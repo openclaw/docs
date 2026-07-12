@@ -846,6 +846,10 @@ context.
   `provider/*` entries. Without an allowlist, the response uses explicit
   `models.providers.<provider>.models` entries, falling back to the full
   catalog only when no configured model rows exist.
+- `"provider-config"`: source-authored `models.providers.*.models` inventory,
+  independent of picker allowlists. Rows include public model capabilities and
+  route-aware availability, but omit provider endpoints, auth material, and
+  runtime request configuration.
 - `"all"`: full gateway catalog, bypassing `agents.defaults.models`. Use for
   diagnostics/discovery UIs, not normal model pickers.
 
