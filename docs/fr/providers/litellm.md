@@ -179,6 +179,7 @@ Les URL LiteLLM en local loopback (`http://localhost:4000`, `127.0.0.1`, `::1`, 
     - La mise en forme des requêtes réservée aux points de terminaison OpenAI natifs ne s’applique pas lorsqu’une URL de base LiteLLM est configurée :
       aucun `service_tier`, aucun `store` Responses, aucune indication de cache des prompts et aucune mise en forme de la charge utile liée au niveau d’effort de raisonnement OpenAI.
     - Les en-têtes d’attribution OpenClaw masqués (`originator`, `version`, `User-Agent`) sont envoyés uniquement aux points de terminaison OpenAI natifs vérifiés ; ils ne sont donc pas injectés avec une URL de base LiteLLM personnalisée.
+
   </Accordion>
 </AccordionGroup>
 

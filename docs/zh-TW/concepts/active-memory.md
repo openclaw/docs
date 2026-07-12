@@ -598,6 +598,7 @@ agents/<agent>/sessions/active-memory/<blocking-memory-sub-agent-session-id>.jso
     - 監看閘道記錄中的 `active-memory: ... start|done`、`memory sync failed (search-bootstrap)` 或提供者嵌入錯誤。
     - 執行 `openclaw status --deep`，以檢查記憶搜尋後端與索引健康狀態。
     - 如果使用 `ollama`，請確認已安裝嵌入模型（`ollama list`）。
+
   </Accordion>
 
   <Accordion title="閘道重新啟動後第一次回憶傳回 `status=timeout`">

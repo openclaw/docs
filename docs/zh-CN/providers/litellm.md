@@ -178,6 +178,7 @@ LiteLLM 可以通过与 OpenAI 兼容的 `/images/generations` 和 `/images/edit
     - OpenClaw 通过 LiteLLM 代理式、与 OpenAI 兼容的 `/v1` 端点进行连接。
     - 仅适用于原生 OpenAI 的请求构造不适用于已配置的 LiteLLM 基础 URL：不会设置 `service_tier`、Responses `store`、提示词缓存提示，也不会对 OpenAI 推理强度有效载荷进行构造。
     - OpenClaw 的隐藏归因请求头（`originator`、`version`、`User-Agent`）只会发送到已验证的原生 OpenAI 端点，因此不会注入自定义 LiteLLM 基础 URL 的请求中。
+
   </Accordion>
 </AccordionGroup>
 

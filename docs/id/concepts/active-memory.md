@@ -614,6 +614,7 @@ Active Memory menggunakan alur pemanggilan kembali milik Plugin memori yang diko
     - Pantau log Gateway untuk `active-memory: ... start|done`, `memory sync failed (search-bootstrap)`, atau kesalahan penyematan penyedia.
     - Jalankan `openclaw status --deep` untuk memeriksa backend pencarian memori dan kesehatan indeks.
     - Jika Anda menggunakan `ollama`, pastikan model penyematan telah terpasang (`ollama list`).
+
   </Accordion>
 
   <Accordion title="Pemanggilan kembali pertama setelah Gateway dimulai ulang mengembalikan `status=timeout`">

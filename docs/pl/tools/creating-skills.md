@@ -252,6 +252,7 @@ Pełny cykl życia propozycji opisano w sekcji [Skill Workshop](/pl/tools/skill-
     wstrzykiwania dowolnych poleceń z niezaufanych danych wejściowych.
   - **Testuj lokalnie** — przed udostępnieniem użyj `openclaw agent --message "..."`.
   - **Korzystaj z ClawHub** — przed tworzeniem od podstaw przejrzyj Skills społeczności na stronie [clawhub.ai](https://clawhub.ai).
+
 </Tip>
 
 ## Powiązane materiały

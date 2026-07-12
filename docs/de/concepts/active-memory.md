@@ -615,6 +615,7 @@ Active Memory verwendet die Erinnerungsabfrage-Pipeline des konfigurierten Speic
     - Suchen Sie in den Gateway-Protokollen nach `active-memory: ... start|done`, `memory sync failed (search-bootstrap)` oder Embedding-Fehlern des Providers.
     - Führen Sie `openclaw status --deep` aus, um das Backend der Speichersuche und den Zustand des Index zu überprüfen.
     - Wenn Sie `ollama` verwenden, vergewissern Sie sich, dass das Embedding-Modell installiert ist (`ollama list`).
+
   </Accordion>
 
   <Accordion title="Die erste Erinnerungsabfrage nach einem Gateway-Neustart gibt `status=timeout` zurück">

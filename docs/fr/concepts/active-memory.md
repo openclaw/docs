@@ -691,6 +691,7 @@ Active Memory s’appuie sur le pipeline de rappel du Plugin de mémoire configu
     - Surveillez dans les journaux du Gateway les messages `active-memory: ... start|done`, `memory sync failed (search-bootstrap)` ou les erreurs d’embeddings du fournisseur.
     - Exécutez `openclaw status --deep` pour examiner le moteur de recherche en mémoire et l’état de l’index.
     - Si vous utilisez `ollama`, vérifiez que le modèle d’embeddings est installé (`ollama list`).
+
   </Accordion>
 
   <Accordion title="Le premier rappel après le redémarrage du Gateway renvoie `status=timeout`">

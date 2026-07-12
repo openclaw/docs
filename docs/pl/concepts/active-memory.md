@@ -597,6 +597,7 @@ Active Memory korzysta z potoku przywoływania skonfigurowanego Pluginu pamięci
     - Obserwuj dzienniki Gateway pod kątem komunikatów `active-memory: ... start|done`, `memory sync failed (search-bootstrap)` lub błędów osadzeń dostawcy.
     - Uruchom `openclaw status --deep`, aby sprawdzić zaplecze wyszukiwania w pamięci i stan indeksu.
     - Jeśli używasz `ollama`, upewnij się, że model osadzeń jest zainstalowany (`ollama list`).
+
   </Accordion>
 
   <Accordion title="Pierwsze przywołanie po ponownym uruchomieniu Gateway zwraca `status=timeout`">

@@ -182,6 +182,7 @@ LAN에서 호스팅되는 프록시의 경우 API 키가 해당 호스트로 전
     - 네이티브 OpenAI 전용 요청 구성은 설정된 LiteLLM 기본 URL을 통해서는 적용되지 않습니다.
       `service_tier`, Responses의 `store`, 프롬프트 캐시 힌트, OpenAI 추론 노력 수준 페이로드 구성이 모두 적용되지 않습니다.
     - 숨겨진 OpenClaw 출처 헤더(`originator`, `version`, `User-Agent`)는 검증된 네이티브 OpenAI 엔드포인트에만 전송되므로 사용자 지정 LiteLLM 기본 URL에는 삽입되지 않습니다.
+
   </Accordion>
 </AccordionGroup>
 

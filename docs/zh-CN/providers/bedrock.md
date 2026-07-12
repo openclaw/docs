@@ -401,6 +401,7 @@ openclaw models list
     - OpenClaw 按以下顺序显示凭证来源：`AWS_BEARER_TOKEN_BEDROCK`，然后是 `AWS_ACCESS_KEY_ID` + `AWS_SECRET_ACCESS_KEY`，接着是 `AWS_PROFILE`，最后是默认 AWS SDK 链。
     - 推理支持取决于模型；请查看 Bedrock 模型卡以了解当前能力。
     - 如果你希望使用托管密钥流程，也可以在 Bedrock 前部署兼容 OpenAI 的代理，并将其配置为 OpenAI provider。
+
   </Accordion>
 </AccordionGroup>
 

@@ -675,6 +675,7 @@ Active Memory از خط لوله بازیابی Plugin حافظه پیکربند
     - گزارش‌های Gateway را برای `active-memory: ... start|done`، ‏`memory sync failed (search-bootstrap)` یا خطاهای تعبیه‌سازی ارائه‌دهنده زیر نظر بگیرید.
     - برای بررسی بک‌اند جست‌وجوی حافظه و سلامت نمایه، `openclaw status --deep` را اجرا کنید.
     - اگر از `ollama` استفاده می‌کنید، تأیید کنید مدل تعبیه‌سازی نصب شده است (`ollama list`).
+
   </Accordion>
 
   <Accordion title="نخستین بازیابی پس از راه‌اندازی مجدد Gateway مقدار `status=timeout` برمی‌گرداند">
