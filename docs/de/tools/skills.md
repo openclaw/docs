@@ -129,6 +129,7 @@ Skill-**Speicherort** (Priorität) und Skill-**Sichtbarkeit** (welcher Agent ihn
     - Eine nicht leere Liste `agents.list[].skills` ist die **endgültige** Menge — sie wird nicht mit den Standardwerten zusammengeführt.
     - Die resultierende Allowlist gilt für die Prompt-Erstellung, die Ermittlung von Slash-Befehlen, die Sandbox-Synchronisierung und Skill-Snapshots.
     - Dies ist keine Autorisierungsgrenze für die Host-Shell. Wenn derselbe Agent `exec` verwenden kann, schränken Sie diese Shell separat durch Sandboxing, Betriebssystembenutzer-Isolation, Exec-Deny-/Allowlists und ressourcenspezifische Anmeldedaten ein.
+
   </Accordion>
 </AccordionGroup>
 

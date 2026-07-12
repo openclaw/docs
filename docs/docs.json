@@ -1219,6 +1219,7 @@
                   "concepts/session-search",
                   "concepts/channel-docking",
                   "concepts/session-pruning",
+                  "concepts/session-state",
                   "concepts/session-tool",
                   {
                     "group": "Memory",
@@ -2839,6 +2840,7 @@
                   "zh-TW/concepts/session-search",
                   "zh-TW/concepts/channel-docking",
                   "zh-TW/concepts/session-pruning",
+                  "zh-TW/concepts/session-state",
                   "zh-TW/concepts/session-tool",
                   {
                     "group": "Memory",
@@ -3802,6 +3804,7 @@
                   "ja-JP/concepts/session-search",
                   "ja-JP/concepts/channel-docking",
                   "ja-JP/concepts/session-pruning",
+                  "ja-JP/concepts/session-state",
                   "ja-JP/concepts/session-tool",
                   {
                     "group": "Memory",
@@ -4765,6 +4768,7 @@
                   "es/concepts/session-search",
                   "es/concepts/channel-docking",
                   "es/concepts/session-pruning",
+                  "es/concepts/session-state",
                   "es/concepts/session-tool",
                   {
                     "group": "Memory",
@@ -5728,6 +5732,7 @@
                   "pt-BR/concepts/session-search",
                   "pt-BR/concepts/channel-docking",
                   "pt-BR/concepts/session-pruning",
+                  "pt-BR/concepts/session-state",
                   "pt-BR/concepts/session-tool",
                   {
                     "group": "Memory",
@@ -6691,6 +6696,7 @@
                   "ko/concepts/session-search",
                   "ko/concepts/channel-docking",
                   "ko/concepts/session-pruning",
+                  "ko/concepts/session-state",
                   "ko/concepts/session-tool",
                   {
                     "group": "Memory",
@@ -7654,6 +7660,7 @@
                   "de/concepts/session-search",
                   "de/concepts/channel-docking",
                   "de/concepts/session-pruning",
+                  "de/concepts/session-state",
                   "de/concepts/session-tool",
                   {
                     "group": "Memory",
@@ -8617,6 +8624,7 @@
                   "fr/concepts/session-search",
                   "fr/concepts/channel-docking",
                   "fr/concepts/session-pruning",
+                  "fr/concepts/session-state",
                   "fr/concepts/session-tool",
                   {
                     "group": "Memory",
@@ -9580,6 +9588,7 @@
                   "hi/concepts/session-search",
                   "hi/concepts/channel-docking",
                   "hi/concepts/session-pruning",
+                  "hi/concepts/session-state",
                   "hi/concepts/session-tool",
                   {
                     "group": "Memory",
@@ -10543,6 +10552,7 @@
                   "ar/concepts/session-search",
                   "ar/concepts/channel-docking",
                   "ar/concepts/session-pruning",
+                  "ar/concepts/session-state",
                   "ar/concepts/session-tool",
                   {
                     "group": "Memory",
@@ -11506,6 +11516,7 @@
                   "it/concepts/session-search",
                   "it/concepts/channel-docking",
                   "it/concepts/session-pruning",
+                  "it/concepts/session-state",
                   "it/concepts/session-tool",
                   {
                     "group": "Memory",
@@ -12469,6 +12480,7 @@
                   "vi/concepts/session-search",
                   "vi/concepts/channel-docking",
                   "vi/concepts/session-pruning",
+                  "vi/concepts/session-state",
                   "vi/concepts/session-tool",
                   {
                     "group": "Memory",
@@ -13432,6 +13444,7 @@
                   "nl/concepts/session-search",
                   "nl/concepts/channel-docking",
                   "nl/concepts/session-pruning",
+                  "nl/concepts/session-state",
                   "nl/concepts/session-tool",
                   {
                     "group": "Memory",
@@ -14395,6 +14408,7 @@
                   "tr/concepts/session-search",
                   "tr/concepts/channel-docking",
                   "tr/concepts/session-pruning",
+                  "tr/concepts/session-state",
                   "tr/concepts/session-tool",
                   {
                     "group": "Memory",
@@ -15358,6 +15372,7 @@
                   "uk/concepts/session-search",
                   "uk/concepts/channel-docking",
                   "uk/concepts/session-pruning",
+                  "uk/concepts/session-state",
                   "uk/concepts/session-tool",
                   {
                     "group": "Memory",
@@ -16321,6 +16336,7 @@
                   "id/concepts/session-search",
                   "id/concepts/channel-docking",
                   "id/concepts/session-pruning",
+                  "id/concepts/session-state",
                   "id/concepts/session-tool",
                   {
                     "group": "Memory",
@@ -17284,6 +17300,7 @@
                   "pl/concepts/session-search",
                   "pl/concepts/channel-docking",
                   "pl/concepts/session-pruning",
+                  "pl/concepts/session-state",
                   "pl/concepts/session-tool",
                   {
                     "group": "Memory",
@@ -18247,6 +18264,7 @@
                   "ru/concepts/session-search",
                   "ru/concepts/channel-docking",
                   "ru/concepts/session-pruning",
+                  "ru/concepts/session-state",
                   "ru/concepts/session-tool",
                   {
                     "group": "Memory",
