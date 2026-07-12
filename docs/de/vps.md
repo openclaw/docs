@@ -1,92 +1,96 @@
 ---
 read_when:
-    - Sie möchten den Gateway auf einem Linux-Server oder Cloud-VPS ausführen
-    - Sie benötigen eine kurze Übersicht der Hosting-Anleitungen
-    - Sie möchten allgemeines Linux-Server-Tuning für OpenClaw
+    - Sie möchten das Gateway auf einem Linux-Server oder Cloud-VPS ausführen
+    - Sie benötigen einen schnellen Überblick über die Hosting-Anleitungen
+    - Sie möchten eine allgemeine Linux-Serveroptimierung für OpenClaw
 sidebarTitle: Linux Server
-summary: OpenClaw auf einem Linux-Server oder Cloud-VPS ausführen – Provider-Auswahl, Architektur und Tuning
+summary: OpenClaw auf einem Linux-Server oder Cloud-VPS ausführen — Provider-Auswahl, Architektur und Optimierung
 title: Linux-Server
 x-i18n:
-    generated_at: "2026-06-27T18:23:21Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T16:00:55Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: d32ca9cd62e99b340827f086602922eae3731d9b6cb42b1fd629917d604c549b
+    source_hash: 634a246850ab8b854c2c799688fd368ebed3a02124baa85bf38d5ff6ef8cec64
     source_path: vps.md
     workflow: 16
 ---
 
-Führen Sie den OpenClaw Gateway auf einem beliebigen Linux-Server oder Cloud-VPS aus. Diese Seite hilft Ihnen,
-einen Provider auszuwählen, erklärt, wie Cloud-Bereitstellungen funktionieren, und behandelt generisches Linux-
-Tuning, das überall gilt.
+Führen Sie das OpenClaw Gateway auf einem beliebigen Linux-Server oder Cloud-VPS aus. Diese Seite hilft Ihnen
+bei der Auswahl eines Providers, erklärt die Funktionsweise von Cloud-Bereitstellungen und behandelt allgemeine Linux-
+Optimierungen, die überall gelten.
 
 ## Provider auswählen
 
 <CardGroup cols={2}>
-  <Card title="Railway" href="/de/install/railway">Ein-Klick-Einrichtung im Browser</Card>
-  <Card title="Northflank" href="/de/install/northflank">Ein-Klick-Einrichtung im Browser</Card>
-  <Card title="DigitalOcean" href="/de/install/digitalocean">Einfacher kostenpflichtiger VPS</Card>
-  <Card title="Oracle Cloud" href="/de/install/oracle">Always Free ARM-Tarif</Card>
-  <Card title="Fly.io" href="/de/install/fly">Fly Machines</Card>
-  <Card title="Hetzner" href="/de/install/hetzner">Docker auf Hetzner VPS</Card>
-  <Card title="Hostinger" href="/de/install/hostinger">VPS mit Ein-Klick-Einrichtung</Card>
-  <Card title="GCP" href="/de/install/gcp">Compute Engine</Card>
   <Card title="Azure" href="/de/install/azure">Linux-VM</Card>
+  <Card title="DigitalOcean" href="/de/install/digitalocean">Einfacher kostenpflichtiger VPS</Card>
   <Card title="exe.dev" href="/de/install/exe-dev">VM mit HTTPS-Proxy</Card>
-  <Card title="Raspberry Pi" href="/de/install/raspberry-pi">ARM selbst gehostet</Card>
+  <Card title="Fly.io" href="/de/install/fly">Fly Machines</Card>
+  <Card title="GCP" href="/de/install/gcp">Compute Engine</Card>
+  <Card title="Hetzner" href="/de/install/hetzner">Docker auf einem Hetzner-VPS</Card>
+  <Card title="Hostinger" href="/de/install/hostinger">VPS mit Ein-Klick-Einrichtung</Card>
+  <Card title="Northflank" href="/de/install/northflank">Ein-Klick-Einrichtung im Browser</Card>
+  <Card title="Oracle Cloud" href="/de/install/oracle">Dauerhaft kostenloser ARM-Tarif</Card>
+  <Card title="Railway" href="/de/install/railway">Ein-Klick-Einrichtung im Browser</Card>
+  <Card title="Raspberry Pi" href="/de/install/raspberry-pi">Selbst gehostet auf ARM</Card>
 </CardGroup>
 
-**AWS (EC2 / Lightsail / kostenloser Tarif)** funktioniert ebenfalls gut.
+**AWS (EC2 / Lightsail / kostenloser Tarif)** eignet sich ebenfalls gut.
 Eine Videoanleitung aus der Community ist verfügbar unter
 [x.com/techfrenAJ/status/2014934471095812547](https://x.com/techfrenAJ/status/2014934471095812547)
-(Community-Ressource -- möglicherweise später nicht mehr verfügbar).
+(Community-Ressource – möglicherweise künftig nicht mehr verfügbar).
 
-## So funktionieren Cloud-Einrichtungen
+## Funktionsweise von Cloud-Einrichtungen
 
-- Der **Gateway läuft auf dem VPS** und verwaltet Zustand + Workspace.
-- Sie verbinden sich von Ihrem Laptop oder Telefon über die **Control UI** oder **Tailscale/SSH**.
-- Behandeln Sie den VPS als maßgebliche Quelle und **sichern Sie** Zustand + Workspace regelmäßig.
-- Sichere Standardeinstellung: Belassen Sie den Gateway auf loopback und greifen Sie über einen SSH-Tunnel oder Tailscale Serve darauf zu.
-  Wenn Sie an `lan` oder `tailnet` binden, verlangen Sie `gateway.auth.token` oder `gateway.auth.password`.
+- Das **Gateway wird auf dem VPS ausgeführt** und verwaltet Zustand und Arbeitsbereich.
+- Sie stellen von Ihrem Laptop oder Smartphone über die **Control UI** oder **Tailscale/SSH** eine Verbindung her.
+- Behandeln Sie den VPS als maßgebliche Datenquelle und erstellen Sie regelmäßig **Sicherungskopien** von Zustand und Arbeitsbereich.
+- Sichere Standardeinstellung: Belassen Sie das Gateway auf der Loopback-Schnittstelle und greifen Sie über einen SSH-Tunnel oder Tailscale Serve darauf zu.
+  Wenn Sie es an `lan` oder `tailnet` binden, erfordert das Gateway ein gemeinsames Geheimnis
+  (`gateway.auth.token` oder `gateway.auth.password`), sofern die Authentifizierung nicht an einen
+  vertrauenswürdigen Proxy delegiert wird.
 
-Verwandte Seiten: [Remote-Zugriff auf den Gateway](/de/gateway/remote), [Plattform-Hub](/de/platforms).
+Verwandte Seiten: [Remote-Zugriff auf das Gateway](/de/gateway/remote), [Plattformübersicht](/de/platforms).
 
-## Admin-Zugriff zuerst härten
+## Zuerst den Administratorzugriff absichern
 
-Bevor Sie OpenClaw auf einem öffentlichen VPS installieren, entscheiden Sie, wie Sie die Box selbst
-administrieren möchten.
+Bevor Sie OpenClaw auf einem öffentlichen VPS installieren, legen Sie fest, wie Sie den
+Server selbst administrieren möchten.
 
-- Wenn Sie Admin-Zugriff nur über Tailnet möchten, installieren Sie zuerst Tailscale, fügen Sie den VPS
-  Ihrem Tailnet hinzu, prüfen Sie eine zweite SSH-Sitzung über die Tailscale-IP oder
-  den MagicDNS-Namen und beschränken Sie anschließend öffentliches SSH.
-- Wenn Sie Tailscale nicht verwenden, wenden Sie eine gleichwertige Härtung für Ihren SSH-
-  Pfad an, bevor Sie weitere Dienste verfügbar machen.
-- Dies ist vom Gateway-Zugriff getrennt. Sie können OpenClaw weiterhin an
-  loopback binden und einen SSH-Tunnel oder Tailscale Serve für das Dashboard verwenden.
+- Für einen ausschließlich über das Tailnet möglichen Administratorzugriff: Installieren Sie zuerst Tailscale, fügen Sie den VPS Ihrem
+  Tailnet hinzu, überprüfen Sie eine zweite SSH-Sitzung über die Tailscale-IP oder den MagicDNS-Namen
+  und schränken Sie anschließend den öffentlichen SSH-Zugriff ein.
+- Ohne Tailscale: Wenden Sie die entsprechende Absicherung auf Ihren SSH-Zugriffsweg an, bevor Sie
+  weitere Dienste zugänglich machen.
+- Dies ist vom Gateway-Zugriff unabhängig. Sie können OpenClaw weiterhin an die
+  Loopback-Schnittstelle binden und für das Dashboard einen SSH-Tunnel oder Tailscale Serve verwenden.
 
 Tailscale-spezifische Gateway-Optionen finden Sie unter [Tailscale](/de/gateway/tailscale).
 
-## Gemeinsamer Unternehmens-Agent auf einem VPS
+## Gemeinsam genutzter Unternehmens-Agent auf einem VPS
 
-Einen einzelnen Agent für ein Team auszuführen ist eine gültige Einrichtung, wenn alle Benutzer in derselben Vertrauensgrenze sind und der Agent ausschließlich geschäftlich genutzt wird.
+Ein einzelner Agent für ein Team ist eine geeignete Einrichtung, wenn sich alle Benutzer innerhalb derselben
+Vertrauensgrenze befinden und der Agent ausschließlich geschäftlich genutzt wird.
 
-- Belassen Sie ihn auf einer dedizierten Runtime (VPS/VM/Container + dedizierter OS-Benutzer/Konten).
-- Melden Sie diese Runtime nicht bei persönlichen Apple-/Google-Konten oder persönlichen Browser-/Passwortmanager-Profilen an.
-- Wenn Benutzer einander gegenüber adversarial sind, trennen Sie nach Gateway/Host/OS-Benutzer.
+- Verwenden Sie dafür eine dedizierte Laufzeitumgebung (VPS/VM/Container sowie dedizierte Betriebssystembenutzer/-konten).
+- Melden Sie diese Laufzeitumgebung nicht bei persönlichen Apple-/Google-Konten oder persönlichen Browser-/Passwortmanager-Profilen an.
+- Wenn sich die Benutzer gegenseitig nicht vertrauen, trennen Sie sie nach Gateway/Host/Betriebssystembenutzer.
 
 Details zum Sicherheitsmodell: [Sicherheit](/de/gateway/security).
 
-## Knoten mit einem VPS verwenden
+## Nodes mit einem VPS verwenden
 
-Sie können den Gateway in der Cloud belassen und **Knoten** auf Ihren lokalen Geräten
-(Mac/iOS/Android/headless) koppeln. Knoten stellen lokale Bildschirm-/Kamera-/Canvas- und `system.run`-
-Fähigkeiten bereit, während der Gateway in der Cloud bleibt.
+Sie können das Gateway in der Cloud belassen und **Nodes** auf Ihren lokalen Geräten
+(Mac/iOS/Android/Headless-Systemen) koppeln. Nodes stellen lokale Bildschirm-, Kamera-, Canvas- und `system.run`-
+Funktionen bereit, während das Gateway in der Cloud verbleibt.
 
-Dokumentation: [Knoten](/de/nodes), [Knoten-CLI](/de/cli/nodes).
+Dokumentation: [Nodes](/de/nodes), [Nodes-CLI](/de/cli/nodes).
 
-## Start-Tuning für kleine VMs und ARM-Hosts
+## Startoptimierung für kleine VMs und ARM-Hosts
 
-Wenn CLI-Befehle auf leistungsschwachen VMs (oder ARM-Hosts) langsam wirken, aktivieren Sie den Modul-Compile-Cache von Node:
+Wenn CLI-Befehle auf leistungsschwachen VMs (oder ARM-Hosts) langsam erscheinen, aktivieren Sie den Modulkompilierungs-Cache von Node:
 
 ```bash
 grep -q 'NODE_COMPILE_CACHE=/var/tmp/openclaw-compile-cache' ~/.bashrc || cat >> ~/.bashrc <<'EOF'
@@ -97,25 +101,21 @@ EOF
 source ~/.bashrc
 ```
 
-- `NODE_COMPILE_CACHE` verbessert die Startzeiten wiederholter Befehle.
-- `OPENCLAW_NO_RESPAWN=1` hält routinemäßige Gateway-Neustarts im Prozess, wodurch zusätzliche Prozessübergaben vermieden werden und die PID-Nachverfolgung auf kleinen Hosts einfach bleibt.
-- Der erste Befehlslauf wärmt den Cache auf; nachfolgende Läufe sind schneller.
-- Raspberry Pi-spezifische Details finden Sie unter [Raspberry Pi](/de/install/raspberry-pi).
+- `NODE_COMPILE_CACHE` verkürzt die Startzeiten bei wiederholten Befehlsaufrufen; beim ersten Aufruf wird der Cache aufgebaut.
+- `OPENCLAW_NO_RESPAWN=1` hält routinemäßige Gateway-Neustarts innerhalb desselben Prozesses. Dadurch werden zusätzliche Prozessübergaben vermieden und die PID-Verfolgung auf kleinen Hosts bleibt einfach.
+- Raspberry-Pi-spezifische Informationen finden Sie unter [Raspberry Pi](/de/install/raspberry-pi).
 
-### systemd-Tuning-Checkliste (optional)
+### Checkliste zur systemd-Optimierung (optional)
 
 Für VM-Hosts mit `systemd` sollten Sie Folgendes erwägen:
 
-- Dienstumgebung für einen stabilen Startpfad hinzufügen:
-  - `OPENCLAW_NO_RESPAWN=1`
-  - `NODE_COMPILE_CACHE=/var/tmp/openclaw-compile-cache`
-- Neustartverhalten explizit halten:
-  - `Restart=always`
-  - `RestartSec=2`
-  - `TimeoutStartSec=90`
-- Bevorzugen Sie SSD-gestützte Datenträger für Zustands-/Cache-Pfade, um Cold-Start-Einbußen durch zufällige I/O zu verringern.
+- Dienstumgebungsvariablen für einen stabilen Startpfad: `OPENCLAW_NO_RESPAWN=1` und
+  `NODE_COMPILE_CACHE=/var/tmp/openclaw-compile-cache`
+- Explizites Neustartverhalten: `Restart=always`, `RestartSec=2`, `TimeoutStartSec=90`
+- SSD-gestützte Datenträger für Zustands-/Cache-Pfade, um die Nachteile zufälliger E/A-Zugriffe beim Kaltstart zu reduzieren.
 
-Für den Standardpfad `openclaw onboard --install-daemon` bearbeiten Sie die Benutzereinheit:
+Der standardmäßige Ablauf `openclaw onboard --install-daemon` installiert eine systemd-Benutzer-
+Unit; bearbeiten Sie sie mit:
 
 ```bash
 systemctl --user edit openclaw-gateway.service
@@ -130,16 +130,16 @@ RestartSec=2
 TimeoutStartSec=90
 ```
 
-Wenn Sie stattdessen bewusst eine Systemeinheit installiert haben, bearbeiten Sie
-`openclaw-gateway.service` über `sudo systemctl edit openclaw-gateway.service`.
+Wenn Sie stattdessen bewusst eine System-Unit installiert haben, bearbeiten Sie sie über
+`sudo systemctl edit openclaw-gateway.service`.
 
-So helfen `Restart=`-Richtlinien bei der automatisierten Wiederherstellung:
-[systemd kann die Dienstwiederherstellung automatisieren](https://www.redhat.com/en/blog/systemd-automate-recovery).
+So unterstützen `Restart=`-Richtlinien die automatisierte Wiederherstellung:
+[systemd kann die Wiederherstellung von Diensten automatisieren](https://www.redhat.com/en/blog/systemd-automate-recovery).
 
-Informationen zum Linux-OOM-Verhalten, zur Auswahl von Kindprozessen als Opfer und zu `exit 137`-
-Diagnosen finden Sie unter [Linux-Speicherdruck und OOM-Kills](/de/platforms/linux#memory-pressure-and-oom-kills).
+Informationen zum Linux-OOM-Verhalten, zur Auswahl untergeordneter Prozesse als Opfer und zur Diagnose von `exit 137`
+finden Sie unter [Linux-Speicherdruck und OOM-Beendigungen](/de/platforms/linux#memory-pressure-and-oom-kills).
 
-## Verwandt
+## Verwandte Themen
 
 - [Installationsübersicht](/de/install)
 - [DigitalOcean](/de/install/digitalocean)

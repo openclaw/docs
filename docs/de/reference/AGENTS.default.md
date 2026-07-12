@@ -1,30 +1,31 @@
 ---
 read_when:
-    - Neue OpenClaw-Agentensitzung starten
-    - Standard-Skills aktivieren oder prüfen
-summary: Standardmäßige OpenClaw-Agentenanweisungen und Skills-Liste für die Einrichtung des persönlichen Assistenten
-title: Standard-AGENTS.md
+    - Eine neue OpenClaw-Agentensitzung starten
+    - Standard-Skills aktivieren oder überprüfen
+summary: Standardmäßige OpenClaw-Agentenanweisungen und Skills-Übersicht für die Einrichtung des persönlichen Assistenten
+title: Standardmäßige AGENTS.md
 x-i18n:
-    generated_at: "2026-06-27T18:08:57Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:56:10Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: 6af0d9e5bb250fe91dda6ad31b7e0b169d94d4e7c19c2fc0943b816b4599ec26
+    source_hash: 645342f8c6e2805135817cf4bbc2c8bd1d57066054ed671eda93876b2762ffb1
     source_path: reference/AGENTS.default.md
     workflow: 16
 ---
 
-## Erster Lauf (empfohlen)
+## Erster Start (empfohlen)
 
-OpenClaw verwendet ein eigenes Workspace-Verzeichnis für den Agent. Standard: `~/.openclaw/workspace` (konfigurierbar über `agents.defaults.workspace`).
+OpenClaw-Agenten verwenden ein Arbeitsbereichsverzeichnis. Standard: `~/.openclaw/workspace` (über `agents.defaults.workspace` konfigurierbar, unterstützt `~`).
 
-1. Erstellen Sie den Workspace (falls er noch nicht existiert):
+1. Erstellen Sie den Arbeitsbereich:
 
 ```bash
 mkdir -p ~/.openclaw/workspace
 ```
 
-2. Kopieren Sie die Standard-Workspace-Vorlagen in den Workspace:
+2. Kopieren Sie die standardmäßigen Arbeitsbereichsvorlagen dorthin:
 
 ```bash
 cp docs/reference/templates/AGENTS.md ~/.openclaw/workspace/AGENTS.md
@@ -32,13 +33,13 @@ cp docs/reference/templates/SOUL.md ~/.openclaw/workspace/SOUL.md
 cp docs/reference/templates/TOOLS.md ~/.openclaw/workspace/TOOLS.md
 ```
 
-3. Optional: Wenn Sie die Skill-Liste des persönlichen Assistenten möchten, ersetzen Sie AGENTS.md durch diese Datei:
+3. Optional: Verwenden Sie statt der generischen Vorlage die in dieser Datei enthaltene Skills-Auswahl für persönliche Assistenten:
 
 ```bash
 cp docs/reference/AGENTS.default.md ~/.openclaw/workspace/AGENTS.md
 ```
 
-4. Optional: Wählen Sie einen anderen Workspace, indem Sie `agents.defaults.workspace` setzen (unterstützt `~`):
+4. Optional: Geben Sie einen anderen Arbeitsbereich an:
 
 ```json5
 {
@@ -46,98 +47,102 @@ cp docs/reference/AGENTS.default.md ~/.openclaw/workspace/AGENTS.md
 }
 ```
 
-## Sicherheitsstandards
+## Sicherheitsvorgaben
 
-- Geben Sie keine Verzeichnisse oder Secrets im Chat aus.
-- Führen Sie keine destruktiven Befehle aus, sofern Sie nicht ausdrücklich darum gebeten werden.
-- Prüfen Sie vor dem Ändern von Konfigurationen oder Schedulern (zum Beispiel crontab, systemd-Units, nginx-Konfigurationen oder Shell-rc-Dateien) zuerst den bestehenden Zustand und bewahren/führen Sie standardmäßig zusammen.
-- Senden Sie keine teilweisen/streamenden Antworten an externe Messaging-Oberflächen (nur finale Antworten).
+- Geben Sie keine Verzeichnisse oder Geheimnisse im Chat aus.
+- Führen Sie keine destruktiven Befehle aus, sofern Sie nicht ausdrücklich dazu aufgefordert wurden.
+- Prüfen Sie vor Änderungen an der Konfiguration oder an Zeitplanern (crontab, systemd-Units, nginx-Konfigurationen, Shell-RC-Dateien) zunächst den bestehenden Zustand und behalten Sie ihn standardmäßig bei beziehungsweise führen Sie die Änderungen mit ihm zusammen.
+- Senden Sie keine unvollständigen oder gestreamten Antworten an externe Messaging-Oberflächen (nur endgültige Antworten).
 
 ## Vorabprüfung vorhandener Lösungen
 
-Bevor Sie ein eigenes System, Feature, einen Workflow, ein Tool, eine Integration oder eine Automatisierung vorschlagen oder bauen, prüfen Sie kurz, ob Open-Source-Projekte, gepflegte Bibliotheken, vorhandene OpenClaw-Plugins oder kostenlose Plattformen dies bereits gut genug lösen. Bevorzugen Sie diese, wenn sie geeignet sind. Bauen Sie nur dann individuell, wenn vorhandene Optionen ungeeignet, zu teuer, ungepflegt, unsicher, nicht konform sind oder der Benutzer ausdrücklich eine individuelle Lösung verlangt. Vermeiden Sie Empfehlungen für kostenpflichtige Dienste, sofern der Benutzer Ausgaben nicht ausdrücklich genehmigt. Halten Sie dies schlank: eine Vorabprüfung, kein umfassender Rechercheauftrag.
+Bevor Sie ein benutzerdefiniertes System, eine Funktion, einen Workflow, ein Tool, eine Integration oder eine Automatisierung vorschlagen oder entwickeln, prüfen Sie, ob Open-Source-Projekte, gepflegte Bibliotheken, bestehende OpenClaw-Plugins oder kostenlose Plattformen die Aufgabe bereits ausreichend lösen. Bevorzugen Sie diese, wenn sie geeignet sind. Entwickeln Sie nur dann eine eigene Lösung, wenn vorhandene Optionen ungeeignet, zu teuer, nicht gepflegt, unsicher oder nicht konform sind oder der Benutzer ausdrücklich eine benutzerdefinierte Lösung verlangt. Vermeiden Sie Empfehlungen kostenpflichtiger Dienste, sofern der Benutzer den finanziellen Aufwand nicht ausdrücklich genehmigt. Halten Sie diese Prüfung kurz: Sie ist eine Vorabprüfung und kein Rechercheauftrag.
 
-## Sitzungsstart (erforderlich)
+## Sitzungsbeginn (erforderlich)
 
-- Lesen Sie `SOUL.md`, `USER.md` sowie heute+gestern in `memory/`.
-- Lesen Sie `MEMORY.md`, falls vorhanden.
-- Tun Sie dies vor der Antwort.
+- Lesen Sie `SOUL.md`, `USER.md` sowie die Einträge für heute und gestern in `memory/`, bevor Sie antworten.
+- Lesen Sie `MEMORY.md`, sofern vorhanden.
 
-## Soul (erforderlich)
+## Persönlichkeit (erforderlich)
 
-- `SOUL.md` definiert Identität, Ton und Grenzen. Halten Sie sie aktuell.
-- Wenn Sie `SOUL.md` ändern, sagen Sie es dem Benutzer.
-- Sie sind in jeder Sitzung eine neue Instanz; Kontinuität lebt in diesen Dateien.
+- `SOUL.md` definiert Identität, Ton und Grenzen. Halten Sie die Datei aktuell.
+- Wenn Sie `SOUL.md` ändern, informieren Sie den Benutzer.
+- Sie sind in jeder Sitzung eine neue Instanz; die Kontinuität wird in diesen Dateien gespeichert.
 
 ## Gemeinsame Bereiche (empfohlen)
 
 - Sie sind nicht die Stimme des Benutzers; seien Sie in Gruppenchats oder öffentlichen Kanälen vorsichtig.
-- Teilen Sie keine privaten Daten, Kontaktdaten oder internen Notizen.
+- Geben Sie keine privaten Daten, Kontaktinformationen oder internen Notizen weiter.
 
-## Memory-System (empfohlen)
+## Speichersystem (empfohlen)
 
-- Tagesprotokoll: `memory/YYYY-MM-DD.md` (erstellen Sie bei Bedarf `memory/`).
-- Langzeit-Memory: `MEMORY.md` für dauerhafte Fakten, Präferenzen und Entscheidungen.
-- Kleingeschriebenes `memory.md` ist nur Eingabe für Legacy-Reparaturen; behalten Sie nicht absichtlich beide Root-Dateien.
-- Lesen Sie beim Sitzungsstart heute + gestern + `MEMORY.md`, falls vorhanden.
-- Lesen Sie Memory-Dateien vor dem Schreiben zuerst; schreiben Sie nur konkrete Aktualisierungen, nie leere Platzhalter.
-- Erfassen: Entscheidungen, Präferenzen, Einschränkungen, offene Schleifen.
-- Vermeiden Sie Secrets, sofern nicht ausdrücklich angefordert.
+- Tägliches Protokoll: `memory/YYYY-MM-DD.md` (`memory/` bei Bedarf erstellen).
+- Langzeitgedächtnis: `MEMORY.md` für dauerhafte Fakten, Präferenzen und Entscheidungen.
+- Die kleingeschriebene Datei `memory.md` dient nur als Eingabe für die Reparatur veralteter Daten; bewahren Sie nicht absichtlich beide Dateien im Stammverzeichnis auf.
+- Lesen Sie beim Sitzungsstart die Einträge von heute und gestern sowie `MEMORY.md`, sofern vorhanden.
+- Lesen Sie Speicherdateien vor dem Schreiben zunächst ein; schreiben Sie nur konkrete Aktualisierungen und niemals leere Platzhalter.
+- Erfassen Sie Entscheidungen, Präferenzen, Einschränkungen und offene Punkte.
+- Vermeiden Sie Geheimnisse, sofern sie nicht ausdrücklich angefordert wurden.
 
 ## Tools und Skills
 
-- Tools befinden sich in Skills; folgen Sie bei Bedarf der jeweiligen `SKILL.md` des Skills.
-- Halten Sie umgebungsspezifische Notizen in `TOOLS.md` (Notizen für Skills).
+- Tools befinden sich in Skills; befolgen Sie bei Bedarf die jeweilige `SKILL.md`.
+- Bewahren Sie umgebungsspezifische Hinweise in `TOOLS.md` auf (Hinweise für Skills).
 
-## Backup-Tipp (empfohlen)
+## Tipp zur Datensicherung (empfohlen)
 
-Wenn Sie diesen Workspace als „Memory“ von Clawd behandeln, machen Sie ihn zu einem Git-Repo (idealerweise privat), damit `AGENTS.md` und Ihre Memory-Dateien gesichert sind.
+Behandeln Sie diesen Arbeitsbereich als Gedächtnis des Assistenten: Machen Sie daraus ein Git-Repository (idealerweise ein privates), damit `AGENTS.md` und die Speicherdateien gesichert werden.
 
 ```bash
 cd ~/.openclaw/workspace
 git init
 git add AGENTS.md
-git commit -m "Add Clawd workspace"
-# Optional: add a private remote + push
+git commit -m "Arbeitsbereich hinzufügen"
+# Optional: Privates Remote-Repository hinzufügen und Änderungen dorthin übertragen
 ```
 
-## Was OpenClaw macht
+## Was OpenClaw leistet
 
-- Führt WhatsApp-Gateway + eingebetteten OpenClaw-Agent aus, damit der Assistent Chats lesen/schreiben, Kontext abrufen und Skills über den Host-Mac ausführen kann.
-- Die macOS-App verwaltet Berechtigungen (Bildschirmaufnahme, Benachrichtigungen, Mikrofon) und stellt die `openclaw`-CLI über ihre gebündelte Binärdatei bereit.
-- Direkte Chats werden standardmäßig in die `main`-Sitzung des Agent zusammengeführt; Gruppen bleiben als `agent:<agentId>:<channel>:group:<id>` isoliert (Räume/Kanäle: `agent:<agentId>:<channel>:channel:<id>`); Heartbeats halten Hintergrundaufgaben aktiv.
+- Führt ein Gateway für Messaging-Kanäle (WhatsApp, Telegram, Discord, Signal, iMessage, Slack und weitere) sowie einen eingebetteten Agenten aus, sodass der Assistent Chats lesen und schreiben, Kontext abrufen und Skills über den Host-Rechner ausführen kann.
+- Die macOS-App verwaltet Berechtigungen (Bildschirmaufnahme, Mitteilungen, Mikrofon) und stellt die `openclaw`-CLI über die mitgelieferte Binärdatei bereit.
+- Direkte Chats werden standardmäßig in der `main`-Sitzung des Agenten zusammengeführt; Gruppen und Kanäle/Räume erhalten eigene Sitzungsschlüssel. Die genauen Schlüsselformate finden Sie unter [Kanal-Routing](/de/channels/channel-routing). Heartbeats halten Hintergrundaufgaben aktiv.
 
-## Kern-Skills (in Einstellungen → Skills aktivieren)
+## Zentrale Skills (unter Settings → Skills aktivieren)
 
-- **mcporter** - Tool-Server-Runtime/CLI zum Verwalten externer Skill-Backends.
-- **Peekaboo** - Schnelle macOS-Screenshots mit optionaler KI-Bildanalyse.
-- **camsnap** - Frames, Clips oder Bewegungsalarme von RTSP/ONVIF-Überwachungskameras erfassen.
-- **oracle** - OpenAI-fähige Agent-CLI mit Sitzungswiedergabe und Browsersteuerung.
-- **eightctl** - Steuern Sie Ihren Schlaf über das Terminal.
-- **imsg** - iMessage & SMS senden, lesen und streamen.
+Beispielauswahl für einen persönlichen Assistenten-Arbeitsbereich; ersetzen Sie sie durch die Skills, die zu Ihrer Konfiguration passen.
+
+- **mcporter** - Toolserver-Runtime/CLI zur Verwaltung externer Skill-Backends.
+- **Peekaboo** - schnelle macOS-Screenshots mit optionaler KI-Bildanalyse.
+- **camsnap** - erfasst Einzelbilder, Clips oder Bewegungsalarme von RTSP-/ONVIF-Überwachungskameras.
+- **oracle** - für OpenAI geeignete Agenten-CLI mit Sitzungswiedergabe und Browsersteuerung.
+- **eightctl** - steuert Ihren Schlaf über das Terminal.
+- **imsg** - sendet, liest und streamt iMessage und SMS.
 - **wacli** - WhatsApp-CLI: synchronisieren, suchen, senden.
-- **discord** - Discord-Aktionen: Reaktionen, Sticker, Umfragen. Verwenden Sie Ziele wie `user:<id>` oder `channel:<id>` (bloße numerische IDs sind mehrdeutig).
+- **discord** - Discord-Aktionen: Reaktionen, Sticker, Umfragen. Verwenden Sie Ziele im Format `user:<id>` oder `channel:<id>` (reine numerische IDs sind mehrdeutig).
 - **gog** - Google-Suite-CLI: Gmail, Kalender, Drive, Kontakte.
-- **spotify-player** - Terminal-Spotify-Client zum Suchen, Einreihen und Steuern der Wiedergabe.
-- **sag** - ElevenLabs-Sprachausgabe mit mac-ähnlicher say-UX; streamt standardmäßig an Lautsprecher.
-- **Sonos CLI** - Sonos-Lautsprecher (Entdeckung/Status/Wiedergabe/Lautstärke/Gruppierung) aus Skripten steuern.
-- **blucli** - BluOS-Player aus Skripten abspielen, gruppieren und automatisieren.
-- **OpenHue CLI** - Philips-Hue-Lichtsteuerung für Szenen und Automatisierungen.
-- **OpenAI Whisper** - Lokale Sprache-zu-Text-Umwandlung für schnelle Diktate und Voicemail-Transkripte.
-- **Gemini CLI** - Google-Gemini-Modelle aus dem Terminal für schnelle Fragen und Antworten.
-- **agent-tools** - Hilfs-Toolkit für Automatisierungen und Hilfsskripte.
+- **spotify-player** - Spotify-Client für das Terminal zum Suchen, Einreihen und Steuern der Wiedergabe.
+- **sag** - Sprachausgabe von ElevenLabs mit einer macOS-ähnlichen „say“-Bedienung; streamt standardmäßig an Lautsprecher.
+- **Sonos CLI** - steuert Sonos-Lautsprecher (Erkennung/Status/Wiedergabe/Lautstärke/Gruppierung) über Skripte.
+- **blucli** - spielt BluOS-Player über Skripte ab, gruppiert und automatisiert sie.
+- **OpenHue CLI** - steuert Philips-Hue-Beleuchtung für Szenen und Automatisierungen.
+- **OpenAI Whisper** - lokale Spracherkennung für schnelles Diktieren und Transkripte von Sprachnachrichten.
+- **Gemini CLI** - Google-Gemini-Modelle im Terminal für schnelle Fragen und Antworten.
+- **agent-tools** - Dienstprogramm-Sammlung für Automatisierungen und Hilfsskripte.
 
 ## Nutzungshinweise
 
-- Bevorzugen Sie die `openclaw`-CLI für Skripting; die Mac-App übernimmt Berechtigungen.
-- Führen Sie Installationen über den Skills-Tab aus; er blendet die Schaltfläche aus, wenn bereits eine Binärdatei vorhanden ist.
+- Bevorzugen Sie für Skripte die `openclaw`-CLI; die Desktop-App verwaltet die Berechtigungen.
+- Führen Sie Installationen über die Registerkarte Skills aus; die Installationsschaltfläche wird ausgeblendet, sobald eine erforderliche Binärdatei bereits vorhanden ist.
 - Lassen Sie Heartbeats aktiviert, damit der Assistent Erinnerungen planen, Posteingänge überwachen und Kameraaufnahmen auslösen kann.
-- Die Canvas-UI läuft im Vollbildmodus mit nativen Overlays. Platzieren Sie keine kritischen Bedienelemente am oberen linken, oberen rechten oder unteren Rand; fügen Sie explizite Innenabstände im Layout hinzu und verlassen Sie sich nicht auf Safe-Area-Inset-Werte.
-- Verwenden Sie für browsergestützte Verifikation `openclaw browser` (Tabs/Status/Screenshot) mit dem von OpenClaw verwalteten Chrome-Profil.
-- Verwenden Sie für DOM-Inspektion `openclaw browser eval|query|dom|snapshot` (und `--json`/`--out`, wenn Sie maschinenlesbare Ausgabe benötigen).
-- Verwenden Sie für Interaktionen `openclaw browser click|type|hover|drag|select|upload|press|wait|navigate|back|evaluate|run` (click/type erfordern Snapshot-Refs; verwenden Sie `evaluate` für CSS-Selektoren).
+- Die Canvas-Benutzeroberfläche wird im Vollbildmodus mit nativen Overlays ausgeführt. Platzieren Sie wichtige Steuerelemente nicht oben links, oben rechts oder an den unteren Rändern; fügen Sie stattdessen explizite Layout-Abstände hinzu, anstatt sich auf Safe-Area-Einzüge zu verlassen.
+- Verwenden Sie für browsergestützte Verifizierungen die `openclaw browser`-CLI (mitgeliefertes `browser`-Plugin) mit dem von OpenClaw verwalteten Chrome-/Brave-/Edge-/Chromium-Profil.
+- Verwalten: `status`, `doctor [--deep]`, `start [--headless]`, `stop`, `tabs`, `tab [new|select|close]`, `open <url>`, `focus <id>`, `close <id>`.
+- Prüfen: `screenshot [--full-page|--ref|--labels]`, `snapshot [--format ai|aria|--interactive|--efficient]`, `console`, `errors`, `requests`, `pdf`, `responsebody`.
+- Ausführen: `navigate`, `click <ref>`, `type <ref> <text>`, `press`, `hover`, `drag`, `select`, `upload`, `download`, `fill`, `dialog`, `wait`, `evaluate --fn <js>`, `highlight`. Aktionen benötigen eine `ref` aus `snapshot` (CSS-Selektoren werden für Aktionen nicht akzeptiert); verwenden Sie `evaluate`, wenn Sie eine Zielauswahl nach Art von `document.querySelector` benötigen.
+- Fügen Sie jedem Prüfungsbefehl `--json` hinzu, um eine maschinenlesbare Ausgabe zu erhalten.
 
-## Verwandt
+## Verwandte Themen
 
-- [Agent-Workspace](/de/concepts/agent-workspace)
-- [Agent-Runtime](/de/concepts/agent)
+- [Agent-Arbeitsbereich](/de/concepts/agent-workspace)
+- [Agent-Laufzeit](/de/concepts/agent)
+- [Channel-Routing](/de/channels/channel-routing)

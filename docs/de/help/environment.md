@@ -1,53 +1,54 @@
 ---
 read_when:
-    - Sie müssen wissen, welche Umgebungsvariablen geladen werden und in welcher Reihenfolge
-    - Sie debuggen fehlende API-Schlüssel im Gateway
+    - Sie müssen wissen, welche Umgebungsvariablen in welcher Reihenfolge geladen werden.
+    - Sie beheben fehlende API-Schlüssel im Gateway.
     - Sie dokumentieren Provider-Authentifizierung oder Bereitstellungsumgebungen
-summary: Wo OpenClaw Umgebungsvariablen lädt und in welcher Rangfolge sie gelten
+summary: Wo OpenClaw Umgebungsvariablen lädt und welche Prioritätsreihenfolge gilt
 title: Umgebungsvariablen
 x-i18n:
-    generated_at: "2026-06-27T17:35:05Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:30:57Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: 7e36f93efe29f9cc0e9942659c323a635d21fcaa436427dcb21f5694e5d0458b
+    source_hash: e0010465008969ea1ebf7bb79d01ee86b7be20f7b6d0d90da72d8b0a3b1ed273
     source_path: help/environment.md
     workflow: 16
 ---
 
-OpenClaw lädt Umgebungsvariablen aus mehreren Quellen. Die Regel lautet: **Bestehende Werte niemals überschreiben**.
-Arbeitsbereich-`.env`-Dateien sind eine Quelle mit geringerem Vertrauen: OpenClaw ignoriert Provider-Zugangsdaten und geschützte Laufzeitsteuerungen aus Arbeitsbereich-`.env`, bevor die Rangfolge angewendet wird.
+OpenClaw bezieht Umgebungsvariablen aus mehreren Quellen. Dabei gilt die Regel: **Vorhandene Werte niemals überschreiben**.
+`.env`-Dateien im Workspace sind eine Quelle mit geringerem Vertrauensniveau: OpenClaw ignoriert Provider-Anmeldedaten und geschützte Laufzeitsteuerungen aus der `.env` des Workspace, bevor die Rangfolge angewendet wird.
 
-## Rangfolge (höchste → niedrigste)
+## Rangfolge (höchste bis niedrigste)
 
-1. **Prozessumgebung** (was der Gateway-Prozess bereits von der übergeordneten Shell oder dem Daemon hat).
-2. **`.env` im aktuellen Arbeitsverzeichnis** (dotenv-Standard; überschreibt nicht; Provider-Zugangsdaten und geschützte Laufzeitsteuerungen werden ignoriert).
-3. **Globale `.env`** unter `~/.openclaw/.env` (auch bekannt als `$OPENCLAW_STATE_DIR/.env`; empfohlen für Provider-API-Schlüssel; überschreibt nicht).
-4. **Config-`env`-Block** in `~/.openclaw/openclaw.json` (nur angewendet, wenn der Wert fehlt).
-5. **Optionaler Login-Shell-Import** (`env.shellEnv.enabled` oder `OPENCLAW_LOAD_SHELL_ENV=1`), nur für fehlende erwartete Schlüssel angewendet.
+1. **Prozessumgebung** (was der Gateway-Prozess bereits von der übergeordneten Shell bzw. dem Daemon übernommen hat).
+2. **`.env` im aktuellen Arbeitsverzeichnis** (dotenv-Standard; überschreibt nicht; Provider-Anmeldedaten und geschützte Laufzeitsteuerungen werden ignoriert).
+3. **Globale `.env`** unter `~/.openclaw/.env` (auch `$OPENCLAW_STATE_DIR/.env`; für Provider-API-Schlüssel empfohlen; überschreibt nicht).
+4. **Konfigurationsblock `env`** in `~/.openclaw/openclaw.json` (wird nur bei fehlenden Werten angewendet).
+5. **Optionaler Import aus der Anmelde-Shell** (`env.shellEnv.enabled` oder `OPENCLAW_LOAD_SHELL_ENV=1`), der nur auf fehlende erwartete Schlüssel angewendet wird.
 
-Bei frischen Ubuntu-Installationen, die das Standard-State-Verzeichnis verwenden, behandelt OpenClaw außerdem `~/.config/openclaw/gateway.env` als Kompatibilitäts-Fallback nach der globalen `.env`. Wenn beide Dateien vorhanden sind und sich widersprechen, behält OpenClaw `~/.openclaw/.env` bei und gibt eine Warnung aus.
+Bei neuen Ubuntu-Installationen, die das standardmäßige Zustandsverzeichnis verwenden, behandelt OpenClaw außerdem `~/.config/openclaw/gateway.env` nach der globalen `.env` als Kompatibilitäts-Fallback. Wenn beide Dateien vorhanden sind und voneinander abweichen, behält OpenClaw `~/.openclaw/.env` bei und gibt eine Warnung aus.
 
-Wenn die Config-Datei vollständig fehlt, wird Schritt 4 übersprungen; der Shell-Import wird weiterhin ausgeführt, wenn er aktiviert ist.
+Wenn die Konfigurationsdatei vollständig fehlt, wird Schritt 4 übersprungen; der Shell-Import wird weiterhin ausgeführt, sofern er aktiviert ist.
 
-## Provider-Zugangsdaten und Arbeitsbereich-`.env`
+## Provider-Anmeldedaten und die `.env` des Workspace
 
-Speichern Sie Provider-API-Schlüssel nicht ausschließlich in einer Arbeitsbereich-`.env`. OpenClaw ignoriert Provider-Zugangsdaten-Umgebungsvariablen aus Arbeitsbereich-`.env`-Dateien, einschließlich häufiger Schlüssel wie `GEMINI_API_KEY`, `GOOGLE_API_KEY`, `XAI_API_KEY`, `MISTRAL_API_KEY`, `GROQ_API_KEY`, `DEEPSEEK_API_KEY`, `PERPLEXITY_API_KEY`, `BRAVE_API_KEY`, `TAVILY_API_KEY`, `EXA_API_KEY` und `FIRECRAWL_API_KEY`.
+Bewahren Sie Provider-API-Schlüssel nicht ausschließlich in einer `.env` des Workspace auf. OpenClaw blockiert zahlreiche Schlüssel für Provider-Anmeldedaten und Endpunktumleitungen aus `.env`-Dateien im Workspace, darunter alle bekannten Umgebungsvariablen für die Provider-Authentifizierung (zum Beispiel `GEMINI_API_KEY`, `GOOGLE_API_KEY`, `XAI_API_KEY`, `MISTRAL_API_KEY`, `GROQ_API_KEY`, `DEEPSEEK_API_KEY`, `PERPLEXITY_API_KEY`, `BRAVE_API_KEY`, `TAVILY_API_KEY`, `EXA_API_KEY`, `FIRECRAWL_API_KEY`), außerdem alle Schlüssel, die auf `_API_HOST`, `_BASE_URL` oder `_HOMESERVER` enden, sowie die vollständigen Namensräume `OPENCLAW_*`, `CLAWHUB_*`, `ANTHROPIC_API_KEY_*` und `OPENAI_API_KEY_*`.
 
-Verwenden Sie eine dieser vertrauenswürdigen Quellen für Provider-Zugangsdaten:
+Verwenden Sie für Provider-Anmeldedaten stattdessen eine der folgenden vertrauenswürdigen Quellen:
 
-- Die Gateway-Prozessumgebung, z. B. eine Shell, eine launchd-/systemd-Unit, ein Container-Secret oder ein CI-Secret.
-- Die globale Laufzeit-dotenv-Datei unter `~/.openclaw/.env` oder `$OPENCLAW_STATE_DIR/.env`.
-- Den Config-`env`-Block in `~/.openclaw/openclaw.json`.
-- Optionalen Login-Shell-Import, wenn `env.shellEnv.enabled` oder `OPENCLAW_LOAD_SHELL_ENV=1` aktiviert ist.
+- Die Prozessumgebung des Gateway, beispielsweise eine Shell, eine launchd-/systemd-Unit, ein Container-Secret oder ein CI-Secret.
+- Die globale dotenv-Laufzeitdatei unter `~/.openclaw/.env` oder `$OPENCLAW_STATE_DIR/.env`.
+- Den Konfigurationsblock `env` in `~/.openclaw/openclaw.json`.
+- Den optionalen Import aus der Anmelde-Shell, wenn `env.shellEnv.enabled` oder `OPENCLAW_LOAD_SHELL_ENV=1` aktiviert ist.
 
-Wenn Sie Provider-Schlüssel bisher nur in einer Arbeitsbereich-`.env` gespeichert haben, verschieben Sie sie in eine der oben genannten vertrauenswürdigen Quellen. Arbeitsbereich-`.env` kann weiterhin gewöhnliche Projektvariablen bereitstellen, die keine Zugangsdaten, Endpoint-Weiterleitungen, Host-Überschreibungen oder `OPENCLAW_*`-Laufzeitsteuerungen sind.
+Wenn Sie Provider-Schlüssel zuvor ausschließlich in einer `.env` des Workspace gespeichert haben, verschieben Sie sie in eine der oben genannten vertrauenswürdigen Quellen. Die `.env` des Workspace kann weiterhin gewöhnliche Projektvariablen bereitstellen, bei denen es sich nicht um Anmeldedaten, Endpunktumleitungen, Host-Überschreibungen oder `OPENCLAW_*`-Laufzeitsteuerungen handelt.
 
-Siehe [Arbeitsbereich-`.env`-Dateien](/de/gateway/security#workspace-env-files) für die Sicherheitsbegründung.
+Die Sicherheitsbegründung finden Sie unter [`.env`-Dateien im Workspace](/de/gateway/security#workspace-env-files).
 
-## Config-`env`-Block
+## Konfigurationsblock `env`
 
-Zwei gleichwertige Möglichkeiten, Inline-Umgebungsvariablen festzulegen (beide überschreiben nicht):
+Es gibt zwei gleichwertige Möglichkeiten, eingebettete Umgebungsvariablen festzulegen (beide überschreiben keine vorhandenen Werte):
 
 ```json5
 {
@@ -60,12 +61,12 @@ Zwei gleichwertige Möglichkeiten, Inline-Umgebungsvariablen festzulegen (beide 
 }
 ```
 
-Der Config-`env`-Block akzeptiert nur literale Zeichenkettenwerte. Er erweitert keine
+Der Konfigurationsblock `env` akzeptiert ausschließlich literale Zeichenfolgenwerte. Er expandiert keine
 `file:...`-Werte; beispielsweise wird `XAI_API_KEY: "file:secrets/xai-api-key.txt"`
-als genau diese Zeichenkette an Provider übergeben.
+genau als diese Zeichenfolge an Provider übergeben.
 
-Für dateibasierte Provider-Schlüssel verwenden Sie eine SecretRef im Zugangsdatenfeld, das
-sie unterstützt:
+Verwenden Sie für dateibasierte Provider-Schlüssel eine SecretRef im Anmeldedatenfeld, das
+dies unterstützt:
 
 ```json5
 {
@@ -88,13 +89,13 @@ sie unterstützt:
 }
 ```
 
-Siehe [Secrets-Verwaltung](/de/gateway/secrets) und die
-[SecretRef-Zugangsdatenoberfläche](/de/reference/secretref-credential-surface) für
-unterstützte Felder.
+Unter [Secret-Verwaltung](/de/gateway/secrets) und auf der
+[SecretRef-Anmeldedatenoberfläche](/de/reference/secretref-credential-surface) finden Sie die
+unterstützten Felder.
 
-## Shell-Umgebungsimport
+## Import der Shell-Umgebung
 
-`env.shellEnv` führt Ihre Login-Shell aus und importiert nur **fehlende** erwartete Schlüssel:
+`env.shellEnv` führt Ihre Anmelde-Shell aus und importiert ausschließlich **fehlende** erwartete Schlüssel:
 
 ```json5
 {
@@ -107,40 +108,39 @@ unterstützte Felder.
 }
 ```
 
-Entsprechungen als Umgebungsvariablen:
+Entsprechende Umgebungsvariablen:
 
 - `OPENCLAW_LOAD_SHELL_ENV=1`
-- `OPENCLAW_SHELL_ENV_TIMEOUT_MS=15000`
+- `OPENCLAW_SHELL_ENV_TIMEOUT_MS=15000` (Standardwert `15000`)
 
-## Exec-Shell-Snapshots
+## Shell-Snapshots für Exec
 
 Auf Nicht-Windows-Gateway-Hosts verwenden bash- und zsh-`exec`-Befehle standardmäßig einen Start-Snapshot.
-Setzen Sie `OPENCLAW_EXEC_SHELL_SNAPSHOT=0` in der Gateway-Prozessumgebung, um diesen Pfad zu deaktivieren.
-Die Werte `false`, `no` und `off` deaktivieren ihn ebenfalls. `exec.env`-Werte pro Aufruf können
-Snapshots nicht umschalten und den Snapshot-Cache nicht umleiten.
+Legen Sie `OPENCLAW_EXEC_SHELL_SNAPSHOT=0` in der Prozessumgebung des Gateway fest, um diesen Pfad zu deaktivieren.
+Die Werte `false`, `no` und `off` deaktivieren ihn ebenfalls. Aufrufspezifische `exec.env`-Werte können
+Snapshots weder umschalten noch den Snapshot-Cache umleiten.
 
-## Laufzeitinjizierte Umgebungsvariablen
+## Zur Laufzeit injizierte Umgebungsvariablen
 
-OpenClaw injiziert außerdem Kontextmarker in gestartete untergeordnete Prozesse:
+OpenClaw injiziert außerdem Kontextmarkierungen in gestartete untergeordnete Prozesse:
 
-- `OPENCLAW_SHELL=exec`: gesetzt für Befehle, die über das `exec`-Tool ausgeführt werden.
-- `OPENCLAW_SHELL=acp`: gesetzt für Starts von ACP-Laufzeit-Backend-Prozessen (zum Beispiel `acpx`).
-- `OPENCLAW_SHELL=acp-client`: gesetzt für `openclaw acp client`, wenn es den ACP-Bridge-Prozess startet.
-- `OPENCLAW_SHELL=tui-local`: gesetzt für lokale TUI-`!`-Shell-Befehle.
-- `OPENCLAW_CLI=1`: gesetzt für untergeordnete Prozesse, die vom CLI-Einstiegspunkt gestartet werden.
+- `OPENCLAW_SHELL=exec`: wird für Befehle festgelegt, die über das Tool `exec` ausgeführt werden.
+- `OPENCLAW_SHELL=acp-client`: wird für `openclaw acp client` festgelegt, wenn es den ACP-Bridge-Prozess startet.
+- `OPENCLAW_SHELL=tui-local`: wird für lokale TUI-Shell-Befehle mit `!` festgelegt.
+- `OPENCLAW_CLI=1`: wird für untergeordnete Prozesse festgelegt, die vom CLI-Einstiegspunkt gestartet werden.
 
-Dies sind Laufzeitmarker (keine erforderliche Benutzer-Config). Sie können in Shell-/Profil-Logik verwendet werden,
+Dies sind Laufzeitmarkierungen (keine erforderliche Benutzerkonfiguration). Sie können in der Shell-/Profillogik verwendet werden,
 um kontextspezifische Regeln anzuwenden.
 
-## UI-Umgebungsvariablen
+## Umgebungsvariablen der Benutzeroberfläche
 
 - `OPENCLAW_THEME=light`: erzwingt die helle TUI-Palette, wenn Ihr Terminal einen hellen Hintergrund hat.
 - `OPENCLAW_THEME=dark`: erzwingt die dunkle TUI-Palette.
-- `COLORFGBG`: wenn Ihr Terminal sie exportiert, verwendet OpenClaw den Hinweis auf die Hintergrundfarbe, um die TUI-Palette automatisch auszuwählen.
+- `COLORFGBG`: Wenn Ihr Terminal diese Variable exportiert, verwendet OpenClaw den Hinweis zur Hintergrundfarbe, um die TUI-Palette automatisch auszuwählen.
 
-## Umgebungsvariablen-Ersetzung in der Config
+## Ersetzung von Umgebungsvariablen in der Konfiguration
 
-Sie können Umgebungsvariablen direkt in Config-Zeichenkettenwerten mit der `${VAR_NAME}`-Syntax referenzieren:
+Sie können Umgebungsvariablen in Zeichenfolgenwerten der Konfiguration mit der Syntax `${VAR_NAME}` direkt referenzieren:
 
 ```json5
 {
@@ -154,43 +154,43 @@ Sie können Umgebungsvariablen direkt in Config-Zeichenkettenwerten mit der `${V
 }
 ```
 
-Siehe [Konfiguration: Umgebungsvariablen-Ersetzung](/de/gateway/configuration-reference#env-var-substitution) für vollständige Details.
+Ausführliche Informationen finden Sie unter [Konfiguration: Ersetzung von Umgebungsvariablen](/de/gateway/configuration-reference#env-var-substitution).
 
-## Secret refs vs. `${ENV}`-Zeichenketten
+## Secret-Referenzen im Vergleich zu `${ENV}`-Zeichenfolgen
 
-OpenClaw unterstützt zwei umgebungsgetriebene Muster:
+OpenClaw unterstützt zwei umgebungsbasierte Muster:
 
-- `${VAR}`-Zeichenkettenersetzung in Config-Werten.
+- `${VAR}`-Zeichenfolgenersetzung in Konfigurationswerten.
 - SecretRef-Objekte (`{ source: "env", provider: "default", id: "VAR" }`) für Felder, die Secret-Referenzen unterstützen.
 
-Beide werden zum Aktivierungszeitpunkt aus der Prozessumgebung aufgelöst. SecretRef-Details sind in der [Secrets-Verwaltung](/de/gateway/secrets) dokumentiert.
-Der Config-`env`-Block selbst löst keine SecretRefs oder `file:...`-
-Kurzschreibwerte auf.
+Beide werden zum Aktivierungszeitpunkt aus der Prozessumgebung aufgelöst. Einzelheiten zu SecretRef sind unter [Secret-Verwaltung](/de/gateway/secrets) dokumentiert.
+Der Konfigurationsblock `env` selbst löst weder SecretRefs noch abgekürzte
+`file:...`-Werte auf.
 
 ## Pfadbezogene Umgebungsvariablen
 
-| Variable                 | Zweck                                                                                                                                                                                                                                    |
-| ------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `OPENCLAW_HOME`          | Überschreibt das Home-Verzeichnis, das für interne OpenClaw-Pfadstandards verwendet wird (`~/.openclaw/`, Agent-Verzeichnisse, Sitzungen, Zugangsdaten, Installer-Onboarding und der standardmäßige Dev-Checkout). Nützlich, wenn OpenClaw als dedizierter Dienstbenutzer ausgeführt wird. |
-| `OPENCLAW_STATE_DIR`     | Überschreibt das State-Verzeichnis (Standard `~/.openclaw`).                                                                                                                                                                             |
-| `OPENCLAW_CONFIG_PATH`   | Überschreibt den Pfad der Config-Datei (Standard `~/.openclaw/openclaw.json`).                                                                                                                                                           |
-| `OPENCLAW_INCLUDE_ROOTS` | Pfadliste von Verzeichnissen, in denen `$include`-Direktiven Dateien außerhalb des Config-Verzeichnisses auflösen dürfen (Standard: keine — `$include` ist auf das Config-Verzeichnis beschränkt). Tilde wird erweitert.                  |
+| Variable                 | Zweck                                                                                                                                                                                                                                 |
+| ------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `OPENCLAW_HOME`          | Überschreibt das für interne OpenClaw-Pfadstandardwerte verwendete Home-Verzeichnis (`~/.openclaw/`, Agent-Verzeichnisse, Sitzungen, Anmeldedaten, Installer-Onboarding und den standardmäßigen Entwicklungs-Checkout). Nützlich, wenn OpenClaw als dedizierter Dienstbenutzer ausgeführt wird. |
+| `OPENCLAW_STATE_DIR`     | Überschreibt das Zustandsverzeichnis (Standardwert `~/.openclaw`).                                                                                                                                                                                   |
+| `OPENCLAW_CONFIG_PATH`   | Überschreibt den Pfad der Konfigurationsdatei (Standardwert `~/.openclaw/openclaw.json`).                                                                                                                                                                    |
+| `OPENCLAW_INCLUDE_ROOTS` | Pfadliste der Verzeichnisse, in denen `$include`-Direktiven Dateien außerhalb des Konfigurationsverzeichnisses auflösen dürfen (Standardwert: keine – `$include` ist auf das Konfigurationsverzeichnis beschränkt). Tilden werden expandiert.                                                         |
 
-## Logging
+## Protokollierung
 
-| Variable                         | Zweck                                                                                                                                                                                                 |
-| -------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `OPENCLAW_LOG_LEVEL`             | Überschreibt das Log-Level sowohl für Datei als auch Konsole (z. B. `debug`, `trace`). Hat Vorrang vor `logging.level` und `logging.consoleLevel` in der Config. Ungültige Werte werden mit einer Warnung ignoriert. |
-| `OPENCLAW_DEBUG_MODEL_TRANSPORT` | Gibt gezielte Diagnoseinformationen zum Timing von Modellanfragen/-antworten auf `info`-Level aus, ohne globale Debug-Logs zu aktivieren.                                                              |
-| `OPENCLAW_DEBUG_MODEL_PAYLOAD`   | Modell-Payload-Diagnose: `summary`, `tools` oder `full-redacted`. `full-redacted` ist begrenzt und redigiert, kann aber Prompt-/Nachrichtentext enthalten.                                           |
-| `OPENCLAW_DEBUG_SSE`             | Streaming-Diagnose: `events` für First-/Done-Timing, `peek`, um die ersten fünf redigierten SSE-Ereignisse einzuschließen.                                                                            |
-| `OPENCLAW_DEBUG_CODE_MODE`       | Code-Modus-Diagnose zur Modelloberfläche, einschließlich Ausblenden von Provider-Tools und Durchsetzung von nur exec/wait.                                                                             |
+| Variable                         | Zweck                                                                                                                                                                                      |
+| -------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `OPENCLAW_LOG_LEVEL`             | Überschreibt die Protokollierungsstufe sowohl für Datei als auch Konsole (z. B. `debug`, `trace`). Hat Vorrang vor `logging.level` und `logging.consoleLevel` in der Konfiguration. Ungültige Werte werden mit einer Warnung ignoriert. |
+| `OPENCLAW_DEBUG_MODEL_TRANSPORT` | Gibt gezielte Diagnoseinformationen zur zeitlichen Abfolge von Modellanfragen und -antworten auf der Stufe `info` aus, ohne globale Debug-Protokolle zu aktivieren.                                                                                  |
+| `OPENCLAW_DEBUG_MODEL_PAYLOAD`   | Diagnose für Modellnutzlasten: `summary`, `tools` oder `full-redacted`. `full-redacted` ist größenbegrenzt und geschwärzt, kann jedoch Prompt-/Nachrichtentext enthalten.                                               |
+| `OPENCLAW_DEBUG_SSE`             | Streaming-Diagnose: `events` für die zeitliche Abfolge von erstem/abschließendem Ereignis, `peek`, um die ersten fünf geschwärzten SSE-Ereignisse einzubeziehen.                                                                                 |
+| `OPENCLAW_DEBUG_CODE_MODE`       | Diagnose der Modelloberfläche im Code-Modus, einschließlich des Ausblendens von Provider-Tools sowie kompakter Steuerung und direkter Durchsetzung.                                                                                  |
 
 ### `OPENCLAW_HOME`
 
-Wenn gesetzt, ersetzt `OPENCLAW_HOME` das System-Home-Verzeichnis (`$HOME` / `os.homedir()`) für interne OpenClaw-Pfadstandards. Dazu gehören das standardmäßige State-Verzeichnis, der Config-Pfad, Agent-Verzeichnisse, Zugangsdaten, der Installer-Onboarding-Arbeitsbereich und der standardmäßige Dev-Checkout, der von `openclaw update --channel dev` verwendet wird.
+Wenn `OPENCLAW_HOME` festgelegt ist, ersetzt es das Home-Verzeichnis des Systems (`$HOME` / `os.homedir()`) für interne OpenClaw-Pfadstandardwerte. Dazu gehören das standardmäßige Zustandsverzeichnis, der Konfigurationspfad, Agent-Verzeichnisse, Anmeldedaten, der Onboarding-Workspace des Installers und der standardmäßige Entwicklungs-Checkout, den `openclaw update --channel dev` verwendet.
 
-**Rangfolge:** `OPENCLAW_HOME` > `$HOME` > `USERPROFILE` > Termux-`PREFIX`-Home-Fallback auf Android > `os.homedir()`
+**Rangfolge:** `OPENCLAW_HOME` > `$HOME` > `USERPROFILE` > Termux-`PREFIX`-Home-Fallback unter Android > `os.homedir()`
 
 **Beispiel** (macOS LaunchDaemon):
 
@@ -202,22 +202,22 @@ Wenn gesetzt, ersetzt `OPENCLAW_HOME` das System-Home-Verzeichnis (`$HOME` / `os
 </dict>
 ```
 
-`OPENCLAW_HOME` kann auch auf einen Tilde-Pfad gesetzt werden (z. B. `~/svc`), der vor der Verwendung mit derselben OS-Home-Fallback-Kette erweitert wird.
+`OPENCLAW_HOME` kann auch auf einen Tildenpfad (z. B. `~/svc`) gesetzt werden, der vor der Verwendung anhand derselben OS-Home-Fallback-Kette expandiert wird.
 
-Explizite Pfadvariablen wie `OPENCLAW_STATE_DIR`, `OPENCLAW_CONFIG_PATH` und `OPENCLAW_GIT_DIR` haben weiterhin Vorrang. Aufgaben auf OS-Kontoebene wie Shell-Startdatei-Erkennung, Paketmanager-Einrichtung und Host-`~`-Erweiterung können weiterhin das echte System-Home verwenden.
+Explizite Pfadvariablen wie `OPENCLAW_STATE_DIR`, `OPENCLAW_CONFIG_PATH` und `OPENCLAW_GIT_DIR` haben weiterhin Vorrang. Aufgaben im Zusammenhang mit dem Betriebssystemkonto, etwa die Erkennung von Shell-Startdateien, die Einrichtung des Paketmanagers und die Host-Expansion von `~`, können weiterhin das tatsächliche Home-Verzeichnis des Systems verwenden.
 
-## nvm-Benutzer: web_fetch-TLS-Fehler
+## nvm-Benutzer: TLS-Fehler bei web_fetch
 
-Wenn Node.js über **nvm** installiert wurde (nicht über den Systempaketmanager), verwendet das eingebaute `fetch()`
-den von nvm gebündelten CA-Speicher, dem moderne Root-CAs fehlen können (ISRG Root X1/X2 für Let's Encrypt,
-DigiCert Global Root G2 usw.). Dadurch schlägt `web_fetch` auf den meisten HTTPS-Seiten mit `"fetch failed"` fehl.
+Wenn Node.js über **nvm** (und nicht über den Paketmanager des Systems) installiert wurde, verwendet das integrierte `fetch()`
+den mit nvm gebündelten CA-Speicher, in dem möglicherweise moderne Stammzertifizierungsstellen fehlen (ISRG Root X1/X2 für Let's Encrypt,
+DigiCert Global Root G2 usw.). Dadurch schlägt `web_fetch` auf den meisten HTTPS-Websites mit `"fetch failed"` fehl.
 
 Unter Linux erkennt OpenClaw nvm automatisch und wendet die Korrektur in der tatsächlichen Startumgebung an:
 
-- `openclaw gateway install` schreibt `NODE_EXTRA_CA_CERTS` in die systemd-Dienstumgebung
-- der `openclaw`-CLI-Einstiegspunkt führt sich selbst erneut mit gesetztem `NODE_EXTRA_CA_CERTS` aus, bevor Node startet
+- `openclaw gateway install` schreibt `NODE_EXTRA_CA_CERTS` in die Umgebung des systemd-Dienstes
+- der CLI-Einstiegspunkt `openclaw` führt sich vor dem Start von Node erneut mit gesetztem `NODE_EXTRA_CA_CERTS` aus
 
-**Manuelle Korrektur (für ältere Versionen oder direkte `node ...`-Starts):**
+**Manuelle Korrektur (für ältere Versionen oder direkte Starts mit `node ...`):**
 
 Exportieren Sie die Variable, bevor Sie OpenClaw starten:
 
@@ -226,23 +226,23 @@ export NODE_EXTRA_CA_CERTS=/etc/ssl/certs/ca-certificates.crt
 openclaw gateway run
 ```
 
-Verlassen Sie sich bei dieser Variable nicht darauf, sie nur in `~/.openclaw/.env` zu schreiben; Node liest
+Verlassen Sie sich bei dieser Variable nicht darauf, sie ausschließlich in `~/.openclaw/.env` einzutragen; Node liest
 `NODE_EXTRA_CA_CERTS` beim Prozessstart.
 
-## Legacy-Umgebungsvariablen
+## Veraltete Umgebungsvariablen
 
-OpenClaw liest nur `OPENCLAW_*`-Umgebungsvariablen. Die Legacy-
-Präfixe `CLAWDBOT_*` und `MOLTBOT_*` aus früheren Releases werden stillschweigend
+OpenClaw liest ausschließlich `OPENCLAW_*`-Umgebungsvariablen. Die veralteten Präfixe
+`CLAWDBOT_*` und `MOLTBOT_*` aus früheren Versionen werden stillschweigend
 ignoriert.
 
-Wenn beim Start noch welche im Gateway-Prozess gesetzt sind, gibt OpenClaw eine
-einzelne Node-Deprecation-Warnung (`OPENCLAW_LEGACY_ENV_VARS`) aus, die die
-erkannten Präfixe und die Gesamtanzahl auflistet. Benennen Sie jeden Wert um, indem Sie das
-Legacy-Präfix durch `OPENCLAW_` ersetzen (zum Beispiel `CLAWDBOT_GATEWAY_TOKEN` →
+Wenn beim Start des Gateway-Prozesses noch solche Variablen festgelegt sind, gibt OpenClaw eine
+einzelne Node-Veraltungswarnung (`OPENCLAW_LEGACY_ENV_VARS`) aus, in der die
+erkannten Präfixe und deren Gesamtanzahl aufgeführt sind. Benennen Sie jeden Wert um, indem Sie das
+veraltete Präfix durch `OPENCLAW_` ersetzen (beispielsweise `CLAWDBOT_GATEWAY_TOKEN` durch
 `OPENCLAW_GATEWAY_TOKEN`); die alten Namen haben keine Wirkung.
 
 ## Verwandte Themen
 
 - [Gateway-Konfiguration](/de/gateway/configuration)
-- [FAQ: Umgebungsvariablen und .env-Laden](/de/help/faq#env-vars-and-env-loading)
+- [FAQ: Umgebungsvariablen und Laden von .env-Dateien](/de/help/faq#env-vars-and-env-loading)
 - [Modellübersicht](/de/concepts/models)

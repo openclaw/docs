@@ -1,14 +1,15 @@
 ---
 read_when:
-    - Vous installez, configurez ou auditez le Plugin anthropic-vertex
-summary: Plugin fournisseur Anthropic Vertex d’OpenClaw pour les modèles Claude sur Google Vertex AI.
+    - Vous installez, configurez ou auditez le plugin anthropic-vertex
+summary: Plugin de fournisseur Anthropic Vertex pour OpenClaw, destiné aux modèles Claude sur Google Vertex AI.
 title: Plugin Anthropic Vertex
 x-i18n:
-    generated_at: "2026-06-27T17:52:28Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:40:38Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: f772c9a5bf1edd6a270b7ba5e6d695290fe96648c9ac38d0bc90bb1504f50cd7
+    source_hash: fe5500ca56df49c0ef6ccbf39ced71e3fd0b18776ad23716de8575bc6ba64cb8
     source_path: plugins/reference/anthropic-vertex.md
     workflow: 16
 ---
@@ -19,19 +20,31 @@ Plugin de fournisseur Anthropic Vertex d’OpenClaw pour les modèles Claude sur
 
 ## Distribution
 
-- Package : `@openclaw/anthropic-vertex-provider`
-- Voie d’installation : npm ; ClawHub
+- Paquet : `@openclaw/anthropic-vertex-provider`
+- Méthode d’installation : npm ; ClawHub
 
 ## Surface
 
-providers: anthropic-vertex
+fournisseurs : anthropic-vertex
 
 <!-- openclaw-plugin-reference:manual-start -->
 
 ## Claude Fable 5
 
-Utilisez `anthropic-vertex/claude-fable-5` là où le modèle est disponible dans votre région Google Cloud.
-Fable 5 utilise toujours la pensée adaptative et définit par défaut l’effort sur `high`. `/think off` et
-`/think minimal` utilisent l’effort `low`, car le modèle ne prend pas en charge la désactivation de la pensée.
+Utilisez `anthropic-vertex/claude-fable-5` lorsque le modèle est disponible dans votre région Google Cloud.
+Fable 5 utilise toujours le raisonnement adaptatif et adopte par défaut un effort `high`. `/think off` et
+`/think minimal` utilisent un effort `low`, car le modèle ne permet pas de désactiver le raisonnement.
+
+## Claude Sonnet 5
+
+Utilisez `anthropic-vertex/claude-sonnet-5` avec le point de terminaison `global`, `us` ou `eu`
+de Vertex. Sonnet 5 utilise par défaut le raisonnement adaptatif avec un effort `high` et prend en charge
+`/think off` ou les niveaux natifs `/think xhigh|max`. OpenClaw publie automatiquement sa
+fenêtre de contexte de 1 000 000 tokens et sa limite de sortie de 128 000 tokens.
+
+La tarification du catalogue suit le tarif mondial de lancement de Vertex de `$2/$10` par
+million de tokens d’entrée/de sortie jusqu’au 31 août 2026, puis de `$3/$15` à partir du
+1er septembre. Les points de terminaison multirégion `us` et `eu` appliquent la majoration
+documentée de 10 % de Vertex.
 
 <!-- openclaw-plugin-reference:manual-end -->

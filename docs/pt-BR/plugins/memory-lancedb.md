@@ -1,45 +1,43 @@
 ---
 read_when:
     - Você está configurando o plugin memory-lancedb
-    - Você quer memória de longo prazo baseada em LanceDB com recuperação automática ou captura automática
-    - Você está usando embeddings locais compatíveis com OpenAI, como Ollama
+    - Você quer memória de longo prazo baseada no LanceDB com recuperação automática ou captura automática
+    - Você está usando embeddings locais compatíveis com a OpenAI, como o Ollama
 sidebarTitle: Memory LanceDB
-summary: Configure o Plugin oficial externo de memória LanceDB, incluindo embeddings locais compatíveis com Ollama
+summary: Configure o Plugin oficial externo de memória LanceDB, incluindo embeddings locais compatíveis com o Ollama
 title: Memória LanceDB
 x-i18n:
-    generated_at: "2026-06-27T17:48:42Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:28:43Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: 4142a755e788418a8b9c64a6ff3a8ce3c520bd6be09b685929478ae0754f7d39
+    source_hash: cdcf5ef7b7fbb8bf6055363d86782cfa36df193fc724406dba06c1380fd9f434
     source_path: plugins/memory-lancedb.md
     workflow: 16
 ---
 
-`memory-lancedb` é um plugin oficial externo de memória que armazena memória de longo prazo no
-LanceDB e usa embeddings para recuperação. Ele pode recuperar automaticamente memórias
-relevantes antes de uma rodada do modelo e capturar fatos importantes após uma resposta.
+`memory-lancedb` é um plugin externo oficial que armazena memória de longo prazo no
+LanceDB com busca vetorial. Ele pode recuperar automaticamente memórias relevantes antes de uma
+interação do modelo e capturar automaticamente fatos importantes após uma resposta.
 
-Use-o quando quiser um banco de dados vetorial local para memória, precisar de um
-endpoint de embeddings compatível com OpenAI ou quiser manter um banco de dados de memória fora
-do armazenamento de memória integrado padrão.
+Use-o para um banco de dados vetorial local, um endpoint de embeddings compatível com OpenAI ou
+um armazenamento de memória fora do backend de memória integrado padrão.
 
 ## Instalação
-
-Instale `memory-lancedb` antes de definir `plugins.slots.memory = "memory-lancedb"`:
 
 ```bash
 openclaw plugins install @openclaw/memory-lancedb
 ```
 
-O plugin é publicado no npm e não é empacotado na imagem de runtime do OpenClaw.
-O instalador grava a entrada do plugin e troca o slot de memória quando nenhum outro
-plugin o possui.
+O plugin é publicado no npm; ele não vem incluído na imagem de runtime do OpenClaw.
+A instalação grava a entrada do plugin, habilita-o e altera
+`plugins.slots.memory` para `memory-lancedb`. Se outro plugin for o proprietário atual
+do slot de memória, esse plugin será desabilitado com um aviso.
 
 <Note>
-`memory-lancedb` é um plugin de memória ativa. Habilite-o selecionando o slot de memória
-com `plugins.slots.memory = "memory-lancedb"`. Plugins complementares, como
-`memory-wiki`, podem ser executados ao lado dele, mas apenas um plugin possui o slot de memória ativa.
+Plugins complementares, como `memory-wiki`, podem ser executados junto com `memory-lancedb`,
+mas apenas um plugin é proprietário do slot de memória ativo por vez.
 </Note>
 
 ## Início rápido
@@ -67,57 +65,47 @@ com `plugins.slots.memory = "memory-lancedb"`. Plugins complementares, como
 }
 ```
 
-Reinicie o Gateway depois de alterar a configuração do plugin:
+Reinicie o Gateway após alterar a configuração do plugin e verifique se ele foi carregado:
 
 ```bash
 openclaw gateway restart
-```
-
-Em seguida, verifique se o plugin foi carregado:
-
-```bash
 openclaw plugins list
 ```
 
-## Embeddings baseados em provedor
+## Configuração de embeddings
 
-`memory-lancedb` pode usar os mesmos adaptadores de provedor de embeddings de memória que
-`memory-core`. Defina `embedding.provider` e omita `embedding.apiKey` para usar o
-perfil de autenticação configurado do provedor, a variável de ambiente ou
-`models.providers.<provider>.apiKey`.
+`embedding` é obrigatório e deve incluir pelo menos um campo. `provider`
+usa `openai` por padrão; `model` usa `text-embedding-3-small` por padrão.
 
-```json5
-{
-  plugins: {
-    slots: {
-      memory: "memory-lancedb",
-    },
-    entries: {
-      "memory-lancedb": {
-        enabled: true,
-        config: {
-          embedding: {
-            provider: "openai",
-            model: "text-embedding-3-small",
-          },
-          autoRecall: true,
-        },
-      },
-    },
-  },
-}
-```
+| Campo                  | Tipo          | Observações                                                                    |
+| ---------------------- | ------------- | ------------------------------------------------------------------------------ |
+| `embedding.provider`   | string        | ID do adaptador, por exemplo, `openai`, `github-copilot`, `ollama`. Padrão: `openai`. |
+| `embedding.model`      | string        | Padrão: `text-embedding-3-small`.                                              |
+| `embedding.apiKey`     | string        | Opcional; aceita expansão de `${ENV_VAR}`.                                     |
+| `embedding.baseUrl`    | string        | Opcional; aceita expansão de `${ENV_VAR}`.                                     |
+| `embedding.dimensions` | integer (>=1) | Obrigatório para modelos ausentes da tabela integrada (veja abaixo).           |
 
-Esse caminho funciona com perfis de autenticação de provedor que expõem credenciais de embeddings.
-Por exemplo, o GitHub Copilot pode ser usado quando o perfil/plano do Copilot oferece suporte a
-embeddings:
+Existem dois caminhos de solicitação:
+
+- **Caminho do adaptador do provedor** (padrão): defina `embedding.provider` e omita
+  `embedding.apiKey`/`embedding.baseUrl`. O plugin resolve o perfil de autenticação
+  configurado do provedor, a variável de ambiente ou
+  `models.providers.<provider>.apiKey` por meio dos mesmos adaptadores de embeddings
+  de memória usados pelo `memory-core`. Esse é o caminho para `github-copilot`, `ollama`
+  e qualquer outro provedor incluído com suporte a embeddings.
+- **Caminho direto do cliente compatível com OpenAI**: não defina `embedding.provider`
+  (ou use `"openai"`) e defina `embedding.apiKey` junto com `embedding.baseUrl`. Use esse
+  caminho para um endpoint de embeddings compatível com OpenAI que não tenha um adaptador
+  de provedor incluído.
+
+O OAuth do OpenAI Codex / ChatGPT não é uma credencial de embeddings da OpenAI Platform.
+Para embeddings da OpenAI, use um perfil de autenticação com chave de API da OpenAI,
+`OPENAI_API_KEY` ou `models.providers.openai.apiKey`. Usuários que tenham somente OAuth
+devem escolher outro provedor compatível com embeddings, como `github-copilot` ou `ollama`.
 
 ```json5
 {
   plugins: {
-    slots: {
-      memory: "memory-lancedb",
-    },
     entries: {
       "memory-lancedb": {
         enabled: true,
@@ -133,16 +121,44 @@ embeddings:
 }
 ```
 
-OAuth do OpenAI Codex / ChatGPT não é uma credencial de embeddings da OpenAI Platform.
-Para embeddings da OpenAI, use um perfil de autenticação com chave de API da OpenAI,
-`OPENAI_API_KEY` ou `models.providers.openai.apiKey`. Usuários somente com OAuth podem usar
-outro provedor compatível com embeddings, como GitHub Copilot ou Ollama.
+Alguns endpoints de embeddings compatíveis com OpenAI rejeitam o parâmetro
+`encoding_format`; outros o ignoram e sempre retornam `number[]`. O `memory-lancedb`
+omite `encoding_format` nas solicitações e aceita respostas tanto em arrays de números
+de ponto flutuante quanto em float32 codificado em base64, portanto ambos os formatos
+de resposta funcionam sem configuração.
+
+### Dimensões
+
+O OpenClaw tem uma dimensão integrada apenas para `text-embedding-3-small` (1536) e
+`text-embedding-3-large` (3072). Qualquer outro modelo precisa de um valor explícito
+em `embedding.dimensions` para que o LanceDB possa criar a coluna vetorial, por exemplo,
+o `embedding-3` da ZhiPu com 2048 dimensões:
+
+```json5
+{
+  plugins: {
+    entries: {
+      "memory-lancedb": {
+        enabled: true,
+        config: {
+          embedding: {
+            apiKey: "${ZHIPU_API_KEY}",
+            baseUrl: "https://open.bigmodel.cn/api/paas/v4",
+            model: "embedding-3",
+            dimensions: 2048,
+          },
+        },
+      },
+    },
+  },
+}
+```
 
 ## Embeddings do Ollama
 
-Para embeddings do Ollama, prefira o provedor de embeddings Ollama empacotado. Ele usa o
-endpoint nativo `/api/embed` do Ollama e segue as mesmas regras de autenticação/URL base que
-o provedor Ollama documentado em [Ollama](/pt-BR/providers/ollama).
+Use o caminho do adaptador do provedor Ollama incluído (`embedding.provider: "ollama"`).
+Ele chama o endpoint nativo `/api/embed` do Ollama e segue as mesmas regras de autenticação
+e URL base do provedor [Ollama](/pt-BR/providers/ollama).
 
 ```json5
 {
@@ -170,103 +186,73 @@ o provedor Ollama documentado em [Ollama](/pt-BR/providers/ollama).
 }
 ```
 
-Defina `dimensions` para modelos de embeddings não padrão. O OpenClaw conhece as
-dimensões de `text-embedding-3-small` e `text-embedding-3-large`; modelos
-personalizados precisam do valor na configuração para que o LanceDB possa criar a coluna vetorial.
-
-Para modelos locais pequenos de embeddings, reduza `recallMaxChars` se vir erros de
-comprimento de contexto vindos do servidor local.
-
-## Provedores compatíveis com OpenAI
-
-Alguns provedores de embeddings compatíveis com OpenAI rejeitam o parâmetro `encoding_format`,
-enquanto outros o ignoram e sempre retornam vetores `number[]`.
-Por isso, `memory-lancedb` omite `encoding_format` em solicitações de embeddings e
-aceita respostas como arrays de floats ou respostas float32 codificadas em base64.
-
-Se você tiver um endpoint bruto de embeddings compatível com OpenAI que não tenha um
-adaptador de provedor empacotado, omita `embedding.provider` (ou deixe-o como `openai`) e
-defina `embedding.apiKey` mais `embedding.baseUrl`. Isso preserva o caminho direto do
-cliente compatível com OpenAI.
-
-Defina `embedding.dimensions` para provedores cujas dimensões de modelo não estejam integradas.
-Por exemplo, o ZhiPu `embedding-3` usa `2048` dimensões:
-
-```json5
-{
-  plugins: {
-    entries: {
-      "memory-lancedb": {
-        enabled: true,
-        config: {
-          embedding: {
-            apiKey: "${ZHIPU_API_KEY}",
-            baseUrl: "https://open.bigmodel.cn/api/paas/v4",
-            model: "embedding-3",
-            dimensions: 2048,
-          },
-        },
-      },
-    },
-  },
-}
-```
+`mxbai-embed-large` não está na tabela de dimensões integrada, portanto `dimensions` é
+obrigatório. Para modelos de embeddings locais pequenos, reduza `recallMaxChars` se o
+servidor local retornar erros de tamanho do contexto.
 
 ## Limites de recuperação e captura
 
-`memory-lancedb` tem dois limites de texto separados:
+| Configuração       | Padrão  | Intervalo                    | Aplicação                                                  |
+| ------------------ | ------- | ---------------------------- | ---------------------------------------------------------- |
+| `recallMaxChars`   | `1000`  | 100-10000                    | Texto enviado à API de embeddings para recuperação.        |
+| `captureMaxChars`  | `500`   | 100-10000                    | Tamanho de mensagem elegível para captura automática.      |
+| `customTriggers`   | `[]`    | 0-50 itens, cada um <=100 caracteres | Frases literais que fazem a captura automática considerar uma mensagem. |
 
-| Configuração      | Padrão | Intervalo | Aplica-se a                                              |
-| ----------------- | ------ | --------- | -------------------------------------------------------- |
-| `recallMaxChars`  | `1000` | 100-10000 | texto enviado à API de embeddings para recuperação       |
-| `captureMaxChars` | `500`  | 100-10000 | tamanho de mensagem qualificado para captura automática  |
-| `customTriggers`  | `[]`   | 0-50      | frases literais que fazem a captura automática considerar uma mensagem |
+`recallMaxChars` limita a consulta de recuperação automática de `before_prompt_build`, a
+ferramenta `memory_recall`, o caminho de consulta de `memory_forget` e `openclaw ltm
+search`. A recuperação automática gera embeddings da mensagem mais recente do usuário na
+interação e recorre ao prompt completo somente quando não há nenhuma mensagem do usuário,
+mantendo os metadados do canal e grandes blocos do prompt fora da solicitação de embeddings.
 
-`recallMaxChars` controla a recuperação automática, a ferramenta `memory_recall`, o
-caminho de consulta `memory_forget` e `openclaw ltm search`. A recuperação automática prefere a
-mensagem mais recente do usuário na rodada e recorre ao prompt completo somente quando nenhuma
-mensagem do usuário está disponível. Isso mantém metadados de canal e grandes blocos de prompt
-fora da solicitação de embeddings.
+`captureMaxChars` determina se uma mensagem do usuário proveniente do evento `agent_end`
+da interação é curta o suficiente para ser considerada para captura automática; ele não
+afeta as consultas de recuperação.
 
-`captureMaxChars` controla se uma resposta é curta o suficiente para ser considerada
-para captura automática. Ele não limita embeddings de consulta de recuperação.
+`customTriggers` adiciona frases literais de captura automática sem regex. Os gatilhos
+integrados abrangem frases comuns relacionadas a memória em inglês, tcheco, chinês,
+japonês e coreano (`remember`, `prefer`, `记住`, `覚えて`, `기억해` e semelhantes).
 
-`customTriggers` permite adicionar frases literais de captura automática sem escrever
-expressões regulares. Os gatilhos integrados incluem frases comuns de memória em inglês, tcheco,
-chinês, japonês e coreano.
+A captura automática também rejeita textos que se pareçam com metadados de
+envelope/transporte, cargas de injeção de prompt ou contexto `<relevant-memories>` já
+injetado e limita a 3 memórias capturadas por interação do agente.
 
 ## Comandos
 
-Quando `memory-lancedb` é o plugin de memória ativa, ele registra o namespace de CLI `ltm`:
+O `memory-lancedb` registra o namespace `ltm` da CLI sempre que está instalado
+(não apenas quando é o proprietário do slot de memória ativo):
 
 ```bash
-openclaw ltm list
-openclaw ltm search "project preferences"
+openclaw ltm list [--limit <n>] [--order-by-created-at]
+openclaw ltm search <query> [--limit <n>]
 openclaw ltm stats
 ```
 
-O subcomando `query` executa uma consulta não vetorial diretamente contra a tabela do LanceDB:
+`ltm query` executa uma consulta não vetorial diretamente na tabela do LanceDB:
 
 ```bash
 openclaw ltm query --cols id,text,createdAt --limit 20
 openclaw ltm query --filter "category = 'preference'" --order-by createdAt:desc
 ```
 
-- `--cols <columns>`: lista permitida de colunas separadas por vírgulas (o padrão é `id`, `text`, `importance`, `category`, `createdAt`).
-- `--filter <condition>`: cláusula WHERE em estilo SQL; limitada a 200 caracteres e restrita a alfanuméricos, operadores de comparação, aspas, parênteses e um pequeno conjunto de pontuação segura.
-- `--limit <n>`: inteiro positivo; padrão `10`.
-- `--order-by <column>:<asc|desc>`: ordenação em memória aplicada após o filtro; a coluna de ordenação é incluída automaticamente na projeção.
+| Flag                              | Padrão                                  | Observações                                                                                                                                     |
+| --------------------------------- | --------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| `--cols <columns>`                | `id,text,importance,category,createdAt` | Lista de colunas permitidas, separadas por vírgulas.                                                                                            |
+| `--filter <condition>`            | nenhum                                  | Cláusula WHERE no estilo SQL. Máximo de 200 caracteres; somente caracteres alfanuméricos, `_-`, espaços em branco e `='"<>!.,()%*` são permitidos. |
+| `--limit <n>`                     | `10`                                    | Número inteiro positivo.                                                                                                                        |
+| `--order-by <column>:<asc\|desc>` | nenhum                                  | Ordenação na memória após a execução do filtro; a coluna de ordenação é adicionada automaticamente à projeção e removida da saída se não tiver sido solicitada. |
 
-Os agentes também recebem ferramentas de memória do LanceDB do plugin de memória ativa:
+Os agentes recebem três ferramentas do plugin de memória ativo:
 
-- `memory_recall` para recuperação baseada no LanceDB
-- `memory_store` para salvar fatos, preferências, decisões e entidades importantes
-- `memory_forget` para remover memórias correspondentes
+- `memory_recall`: busca vetorial nas memórias armazenadas.
+- `memory_store`: salva um fato, uma preferência, uma decisão ou uma entidade (rejeita texto
+  que se pareça com uma carga de injeção de prompt; ignora armazenamentos quase duplicados).
+- `memory_forget`: exclui por `memoryId` ou por `query` (exclui automaticamente uma única
+  correspondência com pontuação acima de 90%; caso contrário, lista IDs candidatos para
+  eliminar a ambiguidade).
 
 ## Armazenamento
 
-Por padrão, os dados do LanceDB ficam em `~/.openclaw/memory/lancedb`. Substitua o
-caminho com `dbPath`:
+Os dados do LanceDB usam `~/.openclaw/memory/lancedb` por padrão. Substitua com `dbPath`:
 
 ```json5
 {
@@ -287,8 +273,9 @@ caminho com `dbPath`:
 }
 ```
 
-`storageOptions` aceita pares chave/valor de string para backends de armazenamento do LanceDB e
-oferece suporte à expansão `${ENV_VAR}`:
+`storageOptions` aceita pares de chave/valor em string para backends de armazenamento
+do LanceDB (por exemplo, armazenamento de objetos compatível com S3) e aceita expansão
+de `${ENV_VAR}`:
 
 ```json5
 {
@@ -314,32 +301,29 @@ oferece suporte à expansão `${ENV_VAR}`:
 }
 ```
 
-## Dependências de runtime
+## Dependências de runtime e suporte a plataformas
 
-`memory-lancedb` depende do pacote nativo `@lancedb/lancedb`. O OpenClaw empacotado
-trata esse pacote como parte do pacote do plugin. A inicialização do Gateway
-não repara dependências de plugins; se a dependência estiver ausente, reinstale ou
-atualize o pacote do plugin e reinicie o Gateway.
+O `memory-lancedb` depende do pacote nativo `@lancedb/lancedb`, que pertence ao
+pacote do plugin (não à distribuição principal do OpenClaw). A inicialização do Gateway
+não repara as dependências do plugin; se a dependência nativa estiver ausente ou não
+conseguir ser carregada, reinstale ou atualize o pacote do plugin e reinicie o Gateway.
 
-Se uma instalação mais antiga registrar um erro de `dist/package.json` ausente ou
-`@lancedb/lancedb` ausente durante o carregamento do plugin, atualize o OpenClaw e reinicie o
-Gateway.
-
-Se o plugin registrar que o LanceDB está indisponível em `darwin-x64`, use o backend de
-memória padrão nessa máquina, mova o Gateway para uma plataforma compatível ou
-desabilite `memory-lancedb`.
+O `@lancedb/lancedb` não publica uma compilação nativa para `darwin-x64` (Mac
+Intel). Nessa plataforma, o plugin registra durante o carregamento que o LanceDB está
+indisponível; use o backend de memória padrão, execute o Gateway em uma
+plataforma/arquitetura compatível ou desabilite o `memory-lancedb`.
 
 ## Solução de problemas
 
-### O comprimento da entrada excede o comprimento de contexto
+### O tamanho da entrada excede o tamanho do contexto
 
-Isso geralmente significa que o modelo de embeddings rejeitou a consulta de recuperação:
+O modelo de embeddings rejeitou a consulta de recuperação:
 
 ```text
-memory-lancedb: recall failed: Error: 400 the input length exceeds the context length
+memory-lancedb: falha na recuperação: Erro: 400 o tamanho da entrada excede o tamanho do contexto
 ```
 
-Defina um `recallMaxChars` menor e reinicie o Gateway:
+Reduza `recallMaxChars` e reinicie o Gateway:
 
 ```json5
 {
@@ -355,37 +339,38 @@ Defina um `recallMaxChars` menor e reinicie o Gateway:
 }
 ```
 
-Para Ollama, verifique também se o servidor de embeddings está acessível pelo host do Gateway:
+Para o Ollama, verifique também se o servidor de embeddings está acessível pelo host do
+Gateway usando seu endpoint nativo de embeddings:
 
 ```bash
-curl http://127.0.0.1:11434/v1/embeddings \
+curl http://127.0.0.1:11434/api/embed \
   -H "Content-Type: application/json" \
   -d '{"model":"mxbai-embed-large","input":"hello"}'
 ```
 
 ### Modelo de embeddings não compatível
 
-Sem `dimensions`, somente as dimensões integradas de embeddings da OpenAI são conhecidas.
-Para modelos locais ou personalizados de embeddings, defina `embedding.dimensions` como o tamanho
-do vetor informado por esse modelo.
+Sem `embedding.dimensions`, somente as dimensões integradas de embeddings da OpenAI
+são conhecidas (`text-embedding-3-small`, `text-embedding-3-large`). Para qualquer outro
+modelo, defina `embedding.dimensions` com o tamanho do vetor informado por esse modelo.
 
-### O plugin carrega, mas nenhuma memória aparece
+### O plugin é carregado, mas nenhuma memória aparece
 
-Verifique se `plugins.slots.memory` aponta para `memory-lancedb` e execute:
+Confirme se `plugins.slots.memory` aponta para `memory-lancedb` e, em seguida, execute:
 
 ```bash
 openclaw ltm stats
 openclaw ltm search "recent preference"
 ```
 
-Se `autoCapture` estiver desabilitado, o plugin recuperará memórias existentes, mas não
-armazenará novas automaticamente. Use a ferramenta `memory_store` ou habilite
-`autoCapture` se quiser captura automática.
+Se `autoCapture` estiver desabilitado, o plugin ainda recuperará as memórias existentes, mas
+não armazenará novas memórias automaticamente. Use a ferramenta `memory_store` ou habilite
+`autoCapture`.
 
 ## Relacionado
 
-- [Visão geral de memória](/pt-BR/concepts/memory)
-- [Active memory](/pt-BR/concepts/active-memory)
-- [Busca de memória](/pt-BR/concepts/memory-search)
-- [Memory Wiki](/pt-BR/plugins/memory-wiki)
+- [Visão geral da memória](/pt-BR/concepts/memory)
+- [Active Memory](/pt-BR/concepts/active-memory)
+- [Pesquisa de memória](/pt-BR/concepts/memory-search)
+- [Wiki de memória](/pt-BR/plugins/memory-wiki)
 - [Ollama](/pt-BR/providers/ollama)

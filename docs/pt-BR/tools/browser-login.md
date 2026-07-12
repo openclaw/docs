@@ -2,58 +2,68 @@
 read_when:
     - Você precisa fazer login em sites para automação do navegador
     - Você quer publicar atualizações no X/Twitter
-summary: Logins manuais para automação de navegador + publicação no X/Twitter
+summary: Logins manuais para automação do navegador + publicação no X/Twitter
 title: Login pelo navegador
 x-i18n:
-    generated_at: "2026-05-11T20:35:51Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:40:56Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: 89501b47611a39df5a658ed7e144b7c16a07188dfa52544b56cbfc6e296e2ecc
+    source_hash: bccd363cf7c9611f4687d50a92f7fb3e2fd1c1d67bb27a80c892f7ac58ae1f8f
     source_path: tools/browser-login.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
 ## Login manual (recomendado)
 
-Quando um site exigir login, **entre manualmente** no perfil do navegador do **host** (o navegador do openclaw).
+Quando um site exigir login, entre manualmente no perfil `openclaw` do navegador
+do host. Não forneça suas credenciais ao modelo: logins automatizados costumam
+acionar mecanismos de defesa contra bots e podem bloquear a conta.
 
-**Não** forneça suas credenciais ao modelo. Logins automatizados costumam acionar defesas antibot e podem bloquear a conta.
+Use o navegador do host (com login manual) tanto para leitura (pesquisas/threads)
+quanto para publicações no X/Twitter e em outros sites sensíveis a bots. Sessões
+de navegador em sandbox têm maior probabilidade de acionar a detecção de bots.
 
-Voltar para a documentação principal do navegador: [Navegador](/pt-BR/tools/browser).
+Voltar à documentação principal do navegador: [Navegador](/pt-BR/tools/browser).
 
 ## Qual perfil do Chrome é usado?
 
-O OpenClaw controla um **perfil dedicado do Chrome** (chamado `openclaw`, com interface em tom alaranjado). Ele é separado do seu perfil de navegador do dia a dia.
+O OpenClaw controla um perfil dedicado do Chrome chamado `openclaw` (com a
+interface em tom alaranjado), separado do perfil que você usa diariamente no
+navegador.
 
-Para chamadas da ferramenta de navegador do agente:
+Para chamadas da ferramenta de navegador pelo agente:
 
-- Escolha padrão: o agente deve usar seu navegador `openclaw` isolado.
-- Use `profile="user"` somente quando sessões já autenticadas existentes forem importantes e o usuário estiver no computador para clicar/aprovar qualquer prompt de anexação.
-- Se você tiver vários perfis de navegador de usuário, especifique o perfil explicitamente em vez de adivinhar.
+- Escolha padrão: o agente usa seu navegador `openclaw` isolado.
+- Use `profile="user"` somente quando as sessões existentes com login forem
+  importantes e você estiver no computador para clicar/aprovar qualquer
+  solicitação de vinculação.
+- Se você tiver vários perfis no navegador do usuário, especifique o perfil
+  explicitamente em vez de tentar adivinhar.
 
-Duas formas simples de acessá-lo:
+Há duas maneiras de acessar o perfil `openclaw`:
 
-1. **Peça ao agente para abrir o navegador** e depois faça login você mesmo.
-2. **Abra-o via CLI**:
+1. Peça ao agente para abrir o navegador e, em seguida, faça login você mesmo.
+2. Abra-o pela CLI:
 
 ```bash
 openclaw browser start
 openclaw browser open https://x.com
 ```
 
-Se você tiver vários perfis, passe `--browser-profile <name>` (o padrão é `openclaw`).
+Para um perfil diferente do padrão, coloque `--browser-profile <name>` antes do
+subcomando (o padrão é `openclaw`):
 
-## X/Twitter: fluxo recomendado
+```bash
+openclaw browser --browser-profile <name> open https://x.com
+```
 
-- **Ler/pesquisar/threads:** use o navegador do **host** (login manual).
-- **Publicar atualizações:** use o navegador do **host** (login manual).
+## Sandbox: permitir acesso ao navegador do host
 
-## Sandboxing + acesso ao navegador do host
-
-Sessões de navegador em sandbox têm **maior probabilidade** de acionar detecção de bots. Para X/Twitter (e outros sites rigorosos), prefira o navegador do **host**.
-
-Se o agente estiver em sandbox, a ferramenta de navegador usa a sandbox por padrão. Para permitir controle do host:
+Se o agente estiver em sandbox, as chamadas à ferramenta `browser` usarão por
+padrão o navegador da sandbox, não o do host. Para permitir que o agente use o
+navegador do host:
 
 ```json5
 {
@@ -70,15 +80,19 @@ Se o agente estiver em sandbox, a ferramenta de navegador usa a sandbox por padr
 }
 ```
 
-Depois, abra você mesmo o navegador do host (invocações pela CLI sempre rodam contra o navegador do host):
+As invocações pela CLI sempre usam o navegador do host, nunca o da sandbox.
+Portanto, você pode abrir o navegador do host por conta própria,
+independentemente desta configuração:
 
 ```bash
-openclaw browser open https://x.com --browser-profile openclaw
+openclaw browser --browser-profile openclaw open https://x.com
 ```
 
-As chamadas da ferramenta `browser` do agente podem então mirar o host assim que `sandbox.browser.allowHostControl: true` estiver definido. Como alternativa, desative a sandbox para o agente que publica atualizações.
+Depois que `sandbox.browser.allowHostControl: true` for definido, as chamadas do
+agente à ferramenta `browser` também poderão usar o host. Como alternativa,
+desative a sandbox para o agente que publica atualizações.
 
-## Relacionados
+## Relacionado
 
 - [Navegador](/pt-BR/tools/browser)
 - [Solução de problemas do navegador no Linux](/pt-BR/tools/browser-linux-troubleshooting)

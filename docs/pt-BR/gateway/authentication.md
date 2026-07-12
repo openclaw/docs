@@ -1,44 +1,41 @@
 ---
 read_when:
-    - Depuração de autenticação de modelo ou expiração de OAuth
-    - Documentando autenticação ou armazenamento de credenciais
-summary: 'Autenticação de modelo: OAuth, chaves de API, reutilização da Claude CLI e setup-token da Anthropic'
+    - Depuração da autenticação do modelo ou da expiração do OAuth
+    - Documentando o armazenamento de autenticação ou credenciais
+summary: 'Autenticação de modelos: OAuth, chaves de API, reutilização da CLI do Claude e token de configuração da Anthropic'
 title: Autenticação
 x-i18n:
-    generated_at: "2026-06-27T17:28:34Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:08:15Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: 4b33eff2386ba48797c96b99f3eb80df4df2d5baab9c42b73fc8e5e722f0767b
+    source_hash: 002877002323297f0ff24fdeb5283bf998215f902b0cbd3b152f7ba9085a852a
     source_path: gateway/authentication.md
     workflow: 16
 ---
 
 <Note>
-Esta página é a referência de autenticação de **provedor de modelo** (chaves de API, OAuth, reutilização da Claude CLI e setup-token da Anthropic). Para autenticação de **conexão do Gateway** (token, senha, trusted-proxy), consulte [Configuração](/pt-BR/gateway/configuration) e [Autenticação de proxy confiável](/pt-BR/gateway/trusted-proxy-auth).
+Esta página aborda a autenticação de **provedores de modelos** (chaves de API, OAuth, reutilização da CLI do Claude, token de configuração da Anthropic). Para autenticação de **conexão com o Gateway** (token, senha, proxy confiável), consulte [Configuração](/pt-BR/gateway/configuration) e [Autenticação por proxy confiável](/pt-BR/gateway/trusted-proxy-auth).
 </Note>
 
-OpenClaw oferece suporte a OAuth e chaves de API para provedores de modelos. Para hosts de Gateway sempre ativos, chaves de API geralmente são a opção mais previsível. Fluxos de assinatura/OAuth também são compatíveis quando correspondem ao modelo de conta do seu provedor.
+O OpenClaw oferece suporte a OAuth e chaves de API para provedores de modelos. Para um host do Gateway sempre ativo, uma chave de API é a opção mais previsível; fluxos de assinatura/OAuth também funcionam quando correspondem ao modelo de conta do seu provedor.
 
-Consulte [/concepts/oauth](/pt-BR/concepts/oauth) para ver o fluxo OAuth completo e o layout de armazenamento.
-Para autenticação baseada em SecretRef (provedores `env`/`file`/`exec`), consulte [Gerenciamento de segredos](/pt-BR/gateway/secrets).
-Para regras de elegibilidade de credenciais/códigos de motivo usadas por `models status --probe`, consulte [Semântica de credenciais de autenticação](/pt-BR/auth-credential-semantics).
+- Fluxo OAuth completo e layout de armazenamento: [/concepts/oauth](/pt-BR/concepts/oauth)
+- Autenticação baseada em SecretRef (provedores `env`/`file`/`exec`): [Gerenciamento de segredos](/pt-BR/gateway/secrets)
+- Códigos de elegibilidade/motivo das credenciais usados por `models status --probe`: [Semântica das credenciais de autenticação](/pt-BR/auth-credential-semantics)
 
-## Configuração recomendada (chave de API, qualquer provedor)
-
-Se você estiver executando um Gateway de longa duração, comece com uma chave de API para o provedor escolhido.
-Especificamente para Anthropic, autenticação por chave de API ainda é a configuração de servidor mais previsível, mas OpenClaw também oferece suporte à reutilização de um login local da Claude CLI.
+## Configuração recomendada: chave de API (qualquer provedor)
 
 1. Crie uma chave de API no console do seu provedor.
-2. Coloque-a no **host do Gateway** (a máquina que executa `openclaw gateway`).
+2. Coloque-a no **host do Gateway** (a máquina que executa `openclaw gateway`):
 
 ```bash
 export <PROVIDER>_API_KEY="..."
 openclaw models status
 ```
 
-3. Se o Gateway for executado sob systemd/launchd, prefira colocar a chave em
-   `~/.openclaw/.env` para que o daemon consiga lê-la:
+3. Se o Gateway for executado pelo systemd/launchd, coloque a chave em `~/.openclaw/.env` para que o daemon possa lê-la:
 
 ```bash
 cat >> ~/.openclaw/.env <<'EOF'
@@ -46,156 +43,130 @@ cat >> ~/.openclaw/.env <<'EOF'
 EOF
 ```
 
-Depois reinicie o daemon (ou reinicie seu processo do Gateway) e verifique novamente:
+4. Reinicie o processo do Gateway (ou o daemon) e verifique novamente:
 
 ```bash
 openclaw models status
 openclaw doctor
 ```
 
-Se você preferir não gerenciar variáveis de ambiente manualmente, o onboarding pode armazenar chaves de API para uso pelo daemon: `openclaw onboard`.
+`openclaw onboard` também pode armazenar chaves de API para uso pelo daemon se você não quiser gerenciar variáveis de ambiente por conta própria. Consulte [Variáveis de ambiente](/pt-BR/help/environment) para ver a precedência completa de carregamento do ambiente (`env.shellEnv`, `~/.openclaw/.env`, systemd/launchd).
 
-Consulte [Ajuda](/pt-BR/help) para detalhes sobre herança de ambiente (`env.shellEnv`, `~/.openclaw/.env`, systemd/launchd).
+## Anthropic: reutilização da CLI do Claude
 
-## Anthropic: compatibilidade com Claude CLI e token
+A autenticação por token de configuração da Anthropic continua sendo um caminho compatível. A reutilização da CLI do Claude (uso no estilo `claude -p`) também é aprovada para esta integração; quando houver um login da CLI do Claude disponível no host, esse será o caminho preferencial para uso local/em desktop. Para hosts do Gateway de longa duração, uma chave de API da Anthropic ainda é a opção mais previsível, com controle explícito de cobrança no lado do servidor.
 
-A autenticação por setup-token da Anthropic ainda está disponível no OpenClaw como um caminho de token compatível. Desde então, a equipe da Anthropic nos informou que o uso da Claude CLI no estilo OpenClaw voltou a ser permitido, então o OpenClaw trata a reutilização da Claude CLI e o uso de `claude -p` como sancionados para esta integração, a menos que a Anthropic publique uma nova política. Quando a reutilização da Claude CLI estiver disponível no host, esse agora é o caminho preferencial.
-
-Para hosts de Gateway de longa duração, uma chave de API da Anthropic ainda é a configuração mais previsível. Se você quiser reutilizar um login Claude existente no mesmo host, use o caminho da Anthropic Claude CLI no onboarding/configure.
-
-Configuração recomendada do host para reutilização da Claude CLI:
+Configuração do host para reutilização da CLI do Claude:
 
 ```bash
-# Run on the gateway host
+# Execute no host do Gateway
 claude auth login
 claude auth status --text
 openclaw models auth login --provider anthropic --method cli --set-default
 ```
 
-Esta é uma configuração em duas etapas:
+Isso é feito em duas etapas: faça login do Claude Code na Anthropic no host e, em seguida, instrua o OpenClaw a encaminhar a seleção de modelos da Anthropic pelo backend local `claude-cli` e armazenar o perfil de autenticação correspondente do OpenClaw.
 
-1. Faça login do próprio Claude Code na Anthropic no host do Gateway.
-2. Informe ao OpenClaw para trocar a seleção de modelos da Anthropic para o backend local `claude-cli` e armazenar o perfil de autenticação correspondente do OpenClaw.
+Se `claude` não estiver no `PATH`, instale o Claude Code ou defina `agents.defaults.cliBackends.claude-cli.command` como o caminho do binário.
 
-Se `claude` não estiver em `PATH`, instale o Claude Code primeiro ou defina `agents.defaults.cliBackends.claude-cli.command` como o caminho real do binário.
+## Inserção manual de token
 
-Entrada manual de token (qualquer provedor; grava o armazenamento de autenticação SQLite por agente + atualiza a configuração):
+Funciona para qualquer provedor; grava no armazenamento SQLite de autenticação por agente e atualiza a configuração:
 
 ```bash
 openclaw models auth paste-token --provider openrouter
 ```
 
-O armazenamento de perfis de autenticação mantém apenas credenciais. Arquivos legados `auth-profiles.json` usavam este formato canônico:
+O OpenClaw lê os perfis de autenticação do `openclaw-agent.sqlite` de cada agente. Detalhes do endpoint (`baseUrl`, `api`, IDs de modelos, cabeçalhos, tempos limite) devem ficar em `models.providers.<id>` no `openclaw.json` ou `models.json`, não nos perfis de autenticação.
 
-```json
-{
-  "version": 1,
-  "profiles": {
-    "openrouter:default": {
-      "type": "api_key",
-      "provider": "openrouter",
-      "key": "OPENROUTER_API_KEY"
-    }
-  }
-}
-```
+Se uma instalação mais antiga ainda tiver `auth-profiles.json`, `auth-state.json` ou uma estrutura simples como `{ "openrouter": { "apiKey": "..." } }`, execute `openclaw doctor --fix` para importá-la para o SQLite; o doctor mantém backups com carimbo de data e hora ao lado dos arquivos JSON originais.
 
-OpenClaw agora lê perfis de autenticação do `openclaw-agent.sqlite` de cada agente. Se uma instalação antiga ainda tiver `auth-profiles.json`, `auth-state.json` ou um arquivo plano de perfil de autenticação como `{ "openrouter": { "apiKey": "..." } }`, execute `openclaw doctor --fix` para importá-lo para o SQLite; o doctor mantém backups com timestamp ao lado dos arquivos JSON originais. Detalhes de endpoint como `baseUrl`, `api`, ids de modelo, cabeçalhos e timeouts pertencem a `models.providers.<id>` em `openclaw.json` ou `models.json`, não a perfis de autenticação.
+Rotas de autenticação externas, como `auth: "aws-sdk"` do Bedrock, não são credenciais. Para uma rota nomeada do Bedrock, defina `auth.profiles.<id>.mode: "aws-sdk"` no `openclaw.json` — não grave `type: "aws-sdk"` no armazenamento de perfis de autenticação. `openclaw doctor --fix` migra marcadores legados do AWS SDK do armazenamento de credenciais para os metadados de configuração.
 
-Rotas de autenticação externas, como Bedrock `auth: "aws-sdk"`, também não são credenciais. Se você quiser uma rota Bedrock nomeada, coloque `auth.profiles.<id>.mode: "aws-sdk"` em `openclaw.json`; não grave `type: "aws-sdk"` no armazenamento de perfis de autenticação. `openclaw doctor --fix` move marcadores legados do AWS SDK do armazenamento de credenciais para metadados de configuração.
-
-Referências de perfil de autenticação também são compatíveis com credenciais estáticas:
+### Credenciais baseadas em SecretRef
 
 - Credenciais `api_key` podem usar `keyRef: { source, provider, id }`
 - Credenciais `token` podem usar `tokenRef: { source, provider, id }`
-- Perfis em modo OAuth não oferecem suporte a credenciais SecretRef; se `auth.profiles.<id>.mode` estiver definido como `"oauth"`, a entrada `keyRef`/`tokenRef` apoiada por SecretRef para esse perfil será rejeitada.
+- Perfis no modo OAuth rejeitam credenciais SecretRef: se `auth.profiles.<id>.mode` for `"oauth"`, um `keyRef`/`tokenRef` baseado em SecretRef para esse perfil será rejeitado.
 
-Verificação adequada para automação (saída `1` quando expirado/ausente, `2` quando prestes a expirar):
-
-```bash
-openclaw models status --check
-```
-
-Sondagens de autenticação ao vivo:
-
-```bash
-openclaw models status --probe
-```
-
-Notas:
-
-- Linhas de sondagem podem vir de perfis de autenticação, credenciais de ambiente ou `models.json`.
-- Se `auth.order.<provider>` explícito omitir um perfil armazenado, a sondagem relata `excluded_by_auth_order` para esse perfil em vez de tentar usá-lo.
-- Se a autenticação existir, mas o OpenClaw não conseguir resolver um candidato de modelo sondável para esse provedor, a sondagem relata `status: no_model`.
-- Cooldowns de limite de taxa podem ter escopo de modelo. Um perfil em cooldown para um modelo ainda pode ser utilizável para um modelo irmão no mesmo provedor.
-
-Scripts operacionais opcionais (systemd/Termux) estão documentados aqui:
-[Scripts de monitoramento de autenticação](/pt-BR/help/scripts#auth-monitoring-scripts)
-
-## Observação sobre Anthropic
-
-O backend `claude-cli` da Anthropic voltou a ser compatível.
-
-- A equipe da Anthropic nos informou que este caminho de integração do OpenClaw voltou a ser permitido.
-- Portanto, o OpenClaw trata a reutilização da Claude CLI e o uso de `claude -p` como sancionados para execuções apoiadas pela Anthropic, a menos que a Anthropic publique uma nova política.
-- Chaves de API da Anthropic continuam sendo a escolha mais previsível para hosts de Gateway de longa duração e controle explícito de cobrança no lado do servidor.
-
-## Verificando o status de autenticação de modelos
+## Verificação do status da autenticação dos modelos
 
 ```bash
 openclaw models status
 openclaw doctor
 ```
 
-## Comportamento de rotação de chaves de API (Gateway)
+Verificação adequada para automação, com saída `1` quando estiver expirado/ausente e `2` quando estiver prestes a expirar:
 
-Alguns provedores oferecem suporte a tentar novamente uma solicitação com chaves alternativas quando uma chamada de API atinge um limite de taxa do provedor.
+```bash
+openclaw models status --check
+```
 
-- Ordem de prioridade:
-  - `OPENCLAW_LIVE_<PROVIDER>_KEY` (substituição única)
-  - `<PROVIDER>_API_KEYS`
-  - `<PROVIDER>_API_KEY`
-  - `<PROVIDER>_API_KEY_*`
-- Provedores Google também incluem `GOOGLE_API_KEY` como fallback adicional.
-- A mesma lista de chaves é desduplicada antes do uso.
-- OpenClaw tenta novamente com a próxima chave apenas para erros de limite de taxa (por exemplo, `429`, `rate_limit`, `quota`, `resource exhausted`, `Too many concurrent
-requests`, `ThrottlingException`, `concurrency limit reached` ou `workers_ai ... quota limit exceeded`).
-- Erros que não são de limite de taxa não são tentados novamente com chaves alternativas.
-- Se todas as chaves falharem, o erro final da última tentativa será retornado.
+Sondagens de autenticação em tempo real (adicione `--probe-provider`, `--probe-profile`, `--probe-timeout`, `--probe-concurrency` ou `--probe-max-tokens` para restringir o escopo):
 
-## Removendo autenticação de provedor enquanto o Gateway está em execução
+```bash
+openclaw models status --probe
+```
 
-Quando a autenticação de provedor é removida pelo plano de controle do Gateway, o OpenClaw exclui os perfis de autenticação salvos para esse provedor e aborta chats ativos ou execuções de agente cujo provedor de modelo selecionado corresponde ao provedor removido. As execuções abortadas emitem os eventos normais de cancelamento de chat e ciclo de vida com `stopReason: "auth-revoked"`, para que clientes conectados possam mostrar que a execução foi interrompida porque as credenciais foram removidas.
+Observações:
 
-Remover a autenticação salva não revoga chaves no provedor. Rotacione ou revogue a chave no painel do provedor quando precisar de invalidação no lado do provedor.
+- As linhas da sondagem podem vir de perfis de autenticação, credenciais do ambiente ou `models.json`.
+- Se `auth.order.<provider>` omitir um perfil armazenado, a sondagem informará `excluded_by_auth_order` para esse perfil em vez de testá-lo.
+- Se houver autenticação, mas o OpenClaw não conseguir resolver um modelo que possa ser sondado para esse provedor, a sondagem informará `status: no_model`.
+- Períodos de espera por limite de taxa podem ser específicos ao modelo: um perfil em período de espera para um modelo ainda pode atender a outro modelo do mesmo provedor.
 
-## Controlando qual credencial é usada
+Scripts operacionais opcionais (systemd/Termux): [Scripts de monitoramento de autenticação](/pt-BR/help/scripts#auth-monitoring-scripts).
 
-### OpenAI e ids legados `openai-codex`
+## Rotação de chaves de API (Gateway)
 
-Perfis de chave de API da OpenAI e perfis OAuth do ChatGPT/Codex usam o id canônico de provedor `openai`. Novas configurações devem usar ids de perfil `openai:*` e `auth.order.openai`.
+Alguns provedores repetem uma solicitação com uma chave alternativa configurada quando uma chamada atinge um limite de taxa do provedor.
 
-Se você vir `openai-codex` em configurações antigas, ids de perfil de autenticação ou `auth.order.openai-codex`, trate isso como entrada de migração legada. Não crie novos perfis `openai-codex`. Execute:
+Ordem de prioridade das chaves por provedor:
+
+1. `OPENCLAW_LIVE_<PROVIDER>_KEY` (substituição única, fixa uma chave)
+2. `<PROVIDER>_API_KEYS` (lista separada por vírgulas/espaços/pontos e vírgulas)
+3. `<PROVIDER>_API_KEY`
+4. `<PROVIDER>_API_KEY_*` (qualquer variável de ambiente com este prefixo)
+
+Os provedores do Google (`google`, `google-vertex`) também recorrem a `GOOGLE_API_KEY`. A lista combinada é desduplicada antes do uso.
+
+O OpenClaw passa para a próxima chave somente quando a mensagem de erro corresponde a: `rate_limit`, `rate limit`, `429`, `quota exceeded`/`quota_exceeded`, `resource exhausted`/`resource_exhausted` ou `too many requests`. Outros erros não são repetidos com chaves alternativas. Se todas as chaves falharem, será retornado o erro final da última tentativa.
+
+<Note>
+Expressões específicas de provedores, como `ThrottlingException`, `concurrency limit reached` ou `workers_ai ... quota limit exceeded`, determinam a **classificação de failover/nova tentativa** (alternância entre modelos ou provedores após falhas repetidas), um mecanismo separado da rotação de chaves de API descrita acima.
+</Note>
+
+Remover a autenticação salva não revoga a chave no provedor — faça a rotação ou revogue-a no painel do provedor quando precisar invalidá-la no lado do provedor.
+
+## Remoção da autenticação do provedor enquanto o Gateway está em execução
+
+Quando você remove a autenticação de um provedor pelo plano de controle do Gateway, o OpenClaw exclui os perfis de autenticação salvos desse provedor e interrompe execuções ativas de chats/agentes cujo provedor do modelo selecionado corresponda ao removido. As execuções interrompidas emitem os eventos normais de cancelamento/ciclo de vida com `stopReason: "auth-revoked"`, permitindo que os clientes conectados mostrem que a execução foi interrompida porque as credenciais foram removidas.
+
+## Controle da credencial utilizada
+
+### OpenAI e IDs legados `openai-codex`
+
+Os perfis de chave de API da OpenAI e os perfis OAuth do ChatGPT/Codex usam o ID de provedor canônico `openai`. Use IDs de perfil `openai:*` e `auth.order.openai` em novas configurações.
+
+Se você encontrar `openai-codex` em configurações antigas, IDs de perfis de autenticação ou `auth.order.openai-codex`, trate-o como entrada de migração legada — não crie novos perfis `openai-codex`. Execute:
 
 ```bash
 openclaw doctor --fix
 openclaw models auth list --provider openai
 ```
 
-O doctor reescreve ids de perfil legados `openai-codex:*` e entradas `auth.order.openai-codex` para a rota de autenticação canônica `openai`. Para roteamento de modelo/runtime específico da OpenAI, consulte [OpenAI](/pt-BR/providers/openai).
+O doctor reescreve IDs de perfil legados `openai-codex:*` e entradas `auth.order.openai-codex` para a rota canônica `openai`. Para o roteamento de modelos/runtime específico da OpenAI, consulte [OpenAI](/pt-BR/providers/openai).
 
 ### Durante o login (CLI)
-
-Use `openclaw models auth login --provider <id> --profile-id <profileId>` para provedores que oferecem suporte a perfis de autenticação nomeados durante o login.
 
 ```bash
 openclaw models auth login --provider openai --profile-id openai:ritsuko
 openclaw models auth login --provider openai --profile-id openai:lain
 ```
 
-Esta é a maneira mais fácil de manter múltiplos logins OAuth para o mesmo provedor separados dentro de um agente.
+`--profile-id` mantém separados vários logins OAuth do mesmo provedor dentro de um agente.
 
-Use `--force` quando um perfil de provedor salvo estiver travado, expirado ou vinculado à conta errada e o comando de login normal continuar reutilizando-o. `--force` exclui os perfis de autenticação salvos para esse provedor no diretório do agente selecionado e depois executa o mesmo fluxo de autenticação de provedor novamente. Ele não revoga credenciais no provedor; rotacione ou revogue-as no painel do provedor quando precisar de invalidação no lado do provedor.
+`--force` exclui os perfis de autenticação salvos desse provedor no diretório do agente selecionado e, em seguida, executa novamente o mesmo fluxo de autenticação. Use-o quando um perfil salvo estiver travado, expirado ou vinculado à conta errada. Ele não revoga as credenciais no provedor.
 
 ```bash
 openclaw models auth login --provider anthropic --force
@@ -203,13 +174,14 @@ openclaw models auth login --provider anthropic --force
 
 ### Por sessão (comando de chat)
 
-Use `/model <alias-or-id>@<profileId>` para fixar uma credencial específica de provedor para a sessão atual (exemplos de ids de perfil: `anthropic:default`, `anthropic:work`).
+- `/model <alias-or-id>@<profileId>` fixa uma credencial específica do provedor para a sessão atual (exemplos de IDs de perfil: `anthropic:default`, `anthropic:work`).
+- `/model` (ou `/model list`) mostra um seletor compacto; `/model status` mostra a visualização completa (candidatos + próximo perfil de autenticação, além dos detalhes do endpoint do provedor quando configurados).
 
-Use `/model` (ou `/model list`) para um seletor compacto; use `/model status` para a visualização completa (candidatos + próximo perfil de autenticação, além de detalhes de endpoint do provedor quando configurados).
+Se você alterar a ordem de autenticação ou a fixação do perfil de um chat que já esteja em execução, envie `/new` ou `/reset` para iniciar uma nova sessão — as sessões existentes mantêm a seleção atual de modelo/perfil até serem redefinidas.
 
-### Por agente (substituição pela CLI)
+### Por agente (substituição via CLI)
 
-Defina uma substituição explícita de ordem de perfis de autenticação para um agente (armazenada no estado de autenticação SQLite desse agente):
+As substituições da ordem de autenticação são armazenadas no estado de autenticação SQLite desse agente:
 
 ```bash
 openclaw models auth order get --provider anthropic
@@ -217,27 +189,23 @@ openclaw models auth order set --provider anthropic anthropic:default
 openclaw models auth order clear --provider anthropic
 ```
 
-Use `--agent <id>` para direcionar um agente específico; omita-o para usar o agente padrão configurado.
-Ao depurar problemas de ordem, `openclaw models status --probe` mostra perfis armazenados omitidos como `excluded_by_auth_order` em vez de ignorá-los silenciosamente.
-Ao depurar problemas de cooldown, lembre-se de que cooldowns de limite de taxa podem estar vinculados a um id de modelo, em vez de ao perfil inteiro do provedor.
-
-Se você alterar a ordem de autenticação ou a fixação de perfil para um chat que já está em execução, envie `/new` ou `/reset` nesse chat para iniciar uma nova sessão. Sessões existentes podem manter a seleção atual de modelo/perfil até serem redefinidas.
+Use `--agent <id>` para selecionar um agente específico; omita-o para usar o agente padrão configurado. `openclaw models status --probe` mostra perfis armazenados omitidos como `excluded_by_auth_order` em vez de ignorá-los silenciosamente.
 
 ## Solução de problemas
 
 ### "Nenhuma credencial encontrada"
 
-Se o perfil da Anthropic estiver ausente, configure uma chave de API da Anthropic no **host do Gateway** ou configure o caminho de setup-token da Anthropic, depois verifique novamente:
+Configure uma chave de API da Anthropic no **host do Gateway** ou configure o caminho do token de configuração da Anthropic e verifique novamente:
 
 ```bash
 openclaw models status
 ```
 
-### Token expirando/expirado
+### Token prestes a expirar/expirado
 
-Execute `openclaw models status` para confirmar qual perfil está expirando. Se um perfil de token da Anthropic estiver ausente ou expirado, atualize essa configuração via setup-token ou migre para uma chave de API da Anthropic.
+Execute `openclaw models status` para identificar qual perfil está prestes a expirar. Se um perfil de token da Anthropic estiver ausente ou expirado, atualize-o pelo token de configuração ou migre para uma chave de API da Anthropic.
 
-## Relacionado
+## Relacionados
 
 - [Gerenciamento de segredos](/pt-BR/gateway/secrets)
 - [Acesso remoto](/pt-BR/gateway/remote)

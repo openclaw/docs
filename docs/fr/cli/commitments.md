@@ -1,25 +1,26 @@
 ---
 read_when:
-    - Vous souhaitez inspecter les engagements de suivi inférés
-    - Vous voulez ignorer les points de suivi en attente
-    - Vous auditez ce que Heartbeat peut fournir
-summary: Référence CLI pour `openclaw commitments` (inspecter et écarter les suivis inférés)
+    - Vous souhaitez examiner les engagements de suivi déduits
+    - Vous souhaitez ignorer les demandes de confirmation en attente
+    - Vous auditez ce que Heartbeat peut transmettre
+summary: Référence de la CLI pour `openclaw commitments` (inspecter et ignorer les suivis déduits)
 title: '`openclaw commitments`'
 x-i18n:
-    generated_at: "2026-04-30T07:17:20Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:09:40Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: 37d5e5dca25cf649a5069360aa4e41fcc33d042dea99f643b98c07189c58f21c
+    source_hash: 4323273a5d73975532f4728dc5e40c5d59e0c6d2e31a538f96bf3451e3fdf4d9
     source_path: cli/commitments.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
 Répertoriez et gérez les engagements de suivi déduits.
 
-Les engagements sont des mémoires de suivi optionnelles et de courte durée, créées à partir du
-contexte de conversation. Consultez [Engagements déduits](/fr/concepts/commitments) pour le
-guide conceptuel.
+Les engagements sont facultatifs (`commitments.enabled`) et constituent des souvenirs de suivi
+à courte durée de vie, créés à partir du contexte de la conversation et transmis par Heartbeat. Consultez
+[Engagements déduits](/fr/concepts/commitments) pour le guide conceptuel et la configuration.
 
 Sans sous-commande, `openclaw commitments` répertorie les engagements en attente.
 
@@ -33,11 +34,14 @@ openclaw commitments dismiss <id...> [--json]
 
 ## Options
 
-- `--all` : afficher tous les statuts au lieu des seuls engagements en attente.
-- `--agent <id>` : filtrer sur un seul identifiant d’agent.
-- `--status <status>` : filtrer par statut. Valeurs : `pending`, `sent`,
-  `dismissed`, `snoozed` ou `expired`.
-- `--json` : produire du JSON lisible par machine.
+- `--all` : affichez tous les statuts au lieu des seuls engagements en attente.
+- `--agent <id>` : filtrez selon un identifiant d’agent.
+- `--status <status>` : filtrez selon le statut. Valeurs : `pending`, `sent`,
+  `dismissed`, `snoozed` ou `expired`. Les valeurs inconnues provoquent une sortie avec une erreur.
+- `--json` : produisez une sortie JSON lisible par une machine.
+
+`dismiss` marque les identifiants d’engagement indiqués comme `dismissed` afin que Heartbeat ne
+les transmette pas.
 
 ## Exemples
 
@@ -53,13 +57,13 @@ Répertorier tous les engagements stockés :
 openclaw commitments --all
 ```
 
-Filtrer sur un seul agent :
+Filtrer selon un agent :
 
 ```bash
 openclaw commitments --agent main
 ```
 
-Trouver les engagements reportés :
+Rechercher les engagements reportés :
 
 ```bash
 openclaw commitments --status snoozed
@@ -79,20 +83,22 @@ openclaw commitments --all --json
 
 ## Sortie
 
-La sortie texte inclut :
+La sortie texte affiche le nombre d’engagements, le chemin du stockage, les éventuels filtres actifs
+et une ligne par engagement :
 
 - identifiant de l’engagement
 - statut
-- type
-- première échéance possible
-- portée
-- texte de relance suggéré
+- type (`event_check_in`, `deadline_check`, `care_check_in` ou `open_loop`)
+- première échéance
+- portée (agent/canal/cible)
+- texte de suivi suggéré
 
-La sortie JSON inclut également le chemin du magasin d’engagements et les enregistrements stockés complets.
+La sortie JSON comprend le nombre, les filtres actifs de statut et d’agent, le
+chemin du stockage des engagements et l’intégralité des enregistrements stockés.
 
-## Connexe
+## Voir aussi
 
 - [Engagements déduits](/fr/concepts/commitments)
-- [Vue d’ensemble de la mémoire](/fr/concepts/memory)
+- [Présentation de la mémoire](/fr/concepts/memory)
 - [Heartbeat](/fr/gateway/heartbeat)
 - [Tâches planifiées](/fr/automation/cron-jobs)

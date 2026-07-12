@@ -1,27 +1,28 @@
 ---
 read_when:
-    - 你正在脚本或 CI 中自动化新手引导
-    - 你需要针对特定提供商的非交互式示例
+    - 你正在通过脚本或 CI 自动执行新手引导
+    - 你需要特定提供商的非交互式示例
 sidebarTitle: CLI automation
 summary: OpenClaw CLI 的脚本化新手引导和 Agent 设置
 title: CLI 自动化
 x-i18n:
-    generated_at: "2026-07-05T11:44:52Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:46:34Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: 9373e7e3815d349e13b98ab68338ff41e8ad3004b49c242acd6c3f8e114f9e3c
+    source_hash: de3115fd0c675b92f22cf9c44ddd307a854e499c6f163235f991368429b2c152
     source_path: start/wizard-cli-automation.md
     workflow: 16
 ---
 
-使用 `openclaw onboard --non-interactive` 编写设置脚本。它要求使用 `--accept-risk`：非交互式设置可以在没有确认提示的情况下写入凭证和守护进程配置，因此该标志是明确的风险确认。
+使用 `openclaw onboard --non-interactive` 编写设置脚本。它要求使用 `--accept-risk`：非交互式设置可以在没有确认提示的情况下写入凭据和守护进程配置，因此该标志表示明确确认相关风险。
 
 <Note>
-`--json` 并不表示非交互模式。请为脚本显式传入 `--non-interactive --accept-risk`。
+`--json` 并不表示启用非交互模式。脚本需要明确传入 `--non-interactive --accept-risk`。
 </Note>
 
-## 基线非交互式示例
+## 非交互式基准示例
 
 ```bash
 openclaw onboard --non-interactive --accept-risk \
@@ -36,11 +37,11 @@ openclaw onboard --non-interactive --accept-risk \
   --skip-skills
 ```
 
-添加 `--json` 以获得机器可读的摘要。
+添加 `--json` 可获得机器可读的摘要。
 
-- `--gateway-port` 默认为 `18789`；仅在需要覆盖时传入。
-- `--skip-bootstrap` 会跳过创建默认工作区文件，适用于会预先填充自己工作区的自动化。
-- `--secret-input-mode ref` 会在凭证配置文件中存储由环境支持的引用（`{ source: "env", provider: "default", id: "<ENV_VAR>" }`），而不是明文密钥。在非交互式 `ref` 模式下，提供商环境变量必须已在进程环境中设置：如果传入内联密钥标志但未设置匹配的环境变量，会快速失败。
+- `--gateway-port` 默认为 `18789`；仅在需要覆盖默认值时传入。
+- `--skip-bootstrap` 跳过创建默认工作区文件，适用于预先填充自有工作区的自动化流程。
+- `--secret-input-mode ref` 会在身份验证配置文件中存储由环境变量支持的引用（`{ source: "env", provider: "default", id: "<ENV_VAR>" }`），而不是明文密钥。在非交互式 `ref` 模式下，提供商环境变量必须已在进程环境中设置：如果传入内联密钥标志，但未设置与其匹配的环境变量，操作会立即失败。
 
 ```bash
 openclaw onboard --non-interactive --accept-risk \
@@ -49,7 +50,7 @@ openclaw onboard --non-interactive --accept-risk \
   --secret-input-mode ref
 ```
 
-## 提供商特定示例
+## 特定提供商示例
 
 <AccordionGroup>
   <Accordion title="Anthropic API 密钥示例">
@@ -61,7 +62,7 @@ openclaw onboard --non-interactive --accept-risk \
       --gateway-bind loopback
     ```
   </Accordion>
-  <Accordion title="Cloudflare AI Gateway 网关示例">
+  <Accordion title="Cloudflare AI Gateway 示例">
     ```bash
     openclaw onboard --non-interactive --accept-risk \
       --mode local \
@@ -116,7 +117,7 @@ openclaw onboard --non-interactive --accept-risk \
       --opencode-zen-api-key "$OPENCODE_API_KEY" \
       --gateway-bind loopback
     ```
-    如需 Go 目录，请改用 `--auth-choice opencode-go --opencode-go-api-key "$OPENCODE_API_KEY"`。
+    对于 Go 目录，请改用 `--auth-choice opencode-go --opencode-go-api-key "$OPENCODE_API_KEY"`。
   </Accordion>
   <Accordion title="Synthetic 示例">
     ```bash
@@ -127,7 +128,7 @@ openclaw onboard --non-interactive --accept-risk \
       --gateway-bind loopback
     ```
   </Accordion>
-  <Accordion title="Vercel AI Gateway 网关示例">
+  <Accordion title="Vercel AI Gateway 示例">
     ```bash
     openclaw onboard --non-interactive --accept-risk \
       --mode local \
@@ -159,11 +160,11 @@ openclaw onboard --non-interactive --accept-risk \
       --gateway-bind loopback
     ```
 
-    `--custom-api-key` 是可选的；某些端点不需要凭证。如果省略，新手引导会检查环境中的 `CUSTOM_API_KEY`。`--custom-provider-id` 是可选的，省略时会从基础 URL 自动派生。`--custom-compatibility` 默认为 `openai`（其他值：`openai-responses`、`anthropic`）。
+    `--custom-api-key` 是可选的；某些端点不要求进行身份验证。如果省略，新手引导会检查环境中的 `CUSTOM_API_KEY`。`--custom-provider-id` 是可选的，省略时会根据基础 URL 自动派生。`--custom-compatibility` 默认为 `openai`（其他值：`openai-responses`、`anthropic`）。
 
-    OpenClaw 会从已知的视觉模型 ID 模式推断图像输入支持（`gpt-4o`、`claude-3/4`、`gemini`、`-vl`/`vision` 后缀，以及类似模式）。添加 `--custom-image-input` 可为未识别的视觉模型强制启用，或添加 `--custom-text-input` 强制仅文本。
+    OpenClaw 会根据已知的视觉模型 ID 模式（`gpt-4o`、`claude-3/4`、`gemini`、`-vl`/`vision` 后缀及类似模式）推断图像输入支持。对于无法识别的视觉模型，添加 `--custom-image-input` 可强制启用图像输入，或添加 `--custom-text-input` 强制仅使用文本输入。
 
-    Ref 模式变体，将 `apiKey` 存储为 `{ source: "env", provider: "default", id: "CUSTOM_API_KEY" }`：
+    引用模式变体，将 `apiKey` 存储为 `{ source: "env", provider: "default", id: "CUSTOM_API_KEY" }`：
 
     ```bash
     export CUSTOM_API_KEY="your-key"
@@ -182,33 +183,33 @@ openclaw onboard --non-interactive --accept-risk \
   </Accordion>
 </AccordionGroup>
 
-Anthropic 设置令牌凭证仍受支持，但当本地 Claude CLI 登录可用时，OpenClaw 更倾向于复用 Claude CLI。对于生产环境，优先使用 Anthropic API 密钥。
+Anthropic setup-token 身份验证仍受支持，但当本地 Claude CLI 已登录时，OpenClaw 会优先复用 Claude CLI。对于生产环境，建议使用 Anthropic API key。
 
-## 添加另一个 agent
+## 添加另一个智能体
 
-`openclaw agents add <name>` 会创建一个单独的 agent，并拥有自己的工作区、会话和凭证配置文件。不带 `--workspace`（且没有其他标志）运行它会启动交互式向导；传入 `--workspace`、`--model`、`--agent-dir`、`--bind` 或 `--non-interactive` 中任意一个都会以非交互方式运行，然后要求提供 `--workspace`。
+`openclaw agents add <name>` 会创建一个独立的智能体，它拥有自己的工作区、会话和身份验证配置文件。在不带 `--workspace`（且不带其他标志）的情况下运行此命令会启动交互式向导；传入 `--workspace`、`--model`、`--agent-dir`、`--bind` 或 `--non-interactive` 中的任意一个标志时，将以非交互方式运行，且必须同时提供 `--workspace`。
 
 ```bash
 openclaw agents add work \
   --workspace ~/.openclaw/workspace-work \
-  --model openai/gpt-5.5 \
+  --model openai/gpt-5.6-sol \
   --bind whatsapp:biz \
   --non-interactive \
   --json
 ```
 
-它写入的配置键（新 agent ID 的 `agents.list[]` 条目）：
+该命令写入的配置键（新智能体 ID 对应的 `agents.list[]` 条目）：
 
 - `name`
 - `workspace`
 - `agentDir`
-- `model`（仅在传入 `--model` 时）
+- `model`（仅当传入 `--model` 时）
 
-说明：
+注意：
 
 - 默认工作区（在交互式向导中省略 `--workspace` 时）：`~/.openclaw/workspace-<agentId>`。
-- `--bind <channel[:accountId]>` 可重复；添加绑定以将入站消息路由到新 agent（向导也可以交互式完成此操作）。
-- agent 名称会规范化为有效的 agent ID；`main` 为保留值。
+- `--bind <channel[:accountId]>` 可重复使用；添加绑定可将入站消息路由到新智能体（向导也可以通过交互方式完成此操作）。
+- 智能体名称会规范化为有效的智能体 ID；`main` 为保留名称。
 
 ## 相关文档
 

@@ -5,17 +5,17 @@ read_when:
 summary: 지원되는 모든 채널에서의 반응 도구 의미 체계
 title: 반응
 x-i18n:
-    generated_at: "2026-06-27T18:16:22Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:50:34Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: 2dc9575eaeb79a56ca82ee491c2974e9984b1a12999762b1532ca9affdbbd72f
+    source_hash: e148a93edbcfbe997075f6e9e191667ec257f76fa48162688fd1f333479661f0
     source_path: tools/reactions.md
     workflow: 16
 ---
 
-에이전트는 `react` 작업과 함께 `message`
-도구를 사용하여 메시지에 이모지 반응을 추가하고 제거할 수 있습니다. 반응 동작은 채널과 전송 방식에 따라 달라집니다.
+에이전트는 `message` 도구의 `react` 작업을 사용하여 이모지 반응을 추가하고 제거합니다. 동작은 채널마다 다릅니다.
 
 ## 작동 방식
 
@@ -27,80 +27,75 @@ x-i18n:
 }
 ```
 
-- 반응을 추가할 때는 `emoji`가 필요합니다.
-- 봇의 반응을 제거하려면 `emoji`를 빈 문자열(`""`)로 설정합니다.
-- 특정 이모지를 제거하려면 `remove: true`를 설정합니다(비어 있지 않은 `emoji` 필요).
-- 상태 반응을 지원하는 채널에서는 반응의 `trackToolCalls: true`를 통해 런타임이 같은 턴 동안 이후 도구 진행 반응에 해당 반응이 달린 메시지를 사용할 수 있습니다.
+- 반응을 추가할 때는 `emoji`가 필수입니다.
+- 이를 지원하는 채널에서 봇의 반응을 제거하려면 `emoji`를 빈 문자열(`""`)로 설정하십시오.
+- 특정 이모지 하나를 제거하려면 `remove: true`를 설정하십시오(`emoji`는 비어 있지 않아야 합니다).
+- 상태 반응을 지원하는 채널에서 반응에 `trackToolCalls: true`를 설정하면 런타임이 같은 턴에서 이후 도구 진행 상황 반응에 해당 반응 메시지를 재사용할 수 있습니다.
 
-## 채널 동작
+## 채널별 동작
 
 <AccordionGroup>
   <Accordion title="Discord 및 Slack">
     - 빈 `emoji`는 메시지에서 봇의 모든 반응을 제거합니다.
-    - `remove: true`는 지정된 이모지만 제거합니다.
-
-  </Accordion>
-
-  <Accordion title="Google Chat">
-    - 빈 `emoji`는 메시지에서 앱의 반응을 제거합니다.
-    - `remove: true`는 지정된 이모지만 제거합니다.
+    - `remove: true`는 지정한 이모지만 제거합니다.
 
   </Accordion>
 
   <Accordion title="Nextcloud Talk">
-    - 반응 추가만 가능: `emoji`가 필요하며 비어 있으면 안 됩니다.
-    - 반응 제거는 아직 지원되지 않습니다. `remove: true`(또는 빈 `emoji`)를 사용한 호출은 조용히 아무 작업도 하지 않는 대신 명확한 오류와 함께 거부됩니다.
-    - Talk 봇이 `reaction` 기능으로 등록되어 있어야 합니다([Nextcloud Talk 채널 문서](/ko/channels/nextcloud-talk) 참조).
+    - 반응 추가만 지원합니다. `emoji`는 필수이며 비어 있지 않아야 합니다.
+    - 반응 제거는 아직 삭제 호출에 연결되어 있지 않습니다. `remove: true`는 아무 동작 없이 무시되는 대신 명시적인 오류와 함께 거부됩니다.
+    - `reaction` 기능으로 등록된 Talk 봇이 필요합니다([Nextcloud Talk 채널 문서](/ko/channels/nextcloud-talk) 참조).
 
   </Accordion>
 
   <Accordion title="Telegram">
     - 빈 `emoji`는 봇의 반응을 제거합니다.
-    - `remove: true`도 반응을 제거하지만, 도구 검증을 위해 여전히 비어 있지 않은 `emoji`가 필요합니다.
+    - `remove: true`도 반응을 제거하지만, 도구 유효성 검사를 위해 `emoji`가 비어 있지 않아야 합니다.
 
   </Accordion>
 
   <Accordion title="WhatsApp">
     - 빈 `emoji`는 봇 반응을 제거합니다.
-    - `remove: true`는 내부적으로 빈 이모지에 매핑됩니다(그래도 도구 호출에는 `emoji`가 필요함).
-    - WhatsApp은 메시지당 봇 반응 슬롯이 하나입니다. 상태 반응 업데이트는 여러 이모지를 쌓지 않고 해당 슬롯을 대체합니다.
+    - `remove: true`는 내부적으로 빈 이모지에 매핑됩니다(도구 호출에는 여전히 `emoji`가 필요합니다).
+    - WhatsApp에는 메시지당 봇 반응 슬롯이 하나만 있습니다. 새 반응을 보내면 여러 이모지가 누적되지 않고 기존 반응을 대체합니다.
 
   </Accordion>
 
   <Accordion title="Zalo Personal (zalouser)">
-    - 비어 있지 않은 `emoji`가 필요합니다.
-    - `remove: true`는 해당 특정 이모지 반응을 제거합니다.
+    - 추가와 제거 모두 `emoji`가 비어 있지 않아야 합니다.
+    - `remove: true`는 해당하는 특정 이모지 반응을 제거합니다.
 
   </Accordion>
 
   <Accordion title="Feishu/Lark">
-    - `add`, `remove`, `list` 작업과 함께 `feishu_reaction` 도구를 사용합니다.
-    - 추가/제거에는 `emoji_type`이 필요하며, 제거에는 `reaction_id`도 필요합니다.
+    - 별도 도구가 아니라 다른 채널과 동일한 `react` 작업을 사용합니다(메시지 반응 ID를 통해 추가/제거/목록 조회).
+    - 추가하려면 비어 있지 않은 `emoji`가 필요합니다(Feishu `emoji_type`으로 매핑됨, 예: `SMILE`, `THUMBSUP`, `HEART`).
+    - `remove: true`에는 비어 있지 않은 `emoji`가 필요하며, 해당 이모지 유형과 일치하는 봇 자체의 반응을 제거합니다.
+    - 빈 `emoji`와 함께 `clearAll: true`를 설정하면 메시지에서 봇의 모든 반응을 제거합니다.
 
   </Accordion>
 
   <Accordion title="Signal">
-    - 수신 반응 알림은 `channels.signal.reactionNotifications`로 제어됩니다. `"off"`는 이를 비활성화하고, `"own"`(기본값)은 사용자가 봇 메시지에 반응할 때 이벤트를 내보내며, `"all"`은 모든 반응에 대해 이벤트를 내보냅니다.
+    - 수신 반응 알림은 `channels.signal.reactionNotifications`로 제어합니다. `"off"`는 알림을 비활성화하고, `"own"`(기본값)은 사용자가 봇 메시지에 반응할 때 이벤트를 내보내며, `"all"`은 모든 반응에 대해 이벤트를 내보내고, `"allowlist"`는 `channels.signal.reactionAllowlist`에 있는 발신자에 대해서만 이벤트를 내보냅니다.
 
   </Accordion>
 
   <Accordion title="iMessage">
-    - 발신 반응은 iMessage 탭백(`love`, `like`, `dislike`, `laugh`, `emphasize`, `question`)입니다.
-    - 수신 탭백 알림은 `channels.imessage.reactionNotifications`로 제어됩니다. `"off"`는 이를 비활성화하고, `"own"`(기본값)은 사용자가 봇이 작성한 메시지에 반응할 때 이벤트를 내보내며, `"all"`은 승인된 발신자의 모든 탭백에 대해 이벤트를 내보냅니다.
+    - 발신 반응은 iMessage 탭백(`love`, `like`, `dislike`, `laugh`, `emphasize`, `question`)입니다. 반응을 추가하려면 `emoji`가 이 유형 중 하나에 매핑되어야 합니다.
+    - 인식되는 탭백 유형 없이 `remove: true`를 설정하면 모든 탭백 유형을 제거하고, 인식되는 유형과 함께 설정하면 해당 유형만 제거합니다.
 
   </Accordion>
 </AccordionGroup>
 
 ## 반응 수준
 
-채널별 `reactionLevel` 구성은 에이전트가 반응을 얼마나 폭넓게 사용하는지 제어합니다. 값은 일반적으로 `off`, `ack`, `minimal` 또는 `extensive`입니다.
+채널별 `reactionLevel`은 에이전트가 자체 반응을 보내는 빈도를 제한합니다. 값은 `off`, `ack`, `minimal`, `extensive`입니다.
 
-- [Telegram reactionLevel](/ko/channels/telegram#reaction-notifications) — `channels.telegram.reactionLevel`
-- [WhatsApp reactionLevel](/ko/channels/whatsapp#reaction-level) — `channels.whatsapp.reactionLevel`
-
-각 플랫폼에서 에이전트가 메시지에 얼마나 적극적으로 반응할지 조정하려면 개별 채널에 `reactionLevel`을 설정합니다.
+- [Telegram 반응 알림](/ko/channels/telegram#feature-reference) - `channels.telegram.reactionLevel`(기본값 `minimal`)
+- [WhatsApp 반응 수준](/ko/channels/whatsapp#reaction-level) - `channels.whatsapp.reactionLevel`(기본값 `minimal`)
+- [Signal 반응](/ko/channels/signal#reactions-message-tool) - `channels.signal.reactionLevel`(기본값 `minimal`)
 
 ## 관련 항목
 
-- [에이전트 전송](/ko/tools/agent-send) — `react`를 포함하는 `message` 도구
-- [채널](/ko/channels) — 채널별 구성
+- [에이전트 전송](/ko/tools/agent-send) - `react`를 포함하는 `message` 도구
+- [채널](/ko/channels) - 채널별 구성

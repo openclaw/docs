@@ -1,29 +1,30 @@
 ---
 read_when:
     - macOS Canvas パネルの実装
-    - 視覚的ワークスペース向けのエージェント制御の追加
-    - WKWebView のキャンバス読み込みのデバッグ
-summary: WKWebView + カスタム URL スキーム経由で埋め込まれたエージェント制御の Canvas パネル
+    - ビジュアルワークスペース用のエージェントコントロールを追加
+    - WKWebView の canvas 読み込みをデバッグする
+summary: WKWebView + カスタム URL スキームで埋め込まれたエージェント制御の Canvas パネル
 title: キャンバス
 x-i18n:
-    generated_at: "2026-07-05T11:35:11Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:35:52Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: a28ebad43f6135e199f1aa03e45aa92ad309d11348d5a47121b1418442b6fe17
+    source_hash: 21955803c39debfbc34851a0c40a69c1f3c6ca009526d9929a4c429ad0b09084
     source_path: platforms/mac/canvas.md
     workflow: 16
 ---
 
-macOS アプリは、`WKWebView` を使ってエージェント制御の **Canvas パネル**を埋め込みます。これは HTML/CSS/JS、A2UI、小さなインタラクティブ UI サーフェス向けの軽量なビジュアルワークスペースです。
+macOS アプリには、エージェントが制御する **Canvas パネル**が `WKWebView` を使用して組み込まれています。これは、HTML/CSS/JS、A2UI、および小規模なインタラクティブ UI サーフェス向けの軽量なビジュアルワークスペースです。
 
-## Canvas の場所
+## Canvas の保存場所
 
 Canvas の状態は Application Support 配下に保存されます。
 
 - `~/Library/Application Support/OpenClaw/canvas/<session>/...`
 
-Canvas パネルは、カスタム URL スキーム `openclaw-canvas://<session>/<path>` 経由でそれらのファイルを提供します。
+Canvas パネルは、カスタム URL スキーム `openclaw-canvas://<session>/<path>` を介してこれらのファイルを提供します。
 
 - `openclaw-canvas://main/` -> `<canvasRoot>/main/index.html`
 - `openclaw-canvas://main/assets/app.css` -> `<canvasRoot>/main/assets/app.css`
@@ -34,78 +35,81 @@ Canvas パネルは、カスタム URL スキーム `openclaw-canvas://<session>
 ## パネルの動作
 
 - メニューバー（またはマウスカーソル）の近くに固定される、枠なしでサイズ変更可能なパネル。
-- セッションごとにサイズと位置を記憶します。
-- ローカルの Canvas ファイルが変更されると自動リロードします。
-- 表示される Canvas パネルは一度に 1 つだけです（必要に応じてセッションが切り替わります）。
+- セッションごとにサイズと位置を記憶。
+- ローカルの Canvas ファイルが変更されると自動的に再読み込み。
+- 一度に表示される Canvas パネルは 1 つのみ（必要に応じてセッションを切り替え）。
 
-Canvas は 設定 -> **Canvas を許可** から無効にできます。無効な場合、canvas node コマンドは `CANVAS_DISABLED` を返します。
+Canvas は Settings -> **Allow Canvas** から無効にできます。無効にすると、Canvas の Node コマンドは `CANVAS_DISABLED` を返します。
 
 ## エージェント API サーフェス
 
-Canvas は Gateway WebSocket 経由で公開されるため、エージェントはパネルの表示/非表示、パスまたは URL へのナビゲーション、JavaScript の評価、スナップショット画像のキャプチャを実行できます。
+Canvas は Gateway WebSocket を介して公開されるため、エージェントはパネルの表示と非表示、パスまたは URL への移動、JavaScript の評価、およびスナップショット画像のキャプチャを行えます。
 
 ```bash
 openclaw nodes canvas present --node <id>
-openclaw nodes canvas navigate --node <id> --url "/"
+openclaw nodes canvas navigate --node <id> "/"
 openclaw nodes canvas eval --node <id> --js "document.title"
 openclaw nodes canvas snapshot --node <id>
 ```
 
-`canvas.navigate` は、ローカル Canvas パス、`http(s)` URL、`file://` URL を受け付けます。`"/"` を渡すと、ローカルのスキャフォールドまたは `index.html` が表示されます。
+`canvas.navigate` は、ローカルの Canvas パス、`http(s)` URL、および `file://` URL を受け付けます。`"/"` を渡すと、ローカルのスキャフォールドまたは `index.html` が表示されます。
 
-## Canvas の A2UI
+`/__openclaw__/canvas/` および `/__openclaw__/a2ui/` 配下の Gateway ホスト対象は、Node セッションの現在のスコープ付き Canvas URL を介して解決されます。アプリは移動前にこの短期間有効なケイパビリティを更新するため、ケイパビリティ URL を自分で構築またはコピーする必要はありません。
 
-A2UI は Gateway canvas ホストによってホストされ、Canvas パネル内にレンダリングされます。Gateway が Canvas ホストをアドバタイズすると、macOS アプリは初回オープン時に A2UI ホストページへ自動で移動します。
+## Canvas 内の A2UI
 
-デフォルトの A2UI ホスト URL: `http://<gateway-host>:18789/__openclaw__/a2ui/`
+A2UI は Gateway の Canvas ホストによってホストされ、Canvas パネル内にレンダリングされます。Gateway が Canvas ホストを通知すると、macOS アプリは初回起動時に A2UI ホストページへ自動的に移動します。
 
-### A2UI コマンド (v0.8)
+通知される URL はケイパビリティでスコープされており、たとえば `http://<gateway-host>:18789/__openclaw__/cap/<token>/__openclaw__/a2ui/?platform=macos` です。安定したリンクではなく、一時的な認証情報として扱ってください。
 
-Canvas は A2UI v0.8 のサーバーからクライアントへのメッセージを受け付けます: `beginRendering`, `surfaceUpdate`, `dataModelUpdate`, `deleteSurface`。`createSurface` (v0.9) はまだサポートされていません。
+### A2UI コマンド（v0.8）
+
+Canvas は、A2UI v0.8 のサーバーからクライアントへのメッセージ `beginRendering`、`surfaceUpdate`、`dataModelUpdate`、`deleteSurface` を受け付けます。`createSurface`（v0.9）はまだサポートされていません。
 
 ```bash
 cat > /tmp/a2ui-v0.8.jsonl <<'EOFA2'
-{"surfaceUpdate":{"surfaceId":"main","components":[{"id":"root","component":{"Column":{"children":{"explicitList":["title","content"]}}}},{"id":"title","component":{"Text":{"text":{"literalString":"Canvas (A2UI v0.8)"},"usageHint":"h1"}}},{"id":"content","component":{"Text":{"text":{"literalString":"If you can read this, A2UI push works."},"usageHint":"body"}}}]}}
+{"surfaceUpdate":{"surfaceId":"main","components":[{"id":"root","component":{"Column":{"children":{"explicitList":["title","content"]}}}},{"id":"title","component":{"Text":{"text":{"literalString":"Canvas（A2UI v0.8）"},"usageHint":"h1"}}},{"id":"content","component":{"Text":{"text":{"literalString":"これを読める場合、A2UI プッシュは機能しています。"},"usageHint":"body"}}}]}}
 {"beginRendering":{"surfaceId":"main","root":"root"}}
 EOFA2
 
 openclaw nodes canvas a2ui push --jsonl /tmp/a2ui-v0.8.jsonl --node <id>
 ```
 
-クイックスモークテスト:
+簡単なスモークテスト：
 
 ```bash
-openclaw nodes canvas a2ui push --node <id> --text "Hello from A2UI"
+openclaw nodes canvas a2ui push --node <id> --text "A2UI からこんにちは"
 ```
 
-## Canvas からエージェント実行をトリガーする
+## Canvas からのエージェント実行のトリガー
 
-Canvas は `openclaw://agent?...` ディープリンク経由で新しいエージェント実行をトリガーできます。
+Canvas は、`openclaw://agent?...` ディープリンクを介して新しいエージェント実行をトリガーできます。
 
 ```js
 window.location.href = "openclaw://agent?message=Review%20this%20design";
 ```
 
-サポートされるクエリパラメーター:
+サポートされるクエリパラメータ：
 
-| パラメーター               | 意味                                                  |
+| パラメータ                 | 意味                                                  |
 | -------------------------- | ----------------------------------------------------- |
-| `message`                  | 事前入力されるエージェントプロンプト。                |
+| `message`                  | 入力済みのエージェントプロンプト。                    |
 | `sessionKey`               | 安定したセッション識別子。                            |
-| `thinking`                 | 任意の thinking プロファイル。                        |
+| `thinking`                 | 任意の思考プロファイル。                              |
 | `deliver`, `to`, `channel` | 配信先。                                              |
 | `timeoutSeconds`           | 任意の実行タイムアウト。                              |
-| `key`                      | 信頼済みローカル呼び出し元向けにアプリが生成する安全トークン。 |
+| `key`                      | 信頼済みのローカル呼び出し元向けにアプリが生成する安全トークン。 |
 
-有効なキーが提供されていない限り、アプリは確認を求めます。キーなしのリンクでは、承認前にメッセージと URL が表示され、配信ルーティングフィールドは無視されます。キー付きリンクは通常の Gateway 実行パスを使用します。
+有効なキーが指定されていない限り、アプリは確認を求めます。キーなしのリンクでは、承認前にメッセージと URL が表示され、配信ルーティングフィールドは無視されます。キー付きのリンクでは、通常の Gateway 実行パスが使用されます。
 
-## セキュリティメモ
+## セキュリティに関する注意事項
 
 - Canvas スキームはディレクトリトラバーサルをブロックします。ファイルはセッションルート配下に存在する必要があります。
-- ローカル Canvas コンテンツはカスタムスキームを使用します（ループバックサーバー不要）。
-- 外部 `http(s)` URL は、明示的にナビゲートされた場合にのみ許可されます。
+- ローカルの Canvas コンテンツはカスタムスキームを使用します（ループバックサーバーは不要）。
+- 外部の `http(s)` URL は、明示的に移動した場合にのみ許可されます。
+- 通常のウェブページはレンダリング専用です。エージェントアクションは、アプリ所有の Canvas スキーム、またはアプリが選択した正確なケイパビリティスコープ付き Gateway A2UI ドキュメントからのみ受け付けられます。サブフレーム、リダイレクト、期限切れのケイパビリティ、および変更されたクエリからはアクションを送信できません。
 
-## 関連
+## 関連項目
 
 - [macOS アプリ](/ja-JP/platforms/macos)
 - [WebChat](/ja-JP/web/webchat)

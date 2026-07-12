@@ -6,20 +6,21 @@ read_when:
 summary: Verwenden Sie NVIDIAs OpenAI-kompatible API in OpenClaw
 title: NVIDIA
 x-i18n:
-    generated_at: "2026-07-01T20:17:22Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:43:57Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: 7b738746acead8dcaa74a39b13b4413171c5bf60efa5166dbc9b259d883a4e22
+    source_hash: b5ac7bcc19400a661b2f2861a1dd4d2306c94e445783929e342e9184003314e9
     source_path: providers/nvidia.md
     workflow: 16
 ---
 
-NVIDIA stellt unter `https://integrate.api.nvidia.com/v1` eine OpenAI-kompatible API für
-offene Modelle kostenlos bereit. Authentifizieren Sie sich mit einem API-Schlüssel von
+NVIDIA stellt offene Modelle kostenlos über eine OpenAI-kompatible API unter
+`https://integrate.api.nvidia.com/v1` bereit. Die Authentifizierung erfolgt mit einem API-Schlüssel von
 [build.nvidia.com](https://build.nvidia.com/settings/api-keys). OpenClaw
-setzt den NVIDIA-Provider standardmäßig auf Nemotron 3 Ultra, NVIDIAs Reasoning-Modell mit insgesamt 550B / 55B
-aktiven Parametern für agentische Arbeit mit langem Kontext.
+verwendet für den NVIDIA-Provider standardmäßig Nemotron 3 Ultra, NVIDIAs Reasoning-Modell mit insgesamt 550B / 55B
+aktiven Parametern für agentische Aufgaben mit langem Kontext.
 
 ## Erste Schritte
 
@@ -40,16 +41,16 @@ aktiven Parametern für agentische Arbeit mit langem Kontext.
   </Step>
 </Steps>
 
-<Warning>
-Wenn Sie `--nvidia-api-key` anstelle der Umgebungsvariable übergeben, landet der Wert im Shell-Verlauf
-und in der `ps`-Ausgabe. Bevorzugen Sie nach Möglichkeit die Umgebungsvariable `NVIDIA_API_KEY`.
-</Warning>
-
-Für eine nicht interaktive Einrichtung können Sie den Schlüssel auch direkt übergeben:
+Übergeben Sie den Schlüssel für eine nicht interaktive Einrichtung direkt:
 
 ```bash
 openclaw onboard --auth-choice nvidia-api-key --nvidia-api-key "nvapi-..."
 ```
+
+<Warning>
+Mit `--nvidia-api-key` gelangt der Schlüssel in den Shell-Verlauf und die Ausgabe von `ps`. Verwenden Sie nach Möglichkeit
+die Umgebungsvariable `NVIDIA_API_KEY`.
+</Warning>
 
 ## Konfigurationsbeispiel
 
@@ -74,72 +75,85 @@ openclaw onboard --auth-choice nvidia-api-key --nvidia-api-key "nvapi-..."
 
 ## Hervorgehobener Katalog
 
-Wenn ein NVIDIA-API-Schlüssel konfiguriert ist, versuchen die OpenClaw-Einrichtungs- und Modellauswahlpfade,
+Wenn ein NVIDIA-API-Schlüssel konfiguriert ist, rufen die Einrichtungs- und Modellauswahlpfade
 NVIDIAs öffentlichen Katalog hervorgehobener Modelle von
-`https://assets.ngc.nvidia.com/products/api-catalog/featured-models.json` zu verwenden, und
-speichern das bewertete Ergebnis für 24 Stunden im Cache. Neue hervorgehobene Modelle von build.nvidia.com
-erscheinen dadurch in Einrichtungs- und Modellauswahloberflächen, ohne auf ein
-OpenClaw-Release warten zu müssen. Wenn der Live-Feed verfügbar ist, ist das erste zurückgegebene Modell
-die Standardoption, die während der NVIDIA-Einrichtung angezeigt wird.
+`https://assets.ngc.nvidia.com/products/api-catalog/featured-models.json` ab und
+speichern das Ergebnis 24 Stunden lang im Cache (die ersten 32 Einträge, als Zeilen mit Freitexteingabe
+importiert). Neue hervorgehobene Modelle von build.nvidia.com erscheinen daher in den Einrichtungs- und
+Modellauswahloberflächen, ohne dass auf eine OpenClaw-Veröffentlichung gewartet werden muss. Wenn der
+Live-Feed verfügbar ist, ist das erste zurückgegebene Modell während der NVIDIA-Einrichtung
+vorausgewählt.
 
 Der Abruf verwendet eine feste HTTPS-Host-Richtlinie für `assets.ngc.nvidia.com`. Wenn kein
-NVIDIA-API-Schlüssel konfiguriert ist oder wenn dieser öffentliche Katalog nicht verfügbar oder
-fehlerhaft ist, fällt OpenClaw auf den gebündelten Katalog und den unten aufgeführten gebündelten Standard zurück.
+NVIDIA-API-Schlüssel konfiguriert oder der Feed nicht verfügbar beziehungsweise fehlerhaft ist,
+greift OpenClaw auf den unten aufgeführten integrierten Katalog und Standardwert zurück.
 
 ## Nemotron 3 Ultra
 
-Nemotron 3 Ultra ist das Standardmodell von NVIDIA in OpenClaw. NVIDIAs Build-Seite für
+Nemotron 3 Ultra ist das standardmäßige NVIDIA-Modell in OpenClaw. NVIDIAs Build-Seite für
 [`nvidia/nemotron-3-ultra-550b-a55b`](https://build.nvidia.com/nvidia/nemotron-3-ultra-550b-a55b)
-führt es als verfügbaren kostenlosen Endpunkt mit einer 1M-Token-Kontextspezifikation auf.
-Der gebündelte Katalog verzeichnet eine maximale Ausgabe von 16.384 Tokens, um NVIDIAs aktueller
-OpenAI-kompatibler Beispielanforderung für den gehosteten Endpunkt zu entsprechen.
+führt es als verfügbaren kostenlosen Endpunkt mit einer Kontextangabe von 1M Token auf.
 
-Verwenden Sie Ultra als NVIDIA-Standard mit den höchsten Fähigkeiten. Behalten Sie Super ausgewählt, wenn
-Sie die kleinere Nemotron-3-Option wünschen, oder wählen Sie eines der Drittanbietermodelle,
-die in NVIDIAs Katalog gehostet werden, wenn deren Kontext, Latenz oder Verhalten besser passt.
-Die gebündelte Ultra-Zeile sendet standardmäßig `chat_template_kwargs.enable_thinking: false` und
-`force_nonempty_content: true`, damit normale Chat-Ausgaben in der sichtbaren Antwort bleiben,
-anstatt Reasoning-Text offenzulegen.
+Die integrierte Ultra-Zeile sendet standardmäßig
+`chat_template_kwargs: { enable_thinking: false, force_nonempty_content: true }`,
+damit die normale Chat-Ausgabe in der sichtbaren Antwort verbleibt, anstatt
+Reasoning-Text offenzulegen.
 
-## Gebündelter Fallback-Katalog
+Verwenden Sie Ultra als leistungsfähigste NVIDIA-Standardoption. Lassen Sie Super ausgewählt, wenn
+Sie die kleinere Nemotron-3-Option wünschen, oder wählen Sie eines der Drittanbietermodelle
+aus NVIDIAs Katalog, wenn dessen Kontext, Latenz oder Verhalten besser geeignet ist.
 
-| Modell-Ref                                 | Name                         | Kontext   | Maximale Ausgabe | Hinweise                                |
-| ------------------------------------------ | ---------------------------- | --------- | ---------------- | --------------------------------------- |
-| `nvidia/nvidia/nemotron-3-ultra-550b-a55b` | NVIDIA Nemotron 3 Ultra 550B | 1,000,000 | 16,384           | Standard                                |
-| `nvidia/nvidia/nemotron-3-super-120b-a12b` | NVIDIA Nemotron 3 Super 120B | 1,048,576 | 8,192            | Hervorgehobener Fallback                |
-| `nvidia/moonshotai/kimi-k2.5`              | Kimi K2.5                    | 262,144   | 8,192            | Hervorgehobener Fallback                |
-| `nvidia/minimaxai/minimax-m2.7`            | Minimax M2.7                 | 196,608   | 8,192            | Hervorgehobener Fallback                |
-| `nvidia/z-ai/glm-5.1`                      | GLM 5.1                      | 202,752   | 8,192            | Hervorgehobener Fallback                |
-| `nvidia/minimaxai/minimax-m2.5`            | MiniMax M2.5                 | 196,608   | 8,192            | Veraltet, Upgrade-Kompatibilität        |
-| `nvidia/z-ai/glm5`                         | GLM-5                        | 202,752   | 8,192            | Veraltet, Upgrade-Kompatibilität        |
+## Integrierter Fallback-Katalog
+
+Die auswählbaren integrierten Zeilen sind eine Momentaufnahme von NVIDIAs Katalog hervorgehobener Modelle. Veraltete
+Kompatibilitätszeilen bleiben über ihre exakte Referenz auflösbar, werden jedoch nicht in der
+Modellauswahl angezeigt.
+
+| Modellreferenz                             | Name                  | Kontext   | Max. Ausgabe |
+| ------------------------------------------ | --------------------- | --------- | ------------ |
+| `nvidia/nvidia/nemotron-3-ultra-550b-a55b` | Nemotron 3 Ultra 550B | 1,048,576 | 8,192        |
+| `nvidia/nvidia/nemotron-3-super-120b-a12b` | Nemotron 3 Super 120B | 1,000,000 | 8,192        |
+| `nvidia/z-ai/glm-5.2`                      | GLM 5.2               | 202,752   | 8,192        |
+| `nvidia/moonshotai/kimi-k2.6`              | Kimi K2.6             | 262,144   | 8,192        |
+| `nvidia/minimaxai/minimax-m3`              | Minimax M3            | 196,608   | 8,192        |
+| `nvidia/deepseek-ai/deepseek-v4-pro`       | DeepSeek V4 Pro       | 262,144   | 16,384       |
+| `nvidia/qwen/qwen3.5-397b-a17b`            | Qwen3.5 397B A17B     | 262,144   | 16,384       |
+
+Der vollständige Kompatibilitätskatalog enthält für bestehende Konfigurationen außerdem weiterhin diese
+veröffentlichten Referenzen: `nvidia/moonshotai/kimi-k2.5`, `nvidia/z-ai/glm-5.1`,
+`nvidia/minimaxai/minimax-m2.5`, `nvidia/z-ai/glm5` und
+`nvidia/minimaxai/minimax-m2.7`. Sie bleiben über ihre exakte Referenz verfügbar, erscheinen jedoch
+nie im Onboarding oder in der Modellauswahl.
 
 ## Erweiterte Konfiguration
 
 <AccordionGroup>
-  <Accordion title="Verhalten zur automatischen Aktivierung">
-    Der Provider wird automatisch aktiviert, wenn die Umgebungsvariable `NVIDIA_API_KEY` gesetzt ist.
-    Über den Schlüssel hinaus ist keine explizite Provider-Konfiguration erforderlich.
+  <Accordion title="Automatische Aktivierung">
+    Der Provider wird automatisch aktiviert, wenn die Umgebungsvariable `NVIDIA_API_KEY`
+    gesetzt ist oder während des Onboardings ein Schlüssel gespeichert wurde. Über den Schlüssel hinaus ist keine
+    explizite Provider-Konfiguration erforderlich.
   </Accordion>
 
   <Accordion title="Katalog und Preise">
-    OpenClaw bevorzugt NVIDIAs öffentlichen Katalog hervorgehobener Modelle, wenn NVIDIA-Authentifizierung
-    konfiguriert ist, und speichert ihn für 24 Stunden im Cache. Der gebündelte Fallback-Katalog ist statisch
-    und behält veraltete ausgelieferte Refs für Upgrade-Kompatibilität bei. Kosten sind im Quellcode standardmäßig
-    auf `0` gesetzt, da NVIDIA derzeit kostenlosen API-Zugriff für die
-    aufgeführten Modelle anbietet.
+    OpenClaw bevorzugt NVIDIAs öffentlichen Katalog hervorgehobener Modelle, wenn die NVIDIA-Authentifizierung
+    konfiguriert ist, und speichert ihn 24 Stunden lang im Cache. Der integrierte auswählbare Fallback ist eine
+    statische Momentaufnahme von NVIDIAs Katalog hervorgehobener Modelle; veraltete Kompatibilitätszeilen,
+    die nur über exakte Referenzen verfügbar sind, werden in der Modellauswahl ausgeblendet. Die Kosten sind im
+    Quellcode standardmäßig auf `0` gesetzt, da NVIDIA derzeit kostenlosen API-Zugriff für die aufgeführten Modelle anbietet.
   </Accordion>
 
   <Accordion title="OpenAI-kompatibler Endpunkt">
-    NVIDIA verwendet den standardmäßigen `/v1`-Completions-Endpunkt. Alle OpenAI-kompatiblen
-    Tools sollten mit der NVIDIA-Basis-URL sofort funktionieren.
+    OpenClaw kommuniziert mit NVIDIA über den Adapter `openai-completions` und die
+    standardmäßige Chat-Completions-Route `/v1`. Alle OpenAI-kompatiblen Werkzeuge sollten
+    mit der NVIDIA-Basis-URL ohne weitere Konfiguration funktionieren.
   </Accordion>
 
-  <Accordion title="Nemotron 3 Ultra Reasoning-Parameter">
-    NVIDIAs Ultra-Beispielanforderung verwendet `chat_template_kwargs.enable_thinking`
-    und `reasoning_budget` für Reasoning-Ausgaben. OpenClaws gebündelte Ultra-Zeile
-    deaktiviert Template-Thinking standardmäßig für normale Chat-Nutzung. Wenn Sie
-    NVIDIA-Reasoning-Ausgaben aktivieren oder andere NVIDIA-spezifische Anforderungsfelder
-    erzwingen müssen, setzen Sie modellspezifische Parameter und beschränken Sie Provider-spezifische Overrides auf
+  <Accordion title="Reasoning-Parameter für Nemotron 3 Ultra">
+    NVIDIAs Ultra-Beispielanfrage verwendet `chat_template_kwargs.enable_thinking`
+    und `reasoning_budget` für die Reasoning-Ausgabe. Die integrierte Ultra-Zeile von OpenClaw
+    deaktiviert Template-Thinking standardmäßig für die normale Chat-Nutzung. Wenn Sie die
+    NVIDIA-Reasoning-Ausgabe aktivieren oder andere NVIDIA-spezifische Anfragefelder
+    erzwingen müssen, legen Sie modellspezifische Parameter fest und beschränken Sie Provider-spezifische Überschreibungen auf
     das NVIDIA-Modell:
 
     ```json5
@@ -159,16 +173,20 @@ anstatt Reasoning-Text offenzulegen.
     }
     ```
 
-    `params.extra_body` ist der finale OpenAI-kompatible Request-Body-Override, verwenden Sie ihn daher
-    nur für Felder, die NVIDIA für den ausgewählten Endpunkt dokumentiert.
+    `params.chat_template_kwargs` wird mit bereits in der Anfrage vorhandenen
+    `chat_template_kwargs` zusammengeführt, anstatt das gesamte Objekt zu ersetzen.
+    `params.extra_body` ist die abschließende OpenAI-kompatible Überschreibung des Anfragekörpers
+    und überschreibt kollidierende Nutzlastschlüssel. Verwenden Sie es daher nur für Felder, die NVIDIA
+    für den ausgewählten Endpunkt dokumentiert.
 
   </Accordion>
 
   <Accordion title="Langsame Antworten benutzerdefinierter Provider">
-    Einige von NVIDIA gehostete benutzerdefinierte Modelle können länger brauchen als der standardmäßige Leerlauf-Watchdog
-    des Modells, bevor sie den ersten Antwort-Chunk ausgeben. Erhöhen Sie für benutzerdefinierte NVIDIA-Provider-Einträge
-    das Provider-Timeout, anstatt das Timeout der gesamten Agent-Laufzeit
-    zu erhöhen:
+    Einige von NVIDIA gehostete benutzerdefinierte Modelle benötigen möglicherweise länger als der standardmäßige Modell-Inaktivitäts-Watchdog von ~120s,
+    bevor sie das erste Antwortfragment ausgeben. Erhöhen Sie für benutzerdefinierte
+    NVIDIA-Provider-Einträge den Provider-Timeout statt des Timeouts der gesamten
+    Agent-Laufzeit; `timeoutSeconds` gilt für Provider-HTTP-Anfragen und
+    erhöht die Obergrenze des Inaktivitäts-/Stream-Watchdogs für diesen Provider:
 
     ```json5
     {
@@ -198,18 +216,17 @@ anstatt Reasoning-Text offenzulegen.
 </AccordionGroup>
 
 <Tip>
-NVIDIA-Modelle können derzeit kostenlos genutzt werden. Prüfen Sie
-[build.nvidia.com](https://build.nvidia.com/) auf aktuelle Verfügbarkeit und
-Details zu Rate Limits.
+NVIDIA-Modelle können derzeit kostenlos verwendet werden. Aktuelle Informationen zur Verfügbarkeit und
+zu Ratenbegrenzungen finden Sie unter [build.nvidia.com](https://build.nvidia.com/).
 </Tip>
 
-## Verwandt
+## Verwandte Themen
 
 <CardGroup cols={2}>
   <Card title="Modellauswahl" href="/de/concepts/model-providers" icon="layers">
-    Provider, Modell-Refs und Failover-Verhalten auswählen.
+    Auswahl von Providern, Modellreferenzen und Failover-Verhalten.
   </Card>
   <Card title="Konfigurationsreferenz" href="/de/gateway/configuration-reference" icon="gear">
-    Vollständige Konfigurationsreferenz für Agents, Modelle und Provider.
+    Vollständige Konfigurationsreferenz für Agenten, Modelle und Provider.
   </Card>
 </CardGroup>

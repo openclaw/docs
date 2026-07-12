@@ -1,122 +1,105 @@
 ---
 read_when:
     - Implementando o painel Canvas do macOS
-    - Adição de controles de agente para o espaço de trabalho visual
+    - Adição de controles do agente ao espaço de trabalho visual
     - Depuração de carregamentos de canvas no WKWebView
-summary: Painel Canvas controlado por agente incorporado via WKWebView + esquema de URL personalizado
-title: Tela
+summary: Painel Canvas controlado pelo agente, incorporado via WKWebView + esquema de URL personalizado
+title: Canvas
 x-i18n:
-    generated_at: "2026-06-28T00:12:30Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:21:22Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: 45f0e1b27fbe58e85d57dbf35a6eb44d47df30569b8b10ed24e8bd240b4b5686
+    source_hash: 21955803c39debfbc34851a0c40a69c1f3c6ca009526d9929a4c429ad0b09084
     source_path: platforms/mac/canvas.md
     workflow: 16
 ---
 
-O app para macOS incorpora um **painel Canvas** controlado por agente usando `WKWebView`. Ele
-é um espaço de trabalho visual leve para HTML/CSS/JS, A2UI e pequenas superfícies
-de UI interativas.
+O app para macOS incorpora um **painel Canvas** controlado pelo agente usando `WKWebView`, um
+espaço de trabalho visual leve para HTML/CSS/JS, A2UI e pequenas
+interfaces de usuário interativas.
 
 ## Onde o Canvas fica
 
-O estado do Canvas é armazenado em Application Support:
+O estado do Canvas é armazenado no Application Support:
 
 - `~/Library/Application Support/OpenClaw/canvas/<session>/...`
 
-O painel Canvas serve esses arquivos por meio de um **esquema de URL personalizado**:
+O painel Canvas disponibiliza esses arquivos por meio de um esquema de URL personalizado,
+`openclaw-canvas://<session>/<path>`:
 
-- `openclaw-canvas://<session>/<path>`
+- `openclaw-canvas://main/` -> `<canvasRoot>/main/index.html`
+- `openclaw-canvas://main/assets/app.css` -> `<canvasRoot>/main/assets/app.css`
+- `openclaw-canvas://main/widgets/todo/` -> `<canvasRoot>/main/widgets/todo/index.html`
 
-Exemplos:
-
-- `openclaw-canvas://main/` → `<canvasRoot>/main/index.html`
-- `openclaw-canvas://main/assets/app.css` → `<canvasRoot>/main/assets/app.css`
-- `openclaw-canvas://main/widgets/todo/` → `<canvasRoot>/main/widgets/todo/index.html`
-
-Se não houver `index.html` na raiz, o app mostra uma **página de estrutura inicial integrada**.
+Se não houver um `index.html` na raiz, o app exibirá uma página de estrutura integrada.
 
 ## Comportamento do painel
 
-- Painel sem bordas, redimensionável e ancorado perto da barra de menus (ou do cursor do mouse).
-- Lembra o tamanho/posição por sessão.
-- Recarrega automaticamente quando os arquivos locais do canvas mudam.
+- Painel sem bordas e redimensionável, ancorado próximo à barra de menus (ou ao cursor do mouse).
+- Memoriza o tamanho e a posição de cada sessão.
+- Recarrega automaticamente quando os arquivos locais do Canvas são alterados.
 - Apenas um painel Canvas fica visível por vez (a sessão é alternada conforme necessário).
 
-O Canvas pode ser desabilitado em Settings → **Allow Canvas**. Quando desabilitado, os comandos de
-nó do canvas retornam `CANVAS_DISABLED`.
+O Canvas pode ser desativado em Settings -> **Allow Canvas**. Quando desativado,
+os comandos do Node para o Canvas retornam `CANVAS_DISABLED`.
 
 ## Superfície da API do agente
 
-O Canvas é exposto pelo **Gateway WebSocket**, então o agente pode:
-
-- mostrar/ocultar o painel
-- navegar para um caminho ou URL
-- avaliar JavaScript
-- capturar uma imagem de snapshot
-
-Exemplos de CLI:
+O Canvas é disponibilizado por meio do WebSocket do Gateway, permitindo que o agente mostre ou oculte o
+painel, navegue até um caminho ou uma URL, avalie JavaScript e capture uma
+imagem de snapshot:
 
 ```bash
 openclaw nodes canvas present --node <id>
-openclaw nodes canvas navigate --node <id> --url "/"
+openclaw nodes canvas navigate --node <id> "/"
 openclaw nodes canvas eval --node <id> --js "document.title"
 openclaw nodes canvas snapshot --node <id>
 ```
 
-Observações:
+`canvas.navigate` aceita caminhos locais do Canvas, URLs `http(s)` e URLs `file://`.
+Passar `"/"` exibe a estrutura local ou o `index.html`.
 
-- `canvas.navigate` aceita **caminhos locais do canvas**, URLs `http(s)` e URLs `file://`.
-- Se você passar `"/"`, o Canvas mostra a estrutura inicial local ou `index.html`.
+Os destinos hospedados pelo Gateway em `/__openclaw__/canvas/` e
+`/__openclaw__/a2ui/` são resolvidos por meio da URL atual do Canvas com escopo
+da sessão do Node. O app atualiza essa capacidade de curta duração antes da navegação;
+você não precisa criar nem copiar uma URL de capacidade por conta própria.
 
 ## A2UI no Canvas
 
-A2UI é hospedado pelo host de canvas do Gateway e renderizado dentro do painel Canvas.
-Quando o Gateway anuncia um host de Canvas, o app para macOS navega automaticamente para a
-página de host do A2UI na primeira abertura.
+A A2UI é hospedada pelo host do Canvas no Gateway e renderizada dentro do painel
+Canvas. Quando o Gateway anuncia um host do Canvas, o app para macOS navega automaticamente
+até a página do host da A2UI na primeira abertura.
 
-URL padrão do host A2UI:
+A URL anunciada tem escopo de capacidade, por exemplo,
+`http://<gateway-host>:18789/__openclaw__/cap/<token>/__openclaw__/a2ui/?platform=macos`.
+Trate-a como credenciais efêmeras, não como um link estável.
 
-```
-http://<gateway-host>:18789/__openclaw__/a2ui/
-```
+### Comandos da A2UI (v0.8)
 
-### Comandos A2UI (v0.8)
-
-Atualmente, o Canvas aceita mensagens servidor→cliente **A2UI v0.8**:
-
-- `beginRendering`
-- `surfaceUpdate`
-- `dataModelUpdate`
-- `deleteSurface`
-
-`createSurface` (v0.9) não é compatível.
-
-Exemplo de CLI:
+O Canvas aceita mensagens A2UI v0.8 do servidor para o cliente: `beginRendering`,
+`surfaceUpdate`, `dataModelUpdate`, `deleteSurface`. `createSurface` (v0.9) ainda
+não é compatível.
 
 ```bash
 cat > /tmp/a2ui-v0.8.jsonl <<'EOFA2'
-{"surfaceUpdate":{"surfaceId":"main","components":[{"id":"root","component":{"Column":{"children":{"explicitList":["title","content"]}}}},{"id":"title","component":{"Text":{"text":{"literalString":"Canvas (A2UI v0.8)"},"usageHint":"h1"}}},{"id":"content","component":{"Text":{"text":{"literalString":"If you can read this, A2UI push works."},"usageHint":"body"}}}]}}
+{"surfaceUpdate":{"surfaceId":"main","components":[{"id":"root","component":{"Column":{"children":{"explicitList":["title","content"]}}}},{"id":"title","component":{"Text":{"text":{"literalString":"Canvas (A2UI v0.8)"},"usageHint":"h1"}}},{"id":"content","component":{"Text":{"text":{"literalString":"Se você consegue ler isto, o envio por push da A2UI funciona."},"usageHint":"body"}}}]}}
 {"beginRendering":{"surfaceId":"main","root":"root"}}
 EOFA2
 
 openclaw nodes canvas a2ui push --jsonl /tmp/a2ui-v0.8.jsonl --node <id>
 ```
 
-Teste rápido:
+Teste rápido de sanidade:
 
 ```bash
-openclaw nodes canvas a2ui push --node <id> --text "Hello from A2UI"
+openclaw nodes canvas a2ui push --node <id> --text "Olá da A2UI"
 ```
 
-## Acionando execuções de agente pelo Canvas
+## Acionamento de execuções do agente pelo Canvas
 
-O Canvas pode acionar novas execuções de agente por meio de links profundos:
-
-- `openclaw://agent?...`
-
-Exemplo (em JS):
+O Canvas pode acionar novas execuções do agente por meio de links profundos `openclaw://agent?...`:
 
 ```js
 window.location.href = "openclaw://agent?message=Review%20this%20design";
@@ -124,24 +107,30 @@ window.location.href = "openclaw://agent?message=Review%20this%20design";
 
 Parâmetros de consulta compatíveis:
 
-- `message`: prompt do agente preenchido previamente.
-- `sessionKey`: identificador estável de sessão.
-- `thinking`: perfil de raciocínio opcional.
-- `deliver`, `to` ou `channel`: destino de entrega.
-- `timeoutSeconds`: tempo limite opcional da execução.
-- `key`: token de segurança gerado pelo app para chamadores locais confiáveis.
+| Parâmetro                  | Significado                                               |
+| -------------------------- | --------------------------------------------------------- |
+| `message`                  | Prompt do agente preenchido previamente.                  |
+| `sessionKey`               | Identificador estável da sessão.                          |
+| `thinking`                 | Perfil de raciocínio opcional.                            |
+| `deliver`, `to`, `channel` | Destino da entrega.                                       |
+| `timeoutSeconds`           | Tempo limite opcional da execução.                        |
+| `key`                      | Token de segurança gerado pelo app para chamadores locais confiáveis. |
 
-O app solicita confirmação, a menos que uma chave válida seja fornecida. Links sem chave
-mostram a mensagem e a URL antes da aprovação e ignoram campos de roteamento de entrega;
-links com chave usam o caminho normal de execução do Gateway.
+O app solicita confirmação, a menos que uma chave válida seja fornecida. Links sem
+chave mostram a mensagem e a URL antes da aprovação e ignoram os campos de roteamento
+da entrega; links com chave usam o caminho normal de execução do Gateway.
 
 ## Observações de segurança
 
-- O esquema Canvas bloqueia travessia de diretórios; os arquivos devem ficar dentro da raiz da sessão.
-- Conteúdo local do Canvas usa um esquema personalizado (nenhum servidor de loopback necessário).
-- URLs externas `http(s)` são permitidas apenas quando navegadas explicitamente.
+- O esquema do Canvas bloqueia a travessia de diretórios; os arquivos devem residir na raiz da sessão.
+- O conteúdo local do Canvas usa um esquema personalizado (sem necessidade de servidor de loopback).
+- URLs `http(s)` externas são permitidas apenas quando acessadas explicitamente por navegação.
+- Páginas da Web comuns servem apenas para renderização. As ações do agente são aceitas somente pelo
+  esquema do Canvas pertencente ao app ou pelo documento A2UI exato do Gateway com escopo de capacidade
+  selecionado pelo app; subframes, redirecionamentos, capacidades expiradas e consultas
+  alteradas não podem despachar ações.
 
-## Relacionados
+## Relacionado
 
-- [app para macOS](/pt-BR/platforms/macos)
+- [App para macOS](/pt-BR/platforms/macos)
 - [WebChat](/pt-BR/web/webchat)

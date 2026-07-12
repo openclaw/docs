@@ -1,30 +1,39 @@
 ---
 read_when:
-    - 你正在安裝、設定或稽核 anthropic Plugin
-summary: 為 OpenClaw 新增 Anthropic 模型供應商支援。
-title: Anthropic Plugin
+    - 你正在安裝、設定或稽核 anthropic 外掛
+summary: Anthropic 模型、Claude 命令列介面及原生 Claude 工作階段目錄。
+title: Anthropic 外掛
 x-i18n:
-    generated_at: "2026-05-02T20:54:16Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:44:47Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: 7aa23ae2712061fc3f8e1fbb642d2cbfa2c40675fc5e41633d33619f41182499
+    source_hash: a482afe12e9e5b17d1ee88bf1d5515c436e0a8dab56418cfb631e35f5cf0279d
     source_path: plugins/reference/anthropic.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-# Anthropic Plugin
+# Anthropic 外掛
 
-為 OpenClaw 新增 Anthropic 模型供應商支援。
+Anthropic 模型、Claude 命令列介面，以及原生 Claude 工作階段目錄。
 
-## 發佈
+## 發佈方式
 
 - 套件：`@openclaw/anthropic-provider`
-- 安裝路徑：包含在 OpenClaw 中
+- 安裝方式：已包含在 OpenClaw 中
 
-## 表面
+## 介面
 
-providers: anthropic; contracts: mediaUnderstandingProviders
+提供者：anthropic；契約：mediaUnderstandingProviders、usageProviders
+
+<!-- openclaw-plugin-reference:manual-start -->
+
+節點命令：anthropic.claude.sessions.list.v1、
+anthropic.claude.sessions.read.v1；契約：mediaUnderstandingProviders、
+usageProviders
+
+<!-- openclaw-plugin-reference:manual-end -->
 
 ## 相關文件
 

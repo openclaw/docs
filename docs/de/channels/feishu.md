@@ -1,59 +1,63 @@
 ---
 read_when:
-    - Sie möchten einen Feishu/Lark-Bot verbinden
+    - Sie möchten einen Feishu-/Lark-Bot verbinden
     - Sie konfigurieren den Feishu-Kanal
 summary: Übersicht, Funktionen und Konfiguration des Feishu-Bots
 title: Feishu
 x-i18n:
-    generated_at: "2026-06-30T13:56:13Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:59:35Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: 262dda9739de284e32b7e87edc336bdb5d16651dbf37148bad7593f3a6a6b951
+    source_hash: 54f4d8a73fb1e7c2af970fa7dc71f953074aa49c4bc4aed0d24671c74a84ebe9
     source_path: channels/feishu.md
     workflow: 16
 ---
 
-Feishu/Lark ist eine All-in-one-Kollaborationsplattform, auf der Teams chatten, Dokumente teilen, Kalender verwalten und gemeinsam Arbeit erledigen.
+OpenClaw verbindet sich über das offizielle Plugin `@openclaw/feishu` mit Feishu/Lark (der All-in-One-Plattform für Zusammenarbeit): Bot-Direktnachrichten, Gruppenchats, Streaming-Antworten in Karten sowie Tools für Feishu-Dokumente, -Wikis, -Drive und Bitable.
 
-**Status:** produktionsreif für Bot-Direktnachrichten und Gruppenchats. WebSocket ist der Standardmodus; Webhook-Modus ist optional.
-
----
+**Status:** produktionsbereit für Bot-Direktnachrichten und Gruppenchats. WebSocket ist der standardmäßige Ereignistransport (keine öffentliche URL erforderlich); der Webhook-Modus ist optional.
 
 ## Schnellstart
 
 <Note>
-Erfordert OpenClaw 2026.5.29 oder höher. Führen Sie `openclaw --version` aus, um die Version zu prüfen. Aktualisieren Sie mit `openclaw update`.
+Erfordert OpenClaw 2026.5.29 oder höher. Führen Sie zum Prüfen `openclaw --version` aus. Aktualisieren Sie mit `openclaw update`.
 </Note>
 
 <Steps>
-  <Step title="Führen Sie den Einrichtungsassistenten für den Kanal aus">
+  <Step title="Assistenten zur Kanaleinrichtung ausführen">
   ```bash
   openclaw channels login --channel feishu
   ```
-  Wählen Sie die manuelle Einrichtung, um eine App ID und ein App Secret aus der Feishu Open Platform einzufügen, oder wählen Sie die QR-Einrichtung, um automatisch einen Bot zu erstellen. Wenn die inländische Feishu-Mobile-App nicht auf den QR-Code reagiert, führen Sie die Einrichtung erneut aus und wählen Sie die manuelle Einrichtung.
-  </Step>
-  
-  <Step title="Starten Sie nach Abschluss der Einrichtung den Gateway neu, um die Änderungen anzuwenden">
+  Dadurch wird das Plugin `@openclaw/feishu` installiert, falls es fehlt. Anschließend führt Sie der Assistent durch die Einrichtung:
+
+- **Manuelle Einrichtung**: Fügen Sie eine App-ID und ein App Secret von Feishu Open Platform (`https://open.feishu.cn`) oder Lark Developer (`https://open.larksuite.com`) ein.
+- **QR-Einrichtung**: Scannen Sie einen QR-Code in der Feishu-App, um automatisch einen Bot zu erstellen. Dieser Ablauf beschränkt Direktnachrichten auf Ihr eigenes Konto (`dmPolicy: "allowlist"` mit Ihrer `open_id`).
+
+Der Assistent fragt außerdem nach der API-Domain (Feishu oder Lark) und der Gruppenrichtlinie. Wenn die chinesische Feishu-Mobil-App nicht auf den QR-Code reagiert, führen Sie die Einrichtung erneut aus und wählen Sie die manuelle Einrichtung.
+</Step>
+
+  <Step title="Nach Abschluss der Einrichtung den Gateway neu starten, um die Änderungen anzuwenden">
   ```bash
   openclaw gateway restart
   ```
   </Step>
 </Steps>
 
----
-
 ## Zugriffskontrolle
 
 ### Direktnachrichten
 
-Konfigurieren Sie `dmPolicy`, um zu steuern, wer dem Bot Direktnachrichten senden kann:
+Konfigurieren Sie `channels.feishu.dmPolicy` (Standard: `pairing`), um festzulegen, wer dem Bot Direktnachrichten senden darf:
 
-- `"pairing"` - unbekannte Benutzer erhalten einen Kopplungscode; Genehmigung per CLI
-- `"allowlist"` - nur in `allowFrom` aufgeführte Benutzer können chatten
-- `"open"` - öffentliche Direktnachrichten nur zulassen, wenn `allowFrom` `"*"` enthält; bei einschränkenden Einträgen können nur passende Benutzer chatten
+| Wert          | Verhalten                                                                                                                        |
+| ------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| `"pairing"`   | Unbekannte Benutzer erhalten einen Kopplungscode; Genehmigung über die CLI                                                       |
+| `"allowlist"` | Nur in `allowFrom` aufgeführte Benutzer können chatten                                                                            |
+| `"open"`      | Öffentliche Direktnachrichten; die Konfigurationsvalidierung erfordert, dass `allowFrom` `"*"` enthält. Einträge ohne Platzhalter schränken den Zugriff weiterhin ein |
 
-**Eine Kopplungsanfrage genehmigen:**
+**Kopplungsanfrage genehmigen:**
 
 ```bash
 openclaw pairing list feishu
@@ -62,40 +66,35 @@ openclaw pairing approve feishu <CODE>
 
 ### Gruppenchats
 
-**Gruppenrichtlinie** (`channels.feishu.groupPolicy`):
+**Gruppenrichtlinie** (`channels.feishu.groupPolicy`, Standard: `allowlist`):
 
-| Wert          | Verhalten                                                                                    |
-| ------------- | -------------------------------------------------------------------------------------------- |
-| `"open"`      | Auf alle Nachrichten in Gruppen antworten                                                    |
-| `"allowlist"` | Nur auf Gruppen in `groupAllowFrom` oder explizit unter `groups.<chat_id>` konfigurierte Gruppen antworten |
-| `"disabled"`  | Alle Gruppennachrichten deaktivieren; explizite `groups.<chat_id>`-Einträge überschreiben dies nicht |
+| Wert          | Verhalten                                                                                              |
+| ------------- | ------------------------------------------------------------------------------------------------------ |
+| `"open"`      | Auf alle Nachrichten in Gruppen antworten                                                              |
+| `"allowlist"` | Nur auf Gruppen in `groupAllowFrom` oder ausdrücklich unter `groups.<chat_id>` konfigurierte Gruppen antworten |
+| `"disabled"`  | Alle Gruppennachrichten deaktivieren; ausdrückliche Einträge unter `groups.<chat_id>` setzen dies nicht außer Kraft |
 
-Standard: `allowlist`
+**Erwähnung erforderlich** (`channels.feishu.requireMention`):
 
-**Erwähnungsanforderung** (`channels.feishu.requireMention`):
+- Standard: @Erwähnung erforderlich, außer wenn die effektive Gruppenrichtlinie `"open"` lautet; dort ist der Standardwert `false`, damit Nachrichten ohne mögliche Erwähnungen (beispielsweise Bilder) den Agenten dennoch erreichen.
+- Legen Sie ausdrücklich `true` oder `false` fest, um den Standardwert zu überschreiben; gruppenspezifische Einstellung: `channels.feishu.groups.<chat_id>.requireMention`.
+- Die ausschließlich für Rundsendungen vorgesehenen Erwähnungen `@all` und `@_all` gelten nicht als Bot-Erwähnungen. Eine Nachricht, die sowohl `@all` als auch den Bot direkt erwähnt, zählt weiterhin als Bot-Erwähnung.
 
-- `true` - @-Erwähnung erforderlich (Standard)
-- `false` - ohne @-Erwähnung antworten
-- Überschreibung pro Gruppe: `channels.feishu.groups.<chat_id>.requireMention`
-- Reine Broadcast-Erwähnungen `@all` und `@_all` werden nicht als Bot-Erwähnungen behandelt. Eine Nachricht, die sowohl `@all` als auch den Bot direkt erwähnt, zählt dennoch als Bot-Erwähnung.
+## Beispiele für die Gruppenkonfiguration
 
----
-
-## Beispiele für Gruppenkonfiguration
-
-### Alle Gruppen zulassen, keine @-Erwähnung erforderlich
+### Alle Gruppen zulassen, keine @Erwähnung erforderlich
 
 ```json5
 {
   channels: {
     feishu: {
-      groupPolicy: "open",
+      groupPolicy: "open", // requireMention ist unter "open" standardmäßig false
     },
   },
 }
 ```
 
-### Alle Gruppen zulassen, @-Erwähnung weiterhin erforderlich
+### Alle Gruppen zulassen, @Erwähnung weiterhin erforderlich
 
 ```json5
 {
@@ -115,14 +114,14 @@ Standard: `allowlist`
   channels: {
     feishu: {
       groupPolicy: "allowlist",
-      // Group IDs look like: oc_xxx
+      // Gruppen-IDs sehen wie folgt aus: oc_xxx
       groupAllowFrom: ["oc_xxx", "oc_yyy"],
     },
   },
 }
 ```
 
-Im Modus `allowlist` können Sie eine Gruppe auch zulassen, indem Sie einen expliziten `groups.<chat_id>`-Eintrag hinzufügen. Explizite Einträge überschreiben `groupPolicy: "disabled"` nicht. Platzhalter-Standards unter `groups.*` konfigurieren passende Gruppen, lassen Gruppen aber nicht eigenständig zu.
+Im Modus `allowlist` können Sie eine Gruppe auch zulassen, indem Sie einen ausdrücklichen Eintrag unter `groups.<chat_id>` hinzufügen. Ausdrückliche Einträge setzen `groupPolicy: "disabled"` nicht außer Kraft. Platzhalter-Standardwerte unter `groups.*` konfigurieren passende Gruppen, lassen diese jedoch nicht selbstständig zu.
 
 ```json5
 {
@@ -149,7 +148,7 @@ Im Modus `allowlist` können Sie eine Gruppe auch zulassen, indem Sie einen expl
       groupAllowFrom: ["oc_xxx"],
       groups: {
         oc_xxx: {
-          // User open_ids look like: ou_xxx
+          // open_ids von Benutzern sehen wie folgt aus: ou_xxx
           allowFrom: ["ou_user1", "ou_user2"],
         },
       },
@@ -158,7 +157,7 @@ Im Modus `allowlist` können Sie eine Gruppe auch zulassen, indem Sie einen expl
 }
 ```
 
----
+`channels.feishu.groupSenderAllowFrom` legt dieselbe Absender-Zulassungsliste für alle Gruppen fest; ein gruppenspezifisches `allowFrom` hat Vorrang.
 
 <a id="get-groupuser-ids"></a>
 
@@ -166,63 +165,59 @@ Im Modus `allowlist` können Sie eine Gruppe auch zulassen, indem Sie einen expl
 
 ### Gruppen-IDs (`chat_id`, Format: `oc_xxx`)
 
-Öffnen Sie die Gruppe in Feishu/Lark, klicken Sie oben rechts auf das Menüsymbol und gehen Sie zu **Einstellungen**. Die Gruppen-ID (`chat_id`) ist auf der Einstellungsseite aufgeführt.
+Öffnen Sie die Gruppe in Feishu/Lark, klicken Sie oben rechts auf das Menüsymbol und wechseln Sie zu **Settings**. Die Gruppen-ID (`chat_id`) ist auf der Einstellungsseite aufgeführt.
 
 ![Gruppen-ID abrufen](/images/feishu-get-group-id.png)
 
 ### Benutzer-IDs (`open_id`, Format: `ou_xxx`)
 
-Starten Sie den Gateway, senden Sie dem Bot eine Direktnachricht und prüfen Sie anschließend die Logs:
+Starten Sie den Gateway, senden Sie dem Bot eine Direktnachricht und prüfen Sie anschließend die Protokolle:
 
 ```bash
 openclaw logs --follow
 ```
 
-Suchen Sie in der Log-Ausgabe nach `open_id`. Sie können auch ausstehende Kopplungsanfragen prüfen:
+Suchen Sie in der Protokollausgabe nach `open_id`. Sie können auch ausstehende Kopplungsanfragen prüfen:
 
 ```bash
 openclaw pairing list feishu
 ```
 
----
+## Häufig verwendete Befehle
 
-## Häufige Befehle
-
-| Befehl    | Beschreibung                        |
-| --------- | ----------------------------------- |
-| `/status` | Bot-Status anzeigen                 |
-| `/reset`  | Aktuelle Sitzung zurücksetzen       |
-| `/model`  | KI-Modell anzeigen oder wechseln    |
+| Befehl    | Beschreibung                         |
+| --------- | ------------------------------------ |
+| `/status` | Bot-Status anzeigen                  |
+| `/reset`  | Aktuelle Sitzung zurücksetzen        |
+| `/model`  | KI-Modell anzeigen oder wechseln     |
 
 <Note>
-Feishu/Lark unterstützt keine nativen Slash-Befehlsmenüs. Senden Sie diese daher als einfache Textnachrichten.
+Feishu/Lark unterstützt keine nativen Menüs für Slash-Befehle. Senden Sie diese daher als reine Textnachrichten.
 </Note>
-
----
 
 ## Fehlerbehebung
 
 ### Bot antwortet nicht in Gruppenchats
 
 1. Stellen Sie sicher, dass der Bot zur Gruppe hinzugefügt wurde
-2. Stellen Sie sicher, dass Sie den Bot @-erwähnen (standardmäßig erforderlich)
-3. Prüfen Sie, dass `groupPolicy` nicht `"disabled"` ist
-4. Logs prüfen: `openclaw logs --follow`
+2. Stellen Sie sicher, dass Sie den Bot mit @ erwähnen (standardmäßig erforderlich)
+3. Vergewissern Sie sich, dass `groupPolicy` nicht auf `"disabled"` gesetzt ist
+4. Prüfen Sie die Protokolle: `openclaw logs --follow`
 
 ### Bot empfängt keine Nachrichten
 
-1. Stellen Sie sicher, dass der Bot in Feishu Open Platform / Lark Developer veröffentlicht und genehmigt ist
+1. Stellen Sie sicher, dass der Bot in Feishu Open Platform / Lark Developer veröffentlicht und genehmigt wurde
 2. Stellen Sie sicher, dass das Ereignisabonnement `im.message.receive_v1` enthält
-3. Stellen Sie sicher, dass **persistente Verbindung** (WebSocket) ausgewählt ist
-4. Stellen Sie sicher, dass alle erforderlichen Berechtigungsbereiche gewährt sind
+3. Stellen Sie sicher, dass **persistent connection** (WebSocket) ausgewählt ist
+4. Stellen Sie sicher, dass alle erforderlichen Berechtigungsbereiche erteilt wurden
 5. Stellen Sie sicher, dass der Gateway ausgeführt wird: `openclaw gateway status`
-6. Logs prüfen: `openclaw logs --follow`
+6. Prüfen Sie die Protokolle: `openclaw logs --follow`
 
-### QR-Einrichtung reagiert in der Feishu-Mobile-App nicht
+### QR-Einrichtung reagiert in der Feishu-Mobil-App nicht
 
-1. Einrichtung erneut ausführen: `openclaw channels login --channel feishu`
-2. Manuelle Einrichtung wählen
-3. Erstellen Sie in Feishu Open Platform eine selbst erstellte App und kopieren Sie deren App ID und App Secret
+1. Führen Sie die Einrichtung erneut aus: `openclaw channels login --channel feishu`
+2. Wählen Sie die manuelle Einrichtung
+3. Erstellen Sie in Feishu Open Platform eine selbst entwickelte App und kopieren Sie deren App-ID und App Secret
 4. Fügen Sie diese Anmeldedaten in den Einrichtungsassistenten ein
 
 ### App Secret offengelegt
@@ -230,8 +225,6 @@ Feishu/Lark unterstützt keine nativen Slash-Befehlsmenüs. Senden Sie diese dah
 1. Setzen Sie das App Secret in Feishu Open Platform / Lark Developer zurück
 2. Aktualisieren Sie den Wert in Ihrer Konfiguration
 3. Starten Sie den Gateway neu: `openclaw gateway restart`
-
----
 
 ## Erweiterte Konfiguration
 
@@ -246,7 +239,7 @@ Feishu/Lark unterstützt keine nativen Slash-Befehlsmenüs. Senden Sie diese dah
         main: {
           appId: "cli_xxx",
           appSecret: "xxx",
-          name: "Primary bot",
+          name: "Primärer Bot",
           tts: {
             providers: {
               openai: { voice: "shimmer" },
@@ -256,7 +249,7 @@ Feishu/Lark unterstützt keine nativen Slash-Befehlsmenüs. Senden Sie diese dah
         backup: {
           appId: "cli_yyy",
           appSecret: "yyy",
-          name: "Backup bot",
+          name: "Ersatz-Bot",
           enabled: false,
         },
       },
@@ -265,37 +258,35 @@ Feishu/Lark unterstützt keine nativen Slash-Befehlsmenüs. Senden Sie diese dah
 }
 ```
 
-`defaultAccount` steuert, welches Konto verwendet wird, wenn ausgehende APIs kein `accountId` angeben.
-`accounts.<id>.tts` verwendet dieselbe Struktur wie `messages.tts` und wird per Deep-Merge über
-die globale TTS-Konfiguration gelegt. Dadurch können Feishu-Setups mit mehreren Bots gemeinsame Provider-
-Anmeldedaten global halten und nur Stimme, Modell, Persona oder Automodus
-pro Konto überschreiben.
+`defaultAccount` bestimmt, welches Konto verwendet wird, wenn ausgehende APIs keine `accountId` angeben. Kontoeinträge übernehmen Einstellungen der obersten Ebene; die meisten Schlüssel der obersten Ebene können pro Konto überschrieben werden.
+`accounts.<id>.tts` verwendet dieselbe Struktur wie `messages.tts` und wird tief mit der globalen TTS-Konfiguration zusammengeführt. So können Feishu-Konfigurationen mit mehreren Bots gemeinsam genutzte Provider-Anmeldedaten global beibehalten und pro Konto nur Stimme, Modell, Persona oder Automatikmodus überschreiben.
 
 ### Nachrichtenlimits
 
-- `textChunkLimit` - Größe ausgehender Textabschnitte (Standard: `2000` Zeichen)
-- `mediaMaxMb` - Upload-/Download-Limit für Medien (Standard: `30` MB)
+- `textChunkLimit` – Größe ausgehender Textabschnitte (Standard: `4000` Zeichen)
+- `chunkMode` – `"length"` (Standard) teilt am Limit; `"newline"` bevorzugt Zeilenumbrüche
+- `mediaMaxMb` – Limit für das Hoch-/Herunterladen von Medien (Standard: `30` MB)
 
 ### Streaming
 
-Feishu/Lark unterstützt Streaming-Antworten über interaktive Karten. Wenn aktiviert, aktualisiert der Bot die Karte in Echtzeit, während er Text generiert.
+Feishu/Lark unterstützt Streaming-Antworten über interaktive Karten (Card Kit Streaming API). Wenn diese Funktion aktiviert ist, aktualisiert der Bot die Karte während der Texterzeugung in Echtzeit.
 
 ```json5
 {
   channels: {
     feishu: {
-      streaming: true, // enable streaming card output (default: true)
-      blockStreaming: true, // opt into completed-block streaming
+      streaming: true, // Streaming-Kartenausgabe aktivieren (Standard: true)
+      blockStreaming: true, // Streaming abgeschlossener Blöcke aktivieren
     },
   },
 }
 ```
 
-Setzen Sie `streaming: false`, um die vollständige Antwort in einer Nachricht zu senden. `blockStreaming` ist standardmäßig deaktiviert; aktivieren Sie es nur, wenn Sie abgeschlossene Assistentenblöcke vor der endgültigen Antwort ausgeben möchten.
+Legen Sie `streaming: false` fest, um die vollständige Antwort in einer Nachricht zu senden; `renderMode: "raw"` (reiner Text anstelle von Karten) deaktiviert Streaming-Karten ebenfalls. `blockStreaming` ist standardmäßig deaktiviert; aktivieren Sie es nur, wenn abgeschlossene Assistentenblöcke vor der endgültigen Antwort ausgegeben werden sollen.
 
 ### Kontingentoptimierung
 
-Reduzieren Sie die Anzahl der Feishu/Lark-API-Aufrufe mit zwei optionalen Flags:
+Reduzieren Sie die Anzahl der Feishu/Lark-API-Aufrufe mit zwei optionalen Optionen:
 
 - `typingIndicator` (Standard `true`): auf `false` setzen, um Aufrufe für Tippreaktionen zu überspringen
 - `resolveSenderNames` (Standard `true`): auf `false` setzen, um Abfragen von Absenderprofilen zu überspringen
@@ -311,11 +302,44 @@ Reduzieren Sie die Anzahl der Feishu/Lark-API-Aufrufe mit zwei optionalen Flags:
 }
 ```
 
+### Umfang von Gruppensitzungen und Themen-Threads
+
+`channels.feishu.groupSessionScope` (auf oberster Ebene, pro Konto oder pro Gruppe) steuert, wie Gruppennachrichten Agentensitzungen zugeordnet werden:
+
+| Wert                   | Sitzung                                                                    |
+| ---------------------- | -------------------------------------------------------------------------- |
+| `"group"` (Standard)   | Eine Sitzung pro Gruppenchat                                               |
+| `"group_sender"`       | Eine Sitzung pro Kombination aus Gruppe und Absender                       |
+| `"group_topic"`        | Eine Sitzung pro Themen-Thread; greift auf die Gruppensitzung zurück       |
+| `"group_topic_sender"` | Eine Sitzung pro Kombination aus Thema und Absender; greift auf Gruppe und Absender zurück |
+
+Für die Themenumfänge verwenden native Feishu/Lark-Themengruppen die Ereignis-`thread_id` (`omt_*`) als kanonischen Sitzungsschlüssel des Themas. Wenn bei einem nativen Themenstarter-Ereignis die `thread_id` fehlt, ruft OpenClaw sie vor dem Routing des Durchlaufs von Feishu ab. Normale Gruppenantworten, die OpenClaw in Threads umwandelt, verwenden weiterhin die Nachrichten-ID der Stammantwort (`om_*`), damit der erste Durchlauf und nachfolgende Durchläufe in derselben Sitzung verbleiben.
+
+Legen Sie `replyInThread: "enabled"` (auf oberster Ebene oder pro Gruppe) fest, damit Bot-Antworten einen Feishu-Themen-Thread erstellen oder fortsetzen, anstatt direkt im Nachrichtenverlauf zu antworten. `topicSessionMode` ist der veraltete Vorgänger von `groupSessionScope`; bevorzugen Sie `groupSessionScope`.
+
+### Feishu-Arbeitsbereichstools
+
+Das Plugin enthält Agententools für Feishu-Dokumente, Chats, Wissensdatenbanken, Cloud-Speicher, Berechtigungen und Bitable sowie entsprechende Skills (`feishu-doc`, `feishu-drive`, `feishu-perm`, `feishu-wiki`). Tool-Familien werden über `channels.feishu.tools` gesteuert:
+
+| Schlüssel        | Tools                                                     | Standard             |
+| ---------------- | --------------------------------------------------------- | -------------------- |
+| `tools.doc`      | `feishu_doc`-Dokumentoperationen                          | `true`               |
+| `tools.chat`     | `feishu_chat`-Chatinformationen und Mitgliederabfragen   | `true`               |
+| `tools.wiki`     | `feishu_wiki`-Wissensdatenbank (erfordert `doc`)          | `true`               |
+| `tools.drive`    | `feishu_drive`-Cloud-Speicher                             | `true`               |
+| `tools.perm`     | `feishu_perm`-Berechtigungsverwaltung                     | `false` (sensibel)   |
+| `tools.scopes`   | `feishu_app_scopes`-Diagnose von App-Berechtigungsbereichen | `true`             |
+| `tools.bitable`  | `feishu_bitable_*`-Bitable-/Base-Operationen              | `true`               |
+
+`tools.base` ist ein Alias für `tools.bitable`; der ausdrückliche Wert von `bitable` hat Vorrang, wenn beide festgelegt sind. Kontospezifische Steuerungen befinden sich unter `accounts.<id>.tools`.
+
+Erteilen Sie `drive:drive.metadata:readonly` für direkte `feishu_drive info`-Abfragen außerhalb des Stammverzeichnisses, sofern die App nicht bereits über den vollständigen Berechtigungsumfang `drive:drive` verfügt. Ohne einen der beiden Berechtigungsumfänge bleibt für `info` die bisherige Suche im Stammverzeichnis über `drive:drive:readonly` verfügbar.
+
 ### ACP-Sitzungen
 
-Feishu/Lark unterstützt ACP für Direktnachrichten und Gruppen-Thread-Nachrichten. Feishu/Lark-ACP ist textbefehlsbasiert - es gibt keine nativen Slash-Befehlsmenüs. Verwenden Sie daher `/acp ...`-Nachrichten direkt in der Unterhaltung.
+Feishu/Lark unterstützt ACP für Direktnachrichten und Nachrichten in Gruppen-Threads. ACP in Feishu/Lark wird über Textbefehle gesteuert – es gibt keine nativen Menüs für Slash-Befehle. Verwenden Sie daher `/acp ...`-Nachrichten direkt in der Unterhaltung.
 
-#### Persistente ACP-Bindung
+#### Dauerhafte ACP-Bindung
 
 ```json5
 {
@@ -367,11 +391,11 @@ In einer Feishu/Lark-Direktnachricht oder einem Thread:
 /acp spawn codex --thread here
 ```
 
-`--thread here` funktioniert für Direktnachrichten und Feishu/Lark-Thread-Nachrichten. Folgenachrichten in der gebundenen Unterhaltung werden direkt an diese ACP-Sitzung geleitet.
+`--thread here` funktioniert für Direktnachrichten und Thread-Nachrichten in Feishu/Lark. Nachfolgende Nachrichten in der gebundenen Unterhaltung werden direkt an diese ACP-Sitzung weitergeleitet.
 
-### Routing mit mehreren Agenten
+### Multi-Agent-Routing
 
-Verwenden Sie `bindings`, um Feishu/Lark-Direktnachrichten oder -Gruppen an verschiedene Agenten zu leiten.
+Verwenden Sie `bindings`, um Direktnachrichten oder Gruppen in Feishu/Lark an unterschiedliche Agenten weiterzuleiten.
 
 ```json5
 {
@@ -405,30 +429,28 @@ Routing-Felder:
 
 - `match.channel`: `"feishu"`
 - `match.peer.kind`: `"direct"` (Direktnachricht) oder `"group"` (Gruppenchat)
-- `match.peer.id`: Benutzer-Open-ID (`ou_xxx`) oder Gruppen-ID (`oc_xxx`)
+- `match.peer.id`: Open ID des Benutzers (`ou_xxx`) oder Gruppen-ID (`oc_xxx`)
 
-Siehe [Gruppen-/Benutzer-IDs abrufen](#get-groupuser-ids) für Hinweise zum Nachschlagen.
+Tipps zum Ermitteln finden Sie unter [Gruppen-/Benutzer-IDs abrufen](#get-groupuser-ids).
 
----
+## Agentenisolierung pro Benutzer (dynamische Agentenerstellung)
 
-## Agent-Isolierung pro Benutzer (dynamische Agentenerstellung)
+Aktivieren Sie `dynamicAgentCreation`, um automatisch **isolierte Agenteninstanzen** für jeden Benutzer von Direktnachrichten zu erstellen. Jeder Benutzer erhält:
 
-Aktivieren Sie `dynamicAgentCreation`, um für jeden Direktnachrichtenbenutzer automatisch **isolierte Agenteninstanzen** zu erstellen. Jeder Benutzer erhält eigene:
+- Ein unabhängiges Arbeitsbereichsverzeichnis
+- Separate Dateien `USER.md` / `SOUL.md` / `MEMORY.md`
+- Einen privaten Unterhaltungsverlauf
+- Isolierte Skills und einen isolierten Zustand
 
-- Unabhängiges Arbeitsverzeichnis
-- Separate `USER.md` / `SOUL.md` / `MEMORY.md`
-- Privater Unterhaltungsverlauf
-- Isolierte Skills und isolierter Status
-
-Dies ist wesentlich für öffentliche Bots, wenn jeder Benutzer eine eigene private KI-Assistentenerfahrung haben soll.
+Dies ist für öffentliche Bots unverzichtbar, wenn jeder Benutzer seinen eigenen privaten KI-Assistenten erhalten soll.
 
 <Note>
-Dynamische Bindungen enthalten die normalisierte Feishu-`accountId`, sodass Standardkonten und benannte Konten jeden Absender an den richtigen dynamischen Agenten leiten.
+Dynamische Bindungen enthalten die normalisierte Feishu-`accountId`, sodass Standardkonten und benannte Konten jeden Absender an den richtigen dynamischen Agenten weiterleiten.
 
-Wenn ein benanntes Konto in einer älteren Version einen dynamischen Agenten ohne Gültigkeitsbereich erstellt hat, zählt dieser Legacy-Agent weiterhin zu `maxAgents`. Vergewissern Sie sich vor dem Entfernen, dass er nicht vom Standardkonto verwendet wird, oder erhöhen Sie `maxAgents` vorübergehend; OpenClaw kann nicht sicher ableiten, welchem Konto mehrdeutiger Legacy-Status gehört.
+Wenn ein benanntes Konto in einer älteren Version einen dynamischen Agenten ohne Geltungsbereich erstellt hat, wird dieser bisherige Agent weiterhin auf `maxAgents` angerechnet. Vergewissern Sie sich vor dem Entfernen, dass er nicht vom Standardkonto verwendet wird, oder erhöhen Sie vorübergehend `maxAgents`. OpenClaw kann nicht sicher ableiten, welchem Konto ein mehrdeutiger bisheriger Zustand gehört.
 </Note>
 
-### Schnelleinrichtung
+### Schnelle Einrichtung
 
 ```json5
 {
@@ -444,9 +466,9 @@ Wenn ein benanntes Konto in einer älteren Version einen dynamischen Agenten ohn
     },
   },
   session: {
-    // Critical: makes each user's DM their "main session"
-    // Automatically loads USER.md / SOUL.md / MEMORY.md
-    // For stronger isolation, use "per-channel-peer" instead
+    // Entscheidend: Macht die Direktnachrichten jedes Benutzers zu seiner „Hauptsitzung“
+    // Lädt USER.md / SOUL.md / MEMORY.md automatisch
+    // Verwenden Sie für eine stärkere Isolierung stattdessen "per-channel-peer"
     dmScope: "main",
   },
 }
@@ -456,55 +478,44 @@ Wenn ein benanntes Konto in einer älteren Version einen dynamischen Agenten ohn
 
 Wenn ein neuer Benutzer seine erste Direktnachricht sendet:
 
-1. Der Kanal generiert eine eindeutige `agentId`: `feishu-{user_open_id}` für das Standardkonto oder einen begrenzten, kontopräfixierten Identitäts-Digest für ein benanntes Konto
-2. Erstellt einen neuen Arbeitsbereich am Pfad `workspaceTemplate`
-3. Registriert den Agenten und erstellt eine Bindung für diesen Benutzer
-4. Der Arbeitsbereichshelfer stellt Bootstrap-Dateien (`AGENTS.md`, `SOUL.md`, `USER.md` usw.) beim ersten Zugriff sicher
+1. Der Kanal generiert eine eindeutige `agentId`: `feishu-{user_open_id}` für das Standardkonto oder einen begrenzten, mit dem Konto präfigierten Identitäts-Digest für ein benanntes Konto
+2. Erstellt einen neuen Arbeitsbereich unter dem Pfad `workspaceTemplate`
+3. Registriert den Agenten und erstellt eine Zuordnung für diesen Benutzer
+4. Der Arbeitsbereichshelfer stellt beim ersten Zugriff Bootstrap-Dateien (`AGENTS.md`, `SOUL.md`, `USER.md` usw.) bereit
 5. Leitet alle zukünftigen Nachrichten dieses Benutzers an seinen dedizierten Agenten weiter
 
 ### Konfigurationsoptionen
 
-| Einstellung                                             | Beschreibung                                             | Standardwert                         |
-| ------------------------------------------------------- | -------------------------------------------------------- | ------------------------------------ |
-| `channels.feishu.dynamicAgentCreation.enabled`          | Automatische Agent-Erstellung pro Benutzer aktivieren    | `false`                              |
-| `channels.feishu.dynamicAgentCreation.workspaceTemplate` | Pfad-Template für dynamische Agent-Workspaces            | `~/.openclaw/workspace-{agentId}`    |
-| `channels.feishu.dynamicAgentCreation.agentDirTemplate` | Template für den Namen des Agent-Verzeichnisses          | `~/.openclaw/agents/{agentId}/agent` |
-| `channels.feishu.dynamicAgentCreation.maxAgents`        | Maximale Anzahl dynamischer Agents, die erstellt werden  | unbegrenzt                           |
+| Einstellung                                              | Beschreibung                                          | Standardwert                         |
+| -------------------------------------------------------- | ----------------------------------------------------- | ------------------------------------ |
+| `channels.feishu.dynamicAgentCreation.enabled`           | Automatische Agentenerstellung pro Benutzer aktivieren | `false`                              |
+| `channels.feishu.dynamicAgentCreation.workspaceTemplate` | Pfadvorlage für dynamische Agenten-Arbeitsbereiche    | `~/.openclaw/workspace-{agentId}`    |
+| `channels.feishu.dynamicAgentCreation.agentDirTemplate`  | Vorlage für den Namen des Agentenverzeichnisses       | `~/.openclaw/agents/{agentId}/agent` |
+| `channels.feishu.dynamicAgentCreation.maxAgents`         | Maximale Anzahl zu erstellender dynamischer Agenten   | unbegrenzt                           |
 
 Template-Variablen:
 
-- `{agentId}` - die generierte Agent-ID (z. B. `feishu-ou_xxxxxx` oder `feishu-support-<identity_digest>`)
-- `{userId}` - die Feishu-`open_id` des Absenders (z. B. `ou_xxxxxx`)
+- `{agentId}` - die generierte Agenten-ID (z. B. `feishu-ou_xxxxxx` oder `feishu-support-<identity_digest>`)
+- `{userId}` - die Feishu-open_id des Absenders (z. B. `ou_xxxxxx`)
 
 ### Sitzungsbereich
 
-`session.dmScope` steuert, wie Direktnachrichten Agent-Sitzungen zugeordnet werden. Dies ist eine **globale Einstellung**, die alle Kanäle betrifft.
+`session.dmScope` steuert, wie Direktnachrichten Agentensitzungen zugeordnet werden. Dies ist eine **globale Einstellung**, die alle Kanäle betrifft.
 
-| Wert                         | Verhalten                                                            | Am besten geeignet für                                           |
-| ---------------------------- | -------------------------------------------------------------------- | ---------------------------------------------------------------- |
-| `"main"`                     | Die DM jedes Benutzers wird der Hauptsitzung seines Agents zugeordnet | Einzelbenutzer-Bots, bei denen `USER.md` / `SOUL.md` automatisch geladen werden sollen |
-| `"per-channel-peer"`         | Jede Kombination aus Kanal und Benutzer erhält eine separate Sitzung | Öffentliche Mehrbenutzer-Bots, die stärkere Isolation benötigen |
-| `"per-account-channel-peer"` | Jede Kombination aus Konto, Kanal und Benutzer erhält eine separate Sitzung | Mehrkonto-Bots, die Sitzungisolation auf Kontoebene benötigen |
+| Wert                         | Verhalten                                                                  | Am besten geeignet für                                                                 |
+| ---------------------------- | -------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
+| `"main"`                     | Die Direktnachrichten jedes Benutzers werden der Hauptsitzung seines Agenten zugeordnet | Einzelbenutzer-Bots, bei denen `USER.md` / `SOUL.md` automatisch geladen werden sollen |
+| `"per-peer"`                 | Jeder Kommunikationspartner erhält eine separate Sitzung (unabhängig vom Kanal) | Isolierung ausschließlich anhand der Absenderidentität                                 |
+| `"per-channel-peer"`         | Jede Kombination aus Kanal und Benutzer erhält eine separate Sitzung       | Öffentliche Mehrbenutzer-Bots, die eine stärkere Isolierung benötigen                  |
+| `"per-account-channel-peer"` | Jede Kombination aus Konto, Kanal und Benutzer erhält eine separate Sitzung | Bots mit mehreren Konten, die eine Sitzungsisolierung auf Kontoebene benötigen         |
 
-**Abwägung**: Die Verwendung von `"main"` aktiviert das automatische Laden von Bootstrap-Dateien (`USER.md`, `SOUL.md`, `MEMORY.md`), bedeutet aber, dass alle DMs über alle Kanäle hinweg dasselbe Muster für Sitzungsschlüssel teilen. Für öffentliche Mehrbenutzer-Bots, bei denen Isolation wichtiger ist als automatisches Bootstrap-Laden, sollten Sie `"per-channel-peer"` in Betracht ziehen und Bootstrap-Dateien manuell verwalten.
+**Abwägung**: Die Verwendung von `"main"` ermöglicht das automatische Laden von Bootstrap-Dateien (`USER.md`, `SOUL.md`, `MEMORY.md`), bedeutet jedoch, dass alle Direktnachrichten über alle Kanäle hinweg dasselbe Muster für Sitzungsschlüssel verwenden. Für öffentliche Mehrbenutzer-Bots, bei denen die Isolierung wichtiger ist als das automatische Laden von Bootstrap-Dateien, sollten Sie `"per-channel-peer"` erwägen und die Bootstrap-Dateien manuell verwalten.
 
 <Note>
-Verwenden Sie `"per-account-channel-peer"`, wenn benannte Feishu-Konten für denselben Absender getrennte Sitzungen behalten sollen. Dynamische Bindings bewahren den Kontobereich.
+Verwenden Sie `"per-account-channel-peer"`, wenn benannte Feishu-Konten für denselben Absender separate Sitzungen beibehalten sollen. Dynamische Bindungen bewahren den Kontobereich.
 </Note>
 
-```json5
-{
-  session: {
-    // For single-user personal bots: enables auto bootstrap loading
-    dmScope: "main",
-
-    // For public multi-user bots: stronger isolation
-    // dmScope: "per-channel-peer",
-  },
-}
-```
-
-### Typische Mehrbenutzer-Bereitstellung
+### Typische Mehrbenutzerbereitstellung
 
 ```json5
 {
@@ -524,25 +535,25 @@ Verwenden Sie `"per-account-channel-peer"`, wenn benannte Feishu-Konten für den
     },
   },
   session: {
-    // Choose dmScope based on your isolation needs:
-    // "main" for bootstrap auto-loading, "per-channel-peer" for stronger isolation
+    // Wählen Sie dmScope entsprechend Ihren Isolationsanforderungen:
+    // "main" für das automatische Laden beim Bootstrap, "per-channel-peer" für eine stärkere Isolation
     dmScope: "main",
   },
-  bindings: [], // Empty - dynamic agents auto-bind
+  bindings: [], // Leer – dynamische Agenten binden sich automatisch
 }
 ```
 
-### Verifizierung
+### Überprüfung
 
-Prüfen Sie die Gateway-Logs, um zu bestätigen, dass die dynamische Erstellung funktioniert:
+Prüfen Sie die Gateway-Protokolle, um zu bestätigen, dass die dynamische Erstellung funktioniert:
 
+```text
+feishu: Dynamischer Agent "feishu-ou_xxxxxx" wird für Benutzer ou_xxxxxx erstellt
+  Workspace: /home/user/.openclaw/workspace-feishu-ou_xxxxxx
+  Agentenverzeichnis: /home/user/.openclaw/agents/feishu-ou_xxxxxx/agent
 ```
-feishu: creating dynamic agent "feishu-ou_xxxxxx" for user ou_xxxxxx
-workspace: /Users/you/.openclaw/workspace-feishu-ou_xxxxxx
-feishu: dynamic agent created, new route: agent:feishu-ou_xxxxxx:main
-```
 
-Alle erstellten Workspaces auflisten:
+Listen Sie alle erstellten Workspaces auf:
 
 ```bash
 ls -la ~/.openclaw/workspace-*
@@ -550,70 +561,89 @@ ls -la ~/.openclaw/workspace-*
 
 ### Hinweise
 
-- **Workspace-Isolation**: Jeder Benutzer erhält sein eigenes Workspace-Verzeichnis und eine eigene Agent-Instanz. Benutzer können im normalen Nachrichtenfluss den Gesprächsverlauf oder die Dateien anderer Benutzer nicht sehen.
-- **Sicherheitsgrenze**: Dies ist ein Isolationsmechanismus für den Nachrichtenkontext, keine Sicherheitsgrenze gegen feindliche Co-Tenants. Der Agent-Prozess und die Host-Umgebung werden gemeinsam genutzt.
-- **`bindings` sollte leer sein**: Dynamische Agents registrieren automatisch ihre eigenen Bindings
-- **Upgrade-Pfad**: Bestehende manuelle Bindings funktionieren weiterhin parallel zu dynamischen Agents
+- **Workspace-Isolation**: Jeder Benutzer erhält ein eigenes Workspace-Verzeichnis und eine eigene Agenteninstanz. Benutzer können im normalen Nachrichtenfluss weder den Konversationsverlauf noch die Dateien anderer Benutzer sehen.
+- **Sicherheitsgrenze**: Dies ist ein Mechanismus zur Isolation des Nachrichtenkontexts, keine Sicherheitsgrenze gegenüber böswilligen Mitmandanten. Der Agentenprozess und die Hostumgebung werden gemeinsam genutzt.
+- **Konfigurationsschreibvorgänge müssen aktiviert bleiben**: Die dynamische Agentenerstellung schreibt Agenten und Bindungen in die Konfiguration; sie wird übersprungen, wenn `channels.feishu.configWrites` auf `false` gesetzt ist (Standard: aktiviert).
+- **`bindings` sollte leer sein**: Dynamische Agenten registrieren ihre eigenen Bindungen automatisch
+- **Upgrade-Pfad**: Bestehende manuelle Bindungen funktionieren weiterhin neben dynamischen Agenten
 - **`session.dmScope` ist global**: Dies betrifft alle Kanäle, nicht nur Feishu
-
----
 
 ## Konfigurationsreferenz
 
 Vollständige Konfiguration: [Gateway-Konfiguration](/de/gateway/configuration)
 
-| Einstellung                                             | Beschreibung                                                                    | Standardwert                         |
-| ------------------------------------------------------- | ------------------------------------------------------------------------------- | ------------------------------------ |
-| `channels.feishu.enabled`                               | Kanal aktivieren/deaktivieren                                                   | `true`                               |
-| `channels.feishu.domain`                                | API-Domain (`feishu` oder `lark`)                                               | `feishu`                             |
-| `channels.feishu.connectionMode`                        | Ereignistransport (`websocket` oder `webhook`)                                  | `websocket`                          |
-| `channels.feishu.defaultAccount`                        | Standardkonto für ausgehendes Routing                                           | `default`                            |
-| `channels.feishu.verificationToken`                     | Für den Webhook-Modus erforderlich                                              | -                                    |
-| `channels.feishu.encryptKey`                            | Für den Webhook-Modus erforderlich                                              | -                                    |
-| `channels.feishu.webhookPath`                           | Webhook-Routenpfad                                                              | `/feishu/events`                     |
-| `channels.feishu.webhookHost`                           | Webhook-Bind-Host                                                               | `127.0.0.1`                          |
-| `channels.feishu.webhookPort`                           | Webhook-Bind-Port                                                               | `3000`                               |
-| `channels.feishu.accounts.<id>.appId`                   | App-ID                                                                          | -                                    |
-| `channels.feishu.accounts.<id>.appSecret`               | App Secret                                                                      | -                                    |
-| `channels.feishu.accounts.<id>.domain`                  | Domain-Override pro Konto                                                       | `feishu`                             |
-| `channels.feishu.accounts.<id>.tts`                     | TTS-Override pro Konto                                                          | `messages.tts`                       |
-| `channels.feishu.dmPolicy`                              | DM-Richtlinie                                                                   | `pairing`                            |
-| `channels.feishu.allowFrom`                             | DM-Allowlist (`open_id`-Liste)                                                  | -                                    |
-| `channels.feishu.groupPolicy`                           | Gruppenrichtlinie                                                               | `allowlist`                          |
-| `channels.feishu.groupAllowFrom`                        | Gruppen-Allowlist                                                               | -                                    |
-| `channels.feishu.requireMention`                        | @Erwähnung in Gruppen verlangen                                                 | `true`                               |
-| `channels.feishu.groups.<chat_id>.requireMention`       | @Erwähnung-Override pro Gruppe; explizite IDs lassen die Gruppe auch im Allowlist-Modus zu | geerbt                               |
-| `channels.feishu.groups.<chat_id>.enabled`              | Eine bestimmte Gruppe aktivieren/deaktivieren                                   | `true`                               |
-| `channels.feishu.dynamicAgentCreation.enabled`          | Automatische Agent-Erstellung pro Benutzer aktivieren                           | `false`                              |
-| `channels.feishu.dynamicAgentCreation.workspaceTemplate` | Pfad-Template für dynamische Agent-Workspaces                                  | `~/.openclaw/workspace-{agentId}`    |
-| `channels.feishu.dynamicAgentCreation.agentDirTemplate` | Template für den Namen des Agent-Verzeichnisses                                 | `~/.openclaw/agents/{agentId}/agent` |
-| `channels.feishu.dynamicAgentCreation.maxAgents`        | Maximale Anzahl dynamischer Agents, die erstellt werden                         | unbegrenzt                           |
-| `channels.feishu.textChunkLimit`                        | Größe von Nachrichtenabschnitten                                                | `2000`                               |
-| `channels.feishu.mediaMaxMb`                            | Größenlimit für Medien                                                          | `30`                                 |
-| `channels.feishu.streaming`                             | Streaming-Kartenausgabe                                                         | `true`                               |
-| `channels.feishu.blockStreaming`                        | Streaming von Antworten mit abgeschlossenen Blöcken                             | `false`                              |
-| `channels.feishu.typingIndicator`                       | Schreibreaktionen senden                                                        | `true`                               |
-| `channels.feishu.resolveSenderNames`                    | Anzeigenamen von Absendern auflösen                                             | `true`                               |
-| `channels.feishu.tools.bitable`                         | Bitable/Base-Tools aktivieren                                                   | `true`                               |
-| `channels.feishu.tools.base`                            | Alias für `channels.feishu.tools.bitable`; explizites `bitable` gewinnt, wenn beide gesetzt sind | `true`                               |
-| `channels.feishu.accounts.<id>.tools.bitable`           | Bitable/Base-Tool-Gate pro Konto                                                | geerbt                               |
-| `channels.feishu.accounts.<id>.tools.base`              | Alias pro Konto für `tools.bitable`                                             | geerbt                               |
-
----
+| Einstellung                                              | Beschreibung                                                                         | Standardwert                         |
+| -------------------------------------------------------- | ------------------------------------------------------------------------------------ | ------------------------------------ |
+| `channels.feishu.enabled`                                | Kanal aktivieren/deaktivieren                                                        | `true`                               |
+| `channels.feishu.domain`                                 | API-Domain (`feishu`, `lark` oder eine `https://`-Basis-URL)                         | `feishu`                             |
+| `channels.feishu.connectionMode`                         | Ereignisübertragung (`websocket` oder `webhook`)                                     | `websocket`                          |
+| `channels.feishu.defaultAccount`                         | Standardkonto für ausgehendes Routing                                                | `default`                            |
+| `channels.feishu.verificationToken`                      | Für den Webhook-Modus erforderlich                                                   | -                                    |
+| `channels.feishu.encryptKey`                             | Für den Webhook-Modus erforderlich                                                   | -                                    |
+| `channels.feishu.webhookPath`                            | Pfad der Webhook-Route                                                               | `/feishu/events`                     |
+| `channels.feishu.webhookHost`                            | Bind-Host des Webhooks                                                               | `127.0.0.1`                          |
+| `channels.feishu.webhookPort`                            | Bind-Port des Webhooks                                                               | `3000`                               |
+| `channels.feishu.accounts.<id>.appId`                    | App-ID                                                                               | -                                    |
+| `channels.feishu.accounts.<id>.appSecret`                | App-Secret                                                                           | -                                    |
+| `channels.feishu.accounts.<id>.domain`                   | Kontospezifische Domain-Überschreibung                                               | `feishu`                             |
+| `channels.feishu.accounts.<id>.tts`                      | Kontospezifische TTS-Überschreibung                                                  | `messages.tts`                       |
+| `channels.feishu.dmPolicy`                               | Richtlinie für Direktnachrichten (`pairing`, `allowlist`, `open`)                    | `pairing`                            |
+| `channels.feishu.allowFrom`                              | Zulassungsliste für Direktnachrichten (Liste von open_id)                            | -                                    |
+| `channels.feishu.groupPolicy`                            | Gruppenrichtlinie (`open`, `allowlist`, `disabled`)                                  | `allowlist`                          |
+| `channels.feishu.groupAllowFrom`                         | Gruppenzulassungsliste                                                               | -                                    |
+| `channels.feishu.groupSenderAllowFrom`                   | Auf alle Gruppen angewendete Absenderzulassungsliste                                 | -                                    |
+| `channels.feishu.requireMention`                         | @Erwähnung in Gruppen erfordern                                                      | `true` (`false` bei Richtlinie `open`) |
+| `channels.feishu.groups.<chat_id>.requireMention`        | Gruppenspezifische Überschreibung für @Erwähnungen; explizite IDs lassen die Gruppe auch im Zulassungslistenmodus zu | geerbt                               |
+| `channels.feishu.groups.<chat_id>.enabled`               | Bestimmte Gruppe aktivieren/deaktivieren                                              | `true`                               |
+| `channels.feishu.groups.<chat_id>.allowFrom`             | Gruppenspezifische Absenderzulassungsliste (überschreibt `groupSenderAllowFrom`)      | -                                    |
+| `channels.feishu.groupSessionScope`                      | Zuordnung von Gruppensitzungen (`group`, `group_sender`, `group_topic`, `group_topic_sender`) | `group`                       |
+| `channels.feishu.replyInThread`                          | Bot-Antworten erstellen/fortsetzen Themen-Threads (`disabled`, `enabled`)             | `disabled`                           |
+| `channels.feishu.reactionNotifications`                  | Eingehende Reaktionsereignisse (`off`, `own`, `all`)                                 | `own`                                |
+| `channels.feishu.dynamicAgentCreation.enabled`           | Automatische Erstellung benutzerspezifischer Agenten aktivieren                      | `false`                              |
+| `channels.feishu.dynamicAgentCreation.workspaceTemplate` | Pfadvorlage für Arbeitsbereiche dynamischer Agenten                                   | `~/.openclaw/workspace-{agentId}`    |
+| `channels.feishu.dynamicAgentCreation.agentDirTemplate`  | Vorlage für den Verzeichnisnamen des Agenten                                          | `~/.openclaw/agents/{agentId}/agent` |
+| `channels.feishu.dynamicAgentCreation.maxAgents`         | Maximale Anzahl zu erstellender dynamischer Agenten                                   | unbegrenzt                           |
+| `channels.feishu.textChunkLimit`                         | Größe der Nachrichtensegmente                                                        | `4000`                               |
+| `channels.feishu.chunkMode`                              | Segmentaufteilung (`length` oder `newline`)                                           | `length`                             |
+| `channels.feishu.mediaMaxMb`                             | Größenlimit für Medien                                                               | `30`                                 |
+| `channels.feishu.renderMode`                             | Darstellung von Antworten (`auto`, `raw`, `card`)                                    | `auto`                               |
+| `channels.feishu.streaming`                              | Streaming-Ausgabe für Karten                                                         | `true`                               |
+| `channels.feishu.blockStreaming`                         | Antwort-Streaming abgeschlossener Blöcke                                              | `false`                              |
+| `channels.feishu.typingIndicator`                        | Tippreaktionen senden                                                                | `true`                               |
+| `channels.feishu.resolveSenderNames`                     | Anzeigenamen von Absendern auflösen                                                  | `true`                               |
+| `channels.feishu.configWrites`                           | Vom Kanal initiierte Konfigurationsänderungen zulassen (für dynamische Agenten erforderlich) | `true`                     |
+| `channels.feishu.tools.doc`                              | Dokumentwerkzeuge aktivieren                                                         | `true`                               |
+| `channels.feishu.tools.chat`                             | Werkzeuge für Chatinformationen aktivieren                                            | `true`                               |
+| `channels.feishu.tools.wiki`                             | Wissensdatenbankwerkzeuge aktivieren (erfordert `doc`)                               | `true`                               |
+| `channels.feishu.tools.drive`                            | Cloudspeicherwerkzeuge aktivieren                                                    | `true`                               |
+| `channels.feishu.tools.perm`                             | Werkzeuge zur Berechtigungsverwaltung aktivieren                                     | `false`                              |
+| `channels.feishu.tools.scopes`                           | Diagnosewerkzeug für App-Berechtigungsbereiche aktivieren                            | `true`                               |
+| `channels.feishu.tools.bitable`                          | Bitable/Base-Werkzeuge aktivieren                                                    | `true`                               |
+| `channels.feishu.tools.base`                             | Alias für `channels.feishu.tools.bitable`; explizites `bitable` hat Vorrang, wenn beide gesetzt sind | `true`                  |
+| `channels.feishu.accounts.<id>.tools.bitable`            | Kontospezifische Freigabe für Bitable/Base-Werkzeuge                                 | geerbt                               |
+| `channels.feishu.accounts.<id>.tools.base`               | Kontospezifischer Alias für `tools.bitable`                                           | geerbt                               |
 
 ## Unterstützte Nachrichtentypen
 
 ### Empfangen
 
 - ✅ Text
-- ✅ Rich Text (Post)
+- ✅ Rich-Text (Beitrag)
 - ✅ Bilder
 - ✅ Dateien
 - ✅ Audio
 - ✅ Video/Medien
 - ✅ Sticker
 
-Eingehende Feishu/Lark-Audionachrichten werden als Medienplatzhalter statt als rohes `file_key`-JSON normalisiert. Wenn `tools.media.audio` konfiguriert ist, lädt OpenClaw die Sprachnotiz-Ressource herunter und führt vor dem Agent-Turn die gemeinsame Audiotranskription aus, sodass der Agent das gesprochene Transkript erhält. Wenn Feishu Transkripttext direkt in der Audio-Payload enthält, wird dieser Text ohne weiteren ASR-Aufruf verwendet. Ohne Audio-Transcription-Provider erhält der Agent weiterhin einen `<media:audio>`-Platzhalter plus den gespeicherten Anhang, nicht die rohe Feishu-Ressourcen-Payload.
+Eingehende Feishu/Lark-Audionachrichten werden als Medienplatzhalter statt als
+unverarbeitetes `file_key`-JSON normalisiert. Wenn `tools.media.audio` konfiguriert
+ist, lädt OpenClaw die Sprachnotiz-Ressource herunter und führt vor dem
+Agentendurchlauf die gemeinsame Audiotranskription aus, sodass der Agent das
+gesprochene Transkript erhält. Wenn Feishu den Transkripttext direkt in der
+Audionutzlast bereitstellt, wird dieser Text ohne einen weiteren ASR-Aufruf
+verwendet. Ohne Provider für Audiotranskription erhält der Agent weiterhin einen
+`<media:audio>`-Platzhalter zusammen mit dem gespeicherten Anhang, nicht die
+unverarbeitete Feishu-Ressourcennutzlast.
 
 ### Senden
 
@@ -623,35 +653,31 @@ Eingehende Feishu/Lark-Audionachrichten werden als Medienplatzhalter statt als r
 - ✅ Audio
 - ✅ Video/Medien
 - ✅ Interaktive Karten (einschließlich Streaming-Aktualisierungen)
-- ⚠️ Rich Text (postartige Formatierung; unterstützt nicht die vollständigen Feishu/Lark-Autorenfunktionen)
+- ⚠️ Rich-Text (beitragsähnliche Formatierung; unterstützt nicht den vollständigen Funktionsumfang für die Inhaltserstellung in Feishu/Lark)
 
-Native Feishu/Lark-Audio-Bubbles verwenden den Feishu-Nachrichtentyp `audio` und erfordern
-Ogg/Opus-Upload-Medien (`file_type: "opus"`). Vorhandene `.opus`- und `.ogg`-Medien
-werden direkt als natives Audio gesendet. MP3/WAV/M4A und andere wahrscheinliche Audioformate werden
-nur dann mit `ffmpeg` in 48 kHz Ogg/Opus transkodiert, wenn die Antwort eine Zustellung als Sprachnachricht
-anfordert (`audioAsVoice` / Nachrichtentool `asVoice`, einschließlich TTS-Sprachnotiz-
-Antworten). Gewöhnliche MP3-Anhänge bleiben reguläre Dateien. Wenn `ffmpeg` fehlt oder
-die Konvertierung fehlschlägt, fällt OpenClaw auf einen Dateianhang zurück und protokolliert den Grund.
+Native Feishu/Lark-Audioblasen verwenden den Feishu-Nachrichtentyp `audio` und
+erfordern hochgeladene Medien im Format Ogg/Opus (`file_type: "opus"`).
+Vorhandene `.opus`- und `.ogg`-Medien werden direkt als natives Audio gesendet.
+MP3/WAV/M4A und andere wahrscheinliche Audioformate werden nur dann mit `ffmpeg`
+in Ogg/Opus mit 48 kHz transkodiert, wenn die Antwort eine Sprachausgabe anfordert
+(`audioAsVoice` / Nachrichtenwerkzeug `asVoice`, einschließlich TTS-Antworten als
+Sprachnotiz). Gewöhnliche MP3-Anhänge bleiben reguläre Dateien. Wenn `ffmpeg`
+fehlt oder die Konvertierung fehlschlägt, greift OpenClaw auf einen Dateianhang
+zurück und protokolliert den Grund.
 
 ### Threads und Antworten
 
 - ✅ Inline-Antworten
 - ✅ Thread-Antworten
-- ✅ Medienantworten bleiben threadbezogen, wenn auf eine Thread-Nachricht geantwortet wird
+- ✅ Medienantworten bleiben beim Antworten auf eine Thread-Nachricht dem Thread zugeordnet
 
-Für `groupSessionScope: "group_topic"` und `"group_topic_sender"` verwenden native
-Feishu/Lark-Themengruppen die Event-`thread_id` (`omt_*`) als kanonischen
-Sitzungsschlüssel für das Thema. Wenn ein natives Thema-Starter-Event `thread_id` auslässt, hydratisiert OpenClaw
-sie vor dem Routing des Turns aus Feishu. Normale Gruppenantworten, die
-OpenClaw in Threads umwandelt, verwenden weiterhin die Nachrichten-ID der Antwortwurzel (`om_*`), sodass
-der erste Turn und der Folge-Turn in derselben Sitzung bleiben.
+Das Routing von Themen-Gruppensitzungen wird unter
+[Umfang von Gruppensitzungen und Themen-Threads](#group-session-scope-and-topic-threads) behandelt.
 
----
-
-## Verwandt
+## Verwandte Themen
 
 - [Kanalübersicht](/de/channels) - alle unterstützten Kanäle
-- [Koppeln](/de/channels/pairing) - DM-Authentifizierung und Kopplungsablauf
-- [Gruppen](/de/channels/groups) - Gruppenchat-Verhalten und Mention-Gating
+- [Kopplung](/de/channels/pairing) - Authentifizierung von Direktnachrichten und Kopplungsablauf
+- [Gruppen](/de/channels/groups) - Verhalten von Gruppenchats und Steuerung durch Erwähnungen
 - [Kanal-Routing](/de/channels/channel-routing) - Sitzungs-Routing für Nachrichten
 - [Sicherheit](/de/gateway/security) - Zugriffsmodell und Härtung

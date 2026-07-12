@@ -1,28 +1,27 @@
 ---
 read_when:
-    - Vous voulez déclencher ou piloter des TaskFlows depuis un système externe
-    - Vous configurez le Plugin webhooks intégré
-summary: 'Plugin Webhooks : point d''entrée TaskFlow authentifié pour l''automatisation externe de confiance'
-title: Plugin Webhooks
+    - Vous souhaitez déclencher ou piloter des TaskFlows depuis un système externe
+    - Vous configurez le Plugin Webhook intégré
+summary: 'Plugin Webhooks : point d’entrée TaskFlow authentifié pour les automatisations externes de confiance'
+title: Plugin de Webhooks
 x-i18n:
-    generated_at: "2026-05-06T17:59:27Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:43:00Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: 9d21d96f680fa24d4a53c1ed5759f800d3cfdc3336789c42c15266edd8ce9e80
+    source_hash: 081ccbb4ca60234b20f4db7379395bdc51e7203caad4c0a88f292989ca18b28e
     source_path: plugins/webhooks.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-Le Plugin Webhooks ajoute des routes HTTP authentifiées qui relient l’automatisation externe aux TaskFlows OpenClaw.
+Le plugin Webhooks ajoute des routes HTTP authentifiées afin qu’un système externe de confiance
+(Zapier, n8n, une tâche CI, un service interne) puisse créer et piloter
+des TaskFlows OpenClaw gérés via HTTP, sans écrire de plugin personnalisé.
 
-Utilisez-le lorsque vous voulez qu’un système approuvé, comme Zapier, n8n, une tâche CI ou un service interne, crée et pilote des TaskFlows gérés sans écrire d’abord de Plugin personnalisé.
-
-## Où il s’exécute
-
-Le Plugin Webhooks s’exécute dans le processus Gateway.
-
-Si votre Gateway s’exécute sur une autre machine, installez et configurez le Plugin sur cet hôte Gateway, puis redémarrez le Gateway.
+Le plugin s’exécute dans le processus Gateway. Pour un Gateway distant, installez-le et
+configurez-le sur cet hôte, puis redémarrez le Gateway. Il est fourni sans aucune route
+configurée ; il reste donc inactif tant que vous n’ajoutez pas au moins une route.
 
 ## Configurer les routes
 
@@ -45,7 +44,7 @@ Définissez la configuration sous `plugins.entries.webhooks.config` :
                 id: "OPENCLAW_WEBHOOK_SECRET",
               },
               controllerId: "webhooks/zapier",
-              description: "Zapier TaskFlow bridge",
+              description: "Passerelle TaskFlow Zapier",
             },
           },
         },
@@ -55,85 +54,86 @@ Définissez la configuration sous `plugins.entries.webhooks.config` :
 }
 ```
 
-Champs de route :
+Champs d’une route :
 
-- `enabled` : facultatif, vaut `true` par défaut
-- `path` : facultatif, vaut `/plugins/webhooks/<routeId>` par défaut
-- `sessionKey` : session requise qui possède les TaskFlows liés
-- `secret` : secret partagé ou SecretRef requis
-- `controllerId` : identifiant de contrôleur facultatif pour les flux gérés créés
-- `description` : note opérateur facultative
+| Champ          | Obligatoire | Valeur par défaut             | Remarques                                            |
+| -------------- | ----------- | ----------------------------- | ---------------------------------------------------- |
+| `enabled`      | non         | `true`                        |                                                      |
+| `path`         | non         | `/plugins/webhooks/<routeId>` | Doit être unique parmi toutes les routes.            |
+| `sessionKey`   | oui         | -                             | Session propriétaire des TaskFlows associés.         |
+| `secret`       | oui         | -                             | Chaîne simple ou SecretRef (voir ci-dessous).        |
+| `controllerId` | non         | `webhooks/<routeId>`          | Utilisé comme contrôleur `create_flow` par défaut.    |
+| `description`  | non         | -                             | Note destinée uniquement à l’opérateur.              |
 
-Entrées `secret` prises en charge :
+`secret` accepte une chaîne simple ou une SecretRef : `{ source: "env" | "file" | "exec", provider: "default", id: "..." }`.
 
-- Chaîne simple
-- SecretRef avec `source: "env" | "file" | "exec"`
-
-Si une route adossée à un secret ne peut pas résoudre son secret au démarrage, le Plugin ignore cette route et journalise un avertissement au lieu d’exposer un endpoint défectueux.
+Chaque route configurée est enregistrée au démarrage, que son secret puisse
+actuellement être résolu ou non. Un secret impossible à résoudre ne désactive ni n’ignore la
+route : les requêtes qui lui sont adressées échouent à l’authentification (`401`) jusqu’à ce que le secret puisse être
+résolu. Les valeurs SecretRef sont résolues à nouveau à chaque requête ; la rotation du
+secret sous-jacent (variable d’environnement, fichier ou sortie d’une commande) prend donc effet sans
+redémarrage du Gateway.
 
 ## Modèle de sécurité
 
-Chaque route est approuvée pour agir avec l’autorité TaskFlow de son `sessionKey` configuré.
+Chaque route agit avec les autorisations TaskFlow de son `sessionKey` configuré : elle
+peut examiner et modifier tout TaskFlow appartenant à cette session. L’accès aux TaskFlows
+passe toujours par `api.runtime.tasks.managedFlows.bindSession(...)` ; une
+route ne peut donc jamais agir en dehors de la session à laquelle elle est associée. Pour limiter l’étendue des conséquences :
 
-Cela signifie que la route peut inspecter et modifier les TaskFlows appartenant à cette session ; vous devriez donc :
+- Utilisez un secret robuste et unique pour chaque route.
+- Préférez une SecretRef à un secret en texte clair défini directement.
+- Associez les routes à la session la plus restreinte compatible avec le workflow.
+- N’exposez que le chemin de webhook précis dont vous avez besoin.
 
-- Utiliser un secret fort et unique par route
-- Préférer les références de secrets aux secrets en texte clair intégrés
-- Lier les routes à la session la plus restreinte qui convient au workflow
-- Exposer uniquement le chemin Webhook précis dont vous avez besoin
+Ordre de traitement des requêtes pour chaque chemin : vérification de la méthode HTTP (`POST` uniquement) et
+de `Content-Type: application/json`, puis limitation du débit par fenêtre fixe (120
+requêtes par fenêtre de 60 secondes pour chaque clé chemin+adresse IP cliente, avec jusqu’à 4 096 clés
+suivies), puis limitation des requêtes en cours (8 requêtes simultanées par clé, avec jusqu’à
+4 096 clés suivies), puis authentification par secret partagé, puis lecture du corps JSON limitée à 256 KB /
+15 secondes. Les requêtes qui échouent à une vérification antérieure n’atteignent jamais
+les vérifications suivantes.
 
-Le Plugin applique :
+## Format de la requête
 
-- Authentification par secret partagé
-- Protections de taille et de délai d’expiration du corps de requête
-- Limitation de débit à fenêtre fixe
-- Limitation des requêtes en cours
-- Accès aux TaskFlows lié au propriétaire via `api.runtime.tasks.managedFlows.bindSession(...)`
-
-## Format de requête
-
-Envoyez des requêtes `POST` avec :
-
-- `Content-Type: application/json`
-- `Authorization: Bearer <secret>` ou `x-openclaw-webhook-secret: <secret>`
-
-Exemple :
+Envoyez des requêtes `POST` avec `Content-Type: application/json` et soit
+`Authorization: Bearer <secret>`, soit `x-openclaw-webhook-secret: <secret>` :
 
 ```bash
 curl -X POST https://gateway.example.com/plugins/webhooks/zapier \
   -H 'Content-Type: application/json' \
   -H 'Authorization: Bearer YOUR_SHARED_SECRET' \
-  -d '{"action":"create_flow","goal":"Review inbound queue"}'
+  -d '{"action":"create_flow","goal":"Examiner la file d’attente entrante"}'
 ```
 
 ## Actions prises en charge
 
-Le Plugin accepte actuellement ces valeurs JSON `action` :
+| Action             | Objectif                                                                    |
+| ------------------ | --------------------------------------------------------------------------- |
+| `create_flow`      | Créer un TaskFlow géré pour la session de la route.                         |
+| `get_flow`         | Récupérer un TaskFlow par son identifiant.                                  |
+| `list_flows`       | Répertorier les TaskFlows de la session de la route.                        |
+| `find_latest_flow` | Récupérer le TaskFlow mis à jour le plus récemment.                         |
+| `resolve_flow`     | Résoudre un TaskFlow à partir d’un jeton opaque.                            |
+| `get_task_summary` | Récupérer le résumé des tâches d’un TaskFlow.                               |
+| `set_waiting`      | Mettre un TaskFlow en attente, avec des données d’état/d’attente facultatives. |
+| `resume_flow`      | Reprendre un TaskFlow en attente/bloqué.                                    |
+| `finish_flow`      | Marquer un TaskFlow comme terminé.                                          |
+| `fail_flow`        | Marquer un TaskFlow comme ayant échoué.                                     |
+| `request_cancel`   | Demander une annulation coopérative.                                        |
+| `cancel_flow`      | Annuler un TaskFlow (peut renvoyer `202` si des enfants sont encore actifs). |
+| `run_task`         | Créer une tâche enfant gérée dans un TaskFlow existant.                     |
 
-- `create_flow`
-- `get_flow`
-- `list_flows`
-- `find_latest_flow`
-- `resolve_flow`
-- `get_task_summary`
-- `set_waiting`
-- `resume_flow`
-- `finish_flow`
-- `fail_flow`
-- `request_cancel`
-- `cancel_flow`
-- `run_task`
+Les actions de modification (`set_waiting`, `resume_flow`, `finish_flow`, `fail_flow`,
+`request_cancel`) exigent `flowId` et `expectedRevision` pour la concurrence
+optimiste ; une révision obsolète renvoie `409 revision_conflict`.
 
 ### `create_flow`
-
-Crée un TaskFlow géré pour la session liée de la route.
-
-Exemple :
 
 ```json
 {
   "action": "create_flow",
-  "goal": "Review inbound queue",
+  "goal": "Examiner la file d’attente entrante",
   "status": "queued",
   "notifyPolicy": "done_only"
 }
@@ -141,14 +141,9 @@ Exemple :
 
 ### `run_task`
 
-Crée une tâche enfant gérée dans un TaskFlow géré existant.
-
-Les runtimes autorisés sont :
-
-- `subagent`
-- `acp`
-
-Exemple :
+Valeurs `runtime` autorisées : `subagent`, `acp`. `startedAt`, `lastEventAt` et
+`progressSummary` ne sont valides que lorsque `status` vaut `"running"` ; les envoyer
+avec tout autre état renvoie `400 invalid_request`.
 
 ```json
 {
@@ -156,13 +151,11 @@ Exemple :
   "flowId": "flow_123",
   "runtime": "acp",
   "childSessionKey": "agent:main:acp:worker",
-  "task": "Inspect the next message batch"
+  "task": "Examiner le prochain lot de messages"
 }
 ```
 
-## Forme de réponse
-
-Les réponses réussies renvoient :
+## Structure de la réponse
 
 ```json
 {
@@ -172,22 +165,27 @@ Les réponses réussies renvoient :
 }
 ```
 
-Les requêtes rejetées renvoient :
-
 ```json
 {
   "ok": false,
   "routeId": "zapier",
   "code": "not_found",
-  "error": "TaskFlow not found.",
+  "error": "TaskFlow introuvable.",
   "result": {}
 }
 ```
 
-Le Plugin supprime intentionnellement les métadonnées de propriétaire/session des réponses Webhook.
+Les vues des flux et des tâches n’incluent jamais les métadonnées de propriétaire/session ; les réponses ne peuvent donc pas
+divulguer le `sessionKey` associé à la route. Les valeurs de `code` comprennent `not_found`,
+`not_managed`, `revision_conflict`, `persist_failed`, `cancel_requested`,
+`cancel_pending`, `terminal`, `invalid_request`, `request_rejected` et
+des codes de repli propres à chaque action (`mutation_rejected`, `create_rejected`,
+`task_not_created`, `cancel_rejected`) lorsqu’une modification est rejetée pour une
+raison non couverte par les codes nommés ci-dessus.
 
-## Docs connexes
+## Voir aussi
 
-- [SDK d’exécution du Plugin](/fr/plugins/sdk-runtime)
-- [Vue d’ensemble des hooks et webhooks](/fr/automation/hooks)
-- [Webhooks CLI](/fr/cli/webhooks)
+- [Hooks](/fr/automation/hooks) - hooks internes déclenchés par des événements, par opposition à cette passerelle TaskFlow basée sur HTTP
+- [Webhooks du Gateway (configuration `hooks.*`)](/fr/automation/cron-jobs#webhooks) - fonctionnalité distincte de point de terminaison HTTP générique du Gateway ; elle ne correspond pas aux routes de ce plugin
+- [SDK d’exécution des plugins](/fr/plugins/sdk-runtime)
+- [Webhooks de la CLI](/fr/cli/webhooks)

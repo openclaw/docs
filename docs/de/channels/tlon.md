@@ -1,37 +1,40 @@
 ---
 read_when:
-    - Arbeiten an Tlon/Urbit-Kanalfunktionen
-summary: Status der Unterstützung für Tlon/Urbit, Funktionen und Konfiguration
+    - Arbeit an Funktionen des Tlon/Urbit-Kanals
+summary: Supportstatus, Funktionen und Konfiguration von Tlon/Urbit
 title: Tlon
 x-i18n:
-    generated_at: "2026-05-04T02:22:13Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:01:57Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: 1718044541b431ff2437508e7e6659c14206f4aa84ab8b207e0d791dea2a48c5
+    source_hash: d53ea7d97a7445910c5692a247758b652e1fce82793e65950e1e21a10fa16813
     source_path: channels/tlon.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-Tlon ist ein dezentraler Messenger, der auf Urbit basiert. OpenClaw verbindet sich mit Ihrem Urbit-Ship und kann auf DMs und Gruppenchat-Nachrichten antworten. Gruppenantworten erfordern standardmäßig eine @-Erwähnung und können über Allowlists weiter eingeschränkt werden.
+Tlon ist ein dezentraler Messenger, der auf Urbit basiert. OpenClaw stellt eine Verbindung zu Ihrem Urbit-Ship her und
+antwortet auf Direktnachrichten und Gruppenchatnachrichten. Für Gruppenantworten ist standardmäßig eine @-Erwähnung erforderlich,
+ergänzt durch Autorisierungsregeln und einen Genehmigungsablauf durch den Eigentümer.
 
-Status: gebündeltes Plugin. DMs, Gruppenerwähnungen, Thread-Antworten, Rich-Text-Formatierung und Bild-Uploads werden unterstützt. Reaktionen und Umfragen werden noch nicht unterstützt.
+Status: gebündeltes Plugin. Direktnachrichten, Gruppenerwähnungen, Threads, Rich Text, Hoch- und Herunterladen von Bildern sowie ein
+Genehmigungssystem für Eigentümer werden unterstützt. Reaktionen und Umfragen werden nicht unterstützt.
 
 ## Gebündeltes Plugin
 
-Tlon wird in aktuellen OpenClaw-Versionen als gebündeltes Plugin ausgeliefert, daher benötigen normale paketierte Builds keine separate Installation.
+Tlon ist in aktuellen OpenClaw-Versionen gebündelt; bei paketierten Builds ist keine separate Installation erforderlich.
 
-Wenn Sie einen älteren Build oder eine benutzerdefinierte Installation verwenden, die Tlon ausschließt, installieren Sie ein aktuelles npm-Paket:
-
-Installation über CLI (npm-Registry):
+Installieren Sie das Plugin bei einem älteren Build oder einer benutzerdefinierten Installation, die es nicht enthält, über npm:
 
 ```bash
 openclaw plugins install @openclaw/tlon
 ```
 
-Verwenden Sie das reine Paket, um dem aktuellen offiziellen Release-Tag zu folgen. Pinning auf eine exakte Version sollten Sie nur verwenden, wenn Sie eine reproduzierbare Installation benötigen.
+Verwenden Sie den reinen Paketnamen, um dem aktuellen Release-Tag zu folgen. Fixieren Sie eine Version (`@openclaw/tlon@x.y.z`)
+nur für reproduzierbare Installationen.
 
-Lokaler Checkout (wenn Sie aus einem Git-Repository ausführen):
+Aus einem lokalen Checkout:
 
 ```bash
 openclaw plugins install ./path/to/local/tlon-plugin
@@ -41,15 +44,11 @@ Details: [Plugins](/de/tools/plugin)
 
 ## Einrichtung
 
-1. Stellen Sie sicher, dass das Tlon-Plugin verfügbar ist.
-   - Aktuelle paketierte OpenClaw-Releases bündeln es bereits.
-   - Ältere/benutzerdefinierte Installationen können es manuell mit den obigen Befehlen hinzufügen.
-2. Ermitteln Sie Ihre Ship-URL und Ihren Login-Code.
-3. Konfigurieren Sie `channels.tlon`.
-4. Starten Sie den Gateway neu.
-5. Senden Sie dem Bot eine DM oder erwähnen Sie ihn in einem Gruppenkanal.
+```bash
+openclaw channels add --channel tlon --ship ~sampel-palnet --url https://your-ship-host --code lidlut-tabwed-pillex-ridrup
+```
 
-Minimale Konfiguration (ein einzelnes Konto):
+Oder bearbeiten Sie die Konfiguration direkt:
 
 ```json5
 {
@@ -59,64 +58,64 @@ Minimale Konfiguration (ein einzelnes Konto):
       ship: "~sampel-palnet",
       url: "https://your-ship-host",
       code: "lidlut-tabwed-pillex-ridrup",
-      ownerShip: "~your-main-ship", // recommended: your ship, always allowed
+      ownerShip: "~your-main-ship", // empfohlen: Ihr Ship, immer autorisiert
     },
   },
 }
 ```
 
+Starten Sie das Gateway nach der direkten Bearbeitung der Konfiguration neu. Senden Sie dem Bot anschließend eine Direktnachricht oder
+erwähnen Sie ihn mit @ in einem Gruppenkanal.
+
 ## Private/LAN-Ships
 
-Standardmäßig blockiert OpenClaw private/interne Hostnamen und IP-Bereiche zum Schutz vor SSRF. Wenn Ihr Ship in einem privaten Netzwerk läuft (localhost, LAN-IP oder interner Hostname), müssen Sie dies ausdrücklich aktivieren:
+OpenClaw blockiert zum Schutz vor SSRF standardmäßig private/interne Hostnamen und IP-Bereiche. Wenn Ihr
+Ship in einem privaten Netzwerk ausgeführt wird (localhost, LAN-IP, interner Hostname), aktivieren Sie dies ausdrücklich:
 
 ```json5
 {
   channels: {
     tlon: {
       url: "http://localhost:8080",
-      allowPrivateNetwork: true,
+      network: {
+        dangerouslyAllowPrivateNetwork: true,
+      },
     },
   },
 }
 ```
 
-Dies gilt für URLs wie:
+Dies gilt für Ziele wie `http://localhost:8080`, `http://192.168.x.x:8080` und
+`http://my-ship.local:8080`. Aktivieren Sie dies nur für eine Ship-URL, der Sie vertrauen; dadurch wird der SSRF-
+Schutz für die HTTP-Anfragen dieses Kontos deaktiviert.
 
-- `http://localhost:8080`
-- `http://192.168.x.x:8080`
-- `http://my-ship.local:8080`
-
-⚠️ Aktivieren Sie dies nur, wenn Sie Ihrem lokalen Netzwerk vertrauen. Diese Einstellung deaktiviert SSRF-Schutzmechanismen für Anfragen an Ihre Ship-URL.
+<Note>
+`channels.tlon.allowPrivateNetwork` (flacher Schlüssel) wird nicht mehr verwendet. `openclaw doctor --fix` verschiebt ihn automatisch nach
+`channels.tlon.network.dangerouslyAllowPrivateNetwork`.
+</Note>
 
 ## Gruppenkanäle
 
-Die automatische Erkennung ist standardmäßig aktiviert. Sie können Kanäle auch manuell festlegen:
+Heften Sie Kanäle manuell an oder aktivieren Sie die automatische Erkennung:
 
 ```json5
 {
   channels: {
     tlon: {
       groupChannels: ["chat/~host-ship/general", "chat/~host-ship/support"],
+      autoDiscoverChannels: true,
     },
   },
 }
 ```
 
-Automatische Erkennung deaktivieren:
-
-```json5
-{
-  channels: {
-    tlon: {
-      autoDiscoverChannels: false,
-    },
-  },
-}
-```
+`autoDiscoverChannels` ist standardmäßig `false`, wenn es in der Konfiguration nicht festgelegt ist; im Einrichtungsassistenten ist die
+Eingabeaufforderung standardmäßig auf Ja gesetzt und `true` wird ausdrücklich geschrieben. Wenn die Option aktiviert ist, fragt OpenClaw beim Start beigetretene Gruppen per Scry ab,
+überwacht neue Kanäle, wenn Gruppeneinladungen angenommen werden, und prüft sie alle 2 Minuten erneut.
 
 ## Zugriffskontrolle
 
-DM-Allowlist (leer = keine DMs erlaubt, verwenden Sie `ownerShip` für den Genehmigungsablauf):
+Zulassungsliste für Direktnachrichten (leer = keine Direktnachrichten zulässig, es sei denn, der Absender ist `ownerShip`):
 
 ```json5
 {
@@ -128,7 +127,8 @@ DM-Allowlist (leer = keine DMs erlaubt, verwenden Sie `ownerShip` für den Geneh
 }
 ```
 
-Gruppenautorisierung (standardmäßig eingeschränkt):
+Die Gruppenautorisierung ist pro Kanal standardmäßig `restricted`. Legen Sie `defaultAuthorizedShips` als
+Grundlage fest und überschreiben Sie sie für jeden Kanal-Nest:
 
 ```json5
 {
@@ -151,9 +151,10 @@ Gruppenautorisierung (standardmäßig eingeschränkt):
 }
 ```
 
-## Owner- und Genehmigungssystem
+Sobald der Bot innerhalb eines Threads geantwortet hat, antwortet er weiterhin auf spätere Nachrichten in diesem Thread,
+ohne dass eine weitere Erwähnung erforderlich ist.
 
-Legen Sie ein Owner-Ship fest, um Genehmigungsanfragen zu erhalten, wenn nicht autorisierte Benutzer zu interagieren versuchen:
+## Eigentümer- und Genehmigungssystem
 
 ```json5
 {
@@ -165,17 +166,36 @@ Legen Sie ein Owner-Ship fest, um Genehmigungsanfragen zu erhalten, wenn nicht a
 }
 ```
 
-Das Owner-Ship ist **überall automatisch autorisiert** — DM-Einladungen werden automatisch akzeptiert und Kanalnachrichten sind immer erlaubt. Sie müssen den Owner nicht zu `dmAllowlist` oder `defaultAuthorizedShips` hinzufügen.
+Das Owner-Ship ist überall autorisiert: DM-Einladungen werden immer automatisch angenommen, Gruppeneinladungen werden
+immer automatisch angenommen und Kanalnachrichten bestehen immer die Autorisierungsprüfung. Das Owner-Ship muss nicht in
+`dmAllowlist`, `defaultAuthorizedShips` oder `groupInviteAllowlist` enthalten sein.
 
-Wenn festgelegt, erhält der Owner DM-Benachrichtigungen für:
+Wenn `ownerShip` festgelegt ist, werden nicht autorisierte Anfragen nicht einfach verworfen – sie werden als ausstehende
+Genehmigung in die Warteschlange gestellt und das Owner-Ship erhält eine DM:
 
-- DM-Anfragen von Ships, die nicht in der Allowlist stehen
-- Erwähnungen in Kanälen ohne Autorisierung
-- Gruppen-Einladungsanfragen
+- DM-Anfragen von Ships, die nicht in `dmAllowlist` enthalten sind
+- Erwähnungen in Kanälen, bei denen der Absender die Autorisierungsprüfung nicht besteht
+- Gruppeneinladungen von Ships, die nicht in `groupInviteAllowlist` enthalten sind (wenn die automatische Annahme deaktiviert ist oder aktiviert ist, aber
+  der Einladende nicht in der Zulassungsliste steht)
 
-## Einstellungen für automatische Annahme
+Das Owner-Ship antwortet per DM, um eine Anfrage zu bearbeiten:
 
-DM-Einladungen automatisch akzeptieren (für Ships in dmAllowlist):
+| Antwort des Owner-Ships       | Wirkung                                                                    |
+| ----------------------------- | -------------------------------------------------------------------------- |
+| `approve` / `deny` / `block`  | Bearbeitet die neueste ausstehende Genehmigung                             |
+| `approve <id>` / `deny <id>`  | Bearbeitet eine bestimmte Genehmigung anhand ihrer ID                      |
+| `block`                       | Blockiert das Ship außerdem nativ, sodass es keine neue Verbindung aufbauen kann |
+| `unblock ~ship`               | Hebt eine native Blockierung auf                                           |
+| `blocked`                     | Listet die derzeit blockierten Ships auf                                   |
+| `pending`                     | Listet ausstehende Genehmigungsanfragen auf                                |
+
+Ohne konfiguriertes `ownerShip` werden nicht autorisierte DMs und Kanalerwähnungen einfach verworfen und protokolliert;
+es gibt keine Aufforderung zur Genehmigung.
+
+## Einstellungen für die automatische Annahme
+
+DM-Einladungen von Ships automatisch annehmen, die bereits in `dmAllowlist` enthalten sind (das Owner-Ship wird unabhängig
+von diesem Flag immer automatisch angenommen):
 
 ```json5
 {
@@ -187,7 +207,8 @@ DM-Einladungen automatisch akzeptieren (für Ships in dmAllowlist):
 }
 ```
 
-Gruppeneinladungen von vertrauenswürdigen Ships automatisch akzeptieren:
+Gruppeneinladungen aus einer Zulassungsliste automatisch annehmen (standardmäßig verweigern: Bei `autoAcceptGroupInvites: true` und
+einer leeren `groupInviteAllowlist` wird keine Einladung von einem anderen Ship als dem Owner-Ship angenommen):
 
 ```json5
 {
@@ -200,44 +221,53 @@ Gruppeneinladungen von vertrauenswürdigen Ships automatisch akzeptieren:
 }
 ```
 
-`autoAcceptGroupInvites` schlägt geschlossen fehl, wenn `groupInviteAllowlist` leer ist. Setzen Sie die Allowlist auf die Ships, deren Gruppeneinladungen automatisch akzeptiert werden sollen.
+## Hot-Reload über den Urbit-Einstellungsspeicher
+
+Die meisten der oben genannten Einstellungen (`dmAllowlist`, `groupInviteAllowlist`, `groupChannels`,
+`defaultAuthorizedShips`, `autoDiscoverChannels`, `autoAcceptDmInvites`,
+`autoAcceptGroupInvites`, `ownerShip`, `showModelSignature`) werden beim ersten Start in den
+`%settings`-Agenten des Ships (Desk `moltbot`, Bucket `tlon`) gespiegelt und anschließend live von dort gelesen,
+sodass Änderungen über einen Landscape-Client oder die Einstellungsbefehle des gebündelten Skills ohne einen
+Neustart des Gateways wirksam werden. `channelRules` und ausstehende Genehmigungen werden dort ebenfalls als JSON gespeichert. Die
+Dateikonfiguration bleibt die maßgebliche Quelle für Werte, die nie in den Einstellungsspeicher geschrieben wurden.
 
 ## Zustellziele (CLI/Cron)
 
-Verwenden Sie diese mit `openclaw message send` oder Cron-Zustellung:
+Zur Verwendung mit `openclaw message send` oder der Cron-Zustellung:
 
 - DM: `~sampel-palnet` oder `dm/~sampel-palnet`
 - Gruppe: `chat/~host-ship/channel` oder `group:~host-ship/channel`
 
 ## Gebündelter Skill
 
-Das Tlon-Plugin enthält einen gebündelten Skill ([`@tloncorp/tlon-skill`](https://github.com/tloncorp/tlon-skill)), der CLI-Zugriff auf Tlon-Operationen bereitstellt:
+Das Plugin bündelt [`@tloncorp/tlon-skill`](https://github.com/tloncorp/tlon-skill), eine CLI für
+direkte Urbit-Operationen, die automatisch verfügbar ist, sobald das Plugin installiert wurde:
 
-- **Kontakte**: Profile abrufen/aktualisieren, Kontakte auflisten
-- **Kanäle**: auflisten, erstellen, Nachrichten posten, Verlauf abrufen
-- **Gruppen**: auflisten, erstellen, Mitglieder verwalten
-- **DMs**: Nachrichten senden, auf Nachrichten reagieren
-- **Reaktionen**: Emoji-Reaktionen zu Posts und DMs hinzufügen/entfernen
-- **Einstellungen**: Plugin-Berechtigungen über Slash-Befehle verwalten
-
-Der Skill ist automatisch verfügbar, wenn das Plugin installiert ist.
+- **Aktivität**: Erwähnungen, Antworten, ungelesene Nachrichten
+- **Kanäle**: auflisten, erstellen, umbenennen
+- **Kontakte**: Profile auflisten/abrufen/aktualisieren
+- **Gruppen**: erstellen, beitreten, Einladungs-/Anfrageabläufe, Rollen
+- **Hooks**: Kanal-Hooks verwalten
+- **Nachrichten**: Verlauf, Suche
+- **DMs**: senden, reagieren, annehmen/ablehnen
+- **Beiträge**: reagieren, löschen
+- **Notizbuch**: in Tagebuchkanälen veröffentlichen
+- **Einstellungen**: Plugin-Konfiguration über den oben genannten Einstellungsspeicher per Hot-Reload aktualisieren
 
 ## Funktionen
 
-| Funktion          | Status                                            |
-| ----------------- | ------------------------------------------------- |
-| Direktnachrichten | ✅ Unterstützt                                    |
-| Gruppen/Kanäle    | ✅ Unterstützt (standardmäßig erwähnungsgesteuert) |
-| Threads           | ✅ Unterstützt (automatische Antworten im Thread) |
-| Rich Text         | ✅ Markdown wird in das Tlon-Format konvertiert   |
-| Bilder            | ✅ In Tlon-Speicher hochgeladen                   |
-| Reaktionen        | ✅ Über [gebündelten Skill](#bundled-skill)       |
-| Umfragen          | ❌ Noch nicht unterstützt                         |
-| Native Befehle    | ✅ Unterstützt (standardmäßig nur Owner)          |
+| Funktion         | Status                                                      |
+| ---------------- | ----------------------------------------------------------- |
+| Direktnachrichten | Unterstützt                                                 |
+| Gruppen/Kanäle   | Unterstützt (standardmäßig nur bei Erwähnung)               |
+| Threads          | Unterstützt (antwortet weiter, sobald es beigetreten ist)   |
+| Rich Text        | Markdown wird in das native Format von Tlon konvertiert     |
+| Bilder           | Eingehend heruntergeladen, ausgehend hochgeladen            |
+| Reaktionen       | Nur über den [gebündelten Skill](#bundled-skill)            |
+| Umfragen         | Nicht unterstützt                                           |
+| Native Befehle   | Standardmäßig nur für das Owner-Ship                        |
 
 ## Fehlerbehebung
-
-Führen Sie zuerst diese Abfolge aus:
 
 ```bash
 openclaw status
@@ -248,44 +278,50 @@ openclaw doctor
 
 Häufige Fehler:
 
-- **DMs werden ignoriert**: Absender ist nicht in `dmAllowlist` und kein `ownerShip` für den Genehmigungsablauf konfiguriert.
-- **Gruppennachrichten werden ignoriert**: Kanal wurde nicht erkannt oder Absender ist nicht autorisiert.
-- **Verbindungsfehler**: Prüfen Sie, ob die Ship-URL erreichbar ist; aktivieren Sie `allowPrivateNetwork` für lokale Ships.
-- **Auth-Fehler**: Verifizieren Sie, dass der Login-Code aktuell ist (Codes rotieren).
+- **DMs werden ignoriert**: Der Absender ist nicht in `dmAllowlist` enthalten und für den Genehmigungsablauf ist kein `ownerShip` konfiguriert.
+- **Gruppennachrichten werden ignoriert**: Der Kanal wurde nicht erkannt/angeheftet oder der Absender besteht die Autorisierungsprüfung nicht und es gibt kein
+  `ownerShip`, um eine Genehmigung in die Warteschlange zu stellen.
+- **Verbindungsfehler**: Prüfen Sie, ob die Ship-URL erreichbar ist; legen Sie für lokale Ships
+  `network.dangerouslyAllowPrivateNetwork` fest.
+- **Authentifizierungsfehler**: Anmeldecodes wechseln regelmäßig – kopieren Sie den aktuellen Code von Ihrem Ship.
 
 ## Konfigurationsreferenz
 
 Vollständige Konfiguration: [Konfiguration](/de/gateway/configuration)
 
-Provider-Optionen:
-
-- `channels.tlon.enabled`: Kanalstart aktivieren/deaktivieren.
-- `channels.tlon.ship`: Urbit-Ship-Name des Bots (z. B. `~sampel-palnet`).
-- `channels.tlon.url`: Ship-URL (z. B. `https://sampel-palnet.tlon.network`).
-- `channels.tlon.code`: Ship-Login-Code.
-- `channels.tlon.allowPrivateNetwork`: localhost-/LAN-URLs erlauben (SSRF-Umgehung).
-- `channels.tlon.ownerShip`: Owner-Ship für Genehmigungssystem (immer autorisiert).
-- `channels.tlon.dmAllowlist`: Ships, die DMs senden dürfen (leer = keine).
-- `channels.tlon.autoAcceptDmInvites`: DMs von Ships in der Allowlist automatisch akzeptieren.
-- `channels.tlon.autoAcceptGroupInvites`: Gruppeneinladungen von Ships in der Allowlist automatisch akzeptieren.
-- `channels.tlon.groupInviteAllowlist`: Ships, deren Gruppeneinladungen automatisch akzeptiert werden dürfen.
-- `channels.tlon.autoDiscoverChannels`: Gruppenkanäle automatisch erkennen (Standard: true).
-- `channels.tlon.groupChannels`: manuell festgelegte Kanal-Nests.
-- `channels.tlon.defaultAuthorizedShips`: Ships, die für alle Kanäle autorisiert sind.
-- `channels.tlon.authorization.channelRules`: Auth-Regeln pro Kanal.
-- `channels.tlon.showModelSignature`: Modellname an Nachrichten anhängen.
+| Schlüssel                                              | Bedeutung                                                              |
+| ------------------------------------------------------ | ---------------------------------------------------------------------- |
+| `channels.tlon.enabled`                                | Aktiviert/deaktiviert den Kanalstart.                                  |
+| `channels.tlon.ship`                                   | Urbit-Ship-Name des Bots (z. B. `~sampel-palnet`).                     |
+| `channels.tlon.url`                                    | Ship-URL (z. B. `https://sampel-palnet.tlon.network`).                 |
+| `channels.tlon.code`                                   | Anmeldecode des Ships.                                                  |
+| `channels.tlon.network.dangerouslyAllowPrivateNetwork` | Erlaubt localhost-/LAN-Ship-URLs (explizite SSRF-Aktivierung).         |
+| `channels.tlon.ownerShip`                              | Owner-Ship: immer autorisiert, empfängt Genehmigungsanfragen.          |
+| `channels.tlon.dmAllowlist`                            | Ships mit DM-Berechtigung (leer = keine außer dem Owner-Ship).         |
+| `channels.tlon.autoAcceptDmInvites`                    | Nimmt DMs von Ships in `dmAllowlist` automatisch an.                   |
+| `channels.tlon.autoAcceptGroupInvites`                 | Nimmt Gruppeneinladungen aus `groupInviteAllowlist` automatisch an.    |
+| `channels.tlon.groupInviteAllowlist`                   | Ships, deren Gruppeneinladungen automatisch angenommen werden.        |
+| `channels.tlon.autoDiscoverChannels`                   | Erkennt beigetretene Gruppenkanäle automatisch (Standard: `false`).    |
+| `channels.tlon.groupChannels`                          | Manuell angeheftete Kanal-Nests.                                       |
+| `channels.tlon.defaultAuthorizedShips`                 | Für alle Kanäle autorisierte Ships (verwendet, wenn keine Regel zutrifft). |
+| `channels.tlon.authorization.channelRules`             | Autorisierungsmodus und Zulassungsliste pro Kanal-Nest.                |
+| `channels.tlon.showModelSignature`                     | Hängt `_[Generated by <model>]_` an Antworten an.                      |
+| `channels.tlon.responsePrefix`                         | Statisches Präfix, das ausgehenden Antworten vorangestellt wird.       |
+| `channels.tlon.accounts.<id>`                          | Zusätzliche benannte Konten (Setups mit mehreren Ships).               |
 
 ## Hinweise
 
-- Gruppenantworten erfordern eine Erwähnung (z. B. `~your-bot-ship`), um zu antworten.
-- Thread-Antworten: Wenn die eingehende Nachricht in einem Thread ist, antwortet OpenClaw im Thread.
-- Rich Text: Markdown-Formatierung (fett, kursiv, Code, Überschriften, Listen) wird in das native Format von Tlon konvertiert.
-- Bilder: URLs werden in den Tlon-Speicher hochgeladen und als Bildblöcke eingebettet.
+- Gruppenantworten benötigen eine @-Erwähnung (z. B. `~your-bot-ship`), sofern der Bot diesem Thread nicht bereits beigetreten ist.
+- Thread-Antworten werden im Thread veröffentlicht; außerdem werden dem Agenten die letzten 10 Nachrichten des Thread-Kontexts
+  vorangestellt.
+- Rich Text (fett, kursiv, Code, Überschriften, Listen) wird in das native Format von Tlon konvertiert.
+- Wenn eine eingehende Nachricht eine Kanalzusammenfassung anfordert (zum Beispiel „Diesen
+  Kanal zusammenfassen“), wird anstelle des normalen Antwortablaufs eine integrierte Verlaufszusammenfassung ausgelöst.
 
 ## Verwandte Themen
 
-- [Channels-Übersicht](/de/channels) — alle unterstützten Kanäle
-- [Pairing](/de/channels/pairing) — DM-Authentifizierung und Pairing-Ablauf
-- [Gruppen](/de/channels/groups) — Gruppenchat-Verhalten und Erwähnungssteuerung
-- [Kanal-Routing](/de/channels/channel-routing) — Sitzungs-Routing für Nachrichten
+- [Kanalübersicht](/de/channels) — alle unterstützten Kanäle
+- [Kopplung](/de/channels/pairing) — DM-Authentifizierung und Kopplungsablauf
+- [Gruppen](/de/channels/groups) — Verhalten von Gruppenchats und Beschränkung auf Erwähnungen
+- [Kanalrouting](/de/channels/channel-routing) — Sitzungsrouting für Nachrichten
 - [Sicherheit](/de/gateway/security) — Zugriffsmodell und Härtung

@@ -1,131 +1,166 @@
 ---
 read_when:
-    - Sie möchten Session-Routing und Isolation verstehen
+    - Sie möchten Sitzungsrouting und -isolierung verstehen
     - Sie möchten den DM-Bereich für Mehrbenutzer-Setups konfigurieren
-    - Sie debuggen tägliche oder inaktive Sitzungs-Resets
+    - Sie debuggen tägliche oder durch Inaktivität ausgelöste Sitzungszurücksetzungen
 summary: Wie OpenClaw Konversationssitzungen verwaltet
 title: Sitzungsverwaltung
 x-i18n:
-    generated_at: "2026-06-27T17:26:29Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:20:36Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: f65249b17c8b45f569531134471683e9f458015b02af29ddf4aa6e1e5c2eac05
+    source_hash: 8ec9e33b4d288fa12016092ab2201431631fc9cb77e6e9d4261d348d5a849f65
     source_path: concepts/session.md
     workflow: 16
 ---
 
-OpenClaw organisiert Unterhaltungen in **Sitzungen**. Jede Nachricht wird anhand ihrer Herkunft einer
-Sitzung zugeordnet -- DMs, Gruppenchats, Cron-Jobs usw.
+OpenClaw leitet jede eingehende Nachricht abhängig von ihrer Herkunft an eine
+**Sitzung** weiter: Direktnachrichten, Gruppenchats, Cron-Jobs usw. Der gesamte
+Sitzungsstatus wird vom **Gateway** verwaltet; UI-Clients fragen Sitzungsdaten
+beim Gateway ab.
 
-## Wie Nachrichten geroutet werden
+## So werden Nachrichten weitergeleitet
 
-| Quelle          | Verhalten                  |
-| --------------- | ------------------------- |
+| Quelle          | Verhalten                         |
+| --------------- | --------------------------------- |
 | Direktnachrichten | Standardmäßig gemeinsame Sitzung |
-| Gruppenchats     | Pro Gruppe isoliert        |
-| Räume/Kanäle  | Pro Raum isoliert         |
-| Cron-Jobs       | Frische Sitzung pro Lauf     |
-| Webhooks        | Pro Hook isoliert         |
+| Gruppenchats     | Für jede Gruppe isoliert          |
+| Räume/Kanäle     | Für jeden Raum isoliert           |
+| Cron-Jobs        | Neue Sitzung bei jedem Durchlauf  |
+| Webhooks         | Für jeden Hook isoliert           |
 
-## DM-Isolation
+## Isolierung von Direktnachrichten
 
-Standardmäßig teilen sich alle DMs aus Kontinuitätsgründen eine Sitzung. Das ist für
-Ein-Benutzer-Setups in Ordnung.
+Standardmäßig teilen sich alle Direktnachrichten eine Sitzung, um den Kontext
+beizubehalten. Dies ist für Einzelbenutzerkonfigurationen ausreichend.
 
 <Warning>
-Wenn mehrere Personen Ihrem Agent Nachrichten senden können, aktivieren Sie die DM-Isolation. Ohne sie teilen
-sich alle Benutzer denselben Unterhaltungskontext -- Alice' private Nachrichten wären für
-Bob sichtbar.
+Wenn mehrere Personen Ihrem Agenten Nachrichten senden können, aktivieren Sie
+die Isolierung von Direktnachrichten. Andernfalls teilen sich alle Benutzer
+denselben Unterhaltungskontext, sodass Alices private Nachrichten für Bob
+sichtbar wären.
 </Warning>
-
-**Die Lösung:**
 
 ```json5
 {
   session: {
-    dmScope: "per-channel-peer", // isolate by channel + sender
+    dmScope: "per-channel-peer", // nach Kanal + Absender isolieren
   },
 }
 ```
 
-Weitere Optionen:
+Optionen für `session.dmScope`:
 
-- `main` (Standard) -- alle DMs teilen sich eine Sitzung.
-- `per-peer` -- nach Absender isolieren (kanalübergreifend).
-- `per-channel-peer` -- nach Kanal + Absender isolieren (empfohlen).
-- `per-account-channel-peer` -- nach Konto + Kanal + Absender isolieren.
+| Wert                       | Verhalten                                           |
+| -------------------------- | --------------------------------------------------- |
+| `main` (Standardwert)      | Alle Direktnachrichten teilen sich eine Sitzung     |
+| `per-peer`                 | Nach Absender kanalübergreifend isolieren           |
+| `per-channel-peer`         | Nach Kanal + Absender isolieren (empfohlen)          |
+| `per-account-channel-peer` | Nach Konto + Kanal + Absender isolieren              |
 
 <Tip>
 Wenn dieselbe Person Sie über mehrere Kanäle kontaktiert, verwenden Sie
-`session.identityLinks`, um ihre Identitäten zu verknüpfen, damit sie eine Sitzung teilen.
+`session.identityLinks`, um ihre Identitäten einer kanonischen Peer-ID
+zuzuordnen, sodass sie eine Sitzung teilen.
 </Tip>
 
 ### Verknüpfte Kanäle andocken
 
-Dock-Befehle ermöglichen es einem Benutzer, die Antwortroute der aktuellen Direct-Chat-Sitzung zu
-einem anderen verknüpften Kanal zu verschieben, ohne eine neue Sitzung zu starten. Siehe
-[Channel-Docking](/de/concepts/channel-docking) für Beispiele, Konfiguration und
-Fehlerbehebung.
+Dock-Befehle verschieben die Antwortroute der aktuellen Direktchat-Sitzung zu
+einem anderen verknüpften Kanal, ohne eine neue Sitzung zu starten. Beispiele,
+Konfiguration und Informationen zur Fehlerbehebung finden Sie unter
+[Kanäle andocken](/de/concepts/channel-docking).
 
-Prüfen Sie Ihr Setup mit `openclaw security audit`.
+Überprüfen Sie Ihre Konfiguration mit `openclaw security audit`.
 
 ## Sitzungslebenszyklus
 
-Sitzungen werden wiederverwendet, bis sie ablaufen:
+Sitzungen werden wiederverwendet, bis sie gemäß `session.reset` ablaufen:
 
-- **Tägliches Zurücksetzen** (Standard) -- neue Sitzung um 4:00 Uhr lokaler Zeit auf dem Gateway-
-  Host. Die tägliche Aktualität basiert darauf, wann die aktuelle `sessionId` gestartet wurde, nicht
-  auf späteren Metadaten-Schreibvorgängen.
-- **Zurücksetzen bei Inaktivität** (optional) -- neue Sitzung nach einem Zeitraum der Inaktivität. Setzen
-  Sie `session.reset.idleMinutes`. Die Inaktivitätsaktualität basiert auf der letzten echten
-  Benutzer-/Kanalinteraktion, sodass Heartbeat-, Cron- und Exec-Systemereignisse die Sitzung nicht
-  am Leben halten.
-- **Manuelles Zurücksetzen** -- geben Sie `/new` oder `/reset` im Chat ein. `/new <model>` wechselt außerdem
-  das Modell.
+- **Tägliches Zurücksetzen** (standardmäßig `mode: "daily"`) – neue Sitzung zu
+  einer konfigurierten lokalen Stunde (`session.reset.atHour`, Standardwert `4`,
+  0–23) auf dem Gateway-Host. Die tägliche Aktualität richtet sich danach, wann
+  die aktuelle `sessionId` gestartet wurde, nicht nach späteren Schreibvorgängen
+  für Metadaten.
+- **Zurücksetzen bei Inaktivität** (`mode: "idle"`) – neue Sitzung nach
+  `session.reset.idleMinutes` Minuten Inaktivität. Die Aktualität bei Inaktivität
+  richtet sich nach der letzten tatsächlichen Benutzer-/Kanalinteraktion,
+  sodass Heartbeat-, Cron- und Exec-Systemereignisse die Sitzung nicht aktiv
+  halten.
+- **Manuelles Zurücksetzen** – geben Sie im Chat `/new` oder `/reset` ein.
+  `/new <model>` wechselt außerdem das Modell.
 
-Wenn sowohl tägliches Zurücksetzen als auch Zurücksetzen bei Inaktivität konfiguriert sind, gilt, was zuerst abläuft.
-Heartbeat-, Cron-, Exec- und andere Systemereignis-Turns können Sitzungsmetadaten schreiben,
-aber diese Schreibvorgänge verlängern die Aktualität für tägliches Zurücksetzen oder Inaktivität nicht. Wenn ein Reset
-die Sitzung weiterdreht, werden wartende Systemereignis-Hinweise für die alte Sitzung
-verworfen, damit veraltete Hintergrund-Updates nicht dem ersten Prompt in
-der neuen Sitzung vorangestellt werden.
+Wenn sowohl tägliches Zurücksetzen als auch Zurücksetzen bei Inaktivität
+konfiguriert sind, gilt die Bedingung, die zuerst eintritt. Durchläufe für
+Heartbeat-, Cron-, Exec- und andere Systemereignisse können Sitzungsmetadaten
+schreiben, doch diese Schreibvorgänge verlängern weder die tägliche Aktualität
+noch die Aktualität bei Inaktivität. Wenn beim Zurücksetzen eine neue Sitzung
+erstellt wird, werden Hinweise zu Systemereignissen in der Warteschlange für
+die alte Sitzung verworfen, damit veraltete Hintergrundaktualisierungen nicht
+der ersten Eingabeaufforderung der neuen Sitzung vorangestellt werden.
 
-Sitzungen mit einer aktiven Provider-eigenen CLI-Sitzung werden nicht durch den impliziten
-täglichen Standard abgeschnitten. Verwenden Sie `/reset` oder konfigurieren Sie `session.reset` explizit, wenn diese
-Sitzungen per Timer ablaufen sollen.
+Sitzungen mit einer aktiven, vom Provider verwalteten CLI-Sitzung werden nicht
+durch den impliziten täglichen Standardwert beendet. Verwenden Sie `/reset`
+oder konfigurieren Sie `session.reset` explizit, wenn diese Sitzungen nach
+einem Zeitplan ablaufen sollen.
 
-## Wo der Zustand gespeichert wird
+Überschreiben Sie den Standardwert je Chattyp oder Kanal:
 
-Der gesamte Sitzungszustand gehört dem **Gateway**. UI-Clients fragen den Gateway nach
-Sitzungsdaten ab.
+```json5
+{
+  session: {
+    reset: { mode: "daily", atHour: 4 },
+    resetByType: {
+      group: { mode: "idle", idleMinutes: 120 },
+      thread: { mode: "daily", atHour: 6 },
+    },
+    resetByChannel: {
+      discord: { mode: "idle", idleMinutes: 10080 },
+    },
+  },
+}
+```
 
-- **Speicher:** `~/.openclaw/agents/<agentId>/sessions/sessions.json`
-- **Transkripte:** `~/.openclaw/agents/<agentId>/sessions/<sessionId>.jsonl`
+`resetByType` unterstützt `direct` (Legacy-Alias `dm`), `group` und `thread`.
+Das veraltete `session.idleMinutes` auf oberster Ebene funktioniert weiterhin als Kompatibilitätsalias für
+einen Standardwert im Inaktivitätsmodus, wenn kein `session.reset`-/`resetByType`-Block festgelegt ist.
 
-`sessions.json` speichert getrennte Lebenszyklus-Zeitstempel:
+## Speicherort des Zustands
 
-- `sessionStartedAt`: wann die aktuelle `sessionId` begann; das tägliche Zurücksetzen verwendet dies.
+- **Laufzeit-Sitzungszeilen:** `~/.openclaw/agents/<agentId>/agent/openclaw-agent.sqlite`
+- **Archivierte Transkriptdateien:** `~/.openclaw/agents/<agentId>/sessions/`
+- **Legacy-Quelle für die Zeilenmigration:** `~/.openclaw/agents/<agentId>/sessions/sessions.json`
+
+Die Sitzungszeilen in der agentenspezifischen SQLite-Datenbank speichern separate
+Lebenszyklus-Zeitstempel:
+
+- `sessionStartedAt`: Zeitpunkt, zu dem die aktuelle `sessionId` begann; die tägliche Zurücksetzung verwendet diesen Wert.
 - `lastInteractionAt`: letzte Benutzer-/Kanalinteraktion, die die Inaktivitätsdauer verlängert.
-- `updatedAt`: letzte Store-Zeilenmutation; nützlich für Auflistung und Bereinigung, aber nicht
-  maßgeblich für die Aktualität von täglichem Zurücksetzen/Inaktivität.
+- `updatedAt`: letzte Änderung der Speicherzeile; nützlich für Auflistung und Bereinigung, aber nicht
+  maßgeblich für die Aktualität täglicher/inaktivitätsbedingter Zurücksetzungen.
 
-Ältere Zeilen ohne `sessionStartedAt` werden, sofern verfügbar, aus dem JSONL-
-Sitzungsheader des Transkripts aufgelöst. Wenn einer älteren Zeile auch `lastInteractionAt` fehlt,
-fällt die Inaktivitätsaktualität auf diese Sitzungsstartzeit zurück, nicht auf spätere Buchhaltungs-
-Schreibvorgänge.
+Während der Migration von älteren Installationen importieren der Gateway-Start und `openclaw doctor
+--fix` Legacy-Zeilen aus `sessions.json` und den aktiven JSONL-Transkriptverlauf automatisch in
+SQLite. Zeilen ohne `sessionStartedAt` werden, sofern verfügbar, anhand des
+JSONL-Sitzungsheaders des Legacy-Transkripts aufgelöst. Wenn einer älteren Zeile außerdem
+`lastInteractionAt` fehlt, basiert die Aktualität für die Inaktivität auf diesem Sitzungsstartzeitpunkt,
+nicht auf späteren Verwaltungs-Schreibvorgängen. Verwenden Sie `openclaw doctor --session-sqlite inspect
+--session-sqlite-all-agents` und die [Doctor-Migrationssequenz
+](/de/cli/doctor#session-sqlite-migration), wenn Sie explizite
+Inspektions- oder Validierungsnachweise benötigen.
 
 ## Sitzungswartung
 
-OpenClaw begrenzt den Sitzungsspeicher im Laufe der Zeit automatisch. Standardmäßig läuft es
-im Modus `enforce` und wendet die Bereinigung während der Wartung an. Setzen Sie
-`session.maintenance.mode` auf `"warn"`, um zu melden, was bereinigt würde, ohne den Store/die Dateien zu verändern:
+OpenClaw begrenzt den Sitzungsspeicher im Laufe der Zeit über `session.maintenance`; die
+Standardwerte sind dargestellt:
 
 ```json5
 {
   session: {
     maintenance: {
-      mode: "enforce",
+      mode: "enforce", // "enforce" führt die Bereinigung durch; "warn" meldet nur
       pruneAfter: "30d",
       maxEntries: 500,
     },
@@ -133,48 +168,54 @@ im Modus `enforce` und wendet die Bereinigung während der Wartung an. Setzen Si
 }
 ```
 
-Für produktionsgroße `maxEntries`-Grenzen verwenden Gateway-Laufzeit-Schreibvorgänge einen kleinen High-Water-Puffer und bereinigen stapelweise zurück auf die konfigurierte Obergrenze. Lesevorgänge aus dem Sitzungsspeicher beschneiden oder begrenzen Einträge beim Gateway-Start nicht. Dadurch wird vermieden, bei jedem Start oder jeder isolierten Cron-Sitzung eine vollständige Store-Bereinigung auszuführen. `openclaw sessions cleanup --enforce` wendet die Obergrenze sofort an.
+Bei für den Produktionseinsatz dimensionierten `maxEntries`-Grenzwerten verwenden Schreibvorgänge der Gateway-Laufzeit einen kleinen
+Höchststands-Puffer und bereinigen den Bestand stapelweise wieder bis zur konfigurierten Obergrenze.
+Lesevorgänge im Sitzungsspeicher bereinigen oder begrenzen Einträge während des Gateway-Starts nicht, sodass
+beim Start und bei isolierten Cron-Sitzungen keine vollständige Speicherbereinigung anfällt.
+`openclaw sessions cleanup --enforce` wendet die Obergrenze sofort an.
 
-Gateway-Modelllauf-Probesitzungen sind standardmäßig kurzlebig. Passende Zeilen mit
-strikten expliziten Schlüsseln wie `agent:*:explicit:model-run-<uuid>` verwenden eine feste `24h`-
-Aufbewahrung, aber die Bereinigung ist druckgesteuert: Sie entfernt veraltete Probe-Zeilen nur, wenn
-Wartungs-/Obergrenzendruck für Sitzungseinträge erreicht ist. Wenn die Modelllauf-Bereinigung läuft,
-läuft sie vor dem allgemeineren Alters-Cutoff für veraltete Einträge und der Eintragsobergrenze. Normale Direct-,
-Gruppen-, Thread-, Cron-, Hook-, Heartbeat-, ACP- und Sub-Agent-Sitzungen erben
-diese 24h-Aufbewahrung nicht.
+Gateway-Prüfsitzungen für Modellläufe sind standardmäßig kurzlebig. Zeilen, die
+`agent:*:explicit:model-run-<uuid>` entsprechen, verwenden eine feste Aufbewahrungsdauer von `24h`, die Bereinigung ist jedoch
+druckgesteuert: Veraltete Prüfzeilen werden nur entfernt, wenn der Wartungs-/Obergrenzendruck
+für Sitzungseinträge erreicht ist; dies erfolgt vor dem allgemeineren Altersgrenzwert
+für veraltete Einträge und der Eintragsobergrenze. Normale direkte, Gruppen-, Thread-, Cron-, Hook-, Heartbeat-,
+ACP- und Subagenten-Sitzungen übernehmen diese Aufbewahrungsdauer von 24 Stunden nicht.
 
-Die Wartung bewahrt dauerhafte externe Unterhaltungspointer, einschließlich Gruppen-
-sitzungen und thread-bezogener Chat-Sitzungen, während synthetische Cron-,
-Hook-, Heartbeat-, ACP- und Sub-Agent-Einträge weiterhin altern und entfernt werden können.
+Die Wartung erhält dauerhafte externe Konversationsverweise, einschließlich Gruppen-
+und Thread-bezogener Chatsitzungen, während synthetische Cron-,
+Hook-, Heartbeat-, ACP- und Subagenten-Einträge weiterhin veralten können.
 
-Wenn Sie zuvor Direct-Message-Isolation verwendet und `session.dmScope` später wieder auf `main`
-zurückgesetzt haben, zeigen Sie veraltete Peer-Keyed-DM-Zeilen mit
-`openclaw sessions cleanup --dry-run --fix-dm-scope` in der Vorschau an. Wenn Sie dasselbe Flag anwenden,
-werden diese alten Direct-DM-Zeilen außer Betrieb genommen und ihre Transkripte als gelöschte
-Archive behalten.
+Wenn Sie zuvor DM-Isolierung verwendet und `session.dmScope` später wieder auf
+`main` gesetzt haben, können Sie veraltete Peer-Schlüssel-basierte DM-Zeilen mit
+`openclaw sessions cleanup --dry-run --fix-dm-scope` in der Vorschau anzeigen. Durch Anwenden desselben Flags
+werden diese alten Direkt-DM-Zeilen außer Betrieb genommen und ihre Transkripte als gelöschte
+Archive aufbewahrt.
 
-Vorschau mit `openclaw sessions cleanup --dry-run`.
+Zeigen Sie jeden Wartungslauf mit `openclaw sessions cleanup --dry-run` in der Vorschau an.
 
 ## Sitzungen prüfen
 
-- `openclaw status` -- Pfad des Sitzungsspeichers und letzte Aktivität.
-- `openclaw sessions --json` -- alle Sitzungen (mit `--active <minutes>` filtern).
-- `/status` im Chat -- Kontextnutzung, Modell und Umschalter.
-- `/context list` -- was im System-Prompt enthalten ist.
+| Befehl                     | Anzeige                                         |
+| -------------------------- | ----------------------------------------------- |
+| `openclaw status`          | Sitzungsspeicherpfad und letzte Aktivität       |
+| `openclaw sessions --json` | Alle Sitzungen (mit `--active <minutes>` filtern) |
+| `/status` im Chat          | Kontextnutzung, Modell und Umschalter           |
+| `/context list`            | Inhalt des System-Prompts                       |
 
 ## Weiterführende Informationen
 
-- [Session Pruning](/de/concepts/session-pruning) -- Kürzen von Tool-Ergebnissen
-- [Compaction](/de/concepts/compaction) -- Zusammenfassen langer Unterhaltungen
-- [Sitzungs-Tools](/de/concepts/session-tool) -- Agent-Tools für sitzungsübergreifende Arbeit
-- [Deep Dive zur Sitzungsverwaltung](/de/reference/session-management-compaction) --
-  Store-Schema, Transkripte, Senderichtlinie, Ursprungsmetadaten und erweiterte Konfiguration
-- [Multi-Agent](/de/concepts/multi-agent) — Routing und Sitzungsisolation über Agenten hinweg
-- [Hintergrundaufgaben](/de/automation/tasks) — wie losgelöste Arbeit Aufgaben-Datensätze mit Sitzungsreferenzen erstellt
-- [Kanal-Routing](/de/channels/channel-routing) — wie eingehende Nachrichten zu Sitzungen geroutet werden
+- [Sitzungssuche](/concepts/session-search) - Volltextabruf über frühere Transkripte hinweg
+- [Sitzungsbereinigung](/de/concepts/session-pruning) - Kürzen von Werkzeugergebnissen
+- [Compaction](/de/concepts/compaction) - Zusammenfassen langer Konversationen
+- [Sitzungswerkzeuge](/de/concepts/session-tool) - Agentenwerkzeuge für sitzungsübergreifende Arbeit
+- [Sitzungsverwaltung im Detail](/de/reference/session-management-compaction) -
+  Speicherschema, Transkripte, Senderichtlinie, Ursprungsmetadaten und erweiterte Konfiguration
+- [Multi-Agenten-System](/de/concepts/multi-agent) - Routing und Sitzungsisolierung zwischen Agenten
+- [Hintergrundaufgaben](/de/automation/tasks) - wie losgelöste Arbeit Aufgabendatensätze mit Sitzungsreferenzen erstellt
+- [Kanal-Routing](/de/channels/channel-routing) - wie eingehende Nachrichten an Sitzungen weitergeleitet werden
 
-## Verwandt
+## Verwandte Themen
 
-- [Session Pruning](/de/concepts/session-pruning)
-- [Sitzungs-Tools](/de/concepts/session-tool)
+- [Sitzungsbereinigung](/de/concepts/session-pruning)
+- [Sitzungswerkzeuge](/de/concepts/session-tool)
 - [Befehlswarteschlange](/de/concepts/queue)

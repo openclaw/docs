@@ -1,30 +1,32 @@
 ---
 read_when:
-    - Gateway, 작업 영역, 인증, 채널, Skills에 대한 안내형 설정을 원하는 경우
-summary: '`openclaw onboard`에 대한 CLI 참조(대화형 온보딩)'
+    - 추론을 설정한 다음 Crestodian으로 설정을 완료하려고 합니다.
+summary: '`openclaw onboard`(대화형 온보딩)의 CLI 참조 문서'
 title: 온보딩
 x-i18n:
-    generated_at: "2026-07-04T20:28:42Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:06:18Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: 99362cdca49929f7d05c2bf7bd8b0a55811b7ad6c618be90effb8869cd2ad839
+    source_hash: 6e9dad7efda492e0d9ef01ef08a1fd8c81272a0d9b3aa3b945917b6878159a06
     source_path: cli/onboard.md
     workflow: 16
 ---
 
 # `openclaw onboard`
 
-로컬 또는 원격 Gateway 설정을 위한 전체 가이드형 온보딩입니다. OpenClaw가 모델 인증, 워크스페이스, Gateway, 채널, Skills, 상태 확인을 하나의 흐름으로 안내하게 하려면 사용하세요.
-
-## 관련 가이드
+먼저 추론을 설정하는 안내형 설정입니다. 기존 AI 액세스를 감지하고,
+실제 completion을 요구하며, 작동하는 경로만 저장한 다음
+나머지를 구성하도록 Crestodian을 시작합니다. `openclaw setup`도 동일한 진입점이며,
+`openclaw setup --baseline`은 기준 구성/워크스페이스만 작성합니다.
 
 <CardGroup cols={2}>
   <Card title="CLI 온보딩 허브" href="/ko/start/wizard" icon="rocket">
-    대화형 CLI 흐름 안내입니다.
+    대화형 CLI 흐름의 단계별 안내입니다.
   </Card>
   <Card title="온보딩 개요" href="/ko/start/onboarding-overview" icon="map">
-    OpenClaw 온보딩이 어떻게 함께 구성되는지 설명합니다.
+    OpenClaw 온보딩의 전체 구성 방식입니다.
   </Card>
   <Card title="CLI 설정 참조" href="/ko/start/wizard-cli-reference" icon="book">
     출력, 내부 동작, 단계별 동작입니다.
@@ -41,6 +43,7 @@ x-i18n:
 
 ```bash
 openclaw onboard
+openclaw onboard --classic
 openclaw onboard --modern
 openclaw onboard --flow quickstart
 openclaw onboard --flow manual
@@ -50,21 +53,89 @@ openclaw onboard --skip-bootstrap
 openclaw onboard --mode remote --remote-url wss://gateway-host:18789
 ```
 
-`--flow import`는 Hermes 같은 Plugin 소유 마이그레이션 공급자를 사용합니다. 새 OpenClaw 설정에서만 실행됩니다. 기존 구성, 자격 증명, 세션 또는 워크스페이스 메모리/ID 파일이 있으면 가져오기 전에 재설정하거나 새 설정을 선택하세요.
+- `--classic`: 전체 단계별 마법사를 엽니다. `--non-interactive`와 함께 사용할 수
+  없으므로 자동 설정에서는 `--classic`을 생략하십시오.
+- `--flow quickstart`: 최소한의 프롬프트로 클래식 마법사를 열고
+  Gateway 토큰을 자동 생성합니다.
+- `--flow manual`(별칭 `advanced`): 포트, 바인드, 인증에 대한 전체 프롬프트가 포함된
+  클래식 마법사를 엽니다.
+- `--flow import`: 감지된 마이그레이션 제공자(예: `--import-from hermes`를 통한 Hermes)를 실행하고 계획을 미리 본 다음 확인 후 적용합니다. 가져오기는 새로운 OpenClaw 설정에 대해서만 실행됩니다. 구성, 자격 증명, 세션 또는 워크스페이스 상태가 존재한다면 먼저 초기화하십시오. 드라이런 계획, 덮어쓰기 모드, 보고서, 정확한 매핑은 [`openclaw migrate`](/ko/cli/migrate)를 사용하십시오.
+- `--modern`은 Crestodian 대화형 설정 도우미의 호환성 별칭입니다.
+  `openclaw crestodian`과 동일한 실제 추론 게이트를 사용하며
+  `--workspace`, `--accept-risk`,
+  `--non-interactive`, `--json`만 허용합니다. 다른 설정 플래그는
+  묵시적으로 무시되지 않고 거부됩니다.
 
-`--modern`은 Crestodian 대화형 온보딩 미리보기를 시작합니다. `--modern`이 없으면 `openclaw onboard`는 클래식 온보딩 흐름을 유지합니다.
+## 안내형 흐름
 
-대화형 터미널에서 하위 명령 없는 기본 `openclaw`는 구성 상태에 따라 라우팅됩니다.
+일반 `openclaw onboard`는 안내형 흐름을 시작합니다. 보안 고지를 표시하고,
+구성된 모델, API 키 환경 변수, 지원되는 로컬 CLI를 통해 이미 사용 가능한
+AI 액세스를 감지한 다음 권장 후보를 실제 completion으로 테스트합니다.
+해당 후보가 실패하면 온보딩에서 이유를 표시하고
+사용 가능한 다음 후보를 자동으로 시도합니다.
 
-- 활성 구성 파일이 없거나 작성된 설정이 없으면(비어 있거나 메타데이터만 있음) 이 클래식 온보딩 흐름을 시작합니다.
-- 구성 파일이 있지만 검증에 실패하면 복구를 위해 [Crestodian](/ko/cli/crestodian)을 시작합니다.
-- 구성 파일이 유효하면 일반 에이전트 TUI를 엽니다. 로컬로 열거나 도달 가능한 구성된 Gateway에 연결합니다. 구성된 설치에서는 TUI 안의 `/crestodian` 또는 `openclaw crestodian`으로 Crestodian에 접근하세요.
+자동 감지가 모두 소진되면 감지된 다른 후보를 선택하거나
+마스킹된 프롬프트에 제공자 API 키를 입력하십시오. 수동 키도 동일한
+실제 completion 경로를 통해 테스트됩니다. 안내형 온보딩은
+후보가 통과하기 전에는 Crestodian 또는 AI 없이 종료하는 옵션을 제공하지 않습니다.
+OpenClaw는 테스트에 성공한 후에만 검증된 모델 경로와 해당 자격 증명을
+저장합니다. 실패한 후보는 구성된 모델을 교체하거나 시도한 자격 증명을
+저장하지 않습니다. 워크스페이스 및 Gateway 설정은
+Crestodian이 시작될 때까지 변경되지 않습니다.
 
-평문 `ws://`는 loopback, 사설 IP 리터럴, `.local`, Tailnet `*.ts.net` Gateway URL에 허용됩니다. 그 밖의 신뢰할 수 있는 사설 DNS 이름에는 온보딩 프로세스 환경에서 `OPENCLAW_ALLOW_INSECURE_PRIVATE_WS=1`을 설정하세요.
+안내형 모드에서 `--workspace <dir>`은 Crestodian이 제안할 워크스페이스와
+격리된 추론 컨텍스트를 제공합니다. Crestodian 설정 제안을 승인할 때까지
+저장되지 않습니다. 클래식 및 비대화형 온보딩은 일반 설정 흐름을 통해
+워크스페이스를 저장합니다.
+
+추론이 통과하면 안내형 온보딩은 검증된 모델로 Crestodian을 즉시 시작합니다.
+그런 다음 Crestodian에서 워크스페이스, Gateway, 채널, 에이전트, Plugin 및
+기타 선택적 기능을 구성할 수 있습니다. Crestodian 내에서
+`open channel wizard for <channel>`을 사용하여 채널 자격 증명 수집을
+마스킹된 터미널 마법사에 맡기십시오. 모델 제공자나 인증을 변경하려면
+Crestodian을 종료하고 `openclaw onboard`를 실행하십시오. Crestodian은
+안내형 또는 클래식 제공자 흐름을 열지 않습니다.
+
+구성된 설치에서 `openclaw onboard`를 다시 실행하면 먼저 현재 기본 모델을
+검증하므로 동일한 흐름이 검증 및 복구 절차로 작동합니다.
+이 검사가 실패해도 구성된 모델은 자동으로 교체되지 않습니다.
+온보딩이 중지되고 계속할 방법을 묻습니다. 검사는 워크스페이스 외부에서
+실행되므로 워크스페이스 Plugin이 제공하는 모델은 에이전트에서 계속
+작동하더라도 여기서는 실패할 수 있습니다.
+제공자별 인증, 채널, Skills, 원격 Gateway 설정, 가져오기 또는 전체 Gateway
+제어에는 `openclaw onboard --classic`을 사용하십시오. 추론 이외의 대화형
+설정 및 복구에는 `openclaw crestodian`을 실행하십시오. `openclaw onboard
+--modern`은 동일한 추론 게이트를 통과하는 호환성 별칭입니다. 클래식
+마법사는 실제 completion을 통해 기본 모델을 선택적으로 검증할 수 있지만,
+Crestodian 자체의 실제 추론 검사를 통과할 때까지 Crestodian은 시작되지 않습니다.
+
+대화형 터미널에서 하위 명령 없이 `openclaw`만 실행하면 구성
+상태에 따라 다음과 같이 라우팅됩니다.
+
+- 활성 구성 파일이 없거나 작성된 설정이 없는 경우(비어 있거나
+  메타데이터만 있는 경우) 안내형 온보딩을 시작합니다.
+- 구성 파일은 존재하지만 유효성 검사에 실패하면 `openclaw doctor` 안내와 함께
+  클래식 온보딩 경로를 시작합니다. Crestodian에는 작동하는 추론이 필요하므로
+  이 추론 전 상태를 복구하는 데 사용되지 않습니다.
+- 구성 파일이 유효하면 일반 에이전트 TUI를 엽니다. 에이전트와 모델이 있는
+  구성된 Gateway에 연결할 수 있으면 온보딩이나 Crestodian 없이 해당 UI로
+  바로 이동합니다. 구성된 설치에서는 TUI 내의 `/crestodian` 또는
+  `openclaw crestodian`으로 Crestodian에 접근하십시오.
+
+평문 `ws://`는 루프백, 사설 IP 리터럴, `.local`, Tailnet `*.ts.net` Gateway URL에 허용됩니다. 그 밖의 신뢰할 수 있는 사설 DNS 이름에는 온보딩 프로세스 환경에서 `OPENCLAW_ALLOW_INSECURE_PRIVATE_WS=1`을 설정하십시오.
+
+## 초기화
+
+```bash
+openclaw onboard --reset
+openclaw onboard --reset --reset-scope full
+```
+
+`--reset`은 설정을 실행하기 전에 상태를 삭제합니다. `--reset-scope`는 삭제 범위를 제어합니다. `config`(구성만), `config+creds+sessions`(범위 없이 `--reset`을 전달할 때의 기본값), `full`(워크스페이스도 초기화) 중 하나입니다. 워크스페이스 초기화는 `--reset-scope full`을 사용할 때만 수행됩니다.
 
 ## 로캘
 
-대화형 온보딩은 고정 설정 문구에 CLI 마법사 로캘을 사용합니다. 확인 순서는 다음과 같습니다.
+대화형 온보딩은 고정된 설정 문구에 CLI 마법사 로캘을 사용합니다. 적용 순서는 다음과 같습니다.
 
 1. `OPENCLAW_LOCALE`
 2. `LC_ALL`
@@ -72,15 +143,15 @@ openclaw onboard --mode remote --remote-url wss://gateway-host:18789
 4. `LANG`
 5. 영어 대체값
 
-지원되는 마법사 로캘은 `en`, `zh-CN`, `zh-TW`입니다. 로캘 값은 `zh_CN.UTF-8` 같은 밑줄 또는 POSIX 접미사 형식을 사용할 수 있습니다. 제품 이름, 명령 이름, 구성 키, URL, 공급자 ID, 모델 ID, Plugin/채널 레이블은 그대로 유지됩니다.
-
-예시:
+지원되는 마법사 로캘은 `en`, `zh-CN`, `zh-TW`입니다. 로캘 값에는 `zh_CN.UTF-8` 같은 밑줄 또는 POSIX 접미사 형식을 사용할 수 있습니다. 제품명, 명령 이름, 구성 키, URL, 제공자 ID, 모델 ID, Plugin/채널 레이블은 원문 그대로 유지됩니다.
 
 ```bash
 OPENCLAW_LOCALE=zh-CN openclaw onboard
 ```
 
-비대화형 사용자 지정 공급자:
+## 비대화형 설정
+
+`--non-interactive`에는 `--accept-risk`가 필요합니다. 이는 에이전트가 강력하며 전체 시스템 액세스가 위험하다는 점을 인정합니다. `--mode`의 기본값은 `local`입니다.
 
 ```bash
 openclaw onboard --non-interactive \
@@ -93,11 +164,9 @@ openclaw onboard --non-interactive \
   --custom-image-input
 ```
 
-`--custom-api-key`는 비대화형 모드에서 선택 사항입니다. 생략하면 온보딩이 `CUSTOM_API_KEY`를 확인합니다.
-OpenClaw는 일반적인 비전 모델 ID를 이미지 지원으로 자동 표시합니다. 알 수 없는 사용자 지정 비전 ID에는 `--custom-image-input`을 전달하고, 텍스트 전용 메타데이터를 강제하려면 `--custom-text-input`을 전달하세요.
-`/v1/responses`는 지원하지만 `/v1/chat/completions`는 지원하지 않는 OpenAI 호환 엔드포인트에는 `--custom-compatibility openai-responses`를 사용하세요.
+`--custom-api-key`는 선택 사항입니다. 생략하면 온보딩에서 환경의 `CUSTOM_API_KEY`를 확인합니다. OpenClaw는 일반적인 비전 모델 ID(GPT-4o/4.1/5.x, Claude 3/4, Gemini, Qwen-VL, LLaVA, Pixtral 및 유사 모델)를 이미지 지원 모델로 자동 표시합니다. 알 수 없는 사용자 지정 비전 ID에는 `--custom-image-input`을 전달하고, 텍스트 전용 메타데이터를 강제하려면 `--custom-text-input`을 사용하십시오. `/v1/responses`는 지원하지만 `/v1/chat/completions`는 지원하지 않는 OpenAI 호환 엔드포인트에는 `--custom-compatibility openai-responses`를 사용하십시오. 유효한 값은 `openai`(기본값), `openai-responses`, `anthropic`입니다.
 
-LM Studio는 비대화형 모드에서 공급자별 키 플래그도 지원합니다.
+LM Studio에는 제공자별 키 플래그도 있습니다.
 
 ```bash
 openclaw onboard --non-interactive \
@@ -118,9 +187,9 @@ openclaw onboard --non-interactive \
   --accept-risk
 ```
 
-`--custom-base-url`의 기본값은 `http://127.0.0.1:11434`입니다. `--custom-model-id`는 선택 사항입니다. 생략하면 온보딩이 Ollama의 권장 기본값을 사용합니다. `kimi-k2.5:cloud` 같은 클라우드 모델 ID도 여기에서 작동합니다.
+`--custom-base-url`의 기본값은 `http://127.0.0.1:11434`입니다. `--custom-model-id`는 선택 사항이며, 생략하면 온보딩에서 Ollama의 권장 기본값을 사용합니다. `kimi-k2.5:cloud` 같은 클라우드 모델 ID도 여기서 작동합니다.
 
-공급자 키를 평문 대신 참조로 저장:
+제공자 키를 평문 대신 참조로 저장하십시오.
 
 ```bash
 openclaw onboard --non-interactive \
@@ -129,77 +198,59 @@ openclaw onboard --non-interactive \
   --accept-risk
 ```
 
-`--secret-input-mode ref`를 사용하면 온보딩이 평문 키 값 대신 환경 기반 참조를 씁니다.
-인증 프로필 기반 공급자의 경우 `keyRef` 항목을 쓰고, 사용자 지정 공급자의 경우 `models.providers.<id>.apiKey`를 env 참조로 씁니다(예: `{ source: "env", provider: "default", id: "CUSTOM_API_KEY" }`).
+`--secret-input-mode ref`를 사용하면 온보딩에서 평문 키 값 대신 환경 기반 참조를 작성합니다. 인증 프로필 기반 제공자의 경우 `keyRef: { source: "env", provider: "default", id: <envVar> }`를 작성하고, 사용자 지정 제공자의 경우에도 같은 방식으로 `models.providers.<id>.apiKey`를 작성합니다(예: `{ source: "env", provider: "default", id: "CUSTOM_API_KEY" }`). 계약: 온보딩 프로세스 환경에서 제공자 환경 변수(예: `OPENAI_API_KEY`)를 설정하고, 해당 환경 변수가 설정되지 않았다면 인라인 키 플래그를 함께 전달하지 마십시오. 일치하는 환경 변수 없이 플래그 값만 전달하면 안내와 함께 즉시 실패합니다.
 
-비대화형 `ref` 모드 계약:
+### Gateway 인증(비대화형)
 
-- 온보딩 프로세스 환경에 공급자 환경 변수를 설정하세요(예: `OPENAI_API_KEY`).
-- 해당 환경 변수도 설정되어 있지 않다면 인라인 키 플래그(예: `--openai-api-key`)를 전달하지 마세요.
-- 필요한 환경 변수 없이 인라인 키 플래그를 전달하면 온보딩은 안내와 함께 빠르게 실패합니다.
-
-비대화형 모드의 Gateway 토큰 옵션:
-
-- `--gateway-auth token --gateway-token <token>`은 평문 토큰을 저장합니다.
-- `--gateway-auth token --gateway-token-ref-env <name>`은 `gateway.auth.token`을 env SecretRef로 저장합니다.
+- `--gateway-auth token --gateway-token <token>`은 평문 토큰을 저장합니다. `token`은 기본 인증 모드입니다.
+- `--gateway-auth token --gateway-token-ref-env <name>`은 `gateway.auth.token`을 환경 SecretRef로 저장합니다. 온보딩 프로세스 환경에 해당 이름의 비어 있지 않은 환경 변수가 필요합니다.
 - `--gateway-token`과 `--gateway-token-ref-env`는 함께 사용할 수 없습니다.
-- `--gateway-token-ref-env`에는 온보딩 프로세스 환경의 비어 있지 않은 환경 변수가 필요합니다.
-- `--install-daemon`과 함께 사용할 때 토큰 인증에 토큰이 필요하면, SecretRef로 관리되는 Gateway 토큰은 검증되지만 supervisor 서비스 환경 메타데이터에 해석된 평문으로 유지되지 않습니다.
-- `--install-daemon`과 함께 사용할 때 토큰 모드에 토큰이 필요하고 구성된 토큰 SecretRef가 해석되지 않으면, 온보딩은 해결 안내와 함께 닫힌 상태로 실패합니다.
-- `--install-daemon`과 함께 사용할 때 `gateway.auth.token`과 `gateway.auth.password`가 모두 구성되어 있고 `gateway.auth.mode`가 설정되지 않았으면, 모드가 명시적으로 설정될 때까지 온보딩이 설치를 차단합니다.
-- 로컬 온보딩은 구성에 `gateway.mode="local"`을 씁니다. 이후 구성 파일에 `gateway.mode`가 없으면 유효한 로컬 모드 단축 경로가 아니라 구성 손상 또는 불완전한 수동 편집으로 취급하세요.
-- 로컬 온보딩은 선택한 설정 경로에 필요한 선택된 다운로드 가능 Plugin을 설치합니다.
-- 원격 온보딩은 원격 Gateway에 대한 연결 정보만 쓰며 로컬 Plugin 패키지를 설치하지 않습니다.
-- `--allow-unconfigured`는 별도의 Gateway 런타임 탈출구입니다. 온보딩이 `gateway.mode`를 생략해도 된다는 뜻이 아닙니다.
-
-예시:
+- `--install-daemon` 사용 시: SecretRef로 관리되는 `gateway.auth.token`은 검증되지만 확인된 평문으로 감독자 서비스 환경 메타데이터에 저장되지 않습니다. 참조를 확인할 수 없으면 해결 안내와 함께 안전하게 설치가 실패합니다. `gateway.auth.token`과 `gateway.auth.password`가 모두 구성되어 있고 `gateway.auth.mode`가 설정되지 않은 경우, 모드를 명시적으로 설정할 때까지 설치가 차단됩니다.
+- 로컬 온보딩은 구성에 `gateway.mode="local"`을 작성합니다. 이후 구성 파일에 `gateway.mode`가 없다면 이는 유효한 로컬 모드 단축 방식이 아니라 구성 손상 또는 완료되지 않은 수동 편집을 의미합니다.
+- 로컬 온보딩은 선택한 설정 경로에 필요한 다운로드 가능 Plugin(예: 해당 인증 선택에 필요한 Codex 또는 Copilot 런타임 Plugin)을 설치합니다. 원격 온보딩은 원격 Gateway의 연결 정보만 작성하며 로컬 Plugin 패키지는 절대 설치하지 않습니다.
+- `--allow-unconfigured`는 별도의 `openclaw gateway run` 비상 탈출구이며, 온보딩에서 `gateway.mode`를 건너뛰도록 허용하지 않습니다.
 
 ```bash
+export OPENAI_API_KEY="your-provider-key"
 export OPENCLAW_GATEWAY_TOKEN="your-token"
 openclaw onboard --non-interactive \
   --mode local \
-  --auth-choice skip \
+  --auth-choice openai-api-key \
+  --secret-input-mode ref \
   --gateway-auth token \
   --gateway-token-ref-env OPENCLAW_GATEWAY_TOKEN \
   --accept-risk
 ```
 
-비대화형 로컬 Gateway 상태 확인:
+### 로컬 Gateway 상태
 
-- `--skip-health`를 전달하지 않으면 온보딩은 도달 가능한 로컬 Gateway를 기다린 뒤 성공적으로 종료합니다.
-- `--install-daemon`은 관리형 Gateway 설치 경로를 먼저 시작합니다. 사용하지 않으면 예를 들어 `openclaw gateway run`처럼 로컬 Gateway가 이미 실행 중이어야 합니다.
-- 자동화에서 구성/워크스페이스/부트스트랩 쓰기만 원한다면 `--skip-health`를 사용하세요.
-- 워크스페이스 파일을 직접 관리한다면 `--skip-bootstrap`을 전달해 `agents.defaults.skipBootstrap: true`를 설정하고 `AGENTS.md`, `SOUL.md`, `TOOLS.md`, `IDENTITY.md`, `USER.md`, `HEARTBEAT.md`, `BOOTSTRAP.md` 생성을 건너뛰세요.
-- 네이티브 Windows에서 `--install-daemon`은 먼저 예약된 작업을 시도하고, 작업 생성이 거부되면 사용자별 시작 폴더 로그인 항목으로 대체합니다.
+- `--skip-health`를 전달하지 않으면 온보딩은 연결 가능한 로컬 Gateway가 준비될 때까지 기다린 후 성공적으로 종료합니다.
+- `--install-daemon`은 먼저 관리형 Gateway 설치 경로를 시작합니다. 이 플래그가 없으면 로컬 Gateway가 이미 실행 중이어야 합니다(예: `openclaw gateway run`).
+- 자동화에서 구성/워크스페이스/부트스트랩 작성만 원하는 경우 `--skip-health`로 대기를 건너뜁니다.
+- `--skip-bootstrap`은 `agents.defaults.skipBootstrap: true`를 설정하고 `AGENTS.md`, `SOUL.md`, `TOOLS.md`, `IDENTITY.md`, `USER.md`, `HEARTBEAT.md`, `BOOTSTRAP.md` 생성을 건너뜁니다.
+- 네이티브 Windows에서 `--install-daemon`은 먼저 Scheduled Tasks를 시도하고, 작업 생성이 거부되면 사용자별 Startup 폴더 로그인 항목으로 대체합니다.
 
-참조 모드의 대화형 온보딩 동작:
+### 대화형 참조 모드
 
-- 프롬프트가 표시되면 **비밀 참조 사용**을 선택하세요.
-- 그런 다음 다음 중 하나를 선택하세요.
-  - 환경 변수
-  - 구성된 비밀 공급자(`file` 또는 `exec`)
-- 온보딩은 참조를 저장하기 전에 빠른 사전 검증을 수행합니다.
-  - 검증이 실패하면 온보딩이 오류를 표시하고 다시 시도할 수 있게 합니다.
+- 메시지가 표시되면 **비밀 참조 사용**을 선택한 다음 **환경 변수** 또는 구성된 비밀 제공자(`file` 또는 `exec`)를 선택하십시오.
+- 온보딩은 참조를 저장하기 전에 빠른 사전 유효성 검사를 실행하며, 실패하면 다시 시도할 수 있습니다.
 
-### 비대화형 Z.AI 엔드포인트 선택
+### Z.AI 엔드포인트 선택 사항
 
 <Note>
-`--auth-choice zai-api-key`는 키에 가장 적합한 Z.AI 엔드포인트와 모델을 자동 감지합니다. Coding Plan 엔드포인트는 `zai/glm-5.2`를 선호하고, 일반 API 엔드포인트는 `zai/glm-5.1`을 사용합니다. Coding Plan 엔드포인트를 강제하려면 `zai-coding-global` 또는 `zai-coding-cn`을 선택하세요.
+`--auth-choice zai-api-key`는 키에 가장 적합한 Z.AI 엔드포인트와 모델을 자동 감지합니다. Coding Plan 엔드포인트는 `zai/glm-5.2`를 우선 사용하며 사용할 수 없으면 `glm-5.1`로 대체합니다. 일반 API 엔드포인트의 기본값은 `zai/glm-5.1`입니다. Coding Plan 엔드포인트를 강제로 사용하려면 `zai-coding-global` 또는 `zai-coding-cn`을 직접 선택하십시오.
 </Note>
 
 ```bash
-# Promptless endpoint selection
+# 프롬프트 없는 엔드포인트 선택
 openclaw onboard --non-interactive \
   --auth-choice zai-coding-global \
   --zai-api-key "$ZAI_API_KEY"
 
-# Other Z.AI endpoint choices:
-# --auth-choice zai-coding-cn
-# --auth-choice zai-global
-# --auth-choice zai-cn
+# 기타 Z.AI 엔드포인트 선택 항목: zai-coding-cn, zai-global, zai-cn
 ```
 
-비대화형 Mistral 예시:
+Mistral:
 
 ```bash
 openclaw onboard --non-interactive \
@@ -209,73 +260,57 @@ openclaw onboard --non-interactive \
 
 ## 추가 비대화형 플래그
 
-토큰 기반 모델 인증(비대화형, `--auth-choice token`과 함께 사용):
+토큰 기반 모델 인증(`--auth-choice token`과 함께 사용):
 
-- `--token-provider <id>` — 토큰 공급자 ID입니다. 어느 공급자가 토큰을 발급하는지 식별합니다.
-- `--token <token>` — 모델 인증용 토큰 값입니다.
-- `--token-profile-id <id>` — 인증 프로필 ID입니다. 일반 토큰 저장의 기본값은 `<provider>:manual`입니다. 공급자 소유 설정 흐름은 `anthropic:default` 같은 자체 기본값을 사용할 수 있습니다.
-- `--token-expires-in <duration>` — 선택적 토큰 만료 기간입니다(예: `365d`, `12h`).
+| 플래그                          | 설명                                                                                                                               |
+| ------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| `--token-provider <id>`         | 토큰을 발급하는 토큰 공급자 ID                                                                                                    |
+| `--token <token>`               | 모델 인증에 사용할 토큰 값                                                                                                        |
+| `--token-profile-id <id>`       | 인증 프로필 ID(기본값은 `<provider>:manual`; 일부 공급자 소유 흐름은 `anthropic:default`와 같은 자체 기본값을 사용함)               |
+| `--token-expires-in <duration>` | 선택적 토큰 만료 기간(예: `365d`, `12h`)                                                                                           |
 
-Cloudflare AI Gateway(비대화형):
+Cloudflare AI Gateway: `--cloudflare-ai-gateway-account-id <id>`, `--cloudflare-ai-gateway-gateway-id <id>`.
 
-- `--cloudflare-ai-gateway-account-id <id>` — Cloudflare AI Gateway를 통한 라우팅용 Cloudflare 계정 ID입니다.
-- `--cloudflare-ai-gateway-gateway-id <id>` — Cloudflare AI Gateway ID입니다.
+데몬 설치 제어: `--no-install-daemon` / `--skip-daemon`(별칭, Gateway 서비스 설치 건너뛰기), `--daemon-runtime <node|bun>`.
 
-Daemon 설치 제어:
+Skills: `--node-manager <npm|pnpm|bun>`(기본값 `npm`), `--skip-skills`.
 
-- `--no-install-daemon` — Gateway 서비스 설치를 명시적으로 건너뜁니다.
-- `--skip-daemon` — `--no-install-daemon`의 별칭입니다.
+UI 및 훅 설정: `--skip-ui`(Control UI/TUI 프롬프트 건너뛰기), `--skip-hooks`(Webhook/훅 설정 건너뛰기), `--skip-channels`, `--skip-search`.
 
-UI 및 후크 설정 제어:
+출력: `--suppress-gateway-token-output`은 토큰이 포함된 Gateway/UI 출력(토큰 힌트, 토큰이 삽입된 자동 로그인 URL, Control UI 자동 실행)을 숨깁니다. 공유 터미널과 CI에서 유용합니다.
 
-- `--skip-ui` — 온보딩 중 Control UI / TUI 프롬프트를 건너뜁니다.
-- `--skip-hooks` — 온보딩 중 Webhook / 후크 설정 프롬프트를 건너뜁니다.
+<Note>
+`--json`은 안내형 또는 클래식 온보딩에서 비대화형 모드를 의미하지 않습니다.
+`--modern`을 사용하면 JSON은 Crestodian 개요를 한 번만 표시하고 해당 단일 결과 후 종료합니다.
+다른 스크립트에는 `--non-interactive`를 사용하십시오.
+</Note>
 
-출력 억제:
+## 공급자 사전 필터링
 
-- `--suppress-gateway-token-output` — 토큰을 포함하는 Gateway/UI 출력(토큰 힌트, 내장 토큰이 있는 자동 로그인 URL, 자동 Control UI 실행)을 억제합니다. 공유 터미널 및 CI 환경에서 유용합니다.
+인증 선택에 선호 공급자가 포함된 경우 온보딩은 기본 모델 및 허용 목록 선택기를 해당 공급자의 모델로 사전 필터링합니다. 이 필터는 동일한 Plugin이 소유한 다른 공급자도 일치시키므로 `volcengine`/`volcengine-plan` 및 `byteplus`/`byteplus-plan`과 같은 코딩 플랜 변형도 포함합니다. 선호 공급자 필터에서 로드된 모델이 하나도 나오지 않으면 선택기가 비어 있지 않도록 온보딩은 필터링되지 않은 카탈로그로 대체합니다.
 
-## 흐름 참고 사항
+## 웹 검색 후속 설정
 
-<AccordionGroup>
-  <Accordion title="흐름 유형">
-    - `quickstart`: 최소 프롬프트, Gateway 토큰을 자동 생성합니다.
-    - `manual`: 포트, 바인드, 인증에 대한 전체 프롬프트입니다(`advanced`의 별칭).
-    - `import`: 감지된 마이그레이션 공급자를 실행하고, 계획을 미리 보여준 다음 확인 후 적용합니다.
+일부 웹 검색 공급자는 온보딩 중에 공급자별 후속 프롬프트를 표시합니다.
 
-  </Accordion>
-  <Accordion title="공급자 사전 필터링">
-    인증 선택이 선호 공급자를 의미하면 온보딩은 기본 모델 및 허용 목록 선택기를 해당 공급자로 사전 필터링합니다. Volcengine과 BytePlus의 경우 Coding Plan 변형(`volcengine-plan/*`, `byteplus-plan/*`)도 일치시킵니다.
+- **Grok**은 동일한 xAI 인증과 `x_search` 모델 선택을 사용하는 선택적 `x_search` 설정을 제공할 수 있습니다.
+- **Kimi**는 Moonshot API 리전(`api.moonshot.ai` 또는 `api.moonshot.cn`)과 기본 Kimi 웹 검색 모델을 요청할 수 있습니다.
 
-    선호 공급자 필터 결과 아직 로드된 모델이 없으면, 온보딩은 선택기를 비워 두는 대신 필터링되지 않은 카탈로그로 대체합니다.
+## 기타 동작
 
-  </Accordion>
-  <Accordion title="웹 검색 후속 설정">
-    일부 웹 검색 공급자는 공급자별 후속 프롬프트를 트리거합니다.
-
-    - **Grok**은 동일한 xAI OAuth 프로필 또는 API 키와 `x_search` 모델 선택을 사용하는 선택적 `x_search` 설정을 제공할 수 있습니다.
-    - **Kimi**는 Moonshot API 지역(`api.moonshot.ai` 대 `api.moonshot.cn`)과 기본 Kimi 웹 검색 모델을 물을 수 있습니다.
-
-  </Accordion>
-  <Accordion title="기타 동작">
-    - 로컬 온보딩 DM 범위 동작: [CLI 설정 참조](/ko/start/wizard-cli-reference#outputs-and-internals).
-    - 가장 빠른 첫 채팅: `openclaw dashboard`(Control UI, 채널 설정 없음).
-    - 사용자 지정 공급자: 목록에 없는 호스팅 공급자를 포함해 OpenAI 또는 Anthropic 호환 엔드포인트에 연결합니다. 자동 감지하려면 Unknown을 사용하세요.
-    - Hermes 상태가 감지되면 온보딩은 마이그레이션 흐름을 제공합니다. 드라이런 계획, 덮어쓰기 모드, 보고서, 정확한 매핑에는 [마이그레이션](/ko/cli/migrate)을 사용하세요.
-
-  </Accordion>
-</AccordionGroup>
+- 로컬 온보딩 DM 범위 동작: [CLI 설정 참고 자료](/ko/start/wizard-cli-reference#outputs-and-internals).
+- 가장 빠른 첫 채팅: `openclaw dashboard`(Control UI, 채널 설정 없음).
+- 사용자 지정 공급자: 목록에 없는 호스팅 공급자를 포함하여 OpenAI 또는 Anthropic 호환 엔드포인트를 연결합니다. 라이브 프로브를 통해 자동 감지하려면 **알 수 없음** 호환성을 사용하십시오.
+- Hermes 상태가 감지되면 온보딩에서 마이그레이션 흐름을 제공합니다(위의 `--flow import` 참조).
 
 ## 일반적인 후속 명령
+
+나중에 추론이 필요 없는 특정 변경에는 `openclaw configure`를 사용하고 채널 전용 설정에는 `openclaw
+channels add`를 사용하십시오. 모델 공급자 또는 인증 경로를 변경하려면 대신
+`openclaw onboard`를 실행하십시오.
 
 ```bash
 openclaw channels add
 openclaw configure
 openclaw agents add <name>
 ```
-
-동일한 안내형 온보딩 진입점으로 `openclaw setup`을 사용하세요. 기준 구성/워크스페이스만 필요한 경우 `openclaw setup --baseline`을 사용하고, 이후 대상 변경에는 `openclaw configure`를, 채널 전용 설정에는 `openclaw channels add`를 사용하세요.
-
-<Note>
-`--json`은 비대화형 모드를 의미하지 않습니다. 스크립트에는 `--non-interactive`를 사용하세요.
-</Note>

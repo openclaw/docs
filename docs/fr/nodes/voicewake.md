@@ -1,59 +1,47 @@
 ---
 read_when:
-    - Modification du comportement ou des valeurs par défaut des mots de réveil vocaux
+    - Modification du comportement ou des valeurs par défaut des mots d’activation vocale
     - Ajout de nouvelles plateformes Node nécessitant la synchronisation du mot d’activation
-summary: Mots de réveil vocaux globaux (gérés par le Gateway) et leur synchronisation entre les nœuds
-title: Réveil vocal
+summary: Mots de réveil vocaux globaux (gérés par le Gateway) et leur synchronisation entre les Node
+title: Activation vocale
 x-i18n:
-    generated_at: "2026-06-27T17:41:39Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:36:17Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: 3c57955e8061eca2f9fec83500e829f183cd3ef9f794bf385823a28f9c89b0a4
+    source_hash: a8a8c7a8bb2ee5bbc57d9141cd8f2176246cc61952b0ed42257f83af2c777427
     source_path: nodes/voicewake.md
     workflow: 16
 ---
 
-OpenClaw traite les **mots de réveil comme une seule liste globale** détenue par le **Gateway**.
+Les mots d’activation constituent **une liste globale unique appartenant au Gateway** — il n’existe aucune liste personnalisée par nœud. N’importe quel nœud ou interface d’application peut modifier la liste ; le Gateway conserve la modification et la diffuse à chaque client connecté.
 
-- Il n’existe **aucun mot de réveil personnalisé par nœud**.
-- **Toute interface utilisateur de nœud/application peut modifier** la liste ; les changements sont persistés par le Gateway et diffusés à tout le monde.
-- macOS et iOS conservent des boutons locaux pour **activer/désactiver Voice Wake** (l’UX locale et les permissions diffèrent).
-- Android garde actuellement Voice Wake désactivé et utilise un flux de micro manuel dans l’onglet Voice.
+- **macOS** : bouton local permettant d’activer ou de désactiver Voice Wake. Nécessite macOS 26+ ; consultez [Réveil vocal (macOS)](/fr/platforms/mac/voicewake) pour plus de détails sur l’exécution et le PTT.
+- **iOS** : bouton local permettant d’activer ou de désactiver Voice Wake dans Settings.
+- **Android** : ne prend pas en charge Voice Wake. L’onglet Voice utilise une capture manuelle du microphone plutôt que des déclencheurs par mot d’activation.
 
-## Stockage (hôte du Gateway)
+## Stockage
 
-Les mots de réveil et les règles de routage sont stockés dans la base de données d’état du gateway :
-
-- `~/.openclaw/state/openclaw.sqlite`
-
-Les tables actives sont :
-
-- `voicewake_triggers`
-- `voicewake_routing_config`
-- `voicewake_routing_routes`
-
-Les anciens fichiers `settings/voicewake.json` et `settings/voicewake-routing.json` sont
-uniquement des entrées de migration pour doctor ; à l’exécution, les tables SQLite sont lues et écrites.
+Les mots d’activation et les règles de routage résident dans la base de données d’état du Gateway, `~/.openclaw/state/openclaw.sqlite` par défaut (modifiable avec `OPENCLAW_STATE_DIR`), dans les tables `voicewake_triggers`, `voicewake_routing_config` et `voicewake_routing_routes`. Les anciens fichiers `settings/voicewake.json` et `settings/voicewake-routing.json` servent uniquement d’entrées de migration pour `openclaw doctor --fix` — l’environnement d’exécution ne les lit jamais.
 
 ## Protocole
 
-### Méthodes
+### Liste des déclencheurs
 
-- `voicewake.get` → `{ triggers: string[] }`
-- `voicewake.set` avec les paramètres `{ triggers: string[] }` → `{ triggers: string[] }`
+| Méthode         | Paramètres               | Résultat                 |
+| --------------- | ------------------------ | ------------------------ |
+| `voicewake.get` | aucun                    | `{ triggers: string[] }` |
+| `voicewake.set` | `{ triggers: string[] }` | `{ triggers: string[] }` |
 
-Notes :
+`voicewake.set` normalise l’entrée : supprime les espaces en début et en fin, élimine les entrées vides, conserve au maximum 32 déclencheurs et tronque chacun à 64 unités de code UTF-16 sans scinder les paires de substitution. Si le résultat est vide, les valeurs intégrées par défaut sont utilisées (`openclaw`, `claude`, `computer`).
 
-- Les déclencheurs sont normalisés (espaces supprimés en début et fin, valeurs vides supprimées). Les listes vides reviennent aux valeurs par défaut.
-- Des limites sont appliquées par sécurité (plafonds de nombre/longueur).
+### Routage (du déclencheur vers la cible)
 
-### Méthodes de routage (déclencheur → cible)
-
-- `voicewake.routing.get` → `{ config: VoiceWakeRoutingConfig }`
-- `voicewake.routing.set` avec les paramètres `{ config: VoiceWakeRoutingConfig }` → `{ config: VoiceWakeRoutingConfig }`
-
-Forme de `VoiceWakeRoutingConfig` :
+| Méthode                 | Paramètres                           | Résultat                             |
+| ----------------------- | ------------------------------------ | ------------------------------------ |
+| `voicewake.routing.get` | aucun                                | `{ config: VoiceWakeRoutingConfig }` |
+| `voicewake.routing.set` | `{ config: VoiceWakeRoutingConfig }` | `{ config: VoiceWakeRoutingConfig }` |
 
 ```json
 {
@@ -64,40 +52,30 @@ Forme de `VoiceWakeRoutingConfig` :
 }
 ```
 
-Les cibles de route prennent en charge exactement l’un des éléments suivants :
+Chaque `target` de route prend en charge exactement l’une des valeurs suivantes :
 
 - `{ "mode": "current" }`
 - `{ "agentId": "main" }`
 - `{ "sessionKey": "agent:main:main" }`
 
+Limites : au maximum 32 routes et 64 caractères au maximum pour le texte du déclencheur. Pour la mise en correspondance et la détection des doublons, les déclencheurs de route sont normalisés en les convertissant en minuscules, en supprimant la ponctuation au début et à la fin de chaque mot et en réduisant les espaces consécutifs (`"Hey, Bot!!"` et `"hey bot"` correspondent et sont considérés comme des doublons) — cette normalisation est plus stricte que la simple suppression des espaces en début et en fin utilisée pour la liste globale des déclencheurs ci-dessus.
+
 ### Événements
 
-- charge utile `voicewake.changed` `{ triggers: string[] }`
-- charge utile `voicewake.routing.changed` `{ config: VoiceWakeRoutingConfig }`
+| Événement                    | Charge utile                         |
+| ---------------------------- | ------------------------------------ |
+| `voicewake.changed`          | `{ triggers: string[] }`             |
+| `voicewake.routing.changed`  | `{ config: VoiceWakeRoutingConfig }` |
 
-Qui le reçoit :
+Les deux sont diffusés à chaque client WebSocket disposant de la portée de lecture (application macOS, WebChat et autres clients similaires), ainsi qu’à chaque nœud connecté. Un nœud reçoit également les deux sous forme d’instantané initial juste après sa connexion.
 
-- Tous les clients WebSocket (application macOS, WebChat, etc.)
-- Tous les nœuds connectés (iOS/Android), ainsi que lors de la connexion d’un nœud sous forme d’envoi initial de « l’état actuel ».
+## Comportement des clients
 
-## Comportement client
+- **macOS** : appelle `voicewake.set`/`voicewake.get` et écoute `voicewake.changed` pour rester synchronisé avec les autres clients.
+- **iOS** : appelle `voicewake.set`/`voicewake.get` et écoute `voicewake.changed` pour maintenir la réactivité de la détection locale des mots d’activation.
+- **Android** : n’annonce pas la capacité `voiceWake` et ne reçoit pas les mises à jour des mots d’activation.
 
-### Application macOS
-
-- Utilise la liste globale pour filtrer les déclencheurs `VoiceWakeRuntime`.
-- La modification de « Trigger words » dans les paramètres Voice Wake appelle `voicewake.set`, puis s’appuie sur la diffusion pour maintenir les autres clients synchronisés.
-
-### Nœud iOS
-
-- Utilise la liste globale pour la détection des déclencheurs `VoiceWakeManager`.
-- La modification de Wake Words dans Settings appelle `voicewake.set` (via le WS du Gateway) et garde également la détection locale des mots de réveil réactive.
-
-### Nœud Android
-
-- Voice Wake est actuellement désactivé dans l’exécution/les Settings Android.
-- La voix Android utilise la capture micro manuelle dans l’onglet Voice au lieu des déclencheurs par mots de réveil.
-
-## Connexe
+## Voir aussi
 
 - [Mode conversation](/fr/nodes/talk)
 - [Audio et notes vocales](/fr/nodes/audio)

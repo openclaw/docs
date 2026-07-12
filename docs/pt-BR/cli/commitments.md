@@ -1,27 +1,28 @@
 ---
 read_when:
-    - Você quer inspecionar compromissos de acompanhamento inferidos
-    - Você quer dispensar verificações pendentes
+    - Você quer inspecionar os compromissos de acompanhamento inferidos
+    - Você quer descartar os check-ins pendentes
     - Você está auditando o que o Heartbeat pode entregar
-summary: Referência da CLI para `openclaw commitments` (inspecionar e descartar ações de acompanhamento inferidas)
+summary: Referência da CLI para `openclaw commitments` (inspecionar e descartar acompanhamentos inferidos)
 title: '`openclaw commitments`'
 x-i18n:
-    generated_at: "2026-04-30T09:40:20Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:00:09Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: 37d5e5dca25cf649a5069360aa4e41fcc33d042dea99f643b98c07189c58f21c
+    source_hash: 4323273a5d73975532f4728dc5e40c5d59e0c6d2e31a538f96bf3451e3fdf4d9
     source_path: cli/commitments.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
 Liste e gerencie compromissos de acompanhamento inferidos.
 
-Compromissos são memórias de acompanhamento opcionais e de curta duração criadas a partir do
-contexto da conversa. Consulte [Compromissos inferidos](/pt-BR/concepts/commitments) para o
-guia conceitual.
+Os compromissos são opcionais (`commitments.enabled`), memórias de acompanhamento de curta duração
+criadas com base no contexto da conversa e entregues pelo Heartbeat. Consulte
+[Compromissos inferidos](/pt-BR/concepts/commitments) para ver o guia conceitual e a configuração.
 
-Sem subcomando, `openclaw commitments` lista os compromissos pendentes.
+Sem um subcomando, `openclaw commitments` lista os compromissos pendentes.
 
 ## Uso
 
@@ -34,44 +35,47 @@ openclaw commitments dismiss <id...> [--json]
 ## Opções
 
 - `--all`: mostra todos os status em vez de apenas os compromissos pendentes.
-- `--agent <id>`: filtra para um id de agente.
+- `--agent <id>`: filtra por um único ID de agente.
 - `--status <status>`: filtra por status. Valores: `pending`, `sent`,
-  `dismissed`, `snoozed` ou `expired`.
-- `--json`: gera JSON legível por máquina.
+  `dismissed`, `snoozed` ou `expired`. Valores desconhecidos encerram o comando com um erro.
+- `--json`: gera uma saída JSON legível por máquina.
+
+`dismiss` marca os IDs de compromisso fornecidos como `dismissed` para que o Heartbeat não
+os entregue.
 
 ## Exemplos
 
-Listar compromissos pendentes:
+Liste os compromissos pendentes:
 
 ```bash
 openclaw commitments
 ```
 
-Listar todos os compromissos armazenados:
+Liste todos os compromissos armazenados:
 
 ```bash
 openclaw commitments --all
 ```
 
-Filtrar para um agente:
+Filtre por um agente:
 
 ```bash
 openclaw commitments --agent main
 ```
 
-Encontrar compromissos adiados:
+Localize compromissos adiados:
 
 ```bash
 openclaw commitments --status snoozed
 ```
 
-Dispensar um ou mais compromissos:
+Descarte um ou mais compromissos:
 
 ```bash
 openclaw commitments dismiss cm_abc123 cm_def456
 ```
 
-Exportar como JSON:
+Exporte como JSON:
 
 ```bash
 openclaw commitments --all --json
@@ -79,18 +83,20 @@ openclaw commitments --all --json
 
 ## Saída
 
-A saída em texto inclui:
+A saída de texto exibe a quantidade de compromissos, o caminho do armazenamento, todos os filtros ativos
+e uma linha por compromisso:
 
-- id do compromisso
+- ID do compromisso
 - status
-- tipo
-- horário de vencimento mais cedo
-- escopo
-- texto de check-in sugerido
+- tipo (`event_check_in`, `deadline_check`, `care_check_in` ou `open_loop`)
+- primeiro horário previsto
+- escopo (agente/canal/destino)
+- texto sugerido para acompanhamento
 
-A saída JSON também inclui o caminho do armazenamento de compromissos e os registros armazenados completos.
+A saída JSON inclui a quantidade, os filtros ativos de status e agente, o
+caminho do armazenamento de compromissos e os registros armazenados completos.
 
-## Relacionado
+## Relacionados
 
 - [Compromissos inferidos](/pt-BR/concepts/commitments)
 - [Visão geral da memória](/pt-BR/concepts/memory)

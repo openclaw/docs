@@ -1,69 +1,111 @@
 ---
 read_when:
-    - OpenClaw 업데이트
+    - OpenClaw 업데이트하기
     - 업데이트 후 문제가 발생함
-summary: OpenClaw 안전하게 업데이트하기(전역 설치 또는 소스), 그리고 롤백 전략
+summary: OpenClaw 안전 업데이트(전역 설치 또는 소스) 및 롤백 전략
 title: 업데이트 중
 x-i18n:
-    generated_at: "2026-06-27T17:38:08Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:24:26Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: a96c5b9b12040fe9bb8b1623c88a9c305d58dc6fcee7003f500e897ded9e7b4a
+    source_hash: 06b475fcd715afa5f4b9fa3fc7d546ba8dc53805c6a29e12fd4706dceb04cb60
     source_path: install/updating.md
     workflow: 16
 ---
 
-OpenClaw를 최신 상태로 유지하세요.
+OpenClaw을 최신 상태로 유지하십시오.
+
+Docker, Podman 및 Kubernetes 이미지 교체에 대해서는
+[컨테이너 이미지 업그레이드](/ko/install/docker#upgrading-container-images)를 참조하십시오.
+Gateway는 준비 상태가 되기 전에 시작 시 안전한 업그레이드 작업을 실행하며, 마운트된
+상태에 수동 복구가 필요하면 종료됩니다.
 
 ## 권장: `openclaw update`
 
-업데이트하는 가장 빠른 방법입니다. 설치 유형(npm 또는 git)을 감지하고, 최신 버전을 가져오고, `openclaw doctor`를 실행한 다음 Gateway를 다시 시작합니다.
+설치 유형(npm 또는 git)을 감지하고, 최신 버전을 가져오며, `openclaw doctor`를 실행하고, Gateway를 다시 시작합니다.
 
 ```bash
 openclaw update
 ```
 
-채널을 전환하거나 특정 버전을 대상으로 지정하려면:
+채널을 전환하거나 특정 버전을 대상으로 지정합니다.
 
 ```bash
 openclaw update --channel beta
+openclaw update --channel extended-stable
 openclaw update --channel dev
-openclaw update --dry-run   # preview without applying
+openclaw update --dry-run   # 적용하지 않고 미리 보기
 ```
 
-`openclaw update`는 `--verbose`를 받지 않습니다. 업데이트 진단에는 계획된 작업을 미리 보려면 `--dry-run`, 구조화된 결과에는 `--json`, 채널 및 사용 가능 상태를 검사하려면 `openclaw update status --json`을 사용하세요. 설치 프로그램에는 자체 `--verbose` 플래그가 있지만, 이 플래그는 `openclaw update`의 일부가 아닙니다.
+`openclaw update`에는 `--verbose` 플래그가 없습니다(설치 프로그램에는 있습니다). 진단하려면
+`--dry-run`으로 계획된 작업을 미리 보고, `--json`으로 구조화된 결과를 확인하거나,
+`openclaw update status --json`으로 채널 및 가용성 상태를 검사하십시오.
 
-`--channel beta`는 beta를 우선하지만, beta 태그가 없거나 최신 stable 릴리스보다 오래된 경우 런타임은 stable/latest로 폴백합니다. 일회성 패키지 업데이트에 원시 npm beta dist-tag를 원한다면 `--tag beta`를 사용하세요.
+`--channel beta`는 beta npm dist-tag를 우선하지만, beta 태그가 없거나 해당 버전이
+최신 stable 릴리스보다 오래된 경우 stable/latest로 대체합니다. 원시 npm beta
+dist-tag에 고정된 일회성 패키지 업데이트에는 대신 `--tag beta`를 사용하십시오.
 
-지속적으로 이동하는 GitHub `main` 체크아웃에는 `--channel dev`를 사용하세요. 패키지 업데이트의 경우 `--tag main`은 한 번의 실행에 대해 `github:openclaw/openclaw#main`으로 매핑되며, GitHub/git 소스 사양은 준비된 npm 설치 전에 임시 tarball로 패키징됩니다.
+`--channel extended-stable`은 패키지 전용이며 설치는 계속
+포그라운드에서만 진행됩니다. OpenClaw은 공개 npm `extended-stable` 선택자를 읽고,
+선택된 정확한 패키지를 검증한 후 해당 버전을 정확히 설치합니다. 레지스트리 데이터가
+없거나 일관되지 않으면 안전하게 실패하며, `latest`로 대체하지 않습니다.
+선택된 버전이 설치된 버전보다 오래된 경우에도 일반적인 다운그레이드 확인이
+적용됩니다. CLI는 코어 업데이트가 성공한 후 채널을 영구 저장하지만,
+`npm install -g openclaw@extended-stable`을 직접 실행하면 `update.channel`이
+업데이트되지 않습니다.
+코어 교체 후 bare/default 또는 `latest` 의도를 가진 적격 공식 npm Plugin은
+해당 코어 버전과 정확히 일치하도록 수렴합니다. 정확한 버전 고정과 명시적인
+비-`latest` 태그, 서드 파티 Plugin 및 npm 이외의 소스는 변경되지 않습니다.
+현재 OpenClaw 버전에서 생성된 카탈로그 설치는 해당 기본 의도를 유지합니다.
+정확한 버전만 포함하는 이전 레코드는 OpenClaw이 과거의 자동 고정과 사용자 고정을
+안전하게 구분할 수 없으므로 계속 고정됩니다. extended-stable 채널에서
+`openclaw plugins update @openclaw/name`을 한 번 실행하여 해당 Plugin이 다시
+정확한 코어 버전을 추적하도록 설정하십시오.
 
-관리형 Plugin의 경우 beta 채널 폴백은 경고입니다. Plugin beta를 사용할 수 없기 때문에 Plugin이 기록된 기본/latest 릴리스를 사용하더라도 코어 업데이트는 계속 성공할 수 있습니다.
+`--channel dev`는 지속적으로 이동하는 GitHub `main` 체크아웃을 제공합니다. 일회성
+패키지 업데이트의 경우 `--tag main`은 `github:openclaw/openclaw#main` 패키지
+사양에 매핑되며 대상 패키지 관리자(npm/pnpm/bun)를 통해 직접 설치합니다.
 
-채널 의미는 [개발 채널](/ko/install/development-channels)을 참고하세요.
+관리되는 Plugin에서 beta 릴리스가 누락된 경우 이는 실패가 아니라 경고입니다.
+Plugin이 기록된 default/latest 릴리스로 대체되는 동안에도 코어 업데이트는
+성공할 수 있습니다.
 
-## npm 및 git 설치 간 전환
+채널 의미에 대해서는 [릴리스 채널](/ko/install/development-channels)을 참조하십시오.
 
-설치 유형을 변경하려면 채널을 사용하세요. 업데이터는 `~/.openclaw`의 상태, 구성, 자격 증명, 워크스페이스를 유지합니다. CLI와 Gateway가 사용하는 OpenClaw 코드 설치만 변경합니다.
+## npm 설치와 git 설치 간 전환
+
+채널을 사용하여 설치 유형을 변경하십시오. 업데이터는 `~/.openclaw`에 있는 상태,
+구성, 자격 증명 및 작업 공간을 유지하며, CLI와 Gateway가 사용하는 OpenClaw 코드
+설치만 변경합니다.
 
 ```bash
-# npm package install -> editable git checkout
+# npm 패키지 설치 -> 편집 가능한 git 체크아웃
 openclaw update --channel dev
 
-# git checkout -> npm package install
+# git 체크아웃 -> npm 패키지 설치
 openclaw update --channel stable
 ```
 
-정확한 설치 모드 전환을 미리 보려면 먼저 `--dry-run`으로 실행하세요.
+먼저 설치 모드 전환을 미리 확인하십시오.
 
 ```bash
 openclaw update --channel dev --dry-run
 openclaw update --channel stable --dry-run
 ```
 
-`dev` 채널은 git 체크아웃을 보장하고, 빌드한 다음 해당 체크아웃에서 전역 CLI를 설치합니다. `stable` 및 `beta` 채널은 패키지 설치를 사용합니다. Gateway가 이미 설치되어 있으면 `openclaw update`는 `--no-restart`를 전달하지 않는 한 서비스 메타데이터를 새로 고치고 다시 시작합니다.
+`dev`는 git 체크아웃을 보장하고 빌드한 다음 해당 체크아웃에서 전역 CLI를
+설치합니다. `stable`, `extended-stable` 및 `beta` 채널은 패키지 설치를
+사용합니다. git 체크아웃에서는 변경하거나 변환하지 않고 extended-stable을
+거부합니다. Gateway가 이미 설치되어 있으면 `--no-restart`를 전달하지 않는 한
+`openclaw update`가 서비스 메타데이터를 갱신하고 다시 시작합니다.
 
-관리형 Gateway 서비스가 있는 패키지 설치의 경우 `openclaw update`는 해당 서비스가 사용하는 패키지 루트를 대상으로 합니다. 셸 `openclaw` 명령이 다른 설치에서 온 경우, 업데이터는 두 루트와 관리형 서비스 Node 경로를 모두 출력합니다. 패키지 업데이트는 서비스 루트를 소유한 패키지 관리자를 사용하며, 패키지를 교체하기 전에 관리형 서비스 Node를 대상 릴리스 엔진과 대조해 확인합니다.
+관리되는 Gateway 서비스가 있는 패키지 설치에서 `openclaw update`는 해당 서비스가
+사용하는 패키지 루트를 대상으로 합니다. 셸의 `openclaw` 명령이 다른 설치에서
+제공되는 경우 업데이터는 두 루트와 관리되는 서비스의 Node 경로를 출력하고,
+패키지를 교체하기 전에 해당 Node 버전이 대상 릴리스의 `engines.node` 요구 사항을
+충족하는지 확인합니다.
 
 ## 대안: 설치 프로그램 다시 실행
 
@@ -71,15 +113,19 @@ openclaw update --channel stable --dry-run
 curl -fsSL https://openclaw.ai/install.sh | bash
 ```
 
-온보딩을 건너뛰려면 `--no-onboard`를 추가하세요. 설치 프로그램을 통해 특정 설치 유형을 강제하려면 `--install-method git --no-onboard` 또는 `--install-method npm --no-onboard`를 전달하세요.
+온보딩을 건너뛰려면 `--no-onboard`를 추가하십시오. 특정 설치 유형을 강제하려면
+`--install-method git --no-onboard` 또는 `--install-method npm --no-onboard`를
+전달하십시오.
 
-npm 패키지 설치 단계 이후 `openclaw update`가 실패하면 설치 프로그램을 다시 실행하세요. 설치 프로그램은 이전 업데이터를 호출하지 않습니다. 전역 패키지 설치를 직접 실행하며, 부분적으로 업데이트된 npm 설치를 복구할 수 있습니다.
+npm 패키지 설치 단계 후 `openclaw update`가 실패하면 대신 설치 프로그램을
+다시 실행하십시오. 설치 프로그램은 업데이터를 호출하지 않고 전역 패키지 설치를
+직접 실행하므로 부분적으로 업데이트된 npm 설치를 복구할 수 있습니다.
 
 ```bash
 curl -fsSL https://openclaw.ai/install.sh | bash -s -- --install-method npm
 ```
 
-복구를 특정 버전 또는 dist-tag로 고정하려면 `--version`을 추가하세요.
+`--version`을 사용하여 복구를 특정 버전 또는 dist-tag에 고정하십시오.
 
 ```bash
 curl -fsSL https://openclaw.ai/install.sh | bash -s -- --install-method npm --version <version-or-dist-tag>
@@ -91,9 +137,18 @@ curl -fsSL https://openclaw.ai/install.sh | bash -s -- --install-method npm --ve
 npm i -g openclaw@latest
 ```
 
-감독형 설치에서는 실행 중인 Gateway 서비스와 패키지 교체를 조율할 수 있으므로 `openclaw update`를 선호하세요. 감독형 설치에서 수동으로 업데이트하는 경우 패키지 관리자가 시작되기 전에 관리형 Gateway를 중지하세요. 패키지 관리자는 파일을 제자리에서 교체하므로, 실행 중인 Gateway가 패키지 트리가 일시적으로 반쯤 교체된 상태에서 코어 또는 Plugin 파일을 로드하려고 시도할 수 있습니다. 패키지 관리자가 완료된 후 Gateway를 다시 시작하여 서비스가 새 설치를 사용하도록 하세요.
+감독되는 설치에는 `openclaw update`를 권장합니다. 실행 중인 Gateway 서비스와
+패키지 교체를 조율할 수 있기 때문입니다. 감독되는 설치에서 수동으로 업데이트하는
+경우 먼저 관리되는 Gateway를 중지하십시오. 패키지 관리자는 파일을 제자리에서
+교체하므로, 그렇지 않으면 실행 중인 Gateway가 교체 도중 코어 또는 Plugin 파일을
+로드하려 할 수 있습니다. 패키지 관리자가 완료된 후 Gateway를 다시 시작하여
+새 설치를 적용하십시오.
 
-root 소유 Linux 시스템 전역 설치에서 `openclaw update`가 `EACCES`로 실패하고 시스템 npm으로 복구하는 경우, 수동 패키지 교체가 끝날 때까지 Gateway를 중지된 상태로 유지하세요. 해당 Gateway에 평소 사용하는 동일한 `openclaw` 프로필 플래그 또는 환경을 사용하세요. `/usr/bin/npm`을 호스트에서 root 소유 전역 prefix를 소유한 시스템 npm으로 바꾸세요.
+루트 소유 Linux 시스템 전역 설치에서 `openclaw update`가 `EACCES`로 실패하면,
+수동 교체 중 Gateway를 중지한 상태로 유지하면서 시스템 npm으로 복구하십시오.
+해당 Gateway에 평소 사용하는 것과 동일한 프로필 플래그/환경을 사용하십시오.
+`/usr/bin/npm`을 호스트에서 루트 소유 전역 접두사를 소유하는 시스템 npm으로
+바꾸십시오.
 
 ```bash
 openclaw gateway stop
@@ -102,7 +157,7 @@ openclaw gateway install --force
 openclaw gateway restart
 ```
 
-그런 다음 서비스를 확인하세요.
+그런 다음 확인하십시오.
 
 ```bash
 openclaw --version
@@ -112,9 +167,17 @@ openclaw gateway status --deep --json
 openclaw doctor --lint --json
 ```
 
-`openclaw update`가 전역 npm 설치를 관리할 때는 먼저 대상 패키지를 임시 npm prefix에 설치하고, 패키징된 `dist` 인벤토리를 검증한 다음, 깨끗한 패키지 트리를 실제 전역 prefix로 교체합니다. 이렇게 하면 npm이 이전 패키지의 오래된 파일 위에 새 패키지를 덮어쓰는 것을 방지할 수 있습니다. 설치 명령이 실패하면 OpenClaw는 `--omit=optional`로 한 번 다시 시도합니다. 이 재시도는 네이티브 선택적 의존성을 컴파일할 수 없는 호스트에 도움이 되며, 폴백도 실패하는 경우 원래 실패를 계속 볼 수 있게 합니다.
+`openclaw update`가 전역 npm 설치를 관리할 때는 먼저 대상을 임시 npm 접두사에
+설치하고, 패키징된 `dist` 인벤토리를 검증한 다음, 깨끗한 패키지 트리를 실제 전역
+접두사로 교체합니다. 이를 통해 npm이 이전 패키지의 오래된 파일 위에 새 패키지를
+덮어쓰는 것을 방지합니다. 설치 명령이 실패하면 OpenClaw은 `--omit=optional`을
+사용해 한 번 재시도합니다. 이는 네이티브 선택적 종속성을 컴파일할 수 없는
+호스트에 도움이 됩니다.
 
-OpenClaw가 관리하는 npm 업데이트 및 Plugin 업데이트 명령은 자식 npm 프로세스에 대해 npm `min-release-age` 격리도 해제합니다. npm은 해당 정책을 파생된 `before` 컷오프로 보고할 수 있습니다. 둘 다 일반 공급망 격리 정책에는 유용하지만, 명시적인 OpenClaw 업데이트는 "선택한 OpenClaw 릴리스를 지금 설치"한다는 의미입니다.
+OpenClaw이 관리하는 npm 업데이트 및 Plugin 업데이트 명령은 하위 npm 프로세스에서
+npm의 `min-release-age` 공급망 격리 정책(또는 이전 `before` 구성 키)도
+해제합니다. 해당 정책은 일반적인 보호를 위해 존재하지만, 명시적인 OpenClaw
+업데이트는 "선택한 릴리스를 지금 설치"한다는 의미입니다.
 
 ```bash
 pnpm add -g openclaw@latest
@@ -128,13 +191,13 @@ bun add -g openclaw@latest
 
 <AccordionGroup>
   <Accordion title="읽기 전용 패키지 트리">
-    OpenClaw는 전역 패키지 디렉터리가 현재 사용자에게 쓰기 가능하더라도, 패키징된 전역 설치를 런타임에서 읽기 전용으로 취급합니다. Plugin 패키지 설치는 사용자 구성 디렉터리 아래의 OpenClaw 소유 npm/git 루트에 있으며, Gateway 시작은 OpenClaw 패키지 트리를 변경하지 않습니다.
+    OpenClaw은 현재 사용자가 전역 패키지 디렉터리에 쓸 수 있는 경우에도 런타임에서 패키징된 전역 설치를 읽기 전용으로 취급합니다. Plugin 패키지 설치는 사용자 구성 디렉터리 아래의 OpenClaw 소유 npm/git 루트에 있으며, Gateway 시작 시 OpenClaw 패키지 트리를 변경하지 않습니다.
 
-    일부 Linux npm 설정은 `/usr/lib/node_modules/openclaw` 같은 root 소유 디렉터리 아래에 전역 패키지를 설치합니다. OpenClaw는 Plugin 설치/업데이트 명령이 해당 전역 패키지 디렉터리 밖에 쓰기 때문에 이 레이아웃을 지원합니다.
+    일부 Linux npm 설정은 `/usr/lib/node_modules/openclaw`과 같은 루트 소유 디렉터리 아래에 전역 패키지를 설치합니다. Plugin 설치/업데이트 명령은 해당 전역 패키지 디렉터리 외부에 쓰므로 OpenClaw은 이 레이아웃을 지원합니다.
 
   </Accordion>
   <Accordion title="강화된 systemd 유닛">
-    명시적 Plugin 설치, Plugin 업데이트, doctor 정리가 변경 사항을 지속할 수 있도록 OpenClaw에 구성/상태 루트에 대한 쓰기 권한을 부여하세요.
+    명시적 Plugin 설치, Plugin 업데이트 및 doctor 정리 작업이 변경 사항을 영구 저장할 수 있도록 OpenClaw에 구성/상태 루트에 대한 쓰기 권한을 부여하십시오.
 
     ```ini
     ReadWritePaths=/var/lib/openclaw /home/openclaw/.openclaw /tmp
@@ -142,13 +205,13 @@ bun add -g openclaw@latest
 
   </Accordion>
   <Accordion title="디스크 공간 사전 점검">
-    패키지 업데이트와 명시적 Plugin 설치 전에 OpenClaw는 대상 볼륨에 대해 최선의 디스크 공간 검사를 시도합니다. 공간이 부족하면 확인된 경로와 함께 경고가 생성되지만, 파일시스템 할당량, 스냅샷, 네트워크 볼륨은 검사 후에도 변경될 수 있으므로 업데이트를 차단하지는 않습니다. 실제 패키지 관리자 설치와 설치 후 검증이 권위 있는 기준으로 유지됩니다.
+    패키지 업데이트 및 명시적 Plugin 설치 전에 OpenClaw은 대상 볼륨의 디스크 공간을 최선의 방식으로 확인하려고 합니다. 공간이 부족하면 확인한 경로와 함께 경고가 표시되지만, 파일 시스템 할당량, 스냅샷 및 네트워크 볼륨은 확인 후 변경될 수 있으므로 업데이트를 차단하지는 않습니다. 실제 패키지 관리자 설치 및 설치 후 검증이 계속 최종 기준입니다.
   </Accordion>
 </AccordionGroup>
 
 ## 자동 업데이터
 
-자동 업데이터는 기본적으로 꺼져 있습니다. `~/.openclaw/openclaw.json`에서 활성화하세요.
+기본적으로 꺼져 있습니다. `~/.openclaw/openclaw.json`에서 활성화하십시오.
 
 ```json5
 {
@@ -164,16 +227,34 @@ bun add -g openclaw@latest
 }
 ```
 
-| 채널     | 동작                                                                                                           |
-| -------- | -------------------------------------------------------------------------------------------------------------- |
-| `stable` | `stableDelayHours`만큼 기다린 다음, `stableJitterHours`에 걸친 결정적 지터(분산 롤아웃)로 적용합니다.          |
-| `beta`   | `betaCheckIntervalHours`마다 확인하고(기본값: 매시간) 즉시 적용합니다.                                         |
-| `dev`    | 자동 적용이 없습니다. `openclaw update`를 수동으로 사용하세요.                                                 |
+| 채널              | 동작                                                                                                                                                           |
+| ----------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `stable`          | `stableDelayHours`(기본값: 6) 동안 기다린 다음, 분산 롤아웃을 위해 `stableJitterHours`(기본값: 12) 범위에서 결정적 지터를 적용하여 설치합니다.                   |
+| `extended-stable` | `checkOnStart`가 활성화된 경우 시작 시와 24시간마다 읽기 전용 업데이트 힌트를 확인합니다. 자동으로 설치하지 않습니다.                                         |
+| `beta`            | `betaCheckIntervalHours`(기본값: 1)마다 확인하고 즉시 설치합니다.                                                                                               |
+| `dev`             | 자동 설치하지 않습니다. `openclaw update`를 수동으로 사용하십시오.                                                                                             |
 
-Gateway는 시작 시 업데이트 힌트도 기록합니다(`update.checkOnStart: false`로 비활성화).
-다운그레이드 또는 사고 복구의 경우, `update.auto.enabled`가 구성되어 있더라도 자동 적용을 차단하려면 Gateway 환경에 `OPENCLAW_NO_AUTO_UPDATE=1`을 설정하세요. `update.checkOnStart`도 비활성화하지 않는 한 시작 업데이트 힌트는 계속 실행될 수 있습니다.
+Gateway는 시작 시 업데이트 힌트도 기록합니다(`update.checkOnStart: false`로
+비활성화). 저장된 extended-stable 선택은 이 읽기 전용 힌트 경로와 기존 24시간
+힌트 간격을 사용하지만, 자동 설치, 핸드오프, 재시작, stable 지연/지터 또는 beta
+폴링은 절대 호출하지 않습니다.
+다운그레이드 또는 사고 복구 시 `update.auto.enabled`가 구성되어 있어도 자동
+설치를 차단하려면 Gateway 환경에서 `OPENCLAW_NO_AUTO_UPDATE=1`을 설정하십시오.
+`update.checkOnStart`도 비활성화하지 않는 한 시작 업데이트 힌트는 계속 실행될 수
+있습니다.
 
-실시간 Gateway 제어 평면 핸들러를 통해 요청된 패키지 관리자 업데이트는 실행 중인 Gateway 프로세스 내부의 패키지 트리를 교체하지 않습니다. 관리형 서비스 설치에서는 Gateway가 분리된 핸드오프를 시작하고 종료한 뒤, 일반 `openclaw update --yes --json` CLI 경로가 서비스를 중지하고, 패키지를 교체하고, 서비스 메타데이터를 새로 고치고, 다시 시작하고, Gateway 버전과 도달 가능성을 검증하고, 가능한 경우 설치되었지만 로드되지 않은 macOS LaunchAgent를 복구하도록 합니다. Gateway가 해당 핸드오프를 안전하게 수행할 수 없으면 `update.run`은 패키지 관리자를 프로세스 내부에서 실행하는 대신 안전한 셸 명령을 보고합니다.
+실행 중인 Gateway 제어 평면(`update.run`)을 통해 요청된 패키지 관리자 업데이트는
+실행 중인 Gateway 프로세스 내부의 패키지 트리를 교체하지 않습니다. 관리되는
+서비스 설치에서 Gateway는 분리된 핸드오프를 시작하고 종료한 다음, 일반적인
+`openclaw update --yes --json` CLI 경로가 서비스를 중지하고, 패키지를 교체하고,
+서비스 메타데이터를 갱신하고, 다시 시작하고, Gateway 버전과 연결 가능성을
+검증하며, 가능한 경우 설치되었지만 로드되지 않은 macOS LaunchAgent를 복구하도록
+합니다. Gateway가 해당 핸드오프를 안전하게 수행할 수 없는 경우 `update.run`은
+프로세스 내에서 패키지 관리자를 실행하는 대신 안전한 셸 명령을 보고합니다.
+
+Control UI 사이드바 업데이트 카드는 동일한 `update.run` 흐름을 시작합니다.
+서명된 macOS 앱에서는 카드가 먼저 Sparkle을 통해 앱을 업데이트합니다. 앱이
+다시 실행된 후 관리되는 로컬 Gateway를 일치하는 버전으로 맞춥니다.
 
 ## 업데이트 후
 
@@ -185,7 +266,7 @@ Gateway는 시작 시 업데이트 힌트도 기록합니다(`update.checkOnStar
 openclaw doctor
 ```
 
-구성을 마이그레이션하고, DM 정책을 감사하고, Gateway 상태를 확인합니다. 자세한 내용: [Doctor](/ko/gateway/doctor)
+구성을 마이그레이션하고, DM 정책을 감사하며, Gateway 상태를 확인합니다. 자세한 내용: [Doctor](/ko/gateway/doctor)
 
 ### Gateway 다시 시작
 
@@ -212,7 +293,7 @@ openclaw gateway restart
 ```
 
 <Tip>
-`npm view openclaw version`은 현재 게시된 버전을 보여줍니다.
+`npm view openclaw version`은 현재 게시된 버전을 표시합니다.
 </Tip>
 
 ### 커밋 고정(소스)
@@ -224,17 +305,17 @@ pnpm install && pnpm build
 openclaw gateway restart
 ```
 
-최신으로 돌아가려면: `git checkout main && git pull`.
+최신 버전으로 돌아가려면 `git checkout main && git pull`을 실행하십시오.
 
-## 막힌 경우
+## 문제가 해결되지 않는 경우
 
-- `openclaw doctor`를 다시 실행하고 출력을 주의 깊게 읽으세요.
-- 소스 체크아웃에서 `openclaw update --channel dev`를 사용할 때, 업데이터는 필요하면 `pnpm`을 자동으로 부트스트랩합니다. pnpm/corepack 부트스트랩 오류가 보이면 `pnpm`을 수동으로 설치하거나(`corepack`을 다시 활성화) 업데이트를 다시 실행하세요.
+- `openclaw doctor`를 다시 실행하고 출력을 주의 깊게 읽으십시오.
+- 소스 체크아웃에서 `openclaw update --channel dev`를 실행하면 필요할 때 업데이터가 `pnpm`을 자동으로 부트스트랩합니다. pnpm/corepack 부트스트랩 오류가 표시되면 `pnpm`을 수동으로 설치하거나 `corepack`을 다시 활성화한 다음 업데이트를 다시 실행하십시오.
 - 확인: [문제 해결](/ko/gateway/troubleshooting)
 - Discord에서 문의: [https://discord.gg/clawd](https://discord.gg/clawd)
 
-## 관련
+## 관련 항목
 
-- [설치 개요](/ko/install): 모든 설치 방법.
-- [Doctor](/ko/gateway/doctor): 업데이트 후 상태 검사.
-- [마이그레이션](/ko/install/migrating): 주요 버전 마이그레이션 가이드.
+- [설치 개요](/ko/install): 모든 설치 방법입니다.
+- [Doctor](/ko/gateway/doctor): 업데이트 후 상태 검사입니다.
+- [마이그레이션](/ko/install/migrating): 메이저 버전 마이그레이션 가이드입니다.

@@ -1,74 +1,64 @@
 ---
 read_when:
-    - Ajustement du comportement de la superposition vocale
-summary: Cycle de vie de la superposition vocale lorsque le mot d’activation et l’appui pour parler se chevauchent
-title: Surcouche vocale
+    - Réglage du comportement de la superposition vocale
+summary: Cycle de vie de la superposition vocale lorsque le mot d’activation et le mode « appuyer pour parler » se chevauchent
+title: Superposition vocale
 x-i18n:
-    generated_at: "2026-05-06T07:31:54Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:31:04Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: 5b30f50512e557bd5a50f0e4e8b7955a847b3b554694347d56638581fcda9514
+    source_hash: eef571c3e8d41a97779537b1b373fab25b08f63575b50e5019f6c5fbcb782c52
     source_path: platforms/mac/voice-overlay.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
 # Cycle de vie de la superposition vocale (macOS)
 
-Public : contributeurs de l’app macOS. Objectif : garder la superposition vocale prévisible lorsque le mot d’activation et l’appuyer-pour-parler se chevauchent.
+Public : contributeurs à l’application macOS. Objectif : garantir un comportement prévisible de la superposition vocale lorsque la détection du mot d’activation et le mode appuyer-pour-parler se chevauchent.
 
-## Intention actuelle
+## Comportement
 
-- Si la superposition est déjà visible à cause du mot d’activation et que l’utilisateur appuie sur le raccourci clavier, la session du raccourci clavier _adopte_ le texte existant au lieu de le réinitialiser. La superposition reste affichée tant que le raccourci clavier est maintenu. Lorsque l’utilisateur relâche : envoyer s’il reste du texte après suppression des espaces, sinon fermer.
-- Le mot d’activation seul continue à envoyer automatiquement en cas de silence ; l’appuyer-pour-parler envoie immédiatement au relâchement.
+- Si la superposition est déjà visible à la suite de la détection du mot d’activation et que l’utilisateur appuie sur la touche de raccourci, la session lancée par cette touche adopte le texte existant au lieu de le réinitialiser. La superposition reste affichée tant que la touche est maintenue. Au relâchement : envoyer si le texte sans espaces superflus n’est pas vide, sinon fermer.
+- La détection du mot d’activation seule continue d’effectuer un envoi automatique après un silence ; le mode appuyer-pour-parler envoie immédiatement au relâchement.
 
-## Implémenté (9 déc. 2025)
+## Implémentation
 
-- Les sessions de superposition portent désormais un jeton par capture (mot d’activation ou appuyer-pour-parler). Les mises à jour partielles/finales/d’envoi/de fermeture/de niveau sont ignorées lorsque le jeton ne correspond pas, ce qui évite les rappels obsolètes.
-- L’appuyer-pour-parler adopte tout texte de superposition visible comme préfixe (ainsi, appuyer sur le raccourci clavier pendant que la superposition de réveil est affichée conserve le texte et ajoute la nouvelle parole). Il attend jusqu’à 1,5 s une transcription finale avant de revenir au texte actuel.
-- La journalisation du carillon/de la superposition est émise au niveau `info` dans les catégories `voicewake.overlay`, `voicewake.ptt` et `voicewake.chime` (début de session, partiel, final, envoi, fermeture, raison du carillon).
+- `VoiceSessionCoordinator` (`apps/macos/Sources/OpenClaw/VoiceSessionCoordinator.swift`) est l’unique propriétaire de la session vocale active. Il s’agit d’un singleton `@MainActor @Observable`, et non d’un acteur. API : `startSession`, `updatePartial`, `finalize`, `sendNow`, `dismiss`, `updateLevel`, `snapshot`. Chaque session comporte un jeton `UUID` ; les appels utilisant un jeton obsolète ou non concordant sont ignorés.
+- `VoiceWakeOverlayController` (`VoiceWakeOverlayController+Session.swift`) affiche la superposition et retransmet les actions de l’utilisateur (`requestSend`, `dismiss`) au coordinateur à l’aide du jeton de session. Il ne possède jamais lui-même l’état de la session.
+- Le mode appuyer-pour-parler (`VoicePushToTalk.begin()`) adopte tout texte visible dans la superposition comme `adoptedPrefix` (via `VoiceSessionCoordinator.shared.snapshot()`), de sorte qu’une pression sur la touche de raccourci pendant l’affichage de la superposition d’activation conserve le texte et y ajoute la nouvelle parole. Au relâchement, il attend jusqu’à 1.5s l’obtention d’une transcription finale avant de se rabattre sur le texte actuel.
+- Lors de `dismiss`, la superposition appelle `VoiceSessionCoordinator.overlayDidDismiss`, ce qui déclenche `VoiceWakeRuntime.refresh(state:)` afin que la fermeture manuelle avec X, la fermeture en cas de texte vide et la fermeture après l’envoi reprennent toutes l’écoute du mot d’activation.
+- Chemin d’envoi unifié : si le texte sans espaces superflus est vide, fermer ; sinon, `sendNow` joue une fois le carillon d’envoi, transmet le texte via `VoiceWakeForwarder`, puis ferme la superposition.
 
-## Étapes suivantes
+## Journalisation
 
-1. **VoiceSessionCoordinator (acteur)**
-   - Possède exactement une `VoiceSession` à la fois.
-   - API (basée sur jeton) : `beginWakeCapture`, `beginPushToTalk`, `updatePartial`, `endCapture`, `cancel`, `applyCooldown`.
-   - Ignore les rappels qui portent des jetons obsolètes (empêche les anciens reconnaisseurs de rouvrir la superposition).
-2. **VoiceSession (modèle)**
-   - Champs : `token`, `source` (wakeWord|pushToTalk), texte validé/volatile, indicateurs de carillon, minuteurs (envoi automatique, inactivité), `overlayMode` (display|editing|sending), échéance du délai de récupération.
-3. **Liaison de la superposition**
-   - `VoiceSessionPublisher` (`ObservableObject`) réplique la session active dans SwiftUI.
-   - `VoiceWakeOverlayView` s’affiche uniquement via le publisher ; il ne modifie jamais directement les singletons globaux.
-   - Les actions utilisateur de la superposition (`sendNow`, `dismiss`, `edit`) rappellent le coordinateur avec le jeton de session.
-4. **Chemin d’envoi unifié**
-   - Sur `endCapture` : si le texte après suppression des espaces est vide → fermer ; sinon `performSend(session:)` (joue le carillon d’envoi une fois, transfère, ferme).
-   - Appuyer-pour-parler : aucun délai ; mot d’activation : délai facultatif pour l’envoi automatique.
-   - Appliquer un court délai de récupération au runtime de réveil après la fin de l’appuyer-pour-parler afin que le mot d’activation ne se redéclenche pas immédiatement.
-5. **Journalisation**
-   - Le coordinateur émet des journaux `.info` dans le sous-système `ai.openclaw`, catégories `voicewake.overlay` et `voicewake.chime`.
-   - Événements clés : `session_started`, `adopted_by_push_to_talk`, `partial`, `finalized`, `send`, `dismiss`, `cancel`, `cooldown`.
+Le sous-système vocal est `ai.openclaw` ; chaque composant utilise sa propre catégorie de journalisation :
 
-## Liste de vérification de débogage
+| Catégorie               | Composant                                       |
+| ----------------------- | ----------------------------------------------- |
+| `voicewake.coordinator` | `VoiceSessionCoordinator`                       |
+| `voicewake.overlay`     | `VoiceWakeOverlayController`/`VoiceWakeOverlay` |
+| `voicewake.ptt`         | Touche de raccourci et capture du mode appuyer-pour-parler |
+| `voicewake.runtime`     | Environnement d’exécution du mot d’activation   |
+| `voicewake.chime`       | Lecture du carillon                             |
+| `voicewake.sync`        | Synchronisation des paramètres globaux          |
+| `voicewake.forward`     | Transmission de la transcription                |
+| `voicewake.meter`       | Moniteur du niveau du microphone                 |
 
-- Diffuser les journaux pendant la reproduction d’une superposition bloquée :
+## Liste de vérification pour le débogage
+
+- Diffusez les journaux en continu pendant que vous reproduisez une superposition qui reste affichée :
 
   ```bash
   sudo log stream --predicate 'subsystem == "ai.openclaw" AND category CONTAINS "voicewake"' --level info --style compact
   ```
 
-- Vérifier qu’un seul jeton de session active existe ; les rappels obsolètes doivent être ignorés par le coordinateur.
-- S’assurer que le relâchement de l’appuyer-pour-parler appelle toujours `endCapture` avec le jeton actif ; si le texte est vide, attendre `dismiss` sans carillon ni envoi.
+- Vérifiez qu’un seul jeton de session est actif ; les rappels obsolètes sont ignorés par le coordinateur.
+- Vérifiez que le relâchement en mode appuyer-pour-parler appelle toujours `end()` avec le jeton actif ; si le texte est vide, attendez-vous à une fermeture sans carillon ni envoi.
 
-## Étapes de migration (suggérées)
+## Voir aussi
 
-1. Ajouter `VoiceSessionCoordinator`, `VoiceSession` et `VoiceSessionPublisher`.
-2. Refactoriser `VoiceWakeRuntime` pour créer/mettre à jour/terminer les sessions au lieu de toucher directement `VoiceWakeOverlayController`.
-3. Refactoriser `VoicePushToTalk` pour adopter les sessions existantes et appeler `endCapture` au relâchement ; appliquer le délai de récupération du runtime.
-4. Connecter `VoiceWakeOverlayController` au publisher ; supprimer les appels directs depuis le runtime/PTT.
-5. Ajouter des tests d’intégration pour l’adoption de session, le délai de récupération et la fermeture avec texte vide.
-
-## Associé
-
-- [App macOS](/fr/platforms/macos)
-- [Réveil vocal (macOS)](/fr/platforms/mac/voicewake)
+- [Application macOS](/fr/platforms/macos)
+- [Activation vocale (macOS)](/fr/platforms/mac/voicewake)
 - [Mode conversation](/fr/nodes/talk)

@@ -1,30 +1,32 @@
 ---
 read_when:
-    - Onboarding- oder Einrichtungsabläufe gegen ein lokal gepacktes Plugin testen
-    - Ein Plugin-Paket vor der Veröffentlichung verifizieren
-    - Automatische Plugin-Installation durch ein Testartefakt ersetzen
+    - Testen von Onboarding- oder Einrichtungsabläufen mit einem lokal gepackten Plugin
+    - Überprüfen eines Plugin-Pakets vor der Veröffentlichung
+    - Ersetzen einer automatischen Plugin-Installation durch ein Testartefakt
 sidebarTitle: Install overrides
-summary: Testen paketierter Plugin-Overrides mit Installationsabläufen zur Einrichtungszeit
-title: Plugin-Installationsüberschreibungen
+summary: Überschreibungen paketierter Plugins mit Installationsabläufen zur Einrichtungszeit testen
+title: Überschreibungen bei der Plugin-Installation
 x-i18n:
-    generated_at: "2026-06-27T17:48:38Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:44:09Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: 9ac3d8074f0455a3287c22447d134bebf57805bc06302652172eb5f87e47e548
+    source_hash: adc823f49ea9f8fa86e6a89933e43fdc309d808ac24397770495dbe81cb4b0d7
     source_path: plugins/install-overrides.md
     workflow: 16
 ---
 
-Overrides für Plugin-Installationen ermöglichen Maintainern, Plugin-Installationen zur Einrichtungszeit gegen ein bestimmtes npm-Paket oder einen lokalen `npm-pack`-Tarball zu testen. Sie sind ausschließlich für E2E- und Paketvalidierung vorgesehen. Reguläre Benutzer sollten Plugins mit [`openclaw plugins install`](/de/cli/plugins) installieren.
+Installationsüberschreibungen für Plugins ermöglichen es Maintainern, Plugin-Installationen während der Einrichtung auf ein bestimmtes npm-Paket oder ein lokales npm-pack-Tarball statt auf die Katalog-, gebündelte oder standardmäßige npm-Quelle zu verweisen. Sie sind ausschließlich für E2E- und Paketvalidierung vorgesehen; normale Benutzer installieren Plugins mit
+[`openclaw plugins install`](/de/cli/plugins).
 
 <Warning>
-Overrides führen Plugin-Code aus der von Ihnen bereitgestellten Quelle aus. Verwenden Sie sie nur in einem isolierten Zustandsverzeichnis oder auf einer wegwerfbaren Testmaschine.
+Überschreibungen führen Plugin-Code aus der von Ihnen angegebenen Quelle aus. Verwenden Sie sie nur in einem isolierten Zustandsverzeichnis oder auf einem temporären Testrechner.
 </Warning>
 
 ## Umgebung
 
-Overrides sind deaktiviert, sofern nicht beide Variablen gesetzt sind:
+Überschreibungen sind deaktiviert, sofern nicht beide Variablen gesetzt sind:
 
 ```bash
 export OPENCLAW_ALLOW_PLUGIN_INSTALL_OVERRIDES=1
@@ -34,26 +36,25 @@ export OPENCLAW_PLUGIN_INSTALL_OVERRIDES='{
 }'
 ```
 
-Die Override-Zuordnung ist JSON, nach Plugin-ID indiziert. Werte unterstützen:
+Die Überschreibungszuordnung ist ein JSON-Objekt, dessen Schlüssel Plugin-IDs sind. Die Werte unterstützen:
 
-- `npm:<registry-spec>` für Registry-Pakete und exakte Versionen oder Tags
-- `npm-pack:<path.tgz>` für lokale Tarballs, die mit `npm pack` erzeugt wurden
-
-Relative `npm-pack:`-Pfade werden vom aktuellen Arbeitsverzeichnis aus aufgelöst.
+| Präfix                | Quelle                                                                                           |
+| --------------------- | ------------------------------------------------------------------------------------------------ |
+| `npm:<registry-spec>` | Registry-Pakete, exakte Versionen oder Tags                                                       |
+| `npm-pack:<path.tgz>` | Lokale, durch `npm pack` erzeugte Tarballs; relative Pfade werden ausgehend vom aktuellen Arbeitsverzeichnis aufgelöst |
 
 ## Verhalten
 
-Wenn ein Flow zur Einrichtungszeit die Installation eines Plugins anfordert, dessen ID in der Zuordnung vorkommt, verwendet OpenClaw die Override-Quelle anstelle der Katalog-, gebündelten oder standardmäßigen npm-Quelle. Dies gilt für Onboarding und andere Flows, die den gemeinsam genutzten Plugin-Installer zur Einrichtungszeit verwenden.
+Wenn ein Einrichtungsablauf ein Plugin installiert, dessen ID in der Zuordnung enthalten ist, verwendet OpenClaw die Überschreibungsquelle statt der Katalog-, gebündelten oder standardmäßigen npm-Quelle. Dies gilt für das Onboarding und jeden anderen Ablauf, der das gemeinsame Installationsprogramm für Plugins während der Einrichtung verwendet.
 
-Overrides erzwingen weiterhin die erwartete Plugin-ID. Ein Tarball, der `codex` zugeordnet ist, muss ein Plugin installieren, dessen Manifest-ID `codex` ist.
-
-Overrides erben nicht den offiziellen Status als vertrauenswürdige Quelle. Selbst wenn der Katalogeintrag normalerweise ein OpenClaw-eigenes Paket darstellt, wird ein Override als vom Betreiber bereitgestellte Testeingabe behandelt.
-
-Workspace-`.env`-Dateien können Installations-Overrides nicht aktivieren. Setzen Sie diese Variablen in der vertrauenswürdigen Shell, im CI-Job oder im Remote-Testbefehl, der OpenClaw startet.
+- Überschreibungen erzwingen weiterhin die erwartete Plugin-ID: Ein `codex`
+  zugeordnetes Tarball muss ein Plugin installieren, dessen Manifest-ID `codex` ist.
+- Überschreibungen übernehmen nicht den offiziellen Status als vertrauenswürdige Quelle. Selbst wenn der Katalogeintrag normalerweise ein OpenClaw-eigenes Paket darstellt, wird eine Überschreibung als vom Betreiber bereitgestellte Testeingabe behandelt.
+- `.env`-Dateien im Workspace können Installationsüberschreibungen nicht aktivieren; beide Umgebungsvariablen stehen auf der Sperrliste für Workspace-dotenv-Dateien. Setzen Sie sie in der vertrauenswürdigen Shell, im CI-Job oder im Remote-Testbefehl, der OpenClaw startet.
 
 ## Paket-E2E
 
-Verwenden Sie ein isoliertes Zustandsverzeichnis, damit Paketinstallationen und Installationsdatensätze Ihren normalen OpenClaw-Zustand nicht berühren:
+Verwenden Sie ein isoliertes Zustandsverzeichnis, damit Paketinstallationen und Installationsdatensätze Ihren normalen OpenClaw-Zustand nicht verändern:
 
 ```bash
 npm pack extensions/codex --pack-destination /tmp
@@ -64,11 +65,11 @@ OPENCLAW_PLUGIN_INSTALL_OVERRIDES='{"codex":"npm-pack:/tmp/openclaw-codex-2026.5
 pnpm openclaw onboard --mode local
 ```
 
-Überprüfen Sie das installierte Paket unter dem Zustandsverzeichnis:
+Überprüfen Sie das installierte Paket im Zustandsverzeichnis:
 
 ```bash
 find "$OPENCLAW_STATE_DIR/npm/projects" -path '*/node_modules/@openclaw/codex/package.json' -print
 grep -R '"@openclaw/codex"' "$OPENCLAW_STATE_DIR/npm/projects"/*/package-lock.json
 ```
 
-Für Live-Provider-E2E beziehen Sie den echten API-Schlüssel aus einer vertrauenswürdigen Shell oder einem CI-Secret, bevor Sie den Testbefehl starten. Geben Sie Schlüssel nicht aus; berichten Sie nur die Quelle und ob der Schlüssel vorhanden war.
+Für Live-Provider-E2E beziehen Sie den echten API-Schlüssel aus einer vertrauenswürdigen Shell oder einem CI-Secret, bevor Sie den Testbefehl starten. Geben Sie keine Schlüssel aus; melden Sie nur die Quelle und ob der Schlüssel vorhanden war.

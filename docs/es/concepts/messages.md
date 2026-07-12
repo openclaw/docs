@@ -1,46 +1,47 @@
 ---
 read_when:
     - Explicación de cómo los mensajes entrantes se convierten en respuestas
-    - Aclaración de sesiones, modos de cola o comportamiento de streaming
-    - Documentar la visibilidad del razonamiento y sus implicaciones de uso
+    - Aclaración de las sesiones, los modos de puesta en cola o el comportamiento de transmisión
+    - Documentación de la visibilidad del razonamiento y sus implicaciones de uso
 summary: Flujo de mensajes, sesiones, puesta en cola y visibilidad del razonamiento
 title: Mensajes
 x-i18n:
-    generated_at: "2026-07-05T11:14:44Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:28:30Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: 92146d8fe08aedfea3ae01b653a303da626651b33b39d6beb22ef867e13eef2f
+    source_hash: 16f0dc387a8825a91568dcd5a44f8bdc54b8d69d78f851760dfc2efa1eb151e7
     source_path: concepts/messages.md
     workflow: 16
 ---
 
-Los mensajes entrantes pasan por enrutamiento, deduplicación/debounce, una ejecución del agente y entrega saliente:
+Los mensajes entrantes pasan por el enrutamiento, la deduplicación/espera antirrebote, una ejecución del agente y la entrega saliente:
 
 ```text
-Inbound message
-  -> routing/bindings -> session key
-  -> dedupe + debounce
-  -> queue (if a run is already active)
-  -> agent run (streaming + tools)
-  -> outbound replies (channel limits + chunking)
+Mensaje entrante
+  -> enrutamiento/vinculaciones -> clave de sesión
+  -> deduplicación + espera antirrebote
+  -> cola (si ya hay una ejecución activa)
+  -> ejecución del agente (transmisión + herramientas)
+  -> respuestas salientes (límites del canal + fragmentación)
 ```
 
-Superficies de configuración clave:
+Principales superficies de configuración:
 
-- `messages.*` para prefijos, colas, debounce entrante y comportamiento de grupos.
-- `agents.defaults.*` para streaming por bloques, fragmentación y valores predeterminados de respuestas silenciosas.
-- Sobrescrituras de canal (`channels.telegram.*`, `channels.whatsapp.*`, etc.) para límites por canal y conmutadores de streaming.
+- `messages.*` para prefijos, gestión de colas, espera antirrebote de mensajes entrantes y comportamiento de grupos.
+- `agents.defaults.*` para transmisión por bloques, fragmentación y valores predeterminados de respuestas silenciosas.
+- Sustituciones específicas de canal (`channels.telegram.*`, `channels.whatsapp.*`, etc.) para límites por canal y opciones de transmisión.
 
-Consulta [Configuración](/es/gateway/configuration) para ver el esquema completo.
+Consulte [Configuración](/es/gateway/configuration) para ver el esquema completo.
 
-## Deduplicación entrante
+## Deduplicación de mensajes entrantes
 
-Los canales pueden volver a entregar el mismo mensaje después de una reconexión. OpenClaw mantiene una caché en memoria indexada por alcance del agente, ruta del canal (canal + par + cuenta + hilo) e id del mensaje, de modo que un mensaje vuelto a entregar no dispara una segunda ejecución del agente. La entrada de caché vence después de 20 minutos o cuando se rastrean 5000 entradas, lo que ocurra primero.
+Los canales pueden volver a entregar el mismo mensaje después de una reconexión. OpenClaw mantiene una caché en memoria cuya clave se compone del ámbito del agente, la ruta del canal (canal + interlocutor + cuenta + hilo) y el identificador del mensaje, para que un mensaje entregado de nuevo no desencadene una segunda ejecución del agente. La entrada de la caché caduca tras 20 minutos o cuando se registran 5000 entradas, lo que ocurra primero.
 
-## Debounce entrante
+## Espera antirrebote de mensajes entrantes
 
-Los mensajes de texto consecutivos y rápidos del mismo remitente se pueden agrupar en un solo turno del agente mediante `messages.inbound`. El debounce tiene alcance por canal + conversación y usa el mensaje más reciente para el enhebrado/los IDs de respuesta.
+Los mensajes de texto consecutivos enviados rápidamente por el mismo remitente pueden agruparse en un solo turno del agente mediante `messages.inbound`. La espera antirrebote se aplica por canal + conversación y utiliza el mensaje más reciente para el hilo y los identificadores de la respuesta.
 
 ```json5
 {
@@ -57,121 +58,121 @@ Los mensajes de texto consecutivos y rápidos del mismo remitente se pueden agru
 }
 ```
 
-- El debounce se aplica a mensajes solo de texto; los medios/adjuntos se vacían inmediatamente.
-- Los comandos de control (stop/abort/status, etc.) omiten el debounce para que se despachen de inmediato.
-- Deshabilitado de forma predeterminada: `messages.inbound.debounceMs` no tiene ningún valor predeterminado integrado, por lo que el debounce solo se activa cuando lo configuras (globalmente o por canal).
-- La opción explícita `coalesceSameSenderDms` de iMessage es la única excepción: retiene todo el texto de DM del mismo remitente (comandos incluidos) el tiempo suficiente para que el envío dividido de comando+URL de Apple llegue como un solo turno. Los chats grupales siempre se despachan al instante independientemente de esta configuración.
+- La espera antirrebote se aplica únicamente a los mensajes de texto; los elementos multimedia y archivos adjuntos se procesan de inmediato.
+- Los comandos de control (detener/abortar/estado, etc.) omiten la espera antirrebote para procesarse de inmediato.
+- Está desactivada de forma predeterminada: `messages.inbound.debounceMs` no tiene un valor predeterminado integrado, por lo que la espera antirrebote solo se activa al establecerlo (globalmente o por canal).
+- La opción habilitable `coalesceSameSenderDms` de iMessage es la única excepción: retiene el tiempo suficiente todo el texto de mensajes directos del mismo remitente (incluidos los comandos) para que el envío dividido de comando+URL de Apple llegue como un solo turno. Los chats de grupo siempre se procesan al instante, independientemente de esta configuración.
 
 ## Sesiones y dispositivos
 
-Las sesiones son propiedad del Gateway, no de los clientes.
+Las sesiones pertenecen al Gateway, no a los clientes.
 
-- Los chats directos se condensan en la clave de sesión principal del agente.
+- Los chats directos se agrupan bajo la clave de sesión principal del agente.
 - Los grupos/canales obtienen sus propias claves de sesión.
 - El almacén de sesiones y las transcripciones residen en el host del Gateway.
 
-Varios dispositivos/canales pueden mapearse a la misma sesión, pero el historial no se sincroniza completamente de vuelta a cada cliente. Usa un dispositivo principal para conversaciones largas a fin de evitar contexto divergente. La Control UI y la TUI siempre muestran la transcripción de la sesión respaldada por el Gateway, por lo que son la fuente de verdad.
+Varios dispositivos/canales pueden asociarse a la misma sesión, pero el historial no se sincroniza por completo con cada cliente. Use un dispositivo principal para las conversaciones largas a fin de evitar contextos divergentes. La interfaz de control y la TUI siempre muestran la transcripción de la sesión respaldada por el Gateway, por lo que constituyen la fuente de verdad.
 
 Detalles: [Gestión de sesiones](/es/concepts/session).
 
-## Cuerpos de prompt y contexto del historial
+## Cuerpos de las solicitudes e historial del contexto
 
 Los plugins de canal rellenan varios campos de texto en el contexto entrante, de mayor a menor preferencia:
 
-| Campo             | Propósito                                                                                                     |
-| ----------------- | ----------------------------------------------------------------------------------------------------------- |
-| `BodyForAgent`    | Texto orientado al modelo para el turno actual. Recurre a `CommandBody` / `RawBody` / `Body` cuando no está establecido.        |
-| `BodyForCommands` | Texto limpio usado para analizar directivas/comandos. Recurre a `CommandBody` / `RawBody` / `Body` cuando no está establecido. |
-| `CommandBody`     | Cuerpo intermedio heredado; prefiere `BodyForCommands`.                                                         |
-| `RawBody`         | Alias obsoleto de `CommandBody`.                                                                         |
-| `Body`            | Cuerpo de prompt heredado; puede incluir envoltorios de canal y de historial.                                     |
+| Campo             | Propósito                                                                                                                  |
+| ----------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| `BodyForAgent`    | Texto dirigido al modelo para el turno actual. Si no se establece, recurre a `CommandBody` / `RawBody` / `Body`.           |
+| `BodyForCommands` | Texto limpio utilizado para analizar directivas/comandos. Si no se establece, recurre a `CommandBody` / `RawBody` / `Body`. |
+| `CommandBody`     | Cuerpo intermedio heredado; se prefiere `BodyForCommands`.                                                                 |
+| `RawBody`         | Alias obsoleto de `CommandBody`.                                                                                            |
+| `Body`            | Cuerpo de solicitud heredado; puede incluir envoltorios del canal y del historial.                                         |
 
-Cuando un canal proporciona historial, lo envuelve con:
+Cuando un canal proporciona el historial, lo encapsula con:
 
 - `[Chat messages since your last reply - for context]`
 - `[Current message - respond to this]`
 
-Para chats no directos (grupos/canales/salas), el cuerpo del mensaje actual lleva como prefijo la etiqueta del remitente, coincidiendo con el estilo usado para las entradas del historial. La eliminación de directivas solo se aplica a la sección del mensaje actual, por lo que el historial permanece intacto. Los canales que envuelven historial deben establecer `BodyForCommands` (o el `CommandBody` / `RawBody` heredado) en el texto original del mensaje y mantener `Body` como el prompt combinado.
+Para los chats no directos (grupos/canales/salas), el cuerpo del mensaje actual lleva como prefijo la etiqueta del remitente, siguiendo el estilo utilizado para las entradas del historial. La eliminación de directivas solo se aplica a la sección del mensaje actual, por lo que el historial permanece intacto. Los canales que encapsulan el historial deben establecer `BodyForCommands` (o los campos heredados `CommandBody` / `RawBody`) en el texto original del mensaje y mantener `Body` como el prompt combinado.
 
-Los búferes de historial son solo pendientes: incluyen mensajes de grupo que no dispararon una ejecución (por ejemplo, mensajes sujetos a mención) y excluyen mensajes que ya están en la transcripción de la sesión. El historial estructurado, las respuestas, los mensajes reenviados y los metadatos de canal se renderizan como bloques de contexto no confiables con rol de usuario durante el ensamblaje del prompt.
+Los búferes de historial contienen únicamente mensajes pendientes: incluyen los mensajes de grupo que no activaron una ejecución (por ejemplo, los mensajes sujetos a una mención) y excluyen los mensajes que ya están en la transcripción de la sesión. El historial estructurado y los metadatos de respuestas, reenvíos y canales se representan como bloques de contexto no confiables con rol de usuario durante la preparación del prompt.
 
-Configura el tamaño del historial con `messages.groupChat.historyLimit` (valor predeterminado global) o sobrescrituras por canal como `channels.slack.historyLimit` y `channels.telegram.accounts.<id>.historyLimit` (establece `0` para deshabilitarlo).
+Configure el tamaño del historial con `messages.groupChat.historyLimit` (valor predeterminado global) o mediante anulaciones por canal, como `channels.slack.historyLimit` y `channels.telegram.accounts.<id>.historyLimit` (establezca `0` para desactivarlo).
 
 ## Metadatos de resultados de herramientas
 
-El `content` del resultado de herramienta es el resultado visible para el modelo; `details` son metadatos de runtime para renderizado de UI, diagnósticos, entrega de medios y plugins.
+El `content` del resultado de la herramienta es el resultado visible para el modelo; `details` contiene metadatos de ejecución para la representación en la interfaz de usuario, el diagnóstico, la entrega de contenido multimedia y los plugins.
 
 - `toolResult.details` se elimina antes de la reproducción del proveedor y antes de la entrada de Compaction.
-- Las transcripciones de sesión persistidas conservan solo `details` acotados; los metadatos sobredimensionados se reemplazan por un resumen compacto marcado como `persistedDetailsTruncated: true`.
-- Los plugins y las herramientas deben poner en `content` el texto que el modelo debe leer, no solo en `details`.
+- Las transcripciones de sesión persistentes conservan solo `details` con tamaño limitado; los metadatos sobredimensionados se sustituyen por un resumen compacto marcado con `persistedDetailsTruncated: true`.
+- Los Plugins y las herramientas deben colocar el texto que el modelo debe leer en `content`, no solo en `details`.
 
-## Colas y seguimientos
+## Puesta en cola y seguimientos
 
-Cuando una ejecución ya está activa, los mensajes entrantes la dirigen de forma predeterminada. `messages.queue` controla el modo:
+Cuando ya hay una ejecución activa, los mensajes entrantes se incorporan a ella de forma predeterminada. `messages.queue` controla el modo:
 
-| Modo              | Comportamiento                                            |
-| ----------------- | --------------------------------------------------- |
-| `steer` (predeterminado) | Inyecta el nuevo prompt en la ejecución activa.          |
-| `followup`        | Ejecuta el mensaje después de que termine la ejecución activa.      |
-| `collect`         | Agrupa mensajes compatibles en un turno posterior.      |
-| `interrupt`       | Aborta la ejecución activa y luego inicia el prompt más reciente. |
+| Modo              | Comportamiento                                                      |
+| ----------------- | ------------------------------------------------------------------- |
+| `steer` (predeterminado) | Inyecta la nueva instrucción en la ejecución activa.          |
+| `followup`        | Ejecuta el mensaje después de que finalice la ejecución activa.     |
+| `collect`         | Agrupa los mensajes compatibles en un único turno posterior.        |
+| `interrupt`       | Cancela la ejecución activa y, a continuación, inicia la instrucción más reciente. |
 
-Valores predeterminados: `messages.queue.debounceMs` es 500 ms (se aplica por igual a steer, followup y agrupación collect), `messages.queue.cap` es 20 mensajes en cola, y `messages.queue.drop` es `summarize` (`old` y `new` también están disponibles). Configura sobrescrituras por canal mediante `messages.queue.byChannel` y `messages.queue.debounceMsByChannel`.
+Valores predeterminados: `messages.queue.debounceMs` es 500ms (se aplica por igual a la agrupación de steer, followup y collect), `messages.queue.cap` es de 20 mensajes en cola y `messages.queue.drop` es `summarize` (`old` y `new` también están disponibles). Configure las anulaciones por canal mediante `messages.queue.byChannel` y `messages.queue.debounceMsByChannel`.
 
-Detalles: [Cola de comandos](/es/concepts/queue) y [Cola de direccionamiento](/es/concepts/queue-steering).
+Detalles: [Cola de comandos](/es/concepts/queue) y [Cola de redirección](/es/concepts/queue-steering).
 
-## Propiedad de ejecuciones de canal
+## Propiedad de las ejecuciones de canal
 
-Los plugins de canal pueden preservar el orden, aplicar debounce a la entrada y aplicar contrapresión de transporte antes de que un mensaje entre en la cola de sesión. No deben imponer un timeout separado alrededor del turno del agente en sí. Una vez que un mensaje se enruta a una sesión, el ciclo de vida de la sesión, las herramientas y el runtime gobierna el trabajo de larga duración para que todos los canales informen y se recuperen de turnos lentos de forma coherente.
+Los Plugins de canal pueden conservar el orden, aplicar antirrebote a la entrada y ejercer contrapresión de transporte antes de que un mensaje entre en la cola de la sesión. No deben imponer un tiempo de espera independiente en torno al propio turno del agente. Una vez que un mensaje se enruta a una sesión, los ciclos de vida de la sesión, las herramientas y el entorno de ejecución rigen el trabajo de larga duración, de modo que todos los canales informen de los turnos lentos y se recuperen de ellos de manera coherente.
 
-## Streaming, fragmentación y agrupación
+## Transmisión, fragmentación y agrupación
 
-El streaming por bloques envía respuestas parciales a medida que el modelo produce bloques de texto; la fragmentación respeta los límites de texto del canal y evita dividir código delimitado.
+La transmisión por bloques envía respuestas parciales a medida que el modelo produce bloques de texto; la fragmentación respeta los límites de texto del canal y evita dividir el código delimitado.
 
-- `agents.defaults.blockStreamingDefault` (`on|off`, predeterminado `off`)
+- `agents.defaults.blockStreamingDefault` (`on|off`, valor predeterminado `off`)
 - `agents.defaults.blockStreamingBreak` (`text_end|message_end`)
 - `agents.defaults.blockStreamingChunk` (`minChars|maxChars|breakPreference`)
-- `agents.defaults.blockStreamingCoalesce` (agrupación basada en inactividad)
-- `agents.defaults.humanDelay` (pausa similar a la humana entre respuestas por bloque)
-- Sobrescrituras de canal: `*.blockStreaming` y `*.blockStreamingCoalesce` (el streaming por bloques está desactivado salvo que `*.blockStreaming` se establezca explícitamente en `true`, en todos los canales, incluido Telegram).
+- `agents.defaults.blockStreamingCoalesce` (agrupación basada en la inactividad)
+- `agents.defaults.humanDelay` (pausa similar a la humana entre respuestas por bloques)
+- Anulaciones por canal: `*.streaming.block.enabled` y `*.streaming.block.coalesce` en canales con transmisión anidada (Telegram, Discord, Slack, iMessage, Microsoft Teams); `*.blockStreaming` / `*.blockStreamingCoalesce` en el nivel superior en canales sin una configuración de transmisión anidada. La transmisión por bloques está desactivada a menos que se habilite explícitamente, en todos los canales, incluido Telegram.
 
-Detalles: [Streaming + fragmentación](/es/concepts/streaming).
+Detalles: [Transmisión y fragmentación](/es/concepts/streaming).
 
 ## Visibilidad del razonamiento y tokens
 
 - `/reasoning on|off|stream` controla la visibilidad.
-- El contenido de razonamiento sigue contando para el uso de tokens cuando el modelo lo produce.
-- Telegram admite streaming de razonamiento en una burbuja de borrador transitoria que se elimina después de la entrega final; usa `/reasoning on` para una salida de razonamiento persistente.
+- El contenido de razonamiento sigue contando para el uso de tokens cuando el modelo lo genera.
+- Telegram permite transmitir el razonamiento en una burbuja de borrador temporal que se elimina tras la entrega final; use `/reasoning on` para obtener una salida de razonamiento persistente.
 
-Detalles: [Directivas de pensamiento + razonamiento](/es/tools/thinking) y [Uso de tokens](/es/reference/token-use).
+Detalles: [Directivas de pensamiento y razonamiento](/es/tools/thinking) y [Uso de tokens](/es/reference/token-use).
 
-## Prefijos, enhebrado y respuestas
+## Prefijos, hilos y respuestas
 
 - Cascada de prefijos salientes: `messages.responsePrefix`, `channels.<channel>.responsePrefix`, `channels.<channel>.accounts.<id>.responsePrefix`. WhatsApp también tiene `channels.whatsapp.messagePrefix` para un prefijo entrante.
-- Enhebrado de respuestas mediante `replyToMode` y valores predeterminados por canal.
+- Respuestas en hilos mediante `replyToMode` y valores predeterminados por canal.
 
-Detalles: [Configuración](/es/gateway/config-agents#messages) y documentación de canales.
+Detalles: [Configuración](/es/gateway/config-agents#messages) y documentación de los canales.
 
 ## Respuestas silenciosas
 
-El token silencioso `NO_REPLY` (insensible a mayúsculas/minúsculas, por lo que `no_reply` también coincide) significa "no entregar una respuesta visible para el usuario". Cuando un turno también tiene medios de herramienta pendientes, como audio TTS generado, OpenClaw elimina el texto silencioso pero sigue entregando el adjunto multimedia.
+El token silencioso `NO_REPLY` (sin distinción entre mayúsculas y minúsculas, por lo que `no_reply` también coincide) significa «no entregar una respuesta visible para el usuario». Cuando un turno también tiene contenido multimedia pendiente de una herramienta, como audio TTS generado, OpenClaw elimina el texto silencioso, pero sigue entregando el archivo multimedia adjunto.
 
-La política de silencio se resuelve por tipo de conversación:
+La política de silencio se determina según el tipo de conversación:
 
-- Las conversaciones directas nunca reciben guía de prompt `NO_REPLY`. Si una ejecución directa devuelve accidentalmente un token silencioso aislado, OpenClaw lo suprime en lugar de reescribirlo o entregarlo.
-- Los grupos/canales permiten silencio de forma predeterminada. En modo de respuesta visible `message_tool`, silencio significa que el modelo no llama a `message(action=send)`.
-- La orquestación interna permite silencio de forma predeterminada.
+- Las conversaciones directas nunca reciben instrucciones de `NO_REPLY` en el prompt. Si una ejecución directa devuelve accidentalmente solo un token silencioso, OpenClaw lo suprime en lugar de reescribirlo o entregarlo.
+- Los grupos/canales permiten el silencio de forma predeterminada. En el modo de respuesta visible de `message_tool`, el silencio significa que el modelo no llama a `message(action=send)`.
+- La orquestación interna permite el silencio de forma predeterminada.
 
-Los valores predeterminados viven bajo `agents.defaults.silentReply`; `surfaces.<id>.silentReply` puede sobrescribir la política de grupo/interna por superficie.
+Los valores predeterminados se encuentran en `agents.defaults.silentReply`; `surfaces.<id>.silentReply` puede reemplazar la política de grupos/interna para cada superficie.
 
-OpenClaw también usa respuestas silenciosas para fallos genéricos del ejecutor interno en chats no directos, de modo que los grupos/canales no vean texto repetitivo de error del Gateway. Los fallos clasificados con texto de recuperación orientado al usuario, como autenticación faltante, límite de tasa o avisos de sobrecarga, aún pueden entregarse. Los chats directos muestran texto de fallo compacto de forma predeterminada; los detalles sin procesar del ejecutor solo se muestran cuando `/verbose full` está habilitado.
+OpenClaw también usa respuestas silenciosas para fallos genéricos del ejecutor interno en chats no directos, para que los grupos/canales no vean texto estándar de errores del Gateway. Los fallos clasificados con texto de recuperación dirigido al usuario, como avisos de autenticación ausente, límite de frecuencia o sobrecarga, aún pueden entregarse. Los chats directos muestran de forma predeterminada un texto de error conciso; los detalles sin procesar del ejecutor solo se muestran cuando `/verbose full` está habilitado.
 
-Las respuestas silenciosas aisladas se descartan en todas las superficies, por lo que las sesiones padre permanecen silenciosas en lugar de reescribir texto centinela en charla de reserva.
+Las respuestas que contienen únicamente el token silencioso se descartan en todas las superficies, por lo que las sesiones superiores permanecen en silencio en lugar de reescribir el texto centinela como mensajes de relleno.
 
-## Relacionado
+## Contenido relacionado
 
-- [Refactor del ciclo de vida de mensajes](/es/concepts/message-lifecycle-refactor) - diseño objetivo duradero de envío y recepción
-- [Streaming](/es/concepts/streaming) - entrega de mensajes en tiempo real
-- [Reintento](/es/concepts/retry) - comportamiento de reintento de entrega de mensajes
+- [Refactorización del ciclo de vida de los mensajes](/es/concepts/message-lifecycle-refactor) - diseño objetivo duradero de envío y recepción
+- [Transmisión](/es/concepts/streaming) - entrega de mensajes en tiempo real
+- [Reintentos](/es/concepts/retry) - comportamiento de reintento de entrega de mensajes
 - [Cola](/es/concepts/queue) - cola de procesamiento de mensajes
 - [Canales](/es/channels) - integraciones con plataformas de mensajería

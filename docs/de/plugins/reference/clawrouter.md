@@ -1,14 +1,15 @@
 ---
 read_when:
-    - Sie installieren, konfigurieren oder auditieren das clawrouter-Plugin
+    - Sie installieren, konfigurieren oder prüfen das clawrouter-Plugin.
 summary: Fügt OpenClaw Unterstützung für den ClawRouter-Modell-Provider hinzu.
 title: ClawRouter-Plugin
 x-i18n:
-    generated_at: "2026-07-04T03:42:06Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:37:15Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: e7ba259cdc8545967e3472225595fb5c3e9248b7cbcbdba3ef56ea15e0fd1655
+    source_hash: 9e9b6bb73e00ead4df682d7c5873b1fd97f84c7c9fe29d4f511403c598651f82
     source_path: plugins/reference/clawrouter.md
     workflow: 16
 ---
@@ -24,7 +25,7 @@ Fügt OpenClaw Unterstützung für den ClawRouter-Modell-Provider hinzu.
 
 ## Oberfläche
 
-Provider: clawrouter
+Provider: clawrouter; Verträge: usageProviders
 
 ## Zugehörige Dokumentation
 

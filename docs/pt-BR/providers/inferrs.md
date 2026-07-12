@@ -1,38 +1,39 @@
 ---
 read_when:
-    - Você quer executar o OpenClaw com um servidor inferrs local
-    - Você está servindo o Gemma ou outro modelo por meio do inferrs
-    - Você precisa dos sinalizadores de compatibilidade exatos do OpenClaw para inferrs
-summary: Execute o OpenClaw por meio do inferrs (servidor local compatível com OpenAI)
-title: Infere
+    - Você quer executar o OpenClaw com um servidor Inferrs local
+    - Você está disponibilizando o Gemma ou outro modelo por meio do Inferrs
+    - Você precisa dos sinalizadores de compatibilidade exatos do OpenClaw para Inferrs
+summary: Execute o OpenClaw por meio do Inferrs (servidor local compatível com a OpenAI)
+title: Inferrs
 x-i18n:
-    generated_at: "2026-05-10T19:48:03Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:31:49Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: 8352da589baaa3a193bb3a56d12ee1a50630346dda186898346e805844d22aa1
+    source_hash: 8b9b6fe337a2ec6536332dd62840052fd802fad0a5f3d885ce137523266ff3c9
     source_path: providers/inferrs.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-[inferrs](https://github.com/ericcurtin/inferrs) pode servir modelos locais por trás de uma API `/v1` compatível com OpenAI. O OpenClaw funciona com `inferrs` pelo caminho genérico `openai-completions`.
+[inferrs](https://github.com/ericcurtin/inferrs) disponibiliza modelos locais por meio de uma API `/v1` compatível com a OpenAI. O OpenClaw se comunica com ele pelo adaptador genérico `openai-completions`.
 
-| Propriedade       | Valor                                                              |
-| ----------------- | ------------------------------------------------------------------ |
-| ID do provedor    | `inferrs` (personalizado; configure em `models.providers.inferrs`) |
-| Plugin            | nenhum — `inferrs` não é um plugin de provedor OpenClaw incluído   |
-| Var. env de auth  | Opcional. Qualquer valor funciona se o seu servidor inferrs não tiver auth |
-| API               | compatível com OpenAI (`openai-completions`)                       |
-| URL base sugerida | `http://127.0.0.1:8080/v1` (ou onde quer que seu servidor inferrs esteja) |
+| Propriedade          | Valor                                                                                   |
+| -------------------- | --------------------------------------------------------------------------------------- |
+| ID do provedor       | `inferrs` (personalizado; configure em `models.providers.inferrs`)                      |
+| Plugin               | nenhum — não é um plugin de provedor incluído no OpenClaw                               |
+| Variável de ambiente de autenticação | nenhuma necessária; qualquer valor funciona se o servidor inferrs não tiver autenticação |
+| API                  | compatível com a OpenAI (`openai-completions`)                                          |
+| URL base sugerida    | `http://127.0.0.1:8080/v1` (ou onde quer que o servidor inferrs esteja escutando)       |
 
 <Note>
-  No momento, `inferrs` é melhor tratado como um backend personalizado auto-hospedado compatível com OpenAI, não como um plugin de provedor OpenClaw dedicado. Você o configura por `models.providers.inferrs`, em vez de uma flag de escolha de integração. Se você precisar de um plugin realmente incluído com descoberta automática, veja [SGLang](/pt-BR/providers/sglang) ou [vLLM](/pt-BR/providers/vllm).
+  `inferrs` é um backend personalizado auto-hospedado compatível com a OpenAI, não um plugin de provedor dedicado do OpenClaw: você o configura em `models.providers.inferrs` em vez de escolher uma opção de autenticação durante a integração inicial. Para um plugin incluído com descoberta automática, consulte [SGLang](/pt-BR/providers/sglang) ou [vLLM](/pt-BR/providers/vllm).
 </Note>
 
 ## Primeiros passos
 
 <Steps>
-  <Step title="Start inferrs with a model">
+  <Step title="Inicie o inferrs com um modelo">
     ```bash
     inferrs serve google/gemma-4-E2B-it \
       --host 127.0.0.1 \
@@ -40,20 +41,20 @@ x-i18n:
       --device metal
     ```
   </Step>
-  <Step title="Verify the server is reachable">
+  <Step title="Verifique se o servidor está acessível">
     ```bash
     curl http://127.0.0.1:8080/health
     curl http://127.0.0.1:8080/v1/models
     ```
   </Step>
-  <Step title="Add an OpenClaw provider entry">
-    Adicione uma entrada explícita de provedor e aponte seu modelo padrão para ela. Veja o exemplo completo de configuração abaixo.
+  <Step title="Adicione uma entrada de provedor do OpenClaw">
+    Adicione uma entrada de provedor explícita e aponte seu modelo padrão para ela. Consulte o exemplo de configuração abaixo.
   </Step>
 </Steps>
 
-## Exemplo completo de configuração
+## Exemplo de configuração completa
 
-Este exemplo usa Gemma 4 em um servidor `inferrs` local.
+Gemma 4 em um servidor `inferrs` local:
 
 ```json5
 {
@@ -96,8 +97,7 @@ Este exemplo usa Gemma 4 em um servidor `inferrs` local.
 
 ## Inicialização sob demanda
 
-O Inferrs também pode ser iniciado pelo OpenClaw apenas quando um modelo `inferrs/...`
-for selecionado. Adicione `localService` à mesma entrada de provedor:
+O OpenClaw pode iniciar o próprio `inferrs` somente quando um modelo `inferrs/...` estiver selecionado. Adicione `localService` à mesma entrada de provedor:
 
 ```json5
 {
@@ -144,44 +144,28 @@ for selecionado. Adicione `localService` à mesma entrada de provedor:
 }
 ```
 
-`command` deve ser absoluto. Use `which inferrs` no host do Gateway e coloque esse
-caminho na configuração. Para a referência completa dos campos, veja
-[Serviços de modelos locais](/pt-BR/gateway/local-model-services).
+`command` deve ser um caminho absoluto. Execute `which inferrs` no host do Gateway e use esse caminho. Referência completa dos campos: [Serviços de modelos locais](/pt-BR/gateway/local-model-services).
 
 ## Configuração avançada
 
 <AccordionGroup>
-  <Accordion title="Why requiresStringContent matters">
-    Algumas rotas de Chat Completions do `inferrs` aceitam apenas
-    `messages[].content` como string, não arrays estruturados de partes de conteúdo.
+  <Accordion title="Por que requiresStringContent é importante">
+    Algumas rotas de Chat Completions do `inferrs` aceitam apenas valores de string em `messages[].content`, não matrizes estruturadas de partes de conteúdo.
 
     <Warning>
-    Se execuções do OpenClaw falharem com um erro como:
+    Se as execuções do OpenClaw falharem com:
 
     ```text
-    messages[1].content: invalid type: sequence, expected a string
+    messages[1].content: tipo inválido: sequência, era esperada uma string
     ```
 
-    defina `compat.requiresStringContent: true` na entrada do seu modelo.
+    defina `compat.requiresStringContent: true` na entrada do modelo. O OpenClaw então converte partes compostas apenas por texto em strings simples antes de enviar a solicitação.
     </Warning>
-
-    ```json5
-    compat: {
-      requiresStringContent: true
-    }
-    ```
-
-    O OpenClaw transformará partes de conteúdo de texto puro em strings simples antes de enviar
-    a solicitação.
 
   </Accordion>
 
-  <Accordion title="Gemma and tool-schema caveat">
-    Algumas combinações atuais de `inferrs` + Gemma aceitam pequenas solicitações diretas
-    para `/v1/chat/completions`, mas ainda falham em turnos completos de agent-runtime
-    do OpenClaw.
-
-    Se isso acontecer, tente isto primeiro:
+  <Accordion title="Ressalva sobre o Gemma e o esquema de ferramentas">
+    Algumas combinações de `inferrs` + Gemma aceitam pequenas solicitações diretas a `/v1/chat/completions`, mas falham em turnos completos do runtime do agente do OpenClaw. Primeiro, tente desativar a superfície do esquema de ferramentas:
 
     ```json5
     compat: {
@@ -190,17 +174,12 @@ caminho na configuração. Para a referência completa dos campos, veja
     }
     ```
 
-    Isso desativa a superfície de esquema de ferramentas do OpenClaw para o modelo e pode reduzir a pressão
-    do prompt em backends locais mais restritos.
-
-    Se solicitações diretas mínimas ainda funcionarem, mas turnos normais de agente do OpenClaw continuarem
-    travando dentro do `inferrs`, o problema restante normalmente está no comportamento
-    upstream do modelo/servidor, e não na camada de transporte do OpenClaw.
+    Isso reduz a pressão do prompt sobre backends locais mais rigorosos. Se pequenas solicitações diretas ainda funcionarem, mas os turnos normais do agente do OpenClaw continuarem causando falhas no `inferrs`, trate isso como uma limitação do modelo ou servidor upstream, não como um problema de transporte do OpenClaw.
 
   </Accordion>
 
-  <Accordion title="Manual smoke test">
-    Depois de configurado, teste as duas camadas:
+  <Accordion title="Teste rápido manual">
+    Teste as duas camadas após a configuração:
 
     ```bash
     curl http://127.0.0.1:8080/v1/chat/completions \
@@ -215,66 +194,52 @@ caminho na configuração. Para a referência completa dos campos, veja
       --json
     ```
 
-    Se o primeiro comando funcionar, mas o segundo falhar, consulte a seção de solução de problemas abaixo.
+    Se o primeiro comando funcionar, mas o segundo falhar, consulte a seção Solução de problemas abaixo.
 
   </Accordion>
 
-  <Accordion title="Proxy-style behavior">
-    `inferrs` é tratado como um backend `/v1` compatível com OpenAI em estilo proxy, não como um
-    endpoint OpenAI nativo.
-
-    - A modelagem de solicitações exclusiva da OpenAI nativa não se aplica aqui
-    - Sem `service_tier`, sem `store` de Responses, sem dicas de cache de prompt e sem
-      modelagem de payload de compatibilidade de raciocínio da OpenAI
-    - Cabeçalhos ocultos de atribuição do OpenClaw (`originator`, `version`, `User-Agent`)
-      não são injetados em URLs base personalizadas do `inferrs`
-
+  <Accordion title="Comportamento no estilo de proxy">
+    Como o `inferrs` usa o adaptador genérico `openai-completions` (não `openai-responses`), a formatação de solicitações exclusiva da OpenAI nativa nunca é aplicada: nenhum `service_tier`, nenhum `store` da Responses, nenhuma dica de cache de prompt e nenhuma formatação de payload de compatibilidade de raciocínio da OpenAI são enviados.
   </Accordion>
 </AccordionGroup>
 
 ## Solução de problemas
 
 <AccordionGroup>
-  <Accordion title="curl /v1/models fails">
-    `inferrs` não está em execução, não está acessível ou não está vinculado ao
-    host/porta esperado. Verifique se o servidor foi iniciado e está escutando no endereço que você
-    configurou.
+  <Accordion title="curl /v1/models falha">
+    O `inferrs` não está em execução, não está acessível ou não está vinculado ao host/porta que você configurou. Confirme se o servidor foi iniciado e está escutando nesse endereço.
   </Accordion>
 
-  <Accordion title="messages[].content expected a string">
-    Defina `compat.requiresStringContent: true` na entrada do modelo. Veja a seção
-    `requiresStringContent` acima para detalhes.
+  <Accordion title="messages[].content esperava uma string">
+    Defina `compat.requiresStringContent: true` na entrada do modelo (consulte acima).
   </Accordion>
 
-  <Accordion title="Direct /v1/chat/completions calls pass but openclaw infer model run fails">
-    Tente definir `compat.supportsTools: false` para desativar a superfície de esquema de ferramentas.
-    Veja a observação sobre o esquema de ferramentas do Gemma acima.
+  <Accordion title="Chamadas diretas a /v1/chat/completions funcionam, mas openclaw infer model run falha">
+    Defina `compat.supportsTools: false` para desativar a superfície do esquema de ferramentas (consulte a ressalva sobre o Gemma acima).
   </Accordion>
 
-  <Accordion title="inferrs still crashes on larger agent turns">
-    Se o OpenClaw não recebe mais erros de esquema, mas `inferrs` ainda trava em turnos maiores
-    de agente, trate isso como uma limitação upstream do `inferrs` ou do modelo. Reduza
-    a pressão do prompt ou mude para outro backend ou modelo local.
+  <Accordion title="O inferrs ainda falha em turnos maiores do agente">
+    Se os erros de esquema tiverem desaparecido, mas o `inferrs` ainda falhar em turnos maiores do agente, trate isso como uma limitação upstream do `inferrs` ou do modelo. Reduza a pressão do prompt ou troque de backend/modelo.
   </Accordion>
 </AccordionGroup>
 
 <Tip>
-Para ajuda geral, veja [Solução de problemas](/pt-BR/help/troubleshooting) e [FAQ](/pt-BR/help/faq).
+Para obter ajuda geral, consulte [Solução de problemas](/pt-BR/help/troubleshooting) e [Perguntas frequentes](/pt-BR/help/faq).
 </Tip>
 
 ## Relacionados
 
 <CardGroup cols={2}>
-  <Card title="Local models" href="/pt-BR/gateway/local-models" icon="server">
-    Executando o OpenClaw com servidores de modelos locais.
+  <Card title="Modelos locais" href="/pt-BR/gateway/local-models" icon="server">
+    Execução do OpenClaw com servidores de modelos locais.
   </Card>
-  <Card title="Local model services" href="/pt-BR/gateway/local-model-services" icon="play">
-    Iniciando servidores de modelos locais sob demanda para provedores configurados.
+  <Card title="Serviços de modelos locais" href="/pt-BR/gateway/local-model-services" icon="play">
+    Inicialização sob demanda de servidores de modelos locais para provedores configurados.
   </Card>
-  <Card title="Gateway troubleshooting" href="/pt-BR/gateway/troubleshooting#local-openai-compatible-backend-passes-direct-probes-but-agent-runs-fail" icon="wrench">
-    Depurando backends locais compatíveis com OpenAI que passam nas sondagens, mas falham em execuções de agente.
+  <Card title="Solução de problemas do Gateway" href="/pt-BR/gateway/troubleshooting#local-openai-compatible-backend-passes-direct-probes-but-agent-runs-fail" icon="wrench">
+    Depuração de backends locais compatíveis com a OpenAI que passam nas verificações, mas falham nas execuções do agente.
   </Card>
-  <Card title="Model selection" href="/pt-BR/concepts/model-providers" icon="layers">
-    Visão geral de todos os provedores, refs de modelo e comportamento de failover.
+  <Card title="Seleção de modelos" href="/pt-BR/concepts/model-providers" icon="layers">
+    Visão geral de todos os provedores, referências de modelos e comportamento de failover.
   </Card>
 </CardGroup>

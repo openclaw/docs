@@ -1,15 +1,16 @@
 ---
 read_when:
-    - Hinzufügen oder Ändern des Hintergrund-Exec-Verhaltens
-    - Debugging von lang laufenden exec-Aufgaben
+    - Hintergrundausführungsverhalten hinzufügen oder ändern
+    - Debugging lang laufender Exec-Aufgaben
 summary: Ausführung im Hintergrund und Prozessverwaltung
-title: Hintergrundausführung und Prozess-Tool
+title: Hintergrundausführung und Prozesswerkzeug
 x-i18n:
-    generated_at: "2026-06-27T17:27:43Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:19:36Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: 5822c1e26b0144c5216ae6e59e279ccc506cf4c0a42b8cd6c386f535fe458bd3
+    source_hash: b540455797df71dcdb18b0caa5f5088e81ef8823e0ec79364bebad8e6f060f12
     source_path: gateway/background-process.md
     workflow: 16
 ---
@@ -18,92 +19,93 @@ OpenClaw führt Shell-Befehle über das `exec`-Tool aus und hält lang laufende 
 
 ## exec-Tool
 
-Wichtige Parameter:
+Parameter:
 
-- `command` (erforderlich)
-- `yieldMs` (Standard 10000): nach dieser Verzögerung automatisch in den Hintergrund verschieben
-- `background` (bool): sofort im Hintergrund ausführen
-- `timeout` (Sekunden, Standard `tools.exec.timeoutSec`): den Prozess nach diesem Timeout beenden; setzen Sie `timeout: 0` nur, um das Timeout des exec-Prozesses für diesen Aufruf zu deaktivieren
-- `elevated` (bool): außerhalb der Sandbox ausführen, wenn der erhöhte Modus aktiviert/erlaubt ist (standardmäßig `gateway` oder `node`, wenn das exec-Ziel `node` ist)
-- Benötigen Sie ein echtes TTY? Setzen Sie `pty: true`.
-- `workdir`, `env`
+| Parameter    | Beschreibung                                                                                                                                                    |
+| ------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `command`    | Erforderlich. Auszuführender Shell-Befehl.                                                                                                                      |
+| `workdir`    | Arbeitsverzeichnis; weglassen, um das standardmäßige aktuelle Arbeitsverzeichnis zu verwenden.                                                                  |
+| `env`        | Zusätzliche Umgebungsvariablen für den Befehl.                                                                                                                  |
+| `yieldMs`    | Wartezeit in Millisekunden, bevor der Prozess in den Hintergrund verschoben wird (Standardwert 10000).                                                          |
+| `background` | Sofort im Hintergrund ausführen.                                                                                                                                |
+| `timeout`    | Zeitüberschreitung in Sekunden (Standardwert `tools.exec.timeoutSec`); beendet den Prozess nach Ablauf. Legen Sie `timeout: 0` fest, um die Zeitüberschreitung des exec-Prozesses für diesen Aufruf zu deaktivieren. |
+| `pty`        | Wenn verfügbar, in einem Pseudoterminal ausführen (CLIs und Coding-Agenten, die ein TTY benötigen).                                                             |
+| `elevated`   | Außerhalb der Sandbox ausführen, wenn der erhöhte Modus aktiviert/zulässig ist (standardmäßig `gateway` oder `node`, wenn das exec-Ziel `node` ist).             |
+| `host`       | Exec-Ziel: `auto`, `sandbox`, `gateway` oder `node`.                                                                                                            |
+| `node`       | Node-ID/-Name, wird mit `host: "node"` verwendet.                                                                                                               |
 
 Verhalten:
 
-- Vordergrundläufe geben die Ausgabe direkt zurück.
-- Wenn ein Lauf in den Hintergrund verschoben wird (explizit oder per Timeout), gibt das Tool `status: "running"` + `sessionId` und ein kurzes Ende der Ausgabe zurück.
-- Hintergrund- und `yieldMs`-Läufe erben `tools.exec.timeoutSec`, sofern der Aufruf kein explizites `timeout` angibt.
-- Ausgaben bleiben im Arbeitsspeicher, bis die Sitzung abgefragt oder gelöscht wird.
-- Wenn das `process`-Tool nicht zugelassen ist, läuft `exec` synchron und ignoriert `yieldMs`/`background`.
-- Gestartete exec-Befehle erhalten `OPENCLAW_SHELL=exec` für kontextbewusste Shell-/Profilregeln.
-- Für lang laufende Arbeit, die jetzt startet, starten Sie sie einmal und verlassen Sie sich auf das automatische
-  Aufwecken bei Abschluss, wenn es aktiviert ist und der Befehl Ausgabe erzeugt oder fehlschlägt.
-- Wenn das automatische Aufwecken bei Abschluss nicht verfügbar ist oder Sie eine Bestätigung für einen stillen Erfolg
-  eines Befehls benötigen, der sauber ohne Ausgabe beendet wurde, verwenden Sie `process`,
-  um den Abschluss zu bestätigen.
-- Emulieren Sie keine Erinnerungen oder verzögerten Nachfassaktionen mit `sleep`-Schleifen oder wiederholtem
-  Polling; verwenden Sie Cron für zukünftige Arbeit.
+- Ausführungen im Vordergrund geben die Ausgabe direkt zurück.
+- Bei Ausführung im Hintergrund (explizit oder durch eine `yieldMs`-Zeitüberschreitung) gibt das Tool `status: "running"` + `sessionId` und das kurze Ende der Ausgabe zurück.
+- Hintergrundausführungen und Ausführungen mit `yieldMs` übernehmen `tools.exec.timeoutSec`, sofern beim Aufruf kein explizites `timeout` übergeben wird.
+- Die Ausgabe verbleibt im Arbeitsspeicher, bis die Sitzung abgefragt oder gelöscht wird.
+- Wenn das `process`-Tool nicht zugelassen ist, wird `exec` synchron ausgeführt und ignoriert `yieldMs`/`background`.
+- Gestartete exec-Befehle erhalten `OPENCLAW_SHELL=exec` für kontextabhängige Shell-/Profilregeln.
+- Für lang laufende Arbeiten, die jetzt beginnen: Starten Sie sie einmal und verlassen Sie sich, sofern aktiviert, auf die automatische Abschlussaktivierung, sobald der Befehl eine Ausgabe erzeugt oder fehlschlägt.
+- Wenn die automatische Abschlussaktivierung nicht verfügbar ist oder Sie eine Bestätigung für einen erfolgreichen Abschluss ohne Ausgabe benötigen, fragen Sie den Status mit `process` ab.
+- Bilden Sie Erinnerungen oder verzögerte Folgeaktionen nicht mit `sleep`-Schleifen oder wiederholten Abfragen nach – verwenden Sie Cron für zukünftige Arbeiten.
 
-## Brücke für untergeordnete Prozesse
+### Umgebungsvariablen zum Überschreiben
 
-Wenn Sie lang laufende untergeordnete Prozesse außerhalb der exec-/process-Tools starten (zum Beispiel CLI-Neustarts oder Gateway-Helfer), binden Sie den Bridge-Helfer für untergeordnete Prozesse ein, damit Beendigungssignale weitergeleitet und Listener bei Exit/Fehler entfernt werden. Dies verhindert verwaiste Prozesse unter systemd und hält das Shutdown-Verhalten plattformübergreifend konsistent.
+| Variable                                 | Wirkung                                                                                                                       |
+| ---------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| `OPENCLAW_BASH_YIELD_MS`                 | Standardmäßige Wartezeit vor der Ausführung im Hintergrund (ms). Standardwert 10000, begrenzt auf 10–120000.                  |
+| `OPENCLAW_BASH_MAX_OUTPUT_CHARS`         | Obergrenze für die Ausgabe im Arbeitsspeicher (Zeichen).                                                                      |
+| `OPENCLAW_BASH_PENDING_MAX_OUTPUT_CHARS` | Obergrenze für ausstehende stdout-/stderr-Ausgaben pro Stream (Zeichen).                                                      |
+| `OPENCLAW_BASH_JOB_TTL_MS`               | TTL für abgeschlossene Sitzungen (ms), begrenzt auf 1m–3h.                                                                    |
+| `OPENCLAW_PROCESS_INPUT_WAIT_IDLE_MS`    | Leerlaufschwelle für Ausgaben, bevor beschreibbare Hintergrundsitzungen als wahrscheinlich auf Eingaben wartend markiert werden. Standardwert 15000. |
 
-Umgebungs-Overrides:
+### Konfiguration (gegenüber Umgebungsvariablen zum Überschreiben bevorzugt)
 
-- `OPENCLAW_BASH_YIELD_MS`: Standard-Yield (ms)
-- `OPENCLAW_BASH_MAX_OUTPUT_CHARS`: Ausgabelimit im Arbeitsspeicher (Zeichen)
-- `OPENCLAW_BASH_PENDING_MAX_OUTPUT_CHARS`: Limit für ausstehendes stdout/stderr pro Stream (Zeichen)
-- `OPENCLAW_BASH_JOB_TTL_MS`: TTL für abgeschlossene Sitzungen (ms, begrenzt auf 1m-3h)
-- `OPENCLAW_PROCESS_INPUT_WAIT_IDLE_MS`: Schwellenwert für inaktive Ausgabe, bevor beschreibbare Hintergrundsitzungen als wahrscheinlich auf Eingabe wartend markiert werden (Standard 15000 ms)
+| Schlüssel                              | Standardwert | Wirkung                                                                                                   |
+| -------------------------------------- | ------------ | --------------------------------------------------------------------------------------------------------- |
+| `tools.exec.backgroundMs`             | 10000        | Entspricht `OPENCLAW_BASH_YIELD_MS`.                                                                      |
+| `tools.exec.timeoutSec`               | 1800         | Standardmäßige Zeitüberschreitung pro Aufruf.                                                             |
+| `tools.exec.cleanupMs`                | 1800000      | Entspricht `OPENCLAW_BASH_JOB_TTL_MS`.                                                                    |
+| `tools.exec.notifyOnExit`             | true         | Stellt beim Beenden einer Hintergrundausführung ein Systemereignis in die Warteschlange und fordert einen Heartbeat an. |
+| `tools.exec.notifyOnExitEmptySuccess` | false        | Stellt auch Abschlussereignisse für erfolgreiche Hintergrundausführungen ohne Ausgabe in die Warteschlange. |
 
-Konfiguration (bevorzugt):
+## Überbrückung von Kindprozessen
 
-- `tools.exec.backgroundMs` (Standard 10000)
-- `tools.exec.timeoutSec` (Standard 1800)
-- `tools.exec.cleanupMs` (Standard 1800000)
-- `tools.exec.notifyOnExit` (Standard true): stellt ein Systemereignis in die Warteschlange + fordert einen Heartbeat an, wenn ein im Hintergrund laufender exec beendet wird.
-- `tools.exec.notifyOnExitEmptySuccess` (Standard false): wenn true, werden auch Abschlussereignisse für erfolgreiche Hintergrundläufe in die Warteschlange gestellt, die keine Ausgabe erzeugt haben.
+Wenn Sie lang laufende Kindprozesse außerhalb der exec-/process-Tools starten (CLI-Neustarts, Gateway-Hilfsprozesse), binden Sie den Hilfsmechanismus zur Überbrückung von Kindprozessen ein, damit Beendigungssignale weitergeleitet und Listener bei Beendigung oder Fehlern entfernt werden. Dadurch werden verwaiste Prozesse unter systemd vermieden und das Herunterfahren bleibt plattformübergreifend konsistent.
 
 ## process-Tool
 
 Aktionen:
 
-- `list`: laufende + abgeschlossene Sitzungen
-- `poll`: neue Ausgabe für eine Sitzung abrufen (meldet auch den Exit-Status)
-- `log`: die aggregierte Ausgabe lesen und Hinweise zur Eingabewiederherstellung anzeigen (unterstützt `offset` + `limit`)
-- `write`: stdin senden (`data`, optional `eof`)
-- `send-keys`: explizite Tastentokens oder Bytes an eine PTY-gestützte Sitzung senden
-- `submit`: Enter / Wagenrücklauf an eine PTY-gestützte Sitzung senden
-- `paste`: Literaltext senden, optional in den bracketed-paste-Modus eingeschlossen
-- `kill`: eine Hintergrundsitzung beenden
-- `clear`: eine abgeschlossene Sitzung aus dem Arbeitsspeicher entfernen
-- `remove`: beenden, wenn laufend, andernfalls löschen, wenn abgeschlossen
+| Aktion      | Wirkung                                                                                                    |
+| ----------- | ---------------------------------------------------------------------------------------------------------- |
+| `list`      | Laufende und abgeschlossene Sitzungen.                                                                     |
+| `poll`      | Neue Ausgabe einer Sitzung abrufen (meldet auch den Beendigungsstatus).                                    |
+| `log`       | Zusammengefasste Ausgabe und Hinweise zur Wiederherstellung der Eingabe lesen. Unterstützt `offset` + `limit`. |
+| `write`     | stdin senden (`data`, optional `eof`).                                                                     |
+| `send-keys` | Explizite Tastentoken oder Bytes an eine PTY-gestützte Sitzung senden.                                     |
+| `submit`    | Eingabetaste/Wagenrücklauf an eine PTY-gestützte Sitzung senden.                                          |
+| `paste`     | Wörtlichen Text senden, optional im Modus für bracketed paste.                                             |
+| `kill`      | Eine Hintergrundsitzung beenden.                                                                           |
+| `clear`     | Eine abgeschlossene Sitzung aus dem Arbeitsspeicher entfernen.                                            |
+| `remove`    | Bei laufender Sitzung beenden, andernfalls eine abgeschlossene Sitzung löschen.                            |
 
 Hinweise:
 
-- Nur in den Hintergrund verschobene Sitzungen werden im Arbeitsspeicher aufgelistet/persistiert.
-- Sitzungen gehen bei einem Prozessneustart verloren (keine Persistenz auf Datenträger).
-- Sitzungsprotokolle werden nur im Chatverlauf gespeichert, wenn Sie `process poll/log` ausführen und das Tool-Ergebnis aufgezeichnet wird.
-- `process` ist pro Agent begrenzt; es sieht nur Sitzungen, die von diesem Agent gestartet wurden.
-- Verwenden Sie `poll` / `log` für Status, Protokolle, Bestätigung stiller Erfolge oder
-  Abschlussbestätigung, wenn das automatische Aufwecken bei Abschluss nicht verfügbar ist.
-- Verwenden Sie `log`, bevor Sie eine interaktive CLI wiederherstellen, damit das aktuelle Transkript,
-  der stdin-Zustand und der Eingabewartehinweis gemeinsam sichtbar sind.
-- Verwenden Sie `write` / `send-keys` / `submit` / `paste` / `kill`, wenn Sie Eingabe
-  oder einen Eingriff benötigen.
-- `process list` enthält einen abgeleiteten `name` (Befehlsverb + Ziel) für schnelle Durchsicht.
-- `process list`, `poll` und `log` melden `waitingForInput` nur,
-  wenn die Sitzung weiterhin beschreibbares stdin hat und länger als der
-  Eingabewarte-Schwellenwert inaktiv war.
-- `process log` verwendet zeilenbasiertes `offset`/`limit`.
-- Wenn sowohl `offset` als auch `limit` ausgelassen werden, gibt es die letzten 200 Zeilen zurück und enthält einen Paging-Hinweis.
-- Wenn `offset` angegeben und `limit` ausgelassen wird, gibt es ab `offset` bis zum Ende zurück (nicht auf 200 begrenzt).
-- Polling ist für Status nach Bedarf gedacht, nicht für die Planung von Warteschleifen. Wenn die Arbeit
-  später erfolgen soll, verwenden Sie stattdessen Cron.
+- Nur Hintergrundsitzungen werden aufgeführt/gespeichert – ausschließlich im Arbeitsspeicher, nicht auf der Festplatte. Sitzungen gehen bei einem Prozessneustart verloren.
+- Eine aktive Hintergrundsitzung blockiert die kooperative Suspendierung des Hosts und einen sicheren Gateway-Neustart, bis der Prozesseigentümer das tatsächliche Ende bestätigt.
+- `process remove` kann eine laufende Sitzung unmittelbar nach Anforderung ihrer Beendigung ausblenden; Suspendierung und Neustart bleiben bis zur Bestätigung des Endes blockiert.
+- Sitzungsprotokolle werden nur im Chatverlauf gespeichert, wenn Sie `process poll`/`log` ausführen und das Tool-Ergebnis aufgezeichnet wird.
+- `process` ist auf den jeweiligen Agenten beschränkt; es sieht nur Sitzungen, die von diesem Agenten gestartet wurden.
+- Verwenden Sie `poll`/`log` für Status, Protokolle oder Abschlussbestätigungen, wenn die automatische Abschlussaktivierung nicht verfügbar ist.
+- Verwenden Sie `log`, bevor Sie eine interaktive CLI wiederherstellen, damit das aktuelle Transkript, der stdin-Status und der Hinweis zum Warten auf Eingaben gemeinsam sichtbar sind.
+- Verwenden Sie `write`/`send-keys`/`submit`/`paste`/`kill`, wenn eine Eingabe oder ein Eingriff erforderlich ist.
+- `process list` enthält für eine schnelle Übersicht einen abgeleiteten `name` (Befehlsverb + Ziel).
+- `process list`, `poll` und `log` melden `waitingForInput` nur, wenn die Sitzung weiterhin über beschreibbares stdin verfügt und länger als die Eingabewarteschwelle inaktiv war (Standardwert 15000 ms, `OPENCLAW_PROCESS_INPUT_WAIT_IDLE_MS`).
+- `process log` verwendet zeilenbasierte Werte für `offset`/`limit`. Wenn beide weggelassen werden, gibt es die letzten 200 Zeilen mit einem Hinweis zur Seitennavigation zurück. Wenn `offset` festgelegt ist und `limit` nicht, erfolgt die Rückgabe ab `offset` bis zum Ende (nicht auf 200 begrenzt).
+- `timeout` von `poll` wartet vor der Rückgabe bis zur angegebenen Anzahl von Millisekunden; Werte über 30000 werden auf 30000 begrenzt.
+- Abfragen dienen dem bedarfsgesteuerten Status, nicht der Planung von Warteschleifen. Wenn die Arbeit später erfolgen soll, verwenden Sie Cron.
 
 ## Beispiele
 
-Eine lange Aufgabe ausführen und später abfragen:
+Eine lang laufende Aufgabe ausführen und später abfragen:
 
 ```json
 { "tool": "exec", "command": "sleep 5 && echo done", "yieldMs": 1000 }
@@ -113,7 +115,7 @@ Eine lange Aufgabe ausführen und später abfragen:
 { "tool": "process", "action": "poll", "sessionId": "<id>" }
 ```
 
-Eine interaktive Sitzung prüfen, bevor Eingabe gesendet wird:
+Eine interaktive Sitzung vor dem Senden einer Eingabe prüfen:
 
 ```json
 { "tool": "process", "action": "log", "sessionId": "<id>" }
@@ -143,13 +145,13 @@ Aktuelle Zeile absenden:
 { "tool": "process", "action": "submit", "sessionId": "<id>" }
 ```
 
-Literaltext einfügen:
+Wörtlichen Text einfügen:
 
 ```json
 { "tool": "process", "action": "paste", "sessionId": "<id>", "text": "line1\nline2\n" }
 ```
 
-## Verwandt
+## Verwandte Themen
 
 - [Exec-Tool](/de/tools/exec)
 - [Exec-Genehmigungen](/de/tools/exec-approvals)

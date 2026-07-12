@@ -1,42 +1,44 @@
 ---
 read_when:
-    - Mettre à jour les correspondances d’identifiants de modèles d’appareils ou les fichiers NOTICE/licence
-    - Modification de la façon dont l’interface utilisateur des Instances affiche les noms des appareils
-summary: Comment OpenClaw intègre les identifiants de modèles d’appareils Apple pour fournir des noms conviviaux dans l’application macOS.
+    - Mise à jour des correspondances d’identifiants de modèles d’appareils ou des fichiers NOTICE/de licence
+    - Modification de l’affichage des noms d’appareils dans l’interface Instances
+summary: Comment OpenClaw intègre les identifiants de modèles d’appareils Apple afin d’afficher des noms conviviaux dans l’application macOS.
 title: Base de données des modèles d’appareils
 x-i18n:
-    generated_at: "2026-04-25T13:56:56Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: f20e035f787ba7d9bb48d2a18263679d20b295e12ffb263a63c3a0ef72312d34
-    source_path: reference/device-models.md
-    workflow: 15
+    generated_at: "2026-07-12T15:47:18Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
+    provider: openai
+    source_hash: 930cd330594072d9c986b8c85c5a68e02dd096e5f0c015e3ee86b767073b93e6
+    source_path: reference/device-models.md
+    workflow: 16
 ---
 
-L’application compagnon macOS affiche des noms de modèles d’appareils Apple conviviaux dans l’interface utilisateur **Instances** en faisant correspondre les identifiants de modèle Apple (par ex. `iPad16,6`, `Mac16,6`) à des noms lisibles par l’humain.
+L’interface utilisateur **Instances** de l’app compagnon macOS associe les identifiants de modèles Apple à des noms conviviaux (`iPad16,6` -> « iPad Pro 13 pouces (M4) », `Mac16,6` -> « MacBook Pro (14 pouces, 2024) »). `DeviceModelCatalog` utilise également le préfixe de l’identifiant (avec repli sur la famille de l’appareil) pour choisir un symbole SF pour chaque appareil.
 
-Le mappage est intégré sous forme de JSON dans :
+Fichiers dans `apps/macos/Sources/OpenClaw/Resources/DeviceModels/` :
 
-- `apps/macos/Sources/OpenClaw/Resources/DeviceModels/`
+| Fichier                                | Fonction                                           |
+| -------------------------------------- | -------------------------------------------------- |
+| `ios-device-identifiers.json`          | Correspondance identifiant iOS/iPadOS -> nom       |
+| `mac-device-identifiers.json`          | Correspondance identifiant Mac -> nom              |
+| `NOTICE.md`                            | SHA des commits en amont épinglés                  |
+| `LICENSE.apple-device-identifiers.txt` | Licence MIT du projet en amont                     |
 
-## Source de données
+## Source des données
 
-Nous intégrons actuellement le mappage depuis le dépôt sous licence MIT suivant :
-
-- `kyle-seongwoo-jun/apple-device-identifiers`
-
-Pour garantir des builds déterministes, les fichiers JSON sont épinglés à des commits upstream spécifiques (enregistrés dans `apps/macos/Sources/OpenClaw/Resources/DeviceModels/NOTICE.md`).
+Intégrés depuis le dépôt GitHub `kyle-seongwoo-jun/apple-device-identifiers`, sous licence MIT. Les fichiers JSON sont épinglés aux SHA des commits consignés dans `NOTICE.md` afin de garantir des builds déterministes.
 
 ## Mise à jour de la base de données
 
-1. Choisissez les commits upstream que vous souhaitez épingler (un pour iOS, un pour macOS).
-2. Mettez à jour les hachages de commit dans `apps/macos/Sources/OpenClaw/Resources/DeviceModels/NOTICE.md`.
-3. Téléchargez à nouveau les fichiers JSON, épinglés à ces commits :
+1. Choisissez les SHA des commits en amont à épingler (un pour iOS et un pour macOS).
+2. Mettez à jour `apps/macos/Sources/OpenClaw/Resources/DeviceModels/NOTICE.md` avec les nouveaux SHA.
+3. Téléchargez à nouveau les fichiers JSON épinglés à ces commits :
 
 ```bash
-IOS_COMMIT="<sha de commit pour ios-device-identifiers.json>"
-MAC_COMMIT="<sha de commit pour mac-device-identifiers.json>"
+IOS_COMMIT="<commit sha for ios-device-identifiers.json>"
+MAC_COMMIT="<commit sha for mac-device-identifiers.json>"
 
 curl -fsSL "https://raw.githubusercontent.com/kyle-seongwoo-jun/apple-device-identifiers/${IOS_COMMIT}/ios-device-identifiers.json" \
   -o apps/macos/Sources/OpenClaw/Resources/DeviceModels/ios-device-identifiers.json
@@ -45,14 +47,14 @@ curl -fsSL "https://raw.githubusercontent.com/kyle-seongwoo-jun/apple-device-ide
   -o apps/macos/Sources/OpenClaw/Resources/DeviceModels/mac-device-identifiers.json
 ```
 
-4. Assurez-vous que `apps/macos/Sources/OpenClaw/Resources/DeviceModels/LICENSE.apple-device-identifiers.txt` correspond toujours à la version upstream (remplacez-le si la licence upstream change).
-5. Vérifiez que l’application macOS se compile correctement (sans avertissements) :
+4. Confirmez que `LICENSE.apple-device-identifiers.txt` correspond toujours à la version en amont ; remplacez-le si la licence en amont a changé.
+5. Vérifiez que l’app macOS se compile sans erreur :
 
 ```bash
 swift build --package-path apps/macos
 ```
 
-## Lié
+## Voir aussi
 
-- [Nœuds](/fr/nodes)
-- [Dépannage des nœuds](/fr/nodes/troubleshooting)
+- [Nodes](/fr/nodes)
+- [Dépannage des Nodes](/fr/nodes/troubleshooting)

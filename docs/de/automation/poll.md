@@ -2,19 +2,20 @@
 summary: Weiterleitung zu /cli/message
 title: Umfragen
 x-i18n:
-    generated_at: "2026-04-24T06:26:24Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: a277212ed680b7aeb9153d003bc084d2d0c918dc53f2f469c72f7fe5a881cfae
-    source_path: automation/poll.md
-    workflow: 15
+    generated_at: "2026-07-12T14:59:11Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
+    provider: openai
+    source_hash: 071617c5fe910ad8a5d4a03416876ba3092d4fc67d5c206570a0456469ef73a9
+    source_path: automation/poll.md
+    workflow: 16
 ---
 
-Diese Seite wurde nach [Nachrichten-Tool](/de/cli/message) verschoben. Informationen zur Umfrage-Dokumentation finden Sie unter [Nachrichten-Tool](/de/cli/message).
+Diese Seite wurde verschoben. Die Dokumentation zu Umfragen, einschließlich der Flags für `openclaw message poll` und der Limits pro Kanal, finden Sie unter [Nachrichtenwerkzeug](/de/cli/message).
 
-## Verwandt
+## Verwandte Themen
 
-- [Webhook](/de/automation/cron-jobs)
+- [Webhooks](/de/automation/cron-jobs#webhooks)
 - [Geplante Aufgaben](/de/automation/cron-jobs)
 - [Hintergrundaufgaben](/de/automation/tasks)

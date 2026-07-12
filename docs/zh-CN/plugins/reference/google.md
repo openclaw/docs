@@ -1,30 +1,31 @@
 ---
 read_when:
     - 你正在安装、配置或审计 google 插件
-summary: 为 OpenClaw 添加 Google、Google Gemini CLI 和 Google Vertex 模型提供商支持。
+summary: 为 OpenClaw 添加对 Google、Google Gemini CLI 和 Google Vertex 模型提供商的支持。
 title: Google 插件
 x-i18n:
-    generated_at: "2026-05-02T15:14:31Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:38:21Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: 24246ba7ebfd5c62a6f02ded8c555a5dbdeec3df128bf5863923d32f6424ea57
+    source_hash: 4228126f246fd09d996c9f76dd10d79ad29f578788a0284abfc7107450a8bf62
     source_path: plugins/reference/google.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
 # Google 插件
 
-为 OpenClaw 添加 Google、Google Gemini CLI、Google Vertex 模型提供商支持。
+为 OpenClaw 添加 Google、Google Gemini CLI 和 Google Vertex 模型提供商支持。
 
 ## 分发
 
-- 包：`@openclaw/google-plugin`
-- 安装路径：包含在 OpenClaw 中
+- 软件包：`@openclaw/google-plugin`
+- 安装方式：内置于 OpenClaw
 
-## 接口面
+## 接口
 
-providers: google, google-gemini-cli, google-vertex; contracts: imageGenerationProviders, mediaUnderstandingProviders, memoryEmbeddingProviders, musicGenerationProviders, realtimeVoiceProviders, speechProviders, videoGenerationProviders, webSearchProviders
+提供商：google、google-gemini-cli、google-vertex；契约：imageGenerationProviders、mediaUnderstandingProviders、memoryEmbeddingProviders、musicGenerationProviders、realtimeVoiceProviders、speechProviders、usageProviders、videoGenerationProviders、webSearchProviders
 
 ## 相关文档
 

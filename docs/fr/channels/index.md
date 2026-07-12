@@ -5,71 +5,77 @@ read_when:
 summary: Plateformes de messagerie auxquelles OpenClaw peut se connecter
 title: Canaux de discussion
 x-i18n:
-    generated_at: "2026-06-27T17:10:41Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:01:55Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: 3ff3e59df21d71f0d80eff2a6299169bfeb15964834a552f3c4c1d5b7c144b8d
+    source_hash: 411b011a8e5dd83d3f30a672c0e8a56251ee8c6ca7cdf3e7dc5c2b1f1b31d73d
     source_path: channels/index.md
     workflow: 16
 ---
 
-OpenClaw peut vous parler sur n’importe quelle application de chat que vous utilisez déjà. Chaque canal se connecte via le Gateway.
+OpenClaw peut communiquer avec vous sur n’importe quelle application de messagerie que vous utilisez déjà. Chaque canal se connecte via le Gateway.
 Le texte est pris en charge partout ; les médias et les réactions varient selon le canal.
 
-## Notes de diffusion
-
-- Les réponses Telegram qui contiennent une syntaxe d’image Markdown, comme `![alt](url)`,
-  sont converties en réponses multimédias sur le chemin de sortie final lorsque c’est possible.
-- Les MPIM Slack sont acheminés comme des discussions de groupe ; les règles de groupe, le comportement des
-  mentions et les règles de session de groupe s’appliquent donc aux conversations MPIM.
-- La configuration WhatsApp s’installe à la demande : l’intégration peut afficher le flux de configuration avant
-  que le package du Plugin soit installé, et le Gateway charge le Plugin externe
-  ClawHub/npm uniquement lorsque le canal est réellement actif.
-- Les canaux qui acceptent les messages entrants rédigés par un bot peuvent utiliser la
-  [protection contre les boucles de bots](/fr/channels/bot-loop-protection) partagée pour empêcher des paires de bots de
-  se répondre indéfiniment.
-- Les salons toujours actifs pris en charge peuvent utiliser les [événements de salon ambiants](/fr/channels/ambient-room-events)
-  afin que les échanges non mentionnés du salon deviennent un contexte discret, sauf si l’agent envoie avec
-  l’outil `message`.
+iMessage, Telegram et l’interface WebChat sont inclus dans l’installation principale. Les canaux marqués
+« plugin officiel » s’installent avec une seule commande (`openclaw plugins install @openclaw/<id>`)
+ou à la demande pendant `openclaw onboard` / `openclaw channels add`, puis nécessitent un redémarrage
+du Gateway. Les canaux marqués « plugin externe » sont maintenus en dehors du dépôt OpenClaw.
 
 ## Canaux pris en charge
 
-- [Discord](/fr/channels/discord) - API Discord Bot + Gateway ; prend en charge les serveurs, les canaux et les messages privés.
-- [Feishu](/fr/channels/feishu) - Bot Feishu/Lark via WebSocket (plugin groupé).
-- [Google Chat](/fr/channels/googlechat) - Application Google Chat API via webhook HTTP (plugin téléchargeable).
-- [iMessage](/fr/channels/imessage) - Intégration native macOS via le pont `imsg` sur un Mac connecté (ou enveloppe SSH lorsque le Gateway s’exécute ailleurs), avec actions d’API privée pour les réponses, tapbacks, effets, pièces jointes et gestion de groupes. Recommandé pour les nouvelles configurations iMessage OpenClaw lorsque les permissions de l’hôte et l’accès à Messages conviennent.
-- [IRC](/fr/channels/irc) - Serveurs IRC classiques ; canaux + messages privés avec contrôles d’appairage/liste d’autorisation.
-- [LINE](/fr/channels/line) - Bot LINE Messaging API (plugin téléchargeable).
-- [Matrix](/fr/channels/matrix) - Protocole Matrix (plugin téléchargeable).
-- [Mattermost](/fr/channels/mattermost) - API Bot + WebSocket ; canaux, groupes, messages privés (plugin téléchargeable).
-- [Microsoft Teams](/fr/channels/msteams) - Bot Framework ; prise en charge entreprise (plugin groupé).
-- [Nextcloud Talk](/fr/channels/nextcloud-talk) - Chat auto-hébergé via Nextcloud Talk (plugin groupé).
-- [Nostr](/fr/channels/nostr) - Messages privés décentralisés via NIP-04 (plugin groupé).
-- [QQ Bot](/fr/channels/qqbot) - API QQ Bot ; discussion privée, discussion de groupe et médias enrichis (plugin groupé).
-- [Raft](/fr/channels/raft) - Passerelle de réveil CLI Raft pour la collaboration humaine et agent (plugin externe).
-- [Signal](/fr/channels/signal) - signal-cli ; axé sur la confidentialité.
-- [Slack](/fr/channels/slack) - Bolt SDK ; applications d’espace de travail.
-- [SMS](/fr/channels/sms) - SMS adossés à Twilio via le webhook du Gateway (plugin officiel).
-- [Synology Chat](/fr/channels/synology-chat) - Synology NAS Chat via webhooks sortants+entrants (plugin groupé).
-- [Telegram](/fr/channels/telegram) - API Bot via grammY ; prend en charge les groupes.
-- [Tlon](/fr/channels/tlon) - Messagerie basée sur Urbit (plugin groupé).
-- [Twitch](/fr/channels/twitch) - Chat Twitch via connexion IRC (plugin groupé).
-- [Voice Call](/fr/plugins/voice-call) - Téléphonie via Plivo ou Twilio (plugin, installé séparément).
-- [WebChat](/fr/web/webchat) - Interface WebChat du Gateway via WebSocket.
-- [WeChat](/fr/channels/wechat) - Plugin Tencent iLink Bot via connexion par QR code ; discussions privées uniquement (plugin externe).
-- [WhatsApp](/fr/channels/whatsapp) - Le plus populaire ; utilise Baileys et nécessite un appairage par QR code.
+- [Discord](/fr/channels/discord) - API Discord Bot + Gateway ; prend en charge les serveurs, les canaux et les messages privés (plugin officiel).
+- [Feishu](/fr/channels/feishu) - Bot Feishu/Lark via WebSocket (plugin officiel).
+- [Google Chat](/fr/channels/googlechat) - Application de l’API Google Chat via un webhook HTTP (plugin officiel).
+- [iMessage](/fr/channels/imessage) - Inclus dans le cœur. Intégration macOS native via le pont `imsg` sur un Mac connecté (ou une enveloppe SSH lorsque le Gateway s’exécute ailleurs), y compris des actions d’API privée pour les réponses, les réactions Tapback, les effets, les pièces jointes et la gestion des groupes.
+- [IRC](/fr/channels/irc) - Serveurs IRC classiques ; canaux et messages privés avec contrôles d’association et de liste d’autorisation (plugin officiel).
+- [LINE](/fr/channels/line) - Bot de l’API LINE Messaging (plugin officiel).
+- [Matrix](/fr/channels/matrix) - Protocole Matrix (plugin officiel).
+- [Mattermost](/fr/channels/mattermost) - API Bot + WebSocket ; canaux, groupes et messages privés (plugin officiel).
+- [Microsoft Teams](/fr/channels/msteams) - Bot Framework ; prise en charge en entreprise (plugin officiel).
+- [Nextcloud Talk](/fr/channels/nextcloud-talk) - Messagerie auto-hébergée via Nextcloud Talk (plugin officiel).
+- [Nostr](/fr/channels/nostr) - Messages privés décentralisés via NIP-04 (plugin officiel).
+- [QQ Bot](/fr/channels/qqbot) - API QQ Bot ; discussions privées, discussions de groupe et contenus multimédias enrichis (plugin officiel).
+- [Raft](/fr/channels/raft) - Pont de réveil de la CLI Raft pour la collaboration entre humains et agents (plugin officiel).
+- [Signal](/fr/channels/signal) - signal-cli ; axé sur la confidentialité (plugin officiel).
+- [Slack](/fr/channels/slack) - SDK Bolt ; applications d’espace de travail (plugin officiel).
+- [SMS](/fr/channels/sms) - SMS reposant sur Twilio via le webhook du Gateway (plugin officiel).
+- [Synology Chat](/fr/channels/synology-chat) - Synology NAS Chat via des webhooks sortants et entrants (plugin officiel).
+- [Telegram](/fr/channels/telegram) - Inclus dans le cœur. API Bot via grammY ; prend en charge les groupes.
+- [Tlon](/fr/channels/tlon) - Messagerie basée sur Urbit (plugin officiel).
+- [Twitch](/fr/channels/twitch) - Messagerie Twitch via une connexion IRC (plugin officiel).
+- [Appel vocal](/fr/plugins/voice-call) - Téléphonie via Plivo, Telnyx ou Twilio (plugin officiel).
+- [WebChat](/fr/web/webchat) - Inclus dans le cœur. Interface WebChat du Gateway via WebSocket.
+- [WeChat](/fr/channels/wechat) - Bot Tencent iLink avec connexion par code QR ; discussions privées uniquement (plugin externe).
+- [WhatsApp](/fr/channels/whatsapp) - Le plus populaire ; utilise Baileys et nécessite une association par code QR (plugin officiel).
 - [Yuanbao](/fr/channels/yuanbao) - Bot Tencent Yuanbao (plugin externe).
-- [Zalo](/fr/channels/zalo) - API Zalo Bot ; messagerie populaire du Vietnam (plugin groupé).
-- [Zalo ClawBot](/fr/channels/zaloclawbot) - Assistant Zalo personnel via connexion par QR code ; lié au propriétaire (plugin externe).
-- [Zalo Personal](/fr/channels/zalouser) - Compte personnel Zalo via connexion par QR code (plugin groupé).
+- [Zalo](/fr/channels/zalo) - API Zalo Bot ; messagerie populaire au Vietnam (plugin officiel).
+- [Zalo ClawBot](/fr/channels/zaloclawbot) - Assistant Zalo personnel avec connexion par code QR ; lié au propriétaire (plugin externe).
+- [Zalo Personal](/fr/channels/zalouser) - Compte personnel Zalo avec connexion par code QR (plugin officiel).
 
-## Notes
+## Remarques sur la distribution
 
-- Les canaux peuvent fonctionner simultanément ; configurez-en plusieurs et OpenClaw acheminera par chat.
-- La configuration la plus rapide est généralement **Telegram** (simple jeton de bot). WhatsApp nécessite un appairage par QR code et
-  stocke davantage d’état sur le disque.
-- Le comportement de groupe varie selon le canal ; consultez [Groupes](/fr/channels/groups).
-- L’appairage des messages privés et les listes d’autorisation sont appliqués pour la sécurité ; consultez [Sécurité](/fr/gateway/security).
-- Dépannage : [Dépannage des canaux](/fr/channels/troubleshooting).
+- Les réponses Telegram qui contiennent une syntaxe d’image Markdown, telle que `![alt](url)`,
+  sont converties en réponses multimédias dans le chemin de sortie final lorsque cela est possible.
+- Les messages privés Slack à plusieurs participants sont acheminés comme des discussions de groupe ; la politique de groupe, le comportement
+  des mentions et les règles de session de groupe s’appliquent donc aux conversations MPIM.
+- La configuration de WhatsApp s’effectue par installation à la demande : l’intégration peut afficher le processus de configuration avant
+  l’installation du paquet du plugin, et le Gateway ne charge le plugin externe
+  ClawHub/npm que lorsque le canal est réellement actif.
+- Les canaux qui acceptent les messages entrants rédigés par des bots peuvent utiliser la
+  [protection partagée contre les boucles de bots](/fr/channels/bot-loop-protection) pour empêcher des paires de bots de
+  se répondre indéfiniment.
+- Les salons permanents pris en charge peuvent utiliser les [événements ambiants de salon](/fr/channels/ambient-room-events)
+  afin que les échanges du salon ne mentionnant pas l’agent deviennent un contexte discret, sauf si l’agent envoie un message avec
+  l’outil `message`.
+
+## Remarques
+
+- Les canaux peuvent fonctionner simultanément ; configurez-en plusieurs et OpenClaw effectuera l’acheminement pour chaque discussion.
+- La configuration la plus rapide est généralement celle de **Telegram** (simple jeton de bot, aucune installation de plugin). WhatsApp
+  nécessite une association par code QR et stocke davantage d’état sur le disque.
+- Le comportement des groupes varie selon le canal ; consultez [Groupes](/fr/channels/groups).
+- L’association des messages privés et les listes d’autorisation sont appliquées pour des raisons de sécurité ; consultez [Sécurité](/fr/gateway/security).
+- Résolution des problèmes : [Résolution des problèmes liés aux canaux](/fr/channels/troubleshooting).
 - Les fournisseurs de modèles sont documentés séparément ; consultez [Fournisseurs de modèles](/fr/providers/models).

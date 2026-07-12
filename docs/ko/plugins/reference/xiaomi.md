@@ -1,14 +1,15 @@
 ---
 read_when:
-    - xiaomi plugin을 설치, 구성 또는 감사하고 있습니다
-summary: OpenClaw에 Xiaomi, Xiaomi Token Plan 모델 제공자 지원을 추가합니다.
+    - xiaomi Plugin을 설치, 구성 또는 감사하고 있습니다.
+summary: OpenClaw에 Xiaomi 및 Xiaomi Token Plan 모델 제공자 지원을 추가합니다.
 title: Xiaomi Plugin
 x-i18n:
-    generated_at: "2026-06-27T17:54:54Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:34:04Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: cd7918f5f372158fbf033381b6977fd98ec193f120797bb0eee7095a6a293b86
+    source_hash: 5999659d0a5abf287b8ce44f573f7f9d2e46b23b5ee21edb613e38a91489a7c7
     source_path: plugins/reference/xiaomi.md
     workflow: 16
 ---
@@ -22,9 +23,9 @@ OpenClaw에 Xiaomi, Xiaomi Token Plan 모델 제공자 지원을 추가합니다
 - 패키지: `@openclaw/xiaomi-provider`
 - 설치 경로: OpenClaw에 포함됨
 
-## 표면
+## 제공 기능
 
-제공자: xiaomi, xiaomi-token-plan; 계약: speechProviders
+제공자: xiaomi, xiaomi-token-plan; 계약: speechProviders, usageProviders
 
 ## 관련 문서
 

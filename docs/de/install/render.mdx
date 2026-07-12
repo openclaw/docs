@@ -1,43 +1,34 @@
 ---
 read_when:
     - OpenClaw auf Render bereitstellen
-    - Sie möchten eine deklarative Cloud-Bereitstellung mit Render Blueprints
+    - Sie möchten eine deklarative Cloud-Bereitstellung mit Render Blueprints.
 summary: OpenClaw auf Render mit Infrastructure-as-Code bereitstellen
 title: Render
 x-i18n:
-    generated_at: "2026-04-23T14:03:16Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 95ffe98a60e9919826a7c7fdb9cbafd63d20ce3de111ac305f43907b1ae442dc
-    source_path: install/render.mdx
-    workflow: 15
+    generated_at: "2026-07-12T15:27:56Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
+    provider: openai
+    source_hash: a5fbb3c6df04e186df958a62a6130da4e3e485acfeecc7e85fee0d5b69a0438f
+    source_path: install/render.mdx
+    workflow: 16
 ---
 
-# Render
-
-Stellen Sie OpenClaw auf Render mithilfe von Infrastructure as Code bereit. Das enthaltene `render.yaml`-Blueprint definiert Ihren gesamten Stack deklarativ — Service, Datenträger, Umgebungsvariablen —, sodass Sie mit einem Klick bereitstellen und Ihre Infrastruktur parallel zu Ihrem Code versionieren können.
+Stellen Sie OpenClaw auf [Render](https://render.com) mithilfe der `render.yaml`-Blueprint des Repositorys bereit. Sie definiert den Dienst, den Datenträger und die Umgebungsvariablen in einer einzigen Datei.
 
 ## Voraussetzungen
 
-- Ein [Render-Konto](https://render.com) (Free-Tier verfügbar)
-- Ein API-Schlüssel Ihres bevorzugten [Modell-Providers](/de/providers)
+- Ein [Render-Konto](https://render.com) (kostenloser Tarif verfügbar)
+- Ein API-Schlüssel von Ihrem bevorzugten [Modell-Provider](/de/providers)
 
-## Mit einem Render-Blueprint bereitstellen
+## Bereitstellung
 
-[Deploy to Render](https://render.com/deploy?repo=https://github.com/openclaw/openclaw)
+[Auf Render bereitstellen](https://render.com/deploy?repo=https://github.com/openclaw/openclaw)
 
-Ein Klick auf diesen Link führt Folgendes aus:
+Dadurch wird anhand von `render.yaml` ein Render-Dienst erstellt, das Docker-Image gebaut und bereitgestellt. Ihre Dienst-URL folgt dem Muster `https://<service-name>.onrender.com`.
 
-1. Es wird ein neuer Render-Service aus dem `render.yaml`-Blueprint im Root dieses Repositorys erstellt.
-2. Das Docker-Image wird gebaut und bereitgestellt.
-
-Nach der Bereitstellung folgt Ihre Service-URL dem Muster `https://<service-name>.onrender.com`.
-
-## Das Blueprint verstehen
-
-Render-Blueprints sind YAML-Dateien, die Ihre Infrastruktur definieren. Das `render.yaml` in diesem
-Repository konfiguriert alles, was zum Ausführen von OpenClaw benötigt wird:
+## Die Blueprint
 
 ```yaml
 services:
@@ -54,122 +45,100 @@ services:
       - key: OPENCLAW_WORKSPACE_DIR
         value: /data/workspace
       - key: OPENCLAW_GATEWAY_TOKEN
-        generateValue: true # auto-generates a secure token
+        generateValue: true # generiert automatisch ein sicheres Token
     disk:
       name: openclaw-data
       mountPath: /data
       sizeGB: 1
 ```
 
-Verwendete wichtige Blueprint-Funktionen:
+| Funktion              | Zweck                                                               |
+| --------------------- | ------------------------------------------------------------------- |
+| `runtime: docker`     | Erstellt das Image aus dem Dockerfile des Repositorys               |
+| `healthCheckPath`     | Render überwacht `/health` und startet fehlerhafte Instanzen neu    |
+| `generateValue: true` | Generiert automatisch einen kryptografisch sicheren Wert            |
+| `disk`                | Persistenter Speicher, der erneute Bereitstellungen überdauert      |
 
-| Funktion              | Zweck                                                      |
-| --------------------- | ---------------------------------------------------------- |
-| `runtime: docker`     | Baut aus dem Dockerfile des Repositorys                    |
-| `healthCheckPath`     | Render überwacht `/health` und startet fehlerhafte Instanzen neu |
-| `generateValue: true` | Generiert automatisch einen kryptografisch sicheren Wert   |
-| `disk`                | Persistenter Speicher, der Neustarts der Bereitstellung übersteht |
+## Tarif auswählen
 
-## Einen Tarif wählen
+| Tarif     | Herunterfahren          | Datenträger    | Am besten geeignet für             |
+| --------- | ----------------------- | -------------- | ---------------------------------- |
+| Free      | Nach 15 Min. Inaktivität | Nicht verfügbar | Tests, Demos                       |
+| Starter   | Nie                     | 1GB+           | Persönliche Nutzung, kleine Teams  |
+| Standard+ | Nie                     | 1GB+           | Produktion, mehrere Kanäle         |
 
-| Tarif     | Spin-down          | Datenträger   | Am besten geeignet für         |
-| --------- | ------------------ | ------------- | ------------------------------ |
-| Free      | Nach 15 Min. Inaktivität | Nicht verfügbar | Tests, Demos              |
-| Starter   | Nie                | 1GB+          | Private Nutzung, kleine Teams  |
-| Standard+ | Nie                | 1GB+          | Produktion, mehrere Channels   |
-
-Das Blueprint verwendet standardmäßig `starter`. Um den Free-Tier zu nutzen, ändern Sie `plan: free` in
-`render.yaml` Ihres Forks (beachten Sie jedoch: Ohne persistenten Datenträger wird der OpenClaw-Status
-bei jeder Bereitstellung zurückgesetzt).
+Die Blueprint verwendet standardmäßig `starter`. Um den kostenlosen Tarif zu verwenden, ändern Sie `plan: free` in der `render.yaml` Ihres Forks. Beachten Sie, dass der OpenClaw-Zustand ohne persistenten Datenträger bei jeder Bereitstellung zurückgesetzt wird.
 
 ## Nach der Bereitstellung
 
-### Auf die Control UI zugreifen
+### Auf die Steuerungsoberfläche zugreifen
 
-Das Web-Dashboard ist verfügbar unter `https://<your-service>.onrender.com/`.
+Das Web-Dashboard ist unter `https://<your-service>.onrender.com/` verfügbar. Stellen Sie die Verbindung mit dem gemeinsamen Geheimnis her: dem automatisch generierten `OPENCLAW_GATEWAY_TOKEN` (Sie finden es unter **Dashboard → your service → Environment**) oder Ihrem Passwort, falls Sie zur Passwortauthentifizierung gewechselt haben.
 
-Verbinden Sie sich mit dem konfigurierten gemeinsamen Secret. Diese Bereitstellungsvorlage generiert
-`OPENCLAW_GATEWAY_TOKEN` automatisch (zu finden unter **Dashboard → Ihr Service →
-Environment**); wenn Sie es durch Passwortauthentifizierung ersetzen, verwenden Sie stattdessen
-dieses Passwort.
+### Protokolle
 
-## Funktionen des Render-Dashboards
-
-### Logs
-
-Zeigen Sie Echtzeit-Logs unter **Dashboard → Ihr Service → Logs** an. Filtern nach:
-
-- Build-Logs (Erstellung des Docker-Images)
-- Deploy-Logs (Start des Service)
-- Runtime-Logs (Ausgabe der Anwendung)
+**Dashboard → your service → Logs** zeigt Build-Protokolle (Erstellung des Docker-Images), Bereitstellungsprotokolle (Start des Dienstes) und Laufzeitprotokolle (Anwendungsausgabe).
 
 ### Shell-Zugriff
 
-Zum Debuggen öffnen Sie eine Shell-Sitzung über **Dashboard → Ihr Service → Shell**. Der persistente Datenträger ist unter `/data` gemountet.
+**Dashboard → your service → Shell** öffnet eine Shell-Sitzung. Der persistente Datenträger ist unter `/data` eingehängt.
 
 ### Umgebungsvariablen
 
-Ändern Sie Variablen unter **Dashboard → Ihr Service → Environment**. Änderungen lösen automatisch eine neue Bereitstellung aus.
+Bearbeiten Sie Variablen unter **Dashboard → your service → Environment**. Änderungen lösen automatisch eine erneute Bereitstellung aus.
 
-### Auto-Deploy
+### Automatische Bereitstellung
 
-Wenn Sie das ursprüngliche OpenClaw-Repository verwenden, stellt Render Ihr OpenClaw nicht automatisch neu bereit. Zum Aktualisieren führen Sie im Dashboard eine manuelle Blueprint-Synchronisierung aus.
+Render führt automatisch eine erneute Bereitstellung durch, wenn der Branch des verbundenen Repositorys einen neuen Commit erhält. Wenn Sie direkt von `openclaw/openclaw` statt von Ihrem eigenen Fork bereitgestellt haben, besitzen Sie keinen Push-Zugriff, um dies auszulösen. Aktualisieren Sie daher über eine manuelle Blueprint-Synchronisierung im Dashboard oder verknüpfen Sie den Dienst mit Ihrem eigenen Fork.
 
 ## Benutzerdefinierte Domain
 
-1. Gehen Sie zu **Dashboard → Ihr Service → Settings → Custom Domains**
+1. **Dashboard → your service → Settings → Custom Domains**
 2. Fügen Sie Ihre Domain hinzu
-3. Konfigurieren Sie DNS wie angegeben (CNAME auf `*.onrender.com`)
+3. Konfigurieren Sie DNS gemäß den Anweisungen (CNAME auf `*.onrender.com`)
 4. Render stellt automatisch ein TLS-Zertifikat bereit
 
 ## Skalierung
 
-Render unterstützt horizontale und vertikale Skalierung:
+- **Vertikal**: Wechseln Sie den Tarif, um mehr CPU/RAM zu erhalten. Dies reicht für OpenClaw normalerweise aus.
+- **Horizontal**: Erhöhen Sie die Anzahl der Instanzen (Standard-Tarif und höher). Dies erfordert Sticky Sessions oder eine externe Zustandsverwaltung, da OpenClaw den Laufzeitzustand auf dem lokalen Datenträger speichert.
 
-- **Vertikal**: Ändern Sie den Tarif, um mehr CPU/RAM zu erhalten
-- **Horizontal**: Erhöhen Sie die Anzahl der Instanzen (Standard-Tarif und höher)
+## Sicherungen und Migration
 
-Für OpenClaw ist vertikale Skalierung in der Regel ausreichend. Horizontale Skalierung erfordert Sticky Sessions oder externe Statusverwaltung.
-
-## Backups und Migration
-
-Exportieren Sie Ihren Status, Ihre Konfiguration, Auth-Profile und den Workspace jederzeit über den
-Shell-Zugriff im Render-Dashboard:
+Über die Shell des Render-Dashboards können Sie jederzeit Zustand, Konfiguration, Authentifizierungsprofile und Arbeitsbereich exportieren:
 
 ```bash
 openclaw backup create
 ```
 
-Dadurch wird ein portables Backup-Archiv mit dem OpenClaw-Status plus einem eventuell konfigurierten
-Workspace erstellt. Siehe [Backup](/de/cli/backup) für Details.
+Dadurch wird ein portables Sicherungsarchiv erstellt. Siehe [Sicherung](/de/cli/backup).
 
 ## Fehlerbehebung
 
-### Service startet nicht
+### Dienst startet nicht
 
-Prüfen Sie die Deploy-Logs im Render-Dashboard. Häufige Probleme:
+Prüfen Sie die Bereitstellungsprotokolle im Render-Dashboard. Häufige Probleme:
 
-- Fehlendes `OPENCLAW_GATEWAY_TOKEN` — prüfen Sie, ob es unter **Dashboard → Environment** gesetzt ist
-- Port-Konflikt — stellen Sie sicher, dass `OPENCLAW_GATEWAY_PORT=8080` gesetzt ist, damit sich das Gateway an den von Render erwarteten Port bindet
+- Fehlendes `OPENCLAW_GATEWAY_TOKEN` – überprüfen Sie, ob es unter **Dashboard → Environment** festgelegt ist
+- Nicht übereinstimmender Port – stellen Sie sicher, dass `OPENCLAW_GATEWAY_PORT=8080` festgelegt ist, damit das Gateway an den von Render erwarteten Port gebunden wird
 
-### Langsame Kaltstarts (Free-Tier)
+### Langsame Kaltstarts (kostenloser Tarif)
 
-Services im Free-Tier fahren nach 15 Minuten Inaktivität herunter. Die erste Anfrage danach dauert einige Sekunden, während der Container startet. Wechseln Sie zum Starter-Tarif für Always-on.
+Dienste im kostenlosen Tarif werden nach 15 Minuten Inaktivität heruntergefahren. Die erste Anfrage nach dem Herunterfahren dauert einige Sekunden, während der Container startet. Wechseln Sie für einen dauerhaften Betrieb zum Starter-Tarif.
 
 ### Datenverlust nach erneuter Bereitstellung
 
-Dies passiert im Free-Tier (kein persistenter Datenträger). Wechseln Sie zu einem kostenpflichtigen Tarif oder
-exportieren Sie regelmäßig ein vollständiges Backup über `openclaw backup create` in der Render-Shell.
+Dies tritt im kostenlosen Tarif auf, da kein persistenter Datenträger verfügbar ist. Wechseln Sie zu einem kostenpflichtigen Tarif oder exportieren Sie regelmäßig über die Render-Shell mit `openclaw backup create` eine Sicherung.
 
-### Fehler bei Health Checks
+### Fehlgeschlagene Integritätsprüfungen
 
-Render erwartet innerhalb von 30 Sekunden eine Antwort mit Status 200 von `/health`. Wenn Builds erfolgreich sind, Bereitstellungen aber fehlschlagen, startet der Service möglicherweise zu langsam. Prüfen Sie:
+Wenn Builds erfolgreich sind, Bereitstellungen jedoch fehlschlagen, benötigt der Dienst möglicherweise zu lange zum Starten oder `/health` ist möglicherweise nicht erreichbar. Prüfen Sie Folgendes:
 
-- Build-Logs auf Fehler
-- Ob der Container lokal mit `docker build && docker run` läuft
+- Build-Protokolle auf Fehler
+- Ob der Container lokal mit `docker build && docker run` ausgeführt wird
 
 ## Nächste Schritte
 
-- Messaging-Channels einrichten: [Channels](/de/channels)
-- Das Gateway konfigurieren: [Gateway configuration](/de/gateway/configuration)
-- OpenClaw aktuell halten: [Updating](/de/install/updating)
+- Nachrichtenkanäle einrichten: [Kanäle](/de/channels)
+- Gateway konfigurieren: [Gateway-Konfiguration](/de/gateway/configuration)
+- OpenClaw aktuell halten: [Aktualisierung](/de/install/updating)

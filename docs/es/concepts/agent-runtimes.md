@@ -1,177 +1,169 @@
 ---
 read_when:
-    - Estás eligiendo entre OpenClaw, Codex, ACP u otro runtime de agente nativo
-    - Te confunden las etiquetas de proveedor/modelo/runtime en el estado o la configuración
-    - Estás documentando la paridad de soporte para un arnés nativo
-summary: Cómo OpenClaw separa proveedores de modelos, modelos, canales y runtimes de agentes
-title: Tiempos de ejecución de agente
+    - Está eligiendo entre OpenClaw, Codex, ACP u otro entorno de ejecución nativo para agentes
+    - Te confunden las etiquetas de proveedor/modelo/entorno de ejecución en el estado o la configuración
+    - Está documentando la paridad de compatibilidad de un arnés nativo
+summary: Cómo separa OpenClaw los proveedores de modelos, los modelos, los canales y los entornos de ejecución de agentes
+title: Entornos de ejecución de agentes
 x-i18n:
-    generated_at: "2026-07-05T11:13:19Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:23:57Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: a4b3c54b9f80e37662dc98f14db8abc4491426695dc9aa081b05bc923cb44ecd
+    source_hash: 47634daec4f88afa26ba47f33e1ed54b5768381bedeb7de7730fdb766566da89
     source_path: concepts/agent-runtimes.md
     workflow: 16
 ---
 
-Un **runtime de agente** posee un bucle de modelo preparado: recibe el prompt,
-dirige la salida del modelo, maneja llamadas a herramientas nativas y devuelve
-el turno terminado a OpenClaw.
+Un **entorno de ejecución de agente** posee un bucle de modelo preparado: recibe el prompt,
+controla la salida del modelo, gestiona las llamadas a herramientas nativas y devuelve el turno finalizado
+a OpenClaw.
 
-Los runtimes son fáciles de confundir con los proveedores porque ambos aparecen
-cerca de la configuración del modelo. Son capas diferentes:
+Es fácil confundir los entornos de ejecución con los proveedores porque ambos aparecen cerca de la
+configuración del modelo. Son capas diferentes:
 
-| Capa              | Ejemplos                                     | Significado                                                            |
-| ----------------- | -------------------------------------------- | ---------------------------------------------------------------------- |
-| Proveedor         | `anthropic`, `github-copilot`, `openai`      | Cómo OpenClaw autentica, descubre modelos y nombra refs de modelo.     |
-| Modelo            | `claude-opus-4-6`, `gpt-5.5`                 | El modelo seleccionado para el turno del agente.                       |
-| Runtime de agente | `claude-cli`, `codex`, `copilot`, `openclaw` | El bucle de bajo nivel o backend que ejecuta el turno preparado.       |
-| Canal             | Discord, Slack, Telegram, WhatsApp           | Dónde entran y salen los mensajes de OpenClaw.                         |
+| Capa                  | Ejemplos                                     | Significado                                                                                   |
+| --------------------- | -------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| Proveedor             | `anthropic`, `github-copilot`, `openai`      | Cómo autentica OpenClaw, descubre modelos y asigna nombres a las referencias de modelos.       |
+| Modelo                | `claude-opus-4-6`, `gpt-5.6-sol`             | El modelo seleccionado para el turno del agente.                                              |
+| Entorno de ejecución de agente | `claude-cli`, `codex`, `copilot`, `openclaw` | El bucle de bajo nivel o backend que ejecuta el turno preparado.                               |
+| Canal                 | Discord, Slack, Telegram, WhatsApp           | Por dónde entran y salen los mensajes de OpenClaw.                                            |
 
-Un **harness** es la implementación que proporciona un runtime de agente
-(término de código). Por ejemplo, el harness Codex incluido implementa el
-runtime `codex`. La configuración pública usa `agentRuntime.id` en entradas de
-proveedor o modelo; las claves de runtime de agente completo son heredadas y se
-ignoran. `openclaw doctor --fix` elimina los antiguos pines de runtime de
-agente completo y reescribe refs de modelo de runtime heredadas a refs
-canónicas de proveedor/modelo más política de runtime con ámbito de modelo
-cuando hace falta.
+Un **harness** es la implementación que proporciona un entorno de ejecución de agente (término de
+código). Por ejemplo, el harness de Codex incluido implementa el entorno de ejecución `codex`.
+La configuración pública usa `agentRuntime.id` en las entradas de proveedor o modelo; las claves de
+entorno de ejecución para todo el agente son heredadas y se ignoran. `openclaw doctor --fix` elimina
+las antiguas asignaciones de entorno de ejecución para todo el agente y reescribe las referencias de
+modelos de entornos de ejecución heredados como referencias canónicas de proveedor/modelo, además de
+una política de entorno de ejecución con ámbito de modelo cuando sea necesario.
 
-Dos familias de runtime:
+Dos familias de entornos de ejecución:
 
-- Los **harnesses embebidos** se ejecutan dentro del bucle de agente preparado
-  de OpenClaw: el runtime integrado `openclaw`, más harnesses de Plugin
-  registrados como `codex` y `copilot`.
-- Los **backends de CLI** ejecutan un proceso de CLI local mientras mantienen
-  canónica la ref de modelo. Por ejemplo, `anthropic/claude-opus-4-8` con un
-  `agentRuntime.id: "claude-cli"` con ámbito de modelo significa "selecciona el
-  modelo de Anthropic, ejecuta mediante Claude CLI". `claude-cli` no es un id de
-  harness embebido y no debe pasarse a la selección de AgentHarness.
+- Los **harnesses integrados** se ejecutan dentro del bucle de agente preparado de OpenClaw: el
+  entorno de ejecución `openclaw` incorporado, además de los harnesses de plugins registrados, como
+  `codex` y `copilot`.
+- Los **backends de CLI** ejecutan un proceso de CLI local mientras mantienen canónica la referencia
+  del modelo. Por ejemplo, `anthropic/claude-opus-4-8` con
+  `agentRuntime.id: "claude-cli"` con ámbito de modelo significa «seleccionar el modelo de Anthropic y
+  ejecutarlo mediante Claude CLI». `claude-cli` no es un id de harness integrado y no debe
+  pasarse a la selección de AgentHarness.
 
-El harness `copilot` es un harness de Plugin externo separado y opcional para
-la CLI de GitHub Copilot; consulta [runtime de agente de GitHub Copilot](/es/plugins/copilot)
-para la decisión orientada al usuario entre PI, Codex y el runtime de agente de
-GitHub Copilot.
+El harness `copilot` es un harness de plugin externo, independiente y opcional para la
+CLI de GitHub Copilot; consulte [Entorno de ejecución de agente de GitHub Copilot](/es/plugins/copilot) para
+conocer la decisión de cara al usuario entre los entornos de ejecución de agente PI, Codex y GitHub Copilot.
 
 ## Superficies de Codex
 
 Varias superficies comparten el nombre Codex:
 
-| Superficie                                      | Nombre/configuración en OpenClaw      | Qué hace                                                                                                             |
-| ----------------------------------------------- | ------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
-| Runtime nativo de servidor de aplicación Codex  | refs de modelo `openai/*`             | Ejecuta turnos de agente embebidos de OpenAI mediante el servidor de aplicación Codex. Esta es la configuración habitual de suscripción ChatGPT/Codex. |
-| Perfiles de autenticación OAuth de Codex        | perfiles OAuth de `openai`            | Almacena autenticación de suscripción ChatGPT/Codex que consume el harness del servidor de aplicación Codex.         |
-| Adaptador Codex ACP                             | `runtime: "acp"`, `agentId: "codex"`  | Ejecuta Codex mediante el plano de control ACP/acpx externo. Úsalo solo cuando se pida explícitamente ACP/acpx.      |
-| Conjunto de comandos nativo de control de chat Codex | `/codex ...`                     | Vincula, reanuda, dirige, detiene e inspecciona hilos del servidor de aplicación Codex desde el chat.                |
-| Ruta de API de OpenAI Platform para superficies no agente | `openai/*` más autenticación con clave de API | APIs directas de OpenAI como imágenes, embeddings, voz y tiempo real.                                           |
+| Superficie                                       | Nombre/configuración de OpenClaw       | Qué hace                                                                                                                     |
+| ------------------------------------------------ | -------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| Entorno de ejecución nativo del servidor de aplicaciones de Codex | Referencias de modelo `openai/*`       | Ejecuta turnos de agente integrados de OpenAI mediante el servidor de aplicaciones de Codex. Esta es la configuración habitual de suscripción de ChatGPT/Codex. |
+| Perfiles de autenticación OAuth de Codex         | Perfiles OAuth de `openai`             | Almacena la autenticación de suscripción de ChatGPT/Codex que consume el harness del servidor de aplicaciones de Codex.      |
+| Adaptador ACP de Codex                           | `runtime: "acp"`, `agentId: "codex"`   | Ejecuta Codex mediante el plano de control externo de ACP/acpx. Úselo solo cuando se solicite explícitamente ACP/acpx.        |
+| Conjunto nativo de comandos de control de chat de Codex | `/codex ...`                       | Vincula, reanuda, dirige, detiene e inspecciona hilos del servidor de aplicaciones de Codex desde el chat.                   |
+| Ruta de la API de OpenAI Platform para superficies sin agente | `openai/*` más autenticación con clave de API | API directas de OpenAI, como imágenes, incrustaciones, voz y tiempo real.                                              |
 
-Estas superficies son intencionadamente independientes. Habilitar el Plugin
-`codex` pone disponibles las funciones nativas del servidor de aplicación;
-`openclaw doctor --fix` posee la reparación de rutas Codex heredadas y la
-limpieza de pines de sesión obsoletos. Seleccionar `openai/*` para un modelo de
-agente ahora significa "ejecutar esto mediante Codex" salvo que se esté usando
-una superficie de API de OpenAI no agente.
+Estas superficies son independientes de forma intencionada. Habilitar el plugin `codex`
+hace que estén disponibles las funciones nativas del servidor de aplicaciones; `openclaw doctor --fix` se encarga
+de reparar las rutas heredadas de Codex y limpiar las asignaciones obsoletas de sesiones. Seleccionar `openai/*`
+para un modelo de agente ahora significa «ejecutar esto mediante Codex», salvo que se esté utilizando una superficie
+de API de OpenAI sin agente.
 
-La configuración común de suscripción ChatGPT/Codex usa OAuth de Codex para la
-autenticación, pero mantiene la ref de modelo como `openai/*` y selecciona el
-runtime `codex`:
+La configuración habitual de suscripción de ChatGPT/Codex usa OAuth de Codex para la autenticación, pero
+mantiene la referencia de modelo como `openai/*` y selecciona el entorno de ejecución `codex`:
 
 ```json5
 {
   agents: {
     defaults: {
-      model: "openai/gpt-5.5",
+      model: "openai/gpt-5.6-sol",
     },
   },
 }
 ```
 
-Eso significa que OpenClaw selecciona una ref de modelo de OpenAI y luego pide
-al runtime del servidor de aplicación Codex que ejecute el turno de agente
-embebido. No significa "usar facturación de API", y no significa que el canal,
-el catálogo de proveedores de modelo o el almacén de sesiones de OpenClaw se
-conviertan en Codex.
+Esto significa que OpenClaw selecciona una referencia de modelo de OpenAI y, a continuación, solicita al entorno
+de ejecución del servidor de aplicaciones de Codex que ejecute el turno de agente integrado. No significa «usar
+facturación de API», ni que el canal, el catálogo de proveedores de modelos o el almacén de sesiones de
+OpenClaw se conviertan en Codex.
 
-Cuando el Plugin `codex` incluido está habilitado, usa la superficie nativa de
-comandos `/codex` (`/codex bind`, `/codex threads`, `/codex resume`,
-`/codex steer`, `/codex stop`) para control de Codex en lenguaje natural en
-lugar de ACP. Usa ACP para Codex solo cuando el usuario pida explícitamente
-ACP/acpx o esté probando la ruta del adaptador ACP. Claude Code, Gemini CLI,
-OpenCode, Cursor y harnesses externos similares siguen usando ACP.
+Cuando el plugin `codex` incluido esté habilitado, use la superficie nativa de comandos `/codex`
+(`/codex bind`, `/codex threads`, `/codex resume`, `/codex steer`,
+`/codex stop`) para controlar Codex mediante lenguaje natural en lugar de ACP. Use ACP para
+Codex solo cuando el usuario solicite explícitamente ACP/acpx o esté probando la ruta del adaptador
+ACP. Claude Code, Gemini CLI, OpenCode, Cursor y otros harnesses externos similares
+siguen usando ACP.
 
 Árbol de decisión:
 
-1. **Vincular/controlar/hilo/reanudar/dirigir/detener Codex** -> superficie nativa de comandos `/codex` cuando el Plugin `codex` incluido está habilitado.
-2. **Codex como runtime embebido** o la experiencia normal de agente Codex respaldada por suscripción -> `openai/<model>`.
-3. **OpenClaw elegido explícitamente para un modelo de OpenAI** -> conserva la ref de modelo como `openai/<model>` y define la política de runtime de proveedor/modelo como `agentRuntime.id: "openclaw"`. Un perfil OAuth de `openai` seleccionado se enruta internamente mediante el transporte de autenticación Codex de OpenClaw.
-4. **Refs de modelo Codex heredadas en la configuración** -> repáralas con `openclaw doctor --fix` a `openai/<model>`; doctor conserva la ruta de autenticación Codex agregando `agentRuntime.id: "codex"` con ámbito de proveedor/modelo donde la antigua ref de modelo lo implicaba. Las refs de modelo heredadas **`codex-cli/*`** se reparan a la misma ruta de servidor de aplicación Codex `openai/<model>`; OpenClaw ya no conserva un backend Codex CLI incluido.
-5. **ACP, acpx o adaptador Codex ACP solicitado explícitamente** -> `runtime: "acp"` y `agentId: "codex"`.
-6. **Claude Code, Gemini CLI, OpenCode, Cursor, Droid u otro harness externo** -> ACP/acpx, no el runtime nativo de subagente.
+1. **Vincular/controlar/hilo/reanudar/dirigir/detener Codex** -> superficie nativa de comandos `/codex` cuando el plugin `codex` incluido esté habilitado.
+2. **Codex como entorno de ejecución integrado** o la experiencia normal de agente de Codex respaldada por suscripción -> `openai/<model>`.
+3. **OpenClaw elegido explícitamente para un modelo de OpenAI** -> mantenga la referencia de modelo como `openai/<model>` y establezca la política de entorno de ejecución del proveedor/modelo en `agentRuntime.id: "openclaw"`. Un perfil OAuth de `openai` seleccionado se enruta internamente mediante el transporte de autenticación de Codex de OpenClaw.
+4. **Referencias heredadas de modelos de Codex en la configuración** -> repárelas con `openclaw doctor --fix` como `openai/<model>`; doctor conserva la ruta de autenticación de Codex añadiendo `agentRuntime.id: "codex"` con ámbito de proveedor/modelo cuando la referencia de modelo antigua lo implicaba. Las referencias heredadas de modelos **`codex-cli/*`** se reparan para usar la misma ruta `openai/<model>` del servidor de aplicaciones de Codex; OpenClaw ya no mantiene un backend de CLI de Codex incluido.
+5. **Se solicita explícitamente ACP, acpx o el adaptador ACP de Codex** -> `runtime: "acp"` y `agentId: "codex"`.
+6. **Claude Code, Gemini CLI, OpenCode, Cursor, Droid u otro harness externo** -> ACP/acpx, no el entorno de ejecución nativo de subagentes.
 
-| Quieres decir...                         | Usa...                                      |
-| ---------------------------------------- | ------------------------------------------ |
-| Control de chat/hilo del servidor de aplicación Codex | `/codex ...` desde el Plugin `codex` incluido |
-| Runtime de agente embebido del servidor de aplicación Codex | refs de modelo de agente `openai/*` |
-| OAuth de OpenAI Codex                    | perfiles OAuth de `openai`                 |
-| Claude Code u otro harness externo       | ACP/acpx                                   |
+| Se refiere a...                                  | Use...                                                   |
+| ------------------------------------------------ | -------------------------------------------------------- |
+| Control de chat/hilos del servidor de aplicaciones de Codex | `/codex ...` del plugin `codex` incluido         |
+| Entorno de ejecución de agente integrado del servidor de aplicaciones de Codex | Referencias de modelo de agente `openai/*` |
+| OAuth de OpenAI Codex                            | Perfiles OAuth de `openai`                               |
+| Claude Code u otro harness externo               | ACP/acpx                                                 |
 
-Para la división de prefijos de la familia OpenAI, consulta [OpenAI](/es/providers/openai) y
-[Proveedores de modelo](/es/concepts/model-providers). Para el contrato de soporte
-del runtime Codex, consulta [runtime de harness Codex](/es/plugins/codex-harness-runtime#v1-support-contract).
+Para conocer la división de prefijos de la familia OpenAI, consulte [OpenAI](/es/providers/openai) y
+[Proveedores de modelos](/es/concepts/model-providers). Para conocer el contrato de compatibilidad del entorno de ejecución
+de Codex, consulte [Entorno de ejecución del harness de Codex](/es/plugins/codex-harness-runtime#v1-support-contract).
 
-## Propiedad del runtime
+## Propiedad del entorno de ejecución
 
-Distintos runtimes poseen distintas partes del bucle:
+Los distintos entornos de ejecución controlan diferentes partes del bucle:
 
-| Superficie                  | OpenClaw embebido                               | Servidor de aplicación Codex                                                |
-| --------------------------- | ----------------------------------------------- | --------------------------------------------------------------------------- |
-| Dueño del bucle de modelo   | OpenClaw, mediante el ejecutor embebido de OpenClaw | Servidor de aplicación Codex                                            |
-| Estado canónico del hilo    | Transcripción de OpenClaw                       | Hilo Codex, más espejo de transcripción de OpenClaw                         |
-| Herramientas dinámicas de OpenClaw | Bucle de herramientas nativas de OpenClaw | Puenteadas mediante el adaptador Codex                                      |
-| Herramientas nativas de shell y archivos | Ruta de OpenClaw                 | Herramientas nativas de Codex, puenteadas mediante hooks nativos donde se admitan |
-| Motor de contexto           | Ensamblaje de contexto nativo de OpenClaw       | OpenClaw proyecta contexto ensamblado en el turno de Codex                  |
-| Compaction                  | OpenClaw o motor de contexto seleccionado       | Compaction nativa de Codex, con notificaciones de OpenClaw y mantenimiento del espejo |
-| Entrega por canal           | OpenClaw                                        | OpenClaw                                                                    |
+| Superficie                  | Integrado de OpenClaw                            | Servidor de aplicaciones de Codex                                                |
+| --------------------------- | ------------------------------------------------ | -------------------------------------------------------------------------------- |
+| Propietario del bucle del modelo | OpenClaw, mediante el ejecutor integrado de OpenClaw | Servidor de aplicaciones de Codex                                           |
+| Estado canónico del hilo    | Transcripción de OpenClaw                        | Hilo de Codex, más un reflejo de la transcripción de OpenClaw                    |
+| Herramientas dinámicas de OpenClaw | Bucle de herramientas nativo de OpenClaw  | Conectadas mediante el adaptador de Codex                                        |
+| Herramientas nativas de shell y archivos | Ruta de OpenClaw                       | Herramientas nativas de Codex, conectadas mediante hooks nativos cuando se admitan |
+| Motor de contexto           | Ensamblaje de contexto nativo de OpenClaw        | OpenClaw proyecta el contexto ensamblado en el turno de Codex                    |
+| Compaction                  | OpenClaw o el motor de contexto seleccionado     | Compaction nativa de Codex, con notificaciones de OpenClaw y mantenimiento del reflejo |
+| Entrega al canal            | OpenClaw                                         | OpenClaw                                                                         |
 
-Regla de diseño: si OpenClaw posee la superficie, puede proporcionar el
-comportamiento normal de hooks de Plugin. Si el runtime nativo posee la
-superficie, OpenClaw necesita eventos de runtime o hooks nativos. Si el runtime
-nativo posee el estado canónico del hilo, OpenClaw refleja y proyecta contexto
-en lugar de reescribir internals no compatibles.
+Regla de diseño: si OpenClaw controla la superficie, puede proporcionar el comportamiento normal de los hooks de
+plugins. Si el entorno de ejecución nativo controla la superficie, OpenClaw necesita eventos del entorno de
+ejecución o hooks nativos. Si el entorno de ejecución nativo controla el estado canónico del hilo,
+OpenClaw refleja y proyecta el contexto en lugar de reescribir componentes internos no compatibles.
 
-## Selección de runtime
+## Selección del entorno de ejecución
 
-OpenClaw resuelve un runtime embebido después de la resolución de proveedor y
-modelo, en este orden:
+OpenClaw resuelve un entorno de ejecución integrado después de resolver el proveedor y el modelo, en
+este orden:
 
-1. Gana la **política de runtime con ámbito de modelo**. Vive en una entrada de
-   modelo de proveedor configurada, o en `agents.defaults.models["provider/model"].agentRuntime`
-   / `agents.list[].models["provider/model"].agentRuntime`. Un comodín de
-   proveedor como `agents.defaults.models["vllm/*"].agentRuntime` se aplica
-   después de la política de modelo exacta, de modo que los modelos de proveedor
-   descubiertos dinámicamente puedan compartir un runtime sin anular excepciones
-   exactas por modelo.
-2. **Política de runtime con ámbito de proveedor**: `models.providers.<provider>.agentRuntime`.
-3. **Modo `auto`**: los runtimes de Plugin registrados pueden reclamar pares proveedor/modelo compatibles.
-4. Si nada reclama el turno en modo `auto`, OpenClaw vuelve a `openclaw` como
-   runtime de compatibilidad. Usa un id de runtime explícito cuando la ejecución
-   deba ser estricta.
+1. La **política de entorno de ejecución con ámbito de modelo** tiene prioridad. Se encuentra en una entrada de modelo
+   de proveedor configurada, o en `agents.defaults.models["provider/model"].agentRuntime`
+   / `agents.list[].models["provider/model"].agentRuntime`. Un comodín de proveedor,
+   como `agents.defaults.models["vllm/*"].agentRuntime`, se aplica después de la política exacta del modelo,
+   por lo que los modelos de proveedor descubiertos dinámicamente pueden compartir un entorno de ejecución sin
+   sobrescribir las excepciones exactas por modelo.
+2. **Política de entorno de ejecución con ámbito de proveedor**: `models.providers.<provider>.agentRuntime`.
+3. **Modo `auto`**: los entornos de ejecución de plugins registrados pueden reclamar pares de proveedor/modelo compatibles.
+4. Si nada reclama el turno en modo `auto`, OpenClaw recurre a
+   `openclaw` como entorno de ejecución de compatibilidad. Use un id de entorno de ejecución explícito cuando
+   la ejecución deba ser estricta.
 
-Los pines de runtime de sesión completa y agente completo se ignoran:
-`OPENCLAW_AGENT_RUNTIME`, estado de sesión `agentHarnessId`/`agentRuntimeOverride`,
-`agents.defaults.agentRuntime` y `agents.list[].agentRuntime`. Ejecuta
-`openclaw doctor --fix` para eliminar configuración obsoleta de runtime de
-agente completo y convertir refs de modelo de runtime heredadas donde pueda
-preservarse la intención.
+Se ignoran las asignaciones de entorno de ejecución para toda la sesión y todo el agente: `OPENCLAW_AGENT_RUNTIME`,
+el estado de sesión `agentHarnessId`/`agentRuntimeOverride`, `agents.defaults.agentRuntime`
+y `agents.list[].agentRuntime`. Ejecute `openclaw doctor --fix` para eliminar la configuración obsoleta
+de entorno de ejecución para todo el agente y convertir las referencias heredadas de modelos de entorno de ejecución cuando
+pueda conservarse la intención.
 
-Los runtimes de Plugin explícitos de proveedor/modelo fallan de forma cerrada:
-`agentRuntime.id: "codex"` en un proveedor o modelo significa Codex, o un error
-claro de selección/runtime; nunca se enruta silenciosamente de vuelta a
-OpenClaw. Solo `auto` puede enrutar un turno no coincidente a OpenClaw.
+Los entornos de ejecución de plugins explícitos de proveedor/modelo aplican un cierre seguro: `agentRuntime.id: "codex"`
+en un proveedor o modelo significa Codex, o un error claro de selección/entorno de ejecución; nunca
+se redirige silenciosamente a OpenClaw. Solo `auto` puede dirigir a OpenClaw un
+turno sin coincidencias.
 
-Los alias de backend de CLI difieren de los ids de harness embebidos. Forma
-preferida de Claude CLI:
+Los alias de backends de CLI son diferentes de los ids de harnesses integrados. Forma preferida de Claude CLI:
 
 ```json5
 {
@@ -188,36 +180,33 @@ preferida de Claude CLI:
 }
 ```
 
-Las refs heredadas como `claude-cli/claude-opus-4-7` siguen siendo compatibles
-por compatibilidad, pero la configuración nueva debería mantener canónico el
-proveedor/modelo y poner el backend de ejecución en la política de runtime de
-proveedor/modelo.
+Las referencias heredadas, como `claude-cli/claude-opus-4-7`, siguen siendo compatibles por
+motivos de compatibilidad, pero la configuración nueva debe mantener canónicos el proveedor/modelo y
+ubicar el backend de ejecución en la política de entorno de ejecución del proveedor/modelo.
 
-Las refs heredadas `codex-cli/*` son distintas: doctor las migra a `openai/*`
-para que se ejecuten mediante el harness de servidor de aplicación Codex en
-lugar de preservar un backend Codex CLI.
+Las referencias heredadas `codex-cli/*` son diferentes: doctor las migra a `openai/*` para
+que se ejecuten mediante el harness del servidor de aplicaciones de Codex en lugar de conservar un backend de CLI
+de Codex.
 
-El modo `auto` es intencionadamente conservador para la mayoría de proveedores.
-Los modelos de agente de OpenAI son la excepción: runtime sin definir y `auto`
-se resuelven ambos al harness Codex. La configuración explícita del runtime
-OpenClaw sigue siendo una ruta de compatibilidad opcional para turnos de agente
-`openai/*`; cuando se empareja con un perfil OAuth de `openai` seleccionado,
-OpenClaw enruta esa ruta internamente mediante el transporte de autenticación
-Codex mientras mantiene la ref de modelo pública como `openai/*`. Los pines de
-sesión obsoletos de runtime OpenAI son ignorados por la selección de runtime y
-pueden limpiarse con `openclaw doctor --fix`.
+El modo `auto` es intencionadamente conservador para la mayoría de los proveedores. Los modelos de agente de OpenAI
+son la excepción: tanto un entorno de ejecución sin establecer como `auto` se resuelven al harness de Codex.
+La configuración explícita del entorno de ejecución de OpenClaw sigue siendo una ruta de compatibilidad opcional
+para turnos de agente `openai/*`; cuando se combina con un perfil OAuth de `openai` seleccionado,
+OpenClaw dirige esa ruta internamente mediante el transporte de autenticación de Codex
+mientras mantiene la referencia pública del modelo como `openai/*`. Las asignaciones obsoletas de sesiones del
+entorno de ejecución de OpenAI se ignoran durante la selección del entorno de ejecución y pueden limpiarse con
+`openclaw doctor --fix`.
 
-Si `openclaw doctor` advierte que el Plugin `codex` está habilitado mientras
-siguen quedando refs de modelo Codex heredadas en la configuración, trátalo
-como estado de ruta heredada y ejecuta `openclaw doctor --fix` para reescribirlo
-a `openai/*` con el runtime Codex.
+Si `openclaw doctor` advierte que el plugin `codex` está habilitado mientras quedan referencias
+heredadas de modelos de Codex en la configuración, trate ese estado como una ruta heredada y ejecute
+`openclaw doctor --fix` para reescribirla como `openai/*` con el entorno de ejecución de Codex.
 
-## Runtime de agente de GitHub Copilot
+## Entorno de ejecución de agente de GitHub Copilot
 
-El Plugin externo `@openclaw/copilot` registra un runtime `copilot` opcional
-respaldado por la CLI de GitHub Copilot (`@github/copilot-sdk`). Declara el
-proveedor de suscripción canónico `github-copilot` y **nunca** se selecciona mediante
-`auto`. Actívalo por modelo o por proveedor mediante `agentRuntime.id`:
+El plugin externo `@openclaw/copilot` registra un runtime `copilot` opcional
+respaldado por la CLI de GitHub Copilot (`@github/copilot-sdk`). Reclama el
+proveedor de suscripción canónico `github-copilot` y **nunca** lo selecciona
+`auto`. Actívelo por modelo o por proveedor mediante `agentRuntime.id`:
 
 ```json5
 {
@@ -234,51 +223,52 @@ proveedor de suscripción canónico `github-copilot` y **nunca** se selecciona m
 }
 ```
 
-El arnés declara su proveedor, runtime, clave de sesión de CLI y prefijo de
+El arnés reclama su proveedor, runtime, clave de sesión de la CLI y prefijo de
 perfil de autenticación en `extensions/copilot/doctor-contract-api.ts`, que
-`openclaw doctor` carga automáticamente. Para configuración, autenticación,
-duplicación de transcripciones, Compaction, el contrato declarativo de doctor y
-la decisión más amplia entre el SDK de PI, Codex y Copilot, consulta
-[runtime de agente de GitHub Copilot](/es/plugins/copilot).
+`openclaw doctor` carga automáticamente. Para obtener información sobre la
+configuración, la autenticación, el reflejo de transcripciones, Compaction, el
+contrato declarativo de doctor y la decisión más amplia entre los SDK de PI,
+Codex y Copilot, consulte [Runtime de agente de GitHub Copilot](/es/plugins/copilot).
 
 ## Contrato de compatibilidad
 
-Cuando un runtime no es OpenClaw, su documentación debe indicar qué superficies de OpenClaw
-admite:
+Cuando un runtime no sea OpenClaw, su documentación debe indicar qué
+superficies de OpenClaw admite:
 
-| Pregunta                               | Por qué importa                                                                                    |
-| -------------------------------------- | ------------------------------------------------------------------------------------------------- |
-| ¿Quién posee el bucle del modelo?      | Determina dónde ocurren los reintentos, la continuación de herramientas y las decisiones de respuesta final. |
-| ¿Quién posee el historial canónico del hilo? | Determina si OpenClaw puede editar el historial o solo duplicarlo.                                |
-| ¿Funcionan las herramientas dinámicas de OpenClaw? | La mensajería, las sesiones, Cron y las herramientas propiedad de OpenClaw dependen de esto.      |
-| ¿Funcionan los hooks de herramientas dinámicas? | Los plugins esperan `before_tool_call`, `after_tool_call` y middleware alrededor de las herramientas propiedad de OpenClaw. |
-| ¿Funcionan los hooks de herramientas nativas? | Las herramientas de shell, parche y propiedad del runtime necesitan soporte de hooks nativos para políticas y observación. |
-| ¿Se ejecuta el ciclo de vida del motor de contexto? | Los plugins de memoria y contexto dependen de ensamblar, ingerir, después del turno y el ciclo de vida de Compaction. |
-| ¿Qué datos de Compaction se exponen?   | Algunos plugins solo necesitan notificaciones; otros necesitan metadatos conservados/eliminados.   |
-| ¿Qué no se admite intencionadamente?   | Los usuarios no deben asumir equivalencia con OpenClaw cuando el runtime nativo posee más estado. |
+| Pregunta                                      | Por qué es importante                                                                                                      |
+| --------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| ¿Quién controla el bucle del modelo?          | Determina dónde se gestionan los reintentos, la continuación de herramientas y las decisiones sobre la respuesta final.    |
+| ¿Quién controla el historial canónico del hilo? | Determina si OpenClaw puede editar el historial o solo reflejarlo.                                                        |
+| ¿Funcionan las herramientas dinámicas de OpenClaw? | La mensajería, las sesiones, Cron y las herramientas controladas por OpenClaw dependen de ello.                         |
+| ¿Funcionan los hooks de herramientas dinámicas? | Los Plugins esperan `before_tool_call`, `after_tool_call` y middleware en torno a las herramientas controladas por OpenClaw. |
+| ¿Funcionan los hooks de herramientas nativas? | El shell, los parches y las herramientas controladas por el runtime necesitan compatibilidad con hooks nativos para las políticas y la observación. |
+| ¿Se ejecuta el ciclo de vida del motor de contexto? | Los plugins de memoria y contexto dependen de los ciclos de ensamblaje, ingesta, posterior al turno y Compaction.       |
+| ¿Qué datos de Compaction se exponen?          | Algunos plugins solo necesitan notificaciones; otros necesitan metadatos sobre lo conservado y lo descartado.              |
+| ¿Qué no se admite intencionadamente?          | Los usuarios no deben suponer equivalencia con OpenClaw cuando el runtime nativo controla más estado.                      |
 
-El contrato de soporte del runtime de Codex está documentado en
-[runtime de arnés de Codex](/es/plugins/codex-harness-runtime#v1-support-contract).
+El contrato de compatibilidad del runtime de Codex está documentado en
+[Runtime del arnés de Codex](/es/plugins/codex-harness-runtime#v1-support-contract).
 
 ## Etiquetas de estado
 
-La salida de estado puede mostrar las etiquetas `Execution` y `Runtime`. Léelas como
-diagnósticos, no como nombres de proveedores:
+La salida de estado puede mostrar las etiquetas `Execution` y `Runtime`. Deben
+interpretarse como datos de diagnóstico, no como nombres de proveedores:
 
-- Una referencia de modelo como `openai/gpt-5.5` es el proveedor/modelo seleccionado.
-- Un id de runtime como `codex` es el bucle que ejecuta el turno.
-- Una etiqueta de canal como Telegram o Discord indica dónde ocurre la conversación.
+- Una referencia de modelo como `openai/gpt-5.6-sol` es el proveedor/modelo seleccionado.
+- Un identificador de runtime como `codex` es el bucle que ejecuta el turno.
+- Una etiqueta de canal como Telegram o Discord indica dónde tiene lugar la conversación.
 
-Si una ejecución muestra un runtime inesperado, inspecciona primero la política de runtime
-del proveedor/modelo seleccionado. Los pines de runtime de sesiones heredadas ya no deciden el enrutamiento.
+Si una ejecución muestra un runtime inesperado, inspeccione primero la política
+de runtime del proveedor/modelo seleccionado. Las fijaciones heredadas del
+runtime de sesión ya no determinan el enrutamiento.
 
 ## Relacionado
 
 - [Arnés de Codex](/es/plugins/codex-harness)
-- [Runtime de arnés de Codex](/es/plugins/codex-harness-runtime)
+- [Runtime del arnés de Codex](/es/plugins/codex-harness-runtime)
 - [Runtime de agente de GitHub Copilot](/es/plugins/copilot)
 - [OpenAI](/es/providers/openai)
 - [Plugins de arnés de agente](/es/plugins/sdk-agent-harness)
-- [Bucle de agente](/es/concepts/agent-loop)
+- [Bucle del agente](/es/concepts/agent-loop)
 - [Modelos](/es/concepts/models)
 - [Estado](/es/cli/status)

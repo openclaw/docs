@@ -1,32 +1,34 @@
 ---
 read_when:
     - Vous souhaitez déclencher des exécutions d’agent depuis des scripts ou la ligne de commande
-    - Vous devez transmettre les réponses de l’agent à un canal de discussion par programmation
-summary: Exécuter des tours d’agent depuis la CLI et transmettre éventuellement les réponses aux canaux
+    - Vous devez transmettre par programmation les réponses de l’agent à un canal de discussion
+summary: Exécutez des tours d’agent depuis la CLI et envoyez éventuellement les réponses aux canaux
 title: Envoi de l’agent
 x-i18n:
-    generated_at: "2026-06-27T18:15:24Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T16:00:53Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: 25026258a5a47c87fbf99689de5ea16d827b11af07bc5ce4f6c3e2bda6466b46
+    source_hash: 23ad57735bd43a2bba5add571e9572da0fbe7b516a70515c674e1ababaab081a
     source_path: tools/agent-send.md
     workflow: 16
 ---
 
-`openclaw agent` exécute un seul tour d’agent depuis la ligne de commande sans nécessiter
-de message de chat entrant. Utilisez-le pour les workflows scriptés, les tests et la
-livraison programmatique.
+`openclaw agent` exécute un seul tour d’agent depuis la ligne de commande sans
+message de discussion entrant. Utilisez-le pour les workflows scriptés, les tests et
+la distribution programmatique. Référence complète des options et du comportement :
+[Référence de la CLI de l’agent](/fr/cli/agent).
 
 ## Démarrage rapide
 
 <Steps>
   <Step title="Exécuter un tour d’agent simple">
     ```bash
-    openclaw agent --agent main --message "What is the weather today?"
+    openclaw agent --agent main --message "Quel temps fait-il aujourd’hui ?"
     ```
 
-    Cela envoie le message via le Gateway et affiche la réponse.
+    Envoie le message via le Gateway et affiche la réponse.
 
   </Step>
 
@@ -35,117 +37,127 @@ livraison programmatique.
     openclaw agent --agent ops --message-file ./task.md
     ```
 
-    Cela lit un fichier UTF-8 valide comme corps du message de l’agent.
+    Lit un fichier UTF-8 valide comme corps du message de l’agent.
 
   </Step>
 
   <Step title="Cibler un agent ou une session spécifique">
     ```bash
-    # Target a specific agent
-    openclaw agent --agent ops --message "Summarize logs"
+    # Cibler un agent spécifique
+    openclaw agent --agent ops --message "Résumer les journaux"
 
-    # Target a phone number (derives session key)
-    openclaw agent --to +15555550123 --message "Status update"
+    # Cibler un numéro de téléphone (dérive la clé de session)
+    openclaw agent --to +15555550123 --message "Mise à jour de l’état"
 
-    # Reuse an existing session
-    openclaw agent --session-id abc123 --message "Continue the task"
+    # Réutiliser une session existante
+    openclaw agent --session-id abc123 --message "Continuer la tâche"
 
-    # Target an exact session key
-    openclaw agent --session-key agent:ops:incident-42 --message "Summarize status"
+    # Cibler une clé de session exacte
+    openclaw agent --session-key agent:ops:incident-42 --message "Résumer l’état"
     ```
 
   </Step>
 
-  <Step title="Livrer la réponse à un canal">
+  <Step title="Distribuer la réponse à un canal">
     ```bash
-    # Deliver to WhatsApp (default channel)
-    openclaw agent --to +15555550123 --message "Report ready" --deliver
+    # Distribuer à WhatsApp (canal par défaut)
+    openclaw agent --to +15555550123 --message "Rapport prêt" --deliver
 
-    # Deliver to Slack
-    openclaw agent --agent ops --message "Generate report" \
+    # Distribuer à Slack
+    openclaw agent --agent ops --message "Générer le rapport" \
       --deliver --reply-channel slack --reply-to "#reports"
     ```
 
   </Step>
 </Steps>
 
-## Indicateurs
+## Options
 
-| Indicateur                    | Description                                                       |
-| ----------------------------- | ----------------------------------------------------------------- |
-| `--message \<text\>`          | Message en ligne à envoyer                                        |
-| `--message-file \<path\>`     | Lire le message depuis un fichier UTF-8 valide                    |
-| `--to \<dest\>`               | Dériver la clé de session depuis une cible (téléphone, id de chat) |
-| `--session-key \<key\>`       | Utiliser une clé de session explicite                             |
-| `--agent \<id\>`              | Cibler un agent configuré (utilise sa session `main`)             |
-| `--session-id \<id\>`         | Réutiliser une session existante par id                           |
-| `--local`                     | Forcer le runtime intégré local (ignorer le Gateway)              |
-| `--deliver`                   | Envoyer la réponse à un canal de chat                             |
-| `--channel \<name\>`          | Canal de livraison (whatsapp, telegram, discord, slack, etc.)     |
-| `--reply-to \<target\>`       | Remplacement de la cible de livraison                             |
-| `--reply-channel \<name\>`    | Remplacement du canal de livraison                                |
-| `--reply-account \<id\>`      | Remplacement de l’id de compte de livraison                       |
-| `--thinking \<level\>`        | Définir le niveau de réflexion pour le profil de modèle sélectionné |
-| `--verbose \<on\|full\|off\>` | Définir le niveau de verbosité                                    |
-| `--timeout \<seconds\>`       | Remplacer le délai d’expiration de l’agent                        |
-| `--json`                      | Produire du JSON structuré                                        |
+| Option                      | Description                                                                     |
+| --------------------------- | ------------------------------------------------------------------------------- |
+| `--message <text>`          | Message en ligne à envoyer                                                      |
+| `--message-file <path>`     | Lire le message depuis un fichier UTF-8 valide                                  |
+| `--to <dest>`               | Dériver la clé de session d’une cible (téléphone, identifiant de discussion)    |
+| `--session-key <key>`       | Utiliser une clé de session explicite                                           |
+| `--agent <id>`              | Cibler un agent configuré (utilise sa session `main`)                           |
+| `--session-id <id>`         | Réutiliser une session existante par identifiant                                |
+| `--model <id>`              | Remplacer le modèle pour cette exécution (`provider/model` ou identifiant de modèle) |
+| `--local`                   | Forcer le runtime intégré local (ignorer le Gateway)                            |
+| `--deliver`                 | Envoyer la réponse à un canal de discussion                                     |
+| `--channel <name>`          | Canal de distribution ; avec `--agent` + `--to`, s’applique aussi à la portée des messages privés |
+| `--reply-to <target>`       | Remplacer la cible de distribution                                              |
+| `--reply-channel <name>`    | Remplacer le canal de distribution                                              |
+| `--reply-account <id>`      | Remplacer l’identifiant du compte de distribution                               |
+| `--thinking <level>`        | Définir le niveau de réflexion pour le profil de modèle sélectionné             |
+| `--verbose <on\|full\|off>` | Conserver le niveau de verbosité pour la session (`full` journalise aussi la sortie des outils) |
+| `--timeout <seconds>`       | Remplacer le délai d’expiration de l’agent (600 par défaut, ou valeur de configuration) |
+| `--json`                    | Produire une sortie JSON structurée                                             |
 
 ## Comportement
 
 - Par défaut, la CLI passe **par le Gateway**. Ajoutez `--local` pour forcer le
   runtime intégré sur la machine actuelle.
-- Passez exactement l’un des deux : `--message` ou `--message-file`. Les messages issus de fichiers conservent
-  le contenu multiligne après suppression d’un BOM UTF-8 facultatif.
-- Si le Gateway est injoignable, la CLI **se rabat** sur l’exécution intégrée locale.
-- Sélection de session : `--to` dérive la clé de session (les cibles de groupe/canal
-  conservent l’isolation ; les chats directs se replient sur `main`).
-- `--session-key` sélectionne une clé explicite. Les clés préfixées par agent doivent utiliser
-  `agent:<agent-id>:<session-key>`, et `--agent` doit correspondre à cet id d’agent lorsque
-  les deux sont fournis. Les clés nues non sentinelles sont limitées à `--agent` lorsqu’il est
-  fourni ; par exemple, `--agent ops --session-key incident-42` achemine vers
-  `agent:ops:incident-42`. Sans `--agent`, les clés nues non sentinelles sont limitées
-  à l’agent par défaut configuré. Les littéraux `global` et `unknown` restent
-  sans portée uniquement lorsqu’aucun `--agent` n’est fourni ; dans ce cas, le repli intégré
-  et la propriété du stockage utilisent l’agent par défaut configuré.
-- Les indicateurs de réflexion et de verbosité persistent dans le stockage de session.
-- Sortie : texte brut par défaut, ou `--json` pour une charge utile structurée + métadonnées.
-- Avec `--json --deliver`, le JSON inclut l’état de livraison pour les envois effectués,
-  supprimés, partiels et échoués. Consultez
-  [État de livraison JSON](/fr/cli/agent#json-delivery-status).
+- Transmettez exactement l’une des options `--message` ou `--message-file`. Les messages de fichier conservent
+  le contenu multiligne après suppression d’un éventuel BOM UTF-8.
+- Si la requête au Gateway échoue, la CLI **se replie** sur l’exécution intégrée
+  locale ; un délai d’expiration du Gateway entraîne un repli avec une nouvelle session au lieu de mettre en concurrence la
+  transcription d’origine.
+- Sélection de la session : `--to` dérive la clé de session (les cibles de groupe/canal
+  conservent leur isolation ; les discussions directes sont regroupées dans `main`). Lorsque `--agent`,
+  `--channel` et `--to` sont utilisés ensemble, le routage suit le destinataire canonique
+  du canal et `session.dmScope`. Les identités stables utilisées uniquement pour les envois sortants emploient une
+  session appartenant au fournisseur, isolée de la session principale de l’agent.
+- `--session-key` sélectionne une clé explicite. Les clés préfixées par un agent doivent utiliser
+  `agent:<agent-id>:<session-key>`, et `--agent` doit correspondre à cet identifiant d’agent lorsque
+  les deux sont fournis. Les clés simples qui ne sont pas des sentinelles sont limitées à `--agent` lorsqu’il est
+  fourni ; par exemple, `--agent ops --session-key incident-42` est routé vers
+  `agent:ops:incident-42`. Sans `--agent`, les clés simples qui ne sont pas des sentinelles sont limitées
+  à l’agent configuré par défaut. Les valeurs littérales `global` et `unknown` restent
+  sans portée uniquement lorsqu’aucun `--agent` n’est fourni ; le chemin de repli intégré
+  résout ces sessions sentinelles vers l’agent configuré par défaut.
+- `--reply-channel` et `--reply-account` affectent uniquement la distribution.
+- Les options de réflexion et de verbosité sont conservées dans le stockage de la session.
+- Sortie : texte brut par défaut, ou `--json` pour une charge utile structurée accompagnée de métadonnées.
+- Avec `--json --deliver`, le JSON inclut l’état de distribution pour les envois
+  effectués, supprimés, partiels et échoués. Consultez
+  [État de distribution JSON](/fr/cli/agent#json-delivery-status).
 
 ## Exemples
 
 ```bash
-# Simple turn with JSON output
-openclaw agent --to +15555550123 --message "Trace logs" --verbose on --json
+# Tour simple avec une sortie JSON
+openclaw agent --to +15555550123 --message "Tracer les journaux" --verbose on --json
 
-# Turn with thinking level
-openclaw agent --session-id 1234 --message "Summarize inbox" --thinking medium
+# Tour avec remplacement du modèle
+openclaw agent --agent ops --model openai/gpt-5.4 --message "Résumer les journaux"
 
-# Multiline prompt from a file
+# Tour avec un niveau de réflexion
+openclaw agent --session-id 1234 --message "Résumer la boîte de réception" --thinking medium
+
+# Invite multiligne depuis un fichier
 openclaw agent --agent ops --message-file ./task.md
 
-# Exact session key
-openclaw agent --session-key agent:ops:incident-42 --message "Summarize status"
+# Clé de session exacte
+openclaw agent --session-key agent:ops:incident-42 --message "Résumer l’état"
 
-# Legacy key scoped to an agent
-openclaw agent --agent ops --session-key incident-42 --message "Summarize status"
+# Ancienne clé limitée à un agent
+openclaw agent --agent ops --session-key incident-42 --message "Résumer l’état"
 
-# Deliver to a different channel than the session
-openclaw agent --agent ops --message "Alert" --deliver --reply-channel telegram --reply-to "@admin"
+# Distribuer à un canal différent de celui de la session
+openclaw agent --agent ops --message "Alerte" --deliver --reply-channel telegram --reply-to "@admin"
 ```
 
-## Connexe
+## Pages connexes
 
 <CardGroup cols={2}>
-  <Card title="Référence de la CLI d’agent" href="/fr/cli/agent" icon="terminal">
-    Référence complète des indicateurs et options de `openclaw agent`.
+  <Card title="Référence de la CLI de l’agent" href="/fr/cli/agent" icon="terminal">
+    Référence complète des options de `openclaw agent`.
   </Card>
   <Card title="Sous-agents" href="/fr/tools/subagents" icon="users">
     Lancement de sous-agents en arrière-plan.
   </Card>
   <Card title="Sessions" href="/fr/concepts/session" icon="comments">
-    Fonctionnement des clés de session et manière dont `--to`, `--agent` et `--session-id` les résolvent.
+    Fonctionnement des clés de session et résolution par `--to`, `--agent` et `--session-id`.
   </Card>
   <Card title="Commandes slash" href="/fr/tools/slash-commands" icon="slash">
     Catalogue de commandes natives utilisé dans les sessions d’agent.

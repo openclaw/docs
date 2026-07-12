@@ -1,201 +1,264 @@
 ---
 read_when:
-    - Você quer que o agente crie ou atualize uma skill a partir do chat
+    - Você quer que o agente crie ou atualize uma skill pelo chat
     - Você precisa revisar, aplicar, rejeitar ou colocar em quarentena um rascunho de skill gerado
-    - Você está configurando aprovação, autonomia, armazenamento ou limites do Skill Workshop
+    - Você está configurando a aprovação, a autonomia, o armazenamento ou os limites do Workshop de Skills
 sidebarTitle: Skill Workshop
 summary: Crie e atualize Skills do espaço de trabalho por meio da revisão do Skill Workshop
-title: Workshop de Skills
+title: Oficina de Skills
 x-i18n:
-    generated_at: "2026-06-27T18:18:20Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:51:04Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: 449b9cb4d26731555af97ff5b85a6fed48eecad02c81965ff95d871cc6fe1b33
+    source_hash: 9e073e6ef874ad0dc885272cbb62f6e94c18b0c242a1d24a67a3095fee2ce0c9
     source_path: tools/skill-workshop.md
     workflow: 16
 ---
 
-A Oficina de Skills é o caminho governado do OpenClaw para criar e atualizar
-skills de workspace.
+O Skill Workshop é o caminho controlado do OpenClaw para criar e atualizar
+Skills do espaço de trabalho. Agentes e operadores nunca gravam `SKILL.md`
+diretamente por esse caminho — eles criam uma **proposta** (rascunho pendente
+com conteúdo, vinculação de destino, estado do scanner, hashes e metadados de
+reversão) que se torna uma Skill ativa somente quando aplicada.
 
-Agentes e operadores não escrevem arquivos `SKILL.md` ativos diretamente por
-este caminho. Eles criam uma **proposta** primeiro. Uma proposta é um rascunho
-pendente que contém o conteúdo de skill proposto, a vinculação de destino, o
-estado do scanner, hashes, metadados de arquivos de suporte e metadados de
-rollback. Ela só se torna uma skill ativa quando aplicada.
-
-A Oficina de Skills escreve apenas skills de workspace. Ela não modifica skills
-empacotadas, de plugin, do ClawHub, de raiz extra, gerenciadas, de agente
-pessoal ou de sistema.
+O Skill Workshop grava apenas Skills do espaço de trabalho. Ele nunca modifica
+Skills integradas, de Plugin, do ClawHub, de raízes extras, gerenciadas, de
+agentes pessoais ou do sistema.
 
 ## Como funciona
 
-- **Proposta primeiro:** o conteúdo de skill gerado é armazenado como
-  `PROPOSAL.md`, não `SKILL.md`.
-- **Aplicar é a única escrita ativa:** criar, atualizar e revisar não alteram
-  skills ativas.
-- **Escopo de workspace:** criações têm como destino a raiz `skills/` do
-  workspace. Atualizações são permitidas apenas para skills de workspace
-  graváveis.
-- **Sem sobrescrita:** a criação falha se a skill de destino já existir.
-- **Vinculado por hash:** propostas de atualização se vinculam ao hash atual do
-  destino e ficam obsoletas se a skill ativa mudar antes da aplicação.
-- **Controlado por scanner:** a aplicação executa a varredura novamente antes de
-  escrever.
-- **Recuperável:** a aplicação escreve metadados de rollback antes de alterar
+- **Primeiro, a proposta:** o conteúdo gerado é armazenado como `PROPOSAL.md`,
+  não como `SKILL.md`.
+- **A aplicação é a única gravação ativa:** criar, atualizar e revisar nunca
+  alteram Skills ativas.
+- **Escopo do espaço de trabalho:** as criações têm como destino a raiz
+  `skills/` do espaço de trabalho; atualizações são permitidas apenas para
+  Skills graváveis do espaço de trabalho.
+- **Sem sobrescrita:** a criação falha se a Skill de destino já existir.
+- **Vinculada por hash:** propostas de atualização são vinculadas ao hash atual
+  do destino e passam para `stale` se a Skill ativa mudar antes da aplicação.
+- **Controlada pelo scanner:** a aplicação executa novamente o scanner de
+  segurança antes da gravação.
+- **Recuperável:** a aplicação grava metadados de reversão antes de modificar
   arquivos ativos.
-- **Superfícies consistentes:** chat, CLI e Gateway chamam o mesmo serviço da
-  Oficina de Skills.
+- **Superfícies consistentes:** chat, CLI e Gateway chamam o mesmo serviço.
 
 ## Ciclo de vida
 
 ```text
-create/update -> pending
-revise        -> pending
-apply         -> applied
-reject        -> rejected
-quarantine    -> quarantined
-target change -> stale
+criar/atualizar -> pendente
+revisar         -> pendente
+aplicar         -> aplicada
+rejeitar        -> rejeitada
+colocar em quarentena -> em quarentena
+alteração do destino  -> desatualizada
 ```
 
-Somente propostas `pending` podem ser revisadas, aplicadas, rejeitadas ou
-colocadas em quarentena.
+Somente uma proposta `pending` pode ser revisada, aplicada, rejeitada ou
+colocada em quarentena.
+
+## Curadoria do ciclo de vida
+
+O Gateway acompanha o uso agregado das Skills no banco de dados de estado
+compartilhado. Uma vez por dia, ele analisa as Skills criadas e aplicadas pelo
+Skill Workshop. Skills não usadas por mais de 30 dias passam para `stale`;
+após 90 dias, passam para `archived` e são excluídas de novos snapshots de
+Skills dos agentes. Os arquivos das Skills arquivadas permanecem inalterados
+no disco. Skills criadas manualmente nunca passam por curadoria; somente Skills
+criadas por propostas do Skill Workshop entram na curadoria do ciclo de vida.
+
+Skills fixadas ignoram as transições do ciclo de vida. Uma Skill desatualizada
+retorna para `active` depois de ser usada e da execução da próxima varredura.
+Skills arquivadas retornam somente por meio de uma restauração explícita:
+
+As transições e restaurações do ciclo de vida se aplicam a novas sessões; as
+sessões em execução mantêm seu snapshot atual de Skills.
+
+```bash
+openclaw skills curator status
+openclaw skills curator pin <skill>
+openclaw skills curator unpin <skill>
+openclaw skills curator restore <skill>
+```
+
+Todos os comandos do curador aceitam `--json`. O status também relata
+candidatos determinísticos de sobreposição apenas como sugestões; ele nunca
+mescla Skills nem chama um modelo.
 
 ## Chat
 
-Peça ao agente a skill que você quer. O agente chama `skill_workshop` e retorna
-um id de proposta.
+Peça ao agente a Skill desejada; ele chama `skill_workshop` e retorna um ID de
+proposta.
+
+### Aprender com trabalhos recentes
+
+Use `/learn` para transformar a conversa atual ou fontes nomeadas em uma
+proposta de Skill orientada por padrões:
+
+```text
+/learn
+/learn docs/runbook.md e https://example.com/guide; concentre-se na recuperação
+```
+
+Sem uma solicitação, `/learn` pede ao agente que extraia da conversa atual o
+fluxo de trabalho reutilizável. Com uma solicitação, o agente trata caminhos,
+URLs, notas coladas e referências à conversa como fontes, respeitando os
+requisitos de foco, escopo e nomenclatura. Ele coleta as fontes com suas
+ferramentas existentes e chama `skill_workshop` com `action: "create"`.
+
+A proposta resultante permanece `pending`; `/learn` nunca a aplica. Revise-a e
+aplique-a pelo fluxo normal de aprovação ou com
+`openclaw skills workshop`.
 
 Criar:
 
 ```text
-Make a skill called morning-catchup that runs my Monday inbox routine.
+Crie uma Skill chamada morning-catchup que execute minha rotina de caixa de entrada de segunda-feira.
 ```
 
-Atualizar uma skill de workspace existente:
+Atualizar uma Skill existente do espaço de trabalho:
 
 ```text
-Update trip-planning to also check seat maps before booking.
+Atualize trip-planning para também verificar mapas de assentos antes da reserva.
 ```
 
 Iterar em uma proposta pendente:
 
 ```text
-Show me the morning-catchup proposal.
-Revise it to also flag anything marked urgent.
-Apply the morning-catchup proposal.
+Mostre a proposta morning-catchup.
+Revise-a para também sinalizar tudo o que estiver marcado como urgente.
+Aplique a proposta morning-catchup.
 ```
 
-Por padrão, `apply`, `reject` e `quarantine` iniciados por agente exibem um
-prompt de aprovação antes de executar. Defina `skills.workshop.approvalPolicy`
-como `"auto"` para pular o prompt em ambientes confiáveis.
+As ações `apply`, `reject` e `quarantine` iniciadas por agentes exibem, por
+padrão, uma solicitação de aprovação. Defina
+`skills.workshop.approvalPolicy` como `"auto"` para ignorá-la em ambientes
+confiáveis.
+
+A solicitação identifica o ID da proposta e a Skill de destino, além de exibir
+a descrição da proposta, a quantidade de arquivos de suporte e o tamanho do
+corpo. As solicitações de aprovação têm um prazo limitado para serem concluídas
+antes do watchdog da ferramenta do agente. Se nenhuma decisão chegar antes da
+expiração da solicitação, a ação do ciclo de vida não será executada: a
+proposta continuará pendente e inalterada. Decida mais tarde na interface do
+Skill Workshop ou execute
+`openclaw skills workshop apply|reject|quarantine <proposal-id>`. Os agentes não
+devem tentar novamente uma ação expirada do ciclo de vida em um loop.
 
 ## CLI
 
-Criar uma nova proposta de skill:
-
 ```bash
+# Criar
 openclaw skills workshop propose-create \
   --name morning-catchup \
-  --description "Daily inbox catch-up: triage, archive, surface, draft, plan" \
+  --description "Revisão diária da caixa de entrada: triar, arquivar, destacar, redigir, planejar" \
   --proposal ./PROPOSAL.md
-```
 
-Criar uma proposta de atualização para uma skill de workspace existente:
-
-```bash
+# Atualizar uma Skill existente do espaço de trabalho
 openclaw skills workshop propose-update trip-planning --proposal ./PROPOSAL.md
-```
 
-Listar e inspecionar:
-
-```bash
+# Listar e inspecionar
 openclaw skills workshop list
 openclaw skills workshop inspect <proposal-id>
-```
 
-Revisar antes da aprovação:
-
-```bash
+# Revisar antes da aprovação
 openclaw skills workshop revise <proposal-id> --proposal ./PROPOSAL.md
-```
 
-Encerrar a proposta:
-
-```bash
+# Encerrar
 openclaw skills workshop apply <proposal-id>
-openclaw skills workshop reject <proposal-id> --reason "Duplicate"
-openclaw skills workshop quarantine <proposal-id> --reason "Needs security review"
+openclaw skills workshop reject <proposal-id> --reason "Duplicada"
+openclaw skills workshop quarantine <proposal-id> --reason "Requer análise de segurança"
 ```
+
+Cada subcomando aceita `--agent <id>` (espaço de trabalho de destino; o padrão
+é o inferido pelo diretório de trabalho atual e, depois, o agente padrão) e
+`--json` (saída estruturada). `propose-create`, `propose-update` e `revise`
+também aceitam `--goal <text>` e `--evidence <text>` para registrar o contexto
+da proposta junto com `--proposal`.
 
 ## Conteúdo da proposta
 
-Enquanto pendente, a proposta é armazenada como `PROPOSAL.md` com frontmatter
-exclusivo de proposta:
+Enquanto estiver pendente, a proposta será armazenada como `PROPOSAL.md` com
+frontmatter exclusivo da proposta:
 
 ```markdown
 ---
 name: "morning-catchup"
-description: "Daily inbox catch-up: triage, archive, surface, draft, plan"
+description: "Revisão diária da caixa de entrada: triar, arquivar, destacar, redigir, planejar"
 status: proposal
 version: "v1"
 date: "2026-05-30T00:00:00.000Z"
 ---
 ```
 
-Ao aplicar, a Oficina de Skills escreve o `SKILL.md` ativo e remove campos
-exclusivos de proposta: `status`, `version` da proposta e `date` da proposta.
+Na aplicação, o Skill Workshop grava o `SKILL.md` ativo e remove os campos
+exclusivos da proposta: `status`, `version` da proposta e `date` da proposta.
 
 ## Arquivos de suporte
 
-Use `--proposal-dir` quando a skill proposta precisar de arquivos ao lado de
+Use `--proposal-dir` quando a Skill proposta precisar de arquivos ao lado de
 `PROPOSAL.md`:
 
 ```bash
 openclaw skills workshop propose-create \
   --name weekly-update \
-  --description "Friday wrap-up: stats, highlights, next week's top three" \
+  --description "Encerramento de sexta-feira: estatísticas, destaques e as três principais prioridades da próxima semana" \
   --proposal-dir ./weekly-update-proposal
 ```
 
-O diretório deve conter `PROPOSAL.md`. Arquivos de suporte devem ficar em:
+O diretório deve conter `PROPOSAL.md`. Os arquivos de suporte devem estar em
+`assets/`, `examples/`, `references/`, `scripts/` ou `templates/`. O Skill
+Workshop os examina, calcula seus hashes e os armazena com a proposta, depois
+os grava ao lado do `SKILL.md` ativo somente na aplicação.
 
-- `assets/`
-- `examples/`
-- `references/`
-- `scripts/`
-- `templates/`
-
-A Oficina de Skills varre, gera hash e armazena arquivos de suporte com a
-proposta. Eles são escritos ao lado do `SKILL.md` ativo apenas na aplicação.
-
-Caminhos de arquivos de suporte rejeitados incluem caminhos absolutos, segmentos
-de caminho ocultos, travessia de caminho, caminhos sobrepostos, arquivos
-executáveis de diretórios de proposta, texto não UTF-8, bytes nulos e arquivos
-fora das pastas padrão de suporte.
+Caminhos de arquivos de suporte rejeitados: caminhos absolutos, segmentos
+ocultos de caminho, travessia de diretórios, caminhos sobrepostos, arquivos
+executáveis, texto que não esteja em UTF-8, bytes nulos e caminhos fora das
+pastas padrão de suporte.
 
 ## Ferramenta do agente
 
-O modelo usa `skill_workshop`:
+O modelo usa `skill_workshop` com uma `action` obrigatória:
+`create | update | revise | list | inspect | apply | reject | quarantine`.
+Outros parâmetros se aplicam conforme a ação:
 
-```text
-action: create | update | revise | list | inspect | apply | reject | quarantine
-```
+| Parâmetro                  | Usado por                                             | Observações                                                                 |
+| -------------------------- | ----------------------------------------------------- | --------------------------------------------------------------------------- |
+| `name`                     | `create`, `inspect`, `revise`                         | Obrigatório para `create`; caso contrário, resolve uma proposta pendente pelo nome |
+| `description`              | `create`, `update`, `revise`                          | Máximo de 160 bytes                                                         |
+| `skill_name`               | `update`                                              | Nome ou chave da Skill existente                                            |
+| `proposal_content`         | `create`, `update`, `revise`                          | Armazenado como `PROPOSAL.md`; limitado por `skills.workshop.maxSkillBytes` |
+| `support_files`            | `create`, `update`, `revise`                          | Matriz de `{ path, content }`                                                |
+| `goal`, `evidence`         | `create`, `update`, `revise`                          | Contexto em texto livre                                                     |
+| `proposal_id`              | `inspect`, `revise`, `apply`, `reject`, `quarantine`  | Proposta de destino                                                         |
+| `reason`                   | `apply`, `reject`, `quarantine`                       | Opcional                                                                    |
+| `query`, `status`, `limit` | `list`                                                | Filtra/pagina; máximo de 50 para `limit`, padrão de 20                       |
 
-Agentes devem usar `skill_workshop` para trabalho de skill gerado. Eles não
-devem criar nem alterar arquivos de proposta por meio de `write`, `edit`,
-`exec`, comandos de shell ou operações diretas no sistema de arquivos.
+Os agentes devem usar `skill_workshop` para trabalhos de Skills gerados. Eles
+não devem criar nem alterar arquivos de propostas por meio de `write`, `edit`,
+`exec`, comandos do shell ou operações diretas no sistema de arquivos.
 
 <Note>
-`skill_workshop` é uma ferramenta integrada de agente e está incluída em
-`tools.profile: "coding"`. Se uma política mais estrita a ocultar, adicione
-`skill_workshop` à lista ativa `tools.allow`, ou use
-`tools.alsoAllow: ["skill_workshop"]` quando o escopo usa um perfil sem um
+`skill_workshop` é uma ferramenta integrada do agente e está incluída em
+`tools.profile: "coding"`. Se uma política mais restrita a ocultar, adicione
+`skill_workshop` à lista `tools.allow` ativa ou use
+`tools.alsoAllow: ["skill_workshop"]` quando o escopo usar um perfil sem um
 `tools.allow` explícito. Execuções em sandbox não constroem a ferramenta
-Skill Workshop do lado do host, portanto execute ações de revisão de proposta a
-partir de uma sessão normal de agente do lado do host ou da CLI.
+Skill Workshop no lado do host; portanto, execute as ações de revisão de
+propostas em uma sessão normal do agente no lado do host ou pela CLI.
 </Note>
+
+## Skills sugeridas
+
+O OpenClaw detecta instruções persistentes como “da próxima vez”, “lembre-se de”
+e correções reativas quando um turno interativo termina, inclusive em turnos
+que falharam. No turno seguinte, o agente oferece salvar o fluxo de trabalho
+detectado mais recentemente por meio de `skill_workshop`; o usuário decide se
+deseja criar uma proposta. Essa sugestão integrada não cria nem altera uma
+Skill por conta própria. Ative `skills.workshop.autonomous.enabled` para criar
+propostas pendentes diretamente.
 
 ## Aprovação e autonomia
 
@@ -215,35 +278,46 @@ partir de uma sessão normal de agente do lado do host ou da CLI.
 }
 ```
 
-- `autonomous.enabled`: permite que o OpenClaw crie propostas pendentes a partir
-  de sinais duráveis de conversa após turnos bem-sucedidos. Padrão: `false`.
-- `allowSymlinkTargetWrites`: permite que a aplicação escreva por meio de
-  symlinks de skill de workspace cujo destino real esteja listado em
-  `skills.load.allowSymlinkTargets`. Padrão: `false`.
-- `approvalPolicy: "pending"`: exige um prompt de aprovação antes de `apply`,
-  `reject` ou `quarantine` iniciados por agente.
-- `approvalPolicy: "auto"`: pula esse prompt de aprovação. O agente ainda deve
-  chamar a ação.
-- `maxPending`: limita propostas pendentes e em quarentena por workspace.
-- `maxSkillBytes`: limita o tamanho do corpo da proposta. Padrão: `40000`.
+| Configuração               | Padrão      | Efeito                                                                                                                                                                           |
+| -------------------------- | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `autonomous.enabled`       | `false`     | Cria propostas pendentes diretamente, em vez de oferecer o fluxo de trabalho detectado mais recentemente no turno seguinte.                                                      |
+| `allowSymlinkTargetWrites` | `false`     | Permite que a aplicação grave por meio de links simbólicos de Skills do espaço de trabalho cujo destino real esteja listado em `skills.load.allowSymlinkTargets`.                |
+| `approvalPolicy`           | `"pending"` | `"pending"` exige uma solicitação de aprovação antes de `apply`, `reject` ou `quarantine` iniciados pelo agente. `"auto"` ignora a solicitação (o agente ainda precisa chamar a ação). |
+| `maxPending`               | `50`        | Limita as propostas pendentes e em quarentena por espaço de trabalho (1-200).                                                                                                    |
+| `maxSkillBytes`            | `40000`     | Limita o tamanho do corpo da proposta em bytes (1024-200000).                                                                                                                    |
 
-Descrições de propostas são sempre limitadas a 160 bytes.
+A captura autônoma reconhece regras prospectivas (por exemplo, “de agora em
+diante”) e correções reativas (por exemplo, “não foi isso que pedi”). Ela
+agrupa novas instruções por tópico em até três propostas por turno, encaminha
+correspondências de vocabulário para Skills graváveis existentes do espaço de
+trabalho e revisa sua própria proposta pendente quando outra correção tem como
+destino a mesma Skill.
+
+As descrições das propostas são sempre limitadas a 160 bytes,
+independentemente de `maxSkillBytes`.
 
 ## Métodos do Gateway
 
-```text
-skills.proposals.list
-skills.proposals.inspect
-skills.proposals.create
-skills.proposals.update
-skills.proposals.revise
-skills.proposals.apply
-skills.proposals.reject
-skills.proposals.quarantine
-```
+| Método                             | Escopo            |
+| ---------------------------------- | ---------------- |
+| `skills.proposals.list`            | `operator.read`  |
+| `skills.proposals.inspect`         | `operator.read`  |
+| `skills.proposals.create`          | `operator.admin` |
+| `skills.proposals.update`          | `operator.admin` |
+| `skills.proposals.revise`          | `operator.admin` |
+| `skills.proposals.requestRevision` | `operator.admin` |
+| `skills.proposals.apply`           | `operator.admin` |
+| `skills.proposals.reject`          | `operator.admin` |
+| `skills.proposals.quarantine`      | `operator.admin` |
+| `skills.curator.status`            | `operator.read`  |
+| `skills.curator.pin`               | `operator.admin` |
+| `skills.curator.unpin`             | `operator.admin` |
+| `skills.curator.restore`           | `operator.admin` |
 
-Métodos somente leitura exigem `operator.read`. Métodos de mutação exigem
-`operator.admin`.
+`requestRevision` está disponível somente no Gateway (sem equivalente na CLI ou nas ferramentas do agente): ele
+encaminha instruções de revisão em texto livre para a sessão de chat do agente responsável,
+em vez de substituir `PROPOSAL.md` diretamente, para interfaces que solicitam ao agente que
+faça a revisão em vez de enviar literalmente um novo conteúdo.
 
 ## Armazenamento
 
@@ -264,39 +338,45 @@ Métodos somente leitura exigem `operator.read`. Métodos de mutação exigem
 Diretório de estado padrão: `~/.openclaw`.
 
 - `proposal.json`: registro canônico da proposta.
-- `proposals.json`: índice de listagem rápida, reconstruível a partir das pastas
-  de propostas.
+- `proposals.json`: índice para listagem rápida, que pode ser reconstruído com base nas pastas de propostas.
 - `PROPOSAL.md`: proposta de skill pendente.
-- `rollback.json`: metadados de recuperação escritos antes de a aplicação
-  alterar arquivos ativos.
+- `rollback.json`: metadados de recuperação gravados antes que a aplicação altere os arquivos ativos.
 
 ## Limites
 
-- Descrição: 160 bytes.
-- Corpo da proposta: `skills.workshop.maxSkillBytes` (padrão 40.000).
-- Arquivos de suporte: 64 por proposta.
-- Tamanho de arquivo de suporte: 256 KB cada, 2 MB no total.
-- Propostas pendentes e em quarentena: `skills.workshop.maxPending` por
-  workspace (padrão 50).
+| Limite                          | Valor                                                                |
+| ------------------------------- | -------------------------------------------------------------------- |
+| Descrição                       | 160 bytes                                                            |
+| Corpo da proposta               | `skills.workshop.maxSkillBytes` (padrão 40.000; limite máximo absoluto de 1 MiB) |
+| Arquivos de suporte             | 64 por proposta                                                      |
+| Tamanho dos arquivos de suporte | 256 KiB cada, 2 MiB no total                                         |
+| Propostas pendentes + em quarentena | `skills.workshop.maxPending` por espaço de trabalho (padrão 50)   |
 
 ## Solução de problemas
 
-| Problema                                       | Resolução                                                                                                                                                                                                 |
-| ---------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Problema                                       | Resolução                                                                                                                                                                                                  |
+| ---------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `Skill proposal description is too large`      | Reduza `description` para 160 bytes ou menos.                                                                                                                                                              |
-| `Skill proposal content is too large`          | Reduza o corpo da proposta ou aumente `skills.workshop.maxSkillBytes`.                                                                                                                                     |
-| `Target skill changed after proposal creation` | Revise a proposta em relação ao destino atual, ou crie uma nova proposta.                                                                                                                                  |
-| `Proposal scan failed`                         | Inspecione os achados do scanner e então revise ou coloque a proposta em quarentena.                                                                                                                       |
-| `untrusted symlink target`                     | Configure `skills.load.allowSymlinkTargets` e habilite `skills.workshop.allowSymlinkTargetWrites` apenas para raízes de skill compartilhadas intencionais.                                                 |
-| `Support file paths must be under one of...`   | Mova arquivos de suporte para `assets/`, `examples/`, `references/`, `scripts/` ou `templates/`.                                                                                                           |
-| A proposta não aparece na lista                | Verifique o workspace `--agent` selecionado e `OPENCLAW_STATE_DIR`.                                                                                                                                        |
-| O agente não consegue chamar `skill_workshop`  | Verifique a política de ferramentas ativa e o modo de execução. `coding` inclui a ferramenta; políticas restritivas de `tools.allow` devem listá-la explicitamente, e execuções em sandbox devem usar uma sessão normal de agente do lado do host ou a CLI. |
+| `Skill proposal content is too large`          | Reduza o corpo da proposta ou aumente `skills.workshop.maxSkillBytes`.                                                                                                                                      |
+| `Target skill changed after proposal creation` | Revise a proposta com base no destino atual ou crie uma nova proposta.                                                                                                                                      |
+| `Proposal scan failed`                         | Inspecione as constatações do verificador e, em seguida, revise ou coloque a proposta em quarentena.                                                                                                        |
+| `untrusted symlink target`                     | Configure `skills.load.allowSymlinkTargets` e habilite `skills.workshop.allowSymlinkTargetWrites` somente para raízes de skills compartilhadas intencionalmente.                                            |
+| `Support file paths must be under one of...`   | Mova os arquivos de suporte para `assets/`, `examples/`, `references/`, `scripts/` ou `templates/`.                                                                                                         |
+| A proposta não aparece na lista                | Verifique o espaço de trabalho selecionado por `--agent` e `OPENCLAW_STATE_DIR`.                                                                                                                            |
+| O agente não consegue chamar `skill_workshop`  | Verifique a política de ferramentas ativa e o modo de execução. `coding` inclui a ferramenta; políticas restritivas de `tools.allow` devem listá-la explicitamente, e execuções em sandbox devem usar uma sessão normal do agente no host ou a CLI. |
 
-## Relacionados
+### Diagnóstico da política de ferramentas
+
+Quando a captura autônoma está habilitada, `openclaw doctor` executa a
+verificação `core/doctor/skill-workshop-tool-policy` para o agente padrão. Se a política
+ocultar `skill_workshop`, o aviso indicará a primeira camada de configuração que o exclui e
+a alteração exata em `allow` ou `alsoAllow` que deve ser feita. Runbooks mais antigos ainda podem usar
+`openclaw plugins inspect skill-workshop`; agora esse comando explica que o Skill
+Workshop é integrado e exibe a mesma dica de política quando aplicável.
+
+## Relacionado
 
 - [Skills](/pt-BR/tools/skills) para ordem de carregamento, precedência e visibilidade
-- [Criando skills](/pt-BR/tools/creating-skills) para o básico de `SKILL.md` escrito
-  manualmente
-- [Configuração de Skills](/pt-BR/tools/skills-config) para o esquema completo
-  `skills.workshop`
-- [CLI de Skills](/pt-BR/cli/skills) para comandos `openclaw skills`
+- [Criação de skills](/pt-BR/tools/creating-skills) para os conceitos básicos da criação manual de `SKILL.md`
+- [Configuração de Skills](/pt-BR/tools/skills-config) para o esquema completo de `skills.workshop`
+- [CLI de Skills](/pt-BR/cli/skills) para os comandos `openclaw skills`

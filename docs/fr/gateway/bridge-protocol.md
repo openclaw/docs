@@ -1,105 +1,88 @@
 ---
 read_when:
-    - Création ou débogage de clients Node (mode nœud iOS/Android/macOS)
-    - Recherche des échecs d’authentification de couplage ou de pont
-    - Audit de la surface Node exposée par le Gateway
-summary: 'Protocole de pont historique (nœuds hérités) : TCP JSONL, appairage, RPC à portée limitée'
+    - Examen de l’ancien code client Node ou des journaux d’appairage archivés
+    - Audit de ce que l’ancienne surface Node exposait auparavant
+summary: 'Protocole de pont historique (nœuds hérités) : JSONL sur TCP, appairage, RPC à portée limitée'
 title: Protocole de pont
 x-i18n:
-    generated_at: "2026-06-27T17:28:31Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:16:34Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: 485d18f94b731018c6e0df493068b0b6aceff9afba6bebf1350db63c04cee98c
+    source_hash: 6e8b69c59f2170439f0e7b139bf5bbdb429d7c9d8dde7b36cd64aab63939c95d
     source_path: gateway/bridge-protocol.md
     workflow: 16
 ---
 
 <Warning>
-Le pont TCP a été **supprimé**. Les builds OpenClaw actuels ne livrent plus l’écouteur du pont et les clés de configuration `bridge.*` ne figurent plus dans le schéma. Cette page est conservée uniquement à titre de référence historique. Utilisez le [protocole Gateway](/fr/gateway/protocol) pour tous les clients nœud/opérateur.
+Le pont TCP a été **supprimé**. Les versions actuelles d’OpenClaw n’incluent plus le processus d’écoute du pont, et les clés de configuration `bridge.*` ne figurent plus dans le schéma. Cette page est fournie uniquement à titre de référence historique. Utilisez le [protocole du Gateway](/fr/gateway/protocol) pour tous les clients de nœud ou d’opérateur.
 </Warning>
 
 ## Pourquoi il existait
 
-- **Frontière de sécurité** : le pont expose une petite liste d’autorisation au lieu de
-  toute la surface de l’API Gateway.
-- **Appairage + identité du nœud** : l’admission des nœuds est gérée par la Gateway et liée
-  à un jeton propre à chaque nœud.
-- **UX de découverte** : les nœuds peuvent découvrir les Gateway via Bonjour sur le LAN, ou se connecter
-  directement sur un tailnet.
-- **WS en loopback** : le plan de contrôle WS complet reste local sauf s’il est tunnelé via SSH.
+- **Périmètre de sécurité** : il exposait une petite liste d’autorisations au lieu de toute la surface d’API du Gateway.
+- **Appairage et identité du nœud** : l’admission des nœuds était gérée par le Gateway et liée à un jeton propre à chaque nœud.
+- **Expérience de découverte** : les nœuds pouvaient découvrir les Gateway via Bonjour sur le réseau local, ou se connecter directement sur un réseau Tailscale.
+- **WebSocket en boucle locale** : l’ensemble du plan de contrôle WebSocket restait local, sauf s’il était acheminé par un tunnel SSH.
 
 ## Transport
 
-- TCP, un objet JSON par ligne (JSONL).
-- TLS facultatif (lorsque `bridge.tls.enabled` vaut true).
-- Le port d’écoute par défaut historique était `18790` (les builds actuels ne démarrent pas de
-  pont TCP).
+- TCP, avec un objet JSON par ligne (JSONL).
+- TLS facultatif (`bridge.tls.enabled: true`).
+- Le port d’écoute par défaut était `18790`.
 
-Lorsque TLS est activé, les enregistrements TXT de découverte incluent `bridgeTls=1` plus
-`bridgeTlsSha256` comme indice non secret. Notez que les enregistrements TXT Bonjour/mDNS ne sont
-pas authentifiés ; les clients ne doivent pas traiter l’empreinte annoncée comme un
-ancrage faisant autorité sans intention explicite de l’utilisateur ou autre vérification hors bande.
+Lorsque TLS était activé, les enregistrements TXT de découverte incluaient `bridgeTls=1` ainsi que `bridgeTlsSha256` comme indication non secrète. Les enregistrements TXT Bonjour/mDNS ne sont pas authentifiés ; les clients ne pouvaient pas considérer l’empreinte annoncée comme une valeur de référence faisant autorité sans autre vérification hors bande.
 
-## Handshake + appairage
+## Établissement de la connexion et appairage
 
-1. Le client envoie `hello` avec les métadonnées du nœud + le jeton (s’il est déjà appairé).
-2. S’il n’est pas appairé, la Gateway répond `error` (`NOT_PAIRED`/`UNAUTHORIZED`).
+1. Le client envoie `hello` avec les métadonnées du nœud et le jeton (s’il est déjà appairé).
+2. S’il n’est pas appairé, le Gateway répond par `error` (`NOT_PAIRED` / `UNAUTHORIZED`).
 3. Le client envoie `pair-request`.
-4. La Gateway attend l’approbation, puis envoie `pair-ok` et `hello-ok`.
+4. Le Gateway attend l’approbation, puis envoie `pair-ok` et `hello-ok`.
 
-Historiquement, `hello-ok` renvoyait `serverName` ; les surfaces de Plugin hébergées sont maintenant
-annoncées via `pluginSurfaceUrls`. Canvas/A2UI utilise
-`pluginSurfaceUrls.canvas` ; l’alias obsolète `canvasHostUrl` ne fait pas partie du
-protocole refactorisé.
+`hello-ok` renvoyait auparavant `serverName` ; les surfaces de Plugin hébergées sont désormais annoncées via `pluginSurfaceUrls` dans le protocole actuel du Gateway (Canvas/A2UI utilise `pluginSurfaceUrls.canvas`).
 
 ## Trames
 
-Client → Gateway :
+Du client vers le Gateway :
 
-- `req` / `res` : RPC Gateway à portée limitée (chat, sessions, config, santé, voicewake, skills.bins)
-- `event` : signaux de nœud (transcription vocale, demande d’agent, abonnement au chat, cycle de vie d’exécution)
+- `req` / `res` : RPC du Gateway à portée limitée (discussion, sessions, configuration, état de santé, activation vocale, skills.bins).
+- `event` : signaux du nœud (transcription vocale, requête de l’agent, abonnement à la discussion, cycle de vie de l’exécution).
 
-Gateway → Client :
+Du Gateway vers le client :
 
-- `invoke` / `invoke-res` : commandes de nœud (`canvas.*`, `camera.*`, `screen.record`,
-  `location.get`, `sms.send`)
-- `event` : mises à jour de chat pour les sessions abonnées
-- `ping` / `pong` : keepalive
+- `invoke` / `invoke-res` : commandes du nœud (`canvas.*`, `camera.*`, `screen.record`, `location.get`, `sms.send`).
+- `event` : mises à jour de discussion pour les sessions suivies.
+- `ping` / `pong` : maintien de la connexion.
 
-L’application historique de la liste d’autorisation vivait dans `src/gateway/server-bridge.ts` (supprimé).
+L’application de la liste d’autorisations se trouvait dans `src/gateway/server-bridge.ts` (supprimé).
 
-## Événements du cycle de vie d’exécution
+## Événements du cycle de vie de l’exécution
 
-Les nœuds peuvent émettre des événements `exec.finished` pour exposer l’activité `system.run` terminée.
-Ils sont mappés vers des événements système dans la Gateway. (Les nœuds historiques peuvent encore émettre `exec.started`.)
-Les nœuds peuvent émettre `exec.denied` pour les tentatives `system.run` refusées ; la Gateway accepte
-l’événement comme un refus terminal et ne met pas en file d’attente d’événement système ni ne réveille le travail d’agent.
+Les nœuds émettaient `exec.finished` pour signaler l’achèvement d’une activité `system.run`, convertie en événements système par le Gateway (les anciens nœuds pouvaient également émettre `exec.started`). `exec.denied` marquait une tentative `system.run` refusée comme un refus définitif, sans mettre en file d’attente un événement système ni déclencher le travail de l’agent.
 
-Champs de charge utile (tous facultatifs sauf indication contraire) :
+Champs de la charge utile (tous facultatifs, sauf indication contraire) :
 
-- `sessionKey` (obligatoire) : session d’agent pour la corrélation des événements et, pour
-  `exec.finished`, la livraison d’événements système.
-- `runId` : identifiant d’exécution unique pour le regroupement.
-- `command` : chaîne de commande brute ou formatée.
-- `exitCode`, `timedOut`, `success`, `output` : détails d’achèvement (terminé uniquement).
-- `reason` : raison du refus (refusé uniquement).
+| Champ                            | Remarques                                                                                                           |
+| -------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| `sessionKey`                     | Obligatoire. Session de l’agent pour la corrélation de l’événement et, pour `exec.finished`, la remise de l’événement système. |
+| `runId`                          | Identifiant d’exécution unique pour le regroupement.                                                               |
+| `command`                        | Chaîne de commande brute ou mise en forme.                                                                         |
+| `exitCode`, `timedOut`, `output` | Détails d’achèvement (uniquement en cas d’exécution terminée).                                                      |
+| `reason`                         | Motif du refus (uniquement en cas de refus).                                                                        |
 
-## Utilisation historique du tailnet
+## Utilisation historique sur un réseau Tailscale
 
-- Liez le pont à une IP de tailnet : `bridge.bind: "tailnet"` dans
-  `~/.openclaw/openclaw.json` (historique uniquement ; `bridge.*` n’est plus valide).
-- Les clients se connectent via le nom MagicDNS ou l’IP du tailnet.
-- Bonjour ne traverse **pas** les réseaux ; utilisez un hôte/port manuel ou DNS-SD étendu
-  si nécessaire.
+- Liez le pont à une adresse IP du réseau Tailscale : `bridge.bind: "tailnet"` dans `~/.openclaw/openclaw.json` (usage historique uniquement ; `bridge.*` n’est plus une configuration valide).
+- Les clients se connectaient via un nom MagicDNS ou une adresse IP du réseau Tailscale.
+- Bonjour ne traverse pas les réseaux ; un DNS-SD étendu ou un hôte et un port définis manuellement étaient autrement nécessaires.
 
-## Versionnement
+## Gestion des versions
 
-Le pont était en **v1 implicite** (aucune négociation min/max). Cette section est
-uniquement une référence historique ; les clients nœud/opérateur actuels utilisent le WebSocket
-[protocole Gateway](/fr/gateway/protocol).
+Le pont utilisait implicitement la version 1, sans négociation des versions minimale et maximale. Les clients actuels de nœud ou d’opérateur utilisent le [protocole WebSocket du Gateway](/fr/gateway/protocol), qui négocie une plage de versions du protocole.
 
-## Connexe
+## Voir aussi
 
-- [Protocole Gateway](/fr/gateway/protocol)
+- [Protocole du Gateway](/fr/gateway/protocol)
 - [Nœuds](/fr/nodes)

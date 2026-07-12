@@ -1,33 +1,26 @@
 ---
 read_when:
-    - Vous voulez exécuter un tour d’agent depuis des scripts (avec livraison facultative de la réponse)
+    - Vous souhaitez exécuter un tour d’agent depuis des scripts (avec remise facultative de la réponse)
 summary: Référence CLI pour `openclaw agent` (envoyer un tour d’agent via le Gateway)
 title: Agent
 x-i18n:
-    generated_at: "2026-06-27T17:17:07Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:07:52Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: be2aad94ba288d14b4b18086dae54eb10c1cd0a6c7b27a836d07f39200e651d8
+    source_hash: 2e137c037a2fa58ac6534adbf1603218fc695e4c61e6c3118ce2c4ec6f1f2143
     source_path: cli/agent.md
     workflow: 16
 ---
 
 # `openclaw agent`
 
-Exécuter un tour d’agent via le Gateway (utilisez `--local` pour le mode embarqué).
-Utilisez `--agent <id>` pour cibler directement un agent configuré.
+Exécutez un tour d’agent via le Gateway. Se rabat sur l’agent intégré si la requête au Gateway échoue ; transmettez `--local` pour forcer d’emblée l’exécution intégrée.
 
-Passez au moins un sélecteur de session :
+Transmettez au moins un sélecteur de session : `--to`, `--session-key`, `--session-id` ou `--agent`.
 
-- `--to <dest>`
-- `--session-key <key>`
-- `--session-id <id>`
-- `--agent <id>`
-
-Associé :
-
-- Outil d’envoi Agent : [Envoi Agent](/fr/tools/agent-send)
+Voir aussi : [Outil d’envoi à l’agent](/fr/tools/agent-send)
 
 ## Options
 
@@ -35,58 +28,55 @@ Associé :
 - `--message-file <path>` : lire le corps du message depuis un fichier UTF-8
 - `-t, --to <dest>` : destinataire utilisé pour dériver la clé de session
 - `--session-key <key>` : clé de session explicite à utiliser pour le routage
-- `--session-id <id>` : id de session explicite
-- `--agent <id>` : id d’agent ; remplace les liaisons de routage
-- `--model <id>` : modèle de remplacement pour cette exécution (`provider/model` ou id de modèle)
-- `--thinking <level>` : niveau de réflexion de l’agent (`off`, `minimal`, `low`, `medium`, `high`, plus les niveaux personnalisés pris en charge par le fournisseur, comme `xhigh`, `adaptive` ou `max`)
-- `--verbose <on|off>` : persister le niveau détaillé pour la session
-- `--channel <channel>` : canal de livraison ; omettez-le pour utiliser le canal de session principal
+- `--session-id <id>` : identifiant de session explicite
+- `--agent <id>` : identifiant de l’agent ; remplace les liaisons de routage
+- `--model <id>` : remplacement du modèle pour cette exécution (`provider/model` ou identifiant du modèle)
+- `--thinking <level>` : niveau de réflexion de l’agent (`off`, `minimal`, `low`, `medium`, `high`, ainsi que les niveaux personnalisés pris en charge par le fournisseur, comme `xhigh`, `adaptive` ou `max`)
+- `--verbose <on|off>` : conserver le niveau de verbosité pour la session
+- `--channel <channel>` : canal de livraison ; omettez cette option pour utiliser le canal principal de la session
 - `--reply-to <target>` : remplacement de la cible de livraison
 - `--reply-channel <channel>` : remplacement du canal de livraison
 - `--reply-account <id>` : remplacement du compte de livraison
-- `--local` : exécuter directement l’agent embarqué (après le préchargement du registre de plugins)
-- `--deliver` : renvoyer la réponse au canal/à la cible sélectionnés
-- `--timeout <seconds>` : remplacer le délai d’expiration de l’agent (600 par défaut ou valeur de configuration)
+- `--local` : exécuter directement l’agent intégré (après le préchargement du registre des plugins)
+- `--deliver` : renvoyer la réponse au canal ou à la cible sélectionnés
+- `--timeout <seconds>` : remplacer le délai d’expiration de l’agent (600 par défaut, ou `agents.defaults.timeoutSeconds`) ; `0` désactive le délai d’expiration
 - `--json` : produire du JSON
 
 ## Exemples
 
 ```bash
-openclaw agent --to +15555550123 --message "status update" --deliver
-openclaw agent --agent ops --message "Summarize logs"
+openclaw agent --to +15555550123 --message "mise à jour de l’état" --deliver
+openclaw agent --agent ops --message "Résumer les journaux"
 openclaw agent --agent ops --message-file ./task.md
-openclaw agent --agent ops --model openai/gpt-5.4 --message "Summarize logs"
-openclaw agent --session-key agent:ops:incident-42 --message "Summarize status"
-openclaw agent --agent ops --session-key incident-42 --message "Summarize status"
-openclaw agent --session-id 1234 --message "Summarize inbox" --thinking medium
-openclaw agent --to +15555550123 --message "Trace logs" --verbose on --json
-openclaw agent --agent ops --message "Generate report" --deliver --reply-channel slack --reply-to "#reports"
-openclaw agent --agent ops --message "Run locally" --local
+openclaw agent --agent ops --model openai/gpt-5.4 --message "Résumer les journaux"
+openclaw agent --session-key agent:ops:incident-42 --message "Résumer l’état"
+openclaw agent --agent ops --session-key incident-42 --message "Résumer l’état"
+openclaw agent --session-id 1234 --message "Résumer la boîte de réception" --thinking medium
+openclaw agent --to +15555550123 --message "Tracer les journaux" --verbose on --json
+openclaw agent --agent ops --message "Générer le rapport" --deliver --reply-channel slack --reply-to "#reports"
+openclaw agent --agent ops --message "Exécuter localement" --local
 ```
 
-## Notes
+## Remarques
 
-- Passez exactement l’une des options `--message` ou `--message-file`. `--message-file` préserve le contenu multiligne du fichier après suppression d’un éventuel BOM UTF-8, et rejette les fichiers qui ne sont pas du UTF-8 valide.
-- Le mode Gateway revient à l’agent embarqué lorsque la requête au Gateway échoue. Utilisez `--local` pour forcer l’exécution embarquée dès le départ.
-- `--local` précharge tout de même d’abord le registre de plugins, afin que les fournisseurs, outils et canaux fournis par les plugins restent disponibles pendant les exécutions embarquées.
-- Les exécutions `--local` et les exécutions de secours embarquées sont traitées comme des exécutions ponctuelles. Les ressources MCP de bouclage groupées et les sessions stdio Claude chaudes ouvertes pour ce processus local sont supprimées après la réponse, afin que les invocations scriptées ne gardent pas de processus enfants locaux en vie.
-- Les exécutions appuyées par Gateway laissent les ressources MCP de bouclage appartenant au Gateway sous le processus Gateway en cours d’exécution ; les anciens clients peuvent encore envoyer l’indicateur de nettoyage historique, mais le Gateway l’accepte comme une absence d’opération de compatibilité.
-- `--channel`, `--reply-channel` et `--reply-account` affectent la livraison de la réponse, pas le routage de session.
-- `--session-key` sélectionne une clé de session explicite. Les clés préfixées par l’agent doivent utiliser `agent:<agent-id>:<session-key>`, et `--agent` doit correspondre à l’id d’agent de la clé lorsque les deux sont fournis. Les clés nues non sentinelles sont limitées à `--agent` lorsqu’il est fourni, ou à l’agent par défaut configuré sinon ; par exemple, `--agent ops --session-key incident-42` route vers `agent:ops:incident-42`. Les littéraux `global` et `unknown` restent non limités uniquement lorsqu’aucun `--agent` n’est fourni ; dans ce cas, le secours embarqué et la propriété du stockage utilisent l’agent par défaut configuré.
-- `--json` réserve stdout à la réponse JSON. Les diagnostics du Gateway, des plugins et du secours embarqué sont routés vers stderr afin que les scripts puissent analyser stdout directement.
-- Le JSON du secours embarqué inclut `meta.transport: "embedded"` et `meta.fallbackFrom: "gateway"` afin que les scripts puissent distinguer les exécutions de secours des exécutions Gateway.
-- Si le Gateway accepte une exécution d’agent mais que la CLI dépasse le délai d’attente en attendant la réponse finale, le secours embarqué utilise un nouvel id explicite de session/exécution `gateway-fallback-*` et signale `meta.fallbackReason: "gateway_timeout"` plus les champs de session de secours. Cela évite de créer une course avec le verrou de transcription appartenant au Gateway ou de remplacer silencieusement la session de conversation routée d’origine.
-- Pour les exécutions appuyées par Gateway, `SIGTERM` et `SIGINT` interrompent la requête CLI en attente. Si le Gateway a déjà accepté l’exécution, la CLI envoie aussi `chat.abort` pour cet id d’exécution accepté avant de quitter. Les exécutions locales `--local` et les exécutions de secours embarquées reçoivent le même signal d’abandon, mais n’envoient pas `chat.abort`. Si un `--run-id` en double atteint le Gateway alors que l’exécution d’agent d’origine est toujours active, la réponse en double signale `status: "in_flight"` et la CLI non JSON imprime un diagnostic stderr au lieu d’une réponse vide. Pour les enveloppes cron/systemd externes, conservez un garde-fou externe d’arrêt forcé comme `timeout -k 60 600 openclaw agent ...` afin que le superviseur puisse toujours récupérer le processus si l’arrêt ne peut pas se vider.
-- Lorsque cette commande déclenche la régénération de `models.json`, les identifiants de fournisseur gérés par SecretRef sont persistés sous forme de marqueurs non secrets (par exemple des noms de variables d’environnement, `secretref-env:ENV_VAR_NAME` ou `secretref-managed`), et non en texte clair de secret résolu.
-- Les écritures de marqueurs font autorité sur la source : OpenClaw persiste les marqueurs depuis l’instantané de configuration source actif, et non depuis les valeurs secrètes d’exécution résolues.
+- Transmettez exactement l’une des options `--message` ou `--message-file`. `--message-file` supprime un BOM UTF-8 initial et conserve le contenu multiligne ; les fichiers qui ne sont pas valides en UTF-8 sont rejetés.
+- Les commandes obliques (par exemple `/compact`) ne peuvent pas être exécutées via `--message`. La CLI les rejette et vous redirige vers la commande dédiée (`openclaw sessions compact <key>` pour la compaction).
+- Les exécutions avec `--local` et celles utilisant le repli intégré sont ponctuelles : les ressources de bouclage MCP groupées et les sessions stdio Claude préchauffées ouvertes pour l’exécution sont arrêtées après la réponse, afin que les appels scriptés ne laissent pas de processus enfants locaux en cours d’exécution. Les exécutions via le Gateway conservent à la place les ressources de bouclage MCP appartenant au Gateway sous le processus Gateway en cours d’exécution.
+- Lorsque `--agent`, `--channel` et `--to` sont utilisés ensemble, le routage de session suit le destinataire canonique du canal et `session.dmScope`. Les canaux dotés d’une identité de destinataire stable utilisée uniquement pour les envois sortants utilisent une session appartenant au fournisseur et isolée de la session principale de l’agent. `--reply-channel` et `--reply-account` n’affectent que la livraison.
+- `--session-key` sélectionne une clé de session explicite. Les clés préfixées par l’agent doivent utiliser `agent:<agent-id>:<session-key>`, et `--agent` doit correspondre à l’identifiant d’agent de la clé lorsque les deux sont fournis. Les clés simples qui ne sont pas des sentinelles sont rattachées à `--agent` lorsqu’il est fourni, ou à l’agent par défaut configuré dans le cas contraire ; par exemple, `--agent ops --session-key incident-42` effectue le routage vers `agent:ops:incident-42`. Les clés littérales `global` et `unknown` restent sans portée uniquement lorsqu’aucune option `--agent` n’est fournie.
+- `--json` réserve stdout à la réponse JSON ; les diagnostics du Gateway, des plugins et du repli intégré sont envoyés à stderr afin que les scripts puissent analyser stdout directement.
+- Le JSON du repli intégré inclut `meta.transport: "embedded"` et `meta.fallbackFrom: "gateway"` afin que les scripts puissent détecter une exécution de repli.
+- Si le Gateway accepte une exécution, mais que la CLI atteint son délai d’expiration en attendant la réponse finale, le repli intégré utilise un nouvel identifiant de session/d’exécution `gateway-fallback-*` et indique `meta.fallbackReason: "gateway_timeout"` ainsi que les champs de la session de repli, au lieu d’entrer en concurrence avec la transcription appartenant au Gateway ou de remplacer silencieusement la session d’origine.
+- `SIGTERM`/`SIGINT` interrompent une requête via le Gateway en attente ; si le Gateway a déjà accepté l’exécution, la CLI envoie également `chat.abort` pour cet identifiant d’exécution avant de quitter. Les exécutions avec `--local` et celles utilisant le repli intégré reçoivent le même signal, mais n’envoient pas `chat.abort`. Si la clé interne de déduplication des exécutions possède déjà une exécution active pour cette session, la réponse indique `status: "in_flight"` et la CLI hors JSON affiche un diagnostic sur stderr au lieu d’une réponse vide. Pour les enveloppes cron/systemd externes, conservez un mécanisme de secours d’arrêt forcé tel que `timeout -k 60 600 openclaw agent ...`, afin que le superviseur puisse récupérer le processus si l’arrêt ne peut pas se terminer proprement.
+- Lorsque cette commande déclenche la régénération de `models.json`, les identifiants du fournisseur gérés par SecretRef sont conservés sous forme de marqueurs non secrets (par exemple des noms de variables d’environnement, `secretref-env:ENV_VAR_NAME` ou `secretref-managed`), jamais sous forme de secrets résolus en texte brut. Les écritures de marqueurs proviennent de l’instantané actif de la configuration source, et non des valeurs secrètes résolues à l’exécution.
 
 ## État de livraison JSON
 
-Lorsque `--json --deliver` est utilisé, la réponse JSON de la CLI peut inclure `deliveryStatus` au niveau supérieur, afin que les scripts puissent distinguer les envois livrés, supprimés, partiels et échoués :
+Avec `--json --deliver`, la réponse JSON de la CLI inclut `deliveryStatus` au niveau supérieur afin que les scripts puissent distinguer les envois livrés, supprimés, partiels et échoués :
 
 ```json
 {
-  "payloads": [{ "text": "Report ready", "mediaUrl": null }],
+  "payloads": [{ "text": "Rapport prêt", "mediaUrl": null }],
   "meta": { "durationMs": 1200 },
   "deliveryStatus": {
     "requested": true,
@@ -98,23 +88,30 @@ Lorsque `--json --deliver` est utilisé, la réponse JSON de la CLI peut inclure
 }
 ```
 
-`deliveryStatus.status` vaut `sent`, `suppressed`, `partial_failed` ou `failed`. `suppressed` signifie que la livraison n’a volontairement pas été envoyée, par exemple parce qu’un hook d’envoi de message l’a annulée ou qu’il n’y avait aucun résultat visible ; c’est tout de même un résultat terminal sans nouvelle tentative. `partial_failed` signifie qu’au moins une charge utile a été envoyée avant l’échec d’une charge utile ultérieure. `failed` signifie qu’aucun envoi durable ne s’est terminé ou que la prévalidation de livraison a échoué.
+Les réponses de la CLI via le Gateway conservent également la structure brute du résultat du Gateway dans `result.deliveryStatus`.
 
-Les réponses CLI appuyées par Gateway préservent aussi la forme brute du résultat Gateway, où le même objet est disponible à `result.deliveryStatus`.
+`deliveryStatus.status` prend l’une des valeurs suivantes :
+
+| État             | Signification                                                                                                                                                       |
+| ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `sent`           | Livraison terminée.                                                                                                                                                 |
+| `suppressed`     | La livraison n’a intentionnellement pas été envoyée (par exemple, un hook d’envoi de messages l’a annulée ou aucun résultat visible n’était disponible). Terminal, sans nouvelle tentative. |
+| `partial_failed` | Au moins une charge utile a été envoyée avant l’échec d’une charge utile ultérieure.                                                                                |
+| `failed`         | Aucun envoi durable n’a abouti, ou la validation préalable à la livraison a échoué.                                                                                  |
 
 Champs courants :
 
 - `requested` : toujours `true` lorsque l’objet est présent.
-- `attempted` : `true` après l’exécution du chemin d’envoi durable ; `false` pour les échecs de prévalidation ou l’absence de charges utiles visibles.
-- `succeeded` : `true`, `false` ou `"partial"` ; `"partial"` va avec `status: "partial_failed"`.
-- `reason` : une raison snake-case en minuscules issue de la livraison durable ou de la validation de prévalidation. Les raisons connues incluent `cancelled_by_message_sending_hook`, `no_visible_payload`, `no_visible_result`, `channel_resolved_to_internal`, `unknown_channel`, `invalid_delivery_target` et `no_delivery_target` ; les envois durables échoués peuvent aussi signaler l’étape échouée. Traitez les valeurs inconnues comme opaques, car l’ensemble peut s’étendre.
-- `resultCount` : nombre de résultats d’envoi au canal lorsqu’il est disponible.
-- `sentBeforeError` : `true` lorsqu’un échec partiel a envoyé au moins une charge utile avant l’erreur.
-- `error` : booléen `true` pour les envois échoués ou partiellement échoués.
-- `errorMessage` : inclus uniquement lorsqu’un message d’erreur de livraison sous-jacent est capturé. Les échecs de prévalidation portent `error` et `reason`, mais pas `errorMessage`.
-- `payloadOutcomes` : résultats facultatifs par charge utile avec `index`, `status`, `reason`, `resultCount`, `error`, `stage`, `sentBeforeError` ou les métadonnées de hook lorsqu’elles sont disponibles.
+- `attempted` : `true` dès que le chemin d’envoi durable a été exécuté ; `false` en cas d’échec de la validation préalable ou en l’absence de charges utiles visibles.
+- `succeeded` : `true`, `false` ou `"partial"` ; `"partial"` est associé à `status: "partial_failed"`.
+- `reason` : raison en minuscules au format snake_case provenant de la livraison durable ou de la validation préalable. Les valeurs connues incluent `cancelled_by_message_sending_hook`, `no_visible_payload`, `no_visible_result`, `channel_resolved_to_internal`, `unknown_channel`, `invalid_delivery_target` et `no_delivery_target` ; les échecs d’envoi durable peuvent également indiquer l’étape ayant échoué. Traitez les valeurs inconnues comme opaques, car cet ensemble peut s’étendre.
+- `resultCount` : nombre de résultats d’envoi au canal, lorsqu’il est disponible.
+- `sentBeforeError` : `true` lorsqu’un échec partiel a envoyé au moins une charge utile avant de rencontrer une erreur.
+- `error` : `true` pour les envois ayant échoué ou partiellement échoué.
+- `errorMessage` : présent uniquement lorsqu’un message d’erreur de livraison sous-jacent a été capturé. Les échecs de validation préalable contiennent `error`/`reason`, mais pas `errorMessage`.
+- `payloadOutcomes` : résultats facultatifs par charge utile avec `index`, `status`, `reason`, `resultCount`, `error`, `stage`, `sentBeforeError` ou les métadonnées du hook lorsqu’elles sont disponibles.
 
-## Associé
+## Voir aussi
 
-- [Référence CLI](/fr/cli)
-- [Exécution de l’agent](/fr/concepts/agent)
+- [Référence de la CLI](/fr/cli)
+- [Environnement d’exécution de l’agent](/fr/concepts/agent)

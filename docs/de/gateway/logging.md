@@ -1,15 +1,16 @@
 ---
 read_when:
-    - Ändern von Logging-Ausgabe oder -Formaten
+    - Ändern der Protokollausgabe oder -formate
     - CLI- oder Gateway-Ausgabe debuggen
-summary: Protokollierungsoberflächen, Dateiprotokolle, WS-Protokollstile und Konsolenformatierung
+summary: Logging-Oberflächen, Dateiprotokolle, WS-Protokollstile und Konsolenformatierung
 title: Gateway-Protokollierung
 x-i18n:
-    generated_at: "2026-06-27T17:31:10Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:20:25Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: dde5e589bb48cd8c41ac6dd0d74780fec1cc1ee79d82d433b4e7c7450dc5c8b6
+    source_hash: 6717be5eac3dfc1acf36b2f21b049d46c7fc3678945295b10ae69781d89d35ad
     source_path: gateway/logging.md
     workflow: 16
 ---
@@ -18,139 +19,106 @@ x-i18n:
 
 Eine benutzerorientierte Übersicht (CLI + Control UI + Konfiguration) finden Sie unter [/logging](/de/logging).
 
-OpenClaw hat zwei Log-„Oberflächen“:
+OpenClaw verfügt über zwei Protokollierungsoberflächen:
 
-- **Konsolenausgabe** (was Sie im Terminal / in der Debug-UI sehen).
-- **Datei-Logs** (JSON-Zeilen), die vom Gateway-Logger geschrieben werden.
+- **Konsolenausgabe** – was Sie im Terminal / in der Debug-UI sehen.
+- **Dateiprotokolle** – vom Gateway-Logger geschriebene JSON-Zeilen.
 
-Beim Start protokolliert der Gateway das aufgelöste Standard-Agentenmodell zusammen mit den
-Modus-Standardeinstellungen, die neue Sitzungen beeinflussen, zum Beispiel:
+Beim Start protokolliert das Gateway das aufgelöste Standard-Agentenmodell sowie die Modusstandardwerte, die neue Sitzungen beeinflussen:
 
 ```text
-agent model: openai/gpt-5.5 (thinking=medium, fast=on)
+Agentenmodell: openai/gpt-5.6-sol (thinking=medium, fast=on)
 ```
 
-`thinking` stammt vom Standard-Agenten, aus Modellparametern oder aus dem globalen Agentenstandard;
-wenn es nicht gesetzt ist, zeigt die Startzusammenfassung `medium`. `fast` stammt vom
-Standard-Agenten oder aus den Modellparametern `fastMode`.
+`thinking` stammt vom Standard-Agenten, aus den Modellparametern oder aus dem globalen Agentenstandard; ist es nicht festgelegt, wird `medium` angezeigt. `fast` stammt vom Standard-Agenten oder aus den `fastMode`-Parametern des Modells.
 
 ## Dateibasierter Logger
 
-- Die standardmäßige rotierende Logdatei liegt unter `/tmp/openclaw/` (eine Datei pro Tag): `openclaw-YYYY-MM-DD.log`
-  - Das Datum verwendet die lokale Zeitzone des Gateway-Hosts.
-- Aktive Logdateien rotieren bei `logging.maxFileBytes` (Standard: 100 MB), wobei
-  bis zu fünf nummerierte Archive behalten werden und in eine neue aktive Datei weitergeschrieben wird.
-- Pfad und Level der Logdatei können über `~/.openclaw/openclaw.json` konfiguriert werden:
-  - `logging.file`
-  - `logging.level`
+- Die standardmäßige rotierende Protokolldatei befindet sich unter `/tmp/openclaw/` (eine Datei pro Tag): `openclaw-YYYY-MM-DD.log`, datiert nach der lokalen Zeitzone des Gateway-Hosts. Wenn dieses Verzeichnis unsicher oder nicht beschreibbar ist (falscher Eigentümer, für alle beschreibbar, ein symbolischer Link), weicht OpenClaw stattdessen auf einen benutzerspezifischen Pfad unter `os.tmpdir()/openclaw-<uid>` aus; unter Windows wird immer dieser Rückfallpfad im temporären Betriebssystemverzeichnis verwendet.
+- Aktive Protokolldateien werden bei `logging.maxFileBytes` rotiert (Standard: 100 MB), wobei bis zu fünf nummerierte Archive (`.1` bis `.5`) aufbewahrt werden und das Schreiben in einer neuen aktiven Datei fortgesetzt wird.
+- Konfigurieren Sie Pfad und Stufe der Protokolldatei über `~/.openclaw/openclaw.json`: `logging.file`, `logging.level`.
+- Das Dateiformat besteht aus einem JSON-Objekt pro Zeile.
 
-Das Dateiformat ist ein JSON-Objekt pro Zeile.
+Codepfade für Gespräche, Echtzeit-Sprachkommunikation und verwaltete Räume verwenden den gemeinsamen Dateilogger für begrenzte Lebenszyklusdatensätze, die für die betriebliche Fehlerdiagnose und den OTLP-Protokollexport vorgesehen sind. Transkripttext, Audionutzdaten, Turn-IDs, Anruf-IDs und Provider-Element-IDs werden niemals in den Protokolldatensatz kopiert.
 
-Codepfade für Talk, Echtzeit-Sprache und verwaltete Räume verwenden den gemeinsamen Datei-Logger für
-begrenzte Lebenszyklusdatensätze. Diese Datensätze sind für operatives Debugging
-und den OTLP-Logexport gedacht; Transkripttext, Audio-Payloads, Turn-IDs, Call-IDs und
-Provider-Item-IDs werden nicht in den Logdatensatz kopiert.
-
-Der Tab „Logs“ der Control UI verfolgt diese Datei über den Gateway (`logs.tail`).
-Die CLI kann dasselbe tun:
+Der Reiter „Protokolle“ der Control UI verfolgt diese Datei über das Gateway (`logs.tail`). Die CLI macht dasselbe:
 
 ```bash
 openclaw logs --follow
 ```
 
-**Ausführlichkeit vs. Log-Level**
+### Ausführlichkeit und Protokollstufen
 
-- **Datei-Logs** werden ausschließlich durch `logging.level` gesteuert.
-- `--verbose` beeinflusst nur die **Ausführlichkeit der Konsole** (und den WS-Logstil); es erhöht **nicht**
-  den Datei-Log-Level.
-- Um Details, die nur bei verbose sichtbar sind, in Datei-Logs zu erfassen, setzen Sie `logging.level` auf `debug` oder
-  `trace`.
-- Trace-Logging enthält außerdem diagnostische Timing-Zusammenfassungen für ausgewählte Hot Paths,
-  zum Beispiel die Vorbereitung der Plugin-Tool-Factory. Siehe
-  [/tools/plugin#slow-plugin-tool-setup](/de/tools/plugin#slow-plugin-tool-setup).
+- **Dateiprotokolle** werden ausschließlich durch `logging.level` gesteuert.
+- `--verbose` beeinflusst nur die **Ausführlichkeit der Konsole** (und den WS-Protokollstil) – die Protokollstufe der Datei wird dadurch **nicht** erhöht.
+- Um ausschließlich bei ausführlicher Ausgabe verfügbare Details in Dateiprotokollen zu erfassen, setzen Sie `logging.level` auf `debug` oder `trace`.
+- Die Trace-Protokollierung umfasst außerdem diagnostische Zeitübersichten für ausgewählte häufig ausgeführte Pfade, beispielsweise die Vorbereitung von Plugin-Werkzeugfabriken. Siehe [/tools/plugin#slow-plugin-tool-setup](/de/tools/plugin#slow-plugin-tool-setup).
 
 ## Konsolenerfassung
 
-Die CLI erfasst `console.log/info/warn/error/debug/trace` und schreibt sie in Datei-Logs,
-während sie weiterhin auf stdout/stderr ausgibt.
+Die CLI erfasst `console.log/info/warn/error/debug/trace`, schreibt diese Ausgaben in Dateiprotokolle und gibt sie weiterhin über stdout/stderr aus.
 
-Sie können die Ausführlichkeit der Konsole unabhängig einstellen über:
+Passen Sie die Ausführlichkeit der Konsole unabhängig davon an:
 
-- `logging.consoleLevel` (Standard `info`)
-- `logging.consoleStyle` (`pretty` | `compact` | `json`)
+- `logging.consoleLevel` (Standard: `info`)
+- `logging.consoleStyle` (`pretty` | `compact` | `json`; auf einem TTY standardmäßig `pretty`, andernfalls `compact`)
 
 ## Schwärzung
 
-OpenClaw kann vertrauliche Tokens maskieren, bevor Log- oder Transkriptausgaben den
-Prozess verlassen. Diese Log-Schwärzungsrichtlinie wird auf Konsole, Datei-Log, OTLP-
-Logdatensatz und Textsenken für Sitzungstranskripte angewendet, sodass passende geheime Werte
-maskiert werden, bevor JSONL-Zeilen oder Nachrichten auf die Festplatte geschrieben werden.
+OpenClaw maskiert vertrauliche Token, bevor Protokoll- oder Transkriptausgaben den Prozess verlassen. Diese Schwärzungsrichtlinie gilt für Konsolen-, Dateiprotoll-, OTLP-Protokolldatensatz- und Sitzungstranskript-Textausgaben, sodass übereinstimmende Geheimniswerte maskiert werden, bevor JSONL-Zeilen oder Nachrichten auf die Festplatte geschrieben werden.
 
 - `logging.redactSensitive`: `off` | `tools` (Standard: `tools`)
-- `logging.redactPatterns`: Array von Regex-Strings (überschreibt Standards)
-  - Verwenden Sie rohe Regex-Strings (automatisch `gi`) oder `/pattern/flags`, wenn Sie benutzerdefinierte Flags benötigen.
-  - Treffer werden maskiert, indem die ersten 6 + letzten 4 Zeichen beibehalten werden (Länge >= 18), andernfalls `***`.
-  - Die Standards decken gängige Schlüsselzuweisungen, CLI-Flags, JSON-Felder, Bearer-Header, PEM-Blöcke, verbreitete Token-Präfixe und Feldnamen für Zahlungsdaten wie Kartennummer, CVC/CVV, gemeinsames Zahlungstoken und Zahlungsdaten ab.
+- `logging.redactPatterns`: Array von Regex-Zeichenfolgen (überschreibt die Standardwerte)
+  - Verwenden Sie rohe Regex-Zeichenfolgen (automatisch `gi`) oder `/pattern/flags` für benutzerdefinierte Flags.
+  - Übereinstimmungen werden maskiert, wobei die ersten 6 und die letzten 4 Zeichen erhalten bleiben (Werte mit >= 18 Zeichen); kürzere Werte werden zu `***`.
+  - Die Standardwerte decken gängige Schlüsselzuweisungen, CLI-Flags, JSON-Felder, Bearer-Header, PEM-Blöcke, verbreitete Präfixe für Anbieter-Token und Feldnamen für Zahlungszugangsdaten ab (Kartennummer, CVC/CVV, gemeinsames Zahlungs-Token, Zahlungszugangsdaten).
 
-Einige Sicherheitsgrenzen schwärzen immer, unabhängig von `logging.redactSensitive`.
-Dazu gehören Tool-Call-Ereignisse der Control UI, Tool-Ausgaben von `sessions_history`,
-Diagnose-Support-Exporte, Provider-Fehlerbeobachtungen, die Anzeige von Exec-Genehmigungsbefehlen
-und Gateway-WebSocket-Protokolllogs. Diese Oberflächen können weiterhin
-`logging.redactPatterns` als zusätzliche Muster verwenden, aber `redactSensitive: "off"`
-führt nicht dazu, dass sie rohe Secrets ausgeben.
+Einige Sicherheitsgrenzen schwärzen unabhängig von `logging.redactSensitive` immer: Control-UI-Werkzeugaufrufereignisse, Werkzeugausgaben von `sessions_history`, Exporte für den Diagnosesupport, Beobachtungen von Provider-Fehlern, die Befehlsanzeige bei Ausführungsgenehmigungen und Gateway-WebSocket-Protokolle. Diese Oberflächen berücksichtigen `logging.redactPatterns` weiterhin als zusätzliche Muster, aber `redactSensitive: "off"` führt nicht dazu, dass sie unmaskierte Geheimnisse ausgeben.
 
-## Gateway-WebSocket-Logs
+## Gateway-WebSocket-Protokolle
 
-Der Gateway gibt WebSocket-Protokolllogs in zwei Modi aus:
+Das Gateway gibt WebSocket-Protokolle in zwei Modi aus:
 
-- **Normaler Modus (kein `--verbose`)**: Nur „interessante“ RPC-Ergebnisse werden ausgegeben:
-  - Fehler (`ok=false`)
-  - langsame Aufrufe (Standardschwelle: `>= 50ms`)
-  - Parse-Fehler
-- **Verbose-Modus (`--verbose`)**: Gibt den gesamten WS-Anfrage-/Antwortverkehr aus.
+- **Normalmodus (ohne `--verbose`)**: Nur „interessante“ RPC-Ergebnisse werden ausgegeben – Fehler (`ok=false`), langsame Aufrufe (Standardschwellenwert: `>= 50ms`) und Analysefehler.
+- **Ausführlicher Modus (`--verbose`)**: Gibt den gesamten WS-Anfrage-/Antwortverkehr aus.
 
-### WS-Logstil
+### WS-Protokollstil
 
-`openclaw gateway` unterstützt einen Stil-Umschalter pro Gateway:
+`openclaw gateway` unterstützt eine Stiloption pro Gateway:
 
-- `--ws-log auto` (Standard): Normaler Modus ist optimiert; Verbose-Modus verwendet kompakte Ausgabe
-- `--ws-log compact`: kompakte Ausgabe (gepaarte Anfrage/Antwort) bei verbose
-- `--ws-log full`: vollständige Ausgabe pro Frame bei verbose
-- `--compact`: Alias für `--ws-log compact`
-
-Beispiele:
+- `--ws-log auto` (Standard): Der Normalmodus ist optimiert; der ausführliche Modus verwendet eine kompakte Ausgabe.
+- `--ws-log compact`: Kompakte Ausgabe (gekoppelte Anfrage/Antwort) im ausführlichen Modus.
+- `--ws-log full`: Vollständige Ausgabe pro Frame im ausführlichen Modus.
+- `--compact`: Alias für `--ws-log compact`.
 
 ```bash
-# optimized (only errors/slow)
+# optimiert (nur Fehler/langsame Aufrufe)
 openclaw gateway
 
-# show all WS traffic (paired)
+# gesamten WS-Verkehr anzeigen (gekoppelt)
 openclaw gateway --verbose --ws-log compact
 
-# show all WS traffic (full meta)
+# gesamten WS-Verkehr anzeigen (vollständige Metadaten)
 openclaw gateway --verbose --ws-log full
 ```
 
-## Konsolenformatierung (Subsystem-Logging)
+## Konsolenformatierung (Subsystem-Protokollierung)
 
-Der Konsolenformatierer ist **TTY-aware** und gibt konsistente, präfixierte Zeilen aus.
-Subsystem-Logger halten die Ausgabe gruppiert und gut scanbar.
+Der Konsolenformatierer ist **TTY-fähig** und gibt einheitliche Zeilen mit Präfixen aus. Subsystem-Logger halten die Ausgabe gruppiert und übersichtlich:
 
-Verhalten:
+- **Subsystem-Präfixe** in jeder Zeile (z. B. `[gateway]`, `[canvas]`, `[tailscale]`).
+- **Subsystem-Farben** (stabil pro Subsystem, aus dem Namen gehasht) sowie Stufenfarben.
+- **Farbe, wenn die Ausgabe ein TTY ist** oder die Umgebung einem leistungsfähigen Terminal entspricht (`TERM`/`COLORTERM`/`TERM_PROGRAM`); berücksichtigt `NO_COLOR` und `FORCE_COLOR`.
+- **Verkürzte Subsystem-Präfixe**: Ein führendes Segment `gateway/`, `channels/` oder `providers/` wird entfernt; anschließend werden höchstens die letzten 2 verbleibenden Segmente beibehalten (z. B. wird `channels/turn/kernel` als `turn/kernel` angezeigt). Bekannte Kanal-Subsysteme (`telegram`, `whatsapp`, `slack` usw.) werden immer auf den reinen Kanalnamen reduziert.
+- **Untergeordnete Logger nach Subsystem** (automatisches Präfix + strukturiertes Feld `{ subsystem }`).
+- **`logRaw()`** für QR-/UX-Ausgaben (kein Präfix, keine Formatierung).
+- **Konsolenstile**: `pretty` | `compact` | `json`.
+- Die **Konsolenprotokollstufe** ist von der Dateiprotokollstufe getrennt (die Datei behält sämtliche Details bei, wenn `logging.level` auf `debug`/`trace` gesetzt ist).
+- **WhatsApp-Nachrichtentexte** werden mit `debug` protokolliert (verwenden Sie `--verbose`, um sie anzuzeigen).
 
-- **Subsystem-Präfixe** in jeder Zeile (z. B. `[gateway]`, `[canvas]`, `[tailscale]`)
-- **Subsystem-Farben** (stabil pro Subsystem) plus Level-Färbung
-- **Farbe, wenn die Ausgabe ein TTY ist oder die Umgebung wie ein Rich-Terminal aussieht** (`TERM`/`COLORTERM`/`TERM_PROGRAM`), respektiert `NO_COLOR`
-- **Verkürzte Subsystem-Präfixe**: entfernt führendes `gateway/` + `channels/`, behält die letzten 2 Segmente (z. B. `whatsapp/outbound`)
-- **Sub-Logger nach Subsystem** (automatisches Präfix + strukturiertes Feld `{ subsystem }`)
-- **`logRaw()`** für QR-/UX-Ausgabe (kein Präfix, keine Formatierung)
-- **Konsolenstile** (z. B. `pretty | compact | json`)
-- **Konsolen-Log-Level** getrennt vom Datei-Log-Level (Datei behält vollständige Details, wenn `logging.level` auf `debug`/`trace` gesetzt ist)
-- **WhatsApp-Nachrichtentexte** werden auf `debug` protokolliert (verwenden Sie `--verbose`, um sie zu sehen)
+Dadurch bleiben Dateiprotokolle stabil, während interaktive Ausgaben übersichtlich dargestellt werden.
 
-So bleiben bestehende Datei-Logs stabil, während interaktive Ausgabe gut scanbar wird.
-
-## Verwandt
+## Verwandte Themen
 
 - [Protokollierung](/de/logging)
 - [OpenTelemetry-Export](/de/gateway/opentelemetry)

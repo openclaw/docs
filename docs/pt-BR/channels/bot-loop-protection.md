@@ -3,47 +3,39 @@ read_when:
     - Configurando mensagens de canal criadas por bots
     - Ajuste da proteção contra loops entre bots
 sidebarTitle: Bot loop protection
-summary: Proteção contra loops de bot para bot padrão e substituições de canal
+summary: Padrões de proteção contra loops entre bots e substituições por canal
 title: Proteção contra loops de bots
 x-i18n:
-    generated_at: "2026-06-27T17:09:10Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:53:16Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: 7a36794332e89dc7a9cf558e1687beabf4a6d10fb8e73c39794b0f0fd01c65b7
+    source_hash: 08637267cd3422d3154315e709c85c85fa57641f1adb0e8ef10c32e8a7b73312
     source_path: channels/bot-loop-protection.md
     workflow: 16
 ---
 
-# Proteção contra loops de bots
+O OpenClaw pode aceitar mensagens escritas por outros bots em canais compatíveis com `allowBots`. Quando esse caminho está habilitado, a proteção contra loops entre pares impede que duas identidades de bot respondam uma à outra indefinidamente.
 
-O OpenClaw pode aceitar mensagens escritas por outros bots em canais que dão suporte a `allowBots`.
-Quando esse caminho está habilitado, a proteção contra loops por par impede que duas identidades de bot
-respondam uma à outra indefinidamente.
-
-A proteção é aplicada pelo executor central de respostas de entrada. Cada canal compatível
-mapeia seu próprio evento de entrada para fatos genéricos: conta ou escopo, id da conversa,
-id do bot remetente e id do bot destinatário. Então o núcleo rastreia o par de participantes nas duas
-direções, aplica um orçamento de janela deslizante e suprime o par durante um
-cooldown depois que o orçamento é excedido.
+A proteção é aplicada pelo executor principal de respostas recebidas. Cada canal compatível mapeia seu evento recebido para informações genéricas: conta ou escopo, id da conversa, id do bot remetente e id do bot destinatário. O núcleo rastreia o par de participantes em ambas as direções (A para B e B para A contam como o mesmo par), aplica um limite de janela deslizante e suprime o par durante um período de espera após o limite ser excedido.
 
 ## Padrões
 
-A proteção contra loops por par fica ativa quando um canal permite que mensagens escritas por bots cheguem ao
-despacho. Os padrões integrados são:
+A proteção contra loops entre pares fica ativa sempre que um canal permite que mensagens criadas por bots cheguem ao despacho. Padrões integrados:
 
-- `maxEventsPerWindow: 20` - um par de bots pode trocar 20 eventos dentro da janela
-- `windowSeconds: 60` - duração da janela deslizante
-- `cooldownSeconds: 60` - tempo de supressão depois que o par excede o orçamento
+| Chave                | Padrão  | Significado                                                   |
+| -------------------- | ------- | ------------------------------------------------------------- |
+| `enabled`            | `true`  | Proteção ativa para os canais compatíveis.                    |
+| `maxEventsPerWindow` | `20`    | Eventos que um par de bots pode trocar dentro da janela.      |
+| `windowSeconds`      | `60`    | Duração da janela deslizante.                                 |
+| `cooldownSeconds`    | `60`    | Tempo de supressão após o par exceder o limite.                |
 
-A proteção não afeta mensagens normais escritas por humanos, implantações com um único bot,
-filtragem de mensagens próprias nem respostas únicas de bot que permaneçam abaixo do orçamento.
+A proteção não afeta mensagens criadas por humanos, implantações com um único bot, filtragem de mensagens do próprio bot nem respostas de bots que permaneçam abaixo do limite.
 
 ## Configurar padrões compartilhados
 
-Defina `channels.defaults.botLoopProtection` uma vez para dar a todos os canais compatíveis
-a mesma linha de base. Substituições por canal e por conta ainda podem ajustar superfícies
-individuais.
+Defina `channels.defaults.botLoopProtection` uma vez para fornecer a todos os canais compatíveis a mesma configuração de referência. Substituições por canal, conta e sala ainda podem ajustar superfícies individuais.
 
 ```json5
 {
@@ -59,18 +51,17 @@ individuais.
 }
 ```
 
-Defina `enabled: false` apenas quando a política do seu canal permitir intencionalmente
-conversas bot a bot sem supressão automática.
+Defina `enabled: false` somente quando a política do seu canal permitir intencionalmente conversas entre bots sem supressão automática.
 
-## Substituir por canal ou conta
+## Substituir por canal, conta ou sala
 
-Canais compatíveis sobrepõem sua própria configuração ao padrão compartilhado. A precedência é:
+Os canais compatíveis sobrepõem suas próprias configurações ao padrão compartilhado, chave por chave. Precedência, da mais específica para a menos específica:
 
-- `channels.<channel>.<room-or-space>.botLoopProtection`, quando o canal oferece suporte a substituições por conversa
-- `channels.<channel>.accounts.<account>.botLoopProtection`, quando o canal oferece suporte a contas
-- `channels.<channel>.botLoopProtection`, quando o canal oferece suporte a padrões de nível superior
-- `channels.defaults.botLoopProtection`
-- padrões integrados
+1. `channels.<channel>.<room-or-space>.botLoopProtection`, quando o canal é compatível com substituições por conversa
+2. `channels.<channel>.accounts.<account>.botLoopProtection`, quando o canal é compatível com contas
+3. `channels.<channel>.botLoopProtection`, quando o canal é compatível com padrões de nível superior
+4. `channels.defaults.botLoopProtection`
+5. padrões integrados
 
 ```json5
 {
@@ -85,27 +76,11 @@ Canais compatíveis sobrepõem sua própria configuração ao padrão compartilh
         maxEventsPerWindow: 8,
       },
       accounts: {
-        molty: {
+        secondary: {
           allowBots: "mentions",
           botLoopProtection: {
             maxEventsPerWindow: 5,
             cooldownSeconds: 90,
-          },
-        },
-      },
-    },
-    slack: {
-      allowBots: "mentions",
-      botLoopProtection: {
-        maxEventsPerWindow: 8,
-      },
-    },
-    matrix: {
-      allowBots: "mentions",
-      groups: {
-        "!roomid:example.org": {
-          botLoopProtection: {
-            maxEventsPerWindow: 5,
           },
         },
       },
@@ -120,19 +95,33 @@ Canais compatíveis sobrepõem sua própria configuração ao padrão compartilh
         },
       },
     },
+    matrix: {
+      allowBots: "mentions",
+      groups: {
+        "!roomid:example.org": {
+          botLoopProtection: {
+            maxEventsPerWindow: 5,
+          },
+        },
+      },
+    },
+    slack: {
+      allowBots: "mentions",
+      botLoopProtection: {
+        maxEventsPerWindow: 8,
+      },
+    },
   },
 }
 ```
 
-## Suporte por canal
+## Compatibilidade dos canais
 
-- Discord: fatos nativos de `author.bot`, indexados por conta do Discord, canal e par de bots.
-- Slack: fatos nativos de `bot_id` para mensagens aceitas escritas por bots, indexados por conta do Slack, canal e par de bots.
+- Discord: informações nativas de `author.bot`, indexadas por conta do Discord, canal e par de bots.
+- Google Chat: informações nativas de `sender.type=BOT` para mensagens aceitas criadas por bots, indexadas por conta, espaço e par de bots.
 - Matrix: contas de bot do Matrix configuradas, indexadas por conta do Matrix, sala e par de bots configurado.
-- Google Chat: fatos nativos de `sender.type=BOT` para mensagens aceitas escritas por bots, indexados por conta, espaço e par de bots.
+- Slack: informações nativas de `bot_id` para mensagens aceitas criadas por bots, indexadas por conta do Slack, canal e par de bots.
 
-Canais que não expõem uma identidade de bot de entrada confiável continuam usando seus
-filtros normais de mensagens próprias e política de acesso. Eles não devem aderir a essa
-proteção até conseguirem identificar os dois participantes no par de bots.
+Os canais que não expõem uma identidade confiável do bot remetente continuam usando seus filtros normais de mensagens do próprio bot e de política de acesso. Eles não devem aderir a essa proteção até que consigam identificar ambos os participantes do par de bots.
 
-Consulte [runtime do SDK](/pt-BR/plugins/sdk-runtime#reusable-runtime-utilities) para detalhes de implementação do Plugin.
+Consulte [runtime do SDK](/pt-BR/plugins/sdk-runtime#reusable-runtime-utilities) para obter detalhes sobre a implementação do plugin.

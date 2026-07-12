@@ -1,74 +1,64 @@
 ---
 read_when:
     - Ajustando o comportamento da sobreposição de voz
-summary: Ciclo de vida da sobreposição de voz quando a palavra de ativação e o modo pressionar para falar se sobrepõem
+summary: Ciclo de vida da sobreposição de voz quando a palavra de ativação e o pressionar para falar se sobrepõem
 title: Sobreposição de voz
 x-i18n:
-    generated_at: "2026-05-06T09:05:44Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:22:17Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: 5b30f50512e557bd5a50f0e4e8b7955a847b3b554694347d56638581fcda9514
+    source_hash: eef571c3e8d41a97779537b1b373fab25b08f63575b50e5019f6c5fbcb782c52
     source_path: platforms/mac/voice-overlay.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
 # Ciclo de vida da sobreposição de voz (macOS)
 
-Público: colaboradores do app para macOS. Objetivo: manter a sobreposição de voz previsível quando a palavra de ativação e o pressionar para falar se sobrepõem.
+Público-alvo: colaboradores do aplicativo para macOS. Objetivo: manter o comportamento da sobreposição de voz previsível quando a palavra de ativação e o pressionar para falar se sobrepõem.
 
-## Intenção atual
+## Comportamento
 
-- Se a sobreposição já estiver visível por causa da palavra de ativação e o usuário pressionar a tecla de atalho, a sessão da tecla de atalho _adota_ o texto existente em vez de redefini-lo. A sobreposição permanece visível enquanto a tecla de atalho estiver pressionada. Quando o usuário solta: envia se houver texto aparado; caso contrário, dispensa.
-- Apenas a palavra de ativação ainda envia automaticamente no silêncio; pressionar para falar envia imediatamente ao soltar.
+- Se a sobreposição já estiver visível devido à palavra de ativação e o usuário pressionar a tecla de atalho, a sessão da tecla de atalho adota o texto existente em vez de redefini-lo. A sobreposição permanece visível enquanto a tecla de atalho estiver pressionada. Ao soltá-la: envia se houver texto sem espaços em branco nas extremidades; caso contrário, fecha.
+- A palavra de ativação usada isoladamente ainda envia automaticamente após o silêncio; o pressionar para falar envia imediatamente quando a tecla é solta.
 
-## Implementado (9 de dez. de 2025)
+## Implementação
 
-- As sessões de sobreposição agora carregam um token por captura (palavra de ativação ou pressionar para falar). Atualizações parciais/finais/de envio/de dispensa/de nível são descartadas quando o token não corresponde, evitando callbacks obsoletos.
-- Pressionar para falar adota qualquer texto de sobreposição visível como prefixo (então pressionar a tecla de atalho enquanto a sobreposição de ativação está visível mantém o texto e acrescenta a nova fala). Ele aguarda até 1,5 s por uma transcrição final antes de recorrer ao texto atual.
-- O registro de chime/sobreposição é emitido em `info` nas categorias `voicewake.overlay`, `voicewake.ptt` e `voicewake.chime` (início da sessão, parcial, final, envio, dispensa, motivo do chime).
+- `VoiceSessionCoordinator` (`apps/macos/Sources/OpenClaw/VoiceSessionCoordinator.swift`) é o único proprietário da sessão de voz ativa. É um singleton `@MainActor @Observable`, não um ator. API: `startSession`, `updatePartial`, `finalize`, `sendNow`, `dismiss`, `updateLevel`, `snapshot`. Cada sessão contém um token `UUID`; chamadas com um token obsoleto ou incompatível são descartadas.
+- `VoiceWakeOverlayController` (`VoiceWakeOverlayController+Session.swift`) renderiza a sobreposição e encaminha as ações do usuário (`requestSend`, `dismiss`) de volta pelo coordenador usando o token da sessão. Ele nunca gerencia o estado da sessão.
+- O pressionar para falar (`VoicePushToTalk.begin()`) adota qualquer texto visível na sobreposição como `adoptedPrefix` (por meio de `VoiceSessionCoordinator.shared.snapshot()`), de modo que pressionar a tecla de atalho enquanto a sobreposição de ativação está visível preserva o texto e acrescenta a nova fala. Ao soltar a tecla, ele aguarda até 1.5s por uma transcrição final antes de recorrer ao texto atual.
+- Em `dismiss`, a sobreposição chama `VoiceSessionCoordinator.overlayDidDismiss`, que aciona `VoiceWakeRuntime.refresh(state:)` para que o fechamento manual pelo X, o fechamento por texto vazio e o fechamento após o envio retomem a escuta da palavra de ativação.
+- Caminho de envio unificado: se o texto sem espaços em branco nas extremidades estiver vazio, fecha; caso contrário, `sendNow` reproduz o som de envio uma vez, encaminha por meio de `VoiceWakeForwarder` e então fecha.
 
-## Próximos passos
+## Registro em log
 
-1. **VoiceSessionCoordinator (actor)**
-   - Possui exatamente uma `VoiceSession` por vez.
-   - API (baseada em token): `beginWakeCapture`, `beginPushToTalk`, `updatePartial`, `endCapture`, `cancel`, `applyCooldown`.
-   - Descarta callbacks que carregam tokens obsoletos (impede que reconhecedores antigos reabram a sobreposição).
-2. **VoiceSession (modelo)**
-   - Campos: `token`, `source` (wakeWord|pushToTalk), texto confirmado/volátil, flags de chime, temporizadores (envio automático, ocioso), `overlayMode` (display|editing|sending), prazo de cooldown.
-3. **Vínculo da sobreposição**
-   - `VoiceSessionPublisher` (`ObservableObject`) espelha a sessão ativa no SwiftUI.
-   - `VoiceWakeOverlayView` renderiza apenas via publisher; nunca altera singletons globais diretamente.
-   - Ações do usuário na sobreposição (`sendNow`, `dismiss`, `edit`) chamam de volta o coordenador com o token da sessão.
-4. **Caminho unificado de envio**
-   - Em `endCapture`: se o texto aparado estiver vazio → dispensar; caso contrário, `performSend(session:)` (toca o chime de envio uma vez, encaminha, dispensa).
-   - Pressionar para falar: sem atraso; palavra de ativação: atraso opcional para envio automático.
-   - Aplique um cooldown curto ao runtime de ativação após o pressionar para falar terminar, para que a palavra de ativação não seja acionada novamente de imediato.
-5. **Registro**
-   - O coordenador emite logs `.info` no subsistema `ai.openclaw`, categorias `voicewake.overlay` e `voicewake.chime`.
-   - Eventos principais: `session_started`, `adopted_by_push_to_talk`, `partial`, `finalized`, `send`, `dismiss`, `cancel`, `cooldown`.
+O subsistema de voz é `ai.openclaw`; cada componente registra em sua própria categoria:
 
-## Checklist de depuração
+| Categoria               | Componente                                      |
+| ----------------------- | ----------------------------------------------- |
+| `voicewake.coordinator` | `VoiceSessionCoordinator`                       |
+| `voicewake.overlay`     | `VoiceWakeOverlayController`/`VoiceWakeOverlay` |
+| `voicewake.ptt`         | Tecla de atalho e captura do pressionar para falar |
+| `voicewake.runtime`     | Runtime da palavra de ativação                  |
+| `voicewake.chime`       | Reprodução do som                               |
+| `voicewake.sync`        | Sincronização das configurações globais         |
+| `voicewake.forward`     | Encaminhamento da transcrição                   |
+| `voicewake.meter`       | Monitor do nível do microfone                   |
 
-- Faça streaming dos logs ao reproduzir uma sobreposição presa:
+## Lista de verificação para depuração
+
+- Transmita os logs durante a reprodução de uma sobreposição persistente:
 
   ```bash
   sudo log stream --predicate 'subsystem == "ai.openclaw" AND category CONTAINS "voicewake"' --level info --style compact
   ```
 
-- Verifique que há apenas um token de sessão ativo; callbacks obsoletos devem ser descartados pelo coordenador.
-- Garanta que soltar o pressionar para falar sempre chame `endCapture` com o token ativo; se o texto estiver vazio, espere `dismiss` sem chime nem envio.
-
-## Etapas de migração (sugeridas)
-
-1. Adicione `VoiceSessionCoordinator`, `VoiceSession` e `VoiceSessionPublisher`.
-2. Refatore `VoiceWakeRuntime` para criar/atualizar/encerrar sessões em vez de tocar diretamente em `VoiceWakeOverlayController`.
-3. Refatore `VoicePushToTalk` para adotar sessões existentes e chamar `endCapture` ao soltar; aplique cooldown ao runtime.
-4. Conecte `VoiceWakeOverlayController` ao publisher; remova chamadas diretas do runtime/PTT.
-5. Adicione testes de integração para adoção de sessão, cooldown e dispensa com texto vazio.
+- Verifique se há apenas um token de sessão ativo; retornos de chamada obsoletos são descartados pelo coordenador.
+- Confirme que, ao soltar a tecla do pressionar para falar, `end()` sempre seja chamado com o token ativo; se o texto estiver vazio, espere um fechamento sem som nem envio.
 
 ## Relacionado
 
-- [App para macOS](/pt-BR/platforms/macos)
+- [Aplicativo para macOS](/pt-BR/platforms/macos)
 - [Ativação por voz (macOS)](/pt-BR/platforms/mac/voicewake)
 - [Modo de conversa](/pt-BR/nodes/talk)

@@ -1,52 +1,56 @@
 ---
 read_when:
     - メニューバーアイコンの動作を変更する
-summary: macOS 版 OpenClaw のメニューバーアイコンの状態とアニメーション
+summary: macOS版OpenClawのメニューバーアイコンの状態とアニメーション
 title: メニューバーアイコン
 x-i18n:
-    generated_at: "2026-07-05T11:34:46Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:39:19Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: b7a096ad148e83f368624e750c1e50c965d8a34a6255a09a19c568e7e88a5868
+    source_hash: 8a38f1253f0c376ef2ce6c0ae339b67084c472c764964bcc7ad21e10133e2b47
     source_path: platforms/mac/icon.md
     workflow: 16
 ---
 
 # メニューバーアイコンの状態
 
-範囲: macOS アプリ (`apps/macos`)。レンダリング: `CritterIconRenderer.makeIcon(...)`。アニメーション/状態の配線: `CritterStatusLabel` + `CritterStatusLabel+Behavior.swift`。
+対象範囲：macOS アプリ（`apps/macos`）。レンダリング：`CritterIconRenderer.makeIcon(...)`。アニメーション／状態の連携：`CritterStatusLabel` + `CritterStatusLabel+Behavior.swift`。
 
 ## 状態
 
-| 状態                  | トリガー                                  | 見た目                                                                                              |
+| 状態                  | トリガー                                  | 表示                                                                                                |
 | --------------------- | ----------------------------------------- | --------------------------------------------------------------------------------------------------- |
-| アイドル              | デフォルト                                | 通常のまばたき/揺れアニメーション                                                                  |
-| 一時停止              | `isPaused=true`                           | ステータス項目が `appearsDisabled` を使用し、動きなし                                               |
-| 音声ウェイク (大きな耳) | ウェイクワードを検知                      | 耳が `earHoles=true` (読みやすさのための円形の穴) で `1.9x` に拡大し、無音後に戻る                 |
-| 作業中                | `isWorking=true` またはアクティブな `IconState` | より速い脚の揺れ (`legWiggle` は最大 `1.0`) に小さな水平オフセットを追加し、アイドル時の揺れに加算 |
+| アイドル              | デフォルト                                | 通常のまばたき／揺れアニメーション。目を開いている間は光沢のある輝きを維持                         |
+| 一時停止              | `isPaused=true`                           | 目を開けたまま触角が垂れる（「勤務時間外」）。動きなし                                             |
+| スリープ              | Gateway が切断済み／未設定                | 触角が垂れ、目が閉じて `⌣ ⌣` のまぶたになる。動きなし                                              |
+| お祝い                | メッセージ送信時（`sendCelebrationTick`） | 約 0.9s の間、目が楽しげな `∩ ∩` の弧に変わり、脚を蹴り上げる                                      |
+| 音声ウェイク（大きな耳） | ウェイクワードを検出                      | 触角がまっすぐ上向きになり、より高く伸びる（`earScale=1.9`）。無音になると元に戻る                 |
+| 作業中                | `isWorking=true` または有効な `IconState` | 脚の揺れが高速化（`legWiggle` は最大 `1.0`）し、小さな水平オフセットが加わる。アイドル時の揺れに加算 |
 
-セッションにアクティブなジョブまたはツールがある場合、ツールアクティビティバッジ (SF Symbol のパック、例: exec 用の `chevron.left.slash.chevron.right`) を同じクリッターアイコンの上に描画できる。このバッジは `IconState`/`ActivityKind` から来る。完全な状態モデルについては [メニューバー](/ja-JP/platforms/mac/menu-bar) を参照。
+セッションにアクティブなジョブまたはツールがある場合、ツールアクティビティバッジ（SF Symbol の円形バッジ。たとえば exec では `chevron.left.slash.chevron.right`）を同じクリッターアイコンの上に表示できます。このバッジは `IconState`／`ActivityKind` から取得されます。完全な状態モデルについては、[メニューバー](/ja-JP/platforms/mac/menu-bar)を参照してください。
 
-## 音声ウェイクの耳
+## 音声ウェイク時の耳
 
-- トリガー: `AppStateStore.shared.triggerVoiceEars(ttl: nil)`。音声ウェイクのキャプチャパイプライン (`VoiceWakeRuntime`) と、音声ウェイクのデバッグ/テストツール (`VoiceWakeTester`, `VoiceWakeOverlayController`) から呼び出される。
-- 停止: `stopVoiceEars()`。キャプチャの確定時に呼び出される。
-- 確定前の無音ウィンドウ: 通常は `2.0s`。トリガーワードだけが聞こえ、その後に発話が続かなかった場合は `5.0s` (`VoiceWakeRuntime.silenceWindow` / `triggerOnlySilenceWindow`)。
-- ブースト中は、アイドルのまばたき/揺れ/脚/耳のタイマーが一時停止される (`earBoostActive` が `CritterStatusLabel+Behavior` のアニメーションタスクをゲートする)。
+- トリガー：`AppStateStore.shared.triggerVoiceEars(ttl: nil)`。音声ウェイクのキャプチャパイプライン（`VoiceWakeRuntime`）および音声ウェイクのデバッグ／テストツール（`VoiceWakeTester`、`VoiceWakeOverlayController`）から呼び出されます。
+- 停止：`stopVoiceEars()`。キャプチャの確定時に呼び出されます。
+- 確定前の無音時間：通常は `2.0s`。トリガーワードだけが検出され、その後に発話が続かなかった場合は `5.0s`（`VoiceWakeRuntime.silenceWindow`／`triggerOnlySilenceWindow`）。
+- 強調表示中は、アイドル時のまばたき／揺れ／脚／耳のタイマーが一時停止します（`CritterStatusLabel+Behavior` では `earBoostActive` がアニメーションタスクを制御します）。
 
 ## 形状とサイズ
 
-- キャンバス: 18x18pt のテンプレート画像。Retina でアイコンを鮮明に保つため、36x36px のビットマップバッキングストア (2x) にレンダリングされる。
-- 耳のスケールはデフォルトで `1.0`。音声ブーストでは全体のフレームを変えずに `earScale=1.9` と `earHoles=true` を設定する。
-- 脚の小走りは、小さな水平ジグルとともに最大 `1.0` の `legWiggle` を使用する。
+- キャンバス：18x18pt のテンプレート画像。Retina でアイコンを鮮明に保つため、36x36px のビットマップバッキングストア（2x）にレンダリングされます。
+- 耳のスケールはデフォルトで `1.0`。音声ブーストでは全体のフレームを変更せずに `earScale=1.9` に設定します。
+- `antennaDroop`（0-1）は、一時停止およびスリープ時のポーズで触角を下向きに折り曲げます。
+- 脚の素早い動きには、最大 `1.0` の `legWiggle` と小さな水平揺れを使用します。
 
-## 挙動上の注意
+## 動作上の注意
 
-- 耳や作業中状態の外部 CLI/ブローカートグルはない。どちらも偶発的なばたつきを避けるため、アプリシグナル (`AppState.setWorking`, `AppState.triggerVoiceEars`) によって内部的に駆動される。
-- ジョブがハングした場合にアイコンがすばやくベースラインへ戻るよう、新しい TTL は短く (10s を大きく下回る) 保つ。
+- 耳や作業中状態を切り替える外部 CLI／ブローカーのトグルはありません。意図しない頻繁な切り替わりを避けるため、どちらもアプリ内部のシグナル（`AppState.setWorking`、`AppState.triggerVoiceEars`）によって駆動されます。
+- ジョブが停止した場合でもアイコンがすぐに基準状態へ戻るよう、新しい TTL は短く（10s を十分に下回る値に）設定してください。
 
-## 関連
+## 関連項目
 
 - [メニューバー](/ja-JP/platforms/mac/menu-bar)
 - [macOS アプリ](/ja-JP/platforms/macos)

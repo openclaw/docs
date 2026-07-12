@@ -1,57 +1,42 @@
 ---
 read_when:
-    - Sie möchten OpenClaw über einen LiteLLM-Proxy routen
-    - Sie benötigen Kostentracking, Logging oder Modell-Routing über LiteLLM
-summary: OpenClaw über LiteLLM Proxy für einheitlichen Modellzugriff und Kostenverfolgung ausführen
+    - Sie möchten OpenClaw über einen LiteLLM-Proxy leiten
+    - Sie benötigen Kostenverfolgung, Protokollierung oder Modell-Routing über LiteLLM.
+summary: OpenClaw über LiteLLM Proxy ausführen – für einheitlichen Modellzugriff und Kostenverfolgung
 title: LiteLLM
 x-i18n:
-    generated_at: "2026-04-30T07:10:42Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:43:31Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: 26b5150cfca92c9cd425c864c711efb3ab62ef94377b9d1e5d6476b07bf4c800
+    source_hash: 797b7d02a80a4cd37b92553665e260532af49e011398202d3504a28c511cee2f
     source_path: providers/litellm.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-[LiteLLM](https://litellm.ai) ist ein Open-Source-LLM-Gateway, das eine einheitliche API für mehr als 100 Modell-Provider bereitstellt. Leiten Sie OpenClaw über LiteLLM, um zentrale Kostenerfassung, Logging und die Flexibilität zu erhalten, Backends zu wechseln, ohne Ihre OpenClaw-Konfiguration zu ändern.
-
-<Tip>
-**Warum LiteLLM mit OpenClaw verwenden?**
-
-- **Kostenerfassung** — Sehen Sie genau, was OpenClaw über alle Modelle hinweg ausgibt
-- **Modell-Routing** — Wechseln Sie zwischen Claude, GPT-4, Gemini und Bedrock ohne Konfigurationsänderungen
-- **Virtuelle Schlüssel** — Erstellen Sie Schlüssel mit Ausgabenlimits für OpenClaw
-- **Logging** — Vollständige Anfrage-/Antwort-Logs für das Debugging
-- **Fallbacks** — Automatische Ausfallsicherung, falls Ihr primärer Provider nicht verfügbar ist
-
-</Tip>
+[LiteLLM](https://litellm.ai) ist ein quelloffenes LLM-Gateway mit einer einheitlichen API für mehr als 100 Modell-
+Provider. Leiten Sie OpenClaw über LiteLLM, um Kosten zentral zu verfolgen, Protokolle zu erfassen, virtuelle Schlüssel mit
+Ausgabenlimits zu verwenden und bei Backend-Ausfällen automatisch auszuweichen, ohne die OpenClaw-Konfiguration zu ändern.
 
 ## Schnellstart
 
 <Tabs>
   <Tab title="Onboarding (empfohlen)">
-    **Am besten geeignet für:** den schnellsten Weg zu einer funktionierenden LiteLLM-Einrichtung.
+    ```bash
+    openclaw onboard --auth-choice litellm-api-key
+    ```
 
-    <Steps>
-      <Step title="Onboarding ausführen">
-        ```bash
-        openclaw onboard --auth-choice litellm-api-key
-        ```
+    Übergeben Sie für eine nicht interaktive Einrichtung mit einem Remote-Proxy die Proxy-URL explizit:
 
-        Für eine nicht interaktive Einrichtung mit einem Remote-Proxy übergeben Sie die Proxy-URL explizit:
-
-        ```bash
-        openclaw onboard --non-interactive --auth-choice litellm-api-key --litellm-api-key "$LITELLM_API_KEY" --custom-base-url "https://litellm.example/v1"
-        ```
-      </Step>
-    </Steps>
+    ```bash
+    openclaw onboard --non-interactive --accept-risk --auth-choice litellm-api-key \
+      --litellm-api-key "$LITELLM_API_KEY" --custom-base-url "https://litellm.example/v1"
+    ```
 
   </Tab>
 
   <Tab title="Manuelle Einrichtung">
-    **Am besten geeignet für:** vollständige Kontrolle über Installation und Konfiguration.
-
     <Steps>
       <Step title="LiteLLM-Proxy starten">
         ```bash
@@ -59,29 +44,17 @@ x-i18n:
         litellm --model claude-opus-4-6
         ```
       </Step>
-      <Step title="OpenClaw auf LiteLLM ausrichten">
+      <Step title="OpenClaw auf LiteLLM verweisen">
         ```bash
         export LITELLM_API_KEY="your-litellm-key"
-
         openclaw
         ```
-
-        Das war's. OpenClaw leitet jetzt über LiteLLM weiter.
       </Step>
     </Steps>
-
   </Tab>
 </Tabs>
 
 ## Konfiguration
-
-### Umgebungsvariablen
-
-```bash
-export LITELLM_API_KEY="sk-litellm-key"
-```
-
-### Konfigurationsdatei
 
 ```json5
 {
@@ -120,13 +93,13 @@ export LITELLM_API_KEY="sk-litellm-key"
 }
 ```
 
-## Erweiterte Konfiguration
+Das Onboarding schreibt standardmäßig das Modell `litellm/claude-opus-4-6`.
 
-### Bilderzeugung
+## Bilderzeugung
 
-LiteLLM kann auch das Tool `image_generate` über OpenAI-kompatible
-`/images/generations`- und `/images/edits`-Routen für OpenClaw bereitstellen. Konfigurieren Sie ein LiteLLM-Bildmodell
-unter `agents.defaults.imageGenerationModel`:
+LiteLLM kann das Tool `image_generate` über die OpenAI-kompatiblen Routen `/images/generations` und
+`/images/edits` bereitstellen. Das standardmäßige Bildmodell ist `gpt-image-2`; konfigurieren Sie unter
+`agents.defaults.imageGenerationModel` ein anderes:
 
 ```json5
 {
@@ -149,10 +122,11 @@ unter `agents.defaults.imageGenerationModel`:
 }
 ```
 
-Loopback-LiteLLM-URLs wie `http://localhost:4000` funktionieren ohne globale
-Private-Network-Überschreibung. Legen Sie für einen im LAN gehosteten Proxy
-`models.providers.litellm.request.allowPrivateNetwork: true` fest, da der API-Schlüssel
-an den konfigurierten Proxy-Host gesendet wird.
+LiteLLM-Loopback-URLs (`http://localhost:4000`, `127.0.0.1`, `::1`, `host.docker.internal`) funktionieren
+ohne eine globale Ausnahme für private Netzwerke. Legen Sie für einen im LAN gehosteten Proxy
+`models.providers.litellm.request.allowPrivateNetwork: true` fest, da der API-Schlüssel an diesen Host gesendet wird.
+
+## Erweitert
 
 <AccordionGroup>
   <Accordion title="Virtuelle Schlüssel">
@@ -174,7 +148,7 @@ an den konfigurierten Proxy-Host gesendet wird.
   </Accordion>
 
   <Accordion title="Modell-Routing">
-    LiteLLM kann Modellanfragen an verschiedene Backends weiterleiten. Konfigurieren Sie dies in Ihrer LiteLLM-`config.yaml`:
+    LiteLLM kann Modellanfragen an verschiedene Backends weiterleiten. Konfigurieren Sie dies in Ihrer LiteLLM-Datei `config.yaml`:
 
     ```yaml
     model_list:
@@ -189,19 +163,17 @@ an den konfigurierten Proxy-Host gesendet wird.
           api_key: os.environ/OPENAI_API_KEY
     ```
 
-    OpenClaw fordert weiterhin `claude-opus-4-6` an — LiteLLM übernimmt das Routing.
+    OpenClaw fordert weiterhin `claude-opus-4-6` an; LiteLLM übernimmt das Routing.
 
   </Accordion>
 
   <Accordion title="Nutzung anzeigen">
-    Prüfen Sie das Dashboard oder die API von LiteLLM:
-
     ```bash
-    # Key info
+    # Schlüsselinformationen
     curl "http://localhost:4000/key/info" \
       -H "Authorization: Bearer sk-litellm-key"
 
-    # Spend logs
+    # Ausgabenprotokolle
     curl "http://localhost:4000/spend/logs" \
       -H "Authorization: Bearer $LITELLM_MASTER_KEY"
     ```
@@ -209,13 +181,13 @@ an den konfigurierten Proxy-Host gesendet wird.
   </Accordion>
 
   <Accordion title="Hinweise zum Proxy-Verhalten">
-    - LiteLLM läuft standardmäßig auf `http://localhost:4000`
-    - OpenClaw verbindet sich über den Proxy-artigen OpenAI-kompatiblen `/v1`-Endpunkt von LiteLLM
-    - Reine native OpenAI-Anfrageformung gilt nicht über LiteLLM:
-      kein `service_tier`, kein Responses-`store`, keine Prompt-Cache-Hinweise und keine
-      OpenAI-Reasoning-Kompatibilitäts-Payload-Formung
-    - Verdeckte OpenClaw-Attributions-Header (`originator`, `version`, `User-Agent`)
-      werden bei benutzerdefinierten LiteLLM-Basis-URLs nicht eingefügt
+    - LiteLLM läuft standardmäßig unter `http://localhost:4000`.
+    - OpenClaw stellt über den Proxy-artigen, OpenAI-kompatiblen `/v1`-Endpunkt von LiteLLM eine Verbindung her.
+    - Eine ausschließlich für natives OpenAI vorgesehene Anfrageaufbereitung wird bei einer konfigurierten LiteLLM-Basis-URL nicht angewendet:
+      kein `service_tier`, kein Responses-`store`, keine Hinweise für den Prompt-Cache und keine OpenAI-spezifische
+      Aufbereitung der Nutzlast für den Reasoning-Aufwand.
+    - Verborgene OpenClaw-Attributionsheader (`originator`, `version`, `User-Agent`) werden nur an
+      verifizierte native OpenAI-Endpunkte gesendet und daher bei einer benutzerdefinierten LiteLLM-Basis-URL nicht eingefügt.
   </Accordion>
 </AccordionGroup>
 
@@ -230,12 +202,12 @@ Allgemeine Informationen zur Provider-Konfiguration und zum Failover-Verhalten f
     Offizielle LiteLLM-Dokumentation und API-Referenz.
   </Card>
   <Card title="Modellauswahl" href="/de/concepts/model-providers" icon="layers">
-    Überblick über alle Provider, Modellreferenzen und Failover-Verhalten.
+    Übersicht über alle Provider, Modellreferenzen und das Failover-Verhalten.
   </Card>
   <Card title="Konfiguration" href="/de/gateway/configuration" icon="gear">
     Vollständige Konfigurationsreferenz.
   </Card>
-  <Card title="Modellauswahl" href="/de/concepts/models" icon="brain">
+  <Card title="Modelle" href="/de/concepts/models" icon="brain">
     So wählen und konfigurieren Sie Modelle.
   </Card>
 </CardGroup>

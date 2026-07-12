@@ -1,46 +1,53 @@
 ---
 read_when:
-    - Implementando aprovações de pareamento de nós sem a interface do macOS
-    - Adicionando fluxos da CLI para aprovar nós remotos
-    - Estendendo o protocolo Gateway com gerenciamento de nós
-summary: Pareamento de nós gerenciado pelo Gateway (Opção B) para iOS e outros nós remotos
-title: Emparelhamento pertencente ao Gateway
+    - Implementação de aprovações de pareamento de Node sem a interface do macOS
+    - Adição de fluxos da CLI para aprovar nodes remotos
+    - Estendendo o protocolo do Gateway com gerenciamento de Nodes
+summary: 'Aprovações de recursos do Node: como os Nodes obtêm exposição de comandos após o pareamento do dispositivo'
+title: Emparelhamento de Node
 x-i18n:
-    generated_at: "2026-06-27T17:32:49Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:17:30Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: aefddafaef419fc59b04ee17dae8ef21685b4f514f4286530bf07362663a8996
+    source_hash: 753b01681fa9be17df853b63210f54374d054a6dde37746a3b5fda69073af71d
     source_path: gateway/pairing.md
     workflow: 16
 ---
 
-No pareamento de propriedade do Gateway, o **Gateway** é a fonte da verdade para quais nós
-têm permissão para entrar. As UIs (app macOS, clientes futuros) são apenas frontends que
-aprovam ou rejeitam solicitações pendentes.
+O pareamento de Node tem duas camadas, ambas armazenadas no registro do dispositivo pareado no
+banco de dados de estado SQLite do Gateway:
 
-**Importante:** nós WS usam **pareamento de dispositivo** (função `node`) durante `connect`.
-`node.pair.*` é um armazenamento de pareamento separado e **não** bloqueia o handshake WS.
-Somente clientes que chamam explicitamente `node.pair.*` usam este fluxo.
+- **Pareamento de dispositivo** (função `node`) controla o handshake `connect`. Consulte
+  [Aprovação automática de dispositivos por CIDR confiável](#trusted-cidr-device-auto-approval)
+  abaixo e [Pareamento de canal](/pt-BR/channels/pairing).
+- **Aprovação de recursos do Node** (`node.pair.*`) controla quais
+  recursos/comandos declarados um Node conectado pode expor. O Gateway é a
+  fonte da verdade; as interfaces (aplicativo para macOS, interface de controle) são frontends que aprovam ou
+  rejeitam solicitações pendentes.
 
-## Conceitos
+O antigo armazenamento independente de pareamento de Node (`nodes/paired.json` com um token por Node,
+retirado do fluxo de conexão em janeiro de 2026) não existe mais: os gateways incorporam
+quaisquer linhas restantes aos registros de dispositivos uma vez durante a inicialização e arquivam os
+arquivos legados com o sufixo `.migrated`. O suporte à ponte TCP legada foi
+removido.
 
-- **Solicitação pendente**: um nó pediu para entrar; requer aprovação.
-- **Nó pareado**: nó aprovado com um token de autenticação emitido.
-- **Transporte**: o endpoint WS do Gateway encaminha solicitações, mas não decide
-  associação. (O suporte ao bridge TCP legado foi removido.)
+## Como funciona a aprovação de recursos
 
-## Como o pareamento funciona
+1. Um Node se conecta ao WS do Gateway (o pareamento de dispositivo controla esta etapa).
+2. O Gateway compara a superfície de recursos/comandos declarada com a
+   aprovada; superfícies novas ou ampliadas armazenam uma **solicitação pendente** no
+   registro do dispositivo e emitem `node.pair.requested`.
+3. Você aprova ou rejeita a solicitação (CLI ou interface).
+4. Até a aprovação, os comandos do Node permanecem filtrados; a aprovação expõe a superfície
+   declarada, sujeita à política normal de comandos.
 
-1. Um nó se conecta ao WS do Gateway e solicita pareamento.
-2. O Gateway armazena uma **solicitação pendente** e emite `node.pair.requested`.
-3. Você aprova ou rejeita a solicitação (CLI ou UI).
-4. Na aprovação, o Gateway emite um **novo token** (tokens são rotacionados ao parear novamente).
-5. O nó se reconecta usando o token e agora está "pareado".
+As solicitações pendentes expiram automaticamente **5 minutos após a última
+tentativa do Node** — um Node que está se reconectando ativamente mantém sua única solicitação pendente ativa,
+em vez de gerar uma nova solicitação (e um prompt de aprovação) a cada tentativa.
 
-Solicitações pendentes expiram automaticamente após **5 minutos**.
-
-## Fluxo de trabalho da CLI (compatível com headless)
+## Fluxo de trabalho da CLI (adequado para ambientes sem interface gráfica)
 
 ```bash
 openclaw nodes pending
@@ -51,97 +58,171 @@ openclaw nodes remove --node <id|name|ip>
 openclaw nodes rename --node <id|name|ip> --name "Living Room iPad"
 ```
 
-`nodes status` mostra nós pareados/conectados e suas capacidades.
+`nodes status` mostra os Nodes pareados/conectados e seus recursos.
 
-## Superfície de API (protocolo do Gateway)
+## Superfície da API (protocolo do Gateway)
 
 Eventos:
 
 - `node.pair.requested` - emitido quando uma nova solicitação pendente é criada.
-- `node.pair.resolved` - emitido quando uma solicitação é aprovada/rejeitada/expirada.
+- `node.pair.resolved` - emitido quando uma solicitação é aprovada, rejeitada ou
+  expira.
 
 Métodos:
 
-- `node.pair.request` - cria ou reutiliza uma solicitação pendente.
-- `node.pair.list` - lista nós pendentes + pareados (`operator.pairing`).
-- `node.pair.approve` - aprova uma solicitação pendente (emite token).
+- `node.pair.list` - lista Nodes pendentes e pareados (`operator.pairing`).
+- `node.pair.approve` - aprova uma solicitação pendente.
 - `node.pair.reject` - rejeita uma solicitação pendente.
-- `node.pair.remove` - remove um nó pareado. Para pareamentos baseados em dispositivo, isso
-  revoga a função `node` do dispositivo: modifica `devices/paired.json` e
-  invalida/desconecta as sessões com função de nó desse dispositivo. Um dispositivo com **funções mistas**
-  (por exemplo, ele também tem `operator`) mantém sua linha e perde apenas a função `node`;
-  uma linha de dispositivo somente de nó é excluída. Também remove qualquer entrada legada correspondente
-  de pareamento de nó pertencente ao gateway. Authz: `operator.pairing` pode remover
-  linhas de nó não operador; um chamador com token de dispositivo revogando sua **própria** função de nó em
-  um dispositivo com funções mistas também precisa de `operator.admin`.
-- `node.pair.verify` - verifica `{ nodeId, token }`.
+- `node.pair.remove` - remove um Node pareado. Isso revoga a função `node` do dispositivo
+  no armazenamento de dispositivos pareados, remove junto a superfície aprovada do Node e
+  invalida/desconecta as sessões com função de Node desse dispositivo. Um dispositivo com **múltiplas funções**
+  (por exemplo, um que também tenha `operator`) mantém sua linha e perde apenas
+  a função `node`; a linha de um dispositivo somente de Node é excluída. Autorização:
+  `operator.pairing` pode remover linhas de Nodes que não sejam operadores; um chamador com token de dispositivo
+  que revogue sua **própria** função de Node em um dispositivo com múltiplas funções também precisa de
+  `operator.admin`.
+- `node.rename` - renomeia o nome de exibição de um Node pareado voltado ao operador.
+
+Removidos na versão 2026.7: `node.pair.request` e `node.pair.verify`. As solicitações
+pendentes são criadas pelo próprio Gateway durante as conexões de Nodes, e o
+token independente por Node ao qual eles davam suporte não existe mais; a autenticação do Node usa o
+token de pareamento do dispositivo.
 
 Observações:
 
-- `node.pair.request` é idempotente por nó: chamadas repetidas retornam a mesma
-  solicitação pendente.
-- Solicitações repetidas para o mesmo nó pendente também atualizam os metadados armazenados do nó
-  e o snapshot mais recente de comandos declarados allowlisted para visibilidade do operador.
-- A aprovação **sempre** gera um token novo; nenhum token jamais é retornado por
-  `node.pair.request`.
-- Os níveis de escopo de operador e as verificações no momento da aprovação estão resumidos em
-  [Escopos de operador](/pt-BR/gateway/operator-scopes).
-- Solicitações podem incluir `silent: true` como dica para fluxos de aprovação automática.
-- `node.pair.approve` usa os comandos declarados da solicitação pendente para impor
-  escopos extras de aprovação:
+- Reconexões com uma superfície inalterada reutilizam a solicitação pendente; solicitações
+  repetidas atualizam os metadados armazenados do Node e o snapshot mais recente dos
+  comandos declarados incluídos na lista de permissões para visibilidade do operador.
+- Os níveis de escopo do operador e as verificações realizadas no momento da aprovação estão resumidos em
+  [Escopos do operador](/pt-BR/gateway/operator-scopes).
+- `node.pair.approve` usa os comandos declarados da solicitação pendente para aplicar
+  escopos adicionais de aprovação:
   - solicitação sem comandos: `operator.pairing`
-  - solicitação de comando não exec: `operator.pairing` + `operator.write`
-  - solicitação `system.run` / `system.run.prepare` / `system.which`:
+  - solicitação de comando não relacionado à execução: `operator.pairing` + `operator.write`
+  - solicitação de `system.run` / `system.run.prepare` / `system.which`:
     `operator.pairing` + `operator.admin`
 
 <Warning>
-O pareamento de nós é um fluxo de confiança e identidade mais emissão de token. Ele **não** fixa a superfície de comandos de nó ativa por nó.
+A aprovação do pareamento de Node registra a superfície de recursos confiável. Ela **não** fixa a superfície ativa de comandos do Node individualmente.
 
-- Comandos de nó ativos vêm do que o nó declara ao conectar depois que a política global de comandos de nó do gateway (`gateway.nodes.allowCommands` e `denyCommands`) é aplicada.
-- A política de permitir e perguntar por nó para `system.run` fica no nó em `exec.approvals.node.*`, não no registro de pareamento.
+- Os comandos ativos do Node vêm do que ele declara ao se conectar, filtrados pela
+  política global de comandos de Node do Gateway (`gateway.nodes.allowCommands` e
+  `denyCommands`).
+- A política por Node de permissão e consulta para `system.run` reside no Node em
+  `exec.approvals.node.*`, e não no registro de pareamento.
 
 </Warning>
 
-## Controle de comandos de nó (2026.3.31+)
+## Controle de comandos do Node (2026.3.31+)
 
 <Warning>
-**Alteração incompatível:** A partir de `2026.3.31`, comandos de nó ficam desabilitados até que o pareamento do nó seja aprovado. Apenas o pareamento de dispositivo não é mais suficiente para expor comandos de nó declarados.
+**Alteração incompatível:** a partir da versão `2026.3.31`, os comandos de Node ficam desativados até que o pareamento de Node seja aprovado. Somente o pareamento de dispositivo não é mais suficiente para expor os comandos declarados do Node.
 </Warning>
 
-Quando um nó se conecta pela primeira vez, o pareamento é solicitado automaticamente. Até que a solicitação de pareamento seja aprovada, todos os comandos de nó pendentes desse nó são filtrados e não serão executados. Depois que a confiança é estabelecida pela aprovação do pareamento, os comandos declarados do nó ficam disponíveis sujeitos à política normal de comandos.
+Quando um Node se conecta pela primeira vez, o pareamento é solicitado automaticamente.
+Até que essa solicitação seja aprovada, todos os comandos pendentes desse Node são
+filtrados e não serão executados. Após a aprovação do pareamento, os comandos
+declarados do Node ficam disponíveis, sujeitos à política normal de comandos.
 
 Isso significa:
 
-- Nós que antes dependiam apenas do pareamento de dispositivo para expor comandos agora precisam concluir o pareamento de nó.
-- Comandos enfileirados antes da aprovação do pareamento são descartados, não adiados.
+- Os Nodes que anteriormente dependiam apenas do pareamento de dispositivo para expor comandos agora também
+  precisam concluir o pareamento de Node.
+- Os comandos enfileirados antes da aprovação do pareamento são descartados, não adiados.
 
-## Limites de confiança de eventos de nó (2026.3.31+)
+## Limites de confiança de eventos do Node (2026.3.31+)
 
 <Warning>
-**Alteração incompatível:** Execuções originadas por nó agora permanecem em uma superfície confiável reduzida.
+**Alteração incompatível:** as execuções originadas por Nodes agora permanecem em uma superfície confiável reduzida.
 </Warning>
 
-Resumos originados por nó e eventos de sessão relacionados são restritos à superfície confiável pretendida. Fluxos acionados por notificação ou por nó que antes dependiam de acesso mais amplo a ferramentas do host ou da sessão podem precisar de ajustes. Esse endurecimento garante que eventos de nó não possam escalar para acesso a ferramentas em nível de host além do permitido pelo limite de confiança do nó.
+Resumos originados do Node e eventos de sessão relacionados são restritos à
+superfície confiável pretendida. Fluxos orientados por notificações ou acionados
+pelo Node que anteriormente dependiam de um acesso mais amplo às ferramentas do
+host ou da sessão talvez precisem de ajustes. Esse reforço impede que eventos do
+Node escalem para acesso a ferramentas no nível do host além do que o limite de
+confiança do Node permite.
 
-Atualizações duráveis de presença de nó seguem o mesmo limite de identidade. O evento `node.presence.alive` é
-aceito apenas de sessões autenticadas de dispositivo de nó e atualiza metadados de pareamento apenas quando a
-identidade do dispositivo/nó já está pareada. Valores `client.id` autodeclarados não bastam para gravar
-estado de visto por último.
+As atualizações duráveis de presença do Node seguem o mesmo limite de identidade:
+o evento `node.presence.alive` é aceito somente de sessões autenticadas de
+dispositivos Node e atualiza os metadados de pareamento somente quando a
+identidade do dispositivo/Node já está pareada. Um valor de `client.id`
+autodeclarado não é suficiente para gravar o estado da última atividade.
 
-## Aprovação automática (app macOS)
+## Aprovação automática de dispositivo verificada por SSH (padrão)
 
-O app macOS pode opcionalmente tentar uma **aprovação silenciosa** quando:
+O primeiro pareamento de dispositivo com `role: node` a partir de um endereço
+privado/CGNAT é aprovado automaticamente quando o Gateway consegue **comprovar
+a propriedade da máquina por SSH**: ele se conecta de volta ao host do
+pareamento (`BatchMode`, `StrictHostKeyChecking=yes`), executa
+`openclaw node identity --json` nele e aprova somente quando o ID e a chave
+pública do dispositivo remoto correspondem exatamente à solicitação pendente.
+A correspondência da chave é o que torna isso seguro: apenas a acessibilidade
+nunca resulta em aprovação; portanto, cotitulares de NAT, outros usuários em um
+host compartilhado e falsificação na LAN são todos encaminhados para a
+solicitação normal.
 
-- a solicitação está marcada como `silent`, e
-- o app consegue verificar uma conexão SSH com o host do gateway usando o mesmo usuário.
+Ativado por padrão. Requisitos para que seja acionado:
 
-Se a aprovação silenciosa falhar, ele volta para o prompt normal "Aprovar/Rejeitar".
+- O usuário do processo do Gateway (ou `sshVerify.user`) consegue acessar o host
+  do Node por SSH de forma não interativa (chaves/agente; o SSH do Tailscale
+  também funciona), e a chave do host já é confiável.
+- `openclaw` é resolvido no `PATH` remoto para `sh -lc` não interativo.
+- O IP de conexão é um endereço privado, ULA, link-local ou CGNAT direto (sem
+  proxy e sem loopback), ou corresponde a `sshVerify.cidrs` quando definido.
+- Mesmo nível mínimo de elegibilidade da aprovação por CIDR confiável: somente
+  pareamento novo de Node sem escopos; upgrades, navegadores, Control UI e
+  WebChat sempre exigem confirmação.
 
-## Aprovação automática de dispositivos por CIDR confiável
+Enquanto uma sondagem está em execução, o cliente Node é instruído a continuar
+tentando (`wait_then_retry`) em vez de pausar para aprovação manual; se a
+sondagem falhar, a próxima tentativa recorrerá ao fluxo normal de confirmação.
+Alvos com falha entram em um breve período de espera (5 minutos após uma
+incompatibilidade de chave).
 
-O pareamento de dispositivo WS para `role: node` permanece manual por padrão. Para redes
-privadas de nós em que o Gateway já confia no caminho de rede, operadores podem
-optar por CIDRs explícitos ou IPs exatos:
+Os dispositivos aprovados registram `approvedVia: "ssh-verified"` e sua primeira
+superfície de recursos declarada é aprovada na mesma etapa — a correspondência
+da chave já comprova que o Node é executado com a conta do operador em uma
+máquina de sua propriedade, que é a mesma alegação feita por uma aprovação
+manual de recursos. Upgrades posteriores da superfície ainda exigem
+confirmação.
+
+Reforce a segurança ou desative:
+
+```json5
+{
+  gateway: {
+    nodes: {
+      pairing: {
+        // Desative completamente:
+        sshVerify: false,
+        // ...ou restrinja/ajuste a sondagem:
+        // sshVerify: { user: "me", identity: "~/.ssh/probe", timeoutMs: 7000, cidrs: ["10.0.0.0/8"] },
+      },
+    },
+  },
+}
+```
+
+## Aprovação automática (aplicativo para macOS)
+
+O aplicativo para macOS pode tentar uma **aprovação silenciosa** de solicitações
+de recursos do Node quando:
+
+- a solicitação está marcada como `silent` (o Gateway marca a primeira
+  superfície de recursos como silenciosa quando o pareamento do dispositivo
+  foi aprovado de forma não interativa); e
+- o aplicativo consegue verificar uma conexão SSH com o host do Gateway usando
+  o mesmo usuário.
+
+Se a aprovação silenciosa falhar, ele recorrerá à solicitação normal
+Approve/Reject.
+
+## Aprovação automática de dispositivo por CIDR confiável
+
+O pareamento de dispositivo WS para `role: node` permanece manual por padrão.
+Para redes privadas de Nodes nas quais o Gateway já confia no caminho de rede,
+os operadores podem ativá-lo explicitamente com CIDRs ou IPs exatos:
 
 ```json5
 {
@@ -157,66 +238,118 @@ optar por CIDRs explícitos ou IPs exatos:
 
 Limite de segurança:
 
-- Desabilitado quando `gateway.nodes.pairing.autoApproveCidrs` não está definido.
-- Não existe modo de aprovação automática geral para LAN ou rede privada.
-- Apenas pareamento novo de dispositivo `role: node` sem escopos solicitados é elegível.
+- Desativado quando `gateway.nodes.pairing.autoApproveCidrs` não está definido.
+- Não existe um modo de aprovação automática geral para LAN ou rede privada; a
+  aprovação automática verificada por SSH (acima) exige uma correspondência
+  criptográfica da chave do dispositivo, nunca apenas a localidade da rede.
+- Somente uma nova solicitação de pareamento de dispositivo com `role: node`,
+  sem escopos solicitados, é elegível.
 - Clientes de operador, navegador, Control UI e WebChat permanecem manuais.
-- Atualizações de função, escopo, metadados e chave pública permanecem manuais.
-- Caminhos de cabeçalho de proxy confiável por loopback no mesmo host não são elegíveis porque esse
-  caminho pode ser falsificado por chamadores locais.
+- Upgrades de função, escopo, metadados e chave pública permanecem manuais.
+- Caminhos de cabeçalho de proxy confiável em loopback no mesmo host não são
+  elegíveis, pois esse caminho pode ser falsificado por chamadores locais.
 
-## Aprovação automática de atualização de metadados
+## Limpeza de pareamentos silenciosos substituídos
 
-Quando um dispositivo já pareado se reconecta com apenas alterações de metadados não sensíveis
-(por exemplo, nome de exibição ou dicas de plataforma do cliente), o OpenClaw trata
-isso como um `metadata-upgrade`. A aprovação automática silenciosa é restrita: ela se aplica apenas
-a reconexões locais confiáveis não navegador que já provaram posse de credenciais locais
-ou compartilhadas, incluindo reconexões de app nativo no mesmo host após alterações de metadados de
-versão do SO. Clientes de navegador/Control UI e clientes remotos ainda
-usam o fluxo explícito de reaprovação. Atualizações de escopo (leitura para escrita/admin) e
-alterações de chave pública **não** são elegíveis para aprovação automática de metadata-upgrade -
-elas permanecem como solicitações explícitas de reaprovação.
+Aprovações não interativas registram sua procedência na linha do dispositivo
+pareado: aprovações de política local no mesmo host como `silent`, aprovações de
+Node por CIDR confiável como `trusted-cidr` e aprovações de Node verificadas por
+SSH como `ssh-verified`. Clientes cujo diretório de estado é efêmero (diretórios
+home temporários, contêineres, sandboxes por execução) geram um novo par de
+chaves de dispositivo a cada execução, e cada execução se pareia novamente de
+forma silenciosa como um dispositivo totalmente novo — sem limpeza, a lista de
+pareados cresce em uma linha obsoleta por execução.
+
+Quando o Gateway aprova silenciosamente um pareamento de dispositivo **local**,
+ele desativa registros mais antigos aprovados como `silent` que pertencem ao
+mesmo cluster de clientes (com `clientId`, `clientMode` e nome de exibição
+correspondentes) e não estão conectados no momento. Os clientes locais são
+executados no próprio host do Gateway, portanto a chave do cluster não pode
+corresponder a outra máquina. As linhas desativadas perdem seus tokens
+imediatamente; qualquer entrada correspondente de pareamento legado de Node é
+removida, e um evento de remoção `node.pair.resolved` é transmitido.
+
+Limites:
+
+- Somente registros cuja aprovação mais recente ocorreu localmente no mesmo host
+  (`silent`) são elegíveis, tanto como acionador quanto como alvo. Pareamentos
+  por CIDR confiável e verificados por SSH atravessam hosts nos quais os
+  metadados de exibição não representam uma identidade de máquina, portanto
+  nunca são removidos automaticamente — use a limpeza da Control UI ou
+  `openclaw nodes remove` para esses casos.
+- Pareamentos aprovados pelo proprietário e por QR/código de configuração
+  (bootstrap) nunca são removidos automaticamente. Registros aprovados antes da
+  existência das informações de procedência permanecem protegidos, mesmo após
+  uma aprovação silenciosa posterior do mesmo ID de dispositivo.
+- Dispositivos conectados no momento são ignorados, portanto sessões locais
+  simultâneas com diretórios de estado separados mantêm seus tokens enquanto
+  estiverem ativas. Registros aprovados no último minuto também são ignorados,
+  para que handshakes de pareamento simultâneos não desativem uns aos outros
+  antes que suas conexões sejam registradas.
+- Os clientes afetados são locais por definição, portanto se pareiam novamente
+  de forma silenciosa na próxima conexão.
+
+## Aprovação automática de upgrade de metadados
+
+Quando um dispositivo já pareado se reconecta apenas com alterações de
+metadados não confidenciais (por exemplo, nome de exibição ou indicações da
+plataforma do cliente), o OpenClaw trata isso como um `metadata-upgrade`. A
+aprovação automática silenciosa é restrita: aplica-se somente a reconexões
+locais confiáveis que não sejam de navegador e que já tenham comprovado a posse
+de credenciais locais ou compartilhadas, incluindo reconexões de aplicativos
+nativos no mesmo host após alterações nos metadados da versão do sistema
+operacional. Clientes de navegador/Control UI e clientes remotos ainda usam o
+fluxo explícito de nova aprovação. Upgrades de escopo (de leitura para
+gravação/administração) e alterações de chave pública **não** são elegíveis para
+aprovação automática de upgrade de metadados; eles permanecem como solicitações
+explícitas de nova aprovação.
 
 ## Auxiliares de pareamento por QR
 
-`/pair qr` renderiza o payload de pareamento como mídia estruturada para que clientes móveis e
-de navegador possam escaneá-lo diretamente.
+`/pair qr` renderiza a carga útil de pareamento como mídia estruturada para que clientes móveis e de
+navegador possam digitalizá-la diretamente.
 
-Excluir um dispositivo também varre quaisquer solicitações pendentes obsoletas de pareamento para esse
-ID de dispositivo, então `nodes pending` não mostra linhas órfãs após uma revogação.
+A exclusão de um dispositivo também remove quaisquer solicitações de pareamento pendentes obsoletas desse
+ID de dispositivo, para que `nodes pending` não mostre linhas órfãs após uma revogação.
 
 ## Localidade e cabeçalhos encaminhados
 
-O pareamento do Gateway trata uma conexão como loopback apenas quando tanto o soquete bruto
-quanto qualquer evidência de proxy upstream concordam. Se uma solicitação chega por loopback, mas
-carrega evidência de cabeçalho `Forwarded`, qualquer `X-Forwarded-*` ou `X-Real-IP`, essa
-evidência de cabeçalho encaminhado desqualifica a alegação de localidade por loopback. O caminho de
-pareamento então exige aprovação explícita em vez de tratar silenciosamente a solicitação como
-uma conexão do mesmo host. Consulte [Autenticação de proxy confiável](/pt-BR/gateway/trusted-proxy-auth) para
-a regra equivalente em autenticação de operador.
+O pareamento do Gateway trata uma conexão como loopback somente quando tanto o soquete bruto
+quanto qualquer evidência de proxy upstream estão de acordo. Se uma solicitação chegar por loopback, mas
+contiver evidências dos cabeçalhos `Forwarded`, qualquer `X-Forwarded-*` ou `X-Real-IP`, essas
+evidências de cabeçalhos encaminhados invalidam a alegação de localidade de loopback, e o
+fluxo de pareamento exige aprovação explícita em vez de tratar silenciosamente a
+solicitação como uma conexão no mesmo host. Consulte
+[Autenticação de proxy confiável](/pt-BR/gateway/trusted-proxy-auth) para ver a regra equivalente na
+autenticação do operador.
 
 ## Armazenamento (local, privado)
 
-O estado de pareamento é armazenado no diretório de estado do Gateway (padrão `~/.openclaw`):
+O estado de pareamento reside nos registros dos dispositivos pareados no banco de dados de estado SQLite
+compartilhado, no diretório de estado do Gateway (padrão: `~/.openclaw`):
 
-- `~/.openclaw/nodes/paired.json`
-- `~/.openclaw/nodes/pending.json`
+- `~/.openclaw/state/openclaw.sqlite` (dispositivos pareados com autenticação de dispositivo,
+  superfícies de Node aprovadas, solicitações de superfície pendentes, solicitações de pareamento de dispositivo
+  pendentes e tokens de bootstrap)
 
-Se você sobrescrever `OPENCLAW_STATE_DIR`, a pasta `nodes/` se move com ele.
+Se você substituir `OPENCLAW_STATE_DIR`, o banco de dados será movido junto com ele. Gateways
+atualizados de versões com armazenamentos JSON os importam na inicialização e mantêm
+os arquivos `devices/*.json.migrated` e `nodes/*.json.migrated`.
 
 Observações de segurança:
 
-- Tokens são segredos; trate `paired.json` como sensível.
-- Rotacionar um token exige reaprovação (ou excluir a entrada do nó).
+- Os tokens de dispositivo são segredos; trate o banco de dados de estado como confidencial.
+- A rotação de um token de dispositivo usa `openclaw devices rotate` /
+  `device.token.rotate`.
 
-## Comportamento de transporte
+## Comportamento do transporte
 
-- O transporte é **sem estado**; ele não armazena associação.
-- Se o Gateway estiver offline ou o pareamento estiver desabilitado, os nós não conseguem parear.
-- Se o Gateway estiver em modo remoto, o pareamento ainda acontece contra o armazenamento do Gateway remoto.
+- O transporte é **sem estado**; ele não armazena a associação.
+- Se o Gateway estiver offline ou o pareamento estiver desativado, os Nodes não poderão ser pareados.
+- No modo remoto, o pareamento ocorre no armazenamento do Gateway remoto.
 
 ## Relacionado
 
-- [Pareamento de canal](/pt-BR/channels/pairing)
-- [Nós](/pt-BR/nodes)
+- [Pareamento de canais](/pt-BR/channels/pairing)
+- [CLI de Nodes](/pt-BR/cli/nodes)
 - [CLI de dispositivos](/pt-BR/cli/devices)

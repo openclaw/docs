@@ -1,30 +1,31 @@
 ---
 read_when:
-    - 你正在安装、配置或审核 iMessage 插件
-summary: 新增 iMessage 渠道功能，用于发送和接收 OpenClaw 消息。
+    - 你正在安装、配置或审计 imessage 插件
+summary: 添加 iMessage 渠道接口，用于发送和接收 OpenClaw 消息。
 title: iMessage 插件
 x-i18n:
-    generated_at: "2026-05-02T15:14:43Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:39:59Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: 3cf902a898d37329fe52d3b7a26c0ecebd641a88c5e490ad678adccb2d9b0d8d
+    source_hash: 5c48bb24e59d5dea948c5f04f579df48b0ae51f923e5dc8a0fc35888ddbbc1c6
     source_path: plugins/reference/imessage.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
 # iMessage 插件
 
-添加 iMessage 渠道界面，用于发送和接收 OpenClaw 消息。
+添加 iMessage 渠道接口，用于发送和接收 OpenClaw 消息。
 
 ## 分发
 
-- 包：`@openclaw/imessage`
-- 安装方式：包含在 OpenClaw 中
+- 软件包：`@openclaw/imessage`
+- 安装方式：已包含在 OpenClaw 中
 
-## 界面
+## 接口
 
-channels: imessage
+渠道：imessage；Skills
 
 ## 相关文档
 

@@ -1,131 +1,167 @@
 ---
 read_when:
-    - Vous voulez comprendre le routage et l’isolation des sessions
-    - Vous souhaitez configurer le périmètre des DM pour les configurations multi-utilisateurs
-    - Vous déboguez les réinitialisations quotidiennes ou de session inactive
+    - Vous souhaitez comprendre le routage et l’isolation des sessions
+    - Vous souhaitez configurer la portée des messages privés pour les configurations multi-utilisateurs
+    - Vous déboguez les réinitialisations quotidiennes ou après une période d’inactivité des sessions
 summary: Comment OpenClaw gère les sessions de conversation
 title: Gestion des sessions
 x-i18n:
-    generated_at: "2026-06-27T17:26:55Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:22:59Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: f65249b17c8b45f569531134471683e9f458015b02af29ddf4aa6e1e5c2eac05
+    source_hash: 8ec9e33b4d288fa12016092ab2201431631fc9cb77e6e9d4261d348d5a849f65
     source_path: concepts/session.md
     workflow: 16
 ---
 
-OpenClaw organise les conversations en **sessions**. Chaque message est routé vers une
-session selon sa provenance -- DM, discussions de groupe, tâches Cron, etc.
+OpenClaw achemine chaque message entrant vers une **session** selon sa provenance :
+messages privés, discussions de groupe, tâches Cron, etc. L’intégralité de l’état
+des sessions appartient au **Gateway** ; les clients d’interface interrogent le
+Gateway pour obtenir les données des sessions.
 
-## Comment les messages sont routés
+## Acheminement des messages
 
-| Source          | Comportement                  |
-| --------------- | ----------------------------- |
-| Messages directs | Session partagée par défaut |
-| Discussions de groupe | Isolée par groupe        |
-| Salons/canaux  | Isolée par salon              |
-| Tâches Cron    | Nouvelle session à chaque exécution |
-| Webhooks       | Isolée par hook               |
+| Source             | Comportement                         |
+| ------------------ | ------------------------------------ |
+| Messages privés    | Session partagée par défaut          |
+| Discussions de groupe | Session isolée pour chaque groupe |
+| Salons/canaux      | Session isolée pour chaque salon     |
+| Tâches Cron        | Nouvelle session à chaque exécution  |
+| Webhooks           | Session isolée pour chaque Webhook   |
 
-## Isolation des DM
+## Isolation des messages privés
 
-Par défaut, tous les DM partagent une seule session pour assurer la continuité. Cela convient aux
-configurations avec un seul utilisateur.
+Par défaut, tous les messages privés partagent une même session afin d’assurer
+la continuité, ce qui convient aux configurations à utilisateur unique.
 
 <Warning>
-Si plusieurs personnes peuvent envoyer des messages à votre agent, activez l’isolation des DM. Sans cela, tous les
-utilisateurs partagent le même contexte de conversation -- les messages privés d’Alice seraient
-visibles par Bob.
+Si plusieurs personnes peuvent envoyer des messages à votre agent, activez
+l’isolation des messages privés. Sans cette isolation, tous les utilisateurs
+partagent le même contexte de conversation : les messages privés d’Alice
+seraient donc visibles par Bob.
 </Warning>
-
-**Le correctif :**
 
 ```json5
 {
   session: {
-    dmScope: "per-channel-peer", // isolate by channel + sender
+    dmScope: "per-channel-peer", // isoler par canal + expéditeur
   },
 }
 ```
 
-Autres options :
+Options de `session.dmScope` :
 
-- `main` (par défaut) -- tous les DM partagent une seule session.
-- `per-peer` -- isoler par expéditeur (sur tous les canaux).
-- `per-channel-peer` -- isoler par canal + expéditeur (recommandé).
-- `per-account-channel-peer` -- isoler par compte + canal + expéditeur.
+| Valeur                     | Comportement                                      |
+| -------------------------- | ------------------------------------------------- |
+| `main` (par défaut)        | Tous les messages privés partagent une session    |
+| `per-peer`                 | Isolation par expéditeur, tous canaux confondus   |
+| `per-channel-peer`         | Isolation par canal + expéditeur (recommandé)     |
+| `per-account-channel-peer` | Isolation par compte + canal + expéditeur          |
 
 <Tip>
 Si la même personne vous contacte depuis plusieurs canaux, utilisez
-`session.identityLinks` pour lier ses identités afin qu’elles partagent une seule session.
+`session.identityLinks` pour associer ses identités à un identifiant canonique
+de pair afin qu’elles partagent une session.
 </Tip>
 
-### Ancrer les canaux liés
+### Ancrage des canaux liés
 
-Les commandes d’ancrage permettent à un utilisateur de déplacer la route de réponse de la session de discussion directe actuelle vers
-un autre canal lié sans démarrer une nouvelle session. Consultez
-[Ancrage de canal](/fr/concepts/channel-docking) pour des exemples, la configuration et le
-dépannage.
+Les commandes d’ancrage déplacent l’itinéraire de réponse de la session de
+discussion privée actuelle vers un autre canal lié sans démarrer de nouvelle
+session. Consultez [Ancrage des canaux](/fr/concepts/channel-docking) pour obtenir
+des exemples, la configuration et des informations de dépannage.
 
 Vérifiez votre configuration avec `openclaw security audit`.
 
 ## Cycle de vie des sessions
 
-Les sessions sont réutilisées jusqu’à leur expiration :
+Les sessions sont réutilisées jusqu’à leur expiration selon `session.reset` :
 
-- **Réinitialisation quotidienne** (par défaut) -- nouvelle session à 4 h 00, heure locale de l’hôte
-  Gateway. La fraîcheur quotidienne est basée sur le moment où le `sessionId` actuel a démarré, et non
-  sur les écritures ultérieures de métadonnées.
-- **Réinitialisation après inactivité** (facultative) -- nouvelle session après une période d’inactivité. Définissez
-  `session.reset.idleMinutes`. La fraîcheur d’inactivité est basée sur la dernière interaction réelle
-  utilisateur/canal ; ainsi, les événements système Heartbeat, Cron et exec ne
-  maintiennent pas la session active.
-- **Réinitialisation manuelle** -- saisissez `/new` ou `/reset` dans la discussion. `/new <model>` change aussi
-  le modèle.
+- **Réinitialisation quotidienne** (`mode: "daily"` par défaut) - nouvelle
+  session à une heure locale configurée (`session.reset.atHour`, valeur par
+  défaut `4`, 0-23) sur l’hôte du Gateway. La validité quotidienne est
+  déterminée par le moment où le `sessionId` actuel a démarré, et non par les
+  écritures ultérieures de métadonnées.
+- **Réinitialisation après inactivité** (`mode: "idle"`) - nouvelle session
+  après `session.reset.idleMinutes` minutes d’inactivité. La validité liée à
+  l’inactivité est déterminée par la dernière interaction réelle avec un
+  utilisateur ou un canal ; les événements système Heartbeat, Cron et
+  d’exécution ne maintiennent donc pas la session active.
+- **Réinitialisation manuelle** - saisissez `/new` ou `/reset` dans la
+  discussion. `/new <model>` change également de modèle.
 
-Lorsque les réinitialisations quotidienne et après inactivité sont toutes deux configurées, celle qui expire en premier s’applique.
-Les tours d’événements système Heartbeat, Cron, exec et autres peuvent écrire des métadonnées de session,
-mais ces écritures ne prolongent pas la fraîcheur de réinitialisation quotidienne ou après inactivité. Lorsqu’une réinitialisation
-fait basculer la session, les notifications d’événements système en file d’attente pour l’ancienne session sont
-ignorées afin que les mises à jour d’arrière-plan obsolètes ne soient pas ajoutées au début de la première invite de
-la nouvelle session.
+Lorsque les réinitialisations quotidienne et après inactivité sont toutes deux
+configurées, la première arrivée à expiration l’emporte. Les tours liés aux
+événements système Heartbeat, Cron, d’exécution et autres peuvent écrire des
+métadonnées de session, mais ces écritures ne prolongent pas la validité des
+réinitialisations quotidienne ou après inactivité. Lorsqu’une réinitialisation
+renouvelle la session, les notifications d’événements système en file d’attente
+pour l’ancienne session sont supprimées afin que les mises à jour obsolètes en
+arrière-plan ne soient pas ajoutées au début de la première invite de la
+nouvelle session.
 
-Les sessions avec une session CLI active détenue par le fournisseur ne sont pas interrompues par la valeur quotidienne implicite
-par défaut. Utilisez `/reset` ou configurez explicitement `session.reset` lorsque ces
-sessions doivent expirer selon un minuteur.
+Les sessions disposant d’une session CLI active appartenant au fournisseur ne
+sont pas interrompues par la valeur quotidienne implicite par défaut. Utilisez
+`/reset` ou configurez explicitement `session.reset` lorsque ces sessions
+doivent expirer selon une minuterie.
 
-## Où réside l’état
+Remplacez la valeur par défaut selon le type de discussion ou le canal :
 
-Tout l’état de session appartient au **Gateway**. Les clients d’interface interrogent le Gateway pour obtenir les
-données de session.
+```json5
+{
+  session: {
+    reset: { mode: "daily", atHour: 4 },
+    resetByType: {
+      group: { mode: "idle", idleMinutes: 120 },
+      thread: { mode: "daily", atHour: 6 },
+    },
+    resetByChannel: {
+      discord: { mode: "idle", idleMinutes: 10080 },
+    },
+  },
+}
+```
 
-- **Stockage :** `~/.openclaw/agents/<agentId>/sessions/sessions.json`
-- **Transcriptions :** `~/.openclaw/agents/<agentId>/sessions/<sessionId>.jsonl`
+`resetByType` prend en charge `direct` (alias hérité `dm`), `group` et `thread`.
+L’ancien paramètre de premier niveau `session.idleMinutes` continue de fonctionner comme alias de compatibilité pour
+une valeur par défaut du mode d’inactivité lorsqu’aucun bloc `session.reset`/`resetByType` n’est défini.
 
-`sessions.json` conserve des horodatages de cycle de vie distincts :
+## Emplacement de l’état
+
+- **Lignes de session d’exécution :** `~/.openclaw/agents/<agentId>/agent/openclaw-agent.sqlite`
+- **Fichiers de transcription archivés :** `~/.openclaw/agents/<agentId>/sessions/`
+- **Source de migration des lignes héritées :** `~/.openclaw/agents/<agentId>/sessions/sessions.json`
+
+Les lignes de session de la base de données SQLite propre à chaque agent conservent des
+horodatages de cycle de vie distincts :
 
 - `sessionStartedAt` : moment où le `sessionId` actuel a commencé ; la réinitialisation quotidienne l’utilise.
-- `lastInteractionAt` : dernière interaction utilisateur/canal qui prolonge la durée de vie d’inactivité.
-- `updatedAt` : dernière mutation de ligne du stockage ; utile pour l’affichage et l’élagage, mais pas
-  autoritaire pour la fraîcheur de réinitialisation quotidienne/après inactivité.
+- `lastInteractionAt` : dernière interaction de l’utilisateur ou du canal qui prolonge la durée d’inactivité.
+- `updatedAt` : dernière modification de la ligne dans le stockage ; utile pour l’énumération et l’élagage, mais ne fait pas
+  autorité pour déterminer l’actualité des réinitialisations quotidiennes ou pour inactivité.
 
-Les lignes plus anciennes sans `sessionStartedAt` sont résolues à partir de l’en-tête de session JSONL de la transcription
-lorsqu’il est disponible. Si une ligne plus ancienne n’a pas non plus `lastInteractionAt`,
-la fraîcheur d’inactivité retombe sur l’heure de début de cette session, et non sur les écritures ultérieures de
-comptabilité.
+Lors de la migration depuis d’anciennes installations, le démarrage du Gateway et `openclaw doctor
+--fix` importent automatiquement dans SQLite les lignes de l’ancien fichier `sessions.json` et l’historique actif des transcriptions JSONL.
+Les lignes dépourvues de `sessionStartedAt` sont complétées à partir de l’en-tête de session de la
+transcription JSONL héritée lorsqu’il est disponible. Si une ancienne ligne ne comporte pas non plus
+`lastInteractionAt`, l’actualité liée à l’inactivité se fonde sur cette heure de début de session,
+et non sur des écritures de gestion ultérieures. Utilisez `openclaw doctor --session-sqlite inspect
+--session-sqlite-all-agents` et la [séquence de migration de Doctor
+](/fr/cli/doctor#session-sqlite-migration) lorsque vous souhaitez obtenir des preuves explicites
+d’inspection ou de validation.
 
 ## Maintenance des sessions
 
-OpenClaw borne automatiquement le stockage des sessions dans le temps. Par défaut, il s’exécute
-en mode `enforce` et applique le nettoyage pendant la maintenance. Définissez
-`session.maintenance.mode` sur `"warn"` pour signaler ce qui serait nettoyé sans modifier le stockage/les fichiers :
+OpenClaw limite le stockage des sessions au fil du temps au moyen de `session.maintenance`, dont les valeurs par défaut
+sont présentées ci-dessous :
 
 ```json5
 {
   session: {
     maintenance: {
-      mode: "enforce",
+      mode: "enforce", // "enforce" applique le nettoyage ; "warn" se contente de le signaler
       pruneAfter: "30d",
       maxEntries: 500,
     },
@@ -133,48 +169,54 @@ en mode `enforce` et applique le nettoyage pendant la maintenance. Définissez
 }
 ```
 
-Pour les limites `maxEntries` de taille production, les écritures d’exécution Gateway utilisent un petit tampon de seuil haut et nettoient par lots pour revenir à la limite configurée. Les lectures du stockage de sessions n’élaguent ni ne limitent les entrées au démarrage du Gateway. Cela évite d’exécuter un nettoyage complet du stockage à chaque démarrage ou session Cron isolée. `openclaw sessions cleanup --enforce` applique la limite immédiatement.
+Pour les limites de `maxEntries` adaptées à la production, les écritures d’exécution du Gateway utilisent une petite
+marge haute et ramènent par lots le nombre d’entrées à la limite configurée.
+Les lectures du stockage de sessions n’élaguent ni ne plafonnent les entrées au démarrage du Gateway, afin que
+le démarrage et les sessions Cron isolées n’aient pas à supporter le coût d’un nettoyage complet du stockage.
+`openclaw sessions cleanup --enforce` applique immédiatement la limite.
 
-Les sessions de sondage d’exécution de modèle du Gateway sont de courte durée par défaut. Les lignes correspondantes avec
-des clés explicites strictes comme `agent:*:explicit:model-run-<uuid>` utilisent une rétention fixe de `24h`,
-mais le nettoyage est soumis à la pression : il ne supprime les lignes de sondage obsolètes que lorsque
-la pression de maintenance/limite des entrées de session est atteinte. Lorsque le nettoyage d’exécution de modèle s’exécute,
-il s’exécute avant le seuil d’âge plus général des entrées obsolètes et la limite d’entrées. Les sessions directes,
-de groupe, de fil, Cron, hook, Heartbeat, ACP et de sous-agent normales n’héritent pas de
-cette rétention de 24 h.
+Les sessions de vérification d’exécution de modèle du Gateway ont une courte durée de vie par défaut. Les lignes correspondant à
+`agent:*:explicit:model-run-<uuid>` utilisent une durée de conservation fixe de `24h`, mais le nettoyage
+dépend de la pression : il ne supprime les anciennes lignes de vérification que lorsque la pression liée à la
+maintenance ou à la limite des entrées de session est atteinte, et s’exécute avant le seuil d’âge plus général
+des entrées obsolètes et la limite du nombre d’entrées. Les sessions normales directes, de groupe, de fil de discussion, Cron, de hook, Heartbeat,
+ACP et de sous-agent n’héritent pas de cette durée de conservation de 24h.
 
-La maintenance préserve les pointeurs durables vers les conversations externes, notamment les
-sessions de groupe et les sessions de discussion limitées à un fil, tout en permettant aux entrées synthétiques Cron,
-hook, Heartbeat, ACP et de sous-agent de vieillir puis d’être supprimées.
+La maintenance préserve les pointeurs durables vers les conversations externes, notamment les sessions de groupe
+et les sessions de discussion limitées à un fil, tout en permettant aux entrées synthétiques Cron,
+de hook, Heartbeat, ACP et de sous-agent d’expirer.
 
-Si vous utilisiez auparavant l’isolation des messages directs puis avez remis
-`session.dmScope` à `main`, prévisualisez les anciennes lignes de DM avec clé par pair avec
+Si vous utilisiez auparavant l’isolation des DM et avez ensuite rétabli `session.dmScope` sur
+`main`, prévisualisez les anciennes lignes de DM indexées par pair avec
 `openclaw sessions cleanup --dry-run --fix-dm-scope`. L’application du même indicateur
-retire ces anciennes lignes de DM directs et conserve leurs transcriptions comme archives
+retire ces anciennes lignes de DM directs et conserve leurs transcriptions sous forme d’archives
 supprimées.
 
-Prévisualisez avec `openclaw sessions cleanup --dry-run`.
+Prévisualisez toute opération de maintenance avec `openclaw sessions cleanup --dry-run`.
 
-## Inspecter les sessions
+## Inspection des sessions
 
-- `openclaw status` -- chemin du stockage de sessions et activité récente.
-- `openclaw sessions --json` -- toutes les sessions (filtrer avec `--active <minutes>`).
-- `/status` dans la discussion -- utilisation du contexte, modèle et bascules.
-- `/context list` -- ce qui se trouve dans l’invite système.
+| Commande                   | Affiche                                                         |
+| -------------------------- | --------------------------------------------------------------- |
+| `openclaw status`          | Chemin du stockage de sessions et activité récente              |
+| `openclaw sessions --json` | Toutes les sessions (filtrage avec `--active <minutes>`)         |
+| `/status` dans le chat     | Utilisation du contexte, modèle et options                       |
+| `/context list`            | Contenu de l’invite système                                     |
 
 ## Pour aller plus loin
 
-- [Élagage des sessions](/fr/concepts/session-pruning) -- réduction des résultats d’outils
-- [Compaction](/fr/concepts/compaction) -- résumé des longues conversations
-- [Outils de session](/fr/concepts/session-tool) -- outils d’agent pour le travail intersessions
-- [Exploration approfondie de la gestion des sessions](/fr/reference/session-management-compaction) --
-  schéma du stockage, transcriptions, politique d’envoi, métadonnées d’origine et configuration avancée
-- [Multi-agent](/fr/concepts/multi-agent) — routage et isolation des sessions entre agents
-- [Tâches d’arrière-plan](/fr/automation/tasks) — comment le travail détaché crée des enregistrements de tâche avec des références de session
-- [Routage des canaux](/fr/channels/channel-routing) — comment les messages entrants sont routés vers les sessions
+- [Recherche de sessions](/concepts/session-search) - rappel en texte intégral dans les transcriptions passées
+- [Élagage des sessions](/fr/concepts/session-pruning) - réduction des résultats des outils
+- [Compaction](/fr/concepts/compaction) - résumé des longues conversations
+- [Outils de session](/fr/concepts/session-tool) - outils d’agent pour le travail entre sessions
+- [Analyse approfondie de la gestion des sessions](/fr/reference/session-management-compaction) -
+  schéma de stockage, transcriptions, politique d’envoi, métadonnées d’origine et configuration avancée
+- [Multi-agent](/fr/concepts/multi-agent) - routage et isolation des sessions entre les agents
+- [Tâches en arrière-plan](/fr/automation/tasks) - création d’enregistrements de tâches avec des références de session par les travaux détachés
+- [Routage des canaux](/fr/channels/channel-routing) - routage des messages entrants vers les sessions
 
-## Connexe
+## Contenu associé
 
 - [Élagage des sessions](/fr/concepts/session-pruning)
 - [Outils de session](/fr/concepts/session-tool)
-- [File de commandes](/fr/concepts/queue)
+- [File d’attente des commandes](/fr/concepts/queue)

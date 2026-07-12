@@ -2,30 +2,26 @@
 read_when:
     - Sie möchten gespeicherte Transkriptzusammenfassungen im Terminal lesen
     - Sie benötigen den Pfad zu einer Markdown-Zusammenfassung der Transkripte.
-    - Sie debuggen das Speicherlayout der Kern-Transkripte
+    - Sie debuggen das Speicherlayout der Kerntranskripte
 summary: CLI-Referenz für `openclaw transcripts` (gespeicherte Transkripte auflisten, anzeigen und lokalisieren)
-title: Transkripte-CLI
+title: Transkript-CLI
 x-i18n:
-    generated_at: "2026-06-27T17:21:29Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:15:29Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: ae6010cfb4e051182f1c48d0d728b30d054542e1e7983ff15a2432840193f9c0
+    source_hash: dde02e924339c64cf6acd5c4b6162785dcfccf4a1df2aac0d9d52d5306511579
     source_path: cli/transcripts.md
     workflow: 16
 ---
 
 # `openclaw transcripts`
 
-Prüfen Sie Transkripte, die vom zentralen `transcripts`-Tool von OpenClaw geschrieben wurden. Diese CLI ist
-schreibgeschützt; Erfassung, Import und Zusammenfassung gehören zum Agent-Tool und
-zu den konfigurierten Auto-Start-Quellen.
+Schreibgeschützter Inspektor für Transkripte, die vom Agent-Tool `transcripts` geschrieben wurden.
+Erfassung, Import und Zusammenfassung erfolgen über dieses Tool, nicht über diese CLI.
 
-Verwenden Sie die CLI, wenn Sie die Notizen von gestern finden, die Markdown-Datei in
-einem Editor öffnen, ein Transkript an ein anderes Tool übergeben oder debuggen möchten,
-wo eine Sitzung auf der Festplatte gelandet ist. Sie startet oder stoppt keine Erfassung.
-
-Artefakte liegen unter dem OpenClaw-State-Verzeichnis:
+Artefakte befinden sich im Zustandsverzeichnis:
 
 ```text
 $OPENCLAW_STATE_DIR/transcripts/YYYY-MM-DD/<session>/
@@ -35,9 +31,9 @@ $OPENCLAW_STATE_DIR/transcripts/YYYY-MM-DD/<session>/
   summary.md
 ```
 
-Das Standard-State-Verzeichnis ist `~/.openclaw`; setzen Sie `OPENCLAW_STATE_DIR`, um ein
-anderes zu verwenden. Das Datumsverzeichnis stammt aus der Startzeit der Sitzung, und das
-Sitzungsverzeichnis ist ein sicheres Dateisystemsegment, das aus der Sitzungs-ID abgeleitet wird.
+Das standardmäßige Zustandsverzeichnis ist `~/.openclaw`; überschreiben Sie es mit `OPENCLAW_STATE_DIR`.
+Das Datumsverzeichnis wird aus der Startzeit der Sitzung abgeleitet; das Sitzungsverzeichnis ist
+ein dateisystemsicherer Slug, der aus der Sitzungs-ID abgeleitet wird.
 
 ## Befehle
 
@@ -55,51 +51,45 @@ openclaw transcripts show <session> --json
 openclaw transcripts path <session> --json
 ```
 
-- `list`: gespeicherte Sitzungen, datumqualifizierten Selektor, Startzeit, Titel und `summary.md`-Pfad auflisten.
-- `show <session>`: die gespeicherte `summary.md` ausgeben.
-- `path <session>`: den `summary.md`-Pfad ausgeben.
-- `path <session> --dir`: das Sitzungsverzeichnis ausgeben.
-- `path <session> --metadata`: `metadata.json` ausgeben.
-- `path <session> --transcript`: `transcript.jsonl` ausgeben.
-- `--json`: maschinenlesbare Ausgabe ausgeben.
+| Befehl                        | Beschreibung                                         |
+| ----------------------------- | ---------------------------------------------------- |
+| `list`                        | Gespeicherte Sitzungen auflisten.                    |
+| `show <session>`              | Die gespeicherte `summary.md` ausgeben.              |
+| `path <session>`              | Den Pfad zu `summary.md` ausgeben.                   |
+| `path <session> --dir`        | Das Sitzungsverzeichnis ausgeben.                    |
+| `path <session> --metadata`   | `metadata.json` ausgeben.                            |
+| `path <session> --transcript` | `transcript.jsonl` ausgeben.                         |
+| `--json`                      | Maschinenlesbare Ausgabe erzeugen (jeder Unterbefehl). |
 
-Wenn sich eine menschenlesbare Sitzungs-ID über mehrere Tage wiederholt, verwenden Sie den datumqualifizierten Selektor
-aus `list`, zum Beispiel `openclaw transcripts show 2026-05-22/standup`.
-Standard-Sitzungs-IDs enthalten einen Zeitstempel und ein zufälliges Suffix; konfigurieren Sie feste
-Sitzungs-IDs nur, wenn sie innerhalb des Tages eindeutig sind.
+`<session>` akzeptiert entweder eine reine Sitzungs-ID oder einen datumsqualifizierten Selektor
+(`YYYY-MM-DD/<session>`). Verwenden Sie die qualifizierte Form, wenn dieselbe Sitzungs-ID
+an mehr als einem Tag vorkommt, zum Beispiel `openclaw transcripts show
+2026-05-22/standup`. Standardmäßige Sitzungs-IDs enthalten einen Zeitstempel und ein zufälliges
+Suffix; weisen Sie einer Sitzung nur dann eine feste ID zu, wenn diese ID innerhalb des Tages eindeutig ist.
 
 ## Ausgabe
 
-`list` gibt eine Sitzung pro Zeile aus:
+`list` gibt pro Sitzung eine tabulatorgetrennte Zeile aus: Selektor, Startzeit, Titel,
+Zusammenfassungspfad.
 
 ```text
-2026-05-22/standup  2026-05-22T09:00:00.000Z  Weekly standup  /Users/alex/.openclaw/transcripts/2026-05-22/standup/summary.md
+2026-05-22/standup  2026-05-22T09:00:00.000Z  Wöchentliches Stand-up  /Users/user/.openclaw/transcripts/2026-05-22/standup/summary.md
 ```
 
-Die Ausgabe ist tabulatorgetrennt. Die Spalten sind Selektor, Startzeit, Titel und
-Zusammenfassungspfad. Der Selektor ist der sicherste Wert, um ihn an `show` oder `path` zurückzugeben.
+Der Selektor ist der sicherste Wert, den Sie wieder an `show` oder `path` übergeben können.
 
-`list --json` gibt Objekte mit folgenden Feldern aus:
+`list --json` gibt Objekte mit `sessionId`, `selector`, `date`, `title`,
+`startedAt`, `stoppedAt`, `source`, `path`, `summaryPath`, `hasSummary` zurück.
 
-- `sessionId`
-- `selector`
-- `date`
-- `title`
-- `startedAt`
-- `stoppedAt`
-- `source`
-- `path`
-- `summaryPath`
-- `hasSummary`
+`show --json` gibt die gespeicherten Sitzungsmetadaten, den Selektor, das Sitzungs-
+verzeichnis, den Zusammenfassungspfad und den Markdown-Text der Zusammenfassung zurück.
 
-`show --json` gibt die gespeicherten Sitzungsmetadaten, den Selektor, das Sitzungsverzeichnis,
-den Zusammenfassungspfad und den Markdown-Text der Zusammenfassung zurück. `path --json` gibt den ausgewählten Pfad
-und zurück, ob diese Datei existiert.
+`path --json` gibt den ausgewählten Pfad zurück und ob diese Datei vorhanden ist.
 
-## Viele Meetings pro Tag
+## Viele Sitzungen pro Tag
 
-Transcripts gruppiert Sitzungen nach Datum und dann nach Sitzungs-ID. Zehn Meetings an einem
-Tag werden zu zehn Geschwisterordnern:
+Sitzungen werden zuerst nach Datum und dann nach Sitzungs-ID gruppiert. Aus zehn Besprechungen an einem Tag werden
+zehn gleichgeordnete Ordner:
 
 ```text
 ~/.openclaw/transcripts/2026-05-22/
@@ -108,23 +98,24 @@ Tag werden zu zehn Geschwisterordnern:
   standup/
 ```
 
-Verwenden Sie für die meisten Automatisierungen die standardmäßig generierten IDs. Verwenden Sie eine feste ID wie `standup`
-nur, wenn dieselbe ID am selben Datum nicht zweimal verwendet wird.
+Verwenden Sie für Automatisierungen standardmäßig generierte IDs. Verwenden Sie eine feste ID wie `standup` nur,
+wenn sie am selben Datum nicht erneut vorkommt.
 
 ## Fehlende Zusammenfassungen
 
-Live-Sitzungen schreiben `summary.md`, wenn die Sitzung stoppt. Importierte Transkripte
-schreiben `summary.md` unmittelbar nach dem Import. Eine Sitzung kann dennoch in
-`list` ohne Zusammenfassung erscheinen, wenn die Erfassung aktiv ist, ein Provider beim Stoppen fehlgeschlagen ist
-oder Metadaten geschrieben wurden, bevor Äußerungen eingegangen sind.
+Live-Sitzungen schreiben `summary.md`, wenn die Sitzung beendet wird; importierte Transkripte
+schreiben sie unmittelbar nach dem Import. Eine Sitzung kann ohne
+Zusammenfassung in `list` erscheinen, solange die Erfassung noch aktiv ist, wenn ein Provider beim Beenden fehlgeschlagen ist oder wenn
+Metadaten geschrieben wurden, bevor Äußerungen eingegangen sind.
 
-Verwenden Sie `path <session> --transcript`, um das nur erweiterte Transkript zu prüfen, und verwenden Sie
-die `summarize`-Aktion des `transcripts`-Tools, um die Markdown-Zusammenfassung neu zu generieren.
+Verwenden Sie `path <session> --transcript`, um das rohe, nur durch Anhängen erweiterte Transkript zu prüfen,
+oder führen Sie die Aktion `summarize` des Tools `transcripts` aus, um die Markdown-
+Zusammenfassung neu zu erzeugen.
 
 ## Konfiguration
 
-Die Transkripterfassung ist opt-in, da Live-Quellen Meeting-Audio beitreten und aufzeichnen können.
-Aktivieren Sie das Tool mit dem obersten `transcripts.enabled`:
+Die Erfassung ist optional (Live-Quellen können beitreten und Besprechungsaudio aufzeichnen). Aktivieren Sie sie
+mit:
 
 ```json
 {
@@ -135,8 +126,14 @@ Aktivieren Sie das Tool mit dem obersten `transcripts.enabled`:
 }
 ```
 
-Konfigurieren Sie Auto-Start-Quellen mit `transcripts.autoStart` in `openclaw.json`.
-Jeder Eintrag wird durch seine Anwesenheit aktiviert; lassen Sie einen Eintrag weg, um diese Quelle zu deaktivieren.
+- `enabled` (Standardwert `false`): das Tool aktivieren.
+- `maxUtterances` (Standardwert `2000`, begrenzt auf 1-10000): Größe des Äußerungspuffers pro
+  Sitzung.
+
+Konfigurieren Sie automatisch gestartete Quellen mit `transcripts.autoStart`. Jeder Eintrag wird
+durch sein Vorhandensein aktiviert; lassen Sie einen Eintrag weg, um diese Quelle zu deaktivieren. `discord-voice`
+ist die gebündelte Quelle mit Unterstützung für automatischen Start und erfordert `guildId` und
+`channelId`:
 
 ```json
 {
@@ -147,11 +144,6 @@ Jeder Eintrag wird durch seine Anwesenheit aktiviert; lassen Sie einen Eintrag w
         "providerId": "discord-voice",
         "guildId": "1234567890",
         "channelId": "2345678901"
-      },
-      {
-        "providerId": "slack-huddle",
-        "accountId": "workspace",
-        "channelId": "C123"
       }
     ]
   }

@@ -2,51 +2,52 @@
 read_when:
     - Você precisa de edições estruturadas em vários arquivos
     - Você quer documentar ou depurar edições baseadas em patches
-summary: Aplicar patches em vários arquivos com a ferramenta apply_patch
+summary: Aplique patches em vários arquivos com a ferramenta apply_patch
 title: ferramenta apply_patch
 x-i18n:
-    generated_at: "2026-05-06T09:14:48Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:42:34Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: 9ff2f8e6ecd55ff1bdc553619ab3d590d0967efe7a9a90a31946ad15fd89a1dc
+    source_hash: 1c0422550ea8d9b0cb6b0ea22d7dcaecc462426f9600003f70c177746f30a3d9
     source_path: tools/apply-patch.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
 Aplique alterações em arquivos usando um formato de patch estruturado. Isso é ideal para edições em vários arquivos
-ou com vários hunks, em que uma única chamada `edit` seria frágil.
+ou com vários trechos, nas quais uma única chamada `edit` seria frágil.
 
-A ferramenta aceita uma única string `input` que envolve uma ou mais operações de arquivo:
+A ferramenta aceita uma única string `input` que encapsula uma ou mais operações de arquivo:
 
-```
+```text
 *** Begin Patch
 *** Add File: path/to/file.txt
-+line 1
-+line 2
++linha 1
++linha 2
 *** Update File: src/app.ts
-@@
--old line
-+new line
+@@ contexto opcional da alteração
+-linha antiga
++linha nova
 *** Delete File: obsolete.txt
 *** End Patch
 ```
 
 ## Parâmetros
 
-- `input` (obrigatório): Conteúdo completo do patch, incluindo `*** Begin Patch` e `*** End Patch`.
+- `input` (obrigatório): conteúdo completo do patch, incluindo `*** Begin Patch` e `*** End Patch`.
 
 ## Observações
 
-- Os caminhos do patch aceitam caminhos relativos (a partir do diretório do workspace) e caminhos absolutos.
-- `tools.exec.applyPatch.workspaceOnly` assume `true` como padrão (contido no workspace). Defina como `false` somente se você intencionalmente quiser que `apply_patch` grave/exclua fora do diretório do workspace.
-- Use `*** Move to:` dentro de um hunk `*** Update File:` para renomear arquivos.
-- `*** End of File` marca uma inserção somente EOF quando necessário.
-- Disponível por padrão para modelos OpenAI e OpenAI Codex. Defina
-  `tools.exec.applyPatch.enabled: false` para desativá-lo.
-- Opcionalmente, restrinja por modelo via
-  `tools.exec.applyPatch.allowModels`.
-- A configuração fica somente em `tools.exec`.
+- Os caminhos do patch aceitam caminhos relativos (a partir do diretório do espaço de trabalho) e caminhos absolutos.
+- O padrão de `tools.exec.applyPatch.workspaceOnly` é `true` (restrito ao espaço de trabalho). Defina-o como `false` somente se quiser intencionalmente que `apply_patch` grave/exclua fora do diretório do espaço de trabalho.
+- Use `*** Move to:` dentro de um trecho `*** Update File:` para renomear arquivos.
+- `*** End of File` marca uma inserção apenas no fim do arquivo quando necessário.
+- Habilitado por padrão para todos os modelos. Defina `tools.exec.applyPatch.enabled: false`
+  para desabilitá-lo ou restrinja-o a modelos específicos com
+  `tools.exec.applyPatch.allowModels` (aceita IDs simples, como `gpt-5.4`, ou IDs
+  completos, como `openai/gpt-5.4`).
+- A configuração fica em `tools.exec.applyPatch.*`.
 
 ## Exemplo
 
@@ -60,13 +61,13 @@ A ferramenta aceita uma única string `input` que envolve uma ou mais operaçõe
 ## Relacionados
 
 <CardGroup cols={2}>
-  <Card title="Diffs" href="/pt-BR/tools/diffs" icon="code-compare">
-    Visualizador de diff somente leitura para apresentação de alterações.
+  <Card title="Diferenças" href="/pt-BR/tools/diffs" icon="code-compare">
+    Visualizador de diferenças somente leitura para apresentação de alterações.
   </Card>
-  <Card title="Exec tool" href="/pt-BR/tools/exec" icon="terminal">
-    Execução de comandos de shell a partir do agente.
+  <Card title="Ferramenta Exec" href="/pt-BR/tools/exec" icon="terminal">
+    Execução de comandos de shell pelo agente.
   </Card>
-  <Card title="Code execution" href="/pt-BR/tools/code-execution" icon="square-code">
+  <Card title="Execução de código" href="/pt-BR/tools/code-execution" icon="square-code">
     Análise remota de Python em sandbox com xAI.
   </Card>
 </CardGroup>

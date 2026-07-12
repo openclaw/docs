@@ -1,52 +1,67 @@
 ---
 read_when:
     - Audio-Transkription oder Medienverarbeitung ändern
-summary: Wie eingehende Audio-/Sprachnachrichten heruntergeladen, transkribiert und in Antworten eingefügt werden
-title: Audio- und Sprachnotizen
+summary: Wie eingehende Audio- und Sprachnachrichten heruntergeladen, transkribiert und in Antworten eingefügt werden
+title: Audio- und Sprachnachrichten
 x-i18n:
-    generated_at: "2026-06-27T17:39:51Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:36:12Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: 90e66cf76537b090afdcd3a7791b40107ae51d6be89c84fcb14c034e38df875e
+    source_hash: cb382f4219620d906bfa76ebddc690b174a3b24f80f815be92e915b363d17792
     source_path: nodes/audio.md
     workflow: 16
 ---
 
-## Was funktioniert
+## Funktionsweise
 
-- **Medienverständnis (Audio)**: Wenn Audioverständnis aktiviert ist (oder automatisch erkannt wird), führt OpenClaw Folgendes aus:
-  1. Es findet den ersten Audioanhang (lokaler Pfad oder URL) und lädt ihn bei Bedarf herunter.
-  2. Es erzwingt `maxBytes`, bevor an jeden Modelleintrag gesendet wird.
-  3. Es führt den ersten geeigneten Modelleintrag der Reihe nach aus (Provider oder CLI).
-  4. Wenn dies fehlschlägt oder übersprungen wird (Größe/Timeout), versucht es den nächsten Eintrag.
-  5. Bei Erfolg ersetzt es `Body` durch einen `[Audio]`-Block und setzt `{{Transcript}}`.
-- **Befehlsparsing**: Wenn die Transkription erfolgreich ist, werden `CommandBody`/`RawBody` auf das Transkript gesetzt, sodass Slash-Befehle weiterhin funktionieren.
-- **Ausführliches Logging**: Mit `--verbose` protokollieren wir, wann die Transkription ausgeführt wird und wann sie den Body ersetzt.
+Wenn das Audioverständnis aktiviert ist (oder automatisch erkannt wird), führt OpenClaw folgende Schritte aus:
+
+1. Es ermittelt den ersten Audioanhang (lokaler Pfad oder URL) und lädt ihn bei Bedarf herunter.
+2. Es erzwingt `maxBytes`, bevor der Anhang an jeden Modelleintrag gesendet wird.
+3. Es führt den ersten geeigneten Modelleintrag der Reihe nach aus (Provider oder CLI). Wenn ein Eintrag fehlschlägt oder übersprungen wird (Größe/Zeitüberschreitung), wird der nächste Eintrag versucht.
+4. Bei Erfolg ersetzt es `Body` durch einen `[Audio]`-Block und setzt `{{Transcript}}`.
+
+Wenn die Transkription erfolgreich ist, werden `CommandBody`/`RawBody` ebenfalls auf das Transkript gesetzt, damit Slash-Befehle weiterhin funktionieren. Mit `--verbose` zeigen die Protokolle, wann die Transkription ausgeführt wird und wann sie den Textkörper ersetzt.
 
 ## Automatische Erkennung (Standard)
 
-Wenn Sie **keine Modelle konfigurieren** und `tools.media.audio.enabled` **nicht** auf `false` gesetzt ist,
-erkennt OpenClaw Optionen automatisch in dieser Reihenfolge und stoppt bei der ersten funktionierenden Option:
+Wenn Sie keine Modelle konfiguriert haben und `tools.media.audio.enabled` nicht auf `false` gesetzt ist, führt OpenClaw die automatische Erkennung in dieser Reihenfolge durch und beendet sie bei der ersten funktionierenden Option:
 
 1. **Aktives Antwortmodell**, wenn dessen Provider Audioverständnis unterstützt.
-2. **Lokale CLIs** (falls installiert)
-   - `sherpa-onnx-offline` (erfordert `SHERPA_ONNX_MODEL_DIR` mit Encoder/Decoder/Joiner/Tokens)
-   - `whisper-cli` (aus `whisper-cpp`; verwendet `WHISPER_CPP_MODEL` oder das gebündelte Tiny-Modell)
+2. **Konfigurierte Provider-Authentifizierung** – jeder `models.providers.*`-Eintrag mit verfügbarer Authentifizierung für einen Provider, der Audiotranskription unterstützt. Dies wird vor lokalen CLIs geprüft, sodass ein konfigurierter API-Schlüssel stets Vorrang vor einem lokalen Programm in `PATH` hat.
+   Provider-Priorität bei mehreren konfigurierten Providern: Groq, OpenAI, xAI, Deepgram, Google, SenseAudio, ElevenLabs, Mistral.
+3. **Lokale CLIs** (nur wenn keine Provider-Authentifizierung ermittelt wurde). OpenClaw erstellt eine geordnete Fallback-Liste:
+   - `whisper-cli`, vor CPU-Standardeinstellungen nur dann, wenn ein früherer Modellaufruf im aktuellen Prozess Metal oder CUDA erkannt hat
+   - `sherpa-onnx-offline` mit seinem standardmäßigen CPU-Provider (erfordert `SHERPA_ONNX_MODEL_DIR` mit `tokens.txt`, `encoder.onnx`, `decoder.onnx` und `joiner.onnx`)
+   - `whisper-cli`, wenn Metal/CUDA lediglich beim Build unterstützt wird oder das ausgewählte Backend anderweitig noch nicht beobachtet wurde
+   - `parakeet-mlx` auf Apple Silicon (MLX-fähig; die Gerätenutzung bleibt unbeobachtet)
    - `whisper` (Python-CLI; lädt Modelle automatisch herunter)
-3. **Provider-Authentifizierung**
-   - Konfigurierte `models.providers.*`-Einträge, die Audio unterstützen, werden zuerst versucht
-   - Provider-Fallback-Reihenfolge: OpenAI → Groq → xAI → Deepgram → Google → SenseAudio → ElevenLabs → Mistral
 
-Seit dem 22.05.2026 wird die automatische Erkennung der Gemini CLI für Medienverständnis nicht mehr unterstützt. Google stellt Gemini-CLI-Nutzer auf Antigravity CLI um; Audio sollte lokale oder Provider-Transkription verwenden, während der CLI-Fallback für Bilder/Videos auf Antigravity CLI (`agy`) umgestellt werden sollte.
+Die Herkunft der Installation/Verknüpfung ist ein Nachweis der Fähigkeit, nicht der Ausführung. Sie verschiebt einen Kandidaten für sich genommen niemals vor CPU-Sherpa. OpenClaw lädt während der Einrichtung oder bei Statusprüfungen kein Modell, nur um ein Backend zu prüfen.
+Automatisch erkanntes whisper.cpp lässt seine normalen Modelllauf-Protokolle aktiviert, damit OpenClaw die vorgelagerte Zeile `using … backend` erfassen kann. Explizite CLI-Einträge behalten ihre konfigurierten Ausgabeoptionen bei.
 
-Um die automatische Erkennung zu deaktivieren, setzen Sie `tools.media.audio.enabled: false`.
-Um sie anzupassen, setzen Sie `tools.media.audio.models`.
-Hinweis: Die Binärerkennung erfolgt bestmöglich über macOS/Linux/Windows hinweg; stellen Sie sicher, dass die CLI in `PATH` liegt (wir expandieren `~`), oder setzen Sie ein explizites CLI-Modell mit vollständigem Befehlspfad.
+Die automatische Erkennung der Gemini CLI für das Medienverständnis wurde durch einen sandboxgeschützten Antigravity-CLI-Fallback (`agy`) für Bilder/Videos ersetzt. Audio verwendet außer den oben genannten lokalen Programmen keinen CLI-Fallback.
+
+Um die automatische Erkennung zu deaktivieren, setzen Sie `tools.media.audio.enabled: false`. Zur Anpassung setzen Sie `tools.media.audio.models`.
+
+<Note>
+Die Binärerkennung erfolgt nach bestem Bemühen unter macOS/Linux/Windows. Stellen Sie sicher, dass sich die CLI in `PATH` befindet (`~` wird expandiert), oder legen Sie ein explizites CLI-Modell mit einem vollständigen Befehlspfad fest.
+</Note>
+
+Prüfen Sie die lokale Auswahl, ohne Audio zu transkribieren:
+
+```bash
+openclaw capability audio providers
+openclaw doctor --lint --only core/doctor/local-audio-acceleration --severity-min info
+```
+
+Das Provider-Inventar meldet den Gewinner des lokalen Fallbacks getrennt von der globalen Provider-Auswahl sowie Felder für fähige, angeforderte und beobachtete Backends. Nach Ausführung der Transkription zeigt `/status` in der Medienzeile das angeforderte oder beobachtete Backend an. Explizite CLI-Einträge in `tools.media.audio.models` umgehen weiterhin die automatische Auswahl. Verwenden Sie deren Backend-spezifische Optionen wie `--provider=cuda` für Sherpa oder `--no-gpu`/`--device` für whisper.cpp.
 
 ## Konfigurationsbeispiele
 
-### Provider + CLI-Fallback (OpenAI + Whisper CLI)
+### Provider- und CLI-Fallback (OpenAI + Whisper CLI)
 
 ```json5
 {
@@ -56,7 +71,7 @@ Hinweis: Die Binärerkennung erfolgt bestmöglich über macOS/Linux/Windows hinw
         enabled: true,
         maxBytes: 20971520,
         models: [
-          { provider: "openai", model: "gpt-4o-mini-transcribe" },
+          { provider: "openai", model: "gpt-4o-transcribe" },
           {
             type: "cli",
             command: "whisper",
@@ -70,7 +85,7 @@ Hinweis: Die Binärerkennung erfolgt bestmöglich über macOS/Linux/Windows hinw
 }
 ```
 
-### Nur Provider mit Scope-Gating
+### Nur Provider mit Bereichsbeschränkung
 
 ```json5
 {
@@ -82,7 +97,7 @@ Hinweis: Die Binärerkennung erfolgt bestmöglich über macOS/Linux/Windows hinw
           default: "allow",
           rules: [{ action: "deny", match: { chatType: "group" } }],
         },
-        models: [{ provider: "openai", model: "gpt-4o-mini-transcribe" }],
+        models: [{ provider: "openai", model: "gpt-4o-transcribe" }],
       },
     },
   },
@@ -134,7 +149,7 @@ Hinweis: Die Binärerkennung erfolgt bestmöglich über macOS/Linux/Windows hinw
 }
 ```
 
-### Transkript an den Chat zurückgeben (Opt-in)
+### Transkript im Chat wiedergeben (Opt-in)
 
 ```json5
 {
@@ -142,83 +157,80 @@ Hinweis: Die Binärerkennung erfolgt bestmöglich über macOS/Linux/Windows hinw
     media: {
       audio: {
         enabled: true,
-        echoTranscript: true, // default is false
-        echoFormat: '📝 "{transcript}"', // optional, supports {transcript}
-        models: [{ provider: "openai", model: "gpt-4o-mini-transcribe" }],
+        echoTranscript: true, // Standard ist false
+        echoFormat: '📝 "{transcript}"', // optional, unterstützt {transcript}
+        models: [{ provider: "openai", model: "gpt-4o-transcribe" }],
       },
     },
   },
 }
 ```
 
-## Hinweise und Einschränkungen
+## Hinweise und Beschränkungen
 
-- Die Provider-Authentifizierung folgt der standardmäßigen Authentifizierungsreihenfolge für Modelle (Authentifizierungsprofile, Umgebungsvariablen, `models.providers.*.apiKey`).
-- Groq-Einrichtungsdetails: [Groq](/de/providers/groq).
-- Deepgram übernimmt `DEEPGRAM_API_KEY`, wenn `provider: "deepgram"` verwendet wird.
-- Deepgram-Einrichtungsdetails: [Deepgram (Audiotranskription)](/de/providers/deepgram).
-- Mistral-Einrichtungsdetails: [Mistral](/de/providers/mistral).
-- SenseAudio übernimmt `SENSEAUDIO_API_KEY`, wenn `provider: "senseaudio"` verwendet wird.
-- SenseAudio-Einrichtungsdetails: [SenseAudio](/de/providers/senseaudio).
+- Die Provider-Authentifizierung folgt der standardmäßigen Reihenfolge der Modellauthentifizierung (Authentifizierungsprofile, Umgebungsvariablen, `models.providers.*.apiKey`).
+- Details zur Einrichtung von Groq: [Groq](/de/providers/groq).
+- Deepgram verwendet `DEEPGRAM_API_KEY`, wenn `provider: "deepgram"` verwendet wird. Details zur Einrichtung: [Deepgram](/de/providers/deepgram).
+- Details zur Einrichtung von Mistral: [Mistral](/de/providers/mistral).
+- SenseAudio verwendet `SENSEAUDIO_API_KEY`, wenn `provider: "senseaudio"` verwendet wird. Details zur Einrichtung: [SenseAudio](/de/providers/senseaudio).
 - Audio-Provider können `baseUrl`, `headers` und `providerOptions` über `tools.media.audio` überschreiben.
-- Die standardmäßige Größenobergrenze beträgt 20 MB (`tools.media.audio.maxBytes`). Zu große Audiodateien werden für dieses Modell übersprungen und der nächste Eintrag wird versucht.
-- Sehr kleine/leere Audiodateien unter 1024 Byte werden vor der Provider-/CLI-Transkription übersprungen.
-- Der Standardwert für `maxChars` für Audio ist **nicht gesetzt** (vollständiges Transkript). Setzen Sie `tools.media.audio.maxChars` oder `maxChars` pro Eintrag, um die Ausgabe zu kürzen.
-- Der automatische OpenAI-Standard ist `gpt-4o-mini-transcribe`; setzen Sie `model: "gpt-4o-transcribe"` für höhere Genauigkeit.
-- Verwenden Sie `tools.media.audio.attachments`, um mehrere Sprachnachrichten zu verarbeiten (`mode: "all"` + `maxAttachments`).
-- Das Transkript ist für Templates als `{{Transcript}}` verfügbar.
-- `tools.media.audio.echoTranscript` ist standardmäßig deaktiviert; aktivieren Sie es, um vor der Agent-Verarbeitung eine Transkriptbestätigung an den ursprünglichen Chat zurückzusenden.
-- `tools.media.audio.echoFormat` passt den Echo-Text an (Platzhalter: `{transcript}`).
-- CLI-stdout ist begrenzt (5 MB); halten Sie die CLI-Ausgabe knapp.
-- CLI-`args` sollten `{{MediaPath}}` für den lokalen Audiodateipfad verwenden. Führen Sie `openclaw doctor --fix` aus, um veraltete `{input}`-Platzhalter aus älteren `audio.transcription.command`-Konfigurationen zu migrieren.
+- Die standardmäßige Größenbegrenzung beträgt 20MB (`tools.media.audio.maxBytes`). Zu große Audiodateien werden für dieses Modell übersprungen, und der nächste Eintrag wird versucht.
+- Audiodateien unter 1024 Bytes werden vor der Provider-/CLI-Transkription übersprungen.
+- Der Standardwert für `maxChars` bei Audio ist **nicht gesetzt** (vollständiges Transkript). Setzen Sie `tools.media.audio.maxChars` oder ein eintragsspezifisches `maxChars`, um die Ausgabe zu kürzen.
+- Der Standardwert der automatischen OpenAI-Erkennung ist `gpt-4o-transcribe`. Setzen Sie `model: "gpt-4o-mini-transcribe"` für eine günstigere/schnellere Option.
+- Verwenden Sie `tools.media.audio.attachments`, um mehrere Sprachnachrichten zu verarbeiten (`mode: "all"` zusammen mit `maxAttachments`, Standardwert 1).
+- Das Transkript steht Vorlagen als `{{Transcript}}` zur Verfügung.
+- `tools.media.audio.echoTranscript` ist standardmäßig deaktiviert. Aktivieren Sie es, um vor der Agentenverarbeitung eine Transkriptbestätigung an den ursprünglichen Chat zurückzusenden.
+- `tools.media.audio.echoFormat` passt den Wiedergabetext an (Platzhalter: `{transcript}`; Standardwert `📝 "{transcript}"`).
+- Die Standardausgabe der CLI ist auf 5MB begrenzt. Halten Sie die CLI-Ausgabe knapp.
+- CLI-`args` sollten `{{MediaPath}}` für den lokalen Pfad der Audiodatei verwenden. Führen Sie `openclaw doctor --fix` aus, um veraltete `{input}`-Platzhalter aus älteren `audio.transcription.command`-Konfigurationen zu migrieren (eingestellter Schlüssel: `audio.transcription`, ersetzt durch `tools.media.audio.models`).
+- `tools.media.concurrency` begrenzt Medienaufgaben; es ist kein GPU-Scheduler.
 
-### Proxy-Umgebungsunterstützung
+### Dauerhaft laufende lokale Spracherkennung
 
-Provider-basierte Audiotranskription berücksichtigt standardmäßige Umgebungsvariablen für ausgehende Proxys:
+Automatisch erkannte lokale Spracherkennung bleibt ein separater Prozess pro Anfrage. OpenClaw verwaltet derzeit keinen dauerhaft laufenden whisper.cpp-Server, da das standardmäßige Homebrew-Paket `whisper-cpp` diesen Server deaktiviert, während das vorgelagerte Beispiel keine konfigurierte, begrenzte Zugangswarteschlange besitzt. Ein Plugin-eigener dauerhaft laufender Lebenszyklus benötigt einen gepflegten paketierten Worker mit Zustands-/Startprüfung, dauerhaft geladenem Modell, begrenzter Warteschlange, Abbruch/Zeitüberschreitung, authentifizierungsfreiem Betrieb ausschließlich über die Loopback-Schnittstelle und ohne Cloud-Fallback, bevor er sicher aktiviert werden kann.
 
-- `HTTPS_PROXY`
-- `HTTP_PROXY`
-- `ALL_PROXY`
-- `https_proxy`
-- `http_proxy`
-- `all_proxy`
+### Unterstützung für Proxy-Umgebungen
 
-Wenn keine Proxy-Umgebungsvariablen gesetzt sind, wird direkter Egress verwendet. Wenn die Proxy-Konfiguration fehlerhaft ist, protokolliert OpenClaw eine Warnung und fällt auf direkten Abruf zurück.
+Provider-basierte Audiotranskription berücksichtigt standardmäßige Umgebungsvariablen für ausgehende Proxys entsprechend der Semantik von undicis `EnvHttpProxyAgent`:
+
+- `HTTPS_PROXY` / `https_proxy`
+- `HTTP_PROXY` / `http_proxy`
+- `ALL_PROXY` / `all_proxy`
+
+Variablen in Kleinschreibung haben Vorrang vor solchen in Großschreibung. Einträge in `NO_PROXY`/`no_proxy` (Hostnamen, `*.suffix` oder `host:port`) umgehen den Proxy. Wenn keine Proxy-Umgebungsvariablen gesetzt sind, wird eine direkte ausgehende Verbindung verwendet. Wenn die Proxy-Einrichtung fehlschlägt (fehlerhafte URL), protokolliert OpenClaw eine Warnung und greift auf einen direkten Abruf zurück.
 
 ## Erwähnungserkennung in Gruppen
 
-Wenn `requireMention: true` für einen Gruppenchat gesetzt ist, transkribiert OpenClaw Audio jetzt **vor** der Prüfung auf Erwähnungen. Dadurch können Sprachnachrichten verarbeitet werden, auch wenn sie Erwähnungen enthalten.
+In Kanälen, die eine Audio-Vorprüfung unterstützen, transkribiert OpenClaw Audio **vor** der Prüfung auf Erwähnungen, wenn für einen Gruppenchat `requireMention: true` festgelegt ist. Dadurch kann eine Sprachnachricht ohne Bildunterschrift die Erwähnungsschranke passieren, wenn ihr Transkript ein konfiguriertes Erwähnungsmuster enthält. Kanalspezifische Dokumentationen beschreiben Übertragungswege, die stattdessen eine eingegebene Erwähnung erfordern.
 
 **Funktionsweise:**
 
-1. Wenn eine Sprachnachricht keinen Text-Body hat und die Gruppe Erwähnungen erfordert, führt OpenClaw eine „Preflight“-Transkription aus.
-2. Das Transkript wird auf Erwähnungsmuster geprüft (z. B. `@BotName`, Emoji-Auslöser).
-3. Wenn eine Erwähnung gefunden wird, durchläuft die Nachricht die vollständige Antwort-Pipeline.
-4. Das Transkript wird für die Erwähnungserkennung verwendet, damit Sprachnachrichten das Erwähnungsgate passieren können.
+1. Wenn eine Sprachnachricht keinen Textkörper enthält und die Gruppe Erwähnungen erfordert, führt OpenClaw eine Vorabtranskription des ersten Audioanhangs durch.
+2. Das Transkript wird auf Erwähnungsmuster geprüft (zum Beispiel `@BotName`, Emoji-Auslöser).
+3. Wenn eine Erwähnung gefunden wird, durchläuft die Nachricht die vollständige Antwortpipeline.
 
-**Fallback-Verhalten:**
+**Fallback-Verhalten:** Wenn die Vorabtranskription fehlschlägt (Zeitüberschreitung, API-Fehler usw.), greift die Nachricht auf die reine Texterkennung von Erwähnungen zurück, sodass gemischte Nachrichten (Text + Audio) niemals verworfen werden.
 
-- Wenn die Transkription während des Preflight fehlschlägt (Timeout, API-Fehler usw.), wird die Nachricht basierend auf reiner Text-Erwähnungserkennung verarbeitet.
-- Dadurch wird sichergestellt, dass gemischte Nachrichten (Text + Audio) niemals fälschlicherweise verworfen werden.
+**Deaktivierung pro Telegram-Gruppe/-Thema:**
 
-**Opt-out pro Telegram-Gruppe/Thema:**
+- Setzen Sie `channels.telegram.groups.<chatId>.disableAudioPreflight: true`, um die vorgezogene Prüfung des Transkripts auf Erwähnungen für diese Gruppe zu überspringen.
+- Setzen Sie `channels.telegram.groups.<chatId>.topics.<threadId>.disableAudioPreflight`, um dies pro Thema zu überschreiben (`true` zum Überspringen, `false` zum erzwungenen Aktivieren).
+- Der Standardwert ist `false` (Vorprüfung aktiviert, wenn die Bedingungen der Erwähnungsschranke erfüllt sind).
 
-- Setzen Sie `channels.telegram.groups.<chatId>.disableAudioPreflight: true`, um Preflight-Transkript-Erwähnungsprüfungen für diese Gruppe zu überspringen.
-- Setzen Sie `channels.telegram.groups.<chatId>.topics.<threadId>.disableAudioPreflight`, um dies pro Thema zu überschreiben (`true` zum Überspringen, `false` zum Erzwingen der Aktivierung).
-- Standard ist `false` (Preflight aktiviert, wenn erwähnungsgesteuerte Bedingungen zutreffen).
-
-**Beispiel:** Ein Nutzer sendet in einer Telegram-Gruppe mit `requireMention: true` eine Sprachnachricht mit dem Inhalt „Hey @Claude, what's the weather?“. Die Sprachnachricht wird transkribiert, die Erwähnung wird erkannt und der Agent antwortet.
+**Beispiel:** Ein Benutzer sendet in einer Telegram-Gruppe mit `requireMention: true` eine Sprachnachricht mit dem Inhalt „Hallo @Claude, wie ist das Wetter?“. Die Sprachnachricht wird transkribiert, die Erwähnung wird erkannt und der Agent antwortet.
 
 ## Fallstricke
 
-- Scope-Regeln verwenden „erste Übereinstimmung gewinnt“. `chatType` wird zu `direct`, `group` oder `room` normalisiert.
-- Stellen Sie sicher, dass Ihre CLI mit 0 beendet wird und Klartext ausgibt; JSON muss über `jq -r .text` angepasst werden.
-- Für `parakeet-mlx`: Wenn Sie `--output-dir` übergeben, liest OpenClaw `<output-dir>/<media-basename>.txt`, wenn `--output-format` `txt` ist (oder ausgelassen wurde); Nicht-`txt`-Ausgabeformate fallen auf stdout-Parsing zurück.
-- Halten Sie Timeouts angemessen (`timeoutSeconds`, Standard 60 s), um ein Blockieren der Antwortwarteschlange zu vermeiden.
-- Die Preflight-Transkription verarbeitet nur den **ersten** Audioanhang für die Erwähnungserkennung. Zusätzliches Audio wird während der Hauptphase des Medienverständnisses verarbeitet.
+- Bei Bereichsregeln gilt der erste Treffer; `chatType` wird auf `direct`, `group` oder `channel` normalisiert.
+- Stellen Sie sicher, dass Ihre CLI mit 0 beendet wird und Klartext ausgibt. JSON-Ausgaben müssen über `jq -r .text` aufbereitet werden.
+- Bekannte Dateiausgabemodi sind maßgeblich: Eine leere oder fehlende abgeleitete Transkriptdatei erzeugt kein Transkript, statt auf die Fortschrittsausgabe der CLI zurückzugreifen.
+- Verwenden Sie für `parakeet-mlx` `--output-format txt` (oder `all`) zusammen mit `--output-dir` und der standardmäßigen Ausgabevorlage `{filename}`. Die vorgelagerten Umgebungsvariablen `PARAKEET_OUTPUT_FORMAT` und `PARAKEET_OUTPUT_TEMPLATE` werden ebenfalls berücksichtigt. OpenClaw liest `<output-dir>/<media-basename>.txt`. Das standardmäßige `srt`-Format, andere Formate und benutzerdefinierte Ausgabevorlagen verwenden weiterhin die Standardausgabe.
+- Halten Sie Zeitüberschreitungen angemessen (`timeoutSeconds`, Standardwert 60s), um eine Blockierung der Antwortwarteschlange zu vermeiden.
+- Die Vorabtranskription verarbeitet für die Erwähnungserkennung nur den **ersten** Audioanhang. Zusätzliche Audioanhänge werden während der Hauptphase des Medienverständnisses verarbeitet.
 
-## Verwandt
+## Verwandte Themen
 
 - [Medienverständnis](/de/nodes/media-understanding)
 - [Sprechmodus](/de/nodes/talk)
-- [Voice Wake](/de/nodes/voicewake)
+- [Sprachaktivierung](/de/nodes/voicewake)

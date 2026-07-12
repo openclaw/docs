@@ -1,48 +1,40 @@
 ---
 read_when:
-    - Verhalten oder Standardwerte der Tippanzeige ändern
-summary: Wann OpenClaw Tippindikatoren anzeigt und wie Sie sie anpassen
+    - Verhalten oder Standardeinstellungen der Tippanzeige ändern
+summary: Wann OpenClaw Tippindikatoren anzeigt und wie Sie sie anpassen können
 title: Tippindikatoren
 x-i18n:
-    generated_at: "2026-06-27T17:27:10Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:21:23Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: fa76889d0f6262f1092abefee02aee8fe944651dc89d3a697ccc86e16558ed60
+    source_hash: 55e5ec38f47e0612b25b5561790e9b8a17ea4e215c4038bb89af83f861089e03
     source_path: concepts/typing-indicators.md
     workflow: 16
 ---
 
-Tippanzeigen werden an den Chat-Kanal gesendet, während eine Ausführung aktiv ist. Verwenden Sie
-`agents.defaults.typingMode`, um zu steuern, **wann** das Tippen beginnt, und `typingIntervalSeconds`,
-um zu steuern, **wie oft** es aktualisiert wird.
+Tippanzeigen werden an den Chat-Kanal gesendet, solange ein Lauf aktiv ist. Verwenden Sie `agents.defaults.typingMode`, um zu steuern, **wann** das Tippen beginnt, und `typingIntervalSeconds`, um zu steuern, **wie oft** die Anzeige aktualisiert wird (Keepalive-Intervall, standardmäßig 6 Sekunden).
 
 ## Standardwerte
 
-Wenn `agents.defaults.typingMode` **nicht gesetzt** ist, behält OpenClaw das Legacy-Verhalten bei:
+Wenn `agents.defaults.typingMode` **nicht festgelegt** ist:
 
-- **Direktchats**: Das Tippen beginnt sofort, sobald die Modellschleife startet.
+- **Direktchats**: Das Tippen beginnt sofort, sobald die Modellschleife beginnt.
 - **Gruppenchats mit einer Erwähnung**: Das Tippen beginnt sofort.
-- **Gruppenchats ohne Erwähnung**: Das Tippen beginnt, wenn die zugelassene Ausführung
-  für Benutzer sichtbare Aktivität hat, etwa Harness-Ausführungsaktivität oder Nachrichtentext.
-- **Heartbeat-Ausführungen**: Das Tippen beginnt, wenn die Heartbeat-Ausführung startet, sofern das
-  aufgelöste Heartbeat-Ziel ein tippfähiger Chat ist und Tippen nicht deaktiviert ist.
+- **Gruppenchats ohne Erwähnung**: Das Tippen beginnt, wenn der zugelassene Lauf eine für Benutzer sichtbare Aktivität aufweist, etwa eine Ausführungsaktivität der Harness-Umgebung oder Nachrichtentext.
+- **Heartbeat-Läufe**: Das Tippen beginnt mit dem Heartbeat-Lauf, sofern das ermittelte Heartbeat-Ziel ein Chat mit Tippunterstützung ist und das Tippen nicht deaktiviert wurde.
 
 ## Modi
 
-Setzen Sie `agents.defaults.typingMode` auf einen der folgenden Werte:
+Legen Sie `agents.defaults.typingMode` auf einen der folgenden Werte fest:
 
-- `never` - niemals eine Tippanzeige.
-- `instant` - Tippen starten, **sobald die Modellschleife beginnt**, selbst wenn die Ausführung
-  später nur das stille Antwort-Token zurückgibt.
-- `thinking` - Tippen beim **ersten Reasoning-Delta** oder bei aktiver
-  Harness-Ausführung starten, nachdem der Turn akzeptiert wurde.
-- `message` - Tippen bei der **ersten für Benutzer sichtbaren Antwortaktivität** starten, etwa
-  bei aktiver Harness-Ausführung oder einem nicht stillen Text-Delta. Stille Antwort-Token wie
-  `NO_REPLY` zählen nicht als Textaktivität.
+- `never` – es wird niemals eine Tippanzeige angezeigt.
+- `instant` – das Tippen beginnt, **sobald die Modellschleife beginnt**, selbst wenn der Lauf später nur das Token für eine stille Antwort zurückgibt.
+- `thinking` – das Tippen beginnt beim **ersten Reasoning-Delta** oder bei aktiver Ausführung der Harness-Umgebung, nachdem der Turn angenommen wurde.
+- `message` – das Tippen beginnt bei der **ersten für Benutzer sichtbaren Antwortaktivität**, etwa bei aktiver Ausführung der Harness-Umgebung oder einem nicht stillen Text-Delta. Tokens für stille Antworten wie `NO_REPLY` gelten nicht als Textaktivität.
 
-Reihenfolge, „wie früh es ausgelöst wird“:
-`never` → `message`/`thinking` → `instant`
+Reihenfolge danach, wie früh die Anzeige ausgelöst wird: `never` -> `message`/`thinking` -> `instant`.
 
 ## Konfiguration
 
@@ -59,7 +51,7 @@ Legen Sie den Standardwert auf Agent-Ebene fest:
 }
 ```
 
-Überschreiben Sie Modus oder Taktung pro Sitzung:
+Überschreiben Sie Modus oder Intervall pro Sitzung:
 
 ```json5
 {
@@ -72,26 +64,19 @@ Legen Sie den Standardwert auf Agent-Ebene fest:
 
 ## Hinweise
 
-- Der Modus `message` startet nicht durch stille Antwort-Token, aber aktive Ausführung
-  kann weiterhin Tippen anzeigen, bevor Assistant-Text verfügbar ist.
-- `thinking` reagiert weiterhin auf gestreamtes Reasoning (`reasoningLevel: "stream"`),
-  und es kann auch durch aktive Ausführung starten, bevor Reasoning-Deltas eintreffen.
-- Heartbeat-Tippen ist ein Liveness-Signal für das aufgelöste Zustellziel. Es
-  startet beim Start der Heartbeat-Ausführung, statt dem Stream-Timing von `message` oder `thinking`
-  zu folgen. Setzen Sie `typingMode: "never"`, um es zu deaktivieren.
-- Heartbeats zeigen kein Tippen an, wenn `target: "none"` gesetzt ist, wenn das Ziel nicht
-  aufgelöst werden kann, wenn die Chat-Zustellung für den Heartbeat deaktiviert ist oder wenn der
-  Kanal Tippen nicht unterstützt.
-- `typingIntervalSeconds` steuert die **Aktualisierungstaktung**, nicht die Startzeit.
-  Der Standardwert ist 6 Sekunden.
+- Der Modus `message` wird nicht durch Tokens für stille Antworten gestartet, aber eine aktive Ausführung kann das Tippen dennoch anzeigen, bevor Text des Assistenten verfügbar ist.
+- `thinking` reagiert weiterhin auf gestreamtes Reasoning (`reasoningLevel: "stream"`) und kann auch durch eine aktive Ausführung gestartet werden, bevor Reasoning-Deltas eintreffen.
+- Die Tippanzeige bei Heartbeats ist ein Aktivitätssignal für das ermittelte Zustellungsziel. Sie beginnt beim Start des Heartbeat-Laufs, statt dem Stream-Timing von `message` oder `thinking` zu folgen. Legen Sie `typingMode: "never"` fest, um sie zu deaktivieren.
+- Heartbeats zeigen keine Tippanzeige, wenn das Heartbeat-Ziel `"none"` ist, das Ziel nicht ermittelt werden kann, die Chat-Zustellung für den Heartbeat deaktiviert ist oder der Kanal keine Tippanzeigen unterstützt.
+- `typingIntervalSeconds` steuert das **Aktualisierungsintervall**, nicht den Startzeitpunkt. Standardwert: 6 Sekunden.
 
 ## Verwandte Themen
 
 <CardGroup cols={2}>
-  <Card title="Presence" href="/de/concepts/presence" icon="signal">
-    Wie der Gateway verbundene Clients verfolgt und sie im macOS-Tab „Instances“ anzeigt.
+  <Card title="Präsenz" href="/de/concepts/presence" icon="signal">
+    Wie das Gateway verbundene Clients für die Geräteseite der Control UI und den Tab „macOS-Instanzen“ verfolgt.
   </Card>
-  <Card title="Streaming and chunking" href="/de/concepts/streaming" icon="bars-staggered">
-    Ausgehendes Streaming-Verhalten, Chunk-Grenzen und kanalspezifische Zustellung.
+  <Card title="Streaming und Aufteilung" href="/de/concepts/streaming" icon="bars-staggered">
+    Verhalten beim ausgehenden Streaming, Abschnittsgrenzen und kanalspezifische Zustellung.
   </Card>
 </CardGroup>

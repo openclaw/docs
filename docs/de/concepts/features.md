@@ -1,14 +1,15 @@
 ---
 read_when:
-    - Sie möchten eine vollständige Liste dessen, was OpenClaw unterstützt
-summary: OpenClaw-Funktionen über Kanäle, Routing, Medien und UX hinweg.
+    - Sie möchten eine vollständige Liste der von OpenClaw unterstützten Funktionen.
+summary: OpenClaw-Funktionen für Kanäle, Routing, Medien und UX.
 title: Funktionen
 x-i18n:
-    generated_at: "2026-06-27T17:23:13Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:11:48Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: b69cead6fc3c6af91e95f8080d9ca409f24c314cf97f707b67d8fdeb84cf92fa
+    source_hash: 5bc3ebdd87a0f6ea0f3d75d029bf7cae469ecd9db84a165bd47c4896936fe303
     source_path: concepts/features.md
     workflow: 16
 ---
@@ -16,84 +17,88 @@ x-i18n:
 ## Highlights
 
 <Columns>
-  <Card title="Channels" icon="message-square" href="/de/channels">
-    Discord, iMessage, Signal, Slack, Telegram, WhatsApp, WebChat und mehr mit einem einzigen Gateway.
+  <Card title="Kanäle" icon="message-square" href="/de/channels">
+    Discord, iMessage, Signal, Slack, Telegram, WhatsApp, WebChat und weitere über einen einzigen Gateway.
   </Card>
   <Card title="Plugins" icon="plug" href="/de/tools/plugin">
-    Gebündelte Plugins fügen Matrix, Nextcloud Talk, Nostr, Twitch, Zalo und mehr hinzu, ohne separate Installationen in normalen aktuellen Releases.
+    Offizielle Plugins fügen Matrix, Nextcloud Talk, Nostr, Twitch, Zalo und Dutzende weitere mit einem einzigen Installationsbefehl hinzu.
   </Card>
   <Card title="Routing" icon="route" href="/de/concepts/multi-agent">
     Multi-Agent-Routing mit isolierten Sitzungen.
   </Card>
-  <Card title="Media" icon="image" href="/de/nodes/images">
+  <Card title="Medien" icon="image" href="/de/nodes/images">
     Bilder, Audio, Video, Dokumente sowie Bild- und Videogenerierung.
   </Card>
-  <Card title="Apps und UI" icon="monitor" href="/de/platforms">
-    Windows Hub, Web Control UI, macOS-App und mobile Nodes.
+  <Card title="Apps und Benutzeroberfläche" icon="monitor" href="/de/platforms">
+    Windows Hub, browserbasierte Control UI, macOS-Menüleisten-App und mobile Nodes.
   </Card>
   <Card title="Mobile Nodes" icon="smartphone" href="/de/nodes">
-    iOS- und Android-Nodes mit Pairing, Sprache/Chat und umfangreichen Gerätebefehlen.
+    iOS- und Android-Nodes mit Kopplung, Sprach-/Chatfunktionen und umfangreichen Gerätebefehlen.
   </Card>
 </Columns>
 
 ## Vollständige Liste
 
-**Channels:**
+**Kanäle:**
 
-- Integrierte Channels umfassen Discord, Google Chat, iMessage, IRC, Signal, Slack, Telegram, WebChat und WhatsApp
-- Gebündelte Plugin-Channels umfassen Feishu, LINE, Matrix, Mattermost, Microsoft Teams, Nextcloud Talk, Nostr, QQ Bot, Synology Chat, Tlon, Twitch, Zalo und Zalo Personal
-- Optional separat installierte Channel-Plugins umfassen Voice Call und Drittanbieterpakete wie WeChat
-- Drittanbieter-Channel-Plugins können den Gateway weiter erweitern, etwa WeChat
+- iMessage, Telegram und WebChat sind in der Kerninstallation enthalten; jeder andere Kanal ist ein
+  offizielles Plugin, das mit `openclaw plugins install @openclaw/<id>` installiert wird (oder bei Bedarf
+  während `openclaw onboard` / `openclaw channels add`)
+- Offizielle Plugin-Kanäle: Discord, Feishu, Google Chat, IRC, LINE, Matrix, Mattermost,
+  Microsoft Teams, Nextcloud Talk, Nostr, QQ Bot, Raft, Signal, Slack, SMS, Synology Chat,
+  Tlon, Twitch, Voice Call, WhatsApp, Zalo und Zalo Personal
+- Außerhalb des OpenClaw-Repos gepflegte externe Plugin-Kanäle: WeChat, Yuanbao und Zalo ClawBot
 - Unterstützung für Gruppenchats mit erwähnungsbasierter Aktivierung
-- DM-Sicherheit mit Allowlists und Pairing
+- Sicherheit für Direktnachrichten durch Zulassungslisten und Kopplung
 
 **Agent:**
 
 - Eingebettete Agent-Laufzeit mit Tool-Streaming
 - Multi-Agent-Routing mit isolierten Sitzungen pro Arbeitsbereich oder Absender
-- Sitzungen: Direkte Chats werden in gemeinsamem `main` zusammengeführt; Gruppen sind isoliert
-- Streaming und Chunking für lange Antworten
+- Sitzungen: Direkte Chats werden in der gemeinsamen Sitzung `main` zusammengeführt; Gruppen sind isoliert
+- Streaming und Aufteilung langer Antworten
 
 **Authentifizierung und Provider:**
 
-- Über 35 Modell-Provider (Anthropic, OpenAI, Google und mehr)
-- Abonnement-Authentifizierung über OAuth (z. B. OpenAI Codex)
-- Unterstützung für benutzerdefinierte und selbst gehostete Provider (vLLM, SGLang, Ollama und jeder OpenAI-kompatible oder Anthropic-kompatible Endpunkt)
+- Über 35 Modell-Provider (Anthropic, OpenAI, Google und weitere)
+- Abonnementauthentifizierung über OAuth (z. B. OpenAI Codex)
+- Unterstützung für benutzerdefinierte und selbst gehostete Provider (vLLM, SGLang, Ollama, llama.cpp, LM Studio und
+  alle OpenAI- oder Anthropic-kompatiblen Endpunkte)
 
 **Medien:**
 
-- Bilder, Audio, Video und Dokumente als Ein- und Ausgabe
-- Gemeinsame Capability-Oberflächen für Bildgenerierung und Videogenerierung
-- Transkription von Sprachnotizen
+- Ein- und Ausgabe von Bildern, Audio, Video und Dokumenten
+- Gemeinsame Funktionsoberflächen für Bild- und Videogenerierung
+- Transkription von Sprachnachrichten
 - Text-to-Speech mit mehreren Providern
 
-**Apps und Schnittstellen:**
+**Apps und Benutzeroberflächen:**
 
-- WebChat und Browser-Control-UI
-- macOS-Menüleisten-Begleit-App
-- iOS-Node mit Pairing, Canvas, Kamera, Bildschirmaufnahme, Standort und Sprache
-- Android-Node mit Pairing, Chat, Sprache, Canvas, Kamera und Gerätebefehlen
+- WebChat und browserbasierte Control UI
+- macOS-Begleit-App für die Menüleiste
+- iOS-Node mit Kopplung, Canvas, Kamera, Bildschirmaufnahme, Standort und Sprache
+- Android-Node mit Kopplung, Chat, Sprache, Canvas, Kamera und Gerätebefehlen
 
 **Tools und Automatisierung:**
 
-- Browserautomatisierung, exec, Sandboxing
+- Browserautomatisierung, Ausführung und Sandboxing
 - Websuche (Brave, DuckDuckGo, Exa, Firecrawl, Gemini, Grok, Kimi, MiniMax Search, Ollama Web Search, Perplexity, SearXNG, Tavily)
-- Cron-Jobs und Heartbeat-Planung
+- Cron-Aufgaben und Heartbeat-Zeitplanung
 - Skills, Plugins und Workflow-Pipelines (Lobster)
 
 ## Verwandte Themen
 
 <CardGroup cols={2}>
-  <Card title="Experimentelle Features" href="/de/concepts/experimental-features" icon="flask">
-    Opt-in-Features, die noch nicht auf der Standardoberfläche ausgeliefert wurden.
+  <Card title="Experimentelle Funktionen" href="/de/concepts/experimental-features" icon="flask">
+    Optional aktivierbare Funktionen, die noch nicht in der Standardoberfläche verfügbar sind.
   </Card>
   <Card title="Agent-Laufzeit" href="/de/concepts/agent" icon="robot">
-    Agent-Laufzeitmodell und wie Läufe verteilt werden.
+    Laufzeitmodell des Agents und die Zuweisung von Ausführungen.
   </Card>
-  <Card title="Channels" href="/de/channels" icon="message-square">
-    Verbinden Sie Telegram, WhatsApp, Discord, Slack und mehr über einen Gateway.
+  <Card title="Kanäle" href="/de/channels" icon="message-square">
+    Verbinden Sie Telegram, WhatsApp, Discord, Slack und weitere über einen einzigen Gateway.
   </Card>
   <Card title="Plugins" href="/de/tools/plugin" icon="plug">
-    Gebündelte und Drittanbieter-Plugins, die OpenClaw erweitern.
+    Offizielle und externe Plugins, die OpenClaw erweitern.
   </Card>
 </CardGroup>

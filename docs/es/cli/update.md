@@ -1,16 +1,17 @@
 ---
 read_when:
-    - Quieres actualizar un checkout de origen de forma segura
-    - Estás depurando la salida o las opciones de `openclaw update`
-    - Debes comprender el comportamiento abreviado de `--update`
-summary: Referencia de CLI para `openclaw update` (actualización de origen relativamente segura + reinicio automático del gateway)
+    - Quieres actualizar de forma segura una copia local del código fuente
+    - Está depurando la salida o las opciones de `openclaw update`
+    - Debes comprender el comportamiento de la forma abreviada `--update`
+summary: Referencia de la CLI para `openclaw update` (actualización de código fuente relativamente segura + reinicio automático del Gateway)
 title: Actualizar
 x-i18n:
-    generated_at: "2026-07-06T10:49:09Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:23:53Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: b6abbb32f8b8132abb73dc1699d341a275e54613f18523bce4cba574d75232c2
+    source_hash: 2db7b636b68e693824cb49ada2c176a4e394a3100ce33fff1c96ee20ae8427ee
     source_path: cli/update.md
     workflow: 16
 ---
@@ -19,8 +20,8 @@ x-i18n:
 
 Actualiza OpenClaw y cambia entre los canales stable/extended-stable/beta/dev.
 
-Si instalaste mediante **npm/pnpm/bun** (instalación global, sin metadatos de git),
-las actualizaciones pasan por el flujo del gestor de paquetes descrito en
+Si se instaló mediante **npm/pnpm/bun** (instalación global, sin metadatos de git),
+las actualizaciones siguen el flujo del gestor de paquetes descrito en
 [Actualización](/es/install/updating).
 
 ## Uso
@@ -44,38 +45,41 @@ openclaw --update
 ```
 
 `openclaw --update` se reescribe como `openclaw update` (útil para shells y
-scripts de lanzamiento).
+scripts de inicio).
 
 ## Opciones
 
-| Marca                                             | Descripción                                                                                                                                                                                                                                                                                                                                  |
-| ------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `--no-restart`                                   | Omite el reinicio del servicio Gateway después de una actualización correcta. Las actualizaciones del gestor de paquetes que sí reinician verifican que el servicio reiniciado informe la versión esperada antes de que el comando se complete correctamente.                                                                                                                                                |
-| `--channel <stable\|extended-stable\|beta\|dev>` | Establece el canal de actualización y lo conserva después de que la actualización del núcleo se complete correctamente. Extended-stable solo está disponible para paquetes.                                                                                                                                                                                                                                            |
-| `--tag <dist-tag\|version\|spec>`                | Anula el destino del paquete solo para esta actualización. No se puede combinar con un canal `extended-stable` efectivo, cuyo destino exacto verificado es obligatorio. Para otras instalaciones de paquete, `main` se asigna a `github:openclaw/openclaw#main`; las especificaciones de origen de GitHub/git se empaquetan en un tarball temporal antes de la instalación global provisional de npm. |
-| `--dry-run`                                      | Previsualiza las acciones planificadas (flujo de canal/etiqueta/destino/reinicio) sin escribir configuración, instalar, sincronizar plugins ni reiniciar.                                                                                                                                                                                                                |
-| `--json`                                         | Imprime JSON `UpdateRunResult` legible por máquinas. Incluye `postUpdate.plugins.warnings` cuando un plugin gestionado necesita reparación, detalles de reserva de plugins del canal beta y `postUpdate.plugins.integrityDrifts` cuando se detecta deriva en artefactos de plugins de npm durante la sincronización posterior a la actualización.                                                                 |
-| `--timeout <seconds>`                            | Tiempo de espera por paso. Valor predeterminado: `1800`.                                                                                                                                                                                                                                                                                                            |
-| `--yes`                                          | Omite las solicitudes de confirmación (por ejemplo, la confirmación de degradación de versión).                                                                                                                                                                                                                                                                              |
-| `--acknowledge-clawhub-risk`                     | Permite que la sincronización de plugins posterior a la actualización continúe pese a las advertencias de confianza de la comunidad de ClawHub sin una solicitud interactiva. Sin esta opción, las versiones de comunidad riesgosas se omiten y se dejan sin cambios cuando OpenClaw no puede solicitar confirmación. Los paquetes oficiales de ClawHub y las fuentes de plugins integrados omiten esta solicitud.                                                     |
+| Indicador                                        | Descripción                                                                                                                                                                                                                                                                                                                                                       |
+| ------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `--no-restart`                                   | Omite el reinicio del servicio Gateway después de una actualización correcta. Las actualizaciones mediante el gestor de paquetes que sí reinician verifican que el servicio reiniciado informe de la versión esperada antes de que el comando finalice correctamente.                                                                                             |
+| `--channel <stable\|extended-stable\|beta\|dev>` | Establece el canal de actualización y lo conserva después de que la actualización del núcleo finalice correctamente. Extended-stable solo está disponible para paquetes.                                                                                                                                                                                          |
+| `--tag <dist-tag\|version\|spec>`                | Sustituye el paquete de destino únicamente para esta actualización. No se puede combinar con un canal `extended-stable` efectivo, cuyo destino exacto verificado es obligatorio. Para otras instalaciones de paquetes, `main` se asigna a `github:openclaw/openclaw#main`; las especificaciones de origen GitHub/git se empaquetan en un tarball temporal antes de la instalación global de npm por etapas. |
+| `--dry-run`                                      | Muestra una vista previa de las acciones planificadas (flujo de canal/etiqueta/destino/reinicio) sin escribir la configuración, instalar, sincronizar plugins ni reiniciar.                                                                                                                                                                                         |
+| `--json`                                         | Imprime JSON `UpdateRunResult` legible por máquinas. Incluye `postUpdate.plugins.warnings` cuando un plugin gestionado necesita reparación, detalles del mecanismo alternativo para plugins del canal beta y `postUpdate.plugins.integrityDrifts` cuando se detecta una desviación en los artefactos de plugins de npm durante la sincronización posterior a la actualización.                         |
+| `--timeout <seconds>`                            | Tiempo de espera por paso. Valor predeterminado: `1800`.                                                                                                                                                                                                                                                                                                           |
+| `--yes`                                          | Omite las solicitudes de confirmación (por ejemplo, la confirmación de una degradación de versión).                                                                                                                                                                                                                                                                |
+| `--acknowledge-clawhub-risk`                     | Permite que la sincronización de plugins posterior a la actualización continúe a pesar de las advertencias de confianza de la comunidad de ClawHub sin una solicitud interactiva. Sin esta opción, las versiones de la comunidad que presentan riesgos se omiten y permanecen sin cambios cuando OpenClaw no puede solicitar confirmación. Los paquetes oficiales de ClawHub y las fuentes de plugins incluidos omiten esta solicitud. |
 
-No hay marca `--verbose`. Usa `--dry-run` para previsualizar las acciones planificadas,
-`--json` para resultados legibles por máquinas y `openclaw update status --json`
-solo para canal/disponibilidad. La verbosidad de la consola de Gateway (`--verbose`) y
-el nivel de registro de archivo (`logging.level: "debug"`/`"trace"`) son controles independientes; consulta
-[Registro de Gateway](/es/gateway/logging).
+No existe el indicador `--verbose`. Use `--dry-run` para obtener una vista previa de las acciones planificadas,
+`--json` para obtener resultados legibles por máquinas y `openclaw update status --json`
+solo para consultar el canal y la disponibilidad. El nivel de detalle de la consola del Gateway (`--verbose`) y
+el nivel de registro en archivos (`logging.level: "debug"`/`"trace"`) son controles independientes; consulte
+[Registro del Gateway](/es/gateway/logging).
 
 <Note>
-En modo Nix (`OPENCLAW_NIX_MODE=1`), las ejecuciones modificadoras de `openclaw update` están deshabilitadas. En su lugar, actualiza el origen de Nix o la entrada flake para esta instalación; para nix-openclaw, usa el [Inicio rápido](https://github.com/openclaw/nix-openclaw#quick-start) centrado en el agente. `openclaw update status` y `openclaw update --dry-run` siguen siendo de solo lectura.
+En el modo Nix (`OPENCLAW_NIX_MODE=1`), se deshabilitan las ejecuciones de `openclaw update` que realizan cambios. En su lugar, actualice el origen de Nix o la entrada de flake de esta instalación; para nix-openclaw, use la [Guía de inicio rápido](https://github.com/openclaw/nix-openclaw#quick-start) centrada primero en el agente. `openclaw update status` y `openclaw update --dry-run` siguen siendo de solo lectura.
 </Note>
 
 <Warning>
-Las degradaciones de versión requieren confirmación porque las versiones anteriores pueden romper la configuración.
+Las degradaciones de versión requieren confirmación porque las versiones anteriores pueden dañar la configuración.
+Si la instalación ya migró las sesiones a SQLite, restaure los artefactos archivados de transcripciones heredadas
+antes de iniciar una versión anterior basada en archivos. Consulte
+[Doctor: Degradación de versión después de migrar las sesiones a SQLite](/es/cli/doctor#downgrading-after-session-sqlite-migration).
 </Warning>
 
 ## `update status`
 
-Muestra el canal de actualización activo, la etiqueta/rama/SHA de git (solo checkouts de origen)
+Muestra el canal de actualización activo, la etiqueta/rama/SHA de git (solo en copias de trabajo del código fuente)
 y la disponibilidad de actualizaciones.
 
 ```bash
@@ -84,23 +88,23 @@ openclaw update status --json
 openclaw update status --timeout 10
 ```
 
-| Marca                  | Predeterminado | Descripción                         |
-| --------------------- | ------- | ----------------------------------- |
-| `--json`              | `false` | Imprime JSON de estado legible por máquinas. |
-| `--timeout <seconds>` | `3`     | Tiempo de espera para las comprobaciones.                 |
+| Indicador             | Valor predeterminado | Descripción                                    |
+| --------------------- | -------------------- | ---------------------------------------------- |
+| `--json`              | `false`              | Imprime el estado en JSON legible por máquinas. |
+| `--timeout <seconds>` | `3`                  | Tiempo de espera para las comprobaciones.      |
 
-Para instalaciones de paquetes extended-stable, el estado realiza el mismo selector público
-y la misma verificación exacta de paquete que la actualización en primer plano. Puede informar
-`ahead of extended-stable` cuando la versión instalada es más reciente. Los fallos JSON
+Para las instalaciones de paquetes extended-stable, el estado realiza la misma selección pública
+y verificación exacta del paquete que la actualización en primer plano. Puede informar
+`ahead of extended-stable` cuando la versión instalada es más reciente. Los errores JSON
 incluyen `registry.reason` (`selector_missing`, `selector_query_failed`,
 `exact_package_mismatch` o `unsupported_git_channel`).
 
 ## `update repair`
 
-Vuelve a ejecutar la finalización de la actualización después de que el paquete principal ya haya cambiado, pero el trabajo de reparación posterior
-no haya terminado limpiamente. Esta es la ruta de recuperación admitida cuando
-`openclaw update` instaló el nuevo paquete principal, pero la sincronización de plugins posterior al núcleo,
-los metadatos de plugins npm gestionados, la actualización del registro o la reparación de doctor no
+Vuelve a ejecutar la finalización de la actualización después de que el paquete principal ya haya cambiado, pero el trabajo
+de reparación posterior no haya finalizado correctamente. Esta es la vía de recuperación admitida cuando
+`openclaw update` instaló el nuevo paquete principal, pero la sincronización de plugins posterior a la actualización del núcleo,
+los metadatos de plugins de npm gestionados, la actualización del registro o la reparación mediante Doctor no
 convergieron.
 
 ```bash
@@ -110,201 +114,208 @@ openclaw update repair --acknowledge-clawhub-risk
 openclaw update repair --json
 ```
 
-| Marca                                             | Descripción                                                                                                                                                                                                                                                         |
-| ------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `--channel <stable\|extended-stable\|beta\|dev>` | Conserva el canal de actualización del núcleo antes de reparar. Para extended-stable, los plugins npm oficiales aptos que siguen intención bare/default o `latest` apuntan a la versión exacta del núcleo instalada. La reparación de extended-stable se rechaza en checkouts de Git sin cambiar la configuración. |
-| `--json`                                         | Imprime JSON de finalización legible por máquinas.                                                                                                                                                                                                                           |
-| `--timeout <seconds>`                            | Tiempo de espera para los pasos de reparación. Valor predeterminado: `1800`.                                                                                                                                                                                                                           |
-| `--yes`                                          | Omite las solicitudes de confirmación.                                                                                                                                                                                                                                          |
-| `--acknowledge-clawhub-risk`                     | Mismo comportamiento que en `openclaw update`.                                                                                                                                                                                                                              |
-| `--no-restart`                                   | Aceptado por paridad; la reparación nunca reinicia el Gateway.                                                                                                                                                                                                             |
+| Indicador                                        | Descripción                                                                                                                                                                                                                                                                                                                           |
+| ------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `--channel <stable\|extended-stable\|beta\|dev>` | Conserva el canal de actualización del núcleo antes de la reparación. Para extended-stable, los plugins oficiales de npm aptos que siguen la intención básica/predeterminada o `latest` usan como destino la versión exacta instalada del núcleo. La reparación de extended-stable se rechaza en copias de trabajo de Git sin cambiar la configuración. |
+| `--json`                                         | Imprime JSON de finalización legible por máquinas.                                                                                                                                                                                                                                                                                     |
+| `--timeout <seconds>`                            | Tiempo de espera para los pasos de reparación. Valor predeterminado: `1800`.                                                                                                                                                                                                                                                           |
+| `--yes`                                          | Omite las solicitudes de confirmación.                                                                                                                                                                                                                                                                                                 |
+| `--acknowledge-clawhub-risk`                     | Tiene el mismo comportamiento que en `openclaw update`.                                                                                                                                                                                                                                                                                |
+| `--no-restart`                                   | Se acepta para mantener la paridad; la reparación nunca reinicia el Gateway.                                                                                                                                                                                                                                                           |
 
-`update repair` ejecuta `openclaw doctor --fix`, recarga la configuración reparada y
-los registros de instalación, sincroniza los plugins rastreados para el canal de actualización activo, actualiza
-las instalaciones de plugins npm gestionados, repara cargas útiles de plugins configuradas faltantes,
-actualiza el registro de plugins y escribe metadatos de registro de instalación convergidos.
-No instala un nuevo paquete principal y no reinicia el Gateway.
+`update repair` ejecuta `openclaw doctor --fix`, vuelve a cargar la configuración reparada y
+los registros de instalación, sincroniza los plugins con seguimiento para el canal de actualización activo, actualiza
+las instalaciones de plugins de npm gestionadas, repara las cargas útiles faltantes de plugins configurados,
+actualiza el registro de plugins y escribe metadatos convergentes de los registros de instalación.
+No instala un nuevo paquete principal ni reinicia el Gateway.
 
 ## `update wizard`
 
 Flujo interactivo para elegir un canal de actualización y confirmar si se debe reiniciar el
-Gateway después (el valor predeterminado es reiniciar). Seleccionar `dev` sin un checkout de git
-ofrece crear uno.
+Gateway después (de forma predeterminada, se reinicia). Al seleccionar `dev` sin una copia de trabajo de git,
+se ofrece la posibilidad de crear una.
 
-| Marca                  | Predeterminado | Descripción                   |
-| --------------------- | ------- | ----------------------------- |
-| `--timeout <seconds>` | `1800`  | Tiempo de espera para cada paso de actualización. |
+| Indicador             | Valor predeterminado | Descripción                                |
+| --------------------- | -------------------- | ------------------------------------------ |
+| `--timeout <seconds>` | `1800`               | Tiempo de espera para cada paso de actualización. |
 
 ## Qué hace
 
-Cambiar canales explícitamente (`--channel ...`) también mantiene alineado el método de instalación:
+Al cambiar de canal explícitamente (`--channel ...`), también se mantiene
+alineado el método de instalación:
 
-- `dev` -> garantiza un checkout de git (predeterminado `~/openclaw`, o
-  `$OPENCLAW_HOME/openclaw` cuando `OPENCLAW_HOME` está definido; anúlalo con
-  `OPENCLAW_GIT_DIR`), lo actualiza e instala la CLI global desde ese
-  checkout.
-- `stable` -> instala desde npm usando `latest`.
+- `dev` -> garantiza que exista una copia de trabajo de git (de forma predeterminada, `~/openclaw`, o
+  `$OPENCLAW_HOME/openclaw` cuando se establece `OPENCLAW_HOME`; se puede sustituir con
+  `OPENCLAW_GIT_DIR`), la actualiza e instala la CLI global desde esa
+  copia de trabajo.
+- `stable` -> instala desde npm mediante `latest`.
 - `extended-stable` -> resuelve el selector público `extended-stable` de npm,
   verifica el paquete exacto seleccionado e instala esa versión exacta. No
-  recurre a otro selector y se rechaza para checkouts de Git.
-- `beta` -> prefiere la dist-tag `beta` de npm, recurriendo a `latest` cuando beta falta o
-  es anterior a la versión stable actual.
+  recurre a otro selector como alternativa y se rechaza para copias de trabajo de Git.
+- `beta` -> prefiere la etiqueta de distribución `beta` de npm y recurre a `latest` como alternativa cuando beta
+  no está disponible o es anterior a la versión estable actual.
 
-### Traspaso de reinicio
+### Transferencia del reinicio
 
-El actualizador automático del núcleo de Gateway (cuando está habilitado mediante configuración) inicia la ruta de actualización de la CLI
-fuera del controlador de solicitudes del Gateway activo. Las actualizaciones del gestor de paquetes
-`update.run` del plano de control y las actualizaciones supervisadas de checkout de git usan
-el mismo traspaso de servicio gestionado en lugar de reemplazar el árbol de paquetes o
-reconstruir `dist/` dentro del proceso de Gateway activo: el Gateway inicia un
-ayudante separado y sale, y ese ayudante ejecuta `openclaw update --yes --json`
-desde fuera del árbol de procesos de Gateway. Si el traspaso no está disponible,
-`update.run` devuelve una respuesta estructurada con el comando de shell seguro para ejecutar
+El actualizador automático del núcleo del Gateway (cuando se habilita mediante la configuración) inicia la ruta de actualización de la CLI
+fuera del controlador de solicitudes activo del Gateway. Las actualizaciones del gestor de paquetes
+`update.run` del plano de control y las actualizaciones supervisadas de copias de trabajo de git utilizan
+la misma transferencia al servicio gestionado, en lugar de sustituir el árbol de paquetes o
+recompilar `dist/` dentro del proceso activo del Gateway: el Gateway inicia un
+proceso auxiliar desacoplado y finaliza, y dicho proceso auxiliar ejecuta `openclaw update --yes --json`
+desde fuera del árbol de procesos del Gateway. Si la transferencia no está disponible,
+`update.run` devuelve una respuesta estructurada con el comando de shell seguro que debe ejecutarse
 manualmente.
 
-Extended-stable se excluye deliberadamente de las comprobaciones de inicio y de la programación de
-actualizaciones automáticas en segundo plano. Las actualizaciones explícitas en primer plano, las actualizaciones simples en primer plano
-con `update.channel: "extended-stable"` almacenado, el estado bajo demanda y el traspaso gestionado de
-Gateway siguen estando admitidos.
+Las selecciones de estabilidad extendida almacenadas reciben avisos de inicio de solo lectura y de actualización cada 24 horas
+cuando `update.checkOnStart` está habilitado. Estas comprobaciones nunca aplican una actualización,
+inician una transferencia, reinician el Gateway, usan el retraso o la variación aleatoria de estable ni usan la
+cadencia de sondeo de beta. Siguen siendo compatibles las actualizaciones explícitas en primer plano, las actualizaciones simples en primer plano con
+`update.channel: "extended-stable"` almacenado, el estado bajo demanda y su
+transferencia administrada del Gateway.
 
-Cuando se instala un servicio Gateway administrado local y el reinicio está habilitado,
-las actualizaciones del gestor de paquetes y de checkout de git detienen el servicio en ejecución antes de
-reemplazar el árbol de paquetes o modificar la salida del checkout/build. El actualizador
-luego actualiza los metadatos del servicio, reinicia el servicio y verifica el
+Cuando hay instalado un servicio local administrado del Gateway y el reinicio está habilitado,
+las actualizaciones mediante el gestor de paquetes y desde un checkout de Git detienen el servicio en ejecución antes de
+reemplazar el árbol de paquetes o modificar el checkout o la salida de compilación. A continuación, el actualizador
+renueva los metadatos del servicio, reinicia el servicio y verifica el
 Gateway reiniciado antes de informar `Gateway: restarted and verified.`.
-Las actualizaciones del gestor de paquetes además verifican que el Gateway reiniciado informe la
-versión de paquete esperada; las actualizaciones de checkout de git verifican el estado del gateway y
-la preparación del servicio después de la reconstrucción.
+Además, las actualizaciones mediante el gestor de paquetes verifican que el Gateway reiniciado indique la
+versión de paquete esperada; las actualizaciones desde un checkout de Git verifican el estado del gateway y
+la disponibilidad del servicio después de la recompilación.
 
 En macOS, la comprobación posterior a la actualización también verifica que el LaunchAgent esté
-cargado/en ejecución para el perfil activo y que el puerto loopback configurado esté
-sano. Si el plist está instalado pero launchd no lo está supervisando, OpenClaw
-vuelve a inicializar el LaunchAgent automáticamente y vuelve a ejecutar las comprobaciones de salud/versión/
-preparación de canal (un bootstrap nuevo carga el trabajo `RunAtLoad` directamente,
+cargado y en ejecución para el perfil activo y que el puerto de bucle invertido configurado esté
+operativo. Si el plist está instalado pero launchd no lo supervisa, OpenClaw
+vuelve a inicializar el LaunchAgent automáticamente y ejecuta de nuevo las comprobaciones de estado, versión y
+disponibilidad del canal (una inicialización nueva carga directamente el trabajo `RunAtLoad`,
 por lo que la recuperación no ejecuta inmediatamente `kickstart -k` en el Gateway recién iniciado). Si
-el Gateway aún no se vuelve saludable, el comando sale con código distinto de cero e
-imprime la ruta del registro de reinicio junto con instrucciones de reinicio, reinstalación y reversión de paquete.
+el Gateway sigue sin estar operativo, el comando termina con un código distinto de cero e
+imprime la ruta del registro de reinicio, además de instrucciones para reiniciar, reinstalar y revertir
+el paquete.
 
-Si el reinicio no puede ejecutarse, el comando imprime `Gateway: restart skipped (...)` o
-`Gateway: restart failed: ...` con una sugerencia manual de `openclaw gateway restart`.
-Con `--no-restart`, el reemplazo de paquete o la reconstrucción de git aún se ejecuta, pero el
-servicio administrado no se detiene ni se reinicia, por lo que el Gateway en ejecución conserva el código anterior
-hasta que lo reinicies manualmente.
+Si no se puede ejecutar el reinicio, el comando imprime `Gateway: restart skipped (...)` o
+`Gateway: restart failed: ...` con una indicación para ejecutar manualmente `openclaw gateway restart`.
+Con `--no-restart`, el reemplazo del paquete o la recompilación de Git siguen ejecutándose, pero el
+servicio administrado no se detiene ni se reinicia, por lo que el Gateway en ejecución conserva el código
+anterior hasta que se reinicie manualmente.
 
-### Forma de respuesta del plano de control
+### Formato de respuesta del plano de control
 
-Cuando `update.run` se ejecuta a través del plano de control del Gateway en una instalación con gestor de paquetes
-o un checkout de git supervisado, el handler informa el inicio de la entrega
-por separado de la actualización de la CLI que continúa después de que el Gateway sale:
+Cuando `update.run` se ejecuta a través del plano de control del Gateway en una instalación
+mediante un gestor de paquetes o un checkout de Git supervisado, el controlador informa del inicio de la transferencia
+por separado de la actualización de la CLI que continúa después de que el Gateway termina:
 
 - `ok: true`, `result.status: "skipped"`,
-  `result.reason: "managed-service-handoff-started"`, y
-  `handoff.status: "started"`: el Gateway creó la entrega del servicio administrado
-  y programó su propio reinicio para que el helper desacoplado pueda ejecutar
+  `result.reason: "managed-service-handoff-started"` y
+  `handoff.status: "started"`: el Gateway creó la transferencia del servicio administrado
+  y programó su propio reinicio para que el proceso auxiliar desacoplado pueda ejecutar
   `openclaw update --yes --json` fuera del proceso del servicio activo.
-- `ok: false`, `result.reason: "managed-service-handoff-unavailable"`, y
-  `handoff.status: "unavailable"`: OpenClaw no pudo encontrar un límite de servicio supervisor
-  y una identidad de servicio duradera para una entrega segura (por
-  ejemplo, la entrega de systemd requiere la identidad de unidad `OPENCLAW_SYSTEMD_UNIT`,
-  no solo marcadores de proceso systemd del entorno). La respuesta incluye
-  `handoff.command`, el comando de shell que se debe ejecutar desde fuera del Gateway.
+- `ok: false`, `result.reason: "managed-service-handoff-unavailable"` y
+  `handoff.status: "unavailable"`: OpenClaw no pudo encontrar un
+  límite de servicio supervisor ni una identidad de servicio persistente para realizar una transferencia segura (por
+  ejemplo, la transferencia de systemd requiere la identidad de unidad `OPENCLAW_SYSTEMD_UNIT`,
+  no solo marcadores de proceso de systemd presentes en el entorno). La respuesta incluye
+  `handoff.command`, el comando de shell que debe ejecutarse desde fuera del Gateway.
 - `ok: false`, `result.reason: "managed-service-handoff-failed"`: el Gateway
-  intentó crear la entrega, pero no pudo iniciar el helper desacoplado.
+  intentó crear la transferencia, pero no pudo iniciar el proceso auxiliar desacoplado.
 
-La carga útil `sentinel` se escribe antes de que el Gateway salga, y la entrega de la CLI
-actualiza ese mismo centinela de reinicio después de que finalizan las comprobaciones de salud del reinicio
-del servicio administrado. Durante la entrega, el centinela puede contener
-`stats.reason: "restart-health-pending"` sin continuación de éxito; el
+La carga útil `sentinel` se escribe antes de que el Gateway termine, y la transferencia de la CLI
+actualiza ese mismo centinela de reinicio después de que finalicen las comprobaciones de estado
+posteriores al reinicio del servicio administrado. Durante la transferencia, el centinela puede contener
+`stats.reason: "restart-health-pending"` sin una continuación de éxito; el
 Gateway reiniciado lo sondea y activa la continuación solo después de que la CLI haya
-verificado la salud del servicio y reescrito el centinela con el resultado final `ok`.
+verificado el estado del servicio y reescrito el centinela con el resultado `ok` final.
 `openclaw status` y `openclaw status --all` muestran una fila `Update restart`
-mientras ese centinela está pendiente o falló, y `update.status` actualiza y
+mientras ese centinela esté pendiente o haya fallado, y `update.status` actualiza y
 devuelve el centinela más reciente.
 
 ## Flujo de checkout de Git
 
-### Selección de canal
+### Selección del canal
 
-- `stable`: hace checkout de la etiqueta no beta más reciente, luego compila y ejecuta doctor.
-- `beta`: prefiere la etiqueta `-beta` más reciente y recurre a la etiqueta estable más reciente
-  cuando beta falta o es más antigua.
-- `dev`: hace checkout de `main`, luego obtiene cambios y aplica rebase.
-- `extended-stable`: no compatible con checkouts de Git; no ocurre ninguna mutación de checkout.
+- `stable`: obtiene la etiqueta no beta más reciente y, a continuación, compila y ejecuta doctor.
+- `beta`: da preferencia a la etiqueta `-beta` más reciente y recurre a la etiqueta estable más reciente
+  cuando beta no existe o es más antigua.
+- `dev`: obtiene `main` y, a continuación, recupera y reorganiza los commits mediante rebase.
+- `extended-stable`: no es compatible con los checkouts de Git; no se produce ninguna modificación
+  del checkout.
 
 ### Pasos de actualización
 
 <Steps>
-  <Step title="Verify clean worktree">
+  <Step title="Verificar que el árbol de trabajo esté limpio">
     Requiere que no haya cambios sin confirmar.
   </Step>
-  <Step title="Switch channel">
+  <Step title="Cambiar de canal">
     Cambia al canal seleccionado (etiqueta o rama).
   </Step>
-  <Step title="Fetch upstream">
-    Solo dev.
+  <Step title="Recuperar desde el repositorio ascendente">
+    Solo para dev.
   </Step>
-  <Step title="Preflight build (dev only)">
-    Ejecuta la compilación de TypeScript en un worktree temporal. Si la punta falla, retrocede hasta 10 commits para encontrar el commit compilable más nuevo. Define `OPENCLAW_UPDATE_PREFLIGHT_LINT=1` para ejecutar también lint durante esta comprobación previa; lint se ejecuta en modo serial restringido porque los hosts de actualización de usuarios suelen ser más pequeños que los runners de CI.
+  <Step title="Compilación preliminar (solo dev)">
+    Ejecuta la compilación de TypeScript en un árbol de trabajo temporal. Si la punta falla, retrocede hasta 10 commits para encontrar el commit compilable más reciente. Establezca `OPENCLAW_UPDATE_PREFLIGHT_LINT=1` para ejecutar también el lint durante esta comprobación preliminar; el lint se ejecuta en modo serie restringido porque los equipos de actualización de los usuarios suelen tener menos recursos que los ejecutores de CI.
   </Step>
-  <Step title="Rebase">
-    Aplica rebase sobre el commit seleccionado (solo dev).
+  <Step title="Reorganizar commits mediante rebase">
+    Realiza un rebase sobre el commit seleccionado (solo dev).
   </Step>
-  <Step title="Install dependencies">
-    Usa el gestor de paquetes del repositorio. Para checkouts con pnpm, el actualizador inicializa `pnpm` bajo demanda (primero mediante `corepack`, luego con un fallback temporal `npm install pnpm@11`) en lugar de ejecutar `npm run build` dentro de un workspace pnpm. Si la inicialización de pnpm todavía falla, el actualizador se detiene temprano con un error específico del gestor de paquetes en lugar de intentar `npm run build` en el checkout.
+  <Step title="Instalar dependencias">
+    Usa el gestor de paquetes del repositorio. Para los checkouts de pnpm, el actualizador inicializa `pnpm` bajo demanda (primero mediante `corepack` y, después, con `npm install pnpm@11` temporal como alternativa) en lugar de ejecutar `npm run build` dentro de un espacio de trabajo de pnpm. Si la inicialización de pnpm sigue fallando, el actualizador se detiene antes con un error específico del gestor de paquetes en lugar de intentar ejecutar `npm run build` en el checkout.
   </Step>
-  <Step title="Build Control UI">
-    Compila el gateway y la Control UI.
+  <Step title="Compilar la interfaz de control">
+    Compila el gateway y la interfaz de control.
   </Step>
-  <Step title="Run doctor">
-    `openclaw doctor` se ejecuta como la comprobación final de actualización segura.
+  <Step title="Ejecutar doctor">
+    `openclaw doctor` se ejecuta como comprobación final de actualización segura.
   </Step>
-  <Step title="Sync plugins">
-    Sincroniza plugins con el canal activo. Dev usa plugins incluidos; stable y beta usan npm. Actualiza instalaciones de plugins rastreadas.
+  <Step title="Sincronizar plugins">
+    Sincroniza los plugins con el canal activo. Dev usa plugins incluidos; stable y beta usan npm. Actualiza las instalaciones de plugins registradas.
   </Step>
 </Steps>
 
 ### Detalles de sincronización de plugins
 
-En el canal beta, las instalaciones de plugins npm y ClawHub rastreadas que siguen la
-línea predeterminada/latest prueban primero una versión de plugin `@beta`. Si el plugin no tiene
-versión beta, OpenClaw recurre a la especificación predeterminada/latest registrada e
-informa una advertencia. Para plugins npm, OpenClaw también recurre al fallback cuando el paquete
-beta existe pero falla la validación de instalación. Estas advertencias de fallback no
-hacen fallar la actualización del núcleo. Las versiones exactas y las etiquetas explícitas nunca se reescriben.
+En el canal beta, las instalaciones registradas de plugins de npm y ClawHub que siguen la
+línea predeterminada o más reciente intentan primero usar una versión `@beta` del plugin. Si el plugin no tiene una
+versión beta, OpenClaw recurre a la especificación predeterminada o más reciente registrada e
+informa de una advertencia. Para los plugins de npm, OpenClaw también recurre a la alternativa cuando el
+paquete beta existe, pero no supera la validación de instalación. Estas advertencias de uso de alternativas no
+hacen que falle la actualización del núcleo. Las versiones exactas y las etiquetas explícitas nunca se reescriben.
 
 <Warning>
-Si una actualización de plugin npm fijada exactamente resuelve a un artefacto cuya integridad difiere del registro de instalación almacenado, `openclaw update` aborta esa actualización de artefacto de plugin en lugar de instalarlo. Reinstala o actualiza el plugin explícitamente solo después de verificar que confías en el nuevo artefacto.
+Si una actualización de un plugin de npm fijada a una versión exacta se resuelve en un artefacto cuya integridad difiere del registro de instalación almacenado, `openclaw update` cancela la actualización de ese artefacto del plugin en lugar de instalarlo. Reinstale o actualice el plugin explícitamente solo después de verificar que confía en el nuevo artefacto.
 </Warning>
 
 <Note>
-Los fallos de sincronización de plugins posteriores a la actualización que están limitados a un plugin administrado y que la ruta de sincronización puede sortear (por ejemplo, un registro npm inaccesible para un plugin no esencial) se informan como advertencias después de que la actualización del núcleo tiene éxito. El resultado JSON conserva `status: "ok"` en el nivel superior de actualización e informa `postUpdate.plugins.status: "warning"` con orientación de `openclaw update repair` y `openclaw plugins inspect <id> --runtime --json`. Las excepciones inesperadas del actualizador o de sincronización todavía hacen fallar el resultado de actualización. Corrige el error de instalación o actualización del plugin y luego vuelve a ejecutar `openclaw update repair`.
+Los fallos de sincronización de plugins posteriores a la actualización que se limitan a un plugin administrado y que la ruta de sincronización puede eludir (por ejemplo, un registro de npm inaccesible para un plugin no esencial) se notifican como advertencias después de que la actualización del núcleo finalice correctamente. El resultado JSON mantiene el `status: "ok"` de la actualización en el nivel superior e informa `postUpdate.plugins.status: "warning"` con indicaciones para ejecutar `openclaw update repair` y `openclaw plugins inspect <id> --runtime --json`. Las excepciones inesperadas del actualizador o de la sincronización siguen haciendo que falle el resultado de la actualización. Corrija el error de instalación o actualización del plugin y, a continuación, vuelva a ejecutar `openclaw update repair`.
 
-Después del paso de sincronización por plugin, `openclaw update` ejecuta una pasada obligatoria de **convergencia posterior al núcleo** antes de que el gateway se reinicie: repara cargas útiles de plugins configurados faltantes, valida cada registro de instalación rastreado _activo_ en disco y verifica estáticamente que su `package.json` sea analizable (y que cualquier `main` declarado explícitamente exista). Los fallos de esta pasada, y una instantánea de configuración no válida, devuelven `postUpdate.plugins.status: "error"` y cambian el `status` de actualización de nivel superior a `"error"`, por lo que `openclaw update` sale con código distinto de cero y el gateway _no_ se reinicia con un conjunto de plugins no verificado. El error incluye líneas estructuradas `postUpdate.plugins.warnings[].guidance` que apuntan a `openclaw update repair` y `openclaw plugins inspect <id> --runtime --json`. Las entradas de plugins deshabilitados y los registros que no son destinos oficiales de sincronización vinculados a fuentes de confianza se omiten aquí (reflejando la política `skipDisabledPlugins` usada por la comprobación de cargas útiles faltantes), por lo que un registro obsoleto de plugin deshabilitado no puede bloquear una actualización que de otro modo sería válida.
+Después del paso de sincronización de cada plugin, `openclaw update` ejecuta una pasada obligatoria de **convergencia posterior al núcleo** antes de que el gateway se reinicie: repara las cargas útiles ausentes de plugins configurados, valida en disco cada registro de instalación registrado _activo_ y verifica estáticamente que su `package.json` pueda analizarse (y que cualquier `main` declarado explícitamente exista). Los fallos de esta pasada, así como una instantánea de configuración no válida, devuelven `postUpdate.plugins.status: "error"` y cambian el `status` de actualización del nivel superior a `"error"`, por lo que `openclaw update` termina con un código distinto de cero y el gateway _no_ se reinicia con un conjunto de plugins sin verificar. El error incluye líneas estructuradas en `postUpdate.plugins.warnings[].guidance` que apuntan a `openclaw update repair` y `openclaw plugins inspect <id> --runtime --json`. Aquí se omiten las entradas de plugins deshabilitados y los registros que no sean destinos oficiales de sincronización vinculados a una fuente de confianza (en consonancia con la política `skipDisabledPlugins` usada por la comprobación de cargas útiles ausentes), por lo que un registro obsoleto de un plugin deshabilitado no puede bloquear una actualización que, por lo demás, sea válida.
 
-Cuando el Gateway actualizado inicia, la carga de plugins es solo de verificación: el inicio no ejecuta gestores de paquetes ni modifica árboles de dependencias. Los reinicios de `update.run` del gestor de paquetes se entregan a la ruta de servicio administrado de la CLI, por lo que el intercambio de paquetes ocurre fuera del proceso antiguo del Gateway y las comprobaciones de salud del servicio deciden si la actualización puede informarse como completa.
+Cuando se inicia el Gateway actualizado, la carga de plugins es solo de verificación: el inicio no ejecuta gestores de paquetes ni modifica árboles de dependencias. Los reinicios de `update.run` mediante el gestor de paquetes se transfieren a la ruta de servicio administrado de la CLI, por lo que el intercambio de paquetes se produce fuera del proceso anterior del Gateway y las comprobaciones de estado del servicio determinan si la actualización puede notificarse como completada.
 </Note>
 
-Después de que una actualización de núcleo extended-stable tiene éxito, la integridad y
-convergencia de plugins posteriores al núcleo apuntan a plugins npm oficiales elegibles en la versión exacta del núcleo instalado. Para la intención predeterminada/`latest`, OpenClaw no consulta
-`@extended-stable` del plugin ni recurre a npm `latest`; deriva la versión del paquete
-del núcleo instalado. Las fijaciones de versión explícitas, las etiquetas explícitas que no son `latest`,
-los paquetes de terceros y las fuentes no npm conservan su intención existente.
+Después de que una actualización del núcleo de estabilidad extendida finalice correctamente, la integridad y
+convergencia de plugins posteriores al núcleo se dirigen a los plugins oficiales de npm aptos en la versión exacta
+del núcleo instalada. Para la intención predeterminada o `latest`, OpenClaw no consulta
+`@extended-stable` del plugin ni recurre a `latest` de npm; obtiene la versión del paquete
+a partir del núcleo instalado. Las versiones fijadas explícitamente, las etiquetas explícitas distintas de `latest`,
+los paquetes de terceros y las fuentes que no sean npm conservan su intención existente.
 
-Para instalaciones con gestor de paquetes, `openclaw update` resuelve la versión de paquete
-objetivo antes de invocar el gestor de paquetes. Las instalaciones globales npm usan una instalación por etapas: OpenClaw instala el paquete nuevo en un prefijo npm temporal,
-verifica allí el inventario `dist` empaquetado y luego intercambia ese árbol de paquete limpio
-en el prefijo global real. Si la verificación falla, doctor posterior a la actualización,
-sincronización de plugins y trabajo de reinicio no se ejecutan desde el árbol sospechoso. Incluso cuando la
-versión instalada ya coincide con el objetivo, el comando actualiza la
-instalación global del paquete, luego ejecuta la sincronización de plugins, una actualización de finalización de comandos del núcleo
-y el trabajo de reinicio. Esto mantiene los sidecars empaquetados y los registros de plugins
-propiedad del canal alineados con la compilación instalada de OpenClaw, mientras deja las reconstrucciones completas
-de finalización de comandos de plugins para ejecuciones explícitas de
+Para las instalaciones mediante un gestor de paquetes, `openclaw update` resuelve la versión de paquete
+de destino antes de invocar el gestor de paquetes. Las instalaciones globales de npm usan una instalación
+por etapas: OpenClaw instala el paquete nuevo en un prefijo temporal de npm,
+verifica allí el inventario de `dist` del paquete y, a continuación, intercambia ese árbol de paquetes
+limpio con el prefijo global real. Si la verificación falla, las tareas posteriores de doctor,
+sincronización de plugins y reinicio no se ejecutan desde el árbol sospechoso. Incluso cuando la
+versión instalada ya coincide con la de destino, el comando renueva la
+instalación global del paquete y, después, ejecuta la sincronización de plugins, una actualización de la finalización
+de comandos del núcleo y las tareas de reinicio. Esto mantiene los componentes auxiliares incluidos en el paquete y los registros de
+plugins propiedad del canal alineados con la compilación instalada de OpenClaw, mientras deja las
+recompilaciones completas de finalización de comandos de plugins para ejecuciones explícitas de
 `openclaw completion --write-state`.
 
-## Relacionado
+## Contenido relacionado
 
-- `openclaw doctor` (ofrece ejecutar update primero en checkouts de git)
+- `openclaw doctor` (ofrece ejecutar primero la actualización en checkouts de Git)
 - [Canales de desarrollo](/es/install/development-channels)
 - [Actualización](/es/install/updating)
-- [Referencia de CLI](/es/cli)
+- [Referencia de la CLI](/es/cli)

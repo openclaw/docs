@@ -1,192 +1,152 @@
 ---
 read_when:
-    - 어떤 기능이 유료 API를 호출할 수 있는지 이해하려는 경우
-    - 키, 비용, 사용량 가시성을 감사해야 합니다
-    - /status 또는 /usage 비용 보고를 설명하고 있습니다
-summary: 무엇이 비용을 발생시킬 수 있는지, 어떤 키가 사용되는지, 사용량을 확인하는 방법 감사
+    - 유료 API를 호출할 수 있는 기능을 파악하려고 합니다
+    - 키, 비용 및 사용량 가시성을 감사해야 합니다.
+    - /status 또는 /usage 비용 보고를 설명하고 있습니다.
+summary: 비용이 발생할 수 있는 항목, 사용되는 키, 사용량 확인 방법을 감사하십시오.
 title: API 사용량 및 비용
 x-i18n:
-    generated_at: "2026-06-27T18:06:06Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:42:10Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: 473028747c3e8eab60667106d22616aa185f867d01238b856f4235faad957a9e
+    source_hash: b35ad64f83572eb8c01b59ee57368fd7ba20cb83ccac835281859796f782c1dd
     source_path: reference/api-usage-costs.md
     workflow: 16
 ---
 
-이 문서는 **API 키를 호출할 수 있는 기능**과 해당 비용이 표시되는 위치를 나열합니다. Provider 사용량 또는 유료 API 호출을 생성할 수 있는 OpenClaw 기능에 초점을 맞춥니다.
+OpenClaw 기능 중 유료 제공자 API를 호출할 수 있는 기능, 각 기능이 자격 증명을 읽는 위치, 그리고 발생한 비용이 표시되는 위치를 정리한 안내입니다.
 
-## 비용이 표시되는 위치(채팅 + CLI)
+## 비용이 표시되는 위치
 
-**세션별 비용 스냅샷**
+**`/status`**(세션별 스냅샷)
 
-- `/status`는 현재 세션 모델, 컨텍스트 사용량, 마지막 응답 토큰을 표시합니다.
-- OpenClaw에 활성 모델의 사용량 메타데이터와 로컬 가격 정보가 있으면,
-  `/status`는 마지막 답변의 **예상 비용**도 표시합니다. 여기에는 Bedrock `aws-sdk` 모델처럼 명시적으로 가격이 책정된 비 API 키 Provider가 포함될 수 있습니다.
-- 라이브 세션 메타데이터가 부족하면, `/status`는 최신 트랜스크립트 사용량
-  항목에서 토큰/캐시 카운터와 활성 런타임 모델 라벨을 복구할 수 있습니다. 기존의 0이 아닌 라이브 값이 여전히 우선하며, 저장된 총합이 없거나 더 작을 때는 프롬프트 크기의 트랜스크립트 총합이 우선할 수 있습니다.
+- 현재 세션 모델, 컨텍스트 사용량, 마지막 응답의 토큰 수를 표시합니다.
+- OpenClaw에 활성 모델의 사용량 메타데이터와 로컬 가격 정보가 있으면 마지막 응답의 **예상 비용**을 추가합니다. 여기에는 Bedrock `aws-sdk` 모델처럼 가격이 명시된 비 API 키 제공자도 포함됩니다.
+- 실시간 세션 스냅샷의 데이터가 부족하면 `/status`는 최신 트랜스크립트 사용량 항목에서 토큰/캐시 카운터와 활성 모델 레이블을 복구합니다. 기존의 0이 아닌 실시간 값이 트랜스크립트 데이터보다 우선합니다. 저장된 합계가 없거나 더 작으면 프롬프트 크기를 포함한 트랜스크립트 합계가 우선할 수 있습니다.
 
-**메시지별 비용 푸터**
+**`/usage`**(메시지별 바닥글)
 
-- `/usage full`은 활성 모델에 로컬 가격 정보가 구성되어 있고 사용량 메타데이터를
-  사용할 수 있을 때 **예상 비용**을 포함한 사용량 푸터를 모든 답변에 추가합니다.
-- `/usage tokens`는 토큰만 표시합니다. 구독형 OAuth/토큰 및 CLI 흐름도 해당 런타임이
-  호환되는 사용량 메타데이터를 제공하고 명시적 로컬 가격이 구성되어 있지 않으면 토큰만 표시합니다.
-- Gemini CLI 참고: 기본 `stream-json` 출력과 레거시 JSON 오버라이드는 모두
-  `stats`에서 사용량을 읽고, `stats.cached`를 `cacheRead`로 정규화하며, 필요할 때
-  `stats.input_tokens - stats.cached`에서 입력 토큰을 산출합니다.
+- `/usage full`은 모든 응답에 사용량 바닥글을 추가하며, 로컬 가격이 구성되어 있고 사용량 메타데이터를 사용할 수 있으면 **예상 비용**도 포함합니다.
+- `/usage tokens`는 토큰만 표시합니다. 구독형 OAuth/토큰 및 CLI 런타임은 호환되는 사용량 메타데이터와 명시적인 로컬 가격을 함께 제공하지 않는 한 토큰만 표시합니다.
+- `/usage cost`는 로컬 비용 요약을 출력하고, `/usage off`는 바닥글을 비활성화합니다.
+- Gemini CLI 참고: `stream-json` 및 레거시 `json` 출력 모두 `stats` 아래에 사용량을 포함합니다. OpenClaw는 `stats.cached`를 `cacheRead`로 정규화하고, 필요한 경우 `stats.input_tokens - stats.cached`에서 입력 토큰 수를 계산합니다.
 
-Anthropic 참고: Anthropic 직원은 OpenClaw 스타일 Claude CLI 사용이 다시
-허용된다고 알려왔으므로, Anthropic이 새 정책을 게시하지 않는 한 OpenClaw는 이 통합에서 Claude CLI 재사용과 `claude -p` 사용을 승인된 것으로 취급합니다.
-Anthropic은 여전히 OpenClaw가 `/usage full`에 표시할 수 있는 메시지별 달러 추정치를 제공하지 않습니다.
+**Control UI → Usage**(세션 간 분석)
 
-**CLI 사용량 기간(Provider 할당량)**
+- 선택한 날짜 범위에 대해 트랜스크립트에서 산출한 토큰 및 예상 비용 합계를 표시하며, 제공자, 모델, 에이전트, 채널, 토큰 유형별 분석을 제공합니다.
+- 선택한 범위의 종료일에 끝나는 더 짧은 달력 기간과 비교합니다. 누락된 날짜는 사용량이 0인 달력 날짜로 계산되며, 더 조밀한 기간을 만들기 위해 건너뛰지 않습니다.
+- 일별 차트의 눈금을 직접 표시합니다. `√` 배지는 제곱근 압축을 사용하여 사용량이 적은 날짜도 계속 보이게 한다는 의미입니다.
+- 이 합계는 사용 가능한 로컬 세션 기록을 설명하며 제공자 청구서나 전체 기간의 청구 원장이 아닙니다. 일부 항목에 가격 정보가 없으면 UI에서 경고합니다.
 
-- `openclaw status --usage`와 `openclaw channels list`는 Provider **사용량 기간**
-  (메시지별 비용이 아닌 할당량 스냅샷)을 표시합니다.
-- 사람이 읽는 출력은 Provider 전반에서 `X% left`로 정규화됩니다.
-- 현재 사용량 기간 Provider: Anthropic, GitHub Copilot, Gemini CLI,
-  OpenAI Codex, MiniMax, Xiaomi, z.ai.
-- MiniMax 참고: 원시 `usage_percent` / `usagePercent` 필드는 남은
-  할당량을 의미하므로 OpenClaw는 표시 전에 이를 반전합니다. 카운트 기반 필드가 있으면 여전히 우선합니다. Provider가 `model_remains`를 반환하면 OpenClaw는 채팅 모델 항목을 선호하고, 필요할 때 타임스탬프에서 기간 라벨을 산출하며, 플랜 라벨에 모델 이름을 포함합니다.
-- 해당 할당량 기간의 사용량 인증은 가능할 때 Provider별 훅에서 가져옵니다. 그렇지 않으면 OpenClaw는 인증 프로필, env 또는 config에서 일치하는 OAuth/API 키
-  자격 증명으로 폴백합니다.
+**CLI 사용량 기간**(메시지별 비용이 아닌 제공자 할당량)
 
-자세한 내용과 예시는 [토큰 사용량 및 비용](/ko/reference/token-use)을 참조하세요.
+- `openclaw status --usage` 및 `openclaw channels list`는 제공자의 **사용량 기간**을 `X% left` 형식으로 표시합니다.
+- 현재 사용량 기간을 제공하는 제공자는 Anthropic, ClawRouter, DeepSeek, GitHub Copilot, Gemini CLI, MiniMax, OpenAI(ChatGPT/Codex OAuth/토큰 인증 포함), Xiaomi, z.ai입니다. 전체 제공자/플래그 목록은 [모델 CLI](/ko/cli/models) 및 [채널 CLI](/ko/cli/channels)를 참조하십시오.
+- MiniMax의 원시 `usage_percent` / `usagePercent` 필드는 남은 할당량을 보고하므로 OpenClaw가 값을 반전합니다. 개수 기반 필드가 있으면 해당 필드가 우선합니다. 응답에 `model_remains` 배열이 포함되면 OpenClaw는 채팅 모델 항목을 선택하고, 필요한 경우 타임스탬프에서 기간 레이블을 계산하며, 플랜 레이블에 모델 이름을 포함합니다.
+- 사용량 인증은 제공자별 훅을 사용할 수 있으면 해당 훅에서 가져옵니다. 그렇지 않으면 OpenClaw는 인증 프로필, 환경 변수 또는 구성에서 일치하는 OAuth/API 키 자격 증명을 사용합니다.
+
+자세한 예시는 [토큰 사용량 및 비용](/ko/reference/token-use)을 참조하십시오.
+
+<Note>
+Anthropic은 새로운 정책을 게시하지 않는 한 Claude CLI 재사용(`claude -p` 포함)이 허용된 통합 방식임을 확인했습니다. Anthropic은 메시지별 예상 금액을 제공하지 않으므로 `/usage full`은 Claude CLI 사용 비용을 표시할 수 없습니다.
+</Note>
 
 ## 키 검색 방식
 
-OpenClaw는 다음에서 자격 증명을 가져올 수 있습니다.
-
-- **인증 프로필**(에이전트별, `auth-profiles.json`에 저장됨).
-- **환경 변수**(예: `OPENAI_API_KEY`, `BRAVE_API_KEY`, `FIRECRAWL_API_KEY`).
-- **Config**(`models.providers.*.apiKey`, `plugins.entries.*.config.webSearch.apiKey`,
-  `plugins.entries.firecrawl.config.webFetch.apiKey`, `memorySearch.*`,
-  `talk.providers.*.apiKey`).
-- **Skills**(`skills.entries.<name>.apiKey`)는 Skills 프로세스 env로 키를 내보낼 수 있습니다.
+- **인증 프로필**: 에이전트별로 `auth-profiles.json`에 저장됩니다.
+- **환경 변수**: 예: `OPENAI_API_KEY`, `BRAVE_API_KEY`, `FIRECRAWL_API_KEY`.
+- **구성**: `models.providers.*.apiKey`, `plugins.entries.*.config.webSearch.apiKey`, `plugins.entries.firecrawl.config.webFetch.apiKey`, `agents.defaults.memorySearch.*`, `talk.providers.*.apiKey`.
+- **Skills**: `skills.entries.<name>.apiKey`이며, 키를 Skills 프로세스 환경으로 내보낼 수 있습니다.
 
 ## 키 비용을 발생시킬 수 있는 기능
 
-### 1) 코어 모델 응답(채팅 + 도구)
+### 핵심 모델 응답(채팅 + 도구)
 
-모든 답변 또는 도구 호출은 **현재 모델 Provider**(OpenAI, Anthropic 등)를 사용합니다. 이것이 사용량과 비용의 주된 원천입니다.
+모든 응답이나 도구 호출은 현재 모델 제공자에서 실행됩니다. 이는 사용량과 비용의 주요 원인이며, OpenClaw의 로컬 UI 외부에서 요금을 청구하는 구독형 호스팅 플랜도 포함합니다. 해당 플랜에는 OpenAI Codex, Alibaba Cloud Model Studio Coding Plan, MiniMax Coding Plan, Z.AI/GLM Coding Plan, Extra Usage가 활성화된 Anthropic의 Claude 로그인 경로가 있습니다.
 
-여기에는 OpenClaw의 로컬 UI 외부에서 여전히 과금되는 구독형 호스팅 Provider도 포함됩니다. 예를 들면 **OpenAI Codex**, **Alibaba Cloud Model Studio
-Coding Plan**, **MiniMax Coding Plan**, **Z.AI / GLM Coding Plan**, 그리고 **Extra Usage**가 활성화된 Anthropic의 OpenClaw Claude 로그인 경로입니다.
+가격 구성은 [모델](/ko/providers/models)을, 표시 방식은 [토큰 사용량 및 비용](/ko/reference/token-use)을 참조하십시오.
 
-가격 구성은 [모델](/ko/providers/models)을, 표시는 [토큰 사용량 및 비용](/ko/reference/token-use)을 참조하세요.
+### 미디어 이해(오디오/이미지/동영상)
 
-### 2) 미디어 이해(오디오/이미지/비디오)
+수신 미디어는 응답 파이프라인이 실행되기 전에 제공자 API를 통해 요약하거나 전사할 수 있습니다. 제공자 지원은 Plugin별로 등록되며 Plugin 추가에 따라 변경됩니다. 현재 목록과 구성은 [미디어 이해](/ko/nodes/media-understanding)를 참조하십시오.
 
-수신 미디어는 답변 실행 전에 요약/전사될 수 있습니다. 이는 모델/Provider API를 사용합니다.
+### 이미지 및 동영상 생성
 
-- 오디오: OpenAI / Groq / Deepgram / DeepInfra / Google / Mistral.
-- 이미지: OpenAI / OpenRouter / Anthropic / DeepInfra / Google / MiniMax / Moonshot / Qwen / Z.AI.
-- 비디오: Google / Qwen / Moonshot.
+`image_generate` 및 `video_generate`는 사용 가능한 구성된 제공자로 라우팅됩니다. `agents.defaults.imageGenerationModel`이 설정되지 않은 경우 이미지 생성은 인증 정보가 있는 기본 제공자를 추론할 수 있습니다. 동영상 생성에는 명시적인 `agents.defaults.videoGenerationModel`이 필요합니다(예: `qwen/wan2.6-t2v`).
 
-[미디어 이해](/ko/nodes/media-understanding)를 참조하세요.
+현재 제공자 목록은 [이미지 생성](/ko/tools/image-generation) 및 [동영상 생성](/ko/tools/video-generation)을 참조하십시오.
 
-### 3) 이미지 및 비디오 생성
+### 메모리 임베딩 및 의미 검색
 
-공유 생성 기능도 Provider 키 비용을 발생시킬 수 있습니다.
+`agents.defaults.memorySearch.provider`가 원격 어댑터(예: `openai`, `gemini`, `voyage`, `mistral`, `deepinfra`, `github-copilot`, `amazon-bedrock`)를 지정하면 의미 기반 메모리 검색에서 임베딩 API를 사용합니다. `memorySearch.provider = "lmstudio"` 또는 `"ollama"`는 로컬/자체 호스팅 서버에서 실행되며 일반적으로 호스팅 요금이 발생하지 않습니다. `memorySearch.provider = "local"`은 API를 사용하지 않고 모든 작업을 기기 내에서 처리합니다. 선택적 `memorySearch.fallback` 제공자를 사용하여 로컬 임베딩 실패를 처리할 수 있습니다.
 
-- 이미지 생성: OpenAI / Google / DeepInfra / fal / MiniMax
-- 비디오 생성: DeepInfra / Qwen
+[메모리](/ko/concepts/memory)를 참조하십시오.
 
-`agents.defaults.imageGenerationModel`이 설정되지 않은 경우 이미지 생성은 인증 기반 Provider 기본값을 추론할 수 있습니다. 비디오 생성은 현재
-`qwen/wan2.6-t2v` 같은 명시적 `agents.defaults.videoGenerationModel`이 필요합니다.
+### 웹 검색 도구
 
-[이미지 생성](/ko/tools/image-generation), [Qwen Cloud](/ko/providers/qwen),
-[모델](/ko/concepts/models)을 참조하세요.
+`web_search`는 선택한 제공자에 따라 사용 요금이 발생할 수 있습니다. 각 제공자는 먼저 환경 변수에서 키를 읽고, 그다음 `plugins.entries.<id>.config.webSearch.apiKey`에서 읽습니다.
 
-### 4) 메모리 임베딩 + 시맨틱 검색
+| 제공자                 | 환경 변수                                                                                                                                                              |
+| ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Brave Search           | `BRAVE_API_KEY`                                                                                                                                                        |
+| DuckDuckGo             | 키 불필요, 비공식 HTML 기반, 요금 없음                                                                                                                                 |
+| Exa                    | `EXA_API_KEY`                                                                                                                                                          |
+| Firecrawl              | `FIRECRAWL_API_KEY`                                                                                                                                                    |
+| Gemini (Google Search) | `GEMINI_API_KEY`                                                                                                                                                       |
+| Grok (xAI)             | xAI OAuth 프로필 또는 `XAI_API_KEY`                                                                                                                                    |
+| Kimi (Moonshot)        | `KIMI_API_KEY` 또는 `MOONSHOT_API_KEY`                                                                                                                                 |
+| MiniMax Search         | `MINIMAX_CODE_PLAN_KEY`, `MINIMAX_CODING_API_KEY`, `MINIMAX_OAUTH_TOKEN` 또는 `MINIMAX_API_KEY`                                                                         |
+| Ollama Web Search      | 로그인된 로컬 호스트에 연결할 수 있으면 키 불필요, 직접 `https://ollama.com` 검색은 `OLLAMA_API_KEY` 사용, 인증으로 보호되는 호스트는 일반 Ollama 제공자 Bearer 인증 재사용 |
+| Parallel               | `PARALLEL_API_KEY`                                                                                                                                                     |
+| Perplexity Search API  | `PERPLEXITY_API_KEY` 또는 `OPENROUTER_API_KEY`                                                                                                                         |
+| SearXNG                | `SEARXNG_BASE_URL`, 키 불필요/자체 호스팅, 호스팅 요금 없음                                                                                                            |
+| Tavily                 | `TAVILY_API_KEY`                                                                                                                                                       |
 
-시맨틱 메모리 검색은 원격 Provider로 구성된 경우 **임베딩 API**를 사용합니다.
+레거시 `tools.web.search.*` 구성 경로는 여전히 호환성 shim을 통해 로드되지만 더 이상 권장되는 인터페이스가 아닙니다.
 
-- `memorySearch.provider = "openai"` → OpenAI 임베딩
-- `memorySearch.provider = "gemini"` → Gemini 임베딩
-- `memorySearch.provider = "voyage"` → Voyage 임베딩
-- `memorySearch.provider = "mistral"` → Mistral 임베딩
-- `memorySearch.provider = "deepinfra"` → DeepInfra 임베딩
-- `memorySearch.provider = "lmstudio"` → LM Studio 임베딩(로컬/자체 호스팅)
-- `memorySearch.provider = "ollama"` → Ollama 임베딩(로컬/자체 호스팅, 일반적으로 호스팅 API 과금 없음)
-- 로컬 임베딩이 실패할 경우 원격 Provider로 선택적 폴백
+**Brave Search 무료 크레딧**: 각 플랜에는 매월 갱신되는 $5의 무료 크레딧이 포함됩니다. Search 플랜의 비용은 요청 1,000건당 $5이므로, 크레딧으로 매월 요청 1,000건을 무료로 사용할 수 있습니다. 예상치 못한 요금을 방지하려면 Brave 대시보드에서 사용량 한도를 설정하십시오.
 
-`memorySearch.provider = "local"`로 로컬 상태를 유지할 수 있습니다(API 사용 없음).
+[웹 도구](/ko/tools/web)를 참조하십시오.
 
-[메모리](/ko/concepts/memory)를 참조하세요.
+### 웹 가져오기 도구(Firecrawl)
 
-### 5) 웹 검색 도구
+`web_fetch`는 키 없이 제공되는 스타터 액세스로 Firecrawl을 호출할 수 있습니다. 더 높은 한도를 사용하려면 `FIRECRAWL_API_KEY`(또는 `plugins.entries.firecrawl.config.webFetch.apiKey`)를 추가하십시오. Firecrawl이 구성되지 않으면 도구는 직접 가져오기와 번들 `web-readability` Plugin으로 폴백합니다(유료 API 없음). 로컬 Readability 추출을 건너뛰려면 `plugins.entries.web-readability.enabled`를 비활성화하십시오.
 
-`web_search`는 Provider에 따라 사용량 요금이 발생할 수 있습니다.
+[웹 도구](/ko/tools/web)를 참조하십시오.
 
-- **Brave Search API**: `BRAVE_API_KEY` 또는 `plugins.entries.brave.config.webSearch.apiKey`
-- **Exa**: `EXA_API_KEY` 또는 `plugins.entries.exa.config.webSearch.apiKey`
-- **Firecrawl**: `FIRECRAWL_API_KEY` 또는 `plugins.entries.firecrawl.config.webSearch.apiKey`
-- **Gemini (Google Search)**: `GEMINI_API_KEY` 또는 `plugins.entries.google.config.webSearch.apiKey`
-- **Grok (xAI)**: xAI OAuth 프로필, `XAI_API_KEY` 또는 `plugins.entries.xai.config.webSearch.apiKey`
-- **Kimi (Moonshot)**: `KIMI_API_KEY`, `MOONSHOT_API_KEY` 또는 `plugins.entries.moonshot.config.webSearch.apiKey`
-- **MiniMax Search**: `MINIMAX_CODE_PLAN_KEY`, `MINIMAX_CODING_API_KEY`, `MINIMAX_API_KEY` 또는 `plugins.entries.minimax.config.webSearch.apiKey`
-- **Ollama Web Search**: 접근 가능한 로그인된 로컬 Ollama 호스트에서는 키 없이 사용 가능. 직접 `https://ollama.com` 검색은 `OLLAMA_API_KEY`를 사용하며, 인증 보호된 호스트는 일반 Ollama Provider bearer 인증을 재사용할 수 있습니다.
-- **Perplexity Search API**: `PERPLEXITY_API_KEY`, `OPENROUTER_API_KEY` 또는 `plugins.entries.perplexity.config.webSearch.apiKey`
-- **Tavily**: `TAVILY_API_KEY` 또는 `plugins.entries.tavily.config.webSearch.apiKey`
-- **DuckDuckGo**: 명시적으로 선택한 경우 키 없는 Provider(API 과금 없음, 비공식이며 HTML 기반)
-- **SearXNG**: `SEARXNG_BASE_URL` 또는 `plugins.entries.searxng.config.webSearch.baseUrl`(키 없음/자체 호스팅, 호스팅 API 과금 없음)
+### 제공자 사용량 스냅샷(상태/상태 확인)
 
-레거시 `tools.web.search.*` Provider 경로는 여전히 임시 호환성 shim을 통해 로드되지만, 더 이상 권장 config 표면이 아닙니다.
+`openclaw status --usage` 및 `openclaw models status --json`은 제공자 사용량 엔드포인트를 호출하여 할당량 기간이나 인증 상태를 표시합니다. 호출량은 적지만 제공자 API에는 계속 요청을 보냅니다.
 
-**Brave Search 무료 크레딧:** 각 Brave 플랜에는 매월 갱신되는 \$5 무료 크레딧이 포함됩니다. Search 플랜은 요청 1,000건당 \$5이므로, 크레딧으로 월 1,000건의 요청을 무료로 처리할 수 있습니다. 예상치 못한 요금을 피하려면 Brave 대시보드에서 사용량 한도를 설정하세요.
+[모델 CLI](/ko/cli/models)를 참조하십시오.
 
-[웹 도구](/ko/tools/web)를 참조하세요.
+### Compaction 보호 요약
 
-### 5) 웹 가져오기 도구(Firecrawl)
+Compaction 보호 기능은 현재 모델을 사용하여 세션 기록을 요약할 수 있으며, 실행 시 제공자 API를 호출합니다.
 
-`web_fetch`는 키 없는 스타터 액세스로 **Firecrawl**을 호출할 수 있습니다. 더 높은 한도를 원하면 API 키를 추가하세요.
+[세션 관리 및 Compaction](/ko/reference/session-management-compaction)을 참조하십시오.
 
-- `FIRECRAWL_API_KEY` 또는 `plugins.entries.firecrawl.config.webFetch.apiKey`
-
-Firecrawl이 구성되어 있지 않으면 도구는 직접 fetch와 번들된 `web-readability` Plugin으로 폴백합니다(유료 API 없음). 로컬 Readability 추출을 건너뛰려면 `plugins.entries.web-readability.enabled`를 비활성화하세요.
-
-[웹 도구](/ko/tools/web)를 참조하세요.
-
-### 6) Provider 사용량 스냅샷(상태/상태 점검)
-
-일부 상태 명령은 **Provider 사용량 엔드포인트**를 호출하여 할당량 기간 또는 인증 상태를 표시합니다.
-이는 일반적으로 호출량이 적지만 여전히 Provider API에 요청합니다.
-
-- `openclaw status --usage`
-- `openclaw models status --json`
-
-[모델 CLI](/ko/cli/models)를 참조하세요.
-
-### 7) Compaction 보호 장치 요약
-
-Compaction 보호 장치는 **현재 모델**을 사용해 세션 기록을 요약할 수 있으며, 실행될 때 Provider API를 호출합니다.
-
-[세션 관리 + Compaction](/ko/reference/session-management-compaction)을 참조하세요.
-
-### 8) 모델 스캔 / 프로브
+### 모델 스캔/프로브
 
 `openclaw models scan`은 OpenRouter 모델을 프로브할 수 있으며, 프로브가 활성화되면 `OPENROUTER_API_KEY`를 사용합니다.
 
-[모델 CLI](/ko/cli/models)를 참조하세요.
+[모델 CLI](/ko/cli/models)를 참조하십시오.
 
-### 9) Talk(음성)
+### 말하기(음성)
 
-Talk 모드는 구성된 경우 **ElevenLabs**를 호출할 수 있습니다.
+말하기 모드는 구성된 경우 ElevenLabs를 호출할 수 있습니다. `ELEVENLABS_API_KEY` 또는 `talk.providers.elevenlabs.apiKey`를 사용합니다.
 
-- `ELEVENLABS_API_KEY` 또는 `talk.providers.elevenlabs.apiKey`
+[말하기 모드](/ko/nodes/talk)를 참조하십시오.
 
-[Talk 모드](/ko/nodes/talk)를 참조하세요.
+### Skills(서드 파티 API)
 
-### 10) Skills(타사 API)
+Skills는 `skills.entries.<name>.apiKey`에 `apiKey`를 저장할 수 있습니다. Skills가 외부 API에 해당 키를 사용하면 Skills의 제공자에 따라 비용이 발생합니다.
 
-Skills는 `skills.entries.<name>.apiKey`에 `apiKey`를 저장할 수 있습니다. Skills가 외부 API에 해당 키를 사용하면 Skills의 Provider에 따라 비용이 발생할 수 있습니다.
+[Skills](/ko/tools/skills)를 참조하십시오.
 
-[Skills](/ko/tools/skills)를 참조하세요.
-
-## 관련 항목
+## 관련 문서
 
 - [토큰 사용량 및 비용](/ko/reference/token-use)
 - [프롬프트 캐싱](/ko/reference/prompt-caching)

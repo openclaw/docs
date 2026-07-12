@@ -1,60 +1,51 @@
 ---
 read_when:
     - mac 디버그 빌드 생성 또는 서명
-summary: 패키징 스크립트에서 생성된 macOS 디버그 빌드의 서명 단계
+summary: 패키징 스크립트로 생성된 macOS 디버그 빌드의 서명 단계
 title: macOS 서명
 x-i18n:
-    generated_at: "2026-06-27T17:40:53Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:30:31Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: df4ee44b6bdf09a24e0d05ed4354e2cb573372d12a667b4fcdfd7d6f88291082
+    source_hash: 663c08c031417d5a9f048581421e4fe9f69480917582f74746af675bcca5cf95
     source_path: platforms/mac/signing.md
     workflow: 16
 ---
 
-# mac 서명(디버그 빌드)
+# Mac 서명(디버그 빌드)
 
-이 앱은 일반적으로 [`scripts/package-mac-app.sh`](https://github.com/openclaw/openclaw/blob/main/scripts/package-mac-app.sh)에서 빌드되며, 이제 다음을 수행합니다.
+[`scripts/package-mac-app.sh`](https://github.com/openclaw/openclaw/blob/main/scripts/package-mac-app.sh)는 앱을 빌드하여 고정 경로(`dist/OpenClaw.app`)에 패키징한 다음, [`scripts/codesign-mac-app.sh`](https://github.com/openclaw/openclaw/blob/main/scripts/codesign-mac-app.sh)를 호출하여 서명합니다. TCC 권한은 번들 ID와 코드 서명에 연결됩니다. 재빌드할 때도 두 항목을 안정적으로 유지하고 앱 경로도 고정하면 macOS에서 TCC 허용 권한(알림, 손쉬운 사용, 화면 기록, 마이크, 음성)을 잊지 않습니다.
 
-- 안정적인 디버그 번들 식별자를 설정합니다: `ai.openclaw.mac.debug`
-- 해당 번들 ID로 Info.plist를 작성합니다(`BUNDLE_ID=...`로 재정의 가능)
-- [`scripts/codesign-mac-app.sh`](https://github.com/openclaw/openclaw/blob/main/scripts/codesign-mac-app.sh)를 호출하여 기본 바이너리와 앱 번들에 서명합니다. 따라서 macOS는 각 재빌드를 동일한 서명된 번들로 취급하고 TCC 권한(알림, 손쉬운 사용, 화면 기록, 마이크, 음성)을 유지합니다. 안정적인 권한을 위해 실제 서명 ID를 사용하세요. ad-hoc은 명시적으로 선택해야 하며 취약합니다([macOS 권한](/ko/platforms/mac/permissions) 참조).
-- 기본적으로 `CODESIGN_TIMESTAMP=auto`를 사용합니다. Developer ID 서명에 신뢰할 수 있는 타임스탬프를 활성화합니다. 타임스탬프를 건너뛰려면(오프라인 디버그 빌드) `CODESIGN_TIMESTAMP=off`를 설정하세요.
-- 빌드 메타데이터를 Info.plist에 주입합니다: `OpenClawBuildTimestamp`(UTC) 및 `OpenClawGitCommit`(짧은 해시). 따라서 정보 창에서 빌드, git, 디버그/릴리스 채널을 표시할 수 있습니다.
-- **패키징은 기본적으로 Node 24를 사용합니다**: 스크립트는 TS 빌드와 Control UI 빌드를 실행합니다. 현재 `22.19+`인 Node 22 LTS는 호환성을 위해 계속 지원됩니다.
-- 환경에서 `SIGN_IDENTITY`를 읽습니다. 항상 인증서로 서명하려면 셸 rc에 `export SIGN_IDENTITY="Apple Development: Your Name (TEAMID)"`(또는 Developer ID Application 인증서)를 추가하세요. ad-hoc 서명은 `ALLOW_ADHOC_SIGNING=1` 또는 `SIGN_IDENTITY="-"`로 명시적으로 선택해야 합니다(권한 테스트에는 권장하지 않음).
-- 서명 후 Team ID 감사를 실행하며, 앱 번들 내부의 Mach-O 중 하나라도 다른 Team ID로 서명된 경우 실패합니다. 우회하려면 `SKIP_TEAM_ID_CHECK=1`을 설정하세요.
+- 디버그 번들 식별자의 기본값은 `ai.openclaw.mac.debug`입니다(`BUNDLE_ID=...`로 재정의).
+- Node: `>=22.19.0 <23` 또는 `>=23.11.0`(저장소 `package.json`의 `engines`). 패키저는 Control UI도 빌드합니다(`pnpm ui:build`).
+- 기본적으로 실제 서명 ID가 필요합니다. 서명 ID를 찾지 못하고 `ALLOW_ADHOC_SIGNING`이 설정되지 않은 경우 코드 서명 스크립트가 오류와 함께 종료됩니다. 임시 서명(`SIGN_IDENTITY="-"`)은 명시적으로 선택해야 하며, 재빌드 간에 TCC 권한을 유지하지 않습니다. [macOS 권한](/ko/platforms/mac/permissions)을 참조하십시오.
+- 환경에서 `SIGN_IDENTITY`를 읽습니다(예: `export SIGN_IDENTITY="Apple Development: Your Name (TEAMID)"` 또는 Developer ID Application 인증서). 설정하지 않으면 `codesign-mac-app.sh`가 Developer ID Application, Apple Distribution, Apple Development, 발견된 첫 번째 유효 코드 서명 ID 순으로 자동 선택합니다.
+- `CODESIGN_TIMESTAMP=auto`(기본값)는 Developer ID Application 서명에만 신뢰할 수 있는 타임스탬프를 활성화합니다. 어느 방식이든 강제하려면 `on`/`off`로 설정하십시오.
+- 정보 탭에서 빌드, Git 및 디버그/릴리스 채널을 표시할 수 있도록 Info.plist에 `OpenClawBuildTimestamp`(ISO8601 UTC)와 `OpenClawGitCommit`(짧은 해시, 사용할 수 없으면 `unknown`)을 기록합니다.
+- 서명 후 팀 ID 감사를 실행하며, 번들 내부의 Mach-O 중 다른 팀 ID를 사용하는 항목이 있으면 실패합니다. 우회하려면 `SKIP_TEAM_ID_CHECK=1`을 설정하십시오.
 
 ## 사용법
 
 ```bash
-# from repo root
-scripts/package-mac-app.sh               # auto-selects identity; errors if none found
-SIGN_IDENTITY="Developer ID Application: Your Name" scripts/package-mac-app.sh   # real cert
-ALLOW_ADHOC_SIGNING=1 scripts/package-mac-app.sh    # ad-hoc (permissions will not stick)
-SIGN_IDENTITY="-" scripts/package-mac-app.sh        # explicit ad-hoc (same caveat)
-DISABLE_LIBRARY_VALIDATION=1 scripts/package-mac-app.sh   # dev-only Sparkle Team ID mismatch workaround
+# 저장소 루트에서
+scripts/package-mac-app.sh                                                      # ID 자동 선택, 찾지 못하면 오류
+SIGN_IDENTITY="Developer ID Application: Your Name" scripts/package-mac-app.sh   # 실제 인증서
+ALLOW_ADHOC_SIGNING=1 scripts/package-mac-app.sh                                 # 임시 서명(권한이 유지되지 않음)
+SIGN_IDENTITY="-" scripts/package-mac-app.sh                                     # 명시적 임시 서명(동일한 주의 사항)
+DISABLE_LIBRARY_VALIDATION=1 scripts/package-mac-app.sh                          # 개발 전용 Sparkle 팀 ID 불일치 해결 방법
 ```
 
-### Ad-hoc 서명 참고
+### 임시 서명 참고 사항
 
-`SIGN_IDENTITY="-"`(ad-hoc)로 서명할 때 스크립트는 **Hardened Runtime**(`--options runtime`)을 자동으로 비활성화합니다. 이는 앱이 동일한 Team ID를 공유하지 않는 내장 프레임워크(예: Sparkle)를 로드하려고 할 때 발생하는 충돌을 방지하는 데 필요합니다. ad-hoc 서명은 TCC 권한 지속성도 깨뜨립니다. 복구 단계는 [macOS 권한](/ko/platforms/mac/permissions)을 참조하세요.
+`SIGN_IDENTITY="-"`는 동일한 팀 ID를 공유하지 않는 내장 프레임워크(예: Sparkle)를 앱이 로드할 때 발생하는 충돌을 방지하기 위해 Hardened Runtime(`--options runtime`)을 비활성화합니다. 임시 서명은 TCC 권한 유지도 중단시킵니다. 복구 단계는 [macOS 권한](/ko/platforms/mac/permissions)을 참조하십시오.
 
-## 정보 창의 빌드 메타데이터
+## 정보 탭용 빌드 메타데이터
 
-`package-mac-app.sh`는 번들에 다음을 기록합니다.
+정보 탭은 Info.plist에서 `OpenClawBuildTimestamp`와 `OpenClawGitCommit`을 읽어 버전, 빌드 날짜, Git 커밋 및 빌드가 DEBUG인지 여부(`#if DEBUG`를 통해)를 표시합니다. 코드 변경 후 이러한 값을 새로 고치려면 패키저를 다시 실행하십시오.
 
-- `OpenClawBuildTimestamp`: 패키징 시점의 ISO8601 UTC
-- `OpenClawGitCommit`: 짧은 git 해시(사용할 수 없는 경우 `unknown`)
-
-정보 탭은 이 키들을 읽어 버전, 빌드 날짜, git 커밋, 그리고 디버그 빌드 여부(`조if DEBUG`를 통해)를 표시합니다. 코드 변경 후 이 값을 새로 고치려면 패키저를 실행하세요.
-
-## 이유
-
-TCC 권한은 번들 식별자 _및_ 코드 서명에 연결됩니다. 변경되는 UUID를 가진 서명되지 않은 디버그 빌드 때문에 macOS가 각 재빌드 후 권한 부여를 잊어버리고 있었습니다. 바이너리에 서명하고(기본적으로 ad-hoc) 고정 번들 ID/경로(`dist/OpenClaw.app`)를 유지하면 빌드 간 권한 부여가 보존되며, 이는 VibeTunnel 접근 방식과 일치합니다.
-
-## 관련 항목
+## 관련 문서
 
 - [macOS 앱](/ko/platforms/macos)
 - [macOS 권한](/ko/platforms/mac/permissions)

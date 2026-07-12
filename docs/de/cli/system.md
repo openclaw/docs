@@ -1,37 +1,40 @@
 ---
 read_when:
-    - Sie möchten ein Systemereignis in die Warteschlange einreihen, ohne einen Cron-Job zu erstellen
+    - Sie möchten ein Systemereignis in die Warteschlange einreihen, ohne einen Cron-Job zu erstellen.
     - Sie müssen Heartbeats aktivieren oder deaktivieren
-    - Sie möchten System-Präsenz-Einträge einsehen
-summary: CLI-Referenz für `openclaw system` (Systemereignisse, Heartbeat, Präsenz)
+    - Sie möchten die Systemanwesenheitseinträge überprüfen
+summary: CLI-Referenz für `openclaw system` (Systemereignisse, Heartbeat, Anwesenheit)
 title: System
 x-i18n:
-    generated_at: "2026-05-11T20:26:54Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:10:10Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: 2810fb064ea4afeac24ca0d71419913a664bbec0721cabdb09196075914f4864
+    source_hash: aaca206d8b463fd33f9e3cb21382bbf36469e9daa2706d8a9e2c7fab14b76e7a
     source_path: cli/system.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
 # `openclaw system`
 
-Systemweite Helfer für den Gateway: Systemereignisse einreihen, Heartbeats steuern
-und Präsenz anzeigen.
+Hilfsfunktionen auf Systemebene für den Gateway: Systemereignisse in die Warteschlange einreihen, Heartbeats steuern und Anwesenheitsinformationen anzeigen.
 
 Alle `system`-Unterbefehle verwenden Gateway-RPC und akzeptieren die gemeinsamen Client-Flags:
 
-- `--url <url>`
-- `--token <token>`
-- `--timeout <ms>`
-- `--expect-final`
+| Flag              | Standardwert                         | Beschreibung                                                                                                                                                                                                                                 |
+| ----------------- | ------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `--url <url>`     | `gateway.remote.url`, sofern konfiguriert | Gateway-WebSocket-URL.                                                                                                                                                                                                                        |
+| `--token <token>` | keiner                               | Gateway-Token (falls erforderlich).                                                                                                                                                                                                           |
+| `--timeout <ms>`  | `30000`                              | RPC-Zeitüberschreitung in Millisekunden.                                                                                                                                                                                                      |
+| `--expect-final`  | deaktiviert                          | Auf die endgültige Antwort warten (Agent).                                                                                                                                                                                                    |
+| `--json`          | deaktiviert                          | JSON ausgeben. `heartbeat last/enable/disable` und `system presence` geben unabhängig von diesem Flag immer die unverarbeitete JSON-Nutzlast des RPC aus; `system event` wechselt damit zwischen JSON und einer einfachen `ok`-Zeile. |
 
-## Häufige Befehle
+## Häufig verwendete Befehle
 
 ```bash
-openclaw system event --text "Check for urgent follow-ups" --mode now
-openclaw system event --text "Check for urgent follow-ups" --url ws://127.0.0.1:18789 --token "$OPENCLAW_GATEWAY_TOKEN"
+openclaw system event --text "Auf dringende Folgemaßnahmen prüfen" --mode now
+openclaw system event --text "Auf dringende Folgemaßnahmen prüfen" --url ws://127.0.0.1:18789 --token "$OPENCLAW_GATEWAY_TOKEN"
 openclaw system heartbeat enable
 openclaw system heartbeat last
 openclaw system presence
@@ -39,59 +42,35 @@ openclaw system presence
 
 ## `system event`
 
-Reiht standardmäßig ein Systemereignis in der **Haupt**-Sitzung ein. Der nächste Heartbeat
-fügt es als `System:`-Zeile in den Prompt ein. Verwenden Sie `--mode now`, um
-den Heartbeat sofort auszulösen; `next-heartbeat` wartet auf den nächsten geplanten Tick.
+Reiht standardmäßig ein Systemereignis in die **Hauptsitzung** ein. Der nächste Heartbeat fügt es als `System:`-Zeile in den Prompt ein. Verwenden Sie `--mode now`, um den Heartbeat sofort auszulösen; `next-heartbeat` (Standardwert) wartet auf den nächsten geplanten Durchlauf.
 
-Übergeben Sie `--session-key`, um eine bestimmte Sitzung anzusteuern (zum Beispiel, um den
-Abschluss einer asynchronen Aufgabe an den Kanal zurückzumelden, der sie gestartet hat).
+Übergeben Sie `--session-key`, um eine bestimmte Sitzung anzusprechen, beispielsweise um den Abschluss einer asynchronen Aufgabe an den Kanal zurückzumelden, der sie gestartet hat.
 
-> **Timing-Ausnahme mit `--session-key`:** Wenn `--session-key` angegeben wird,
-> wird `--mode next-heartbeat` zu einem sofortigen gezielten Wake, statt
-> auf den nächsten geplanten Tick zu warten. Gezielte Wakes verwenden die Heartbeat-Absicht
-> `immediate`, sodass sie die Noch-nicht-fällig-Sperre des Runners umgehen, die andernfalls
-> einen Wake mit `event`-Absicht verzögern (und effektiv verwerfen) würde. Wenn Sie eine verzögerte
-> Zustellung wünschen, lassen Sie `--session-key` weg, sodass das Ereignis in der Hauptsitzung landet und
-> mit dem nächsten regulären Heartbeat mitläuft.
+<Note>
+**Zeitsteuerungsausnahme mit `--session-key`:** Wenn `--session-key` angegeben wird, führt `--mode next-heartbeat` zu einem sofortigen gezielten Aufwecken, statt auf den nächsten geplanten Durchlauf zu warten. Gezieltes Aufwecken verwendet die Heartbeat-Absicht `immediate` und umgeht dadurch die „noch nicht fällig“-Sperre des Runners, die andernfalls ein Aufwecken mit der Absicht `event` verzögern (und faktisch verwerfen) würde. Wenn Sie eine verzögerte Zustellung wünschen, lassen Sie `--session-key` weg, damit das Ereignis in der Hauptsitzung landet und mit dem nächsten regulären Heartbeat übermittelt wird.
+</Note>
 
 Flags:
 
-- `--text <text>`: erforderlicher Systemereignistext.
-- `--mode <mode>`: `now` oder `next-heartbeat` (Standard).
-- `--session-key <sessionKey>`: optional; steuert eine bestimmte Agent-Sitzung an
-  statt der Hauptsitzung des Agenten. Schlüssel, die nicht zum
-  aufgelösten Agenten gehören, fallen auf die Hauptsitzung des Agenten zurück.
-- `--json`: maschinenlesbare Ausgabe.
-- `--url`, `--token`, `--timeout`, `--expect-final`: gemeinsame Gateway-RPC-Flags.
+- `--text <text>`: erforderlicher Text des Systemereignisses.
+- `--mode <mode>`: `now` oder `next-heartbeat` (Standardwert).
+- `--session-key <sessionKey>`: optional; richtet das Ereignis an eine bestimmte Agent-Sitzung statt an die Hauptsitzung des Agents. Schlüssel, die nicht zum ermittelten Agent gehören, greifen auf die Hauptsitzung des Agents zurück.
 
 ## `system heartbeat last|enable|disable`
 
-Heartbeat-Steuerung:
-
 - `last`: zeigt das letzte Heartbeat-Ereignis an.
-- `enable`: schaltet Heartbeats wieder ein (verwenden Sie dies, wenn sie deaktiviert wurden).
+- `enable`: aktiviert Heartbeats wieder (verwenden Sie dies, wenn sie deaktiviert wurden).
 - `disable`: pausiert Heartbeats.
-
-Flags:
-
-- `--json`: maschinenlesbare Ausgabe.
-- `--url`, `--token`, `--timeout`, `--expect-final`: gemeinsame Gateway-RPC-Flags.
 
 ## `system presence`
 
-Listet die aktuellen Systempräsenz-Einträge auf, die dem Gateway bekannt sind (Nodes,
-Instanzen und ähnliche Statuszeilen).
-
-Flags:
-
-- `--json`: maschinenlesbare Ausgabe.
-- `--url`, `--token`, `--timeout`, `--expect-final`: gemeinsame Gateway-RPC-Flags.
+Listet die aktuellen Einträge zur Systemanwesenheit auf, die dem Gateway bekannt sind (Nodes, Instanzen und ähnliche Statuszeilen).
 
 ## Hinweise
 
 - Erfordert einen laufenden Gateway, der über Ihre aktuelle Konfiguration erreichbar ist (lokal oder remote).
-- Systemereignisse sind flüchtig und bleiben über Neustarts hinweg nicht erhalten.
+- Systemereignisse sind flüchtig und bleiben bei Neustarts nicht erhalten.
 
-## Verwandt
+## Verwandte Themen
 
 - [CLI-Referenz](/de/cli)

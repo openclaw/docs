@@ -2,18 +2,19 @@
 summary: Weiterleitung zu /gateway/authentication
 title: Authentifizierungsüberwachung
 x-i18n:
-    generated_at: "2026-04-30T06:38:01Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:58:39Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: d0bb68c2881911afc634aaba017444a5a8356f4cc519f0a2b5e415ff9ad739f3
+    source_hash: 2d2c52a0082ff90306c61fb33ee2f2dc74b8703c9d8ee7a13581e72d2d564f0a
     source_path: automation/auth-monitoring.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-Die Authentifizierungsüberwachung finden Sie unter [Authentifizierung](/de/gateway/authentication).
+Diese Seite wurde verschoben. Die Authentifizierung für Modell-Provider finden Sie unter [Authentifizierung](/de/gateway/authentication); Betriebsskripte zur Überwachung des Authentifizierungsstatus finden Sie unter [Skripte zur Authentifizierungsüberwachung](/de/help/scripts#auth-monitoring-scripts).
 
 ## Verwandte Themen
 
-- [Fehlerbehebung bei der Automatisierung](/de/automation/cron-jobs)
+- [Fehlerbehebung bei der Automatisierung](/de/automation/cron-jobs#troubleshooting)
 - [Hooks](/de/automation/hooks)

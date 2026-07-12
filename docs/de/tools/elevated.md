@@ -1,48 +1,46 @@
 ---
 read_when:
-    - Standardeinstellungen für den erhöhten Modus, Allowlists oder das Verhalten von Slash-Befehlen anpassen
-    - Verstehen, wie Agenten in einer Sandbox auf den Host zugreifen können
-summary: 'Exec-Modus mit erhöhten Rechten: Befehle von einem sandboxierten Agenten aus außerhalb der Sandbox ausführen'
-title: Modus mit erhöhten Rechten
+    - Standardwerte für den erhöhten Modus, Zulassungslisten oder das Verhalten von Slash-Befehlen anpassen
+    - Verstehen, wie Agents in der Sandbox auf den Host zugreifen können
+summary: 'Erweiterter Ausführungsmodus: Befehle von einem sandboxgeschützten Agenten außerhalb der Sandbox ausführen'
+title: Erweiterter Modus
 x-i18n:
-    generated_at: "2026-05-06T07:05:11Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:56:54Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: 91aab7c105643d8e5d07d89cd5ab176f0a40cd3d23e2b20b3986cbf76f575d64
+    source_hash: ab035f2f0d0074da4e7661d9d690d89aa5eea25b7920ce48a2a03dffccded85b
     source_path: tools/elevated.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-Wenn ein Agent innerhalb einer Sandbox ausgeführt wird, sind seine `exec`-Befehle auf die
-Sandbox-Umgebung beschränkt. **Elevated mode** lässt den Agent stattdessen ausbrechen und Befehle
-außerhalb der Sandbox ausführen, mit konfigurierbaren Genehmigungs-Gates.
+Wenn ein Agent innerhalb einer Sandbox ausgeführt wird, sind seine `exec`-Befehle auf die Sandbox-Umgebung beschränkt. Der **erweiterte Modus** ermöglicht es dem Agenten, diese Beschränkung zu umgehen und stattdessen Befehle außerhalb der Sandbox auszuführen, mit konfigurierbaren Genehmigungsschranken.
 
 <Info>
-  Elevated mode ändert das Verhalten nur, wenn der Agent **sandboxed** ist. Bei
-  nicht sandboxed Agents läuft exec bereits auf dem Host.
+  Der erweiterte Modus ändert das Verhalten nur, wenn der Agent in einer **Sandbox** ausgeführt wird. Bei Agenten ohne Sandbox wird exec bereits auf dem Host ausgeführt.
 </Info>
 
 ## Direktiven
 
-Steuern Sie Elevated mode pro Sitzung mit Slash-Befehlen:
+Steuern Sie den erweiterten Modus sitzungsbezogen mit Slash-Befehlen:
 
-| Direktive        | Funktion                                                               |
-| ---------------- | ---------------------------------------------------------------------- |
-| `/elevated on`   | Außerhalb der Sandbox auf dem konfigurierten Host-Pfad ausführen, Genehmigungen beibehalten |
-| `/elevated ask`  | Wie `on` (Alias)                                                       |
-| `/elevated full` | Außerhalb der Sandbox auf dem konfigurierten Host-Pfad ausführen und Genehmigungen überspringen |
-| `/elevated off`  | Zur auf die Sandbox beschränkten Ausführung zurückkehren               |
+| Direktive        | Funktion                                                                                                                                        |
+| ---------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| `/elevated on`   | Außerhalb der Sandbox im konfigurierten Host-Pfad ausführen und Genehmigungen beibehalten                                                       |
+| `/elevated ask`  | Identisch mit `on` (Alias)                                                                                                                       |
+| `/elevated full` | Außerhalb der Sandbox im konfigurierten Host-Pfad ausführen und Genehmigungen überspringen, wenn die Modus-/Host-Genehmigungsrichtlinie bereits freizügig ist |
+| `/elevated off`  | Zur auf die Sandbox beschränkten Ausführung zurückkehren                                                                                         |
 
-Auch verfügbar als `/elev on|off|ask|full`.
+Auch als `/elev on|off|ask|full` verfügbar.
 
-Senden Sie `/elevated` ohne Argument, um die aktuelle Ebene anzuzeigen.
+Senden Sie `/elevated` ohne Argument, um die aktuelle Stufe anzuzeigen.
 
 ## Funktionsweise
 
 <Steps>
   <Step title="Verfügbarkeit prüfen">
-    Elevated muss in der Konfiguration aktiviert sein und der Absender muss auf der Allowlist stehen:
+    Der erweiterte Modus muss in der Konfiguration aktiviert sein und der Absender muss auf der Zulassungsliste stehen:
 
     ```json5
     {
@@ -60,8 +58,8 @@ Senden Sie `/elevated` ohne Argument, um die aktuelle Ebene anzuzeigen.
 
   </Step>
 
-  <Step title="Ebene festlegen">
-    Senden Sie eine Nachricht, die nur aus einer Direktive besteht, um den Sitzungsstandard festzulegen:
+  <Step title="Stufe festlegen">
+    Senden Sie eine Nachricht, die ausschließlich die Direktive enthält, um den Sitzungsstandard festzulegen:
 
     ```
     /elevated full
@@ -70,67 +68,69 @@ Senden Sie `/elevated` ohne Argument, um die aktuelle Ebene anzuzeigen.
     Oder verwenden Sie sie inline (gilt nur für diese Nachricht):
 
     ```
-    /elevated on run the deployment script
+    /elevated on Bereitstellungsskript ausführen
     ```
 
   </Step>
 
   <Step title="Befehle außerhalb der Sandbox ausführen">
-    Wenn Elevated aktiv ist, verlassen `exec`-Aufrufe die Sandbox. Der effektive Host ist
-    standardmäßig `gateway` oder `node`, wenn das konfigurierte bzw. Sitzungs-Exec-Ziel
-    `node` ist. Im Modus `full` werden exec-Genehmigungen übersprungen. Im Modus `on`/`ask`
-    gelten konfigurierte Genehmigungsregeln weiterhin.
+    Wenn der erweiterte Modus aktiv ist, verlassen `exec`-Aufrufe die Sandbox. Der wirksame Host ist
+    standardmäßig `gateway` oder `node`, wenn das konfigurierte bzw. sitzungsbezogene exec-Ziel
+    `node` ist. Im Modus `full` werden exec-Genehmigungen übersprungen, wenn die aufgelöste
+    Genehmigungsrichtlinie für exec-Modus und -Host bereits vollständig freizügig ist (Sicherheit `full`,
+    Abfrage `off`); andernfalls gilt weiterhin die normale Genehmigungsrichtlinie. Im Modus
+    `on`/`ask` gelten die konfigurierten Genehmigungsregeln immer.
   </Step>
 </Steps>
 
 ## Auflösungsreihenfolge
 
 1. **Inline-Direktive** in der Nachricht (gilt nur für diese Nachricht)
-2. **Sitzungs-Override** (festgelegt durch Senden einer Nachricht, die nur aus einer Direktive besteht)
+2. **Sitzungsüberschreibung** (durch Senden einer Nachricht, die ausschließlich die Direktive enthält)
 3. **Globaler Standard** (`agents.defaults.elevatedDefault` in der Konfiguration)
 
-## Verfügbarkeit und Allowlists
+## Verfügbarkeit und Zulassungslisten
 
-- **Globales Gate**: `tools.elevated.enabled` (muss `true` sein)
-- **Absender-Allowlist**: `tools.elevated.allowFrom` mit Listen pro Kanal
-- **Gate pro Agent**: `agents.list[].tools.elevated.enabled` (kann nur weiter einschränken)
-- **Allowlist pro Agent**: `agents.list[].tools.elevated.allowFrom` (Absender muss sowohl global als auch pro Agent übereinstimmen)
-- **Discord-Fallback**: Wenn `tools.elevated.allowFrom.discord` ausgelassen wird, wird `channels.discord.allowFrom` als Fallback verwendet
-- **Alle Gates müssen bestehen**; andernfalls wird Elevated als nicht verfügbar behandelt
+- **Globale Schranke**: `tools.elevated.enabled` (muss `true` sein)
+- **Absender-Zulassungsliste**: `tools.elevated.allowFrom` mit kanalspezifischen Listen
+- **Agentenspezifische Schranke**: `agents.list[].tools.elevated.enabled` (kann nur weiter einschränken; sowohl die globale als auch die agentenspezifische Schranke müssen `true` sein)
+- **Agentenspezifische Zulassungsliste**: `agents.list[].tools.elevated.allowFrom` (der Absender muss sowohl mit der globalen als auch mit der agentenspezifischen Liste übereinstimmen)
+- **Vom Kanal bereitgestellte Fallback-Zulassungsliste**: Kanal-Plugins können über einen SDK-Adapter-Hook optional eine Fallback-Zulassungsliste bereitstellen, die verwendet wird, wenn `tools.elevated.allowFrom.<provider>` nicht konfiguriert ist. Derzeit implementiert kein gebündeltes Kanal-Plugin diesen Hook, sodass heute in der Praxis jeder Provider einen expliziten Eintrag unter `tools.elevated.allowFrom.<provider>` benötigt.
+- **Alle Schranken müssen passiert werden**; andernfalls gilt der erweiterte Modus als nicht verfügbar
 
-Formate für Allowlist-Einträge:
+Formate für Einträge in der Zulassungsliste:
 
-| Präfix                  | Übereinstimmung                |
-| ----------------------- | ------------------------------ |
-| (keines)                | Absender-ID, E.164 oder From-Feld |
-| `name:`                 | Anzeigename des Absenders      |
-| `username:`             | Benutzername des Absenders     |
-| `tag:`                  | Tag des Absenders              |
-| `id:`, `from:`, `e164:` | Explizites Identity-Targeting  |
+| Präfix                  | Entspricht                             |
+| ----------------------- | -------------------------------------- |
+| (keines)                | Absender-ID, E.164 oder From-Feld      |
+| `name:`                 | Anzeigename des Absenders              |
+| `username:`             | Benutzername des Absenders             |
+| `tag:`                  | Tag des Absenders                      |
+| `id:`, `from:`, `e164:` | Explizite Adressierung einer Identität |
 
-## Was Elevated nicht steuert
+## Was der erweiterte Modus nicht steuert
 
-- **Tool-Policy**: Wenn `exec` durch die Tool-Policy verweigert wird, kann Elevated das nicht überschreiben.
-- **Host-Auswahlrichtlinie**: Elevated macht aus `auto` keinen freien Cross-Host-Override. Es verwendet die konfigurierten bzw. Sitzungsregeln für das Exec-Ziel und wählt `node` nur dann, wenn das Ziel bereits `node` ist.
-- **Getrennt von `/exec`**: Die Direktive `/exec` passt Exec-Standards pro Sitzung für autorisierte Absender an und erfordert keinen Elevated mode.
+- **Tool-Richtlinie**: Wenn `exec` durch die Tool-Richtlinie verweigert wird, kann der erweiterte Modus dies nicht außer Kraft setzen.
+- **Host-Auswahlrichtlinie**: Der erweiterte Modus verwandelt `auto` nicht in eine uneingeschränkte hostübergreifende Überschreibung. Er verwendet die konfigurierten bzw. sitzungsbezogenen Regeln für das exec-Ziel und wählt `node` nur aus, wenn das Ziel bereits `node` ist.
+- **Unabhängig von `/exec`**: Die Direktive `/exec` passt für autorisierte Absender die sitzungsbezogenen exec-Standards (Host, Sicherheit, Abfrage, Node) an und erfordert nicht den erweiterten Modus.
 
 <Note>
-  Der Bash-Chatbefehl (`!`-Präfix; `/bash`-Alias) ist ein separates Gate, für das zusätzlich zu seinem eigenen Flag `tools.bash.enabled` auch `tools.elevated` aktiviert sein muss. Das Deaktivieren von Elevated sperrt auch `!`-Shell-Befehle aus.
+  Der Bash-Chatbefehl (Präfix `!`; Alias `/bash`) verfügt über eine separate Schranke, die zusätzlich zu seinem eigenen Flag `tools.bash.enabled` die Aktivierung von `tools.elevated` voraussetzt. Wenn der erweiterte Modus deaktiviert wird, werden auch `!`-Shell-Befehle gesperrt.
 </Note>
 
-## Verwandt
+## Verwandte Themen
 
 <CardGroup cols={2}>
   <Card title="Exec-Tool" href="/de/tools/exec" icon="terminal">
-    Shell-Befehlsausführung vom Agent aus.
+    Ausführung von Shell-Befehlen durch den Agenten.
   </Card>
   <Card title="Exec-Genehmigungen" href="/de/tools/exec-approvals" icon="shield">
-    Genehmigungs- und Allowlist-System für `exec`.
+    Genehmigungs- und Zulassungssystem für `exec`.
   </Card>
   <Card title="Sandboxing" href="/de/gateway/sandboxing" icon="box">
     Sandbox-Konfiguration auf Gateway-Ebene.
   </Card>
-  <Card title="Sandbox vs Tool Policy vs Elevated" href="/de/gateway/sandbox-vs-tool-policy-vs-elevated" icon="scale-balanced">
-    Wie die drei Gates während eines Tool-Aufrufs zusammenspielen.
+  <Card title="Sandbox vs. Tool-Richtlinie vs. erweiterter Modus" href="/de/gateway/sandbox-vs-tool-policy-vs-elevated" icon="scale-balanced">
+    Wie die drei Schranken bei einem Tool-Aufruf zusammenwirken.
   </Card>
 </CardGroup>

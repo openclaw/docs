@@ -1,37 +1,37 @@
 ---
 read_when:
-    - Usando os templates do gateway de desenvolvimento
+    - Usando os modelos do Gateway de desenvolvimento
     - Atualizando a identidade padrão do agente de desenvolvimento
-summary: Observações de ferramentas do agente de desenvolvimento (C-3PO)
-title: Template TOOLS.dev
+summary: Notas sobre ferramentas de agente de desenvolvimento (C-3PO)
+title: Modelo de TOOLS.dev
 x-i18n:
-    generated_at: "2026-04-24T06:12:14Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 23c11e2832ed0dcf9ddd43e5472e0c025c1a91a33299019c16f00a7230e8e99c
-    source_path: reference/templates/TOOLS.dev.md
-    workflow: 15
+    generated_at: "2026-07-12T15:37:23Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
+    provider: openai
+    source_hash: 3259107a9252ff3d01b98608e6005387cb54a75da5db64f833c945056abd4173
+    source_path: reference/templates/TOOLS.dev.md
+    workflow: 16
 ---
 
-# TOOLS.md - Observações de ferramentas do usuário (editável)
+# TOOLS.md - Notas de ferramentas do usuário (editável)
 
-Este arquivo é para _suas_ observações sobre ferramentas externas e convenções.
-Ele não define quais ferramentas existem; o OpenClaw fornece ferramentas integradas internamente.
+Este arquivo serve para _suas_ anotações sobre ferramentas externas e convenções. Ele não define quais ferramentas existem; o OpenClaw fornece ferramentas integradas internamente, e as Skills adicionam as demais.
 
 ## Exemplos
 
 ### imsg
 
-- Enviar um iMessage/SMS: descreva para quem/o quê, confirme antes de enviar.
+- Enviar uma iMessage/SMS: descreva quem/o quê e confirme antes de enviar.
 - Prefira mensagens curtas; evite enviar segredos.
 
 ### sag
 
-- Text-to-speech: especifique voz, alto-falante/sala de destino e se deve transmitir.
+- Conversão de texto em fala: especifique a voz, o alto-falante/sala de destino e se deve transmitir em tempo real.
 
-Adicione o que mais você quiser que o assistente saiba sobre seu toolchain local.
+Adicione qualquer outra informação que você queira que o assistente saiba sobre seu conjunto de ferramentas local.
 
-## Relacionados
+## Relacionado
 
-- [TOOLS.md template](/pt-BR/reference/templates/TOOLS)
+- [Modelo de TOOLS.md](/pt-BR/reference/templates/TOOLS)

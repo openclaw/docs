@@ -1,14 +1,15 @@
 ---
 read_when:
     - 你正在安装、配置或审计 deepseek 插件
-summary: 添加 DeepSeek 模型提供商支持到 OpenClaw。
+summary: 为 OpenClaw 添加 DeepSeek 模型提供商支持。
 title: DeepSeek 插件
 x-i18n:
-    generated_at: "2026-06-27T02:47:12Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:38:13Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: c391a9d87d4de66f279f0b851868857b1a57e328feede3f5833e5e323ea5e281
+    source_hash: e2e7de36581db36818f63f754da829d91163c0ae3eaab9a087da087d3c681538
     source_path: plugins/reference/deepseek.md
     workflow: 16
 ---
@@ -19,12 +20,12 @@ x-i18n:
 
 ## 分发
 
-- Package：`@openclaw/deepseek-provider`
+- 软件包：`@openclaw/deepseek-provider`
 - 安装方式：npm；ClawHub：`clawhub:@openclaw/deepseek-provider`
 
-## 表面
+## 接口
 
-providers：deepseek
+提供商：deepseek；契约：usageProviders
 
 ## 相关文档
 

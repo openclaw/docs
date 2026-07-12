@@ -1,147 +1,137 @@
 ---
 read_when:
-    - Implémentation du panneau Canvas macOS
+    - Implémentation du panneau Canvas de macOS
     - Ajout de contrôles d’agent pour l’espace de travail visuel
-    - Débogage des chargements de canevas WKWebView
-summary: Panneau Canvas contrôlé par agent intégré via WKWebView + schéma d’URL personnalisé
+    - Débogage du chargement du canevas WKWebView
+summary: Panneau Canvas contrôlé par l’agent, intégré via WKWebView et un schéma d’URL personnalisé
 title: Canevas
 x-i18n:
-    generated_at: "2026-06-28T00:13:01Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:30:13Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: 45f0e1b27fbe58e85d57dbf35a6eb44d47df30569b8b10ed24e8bd240b4b5686
+    source_hash: 21955803c39debfbc34851a0c40a69c1f3c6ca009526d9929a4c429ad0b09084
     source_path: platforms/mac/canvas.md
     workflow: 16
 ---
 
-L’application macOS intègre un **panneau Canvas** contrôlé par l’agent à l’aide de `WKWebView`. Il
-s’agit d’un espace de travail visuel léger pour HTML/CSS/JS, A2UI et les petites surfaces
-d’interface utilisateur interactives.
+L’app macOS intègre un **panneau Canvas** contrôlé par un agent à l’aide de `WKWebView`, un
+espace de travail visuel léger pour HTML/CSS/JS, A2UI et de petites interfaces
+utilisateur interactives.
 
-## Où se trouve Canvas
+## Emplacement de Canvas
 
-L’état de Canvas est stocké sous Application Support :
+L’état de Canvas est stocké dans Application Support :
 
 - `~/Library/Application Support/OpenClaw/canvas/<session>/...`
 
-Le panneau Canvas sert ces fichiers via un **schéma d’URL personnalisé** :
+Le panneau Canvas sert ces fichiers au moyen d’un schéma d’URL personnalisé,
+`openclaw-canvas://<session>/<path>` :
 
-- `openclaw-canvas://<session>/<path>`
+- `openclaw-canvas://main/` -> `<canvasRoot>/main/index.html`
+- `openclaw-canvas://main/assets/app.css` -> `<canvasRoot>/main/assets/app.css`
+- `openclaw-canvas://main/widgets/todo/` -> `<canvasRoot>/main/widgets/todo/index.html`
 
-Exemples :
-
-- `openclaw-canvas://main/` → `<canvasRoot>/main/index.html`
-- `openclaw-canvas://main/assets/app.css` → `<canvasRoot>/main/assets/app.css`
-- `openclaw-canvas://main/widgets/todo/` → `<canvasRoot>/main/widgets/todo/index.html`
-
-Si aucun `index.html` n’existe à la racine, l’application affiche une **page d’échafaudage intégrée**.
+Si aucun fichier `index.html` n’existe à la racine, l’application affiche une page
+de structure intégrée.
 
 ## Comportement du panneau
 
-- Panneau sans bordure et redimensionnable, ancré près de la barre des menus (ou du curseur de la souris).
-- Mémorise la taille et la position par session.
+- Panneau sans bordure et redimensionnable, ancré près de la barre de menus (ou du curseur de la souris).
+- Mémorise la taille et la position pour chaque session.
 - Se recharge automatiquement lorsque les fichiers Canvas locaux changent.
-- Un seul panneau Canvas est visible à la fois (la session est changée si nécessaire).
+- Un seul panneau Canvas est visible à la fois (la session change si nécessaire).
 
-Canvas peut être désactivé depuis Réglages → **Autoriser Canvas**. Lorsqu’il est désactivé, les commandes
-de nœud canvas renvoient `CANVAS_DISABLED`.
+Canvas peut être désactivé depuis Settings -> **Autoriser Canvas**. Lorsqu’il est désactivé,
+les commandes Canvas du Node renvoient `CANVAS_DISABLED`.
 
-## Surface d’API de l’agent
+## Surface de l’API de l’agent
 
-Canvas est exposé via le **WebSocket Gateway**, afin que l’agent puisse :
-
-- afficher/masquer le panneau
-- naviguer vers un chemin ou une URL
-- évaluer du JavaScript
-- capturer une image instantanée
-
-Exemples CLI :
+Canvas est exposé via le WebSocket du Gateway, ce qui permet à l’agent d’afficher ou de masquer le
+panneau, d’accéder à un chemin ou à une URL, d’évaluer du JavaScript et de capturer une
+image instantanée :
 
 ```bash
 openclaw nodes canvas present --node <id>
-openclaw nodes canvas navigate --node <id> --url "/"
+openclaw nodes canvas navigate --node <id> "/"
 openclaw nodes canvas eval --node <id> --js "document.title"
 openclaw nodes canvas snapshot --node <id>
 ```
 
-Notes :
+`canvas.navigate` accepte les chemins Canvas locaux, les URL `http(s)` et les URL
+`file://`. Le passage de `"/"` affiche la structure locale ou le fichier `index.html`.
 
-- `canvas.navigate` accepte les **chemins Canvas locaux**, les URL `http(s)` et les URL `file://`.
-- Si vous passez `"/"`, Canvas affiche l’échafaudage local ou `index.html`.
+Les cibles hébergées par le Gateway sous `/__openclaw__/canvas/` et
+`/__openclaw__/a2ui/` sont résolues au moyen de l’URL Canvas délimitée actuelle de la
+session du Node. L’application actualise cette capacité de courte durée avant la navigation ;
+vous n’avez pas besoin de construire ni de copier vous-même une URL de capacité.
 
 ## A2UI dans Canvas
 
-A2UI est hébergé par l’hôte canvas du Gateway et rendu dans le panneau Canvas.
-Lorsque le Gateway annonce un hôte Canvas, l’application macOS navigue automatiquement vers la
-page hôte A2UI à la première ouverture.
+A2UI est hébergé par l’hôte Canvas du Gateway et rendu dans le panneau Canvas.
+Lorsque le Gateway annonce un hôte Canvas, l’application macOS accède automatiquement
+à la page de l’hôte A2UI lors de la première ouverture.
 
-URL par défaut de l’hôte A2UI :
-
-```
-http://<gateway-host>:18789/__openclaw__/a2ui/
-```
+L’URL annoncée est délimitée par une capacité, par exemple
+`http://<gateway-host>:18789/__openclaw__/cap/<token>/__openclaw__/a2ui/?platform=macos`.
+Traitez-la comme des identifiants éphémères, et non comme un lien stable.
 
 ### Commandes A2UI (v0.8)
 
-Canvas accepte actuellement les messages serveur→client **A2UI v0.8** :
-
-- `beginRendering`
-- `surfaceUpdate`
-- `dataModelUpdate`
-- `deleteSurface`
-
-`createSurface` (v0.9) n’est pas pris en charge.
-
-Exemple CLI :
+Canvas accepte les messages A2UI v0.8 du serveur vers le client : `beginRendering`,
+`surfaceUpdate`, `dataModelUpdate`, `deleteSurface`. `createSurface` (v0.9) n’est
+pas encore pris en charge.
 
 ```bash
 cat > /tmp/a2ui-v0.8.jsonl <<'EOFA2'
-{"surfaceUpdate":{"surfaceId":"main","components":[{"id":"root","component":{"Column":{"children":{"explicitList":["title","content"]}}}},{"id":"title","component":{"Text":{"text":{"literalString":"Canvas (A2UI v0.8)"},"usageHint":"h1"}}},{"id":"content","component":{"Text":{"text":{"literalString":"If you can read this, A2UI push works."},"usageHint":"body"}}}]}}
+{"surfaceUpdate":{"surfaceId":"main","components":[{"id":"root","component":{"Column":{"children":{"explicitList":["title","content"]}}}},{"id":"title","component":{"Text":{"text":{"literalString":"Canvas (A2UI v0.8)"},"usageHint":"h1"}}},{"id":"content","component":{"Text":{"text":{"literalString":"Si vous pouvez lire ceci, l’envoi A2UI fonctionne."},"usageHint":"body"}}}]}}
 {"beginRendering":{"surfaceId":"main","root":"root"}}
 EOFA2
 
 openclaw nodes canvas a2ui push --jsonl /tmp/a2ui-v0.8.jsonl --node <id>
 ```
 
-Test rapide :
+Test de bon fonctionnement rapide :
 
 ```bash
-openclaw nodes canvas a2ui push --node <id> --text "Hello from A2UI"
+openclaw nodes canvas a2ui push --node <id> --text "Bonjour depuis A2UI"
 ```
 
-## Déclenchement de runs d’agent depuis Canvas
+## Déclenchement d’exécutions d’agent depuis Canvas
 
-Canvas peut déclencher de nouveaux runs d’agent via des liens profonds :
-
-- `openclaw://agent?...`
-
-Exemple (en JS) :
+Canvas peut déclencher de nouvelles exécutions d’agent au moyen de liens profonds `openclaw://agent?...` :
 
 ```js
-window.location.href = "openclaw://agent?message=Review%20this%20design";
+window.location.href = "openclaw://agent?message=Examinez%20cette%20conception";
 ```
 
 Paramètres de requête pris en charge :
 
-- `message` : invite d’agent préremplie.
-- `sessionKey` : identifiant de session stable.
-- `thinking` : profil de réflexion facultatif.
-- `deliver`, `to` ou `channel` : cible de livraison.
-- `timeoutSeconds` : délai d’expiration facultatif du run.
-- `key` : jeton de sécurité généré par l’application pour les appelants locaux de confiance.
+| Paramètre                  | Signification                                          |
+| -------------------------- | ------------------------------------------------------ |
+| `message`                  | Invite d’agent préremplie.                             |
+| `sessionKey`               | Identifiant de session stable.                         |
+| `thinking`                 | Profil de réflexion facultatif.                        |
+| `deliver`, `to`, `channel` | Cible de livraison.                                    |
+| `timeoutSeconds`           | Délai d’expiration facultatif de l’exécution.          |
+| `key`                      | Jeton de sécurité généré par l’application pour les appelants locaux de confiance. |
 
-L’application demande une confirmation sauf si une clé valide est fournie. Les liens sans clé
-affichent le message et l’URL avant approbation, et ignorent les champs de routage de livraison ;
-les liens avec clé utilisent le chemin normal de run Gateway.
+L’application demande une confirmation sauf si une clé valide est fournie. Les liens
+sans clé affichent le message et l’URL avant l’approbation et ignorent les champs
+d’acheminement de la livraison ; les liens avec clé utilisent le chemin d’exécution normal du Gateway.
 
-## Notes de sécurité
+## Remarques sur la sécurité
 
-- Le schéma Canvas bloque la traversée de répertoires ; les fichiers doivent se trouver sous la racine de session.
-- Le contenu Canvas local utilise un schéma personnalisé (aucun serveur local loopback requis).
-- Les URL `http(s)` externes ne sont autorisées que lorsqu’elles font l’objet d’une navigation explicite.
+- Le schéma Canvas bloque la traversée de répertoires ; les fichiers doivent se trouver sous la racine de la session.
+- Le contenu Canvas local utilise un schéma personnalisé (aucun serveur de bouclage requis).
+- Les URL `http(s)` externes ne sont autorisées que lorsqu’une navigation explicite y mène.
+- Les pages web ordinaires servent uniquement au rendu. Les actions de l’agent ne sont acceptées que depuis le
+  schéma Canvas appartenant à l’application ou le document A2UI du Gateway délimité précisément par une capacité
+  et sélectionné par l’application ; les sous-cadres, les redirections, les capacités périmées et les requêtes
+  modifiées ne peuvent pas déclencher d’actions.
 
-## Connexe
+## Voir aussi
 
 - [Application macOS](/fr/platforms/macos)
 - [WebChat](/fr/web/webchat)

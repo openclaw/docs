@@ -1,35 +1,36 @@
 ---
 read_when:
-    - Sie möchten die aktuellen OpenClaw-Dokumente über das Terminal durchsuchen
+    - Sie möchten die aktuellen OpenClaw-Dokumente im Terminal durchsuchen
     - Sie müssen wissen, welche gehostete Such-API die Dokumentations-CLI aufruft
-summary: CLI-Referenz für `openclaw docs` (Live-Dokumentationsindex durchsuchen)
+summary: CLI-Referenz für `openclaw docs` (den Index der Live-Dokumentation durchsuchen)
 title: Dokumentation
 x-i18n:
-    generated_at: "2026-06-27T17:18:21Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:06:26Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: f8be22f689d40ffec29df9562b69444c0f8b9bb607dfcb79de20b3023e0eb30a
+    source_hash: b0b575f0b76d40a53dd4f79c55fd65969a24eae27e27bd1c46d395f61fe89e42
     source_path: cli/docs.md
     workflow: 16
 ---
 
 # `openclaw docs`
 
-Durchsuchen Sie den Live-Index der OpenClaw-Dokumentation vom Terminal aus. Der Befehl ruft die von Cloudflare gehostete Such-API der OpenClaw-Dokumentation auf und rendert die Ergebnisse in Ihrem Terminal.
+Durchsuchen Sie den Live-Index der OpenClaw-Dokumentation über das Terminal.
 
 ## Verwendung
 
 ```bash
-openclaw docs                       # print docs entrypoint and example search
-openclaw docs <query...>            # search the live docs index
+openclaw docs                       # Einstiegspunkt der Dokumentation und Beispielsuche ausgeben
+openclaw docs <query...>            # Live-Index der Dokumentation durchsuchen
 ```
 
-Argumente:
+| Argument     | Beschreibung                                                                                     |
+| ------------ | ------------------------------------------------------------------------------------------------ |
+| `[query...]` | Frei formulierte Suchanfrage. Mehrteilige Anfragen werden mit Leerzeichen verbunden und als eine Anfrage gesendet. |
 
-| Argument     | Beschreibung                                                                                          |
-| ------------ | ----------------------------------------------------------------------------------------------------- |
-| `[query...]` | Frei formulierte Suchanfrage. Mehrwort-Abfragen werden mit Leerzeichen verbunden und als eine gesendet. |
+Ohne Suchanfrage gibt `openclaw docs` die URL des Dokumentationseinstiegspunkts und einen Beispiel-Suchbefehl aus, anstatt eine Suche auszuführen.
 
 ## Beispiele
 
@@ -39,31 +40,29 @@ openclaw docs sandbox allowHostControl
 openclaw docs gateway token secretref
 ```
 
-Ohne Abfrage gibt `openclaw docs` die URL des Dokumentations-Einstiegspunkts sowie einen Beispiel-Suchbefehl aus, statt eine Suche auszuführen.
-
 ## Funktionsweise
 
-`openclaw docs` ruft `https://docs.openclaw.ai/api/search` auf und rendert die JSON-Ergebnisse. Der Suchaufruf verwendet ein festes Timeout von 30 Sekunden.
+`openclaw docs` ruft `https://docs.openclaw.ai/api/search` auf und stellt die JSON-Ergebnisse dar. Für die Suchanfrage gilt ein festes Zeitlimit von 30 Sekunden.
 
 ## Ausgabe
 
-In einem Rich-(TTY)-Terminal werden Ergebnisse als Überschrift gefolgt von einer Aufzählungsliste gerendert. Jeder Aufzählungspunkt zeigt den Seitentitel, die verlinkte Dokumentations-URL und in der nächsten Zeile einen kurzen Ausschnitt. Leere Ergebnisse geben „Keine Ergebnisse.“ aus.
+In einem Rich-Terminal (TTY) werden die Ergebnisse als Überschrift mit anschließender Aufzählung dargestellt: Seitentitel, verlinkte Dokumentations-URL und ein kurzer Ausschnitt in der nächsten Zeile. Bei leeren Ergebnissen wird „Keine Ergebnisse.“ ausgegeben.
 
-In nicht angereicherter Ausgabe (weitergeleitet, `--no-color`, Skripte) werden dieselben Daten als Markdown gerendert:
+In einer Ausgabe ohne Rich-Darstellung (weitergeleitet, `--no-color`, Skripte) werden dieselben Daten als Markdown dargestellt:
 
 ```markdown
-# Docs search: <query>
+# Dokumentationssuche: <query>
 
-- [Title](https://docs.openclaw.ai/...) - snippet
-- [Title](https://docs.openclaw.ai/...) - snippet
+- [Titel](https://docs.openclaw.ai/...) - Ausschnitt
+- [Titel](https://docs.openclaw.ai/...) - Ausschnitt
 ```
 
 ## Exit-Codes
 
-| Code | Bedeutung                                                                 |
-| ---- | ------------------------------------------------------------------------- |
-| `0`  | Suche erfolgreich (einschließlich Antworten ohne Ergebnisse).             |
-| `1`  | Der Aufruf der gehosteten Such-API der Dokumentation ist fehlgeschlagen; stderr wird inline ausgegeben. |
+| Code | Bedeutung                                                                                      |
+| ---- | ---------------------------------------------------------------------------------------------- |
+| `0`  | Die Suche war erfolgreich, einschließlich Antworten ohne Ergebnisse.                           |
+| `1`  | Der Aufruf der gehosteten API für die Dokumentationssuche ist fehlgeschlagen; stderr gibt die Fehlermeldung aus. |
 
 ## Verwandte Themen
 

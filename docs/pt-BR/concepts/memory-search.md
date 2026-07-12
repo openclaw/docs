@@ -1,124 +1,140 @@
 ---
 read_when:
-    - Você quer entender como memory_search funciona
+    - Você quer entender como `memory_search` funciona
     - Você quer escolher um provedor de embeddings
-    - Você quer ajustar a qualidade da busca
-summary: Como a busca na memória encontra notas relevantes usando embeddings e recuperação híbrida
+    - Você quer ajustar a qualidade da pesquisa
+summary: Como a busca de memória encontra notas relevantes usando embeddings e recuperação híbrida
 title: Pesquisa de memória
 x-i18n:
-    generated_at: "2026-06-28T22:33:22Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:09:23Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: 32ffb9d996851566eb92b7812c5425f545ecbb5387a0a445686df35a6c8ae143
+    source_hash: 2ae0830843fba28c24159d85425240051fb8caf086cd0563d3091890045dcfad
     source_path: concepts/memory-search.md
     workflow: 16
 ---
 
 `memory_search` encontra notas relevantes nos seus arquivos de memória, mesmo quando a
-redação difere do texto original. Ele funciona indexando a memória em pequenos
-blocos e pesquisando neles usando embeddings, palavras-chave ou ambos.
+redação difere do texto original. Ele divide a memória em pequenos trechos e
+faz buscas neles usando embeddings, palavras-chave ou ambos.
 
 ## Início rápido
 
-A pesquisa de memória usa embeddings da OpenAI por padrão. Para usar outro
-backend de embedding, defina um provedor explicitamente:
+O OpenClaw usa embeddings da OpenAI por padrão. Para usar outro provedor, defina-o
+explicitamente:
 
 ```json5
 {
   agents: {
     defaults: {
       memorySearch: {
-        provider: "openai", // or "gemini", "local", "ollama", "openai-compatible", etc.
+        provider: "openai", // ou "gemini", "voyage", "mistral", "bedrock", "local", "ollama", "lmstudio", "github-copilot", "openai-compatible"
       },
     },
   },
 }
 ```
 
-Para configurações com vários endpoints e provedores específicos de memória, `provider` também pode
-ser uma entrada personalizada de `models.providers.<id>`, como `ollama-5080`, quando esse
-provedor define `api: "ollama"` ou outro proprietário de adaptador de embedding de memória.
+`provider` também pode referenciar uma entrada personalizada `models.providers.<id>` (por
+exemplo, `ollama-5080`), desde que essa entrada defina `api` como `"ollama"` ou
+outro ID de provedor com um adaptador de embeddings de memória.
 
-Para embeddings locais sem chave de API, instale
-`@openclaw/llama-cpp-provider` e defina `provider: "local"`. Checkouts de código-fonte
-ainda podem exigir aprovação de build nativo: `pnpm approve-builds` e depois
+Para embeddings locais sem chave de API, instale o plugin oficial do provedor
+llama.cpp e defina `provider: "local"`:
+
+```bash
+openclaw plugins install @openclaw/llama-cpp-provider
+```
+
+Checkouts do código-fonte ainda exigem aprovação da compilação nativa: `pnpm approve-builds` e, em seguida,
 `pnpm rebuild node-llama-cpp`.
 
-Alguns endpoints de embedding compatíveis com OpenAI exigem rótulos assimétricos, como
-`input_type: "query"` para pesquisas e `input_type: "document"` ou `"passage"`
-para blocos indexados. Configure-os com `memorySearch.queryInputType` e
-`memorySearch.documentInputType`; veja a [referência de configuração de memória](/pt-BR/reference/memory-config#provider-specific-config).
+Alguns endpoints de embeddings compatíveis com OpenAI exigem rótulos assimétricos de `input_type`,
+como `"query"` para buscas e `"document"`/`"passage"` para trechos
+indexados. Defina-os com `queryInputType` e `documentInputType`; consulte a
+[Referência de configuração de memória](/pt-BR/reference/memory-config#provider-specific-config).
 
 ## Provedores compatíveis
 
-| Provedor          | ID                  | Precisa de chave de API | Observações                         |
-| ----------------- | ------------------- | ----------------------- | ----------------------------------- |
-| Bedrock           | `bedrock`           | Não                     | Usa a cadeia de credenciais da AWS  |
-| DeepInfra         | `deepinfra`         | Sim                     | Padrão: `BAAI/bge-m3`               |
-| Gemini            | `gemini`            | Sim                     | Compatível com indexação de imagem/áudio |
-| GitHub Copilot    | `github-copilot`    | Não                     | Usa assinatura do Copilot           |
-| Local             | `local`             | Não                     | Modelo GGUF, download de ~0,6 GB    |
-| Mistral           | `mistral`           | Sim                     |                                     |
-| Ollama            | `ollama`            | Não                     | Local/auto-hospedado                |
-| OpenAI            | `openai`            | Sim                     | Padrão                              |
-| Compatível com OpenAI | `openai-compatible` | Geralmente              | `/v1/embeddings` genérico           |
-| Voyage            | `voyage`            | Sim                     |                                     |
+| Provedor          | ID                  | Exige chave de API | Observações                             |
+| ----------------- | ------------------- | ------------------ | --------------------------------------- |
+| Bedrock           | `bedrock`           | Não                | Usa a cadeia de credenciais da AWS      |
+| DeepInfra         | `deepinfra`         | Sim                | Modelo padrão `BAAI/bge-m3`             |
+| Gemini            | `gemini`            | Sim                | Compatível com indexação de imagem/áudio |
+| GitHub Copilot    | `github-copilot`    | Não                | Usa sua assinatura do Copilot           |
+| Local             | `local`             | Não                | Modelo GGUF, download automático de ~0.6 GB |
+| LM Studio         | `lmstudio`          | Não                | Servidor local/auto-hospedado            |
+| Mistral           | `mistral`           | Sim                |                                         |
+| Ollama            | `ollama`            | Não                | Servidor local/auto-hospedado            |
+| OpenAI            | `openai`            | Sim                | Padrão                                  |
+| Compatível com OpenAI | `openai-compatible` | Geralmente     | Endpoint genérico `/v1/embeddings`      |
+| Voyage            | `voyage`            | Sim                |                                         |
 
-## Como a pesquisa funciona
+## Como a busca funciona
 
-O OpenClaw executa dois caminhos de recuperação em paralelo e mescla os resultados:
+O OpenClaw executa duas rotas de recuperação em paralelo e combina os resultados:
 
 ```mermaid
 flowchart LR
-    Q["Query"] --> E["Embedding"]
-    Q --> T["Tokenize"]
-    E --> VS["Vector Search"]
-    T --> BM["BM25 Search"]
-    VS --> M["Weighted Merge"]
+    Q["Consulta"] --> E["Embedding"]
+    Q --> T["Tokenizar"]
+    E --> VS["Busca vetorial"]
+    T --> BM["Busca BM25"]
+    VS --> M["Combinação ponderada"]
     BM --> M
-    M --> R["Top Results"]
+    M --> R["Principais resultados"]
 ```
 
-- **Pesquisa vetorial** encontra notas com significado semelhante ("gateway host" corresponde a
-  "the machine running OpenClaw").
-- **Pesquisa por palavra-chave BM25** encontra correspondências exatas (IDs, strings de erro, chaves de
+- **Busca vetorial** encontra significados semelhantes ("host do gateway" corresponde a "a
+  máquina que executa o OpenClaw").
+- **Busca por palavras-chave BM25** encontra termos exatos (IDs, strings de erro, chaves de
   configuração).
+- **Busca por nome de arquivo** indexa os caminhos separadamente do conteúdo das notas. Caminhos completos
+  exatos, nomes de arquivos e nomes sem extensão aparecem antes de correspondências parciais de caminhos,
+  enquanto os trechos e as pontuações de palavras-chave do conteúdo ainda vêm do conteúdo das notas.
 
-Se apenas um caminho estiver disponível, o outro é executado sozinho. O modo intencional somente FTS
-(`provider: "none"`) e a seleção automática/padrão de provedor ainda podem usar
-classificação lexical quando embeddings não estão disponíveis.
+Se apenas uma rota estiver disponível, ela será executada sozinha.
 
-Provedores explícitos de embedding não locais são diferentes. Se você definir
-`memorySearch.provider` como um provedor concreto com backend remoto e esse provedor
-não estiver disponível em tempo de execução, `memory_search` relatará a memória como indisponível em vez
-de usar silenciosamente resultados somente FTS. Isso mantém visível um provedor semântico
-configurado quebrado. Defina `provider: "none"` para recuperação deliberada somente FTS ou corrija
-a configuração de provedor/autenticação para restaurar a classificação semântica.
+**Modo somente FTS.** Defina `provider: "none"` para desativar intencionalmente os embeddings
+e buscar apenas com palavras-chave. Deixar `provider` sem definição ou definido como `"auto"`
+também recorre à classificação apenas por palavras-chave se nenhuma autenticação de embeddings estiver configurada,
+sem gerar erro, assim como `provider: "local"` (o provedor
+GGUF/llama.cpp) quando falha.
 
-## Melhorando a qualidade da pesquisa
+**Provedor explícito indisponível.** Se você nomear explicitamente qualquer outro provedor
+(por exemplo, `openai`, `ollama`, `gemini`) e ele ficar indisponível no
+momento da solicitação (autenticação incorreta, falha de rede), `memory_search` informa que a memória está
+indisponível em vez de degradar silenciosamente para resultados somente FTS. Isso mantém
+visível um provedor configurado com problemas. Defina `provider: "none"` para uma
+recuperação deliberadamente somente FTS ou corrija a configuração do provedor/autenticação para restaurar a classificação
+semântica.
 
-Dois recursos opcionais ajudam quando você tem um grande histórico de notas:
+## Como melhorar a qualidade da busca
+
+Dois recursos opcionais ajudam quando há um grande histórico de notas.
 
 ### Decaimento temporal
 
 Notas antigas perdem gradualmente peso na classificação para que informações recentes apareçam primeiro.
-Com a meia-vida padrão de 30 dias, uma nota do mês passado pontua 50% do
-seu peso original. Arquivos perenes como `MEMORY.md` nunca sofrem decaimento.
+Com a meia-vida padrão de 30 dias, uma nota do mês passado recebe 50% do seu
+peso original. `MEMORY.md` e outros arquivos sem data em `memory/` são
+perenes e nunca sofrem decaimento; apenas arquivos datados `memory/YYYY-MM-DD.md` sofrem decaimento.
 
 <Tip>
-Ative o decaimento temporal se o seu agente tiver meses de notas diárias e informações
-obsoletas continuarem superando o contexto recente na classificação.
+Ative este recurso se o seu agente tiver meses de notas diárias e informações desatualizadas
+continuarem aparecendo acima do contexto recente.
 </Tip>
 
 ### MMR (diversidade)
 
-Reduz resultados redundantes. Se cinco notas mencionarem a mesma configuração de roteador, o MMR
-garante que os principais resultados cubram tópicos diferentes em vez de se repetirem.
+Reduz resultados redundantes. Se cinco notas mencionarem a mesma configuração de roteador,
+o MMR garante que os principais resultados abranjam diferentes tópicos em vez de se repetirem.
 
 <Tip>
-Ative o MMR se `memory_search` continuar retornando trechos quase duplicados de
-notas diárias diferentes.
+Ative este recurso se `memory_search` continuar retornando trechos quase duplicados de
+diferentes notas diárias.
 </Tip>
 
 ### Ativar ambos
@@ -142,52 +158,52 @@ notas diárias diferentes.
 
 ## Memória multimodal
 
-Com Gemini Embedding 2, você pode indexar imagens e arquivos de áudio junto com
-Markdown. As consultas de pesquisa continuam sendo texto, mas fazem correspondência com conteúdo
-visual e de áudio. Veja a [referência de configuração de memória](/pt-BR/reference/memory-config) para
-configuração.
+Com `gemini-embedding-2-preview`, você pode indexar imagens e áudio junto com
+Markdown. Isso se aplica apenas aos arquivos em `memorySearch.extraPaths`; as raízes
+de memória padrão (`MEMORY.md`, `memory/*.md`) permanecem restritas a Markdown. As consultas de busca
+continuam sendo texto, mas encontram correspondências em conteúdo visual e de áudio. Consulte a
+[Referência de configuração de memória](/pt-BR/reference/memory-config#multimodal-memory-gemini)
+para saber como configurar.
 
-## Pesquisa de memória da sessão
+## Busca na memória de sessões
 
-Opcionalmente, você pode indexar transcrições de sessões para que `memory_search` possa recuperar
-conversas anteriores. Isso é opcional via
-`memorySearch.experimental.sessionMemory` e `sources: ["sessions"]`; a lista padrão
-de fontes inclui apenas memória. A flag experimental ativa a indexação de transcrições de sessão,
-enquanto `sources` controla se blocos de sessão são pesquisados.
+Para recuperação exata de texto completo nas transcrições de sessões, use [`sessions_search`](/concepts/session-search)
+e depois abra um resultado com `sessions_history`. A busca na memória de sessões continua sendo o complemento
+semântico e experimental.
 
-Ocorrências de sessão obedecem a `tools.sessions.visibility`: a configuração padrão `tree` apenas
-expõe a sessão atual e as sessões que ela gerou. Para recuperar uma sessão não relacionada
-despachada pelo gateway do mesmo agente a partir de uma sessão de DM separada, amplie
-intencionalmente a visibilidade para `agent`.
+Opcionalmente, indexe as transcrições de sessões para que `memory_search` possa recuperar
+conversas anteriores. Esse recurso é opcional: defina `experimental.sessionMemory: true` e adicione
+`"sessions"` a `sources` (o valor padrão de `sources` é `["memory"]`).
 
-Ao usar QMD, também defina `memory.qmd.sessions.enabled: true` para que as transcrições sejam
-exportadas para uma coleção QMD. Veja a
-[referência de configuração](/pt-BR/reference/memory-config) para detalhes.
+Os resultados de sessões obedecem a `tools.sessions.visibility`: o padrão `"tree"` apenas
+expõe a sessão atual e as sessões que ela iniciou. Para recuperar uma sessão não relacionada
+do mesmo agente a partir de outra sessão (por exemplo, uma sessão despachada pelo gateway
+a partir de uma DM), amplie a visibilidade para `"agent"`.
+
+Ao usar o backend QMD, defina também `memory.qmd.sessions.enabled: true` para que
+as transcrições sejam exportadas para a coleção QMD; `experimental.sessionMemory`
+e `sources` sozinhos não exportam transcrições para o QMD. Consulte a
+[referência de configuração](/pt-BR/reference/memory-config#session-memory-search-experimental).
 
 ## Solução de problemas
 
-**Sem resultados?** Execute `openclaw memory status` para verificar o índice. Se estiver vazio, execute
+**Nenhum resultado?** Execute `openclaw memory status` para verificar o índice. Se estiver vazio, execute
 `openclaw memory index --force`.
 
-**Apenas correspondências por palavra-chave?** Seu provedor de embedding pode não estar configurado. Verifique
+**Apenas correspondências de palavras-chave?** Seu provedor de embeddings pode não estar configurado. Verifique
 `openclaw memory status --deep`.
 
-**Embeddings locais atingem timeout?** `ollama`, `lmstudio` e `local` usam um timeout de lote inline mais longo
-por padrão. Se o host for simplesmente lento, defina
+**Os embeddings locais atingem o tempo limite?** `ollama`, `lmstudio` e `local` usam um tempo limite maior
+para lotes em linha por padrão. Se o host estiver apenas lento, defina
 `agents.defaults.memorySearch.sync.embeddingBatchTimeoutSeconds` e execute novamente
 `openclaw memory index --force`.
 
-**Texto CJK não encontrado?** Reconstrua o índice FTS com
+**Texto CJK não encontrado?** Recrie o índice FTS com
 `openclaw memory index --force`.
-
-## Leitura adicional
-
-- [Active Memory](/pt-BR/concepts/active-memory) -- memória de subagente para sessões de chat interativas
-- [Memória](/pt-BR/concepts/memory) -- layout de arquivos, backends, ferramentas
-- [referência de configuração de memória](/pt-BR/reference/memory-config) -- todos os controles de configuração
 
 ## Relacionados
 
 - [Visão geral da memória](/pt-BR/concepts/memory)
 - [Active Memory](/pt-BR/concepts/active-memory)
 - [Mecanismo de memória integrado](/pt-BR/concepts/memory-builtin)
+- [Referência de configuração de memória](/pt-BR/reference/memory-config)

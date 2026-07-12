@@ -1,65 +1,68 @@
 ---
 read_when:
-    - '`.experimental` 設定キーが表示され、それが安定しているかどうかを知りたい'
-    - プレビュー版ランタイム機能を通常のデフォルトと混同せずに試したい場合
-    - 現在ドキュメント化されている実験的フラグを確認できる場所を1つにまとめたい場合
-summary: OpenClaw における実験的フラグの意味と、現在ドキュメント化されているもの
+    - '`.experimental` という設定キーを見つけ、それが安定しているかどうかを確認したい場合'
+    - 通常のデフォルトと混同せずに、プレビュー版のランタイム機能を試したい場合
+    - 現在ドキュメント化されている実験的フラグを1か所で確認したい場合
+summary: OpenClaw の実験的フラグの意味と、現在ドキュメント化されているフラグ
 title: 実験的機能
 x-i18n:
-    generated_at: "2026-07-06T10:48:39Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:24:53Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: ac12f9e754afd369a1be0853f8023e479fe51777aa42b73f6245223f07053152
+    source_hash: 1d4f6d066ef80cad2fb8a54c8aecb9fca5b4ed91cd5a3626dad4ad889dc3e8f2
     source_path: concepts/experimental-features.md
     workflow: 16
 ---
 
-実験的機能は、明示的なフラグの背後にあるオプトインのプレビューサーフェスです。安定したデフォルトや長期的な契約になる前に、さらに実環境での実績が必要です。
+実験的機能は、明示的なフラグの背後にあるオプトイン方式のプレビュー機能です。安定したデフォルトや長期的な契約を提供するには、実環境でのさらなる検証が必要です。
 
-- ドキュメントで有効化するよう案内されていない限り、デフォルトではオフです。
-- 形状と挙動は、安定版の設定より速く変わる可能性があります。
-- すでに安定した経路が存在する場合は、それを優先してください。
-- 広くロールアウトするのは、まず小規模な環境でテストした後にしてください。
+- ドキュメントに有効化するよう記載されていない限り、デフォルトでは無効です。
+- 形態と動作は、安定版の設定より速いペースで変更される可能性があります。
+- 既存の安定した方法がある場合は、そちらを優先してください。
+- 広範囲に展開する前に、まず小規模な環境でテストしてください。
 
 ## 現在ドキュメント化されているフラグ
 
-| サーフェス               | キー                                                                                       | 使用する場合                                                                                                                      | 詳細                                                                                          |
-| ------------------------ | ------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
-| ローカルモデルランタイム | `agents.defaults.experimental.localModelLean`, `agents.list[].experimental.localModelLean` | 小さめ、または制約の厳しいローカルバックエンドが、OpenClaw の完全なデフォルトツールサーフェスを処理しきれない場合                | [ローカルモデル](/ja-JP/gateway/local-models)                                                        |
-| メモリ検索               | `agents.defaults.memorySearch.experimental.sessionMemory`                                  | `memory_search` で以前のセッションのトランスクリプトをインデックス化し、追加のストレージ/インデックス化コストを受け入れたい場合 | [メモリ設定リファレンス](/ja-JP/reference/memory-config#session-memory-search-experimental)         |
-| Codex ハーネス           | `plugins.entries.codex.config.appServer.experimental.sandboxExecServer`                    | ネイティブ Codex app-server 0.132.0 以降で、Code Mode を無効化する代わりに OpenClaw のサンドボックス backed exec-server を対象にしたい場合 | [Codex ハーネスリファレンス](/ja-JP/plugins/codex-harness-reference#sandboxed-native-execution)     |
-| 構造化計画ツール         | `tools.experimental.planTool`                                                              | 互換性のあるランタイムと UI で、複数ステップの作業追跡用に構造化された `update_plan` ツールを公開したい場合                     | [Gateway 設定リファレンス](/ja-JP/gateway/config-tools#toolsexperimental)                           |
+| 機能                     | キー                                                                                       | 使用する状況                                                                                                                         | 詳細                                                                                          |
+| ------------------------ | ------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------- |
+| ローカルモデルランタイム | `agents.defaults.experimental.localModelLean`, `agents.list[].experimental.localModelLean` | 小規模または制約の厳しいローカルバックエンドが、OpenClaw の完全なデフォルトツール機能を処理できない場合                              | [ローカルモデル](/ja-JP/gateway/local-models)                                                       |
+| メモリ検索               | `agents.defaults.memorySearch.experimental.sessionMemory`                                  | `memory_search` で過去のセッショントランスクリプトをインデックス化し、追加のストレージおよびインデックス作成コストを許容できる場合    | [メモリ設定リファレンス](/ja-JP/reference/memory-config#session-memory-search-experimental)         |
+| Codex ハーネス            | `plugins.entries.codex.config.appServer.experimental.sandboxExecServer`                    | Code Mode を無効にせず、ネイティブ Codex app-server 0.132.0 以降の実行先を OpenClaw サンドボックスベースの exec-server にする場合     | [Codex ハーネスリファレンス](/ja-JP/plugins/codex-harness-reference#sandboxed-native-execution)      |
+| 構造化計画ツール         | `tools.experimental.planTool`                                                              | 互換性のあるランタイムと UI で、複数ステップの作業追跡用に構造化された `update_plan` ツールを公開する場合                             | [Gateway 設定リファレンス](/ja-JP/gateway/config-tools#toolsexperimental)                            |
 
-## ローカルモデルのリーンモード
+## ローカルモデルの軽量モード
 
-`agents.defaults.experimental.localModelLean: true` は、エージェントの直接サーフェスから、毎ターン重い任意ツールを削除します: `browser`, `cron`, `message`, `image_generate`, `music_generate`, `video_generate`, `tts`, `pdf`。明示的に許可されたツールや配信に必要なツールは引き続き利用できますが、Tool Search はそれらを直接公開する代わりにカタログ化することがあります。リーンモードは、`tools.toolSearch` がまだ設定されていない場合、Plugin/MCP/クライアントカタログも構造化 Tool Search (`tool_search`, `tool_describe`, `tool_call`) にデフォルト設定します。これを 1 つのエージェントに限定するには `agents.list[].experimental.localModelLean` を使用します。
+`agents.defaults.experimental.localModelLean: true` を設定すると、負荷の高いオプションツール（`browser`、`cron`、`message`、`image_generate`、`music_generate`、`video_generate`、`tts`、`pdf`）が、各ターンでエージェントに直接提示される機能から除外されます。明示的に許可されたツールや配信に必要なツールは引き続き利用できますが、直接公開されず、Tool Search のカタログに登録される場合があります。軽量モードでは、`tools.toolSearch` が未設定の場合、Plugin/MCP/クライアントカタログのデフォルトも構造化 Tool Search（`tool_search`、`tool_describe`、`tool_call`）になります。これを単一のエージェントに限定するには、`agents.list[].experimental.localModelLean` を使用します。
 
-すでに Tool Search をグローバルに調整している場合、OpenClaw はその設定をそのままにします。リーンモードの Tool Search デフォルトからオプトアウトするには、`tools.toolSearch: false` を設定してください。
+Tool Search をすでにグローバルに調整している場合、OpenClaw はその設定を変更しません。軽量モードにおける Tool Search のデフォルトを無効にするには、`tools.toolSearch: false` を設定します。
 
-### これらのツールを対象にする理由
+構造化された `tools` モードでは、軽量実行時も Tool Search コントロールの横に `exec` が直接表示されるため、コーディング向けに調整されたローカルモデルは、使い慣れたシェル経路を引き続き選択できます。これはスキーマの可視性のみを変更します。通常のツールポリシー、サンドボックス化、exec の承認は引き続き適用されます。明示的な `code` モードと `directory` モードでは、通常の Compaction 動作が維持されます。
 
-これらのツールは説明が最も大きく、パラメーター形状が広く、通常のコーディングや会話の経路から小さなモデルの注意をそらす可能性が高いものです。小さなコンテキスト、または制約の厳しい OpenAI 互換バックエンドでは、これは次の違いになります。
+### これらのツールを対象とする理由
+
+これらのツールは、説明が最も長い、パラメータの形式が最も広範、または小規模モデルの注意を通常のコーディングや会話の流れからそらす可能性が最も高いものです。コンテキストが小さい、または制約の厳しい OpenAI 互換バックエンドでは、これにより次のような違いが生じます。
 
 - ツールスキーマがプロンプトに収まるか、会話履歴を圧迫するか。
-- モデルが適切なツールを選ぶか、似たスキーマが多すぎて不正な形式のツール呼び出しを出力するか。
-- Chat Completions アダプターが構造化出力の制限内に収まるか、ツール呼び出しペイロードサイズで 400 になるか。
+- モデルが適切なツールを選択するか、類似したスキーマが多すぎるため不正なツール呼び出しを生成するか。
+- Chat Completions アダプターが構造化出力の制限内に収まるか、ツール呼び出しペイロードのサイズが原因で 400 エラーになるか。
 
-削除しても、直接のツールリストが短くなるだけです。モデルは引き続き `read`, `write`, `edit`, `exec`, `apply_patch`、画像理解、web 検索/取得（設定されている場合）、メモリ、セッション/エージェントツールを持ちます。`tools.toolSearch: false` を設定しない限り、追加のカタログは Tool Search 経由で到達可能なままです。明示的なツール許可により、リーンなエージェントを絞り込まれたワークフローに戻すことができます。
+これらを削除しても、直接表示されるツールリストが短くなるだけです。モデルは引き続き `read`、`write`、`edit`、`exec`、`apply_patch`、画像理解、Web 検索/取得（設定されている場合）、メモリ、セッション/エージェントツールを利用できます。`tools.toolSearch: false` を設定しない限り、追加のカタログには Tool Search 経由で引き続きアクセスできます。ツールを明示的に許可することで、軽量エージェントを必要最小限のワークフローに再参加させることもできます。
 
-### 有効化するタイミング
+### 有効にするタイミング
 
-モデルが Gateway と通信できることは確認済みだが、完全なエージェントターンが誤動作する場合にリーンモードを有効化してください。
+モデルが Gateway と通信できることを確認済みであるにもかかわらず、完全なエージェントターンが正常に動作しない場合に、軽量モードを有効にします。
 
 1. `openclaw infer model run --gateway --model <ref> --prompt "Reply with exactly: pong"` が成功する。
-2. 通常のエージェントターンが、不正な形式のツール呼び出し、過大なプロンプト、またはモデルがツールを無視することで失敗する。
-3. `localModelLean: true` に切り替えると失敗が解消する。
+2. 通常のエージェントターンが、不正なツール呼び出し、サイズ超過のプロンプト、またはモデルによるツールの無視によって失敗する。
+3. `localModelLean: true` に切り替えると、失敗が解消される。
 
-### オフのままにするタイミング
+### 無効のままにするタイミング
 
-バックエンドが完全なデフォルトランタイムを問題なく処理できる場合は、これはオフのままにしてください。これは、より小さなツールサーフェスを必要とするローカルスタック向けの回避策であり、ホスト型モデルや十分なリソースを持つローカル環境のデフォルトではありません。
+バックエンドが完全なデフォルトランタイムを問題なく処理できる場合は、無効のままにしてください。これは、より小さなツール機能を必要とするローカルスタック向けの回避策であり、ホスト型モデルや十分なリソースを備えたローカル環境向けのデフォルトではありません。
 
-リーンモードは、`tools.profile`、`tools.allow`/`tools.deny`、またはモデルの `compat.supportsTools: false` エスケープハッチを置き換えるものではありません。特定のエージェントで恒久的に狭いツールサーフェスを使う場合は、それらの安定したノブを優先してください。
+軽量モードは、`tools.profile`、`tools.allow`/`tools.deny`、またはモデルの緊急回避策である `compat.supportsTools: false` の代わりにはなりません。特定のエージェントに対して恒久的にツール機能を絞り込む場合は、これらの安定した設定項目を優先してください。
 
 ### 有効化
 
@@ -75,7 +78,7 @@ x-i18n:
 }
 ```
 
-1 つのエージェントのみの場合:
+単一のエージェントのみの場合:
 
 ```json5
 {
@@ -93,13 +96,13 @@ x-i18n:
 }
 ```
 
-フラグを変更した後は Gateway を再起動してください。リーンフィルタリングは、`tools.allow` または `tools.alsoAllow` で明示的に保持しない限り、`browser`, `cron`, `message`, `image_generate`, `music_generate`, `video_generate`, `tts`, `pdf` を削除します。Tool Search は、保持されたツールを直接公開する代わりにカタログ化する場合があります。
+フラグを変更した後、Gateway を再起動してください。`tools.allow` または `tools.alsoAllow` で明示的に維持しない限り、軽量フィルタリングによって `browser`、`cron`、`message`、`image_generate`、`music_generate`、`video_generate`、`tts`、`pdf` が除外されます。維持されたツールも、直接公開されず、Tool Search のカタログに登録される場合があります。
 
-## 実験的とは隠されているという意味ではない
+## 実験的であることは非公開を意味しない
 
-実験的機能は、安定版のように見えるデフォルトノブの背後に隠すのではなく、ドキュメントと設定パス自体で明確にそう示すべきです。
+実験的機能は、安定版に見えるデフォルト設定項目の背後に隠すのではなく、ドキュメントと設定パス自体で実験的であることを明示する必要があります。
 
-## 関連
+## 関連項目
 
 - [機能](/ja-JP/concepts/features)
 - [リリースチャンネル](/ja-JP/install/development-channels)

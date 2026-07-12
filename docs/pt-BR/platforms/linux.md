@@ -1,96 +1,80 @@
 ---
 read_when:
-    - Procurando status do aplicativo complementar para Linux
-    - Planejando cobertura de plataforma ou contribuições
-    - Depurando encerramentos por OOM do Linux ou saída 137 em uma VPS ou contêiner
-summary: Suporte a Linux + status do aplicativo complementar
+    - Buscando o status do aplicativo complementar para Linux
+    - Planejamento da cobertura de plataformas ou de contribuições
+    - Depuração de encerramentos por OOM no Linux ou saída 137 em uma VPS ou contêiner
+summary: Status do suporte ao Linux + aplicativo complementar
 title: Aplicativo para Linux
 x-i18n:
-    generated_at: "2026-06-27T17:42:50Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:24:14Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: 437eb12d373ff9161ec7fa1e6fc04bf5662f903374d17f55b45ae1ea355c9085
+    source_hash: 3a1b57fc7e37257a05eb06f265a49f165eef429f1c8d93c988853f39eba89627
     source_path: platforms/linux.md
     workflow: 16
 ---
 
-O Gateway é totalmente compatível com Linux. **Node é o runtime recomendado**.
-Bun não é recomendado para o Gateway (bugs de WhatsApp/Telegram).
+O Gateway é totalmente compatível com Linux. Node é o runtime recomendado; Bun
+não é recomendado (devido a problemas conhecidos com WhatsApp/Telegram).
 
-Aplicativos complementares nativos para Linux estão planejados. Contribuições são bem-vindas se você quiser ajudar a criar um.
+Ainda não há um aplicativo complementar nativo para Linux. Contribuições são bem-vindas.
 
-## Caminho rápido para iniciantes (VPS)
+## Caminho rápido (VPS)
 
-1. Instale o Node 24 (recomendado; Node 22 LTS, atualmente `22.19+`, ainda funciona por compatibilidade)
+1. Instale o Node 24 (recomendado) ou o Node 22.19+ (LTS, ainda compatível).
 2. `npm i -g openclaw@latest`
 3. `openclaw onboard --install-daemon`
-4. Do seu laptop: `ssh -N -L 18789:127.0.0.1:18789 <user>@<host>`
-5. Abra `http://127.0.0.1:18789/` e autentique-se com o segredo compartilhado configurado (token por padrão; senha se você definir `gateway.auth.mode: "password"`)
+4. No seu laptop: `ssh -N -L 18789:127.0.0.1:18789 <user>@<host>`
+5. Abra `http://127.0.0.1:18789/` e autentique-se com o segredo compartilhado
+   configurado (token por padrão; senha se `gateway.auth.mode` for `"password"`).
 
-Guia completo de servidor Linux: [Servidor Linux](/pt-BR/vps). Exemplo passo a passo de VPS: [exe.dev](/pt-BR/install/exe-dev)
+Guia completo do servidor: [Servidor Linux](/pt-BR/vps). Exemplo passo a passo de VPS:
+[exe.dev](/pt-BR/install/exe-dev).
 
 ## Instalação
 
 - [Primeiros passos](/pt-BR/start/getting-started)
 - [Instalação e atualizações](/pt-BR/install/updating)
-- Fluxos opcionais: [Bun (experimental)](/pt-BR/install/bun), [Nix](/pt-BR/install/nix), [Docker](/pt-BR/install/docker)
+- Opcional: [Bun (experimental)](/pt-BR/install/bun), [Nix](/pt-BR/install/nix), [Docker](/pt-BR/install/docker)
 
-## Gateway
+## Serviço do Gateway (systemd)
 
-- [Runbook do Gateway](/pt-BR/gateway)
-- [Configuração](/pt-BR/gateway/configuration)
+Instale usando uma destas opções:
 
-## Instalação do serviço Gateway (CLI)
-
-Use um destes:
-
-```
+```bash
 openclaw onboard --install-daemon
-```
-
-Ou:
-
-```
 openclaw gateway install
+openclaw configure   # selecione "Serviço do Gateway" quando solicitado
 ```
 
-Ou:
+Repare ou migre uma instalação existente:
 
-```
-openclaw configure
-```
-
-Selecione **Serviço Gateway** quando solicitado.
-
-Reparar/migrar:
-
-```
+```bash
 openclaw doctor
 ```
 
-## Controle do sistema (unidade de usuário systemd)
+Por padrão, `openclaw gateway install` gera uma unidade systemd de **usuário**. As
+orientações completas sobre o serviço, incluindo a variante da unidade em nível de
+**sistema** para hosts compartilhados ou sempre ativos, estão no [guia operacional do Gateway](/pt-BR/gateway#supervision-and-service-lifecycle).
 
-O OpenClaw instala um serviço systemd de **usuário** por padrão. Use um serviço de **sistema**
-para servidores compartilhados ou sempre ativos. `openclaw gateway install` e
-`openclaw onboard --install-daemon` já renderizam a unidade canônica atual
-para você; escreva uma manualmente apenas quando precisar de uma configuração
-personalizada de sistema/gerenciador de serviços. A orientação completa do serviço fica no [runbook do Gateway](/pt-BR/gateway).
+Crie uma unidade manualmente apenas para uma configuração personalizada. Exemplo mínimo
+de unidade de usuário (`~/.config/systemd/user/openclaw-gateway[-<profile>].service`):
 
-Configuração mínima:
-
-Crie `~/.config/systemd/user/openclaw-gateway[-<profile>].service`:
-
-```
+```ini
 [Unit]
-Description=OpenClaw Gateway (profile: <profile>, v<version>)
+Description=Gateway do OpenClaw (perfil: <profile>, v<version>)
 After=network-online.target
 Wants=network-online.target
+StartLimitBurst=5
+StartLimitIntervalSec=60
 
 [Service]
 ExecStart=/usr/local/bin/openclaw gateway --port 18789
 Restart=always
 RestartSec=5
+RestartPreventExitStatus=78
 TimeoutStopSec=30
 TimeoutStartSec=30
 SuccessExitStatus=0 143
@@ -101,55 +85,57 @@ KillMode=control-group
 WantedBy=default.target
 ```
 
-Habilite-o:
+Habilite-a:
 
-```
+```bash
 systemctl --user enable --now openclaw-gateway[-<profile>].service
 ```
 
 ## Pressão de memória e encerramentos por OOM
 
-No Linux, o kernel escolhe uma vítima de OOM quando um host, VM ou cgroup de contêiner
-fica sem memória. O Gateway pode ser uma vítima ruim porque possui sessões
-de longa duração e conexões de canal. Por isso, o OpenClaw dá preferência para que
-processos filhos transitórios sejam encerrados antes do Gateway quando possível.
+No Linux, o kernel escolhe uma vítima de OOM quando um host, uma VM ou um cgroup
+de contêiner fica sem memória. O Gateway é uma vítima inadequada porque mantém
+sessões e conexões de canais de longa duração; por isso, o OpenClaw prioriza,
+quando possível, o encerramento de processos filhos temporários.
 
-Para spawns de filhos Linux elegíveis, o OpenClaw inicia o filho por meio de um wrapper
-curto de `/bin/sh` que eleva o `oom_score_adj` do próprio filho para `1000` e, em seguida,
-executa com `exec` o comando real. Esta é uma operação sem privilégios porque o filho
-está apenas aumentando sua própria probabilidade de encerramento por OOM.
+Para inicializações de processos filhos Linux elegíveis, o OpenClaw envolve o comando em um
+pequeno shim `/bin/sh` que aumenta o `oom_score_adj` do próprio processo filho para `1000` e,
+em seguida, usa `exec` para executar o comando real. Isso não exige privilégios: um processo
+sempre pode aumentar sua própria pontuação de OOM.
 
-As superfícies de processos filhos cobertas incluem:
+Superfícies de processos filhos abrangidas:
 
-- filhos de comando gerenciados pelo supervisor,
-- filhos de shell PTY,
-- filhos de servidor MCP stdio,
-- processos de navegador/Chrome iniciados pelo OpenClaw.
+- Processos filhos de comandos gerenciados pelo supervisor
+- Processos filhos de shell PTY
+- Processos filhos de servidores MCP via stdio
+- Processos de navegador/Chrome iniciados pelo OpenClaw (por meio do runtime de processos do SDK de plugins)
 
-O wrapper é exclusivo para Linux e é ignorado quando `/bin/sh` não está disponível. Ele
-também é ignorado se o env do filho definir `OPENCLAW_CHILD_OOM_SCORE_ADJ=0`, `false`,
-`no` ou `off`.
+O wrapper é exclusivo para Linux e é ignorado quando `/bin/sh` não está disponível ou quando
+o ambiente do processo filho define `OPENCLAW_CHILD_OOM_SCORE_ADJ` como `0`, `false`, `no` ou
+`off`.
 
-Para verificar um processo filho:
+Verifique um processo filho:
 
 ```bash
 cat /proc/<child-pid>/oom_score_adj
 ```
 
-O valor esperado para filhos cobertos é `1000`. O processo do Gateway deve manter
-sua pontuação normal, geralmente `0`.
+O valor esperado para os processos filhos abrangidos é `1000`; o próprio processo do Gateway
+mantém sua pontuação normal (geralmente `0`).
 
-A unidade systemd recomendada também define `OOMPolicy=continue`. Isso mantém a
-unidade do Gateway ativa quando um processo filho transitório é selecionado pelo OOM killer;
-o comando/sessão filho pode falhar e relatar seu erro sem que o systemd marque
-todo o serviço do gateway como falho e reinicie todos os canais.
+A configuração `OOMPolicy=continue` da unidade systemd mantém o serviço do Gateway ativo quando
+um processo filho temporário é selecionado pelo OOM killer, em vez de marcar toda a unidade
+como falha e reiniciar todos os canais; o processo filho ou a sessão que falhou relata seu
+próprio erro.
 
-Isso não substitui o ajuste normal de memória. Se um VPS ou contêiner encerrar
-filhos repetidamente, aumente o limite de memória, reduza a concorrência ou adicione
-controles de recursos mais fortes, como `MemoryMax=` do systemd ou limites de memória no nível do contêiner.
+Isso não substitui o ajuste normal de memória. Se uma VPS ou um contêiner encerrar processos
+filhos repetidamente, aumente o limite de memória, reduza a simultaneidade ou adicione controles
+de recursos mais rigorosos (systemd `MemoryMax=`, limites de memória do contêiner).
 
-## Relacionados
+## Relacionado
 
 - [Visão geral da instalação](/pt-BR/install)
 - [Servidor Linux](/pt-BR/vps)
 - [Raspberry Pi](/pt-BR/install/raspberry-pi)
+- [Guia operacional do Gateway](/pt-BR/gateway)
+- [Configuração do Gateway](/pt-BR/gateway/configuration)

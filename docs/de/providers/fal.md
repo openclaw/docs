@@ -1,37 +1,46 @@
 ---
 read_when:
-    - Sie möchten die fal-Bildgenerierung in OpenClaw verwenden
-    - Sie benötigen den `FAL_KEY`-Auth-Flow
-    - Sie möchten fal-Standardwerte für image_generate, video_generate oder music_generate
-summary: fal-Einrichtung für Bild-, Video- und Musikgenerierung in OpenClaw
+    - Sie möchten die Bilderzeugung von fal in OpenClaw verwenden
+    - Sie benötigen den `FAL_KEY`-Authentifizierungsablauf
+    - Sie möchten fal-Standardeinstellungen für image_generate, video_generate oder music_generate festlegen.
+summary: Einrichtung der Bild-, Video- und Musikgenerierung mit fal in OpenClaw
 title: Fal
 x-i18n:
-    generated_at: "2026-06-27T18:03:42Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:52:53Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: af294939a39673fb32cb68c882708dbe69b64ca5e5d13f5504de9d1d8715e3bd
+    source_hash: 9bd868aaf6771f6fa38bb8e2a83133460d150e2a5aa9e5b888e221c07f29e0ad
     source_path: providers/fal.md
     workflow: 16
 ---
 
-OpenClaw enthält einen gebündelten `fal`-Provider für gehostete Bild-, Video- und Musikgenerierung.
+OpenClaw enthält einen gebündelten `fal`-Provider für die gehostete Bild-, Video- und
+Musikgenerierung.
 
-| Eigenschaft | Wert                                                          |
-| -------- | ------------------------------------------------------------- |
-| Provider | `fal`                                                         |
-| Auth     | `FAL_KEY` (kanonisch; `FAL_API_KEY` funktioniert auch als Fallback) |
-| API      | fal-Modellendpunkte                                           |
+| Eigenschaft    | Wert                                                                            |
+| -------------- | ------------------------------------------------------------------------------- |
+| Provider       | `fal`                                                                           |
+| Authentifizierung | `FAL_KEY` (kanonisch; `FAL_API_KEY` funktioniert ebenfalls als Fallback)     |
+| API            | fal-Modellendpunkte (`https://fal.run`; Videoaufträge verwenden `https://queue.fal.run`) |
+| Basis-URL      | Mit `models.providers.fal.baseUrl` überschreiben                                 |
 
 ## Erste Schritte
 
 <Steps>
-  <Step title="Set the API key">
+  <Step title="API-Schlüssel festlegen">
     ```bash
     openclaw onboard --auth-choice fal-api-key
     ```
+
+    Nicht interaktive Einrichtungen können `--fal-api-key <key>` übergeben oder
+    `FAL_KEY` exportieren. Das Onboarding legt außerdem
+    `fal/fal-ai/flux/dev` als Standardbildmodell fest, wenn keines konfiguriert
+    ist.
+
   </Step>
-  <Step title="Set a default image model">
+  <Step title="Standardbildmodell festlegen">
     ```json5
     {
       agents: {
@@ -51,60 +60,66 @@ OpenClaw enthält einen gebündelten `fal`-Provider für gehostete Bild-, Video-
 Der gebündelte `fal`-Provider für die Bildgenerierung verwendet standardmäßig
 `fal/fal-ai/flux/dev`.
 
-| Fähigkeit      | Wert                                                               |
-| -------------- | ------------------------------------------------------------------ |
-| Max. Bilder    | 4 pro Anfrage; Krea 2: 1 pro Anfrage                               |
-| Bearbeitungsmodus | Flux: 1 Referenzbild; GPT Image 2: 10; Nano Banana 2: 14        |
-| Stilreferenzen | Krea 2: bis zu 10 Stilreferenzen über `image` / `images`           |
-| Größen-Overrides | Unterstützt                                                       |
-| Seitenverhältnis | Unterstützt für Generieren, Krea 2 und Bearbeitung mit GPT Image 2/Nano Banana 2 |
-| Auflösung      | Unterstützt                                                        |
-| Ausgabeformat  | `png` oder `jpeg`                                                  |
+| Funktion                   | Wert                                                               |
+| -------------------------- | ------------------------------------------------------------------ |
+| Maximale Bildanzahl        | 4 pro Anfrage; Krea 2: 1 pro Anfrage                               |
+| Größenüberschreibungen     | `1024x1024`, `1024x1536`, `1536x1024`, `1024x1792`, `1792x1024`    |
+| Seitenverhältnis           | Überall außer bei Flux-Bild-zu-Bild unterstützt                    |
+| Auflösung                  | `1K`, `2K`, `4K` (modellspezifische Grenzen unten)                 |
+| Ausgabeformat              | `png` (Standard) oder `jpeg`; Krea 2 lehnt `outputFormat`-Überschreibungen ab |
+
+Bearbeitungsanfragen (Referenzbilder über die gemeinsamen Parameter `image` /
+`images`) werden an einen modellspezifischen Bearbeitungsendpunkt mit
+modellspezifischen Referenzgrenzen weitergeleitet:
+
+| Modellfamilie              | Modellreferenz nach `fal/`               | Bearbeitungsendpunkt | Maximale Referenzbilder |
+| -------------------------- | ---------------------------------------- | -------------------- | ----------------------- |
+| Flux und andere fal-Modelle | `fal-ai/flux/dev` (Standard)            | `/image-to-image`    | 1                       |
+| GPT Image                  | `openai/gpt-image-*`                     | `/edit`              | 10                      |
+| Grok Imagine               | `xai/grok-imagine-image`                 | `/edit`              | 3                       |
+| Nano Banana (veraltet)     | `fal-ai/nano-banana`                     | `/edit`              | 3                       |
+| Nano Banana 2              | `fal-ai/nano-banana-*`                   | `/edit`              | 14                      |
+| Nano Banana 2 Lite         | `google/nano-banana-2-lite`              | `/edit`              | 14                      |
+| Krea 2                     | `krea/v2/{medium,large}/text-to-image`   | keiner (Stilreferenzen) | 10 Stilreferenzen     |
 
 <Warning>
-Flux-Anfragen für Bild-zu-Bild unterstützen **keine** `aspectRatio`-Overrides. Bearbeitungsanfragen für GPT
-Image 2 und Nano Banana 2 verwenden fals `/edit`-Endpunkt und akzeptieren
-Hinweise zum Seitenverhältnis. Nano Banana 2 akzeptiert außerdem zusätzliche native breite/hohe Verhältnisse
-wie `4:1`, `1:4`, `8:1` und `1:8`; Krea 2 validiert seine eigene kleinere
-Teilmenge von Seitenverhältnissen.
+Flux-Bild-zu-Bild-Anfragen unterstützen **keine** Überschreibungen von
+`aspectRatio`. Bearbeitungsanfragen für GPT Image und Nano Banana 2 verwenden
+den `/edit`-Endpunkt von fal und akzeptieren Hinweise zum Seitenverhältnis.
+Nano Banana 2 akzeptiert außerdem zusätzliche native breite/hohe Verhältnisse
+wie `4:1`, `1:4`, `8:1` und `1:8`; Krea 2 validiert eine eigene kleinere
+Teilmenge von Seitenverhältnissen. Grok Imagine verfügt über eine eigene Liste
+von Verhältnissen (einschließlich `2:1`, `20:9`, `19.5:9` und deren
+Umkehrungen) und akzeptiert nur die Auflösungen `1K`/`2K`; das veraltete Nano
+Banana und Nano Banana 2 Lite lehnen Überschreibungen von `resolution` ab.
 </Warning>
 
-Krea-2-Modelle verwenden fals natives Krea-Payload-Schema. OpenClaw sendet
-`aspect_ratio`, `creativity` und `image_style_references` statt des
-generischen `image_size`- / Bearbeitungsendpunkt-Payloads, der von Flux verwendet wird. Die Modellreferenzen sind:
+Krea-2-Modelle verwenden das native Krea-Nutzdatenschema von fal. OpenClaw
+sendet `aspect_ratio`, `creativity` und `image_style_references` anstelle des
+generischen `image_size`- bzw. Bearbeitungsendpunkt-Nutzdatenformats, das Flux
+verwendet. Die Modellreferenzen lauten:
 
 - `fal/krea/v2/medium/text-to-image`
 - `fal/krea/v2/large/text-to-image`
 
-Verwenden Sie Medium für schnellere ausdrucksstarke Illustrationen, Anime, Malerei und künstlerische
-Stile. Verwenden Sie Large für langsamere fotorealistische Ergebnisse, rohe Texturen, Filmkorn und detaillierte
-Looks. Krea verwendet standardmäßig `fal.creativity: "medium"`; unterstützte Werte sind
-`raw`, `low`, `medium` und `high`.
+Verwenden Sie Medium für schnellere ausdrucksstarke Illustrationen, Anime,
+Gemälde und künstlerische Stile. Verwenden Sie Large für langsamere
+fotorealistische Darstellungen, rohe Texturen, Filmkörnung und detaillierte
+Optiken. Krea verwendet standardmäßig `fal.creativity: "medium"`; unterstützte
+Werte sind `raw`, `low`, `medium` und `high`.
 
-Krea 2 stellt in fals Anfrageschema das Seitenverhältnis bereit, nicht `image_size`. Bevorzugen Sie
-`aspectRatio`; OpenClaw ordnet `size` dem nächstgelegenen unterstützten Krea-Seitenverhältnis zu
-und lehnt `resolution` für Krea ab, statt es zu verwerfen.
+Krea 2 stellt im Anfrageschema von fal das Seitenverhältnis und nicht
+`image_size` bereit. Bevorzugen Sie `aspectRatio`; OpenClaw ordnet `size` dem
+nächstgelegenen unterstützten Krea-Seitenverhältnis zu und lehnt `resolution`
+für Krea ab, anstatt es zu verwerfen.
 
-Verwenden Sie `outputFormat: "png"`, wenn Sie PNG-Ausgabe von fal-Modellen wünschen, die
-`output_format` bereitstellen. fal deklariert in OpenClaw keine explizite Steuerung
-für transparenten Hintergrund, daher wird `background: "transparent"` als ignorierter
-Override für fal-Modelle gemeldet.
-Krea-2-Endpunkte stellen über fal kein `output_format`-Anfragefeld bereit, daher
-lehnt OpenClaw `outputFormat`-Overrides für Krea-Anfragen ab.
-
-So verwenden Sie fal als Standard-Provider für Bilder:
-
-```json5
-{
-  agents: {
-    defaults: {
-      imageGenerationModel: {
-        primary: "fal/fal-ai/flux/dev",
-      },
-    },
-  },
-}
-```
+Verwenden Sie `outputFormat: "png"`, wenn Sie eine PNG-Ausgabe von fal-Modellen
+wünschen, die `output_format` bereitstellen. fal deklariert in OpenClaw keine
+explizite Steuerung für transparente Hintergründe, daher wird
+`background: "transparent"` bei fal-Modellen als ignorierte Überschreibung
+gemeldet.
+Krea-2-Endpunkte stellen über fal kein `output_format`-Anfragefeld bereit,
+daher lehnt OpenClaw `outputFormat`-Überschreibungen für Krea-Anfragen ab.
 
 So verwenden Sie Krea 2 Medium:
 
@@ -125,16 +140,27 @@ So verwenden Sie Krea 2 Medium:
 Der gebündelte `fal`-Provider für die Videogenerierung verwendet standardmäßig
 `fal/fal-ai/minimax/video-01-live`.
 
-| Fähigkeit | Wert                                                               |
-| ---------- | ------------------------------------------------------------------ |
-| Modi       | Text-zu-Video, Einzelbildreferenz, Seedance-Referenz-zu-Video |
-| Laufzeit   | Queue-gestützter Einreichungs-/Status-/Ergebnisablauf für lang laufende Jobs |
+| Funktion       | Wert                                                               |
+| -------------- | ------------------------------------------------------------------ |
+| Modi           | Text-zu-Video, Einzelbildreferenz, Seedance-Referenz-zu-Video      |
+| Laufzeit       | Warteschlangengestützter Ablauf für Übermittlung, Status und Ergebnis bei lang laufenden Aufträgen |
+| Zeitüberschreitung | Standardmäßig 20 Minuten pro Auftrag; Statusabfrage alle 5 Sekunden |
 
 <AccordionGroup>
-  <Accordion title="Available video models">
+  <Accordion title="Verfügbare Videomodelle">
+    **MiniMax (Standard):**
+
+    - `fal/fal-ai/minimax/video-01-live`
+
     **HeyGen-Video-Agent:**
 
     - `fal/fal-ai/heygen/v2/video-agent`
+
+    **Kling und Wan:**
+
+    - `fal/fal-ai/kling-video/v2.1/master/text-to-video`
+    - `fal/fal-ai/wan/v2.2-a14b/text-to-video`
+    - `fal/fal-ai/wan/v2.2-a14b/image-to-video`
 
     **Seedance 2.0:**
 
@@ -145,9 +171,14 @@ Der gebündelte `fal`-Provider für die Videogenerierung verwendet standardmäß
     - `fal/bytedance/seedance-2.0/image-to-video`
     - `fal/bytedance/seedance-2.0/reference-to-video`
 
+    MiniMax-Live- und HeyGen-Anfragen senden nur den Prompt und optional ein
+    einzelnes Referenzbild; andere Überschreibungen werden nicht
+    weitergeleitet. Seedance-Modelle akzeptieren `aspectRatio`, `size`,
+    `resolution`, Dauern von 4-15 Sekunden und einen Audio-Umschalter.
+
   </Accordion>
 
-  <Accordion title="Seedance 2.0 config example">
+  <Accordion title="Seedance-2.0-Konfigurationsbeispiel">
     ```json5
     {
       agents: {
@@ -161,7 +192,7 @@ Der gebündelte `fal`-Provider für die Videogenerierung verwendet standardmäß
     ```
   </Accordion>
 
-  <Accordion title="Seedance 2.0 reference-to-video config example">
+  <Accordion title="Seedance-2.0-Konfigurationsbeispiel für Referenz-zu-Video">
     ```json5
     {
       agents: {
@@ -174,13 +205,15 @@ Der gebündelte `fal`-Provider für die Videogenerierung verwendet standardmäß
     }
     ```
 
-    Referenz-zu-Video akzeptiert bis zu 9 Bilder, 3 Videos und 3 Audioreferenzen
-    über die gemeinsamen `video_generate`-Parameter `images`, `videos` und `audioRefs`,
-    mit insgesamt höchstens 12 Referenzdateien.
+    Referenz-zu-Video akzeptiert über die gemeinsamen `video_generate`-Parameter
+    `images`, `videos` und `audioRefs` bis zu 9 Bilder, 3 Videos und 3
+    Audioreferenzen, mit insgesamt höchstens 12 Referenzdateien.
+    Audioreferenzen erfordern in derselben Anfrage mindestens eine Bild- oder
+    Videoreferenz.
 
   </Accordion>
 
-  <Accordion title="HeyGen video-agent config example">
+  <Accordion title="HeyGen-Video-Agent-Konfigurationsbeispiel">
     ```json5
     {
       agents: {
@@ -197,16 +230,17 @@ Der gebündelte `fal`-Provider für die Videogenerierung verwendet standardmäß
 
 ## Musikgenerierung
 
-Das gebündelte `fal`-Plugin registriert außerdem einen Provider für die Musikgenerierung für das
-gemeinsame Tool `music_generate`.
+Das gebündelte `fal`-Plugin registriert außerdem einen Provider für die
+Musikgenerierung für das gemeinsame Werkzeug `music_generate`.
 
-| Fähigkeit     | Wert                                                                                                   |
-| ------------- | ------------------------------------------------------------------------------------------------------ |
-| Standardmodell | `fal/fal-ai/minimax-music/v2.6`                                                                        |
-| Modelle       | `fal-ai/minimax-music/v2.6`, `fal-ai/ace-step/prompt-to-audio`, `fal-ai/stable-audio-25/text-to-audio` |
-| Laufzeit      | Synchrone Anfrage plus Download des generierten Audios                                                 |
+| Funktion        | Wert                                                                                                                    |
+| --------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| Standardmodell  | `fal/fal-ai/minimax-music/v2.6`                                                                                         |
+| Modelle         | `fal-ai/minimax-music/v2.6` (mp3), `fal-ai/ace-step/prompt-to-audio` (wav), `fal-ai/stable-audio-25/text-to-audio` (wav) |
+| Maximale Dauer  | 240 Sekunden                                                                                                            |
+| Laufzeit        | Synchrone Anfrage mit anschließendem Download des generierten Audios                                                    |
 
-Verwenden Sie fal als Standard-Provider für Musik:
+So verwenden Sie fal als Standard-Provider für Musik:
 
 ```json5
 {
@@ -220,28 +254,35 @@ Verwenden Sie fal als Standard-Provider für Musik:
 }
 ```
 
-`fal-ai/minimax-music/v2.6` unterstützt explizite Liedtexte und Instrumentalmodus.
-ACE-Step und Stable Audio sind Prompt-zu-Audio-Endpunkte; wählen Sie sie mit dem
-`model`-Override, wenn Sie diese Modellfamilien verwenden möchten.
+`fal-ai/minimax-music/v2.6` unterstützt explizite Liedtexte und einen
+Instrumentalmodus, jedoch nicht beides in derselben Anfrage. ACE-Step und
+Stable Audio sind Prompt-zu-Audio-Endpunkte; wählen Sie sie mit der
+`model`-Überschreibung aus, wenn Sie diese Modellfamilien verwenden möchten.
+ACE-Step lehnt explizite Liedtexte ab; Stable Audio lehnt sowohl Liedtexte als
+auch den Instrumentalmodus ab.
 
 <Tip>
-Verwenden Sie `openclaw models list --provider fal`, um die vollständige Liste der verfügbaren fal-
-Modelle zu sehen, einschließlich kürzlich hinzugefügter Einträge.
+Die obigen Tabellen und Akkordeons behandeln die Modellfamilien, für die der
+gebündelte fal-Provider Sonderbehandlungen implementiert. Andere
+fal-Bildendpunkt-IDs können weiterhin als Bildmodell ausgewählt werden; sie
+werden wie Flux behandelt (generische `image_size`-Nutzdaten, ein Referenzbild
+über `/image-to-image`).
 </Tip>
 
-## Verwandt
+## Verwandte Themen
 
 <CardGroup cols={2}>
-  <Card title="Image generation" href="/de/tools/image-generation" icon="image">
-    Gemeinsame Parameter für Bildtools und Provider-Auswahl.
+  <Card title="Bildgenerierung" href="/de/tools/image-generation" icon="image">
+    Gemeinsame Parameter des Bildwerkzeugs und Provider-Auswahl.
   </Card>
-  <Card title="Video generation" href="/de/tools/video-generation" icon="video">
-    Gemeinsame Parameter für Videotools und Provider-Auswahl.
+  <Card title="Videogenerierung" href="/de/tools/video-generation" icon="video">
+    Gemeinsame Parameter des Videowerkzeugs und Provider-Auswahl.
   </Card>
-  <Card title="Music generation" href="/de/tools/music-generation" icon="music">
-    Gemeinsame Parameter für Musiktools und Provider-Auswahl.
+  <Card title="Musikgenerierung" href="/de/tools/music-generation" icon="music">
+    Gemeinsame Parameter des Musikwerkzeugs und Provider-Auswahl.
   </Card>
-  <Card title="Configuration reference" href="/de/gateway/config-agents#agent-defaults" icon="gear">
-    Agent-Standardeinstellungen einschließlich Auswahl von Bild-, Video- und Musikmodell.
+  <Card title="Konfigurationsreferenz" href="/de/gateway/config-agents#agent-defaults" icon="gear">
+    Agent-Standardeinstellungen einschließlich der Auswahl von Bild-, Video-
+    und Musikmodellen.
   </Card>
 </CardGroup>

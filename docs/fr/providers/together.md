@@ -1,36 +1,39 @@
 ---
 read_when:
-    - Vous voulez utiliser Together AI avec OpenClaw
-    - Vous avez besoin de la variable d’environnement de clé API ou du choix d’authentification CLI
+    - Vous souhaitez utiliser Together AI avec OpenClaw
+    - Vous devez définir la variable d’environnement de la clé API ou choisir l’authentification via la CLI.
 summary: Configuration de Together AI (authentification + sélection du modèle)
 title: Together AI
 x-i18n:
-    generated_at: "2026-06-27T18:07:37Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:44:52Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: a1f803ae88828a775d93dcf8b0b62e70b1dbd0cf963639121e2995fabfcd280b
+    source_hash: 0860ac6e8092bb4eb48d3c0d348d5c42f538e0316d2fa22a99cbb3a9851b1185
     source_path: providers/together.md
     workflow: 16
 ---
 
-[Together AI](https://together.ai) fournit l’accès à des modèles open source de premier plan, notamment Llama, DeepSeek, Kimi et d’autres, via une API unifiée.
+[Together AI](https://together.ai) fournit un accès aux principaux modèles open source,
+notamment Llama, DeepSeek, Kimi et bien d’autres, par l’intermédiaire d’une API unifiée.
+OpenClaw l’intègre en tant que fournisseur `together`.
 
-| Propriété | Valeur                        |
-| --------- | ----------------------------- |
-| Fournisseur | `together`                  |
-| Authentification | `TOGETHER_API_KEY`     |
-| API       | compatible OpenAI             |
+| Propriété  | Valeur                        |
+| ---------- | ----------------------------- |
+| Fournisseur | `together`                    |
+| Authentification | `TOGETHER_API_KEY`            |
+| API        | Compatible avec OpenAI        |
 | URL de base | `https://api.together.xyz/v1` |
 
-## Premiers pas
+## Prise en main
 
 <Steps>
   <Step title="Obtenir une clé API">
     Créez une clé API sur
     [api.together.ai/settings/api-keys](https://api.together.ai/settings/api-keys).
   </Step>
-  <Step title="Exécuter l’onboarding">
+  <Step title="Exécuter l’intégration initiale">
     ```bash
     openclaw onboard --auth-choice together-api-key
     ```
@@ -60,31 +63,34 @@ openclaw onboard --non-interactive \
 ```
 
 <Note>
-Le préréglage d’onboarding définit
-`together/meta-llama/Llama-3.3-70B-Instruct-Turbo` comme modèle par défaut.
+L’intégration initiale définit `together/meta-llama/Llama-3.3-70B-Instruct-Turbo`
+comme modèle par défaut.
 </Note>
 
 ## Catalogue intégré
 
-OpenClaw fournit ce catalogue Together intégré :
+Le coût est exprimé en USD par million de jetons.
 
-| Réf. de modèle                                    | Nom                          | Entrée      | Contexte | Notes                |
-| -------------------------------------------------- | ---------------------------- | ----------- | -------- | -------------------- |
-| `together/meta-llama/Llama-3.3-70B-Instruct-Turbo` | Llama 3.3 70B Instruct Turbo | texte       | 131,072  | Modèle par défaut    |
-| `together/moonshotai/Kimi-K2.6`                    | Kimi K2.6 FP4                | texte, image | 262,144 | Modèle de raisonnement Kimi |
-| `together/deepseek-ai/DeepSeek-V4-Pro`             | DeepSeek V4 Pro              | texte       | 512,000  | Modèle de texte de raisonnement |
-| `together/Qwen/Qwen2.5-7B-Instruct-Turbo`          | Qwen2.5 7B Instruct Turbo    | texte       | 32,768   | Modèle de texte rapide |
-| `together/zai-org/GLM-5.1`                         | GLM 5.1 FP4                  | texte       | 202,752  | Modèle de texte de raisonnement |
+| Référence du modèle                                | Nom                          | Entrée      | Contexte | Sortie max. | Coût (entrée/sortie) | Remarques                 |
+| -------------------------------------------------- | ---------------------------- | ----------- | -------- | ----------- | -------------------- | ------------------------- |
+| `together/meta-llama/Llama-3.3-70B-Instruct-Turbo` | Llama 3.3 70B Instruct Turbo | texte       | 131,072  | 8,192       | 0.88 / 0.88          | Modèle par défaut         |
+| `together/moonshotai/Kimi-K2.6`                    | Kimi K2.6 FP4                | texte, image | 262,144 | 32,768      | 1.20 / 4.50          | Modèle de raisonnement    |
+| `together/deepseek-ai/DeepSeek-V4-Pro`             | DeepSeek V4 Pro              | texte       | 512,000  | 8,192       | 2.10 / 4.40          | Modèle de raisonnement    |
+| `together/Qwen/Qwen2.5-7B-Instruct-Turbo`          | Qwen2.5 7B Instruct Turbo    | texte       | 32,768   | 8,192       | 0.30 / 0.30          | Rapide, sans raisonnement |
+| `together/zai-org/GLM-5.1`                         | GLM 5.1 FP4                  | texte       | 202,752  | 8,192       | 1.40 / 4.40          | Modèle de raisonnement    |
 
-## Génération vidéo
+## Génération de vidéos
 
-Le Plugin `together` intégré enregistre également la génération vidéo via l’outil partagé `video_generate`.
+Le plugin `together` intégré enregistre également la génération de vidéos par
+l’intermédiaire de l’outil partagé `video_generate`.
 
-| Propriété            | Valeur                                                                   |
-| -------------------- | ------------------------------------------------------------------------ |
-| Modèle vidéo par défaut | `together/Wan-AI/Wan2.2-T2V-A14B`                                     |
-| Modes                | texte vers vidéo ; référence à image unique seulement avec `Wan-AI/Wan2.2-I2V-A14B` |
-| Paramètres pris en charge | `aspectRatio`, `resolution`                                        |
+| Propriété             | Valeur                                                                                    |
+| --------------------- | ----------------------------------------------------------------------------------------- |
+| Modèle vidéo par défaut | `Wan-AI/Wan2.2-T2V-A14B`                                                                |
+| Autres modèles        | `Wan-AI/Wan2.2-I2V-A14B`, `minimax/Hailuo-02`, `Kwai/Kling-2.1-Master`                    |
+| Modes                 | texte vers vidéo ; image vers vidéo uniquement avec `Wan-AI/Wan2.2-I2V-A14B` (une seule image de référence) |
+| Durée                 | 1-10 secondes                                                                             |
+| Paramètres pris en charge | `size` (analysé au format `<width>x<height>`) ; `aspectRatio`/`resolution` ne sont pas lus |
 
 Pour utiliser Together comme fournisseur vidéo par défaut :
 
@@ -101,37 +107,41 @@ Pour utiliser Together comme fournisseur vidéo par défaut :
 ```
 
 <Tip>
-Consultez [Génération vidéo](/fr/tools/video-generation) pour les paramètres de l’outil partagé, la sélection du fournisseur et le comportement de basculement.
+Consultez [Génération de vidéos](/fr/tools/video-generation) pour connaître les paramètres de l’outil partagé,
+la sélection du fournisseur et le comportement de basculement.
 </Tip>
 
 <AccordionGroup>
-  <Accordion title="Note sur l’environnement">
-    Si le Gateway s’exécute comme un démon (launchd/systemd), assurez-vous que
-    `TOGETHER_API_KEY` est disponible pour ce processus (par exemple, dans
-    `~/.openclaw/.env` ou via `env.shellEnv`).
+  <Accordion title="Remarque sur l’environnement">
+    Si le Gateway s’exécute en tant que démon (launchd/systemd), assurez-vous que
+    `TOGETHER_API_KEY` est accessible à ce processus (par exemple dans
+    `~/.openclaw/.env` ou par l’intermédiaire de `env.shellEnv`).
 
     <Warning>
-    Les clés définies uniquement dans votre shell interactif ne sont pas visibles par les processus Gateway gérés par un démon. Utilisez la configuration `~/.openclaw/.env` ou `env.shellEnv` pour une disponibilité persistante.
+    Les clés définies uniquement dans votre shell interactif ne sont pas visibles par les
+    processus Gateway gérés par un démon. Utilisez la configuration `~/.openclaw/.env` ou
+    `env.shellEnv` pour garantir leur disponibilité permanente.
     </Warning>
 
   </Accordion>
 
   <Accordion title="Dépannage">
     - Vérifiez que votre clé fonctionne : `openclaw models list --provider together`
-    - Si les modèles n’apparaissent pas, confirmez que la clé API est définie dans le bon environnement pour votre processus Gateway.
-    - Les références de modèle utilisent la forme `together/<model-id>`.
+    - Si les modèles n’apparaissent pas, vérifiez que la clé API est définie dans
+      l’environnement approprié pour votre processus Gateway.
+    - Les références de modèles utilisent le format `together/<model-id>`.
 
   </Accordion>
 </AccordionGroup>
 
-## Associé
+## Contenu associé
 
 <CardGroup cols={2}>
-  <Card title="Sélection du modèle" href="/fr/concepts/model-providers" icon="layers">
+  <Card title="Fournisseurs de modèles" href="/fr/concepts/model-providers" icon="layers">
     Règles des fournisseurs, références de modèles et comportement de basculement.
   </Card>
-  <Card title="Génération vidéo" href="/fr/tools/video-generation" icon="video">
-    Paramètres de l’outil partagé de génération vidéo et sélection du fournisseur.
+  <Card title="Génération de vidéos" href="/fr/tools/video-generation" icon="video">
+    Paramètres de l’outil partagé de génération de vidéos et sélection du fournisseur.
   </Card>
   <Card title="Référence de configuration" href="/fr/gateway/configuration-reference" icon="gear">
     Schéma de configuration complet, y compris les paramètres des fournisseurs.

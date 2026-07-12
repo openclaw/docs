@@ -1,38 +1,40 @@
 ---
 read_when:
-    - Atualizando mapeamentos de identificadores de modelo de dispositivo ou arquivos NOTICE/license
-    - Alterando como a UI de Instâncias exibe nomes de dispositivos
-summary: Como o OpenClaw incorpora identificadores de modelo de dispositivos Apple para nomes amigáveis no app macOS.
+    - Atualização dos mapeamentos de identificadores de modelos de dispositivos ou dos arquivos NOTICE/licença
+    - Alteração de como a interface de Instâncias exibe os nomes dos dispositivos
+summary: Como o OpenClaw incorpora identificadores de modelos de dispositivos Apple para exibir nomes amigáveis no aplicativo para macOS.
 title: Banco de dados de modelos de dispositivos
 x-i18n:
-    generated_at: "2026-04-25T13:55:22Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: f20e035f787ba7d9bb48d2a18263679d20b295e12ffb263a63c3a0ef72312d34
-    source_path: reference/device-models.md
-    workflow: 15
+    generated_at: "2026-07-12T15:35:58Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
+    provider: openai
+    source_hash: 930cd330594072d9c986b8c85c5a68e02dd096e5f0c015e3ee86b767073b93e6
+    source_path: reference/device-models.md
+    workflow: 16
 ---
 
-O app complementar para macOS mostra nomes amigáveis de modelos de dispositivos Apple na UI de **Instâncias** mapeando identificadores de modelo da Apple (por exemplo, `iPad16,6`, `Mac16,6`) para nomes legíveis por humanos.
+A interface de **Instâncias** do aplicativo complementar para macOS mapeia identificadores de modelos da Apple para nomes amigáveis (`iPad16,6` -> "iPad Pro de 13 polegadas (M4)", `Mac16,6` -> "MacBook Pro (14 polegadas, 2024)"). `DeviceModelCatalog` também usa o prefixo do identificador (recorrendo à família do dispositivo como alternativa) para escolher um símbolo SF para cada dispositivo.
 
-O mapeamento é incorporado como JSON em:
+Arquivos em `apps/macos/Sources/OpenClaw/Resources/DeviceModels/`:
 
-- `apps/macos/Sources/OpenClaw/Resources/DeviceModels/`
+| Arquivo                                | Finalidade                                      |
+| -------------------------------------- | ----------------------------------------------- |
+| `ios-device-identifiers.json`          | Mapeamento de identificador iOS/iPadOS -> nome  |
+| `mac-device-identifiers.json`          | Mapeamento de identificador Mac -> nome         |
+| `NOTICE.md`                            | SHAs fixados dos commits do repositório original |
+| `LICENSE.apple-device-identifiers.txt` | Licença MIT do repositório original             |
 
-## Fonte de dados
+## Fonte dos dados
 
-Atualmente incorporamos o mapeamento do repositório sob licença MIT:
+Importados do repositório do GitHub `kyle-seongwoo-jun/apple-device-identifiers`, licenciado sob a licença MIT. Os arquivos JSON são fixados nos SHAs dos commits registrados em `NOTICE.md` para manter as compilações determinísticas.
 
-- `kyle-seongwoo-jun/apple-device-identifiers`
+## Atualização do banco de dados
 
-Para manter builds determinísticos, os arquivos JSON são fixados em commits específicos upstream (registrados em `apps/macos/Sources/OpenClaw/Resources/DeviceModels/NOTICE.md`).
-
-## Atualizando o banco de dados
-
-1. Escolha os commits upstream que você quer fixar (um para iOS, um para macOS).
-2. Atualize os hashes de commit em `apps/macos/Sources/OpenClaw/Resources/DeviceModels/NOTICE.md`.
-3. Baixe novamente os arquivos JSON, fixados nesses commits:
+1. Escolha os SHAs dos commits do repositório original que serão fixados (um para iOS e outro para macOS).
+2. Atualize `apps/macos/Sources/OpenClaw/Resources/DeviceModels/NOTICE.md` com os novos SHAs.
+3. Baixe novamente os arquivos JSON fixados nesses commits:
 
 ```bash
 IOS_COMMIT="<commit sha for ios-device-identifiers.json>"
@@ -45,8 +47,8 @@ curl -fsSL "https://raw.githubusercontent.com/kyle-seongwoo-jun/apple-device-ide
   -o apps/macos/Sources/OpenClaw/Resources/DeviceModels/mac-device-identifiers.json
 ```
 
-4. Garanta que `apps/macos/Sources/OpenClaw/Resources/DeviceModels/LICENSE.apple-device-identifiers.txt` ainda corresponda ao upstream (substitua-o se a licença upstream mudar).
-5. Verifique se o app macOS compila sem problemas (sem avisos):
+4. Confirme se `LICENSE.apple-device-identifiers.txt` ainda corresponde à versão do repositório original; substitua-o se a licença original tiver sido alterada.
+5. Verifique se o aplicativo para macOS é compilado sem erros:
 
 ```bash
 swift build --package-path apps/macos

@@ -1,15 +1,16 @@
 ---
 read_when:
-    - Quieres una guía paso a paso para principiantes de la TUI
-    - Necesitas la lista completa de funciones, comandos y atajos de TUI
-summary: 'Interfaz de terminal (TUI): conéctate al Gateway o ejecútala localmente en modo integrado'
+    - Quieres una guía paso a paso de la TUI apta para principiantes
+    - Necesita la lista completa de funciones, comandos y atajos de la TUI
+summary: 'Interfaz de usuario de terminal (TUI): conéctese al Gateway o ejecútela localmente en modo integrado'
 title: TUI
 x-i18n:
-    generated_at: "2026-07-06T10:53:48Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:54:54Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: 9eec565ebdf91d705074798ef5bad433fd3d8e7c429e6bd0214a3eb3baa39c1f
+    source_hash: d7181ea88643a129532f698908fd3dd3d93078b7e33b0ab1166dcfca2ecc2abd
     source_path: web/tui.md
     workflow: 16
 ---
@@ -18,19 +19,19 @@ x-i18n:
 
 ### Modo Gateway
 
-1. Inicia el Gateway.
+1. Inicie el Gateway.
 
 ```bash
 openclaw gateway
 ```
 
-2. Abre la TUI.
+2. Abra la TUI.
 
 ```bash
 openclaw tui
 ```
 
-3. Escribe un mensaje y pulsa Enter.
+3. Escriba un mensaje y pulse Enter.
 
 Gateway remoto:
 
@@ -38,85 +39,85 @@ Gateway remoto:
 openclaw tui --url ws://<host>:<port> --token <gateway-token>
 ```
 
-Usa `--password` si tu Gateway usa autenticación por contraseña.
+Use `--password` si el Gateway utiliza autenticación mediante contraseña.
 
 ### Modo local
 
-Ejecuta la TUI sin un Gateway:
+Ejecute la TUI sin un Gateway:
 
 ```bash
 openclaw chat
-# or
+# o
 openclaw tui --local
 ```
 
 - `openclaw chat` y `openclaw terminal` son alias de `openclaw tui --local`.
-- `--local` no puede combinarse con `--url`, `--token` ni `--password`.
-- El modo local usa directamente el entorno de ejecución del agente integrado. La mayoría de las herramientas locales funcionan, pero las funciones exclusivas del Gateway no están disponibles.
-- `openclaw` sin más (sin subcomando) elige un destino automáticamente: una instalación sin configurar ejecuta el onboarding; una configuración no válida abre [Crestodian](#crestodian-setup-and-repair-helper); una configuración válida abre esta shell TUI en modo Gateway si se puede acceder a un Gateway; de lo contrario, en modo local.
+- `--local` no se puede combinar con `--url`, `--token` ni `--password`.
+- El modo local utiliza directamente el entorno de ejecución del agente integrado. La mayoría de las herramientas locales funcionan, pero las funciones exclusivas del Gateway no están disponibles.
+- `openclaw` sin argumentos (sin subcomando) elige un destino automáticamente: una instalación sin configurar ejecuta la incorporación para inferencia; una configuración no válida abre la guía clásica de doctor; un Gateway configurado y accesible abre este intérprete de la TUI en modo Gateway; de lo contrario, un modelo local configurado lo abre en modo local.
 
-## Lo que ves
+## Lo que se muestra
 
-- Encabezado: URL de conexión, agente actual, sesión actual.
-- Registro de chat: mensajes del usuario, respuestas del asistente, avisos del sistema, tarjetas de herramientas.
-- Línea de estado: estado de conexión/ejecución (conectando, ejecutando, transmitiendo, inactivo, error).
-- Pie: agente + sesión + modelo + estado de objetivo + think/fast/verbose/trace/reasoning + recuentos de tokens + entrega. Cuando `tui.footer.showRemoteHost` está habilitado, las conexiones remotas del Gateway también muestran el host de conexión.
+- Encabezado: URL de conexión, agente actual y sesión actual.
+- Registro del chat: mensajes del usuario, respuestas del asistente, avisos del sistema y tarjetas de herramientas.
+- Línea de estado: estado de la conexión o ejecución (conectando, en ejecución, transmitiendo, inactivo o error).
+- Pie de página: agente + sesión + modelo + estado del objetivo + pensar/rápido/detallado/traza/razonamiento + recuentos de tokens + entrega. Cuando `tui.footer.showRemoteHost` está habilitado, las conexiones remotas al Gateway también muestran el host de conexión.
 - Entrada: editor de texto con autocompletado.
 
 ## Modelo mental: agentes + sesiones
 
-- Los agentes son slugs únicos (por ejemplo, `main`, `research`). El Gateway expone la lista.
+- Los agentes son identificadores únicos (por ejemplo, `main` y `research`). El Gateway expone la lista.
 - Las sesiones pertenecen al agente actual.
-- Las claves de sesión se almacenan como `agent:<agentId>:<sessionKey>`.
-  - Si escribes `/session main`, la TUI lo expande a `agent:<currentAgent>:main`.
-  - Si escribes `/session agent:other:main`, cambias explícitamente a esa sesión de agente.
-- Alcance de sesión:
+- Las claves de sesión se almacenan con el formato `agent:<agentId>:<sessionKey>`.
+  - Si escribe `/session main`, la TUI lo expande a `agent:<currentAgent>:main`.
+  - Si escribe `/session agent:other:main`, cambia explícitamente a la sesión de ese agente.
+- Ámbito de la sesión:
   - `per-sender` (predeterminado): cada agente tiene muchas sesiones.
-  - `global`: la TUI siempre usa la sesión `global` (el selector puede estar vacío).
-- El agente + sesión actuales siempre están visibles en el pie.
-- Para mostrar el host del Gateway en conexiones no locales respaldadas por URL, habilítalo con:
+  - `global`: la TUI siempre utiliza la sesión `global` (el selector puede estar vacío).
+- El agente y la sesión actuales siempre se muestran en el pie de página.
+- Para mostrar el host del Gateway en conexiones no locales basadas en URL, habilite esta opción:
 
   ```bash
   openclaw config set tui.footer.showRemoteHost true
   ```
 
-  El valor predeterminado es `false`. Las conexiones loopback y locales integradas nunca muestran una etiqueta de host.
+  El valor predeterminado es `false`. Las conexiones de bucle invertido y las conexiones locales integradas nunca muestran una etiqueta de host.
 
-- Si la sesión tiene un [objetivo](/es/tools/goal), el pie muestra su estado compacto:
+- Si la sesión tiene un [objetivo](/es/tools/goal), el pie de página muestra su estado compacto:
   `Pursuing goal`, `Goal paused (/goal resume)`, `Goal blocked (/goal resume)` o `Goal achieved`.
-- Cuando se inicia sin `--session`, la TUI en modo Gateway reanuda la última sesión seleccionada para el mismo gateway, agente y alcance de sesión si esa sesión aún existe. Pasar `--session`, `/session`, `/new` o `/reset` sigue siendo explícito.
+- Cuando se inicia sin `--session`, la TUI en modo Gateway reanuda la última sesión seleccionada para el mismo Gateway, agente y ámbito de sesión si esa sesión aún existe. Pasar `--session`, `/session`, `/new` o `/reset` sigue siendo explícito.
 
 ## Envío + entrega
 
-- Los mensajes siempre van al Gateway (o al entorno de ejecución integrado en modo local); entregar la respuesta del asistente de vuelta a un proveedor de chat es un paso separado y desactivado de forma predeterminada.
-- La TUI es una superficie de origen interna como WebChat, no un canal saliente genérico. Los harnesses que requieren `tools.message` para respuestas visibles pueden satisfacer el turno activo de la TUI con un `message.send` sin destino; la entrega explícita del proveedor sigue usando canales configurados normales y nunca recurre a `lastChannel`.
-- La entrega queda fijada para toda la sesión TUI al iniciar: empieza con `openclaw tui --deliver` para activarla. No hay comando slash `/deliver` ni interruptor de Settings para cambiarla a mitad de sesión; reinicia la TUI para cambiarla.
+- Los mensajes siempre se envían al Gateway (o al entorno de ejecución integrado en modo local); entregar la respuesta del asistente a un proveedor de chat es un paso independiente y desactivado de forma predeterminada.
+- La TUI es una superficie de origen interna como WebChat, no un canal de salida genérico. Los entornos de prueba que requieren `tools.message` para las respuestas visibles pueden completar el turno activo de la TUI con un `message.send` sin destino; la entrega explícita al proveedor sigue usando los canales configurados normales y nunca recurre a `lastChannel`.
+- La entrega queda fijada para toda la sesión de la TUI al iniciarla: iníciela con `openclaw tui --deliver` para activarla. No hay ningún comando con barra `/deliver` ni opción en Settings que permita cambiarla durante la sesión; reinicie la TUI para modificarla.
 
-## Selectores + superposiciones
+## Selectores y superposiciones
 
-- Selector de modelo: lista los modelos disponibles y establece la anulación de sesión.
-- Selector de agente: elige un agente diferente.
-- Selector de sesión: muestra hasta 50 sesiones del agente actual actualizadas en los últimos 7 días. Usa `/session <key>` para saltar a una sesión conocida más antigua.
-- Settings (`/settings`): alterna la expansión de salida de herramientas y la visibilidad del razonamiento. Este panel no controla la entrega.
+- Selector de modelos: muestra los modelos disponibles y establece la anulación de la sesión.
+- Selector de agentes: permite elegir otro agente.
+- Selector de sesiones: muestra hasta 50 sesiones del agente actual actualizadas durante los últimos 7 días. Use `/session <key>` para ir a una sesión anterior conocida.
+- Configuración (`/settings`): permite alternar la expansión de la salida de las herramientas y la visibilidad del razonamiento. Este panel no controla la entrega.
 
 ## Atajos de teclado
 
 - Enter: enviar mensaje
 - Esc: cancelar la ejecución activa
-- Ctrl+C: borrar entrada (pulsa dos veces para salir)
+- Ctrl+C: borrar la entrada (púlselo dos veces para salir)
 - Ctrl+D: salir
-- Ctrl+L: selector de modelo
-- Ctrl+G: selector de agente
-- Ctrl+P: selector de sesión
-- Ctrl+O: alternar expansión de salida de herramientas
-- Ctrl+T: alternar visibilidad del razonamiento (recarga el historial)
+- Ctrl+L: selector de modelos
+- Ctrl+G: selector de agentes
+- Ctrl+P: selector de sesiones
+- Ctrl+O: alternar la expansión de la salida de las herramientas
+- Ctrl+T: alternar la visibilidad del razonamiento (vuelve a cargar el historial)
 
-## Comandos slash
+## Comandos con barra diagonal
 
 Núcleo:
 
 - `/help`
-- `/status` (reenviado por el Gateway; muestra resumen de sesión/modelo)
+- `/status` (reenviado por el Gateway; muestra un resumen de la sesión y el modelo)
 - `/gateway-status` (alias `/gwstatus`; muestra directamente el estado de conexión del Gateway)
 - `/agent <id>` (o `/agents`)
 - `/session <key>` (o `/sessions`)
@@ -129,56 +130,56 @@ Controles de sesión:
 - `/verbose <on|full|off>`
 - `/trace <on|off>`
 - `/reasoning <on|off|stream>`
-- `/usage <off|tokens|full|reset>` (`reset`/`inherit`/`clear`/`default` borra la anulación de sesión)
+- `/usage <off|tokens|full|reset>` (`reset`/`inherit`/`clear`/`default` elimina la configuración específica de la sesión)
 - `/goal [status] | /goal start <objective> | /goal edit <objective> | /goal pause|resume|complete|block|clear`
 - `/elevated <on|off|ask|full>` (alias: `/elev`)
 - `/activation <mention|always>`
 
-Ciclo de vida de sesión:
+Ciclo de vida de la sesión:
 
-- `/new` (crea una sesión nueva y aislada bajo una clave nueva; no afecta a otros clientes TUI en la sesión anterior)
-- `/reset` (restablece la clave de sesión actual en el mismo lugar)
+- `/new` (crea una sesión nueva y aislada con una clave nueva; no afecta a otros clientes TUI que usan la sesión anterior)
+- `/reset` (restablece en el mismo lugar la clave de la sesión actual)
 - `/abort` (cancela la ejecución activa)
 - `/settings`
 - `/exit` (o `/quit`)
 
-Solo modo local:
+Solo en modo local:
 
 - `/auth [provider]` abre el flujo de autenticación/inicio de sesión del proveedor dentro de la TUI.
 
 Crestodian:
 
-- `/crestodian [request]` vuelve de la TUI normal del agente al chat de configuración/reparación de [Crestodian](#crestodian-setup-and-repair-helper), reenviando opcionalmente una solicitud.
+- `/crestodian [request]` vuelve de la TUI normal del agente al chat de configuración/reparación de [Crestodian](#crestodian-setup-and-repair-helper), con la opción de reenviar una solicitud.
 
-Otros comandos slash del Gateway (por ejemplo, `/context`) se reenvían al Gateway y se muestran como salida del sistema. Consulta [Comandos slash](/es/tools/slash-commands).
+Otros comandos de barra del Gateway (por ejemplo, `/context`) se reenvían al Gateway y se muestran como salida del sistema. Consulte [Comandos de barra](/es/tools/slash-commands).
 
-## Comandos de shell locales
+## Comandos del shell local
 
-- Antepon `!` a una línea para ejecutar un comando de shell local en el host de la TUI.
-- La TUI solicita una vez por sesión permiso para permitir la ejecución local; si se rechaza, `!` queda deshabilitado para la sesión.
-- Los comandos se ejecutan en una shell nueva y no interactiva en el directorio de trabajo de la TUI (sin `cd`/env persistente).
-- Los comandos de shell locales reciben `OPENCLAW_SHELL=tui-local` en su entorno.
-- Un `!` solo se envía como mensaje normal; los espacios iniciales no activan la ejecución local.
+- Anteponer `!` a una línea para ejecutar un comando del shell local en el host de la TUI.
+- La TUI solicita una vez por sesión permiso para la ejecución local; si se rechaza, `!` permanece deshabilitado durante la sesión.
+- Los comandos se ejecutan en un shell nuevo y no interactivo, en el directorio de trabajo de la TUI (sin persistencia de `cd` ni de variables de entorno).
+- Los comandos del shell local reciben `OPENCLAW_SHELL=tui-local` en su entorno.
+- Un `!` aislado se envía como un mensaje normal; los espacios iniciales no activan la ejecución local.
 
-## Ayudante de configuración y reparación Crestodian
+## Asistente de configuración y reparación Crestodian
 
-Crestodian es el asistente de configuración/reparación de anillo cero, expuesto como `openclaw crestodian` (o iniciado automáticamente cuando `openclaw` sin más encuentra una configuración no válida). Se ejecuta dentro de la misma shell TUI local que `openclaw tui --local`, respaldado por una capa dedicada de diálogo/operaciones en lugar de una sesión activa de modelo+herramientas:
+Crestodian es el asistente de configuración y reparación de nivel cero, disponible como `openclaw crestodian` después de que el modelo predeterminado configurado supere una comprobación de inferencia en vivo. Si la inferencia no está disponible, una invocación interactiva vuelve a la incorporación de inferencia y la automatización falla con instrucciones de reparación. Se ejecuta dentro del mismo entorno TUI local que `openclaw tui --local`, respaldado por un agente de IA restringido a las operaciones tipadas de Crestodian sujetas a aprobación:
 
 ```bash
-openclaw crestodian                       # start interactively
-openclaw crestodian -m "status"           # run one request and exit
-openclaw crestodian -m "set default model openai/gpt-5.2" --yes   # apply a config write
+openclaw crestodian                       # iniciar de forma interactiva
+openclaw crestodian -m "status"           # ejecutar una solicitud y salir
+openclaw crestodian -m "set default model openai/gpt-5.2" --yes   # aplicar una escritura de configuración
 ```
 
-- Las escrituras de configuración persistente necesitan aprobación: confirma de forma interactiva o pasa `--yes`.
-- `--json` imprime la vista general de inicio como JSON en lugar de iniciar el chat.
-- Desde dentro de Crestodian, una solicitud `open-tui` (por ejemplo, pedir hablar con un agente normal) sale de Crestodian y abre la TUI de agente normal; usa `/crestodian` allí para volver.
+- Las escrituras persistentes de configuración requieren aprobación: confírmelas de forma interactiva o pase `--yes`.
+- `--json` imprime el resumen inicial como JSON en lugar de iniciar el chat.
+- Desde Crestodian, una solicitud `open-tui` (por ejemplo, pedir hablar con un agente normal) cierra Crestodian y abre la TUI habitual del agente; use `/crestodian` allí para volver.
 
-Usa el modo local cuando la configuración actual ya valida y quieres que el agente integrado la inspeccione en la misma máquina, la compare con la documentación y ayude a reparar desviaciones sin depender de un Gateway en ejecución.
+Use el modo local cuando la configuración actual ya se valide y se quiera que el agente integrado la inspeccione en la misma máquina, la compare con la documentación y ayude a corregir desviaciones sin depender de un Gateway en ejecución.
 
-Si `openclaw config validate` ya falla, empieza primero con `openclaw configure` u `openclaw doctor --fix`; `openclaw chat` sigue necesitando una configuración cargable para iniciar.
+Si `openclaw config validate` ya está fallando, empieza primero con `openclaw configure` o `openclaw doctor --fix`; `openclaw chat` también necesita una configuración que se pueda cargar para iniciarse.
 
-Bucle típico:
+Flujo habitual:
 
 1. Inicia el modo local:
 
@@ -186,13 +187,13 @@ Bucle típico:
 openclaw chat
 ```
 
-2. Pide al agente lo que quieres revisar, por ejemplo:
+2. Pide al agente que compruebe lo que necesites, por ejemplo:
 
 ```text
-Compare my gateway auth config with the docs and suggest the smallest fix.
+Compara mi configuración de autenticación del Gateway con la documentación y sugiere la corrección más pequeña.
 ```
 
-3. Usa comandos de shell locales para obtener evidencia y validación exactas:
+3. Usa comandos del shell local para obtener pruebas exactas y realizar la validación:
 
 ```text
 !openclaw config file
@@ -201,73 +202,74 @@ Compare my gateway auth config with the docs and suggest the smallest fix.
 !openclaw doctor
 ```
 
-4. Aplica cambios acotados con `openclaw config set` u `openclaw configure`, y luego vuelve a ejecutar `!openclaw config validate`.
+4. Aplica cambios específicos con `openclaw config set` o `openclaw configure` y, a continuación, vuelve a ejecutar `!openclaw config validate`.
 5. Si Doctor recomienda una migración o reparación automática, revísala y ejecuta `!openclaw doctor --fix`.
 
 Consejos:
 
-- Prefiere `openclaw config set` u `openclaw configure` antes que editar `openclaw.json` a mano.
+- Es preferible usar `openclaw config set` o `openclaw configure` en lugar de editar `openclaw.json` manualmente.
 - `openclaw docs "<query>"` busca en el índice de documentación en vivo desde la misma máquina.
-- `openclaw config validate --json` es útil cuando quieres errores estructurados de esquema y SecretRef/resolubilidad.
+- `openclaw config validate --json` resulta útil cuando se necesitan errores estructurados del esquema y de SecretRef/resolución.
 
 ## Salida de herramientas
 
-- Las llamadas de herramientas se muestran como tarjetas con argumentos + resultados.
-- Ctrl+O alterna entre vistas contraídas/expandidas.
-- Mientras las herramientas se ejecutan, las actualizaciones parciales se transmiten en la misma tarjeta.
+- Las llamadas a herramientas se muestran como tarjetas con argumentos y resultados.
+- Ctrl+O alterna entre las vistas contraída y expandida.
+- Mientras se ejecutan las herramientas, las actualizaciones parciales se transmiten en la misma tarjeta.
 
-## Colores de terminal
+## Colores del terminal
 
-- La TUI mantiene el texto del cuerpo del asistente en el primer plano predeterminado de tu terminal para que tanto los terminales oscuros como claros sigan siendo legibles.
-- Si tu terminal usa un fondo claro y la autodetección es incorrecta, establece `OPENCLAW_THEME=light` antes de iniciar `openclaw tui`.
-- Para forzar la paleta oscura original en su lugar, establece `OPENCLAW_THEME=dark`.
+- La TUI mantiene el texto del cuerpo del asistente con el color de primer plano predeterminado del terminal para que siga siendo legible tanto en terminales claros como oscuros.
+- Si el terminal utiliza un fondo claro y la detección automática es incorrecta, configure `OPENCLAW_THEME=light` antes de iniciar `openclaw tui`.
+- Para forzar en su lugar la paleta oscura original, configure `OPENCLAW_THEME=dark`.
 
-## Historial + transmisión
+## Historial y transmisión
 
-- Al conectar, la TUI carga el historial más reciente (200 mensajes de forma predeterminada).
-- Las respuestas en streaming se actualizan en el mismo lugar hasta finalizar.
-- La TUI también escucha eventos de herramientas del agente para tarjetas de herramientas más completas.
+- Al conectarse, la TUI carga el historial más reciente (200 mensajes de forma predeterminada).
+- Las respuestas transmitidas se actualizan en el mismo lugar hasta que finalizan.
+- La TUI también escucha los eventos de herramientas del agente para ofrecer tarjetas de herramientas más completas.
 
 ## Detalles de conexión
 
-- La TUI se conecta con el id de cliente `openclaw-tui` bajo el modo de cliente amplio `ui` (el mismo modo que usan Control UI y WebChat para la política del Gateway).
-- Las reconexiones muestran un mensaje del sistema; las brechas de eventos se exponen en el registro.
+- La TUI se conecta con el identificador de cliente `openclaw-tui` mediante el modo general de cliente `ui` (el mismo modo que utilizan la interfaz de control y WebChat para la política del Gateway).
+- Las reconexiones muestran un mensaje del sistema; las interrupciones en los eventos se indican en el registro.
 
 ## Opciones
 
-- `--local`: Ejecutar contra el entorno de ejecución local del agente integrado
-- `--url <url>`: URL WebSocket del Gateway (usa de forma predeterminada `gateway.remote.url` de la configuración, o `ws://127.0.0.1:<port>` en loopback)
-- `--token <token>`: token del Gateway (si se requiere)
-- `--password <password>`: contraseña del Gateway (si se requiere)
-- `--session <key>`: clave de sesión (predeterminado: `main`, o `global` cuando el alcance es global)
-- `--deliver`: entregar respuestas del asistente al proveedor (desactivado de forma predeterminada)
-- `--thinking <level>`: anular el nivel de razonamiento para envíos
-- `--message <text>`: enviar un mensaje inicial después de conectar
-- `--timeout-ms <ms>`: tiempo de espera del agente en ms (usa de forma predeterminada `agents.defaults.timeoutSeconds`)
-- `--history-limit <n>`: entradas de historial que cargar (predeterminado `200`)
+- `--local`: Ejecutar con el entorno de ejecución local integrado del agente
+- `--url <url>`: URL de WebSocket del Gateway (el valor predeterminado es `gateway.remote.url` de la configuración o `ws://127.0.0.1:<port>` en la interfaz de bucle invertido)
+- `--token <token>`: Token del Gateway (si es obligatorio)
+- `--password <password>`: Contraseña del Gateway (si es obligatoria)
+- `--tls-fingerprint <sha256>`: Huella digital esperada del certificado TLS para un Gateway `wss://` anclado
+- `--session <key>`: Clave de sesión (valor predeterminado: `main`, o `global` cuando el ámbito es global)
+- `--deliver`: Entregar las respuestas del asistente al proveedor (desactivado de forma predeterminada)
+- `--thinking <level>`: Anular el nivel de razonamiento de los envíos
+- `--message <text>`: Enviar un mensaje inicial después de conectarse
+- `--timeout-ms <ms>`: Tiempo de espera del agente en ms (el valor predeterminado es `agents.defaults.timeoutSeconds`)
+- `--history-limit <n>`: Entradas del historial que se cargarán (valor predeterminado: `200`)
 
 <Warning>
-Cuando estableces `--url`, la TUI no recurre a credenciales de configuración ni de entorno. Pasa `--token` o `--password` explícitamente. La falta de credenciales explícitas es un error. En modo local, no pases `--url`, `--token` ni `--password`.
+Cuando se establece `--url`, la TUI no recurre a las credenciales de la configuración ni del entorno. Pase `--token` o `--password` explícitamente, además de `--tls-fingerprint` cuando el destino utilice un certificado anclado. La ausencia de credenciales explícitas es un error. En el modo local, no pase `--url`, `--token`, `--password` ni `--tls-fingerprint`.
 </Warning>
 
 ## Solución de problemas
 
-No hay salida después de enviar un mensaje:
+No aparece ninguna salida después de enviar un mensaje:
 
-- Ejecuta `/status` en la TUI para confirmar que el Gateway está conectado e inactivo/ocupado.
-- Revisa los registros del Gateway: `openclaw logs --follow`.
-- Confirma que el agente puede ejecutarse: `openclaw status` y `openclaw models status`.
-- Si esperas mensajes en un canal de chat, confirma que la TUI se inició con `--deliver` (esto no puede activarse más tarde sin reiniciar).
+- Ejecute `/status` en la TUI para confirmar que el Gateway está conectado e inactivo u ocupado.
+- Consulte los registros del Gateway: `openclaw logs --follow`.
+- Confirme que el agente puede ejecutarse: `openclaw status` y `openclaw models status`.
+- Si se esperan mensajes en un canal de chat, confirme que la TUI se inició con `--deliver` (no se puede activar posteriormente sin reiniciar).
 
 ## Solución de problemas de conexión
 
-- `disconnected`: asegúrate de que el Gateway esté en ejecución y de que tus `--url/--token/--password` sean correctos.
-- No hay agentes en el selector: revisa `openclaw agents list` y tu configuración de enrutamiento.
-- Selector de sesión vacío: puede que estés en alcance global o que aún no tengas sesiones.
+- `disconnected`: asegúrese de que el Gateway esté en ejecución y de que `--url/--token/--password` sean correctos.
+- No hay agentes en el selector: compruebe `openclaw agents list` y la configuración de enrutamiento.
+- Selector de sesiones vacío: es posible que se encuentre en el ámbito global o que todavía no haya sesiones.
 
-## Relacionado
+## Contenido relacionado
 
-- [Control UI](/es/web/control-ui) — interfaz de control basada en web
-- [Config](/es/cli/config) — inspecciona, valida y edita `openclaw.json`
+- [Interfaz de control](/es/web/control-ui) — interfaz de control basada en la web
+- [Configuración](/es/cli/config) — inspeccionar, validar y editar `openclaw.json`
 - [Doctor](/es/cli/doctor) — comprobaciones guiadas de reparación y migración
-- [Referencia de CLI](/es/cli) — referencia completa de comandos de CLI
+- [Referencia de la CLI](/es/cli) — referencia completa de comandos de la CLI

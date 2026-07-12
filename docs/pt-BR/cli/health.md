@@ -1,30 +1,31 @@
 ---
 read_when:
     - Você quer verificar rapidamente a integridade do Gateway em execução
-summary: Referência da CLI para `openclaw health` (instantâneo de integridade do Gateway via RPC)
+summary: Referência da CLI para `openclaw health` (instantâneo da integridade do Gateway via RPC)
 title: Saúde
 x-i18n:
-    generated_at: "2026-05-10T19:28:16Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:04:47Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: 26be7bbbf75c2eca1213fe145fdeeab6fee96798dff457278ac69a20145bf75d
+    source_hash: a26ce5ade9ab56c9751c3dde814c38a1e01e74d91c2fd57e56d3c44ca529d0d8
     source_path: cli/health.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
 # `openclaw health`
 
-Busca a integridade do Gateway em execução.
+Obtém um instantâneo de integridade do Gateway em execução por meio de RPC via WebSocket (sem conexões diretas aos canais pela CLI).
 
 ## Opções
 
-| Opção            | Padrão  | Descrição                                                                  |
-| ---------------- | ------- | -------------------------------------------------------------------------- |
-| `--json`         | `false` | Imprime JSON legível por máquina em vez de texto.                          |
-| `--timeout <ms>` | `10000` | Tempo limite da conexão em milissegundos.                                  |
-| `--verbose`      | `false` | Registro detalhado. Força uma sondagem ativa e expande a saída por agente. |
-| `--debug`        | `false` | Alias para `--verbose`.                                                    |
+| Sinalizador      | Padrão  | Descrição                                                                                                                 |
+| ---------------- | ------- | ------------------------------------------------------------------------------------------------------------------------- |
+| `--json`         | `false` | Exibe JSON legível por máquina em vez de texto.                                                                           |
+| `--timeout <ms>` | `10000` | Tempo limite de conexão em milissegundos.                                                                                 |
+| `--verbose`      | `false` | Força uma sondagem em tempo real e expande a saída para todas as contas e todos os agentes configurados.                  |
+| `--debug`        | `false` | Alias de `--verbose`.                                                                                                     |
 
 Exemplos:
 
@@ -36,16 +37,14 @@ openclaw health --verbose
 openclaw health --debug
 ```
 
-Observações:
+## Comportamento
 
-- Por padrão, `openclaw health` solicita ao Gateway em execução o instantâneo de integridade. Quando o
-  Gateway já tem um instantâneo em cache recente, ele pode retornar essa carga útil em cache e
-  atualizar em segundo plano.
-- `--verbose` força uma sondagem ativa, imprime os detalhes de conexão do Gateway e expande a
-  saída legível por humanos em todas as contas e agentes configurados.
-- A saída inclui armazenamentos de sessão por agente quando vários agentes estão configurados.
+- Sem `--verbose`, o Gateway pode retornar um instantâneo armazenado em cache (atualizado há no máximo 60 segundos e sem alterações em relação ao estado de execução dos canais em tempo real) e atualizá-lo em segundo plano para o próximo solicitante.
+- `--verbose` força uma sondagem em tempo real (sondagens das contas de cada canal), exibe os detalhes da conexão com o Gateway e expande a saída legível por humanos para todas as contas e todos os agentes configurados, em vez de apenas para o agente padrão.
+- `--json` sempre retorna o instantâneo completo: canais, sondagens por conta, estado de carregamento dos plugins, estado de quarentena do mecanismo de contexto, estado do cache de preços dos modelos, integridade do loop de eventos e armazenamentos de sessões por agente.
 
-## Relacionados
+## Relacionado
 
 - [Referência da CLI](/pt-BR/cli)
+- [`openclaw status`](/pt-BR/cli/status) — diagnóstico local e sondagens de canais sem um instantâneo completo de integridade
 - [Integridade do Gateway](/pt-BR/gateway/health)

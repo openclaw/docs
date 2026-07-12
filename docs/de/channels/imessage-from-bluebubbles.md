@@ -1,55 +1,50 @@
 ---
 read_when:
-    - Planung des Wechsels von BlueBubbles zum gebündelten iMessage-Plugin
+    - Planung eines Wechsels von BlueBubbles zum gebündelten iMessage-Plugin
     - BlueBubbles-Konfigurationsschlüssel in iMessage-Entsprechungen übersetzen
     - imsg vor dem Aktivieren des iMessage-Plugins überprüfen
-summary: Migrieren Sie alte BlueBubbles-Konfigurationen zum gebündelten iMessage-Plugin, ohne Pairing, Allowlisten oder Gruppenbindungen zu verlieren.
+summary: 'Alte BlueBubbles-Konfigurationen in das gebündelte iMessage-Plugin migrieren: Schlüsselzuordnung, Gruppen-Zulassungslisten-Gates und Überprüfung der Umstellung.'
 title: Von BlueBubbles kommend
 x-i18n:
-    generated_at: "2026-06-27T17:10:14Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:59:32Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: dae45911686697a064b19265b11acb87d377992f762256c44a22dd3f1b4c4b08
+    source_hash: b9d1533c356d3901358c25f0b90e6850124f66d3c14f056d90d5723242076d22
     source_path: channels/imessage-from-bluebubbles.md
     workflow: 16
 ---
 
-Das gebündelte `imessage`-Plugin erreicht jetzt dieselbe private API-Oberfläche wie BlueBubbles (`react`, `edit`, `unsend`, `reply`, `sendWithEffect`, Gruppenverwaltung, Anhänge), indem es [`steipete/imsg`](https://github.com/steipete/imsg) über JSON-RPC steuert. Wenn Sie bereits einen Mac mit installiertem `imsg` betreiben, können Sie den BlueBubbles-Server entfernen und das Plugin direkt mit Messages.app kommunizieren lassen.
+Die BlueBubbles-Unterstützung wurde entfernt. OpenClaw unterstützt iMessage nur über das gebündelte `imessage`-Plugin, das [`steipete/imsg`](https://github.com/steipete/imsg) über JSON-RPC steuert und dieselbe private API-Oberfläche erreicht, die BlueBubbles hatte (`react`, `edit`, `unsend`, `reply`, `sendWithEffect`, native Umfragen, Gruppenverwaltung, Anhänge). Eine einzige CLI-Binärdatei ersetzt den BlueBubbles-Server, die Client-App und die Webhook-Infrastruktur: kein REST-Endpunkt, keine Webhook-Authentifizierung.
 
-Die BlueBubbles-Unterstützung wurde entfernt. OpenClaw unterstützt iMessage nur über `imsg`. Diese Anleitung dient der Migration alter `channels.bluebubbles`-Konfigurationen zu `channels.imessage`; es gibt keinen anderen unterstützten Migrationspfad.
+Dieser Leitfaden migriert alte `channels.bluebubbles`-Konfigurationen zu `channels.imessage`. Es gibt keinen anderen unterstützten Migrationspfad. Im aktuellen OpenClaw ist ein verbliebener `channels.bluebubbles`-Block wirkungslos – keine Laufzeitkomponente liest ihn.
 
 <Note>
-Die kurze Ankündigung und Betreiberzusammenfassung finden Sie unter [Entfernung von BlueBubbles und der imsg-iMessage-Pfad](/de/announcements/bluebubbles-imessage).
+Die kurze Ankündigung und eine Zusammenfassung für Betreiber finden Sie unter [Entfernung von BlueBubbles und der imsg-iMessage-Pfad](/de/announcements/bluebubbles-imessage).
 </Note>
 
-## Migrations-Checkliste
+## Migrationscheckliste
 
-Verwenden Sie diese Checkliste, wenn Sie Ihre alte BlueBubbles-Konfiguration bereits kennen und den kürzesten sicheren Weg möchten:
+Der kürzeste sichere Weg, wenn Sie Ihre alte BlueBubbles-Konfiguration bereits kennen:
 
-1. Prüfen Sie `imsg` direkt auf dem Mac, auf dem Messages.app ausgeführt wird (`imsg chats`, `imsg history`, `imsg send` und `imsg rpc --help`).
-2. Kopieren Sie Verhaltensschlüssel von `channels.bluebubbles` nach `channels.imessage`: `dmPolicy`, `allowFrom`, `groupPolicy`, `groupAllowFrom`, `groups`, `includeAttachments`, `attachmentRoots`, `mediaMaxMb`, `textChunkLimit`, `coalesceSameSenderDms` und `actions`.
+1. Überprüfen Sie `imsg` direkt auf dem Mac, auf dem Messages.app ausgeführt wird (`imsg chats`, `imsg history`, `imsg send`, `imsg rpc --help`).
+2. Kopieren Sie die Verhaltensschlüssel von `channels.bluebubbles` nach `channels.imessage`: `dmPolicy`, `allowFrom`, `groupPolicy`, `groupAllowFrom`, `groups`, `includeAttachments`, `attachmentRoots`, `mediaMaxMb`, `textChunkLimit`, `coalesceSameSenderDms` und `actions`.
 3. Entfernen Sie Transportschlüssel, die nicht mehr existieren: `serverUrl`, `password`, Webhook-URLs und die BlueBubbles-Servereinrichtung.
-4. Wenn der Gateway nicht auf dem Messages-Mac läuft, setzen Sie `channels.imessage.cliPath` auf einen SSH-Wrapper und legen Sie `remoteHost` für entfernte Anhangsabrufe fest.
-5. Aktivieren Sie bei gestopptem Gateway `channels.imessage` und führen Sie dann `openclaw channels status --probe --channel imessage` aus.
-6. Testen Sie eine DM, eine zugelassene Gruppe, Anhänge, sofern aktiviert, und jede private API-Aktion, die der Agent voraussichtlich verwenden soll.
-7. Löschen Sie den BlueBubbles-Server und die alte `channels.bluebubbles`-Konfiguration, nachdem der iMessage-Pfad verifiziert wurde.
+4. Wenn der Gateway nicht auf dem Messages-Mac ausgeführt wird, setzen Sie `channels.imessage.cliPath` auf einen SSH-Wrapper und legen Sie `remoteHost` für das Abrufen entfernter Anhänge fest.
+5. Aktivieren Sie `channels.imessage`, starten Sie den Gateway neu und führen Sie anschließend `openclaw channels status --probe --channel imessage` aus.
+6. Testen Sie eine Direktnachricht, eine zulässige Gruppe, Anhänge, falls aktiviert, sowie jede private API-Aktion, die der Agent voraussichtlich verwenden wird.
+7. Löschen Sie den BlueBubbles-Server und die alte `channels.bluebubbles`-Konfiguration, nachdem der iMessage-Pfad überprüft wurde.
 
-## Wann diese Migration sinnvoll ist
+## Funktionsweise von imsg
 
-- Sie betreiben `imsg` bereits auf demselben Mac (oder auf einem per SSH erreichbaren Mac), auf dem Messages.app angemeldet ist.
-- Sie möchten eine Komponente weniger betreiben: keinen separaten BlueBubbles-Server, keinen zu authentifizierenden REST-Endpunkt, keine Webhook-Verkabelung. Eine einzelne CLI-Binärdatei statt Server + Client-App + Hilfsprogramm.
-- Sie verwenden einen [unterstützten macOS-/`imsg`-Build](/de/channels/imessage#requirements-and-permissions-macos), bei dem der private API-Probe `available: true` meldet.
+`imsg` ist eine lokale macOS-CLI für Messages. OpenClaw startet `imsg rpc` als untergeordneten Prozess und kommuniziert über stdin/stdout mittels JSON-RPC. Es gibt keinen HTTP-Server, keine Webhook-URL, keinen Hintergrund-Daemon, keinen Launch Agent und keinen offenzulegenden Port.
 
-## Was imsg tut
-
-`imsg` ist eine lokale macOS-CLI für Messages. OpenClaw startet `imsg rpc` als untergeordneten Prozess und kommuniziert per JSON-RPC über stdin/stdout. Es gibt keinen HTTP-Server, keine Webhook-URL, keinen Hintergrund-Daemon, keinen Launch-Agent und keinen Port, der offengelegt werden muss.
-
-- Lesezugriffe erfolgen aus `~/Library/Messages/chat.db` über ein schreibgeschütztes SQLite-Handle.
-- Live eingehende Nachrichten kommen aus `imsg watch` / `watch.subscribe`, das `chat.db`-Dateisystemereignissen mit einem Polling-Fallback folgt.
-- Sendevorgänge verwenden Messages.app-Automatisierung für normale Text- und Dateisendungen.
-- Erweiterte Aktionen verwenden `imsg launch`, um den `imsg`-Helfer in Messages.app einzuschleusen. Das schaltet Lesebestätigungen, Tippindikatoren, Rich Sends, Bearbeiten, Zurückrufen, Antworten in Threads, Tapbacks und Gruppenverwaltung frei.
-- Linux-Builds können eine kopierte `chat.db` untersuchen, aber nicht senden, die Live-Mac-Datenbank beobachten oder Messages.app steuern. Führen Sie für OpenClaw iMessage `imsg` auf dem angemeldeten Mac oder über einen SSH-Wrapper zu diesem Mac aus.
+- Lesezugriffe erfolgen über `~/Library/Messages/chat.db` mithilfe eines schreibgeschützten SQLite-Handles.
+- Eingehende Live-Nachrichten stammen aus `imsg watch` / `watch.subscribe`, das Dateisystemereignissen von `chat.db` folgt und ersatzweise Polling verwendet.
+- Für das normale Senden von Texten und Dateien wird die Automatisierung von Messages.app verwendet.
+- Erweiterte Aktionen verwenden `imsg launch`, um den `imsg`-Hilfsprozess in Messages.app zu injizieren. Dadurch werden Lesebestätigungen, Tippindikatoren, formatierte Sendungen, Bearbeiten, Zurückziehen, Antworten in Threads, Tapbacks, Umfragen und Gruppenverwaltung ermöglicht.
+- Linux-Builds können eine kopierte `chat.db` untersuchen, aber weder Nachrichten senden noch die Live-Datenbank des Macs überwachen oder Messages.app steuern. Führen Sie für OpenClaw iMessage `imsg` auf dem angemeldeten Mac oder über einen SSH-Wrapper zu diesem Mac aus.
 
 ## Bevor Sie beginnen
 
@@ -57,95 +52,97 @@ Verwenden Sie diese Checkliste, wenn Sie Ihre alte BlueBubbles-Konfiguration ber
 
    ```bash
    brew install steipete/tap/imsg
+   brew update && brew upgrade imsg
    imsg --version
    imsg chats --limit 3
    ```
 
-   Wenn `imsg chats` mit `unable to open database file`, leerer Ausgabe oder `authorization denied` fehlschlägt, gewähren Sie dem Terminal, Editor, Node-Prozess, Gateway-Dienst oder SSH-Elternprozess, der `imsg` startet, Festplattenvollzugriff und öffnen Sie diesen Elternprozess anschließend erneut.
+   Bei der üblichen lokalen Einrichtung kann die OpenClaw-Einrichtung eine vom Benutzer bestätigte Homebrew-Installation oder -Aktualisierung von `imsg` auf dem bei Messages angemeldeten Mac anbieten. Manuelle Einrichtungen und Topologien mit SSH-Wrapper bleiben in der Verantwortung des Betreibers: Wiederholen Sie die Homebrew-Aktualisierung im selben lokalen oder entfernten Benutzerkontext, in dem `imsg` ausgeführt wird. Wenn `imsg chats` mit `unable to open database file`, leerer Ausgabe oder `authorization denied` fehlschlägt, gewähren Sie dem Terminal, Editor, Node-Prozess, Gateway-Dienst oder übergeordneten SSH-Prozess, der `imsg` startet, vollständigen Festplattenzugriff und öffnen Sie anschließend diesen übergeordneten Prozess erneut.
 
-2. Prüfen Sie die Lese-, Watch-, Sende- und RPC-Oberflächen, bevor Sie die OpenClaw-Konfiguration ändern:
+2. Überprüfen Sie die Oberflächen für Lesen, Überwachen, Senden und RPC, bevor Sie die OpenClaw-Konfiguration ändern:
 
    ```bash
    imsg chats --limit 10 --json | jq -s
    imsg history --chat-id 42 --limit 10 --attachments --json | jq -s
    imsg watch --chat-id 42 --reactions --json
-   imsg send --chat-id 42 --text "OpenClaw imsg test"
+   imsg send --chat-id 42 --text "OpenClaw-imsg-Test"
    imsg rpc --help
    ```
 
-   Ersetzen Sie `42` durch eine echte Chat-ID aus `imsg chats`. Senden erfordert eine Automation-Berechtigung für Messages.app. Wenn OpenClaw über SSH ausgeführt wird, führen Sie diese Befehle über denselben SSH-Wrapper oder Benutzerkontext aus, den OpenClaw verwenden wird. Wenn Lesezugriffe/Probes funktionieren, Sendevorgänge aber mit AppleEvents `-1743` fehlschlagen, prüfen Sie, ob Automation auf `/usr/libexec/sshd-keygen-wrapper` gelandet ist; siehe [SSH-Wrapper-Sendevorgänge schlagen mit AppleEvents -1743 fehl](/de/channels/imessage#ssh-wrapper-sends-fail-with-appleevents-1743).
+   Ersetzen Sie `42` durch eine echte Chat-ID aus `imsg chats`. Das Senden erfordert die Automatisierungsberechtigung für Messages.app. Wenn OpenClaw über SSH ausgeführt wird, führen Sie diese Befehle über denselben SSH-Wrapper oder Benutzerkontext aus, den OpenClaw verwenden wird. Wenn Lesezugriffe funktionieren, das Senden jedoch mit AppleEvents `-1743` fehlschlägt, prüfen Sie, ob die Automatisierungsberechtigung `/usr/libexec/sshd-keygen-wrapper` zugewiesen wurde; siehe [Senden über den SSH-Wrapper schlägt mit AppleEvents -1743 fehl](/de/channels/imessage#requirements-and-permissions-macos).
 
-3. Aktivieren Sie die private API-Brücke, wenn Sie erweiterte Aktionen benötigen:
+3. Aktivieren Sie die private API-Bridge. Dies wird für OpenClaw iMessage dringend empfohlen, da Antworten, Tapbacks, Effekte, Umfragen, Antworten mit Anhängen und Gruppenaktionen davon abhängen:
 
    ```bash
    imsg launch
    imsg status --json
    ```
 
-   `imsg launch` erfordert, dass SIP deaktiviert ist. Einfaches Senden, Verlauf und Watch funktionieren ohne `imsg launch`; erweiterte Aktionen nicht.
+   Für `imsg launch` muss SIP deaktiviert sein (und unter modernem macOS muss die Bibliotheksvalidierung gelockert werden – siehe [Aktivieren der privaten imsg-API](/de/channels/imessage#enabling-the-imsg-private-api)). Grundlegendes Senden, der Verlauf und die Überwachung funktionieren ohne `imsg launch`; der vollständige Aktionsumfang von OpenClaw iMessage jedoch nicht.
 
-4. Nachdem Sie eine aktivierte `channels.imessage`-Konfiguration hinzugefügt haben, verifizieren Sie die Brücke über OpenClaw:
+4. Nachdem Sie `channels.imessage` aktiviert und den Gateway gestartet haben, überprüfen Sie die Bridge über OpenClaw:
 
    ```bash
    openclaw channels status --probe
    ```
 
-   Sie möchten `imessage.privateApi.available: true`. Wenn `false` gemeldet wird, beheben Sie das zuerst; siehe [Capability-Erkennung](/de/channels/imessage#private-api-actions). `channels status --probe` prüft nur konfigurierte, aktivierte Konten.
+   Das iMessage-Konto sollte `works` melden; mit `--json` enthält die Probe-Nutzlast `privateApi.available: true`. Wenn `false` gemeldet wird, beheben Sie dies zuerst – siehe [Funktionserkennung](/de/channels/imessage#private-api-actions). Für die Prüfung ist ein erreichbarer Gateway erforderlich (andernfalls greift die CLI auf eine reine Konfigurationsausgabe zurück), und es werden nur konfigurierte, aktivierte Konten geprüft.
 
-5. Erstellen Sie einen Snapshot Ihrer Konfiguration:
+5. Erstellen Sie eine Sicherungskopie Ihrer Konfiguration:
 
    ```bash
-   cp ~/.openclaw/openclaw.json5 ~/.openclaw/openclaw.json5.bak
+   cp ~/.openclaw/openclaw.json ~/.openclaw/openclaw.json.bak
    ```
 
-## Konfigurationsübersetzung
+## Konfigurationsübertragung
 
-iMessage und BlueBubbles teilen viele Konfigurationen auf Kanalebene. Die Schlüssel, die sich ändern, betreffen meist den Transport (REST-Server statt lokaler CLI). Verhaltensschlüssel (`dmPolicy`, `groupPolicy`, `allowFrom` usw.) behalten dieselbe Bedeutung.
+iMessage und BlueBubbles verwenden größtenteils dieselben Verhaltensschlüssel auf Kanalebene. Geändert werden der Transport (REST-Server gegenüber lokaler CLI) und das Schlüsselformat der Gruppenregistrierung.
 
-| BlueBubbles                                                | gebündeltes iMessage                      | Hinweise                                                                                                                                                                                                                                                                                                                                                                            |
-| ---------------------------------------------------------- | ----------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `channels.bluebubbles.enabled`                             | `channels.imessage.enabled`               | Gleiche Semantik.                                                                                                                                                                                                                                                                                                                                                                    |
-| `channels.bluebubbles.serverUrl`                           | _(entfernt)_                              | Kein REST-Server — das Plugin startet `imsg rpc` über stdio.                                                                                                                                                                                                                                                                                                                        |
-| `channels.bluebubbles.password`                            | _(entfernt)_                              | Keine Webhook-Authentifizierung erforderlich.                                                                                                                                                                                                                                                                                                                                        |
-| _(implizit)_                                               | `channels.imessage.cliPath`               | Pfad zu `imsg` (Standard `imsg`); verwenden Sie ein Wrapper-Skript für SSH.                                                                                                                                                                                                                                                                                                         |
-| _(implizit)_                                               | `channels.imessage.dbPath`                | Optionale Überschreibung für die Messages.app-`chat.db`; wird automatisch erkannt, wenn weggelassen.                                                                                                                                                                                                                                                                                 |
-| _(implizit)_                                               | `channels.imessage.remoteHost`            | `host` oder `user@host` — nur erforderlich, wenn `cliPath` ein SSH-Wrapper ist und Sie SCP-Abrufe von Anhängen wünschen.                                                                                                                                                                                                                                                            |
-| `channels.bluebubbles.dmPolicy`                            | `channels.imessage.dmPolicy`              | Gleiche Werte (`pairing` / `allowlist` / `open` / `disabled`).                                                                                                                                                                                                                                                                                                                       |
-| `channels.bluebubbles.allowFrom`                           | `channels.imessage.allowFrom`             | Pairing-Freigaben werden nach Handle übernommen, nicht nach Token.                                                                                                                                                                                                                                                                                                                   |
-| `channels.bluebubbles.groupPolicy`                         | `channels.imessage.groupPolicy`           | Gleiche Werte (`allowlist` / `open` / `disabled`).                                                                                                                                                                                                                                                                                                                                   |
-| `channels.bluebubbles.groupAllowFrom`                      | `channels.imessage.groupAllowFrom`        | Gleich.                                                                                                                                                                                                                                                                                                                                                                             |
-| `channels.bluebubbles.groups`                              | `channels.imessage.groups`                | **Kopieren Sie dies unverändert, einschließlich eines etwaigen `groups: { "*": { ... } }`-Wildcard-Eintrags.** Pro Gruppe werden `requireMention`, `tools`, `toolsBySender` übernommen. Mit `groupPolicy: "allowlist"` verwirft ein leerer oder fehlender `groups`-Block stillschweigend jede Gruppennachricht — siehe „Stolperfalle Gruppenregistrierung“ unten.                    |
-| `channels.bluebubbles.sendReadReceipts`                    | `channels.imessage.sendReadReceipts`      | Standard `true`. Beim gebündelten Plugin wird dies nur ausgelöst, wenn die private API-Prüfung aktiv ist.                                                                                                                                                                                                                                                                            |
-| `channels.bluebubbles.includeAttachments`                  | `channels.imessage.includeAttachments`    | Gleiche Form, **ebenfalls standardmäßig deaktiviert**. Wenn bei Ihnen Anhänge über BlueBubbles liefen, müssen Sie dies im iMessage-Block ausdrücklich erneut setzen — es wird nicht implizit übernommen, und eingehende Fotos/Medien werden stillschweigend verworfen, ohne `Inbound message`-Logzeile, bis Sie dies tun.                                                              |
-| `channels.bluebubbles.attachmentRoots`                     | `channels.imessage.attachmentRoots`       | Lokale Roots; gleiche Wildcard-Regeln.                                                                                                                                                                                                                                                                                                                                               |
-| _(N/V)_                                                    | `channels.imessage.remoteAttachmentRoots` | Wird nur verwendet, wenn `remoteHost` für SCP-Abrufe gesetzt ist.                                                                                                                                                                                                                                                                                                                    |
-| `channels.bluebubbles.mediaMaxMb`                          | `channels.imessage.mediaMaxMb`            | Standard 16 MB bei iMessage (BlueBubbles-Standard war 8 MB). Setzen Sie dies explizit, wenn Sie die niedrigere Obergrenze beibehalten möchten.                                                                                                                                                                                                                                      |
-| `channels.bluebubbles.textChunkLimit`                      | `channels.imessage.textChunkLimit`        | Standard 4000 bei beiden.                                                                                                                                                                                                                                                                                                                                                           |
-| `channels.bluebubbles.coalesceSameSenderDms`               | `channels.imessage.coalesceSameSenderDms` | Gleiche Opt-in-Funktion. Nur DMs — Gruppenchats behalten bei beiden Kanälen den sofortigen Versand pro Nachricht. Erweitert den standardmäßigen eingehenden Debounce auf 7000 ms, wenn aktiviert und kein explizites `messages.inbound.byChannel.imessage` oder globales `messages.inbound.debounceMs` gesetzt ist. Siehe [iMessage-Dokumentation § Zusammenführen aufgeteilter DMs](/de/channels/imessage#coalescing-split-send-dms-command--url-in-one-composition). |
-| `channels.bluebubbles.enrichGroupParticipantsFromContacts` | _(N/V)_                                   | iMessage liest Anzeigenamen von Absendern bereits aus `chat.db`.                                                                                                                                                                                                                                                                                                                     |
-| `channels.bluebubbles.actions.*`                           | `channels.imessage.actions.*`             | Umschalter pro Aktion: `reactions`, `edit`, `unsend`, `reply`, `sendWithEffect`, `renameGroup`, `setGroupIcon`, `addParticipant`, `removeParticipant`, `leaveGroup`, `sendAttachment`.                                                                                                                                                                                              |
+| BlueBubbles                                                | gebündeltes iMessage                      | Hinweise                                                                                                                                                                                                                                                                                                               |
+| ---------------------------------------------------------- | ----------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `channels.bluebubbles.enabled`                             | `channels.imessage.enabled`               | Gleiche Semantik (standardmäßig `true`, sobald der Block vorhanden ist).                                                                                                                                                                                                                                                |
+| `channels.bluebubbles.serverUrl`                           | _(entfernt)_                              | Kein REST-Server – das Plugin startet `imsg rpc` über stdio.                                                                                                                                                                                                                                                            |
+| `channels.bluebubbles.password`                            | _(entfernt)_                              | Keine Webhook-Authentifizierung erforderlich.                                                                                                                                                                                                                                                                           |
+| _(implizit)_                                               | `channels.imessage.cliPath`               | Pfad zu `imsg` (Standardwert `imsg`); verwenden Sie für SSH ein Wrapper-Skript.                                                                                                                                                                                                                                         |
+| _(implizit)_                                               | `channels.imessage.dbPath`                | Optionale Überschreibung für `chat.db` von Messages.app; wird automatisch erkannt, wenn nicht angegeben.                                                                                                                                                                                                                |
+| _(implizit)_                                               | `channels.imessage.remoteHost`            | `host` oder `user@host` – nur erforderlich, wenn `cliPath` ein SSH-Wrapper ist und Sie Anhänge per SCP abrufen möchten.                                                                                                                                                                                                  |
+| `channels.bluebubbles.dmPolicy`                            | `channels.imessage.dmPolicy`              | Gleiche Werte (`pairing` / `allowlist` / `open` / `disabled`); Standardwert `pairing`.                                                                                                                                                                                                                                  |
+| `channels.bluebubbles.allowFrom`                           | `channels.imessage.allowFrom`             | Gleiche Handle-Formate (`+15555550123`, `user@example.com`). Genehmigungen aus dem Pairing-Speicher werden nicht übertragen – siehe unten.                                                                                                                                                                               |
+| `channels.bluebubbles.groupPolicy`                         | `channels.imessage.groupPolicy`           | Gleiche Werte (`allowlist` / `open` / `disabled`); Standardwert `allowlist`.                                                                                                                                                                                                                                            |
+| `channels.bluebubbles.groupAllowFrom`                      | `channels.imessage.groupAllowFrom`        | Gleich. Wenn nicht festgelegt, greift iMessage auf `allowFrom` zurück; ein explizit leeres `groupAllowFrom: []` blockiert unter `groupPolicy: "allowlist"` alle Gruppen.                                                                                                                                                  |
+| `channels.bluebubbles.groups`                              | `channels.imessage.groups`                | Kopieren Sie den Platzhaltereintrag `"*"` unverändert; versehen Sie gruppenspezifische Einträge mit neuen Schlüsseln anhand der numerischen iMessage-`chat_id` – siehe „Stolperfalle beim Gruppenregister“. `requireMention`, `tools`, `toolsBySender` und `systemPrompt` werden übernommen.                                  |
+| `channels.bluebubbles.sendReadReceipts`                    | `channels.imessage.sendReadReceipts`      | Standardwert `true`. Beim gebündelten Plugin wird dies nur ausgelöst, wenn die Prüfung der privaten API erfolgreich ist.                                                                                                                                                                                                 |
+| `channels.bluebubbles.includeAttachments`                  | `channels.imessage.includeAttachments`    | Gleiche Struktur, ebenfalls standardmäßig deaktiviert. Wenn Anhänge über BlueBubbles übertragen wurden, legen Sie dies explizit fest – eingehende Fotos/Medien werden andernfalls stillschweigend verworfen (keine `Inbound message`-Protokollzeile).                                                                      |
+| `channels.bluebubbles.attachmentRoots`                     | `channels.imessage.attachmentRoots`       | Lokale Stammverzeichnisse; gleiche Platzhalterregeln.                                                                                                                                                                                                                                                                  |
+| _(n. z.)_                                                  | `channels.imessage.remoteAttachmentRoots` | Wird nur verwendet, wenn `remoteHost` für SCP-Abrufe festgelegt ist.                                                                                                                                                                                                                                                     |
+| `channels.bluebubbles.mediaMaxMb`                          | `channels.imessage.mediaMaxMb`            | Standardwert bei iMessage: 16 MB (der Standardwert bei BlueBubbles war 8 MB). Legen Sie den Wert explizit fest, um die niedrigere Obergrenze beizubehalten.                                                                                                                                                              |
+| `channels.bluebubbles.textChunkLimit`                      | `channels.imessage.textChunkLimit`        | Standardwert bei beiden: 4000.                                                                                                                                                                                                                                                                                          |
+| `channels.bluebubbles.coalesceSameSenderDms`               | `channels.imessage.coalesceSameSenderDms` | Gleiche optionale Aktivierung. Nur für Direktnachrichten – Gruppen behalten die Verarbeitung pro Nachricht bei. Erhöht die standardmäßige Eingangsentprellung auf 7000 ms, sofern nicht `messages.inbound.byChannel.imessage` oder ein globales `messages.inbound.debounceMs` festgelegt ist. Siehe [Zusammenfassen aufgeteilter Direktnachrichten](/de/channels/imessage#coalescing-split-send-dms-command--url-in-one-composition). |
+| `channels.bluebubbles.enrichGroupParticipantsFromContacts` | _(n. z.)_                                 | `imsg` stellt die Anzeigenamen der Absender bereits aus `chat.db` bereit.                                                                                                                                                                                                                                               |
+| `channels.bluebubbles.actions.*`                           | `channels.imessage.actions.*`             | Gleiche aktionsspezifische Schalter (`reactions`, `edit`, `unsend`, `reply`, `sendWithEffect`, `renameGroup`, `setGroupIcon`, `addParticipant`, `removeParticipant`, `leaveGroup`, `sendAttachment`) sowie das neue `polls`. Alle sind standardmäßig aktiviert; Aktionen der privaten API erfordern weiterhin die Bridge. |
 
-Konfigurationen mit mehreren Konten (`channels.bluebubbles.accounts.*`) werden eins zu eins in `channels.imessage.accounts.*` übersetzt.
+Konfigurationen mit mehreren Konten (`channels.bluebubbles.accounts.*`) werden eins zu eins in `channels.imessage.accounts.*` übertragen.
 
-## Stolperfalle Gruppenregistrierung
+## Stolperfalle beim Gruppenregister
 
-Das gebündelte iMessage-Plugin führt **zwei** separate Allowlist-Gates für Gruppen direkt nacheinander aus. Beide müssen erfolgreich sein, damit eine Gruppennachricht den Agenten erreicht:
+Das gebündelte iMessage-Plugin führt zwei Gruppenprüfungen direkt nacheinander aus. Eine Gruppennachricht muss beide bestehen, um den Agenten zu erreichen:
 
-1. **Allowlist für Absender / Chat-Ziel** (`channels.imessage.groupAllowFrom`) — geprüft durch `isAllowedIMessageSender`. Gleicht eingehende Nachrichten nach Absender-Handle, `chat_guid`, `chat_identifier` oder `chat_id` ab. Gleiche Form wie bei BlueBubbles.
-2. **Gruppenregistrierung** (`channels.imessage.groups`) — geprüft durch `resolveChannelGroupPolicy` aus `inbound-processing.ts:199`. Mit `groupPolicy: "allowlist"` erfordert dieses Gate entweder:
-   - einen `groups: { "*": { ... } }`-Wildcard-Eintrag (setzt `allowAll = true`) oder
-   - einen expliziten Eintrag pro `chat_id` unter `groups`.
+1. **Absender-/Chatziel-Zulassungsliste** (`channels.imessage.groupAllowFrom`) – gleicht das Absender-Handle oder das Chatziel ab (Einträge mit `chat_id:`, `chat_guid:`, `chat_identifier:`). Wenn `groupAllowFrom` nicht festgelegt ist, greift diese Prüfung auf `allowFrom` zurück; ein explizites `groupAllowFrom: []` deaktiviert diesen Rückgriff und verwirft unter `groupPolicy: "allowlist"` jede Gruppennachricht.
+2. **Gruppenregister** (`channels.imessage.groups`) – nach der numerischen iMessage-`chat_id` verschlüsselt:
+   - Kein `groups`-Block (oder ein leerer): Gruppen bestehen diese Prüfung, solange Prüfung 1 über eine nicht leere effektive Absender-Zulassungsliste verfügt; die Absenderfilterung steuert den Zugriff, und beim Start wird keine Warnung ausgegeben, dass alle Nachrichten verworfen werden.
+   - `groups` mit Einträgen, aber ohne `"*"`: Nur die aufgeführten `chat_id`-Schlüssel werden akzeptiert. Durch das Auflisten einer beliebigen Gruppe wird das Register selbst unter `groupPolicy: "open"` zu einer Zulassungsliste.
+   - `groups: { "*": { ... } }`: Jede Gruppe besteht diese Prüfung.
 
-Wenn Gate 1 erfolgreich ist, Gate 2 aber fehlschlägt, wird die Nachricht verworfen. Das Plugin gibt zwei Signale auf `warn`-Ebene aus, sodass dies auf der Standard-Logebene nicht mehr still geschieht:
+Die Migrationsfalle: BlueBubbles verwendete Chat-GUIDs/Chat-IDs als Schlüssel für `groups`-Einträge, während das iMessage-Register numerische `chat_id`-Werte als Schlüssel verwendet. Unverändert kopierte gruppenspezifische Einträge erzeugen ein nicht leeres Register, dessen Schlüssel niemals übereinstimmen, sodass jede Gruppennachricht bei Prüfung 2 verworfen wird. Kopieren Sie den Platzhaltereintrag `"*"` unverändert; versehen Sie spezifische Gruppeneinträge mit neuen Schlüsseln aus den `chat_id`-Werten von `imsg chats`.
 
-- Ein einmaliger `warn` beim Start pro Konto, wenn `groupPolicy: "allowlist"` gesetzt ist, `channels.imessage.groups` aber leer ist (kein `"*"`-Wildcard, keine Einträge pro `chat_id`) — ausgelöst, bevor Nachrichten eintreffen.
-- Ein einmaliger `warn` pro `chat_id`, wenn eine bestimmte Gruppe zur Laufzeit zum ersten Mal verworfen wird, mit Nennung der chat_id und des genauen Schlüssels, der zu `groups` hinzugefügt werden muss, um sie zu erlauben.
+Beide Verwerfungspfade sind auf der standardmäßigen Protokollebene anhand von `warn`-Zeilen sichtbar:
 
-DMs funktionieren weiterhin, weil sie einen anderen Codepfad nehmen.
+- Einmal pro Konto beim Start, wenn `groupPolicy: "allowlist"` festgelegt und die effektive Absender-Zulassungsliste für Gruppen leer ist: `imessage: groupPolicy="allowlist" for account "<id>" but no group sender allowlist is configured ...`. Legen Sie `groupAllowFrom` (oder `allowFrom`) fest, um Absender zuzulassen; das alleinige Hinzufügen von `groups` erfüllt die Absenderprüfung nicht.
+- Einmal pro `chat_id` zur Laufzeit, wenn das Register eine Gruppe verwirft: `imessage: dropping group message from chat_id=<id> ... not in channels.imessage.groups allowlist`; dabei wird der genaue hinzuzufügende Schlüssel genannt.
 
-Dies ist der häufigste Fehlermodus bei der Migration von BlueBubbles zu gebündeltem iMessage: Betreiber kopieren `groupAllowFrom` und `groupPolicy`, überspringen aber den `groups`-Block, weil BlueBubbles' `groups: { "*": { "requireMention": true } }` wie eine nicht zusammenhängende Erwähnungseinstellung aussieht. Tatsächlich ist er für das Registry-Gate entscheidend.
+Direktnachrichten funktionieren in beiden Fällen weiterhin – sie verwenden einen anderen Codepfad, daher beweist der Erfolg von Direktnachrichten nicht, dass die Gruppenweiterleitung funktioniert.
 
-Die Mindestkonfiguration, damit Gruppennachrichten nach `groupPolicy: "allowlist"` weiter fließen:
+Die minimale absenderbezogene Konfiguration mit `groupPolicy: "allowlist"`:
 
 ```json5
 {
@@ -153,115 +150,88 @@ Die Mindestkonfiguration, damit Gruppennachrichten nach `groupPolicy: "allowlist
     imessage: {
       groupPolicy: "allowlist",
       groupAllowFrom: ["+15555550123", "chat_guid:any;-;..."],
-      groups: {
-        "*": { requireMention: true },
-      },
     },
   },
 }
 ```
 
-`requireMention: true` unter `*` ist harmlos, wenn keine Erwähnungsmuster konfiguriert sind: Die Runtime setzt `canDetectMention = false` und umgeht den Erwähnungs-Drop bei `inbound-processing.ts:512`. Mit konfigurierten Erwähnungsmustern (`agents.list[].groupChat.mentionPatterns`) funktioniert es wie erwartet.
-
-Wenn die Gateway-Logs `imessage: dropping group message from chat_id=<id>` oder die Startzeile `imessage: groupPolicy="allowlist" but channels.imessage.groups is empty` enthalten, verwirft Gate 2 die Nachricht - fügen Sie den `groups`-Block hinzu.
+Dadurch werden die konfigurierten Absender in jeder Gruppe zugelassen. Fügen Sie `groups`-Einträge hinzu, um die zulässigen Chats einzuschränken oder chatbezogene Optionen wie `requireMention` festzulegen; kopieren Sie den BlueBubbles-Eintrag `"*"` unverändert, versehen Sie spezifische Einträge jedoch mit neuen Schlüsseln anhand numerischer iMessage-`chat_id`-Werte.
 
 ## Schritt für Schritt
 
-1. Fügen Sie einen iMessage-Block neben dem vorhandenen BlueBubbles-Block hinzu. Lassen Sie ihn deaktiviert, solange der Gateway noch BlueBubbles-Traffic routet:
+1. Migrieren Sie die Konfiguration. Lassen Sie den neuen Block während der Bearbeitung deaktiviert; der alte Block `channels.bluebubbles` wird von der aktuellen OpenClaw-Version ignoriert und kann als Referenz daneben bestehen bleiben:
 
    ```json5
    {
      channels: {
-       bluebubbles: {
-         enabled: true,
-         // ... existing config ...
-       },
        imessage: {
-         enabled: false,
+         enabled: false, // auf true setzen, wenn Sie zur Umstellung bereit sind
          cliPath: "/opt/homebrew/bin/imsg",
          dmPolicy: "pairing",
-         allowFrom: ["+15555550123"], // copy from bluebubbles.allowFrom
+         allowFrom: ["+15555550123"], // aus bluebubbles.allowFrom kopieren
          groupPolicy: "allowlist",
-         groupAllowFrom: [], // copy from bluebubbles.groupAllowFrom
-         groups: { "*": { requireMention: true } }, // copy from bluebubbles.groups — silently drops groups if missing, see "Group registry footgun" above
-         actions: {
-           reactions: true,
-           edit: true,
-           unsend: true,
-           reply: true,
-           sendWithEffect: true,
-           sendAttachment: true,
-         },
+         groupAllowFrom: [], // aus bluebubbles.groupAllowFrom kopieren
+         groups: { "*": { requireMention: true } }, // Platzhalter unverändert kopieren; Einträge pro Chat anhand der chat_id neu verschlüsseln
+         // Aktionen sind standardmäßig aktiviert; einzelne Schalter zum Deaktivieren auf false setzen
        },
      },
    }
    ```
 
-2. **Prüfen Sie, bevor Traffic relevant wird** - stoppen Sie den Gateway, aktivieren Sie den iMessage-Block vorübergehend und bestätigen Sie über die CLI, dass iMessage fehlerfrei gemeldet wird:
+2. **Stellen Sie um und führen Sie eine Prüfung durch.** Setzen Sie `channels.imessage.enabled: true`, starten Sie den Gateway neu und bestätigen Sie, dass der Kanal als fehlerfrei gemeldet wird:
 
    ```bash
-   openclaw gateway stop
-   # edit config: channels.imessage.enabled = true
-   openclaw channels status --probe --channel imessage   # expect imessage.privateApi.available: true
+   openclaw gateway restart
+   openclaw channels status --probe --channel imessage   # „works“ erwartet; --json zeigt privateApi.available: true
    ```
 
-   `channels status --probe` prüft nur konfigurierte, aktivierte Konten. Starten Sie den Gateway nicht mit gleichzeitig aktiviertem BlueBubbles und iMessage neu, außer Sie möchten bewusst beide Kanal-Monitore ausführen. Wenn Sie nicht sofort umstellen, setzen Sie `channels.imessage.enabled` vor dem Neustart des Gateway wieder auf `false`. Verwenden Sie die direkten `imsg`-Befehle in [Bevor Sie beginnen](#before-you-start), um den Mac zu validieren, bevor Sie OpenClaw-Traffic aktivieren.
+   Die Prüfung erfordert einen erreichbaren Gateway und prüft nur konfigurierte, aktivierte Konten. Verwenden Sie die direkten `imsg`-Befehle unter [Bevor Sie beginnen](#before-you-start), um den Mac selbst zu überprüfen.
 
-3. **Stellen Sie um.** Sobald das aktivierte iMessage-Konto fehlerfrei gemeldet wird, entfernen Sie die BlueBubbles-Konfiguration und lassen Sie iMessage aktiviert:
+3. **Überprüfen Sie Direktnachrichten.** Senden Sie dem Agenten eine Direktnachricht und bestätigen Sie, dass die Antwort ankommt.
 
-   ```json5
-   {
-     channels: {
-       imessage: { enabled: true /* ... */ },
-     },
-   }
-   ```
+4. **Überprüfen Sie Gruppen separat.** Direktnachrichten und Gruppen durchlaufen unterschiedliche Codepfade — erfolgreiche Direktnachrichten beweisen nicht, dass Gruppen korrekt weitergeleitet werden. Senden Sie eine Nachricht in einem zulässigen Gruppenchat und bestätigen Sie, dass die Antwort ankommt. Wenn die Gruppe stumm bleibt (keine Antwort des Agenten, kein Fehler), prüfen Sie das Gateway-Protokoll auf die beiden `warn`-Zeilen aus „Fehlerquelle bei der Gruppenregistrierung“ oben. Die Startwarnung bedeutet, dass die effektive Absender-Zulassungsliste leer ist; eine Warnung pro `chat_id` bedeutet, dass eine befüllte `groups`-Registrierung diesen Chat nicht enthält.
 
-   Starten Sie den Gateway neu. Eingehender iMessage-Traffic läuft jetzt durch das gebündelte Plugin.
+5. **Überprüfen Sie die Aktionsoberfläche.** Bitten Sie den Agenten aus einer gekoppelten Direktnachricht heraus, eine Reaktion hinzuzufügen, eine Nachricht zu bearbeiten, zurückzuziehen oder zu beantworten, ein Foto zu senden und (in einer Gruppe) die Gruppe umzubenennen oder einen Teilnehmer hinzuzufügen bzw. zu entfernen. Jede Aktion sollte nativ in Messages.app ankommen. Wenn eine Aktion `iMessage <action> requires the imsg private API bridge` auslöst, führen Sie `imsg launch` erneut aus und aktualisieren Sie den Status mit `openclaw channels status --probe`.
 
-4. **DMs verifizieren.** Senden Sie dem Agent eine Direktnachricht und bestätigen Sie, dass die Antwort ankommt.
-
-5. **Gruppen separat verifizieren.** DMs und Gruppen nehmen unterschiedliche Codepfade - ein DM-Erfolg beweist nicht, dass Gruppen geroutet werden. Senden Sie dem Agent eine Nachricht in einem gekoppelten Gruppenchat und bestätigen Sie, dass die Antwort ankommt. Wenn die Gruppe still bleibt (keine Agent-Antwort, kein Fehler), prüfen Sie das Gateway-Log auf `imessage: dropping group message from chat_id=<id>` oder die Startzeile `imessage: groupPolicy="allowlist" but channels.imessage.groups is empty` - beide erscheinen beim Standard-Log-Level. Wenn eine davon erscheint, fehlt Ihr `groups`-Block oder ist leer - siehe „Group registry footgun“ oben.
-
-6. **Aktionsoberfläche verifizieren** - bitten Sie den Agent aus einer gekoppelten DM heraus, zu reagieren, zu bearbeiten, zurückzuziehen, zu antworten, ein Foto zu senden und (in einer Gruppe) die Gruppe umzubenennen / einen Teilnehmer hinzuzufügen oder zu entfernen. Jede Aktion sollte nativ in Messages.app ankommen. Wenn eine davon „iMessage `<action>` requires the imsg private API bridge“ ausgibt, führen Sie erneut `imsg launch` aus und aktualisieren Sie `channels status --probe`.
-
-7. **Entfernen Sie den BlueBubbles-Server und die Konfiguration**, sobald iMessage-DMs, Gruppen und Aktionen verifiziert sind. OpenClaw verwendet `channels.bluebubbles` nicht.
+6. **Entfernen Sie den BlueBubbles-Server und den Block `channels.bluebubbles`**, sobald iMessage-Direktnachrichten, -Gruppen und -Aktionen überprüft wurden. OpenClaw liest `channels.bluebubbles` nicht.
 
 ## Aktionsparität auf einen Blick
 
-| Aktion                                              | Legacy BlueBubbles                  | gebündeltes iMessage                                                          |
-| --------------------------------------------------- | ----------------------------------- | ----------------------------------------------------------------------------- |
-| Text senden / SMS-Fallback                          | ✅                                  | ✅                                                                            |
-| Medien senden (Foto, Video, Datei, Sprachnachricht) | ✅                                  | ✅                                                                            |
-| Thread-Antwort (`reply_to_guid`)                    | ✅                                  | ✅ (schließt [#51892](https://github.com/openclaw/openclaw/issues/51892))     |
-| Tapback (`react`)                                   | ✅                                  | ✅                                                                            |
-| Bearbeiten / zurückziehen (macOS 13+-Empfänger)     | ✅                                  | ✅                                                                            |
-| Mit Bildschirmeffekt senden                         | ✅                                  | ✅ (schließt Teil von [#9394](https://github.com/openclaw/openclaw/issues/9394)) |
-| Rich-Text fett / kursiv / unterstrichen / durchgestrichen | ✅                           | ✅ (Typed-Run-Formatierung über attributedBody)                               |
-| Gruppe umbenennen / Gruppensymbol setzen            | ✅                                  | ✅                                                                            |
-| Teilnehmer hinzufügen / entfernen, Gruppe verlassen | ✅                                  | ✅                                                                            |
-| Lesebestätigungen und Tippindikator                 | ✅                                  | ✅ (durch private API-Probe abgesichert)                                      |
-| DM-Zusammenführung bei gleichem Absender            | ✅                                  | ✅ (nur DM; opt-in über `channels.imessage.coalesceSameSenderDms`)            |
-| Eingehende Wiederherstellung nach einem Neustart    | ✅ (Webhook-Replay + History-Fetch) | ✅ (automatisch: verpasste Nachrichten über since_rowid + Deduplizierung wiedergeben; größeres Fenster lokal) |
+| Aktion                                              | älteres BlueBubbles | gebündeltes iMessage                                                            |
+| --------------------------------------------------- | ------------------- | ------------------------------------------------------------------------------- |
+| Text senden / SMS-Ausweichlösung                    | ✅                  | ✅                                                                              |
+| Medien senden (Foto, Video, Datei, Sprachnachricht) | ✅                  | ✅                                                                              |
+| Antwort im Thread (`reply_to_guid`)                 | ✅                  | ✅ (schließt [#51892](https://github.com/openclaw/openclaw/issues/51892))       |
+| Tapback (`react`)                                   | ✅                  | ✅                                                                              |
+| Bearbeiten / zurückziehen (Empfänger mit macOS 13+) | ✅                  | ✅                                                                              |
+| Mit Bildschirmeffekt senden                         | ✅                  | ✅ (schließt einen Teil von [#9394](https://github.com/openclaw/openclaw/issues/9394)) |
+| Rich-Text: fett / kursiv / unterstrichen / durchgestrichen | ✅           | ✅ (formatierte Textabschnitte über attributedBody)                             |
+| Native Messages-Umfragen (erstellen und abstimmen)  | ❌                  | ✅ (`actions.polls`; Empfänger benötigen iOS/macOS 26+ für die native Darstellung) |
+| Gruppe umbenennen / Gruppensymbol festlegen         | ✅                  | ✅                                                                              |
+| Teilnehmer hinzufügen / entfernen, Gruppe verlassen | ✅                 | ✅                                                                              |
+| Lesebestätigungen und Tippanzeige                   | ✅                  | ✅ (abhängig von der Prüfung der privaten API)                                  |
+| Zusammenführung von Direktnachrichten desselben Absenders | ✅            | ✅ (nur Direktnachrichten; Opt-in über `channels.imessage.coalesceSameSenderDms`) |
+| Wiederherstellung eingehender Nachrichten nach einem Neustart | ✅         | ✅ (automatisch: `since_rowid`-Wiedergabe + GUID-Deduplizierung; lokal größeres Zeitfenster) |
 
-iMessage stellt Nachrichten wieder her, die verpasst wurden, während der Gateway offline war: Beim Start spielt es ab der zuletzt weitergeleiteten rowid über `imsg watch.subscribe` `since_rowid` wieder ein und dedupliziert nach GUID, während eine Altersgrenze für veraltete Backlogs die Push-Flush-„Backlog-Bombe“ unterdrückt. Dies läuft über die `imsg`-RPC-Verbindung und funktioniert daher auch für Remote-SSH-Setups mit `cliPath`; lokale Setups erhalten ein größeres Wiederherstellungsfenster, weil sie `chat.db` lesen können. Siehe [Eingehende Wiederherstellung nach einem Bridge- oder Gateway-Neustart](/de/channels/imessage#inbound-recovery-after-a-bridge-or-gateway-restart).
+iMessage stellt Nachrichten wieder her, die während des Gateway-Ausfalls verpasst wurden: Beim Start erfolgt die Wiedergabe ab der zuletzt zugestellten rowid über `since_rowid` von `imsg watch.subscribe`, die Deduplizierung anhand der GUID und die Unterdrückung der „Backlog-Bombe“ bei der Push-Leerung durch eine Altersgrenze für veraltete Rückstände. Dies erfolgt über die `imsg`-RPC-Verbindung und funktioniert daher auch bei Remote-SSH-Konfigurationen von `cliPath`; lokale Konfigurationen erhalten ein größeres Wiederherstellungszeitfenster, da sie `chat.db` lesen können. Siehe [Wiederherstellung eingehender Nachrichten nach einem Neustart der Bridge oder des Gateways](/de/channels/imessage#inbound-recovery-after-a-bridge-or-gateway-restart).
 
-## Pairing, Sitzungen und ACP-Bindings
+## Kopplung, Sitzungen und ACP-Bindungen
 
-- **Pairing-Genehmigungen** werden per Handle übernommen. Sie müssen bekannte Absender nicht erneut genehmigen - `channels.imessage.allowFrom` erkennt dieselben `+15555550123`- / `user@example.com`-Strings, die BlueBubbles verwendet hat.
-- **Sitzungen** bleiben pro Agent + Chat begrenzt. DMs werden unter dem Standard `session.dmScope=main` in die Hauptsitzung des Agent zusammengeführt; Gruppensitzungen bleiben pro `chat_id` isoliert. Die Sitzungsschlüssel unterscheiden sich (`agent:<id>:imessage:group:<chat_id>` gegenüber dem BlueBubbles-Äquivalent) - alte Konversationshistorie unter BlueBubbles-Sitzungsschlüsseln wird nicht in iMessage-Sitzungen übernommen.
-- **ACP-Bindings**, die auf `match.channel: "bluebubbles"` verweisen, müssen auf `"imessage"` aktualisiert werden. Die Formen von `match.peer.id` (`chat_id:`, `chat_guid:`, `chat_identifier:`, bloßes Handle) sind identisch.
+- **Zulassungslisten werden anhand des Handles übernommen.** `channels.imessage.allowFrom` erkennt dieselben Zeichenfolgen `+15555550123` / `user@example.com`, die BlueBubbles verwendet hat — kopieren Sie sie unverändert.
+- **Genehmigungen im Kopplungsspeicher werden nicht übertragen.** Der Kopplungsspeicher ist kanalspezifisch, und der alte BlueBubbles-Speicher wird nicht migriert. Absender, die ausschließlich über die Kopplung genehmigt wurden, müssen sich unter iMessage erneut koppeln, oder Sie fügen deren Handles zu `allowFrom` hinzu.
+- **Sitzungen** bleiben auf Agent + Chat beschränkt. Direktnachrichten werden beim standardmäßigen `session.dmScope=main` in der Hauptsitzung des Agenten zusammengeführt; Gruppensitzungen bleiben pro `chat_id` isoliert (`agent:<agentId>:imessage:group:<chat_id>`). Der alte Konversationsverlauf unter BlueBubbles-Sitzungsschlüsseln wird nicht in iMessage-Sitzungen übernommen.
+- **ACP-Bindungen**, die auf `match.channel: "bluebubbles"` verweisen, müssen in `"imessage"` geändert werden. Die Formate von `match.peer.id` (`chat_id:`, `chat_guid:`, `chat_identifier:`, reines Handle) sind identisch.
 
-## Kein Rollback-Kanal
+## Kein Kanal für ein Rollback
 
-Es gibt keine unterstützte BlueBubbles-Runtime, zu der Sie zurückwechseln können. Wenn die iMessage-Verifizierung fehlschlägt, setzen Sie `channels.imessage.enabled: false`, starten Sie den Gateway neu, beheben Sie den `imsg`-Blocker und versuchen Sie die Umstellung erneut.
+Es gibt keine unterstützte BlueBubbles-Laufzeit, zu der Sie zurückwechseln können. Wenn die iMessage-Überprüfung fehlschlägt, setzen Sie `channels.imessage.enabled: false`, starten Sie den Gateway neu, beheben Sie das `imsg`-Hindernis und versuchen Sie die Umstellung erneut.
 
-Der Antwort-Cache liegt im SQLite-Plugin-Status. `openclaw doctor --fix` importiert und archiviert die alte `imessage/reply-cache.jsonl`-Sidecar-Datei, wenn sie vorhanden ist.
+Der Antwort-Cache befindet sich im SQLite-Zustand des Plugins. `openclaw doctor --fix` importiert und archiviert die alte Begleitdatei `imessage/reply-cache.jsonl`, sofern sie vorhanden ist.
 
 ## Verwandte Themen
 
-- [BlueBubbles-Entfernung und der imsg-iMessage-Pfad](/de/announcements/bluebubbles-imessage) - kurze Ankündigung und Betreiberzusammenfassung.
-- [iMessage](/de/channels/imessage) - vollständige iMessage-Kanalreferenz, einschließlich Einrichtung mit `imsg launch` und Fähigkeitserkennung.
-- `/channels/bluebubbles` - Legacy-URL, die zu diesem Migrationsleitfaden weiterleitet.
-- [Pairing](/de/channels/pairing) - DM-Authentifizierung und Pairing-Ablauf.
-- [Kanalrouting](/de/channels/channel-routing) - wie der Gateway einen Kanal für ausgehende Antworten auswählt.
+- [Entfernung von BlueBubbles und der imsg-iMessage-Pfad](/de/announcements/bluebubbles-imessage) — kurze Ankündigung und Zusammenfassung für Betreiber.
+- [iMessage](/de/channels/imessage) — vollständige Referenz zum iMessage-Kanal einschließlich der Einrichtung mit `imsg launch` und der Funktionserkennung.
+- `/channels/bluebubbles` — ältere URL, die zu diesem Migrationsleitfaden weiterleitet.
+- [Kopplung](/de/channels/pairing) — Authentifizierung von Direktnachrichten und Kopplungsablauf.
+- [Kanalweiterleitung](/de/channels/channel-routing) — wie der Gateway einen Kanal für ausgehende Antworten auswählt.

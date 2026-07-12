@@ -1,29 +1,32 @@
 ---
 read_when:
-    - Sie möchten bereichsübergreifende Erkennung (DNS-SD) über Tailscale + CoreDNS nutzen
+    - Sie möchten eine Weitbereichserkennung (DNS-SD) über Tailscale + CoreDNS.
     - You're setting up split DNS for a custom discovery domain (example: openclaw.internal)
 summary: CLI-Referenz für `openclaw dns` (Hilfsfunktionen für die Weitbereichserkennung)
 title: DNS
 x-i18n:
-    generated_at: "2026-05-06T09:02:53Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:11:46Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: 460bdcbaa2c0c0fc1a4f5bdd76b904d8ac35195a25324c66421abfdc2044bb07
+    source_hash: bb07353df03f9d169e1aede2da0b711ffb68e8c9d21d51359e93e92cc0818ca2
     source_path: cli/dns.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
 # `openclaw dns`
 
-DNS-Helfer für Wide-Area-Erkennung (Tailscale + CoreDNS). Derzeit auf macOS + Homebrew CoreDNS ausgerichtet.
+DNS-Hilfsfunktionen für die Wide-Area-Erkennung (Tailscale + CoreDNS). Derzeit nur macOS + Homebrew CoreDNS.
 
-Verwandt:
+Verwandte Themen:
 
 - Gateway-Erkennung: [Erkennung](/de/gateway/discovery)
-- Wide-Area-Erkennungskonfiguration: [Konfiguration](/de/gateway/configuration)
+- Konfiguration der Wide-Area-Erkennung: [Konfiguration](/de/gateway/configuration)
 
-## Einrichtung
+## `dns setup`
+
+CoreDNS-Einrichtung für die Unicast-DNS-SD-Erkennung planen oder anwenden.
 
 ```bash
 openclaw dns setup
@@ -31,31 +34,27 @@ openclaw dns setup --domain openclaw.internal
 openclaw dns setup --apply
 ```
 
-## `dns setup`
+| Option              | Auswirkung                                                                                                  |
+| ------------------- | ----------------------------------------------------------------------------------------------------------- |
+| `--domain <domain>` | Domain für die Wide-Area-Erkennung (zum Beispiel `openclaw.internal`).                                      |
+| `--apply`           | CoreDNS-Konfiguration installieren/aktualisieren und den Dienst (neu) starten. Erfordert sudo, nur macOS.   |
 
-CoreDNS-Einrichtung für Unicast-DNS-SD-Erkennung planen oder anwenden.
+Ohne `--domain` verwendet OpenClaw `discovery.wideArea.domain` aus der Konfiguration.
 
-Optionen:
+Ohne `--apply` gibt der Befehl nur Folgendes aus:
 
-- `--domain <domain>`: Wide-Area-Erkennungsdomain (zum Beispiel `openclaw.internal`)
-- `--apply`: CoreDNS-Konfiguration installieren oder aktualisieren und den Dienst neu starten (erfordert sudo; nur macOS)
+- Aufgelöste Erkennungsdomain und Pfad zur Zonendatei
+- Aktuelle Tailnet-IP-Adressen
+- Empfohlene Erkennungskonfiguration für `openclaw.json`
+- In der Tailscale-Administrationskonsole festzulegende Nameserver-/Domainwerte für Tailscale Split DNS
 
-Angezeigte Informationen:
+Mit `--apply` (nur macOS, erfordert Homebrew CoreDNS):
 
-- aufgelöste Erkennungsdomain
-- Zone-Dateipfad
-- aktuelle Tailnet-IPs
-- empfohlene `openclaw.json`-Erkennungskonfiguration
-- die festzulegenden Tailscale-Split-DNS-Nameserver-/Domainwerte
+- Initialisiert die Zonendatei, falls sie fehlt
+- Fügt die CoreDNS-Importanweisung hinzu, falls sie fehlt
+- Startet den Brew-Dienst `coredns` neu
 
-Hinweise:
-
-- Ohne `--apply` dient der Befehl nur als Planungshilfe und gibt die empfohlene Einrichtung aus.
-- Wenn `--domain` ausgelassen wird, verwendet OpenClaw `discovery.wideArea.domain` aus der Konfiguration.
-- `--apply` unterstützt derzeit nur macOS und erwartet Homebrew CoreDNS.
-- `--apply` initialisiert bei Bedarf die Zone-Datei, stellt sicher, dass die CoreDNS-Import-Anweisung vorhanden ist, und startet den Brew-Dienst `coredns` neu.
-
-## Verwandt
+## Verwandte Themen
 
 - [CLI-Referenz](/de/cli)
 - [Erkennung](/de/gateway/discovery)

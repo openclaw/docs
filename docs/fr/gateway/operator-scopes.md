@@ -1,127 +1,134 @@
 ---
 read_when:
-    - Débogage des erreurs de portée opérateur manquante
-    - Examiner les approbations de jumelage d’appareils ou de nœuds
-    - Ajout ou classification de méthodes RPC Gateway
-summary: Rôles d’opérateur, périmètres et vérifications au moment de l’approbation pour les clients Gateway
-title: Portées opérateur
+    - Débogage des erreurs d’absence de portée opérateur
+    - Examen des approbations d’appairage d’appareils ou de Node
+    - Ajout ou classification des méthodes RPC du Gateway
+summary: Rôles des opérateurs, portées et vérifications au moment de l’approbation pour les clients du Gateway
+title: Portées des opérateurs
 x-i18n:
-    generated_at: "2026-06-27T17:32:39Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:25:50Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: dc59453ae1a73b52276185de2cedd1ed4da027111168eda8107d6ba0b74aec2f
+    source_hash: cfda4486e8d31c01fb7ffff398dcc678d298194f0f0ce6308ae9e5388f5a2856
     source_path: gateway/operator-scopes.md
     workflow: 16
 ---
 
-Les portées d’opérateur définissent ce qu’un client Gateway peut faire après son authentification.
-Elles constituent un garde-fou du plan de contrôle dans un même domaine d’opérateur Gateway de confiance,
-et non une isolation multilocataire hostile. Si vous avez besoin d’une séparation forte entre
-des personnes, des équipes ou des machines, exécutez des Gateways séparés sous des utilisateurs système ou
-des hôtes distincts.
+Les portées d’opérateur déterminent ce qu’un client Gateway peut faire après son authentification.
+Elles constituent un garde-fou du plan de contrôle au sein d’un même domaine d’opérateur Gateway de confiance,
+et non une isolation hostile entre plusieurs locataires. Pour assurer une séparation forte entre des personnes,
+des équipes ou des machines, exécutez des Gateways distincts sous des utilisateurs de système d’exploitation ou sur des hôtes distincts.
 
 Voir aussi : [Sécurité](/fr/gateway/security), [Protocole Gateway](/fr/gateway/protocol),
 [Appairage Gateway](/fr/gateway/pairing), [CLI des appareils](/fr/cli/devices).
 
 ## Rôles
 
-Les clients WebSocket Gateway se connectent avec un rôle :
+Chaque client WebSocket Gateway se connecte avec un rôle :
 
-- `operator` : clients du plan de contrôle tels que la CLI, l’interface Control UI, l’automatisation et
-  les processus d’assistance de confiance.
-- `node` : hôtes de capacités tels que macOS, iOS, Android ou des nœuds sans interface qui
-  exposent des commandes via `node.invoke`.
+- `operator` : clients du plan de contrôle tels que la CLI, l’interface de contrôle, les automatisations et
+  les processus auxiliaires de confiance.
+- `node` : hôtes de capacités (macOS, iOS, Android, sans interface graphique) qui exposent
+  des commandes via `node.invoke`.
 
-Les méthodes RPC d’opérateur nécessitent le rôle `operator`. Les méthodes initiées par un nœud
+Les méthodes RPC d’opérateur nécessitent le rôle `operator` ; les méthodes provenant d’un Node
 nécessitent le rôle `node`.
 
 ## Niveaux de portée
 
-| Portée                  | Signification                                                                                                                                                                                                 |
-| ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `operator.read`         | État, listes, catalogue, journaux, lectures de session et autres appels du plan de contrôle non modificatifs en lecture seule.                                                                                |
-| `operator.write`        | Actions d’opérateur modificatives normales, comme l’envoi de messages, l’invocation d’outils, la mise à jour des paramètres talk/voice et le relais de commandes de nœud. Satisfait également `operator.read`. |
-| `operator.admin`        | Accès administratif au plan de contrôle. Satisfait toutes les portées `operator.*`. Requis pour la mutation de configuration, les mises à jour, les hooks natifs, les espaces de noms réservés sensibles et les approbations à haut risque. |
-| `operator.pairing`      | Gestion de l’appairage des appareils et des nœuds, notamment la liste, l’approbation, le rejet, la suppression, la rotation et la révocation des enregistrements d’appairage ou des jetons d’appareil.       |
-| `operator.approvals`    | API d’approbation d’exécution et de Plugin.                                                                                                                                                                  |
-| `operator.talk.secrets` | Lecture de la configuration Talk avec les secrets inclus.                                                                                                                                                     |
+| Portée                  | Signification                                                                                                                                                                                       |
+| ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `operator.read`         | État, listes, catalogue, journaux, lecture des sessions et autres appels sans mutation, en lecture seule.                                                                                           |
+| `operator.write`        | Actions d’opérateur avec mutation : envoi de messages, invocation d’outils, mise à jour des paramètres de conversation/voix, relais de commandes de Node. Satisfait également `operator.read`.       |
+| `operator.admin`        | Accès administratif. Satisfait toutes les portées `operator.*`. Requis pour la modification de la configuration, les mises à jour, les hooks natifs, les espaces de noms réservés et les approbations à haut risque. |
+| `operator.pairing`      | Gestion de l’appairage des appareils et des Nodes : répertorier, approuver, rejeter, supprimer, renouveler, révoquer.                                                                                |
+| `operator.approvals`    | API d’approbation d’exécution et de Plugin.                                                                                                                                                          |
+| `operator.talk.secrets` | Lecture de la configuration de conversation avec les secrets inclus.                                                                                                                                |
 
-Les futures portées `operator.*` inconnues nécessitent une correspondance exacte, sauf si l’appelant possède
-`operator.admin`.
+Les futures portées `operator.*` inconnues nécessitent une correspondance exacte, sauf si l’appelant
+détient déjà `operator.admin`.
 
-## La portée de méthode n’est que le premier garde-fou
+## La portée de la méthode n’est que le premier contrôle
 
-Chaque RPC Gateway possède une portée de méthode de moindre privilège. Cette portée de méthode décide
-si la requête peut atteindre le gestionnaire. Certains gestionnaires appliquent ensuite des contrôles
-plus stricts au moment de l’approbation, selon l’élément concret approuvé ou modifié.
-
-Exemples :
+Chaque RPC Gateway possède une portée de méthode fondée sur le moindre privilège, qui détermine si une
+requête atteint son gestionnaire. Certains gestionnaires appliquent ensuite des contrôles plus stricts selon
+l’élément concret approuvé ou modifié :
 
 - `device.pair.approve` est accessible avec `operator.pairing`, mais l’approbation d’un
-  appareil opérateur ne peut créer ou préserver que les portées que l’appelant détient déjà.
-- `node.pair.approve` est accessible avec `operator.pairing`, puis dérive des portées
-  d’approbation supplémentaires à partir de la liste de commandes de nœud en attente.
-- `chat.send` est normalement une méthode à portée d’écriture, mais les commandes persistantes `/config set`
-  et `/config unset` nécessitent `operator.admin` au niveau de la commande.
+  appareil d’opérateur ne peut créer ou préserver que les portées que l’appelant détient déjà.
+- `node.pair.approve` est accessible avec `operator.pairing`, puis déduit des portées
+  d’approbation supplémentaires à partir de la liste de commandes déclarée par le Node en attente.
+- `chat.send` est une méthode nécessitant une portée d’écriture, mais les commandes de conversation `/config set` et
+  `/config unset` nécessitent en plus `operator.admin`,
+  quelle que soit la portée d’envoi de conversation de l’appelant.
 
-Cela permet aux opérateurs dotés de portées inférieures d’effectuer des actions d’appairage à faible risque sans rendre
-toutes les approbations d’appairage réservées aux administrateurs.
+Cela permet aux opérateurs disposant de portées inférieures d’effectuer des actions d’appairage à faible risque sans
+exiger un accès administrateur pour toutes les approbations d’appairage.
 
-## Approbations d’appairage d’appareil
+## Approbations d’appairage des appareils
 
-Les enregistrements d’appairage d’appareil sont la source durable des rôles et portées approuvés.
-Les appareils déjà appairés n’obtiennent pas silencieusement un accès plus large : les reconnexions qui demandent
-un rôle ou des portées plus larges créent une nouvelle demande de mise à niveau en attente.
+Les enregistrements d’appairage des appareils constituent la source durable des rôles et portées approuvés.
+Un appareil déjà appairé n’obtient pas silencieusement un accès plus étendu : une reconnexion
+qui demande un rôle ou des portées plus larges crée une nouvelle demande de mise à niveau en attente.
 
 Lors de l’approbation d’une demande d’appareil :
 
-- Une demande sans rôle d’opérateur ne nécessite pas d’approbation de portée de jeton d’opérateur.
-- Une demande pour un rôle d’appareil non opérateur, tel que `node`, nécessite
-  `operator.admin`, même lorsque `device.pair.approve` est accessible avec
+- Une demande sans rôle d’opérateur ne nécessite pas d’approbation de portée d’opérateur.
+- Une demande concernant un rôle d’appareil autre qu’opérateur (par exemple `node`) nécessite
+  `operator.admin`, même si `device.pair.approve` lui-même ne nécessite que
   `operator.pairing`.
-- Une demande pour `operator.read`, `operator.write`, `operator.approvals`,
-  `operator.pairing` ou `operator.talk.secrets` nécessite que l’appelant détienne
-  ces portées, ou `operator.admin`.
-- Une demande pour `operator.admin` nécessite `operator.admin`.
-- Une demande de réparation sans portées explicites peut hériter des portées de jeton d’opérateur
-  existantes. Si ce jeton existant a une portée d’administration, l’approbation nécessite toujours
+- Une demande concernant `operator.read`, `operator.write`, `operator.approvals`,
+  `operator.pairing` ou `operator.talk.secrets` exige que l’appelant détienne déjà
+  cette portée, ou `operator.admin`.
+- Une demande concernant `operator.admin` nécessite `operator.admin`.
+- Une demande de réparation sans portées explicites peut hériter des portées du jeton
+  d’opérateur existant ; si ce jeton dispose d’une portée d’administration, l’approbation nécessite tout de même
   `operator.admin`.
 
-Les sessions à secret partagé et à proxy de confiance non administratrices peuvent approuver les demandes d’appareil opérateur
-uniquement dans leurs propres portées d’opérateur déclarées. L’approbation de rôles non opérateur
-est réservée aux administrateurs, même lorsque ces sessions peuvent par ailleurs utiliser
+Les sessions non administratrices utilisant un secret partagé ou un proxy de confiance ne peuvent approuver
+les demandes d’appareils d’opérateur que dans les limites de leurs propres portées d’opérateur déclarées ; l’approbation
+de rôles autres qu’opérateur est réservée aux administrateurs, même lorsque ces sessions peuvent par ailleurs utiliser
 `operator.pairing`.
 
-Pour les sessions avec jeton d’appareil appairé, la gestion est également limitée à soi-même, sauf si
-l’appelant possède `operator.admin` : les appelants non administrateurs ne voient que leurs propres
-entrées d’appairage, ne peuvent approuver ou rejeter que leur propre demande en attente, et ne peuvent effectuer une rotation,
-révoquer ou supprimer que leur propre entrée d’appareil.
+Pour les sessions utilisant un jeton d’appareil appairé, la gestion est limitée à soi-même, sauf si l’appelant
+détient `operator.admin` : un appelant non administrateur ne voit que ses propres entrées d’appairage et
+ne peut approuver, rejeter, renouveler, révoquer ou supprimer que l’entrée de son propre appareil.
 
-## Approbations d’appairage de nœud
+## Approbations d’appairage des Nodes
 
-L’ancien `node.pair.*` utilise un magasin d’appairage de nœuds séparé appartenant au Gateway. Les nœuds WS
-utilisent l’appairage d’appareil avec `role: node`, mais le même vocabulaire de niveau d’approbation
-s’applique.
+Les anciennes méthodes `node.pair.*` utilisent un magasin d’appairage de Nodes distinct, détenu par le Gateway.
+Les Nodes WS utilisent à la place l’appairage d’appareils (`role: node`), mais le même vocabulaire
+d’approbation s’applique. Consultez [Appairage Gateway](/fr/gateway/pairing) pour comprendre la relation entre les deux
+magasins.
 
-`node.pair.approve` utilise la liste de commandes de la demande en attente pour dériver les portées
-supplémentaires requises :
+`node.pair.approve` déduit des portées supplémentaires requises à partir de la liste de commandes
+de la demande en attente :
 
-- Demande sans commande : `operator.pairing`
-- Commandes de nœud hors exécution : `operator.pairing` + `operator.write`
-- `system.run`, `system.run.prepare` ou `system.which` :
-  `operator.pairing` + `operator.admin`
+| Commandes déclarées                                    | Portées requises                      |
+| ------------------------------------------------------ | ------------------------------------- |
+| aucune                                                 | `operator.pairing`                    |
+| commandes de Node autres que celles d’exécution        | `operator.pairing` + `operator.write` |
+| `system.run`, `system.run.prepare` ou `system.which`   | `operator.pairing` + `operator.admin` |
 
-L’appairage de nœud établit l’identité et la confiance. Il ne remplace pas la politique
-d’approbation d’exécution `system.run` propre au nœud.
+L’approbation d’une déclaration de Node n’active pas les commandes soumises à une liste d’autorisation
+d’exécution distincte. Par exemple, l’approbation d’un Node qui déclare
+`computer.act` nécessite les portées d’appairage et d’écriture, mais ne fait qu’enregistrer la surface.
+Un administrateur ou un propriétaire doit toujours armer `computer.act`. Tant qu’elle reste
+armée, son invocation via la méthode `node.invoke`, soumise à une portée d’écriture, ne
+nécessite pas de portée d’administration pour chaque action.
+
+L’appairage d’un Node établit son identité et la confiance ; il ne remplace pas la propre
+politique d’approbation d’exécution `system.run` du Node.
 
 ## Authentification par secret partagé
 
-L’authentification par jeton/mot de passe Gateway partagé est traitée comme un accès opérateur de confiance pour
-ce Gateway. Les surfaces HTTP compatibles OpenAI, `/tools/invoke` et les points de terminaison HTTP d’historique de session
-restaurent l’ensemble normal complet des portées d’opérateur par défaut pour l’authentification bearer par secret partagé,
-même si un appelant envoie des portées déclarées plus étroites.
+L’authentification par jeton/mot de passe partagé du Gateway est considérée comme un accès d’opérateur de confiance pour
+ce Gateway. Les surfaces HTTP compatibles avec OpenAI, `/tools/invoke` et les points de terminaison HTTP
+d’historique de session rétablissent l’ensemble complet des portées d’opérateur par défaut pour
+l’authentification par jeton porteur à secret partagé, même si un appelant envoie des portées déclarées plus restreintes.
 
-Les modes porteurs d’identité, tels que l’authentification par proxy de confiance ou `none` pour l’ingress privé,
-peuvent toujours respecter les portées déclarées explicites. Utilisez des Gateways séparés pour une véritable
-séparation des frontières de confiance.
+Les modes associés à une identité, tels que l’authentification par proxy de confiance ou `none` pour une entrée privée,
+peuvent toujours respecter les portées explicitement déclarées. Utilisez des Gateways distincts pour une véritable séparation
+des limites de confiance.

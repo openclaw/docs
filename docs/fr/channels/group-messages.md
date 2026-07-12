@@ -1,42 +1,44 @@
 ---
 read_when:
     - Configuration spécifique des groupes WhatsApp
-    - Modifier les modes d’activation de WhatsApp (`mention` vs `always`)
-    - Ajuster les clés de session de groupe WhatsApp ou le contexte des messages en attente
+    - Modification des modes d’activation de WhatsApp (`mention` ou `always`)
+    - Ajustement des clés de session des groupes WhatsApp ou du contexte des messages en attente
 sidebarTitle: WhatsApp groups
 summary: Gestion des messages de groupe WhatsApp — activation, listes d’autorisation, sessions et injection de contexte
 title: Messages de groupe WhatsApp
 x-i18n:
-    generated_at: "2026-06-27T17:10:13Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:02:55Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: 790866fd959b43d94b745082f3c90920b81c0a016492e9e164c600663f1b2eee
+    source_hash: bd1adb379a4cae4ee9b4b9950d7519e62e1fc0e72ece25ec1b337ee3cb803cda
     source_path: channels/group-messages.md
     workflow: 16
 ---
 
-For the cross-channel groups model (Discord, iMessage, Matrix, Microsoft Teams, Signal, Slack, Telegram, WhatsApp, Zalo), see [Groups](/fr/channels/groups). This page covers the WhatsApp-specific behavior on top of that model: activation, group allowlists, per-group session keys, and pending-message context injection.
+Pour le modèle de groupes multicanaux (Discord, iMessage, Matrix, Microsoft Teams, QQBot, Signal, Slack, Telegram, WhatsApp, Zalo), consultez [Groupes](/fr/channels/groups). Cette page décrit le comportement propre à WhatsApp qui s’ajoute à ce modèle : activation, listes d’autorisation des groupes, clés de session propres à chaque groupe et injection du contexte des messages en attente.
 
-Goal: let OpenClaw sit in WhatsApp groups, wake up only when pinged, and keep that thread separate from the personal DM session.
+Objectif : permettre à OpenClaw de rester dans les groupes WhatsApp, de s’activer uniquement lorsqu’il est interpellé et de conserver ce fil séparé de la session personnelle de messages directs.
 
 <Note>
-`agents.list[].groupChat.mentionPatterns` is also used by Telegram, Discord, Slack, and iMessage. For multi-agent setups, set it per agent, or use `messages.groupChat.mentionPatterns` as a global fallback.
+`agents.list[].groupChat.mentionPatterns` est partagé avec le filtrage des mentions des autres canaux. Pour les configurations multi-agents, définissez-le pour chaque agent, ou utilisez `messages.groupChat.mentionPatterns` comme solution de repli globale. Si aucun des deux n’est défini, les motifs sont dérivés du nom et de l’émoji de l’identité de l’agent.
 </Note>
 
-## Behavior
+## Comportement
 
-- Activation modes: `mention` (default) or `always`. `mention` requires a ping (real WhatsApp @-mentions via `mentionedJids`, safe regex patterns, or the bot's E.164 anywhere in the text). `always` wakes the agent on every message but it should reply only when it can add meaningful value; otherwise it returns the exact silent token `NO_REPLY` / `no_reply`. Defaults can be set in config (`channels.whatsapp.groups`) and overridden per group via `/activation`. When `channels.whatsapp.groups` is set, it also acts as a group allowlist (include `"*"` to allow all).
-- Group policy: `channels.whatsapp.groupPolicy` controls whether group messages are accepted (`open|disabled|allowlist`). `allowlist` uses `channels.whatsapp.groupAllowFrom` (fallback: explicit `channels.whatsapp.allowFrom`). Default is `allowlist` (blocked until you add senders).
-- Per-group sessions: session keys look like `agent:<agentId>:whatsapp:group:<jid>` so commands such as `/verbose on`, `/trace on`, or `/think high` (sent as standalone messages) are scoped to that group; personal DM state is untouched. Heartbeats are skipped for group threads.
-- Context injection: **pending-only** group messages (default 50) that _did not_ trigger a run are prefixed under `[Chat messages since your last reply - for context]`, with the triggering line under `[Current message - respond to this]`. Messages already in the session are not re-injected.
-- Sender surfacing: every group batch now ends with `[from: Sender Name (+E164)]` so OpenClaw knows who is speaking.
-- Ephemeral/view-once: we unwrap those before extracting text/mentions, so pings inside them still trigger.
-- Group system prompt: on the first turn of a group session (and whenever `/activation` changes the mode) we inject a short blurb into the system prompt like `You are replying inside the WhatsApp group "<subject>". Group members: Alice (+44...), Bob (+43...), ... Activation: trigger-only ... Address the specific sender noted in the message context.` If metadata isn't available we still tell the agent it's a group chat.
+- Modes d’activation : `mention` (par défaut) ou `always`. `mention` nécessite une sollicitation : une véritable @mention WhatsApp (`mentionedJids`), un motif d’expression régulière configuré, les chiffres E.164 du bot n’importe où dans le texte ou une réponse citant l’un des messages du bot (sauf dans les configurations de conversation avec soi-même utilisant un numéro partagé). `always` réveille l’agent à chaque message, mais l’invite de groupe injectée lui indique de répondre uniquement lorsqu’il apporte une valeur ajoutée et, dans le cas contraire, de renvoyer exactement le jeton silencieux `NO_REPLY` (sans distinction entre majuscules et minuscules). Les valeurs par défaut proviennent de la configuration (`channels.whatsapp.groups` `requireMention`) et peuvent être remplacées pour chaque groupe via `/activation`.
+- Liste d’autorisation des groupes : lorsque `channels.whatsapp.groups` est défini, seuls les JID de groupe répertoriés sont admis (incluez `"*"` pour tous les autoriser) ; les messages provenant de groupes non répertoriés sont ignorés avec une indication dans le journal.
+- Politique de groupe : `channels.whatsapp.groupPolicy` détermine si les messages de groupe sont acceptés (`open|disabled|allowlist`). `allowlist` utilise `channels.whatsapp.groupAllowFrom` (solution de repli : `channels.whatsapp.allowFrom` explicite). La valeur par défaut est `allowlist` (bloqué jusqu’à ce que vous ajoutiez des expéditeurs).
+- Sessions par groupe : les clés de session ressemblent à `agent:<agentId>:whatsapp:group:<jid>` (les comptes autres que celui par défaut ajoutent `:thread:whatsapp-account-<accountId>`) ; les directives telles que `/verbose on`, `/trace on` ou `/think high` (envoyées sous forme de messages autonomes) sont donc limitées à ce groupe, sans modifier l’état des messages privés personnels.
+- Injection du contexte : les messages de groupe **en attente uniquement** (50 par défaut) qui _n’ont pas_ déclenché d’exécution sont préfixés sous `[Chat messages since your last reply - for context]`, tandis que la ligne déclencheuse figure sous `[Current message - respond to this]`. La fenêtre des messages en attente est effacée après l’exécution ; les messages déjà présents dans la session ne sont pas réinjectés.
+- Attribution de l’expéditeur : chaque ligne de groupe contient le libellé de l’expéditeur dans l’enveloppe du message, par exemple `[WhatsApp <groupJid> <timestamp>] Alice (+447700900123): text`, et l’identité de l’expéditeur ainsi que l’objet et les membres du groupe sont transmis dans le bloc non fiable de métadonnées de conversation.
+- Messages éphémères/à affichage unique : les enveloppes sont retirées avant l’extraction du texte et des mentions, de sorte que les sollicitations qu’elles contiennent déclenchent toujours l’agent.
+- Invite système de groupe : le premier tour d’une session de groupe (ainsi que tout tour suivant une modification du mode par `/activation`) injecte des instructions d’activation dans l’invite système (`Activation: trigger-only ...` ou `Activation: always-on ...`, ainsi que « s’adresser à l’expéditeur concerné »). Les instructions persistantes relatives à l’envoi dans les conversations de groupe (« Vous participez à une conversation de groupe WhatsApp… ») sont toujours incluses.
 
-## Config example (WhatsApp)
+## Exemple de configuration (WhatsApp)
 
-Add a `groupChat` block to `~/.openclaw/openclaw.json` so display-name pings work even when WhatsApp strips the visual `@` in the text body:
+Permettez aux mentions par nom d’affichage de fonctionner même lorsque WhatsApp supprime le `@` visible du corps du texte :
 
 ```json5
 {
@@ -45,6 +47,7 @@ Add a `groupChat` block to `~/.openclaw/openclaw.json` so display-name pings wor
       groups: {
         "*": { requireMention: true },
       },
+      historyLimit: 50, // fenêtre de contexte de groupe en attente (50 par défaut)
     },
   },
   agents: {
@@ -52,7 +55,6 @@ Add a `groupChat` block to `~/.openclaw/openclaw.json` so display-name pings wor
       {
         id: "main",
         groupChat: {
-          historyLimit: 50,
           mentionPatterns: ["@?openclaw", "\\+?15555550123"],
         },
       },
@@ -61,43 +63,44 @@ Add a `groupChat` block to `~/.openclaw/openclaw.json` so display-name pings wor
 }
 ```
 
-Notes:
+Remarques :
 
-- The regexes are case-insensitive and use the same safe-regex guardrails as other config regex surfaces; invalid patterns and unsafe nested repetition are ignored.
-- WhatsApp still sends canonical mentions via `mentionedJids` when someone taps the contact, so the number fallback is rarely needed but is a useful safety net.
+- Les expressions régulières sont insensibles à la casse et utilisent les mêmes protections contre les expressions régulières dangereuses que les autres surfaces de configuration acceptant des expressions régulières ; les motifs non valides et les répétitions imbriquées dangereuses sont ignorés.
+- WhatsApp envoie toujours les mentions canoniques via `mentionedJids` lorsqu’une personne touche le contact ; le recours au numéro est donc rarement nécessaire, mais constitue un filet de sécurité utile.
+- La fenêtre de contexte en attente est déterminée dans l’ordre suivant : `channels.whatsapp.accounts.<id>.historyLimit` → `channels.whatsapp.historyLimit` → `messages.groupChat.historyLimit` → 50.
 
-### Activation command (owner-only)
+### Commande d’activation (réservée au propriétaire)
 
-Use the group chat command:
+Utilisez la commande de discussion de groupe :
 
 - `/activation mention`
 - `/activation always`
 
-Only the owner number (from `channels.whatsapp.allowFrom`, or the bot's own E.164 when unset) can change this. Send `/status` as a standalone message in the group to see the current activation mode.
+Seuls les numéros des propriétaires (provenant de `channels.whatsapp.allowFrom`, ou le propre numéro E.164 du bot lorsque ce paramètre n’est pas défini) peuvent modifier ce réglage ; la commande `/activation` envoyée par toute autre personne est ignorée et stockée uniquement comme contexte. Envoyez `/status` sous forme de message autonome dans le groupe pour afficher le mode d’activation actuel.
 
-## How to use
+## Utilisation
 
-1. Add your WhatsApp account (the one running OpenClaw) to the group.
-2. Say `@openclaw …` (or include the number). Only allowlisted senders can trigger it unless you set `groupPolicy: "open"`.
-3. The agent prompt will include recent group context plus the trailing `[from: …]` marker so it can address the right person.
-4. Session-level directives (`/verbose on`, `/trace on`, `/think high`, `/new` or `/reset`, `/compact`) apply only to that group's session; send them as standalone messages so they register. Your personal DM session remains independent.
+1. Ajoutez votre compte WhatsApp (celui qui exécute OpenClaw) au groupe.
+2. Écrivez `@openclaw ...` (ou incluez le numéro). Seuls les expéditeurs figurant dans la liste d’autorisation peuvent le déclencher, sauf si vous définissez `groupPolicy: "open"`.
+3. L’invite de l’agent inclut le contexte de groupe en attente ainsi que des lignes identifiant les expéditeurs, afin qu’il puisse s’adresser à la bonne personne.
+4. Les directives de session (`/verbose on`, `/trace on`, `/think high`, `/new` ou `/reset`, `/compact`) s’appliquent uniquement à la session de ce groupe ; envoyez-les sous forme de messages autonomes afin qu’elles soient prises en compte. Votre session personnelle par message privé reste indépendante.
 
-## Testing / verification
+## Tests / vérification
 
-- Manual smoke:
-  - Send an `@openclaw` ping in the group and confirm a reply that references the sender name.
-  - Send a second ping and verify the history block is included then cleared on the next turn.
-- Check gateway logs (run with `--verbose`) to see `inbound web message` entries showing `from: <groupJid>` and the `[from: …]` suffix.
+- Test rapide manuel :
+  - Envoyez une mention `@openclaw` dans le groupe et vérifiez qu’une réponse fait référence au nom de l’expéditeur.
+  - Envoyez une deuxième mention et vérifiez que le bloc d’historique est inclus, puis qu’il est effacé au tour suivant.
+- Consultez les journaux du Gateway (exécuté avec `--verbose`) pour rechercher des entrées `inbound web message` affichant `from: <groupJid>` et le corps identifié par expéditeur.
 
-## Known considerations
+## Points à prendre en compte
 
-- Heartbeats are intentionally skipped for groups to avoid noisy broadcasts.
-- Echo suppression uses the combined batch string; if you send identical text twice without mentions, only the first will get a response.
-- Session store entries will appear as `agent:<agentId>:whatsapp:group:<jid>` in the session store (`~/.openclaw/agents/<agentId>/sessions/sessions.json` by default); a missing entry just means the group hasn't triggered a run yet.
-- Typing indicators in groups follow `agents.defaults.typingMode`. When visible replies are opted into message-tool-only mode, typing starts immediately by default so group members can see the agent is working even if no automatic final reply is posted. Explicit typing-mode config still wins.
+- Les Heartbeats s’exécutent dans la session principale de l’agent ; les sessions de groupe ne reçoivent jamais d’exécutions de Heartbeat.
+- La suppression des échos mémorise l’invite combinée (historique + message actuel) pour chaque session, afin que les messages envoyés par le bot lui-même ne le déclenchent pas de nouveau ; un lot identique répété peut être ignoré en tant qu’écho.
+- Les entrées du stockage de sessions apparaissent sous la forme `agent:<agentId>:whatsapp:group:<jid>` dans le stockage de sessions SQLite propre à chaque agent ; une entrée manquante signifie simplement que le groupe n’a pas encore déclenché d’exécution.
+- Les indicateurs de saisie suivent `session.typingMode` / `agents.defaults.typingMode`. Lorsque les réponses visibles sont configurées pour utiliser uniquement l’outil de messagerie, la saisie commence immédiatement par défaut afin que les membres du groupe puissent voir que l’agent travaille, même si aucune réponse finale automatique n’est publiée. Une configuration explicite du mode de saisie reste prioritaire.
 
-## Related
+## Pages connexes
 
-- [Groups](/fr/channels/groups)
-- [Channel routing](/fr/channels/channel-routing)
-- [Broadcast groups](/fr/channels/broadcast-groups)
+- [Groupes](/fr/channels/groups)
+- [Routage des canaux](/fr/channels/channel-routing)
+- [Groupes de diffusion](/fr/channels/broadcast-groups)

@@ -1,29 +1,32 @@
 ---
 read_when:
-    - Vous voulez la découverte sur réseau étendu (DNS-SD) via Tailscale + CoreDNS
+    - Vous souhaitez une découverte sur réseau étendu (DNS-SD) via Tailscale + CoreDNS
     - You're setting up split DNS for a custom discovery domain (example: openclaw.internal)
-summary: Référence CLI pour `openclaw dns` (outils d’aide à la découverte à grande échelle)
+summary: Référence de la CLI pour `openclaw dns` (utilitaires de découverte sur réseau étendu)
 title: DNS
 x-i18n:
-    generated_at: "2026-05-06T09:02:11Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:13:53Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: 460bdcbaa2c0c0fc1a4f5bdd76b904d8ac35195a25324c66421abfdc2044bb07
+    source_hash: bb07353df03f9d169e1aede2da0b711ffb68e8c9d21d51359e93e92cc0818ca2
     source_path: cli/dns.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
 # `openclaw dns`
 
-Assistants DNS pour la découverte étendue (Tailscale + CoreDNS). Actuellement centré sur macOS + Homebrew CoreDNS.
+Utilitaires DNS pour la découverte sur réseau étendu (Tailscale + CoreDNS). Actuellement compatibles uniquement avec macOS et CoreDNS installé via Homebrew.
 
-Connexe :
+Voir aussi :
 
 - Découverte du Gateway : [Découverte](/fr/gateway/discovery)
-- Configuration de la découverte étendue : [Configuration](/fr/gateway/configuration)
+- Configuration de la découverte sur réseau étendu : [Configuration](/fr/gateway/configuration)
 
-## Configuration
+## `dns setup`
+
+Planifiez ou appliquez la configuration de CoreDNS pour la découverte DNS-SD unicast.
 
 ```bash
 openclaw dns setup
@@ -31,31 +34,27 @@ openclaw dns setup --domain openclaw.internal
 openclaw dns setup --apply
 ```
 
-## `dns setup`
+| Option              | Effet                                                                                                      |
+| ------------------- | ---------------------------------------------------------------------------------------------------------- |
+| `--domain <domain>` | Domaine de découverte sur réseau étendu (par exemple `openclaw.internal`).                                 |
+| `--apply`           | Installe/met à jour la configuration de CoreDNS et (re)démarre le service. Nécessite sudo, macOS uniquement. |
 
-Planifier ou appliquer la configuration de CoreDNS pour la découverte DNS-SD unicast.
+Sans `--domain`, OpenClaw utilise `discovery.wideArea.domain` provenant de la configuration.
 
-Options :
+Sans `--apply`, la commande affiche uniquement :
 
-- `--domain <domain>` : domaine de découverte étendue (par exemple `openclaw.internal`)
-- `--apply` : installer ou mettre à jour la configuration de CoreDNS et redémarrer le service (nécessite sudo ; macOS uniquement)
+- Le domaine de découverte résolu et le chemin du fichier de zone
+- Les adresses IP actuelles du tailnet
+- La configuration de découverte `openclaw.json` recommandée
+- Les valeurs du serveur de noms et du domaine Split DNS de Tailscale à définir dans la console d’administration Tailscale
 
-Ce qu’elle affiche :
+Avec `--apply` (macOS uniquement, nécessite CoreDNS installé via Homebrew) :
 
-- domaine de découverte résolu
-- chemin du fichier de zone
-- adresses IP actuelles du réseau Tailscale
-- configuration de découverte `openclaw.json` recommandée
-- les valeurs de serveur de noms/domaine Split DNS Tailscale à définir
+- Initialise le fichier de zone s’il est manquant
+- Ajoute la section d’importation CoreDNS si elle est manquante
+- Redémarre le service brew `coredns`
 
-Notes :
+## Voir aussi
 
-- Sans `--apply`, la commande est uniquement un assistant de planification et affiche la configuration recommandée.
-- Si `--domain` est omis, OpenClaw utilise `discovery.wideArea.domain` depuis la configuration.
-- `--apply` prend actuellement en charge uniquement macOS et s’attend à Homebrew CoreDNS.
-- `--apply` initialise le fichier de zone si nécessaire, garantit que la strophe d’importation CoreDNS existe, et redémarre le service brew `coredns`.
-
-## Connexe
-
-- [Référence CLI](/fr/cli)
+- [Référence de la CLI](/fr/cli)
 - [Découverte](/fr/gateway/discovery)

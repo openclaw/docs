@@ -1,40 +1,40 @@
 ---
 read_when:
-    - OpenClaw에서 Cloudflare AI Gateway를 사용하려는 경우
-    - 계정 ID, Gateway ID 또는 API 키 환경 변수가 필요합니다
+    - OpenClaw에서 Cloudflare AI Gateway를 사용하려고 합니다
+    - 계정 ID, Gateway ID 또는 API 키 환경 변수가 필요합니다.
 summary: Cloudflare AI Gateway 설정(인증 + 모델 선택)
 title: Cloudflare AI Gateway
 x-i18n:
-    generated_at: "2026-06-27T18:01:03Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:35:05Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: 05678faa049349c610a9c7ea9d23958bf51927453cf6987fef397cd273f6556b
+    source_hash: 02c7785616e7aee645bb3fc41ef6a3585e1f2f9d886fab1a06231e497effd045
     source_path: providers/cloudflare-ai-gateway.md
     workflow: 16
 ---
 
-Cloudflare AI Gateway는 제공자 API 앞단에 위치하며 분석, 캐싱, 제어 기능을 추가할 수 있게 해줍니다. Anthropic의 경우 OpenClaw는 Gateway 엔드포인트를 통해 Anthropic Messages API를 사용합니다.
+[Cloudflare AI Gateway](https://developers.cloudflare.com/ai-gateway/)는 공급자 API 앞에 위치하여 분석, 캐싱, 제어 기능을 추가합니다. Anthropic의 경우 OpenClaw는 Gateway 엔드포인트를 통해 Anthropic Messages API를 사용합니다.
 
 | 속성          | 값                                                                                       |
 | ------------- | ---------------------------------------------------------------------------------------- |
-| 제공자        | `cloudflare-ai-gateway`                                                                  |
+| 공급자        | `cloudflare-ai-gateway`                                                                  |
+| Plugin        | 공식 외부 패키지(`@openclaw/cloudflare-ai-gateway-provider`)                             |
 | 기본 URL      | `https://gateway.ai.cloudflare.com/v1/<account_id>/<gateway_id>/anthropic`               |
 | 기본 모델     | `cloudflare-ai-gateway/claude-sonnet-4-6`                                                |
-| API 키        | `CLOUDFLARE_AI_GATEWAY_API_KEY` (Gateway를 통한 요청에 사용하는 제공자 API 키) |
+| API 키        | `CLOUDFLARE_AI_GATEWAY_API_KEY`(Gateway를 통한 요청에 사용하는 공급자 API 키)            |
 
 <Note>
-Cloudflare AI Gateway를 통해 라우팅되는 Anthropic 모델에는 **Anthropic API 키**를 제공자 키로 사용하세요.
+Cloudflare AI Gateway를 통해 라우팅되는 Anthropic 모델의 경우 공급자 키로 **Anthropic API 키**를 사용하십시오.
 </Note>
 
-Anthropic Messages 모델에서 thinking이 활성화된 경우, OpenClaw는 Cloudflare AI Gateway를 통해 페이로드를 보내기 전에 끝에 붙은
-assistant 사전 채움 턴을 제거합니다.
-Anthropic은 확장 thinking에서 응답 사전 채우기를 거부하지만, 일반적인
-비-thinking 사전 채우기는 계속 사용할 수 있습니다.
+Anthropic Messages 모델에서 사고 기능이 활성화되면 OpenClaw는 Cloudflare AI Gateway를 통해 페이로드를 전송하기 전에 마지막의 어시스턴트 프리필 턴을 제거합니다.
+Anthropic은 확장 사고 기능과 함께 응답을 프리필하는 것을 거부하지만, 일반적인 비사고 프리필은 계속 사용할 수 있습니다.
 
 ## Plugin 설치
 
-공식 Plugin을 설치한 다음 Gateway를 다시 시작합니다.
+공식 Plugin을 설치한 다음 Gateway를 다시 시작하십시오.
 
 ```bash
 openclaw plugins install @openclaw/cloudflare-ai-gateway-provider
@@ -44,18 +44,18 @@ openclaw gateway restart
 ## 시작하기
 
 <Steps>
-  <Step title="제공자 API 키와 Gateway 세부 정보 설정">
-    온보딩을 실행하고 Cloudflare AI Gateway 인증 옵션을 선택합니다.
+  <Step title="공급자 API 키 및 Gateway 세부 정보 설정">
+    온보딩을 실행하고 Cloudflare AI Gateway 인증 옵션을 선택하십시오.
 
     ```bash
     openclaw onboard --auth-choice cloudflare-ai-gateway-api-key
     ```
 
-    계정 ID, gateway ID, API 키를 입력하라는 메시지가 표시됩니다.
+    계정 ID, Gateway ID 및 API 키를 입력하라는 메시지가 표시됩니다.
 
   </Step>
   <Step title="기본 모델 설정">
-    OpenClaw 구성에 모델을 추가합니다.
+    OpenClaw 구성에 모델을 추가하십시오.
 
     ```json5
     {
@@ -68,7 +68,7 @@ openclaw gateway restart
     ```
 
   </Step>
-  <Step title="모델을 사용할 수 있는지 확인">
+  <Step title="모델 사용 가능 여부 확인">
     ```bash
     openclaw models list --provider cloudflare-ai-gateway
     ```
@@ -77,7 +77,7 @@ openclaw gateway restart
 
 ## 비대화형 예시
 
-스크립트나 CI 설정에서는 모든 값을 명령줄에 전달합니다.
+스크립트 또는 CI 설정에서는 모든 값을 명령줄에 전달하십시오.
 
 ```bash
 openclaw onboard --non-interactive \
@@ -91,8 +91,8 @@ openclaw onboard --non-interactive \
 ## 고급 구성
 
 <AccordionGroup>
-  <Accordion title="인증된 게이트웨이">
-    Cloudflare에서 Gateway 인증을 활성화했다면 `cf-aig-authorization` 헤더를 추가하세요. 이는 제공자 API 키에 **추가로** 필요합니다.
+  <Accordion title="인증된 Gateway">
+    Cloudflare에서 Gateway 인증을 활성화한 경우 `cf-aig-authorization` 헤더를 추가하십시오. 이는 공급자 API 키와 **별도로 추가해야 합니다**.
 
     ```json5
     {
@@ -109,16 +109,16 @@ openclaw onboard --non-interactive \
     ```
 
     <Tip>
-    `cf-aig-authorization` 헤더는 Cloudflare Gateway 자체에 인증하고, 제공자 API 키(예: Anthropic 키)는 업스트림 제공자에 인증합니다.
+    `cf-aig-authorization` 헤더는 Cloudflare Gateway 자체에 인증하며, 공급자 API 키(예: Anthropic 키)는 업스트림 공급자에 인증합니다.
     </Tip>
 
   </Accordion>
 
-  <Accordion title="환경 참고">
-    Gateway가 데몬(launchd/systemd)으로 실행되는 경우 `CLOUDFLARE_AI_GATEWAY_API_KEY`를 해당 프로세스에서 사용할 수 있는지 확인하세요.
+  <Accordion title="환경 관련 참고 사항">
+    Gateway가 데몬(launchd/systemd)으로 실행되는 경우 해당 프로세스에서 `CLOUDFLARE_AI_GATEWAY_API_KEY`를 사용할 수 있는지 확인하십시오.
 
     <Warning>
-    대화형 셸에서만 내보낸 키는 해당 환경도 그곳에 가져오지 않는 한 launchd/systemd 데몬에는 도움이 되지 않습니다. gateway 프로세스가 키를 읽을 수 있도록 `~/.openclaw/.env` 또는 `env.shellEnv`를 통해 키를 설정하세요.
+    대화형 셸에서만 내보낸 키는 해당 환경도 launchd/systemd 데몬으로 가져오지 않는 한 데몬에 적용되지 않습니다. Gateway 프로세스가 키를 읽을 수 있도록 `~/.openclaw/.env` 또는 `env.shellEnv`를 통해 키를 설정하십시오.
     </Warning>
 
   </Accordion>
@@ -128,9 +128,9 @@ openclaw onboard --non-interactive \
 
 <CardGroup cols={2}>
   <Card title="모델 선택" href="/ko/concepts/model-providers" icon="layers">
-    제공자, 모델 참조, 장애 조치 동작 선택.
+    공급자, 모델 참조 및 장애 조치 동작을 선택하는 방법입니다.
   </Card>
   <Card title="문제 해결" href="/ko/help/troubleshooting" icon="wrench">
-    일반적인 문제 해결 및 FAQ.
+    일반적인 문제 해결 방법 및 FAQ입니다.
   </Card>
 </CardGroup>

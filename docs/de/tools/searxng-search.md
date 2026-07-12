@@ -1,29 +1,30 @@
 ---
 read_when:
-    - Sie möchten einen selbst gehosteten Websuch-Provider
+    - Sie möchten einen selbst gehosteten Provider für die Websuche
     - Sie möchten SearXNG für web_search verwenden
-    - Sie benötigen eine datenschutzorientierte oder air-gapped Suchoption
-summary: SearXNG-Websuche -- selbst gehosteter Meta-Such-Provider ohne Schlüssel
+    - Sie benötigen eine datenschutzorientierte oder vom Netzwerk isolierte Suchoption
+summary: SearXNG-Websuche – selbst gehosteter Meta-Such-Provider ohne API-Schlüssel
 title: SearXNG-Suche
 x-i18n:
-    generated_at: "2026-06-27T18:21:07Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:59:49Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: 4bd00a20e45f71b7bd855a6588d5c829a0202839fc93ddcec1e255b7858ff183
+    source_hash: cae8de9f8e2c8dd9cec615adb48da5c1fd7654bffe96c7afc1acea3effbcf1fc
     source_path: tools/searxng-search.md
     workflow: 16
 ---
 
 OpenClaw unterstützt [SearXNG](https://docs.searxng.org/) als **selbst gehosteten,
-schlüsselfreien** `web_search`-Provider. SearXNG ist eine Open-Source-Metasuchmaschine,
-die Ergebnisse aus Google, Bing, DuckDuckGo und anderen Quellen aggregiert.
+schlüsselfreien** `web_search`-Provider. SearXNG ist eine quelloffene Metasuchmaschine,
+die Ergebnisse von Google, Bing, DuckDuckGo und anderen Quellen zusammenführt.
 
 Vorteile:
 
-- **Kostenlos und unbegrenzt** -- kein API-Schlüssel und kein kommerzielles Abonnement erforderlich
+- **Kostenlos und unbegrenzt** -- kein API-Schlüssel oder kommerzielles Abonnement erforderlich
 - **Datenschutz / Air-Gap** -- Abfragen verlassen Ihr Netzwerk nie
-- **Funktioniert überall** -- keine regionalen Einschränkungen durch kommerzielle Such-APIs
+- **Überall einsetzbar** -- keine regionalen Einschränkungen kommerzieller Such-APIs
 
 ## Einrichtung
 
@@ -38,17 +39,17 @@ Vorteile:
     docker run -d -p 8888:8080 searxng/searxng
     ```
 
-    Oder verwenden Sie eine vorhandene SearXNG-Bereitstellung, auf die Sie Zugriff haben. Informationen zur Produktionseinrichtung finden Sie in der
-    [SearXNG-Dokumentation](https://docs.searxng.org/).
+    Alternativ können Sie jede vorhandene SearXNG-Bereitstellung verwenden, auf die Sie Zugriff haben. Informationen zur
+    Produktionseinrichtung finden Sie in der [SearXNG-Dokumentation](https://docs.searxng.org/).
 
   </Step>
   <Step title="Konfigurieren">
     ```bash
     openclaw configure --section web
-    # Select "searxng" as the provider
+    # Wählen Sie "searxng" als Provider aus
     ```
 
-    Oder legen Sie die Umgebungsvariable fest und lassen Sie sie von der automatischen Erkennung finden:
+    Alternativ können Sie die Umgebungsvariable setzen und die automatische Erkennung verwenden:
 
     ```bash
     export SEARXNG_BASE_URL="http://localhost:8888"
@@ -71,7 +72,7 @@ Vorteile:
 }
 ```
 
-Plugin-Einstellungen für die SearXNG-Instanz:
+Einstellungen auf Plugin-Ebene für die SearXNG-Instanz:
 
 ```json5
 {
@@ -91,62 +92,64 @@ Plugin-Einstellungen für die SearXNG-Instanz:
 }
 ```
 
-Das Feld `baseUrl` akzeptiert auch SecretRef-Objekte.
-
-Transportregeln:
-
-- `https://` funktioniert für öffentliche oder private SearXNG-Hosts
-- `http://` wird nur für vertrauenswürdige Hosts in privaten Netzwerken oder Loopback-Hosts akzeptiert
-- öffentliche SearXNG-Hosts müssen `https://` verwenden
-- private/interne Hosts verwenden den selbst gehosteten Netzwerk-Guard; öffentliche `https://`-
-  Hosts bleiben beim strikten Web-Search-Guard und können nicht auf private
-  Adressen weiterleiten
+`baseUrl` akzeptiert auch ein SecretRef-Objekt (zum Beispiel `{ source: "env", id: "SEARXNG_BASE_URL" }`).
 
 ## Umgebungsvariable
 
-Legen Sie `SEARXNG_BASE_URL` als Alternative zur Konfiguration fest:
+Legen Sie alternativ zur Konfiguration `SEARXNG_BASE_URL` fest:
 
 ```bash
 export SEARXNG_BASE_URL="http://localhost:8888"
 ```
 
-Wenn `SEARXNG_BASE_URL` festgelegt ist und kein expliziter Provider konfiguriert wurde, wählt die automatische Erkennung SearXNG automatisch aus (mit der niedrigsten Priorität -- jeder API-gestützte Provider mit einem
-Schlüssel hat Vorrang).
+Auflösungsreihenfolge: konfigurierte `baseUrl`-Zeichenfolge, dann eine eingebettete Umgebungs-SecretRef für
+`baseUrl`, dann `SEARXNG_BASE_URL`. Wenn keiner der Konfigurationspfade festgelegt ist und
+`SEARXNG_BASE_URL` vorhanden ist, ohne dass explizit ein Provider ausgewählt wurde, wählt die automatische Erkennung
+SearXNG aus.
 
-## Plugin-Konfigurationsreferenz
+## Referenz zur Plugin-Konfiguration
 
-| Feld         | Beschreibung                                                        |
-| ------------ | ------------------------------------------------------------------ |
-| `baseUrl`    | Basis-URL Ihrer SearXNG-Instanz (erforderlich)                     |
-| `categories` | Kommagetrennte Kategorien wie `general`, `news` oder `science`     |
-| `language`   | Sprachcode für Ergebnisse wie `en`, `de` oder `fr`                 |
+| Feld         | Beschreibung                                                               |
+| ------------ | -------------------------------------------------------------------------- |
+| `baseUrl`    | Basis-URL Ihrer SearXNG-Instanz (erforderlich)                             |
+| `categories` | Kommagetrennte Kategorien wie `general`, `news` oder `science`             |
+| `language`   | Sprachcode für Ergebnisse wie `en`, `de` oder `fr`                         |
+
+Der Aufruf des Tools `web_search` akzeptiert außerdem `count` (1-10 Ergebnisse), `categories`
+und `language` als Überschreibungen pro Aufruf.
 
 ## Hinweise
 
-- **JSON-API** -- verwendet SearXNGs nativen `format=json`-Endpunkt, kein HTML-Scraping
-- **URLs für Bildergebnisse** -- Ergebnisse der Bildkategorie enthalten `img_src`, wenn SearXNG
+- **JSON-API** -- verwendet den nativen SearXNG-Endpunkt `format=json` statt HTML-Scraping
+- **URLs von Bildergebnissen** -- Ergebnisse der Bildkategorie enthalten `img_src`, wenn SearXNG
   eine direkte Bild-URL zurückgibt
 - **Kein API-Schlüssel** -- funktioniert sofort mit jeder SearXNG-Instanz
-- **Base-URL-Validierung** -- `baseUrl` muss eine gültige `http://`- oder `https://`-
-  URL sein; öffentliche Hosts müssen `https://` verwenden
-- **Network Guard** -- private/interne SearXNG-Endpunkte aktivieren den Zugriff auf private Netzwerke; öffentliche `https://`-SearXNG-Endpunkte behalten strikten SSRF-
-  Schutz bei
-- **Reihenfolge der automatischen Erkennung** -- SearXNG wird nach API-gestützten Providern
-  mit konfigurierten Schlüsseln geprüft (Reihenfolge 200). Schlüsselfreie Provider wie DuckDuckGo oder
-  Ollama Web Search werden ohne explizite Provider-Auswahl nicht automatisch ausgewählt
+- **Validierung der Basis-URL** -- `baseUrl` muss eine gültige `http://`- oder `https://`-
+  URL sein
+- **Netzwerkschutz** -- `http://`-Basis-URLs müssen auf einen vertrauenswürdigen privaten oder
+  Loopback-Host verweisen (öffentliche Hosts müssen `https://` verwenden); `https://`-Basis-URLs, die
+  zu einer privaten/internen Adresse aufgelöst werden, erhalten dieselbe Ausnahme für selbst gehostete Instanzen,
+  während für `https://`-Basis-URLs, die öffentlich aufgelöst werden, weiterhin strenger SSRF-Schutz gilt
+- **Reihenfolge der automatischen Erkennung** -- SearXNG erfordert eine konfigurierte `baseUrl` (Reihenfolge
+  200 unter Providern, die bereits über die erforderlichen Anmeldedaten verfügen). Schlüsselfreie
+  Provider wie DuckDuckGo oder Ollama Web Search werden bei der automatischen Erkennung nie implizit ausgewählt;
+  sie werden nur durch eine explizite Auswahl von `provider` aktiviert
 - **Selbst gehostet** -- Sie kontrollieren die Instanz, Abfragen und vorgelagerten Suchmaschinen
 - **Kategorien** verwenden standardmäßig `general`, wenn sie nicht konfiguriert sind
-- **Kategorie-Fallback** -- wenn eine Anfrage für eine nicht-`general`-Kategorie erfolgreich ist, aber
-  null Ergebnisse zurückgibt, versucht OpenClaw dieselbe Abfrage einmal mit `general` erneut,
+- **Kategorie-Fallback** -- wenn eine Anfrage für eine andere Kategorie als `general` erfolgreich ist, aber
+  keine Ergebnisse zurückgibt, versucht OpenClaw dieselbe Abfrage einmal mit `general` erneut,
   bevor eine leere Ergebnismenge zurückgegeben wird
+- **Ergebnis-Caching** -- identische Abfragen (gleiche Abfrage, Anzahl, Kategorien,
+  Sprache und Basis-URL) werden für eine kurze TTL prozessintern zwischengespeichert
+- **Versionsanforderung** -- das Plugin deklariert `minHostVersion: >=2026.6.9`
 
 <Tip>
-  Damit die SearXNG-JSON-API funktioniert, stellen Sie sicher, dass Ihre SearXNG-Instanz das `json`-
-  Format in ihrer `settings.yml` unter `search.formats` aktiviert hat.
+  Damit die SearXNG-JSON-API funktioniert, stellen Sie sicher, dass in Ihrer SearXNG-Instanz das Format `json`
+  in der Datei `settings.yml` unter `search.formats` aktiviert ist.
 </Tip>
 
-## Verwandt
+## Verwandte Themen
 
-- [Web Search overview](/de/tools/web) -- alle Provider und automatische Erkennung
-- [DuckDuckGo Search](/de/tools/duckduckgo-search) -- ein weiterer schlüsselfreier Provider
-- [Brave Search](/de/tools/brave-search) -- strukturierte Ergebnisse mit kostenlosem Tarif
+- [Übersicht zur Websuche](/de/tools/web) -- alle Provider und automatische Erkennung
+- [DuckDuckGo-Suche](/de/tools/duckduckgo-search) -- ein weiterer schlüsselfreier Provider
+- [Brave-Suche](/de/tools/brave-search) -- strukturierte Ergebnisse mit kostenlosem Kontingent

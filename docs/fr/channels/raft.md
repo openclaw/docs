@@ -2,27 +2,29 @@
 read_when:
     - Vous souhaitez connecter OpenClaw à un espace de travail Raft
     - Vous configurez un agent externe Raft
-    - Vous déboguez la remise du réveil Raft
+    - Vous déboguez la remise des réveils Raft
 sidebarTitle: Raft
-summary: Prise en charge des agents externes Raft via le pont de réveil de la CLI Raft
+summary: Prise en charge de l’agent externe Raft via le pont de réveil de la CLI Raft
 title: Raft
 x-i18n:
-    generated_at: "2026-06-27T17:12:18Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:03:19Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: ef9ebfd27e69575d9a1534b3b31f05036f081c54a2379411d2c7fb6f8165d558
+    source_hash: 454d92d764a4ec3b0ec52467cba254dcad795870e04d1d32d4cf65d8b451a0de
     source_path: channels/raft.md
     workflow: 16
 ---
 
-La prise en charge de Raft connecte un agent OpenClaw à un Agent externe Raft via la
-CLI Raft locale. Raft envoie des indices de réveil authentifiés au Gateway. L’agent utilise ensuite
-la CLI Raft pour vérifier et envoyer des messages.
+Raft connecte un agent OpenClaw à un agent externe Raft par l’intermédiaire de la
+CLI Raft locale. Raft envoie des notifications de réveil authentifiées au Gateway ;
+l’agent utilise ensuite la CLI Raft pour consulter et envoyer des messages.
+Conversations directes uniquement (aucun groupe).
 
 ## Installation
 
-Raft est un Plugin externe officiel. Installez-le sur l’hôte du Gateway :
+Raft est un plugin externe officiel. Installez-le sur l’hôte du Gateway :
 
 ```bash
 openclaw plugins install @openclaw/raft
@@ -33,12 +35,13 @@ Détails : [Plugins](/fr/tools/plugin)
 
 ## Prérequis
 
-- Un espace de travail Raft avec un Agent externe.
-- La CLI Raft installée sur le même hôte que le Gateway OpenClaw.
-- Un profil CLI Raft déjà connecté et associé à cet Agent externe.
+- Un espace de travail Raft doté d’un agent externe.
+- La CLI Raft installée sur le même hôte que le Gateway OpenClaw et accessible
+  dans le `PATH` du service.
+- Un profil de CLI Raft déjà connecté et associé à cet agent externe.
 
-Le Plugin ne stocke pas les identifiants Raft. La CLI Raft conserve cette authentification
-dans son propre profil.
+Le plugin ne stocke pas les identifiants Raft ; la CLI Raft conserve cette
+authentification dans son propre profil.
 
 ## Configuration
 
@@ -55,14 +58,14 @@ Définissez le profil dans la configuration :
 }
 ```
 
-Pour le compte par défaut, vous pouvez plutôt définir `RAFT_PROFILE` dans
+Pour le compte par défaut, vous pouvez à la place définir `RAFT_PROFILE` dans
 l’environnement du Gateway :
 
 ```bash
 RAFT_PROFILE=openclaw
 ```
 
-Utilisez un compte nommé lorsqu’un Gateway se connecte à plusieurs Agents externes Raft :
+Utilisez un compte nommé lorsqu’un Gateway se connecte à plusieurs agents externes Raft :
 
 ```json5
 {
@@ -81,28 +84,32 @@ Utilisez un compte nommé lorsqu’un Gateway se connecte à plusieurs Agents ex
 }
 ```
 
-Le flux de configuration interactif enregistre le même profil :
+La configuration interactive enregistre le même profil :
 
 ```bash
-openclaw channels setup raft
+openclaw channels add --channel raft
 ```
 
 ## Fonctionnement
 
-Au démarrage du Gateway, le Plugin :
+Lorsque le Gateway démarre, le plugin :
 
-1. Ouvre un point de terminaison HTTP de réveil limité au loopback sur un port éphémère.
-2. Lance `raft --profile <profile> agent bridge` avec ce point de terminaison et un
+1. Ouvre un point de terminaison HTTP de réveil accessible uniquement en boucle locale sur un port éphémère.
+2. Démarre `raft --profile <profile> agent bridge` avec ce point de terminaison et un
    jeton propre au processus.
-3. Accepte uniquement les indices de réveil authentifiés, sans contenu, avec une identité de relecture provenant du pont local.
-4. Exige l’un des champs `eventId`, `attemptId`, `messageId`, `delivery_id`, `wake_id` ou `id`.
-5. Déduplique les livraisons de réveil réessayées récemment selon l’identifiant d’événement du pont, y compris entre les redémarrages du Gateway.
-6. Renvoie une session d’exécution stable pour le pont actuel et un lot de vidage d’activité vide pour le protocole CLI Raft.
-7. Lance un tour d’agent OpenClaw sérialisé pour chaque réveil accepté.
+3. Accepte uniquement les notifications de réveil authentifiées, sans contenu et dotées
+   d’un identifiant anti-rejeu provenant du pont local.
+4. Exige la présence de `eventId`, `attemptId`, `messageId`, `delivery_id`,
+   `wake_id` ou `id` dans chaque charge utile de réveil.
+5. Déduplique pendant 24 heures les nouvelles tentatives de livraison de notifications de réveil
+   selon l’identifiant d’événement du pont, y compris après les redémarrages du Gateway.
+6. Renvoie une session d’exécution stable pour le pont actuel et un lot vide
+   de collecte d’activité pour le protocole de la CLI Raft.
+7. Lance un tour sérialisé de l’agent OpenClaw pour chaque réveil accepté.
 
-Le pont gère les nouvelles tentatives de livraison Raft et les reconnexions. Le tour OpenClaw reçoit
-uniquement un avis de réveil, pas une copie du corps du message Raft. Il utilise la CLI pour lire
-les messages en attente et envoyer sa réponse :
+Le pont gère les nouvelles tentatives de livraison et les reconnexions de Raft. Le tour
+OpenClaw reçoit uniquement une notification de réveil, et non une copie du corps du
+message Raft. Il utilise la CLI pour lire les messages en attente et envoyer sa réponse :
 
 ```bash
 raft --profile openclaw message check
@@ -110,9 +117,7 @@ raft --profile openclaw message send
 ```
 
 <Note>
-Raft n’est pas un transport normal de messages push. OpenClaw n’envoie pas automatiquement
-le texte final du modèle via le pont ; l’agent doit donc utiliser la
-CLI Raft après avoir traité un réveil.
+Raft n’est pas un transport de messages poussés. OpenClaw ne renvoie pas automatiquement le texte final du modèle par l’intermédiaire du pont ; l’agent doit donc utiliser la CLI Raft après avoir traité un réveil.
 </Note>
 
 ## Vérification
@@ -124,32 +129,32 @@ openclaw channels status --probe
 openclaw plugins inspect raft --runtime --json
 ```
 
-Envoyez ensuite un message à l’Agent externe Raft. Le journal du Gateway doit afficher le
-démarrage du pont Raft, suivi d’un réveil entrant. L’agent doit utiliser le
-profil Raft configuré pour vérifier ses messages en attente.
+Envoyez ensuite un message à l’agent externe Raft. Le journal du Gateway doit indiquer
+le démarrage du pont Raft, suivi d’un réveil entrant. L’agent doit utiliser
+le profil Raft configuré pour consulter ses messages en attente.
 
 ## Dépannage
 
 <AccordionGroup>
-  <Accordion title="La CLI Raft est manquante">
-    Installez la CLI Raft sur l’hôte du Gateway et rendez `raft` disponible dans le
-    `PATH` du service. Vérifiez avec `raft --help`, puis redémarrez le Gateway.
+  <Accordion title="La CLI Raft est introuvable">
+    Installez la CLI Raft sur l’hôte du Gateway et rendez `raft` accessible dans le
+    `PATH` du service. Vérifiez-la avec `raft --help`, puis redémarrez le Gateway.
   </Accordion>
-  <Accordion title="Le pont se ferme immédiatement">
-    Vérifiez que le profil configuré est connecté et appartient à l’Agent externe
-    Raft prévu. Exécutez `raft --profile <profile> agent bridge` directement
-    pour voir le diagnostic de la CLI.
+  <Accordion title="Le pont s’arrête immédiatement">
+    Vérifiez que le profil configuré est connecté et appartient à l’agent externe
+    Raft prévu. Exécutez directement `raft --profile <profile> agent bridge`
+    pour afficher le diagnostic de la CLI.
   </Accordion>
   <Accordion title="Un réveil arrive, mais aucune réponse Raft n’est envoyée">
-    C’est attendu lorsque l’agent n’invoque pas la CLI Raft. Le pont de réveil
-    ne transporte pas les corps de message ni les réponses finales automatiques. Vérifiez la
-    politique d’outils de l’agent et assurez-vous qu’il peut exécuter `raft --profile <profile> message
-    check` et `message send`.
+    Ce comportement est attendu lorsque l’agent n’appelle pas la CLI Raft. Le pont
+    de réveil ne transporte ni le corps des messages ni les réponses finales automatiques. Vérifiez la
+    stratégie d’outils de l’agent et assurez-vous qu’il peut exécuter `raft --profile <profile>
+    message check` et `message send`.
   </Accordion>
 </AccordionGroup>
 
 ## Références
 
 - [Raft](https://raft.build/)
-- [Documentation Raft](https://docs.raft.build/welcome/)
-- [Intégration Hermes Raft](https://hermes-agent.nousresearch.com/docs/user-guide/messaging/raft)
+- [Documentation de Raft](https://docs.raft.build/welcome/)
+- [Intégration de Raft à Hermes](https://hermes-agent.nousresearch.com/docs/user-guide/messaging/raft)

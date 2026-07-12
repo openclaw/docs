@@ -1,95 +1,84 @@
 ---
 read_when:
-    - Configurer des flux de travail d’agents autonomes qui s’exécutent sans invite pour chaque tâche
-    - Définir ce que l’agent peut faire de manière autonome et ce qui nécessite l’approbation humaine
-    - Structurer des agents multi-programmes avec des limites claires et des règles d’escalade
-summary: Définir l’autorité opérationnelle permanente pour les programmes d’agents autonomes
-title: Consignes permanentes
+    - Configuration de workflows d’agents autonomes s’exécutant sans invite pour chaque tâche
+    - Définir ce que l’agent peut faire de manière autonome et ce qui nécessite une approbation humaine
+    - Structurer des agents multiprogrammes avec des limites claires et des règles d’escalade
+summary: Définir une autorité opérationnelle permanente pour les programmes d’agents autonomes
+title: Ordres permanents
 x-i18n:
-    generated_at: "2026-05-12T00:56:10Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:00:16Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: 3a51baa7aca31cb34b682983374d4d551ed6ab57ae54a5c63e7d044bffeef756
+    source_hash: 9e7ad622efe734facc9dc3716f5ee7f57ed3923499db78730bda234a5c62ad80
     source_path: automation/standing-orders.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-Les ordres permanents accordent à votre agent une **autorité opérationnelle permanente** pour des programmes définis. Au lieu de donner des instructions de tâche individuelles à chaque fois, vous définissez des programmes avec un périmètre, des déclencheurs et des règles d’escalade clairs - et l’agent s’exécute de manière autonome dans ces limites.
+Les ordres permanents accordent à votre agent une **autorité opérationnelle permanente** pour des programmes définis. Au lieu de solliciter l’agent pour chaque tâche, vous définissez des programmes dont la portée, les déclencheurs et les règles d’escalade sont clairs, et l’agent les exécute de façon autonome dans ces limites : « Vous êtes responsable du rapport hebdomadaire. Compilez-le chaque vendredi, envoyez-le et ne procédez à une escalade que si quelque chose semble anormal. »
 
-C’est la différence entre dire à votre assistant « envoie le rapport hebdomadaire » chaque vendredi et accorder une autorité permanente : « Tu es responsable du rapport hebdomadaire. Compile-le chaque vendredi, envoie-le, et n’escalade que si quelque chose semble anormal. »
+## Pourquoi utiliser des ordres permanents
 
-## Pourquoi les ordres permanents
+**Sans ordres permanents :** vous sollicitez l’agent pour chaque tâche, les travaux routiniers sont oubliés ou retardés, et vous devenez le goulot d’étranglement.
 
-**Sans ordres permanents :**
-
-- Vous devez solliciter l’agent pour chaque tâche
-- L’agent reste inactif entre les demandes
-- Le travail routinier est oublié ou retardé
-- Vous devenez le goulot d’étranglement
-
-**Avec des ordres permanents :**
-
-- L’agent s’exécute de manière autonome dans des limites définies
-- Le travail routinier se fait à l’heure prévue sans sollicitation
-- Vous n’intervenez que pour les exceptions et les validations
-- L’agent utilise les temps morts de façon productive
+**Avec des ordres permanents :** l’agent agit de façon autonome dans des limites définies, les travaux routiniers sont effectués selon le calendrier prévu, et vous n’intervenez que pour les exceptions et les approbations.
 
 ## Fonctionnement
 
-Les ordres permanents sont définis dans les fichiers de votre [espace de travail de l’agent](/fr/concepts/agent-workspace). L’approche recommandée consiste à les inclure directement dans `AGENTS.md` (qui est automatiquement injecté à chaque session) afin que l’agent les ait toujours en contexte. Pour les configurations plus importantes, vous pouvez aussi les placer dans un fichier dédié comme `standing-orders.md` et y faire référence depuis `AGENTS.md`.
+Les ordres permanents sont définis dans les fichiers de votre [espace de travail de l’agent](/fr/concepts/agent-workspace). L’approche recommandée consiste à les inclure directement dans `AGENTS.md` (qui est injecté automatiquement à chaque session), afin que l’agent les ait toujours dans son contexte. Pour les configurations plus importantes, vous pouvez également les placer dans un fichier dédié, tel que `standing-orders.md`, et y faire référence depuis `AGENTS.md`.
 
 Chaque programme précise :
 
-1. **Périmètre** - ce que l’agent est autorisé à faire
+1. **Portée** - ce que l’agent est autorisé à faire
 2. **Déclencheurs** - quand l’exécuter (calendrier, événement ou condition)
-3. **Points de validation** - ce qui nécessite une approbation humaine avant d’agir
+3. **Points de contrôle d’approbation** - ce qui nécessite une validation humaine avant toute action
 4. **Règles d’escalade** - quand s’arrêter et demander de l’aide
 
-L’agent charge ces instructions à chaque session via les fichiers d’amorçage de l’espace de travail (voir [Espace de travail de l’agent](/fr/concepts/agent-workspace) pour la liste complète des fichiers automatiquement injectés) et les exécute, en combinaison avec des [tâches Cron](/fr/automation/cron-jobs) pour l’application basée sur le temps.
+L’agent charge ces instructions à chaque session par l’intermédiaire des fichiers d’amorçage de l’espace de travail (consultez [Espace de travail de l’agent](/fr/concepts/agent-workspace) pour obtenir la liste complète des fichiers injectés automatiquement) et les exécute conjointement avec les [tâches Cron](/fr/automation/cron-jobs), qui garantissent leur application aux moments prévus.
 
 <Tip>
-Placez les ordres permanents dans `AGENTS.md` pour garantir qu’ils sont chargés à chaque session. L’amorçage de l’espace de travail injecte automatiquement `AGENTS.md`, `SOUL.md`, `TOOLS.md`, `IDENTITY.md`, `USER.md`, `HEARTBEAT.md`, `BOOTSTRAP.md` et `MEMORY.md` - mais pas les fichiers arbitraires dans les sous-répertoires.
+Placez les ordres permanents dans `AGENTS.md` pour garantir leur chargement à chaque session. Le processus d’amorçage de l’espace de travail injecte automatiquement `AGENTS.md`, `SOUL.md`, `TOOLS.md`, `IDENTITY.md`, `USER.md`, `HEARTBEAT.md`, `BOOTSTRAP.md` et `MEMORY.md`, mais pas les fichiers arbitraires situés dans des sous-répertoires.
 </Tip>
 
 ## Anatomie d’un ordre permanent
 
 ```markdown
-## Program: Weekly Status Report
+## Programme : Rapport d’état hebdomadaire
 
-**Authority:** Compile data, generate report, deliver to stakeholders
-**Trigger:** Every Friday at 4 PM (enforced via cron job)
-**Approval gate:** None for standard reports. Flag anomalies for human review.
-**Escalation:** If data source is unavailable or metrics look unusual (>2σ from norm)
+**Autorité :** Compiler les données, générer le rapport, le transmettre aux parties prenantes
+**Déclencheur :** Chaque vendredi à 16 h (application garantie par une tâche Cron)
+**Point de contrôle d’approbation :** Aucun pour les rapports standard. Signaler les anomalies pour qu’elles soient examinées par une personne.
+**Escalade :** Si la source de données est indisponible ou si les métriques semblent inhabituelles (>2σ par rapport à la norme)
 
-### Execution steps
+### Étapes d’exécution
 
-1. Pull metrics from configured sources
-2. Compare to prior week and targets
-3. Generate report in Reports/weekly/YYYY-MM-DD.md
-4. Deliver summary via configured channel
-5. Log completion to Agent/Logs/
+1. Récupérer les métriques depuis les sources configurées
+2. Les comparer à celles de la semaine précédente et aux objectifs
+3. Générer le rapport dans Reports/weekly/YYYY-MM-DD.md
+4. Transmettre le résumé par le canal configuré
+5. Consigner l’achèvement dans Agent/Logs/
 
-### What NOT to do
+### Ce qu’il ne faut PAS faire
 
-- Do not send reports to external parties
-- Do not modify source data
-- Do not skip delivery if metrics look bad - report accurately
+- Ne pas envoyer de rapports à des tiers externes
+- Ne pas modifier les données sources
+- Ne pas ignorer la transmission si les métriques sont mauvaises : les présenter avec exactitude
 ```
 
-## Ordres permanents plus tâches Cron
+## Ordres permanents et tâches Cron
 
 Les ordres permanents définissent **ce que** l’agent est autorisé à faire. Les [tâches Cron](/fr/automation/cron-jobs) définissent **quand** cela se produit. Ils fonctionnent ensemble :
 
-```
-Standing Order: "You own the daily inbox triage"
+```text
+Ordre permanent : « Vous êtes responsable du tri quotidien de la boîte de réception »
     ↓
-Cron Job (8 AM daily): "Execute inbox triage per standing orders"
+Tâche Cron (tous les jours à 8 h) : « Exécuter le tri de la boîte de réception conformément aux ordres permanents »
     ↓
-Agent: Reads standing orders → executes steps → reports results
+Agent : Lit les ordres permanents → exécute les étapes → rend compte des résultats
 ```
 
-L’invite de la tâche Cron doit faire référence à l’ordre permanent au lieu de le dupliquer :
+L’invite de la tâche Cron doit faire référence à l’ordre permanent plutôt que de le dupliquer :
 
 ```bash
 openclaw cron add \
@@ -100,7 +89,7 @@ openclaw cron add \
   --announce \
   --channel imessage \
   --to "+1XXXXXXXXXX" \
-  --message "Execute daily inbox triage per standing orders. Check mail for new alerts. Parse, categorize, and persist each item. Report summary to owner. Escalate unknowns."
+  --message "Exécutez le tri quotidien de la boîte de réception conformément aux ordres permanents. Recherchez les nouvelles alertes dans les e-mails. Analysez, catégorisez et conservez chaque élément. Envoyez un résumé au responsable. Procédez à une escalade pour les éléments inconnus."
 ```
 
 ## Exemples
@@ -108,151 +97,151 @@ openclaw cron add \
 ### Exemple 1 : contenu et réseaux sociaux (cycle hebdomadaire)
 
 ```markdown
-## Program: Content & Social Media
+## Programme : Contenu et réseaux sociaux
 
-**Authority:** Draft content, schedule posts, compile engagement reports
-**Approval gate:** All posts require owner review for first 30 days, then standing approval
-**Trigger:** Weekly cycle (Monday review → mid-week drafts → Friday brief)
+**Autorité :** Rédiger du contenu, planifier des publications, compiler des rapports d’engagement
+**Point de contrôle d’approbation :** Toutes les publications doivent être examinées par le responsable pendant les 30 premiers jours, puis elles bénéficient d’une approbation permanente
+**Déclencheur :** Cycle hebdomadaire (examen le lundi → brouillons en milieu de semaine → synthèse le vendredi)
 
-### Weekly cycle
+### Cycle hebdomadaire
 
-- **Monday:** Review platform metrics and audience engagement
-- **Tuesday-Thursday:** Draft social posts, create blog content
-- **Friday:** Compile weekly marketing brief → deliver to owner
+- **Lundi :** Examiner les métriques des plateformes et l’engagement de l’audience
+- **Du mardi au jeudi :** Rédiger des publications pour les réseaux sociaux et créer du contenu de blog
+- **Vendredi :** Compiler la synthèse marketing hebdomadaire → la transmettre au responsable
 
-### Content rules
+### Règles relatives au contenu
 
-- Voice must match the brand (see SOUL.md or brand voice guide)
-- Never identify as AI in public-facing content
-- Include metrics when available
-- Focus on value to audience, not self-promotion
+- Le ton doit correspondre à la marque (consultez SOUL.md ou le guide du ton de la marque)
+- Ne jamais se présenter comme une IA dans du contenu destiné au public
+- Inclure des métriques lorsqu’elles sont disponibles
+- Se concentrer sur la valeur apportée à l’audience, et non sur l’autopromotion
 ```
 
-### Exemple 2 : opérations financières (déclenchées par événement)
+### Exemple 2 : opérations financières (déclenchées par un événement)
 
 ```markdown
-## Program: Financial Processing
+## Programme : Traitement financier
 
-**Authority:** Process transaction data, generate reports, send summaries
-**Approval gate:** None for analysis. Recommendations require owner approval.
-**Trigger:** New data file detected OR scheduled monthly cycle
+**Autorité :** Traiter les données de transaction, générer des rapports, envoyer des résumés
+**Point de contrôle d’approbation :** Aucun pour l’analyse. Les recommandations nécessitent l’approbation du responsable.
+**Déclencheur :** Détection d’un nouveau fichier de données OU cycle mensuel planifié
 
-### When new data arrives
+### Lors de l’arrivée de nouvelles données
 
-1. Detect new file in designated input directory
-2. Parse and categorize all transactions
-3. Compare against budget targets
-4. Flag: unusual items, threshold breaches, new recurring charges
-5. Generate report in designated output directory
-6. Deliver summary to owner via configured channel
+1. Détecter le nouveau fichier dans le répertoire d’entrée désigné
+2. Analyser et catégoriser toutes les transactions
+3. Les comparer aux objectifs budgétaires
+4. Signaler : les éléments inhabituels, les dépassements de seuil et les nouveaux frais récurrents
+5. Générer le rapport dans le répertoire de sortie désigné
+6. Transmettre le résumé au responsable par le canal configuré
 
-### Escalation rules
+### Règles d’escalade
 
-- Single item > $500: immediate alert
-- Category > budget by 20%: flag in report
-- Unrecognizable transaction: ask owner for categorization
-- Failed processing after 2 retries: report failure, do not guess
+- Élément individuel > 500 $ : alerte immédiate
+- Catégorie dépassant le budget de 20 % : la signaler dans le rapport
+- Transaction non identifiable : demander au responsable de la catégoriser
+- Échec du traitement après 2 nouvelles tentatives : signaler l’échec, ne pas faire de supposition
 ```
 
-### Exemple 3 : surveillance et alertes (continu)
+### Exemple 3 : surveillance et alertes (en continu)
 
 ```markdown
-## Program: System Monitoring
+## Programme : Surveillance du système
 
-**Authority:** Check system health, restart services, send alerts
-**Approval gate:** Restart services automatically. Escalate if restart fails twice.
-**Trigger:** Every heartbeat cycle
+**Autorité :** Vérifier l’état du système, redémarrer les services, envoyer des alertes
+**Point de contrôle d’approbation :** Redémarrer automatiquement les services. Procéder à une escalade si le redémarrage échoue deux fois.
+**Déclencheur :** À chaque cycle de Heartbeat
 
-### Checks
+### Vérifications
 
-- Service health endpoints responding
-- Disk space above threshold
-- Pending tasks not stale (>24 hours)
-- Delivery channels operational
+- Les points de terminaison d’état des services répondent
+- L’espace disque est supérieur au seuil
+- Les tâches en attente ne sont pas obsolètes (>24 heures)
+- Les canaux de transmission sont opérationnels
 
-### Response matrix
+### Matrice de réponse
 
-| Condition        | Action                   | Escalate?                |
-| ---------------- | ------------------------ | ------------------------ |
-| Service down     | Restart automatically    | Only if restart fails 2x |
-| Disk space < 10% | Alert owner              | Yes                      |
-| Stale task > 24h | Remind owner             | No                       |
-| Channel offline  | Log and retry next cycle | If offline > 2 hours     |
+| Condition             | Action                                  | Escalade ?                      |
+| --------------------- | --------------------------------------- | ------------------------------- |
+| Service indisponible  | Redémarrer automatiquement              | Seulement après 2 échecs        |
+| Espace disque < 10 %  | Alerter le responsable                  | Oui                             |
+| Tâche obsolète > 24 h | Envoyer un rappel au responsable        | Non                             |
+| Canal hors ligne      | Consigner et réessayer au cycle suivant | Si hors ligne pendant > 2 heures |
 ```
 
 ## Modèle exécuter-vérifier-rendre compte
 
-Les ordres permanents fonctionnent mieux lorsqu’ils sont associés à une discipline d’exécution stricte. Chaque tâche d’un ordre permanent doit suivre cette boucle :
+Les ordres permanents sont plus efficaces lorsqu’ils sont associés à une discipline d’exécution stricte. Chaque tâche d’un ordre permanent doit suivre cette boucle :
 
-1. **Exécuter** - Faire le travail réel (ne pas se contenter d’accuser réception de l’instruction)
-2. **Vérifier** - Confirmer que le résultat est correct (fichier existant, message livré, données analysées)
-3. **Rendre compte** - Dire au propriétaire ce qui a été fait et ce qui a été vérifié
+1. **Exécuter** - Effectuer réellement le travail (ne pas se contenter d’accuser réception de l’instruction)
+2. **Vérifier** - Confirmer que le résultat est correct (le fichier existe, le message a été transmis, les données ont été analysées)
+3. **Rendre compte** - Indiquer au responsable ce qui a été fait et vérifié
 
 ```markdown
-### Execution rules
+### Règles d’exécution
 
-- Every task follows Execute-Verify-Report. No exceptions.
-- "I'll do that" is not execution. Do it, then report.
-- "Done" without verification is not acceptable. Prove it.
-- If execution fails: retry once with adjusted approach.
-- If still fails: report failure with diagnosis. Never silently fail.
-- Never retry indefinitely - 3 attempts max, then escalate.
+- Chaque tâche suit le modèle Exécuter-Vérifier-Rendre compte. Aucune exception.
+- « Je vais m’en occuper » ne constitue pas une exécution. Faites-le, puis rendez compte.
+- « Terminé » sans vérification n’est pas acceptable. Apportez-en la preuve.
+- Si l’exécution échoue : réessayez une fois en adaptant l’approche.
+- Si elle échoue encore : signalez l’échec en fournissant un diagnostic. N’échouez jamais silencieusement.
+- Ne réessayez jamais indéfiniment : 3 tentatives au maximum, puis procédez à une escalade.
 ```
 
 Ce modèle évite le mode d’échec le plus courant des agents : accuser réception d’une tâche sans l’accomplir.
 
 ## Architecture multiprogramme
 
-Pour les agents qui gèrent plusieurs domaines, organisez les ordres permanents sous forme de programmes séparés avec des limites claires :
+Pour les agents qui gèrent plusieurs domaines, organisez les ordres permanents sous forme de programmes distincts aux limites claires :
 
 ```markdown
-## Program 1: [Domain A] (Weekly)
+## Programme 1 : [Domaine A] (Hebdomadaire)
 
 ...
 
-## Program 2: [Domain B] (Monthly + On-Demand)
+## Programme 2 : [Domaine B] (Mensuel + À la demande)
 
 ...
 
-## Program 3: [Domain C] (As-Needed)
+## Programme 3 : [Domaine C] (Selon les besoins)
 
 ...
 
-## Escalation Rules (All Programs)
+## Règles d’escalade (Tous les programmes)
 
-- [Common escalation criteria]
-- [Approval gates that apply across programs]
+- [Critères d’escalade communs]
+- [Points de contrôle d’approbation applicables à tous les programmes]
 ```
 
 Chaque programme doit avoir :
 
-- Sa propre **cadence de déclenchement** (hebdomadaire, mensuelle, événementielle, continue)
-- Ses propres **points de validation** (certains programmes nécessitent plus de supervision que d’autres)
+- Sa propre **cadence de déclenchement** (hebdomadaire, mensuelle, événementielle ou continue)
+- Ses propres **points de contrôle d’approbation** (certains programmes nécessitent davantage de supervision que d’autres)
 - Des **limites** claires (l’agent doit savoir où un programme se termine et où un autre commence)
 
 ## Bonnes pratiques
 
 ### À faire
 
-- Commencer avec une autorité limitée et l’élargir à mesure que la confiance se construit
-- Définir des points de validation explicites pour les actions à haut risque
-- Inclure des sections « Ce qu’il ne faut PAS faire » - les limites comptent autant que les autorisations
-- Combiner avec des tâches Cron pour une exécution fiable basée sur le temps
+- Commencer avec une autorité limitée et l’élargir à mesure que la confiance s’établit
+- Définir des points de contrôle d’approbation explicites pour les actions à haut risque
+- Inclure des sections « Ce qu’il ne faut PAS faire » : les limites comptent autant que les autorisations
+- Associer les ordres à des tâches Cron pour garantir une exécution fiable aux moments prévus
 - Examiner les journaux de l’agent chaque semaine pour vérifier que les ordres permanents sont respectés
-- Mettre à jour les ordres permanents à mesure que vos besoins évoluent - ce sont des documents vivants
+- Mettre à jour les ordres permanents à mesure que vos besoins évoluent : ce sont des documents vivants
 
 ### À éviter
 
-- Accorder une autorité large dès le premier jour (« fais ce que tu penses être le mieux »)
-- Omettre les règles d’escalade - chaque programme a besoin d’une clause « quand s’arrêter et demander »
-- Supposer que l’agent se souviendra des instructions verbales - mettez tout dans le fichier
-- Mélanger les sujets dans un seul programme - programmes séparés pour domaines séparés
-- Oublier l’application par des tâches Cron - les ordres permanents sans déclencheurs deviennent des suggestions
+- Accorder une autorité étendue dès le premier jour (« faites ce qui vous semble préférable »)
+- Omettre les règles d’escalade : chaque programme doit comporter une clause indiquant « quand s’arrêter et demander »
+- Supposer que l’agent se souviendra des instructions verbales : consignez tout dans le fichier
+- Mélanger plusieurs domaines dans un même programme : créez des programmes distincts pour des domaines distincts
+- Oublier de les faire appliquer au moyen de tâches Cron : les ordres permanents sans déclencheurs ne sont que des suggestions
 
-## Connexe
+## Contenu connexe
 
-- [Automatisation](/fr/automation) : tous les mécanismes d’automatisation en un coup d’œil.
-- [Tâches Cron](/fr/automation/cron-jobs) : application du calendrier pour les ordres permanents.
-- [Hooks](/fr/automation/hooks) : scripts événementiels pour les événements du cycle de vie de l’agent.
+- [Automatisation](/fr/automation) : aperçu de tous les mécanismes d’automatisation.
+- [Tâches Cron](/fr/automation/cron-jobs) : application du calendrier des ordres permanents.
+- [Hooks](/fr/automation/hooks) : scripts déclenchés par des événements du cycle de vie de l’agent.
 - [Webhooks](/fr/automation/cron-jobs#webhooks) : déclencheurs d’événements HTTP entrants.
-- [Espace de travail de l’agent](/fr/concepts/agent-workspace) : où résident les ordres permanents, y compris la liste complète des fichiers d’amorçage automatiquement injectés (`AGENTS.md`, `SOUL.md`, etc.).
+- [Espace de travail de l’agent](/fr/concepts/agent-workspace) : emplacement des ordres permanents, y compris la liste complète des fichiers d’amorçage injectés automatiquement (`AGENTS.md`, `SOUL.md`, etc.).

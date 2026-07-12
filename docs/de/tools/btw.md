@@ -1,173 +1,118 @@
 ---
 read_when:
     - Sie möchten eine kurze Nebenfrage zur aktuellen Sitzung stellen
-    - Sie implementieren oder debuggen BTW-Verhalten über verschiedene Clients hinweg
-summary: Nebenbei gestellte flüchtige Fragen mit /btw
-title: 'Übrigens: Zusatzfragen'
+    - Sie implementieren oder debuggen das BTW-Verhalten clientübergreifend
+summary: Kurzlebige Nebenfragen mit /btw
+title: Übrigens, Nebenfragen
 x-i18n:
-    generated_at: "2026-06-27T18:16:15Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:56:14Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: cf97c17fb02c2464b1d1b31cfec652d52c60be6ce0cad25eaf32a9c080843ef2
+    source_hash: 338a54d0e15ec90aebaeeaee551559a26f1437f7b6dcdde4a4b1e63347ad0759
     source_path: tools/btw.md
     workflow: 16
 ---
 
-`/btw` ermöglicht Ihnen, eine kurze Nebenfrage zur **aktuellen Sitzung** zu stellen, ohne
-diese Frage in den normalen Konversationsverlauf zu übernehmen. `/side` ist ein Alias.
-
-Es ist dem `/btw`-Verhalten von Claude Code nachempfunden, aber an die Gateway- und
-Mehrkanalarchitektur von OpenClaw angepasst.
-
-## Was es tut
-
-Wenn Sie Folgendes senden:
+`/btw` (Alias `/side`) stellt eine kurze Nebenfrage zur **aktuellen
+Sitzung**, ohne sie dem Gesprächsverlauf hinzuzufügen. Es ist an
+Claude Codes `/btw` angelehnt und an die Gateway- und Mehrkanalarchitektur
+von OpenClaw angepasst.
 
 ```text
-/btw what changed?
+/btw was hat sich geändert?
+/side was bedeutet dieser Fehler?
 ```
 
-OpenClaw:
+## Funktionsweise
 
-1. erstellt einen Snapshot des aktuellen Sitzungskontexts,
-2. führt eine separate, ephemere Nebenabfrage aus,
-3. beantwortet nur die Nebenfrage,
-4. lässt den Hauptlauf unverändert,
-5. schreibt die BTW-Frage oder -Antwort **nicht** in den Sitzungsverlauf,
-6. gibt die Antwort als **Live-Nebenergebnis** statt als normale Assistentennachricht aus.
+1. Erstellt eine Momentaufnahme der aktuellen Sitzung als Hintergrundkontext (einschließlich eines
+   Prompts des aktuell laufenden Hauptlaufs).
+2. Führt eine separate, einmalige Nebenabfrage aus und weist das Modell an, nur die
+   Nebenfrage zu beantworten und die Hauptaufgabe weder fortzusetzen noch zu steuern.
+3. Stellt die Antwort als Live-Nebenergebnis bereit, nicht als normale Assistentennachricht.
+4. Schreibt weder die Frage noch die Antwort jemals in den Sitzungsverlauf oder in `chat.history`.
 
-Das wichtige mentale Modell ist:
+Der Hauptlauf bleibt unverändert, sofern einer aktiv ist.
 
-- gleicher Sitzungskontext
-- separate einmalige Nebenabfrage
-- gleicher nativer Harness-Transport, wenn die Sitzung einen nativen Harness verwendet
-- keine zukünftige Kontextverunreinigung
-- keine Transcript-Persistenz
+Bei Codex-Harness-Sitzungen verzweigt BTW den aktiven Codex-App-Server-Thread in
+einen kurzlebigen untergeordneten Thread, statt einen separaten Provider-Aufruf auszuführen. Dadurch
+bleiben Codex OAuth sowie das native Tool- und Thread-Verhalten erhalten, und der verzweigte
+Thread übernimmt die aktuelle Genehmigungsrichtlinie, Sandbox und native
+Tool-Oberfläche des übergeordneten Threads. Der verzweigte Thread erhält einen Abgrenzungsprompt, der dem Modell mitteilt, dass
+alles davor geerbter Referenzkontext und keine aktiven Anweisungen darstellt
+und dass nur Nachrichten nach der Abgrenzung aktiv sind. `/btw` erfordert einen
+vorhandenen Codex-Thread; senden Sie zuerst eine normale Nachricht.
 
-Für Codex-Harness-Sitzungen bleibt BTW innerhalb von Codex, indem der aktive
-App-Server-Thread als ephemerer Neben-Thread geforkt wird. Dadurch bleiben Codex OAuth und das native
-Thread-Verhalten intakt, während die Nebenantwort weiterhin vom übergeordneten
-Transcript isoliert wird. Wie Codex `/side` behält der Neben-Thread die aktuellen Codex-
-Berechtigungen und die native Tool-Oberfläche bei, mit Leitplanken, die dem Modell sagen, dass es
-geerbte Arbeit aus dem übergeordneten Thread nicht als aktive Anweisungen behandeln soll.
-
-Für CLI-Runtime-Aliase verwendet BTW das zuständige CLI-Backend im Nebenfragenmodus,
-statt auf einen direkten Provider-Aufruf zurückzufallen. OpenClaw übernimmt bereinigten
-Konversationskontext in einen frischen einmaligen CLI-Aufruf, deaktiviert OpenClaw MCP-
-Tool-Bündelung und wiederverwendbaren CLI-Sitzungszustand für diesen Aufruf und lässt das
-Backend alle CLI-nativen No-Resume- oder No-Tools-Flags hinzufügen, die es unterstützt. Direkte
-Nicht-CLI-Runtimes behalten den direkten einmaligen Pfad bei.
+Bei CLI-Laufzeit-Aliasen ruft BTW das zuständige CLI-Backend im einmaligen
+Nebenfragenmodus auf: Es speist bereinigten Gesprächskontext in einen neuen CLI-
+Aufruf ein, bei dem die Tool-Bündelung und der wiederverwendbare Sitzungsstatus deaktiviert sind, und fügt
+alle vom Backend unterstützten Flags zur Verhinderung der Fortsetzung und Tool-Nutzung hinzu. Direkte Laufzeiten (ohne CLI)
+verwenden stattdessen einen direkten einmaligen Provider-Aufruf.
 
 ## Was es nicht tut
 
-`/btw` tut **nicht** Folgendes:
+`/btw` erstellt keine dauerhafte Sitzung, setzt die unvollendete Hauptaufgabe nicht fort,
+speichert keine Frage-/Antwortdaten im Transkriptverlauf und übersteht kein Neuladen.
 
-- eine neue dauerhafte Sitzung erstellen,
-- die unvollendete Hauptaufgabe fortsetzen,
-- BTW-Frage-/Antwortdaten in den Transcript-Verlauf schreiben,
-- in `chat.history` erscheinen,
-- einen Reload überstehen.
+## Bereitstellungsmodell
 
-Es ist bewusst **ephemer**.
+Der normale Assistentenchat verwendet das Gateway-Ereignis `chat`. BTW verwendet ein separates
+Ereignis `chat.side_result`, damit Clients es nicht mit dem regulären
+Gesprächsverlauf verwechseln können. Da es nicht aus `chat.history` wiedergegeben wird,
+verschwindet es nach dem Neuladen.
 
-## Wie Kontext funktioniert
+## Verhalten der Oberflächen
 
-BTW verwendet die aktuelle Sitzung nur als **Hintergrundkontext**.
+| Oberfläche        | Verhalten                                                                                                                                                                                                                                                                            |
+| ----------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| TUI               | Wird im Chatprotokoll eingebettet und deutlich von einer normalen Antwort unterscheidbar dargestellt; kann mit `Enter` oder `Esc` geschlossen werden.                                                                                                                               |
+| Externe Kanäle    | Wird als eindeutig gekennzeichnete einmalige Antwort bereitgestellt (Telegram, WhatsApp und Discord verfügen über keine lokale kurzlebige Einblendung).                                                                                                                              |
+| Control UI / Web  | Wird als schwebendes „Side chat“-Panel dargestellt, das am Thread angeheftet ist. Antworten sammeln sich als Gesprächsbeiträge an, und ein „Follow up“-Eingabefeld stellt die nächste Nebenfrage. Beim Schließen (`Esc` oder X) bleibt das Gespräch erhalten und wird bei der nächsten Antwort erneut geöffnet; die Papierkorb-Schaltfläche verwirft es und beendet einen ausstehenden Lauf. |
 
-Wenn der Hauptlauf gerade aktiv ist, erstellt OpenClaw einen Snapshot des aktuellen Nachrichten-
-zustands und schließt den laufenden Hauptprompt als Hintergrundkontext ein, während
-dem Modell ausdrücklich mitgeteilt wird:
+## Auswahl-Popup (Control UI)
 
-- nur die Nebenfrage beantworten,
-- die unvollendete Hauptaufgabe nicht fortsetzen oder abschließen,
-- die übergeordnete Konversation nicht steuern.
+Wenn Sie Text innerhalb einer Chatnachricht in der Control UI markieren, wird ein kleines
+Auswahl-Popup mit zwei Aktionen geöffnet:
 
-Dadurch bleibt BTW vom Hauptlauf isoliert und ist sich dennoch bewusst, worum es in
-der Sitzung geht.
+- **More details** sendet sofort eine implizite `/btw`-Frage, die das
+  Modell auffordert, den markierten Text im Kontext der aktuellen
+  Sitzung zu erklären. Die Antwort erscheint im schwebenden Side-Chat-Panel.
+- **Ask in side chat** füllt den Editor mit einem `/btw`-Entwurf vor, der den
+  markierten Text zitiert, damit Sie eine eigene Frage dazu eingeben können.
 
-## Auslieferungsmodell
+Beide Aktionen folgen der normalen `/btw`-Semantik: Frage und Antwort werden nicht
+im Sitzungsverlauf gespeichert, und der Hauptlauf bleibt unverändert.
 
-BTW wird **nicht** als normale Assistenten-Transcript-Nachricht ausgeliefert.
+## Verwendung
 
-Auf Gateway-Protokollebene:
-
-- normaler Assistenten-Chat verwendet das Ereignis `chat`
-- BTW verwendet das Ereignis `chat.side_result`
-
-Diese Trennung ist beabsichtigt. Wenn BTW den normalen Ereignispfad `chat` wiederverwenden würde,
-würden Clients es wie regulären Konversationsverlauf behandeln.
-
-Da BTW ein separates Live-Ereignis verwendet und nicht aus
-`chat.history` erneut abgespielt wird, verschwindet es nach dem Neuladen.
-
-## Oberflächenverhalten
-
-### TUI
-
-In der TUI wird BTW inline in der aktuellen Sitzungsansicht gerendert, bleibt aber
-flüchtig:
-
-- sichtbar von einer normalen Assistentenantwort unterscheidbar
-- mit `Enter` oder `Esc` ausblendbar
-- wird beim Neuladen nicht erneut abgespielt
-
-### Externe Kanäle
-
-In Kanälen wie Telegram, WhatsApp und Discord wird BTW als
-klar gekennzeichnete einmalige Antwort zugestellt, da diese Oberflächen kein lokales
-Konzept für flüchtige Overlays haben.
-
-Die Antwort wird weiterhin als Nebenergebnis behandelt, nicht als normaler Sitzungsverlauf.
-
-### Control UI / Web
-
-Der Gateway gibt BTW korrekt als `chat.side_result` aus, und BTW ist nicht in
-`chat.history` enthalten, daher ist der Persistenzvertrag für das Web bereits korrekt.
-
-Die aktuelle Control UI benötigt noch einen dedizierten `chat.side_result`-Consumer, um
-BTW live im Browser zu rendern. Bis diese clientseitige Unterstützung verfügbar ist, ist BTW ein
-Gateway-Level-Feature mit vollständigem TUI- und externem Kanalverhalten, aber noch
-keine vollständige Browser-UX.
-
-## Wann BTW verwendet werden sollte
-
-Verwenden Sie `/btw`, wenn Sie Folgendes möchten:
-
-- eine kurze Klärung zur aktuellen Arbeit,
-- eine sachliche Nebenantwort, während ein langer Lauf noch in Bearbeitung ist,
-- eine temporäre Antwort, die nicht Teil des zukünftigen Sitzungskontexts werden soll.
-
-Beispiele:
+Verwenden Sie `/btw` für eine kurze Klärung, eine sachliche Nebenfrage, während ein langer Lauf
+noch ausgeführt wird, oder eine vorübergehende Antwort, die nicht in den zukünftigen
+Sitzungskontext aufgenommen werden soll.
 
 ```text
-/btw what file are we editing?
-/side what changed while the main run continued?
-/btw what does this error mean?
-/btw summarize the current task in one sentence
-/btw what is 17 * 19?
+/btw welche Datei bearbeiten wir?
+/btw fasse die aktuelle Aufgabe in einem Satz zusammen
+/btw was ist 17 * 19?
 ```
 
-## Wann BTW nicht verwendet werden sollte
+Alles, was Teil des zukünftigen Arbeitskontexts der Sitzung werden soll,
+fragen Sie stattdessen normal in der Hauptsitzung.
 
-Verwenden Sie `/btw` nicht, wenn die Antwort Teil des zukünftigen
-Arbeitskontexts der Sitzung werden soll.
-
-Stellen Sie die Frage in diesem Fall normal in der Hauptsitzung, anstatt BTW zu verwenden.
-
-## Verwandt
+## Verwandte Themen
 
 <CardGroup cols={2}>
   <Card title="Slash-Befehle" href="/de/tools/slash-commands" icon="terminal">
-    Nativer Befehlskatalog und Chat-Anweisungen.
+    Nativer Befehlskatalog und Chat-Direktiven.
   </Card>
   <Card title="Denkstufen" href="/de/tools/thinking" icon="brain">
-    Reasoning-Effort-Stufen für den Modellaufruf der Nebenfrage.
+    Stufen des Schlussfolgerungsaufwands für den Modellaufruf der Nebenfrage.
   </Card>
   <Card title="Sitzung" href="/de/concepts/session" icon="comments">
     Sitzungsschlüssel, Verlauf und Persistenzsemantik.
   </Card>
   <Card title="Steuerungsbefehl" href="/de/tools/steer" icon="arrow-right">
-    Eine Steuerungsnachricht in den aktiven Lauf einfügen, ohne ihn zu beenden.
+    Fügt eine steuernde Nachricht in den aktiven Lauf ein, ohne ihn zu beenden.
   </Card>
 </CardGroup>

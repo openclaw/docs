@@ -1,97 +1,82 @@
 ---
 read_when:
-    - Eine neue Kernfunktion und Plugin-Registrierungsoberfläche hinzufügen
-    - Entscheiden, ob Code in den Core, ein Vendor-Plugin oder ein Feature-Plugin gehört
-    - Einen neuen Runtime-Helfer für Kanäle oder Tools verdrahten
+    - Hinzufügen einer neuen Kernfunktion und einer Registrierungsoberfläche für Plugins
+    - Entscheidung, ob Code in den Kern, ein Provider-Plugin oder ein Funktions-Plugin gehört
+    - Einbindung eines neuen Runtime-Helfers für Kanäle oder Tools
 sidebarTitle: Adding capabilities
-summary: Leitfaden für Mitwirkende zum Hinzufügen einer neuen gemeinsamen Fähigkeit zum OpenClaw-Plugin-System
+summary: Leitfaden für Mitwirkende zum Hinzufügen einer neuen gemeinsamen Funktion zum Plugin-System von OpenClaw
 title: Funktionen hinzufügen (Leitfaden für Mitwirkende)
 x-i18n:
-    generated_at: "2026-06-27T17:44:20Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:31:48Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: b8a25122a7b76ff5bbb7616748d5fad2397502f9accb5428134a75d65e872034
+    source_hash: 3534b7521ab8183d91399cded8a3b397be46bf9bd18f2fdb88a8947bad67ffaa
     source_path: plugins/adding-capabilities.md
     workflow: 16
 ---
 
 <Info>
-  Dies ist ein **Contributor-Leitfaden** für OpenClaw-Kernentwickler. Wenn Sie ein externes Plugin
-  erstellen, lesen Sie stattdessen [Plugins erstellen](/de/plugins/building-plugins).
-  Die ausführliche Architekturreferenz (Capability-Modell, Ownership,
-  Lade-Pipeline, Runtime-Helfer) finden Sie unter [Plugin-Interna](/de/plugins/architecture).
+  Dies ist ein **Leitfaden für Mitwirkende** für Entwickler des OpenClaw-Kerns. Wenn Sie
+  ein externes Plugin erstellen, lesen Sie stattdessen [Plugins erstellen](/de/plugins/building-plugins).
+  Die ausführliche Architekturreferenz (Fähigkeitsmodell, Zuständigkeit,
+  Ladepipeline, Runtime-Helfer) finden Sie unter [Plugin-Interna](/de/plugins/architecture).
 </Info>
 
-Verwenden Sie dies, wenn OpenClaw eine neue gemeinsame Domäne benötigt, etwa Embeddings,
-Bildgenerierung, Videogenerierung oder einen zukünftigen funktionsbezogenen Bereich mit
-Vendor-Unterstützung.
+Verwenden Sie diesen Leitfaden, wenn OpenClaw eine neue gemeinsame Domäne benötigt, etwa für Embeddings, Bildgenerierung, Videogenerierung oder einen zukünftigen, von Anbietern gestützten Funktionsbereich.
 
 Die Regel:
 
-- **Plugin** = Ownership-Grenze
-- **Capability** = gemeinsamer Kernvertrag
+- **Plugin** = Zuständigkeitsgrenze
+- **Fähigkeit** = gemeinsamer Kernvertrag
 
-Beginnen Sie nicht damit, einen Vendor direkt in einen Kanal oder ein Tool einzubinden. Beginnen Sie mit der Definition der Capability.
+Binden Sie einen Anbieter nicht direkt in einen Kanal oder ein Tool ein. Definieren Sie zuerst die Fähigkeit.
 
-## Wann eine Capability erstellt werden sollte
+## Wann eine Fähigkeit erstellt werden sollte
 
-Erstellen Sie eine neue Capability, wenn **alle** diese Punkte zutreffen:
+Erstellen Sie eine neue Fähigkeit nur, wenn **alle** folgenden Bedingungen erfüllt sind:
 
-1. Mehr als ein Vendor könnte sie plausibel implementieren.
-2. Kanäle, Tools oder Feature-Plugins sollten sie nutzen können, ohne den Vendor zu kennen.
-3. Der Kern muss Fallback, Policy, Konfiguration oder Zustellverhalten besitzen.
+1. Mehr als ein Anbieter könnte sie plausibel implementieren.
+2. Kanäle, Tools oder Funktions-Plugins sollen sie nutzen können, ohne den Anbieter kennen zu müssen.
+3. Der Kern muss Fallback-, Richtlinien-, Konfigurations- oder Auslieferungsverhalten verwalten.
 
-Wenn die Arbeit nur Vendor-spezifisch ist und noch kein gemeinsamer Vertrag existiert, halten Sie an und definieren Sie zuerst den Vertrag.
+Wenn die Arbeit nur einen Anbieter betrifft und noch kein gemeinsamer Vertrag vorhanden ist, definieren Sie zuerst den Vertrag.
 
 ## Die Standardreihenfolge
 
 1. Definieren Sie den typisierten Kernvertrag.
 2. Fügen Sie die Plugin-Registrierung für diesen Vertrag hinzu.
 3. Fügen Sie einen gemeinsamen Runtime-Helfer hinzu.
-4. Binden Sie ein echtes Vendor-Plugin als Nachweis ein.
-5. Stellen Sie Feature-/Kanal-Consumer auf den Runtime-Helfer um.
+4. Binden Sie als Nachweis ein echtes Anbieter-Plugin ein.
+5. Stellen Sie Funktions- und Kanalnutzer auf den Runtime-Helfer um.
 6. Fügen Sie Vertragstests hinzu.
-7. Dokumentieren Sie die betreiberseitige Konfiguration und das Ownership-Modell.
+7. Dokumentieren Sie die betreiberseitige Konfiguration und das Zuständigkeitsmodell.
 
 ## Was wohin gehört
 
-**Kern:**
-
-- Request-/Response-Typen.
-- Provider-Registry und Auflösung.
-- Fallback-Verhalten.
-- Konfigurationsschema mit weitergegebenen `title`- / `description`-Docs-Metadaten auf verschachtelten Objekt-, Wildcard-, Array-Item- und Composition-Knoten.
-- Runtime-Helferoberfläche.
-
-**Vendor-Plugin:**
-
-- Vendor-API-Aufrufe.
-- Vendor-Auth-Verarbeitung.
-- Vendor-spezifische Request-Normalisierung.
-- Registrierung der Capability-Implementierung.
-
-**Feature-/Kanal-Plugin:**
-
-- Ruft `api.runtime.*` oder den passenden `plugin-sdk/*-runtime`-Helfer auf.
-- Ruft niemals direkt eine Vendor-Implementierung auf.
+| Ebene                      | Zuständig für                                                                                                                                                                                                                                  |
+| -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Kern**                   | Anfrage-/Antworttypen; Provider-Registrierung und -Auflösung; Fallback-Verhalten; Konfigurationsschema mit weitergegebenen `title`-/`description`-Dokumentationsmetadaten für verschachtelte Objekt-, Platzhalter-, Array-Element- und Kompositionsknoten; Runtime-Helferoberfläche. |
+| **Anbieter-Plugin**          | Anbieter-API-Aufrufe, Handhabung der Anbieter-Authentifizierung, anbieterspezifische Anfragenormalisierung und Registrierung der Fähigkeitsimplementierung.                                                                                                     |
+| **Funktions-/Kanal-Plugin** | Ruft `api.runtime.*` oder den entsprechenden `plugin-sdk/*-runtime`-Helfer auf. Ruft niemals direkt eine Anbieterimplementierung auf.                                                                                                                    |
 
 ## Provider- und Harness-Schnittstellen
 
-Verwenden Sie **Provider-Hooks**, wenn das Verhalten zum Model-Provider-Vertrag gehört und nicht zum generischen Agent-Loop. Beispiele sind Provider-spezifische Request-Parameter nach der Transportauswahl, Auth-Profil-Präferenz, Prompt-Overlays und Follow-up-Fallback-Routing nach Model-/Profil-Failover.
+Verwenden Sie **Provider-Hooks**, wenn das Verhalten zum Vertrag des Modell-Providers und nicht zur generischen Agentenschleife gehört. Beispiele sind providerspezifische Anfrageparameter nach der Transportauswahl, die Bevorzugung von Authentifizierungsprofilen, Prompt-Overlays und nachgelagertes Fallback-Routing nach einem Modell-/Profil-Failover.
 
-Verwenden Sie **Agent-Harness-Hooks**, wenn das Verhalten zur Runtime gehört, die einen Turn ausführt. Harnesses können explizite Protokollergebnisse klassifizieren, etwa leere Ausgabe, Reasoning ohne sichtbare Ausgabe oder einen strukturierten Plan ohne abschließende Antwort, damit die äußere Model-Fallback-Policy die Retry-Entscheidung treffen kann.
+Verwenden Sie **Agent-Harness-Hooks**, wenn das Verhalten zur Runtime gehört, die einen Durchlauf ausführt. Harnesses können explizite Protokollergebnisse klassifizieren, etwa leere Ausgaben, Reasoning ohne sichtbare Ausgabe oder einen strukturierten Plan ohne endgültige Antwort, damit die äußere Modell-Fallback-Richtlinie über einen erneuten Versuch entscheiden kann.
 
-Halten Sie beide Schnittstellen schmal:
+Halten Sie beide Schnittstellen eng begrenzt:
 
-- Der Kern besitzt die Retry-/Fallback-Policy.
-- Provider-Plugins besitzen Provider-spezifische Request-/Auth-/Routing-Hinweise.
-- Harness-Plugins besitzen Runtime-spezifische Attempt-Klassifizierung.
-- Drittanbieter-Plugins geben Hinweise zurück, keine direkten Änderungen am Kernzustand.
+- Der Kern verwaltet die Wiederholungs-/Fallback-Richtlinie.
+- Provider-Plugins verwalten providerspezifische Hinweise zu Anfragen, Authentifizierung und Routing.
+- Harness-Plugins verwalten die runtime-spezifische Klassifizierung von Versuchen.
+- Drittanbieter-Plugins geben Hinweise zurück und verändern den Kernzustand nicht direkt.
 
 ## Datei-Checkliste
 
-Für eine neue Capability sollten Sie damit rechnen, diese Bereiche anzupassen:
+Bei einer neuen Fähigkeit müssen voraussichtlich folgende Bereiche geändert werden:
 
 - `src/<capability>/types.ts`
 - `src/<capability>/...registry/runtime.ts`
@@ -104,52 +89,46 @@ Für eine neue Capability sollten Sie damit rechnen, diese Bereiche anzupassen:
 - `src/plugin-sdk/<capability>.ts`
 - `src/plugin-sdk/<capability>-runtime.ts`
 - Ein oder mehrere gebündelte Plugin-Pakete.
-- Konfiguration, Docs, Tests.
+- Konfiguration, Dokumentation und Tests.
 
-## Durchgearbeitetes Beispiel: Bildgenerierung
+## Ausgearbeitetes Beispiel: Bildgenerierung
 
-Bildgenerierung folgt der Standardform:
+Die Bildgenerierung folgt der Standardstruktur:
 
 1. Der Kern definiert `ImageGenerationProvider`.
 2. Der Kern stellt `registerImageGenerationProvider(...)` bereit.
-3. Der Kern stellt `runtime.imageGeneration.generate(...)` bereit.
-4. Die Plugins `openai`, `google`, `fal` und `minimax` registrieren Vendor-gestützte Implementierungen.
-5. Zukünftige Vendors registrieren denselben Vertrag, ohne Kanäle/Tools zu ändern.
+3. Der Kern stellt `api.runtime.imageGeneration.generate(...)` und `.listProviders(...)` bereit.
+4. Anbieter-Plugins (`comfy`, `deepinfra`, `fal`, `google`, `litellm`, `microsoft-foundry`, `minimax`, `openai`, `openrouter`, `vydra`, `xai`) registrieren von Anbietern gestützte Implementierungen.
+5. Zukünftige Anbieter registrieren denselben Vertrag, ohne Kanäle oder Tools zu ändern.
 
-Der Konfigurationsschlüssel ist absichtlich vom Routing für Vision-Analyse getrennt:
+Der Konfigurationsschlüssel ist bewusst vom Routing für die Bildanalyse getrennt:
 
 - `agents.defaults.imageModel` analysiert Bilder.
 - `agents.defaults.imageGenerationModel` generiert Bilder.
 
-Halten Sie diese getrennt, damit Fallback und Policy explizit bleiben.
+Halten Sie diese getrennt, damit Fallback und Richtlinien explizit bleiben.
 
 ## Embedding-Provider
 
-Verwenden Sie `embeddingProviders` für wiederverwendbare Vector-Embedding-Provider. Dieser Vertrag
-ist bewusst breiter als Memory: Tools, Suche, Retrieval, Importer oder
-zukünftige Feature-Plugins können Embeddings nutzen, ohne von der Memory-
-Engine abhängig zu sein.
+Verwenden Sie `registerEmbeddingProvider(...)` beziehungsweise den Vertrag `embeddingProviders` für wiederverwendbare Provider für Vektor-Embeddings. Dieser Vertrag ist bewusst allgemeiner als der Speicher: Tools, Suche, Abruf, Importer oder zukünftige Funktions-Plugins können Embeddings nutzen, ohne von der Speicher-Engine abhängig zu sein. Auch die Speichersuche nutzt generische `embeddingProviders`.
 
-Memory-Suche kann generische `embeddingProviders` nutzen. Der ältere
-Vertrag `memoryEmbeddingProviders` ist veraltete Kompatibilität, während bestehende
-Memory-spezifische Provider migrieren; neue wiederverwendbare Embedding-Provider sollten
-`embeddingProviders` verwenden.
+Die ältere speicherspezifische Registrierungs-API und der Vertrag `memoryEmbeddingProviders` sind veraltet. Verwenden Sie für alle neuen Embedding-Provider `registerEmbeddingProvider` und `embeddingProviders`.
 
 ## Review-Checkliste
 
-Prüfen Sie vor dem Ausliefern einer neuen Capability:
+Prüfen Sie vor der Auslieferung einer neuen Fähigkeit:
 
-- Kein Kanal/Tool importiert Vendor-Code direkt.
+- Kein Kanal oder Tool importiert Anbietercode direkt.
 - Der Runtime-Helfer ist der gemeinsame Pfad.
-- Mindestens ein Vertragstest bestätigt die gebündelte Ownership.
-- Konfigurations-Docs nennen den neuen Model-/Konfigurationsschlüssel.
-- Plugin-Docs erklären die Ownership-Grenze.
+- Mindestens ein Vertragstest bestätigt die gebündelte Zuständigkeit.
+- Die Konfigurationsdokumentation nennt den neuen Modell-/Konfigurationsschlüssel.
+- Die Plugin-Dokumentation erläutert die Zuständigkeitsgrenze.
 
-Wenn ein PR die Capability-Schicht überspringt und Vendor-Verhalten in einem Kanal/Tool hardcodiert, senden Sie ihn zurück und definieren Sie zuerst den Vertrag.
+Wenn ein PR die Fähigkeitsebene überspringt und Anbieterverhalten fest in einen Kanal oder ein Tool einprogrammiert, weisen Sie ihn zurück und definieren Sie zuerst den Vertrag.
 
 ## Verwandte Themen
 
-- [Plugin-Interna](/de/plugins/architecture) — Capability-Modell, Ownership, Lade-Pipeline, Runtime-Helfer.
+- [Plugin-Interna](/de/plugins/architecture) — Fähigkeitsmodell, Zuständigkeit, Ladepipeline und Runtime-Helfer.
 - [Plugins erstellen](/de/plugins/building-plugins) — Tutorial für das erste Plugin.
-- [SDK-Übersicht](/de/plugins/sdk-overview) — Import-Map und Referenz zur Registrierungs-API.
-- [Skills erstellen](/de/tools/creating-skills) — begleitende Contributor-Oberfläche.
+- [SDK-Übersicht](/de/plugins/sdk-overview) — Referenz für Importzuordnung und Registrierungs-API.
+- [Skills erstellen](/de/tools/creating-skills) — ergänzende Oberfläche für Mitwirkende.

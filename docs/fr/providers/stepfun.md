@@ -1,43 +1,42 @@
 ---
 read_when:
-    - Vous voulez des modèles StepFun dans OpenClaw
-    - Vous avez besoin de conseils de configuration pour StepFun
+    - Vous souhaitez utiliser les modèles StepFun dans OpenClaw
+    - Vous avez besoin d’instructions pour configurer StepFun
 summary: Utiliser les modèles StepFun avec OpenClaw
 title: StepFun
 x-i18n:
-    generated_at: "2026-06-27T18:07:19Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:44:25Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: 08c5d684382ae98a981f6f441f7eb49c01342598952bcf16dc251d0bdfb526ca
+    source_hash: c65e6d395f4ea890efc0e4847ec21dc1c2796fa240d20ca3e6d40eea480ed9f4
     source_path: providers/stepfun.md
     workflow: 16
 ---
 
-Le Plugin de fournisseur StepFun prend en charge deux ids de fournisseur :
+StepFun est fourni sous la forme d’un plugin officiel externe (`@openclaw/stepfun-provider`) avec deux identifiants de fournisseur :
 
-- `stepfun` pour l’endpoint standard
-- `stepfun-plan` pour l’endpoint Step Plan
+- `stepfun` pour le point de terminaison standard
+- `stepfun-plan` pour le point de terminaison Step Plan
 
 <Warning>
-Standard et Step Plan sont des **fournisseurs distincts** avec des endpoints et des préfixes de référence de modèle différents (`stepfun/...` contre `stepfun-plan/...`). Utilisez une clé Chine avec les endpoints `.com` et une clé globale avec les endpoints `.ai`.
+Standard et Step Plan sont des **fournisseurs distincts**, avec des points de terminaison et des préfixes de référence de modèle différents (`stepfun/...` contre `stepfun-plan/...`). Utilisez une clé Chine avec les points de terminaison `.com` et une clé globale avec les points de terminaison `.ai`.
 </Warning>
 
 ## Installer le plugin
-
-Installez le plugin officiel, puis redémarrez Gateway :
 
 ```bash
 openclaw plugins install @openclaw/stepfun-provider
 openclaw gateway restart
 ```
 
-## Vue d’ensemble des régions et endpoints
+## Présentation des régions et des points de terminaison
 
-| Endpoint  | Chine (`.com`)                         | Global (`.ai`)                        |
-| --------- | -------------------------------------- | ------------------------------------- |
-| Standard  | `https://api.stepfun.com/v1`           | `https://api.stepfun.ai/v1`           |
-| Step Plan | `https://api.stepfun.com/step_plan/v1` | `https://api.stepfun.ai/step_plan/v1` |
+| Point de terminaison | Chine (`.com`)                         | International (`.ai`)                 |
+| -------------------- | -------------------------------------- | ------------------------------------- |
+| Standard             | `https://api.stepfun.com/v1`           | `https://api.stepfun.ai/v1`           |
+| Step Plan            | `https://api.stepfun.com/step_plan/v1` | `https://api.stepfun.ai/step_plan/v1` |
 
 Variable d’environnement d’authentification : `STEPFUN_API_KEY`
 
@@ -45,38 +44,38 @@ Variable d’environnement d’authentification : `STEPFUN_API_KEY`
 
 Standard (`stepfun`) :
 
-| Réf. de modèle          | Contexte | Sortie max. | Notes                     |
-| ------------------------ | ------- | ---------- | ---------------------- |
-| `stepfun/step-3.5-flash` | 262,144 | 65,536     | Modèle standard par défaut |
+| Référence du modèle       | Contexte | Sortie maximale | Remarques                                      |
+| ------------------------- | -------- | --------------- | ---------------------------------------------- |
+| `stepfun/step-3.5-flash`  | 262,144  | 65,536          | Modèle standard par défaut                     |
+| `stepfun/step-3.7-flash`  | 262,144  | 262,144         | Prise en charge des images en entrée multimodale |
 
 Step Plan (`stepfun-plan`) :
 
-| Réf. de modèle                    | Contexte | Sortie max. | Notes                         |
-| ---------------------------------- | ------- | ---------- | -------------------------- |
-| `stepfun-plan/step-3.5-flash`      | 262,144 | 65,536     | Modèle Step Plan par défaut   |
-| `stepfun-plan/step-3.5-flash-2603` | 262,144 | 65,536     | Modèle Step Plan supplémentaire |
+| Référence du modèle                 | Contexte | Sortie maximale | Remarques                                      |
+| ----------------------------------- | -------- | --------------- | ---------------------------------------------- |
+| `stepfun-plan/step-3.5-flash`       | 262,144  | 65,536          | Modèle Step Plan par défaut                    |
+| `stepfun-plan/step-3.7-flash`       | 262,144  | 262,144         | Prise en charge des images en entrée multimodale |
+| `stepfun-plan/step-3.5-flash-2603`  | 262,144  | 65,536          | Modèle Step Plan supplémentaire                |
 
-## Premiers pas
-
-Choisissez votre surface de fournisseur et suivez les étapes de configuration.
+## Prise en main
 
 <Tabs>
   <Tab title="Standard">
-    **Idéal pour :** usage général via l’endpoint StepFun standard.
+    Idéal pour un usage général via le point de terminaison standard de StepFun.
 
     <Steps>
-      <Step title="Choisir la région de votre endpoint">
-        | Choix d’authentification       | Endpoint                         | Région        |
-        | -------------------------------- | -------------------------------- | ------------- |
-        | `stepfun-standard-api-key-intl`  | `https://api.stepfun.ai/v1`     | International |
-        | `stepfun-standard-api-key-cn`    | `https://api.stepfun.com/v1`    | Chine         |
+      <Step title="Choisissez la région de votre point de terminaison">
+        | Choix d’authentification          | Point de terminaison          | Région        |
+        | --------------------------------- | ----------------------------- | ------------- |
+        | `stepfun-standard-api-key-intl`   | `https://api.stepfun.ai/v1`   | International |
+        | `stepfun-standard-api-key-cn`     | `https://api.stepfun.com/v1`  | Chine         |
       </Step>
-      <Step title="Exécuter l’intégration initiale">
+      <Step title="Exécutez l’intégration initiale">
         ```bash
         openclaw onboard --auth-choice stepfun-standard-api-key-intl
         ```
 
-        Ou pour l’endpoint Chine :
+        Point de terminaison pour la Chine :
 
         ```bash
         openclaw onboard --auth-choice stepfun-standard-api-key-cn
@@ -88,35 +87,34 @@ Choisissez votre surface de fournisseur et suivez les étapes de configuration.
           --stepfun-api-key "$STEPFUN_API_KEY"
         ```
       </Step>
-      <Step title="Vérifier que les modèles sont disponibles">
+      <Step title="Vérifiez que les modèles sont disponibles">
         ```bash
         openclaw models list --provider stepfun
         ```
       </Step>
     </Steps>
 
-    ### Références de modèle
-
-    - Modèle par défaut : `stepfun/step-3.5-flash`
+    Modèle par défaut : `stepfun/step-3.5-flash`
+    Autre modèle : `stepfun/step-3.7-flash`
 
   </Tab>
 
   <Tab title="Step Plan">
-    **Idéal pour :** endpoint de raisonnement Step Plan.
+    Idéal pour le point de terminaison de raisonnement Step Plan.
 
     <Steps>
-      <Step title="Choisir la région de votre endpoint">
-        | Choix d’authentification   | Endpoint                                | Région        |
-        | ---------------------------- | --------------------------------------- | ------------- |
-        | `stepfun-plan-api-key-intl`  | `https://api.stepfun.ai/step_plan/v1`  | International |
-        | `stepfun-plan-api-key-cn`    | `https://api.stepfun.com/step_plan/v1` | Chine         |
+      <Step title="Choisissez la région de votre point de terminaison">
+        | Choix d’authentification       | Point de terminaison                     | Région        |
+        | ------------------------------ | ---------------------------------------- | ------------- |
+        | `stepfun-plan-api-key-intl`    | `https://api.stepfun.ai/step_plan/v1`    | International |
+        | `stepfun-plan-api-key-cn`      | `https://api.stepfun.com/step_plan/v1`   | Chine         |
       </Step>
-      <Step title="Exécuter l’intégration initiale">
+      <Step title="Exécutez l’intégration initiale">
         ```bash
         openclaw onboard --auth-choice stepfun-plan-api-key-intl
         ```
 
-        Ou pour l’endpoint Chine :
+        Point de terminaison pour la Chine :
 
         ```bash
         openclaw onboard --auth-choice stepfun-plan-api-key-cn
@@ -128,25 +126,25 @@ Choisissez votre surface de fournisseur et suivez les étapes de configuration.
           --stepfun-api-key "$STEPFUN_API_KEY"
         ```
       </Step>
-      <Step title="Vérifier que les modèles sont disponibles">
+      <Step title="Vérifiez que les modèles sont disponibles">
         ```bash
         openclaw models list --provider stepfun-plan
         ```
       </Step>
     </Steps>
 
-    ### Références de modèle
-
-    - Modèle par défaut : `stepfun-plan/step-3.5-flash`
-    - Modèle alternatif : `stepfun-plan/step-3.5-flash-2603`
+    Modèle par défaut : `stepfun-plan/step-3.5-flash`
+    Autres modèles : `stepfun-plan/step-3.7-flash`, `stepfun-plan/step-3.5-flash-2603`
 
   </Tab>
 </Tabs>
 
+Un seul flux d’authentification crée des profils correspondant à la région pour `stepfun` et `stepfun-plan`. Les deux surfaces sont donc détectées ensemble après une seule exécution de l’intégration initiale.
+
 ## Configuration avancée
 
 <AccordionGroup>
-  <Accordion title="Configuration complète : fournisseur Standard">
+  <Accordion title="Configuration complète : fournisseur standard">
     ```json5
     {
       env: { STEPFUN_API_KEY: "your-key" },
@@ -159,6 +157,36 @@ Choisissez votre surface de fournisseur et suivez les étapes de configuration.
             api: "openai-completions",
             apiKey: "${STEPFUN_API_KEY}",
             models: [
+              {
+                id: "step-3.7-flash",
+                name: "Step 3.7 Flash",
+                reasoning: true,
+                input: ["text", "image"],
+                thinkingLevelMap: { off: "low", minimal: "low", xhigh: "high", max: "high" },
+                cost: { input: 0.2, output: 1.15, cacheRead: 0.04, cacheWrite: 0 },
+                contextWindow: 262144,
+                maxTokens: 262144,
+                compat: {
+                  supportsStore: false,
+                  supportsDeveloperRole: false,
+                  supportsUsageInStreaming: false,
+                  supportsReasoningEffort: true,
+                  supportsStrictMode: false,
+                  supportedReasoningEfforts: ["low", "medium", "high"],
+                  maxTokensField: "max_tokens",
+                  reasoningEffortMap: {
+                    off: "low",
+                    none: "low",
+                    minimal: "low",
+                    low: "low",
+                    medium: "medium",
+                    high: "high",
+                    xhigh: "high",
+                    adaptive: "high",
+                    max: "high",
+                  },
+                },
+              },
               {
                 id: "step-3.5-flash",
                 name: "Step 3.5 Flash",
@@ -190,6 +218,36 @@ Choisissez votre surface de fournisseur et suivez les étapes de configuration.
             apiKey: "${STEPFUN_API_KEY}",
             models: [
               {
+                id: "step-3.7-flash",
+                name: "Step 3.7 Flash",
+                reasoning: true,
+                input: ["text", "image"],
+                thinkingLevelMap: { off: "low", minimal: "low", xhigh: "high", max: "high" },
+                cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 },
+                contextWindow: 262144,
+                maxTokens: 262144,
+                compat: {
+                  supportsStore: false,
+                  supportsDeveloperRole: false,
+                  supportsUsageInStreaming: false,
+                  supportsReasoningEffort: true,
+                  supportsStrictMode: false,
+                  supportedReasoningEfforts: ["low", "medium", "high"],
+                  maxTokensField: "max_tokens",
+                  reasoningEffortMap: {
+                    off: "low",
+                    none: "low",
+                    minimal: "low",
+                    low: "low",
+                    medium: "medium",
+                    high: "high",
+                    xhigh: "high",
+                    adaptive: "high",
+                    max: "high",
+                  },
+                },
+              },
+              {
                 id: "step-3.5-flash",
                 name: "Step 3.5 Flash",
                 reasoning: true,
@@ -215,32 +273,28 @@ Choisissez votre surface de fournisseur et suivez les étapes de configuration.
     ```
   </Accordion>
 
-  <Accordion title="Notes">
-    - Le fournisseur est un package externe officiel ; installez-le avant la configuration.
-    - `step-3.5-flash-2603` est actuellement exposé uniquement sur `stepfun-plan`.
-    - Un flux d’authentification unique écrit des profils correspondant à la région pour `stepfun` et `stepfun-plan`, afin que les deux surfaces puissent être découvertes ensemble.
-    - Utilisez `openclaw models list` et `openclaw models set <provider/model>` pour inspecter ou changer de modèle.
+  <Accordion title="Remarques">
+    - `step-3.7-flash` accepte du texte et des images en entrée via OpenClaw. L’API de StepFun prend également en charge la vidéo, qui n’est pas encore une modalité d’entrée de modèle dans OpenClaw.
+    - Step 3.7 prend en charge les niveaux d’effort de raisonnement `low`, `medium` et `high`. Comme le modèle ne dispose d’aucun mode sans raisonnement, `/think off` correspond à `low`.
+    - `step-3.5-flash-2603` n’est actuellement proposé que sur `stepfun-plan`.
+    - Utilisez `openclaw models list` et `openclaw models set <provider/model>` pour examiner les modèles ou en changer.
 
   </Accordion>
 </AccordionGroup>
 
-<Note>
-Pour une vue d’ensemble plus large des fournisseurs, consultez [Fournisseurs de modèles](/fr/concepts/model-providers).
-</Note>
-
-## Associés
+## Voir aussi
 
 <CardGroup cols={2}>
-  <Card title="Sélection du modèle" href="/fr/concepts/model-providers" icon="layers">
-    Vue d’ensemble de tous les fournisseurs, références de modèle et comportement de basculement.
+  <Card title="Fournisseurs de modèles" href="/fr/concepts/model-providers" icon="layers">
+    Présentation de tous les fournisseurs, des références de modèles et du comportement de basculement.
   </Card>
   <Card title="Référence de configuration" href="/fr/gateway/configuration-reference" icon="gear">
     Schéma de configuration complet pour les fournisseurs, les modèles et les plugins.
   </Card>
-  <Card title="Sélection du modèle" href="/fr/concepts/models" icon="brain">
+  <Card title="CLI des modèles" href="/fr/concepts/models" icon="brain">
     Comment choisir et configurer les modèles.
   </Card>
   <Card title="Plateforme StepFun" href="https://platform.stepfun.com" icon="globe">
-    Gestion des clés d’API StepFun et documentation.
+    Gestion des clés d’API et documentation de StepFun.
   </Card>
 </CardGroup>

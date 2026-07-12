@@ -1,28 +1,43 @@
 ---
 read_when:
     - Vous avez besoin de journaux de débogage ciblés sans augmenter les niveaux de journalisation globaux
-    - Vous devez capturer les journaux propres au sous-système pour le support
-summary: Indicateurs de diagnostic pour des journaux de débogage ciblés
+    - Vous devez recueillir les journaux propres au sous-système pour le support.
+summary: Indicateurs de diagnostic pour les journaux de débogage ciblés
 title: Indicateurs de diagnostic
 x-i18n:
-    generated_at: "2026-06-27T17:28:13Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:15:39Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: c78c5c2f90fb1d601d0a3ef94919310759d58c9f9c70a093c91f31594bc777fb
+    source_hash: 9847f464fde89d9e639b089fe54fb933deb9debad2a6d8b120ab01bacff181a8
     source_path: diagnostics/flags.md
     workflow: 16
 ---
 
-Les indicateurs de diagnostic vous permettent d’activer des journaux de débogage ciblés sans activer la journalisation détaillée partout. Les indicateurs sont optionnels et n’ont aucun effet sauf si un sous-système les vérifie.
+Les indicateurs de diagnostic activent une journalisation supplémentaire pour un sous-système sans augmenter
+globalement `logging.level`. Un indicateur n’a aucun effet sauf si un sous-système le vérifie.
 
 ## Fonctionnement
 
-- Les indicateurs sont des chaînes (insensibles à la casse).
-- Vous pouvez activer des indicateurs dans la configuration ou via une surcharge d’environnement.
-- Les caractères génériques sont pris en charge :
-  - `telegram.*` correspond à `telegram.http`
-  - `*` active tous les indicateurs
+- Les indicateurs sont des chaînes insensibles à la casse, obtenues à partir de `diagnostics.flags` dans
+  la configuration et de la substitution par la variable d’environnement `OPENCLAW_DIAGNOSTICS`, puis dédupliquées et converties en minuscules.
+- `name.*` correspond à `name` lui-même et à tout ce qui se trouve sous `name.` (par exemple,
+  `telegram.*` correspond à `telegram.http`).
+- `*` ou `all` active tous les indicateurs.
+- Redémarrez le Gateway après avoir modifié `diagnostics.flags` dans la configuration ; cette option n’est pas
+  rechargée à chaud.
+
+## Indicateurs connus
+
+| Indicateur       | Active                                                               |
+| ---------------- | -------------------------------------------------------------------- |
+| `telegram.http`  | Journalisation des erreurs HTTP de l’API Telegram Bot                |
+| `brave.http`     | Journalisation des requêtes, réponses et caches de Brave Search      |
+| `profiler`       | Profileur de l’étape de réponse et profileur du serveur d’application Codex (les deux) |
+| `reply.profiler` | Profileur de l’étape de réponse uniquement                           |
+| `codex.profiler` | Profileur du serveur d’application Codex uniquement                  |
+| `timeline`       | Artefact de chronologie JSONL structuré (voir ci-dessous)            |
 
 ## Activation via la configuration
 
@@ -44,47 +59,49 @@ Plusieurs indicateurs :
 }
 ```
 
-Redémarrez le Gateway après avoir modifié les indicateurs.
-
-## Surcharge d’environnement (ponctuelle)
+## Substitution par variable d’environnement (ponctuelle)
 
 ```bash
-OPENCLAW_DIAGNOSTICS=telegram.http,telegram.payload
+OPENCLAW_DIAGNOSTICS=telegram.http,brave.http
 ```
 
-Désactiver tous les indicateurs :
+Les valeurs sont séparées par des virgules ou des espaces. Valeurs spéciales :
 
-```bash
-OPENCLAW_DIAGNOSTICS=0
-```
+| Valeur                      | Effet                                                       |
+| --------------------------- | ----------------------------------------------------------- |
+| `0`, `false`, `off`, `none` | Désactive tous les indicateurs, y compris ceux de la configuration |
+| `1`, `true`, `all`, `*`     | Active tous les indicateurs                                 |
 
-`OPENCLAW_DIAGNOSTICS=0` est une surcharge de désactivation au niveau du processus : elle désactive
-les indicateurs provenant à la fois de l’environnement et de la configuration pour ce processus.
+`OPENCLAW_DIAGNOSTICS=0` désactive les indicateurs provenant de la variable d’environnement et de la configuration pour ce
+processus, ce qui permet de désactiver temporairement un indicateur de profileur laissé actif dans la configuration
+sans modifier le fichier.
 
-## Indicateurs de profilage
+## Indicateurs de profileur
 
-Les indicateurs du profileur activent des intervalles de chronométrage ciblés sans augmenter les niveaux
-globaux de journalisation. Ils sont désactivés par défaut.
+Les indicateurs de profileur contrôlent des intervalles de mesure légers ; ils n’ajoutent aucune surcharge lorsqu’ils sont désactivés.
 
-Activer tous les intervalles contrôlés par le profileur pour une exécution du Gateway :
+Activez tous les intervalles contrôlés par le profileur pour une exécution du Gateway :
 
 ```bash
 OPENCLAW_DIAGNOSTICS=profiler openclaw gateway run
 ```
 
-Activer uniquement les intervalles du profileur de distribution des réponses :
+Activez uniquement les intervalles du profileur de distribution des réponses :
 
 ```bash
 OPENCLAW_DIAGNOSTICS=reply.profiler openclaw gateway run
 ```
 
-Activer uniquement les intervalles du profileur de démarrage/outil/fil du serveur d’application Codex :
+Activez uniquement les intervalles du profileur de démarrage, d’outils et de fils de discussion du serveur d’application Codex :
 
 ```bash
 OPENCLAW_DIAGNOSTICS=codex.profiler openclaw gateway run
 ```
 
-Activer les indicateurs du profileur depuis la configuration :
+`profiler` active à la fois le profileur de réponse et le profileur Codex ; utilisez les
+noms d’indicateurs délimités pour n’en activer qu’un seul.
+
+Vous pouvez également le définir dans la configuration :
 
 ```json
 {
@@ -94,18 +111,14 @@ Activer les indicateurs du profileur depuis la configuration :
 }
 ```
 
-Redémarrez le Gateway après avoir modifié les indicateurs de configuration. Pour désactiver un indicateur du profileur,
-retirez-le de `diagnostics.flags` et redémarrez. Pour désactiver temporairement tous les
-indicateurs de diagnostic même lorsque la configuration active des indicateurs du profileur, démarrez le processus avec :
-
-```bash
-OPENCLAW_DIAGNOSTICS=0 openclaw gateway run
-```
+Redémarrez le Gateway après avoir modifié les indicateurs de configuration. Pour désactiver un indicateur de profileur,
+supprimez-le de `diagnostics.flags` et redémarrez, ou lancez le processus avec
+`OPENCLAW_DIAGNOSTICS=0` afin de remplacer tous les indicateurs de diagnostic pour cette exécution.
 
 ## Artefacts de chronologie
 
-L’indicateur `timeline` écrit des événements structurés de chronométrage au démarrage et à l’exécution pour
-les harnais QA externes :
+L’indicateur `timeline` (alias : `diagnostics.timeline`) écrit les événements structurés de temporisation du démarrage
+et de l’exécution au format JSONL, pour les bancs de test d’assurance qualité externes :
 
 ```bash
 OPENCLAW_DIAGNOSTICS=timeline \
@@ -113,7 +126,7 @@ OPENCLAW_DIAGNOSTICS_TIMELINE_PATH=/tmp/openclaw-timeline.jsonl \
 openclaw gateway run
 ```
 
-Vous pouvez aussi l’activer dans la configuration :
+Vous pouvez également l’activer dans la configuration :
 
 ```json
 {
@@ -123,68 +136,81 @@ Vous pouvez aussi l’activer dans la configuration :
 }
 ```
 
-Le chemin du fichier de chronologie provient toujours de
-`OPENCLAW_DIAGNOSTICS_TIMELINE_PATH`. Lorsque `timeline` est activé uniquement depuis la
-configuration, les premiers intervalles de chargement de la configuration ne sont pas émis, car OpenClaw n’a
-pas encore lu la configuration ; les intervalles de démarrage suivants utilisent l’indicateur de configuration.
+Le chemin de sortie provient toujours de `OPENCLAW_DIAGNOSTICS_TIMELINE_PATH`, même
+lorsque l’indicateur lui-même est défini dans la configuration ; il n’existe aucune clé de configuration pour le chemin.
+Lorsque `timeline` est activé uniquement depuis la configuration, les premiers intervalles de chargement de la configuration
+sont absents, car OpenClaw n’a pas encore lu la configuration ; les intervalles de démarrage suivants
+sont enregistrés normalement.
 
-`OPENCLAW_DIAGNOSTICS=1`, `OPENCLAW_DIAGNOSTICS=all` et
-`OPENCLAW_DIAGNOSTICS=*` activent aussi la chronologie, car ils activent tous les
-indicateurs de diagnostic. Préférez `timeline` lorsque vous voulez uniquement l’artefact
-de chronométrage JSONL.
+`OPENCLAW_DIAGNOSTICS=1`, `=all` et `=*` activent également la chronologie, puisqu’ils
+activent tous les indicateurs. Préférez l’indicateur délimité `timeline` lorsque vous souhaitez uniquement
+l’artefact JSONL et aucun autre indicateur de diagnostic.
 
-Les enregistrements de chronologie utilisent l’enveloppe `openclaw.diagnostics.v1`. Les événements peuvent inclure
-des identifiants de processus, des noms de phase, des noms d’intervalle, des durées, des identifiants de Plugin, des nombres de dépendances,
-des échantillons de délai de boucle d’événements, des noms d’opérations de fournisseur, l’état de sortie de processus enfant,
-ainsi que des noms/messages d’erreur au démarrage. Traitez les fichiers de chronologie comme des
-artefacts de diagnostic locaux ; vérifiez-les avant de les partager hors de votre machine.
+Les échantillons de délai de la boucle d’événements dans la chronologie nécessitent une activation supplémentaire au-delà de
+`timeline` : définissez `OPENCLAW_DIAGNOSTICS_EVENT_LOOP=1` (ou `on`/`true`/`yes`) en
+plus de l’activation de la chronologie.
+
+Les enregistrements de chronologie utilisent l’enveloppe `openclaw.diagnostics.v1` et peuvent inclure
+les identifiants de processus, les noms de phases, les noms d’intervalles, les durées, les identifiants de Plugin, le nombre
+de dépendances, les échantillons de délai de la boucle d’événements, les noms d’opérations de fournisseur, l’état de sortie
+des processus enfants ainsi que les noms et messages des erreurs de démarrage. Traitez les fichiers de chronologie comme des
+artefacts de diagnostic locaux ; examinez-les avant de les partager hors de votre machine.
 
 ## Emplacement des journaux
 
-Les indicateurs émettent des journaux dans le fichier journal de diagnostic standard. Par défaut :
+Les indicateurs écrivent les journaux dans le fichier journal de diagnostic standard. Par défaut :
 
 ```
 /tmp/openclaw/openclaw-YYYY-MM-DD.log
 ```
 
-Si vous définissez `logging.file`, utilisez plutôt ce chemin. Les journaux sont au format JSONL (un objet JSON par ligne). La rédaction s’applique toujours selon `logging.redactSensitive`.
+Si vous définissez `logging.file`, utilisez plutôt ce chemin. Les journaux sont au format JSONL (un objet JSON
+par ligne). La rédaction s’applique toujours conformément à `logging.redactSensitive`.
+Consultez [Journalisation](/fr/logging) pour obtenir le modèle complet de résolution du chemin des journaux, de rotation et de
+rédaction.
 
-## Extraire les journaux
+## Extraction des journaux
 
-Choisir le fichier journal le plus récent :
+Sélectionnez le fichier journal le plus récent :
 
 ```bash
 ls -t /tmp/openclaw/openclaw-*.log | head -n 1
 ```
 
-Filtrer les diagnostics HTTP de Telegram :
+Filtrez les diagnostics HTTP de Telegram :
 
 ```bash
 rg "telegram http error" /tmp/openclaw/openclaw-*.log
 ```
 
-Filtrer les diagnostics HTTP de Brave Search :
+Filtrez les diagnostics HTTP de Brave Search :
 
 ```bash
 rg "brave http" /tmp/openclaw/openclaw-*.log
 ```
 
-Ou suivre le journal pendant la reproduction :
+Ou suivez les journaux pendant la reproduction du problème :
 
 ```bash
 tail -f /tmp/openclaw/openclaw-$(date +%F).log | rg "telegram http error"
 ```
 
-Pour les Gateways distants, vous pouvez aussi utiliser `openclaw logs --follow` (voir [/cli/logs](/fr/cli/logs)).
+Pour les Gateway distants, utilisez plutôt `openclaw logs --follow` (voir
+[/cli/logs](/fr/cli/logs)).
 
-## Notes
+## Remarques
 
-- Si `logging.level` est défini à un niveau supérieur à `warn`, ces journaux peuvent être supprimés. La valeur par défaut `info` convient.
-- `brave.http` journalise les URL/paramètres de requête Brave Search, l’état/le chronométrage des réponses, ainsi que les événements d’accès/échec/écriture du cache. Il ne journalise pas les clés API ni les corps de réponse, mais les requêtes de recherche peuvent être sensibles.
-- Les indicateurs peuvent rester activés sans risque ; ils n’affectent que le volume des journaux pour le sous-système spécifique.
-- Utilisez [/logging](/fr/logging) pour modifier les destinations, niveaux et règles de rédaction des journaux.
+- Si `logging.level` est défini à un niveau supérieur à `warn`, les journaux contrôlés par des indicateurs peuvent être
+  supprimés. La valeur par défaut `info` convient.
+- `brave.http` journalise les URL et paramètres de requête de Brave Search, l’état et la temporisation
+  des réponses, ainsi que les événements d’accès réussi, d’échec et d’écriture du cache. Il ne journalise pas la clé d’API
+  (envoyée dans un en-tête de requête) ni le corps des réponses, mais les requêtes de recherche peuvent être
+  sensibles.
+- Vous pouvez laisser les indicateurs activés sans risque ; ils n’affectent que le volume des journaux du
+  sous-système concerné.
+- Utilisez [/logging](/fr/logging) pour modifier les destinations, les niveaux et la rédaction des journaux.
 
-## Connexe
+## Pages connexes
 
 - [Diagnostics du Gateway](/fr/gateway/diagnostics)
 - [Dépannage du Gateway](/fr/gateway/troubleshooting)

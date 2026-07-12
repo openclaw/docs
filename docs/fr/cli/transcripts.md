@@ -1,31 +1,27 @@
 ---
 read_when:
-    - Vous voulez lire les résumés de transcription stockés depuis le terminal
-    - Vous avez besoin du chemin vers un résumé Markdown des transcriptions
-    - Vous déboguez la disposition du stockage des transcriptions principales
-summary: Référence CLI pour `openclaw transcripts` (lister, afficher et localiser les transcriptions stockées)
+    - Vous souhaitez lire les résumés de transcriptions stockés depuis le terminal
+    - Vous devez indiquer le chemin d’accès à un résumé Markdown des transcriptions.
+    - Vous déboguez la structure de stockage des transcriptions du cœur.
+summary: Référence de la CLI pour `openclaw transcripts` (répertorier, afficher et localiser les transcriptions stockées)
 title: CLI des transcriptions
 x-i18n:
-    generated_at: "2026-06-27T17:21:49Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:17:06Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: ae6010cfb4e051182f1c48d0d728b30d054542e1e7983ff15a2432840193f9c0
+    source_hash: dde02e924339c64cf6acd5c4b6162785dcfccf4a1df2aac0d9d52d5306511579
     source_path: cli/transcripts.md
     workflow: 16
 ---
 
 # `openclaw transcripts`
 
-Inspecter les transcriptions écrites par l’outil principal `transcripts` d’OpenClaw. Cette CLI est
-en lecture seule ; la capture, l’importation et la synthèse appartiennent à l’outil d’agent et
-aux sources de démarrage automatique configurées.
+Inspecteur en lecture seule des transcriptions écrites par l’outil d’agent `transcripts`.
+La capture, l’importation et la synthèse s’effectuent au moyen de cet outil, et non de cette CLI.
 
-Utilisez la CLI lorsque vous voulez retrouver les notes d’hier, ouvrir le fichier Markdown dans
-un éditeur, fournir une transcription à un autre outil ou déboguer l’emplacement où une session a été enregistrée sur
-le disque. Elle ne démarre ni n’arrête la capture.
-
-Les artefacts se trouvent sous le répertoire d’état d’OpenClaw :
+Les artefacts se trouvent dans le répertoire d’état :
 
 ```text
 $OPENCLAW_STATE_DIR/transcripts/YYYY-MM-DD/<session>/
@@ -35,9 +31,9 @@ $OPENCLAW_STATE_DIR/transcripts/YYYY-MM-DD/<session>/
   summary.md
 ```
 
-Le répertoire d’état par défaut est `~/.openclaw` ; définissez `OPENCLAW_STATE_DIR` pour en utiliser un
-autre. Le répertoire de date provient de l’heure de début de la session, et le
-répertoire de session est un segment de système de fichiers sûr dérivé de l’id de session.
+Le répertoire d’état par défaut est `~/.openclaw` ; remplacez-le avec `OPENCLAW_STATE_DIR`.
+Le répertoire de date provient de l’heure de début de la session ; le répertoire de session est
+un slug compatible avec le système de fichiers dérivé de l’identifiant de session.
 
 ## Commandes
 
@@ -55,51 +51,45 @@ openclaw transcripts show <session> --json
 openclaw transcripts path <session> --json
 ```
 
-- `list` : lister les sessions stockées, le sélecteur qualifié par date, l’heure de début, le titre et le chemin de `summary.md`.
-- `show <session>` : afficher le fichier `summary.md` stocké.
-- `path <session>` : afficher le chemin de `summary.md`.
-- `path <session> --dir` : afficher le répertoire de session.
-- `path <session> --metadata` : afficher `metadata.json`.
-- `path <session> --transcript` : afficher `transcript.jsonl`.
-- `--json` : afficher une sortie lisible par machine.
+| Commande                      | Description                                                     |
+| ----------------------------- | --------------------------------------------------------------- |
+| `list`                        | Répertorie les sessions stockées.                               |
+| `show <session>`              | Affiche le fichier `summary.md` stocké.                          |
+| `path <session>`              | Affiche le chemin de `summary.md`.                               |
+| `path <session> --dir`        | Affiche le répertoire de la session.                             |
+| `path <session> --metadata`   | Affiche `metadata.json`.                                        |
+| `path <session> --transcript` | Affiche `transcript.jsonl`.                                      |
+| `--json`                      | Affiche une sortie lisible par machine (toute sous-commande).    |
 
-Lorsqu’un id de session lisible par un humain se répète sur plusieurs jours, utilisez le sélecteur qualifié par date
-fourni par `list`, par exemple `openclaw transcripts show 2026-05-22/standup`.
-Les ids de session par défaut incluent un horodatage et un suffixe aléatoire ; configurez des
-ids de session fixes uniquement lorsqu’ils sont uniques au sein de la journée.
+`<session>` accepte soit un identifiant de session seul, soit un sélecteur
+qualifié par une date (`YYYY-MM-DD/<session>`). Utilisez la forme qualifiée lorsque le même
+identifiant de session apparaît sur plusieurs jours, par exemple `openclaw transcripts show
+2026-05-22/standup`. Les identifiants de session par défaut comprennent un horodatage et un
+suffixe aléatoire ; n’attribuez un identifiant fixe à une session que s’il est unique pour la journée.
 
 ## Sortie
 
-`list` affiche une session par ligne :
+`list` affiche une ligne séparée par des tabulations pour chaque session : sélecteur, heure de début, titre,
+chemin du résumé.
 
 ```text
-2026-05-22/standup  2026-05-22T09:00:00.000Z  Weekly standup  /Users/alex/.openclaw/transcripts/2026-05-22/standup/summary.md
+2026-05-22/standup  2026-05-22T09:00:00.000Z  Réunion hebdomadaire  /Users/user/.openclaw/transcripts/2026-05-22/standup/summary.md
 ```
 
-La sortie est séparée par des tabulations. Les colonnes sont le sélecteur, l’heure de début, le titre et le
-chemin du résumé. Le sélecteur est la valeur la plus sûre à repasser à `show` ou `path`.
+Le sélecteur est la valeur la plus sûre à transmettre de nouveau à `show` ou `path`.
 
-`list --json` affiche des objets avec :
+`list --json` renvoie des objets contenant `sessionId`, `selector`, `date`, `title`,
+`startedAt`, `stoppedAt`, `source`, `path`, `summaryPath`, `hasSummary`.
 
-- `sessionId`
-- `selector`
-- `date`
-- `title`
-- `startedAt`
-- `stoppedAt`
-- `source`
-- `path`
-- `summaryPath`
-- `hasSummary`
+`show --json` renvoie les métadonnées stockées de la session, le sélecteur, le répertoire de
+session, le chemin du résumé et le texte Markdown du résumé.
 
-`show --json` renvoie les métadonnées de session stockées, le sélecteur, le répertoire de session,
-le chemin du résumé et le texte Markdown du résumé. `path --json` renvoie le chemin sélectionné
-et indique si ce fichier existe.
+`path --json` renvoie le chemin sélectionné et indique si ce fichier existe.
 
-## Nombreuses réunions par jour
+## Plusieurs sessions par jour
 
-Transcripts regroupe les sessions par date, puis par id de session. Dix réunions en une
-journée deviennent dix dossiers frères :
+Les sessions sont regroupées par date, puis par identifiant de session. Dix réunions le même jour deviennent
+dix dossiers frères :
 
 ```text
 ~/.openclaw/transcripts/2026-05-22/
@@ -108,23 +98,24 @@ journée deviennent dix dossiers frères :
   standup/
 ```
 
-Utilisez les ids générés par défaut pour la plupart des automatisations. Utilisez un id fixe tel que `standup`
-uniquement lorsque le même id ne sera pas utilisé deux fois à la même date.
+Utilisez les identifiants générés par défaut pour l’automatisation. Utilisez un identifiant fixe comme `standup` uniquement
+s’il ne se répète pas à la même date.
 
 ## Résumés manquants
 
-Les sessions en direct écrivent `summary.md` lorsque la session s’arrête. Les transcriptions importées
-écrivent `summary.md` immédiatement après l’importation. Une session peut encore apparaître dans
-`list` sans résumé lorsque la capture est active, qu’un fournisseur a échoué pendant l’arrêt,
-ou que les métadonnées ont été écrites avant l’arrivée de toute prise de parole.
+Les sessions en direct écrivent `summary.md` lorsque la session s’arrête ; les transcriptions importées
+l’écrivent immédiatement après l’importation. Une session peut apparaître dans `list` sans
+résumé tant que la capture est encore active, si un fournisseur a échoué pendant l’arrêt ou si
+les métadonnées ont été écrites avant l’arrivée de toute intervention.
 
-Utilisez `path <session> --transcript` pour inspecter la transcription en ajout uniquement, et utilisez
-l’action `summarize` de l’outil `transcripts` pour régénérer le résumé Markdown.
+Utilisez `path <session> --transcript` pour inspecter la transcription brute en ajout seul,
+ou exécutez l’action `summarize` de l’outil `transcripts` pour régénérer le résumé
+Markdown.
 
 ## Configuration
 
-La capture de transcription est facultative, car les sources en direct peuvent rejoindre et enregistrer l’audio
-d’une réunion. Activez l’outil avec `transcripts.enabled` au niveau supérieur :
+La capture est facultative (les sources en direct peuvent rejoindre et enregistrer le son des réunions). Activez-la
+avec :
 
 ```json
 {
@@ -135,8 +126,14 @@ d’une réunion. Activez l’outil avec `transcripts.enabled` au niveau supéri
 }
 ```
 
-Configurez les sources de démarrage automatique avec `transcripts.autoStart` dans `openclaw.json`.
-Chaque entrée est activée par sa présence ; omettez une entrée pour désactiver cette source.
+- `enabled` (valeur par défaut : `false`) : active l’outil.
+- `maxUtterances` (valeur par défaut : `2000`, limitée à 1-10000) : taille du tampon d’interventions par
+  session.
+
+Configurez les sources à démarrage automatique avec `transcripts.autoStart`. Chaque entrée est
+activée par sa présence ; omettez une entrée pour désactiver cette source. `discord-voice`
+est la source intégrée compatible avec le démarrage automatique et nécessite `guildId` et
+`channelId` :
 
 ```json
 {
@@ -147,11 +144,6 @@ Chaque entrée est activée par sa présence ; omettez une entrée pour désacti
         "providerId": "discord-voice",
         "guildId": "1234567890",
         "channelId": "2345678901"
-      },
-      {
-        "providerId": "slack-huddle",
-        "accountId": "workspace",
-        "channelId": "C123"
       }
     ]
   }

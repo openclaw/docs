@@ -1,31 +1,32 @@
 ---
 read_when:
-    - Tester les flux d’onboarding ou de configuration avec un Plugin empaqueté localement
-    - Vérifier un package de Plugin avant de le publier
-    - Remplacer une installation automatique de Plugin par un artefact de test
+    - Tester les parcours d’intégration ou de configuration avec un plugin empaqueté localement
+    - Vérification d’un paquet de Plugin avant sa publication
+    - Remplacement de l’installation automatique d’un Plugin par un artefact de test
 sidebarTitle: Install overrides
-summary: Tester les remplacements de Plugin empaquetés avec les flux d’installation au moment de la configuration
-title: Remplacements d’installation de Plugin
+summary: Tester les remplacements de Plugins empaquetés avec les flux d’installation lors de la configuration
+title: Remplacements prioritaires d’installation des Plugins
 x-i18n:
-    generated_at: "2026-06-27T17:49:06Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:43:40Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: 9ac3d8074f0455a3287c22447d134bebf57805bc06302652172eb5f87e47e548
+    source_hash: adc823f49ea9f8fa86e6a89933e43fdc309d808ac24397770495dbe81cb4b0d7
     source_path: plugins/install-overrides.md
     workflow: 16
 ---
 
-Les remplacements d’installation de Plugin permettent aux mainteneurs de tester les installations de Plugins au moment de la configuration avec un package npm spécifique ou une archive tarball locale produite par `npm pack`. Ils sont réservés à la validation E2E et des packages. Les utilisateurs normaux doivent installer les plugins avec
+Les substitutions d’installation de Plugin permettent aux responsables d’indiquer aux installations de plugins effectuées lors de la configuration un paquet npm spécifique ou une archive npm locale au format tarball, plutôt que la source du catalogue, intégrée ou npm par défaut. Elles sont réservées aux tests E2E et à la validation des paquets ; les utilisateurs ordinaires installent les plugins avec
 [`openclaw plugins install`](/fr/cli/plugins).
 
 <Warning>
-Les remplacements exécutent le code du Plugin depuis la source que vous fournissez. Utilisez-les uniquement dans un répertoire d’état isolé ou sur une machine de test jetable.
+Les substitutions exécutent le code du Plugin provenant de la source que vous fournissez. Utilisez-les uniquement dans un répertoire d’état isolé ou sur une machine de test jetable.
 </Warning>
 
 ## Environnement
 
-Les remplacements sont désactivés sauf si les deux variables sont définies :
+Les substitutions sont désactivées sauf si les deux variables sont définies :
 
 ```bash
 export OPENCLAW_ALLOW_PLUGIN_INSTALL_OVERRIDES=1
@@ -35,26 +36,24 @@ export OPENCLAW_PLUGIN_INSTALL_OVERRIDES='{
 }'
 ```
 
-La carte des remplacements est du JSON indexé par identifiant de plugin. Les valeurs prennent en charge :
+La table de substitutions est un objet JSON indexé par identifiant de Plugin. Les valeurs prennent en charge :
 
-- `npm:<registry-spec>` pour les packages de registre et les versions exactes ou les tags
-- `npm-pack:<path.tgz>` pour les archives tarball locales produites par `npm pack`
-
-Les chemins relatifs `npm-pack:` sont résolus depuis le répertoire de travail actuel.
+| Préfixe               | Source                                                                                                              |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| `npm:<registry-spec>` | Paquets du registre, versions exactes ou étiquettes                                                                 |
+| `npm-pack:<path.tgz>` | Archives tarball locales produites par `npm pack` ; les chemins relatifs sont résolus depuis le répertoire de travail actuel |
 
 ## Comportement
 
-Lorsqu’un flux au moment de la configuration demande d’installer un Plugin dont l’identifiant figure dans la carte, OpenClaw utilise la source de remplacement au lieu de la source npm du catalogue, intégrée ou par défaut. Cela s’applique à l’onboarding et aux autres flux qui utilisent l’installateur de Plugin partagé au moment de la configuration.
+Lorsqu’un flux de configuration installe un Plugin dont l’identifiant figure dans la table, OpenClaw utilise la source de substitution au lieu de la source du catalogue, intégrée ou npm par défaut. Cela s’applique à l’intégration initiale et à tout autre flux utilisant le programme d’installation partagé des plugins lors de la configuration.
 
-Les remplacements imposent toujours l’identifiant de Plugin attendu. Une archive tarball associée à `codex` doit installer un Plugin dont l’identifiant de manifeste est `codex`.
+- Les substitutions imposent toujours l’identifiant de Plugin attendu : une archive tarball associée à `codex` doit installer un Plugin dont l’identifiant de manifeste est `codex`.
+- Les substitutions n’héritent pas du statut de source officielle approuvée. Même lorsque l’entrée du catalogue représente normalement un paquet appartenant à OpenClaw, une substitution est traitée comme une donnée de test fournie par l’opérateur.
+- Les fichiers `.env` de l’espace de travail ne peuvent pas activer les substitutions d’installation ; les deux variables d’environnement figurent dans la liste des variables dotenv d’espace de travail bloquées. Définissez-les dans le shell de confiance, la tâche CI ou la commande de test distante qui lance OpenClaw.
 
-Les remplacements n’héritent pas du statut officiel de source de confiance. Même lorsque l’entrée du catalogue représente normalement un package détenu par OpenClaw, un remplacement est traité comme une entrée de test fournie par l’opérateur.
+## Tests E2E des paquets
 
-Les fichiers `.env` de l’espace de travail ne peuvent pas activer les remplacements d’installation. Définissez ces variables dans le shell de confiance, la tâche CI ou la commande de test distante qui lance OpenClaw.
-
-## E2E de package
-
-Utilisez un répertoire d’état isolé afin que les installations de packages et les enregistrements d’installation ne touchent pas votre état OpenClaw normal :
+Utilisez un répertoire d’état isolé afin que les installations de paquets et les enregistrements d’installation ne modifient pas votre état OpenClaw habituel :
 
 ```bash
 npm pack extensions/codex --pack-destination /tmp
@@ -65,11 +64,11 @@ OPENCLAW_PLUGIN_INSTALL_OVERRIDES='{"codex":"npm-pack:/tmp/openclaw-codex-2026.5
 pnpm openclaw onboard --mode local
 ```
 
-Vérifiez le package installé sous le répertoire d’état :
+Vérifiez le paquet installé dans le répertoire d’état :
 
 ```bash
 find "$OPENCLAW_STATE_DIR/npm/projects" -path '*/node_modules/@openclaw/codex/package.json' -print
 grep -R '"@openclaw/codex"' "$OPENCLAW_STATE_DIR/npm/projects"/*/package-lock.json
 ```
 
-Pour l’E2E de fournisseur en direct, sourcez la vraie clé API depuis un shell de confiance ou un secret CI avant de lancer la commande de test. N’imprimez pas les clés ; indiquez uniquement la source et si la clé était présente.
+Pour les tests E2E d’un fournisseur réel, chargez la véritable clé d’API depuis un shell de confiance ou un secret CI avant de lancer la commande de test. N’affichez pas les clés ; indiquez uniquement la source et si la clé était présente.

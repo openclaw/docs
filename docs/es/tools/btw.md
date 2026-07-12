@@ -1,103 +1,128 @@
 ---
 read_when:
-    - Quieres hacer una pregunta rápida aparte sobre la sesión actual
+    - Quieres hacer una breve pregunta aparte sobre la sesión actual
     - Está implementando o depurando el comportamiento de BTW en distintos clientes
 summary: Preguntas secundarias efímeras con /btw
 title: Por cierto, preguntas secundarias
 x-i18n:
-    generated_at: "2026-07-05T11:45:58Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:53:28Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: c20220c037e4b6963b1708f75dc7f268a76b88b297363e9b65e6d3d8bfa6d26a
+    source_hash: 338a54d0e15ec90aebaeeaee551559a26f1437f7b6dcdde4a4b1e63347ad0759
     source_path: tools/btw.md
     workflow: 16
 ---
 
-`/btw` (alias `/side`) hace una pregunta secundaria rápida sobre la **sesión
-actual** sin añadirla al historial de conversación. Está modelado a partir de
-`/btw` de Claude Code, adaptado al Gateway de OpenClaw y a la arquitectura
-multicanal.
+`/btw` (alias `/side`) plantea una pregunta secundaria rápida sobre la **sesión
+actual** sin añadirla al historial de la conversación. Está inspirado en
+`/btw` de Claude Code y adaptado al Gateway y a la arquitectura multicanal
+de OpenClaw.
 
 ```text
-/btw what changed?
-/side what does this error mean?
+/btw ¿qué ha cambiado?
+/side ¿qué significa este error?
 ```
 
 ## Qué hace
 
-1. Captura una instantánea de la sesión actual como contexto de fondo (incluido cualquier
-   prompt de ejecución principal en curso).
-2. Ejecuta una consulta secundaria separada y de una sola vez, indicándole al modelo que responda solo a la
-   pregunta secundaria y que no reanude ni dirija la tarea principal.
-3. Entrega la respuesta como un resultado secundario en vivo, no como un mensaje normal del asistente.
-4. Nunca escribe la pregunta ni la respuesta en el historial de la sesión ni en `chat.history`.
+1. Captura una instantánea de la sesión actual como contexto de fondo (incluido
+   cualquier prompt de la ejecución principal en curso).
+2. Ejecuta una consulta secundaria independiente y de un solo uso, indicando al
+   modelo que responda únicamente a la pregunta secundaria y que no reanude ni
+   redirija la tarea principal.
+3. Entrega la respuesta como un resultado secundario en directo, no como un
+   mensaje normal del asistente.
+4. Nunca escribe la pregunta ni la respuesta en el historial de la sesión ni en
+   `chat.history`.
 
-La ejecución principal, si hay una activa, queda intacta.
+La ejecución principal, si hay una activa, no se modifica.
 
-Para sesiones del arnés de Codex, BTW bifurca el hilo activo del servidor de aplicaciones de Codex en
-un hilo hijo efímero en lugar de ejecutar una llamada separada al proveedor. Esto
-mantiene intactos el OAuth de Codex y el comportamiento nativo de herramientas/hilos, y el hilo
-bifurcado conserva la política de aprobación, el sandbox y la superficie de herramientas nativas actuales
-del hilo padre. El hilo bifurcado recibe un prompt de límite que le indica al modelo que
-todo lo anterior es contexto de referencia heredado, no instrucciones activas,
-y que solo los mensajes posteriores al límite están activos. `/btw` requiere un
-hilo de Codex existente; envía primero un mensaje normal.
+En las sesiones del entorno de Codex, BTW bifurca el hilo activo del servidor
+de aplicaciones de Codex en un hilo secundario efímero, en lugar de realizar
+una llamada independiente al proveedor. Esto mantiene intactos OAuth de Codex
+y el comportamiento nativo de las herramientas y los hilos; además, el hilo
+bifurcado conserva la política de aprobación, el sandbox y la superficie de
+herramientas nativas actuales del hilo principal. El hilo bifurcado recibe un
+prompt delimitador que indica al modelo que todo lo anterior es contexto de
+referencia heredado, no instrucciones activas, y que solo están activos los
+mensajes posteriores al delimitador. `/btw` requiere un hilo de Codex
+existente; primero debe enviarse un mensaje normal.
 
-Para los alias de tiempo de ejecución de CLI, BTW invoca el backend de CLI propietario en modo de
-pregunta secundaria de una sola vez: siembra contexto de conversación saneado en una invocación nueva de CLI
-con la agrupación de herramientas y el estado de sesión reutilizable deshabilitados, y añade
-cualquier flag de no reanudar/sin herramientas que admita el backend. Los tiempos de ejecución directos (no CLI)
-usan en su lugar una llamada directa y de una sola vez al proveedor.
+Para los alias del entorno de ejecución de la CLI, BTW invoca el backend de
+CLI propietario en modo de pregunta secundaria de un solo uso: incorpora el
+contexto saneado de la conversación en una nueva invocación de la CLI, con la
+agrupación de herramientas y el estado reutilizable de la sesión desactivados,
+y añade las opciones de no reanudación y ausencia de herramientas que admita
+el backend. Los entornos de ejecución directos (no basados en CLI) utilizan en
+su lugar una llamada directa y de un solo uso al proveedor.
 
 ## Qué no hace
 
-`/btw` no crea una sesión duradera, no continúa la tarea principal sin terminar,
-no persiste datos de pregunta/respuesta en el historial de transcripción ni sobrevive a una recarga.
+`/btw` no crea una sesión persistente, no continúa la tarea principal
+inacabada, no conserva los datos de la pregunta o la respuesta en el historial
+de la transcripción ni sobrevive a una recarga.
 
 ## Modelo de entrega
 
-El chat normal del asistente usa el evento `chat` del Gateway. BTW usa un evento
-`chat.side_result` separado para que los clientes no puedan confundirlo con el historial de
-conversación normal. Como no se reproduce desde `chat.history`, desaparece
-después de recargar.
+El chat normal del asistente utiliza el evento `chat` del Gateway. BTW utiliza
+un evento `chat.side_result` independiente para que los clientes no puedan
+confundirlo con el historial normal de la conversación. Como no se reproduce
+desde `chat.history`, desaparece después de una recarga.
 
-## Comportamiento de superficie
+## Comportamiento según la superficie
 
-| Superficie        | Comportamiento                                                                                                                                          |
-| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| TUI               | Se muestra en línea en el registro del chat, claramente distinto de una respuesta normal, descartable con `Enter` o `Esc`.                              |
-| Canales externos  | Se entrega como una respuesta única claramente etiquetada (Telegram, WhatsApp, Discord no tienen superposición efímera local).                          |
-| Control UI / web  | El Gateway emite `chat.side_result` correctamente y se excluye de `chat.history`, pero Control UI aún no tiene consumidor para renderizarlo en vivo en el navegador. |
+| Superficie        | Comportamiento                                                                                                                                                                                                                                                                       |
+| ----------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| TUI               | Se muestra en línea en el registro del chat, claramente diferenciado de una respuesta normal, y puede descartarse con `Enter` o `Esc`.                                                                                                                                               |
+| Canales externos  | Se entrega como una respuesta puntual claramente etiquetada (Telegram, WhatsApp y Discord no disponen de una superposición efímera local).                                                                                                                                            |
+| Interfaz de control/web | Se muestra como un panel flotante «Chat secundario» fijado al hilo. Las respuestas se acumulan como turnos y una entrada «Seguimiento» permite formular la siguiente pregunta secundaria. Cerrar (`Esc` o la X) conserva la conversación y vuelve a abrirla con la siguiente respuesta; el botón de la papelera la descarta y detiene una ejecución pendiente. |
+
+## Ventana emergente de selección (Interfaz de control)
+
+Al resaltar texto dentro de un mensaje de chat en la Interfaz de control, se
+abre una pequeña ventana emergente de selección con dos acciones:
+
+- **Más detalles** envía inmediatamente una pregunta `/btw` implícita para
+  solicitar al modelo que explique el texto resaltado en el contexto de la
+  sesión actual. La respuesta llega al panel flotante del chat secundario.
+- **Preguntar en el chat secundario** rellena previamente el editor con un
+  borrador de `/btw` que cita el texto resaltado, para que pueda escribirse una
+  pregunta propia al respecto.
+
+Ambas acciones siguen la semántica normal de `/btw`: la pregunta y la respuesta
+no se incluyen en el historial de la sesión y la ejecución principal no se
+modifica.
 
 ## Cuándo usarlo
 
-Usa `/btw` para una aclaración rápida, una respuesta secundaria factual mientras una ejecución larga
-sigue en progreso, o una respuesta temporal que no deba entrar en el contexto
-futuro de la sesión.
+Use `/btw` para obtener una aclaración rápida, una respuesta factual secundaria
+mientras una ejecución larga sigue en curso o una respuesta temporal que no
+deba incorporarse al contexto futuro de la sesión.
 
 ```text
-/btw what file are we editing?
-/btw summarize the current task in one sentence
-/btw what is 17 * 19?
+/btw ¿qué archivo estamos editando?
+/btw resume la tarea actual en una oración
+/btw ¿cuánto es 17 * 19?
 ```
 
-Para cualquier cosa que quieras que forme parte del contexto de trabajo futuro
-de la sesión, pregunta normalmente en la sesión principal.
+Para cualquier información que deba formar parte del contexto de trabajo futuro
+de la sesión, formule la pregunta normalmente en la sesión principal.
 
 ## Relacionado
 
 <CardGroup cols={2}>
-  <Card title="Comandos de barra" href="/es/tools/slash-commands" icon="terminal">
+  <Card title="Comandos con barra diagonal" href="/es/tools/slash-commands" icon="terminal">
     Catálogo de comandos nativos y directivas de chat.
   </Card>
-  <Card title="Niveles de pensamiento" href="/es/tools/thinking" icon="brain">
-    Niveles de esfuerzo de razonamiento para la llamada al modelo de pregunta secundaria.
+  <Card title="Niveles de razonamiento" href="/es/tools/thinking" icon="brain">
+    Niveles de esfuerzo de razonamiento para la llamada al modelo de preguntas secundarias.
   </Card>
   <Card title="Sesión" href="/es/concepts/session" icon="comments">
     Claves de sesión, historial y semántica de persistencia.
   </Card>
-  <Card title="Comando steer" href="/es/tools/steer" icon="arrow-right">
-    Inyecta un mensaje de direccionamiento en la ejecución activa sin finalizarla.
+  <Card title="Comando de redirección" href="/es/tools/steer" icon="arrow-right">
+    Inserta un mensaje de redirección en la ejecución activa sin finalizarla.
   </Card>
 </CardGroup>

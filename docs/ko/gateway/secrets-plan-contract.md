@@ -3,25 +3,24 @@ read_when:
     - '`openclaw secrets apply` 계획 생성 또는 검토'
     - '`Invalid plan target path` 오류 디버깅'
     - 대상 유형 및 경로 검증 동작 이해하기
-summary: '`secrets apply` 계획 계약: 대상 검증, 경로 매칭 및 `auth-profiles.json` 대상 범위'
-title: 비밀 정보 적용 계획 계약
+summary: '`secrets apply` 계획의 계약: 대상 검증, 경로 일치 및 `auth-profiles.json` 대상 범위'
+title: 시크릿 적용 계획 계약
 x-i18n:
-    generated_at: "2026-06-27T17:31:22Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:21:21Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: 03f0ca9b433553a2f6d86d01b8c227a24b6f53ef7034a94bd648fbf04c81f13e
+    source_hash: ddaf3df7f0be326fa1c8dc8c360b03697fb58329d03c4eb8106a8740ddf6c47a
     source_path: gateway/secrets-plan-contract.md
     workflow: 16
 ---
 
-이 페이지는 `openclaw secrets apply`가 강제하는 엄격한 계약을 정의합니다.
+이 페이지에서는 `openclaw secrets apply`가 적용하는 엄격한 계약을 정의합니다. 대상이 이러한 규칙과 일치하지 않으면 파일을 변경하기 전에 적용이 실패합니다.
 
-대상이 이 규칙과 일치하지 않으면, 구성 변경 전에 apply가 실패합니다.
+## 계획 파일 구조
 
-## 계획 파일 형태
-
-`openclaw secrets apply --from <plan.json>`은 계획 대상의 `targets` 배열을 예상합니다.
+`openclaw secrets apply --from <plan.json>`은 계획 대상의 `targets` 배열을 요구합니다.
 
 ```json5
 {
@@ -46,19 +45,16 @@ x-i18n:
 }
 ```
 
-## Provider 업서트와 삭제
+`openclaw secrets configure`는 이 구조로 계획을 생성합니다. 직접 작성하거나 편집할 수도 있습니다.
 
-계획에는 대상별 쓰기와 함께 `secrets.providers` 맵을 변경하는 두 개의 선택적 최상위 필드도 포함할 수 있습니다.
+## 제공자 업서트 및 삭제
 
-- `providerUpserts` — provider 별칭을 키로 사용하는 객체입니다. 각 값은
-  provider 정의(`openclaw.json`의 `secrets.providers.<alias>` 아래에서 허용되는 것과
-  동일한 형태, 예: `exec` 또는 `file` provider)입니다.
-- `providerDeletes` — 제거할 provider 별칭의 배열입니다.
+계획에는 대상별 쓰기와 함께 `secrets.providers` 맵을 변경하는 다음 두 개의 선택적 최상위 필드도 포함할 수 있습니다.
 
-`providerUpserts`는 `targets`보다 먼저 실행되므로, `target.ref.provider`가
-동일한 계획이 `providerUpserts`에서 도입하는 provider 별칭을 참조할 수 있습니다.
-이것이 없으면 아직 `openclaw.json`에 구성되지 않은 별칭을 참조하는 계획은
-`provider "<alias>" is not configured` 오류로 실패합니다.
+- `providerUpserts` -- 제공자 별칭을 키로 사용하는 객체입니다. 각 값은 제공자 정의입니다(`openclaw.json`의 `secrets.providers.<alias>`에서 허용되는 것과 동일한 구조이며, 예를 들어 `exec` 또는 `file` 제공자입니다).
+- `providerDeletes` -- 제거할 제공자 별칭의 배열입니다.
+
+`providerUpserts`는 `targets`보다 먼저 실행되므로 `target.ref.provider`에서 동일한 계획의 `providerUpserts`가 도입하는 제공자 별칭을 참조할 수 있습니다. 이러한 순서가 없으면 `openclaw.json`에 아직 구성되지 않은 별칭을 참조하는 계획은 `provider "<alias>" is not configured` 오류와 함께 실패합니다.
 
 ```json5
 {
@@ -84,81 +80,77 @@ x-i18n:
 }
 ```
 
-`providerUpserts`를 통해 도입된 Exec provider도 [Exec provider 동의 동작](#exec-provider-consent-behavior)의
-exec 동의 규칙이 적용됩니다. exec provider가 포함된 계획은 쓰기 모드에서
-`--allow-exec`가 필요합니다.
+`providerUpserts`를 통해 도입된 Exec 제공자에도 [Exec 제공자 동의 동작](#exec-provider-consent-behavior)의 Exec 동의 규칙이 계속 적용됩니다. Exec 제공자를 포함하는 계획을 쓰기 모드에서 실행하려면 `--allow-exec`이 필요합니다.
 
 ## 지원되는 대상 범위
 
-계획 대상은 다음의 지원되는 자격 증명 경로에 대해 허용됩니다.
-
-- [SecretRef 자격 증명 표면](/ko/reference/secretref-credential-surface)
+[SecretRef 자격 증명 표면](/ko/reference/secretref-credential-surface)에서 지원되는 자격 증명 경로에 대해 계획 대상이 허용됩니다.
 
 ## 대상 유형 동작
 
-일반 규칙:
+`target.type`은 인식되는 대상 유형이어야 하며, 정규화된 `target.path`는 해당 유형에 등록된 경로 구조와 일치해야 합니다.
 
-- `target.type`은 인식되어야 하며 정규화된 `target.path` 형태와 일치해야 합니다.
+일부 대상 유형은 기존 계획을 위해 정식 유형 이름 외에도 호환성 별칭을 `target.type`으로 허용합니다.
 
-기존 계획을 위해 호환성 별칭은 계속 허용됩니다.
-
-- `models.providers.apiKey`
-- `skills.entries.apiKey`
-- `channels.googlechat.serviceAccount`
+| 정식 유형                             | 허용되는 별칭                                   |
+| ------------------------------------ | ----------------------------------------------- |
+| `models.providers.apiKey`            | `models.providers.*.apiKey`                     |
+| `skills.entries.apiKey`              | `skills.entries.*.apiKey`                       |
+| `channels.googlechat.serviceAccount` | `channels.googlechat.accounts.*.serviceAccount` |
 
 ## 경로 검증 규칙
 
-각 대상은 다음 모두로 검증됩니다.
+각 대상은 다음 조건을 모두 사용하여 검증됩니다.
 
 - `type`은 인식되는 대상 유형이어야 합니다.
-- `path`는 비어 있지 않은 점 경로여야 합니다.
-- `pathSegments`는 생략할 수 있습니다. 제공된 경우 `path`와 정확히 동일한 경로로 정규화되어야 합니다.
+- `path`는 비어 있지 않은 점 구분 경로여야 합니다.
+- `pathSegments`는 생략할 수 있습니다. 제공하는 경우 `path`와 정확히 동일한 경로로 정규화되어야 합니다.
 - 금지된 세그먼트는 거부됩니다: `__proto__`, `prototype`, `constructor`.
-- 정규화된 경로는 대상 유형에 등록된 경로 형태와 일치해야 합니다.
-- `providerId` 또는 `accountId`가 설정된 경우, 경로에 인코딩된 id와 일치해야 합니다.
+- 정규화된 경로는 대상 유형에 등록된 경로 구조와 일치해야 합니다.
+- `providerId` 또는 `accountId`가 설정된 경우 경로에 인코딩된 ID와 일치해야 합니다.
 - `auth-profiles.json` 대상에는 `agentId`가 필요합니다.
-- 새 `auth-profiles.json` 매핑을 만들 때는 `authProfileProvider`를 포함하세요.
+- 새 `auth-profiles.json` 매핑을 생성할 때는 `authProfileProvider`를 포함하십시오.
 
 ## 실패 동작
 
-대상이 검증에 실패하면 apply는 다음과 같은 오류와 함께 종료됩니다.
+대상 검증이 실패하면 적용은 다음과 같은 오류와 함께 종료됩니다.
 
 ```text
-Invalid plan target path for models.providers.apiKey: models.providers.openai.baseUrl
+models.providers.apiKey의 계획 대상 경로가 잘못되었습니다: models.providers.openai.baseUrl
 ```
 
-잘못된 계획에 대해서는 쓰기가 커밋되지 않습니다.
+잘못된 계획에서는 쓰기가 커밋되지 않습니다. 대상 확인과 경로 검증은 파일을 건드리기 전에 실행됩니다. 이와 별도로 유효한 계획이 쓰기를 시작하면 적용은 먼저 변경되는 모든 파일의 스냅샷을 만들고, 동일한 실행의 이후 쓰기가 실패할 경우 해당 스냅샷을 복원합니다. 따라서 부분적인 쓰기로 인해 구성, 인증 프로필 또는 환경 상태가 서로 불일치하는 일이 없습니다.
 
-## Exec provider 동의 동작
+## Exec 제공자 동의 동작
 
-- `--dry-run`은 기본적으로 exec SecretRef 검사를 건너뜁니다.
-- exec SecretRef/provider가 포함된 계획은 `--allow-exec`가 설정되지 않는 한 쓰기 모드에서 거부됩니다.
-- exec가 포함된 계획을 검증/적용할 때는 dry-run 및 쓰기 명령 모두에 `--allow-exec`를 전달하세요.
+- `--dry-run`은 기본적으로 Exec SecretRef 검사를 건너뜁니다.
+- Exec SecretRef/제공자를 포함하는 계획은 `--allow-exec`이 설정되지 않으면 쓰기 모드에서 거부됩니다.
+- Exec을 포함하는 계획을 검증하거나 적용할 때는 시험 실행과 쓰기 명령 모두에 `--allow-exec`을 전달하십시오.
 
 ## 런타임 및 감사 범위 참고 사항
 
-- ref 전용 `auth-profiles.json` 항목(`keyRef`/`tokenRef`)은 런타임 해석 및 감사 범위에 포함됩니다.
-- `secrets apply`는 지원되는 `openclaw.json` 대상, 지원되는 `auth-profiles.json` 대상, 선택적 스크럽 대상에 씁니다.
+- 참조 전용 `auth-profiles.json` 항목(`keyRef`/`tokenRef`)은 런타임 자격 증명 확인 및 감사 범위에 포함됩니다.
+- `secrets apply`는 지원되는 `openclaw.json` 대상과 지원되는 `auth-profiles.json` 대상을 기록하며, 기본적으로 각각 활성화된 세 가지 선택적 정리 단계를 수행합니다. `scrubEnv`는 `.env`에서 마이그레이션된 평문 값을 제거하고, `scrubAuthProfilesForProviderTargets`는 계획에서 방금 마이그레이션한 제공자의 `auth-profiles.json`에 남은 평문/미사용 참조를 지우며, `scrubLegacyAuthJson`은 레거시 `auth.json` 저장소에서 마이그레이션된 `api_key` 항목을 삭제합니다. 해당 단계를 건너뛰려면 계획에서 `options.scrubEnv`, `options.scrubAuthProfilesForProviderTargets`, `options.scrubLegacyAuthJson` 중 원하는 값을 `false`로 설정하십시오.
 
-## 운영자 검사
+## 운영자 확인
 
 ```bash
-# Validate plan without writes
+# 쓰기 없이 계획 검증
 openclaw secrets apply --from /tmp/openclaw-secrets-plan.json --dry-run
 
-# Then apply for real
+# 그런 다음 실제로 적용
 openclaw secrets apply --from /tmp/openclaw-secrets-plan.json
 
-# For exec-containing plans, opt in explicitly in both modes
+# Exec을 포함하는 계획은 두 모드 모두에서 명시적으로 동의
 openclaw secrets apply --from /tmp/openclaw-secrets-plan.json --dry-run --allow-exec
 openclaw secrets apply --from /tmp/openclaw-secrets-plan.json --allow-exec
 ```
 
-apply가 잘못된 대상 경로 메시지와 함께 실패하면 `openclaw secrets configure`로 계획을 다시 생성하거나 대상 경로를 위의 지원되는 형태로 수정하세요.
+잘못된 대상 경로 메시지와 함께 적용이 실패하면 `openclaw secrets configure`로 계획을 다시 생성하거나 대상 경로를 위에서 지원되는 구조로 수정하십시오.
 
 ## 관련 문서
 
-- [Secrets 관리](/ko/gateway/secrets)
+- [비밀 관리](/ko/gateway/secrets)
 - [CLI `secrets`](/ko/cli/secrets)
 - [SecretRef 자격 증명 표면](/ko/reference/secretref-credential-surface)
 - [구성 참조](/ko/gateway/configuration-reference)

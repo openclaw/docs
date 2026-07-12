@@ -1,59 +1,49 @@
 ---
 read_when:
-    - Inicializando um workspace manualmente
-summary: Modelo de workspace para `TOOLS.md`
-title: Modelo de `TOOLS.md`
+    - Inicialização manual de um espaço de trabalho
+summary: Modelo de espaço de trabalho para TOOLS.md
+title: Modelo de TOOLS.md
 x-i18n:
-    generated_at: "2026-04-24T06:12:14Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 810b088129bfd963ffe603a7e0a07d099fd2551bf13ebcb702905e1b8135d017
-    source_path: reference/templates/TOOLS.md
-    workflow: 15
+    generated_at: "2026-07-12T15:45:24Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
+    provider: openai
+    source_hash: 20eab78b3b117566a1d33a70873e70ff2d5099543aa44e2719dc8d0797099afe
+    source_path: reference/templates/TOOLS.md
+    workflow: 16
 ---
 
-# TOOLS.md - Observações locais
+# TOOLS.md - Notas locais
 
-Skills definem _como_ as ferramentas funcionam. Este arquivo é para os detalhes _seus_ — as coisas que são exclusivas da sua configuração.
-
-## O que entra aqui
-
-Coisas como:
-
-- Nomes e localizações de câmeras
-- Hosts e aliases de SSH
-- Vozes preferidas para TTS
-- Nomes de caixas de som/salas
-- Apelidos de dispositivos
-- Qualquer coisa específica do ambiente
+Skills definem _como_ as ferramentas funcionam. Este arquivo contém as _suas_ especificidades — aquilo que é exclusivo da sua configuração: nomes e locais de câmeras, hosts e aliases SSH, vozes de TTS preferidas, nomes de caixas de som e ambientes, apelidos de dispositivos e qualquer informação específica do ambiente.
 
 ## Exemplos
 
 ```markdown
-### Cameras
+### Câmeras
 
-- living-room → Área principal, grande angular de 180°
-- front-door → Entrada, acionada por movimento
+- sala de estar → Área principal, ângulo amplo de 180°
+- porta da frente → Entrada, acionada por movimento
 
 ### SSH
 
-- home-server → 192.168.1.100, user: admin
+- servidor doméstico → 192.168.1.100, usuário: admin
 
 ### TTS
 
 - Voz preferida: "Nova" (acolhedora, levemente britânica)
-- Caixa de som padrão: Kitchen HomePod
+- Caixa de som padrão: HomePod da cozinha
 ```
 
-## Por que separado?
+## Por que manter separado?
 
-Skills são compartilhadas. Sua configuração é sua. Mantê-las separadas significa que você pode atualizar Skills sem perder suas anotações e compartilhar Skills sem vazar sua infraestrutura.
+Skills são compartilhadas. Sua configuração é só sua. Mantê-las separadas permite atualizar as Skills sem perder suas notas e compartilhar Skills sem expor sua infraestrutura.
 
 ---
 
-Adicione tudo o que ajudar você a fazer seu trabalho. Esta é a sua cola.
+Adicione tudo o que ajudar você a realizar seu trabalho. Esta é sua folha de consulta rápida.
 
 ## Relacionado
 
-- [Workspace do agente](/pt-BR/concepts/agent-workspace)
+- [Espaço de trabalho do agente](/pt-BR/concepts/agent-workspace)

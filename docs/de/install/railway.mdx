@@ -1,100 +1,84 @@
 ---
 read_when:
     - OpenClaw auf Railway bereitstellen
-    - Sie möchten ein One-Click-Cloud-Deployment mit browserbasierter Control UI
-summary: OpenClaw mit der One-Click-Vorlage auf Railway bereitstellen
+    - Sie möchten eine Cloud-Bereitstellung mit nur einem Klick und browserbasierter Steuerungsoberfläche.
+summary: OpenClaw mit einer Ein-Klick-Vorlage auf Railway bereitstellen
 title: Railway
 x-i18n:
-    generated_at: "2026-04-23T14:03:16Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 989c8467ead04b8aa7c94101abd99c936ecd3e451fe728afe8c2f2bd5a78df48
-    source_path: install/railway.mdx
-    workflow: 15
+    generated_at: "2026-07-12T15:35:36Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
+    provider: openai
+    source_hash: cbef00b8de61545e9971b18164472c2f47fe607f69ec36f83a27a11b65ea863f
+    source_path: install/railway.mdx
+    workflow: 16
 ---
 
-# Railway
+Stellen Sie OpenClaw mit einer Ein-Klick-Vorlage auf Railway bereit und greifen Sie über die webbasierte Control UI darauf zu. Dies ist der einfachste Weg „ohne Terminal auf dem Server“: Railway führt das Gateway für Sie aus.
 
-Stellen Sie OpenClaw mit einer One-Click-Vorlage auf Railway bereit und greifen Sie über die webbasierte Control UI darauf zu.
-Dies ist der einfachste Weg „ohne Terminal auf dem Server“: Railway führt das Gateway für Sie aus.
-
-## Schnelle Checkliste (neue Benutzer)
-
-1. Klicken Sie auf **Deploy on Railway** (unten).
-2. Fügen Sie ein **Volume** hinzu, das unter `/data` gemountet ist.
-3. Setzen Sie die erforderlichen **Variables** (mindestens `OPENCLAW_GATEWAY_PORT` und `OPENCLAW_GATEWAY_TOKEN`).
-4. Aktivieren Sie **HTTP Proxy** auf Port `8080`.
-5. Öffnen Sie `https://<your-railway-domain>/openclaw` und verbinden Sie sich mit dem konfigurierten Shared Secret. Diese Vorlage verwendet standardmäßig `OPENCLAW_GATEWAY_TOKEN`; wenn Sie es durch Passwortauthentifizierung ersetzen, verwenden Sie stattdessen dieses Passwort.
-
-## One-Click-Deployment
+## Ein-Klick-Bereitstellung
 
 <a href="https://railway.com/deploy/clawdbot-railway-template" target="_blank" rel="noreferrer">
-  Deploy on Railway
+  Auf Railway bereitstellen
 </a>
 
-Nach der Bereitstellung finden Sie Ihre öffentliche URL unter **Railway → Ihr Dienst → Settings → Domains**.
+<Steps>
+  <Step title="Vorlage bereitstellen">
+    Klicken Sie oben auf **Deploy on Railway**.
+  </Step>
 
-Railway wird entweder:
+<Step title="Volume hinzufügen">
+  Binden Sie ein unter `/data` eingehängtes Volume ein (für persistenten Zustand erforderlich).
+</Step>
 
-- Ihnen eine generierte Domain geben (oft `https://<something>.up.railway.app`), oder
-- Ihre benutzerdefinierte Domain verwenden, wenn Sie eine hinzugefügt haben.
+  <Step title="Variablen festlegen">
+    Legen Sie die erforderlichen **Variables** für den Dienst fest:
 
-Öffnen Sie dann:
+    - `OPENCLAW_GATEWAY_PORT=8080` (erforderlich -- muss mit dem Port unter Public Networking übereinstimmen)
+    - `OPENCLAW_GATEWAY_TOKEN` (erforderlich; als Administrator-Secret behandeln)
+    - `OPENCLAW_STATE_DIR=/data/.openclaw` (empfohlen)
+    - `OPENCLAW_WORKSPACE_DIR=/data/workspace` (empfohlen)
 
-- `https://<your-railway-domain>/openclaw` — Control UI
+  </Step>
+
+<Step title="Öffentliches Netzwerk aktivieren">
+  Aktivieren Sie unter **Public Networking** für den Dienst auf Port `8080` die Option **HTTP Proxy**.
+</Step>
+
+  <Step title="Verbindung herstellen">
+    Ihre öffentliche URL finden Sie unter **Railway -> your service -> Settings -> Domains** -- entweder als generierte Domain (häufig `https://<something>.up.railway.app`) oder als Ihre verknüpfte benutzerdefinierte Domain.
+
+    Öffnen Sie `https://<your-railway-domain>/openclaw` und stellen Sie die Verbindung mit dem konfigurierten gemeinsamen Secret her. Die Vorlage verwendet standardmäßig `OPENCLAW_GATEWAY_TOKEN`; wenn Sie dies durch Passwortauthentifizierung ersetzen, verwenden Sie stattdessen dieses Passwort.
+
+  </Step>
+</Steps>
 
 ## Was Sie erhalten
 
-- Gehostetes OpenClaw Gateway + Control UI
-- Persistenter Speicher über Railway Volume (`/data`), damit `openclaw.json`,
-  `auth-profiles.json` pro Agent, Kanal-/Provider-Status, Sitzungen und
-  Workspace erneute Bereitstellungen überdauern
+- Gehostetes OpenClaw Gateway mit Control UI
+- Persistenter Speicher über das Railway-Volume (`/data`), sodass `openclaw.json`, agentenspezifische `auth-profiles.json`, Kanal-/Provider-Zustand, Sitzungen und Arbeitsbereich erneute Bereitstellungen überdauern
 
-## Erforderliche Railway-Einstellungen
+## Kanal verbinden
 
-### Public Networking
+Verwenden Sie für Anweisungen zur Kanaleinrichtung die Control UI unter `/openclaw` oder führen Sie `openclaw onboard` über die Shell von Railway aus:
 
-Aktivieren Sie **HTTP Proxy** für den Dienst.
-
-- Port: `8080`
-
-### Volume (erforderlich)
-
-Hängen Sie ein Volume an, das unter folgendem Pfad gemountet ist:
-
-- `/data`
-
-### Variables
-
-Setzen Sie diese Variablen für den Dienst:
-
-- `OPENCLAW_GATEWAY_PORT=8080` (erforderlich — muss mit dem Port in Public Networking übereinstimmen)
-- `OPENCLAW_GATEWAY_TOKEN` (erforderlich; als Admin-Geheimnis behandeln)
-- `OPENCLAW_STATE_DIR=/data/.openclaw` (empfohlen)
-- `OPENCLAW_WORKSPACE_DIR=/data/workspace` (empfohlen)
-
-## Einen Kanal verbinden
-
-Verwenden Sie die Control UI unter `/openclaw` oder führen Sie `openclaw onboard` über die Railway-Shell aus, um Anweisungen zur Kanaleinrichtung zu erhalten:
-
-- [Telegram](/de/channels/telegram) (am schnellsten — nur ein Bot-Token)
 - [Discord](/de/channels/discord)
+- [Telegram](/de/channels/telegram) (am schnellsten -- nur ein Bot-Token erforderlich)
 - [Alle Kanäle](/de/channels)
 
-## Backups und Migration
+## Sicherungen und Migration
 
-Exportieren Sie Ihren Status, Ihre Konfiguration, Auth-Profile und Ihren Workspace:
+Exportieren Sie Ihren Zustand, Ihre Konfiguration, Ihre Authentifizierungsprofile und Ihren Arbeitsbereich:
 
 ```bash
 openclaw backup create
 ```
 
-Dadurch wird ein portables Backup-Archiv mit dem OpenClaw-Status sowie jedem konfigurierten
-Workspace erstellt. Siehe [Backup](/de/cli/backup) für Details.
+Dadurch wird ein portables Sicherungsarchiv mit dem OpenClaw-Zustand und allen konfigurierten Arbeitsbereichen erstellt. Weitere Informationen finden Sie unter [Sicherung](/de/cli/backup).
 
 ## Nächste Schritte
 
-- Messaging-Kanäle einrichten: [Channels](/de/channels)
-- Das Gateway konfigurieren: [Gateway configuration](/de/gateway/configuration)
-- OpenClaw aktuell halten: [Updating](/de/install/updating)
+- Messaging-Kanäle einrichten: [Kanäle](/de/channels)
+- Gateway konfigurieren: [Gateway-Konfiguration](/de/gateway/configuration)
+- OpenClaw aktuell halten: [Aktualisierung](/de/install/updating)

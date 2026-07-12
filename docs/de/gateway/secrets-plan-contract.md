@@ -1,27 +1,26 @@
 ---
 read_when:
-    - Erstellen oder Überprüfen von `openclaw secrets apply`-Plänen
-    - Debuggen von `Invalid plan target path`-Fehlern
-    - Zieltyp und Pfadvalidierungsverhalten verstehen
-summary: 'Vertrag für `secrets apply`-Pläne: Zielvalidierung, Pfadabgleich und `auth-profiles.json`-Zielumfang'
-title: Vertrag für den Anwendungsplan von Geheimnissen
+    - Generieren oder Überprüfen von `openclaw secrets apply`-Plänen
+    - Fehler vom Typ `Invalid plan target path` debuggen
+    - Validierungsverhalten für Zieltyp und Pfad verstehen
+summary: 'Vertrag für `secrets apply`-Pläne: Zielvalidierung, Pfadabgleich und Zielumfang von `auth-profiles.json`'
+title: Vertrag für den Plan zur Anwendung von Geheimnissen
 x-i18n:
-    generated_at: "2026-06-27T17:33:16Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:27:27Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: 03f0ca9b433553a2f6d86d01b8c227a24b6f53ef7034a94bd648fbf04c81f13e
+    source_hash: ddaf3df7f0be326fa1c8dc8c360b03697fb58329d03c4eb8106a8740ddf6c47a
     source_path: gateway/secrets-plan-contract.md
     workflow: 16
 ---
 
-Diese Seite definiert den strikten Vertrag, der von `openclaw secrets apply` erzwungen wird.
+Diese Seite definiert den strikten Vertrag, den `openclaw secrets apply` durchsetzt. Wenn ein Ziel diesen Regeln nicht entspricht, schlägt die Anwendung fehl, bevor eine Datei geändert wird.
 
-Wenn ein Ziel nicht diesen Regeln entspricht, schlägt apply fehl, bevor die Konfiguration verändert wird.
+## Struktur der Plandatei
 
-## Plan-Dateiform
-
-`openclaw secrets apply --from <plan.json>` erwartet ein `targets`-Array mit Plan-Zielen:
+`openclaw secrets apply --from <plan.json>` erwartet ein `targets`-Array mit Planzielen:
 
 ```json5
 {
@@ -46,22 +45,16 @@ Wenn ein Ziel nicht diesen Regeln entspricht, schlägt apply fehl, bevor die Kon
 }
 ```
 
-## Provider-Upserts und -Löschungen
+`openclaw secrets configure` erzeugt Pläne in dieser Struktur. Sie können einen Plan auch manuell erstellen oder bearbeiten.
 
-Pläne können außerdem zwei optionale Felder auf oberster Ebene enthalten, die die
-`secrets.providers`-Map zusätzlich zu den Schreibvorgängen pro Ziel verändern:
+## Einfügen, Aktualisieren und Löschen von Providern
 
-- `providerUpserts` — ein Objekt, das nach Provider-Alias verschlüsselt ist. Jeder Wert ist eine
-  Provider-Definition (dieselbe Form, die unter
-  `secrets.providers.<alias>` in `openclaw.json` akzeptiert wird, z. B. ein `exec`- oder `file`-
-  Provider).
-- `providerDeletes` — ein Array von Provider-Aliassen, die entfernt werden sollen.
+Pläne können außerdem zwei optionale Felder auf oberster Ebene enthalten, die zusätzlich zu den Schreibvorgängen für die einzelnen Ziele die Zuordnung `secrets.providers` ändern:
 
-`providerUpserts` wird vor `targets` ausgeführt, sodass ein `target.ref.provider`
-auf einen Provider-Alias verweisen kann, den derselbe Plan in
-`providerUpserts` einführt. Ohne dies schlagen Pläne, die auf einen noch nicht in
-`openclaw.json` konfigurierten Alias verweisen, mit `provider "<alias>" is not
-configured` fehl.
+- `providerUpserts` -- ein Objekt, dessen Schlüssel Provider-Aliasse sind. Jeder Wert ist eine Provider-Definition (dieselbe Struktur, die in `openclaw.json` unter `secrets.providers.<alias>` akzeptiert wird, z. B. ein `exec`- oder `file`-Provider).
+- `providerDeletes` -- ein Array der zu entfernenden Provider-Aliasse.
+
+`providerUpserts` wird vor `targets` ausgeführt, sodass `target.ref.provider` auf einen Provider-Alias verweisen kann, den derselbe Plan in `providerUpserts` einführt. Ohne diese Reihenfolge schlagen Pläne, die auf einen noch nicht in `openclaw.json` konfigurierten Alias verweisen, mit `provider "<alias>" is not configured` fehl.
 
 ```json5
 {
@@ -87,81 +80,77 @@ configured` fehl.
 }
 ```
 
-Exec-Provider, die über `providerUpserts` eingeführt werden, unterliegen weiterhin den
-Exec-Zustimmungsregeln in [Zustimmungsverhalten für Exec-Provider](#exec-provider-consent-behavior):
-Pläne mit Exec-Providern erfordern im Schreibmodus `--allow-exec`.
+Über `providerUpserts` eingeführte Exec-Provider unterliegen weiterhin den Zustimmungsregeln für Exec unter [Zustimmungsverhalten für Exec-Provider](#exec-provider-consent-behavior): Pläne mit Exec-Providern erfordern im Schreibmodus `--allow-exec`.
 
-## Unterstützter Zielbereich
+## Unterstützter Zielumfang
 
-Plan-Ziele werden für unterstützte Anmeldeinformationspfade akzeptiert in:
+Planziele werden für unterstützte Anmeldedatenpfade unter [SecretRef-Anmeldedatenoberfläche](/de/reference/secretref-credential-surface) akzeptiert.
 
-- [SecretRef-Oberfläche für Anmeldeinformationen](/de/reference/secretref-credential-surface)
+## Verhalten der Zieltypen
 
-## Verhalten des Zieltyps
+`target.type` muss ein anerkannter Zieltyp sein, und der normalisierte `target.path` muss der für diesen Typ registrierten Pfadstruktur entsprechen.
 
-Allgemeine Regel:
+Einige Zieltypen akzeptieren für bestehende Pläne zusätzlich zu ihrem kanonischen Typnamen einen Kompatibilitätsalias als `target.type`:
 
-- `target.type` muss erkannt werden und der normalisierten Form von `target.path` entsprechen.
+| Kanonischer Typ                      | Akzeptierter Alias                              |
+| ------------------------------------ | ----------------------------------------------- |
+| `models.providers.apiKey`            | `models.providers.*.apiKey`                     |
+| `skills.entries.apiKey`              | `skills.entries.*.apiKey`                       |
+| `channels.googlechat.serviceAccount` | `channels.googlechat.accounts.*.serviceAccount` |
 
-Kompatibilitäts-Aliasse bleiben für bestehende Pläne akzeptiert:
-
-- `models.providers.apiKey`
-- `skills.entries.apiKey`
-- `channels.googlechat.serviceAccount`
-
-## Regeln zur Pfadvalidierung
+## Regeln für die Pfadvalidierung
 
 Jedes Ziel wird anhand aller folgenden Regeln validiert:
 
-- `type` muss ein erkannter Zieltyp sein.
-- `path` muss ein nicht leerer Punktpfad sein.
-- `pathSegments` kann weggelassen werden. Wenn es angegeben wird, muss es exakt auf denselben Pfad wie `path` normalisieren.
+- `type` muss ein anerkannter Zieltyp sein.
+- `path` muss ein nicht leerer, durch Punkte getrennter Pfad sein.
+- `pathSegments` kann weggelassen werden. Wenn es angegeben wird, muss es exakt zum selben Pfad wie `path` normalisiert werden.
 - Verbotene Segmente werden abgelehnt: `__proto__`, `prototype`, `constructor`.
-- Der normalisierte Pfad muss der registrierten Pfadform für den Zieltyp entsprechen.
-- Wenn `providerId` oder `accountId` gesetzt ist, muss es mit der im Pfad kodierten ID übereinstimmen.
-- `auth-profiles.json`-Ziele erfordern `agentId`.
-- Beim Erstellen einer neuen `auth-profiles.json`-Zuordnung muss `authProfileProvider` enthalten sein.
+- Der normalisierte Pfad muss der registrierten Pfadstruktur für den Zieltyp entsprechen.
+- Wenn `providerId` oder `accountId` gesetzt ist, muss der Wert mit der im Pfad codierten ID übereinstimmen.
+- Ziele in `auth-profiles.json` erfordern `agentId`.
+- Geben Sie beim Erstellen einer neuen Zuordnung in `auth-profiles.json` `authProfileProvider` an.
 
 ## Fehlerverhalten
 
-Wenn die Validierung eines Ziels fehlschlägt, beendet apply mit einem Fehler wie:
+Wenn die Validierung eines Ziels fehlschlägt, wird die Anwendung mit einem Fehler wie dem folgenden beendet:
 
 ```text
-Invalid plan target path for models.providers.apiKey: models.providers.openai.baseUrl
+Ungültiger Planzielpfad für models.providers.apiKey: models.providers.openai.baseUrl
 ```
 
-Für einen ungültigen Plan werden keine Schreibvorgänge übernommen.
+Bei einem ungültigen Plan werden keine Schreibvorgänge übernommen: Zielauflösung und Pfadvalidierung werden ausgeführt, bevor eine Datei verändert wird. Sobald ein gültiger Plan mit dem Schreiben beginnt, erstellt die Anwendung außerdem zunächst Momentaufnahmen aller betroffenen Dateien und stellt diese wieder her, wenn ein späterer Schreibvorgang im selben Durchlauf fehlschlägt. Dadurch führt ein unvollständiger Schreibvorgang niemals dazu, dass Konfiguration, Authentifizierungsprofile oder Umgebungszustand nicht mehr synchron sind.
 
 ## Zustimmungsverhalten für Exec-Provider
 
-- `--dry-run` überspringt Exec-SecretRef-Prüfungen standardmäßig.
-- Pläne mit Exec-SecretRefs/Providern werden im Schreibmodus abgelehnt, sofern `--allow-exec` nicht gesetzt ist.
-- Beim Validieren/Anwenden von Plänen mit Exec-Inhalten übergeben Sie `--allow-exec` sowohl in Dry-Run- als auch in Schreibbefehlen.
+- `--dry-run` überspringt standardmäßig die Prüfungen von Exec-SecretRefs.
+- Pläne mit Exec-SecretRefs/-Providern werden im Schreibmodus abgelehnt, sofern `--allow-exec` nicht gesetzt ist.
+- Übergeben Sie bei der Validierung und Anwendung von Plänen mit Exec-Inhalten `--allow-exec` sowohl an den Probelauf- als auch an den Schreibbefehl.
 
-## Hinweise zu Laufzeit- und Audit-Umfang
+## Hinweise zum Laufzeit- und Auditumfang
 
-- Nur-Ref-Einträge in `auth-profiles.json` (`keyRef`/`tokenRef`) sind in der Laufzeitauflösung und Audit-Abdeckung enthalten.
-- `secrets apply` schreibt unterstützte `openclaw.json`-Ziele, unterstützte `auth-profiles.json`-Ziele und optionale Bereinigungsziele.
+- Reine Referenzeinträge in `auth-profiles.json` (`keyRef`/`tokenRef`) werden bei der Auflösung von Laufzeitanmeldedaten und bei Audits berücksichtigt.
+- `secrets apply` schreibt unterstützte Ziele in `openclaw.json`, unterstützte Ziele in `auth-profiles.json` sowie drei optionale Bereinigungsdurchläufe, die jeweils standardmäßig aktiviert sind: `scrubEnv` (entfernt migrierte Klartextwerte aus `.env`), `scrubAuthProfilesForProviderTargets` (entfernt Klartext und nicht verwendete Referenzreste in `auth-profiles.json` für Provider, die gerade durch einen Plan migriert wurden) und `scrubLegacyAuthJson` (entfernt migrierte `api_key`-Einträge aus veralteten `auth.json`-Speichern). Setzen Sie im Plan `options.scrubEnv`, `options.scrubAuthProfilesForProviderTargets` oder `options.scrubLegacyAuthJson` auf `false`, um den jeweiligen Durchlauf zu überspringen.
 
-## Operator-Prüfungen
+## Prüfungen für Betreiber
 
 ```bash
-# Validate plan without writes
+# Plan ohne Schreibvorgänge validieren
 openclaw secrets apply --from /tmp/openclaw-secrets-plan.json --dry-run
 
-# Then apply for real
+# Anschließend tatsächlich anwenden
 openclaw secrets apply --from /tmp/openclaw-secrets-plan.json
 
-# For exec-containing plans, opt in explicitly in both modes
+# Bei Plänen mit Exec-Inhalten in beiden Modi ausdrücklich zustimmen
 openclaw secrets apply --from /tmp/openclaw-secrets-plan.json --dry-run --allow-exec
 openclaw secrets apply --from /tmp/openclaw-secrets-plan.json --allow-exec
 ```
 
-Wenn apply mit einer Meldung zu einem ungültigen Zielpfad fehlschlägt, generieren Sie den Plan mit `openclaw secrets configure` neu oder korrigieren Sie den Zielpfad auf eine oben unterstützte Form.
+Wenn die Anwendung mit einer Meldung über einen ungültigen Zielpfad fehlschlägt, erzeugen Sie den Plan mit `openclaw secrets configure` neu oder korrigieren Sie den Zielpfad entsprechend einer der oben aufgeführten unterstützten Strukturen.
 
 ## Verwandte Dokumentation
 
-- [Secrets-Verwaltung](/de/gateway/secrets)
+- [Verwaltung von Secrets](/de/gateway/secrets)
 - [CLI `secrets`](/de/cli/secrets)
-- [SecretRef-Oberfläche für Anmeldeinformationen](/de/reference/secretref-credential-surface)
+- [SecretRef-Anmeldedatenoberfläche](/de/reference/secretref-credential-surface)
 - [Konfigurationsreferenz](/de/gateway/configuration-reference)

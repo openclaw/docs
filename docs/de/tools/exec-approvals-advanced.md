@@ -1,31 +1,33 @@
 ---
 read_when:
-    - Sichere Bins oder benutzerdefinierte Safe-Bin-Profile konfigurieren
-    - Genehmigungen an Slack/Discord/Telegram oder andere Chat-Kanäle weiterleiten
+    - Sichere Binärdateien oder benutzerdefinierte Profile für sichere Binärdateien konfigurieren
+    - Weiterleitung von Genehmigungen an Slack/Discord/Telegram oder andere Chat-Kanäle
     - Implementieren eines nativen Genehmigungsclients für einen Kanal
-summary: 'Erweiterte Exec-Genehmigungen: sichere Binaries, Interpreter-Bindung, Genehmigungsweiterleitung, native Zustellung'
+summary: 'Erweiterte Ausführungsgenehmigungen: sichere Binärdateien, Interpreter-Bindung, Weiterleitung von Genehmigungen, native Zustellung'
 title: Exec-Genehmigungen — erweitert
 x-i18n:
-    generated_at: "2026-06-27T18:17:41Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:57:40Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: 3d936e1a1567d204981eec7c3262cf11f2af8fc1ed6213182954c2324718a270
+    source_hash: 99f123c7663378cc30ff9b6498c5cbc18ce9f20e9ac769755bab23af69ef1c7d
     source_path: tools/exec-approvals-advanced.md
     workflow: 16
 ---
 
-Fortgeschrittene Themen zu Exec-Genehmigungen: der `safeBins`-Fast-Path, Interpreter-/Runtime-Bindung und Genehmigungsweiterleitung an Chat-Kanäle (einschließlich nativer Zustellung). Den zentralen Richtlinien- und Genehmigungsablauf finden Sie unter [Exec-Genehmigungen](/de/tools/exec-approvals).
+Fortgeschrittene Themen zu Ausführungsgenehmigungen: der `safeBins`-Schnellpfad, die Bindung von Interpretern/Laufzeitumgebungen und die Weiterleitung von Genehmigungen an Chat-Kanäle (einschließlich nativer Zustellung).
+Die grundlegende Richtlinie und den Genehmigungsablauf finden Sie unter [Ausführungsgenehmigungen](/de/tools/exec-approvals).
 
-## Safe Bins (nur stdin)
+## Sichere Binärdateien (nur stdin)
 
-`tools.exec.safeBins` definiert eine kleine Liste von **nur-stdin**-Binärdateien (zum Beispiel `cut`), die im Allowlist-Modus **ohne** explizite Allowlist-Einträge ausgeführt werden können. Safe Bins lehnen positionale Dateiargumente und pfadähnliche Tokens ab, sodass sie nur mit dem eingehenden Stream arbeiten können. Behandeln Sie dies als engen Fast-Path für Stream-Filter, nicht als allgemeine Vertrauensliste.
+`tools.exec.safeBins` benennt **ausschließlich über stdin arbeitende** Binärdateien (beispielsweise `cut`), die im Allowlist-Modus **ohne** explizite Allowlist-Einträge ausgeführt werden. Sichere Binärdateien lehnen positionale Dateiargumente und pfadähnliche Token ab, sodass sie nur den eingehenden Datenstrom verarbeiten können. Betrachten Sie dies als einen eng begrenzten Schnellpfad für Datenstromfilter, nicht als allgemeine Vertrauensliste.
 
 <Warning>
-Fügen Sie **keine** Interpreter- oder Runtime-Binärdateien (zum Beispiel `python3`, `node`, `ruby`, `bash`, `sh`, `zsh`) zu `safeBins` hinzu. Wenn ein Befehl Code auswerten, Unterbefehle ausführen oder konstruktionsbedingt Dateien lesen kann, bevorzugen Sie explizite Allowlist-Einträge und lassen Sie Genehmigungsaufforderungen aktiviert. Benutzerdefinierte Safe Bins müssen ein explizites Profil in `tools.exec.safeBinProfiles.<bin>` definieren.
+Fügen Sie **keine** Interpreter- oder Laufzeitbinärdateien (beispielsweise `python3`, `node`, `ruby`, `bash`, `sh`, `zsh`) zu `safeBins` hinzu. Wenn ein Befehl konzeptionell Code auswerten, Unterbefehle ausführen oder Dateien lesen kann, verwenden Sie vorzugsweise explizite Allowlist-Einträge und lassen Sie Genehmigungsaufforderungen aktiviert. Benutzerdefinierte sichere Binärdateien müssen unter `tools.exec.safeBinProfiles.<bin>` ein explizites Profil definieren.
 </Warning>
 
-Standardmäßige Safe Bins:
+Standardmäßige sichere Binärdateien:
 
 [//]: # "SAFE_BIN_DEFAULTS:START"
 
@@ -33,270 +35,315 @@ Standardmäßige Safe Bins:
 
 [//]: # "SAFE_BIN_DEFAULTS:END"
 
-`grep` und `sort` sind nicht in der Standardliste enthalten. Wenn Sie sie aktivieren, behalten Sie explizite Allowlist-Einträge für ihre Workflows ohne stdin bei. Für `grep` im Safe-Bin-Modus geben Sie das Muster mit `-e`/`--regexp` an; die positionale Musterform wird abgelehnt, damit Dateioperanden nicht als mehrdeutige positionale Argumente eingeschleust werden können.
+`grep` und `sort` sind nicht in der Standardliste enthalten. Wenn Sie sie aktivieren, behalten Sie explizite Allowlist-Einträge für deren Arbeitsabläufe ohne stdin bei. Geben Sie für `grep` im Safe-Bin-Modus das Muster mit `-e`/`--regexp` an; die positionale Musterform wird abgelehnt, damit Dateioperanden nicht als mehrdeutige positionale Argumente eingeschleust werden können.
 
 ### Argv-Validierung und abgelehnte Flags
 
-Die Validierung ist ausschließlich anhand der argv-Form deterministisch (keine Existenzprüfungen im Host-Dateisystem), wodurch verhindert wird, dass Allow-/Deny-Unterschiede als Datei-Existenz-Orakel wirken. Dateiorientierte Optionen werden für standardmäßige Safe Bins abgelehnt; lange Optionen werden fail-closed validiert (unbekannte Flags und mehrdeutige Abkürzungen werden abgelehnt).
+Die Validierung erfolgt deterministisch ausschließlich anhand der argv-Struktur (ohne Existenzprüfungen im Host-Dateisystem), wodurch ein Datei-Existenz-Orakel aufgrund unterschiedlicher Zulassungs-/Ablehnungsergebnisse verhindert wird. Dateiorientierte Optionen werden für standardmäßige sichere Binärdateien abgelehnt; lange Optionen werden nach dem Fail-Closed-Prinzip validiert (unbekannte Flags und mehrdeutige Abkürzungen werden abgelehnt). Erkannte schreibgeschützte boolesche Flags der standardmäßigen Binärdateien (beispielsweise `wc -l`, `tr -d`, `uniq -c`) werden akzeptiert, während unbekannte kurze Flags nach dem Fail-Closed-Prinzip behandelt werden und eine manuelle Genehmigung erfordern.
 
-Abgelehnte Flags nach Safe-Bin-Profil:
+Nach Safe-Bin-Profil abgelehnte Flags:
 
 [//]: # "SAFE_BIN_DENIED_FLAGS:START"
 
 - `grep`: `--dereference-recursive`, `--directories`, `--exclude-from`, `--file`, `--recursive`, `-R`, `-d`, `-f`, `-r`
 - `jq`: `--argfile`, `--from-file`, `--library-path`, `--rawfile`, `--slurpfile`, `-L`, `-f`
 - `sort`: `--compress-program`, `--files0-from`, `--output`, `--random-source`, `--temporary-directory`, `-T`, `-o`
+- `tail`: `--follow`, `--retry`, `-F`, `-f`
 - `wc`: `--files0-from`
 
 [//]: # "SAFE_BIN_DENIED_FLAGS:END"
 
-Safe Bins erzwingen außerdem, dass argv-Tokens zur Ausführungszeit für nur-stdin-Segmente als **literaler Text** behandelt werden (kein Globbing und keine `$VARS`-Expansion), sodass Muster wie `*` oder `$HOME/...` nicht verwendet werden können, um Dateilesezugriffe einzuschleusen.
+Sichere Binärdateien erzwingen außerdem, dass argv-Token zur Ausführungszeit für ausschließlich über stdin arbeitende Segmente als **Literaltext** behandelt werden (kein Globbing und keine `$VARS`-Expansion), sodass Muster wie `*` oder `$HOME/...` nicht zum Einschleusen von Dateizugriffen verwendet werden können. `awk`, `sed` und `jq` werden als sichere Binärdateien immer abgelehnt, da ihre Semantik nicht auf eine ausschließliche stdin-Verarbeitung validiert werden kann: `jq` kann Umgebungsdaten lesen und jq-Code aus Modulen oder Startdateien laden. Verwenden Sie für diese Werkzeuge statt `safeBins` einen expliziten Allowlist-Eintrag oder eine Genehmigungsaufforderung.
 
-### Vertrauenswürdige Binärverzeichnisse
+### Vertrauenswürdige Verzeichnisse für Binärdateien
 
-Safe Bins müssen aus vertrauenswürdigen Binärverzeichnissen aufgelöst werden (Systemstandards plus optional `tools.exec.safeBinTrustedDirs`). `PATH`-Einträge werden nie automatisch als vertrauenswürdig eingestuft. Standardmäßige vertrauenswürdige Verzeichnisse sind absichtlich minimal: `/bin`, `/usr/bin`. Wenn Ihre Safe-Bin-Ausführungsdatei in Paketmanager-/Benutzerpfaden liegt (zum Beispiel `/opt/homebrew/bin`, `/usr/local/bin`, `/opt/local/bin`, `/snap/bin`), fügen Sie diese explizit zu `tools.exec.safeBinTrustedDirs` hinzu.
+Sichere Binärdateien müssen aus vertrauenswürdigen Verzeichnissen für Binärdateien aufgelöst werden (Systemstandards plus optional `tools.exec.safeBinTrustedDirs`). `PATH`-Einträgen wird niemals automatisch vertraut. Die standardmäßig vertrauenswürdigen Verzeichnisse sind bewusst minimal gehalten: `/bin`, `/usr/bin`. Wenn sich Ihre Safe-Bin-Ausführungsdatei in Paketmanager-/Benutzerpfaden befindet (beispielsweise `/opt/homebrew/bin`, `/usr/local/bin`, `/opt/local/bin`, `/snap/bin`), fügen Sie diese explizit zu `tools.exec.safeBinTrustedDirs` hinzu.
 
 ### Shell-Verkettung, Wrapper und Multiplexer
 
-Shell-Verkettung (`&&`, `||`, `;`) ist erlaubt, wenn jedes Top-Level-Segment die Allowlist erfüllt (einschließlich Safe Bins oder automatischer Skill-Zulassung). Umleitungen bleiben im Allowlist-Modus nicht unterstützt. Befehlssubstitution (`$()` / Backticks) wird während des Allowlist-Parsings abgelehnt, auch innerhalb doppelter Anführungszeichen; verwenden Sie einfache Anführungszeichen, wenn Sie literalen `$()`-Text benötigen.
+Shell-Verkettung (`&&`, `||`, `;`) ist zulässig, wenn jedes Segment der obersten Ebene die Allowlist erfüllt (einschließlich sicherer Binärdateien oder automatischer Skill-Zulassung). Umleitungen werden im Allowlist-Modus weiterhin nicht unterstützt. Befehlssubstitution (`$()` / Backticks) wird bei der Allowlist-Analyse abgelehnt, auch innerhalb doppelter Anführungszeichen; verwenden Sie einfache Anführungszeichen, wenn Sie literalen `$()`-Text benötigen.
 
-Bei Genehmigungen für macOS-Companion-Apps wird roher Shell-Text, der Shell-Steuerungs- oder Expansionssyntax enthält (`&&`, `||`, `;`, `|`, `` ` ``, `$`, `<`, `>`, `(`, `)`), als Allowlist-Fehlschlag behandelt, sofern nicht die Shell-Binärdatei selbst in der Allowlist steht.
+Bei Genehmigungen über die macOS-Begleit-App wird unverarbeiteter Shell-Text, der Shell-Steuerungs- oder Expansionssyntax enthält (`&&`, `||`, `;`, `|`, `` ` ``, `$`, `<`, `>`, `(`, `)`), als fehlender Allowlist-Treffer behandelt, sofern die Shell-Binärdatei selbst nicht auf der Allowlist steht.
 
-Für Shell-Wrapper (`bash|sh|zsh ... -c/-lc`) werden anforderungsspezifische Env-Überschreibungen auf eine kleine explizite Allowlist reduziert (`TERM`, `LANG`, `LC_*`, `COLORTERM`, `NO_COLOR`, `FORCE_COLOR`).
+Bei Shell-Wrappern (`bash|sh|zsh ... -c/-lc`) werden anfragespezifische Umgebungsüberschreibungen auf eine kleine explizite Allowlist reduziert (`TERM`, `LANG`, `LC_*`, `COLORTERM`, `NO_COLOR`, `FORCE_COLOR`).
 
-Bei `allow-always`-Entscheidungen im Allowlist-Modus speichern bekannte Dispatch-Wrapper (`env`, `flock`, `nice`, `nohup`, `stdbuf`, `timeout`) den Pfad der inneren Ausführungsdatei statt des Wrapper-Pfads. Shell-Multiplexer (`busybox`, `toybox`) werden für Shell-Applets (`sh`, `ash` usw.) auf dieselbe Weise entpackt. Wenn ein Wrapper oder Multiplexer nicht sicher entpackt werden kann, wird automatisch kein Allowlist-Eintrag gespeichert.
+Bei `allow-always`-Entscheidungen im Allowlist-Modus speichern transparente Dispatch-Wrapper (beispielsweise `env`, `flock`, `nice`, `nohup`, `stdbuf`, `timeout`) den Pfad der inneren Ausführungsdatei statt des Wrapper-Pfads. Shell-Multiplexer (`busybox`, `toybox`) werden für Shell-Applets (`sh`, `ash` usw.) auf dieselbe Weise entpackt. Wenn ein Wrapper oder Multiplexer nicht sicher entpackt werden kann, wird nicht automatisch ein Allowlist-Eintrag gespeichert.
 
-Wenn Sie Interpreter wie `python3` oder `node` in die Allowlist aufnehmen, bevorzugen Sie `tools.exec.strictInlineEval=true`, damit Inline-Eval weiterhin eine explizite Genehmigung erfordert. Im strikten Modus kann `allow-always` weiterhin harmlose Interpreter-/Skriptaufrufe speichern, aber Inline-Eval-Träger werden nicht automatisch gespeichert.
+Wenn Sie Interpreter wie `python3` oder `node` auf die Allowlist setzen, verwenden Sie vorzugsweise `tools.exec.strictInlineEval=true`, damit die Inline-Auswertung weiterhin eine explizite Genehmigung erfordert. Im strikten Modus kann `allow-always` weiterhin unbedenkliche Interpreter-/Skriptaufrufe speichern, Inline-Auswertungsträger werden jedoch nicht automatisch gespeichert.
 
-### Safe Bins versus Allowlist
+### Sichere Binärdateien im Vergleich zur Allowlist
 
-| Thema | `tools.exec.safeBins` | Allowlist (`exec-approvals.json`) |
-| ---------------- | ------------------------------------------------------ | ---------------------------------------------------------------------------------- |
-| Ziel | Enge stdin-Filter automatisch zulassen | Bestimmten Ausführungsdateien explizit vertrauen |
-| Abgleichstyp | Name der Ausführungsdatei + Safe-Bin-argv-Richtlinie | Glob für aufgelösten Ausführungsdateipfad oder bloßer Befehlsnamen-Glob für über PATH aufgerufene Befehle |
-| Argumentumfang | Durch Safe-Bin-Profil und Literal-Token-Regeln eingeschränkt | Standardmäßig Pfadabgleich; optional kann `argPattern` geparstes argv einschränken |
-| Typische Beispiele | `head`, `tail`, `tr`, `wc` | `jq`, `python3`, `node`, `ffmpeg`, benutzerdefinierte CLIs |
-| Beste Verwendung | Texttransformationen mit geringem Risiko in Pipelines | Jedes Tool mit breiterem Verhalten oder Nebenwirkungen |
+| Thema              | `tools.exec.safeBins`                                             | Allowlist (`exec-approvals.json`)                                                                   |
+| ------------------ | ----------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| Ziel               | Eng begrenzte stdin-Filter automatisch zulassen                   | Bestimmten Ausführungsdateien explizit vertrauen                                                    |
+| Übereinstimmungstyp | Name der Ausführungsdatei + Safe-Bin-argv-Richtlinie              | Glob für den aufgelösten Pfad der Ausführungsdatei oder reinen Befehlsnamen bei über PATH aufgerufenen Befehlen |
+| Argumentumfang     | Durch Safe-Bin-Profil und Regeln für literale Token eingeschränkt | Standardmäßig Pfadabgleich; optional kann `argPattern` die analysierten argv einschränken            |
+| Typische Beispiele | `head`, `tail`, `tr`, `wc`                                        | `jq`, `python3`, `node`, `ffmpeg`, benutzerdefinierte CLIs                                          |
+| Beste Verwendung   | Texttransformationen mit geringem Risiko in Pipelines             | Jedes Werkzeug mit umfassenderem Verhalten oder Nebenwirkungen                                      |
 
 Konfigurationsort:
 
 - `safeBins` stammt aus der Konfiguration (`tools.exec.safeBins` oder pro Agent `agents.list[].tools.exec.safeBins`).
 - `safeBinTrustedDirs` stammt aus der Konfiguration (`tools.exec.safeBinTrustedDirs` oder pro Agent `agents.list[].tools.exec.safeBinTrustedDirs`).
 - `safeBinProfiles` stammt aus der Konfiguration (`tools.exec.safeBinProfiles` oder pro Agent `agents.list[].tools.exec.safeBinProfiles`). Profilschlüssel pro Agent überschreiben globale Schlüssel.
-- Allowlist-Einträge liegen in der hostlokalen Genehmigungsdatei unter `agents.<id>.allowlist` (oder über Control UI / `openclaw approvals allowlist ...`).
-- `openclaw security audit` warnt mit `tools.exec.safe_bins_interpreter_unprofiled`, wenn Interpreter-/Runtime-Bins ohne explizite Profile in `safeBins` erscheinen.
-- `openclaw doctor --fix` kann fehlende benutzerdefinierte `safeBinProfiles.<bin>`-Einträge als `{}` erzeugen (anschließend prüfen und einschränken). Interpreter-/Runtime-Bins werden nicht automatisch erzeugt.
+- Allowlist-Einträge befinden sich in der lokalen Genehmigungsdatei des Hosts unter `agents.<id>.allowlist` (oder über Control UI / `openclaw approvals allowlist ...`).
+- `openclaw security audit` warnt mit `tools.exec.safe_bins_interpreter_unprofiled`, wenn Interpreter-/Laufzeitbinärdateien ohne explizite Profile in `safeBins` erscheinen.
+- `openclaw doctor --fix` kann fehlende benutzerdefinierte `safeBinProfiles.<bin>`-Einträge als `{}` vorbereiten (anschließend prüfen und einschränken). Interpreter-/Laufzeitbinärdateien werden nicht automatisch vorbereitet.
 
 Beispiel für ein benutzerdefiniertes Profil:
 __OC_I18N_900000__
-Wenn Sie `jq` explizit in `safeBins` aufnehmen, lehnt OpenClaw das `env`-Builtin im Safe-Bin-Modus trotzdem ab, sodass `jq -n env` die Host-Prozessumgebung nicht ohne expliziten Allowlist-Pfad oder Genehmigungsaufforderung ausgeben kann.
+## Interpreter-/Laufzeitbefehle
 
-## Interpreter-/Runtime-Befehle
+Durch Genehmigungen abgesicherte Interpreter-/Laufzeitausführungen sind bewusst konservativ:
 
-Genehmigungsgestützte Interpreter-/Runtime-Ausführungen sind absichtlich konservativ:
+- Der exakte argv-/cwd-/env-Kontext wird immer gebunden.
+- Direkte Shell-Skript- und direkte Laufzeitdateiformen werden nach bestem Bemühen an einen konkreten lokalen Dateischnappschuss gebunden.
+- Gängige Paketmanager-Wrapperformen, die weiterhin zu genau einer direkten lokalen Datei aufgelöst werden (beispielsweise `pnpm exec`, `pnpm node`, `npm exec`, `npx`), werden vor der Bindung entpackt.
+- Wenn OpenClaw nicht genau eine konkrete lokale Datei für einen Interpreter-/Laufzeitbefehl identifizieren kann (beispielsweise Paketskripte, Auswertungsformen, laufzeitspezifische Loader-Ketten oder mehrdeutige Formen mit mehreren Dateien), wird die genehmigungsgestützte Ausführung abgelehnt, statt eine nicht vorhandene semantische Abdeckung zu behaupten.
+- Bevorzugen Sie für solche Arbeitsabläufe Sandboxing, eine separate Host-Grenze oder eine explizit vertrauenswürdige Allowlist beziehungsweise einen vollständigen Arbeitsablauf, bei dem der Betreiber die umfassendere Laufzeitsemantik akzeptiert.
 
-- Der genaue argv-/cwd-/env-Kontext ist immer gebunden.
-- Direkte Shell-Skript- und direkte Runtime-Dateiformen werden bestmöglich an einen konkreten lokalen Datei-Snapshot gebunden.
-- Gängige Paketmanager-Wrapper-Formen, die weiterhin auf eine direkte lokale Datei auflösen (zum Beispiel `pnpm exec`, `pnpm node`, `npm exec`, `npx`), werden vor der Bindung entpackt.
-- Wenn OpenClaw für einen Interpreter-/Runtime-Befehl nicht genau eine konkrete lokale Datei identifizieren kann (zum Beispiel Paket-Skripte, Eval-Formen, runtime-spezifische Loader-Ketten oder mehrdeutige Mehrdatei-Formen), wird die genehmigungsgestützte Ausführung verweigert, statt eine semantische Abdeckung zu behaupten, die sie nicht hat.
-- Für diese Workflows bevorzugen Sie Sandboxing, eine separate Host-Grenze oder einen explizit vertrauenswürdigen Allowlist-/vollständigen Workflow, bei dem der Operator die breitere Runtime-Semantik akzeptiert.
+Wenn Genehmigungen erforderlich sind, gibt das Exec-Werkzeug sofort eine Genehmigungs-ID zurück. Verwenden Sie diese ID, um später auftretende Systemereignisse der genehmigten Ausführung (`Exec finished` und, sofern konfiguriert, `Exec running`) zuzuordnen.
+Wenn vor Ablauf des Zeitlimits keine Entscheidung eintrifft, wird die Anfrage als Genehmigungszeitüberschreitung behandelt und als endgültige Ablehnung des Host-Befehls gemeldet. Bei asynchronen Genehmigungen des Haupt-Agenten mit einer Ursprungssitzung setzt OpenClaw diese Sitzung außerdem mit einer internen Folgemeldung fort, damit der Agent erkennt, dass der Befehl nicht ausgeführt wurde, anstatt später ein fehlendes Ergebnis zu reparieren. Ausstehende Exec-Genehmigungen laufen standardmäßig nach 30 Minuten ab.
 
-Wenn Genehmigungen erforderlich sind, gibt das Exec-Tool sofort eine Genehmigungs-ID zurück. Verwenden Sie diese ID, um später genehmigte Systemereignisse zur Ausführung zu korrelieren (`Exec finished` und `Exec running`, wenn konfiguriert). Wenn vor dem Timeout keine Entscheidung eintrifft, wird die Anforderung als Genehmigungs-Timeout behandelt und als terminale Host-Befehlsverweigerung angezeigt. Bei asynchronen Genehmigungen des Haupt-Agenten mit ursprünglicher Sitzung setzt OpenClaw diese Sitzung außerdem mit einem internen Follow-up fort, damit der Agent erkennt, dass der Befehl nicht ausgeführt wurde, statt später ein fehlendes Ergebnis zu reparieren.
+### Verhalten der Folgezustellung
 
-### Verhalten bei Follow-up-Zustellung
+Nachdem eine genehmigte asynchrone Exec-Ausführung abgeschlossen ist, sendet OpenClaw eine nachfolgende `agent`-Runde an dieselbe Sitzung.
+Abgelehnte asynchrone Genehmigungen verwenden für den Ablehnungsstatus denselben Folgemeldungspfad der Hauptsitzung, registrieren jedoch keine Übergaben an eine privilegierte Laufzeitumgebung und führen den Befehl nicht aus. Ablehnungen ohne fortsetzbare Hauptsitzung werden entweder unterdrückt oder über einen sicheren direkten Pfad gemeldet, sofern ein solcher vorhanden ist.
 
-Nachdem ein genehmigter asynchroner Exec abgeschlossen ist, sendet OpenClaw einen Follow-up-`agent`-Turn an dieselbe Sitzung. Abgelehnte asynchrone Genehmigungen verwenden denselben Hauptsitzungs-Follow-up-Pfad für den Ablehnungsstatus, registrieren aber keine erhöhten Runtime-Handoffs und führen den Befehl nicht aus. Ablehnungen ohne fortsetzbare Hauptsitzung werden entweder unterdrückt oder über eine sichere direkte Route gemeldet, wenn eine vorhanden ist.
+- Wenn ein gültiges externes Zustellungsziel vorhanden ist (zustellbarer Kanal plus Ziel `to`), verwendet die Folgezustellung diesen Kanal.
+- Bei reinen Webchat- oder internen Sitzungsabläufen ohne externes Ziel bleibt die Folgezustellung auf die Sitzung beschränkt (`deliver: false`).
+- Wenn ein Aufrufer ausdrücklich eine strikte externe Zustellung verlangt, aber kein externer Kanal aufgelöst werden kann, schlägt die Anfrage mit `INVALID_REQUEST` fehl.
+- Wenn `bestEffortDeliver` aktiviert ist und kein externer Kanal aufgelöst werden kann, wird die Zustellung auf eine reine Sitzungszustellung herabgestuft, anstatt fehlzuschlagen.
 
-- Wenn ein gültiges externes Zustellziel vorhanden ist (zustellbarer Kanal plus Ziel `to`), verwendet die Follow-up-Zustellung diesen Kanal.
-- In reinem Webchat oder internen Sitzungsabläufen ohne externes Ziel bleibt die Follow-up-Zustellung nur sitzungsintern (`deliver: false`).
-- Wenn ein Aufrufer explizit strikte externe Zustellung anfordert, aber kein externer Kanal auflösbar ist, schlägt die Anforderung mit `INVALID_REQUEST` fehl.
-- Wenn `bestEffortDeliver` aktiviert ist und kein externer Kanal aufgelöst werden kann, wird die Zustellung auf nur sitzungsintern herabgestuft, statt fehlzuschlagen.
+## Weiterleitung von Genehmigungen an Chat-Kanäle
 
-## Genehmigungsweiterleitung an Chat-Kanäle
-
-Sie können Exec-Genehmigungsaufforderungen an jeden Chat-Kanal weiterleiten (einschließlich Plugin-Kanälen) und sie mit `/approve` genehmigen. Dies verwendet die normale Pipeline für ausgehende Zustellung.
+Sie können Exec-Genehmigungsaufforderungen an jeden Chat-Kanal (einschließlich Plugin-Kanälen) weiterleiten und mit `/approve` genehmigen. Dabei wird die normale Pipeline für ausgehende Zustellungen verwendet.
 
 Konfiguration:
 __OC_I18N_900001__
 Antwort im Chat:
 __OC_I18N_900002__
-Der Befehl `/approve` verarbeitet sowohl Exec-Genehmigungen als auch Plugin-Genehmigungen. Wenn die ID keiner ausstehenden Exec-Genehmigung entspricht, prüft er stattdessen automatisch Plugin-Genehmigungen.
+Der Befehl `/approve` verarbeitet sowohl Exec-Genehmigungen als auch Plugin-Genehmigungen. Wenn die ID keiner ausstehenden Exec-Genehmigung entspricht, werden stattdessen automatisch die Plugin-Genehmigungen geprüft. Dieser Fallback ist auf Fehler der Art „Genehmigung nicht gefunden“ beschränkt; bei einer tatsächlichen Ablehnung oder einem Fehler einer Exec-Genehmigung erfolgt nicht stillschweigend ein erneuter Versuch als Plugin-Genehmigung.
 
 ### Weiterleitung von Plugin-Genehmigungen
 
-Die Weiterleitung von Plugin-Genehmigungen verwendet dieselbe Zustellpipeline wie Exec-Genehmigungen, hat aber eine eigene unabhängige Konfiguration unter `approvals.plugin`. Das Aktivieren oder Deaktivieren des einen beeinflusst das andere nicht. Informationen zum Verhalten beim Erstellen von Plugins, zu Anforderungsfeldern und zur Entscheidungssemantik finden Sie unter [Plugin-Berechtigungsanforderungen](/plugins/plugin-permission-requests).
+Die Weiterleitung von Plugin-Genehmigungen verwendet dieselbe Zustellungspipeline wie Exec-Genehmigungen, verfügt jedoch unter `approvals.plugin` über eine eigene unabhängige Konfiguration. Das Aktivieren oder Deaktivieren der einen Funktion wirkt sich nicht auf die andere aus.
+Informationen zum Verhalten bei der Plugin-Erstellung, zu Anfragefeldern und zur Entscheidungssemantik finden Sie unter [Plugin-Berechtigungsanfragen](/plugins/plugin-permission-requests).
 __OC_I18N_900003__
-Die Konfigurationsform ist identisch mit `approvals.exec`: `enabled`, `mode`, `agentFilter`, `sessionFilter` und `targets` funktionieren auf dieselbe Weise.
+Die Konfigurationsstruktur ist identisch mit `approvals.exec`: `enabled`, `mode`, `agentFilter`, `sessionFilter` und `targets` funktionieren auf dieselbe Weise.
 
-Kanäle, die gemeinsame interaktive Antworten unterstützen, rendern dieselben Genehmigungsschaltflächen für Exec- und Plugin-Genehmigungen. Kanäle ohne gemeinsame interaktive UI fallen auf Klartext mit `/approve`-Anweisungen zurück.
-Plugin-Genehmigungsanforderungen können die verfügbaren Entscheidungen einschränken. Genehmigungsoberflächen verwenden den in der Anforderung deklarierten Entscheidungssatz, und der Gateway lehnt Versuche ab, eine nicht angebotene Entscheidung zu übermitteln.
+Kanäle, die gemeinsame interaktive Antworten unterstützen, zeigen sowohl für Exec- als auch für
+Plugin-Genehmigungen dieselben Genehmigungsschaltflächen an. Kanäle ohne gemeinsame interaktive
+Benutzeroberfläche greifen auf Klartext mit `/approve`-Anweisungen zurück. Bei
+Plugin-Genehmigungsanfragen können die verfügbaren Entscheidungen eingeschränkt sein:
+Genehmigungsoberflächen verwenden die in der Anfrage deklarierte Entscheidungsmenge, und das
+Gateway lehnt Versuche ab, eine nicht angebotene Entscheidung zu übermitteln.
 
 ### Genehmigungen im selben Chat auf jedem Kanal
 
-Wenn eine Exec- oder Plugin-Genehmigungsanforderung von einer zustellbaren Chat-Oberfläche stammt, kann derselbe Chat sie jetzt standardmäßig mit `/approve` genehmigen. Dies gilt zusätzlich zu den bestehenden Web-UI- und Terminal-UI-Abläufen für Kanäle wie Slack, Matrix und Microsoft Teams.
+Wenn eine Exec- oder Plugin-Genehmigungsanfrage von einer Chat-Oberfläche stammt, über die
+Nachrichten zugestellt werden können, kann sie standardmäßig in demselben Chat mit `/approve`
+genehmigt werden. Dies gilt zusätzlich zu den bestehenden Abläufen der Web-Benutzeroberfläche und
+Terminal-Benutzeroberfläche für Slack, Matrix, Microsoft Teams und ähnliche Chats, über die
+Nachrichten zugestellt werden können. Dabei wird das normale Kanalauthentifizierungsmodell für
+diese Unterhaltung verwendet. Wenn der ursprüngliche Chat bereits Befehle senden und Antworten
+empfangen kann, benötigen ausstehende Genehmigungsanfragen nicht mehr allein zu diesem Zweck einen
+separaten nativen Zustellungsadapter.
 
-Dieser gemeinsame Textbefehls-Pfad verwendet das normale Authentifizierungsmodell des Channels für diese Unterhaltung. Wenn der
-ursprüngliche Chat bereits Befehle senden und Antworten empfangen kann, benötigen Genehmigungsanfragen keinen
-separaten nativen Zustelladapter mehr, nur um ausstehend zu bleiben.
-
-Discord und Telegram unterstützen ebenfalls `/approve` im selben Chat, aber diese Channels verwenden weiterhin ihre
-aufgelöste Genehmigerliste für die Autorisierung, auch wenn die native Genehmigungszustellung deaktiviert ist.
-
-Für Telegram und andere native Genehmigungsclients, die den Gateway direkt aufrufen,
-ist dieser Fallback absichtlich auf Fehler vom Typ „Genehmigung nicht gefunden“ begrenzt. Eine echte
-Exec-Genehmigungsverweigerung oder ein Fehler wird nicht stillschweigend erneut als Plugin-Genehmigung versucht.
+Discord, Telegram und QQ bot unterstützen ebenfalls `/approve` im selben Chat. Diese Kanäle
+verwenden jedoch auch bei deaktivierter nativer Genehmigungszustellung weiterhin ihre aufgelöste
+Liste der Genehmigungsberechtigten zur Autorisierung.
 
 ### Native Genehmigungszustellung
 
-Einige Channels können auch als native Genehmigungsclients fungieren. Native Clients ergänzen den gemeinsamen
-`/approve`-Ablauf im selben Chat um Genehmiger-DMs, Fanout in den Ursprungs-Chat
-und channelspezifische interaktive Genehmigungs-UX.
+Einige Kanäle können auch als native Genehmigungsclients fungieren: Discord, Slack, Telegram,
+Matrix und QQ bot. Native Clients ergänzen den gemeinsamen `/approve`-Ablauf im selben Chat um
+Direktnachrichten an Genehmigungsberechtigte, eine Verteilung an den ursprünglichen Chat und eine
+kanalspezifische interaktive Bedienoberfläche für Genehmigungen.
 
-Wenn native Genehmigungskarten/-buttons verfügbar sind, ist diese native UI der primäre
-agentenseitige Pfad. Der Agent sollte nicht zusätzlich einen doppelten einfachen Chat-Befehl
-`/approve` ausgeben, es sei denn, das Tool-Ergebnis sagt, dass Chat-Genehmigungen nicht verfügbar sind oder
-manuelle Genehmigung der einzige verbleibende Pfad ist.
+Wenn native Genehmigungskarten oder -schaltflächen verfügbar sind, ist diese native
+Benutzeroberfläche der primäre Pfad für den Agenten. Der Agent sollte nicht zusätzlich einen
+doppelten `/approve`-Befehl im normalen Chat ausgeben, sofern das Werkzeugergebnis nicht angibt,
+dass Chat-Genehmigungen nicht verfügbar sind oder eine manuelle Genehmigung der einzige verbleibende
+Pfad ist.
 
-Wenn ein nativer Genehmigungsclient konfiguriert ist, aber keine native Runtime für
-den ursprünglichen Channel aktiv ist, lässt OpenClaw die lokale deterministische `/approve`-
-Aufforderung sichtbar. Wenn die native Runtime aktiv ist und die Zustellung versucht, aber kein
-Ziel die Karte erhält, sendet OpenClaw einen Fallback-Hinweis im selben Chat mit dem
-exakten Befehl `/approve <id> <decision>`, damit die Anfrage weiterhin aufgelöst werden kann.
+Wenn ein nativer Genehmigungsclient konfiguriert ist, aber für den ursprünglichen Kanal keine native
+Runtime aktiv ist, hält OpenClaw die lokale deterministische `/approve`-Aufforderung sichtbar. Wenn
+die native Runtime aktiv ist und eine Zustellung versucht, aber kein Ziel die Karte empfängt,
+sendet OpenClaw im selben Chat einen Fallback-Hinweis mit dem exakten Befehl
+`/approve <id> <decision>`, damit die Anfrage weiterhin bearbeitet werden kann.
 
-Generisches Modell:
+Allgemeines Modell:
 
-- Die Host-Exec-Richtlinie entscheidet weiterhin, ob Exec-Genehmigung erforderlich ist
+- Die Exec-Richtlinie des Hosts entscheidet weiterhin, ob eine Exec-Genehmigung erforderlich ist
 - `approvals.exec` steuert die Weiterleitung von Genehmigungsaufforderungen an andere Chat-Ziele
-- `channels.<channel>.execApprovals` steuert, ob Discord, Slack, Telegram und ähnliche
-  channelspezifische native Clients aktiviert sind
-- Slack-Plugin-Genehmigungen können Slacks nativen Genehmigungsclient verwenden, wenn die Anfrage aus Slack kommt
-  und Slack-Plugin-Genehmiger aufgelöst werden; `approvals.plugin` kann Plugin-Genehmigungen auch an Slack-
-  Sessions oder Ziele routen, selbst wenn Slack-Exec-Genehmigungen deaktiviert sind
-- Native Genehmigungskarten in Google Chat verarbeiten Exec- und Plugin-Genehmigungen, die aus Google
-  Chat-Bereichen oder -Threads stammen, wenn stabile `users/<id>`-Genehmiger aus `dm.allowFrom` oder
-  `defaultTo` aufgelöst werden; sie verwenden keine Reaktionsereignisse für Entscheidungen
-- Die Genehmigungszustellung per Reaktion in WhatsApp und Signal wird durch `approvals.exec` und
-  `approvals.plugin` gesteuert; sie haben keine `channels.<channel>.execApprovals`-Blöcke
+- `channels.<channel>.execApprovals` steuert, ob kanalspezifische native Clients für Discord, Slack,
+  Telegram, QQ bot und ähnliche Kanäle aktiviert sind
+- Slack-Plugin-Genehmigungen können den nativen Genehmigungsclient von Slack verwenden, wenn die
+  Anfrage aus Slack stammt und Slack-Plugin-Genehmigungsberechtigte aufgelöst werden können;
+  `approvals.plugin` kann Plugin-Genehmigungen außerdem an Slack-Sitzungen oder -Ziele weiterleiten,
+  selbst wenn Slack-Exec-Genehmigungen deaktiviert sind
+- Native Genehmigungskarten von Google Chat verarbeiten Exec- und Plugin-Genehmigungen, die aus
+  Google-Chat-Spaces oder -Threads stammen, wenn stabile `users/<id>`-Genehmigungsberechtigte aus
+  `dm.allowFrom` oder `defaultTo` aufgelöst werden können; sie verwenden keine Reaktionsereignisse
+  für Entscheidungen
+- Die Zustellung von WhatsApp- und Signal-Reaktionsgenehmigungen wird durch `approvals.exec` und
+  `approvals.plugin` gesteuert; sie verfügen über keine
+  `channels.<channel>.execApprovals`-Blöcke
 
-Native Genehmigungsclients aktivieren DM-zuerst-Zustellung automatisch, wenn all dies zutrifft:
+Native Genehmigungsclients aktivieren die Zustellung vorrangig per Direktnachricht automatisch,
+wenn alle folgenden Bedingungen erfüllt sind:
 
-- Der Channel unterstützt native Genehmigungszustellung
-- Genehmiger können aus expliziten `execApprovals.approvers` oder der Besitzeridentität
-  wie `commands.ownerAllowFrom` aufgelöst werden
-- `channels.<channel>.execApprovals.enabled` ist nicht gesetzt oder `"auto"`
+- Der Kanal unterstützt die native Genehmigungszustellung
+- Genehmigungsberechtigte können aus expliziten `execApprovals.approvers` oder einer
+  Eigentümeridentität wie `commands.ownerAllowFrom` aufgelöst werden
+- `channels.<channel>.execApprovals.enabled` ist nicht festgelegt oder auf `"auto"` gesetzt
 
-Setzen Sie `enabled: false`, um einen nativen Genehmigungsclient explizit zu deaktivieren. Setzen Sie `enabled: true`, um
-ihn zu erzwingen, wenn Genehmiger aufgelöst werden. Öffentliche Zustellung in den Ursprungs-Chat bleibt über
-`channels.<channel>.execApprovals.target` explizit.
+Setzen Sie `enabled: false`, um einen nativen Genehmigungsclient ausdrücklich zu deaktivieren.
+Setzen Sie `enabled: true`, um seine Aktivierung zu erzwingen, wenn Genehmigungsberechtigte
+aufgelöst werden können. Die öffentliche Zustellung an den ursprünglichen Chat bleibt über
+`channels.<channel>.execApprovals.target` explizit konfiguriert. Wenn das native `target` die
+Zustellung an den ursprünglichen Chat aktiviert, enthalten Genehmigungsaufforderungen den
+Befehlstext.
 
-FAQ: [Warum gibt es zwei Exec-Genehmigungskonfigurationen für Chat-Genehmigungen?](/help/faq-first-run#why-are-there-two-exec-approval-configs-for-chat-approvals)
+FAQ: [Warum gibt es zwei Exec-Genehmigungskonfigurationen für Chat-Genehmigungen?](/help/faq-first-run)
 
 - Discord: `channels.discord.execApprovals.*`
 - Slack: `channels.slack.execApprovals.*`
 - Telegram: `channels.telegram.execApprovals.*`
-- Google Chat: Konfigurieren Sie stabile Genehmiger mit `channels.googlechat.dm.allowFrom` oder
-  `channels.googlechat.defaultTo`; kein `execApprovals`-Block ist erforderlich
-- WhatsApp: Verwenden Sie `approvals.exec` und `approvals.plugin`, um Genehmigungsaufforderungen an WhatsApp zu routen
-- Signal: Verwenden Sie `approvals.exec` und `approvals.plugin`, um Genehmigungsaufforderungen an Signal zu routen
+- QQ bot: `channels.qqbot.execApprovals.*`
+- Google Chat: Konfigurieren Sie stabile Genehmigungsberechtigte mit
+  `channels.googlechat.dm.allowFrom` oder `channels.googlechat.defaultTo`; ein
+  `execApprovals`-Block ist nicht erforderlich
+- WhatsApp: Verwenden Sie `approvals.exec` und `approvals.plugin`, um Genehmigungsaufforderungen an
+  WhatsApp weiterzuleiten
+- Signal: Verwenden Sie `approvals.exec` und `approvals.plugin`, um Genehmigungsaufforderungen an
+  Signal weiterzuleiten
 
-Diese nativen Genehmigungsclients ergänzen den gemeinsamen `/approve`-Ablauf im selben Chat und die gemeinsamen
-Genehmigungsbuttons um DM-Routing und optionalen Channel-Fanout.
+Für native Clients spezifische Weiterleitung:
 
-Gemeinsames Verhalten:
+- Telegram verwendet standardmäßig Direktnachrichten an Genehmigungsberechtigte (`target: "dm"`).
+  Wechseln Sie zu `channel` oder `both`, um Genehmigungsaufforderungen auch im ursprünglichen
+  Telegram-Chat oder -Thema anzuzeigen. Bei Telegram-Forenthemen behält OpenClaw das Thema sowohl
+  für die Genehmigungsaufforderung als auch für die anschließende Nachricht nach der Genehmigung bei.
+- Genehmigungsberechtigte für Discord und Telegram können explizit angegeben
+  (`execApprovals.approvers`) oder aus `commands.ownerAllowFrom` abgeleitet werden; nur aufgelöste
+  Genehmigungsberechtigte können genehmigen oder ablehnen.
+- Slack-Genehmigungsberechtigte können explizit angegeben (`execApprovals.approvers`) oder aus
+  `commands.ownerAllowFrom` abgeleitet werden. Direktnachrichten für
+  Slack-Plugin-Genehmigungen verwenden Slack-Plugin-Genehmigungsberechtigte aus `allowFrom` und die
+  Standardweiterleitung des Kontos, nicht die Genehmigungsberechtigten für Slack-Exec. Native
+  Slack-Schaltflächen bewahren die Art der Genehmigungs-ID, sodass `plugin:`-IDs
+  Plugin-Genehmigungen ohne eine zweite lokale Slack-Fallback-Ebene bearbeiten können.
+- Native Google-Chat-Karten bewahren den manuellen `/approve`-Fallback im Nachrichtentext, aber
+  Rückrufe von Kartenschaltflächen übertragen nur undurchsichtige Aktionstoken; die Genehmigungs-ID
+  und die Entscheidung werden aus dem serverseitigen ausstehenden Zustand wiederhergestellt.
+- WhatsApp-Emoji-Genehmigungen verarbeiten sowohl Exec- als auch Plugin-Aufforderungen, wenn die
+  entsprechende Weiterleitungsfamilie auf oberster Ebene an WhatsApp weiterleitet. Aufforderungen
+  nativen Ursprungs werden direkt gebunden; bei der Zustellung im gemeinsamen Zielmodus werden
+  dieselben typisierten Genehmigungsmetadaten an die akzeptierte WhatsApp-Empfangsbestätigung
+  gebunden.
+- Signal-Reaktionsgenehmigungen verarbeiten Exec- und Plugin-Aufforderungen nur, wenn die
+  entsprechende Weiterleitungsfamilie auf oberster Ebene aktiviert ist und an Signal weiterleitet.
+  Direkte Signal-Exec-Genehmigungen im selben Chat können den lokalen `/approve`-Fallback ohne
+  explizite Genehmigungsberechtigte unterdrücken; die Auflösung von Signal-Reaktionen erfordert
+  weiterhin explizite Signal-Genehmigungsberechtigte aus `channels.signal.allowFrom` oder
+  `defaultTo`.
+- Die native Matrix-Weiterleitung per Direktnachricht oder Kanal sowie Reaktionskürzel verarbeiten
+  sowohl Exec- als auch Plugin-Genehmigungen; die Plugin-Autorisierung stammt weiterhin aus
+  `channels.matrix.dm.allowFrom`. Native Matrix-Aufforderungen enthalten beim ersten
+  Aufforderungsereignis benutzerdefinierte `com.openclaw.approval`-Ereignisinhalte, sodass
+  OpenClaw-kompatible Matrix-Clients strukturierte Genehmigungszustände lesen können, während
+  Standardclients den Klartext-Fallback `/approve` beibehalten.
+- Native Genehmigungsschaltflächen von Discord und Telegram übertragen in
+  transportprivaten Rückrufdaten eine explizite Eigentümerart für Exec oder Plugin und lösen nur
+  diesen Eigentümer auf. Ältere `/approve`-Steuerelemente ohne Art bleiben ein begrenzter
+  Kompatibilitätspfad: Sie versuchen nur Eigentümerarten, die der Akteur genehmigen darf, fahren
+  nur nach dem Ergebnis „Genehmigung nicht gefunden“ fort und leiten die Eigentümerschaft niemals
+  aus der Genehmigungs-ID ab.
+- Die anfragende Person muss nicht genehmigungsberechtigt sein.
+- Wenn keine Bedienoberfläche oder kein konfigurierter Genehmigungsclient die Anfrage annehmen kann,
+  greift die Aufforderung auf `askFallback` zurück.
 
-- Slack, Matrix, Microsoft Teams und ähnliche zustellbare Chats verwenden das normale Channel-Auth-Modell
-  für `/approve` im selben Chat
-- Wenn sich ein nativer Genehmigungsclient automatisch aktiviert, ist das standardmäßige native Zustellziel Genehmiger-DMs
-- Für Discord und Telegram können nur aufgelöste Genehmiger genehmigen oder ablehnen
-- Discord-Genehmiger können explizit (`execApprovals.approvers`) oder aus `commands.ownerAllowFrom` abgeleitet sein
-- Telegram-Genehmiger können explizit (`execApprovals.approvers`) oder aus `commands.ownerAllowFrom` abgeleitet sein
-- Slack-Genehmiger können explizit (`execApprovals.approvers`) oder aus `commands.ownerAllowFrom` abgeleitet sein
-- Slack-Plugin-Genehmigungs-DMs verwenden Slack-Plugin-Genehmiger aus `allowFrom` und Standard-
-  Routing des Kontos, nicht Slack-Exec-Genehmiger
-- Native Slack-Buttons bewahren die Art der Genehmigungs-ID, sodass `plugin:`-IDs Plugin-Genehmigungen
-  ohne zweite Slack-lokale Fallback-Schicht auflösen können
-- Native Google Chat-Karten bewahren den manuellen `/approve`-Fallback im Nachrichtentext, aber Kartenbutton-
-  Callbacks tragen nur opake Aktionstokens; Genehmigungs-ID und Entscheidung werden aus serverseitigem
-  ausstehendem Zustand wiederhergestellt
-- WhatsApp-Emoji-Genehmigungen verarbeiten sowohl Exec- als auch Plugin-Aufforderungen nur, wenn die passende übergeordnete
-  Weiterleitungsfamilie aktiviert ist und an WhatsApp routet; zielgebundene WhatsApp-Weiterleitung bleibt auf
-  dem gemeinsamen Weiterleitungspfad, sofern sie nicht dasselbe native Ursprungsziel erfüllt
-- Signal-Reaktionsgenehmigungen verarbeiten sowohl Exec- als auch Plugin-Aufforderungen nur, wenn die passende übergeordnete
-  Weiterleitungsfamilie aktiviert ist und an Signal routet. Direkte Signal-Exec-Genehmigungen im selben Chat können
-  den lokalen `/approve`-Fallback ohne explizite Genehmiger unterdrücken; die Signal-Reaktionsauflösung
-  erfordert weiterhin explizite Signal-Genehmiger aus `channels.signal.allowFrom` oder `defaultTo`.
-- Matrix-natives DM-/Channel-Routing und Reaktions-Shortcuts verarbeiten sowohl Exec- als auch Plugin-Genehmigungen;
-  die Plugin-Autorisierung kommt weiterhin aus `channels.matrix.dm.allowFrom`
-- Matrix-native Aufforderungen enthalten beim ersten Aufforderungsereignis benutzerdefinierten `com.openclaw.approval`-
-  Ereignisinhalt, damit OpenClaw-fähige Matrix-Clients strukturierten Genehmigungszustand lesen können, während Standardclients
-  den Klartext-`/approve`-Fallback behalten
-- Der Anfragesteller muss kein Genehmiger sein
-- Der ursprüngliche Chat kann direkt mit `/approve` genehmigen, wenn dieser Chat bereits Befehle und Antworten unterstützt
-- Native Discord-Genehmigungsbuttons routen nach Art der Genehmigungs-ID: `plugin:`-IDs gehen
-  direkt zu Plugin-Genehmigungen, alles andere geht zu Exec-Genehmigungen
-- Native Telegram-Genehmigungsbuttons folgen demselben begrenzten Exec-zu-Plugin-Fallback wie `/approve`
-- Wenn natives `target` die Zustellung in den Ursprungs-Chat aktiviert, enthalten Genehmigungsaufforderungen den Befehlstext
-- Ausstehende Exec-Genehmigungen laufen standardmäßig nach 30 Minuten ab
-- Wenn keine Operator-UI oder kein konfigurierter Genehmigungsclient die Anfrage annehmen kann, fällt die Aufforderung auf `askFallback` zurück
-
-Sensible, nur für Besitzer bestimmte Gruppenbefehle wie `/diagnostics` und `/export-trajectory` verwenden privates
-Besitzer-Routing für Genehmigungsaufforderungen und Endergebnisse. OpenClaw versucht zuerst eine private Route auf derselben
-Oberfläche, auf der der Besitzer den Befehl ausgeführt hat. Wenn diese Oberfläche keine private Besitzerroute hat, fällt es
-auf die erste verfügbare Besitzerroute aus `commands.ownerAllowFrom` zurück, sodass ein Discord-Gruppenbefehl
-die Genehmigung und das Ergebnis weiterhin an die Telegram-DM des Besitzers senden kann, wenn Telegram als
-primäre private Schnittstelle konfiguriert ist. Der Gruppenchat erhält nur eine kurze Bestätigung.
-
-Telegram verwendet standardmäßig Genehmiger-DMs (`target: "dm"`). Sie können zu `channel` oder `both` wechseln, wenn
-Genehmigungsaufforderungen auch im ursprünglichen Telegram-Chat/-Thema erscheinen sollen. Für Telegram-Forum-
-Themen bewahrt OpenClaw das Thema für die Genehmigungsaufforderung und die Folgeantwort nach der Genehmigung.
+Sensible, ausschließlich Eigentümern vorbehaltene Gruppenbefehle wie `/diagnostics` und
+`/export-trajectory` verwenden eine private Eigentümerweiterleitung für Genehmigungsaufforderungen
+und endgültige Ergebnisse. OpenClaw versucht zunächst eine private Route auf derselben Oberfläche,
+auf der der Eigentümer den Befehl ausgeführt hat. Wenn diese Oberfläche über keine private
+Eigentümerroute verfügt, greift OpenClaw auf die erste verfügbare Eigentümerroute aus
+`commands.ownerAllowFrom` zurück. Dadurch kann ein Discord-Gruppenbefehl die Genehmigung und das
+Ergebnis weiterhin an die Telegram-Direktnachrichten des Eigentümers senden, wenn Telegram als
+primäre private Oberfläche konfiguriert ist. Der Gruppenchat erhält nur eine kurze Bestätigung.
 
 Siehe:
 
 - [Discord](/channels/discord)
 - [Telegram](/channels/telegram)
+- [QQ bot](/channels/qqbot)
+
+### Offizielle mobile Bedien-Apps
+
+Die offiziellen iOS- und Android-Apps können außerdem ausstehende Exec-Genehmigungen im Besitz des
+Gateways prüfen, wenn eine `operator.admin`-Verbindung verwendet wird oder wenn das gekoppelte
+`operator.approvals`-Gerät ausdrücklich als Ziel der Anfrage angegeben wurde. Sie lesen denselben
+bereinigten, dauerhaften Datensatz, den die Control UI verwendet, übermitteln eine Entscheidung
+unter Berücksichtigung der Art und zeigen das kanonische Ergebnis der ersten Antwort des Gateways
+an. Die Apple Watch spiegelt diese Genehmigungsaufforderungen über das gekoppelte iPhone und bietet
+Aktionen zum einmaligen Zulassen und Ablehnen. Im direkten Watch-Gateway-Modus werden Genehmigungen
+nicht geprüft.
+
+Eine verloren gegangene Bestätigung der Bearbeitung macht die übermittelte Auswahl nicht
+maßgeblich: Die App deaktiviert die Steuerelemente und liest den Datensatz erneut. Wenn eine andere
+Oberfläche zuerst war, zeigt die App die dort erfasste Entscheidung an. Ausstehende Aufforderungen
+bleiben an das Gateway gebunden, das sie ausgegeben hat. Daher kann der Wechsel des aktiven Gateways
+eine alte Genehmigungs-ID nicht umleiten.
 
 ### macOS-IPC-Ablauf
 __OC_I18N_900004__
 Sicherheitshinweise:
 
-- Unix-Socket-Modus `0600`, Token gespeichert in `exec-approvals.json`.
-- Same-UID-Peer-Prüfung.
-- Challenge/Response (Nonce + HMAC-Token + Anfrage-Hash) + kurze TTL.
+- Unix-Socket-Modus `0600`, Token in `exec-approvals.json` gespeichert.
+- Überprüfung auf dieselbe UID.
+- Challenge-Response (Nonce + HMAC-Token + Anfrage-Hash) + kurze TTL.
 
 ## FAQ
 
-### Wann würden `accountId` und `threadId` für ein Genehmigungsziel verwendet?
+### Wann werden `accountId` und `threadId` für ein Genehmigungsziel verwendet?
 
-Verwenden Sie `accountId`, wenn der Channel mehrere konfigurierte Identitäten hat und die Genehmigungsaufforderung
-über ein bestimmtes Konto gesendet werden muss. Verwenden Sie `threadId`, wenn das Ziel Themen oder
-Threads unterstützt und die Aufforderung in diesem Thread bleiben soll statt im Chat auf oberster Ebene.
+Verwenden Sie `accountId`, wenn für den Kanal mehrere Identitäten konfiguriert sind und die
+Genehmigungsaufforderung über ein bestimmtes Konto gesendet werden muss. Verwenden Sie `threadId`,
+wenn das Ziel Themen oder Threads unterstützt und die Aufforderung innerhalb dieses Threads statt
+im Chat auf oberster Ebene verbleiben soll.
 
-Ein konkreter Telegram-Fall ist eine Operations-Supergruppe mit Forum-Themen und zwei Telegram-Bot-
-Konten. Der Wert `to` benennt die Supergruppe, `accountId` wählt das Bot-Konto aus und `threadId`
-wählt das Forum-Thema aus:
+Ein konkreter Telegram-Fall ist eine Betriebs-Supergruppe mit Forenthemen und zwei
+Telegram-Bot-Konten. Der Wert `to` bezeichnet die Supergruppe, `accountId` wählt das Bot-Konto aus
+und `threadId` wählt das Forenthema aus:
 __OC_I18N_900005__
-Mit dieser Einrichtung werden weitergeleitete Exec-Genehmigungen vom Telegram-Konto `ops-bot` in Thema
-`77` des Chats `-1001234567890` gepostet. Ein Ziel ohne `accountId` verwendet das Standardkonto des Channels, und
-ein Ziel ohne `threadId` postet an das Ziel auf oberster Ebene.
+Mit dieser Einrichtung werden weitergeleitete Exec-Genehmigungen durch das Telegram-Konto
+`ops-bot` im Thema `77` des Chats `-1001234567890` veröffentlicht. Ein Ziel ohne `accountId`
+verwendet das Standardkonto des Kanals, und ein Ziel ohne `threadId` veröffentlicht am Ziel auf
+oberster Ebene.
 
-### Wenn Genehmigungen an eine Session gesendet werden, kann sie dann jeder in dieser Session genehmigen?
+### Kann jede Person in einer Sitzung dort eingehende Genehmigungen erteilen?
 
-Nein. Session-Zustellung steuert nur, wo die Aufforderung erscheint. Sie autorisiert nicht von sich aus jeden
-Teilnehmer in diesem Chat zur Genehmigung.
+Nein. Die Sitzungszustellung steuert nur, wo die Aufforderung erscheint. Sie autorisiert nicht von
+sich aus alle Teilnehmenden dieses Chats zur Genehmigung.
 
-Für generisches `/approve` im selben Chat muss der Absender bereits für Befehle in dieser
-Channel-Session autorisiert sein. Wenn der Channel explizite Genehmiger freigibt, können diese Genehmiger
-die `/approve`-Aktion autorisieren, auch wenn sie sonst in dieser Session nicht befehlsautorisiert sind.
+Für das allgemeine `/approve` im selben Chat muss die absendende Person bereits für Befehle in
+dieser Kanalsitzung autorisiert sein. Wenn der Kanal explizite Genehmigungsberechtigte bereitstellt,
+können diese die `/approve`-Aktion autorisieren, auch wenn sie ansonsten in dieser Sitzung nicht
+zur Ausführung von Befehlen autorisiert sind.
 
-Einige Channels sind strenger. Discord, Telegram, Matrix, native Slack-Genehmigungs-DMs und ähnliche
-native Genehmigungsclients verwenden ihre aufgelösten Genehmigerlisten für die Genehmigungsautorisierung. Zum Beispiel
-kann eine Telegram-Forum-Themen-Genehmigungsaufforderung für alle im Thema sichtbar sein, aber nur numerische
-Telegram-Benutzer-IDs, die aus `channels.telegram.execApprovals.approvers` oder
-`commands.ownerAllowFrom` aufgelöst wurden, können sie genehmigen oder ablehnen.
+Einige Kanäle sind strenger. Discord, Telegram, Matrix, native Direktnachrichten für
+Slack-Genehmigungen und ähnliche native Genehmigungsclients verwenden ihre aufgelösten Listen der
+Genehmigungsberechtigten zur Genehmigungsautorisierung. Beispielsweise kann eine
+Genehmigungsaufforderung in einem Telegram-Forenthema für alle Personen im Thema sichtbar sein,
+aber nur numerische Telegram-Benutzer-IDs, die aus
+`channels.telegram.execApprovals.approvers` oder `commands.ownerAllowFrom` aufgelöst wurden, können
+sie genehmigen oder ablehnen.
 
-## Verwandt
+## Verwandte Themen
 
-- [Exec-Genehmigungen](/de/tools/exec-approvals) — Kernrichtlinie und Genehmigungsablauf
-- [Exec-Tool](/de/tools/exec)
-- [Erhöhter Modus](/de/tools/elevated)
-- [Skills](/de/tools/skills) — Skill-gestütztes Verhalten für automatische Erlaubnis
+- [Exec-Genehmigungen](/de/tools/exec-approvals) — zentrale Richtlinie und Genehmigungsablauf
+- [Exec-Werkzeug](/de/tools/exec)
+- [Erweiterter Modus](/de/tools/elevated)
+- [Skills](/de/tools/skills) — durch Skills unterstütztes automatisches Zulassungsverhalten

@@ -1,20 +1,21 @@
 ---
-summary: /cli/message로 리디렉션
-title: 투표
+summary: /cli/message로 리디렉션합니다
+title: 설문 조사
 x-i18n:
-    generated_at: "2026-04-24T06:02:34Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: a277212ed680b7aeb9153d003bc084d2d0c918dc53f2f469c72f7fe5a881cfae
-    source_path: automation/poll.md
-    workflow: 15
+    generated_at: "2026-07-12T14:57:47Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
+    provider: openai
+    source_hash: 071617c5fe910ad8a5d4a03416876ba3092d4fc67d5c206570a0456469ef73a9
+    source_path: automation/poll.md
+    workflow: 16
 ---
 
-이 페이지는 [Message tool](/ko/cli/message)(으)로 이동했습니다. 투표 문서는 [Message tool](/ko/cli/message)에서 확인하세요.
+이 페이지는 이동되었습니다. `openclaw message poll` 플래그와 채널별 제한을 포함한 투표 문서는 [메시지 도구](/ko/cli/message)에서 확인할 수 있습니다.
 
-## 관련
+## 관련 문서
 
-- [Webhook](/ko/automation/cron-jobs)
+- [Webhook](/ko/automation/cron-jobs#webhooks)
 - [예약된 작업](/ko/automation/cron-jobs)
 - [백그라운드 작업](/ko/automation/tasks)

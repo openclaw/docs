@@ -1,30 +1,31 @@
 ---
 read_when:
-    - github-copilot Plugin をインストール、設定、または監査している場合
+    - github-copilot Pluginをインストール、設定、または監査しています
 summary: OpenClaw に GitHub Copilot モデルプロバイダーのサポートを追加します。
 title: GitHub Copilot Plugin
 x-i18n:
-    generated_at: "2026-05-02T20:57:28Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:46:44Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: 2845e2575d30865b06f318873da6da8085f4928d059176b514c3195a29a87e36
+    source_hash: 01b8a15fe2da9848cef18e0e24b1fdb1493e8f17046a7f82f1331f29c80f0660
     source_path: plugins/reference/github-copilot.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
 # GitHub Copilot Plugin
 
-OpenClaw に GitHub Copilot モデルプロバイダーサポートを追加します。
+OpenClaw に GitHub Copilot モデルプロバイダーのサポートを追加します。
 
 ## 配布
 
 - パッケージ: `@openclaw/github-copilot-provider`
-- インストール経路: OpenClaw に含まれています
+- インストール方法: OpenClaw に同梱
 
-## サーフェス
+## 公開インターフェース
 
-providers: github-copilot; contracts: memoryEmbeddingProviders
+プロバイダー: github-copilot、コントラクト: memoryEmbeddingProviders、usageProviders
 
 ## 関連ドキュメント
 

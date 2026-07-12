@@ -1,31 +1,32 @@
 ---
 read_when:
-    - Sie möchten SenseAudio-Spracherkennung für Audioanhänge
+    - Sie möchten SenseAudio-Spracherkennung für Audioanhänge verwenden
     - Sie benötigen die Umgebungsvariable für den SenseAudio-API-Schlüssel oder den Pfad zur Audiokonfiguration
-summary: SenseAudio-Batch-Transkription für eingehende Sprachnachrichten
+summary: SenseAudio-Stapeltranskription für eingehende Sprachnachrichten
 title: SenseAudio
 x-i18n:
-    generated_at: "2026-05-06T07:01:31Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:49:50Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: f53af21c746cdd44c71485cbad669f4a01a6e5be956675c73831e7b5f15df8c4
+    source_hash: 2d2b310982a9e0f1afe2f95ae92d1516d490314f40b4b0e4eded25c72dfca586
     source_path: providers/senseaudio.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-SenseAudio kann eingehende Audio- und Sprachnachrichten-Anhänge über OpenClaws gemeinsame `tools.media.audio`-Pipeline transkribieren. OpenClaw sendet Audiodaten als Multipart an den OpenAI-kompatiblen Transkriptions-Endpunkt und fügt den zurückgegebenen Text als `{{Transcript}}` plus einen `[Audio]`-Block ein.
+SenseAudio transkribiert eingehende Audio- und Sprachnotizanhänge über die gemeinsame `tools.media.audio`-Pipeline von OpenClaw. OpenClaw sendet Audiodaten als Multipart-Anfrage an den OpenAI-kompatiblen Transkriptionsendpunkt und fügt den zurückgegebenen Text als `{{Transcript}}` sowie als `[Audio]`-Block ein.
 
-| Eigenschaft              | Wert                                             |
-| ------------------------ | ------------------------------------------------ |
-| Provider-ID              | `senseaudio`                                     |
-| Plugin                   | gebündelt, `enabledByDefault: true`              |
-| Contract                 | `mediaUnderstandingProviders` (Audio)            |
-| Auth-Umgebungsvariable   | `SENSEAUDIO_API_KEY`                             |
-| Standardmodell           | `senseaudio-asr-pro-1.5-260319`                  |
-| Standard-URL             | `https://api.senseaudio.cn/v1`                   |
-| Website                  | [senseaudio.cn](https://senseaudio.cn)           |
-| Dokumentation            | [senseaudio.cn/docs](https://senseaudio.cn/docs) |
+| Eigenschaft   | Wert                                             |
+| ------------- | ------------------------------------------------ |
+| Provider-ID   | `senseaudio`                                     |
+| Plugin        | gebündelt, `enabledByDefault: true`              |
+| Vertrag       | `mediaUnderstandingProviders` (Audio)            |
+| Auth.-Umgebungsvariable | `SENSEAUDIO_API_KEY`                    |
+| Standardmodell | `senseaudio-asr-pro-1.5-260319`                 |
+| Standard-URL  | `https://api.senseaudio.cn/v1`                   |
+| Website       | [senseaudio.cn](https://senseaudio.cn)           |
+| Dokumentation | [senseaudio.cn/docs](https://senseaudio.cn/docs) |
 
 ## Erste Schritte
 
@@ -49,7 +50,7 @@ SenseAudio kann eingehende Audio- und Sprachnachrichten-Anhänge über OpenClaws
     }
     ```
   </Step>
-  <Step title="Senden Sie eine Sprachnachricht">
+  <Step title="Senden Sie eine Sprachnotiz">
     Senden Sie eine Audionachricht über einen beliebigen verbundenen Kanal. OpenClaw lädt die
     Audiodaten zu SenseAudio hoch und verwendet das Transkript in der Antwort-Pipeline.
   </Step>
@@ -57,20 +58,20 @@ SenseAudio kann eingehende Audio- und Sprachnachrichten-Anhänge über OpenClaws
 
 ## Optionen
 
-| Option     | Pfad                                  | Beschreibung                                      |
-| ---------- | ------------------------------------- | ------------------------------------------------- |
-| `model`    | `tools.media.audio.models[].model`    | SenseAudio-ASR-Modell-ID                          |
-| `language` | `tools.media.audio.models[].language` | Optionaler Sprachhinweis                          |
-| `prompt`   | `tools.media.audio.prompt`            | Optionaler Transkriptions-Prompt                  |
-| `baseUrl`  | `tools.media.audio.baseUrl` or model  | OpenAI-kompatible Basis überschreiben             |
-| `headers`  | `tools.media.audio.request.headers`   | Zusätzliche Request-Header                        |
+| Option     | Pfad                                  | Beschreibung                              |
+| ---------- | ------------------------------------- | ----------------------------------------- |
+| `model`    | `tools.media.audio.models[].model`    | SenseAudio-ASR-Modell-ID                  |
+| `language` | `tools.media.audio.models[].language` | Optionaler Sprachhinweis                  |
+| `prompt`   | `tools.media.audio.prompt`            | Optionaler Transkriptions-Prompt          |
+| `baseUrl`  | `tools.media.audio.baseUrl` oder Modell | Überschreibt die OpenAI-kompatible Basis |
+| `headers`  | `tools.media.audio.request.headers`   | Zusätzliche Anfrage-Header                |
 
 <Note>
-SenseAudio ist in OpenClaw nur Batch-STT. Die Echtzeit-Transkription von Voice Calls
-verwendet weiterhin Provider mit Streaming-STT-Unterstützung.
+SenseAudio unterstützt in OpenClaw ausschließlich Batch-STT. Die Echtzeittranskription für Sprachanrufe
+verwendet weiterhin Provider mit Unterstützung für Streaming-STT.
 </Note>
 
-## Verwandt
+## Verwandte Themen
 
 - [Medienverständnis (Audio)](/de/nodes/audio)
 - [Modell-Provider](/de/concepts/model-providers)

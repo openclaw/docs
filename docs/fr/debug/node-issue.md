@@ -1,98 +1,95 @@
 ---
 read_when:
-    - Débogage des scripts de développement propres à Node ou des échecs du mode de surveillance
-    - Investigation des plantages du chargeur tsx/esbuild dans OpenClaw
-summary: Notes et solutions de contournement pour le plantage Node + tsx "__name is not a function"
+    - Analyse d’un plantage du chargeur tsx/esbuild mentionnant un helper __name manquant
+summary: Plantage historique de Node + tsx avec « __name is not a function » et sa cause
 title: Plantage de Node + tsx
 x-i18n:
-    generated_at: "2026-05-06T17:54:52Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:24:34Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: 808f04959c70c96c983fb2517234d4c06712049d7afebb9b1b4b340df75d7d70
+    source_hash: 97d2f62d24860cee65753027ba84c14c8d4ffb910ee17bb0032cf0409c427589
     source_path: debug/node-issue.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-# Crash Node + tsx « \_\_name is not a function »
+# Plantage Node + tsx « \_\_name is not a function »
 
-## Résumé
+## État
 
-Exécuter OpenClaw via Node avec `tsx` échoue au démarrage avec :
+Résolu. Ce plantage ne se reproduit pas avec la version actuelle de `tsx` épinglée dans
+`package.json` (`4.22.3`), ni avec les versions actuelles de Node. Cette note est conservée au cas où
+une future mise à niveau de `tsx`/esbuild le réintroduirait.
 
+## Symptôme initial
+
+L’exécution des scripts de développement OpenClaw via `tsx` échouait au démarrage avec :
+
+```text
+[openclaw] Échec du démarrage de la CLI : TypeError: __name is not a function
+    dans createSubsystemLogger (src/logging/subsystem.ts)
+    dans <caller> (src/agents/auth-profiles/constants.ts)
 ```
-[openclaw] Failed to start CLI: TypeError: __name is not a function
-    at createSubsystemLogger (.../src/logging/subsystem.ts:203:25)
-    at .../src/agents/auth-profiles/constants.ts:25:20
-```
 
-Cela a commencé après le passage des scripts de développement de Bun à `tsx` (commit `2871657e`, 2026-01-06). Le même chemin d’exécution fonctionnait avec Bun.
+Les numéros de ligne sont omis ; les deux fichiers ont changé depuis le plantage initial
+et les lignes concernées ne correspondent plus.
 
-## Environnement
+Ce problème est apparu après le passage des scripts de développement de Bun à `tsx` (`2871657e`,
+2026-01-06), afin de rendre Bun facultatif. Le chemin équivalent basé sur Bun ne plantait pas.
+Il a été observé initialement avec Node v25.3.0 sous macOS ; les autres plateformes exécutant
+Node 25 étaient également considérées comme probablement affectées.
 
-- Node : v25.x (observé sur v25.3.0)
-- tsx : 4.21.0
-- OS : macOS (reproduction probablement aussi sur d’autres plateformes qui exécutent Node 25)
+## Cause
 
-## Reproduction (Node uniquement)
+`tsx` transforme TS/ESM avec esbuild en définissant `keepNames: true` en dur dans
+ses options de transformation. Ce paramètre amène esbuild à envelopper les déclarations de
+fonctions/classes nommées dans un appel à un utilitaire `__name`, afin que `fn.name` soit conservé
+après la minification et le regroupement. Ce plantage signifie que l’utilitaire était absent ou
+masqué au site d’appel de ce module dans la combinaison `tsx`/Node concernée ; `__name(...)`
+levait donc une exception au lieu de renvoyer la valeur enveloppée.
+
+## Vérification actuelle de la reproduction
 
 ```bash
-# in repo root
 node --version
 pnpm install
 node --import tsx src/entry.ts status
 ```
 
-## Reproduction minimale dans le dépôt
+Reproduction minimale isolée (charge uniquement le module indiqué dans la trace de pile d’origine) :
 
 ```bash
 node --import tsx scripts/repro/tsx-name-repro.ts
 ```
 
-## Vérification de version Node
+Les deux commandes se terminent actuellement sans erreur. Si l’une d’elles déclenche à nouveau l’erreur `__name is not a
+function`, relevez la version exacte de Node, la version de `tsx`
+(`node_modules/tsx/package.json`) et la trace de pile complète avant de signaler le problème au projet en amont.
 
-- Node 25.3.0 : échoue
-- Node 22.22.0 (Homebrew `node@22`) : échoue
-- Node 24 : pas encore installé ici ; vérification nécessaire
+## Solutions de contournement (si le plantage réapparaît)
 
-## Notes / hypothèse
-
-- `tsx` utilise esbuild pour transformer TS/ESM. Le `keepNames` d’esbuild émet un helper `__name` et encapsule les définitions de fonctions avec `__name(...)`.
-- Le crash indique que `__name` existe mais n’est pas une fonction à l’exécution, ce qui implique que le helper est manquant ou écrasé pour ce module dans le chemin du chargeur Node 25.
-- Des problèmes similaires liés au helper `__name` ont été signalés dans d’autres consommateurs d’esbuild lorsque le helper est manquant ou réécrit.
-
-## Historique de régression
-
-- `2871657e` (2026-01-06) : les scripts sont passés de Bun à tsx pour rendre Bun optionnel.
-- Avant cela (chemin Bun), `openclaw status` et `gateway:watch` fonctionnaient.
-
-## Contournements
-
-- Utiliser Bun pour les scripts de développement (retour temporaire actuel).
-- Utiliser `tsgo` pour la vérification de types du dépôt, puis exécuter la sortie construite :
+- Exécutez les scripts de développement avec Bun plutôt qu’avec `node --import tsx`.
+- Exécutez `pnpm tsgo` pour la vérification des types, puis exécutez la sortie compilée au lieu du
+  code source avec `tsx` :
 
   ```bash
   pnpm tsgo
   node openclaw.mjs status
   ```
 
-- Note historique : `tsc` a été utilisé ici pendant le débogage de ce problème Node/tsx, mais les voies de vérification de types du dépôt utilisent maintenant `tsgo`.
-- Désactiver le keepNames d’esbuild dans le chargeur TS si possible (empêche l’insertion du helper `__name`) ; tsx ne l’expose pas actuellement.
-- Tester Node LTS (22/24) avec `tsx` pour voir si le problème est spécifique à Node 25.
+- Essayez une autre version de `tsx` (`pnpm add -D tsx@<version>` constitue une modification des dépendances
+  et nécessite une approbation conformément à la politique du dépôt) afin de déterminer par dichotomie si la version d’esbuild
+  qu’elle inclut a réintroduit le bogue.
+- Effectuez un test avec une autre version majeure/mineure de Node pour déterminer si l’échec est propre à une
+  version.
 
 ## Références
 
-- [https://opennext.js.org/cloudflare/howtos/keep_names](https://opennext.js.org/cloudflare/howtos/keep_names)
 - [https://esbuild.github.io/api/#keep-names](https://esbuild.github.io/api/#keep-names)
 - [https://github.com/evanw/esbuild/issues/1031](https://github.com/evanw/esbuild/issues/1031)
 
-## Étapes suivantes
-
-- Reproduire sur Node 22/24 pour confirmer la régression Node 25.
-- Tester la nightly de `tsx` ou épingler une version antérieure s’il existe une régression connue.
-- Si la reproduction se produit sur Node LTS, ouvrir une reproduction minimale en amont avec la trace de pile `__name`.
-
-## Lié
+## Voir aussi
 
 - [Installation de Node.js](/fr/install/node)
 - [Dépannage du Gateway](/fr/gateway/troubleshooting)

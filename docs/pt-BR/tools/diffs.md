@@ -1,45 +1,37 @@
 ---
 read_when:
-    - Você quer que agentes mostrem edições de código ou markdown como diffs
-    - Você quer uma URL de visualizador pronta para canvas ou um arquivo de diff renderizado
-    - Você precisa de artefatos de diff temporários e controlados com padrões seguros
+    - Você quer que os agentes mostrem edições de código ou Markdown como diffs
+    - Você quer uma URL de visualização pronta para o Canvas ou um arquivo de diff renderizado
+    - Você precisa de artefatos de diff temporários e controlados, com padrões seguros
 sidebarTitle: Diffs
-summary: Visualizador de diff somente leitura e renderizador de arquivos para agentes (ferramenta opcional de Plugin)
-title: Diffs
+summary: Visualizador de diferenças somente leitura e renderizador de arquivos para agentes (ferramenta de plugin opcional)
+title: Diferenças
 x-i18n:
-    generated_at: "2026-06-27T18:14:29Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:48:10Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: ea3d8e9e026e10b2f3658b795c07ea21062896ab0d45a8cb2dc7e0e9ed9aa658
+    source_hash: f28a8ac4191f72376ba5c8823337bd337e3fac236ea4ecc2204e6dcf2930e607
     source_path: tools/diffs.md
     workflow: 16
 ---
 
-`diffs` é uma ferramenta opcional de Plugin com orientação de sistema curta integrada e uma skill complementar que transforma conteúdo de alterações em um artefato diff somente leitura para agentes.
+`diffs` é uma ferramenta opcional de Plugin incluído que transforma um texto anterior/posterior ou um patch unificado em um artefato de diff somente leitura. Ela também adiciona breves orientações para o agente ao início do prompt do sistema e inclui uma skill complementar com instruções mais completas.
 
-Ela aceita:
+Entrada: texto `before` + `after` ou um `patch` unificado (mutuamente exclusivos).
 
-- texto `before` e `after`
-- um `patch` unificado
-
-Ela pode retornar:
-
-- uma URL do visualizador do Gateway para apresentação em canvas
-- um caminho de arquivo renderizado (PNG ou PDF) para entrega por mensagem
-- ambas as saídas em uma única chamada
-
-Quando habilitado, o Plugin acrescenta orientações concisas de uso ao espaço do prompt de sistema e também expõe uma skill detalhada para casos em que o agente precisa de instruções mais completas.
+Saída: uma URL do visualizador do Gateway para apresentação no canvas, um caminho de arquivo PNG/PDF renderizado para envio por mensagem ou ambos.
 
 ## Início rápido
 
 <Steps>
-  <Step title="Install the plugin">
+  <Step title="Instale o Plugin">
     ```bash
     openclaw plugins install diffs
     ```
   </Step>
-  <Step title="Enable the plugin">
+  <Step title="Ative o Plugin">
     ```json5
     {
       plugins: {
@@ -52,24 +44,24 @@ Quando habilitado, o Plugin acrescenta orientações concisas de uso ao espaço 
     }
     ```
   </Step>
-  <Step title="Pick a mode">
+  <Step title="Escolha um modo">
     <Tabs>
       <Tab title="view">
-        Fluxos com canvas primeiro: agentes chamam `diffs` com `mode: "view"` e abrem `details.viewerUrl` com `canvas present`.
+        Fluxos com prioridade para o canvas: os agentes chamam `diffs` com `mode: "view"` e abrem `details.viewerUrl` com `canvas present`.
       </Tab>
       <Tab title="file">
-        Entrega de arquivo no chat: agentes chamam `diffs` com `mode: "file"` e enviam `details.filePath` com `message` usando `path` ou `filePath`.
+        Envio de arquivo pelo chat: os agentes chamam `diffs` com `mode: "file"` e enviam `details.filePath` com `message` usando `path` ou `filePath`.
       </Tab>
       <Tab title="both">
-        Combinado: agentes chamam `diffs` com `mode: "both"` para obter os dois artefatos em uma única chamada.
+        Combinado (padrão): os agentes chamam `diffs` com `mode: "both"` para obter ambos os artefatos em uma única chamada.
       </Tab>
     </Tabs>
   </Step>
 </Steps>
 
-## Desabilitar a orientação de sistema integrada
+## Desativar a orientação integrada do sistema
 
-Se você quiser manter a ferramenta `diffs` habilitada, mas desabilitar sua orientação integrada de prompt de sistema, defina `plugins.entries.diffs.hooks.allowPromptInjection` como `false`:
+Para manter a ferramenta, mas remover a orientação adicionada ao início do prompt do sistema, defina `plugins.entries.diffs.hooks.allowPromptInjection` como `false`:
 
 ```json5
 {
@@ -86,156 +78,102 @@ Se você quiser manter a ferramenta `diffs` habilitada, mas desabilitar sua orie
 }
 ```
 
-Isso bloqueia o hook `before_prompt_build` do Plugin diffs, mantendo o Plugin, a ferramenta e a skill complementar disponíveis.
-
-Se você quiser desabilitar tanto a orientação quanto a ferramenta, desabilite o Plugin em vez disso.
-
-## Fluxo de trabalho típico do agente
-
-<Steps>
-  <Step title="Call diffs">
-    O agente chama a ferramenta `diffs` com entrada.
-  </Step>
-  <Step title="Read details">
-    O agente lê os campos `details` da resposta.
-  </Step>
-  <Step title="Present">
-    O agente abre `details.viewerUrl` com `canvas present`, envia `details.filePath` com `message` usando `path` ou `filePath`, ou faz ambos.
-  </Step>
-</Steps>
-
-## Exemplos de entrada
-
-<Tabs>
-  <Tab title="Before and after">
-    ```json
-    {
-      "before": "# Hello\n\nOne",
-      "after": "# Hello\n\nTwo",
-      "path": "docs/example.md",
-      "mode": "view"
-    }
-    ```
-  </Tab>
-  <Tab title="Patch">
-    ```json
-    {
-      "patch": "diff --git a/src/example.ts b/src/example.ts\n--- a/src/example.ts\n+++ b/src/example.ts\n@@ -1 +1 @@\n-const x = 1;\n+const x = 2;\n",
-      "mode": "both"
-    }
-    ```
-  </Tab>
-</Tabs>
+Isso bloqueia o hook `before_prompt_build` do Plugin, mantendo a ferramenta e a skill disponíveis. Para desativar tanto a orientação quanto a ferramenta, desative o Plugin.
 
 ## Referência de entrada da ferramenta
 
 Todos os campos são opcionais, salvo indicação em contrário.
 
 <ParamField path="before" type="string">
-  Texto original. Obrigatório com `after` quando `patch` é omitido.
+  Texto original. Obrigatório com `after` quando `patch` for omitido.
 </ParamField>
 <ParamField path="after" type="string">
-  Texto atualizado. Obrigatório com `before` quando `patch` é omitido.
+  Texto atualizado. Obrigatório com `before` quando `patch` for omitido.
 </ParamField>
 <ParamField path="patch" type="string">
   Texto de diff unificado. Mutuamente exclusivo com `before` e `after`.
 </ParamField>
 <ParamField path="path" type="string">
-  Nome de arquivo de exibição para o modo antes e depois.
+  Nome de arquivo exibido no modo anterior/posterior.
 </ParamField>
 <ParamField path="lang" type="string">
-  Dica de substituição de linguagem para o modo antes e depois. Valores desconhecidos e linguagens fora do conjunto padrão do visualizador retornam para texto simples, a menos que o
-  Plugin Diff Viewer Language Pack esteja instalado.
+  Dica para substituir o idioma no modo anterior/posterior. Valores desconhecidos e idiomas fora do conjunto padrão do visualizador usam texto simples como alternativa, a menos que o Plugin Diff Viewer Language Pack esteja instalado.
 </ParamField>
-
 <ParamField path="title" type="string">
   Substituição do título do visualizador.
 </ParamField>
 <ParamField path="mode" type='"view" | "file" | "both"'>
-  Modo de saída. O padrão é o padrão do Plugin `defaults.mode`. Alias obsoleto: `"image"` se comporta como `"file"` e ainda é aceito para compatibilidade retroativa.
+  Modo de saída. O padrão é o valor padrão do Plugin `defaults.mode` (`both`). Alias obsoleto: `"image"` se comporta de forma idêntica a `"file"`.
 </ParamField>
 <ParamField path="theme" type='"light" | "dark"'>
-  Tema do visualizador. O padrão é o padrão do Plugin `defaults.theme`.
+  Tema do visualizador. O padrão é o valor padrão do Plugin `defaults.theme`.
 </ParamField>
 <ParamField path="layout" type='"unified" | "split"'>
-  Layout do diff. O padrão é o padrão do Plugin `defaults.layout`.
+  Layout do diff. O padrão é o valor padrão do Plugin `defaults.layout`.
 </ParamField>
 <ParamField path="expandUnchanged" type="boolean">
-  Expande seções inalteradas quando o contexto completo está disponível. Opção apenas por chamada (não é uma chave padrão do Plugin).
+  Expande as seções inalteradas quando o contexto completo está disponível. Opção apenas por chamada (não é uma chave padrão do Plugin).
 </ParamField>
 <ParamField path="fileFormat" type='"png" | "pdf"'>
-  Formato de arquivo renderizado. O padrão é o padrão do Plugin `defaults.fileFormat`.
+  Formato do arquivo renderizado. O padrão é o valor padrão do Plugin `defaults.fileFormat`.
 </ParamField>
 <ParamField path="fileQuality" type='"standard" | "hq" | "print"'>
-  Predefinição de qualidade para renderização PNG ou PDF.
+  Predefinição de qualidade para renderização em PNG/PDF.
 </ParamField>
 <ParamField path="fileScale" type="number">
-  Substituição de escala do dispositivo (`1`-`4`).
+  Substituição da escala do dispositivo (`1`-`4`).
 </ParamField>
 <ParamField path="fileMaxWidth" type="number">
-  Largura máxima de renderização em pixels CSS (`640`-`2400`).
+  Largura máxima da renderização em pixels CSS (`640`-`2400`).
 </ParamField>
 <ParamField path="ttlSeconds" type="number" default="1800">
-  TTL do artefato em segundos para saídas do visualizador e de arquivo independente. Máximo de 21600.
+  TTL do artefato em segundos para as saídas do visualizador e de arquivos independentes. Máximo de `21600`.
 </ParamField>
 <ParamField path="baseUrl" type="string">
   Substituição da origem da URL do visualizador. Substitui `viewerBaseUrl` do Plugin. Deve ser `http` ou `https`, sem consulta/hash.
 </ParamField>
 
 <AccordionGroup>
-  <Accordion title="Legacy input aliases">
-    Ainda aceitos para compatibilidade retroativa:
-
-    - `format` -> `fileFormat`
-    - `imageFormat` -> `fileFormat`
-    - `imageQuality` -> `fileQuality`
-    - `imageScale` -> `fileScale`
-    - `imageMaxWidth` -> `fileMaxWidth`
-
-  </Accordion>
-  <Accordion title="Validation and limits">
-    - `before` e `after` com máximo de 512 KiB cada.
-    - `patch` com máximo de 2 MiB.
-    - `path` com máximo de 2048 bytes.
-    - `lang` com máximo de 128 bytes.
-    - `title` com máximo de 1024 bytes.
+  <Accordion title="Validação e limites">
+    - `before`/`after`: máximo de 512 KiB cada.
+    - `patch`: máximo de 2 MiB.
+    - `path`: máximo de 2048 bytes.
+    - `lang`: máximo de 128 bytes.
+    - `title`: máximo de 1024 bytes.
     - Limite de complexidade do patch: máximo de 128 arquivos e 120000 linhas no total.
-    - `patch` junto com `before` ou `after` é rejeitado.
-    - Limites de segurança de arquivo renderizado (aplicam-se a PNG e PDF):
-      - `fileQuality: "standard"`: máximo de 8 MP (8.000.000 pixels renderizados).
-      - `fileQuality: "hq"`: máximo de 14 MP (14.000.000 pixels renderizados).
-      - `fileQuality: "print"`: máximo de 24 MP (24.000.000 pixels renderizados).
-      - PDF também tem um máximo de 50 páginas.
+    - `patch` junto com `before`/`after` é rejeitado.
+    - Limites de segurança do arquivo renderizado (PNG e PDF):
+      - `fileQuality: "standard"`: máximo de 8 MP (8,000,000 pixels renderizados).
+      - `fileQuality: "hq"`: máximo de 14 MP.
+      - `fileQuality: "print"`: máximo de 24 MP.
+      - PDF também é limitado a 50 páginas.
 
   </Accordion>
 </AccordionGroup>
 
 ## Realce de sintaxe
 
-OpenClaw inclui realce de sintaxe para linguagens comuns de código-fonte, configuração e documentação:
+Linguagens integradas:
 
 `javascript`, `typescript`, `tsx`, `jsx`, `json`, `markdown`, `yaml`, `css`, `html`, `sh`, `python`, `go`, `rust`, `java`, `c`, `cpp`, `csharp`, `php`, `sql`, `docker`, `ruby`, `swift`, `kotlin`, `r`, `dart`, `lua`, `powershell`, `xml` e `toml`.
 
-Aliases comuns como `js`, `ts`, `bash`, `md`, `yml`, `c++`, `dockerfile`, `rb`, `kt` e `ps1` são normalizados para essas linguagens padrão.
+Aliases comuns (`js`, `ts`, `bash`, `md`, `yml`, `c++`, `dockerfile`, `rb`, `kt`, `ps1` etc.) são normalizados para essas linguagens.
 
-Instale o Plugin Diff Viewer Language Pack para destacar outras linguagens: 
+Instale o Plugin Diff Viewer Language Pack para obter mais linguagens (Astro, Vue, Svelte, MDX, GraphQL, Terraform/HCL, Nix, Clojure, Elixir, Haskell, OCaml, Scala, Zig, Solidity, Verilog/VHDL, Fortran, MATLAB, LaTeX, Mermaid, Sass/Less/SCSS, Nginx, Apache, CSV, dotenv, INI, diff e outras):
 
 ```bash
 openclaw plugins install clawhub:@openclaw/diffs-language-pack
 ```
 
-Com o pacote de linguagens disponível, o OpenClaw consegue destacar muito mais linguagens. Se o pacote não estiver instalado, arquivos fora da lista padrão ainda serão renderizados como texto simples legível. Exemplos incluem Astro, Vue, Svelte, MDX, GraphQL, Terraform/HCL, Nix, Clojure, Elixir, Haskell, OCaml, Scala, Zig, Solidity, Verilog/VHDL, Fortran, MATLAB, LaTeX, Mermaid, Sass/Less/SCSS, Nginx, Apache, CSV, dotenv, INI e arquivos diff.
+Sem o pacote, linguagens não compatíveis ainda são renderizadas como texto simples legível. Consulte o [Plugin Diffs Language Pack](/pt-BR/plugins/reference/diffs-language-pack) e as [linguagens do Shiki](https://shiki.style/languages) para ver o catálogo upstream.
 
-Veja o [Plugin Diffs Language Pack](/pt-BR/plugins/reference/diffs-language-pack) para detalhes e [linguagens do Shiki](https://shiki.style/languages) para o catálogo upstream de linguagens e aliases do Shiki.
+## Contrato dos detalhes da saída
 
-## Contrato de detalhes de saída
-
-A ferramenta retorna metadados estruturados em `details`.
+Todos os resultados bem-sucedidos incluem `changed`: uma entrada anterior/posterior idêntica retorna `false` sem criar um artefato; resultados renderizados retornam `true`.
 
 <AccordionGroup>
-  <Accordion title="Campos do visualizador">
-    Campos compartilhados para modos que criam um visualizador:
-
+  <Accordion title="Campos do visualizador (modos view e both)">
+    - `changed`
     - `artifactId`
     - `viewerUrl`
     - `viewerPath`
@@ -244,16 +182,15 @@ A ferramenta retorna metadados estruturados em `details`.
     - `inputKind`
     - `fileCount`
     - `mode`
-    - `context` (`agentId`, `sessionId`, `messageChannel`, `agentAccountId` quando disponível)
+    - `context` (`agentId`, `sessionId`, `messageChannel`, `agentAccountId` quando disponíveis)
 
   </Accordion>
-  <Accordion title="Campos de arquivo">
-    Campos de arquivo quando PNG ou PDF é renderizado:
-
+  <Accordion title="Campos do arquivo (modos file e both)">
+    - `changed`
     - `artifactId`
     - `expiresAt`
     - `filePath`
-    - `path` (mesmo valor que `filePath`, para compatibilidade com ferramentas de mensagem)
+    - `path` (mesmo valor que `filePath`, para compatibilidade com a ferramenta de mensagens)
     - `fileBytes`
     - `fileFormat`
     - `fileQuality`
@@ -261,38 +198,25 @@ A ferramenta retorna metadados estruturados em `details`.
     - `fileMaxWidth`
 
   </Accordion>
-  <Accordion title="Aliases de compatibilidade">
-    Também retornados para chamadores existentes:
-
-    - `format` (mesmo valor que `fileFormat`)
-    - `imagePath` (mesmo valor que `filePath`)
-    - `imageBytes` (mesmo valor que `fileBytes`)
-    - `imageQuality` (mesmo valor que `fileQuality`)
-    - `imageScale` (mesmo valor que `fileScale`)
-    - `imageMaxWidth` (mesmo valor que `fileMaxWidth`)
-
-  </Accordion>
 </AccordionGroup>
 
-Resumo do comportamento dos modos:
+| Modo     | Retorna                                                                                                       |
+| -------- | ------------------------------------------------------------------------------------------------------------- |
+| `"view"` | Somente os campos do visualizador.                                                                            |
+| `"file"` | Somente os campos do arquivo, sem artefato do visualizador.                                                   |
+| `"both"` | Campos do visualizador e do arquivo. Se a renderização do arquivo falhar, o visualizador ainda será retornado com `fileError`. |
 
-| Modo     | O que é retornado                                                                                                      |
-| -------- | ---------------------------------------------------------------------------------------------------------------------- |
-| `"view"` | Apenas campos do visualizador.                                                                                         |
-| `"file"` | Apenas campos de arquivo, sem artefato de visualizador.                                                                 |
-| `"both"` | Campos do visualizador mais campos de arquivo. Se a renderização do arquivo falhar, o visualizador ainda retorna com o alias `fileError` e `imageError`. |
+### Seções inalteradas recolhidas
 
-## Seções inalteradas recolhidas
+O visualizador mostra linhas como `N unmodified lines`. Os controles de expansão só aparecem quando o diff renderizado tem dados de contexto expansíveis (típico para entradas de antes/depois). Muitos patches unificados omitem os blocos de contexto em seus trechos, portanto a linha pode aparecer sem um controle de expansão — isso é esperado, não é um bug. `expandUnchanged` só se aplica quando existe contexto expansível.
 
-- O visualizador pode mostrar linhas como `N unmodified lines`.
-- Os controles de expansão nessas linhas são condicionais e não são garantidos para todo tipo de entrada.
-- Os controles de expansão aparecem quando o diff renderizado tem dados de contexto expansíveis, o que é típico para entradas antes e depois.
-- Para muitas entradas de patch unificado, os corpos de contexto omitidos não estão disponíveis nos hunks do patch analisado, então a linha pode aparecer sem controles de expansão. Esse é o comportamento esperado.
-- `expandUnchanged` se aplica apenas quando existe contexto expansível.
+### Navegação entre vários arquivos
+
+Os patches que alteram mais de um arquivo começam com um cartão de resumo dos arquivos alterados: contagens totais de `+N` / `-N`, contagens por arquivo, indicadores de adicionado/excluído/renomeado e links de âncora que levam a cada arquivo. Os arquivos PNG/PDF renderizados mantêm as contagens no cabeçalho de cada arquivo, mas omitem os controles interativos de alternância de visualização, pois eles não funcionam em um arquivo estático.
 
 ## Padrões do Plugin
 
-Defina padrões para todo o Plugin em `~/.openclaw/openclaw.json`:
+Defina os padrões gerais do Plugin em `~/.openclaw/openclaw.json`:
 
 ```json5
 {
@@ -325,30 +249,12 @@ Defina padrões para todo o Plugin em `~/.openclaw/openclaw.json`:
 }
 ```
 
-Padrões compatíveis:
+Chaves de `defaults` compatíveis: `fontFamily`, `fontSize`, `lineSpacing`, `layout`, `showLineNumbers`, `diffIndicators`, `wordWrap`, `background`, `theme`, `fileFormat`, `fileQuality`, `fileScale`, `fileMaxWidth`, `mode`, `ttlSeconds`. Parâmetros explícitos de chamada de ferramenta substituem esses valores.
 
-- `fontFamily`
-- `fontSize`
-- `lineSpacing`
-- `layout`
-- `showLineNumbers`
-- `diffIndicators`
-- `wordWrap`
-- `background`
-- `theme`
-- `fileFormat`
-- `fileQuality`
-- `fileScale`
-- `fileMaxWidth`
-- `mode`
-- `ttlSeconds`
-
-Parâmetros explícitos da ferramenta substituem esses padrões.
-
-### Configuração persistente de URL do visualizador
+### Configuração persistente da URL do visualizador
 
 <ParamField path="viewerBaseUrl" type="string">
-  Fallback pertencente ao Plugin para links de visualizador retornados quando uma chamada de ferramenta não passa `baseUrl`. Deve ser `http` ou `https`, sem consulta/hash.
+  Fallback pertencente ao Plugin para links do visualizador retornados quando uma chamada de ferramenta não fornece `baseUrl`. Deve usar `http` ou `https`, sem consulta/hash.
 </ParamField>
 
 ```json5
@@ -369,7 +275,7 @@ Parâmetros explícitos da ferramenta substituem esses padrões.
 ## Configuração de segurança
 
 <ParamField path="security.allowRemoteViewer" type="boolean" default="false">
-  `false`: solicitações não loopback para rotas do visualizador são negadas. `true`: visualizadores remotos são permitidos se o caminho tokenizado for válido.
+  `false`: solicitações que não sejam de loopback para as rotas do visualizador são negadas. `true`: visualizadores remotos são permitidos se o caminho com token for válido.
 </ParamField>
 
 ```json5
@@ -391,63 +297,41 @@ Parâmetros explícitos da ferramenta substituem esses padrões.
 
 ## Ciclo de vida e armazenamento de artefatos
 
-- Os artefatos são armazenados na subpasta temporária: `$TMPDIR/openclaw-diffs`.
-- Os metadados do artefato do visualizador contêm:
-  - ID aleatório do artefato (20 caracteres hexadecimais)
-  - token aleatório (48 caracteres hexadecimais)
-  - `createdAt` e `expiresAt`
-  - caminho armazenado de `viewer.html`
-- O TTL padrão do artefato é de 30 minutos quando não especificado.
-- O TTL máximo aceito do visualizador é de 6 horas.
-- A limpeza é executada oportunisticamente após a criação do artefato.
-- Artefatos expirados são excluídos.
-- A limpeza de fallback remove pastas obsoletas com mais de 24 horas quando os metadados estão ausentes.
+- Os artefatos ficam em `$TMPDIR/openclaw-diffs`.
+- Os metadados do visualizador armazenam um ID de artefato aleatório de 20 caracteres hexadecimais, um token aleatório de 48 caracteres hexadecimais, `createdAt`/`expiresAt` e o caminho armazenado de `viewer.html`.
+- TTL padrão do artefato: 30 minutos. TTL máximo aceito: 6 horas.
+- A limpeza é executada de forma oportunista após cada chamada de criação de artefato; os artefatos expirados são excluídos.
+- A varredura de contingência remove pastas obsoletas com mais de 24 horas quando os metadados estão ausentes.
 
-## URL do visualizador e comportamento de rede
+## URL do visualizador e comportamento da rede
 
-Rota do visualizador:
+Rota do visualizador: `/plugins/diffs/view/{artifactId}/{token}`
 
-- `/plugins/diffs/view/{artifactId}/{token}`
-
-Assets do visualizador:
+Recursos do visualizador:
 
 - `/plugins/diffs/assets/viewer.js`
 - `/plugins/diffs/assets/viewer-runtime.js`
-- `/plugins/diffs-language-pack/assets/viewer.js` quando o diff usa uma linguagem do Diff Viewer Language Pack
+- `/plugins/diffs-language-pack/assets/viewer.js` (somente quando o diff usa um idioma do pacote de idiomas)
 
-O documento do visualizador resolve esses assets em relação à URL do visualizador, então um prefixo de caminho opcional `baseUrl` também é preservado para ambas as solicitações de assets.
+O documento do visualizador resolve esses recursos em relação à URL do visualizador, portanto, um prefixo de caminho opcional em `baseUrl` também é aplicado às solicitações de recursos.
 
-Comportamento de construção de URL:
+Ordem de resolução da URL: `baseUrl` da chamada da ferramenta (após validação rigorosa) -> `viewerBaseUrl` do plugin -> padrão de loopback `127.0.0.1`. Se o modo de vinculação do Gateway for `custom` e `gateway.customBindHost` estiver definido, esse host será usado em vez do loopback.
 
-- Se `baseUrl` da chamada de ferramenta for fornecido, ele será usado após validação rigorosa.
-- Caso contrário, se `viewerBaseUrl` do Plugin estiver configurado, ele será usado.
-- Sem nenhuma das substituições, a URL do visualizador usa por padrão o loopback `127.0.0.1`.
-- Se o modo de vinculação do Gateway for `custom` e `gateway.customBindHost` estiver definido, esse host será usado.
-
-Regras de `baseUrl`:
-
-- Deve ser `http://` ou `https://`.
-- Query e hash são rejeitados.
-- Origem mais caminho base opcional são permitidos.
+Regras de `baseUrl`: deve ser `http://` ou `https://`; query e hash são rejeitados; é permitida uma origem com um caminho-base opcional.
 
 ## Modelo de segurança
 
 <AccordionGroup>
   <Accordion title="Proteção do visualizador">
-    - Apenas loopback por padrão.
-    - Caminhos de visualizador tokenizados com validação rigorosa de ID e token.
-    - CSP da resposta do visualizador:
-      - `default-src 'none'`
-      - scripts e assets apenas da própria origem
-      - nenhum `connect-src` de saída
-    - Limitação de erros remotos quando o acesso remoto está habilitado:
-      - 40 falhas a cada 60 segundos
-      - bloqueio de 60 segundos (`429 Too Many Requests`)
+    - Somente loopback por padrão.
+    - Caminhos tokenizados do visualizador com validação rigorosa dos padrões de ID e token.
+    - CSP da resposta do visualizador: `default-src 'none'`; scripts/recursos somente da própria origem; nenhum `connect-src` de saída.
+    - Limitação de tentativas malsucedidas remotas quando o acesso remoto está habilitado: 40 falhas em 60 segundos acionam um bloqueio de 60 segundos (`429 Too Many Requests`).
 
   </Accordion>
   <Accordion title="Proteção da renderização de arquivos">
-    - O roteamento de solicitações do navegador para capturas de tela é negar por padrão.
-    - Apenas assets locais do visualizador em `http://127.0.0.1/plugins/diffs/assets/*` são permitidos.
+    - O roteamento de solicitações do navegador para capturas de tela é bloqueado por padrão.
+    - Somente recursos locais do visualizador em `http://127.0.0.1/plugins/diffs/assets/*` são permitidos.
     - Solicitações de rede externas são bloqueadas.
 
   </Accordion>
@@ -459,7 +343,7 @@ Regras de `baseUrl`:
 
 Ordem de resolução:
 
-<Steps>
+  <Steps>
   <Step title="Configuração">
     `browser.executablePath` na configuração do OpenClaw.
   </Step>
@@ -470,65 +354,56 @@ Ordem de resolução:
 
   </Step>
   <Step title="Fallback da plataforma">
-    Fallback de descoberta de comando/caminho da plataforma.
+    Caminhos de instalação comuns e buscas no `PATH` para Chrome, Chromium, Edge e Brave.
   </Step>
 </Steps>
 
-Texto comum de falha:
-
-- `Diff PNG/PDF rendering requires a Chromium-compatible browser...`
-
-Corrija instalando Chrome, Chromium, Edge ou Brave, ou definindo uma das opções de caminho de executável acima.
+Texto comum de falha: `Diff PNG/PDF rendering requires a Chromium-compatible browser...`. Corrija instalando o Chrome, Chromium, Edge ou Brave, ou definindo uma das opções de caminho do executável acima.
 
 ## Solução de problemas
 
-<AccordionGroup>
+  <AccordionGroup>
   <Accordion title="Erros de validação de entrada">
-    - `Provide patch or both before and after text.` — inclua `before` e `after`, ou forneça `patch`.
-    - `Provide either patch or before/after input, not both.` — não misture modos de entrada.
-    - `Invalid baseUrl: ...` — use origem `http(s)` com caminho opcional, sem query/hash.
-    - `{field} exceeds maximum size (...)` — reduza o tamanho do payload.
-    - Rejeição de patch grande — reduza a contagem de arquivos do patch ou o total de linhas.
+    - `Provide patch or both before and after text.` -- inclua `before` e `after`, ou forneça `patch`.
+    - `Provide either patch or before/after input, not both.` -- não misture os modos de entrada.
+    - `Invalid baseUrl: ...` -- use uma origem `http(s)` com caminho opcional, sem consulta/hash.
+    - `{field} exceeds maximum size (...)` -- reduza o tamanho da carga útil.
+    - Rejeição de patch grande -- reduza a quantidade de arquivos do patch ou o total de linhas.
 
   </Accordion>
   <Accordion title="Acessibilidade do visualizador">
-    - A URL do visualizador resolve para `127.0.0.1` por padrão.
-    - Para cenários de acesso remoto:
-      - defina `viewerBaseUrl` do Plugin, ou
-      - passe `baseUrl` por chamada de ferramenta, ou
-      - use `gateway.bind=custom` e `gateway.customBindHost`
-    - Se `gateway.trustedProxies` incluir loopback para um proxy no mesmo host (por exemplo, Tailscale Serve), solicitações brutas do visualizador por loopback sem cabeçalhos de IP do cliente encaminhados falham fechadas por design.
-    - Para essa topologia de proxy:
-      - prefira `mode: "file"` ou `mode: "both"` quando você precisar apenas de um anexo, ou
-      - habilite intencionalmente `security.allowRemoteViewer` e defina `viewerBaseUrl` do Plugin ou passe um `baseUrl` de proxy/público quando precisar de uma URL de visualizador compartilhável
-    - Habilite `security.allowRemoteViewer` apenas quando você pretende permitir acesso externo ao visualizador.
+    - A URL do visualizador é resolvida como `127.0.0.1` por padrão.
+    - Para acesso remoto, defina `viewerBaseUrl` no plugin, passe `baseUrl` por chamada ou use `gateway.bind=custom` com `gateway.customBindHost`.
+    - Se `gateway.trustedProxies` incluir o endereço de loopback para um proxy no mesmo host (por exemplo, Tailscale Serve), as solicitações brutas do visualizador via loopback sem cabeçalhos encaminhados de IP do cliente falharão de forma segura por design.
+    - Para essa topologia de proxy, prefira `mode: "file"`/`"both"` para um anexo ou habilite intencionalmente `security.allowRemoteViewer` junto com `viewerBaseUrl` no plugin/um `baseUrl` de proxy para obter um link compartilhável do visualizador.
+    - Habilite `security.allowRemoteViewer` somente quando o acesso externo ao visualizador for desejado.
 
   </Accordion>
-  <Accordion title="A linha de linhas não modificadas não tem botão de expandir">
-    Isso pode acontecer para entrada de patch quando o patch não carrega contexto expansível. Isso é esperado e não indica falha do visualizador.
+  <Accordion title="A linha de linhas não modificadas não tem botão de expansão">
+    Comportamento esperado para uma entrada de patch sem contexto expansível; não é uma falha do visualizador.
   </Accordion>
   <Accordion title="Artefato não encontrado">
     - O artefato expirou devido ao TTL.
-    - O token ou caminho mudou.
+    - O token ou o caminho foi alterado.
     - A limpeza removeu dados obsoletos.
 
   </Accordion>
 </AccordionGroup>
 
-## Orientação operacional
+## Orientações operacionais
 
 - Prefira `mode: "view"` para revisões interativas locais no canvas.
-- Prefira `mode: "file"` para canais de chat de saída que precisam de um anexo.
-- Mantenha `allowRemoteViewer` desabilitado, a menos que sua implantação exija URLs remotas do visualizador.
-- Defina `ttlSeconds` curto explícito para diffs sensíveis.
-- Evite enviar segredos na entrada de diff quando não for necessário.
-- Se seu canal comprime imagens de forma agressiva (por exemplo, Telegram ou WhatsApp), prefira saída em PDF (`fileFormat: "pdf"`).
+- Prefira `mode: "file"` para canais de chat externos que precisam de um anexo.
+- Mantenha `allowRemoteViewer` desativado, a menos que sua implantação exija URLs de visualização remota.
+- Defina um `ttlSeconds` curto e explícito para diffs confidenciais.
+- Evite enviar segredos na entrada do diff quando não for necessário.
+- Se o seu canal compactar imagens de forma agressiva (por exemplo, Telegram ou WhatsApp), prefira a saída em PDF (`fileFormat: "pdf"`).
 
 <Note>
-Motor de renderização de diff fornecido por [Diffs](https://diffs.com).
+Mecanismo de renderização de diffs desenvolvido com [Diffs](https://diffs.com).
 </Note>
 
-## Relacionado
+## Relacionados
 
 - [Navegador](/pt-BR/tools/browser)
 - [Plugins](/pt-BR/tools/plugin)

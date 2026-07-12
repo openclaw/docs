@@ -1,32 +1,33 @@
 ---
 read_when:
-    - 합성 QA 전송 계층을 로컬 또는 CI 테스트 실행에 연결하고 있습니다
-    - 번들된 qa-channel 구성 영역이 필요합니다
-    - 엔드투엔드 QA 자동화를 반복 개선하고 있습니다
+    - 로컬 또는 CI 테스트 실행에 합성 QA 전송 계층을 연결하고 있습니다
+    - 번들로 제공되는 qa-channel 구성 인터페이스가 필요합니다
+    - 엔드투엔드 QA 자동화를 반복적으로 개선하고 있습니다
 summary: 결정론적 OpenClaw QA 시나리오를 위한 합성 Slack급 채널 Plugin
 title: QA 채널
 x-i18n:
-    generated_at: "2026-05-10T19:23:37Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:59:04Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: 8f28962032bc5f6b228de731ae6bd9a22831604b506b7073aeffba19ac22e0e8
+    source_hash: f33af6ef31515e0cab0ee2540f48f3ffea8aba3d13915dc8cf66111599354187
     source_path: channels/qa-channel.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-`qa-channel`은 자동화된 OpenClaw QA를 위한 번들 합성 메시지 전송 수단입니다. 프로덕션 채널이 아니며, 상태를 결정적으로 유지하고 완전히 검사 가능하게 하면서 실제 전송 수단에서 사용하는 것과 동일한 채널 Plugin 경계를 실행하기 위해 존재합니다.
+`qa-channel`은 자동화된 OpenClaw QA를 위한 저장소 로컬 합성 메시지 전송 방식입니다(`extensions/qa-channel`, 비공개 패키지, 패키징된 설치에서 제외됨). 프로덕션 채널이 아니며, 상태를 결정론적으로 유지하고 완전히 검사할 수 있도록 하면서 실제 전송 방식이 사용하는 것과 동일한 채널 Plugin 경계를 실행하기 위해 존재합니다.
 
-## 수행하는 작업
+## 기능
 
 - Slack급 대상 문법:
   - `dm:<user>`
   - `channel:<room>`
   - `group:<room>`
   - `thread:<room>/<thread>`
-- 공유 `channel:` 및 `group:` 대화는 에이전트에 그룹/채널 룸 턴으로 표시되므로 Discord, Slack, Telegram 및 유사한 전송 수단에서 사용하는 것과 동일한 표시 응답 및 메시지 도구 라우팅 정책을 실행합니다.
-- 인바운드 메시지 주입, 아웃바운드 대화 기록 캡처, 스레드 생성, 반응, 편집, 삭제, 검색/읽기 작업을 위한 HTTP 기반 합성 버스입니다.
-- `.artifacts/qa-e2e/`에 Markdown 보고서를 작성하는 호스트 측 자체 점검 러너입니다.
+- 공유 `channel:` 및 `group:` 대화는 에이전트에 그룹/채널 방 턴으로 제공되므로 Discord, Slack, Telegram 및 유사한 전송 방식에서 사용하는 것과 동일한 표시 답장 및 메시지 도구 라우팅 정책을 실행합니다.
+- 인바운드 메시지 주입, 아웃바운드 트랜스크립트 캡처, 스레드 생성, 반응, 편집, 삭제 및 검색/읽기 작업을 위한 HTTP 기반 합성 버스입니다.
+- Markdown 보고서를 `.artifacts/qa-e2e/`에 작성하는 호스트 측 자체 검사 실행기입니다.
 
 ## 구성
 
@@ -47,57 +48,59 @@ x-i18n:
 계정 키:
 
 - `enabled` - 이 계정의 마스터 토글입니다.
-- `name` - 선택 사항인 표시 레이블입니다.
-- `baseUrl` - 합성 버스 URL입니다.
-- `botUserId` - 대상 문법에서 사용되는 Matrix 스타일 봇 사용자 ID입니다.
-- `botDisplayName` - 아웃바운드 메시지의 표시 이름입니다.
-- `pollTimeoutMs` - 롱 폴링 대기 창입니다. 100에서 30000 사이의 정수입니다.
-- `allowFrom` - 발신자 허용 목록입니다(사용자 ID 또는 `"*"`). 직접 메시지와
-  허용 목록 기반 그룹 정책 모두 이 합성 발신자 ID를 사용합니다.
-- `groupPolicy` - 공유 룸 정책: `"open"`(기본값), `"allowlist"` 또는
+- `name` - 선택적 표시 레이블입니다.
+- `baseUrl` - 합성 버스 URL입니다. 이 값이 설정되면 계정이 구성된 것으로 간주합니다.
+- `botUserId` - 대상 문법에 사용하는 합성 봇 사용자 ID입니다(기본값: `openclaw`).
+- `botDisplayName` - 아웃바운드 메시지의 표시 이름입니다(기본값: `OpenClaw QA`).
+- `pollTimeoutMs` - 롱 폴링 대기 시간입니다. 100에서 30000 사이의 정수입니다(기본값: 1000).
+- `allowFrom` - 발신자 허용 목록입니다(사용자 ID 또는 `"*"`; 기본값: `["*"]`). DM은
+  항상 `open` 정책을 사용하며, 허용 목록 기반 그룹 정책에서도 이러한 합성
+  발신자 ID를 사용합니다.
+- `groupPolicy` - 공유 방 정책입니다. `"open"`(기본값), `"allowlist"` 또는
   `"disabled"`입니다.
-- `groupAllowFrom` - 선택 사항인 공유 룸 발신자 허용 목록입니다. `"allowlist"`에서
-  생략하면 QA Channel은 `allowFrom`으로 대체합니다.
-- `groups.<room>.requireMention` - 특정 그룹/채널 룸에서 응답하기 전에 봇 멘션을
-  요구합니다. `groups."*"`는 기본값을 설정합니다.
-- `defaultTo` - 제공된 대상이 없을 때의 대체 대상입니다.
+- `groupAllowFrom` - 선택적 공유 방 발신자 허용 목록입니다. `"allowlist"`에서
+  생략하면 QA Channel은 `allowFrom`을 대신 사용합니다.
+- `groups.<room>.requireMention` - 특정 그룹/채널 방에서 답장하기 전에 봇 멘션을
+  요구합니다(기본값: false). `groups."*"`는 기본값을 설정하며, 방별 `tools` /
+  `toolsBySender`는 도구 정책 재정의를 설정합니다.
+- `defaultTo` - 대상이 제공되지 않았을 때 사용하는 대체 대상입니다.
 - `actions.messages` / `actions.reactions` / `actions.search` / `actions.threads` - 작업별 도구 게이팅입니다.
 
 최상위 수준의 다중 계정 키:
 
-- `accounts` - 계정 ID를 키로 하는 이름 있는 계정별 재정의 레코드입니다.
-- `defaultAccount` - 여러 계정이 구성된 경우 선호되는 계정 ID입니다.
+- `accounts` - 계정 ID를 키로 사용하는, 이름이 지정된 계정별 재정의 레코드입니다.
+- `defaultAccount` - 여러 계정이 구성된 경우 선호하는 계정 ID입니다.
 
-## 러너
+## 실행기
 
-호스트 측 자체 점검(`.artifacts/qa-e2e/` 아래에 Markdown 보고서 작성):
+호스트 측 자체 검사(Markdown 보고서를 `.artifacts/qa-e2e/` 아래에 작성):
 
 ```bash
 pnpm qa:e2e
 ```
 
-이는 `qa-lab`을 통해 라우팅되고, 리포지토리 내 QA 버스를 시작하며, 번들 `qa-channel` 런타임 슬라이스를 부팅한 뒤 결정적 자체 점검을 실행합니다.
+이 명령은 `qa-lab`을 통해 라우팅하고, 저장소 내 QA 버스를 시작하고, `qa-channel` 런타임 슬라이스를 부팅한 다음 결정론적 자체 검사를 실행합니다.
 
-전체 리포지토리 기반 시나리오 제품군:
+전체 저장소 기반 시나리오 모음:
 
 ```bash
 pnpm openclaw qa suite
 ```
 
-QA Gateway 레인을 대상으로 시나리오를 병렬로 실행합니다. 시나리오, 프로필 및 공급자 모드는 [QA 개요](/ko/concepts/qa-e2e-automation)를 참조하세요.
+QA Gateway 레인에 대해 시나리오를 병렬로 실행합니다. 시나리오, 프로필 및 제공자 모드는 [QA 개요](/ko/concepts/qa-e2e-automation)를 참조하십시오.
 
-Docker 기반 QA 사이트(Gateway + QA Lab 디버거 UI를 하나의 스택으로 제공):
+Docker 기반 QA 사이트(Gateway + QA Lab 디버거 UI를 하나의 스택으로 구성):
 
 ```bash
 pnpm qa:lab:up
 ```
 
-QA 사이트를 빌드하고, Docker 기반 Gateway + QA Lab 스택을 시작하며, QA Lab URL을 출력합니다. 여기에서 시나리오를 선택하고, 모델 레인을 고르고, 개별 실행을 시작하며, 결과를 실시간으로 볼 수 있습니다. QA Lab 디버거는 제공되는 Control UI 번들과 별개입니다.
+QA 사이트를 빌드하고, Docker 기반 Gateway + QA Lab 스택을 시작하고, QA Lab URL을 출력합니다. 여기에서 시나리오를 선택하고, 모델 레인을 선택하고, 개별 실행을 시작하고, 결과를 실시간으로 확인할 수 있습니다. QA Lab 디버거는 배포되는 Control UI 번들과 별개입니다.
 
-## 관련
+## 관련 항목
 
 - [QA 개요](/ko/concepts/qa-e2e-automation) - 전체 스택, 전송 어댑터, 시나리오 작성
-- [Matrix QA](/ko/concepts/qa-matrix) - 실제 채널을 구동하는 예제 라이브 전송 러너
+- [Matrix QA](/ko/concepts/qa-matrix) - 실제 채널을 구동하는 라이브 전송 실행기 예시
 - [페어링](/ko/channels/pairing)
 - [그룹](/ko/channels/groups)
 - [채널 개요](/ko/channels)

@@ -1,85 +1,97 @@
 ---
 read_when:
     - Medien-Pipeline oder Anhänge ändern
-summary: Regeln für den Umgang mit Bildern und Medien bei Sendungen, Gateway- und Agent-Antworten
+summary: Regeln für die Verarbeitung von Bildern und Medien bei Send-, Gateway- und Agentenantworten
 title: Bild- und Medienunterstützung
 x-i18n:
-    generated_at: "2026-06-27T17:40:04Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:36:41Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: eeee181cae2798b7d0f5dbe0331c6b09612755b4d796d98baaeaf6989955def5
+    source_hash: 41d5bbd174b4fb35b616a9e90930485fd76dc8cfbad2e178f0823e6fb40c36f8
     source_path: nodes/images.md
     workflow: 16
 ---
 
-Der WhatsApp-Kanal läuft über **Baileys Web**. Dieses Dokument beschreibt die aktuellen Regeln zur Medienverarbeitung für Senden, Gateway und Agentenantworten.
+Der WhatsApp-Kanal basiert auf Baileys Web. Diese Seite beschreibt die Regeln für die Medienverarbeitung beim Senden, im Gateway und bei Agentenantworten.
 
 ## Ziele
 
-- Medien mit optionalen Beschriftungen über `openclaw message send --media` senden.
-- Automatische Antworten aus dem Web-Posteingang dürfen Medien zusammen mit Text enthalten.
-- Grenzwerte pro Typ sinnvoll und vorhersehbar halten.
+- Medien mit einer optionalen Beschriftung über `openclaw message send --media` senden.
+- Automatische Antworten aus dem Web-Posteingang dürfen neben Text auch Medien enthalten.
+- Sinnvolle und vorhersehbare Grenzwerte für jeden Medientyp beibehalten.
 
 ## CLI-Oberfläche
 
-- `openclaw message send --media <path-or-url> [--message <caption>]`
-  - `--media` ist optional; die Beschriftung kann bei reinen Mediensendungen leer sein.
-  - `--dry-run` gibt die aufgelöste Nutzlast aus; `--json` gibt `{ channel, to, messageId, mediaUrl, caption }` aus.
+`openclaw message send --target <dest> --media <path-or-url> [--message <caption>]`
+
+- `--media <path-or-url>` — hängt Medien an (Bild/Audio/Video/Dokument); akzeptiert lokale Pfade oder URLs. Optional; bei Sendungen, die nur Medien enthalten, kann die Beschriftung leer sein.
+- `--gif-playback` — behandelt Videomedien als GIF-Wiedergabe (nur WhatsApp).
+- `--force-document` — sendet Medien als Dokument, um die Komprimierung durch den Kanal zu vermeiden (Telegram, WhatsApp); gilt für Bilder, GIFs und Videos.
+- `--reply-to <id>`, `--thread-id <id>`, `--pin`, `--silent` — Zustellungs- und Thread-Optionen, die auch für Sendungen gelten, die nur Text enthalten.
+- `--dry-run` — gibt die aufgelöste Nutzlast aus und überspringt das Senden.
+- `--json` — gibt das Ergebnis als JSON aus: `{ action, channel, dryRun, handledBy, messageId?, payload }` (`payload` enthält das kanalspezifische Sendeergebnis einschließlich etwaiger Medienreferenzen).
 
 ## Verhalten des WhatsApp-Web-Kanals
 
 - Eingabe: lokaler Dateipfad **oder** HTTP(S)-URL.
-- Ablauf: in einen Buffer laden, Medientyp erkennen und die korrekte Nutzlast erstellen:
-  - **Bilder:** auf JPEG skalieren und neu komprimieren (maximale Seite 2048px), ausgerichtet auf `channels.whatsapp.mediaMaxMb` (Standard: 50 MB).
-  - **Audio/Sprache/Video:** Durchleitung bis 16 MB; Audio wird als Sprachnachricht gesendet (`ptt: true`).
-  - **Dokumente:** alles andere, bis 100 MB, mit beibehaltenem Dateinamen, sofern verfügbar.
-- WhatsApp-Wiedergabe im GIF-Stil: ein MP4 mit `gifPlayback: true` senden (CLI: `--gif-playback`), damit mobile Clients es inline in Schleife abspielen.
-- Die MIME-Erkennung bevorzugt Magic Bytes, dann Header, dann die Dateiendung.
+- Ablauf: in einen Puffer laden, Medienart erkennen und anschließend die ausgehende Nutzlast entsprechend der Art erstellen:
+  - **Bilder:** werden so optimiert, dass sie unter `channels.whatsapp.mediaMaxMb` (Standardwert 50MB) bleiben. Undurchsichtige Bilder werden erneut als JPEG komprimiert (die standardmäßige Abstufung der Seitenlängen beginnt bei 2048px und wird bei wiederholter Überschreitung der Größenbegrenzung reduziert); Bilder mit Transparenz bleiben PNG-Dateien. Wenn die Quelle bereits ein zulässiges JPEG/PNG/WebP innerhalb der Grenzwerte für Größe und Seitenlänge ist, bleiben die ursprünglichen Bytes unverändert erhalten, statt erneut komprimiert zu werden. Animierte GIFs werden niemals neu codiert, sondern nur auf ihre Größe geprüft.
+  - **Audio/Sprache:** Sofern es sich nicht bereits um natives Sprachaudio (`.ogg`/`.opus` oder `audio/ogg`/`audio/opus`) handelt, wird ausgehendes Audio vor dem Senden als Sprachnachricht (`ptt: true`) über `ffmpeg` in Opus/OGG transcodiert (48kHz Mono, 64kbps, auf 20 Minuten begrenzt).
+  - **Video:** unveränderte Weiterleitung bis 16MB.
+  - **Dokumente:** alles andere bis 100MB; der Dateiname bleibt erhalten, sofern verfügbar.
+- GIF-ähnliche Wiedergabe in WhatsApp: Senden Sie eine MP4-Datei mit `gifPlayback: true` (CLI: `--gif-playback`), damit mobile Clients sie in einer Endlosschleife direkt im Nachrichtenverlauf wiedergeben.
+- Bei der MIME-Erkennung haben erkannte magische Bytes Vorrang, gefolgt von der Dateierweiterung und anschließend den Antwort-Headern; ein generisch erkannter Container (`application/octet-stream`, `zip`) überschreibt niemals eine spezifischere Zuordnung anhand der Dateierweiterung (beispielsweise XLSX gegenüber ZIP).
 - Die Beschriftung stammt aus `--message` oder `reply.text`; eine leere Beschriftung ist zulässig.
-- Protokollierung: Nicht ausführlich zeigt `↩️`/`✅`; ausführlich enthält Größe und Quellpfad/URL.
+- Protokollierung: Im nicht ausführlichen Modus werden `↩️`/`✅` angezeigt; der ausführliche Modus enthält Größe und Quellpfad/-URL.
+
+<Note>
+Die oben genannten Werte von 16MB für Audio/Video und 100MB für Dokumente sind die gemeinsamen Standardwerte je Medienart, wenn keine explizite Begrenzung in Bytes übergeben wird. WhatsApp-Sendungen legen über `channels.whatsapp.mediaMaxMb` (Standardwert 50MB) eine explizite Begrenzung fest, die für dieses Konto einheitlich für alle Medienarten gilt.
+</Note>
 
 ## Pipeline für automatische Antworten
 
-- `getReplyFromConfig` gibt `{ text?, mediaUrl?, mediaUrls? }` zurück.
-- Wenn Medien vorhanden sind, löst der Web-Sender lokale Pfade oder URLs mit derselben Pipeline wie `openclaw message send` auf.
-- Mehrere Medieneinträge werden, falls angegeben, nacheinander gesendet.
+- `getReplyFromConfig` gibt eine Antwortnutzlast (oder ein Array von Nutzlasten) zurück, die neben anderen Feldern `text?`, `mediaUrl?` und `mediaUrls?` enthält.
+- Wenn Medien vorhanden sind, löst die Web-Sendekomponente lokale Pfade oder URLs mit derselben Pipeline wie `openclaw message send` auf.
+- Mehrere Medieneinträge werden, sofern vorhanden, nacheinander gesendet.
 
 ## Eingehende Medien für Befehle
 
-- Wenn eingehende Web-Nachrichten Medien enthalten, lädt OpenClaw sie in eine temporäre Datei herunter und stellt Template-Variablen bereit:
-  - `{{MediaUrl}}` Pseudo-URL für das eingehende Medium.
-  - `{{MediaPath}}` lokaler temporärer Pfad, der vor dem Ausführen des Befehls geschrieben wird.
-- Wenn eine Docker-Sandbox pro Sitzung aktiviert ist, werden eingehende Medien in den Sandbox-Arbeitsbereich kopiert und `MediaPath`/`MediaUrl` in einen relativen Pfad wie `media/inbound/<filename>` umgeschrieben.
-- Medienverständnis (falls über `tools.media.*` oder das gemeinsame `tools.media.models` konfiguriert) läuft vor dem Templating und kann `[Image]`-, `[Audio]`- und `[Video]`-Blöcke in `Body` einfügen.
-  - Audio setzt `{{Transcript}}` und verwendet das Transkript für die Befehlsauswertung, damit Slash-Befehle weiterhin funktionieren.
-  - Video- und Bildbeschreibungen behalten jeglichen Beschriftungstext für die Befehlsauswertung bei.
-  - Wenn das aktive primäre Bildmodell Vision bereits nativ unterstützt, überspringt OpenClaw den `[Image]`-Zusammenfassungsblock und übergibt stattdessen das Originalbild an das Modell.
-- Standardmäßig wird nur der erste passende Bild-/Audio-/Video-Anhang verarbeitet; setzen Sie `tools.media.<cap>.attachments`, um mehrere Anhänge zu verarbeiten.
+- Wenn eingehende Webnachrichten Medien enthalten, lädt OpenClaw diese in eine temporäre Datei herunter und stellt Vorlagenvariablen bereit:
+  - `{{MediaUrl}}` — Pseudo-URL für das eingehende Medium.
+  - `{{MediaPath}}` — lokaler temporärer Pfad, der vor der Ausführung des Befehls geschrieben wird.
+- Wenn eine sitzungsspezifische Docker-Sandbox aktiviert ist, werden eingehende Medien in den Arbeitsbereich der Sandbox kopiert und `MediaPath`/`MediaUrl` in einen Sandbox-relativen Pfad wie `media/inbound/<filename>` umgeschrieben.
+- Die Medienanalyse (konfiguriert über `tools.media.*` oder die gemeinsamen `tools.media.models`) wird vor der Vorlagenverarbeitung ausgeführt und kann `[Image]`-, `[Audio]`- und `[Video]`-Blöcke in `Body` einfügen.
+  - Bei Audio wird `{{Transcript}}` gesetzt und das Transkript für die Befehlsanalyse verwendet, sodass Slash-Befehle weiterhin funktionieren.
+  - Bei Video- und Bildbeschreibungen bleibt vorhandener Beschriftungstext für die Befehlsanalyse erhalten.
+  - Wenn das aktive primäre Modell bereits nativ Bilder unterstützt, überspringt OpenClaw den `[Image]`-Zusammenfassungsblock und übergibt stattdessen das Originalbild an das Modell.
+- Standardmäßig wird nur der erste passende Bild-, Audio- oder Videoanhang verarbeitet; legen Sie `tools.media.<capability>.attachments` fest, um mehrere Anhänge zu verarbeiten.
 
 ## Grenzwerte und Fehler
 
-**Obergrenzen für ausgehendes Senden (WhatsApp-Web-Senden)**
+**Grenzwerte für ausgehende Sendungen (WhatsApp-Webversand)**
 
-- Bilder: bis zu `channels.whatsapp.mediaMaxMb` (Standard: 50 MB) nach der Neukomprimierung.
-- Audio/Sprache/Video: Obergrenze 16 MB; Dokumente: Obergrenze 100 MB.
-- Zu große oder nicht lesbare Medien → klarer Fehler in den Logs, und die Antwort wird übersprungen.
+- Bilder: nach der Optimierung bis zu `channels.whatsapp.mediaMaxMb` (Standardwert 50MB).
+- Audio/Video: Begrenzung auf 16MB (gemeinsamer Standardwert; beim Senden über WhatsApp durch `mediaMaxMb` überschrieben).
+- Dokumente: Begrenzung auf 100MB (gemeinsamer Standardwert; beim Senden über WhatsApp durch `mediaMaxMb` überschrieben).
+- Zu große oder nicht lesbare Medien erzeugen einen eindeutigen Fehler in den Protokollen und die Antwort wird übersprungen.
 
-**Obergrenzen für Medienverständnis (Transkription/Beschreibung)**
+**Grenzwerte für die Medienanalyse (Transkription/Beschreibung)**
 
-- Bildstandard: 10 MB (`tools.media.image.maxBytes`).
-- Audiostandard: 20 MB (`tools.media.audio.maxBytes`).
-- Videostandard: 50 MB (`tools.media.video.maxBytes`).
-- Bei zu großen Medien wird das Verständnis übersprungen, aber Antworten werden weiterhin mit dem ursprünglichen Body verarbeitet.
+- Standardwert für Bilder: 10MB (`tools.media.image.maxBytes`).
+- Standardwert für Audio: 20MB (`tools.media.audio.maxBytes`).
+- Standardwert für Video: 50MB (`tools.media.video.maxBytes`).
+- Bei zu großen Medien wird die Analyse übersprungen, die Antwort wird jedoch weiterhin mit dem ursprünglichen Textkörper verarbeitet.
 
 ## Hinweise für Tests
 
-- Sende- und Antwortabläufe für Bild-, Audio- und Dokumentfälle abdecken.
-- Neukomprimierung für Bilder (Größenbegrenzung) und Sprachnachricht-Flag für Audio validieren.
-- Sicherstellen, dass Antworten mit mehreren Medien als sequenzielle Sendungen aufgefächert werden.
+- Sende- und Antwortabläufe für Bilder, Audio und Dokumente abdecken.
+- Größengrenzen nach der Bildoptimierung und das Sprachnachrichten-Flag für Audio überprüfen.
+- Sicherstellen, dass Antworten mit mehreren Medien in aufeinanderfolgende Sendungen aufgefächert werden.
 
-## Verwandt
+## Verwandte Themen
 
 - [Kameraaufnahme](/de/nodes/camera)
-- [Medienverständnis](/de/nodes/media-understanding)
+- [Medienanalyse](/de/nodes/media-understanding)
 - [Audio und Sprachnachrichten](/de/nodes/audio)

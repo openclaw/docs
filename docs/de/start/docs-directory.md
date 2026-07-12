@@ -1,77 +1,78 @@
 ---
 read_when:
-    - Sie möchten schnellen Zugriff auf wichtige Dokumentationsseiten
-summary: Kuratierte Links zu den meistgenutzten OpenClaw-Dokumentationen.
+    - Sie möchten schnell auf wichtige Dokumentationsseiten zugreifen
+summary: Ausgewählte Links zu den am häufigsten verwendeten OpenClaw-Dokumentationsseiten.
 title: Dokumentationsverzeichnis
 x-i18n:
-    generated_at: "2026-06-27T18:14:10Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:55:08Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: f7d45effe4df50fb544e9f6fd2fcd87f4ed674eba0042eace757dbfcad93d07a
+    source_hash: 48859dc0b31139f1f5acaa403e506cd6d9767ee32e502a4ef74340dbbc21918f
     source_path: start/docs-directory.md
     workflow: 16
 ---
 
 <Note>
 Diese Seite ist ein kuratierter Index. Wenn Sie neu sind, beginnen Sie mit [Erste Schritte](/de/start/getting-started).
-Eine vollständige Übersicht der Dokumentation finden Sie unter [Docs-Hubs](/de/start/hubs).
+Eine vollständige Übersicht der Dokumentation finden Sie unter [Dokumentations-Hubs](/de/start/hubs).
 </Note>
 
 ## Hier beginnen
 
-- [Docs-Hubs (alle Seiten verlinkt)](/de/start/hubs)
+- [Dokumentations-Hubs (alle Seiten verlinkt)](/de/start/hubs)
 - [Hilfe](/de/help)
 - [Konfiguration](/de/gateway/configuration)
 - [Konfigurationsbeispiele](/de/gateway/configuration-examples)
 - [Slash-Befehle](/de/tools/slash-commands)
 - [Multi-Agent-Routing](/de/concepts/multi-agent)
 - [Aktualisierung und Rollback](/de/install/updating)
-- [Koppeln (DM und Knoten)](/de/channels/pairing)
+- [Kopplung (Direktnachrichten und Nodes)](/de/channels/pairing)
 - [Nix-Modus](/de/install/nix)
 - [Einrichtung des OpenClaw-Assistenten](/de/start/openclaw)
 - [Skills](/de/tools/skills)
 - [Skills-Konfiguration](/de/tools/skills-config)
 - [Workspace-Vorlagen](/de/reference/templates/AGENTS)
 - [RPC-Adapter](/de/reference/rpc)
-- [Gateway-Runbook](/de/gateway)
-- [Knoten (iOS und Android)](/de/nodes)
-- [Web-Oberflächen (Control UI)](/de/web)
-- [Erkennung und Transporte](/de/gateway/discovery)
+- [Gateway-Betriebshandbuch](/de/gateway)
+- [Nodes (iOS und Android)](/de/nodes)
+- [Weboberflächen (Control UI)](/de/web)
+- [Erkennung und Übertragungswege](/de/gateway/discovery)
 - [Remotezugriff](/de/gateway/remote)
 
-## Provider und UX
+## Kanäle und Benutzererfahrung
 
-- [WebChat](/de/web/webchat)
 - [Control UI (Browser)](/de/web/control-ui)
-- [Telegram](/de/channels/telegram)
 - [Discord](/de/channels/discord)
-- [Mattermost](/de/channels/mattermost)
-- [QQ Bot](/de/channels/qqbot)
-- [iMessage](/de/channels/imessage)
 - [Gruppen](/de/channels/groups)
-- [WhatsApp-Gruppennachrichten](/de/channels/group-messages)
-- [Medienbilder](/de/nodes/images)
+- [iMessage](/de/channels/imessage)
+- [Mattermost](/de/channels/mattermost)
 - [Medienaudio](/de/nodes/audio)
+- [Medienbilder](/de/nodes/images)
+- [QQ Bot](/de/channels/qqbot)
+- [Telegram](/de/channels/telegram)
+- [WebChat](/de/web/webchat)
+- [WhatsApp-Gruppennachrichten](/de/channels/group-messages)
 
-## Companion-Apps
+## Begleit-Apps
 
-- [macOS-App](/de/platforms/macos)
-- [iOS-App](/de/platforms/ios)
 - [Android-App](/de/platforms/android)
-- [Windows Hub](/de/platforms/windows)
+- [iOS-App](/de/platforms/ios)
 - [Linux-App](/de/platforms/linux)
+- [macOS-App](/de/platforms/macos)
+- [Windows-Hub](/de/platforms/windows)
 
 ## Betrieb und Sicherheit
 
 - [Sitzungen](/de/concepts/session)
-- [Cron-Jobs](/de/automation/cron-jobs)
+- [Cron-Aufgaben](/de/automation/cron-jobs)
 - [Webhooks](/de/automation/cron-jobs#webhooks)
 - [Gmail-Hooks (Pub/Sub)](/de/automation/cron-jobs#gmail-pubsub-integration)
 - [Sicherheit](/de/gateway/security)
 - [Fehlerbehebung](/de/gateway/troubleshooting)
 
-## Verwandt
+## Verwandte Themen
 
 - [Erste Schritte](/de/start/getting-started)
-- [Docs-Hubs](/de/start/hubs)
+- [Dokumentations-Hubs](/de/start/hubs)

@@ -1,69 +1,70 @@
 ---
 doc-schema-version: 1
 read_when:
-    - 新しい OpenClaw Plugin を作成したい
+    - 新しい OpenClaw Plugin を作成したい場合
     - Plugin 開発のクイックスタートが必要です
     - チャネル、プロバイダー、CLI バックエンド、ツール、またはフックのドキュメントから選択しています
 sidebarTitle: Getting Started
-summary: 数分で最初の OpenClaw plugin を作成する
-title: Plugin の構築
+summary: 数分で最初の OpenClaw Plugin を作成する
+title: Pluginの構築
 x-i18n:
-    generated_at: "2026-07-05T11:30:42Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:36:55Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: 71634f848091562bb2c1f5d3aa92a2b623beac190e3bd0b56cc01a1e333143b4
+    source_hash: 99ef2f22f8ae55614d835bc4309881ce264ab1a2287ac08af328e0b311d8fd9a
     source_path: plugins/building-plugins.md
     workflow: 16
 ---
 
-Plugins は core を変更せずに OpenClaw を拡張します。Plugin は messaging
-channel、model provider、local CLI backend、agent tool、hook、media provider、
-または別の Plugin 所有の capability を追加できます。
+Plugin はコアを変更せずに OpenClaw を拡張します。Plugin は、メッセージング
+チャネル、モデルプロバイダー、ローカル CLI バックエンド、エージェントツール、フック、メディアプロバイダー、
+または Plugin が所有するその他の機能を追加できます。
 
-外部 Plugin を OpenClaw リポジトリに追加する必要はありません。package を
-[ClawHub](/clawhub) に公開すると、ユーザーは次のようにインストールできます。
+外部 Plugin を OpenClaw リポジトリに追加する必要はありません。パッケージを
+[ClawHub](/clawhub) に公開すると、ユーザーは次のコマンドでインストールできます。
 
 ```bash
 openclaw plugins install clawhub:<package-name>
 ```
 
-launch cutover の間は、bare package spec も引き続き npm からインストールされます。
-ClawHub 解決を使いたい場合は、`clawhub:` prefix を使用します。
+ローンチ移行期間中は、プレフィックスなしのパッケージ指定も引き続き npm からインストールされます。ClawHub で解決する場合は
+`clawhub:` プレフィックスを使用してください。
 
 ## 要件
 
-- Node 22.19+、Node 23.11+、または Node 24+、および `npm` または `pnpm`。
-- TypeScript ESM modules。
-- in-repo bundled plugin の作業では、リポジトリを clone して `pnpm install` を実行します。
-  OpenClaw は `extensions/*` workspace packages から bundled plugins を検出するため、
-  source-checkout plugin 開発は pnpm のみです。
+- Node 22.19+、Node 23.11+、または Node 24+ と、`npm` または `pnpm`。
+- TypeScript ESM モジュール。
+- リポジトリ内のバンドル Plugin を開発する場合は、リポジトリをクローンして `pnpm install` を実行します。
+  OpenClaw は `extensions/*` ワークスペースパッケージから
+  バンドル Plugin を検出するため、ソースチェックアウトでの Plugin 開発は pnpm のみをサポートします。
 
-## Plugin の形を選ぶ
+## Plugin の形態を選択する
 
 <CardGroup cols={2}>
-  <Card title="Channel plugin" icon="messages-square" href="/ja-JP/plugins/sdk-channel-plugins">
-    OpenClaw を messaging platform に接続します。
+  <Card title="チャネル Plugin" icon="messages-square" href="/ja-JP/plugins/sdk-channel-plugins">
+    OpenClaw をメッセージングプラットフォームに接続します。
   </Card>
-  <Card title="Provider plugin" icon="cpu" href="/ja-JP/plugins/sdk-provider-plugins">
-    model、media、search、fetch、speech、または realtime provider を追加します。
+  <Card title="プロバイダー Plugin" icon="cpu" href="/ja-JP/plugins/sdk-provider-plugins">
+    モデル、メディア、検索、取得、音声、またはリアルタイムプロバイダーを追加します。
   </Card>
-  <Card title="CLI backend plugin" icon="terminal" href="/ja-JP/plugins/cli-backend-plugins">
-    OpenClaw model fallback を通じて local AI CLI を実行します。
+  <Card title="CLI バックエンド Plugin" icon="terminal" href="/ja-JP/plugins/cli-backend-plugins">
+    OpenClaw のモデルフォールバックを通じてローカル AI CLI を実行します。
   </Card>
-  <Card title="Tool plugin" icon="wrench" href="/ja-JP/plugins/tool-plugins">
-    agent tools を登録します。
+  <Card title="ツール Plugin" icon="wrench" href="/ja-JP/plugins/tool-plugins">
+    エージェントツールを登録します。
   </Card>
 </CardGroup>
 
 ## クイックスタート
 
-必須の agent tool を 1 つ登録して、最小限の tool plugin を構築します。これは
-最短で有用な Plugin の形であり、package、manifest、entry point、local proof を
-対象にします。
+必須のエージェントツールを 1 つ登録して、最小構成のツール Plugin を構築します。これは
+実用的な Plugin の最小形態であり、パッケージ、マニフェスト、エントリポイント、
+およびローカルでの動作確認を網羅します。
 
 <Steps>
-  <Step title="Create package metadata">
+  <Step title="パッケージメタデータを作成する">
     <CodeGroup>
 
 ```json package.json
@@ -95,7 +96,7 @@ ClawHub 解決を使いたい場合は、`clawhub:` prefix を使用します。
 {
   "id": "my-plugin",
   "name": "My Plugin",
-  "description": "Adds a custom tool to OpenClaw",
+  "description": "OpenClaw にカスタムツールを追加します",
   "contracts": {
     "tools": ["my_tool"]
   },
@@ -111,27 +112,27 @@ ClawHub 解決を使いたい場合は、`clawhub:` prefix を使用します。
 
     </CodeGroup>
 
-    公開済みの外部 Plugin は、runtime entries が built JavaScript
-    files を指すようにする必要があります。entry point contract 全体については
-    [SDK entry points](/ja-JP/plugins/sdk-entrypoints) を参照してください。
+    公開する外部 Plugin のランタイムエントリは、ビルド済みの JavaScript
+    ファイルを参照する必要があります。エントリポイントの完全な契約については、[SDK エントリポイント](/ja-JP/plugins/sdk-entrypoints)を
+    参照してください。
 
-    config がない場合でも、すべての Plugin には manifest が必要です。Runtime tools は
-    `contracts.tools` に含める必要があります。これにより OpenClaw は
-    すべての plugin runtime を eager loading せずに ownership を検出できます。
-    `activation.onStartup` は意図して設定してください。この例では Gateway startup 時に読み込みます。
+    設定がない場合でも、すべての Plugin にマニフェストが必要です。OpenClaw が
+    すべての Plugin ランタイムを先行して読み込まずに所有元を検出できるように、ランタイムツールは
+    `contracts.tools` に記載する必要があります。`activation.onStartup` は
+    意図を持って設定してください。この例では Gateway の起動時に読み込みます。
 
-    Host-trusted plugin surfaces も manifest-gated であり、installed plugins では明示的な宣言が必要です:
-    `api.registerAgentToolResultMiddleware(...)` では各 target runtime を
-    `contracts.agentToolResultMiddleware` に列挙する必要があり、
-    `api.registerTrustedToolPolicy(...)` では各 policy id を
-    `contracts.trustedToolPolicies` に含める必要があります。これらの宣言により、
-    install-time inspection と runtime registration の整合性が保たれます。
+    ホストが信頼する Plugin サーフェスもマニフェストによって制限され、インストール済み Plugin では明示的な
+    宣言が必要です。`api.registerAgentToolResultMiddleware(...)`
+    では各対象ランタイムを `contracts.agentToolResultMiddleware` に記載する必要があり、
+    `api.registerTrustedToolPolicy(...)` では各ポリシー ID を
+    `contracts.trustedToolPolicies` に記載する必要があります。これらの宣言により、インストール時の
+    検査とランタイム登録の整合性が保たれます。
 
-    すべての manifest field については、[Plugin manifest](/ja-JP/plugins/manifest) を参照してください。
+    各マニフェストフィールドについては、[Plugin マニフェスト](/ja-JP/plugins/manifest)を参照してください。
 
   </Step>
 
-  <Step title="Register the tool">
+  <Step title="ツールを登録する">
     ```typescript index.ts
     import { Type } from "typebox";
     import { definePluginEntry } from "openclaw/plugin-sdk/plugin-entry";
@@ -155,23 +156,24 @@ ClawHub 解決を使いたい場合は、`clawhub:` prefix を使用します。
     });
     ```
 
-    non-channel plugins には `definePluginEntry` を使用します。Channel plugins は代わりに
+    チャネル以外の Plugin には `definePluginEntry` を使用します。チャネル Plugin では代わりに
     `openclaw/plugin-sdk/core` の `defineChannelPluginEntry` を使用します。
 
   </Step>
 
-  <Step title="Test the runtime">
-    installed plugin または external plugin の場合、loaded runtime を inspect します。
+  <Step title="ランタイムをテストする">
+    インストール済みまたは外部の Plugin では、読み込まれたランタイムを検査します。
 
     ```bash
     openclaw plugins inspect my-plugin --runtime --json
     ```
 
-    Plugin が CLI command を登録する場合は、その command も実行し、
-    output を確認します。例: `openclaw demo-plugin ping`。
+    Plugin が CLI コマンドを登録する場合は、そのコマンドも実行して出力を確認します。
+    例: `openclaw demo-plugin ping`。
 
-    このリポジトリ内の bundled plugin では、OpenClaw は `extensions/*` workspace から
-    source-checkout plugin packages を検出します。最も近い targeted test を実行します。
+    このリポジトリ内のバンドル Plugin については、OpenClaw が `extensions/*` ワークスペースから
+    ソースチェックアウトの Plugin パッケージを検出します。最も対象に近い
+    テストを実行します。
 
     ```bash
     pnpm test extensions/my-plugin/
@@ -180,14 +182,14 @@ ClawHub 解決を使いたい場合は、`clawhub:` prefix を使用します。
 
   </Step>
 
-  <Step title="Test the package install">
-    package-ready plugin を公開する前に、ユーザーが受け取るものと同じ install shape をテストします。
-    まず build step を追加し、`openclaw.extensions` などの runtime entries が
-    `./dist/index.js` のような built JavaScript を指すようにし、
-    `npm pack` にその `dist/` output が含まれることを確認します。TypeScript source entries は
-    source checkouts と local development paths 専用です。
+  <Step title="パッケージのインストールをテストする">
+    公開可能な Plugin を公開する前に、ユーザーが利用するものと同じインストール形態を
+    テストします。まずビルドステップを追加し、`openclaw.extensions` などのランタイムエントリが
+    `./dist/index.js` のようなビルド済み JavaScript を参照するようにして、
+    `npm pack` にその `dist/` 出力が含まれることを確認します。TypeScript ソースエントリは
+    ソースチェックアウトとローカル開発パス専用です。
 
-    次に Plugin を pack し、`npm-pack:` で tarball をインストールします。
+    次に Plugin をパックし、`npm-pack:` を使用して tarball をインストールします。
 
     ```bash
     npm pack --pack-destination /tmp
@@ -195,35 +197,37 @@ ClawHub 解決を使いたい場合は、`clawhub:` prefix を使用します。
     openclaw plugins inspect my-plugin --runtime --json
     ```
 
-    `npm-pack:` は OpenClaw の managed per-plugin npm project を使用するため、
-    source checkout testing では隠れる可能性がある runtime dependency の誤りを検出します。
-    これは package と dependency shape を証明するものであり、catalog-linked official trust を証明するものではありません。
-    Runtime imports は `dependencies` または `optionalDependencies` に含める必要があります。
-    `devDependencies` のみに残された dependencies は、managed runtime project にはインストールされません。
+    `npm-pack:` は OpenClaw が管理する Plugin ごとの npm プロジェクトを使用するため、
+    ソースチェックアウトのテストでは隠れる可能性があるランタイム依存関係の誤りを検出できます。これは
+    パッケージと依存関係の形態を検証するものであり、カタログに関連付けられた公式の信頼性を証明するものではありません。
+    ランタイムの import は `dependencies` または `optionalDependencies` に含める必要があります。
+    `devDependencies` のみに残された依存関係は、管理対象の
+    ランタイムプロジェクトにはインストールされません。
 
-    official または privileged plugin behavior の最終 proof として raw archive/path install を使用しないでください。
-    Raw sources は local debugging には有用ですが、npm または ClawHub installs と同じ dependency path を証明しません。
-    Plugin が trusted official plugin status に依存する場合は、catalog-backed official install または
-    official trust を記録する published package path を通じて、2 つ目の proof を追加してください。
-    install-root と dependency ownership の詳細については
-    [Plugin dependency resolution](/ja-JP/plugins/dependency-resolution) を参照してください。
+    公式または特権的な Plugin の動作を最終確認する際に、生のアーカイブやパスからのインストールを使用しないでください。
+    生のソースはローカルデバッグには有用ですが、
+    npm または ClawHub からのインストールと同じ依存関係パスを検証できません。
+    Plugin が信頼済みの公式 Plugin ステータスに依存する場合は、公式の信頼性を記録する
+    カタログ経由の公式インストールまたは公開済みパッケージのパスを使用して、
+    2 つ目の検証を追加してください。インストールルートと依存関係の所有権の詳細については、
+    [Plugin の依存関係解決](/ja-JP/plugins/dependency-resolution)を参照してください。
 
   </Step>
 
-  <Step title="Publish">
-    公開前に package を検証します。
+  <Step title="公開する">
+    公開前にパッケージを検証します。
 
     ```bash
     clawhub package publish your-org/your-plugin --dry-run
     clawhub package publish your-org/your-plugin
     ```
 
-    Canonical ClawHub package snippets は `docs/snippets/plugin-publish/` にあります。
+    標準の ClawHub パッケージスニペットは `docs/snippets/plugin-publish/` にあります。
 
   </Step>
 
-  <Step title="Install">
-    公開済み package を ClawHub 経由でインストールします。
+  <Step title="インストールする">
+    公開済みパッケージを ClawHub 経由でインストールします。
 
     ```bash
     openclaw plugins install clawhub:your-org/your-plugin
@@ -234,11 +238,14 @@ ClawHub 解決を使いたい場合は、`clawhub:` prefix を使用します。
 
 <a id="registering-agent-tools"></a>
 
-## tools の登録
+## ツールの登録
 
-Tools には required と optional があります。Required tools は
-Plugin が有効なとき常に利用できます。Optional tools は、OpenClaw が
-所有する plugin runtime を読み込む前に、ユーザーによる明示的な opt-in が必要です。
+ツールには必須と任意があります。必須ツールは、Plugin が有効な場合は常に
+利用できます。任意ツールでは、OpenClaw が所有元の Plugin ランタイムを
+読み込む前に、ユーザーによる明示的なオプトインが必要です。
+
+ツールファクトリは、利用可能な場合のアクティブなプラットフォーム会話に対応する `nativeChannelId`、
+`deliveryContext`、および `requesterSenderId` を含む、信頼済みのランタイムコンテキストを受け取ります。
 
 ```typescript
 register(api) {
@@ -256,7 +263,8 @@ register(api) {
 }
 ```
 
-`api.registerTool(...)` で登録されるすべての tool は、plugin manifest でも宣言する必要があります。
+`api.registerTool(...)` で登録するすべてのツールは、Plugin マニフェストでも
+宣言する必要があります。
 
 ```json
 {
@@ -271,81 +279,85 @@ register(api) {
 }
 ```
 
-ユーザーは `tools.allow` で opt in します。
+ユーザーは `tools.allow` でオプトインします。
 
 ```json5
 {
-  tools: { allow: ["workflow_tool"] }, // or ["my-plugin"] for every tool from one plugin
+  tools: { allow: ["workflow_tool"] }, // または 1 つの Plugin のすべてのツールには ["my-plugin"]
 }
 ```
 
-Optional tools は、tool を model に公開するかどうかを制御します。model が選択した後、
-action が実行される前に tool または hook が approval を求める必要がある場合は、
-[plugin permission requests](/ja-JP/plugins/plugin-permission-requests) を使用します。
+任意ツールは、ツールをモデルに公開するかどうかを制御します。モデルがツールまたはフックを選択した後、
+アクションを実行する前に承認を求める必要がある場合は、
+[Plugin の権限リクエスト](/ja-JP/plugins/plugin-permission-requests)を使用します。
 
-side effects、unusual binaries、またはデフォルトで公開すべきではない capabilities には
-optional tools を使用します。Tool names は core tool names と競合してはいけません。
-競合は skipped され、plugin diagnostics に報告されます。Malformed registrations も同じ方法で
-skipped され、報告されます。つまり、空でない `name` がない場合、`execute` が function でない場合、
-または tool descriptor に `parameters` object がない場合です。
+副作用、一般的でないバイナリ、またはデフォルトでは公開すべきでない機能には、
+任意ツールを使用します。ツール名はコアツール名と競合してはなりません。競合はスキップされ、
+Plugin 診断で報告されます。不正な形式の登録も同様にスキップされ、報告されます。該当するのは、
+空でない `name` がない場合、`execute` が関数でない場合、またはツール記述子に
+`parameters` オブジェクトがない場合です。
 
-Tool factories は runtime-supplied context object を受け取ります。現在の turn の active model に応じて
-tool が log、display、または adapt する必要がある場合は `ctx.activeModel` を使用します。
-これには `provider`、`modelId`、`modelRef` が含まれる場合があります。これは informational runtime metadata として扱い、
-local operator、installed plugin code、または modified OpenClaw runtime に対する security boundary として扱わないでください。
-Sensitive local tools では、引き続き明示的な plugin または operator opt-in を要求し、
-active-model metadata がない、または不適切な場合は fail closed する必要があります。
+ツールファクトリは、ランタイムから提供されるコンテキストオブジェクトを受け取ります。ツールが現在の
+ターンでアクティブなモデルに応じたログ記録、表示、または適応を必要とする場合は、`ctx.activeModel`
+を使用してください。これには `provider`、`modelId`、`modelRef` が含まれる場合があります。これは
+情報提供用のランタイムメタデータとして扱い、ローカルオペレーター、インストール済み Plugin コード、
+または変更された OpenClaw ランタイムに対するセキュリティ境界として扱わないでください。機密性の高い
+ローカルツールでは、引き続き Plugin またはオペレーターによる明示的なオプトインを必須とし、
+アクティブモデルのメタデータがない場合や不適切な場合はフェイルクローズにする必要があります。
 
-manifest は ownership と discovery を宣言します。execution は引き続き live
-registered tool implementation を呼び出します。`toolMetadata.<tool>.optional: true` を
-`api.registerTool(..., { optional: true })` と合わせておくことで、OpenClaw は
-その tool が明示的に allowlist されるまで plugin runtime の読み込みを避けられます。
+マニフェストは所有権と検出を宣言しますが、実行時には引き続き登録済みの
+実際のツール実装が呼び出されます。OpenClaw がツールを明示的に許可リストへ追加するまで
+その Plugin ランタイムを読み込まずに済むように、`toolMetadata.<tool>.optional: true`
+と `api.registerTool(..., { optional: true })` の整合性を保ってください。
 
-## Import conventions
+## import の規約
 
-focused SDK subpaths から import します。
+用途別の SDK サブパスから import します。
 
 ```typescript
 import { definePluginEntry } from "openclaw/plugin-sdk/plugin-entry";
 import { createPluginRuntimeStore } from "openclaw/plugin-sdk/runtime-store";
 ```
 
-deprecated root barrel から import しないでください。
+非推奨のルートバレルから import しないでください。
 
 ```typescript
 import { definePluginEntry } from "openclaw/plugin-sdk";
 ```
 
-Plugin package 内では、internal imports に `api.ts` や `runtime-api.ts` などの local barrel files を使用します。
-自分の Plugin を SDK path 経由で import しないでください。Provider-specific helpers は、
-seam が本当に generic でない限り provider package 内に置く必要があります。
+Plugin パッケージ内では、内部 import に `api.ts` や
+`runtime-api.ts` などのローカルバレルファイルを使用してください。自身の Plugin を
+SDK パス経由で import しないでください。プロバイダー固有のヘルパーは、その境界が本当に汎用的でない限り、
+プロバイダーパッケージ内に留める必要があります。
 
-Custom Gateway RPC methods は advanced entry point です。plugin-specific prefix に置いてください。
-`config.*`、`exec.approvals.*`、`operator.admin.*`、`wizard.*`、`update.*` などの core admin namespaces は
-reserved のままで、`operator.admin` に解決されます。
-`openclaw/plugin-sdk/gateway-method-runtime` bridge は、
-`contracts.gatewayMethodDispatch: ["authenticated-request"]` を宣言する plugin HTTP routes のために予約されています。
+カスタム Gateway RPC メソッドは高度なエントリポイントです。Plugin 固有の
+プレフィックスを使用してください。`config.*`、`exec.approvals.*`、
+`operator.admin.*`、`wizard.*`、`update.*` などのコア管理名前空間は予約済みであり、
+`operator.admin` に解決されます。
+`openclaw/plugin-sdk/gateway-method-runtime` ブリッジは、
+`contracts.gatewayMethodDispatch: ["authenticated-request"]` を宣言する Plugin HTTP
+ルート専用です。
 
-import map 全体については、[Plugin SDK overview](/ja-JP/plugins/sdk-overview) を参照してください。
+完全な import マップについては、[Plugin SDK の概要](/ja-JP/plugins/sdk-overview)を参照してください。
 
 ## 提出前チェックリスト
 
-<Check>**package.json** に正しい `openclaw` metadata がある</Check>
-<Check>**openclaw.plugin.json** manifest が存在し、有効である</Check>
-<Check>Entry point が `defineChannelPluginEntry` または `definePluginEntry` を使用している</Check>
-<Check>すべての imports が focused `plugin-sdk/<subpath>` paths を使用している</Check>
-<Check>Internal imports が SDK self-imports ではなく local modules を使用している</Check>
-<Check>Tests が通る (`pnpm test <bundled-plugin-root>/my-plugin/`)</Check>
-<Check>`pnpm check` が通る (in-repo plugins)</Check>
+<Check>**package.json** に正しい `openclaw` メタデータがある</Check>
+<Check>**openclaw.plugin.json** マニフェストが存在し、有効である</Check>
+<Check>エントリポイントが `defineChannelPluginEntry` または `definePluginEntry` を使用している</Check>
+<Check>すべての import が用途別の `plugin-sdk/<subpath>` パスを使用している</Check>
+<Check>内部 import が SDK 経由の自己 import ではなく、ローカルモジュールを使用している</Check>
+<Check>テストが成功する（`pnpm test <bundled-plugin-root>/my-plugin/`）</Check>
+<Check>`pnpm check` が成功する（リポジトリ内 Plugin）</Check>
 
-## beta releases に対してテストする
+## ベータリリースに対してテストする
 
-1. [openclaw/openclaw](https://github.com/openclaw/openclaw/releases) のリリースをウォッチします（`Watch` > `Releases`）。ベータタグは `v2026.3.N-beta.1` のような形式です。リリース告知は X の [@openclaw](https://x.com/openclaw) でもフォローできます。
-2. ベータタグが表示されたら、すぐに自分の Plugin をそのタグに対してテストします。安定版までの期間は通常数時間しかありません。
-3. テスト後、`plugin-forum` Discord チャンネル（[discord.gg/clawd](https://discord.gg/clawd)）にある自分の Plugin のスレッドに、`all good` または壊れた内容を投稿します。まだスレッドがない場合は作成します。
-4. 何かが壊れた場合は、`Beta blocker: <plugin-name> - <summary>` というタイトルの issue を開くか更新し、`beta-blocker` ラベルを適用します。その issue を自分のスレッドにリンクします。
-5. `fix(<plugin-id>): beta blocker - <summary>` というタイトルで `main` への PR を開き、PR と Discord スレッドの両方で issue をリンクします。コントリビューターは PR にラベルを付けられないため、タイトルがメンテナーと自動化に対する PR 側のシグナルになります。PR があるブロッカーはマージされますが、PR がないブロッカーはそのまま出荷される可能性があります。
-6. 沈黙は問題なしを意味します。この期間を逃すと、通常は修正が次のサイクルに入ります。
+1. [openclaw/openclaw](https://github.com/openclaw/openclaw/releases) のリリースをウォッチします（`Watch` > `Releases`）。ベータタグは `v2026.3.N-beta.1` のような形式です。リリースのお知らせについては、X の [@openclaw](https://x.com/openclaw) もフォローできます。
+2. ベータタグが公開されたら、すぐに Plugin をそのタグに対してテストします。安定版までの猶予は通常、わずか数時間です。
+3. テスト後、`plugin-forum` Discord チャンネル（[discord.gg/clawd](https://discord.gg/clawd)）にある自分の Plugin のスレッドへ、`all good` または問題が発生した内容を投稿します。まだスレッドがない場合は作成してください。
+4. 問題が発生した場合は、`Beta blocker: <plugin-name> - <summary>` というタイトルの Issue を作成または更新し、`beta-blocker` ラベルを付けます。スレッドに Issue へのリンクを掲載してください。
+5. `fix(<plugin-id>): beta blocker - <summary>` というタイトルで `main` への PR を作成し、PR と Discord スレッドの両方に Issue へのリンクを掲載します。コントリビューターは PR にラベルを付けられないため、タイトルがメンテナーと自動化に対する PR 側のシグナルになります。PR があるブロッカーはマージされますが、PR がないブロッカーがあってもそのままリリースされる可能性があります。
+6. 連絡がなければ問題なしと見なされます。この期間に間に合わなかった場合、通常、修正は次のサイクルで取り込まれます。
 
 ## 次のステップ
 
@@ -359,21 +371,21 @@ import map 全体については、[Plugin SDK overview](/ja-JP/plugins/sdk-over
   <Card title="CLI バックエンド Plugin" icon="terminal" href="/ja-JP/plugins/cli-backend-plugins">
     ローカル AI CLI バックエンドを登録する
   </Card>
-  <Card title="SDK 概要" icon="book-open" href="/ja-JP/plugins/sdk-overview">
-    インポートマップと登録 API リファレンス
+  <Card title="SDK の概要" icon="book-open" href="/ja-JP/plugins/sdk-overview">
+    インポートマップと登録 API のリファレンス
   </Card>
   <Card title="ランタイムヘルパー" icon="settings" href="/ja-JP/plugins/sdk-runtime">
-    api.runtime 経由の TTS、検索、サブエージェント
+    api.runtime を介した TTS、検索、サブエージェント
   </Card>
   <Card title="テスト" icon="test-tubes" href="/ja-JP/plugins/sdk-testing">
-    テストユーティリティとパターン
+    テスト用ユーティリティとパターン
   </Card>
   <Card title="Plugin マニフェスト" icon="file-json" href="/ja-JP/plugins/manifest">
-    完全なマニフェストスキーマリファレンス
+    完全なマニフェストスキーマのリファレンス
   </Card>
 </CardGroup>
 
-## 関連
+## 関連項目
 
 - [Plugin フック](/ja-JP/plugins/hooks)
 - [Plugin アーキテクチャ](/ja-JP/plugins/architecture)

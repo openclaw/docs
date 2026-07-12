@@ -1,24 +1,29 @@
 ---
 read_when:
-    - Você usa o Plugin voice-call e quer todos os pontos de entrada da CLI
+    - Você usa o plugin de chamada de voz e deseja todos os pontos de entrada da CLI
     - Você precisa de tabelas de flags e valores padrão para setup, smoke, call, continue, speak, dtmf, end, status, tail, latency, expose e start
-summary: Referência da CLI para `openclaw voicecall` (superfície de comandos do Plugin de chamada de voz)
+summary: Referência da CLI para `openclaw voicecall` (interface de comandos do plugin de chamadas de voz)
 title: Chamada de voz
 x-i18n:
-    generated_at: "2026-05-10T19:29:49Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:03:48Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: 24013c06bf3e688bd86caa407bf20dddabe0dff60a400ed4f23478de62308634
+    source_hash: aec445886cccb79c9212dd9f1f448ff9634274deb380632be786478c9bb29670
     source_path: cli/voicecall.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
 # `openclaw voicecall`
 
-`voicecall` é um comando fornecido por Plugin. Ele aparece somente quando o Plugin voice-call está instalado e habilitado.
+`voicecall` é um comando fornecido por um plugin. Ele só aparece quando o plugin
+de chamadas de voz está instalado e habilitado.
 
-Quando o Gateway está em execução, os comandos operacionais (`call`, `start`, `continue`, `speak`, `dtmf`, `end`, `status`) são roteados para o runtime de chamada de voz desse Gateway. Se nenhum Gateway estiver acessível, eles recorrem a um runtime CLI independente.
+Quando o Gateway está em execução, os comandos operacionais (`call`, `start`,
+`continue`, `speak`, `dtmf`, `end`, `status`) são encaminhados ao runtime de
+chamadas de voz desse Gateway. Se nenhum Gateway estiver acessível, eles usam
+como alternativa um runtime independente da CLI.
 
 ## Subcomandos
 
@@ -37,26 +42,26 @@ openclaw voicecall latency  [--file <path>] [--last <n>]
 openclaw voicecall expose   [--mode <m>] [--path <p>] [--port <port>] [--serve-path <p>]
 ```
 
-| Subcomando | Descrição                                                       |
-| ---------- | --------------------------------------------------------------- |
-| `setup`    | Mostra verificações de prontidão do provedor e do Webhook.      |
+| Subcomando | Descrição                                                                    |
+| ---------- | ---------------------------------------------------------------------------- |
+| `setup`    | Exibe as verificações de prontidão do provedor e do Webhook.                  |
 | `smoke`    | Executa verificações de prontidão; faz uma chamada de teste real somente com `--yes`. |
-| `call`     | Inicia uma chamada de voz de saída.                             |
-| `start`    | Alias para `call` com `--to` obrigatório e `--message` opcional. |
-| `continue` | Fala uma mensagem e aguarda a próxima resposta.                 |
-| `speak`    | Fala uma mensagem sem aguardar uma resposta.                    |
-| `dtmf`     | Envia dígitos DTMF para uma chamada ativa.                      |
-| `end`      | Desliga uma chamada ativa.                                      |
-| `status`   | Inspeciona chamadas ativas (ou uma por `--call-id`).            |
-| `tail`     | Acompanha `calls.jsonl` (útil durante testes de provedor).      |
-| `latency`  | Resume métricas de latência de turno de `calls.jsonl`.          |
-| `expose`   | Alterna Tailscale serve/funnel para o endpoint do Webhook.      |
+| `call`     | Inicia uma chamada de voz de saída.                                           |
+| `start`    | Alias de `call` com `--to` obrigatório e `--message` opcional.                |
+| `continue` | Fala uma mensagem e aguarda a próxima resposta.                               |
+| `speak`    | Fala uma mensagem sem aguardar uma resposta.                                  |
+| `dtmf`     | Envia dígitos DTMF para uma chamada ativa.                                    |
+| `end`      | Encerra uma chamada ativa.                                                    |
+| `status`   | Inspeciona chamadas ativas (ou uma chamada por `--call-id`).                  |
+| `tail`     | Acompanha `calls.jsonl` (útil durante testes do provedor).                    |
+| `latency`  | Resume as métricas de latência dos turnos de `calls.jsonl`.                   |
+| `expose`   | Alterna o serve/funnel do Tailscale para o endpoint do Webhook.               |
 
-## Configuração e smoke
+## Configuração e teste de fumaça
 
 ### `setup`
 
-Imprime verificações de prontidão legíveis por humanos por padrão. Passe `--json` para scripts.
+Por padrão, imprime verificações de prontidão legíveis por humanos. Passe `--json` para scripts.
 
 ```bash
 openclaw voicecall setup
@@ -65,24 +70,25 @@ openclaw voicecall setup --json
 
 ### `smoke`
 
-Executa as mesmas verificações de prontidão. Ele não fará uma chamada telefônica real a menos que `--to` e `--yes` estejam presentes.
+Executa as mesmas verificações de prontidão. Faz uma chamada telefônica real somente quando
+`--to` e `--yes` estão presentes.
 
-| Flag               | Padrão                            | Descrição                                   |
-| ------------------ | --------------------------------- | ------------------------------------------- |
-| `-t, --to <phone>` | (nenhum)                          | Número de telefone para ligar em um smoke real. |
-| `--message <text>` | `OpenClaw voice call smoke test.` | Mensagem a ser falada durante a chamada smoke. |
-| `--mode <mode>`    | `notify`                          | Modo da chamada: `notify` ou `conversation`. |
-| `--yes`            | `false`                           | Faz de fato a chamada de saída real.        |
-| `--json`           | `false`                           | Imprime JSON legível por máquina.           |
+| Opção              | Padrão                            | Descrição                                               |
+| ------------------ | --------------------------------- | ------------------------------------------------------- |
+| `-t, --to <phone>` | (nenhum)                          | Número de telefone a ser chamado no teste real.         |
+| `--message <text>` | `OpenClaw voice call smoke test.` | Mensagem a ser falada durante a chamada de teste.       |
+| `--mode <mode>`    | `notify`                          | Modo da chamada: `notify` ou `conversation`.            |
+| `--yes`            | `false`                           | Efetivamente faz a chamada de saída real.               |
+| `--json`           | `false`                           | Imprime JSON legível por máquina.                       |
 
 ```bash
 openclaw voicecall smoke
-openclaw voicecall smoke --to "+15555550123"        # dry run
-openclaw voicecall smoke --to "+15555550123" --yes  # live notify call
+openclaw voicecall smoke --to "+15555550123"        # simulação
+openclaw voicecall smoke --to "+15555550123" --yes  # chamada real de notificação
 ```
 
 <Note>
-Para provedores externos (`twilio`, `telnyx`, `plivo`), `setup` e `smoke` exigem uma URL pública de Webhook de `publicUrl`, um túnel ou exposição por Tailscale. Um fallback de loopback ou serve privado é rejeitado porque as operadoras não conseguem alcançá-lo.
+Para provedores externos (`plivo`, `telnyx`, `twilio`), `setup` e `smoke` exigem uma URL pública de Webhook proveniente de `publicUrl`, de um túnel ou da exposição pelo Tailscale. Uma alternativa de serve em loopback ou rede privada é rejeitada porque as operadoras não conseguem acessá-la.
 </Note>
 
 ## Ciclo de vida da chamada
@@ -91,11 +97,11 @@ Para provedores externos (`twilio`, `telnyx`, `plivo`), `setup` e `smoke` exigem
 
 Inicia uma chamada de voz de saída.
 
-| Flag                   | Obrigatório | Padrão            | Descrição                                                                  |
-| ---------------------- | ----------- | ----------------- | -------------------------------------------------------------------------- |
-| `-m, --message <text>` | sim         | (nenhum)          | Mensagem a ser falada quando a chamada conectar.                           |
-| `-t, --to <phone>`     | não         | config `toNumber` | Número de telefone E.164 para ligar.                                       |
-| `--mode <mode>`        | não         | `conversation`    | Modo da chamada: `notify` (desliga após a mensagem) ou `conversation` (permanece aberta). |
+| Opção                  | Obrigatória | Padrão            | Descrição                                                                          |
+| ---------------------- | ----------- | ----------------- | ---------------------------------------------------------------------------------- |
+| `-m, --message <text>` | sim         | (nenhum)          | Mensagem a ser falada quando a chamada for conectada.                              |
+| `-t, --to <phone>`     | não         | config `toNumber` | Número de telefone E.164 a ser chamado.                                            |
+| `--mode <mode>`        | não         | `conversation`    | Modo da chamada: `notify` (encerra após a mensagem) ou `conversation` (permanece aberta). |
 
 ```bash
 openclaw voicecall call --to "+15555550123" --message "Hello"
@@ -104,46 +110,46 @@ openclaw voicecall call -m "Heads up" --mode notify
 
 ### `start`
 
-Alias para `call` com um formato de flags padrão diferente.
+Alias de `call` com um formato padrão de opções diferente.
 
-| Flag               | Obrigatório | Padrão         | Descrição                                      |
-| ------------------ | ----------- | -------------- | ---------------------------------------------- |
-| `--to <phone>`     | sim         | (nenhum)       | Número de telefone para ligar.                 |
-| `--message <text>` | não         | (nenhum)       | Mensagem a ser falada quando a chamada conectar. |
-| `--mode <mode>`    | não         | `conversation` | Modo da chamada: `notify` ou `conversation`.   |
+| Opção              | Obrigatória | Padrão         | Descrição                                             |
+| ------------------ | ----------- | -------------- | ----------------------------------------------------- |
+| `--to <phone>`     | sim         | (nenhum)       | Número de telefone a ser chamado.                     |
+| `--message <text>` | não         | (nenhum)       | Mensagem a ser falada quando a chamada for conectada. |
+| `--mode <mode>`    | não         | `conversation` | Modo da chamada: `notify` ou `conversation`.          |
 
 ### `continue`
 
 Fala uma mensagem e aguarda uma resposta.
 
-| Flag               | Obrigatório | Descrição          |
+| Opção              | Obrigatória | Descrição          |
 | ------------------ | ----------- | ------------------ |
 | `--call-id <id>`   | sim         | ID da chamada.     |
-| `--message <text>` | sim         | Mensagem a ser falada. |
+| `--message <text>` | sim         | Mensagem a falar.  |
 
 ### `speak`
 
 Fala uma mensagem sem aguardar uma resposta.
 
-| Flag               | Obrigatório | Descrição          |
+| Opção              | Obrigatória | Descrição          |
 | ------------------ | ----------- | ------------------ |
 | `--call-id <id>`   | sim         | ID da chamada.     |
-| `--message <text>` | sim         | Mensagem a ser falada. |
+| `--message <text>` | sim         | Mensagem a falar.  |
 
 ### `dtmf`
 
 Envia dígitos DTMF para uma chamada ativa.
 
-| Flag                | Obrigatório | Descrição                                  |
-| ------------------- | ----------- | ------------------------------------------ |
-| `--call-id <id>`    | sim         | ID da chamada.                             |
-| `--digits <digits>` | sim         | Dígitos DTMF (por exemplo, `ww123456#` para esperas). |
+| Opção               | Obrigatória | Descrição                                                 |
+| ------------------- | ----------- | --------------------------------------------------------- |
+| `--call-id <id>`    | sim         | ID da chamada.                                            |
+| `--digits <digits>` | sim         | Dígitos DTMF (por exemplo, `ww123456#` para esperas).      |
 
 ### `end`
 
-Desliga uma chamada ativa.
+Encerra uma chamada ativa.
 
-| Flag             | Obrigatório | Descrição      |
+| Opção            | Obrigatória | Descrição      |
 | ---------------- | ----------- | -------------- |
 | `--call-id <id>` | sim         | ID da chamada. |
 
@@ -151,10 +157,10 @@ Desliga uma chamada ativa.
 
 Inspeciona chamadas ativas.
 
-| Flag             | Padrão    | Descrição                         |
-| ---------------- | --------- | --------------------------------- |
-| `--call-id <id>` | (nenhum)  | Restringe a saída a uma chamada.  |
-| `--json`         | `false`   | Imprime JSON legível por máquina. |
+| Opção            | Padrão   | Descrição                              |
+| ---------------- | -------- | -------------------------------------- |
+| `--call-id <id>` | (nenhum) | Restringe a saída a uma chamada.       |
+| `--json`         | `false`  | Imprime JSON legível por máquina.      |
 
 ```bash
 openclaw voicecall status
@@ -166,35 +172,38 @@ openclaw voicecall status --call-id <id>
 
 ### `tail`
 
-Acompanha o log JSONL de chamadas de voz. Imprime as últimas `--since` linhas ao iniciar e, em seguida, transmite novas linhas conforme são gravadas.
+Acompanha o log JSONL de chamadas de voz. Imprime as últimas `--since` linhas ao iniciar e,
+em seguida, transmite novas linhas à medida que são gravadas.
 
-| Flag            | Padrão                     | Descrição                                  |
-| --------------- | -------------------------- | ------------------------------------------ |
-| `--file <path>` | resolvido pelo store do Plugin | Caminho para `calls.jsonl`.             |
-| `--since <n>`   | `25`                       | Linhas a imprimir antes de acompanhar.     |
-| `--poll <ms>`   | `250` (mínimo 50)          | Intervalo de sondagem em milissegundos.    |
+| Opção           | Padrão                            | Descrição                                      |
+| --------------- | --------------------------------- | ---------------------------------------------- |
+| `--file <path>` | resolvido a partir do armazenamento do plugin | Caminho para `calls.jsonl`.        |
+| `--since <n>`   | `25`                              | Linhas a imprimir antes do acompanhamento.     |
+| `--poll <ms>`   | `250` (mínimo 50)                 | Intervalo de consulta em milissegundos.        |
 
 ### `latency`
 
-Resume métricas de latência de turno e espera de escuta de `calls.jsonl`. A saída é JSON com resumos de `recordsScanned`, `turnLatency` e `listenWait`.
+Resume as métricas de latência dos turnos e de espera de escuta de `calls.jsonl`. A saída é
+um JSON com resumos de `recordsScanned`, `turnLatency` e `listenWait`.
 
-| Flag            | Padrão                     | Descrição                                  |
-| --------------- | -------------------------- | ------------------------------------------ |
-| `--file <path>` | resolvido pelo store do Plugin | Caminho para `calls.jsonl`.             |
-| `--last <n>`    | `200` (mínimo 1)           | Número de registros recentes a analisar.   |
+| Opção           | Padrão                            | Descrição                                    |
+| --------------- | --------------------------------- | -------------------------------------------- |
+| `--file <path>` | resolvido a partir do armazenamento do plugin | Caminho para `calls.jsonl`.      |
+| `--last <n>`    | `200` (mínimo 1)                  | Número de registros recentes a serem analisados. |
 
-## Expondo Webhooks
+## Exposição de webhooks
 
 ### `expose`
 
-Habilita, desabilita ou altera a configuração de Tailscale serve/funnel para o Webhook de voz.
+Habilita, desabilita ou altera a configuração de serve/funnel do Tailscale para o
+Webhook de voz.
 
-| Flag                  | Padrão                                    | Descrição                                     |
-| --------------------- | ----------------------------------------- | --------------------------------------------- |
-| `--mode <mode>`       | `funnel`                                  | `off`, `serve` (tailnet) ou `funnel` (público). |
-| `--path <path>`       | config `tailscale.path` ou `--serve-path` | Caminho Tailscale a expor.                    |
-| `--port <port>`       | config `serve.port` ou `3334`             | Porta local do Webhook.                       |
-| `--serve-path <path>` | config `serve.path` ou `/voice/webhook`   | Caminho local do Webhook.                     |
+| Opção                 | Padrão                                    | Descrição                                             |
+| --------------------- | ----------------------------------------- | ----------------------------------------------------- |
+| `--mode <mode>`       | `funnel`                                  | `off`, `serve` (tailnet) ou `funnel` (público).       |
+| `--path <path>`       | config `tailscale.path` ou `--serve-path` | Caminho do Tailscale a ser exposto.                   |
+| `--port <port>`       | config `serve.port` ou `3334`             | Porta local do Webhook.                               |
+| `--serve-path <path>` | config `serve.path` ou `/voice/webhook`   | Caminho local do Webhook.                             |
 
 ```bash
 openclaw voicecall expose --mode serve
@@ -203,10 +212,10 @@ openclaw voicecall expose --mode off
 ```
 
 <Warning>
-Exponha o endpoint do Webhook somente a redes em que você confia. Prefira Tailscale Serve em vez de Funnel quando possível.
+Exponha o endpoint do Webhook somente a redes nas quais você confia. Prefira o Tailscale Serve ao Funnel quando possível.
 </Warning>
 
-## Relacionado
+## Relacionados
 
 - [Referência da CLI](/pt-BR/cli)
-- [Plugin de chamada de voz](/pt-BR/plugins/voice-call)
+- [Plugin de chamadas de voz](/pt-BR/plugins/voice-call)

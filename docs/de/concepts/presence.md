@@ -1,125 +1,144 @@
 ---
 read_when:
-    - Fehlerbehebung für die Registerkarte „Instanzen“
-    - Untersuchen doppelter oder veralteter Instanzzeilen
-    - Ändern von Gateway-WS-Verbindungs- oder system-event-Beacons
-summary: Wie OpenClaw-Präsenz-Einträge erzeugt, zusammengeführt und angezeigt werden
-title: Präsenz
+    - Fehlerbehebung beim Live-Status auf der Geräteseite der Control UI
+    - Untersuchung doppelter oder veralteter Instanzzeilen
+    - Ändern der Gateway-WS-Verbindungs- oder Systemereignis-Beacons
+summary: Wie OpenClaw-Präsenzeinträge erzeugt, zusammengeführt und angezeigt werden
+title: Anwesenheit
 x-i18n:
-    generated_at: "2026-05-06T06:44:31Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:16:32Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: 6ab76e81fc1842c747b0a33da8cf9874e3537c5ab023450ee1a6a314453e7263
+    source_hash: 4c0ef74eeaaa5ee00e43dfcfb25d7e3652fd6e7d0fac2d236fe3b9af7d193d1c
     source_path: concepts/presence.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-OpenClaw „Presence“ ist eine schlanke Best-Effort-Ansicht von:
+Die „Präsenz“ von OpenClaw ist eine schlanke Best-Effort-Übersicht über:
 
-- dem **Gateway** selbst und
-- **Clients, die mit dem Gateway verbunden sind** (Mac-App, WebChat, CLI usw.)
+- den **Gateway** selbst und
+- **für Benutzer sichtbare Clients, die mit dem Gateway verbunden sind** (Mac-App, WebChat, Nodes usw.)
 
-Presence wird hauptsächlich verwendet, um den Tab **Instanzen** der macOS-App zu rendern und
-schnelle operative Sichtbarkeit bereitzustellen.
+Die Präsenz zeigt Live-Verbindungsmetadaten auf der Seite **Geräte** der Control UI
+und auf der Registerkarte **Instanzen** der macOS-App an.
 
-## Presence-Felder (was angezeigt wird)
+Diese Seite behandelt die Client-Liste des Gateway. Informationen dazu, wie Sie den zuletzt
+verwendeten Mac erkennen und Node-Benachrichtigungen dorthin weiterleiten, finden Sie unter
+[Präsenz des aktiven Computers](/nodes/presence).
 
-Presence-Einträge sind strukturierte Objekte mit Feldern wie:
+## Präsenzfelder (was angezeigt wird)
 
-- `instanceId` (optional, aber dringend empfohlen): stabile Client-Identität (normalerweise `connect.client.instanceId`)
-- `host`: menschenlesbarer Hostname
-- `ip`: Best-Effort-IP-Adresse
-- `version`: Client-Versionszeichenfolge
-- `deviceFamily` / `modelIdentifier`: Hardware-Hinweise
-- `mode`: `ui`, `webchat`, `cli`, `backend`, `probe`, `test`, `node`, ...
-- `lastInputSeconds`: „Sekunden seit der letzten Benutzereingabe“ (falls bekannt)
-- `reason`: `self`, `connect`, `node-connected`, `periodic`, ...
+Präsenzeinträge sind strukturierte Objekte mit Feldern wie:
+
+- `instanceId` (optional, aber dringend empfohlen): stabile Clientidentität (üblicherweise `connect.client.instanceId`)
+- `host`: benutzerfreundlicher Hostname
+- `ip`: nach bestem Bemühen ermittelte IP-Adresse
+- `version`: Zeichenfolge mit der Clientversion
+- `deviceFamily` / `modelIdentifier`: Hinweise zur Hardware
+- `mode`: `ui`, `webchat`, `cli`, `backend`, `node`, `probe`, `test`
+- `lastInputSeconds`: Sekunden seit der letzten Benutzereingabe, sofern bekannt
+- `reason`: frei formulierbare, vom Client bereitgestellte Zeichenfolge; der Gateway selbst gibt nur `self`, `connect` und `disconnect` aus
+- `deviceId`, `roles`, `scopes`: Hinweise zur Geräteidentität sowie zu Rollen und Geltungsbereichen aus dem Verbindungs-Handshake
 - `ts`: Zeitstempel der letzten Aktualisierung (ms seit der Epoche)
 
-## Produzenten (woher Presence stammt)
+## Erzeuger (woher die Präsenzdaten stammen)
 
-Presence-Einträge werden von mehreren Quellen erzeugt und **zusammengeführt**.
+Präsenzeinträge werden von mehreren Quellen erzeugt und **zusammengeführt**.
 
-### 1) Self-Eintrag des Gateway
+### 1) Selbsteintrag des Gateway
 
-Das Gateway legt beim Start immer einen „Self“-Eintrag an, damit UIs den Gateway-Host anzeigen,
-noch bevor sich Clients verbinden.
+Der Gateway legt beim Start immer einen „Selbst“-Eintrag an, damit Benutzeroberflächen den Gateway-Host
+bereits anzeigen, bevor sich Clients verbinden.
 
 ### 2) WebSocket-Verbindung
 
 Jeder WS-Client beginnt mit einer `connect`-Anfrage. Nach erfolgreichem Handshake
-legt das Gateway einen Presence-Eintrag für diese Verbindung an oder aktualisiert ihn.
+fügt der Gateway einen Präsenzeintrag für diese Verbindung ein oder aktualisiert ihn.
 
-#### Warum einmalige CLI-Befehle nicht angezeigt werden
+#### Warum kurzlebige Verbindungen der Steuerungsebene nicht angezeigt werden
 
-Die CLI verbindet sich oft für kurze, einmalige Befehle. Um die
-Instanzenliste nicht zu überfluten, wird `client.mode === "cli"` **nicht** in einen Presence-Eintrag umgewandelt.
+CLI-Befehle, Backend-RPC-Clients und Prüf-Clients stellen häufig nur kurz eine Verbindung her. Damit
+diese Fluktuation nicht während der gesamten Präsenz-TTL gespeichert wird, werden Clients im Modus `cli`, `backend`
+oder `probe` **nicht** in Präsenzeinträge umgewandelt. Clients im Testmodus
+werden weiterhin erfasst, da Testsuiten sie als Stellvertreter für echte Clients verwenden.
 
-### 3) `system-event`-Beacons
+### 3) `system-event`-Signale
 
-Clients können über die Methode `system-event` umfangreichere periodische Beacons senden. Die Mac-App
-verwendet dies, um Hostname, IP und `lastInputSeconds` zu melden.
+Clients können über die Methode `system-event` regelmäßig ausführlichere Signale senden. Die Mac-
+App meldet damit den Hostnamen, die IP-Adresse und `lastInputSeconds`.
 
-### 4) Node-Verbindungen (Rolle: node)
+### 4) Node-Verbindungen (Rolle: Node)
 
-Wenn sich ein Node über das Gateway-WebSocket mit `role: node` verbindet, legt das Gateway
-einen Presence-Eintrag für diesen Node an oder aktualisiert ihn (derselbe Ablauf wie bei anderen WS-Clients).
+Wenn sich ein Node über den Gateway-WebSocket mit `role: node` verbindet, fügt der Gateway
+einen Präsenzeintrag für diesen Node ein oder aktualisiert ihn (derselbe Ablauf wie bei anderen WS-Clients).
 
-## Regeln zum Zusammenführen und Deduplizieren (warum `instanceId` wichtig ist)
+## Regeln für Zusammenführung und Deduplizierung (warum `instanceId` wichtig ist)
 
-Presence-Einträge werden in einer einzelnen In-Memory-Map gespeichert:
+Präsenzeinträge werden in einer einzigen In-Memory-Map gespeichert. Als Schlüssel wird ohne Beachtung der Groß-/Kleinschreibung
+der erste verfügbare Wert in folgender Reihenfolge verwendet: eine gekoppelte Geräte-ID, `connect.client.instanceId`
+oder als letzte Möglichkeit die verbindungsspezifische ID.
 
-- Einträge werden über einen **Presence-Schlüssel** indiziert.
-- Der beste Schlüssel ist eine stabile `instanceId` (aus `connect.client.instanceId`), die Neustarts überdauert.
-- Schlüssel sind nicht groß-/kleinschreibungssensitiv.
-
-Wenn sich ein Client ohne stabile `instanceId` erneut verbindet, kann er als
-**doppelte** Zeile erscheinen.
+Kurzlebige Clients der Steuerungsebene werden vollständig von der Erfassung ausgeschlossen (siehe
+oben), sodass ihre Verbindungs-IDs niemals als Schlüssel verwendet werden. Bei allen anderen Clients führt
+die Ausweichlösung mit der Verbindungs-ID dazu, dass ein Client, der sich ohne stabile
+`instanceId` erneut verbindet, als **doppelte** Zeile erscheint.
 
 ## TTL und begrenzte Größe
 
-Presence ist absichtlich flüchtig:
+Die Präsenz ist bewusst kurzlebig:
 
 - **TTL:** Einträge, die älter als 5 Minuten sind, werden entfernt
-- **Maximale Einträge:** 200 (älteste werden zuerst verworfen)
+- **Maximale Einträge:** 200 (die ältesten werden zuerst entfernt)
 
-Dadurch bleibt die Liste aktuell und unbegrenztes Speicherwachstum wird vermieden.
+Dadurch bleibt die Liste aktuell und ein unbegrenztes Speicherwachstum wird vermieden.
 
-## Hinweis zu Remote/Tunnel (Loopback-IPs)
+## Einschränkung bei Remote-Verbindungen/Tunneln (Loopback-IPs)
 
-Wenn sich ein Client über einen SSH-Tunnel / eine lokale Portweiterleitung verbindet, sieht das Gateway
-die Remote-Adresse möglicherweise als `127.0.0.1`. Um zu vermeiden, dass eine gute vom Client gemeldete
-IP überschrieben wird, werden Loopback-Remote-Adressen ignoriert.
+Wenn sich ein Client über einen SSH-Tunnel bzw. eine lokale Portweiterleitung verbindet, erkennt der Gateway
+die Remote-Adresse möglicherweise als `127.0.0.1`. Damit diese Tunnel-
+adresse nicht als IP-Adresse des Clients gespeichert wird, lässt die Verbindungsverarbeitung bei
+als lokal erkannten Clients (Loopback) das Feld `ip` vollständig weg, anstatt die Loopback-Adresse
+in den Eintrag zu schreiben.
 
-## Konsumenten
+## Verbraucher
 
-### macOS-Tab „Instanzen“
+### Seite „Geräte“ der Control UI
 
-Die macOS-App rendert die Ausgabe von `system-presence` und wendet eine kleine Statusanzeige
-(Aktiv/Inaktiv/Veraltet) basierend auf dem Alter der letzten Aktualisierung an.
+Die Seite **Geräte** verknüpft `system-presence` mit dauerhaften Kopplungs- und Node-
+Datensätzen. Sie setzt das Selbstsignal des Gateway an die erste Stelle und verwendet übereinstimmende Geräte- oder
+Instanz-IDs für Live-Metadaten zu Plattform, Version, Modell und Aktualität der Eingaben.
 
-## Debugging-Tipps
+### Registerkarte „Instanzen“ unter macOS
 
-- Um die Rohdatenliste zu sehen, rufen Sie `system-presence` gegen das Gateway auf.
+Die macOS-App stellt die Ausgabe von `system-presence` dar und zeigt abhängig vom Alter
+der letzten Aktualisierung eine kleine Statusanzeige (Aktiv/Inaktiv/Veraltet) an.
+
+## Tipps zur Fehlerbehebung
+
+- Um die unverarbeitete Liste anzuzeigen, rufen Sie `system-presence` für den Gateway auf.
 - Wenn Sie Duplikate sehen:
-  - bestätigen Sie, dass Clients beim Handshake eine stabile `client.instanceId` senden
-  - bestätigen Sie, dass periodische Beacons dieselbe `instanceId` verwenden
-  - prüfen Sie, ob dem aus der Verbindung abgeleiteten Eintrag `instanceId` fehlt (Duplikate sind dann erwartet)
+  - Vergewissern Sie sich, dass Clients beim Handshake eine stabile `client.instanceId` senden
+  - Vergewissern Sie sich, dass regelmäßige Signale dieselbe `instanceId` verwenden
+  - Prüfen Sie, ob dem aus der Verbindung abgeleiteten Eintrag die `instanceId` fehlt (Duplikate sind dann zu erwarten)
 
 ## Verwandte Themen
 
 <CardGroup cols={2}>
-  <Card title="Eingabeindikatoren" href="/de/concepts/typing-indicators" icon="ellipsis">
-    Wann Eingabeindikatoren gesendet werden und wie Sie sie abstimmen.
+  <Card title="Präsenz des aktiven Computers" href="/nodes/presence" icon="computer-mouse">
+    Wie physische Eingaben am Mac einen aktiven Node auswählen und Verbindungsbenachrichtigungen weiterleiten.
   </Card>
-  <Card title="Streaming und Chunking" href="/de/concepts/streaming" icon="bars-staggered">
-    Ausgehendes Streaming, Chunking und kanalspezifische Formatierung.
+  <Card title="Eingabeanzeigen" href="/de/concepts/typing-indicators" icon="ellipsis">
+    Wann Eingabeanzeigen gesendet werden und wie sie angepasst werden können.
+  </Card>
+  <Card title="Streaming und Aufteilung" href="/de/concepts/streaming" icon="bars-staggered">
+    Ausgehendes Streaming, Aufteilung und kanalspezifische Formatierung.
   </Card>
   <Card title="Gateway-Architektur" href="/de/concepts/architecture" icon="diagram-project">
-    Gateway-Komponenten und das WebSocket-Protokoll, das Presence-Aktualisierungen steuert.
+    Gateway-Komponenten und das WebSocket-Protokoll, das Präsenzaktualisierungen steuert.
   </Card>
   <Card title="Gateway-Protokoll" href="/de/gateway/protocol" icon="plug">
-    Das Wire-Protokoll für `connect`, `system-event` und `system-presence`.
+    Das Übertragungsprotokoll für `connect`, `system-event` und `system-presence`.
   </Card>
 </CardGroup>

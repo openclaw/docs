@@ -1,33 +1,37 @@
 ---
 read_when:
-    - OpenClaw에서 Together AI를 사용하려는 경우
-    - API 키 환경 변수 또는 CLI 인증 선택이 필요합니다
+    - OpenClaw에서 Together AI를 사용하려고 합니다
+    - API 키 환경 변수 또는 CLI 인증 옵션이 필요합니다.
 summary: Together AI 설정(인증 + 모델 선택)
 title: Together AI
 x-i18n:
-    generated_at: "2026-06-27T18:04:46Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:39:39Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: a1f803ae88828a775d93dcf8b0b62e70b1dbd0cf963639121e2995fabfcd280b
+    source_hash: 0860ac6e8092bb4eb48d3c0d348d5c42f538e0316d2fa22a99cbb3a9851b1185
     source_path: providers/together.md
     workflow: 16
 ---
 
-[Together AI](https://together.ai)는 통합 API를 통해 Llama, DeepSeek, Kimi 등을 포함한 주요 오픈 소스 모델에 대한 액세스를 제공합니다.
+[Together AI](https://together.ai)는 통합 API를 통해 Llama, DeepSeek, Kimi 등을 비롯한
+주요 오픈 소스 모델에 대한 액세스를 제공합니다.
+OpenClaw에는 `together` 제공자로 번들되어 있습니다.
 
 | 속성 | 값                            |
-| -------- | ----------------------------- |
-| 공급자 | `together`                    |
-| 인증     | `TOGETHER_API_KEY`            |
-| API      | OpenAI 호환             |
+| ---- | ----------------------------- |
+| 제공자 | `together`                    |
+| 인증 | `TOGETHER_API_KEY`            |
+| API | OpenAI 호환                   |
 | 기본 URL | `https://api.together.xyz/v1` |
 
 ## 시작하기
 
 <Steps>
   <Step title="API 키 받기">
-    [api.together.ai/settings/api-keys](https://api.together.ai/settings/api-keys)에서 API 키를 생성합니다.
+    [api.together.ai/settings/api-keys](https://api.together.ai/settings/api-keys)에서
+    API 키를 생성합니다.
   </Step>
   <Step title="온보딩 실행">
     ```bash
@@ -59,32 +63,36 @@ openclaw onboard --non-interactive \
 ```
 
 <Note>
-온보딩 프리셋은 `together/meta-llama/Llama-3.3-70B-Instruct-Turbo`를 기본 모델로 설정합니다.
+온보딩에서는 `together/meta-llama/Llama-3.3-70B-Instruct-Turbo`를
+기본 모델로 설정합니다.
 </Note>
 
-## 내장 카탈로그
+## 기본 제공 카탈로그
 
-OpenClaw는 이 번들 Together 카탈로그를 제공합니다.
+비용은 토큰 100만 개당 USD 기준입니다.
 
-| 모델 ref                                          | 이름                         | 입력       | 컨텍스트 | 비고                |
-| -------------------------------------------------- | ---------------------------- | ----------- | ------- | -------------------- |
-| `together/meta-llama/Llama-3.3-70B-Instruct-Turbo` | Llama 3.3 70B Instruct Turbo | 텍스트        | 131,072 | 기본 모델        |
-| `together/moonshotai/Kimi-K2.6`                    | Kimi K2.6 FP4                | 텍스트, 이미지 | 262,144 | Kimi 추론 모델 |
-| `together/deepseek-ai/DeepSeek-V4-Pro`             | DeepSeek V4 Pro              | 텍스트        | 512,000 | 추론 텍스트 모델 |
-| `together/Qwen/Qwen2.5-7B-Instruct-Turbo`          | Qwen2.5 7B Instruct Turbo    | 텍스트        | 32,768  | 빠른 텍스트 모델      |
-| `together/zai-org/GLM-5.1`                         | GLM 5.1 FP4                  | 텍스트        | 202,752 | 추론 텍스트 모델 |
+| 모델 참조                                          | 이름                         | 입력         | 컨텍스트 | 최대 출력 | 비용(입력/출력) | 참고                  |
+| -------------------------------------------------- | ---------------------------- | ------------ | -------- | --------- | --------------- | --------------------- |
+| `together/meta-llama/Llama-3.3-70B-Instruct-Turbo` | Llama 3.3 70B Instruct Turbo | 텍스트       | 131,072  | 8,192     | 0.88 / 0.88     | 기본 모델             |
+| `together/moonshotai/Kimi-K2.6`                    | Kimi K2.6 FP4                | 텍스트, 이미지 | 262,144  | 32,768    | 1.20 / 4.50     | 추론 모델             |
+| `together/deepseek-ai/DeepSeek-V4-Pro`             | DeepSeek V4 Pro              | 텍스트       | 512,000  | 8,192     | 2.10 / 4.40     | 추론 모델             |
+| `together/Qwen/Qwen2.5-7B-Instruct-Turbo`          | Qwen2.5 7B Instruct Turbo    | 텍스트       | 32,768   | 8,192     | 0.30 / 0.30     | 빠른 비추론 모델      |
+| `together/zai-org/GLM-5.1`                         | GLM 5.1 FP4                  | 텍스트       | 202,752  | 8,192     | 1.40 / 4.40     | 추론 모델             |
 
-## 비디오 생성
+## 동영상 생성
 
-번들 `together` Plugin은 공유 `video_generate` 도구를 통한 비디오 생성도 등록합니다.
+번들된 `together` Plugin은 공유 `video_generate` 도구를 통한
+동영상 생성도 등록합니다.
 
-| 속성             | 값                                                                    |
-| -------------------- | ------------------------------------------------------------------------ |
-| 기본 비디오 모델  | `together/Wan-AI/Wan2.2-T2V-A14B`                                        |
-| 모드                | 텍스트-비디오; `Wan-AI/Wan2.2-I2V-A14B`에서는 단일 이미지 참조만 |
-| 지원되는 매개변수 | `aspectRatio`, `resolution`                                              |
+| 속성                 | 값                                                                                        |
+| -------------------- | ----------------------------------------------------------------------------------------- |
+| 기본 동영상 모델     | `Wan-AI/Wan2.2-T2V-A14B`                                                                  |
+| 기타 모델            | `Wan-AI/Wan2.2-I2V-A14B`, `minimax/Hailuo-02`, `Kwai/Kling-2.1-Master`                    |
+| 모드                 | 텍스트-동영상; `Wan-AI/Wan2.2-I2V-A14B`에서만 이미지-동영상 지원(참조 이미지 1개)        |
+| 길이                 | 1-10초                                                                                    |
+| 지원되는 매개변수    | `size`(`<width>x<height>`로 파싱); `aspectRatio`/`resolution`은 읽지 않음                 |
 
-Together를 기본 비디오 공급자로 사용하려면:
+Together를 기본 동영상 제공자로 사용하려면 다음과 같이 설정합니다.
 
 ```json5
 {
@@ -99,23 +107,29 @@ Together를 기본 비디오 공급자로 사용하려면:
 ```
 
 <Tip>
-공유 도구 매개변수, 공급자 선택, 장애 조치 동작은 [비디오 생성](/ko/tools/video-generation)을 참조하세요.
+공유 도구 매개변수, 제공자 선택 및 장애 조치 동작은
+[동영상 생성](/ko/tools/video-generation)을 참조하십시오.
 </Tip>
 
 <AccordionGroup>
   <Accordion title="환경 참고 사항">
-    Gateway가 데몬(launchd/systemd)으로 실행되는 경우 해당 프로세스에서 `TOGETHER_API_KEY`를 사용할 수 있는지 확인하세요(예: `~/.openclaw/.env` 또는 `env.shellEnv`를 통해).
+    Gateway가 데몬(launchd/systemd)으로 실행되는 경우 해당 프로세스에서
+    `TOGETHER_API_KEY`를 사용할 수 있는지 확인하십시오(예:
+    `~/.openclaw/.env` 또는 `env.shellEnv`를 통해 설정).
 
     <Warning>
-    대화형 셸에서만 설정한 키는 데몬이 관리하는 Gateway 프로세스에 표시되지 않습니다. 지속적으로 사용할 수 있도록 `~/.openclaw/.env` 또는 `env.shellEnv` 구성을 사용하세요.
+    대화형 셸에만 설정된 키는 데몬이 관리하는 Gateway 프로세스에서
+    사용할 수 없습니다. 지속적으로 사용할 수 있도록 `~/.openclaw/.env` 또는
+    `env.shellEnv` 구성을 사용하십시오.
     </Warning>
 
   </Accordion>
 
   <Accordion title="문제 해결">
-    - 키가 작동하는지 확인하세요: `openclaw models list --provider together`
-    - 모델이 표시되지 않으면 Gateway 프로세스에 맞는 올바른 환경에 API 키가 설정되어 있는지 확인하세요.
-    - 모델 ref는 `together/<model-id>` 형식을 사용합니다.
+    - 키가 작동하는지 확인하십시오: `openclaw models list --provider together`
+    - 모델이 표시되지 않으면 Gateway 프로세스에 맞는 올바른 환경에 API 키가
+      설정되어 있는지 확인하십시오.
+    - 모델 참조는 `together/<model-id>` 형식을 사용합니다.
 
   </Accordion>
 </AccordionGroup>
@@ -123,16 +137,16 @@ Together를 기본 비디오 공급자로 사용하려면:
 ## 관련 항목
 
 <CardGroup cols={2}>
-  <Card title="모델 선택" href="/ko/concepts/model-providers" icon="layers">
-    공급자 규칙, 모델 ref, 장애 조치 동작입니다.
+  <Card title="모델 제공자" href="/ko/concepts/model-providers" icon="layers">
+    제공자 규칙, 모델 참조 및 장애 조치 동작입니다.
   </Card>
-  <Card title="비디오 생성" href="/ko/tools/video-generation" icon="video">
-    공유 비디오 생성 도구 매개변수와 공급자 선택입니다.
+  <Card title="동영상 생성" href="/ko/tools/video-generation" icon="video">
+    공유 동영상 생성 도구의 매개변수 및 제공자 선택입니다.
   </Card>
   <Card title="구성 참조" href="/ko/gateway/configuration-reference" icon="gear">
-    공급자 설정을 포함한 전체 구성 스키마입니다.
+    제공자 설정을 포함한 전체 구성 스키마입니다.
   </Card>
   <Card title="Together AI" href="https://together.ai" icon="arrow-up-right-from-square">
-    Together AI 대시보드, API 문서, 가격 정보입니다.
+    Together AI 대시보드, API 문서 및 가격 정보입니다.
   </Card>
 </CardGroup>

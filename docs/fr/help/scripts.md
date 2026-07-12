@@ -1,35 +1,41 @@
 ---
 read_when:
     - Exécution de scripts depuis le dépôt
-    - Ajout ou modification de scripts sous ./scripts
-summary: 'Scripts du dépôt : objectif, périmètre et notes de sécurité'
+    - Ajout ou modification de scripts dans ./scripts
+summary: 'Scripts du dépôt : objectif, portée et consignes de sécurité'
 title: Scripts
 x-i18n:
-    generated_at: "2026-05-06T07:26:22Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:25:05Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: 01f2e064891940959acf23c003d7e842386f67ac6c869d0677b802738ac04bdf
+    source_hash: 323069190ea6647101ee7120e06f6b2a018833d0904a11787fa1b610f5b3d9e1
     source_path: help/scripts.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-Le répertoire `scripts/` contient des scripts d’aide pour les flux de travail locaux et les tâches d’exploitation.
-Utilisez-les lorsqu’une tâche est clairement liée à un script ; sinon, privilégiez la CLI.
+`scripts/` contient des scripts auxiliaires pour les workflows locaux et les tâches d’exploitation. Utilisez-les lorsqu’une tâche est clairement liée à un script ; sinon, privilégiez la CLI.
 
 ## Conventions
 
-- Les scripts sont **facultatifs** sauf s’ils sont référencés dans la documentation ou les listes de vérification de release.
-- Privilégiez les surfaces CLI lorsqu’elles existent (exemple : la surveillance de l’authentification utilise `openclaw models status --check`).
-- Partez du principe que les scripts sont propres à l’hôte ; lisez-les avant de les exécuter sur une nouvelle machine.
+- Les scripts sont **facultatifs**, sauf s’ils sont mentionnés dans la documentation ou les listes de contrôle de publication.
+- Privilégiez les interfaces CLI lorsqu’elles existent (exemple : `openclaw models status --check`).
+- Partez du principe que les scripts sont spécifiques à l’hôte ; lisez-les avant de les exécuter sur une nouvelle machine.
 
 ## Scripts de surveillance de l’authentification
 
-La surveillance de l’authentification est couverte dans [Authentification](/fr/gateway/authentication). Les scripts sous `scripts/` sont des compléments facultatifs pour les flux de travail systemd/Termux sur téléphone.
+L’authentification générale des modèles est traitée dans [Authentification](/fr/gateway/authentication). Les scripts ci-dessous constituent un système distinct et facultatif permettant de surveiller un **jeton d’abonnement à la CLI Claude Code** sur un hôte distant/sans interface graphique et de se réauthentifier depuis un téléphone :
 
-## Assistant de lecture GitHub
+- `scripts/setup-auth-system.sh` - configuration initiale : vérifie l’authentification actuelle, aide à générer un `claude setup-token` à longue durée de vie et affiche les étapes d’installation pour systemd/Termux.
+- `scripts/claude-auth-status.sh [full|json|simple]` - vérifie l’état de l’authentification de Claude Code et d’OpenClaw.
+- `scripts/auth-monitor.sh` - interroge périodiquement l’état et envoie une notification (via l’envoi OpenClaw et/ou ntfy.sh) lorsque le jeton approche de son expiration. Variables d’environnement : `WARN_HOURS` (valeur par défaut : `2`), `NOTIFY_PHONE`, `NOTIFY_NTFY`. Exécutez-le selon une planification à l’aide des fichiers `scripts/systemd/openclaw-auth-monitor.{service,timer}` fournis (toutes les 30 minutes).
+- `scripts/mobile-reauth.sh` - réexécute `claude setup-token` et affiche les URL à ouvrir sur un téléphone, pour une utilisation via SSH depuis Termux.
+- `scripts/termux-quick-auth.sh`, `scripts/termux-auth-widget.sh`, `scripts/termux-sync-widget.sh` - scripts Termux:Widget qui se connectent à l’hôte via SSH, affichent une notification éphémère d’état et ouvrent la console/les instructions de réauthentification lorsque l’authentification a expiré.
 
-Utilisez `scripts/gh-read` lorsque vous voulez que `gh` utilise un jeton d’installation GitHub App pour les appels de lecture limités au dépôt, tout en laissant le `gh` normal sur votre connexion personnelle pour les actions d’écriture.
+## Utilitaire de lecture GitHub
+
+Utilisez `scripts/gh-read` lorsque vous souhaitez que `gh` utilise un jeton d’installation d’application GitHub pour les appels en lecture limités au dépôt, tout en laissant le `gh` normal connecté à votre compte personnel pour les actions d’écriture.
 
 Variables d’environnement requises :
 
@@ -38,8 +44,8 @@ Variables d’environnement requises :
 
 Variables d’environnement facultatives :
 
-- `OPENCLAW_GH_READ_INSTALLATION_ID` lorsque vous voulez ignorer la recherche d’installation basée sur le dépôt
-- `OPENCLAW_GH_READ_PERMISSIONS` comme substitution séparée par des virgules pour le sous-ensemble d’autorisations de lecture à demander
+- `OPENCLAW_GH_READ_INSTALLATION_ID` lorsque vous souhaitez ignorer la recherche de l’installation basée sur le dépôt
+- `OPENCLAW_GH_READ_PERMISSIONS` comme remplacement, séparé par des virgules, du sous-ensemble d’autorisations de lecture à demander
 
 Ordre de résolution du dépôt :
 
@@ -55,10 +61,10 @@ Exemples :
 
 ## Lors de l’ajout de scripts
 
-- Gardez les scripts ciblés et documentés.
-- Ajoutez une courte entrée dans la documentation pertinente (ou créez-en une si elle manque).
+- Veillez à ce que les scripts restent ciblés et documentés.
+- Ajoutez une courte entrée dans la documentation pertinente (ou créez-en une si elle n’existe pas).
 
-## Connexe
+## Ressources connexes
 
 - [Tests](/fr/help/testing)
-- [Tests en direct](/fr/help/testing-live)
+- [Tests en conditions réelles](/fr/help/testing-live)

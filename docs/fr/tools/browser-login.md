@@ -1,59 +1,57 @@
 ---
 read_when:
     - Vous devez vous connecter aux sites pour l’automatisation du navigateur
-    - Vous voulez publier des mises à jour sur X/Twitter
-summary: Connexions manuelles pour l’automatisation de navigateur et la publication sur X/Twitter
+    - Vous souhaitez publier des mises à jour sur X/Twitter
+summary: Connexions manuelles pour l’automatisation du navigateur et la publication sur X/Twitter
 title: Connexion via le navigateur
 x-i18n:
-    generated_at: "2026-05-11T20:56:59Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:52:09Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: 89501b47611a39df5a658ed7e144b7c16a07188dfa52544b56cbfc6e296e2ecc
+    source_hash: bccd363cf7c9611f4687d50a92f7fb3e2fd1c1d67bb27a80c892f7ac58ae1f8f
     source_path: tools/browser-login.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
 ## Connexion manuelle (recommandée)
 
-Lorsqu’un site nécessite une connexion, **connectez-vous manuellement** dans le profil de navigateur de l’**hôte** (le navigateur openclaw).
+Lorsqu’un site nécessite une connexion, connectez-vous manuellement dans le profil `openclaw` du navigateur hôte. Ne communiquez pas vos identifiants au modèle : les connexions automatisées déclenchent souvent les mécanismes de défense contre les robots et peuvent verrouiller le compte.
 
-Ne donnez **pas** vos identifiants au modèle. Les connexions automatisées déclenchent souvent des défenses anti-bots et peuvent verrouiller le compte.
+Utilisez le navigateur hôte (connexion manuelle) aussi bien pour consulter du contenu (recherches/fils de discussion) que pour publier sur X/Twitter et d’autres sites sensibles aux robots. Les sessions de navigateur en bac à sable sont plus susceptibles de déclencher la détection des robots.
 
 Retour à la documentation principale du navigateur : [Navigateur](/fr/tools/browser).
 
 ## Quel profil Chrome est utilisé ?
 
-OpenClaw contrôle un **profil Chrome dédié** (nommé `openclaw`, avec une interface teintée d’orange). Il est distinct de votre profil de navigateur quotidien.
+OpenClaw contrôle un profil Chrome dédié nommé `openclaw` (interface teintée d’orange), distinct de votre profil de navigation quotidien.
 
-Pour les appels d’outil de navigateur de l’agent :
+Pour les appels de l’outil de navigation effectués par l’agent :
 
-- Choix par défaut : l’agent doit utiliser son navigateur `openclaw` isolé.
-- Utilisez `profile="user"` uniquement lorsque des sessions connectées existantes sont nécessaires et que l’utilisateur est devant l’ordinateur pour cliquer/approuver toute invite d’attachement.
-- Si vous avez plusieurs profils de navigateur utilisateur, indiquez explicitement le profil au lieu de deviner.
+- Choix par défaut : l’agent utilise son navigateur `openclaw` isolé.
+- Utilisez `profile="user"` uniquement lorsque les sessions déjà connectées sont nécessaires et que vous êtes devant l’ordinateur pour cliquer ou approuver toute demande de connexion.
+- Si vous disposez de plusieurs profils de navigateur utilisateur, indiquez explicitement le profil au lieu de le deviner.
 
-Deux moyens simples d’y accéder :
+Deux méthodes permettent d’accéder au profil `openclaw` :
 
-1. **Demandez à l’agent d’ouvrir le navigateur**, puis connectez-vous vous-même.
-2. **Ouvrez-le via la CLI** :
+1. Demandez à l’agent d’ouvrir le navigateur, puis connectez-vous vous-même.
+2. Ouvrez-le via la CLI :
 
 ```bash
 openclaw browser start
 openclaw browser open https://x.com
 ```
 
-Si vous avez plusieurs profils, passez `--browser-profile <name>` (la valeur par défaut est `openclaw`).
+Pour un profil autre que celui par défaut, placez `--browser-profile <name>` avant la sous-commande (la valeur par défaut est `openclaw`) :
 
-## X/Twitter : flux recommandé
+```bash
+openclaw browser --browser-profile <name> open https://x.com
+```
 
-- **Lecture/recherche/fils :** utilisez le navigateur de l’**hôte** (connexion manuelle).
-- **Publier des mises à jour :** utilisez le navigateur de l’**hôte** (connexion manuelle).
+## Mise en bac à sable : autoriser l’accès au navigateur hôte
 
-## Mise en bac à sable + accès au navigateur hôte
-
-Les sessions de navigateur en bac à sable sont **plus susceptibles** de déclencher la détection des bots. Pour X/Twitter (et d’autres sites stricts), privilégiez le navigateur de l’**hôte**.
-
-Si l’agent est en bac à sable, l’outil de navigateur utilise le bac à sable par défaut. Pour autoriser le contrôle de l’hôte :
+Si l’agent est placé dans un bac à sable, les appels de son outil `browser` ciblent par défaut le navigateur du bac à sable, et non celui de l’hôte. Pour permettre à l’agent de cibler le navigateur hôte à la place :
 
 ```json5
 {
@@ -70,16 +68,16 @@ Si l’agent est en bac à sable, l’outil de navigateur utilise le bac à sabl
 }
 ```
 
-Ouvrez ensuite vous-même le navigateur hôte (les invocations CLI s’exécutent toujours sur le navigateur hôte) :
+Les appels via la CLI ciblent toujours le navigateur hôte, jamais le bac à sable. Vous pouvez donc ouvrir vous-même le navigateur hôte indépendamment de ce paramètre :
 
 ```bash
-openclaw browser open https://x.com --browser-profile openclaw
+openclaw browser --browser-profile openclaw open https://x.com
 ```
 
-Les appels de l’outil `browser` de l’agent peuvent ensuite cibler l’hôte une fois que `sandbox.browser.allowHostControl: true` est défini. Vous pouvez également désactiver la mise en bac à sable pour l’agent qui publie les mises à jour.
+Une fois `sandbox.browser.allowHostControl: true` défini, les appels de l’outil `browser` de l’agent peuvent également cibler l’hôte. Vous pouvez aussi désactiver la mise en bac à sable pour l’agent qui publie les mises à jour.
 
-## Connexe
+## Pages associées
 
 - [Navigateur](/fr/tools/browser)
 - [Dépannage du navigateur sous Linux](/fr/tools/browser-linux-troubleshooting)
-- [Dépannage du navigateur WSL2](/fr/tools/browser-wsl2-windows-remote-cdp-troubleshooting)
+- [Dépannage du navigateur sous WSL2](/fr/tools/browser-wsl2-windows-remote-cdp-troubleshooting)

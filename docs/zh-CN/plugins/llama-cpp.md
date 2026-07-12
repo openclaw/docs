@@ -1,30 +1,31 @@
 ---
 read_when:
-    - 你想使用本地 GGUF 模型生成记忆搜索嵌入
-    - 你正在配置 memorySearch.provider = "local"
+    - 你希望使用本地 GGUF 模型生成记忆搜索嵌入向量
+    - 你正在配置 `memorySearch.provider = "local"`
     - 你需要负责 node-llama-cpp 运行时的 OpenClaw 插件
 sidebarTitle: llama.cpp Provider
 summary: 安装官方 llama.cpp 提供商，用于本地 GGUF 记忆嵌入
 title: llama.cpp 提供商
 x-i18n:
-    generated_at: "2026-07-05T11:31:13Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:39:02Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: bc8243a07b647f2f9a4b2da855997d39fb37704dfe584fc4f14076ab276b07a8
+    source_hash: 369ec199e8493356912337b849a84f829672e8872d17083c9a597f4e5294ebd5
     source_path: plugins/llama-cpp.md
     workflow: 16
 ---
 
-`llama-cpp` 是用于本地 GGUF 嵌入的官方外部提供商插件。它注册嵌入提供商 ID `local`，并拥有 `memorySearch.provider: "local"` 所使用的 `node-llama-cpp` 运行时依赖。
+`llama-cpp` 是用于本地 GGUF 嵌入的官方外部提供商插件。它注册嵌入提供商 ID `local`，并负责管理 `memorySearch.provider: "local"` 使用的 `node-llama-cpp` 运行时依赖项。
 
-在使用本地记忆嵌入之前安装它：
+使用本地记忆嵌入前，请先安装它：
 
 ```bash
 openclaw plugins install @openclaw/llama-cpp-provider
 ```
 
-主 `openclaw` npm 包不包含 `node-llama-cpp`。将原生依赖保留在此插件中，可以防止常规 OpenClaw npm 更新删除 OpenClaw 包目录内手动安装的运行时。
+主 `openclaw` npm 软件包不包含 `node-llama-cpp`。将原生依赖项保留在此插件中，可以防止 OpenClaw 的常规 npm 更新删除手动安装在 OpenClaw 软件包目录中的运行时。
 
 ## 配置
 
@@ -45,23 +46,31 @@ openclaw plugins install @openclaw/llama-cpp-provider
 }
 ```
 
-`local.modelPath` 默认使用上面显示的 `hf:` URI（`embeddinggemma-300m-qat-Q8_0.gguf`）。将它指向不同的 `hf:` URI 或本地 `.gguf` 文件即可使用其他模型。`local.modelCacheDir` 会覆盖已下载模型的缓存位置（默认：`~/.node-llama-cpp/models`），并且 `local.contextSize` 接受整数或 `"auto"`。
+`local.modelPath` 默认使用上面显示的 `hf:` URI（`embeddinggemma-300m-qat-Q8_0.gguf`）。将其指向其他 `hf:` URI 或本地 `.gguf` 文件即可使用其他模型。`local.modelCacheDir` 可覆盖下载模型的缓存位置（默认值：`~/.node-llama-cpp/models`），`local.contextSize` 接受整数或 `"auto"`。
+
+当 `local.contextSize` 为数值时，提供商还会将该要求传递给 node-llama-cpp 的 GPU 层自动放置功能。这样，node-llama-cpp 就能在保留内存安全检查的同时，将模型和嵌入上下文一并合理装入。使用 `"auto"` 时，node-llama-cpp 会保持其常规的自动放置行为。
 
 ## 原生运行时
 
-使用 Node 24 可获得最顺畅的原生安装路径。使用 pnpm 的源码检出可能需要批准并重新构建原生依赖：
+使用 Node 24 可获得最顺畅的原生安装体验。使用 pnpm 的源代码检出可能需要批准并重新构建原生依赖项：
 
 ```bash
 pnpm approve-builds
 pnpm rebuild node-llama-cpp
 ```
 
+## 运行时诊断
+
+提供商加载后，运行 `openclaw memory status --deep` 可检查所选后端和构建版本、设备名称、GPU 卸载层数、请求的上下文大小，以及最近观测到的 VRAM 或统一内存快照。VRAM 值包含观测时间戳，因为被动状态读取不会重新加载模型或轮询设备。
+
+当正在运行的 Gateway 网关已经使用过本地提供商时，`openclaw doctor` 中也可能显示这些最近已知信息。常规的状态或 doctor 命令不会仅为收集诊断信息而加载模型。
+
 ## 故障排查
 
-如果 `node-llama-cpp` 缺失或加载失败，OpenClaw 会报告失败并提示：
+如果 `node-llama-cpp` 缺失或加载失败，OpenClaw 会报告故障并提供以下处理步骤：
 
 1. 安装插件：`openclaw plugins install @openclaw/llama-cpp-provider`。
 2. 使用 Node 24 进行原生安装/更新。
-3. 从 pnpm 源码检出中：`pnpm approve-builds`，然后运行 `pnpm rebuild node-llama-cpp`。
+3. 在 pnpm 源代码检出目录中：先运行 `pnpm approve-builds`，然后运行 `pnpm rebuild node-llama-cpp`。
 
-若想在没有原生构建步骤的情况下以更低摩擦使用本地嵌入，请改为将 `memorySearch.provider` 设置为远程嵌入提供商，例如 `lmstudio`、`ollama`、`openai` 或 `voyage`。
+如果希望更轻松地使用本地嵌入而不执行原生构建步骤，请改为将 `memorySearch.provider` 设置为远程嵌入提供商，例如 `lmstudio`、`ollama`、`openai` 或 `voyage`。

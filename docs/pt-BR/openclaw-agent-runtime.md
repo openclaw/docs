@@ -1,84 +1,80 @@
 ---
 read_when:
-    - Trabalhando no código ou nos testes do runtime de agentes do OpenClaw
-    - Executando fluxos de lint, verificação de tipos e testes live do agent-runtime
-summary: 'Fluxo de trabalho do desenvolvedor para o runtime de agentes do OpenClaw: build, testes e validação ao vivo'
+    - Trabalhando no código de runtime ou nos testes do agente OpenClaw
+    - Executando fluxos de lint, verificação de tipos e testes em ambiente real do runtime do agente
+summary: 'Fluxo de trabalho de desenvolvimento para o runtime de agentes do OpenClaw: compilação, testes e validação em ambiente real'
 title: Fluxo de trabalho do runtime do agente OpenClaw
 x-i18n:
-    generated_at: "2026-06-27T17:41:03Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:20:32Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: fbe2a192ff7954577f8cbeae33676cbfd330f297d31c1917d2ab52898c2c5064
+    source_hash: 044f05779bef4ad18478081ba44d84356723c8a0be764440aa9d2b976d167324
     source_path: openclaw-agent-runtime.md
     workflow: 16
 ---
 
-Um fluxo de trabalho sensato para trabalhar no runtime do agente OpenClaw no OpenClaw.
+Fluxo de trabalho de desenvolvimento para o runtime do agente (`src/agents/`) no repositório do OpenClaw.
 
-## Verificação de tipos e linting
+## Verificação de tipos e lint
 
-- Gate local padrão: `pnpm check`
-- Gate de build: `pnpm build` quando a alteração puder afetar a saída de build, o empacotamento ou limites de carregamento preguiçoso/módulos
-- Gate completo de landing para alterações no runtime do agente: `pnpm check && pnpm test`
+- Verificação local padrão: `pnpm check` (verificação de tipos, lint e verificações de políticas)
+- Verificação de build: `pnpm build` quando a alteração puder afetar a saída do build, o empacotamento ou os limites de carregamento tardio/módulos
+- Verificação completa antes do push: `pnpm build && pnpm check && pnpm check:test-types && pnpm test`
 
-## Executando testes do runtime do agente
+## Execução dos testes do runtime do agente
 
-Execute o conjunto de testes do runtime do agente diretamente com Vitest:
+Execute as suítes de testes unitários do runtime do agente:
 
 ```bash
 pnpm test \
   "src/agents/agent-*.test.ts" \
   "src/agents/embedded-agent-*.test.ts" \
-  "src/agents/agent-tools*.test.ts" \
-  "src/agents/agent-settings.test.ts" \
-  "src/agents/agent-tool-definition-adapter*.test.ts" \
   "src/agents/agent-hooks/**/*.test.ts"
 ```
 
-Para incluir o exercício com provedor live:
+O primeiro glob também abrange as suítes `agent-tools*`, `agent-settings` e
+`agent-tool-definition-adapter*`.
+
+Os testes em ambiente real são excluídos da configuração de testes unitários; execute-os por meio do
+wrapper de testes em ambiente real (define `OPENCLAW_LIVE_TEST=1` e requer credenciais do provedor):
 
 ```bash
-OPENCLAW_LIVE_TEST=1 pnpm test src/agents/embedded-agent-runner-extraparams.live.test.ts
+pnpm test:live src/agents/embedded-agent-runner-extraparams.live.test.ts
 ```
 
-Isso cobre os principais conjuntos de testes unitários do runtime do agente:
+## Testes manuais
 
-- `src/agents/agent-*.test.ts`
-- `src/agents/embedded-agent-*.test.ts`
-- `src/agents/agent-tools*.test.ts`
-- `src/agents/agent-settings.test.ts`
-- `src/agents/agent-tool-definition-adapter.test.ts`
-- `src/agents/agent-hooks/*.test.ts`
+- Execute o Gateway no modo de desenvolvimento (ignora as conexões de canais por meio de `OPENCLAW_SKIP_CHANNELS=1`): `pnpm gateway:dev`
+- Acione um turno do agente por meio do Gateway: `pnpm openclaw agent --message "Hello" --thinking low`
+- Use a TUI para depuração interativa: `pnpm tui`
 
-## Teste manual
+Para o comportamento de chamadas de ferramentas, solicite uma ação `read` ou `exec` para poder observar
+o streaming da ferramenta e o tratamento do payload.
 
-Fluxo recomendado:
+## Redefinição completa
 
-- Execute o Gateway em modo de desenvolvimento:
-  - `pnpm gateway:dev`
-- Acione o agente diretamente:
-  - `pnpm openclaw agent --message "Hello" --thinking low`
-- Use a TUI para depuração interativa:
-  - `pnpm tui`
+O estado fica no diretório de estado do OpenClaw: `~/.openclaw` por padrão, ou
+`$OPENCLAW_STATE_DIR` quando definido. Caminhos relativos a esse diretório:
 
-Para comportamento de chamada de ferramenta, solicite uma ação `read` ou `exec` para poder ver o streaming da ferramenta e o tratamento do payload.
+| Caminho                                        | Armazena                                                                           |
+| ---------------------------------------------- | ---------------------------------------------------------------------------------- |
+| `openclaw.json`                                | Configuração                                                                       |
+| `state/openclaw.sqlite`                        | Banco de dados compartilhado de estado de runtime                                  |
+| `agents/<agentId>/agent/openclaw-agent.sqlite` | Perfis de autenticação de modelo por agente (chaves de API + OAuth) e estado de runtime |
+| `credentials/`                                 | Credenciais de provedores/canais fora do armazenamento de perfis de autenticação   |
+| `agents/<agentId>/sessions/`                   | Histórico de transcrições e fontes de migração de sessões legadas                  |
+| `sessions/`                                    | Armazenamento legado de sessões de agente único (somente instalações antigas)      |
+| `workspace/`                                   | Workspace padrão do agente (agentes adicionais usam `workspace-<agentId>`)         |
 
-## Redefinição para estado limpo
+Exclua esses caminhos para uma redefinição completa. Redefinições mais específicas:
 
-O estado fica no diretório de estado do OpenClaw. O padrão é `~/.openclaw`. Se `OPENCLAW_STATE_DIR` estiver definido, use esse diretório em vez disso.
+- Somente sessões: não exclua `agents/<agentId>/agent/openclaw-agent.sqlite`; as linhas de sessão ficam nele junto com outros estados por agente. Use `/new` ou `/reset` para iniciar uma nova sessão em um chat e `openclaw sessions cleanup` para a manutenção de sessões.
+- Manter autenticação: preserve `agents/<agentId>/agent/openclaw-agent.sqlite` e `credentials/`.
 
-Para redefinir tudo:
-
-- `openclaw.json` para configuração
-- `agents/<agentId>/agent/auth-profiles.json` para perfis de autenticação de modelo (chaves de API + OAuth)
-- `credentials/` para estado de provedor/canal que ainda fica fora do armazenamento de perfis de autenticação
-- `agents/<agentId>/sessions/` para histórico de sessões do agente
-- `agents/<agentId>/sessions/sessions.json` para o índice de sessões
-- `sessions/` se caminhos legados existirem
-- `workspace/` se você quiser um espaço de trabalho em branco
-
-Se você quiser redefinir apenas as sessões, exclua `agents/<agentId>/sessions/` para esse agente. Se quiser manter a autenticação, deixe `agents/<agentId>/agent/auth-profiles.json` e qualquer estado de provedor em `credentials/` no lugar.
+Os arquivos legados `auth-profiles.json` não são mais lidos durante o runtime;
+`openclaw doctor --fix` os importa para o armazenamento SQLite.
 
 ## Referências
 
@@ -87,4 +83,4 @@ Se você quiser redefinir apenas as sessões, exclua `agents/<agentId>/sessions/
 
 ## Relacionado
 
-- [Arquitetura do runtime do agente OpenClaw](/pt-BR/agent-runtime-architecture)
+- [Arquitetura de runtime do agente OpenClaw](/pt-BR/agent-runtime-architecture)

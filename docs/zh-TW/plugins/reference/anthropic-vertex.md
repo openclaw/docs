@@ -1,21 +1,22 @@
 ---
 read_when:
-    - 您正在安裝、設定或稽核 anthropic-vertex 外掛
-summary: OpenClaw Anthropic Vertex 提供者外掛，適用於 Google Vertex AI 上的 Claude 模型。
+    - 你正在安裝、設定或稽核 anthropic-vertex 外掛
+summary: 適用於 Google Vertex AI 上 Claude 模型的 OpenClaw Anthropic Vertex 供應商外掛。
 title: Anthropic Vertex 外掛
 x-i18n:
-    generated_at: "2026-06-27T19:41:00Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:41:32Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: f772c9a5bf1edd6a270b7ba5e6d695290fe96648c9ac38d0bc90bb1504f50cd7
+    source_hash: fe5500ca56df49c0ef6ccbf39ced71e3fd0b18776ad23716de8575bc6ba64cb8
     source_path: plugins/reference/anthropic-vertex.md
     workflow: 16
 ---
 
 # Anthropic Vertex 外掛
 
-OpenClaw Anthropic Vertex 提供者外掛，用於 Google Vertex AI 上的 Claude 模型。
+適用於 Google Vertex AI 上 Claude 模型的 OpenClaw Anthropic Vertex 供應商外掛。
 
 ## 發佈
 
@@ -24,14 +25,25 @@ OpenClaw Anthropic Vertex 提供者外掛，用於 Google Vertex AI 上的 Claud
 
 ## 介面
 
-providers: anthropic-vertex
+供應商：anthropic-vertex
 
 <!-- openclaw-plugin-reference:manual-start -->
 
 ## Claude Fable 5
 
-請在你的 Google Cloud 區域可用此模型時使用 `anthropic-vertex/claude-fable-5`。
-Fable 5 一律使用自適應思考，且預設為 `high` effort。`/think off` 和
-`/think minimal` 會使用 `low` effort，因為此模型不支援停用思考。
+在你的 Google Cloud 區域提供此模型時，請使用 `anthropic-vertex/claude-fable-5`。
+Fable 5 一律使用自適應思考，預設推理強度為 `high`。由於此模型不支援停用思考，
+`/think off` 和 `/think minimal` 會使用 `low` 推理強度。
+
+## Claude Sonnet 5
+
+請搭配 Vertex 的 `global`、`us` 或 `eu` 端點使用 `anthropic-vertex/claude-sonnet-5`。
+Sonnet 5 預設以 `high` 推理強度使用自適應思考，並支援 `/think off` 或原生的
+`/think xhigh|max` 等級。OpenClaw 會自動提供其 1,000,000 個 token 的上下文視窗，
+以及 128,000 個 token 的輸出限制。
+
+目錄定價依循 Vertex 的全球端點優惠費率：截至 2026 年 8 月 31 日，
+每百萬個輸入／輸出 token 為 `$2/$10`，自 9 月 1 日起則為 `$3/$15`。
+`us` 和 `eu` 多區域端點採用 Vertex 文件所述的 10% 加價。
 
 <!-- openclaw-plugin-reference:manual-end -->

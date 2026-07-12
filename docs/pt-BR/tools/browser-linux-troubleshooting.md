@@ -1,64 +1,61 @@
 ---
 read_when: Browser control fails on Linux, especially with snap Chromium
-summary: Corrigir problemas de inicialização do CDP do Chrome/Brave/Edge/Chromium para o controle de navegador do OpenClaw no Linux
+summary: Corrija problemas de inicialização do CDP no Chrome/Brave/Edge/Chromium para o controle de navegador do OpenClaw no Linux
 title: Solução de problemas do navegador
 x-i18n:
-    generated_at: "2026-04-30T10:09:45Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:42:45Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: d9a91ea42a8a600163bcf66ad398677175bd0c5186d3e1dddb629a55c2ea66ed
+    source_hash: e0256e8ee441802086cd486923060be54f8966b423e5dcb71fc8961bbab5d729
     source_path: tools/browser-linux-troubleshooting.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-## Problema: "Falha ao iniciar o CDP do Chrome na porta 18800"
+## Problema: falha ao iniciar o Chrome CDP na porta 18800
 
-O servidor de controle de navegador do OpenClaw falha ao iniciar Chrome/Brave/Edge/Chromium com o erro:
-
-```
-{"error":"Error: Failed to start Chrome CDP on port 18800 for profile \"openclaw\"."}
+```json
+{ "error": "Erro: falha ao iniciar o Chrome CDP na porta 18800 para o perfil \"openclaw\"." }
 ```
 
 ### Causa raiz
 
-No Ubuntu (e em muitas distribuições Linux), a instalação padrão do Chromium é um **pacote snap**. O confinamento AppArmor do Snap interfere na forma como o OpenClaw inicia e monitora o processo do navegador.
+No Ubuntu e na maioria das distribuições Linux, `apt install chromium` instala um
+wrapper snap, não um navegador real:
 
-O comando `apt install chromium` instala um pacote auxiliar que redireciona para snap:
-
+```text
+Observação: selecionando 'chromium-browser' em vez de 'chromium'
+chromium-browser já está na versão mais recente (2:1snap1-0ubuntu2).
 ```
-Note, selecting 'chromium-browser' instead of 'chromium'
-chromium-browser is already the newest version (2:1snap1-0ubuntu2).
-```
 
-Isso NÃO é um navegador real - é apenas um wrapper.
+O confinamento do AppArmor do snap interfere na forma como o OpenClaw inicia e monitora
+o processo do navegador.
 
 Outras falhas comuns de inicialização no Linux:
 
-- `The profile appears to be in use by another Chromium process` significa que o Chrome
-  encontrou arquivos de bloqueio `Singleton*` obsoletos no diretório de perfil gerenciado. O OpenClaw
-  remove esses bloqueios e tenta novamente uma vez quando o bloqueio aponta para um processo morto ou
-  de outro host.
-- `Missing X server or $DISPLAY` significa que um navegador visível foi explicitamente
-  solicitado em um host sem uma sessão de desktop. Por padrão, perfis gerenciados locais
-  agora voltam para o modo headless no Linux quando `DISPLAY` e
-  `WAYLAND_DISPLAY` estão ambos indefinidos. Se você definir `OPENCLAW_BROWSER_HEADLESS=0`,
-  `browser.headless: false` ou `browser.profiles.<name>.headless: false`,
-  remova essa substituição com interface, defina `OPENCLAW_BROWSER_HEADLESS=1`, inicie `Xvfb`,
-  execute `openclaw browser start --headless` para uma inicialização gerenciada avulsa, ou execute
+- `The profile appears to be in use by another Chromium process`: arquivos de bloqueio
+  `Singleton*` obsoletos no diretório do perfil gerenciado. O OpenClaw remove
+  esses bloqueios e tenta novamente uma vez quando o bloqueio aponta para um processo
+  encerrado ou em outro host.
+- `Missing X server or $DISPLAY`: foi solicitado explicitamente um navegador visível
+  em um host sem uma sessão de desktop. Perfis locais gerenciados usam
+  o modo headless como fallback no Linux quando `DISPLAY` e `WAYLAND_DISPLAY` não estão definidos.
+  Se você definiu `OPENCLAW_BROWSER_HEADLESS=0`, `browser.headless: false` ou
+  `browser.profiles.<name>.headless: false`, remova essa substituição para o modo com interface,
+  defina `OPENCLAW_BROWSER_HEADLESS=1`, inicie o `Xvfb`, execute
+  `openclaw browser start --headless` para uma inicialização gerenciada única ou execute
   o OpenClaw em uma sessão de desktop real.
 
-### Solução 1: Instalar o Google Chrome (recomendado)
-
-Instale o pacote `.deb` oficial do Google Chrome, que não é isolado pelo snap:
+### Solução 1: instalar o Google Chrome (recomendado)
 
 ```bash
 wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
 sudo dpkg -i google-chrome-stable_current_amd64.deb
-sudo apt --fix-broken install -y  # if there are dependency errors
+sudo apt --fix-broken install -y  # se houver erros de dependência
 ```
 
-Em seguida, atualize sua configuração do OpenClaw (`~/.openclaw/openclaw.json`):
+Atualize `~/.openclaw/openclaw.json`:
 
 ```json
 {
@@ -71,11 +68,10 @@ Em seguida, atualize sua configuração do OpenClaw (`~/.openclaw/openclaw.json`
 }
 ```
 
-### Solução 2: Usar o Chromium do Snap com modo somente anexar
+### Solução 2: usar o Chromium via snap no modo somente anexação
 
-Se você precisa usar o Chromium do snap, configure o OpenClaw para anexar a um navegador iniciado manualmente:
-
-1. Atualize a configuração:
+Se você precisar manter o Chromium via snap, configure o OpenClaw para se conectar a um
+navegador iniciado manualmente, em vez de iniciá-lo:
 
 ```json
 {
@@ -88,7 +84,7 @@ Se você precisa usar o Chromium do snap, configure o OpenClaw para anexar a um 
 }
 ```
 
-2. Inicie o Chromium manualmente:
+Inicie o Chromium manualmente:
 
 ```bash
 chromium-browser --headless --no-sandbox --disable-gpu \
@@ -97,12 +93,12 @@ chromium-browser --headless --no-sandbox --disable-gpu \
   about:blank &
 ```
 
-3. Opcionalmente, crie um serviço de usuário systemd para iniciar o Chrome automaticamente:
+Opcionalmente, inicie-o automaticamente com um serviço de usuário do systemd:
 
 ```ini
 # ~/.config/systemd/user/openclaw-browser.service
 [Unit]
-Description=OpenClaw Browser (Chrome CDP)
+Description=Navegador do OpenClaw (Chrome CDP)
 After=network.target
 
 [Service]
@@ -114,68 +110,68 @@ RestartSec=5
 WantedBy=default.target
 ```
 
-Habilite com: `systemctl --user enable --now openclaw-browser.service`
+```bash
+systemctl --user enable --now openclaw-browser.service
+```
 
 ### Verificar se o navegador funciona
 
-Verifique o status:
-
 ```bash
 curl -s http://127.0.0.1:18791/ | jq '{running, pid, chosenBrowser}'
-```
-
-Teste a navegação:
-
-```bash
 curl -s -X POST http://127.0.0.1:18791/start
 curl -s http://127.0.0.1:18791/tabs
 ```
 
 ### Referência de configuração
 
-| Opção                            | Descrição                                                            | Padrão                                                      |
-| -------------------------------- | -------------------------------------------------------------------- | ----------------------------------------------------------- |
-| `browser.enabled`                | Habilitar controle do navegador                                      | `true`                                                      |
-| `browser.executablePath`         | Caminho para um binário de navegador baseado em Chromium (Chrome/Brave/Edge/Chromium) | detectado automaticamente (prefere o navegador padrão quando baseado em Chromium) |
-| `browser.headless`               | Executar sem GUI                                                     | `false`                                                     |
-| `OPENCLAW_BROWSER_HEADLESS`      | Substituição por processo para o modo headless do navegador gerenciado local | indefinido                                                  |
-| `browser.noSandbox`              | Adicionar a flag `--no-sandbox` (necessária para algumas configurações Linux) | `false`                                                     |
-| `browser.attachOnly`             | Não iniciar o navegador, apenas anexar ao existente                  | `false`                                                     |
-| `browser.cdpPort`                | Porta do Chrome DevTools Protocol                                    | `18800`                                                     |
-| `browser.localLaunchTimeoutMs`   | Tempo limite de descoberta do Chrome gerenciado local                | `15000`                                                     |
-| `browser.localCdpReadyTimeoutMs` | Tempo limite de prontidão do CDP após inicialização gerenciada local | `8000`                                                      |
+| Opção                            | Descrição                                                                            | Padrão                                                                                  |
+| -------------------------------- | ------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------- |
+| `browser.enabled`                | Habilita o controle do navegador                                                     | `true`                                                                                  |
+| `browser.executablePath`         | Caminho para um binário de navegador baseado no Chromium (Chrome/Brave/Edge/Chromium) | detectado automaticamente (prioriza o navegador padrão do SO quando baseado no Chromium) |
+| `browser.headless`               | Executa sem interface gráfica                                                        | `false`                                                                                 |
+| `OPENCLAW_BROWSER_HEADLESS`      | Substituição por processo para o modo headless do navegador local gerenciado          | não definido                                                                            |
+| `browser.noSandbox`              | Adiciona a opção `--no-sandbox` (necessária em algumas configurações do Linux)        | `false`                                                                                 |
+| `browser.attachOnly`             | Não inicia um navegador; apenas se conecta a um existente                            | `false`                                                                                 |
+| `browser.cdpPortRangeStart`      | Porta CDP local inicial para perfis atribuídos automaticamente                       | `18800` (derivada da porta do Gateway)                                                   |
+| `browser.localLaunchTimeoutMs`   | Tempo limite para detectar o Chrome local gerenciado, até `120000`                   | `15000`                                                                                 |
+| `browser.localCdpReadyTimeoutMs` | Tempo limite de prontidão do CDP local gerenciado após a inicialização, até `120000`  | `8000`                                                                                  |
 
-No Raspberry Pi, em hosts VPS mais antigos ou em armazenamento lento, aumente
-`browser.localLaunchTimeoutMs` quando o Chrome precisar de mais tempo para expor seu endpoint
-HTTP de CDP. Aumente `browser.localCdpReadyTimeoutMs` quando a inicialização for bem-sucedida, mas
-`openclaw browser start` ainda relatar `not reachable after start`. Os valores devem
-ser inteiros positivos até `120000` ms; valores de configuração inválidos são rejeitados.
+Ambos os valores de tempo limite devem ser números inteiros positivos de até `120000` ms; outros valores
+são rejeitados durante o carregamento da configuração. No Raspberry Pi, em hosts VPS mais antigos ou com
+armazenamento lento, aumente `browser.localLaunchTimeoutMs` quando o Chrome precisar de mais tempo para
+expor seu endpoint HTTP do CDP. Aumente `browser.localCdpReadyTimeoutMs` quando
+a inicialização for bem-sucedida, mas `openclaw browser start` ainda informar `not reachable
+after start`.
 
-### Problema: "Nenhuma aba do Chrome encontrada para profile=\"user\""
+### Problema: nenhuma aba do Chrome encontrada para profile="user"
 
-Você está usando um perfil `existing-session` / Chrome MCP. O OpenClaw consegue ver o Chrome local,
-mas não há abas abertas disponíveis para anexar.
+Você está usando o perfil `user` (`existing-session` / Chrome MCP) e não há
+abas abertas às quais se conectar.
 
 Opções de correção:
 
-1. **Use o navegador gerenciado:** `openclaw browser start --browser-profile openclaw`
-   (ou defina `browser.defaultProfile: "openclaw"`).
-2. **Use o Chrome MCP:** garanta que o Chrome local esteja em execução com pelo menos uma aba aberta e tente novamente com `--browser-profile user`.
+1. Use o navegador gerenciado:
+   `openclaw browser --browser-profile openclaw start` (ou defina
+   `browser.defaultProfile: "openclaw"`).
+2. Mantenha o Chrome local em execução com pelo menos uma aba aberta e tente novamente com
+   `--browser-profile user`.
 
 Observações:
 
-- `user` é apenas para o host. Para servidores Linux, contêineres ou hosts remotos, prefira perfis CDP.
-- `user` / outros perfis `existing-session` mantêm os limites atuais do Chrome MCP:
-  ações orientadas por referência, hooks de upload de um arquivo, sem substituições de tempo limite de diálogo, sem
-  `wait --load networkidle` e sem `responsebody`, exportação de PDF, interceptação de download
-  ou ações em lote.
-- Perfis `openclaw` locais atribuem automaticamente `cdpPort`/`cdpUrl`; defina esses valores apenas para CDP remoto.
+- `user` funciona somente no host. Em servidores Linux, contêineres ou hosts remotos, prefira
+  perfis CDP.
+- `user` e outros perfis `existing-session` compartilham as limitações atuais do Chrome MCP:
+  somente ações orientadas por referências, um arquivo por upload, sem substituições de `timeoutMs`
+  para caixas de diálogo, sem `wait --load networkidle` e sem `responsebody`, exportação para PDF,
+  interceptação de downloads ou ações em lote.
+- Perfis locais do driver `openclaw` atribuem `cdpPort`/`cdpUrl` automaticamente; defina-os
+  manualmente somente para CDP remoto.
 - Perfis CDP remotos aceitam `http://`, `https://`, `ws://` e `wss://`.
-  Use HTTP(S) para descoberta de `/json/version`, ou WS(S) quando seu serviço de navegador
-  fornecer uma URL direta de socket DevTools.
+  Use HTTP(S) para a descoberta por `/json/version` ou WS(S) quando o serviço do navegador
+  fornecer diretamente uma URL de socket do DevTools.
 
 ## Relacionado
 
 - [Navegador](/pt-BR/tools/browser)
 - [Login no navegador](/pt-BR/tools/browser-login)
-- [Solução de problemas do navegador WSL2](/pt-BR/tools/browser-wsl2-windows-remote-cdp-troubleshooting)
+- [Solução de problemas do navegador no WSL2](/pt-BR/tools/browser-wsl2-windows-remote-cdp-troubleshooting)

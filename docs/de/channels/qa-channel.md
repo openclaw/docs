@@ -1,32 +1,33 @@
 ---
 read_when:
     - Sie binden den synthetischen QA-Transport in einen lokalen oder CI-Testlauf ein
-    - Sie benötigen die mitgelieferte qa-channel-Konfigurationsschnittstelle
-    - Sie arbeiten iterativ an der End-to-End-QA-Automatisierung
-summary: Synthetisches Kanal-Plugin der Slack-Klasse für deterministische OpenClaw-QA-Szenarien
+    - Sie benötigen die Konfigurationsoberfläche des gebündelten qa-channel.
+    - Sie entwickeln die End-to-End-QA-Automatisierung iterativ weiter
+summary: Synthetisches Plugin für Slack-ähnliche Kanäle für deterministische OpenClaw-QA-Szenarien
 title: QA-Kanal
 x-i18n:
-    generated_at: "2026-05-10T19:23:24Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:00:44Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: 8f28962032bc5f6b228de731ae6bd9a22831604b506b7073aeffba19ac22e0e8
+    source_hash: f33af6ef31515e0cab0ee2540f48f3ffea8aba3d13915dc8cf66111599354187
     source_path: channels/qa-channel.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-`qa-channel` ist ein gebündelter synthetischer Nachrichtentransport für automatisierte OpenClaw-QA. Es ist kein Produktionskanal - er existiert, um dieselbe Channel-Plugin-Grenze auszuüben, die von echten Transporten verwendet wird, während der Zustand deterministisch und vollständig einsehbar bleibt.
+`qa-channel` ist ein repo-lokaler synthetischer Nachrichtentransport für automatisierte OpenClaw-QA (`extensions/qa-channel`, privates Paket, von paketierten Installationen ausgeschlossen). Er ist kein produktiver Kanal – er dient dazu, dieselbe Kanal-Plugin-Grenze zu testen, die von realen Transporten verwendet wird, während der Zustand deterministisch und vollständig einsehbar bleibt.
 
-## Was es macht
+## Funktionsweise
 
-- Zielgrammatik der Slack-Klasse:
+- Zielsyntax nach Slack-Art:
   - `dm:<user>`
   - `channel:<room>`
   - `group:<room>`
   - `thread:<room>/<thread>`
-- Geteilte `channel:`- und `group:`-Unterhaltungen werden Agenten als Gruppen-/Kanalraum-Turns angezeigt, sodass sie dieselbe Richtlinie für sichtbare Antworten und Message-Tool-Routing ausüben, die von Discord, Slack, Telegram und ähnlichen Transporten verwendet wird.
-- HTTP-gestützter synthetischer Bus für Inbound-Nachrichteninjektion, Outbound-Transkripterfassung, Thread-Erstellung, Reaktionen, Bearbeitungen, Löschungen sowie Such-/Leseaktionen.
-- Hostseitiger Self-Check-Runner, der einen Markdown-Bericht nach `.artifacts/qa-e2e/` schreibt.
+- Gemeinsame `channel:`- und `group:`-Unterhaltungen werden Agenten als Gruppen-/Kanalraum-Interaktionen bereitgestellt, sodass sie dieselben Richtlinien für sichtbare Antworten und das Routing von Nachrichtentools durchlaufen, die von Discord, Slack, Telegram und ähnlichen Transporten verwendet werden.
+- HTTP-gestützter synthetischer Bus zum Einspeisen eingehender Nachrichten, Erfassen ausgehender Transkripte, Erstellen von Threads sowie für Reaktionen, Bearbeitungen, Löschungen und Such-/Leseaktionen.
+- Hostseitiger Selbsttest-Runner, der einen Markdown-Bericht unter `.artifacts/qa-e2e/` schreibt.
 
 ## Konfiguration
 
@@ -46,58 +47,60 @@ x-i18n:
 
 Kontoschlüssel:
 
-- `enabled` - Master-Umschalter für dieses Konto.
-- `name` - optionale Anzeige-Bezeichnung.
-- `baseUrl` - URL des synthetischen Busses.
-- `botUserId` - Bot-Benutzer-ID im Matrix-Stil, die in der Zielgrammatik verwendet wird.
-- `botDisplayName` - Anzeigename für ausgehende Nachrichten.
-- `pollTimeoutMs` - Wartefenster für Long-Polling. Ganzzahl zwischen 100 und 30000.
-- `allowFrom` - Sender-Allowlist (Benutzer-IDs oder `"*"`). Direktnachrichten und
-  die Allowlist-Gruppenrichtlinie verwenden beide diese synthetischen Sender-IDs.
-- `groupPolicy` - Richtlinie für geteilte Räume: `"open"` (Standard), `"allowlist"` oder
+- `enabled` – Hauptschalter für dieses Konto.
+- `name` – optionale Anzeigebezeichnung.
+- `baseUrl` – URL des synthetischen Busses. Das Konto gilt als konfiguriert, sobald dieser Wert festgelegt ist.
+- `botUserId` – synthetische Bot-Benutzer-ID, die in der Zielsyntax verwendet wird (Standard: `openclaw`).
+- `botDisplayName` – Anzeigename für ausgehende Nachrichten (Standard: `OpenClaw QA`).
+- `pollTimeoutMs` – Wartefenster für Long Polling. Ganzzahl zwischen 100 und 30000 (Standard: 1000).
+- `allowFrom` – Zulassungsliste für Absender (Benutzer-IDs oder `"*"`; Standard: `["*"]`). Direktnachrichten verwenden
+  immer die Richtlinie `open`; die Gruppenrichtlinie mit Zulassungsliste verwendet ebenfalls diese synthetischen
+  Absender-IDs.
+- `groupPolicy` – Richtlinie für gemeinsam genutzte Räume: `"open"` (Standard), `"allowlist"` oder
   `"disabled"`.
-- `groupAllowFrom` - optionale Sender-Allowlist für geteilte Räume. Wenn sie unter
-  `"allowlist"` ausgelassen wird, fällt QA Channel auf `allowFrom` zurück.
-- `groups.<room>.requireMention` - erfordert eine Bot-Erwähnung, bevor in einem
-  bestimmten Gruppen-/Kanalraum geantwortet wird. `groups."*"` legt den Standard fest.
-- `defaultTo` - Ausweichziel, wenn keines angegeben ist.
-- `actions.messages` / `actions.reactions` / `actions.search` / `actions.threads` - Tool-Gating pro Aktion.
+- `groupAllowFrom` – optionale Absender-Zulassungsliste für gemeinsam genutzte Räume. Wenn sie bei
+  `"allowlist"` nicht angegeben ist, greift QA Channel auf `allowFrom` zurück.
+- `groups.<room>.requireMention` – erfordert eine Erwähnung des Bots, bevor in einem
+  bestimmten Gruppen-/Kanalraum geantwortet wird (Standard: false). `groups."*"` legt den Standard fest;
+  raumspezifische `tools` / `toolsBySender` legen Überschreibungen der Tool-Richtlinie fest.
+- `defaultTo` – Ausweichziel, wenn keines angegeben wird.
+- `actions.messages` / `actions.reactions` / `actions.search` / `actions.threads` – aktionsspezifische Tool-Zugriffssteuerung.
 
-Mehrkontoschlüssel auf oberster Ebene:
+Kontenübergreifende Schlüssel auf oberster Ebene:
 
-- `accounts` - Datensatz benannter kontospezifischer Überschreibungen, nach Konto-ID geschlüsselt.
-- `defaultAccount` - bevorzugte Konto-ID, wenn mehrere konfiguriert sind.
+- `accounts` – Datensatz benannter, kontospezifischer Überschreibungen, indiziert nach Konto-ID.
+- `defaultAccount` – bevorzugte Konto-ID, wenn mehrere konfiguriert sind.
 
 ## Runner
 
-Hostseitiger Self-Check (schreibt einen Markdown-Bericht unter `.artifacts/qa-e2e/`):
+Hostseitiger Selbsttest (schreibt einen Markdown-Bericht unter `.artifacts/qa-e2e/`):
 
 ```bash
 pnpm qa:e2e
 ```
 
-Dies wird über `qa-lab` geleitet, startet den QA-Bus im Repository, bootet den gebündelten `qa-channel`-Runtime-Abschnitt und führt einen deterministischen Self-Check aus.
+Dieser wird über `qa-lab` geleitet, startet den repo-internen QA-Bus, fährt den Runtime-Ausschnitt von `qa-channel` hoch und führt einen deterministischen Selbsttest aus.
 
-Vollständige repositorygestützte Szenario-Suite:
+Vollständige repo-gestützte Szenariosuite:
 
 ```bash
 pnpm openclaw qa suite
 ```
 
-Führt Szenarien parallel gegen die QA-Gateway-Lane aus. Szenarien, Profile und Provider-Modi finden Sie in der [QA-Übersicht](/de/concepts/qa-e2e-automation).
+Führt Szenarien parallel in der QA-Gateway-Lane aus. Informationen zu Szenarien, Profilen und Provider-Modi finden Sie in der [QA-Übersicht](/de/concepts/qa-e2e-automation).
 
-Docker-gestützte QA-Site (Gateway + QA Lab-Debugger-UI in einem Stack):
+Docker-gestützte QA-Site (Gateway und QA-Lab-Debugger-Benutzeroberfläche in einem Stack):
 
 ```bash
 pnpm qa:lab:up
 ```
 
-Baut die QA-Site, startet den Docker-gestützten Gateway- + QA Lab-Stack und gibt die QA Lab-URL aus. Von dort aus können Sie Szenarien auswählen, die Modell-Lane wählen, einzelne Läufe starten und Ergebnisse live beobachten. Der QA Lab-Debugger ist vom ausgelieferten Control-UI-Bundle getrennt.
+Erstellt die QA-Site, startet den Docker-gestützten Stack aus Gateway und QA Lab und gibt die QA-Lab-URL aus. Dort können Sie Szenarien auswählen, die Modell-Lane festlegen, einzelne Läufe starten und die Ergebnisse live verfolgen. Der QA-Lab-Debugger ist vom ausgelieferten Control-UI-Bundle getrennt.
 
 ## Verwandte Themen
 
-- [QA-Übersicht](/de/concepts/qa-e2e-automation) - gesamter Stack, Transport-Adapter, Szenarioerstellung
-- [Matrix-QA](/de/concepts/qa-matrix) - beispielhafter Live-Transport-Runner, der einen echten Kanal steuert
+- [QA-Übersicht](/de/concepts/qa-e2e-automation) – Gesamt-Stack, Transportadapter und Szenarioerstellung
+- [Matrix-QA](/de/concepts/qa-matrix) – Beispiel für einen Live-Transport-Runner, der einen realen Kanal steuert
 - [Kopplung](/de/channels/pairing)
 - [Gruppen](/de/channels/groups)
 - [Kanalübersicht](/de/channels)

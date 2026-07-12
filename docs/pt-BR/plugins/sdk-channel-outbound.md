@@ -1,30 +1,36 @@
 ---
 read_when:
-    - Você está criando ou refatorando um caminho de envio de Plugin de canal de mensagens
-    - Você precisa de entrega durável da resposta final, confirmações de recebimento, finalização da pré-visualização ao vivo ou política de confirmação de recebimento
-    - Você está migrando de channel-message, channel-message-runtime ou auxiliares legados de despacho de respostas
-summary: 'API do ciclo de vida de mensagens de saída para plugins de canal: adaptadores, recibos, envios duráveis, prévia ao vivo e auxiliares do pipeline de respostas'
+    - Você está criando ou refatorando o fluxo de envio de um plugin de canal de mensagens
+    - Você precisa de entrega durável da resposta final, confirmações de recebimento, finalização da pré-visualização em tempo real ou política de confirmação de recebimento
+    - Você está migrando de channel-message, channel-message-runtime ou de auxiliares legados de encaminhamento de respostas
+summary: 'API do ciclo de vida de mensagens de saída para plugins de canal: adaptadores, confirmações, envios duráveis, pré-visualização em tempo real e auxiliares do pipeline de respostas'
 title: API de saída do canal
 x-i18n:
-    generated_at: "2026-06-27T17:58:11Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:27:52Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: e9d2681c06ac808d7fe0218d1a48e6ba06ea5e80270816535d957782193e488f
+    source_hash: 6ab3c38a0c2ae7d46f318604328b5ffdd6f375005150f09698b299cbd06e2f22
     source_path: plugins/sdk-channel-outbound.md
     workflow: 16
 ---
 
-Plugins de canal devem expor o comportamento de mensagens de saída a partir de
+Plugins de canal expõem o comportamento de mensagens de saída por meio de
 `openclaw/plugin-sdk/channel-outbound`. Use
-`openclaw/plugin-sdk/channel-inbound` para orquestração de recebimento/contexto/despacho.
+`openclaw/plugin-sdk/channel-inbound` para a orquestração de
+recebimento/contexto/encaminhamento.
 
-O core é responsável por enfileiramento, durabilidade, política genérica de repetição, hooks, recibos e a
-ferramenta `message` compartilhada. O Plugin é responsável por chamadas nativas de enviar/editar/excluir, normalização de destino, encadeamento da plataforma, citações selecionadas, sinalizadores de notificação, estado da conta e efeitos colaterais específicos da plataforma.
+O núcleo é responsável pelo enfileiramento, pela durabilidade, pela política
+genérica de novas tentativas, pelos hooks, pelos recibos e pela ferramenta
+`message` compartilhada. O plugin é responsável pelas chamadas nativas de
+envio/edição/exclusão, pela normalização do destino, pelas threads da
+plataforma, pelas citações selecionadas, pelos sinalizadores de notificação,
+pelo estado da conta e pelos efeitos colaterais específicos da plataforma.
 
 ## Adaptador
 
-A maioria dos Plugins define um adaptador `message`:
+A maioria dos plugins define um adaptador de `message`:
 
 ```ts
 import {
@@ -67,13 +73,56 @@ export const demoMessageAdapter = defineChannelMessageAdapter({
 });
 ```
 
-Declare apenas capacidades que o transporte nativo realmente preserva. Cubra cada
-capacidade declarada de envio, recibo, pré-visualização ao vivo e confirmação de recebimento com os
-helpers de contrato exportados deste subcaminho.
+Declare apenas as capacidades que o transporte nativo realmente preserva.
+Cubra cada capacidade declarada de envio, recibo, pré-visualização ao vivo e
+confirmação de recebimento com os auxiliares de contrato exportados deste
+subcaminho.
+
+## Sanitização de texto simples
+
+Use `sanitizeForPlainText(...)` quando um adaptador de saída precisar converter
+as tags de formatação HTML compatíveis em marcação de texto leve. O padrão
+mantém os marcadores existentes de negrito e tachado no estilo de chat. Passe
+`{ style: "markdown" }` somente quando o canal reanalisar o resultado como
+Markdown:
+
+```ts
+import { sanitizeForPlainText } from "openclaw/plugin-sdk/channel-outbound";
+
+const chatText = sanitizeForPlainText(text);
+const markdownText = sanitizeForPlainText(text, { style: "markdown" });
+```
+
+O estilo Markdown usa `**bold**` e `~~strikethrough~~`; itálico e código inline
+mantêm os marcadores `_italic_` e de acento grave nos dois estilos. Selecione o
+estilo no limite do canal, em vez de reescrever o texto dos marcadores após a
+sanitização.
+
+## Evidências de entrega
+
+Um `MessageReceipt` registra o resultado retornado por um adaptador de canal.
+Identificadores concretos de mensagens da plataforma mostram que o caminho de
+envio da plataforma aceitou a mensagem; eles não comprovam que o dispositivo
+de um destinatário a exibiu ou leu. Recibos sem identificadores de mensagens
+da plataforma são apenas metadados de recibo locais. Canais com confirmações
+de leitura ou estado de entrega ao dispositivo devem acompanhar esses fatos
+por meio de um caminho separado e específico do canal.
+
+Se um adaptador de canal puder comprovar que repetir uma falha não pode
+duplicar um envio visível ao destinatário e que nenhuma chamada capaz de
+finalizar foi iniciada, lance
+`new PlatformMessageNotDispatchedError("...", { cause: error })` de
+`openclaw/plugin-sdk/error-runtime`. O núcleo poderá então limpar evidências
+obsoletas da tentativa de envio e repetir com segurança a intenção enfileirada.
+Somente o adaptador responsável pelo limite de encaminhamento final pode fazer
+essa afirmação. Nunca use o marcador depois que uma chamada de
+finalização/envio começar ou retornar um resultado ambíguo; uma marcação
+incorreta pode duplicar mensagens.
 
 ## Adaptadores de saída existentes
 
-Se o canal já tiver um adaptador `outbound` compatível, derive o adaptador de mensagem em vez de duplicar o código de envio:
+Se o canal já tiver um adaptador `outbound` compatível, derive dele o adaptador
+de mensagem em vez de duplicar o código de envio:
 
 ```ts
 import { createChannelMessageAdapterFromOutbound } from "openclaw/plugin-sdk/channel-outbound";
@@ -92,24 +141,54 @@ export const messageAdapter = createChannelMessageAdapterFromOutbound({
 
 ## Envios duráveis
 
-Helpers de envio em tempo de execução também ficam em `channel-outbound`:
+Os auxiliares de envio do runtime também ficam em `channel-outbound`:
 
 - `sendDurableMessageBatch(...)`
 - `withDurableMessageSendContext(...)`
 - `deliverInboundReplyWithMessageSendContext(...)`
-- helpers de streaming/progresso de rascunho, como `resolveChannelDraftStreamingChunking(...)`
+- auxiliares de streaming/progresso de rascunho, como `resolveChannelDraftStreamingChunking(...)`
 
 `sendDurableMessageBatch(...)` retorna um resultado explícito:
 
-- `sent`: pelo menos uma mensagem visível da plataforma foi entregue.
-- `suppressed`: nenhuma mensagem da plataforma deve ser tratada como ausente.
-- `partial_failed`: pelo menos uma mensagem da plataforma foi entregue antes que um payload ou efeito colateral posterior falhasse.
-- `failed`: nenhum recibo da plataforma foi produzido.
+| Resultado        | Significado                                                                                       |
+| ---------------- | ------------------------------------------------------------------------------------------------- |
+| `sent`           | pelo menos uma mensagem visível da plataforma foi aceita pelo caminho de envio da plataforma      |
+| `suppressed`     | nenhuma mensagem da plataforma deve ser tratada como ausente                                      |
+| `partial_failed` | pelo menos uma mensagem da plataforma foi aceita antes da falha de um payload ou efeito posterior |
+| `failed`         | nenhum recibo da plataforma foi produzido                                                         |
 
-Use `payloadOutcomes` quando um lote mistura payloads enviados, suprimidos e com falha.
-Não infira cancelamento de hook a partir de um resultado vazio de entrega direta legada.
+Use `payloadOutcomes` quando um lote misturar payloads enviados, suprimidos e
+com falha. Não deduza o cancelamento de hooks a partir de um resultado vazio
+de entrega direta legada.
 
-## Despacho de compatibilidade
+## Admissão de entrega adiada
 
-O despacho de resposta de entrada deve ser montado por meio de
-`dispatchChannelInboundReply(...)` de `channel-inbound`. Mantenha a entrega da plataforma no adaptador de entrega; use `channel-outbound` para adaptadores de mensagem, envios duráveis, recibos, pré-visualização ao vivo e opções do pipeline de resposta.
+Use `message.durableFinal.admitDeferredDelivery(...)` quando uma conta resolvida
+não puder aceitar com segurança entregas de saída ou adiadas gerenciadas pelo
+núcleo. O núcleo chama esse hook de forma síncrona antes do trabalho de saída
+ao vivo, incluindo caminhos que ignoram a persistência da fila, e novamente
+antes de reproduzir uma intenção recuperada. O contexto inclui `cfg`,
+`channel`, `to`, `accountId` e uma `phase` com valor `live` ou `recovery`.
+
+Retorne `{ status: "allowed" }` para continuar. Retorne
+`{ status: "permanent_rejection", reason }` quando a entrega não puder ser
+persistida, enviada diretamente nem reproduzida. Uma rejeição ao vivo falha
+antes da criação da fila, dos hooks de mensagem ou do trabalho na plataforma.
+Uma rejeição na recuperação marca o registro enfileirado como falho e ignora a
+reconciliação e a reprodução. Omitir o hook significa que a entrega é
+permitida.
+
+O hook é uma decisão síncrona de admissão, não um caminho de envio. Leia apenas
+configurações ou estados do runtime já carregados; não realize operações de
+E/S assíncronas de rede, sistema de arquivos ou outro tipo. Os testes de
+contrato devem exercitar ambas as fases e as duas variantes de resultado por
+meio de `ChannelMessageDurableFinalAdapter` de
+`openclaw/plugin-sdk/channel-outbound`.
+
+## Encaminhamento de compatibilidade
+
+Monte o encaminhamento de respostas recebidas por meio de
+`dispatchChannelInboundReply(...)` de `channel-inbound`. Mantenha a entrega na
+plataforma no adaptador de entrega; use `channel-outbound` para adaptadores de
+mensagem, envios duráveis, recibos, pré-visualização ao vivo e opções do
+pipeline de respostas.

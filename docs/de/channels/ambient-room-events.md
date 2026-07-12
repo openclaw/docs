@@ -1,30 +1,31 @@
 ---
 read_when:
-    - Immer aktive Gruppen- oder Kanalräume konfigurieren
-    - Sie möchten, dass der Agent Raumgespräche beobachtet, ohne automatisch finalen Text zu posten
-    - Debugging von Eingaben und Token-Nutzung ohne sichtbare Raumnachricht
+    - Konfigurieren von dauerhaft aktiven Gruppen- oder Kanalräumen
+    - Sie möchten, dass der Agent die Unterhaltung im Raum verfolgt, ohne automatisch abschließenden Text zu veröffentlichen
+    - Fehlerbehebung bei Eingabeanzeige und Token-Nutzung ohne sichtbare Nachricht im Raum
 sidebarTitle: Ambient room events
-summary: Lassen Sie unterstützte Gruppenräume stillen Kontext bereitstellen, sofern der Agent nicht mit dem Nachrichtentool sendet.
-title: Raumereignisse im Hintergrund
+summary: Unterstützte Gruppenräume liefern stillen Kontext, sofern der Agent nicht über das Nachrichten-Tool sendet
+title: Umgebungsereignisse im Raum
 x-i18n:
-    generated_at: "2026-07-02T17:34:08Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:59:15Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: 8e3dcf5abab58d9bfd75b7cef6c8a55b98f6688a895774b8ba4a1ffc5723e0a6
+    source_hash: 3f144b44c8ae0a78e756d741c7b4685632862c0eb15531185ddeb0c2ba801e1a
     source_path: channels/ambient-room-events.md
     workflow: 16
 ---
 
-Ambient-Raumereignisse ermöglichen OpenClaw, nicht erwähnte Gruppen- oder Kanalunterhaltungen als stillen Kontext zu verarbeiten. Der Agent kann Speicher und Sitzungsstatus aktualisieren, aber der Raum bleibt still, sofern der Agent nicht ausdrücklich das `message`-Tool aufruft.
+Umgebungsereignisse in Räumen ermöglichen es OpenClaw, nicht erwähnte Unterhaltungen in Gruppen oder Kanälen als stillen Kontext zu verarbeiten. Der Agent kann den Speicher und den Sitzungsstatus aktualisieren, aber der Raum bleibt still, sofern der Agent nicht ausdrücklich das `message`-Tool aufruft.
 
-Für dauerhaft aktive Gruppenchats ist dies der empfohlene Modus: Kombinieren Sie `messages.groupChat.unmentionedInbound: "room_event"` mit `messages.groupChat.visibleReplies: "message_tool"`. Verwenden Sie ihn, wenn der Agent zuhören, entscheiden soll, wann eine Antwort hilfreich ist, und das alte Prompt-Muster vermeiden soll, mit `NO_REPLY` zu antworten.
+Kombinieren Sie für ständig aktive Gruppenchats `messages.groupChat.unmentionedInbound: "room_event"` mit `messages.groupChat.visibleReplies: "message_tool"`. Der Agent hört zu, entscheidet, wann eine Antwort sinnvoll ist, und benötigt nie das alte Prompt-Muster, mit `NO_REPLY` zu antworten.
 
-Heute unterstützt: Discord-Guild-Kanäle, Slack-Kanäle und private Kanäle, Slack-Mehrpersonen-DMs sowie Telegram-Gruppen oder Supergroups. Andere Gruppenkanäle behalten ihr bestehendes Gruppenverhalten bei, sofern ihre Kanalseite nicht angibt, dass sie Ambient-Raumereignisse unterstützen.
+Derzeit unterstützt: Discord-Serverkanäle, Slack-Kanäle und private Kanäle, Slack-Direktnachrichten mit mehreren Personen sowie Telegram-Gruppen oder -Supergruppen. Andere Gruppenkanäle behalten ihr bestehendes Gruppenverhalten bei, sofern auf ihrer Kanalseite nicht angegeben ist, dass sie Umgebungsereignisse in Räumen unterstützen.
 
 ## Empfohlene Einrichtung
 
-Legen Sie das globale Gruppenchat-Verhalten fest:
+Legen Sie das globale Verhalten für Gruppenchats fest:
 
 ```json5
 {
@@ -38,21 +39,23 @@ Legen Sie das globale Gruppenchat-Verhalten fest:
 }
 ```
 
-Konfigurieren Sie dann den Raum selbst als dauerhaft aktiv, indem Sie die Erwähnungsprüfung für diesen Raum deaktivieren. Der Kanal muss weiterhin durch seine normale `groupPolicy`, die Raum-Allowlist und die Absender-Allowlist erlaubt sein.
+Machen Sie den Raum anschließend ständig aktiv, indem Sie die Erwähnungsprüfung für diesen Raum deaktivieren. Der Raum muss weiterhin seine normale `groupPolicy`, Raum-Zulassungsliste und Absender-Zulassungsliste erfüllen.
 
-Nach dem Speichern der Konfiguration lädt der Gateway die `messages`-Einstellungen per Hot Reload neu. Starten Sie nur neu, wenn Dateiüberwachung oder Konfigurations-Neuladen deaktiviert ist.
+Nach dem Speichern der Konfiguration übernimmt der Gateway die `messages`-Einstellungen dynamisch. Starten Sie ihn nur neu, wenn die Dateiüberwachung oder das Neuladen der Konfiguration deaktiviert ist (`gateway.reload.mode: "off"`).
 
 ## Was sich ändert
 
 Mit `messages.groupChat.unmentionedInbound: "room_event"`:
 
-- nicht erwähnte erlaubte Gruppen- oder Kanalnachrichten werden zu stillen Raumereignissen
-- erwähnte Nachrichten bleiben Benutzeranfragen
-- Textbefehle und native Befehle bleiben Benutzeranfragen
-- Abbruch- oder Stoppanfragen bleiben Benutzeranfragen
-- Direktnachrichten bleiben Benutzeranfragen
+- werden zulässige, nicht erwähnte Gruppen- oder Kanalnachrichten zu stillen Raumereignissen
+- bleiben Nachrichten mit Erwähnungen Benutzeranfragen
+- bleiben textbasierte Steuerbefehle und native Befehle Benutzeranfragen
+- bleiben Abbruch- oder Stoppanfragen Benutzeranfragen
+- bleiben Direktnachrichten Benutzeranfragen
 
-Raumereignisse verwenden strikt sichtbare Zustellung. Abschließender Assistant-Text ist privat. Der Agent muss `message(action=send)` aufrufen, um im Raum zu posten.
+Raumereignisse verwenden eine strikt kontrollierte sichtbare Zustellung. Der abschließende Assistententext bleibt privat. Der Agent muss `message(action=send)` aufrufen, um im Raum zu posten.
+
+Reaktionen für Tipp- und Lebenszyklusstatus bleiben bei Raumereignissen unterdrückt. Die einzige ausdrückliche Ausnahme für Empfangsbestätigungen ist `messages.ackReactionScope: "all"`, wodurch die konfigurierte Bestätigungsreaktion gesendet wird. Verwenden Sie einen engeren Geltungsbereich oder `"off"`, wenn der Raum vollständig still bleiben muss.
 
 ## Discord-Beispiel
 
@@ -79,17 +82,17 @@ Raumereignisse verwenden strikt sichtbare Zustellung. Abschließender Assistant-
 }
 ```
 
-Verwenden Sie eine kanalbezogene Discord-Konfiguration, wenn nur ein Kanal ambient sein soll:
+Verwenden Sie eine kanalspezifische Discord-Konfiguration, wenn nur ein Kanal Umgebungsereignisse verarbeiten soll. Unter `groupPolicy: "allowlist"` wird der Kanal durch seine Auflistung zugelassen (`enabled: false` deaktiviert einen Eintrag):
 
 ```json5
 {
   channels: {
     discord: {
+      groupPolicy: "allowlist",
       guilds: {
         "<DISCORD_SERVER_ID>": {
           channels: {
             "<DISCORD_CHANNEL_ID_OR_NAME>": {
-              allow: true,
               requireMention: false,
             },
           },
@@ -102,7 +105,7 @@ Verwenden Sie eine kanalbezogene Discord-Konfiguration, wenn nur ein Kanal ambie
 
 ## Slack-Beispiel
 
-Slack-Kanal-Allowlists sind ID-first. Verwenden Sie Kanal-IDs wie `C12345678`, nicht `#channel-name`.
+Slack-Kanal-Zulassungslisten verwenden vorrangig IDs. Verwenden Sie Kanal-IDs wie `C12345678`, nicht `#channel-name`. Der Kanal wird durch seine Auflistung unter `channels.slack.channels` zugelassen (`enabled: false` deaktiviert einen Eintrag):
 
 ```json5
 {
@@ -118,7 +121,6 @@ Slack-Kanal-Allowlists sind ID-first. Verwenden Sie Kanal-IDs wie `C12345678`, n
       groupPolicy: "allowlist",
       channels: {
         "<SLACK_CHANNEL_ID>": {
-          allow: true,
           requireMention: false,
         },
       },
@@ -129,7 +131,7 @@ Slack-Kanal-Allowlists sind ID-first. Verwenden Sie Kanal-IDs wie `C12345678`, n
 
 ## Telegram-Beispiel
 
-Für Telegram-Gruppen muss der Bot normale Gruppennachrichten sehen können. Wenn `requireMention: false` gesetzt ist, deaktivieren Sie den BotFather-Privatsphäremodus oder verwenden Sie eine andere Telegram-Einrichtung, die vollständigen Gruppenverkehr an den Bot liefert.
+Bei Telegram-Gruppen muss der Bot normale Gruppennachrichten sehen können. Wenn `requireMention: false` gesetzt ist, deaktivieren Sie den Datenschutzmodus von BotFather oder verwenden Sie eine andere Telegram-Einrichtung, die den vollständigen Gruppenverkehr an den Bot übermittelt.
 
 ```json5
 {
@@ -153,11 +155,11 @@ Für Telegram-Gruppen muss der Bot normale Gruppennachrichten sehen können. Wen
 }
 ```
 
-Telegram-Gruppen-IDs sind üblicherweise negative Zahlen wie `-1001234567890`. Lesen Sie `chat.id` aus `openclaw logs --follow`, leiten Sie eine Gruppennachricht an einen ID-Hilfsbot weiter oder prüfen Sie Bot API `getUpdates`.
+Telegram-Gruppen-IDs sind üblicherweise negative Zahlen wie `-1001234567890`. Lesen Sie `chat.id` aus `openclaw logs --follow`, leiten Sie eine Gruppennachricht an einen Hilfs-Bot zur ID-Ermittlung weiter oder prüfen Sie `getUpdates` der Bot API.
 
-## Agent-spezifische Richtlinie
+## Agentenspezifische Richtlinie
 
-Verwenden Sie eine Agent-Überschreibung, wenn mehrere Agenten denselben Raum teilen, aber nur einer nicht erwähnte Unterhaltung als ambienten Kontext behandeln soll:
+Verwenden Sie eine Agentenüberschreibung, wenn mehrere Agenten denselben Raum nutzen, aber nur einer nicht erwähnte Unterhaltungen als Umgebungskontext behandeln soll:
 
 ```json5
 {
@@ -180,37 +182,35 @@ Verwenden Sie eine Agent-Überschreibung, wenn mehrere Agenten denselben Raum te
 }
 ```
 
-Der Agent-spezifische Wert `agents.list[].groupChat.unmentionedInbound` überschreibt `messages.groupChat.unmentionedInbound` für diesen Agenten.
+Der agentenspezifische Wert `agents.list[].groupChat.unmentionedInbound` überschreibt `messages.groupChat.unmentionedInbound` für diesen Agenten.
 
 ## Modi für sichtbare Antworten
 
-`messages.groupChat.visibleReplies` ist standardmäßig `"automatic"` für normale Gruppen-/Kanal-Benutzeranfragen. Behalten Sie diese Standardeinstellung bei, wenn abschließender Assistant-Text sichtbar gepostet werden soll, ohne dass ein expliziter Nachrichten-Tool-Aufruf erforderlich ist.
+`messages.groupChat.visibleReplies` verwendet standardmäßig `"automatic"` für normale Benutzeranfragen in Gruppen oder Kanälen. Behalten Sie diese Voreinstellung bei, wenn der abschließende Assistententext ohne ausdrücklichen Aufruf des Nachrichten-Tools sichtbar gepostet werden soll.
 
-Für ambient dauerhaft aktive Räume wird `messages.groupChat.visibleReplies: "message_tool"` weiterhin empfohlen, besonders mit tool-zuverlässigen Modellen der neuesten Generation wie GPT 5.5. Dadurch kann der Agent entscheiden, wann er spricht, indem er das Nachrichten-Tool aufruft. Wenn das Modell abschließenden Text zurückgibt, ohne das Tool aufzurufen, hält OpenClaw diesen abschließenden Text privat und protokolliert Metadaten zur unterdrückten Zustellung.
+Für ständig aktive Räume mit Umgebungsereignissen wird `messages.groupChat.visibleReplies: "message_tool"` weiterhin empfohlen, insbesondere mit Modellen der neuesten Generation, die Tools zuverlässig verwenden, wie GPT-5.6 Sol. Dadurch kann der Agent durch Aufruf des Nachrichten-Tools entscheiden, wann er antwortet. Wenn das Modell abschließenden Text zurückgibt, ohne das Tool aufzurufen, hält OpenClaw diesen Text privat und protokolliert Metadaten zur unterdrückten Zustellung.
 
-Raumereignisse bleiben strikt, auch wenn andere Gruppenanfragen automatische Antworten verwenden. Nicht erwähnte ambient Raumereignisse erfordern weiterhin `message(action=send)` für sichtbare Ausgabe.
+Raumereignisse bleiben strikt, auch wenn andere Gruppenanfragen automatische Antworten verwenden. Nicht erwähnte Umgebungsereignisse in Räumen erfordern für eine sichtbare Ausgabe immer `message(action=send)`.
 
 ## Verlauf
 
-`messages.groupChat.historyLimit` steuert den globalen Standard für Gruppenverlauf. Kanäle können ihn mit `channels.<channel>.historyLimit` überschreiben, und einige Kanäle unterstützen auch verlaufsbezogene Limits pro Konto.
+`messages.groupChat.historyLimit` legt die globale Voreinstellung für den Gruppenverlauf fest (50, wenn nicht gesetzt; muss eine positive Ganzzahl sein). Kanäle können diesen Wert mit `channels.<channel>.historyLimit` überschreiben, und einige Kanäle unterstützen außerdem kontospezifische Verlaufslimits. Setzen Sie `historyLimit: 0` auf Kanalebene, um den Gruppenverlaufskontext für diesen Kanal zu deaktivieren.
 
-Setzen Sie `historyLimit: 0`, um Gruppenverlaufskontext zu deaktivieren.
-
-Unterstützte Raumereignis-Kanäle behalten aktuelle ambiente Raumnachrichten als Kontext. Telegram behält ein dauerhaft aktives rollierendes Fenster pro Gruppe, begrenzt durch `historyLimit`; Benutzeranfrage-Turns wählen Einträge nach der letzten aufgezeichneten Antwort des Bots aus, während Raumereignis-Turns das vollständige aktuelle Fenster erhalten, damit das Modell seine eigenen aktuellen Beiträge sehen kann. Der entfernte Telegram-Modusschlüssel `includeGroupHistoryContext` wird durch `openclaw doctor --fix` entfernt.
+Kanäle, die Raumereignisse unterstützen, behalten aktuelle Umgebungsnachrichten des Raums als Kontext bei. Telegram führt pro Gruppe ein ständig aktives, durch `historyLimit` begrenztes rollierendes Fenster. Bei Benutzeranfragen werden Einträge nach der letzten aufgezeichneten Antwort des Bots ausgewählt, während Raumereignisse das gesamte aktuelle Fenster erhalten, damit das Modell seine eigenen kürzlich veröffentlichten Beiträge sehen kann. Der eingestellte Telegram-Modusschlüssel `includeGroupHistoryContext` wird durch `openclaw doctor --fix` entfernt.
 
 ## Fehlerbehebung
 
-Wenn der Raum Tippen oder Token-Nutzung anzeigt, aber keine sichtbare Nachricht:
+Wenn im Raum Tippaktivität oder Token-Nutzung angezeigt wird, aber keine sichtbare Nachricht erscheint:
 
-1. Bestätigen Sie, dass der Raum durch die Kanal-Allowlist und Absender-Allowlist erlaubt ist.
-2. Bestätigen Sie, dass `requireMention: false` auf der erwarteten Raumebene gesetzt ist.
-3. Prüfen Sie, ob `messages.groupChat.unmentionedInbound` oder die Agent-Überschreibung `"room_event"` ist.
-4. Prüfen Sie die Logs auf Metadaten zu unterdrückter finaler Nutzlast oder `didSendViaMessagingTool: false`.
-5. Behalten Sie für normale Gruppenanfragen `messages.groupChat.visibleReplies: "automatic"` bei oder stellen Sie es wieder her, wenn finale Antworten automatisch gepostet werden sollen. Verwenden Sie für ambiente Räume mit `message_tool` ein Modell/eine Runtime, das bzw. die zuverlässig Tools aufruft.
+1. Vergewissern Sie sich, dass der Raum durch die Kanal-Zulassungsliste und die Absender-Zulassungsliste zugelassen ist.
+2. Vergewissern Sie sich, dass `requireMention: false` auf der erwarteten Raumebene gesetzt ist.
+3. Prüfen Sie, ob `messages.groupChat.unmentionedInbound` oder die Agentenüberschreibung auf `"room_event"` gesetzt ist.
+4. Prüfen Sie die Protokolle auf Metadaten zu unterdrückten abschließenden Nutzdaten oder `didSendViaMessagingTool: false`.
+5. Behalten Sie bei normalen Gruppenanfragen `messages.groupChat.visibleReplies: "automatic"` bei oder stellen Sie es wieder her, wenn abschließende Antworten automatisch gepostet werden sollen. Verwenden Sie für Räume mit Umgebungsereignissen und `message_tool` ein Modell beziehungsweise eine Laufzeit, die Tools zuverlässig aufruft.
 
-Wenn ambiente Telegram-Räume gar nicht auslösen, prüfen Sie den BotFather-Privatsphäremodus und verifizieren Sie, dass der Gateway normale Gruppennachrichten empfängt.
+Wenn Telegram-Räume mit Umgebungsereignissen überhaupt nicht ausgelöst werden, prüfen Sie den Datenschutzmodus von BotFather und vergewissern Sie sich, dass der Gateway normale Gruppennachrichten empfängt.
 
-Wenn ambiente Slack-Räume nicht auslösen, verifizieren Sie, dass der Kanalschlüssel die Slack-Kanal-ID ist und die App den erforderlichen Scope `channels:history` oder `groups:history` für diesen Raumtyp hat.
+Wenn Slack-Räume mit Umgebungsereignissen nicht ausgelöst werden, vergewissern Sie sich, dass der Kanalschlüssel die Slack-Kanal-ID ist und die App über den Verlaufsbereich für diesen Raumtyp verfügt: `channels:history` (öffentlich), `groups:history` (privat) oder `mpim:history` (Direktnachrichten mit mehreren Personen).
 
 ## Verwandte Themen
 

@@ -1,20 +1,21 @@
 ---
 summary: Weiterleitung zu /automation/cron-jobs
-title: Fehlerbehebung bei der Automatisierung
+title: Fehlerbehebung bei Automatisierungen
 x-i18n:
-    generated_at: "2026-04-24T06:26:41Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: e7784858f6d2594a1d6019435b2a5a1647e12f5de6329198db9539e325f73737
-    source_path: automation/troubleshooting.md
-    workflow: 15
+    generated_at: "2026-07-12T14:59:02Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
+    provider: openai
+    source_hash: 2f279c2c51d880b58907cb3d3866c8a1103027d3bbf28e0f0f97d6a9c2cffc16
+    source_path: automation/troubleshooting.md
+    workflow: 16
 ---
 
-Diese Seite wurde nach [Scheduled Tasks](/de/automation/cron-jobs#troubleshooting) verschoben. Informationen zur Fehlerbehebung finden Sie unter [Scheduled Tasks](/de/automation/cron-jobs#troubleshooting).
+Diese Seite wurde verschoben. Informationen zur Fehlerbehebung bei Automatisierungen finden Sie jetzt unter [Geplante Aufgaben](/de/automation/cron-jobs#troubleshooting).
 
-## Verwandt
+## Verwandte Themen
 
 - [Hooks](/de/automation/hooks)
 - [Hintergrundaufgaben](/de/automation/tasks)
-- [Fehlerbehebung für Gateway](/de/gateway/troubleshooting)
+- [Gateway-Fehlerbehebung](/de/gateway/troubleshooting)

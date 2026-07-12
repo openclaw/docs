@@ -1,44 +1,56 @@
 ---
 read_when:
     - Verhalten des Menüleistensymbols ändern
-summary: Zustände und Animationen des Menüleistensymbols für OpenClaw unter macOS
+summary: Status und Animationen des Menüleistensymbols für OpenClaw unter macOS
 title: Menüleistensymbol
 x-i18n:
-    generated_at: "2026-05-06T06:56:15Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:38:52Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: 5497927721ff7486e9585a8a3edc2d5140408b2b0707acdcef2388e87bca20ec
+    source_hash: 8a38f1253f0c376ef2ce6c0ae339b67084c472c764964bcc7ad21e10133e2b47
     source_path: platforms/mac/icon.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
 # Zustände des Menüleistensymbols
 
-Autor: steipete · Aktualisiert: 2025-12-06 · Geltungsbereich: macOS-App (`apps/macos`)
+Geltungsbereich: macOS-App (`apps/macos`). Rendering: `CritterIconRenderer.makeIcon(...)`. Verknüpfung von Animation und Zustand: `CritterStatusLabel` + `CritterStatusLabel+Behavior.swift`.
 
-- **Inaktiv:** Normale Symbolanimation (Blinken, gelegentliches Wackeln).
-- **Pausiert:** Statuselement verwendet `appearsDisabled`; keine Bewegung.
-- **Sprachauslöser (große Ohren):** Der Sprachaktivierungsdetektor ruft `AppState.triggerVoiceEars(ttl: nil)` auf, wenn das Aktivierungswort erkannt wird, und hält `earBoostActive=true`, während die Äußerung erfasst wird. Die Ohren werden größer skaliert (1,9x), erhalten zur besseren Lesbarkeit runde Ohrlöcher und werden dann nach 1 s Stille über `stopVoiceEars()` zurückgesetzt. Wird nur aus der sprachgesteuerten Pipeline in der App ausgelöst.
-- **Arbeitend (Agent läuft):** `AppState.isWorking=true` steuert eine Mikroanimation für „Schwanz-/Beinbewegung“: schnelleres Beinwackeln und leichter Versatz, während Arbeit läuft. Derzeit rund um WebChat-Agent-Ausführungen umgeschaltet; fügen Sie dieselbe Umschaltung rund um andere lange Aufgaben hinzu, wenn Sie sie verdrahten.
+## Zustände
 
-Verdrahtungspunkte
+| Zustand                    | Auslöser                                  | Darstellung                                                                                                   |
+| -------------------------- | ----------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| Inaktiv                    | Standard                                  | Normale Blinzel-/Wackelanimation; geöffnete Augen behalten einen glänzenden Lichtreflex                        |
+| Pausiert                   | `isPaused=true`                           | Fühler hängen bei geöffneten Augen herab („außer Dienst“); keine Bewegung                                     |
+| Schlafend                  | Gateway getrennt/nicht konfiguriert       | Fühler hängen herab und die Augen schließen sich zu `⌣ ⌣`-Lidern; keine Bewegung                              |
+| Feier                      | Nachricht gesendet (`sendCelebrationTick`)| Augen blitzen für ~0.9s als fröhliche `∩ ∩`-Bögen auf, zusätzlich erfolgt ein Beinschlag                       |
+| Sprachaktivierung (große Ohren) | Aktivierungswort erkannt             | Fühler richten sich gerade und höher auf (`earScale=1.9`); sinken nach Stille wieder ab                         |
+| Arbeitend                  | `isWorking=true` oder ein aktiver `IconState` | Schnelleres Beinwackeln (`legWiggle` bis zu `1.0`) sowie ein kleiner horizontaler Versatz; zusätzlich zum Wackeln im inaktiven Zustand |
 
-- Sprachaktivierung: Runtime/Tester rufen bei Auslösung `AppState.triggerVoiceEars(ttl: nil)` und nach 1 s Stille `stopVoiceEars()` auf, um dem Erfassungsfenster zu entsprechen.
-- Agent-Aktivität: Setzen Sie `AppStateStore.shared.setWorking(true/false)` rund um Arbeitsspannen (im WebChat-Agent-Aufruf bereits umgesetzt). Halten Sie Spannen kurz und setzen Sie sie in `defer`-Blöcken zurück, um hängengebliebene Animationen zu vermeiden.
+Ein Badge für Werkzeugaktivität (SF-Symbol-Plakette, z. B. `chevron.left.slash.chevron.right` für die Ausführung) kann über demselben Tierchensymbol dargestellt werden, wenn eine Sitzung einen aktiven Auftrag oder ein aktives Werkzeug hat. Dieses Badge stammt aus `IconState`/`ActivityKind`; das vollständige Zustandsmodell finden Sie unter [Menüleiste](/de/platforms/mac/menu-bar).
 
-Formen und Größen
+## Ohren bei Sprachaktivierung
 
-- Basissymbol wird in `CritterIconRenderer.makeIcon(blink:legWiggle:earWiggle:earScale:earHoles:)` gezeichnet.
-- Ohrskalierung ist standardmäßig `1.0`; die Sprachverstärkung setzt `earScale=1.9` und schaltet `earHoles=true` um, ohne den Gesamtrahmen zu ändern (18×18 pt-Vorlagenbild, gerendert in einen 36×36 px-Retina-Backing-Store).
-- Die schnelle Bewegung verwendet Beinwackeln bis zu ~1.0 mit einem kleinen horizontalen Zittern; sie wird additiv zu jedem bestehenden Inaktiv-Wackeln angewendet.
+- Auslöser: `AppStateStore.shared.triggerVoiceEars(ttl: nil)`, aufgerufen aus der Erfassungspipeline für die Sprachaktivierung (`VoiceWakeRuntime`) sowie aus den Debug-/Testwerkzeugen für die Sprachaktivierung (`VoiceWakeTester`, `VoiceWakeOverlayController`).
+- Beenden: `stopVoiceEars()`, wird aufgerufen, wenn die Erfassung abgeschlossen wird.
+- Stillefenster vor dem Abschluss: normalerweise `2.0s`, `5.0s`, wenn nur das Aktivierungswort erkannt wurde und keine weitere Sprache folgte (`VoiceWakeRuntime.silenceWindow` / `triggerOnlySilenceWindow`).
+- Während der Verstärkung werden die Timer für Blinzeln/Wackeln/Beine/Ohren im inaktiven Zustand ausgesetzt (`earBoostActive` sperrt die Animationsaufgabe in `CritterStatusLabel+Behavior`).
 
-Verhaltenshinweise
+## Formen und Größen
 
-- Keine externe CLI-/Broker-Umschaltung für Ohren/Arbeitszustand; behalten Sie dies intern bei den eigenen Signalen der App, um unbeabsichtigtes Hin- und Herschalten zu vermeiden.
-- Halten Sie TTLs kurz (&lt;10 s), damit das Symbol schnell zum Ausgangszustand zurückkehrt, falls ein Job hängt.
+- Zeichenfläche: 18x18pt-Vorlagenbild, gerendert in einen 36x36px-Bitmap-Zwischenspeicher (2x), damit das Symbol auf Retina-Displays scharf bleibt.
+- Die Ohrskalierung beträgt standardmäßig `1.0`; die Sprachverstärkung setzt `earScale=1.9`, ohne den Gesamtrahmen zu ändern.
+- `antennaDroop` (0-1) klappt die Fühler für die pausierte und schlafende Pose nach unten.
+- Das Beinwuseln verwendet `legWiggle` bis zu `1.0` mit einem kleinen horizontalen Ruckeln.
 
-## Verwandt
+## Hinweise zum Verhalten
+
+- Es gibt keinen externen CLI-/Broker-Schalter für die Ohren oder den Arbeitszustand; beide werden intern durch App-Signale (`AppState.setWorking`, `AppState.triggerVoiceEars`) gesteuert, um unbeabsichtigtes Flattern zu vermeiden.
+- Halten Sie jede neue TTL kurz (deutlich unter 10s), damit das Symbol schnell zum Ausgangszustand zurückkehrt, falls ein Auftrag hängen bleibt.
+
+## Verwandte Themen
 
 - [Menüleiste](/de/platforms/mac/menu-bar)
 - [macOS-App](/de/platforms/macos)

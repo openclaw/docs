@@ -5,11 +5,12 @@ read_when:
 summary: Index généré des pages de référence des Plugins OpenClaw
 title: Référence du Plugin
 x-i18n:
-    generated_at: "2026-07-04T03:46:54Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:40:29Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: ba0c5e453eec38249f79746aebcc9a977d8eaffd70b558a558eb64d74c8c4ba1
+    source_hash: 03099acfb0bcbe9814fa53f5d2d893a08a39f42bf713ff140e9604783f9cef0e
     source_path: plugins/reference.md
     workflow: 16
 ---
@@ -23,5 +24,5 @@ Cette page est générée à partir de `extensions/*/package.json` et de
 pnpm plugins:inventory:gen
 ```
 
-Utilisez l’[inventaire des Plugins](/fr/plugins/plugin-inventory) pour parcourir les 130
+Utilisez l’[inventaire des Plugins](/fr/plugins/plugin-inventory) pour parcourir les 136
 pages de référence de Plugins générées par distribution, package et description.

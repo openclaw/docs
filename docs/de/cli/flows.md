@@ -1,22 +1,23 @@
 ---
 read_when:
-    - Sie stoßen in älterer Dokumentation oder in Versionshinweisen auf `openclaw flows`
-    - Sie möchten eine kurze TaskFlow-Inspektionsreferenz
+    - Sie stoßen in älteren Dokumentationen oder Versionshinweisen auf `openclaw flows`
+    - Sie möchten eine Kurzübersicht zur TaskFlow-Inspektion
 summary: 'Weiterleitung: Flow-Befehle befinden sich unter `openclaw tasks flow`'
 title: Abläufe (Weiterleitung)
 x-i18n:
-    generated_at: "2026-05-10T19:28:26Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:06:40Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: b41e8a911cfbba32f3a1af059df34f73443ea7649bce46a5926cdf26c8399c12
+    source_hash: 05d27154190d6087649612d81ce15f0cbc9459aa89ab22211582c18f4fc2943c
     source_path: cli/flows.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
 # `openclaw tasks flow`
 
-Es gibt keinen `openclaw flows`-Befehl auf oberster Ebene. Die dauerhafte TaskFlow-Inspektion befindet sich unter `openclaw tasks flow`.
+Es gibt keinen übergeordneten Befehl `openclaw flows`. Die dauerhafte TaskFlow-Überprüfung erfolgt unter `openclaw tasks flow`.
 
 ## Unterbefehle
 
@@ -26,19 +27,17 @@ openclaw tasks flow show   <lookup> [--json]
 openclaw tasks flow cancel <lookup>
 ```
 
-| Unterbefehl | Beschreibung                     | Argumente / Optionen                                                                   |
-| ----------- | -------------------------------- | -------------------------------------------------------------------------------------- |
-| `list`      | Nachverfolgte TaskFlows auflisten. | `--json` maschinenlesbare Ausgabe; `--status <name>` Filter (siehe Statuswerte unten). |
-| `show`      | Einen TaskFlow anzeigen.         | `<lookup>` Flow-ID oder Owner-Schlüssel; `--json` maschinenlesbare Ausgabe.            |
-| `cancel`    | Einen laufenden TaskFlow abbrechen. | `<lookup>` Flow-ID oder Owner-Schlüssel.                                               |
+| Unterbefehl | Beschreibung                       | Argumente / Optionen                                                                                  |
+| ----------- | ---------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| `list`      | Nachverfolgte TaskFlows auflisten. | `--json` maschinenlesbare Ausgabe; Filter `--status <name>` (siehe Statuswerte unten).                 |
+| `show`      | Eine TaskFlow anzeigen.            | `<lookup>` Flow-ID oder Eigentümerschlüssel; `--json` maschinenlesbare Ausgabe.                        |
+| `cancel`    | Eine laufende TaskFlow abbrechen.  | `<lookup>` Flow-ID oder Eigentümerschlüssel.                                                          |
 
-`<lookup>` akzeptiert entweder eine Flow-ID (zurückgegeben von `list` / `show`) oder den Owner-Schlüssel des Flows (den stabilen Bezeichner, den das besitzende Subsystem verwendet, um den Flow nachzuverfolgen).
+`<lookup>` akzeptiert entweder eine Flow-ID (von `list` / `show` zurückgegeben) oder den Eigentümerschlüssel des Flows (die stabile Kennung, mit der das zuständige Subsystem den Flow nachverfolgt).
 
-### Statusfilterwerte
+### Werte für den Statusfilter
 
-`--status` bei `list` akzeptiert einen der folgenden Werte:
-
-`queued`, `running`, `waiting`, `blocked`, `succeeded`, `failed`, `cancelled`, `lost`
+`--status` für `list` akzeptiert einen der folgenden Werte: `queued`, `running`, `waiting`, `blocked`, `succeeded`, `failed`, `cancelled`, `lost`.
 
 ## Beispiele
 
@@ -51,9 +50,9 @@ openclaw tasks flow show flow_abc123 --json
 openclaw tasks flow cancel flow_abc123
 ```
 
-Vollständige TaskFlow-Konzepte und Informationen zum Erstellen finden Sie unter [TaskFlow](/de/automation/taskflow). Informationen zum übergeordneten Befehl `tasks` finden Sie in der [tasks-CLI-Referenz](/de/cli/tasks).
+Informationen zu TaskFlow-Konzepten und zur Erstellung finden Sie unter [TaskFlow](/de/automation/taskflow). Informationen zum übergeordneten Befehl `tasks` finden Sie in der [CLI-Referenz für tasks](/de/cli/tasks).
 
-## Verwandt
+## Verwandte Themen
 
 - [CLI-Referenz](/de/cli)
 - [Automatisierung](/de/automation)

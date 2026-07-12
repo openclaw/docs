@@ -1,62 +1,63 @@
 ---
 read_when:
-    - Agregar o modificar el análisis de ubicaciones de canal
-    - Usar campos de contexto de ubicación en prompts o herramientas del agente
-summary: Análisis de ubicación de canales entrantes (Telegram, WhatsApp, Matrix, LINE) y campos de contexto
-title: Análisis de la ubicación del canal
+    - Adición o modificación del análisis de ubicación del canal
+    - Uso de campos de contexto de ubicación en prompts o herramientas del agente
+summary: Análisis de ubicaciones de canales y cargas útiles portátiles de ubicación saliente
+title: Análisis de ubicación del canal
 x-i18n:
-    generated_at: "2026-07-05T11:02:48Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:18:43Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: 3388739af0514238453aefbbf32de9ccdd19240367907a045bfe5e48e95a2ae6
+    source_hash: c7e5647d02643ad6d95024b362228377690d7fdff66441fae367f0f5307217fb
     source_path: channels/location.md
     workflow: 16
 ---
 
-OpenClaw normaliza las ubicaciones compartidas desde canales de chat en:
+OpenClaw normaliza las ubicaciones compartidas de los canales de chat en:
 
 - texto conciso de coordenadas añadido al cuerpo entrante, y
-- campos estructurados en la carga útil de contexto de respuesta automática. Las etiquetas, direcciones y leyendas/comentarios proporcionados por el canal se representan en el prompt mediante el bloque JSON compartido de metadatos no confiables, no en línea en el cuerpo del usuario.
+- campos estructurados en la carga útil de contexto de respuesta automática. Las etiquetas, direcciones y leyendas/comentarios proporcionados por el canal se incorporan al prompt mediante el bloque JSON compartido de metadatos no confiables, no en línea en el cuerpo del usuario.
 
 Compatibilidad actual:
 
 - **LINE** (mensajes de ubicación con título/dirección)
 - **Matrix** (`m.location` con `geo_uri`)
-- **Telegram** (pines de ubicación + lugares + ubicaciones en vivo)
+- **Telegram** (marcadores de ubicación + lugares + ubicaciones en tiempo real)
 - **WhatsApp** (`locationMessage` + `liveLocationMessage`)
 
-## Formato de texto
+## Formato del texto
 
-Las ubicaciones se representan como líneas amigables sin corchetes. Las coordenadas usan seis decimales; la precisión se redondea a metros enteros:
+Las ubicaciones se representan como líneas legibles sin corchetes. Las coordenadas usan seis decimales; la precisión se redondea a metros enteros:
 
-- Pin:
+- Marcador:
   - `📍 48.858844, 2.294351 ±12m`
-- Lugar con nombre (misma línea; el nombre/dirección van solo al bloque de metadatos):
+- Lugar con nombre (en la misma línea; el nombre y la dirección solo se incluyen en el bloque de metadatos):
   - `📍 48.858844, 2.294351 ±12m`
-- Uso compartido en vivo:
+- Ubicación compartida en tiempo real:
   - `🛰 Live location: 48.858844, 2.294351 ±12m`
 
-Si el canal incluye una etiqueta, dirección o leyenda/comentario, se conserva en la carga útil de contexto y aparece en el prompt como JSON no confiable delimitado (los campos se omiten cuando están ausentes):
+Si el canal incluye una etiqueta, dirección o leyenda/comentario, se conserva en la carga útil de contexto y aparece en el prompt como JSON delimitado no confiable (los campos se omiten cuando no están presentes):
 
 ````text
-Location (untrusted metadata):
+Ubicación (metadatos no confiables):
 ```json
 {
   "latitude": 48.858844,
   "longitude": 2.294351,
   "accuracy_m": 12,
   "source": "place",
-  "name": "Eiffel Tower",
-  "address": "Champ de Mars, Paris",
-  "caption": "Meet here"
+  "name": "Torre Eiffel",
+  "address": "Campo de Marte, París",
+  "caption": "Nos vemos aquí"
 }
 ```
 ````
 
 ## Campos de contexto
 
-Cuando hay una ubicación presente, estos campos se añaden a `ctx`:
+Cuando hay una ubicación, se añaden estos campos a `ctx`:
 
 - `LocationLat` (número)
 - `LocationLon` (número)
@@ -67,19 +68,25 @@ Cuando hay una ubicación presente, estos campos se añaden a `ctx`:
 - `LocationIsLive` (booleano)
 - `LocationCaption` (cadena; opcional)
 
-Cuando el canal no establece una fuente explícita, OpenClaw la infiere: los usos compartidos en vivo se convierten en `live`, las ubicaciones con nombre o dirección se convierten en `place`, y todo lo demás es `pin`.
+Cuando el canal no establece una fuente explícita, OpenClaw la infiere: las ubicaciones compartidas en tiempo real se convierten en `live`, las ubicaciones con un nombre o una dirección se convierten en `place` y todas las demás son `pin`.
 
-El renderizador de prompts trata `LocationName`, `LocationAddress` y `LocationCaption` como metadatos no confiables y los serializa mediante la misma ruta JSON acotada usada para otros contextos de canal.
+El renderizador del prompt trata `LocationName`, `LocationAddress` y `LocationCaption` como metadatos no confiables y los serializa mediante la misma ruta JSON limitada que se utiliza para el resto del contexto del canal.
 
-## Notas de canal
+## Cargas útiles salientes
 
-- **LINE**: el mensaje de ubicación `title`/`address` se asigna a `LocationName`/`LocationAddress`; no hay ubicaciones en vivo.
-- **Matrix**: `geo_uri` se analiza como una ubicación de pin; el parámetro `u` (incertidumbre) se asigna a `LocationAccuracy`, el cuerpo del evento rellena `LocationCaption`, la altitud se ignora y `LocationIsLive` siempre es falso.
-- **Telegram**: los lugares se asignan a `LocationName`/`LocationAddress`; las ubicaciones en vivo se detectan mediante `live_period`.
+La herramienta de mensajes y el SDK de Plugin utilizan la misma estructura `NormalizedLocation` para las ubicaciones salientes portables. Una carga útil que solo contiene coordenadas representa un marcador. Los canales con compatibilidad nativa con lugares pueden asignar `name` y `address` a una tarjeta de lugar.
+
+Actualmente, Telegram expone esta función mediante `message(action="send")`. Su primera implementación es deliberadamente independiente: las cargas útiles de ubicación no se pueden combinar con texto ni contenido multimedia, y los pares de lugar incompletos generan un error en vez de descartar silenciosamente un nombre o una dirección. Los canales no compatibles no anuncian el parámetro de ubicación.
+
+## Notas sobre los canales
+
+- **LINE**: los campos `title`/`address` de los mensajes de ubicación se asignan a `LocationName`/`LocationAddress`; no admite ubicaciones en tiempo real.
+- **Matrix**: `geo_uri` se analiza como una ubicación de marcador; el parámetro `u` (incertidumbre) se asigna a `LocationAccuracy`, el cuerpo del evento rellena `LocationCaption`, la altitud se ignora y `LocationIsLive` siempre es falso.
+- **Telegram**: los lugares se asignan a `LocationName`/`LocationAddress`; las ubicaciones en tiempo real se detectan mediante `live_period`.
 - **WhatsApp**: `locationMessage.comment` y `liveLocationMessage.caption` rellenan `LocationCaption`.
 
-## Relacionado
+## Temas relacionados
 
 - [Comando de ubicación (nodos)](/es/nodes/location-command)
 - [Captura de cámara](/es/nodes/camera)
-- [Comprensión de medios](/es/nodes/media-understanding)
+- [Comprensión de contenido multimedia](/es/nodes/media-understanding)

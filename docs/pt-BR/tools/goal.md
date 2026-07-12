@@ -2,223 +2,230 @@
 doc-schema-version: 1
 read_when:
     - Você quer que o OpenClaw mantenha um objetivo visível durante uma sessão longa
-    - Você precisa pausar, retomar, bloquear, concluir ou limpar uma meta de sessão
+    - Você precisa pausar, retomar, bloquear, concluir ou limpar uma meta da sessão
     - Você quer entender as ferramentas get_goal, create_goal e update_goal
-    - Você quer ver como os objetivos aparecem na TUI
-summary: 'Objetivos da sessão: objetivos duráveis por sessão, controles /goal, ferramentas de objetivo do modelo, orçamentos de tokens e status da TUI'
+    - Você quer ver como as metas aparecem na TUI
+summary: 'Metas da sessão: objetivos duráveis por sessão, controles de /goal, ferramentas de meta do modelo, orçamentos de tokens e status da TUI'
 title: Objetivo
 x-i18n:
-    generated_at: "2026-06-27T18:15:58Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:48:52Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: 4313983dff7f37496f6c996303cace75f6863a71c8a9cd5367fdafbcc3f459c4
+    source_hash: 046356770522dc8a5584a59f3322b4502554a4b7f129b074da633861050ee5fd
     source_path: tools/goal.md
     workflow: 16
 ---
 
 # Objetivo
 
-Um **objetivo** é um objetivo durável anexado à sessão atual do OpenClaw.
-Ele dá ao agente e ao operador um alvo compartilhado para trabalho de longa duração,
-sem transformar esse alvo em uma tarefa em segundo plano, lembrete, tarefa cron ou
+Um **objetivo** é uma meta duradoura associada à sessão atual do OpenClaw.
+Ele fornece ao agente e ao operador um alvo compartilhado para trabalhos de longa duração,
+sem transformar esse alvo em uma tarefa em segundo plano, lembrete, trabalho Cron ou
 ordem permanente.
 
-Objetivos são estado da sessão. Eles acompanham a chave da sessão, sobrevivem a
-reinicializações do processo, aparecem em `/goal`, ficam disponíveis para o modelo
-por meio das ferramentas de objetivo e aparecem no rodapé da TUI quando a sessão
-ativa tem um.
+Os objetivos fazem parte do estado da sessão: acompanham a chave da sessão, persistem após
+reinicializações do processo e aparecem em `/goal`, nas ferramentas de objetivo voltadas ao modelo e no rodapé da TUI.
 
 ## Início rápido
 
-Defina um objetivo:
-
 ```text
-/goal start get CI green for PR 87469 and push the fix
-```
-
-Verifique-o:
-
-```text
+/goal start deixar a CI verde para o PR 87469 e enviar a correção
 /goal
-```
-
-Pause-o quando o trabalho estiver intencionalmente aguardando:
-
-```text
-/goal pause waiting for CI
-```
-
-Retome-o:
-
-```text
+/goal edit deixar a CI verde para o PR 87469, enviar a correção e atualizar a documentação
+/goal pause aguardando a CI
 /goal resume
-```
-
-Marque-o como concluído:
-
-```text
-/goal complete pushed and verified
-```
-
-Limpe-o:
-
-```text
+/goal complete enviado e verificado
 /goal clear
 ```
 
+`start` é opcional: `/goal get CI green for PR 87469` também cria uma meta,
+pois qualquer texto após `/goal` que não seja uma palavra de ação conhecida é tratado como um
+novo objetivo.
+
 ## Para que servem os objetivos
 
-Use um objetivo quando uma sessão tiver um resultado concreto que deve permanecer visível
-ao longo de muitos turnos:
+Use um objetivo quando uma sessão tiver um resultado concreto que deva permanecer visível
+ao longo de muitas interações:
 
-- Um fechamento de PR: corrigir, verificar, fazer autoreview, enviar e abrir ou atualizar o PR.
-- Uma execução de depuração: reproduzir o bug, identificar a superfície responsável, corrigir e comprovar
-  a correção.
-- Uma revisão de docs: ler os docs relevantes, escrever a nova página, adicionar links cruzados e
-  verificar o build dos docs.
+- A conclusão de um PR: corrigir, verificar, executar a revisão automática, enviar e abrir ou atualizar o PR.
+- Uma sessão de depuração: reproduzir o bug, identificar a área responsável, aplicar a correção e
+  comprová-la.
+- Uma revisão de documentação: ler a documentação relevante, escrever a nova página, adicionar referências cruzadas e
+  verificar a compilação da documentação.
 - Uma tarefa de manutenção: inspecionar o estado atual, fazer alterações delimitadas, executar as
-  verificações certas e relatar o que mudou.
+  verificações adequadas e relatar o que mudou.
 
 Um objetivo não é uma fila de tarefas. Use [TaskFlow](/pt-BR/automation/taskflow),
-[tarefas](/pt-BR/automation/tasks), [tarefas cron](/pt-BR/automation/cron-jobs) ou
-[ordens permanentes](/pt-BR/automation/standing-orders) quando o trabalho deve ser executado de forma desacoplada,
-repetir em uma programação, se desdobrar em subtrabalhos gerenciados ou persistir como uma política.
+[tarefas](/pt-BR/automation/tasks), [tarefas Cron](/pt-BR/automation/cron-jobs) ou
+[ordens permanentes](/pt-BR/automation/standing-orders) quando o trabalho precisar ser executado de forma desacoplada,
+repetido conforme uma programação, distribuído em subtarefas gerenciadas ou mantido como uma política.
 
 ## Referência de comandos
 
-`/goal` sem argumentos imprime o resumo do objetivo atual:
+`/goal` sem argumentos exibe o resumo do objetivo atual:
 
 ```text
-Goal
-Status: active
-Objective: get CI green for PR 87469 and push the fix
-Tokens used: 12k
-Token budget: 12k/50k
+Meta
+Status: ativo
+Objetivo: deixar a CI verde para o PR 87469 e enviar a correção
+Tokens usados: 12k
+Orçamento de tokens: 12k/50k
 
-Commands: /goal pause, /goal complete, /goal clear
+Comandos: /goal edit <objective>, /goal pause, /goal complete, /goal clear
 ```
 
-Comandos:
+| Comando                                             | Efeito                                                                                      |
+| --------------------------------------------------- | ------------------------------------------------------------------------------------------- |
+| `/goal` ou `/goal status`                           | Exibe a meta atual.                                                                         |
+| `/goal start <objective>`                           | Cria uma nova meta para a sessão atual.                                                     |
+| `/goal set <objective>`, `/goal create <objective>` | Aliases de `start`.                                                                         |
+| `/goal <objective>`                                 | Também cria uma nova meta (qualquer texto que não seja uma palavra de ação reconhecida).    |
+| `/goal edit <objective>`                            | Reformula o objetivo atual; o status e a contabilização de tokens permanecem inalterados.   |
+| `/goal pause [note]`                                | Pausa uma meta ativa.                                                                       |
+| `/goal resume [note]`                               | Retoma uma meta pausada, bloqueada, limitada por uso ou limitada por orçamento.             |
+| `/goal complete [note]`                             | Marca a meta como alcançada.                                                                |
+| `/goal done [note]`                                 | Alias de `complete`.                                                                        |
+| `/goal block [note]`                                | Marca a meta como bloqueada.                                                                |
+| `/goal blocked [note]`                              | Alias de `block`.                                                                           |
+| `/goal clear`                                       | Remove a meta da sessão.                                                                    |
 
-- `/goal` ou `/goal status` mostra o objetivo atual.
-- `/goal start <objective>` cria um novo objetivo para a sessão atual.
-- `/goal set <objective>` e `/goal create <objective>` são aliases para
-  `start`.
-- `/goal pause [note]` pausa um objetivo ativo.
-- `/goal resume [note]` retoma um objetivo pausado, bloqueado, limitado por uso ou
-  limitado por orçamento.
-- `/goal complete [note]` marca o objetivo como alcançado.
-- `/goal done [note]` é um alias para `complete`.
-- `/goal block [note]` marca o objetivo como bloqueado.
-- `/goal blocked [note]` é um alias para `block`.
-- `/goal clear` remove o objetivo da sessão.
+Só pode existir uma meta por vez em uma sessão. Iniciar uma segunda meta falha
+com `Goal error: goal already exists` até que a atual seja removida.
 
-Apenas um objetivo pode existir em uma sessão por vez. Iniciar um segundo objetivo falha
-até que o atual seja limpo.
+`/goal start` não aceita um sinalizador de orçamento de tokens; um orçamento só
+pode ser definido por meio da ferramenta `create_goal` voltada para o modelo.
 
 ## Status
 
-Objetivos usam um pequeno conjunto de status:
-
-- `active`: a sessão está buscando o objetivo.
-- `paused`: o operador pausou o objetivo; `/goal resume` o torna ativo novamente.
+- `active`: a sessão está buscando alcançar a meta.
+- `paused`: o operador pausou a meta; `/goal resume` a torna ativa
+  novamente.
 - `blocked`: o agente ou operador relatou um bloqueio real; `/goal resume`
-  o torna ativo novamente quando novas informações ou estado estiverem disponíveis.
+  a torna ativa novamente quando novas informações ou um novo estado estão disponíveis.
 - `budget_limited`: o orçamento de tokens configurado foi atingido; `/goal resume`
-  reinicia a busca a partir do mesmo objetivo.
-- `usage_limited`: reservado para estados de parada por limite de uso; `/goal resume`
-  reinicia a busca quando permitido.
-- `complete`: o objetivo foi alcançado. Objetivos concluídos são terminais; use
-  `/goal clear` antes de iniciar outro objetivo.
+  reinicia a busca pelo mesmo objetivo com uma nova janela de orçamento.
+- `usage_limited`: reservado para um futuro estado de interrupção por limite de uso; `/goal
+resume` reinicia a busca da mesma forma.
+- `complete`: a meta foi alcançada. Metas concluídas são terminais; use `/goal
+clear` antes de iniciar outra meta.
 
-`/new` e `/reset` limpam o objetivo da sessão atual porque iniciam intencionalmente
-um contexto de sessão novo.
+`/new` e `/reset` apagam o objetivo atual da sessão, pois iniciam intencionalmente
+um novo contexto de sessão.
 
 ## Orçamentos de tokens
 
-Objetivos podem ter um orçamento de tokens positivo opcional. O orçamento é armazenado com o
-objetivo e medido a partir da contagem de tokens nova da sessão no momento da criação. Se a
-sessão atual tiver apenas uso de tokens obsoleto ou desconhecido quando o objetivo começa,
-o OpenClaw aguarda o próximo instantâneo novo de tokens da sessão e usa isso como a
-linha de base, para que tokens gastos antes de o objetivo existir não sejam cobrados do objetivo.
+Os objetivos podem ter um orçamento de tokens positivo opcional, definido por meio do
+parâmetro `token_budget` da ferramenta `create_goal`. O orçamento é medido a partir da
+contagem atualizada de tokens da sessão no momento da criação do objetivo. Se a sessão tiver apenas
+um instantâneo de tokens desatualizado ou desconhecido quando o objetivo for iniciado, o OpenClaw aguardará o
+próximo instantâneo atualizado e o usará como referência, para que os tokens gastos antes da
+existência do objetivo não sejam contabilizados nele.
 
-Quando o uso de tokens atinge o orçamento, o objetivo muda para `budget_limited`. Isso
-não exclui o objetivo nem apaga o objetivo. Ele informa ao operador e ao
-agente que o objetivo não está mais sendo buscado ativamente até ser retomado ou
-limpo.
+Quando o uso atinge o orçamento, o objetivo passa para `budget_limited`. Isso não
+exclui o objetivo nem apaga a finalidade; informa ao operador e ao
+agente que o objetivo não está mais sendo buscado ativamente até que seja retomado ou
+apagado. A retomada inicia uma nova janela de orçamento a partir da contagem atualizada de
+tokens atual.
 
-Orçamentos de tokens são uma proteção de objetivo de sessão, não um limite de cobrança. Cota do provedor,
-relatórios de custo e comportamento da janela de contexto ainda usam os controles normais de uso
-e modelo do OpenClaw.
+Os orçamentos de tokens são um mecanismo de proteção para objetivos da sessão, não um limite de cobrança. A
+cota do provedor, os relatórios de custos e o comportamento da janela de contexto ainda usam os controles normais de
+uso e de modelo do OpenClaw.
 
-## Ferramentas do modelo
+## Ferramentas de modelo
 
-O OpenClaw expõe três ferramentas centrais de objetivo para harnesses de agente:
+O OpenClaw disponibiliza três ferramentas de objetivo para os ambientes de execução de agentes:
 
-- `get_goal`: lê o objetivo da sessão atual, incluindo status, objetivo, uso de
-  tokens e orçamento de tokens.
-- `create_goal`: cria um objetivo apenas quando as instruções do usuário, sistema ou desenvolvedor
-  solicitam explicitamente um. Ele falha se a sessão já tiver um
-  objetivo.
-- `update_goal`: marca o objetivo como `complete` ou `blocked`.
+| Ferramenta     | Finalidade                                                                                                                          |
+| -------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| `get_goal`     | Lê a meta atual da sessão: status, objetivo, uso de tokens e orçamento de tokens.                                                    |
+| `create_goal`  | Cria uma meta somente quando as instruções do usuário ou do sistema solicitam uma explicitamente. Falha se a sessão já tiver uma meta. |
+| `update_goal`  | Marca a meta como `complete` ou `blocked`.                                                                                           |
 
-O modelo não pode pausar, retomar, limpar ou substituir um objetivo silenciosamente. Esses são
-controles de operador/sessão por meio de `/goal` e comandos de redefinição. Isso impede que o
-agente mova o alvo discretamente, preservando um caminho limpo para o
-agente relatar a conclusão ou um bloqueio genuíno.
+O modelo não pode pausar, retomar, limpar ou substituir uma meta silenciosamente. Essas ações permanecem
+como controles do operador/da sessão por meio de `/goal` e dos comandos de redefinição, para que o agente
+possa relatar a conclusão ou um bloqueio real sem alterar discretamente o
+objetivo.
 
-A ferramenta `update_goal` deve marcar um objetivo como `complete` apenas quando o objetivo for
-realmente alcançado. Ela deve marcar um objetivo como `blocked` apenas quando a mesma condição
-de bloqueio se repetiu e o agente não consegue fazer progresso significativo sem
-nova entrada do usuário ou uma mudança de estado externa.
+`update_goal` deve marcar uma meta como `complete` somente quando o objetivo
+tiver sido realmente alcançado. Deve marcar uma meta como `blocked` somente depois que a mesma
+condição de bloqueio ocorrer novamente por pelo menos três turnos consecutivos da meta, não por
+dificuldades comuns ou falta de refinamento.
+
+## Contexto da meta em cada turno
+
+Cada turno de usuário/chat com uma meta ativa inclui esta linha de contexto com função de usuário:
+
+```text
+Meta ativa: <objective> — avance-a ou atualize seu status (get_goal/update_goal).
+```
+
+O OpenClaw mantém a linha compacta truncando objetivos longos. Metas pausadas,
+bloqueadas, limitadas por orçamento, limitadas por uso e concluídas não são injetadas,
+portanto, uma interrupção do operador permanece em vigor até que a meta seja retomada.
+
+## Interface de controle
+
+A Interface de controle web mostra a meta como uma etiqueta compacta acima do campo de composição do chat:
+um ícone de status, o rótulo de status (por exemplo, `Pursuing goal`), o objetivo
+truncado e um cronômetro de tempo decorrido atualizado em tempo real.
+
+A etiqueta contém controles embutidos:
+
+- **Lápis** preenche previamente o campo de composição com `/goal edit <objective>` para que o
+  objetivo possa ser reformulado e enviado.
+- **Pausar/retomar** alterna entre `/goal pause` e `/goal resume` com base
+  no status atual.
+- **Lixeira** envia `/goal clear`.
+- **Divisa** expande a etiqueta para mostrar o objetivo completo, a nota de status
+  mais recente, o uso de tokens e o tempo decorrido.
+
+Os botões de ação ficam ocultos enquanto o campo de composição não puder enviar (por exemplo,
+quando a conexão com o Gateway estiver indisponível); a divisa de expansão continua funcionando.
 
 ## TUI
 
-A TUI mantém o objetivo da sessão ativa visível no rodapé ao lado do
-agente, sessão, modelo, controles de execução e contagens de tokens.
+O rodapé da TUI mantém a meta da sessão ativa visível ao lado dos campos de agente,
+sessão e modelo, antes dos indicadores de tokens/modo.
 
 Exemplos de rodapé:
 
-- `Pursuing goal (12k/50k)` para um objetivo ativo com orçamento de tokens.
-- `Goal paused (/goal resume)` para um objetivo pausado.
-- `Goal blocked (/goal resume)` para um objetivo bloqueado.
-- `Goal hit usage limits (/goal resume)` para um objetivo limitado por uso.
-- `Goal unmet (50k/50k)` para um objetivo limitado por orçamento.
-- `Goal achieved (42k)` para um objetivo concluído.
+- `Pursuing goal (12k/50k)` para uma meta ativa com orçamento de tokens.
+- `Goal paused (/goal resume)` para uma meta pausada.
+- `Goal blocked (/goal resume)` para uma meta bloqueada.
+- `Goal hit usage limits (/goal resume)` para uma meta limitada por uso.
+- `Goal unmet (50k/50k)` para uma meta limitada por orçamento.
+- `Goal achieved (42k)` para uma meta concluída.
 
-O rodapé é intencionalmente compacto. Use `/goal` para ver o objetivo completo, nota,
-orçamento de tokens e comandos disponíveis.
+O rodapé é intencionalmente compacto. Use `/goal` para consultar o objetivo completo,
+a nota, o orçamento de tokens e os comandos disponíveis.
 
-## Comportamento de canal
+## Comportamento do canal
 
-O comando `/goal` funciona em sessões do OpenClaw com suporte a comandos, incluindo a
-TUI e superfícies de chat que permitem comandos de texto. O estado do objetivo é anexado à
-chave da sessão, não ao transporte. Se duas superfícies usarem a mesma sessão, elas verão
-o mesmo objetivo.
+`/goal` funciona em sessões do OpenClaw que aceitam comandos, incluindo a TUI e
+superfícies de chat que permitem comandos de texto. O estado da meta é associado à
+chave da sessão, não ao transporte, portanto duas superfícies que compartilham uma chave de sessão veem a
+mesma meta.
 
-O estado do objetivo não é uma diretiva de entrega. Ele não força respostas por meio de um
-canal, altera o comportamento da fila, aprova ferramentas nem agenda trabalho.
+O estado da meta não é uma diretiva de entrega: ele não força respostas por meio de um
+canal, não altera o comportamento da fila, não aprova ferramentas nem agenda trabalho.
 
 ## Solução de problemas
 
-`Goal error: goal already exists` significa que a sessão já tem um objetivo. Use
-`/goal` para inspecioná-lo, `/goal complete` se ele estiver concluído ou `/goal clear` antes de
-iniciar um objetivo diferente.
+| Mensagem                               | Significado                                                                                                                                                           |
+| -------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Goal error: goal already exists`      | A sessão já tem uma meta. Use `/goal` para inspecioná-la, `/goal complete` se estiver concluída ou `/goal clear` antes de iniciar um objetivo diferente.               |
+| `Goal error: goal not found`           | A sessão ainda não tem uma meta. Inicie uma com `/goal start <objective>`.                                                                                             |
+| `Goal error: goal is already complete` | A meta está em estado terminal. Limpe-a antes de iniciar ou retomar outro objetivo.                                                                                    |
 
-`Goal error: goal not found` significa que a sessão ainda não tem objetivo. Inicie um com
-`/goal start <objective>`.
+Se o uso de tokens mostrar `0` ou parecer desatualizado, a sessão ativa talvez ainda não tenha um
+snapshot recente de tokens. O uso é atualizado à medida que o OpenClaw registra o uso da sessão
+e os totais derivados da transcrição.
 
-`Goal error: goal is already complete` significa que o objetivo é terminal. Limpe-o
-antes de iniciar ou retomar outro objetivo.
+## Relacionado
 
-Se o uso de tokens parecer `0` ou obsoleto, a sessão ativa talvez ainda não tenha um
-instantâneo novo de tokens. O uso é atualizado à medida que o OpenClaw registra o uso da sessão e
-totais derivados da transcrição.
-
-## Relacionados
-
-- [Comandos slash](/pt-BR/tools/slash-commands)
+- [Comandos de barra](/pt-BR/tools/slash-commands)
 - [TUI](/pt-BR/web/tui)
 - [Ferramenta de sessão](/pt-BR/concepts/session-tool)
 - [Compaction](/pt-BR/concepts/compaction)

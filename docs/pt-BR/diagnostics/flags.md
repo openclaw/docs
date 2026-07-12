@@ -1,30 +1,45 @@
 ---
 read_when:
-    - Você precisa de logs de depuração direcionados sem aumentar os níveis globais de registro
-    - Você precisa capturar logs específicos do subsistema para suporte
-summary: Sinalizadores de diagnóstico para logs de depuração direcionados
-title: Sinalizadores de diagnóstico
+    - Você precisa de logs de depuração específicos sem aumentar os níveis globais de log
+    - Você precisa coletar logs específicos do subsistema para obter suporte
+summary: Flags de diagnóstico para logs de depuração direcionados
+title: Flags de diagnóstico
 x-i18n:
-    generated_at: "2026-06-27T17:28:16Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:07:53Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: c78c5c2f90fb1d601d0a3ef94919310759d58c9f9c70a093c91f31594bc777fb
+    source_hash: 9847f464fde89d9e639b089fe54fb933deb9debad2a6d8b120ab01bacff181a8
     source_path: diagnostics/flags.md
     workflow: 16
 ---
 
-Flags de diagnóstico permitem habilitar logs de depuração direcionados sem ativar logs detalhados em todos os lugares. As flags são opt-in e não têm efeito a menos que um subsistema as verifique.
+Os sinalizadores de diagnóstico ativam registros adicionais para um subsistema sem aumentar
+`logging.level` globalmente. Um sinalizador não tem efeito, a menos que um subsistema o verifique.
 
 ## Como funciona
 
-- Flags são strings (sem diferenciar maiúsculas de minúsculas).
-- Você pode habilitar flags na configuração ou por meio de uma substituição via env.
-- Caracteres curinga são compatíveis:
-  - `telegram.*` corresponde a `telegram.http`
-  - `*` habilita todas as flags
+- Os sinalizadores são strings que não diferenciam maiúsculas de minúsculas, resolvidas com base em `diagnostics.flags` na
+  configuração mais a substituição pela variável de ambiente `OPENCLAW_DIAGNOSTICS`, com duplicatas removidas e convertidas em minúsculas.
+- `name.*` corresponde ao próprio `name` e a tudo sob `name.` (por exemplo,
+  `telegram.*` corresponde a `telegram.http`).
+- `*` ou `all` ativa todos os sinalizadores.
+- Reinicie o Gateway depois de alterar `diagnostics.flags` na configuração; essa opção não é
+  recarregada dinamicamente.
 
-## Habilitar via configuração
+## Sinalizadores conhecidos
+
+| Sinalizador      | Ativa                                                             |
+| ---------------- | ----------------------------------------------------------------- |
+| `telegram.http`  | Registro de erros HTTP da API de Bot do Telegram                  |
+| `brave.http`     | Registro de solicitações/respostas/cache do Brave Search          |
+| `profiler`       | Perfilador da etapa de resposta e do app-server do Codex (ambos)  |
+| `reply.profiler` | Apenas o perfilador da etapa de resposta                          |
+| `codex.profiler` | Apenas o perfilador do app-server do Codex                        |
+| `timeline`       | Artefato de linha do tempo em JSONL estruturado (veja abaixo)     |
+
+## Ativar pela configuração
 
 ```json
 {
@@ -34,7 +49,7 @@ Flags de diagnóstico permitem habilitar logs de depuração direcionados sem at
 }
 ```
 
-Múltiplas flags:
+Vários sinalizadores:
 
 ```json
 {
@@ -44,47 +59,49 @@ Múltiplas flags:
 }
 ```
 
-Reinicie o Gateway depois de alterar as flags.
-
-## Substituição via env (uso único)
+## Substituição por variável de ambiente (uso único)
 
 ```bash
-OPENCLAW_DIAGNOSTICS=telegram.http,telegram.payload
+OPENCLAW_DIAGNOSTICS=telegram.http,brave.http
 ```
 
-Desabilitar todas as flags:
+Os valores são separados por vírgulas ou espaços em branco. Valores especiais:
 
-```bash
-OPENCLAW_DIAGNOSTICS=0
-```
+| Valor                       | Efeito                                                     |
+| --------------------------- | ---------------------------------------------------------- |
+| `0`, `false`, `off`, `none` | Desativa todos os sinalizadores, substituindo também a configuração |
+| `1`, `true`, `all`, `*`     | Ativa todos os sinalizadores                               |
 
-`OPENCLAW_DIAGNOSTICS=0` é uma substituição de desabilitação em nível de processo: ela desabilita
-flags tanto do env quanto da configuração para esse processo.
+`OPENCLAW_DIAGNOSTICS=0` desativa os sinalizadores provenientes tanto da variável de ambiente quanto da configuração para esse
+processo, o que é útil para silenciar temporariamente um sinalizador de perfilador deixado ativo na configuração
+sem editar o arquivo.
 
-## Flags de perfilamento
+## Sinalizadores de perfilador
 
-Flags de perfilador habilitam intervalos de temporização direcionados sem aumentar os níveis
-globais de log. Elas ficam desabilitadas por padrão.
+Os sinalizadores de perfilador controlam intervalos leves de medição de tempo; eles não adicionam sobrecarga quando estão desativados.
 
-Habilite todos os intervalos controlados por perfilador para uma execução do Gateway:
+Ative todos os intervalos controlados pelo perfilador para uma execução do Gateway:
 
 ```bash
 OPENCLAW_DIAGNOSTICS=profiler openclaw gateway run
 ```
 
-Habilite apenas intervalos de perfilador de envio de respostas:
+Ative apenas os intervalos do perfilador de despacho de respostas:
 
 ```bash
 OPENCLAW_DIAGNOSTICS=reply.profiler openclaw gateway run
 ```
 
-Habilite apenas intervalos de perfilador de inicialização/ferramenta/thread do servidor de app Codex:
+Ative apenas os intervalos do perfilador de inicialização/ferramentas/threads do app-server do Codex:
 
 ```bash
 OPENCLAW_DIAGNOSTICS=codex.profiler openclaw gateway run
 ```
 
-Habilite flags de perfilador pela configuração:
+`profiler` ativa tanto o perfilador de respostas quanto o perfilador do Codex; use os
+nomes de sinalizadores com escopo para ativar apenas um deles.
+
+Ou defina-os na configuração:
 
 ```json
 {
@@ -94,18 +111,14 @@ Habilite flags de perfilador pela configuração:
 }
 ```
 
-Reinicie o Gateway depois de alterar flags de configuração. Para desabilitar uma flag de perfilador,
-remova-a de `diagnostics.flags` e reinicie. Para desabilitar temporariamente todas as
-flags de diagnóstico mesmo quando a configuração habilita flags de perfilador, inicie o processo com:
-
-```bash
-OPENCLAW_DIAGNOSTICS=0 openclaw gateway run
-```
+Reinicie o Gateway depois de alterar os sinalizadores de configuração. Para desativar um sinalizador de perfilador,
+remova-o de `diagnostics.flags` e reinicie, ou inicie o processo com
+`OPENCLAW_DIAGNOSTICS=0` para substituir todos os sinalizadores de diagnóstico nessa execução.
 
 ## Artefatos de linha do tempo
 
-A flag `timeline` grava eventos estruturados de temporização de inicialização e runtime para
-harnesses externos de QA:
+O sinalizador `timeline` (alias: `diagnostics.timeline`) grava eventos estruturados de temporização da inicialização
+e da execução em formato JSONL para estruturas externas de QA:
 
 ```bash
 OPENCLAW_DIAGNOSTICS=timeline \
@@ -113,7 +126,7 @@ OPENCLAW_DIAGNOSTICS_TIMELINE_PATH=/tmp/openclaw-timeline.jsonl \
 openclaw gateway run
 ```
 
-Você também pode habilitá-la na configuração:
+Ou ative-o na configuração:
 
 ```json
 {
@@ -123,68 +136,81 @@ Você também pode habilitá-la na configuração:
 }
 ```
 
-O caminho do arquivo de linha do tempo ainda vem de
-`OPENCLAW_DIAGNOSTICS_TIMELINE_PATH`. Quando `timeline` é habilitada apenas pela
-configuração, os primeiros intervalos de carregamento de configuração não são emitidos porque o OpenClaw
-ainda não leu a configuração; os intervalos de inicialização subsequentes usam a flag da configuração.
+O caminho de saída sempre vem de `OPENCLAW_DIAGNOSTICS_TIMELINE_PATH`, mesmo
+quando o próprio sinalizador é definido na configuração; não há uma chave de configuração para o caminho.
+Quando `timeline` é ativado apenas pela configuração, os primeiros intervalos de carregamento da configuração
+ficam ausentes porque o OpenClaw ainda não leu a configuração; os intervalos posteriores da inicialização
+são capturados normalmente.
 
-`OPENCLAW_DIAGNOSTICS=1`, `OPENCLAW_DIAGNOSTICS=all` e
-`OPENCLAW_DIAGNOSTICS=*` também habilitam a linha do tempo porque habilitam todas as
-flags de diagnóstico. Prefira `timeline` quando você quiser apenas o artefato de temporização
-JSONL.
+`OPENCLAW_DIAGNOSTICS=1`, `=all` e `=*` também ativam a linha do tempo, pois
+ativam todos os sinalizadores. Prefira o sinalizador `timeline` com escopo quando quiser apenas o
+artefato JSONL, e não todos os outros sinalizadores de diagnóstico.
 
-Registros de linha do tempo usam o envelope `openclaw.diagnostics.v1`. Eventos podem incluir
-IDs de processo, nomes de fase, nomes de intervalo, durações, IDs de plugin, contagens de dependências,
-amostras de atraso do loop de eventos, nomes de operações de provedor, estado de saída de processo filho
-e nomes/mensagens de erro de inicialização. Trate arquivos de linha do tempo como artefatos locais
+As amostras de atraso do loop de eventos na linha do tempo exigem mais uma ativação além de
+`timeline`: defina `OPENCLAW_DIAGNOSTICS_EVENT_LOOP=1` (ou `on`/`true`/`yes`) além
+de ativar a linha do tempo.
+
+Os registros da linha do tempo usam o envelope `openclaw.diagnostics.v1` e podem incluir
+IDs de processos, nomes de fases, nomes de intervalos, durações, IDs de plugins, contagens de
+dependências, amostras de atraso do loop de eventos, nomes de operações de provedores, estado de saída
+de processos filhos e nomes/mensagens de erros de inicialização. Trate os arquivos de linha do tempo como artefatos locais
 de diagnóstico; revise-os antes de compartilhá-los fora da sua máquina.
 
-## Para onde os logs vão
+## Destino dos registros
 
-Flags emitem logs no arquivo de log de diagnóstico padrão. Por padrão:
+Os sinalizadores emitem registros no arquivo padrão de registros de diagnóstico. Por padrão:
 
 ```
 /tmp/openclaw/openclaw-YYYY-MM-DD.log
 ```
 
-Se você definir `logging.file`, use esse caminho em vez disso. Logs são JSONL (um objeto JSON por linha). A redação ainda se aplica com base em `logging.redactSensitive`.
+Se você definir `logging.file`, use esse caminho. Os registros estão no formato JSONL (um objeto JSON
+por linha). A ocultação ainda é aplicada com base em `logging.redactSensitive`.
+Consulte [Registros](/pt-BR/logging) para ver o modelo completo de resolução do caminho dos registros, rotação e
+ocultação.
 
-## Extrair logs
+## Extrair registros
 
-Escolha o arquivo de log mais recente:
+Selecione o arquivo de registro mais recente:
 
 ```bash
 ls -t /tmp/openclaw/openclaw-*.log | head -n 1
 ```
 
-Filtre diagnósticos HTTP do Telegram:
+Filtre os diagnósticos HTTP do Telegram:
 
 ```bash
 rg "telegram http error" /tmp/openclaw/openclaw-*.log
 ```
 
-Filtre diagnósticos HTTP do Brave Search:
+Filtre os diagnósticos HTTP do Brave Search:
 
 ```bash
 rg "brave http" /tmp/openclaw/openclaw-*.log
 ```
 
-Ou acompanhe enquanto reproduz:
+Ou acompanhe os registros enquanto reproduz o problema:
 
 ```bash
 tail -f /tmp/openclaw/openclaw-$(date +%F).log | rg "telegram http error"
 ```
 
-Para Gateways remotos, você também pode usar `openclaw logs --follow` (veja [/cli/logs](/pt-BR/cli/logs)).
+Para Gateways remotos, use `openclaw logs --follow` (consulte
+[/cli/logs](/pt-BR/cli/logs)).
 
 ## Observações
 
-- Se `logging.level` estiver definido acima de `warn`, esses logs podem ser suprimidos. O padrão `info` é adequado.
-- `brave.http` registra URLs/parâmetros de consulta de solicitações do Brave Search, status/temporização de resposta e eventos de acerto/erro/gravação de cache. Ele não registra chaves de API nem corpos de resposta, mas consultas de pesquisa podem ser sensíveis.
-- É seguro deixar flags habilitadas; elas afetam apenas o volume de log do subsistema específico.
-- Use [/logging](/pt-BR/logging) para alterar destinos, níveis e redação de logs.
+- Se `logging.level` estiver definido como um nível superior a `warn`, os registros controlados por sinalizadores poderão ser
+  suprimidos. O valor padrão `info` é adequado.
+- `brave.http` registra URLs/parâmetros de consulta das solicitações do Brave Search, status/tempo
+  das respostas e eventos de acerto/erro/gravação do cache. Ele não registra a chave de API
+  (enviada como cabeçalho da solicitação) nem os corpos das respostas, mas as consultas de pesquisa podem ser
+  confidenciais.
+- É seguro deixar os sinalizadores ativados; eles afetam apenas o volume de registros do
+  subsistema específico.
+- Use [/logging](/pt-BR/logging) para alterar destinos, níveis e ocultação dos registros.
 
-## Relacionado
+## Relacionados
 
-- [Diagnósticos do Gateway](/pt-BR/gateway/diagnostics)
+- [Diagnóstico do Gateway](/pt-BR/gateway/diagnostics)
 - [Solução de problemas do Gateway](/pt-BR/gateway/troubleshooting)

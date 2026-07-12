@@ -1,20 +1,21 @@
 ---
 read_when:
-    - Node está conectado, mas as ferramentas camera/canvas/screen/exec falham
-    - Você precisa do modelo mental de pareamento de Node versus aprovações
-summary: Solucionar problemas de pareamento de Node, requisitos de primeiro plano, permissões e falhas de ferramentas
+    - O Node está conectado, mas as ferramentas de câmera/canvas/tela/exec falham
+    - Você precisa entender o modelo mental de pareamento de nodes versus aprovações
+summary: Solucione problemas de pareamento de nodes, requisitos de primeiro plano, permissões e falhas de ferramentas
 title: Solução de problemas do Node
 x-i18n:
-    generated_at: "2026-05-10T19:39:54Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:23:26Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: d53f06367b63125f04b4b542c322e6e50e1f33153e0fbdd09e7a38772c69a438
+    source_hash: 53d082dcd2f4bb022eb683d72d193dbb6800b5a81a8f5ab9506d82feaa0dbc49
     source_path: nodes/troubleshooting.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-Use esta página quando um Node estiver visível no status, mas as ferramentas de Node falharem.
+Use esta página quando um Node estiver visível no status, mas as ferramentas do Node falharem.
 
 ## Sequência de comandos
 
@@ -26,7 +27,7 @@ openclaw doctor
 openclaw channels status --probe
 ```
 
-Depois execute verificações específicas do Node:
+Em seguida, execute verificações específicas do Node:
 
 ```bash
 openclaw nodes status
@@ -34,15 +35,15 @@ openclaw nodes describe --node <idOrNameOrIp>
 openclaw approvals get --node <idOrNameOrIp>
 ```
 
-Sinais saudáveis:
+Sinais de funcionamento normal:
 
-- O Node está conectado e pareado para a função `node`.
-- `nodes describe` inclui a capacidade que você está chamando.
-- As aprovações de execução mostram o modo/lista de permissões esperado.
+- O Node está conectado e emparelhado para a função `node`.
+- `nodes describe` inclui o recurso que você está chamando.
+- As aprovações de execução mostram o modo e a lista de permissões esperados.
 
 ## Requisitos de primeiro plano
 
-`canvas.*`, `camera.*` e `screen.*` funcionam apenas em primeiro plano em Nodes iOS/Android.
+`canvas.*`, `camera.*` e `screen.*` só funcionam em primeiro plano em Nodes iOS/Android.
 
 Verificação e correção rápidas:
 
@@ -52,24 +53,27 @@ openclaw nodes canvas snapshot --node <idOrNameOrIp>
 openclaw logs --follow
 ```
 
-Se você vir `NODE_BACKGROUND_UNAVAILABLE`, coloque o app do Node em primeiro plano e tente novamente.
+Se você vir `NODE_BACKGROUND_UNAVAILABLE`, coloque o aplicativo do Node em primeiro plano e tente novamente.
 
 ## Matriz de permissões
 
-| Capacidade                   | iOS                                            | Android                                             | app de Node no macOS               | Código de falha típico          |
-| ---------------------------- | ---------------------------------------------- | --------------------------------------------------- | ---------------------------------- | ------------------------------- |
-| `camera.snap`, `camera.clip` | Câmera (+ microfone para áudio do clipe)       | Câmera (+ microfone para áudio do clipe)            | Câmera (+ microfone para áudio do clipe) | `*_PERMISSION_REQUIRED`        |
-| `screen.record`              | Gravação de Tela (+ microfone opcional)        | Prompt de captura de tela (+ microfone opcional)    | Gravação de Tela                   | `*_PERMISSION_REQUIRED`        |
-| `location.get`               | Durante o Uso ou Sempre (depende do modo)      | Localização em primeiro plano/segundo plano com base no modo | Permissão de localização           | `LOCATION_PERMISSION_REQUIRED` |
-| `system.run`                 | n/a (caminho do host do Node)                  | n/a (caminho do host do Node)                       | Aprovações de execução necessárias | `SYSTEM_RUN_DENIED`            |
+| Recurso                      | iOS                                               | Android                                                | Aplicativo do Node para macOS                    | Código de falha típico                          |
+| ---------------------------- | ------------------------------------------------- | ------------------------------------------------------ | ----------------------------------------------- | ----------------------------------------------- |
+| `camera.snap`, `camera.clip` | Câmera (+ microfone para o áudio do clipe)        | Câmera (+ microfone para o áudio do clipe)             | Câmera (+ microfone para o áudio do clipe)      | `*_PERMISSION_REQUIRED`                       |
+| `screen.record`              | Gravação da Tela (+ microfone opcional)           | Solicitação de captura de tela (+ microfone opcional)  | Gravação da Tela                                | `*_PERMISSION_REQUIRED`                       |
+| `computer.act`               | não aplicável                                     | não aplicável                                          | Acessibilidade + Gravação da Tela               | `COMPUTER_DISABLED`, `ACCESSIBILITY_REQUIRED` |
+| `location.get`               | Durante o Uso ou Sempre (depende do modo)         | Localização em primeiro/segundo plano conforme o modo  | Permissão de localização                        | `LOCATION_PERMISSION_REQUIRED`                |
+| `system.run`                 | não aplicável (caminho do host do Node)           | não aplicável (caminho do host do Node)                | Aprovações de execução obrigatórias             | `SYSTEM_RUN_DENIED`                           |
 
-## Pareamento versus aprovações
+## Emparelhamento versus aprovações
 
-Estes são controles diferentes:
+Três controles separados determinam se um comando do Node é bem-sucedido:
 
-1. **Pareamento de dispositivo**: este Node pode se conectar ao Gateway?
+1. **Emparelhamento do dispositivo**: este Node pode se conectar ao Gateway?
 2. **Política de comandos de Node do Gateway**: o ID do comando RPC é permitido por `gateway.nodes.allowCommands` / `denyCommands` e pelos padrões da plataforma?
-3. **Aprovações de execução**: este Node pode executar um comando de shell específico localmente?
+3. **Aprovações de execução**: este Node pode executar localmente um comando específico do shell?
+
+O emparelhamento do Node é um controle de identidade/confiança, não uma superfície de aprovação por comando. Para `system.run`, a política por Node reside no arquivo de aprovações de execução desse Node (`openclaw approvals get --node ...`), não no registro de emparelhamento do Gateway.
 
 Verificações rápidas:
 
@@ -80,31 +84,28 @@ openclaw approvals get --node <idOrNameOrIp>
 openclaw approvals allowlist add --node <idOrNameOrIp> "/usr/bin/uname"
 ```
 
-Se o pareamento estiver ausente, aprove primeiro o dispositivo Node.
-Se `nodes describe` estiver sem um comando, verifique a política de comandos de Node do Gateway e se o Node realmente declarou esse comando ao se conectar.
-Se o pareamento estiver correto, mas `system.run` falhar, corrija as aprovações/lista de permissões de execução nesse Node.
+- Emparelhamento ausente: primeiro, aprove o dispositivo do Node.
+- Um comando está ausente em `nodes describe`: verifique a política de comandos de Node do Gateway e se o Node realmente declarou esse comando ao se conectar.
+- O emparelhamento está correto, mas `system.run` falha: corrija as aprovações de execução/lista de permissões nesse Node.
 
-O pareamento de Node é um controle de identidade/confiança, não uma superfície de aprovação por comando. Para `system.run`, a política por Node fica no arquivo de aprovações de execução desse Node (`openclaw approvals get --node ...`), não no registro de pareamento do Gateway.
+Para execuções `host=node` respaldadas por aprovação, o Gateway também vincula a execução ao `systemRunPlan` canônico preparado. Se um chamador posterior modificar o comando, o cwd ou os metadados da sessão antes que a execução aprovada seja encaminhada, o Gateway rejeitará a execução por incompatibilidade de aprovação, em vez de confiar na carga útil editada.
 
-Para execuções `host=node` com base em aprovação, o Gateway também vincula a execução ao
-`systemRunPlan` canônico preparado. Se um chamador posterior alterar o comando/cwd ou
-metadados de sessão antes que a execução aprovada seja encaminhada, o Gateway rejeita a
-execução como incompatibilidade de aprovação em vez de confiar no payload editado.
+## Códigos de erro comuns do Node
 
-## Códigos de erro comuns de Node
+| Código                                 | Significado                                                                                                                                                                                                                 |
+| -------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `NODE_BACKGROUND_UNAVAILABLE`          | O aplicativo está em segundo plano; coloque-o em primeiro plano.                                                                                                                                                            |
+| `CAMERA_DISABLED`                      | A opção da câmera está desativada nas configurações do Node.                                                                                                                                                                |
+| `*_PERMISSION_REQUIRED`                | A permissão do sistema operacional está ausente ou foi negada.                                                                                                                                                              |
+| `LOCATION_DISABLED`                    | O modo de localização está desativado.                                                                                                                                                                                      |
+| `LOCATION_PERMISSION_REQUIRED`         | O modo de localização solicitado não foi concedido.                                                                                                                                                                        |
+| `LOCATION_BACKGROUND_UNAVAILABLE`      | O aplicativo está em segundo plano, mas existe apenas a permissão Durante o Uso.                                                                                                                                             |
+| `COMPUTER_DISABLED`                    | Ative **Allow Computer Control** no aplicativo para macOS e aprove a atualização do emparelhamento.                                                                                                                         |
+| `ACCESSIBILITY_REQUIRED`               | Conceda Acessibilidade ao pacote atual do aplicativo OpenClaw nos Ajustes do Sistema do macOS.                                                                                                                               |
+| `SYSTEM_RUN_DENIED: approval required` | A solicitação de execução exige aprovação explícita.                                                                                                                                                                       |
+| `SYSTEM_RUN_DENIED: allowlist miss`    | O comando foi bloqueado pelo modo de lista de permissões. Em hosts de Node Windows, formas com wrapper de shell, como `cmd.exe /c ...`, são tratadas como ausentes da lista de permissões nesse modo, a menos que sejam aprovadas pelo fluxo de solicitação. |
 
-- `NODE_BACKGROUND_UNAVAILABLE` → o app está em segundo plano; coloque-o em primeiro plano.
-- `CAMERA_DISABLED` → alternância da câmera desativada nas configurações do Node.
-- `*_PERMISSION_REQUIRED` → permissão do SO ausente/negada.
-- `LOCATION_DISABLED` → modo de localização desativado.
-- `LOCATION_PERMISSION_REQUIRED` → modo de localização solicitado não concedido.
-- `LOCATION_BACKGROUND_UNAVAILABLE` → o app está em segundo plano, mas só existe permissão Durante o Uso.
-- `SYSTEM_RUN_DENIED: approval required` → a solicitação de execução precisa de aprovação explícita.
-- `SYSTEM_RUN_DENIED: allowlist miss` → comando bloqueado pelo modo de lista de permissões.
-  Em hosts de Node Windows, formas de wrapper de shell como `cmd.exe /c ...` são tratadas como ausências na lista de permissões no
-  modo de lista de permissões, a menos que sejam aprovadas pelo fluxo de solicitação.
-
-## Ciclo rápido de recuperação
+## Ciclo de recuperação rápida
 
 ```bash
 openclaw nodes status
@@ -113,19 +114,22 @@ openclaw approvals get --node <idOrNameOrIp>
 openclaw logs --follow
 ```
 
-Se ainda estiver travado:
+Se o problema persistir:
 
-- Aprove novamente o pareamento do dispositivo.
-- Reabra o app do Node (primeiro plano).
-- Conceda novamente as permissões do SO.
-- Recrie/ajuste a política de aprovação de execução.
+- Aprove novamente o emparelhamento do dispositivo.
+- Reabra o aplicativo do Node (em primeiro plano).
+- Conceda novamente as permissões do sistema operacional.
+- Recrie ou ajuste a política de aprovação de execução.
+
+Para o controle do computador, verifique também se um agente com capacidade de visão disponibiliza a ferramenta `computer`, se `screen.snapshot` é concluído com êxito com a permissão de Gravação da Tela e se `/phone status` mostra a autorização temporária ou persistente do Gateway que você pretendia. Uma entrada em `gateway.nodes.denyCommands` sempre prevalece sobre `allowCommands`.
 
 ## Relacionados
 
-- [Visão geral de Nodes](/pt-BR/nodes)
+- [Visão geral dos Nodes](/pt-BR/nodes)
 - [Nodes de câmera](/pt-BR/nodes/camera)
 - [Comando de localização](/pt-BR/nodes/location-command)
+- [Uso do computador](/nodes/computer-use)
 - [Aprovações de execução](/pt-BR/tools/exec-approvals)
-- [Pareamento do Gateway](/pt-BR/gateway/pairing)
+- [Emparelhamento do Gateway](/pt-BR/gateway/pairing)
 - [Solução de problemas do Gateway](/pt-BR/gateway/troubleshooting)
 - [Solução de problemas de canais](/pt-BR/channels/troubleshooting)

@@ -1,52 +1,53 @@
 ---
 read_when:
-    - Vous devez effectuer des modifications structurées de fichiers dans plusieurs fichiers
+    - Vous devez effectuer des modifications structurées dans plusieurs fichiers
     - Vous souhaitez documenter ou déboguer des modifications basées sur des correctifs
-summary: Appliquer des correctifs multifichiers avec l’outil apply_patch
+summary: Appliquez des correctifs à plusieurs fichiers avec l’outil apply_patch
 title: outil apply_patch
 x-i18n:
-    generated_at: "2026-05-06T07:39:46Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:56:21Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: 9ff2f8e6ecd55ff1bdc553619ab3d590d0967efe7a9a90a31946ad15fd89a1dc
+    source_hash: 1c0422550ea8d9b0cb6b0ea22d7dcaecc462426f9600003f70c177746f30a3d9
     source_path: tools/apply-patch.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-Appliquez des modifications de fichiers à l’aide d’un format de patch structuré. C’est idéal pour les modifications portant sur plusieurs fichiers
-ou plusieurs hunks, où un seul appel `edit` serait fragile.
+Appliquez les modifications de fichiers à l’aide d’un format de correctif structuré. Cette méthode est idéale pour les modifications portant sur plusieurs fichiers
+ou plusieurs blocs, lorsqu’un seul appel à `edit` serait fragile.
 
-L’outil accepte une seule chaîne `input` qui enveloppe une ou plusieurs opérations sur des fichiers :
+L’outil accepte une seule chaîne `input` qui encapsule une ou plusieurs opérations sur des fichiers :
 
-```
+```text
 *** Begin Patch
 *** Add File: path/to/file.txt
-+line 1
-+line 2
++ligne 1
++ligne 2
 *** Update File: src/app.ts
-@@
--old line
-+new line
+@@ contexte de modification facultatif
+-ancienne ligne
++nouvelle ligne
 *** Delete File: obsolete.txt
 *** End Patch
 ```
 
 ## Paramètres
 
-- `input` (obligatoire) : contenu complet du patch, y compris `*** Begin Patch` et `*** End Patch`.
+- `input` (obligatoire) : contenu complet du correctif, y compris `*** Begin Patch` et `*** End Patch`.
 
-## Notes
+## Remarques
 
-- Les chemins de patch prennent en charge les chemins relatifs (depuis le répertoire de l’espace de travail) et les chemins absolus.
-- `tools.exec.applyPatch.workspaceOnly` vaut `true` par défaut (contenu dans l’espace de travail). Définissez-le sur `false` uniquement si vous souhaitez intentionnellement que `apply_patch` écrive/supprime en dehors du répertoire de l’espace de travail.
-- Utilisez `*** Move to:` dans un hunk `*** Update File:` pour renommer des fichiers.
-- `*** End of File` marque une insertion uniquement en fin de fichier lorsque nécessaire.
-- Disponible par défaut pour les modèles OpenAI et OpenAI Codex. Définissez
-  `tools.exec.applyPatch.enabled: false` pour le désactiver.
-- Vous pouvez éventuellement restreindre l’accès par modèle via
-  `tools.exec.applyPatch.allowModels`.
-- La configuration se trouve uniquement sous `tools.exec`.
+- Les chemins du correctif prennent en charge les chemins relatifs (depuis le répertoire de l’espace de travail) et les chemins absolus.
+- `tools.exec.applyPatch.workspaceOnly` vaut `true` par défaut (limité à l’espace de travail). Définissez-le sur `false` uniquement si vous souhaitez intentionnellement que `apply_patch` écrive ou supprime des éléments en dehors du répertoire de l’espace de travail.
+- Utilisez `*** Move to:` dans un bloc `*** Update File:` pour renommer des fichiers.
+- `*** End of File` marque, si nécessaire, une insertion uniquement en fin de fichier.
+- Activé par défaut pour chaque modèle. Définissez `tools.exec.applyPatch.enabled: false`
+  pour le désactiver, ou limitez-le à des modèles spécifiques avec
+  `tools.exec.applyPatch.allowModels` (accepte les identifiants bruts comme `gpt-5.4` ou les identifiants complets
+  comme `openai/gpt-5.4`).
+- La configuration se trouve sous `tools.exec.applyPatch.*`.
 
 ## Exemple
 
@@ -57,16 +58,16 @@ L’outil accepte une seule chaîne `input` qui enveloppe une ou plusieurs opér
 }
 ```
 
-## Liens connexes
+## Éléments associés
 
 <CardGroup cols={2}>
-  <Card title="Diffs" href="/fr/tools/diffs" icon="code-compare">
-    Visionneuse de diff en lecture seule pour présenter les changements.
+  <Card title="Différences" href="/fr/tools/diffs" icon="code-compare">
+    Visionneuse de différences en lecture seule pour présenter les modifications.
   </Card>
-  <Card title="Outil exec" href="/fr/tools/exec" icon="terminal">
-    Exécution de commandes shell depuis l’agent.
+  <Card title="Outil Exec" href="/fr/tools/exec" icon="terminal">
+    Exécution de commandes d’interpréteur depuis l’agent.
   </Card>
   <Card title="Exécution de code" href="/fr/tools/code-execution" icon="square-code">
-    Analyse Python distante en bac à sable avec xAI.
+    Analyse Python distante en environnement isolé avec xAI.
   </Card>
 </CardGroup>

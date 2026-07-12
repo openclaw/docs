@@ -1,27 +1,30 @@
 ---
 read_when:
-    - OpenClaw에서 fal 이미지 생성을 사용하려는 경우
+    - OpenClaw에서 fal 이미지 생성을 사용하려고 합니다
     - FAL_KEY 인증 흐름이 필요합니다
-    - image_generate, video_generate 또는 music_generate에 대해 fal 기본값을 원합니다
+    - image_generate, video_generate 또는 music_generate에 fal 기본값을 사용하려는 경우
 summary: OpenClaw에서 fal 이미지, 동영상 및 음악 생성 설정
 title: Fal
 x-i18n:
-    generated_at: "2026-06-27T18:01:50Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:39:30Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: af294939a39673fb32cb68c882708dbe69b64ca5e5d13f5504de9d1d8715e3bd
+    source_hash: 9bd868aaf6771f6fa38bb8e2a83133460d150e2a5aa9e5b888e221c07f29e0ad
     source_path: providers/fal.md
     workflow: 16
 ---
 
-OpenClaw은 호스팅 이미지, 비디오, 음악 생성을 위한 번들 `fal` 제공자를 제공합니다.
+OpenClaw은 호스팅 이미지, 동영상 및 음악 생성을 위한 번들 `fal`
+제공자를 제공합니다.
 
-| 속성 | 값                                                         |
-| -------- | ------------------------------------------------------------- |
-| 제공자 | `fal`                                                         |
-| 인증     | `FAL_KEY`(표준, `FAL_API_KEY`도 폴백으로 작동) |
-| API      | fal 모델 엔드포인트                                           |
+| 속성     | 값                                                                              |
+| -------- | ------------------------------------------------------------------------------- |
+| 제공자   | `fal`                                                                           |
+| 인증     | `FAL_KEY` (표준이며, `FAL_API_KEY`도 대체 수단으로 작동함)                     |
+| API      | fal 모델 엔드포인트 (`https://fal.run`; 동영상 작업은 `https://queue.fal.run` 사용) |
+| 기본 URL | `models.providers.fal.baseUrl`로 재정의                                         |
 
 ## 시작하기
 
@@ -30,6 +33,11 @@ OpenClaw은 호스팅 이미지, 비디오, 음악 생성을 위한 번들 `fal`
     ```bash
     openclaw onboard --auth-choice fal-api-key
     ```
+
+    비대화형 설정에서는 `--fal-api-key <key>`를 전달하거나 `FAL_KEY`를
+    내보낼 수 있습니다. 온보딩 시 이미지 모델이 구성되어 있지 않으면
+    `fal/fal-ai/flux/dev`도 기본 이미지 모델로 설정합니다.
+
   </Step>
   <Step title="기본 이미지 모델 설정">
     ```json5
@@ -51,62 +59,65 @@ OpenClaw은 호스팅 이미지, 비디오, 음악 생성을 위한 번들 `fal`
 번들 `fal` 이미지 생성 제공자의 기본값은
 `fal/fal-ai/flux/dev`입니다.
 
-| 기능     | 값                                                              |
-| -------------- | ------------------------------------------------------------------ |
-| 최대 이미지 수     | 요청당 4개, Krea 2: 요청당 1개                               |
-| 편집 모드      | Flux: 참조 이미지 1개, GPT Image 2: 10개, Nano Banana 2: 14개        |
-| 스타일 참조     | Krea 2: `image` / `images`를 통해 최대 10개의 스타일 참조           |
-| 크기 재정의 | 지원됨                                                          |
-| 종횡비   | 생성, Krea 2, GPT Image 2/Nano Banana 2 편집에서 지원됨 |
-| 해상도     | 지원됨                                                          |
-| 출력 형식  | `png` 또는 `jpeg`                                                    |
+| 기능          | 값                                                                 |
+| ------------- | ------------------------------------------------------------------ |
+| 최대 이미지 수 | 요청당 4개, Krea 2는 요청당 1개                                   |
+| 크기 재정의   | `1024x1024`, `1024x1536`, `1536x1024`, `1024x1792`, `1792x1024`    |
+| 종횡비        | Flux 이미지 간 변환을 제외한 모든 곳에서 지원                      |
+| 해상도        | `1K`, `2K`, `4K` (모델별 제한은 아래 참조)                         |
+| 출력 형식     | `png`(기본값) 또는 `jpeg`; Krea 2는 `outputFormat` 재정의를 거부함 |
+
+편집 요청(공유 `image` / `images` 매개변수를 통해 참조 이미지 전달)은
+모델별 참조 제한이 적용되는 모델별 편집 엔드포인트로 라우팅됩니다.
+
+| 모델 계열                 | `fal/` 뒤의 모델 참조                  | 편집 엔드포인트    | 최대 참조 이미지 수 |
+| ------------------------- | -------------------------------------- | ------------------ | ------------------- |
+| Flux 및 기타 fal 모델     | `fal-ai/flux/dev` (기본값)             | `/image-to-image`  | 1                   |
+| GPT Image                 | `openai/gpt-image-*`                   | `/edit`            | 10                  |
+| Grok Imagine              | `xai/grok-imagine-image`               | `/edit`            | 3                   |
+| Nano Banana (레거시)      | `fal-ai/nano-banana`                   | `/edit`            | 3                   |
+| Nano Banana 2             | `fal-ai/nano-banana-*`                 | `/edit`            | 14                  |
+| Nano Banana 2 Lite        | `google/nano-banana-2-lite`            | `/edit`            | 14                  |
+| Krea 2                    | `krea/v2/{medium,large}/text-to-image` | 없음(스타일 참조)  | 스타일 참조 10개    |
 
 <Warning>
-Flux 이미지-투-이미지 요청은 `aspectRatio` 재정의를 **지원하지 않습니다**. GPT
-Image 2와 Nano Banana 2 편집 요청은 fal의 `/edit` 엔드포인트를 사용하며
-종횡비 힌트를 받습니다. Nano Banana 2는 `4:1`, `1:4`, `8:1`, `1:8`과 같은
-추가 네이티브 와이드/톨 비율도 받습니다. Krea 2는 자체적으로 더 작은
-종횡비 하위 집합을 검증합니다.
+Flux 이미지 간 변환 요청은 `aspectRatio` 재정의를 지원하지 **않습니다**.
+GPT Image 및 Nano Banana 2 편집 요청은 fal의 `/edit` 엔드포인트를 사용하며
+종횡비 힌트를 허용합니다. Nano Banana 2는 `4:1`, `1:4`, `8:1`, `1:8`과
+같은 추가 네이티브 가로형/세로형 비율도 허용하며, Krea 2는 자체적으로 더
+제한된 종횡비 하위 집합을 검증합니다. Grok Imagine에는 자체 비율 목록
+(`2:1`, `20:9`, `19.5:9` 및 각각의 역비율 포함)이 있으며 `1K`/`2K`
+해상도만 허용합니다. 레거시 Nano Banana와 Nano Banana 2 Lite는
+`resolution` 재정의를 거부합니다.
 </Warning>
 
-Krea 2 모델은 fal의 네이티브 Krea 페이로드 스키마를 사용합니다. OpenClaw는
+Krea 2 모델은 fal의 네이티브 Krea 페이로드 스키마를 사용합니다. OpenClaw은
 Flux에서 사용하는 일반 `image_size` / 편집 엔드포인트 페이로드 대신
-`aspect_ratio`, `creativity`, `image_style_references`를 보냅니다. 모델 참조는 다음과 같습니다.
+`aspect_ratio`, `creativity`, `image_style_references`를 전송합니다.
+모델 참조는 다음과 같습니다.
 
 - `fal/krea/v2/medium/text-to-image`
 - `fal/krea/v2/large/text-to-image`
 
-더 빠른 표현적 일러스트레이션, 애니메이션, 회화, 예술적
-스타일에는 Medium을 사용하세요. 더 느린 포토리얼, 원시 텍스처, 필름 그레인, 디테일한
-룩에는 Large를 사용하세요. Krea의 기본값은 `fal.creativity: "medium"`이며, 지원되는 값은
-`raw`, `low`, `medium`, `high`입니다.
+더 빠르고 표현력 있는 일러스트레이션, 애니메이션, 회화 및 예술적 스타일에는
+Medium을 사용하십시오. 더 느리지만 사실적인 사진, 원시 질감, 필름 그레인 및
+세밀한 표현에는 Large를 사용하십시오. Krea의 기본값은
+`fal.creativity: "medium"`이며, 지원되는 값은 `raw`, `low`, `medium`,
+`high`입니다.
 
-Krea 2는 fal의 요청 스키마에서 `image_size`가 아니라 종횡비를 노출합니다.
-`aspectRatio`를 우선 사용하세요. OpenClaw는 `size`를 가장 가까운 지원 Krea 종횡비에 매핑하고,
-Krea에서는 `resolution`을 버리는 대신 거부합니다.
+Krea 2는 fal 요청 스키마에서 `image_size`가 아닌 종횡비를 제공합니다.
+`aspectRatio`를 사용하는 것이 좋습니다. OpenClaw은 `size`를 가장 가까운
+지원 Krea 종횡비로 매핑하며, Krea에서 `resolution`을 무시하지 않고
+거부합니다.
 
-`output_format`을 노출하는 fal 모델에서 PNG 출력을 원할 때는
-`outputFormat: "png"`를 사용하세요. fal은 OpenClaw에서 명시적인 투명 배경
-제어를 선언하지 않으므로 `background: "transparent"`는 fal 모델에서 무시된
-재정의로 보고됩니다.
-Krea 2 엔드포인트는 fal을 통해 `output_format` 요청 필드를 노출하지 않으므로,
-OpenClaw는 Krea 요청에 대한 `outputFormat` 재정의를 거부합니다.
+`output_format`을 노출하는 fal 모델에서 PNG 출력을 원하면
+`outputFormat: "png"`를 사용하십시오. fal은 OpenClaw에서 명시적인 투명
+배경 제어를 선언하지 않으므로, fal 모델에서 `background: "transparent"`는
+무시된 재정의로 보고됩니다.
+Krea 2 엔드포인트는 fal을 통해 `output_format` 요청 필드를 노출하지 않으므로
+OpenClaw은 Krea 요청의 `outputFormat` 재정의를 거부합니다.
 
-fal을 기본 이미지 제공자로 사용하려면:
-
-```json5
-{
-  agents: {
-    defaults: {
-      imageGenerationModel: {
-        primary: "fal/fal-ai/flux/dev",
-      },
-    },
-  },
-}
-```
-
-Krea 2 Medium을 사용하려면:
+Krea 2 Medium을 사용하려면 다음과 같이 설정하십시오.
 
 ```json5
 {
@@ -120,21 +131,32 @@ Krea 2 Medium을 사용하려면:
 }
 ```
 
-## 비디오 생성
+## 동영상 생성
 
-번들 `fal` 비디오 생성 제공자의 기본값은
+번들 `fal` 동영상 생성 제공자의 기본값은
 `fal/fal-ai/minimax/video-01-live`입니다.
 
-| 기능 | 값                                                              |
+| 기능       | 값                                                                 |
 | ---------- | ------------------------------------------------------------------ |
-| 모드      | 텍스트-투-비디오, 단일 이미지 참조, Seedance 참조-투-비디오 |
-| 런타임    | 장기 실행 작업을 위한 큐 기반 제출/상태/결과 흐름       |
+| 모드       | 텍스트로 동영상 생성, 단일 이미지 참조, Seedance 참조로 동영상 생성 |
+| 런타임     | 장기 실행 작업을 위한 큐 기반 제출/상태/결과 흐름                  |
+| 제한 시간  | 기본적으로 작업당 20분, 5초마다 상태 폴링                          |
 
 <AccordionGroup>
-  <Accordion title="사용 가능한 비디오 모델">
-    **HeyGen 비디오 에이전트:**
+  <Accordion title="사용 가능한 동영상 모델">
+    **MiniMax(기본값):**
+
+    - `fal/fal-ai/minimax/video-01-live`
+
+    **HeyGen video-agent:**
 
     - `fal/fal-ai/heygen/v2/video-agent`
+
+    **Kling 및 Wan:**
+
+    - `fal/fal-ai/kling-video/v2.1/master/text-to-video`
+    - `fal/fal-ai/wan/v2.2-a14b/text-to-video`
+    - `fal/fal-ai/wan/v2.2-a14b/image-to-video`
 
     **Seedance 2.0:**
 
@@ -144,6 +166,11 @@ Krea 2 Medium을 사용하려면:
     - `fal/bytedance/seedance-2.0/text-to-video`
     - `fal/bytedance/seedance-2.0/image-to-video`
     - `fal/bytedance/seedance-2.0/reference-to-video`
+
+    MiniMax Live 및 HeyGen 요청은 프롬프트와 선택적 단일 참조 이미지만
+    전송하며, 다른 재정의는 전달하지 않습니다. Seedance 모델은
+    `aspectRatio`, `size`, `resolution`, 4~15초 길이 및 오디오 토글을
+    허용합니다.
 
   </Accordion>
 
@@ -161,7 +188,7 @@ Krea 2 Medium을 사용하려면:
     ```
   </Accordion>
 
-  <Accordion title="Seedance 2.0 참조-투-비디오 구성 예시">
+  <Accordion title="Seedance 2.0 참조로 동영상 생성 구성 예시">
     ```json5
     {
       agents: {
@@ -174,13 +201,14 @@ Krea 2 Medium을 사용하려면:
     }
     ```
 
-    참조-투-비디오는 공유 `video_generate`의 `images`, `videos`, `audioRefs`
-    매개변수를 통해 최대 9개의 이미지, 3개의 비디오, 3개의 오디오 참조를 받으며,
-    전체 참조 파일은 최대 12개입니다.
+    참조로 동영상 생성은 공유 `video_generate`의 `images`, `videos`,
+    `audioRefs` 매개변수를 통해 이미지 최대 9개, 동영상 3개, 오디오 참조
+    3개를 허용하며, 전체 참조 파일은 최대 12개입니다. 오디오 참조를
+    사용하려면 같은 요청에 이미지 또는 동영상 참조가 하나 이상 있어야 합니다.
 
   </Accordion>
 
-  <Accordion title="HeyGen 비디오 에이전트 구성 예시">
+  <Accordion title="HeyGen video-agent 구성 예시">
     ```json5
     {
       agents: {
@@ -197,15 +225,17 @@ Krea 2 Medium을 사용하려면:
 
 ## 음악 생성
 
-번들 `fal` Plugin은 공유 `music_generate` 도구를 위한 음악 생성 제공자도 등록합니다.
+번들 `fal` Plugin은 공유 `music_generate` 도구를 위한 음악 생성 제공자도
+등록합니다.
 
-| 기능    | 값                                                                                                  |
-| ------------- | ------------------------------------------------------------------------------------------------------ |
-| 기본 모델 | `fal/fal-ai/minimax-music/v2.6`                                                                        |
-| 모델        | `fal-ai/minimax-music/v2.6`, `fal-ai/ace-step/prompt-to-audio`, `fal-ai/stable-audio-25/text-to-audio` |
-| 런타임       | 동기 요청 및 생성된 오디오 다운로드                                                      |
+| 기능        | 값                                                                                                                       |
+| ----------- | ------------------------------------------------------------------------------------------------------------------------ |
+| 기본 모델   | `fal/fal-ai/minimax-music/v2.6`                                                                                          |
+| 모델        | `fal-ai/minimax-music/v2.6` (mp3), `fal-ai/ace-step/prompt-to-audio` (wav), `fal-ai/stable-audio-25/text-to-audio` (wav) |
+| 최대 길이   | 240초                                                                                                                    |
+| 런타임      | 동기 요청 후 생성된 오디오 다운로드                                                                                     |
 
-fal을 기본 음악 제공자로 사용하세요:
+fal을 기본 음악 제공자로 사용하려면 다음과 같이 설정하십시오.
 
 ```json5
 {
@@ -219,28 +249,32 @@ fal을 기본 음악 제공자로 사용하세요:
 }
 ```
 
-`fal-ai/minimax-music/v2.6`는 명시적 가사와 악기 모드를 지원합니다.
-ACE-Step과 Stable Audio는 프롬프트-투-오디오 엔드포인트입니다. 해당 모델 패밀리를 원할 때
-`model` 재정의로 선택하세요.
+`fal-ai/minimax-music/v2.6`은 명시적 가사와 연주곡 모드를 지원하지만,
+같은 요청에서 둘을 동시에 사용할 수는 없습니다. ACE-Step 및 Stable Audio는
+프롬프트로 오디오를 생성하는 엔드포인트입니다. 해당 모델 계열을 사용하려면
+`model` 재정의로 선택하십시오. ACE-Step은 명시적 가사를 거부하며,
+Stable Audio는 가사와 연주곡 모드를 모두 거부합니다.
 
 <Tip>
-최근 추가된 항목을 포함해 사용 가능한 fal 모델의 전체 목록을 보려면
-`openclaw models list --provider fal`을 사용하세요.
+위의 표와 아코디언에서는 번들 fal 제공자가 특별 처리하는 모델 계열을
+다룹니다. 다른 fal 이미지 엔드포인트 ID도 이미지 모델로 선택할 수 있으며,
+이들은 Flux와 동일하게 처리됩니다(일반 `image_size` 페이로드,
+`/image-to-image`를 통한 참조 이미지 1개).
 </Tip>
 
 ## 관련 항목
 
 <CardGroup cols={2}>
   <Card title="이미지 생성" href="/ko/tools/image-generation" icon="image">
-    공유 이미지 도구 매개변수와 제공자 선택.
+    공유 이미지 도구 매개변수 및 제공자 선택입니다.
   </Card>
-  <Card title="비디오 생성" href="/ko/tools/video-generation" icon="video">
-    공유 비디오 도구 매개변수와 제공자 선택.
+  <Card title="동영상 생성" href="/ko/tools/video-generation" icon="video">
+    공유 동영상 도구 매개변수 및 제공자 선택입니다.
   </Card>
   <Card title="음악 생성" href="/ko/tools/music-generation" icon="music">
-    공유 음악 도구 매개변수와 제공자 선택.
+    공유 음악 도구 매개변수 및 제공자 선택입니다.
   </Card>
   <Card title="구성 참조" href="/ko/gateway/config-agents#agent-defaults" icon="gear">
-    이미지, 비디오, 음악 모델 선택을 포함한 에이전트 기본값.
+    이미지, 동영상 및 음악 모델 선택을 포함한 에이전트 기본값입니다.
   </Card>
 </CardGroup>

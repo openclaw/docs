@@ -1,33 +1,30 @@
 ---
 read_when:
     - Você mantém scripts mais antigos usando `openclaw clawbot ...`
-    - Você precisa de orientação de migração para os comandos atuais
+    - Você precisa de orientações de migração para os comandos atuais
 summary: Referência da CLI para `openclaw clawbot` (namespace de alias legado)
 title: Clawbot
 x-i18n:
-    generated_at: "2026-04-24T05:44:48Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 4ca7f189071d170a94ec3eda276a3ba1202ccdee43c610f214b65bda8375d300
-    source_path: cli/clawbot.md
-    workflow: 15
+    generated_at: "2026-07-12T14:59:31Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
+    provider: openai
+    source_hash: 6baf9b4e9bbe8bb31cdc4923c38cd45a883b6e5be921a403335e257dacdc2cd5
+    source_path: cli/clawbot.md
+    workflow: 16
 ---
 
 # `openclaw clawbot`
 
-Namespace de alias legado mantido por compatibilidade retroativa.
-
-Alias atualmente compatível:
-
-- `openclaw clawbot qr` (mesmo comportamento que [`openclaw qr`](/pt-BR/cli/qr))
+Namespace de alias legado mantido para compatibilidade com versões anteriores. Ele registra o mesmo comando de QR da CLI de nível superior, portanto, `openclaw clawbot qr` aceita todas as opções de [`openclaw qr`](/pt-BR/cli/qr).
 
 ## Migração
 
-Prefira diretamente os comandos atuais de nível superior:
+Prefira o comando moderno de nível superior:
 
 - `openclaw clawbot qr` -> `openclaw qr`
 
-## Relacionados
+## Relacionado
 
 - [Referência da CLI](/pt-BR/cli)

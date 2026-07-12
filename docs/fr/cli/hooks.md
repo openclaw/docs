@@ -1,134 +1,63 @@
 ---
 read_when:
-    - Vous souhaitez gérer les points d’accroche d’agent
-    - Vous voulez vérifier la disponibilité des points d’accroche ou activer les points d’accroche de l’espace de travail
-summary: Référence CLI pour `openclaw hooks` (points d’ancrage d’agent)
-title: Points d’accroche
+    - Vous souhaitez gérer les hooks d’agent
+    - Vous souhaitez vérifier la disponibilité des hooks ou activer les hooks de l’espace de travail
+summary: Référence de la CLI pour `openclaw hooks` (hooks d’agent)
+title: Hooks
 x-i18n:
-    generated_at: "2026-05-06T17:53:17Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:07:57Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: 56dd1ef82458dde3280e2cdfb4f3835211726517416e90625d3272d128eb9e0e
+    source_hash: f33d1e343771971bdc17dcafdabc6c4fc893b3080897862475a148e5f3957796
     source_path: cli/hooks.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
 # `openclaw hooks`
 
-Gérer les hooks d’agent (automatisations événementielles pour des commandes comme `/new`, `/reset` et le démarrage du Gateway).
+Gérez les hooks d’agent (automatisations pilotées par des événements pour des commandes telles que `/new`, `/reset` et le démarrage du Gateway). La commande seule `openclaw hooks` équivaut à `openclaw hooks list`.
 
-Exécuter `openclaw hooks` sans sous-commande équivaut à `openclaw hooks list`.
+Voir aussi : [Hooks](/fr/automation/hooks) - [Hooks de Plugin](/fr/plugins/hooks)
 
-Associé :
-
-- Hooks : [Hooks](/fr/automation/hooks)
-- Hooks de Plugin : [Hooks de Plugin](/fr/plugins/hooks)
-
-## Lister tous les hooks
+## Répertorier les hooks
 
 ```bash
-openclaw hooks list
+openclaw hooks list [--eligible] [--json] [-v|--verbose]
 ```
 
-Liste tous les hooks découverts dans les répertoires de l’espace de travail, gérés, supplémentaires et intégrés.
-Le démarrage du Gateway ne charge pas les gestionnaires de hooks internes tant qu’au moins un hook interne n’est pas configuré.
+Répertorie les hooks découverts dans les répertoires de l’espace de travail, gérés, supplémentaires et intégrés.
 
-**Options :**
-
-- `--eligible` : Afficher uniquement les hooks admissibles (exigences satisfaites)
-- `--json` : Sortie au format JSON
-- `-v, --verbose` : Afficher des informations détaillées, y compris les exigences manquantes
-
-**Exemple de sortie :**
+- `--eligible` : uniquement les hooks dont les exigences sont satisfaites.
+- `--json` : sortie structurée.
+- `-v, --verbose` : inclut une colonne Missing indiquant les exigences non satisfaites.
 
 ```
-Hooks (4/4 ready)
+Hooks (4/5 prêts)
 
-Ready:
-  🚀 boot-md ✓ - Run BOOT.md on gateway startup
-  📎 bootstrap-extra-files ✓ - Inject extra workspace bootstrap files during agent bootstrap
-  📝 command-logger ✓ - Log all command events to a centralized audit file
-  💾 session-memory ✓ - Save session context to memory when /new or /reset command is issued
+Prêts :
+  🚀 boot-md ✓ - Exécuter BOOT.md au démarrage du Gateway
+  📎 bootstrap-extra-files ✓ - Injecter des fichiers d’amorçage supplémentaires de l’espace de travail pendant l’amorçage de l’agent
+  📝 command-logger ✓ - Consigner tous les événements de commande dans un fichier d’audit centralisé
+  💾 session-memory ✓ - Enregistrer le contexte de session dans la mémoire lors de l’émission de la commande /new ou /reset
 ```
-
-**Exemple (détaillé) :**
-
-```bash
-openclaw hooks list --verbose
-```
-
-Affiche les exigences manquantes pour les hooks non admissibles.
-
-**Exemple (JSON) :**
-
-```bash
-openclaw hooks list --json
-```
-
-Renvoie du JSON structuré pour une utilisation programmatique.
 
 ## Obtenir les informations d’un hook
 
 ```bash
-openclaw hooks info <name>
+openclaw hooks info <name> [--json]
 ```
 
-Afficher des informations détaillées sur un hook spécifique.
+`<name>` est le nom ou la clé du hook (par exemple `session-memory`). Affiche la source, les chemins du fichier et du gestionnaire, la page d’accueil, les événements et l’état de chaque exigence (binaires, environnement, configuration, système d’exploitation).
 
-**Arguments :**
-
-- `<name>` : Nom du hook ou clé du hook (par exemple, `session-memory`)
-
-**Options :**
-
-- `--json` : Sortie au format JSON
-
-**Exemple :**
+## Vérifier l’éligibilité
 
 ```bash
-openclaw hooks info session-memory
+openclaw hooks check [--json]
 ```
 
-**Sortie :**
-
-```
-💾 session-memory ✓ Ready
-
-Save session context to memory when /new or /reset command is issued
-
-Details:
-  Source: openclaw-bundled
-  Path: /path/to/openclaw/hooks/bundled/session-memory/HOOK.md
-  Handler: /path/to/openclaw/hooks/bundled/session-memory/handler.ts
-  Homepage: https://docs.openclaw.ai/automation/hooks#session-memory
-  Events: command:new, command:reset
-
-Requirements:
-  Config: ✓ workspace.dir
-```
-
-## Vérifier l’admissibilité des hooks
-
-```bash
-openclaw hooks check
-```
-
-Afficher un résumé de l’état d’admissibilité des hooks (combien sont prêts ou non).
-
-**Options :**
-
-- `--json` : Sortie au format JSON
-
-**Exemple de sortie :**
-
-```
-Hooks Status
-
-Total hooks: 4
-Ready: 4
-Not ready: 0
-```
+Affiche un récapitulatif du nombre de hooks prêts et non prêts ; lorsque des hooks ne sont pas prêts, les répertorie avec leur motif de blocage.
 
 ## Activer un hook
 
@@ -136,37 +65,11 @@ Not ready: 0
 openclaw hooks enable <name>
 ```
 
-Activer un hook spécifique en l’ajoutant à votre configuration (`~/.openclaw/openclaw.json` par défaut).
+Ajoute ou met à jour `hooks.internal.entries.<name>.enabled = true` dans la configuration et active également l’interrupteur principal `hooks.internal.enabled` (le Gateway ne charge aucun gestionnaire de hook interne tant qu’au moins un hook n’est pas configuré). Échoue si le hook n’existe pas, est géré par un Plugin ou n’est pas éligible (exigences manquantes).
 
-**Remarque :** Les hooks de l’espace de travail sont désactivés par défaut jusqu’à leur activation ici ou dans la configuration. Les hooks gérés par des plugins affichent `plugin:<id>` dans `openclaw hooks list` et ne peuvent pas être activés/désactivés ici. Activez/désactivez plutôt le plugin.
+Les hooks gérés par un Plugin affichent `plugin:<id>` dans `hooks list` et ne peuvent pas être activés ou désactivés ici ; activez ou désactivez plutôt le Plugin propriétaire.
 
-**Arguments :**
-
-- `<name>` : Nom du hook (par exemple, `session-memory`)
-
-**Exemple :**
-
-```bash
-openclaw hooks enable session-memory
-```
-
-**Sortie :**
-
-```
-✓ Enabled hook: 💾 session-memory
-```
-
-**Ce que cela fait :**
-
-- Vérifie si le hook existe et est admissible
-- Met à jour `hooks.internal.entries.<name>.enabled = true` dans votre configuration
-- Enregistre la configuration sur le disque
-
-Si le hook provient de `<workspace>/hooks/`, cette étape d’adhésion explicite est requise avant que le Gateway ne le charge.
-
-**Après l’activation :**
-
-- Redémarrez le Gateway afin que les hooks soient rechargés (redémarrage de l’application de la barre de menus sur macOS, ou redémarrage de votre processus Gateway en développement).
+Redémarrez le Gateway après l’activation (redémarrez l’application de la barre des menus sous macOS ou votre processus Gateway en développement) afin qu’il recharge les hooks.
 
 ## Désactiver un hook
 
@@ -174,169 +77,57 @@ Si le hook provient de `<workspace>/hooks/`, cette étape d’adhésion explicit
 openclaw hooks disable <name>
 ```
 
-Désactiver un hook spécifique en mettant à jour votre configuration.
+Définit `hooks.internal.entries.<name>.enabled = false`. Redémarrez ensuite le Gateway.
 
-**Arguments :**
-
-- `<name>` : Nom du hook (par exemple, `command-logger`)
-
-**Exemple :**
+## Installer et mettre à jour des packs de hooks
 
 ```bash
-openclaw hooks disable command-logger
-```
+openclaw plugins install <package>        # npm par défaut
+openclaw plugins install npm:<package>    # npm uniquement
+openclaw plugins install <package> --pin  # épingler la version résolue
+openclaw plugins install <path>           # répertoire local ou archive
+openclaw plugins install -l <path>        # lier un répertoire local au lieu de le copier
 
-**Sortie :**
-
-```
-⏸ Disabled hook: 📝 command-logger
-```
-
-**Après la désactivation :**
-
-- Redémarrez le Gateway afin que les hooks soient rechargés
-
-## Notes
-
-- `openclaw hooks list --json`, `info --json` et `check --json` écrivent du JSON structuré directement sur stdout.
-- Les hooks gérés par des plugins ne peuvent pas être activés ni désactivés ici ; activez ou désactivez plutôt le plugin propriétaire.
-
-## Installer des packs de hooks
-
-```bash
-openclaw plugins install <package>        # npm by default
-openclaw plugins install npm:<package>    # npm only
-openclaw plugins install <package> --pin  # pin version
-openclaw plugins install <path>           # local path
-```
-
-Installer des packs de hooks via l’installateur de plugins unifié.
-
-`openclaw hooks install` fonctionne toujours comme alias de compatibilité, mais il affiche un avertissement d’obsolescence et transfère vers `openclaw plugins install`.
-
-Les spécifications npm sont **uniquement issues du registre** (nom du paquet + **version exacte** facultative ou **dist-tag**). Les spécifications Git/URL/fichier et les plages semver sont rejetées. Les installations de dépendances s’exécutent localement au projet avec `--ignore-scripts` par sécurité, même lorsque votre shell a des paramètres globaux d’installation npm.
-
-Les spécifications nues et `@latest` restent sur le canal stable. Si npm résout l’une ou l’autre vers une préversion, OpenClaw s’arrête et vous demande d’accepter explicitement avec une balise de préversion comme `@beta`/`@rc` ou une version de préversion exacte.
-
-**Ce que cela fait :**
-
-- Copie le pack de hooks dans `~/.openclaw/hooks/<id>`
-- Active les hooks installés dans `hooks.internal.entries.*`
-- Enregistre l’installation sous `hooks.internal.installs`
-
-**Options :**
-
-- `-l, --link` : Lier un répertoire local au lieu de le copier (l’ajoute à `hooks.internal.load.extraDirs`)
-- `--pin` : Enregistrer les installations npm comme `name@version` résolus exacts dans `hooks.internal.installs`
-
-**Archives prises en charge :** `.zip`, `.tgz`, `.tar.gz`, `.tar`
-
-**Exemples :**
-
-```bash
-# Local directory
-openclaw plugins install ./my-hook-pack
-
-# Local archive
-openclaw plugins install ./my-hook-pack.zip
-
-# NPM package
-openclaw plugins install @openclaw/my-hook-pack
-
-# Link a local directory without copying
-openclaw plugins install -l ./my-hook-pack
-```
-
-Les packs de hooks liés sont traités comme des hooks gérés depuis un répertoire configuré par l’opérateur, et non comme des hooks de l’espace de travail.
-
-## Mettre à jour des packs de hooks
-
-```bash
 openclaw plugins update <id>
 openclaw plugins update --all
+openclaw plugins update --dry-run
 ```
 
-Mettre à jour les packs de hooks basés sur npm suivis via le programme de mise à jour de plugins unifié.
+Les packs de hooks s’installent au moyen du programme unifié d’installation et de mise à jour des plugins ; `openclaw hooks install` et `openclaw hooks update` fonctionnent encore comme alias obsolètes qui affichent un avertissement et transmettent la commande aux commandes `plugins`.
 
-`openclaw hooks update` fonctionne toujours comme alias de compatibilité, mais il affiche un avertissement d’obsolescence et transfère vers `openclaw plugins update`.
-
-**Options :**
-
-- `--all` : Mettre à jour tous les packs de hooks suivis
-- `--dry-run` : Afficher ce qui changerait sans écrire
-
-Lorsqu’un hachage d’intégrité enregistré existe et que le hachage de l’artefact récupéré change, OpenClaw affiche un avertissement et demande confirmation avant de continuer. Utilisez l’option globale `--yes` pour contourner les invites dans les exécutions CI/non interactives.
+- Les spécifications npm sont limitées au registre : nom du paquet accompagné facultativement d’une version exacte ou d’un dist-tag. Les spécifications Git, URL et fichier ainsi que les plages semver sont rejetées. L’installation des dépendances s’exécute localement dans le projet avec `--ignore-scripts`.
+- Les spécifications seules et `@latest` restent sur le canal stable ; si npm résout une préversion, OpenClaw s’arrête et vous demande de l’accepter explicitement (`@beta`, `@rc` ou une version préliminaire exacte).
+- Archives prises en charge : `.zip`, `.tgz`, `.tar.gz`, `.tar`.
+- `-l, --link` lie un répertoire local au lieu de le copier (et l’ajoute à `hooks.internal.load.extraDirs`) ; les packs de hooks liés sont des hooks gérés provenant d’un répertoire configuré par un opérateur, et non des hooks de l’espace de travail.
+- `--pin` enregistre les installations npm sous la forme exacte `name@version` résolue dans `hooks.internal.installs`.
+- L’installation copie le pack dans `~/.openclaw/hooks/<id>`, active ses hooks sous `hooks.internal.entries.*` et enregistre l’installation sous `hooks.internal.installs`.
+- Si une empreinte d’intégrité enregistrée ne correspond plus à l’artefact récupéré, OpenClaw affiche un avertissement et demande confirmation avant de poursuivre ; transmettez l’option globale `--yes` pour ignorer la demande (par exemple dans un environnement CI).
 
 ## Hooks intégrés
 
-### session-memory
+| Hook                  | Événements                                         | Fonction                                                                                                        |
+| --------------------- | -------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
+| boot-md               | `gateway:startup`                                  | Exécute `BOOT.md` au démarrage du Gateway pour chaque portée d’agent configurée                                |
+| bootstrap-extra-files | `agent:bootstrap`                                  | Injecte des fichiers d’amorçage supplémentaires (par exemple `AGENTS.md`/`TOOLS.md` d’un monorepo) pendant l’amorçage de l’agent |
+| command-logger        | `command`                                          | Consigne les événements de commande dans `~/.openclaw/logs/commands.log`                                       |
+| compaction-notifier   | `session:compact:before`, `session:compact:after`  | Envoie des notifications visibles dans le chat au début et à la fin de la Compaction de session                |
+| session-memory        | `command:new`, `command:reset`                     | Enregistre le contexte de session dans la mémoire lors de `/new` ou `/reset`                                   |
 
-Enregistre le contexte de session en mémoire lorsque vous exécutez `/new` ou `/reset`.
+Activez n’importe quel hook intégré avec `openclaw hooks enable <hook-name>`. Détails complets, clés de configuration et valeurs par défaut : [Hooks intégrés](/fr/automation/hooks#bundled-hooks).
 
-**Activer :**
-
-```bash
-openclaw hooks enable session-memory
-```
-
-**Sortie :** `~/.openclaw/workspace/memory/YYYY-MM-DD-HHMM.md` par défaut. Définissez `hooks.internal.entries.session-memory.llmSlug: true` pour des slugs de noms de fichiers générés par le modèle.
-
-**Voir :** [documentation de session-memory](/fr/automation/hooks#session-memory)
-
-### bootstrap-extra-files
-
-Injecte des fichiers d’amorçage supplémentaires (par exemple `AGENTS.md` / `TOOLS.md` locaux au monorepo) pendant `agent:bootstrap`.
-
-**Activer :**
+### Fichier journal de command-logger
 
 ```bash
-openclaw hooks enable bootstrap-extra-files
+tail -n 20 ~/.openclaw/logs/commands.log        # commandes récentes
+cat ~/.openclaw/logs/commands.log | jq .          # affichage mis en forme
+grep '"action":"new"' ~/.openclaw/logs/commands.log | jq .   # filtrer par action
 ```
 
-**Voir :** [documentation de bootstrap-extra-files](/fr/automation/hooks#bootstrap-extra-files)
+## Remarques
 
-### command-logger
+- `hooks list --json`, `info --json` et `check --json` écrivent directement du JSON structuré dans la sortie standard.
 
-Journalise tous les événements de commande dans un fichier d’audit centralisé.
+## Voir aussi
 
-**Activer :**
-
-```bash
-openclaw hooks enable command-logger
-```
-
-**Sortie :** `~/.openclaw/logs/commands.log`
-
-**Voir les journaux :**
-
-```bash
-# Recent commands
-tail -n 20 ~/.openclaw/logs/commands.log
-
-# Pretty-print
-cat ~/.openclaw/logs/commands.log | jq .
-
-# Filter by action
-grep '"action":"new"' ~/.openclaw/logs/commands.log | jq .
-```
-
-**Voir :** [documentation de command-logger](/fr/automation/hooks#command-logger)
-
-### boot-md
-
-Exécute `BOOT.md` au démarrage du Gateway (après le démarrage des canaux).
-
-**Événements** : `gateway:startup`
-
-**Activer** :
-
-```bash
-openclaw hooks enable boot-md
-```
-
-**Voir :** [documentation de boot-md](/fr/automation/hooks#boot-md)
-
-## Associé
-
-- [Référence CLI](/fr/cli)
+- [Référence de la CLI](/fr/cli)
 - [Hooks d’automatisation](/fr/automation/hooks)

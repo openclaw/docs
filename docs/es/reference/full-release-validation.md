@@ -1,26 +1,27 @@
 ---
 read_when:
-    - Ejecución o repetición de la Validación completa de la versión
-    - Comparación de los perfiles de validación de versiones estable y completa
-    - Depuración de fallos en las etapas de validación de lanzamiento
-summary: Etapas de validación de la versión completa, flujos de trabajo secundarios, perfiles de lanzamiento, identificadores de repetición de ejecución y evidencia
+    - Ejecutar o volver a ejecutar la validación completa de la versión
+    - Comparación de los perfiles de validación de versiones estables y completas
+    - Depuración de fallos en las etapas de validación de versiones
+summary: Etapas de validación completa de la versión, flujos de trabajo secundarios, perfiles de versión, identificadores de repetición y evidencia
 title: Validación completa de la versión
 x-i18n:
-    generated_at: "2026-07-05T11:43:23Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:48:49Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: a5ece97d1f12e6a097cf9314acd47614f0f80cee704b1b48c0cedfe5e39ff064
+    source_hash: a0c152128a27b173f131bcf2754c7f06d7bf3e9f7d2d1d0f745ab999f53c78c9
     source_path: reference/full-release-validation.md
     workflow: 16
 ---
 
 `Full Release Validation` es el paraguas de la versión: el único punto de entrada manual
-para la prueba previa al lanzamiento. La mayor parte del trabajo ocurre en flujos de trabajo secundarios para que una máquina fallida pueda
-volver a ejecutarse sin reiniciar toda la versión.
+para las pruebas previas a la publicación. La mayor parte del trabajo ocurre en flujos de trabajo secundarios para que un entorno con errores pueda
+volver a ejecutarse sin reiniciar toda la publicación.
 
-Ejecútalo desde una referencia de flujo de trabajo de confianza, normalmente `main`, y pasa la rama de versión,
-la etiqueta o el SHA completo de commit como `ref`:
+Ejecútelo desde una referencia de flujo de trabajo de confianza, normalmente `main`, y pase la rama de publicación,
+la etiqueta o el SHA completo de la confirmación como `ref`:
 
 ```bash
 gh workflow run full-release-validation.yml \
@@ -31,198 +32,251 @@ gh workflow run full-release-validation.yml \
   -f release_profile=stable
 ```
 
-`provider` también acepta `anthropic` o `minimax` para la incorporación multiplataforma y el
-turno de agente de extremo a extremo. Los flujos de trabajo secundarios usan la referencia de flujo de trabajo de confianza para el
-arnés y el `ref` de entrada para el candidato bajo prueba, por lo que la nueva lógica de validación
-sigue disponible al validar una rama o etiqueta de versión anterior.
+`provider` también acepta `anthropic` o `minimax` para la incorporación entre sistemas operativos y el
+turno de agente de extremo a extremo. Los trabajos secundarios reutilizables resuelven el entorno del flujo de trabajo invocado
+desde `job.workflow_repository` y `job.workflow_sha`, mientras que la entrada `ref`
+selecciona el candidato sometido a prueba. Esto mantiene disponible la lógica actual de validación
+de confianza al validar una rama o etiqueta de una versión anterior.
 
-`release_profile=stable` y `release_profile=full` siempre ejecutan la prueba prolongada
-live/Docker exhaustiva. Pasa `run_release_soak=true` para incluir los mismos carriles de prueba prolongada
+Cada flujo secundario iniciado debe informar el mismo SHA de flujo de trabajo que la ejecución principal de
+`Full Release Validation`. Si `main` cambia entre los inicios del flujo principal y los secundarios,
+el paraguas aplica un cierre seguro incluso si el flujo secundario tiene éxito. Para
+una prueba inmutable de una confirmación exacta, use
+`pnpm ci:full-release --sha <target-sha>`. El auxiliar crea una referencia temporal
+`release-ci/*` fijada al `origin/main` de confianza actual, pasa el SHA de destino
+solo como la referencia candidata `ref`, reutiliza pruebas estrictas del destino exacto cuando
+están disponibles y elimina la referencia después de la validación. Pase
+`-f reuse_evidence=false` para forzar una ejecución nueva o
+`--workflow-sha <trusted-main-sha>` para seleccionar una confirmación anterior del flujo de trabajo que aún sea
+accesible desde el `origin/main` actual. El flujo de trabajo nunca crea ni actualiza
+referencias del repositorio por sí mismo.
+
+`release_profile=stable` y `release_profile=full` siempre ejecutan la prueba prolongada exhaustiva
+en vivo/Docker. Pase `run_release_soak=true` para incluir las mismas fases de prueba prolongada
 con el perfil `beta`. La publicación estable rechaza un manifiesto de validación
-sin esta prueba prolongada y sin evidencia bloqueante de rendimiento del producto.
+sin esta prueba prolongada y sin pruebas bloqueantes del rendimiento del producto.
 
-Package Acceptance normalmente compila el tarball candidato desde el `ref`
-resuelto, incluidas las ejecuciones con SHA completo despachadas con `pnpm ci:full-release`. Después de una
-publicación beta, pasa `release_package_spec=openclaw@YYYY.M.PATCH-beta.N` para reutilizar
-el paquete npm publicado en las comprobaciones de versión, Package Acceptance, multiplataforma,
-Docker de ruta de versión y Telegram de paquete. Usa `package_acceptance_package_spec`
-solo cuando Package Acceptance deba demostrar intencionadamente un paquete diferente.
-El carril de paquete live del plugin Codex sigue el mismo estado: los valores
-`release_package_spec` publicados derivan `codex_plugin_spec=npm:@openclaw/codex@<version>`;
-las ejecuciones con SHA/artefacto empaquetan `extensions/codex` desde el ref seleccionado; y los operadores
-pueden establecer `codex_plugin_spec` directamente para fuentes de plugin `npm:`, `npm-pack:` o `git:`.
-El carril concede la aprobación explícita de instalación de Codex CLI requerida por
-ese plugin, luego ejecuta la comprobación previa de Codex CLI y turnos de agente de OpenAI en la misma sesión.
+Package Acceptance normalmente compila el tarball candidato desde la referencia
+`ref` resuelta, incluidas las ejecuciones de SHA completo iniciadas con `pnpm ci:full-release`. Después de
+una publicación beta, pase `release_package_spec=openclaw@YYYY.M.PATCH-beta.N` para reutilizar
+el paquete npm publicado en las comprobaciones de publicación, Package Acceptance, las pruebas entre sistemas operativos,
+la ruta de publicación de Docker y Telegram con el paquete. Use `package_acceptance_package_spec`
+solo cuando Package Acceptance deba probar intencionadamente un paquete diferente.
+La fase del paquete en vivo del Plugin Codex sigue el mismo estado: los valores publicados de
+`release_package_spec` derivan `codex_plugin_spec=npm:@openclaw/codex@<version>`;
+las ejecuciones por SHA/artefacto empaquetan `extensions/codex` desde la referencia seleccionada; y los operadores
+pueden establecer `codex_plugin_spec` directamente para fuentes del Plugin
+`npm:`, `npm-pack:` o `git:`. La fase concede la aprobación explícita de instalación de la CLI de Codex que
+requiere ese Plugin y, después, ejecuta la comprobación previa de la CLI de Codex y turnos del agente OpenAI en la misma sesión.
 
 ## Etapas de nivel superior
 
-Para `rerun_group=all`, un trabajo `Verify Docker runtime image assets` bloquea todas las
-demás etapas: compila el objetivo Docker `runtime-assets` con
-`OPENCLAW_EXTENSIONS=diagnostics-otel,codex` antes de que se despache cualquier otra cosa. Un
-`rerun_group` más limitado omite esta comprobación previa.
+Para `rerun_group=all`, primero se ejecuta un trabajo `Check for reusable validation evidence`:
+busca la validación completa correcta más reciente para exactamente el mismo
+SHA de destino, perfil de publicación, configuración efectiva de prueba prolongada y entradas de validación.
+Cuando existen esas pruebas, se omiten todas las fases y el verificador del paraguas
+vuelve a comprobar el artefacto inmutable del flujo principal, las ejecuciones secundarias y los registros de inicio. Esto es
+solo una recuperación de reejecución para el mismo candidato; no autoriza la reutilización entre distintos SHA. Para
+un candidato modificado, vuelva a ejecutar cada puerta de paquete, artefacto, instalación, Docker o proveedor
+afectada por esa diferencia. Pase `reuse_evidence=false` para forzar una nueva ejecución
+completa. La reutilización de pruebas solo se ejecuta desde `main` o desde una referencia canónica
+`release-ci/*` fijada por SHA cuya confirmación del flujo de trabajo permanezca en el linaje de confianza de `main`;
+otras referencias del flujo de trabajo ejecutan las fases seleccionadas desde cero.
 
-| Etapa                   | Detalles                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
-| ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Resolución del objetivo       | **Trabajo:** `Resolve target ref`<br />**Flujo de trabajo secundario:** ninguno<br />**Demuestra:** resuelve la rama de versión, la etiqueta o el SHA completo de commit y registra las entradas seleccionadas.<br />**Reejecución:** vuelve a ejecutar el paraguas si esto falla.                                                                                                                                                                                                                                             |
-| Comprobación previa de recursos Docker | **Trabajo:** `Verify Docker runtime image assets`<br />**Flujo de trabajo secundario:** ninguno<br />**Demuestra:** el objetivo de compilación Docker `runtime-assets` todavía se completa correctamente antes de que se despache cualquier otra etapa. Se ejecuta solo para `rerun_group=all`.<br />**Reejecución:** vuelve a ejecutar el paraguas con `rerun_group=all`.                                                                                                                                                                          |
-| Vitest y CI normal    | **Trabajo:** `Run normal full CI`<br />**Flujo de trabajo secundario:** `CI`<br />**Demuestra:** grafo de CI completo manual contra el ref objetivo, incluidos carriles de Linux Node, fragmentos de plugins incluidos, fragmentos de contrato de plugins y canales, compatibilidad con Node 22, `check-*`, `check-additional-*`, comprobaciones de humo de artefactos compilados, comprobaciones de documentación, Skills de Python, Windows, macOS, i18n de Control UI y Android mediante el paraguas.<br />**Reejecución:** `rerun_group=ci`.                           |
-| Prelanzamiento de plugins       | **Trabajo:** `Run plugin prerelease validation`<br />**Flujo de trabajo secundario:** `Plugin Prerelease`<br />**Demuestra:** comprobaciones estáticas de plugins exclusivas de versión, cobertura agéntica de plugins, fragmentos completos por lotes de plugins, carriles Docker de prelanzamiento de plugins y un artefacto no bloqueante `plugin-inspector-advisory` para triaje de compatibilidad.<br />**Reejecución:** `rerun_group=plugin-prerelease`.                                                                                           |
-| Comprobaciones de versión          | **Trabajo:** `Run release/live/Docker/QA validation`<br />**Flujo de trabajo secundario:** `OpenClaw Release Checks`<br />**Demuestra:** humo de instalación, comprobaciones de paquete multiplataforma, Package Acceptance, paridad de QA Lab, Matrix live y Telegram live. Los perfiles estable y completo también ejecutan suites live/E2E exhaustivas y fragmentos Docker de ruta de versión; beta puede optar por incluirlos con `run_release_soak=true`.<br />**Reejecución:** `rerun_group=release-checks` o un identificador de release-checks más limitado. |
-| Telegram de paquete        | **Trabajo:** `Run package Telegram E2E`<br />**Flujo de trabajo secundario:** `NPM Telegram Beta E2E`<br />**Demuestra:** un E2E enfocado de Telegram con paquete publicado cuando `release_package_spec` o `npm_telegram_package_spec` está establecido. La validación completa del candidato usa en su lugar el E2E canónico de Telegram de Package Acceptance.<br />**Reejecución:** `rerun_group=npm-telegram` con `release_package_spec` o `npm_telegram_package_spec`.                                               |
-| Rendimiento del producto     | **Trabajo:** `Run product performance evidence`<br />**Flujo de trabajo secundario:** `OpenClaw Performance`<br />**Demuestra:** ejecución de rendimiento de perfil de versión (`profile=release`, `repeat=3`, `fail_on_regression=true`) contra el SHA objetivo. Requerido (bloqueante) solo para `rerun_group=all` o `rerun_group=performance`; no requerido para grupos de reejecución más limitados.<br />**Reejecución:** `rerun_group=performance`.                                                              |
-| Verificador del paraguas       | **Trabajo:** `Verify full validation`<br />**Flujo de trabajo secundario:** ninguno<br />**Demuestra:** vuelve a comprobar las conclusiones registradas de las ejecuciones secundarias y añade tablas de trabajos más lentos desde los flujos de trabajo secundarios.<br />**Reejecución:** vuelve a ejecutar solo este trabajo después de volver a ejecutar un flujo secundario fallido hasta que pase.                                                                                                                                                                                                  |
+También para `rerun_group=all`, un trabajo `Verify Docker runtime image assets` compila
+el destino Docker `runtime-assets` con
+`OPENCLAW_EXTENSIONS=diagnostics-otel,codex`. Se ejecuta en paralelo con las
+demás etapas y el verificador del paraguas lo aplica; las fases ya no esperan a que
+termine antes de iniciarse. Un `rerun_group` más específico omite esta comprobación previa.
 
-Para `ref=main` y `rerun_group=all`, un paraguas más nuevo sustituye a uno anterior.
-Cuando se cancela el padre, su monitor cancela cualquier flujo de trabajo secundario que ya haya
-despachado. Las ejecuciones de validación de ramas de versión y etiquetas no se cancelan entre sí de
-forma predeterminada.
+| Etapa                   | Detalles                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Resolución del destino       | **Trabajo:** `Resolve target ref`<br />**Flujo de trabajo secundario:** ninguno<br />**Demuestra:** resuelve la rama de publicación, la etiqueta o el SHA completo de la confirmación y registra las entradas seleccionadas.<br />**Reejecución:** vuelva a ejecutar el paraguas si esto falla.                                                                                                                                                                                                                                                                                                            |
+| Comprobación previa de los recursos de Docker | **Trabajo:** `Verify Docker runtime image assets`<br />**Flujo de trabajo secundario:** ninguno<br />**Demuestra:** el destino de compilación de Docker `runtime-assets` continúa funcionando correctamente antes de iniciar cualquier otra etapa. Solo se ejecuta para `rerun_group=all`.<br />**Reejecución:** vuelva a ejecutar el paraguas con `rerun_group=all`.                                                                                                                                                                                                                                         |
+| Vitest y CI normal    | **Trabajo:** `Run normal full CI`<br />**Flujo de trabajo secundario:** `CI`<br />**Demuestra:** el grafo manual completo de CI para la referencia de destino, incluidas las fases de Node en Linux, los fragmentos de Plugins incluidos, los fragmentos de contratos de Plugins y canales, la compatibilidad con Node 22, `check-*`, `check-additional-*`, las comprobaciones de humo de artefactos compilados, las comprobaciones de documentación, las Skills de Python, Windows, macOS, la i18n de Control UI y Android mediante el paraguas.<br />**Reejecución:** `rerun_group=ci`.                                                                                          |
+| Versión preliminar de Plugins       | **Trabajo:** `Run plugin prerelease validation`<br />**Flujo de trabajo secundario:** `Plugin Prerelease`<br />**Demuestra:** comprobaciones estáticas de Plugins exclusivas de publicación, cobertura agéntica de Plugins, fragmentos completos por lotes de Plugins, fases Docker de versión preliminar de Plugins y un artefacto no bloqueante `plugin-inspector-advisory` para la clasificación de compatibilidad.<br />**Reejecución:** `rerun_group=plugin-prerelease`.                                                                                                                                                          |
+| Comprobaciones de publicación          | **Trabajo:** `Run release/live/Docker/QA validation`<br />**Flujo de trabajo secundario:** `OpenClaw Release Checks`<br />**Demuestra:** prueba de humo de instalación, comprobaciones de paquetes entre sistemas operativos, Package Acceptance, paridad de QA Lab, Matrix en vivo y Telegram en vivo. Los perfiles estable y completo también ejecutan conjuntos exhaustivos de pruebas en vivo/E2E y fragmentos de la ruta de publicación de Docker; beta puede incluirlos con `run_release_soak=true`.<br />**Reejecución:** `rerun_group=release-checks` o un identificador más específico de las comprobaciones de publicación.                                                                |
+| Telegram con el paquete        | **Trabajo:** `Run package Telegram E2E`<br />**Flujo de trabajo secundario:** `NPM Telegram Beta E2E`<br />**Demuestra:** una prueba E2E específica de Telegram con el paquete publicado cuando se establece `release_package_spec` o `npm_telegram_package_spec`. La validación completa del candidato utiliza en su lugar la prueba E2E canónica de Telegram de Package Acceptance.<br />**Reejecución:** `rerun_group=npm-telegram` con `release_package_spec` o `npm_telegram_package_spec`.                                                                                                              |
+| Rendimiento del producto     | **Trabajo:** `Run product performance evidence`<br />**Flujo de trabajo secundario:** `OpenClaw Performance`<br />**Demuestra:** ejecución de rendimiento del perfil de publicación (`profile=release`, `repeat=3`, `fail_on_regression=true`, `publish_reports=false`) para el SHA de destino. La salida de Kova permanece en los artefactos del flujo de trabajo y el flujo secundario debe demostrar que se omitió su publicador de informes. Se requiere (y es bloqueante) solo para `rerun_group=all` o `rerun_group=performance`; no se requiere para grupos de reejecución más específicos.<br />**Reejecución:** `rerun_group=performance`. |
+| Verificador del paraguas       | **Trabajo:** `Verify full validation`<br />**Flujo de trabajo secundario:** ninguno<br />**Demuestra:** vuelve a comprobar las conclusiones registradas de las ejecuciones secundarias y agrega tablas de los trabajos más lentos de los flujos de trabajo secundarios.<br />**Reejecución:** vuelva a ejecutar solo este trabajo después de volver a ejecutar correctamente un flujo secundario que había fallado.                                                                                                                                                                                                                                                                 |
 
-## Etapas de comprobaciones de versión
+El paraguas siempre inicia el rendimiento del producto en modo de solo artefactos.
+`OpenClaw Performance` permite publicar informes únicamente para ejecuciones programadas o un
+inicio manual que establezca explícitamente `publish_reports=true`. La protección de solo artefactos
+debe completarse correctamente, lo que demuestra que el trabajo del publicador permaneció omitido.
+Las pruebas nuevas y reutilizadas registran
+`controls.performanceReportPublication=artifact-only`; el verificador y el selector de reutilización
+rechazan pruebas que no incluyan la prueba normalizada correspondiente del flujo secundario
+de rendimiento.
 
-`OpenClaw Release Checks` es el flujo de trabajo secundario más grande. Resuelve el objetivo
-una vez y prepara un artefacto compartido `release-package-under-test` cuando las etapas orientadas a paquetes
-o Docker lo necesitan.
+El verificador carga el manifiesto canónico como
+`full-release-validation-<run-id>-<run-attempt>`. Las herramientas de pruebas validan
+su ID de artefacto, resumen, ejecución productora e intento antes de descargar exactamente ese
+ID de artefacto. Limitan el ZIP descargado, verifican sus bytes con respecto al resumen
+`sha256:` de REST y transmiten la única entrada permitida y limitada del manifiesto sin
+extraer el archivo. Se mantiene temporalmente un alias de nombre estable para consumidores de
+publicación anteriores. El verificador siempre prefiere el artefacto calificado por intento;
+como transición, acepta el nombre estable solo para un productor del manifiesto v2
+en el intento 1. Rechaza ese nombre heredado para intentos posteriores y para el manifiesto v3.
+
+Para `ref=main` con `rerun_group=all`, para referencias `release/*` y para referencias alfa de Tideclaw,
+una ejecución más reciente del paraguas reemplaza una anterior con la misma referencia y
+el mismo grupo de reejecución. Cuando se cancela el flujo principal, su monitor cancela cualquier flujo de trabajo
+secundario que ya haya iniciado. Las ejecuciones de validación con etiquetas y SHA fijados no
+se cancelan entre sí.
+
+## Etapas de comprobación de la publicación
+
+`OpenClaw Release Checks` es el flujo de trabajo secundario más grande. Resuelve el destino
+una sola vez y prepara un artefacto compartido `release-package-under-test` cuando las etapas
+orientadas a paquetes o Docker lo necesitan.
 
 | Etapa                    | Detalles                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | ------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Objetivo de versión      | **Trabajo:** `Resolve target ref`<br />**Flujo de trabajo de respaldo:** ninguno<br />**Pruebas:** referencia seleccionada, SHA esperado opcional, perfil, grupo de reejecución y filtro enfocado de suite en vivo.<br />**Reejecución:** `rerun_group=release-checks`.                                                                                                                                                                                                                                                                                                          |
-| Artefacto de paquete     | **Trabajo:** `Prepare release package artifact`<br />**Flujo de trabajo de respaldo:** ninguno<br />**Pruebas:** empaqueta o resuelve un tarball candidato y sube `release-package-under-test` para comprobaciones posteriores orientadas a paquetes.<br />**Reejecución:** el grupo de paquete afectado, cross-OS o en vivo/E2E.                                                                                                                                                                                                                                                |
-| Smoke de instalación     | **Trabajo:** `Run install smoke`<br />**Flujo de trabajo de respaldo:** `Install Smoke`<br />**Pruebas:** ruta de instalación completa con reutilización de imagen smoke del Dockerfile raíz, instalación de paquete QR, smokes de Docker raíz y Gateway, pruebas de Docker del instalador y smoke de proveedor de imágenes con instalación global de Bun.<br />**Reejecución:** `rerun_group=install-smoke`.                                                                                                                                                                      |
-| Cross-OS                 | **Trabajo:** `cross_os_release_checks`<br />**Flujo de trabajo de respaldo:** `OpenClaw Cross-OS Release Checks (Reusable)`<br />**Pruebas:** carriles nuevos y de actualización en Linux, Windows y macOS para el proveedor y modo seleccionados, usando el tarball candidato más un paquete de referencia.<br />**Reejecución:** `rerun_group=cross-os`.                                                                                                                                                                                                                         |
-| Repositorio y E2E en vivo | **Trabajo:** `Run repo/live E2E validation`<br />**Flujo de trabajo de respaldo:** `OpenClaw Live And E2E Checks (Reusable)`<br />**Pruebas:** E2E de repositorio, caché en vivo, streaming websocket de OpenAI, shards de proveedor en vivo nativo y Plugin, y arneses de modelo/backend/Gateway en vivo respaldados por Docker seleccionados por `release_profile`.<br />**Ejecuciones:** `run_release_soak=true`, `release_profile=full` o `rerun_group=live-e2e` enfocado.<br />**Reejecución:** `rerun_group=live-e2e`, opcionalmente con `live_suite_filter`. |
-| Ruta de versión Docker   | **Trabajo:** `Run Docker release-path validation`<br />**Flujo de trabajo de respaldo:** `OpenClaw Live And E2E Checks (Reusable)`<br />**Pruebas:** fragmentos de Docker de ruta de versión contra el artefacto de paquete compartido.<br />**Ejecuciones:** `run_release_soak=true`, `release_profile=full` o `rerun_group=live-e2e` enfocado.<br />**Reejecución:** `rerun_group=live-e2e`.                                                                                                                                                                                |
-| Aceptación de paquetes   | **Trabajo:** `Run package acceptance`<br />**Flujo de trabajo de respaldo:** `Package Acceptance`<br />**Pruebas:** fixtures de paquete Plugin sin conexión, actualización de Plugin, el E2E canónico del paquete mock-OpenAI Telegram y comprobaciones de supervivencia de actualización publicada contra el mismo tarball. Las comprobaciones de versión bloqueantes usan la referencia publicada más reciente predeterminada; las comprobaciones soak (`run_release_soak=true`) se amplían a las últimas 4 versiones estables de npm más 3 versiones históricas fijadas (`2026.4.23`, `2026.5.2`, `2026.4.15`), ejecutadas contra fixtures de actualización de incidencias reportadas.<br />**Reejecución:** `rerun_group=package`. |
-| Tarjeta de puntuación de madurez | **Trabajo:** `Render maturity scorecard release docs`<br />**Flujo de trabajo de respaldo:** `maturity-scorecard.yml`<br />**Pruebas:** renderiza la documentación de la tarjeta de puntuación de madurez consultiva contra la referencia objetivo. Solo se ejecuta cuando se pasa `run_maturity_scorecard=true`.<br />**Reejecución:** `rerun_group=qa` con `run_maturity_scorecard=true`.                                                                                                                                                                               |
-| Paridad de QA            | **Trabajo:** `Run QA Lab parity lane` y `Run QA Lab parity report`<br />**Flujo de trabajo de respaldo:** trabajos directos<br />**Pruebas:** paquetes de paridad agéntica candidata y de referencia, y luego el informe de paridad.<br />**Reejecución:** `rerun_group=qa-parity` o `rerun_group=qa`.                                                                                                                                                                                                                                                                             |
-| Paridad de runtime de QA | **Trabajo:** `Run QA Lab runtime parity lane`<br />**Flujo de trabajo de respaldo:** trabajo directo<br />**Pruebas:** un carril de paridad agéntica de par de runtimes `openclaw`/`codex` (`pnpm openclaw qa suite --runtime-pair openclaw,codex`), incluido un nivel estándar y, con `run_release_soak=true`, un nivel soak. Consultivo: los fallos individuales no bloquean el verificador de comprobaciones de versión.<br />**Reejecución:** `rerun_group=qa-parity` o `rerun_group=qa`.                                                                                      |
-| Cobertura de herramientas del runtime de QA | **Trabajo:** `Enforce QA Lab runtime tool coverage`<br />**Flujo de trabajo de respaldo:** trabajo directo<br />**Pruebas:** deriva dinámica de herramientas entre `openclaw` y `codex` en el nivel estándar de paridad de runtime (`pnpm openclaw qa coverage --tools`), usando la salida del carril de paridad de runtime de QA. Bloqueante: este trabajo no se puede anular como consultivo.<br />**Reejecución:** `rerun_group=qa-parity` o `rerun_group=qa`.                                                                                     |
-| Matrix en vivo de QA     | **Trabajo:** `Run QA Lab live Matrix lane`<br />**Flujo de trabajo de respaldo:** trabajo directo<br />**Pruebas:** perfil rápido de QA de Matrix en vivo en el entorno `qa-live-shared`.<br />**Reejecución:** `rerun_group=qa-live` o `rerun_group=qa`.                                                                                                                                                                                                                                                                                                                           |
-| Telegram en vivo de QA   | **Trabajo:** `Run QA Lab live Telegram lane`<br />**Flujo de trabajo de respaldo:** trabajo directo<br />**Pruebas:** QA de Telegram en vivo con arrendamientos de credenciales de Convex CI.<br />**Reejecución:** `rerun_group=qa-live` o `rerun_group=qa`.                                                                                                                                                                                                                                                                                                                       |
-| Verificador de versión   | **Trabajo:** `Verify release checks`<br />**Flujo de trabajo de respaldo:** ninguno<br />**Pruebas:** trabajos requeridos de comprobación de versión para el grupo de reejecución seleccionado.<br />**Reejecución:** reejecutar después de que pasen los trabajos secundarios enfocados.                                                                                                                                                                                                                                                                                         |
+| Objetivo de la versión           | **Trabajo:** `Resolve target ref`<br />**Flujo de trabajo subyacente:** ninguno<br />**Pruebas:** referencia seleccionada, SHA esperado opcional, perfil, grupo de repetición y filtro específico de la suite en vivo.<br />**Repetición:** `rerun_group=release-checks`.                                                                                                                                                                                                                                                                                                                                                             |
+| Artefacto del paquete         | **Trabajo:** `Prepare release package artifact`<br />**Flujo de trabajo subyacente:** ninguno<br />**Pruebas:** empaqueta o resuelve un único tarball candidato y carga `release-package-under-test` para las comprobaciones posteriores relacionadas con el paquete.<br />**Repetición:** el grupo afectado de paquete, multiplataforma o en vivo/E2E.                                                                                                                                                                                                                                                                                             |
+| Prueba rápida de instalación            | **Trabajo:** `Run install smoke`<br />**Flujo de trabajo subyacente:** `Install Smoke`<br />**Pruebas:** ruta de instalación completa con reutilización de la imagen de prueba rápida del Dockerfile raíz, instalación del paquete QR, pruebas rápidas de Docker de la raíz y del Gateway, pruebas de Docker del instalador y prueba rápida del proveedor de imágenes con instalación global mediante Bun.<br />**Repetición:** `rerun_group=install-smoke`.                                                                                                                                                                                                                                                           |
+| Multiplataforma                 | **Trabajo:** `cross_os_release_checks`<br />**Flujo de trabajo subyacente:** `OpenClaw Cross-OS Release Checks (Reusable)`<br />**Pruebas:** carriles de instalación nueva y actualización en Linux, Windows y macOS para el proveedor y el modo seleccionados, utilizando el tarball candidato junto con un paquete de referencia.<br />**Repetición:** `rerun_group=cross-os`.                                                                                                                                                                                                                                                                 |
+| E2E del repositorio y en vivo        | **Trabajo:** `Run repo/live E2E validation`<br />**Flujo de trabajo subyacente:** `OpenClaw Live And E2E Checks (Reusable)`<br />**Pruebas:** E2E del repositorio, caché en vivo, streaming mediante websocket de OpenAI, fragmentos del proveedor nativo en vivo y de plugins, y arneses de modelo/backend/gateway en vivo respaldados por Docker y seleccionados mediante `release_profile`.<br />**Ejecuciones:** `run_release_soak=true`, `release_profile=full` o el grupo específico `rerun_group=live-e2e`.<br />**Repetición:** `rerun_group=live-e2e`, opcionalmente con `live_suite_filter`.                                                                                |
+| Ruta de versión de Docker      | **Trabajo:** `Run Docker release-path validation`<br />**Flujo de trabajo subyacente:** `OpenClaw Live And E2E Checks (Reusable)`<br />**Pruebas:** bloques de Docker de la ruta de versión con el artefacto de paquete compartido.<br />**Ejecuciones:** `run_release_soak=true`, `release_profile=full` o el grupo específico `rerun_group=live-e2e`.<br />**Repetición:** `rerun_group=live-e2e`.                                                                                                                                                                                                                                     |
+| Aceptación del paquete       | **Trabajo:** `Run package acceptance`<br />**Flujo de trabajo subyacente:** `Package Acceptance`<br />**Pruebas:** fixtures sin conexión de paquetes de plugins, actualización de plugins, el E2E canónico del paquete de Telegram con OpenAI simulado y comprobaciones de supervivencia tras la actualización desde versiones publicadas utilizando el mismo tarball. Las comprobaciones de versión bloqueantes utilizan como referencia predeterminada la última versión publicada; las comprobaciones prolongadas (`run_release_soak=true`) se amplían a las últimas 4 versiones estables de npm más 3 versiones históricas fijadas (`2026.4.23`, `2026.5.2`, `2026.4.15`), ejecutadas con fixtures de actualización de incidencias notificadas.<br />**Repetición:** `rerun_group=package`. |
+| Cuadro de indicadores de madurez       | **Trabajo:** `Render maturity scorecard release docs`<br />**Flujo de trabajo subyacente:** `maturity-scorecard.yml`<br />**Pruebas:** genera la documentación orientativa del cuadro de indicadores de madurez con la referencia objetivo. Solo se ejecuta cuando se proporciona `run_maturity_scorecard=true`.<br />**Repetición:** `rerun_group=qa` con `run_maturity_scorecard=true`.                                                                                                                                                                                                                                                           |
+| Paridad de QA                | **Trabajo:** `Run QA Lab parity lane` y `Run QA Lab parity report`<br />**Flujo de trabajo subyacente:** trabajos directos<br />**Pruebas:** paquetes de paridad agéntica del candidato y de referencia, seguidos del informe de paridad.<br />**Repetición:** `rerun_group=qa-parity` o `rerun_group=qa`.                                                                                                                                                                                                                                                                                                                         |
+| Paridad del entorno de ejecución de QA        | **Trabajo:** `Run QA Lab runtime parity lane`<br />**Flujo de trabajo subyacente:** trabajo directo<br />**Pruebas:** un carril de paridad agéntica para el par de entornos de ejecución `openclaw`/`codex` (`pnpm openclaw qa suite --runtime-pair openclaw,codex`), que incluye un nivel estándar y, con `run_release_soak=true`, un nivel de prueba prolongada. Orientativo: los fallos individuales no bloquean el verificador de comprobaciones de versión.<br />**Repetición:** `rerun_group=qa-parity` o `rerun_group=qa`.                                                                                                                                                    |
+| Cobertura de herramientas del entorno de ejecución de QA | **Trabajo:** `Enforce QA Lab runtime tool coverage`<br />**Flujo de trabajo subyacente:** trabajo directo<br />**Pruebas:** desviación dinámica de herramientas entre `openclaw` y `codex` en el nivel estándar de paridad del entorno de ejecución (`pnpm openclaw qa coverage --tools`), utilizando la salida del carril de paridad del entorno de ejecución de QA. Bloqueante: este trabajo no se puede invalidar como orientativo.<br />**Repetición:** `rerun_group=qa-parity` o `rerun_group=qa`.                                                                                                                                                                                        |
+| Matrix en vivo de QA           | **Trabajo:** `Run QA Lab live Matrix lane`<br />**Flujo de trabajo subyacente:** trabajo directo<br />**Pruebas:** perfil rápido de QA de Matrix en vivo en el entorno `qa-live-shared`.<br />**Repetición:** `rerun_group=qa-live` o `rerun_group=qa`.                                                                                                                                                                                                                                                                                                                                                          |
+| Telegram en vivo de QA         | **Trabajo:** `Run QA Lab live Telegram lane`<br />**Flujo de trabajo subyacente:** trabajo directo<br />**Pruebas:** QA de Telegram en vivo con concesiones de credenciales de Convex CI.<br />**Repetición:** `rerun_group=qa-live` o `rerun_group=qa`.                                                                                                                                                                                                                                                                                                                                                                      |
+| Verificador de la versión         | **Trabajo:** `Verify release checks`<br />**Flujo de trabajo subyacente:** ninguno<br />**Pruebas:** trabajos obligatorios de comprobación de la versión para el grupo de repetición seleccionado.<br />**Repetición:** repetir después de que se completen correctamente los trabajos secundarios específicos.                                                                                                                                                                                                                                                                                                                                                                                   |
 
-## Fragmentos de ruta de versión Docker
+## Bloques de la ruta de versión de Docker
 
-La etapa de ruta de versión Docker ejecuta estos fragmentos cuando `live_suite_filter` está
-vacío:
+La etapa de la ruta de versión de Docker ejecuta estos bloques cuando
+`live_suite_filter` está vacío:
 
-| Fragmento                                                       | Cobertura                                                                                                                   |
+| Bloque                                                           | Cobertura                                                                                                                   |
 | --------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
-| `core`                                                          | Carriles smoke de ruta de versión Docker del núcleo.                                                                        |
-| `package-update-openai`                                         | Comportamiento de instalación/actualización de paquete OpenAI, instalación bajo demanda de Codex, turnos en vivo del Plugin Codex y llamadas a herramientas de Chat Completions. |
-| `package-update-anthropic`                                      | Comportamiento de instalación y actualización de paquete Anthropic.                                                         |
-| `package-update-core`                                           | Comportamiento de paquete y actualización neutral respecto al proveedor.                                                    |
-| `plugins-runtime-plugins`                                       | Carriles de runtime de Plugin que ejercitan el comportamiento de Plugin.                                                    |
-| `plugins-runtime-services`                                      | Carriles de runtime de Plugin respaldados por servicios y en vivo; incluye OpenWebUI cuando se solicita.                    |
-| `plugins-runtime-install-a` through `plugins-runtime-install-h` | Lotes de instalación/runtime de Plugin divididos para validación de versión en paralelo.                                    |
+| `core`                                                          | Carriles principales de pruebas rápidas de la ruta de versión de Docker.                                                                                      |
+| `package-update-openai`                                         | Comportamiento de instalación y actualización del paquete de OpenAI, instalación bajo demanda de Codex, interacciones en vivo del plugin de Codex y llamadas a herramientas de Chat Completions. |
+| `package-update-anthropic`                                      | Comportamiento de instalación y actualización del paquete de Anthropic.                                                                             |
+| `package-update-core`                                           | Comportamiento del paquete y de la actualización independiente del proveedor.                                                                              |
+| `plugins-runtime-plugins`                                       | Carriles del entorno de ejecución de plugins que ejercitan el comportamiento de los plugins.                                                                        |
+| `plugins-runtime-services`                                      | Carriles del entorno de ejecución de plugins respaldados por servicios y en vivo.                                                                              |
+| De `plugins-runtime-install-a` a `plugins-runtime-install-h` | Lotes de instalación y ejecución de plugins divididos para validar la versión en paralelo.                                                      |
+| `openwebui`                                                     | Prueba rápida de compatibilidad con OpenWebUI aislada en un ejecutor dedicado con un disco de gran capacidad cuando se solicita.                                    |
 
-Usa `docker_lanes=<lane[,lane]>` dirigido en el flujo de trabajo reutilizable en vivo/E2E cuando
-solo falló un carril Docker. Los artefactos de versión incluyen comandos de reejecución
-por carril con entradas de artefacto de paquete y reutilización de imagen cuando están disponibles.
+Utilice `docker_lanes=<lane[,lane]>` de forma específica en el flujo de trabajo reutilizable en vivo/E2E cuando
+solo haya fallado un carril de Docker. Los artefactos de la versión incluyen, por cada carril, comandos
+de repetición con entradas para reutilizar el artefacto del paquete y la imagen cuando estén disponibles.
 
 ## Perfiles de versión
 
-`release_profile` controla principalmente la amplitud en vivo/de proveedores dentro de las comprobaciones de lanzamiento.
-No elimina la CI completa normal, Plugin Prerelease, la prueba de instalación, la
-aceptación de paquetes ni QA Lab. Los perfiles estable y completo siempre ejecutan cobertura exhaustiva de E2E de repositorio/en vivo
-y de soak de ruta de lanzamiento de Docker. El perfil beta puede optar por incluirla con
-`run_release_soak=true`. Package Acceptance proporciona el E2E de Telegram de paquete canónico
-para cada candidato completo, por lo que el paraguas no duplica ese
+`release_profile` controla principalmente la amplitud de proveedores y pruebas en vivo dentro de las comprobaciones de lanzamiento.
+No elimina la CI completa normal, la versión preliminar de Plugin, la prueba rápida de instalación, la
+aceptación de paquetes ni QA Lab. Los perfiles estable y completo siempre ejecutan una cobertura exhaustiva
+de E2E del repositorio/en vivo y de pruebas prolongadas de la ruta de lanzamiento de Docker. El perfil beta puede habilitarla con
+`run_release_soak=true`. La aceptación de paquetes proporciona la prueba E2E canónica de Telegram para el paquete
+en cada candidato completo, por lo que el flujo general no duplica ese
 sondeador en vivo.
 
-| Perfil   | Uso previsto                     | Cobertura en vivo/de proveedores incluida                                                                                                                                                                  |
-| -------- | -------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `beta`   | Prueba crítica de lanzamiento más rápida. | Ruta en vivo de OpenAI/núcleo, modelos en vivo de Docker para OpenAI, núcleo de gateway nativo, perfil de Gateway de OpenAI nativo, Plugin de OpenAI nativo y Gateway OpenAI en vivo de Docker.            |
-| `stable` | Perfil predeterminado de aprobación de lanzamiento. | `beta` más prueba de Anthropic, Google, MiniMax, backend, arnés de pruebas en vivo nativo, backend de CLI en vivo de Docker, enlace ACP de Docker, arnés Codex de Docker, subagent-announce de Docker y un shard de prueba de OpenCode Go. |
-| `full`   | Barrido consultivo amplio.       | `stable` más proveedores consultivos, shards en vivo de Plugin y shards en vivo de medios.                                                                                                                 |
+| Perfil   | Uso previsto                                | Cobertura de proveedores y pruebas en vivo incluida                                                                                                                                                       |
+| -------- | ------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `beta`   | Prueba rápida esencial para el lanzamiento. | Ruta en vivo de OpenAI/núcleo, modelos en vivo de Docker para OpenAI, núcleo del gateway nativo, perfil nativo de Gateway de OpenAI, Plugin nativo de OpenAI y Gateway en vivo de Docker para OpenAI.       |
+| `stable` | Perfil predeterminado para aprobar lanzamientos. | `beta` más prueba rápida de Anthropic, Google, MiniMax, backend, conjunto de pruebas en vivo nativo, backend de CLI en vivo de Docker, vinculación ACP de Docker, conjunto de pruebas de Codex en Docker, anuncio de subagente en Docker y un fragmento de prueba rápida de OpenCode Go. |
+| `full`   | Barrido consultivo amplio.                  | `stable` más proveedores consultivos, fragmentos de pruebas en vivo de plugins y fragmentos de pruebas multimedia en vivo.                                                                                |
 
-## Adiciones solo de full
+## Incorporaciones exclusivas del perfil completo
 
-Estas suites se omiten en `stable` y se incluyen en `full`:
+Estos conjuntos se omiten en `stable` y se incluyen en `full`:
 
-| Área                             | Cobertura solo de full                                                                                                      |
-| -------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
-| Modelos en vivo de Docker        | OpenCode Go, OpenRouter, xAI, Z.ai y Fireworks.                                                                             |
-| Gateway en vivo de Docker        | Proveedores consultivos divididos en shards de DeepSeek/Fireworks, OpenCode Go/OpenRouter y xAI/Z.ai.                       |
-| Perfiles de proveedor de Gateway nativo | Shards completos de Anthropic Opus y Sonnet/Haiku, Fireworks, DeepSeek, shards completos de modelos de OpenCode Go, OpenRouter, xAI y Z.ai. |
-| Shards en vivo de Plugin nativo  | Plugins A-K, L-N, O-Z otros, Moonshot y xAI.                                                                                |
-| Shards en vivo de medios nativos | Audio, música de Google, música de MiniMax y grupos de video A-D.                                                           |
+| Área                                    | Cobertura exclusiva del perfil completo                                                                                                     |
+| --------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| Modelos en vivo de Docker               | OpenCode Go, OpenRouter, xAI, Z.ai y Fireworks.                                                                                              |
+| Gateway en vivo de Docker               | Proveedores consultivos divididos en fragmentos DeepSeek/Fireworks, OpenCode Go/OpenRouter y xAI/Z.ai.                                      |
+| Perfiles de proveedor del Gateway nativo | Fragmentos completos Anthropic Opus y Sonnet/Haiku, Fireworks, DeepSeek, fragmentos completos de modelos OpenCode Go, OpenRouter, xAI y Z.ai. |
+| Fragmentos de plugins nativos en vivo   | Plugins A-K, L-N, otros O-Z, Moonshot y xAI.                                                                                                 |
+| Fragmentos multimedia nativos en vivo   | Audio, música de Google, música de MiniMax y grupos de vídeo A-D.                                                                             |
 
 `stable` incluye `native-live-src-gateway-profiles-anthropic-smoke` y
-`native-live-src-gateway-profiles-opencode-go-smoke`; `full` usa en su lugar los shards más amplios
-de modelos de Anthropic y OpenCode Go. Las repeticiones enfocadas aún pueden usar los
+`native-live-src-gateway-profiles-opencode-go-smoke`; `full` utiliza en su lugar los fragmentos más amplios
+de modelos Anthropic y OpenCode Go. Las repeticiones específicas aún pueden utilizar los
 identificadores agregados `native-live-src-gateway-profiles-anthropic` o
 `native-live-src-gateway-profiles-opencode-go`.
 
-## Repeticiones enfocadas
+## Repeticiones específicas
 
-Usa `rerun_group` para evitar repetir cajas de lanzamiento no relacionadas:
+Utilice `rerun_group` para evitar repetir entornos de lanzamiento no relacionados:
 
-| Identificador       | Alcance                                                                                       |
-| ------------------- | --------------------------------------------------------------------------------------------- |
-| `all`               | Todas las etapas de Full Release Validation.                                                   |
-| `ci`                | Solo el hijo de CI completa manual.                                                           |
-| `plugin-prerelease` | Solo el hijo de Plugin Prerelease.                                                            |
-| `release-checks`    | Todas las etapas de OpenClaw Release Checks.                                                   |
-| `install-smoke`     | Install Smoke mediante comprobaciones de lanzamiento.                                         |
-| `cross-os`          | Comprobaciones de lanzamiento multiplataforma.                                                 |
-| `live-e2e`          | Validación de E2E de repositorio/en vivo y ruta de lanzamiento de Docker.                      |
-| `package`           | Package Acceptance.                                                                           |
-| `qa`                | Paridad de QA más carriles en vivo de QA.                                                      |
-| `qa-parity`         | Solo carriles e informe de paridad de QA.                                                      |
-| `qa-live`           | Matrix/Telegram en vivo de QA más carriles de Discord, WhatsApp y Slack controlados cuando estén habilitados. |
-| `npm-telegram`      | E2E de Telegram de paquete publicado; requiere `release_package_spec` o `npm_telegram_package_spec`. |
-| `performance`       | Solo evidencia de rendimiento del producto.                                                    |
+| Identificador         | Alcance                                                                                                        |
+| --------------------- | -------------------------------------------------------------------------------------------------------------- |
+| `all`                 | Todas las etapas de validación completa del lanzamiento.                                                       |
+| `ci`                  | Solo el proceso secundario manual de CI completa.                                                              |
+| `plugin-prerelease`   | Solo el proceso secundario de versión preliminar de Plugin.                                                    |
+| `release-checks`      | Todas las etapas de comprobaciones de lanzamiento de OpenClaw.                                                 |
+| `install-smoke`       | Prueba rápida de instalación mediante comprobaciones de lanzamiento.                                          |
+| `cross-os`            | Comprobaciones de lanzamiento entre sistemas operativos.                                                       |
+| `live-e2e`            | E2E del repositorio/en vivo y validación de la ruta de lanzamiento de Docker.                                  |
+| `package`             | Aceptación de paquetes.                                                                                        |
+| `qa`                  | Paridad de QA más carriles de QA en vivo.                                                                      |
+| `qa-parity`           | Solo carriles e informe de paridad de QA.                                                                      |
+| `qa-live`             | Matrix/Telegram de QA en vivo más carriles condicionados de Discord, WhatsApp y Slack cuando están habilitados. |
+| `npm-telegram`        | E2E de Telegram del paquete publicado; requiere `release_package_spec` o `npm_telegram_package_spec`.          |
+| `performance`         | Solo evidencia de rendimiento del producto.                                                                   |
 
-Usa `live_suite_filter` con `rerun_group=live-e2e` cuando haya fallado una suite en vivo.
-Los ids de filtro válidos se definen en el workflow reutilizable en vivo/E2E, incluidos
+Use `live_suite_filter` con `rerun_group=live-e2e` cuando falle una suite en vivo.
+Los identificadores de filtro válidos se definen en el flujo de trabajo reutilizable en vivo/E2E, incluidos
 `docker-live-models`, `live-gateway-docker`,
 `live-gateway-anthropic-docker`, `live-gateway-google-docker`,
 `live-gateway-minimax-docker`, `live-gateway-advisory-docker`,
 `live-cli-backend-docker`, `live-acp-bind-docker` y
 `live-codex-harness-docker`.
 
-El identificador `live-gateway-advisory-docker` es un identificador agregado de repetición para sus
-tres shards de proveedores, por lo que aún se expande a todos los trabajos consultivos de Gateway de Docker.
+El identificador `live-gateway-advisory-docker` es un identificador de reejecución agregado para sus
+tres particiones de proveedores, por lo que sigue distribuyéndose entre todos los trabajos informativos del Gateway en Docker.
 
-Usa `cross_os_suite_filter` con `rerun_group=cross-os` cuando haya fallado un carril multiplataforma.
-El filtro acepta un id de SO, un id de suite o un par SO/suite, por
-ejemplo `windows/packaged-upgrade`, `windows` o `packaged-fresh`. Los resúmenes
-multiplataforma incluyen tiempos por fase para carriles de actualización empaquetada, y los comandos
-de larga duración imprimen líneas de Heartbeat para que una actualización atascada sea visible antes del
-tiempo de espera del trabajo.
+Use `cross_os_suite_filter` con `rerun_group=cross-os` cuando falle una vía
+multiplataforma. El filtro acepta un identificador de SO, un identificador de suite o un par SO/suite, por
+ejemplo, `windows/packaged-upgrade`, `windows` o `packaged-fresh`. Los resúmenes
+multiplataforma incluyen los tiempos de cada fase para las vías de actualización mediante paquete, y los comandos
+de larga duración imprimen líneas de Heartbeat para que una actualización bloqueada sea visible antes de que se
+agote el tiempo de espera del trabajo.
 
-Los fallos de comprobación de lanzamiento de QA bloquean la validación normal de lanzamiento. La comprobación de
-cobertura de herramientas de runtime de QA (deriva dinámica de herramientas entre `openclaw` y `codex` en el
-nivel estándar) también bloquea el verificador de comprobaciones de lanzamiento, aunque el
-carril subyacente de paridad de runtime de QA sea consultivo. Las ejecuciones alfa de Tideclaw aún pueden
-tratar como consultivos los carriles de comprobación de lanzamiento que no sean de seguridad de paquete. Cuando
-`live_suite_filter` solicita explícitamente un carril en vivo de QA controlado como Discord,
-WhatsApp o Slack, la variable de repositorio `OPENCLAW_RELEASE_QA_*_LIVE_CI_ENABLED`
-correspondiente debe estar habilitada; de lo contrario, la captura de entrada falla en lugar de omitir silenciosamente el carril.
-Vuelve a ejecutar `rerun_group=qa`, `qa-parity` o `qa-live` cuando
-necesites evidencia de QA actualizada.
+Los fallos de las comprobaciones de versión de QA bloquean la validación normal de la versión. La comprobación de
+cobertura de herramientas del entorno de ejecución de QA (divergencia dinámica de herramientas entre `openclaw` y `codex` en el
+nivel estándar) también bloquea el verificador de comprobaciones de versión, aunque la
+vía subyacente de paridad del entorno de ejecución de QA sea informativa. Las ejecuciones alfa de Tideclaw aún pueden
+tratar como informativas las vías de comprobación de versión que no estén relacionadas con la seguridad de los paquetes. Con
+`release_profile=beta`, las suites de proveedores en vivo de `Run repo/live E2E validation`
+son informativas: las implementaciones de modelos de terceros cambian durante una versión, por lo que
+el perfil beta muestra sus fallos como advertencias, mientras que los perfiles estable y completo los mantienen
+como bloqueantes. Cuando
+`live_suite_filter` solicita explícitamente una vía en vivo de QA controlada, como Discord,
+WhatsApp o Slack, debe estar habilitada la variable del repositorio
+`OPENCLAW_RELEASE_QA_*_LIVE_CI_ENABLED` correspondiente; de lo contrario, la captura de entradas falla en vez de omitir silenciosamente la vía.
+Vuelva a ejecutar `rerun_group=qa`, `qa-parity` o `qa-live` cuando
+necesite evidencias de QA actualizadas.
 
-## Evidencia que conservar
+## Evidencias que se deben conservar
 
-Conserva el resumen de `Full Release Validation` como índice de nivel de lanzamiento. Enlaza
-ids de ejecuciones hijas e incluye tablas de trabajos más lentos. Para fallos, inspecciona primero el
-workflow hijo y luego vuelve a ejecutar el identificador coincidente más pequeño de arriba.
+Conserve el resumen de `Full Release Validation` como índice del nivel de versión. Incluye enlaces a
+los identificadores de las ejecuciones secundarias y tablas de los trabajos más lentos. En caso de fallos, inspeccione primero el
+flujo de trabajo secundario y, a continuación, vuelva a ejecutar el identificador coincidente más específico de los anteriores.
 
 Artefactos útiles:
 
 - `release-package-under-test` de `OpenClaw Release Checks`
-- Artefactos de ruta de lanzamiento de Docker en `.artifacts/docker-tests/`
+- Artefactos de la ruta de versión de Docker en `.artifacts/docker-tests/`
 - `package-under-test` de Package Acceptance y artefactos de aceptación de Docker
-- Artefactos de comprobación de lanzamiento multiplataforma para cada SO y suite
-- Artefactos de paridad de QA, paridad de runtime, Matrix y Telegram
+- Artefactos de comprobación de versión multiplataforma para cada SO y suite
+- Artefactos de paridad de QA, paridad del entorno de ejecución, Matrix y Telegram
 
-## Archivos de workflow
+## Archivos de flujos de trabajo
 
 - `.github/workflows/full-release-validation.yml`
 - `.github/workflows/openclaw-release-checks.yml`
 - `.github/workflows/openclaw-live-and-e2e-checks-reusable.yml`
 - `.github/workflows/plugin-prerelease.yml`
 - `.github/workflows/install-smoke.yml`
+- `.github/workflows/install-smoke-reusable.yml`
 - `.github/workflows/openclaw-cross-os-release-checks-reusable.yml`
 - `.github/workflows/package-acceptance.yml`
 - `.github/workflows/openclaw-performance.yml`

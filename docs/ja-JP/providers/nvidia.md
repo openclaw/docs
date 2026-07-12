@@ -1,21 +1,22 @@
 ---
 read_when:
-    - OpenClawでオープンモデルを無料で使いたい
+    - OpenClawでオープンモデルを無料で使用する場合
     - NVIDIA_API_KEY の設定が必要です
-    - NVIDIA 経由で Nemotron 3 Ultra を使用したい場合
+    - NVIDIA 経由で Nemotron 3 Ultra を使用する場合
 summary: OpenClaw で NVIDIA の OpenAI 互換 API を使用する
 title: NVIDIA
 x-i18n:
-    generated_at: "2026-07-05T11:45:06Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:47:41Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: 3300395fdaf9baf22476f9b4d5a5b217ddab1aa10042c5959ffa059c3a258de4
+    source_hash: b5ac7bcc19400a661b2f2861a1dd4d2306c94e445783929e342e9184003314e9
     source_path: providers/nvidia.md
     workflow: 16
 ---
 
-NVIDIA は、OpenAI互換 API `https://integrate.api.nvidia.com/v1` を通じてオープンモデルを無料で提供しています。認証には [build.nvidia.com](https://build.nvidia.com/settings/api-keys) で取得した API キーを使用します。OpenClaw は NVIDIA provider のデフォルトを Nemotron 3 Ultra に設定します。これは、長いコンテキストのエージェント型作業向けに NVIDIA が提供する、総パラメータ数 550B / アクティブ推論 55B のモデルです。
+NVIDIA は、OpenAI 互換 API（`https://integrate.api.nvidia.com/v1`）を通じてオープンモデルを無料で提供しています。認証には、[build.nvidia.com](https://build.nvidia.com/settings/api-keys) で取得した API キーを使用します。OpenClaw の NVIDIA プロバイダーでは、長いコンテキストを扱うエージェント型処理向けに、総パラメーター数 550B／アクティブパラメーター数 55B の NVIDIA 推論モデル Nemotron 3 Ultra がデフォルトで使用されます。
 
 ## はじめに
 
@@ -43,7 +44,7 @@ openclaw onboard --auth-choice nvidia-api-key --nvidia-api-key "nvapi-..."
 ```
 
 <Warning>
-`--nvidia-api-key` はキーをシェル履歴と `ps` 出力に残します。可能な場合は `NVIDIA_API_KEY` 環境変数を優先してください。
+`--nvidia-api-key` を使用すると、キーがシェル履歴と `ps` の出力に残ります。可能な場合は、`NVIDIA_API_KEY` 環境変数を使用してください。
 </Warning>
 
 ## 設定例
@@ -67,49 +68,53 @@ openclaw onboard --auth-choice nvidia-api-key --nvidia-api-key "nvapi-..."
 }
 ```
 
-## 注目カタログ
+## 注目モデルカタログ
 
-NVIDIA API キーが設定されている場合、セットアップとモデル選択のパスは NVIDIA の公開注目モデルカタログを `https://assets.ngc.nvidia.com/products/api-catalog/featured-models.json` から取得し、結果を 24 時間キャッシュします（先頭 32 件を自由テキスト入力行としてインポート）。そのため、build.nvidia.com の新しい注目モデルは、OpenClaw のリリースを待たずにセットアップとモデル選択の画面に表示されます。ライブフィードが利用可能な場合、最初に返されたモデルが NVIDIA セットアップ中の事前選択オプションになります。
+NVIDIA API キーが設定されている場合、セットアップおよびモデル選択の処理では、`https://assets.ngc.nvidia.com/products/api-catalog/featured-models.json` から NVIDIA の公開注目モデルカタログを取得し、結果を 24 時間キャッシュします（先頭 32 件を自由テキスト入力の行としてインポートします）。そのため、build.nvidia.com の新しい注目モデルは、OpenClaw のリリースを待たずにセットアップ画面とモデル選択画面に表示されます。ライブフィードを利用できる場合、NVIDIA のセットアップ中は、最初に返されたモデルが事前選択されます。
 
-この取得では、`assets.ngc.nvidia.com` に対して固定の HTTPS ホストポリシーを使用します。NVIDIA API キーが設定されていない場合、またはフィードが利用できないか不正な形式の場合、OpenClaw は同梱カタログと以下の同梱デフォルトにフォールバックします。
+取得時には、`assets.ngc.nvidia.com` に対する固定の HTTPS ホストポリシーが使用されます。NVIDIA API キーが設定されていない場合、またはフィードを利用できないか形式が不正な場合、OpenClaw は以下の同梱カタログと同梱デフォルトにフォールバックします。
 
 ## Nemotron 3 Ultra
 
-Nemotron 3 Ultra は OpenClaw のデフォルト NVIDIA モデルです。[`nvidia/nemotron-3-ultra-550b-a55b`](https://build.nvidia.com/nvidia/nemotron-3-ultra-550b-a55b) の NVIDIA build ページでは、1M トークンのコンテキスト仕様を持つ利用可能な無料エンドポイントとして記載されています。同梱カタログでは、ホストされたエンドポイント向けの NVIDIA の現在の OpenAI互換サンプルリクエストに合わせて、最大出力を 16,384 トークンとして記録しています。
+Nemotron 3 Ultra は、OpenClaw におけるデフォルトの NVIDIA モデルです。[`nvidia/nemotron-3-ultra-550b-a55b`](https://build.nvidia.com/nvidia/nemotron-3-ultra-550b-a55b) の NVIDIA ビルドページでは、1M トークンのコンテキスト仕様を備えた、無料で利用可能なエンドポイントとして掲載されています。
 
-同梱の Ultra 行は、通常のチャット出力が推論テキストを露出せずに表示回答内に収まるように、デフォルトで `chat_template_kwargs: { enable_thinking: false, force_nonempty_content: true }` を送信します。
+同梱されている Ultra の行では、通常のチャット出力で推論テキストを露出させず、表示される回答内に出力を維持するため、デフォルトで `chat_template_kwargs: { enable_thinking: false, force_nonempty_content: true }` を送信します。
 
-最高性能の NVIDIA デフォルトには Ultra を使用します。より小さい Nemotron 3 オプションが必要な場合は Super を選択したままにするか、コンテキスト、レイテンシ、または挙動がより適している場合は NVIDIA のカタログでホストされているサードパーティモデルのいずれかを選択してください。
+NVIDIA のデフォルトとして最高の能力が必要な場合は Ultra を使用します。より小さい Nemotron 3 オプションが必要な場合は Super を選択したままにするか、コンテキスト、レイテンシー、または動作がより適している場合は NVIDIA のカタログでホストされているサードパーティーモデルのいずれかを選択します。
 
 ## 同梱フォールバックカタログ
 
-| モデル参照                               | 名前                         | コンテキスト | 最大出力 | メモ                                     |
-| ------------------------------------------ | ---------------------------- | --------- | ---------- | ---------------------------------------- |
-| `nvidia/nvidia/nemotron-3-ultra-550b-a55b` | NVIDIA Nemotron 3 Ultra 550B | 1,000,000 | 16,384     | デフォルト                               |
-| `nvidia/nvidia/nemotron-3-super-120b-a12b` | NVIDIA Nemotron 3 Super 120B | 1,048,576 | 8,192      |                                          |
-| `nvidia/moonshotai/kimi-k2.5`              | Kimi K2.5                    | 262,144   | 8,192      |                                          |
-| `nvidia/minimaxai/minimax-m2.7`            | Minimax M2.7                 | 196,608   | 8,192      |                                          |
-| `nvidia/z-ai/glm-5.1`                      | GLM 5.1                      | 202,752   | 8,192      |                                          |
-| `nvidia/minimaxai/minimax-m2.5`            | MiniMax M2.5                 | 196,608   | 8,192      | 非推奨。`minimaxai/minimax-m2.7` を使用 |
-| `nvidia/z-ai/glm5`                         | GLM-5                        | 202,752   | 8,192      | 非推奨。`z-ai/glm-5.1` を使用           |
+選択可能な同梱行は、NVIDIA の注目モデルカタログのスナップショットです。非推奨の互換性行は完全一致の参照で引き続き解決できますが、モデル選択画面には表示されません。
+
+| モデル参照                                 | 名前                  | コンテキスト | 最大出力   |
+| ------------------------------------------ | --------------------- | ------------ | ---------- |
+| `nvidia/nvidia/nemotron-3-ultra-550b-a55b` | Nemotron 3 Ultra 550B | 1,048,576    | 8,192      |
+| `nvidia/nvidia/nemotron-3-super-120b-a12b` | Nemotron 3 Super 120B | 1,000,000    | 8,192      |
+| `nvidia/z-ai/glm-5.2`                      | GLM 5.2               | 202,752      | 8,192      |
+| `nvidia/moonshotai/kimi-k2.6`              | Kimi K2.6             | 262,144      | 8,192      |
+| `nvidia/minimaxai/minimax-m3`              | Minimax M3            | 196,608      | 8,192      |
+| `nvidia/deepseek-ai/deepseek-v4-pro`       | DeepSeek V4 Pro       | 262,144      | 16,384     |
+| `nvidia/qwen/qwen3.5-397b-a17b`            | Qwen3.5 397B A17B     | 262,144      | 16,384     |
+
+完全な互換性カタログでは、既存の設定用として、リリース済みの次の参照も保持されています：`nvidia/moonshotai/kimi-k2.5`、`nvidia/z-ai/glm-5.1`、`nvidia/minimaxai/minimax-m2.5`、`nvidia/z-ai/glm5`、`nvidia/minimaxai/minimax-m2.7`。これらは完全一致の参照で引き続き利用できますが、オンボーディングやモデル選択画面には表示されません。
 
 ## 高度な設定
 
 <AccordionGroup>
-  <Accordion title="自動有効化の挙動">
-    `NVIDIA_API_KEY` 環境変数が設定されている場合、またはオンボーディング中にキーが保存された場合、provider は自動的に有効化されます。キー以外に明示的な provider 設定は必要ありません。
+  <Accordion title="自動有効化の動作">
+    `NVIDIA_API_KEY` 環境変数が設定されているか、オンボーディング中にキーが保存されている場合、プロバイダーは自動的に有効になります。キー以外に明示的なプロバイダー設定は必要ありません。
   </Accordion>
 
-  <Accordion title="カタログと価格">
-    NVIDIA 認証が設定されている場合、OpenClaw は NVIDIA の公開注目モデルカタログを優先し、24 時間キャッシュします。同梱フォールバックカタログは静的で、アップグレード互換性のために非推奨の出荷済み参照を保持します。NVIDIA は現在、記載されたモデルに無料 API アクセスを提供しているため、ソース内のコストはデフォルトで `0` です。
+  <Accordion title="カタログと料金">
+    NVIDIA 認証が設定されている場合、OpenClaw は NVIDIA の公開注目モデルカタログを優先し、それを 24 時間キャッシュします。選択可能な同梱フォールバックは、NVIDIA の注目モデルカタログの静的スナップショットです。非推奨の完全一致参照用互換性行は、モデル選択画面では非表示になります。現在 NVIDIA は掲載されているモデルへの無料 API アクセスを提供しているため、ソース内のコストはデフォルトで `0` です。
   </Accordion>
 
-  <Accordion title="OpenAI互換エンドポイント">
-    OpenClaw は、標準の `/v1` チャット補完ルートに対して `openai-completions` アダプターを使用して NVIDIA と通信します。OpenAI互換ツールは、NVIDIA ベース URL でそのまま動作するはずです。
+  <Accordion title="OpenAI 互換エンドポイント">
+    OpenClaw は、標準の `/v1` チャット補完ルートに対して `openai-completions` アダプターを使用し、NVIDIA と通信します。OpenAI 互換のツールはすべて、NVIDIA のベース URL を指定するだけでそのまま動作します。
   </Accordion>
 
-  <Accordion title="Nemotron 3 Ultra の推論パラメータ">
-    NVIDIA の Ultra サンプルリクエストは、推論出力に `chat_template_kwargs.enable_thinking` と `reasoning_budget` を使用します。OpenClaw の同梱 Ultra 行は、通常のチャット利用向けにデフォルトでテンプレート思考を無効にしています。NVIDIA の推論出力を有効にする必要がある場合、または他の NVIDIA 固有のリクエストフィールドを強制する必要がある場合は、モデル単位のパラメータを設定し、provider 固有のオーバーライドを NVIDIA モデルに限定してください。
+  <Accordion title="Nemotron 3 Ultra の推論パラメーター">
+    NVIDIA の Ultra サンプルリクエストでは、推論出力に `chat_template_kwargs.enable_thinking` と `reasoning_budget` を使用します。OpenClaw の同梱 Ultra 行では、通常のチャット用途向けに、デフォルトでテンプレートの推論を無効にしています。NVIDIA の推論出力を有効にする必要がある場合、または NVIDIA 固有の他のリクエストフィールドを強制する必要がある場合は、モデルごとのパラメーターを設定し、プロバイダー固有のオーバーライドのスコープを NVIDIA モデルに限定します。
 
     ```json5
     {
@@ -128,12 +133,13 @@ Nemotron 3 Ultra は OpenClaw のデフォルト NVIDIA モデルです。[`nvid
     }
     ```
 
-    `params.chat_template_kwargs` は、リクエスト上にすでにある `chat_template_kwargs` 全体を置き換えるのではなく、そこへマージされます。`params.extra_body` は最終的な OpenAI互換リクエスト本文のオーバーライドであり、衝突するペイロードキーを上書きするため、選択したエンドポイントについて NVIDIA が文書化しているフィールドにのみ使用してください。
+    `params.chat_template_kwargs` は、リクエストにすでに存在する `chat_template_kwargs` オブジェクト全体を置き換えるのではなく、そのオブジェクトにマージされます。
+    `params.extra_body` は、OpenAI 互換リクエスト本文に対する最終オーバーライドであり、競合するペイロードキーを上書きします。そのため、選択したエンドポイントについて NVIDIA が文書化しているフィールドにのみ使用してください。
 
   </Accordion>
 
-  <Accordion title="遅いカスタム provider 応答">
-    NVIDIA でホストされる一部のカスタムモデルは、最初の応答チャンクを出力するまでに、デフォルトの約 120 秒のモデルアイドル watchdog より長くかかる場合があります。カスタム NVIDIA provider エントリでは、agent ランタイム全体のタイムアウトではなく provider タイムアウトを引き上げてください。`timeoutSeconds` は provider の HTTP リクエストを対象とし、その provider のアイドル/ストリーム watchdog 上限を引き上げます。
+  <Accordion title="カスタムプロバイダーの応答が遅い場合">
+    NVIDIA でホストされる一部のカスタムモデルでは、最初の応答チャンクを送信するまでに、デフォルトの約 120 秒のモデルアイドル監視時間を超えることがあります。カスタム NVIDIA プロバイダーのエントリでは、エージェントランタイム全体のタイムアウトではなく、プロバイダーのタイムアウトを引き上げてください。`timeoutSeconds` はプロバイダーの HTTP リクエストを対象とし、そのプロバイダーのアイドル／ストリーム監視時間の上限を引き上げます。
 
     ```json5
     {
@@ -163,16 +169,16 @@ Nemotron 3 Ultra は OpenClaw のデフォルト NVIDIA モデルです。[`nvid
 </AccordionGroup>
 
 <Tip>
-NVIDIA モデルは現在無料で利用できます。最新の提供状況とレート制限の詳細は [build.nvidia.com](https://build.nvidia.com/) を確認してください。
+現在、NVIDIA モデルは無料で使用できます。最新の提供状況とレート制限の詳細については、[build.nvidia.com](https://build.nvidia.com/) を確認してください。
 </Tip>
 
-## 関連
+## 関連項目
 
 <CardGroup cols={2}>
-  <Card title="モデル選択" href="/ja-JP/concepts/model-providers" icon="layers">
-    provider、モデル参照、フェイルオーバー動作の選択。
+  <Card title="モデルの選択" href="/ja-JP/concepts/model-providers" icon="layers">
+    プロバイダー、モデル参照、およびフェイルオーバー動作の選択方法。
   </Card>
   <Card title="設定リファレンス" href="/ja-JP/gateway/configuration-reference" icon="gear">
-    agent、モデル、provider の完全な設定リファレンス。
+    エージェント、モデル、およびプロバイダーの完全な設定リファレンス。
   </Card>
 </CardGroup>

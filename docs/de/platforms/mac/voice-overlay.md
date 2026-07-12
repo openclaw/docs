@@ -1,74 +1,64 @@
 ---
 read_when:
-    - Verhalten des Sprach-Overlays anpassen
-summary: Lebenszyklus des Voice-Overlays, wenn sich Wake-Word und Push-to-Talk überschneiden
+    - Verhalten der Sprachüberlagerung anpassen
+summary: Lebenszyklus des Sprach-Overlays bei Überschneidung von Aktivierungswort und Push-to-Talk
 title: Sprach-Overlay
 x-i18n:
-    generated_at: "2026-05-06T06:56:40Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:31:10Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: 5b30f50512e557bd5a50f0e4e8b7955a847b3b554694347d56638581fcda9514
+    source_hash: eef571c3e8d41a97779537b1b373fab25b08f63575b50e5019f6c5fbcb782c52
     source_path: platforms/mac/voice-overlay.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-# Voice-Overlay-Lebenszyklus (macOS)
+# Lebenszyklus des Sprach-Overlays (macOS)
 
-Zielgruppe: Mitwirkende an der macOS-App. Ziel: das Voice Overlay vorhersehbar halten, wenn Wake-Word und Push-to-Talk überlappen.
+Zielgruppe: Mitwirkende an der macOS-App. Ziel: ein vorhersehbares Verhalten des Sprach-Overlays bei Überschneidungen von Aktivierungswort und Push-to-Talk.
 
-## Aktuelle Absicht
+## Verhalten
 
-- Wenn das Overlay durch ein Wake-Word bereits sichtbar ist und der Benutzer die Tastenkombination drückt, übernimmt die Hotkey-Sitzung den vorhandenen Text, statt ihn zurückzusetzen. Das Overlay bleibt sichtbar, solange die Tastenkombination gehalten wird. Wenn der Benutzer loslässt: senden, wenn getrimmter Text vorhanden ist, andernfalls schließen.
-- Wake-Word allein sendet weiterhin automatisch bei Stille; Push-to-Talk sendet sofort beim Loslassen.
+- Wenn das Overlay aufgrund des Aktivierungsworts bereits sichtbar ist und der Benutzer die Tastenkombination drückt, übernimmt die Push-to-Talk-Sitzung den vorhandenen Text, anstatt ihn zurückzusetzen. Das Overlay bleibt sichtbar, solange die Tastenkombination gedrückt wird. Beim Loslassen: senden, wenn nach dem Entfernen von Leerraum Text vorhanden ist, andernfalls schließen.
+- Nur das Aktivierungswort sendet bei Stille weiterhin automatisch; Push-to-Talk sendet sofort beim Loslassen.
 
-## Implementiert (9. Dez. 2025)
+## Implementierung
 
-- Overlay-Sitzungen tragen jetzt ein Token pro Aufnahme (Wake-Word oder Push-to-Talk). Partial-/Final-/Send-/Dismiss-/Level-Updates werden verworfen, wenn das Token nicht übereinstimmt, wodurch veraltete Callbacks vermieden werden.
-- Push-to-Talk übernimmt jeden sichtbaren Overlay-Text als Präfix (wenn also die Tastenkombination gedrückt wird, während das Wake-Overlay sichtbar ist, bleibt der Text erhalten und neue Sprache wird angehängt). Es wartet bis zu 1,5 s auf ein finales Transkript, bevor auf den aktuellen Text zurückgefallen wird.
-- Chime-/Overlay-Logging wird auf `info` in den Kategorien `voicewake.overlay`, `voicewake.ptt` und `voicewake.chime` ausgegeben (Sitzungsstart, partial, final, send, dismiss, Chime-Grund).
+- `VoiceSessionCoordinator` (`apps/macos/Sources/OpenClaw/VoiceSessionCoordinator.swift`) ist der alleinige Eigentümer der aktiven Sprachsitzung. Es handelt sich um ein `@MainActor @Observable`-Singleton, nicht um einen Actor. API: `startSession`, `updatePartial`, `finalize`, `sendNow`, `dismiss`, `updateLevel`, `snapshot`. Jede Sitzung enthält ein `UUID`-Token; Aufrufe mit einem veralteten oder nicht übereinstimmenden Token werden verworfen.
+- `VoiceWakeOverlayController` (`VoiceWakeOverlayController+Session.swift`) rendert das Overlay und leitet Benutzeraktionen (`requestSend`, `dismiss`) über das Sitzungstoken an den Koordinator weiter. Er verwaltet den Sitzungsstatus niemals selbst.
+- Push-to-Talk (`VoicePushToTalk.begin()`) übernimmt sichtbaren Overlay-Text als `adoptedPrefix` (über `VoiceSessionCoordinator.shared.snapshot()`), sodass beim Drücken der Tastenkombination während der Anzeige des Aktivierungswort-Overlays der Text erhalten bleibt und neue Sprache angehängt wird. Beim Loslassen wartet es bis zu 1.5s auf ein endgültiges Transkript, bevor es auf den aktuellen Text zurückgreift.
+- Bei `dismiss` ruft das Overlay `VoiceSessionCoordinator.overlayDidDismiss` auf, wodurch `VoiceWakeRuntime.refresh(state:)` ausgelöst wird. So wird das Abhören des Aktivierungsworts nach dem manuellen Schließen über X, dem Schließen bei leerem Text und dem Schließen nach dem Senden jeweils fortgesetzt.
+- Einheitlicher Sendepfad: Wenn der Text nach dem Entfernen von Leerraum leer ist, schließen; andernfalls spielt `sendNow` den Sendeton einmal ab, leitet den Text über `VoiceWakeForwarder` weiter und schließt anschließend das Overlay.
 
-## Nächste Schritte
+## Protokollierung
 
-1. **VoiceSessionCoordinator (actor)**
-   - Besitzt zu jedem Zeitpunkt genau eine `VoiceSession`.
-   - API (tokenbasiert): `beginWakeCapture`, `beginPushToTalk`, `updatePartial`, `endCapture`, `cancel`, `applyCooldown`.
-   - Verwirft Callbacks mit veralteten Tokens (verhindert, dass alte Erkenner das Overlay erneut öffnen).
-2. **VoiceSession (model)**
-   - Felder: `token`, `source` (wakeWord|pushToTalk), festgeschriebener/flüchtiger Text, Chime-Flags, Timer (Auto-Send, Idle), `overlayMode` (display|editing|sending), Cooldown-Frist.
-3. **Overlay-Binding**
-   - `VoiceSessionPublisher` (`ObservableObject`) spiegelt die aktive Sitzung in SwiftUI.
-   - `VoiceWakeOverlayView` rendert nur über den Publisher; es mutiert niemals globale Singletons direkt.
-   - Overlay-Benutzeraktionen (`sendNow`, `dismiss`, `edit`) rufen den Coordinator mit dem Sitzungstoken zurück.
-4. **Vereinheitlichter Sendepfad**
-   - Bei `endCapture`: wenn getrimmter Text leer ist → schließen; andernfalls `performSend(session:)` (spielt Send-Chime einmal ab, leitet weiter, schließt).
-   - Push-to-Talk: keine Verzögerung; Wake-Word: optionale Verzögerung für Auto-Send.
-   - Wenden Sie nach Abschluss von Push-to-Talk einen kurzen Cooldown auf die Wake-Laufzeit an, damit das Wake-Word nicht sofort erneut auslöst.
-5. **Logging**
-   - Der Coordinator gibt `.info`-Logs im Subsystem `ai.openclaw` und in den Kategorien `voicewake.overlay` und `voicewake.chime` aus.
-   - Wichtige Ereignisse: `session_started`, `adopted_by_push_to_talk`, `partial`, `finalized`, `send`, `dismiss`, `cancel`, `cooldown`.
+Das Sprachsubsystem ist `ai.openclaw`; jede Komponente protokolliert unter ihrer eigenen Kategorie:
 
-## Debugging-Checkliste
+| Kategorie               | Komponente                                      |
+| ----------------------- | ----------------------------------------------- |
+| `voicewake.coordinator` | `VoiceSessionCoordinator`                       |
+| `voicewake.overlay`     | `VoiceWakeOverlayController`/`VoiceWakeOverlay` |
+| `voicewake.ptt`         | Push-to-Talk-Tastenkombination und -Aufnahme    |
+| `voicewake.runtime`     | Aktivierungswort-Laufzeit                       |
+| `voicewake.chime`       | Wiedergabe des Signaltons                       |
+| `voicewake.sync`        | Globale Einstellungssynchronisierung            |
+| `voicewake.forward`     | Weiterleitung des Transkripts                   |
+| `voicewake.meter`       | Mikrofonpegelüberwachung                        |
 
-- Streamen Sie Logs, während Sie ein hängenbleibendes Overlay reproduzieren:
+## Checkliste zur Fehlerbehebung
+
+- Streamen Sie die Protokolle, während Sie ein hängen gebliebenes Overlay reproduzieren:
 
   ```bash
   sudo log stream --predicate 'subsystem == "ai.openclaw" AND category CONTAINS "voicewake"' --level info --style compact
   ```
 
-- Prüfen Sie, dass nur ein aktives Sitzungstoken vorhanden ist; veraltete Callbacks sollten vom Coordinator verworfen werden.
-- Stellen Sie sicher, dass das Loslassen von Push-to-Talk immer `endCapture` mit dem aktiven Token aufruft; wenn der Text leer ist, erwarten Sie `dismiss` ohne Chime oder Senden.
+- Vergewissern Sie sich, dass nur ein aktives Sitzungstoken vorhanden ist; veraltete Rückrufe werden vom Koordinator verworfen.
+- Stellen Sie sicher, dass beim Loslassen von Push-to-Talk stets `end()` mit dem aktiven Token aufgerufen wird; wenn der Text leer ist, muss das Overlay ohne Signalton oder Senden geschlossen werden.
 
-## Migrationsschritte (vorgeschlagen)
-
-1. `VoiceSessionCoordinator`, `VoiceSession` und `VoiceSessionPublisher` hinzufügen.
-2. `VoiceWakeRuntime` so refaktorieren, dass Sitzungen erstellt/aktualisiert/beendet werden, statt `VoiceWakeOverlayController` direkt zu berühren.
-3. `VoicePushToTalk` so refaktorieren, dass vorhandene Sitzungen übernommen werden und beim Loslassen `endCapture` aufgerufen wird; Runtime-Cooldown anwenden.
-4. `VoiceWakeOverlayController` mit dem Publisher verdrahten; direkte Aufrufe aus Runtime/PTT entfernen.
-5. Integrationstests für Sitzungsübernahme, Cooldown und Schließen bei leerem Text hinzufügen.
-
-## Verwandt
+## Verwandte Themen
 
 - [macOS-App](/de/platforms/macos)
-- [Voice Wake (macOS)](/de/platforms/mac/voicewake)
-- [Talk-Modus](/de/nodes/talk)
+- [Sprachaktivierung (macOS)](/de/platforms/mac/voicewake)
+- [Sprechmodus](/de/nodes/talk)

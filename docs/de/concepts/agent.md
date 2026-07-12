@@ -1,52 +1,57 @@
 ---
 read_when:
-    - Agent-Laufzeit, Workspace-Bootstrap oder Sitzungsverhalten ändern
-summary: Agent-Laufzeit, Workspace-Vertrag und Sitzungs-Bootstrap
-title: Agent-Laufzeit
+    - Ändern von Agentenlaufzeit, Workspace-Bootstrap oder Sitzungsverhalten
+summary: Agentenlaufzeit, Workspace-Vertrag und Sitzungsinitialisierung
+title: Agentenlaufzeit
 x-i18n:
-    generated_at: "2026-06-27T17:22:27Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:16:22Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: 2fb4d3f0bb6e8aa2a23d00f5def5eb0ffa152bc75f82a12c40ac7ed00776011c
+    source_hash: e7b07f6db62c001d43e223eee28911b0515e1528e4b15c6c3748e88eaf405cfc
     source_path: concepts/agent.md
     workflow: 16
 ---
 
-OpenClaw führt eine **einzelne eingebettete Agent-Runtime** aus - einen Agent-Prozess pro Gateway, mit eigenem Workspace, Bootstrap-Dateien und Sitzungsspeicher. Diese Seite behandelt diesen Runtime-Vertrag: was der Workspace enthalten muss, welche Dateien injiziert werden und wie Sitzungen dagegen gebootstrapt werden.
+OpenClaw enthält eine **eingebettete Agent-Runtime**: eine integrierte Agent-Schleife, Tool-Anbindung und Prompt-Zusammenstellung, im Unterschied zur Delegation von Durchläufen an einen externen Harness-Prozess. Jeder konfigurierte Agent (zum Ausführen mehrerer siehe [Multi-Agent-Routing](/de/concepts/multi-agent)) verfügt über einen eigenen Workspace, eigene Bootstrap-Dateien und einen eigenen Sitzungsspeicher. Diese Seite beschreibt den Runtime-Vertrag: was der Workspace enthalten muss, welche Dateien injiziert werden und wie Sitzungen damit initialisiert werden.
 
 ## Workspace (erforderlich)
 
-OpenClaw verwendet ein einzelnes Agent-Workspace-Verzeichnis (`agents.defaults.workspace`) als das **einzige** Arbeitsverzeichnis (`cwd`) des Agents für Tools und Kontext.
+Jeder Agent verwendet ein einzelnes Workspace-Verzeichnis (`agents.defaults.workspace` oder
+`agents.list[].workspace` pro Agent) als sein **einziges** Arbeitsverzeichnis (`cwd`)
+für Tools und Kontext.
 
-Empfohlen: Verwenden Sie `openclaw setup`, um `~/.openclaw/openclaw.json` zu erstellen, falls sie fehlt, und die Workspace-Dateien zu initialisieren.
+Empfehlung: Verwenden Sie `openclaw setup`, um `~/.openclaw/openclaw.json` zu erstellen, falls die Datei fehlt, und die Workspace-Dateien zu initialisieren.
 
-Vollständiges Workspace-Layout + Backup-Leitfaden: [Agent-Workspace](/de/concepts/agent-workspace)
+Vollständige Workspace-Struktur und Sicherungsanleitung: [Agent-Workspace](/de/concepts/agent-workspace)
 
-Wenn `agents.defaults.sandbox` aktiviert ist, können Nicht-Hauptsitzungen dies mit sitzungsbezogenen Workspaces unter `agents.defaults.sandbox.workspaceRoot` überschreiben (siehe [Gateway-Konfiguration](/de/gateway/configuration)).
+Wenn `agents.defaults.sandbox` aktiviert ist, können Nicht-Hauptsitzungen dies durch sitzungsspezifische Workspaces unter `agents.defaults.sandbox.workspaceRoot` überschreiben (siehe [Gateway-Konfiguration](/de/gateway/configuration)).
 
 ## Bootstrap-Dateien (injiziert)
 
-Innerhalb von `agents.defaults.workspace` erwartet OpenClaw diese vom Benutzer bearbeitbaren Dateien:
+Im Workspace erwartet OpenClaw diese vom Benutzer bearbeitbaren Dateien:
 
-- `AGENTS.md` - Betriebsanweisungen + „Gedächtnis“
-- `SOUL.md` - Persona, Grenzen, Ton
-- `TOOLS.md` - vom Benutzer gepflegte Tool-Notizen (z. B. `imsg`, `sag`, Konventionen)
-- `BOOTSTRAP.md` - einmaliges Erstritual (nach Abschluss gelöscht)
-- `IDENTITY.md` - Agent-Name/Vibe/Emoji
-- `USER.md` - Benutzerprofil + bevorzugte Anrede
+| Datei          | Zweck                                                |
+| -------------- | ---------------------------------------------------- |
+| `AGENTS.md`    | Betriebsanweisungen und „Gedächtnis“                 |
+| `SOUL.md`      | Persona, Grenzen, Ton                                |
+| `TOOLS.md`     | Vom Benutzer gepflegte Tool-Hinweise und Konventionen |
+| `IDENTITY.md`  | Name/Stil/Emoji des Agenten                          |
+| `USER.md`      | Benutzerprofil und bevorzugte Anrede                 |
+| `HEARTBEAT.md` | Heartbeat-spezifische Anweisungen                    |
+| `BOOTSTRAP.md` | Einmaliges Erstritual (nach Abschluss gelöscht)      |
+| `MEMORY.md`    | Stammdatei für das Langzeitgedächtnis, falls vorhanden |
 
-Beim ersten Turn einer neuen Sitzung injiziert OpenClaw die Inhalte dieser Dateien in den Projektkontext des System-Prompts.
+Beim ersten Durchlauf einer neuen Sitzung injiziert OpenClaw den Inhalt dieser Dateien in den Projektkontext des System-Prompts. `MEMORY.md` wird nur injiziert, wenn die Datei im Stammverzeichnis des Workspace vorhanden ist.
 
-Leere Dateien werden übersprungen. Große Dateien werden gekürzt und mit einer Markierung abgeschnitten, damit Prompts schlank bleiben (lesen Sie die Datei für den vollständigen Inhalt).
+Leere Dateien werden übersprungen. Große Dateien werden gekürzt und mit einer Markierung abgeschnitten, damit Prompts kompakt bleiben (lesen Sie die Datei, um den vollständigen Inhalt zu erhalten). Bei einer fehlenden Datei (außer `MEMORY.md`) wird stattdessen eine einzelne Markierungszeile für eine „fehlende Datei“ injiziert; `openclaw setup` erstellt dafür eine sichere Standardvorlage.
 
-Wenn eine Datei fehlt, injiziert OpenClaw eine einzelne Markierungszeile „fehlende Datei“ (und `openclaw setup` erstellt eine sichere Standardvorlage).
+`BOOTSTRAP.md` wird nur für einen **völlig neuen Workspace** erstellt (keine anderen Bootstrap-Dateien vorhanden). Solange die Datei aussteht, behält OpenClaw sie im Projektkontext und fügt dem System-Prompt Bootstrap-Anweisungen für das anfängliche Ritual hinzu, anstatt sie in die Benutzernachricht zu kopieren. Wenn Sie die Datei nach Abschluss des Rituals löschen, wird sie bei späteren Neustarts nicht erneut erstellt.
 
-`BOOTSTRAP.md` wird nur für einen **brandneuen Workspace** erstellt (keine anderen Bootstrap-Dateien vorhanden). Solange sie aussteht, behält OpenClaw sie im Projektkontext und fügt System-Prompt-Bootstrap-Anleitung für das Anfangsritual hinzu, statt sie in die Benutzernachricht zu kopieren. Wenn Sie sie nach Abschluss des Rituals löschen, sollte sie bei späteren Neustarts nicht neu erstellt werden.
+Nachdem ein Workspace erkannt wurde, verwaltet OpenClaw außerdem eine Bestätigungsmarkierung für den Workspace-Pfad im Zustandsverzeichnis. Wenn ein kürzlich bestätigter Workspace verschwindet oder gelöscht wird, lehnt der Start eine unbemerkte Neuerstellung von `BOOTSTRAP.md` ab; stellen Sie den Workspace wieder her oder führen Sie eine vollständige Onboarding-Zurücksetzung durch, damit Workspace und Markierung gemeinsam gelöscht werden.
 
-Nachdem ein Workspace beobachtet wurde, hält OpenClaw außerdem eine Attestierungsmarkierung im Zustandsverzeichnis für den Workspace-Pfad vor. Wenn ein kürzlich attestierter Workspace verschwindet oder gelöscht wird, verweigert der Start ein stilles erneutes Anlegen von `BOOTSTRAP.md`; stellen Sie den Workspace wieder her oder verwenden Sie einen vollständigen Onboard-Reset, damit Workspace und Markierung gemeinsam entfernt werden.
-
-Um die Erstellung von Bootstrap-Dateien vollständig zu deaktivieren (für vorbefüllte Workspaces), setzen Sie:
+Um die Erstellung von Bootstrap-Dateien vollständig zu deaktivieren (für vorab befüllte Workspaces), legen Sie Folgendes fest:
 
 ```json5
 { agents: { defaults: { skipBootstrap: true } } }
@@ -54,7 +59,7 @@ Um die Erstellung von Bootstrap-Dateien vollständig zu deaktivieren (für vorbe
 
 ## Integrierte Tools
 
-Core-Tools (read/exec/edit/write und verwandte System-Tools) sind immer verfügbar, vorbehaltlich der Tool-Richtlinie. `apply_patch` ist optional und wird durch `tools.exec.applyPatch` gesteuert. `TOOLS.md` steuert **nicht**, welche Tools existieren; es ist Anleitung dafür, wie _Sie_ möchten, dass sie verwendet werden.
+Kern-Tools (Lesen/Ausführen/Bearbeiten/Schreiben und zugehörige System-Tools) sind stets verfügbar, vorbehaltlich der Tool-Richtlinie. `apply_patch` ist für OpenAI-Modelle standardmäßig aktiviert und wird durch `tools.exec.applyPatch` (`enabled`, `workspaceOnly`, `allowModels`) gesteuert. `TOOLS.md` legt **nicht** fest, welche Tools vorhanden sind; die Datei enthält Vorgaben dazu, wie _Sie_ deren Verwendung wünschen.
 
 ## Skills
 
@@ -64,60 +69,79 @@ OpenClaw lädt Skills aus diesen Speicherorten (höchste Priorität zuerst):
 - Projekt-Agent-Skills: `<workspace>/.agents/skills`
 - Persönliche Agent-Skills: `~/.agents/skills`
 - Verwaltet/lokal: `~/.openclaw/skills`
-- Gebündelt (mit der Installation ausgeliefert)
+- Mitgeliefert (in der Installation enthalten)
 - Zusätzliche Skill-Ordner: `skills.load.extraDirs`
 
-Skill-Roots können gruppierte Ordner wie `<workspace>/skills/personal/foo/SKILL.md` enthalten; der Skill wird weiterhin über seinen flachen Frontmatter-Namen verfügbar gemacht, zum Beispiel `foo`.
+Skill-Stammverzeichnisse können gruppierte Ordner wie
+`<workspace>/skills/personal/foo/SKILL.md` enthalten; der Skill wird weiterhin unter seinem
+flachen Frontmatter-Namen bereitgestellt, zum Beispiel `foo`.
 
-Skills können per Konfiguration/Env gesteuert werden (siehe `skills` in [Gateway-Konfiguration](/de/gateway/configuration)).
+Skills können durch Konfiguration/Umgebungsvariablen eingeschränkt werden (siehe `skills` in der [Gateway-Konfiguration](/de/gateway/configuration)).
 
 ## Runtime-Grenzen
 
-Die eingebettete Agent-Runtime gehört OpenClaw: Modellerkennung, Tool-Verdrahtung, Prompt-Zusammenstellung, Sitzungsverwaltung und Kanalzustellung teilen sich eine integrierte Runtime-Oberfläche.
+Die eingebettete Agent-Runtime gehört zu OpenClaw: Modellerkennung, Tool-Anbindung,
+Prompt-Zusammenstellung, Sitzungsverwaltung und Kanalauslieferung bilden eine gemeinsame integrierte
+Runtime-Oberfläche.
 
 ## Sitzungen
 
-Sitzungstranskripte werden als JSONL gespeichert unter:
+Sitzungszeilen werden in der SQLite-Datenbank des jeweiligen Agenten gespeichert:
 
-- `~/.openclaw/agents/<agentId>/sessions/<SessionId>.jsonl`
+- `~/.openclaw/agents/<agentId>/agent/openclaw-agent.sqlite`
 
-Die Sitzungs-ID ist stabil und wird von OpenClaw gewählt.
-Legacy-Sitzungsordner aus anderen Tools werden nicht gelesen.
+Transkript-JSONL-Dateien können weiterhin unter
+`~/.openclaw/agents/<agentId>/sessions/` als Eingaben für Legacy-Migrationen, gelöschte oder
+zurückgesetzte Archive, Importe, Exporte und Support-Artefakte vorhanden sein. Der aktive Agent-Verlauf wird
+zusammen mit den Sitzungszeilen in SQLite gespeichert. Die Sitzungs-ID ist stabil und wird von
+OpenClaw festgelegt. OpenClaw liest keine Sitzungsordner anderer Tools.
 
 ## Steuerung während des Streamings
 
-Eingehende Prompts, die mitten in einem Lauf eintreffen, werden standardmäßig in den aktuellen Lauf gesteuert. Die Steuerung wird **nachdem der aktuelle Assistant-Turn seine Tool-Aufrufe fertig ausgeführt hat** zugestellt, vor dem nächsten LLM-Aufruf, und überspringt keine verbleibenden Tool-Aufrufe aus der aktuellen Assistant-Nachricht mehr.
+Eingehende Prompts, die während eines laufenden Durchlaufs eintreffen, werden standardmäßig in den aktuellen Durchlauf eingesteuert.
+Die Steuerung erfolgt **nachdem der aktuelle Assistentendurchlauf die Ausführung seiner
+Tool-Aufrufe abgeschlossen hat**, vor dem nächsten LLM-Aufruf, und überspringt keine verbleibenden Tool-Aufrufe
+der aktuellen Assistentennachricht mehr.
 
-`/queue steer` ist das Standardverhalten bei aktivem Lauf. `/queue followup` und `/queue collect` lassen Nachrichten auf einen späteren Turn warten, statt zu steuern. `/queue interrupt` bricht stattdessen den aktiven Lauf ab. Siehe [Queue](/de/concepts/queue) und [Steering-Queue](/de/concepts/queue-steering) für Queue- und Grenzverhalten.
+`/queue steer` ist das Standardverhalten für aktive Durchläufe. Mit `/queue followup` und
+`/queue collect` warten Nachrichten auf einen späteren Durchlauf, anstatt eingesteuert zu werden.
+`/queue interrupt` bricht stattdessen den aktiven Durchlauf ab. Informationen zum Verhalten der Warteschlange und ihrer Grenzen finden Sie unter [Warteschlange](/de/concepts/queue)
+und [Steuerungswarteschlange](/de/concepts/queue-steering).
 
-Block-Streaming sendet abgeschlossene Assistant-Blöcke, sobald sie fertig sind; es ist **standardmäßig deaktiviert** (`agents.defaults.blockStreamingDefault: "off"`).
-Passen Sie die Grenze über `agents.defaults.blockStreamingBreak` an (`text_end` vs `message_end`; Standard ist text_end).
-Steuern Sie weiches Block-Chunking mit `agents.defaults.blockStreamingChunk` (Standard 800-1200 Zeichen; bevorzugt Absatzumbrüche, dann Zeilenumbrüche; Sätze zuletzt).
-Fassen Sie gestreamte Chunks mit `agents.defaults.blockStreamingCoalesce` zusammen, um Einzeilen-Spam zu reduzieren (leerlaufbasiertes Zusammenführen vor dem Senden). Nicht-Telegram-Kanäle erfordern explizit `*.blockStreaming: true`, um Blockantworten zu aktivieren.
-Ausführliche Tool-Zusammenfassungen werden beim Tool-Start ausgegeben (kein Debounce); die Control UI streamt Tool-Ausgabe, wenn verfügbar, über Agent-Ereignisse.
-Weitere Details: [Streaming + Chunking](/de/concepts/streaming).
+Block-Streaming sendet abgeschlossene Assistentenblöcke, sobald sie fertiggestellt sind; es ist
+**standardmäßig deaktiviert** (`agents.defaults.blockStreamingDefault: "off"`).
+Passen Sie die Grenze über `agents.defaults.blockStreamingBreak` an (`text_end` gegenüber `message_end`; Standardwert ist `text_end`).
+Steuern Sie die weiche Blockaufteilung mit `agents.defaults.blockStreamingChunk` (standardmäßig
+800-1200 Zeichen; bevorzugt Absatzumbrüche, dann Zeilenumbrüche und zuletzt Satzgrenzen).
+Fassen Sie gestreamte Blöcke mit `agents.defaults.blockStreamingCoalesce` zusammen, um
+Einzeilen-Spam zu reduzieren (inaktivitätsbasierte Zusammenführung vor dem Senden). Kanäle außer Telegram erfordern
+explizit `*.blockStreaming: true`, um Blockantworten zu aktivieren.
+Ausführliche Tool-Zusammenfassungen werden beim Start des Tools ausgegeben (ohne Entprellung); die Control UI
+streamt die Tool-Ausgabe über Agent-Ereignisse, sofern verfügbar.
+Weitere Einzelheiten: [Streaming und Aufteilung](/de/concepts/streaming).
 
-## Modell-Refs
+## Modellreferenzen
 
-Modell-Refs in der Konfiguration (zum Beispiel `agents.defaults.model` und `agents.defaults.models`) werden durch Aufteilen am **ersten** `/` geparst.
+Modellreferenzen in der Konfiguration (zum Beispiel `agents.defaults.model` und `agents.defaults.models`) werden am **ersten** `/` getrennt.
 
-- Verwenden Sie `provider/model`, wenn Sie Modelle konfigurieren.
-- Wenn die Modell-ID selbst `/` enthält (OpenRouter-Stil), schließen Sie das Provider-Präfix ein (Beispiel: `openrouter/moonshotai/kimi-k2`).
-- Wenn Sie den Provider weglassen, versucht OpenClaw zuerst einen Alias, dann eine Übereinstimmung mit einem eindeutigen konfigurierten Provider für genau diese Modell-ID, und fällt erst dann auf den konfigurierten Standard-Provider zurück. Wenn dieser Provider das konfigurierte Standardmodell nicht mehr bereitstellt, fällt OpenClaw auf das erste konfigurierte Provider/Modell zurück, statt einen veralteten Standard eines entfernten Providers offenzulegen.
+- Verwenden Sie beim Konfigurieren von Modellen `provider/model`.
+- Wenn die Modell-ID selbst `/` enthält (wie bei OpenRouter), geben Sie das Provider-Präfix an (Beispiel: `openrouter/moonshotai/kimi-k2`).
+- Wenn Sie den Provider weglassen, versucht OpenClaw zuerst einen Alias, dann eine eindeutige
+  Übereinstimmung eines konfigurierten Providers für genau diese Modell-ID und greift erst danach
+  auf den konfigurierten Standard-Provider zurück. Wenn dieser Provider das
+  konfigurierte Standardmodell nicht mehr anbietet, greift OpenClaw auf das erste konfigurierte
+  Provider-/Modellpaar zurück, anstatt einen veralteten Standardwert eines entfernten Providers auszugeben.
 
 ## Konfiguration (minimal)
 
-Setzen Sie mindestens:
+Legen Sie mindestens Folgendes fest:
 
 - `agents.defaults.workspace`
 - `channels.whatsapp.allowFrom` (dringend empfohlen)
 
----
-
-_Nächster Schritt: [Gruppenchats](/de/channels/group-messages)_ 🦞
-
-## Verwandt
+## Verwandte Themen
 
 - [Agent-Workspace](/de/concepts/agent-workspace)
 - [Multi-Agent-Routing](/de/concepts/multi-agent)
 - [Sitzungsverwaltung](/de/concepts/session)
+- [Gruppenchats](/de/channels/group-messages)

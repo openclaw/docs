@@ -2,16 +2,17 @@
 read_when:
     - Conectar Codex, Claude Code u otro cliente MCP a canales respaldados por OpenClaw
     - Ejecutando `openclaw mcp serve`
-    - Administrar las definiciones de servidores MCP guardadas por OpenClaw
+    - Administración de las definiciones de servidores MCP guardadas por OpenClaw
 sidebarTitle: MCP
-summary: Exponer las conversaciones de canales de OpenClaw mediante MCP y gestionar las definiciones guardadas de servidores MCP
+summary: Expón las conversaciones de los canales de OpenClaw mediante MCP y gestiona las definiciones guardadas de servidores MCP
 title: MCP
 x-i18n:
-    generated_at: "2026-07-05T11:07:42Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:23:09Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: 569540aefe6700c82b00249183fd09e35ea41055a7e7fc0622a811bb2055488b
+    source_hash: 5753ffb716794edcdfa2c3cdd370bd33173b6d30785f135e84933dcd628bbe54
     source_path: cli/mcp.md
     workflow: 16
 ---
@@ -19,29 +20,29 @@ x-i18n:
 `openclaw mcp` tiene dos funciones:
 
 - ejecutar OpenClaw como servidor MCP con `openclaw mcp serve`
-- gestionar definiciones de servidores MCP salientes administrados por OpenClaw con `list`, `show`, `status`, `doctor`, `probe`, `add`, `set`, `configure`, `tools`, `login`, `logout`, `reload` y `unset`
+- gestionar las definiciones de servidores MCP salientes administradas por OpenClaw con `list`, `show`, `status`, `doctor`, `probe`, `add`, `set`, `configure`, `tools`, `login`, `logout`, `reload` y `unset`
 
-`serve` es OpenClaw actuando como servidor MCP. Los demás subcomandos son OpenClaw actuando como registro del lado cliente de MCP para servidores que sus propios runtimes puedan consumir más adelante.
+Con `serve`, OpenClaw actúa como servidor MCP. Con los demás subcomandos, OpenClaw actúa como registro del lado del cliente MCP para servidores que sus propios entornos de ejecución pueden consumir posteriormente.
 
 <Note>
-  `list`, `show`, `set` y `unset` solo leen y escriben entradas `mcp.servers` administradas por OpenClaw en la configuración de OpenClaw. No incluyen servidores mcporter de `config/mcporter.json`; usa `mcporter list` para ese registro.
+  `list`, `show`, `set` y `unset` solo leen y escriben entradas `mcp.servers` administradas por OpenClaw en la configuración de OpenClaw. No incluyen los servidores de mcporter de `config/mcporter.json`; use `mcporter list` para ese registro.
 </Note>
 
-Usa [`openclaw acp`](/es/cli/acp) cuando OpenClaw deba alojar por sí mismo una sesión de arnés de programación y enrutar ese runtime mediante ACP.
+Use [`openclaw acp`](/es/cli/acp) cuando OpenClaw deba alojar por sí mismo una sesión de un entorno de programación y enrutar ese entorno de ejecución mediante ACP.
 
-## Elige la ruta MCP correcta
+## Elegir la ruta MCP adecuada
 
-| Objetivo                                                            | Uso                                                                  | Por qué                                                                                                         |
+| Objetivo                                                                | Usar                                                                  | Motivo                                                                                                             |
 | ------------------------------------------------------------------- | -------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
-| Permitir que un cliente MCP externo lea/envíe conversaciones de canales de OpenClaw | `openclaw mcp serve`                                                 | OpenClaw es el servidor MCP y expone conversaciones respaldadas por Gateway mediante stdio.                    |
-| Guardar servidores MCP de terceros para ejecuciones de agentes administradas por OpenClaw | `openclaw mcp add`, `set`, `configure`, `tools`, `login`             | OpenClaw es el registro del lado cliente de MCP y luego proyecta esos servidores en runtimes elegibles.         |
-| Comprobar un servidor guardado sin ejecutar un turno de agente      | `openclaw mcp status`, `doctor`, `probe`                             | `status` y `doctor` inspeccionan la configuración; `probe` abre una conexión MCP en vivo y lista capacidades.  |
-| Editar la configuración MCP desde un navegador                      | Control UI `/mcp`                                                    | La página muestra inventario, habilitación, resúmenes de OAuth/filtros, sugerencias de comandos y un editor `mcp` con alcance. |
-| Dar al servidor de aplicaciones de Codex un servidor MCP nativo con alcance | `mcp.servers.<name>.codex`                                           | El bloque `codex` solo afecta la proyección de hilos del servidor de aplicaciones de Codex y se elimina antes de entregar la configuración nativa. |
-| Ejecutar sesiones de arnés alojadas por ACP                         | [`openclaw acp`](/es/cli/acp) y [Agentes ACP](/es/tools/acp-agents-setup) | El modo puente ACP no acepta inyección de servidores MCP por sesión; configura en su lugar puentes de gateway/plugins. |
+| Permitir que un cliente MCP externo lea o envíe conversaciones de canales de OpenClaw | `openclaw mcp serve`                                                 | OpenClaw es el servidor MCP y expone conversaciones respaldadas por el Gateway mediante stdio.                                 |
+| Guardar servidores MCP de terceros para ejecuciones de agentes administradas por OpenClaw        | `openclaw mcp add`, `set`, `configure`, `tools`, `login`             | OpenClaw es el registro del lado del cliente MCP y posteriormente proyecta esos servidores en los entornos de ejecución compatibles.               |
+| Comprobar un servidor guardado sin ejecutar un turno del agente                  | `openclaw mcp status`, `doctor`, `probe`                             | `status` y `doctor` inspeccionan la configuración; `probe` abre una conexión MCP activa y enumera las capacidades.               |
+| Editar la configuración de MCP desde un navegador                                      | Interfaz de control `/settings/mcp` (alias `/mcp`)                            | La página muestra el inventario, la habilitación, resúmenes de OAuth y filtros, sugerencias de comandos y un editor de `mcp` con alcance limitado.         |
+| Proporcionar a Codex app-server un servidor MCP nativo con alcance limitado                    | `mcp.servers.<name>.codex`                                           | El bloque `codex` solo afecta a la proyección de hilos de Codex app-server y se elimina antes de entregar la configuración nativa. |
+| Ejecutar sesiones de entornos alojadas mediante ACP                                     | [`openclaw acp`](/es/cli/acp) y [Agentes ACP](/es/tools/acp-agents-setup) | El modo puente de ACP no acepta la inyección de servidores MCP por sesión; configure en su lugar puentes del Gateway o de plugins.     |
 
 <Tip>
-Si no tienes claro qué ruta necesitas, empieza con `openclaw mcp status --verbose`. Muestra lo que OpenClaw tiene guardado sin iniciar ningún servidor MCP.
+Si no sabe con certeza qué ruta necesita, comience con `openclaw mcp status --verbose`. Muestra lo que OpenClaw ha guardado sin iniciar ningún servidor MCP.
 </Tip>
 
 ## OpenClaw como servidor MCP
@@ -50,80 +51,80 @@ Esta es la ruta `openclaw mcp serve`.
 
 ### Cuándo usar serve
 
-Usa `openclaw mcp serve` cuando:
+Use `openclaw mcp serve` cuando:
 
-- Codex, Claude Code u otro cliente MCP deban hablar directamente con conversaciones de canales respaldadas por OpenClaw
-- ya tengas un Gateway de OpenClaw local o remoto con sesiones enrutadas
-- quieras un servidor MCP que funcione en todos los backends de canales de OpenClaw en lugar de ejecutar puentes separados por canal
+- Codex, Claude Code u otro cliente MCP deba comunicarse directamente con conversaciones de canales respaldadas por OpenClaw
+- ya disponga de un Gateway de OpenClaw local o remoto con sesiones enrutadas
+- quiera un único servidor MCP que funcione con los distintos backends de canales de OpenClaw, en lugar de ejecutar puentes independientes para cada canal
 
-Usa [`openclaw acp`](/es/cli/acp) en su lugar cuando OpenClaw deba alojar el runtime de programación por sí mismo y mantener la sesión del agente dentro de OpenClaw.
+Use [`openclaw acp`](/es/cli/acp) en su lugar cuando OpenClaw deba alojar por sí mismo el entorno de ejecución de programación y mantener la sesión del agente dentro de OpenClaw.
 
 ### Cómo funciona
 
-`openclaw mcp serve` inicia un servidor MCP stdio. El cliente MCP es dueño de ese proceso. Mientras el cliente mantiene abierta la sesión stdio, el puente se conecta a un Gateway de OpenClaw local o remoto mediante WebSocket y expone conversaciones de canales enrutadas mediante MCP.
+`openclaw mcp serve` inicia un servidor MCP mediante stdio. El cliente MCP controla ese proceso. Mientras el cliente mantenga abierta la sesión stdio, el puente se conecta mediante WebSocket a un Gateway de OpenClaw local o remoto y expone las conversaciones de canales enrutadas mediante MCP.
 
 <Steps>
   <Step title="El cliente inicia el puente">
     El cliente MCP inicia `openclaw mcp serve`.
   </Step>
-  <Step title="El puente se conecta a Gateway">
+  <Step title="El puente se conecta al Gateway">
     El puente se conecta al Gateway de OpenClaw mediante WebSocket.
   </Step>
   <Step title="Las sesiones se convierten en conversaciones MCP">
-    Las sesiones enrutadas se convierten en conversaciones MCP y herramientas de transcripción/historial.
+    Las sesiones enrutadas se convierten en conversaciones MCP y en herramientas de transcripción e historial.
   </Step>
-  <Step title="Cola de eventos en vivo">
-    Los eventos en vivo se ponen en cola en memoria mientras el puente está conectado.
+  <Step title="Los eventos en directo se ponen en cola">
+    Los eventos en directo se ponen en cola en la memoria mientras el puente permanece conectado.
   </Step>
-  <Step title="Push opcional de Claude">
-    Si el modo de canal Claude está habilitado, la misma sesión también puede recibir notificaciones push específicas de Claude.
+  <Step title="Notificaciones push opcionales de Claude">
+    Si está habilitado el modo de canal de Claude, la misma sesión también puede recibir notificaciones push específicas de Claude.
   </Step>
 </Steps>
 
 <AccordionGroup>
   <Accordion title="Comportamiento importante">
-    - el estado de la cola en vivo empieza cuando el puente se conecta
-    - el historial de transcripción anterior se lee con `messages_read`
+    - el estado de la cola en directo comienza cuando se conecta el puente
+    - el historial de transcripciones anterior se lee con `messages_read`
     - las notificaciones push de Claude solo existen mientras la sesión MCP está activa
-    - cuando el cliente se desconecta, el puente sale y la cola en vivo desaparece
-    - los puntos de entrada de agente de una sola ejecución, como `openclaw agent` y `openclaw infer model run`, retiran cualquier runtime MCP incluido que abran cuando se completa la respuesta, por lo que las ejecuciones con scripts repetidas no acumulan procesos hijos MCP stdio
-    - los servidores MCP stdio iniciados por OpenClaw (incluidos o configurados por el usuario) se desmontan como un árbol de procesos al apagarse, por lo que los subprocesos hijos iniciados por el servidor no sobreviven después de que sale el cliente stdio padre
-    - eliminar o restablecer una sesión desecha los clientes MCP de esa sesión mediante la ruta compartida de limpieza de runtime, por lo que no quedan conexiones stdio persistentes vinculadas a una sesión eliminada
+    - cuando el cliente se desconecta, el puente finaliza y se pierde la cola en directo
+    - los puntos de entrada de agente de una sola ejecución, como `openclaw agent` y `openclaw infer model run`, finalizan cualquier entorno de ejecución MCP incluido que abran cuando se completa la respuesta, por lo que las ejecuciones repetidas mediante scripts no acumulan procesos secundarios MCP de stdio
+    - los servidores MCP de stdio iniciados por OpenClaw, ya sean incluidos o configurados por el usuario, se cierran como un árbol de procesos al apagarse, por lo que los subprocesos secundarios iniciados por el servidor no permanecen activos después de que finalice el cliente stdio principal
+    - al eliminar o restablecer una sesión, se liberan los clientes MCP de esa sesión mediante la ruta compartida de limpieza del entorno de ejecución, por lo que no quedan conexiones stdio persistentes vinculadas a una sesión eliminada
 
   </Accordion>
 </AccordionGroup>
 
-### Elige un modo de cliente
+### Elegir un modo de cliente
 
 <Tabs>
   <Tab title="Clientes MCP genéricos">
-    Solo herramientas MCP estándar. Usa `conversations_list`, `messages_read`, `events_poll`, `events_wait`, `messages_send` y las herramientas de aprobación.
+    Solo herramientas MCP estándar. Use `conversations_list`, `messages_read`, `events_poll`, `events_wait`, `messages_send` y las herramientas de aprobación.
   </Tab>
   <Tab title="Claude Code">
-    Herramientas MCP estándar más el adaptador de canal específico de Claude. Habilita `--claude-channel-mode on` o deja el valor predeterminado `auto`.
+    Herramientas MCP estándar más el adaptador de canal específico de Claude. Habilite `--claude-channel-mode on` o mantenga el valor predeterminado `auto`.
   </Tab>
 </Tabs>
 
 <Note>
-Hoy, `auto` se comporta igual que `on`. Todavía no hay detección de capacidades del cliente.
+Actualmente, `auto` se comporta igual que `on`. Aún no existe detección de capacidades del cliente.
 </Note>
 
 ### Qué expone serve
 
-El puente usa los metadatos de rutas de sesión existentes de Gateway para exponer conversaciones respaldadas por canales. Una conversación aparece cuando OpenClaw ya tiene estado de sesión con una ruta conocida, como:
+El puente utiliza los metadatos existentes de las rutas de sesión del Gateway para exponer conversaciones respaldadas por canales. Una conversación aparece cuando OpenClaw ya dispone de un estado de sesión con una ruta conocida, como:
 
 - `channel`
-- metadatos de destinatario o destino
+- metadatos del destinatario o del destino
 - `accountId` opcional
 - `threadId` opcional
 
-Esto ofrece a los clientes MCP un único lugar para:
+Esto proporciona a los clientes MCP un único lugar donde:
 
-- listar conversaciones enrutadas recientes
-- leer el historial de transcripción reciente
+- enumerar conversaciones enrutadas recientes
+- leer el historial reciente de transcripciones
 - esperar nuevos eventos entrantes
-- enviar una respuesta por la misma ruta
-- ver solicitudes de aprobación que llegan mientras el puente está conectado
+- devolver una respuesta mediante la misma ruta
+- ver las solicitudes de aprobación que lleguen mientras el puente esté conectado
 
 ### Uso
 
@@ -155,44 +156,44 @@ Esto ofrece a los clientes MCP un único lugar para:
 
 <AccordionGroup>
   <Accordion title="conversations_list">
-    Lista conversaciones recientes respaldadas por sesiones que ya tienen metadatos de ruta en el estado de sesión de Gateway.
+    Enumera las conversaciones recientes respaldadas por sesiones que ya tienen metadatos de ruta en el estado de sesión del Gateway.
 
-    Filtros: `limit` (máx. 500), `search`, `channel`, `includeDerivedTitles`, `includeLastMessage`.
+    Filtros: `limit` (máximo 500), `search`, `channel`, `includeDerivedTitles`, `includeLastMessage`.
 
   </Accordion>
   <Accordion title="conversation_get">
-    Devuelve una conversación por `session_key` usando una búsqueda directa de sesión de Gateway.
+    Devuelve una conversación mediante `session_key` usando una consulta directa de sesión al Gateway.
   </Accordion>
   <Accordion title="messages_read">
-    Lee mensajes de transcripción recientes para una conversación respaldada por sesión. `limit` tiene un valor predeterminado de 20, máximo 200.
+    Lee los mensajes recientes de la transcripción de una conversación respaldada por una sesión. El valor predeterminado de `limit` es 20; el máximo es 200.
   </Accordion>
   <Accordion title="attachments_fetch">
-    Extrae bloques de contenido de mensaje que no son texto de un mensaje de transcripción. Esta es una vista de metadatos sobre el contenido de la transcripción, no un almacén independiente de blobs de adjuntos duraderos.
+    Extrae los bloques de contenido que no son de texto de un mensaje de la transcripción. Esta es una vista de metadatos del contenido de la transcripción, no un almacén independiente y persistente de blobs de archivos adjuntos.
   </Accordion>
   <Accordion title="events_poll">
-    Lee eventos en vivo en cola desde un cursor numérico. `limit` máximo 200.
+    Lee los eventos en directo en cola desde un cursor numérico. El máximo de `limit` es 200.
   </Accordion>
   <Accordion title="events_wait">
-    Realiza long polling hasta que llega el siguiente evento en cola coincidente o vence un tiempo de espera (predeterminado 30 s, máximo 300 s).
+    Realiza una consulta de larga duración hasta que llega el siguiente evento en cola que coincida o vence el tiempo de espera (valor predeterminado de 30s, máximo de 300s).
 
-    Usa esto cuando un cliente MCP genérico necesite entrega casi en tiempo real sin un protocolo push específico de Claude.
+    Use esta opción cuando un cliente MCP genérico necesite una entrega casi en tiempo real sin un protocolo push específico de Claude.
 
   </Accordion>
   <Accordion title="messages_send">
-    Envía texto de vuelta por la misma ruta ya registrada en la sesión.
+    Envía texto mediante la misma ruta ya registrada en la sesión.
 
     Comportamiento actual:
 
     - requiere una ruta de conversación existente
-    - usa el canal, destinatario, id de cuenta e id de hilo de la sesión
-    - envía solo texto
+    - utiliza el canal, el destinatario, el identificador de cuenta y el identificador del hilo de la sesión
+    - solo envía texto
 
   </Accordion>
   <Accordion title="permissions_list_open">
-    Lista solicitudes pendientes de aprobación de exec/plugin que el puente ha observado desde que se conectó al Gateway.
+    Enumera las solicitudes de aprobación de ejecución o plugins pendientes que el puente ha observado desde que se conectó al Gateway.
   </Accordion>
   <Accordion title="permissions_respond">
-    Resuelve una solicitud pendiente de aprobación de exec/plugin con:
+    Resuelve una solicitud de aprobación de ejecución o plugins pendiente con:
 
     - `allow-once`
     - `allow-always`
@@ -205,7 +206,7 @@ Esto ofrece a los clientes MCP un único lugar para:
 
 El puente mantiene una cola de eventos en memoria mientras está conectado.
 
-Tipos de evento actuales:
+Tipos de eventos actuales:
 
 - `message`
 - `exec_approval_requested`
@@ -215,45 +216,45 @@ Tipos de evento actuales:
 - `claude_permission_request`
 
 <Warning>
-- la cola es solo en vivo; empieza cuando se inicia el puente MCP
-- `events_poll` y `events_wait` no reproducen por sí mismos el historial anterior de Gateway
-- el backlog duradero debe leerse con `messages_read`
+- la cola solo contiene eventos en directo; comienza cuando se inicia el puente MCP
+- `events_poll` y `events_wait` no reproducen por sí mismos el historial anterior del Gateway
+- el historial pendiente persistente debe leerse con `messages_read`
 
 </Warning>
 
-### Notificaciones de canal Claude
+### Notificaciones de canal de Claude
 
-El puente también puede exponer notificaciones de canal específicas de Claude. Este es el equivalente en OpenClaw de un adaptador de canal de Claude Code: las herramientas MCP estándar siguen disponibles, pero los mensajes entrantes en vivo también pueden llegar como notificaciones MCP específicas de Claude.
+El puente también puede exponer notificaciones de canal específicas de Claude. Este es el equivalente en OpenClaw de un adaptador de canal de Claude Code: las herramientas MCP estándar siguen disponibles, pero los mensajes entrantes en directo también pueden llegar como notificaciones MCP específicas de Claude.
 
 <Tabs>
   <Tab title="off">
     `--claude-channel-mode off`: solo herramientas MCP estándar.
   </Tab>
   <Tab title="on">
-    `--claude-channel-mode on`: habilita las notificaciones de canal Claude.
+    `--claude-channel-mode on`: habilita las notificaciones de canal de Claude.
   </Tab>
   <Tab title="auto (predeterminado)">
-    `--claude-channel-mode auto`: valor predeterminado actual; el mismo comportamiento de puente que `on`.
+    `--claude-channel-mode auto`: valor predeterminado actual; el comportamiento del puente es el mismo que con `on`.
   </Tab>
 </Tabs>
 
-Cuando el modo de canal Claude está habilitado, el servidor anuncia capacidades experimentales de Claude y puede emitir:
+Cuando el modo de canal de Claude está habilitado, el servidor anuncia capacidades experimentales de Claude y puede emitir:
 
 - `notifications/claude/channel`
 - `notifications/claude/channel/permission`
 
 Comportamiento actual del puente:
 
-- los mensajes de transcripción `user` entrantes se reenvían como `notifications/claude/channel`
-- las solicitudes de permiso de Claude recibidas mediante MCP se rastrean en memoria
-- si el propietario del comando en la conversación vinculada envía más adelante `yes <id>` o `no <id>` (`<id>` es el id de solicitud de 5 letras, excluyendo `l`), el puente lo convierte en `notifications/claude/channel/permission`
-- estas notificaciones son solo para la sesión en vivo; si el cliente MCP se desconecta, no hay destino push
+- los mensajes entrantes `user` de la transcripción se reenvían como `notifications/claude/channel`
+- las solicitudes de permisos de Claude recibidas mediante MCP se registran en memoria
+- si el propietario del comando en la conversación vinculada envía posteriormente `yes <id>` o `no <id>` (`<id>` es el identificador de solicitud de 5 letras, sin incluir `l`), el puente lo convierte en `notifications/claude/channel/permission`
+- estas notificaciones solo existen durante la sesión en directo; si el cliente MCP se desconecta, no hay ningún destino para las notificaciones push
 
-Esto es intencionadamente específico del cliente. Los clientes MCP genéricos deben depender de las herramientas de sondeo estándar.
+Este comportamiento es específico del cliente de forma intencionada. Los clientes MCP genéricos deben utilizar las herramientas de consulta estándar.
 
-### Configuración de cliente MCP
+### Configuración del cliente MCP
 
-Ejemplo de configuración de cliente stdio:
+Ejemplo de configuración de un cliente stdio:
 
 ```json
 {
@@ -273,23 +274,23 @@ Ejemplo de configuración de cliente stdio:
 }
 ```
 
-Para la mayoría de los clientes MCP genéricos, empieza con la superficie de herramientas estándar e ignora el modo Claude. Activa el modo Claude solo para clientes que realmente entiendan los métodos de notificación específicos de Claude.
+Para la mayoría de los clientes MCP genéricos, comience con el conjunto estándar de herramientas e ignore el modo de Claude. Active el modo de Claude solo para los clientes que comprendan realmente los métodos de notificación específicos de Claude.
 
 ### Opciones
 
 `openclaw mcp serve` admite:
 
 <ParamField path="--url" type="string">
-  URL WebSocket de Gateway. Usa `gateway.remote.url` de forma predeterminada cuando está configurado.
+  URL de WebSocket del Gateway. El valor predeterminado es `gateway.remote.url` cuando está configurado.
 </ParamField>
 <ParamField path="--token" type="string">
-  Token de Gateway.
+  Token del Gateway.
 </ParamField>
 <ParamField path="--token-file" type="string">
   Lee el token desde un archivo.
 </ParamField>
 <ParamField path="--password" type="string">
-  Contraseña de Gateway.
+  Contraseña del Gateway.
 </ParamField>
 <ParamField path="--password-file" type="string">
   Lee la contraseña desde un archivo.
@@ -302,56 +303,56 @@ Para la mayoría de los clientes MCP genéricos, empieza con la superficie de he
 </ParamField>
 
 <Tip>
-Prefiere `--token-file` o `--password-file` en lugar de secretos en línea cuando sea posible.
+Cuando sea posible, se recomienda usar `--token-file` o `--password-file` en lugar de secretos en línea.
 </Tip>
 
-### Seguridad y límite de confianza
+### Límite de seguridad y confianza
 
-El puente no inventa enrutamiento. Solo expone conversaciones que Gateway ya sabe enrutar.
+El puente no crea rutas. Solo expone las conversaciones que el Gateway ya sabe cómo enrutar.
 
-Eso significa:
+Esto significa lo siguiente:
 
-- las listas de permitidos de remitentes, el emparejamiento y la confianza a nivel de canal siguen perteneciendo a la configuración del canal de OpenClaw subyacente
-- `messages_send` solo puede responder a través de una ruta almacenada existente
-- el estado de aprobación es en vivo/en memoria solo para la sesión actual del puente
-- la autenticación del puente debe usar los mismos controles de token o contraseña de Gateway en los que confiarías para cualquier otro cliente remoto de Gateway
+- las listas de remitentes permitidos, el emparejamiento y la confianza a nivel de canal siguen perteneciendo a la configuración subyacente del canal de OpenClaw
+- `messages_send` solo puede responder mediante una ruta almacenada existente
+- el estado de aprobación solo está activo y en memoria durante la sesión actual del puente
+- la autenticación del puente debe usar los mismos controles de token o contraseña del Gateway en los que se confiaría para cualquier otro cliente remoto del Gateway
 
-Si falta una conversación en `conversations_list`, la causa habitual no es la configuración de MCP. Es la falta de metadatos de ruta, o metadatos incompletos, en la sesión de Gateway subyacente.
+Si una conversación no aparece en `conversations_list`, la causa habitual no es la configuración de MCP. Se debe a que faltan metadatos de ruta o están incompletos en la sesión subyacente del Gateway.
 
 ### Pruebas
 
-OpenClaw incluye una prueba de humo determinista de Docker para este puente:
+OpenClaw incluye una prueba de humo determinista en Docker para este puente:
 
 ```bash
 pnpm test:docker:mcp-channels
 ```
 
-Esa prueba de humo ejecuta un único contenedor: siembra el estado de conversación, inicia Gateway y luego genera `openclaw mcp serve` como un proceso hijo stdio y lo controla como cliente MCP. Verifica el descubrimiento de conversaciones, las lecturas de transcripciones, las lecturas de metadatos de adjuntos, el comportamiento de la cola de eventos en vivo y las notificaciones de canal y permisos de estilo Claude sobre el puente MCP stdio real. El enrutamiento de envío saliente (`messages_send` reutilizando la ruta de conversación almacenada) está cubierto por separado mediante pruebas unitarias en `src/mcp/channel-server.test.ts`.
+Esta prueba de humo ejecuta un único contenedor: inicializa el estado de las conversaciones, inicia el Gateway y, a continuación, genera `openclaw mcp serve` como proceso secundario stdio y lo controla como cliente MCP. Verifica el descubrimiento de conversaciones, la lectura de transcripciones, la lectura de metadatos de archivos adjuntos, el comportamiento de la cola de eventos en tiempo real y las notificaciones de canales y permisos al estilo de Claude mediante el puente MCP stdio real. El enrutamiento de envíos salientes (`messages_send` reutilizando la ruta almacenada de la conversación) se cubre por separado mediante pruebas unitarias en `src/mcp/channel-server.test.ts`.
 
 Esta es la forma más rápida de demostrar que el puente funciona sin conectar una cuenta real de Telegram, Discord o iMessage a la ejecución de pruebas.
 
-Para un contexto más amplio de pruebas, consulta [Pruebas](/es/help/testing).
+Para obtener un contexto más amplio sobre las pruebas, consulte [Pruebas](/es/help/testing).
 
 ### Solución de problemas
 
 <AccordionGroup>
   <Accordion title="No se devolvieron conversaciones">
-    Normalmente significa que la sesión de Gateway todavía no es enrutable. Confirma que la sesión subyacente tenga almacenados el canal/proveedor, el destinatario y los metadatos opcionales de ruta de cuenta/hilo.
+    Normalmente significa que la sesión del Gateway aún no se puede enrutar. Confirme que la sesión subyacente tenga almacenados el canal o proveedor, el destinatario y los metadatos opcionales de ruta de la cuenta o del hilo.
   </Accordion>
-  <Accordion title="events_poll o events_wait omiten mensajes antiguos">
-    Esperado. La cola en vivo comienza cuando el puente se conecta. Lee el historial de transcripciones más antiguo con `messages_read`.
+  <Accordion title="events_poll o events_wait omite mensajes anteriores">
+    Es el comportamiento esperado. La cola en tiempo real comienza cuando se conecta el puente. Lea el historial anterior de la transcripción con `messages_read`.
   </Accordion>
   <Accordion title="Las notificaciones de Claude no aparecen">
-    Revisa todo lo siguiente:
+    Compruebe todo lo siguiente:
 
     - el cliente mantuvo abierta la sesión MCP stdio
-    - `--claude-channel-mode` es `on` o `auto`
-    - el cliente realmente entiende los métodos de notificación específicos de Claude
-    - el mensaje entrante ocurrió después de que el puente se conectó
+    - `--claude-channel-mode` está establecido en `on` o `auto`
+    - el cliente comprende realmente los métodos de notificación específicos de Claude
+    - el mensaje entrante se produjo después de que se conectara el puente
 
   </Accordion>
   <Accordion title="Faltan aprobaciones">
-    `permissions_list_open` solo muestra solicitudes de aprobación observadas mientras el puente estaba conectado. No es una API duradera de historial de aprobaciones.
+    `permissions_list_open` solo muestra las solicitudes de aprobación observadas mientras el puente estaba conectado. No es una API de historial de aprobaciones persistente.
   </Accordion>
 </AccordionGroup>
 
@@ -360,48 +361,49 @@ Para un contexto más amplio de pruebas, consulta [Pruebas](/es/help/testing).
 Esta es la ruta de `openclaw mcp list`, `show`, `status`, `doctor`, `probe`, `add`, `set`,
 `configure`, `tools`, `login`, `logout`, `reload` y `unset`.
 
-Estos comandos no exponen OpenClaw sobre MCP. Administran definiciones de servidores MCP gestionadas por OpenClaw bajo `mcp.servers` en la configuración de OpenClaw. No leen servidores mcporter desde `config/mcporter.json`.
+Estos comandos no exponen OpenClaw mediante MCP. Administran las definiciones de servidores MCP gestionadas por OpenClaw en `mcp.servers`, dentro de la configuración de OpenClaw. No leen servidores de mcporter desde `config/mcporter.json`.
 
-Esas definiciones guardadas son para runtimes que OpenClaw inicia o configura más tarde, como OpenClaw integrado y otros adaptadores de runtime. OpenClaw almacena las definiciones de forma centralizada para que esos runtimes no tengan que mantener sus propias listas duplicadas de servidores MCP.
+Estas definiciones guardadas están destinadas a entornos de ejecución que OpenClaw inicia o configura posteriormente, como OpenClaw integrado y otros adaptadores de entorno de ejecución. OpenClaw almacena las definiciones de forma centralizada para que esos entornos de ejecución no necesiten mantener sus propias listas duplicadas de servidores MCP.
 
 <AccordionGroup>
   <Accordion title="Comportamiento importante">
-    - estos comandos solo leen o escriben configuración de OpenClaw
+    - estos comandos solo leen o escriben la configuración de OpenClaw
     - `status`, `list`, `show`, `doctor` sin `--probe`, `set`, `configure`, `tools`, `logout`, `reload` y `unset` no se conectan al servidor MCP de destino
     - `login` ejecuta el flujo de red OAuth de MCP para el servidor HTTP configurado y guarda las credenciales locales resultantes
-    - `status --verbose` imprime sugerencias resueltas de transporte, autenticación, tiempo de espera, filtro y llamadas paralelas a herramientas sin conectarse
-    - `doctor` revisa las definiciones guardadas en busca de problemas de configuración local como comandos stdio faltantes, directorios de trabajo no válidos, archivos TLS faltantes, servidores deshabilitados, valores sensibles literales de encabezado/env y autorización OAuth incompleta
-    - `doctor --probe` agrega la misma prueba de conexión en vivo que `probe` después de que pasan las comprobaciones estáticas
-    - `probe` se conecta al servidor seleccionado o a todos los servidores configurados, enumera herramientas e informa capacidades/diagnósticos
-    - `add` construye una definición a partir de flags y ejecuta una prueba antes de guardar, salvo que `--no-probe` esté configurado o primero se necesite autorización OAuth
-    - los adaptadores de runtime deciden qué formas de transporte admiten realmente en tiempo de ejecución
-    - `enabled: false` conserva un servidor guardado pero lo excluye del descubrimiento de runtime integrado
-    - `timeout` y `connectTimeout` establecen tiempos de espera de solicitud y conexión por servidor en segundos
-    - `supportsParallelToolCalls: true` marca servidores a los que los adaptadores pueden llamar simultáneamente
-    - los servidores HTTP pueden usar encabezados estáticos, inicio de sesión OAuth, control de verificación TLS y rutas de certificado/clave mTLS
-    - OpenClaw integrado expone las herramientas MCP configuradas en los perfiles de herramientas normales `coding` y `messaging`; `minimal` sigue ocultándolas, y `tools.deny: ["bundle-mcp"]` las deshabilita explícitamente
-    - `toolFilter.include` y `toolFilter.exclude` por servidor filtran las herramientas MCP descubiertas antes de que se conviertan en herramientas de OpenClaw
-    - los servidores que anuncian recursos o prompts también exponen herramientas utilitarias para listar/leer recursos y listar/obtener prompts; esos nombres utilitarios generados (`resources_list`, `resources_read`, `prompts_list`, `prompts_get`) usan el mismo filtro de inclusión/exclusión
-    - los cambios dinámicos en la lista de herramientas MCP invalidan el catálogo en caché de esa sesión; el siguiente descubrimiento/uso lo actualiza desde el servidor
-    - los fallos repetidos de solicitud/protocolo de herramientas MCP pausan brevemente ese servidor para que un servidor roto no consuma todo el turno
-    - los runtimes MCP empaquetados con alcance de sesión se eliminan tras `mcp.sessionIdleTtlMs` milisegundos de inactividad (10 minutos de forma predeterminada; configura `0` para deshabilitarlo) y las ejecuciones integradas de un solo uso los limpian al final de la ejecución
+    - `status --verbose` muestra el transporte resuelto y las indicaciones de autenticación, tiempos de espera, filtros y llamadas paralelas a herramientas sin conectarse
+    - `doctor` comprueba si las definiciones guardadas presentan problemas de configuración local, como comandos stdio ausentes, directorios de trabajo no válidos, archivos TLS ausentes, servidores deshabilitados, valores confidenciales literales de encabezados o variables de entorno y autorizaciones OAuth incompletas
+    - `doctor --probe` añade la misma prueba de conexión en tiempo real que `probe` después de superar las comprobaciones estáticas
+    - `probe` se conecta al servidor seleccionado o a todos los servidores configurados, enumera las herramientas e informa de las capacidades y los diagnósticos
+    - `add` crea una definición a partir de indicadores y realiza una prueba antes de guardarla, salvo que se establezca `--no-probe` o que primero sea necesaria una autorización OAuth
+    - los adaptadores de entorno de ejecución deciden qué formatos de transporte admiten realmente durante la ejecución
+    - `enabled: false` mantiene guardado un servidor, pero lo excluye del descubrimiento del entorno de ejecución integrado
+    - `timeout` y `connectTimeout` establecen, en segundos, los tiempos de espera de las solicitudes y conexiones de cada servidor
+    - `supportsParallelToolCalls: true` marca los servidores a los que los adaptadores pueden llamar simultáneamente
+    - los servidores HTTP pueden usar encabezados estáticos, inicio de sesión OAuth, control de verificación TLS y rutas de certificados y claves mTLS
+    - OpenClaw integrado expone las herramientas MCP configuradas en los perfiles de herramientas normales `coding` y `messaging`; `minimal` sigue ocultándolas y `tools.deny: ["bundle-mcp"]` las deshabilita explícitamente
+    - `toolFilter.include` y `toolFilter.exclude` de cada servidor filtran las herramientas MCP descubiertas antes de que se conviertan en herramientas de OpenClaw
+    - los servidores que anuncian recursos o prompts también exponen herramientas auxiliares para enumerar o leer recursos y enumerar u obtener prompts; los nombres auxiliares generados (`resources_list`, `resources_read`, `prompts_list`, `prompts_get`) usan el mismo filtro de inclusión y exclusión
+    - los cambios dinámicos en la lista de herramientas MCP invalidan el catálogo almacenado en caché para esa sesión; el siguiente descubrimiento o uso lo actualiza desde el servidor
+    - los fallos repetidos en solicitudes de herramientas o en el protocolo MCP ponen en pausa brevemente ese servidor para que un servidor averiado no consuma todo el turno
+    - los entornos de ejecución MCP incluidos y limitados a la sesión se eliminan después de `mcp.sessionIdleTtlMs` milisegundos de inactividad (valor predeterminado: 10 minutos; establezca `0` para deshabilitarlo), y las ejecuciones integradas de una sola vez los limpian al finalizar
 
   </Accordion>
 </AccordionGroup>
 
-Los adaptadores de runtime pueden normalizar este registro compartido a la forma que espera su cliente descendente. Por ejemplo, OpenClaw integrado consume directamente los valores `transport` de OpenClaw, mientras que Claude Code y Gemini reciben valores `type` nativos de CLI como `http`, `sse` o `stdio`.
+Los adaptadores de entorno de ejecución pueden normalizar este registro compartido al formato que espera su cliente descendente. Por ejemplo, OpenClaw integrado consume directamente los valores `transport` de OpenClaw, mientras que Claude Code y Gemini reciben valores `type` nativos de la CLI, como `http`, `sse` o `stdio`.
 
-Codex app-server también respeta un bloque opcional `codex` en cada servidor. Esto es
-metadatos de proyección de OpenClaw solo para hilos de Codex app-server; no
-cambia sesiones ACP, configuración genérica de arnés Codex ni otros adaptadores de runtime.
-Usa `codex.agents` no vacío para proyectar un servidor solo en ids específicos de agentes de OpenClaw. Las listas de agentes vacías, en blanco o no válidas son rechazadas por la validación de configuración
-y omitidas por la ruta de proyección de runtime en lugar de volverse
-globales. Usa `codex.defaultToolsApprovalMode` (`auto`, `prompt` o `approve`)
-para emitir el `default_tools_approval_mode` nativo de Codex para un servidor de confianza.
-OpenClaw elimina los metadatos `codex` antes de entregar la configuración nativa `mcp_servers`
-a Codex.
+Codex app-server también respeta un bloque `codex` opcional en cada servidor. Estos son
+metadatos de proyección de OpenClaw exclusivamente para hilos de Codex app-server; no
+cambian las sesiones ACP, la configuración genérica del entorno de Codex ni otros adaptadores de entorno de ejecución.
+Use `codex.agents` no vacío para proyectar un servidor únicamente en identificadores específicos de agentes de OpenClaw.
+Las listas de agentes vacías, en blanco o no válidas se rechazan durante la validación de la configuración
+y se omiten en la ruta de proyección del entorno de ejecución, en lugar de convertirse
+en globales. Use `codex.defaultToolsApprovalMode` (`auto`, `prompt` o `approve`)
+para emitir el valor nativo `default_tools_approval_mode` de Codex para un servidor de confianza.
+OpenClaw elimina los metadatos `codex` antes de entregar la configuración nativa
+`mcp_servers` a Codex.
 
-### Definiciones guardadas de servidores MCP
+### Definiciones de servidores MCP guardadas
 
 Comandos:
 
@@ -421,20 +423,20 @@ Comandos:
 
 Notas:
 
-- `list` ordena los nombres de servidores.
-- `show` sin un nombre imprime el objeto completo del servidor MCP configurado.
-- `status` clasifica los transportes configurados sin conectarse. `--verbose` incluye detalles resueltos de lanzamiento, tiempo de espera, OAuth, filtro y llamadas paralelas.
-- `doctor` realiza comprobaciones estáticas sin conectarse. Agrega `--probe` cuando el comando también deba verificar que los servidores habilitados se conectan.
-- `probe` se conecta e informa recuentos de herramientas, compatibilidad con recursos/prompts, compatibilidad con cambios de lista y diagnósticos.
-- `add` acepta flags stdio como `--command`, `--arg`, `--env` y `--cwd`, o flags HTTP como `--url`, `--transport`, `--header`, `--auth oauth`, TLS, tiempo de espera y flags de selección de herramientas.
+- `list` ordena los nombres de los servidores.
+- `show` sin un nombre muestra el objeto completo de servidores MCP configurados.
+- `status` clasifica los transportes configurados sin conectarse. `--verbose` incluye detalles resueltos sobre el inicio, los tiempos de espera, OAuth, los filtros y las llamadas paralelas.
+- `doctor` realiza comprobaciones estáticas sin conectarse. Añada `--probe` cuando el comando también deba verificar que los servidores habilitados puedan conectarse.
+- `probe` se conecta e informa de la cantidad de herramientas, la compatibilidad con recursos y prompts, la compatibilidad con cambios en la lista y los diagnósticos.
+- `add` acepta indicadores stdio como `--command`, `--arg`, `--env` y `--cwd`, o indicadores HTTP como `--url`, `--transport`, `--header`, `--auth oauth`, TLS, tiempos de espera y selección de herramientas.
 - `set` espera un valor de objeto JSON en la línea de comandos.
-- `configure` actualiza habilitación, filtros de herramientas, tiempos de espera, OAuth, TLS y sugerencias de llamadas paralelas a herramientas sin reemplazar toda la definición del servidor. Agrega `--probe` para verificar el servidor actualizado antes de guardar.
-- `tools` actualiza los filtros de herramientas por servidor. Las entradas de inclusión/exclusión son nombres de herramientas MCP y globs simples `*`.
-- `login` ejecuta el flujo OAuth para servidores HTTP configurados con `auth: "oauth"`. La primera ejecución imprime una URL de autorización; vuelve a ejecutarlo con `--code` después de la aprobación.
-- `logout` borra las credenciales OAuth almacenadas para el servidor nombrado sin quitar la definición del servidor guardada.
-- `reload` descarta los runtimes MCP en proceso almacenados en caché solo para el proceso CLI actual. Los procesos de Gateway o agente en otro proceso siguen necesitando su propia ruta de recarga o reinicio.
-- Usa `transport: "streamable-http"` para servidores MCP Streamable HTTP. `openclaw mcp set` también normaliza el `type: "http"` nativo de CLI a la misma forma de configuración canónica por compatibilidad.
-- `unset` falla si el servidor nombrado no existe.
+- `configure` actualiza la habilitación, los filtros de herramientas, los tiempos de espera, OAuth, TLS y las indicaciones de llamadas paralelas a herramientas sin reemplazar toda la definición del servidor. Añada `--probe` para verificar el servidor actualizado antes de guardarlo.
+- `tools` actualiza los filtros de herramientas de cada servidor. Las entradas de inclusión y exclusión son nombres de herramientas MCP y patrones glob simples con `*`.
+- `login` ejecuta el flujo OAuth para servidores HTTP configurados con `auth: "oauth"`. La primera ejecución muestra una URL de autorización; vuelva a ejecutarlo con `--code` después de la aprobación.
+- `logout` borra las credenciales OAuth almacenadas del servidor indicado sin eliminar la definición guardada del servidor.
+- `reload` descarta los entornos de ejecución MCP en proceso almacenados en caché únicamente para el proceso actual de la CLI. Los procesos del Gateway o de agentes que se ejecuten en otro proceso siguen necesitando su propia ruta de recarga o reinicio.
+- Use `transport: "streamable-http"` para servidores MCP de Streamable HTTP. `openclaw mcp set` también normaliza el valor `type: "http"` nativo de la CLI al mismo formato de configuración canónico por compatibilidad.
+- `unset` falla si el servidor indicado no existe.
 
 Ejemplos:
 
@@ -455,9 +457,9 @@ openclaw mcp logout docs
 openclaw mcp unset context7
 ```
 
-### Recetas comunes de servidores
+### Recetas comunes para servidores
 
-Estos ejemplos solo guardan definiciones de servidores. Ejecuta `openclaw mcp doctor --probe` después para demostrar que el servidor inicia y expone herramientas.
+Estos ejemplos solo guardan definiciones de servidores. Ejecute después `openclaw mcp doctor --probe` para demostrar que el servidor se inicia y expone herramientas.
 
 <Tabs>
   <Tab title="Sistema de archivos">
@@ -471,7 +473,7 @@ Estos ejemplos solo guardan definiciones de servidores. Ejecuta `openclaw mcp do
     openclaw mcp doctor files --probe
     ```
 
-    Limita los servidores de sistema de archivos al árbol de directorios más pequeño que el agente deba leer o editar.
+    Limite los servidores de sistemas de archivos al árbol de directorios más pequeño que el agente deba leer o editar.
 
   </Tab>
   <Tab title="Memoria">
@@ -483,7 +485,7 @@ Estos ejemplos solo guardan definiciones de servidores. Ejecuta `openclaw mcp do
     openclaw mcp probe memory --json
     ```
 
-    Usa un filtro de herramientas si el servidor expone herramientas de escritura que no deberían estar disponibles para agentes normales.
+    Use un filtro de herramientas si el servidor expone herramientas de escritura que no deban estar disponibles para los agentes normales.
 
   </Tab>
   <Tab title="Script local">
@@ -496,10 +498,10 @@ Estos ejemplos solo guardan definiciones de servidores. Ejecuta `openclaw mcp do
     openclaw mcp status --verbose
     ```
 
-    `doctor` comprueba que `cwd` exista y que el comando se resuelva desde el entorno configurado.
+    `doctor` comprueba que `cwd` exista y que el comando pueda resolverse desde el entorno configurado.
 
   </Tab>
-  <Tab title="Remote HTTP">
+  <Tab title="HTTP remoto">
     ```bash
     openclaw mcp add docs \
       --url https://mcp.example.com/mcp \
@@ -512,24 +514,24 @@ Estos ejemplos solo guardan definiciones de servidores. Ejecuta `openclaw mcp do
     openclaw mcp doctor docs --probe
     ```
 
-    Usa OAuth cuando el servidor remoto lo admita. Si el servidor requiere encabezados estáticos, evita confirmar tokens bearer literales.
+    Use OAuth cuando el servidor remoto lo admita. Si el servidor requiere encabezados estáticos, evite confirmar en el repositorio tokens de portador literales.
 
   </Tab>
-  <Tab title="Desktop/CUA">
+  <Tab title="Escritorio/CUA">
     ```bash
     openclaw mcp set cua-driver '{"command":"cua-driver","args":["mcp"]}'
     openclaw mcp tools cua-driver --include 'list_apps,observe,click,type'
     openclaw mcp doctor cua-driver --probe
     ```
 
-    Los servidores de control directo del escritorio heredan los permisos del proceso que inician. Usa filtros de herramientas restrictivos y solicitudes de permisos a nivel del sistema operativo.
+    Los servidores de control directo del escritorio heredan los permisos del proceso que inician. Use filtros de herramientas restrictivos y solicitudes de permisos del sistema operativo.
 
   </Tab>
 </Tabs>
 
-### Formas de salida JSON
+### Formatos de salida JSON
 
-Usa `--json` para scripts y paneles. Los conjuntos de campos pueden crecer con el tiempo, por lo que los consumidores deben ignorar las claves desconocidas.
+Use `--json` para scripts y paneles. Los conjuntos de campos pueden ampliarse con el tiempo, por lo que los consumidores deben ignorar las claves desconocidas.
 
 <AccordionGroup>
   <Accordion title="status --json">
@@ -576,7 +578,7 @@ Usa `--json` para scripts y paneles. Los conjuntos de campos pueden crecer con e
           "issues": [
             {
               "level": "warning",
-              "message": "OAuth credentials are not authorized; run openclaw mcp login docs"
+              "message": "Las credenciales de OAuth no están autorizadas; ejecute openclaw mcp login docs"
             }
           ]
         }
@@ -584,7 +586,7 @@ Usa `--json` para scripts y paneles. Los conjuntos de campos pueden crecer con e
     }
     ```
 
-    `doctor --json` sale con un código distinto de cero cuando cualquier servidor habilitado y comprobado tiene un problema de nivel `error`. Los problemas `warning` e `info` se notifican, pero no hacen que el comando falle por sí solos.
+    `doctor --json` finaliza con un código distinto de cero cuando cualquier servidor habilitado que se compruebe presenta un problema de nivel `error`. Los problemas `warning` e `info` se notifican, pero por sí solos no hacen que el comando falle.
 
   </Accordion>
   <Accordion title="probe --json">
@@ -608,12 +610,12 @@ Usa `--json` para scripts y paneles. Los conjuntos de campos pueden crecer con e
     }
     ```
 
-    `probe --json` abre una sesión de cliente MCP en vivo e imprime su resultado directamente; a diferencia de `status`/`doctor`, la salida no tiene un campo `path` de nivel superior. Las claves `resources` y `prompts` solo están presentes cuando el servidor anuncia realmente esa capacidad (un servidor sin prompts omite la clave `prompts` en lugar de informar `false`). Usa `probe` para demostrar alcanzabilidad y capacidades, no para auditorías de configuración estática.
+    `probe --json` abre una sesión activa del cliente MCP e imprime directamente su resultado; a diferencia de `status`/`doctor`, la salida no tiene un campo `path` de nivel superior. Las claves `resources` y `prompts` solo están presentes cuando el servidor anuncia realmente esa capacidad (un servidor sin indicaciones omite la clave `prompts` en lugar de informar `false`). Use `probe` para demostrar la accesibilidad y las capacidades, no para auditar la configuración estática.
 
   </Accordion>
 </AccordionGroup>
 
-Forma de configuración de ejemplo:
+Ejemplo de estructura de configuración:
 
 ```json
 {
@@ -648,38 +650,38 @@ Forma de configuración de ejemplo:
 
 ### Transporte stdio
 
-Inicia un proceso hijo local y se comunica por stdin/stdout.
+Inicia un proceso secundario local y se comunica mediante stdin/stdout.
 
-| Campo                      | Descripción                                      |
-| -------------------------- | ------------------------------------------------ |
-| `command`                  | Ejecutable que se va a generar (obligatorio)     |
-| `args`                     | Arreglo de argumentos de línea de comandos       |
-| `env`                      | Variables de entorno adicionales                 |
-| `cwd` / `workingDirectory` | Directorio de trabajo para el proceso            |
+| Campo                      | Descripción                                  |
+| -------------------------- | -------------------------------------------- |
+| `command`                  | Ejecutable que se iniciará (obligatorio)     |
+| `args`                     | Matriz de argumentos de línea de comandos    |
+| `env`                      | Variables de entorno adicionales             |
+| `cwd` / `workingDirectory` | Directorio de trabajo del proceso            |
 
 <Warning>
-**Filtro de seguridad de entorno stdio**
+**Filtro de seguridad del entorno de stdio**
 
-OpenClaw rechaza las claves de entorno de inicio de intérprete, secuestro de cargador e inicio de shell antes de generar un servidor MCP stdio, incluso si aparecen en el bloque `env` de un servidor. Esto usa la misma política de seguridad del entorno host que otros procesos generados por OpenClaw: bloquea hooks conocidos de inicio de intérprete (por ejemplo `NODE_OPTIONS`, `PYTHONSTARTUP`, `PERL5OPT`, `RUBYOPT`, `BASHOPTS`, `KSH_ENV`), prefijos de bibliotecas compartidas e inyección de funciones (`DYLD_*`, `LD_*`, `BASH_FUNC_*`) y variables similares de control de tiempo de ejecución. El inicio las descarta silenciosamente y registra una advertencia para que no puedan inyectar un preludio implícito, cambiar el intérprete, habilitar un depurador ni secuestrar el enlazador dinámico contra el proceso stdio. Una lista de permitidos explícita mantiene utilizables las variables de entorno comunes de credenciales MCP (`GITHUB_TOKEN`, `GH_TOKEN`, `GITLAB_TOKEN`, `NPM_TOKEN`, `NODE_AUTH_TOKEN`, `DATABASE_URL`, `MONGODB_URI`, `REDIS_URL`, `AMQP_URL`, `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_SESSION_TOKEN`, `AZURE_CLIENT_ID`, `AZURE_CLIENT_SECRET`), junto con variables de entorno comunes de proxy y específicas del servidor (`HTTP_PROXY`, `*_API_KEY` personalizadas, etc.). Otras claves `AWS_*`, como `AWS_CONFIG_FILE` y `AWS_SHARED_CREDENTIALS_FILE`, permanecen bloqueadas porque apuntan a archivos de credenciales en lugar de llevar directamente un valor de credencial.
+OpenClaw rechaza las claves de entorno de inicio del intérprete, secuestro del cargador e inicialización del shell antes de iniciar un servidor MCP stdio, incluso si aparecen en el bloque `env` de un servidor. Para ello, utiliza la misma política de seguridad del entorno del host que los demás procesos iniciados por OpenClaw: bloquea los enlaces conocidos de inicio del intérprete (por ejemplo, `NODE_OPTIONS`, `PYTHONSTARTUP`, `PERL5OPT`, `RUBYOPT`, `BASHOPTS`, `KSH_ENV`), los prefijos de inyección de bibliotecas compartidas y funciones (`DYLD_*`, `LD_*`, `BASH_FUNC_*`) y variables similares de control del entorno de ejecución. Durante el inicio, estas se descartan silenciosamente y se registra una advertencia para impedir que inyecten un preámbulo implícito, sustituyan el intérprete, habiliten un depurador o secuestren el enlazador dinámico del proceso stdio. Una lista explícita de permitidos mantiene utilizables las variables de entorno habituales de credenciales de MCP (`GITHUB_TOKEN`, `GH_TOKEN`, `GITLAB_TOKEN`, `NPM_TOKEN`, `NODE_AUTH_TOKEN`, `DATABASE_URL`, `MONGODB_URI`, `REDIS_URL`, `AMQP_URL`, `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_SESSION_TOKEN`, `AZURE_CLIENT_ID`, `AZURE_CLIENT_SECRET`), junto con las variables de proxy habituales y las específicas del servidor (`HTTP_PROXY`, variables `*_API_KEY` personalizadas, etc.). Otras claves `AWS_*`, como `AWS_CONFIG_FILE` y `AWS_SHARED_CREDENTIALS_FILE`, permanecen bloqueadas porque apuntan a archivos de credenciales en lugar de contener directamente un valor de credencial.
 
-Si tu servidor MCP necesita realmente una de las variables bloqueadas, configúrala en el proceso host del Gateway en lugar de hacerlo en el `env` del servidor stdio.
+Si el servidor MCP necesita realmente una de las variables bloqueadas, establézcala en el proceso host del gateway en lugar de hacerlo en el bloque `env` del servidor stdio.
 </Warning>
 
-### Transporte SSE / HTTP
+### Transporte SSE/HTTP
 
-Se conecta a un servidor MCP remoto mediante HTTP Server-Sent Events.
+Se conecta a un servidor MCP remoto mediante eventos enviados por el servidor a través de HTTP.
 
-| Campo                          | Descripción                                                          |
-| ------------------------------ | -------------------------------------------------------------------- |
-| `url`                          | URL HTTP o HTTPS del servidor remoto (obligatorio)                   |
-| `headers`                      | Mapa opcional clave-valor de encabezados HTTP (por ejemplo tokens de autenticación) |
-| `connectionTimeoutMs`          | Tiempo de espera de conexión por servidor en ms (opcional)           |
-| `connectTimeout`               | Tiempo de espera de conexión por servidor en segundos (opcional)     |
-| `timeout` / `requestTimeoutMs` | Tiempo de espera de solicitud MCP por servidor en segundos o ms      |
-| `auth: "oauth"`                | Usa almacenamiento de tokens OAuth de MCP y `openclaw mcp login`     |
-| `sslVerify`                    | Establécelo en false solo para endpoints HTTPS privados explícitamente confiables |
-| `clientCert` / `clientKey`     | Rutas del certificado y la clave de cliente mTLS                     |
-| `supportsParallelToolCalls`    | Indica que las llamadas concurrentes son seguras para este servidor  |
+| Campo                          | Descripción                                                                      |
+| ------------------------------ | -------------------------------------------------------------------------------- |
+| `url`                          | URL HTTP o HTTPS del servidor remoto (obligatoria)                               |
+| `headers`                      | Mapa opcional de pares clave-valor de encabezados HTTP (por ejemplo, tokens de autenticación) |
+| `connectionTimeoutMs`          | Tiempo de espera de conexión por servidor en ms (opcional)                       |
+| `connectTimeout`               | Tiempo de espera de conexión por servidor en segundos (opcional)                 |
+| `timeout` / `requestTimeoutMs` | Tiempo de espera de solicitudes MCP por servidor en segundos o ms                |
+| `auth: "oauth"`                | Usa las credenciales de OAuth guardadas mediante `openclaw mcp login`            |
+| `sslVerify`                    | Establecer en false solo para puntos de conexión HTTPS privados y explícitamente confiables |
+| `clientCert` / `clientKey`     | Rutas del certificado y la clave del cliente mTLS                                |
+| `supportsParallelToolCalls`    | Indica que las llamadas simultáneas son seguras para este servidor               |
 
 Ejemplo:
 
@@ -700,41 +702,51 @@ Ejemplo:
 }
 ```
 
-Los valores sensibles en `url` (userinfo) y `headers` se redactan en los registros y en la salida de estado. `openclaw mcp doctor` advierte cuando las entradas `headers` o `env` que parecen sensibles contienen valores literales, para que los operadores puedan sacar esos valores de la configuración confirmada.
+Los valores confidenciales de `url` (información de usuario) y `headers` se ocultan en los registros y en la salida de estado. `openclaw mcp doctor` advierte cuando las entradas de `headers` o `env` que parecen confidenciales contienen valores literales, para que los operadores puedan trasladar esos valores fuera de la configuración confirmada en el repositorio.
 
-### Flujo de trabajo OAuth
+### Flujo de trabajo de OAuth
 
-OAuth es para servidores MCP HTTP que anuncian el flujo OAuth de MCP. Los encabezados `Authorization` estáticos se ignoran para un servidor mientras `auth: "oauth"` esté habilitado.
+OAuth se utiliza para servidores MCP HTTP que anuncian el flujo OAuth de MCP. Los encabezados `Authorization` estáticos se ignoran en un servidor mientras `auth: "oauth"` está habilitado. Las credenciales guardadas mediante `openclaw mcp login` funcionan con MCP integrado, los ejecutores de la CLI y el servidor de aplicaciones local de Codex.
+
+Hasta que las credenciales estén disponibles, OpenClaw omite únicamente ese servidor MCP del entorno de ejecución del agente, en lugar de provocar un error en el turno del agente. El operador, o un agente con acceso al shell, puede ejecutar entonces `openclaw mcp login <name>` y utilizar el servidor en un turno posterior.
+
+Cuando un servicio MCP remoto ya está respaldado por un perfil de autenticación independiente de OpenClaw con capacidad de actualización, se puede establecer opcionalmente `oauth.authProfileId`. OpenClaw actualiza cualquiera de las fuentes de credenciales antes de la proyección en el entorno de ejecución y pasa únicamente el token de acceso actual al cliente MCP posterior.
 
 <Steps>
-  <Step title="Save the server">
-    Agrega o actualiza el servidor con `auth: "oauth"` y cualquier metadato OAuth opcional.
+  <Step title="Guardar el servidor">
+    Añada o actualice el servidor con `auth: "oauth"` y cualquier metadato opcional de OAuth.
 
     ```bash
     openclaw mcp set docs '{"url":"https://mcp.example.com/mcp","transport":"streamable-http","auth":"oauth","oauth":{"scope":"docs.read"}}'
     ```
 
+    Para un token de portador respaldado por un perfil de autenticación, guarde la vinculación del perfil:
+
+    ```bash
+    openclaw mcp set docs '{"url":"https://mcp.example.com/mcp","transport":"streamable-http","auth":"oauth","oauth":{"authProfileId":"docs:mcp"}}'
+    ```
+
   </Step>
-  <Step title="Start login">
-    Ejecuta login para crear la solicitud de autorización.
+  <Step title="Iniciar sesión">
+    Ejecute el inicio de sesión para crear la solicitud de autorización.
 
     ```bash
     openclaw mcp login docs
     ```
 
-    OpenClaw imprime la URL de autorización y almacena el estado temporal del verificador OAuth en el directorio de estado de OpenClaw.
+    OpenClaw muestra la URL de autorización y almacena el estado temporal del verificador de OAuth en el directorio de estado de OpenClaw.
 
   </Step>
-  <Step title="Finish with the code">
-    Después de aprobar en el navegador, pasa el código devuelto de vuelta a OpenClaw.
+  <Step title="Finalizar con el código">
+    Después de aprobar la solicitud en el navegador, devuelva el código recibido a OpenClaw.
 
     ```bash
     openclaw mcp login docs --code abc123
     ```
 
   </Step>
-  <Step title="Check authorization">
-    Usa status o doctor para confirmar que los tokens están presentes.
+  <Step title="Comprobar la autorización">
+    Utilice el estado o el diagnóstico para confirmar que los tokens estén presentes.
 
     ```bash
     openclaw mcp status --verbose
@@ -742,8 +754,8 @@ OAuth es para servidores MCP HTTP que anuncian el flujo OAuth de MCP. Los encabe
     ```
 
   </Step>
-  <Step title="Clear credentials">
-    Logout elimina las credenciales OAuth almacenadas, pero conserva la definición guardada del servidor.
+  <Step title="Borrar las credenciales">
+    El cierre de sesión elimina las credenciales de OAuth almacenadas, pero conserva la definición guardada del servidor.
 
     ```bash
     openclaw mcp logout docs
@@ -752,26 +764,26 @@ OAuth es para servidores MCP HTTP que anuncian el flujo OAuth de MCP. Los encabe
   </Step>
 </Steps>
 
-Si el proveedor rota tokens o el estado de autorización se queda bloqueado, ejecuta `openclaw mcp logout <name>` y luego repite `login`. `logout` puede borrar las credenciales de un servidor HTTP guardado incluso después de que `auth: "oauth"` se haya eliminado de la configuración, siempre que el nombre del servidor y la URL aún identifiquen la entrada del almacén de credenciales.
+Si el proveedor rota los tokens o el estado de autorización queda bloqueado, ejecute `openclaw mcp logout <name>` y, a continuación, repita `login`. `logout` puede borrar las credenciales de un servidor HTTP guardado incluso después de que `auth: "oauth"` se haya eliminado de la configuración, siempre que el nombre y la URL del servidor sigan identificando la entrada del almacén de credenciales.
 
-### Transporte HTTP transmisible
+### Transporte HTTP con transmisión
 
-`streamable-http` es una opción de transporte adicional junto con `sse` y `stdio`. Usa streaming HTTP para la comunicación bidireccional con servidores MCP remotos.
+`streamable-http` es una opción de transporte adicional junto con `sse` y `stdio`. Utiliza transmisión HTTP para la comunicación bidireccional con servidores MCP remotos.
 
-| Campo                          | Descripción                                                                            |
-| ------------------------------ | -------------------------------------------------------------------------------------- |
-| `url`                          | URL HTTP o HTTPS del servidor remoto (obligatorio)                                     |
-| `transport`                    | Establécelo en `"streamable-http"` para seleccionar este transporte; si se omite, OpenClaw usa `sse` |
-| `headers`                      | Mapa opcional clave-valor de encabezados HTTP (por ejemplo tokens de autenticación)    |
-| `connectionTimeoutMs`          | Tiempo de espera de conexión por servidor en ms (opcional)                             |
-| `connectTimeout`               | Tiempo de espera de conexión por servidor en segundos (opcional)                       |
-| `timeout` / `requestTimeoutMs` | Tiempo de espera de solicitud MCP por servidor en segundos o ms                        |
-| `auth: "oauth"`                | Usa almacenamiento de tokens OAuth de MCP y `openclaw mcp login`                       |
-| `sslVerify`                    | Establécelo en false solo para endpoints HTTPS privados explícitamente confiables      |
-| `clientCert` / `clientKey`     | Rutas del certificado y la clave de cliente mTLS                                       |
-| `supportsParallelToolCalls`    | Indica que las llamadas concurrentes son seguras para este servidor                    |
+| Campo                          | Descripción                                                                                                                      |
+| ------------------------------ | -------------------------------------------------------------------------------------------------------------------------------- |
+| `url`                          | URL HTTP o HTTPS del servidor remoto (obligatoria)                                                                                |
+| `transport`                    | Establézcalo en `"streamable-http"` para seleccionar este transporte; si se omite, OpenClaw utiliza `sse`                         |
+| `headers`                      | Mapa opcional de pares clave-valor de encabezados HTTP (por ejemplo, tokens de autenticación)                                     |
+| `connectionTimeoutMs`          | Tiempo de espera de conexión por servidor en ms (opcional)                                                                        |
+| `connectTimeout`               | Tiempo de espera de conexión por servidor en segundos (opcional)                                                                  |
+| `timeout` / `requestTimeoutMs` | Tiempo de espera de solicitudes MCP por servidor en segundos o ms                                                                 |
+| `auth: "oauth"`                | Utiliza las credenciales OAuth de MCP guardadas mediante `openclaw mcp login`                                                      |
+| `sslVerify`                    | Establézcalo en falso únicamente para endpoints HTTPS privados en los que se confíe explícitamente                                |
+| `clientCert` / `clientKey`     | Rutas del certificado y la clave de cliente mTLS                                                                                  |
+| `supportsParallelToolCalls`    | Indica que las llamadas simultáneas son seguras para este servidor                                                                |
 
-La configuración de OpenClaw usa `transport: "streamable-http"` como la grafía canónica. Los valores MCP nativos de la CLI `type: "http"` se aceptan cuando se guardan mediante `openclaw mcp set` y `openclaw doctor --fix` los repara en la configuración existente, pero `transport` es lo que OpenClaw integrado consume directamente.
+La configuración de OpenClaw utiliza `transport: "streamable-http"` como grafía canónica. Los valores MCP nativos de la CLI `type: "http"` se aceptan cuando se guardan mediante `openclaw mcp set` y se corrigen mediante `openclaw doctor --fix` en la configuración existente, pero `transport` es lo que consume directamente OpenClaw integrado.
 
 Ejemplo:
 
@@ -794,45 +806,99 @@ Ejemplo:
 ```
 
 <Note>
-Los comandos de registro no inician el puente de canal. Solo `probe` y `doctor --probe` abren una sesión de cliente MCP en vivo para demostrar que el servidor de destino es alcanzable.
+Los comandos del registro no inician el puente del canal. Solo `probe` y `doctor --probe` abren una sesión activa del cliente MCP para comprobar que se puede acceder al servidor de destino.
 </Note>
 
 ## Interfaz de control
 
-La UI de Control del navegador incluye una página dedicada de configuración de MCP en `/mcp`. Muestra recuentos de servidores configurados, resúmenes de habilitados/OAuth/filtros, filas de transporte por servidor, controles para habilitar/deshabilitar, comandos CLI comunes y un editor delimitado para la sección de configuración `mcp`.
+La interfaz de control del navegador incluye una página dedicada de configuración de MCP en `/settings/mcp`; la ruta anterior `/mcp` permanece como alias. La página muestra los recuentos de servidores configurados, resúmenes de servidores habilitados, con OAuth y con filtros, filas de transporte por servidor, controles para habilitar o deshabilitar, comandos habituales de la CLI y un editor con ámbito limitado para la sección de configuración `mcp`.
 
-Usa la página para ediciones de operadores e inventario rápido. Usa `openclaw mcp doctor --probe` o `openclaw mcp probe` cuando necesites prueba en vivo del servidor.
+Utilice la página para realizar modificaciones de operador y consultar rápidamente el inventario. Utilice `openclaw mcp doctor --probe` u `openclaw mcp probe` cuando necesite una comprobación activa del servidor.
 
 Flujo de trabajo del operador:
 
-1. Abre la UI de Control y elige **MCP**.
-2. Revisa las tarjetas de resumen de servidores totales, habilitados, OAuth y filtrados.
-3. Usa cada fila de servidor para ver indicaciones de transporte, autenticación, filtro, tiempo de espera y comando.
-4. Alterna la habilitación cuando quieras conservar una definición pero excluirla del descubrimiento en tiempo de ejecución.
-5. Edita la sección de configuración `mcp` delimitada para cambios estructurales como servidores nuevos, encabezados, TLS, metadatos de OAuth o filtros de herramientas.
-6. Elige **Guardar** para persistir solo la configuración, o **Guardar y publicar** para aplicarla a través de la ruta de configuración del Gateway.
-7. Ejecuta `openclaw mcp doctor --probe` cuando necesites prueba en vivo de que el servidor editado arranca y lista herramientas.
+1. Abra la interfaz de control y elija **MCP**.
+2. Revise las tarjetas de resumen de los servidores totales, habilitados, con OAuth y filtrados.
+3. Utilice cada fila de servidor para consultar indicaciones de transporte, autenticación, filtros, tiempo de espera y comandos.
+4. Cambie el estado de habilitación cuando quiera conservar una definición, pero excluirla de la detección en tiempo de ejecución.
+5. Edite la sección de configuración `mcp` con ámbito limitado para realizar cambios estructurales, como añadir servidores, encabezados, TLS, metadatos de OAuth o filtros de herramientas.
+6. Elija **Save** para conservar únicamente la configuración o **Save & Publish** para aplicarla mediante la ruta de configuración del Gateway.
+7. Ejecute `openclaw mcp doctor --probe` cuando necesite una comprobación activa de que el servidor modificado se inicia y enumera las herramientas.
 
 Notas:
 
-- los fragmentos de comando entrecomillan los nombres de servidores para que los nombres inusuales sigan siendo copiables en una shell
-- los valores mostrados con formato similar a URL se censuran antes de renderizarse cuando contienen credenciales incrustadas
-- la página no inicia transportes MCP por sí sola
-- los tiempos de ejecución activos pueden necesitar `openclaw mcp reload`, publicación de configuración del Gateway o reinicio del proceso, según qué proceso sea dueño de los clientes MCP
+- los fragmentos de comandos escriben entre comillas los nombres de los servidores para que los nombres inusuales puedan copiarse en un shell
+- los valores mostrados similares a URL se ocultan antes de representarse cuando contienen credenciales integradas
+- la página no inicia los transportes MCP por sí sola
+- los entornos de ejecución activos pueden requerir `openclaw mcp reload`, publicar la configuración del Gateway o reiniciar el proceso, según qué proceso sea propietario de los clientes MCP
+
+## Aplicaciones MCP
+
+OpenClaw puede representar herramientas que implementan la [extensión MCP Apps](https://modelcontextprotocol.io/extensions/apps) estable. Las aplicaciones son opcionales porque su HTML procede del servidor MCP configurado y puede solicitar herramientas o recursos visibles para la aplicación desde ese mismo servidor.
+
+Habilite el puente del host:
+
+```bash
+openclaw config set mcp.apps.enabled true --strict-json
+```
+
+Reinicie el Gateway después de cambiar esta configuración. Cuando está habilitada, OpenClaw inicia un agente de escucha HTTP(S) exclusivo del entorno aislado en el puerto del Gateway más uno (para el Gateway predeterminado, `18790`). La interfaz de control carga las aplicaciones desde ese origen independiente; el agente de escucha nunca sirve la interfaz de control, las rutas autenticadas del Gateway ni los datos del usuario.
+
+Las conexiones directas al Gateway necesitan acceso a ambos puertos. Si un proxy inverso o un terminador TLS expone la interfaz de control, asigne a las aplicaciones un origen público dedicado y redirija únicamente ese origen al agente de escucha del entorno aislado:
+
+```json5
+{
+  mcp: {
+    apps: {
+      enabled: true,
+      sandboxOrigin: "https://mcp-apps.example.com",
+      sandboxPort: 18790,
+    },
+  },
+}
+```
+
+El origen del entorno aislado debe ser distinto del origen de la interfaz de control. No aloje en él otro contenido autenticado o confidencial.
+
+Por ejemplo, la demostración oficial básica de React puede configurarse de la siguiente manera:
+
+```json5
+{
+  mcp: {
+    apps: { enabled: true },
+    servers: {
+      "basic-react": {
+        command: "npx",
+        args: ["-y", "@modelcontextprotocol/server-basic-react", "--stdio"],
+      },
+    },
+  },
+}
+```
+
+Comportamiento y límites de seguridad:
+
+- OpenClaw anuncia la extensión `io.modelcontextprotocol/ui` únicamente cuando las aplicaciones están habilitadas.
+- Solo se representan los recursos `ui://` con el tipo MIME exacto `text/html;profile=mcp-app`.
+- Los recursos de la interfaz de usuario tienen un límite de 2 MiB, se sitúan detrás de un proxy de doble iframe en un origen externo dedicado, se cargan en un origen interno opaco de la aplicación y están restringidos por una CSP derivada de los metadatos del recurso.
+- Las herramientas exclusivas de las aplicaciones (`_meta.ui.visibility: ["app"]`) no aparecen en las listas de herramientas del modelo. Las aplicaciones solo pueden llamar a herramientas visibles para aplicaciones en su servidor propietario.
+- Los permisos de aplicaciones vinculados al origen, como la cámara, el micrófono y la geolocalización, no se conceden mientras los documentos internos de las aplicaciones utilizan orígenes opacos para el aislamiento entre aplicaciones.
+- El HTML de la aplicación, los argumentos completos de las herramientas y los resultados sin procesar se conservan en una concesión de vista en memoria limitada a diez minutos. No se escriben en el disco ni se copian en los metadatos de vista previa de la transcripción, y una vista caducada no reinicia su entorno de ejecución MCP.
+- `openclaw security audit` muestra una advertencia mientras el puente está habilitado. Deshabilítelo mediante `openclaw config set mcp.apps.enabled false --strict-json` cuando no sea necesario.
 
 ## Límites actuales
 
-Esta página documenta el puente tal como se distribuye hoy.
+Esta página documenta el puente tal como se distribuye actualmente.
 
 Límites actuales:
 
-- el descubrimiento de conversaciones depende de los metadatos de rutas de sesión existentes del Gateway
-- no hay protocolo push genérico más allá del adaptador específico de Claude
-- todavía no hay herramientas para editar mensajes ni reaccionar
-- el transporte HTTP/SSE/streamable-http se conecta a un único servidor remoto; todavía no hay upstream multiplexado
-- `permissions_list_open` solo incluye aprobaciones observadas mientras el puente está conectado
+- la detección de conversaciones depende de los metadatos existentes de las rutas de sesión del Gateway
+- no existe un protocolo push genérico aparte del adaptador específico de Claude
+- aún no hay herramientas para editar mensajes ni añadir reacciones
+- el transporte HTTP/SSE/streamable-http se conecta a un único servidor remoto; todavía no existe un servidor ascendente multiplexado
+- `permissions_list_open` solo incluye las aprobaciones observadas mientras el puente está conectado
 
-## Relacionado
+## Contenido relacionado
 
-- [Referencia de CLI](/es/cli)
+- [Referencia de la CLI](/es/cli)
 - [Plugins](/es/cli/plugins)

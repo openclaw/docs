@@ -1,51 +1,52 @@
 ---
 read_when:
     - Externe CLI-Integrationen hinzufügen oder ändern
-    - RPC-Adapter debuggen (signal-cli, imsg)
+    - Debugging von RPC-Adaptern (signal-cli, imsg)
 summary: RPC-Adapter für externe CLIs (signal-cli, imsg) und Gateway-Muster
-title: RPC-Adapter
+title: RPC-Adapteren
 x-i18n:
-    generated_at: "2026-05-10T19:51:14Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:52:08Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: 63556f140bee55821fa0a09ff9808e163728049f8db4c58f7bb4ceca6e1cac1a
+    source_hash: 6ddb3fb741c90fe7b01ba35376b71865584b1e507cf610705392452790fb76f5
     source_path: reference/rpc.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-OpenClaw integriert externe CLIs über JSON-RPC. Heute werden zwei Muster verwendet.
+OpenClaw integriert externe CLIs über JSON-RPC. Derzeit werden zwei Muster verwendet.
 
 ## Muster A: HTTP-Daemon (signal-cli)
 
-- `signal-cli` läuft als Daemon mit JSON-RPC über HTTP.
-- Der Ereignisstream ist SSE (`/api/v1/events`).
-- Health-Probe: `/api/v1/check`.
-- OpenClaw verwaltet den Lebenszyklus, wenn `channels.signal.autoStart=true`.
+- `signal-cli` wird als Daemon mit JSON-RPC über HTTP ausgeführt.
+- Der Ereignisstream verwendet SSE (`/api/v1/events`).
+- Zustandsprüfung: `/api/v1/check`.
+- OpenClaw verwaltet den Lebenszyklus, wenn `channels.signal.autoStart=true` festgelegt ist.
 
-Siehe [Signal](/de/channels/signal) für Einrichtung und Endpunkte.
+Einrichtung und Endpunkte finden Sie unter [Signal](/de/channels/signal).
 
-## Muster B: stdio-Kindprozess (imsg)
+## Muster B: Untergeordneter stdio-Prozess (imsg)
 
-- OpenClaw startet `imsg rpc` als Kindprozess für [iMessage](/de/channels/imessage).
-- JSON-RPC ist zeilengetrennt über stdin/stdout (ein JSON-Objekt pro Zeile).
-- Kein TCP-Port, kein Daemon erforderlich.
+- OpenClaw startet `imsg rpc` als untergeordneten Prozess für [iMessage](/de/channels/imessage).
+- JSON-RPC wird zeilenweise über stdin/stdout übertragen (ein JSON-Objekt pro Zeile).
+- Kein TCP-Port und kein Daemon erforderlich.
 
 Verwendete Kernmethoden:
 
 - `watch.subscribe` → Benachrichtigungen (`method: "message"`)
 - `watch.unsubscribe`
 - `send`
-- `chats.list` (Probe/Diagnose)
+- `chats.list` (Prüfung/Diagnose)
 
-Siehe [iMessage](/de/channels/imessage) für Legacy-Einrichtung und Adressierung (`chat_id` bevorzugt).
+Einrichtung und Adressierung finden Sie unter [iMessage](/de/channels/imessage) (`chat_id` wird gegenüber Anzeigenamen bevorzugt).
 
-## Adapter-Richtlinien
+## Richtlinien für Adapter
 
-- Gateway verwaltet den Prozess (Start/Stopp an den Provider-Lebenszyklus gebunden).
-- Halten Sie RPC-Clients resilient: Timeouts, Neustart beim Beenden.
-- Bevorzugen Sie stabile IDs (z. B. `chat_id`) gegenüber Anzeigezeichenfolgen.
+- Der Gateway verwaltet den Prozess (Start/Stopp sind an den Lebenszyklus des Providers gekoppelt).
+- Gestalten Sie RPC-Clients robust: Zeitüberschreitungen und Neustart beim Beenden.
+- Bevorzugen Sie stabile IDs (z. B. `chat_id`) gegenüber Anzeigenamen.
 
-## Verwandt
+## Verwandte Themen
 
 - [Gateway-Protokoll](/de/gateway/protocol)

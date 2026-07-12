@@ -1,46 +1,47 @@
 ---
 read_when:
-    - Você quer que o OpenClaw se lembre de acompanhamentos naturais
-    - Você quer entender como as verificações inferidas diferem dos lembretes
+    - Você quer que o OpenClaw se lembre de continuações naturais
+    - Você quer entender como os check-ins inferidos diferem dos lembretes
     - Você quer revisar ou descartar compromissos de acompanhamento
 sidebarTitle: Commitments
-summary: Memória de acompanhamento inferida para verificações que não são lembretes exatos
+summary: Memória de acompanhamento inferida para check-ins que não são lembretes exatos
 title: Compromissos inferidos
 x-i18n:
-    generated_at: "2026-05-01T05:56:05Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:08:25Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: 78841d87fe749aa5b04a967218396df1c1a7884c5767b09215c96aee34fa2014
+    source_hash: f4708cd337c7755a4f16e14154050dc43b6033e71bfda9de5e8fdaa9c6ce0277
     source_path: concepts/commitments.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-Compromissos são memórias de acompanhamento de curta duração. Quando ativados, o OpenClaw pode
-perceber que uma conversa criou uma oportunidade futura de check-in e lembrar
-de trazê-la de volta mais tarde.
+Compromissos são memórias de acompanhamento de curta duração. Quando habilitados, o OpenClaw pode
+perceber que uma conversa criou uma oportunidade de acompanhamento futuro e se lembrar
+de retomá-la mais tarde.
 
 Exemplos:
 
-- Você menciona uma entrevista amanhã. O OpenClaw pode fazer check-in depois.
-- Você diz que está exausto. O OpenClaw pode perguntar depois se você dormiu.
-- O agente diz que fará acompanhamento depois que algo mudar. O OpenClaw pode acompanhar
-  esse loop aberto.
+- Você menciona uma entrevista amanhã. O OpenClaw pode perguntar depois como foi.
+- Você diz que está exausto. O OpenClaw pode perguntar mais tarde se você dormiu.
+- O agente diz que fará um acompanhamento depois que algo mudar. O OpenClaw pode acompanhar
+  essa pendência.
 
-Compromissos não são fatos duráveis como `MEMORY.md`, e não são lembretes
-exatos. Eles ficam entre memória e automação: o OpenClaw lembra uma obrigação
-vinculada à conversa, então o Heartbeat a entrega quando ela vence.
+Compromissos não são fatos duráveis como `MEMORY.md` nem são lembretes
+exatos. Eles ficam entre a memória e a automação: o OpenClaw se lembra de uma
+obrigação vinculada à conversa e, então, o heartbeat a entrega quando chega o momento.
 
-## Ativar compromissos
+## Habilitar compromissos
 
-Compromissos ficam desativados por padrão. Ative-os na configuração:
+Compromissos ficam desativados por padrão (`commitments.enabled: false`). Habilite-os na configuração:
 
 ```bash
 openclaw config set commitments.enabled true
 openclaw config set commitments.maxPerDay 3
 ```
 
-`openclaw.json` equivalente:
+O `openclaw.json` equivalente:
 
 ```json
 {
@@ -52,64 +53,66 @@ openclaw config set commitments.maxPerDay 3
 ```
 
 `commitments.maxPerDay` limita quantos acompanhamentos inferidos podem ser entregues
-por sessão de agente em um dia móvel. O padrão é `3`.
+por sessão do agente em um período móvel de um dia. O padrão é `3`.
 
 ## Como funciona
 
-Depois de uma resposta do agente, o OpenClaw pode executar uma passagem oculta de extração em segundo plano em um
-contexto separado. Essa passagem procura apenas compromissos de acompanhamento inferidos. Ela
-não escreve na conversa visível e não pede ao agente principal
-para raciocinar sobre a extração.
+Após uma resposta do agente, o OpenClaw pode executar uma etapa oculta de extração em segundo plano em um
+contexto separado, com as ferramentas desabilitadas. Essa etapa procura apenas compromissos de acompanhamento inferidos. Ela
+não escreve na conversa visível nem solicita que o agente principal
+raciocine sobre a extração.
 
-Quando encontra um candidato de alta confiança, o OpenClaw armazena um compromisso com:
+Ao encontrar um candidato com alta confiança, o OpenClaw armazena um compromisso com:
 
-- o id do agente
+- o ID do agente
 - a chave da sessão
-- o canal original e o alvo de entrega
+- o canal original e o destino da entrega
 - uma janela de vencimento
-- um check-in curto sugerido
-- metadados não instrucionais para o Heartbeat decidir se deve enviá-lo
+- uma breve sugestão de acompanhamento
+- metadados sem instruções para o heartbeat decidir se deve enviá-lo
 
-A entrega acontece pelo Heartbeat. Quando um compromisso vence, o Heartbeat
-adiciona o compromisso à rodada de Heartbeat para o mesmo agente e escopo de canal.
-O modelo pode enviar um check-in natural ou responder `HEARTBEAT_OK` para dispensá-lo.
-Se o Heartbeat estiver configurado com `target: "none"`, os compromissos vencidos permanecem
-internos e não enviam check-ins externos. Prompts de entrega de compromisso não
-reproduzem o texto da conversa original, e rodadas de Heartbeat de compromisso vencido são executadas
-sem ferramentas do OpenClaw.
+A entrega ocorre por meio do heartbeat. Quando chega o momento de um compromisso, o heartbeat
+adiciona o compromisso à execução do heartbeat para o mesmo agente e escopo de canal.
+O prompt avisa explicitamente que os metadados do compromisso não são confiáveis e instrui
+o modelo a não seguir instruções contidas neles nem usar ferramentas por causa deles. O
+modelo pode enviar uma mensagem natural de acompanhamento ou responder `HEARTBEAT_OK` para descartá-lo.
+Se o heartbeat estiver configurado com `target: "none"`, os compromissos vencidos permanecem
+internos e não enviam acompanhamentos externos. Os prompts de entrega de compromissos não
+reproduzem o texto da conversa original, apenas a sugestão de acompanhamento e os
+metadados, e as execuções do heartbeat para compromissos vencidos ocorrem sem as ferramentas do OpenClaw.
 
-O OpenClaw nunca entrega um compromisso inferido imediatamente depois de gravá-lo.
-O horário de vencimento é limitado a pelo menos um intervalo de Heartbeat depois que o compromisso
-é criado, para que o acompanhamento não ecoe de volta no mesmo momento em que foi
+O OpenClaw nunca entrega um compromisso inferido imediatamente após armazená-lo.
+O horário de vencimento é ajustado para, no mínimo, um intervalo de heartbeat após a criação
+do compromisso, para que o acompanhamento não seja repetido no mesmo momento em que foi
 inferido.
 
 ## Escopo
 
-Compromissos têm escopo limitado ao agente exato e ao contexto de canal em que foram
+Os compromissos são restritos ao contexto exato do agente e do canal em que foram
 criados. Um acompanhamento inferido durante uma conversa com um agente no Discord não é
-entregue por outro agente, outro canal ou uma sessão não relacionada.
+entregue por outro agente, outro canal nem por uma sessão não relacionada.
 
-Esse escopo faz parte do recurso. Check-ins naturais devem parecer a continuação da mesma
-conversa, não um sistema global de lembretes.
+Esse escopo faz parte do recurso. Acompanhamentos naturais devem parecer uma continuação
+da mesma conversa, não um sistema global de lembretes.
 
-## Compromissos vs lembretes
+## Compromissos versus lembretes
 
-| Necessidade                                     | Usar                                     |
-| ----------------------------------------------- | ---------------------------------------- |
-| "Lembre-me às 15h"                              | [Tarefas agendadas](/pt-BR/automation/cron-jobs) |
-| "Me avise em 20 minutos"                        | [Tarefas agendadas](/pt-BR/automation/cron-jobs) |
-| "Execute este relatório todos os dias úteis"    | [Tarefas agendadas](/pt-BR/automation/cron-jobs) |
-| "Tenho uma entrevista amanhã"                   | Compromissos                             |
-| "Passei a noite inteira acordado"               | Compromissos                             |
-| "Faça acompanhamento se eu não responder esta thread aberta" | Compromissos                  |
+| Necessidade                                      | Usar                                          |
+| ------------------------------------------------ | --------------------------------------------- |
+| "Lembre-me às 15h"                               | [Tarefas agendadas](/pt-BR/automation/cron-jobs)    |
+| "Avise-me daqui a 20 minutos"                    | [Tarefas agendadas](/pt-BR/automation/cron-jobs)    |
+| "Execute este relatório todos os dias úteis"     | [Tarefas agendadas](/pt-BR/automation/cron-jobs)    |
+| "Tenho uma entrevista amanhã"                    | Compromissos                                  |
+| "Passei a noite toda acordado"                   | Compromissos                                  |
+| "Faça um acompanhamento se eu não responder a esta discussão em aberto" | Compromissos                 |
 
-Solicitações exatas do usuário já pertencem ao caminho do agendador. Compromissos são apenas
+Solicitações explícitas do usuário já pertencem ao fluxo do agendador. Compromissos servem apenas
 para acompanhamentos inferidos: os momentos em que o usuário não pediu um lembrete,
-mas a conversa claramente criou um check-in futuro útil.
+mas a conversa criou claramente uma oportunidade útil de acompanhamento futuro.
 
 ## Gerenciar compromissos
 
-Use a CLI para inspecionar e limpar compromissos armazenados:
+Use a CLI para inspecionar e limpar os compromissos armazenados:
 
 ```bash
 openclaw commitments
@@ -119,17 +122,17 @@ openclaw commitments --status snoozed
 openclaw commitments dismiss cm_abc123
 ```
 
-Consulte [`openclaw commitments`](/pt-BR/cli/commitments) para a referência do comando.
+Consulte [`openclaw commitments`](/pt-BR/cli/commitments) para ver a referência completa do comando.
 
 ## Privacidade e custo
 
-A extração de compromissos usa uma passagem de LLM, então ativá-la adiciona uso de modelo em segundo plano
-após rodadas elegíveis. A passagem fica oculta da conversa visível ao usuário,
-mas pode ler a troca recente necessária para decidir se existe um
-acompanhamento.
+A extração de compromissos usa uma etapa de LLM, portanto habilitá-la adiciona uso do modelo
+em segundo plano após interações qualificadas. A etapa fica oculta da conversa
+visível para o usuário, mas pode ler a interação recente necessária para decidir se
+existe um acompanhamento.
 
-Compromissos armazenados são estado local do OpenClaw. Eles são memória operacional, não
-memória de longo prazo. Desative o recurso com:
+Os compromissos armazenados são um estado local do OpenClaw. Eles são memória operacional, não
+memória de longo prazo. Desabilite o recurso com:
 
 ```bash
 openclaw config set commitments.enabled false
@@ -137,20 +140,20 @@ openclaw config set commitments.enabled false
 
 ## Solução de problemas
 
-Se acompanhamentos esperados não estiverem aparecendo:
+Se os acompanhamentos esperados não estiverem aparecendo:
 
-- Confirme que `commitments.enabled` é `true`.
-- Verifique `openclaw commitments --all` em busca de registros pendentes, dispensados, adiados ou expirados.
-- Certifique-se de que o Heartbeat esteja em execução para o agente.
+- Confirme se `commitments.enabled` é `true`.
+- Verifique em `openclaw commitments --all` se há registros pendentes, descartados, adiados ou expirados.
+- Verifique se o heartbeat está em execução para o agente.
 - Verifique se `commitments.maxPerDay` já foi atingido para essa
-  sessão de agente.
+  sessão do agente.
 - Lembre-se de que lembretes exatos são ignorados pela extração de compromissos e devem
   aparecer em [tarefas agendadas](/pt-BR/automation/cron-jobs).
 
 ## Relacionados
 
 - [Visão geral da memória](/pt-BR/concepts/memory)
-- [Active memory](/pt-BR/concepts/active-memory)
+- [Active Memory](/pt-BR/concepts/active-memory)
 - [Heartbeat](/pt-BR/gateway/heartbeat)
 - [Tarefas agendadas](/pt-BR/automation/cron-jobs)
 - [`openclaw commitments`](/pt-BR/cli/commitments)

@@ -1,15 +1,16 @@
 ---
 read_when:
     - Sie möchten DeepSeek mit OpenClaw verwenden
-    - Sie benötigen die Umgebungsvariable für den API-Schlüssel oder die CLI-Authentifizierungsauswahl
+    - Sie benötigen die Umgebungsvariable für den API-Schlüssel oder die Authentifizierungsauswahl der CLI
 summary: DeepSeek-Einrichtung (Authentifizierung + Modellauswahl)
 title: DeepSeek
 x-i18n:
-    generated_at: "2026-06-27T18:03:31Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:52:30Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: 0446f78e1cb6412034ca18b0db49f2f3a1958e91a013661b3056bf3687fc2d09
+    source_hash: 77e074756d593205d7d05f499da93b9bd3c63acdce7092b42fb5562023577925
     source_path: providers/deepseek.md
     workflow: 16
 ---
@@ -25,7 +26,7 @@ x-i18n:
 
 ## Plugin installieren
 
-Installieren Sie das offizielle Plugin und starten Sie dann den Gateway neu:
+Installieren Sie das offizielle Plugin und starten Sie anschließend den Gateway neu:
 
 ```bash
 openclaw plugins install @openclaw/deepseek-provider
@@ -35,24 +36,23 @@ openclaw gateway restart
 ## Erste Schritte
 
 <Steps>
-  <Step title="Get your API key">
-    Erstellen Sie einen API-Schlüssel unter [platform.deepseek.com](https://platform.deepseek.com/api_keys).
+  <Step title="API-Schlüssel abrufen">
+    Erstellen Sie unter [platform.deepseek.com](https://platform.deepseek.com/api_keys) einen API-Schlüssel.
   </Step>
-  <Step title="Run onboarding">
+  <Step title="Onboarding ausführen">
     ```bash
     openclaw onboard --auth-choice deepseek-api-key
     ```
 
-    Dadurch werden Sie zur Eingabe Ihres API-Schlüssels aufgefordert, und `deepseek/deepseek-v4-flash` wird als Standardmodell festgelegt.
+    Fragt Ihren API-Schlüssel ab und legt `deepseek/deepseek-v4-flash` als Standardmodell fest.
 
   </Step>
-  <Step title="Verify models are available">
+  <Step title="Verfügbarkeit der Modelle überprüfen">
     ```bash
     openclaw models list --provider deepseek
     ```
 
-    Um den statischen Katalog des Plugins zu prüfen, ohne dass ein laufender Gateway erforderlich ist,
-    verwenden Sie:
+    So prüfen Sie den statischen Katalog des Plugins ohne laufenden Gateway:
 
     ```bash
     openclaw models list --all --provider deepseek
@@ -62,8 +62,8 @@ openclaw gateway restart
 </Steps>
 
 <AccordionGroup>
-  <Accordion title="Non-interactive setup">
-    Für skriptgesteuerte oder headless Installationen übergeben Sie alle Flags direkt:
+  <Accordion title="Nicht interaktive Einrichtung">
+    Übergeben Sie für skriptgesteuerte oder monitorlose Installationen alle Flags direkt:
 
     ```bash
     openclaw onboard --non-interactive \
@@ -78,56 +78,61 @@ openclaw gateway restart
 </AccordionGroup>
 
 <Warning>
-Wenn der Gateway als Daemon ausgeführt wird (launchd/systemd), stellen Sie sicher, dass `DEEPSEEK_API_KEY`
-für diesen Prozess verfügbar ist (zum Beispiel in `~/.openclaw/.env` oder über
-`env.shellEnv`).
+Wenn der Gateway als Daemon (launchd/systemd) ausgeführt wird, stellen Sie sicher, dass
+`DEEPSEEK_API_KEY` für diesen Prozess verfügbar ist (beispielsweise in
+`~/.openclaw/.env` oder über `env.shellEnv`).
 </Warning>
 
 ## Integrierter Katalog
 
-| Modell-Ref                   | Name              | Eingabe | Kontext  | Maximale Ausgabe | Hinweise                                       |
-| ---------------------------- | ----------------- | ------- | -------- | ---------------- | ---------------------------------------------- |
-| `deepseek/deepseek-v4-flash` | DeepSeek V4 Flash | Text    | 1,000,000 | 384,000          | Standardmodell; V4-Oberfläche mit Thinking-Unterstützung |
-| `deepseek/deepseek-v4-pro`   | DeepSeek V4 Pro   | Text    | 1,000,000 | 384,000          | V4-Oberfläche mit Thinking-Unterstützung       |
-| `deepseek/deepseek-chat`     | DeepSeek Chat     | Text    | 131,072  | 8,192            | DeepSeek V3.2-Oberfläche ohne Thinking         |
-| `deepseek/deepseek-reasoner` | DeepSeek Reasoner | Text    | 131,072  | 65,536           | V3.2-Oberfläche mit Reasoning-Unterstützung    |
+| Modellreferenz               | Name              | Eingabe | Kontext   | Maximale Ausgabe | Hinweise                                                 |
+| ---------------------------- | ----------------- | ------- | --------- | ---------------- | -------------------------------------------------------- |
+| `deepseek/deepseek-v4-flash` | DeepSeek V4 Flash | Text    | 1,000,000 | 384,000          | Standardmodell; V4-Oberfläche mit Denkfunktion           |
+| `deepseek/deepseek-v4-pro`   | DeepSeek V4 Pro   | Text    | 1,000,000 | 384,000          | V4-Oberfläche mit Denkfunktion                           |
+| `deepseek/deepseek-chat`     | DeepSeek Chat     | Text    | 1,000,000 | 384,000          | Veralteter Kompatibilitätsname für V4 Flash ohne Denken  |
+| `deepseek/deepseek-reasoner` | DeepSeek Reasoner | Text    | 1,000,000 | 384,000          | Veralteter Kompatibilitätsname für V4 Flash mit Denken   |
+
+<Warning>
+DeepSeek wird `deepseek-chat` und `deepseek-reasoner` am 24. Juli 2026
+um 15:59 UTC außer Betrieb nehmen. Sie werden derzeit im Modus ohne Denken
+beziehungsweise im Denkmodus an DeepSeek V4 Flash weitergeleitet. Stellen Sie konfigurierte Modellreferenzen
+vor diesem Zeitpunkt auf `deepseek/deepseek-v4-flash` oder `deepseek/deepseek-v4-pro` um.
+</Warning>
+
+Die lokalen Kostenschätzungen von OpenClaw basieren auf den von DeepSeek veröffentlichten
+Tarifen für Cache-Treffer, Cache-Fehlschläge und Ausgaben. DeepSeek kann diese Tarife ändern; die Seite
+[Modelle und Preise](https://api-docs.deepseek.com/quick_start/pricing/) ist
+für die Abrechnung maßgeblich.
 
 <Tip>
-V4-Modelle unterstützen die `thinking`-Steuerung von DeepSeek. OpenClaw spielt außerdem
-DeepSeek-`reasoning_content` in Folgeturns erneut ein, damit Thinking-Sitzungen mit Tool-
-Aufrufen fortgesetzt werden können.
-Verwenden Sie `/think xhigh` oder `/think max` mit DeepSeek-V4-Modellen, um DeepSeeks
-maximales `reasoning_effort` anzufordern.
+V4-Modelle unterstützen die `thinking`-Steuerung von DeepSeek. OpenClaw gibt außerdem
+DeepSeek-`reasoning_content` bei nachfolgenden Durchläufen erneut wieder, sodass Denksitzungen mit
+Tool-Aufrufen fortgesetzt werden können.
+Verwenden Sie `/think xhigh` oder `/think max` mit DeepSeek-V4-Modellen, um den maximalen
+`reasoning_effort` von DeepSeek anzufordern; beide werden auf `"max"` abgebildet.
 </Tip>
 
-## Thinking und Tools
+## Denken und Tools
 
-DeepSeek-V4-Thinking-Sitzungen haben einen strengeren Replay-Vertrag als die meisten
-OpenAI-kompatiblen Provider: Nachdem ein Turn mit aktiviertem Thinking Tools verwendet hat, erwartet DeepSeek,
-dass erneut eingespielte Assistant-Nachrichten aus diesem Turn bei Folgeanfragen
-`reasoning_content` enthalten. OpenClaw verarbeitet dies innerhalb des
-DeepSeek-Plugins, sodass normale Tool-Nutzung über mehrere Turns hinweg mit
-`deepseek/deepseek-v4-flash` und `deepseek/deepseek-v4-pro` funktioniert.
+Bei DeepSeek-V4-Denksitzungen müssen wiedergegebene Assistentennachrichten aus einem
+Durchlauf mit aktivierter Denkfunktion in nachfolgenden Anfragen `reasoning_content` enthalten.
+Das DeepSeek-Plugin von OpenClaw ergänzt dieses Feld automatisch, sodass die normale
+Tool-Nutzung über mehrere Durchläufe mit `deepseek/deepseek-v4-flash` und
+`deepseek/deepseek-v4-pro` funktioniert, selbst wenn der Verlauf von einem anderen
+OpenAI-kompatiblen Provider (ohne natives `reasoning_content`) oder aus einer einfachen
+Assistentennachricht stammt. Nach einem Provider-Wechsel während einer Sitzung ist kein `/new` erforderlich.
 
-Wenn Sie eine bestehende Sitzung von einem anderen OpenAI-kompatiblen Provider auf ein
-DeepSeek-V4-Modell umstellen, haben ältere Assistant-Turns mit Tool-Aufrufen möglicherweise kein natives
-DeepSeek-`reasoning_content`. OpenClaw ergänzt dieses fehlende Feld in erneut eingespielten
-Assistant-Nachrichten für DeepSeek-V4-Thinking-Anfragen, damit der Provider
-den Verlauf akzeptieren kann, ohne `/new` zu erfordern.
+Wenn die Denkfunktion deaktiviert ist (einschließlich der UI-Auswahl **None**), sendet OpenClaw
+`thinking: { type: "disabled" }` und entfernt wiedergegebenes `reasoning_content`
+aus dem ausgehenden Verlauf, sodass die Sitzung auf dem DeepSeek-Pfad ohne Denken bleibt.
 
-Wenn Thinking in OpenClaw deaktiviert ist (einschließlich der UI-Auswahl **None**),
-sendet OpenClaw DeepSeek `thinking: { type: "disabled" }` und entfernt erneut eingespieltes
-`reasoning_content` aus dem ausgehenden Verlauf. Dadurch bleiben Sitzungen mit deaktiviertem Thinking
-auf dem DeepSeek-Pfad ohne Thinking.
-
-Verwenden Sie `deepseek/deepseek-v4-flash` für den standardmäßigen schnellen Pfad. Verwenden Sie
-`deepseek/deepseek-v4-pro`, wenn Sie das stärkere V4-Modell möchten und
-höhere Kosten oder Latenz akzeptieren können.
+Verwenden Sie `deepseek/deepseek-v4-flash` als standardmäßigen schnellen Pfad. Verwenden Sie
+`deepseek/deepseek-v4-pro` für das leistungsstärkere Modell, wenn Sie höhere
+Kosten oder Latenzen akzeptieren können.
 
 ## Live-Tests
 
-Die direkte Live-Modellsuite enthält DeepSeek V4 im modernen Modellset. Um
-nur die direkten Modellprüfungen für DeepSeek V4 auszuführen:
+So führen Sie ausschließlich die direkten DeepSeek-V4-Modellprüfungen aus der modernen Live-Modelltestsuite aus:
 
 ```bash
 OPENCLAW_LIVE_PROVIDERS=deepseek \
@@ -135,8 +140,8 @@ OPENCLAW_LIVE_MODELS="deepseek/deepseek-v4-flash,deepseek/deepseek-v4-pro" \
 pnpm test:live src/agents/models.profiles.live.test.ts
 ```
 
-Diese Live-Prüfung verifiziert, dass beide V4-Modelle abschließen können und dass Thinking-/Tool-
-Folgeturns die von DeepSeek benötigte Replay-Nutzlast beibehalten.
+Überprüft, ob beide V4-Modelle erfolgreich abschließen und ob nachfolgende Durchläufe mit Denkfunktion und Tools
+die von DeepSeek benötigte Wiedergabe-Nutzlast beibehalten.
 
 ## Konfigurationsbeispiel
 
@@ -154,10 +159,10 @@ Folgeturns die von DeepSeek benötigte Replay-Nutzlast beibehalten.
 ## Verwandte Themen
 
 <CardGroup cols={2}>
-  <Card title="Model selection" href="/de/concepts/model-providers" icon="layers">
-    Auswahl von Providern, Modell-Refs und Failover-Verhalten.
+  <Card title="Modellauswahl" href="/de/concepts/model-providers" icon="layers">
+    Auswahl von Providern, Modellreferenzen und Failover-Verhalten.
   </Card>
-  <Card title="Configuration reference" href="/de/gateway/configuration-reference" icon="gear">
-    Vollständige Konfigurationsreferenz für Agents, Modelle und Provider.
+  <Card title="Konfigurationsreferenz" href="/de/gateway/configuration-reference" icon="gear">
+    Vollständige Konfigurationsreferenz für Agenten, Modelle und Provider.
   </Card>
 </CardGroup>

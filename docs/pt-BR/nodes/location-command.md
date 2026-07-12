@@ -1,57 +1,59 @@
 ---
 read_when:
-    - Adição de suporte a nó de localização ou interface de permissões
-    - Projetando permissões de localização do Android ou comportamento em primeiro plano
-summary: Comando de localização para nós (location.get), modos de permissão e comportamento em primeiro plano no Android
+    - Adição de suporte à localização do Node ou de uma interface de permissões
+    - Projetando permissões de localização ou comportamento em primeiro plano no Android
+summary: Comando de localização para nodes (location.get), modos de permissão e comportamento em primeiro plano no Android
 title: Comando de localização
 x-i18n:
-    generated_at: "2026-05-06T06:02:21Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:20:13Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: 63ed754bfdda1cf379dcb7ac40817c0b93cc1efe4526512d70258072da4bc8a7
+    source_hash: fae9f7707620f3f743d40c07618a431a6baa7a357dda6d74021bc986cd4974b1
     source_path: nodes/location-command.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
 ## Resumo
 
-- `location.get` é um comando de nó (via `node.invoke`).
+- `location.get` é um comando de Node, invocado por meio de `node.invoke` ou `openclaw nodes location get`.
 - Desativado por padrão.
-- As configurações do app Android usam um seletor: Desativado / Durante o uso.
-- Alternância separada: Localização precisa.
+- Compilações Android de terceiros usam um seletor: Desativado / Durante o uso / Sempre. As compilações da Play Store mantêm Desativado / Durante o uso.
+- Localização precisa é uma opção separada.
 
-## Por que um seletor (e não apenas um interruptor)
+## Por que um seletor (e não apenas uma opção)
 
-As permissões do SO têm vários níveis. Podemos expor um seletor no app, mas o SO ainda decide a concessão real.
-
-- iOS/macOS podem expor **Durante o uso** ou **Sempre** em prompts/configurações do sistema.
-- O app Android atualmente dá suporte apenas à localização em primeiro plano.
-- A localização precisa é uma concessão separada (iOS 14+ "Precisa", Android "precisa" vs "aproximada").
-
-O seletor na interface direciona o modo solicitado; a concessão real fica nas configurações do SO.
+As permissões de localização do sistema operacional têm vários níveis. A localização precisa também é uma concessão separada do sistema operacional ("Precisa" no iOS 14+, "precisa" em vez de "aproximada" no Android). O seletor no aplicativo determina o modo solicitado, mas o sistema operacional ainda decide a concessão efetiva.
 
 ## Modelo de configurações
 
-Por dispositivo de nó:
+Por dispositivo Node:
 
-- `location.enabledMode`: `off | whileUsing`
+- `location.enabledMode`: `off | whileUsing | always`
 - `location.preciseEnabled`: bool
 
 Comportamento da interface:
 
 - Selecionar `whileUsing` solicita permissão em primeiro plano.
-- Se o SO negar o nível solicitado, reverter para o nível mais alto concedido e mostrar o status.
+- Selecionar `always` na compilação Android de terceiros primeiro solicita permissão em primeiro plano, explica o acesso em segundo plano e, em seguida, abre as configurações do aplicativo no Android para a concessão separada **Allow all the time**.
+- As compilações Android da Play Store não declaram permissão de localização em segundo plano nem exibem `always`.
+- Se o sistema operacional negar o nível solicitado, o aplicativo reverte para o nível mais alto concedido e exibe o status.
 
 ## Mapeamento de permissões (node.permissions)
 
-Opcional. O nó macOS relata `location` pelo mapa de permissões; iOS/Android podem omiti-lo.
+Opcional. O Node do macOS informa `location` por meio do mapa `permissions` em `node.list`/`node.describe`; iOS/Android podem omiti-lo.
 
 ## Comando: `location.get`
 
-Chamado via `node.invoke`.
+Chamado por meio de `node.invoke` ou pelo auxiliar da CLI:
 
-Parâmetros (sugeridos):
+```bash
+openclaw nodes location get --node <idOrNameOrIp>
+openclaw nodes location get --node <idOrNameOrIp> --accuracy precise --max-age 15000 --location-timeout 10000
+```
+
+Parâmetros:
 
 ```json
 {
@@ -60,6 +62,8 @@ Parâmetros (sugeridos):
   "desiredAccuracy": "coarse|balanced|precise"
 }
 ```
+
+As flags da CLI são mapeadas diretamente: `--location-timeout` -> `timeoutMs`, `--max-age` -> `maxAgeMs`, `--accuracy` -> `desiredAccuracy`.
 
 Carga útil da resposta:
 
@@ -80,31 +84,33 @@ Carga útil da resposta:
 Erros (códigos estáveis):
 
 - `LOCATION_DISABLED`: o seletor está desativado.
-- `LOCATION_PERMISSION_REQUIRED`: falta permissão para o modo solicitado.
-- `LOCATION_BACKGROUND_UNAVAILABLE`: o app está em segundo plano, mas apenas Durante o uso é permitido.
-- `LOCATION_TIMEOUT`: nenhuma posição obtida a tempo.
-- `LOCATION_UNAVAILABLE`: falha do sistema / nenhum provedor.
+- `LOCATION_PERMISSION_REQUIRED`: falta a permissão para o modo solicitado.
+- `LOCATION_BACKGROUND_UNAVAILABLE`: o aplicativo está em segundo plano, mas apenas Durante o uso foi concedido.
+- `LOCATION_TIMEOUT`: nenhuma localização foi obtida a tempo.
+- `LOCATION_UNAVAILABLE`: falha do sistema ou nenhum provedor disponível.
 
 ## Comportamento em segundo plano
 
-- O app Android nega `location.get` quando está em segundo plano.
-- Mantenha o OpenClaw aberto ao solicitar localização no Android.
-- Outras plataformas de nó podem ser diferentes.
+- As compilações Android de terceiros aceitam `location.get` em segundo plano somente quando o usuário selecionou `Always` e o Android concedeu a localização em segundo plano. O serviço persistente de Node existente adiciona o tipo de serviço `location` e exibe `Location: Always` enquanto está ativo.
+- As compilações Android da Play Store e o modo `While Using` negam `location.get` enquanto o aplicativo está em segundo plano.
+- Outras plataformas de Node podem ter comportamento diferente.
 
-## Integração de modelo/ferramentas
+## Integração com modelos e ferramentas
 
-- Superfície de ferramenta: a ferramenta `nodes` adiciona a ação `location_get` (nó obrigatório).
+- Ferramenta do agente: a ação `location_get` da ferramenta `nodes` (Node obrigatório).
 - CLI: `openclaw nodes location get --node <id>`.
-- Diretrizes para agente: chamar apenas quando o usuário tiver ativado a localização e entender o escopo.
+- Diretrizes para agentes: chamar somente quando o usuário tiver ativado a localização e compreender o escopo.
 
-## Texto de UX (sugerido)
+## Texto da experiência do usuário (sugerido)
 
 - Desativado: "O compartilhamento de localização está desativado."
-- Durante o uso: "Somente quando o OpenClaw está aberto."
-- Precisa: "Use localização GPS precisa. Desative para compartilhar localização aproximada."
+- Durante o uso: "Somente quando o OpenClaw estiver aberto."
+- Sempre: "Permitir verificações de localização solicitadas enquanto o OpenClaw estiver em segundo plano."
+- Precisa: "Usar a localização precisa do GPS. Desative para compartilhar a localização aproximada."
 
-## Relacionado
+## Relacionados
 
-- [Análise de localização do canal](/pt-BR/channels/location)
-- [Captura de câmera](/pt-BR/nodes/camera)
+- [Visão geral dos Nodes](/pt-BR/nodes)
+- [Análise de localização dos canais](/pt-BR/channels/location)
+- [Captura da câmera](/pt-BR/nodes/camera)
 - [Modo de conversa](/pt-BR/nodes/talk)

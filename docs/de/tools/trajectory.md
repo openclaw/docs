@@ -1,114 +1,108 @@
 ---
 read_when:
-    - Fehlersuche dazu, warum ein Agent auf eine bestimmte Weise geantwortet hat, fehlgeschlagen ist oder Werkzeuge aufgerufen hat
-    - Exportieren eines Support-Bundles für eine OpenClaw-Sitzung
-    - Untersuchen von Prompt-Kontext, Tool-Aufrufen, Laufzeitfehlern oder Nutzungsmetadaten
-    - Deaktivieren oder Verschieben der Trajektorienerfassung
-summary: Bereinigte Trajectory-Bundles zum Debuggen einer OpenClaw-Agentensitzung exportieren
+    - Fehlersuche, warum ein Agent auf eine bestimmte Weise geantwortet hat, fehlgeschlagen ist oder Tools aufgerufen hat
+    - Exportieren eines Support-Pakets für eine OpenClaw-Sitzung
+    - Untersuchung von Prompt-Kontext, Tool-Aufrufen, Laufzeitfehlern oder Nutzungsmetadaten
+    - Deaktivieren der Trajektorienerfassung
+summary: Redigierte Trajektorienpakete zum Debuggen einer OpenClaw-Agentensitzung exportieren
 title: Trajektorien-Bundles
 x-i18n:
-    generated_at: "2026-06-27T18:22:38Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T16:07:19Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: bf48616c29a1055f26d39a88869c025db7e6261b13dcaa0cd35be438c6a86a88
+    source_hash: 7fc494732b6239ad4ea58dca3920a47cb7433c680e7566855dd265c986b55e74
     source_path: tools/trajectory.md
     workflow: 16
 ---
 
-Die Trajectory-Erfassung ist OpenClaws sitzungsbezogener Flugschreiber. Sie zeichnet eine
-strukturierte Zeitleiste für jeden Agentenlauf auf; anschließend paketiert `/export-trajectory` die
-aktuelle Sitzung in ein redigiertes Support-Bundle.
+Die Trajektorienerfassung ist OpenClaws Flugschreiber für einzelne Sitzungen. Sie zeichnet für jeden Agentenlauf eine
+strukturierte Zeitleiste auf. Anschließend verpackt `/export-trajectory` die
+aktuelle Sitzung in ein bereinigtes Support-Paket, das Folgendes umfasst:
 
-Verwenden Sie sie, wenn Sie Fragen wie diese beantworten müssen:
+- Den Prompt, den System-Prompt und die an das Modell gesendeten Tools
+- Welche Transkriptnachrichten und Tool-Aufrufe zu einer Antwort führten
+- Ob für den Lauf ein Timeout auftrat, er abgebrochen oder komprimiert wurde oder ein Provider-Fehler auftrat
+- Welche Modelle, Plugins, Skills und Laufzeiteinstellungen aktiv waren
+- Vom Provider zurückgegebene Nutzungs- und Prompt-Cache-Metadaten
 
-- Welcher Prompt, System-Prompt und welche Tools wurden an das Modell gesendet?
-- Welche Transkriptmeldungen und Tool-Aufrufe führten zu dieser Antwort?
-- Ist der Lauf abgelaufen, abgebrochen, verdichtet worden oder auf einen Provider-Fehler gestoßen?
-- Welches Modell, welche Plugins, Skills und Runtime-Einstellungen waren aktiv?
-- Welche Nutzungs- und Prompt-Cache-Metadaten hat der Provider zurückgegeben?
-
-Wenn Sie einen umfassenden Supportbericht für ein Live-Gateway-Problem einreichen, beginnen Sie mit
-[`/diagnostics`](/de/gateway/diagnostics#chat-command). Diagnostics sammelt das
-bereinigte Gateway-Bundle und kann bei OpenAI-Codex-Harness-Sitzungen nach Genehmigung auch
-Codex-Feedback an OpenAI-Server senden. Verwenden Sie `/export-trajectory`, wenn
-Sie ausdrücklich die detaillierte sitzungsbezogene Zeitleiste von Prompts, Tools und Transkript
-benötigen.
+Für einen umfassenden Gateway-Supportbericht beginnen Sie stattdessen mit
+[`/diagnostics`](/de/gateway/diagnostics#chat-command); dieser Befehl erfasst das
+bereinigte Gateway-Paket und kann bei OpenAI-Codex-Harness-Sitzungen nach
+Genehmigung Codex-Feedback an OpenAI senden. Verwenden Sie `/export-trajectory`,
+wenn Sie die detaillierte sitzungsspezifische Zeitleiste der Prompts, Tools und
+des Transkripts benötigen.
 
 ## Schnellstart
 
-Senden Sie dies in der aktiven Sitzung:
+Senden Sie in der aktiven Sitzung (Alias `/trajectory`):
 
 ```text
 /export-trajectory
 ```
 
-Alias:
-
-```text
-/trajectory
-```
-
-OpenClaw schreibt das Bundle unterhalb des Workspaces:
+OpenClaw schreibt das Paket im Workspace unter:
 
 ```text
 .openclaw/trajectory-exports/openclaw-trajectory-<session>-<timestamp>/
 ```
 
-Sie können einen relativen Namen für das Ausgabeverzeichnis wählen:
+Übergeben Sie einen relativen Namen für das Ausgabeverzeichnis, um diesen zu überschreiben:
 
 ```text
 /export-trajectory bug-1234
 ```
 
-Der benutzerdefinierte Pfad wird innerhalb von `.openclaw/trajectory-exports/` aufgelöst. Absolute
-Pfade und `~`-Pfade werden abgelehnt.
+Der Name wird innerhalb von `.openclaw/trajectory-exports/` aufgelöst. Absolute Pfade und
+`~`-Pfade werden abgelehnt.
 
-Trajectory-Bundles können Prompts, Modellnachrichten, Tool-Schemata, Tool-Ergebnisse,
-Runtime-Ereignisse und lokale Pfade enthalten. Der Chat-Slash-Befehl durchläuft daher
-jedes Mal die Exec-Genehmigung. Genehmigen Sie den Export einmal, wenn Sie das Bundle
-erstellen möchten; verwenden Sie nicht Allow-all. In Gruppenchats sendet OpenClaw die
-Genehmigungsaufforderung und das Exportergebnis privat an den Owner, statt die
-Trajectory-Details zurück in den gemeinsamen Raum zu posten.
+Trajektorienpakete können Prompts, Modellnachrichten, Tool-Schemas, Tool-
+Ergebnisse, Laufzeitereignisse und lokale Pfade enthalten. Daher durchläuft der
+Chat-Befehl immer die Ausführungsgenehmigung. Genehmigen Sie den Export einmal,
+wenn Sie das Paket tatsächlich erstellen möchten; verwenden Sie nicht „Alle
+erlauben“. In Gruppenchats sendet OpenClaw die Genehmigungsaufforderung und das
+Exportergebnis privat an den Eigentümer, statt Trajektoriendetails im
+gemeinsamen Raum zu veröffentlichen.
 
-Für lokale Prüfung oder Support-Workflows können Sie den genehmigten Befehlspfad auch
-direkt ausführen:
+Führen Sie für die lokale Prüfung oder Support-Workflows den zugrunde liegenden CLI-Befehl
+direkt aus:
 
 ```bash
 openclaw sessions export-trajectory --session-key "agent:main:telegram:direct:123" --workspace .
 ```
 
+Weitere Flags: `--output <path>` (Verzeichnisname innerhalb von
+`.openclaw/trajectory-exports`), `--store <path>` (Überschreiben des Sitzungsspeichers),
+`--agent <id>` (Agenten-ID für die Speicherauflösung), `--json` (strukturierte Ausgabe).
+
 ## Zugriff
 
-Trajectory-Export ist ein Owner-Befehl. Der Absender muss die normalen
-Autorisierungsprüfungen für Befehle und die Owner-Prüfungen für den Kanal bestehen.
+Der Trajektorienexport ist ein Eigentümerbefehl. Der Absender muss die normalen
+Autorisierungsprüfungen für Befehle sowie die Eigentümerprüfung des Kanals
+bestehen.
 
 ## Was aufgezeichnet wird
 
-Trajectory-Erfassung ist für OpenClaw-Agentenläufe standardmäßig aktiviert.
+Die Trajektorienerfassung ist für OpenClaw-Agentenläufe standardmäßig aktiviert.
 
-Runtime-Ereignisse umfassen:
+Zu den Laufzeitereignissen gehören:
 
 - `session.started`
 - `trace.metadata`
 - `context.compiled`
 - `prompt.submitted`
-- `model.fallback_step`, einschließlich Quellmodell, nächstem Modell, Fehlergrund/-detail, Kettenposition und ob der Fallback fortgeschritten ist, erfolgreich war oder die Kette erschöpft hat
+- `model.fallback_step`, einschließlich Quellmodell, nächstem Modell, Fehlergrund/-details, Position in der Kette und der Angabe, ob die Kette fortgesetzt wurde, erfolgreich war oder ausgeschöpft wurde
 - `model.completed`
 - `trace.artifacts`
 - `session.ended`
 
-Transkriptereignisse werden außerdem aus dem aktiven Sitzungszweig rekonstruiert:
+Transkriptereignisse werden aus dem aktiven Sitzungszweig rekonstruiert:
+Benutzernachrichten, Assistentennachrichten, Tool-Aufrufe, Tool-Ergebnisse,
+Compactions, Modellwechsel, Bezeichnungen und benutzerdefinierte
+Sitzungseinträge.
 
-- Benutzernachrichten
-- Assistentennachrichten
-- Tool-Aufrufe
-- Tool-Ergebnisse
-- Compactions
-- Modelländerungen
-- Labels und benutzerdefinierte Sitzungseinträge
-
-Ereignisse werden als JSON Lines mit dieser Schema-Markierung geschrieben:
+Ereignisse werden als JSON Lines mit dieser Schemamarkierung geschrieben:
 
 ```json
 {
@@ -117,118 +111,104 @@ Ereignisse werden als JSON Lines mit dieser Schema-Markierung geschrieben:
 }
 ```
 
-## Bundle-Dateien
+## Paketdateien
 
-Ein exportiertes Bundle kann Folgendes enthalten:
+| Datei                 | Inhalt                                                                                               |
+| --------------------- | ---------------------------------------------------------------------------------------------------- |
+| `manifest.json`       | Paketschema, Quelldateien, Ereigniszahlen und Liste der erzeugten Dateien                             |
+| `events.jsonl`        | Geordnete Laufzeit- und Transkriptzeitleiste                                                          |
+| `session-branch.json` | Bereinigter aktiver Transkriptzweig und Sitzungskopf                                                  |
+| `metadata.json`       | OpenClaw-Version, Betriebssystem/Laufzeit, Modell, Konfigurations-Snapshot, Plugins, Skills und Prompt-Metadaten |
+| `artifacts.json`      | Endstatus, Fehler, Nutzung, Prompt-Cache, Compaction-Anzahl, Assistententext und Tool-Metadaten       |
+| `prompts.json`        | Übermittelte Prompts und ausgewählte Details zur Prompt-Erstellung                                    |
+| `system-prompt.txt`   | Zuletzt kompilierter System-Prompt, sofern erfasst                                                    |
+| `tools.json`          | An das Modell gesendete Tool-Definitionen, sofern erfasst                                             |
 
-| Datei                 | Inhalte                                                                                         |
-| --------------------- | ------------------------------------------------------------------------------------------------ |
-| `manifest.json`       | Bundle-Schema, Quelldateien, Ereigniszahlen und generierte Dateiliste                            |
-| `events.jsonl`        | Geordnete Runtime- und Transkript-Zeitleiste                                                     |
-| `session-branch.json` | Redigierter aktiver Transkriptzweig und Sitzungsheader                                           |
-| `metadata.json`       | OpenClaw-Version, OS/Runtime, Modell, Konfigurations-Snapshot, Plugins, Skills und Prompt-Metadaten |
-| `artifacts.json`      | Endstatus, Fehler, Nutzung, Prompt-Cache, Compaction-Anzahl, Assistententext und Tool-Metadaten  |
-| `prompts.json`        | Übermittelte Prompts und ausgewählte Details zur Prompt-Erstellung                               |
-| `system-prompt.txt`   | Zuletzt kompilierter System-Prompt, falls erfasst                                                |
-| `tools.json`          | An das Modell gesendete Tool-Definitionen, falls erfasst                                         |
+`manifest.json` führt die in einem bestimmten Paket vorhandenen Dateien auf;
+einige Dateien werden ausgelassen, wenn die Sitzung die entsprechenden
+Laufzeitdaten nicht erfasst hat.
 
-`manifest.json` listet die in diesem Bundle vorhandenen Dateien auf. Einige Dateien werden ausgelassen,
-wenn die Sitzung die entsprechenden Runtime-Daten nicht erfasst hat.
+## Erfassungsspeicher
 
-## Erfassungsort
+Laufzeit-Trajektorienereignisse werden zusammen mit der Sitzung in der
+agentenspezifischen SQLite-Datenbank gespeichert. Beim Exportieren einer
+Trajektorie wird ein bereinigtes JSONL-Support-Paket erzeugt; die aktive
+Laufzeiterfassung ist keine sitzungsnahe JSONL-Sidecar-Datei.
 
-Standardmäßig werden Runtime-Trajectory-Ereignisse neben die Sitzungsdatei geschrieben:
-
-```text
-<session>.trajectory.jsonl
-```
-
-OpenClaw schreibt außerdem eine Best-Effort-Zeigerdatei neben die Sitzung:
-
-```text
-<session>.trajectory-path.json
-```
-
-Setzen Sie `OPENCLAW_TRAJECTORY_DIR`, um Runtime-Trajectory-Sidecars in einem
-dedizierten Verzeichnis zu speichern:
-
-```bash
-export OPENCLAW_TRAJECTORY_DIR=/var/lib/openclaw/trajectories
-```
-
-Wenn diese Variable gesetzt ist, schreibt OpenClaw pro Sitzungs-ID eine JSONL-Datei in dieses
-Verzeichnis.
-
-Die Sitzungswartung entfernt Trajectory-Sidecars, wenn ihr zugehöriger Sitzungseintrag
-durch das Sitzungs-Datenträgerbudget bereinigt, begrenzt oder verdrängt wird. Runtime-Dateien außerhalb
-des Sitzungsverzeichnisses werden nur entfernt, wenn das Zeigerziel weiterhin nachweist, dass es
-zu dieser Sitzung gehört.
+Ältere Dateien vom Typ `.trajectory.jsonl` und `.trajectory-path.json` können
+weiterhin aus älteren Versionen oder expliziten Legacy-Dateiexporten stammen.
+Die Sitzungswartung behandelt diese Dateien als Bereinigungsziele; die aktive
+Erfassung schreibt Datenbankzeilen.
 
 ## Erfassung deaktivieren
-
-Setzen Sie `OPENCLAW_TRAJECTORY=0`, bevor Sie OpenClaw starten:
 
 ```bash
 export OPENCLAW_TRAJECTORY=0
 ```
 
-Dies deaktiviert die Runtime-Trajectory-Erfassung. `/export-trajectory` kann weiterhin
-den Transkriptzweig exportieren, aber reine Runtime-Dateien wie kompilierter Kontext,
-Provider-Artefakte und Prompt-Metadaten fehlen möglicherweise.
+Dies deaktiviert die Laufzeit-Trajektorienerfassung, bevor OpenClaw gestartet
+wird. `/export-trajectory` kann den Transkriptzweig weiterhin exportieren, aber
+reine Laufzeitdaten wie kompilierter Kontext, Provider-Artefakte und
+Prompt-Metadaten können fehlen.
 
 ## Flush-Timeout anpassen
 
-OpenClaw leert Runtime-Trajectory-Sidecars während der Agentenbereinigung. Der standardmäßige
-Bereinigungs-Timeout beträgt 10.000 ms. Setzen Sie bei langsamen Datenträgern oder großen Speichern
-`OPENCLAW_TRAJECTORY_FLUSH_TIMEOUT_MS`, bevor Sie OpenClaw starten:
+OpenClaw schreibt Laufzeit-Trajektorienzeilen während der Agentenbereinigung
+dauerhaft. Das standardmäßige Bereinigungs-Timeout beträgt 10,000 ms. Legen Sie
+auf langsamen Datenträgern oder bei großen Speichern
+`OPENCLAW_TRAJECTORY_FLUSH_TIMEOUT_MS` vor dem Start von OpenClaw fest:
 
 ```bash
 export OPENCLAW_TRAJECTORY_FLUSH_TIMEOUT_MS=30000
 ```
 
-Dies steuert, wann OpenClaw einen `openclaw-trajectory-flush`-Timeout protokolliert und fortfährt.
-Es ändert nicht die Größenbegrenzungen der Trajectory. Um alle Agentenbereinigungsschritte
-anzupassen, die keinen expliziten Timeout übergeben, setzen Sie `OPENCLAW_AGENT_CLEANUP_TIMEOUT_MS`.
+Dies steuert, wann OpenClaw ein `openclaw-trajectory-flush`-Timeout protokolliert
+und fortfährt; die Größenbeschränkungen der Trajektorie werden dadurch nicht
+geändert. Um alle Agentenbereinigungsschritte anzupassen, die kein explizites
+Timeout übergeben, legen Sie `OPENCLAW_AGENT_CLEANUP_TIMEOUT_MS` fest.
 
-## Datenschutz und Grenzen
+## Datenschutz und Beschränkungen
 
-Trajectory-Bundles sind für Support und Debugging gedacht, nicht für öffentliche Veröffentlichung.
-OpenClaw redigiert sensible Werte, bevor Exportdateien geschrieben werden:
+Trajektorienpakete sind für Support und Fehlerbehebung vorgesehen, nicht für
+öffentliche Veröffentlichungen. OpenClaw bereinigt sensible Werte, bevor
+Exportdateien geschrieben werden:
 
-- Zugangsdaten und bekannte, geheimnisähnliche Payload-Felder
+- Anmeldedaten und bekannte geheimnisähnliche Nutzlastfelder
 - Bilddaten
 - lokale Zustandspfade
 - Workspace-Pfade, ersetzt durch `$WORKSPACE_DIR`
-- Home-Verzeichnispfade, sofern erkannt
+- Pfade des Home-Verzeichnisses, sofern erkannt
 
 Der Exporter begrenzt außerdem die Eingabegröße:
 
-- Runtime-Sidecar-Dateien: Live-Erfassung stoppt bei 10 MiB und zeichnet ein Kürzungsereignis auf, wenn noch Platz bleibt; der Export akzeptiert vorhandene Runtime-Sidecars bis 50 MiB
+- Laufzeiterfassung: Die aktive Erfassung ist ein rollierendes Fenster mit einer Obergrenze von 10 MiB; die ältesten Ereignisse werden entfernt, um Platz für neue zu schaffen. Der Export akzeptiert vorhandene ältere Laufzeit-Sidecar-Dateien bis zu 50 MiB
 - Sitzungsdateien: 50 MiB
-- Runtime-Ereignisse: 200.000
-- insgesamt exportierte Ereignisse: 250.000
-- einzelne Runtime-Ereigniszeilen werden oberhalb von 256 KiB gekürzt
+- Laufzeitereignisse pro Export: 200,000
+- insgesamt exportierte Ereignisse: 250,000
+- einzelne Laufzeitereigniszeilen werden oberhalb von 256 KiB gekürzt
 
-Prüfen Sie Bundles, bevor Sie sie außerhalb Ihres Teams teilen. Redigierung erfolgt nach bestem Bemühen
-und kann nicht jedes anwendungsspezifische Geheimnis kennen.
+Prüfen Sie Pakete, bevor Sie sie außerhalb Ihres Teams weitergeben. Die
+Bereinigung erfolgt nach bestem Bemühen und kann nicht jedes
+anwendungsspezifische Geheimnis erkennen.
 
 ## Fehlerbehebung
 
-Wenn der Export keine Runtime-Ereignisse enthält:
+Wenn der Export keine Laufzeitereignisse enthält:
 
-- bestätigen Sie, dass OpenClaw ohne `OPENCLAW_TRAJECTORY=0` gestartet wurde
-- prüfen Sie, ob `OPENCLAW_TRAJECTORY_DIR` auf ein beschreibbares Verzeichnis zeigt
-- führen Sie eine weitere Nachricht in der Sitzung aus und exportieren Sie dann erneut
-- prüfen Sie `manifest.json` auf `runtimeEventCount`
+- Vergewissern Sie sich, dass OpenClaw ohne `OPENCLAW_TRAJECTORY=0` gestartet wurde
+- Führen Sie eine weitere Nachricht in der Sitzung aus und exportieren Sie anschließend erneut
+- Prüfen Sie `manifest.json` auf `runtimeEventCount`
 
 Wenn der Befehl den Ausgabepfad ablehnt:
 
-- verwenden Sie einen relativen Namen wie `bug-1234`
-- übergeben Sie nicht `/tmp/...` oder `~/...`
-- halten Sie den Export innerhalb von `.openclaw/trajectory-exports/`
+- Verwenden Sie einen relativen Namen wie `bug-1234`
+- Übergeben Sie nicht `/tmp/...` oder `~/...`
+- Belassen Sie den Export innerhalb von `.openclaw/trajectory-exports/`
 
-Wenn der Export mit einem Größenfehler fehlschlägt, hat die Sitzung oder das Sidecar die
-Sicherheitsgrenzen für den Export überschritten. Starten Sie eine neue Sitzung oder exportieren Sie eine kleinere Reproduktion.
+Wenn der Export mit einem Größenfehler fehlschlägt, hat die Sitzung oder die
+Sidecar-Datei die oben genannten Sicherheitsgrenzen für den Export
+überschritten. Starten Sie eine neue Sitzung oder exportieren Sie eine kleinere
+Reproduktion.
 
 ## Verwandte Themen
 

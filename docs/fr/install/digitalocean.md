@@ -1,30 +1,31 @@
 ---
 read_when:
-    - Configuration d’OpenClaw sur DigitalOcean
-    - Recherche d’un VPS payant simple pour OpenClaw
+    - Configurer OpenClaw sur DigitalOcean
+    - Vous recherchez un VPS payant simple pour OpenClaw
 summary: Héberger OpenClaw sur un Droplet DigitalOcean
 title: DigitalOcean
 x-i18n:
-    generated_at: "2026-05-11T20:41:16Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:33:35Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: 2ddfe3e6df5e48616584e912e12eede30a62f869fc307f586c9604c9c06c9e5b
+    source_hash: e124a59c079efda0c8e880018f2657fad784af1489ca3f98ed8ab609249e35bd
     source_path: install/digitalocean.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-Exécutez un OpenClaw Gateway persistant sur un Droplet DigitalOcean (~6 $/mois pour l’offre Basic 1 Go).
+Exécutez un Gateway OpenClaw persistant sur un Droplet DigitalOcean (environ 6 $/mois pour l’offre Basic de 1 Go).
 
-DigitalOcean est l’option VPS payante la plus simple. Si vous préférez des options moins chères ou gratuites :
+DigitalOcean constitue une solution VPS payante simple. Pour des options moins chères ou gratuites :
 
-- [Hetzner](/fr/install/hetzner) — 3,79 €/mois, plus de cœurs/RAM par dollar.
-- [Oracle Cloud](/fr/install/oracle) — ARM Always Free (jusqu’à 4 OCPU, 24 Go de RAM), mais l’inscription peut être capricieuse et l’offre est uniquement ARM.
+- [Hetzner](/fr/install/hetzner) -- davantage de cœurs et de RAM par dollar.
+- [Oracle Cloud](/fr/install/oracle) -- offre ARM Always Free (jusqu’à 4 OCPU et 24 Go de RAM), mais l’inscription peut être délicate et seule l’architecture ARM est prise en charge.
 
 ## Prérequis
 
 - Compte DigitalOcean ([inscription](https://cloud.digitalocean.com/registrations/new))
-- Paire de clés SSH (ou volonté d’utiliser l’authentification par mot de passe)
+- Paire de clés SSH (ou possibilité d’utiliser l’authentification par mot de passe)
 - Environ 20 minutes
 
 ## Configuration
@@ -32,16 +33,16 @@ DigitalOcean est l’option VPS payante la plus simple. Si vous préférez des o
 <Steps>
   <Step title="Créer un Droplet">
     <Warning>
-    Utilisez une image de base propre (Ubuntu 24.04 LTS). Évitez les images Marketplace 1-click de tiers, sauf si vous avez examiné leurs scripts de démarrage et leurs paramètres de pare-feu par défaut.
+    Utilisez une image de base propre (Ubuntu 24.04 LTS). Évitez les images tierces en un clic de Marketplace, sauf si vous avez examiné leurs scripts de démarrage et les paramètres par défaut de leur pare-feu.
     </Warning>
 
     1. Connectez-vous à [DigitalOcean](https://cloud.digitalocean.com/).
     2. Cliquez sur **Create > Droplets**.
     3. Choisissez :
-       - **Région :** la plus proche de vous
-       - **Image :** Ubuntu 24.04 LTS
-       - **Taille :** Basic, Regular, 1 vCPU / 1 Go de RAM / 25 Go SSD
-       - **Authentification :** clé SSH (recommandé) ou mot de passe
+       - **Region:** la région la plus proche de vous
+       - **Image:** Ubuntu 24.04 LTS
+       - **Size:** Basic, Regular, 1 vCPU / 1 Go de RAM / SSD de 25 Go
+       - **Authentication:** clé SSH (recommandé) ou mot de passe
     4. Cliquez sur **Create Droplet** et notez l’adresse IP.
 
   </Step>
@@ -52,14 +53,14 @@ DigitalOcean est l’option VPS payante la plus simple. Si vous préférez des o
 
     apt update && apt upgrade -y
 
-    # Install Node.js 24
+    # Installer Node.js 24
     curl -fsSL https://deb.nodesource.com/setup_24.x | bash -
     apt install -y nodejs
 
-    # Install OpenClaw
+    # Installer OpenClaw
     curl -fsSL https://openclaw.ai/install.sh | bash
 
-    # Create the non-root user that will own OpenClaw state and services.
+    # Créer l’utilisateur non-root qui possédera l’état et les services OpenClaw.
     adduser openclaw
     usermod -aG sudo openclaw
     loginctl enable-linger openclaw
@@ -68,20 +69,20 @@ DigitalOcean est l’option VPS payante la plus simple. Si vous préférez des o
     openclaw --version
     ```
 
-    Utilisez le shell root uniquement pour l’amorçage du système. Exécutez les commandes OpenClaw avec l’utilisateur non-root `openclaw` afin que l’état réside sous `/home/openclaw/.openclaw/` et que le Gateway s’installe comme service systemd de cet utilisateur.
+    Utilisez le shell root uniquement pour l’initialisation du système. Exécutez les commandes OpenClaw avec l’utilisateur non-root `openclaw` afin que l’état soit stocké sous `/home/openclaw/.openclaw/` et que le Gateway soit installé en tant que service systemd `--user` de cet utilisateur.
 
   </Step>
 
-  <Step title="Lancer l’onboarding">
+  <Step title="Exécuter l’intégration initiale">
     ```bash
     openclaw onboard --install-daemon
     ```
 
-    L’assistant vous guide dans l’authentification du modèle, la configuration du canal, la génération du jeton du Gateway et l’installation du démon (systemd).
+    L’assistant vous guide dans l’authentification du modèle, la configuration des canaux, la génération du jeton du Gateway et l’installation du démon (service utilisateur systemd).
 
   </Step>
 
-  <Step title="Ajouter du swap (recommandé pour les Droplets de 1 Go)">
+  <Step title="Ajouter un espace d’échange (recommandé pour les Droplets de 1 Go)">
     ```bash
     fallocate -l 2G /swapfile
     chmod 600 /swapfile
@@ -99,13 +100,13 @@ DigitalOcean est l’option VPS payante la plus simple. Si vous préférez des o
     ```
   </Step>
 
-  <Step title="Accéder à l’interface utilisateur de contrôle">
-    Le Gateway se lie au loopback par défaut. Choisissez l’une de ces options.
+  <Step title="Accéder à l’interface de contrôle">
+    Le Gateway écoute sur l’interface de bouclage par défaut. Choisissez l’une des options suivantes.
 
-    **Option A : tunnel SSH (le plus simple)**
+    **Option A : tunnel SSH (la plus simple)**
 
     ```bash
-    # From your local machine
+    # Depuis votre machine locale
     ssh -L 18789:localhost:18789 root@YOUR_DROPLET_IP
     ```
 
@@ -122,9 +123,9 @@ DigitalOcean est l’option VPS payante la plus simple. Si vous préférez des o
 
     Ouvrez ensuite `https://<magicdns>/` depuis n’importe quel appareil de votre tailnet.
 
-    Tailscale Serve authentifie le trafic de l’interface utilisateur de contrôle et WebSocket via les en-têtes d’identité du tailnet, ce qui suppose que l’hôte du Gateway lui-même est fiable. Les points de terminaison de l’API HTTP suivent le mode d’authentification normal du Gateway (jeton/mot de passe) dans tous les cas. Pour exiger des identifiants à secret partagé explicites via Serve, définissez `gateway.auth.allowTailscale: false` et utilisez `gateway.auth.mode: "token"` ou `"password"`.
+    Tailscale Serve authentifie le trafic de l’interface de contrôle et WebSocket au moyen des en-têtes d’identité du tailnet, ce qui suppose que l’hôte du Gateway lui-même est digne de confiance. Les points de terminaison de l’API HTTP continuent d’utiliser le mode d’authentification normal du Gateway (jeton/mot de passe), indépendamment de ce paramètre. Pour exiger des identifiants explicites à secret partagé avec Serve, définissez `gateway.auth.allowTailscale: false` et utilisez `gateway.auth.mode: "token"` ou `"password"`.
 
-    **Option C : liaison au tailnet (sans Serve)**
+    **Option C : écoute sur le tailnet (sans Serve)**
 
     ```bash
     openclaw config set gateway.bind tailnet
@@ -138,45 +139,45 @@ DigitalOcean est l’option VPS payante la plus simple. Si vous préférez des o
 
 ## Persistance et sauvegardes
 
-L’état d’OpenClaw réside sous :
+L’état d’OpenClaw est stocké sous :
 
-- `~/.openclaw/` — `openclaw.json`, les fichiers `auth-profiles.json` par agent, l’état des canaux/fournisseurs et les données de session.
-- `~/.openclaw/workspace/` — l’espace de travail de l’agent (SOUL.md, mémoire, artefacts).
+- `~/.openclaw/` -- `openclaw.json`, les identifiants des canaux et des fournisseurs, le fichier `auth-profiles.json` de chaque agent et les données de session.
+- `~/.openclaw/workspace/` -- l’espace de travail de l’agent (SOUL.md, mémoire, artefacts).
 
-Ces données survivent aux redémarrages du Droplet. Pour créer un instantané portable :
+Ces données sont conservées lors des redémarrages du Droplet. Pour créer un instantané portable :
 
 ```bash
 openclaw backup create
 ```
 
-Les instantanés DigitalOcean sauvegardent l’intégralité du Droplet ; `openclaw backup create` est portable entre hôtes.
+Les instantanés DigitalOcean sauvegardent l’intégralité du Droplet ; `openclaw backup create` est portable d’un hôte à l’autre.
 
 ## Conseils pour 1 Go de RAM
 
-Le Droplet à 6 $ ne dispose que de 1 Go de RAM. Pour garder un fonctionnement fluide :
+Le Droplet à 6 $ ne dispose que de 1 Go de RAM. Pour garantir un fonctionnement fluide :
 
-- Assurez-vous que l’étape de swap ci-dessus est présente dans `/etc/fstab` afin qu’elle survive aux redémarrages.
-- Préférez les modèles basés sur API (Claude, GPT) aux modèles locaux — l’inférence LLM locale ne tient pas dans 1 Go.
-- Définissez `agents.defaults.model.primary` sur un modèle plus petit si vous rencontrez des OOM sur de grandes invites.
-- Surveillez avec `free -h` et `htop`.
+- Assurez-vous que l’étape de configuration de l’espace d’échange ci-dessus figure dans `/etc/fstab` afin qu’elle soit conservée lors des redémarrages.
+- Préférez les modèles accessibles par API (Claude, GPT) aux modèles locaux -- l’inférence locale de LLM ne tient pas dans 1 Go.
+- Définissez `agents.defaults.model.primary` sur un modèle plus petit si de longues invites provoquent des erreurs de mémoire insuffisante.
+- Surveillez les ressources avec `free -h` et `htop`.
 
 ## Dépannage
 
 **Le Gateway ne démarre pas** -- Exécutez `openclaw doctor --non-interactive` et consultez les journaux avec `journalctl --user -u openclaw-gateway.service -n 50`.
 
-**Port déjà utilisé** -- Exécutez `lsof -i :18789` pour trouver le processus, puis arrêtez-le.
+**Le port est déjà utilisé** -- Exécutez `lsof -i :18789` pour trouver le processus, puis arrêtez-le.
 
-**Mémoire insuffisante** -- Vérifiez que le swap est actif avec `free -h`. Si vous rencontrez encore des OOM, utilisez des modèles basés sur API (Claude, GPT) plutôt que des modèles locaux, ou passez à un Droplet de 2 Go.
+**Mémoire insuffisante** -- Vérifiez que l’espace d’échange est actif avec `free -h`. Si les erreurs de mémoire insuffisante persistent, utilisez des modèles accessibles par API (Claude, GPT) plutôt que des modèles locaux, ou passez à un Droplet de 2 Go.
 
 ## Étapes suivantes
 
-- [Canaux](/fr/channels) -- connectez Telegram, WhatsApp, Discord et plus encore
+- [Canaux](/fr/channels) -- connectez Telegram, WhatsApp, Discord et d’autres services
 - [Configuration du Gateway](/fr/gateway/configuration) -- toutes les options de configuration
 - [Mise à jour](/fr/install/updating) -- maintenez OpenClaw à jour
 
-## Connexe
+## Pages associées
 
 - [Vue d’ensemble de l’installation](/fr/install)
 - [Fly.io](/fr/install/fly)
 - [Hetzner](/fr/install/hetzner)
-- [Hébergement VPS](/fr/vps)
+- [Hébergement sur VPS](/fr/vps)

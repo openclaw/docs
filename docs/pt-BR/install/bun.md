@@ -1,24 +1,25 @@
 ---
 read_when:
     - Você quer o ciclo de desenvolvimento local mais rápido (bun + watch)
-    - Você encontrou problemas de instalação, patch ou script de ciclo de vida do Bun
-summary: 'Fluxo de trabalho com Bun (experimental): instalações e pontos de atenção vs pnpm'
+    - Você encontrou problemas com scripts de instalação, patch ou ciclo de vida do Bun
+summary: 'Fluxo de trabalho com Bun (experimental): instalação e ressalvas em comparação com o pnpm'
 title: Bun (experimental)
 x-i18n:
-    generated_at: "2026-06-27T17:37:35Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:22:04Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: 1c31f2c09f3c1f99ae1a306184a86f2240b0c0f4f655c2759f5aeb6bac6b745a
+    source_hash: b836be354166ceb073d170e472e8b69c3f517e754fe71417df1d85d27a18ae94
     source_path: install/bun.md
     workflow: 16
 ---
 
 <Warning>
-Bun **não é recomendado para o runtime do Gateway** (problemas conhecidos com WhatsApp e Telegram). Use Node em produção.
+O Bun não é recomendado para o runtime do Gateway (há problemas conhecidos com WhatsApp e Telegram). Use o Node em produção.
 </Warning>
 
-Bun é um runtime local opcional para executar TypeScript diretamente (`bun run ...`, `bun --watch ...`). O gerenciador de pacotes padrão continua sendo `pnpm`, que tem suporte completo e é usado pelas ferramentas da documentação. Bun não consegue usar `pnpm-lock.yaml` e vai ignorá-lo.
+O Bun é um runtime local opcional para executar TypeScript diretamente (`bun run ...`, `bun --watch ...`). O gerenciador de pacotes padrão continua sendo o `pnpm`, que é totalmente compatível e usado pelas ferramentas de documentação. O Bun não pode usar o `pnpm-lock.yaml` e o ignora.
 
 ## Instalação
 
@@ -28,7 +29,7 @@ Bun é um runtime local opcional para executar TypeScript diretamente (`bun run 
     bun install
     ```
 
-    `bun.lock` / `bun.lockb` estão no gitignore, então não há alterações no repo. Para ignorar totalmente gravações de lockfile:
+    `bun.lock` / `bun.lockb` são ignorados pelo Git, portanto não há alterações desnecessárias no repositório. Para não gravar nenhum arquivo de bloqueio:
 
     ```sh
     bun install --no-save
@@ -45,12 +46,12 @@ Bun é um runtime local opcional para executar TypeScript diretamente (`bun run 
 
 ## Scripts de ciclo de vida
 
-Bun bloqueia scripts de ciclo de vida de dependências, a menos que eles sejam explicitamente confiáveis. Para este repo, os scripts comumente bloqueados não são necessários:
+O Bun bloqueia scripts de ciclo de vida de dependências, a menos que sejam explicitamente considerados confiáveis. Neste repositório, os scripts normalmente bloqueados não são necessários:
 
-- `baileys` `preinstall` -- verifica se a versão principal do Node é >= 20 (OpenClaw usa Node 24 por padrão e ainda oferece suporte ao Node 22 LTS, atualmente `22.19+`)
-- `protobufjs` `postinstall` -- emite avisos sobre esquemas de versão incompatíveis (sem artefatos de build)
+- `baileys` `preinstall`: verifica se a versão principal do Node é >= 20 (o OpenClaw requer Node 22.19+ ou 23.11+, com recomendação do Node 24)
+- `protobufjs` `postinstall`: emite avisos sobre esquemas de versão incompatíveis (sem artefatos de compilação)
 
-Se você encontrar um problema de runtime que exija esses scripts, confie neles explicitamente:
+Se você encontrar um problema de runtime que exija esses scripts, marque-os explicitamente como confiáveis:
 
 ```sh
 bun pm trust baileys protobufjs
@@ -58,9 +59,9 @@ bun pm trust baileys protobufjs
 
 ## Ressalvas
 
-Alguns scripts ainda têm pnpm fixo no código (por exemplo, `check:docs`, `ui:*`, `protocol:check`). Execute-os via pnpm por enquanto.
+Alguns scripts de pacote codificam `pnpm` internamente (por exemplo, `check:docs`, `ui:*`, `protocol:check`). Executá-los por meio de `bun run` ainda invoca o `pnpm` no shell; portanto, execute-os diretamente com o `pnpm`.
 
-## Relacionados
+## Conteúdo relacionado
 
 - [Visão geral da instalação](/pt-BR/install)
 - [Node.js](/pt-BR/install/node)

@@ -2,27 +2,28 @@
 read_when:
     - 你需要 OpenCode Go 目录
     - 你需要 Go 托管模型的运行时模型引用
-summary: 将 OpenCode Go 目录与共享的 OpenCode 设置一起使用
+summary: 使用采用共享 OpenCode 设置的 OpenCode Go 目录
 title: OpenCode Go
 x-i18n:
-    generated_at: "2026-07-05T11:39:15Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:44:06Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: decfc453b812c1264fc3e976dca4e1289171bac67b9e268f6cd9e5076b5aa78b
+    source_hash: df647721e8966fd4fad3178550b071a2eb827148fe765bda53b3d7c97ceaadc2
     source_path: providers/opencode-go.md
     workflow: 16
 ---
 
-OpenCode Go 是 [OpenCode](/zh-CN/providers/opencode) 内的 Go 目录。它与 Zen 目录共享
-`OPENCODE_API_KEY` 凭证，但保留自己的运行时提供商 ID（`opencode-go`），以便上游按模型路由保持
-正确。
+OpenCode Go 是 [OpenCode](/zh-CN/providers/opencode) 中的 Go 目录。它与 Zen 目录共享
+`OPENCODE_API_KEY` 凭据，但保留自己的运行时提供商 ID（`opencode-go`），以确保上游按模型路由
+保持正确。
 
-| 属性             | 值                                                 |
-| ---------------- | -------------------------------------------------- |
-| 运行时提供商     | `opencode-go`                                      |
-| 凭证             | `OPENCODE_API_KEY`（别名：`OPENCODE_ZEN_API_KEY`） |
-| 父级设置         | [OpenCode](/zh-CN/providers/opencode)                    |
+| 属性           | 值                                                 |
+| -------------- | -------------------------------------------------- |
+| 运行时提供商   | `opencode-go`                                      |
+| 身份验证       | `OPENCODE_API_KEY`（别名：`OPENCODE_ZEN_API_KEY`） |
+| 上级设置       | [OpenCode](/zh-CN/providers/opencode)                    |
 
 ## 入门指南
 
@@ -34,12 +35,12 @@ OpenCode Go 是 [OpenCode](/zh-CN/providers/opencode) 内的 Go 目录。它与 
         openclaw onboard --auth-choice opencode-go
         ```
       </Step>
-      <Step title="将 Go 模型设为默认值">
+      <Step title="将 Go 模型设为默认模型">
         ```bash
         openclaw config set agents.defaults.model.primary "opencode-go/kimi-k2.6"
         ```
       </Step>
-      <Step title="验证模型可用">
+      <Step title="验证模型是否可用">
         ```bash
         openclaw models list --provider opencode-go
         ```
@@ -54,7 +55,7 @@ OpenCode Go 是 [OpenCode](/zh-CN/providers/opencode) 内的 Go 目录。它与 
         openclaw onboard --opencode-go-api-key "$OPENCODE_API_KEY"
         ```
       </Step>
-      <Step title="验证模型可用">
+      <Step title="验证模型是否可用">
         ```bash
         openclaw models list --provider opencode-go
         ```
@@ -67,7 +68,7 @@ OpenCode Go 是 [OpenCode](/zh-CN/providers/opencode) 内的 Go 目录。它与 
 
 ```json5
 {
-  env: { OPENCODE_API_KEY: "YOUR_API_KEY_HERE" }, // pragma: allowlist secret
+  env: { OPENCODE_API_KEY: "YOUR_API_KEY_HERE" }, // pragma: 允许列入密钥白名单
   agents: { defaults: { model: { primary: "opencode-go/kimi-k2.6" } } },
 }
 ```
@@ -88,9 +89,7 @@ OpenCode Go 是 [OpenCode](/zh-CN/providers/opencode) 内的 Go 目录。它与 
 | `opencode-go/kimi-k2.5`         | Kimi K2.5         | 262,144   | 65,536     | 是       |
 | `opencode-go/kimi-k2.6`         | Kimi K2.6         | 262,144   | 65,536     | 是       |
 | `opencode-go/kimi-k2.7-code`    | Kimi K2.7 Code    | 262,144   | 262,144    | 是       |
-| `opencode-go/mimo-v2-omni`      | MiMo V2 Omni      | 262,144   | 32,000     | 是       |
 | `opencode-go/mimo-v2.5`         | MiMo V2.5         | 1M        | 128,000    | 是       |
-| `opencode-go/mimo-v2-pro`       | MiMo V2 Pro       | 1,048,576 | 32,000     | 否       |
 | `opencode-go/mimo-v2.5-pro`     | MiMo V2.5 Pro     | 1,048,576 | 128,000    | 否       |
 | `opencode-go/minimax-m2.5`      | MiniMax M2.5      | 204,800   | 65,536     | 否       |
 | `opencode-go/minimax-m2.7`      | MiniMax M2.7      | 204,800   | 131,072    | 否       |
@@ -104,31 +103,30 @@ OpenCode Go 是 [OpenCode](/zh-CN/providers/opencode) 内的 Go 目录。它与 
 
 <AccordionGroup>
   <Accordion title="路由行为">
-    OpenClaw 会自动路由任何 `opencode-go/...` 模型引用。不需要额外的
+    OpenClaw 会自动路由任何 `opencode-go/...` 模型引用。无需额外的
     提供商配置。
   </Accordion>
 
   <Accordion title="运行时引用约定">
-    运行时引用保持显式：Zen 使用 `opencode/...`，Go 使用 `opencode-go/...`。
-    这会让两个目录中的上游按模型路由保持正确。
+    运行时引用保持明确：Zen 使用 `opencode/...`，Go 使用 `opencode-go/...`。
+    这可确保两个目录的上游按模型路由均保持正确。
   </Accordion>
 
-  <Accordion title="共享凭证">
-    一个 `OPENCODE_API_KEY` 同时覆盖 Zen 和 Go 目录。在设置期间输入
-    密钥会为两个运行时提供商存储凭证。
+  <Accordion title="共享凭据">
+    一个 `OPENCODE_API_KEY` 即可覆盖 Zen 和 Go 两个目录。在设置期间输入
+    密钥会为两个运行时提供商存储凭据。
   </Accordion>
 </AccordionGroup>
 
 <Tip>
-请参阅 [OpenCode](/zh-CN/providers/opencode)，了解共享的新手引导概览以及完整的
-Zen + Go 目录参考。
+有关共享新手引导概览以及完整的 Zen + Go 目录参考，请参阅 [OpenCode](/zh-CN/providers/opencode)。
 </Tip>
 
 ## 相关内容
 
 <CardGroup cols={2}>
-  <Card title="OpenCode（父级）" href="/zh-CN/providers/opencode" icon="server">
-    共享的新手引导、目录概览和高级说明。
+  <Card title="OpenCode（上级）" href="/zh-CN/providers/opencode" icon="server">
+    共享新手引导、目录概览和高级说明。
   </Card>
   <Card title="模型选择" href="/zh-CN/concepts/model-providers" icon="layers">
     选择提供商、模型引用和故障转移行为。

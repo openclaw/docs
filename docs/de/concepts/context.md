@@ -1,126 +1,130 @@
 ---
 read_when:
     - Sie möchten verstehen, was „Kontext“ in OpenClaw bedeutet
-    - Sie debuggen, warum das Modell etwas „weiß“ (oder vergessen hat)
-    - Sie möchten Kontext-Overhead reduzieren (/context, /status, /compact)
-summary: 'Kontext: was das Modell sieht, wie er erstellt wird und wie Sie ihn prüfen können'
+    - Sie untersuchen, warum das Modell etwas „weiß“ (oder vergessen hat)
+    - Sie möchten den Kontextaufwand reduzieren (/context, /status, /compact)
+summary: 'Kontext: Was das Modell sieht, wie er aufgebaut wird und wie Sie ihn prüfen können'
 title: Kontext
 x-i18n:
-    generated_at: "2026-06-27T17:23:05Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:16:53Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: 900b4a72acf43405a6b7718b93c3b5c8543eb2cc90766298889052c7468e39fb
+    source_hash: 1eb3d342a601a447487640587f746cc80a133ede338a880741f53c3e01f20ed1
     source_path: concepts/context.md
     workflow: 16
 ---
 
-„Kontext“ ist **alles, was OpenClaw für einen Lauf an das Modell sendet**. Er wird durch das **Kontextfenster** des Modells begrenzt (Token-Limit).
+„Kontext“ ist **alles, was OpenClaw für einen Lauf an das Modell sendet**. Er wird durch das **Kontextfenster** des Modells (Token-Limit) begrenzt.
 
-Einsteiger-Mentalmodell:
+Einfaches mentales Modell für Einsteiger:
 
-- **System-Prompt** (von OpenClaw erstellt): Regeln, Werkzeuge, Skills-Liste, Zeit/Laufzeit und injizierte Workspace-Dateien.
+- **System-Prompt** (von OpenClaw erstellt): Regeln, Tools, Skills-Liste, Zeit/Laufzeit und eingebundene Workspace-Dateien.
 - **Konversationsverlauf**: Ihre Nachrichten + die Nachrichten des Assistenten für diese Sitzung.
-- **Werkzeugaufrufe/-ergebnisse + Anhänge**: Befehlsausgabe, gelesene Dateien, Bilder/Audio usw.
+- **Tool-Aufrufe/-Ergebnisse + Anhänge**: Befehlsausgaben, gelesene Dateien, Bilder/Audio usw.
 
-Kontext ist _nicht dasselbe_ wie „Memory“: Memory kann auf der Festplatte gespeichert und später erneut geladen werden; Kontext ist das, was sich im aktuellen Fenster des Modells befindet.
+Kontext ist _nicht dasselbe_ wie „Speicher“: Speicher kann auf dem Datenträger abgelegt und später erneut geladen werden; Kontext ist das, was sich im aktuellen Fenster des Modells befindet.
 
 ## Schnellstart (Kontext prüfen)
 
 - `/status` → schnelle Ansicht „Wie voll ist mein Fenster?“ + Sitzungseinstellungen.
-- `/context list` → was injiziert wurde + grobe Größen (pro Datei + Summen).
-- `/context detail` → detailliertere Aufschlüsselung: Größen pro Datei, pro Werkzeugschema, pro Skill-Eintrag, System-Prompt-Größe und Anzahl kompaktierbarer Transkriptnachrichten.
-- `/context map` → WinDirStat-artige Treemap-Grafik der aktuell nachverfolgten Kontextbeiträge der Sitzung.
-- `/usage tokens` → Nutzungsfooter pro Antwort an normale Antworten anhängen.
-- `/compact` → älteren Verlauf zu einem kompakten Eintrag zusammenfassen, um Fensterplatz freizugeben.
+- `/context list` → was eingebunden ist + ungefähre Größen (pro Datei + Gesamtwerte).
+- `/context detail` → detailliertere Aufschlüsselung: Größen pro Datei, pro Tool-Schema und pro Skills-Eintrag, Größe des System-Prompts sowie Anzahl der kompaktierbaren Transkriptnachrichten.
+- `/context map` → WinDirStat-artiges Treemap-Bild der erfassten Kontextbeiträge der aktuellen Sitzung.
+- `/usage tokens` → jeder normalen Antwort eine Fußzeile zur Nutzung hinzufügen.
+- `/compact` → älteren Verlauf zu einem kompakten Eintrag zusammenfassen, um Platz im Fenster freizugeben.
 
-Siehe auch: [Slash-Befehle](/de/tools/slash-commands), [Token-Nutzung & Kosten](/de/reference/token-use), [Compaction](/de/concepts/compaction).
+Siehe auch: [Slash-Befehle](/de/tools/slash-commands), [Token-Nutzung und -Kosten](/de/reference/token-use), [Compaction](/de/concepts/compaction).
 
 ## Beispielausgabe
 
-Werte variieren je nach Modell, Provider, Werkzeugrichtlinie und Inhalt Ihres Workspaces.
+Die Werte variieren je nach Modell, Provider, Tool-Richtlinie und Inhalt Ihres Workspace.
 
 ### `/context list`
 
-```
-🧠 Context breakdown
+```text
+🧠 Kontextaufschlüsselung
 Workspace: <workspaceDir>
-Bootstrap max/file: 12,000 chars
-Sandbox: mode=non-main sandboxed=false
-System prompt (run): 38,412 chars (~9,603 tok) (Project Context 23,901 chars (~5,976 tok))
+Bootstrap-Maximum/Datei: 12,000 Zeichen
+Sandbox: Modus=non-main sandboxed=false
+System-Prompt (Lauf): 38,412 Zeichen (~9,603 Tok.) (Projektkontext 23,901 Zeichen (~5,976 Tok.))
 
-Injected workspace files:
-- AGENTS.md: OK | raw 1,742 chars (~436 tok) | injected 1,742 chars (~436 tok)
-- SOUL.md: OK | raw 912 chars (~228 tok) | injected 912 chars (~228 tok)
-- TOOLS.md: TRUNCATED | raw 54,210 chars (~13,553 tok) | injected 20,962 chars (~5,241 tok)
-- IDENTITY.md: OK | raw 211 chars (~53 tok) | injected 211 chars (~53 tok)
-- USER.md: OK | raw 388 chars (~97 tok) | injected 388 chars (~97 tok)
-- HEARTBEAT.md: MISSING | raw 0 | injected 0
-- BOOTSTRAP.md: OK | raw 0 chars (~0 tok) | injected 0 chars (~0 tok)
+Eingebundene Workspace-Dateien:
+- AGENTS.md: OK | Rohdaten 1,742 Zeichen (~436 Tok.) | eingebunden 1,742 Zeichen (~436 Tok.)
+- SOUL.md: OK | Rohdaten 912 Zeichen (~228 Tok.) | eingebunden 912 Zeichen (~228 Tok.)
+- TOOLS.md: GEKÜRZT | Rohdaten 54,210 Zeichen (~13,553 Tok.) | eingebunden 20,962 Zeichen (~5,241 Tok.)
+- IDENTITY.md: OK | Rohdaten 211 Zeichen (~53 Tok.) | eingebunden 211 Zeichen (~53 Tok.)
+- USER.md: OK | Rohdaten 388 Zeichen (~97 Tok.) | eingebunden 388 Zeichen (~97 Tok.)
+- HEARTBEAT.md: FEHLT | Rohdaten 0 | eingebunden 0
+- BOOTSTRAP.md: OK | Rohdaten 0 Zeichen (~0 Tok.) | eingebunden 0 Zeichen (~0 Tok.)
 
-Skills list (system prompt text): 2,184 chars (~546 tok) (12 skills)
+Skills-Liste (System-Prompt-Text): 2,184 Zeichen (~546 Tok.) (12 Skills)
 Tools: read, edit, write, exec, process, browser, message, sessions_send, …
-Tool list (system prompt text): 1,032 chars (~258 tok)
-Tool schemas (JSON): 31,988 chars (~7,997 tok) (counts toward context; not shown as text)
-Tools: (same as above)
+Tool-Liste (System-Prompt-Text): 1,032 Zeichen (~258 Tok.)
+Tool-Schemas (JSON): 31,988 Zeichen (~7,997 Tok.) (zählen zum Kontext; werden nicht als Text angezeigt)
+Tools: (wie oben)
 
-Session tokens (cached): 14,250 total / ctx=32,000
+Sitzungs-Token (zwischengespeichert): 14,250 gesamt / ctx=32,000
 ```
 
 ### `/context detail`
 
-```
-🧠 Context breakdown (detailed)
+```text
+🧠 Kontextaufschlüsselung (detailliert)
 …
-Top skills (prompt entry size):
-- frontend-design: 412 chars (~103 tok)
-- oracle: 401 chars (~101 tok)
-… (+10 more skills)
+Größte Skills (Größe des Prompt-Eintrags):
+- frontend-design: 412 Zeichen (~103 Tok.)
+- oracle: 401 Zeichen (~101 Tok.)
+… (+10 weitere Skills)
 
-Top tools (schema size):
-- browser: 9,812 chars (~2,453 tok)
-- exec: 6,240 chars (~1,560 tok)
-… (+N more tools)
+Größte Tools (Schemagröße):
+- browser: 9,812 Zeichen (~2,453 Tok.)
+- exec: 6,240 Zeichen (~1,560 Tok.)
+… (+N weitere Tools)
 ```
 
 ### `/context map`
 
-Sendet ein Bild, das aus dem neuesten zwischengespeicherten Laufbericht generiert wird. Bevor eine normale Nachricht in der Sitzung einen Laufbericht erzeugt hat, gibt `/context map` statt einer geschätzten Darstellung eine Nicht-verfügbar-Meldung zurück. Die Rechteckfläche ist proportional zu den nachverfolgten Prompt-Zeichen:
+Sendet ein Bild, das aus dem neuesten zwischengespeicherten Laufbericht und dem Sitzungstranskript generiert wird. Bevor eine normale Nachricht in der Sitzung einen Laufbericht erzeugt hat, gibt `/context map` eine Meldung zur Nichtverfügbarkeit zurück, anstatt eine Schätzung darzustellen. Die Fläche der Rechtecke ist proportional zur Anzahl der erfassten Prompt-Zeichen:
 
-- injizierte Workspace-Dateien
-- Basistext des System-Prompts
-- Skill-Prompt-Einträge
-- Werkzeug-JSON-Schemas
+- Konversationstranskript (Benutzernachrichten, Antworten des Assistenten, Tool-Ergebnisse, Compaction-Zusammenfassungen) sowie Laufzeitkontext pro Runde und Prompt-Ergänzungen durch Hooks, die nur das Modell erreichen
+- eingebundene Workspace-Dateien
+- Text des grundlegenden System-Prompts
+- Skills-Prompt-Einträge
+- JSON-Schemas der Tools
 
-`/context list`, `/context detail` und `/context json` können weiterhin eine On-Demand-Schätzung prüfen, wenn kein Laufbericht zwischengespeichert ist.
+Die Konversationsgruppe wächst mit der Sitzung, daher ändert sich die Karte von Runde zu Runde; nach der Compaction schrumpft sie zu einer Kachel mit Zusammenfassungen.
+
+`/context list`, `/context detail` und `/context json` können weiterhin eine bei Bedarf erstellte Schätzung anzeigen, wenn kein Laufbericht zwischengespeichert ist.
 
 ## Was zum Kontextfenster zählt
 
-Alles, was das Modell erhält, zählt, einschließlich:
+Alles, was das Modell empfängt, zählt dazu, einschließlich:
 
 - System-Prompt (alle Abschnitte).
 - Konversationsverlauf.
-- Werkzeugaufrufe + Werkzeugergebnisse.
+- Tool-Aufrufe + Tool-Ergebnisse.
 - Anhänge/Transkripte (Bilder/Audio/Dateien).
-- Compaction-Zusammenfassungen und Pruning-Artefakte.
-- Provider-„Wrapper“ oder versteckte Header (nicht sichtbar, zählen trotzdem).
+- Compaction-Zusammenfassungen und Bereinigungsartefakte.
+- „Wrapper“ des Providers oder verborgene Header (nicht sichtbar, werden dennoch gezählt).
 
-## Wie OpenClaw den System-Prompt erstellt
+## So erstellt OpenClaw den System-Prompt
 
-Der System-Prompt ist **OpenClaw-eigen** und wird bei jedem Lauf neu erstellt. Er enthält:
+Der System-Prompt wird von **OpenClaw verwaltet** und bei jedem Lauf neu erstellt. Er umfasst:
 
-- Werkzeugliste + kurze Beschreibungen.
+- Tool-Liste + kurze Beschreibungen.
 - Skills-Liste (nur Metadaten; siehe unten).
 - Workspace-Speicherort.
 - Zeit (UTC + umgerechnete Benutzerzeit, falls konfiguriert).
-- Laufzeitmetadaten (Host/OS/Modell/Thinking).
-- Injizierte Workspace-Bootstrap-Dateien unter **Project Context**.
+- Laufzeitmetadaten (Host/Betriebssystem/Modell/Denkmodus).
+- Eingebundene Workspace-Bootstrap-Dateien unter **Projektkontext**.
 
 Vollständige Aufschlüsselung: [System-Prompt](/de/concepts/system-prompt).
 
-## Injizierte Workspace-Dateien (Project Context)
+## Eingebundene Workspace-Dateien (Projektkontext)
 
-Standardmäßig injiziert OpenClaw einen festen Satz von Workspace-Dateien (falls vorhanden):
+Standardmäßig injiziert OpenClaw eine festgelegte Gruppe von Workspace-Dateien (sofern vorhanden):
 
 - `AGENTS.md`
 - `SOUL.md`
@@ -128,80 +132,80 @@ Standardmäßig injiziert OpenClaw einen festen Satz von Workspace-Dateien (fall
 - `IDENTITY.md`
 - `USER.md`
 - `HEARTBEAT.md`
-- `BOOTSTRAP.md` (nur beim ersten Lauf)
+- `BOOTSTRAP.md` (nur beim ersten Start)
 
-Große Dateien werden pro Datei mit `agents.defaults.bootstrapMaxChars` gekürzt (Standard `20000` Zeichen). OpenClaw erzwingt außerdem eine Gesamtobergrenze für die Bootstrap-Injektion über alle Dateien hinweg mit `agents.defaults.bootstrapTotalMaxChars` (Standard `60000` Zeichen). `/context` zeigt Größen für **roh vs. injiziert** und ob eine Kürzung stattgefunden hat.
+Große Dateien werden einzeln gemäß `agents.defaults.bootstrapMaxChars` gekürzt (Standardwert: `20000` Zeichen). OpenClaw erzwingt außerdem mit `agents.defaults.bootstrapTotalMaxChars` eine Gesamtobergrenze für die Bootstrap-Injektion über alle Dateien hinweg (Standardwert: `60000` Zeichen). `/context` zeigt die Größen **im Rohzustand und nach der Injektion** sowie, ob eine Kürzung erfolgt ist.
 
-Wenn eine Kürzung erfolgt, kann die Laufzeit einen Warnblock im Prompt unter Project Context injizieren. Konfigurieren Sie dies mit `agents.defaults.bootstrapPromptTruncationWarning` (`off`, `once`, `always`; Standard `always`).
+Wenn eine Kürzung erfolgt, kann die Laufzeitumgebung unter „Project Context“ einen Warnblock in den Prompt einfügen. Konfigurieren Sie dies mit `agents.defaults.bootstrapPromptTruncationWarning` (`off`, `once`, `always`; Standardwert: `always`).
 
-## Skills: injiziert vs. bei Bedarf geladen
+## Skills: injiziert oder bei Bedarf geladen
 
-Der System-Prompt enthält eine kompakte **Skills-Liste** (Name + Beschreibung + Speicherort). Diese Liste hat echten Overhead.
+Der System-Prompt enthält eine kompakte **Skills-Liste** (Name + Beschreibung + Speicherort). Diese Liste verursacht einen tatsächlichen Mehraufwand.
 
-Skill-Anweisungen sind standardmäßig _nicht_ enthalten. Es wird erwartet, dass das Modell die `SKILL.md` des Skills **nur bei Bedarf** per `read` liest.
+Skill-Anweisungen werden standardmäßig _nicht_ einbezogen. Vom Modell wird erwartet, die `SKILL.md` des Skills **nur bei Bedarf** mit `read` einzulesen.
 
-## Werkzeuge: Es gibt zwei Kosten
+## Tools: Es entstehen zwei Kostenarten
 
-Werkzeuge beeinflussen den Kontext auf zwei Arten:
+Tools wirken sich auf zwei Arten auf den Kontext aus:
 
-1. **Werkzeuglistentext** im System-Prompt (was Sie als „Tooling“ sehen).
-2. **Werkzeugschemas** (JSON). Diese werden an das Modell gesendet, damit es Werkzeuge aufrufen kann. Sie zählen zum Kontext, auch wenn Sie sie nicht als Klartext sehen.
+1. **Text der Tool-Liste** im System-Prompt (das, was Sie als „Tooling“ sehen).
+2. **Tool-Schemas** (JSON). Diese werden an das Modell gesendet, damit es Tools aufrufen kann. Sie werden auf den Kontext angerechnet, obwohl Sie sie nicht als Klartext sehen.
 
-`/context detail` schlüsselt die größten Werkzeugschemas auf, damit Sie sehen können, was dominiert.
+`/context detail` schlüsselt die größten Tool-Schemas auf, damit Sie erkennen können, welche den Kontext am stärksten beanspruchen.
 
 ## Befehle, Direktiven und „Inline-Kurzbefehle“
 
-Slash-Befehle werden vom Gateway verarbeitet. Es gibt einige unterschiedliche Verhaltensweisen:
+Slash-Befehle werden vom Gateway verarbeitet. Dabei gibt es verschiedene Verhaltensweisen:
 
-- **Eigenständige Befehle**: Eine Nachricht, die nur `/...` enthält, wird als Befehl ausgeführt.
-- **Direktiven**: `/think`, `/verbose`, `/trace`, `/reasoning`, `/elevated`, `/model`, `/queue` werden entfernt, bevor das Modell die Nachricht sieht.
-  - Nachrichten, die nur Direktiven enthalten, speichern Sitzungseinstellungen dauerhaft.
-  - Inline-Direktiven in einer normalen Nachricht wirken als Hinweise pro Nachricht.
-- **Inline-Kurzbefehle** (nur erlaubte Absender): Bestimmte `/...`-Tokens innerhalb einer normalen Nachricht können sofort ausgeführt werden (Beispiel: „hey /status“) und werden entfernt, bevor das Modell den restlichen Text sieht.
+- **Eigenständige Befehle**: Eine Nachricht, die nur aus `/...` besteht, wird als Befehl ausgeführt.
+- **Direktiven**: `/think`, `/fast`, `/verbose`, `/trace`, `/reasoning`, `/elevated`, `/exec`, `/model`, `/queue` werden entfernt, bevor das Modell die Nachricht sieht.
+  - Nachrichten, die nur aus Direktiven bestehen, speichern die Sitzungseinstellungen dauerhaft.
+  - Inline-Direktiven in einer normalen Nachricht dienen als Hinweise für die jeweilige Nachricht.
+- **Inline-Kurzbefehle** (nur für Absender auf der Zulassungsliste): Bestimmte `/...`-Tokens innerhalb einer normalen Nachricht können sofort ausgeführt werden (Beispiel: „hey /status“) und werden entfernt, bevor das Modell den verbleibenden Text sieht.
 
 Details: [Slash-Befehle](/de/tools/slash-commands).
 
-## Sitzungen, Compaction und Pruning (was erhalten bleibt)
+## Sitzungen, Compaction und Bereinigung (was bestehen bleibt)
 
-Was über Nachrichten hinweg erhalten bleibt, hängt vom Mechanismus ab:
+Was über mehrere Nachrichten hinweg bestehen bleibt, hängt vom jeweiligen Mechanismus ab:
 
-- **Normaler Verlauf** bleibt im Sitzungstranskript erhalten, bis er durch Richtlinie kompaktiert/gepruned wird.
-- **Compaction** speichert eine Zusammenfassung im Transkript und lässt aktuelle Nachrichten unverändert.
-- **Pruning** entfernt alte Werkzeugergebnisse aus dem _im Arbeitsspeicher_ befindlichen Prompt, um Platz im Kontextfenster freizugeben, schreibt das Sitzungstranskript aber nicht um - der vollständige Verlauf bleibt weiterhin auf der Festplatte prüfbar.
+- **Normaler Verlauf** bleibt im Sitzungstranskript erhalten, bis er gemäß den Richtlinien komprimiert oder bereinigt wird.
+- **Compaction** speichert eine Zusammenfassung im Transkript und lässt die neuesten Nachrichten unverändert.
+- **Bereinigung** entfernt alte Tool-Ergebnisse aus dem Prompt _im Arbeitsspeicher_, um Platz im Kontextfenster freizugeben, schreibt das Sitzungstranskript jedoch nicht um – der vollständige Verlauf kann weiterhin auf dem Datenträger eingesehen werden.
 
-Dokumentation: [Sitzung](/de/concepts/session), [Compaction](/de/concepts/compaction), [Sitzungs-Pruning](/de/concepts/session-pruning).
+Dokumentation: [Sitzung](/de/concepts/session), [Compaction](/de/concepts/compaction), [Sitzungsbereinigung](/de/concepts/session-pruning).
 
-Standardmäßig verwendet OpenClaw die integrierte `legacy`-Kontext-Engine für Zusammenstellung und
+Standardmäßig verwendet OpenClaw die integrierte Kontext-Engine `legacy` für die Zusammenstellung und
 Compaction. Wenn Sie ein Plugin installieren, das `kind: "context-engine"` bereitstellt, und
-es mit `plugins.slots.contextEngine` auswählen, delegiert OpenClaw die Kontext-
-Zusammenstellung, `/compact` und zugehörige Subagent-Kontext-Lifecycle-Hooks stattdessen an diese
-Engine. `ownsCompaction: false` führt nicht automatisch zu einem Fallback auf die `legacy`-
-Engine; die aktive Engine muss `compact()` weiterhin korrekt implementieren. Siehe
-[Kontext-Engine](/de/concepts/context-engine) für die vollständige
-Plugin-fähige Schnittstelle, Lifecycle-Hooks und Konfiguration.
+es mit `plugins.slots.contextEngine` auswählen, delegiert OpenClaw stattdessen die Kontextzusammenstellung,
+`/compact` und zugehörige Lebenszyklus-Hooks für den Subagent-Kontext an diese
+Engine. `ownsCompaction: false` greift nicht automatisch auf die Legacy-Engine
+zurück; die aktive Engine muss `compact()` weiterhin korrekt implementieren. Unter
+[Kontext-Engine](/de/concepts/context-engine) finden Sie die vollständige
+austauschbare Schnittstelle, die Lebenszyklus-Hooks und die Konfiguration.
 
 ## Was `/context` tatsächlich meldet
 
-`/context` bevorzugt den neuesten **laufgebauten** System-Prompt-Bericht, wenn verfügbar:
+`/context` verwendet bevorzugt den neuesten **für den Lauf erstellten** System-Prompt-Bericht, sofern verfügbar:
 
-- `System prompt (run)` = aus dem letzten eingebetteten (werkzeugfähigen) Lauf erfasst und im Sitzungsspeicher persistiert.
-- `System prompt (estimate)` = spontan berechnet, wenn kein Laufbericht existiert (oder wenn die Ausführung über ein CLI-Backend erfolgt, das den Bericht nicht erzeugt).
+- `System prompt (run)` = aus dem letzten eingebetteten (toolfähigen) Lauf erfasst und im Sitzungsspeicher persistiert.
+- `System prompt (estimate)` = wird dynamisch berechnet, wenn kein Laufbericht vorhanden ist (oder wenn die Ausführung über ein CLI-Backend erfolgt, das diesen Bericht nicht erzeugt).
 
-In beiden Fällen werden Größen und wichtigste Beiträge gemeldet; der vollständige System-Prompt oder die Werkzeugschemas werden **nicht** ausgegeben. Im Detailmodus vergleicht es außerdem das Sitzungstranskript mit demselben Prädikat für echte Konversationsnachrichten, das von Compaction verwendet wird, sodass hohe Prompt-/Cache-Nutzung leichter von kompaktierbarem Konversationsverlauf zu unterscheiden ist.
+In beiden Fällen werden Größen und die wichtigsten Beitragsquellen gemeldet; der vollständige System-Prompt oder die Tool-Schemas werden **nicht** ausgegeben. Im detaillierten Modus wird außerdem das Sitzungsprotokoll mit demselben Prädikat für Nachrichten aus realen Unterhaltungen verglichen, das auch von Compaction verwendet wird. Dadurch lässt sich eine hohe Prompt-/Cache-Nutzung leichter von einem komprimierbaren Unterhaltungsverlauf unterscheiden.
 
-## Verwandt
+## Verwandte Themen
 
 <CardGroup cols={2}>
   <Card title="Kontext-Engine" href="/de/concepts/context-engine" icon="puzzle-piece">
     Benutzerdefinierte Kontextinjektion über Plugins.
   </Card>
   <Card title="Compaction" href="/de/concepts/compaction" icon="compress">
-    Lange Konversationen zusammenfassen, damit sie im Modellfenster bleiben.
+    Zusammenfassung langer Unterhaltungen, damit sie innerhalb des Modellfensters bleiben.
   </Card>
   <Card title="System-Prompt" href="/de/concepts/system-prompt" icon="message-lines">
-    Wie der System-Prompt erstellt wird und was er in jeder Runde injiziert.
+    Wie der System-Prompt erstellt wird und was er bei jedem Durchlauf einfügt.
   </Card>
-  <Card title="Agent-Loop" href="/de/concepts/agent-loop" icon="arrows-rotate">
-    Der vollständige Ausführungszyklus des Agenten von der eingehenden Nachricht bis zur finalen Antwort.
+  <Card title="Agentenschleife" href="/de/concepts/agent-loop" icon="arrows-rotate">
+    Der vollständige Ausführungszyklus des Agenten von der eingehenden Nachricht bis zur endgültigen Antwort.
   </Card>
 </CardGroup>

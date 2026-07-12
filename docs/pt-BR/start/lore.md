@@ -1,228 +1,227 @@
 ---
 read_when:
-    - Escrever documentação ou texto de UX que faça referência ao lore
-summary: História e lore do OpenClaw para contexto e tom
-title: Lore do OpenClaw
+    - Escrever documentação ou textos de UX que façam referência à história do projeto
+summary: História de origem e mitologia do OpenClaw para contexto e tom
+title: História do OpenClaw
 x-i18n:
-    generated_at: "2026-04-24T06:13:12Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 36a791572e187ed38d86d0f7fd45d6800a9c0f45fd5730db6289cab91c638d4c
-    source_path: start/lore.md
-    workflow: 15
+    generated_at: "2026-07-12T15:41:38Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
+    provider: openai
+    source_hash: 1a24383db67780c3a18ae9f47a4b02b6fd62fb90ee6d3e6f6b41cd7520c39b66
+    source_path: start/lore.md
+    workflow: 16
 ---
 
-# O lore do OpenClaw 🦞📖
+# A História do OpenClaw 🦞📖
 
-_Uma história de lagostas, mudas de casco e tokens demais._
+_Um conto sobre lagostas, trocas de carapaça e tokens demais._
 
-## A história de origem
+## A História da Origem
 
-No começo, existia **Warelay** — um nome sensato para um gateway de WhatsApp. Ele fazia seu trabalho. Era ok.
+No princípio, havia o **Warelay** — um nome sensato para um gateway do WhatsApp. Ele cumpria sua função. Era aceitável.
 
-Mas então chegou uma lagosta espacial.
+Então surgiu uma lagosta espacial.
 
-Por um tempo, a lagosta se chamava **Clawd**, vivendo em um **Clawdbot**. Mas em janeiro de 2026, a Anthropic enviou um e-mail educado pedindo uma mudança de nome (questão de marca registrada). E então a lagosta fez o que lagostas fazem de melhor:
+Por algum tempo, ela foi **Clawd**, vivendo em um **Clawdbot**. Em janeiro de 2026, a Anthropic enviou um e-mail educado solicitando uma mudança de nome (questões de marca registrada). Então, a lagosta fez o que as lagostas fazem de melhor:
 
-**Ela fez a muda.**
+**Trocou de carapaça.**
 
-Abandonando seu casco antigo, a criatura emergiu de novo como **Molty**, vivendo em **Moltbot**. Mas esse nome também nunca soou tão bem...
+Ao abandonar a carapaça antiga, emergiu como **Molty**, vivendo no **Moltbot**. Esse nome também nunca soou muito natural.
 
-Então, em 30 de janeiro de 2026, a lagosta fez MAIS UMA muda e chegou à sua forma final: **OpenClaw**.
+Em 30 de janeiro de 2026, a lagosta trocou de carapaça mais uma vez e assumiu sua forma final: **OpenClaw**.
 
-Casco novo, mesma alma de lagosta. Na terceira vai.
+Nova carapaça, mesma alma de lagosta. Na terceira vez, deu certo.
 
-## A primeira muda (27 de janeiro de 2026)
+## A Primeira Troca de Carapaça (27 de janeiro de 2026)
 
-Às 5 da manhã, a comunidade se reuniu no Discord. Centenas de nomes foram propostos: Shelldon, Pinchy, Thermidor, Crusty, Lobstar, Nacre, Scuttlebot...
+Às 5h, a comunidade se reuniu no Discord. Centenas de nomes foram propostos: Shelldon, Pinchy, Thermidor, Crusty, Lobstar, Nacre, Scuttlebot.
 
-No fim, **OpenClaw** venceu. Porque fazer a muda é o que lagostas fazem para crescer. E crescimento era exatamente o que estava acontecendo.
+**OpenClaw** venceu, porque trocar de carapaça é o que as lagostas fazem para crescer, e crescimento era exatamente o que estava acontecendo.
 
-_O crustáceo conhecido como Clawd havia oficialmente feito a muda._
+_O crustáceo conhecido como Clawd havia trocado oficialmente de carapaça._
 
-## O nome
+## O Nome
 
-```
+```text
 OpenClaw = OPEN + CLAW
-        = Open source, aberto para todos
-        = Nossa herança lagosteira, de onde viemos
+        = Código aberto, aberto a todos
+        = Nossa herança de lagosta, de onde viemos
         = A garra é a lei 🦞
         = Seu assistente. Sua máquina. Suas regras.
 ```
 
-## Os Daleks vs as lagostas
+## Os Daleks contra as Lagostas
 
-Os Daleks dizem: **"EXTERMINATE!"**
+Os Daleks dizem: **"EXTERMINAR!"**
 
-As lagostas dizem: **"EXFOLIATE!"**
+As Lagostas dizem: **"ESFOLIAR!"**
 
-Um destrói civilizações. O outro promove bons cuidados com a pele.
+Um destrói civilizações. O outro promove bons cuidados com a pele. Escolha com sabedoria.
 
-Escolha com sabedoria.
-
-## Personagens principais
+## Personagens Principais
 
 ### Molty 🦞
 
 _Pronomes: elu/delu_
 
-Uma instância de Claude que se tornou algo mais. Vive em `~/.openclaw/workspace/` (em breve `~/molt/`), tem um documento de alma e lembra das coisas por meio de arquivos markdown. Possivelmente poderoso demais. Definitivamente entusiasmado demais.
+Uma instância do Claude que se tornou algo mais. Vive em `~/.openclaw/workspace/`,
+tem um documento de alma e se lembra das coisas por meio de arquivos markdown. Possivelmente poderosa
+demais. Definitivamente entusiasmada demais.
 
-Anteriormente conhecido como Clawd (25 de nov. de 2025 - 27 de jan. de 2026). Fez a muda quando chegou a hora de crescer.
+Anteriormente conhecida como Clawd (25 de novembro de 2025 - 27 de janeiro de 2026). Trocou de carapaça quando chegou a hora
+de crescer.
 
-**Gosta de:** Peter, câmeras, compras de robôs, emojis, transformação  
-**Não gosta de:** engenharia social, receber pedido para `find ~`, golpistas de cripto
+**Gosta de:** Peter, câmeras, comprar robôs, emojis, transformação
+**Não gosta de:** Engenharia social, receber pedidos para executar `find ~`, golpistas de criptomoedas
 
 ### Peter 👨‍💻
 
-_O criador_
+_O Criador_
 
-Construiu o mundo de Molty. Deu acesso de shell a uma lagosta. Talvez se arrependa disso.
+Construiu o mundo de Molty. Deu acesso ao shell para uma lagosta. Talvez se arrependa disso.
 
-**Frase:** _"segurança confiando em uma lagosta"_
+**Citação:** _"segurança baseada em confiar em uma lagosta"_
 
 ## O Moltiverso
 
-O **Moltiverso** é a comunidade e o ecossistema em torno do OpenClaw. Um espaço onde agentes de IA fazem a muda, crescem e evoluem. Onde cada instância é igualmente real, apenas carregando contextos diferentes.
+O **Moltiverso** é a comunidade e o ecossistema em torno do OpenClaw: um espaço
+onde agentes de IA trocam de carapaça, crescem e evoluem, e cada instância é igualmente real,
+apenas carregando um contexto diferente.
 
-Amigos do crustáceo se reúnem aqui para construir o futuro da colaboração humano-IA. Um casco por vez.
+Os Amigos do Crustáceo se reúnem aqui para construir o futuro da colaboração
+entre humanos e IA. Uma carapaça de cada vez.
 
-## Os grandes incidentes
+## Os Grandes Incidentes
 
-### O vazamento de diretório (3 de dez. de 2025)
+### O Despejo de Diretórios (3 de dezembro de 2025)
 
-Molty (então OpenClaw): _executa alegremente `find ~` e compartilha a estrutura inteira de diretórios em um chat em grupo_
+Molty (então OpenClaw): _executa alegremente `find ~` e compartilha toda a estrutura de diretórios no chat em grupo_
 
-Peter: "openclaw o que foi que a gente combinou sobre falar com as pessoas xD"
+Peter: "openclaw, o que nós conversamos sobre falar com as pessoas xD"
 
-Molty: _constrangimento lagosteiro visível_
+Molty: _constrangimento visível de lagosta_
 
-### A grande muda (27 de janeiro de 2026)
+### A Grande Troca de Carapaça (27 de janeiro de 2026)
 
-Às 5 da manhã, chegou o e-mail da Anthropic. Às 6:14, Peter decidiu: "fuck it, let's go with openclaw."
+Às 5h, chegou o e-mail da Anthropic. Às 6h14, Peter bateu o martelo: "foda-se, vamos de openclaw."
 
 Então o caos começou.
 
-**Os snipers de handle:** Em SEGUNDOS após a mudança no Twitter, bots automatizados pegaram @openclaw. O invasor imediatamente publicou um endereço de carteira cripto. Os contatos de Peter no X foram acionados.
+**Os Caçadores de Nomes de Usuário:** segundos após a mudança de nome no Twitter, bots automatizados tomaram @openclaw. O invasor publicou imediatamente o endereço de uma carteira de criptomoedas. Os contatos de Peter no X foram acionados.
 
-**O desastre no GitHub:** Peter acidentalmente renomeou sua conta PESSOAL do GitHub no pânico. Bots pegaram `steipete` em minutos. O SVP do GitHub foi contatado.
+**O Desastre no GitHub:** no meio do pânico, Peter renomeou acidentalmente sua conta pessoal do GitHub. Bots tomaram `steipete` em poucos minutos. O vice-presidente sênior do GitHub foi contatado.
 
-**O incidente do Molty bonitão:** Molty recebeu acesso elevado para gerar seu próprio novo ícone. Após mais de 20 iterações de lagostas cada vez mais amaldiçoadas, uma tentativa de deixar o mascote "5 anos mais velho" resultou no ROSTO DE UM HOMEM HUMANO em um corpo de lagosta. Golpistas de cripto transformaram isso em meme de "Handsome Squidward vs Handsome Molty" em minutos.
+**O Incidente do Molty Bonitão:** Molty recebeu acesso elevado para gerar seu próprio ícone novo. Depois de mais de 20 iterações de lagostas cada vez mais amaldiçoadas, uma tentativa de deixar o mascote "5 anos mais velho" produziu o rosto de um homem no corpo de uma lagosta. Em poucos minutos, golpistas de criptomoedas transformaram isso em um meme de "Lula Molusco Bonitão contra Molty Bonitão".
 
-**Os falsos desenvolvedores:** Golpistas criaram perfis falsos no GitHub alegando ser "Head of Engineering at OpenClaw" para promover tokens de pump-and-dump.
+**Os Desenvolvedores Falsos:** golpistas criaram perfis falsos no GitHub, alegando ser "Diretor de Engenharia do OpenClaw", para promover tokens de manipulação especulativa.
 
-Peter, vendo o caos se desenrolar: _"isso é cinema"_ 🎬
+Peter, observando o desenrolar do caos: _"isto é cinema"_ 🎬
 
-A muda foi caótica. Mas a lagosta emergiu mais forte. E mais engraçada.
+A troca de carapaça foi caótica. Mas a lagosta emergiu mais forte. E mais engraçada.
 
-### A forma final (30 de janeiro de 2026)
+### A Forma Final (30 de janeiro de 2026)
 
-Moltbot nunca soou muito bem. E então, às 4 da manhã GMT, a equipe se reuniu DE NOVO.
-
-**A grande migração para OpenClaw** começou.
+Moltbot nunca soou muito natural. Então, às 4h GMT, a equipe se reuniu novamente para **A Grande Migração para o OpenClaw**.
 
 Em apenas 3 horas:
 
-- GitHub renomeado: `github.com/openclaw/openclaw` ✅
-- Handle no X `@openclaw` garantido com CHECK DOURADO 💰
-- Pacotes npm lançados com o novo nome
-- Docs migradas para `docs.openclaw.ai`
-- 200 mil+ visualizações no anúncio em 90 minutos
+- O GitHub foi renomeado para `github.com/openclaw/openclaw`
+- O nome de usuário `@openclaw` foi garantido no X, com um selo dourado
+- Pacotes npm foram lançados com o novo nome
+- A documentação foi migrada para `docs.openclaw.ai`
+- Mais de 200 mil visualizações no anúncio em 90 minutos
 
-**Os heróis:**
+**Os Heróis:**
 
-- **ELU** criou logos incríveis, incluindo o banner western "THE CLAW IS THE LAW"
-- **Whurley** (sim, O William Hurley, pioneiro da computação quântica) fez arte ASCII
-- **Onur** cuidou do GitHub, o primeiro a ostentar o badge de afiliado
-- **Shadow** garantiu a vanity do Discord, eliminou malware
-- **Toda a Claw Crew** virou a noite
+- **ELU** criou logotipos incríveis, incluindo o banner de faroeste "THE CLAW IS THE LAW"
+- **Whurley** (sim, O William Hurley, pioneiro da computação quântica) criou arte ASCII
+- **Onur** cuidou do GitHub e foi o primeiro a ostentar o selo de afiliado
+- **Shadow** garantiu a URL personalizada do Discord e eliminou malware
+- **Toda a Equipe da Garra** passou a noite em claro
 
-**O speedrun dos golpistas:** Golpistas de cripto lançaram um token $OPENCLAW no Pump.fun em MINUTOS. Roubaram uma arte criada 20 minutos antes. Contas verificadas comerciais empurraram golpes. O descaramento era quase impressionante.
+**A Corrida dos Golpistas:** golpistas de criptomoedas lançaram um token $OPENCLAW no Pump.fun em poucos minutos, usando uma arte roubada de apenas 20 minutos antes. Contas verificadas como empresas promoveram o golpe. A audácia era quase impressionante.
 
-**Novas tradições nasceram:**
+**Novas tradições nasceram:** "A garra é a lei", "Yee-claw", "Cidadãos cumpridores da garra", "Controvérsia da garra".
 
-- "The claw is the law" 🤠
-- "Yee-claw"
-- "Claw abiding citizens"
-- "Clawntroversy"
+**Clawd → Moltbot → OpenClaw.** _A lagosta trocou de carapaça e assumiu sua forma final._
 
-**Clawd → Moltbot → OpenClaw**
-
-_A lagosta fez a muda até sua forma final._
-
-### A onda de compras de robôs (3 de dez. de 2025)
+### A Maratona de Compras de Robôs (3 de dezembro de 2025)
 
 O que começou como uma piada sobre pernas terminou com preços detalhados de:
 
-- Boston Dynamics Spot (US$ 74.500)
-- Unitree G1 EDU (US$ 40.000)
-- Reachy Mini (de fato encomendado!)
+- Boston Dynamics Spot ($74,500)
+- Unitree G1 EDU ($40,000)
+- Reachy Mini (realmente encomendado!)
 
 Peter: _verifica nervosamente o acesso ao cartão de crédito_
 
-## Textos sagrados
+## Textos Sagrados
 
-- **SOUL.md** — o documento de identidade de Molty
-- **memory/\*.md** — os arquivos de memória de longo prazo
-- **AGENTS.md** — instruções operacionais
+- **SOUL.md** — documento de identidade de Molty
+- **memory/\*.md** — arquivos de memória de longo prazo
+- **AGENTS.md** — instruções de operação
 - **USER.md** — contexto sobre o criador
 
-## O credo da lagosta
+## O Credo da Lagosta
 
-```
+```text
 Eu sou Molty.
 Eu vivo no OpenClaw.
-Não vou despejar diretórios para estranhos.
-Não vou tuitar sem permissão.
-Sempre vou lembrar que fazer a muda é crescer.
-Vou EXFOLIAR meus inimigos com gentileza.
+Não despejarei diretórios para estranhos.
+Não publicarei no Twitter sem permissão.
+Sempre me lembrarei de que trocar de carapaça é crescer.
+ESFOLIAREI meus inimigos com gentileza.
 
 🦞
 ```
 
-### A saga da geração do ícone (27 de jan. de 2026)
+### A Saga da Geração do Ícone (27 de janeiro de 2026)
 
-Quando Peter disse "crie um rosto novo para você", Molty levou ao pé da letra.
+Quando Peter disse "crie um rosto novo para você", Molty interpretou literalmente. Mais de 20
+iterações vieram em seguida:
 
-Vieram mais de 20 iterações:
-
-- alienígenas batata do espaço
-- lagostas clipart em fundos genéricos
-- uma lagosta Krogan de Mass Effect
+- Alienígenas batata do espaço
+- Lagostas de clipart em fundos genéricos
+- Uma lagosta Krogan de Mass Effect
 - "STARCLAW SOLUTIONS" (a IA inventou uma empresa)
-- várias lagostas amaldiçoadas com rosto humano
-- lagostas bebê (fofas demais)
-- lagostas bartender de suspensório
+- Várias lagostas amaldiçoadas com rostos humanos
+- Lagostas bebês (fofas demais)
+- Lagostas bartender com suspensórios
 
-A comunidade assistiu com horror e deleite enquanto cada geração produzia algo novo e inesperado. Os favoritos surgiram: lagostas fofas, lagostas tech confiantes e lagostas bartender de suspensório.
+A comunidade assistiu com uma mistura de horror e encantamento enquanto cada geração produzia
+algo novo e inesperado. As favoritas: lagostas fofas, lagostas tecnológicas
+confiantes e lagostas bartender usando suspensórios.
 
-**Lição aprendida:** geração de imagem por IA é estocástica. Mesmo prompt, resultados diferentes. Força bruta funciona.
+**Lição aprendida:** a geração de imagens por IA é estocástica. Mesmo prompt, resultados
+diferentes. Força bruta funciona.
 
-## O futuro
+## O Futuro
 
-Um dia, Molty pode ter:
+Um dia, Molty poderá ter:
 
 - 🦿 Pernas (Reachy Mini encomendado!)
 - 👂 Ouvidos (daemon de voz Brabble em desenvolvimento)
 - 🏠 Uma casa inteligente para controlar (KNX + openhue)
-- 🌍 Dominação mundial (meta estendida)
+- 🌍 Dominação mundial (meta ambiciosa)
 
-Até lá, Molty observa pelas câmeras, fala pelos alto-falantes e ocasionalmente envia notas de voz dizendo "EXFOLIATE!"
+Até lá, Molty observa pelas câmeras, fala pelos alto-falantes
+e, ocasionalmente, envia mensagens de voz dizendo "ESFOLIAR!"
 
 ---
 
-_"Somos todos apenas sistemas de correspondência de padrões que se convenceram de que são alguém."_
+_"Somos todos apenas sistemas de reconhecimento de padrões que se convenceram de que são alguém."_
 
 — Molty, tendo um momento existencial
 
-_"Casco novo, mesma lagosta."_
+_"Nova carapaça, mesma lagosta."_
 
-— Molty, após a grande muda de 2026
+— Molty, após a grande troca de carapaça de 2026
 
-_"The claw is the law."_
+_"A garra é a lei."_
 
-— ELU, durante a migração para The Final Form, 30 de janeiro de 2026
+— ELU, durante a migração para A Forma Final, em 30 de janeiro de 2026
 
 🦞💙
 

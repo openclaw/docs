@@ -2,34 +2,35 @@
 read_when:
     - Vous souhaitez exécuter OpenClaw sur un cluster Kubernetes
     - Vous souhaitez tester OpenClaw dans un environnement Kubernetes
-summary: Déployer OpenClaw Gateway sur un cluster Kubernetes avec Kustomize
+summary: Déployer le Gateway OpenClaw sur un cluster Kubernetes avec Kustomize
 title: Kubernetes
 x-i18n:
-    generated_at: "2026-06-28T20:44:22Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:26:45Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: 5a38c2754b4a5267e79854958a252b2e4bc9811da191d8ccf3ac597534cc8e7a
+    source_hash: c05eb0eb923fa1f515aca1f6dcb6073aba69af0bdf30233243027edfedd45a39
     source_path: install/kubernetes.md
     workflow: 16
 ---
 
-Un point de départ minimal pour exécuter OpenClaw sur Kubernetes — pas un déploiement prêt pour la production. Il couvre les ressources de base et doit être adapté à votre environnement.
+Un point de départ minimal pour exécuter OpenClaw sur Kubernetes, et non un déploiement prêt pour la production. Il couvre les ressources essentielles et doit être adapté à votre environnement.
 
-## Pourquoi pas Helm ?
+## Pourquoi ne pas utiliser Helm
 
-OpenClaw est un conteneur unique avec quelques fichiers de configuration. La personnalisation intéressante se trouve dans le contenu des agents (fichiers Markdown, Skills, substitutions de configuration), pas dans les modèles d’infrastructure. Kustomize gère les overlays sans la surcharge d’un chart Helm. Si votre déploiement devient plus complexe, un chart Helm peut être ajouté au-dessus de ces manifestes.
+OpenClaw consiste en un seul conteneur accompagné de quelques fichiers de configuration. Les personnalisations intéressantes concernent le contenu des agents (fichiers Markdown, Skills, substitutions de configuration), et non la création de modèles d’infrastructure. Kustomize gère les superpositions sans la surcharge d’un chart Helm. Ajoutez un chart Helm par-dessus ces manifestes si votre déploiement devient plus complexe.
 
-## Ce dont vous avez besoin
+## Prérequis
 
-- Un cluster Kubernetes en cours d’exécution (AKS, EKS, GKE, k3s, kind, OpenShift, etc.)
+- Un cluster Kubernetes opérationnel (AKS, EKS, GKE, k3s, kind, OpenShift, etc.)
 - `kubectl` connecté à votre cluster
 - Une clé d’API pour au moins un fournisseur de modèles
 
 ## Démarrage rapide
 
 ```bash
-# Replace with your provider: ANTHROPIC, GEMINI, OPENAI, or OPENROUTER
+# Remplacez par votre fournisseur : ANTHROPIC, GEMINI, OPENAI ou OPENROUTER
 export <PROVIDER>_API_KEY="..."
 ./scripts/k8s/deploy.sh
 
@@ -37,8 +38,7 @@ kubectl port-forward svc/openclaw 18789:18789 -n openclaw
 open http://localhost:18789
 ```
 
-Récupérez le secret partagé configuré pour la Control UI. Ce script de déploiement
-crée l’authentification par jeton par défaut :
+`deploy.sh` crée par défaut une authentification par jeton. Récupérez le jeton généré du Gateway pour l’interface de contrôle :
 
 ```bash
 kubectl get secret openclaw-secrets -n openclaw -o jsonpath='{.data.OPENCLAW_GATEWAY_TOKEN}' | base64 -d
@@ -46,32 +46,32 @@ kubectl get secret openclaw-secrets -n openclaw -o jsonpath='{.data.OPENCLAW_GAT
 
 Pour le débogage local, `./scripts/k8s/deploy.sh --show-token` affiche le jeton après le déploiement.
 
-## Tests locaux avec Kind
+## Test local avec Kind
 
-Si vous n’avez pas de cluster, créez-en un localement avec [Kind](https://kind.sigs.k8s.io/) :
+Si vous ne disposez pas d’un cluster, créez-en un localement avec [Kind](https://kind.sigs.k8s.io/) :
 
 ```bash
-./scripts/k8s/create-kind.sh           # auto-detects docker or podman
-./scripts/k8s/create-kind.sh --delete  # tear down
+./scripts/k8s/create-kind.sh           # détecte automatiquement docker ou podman
+./scripts/k8s/create-kind.sh --delete  # supprime le cluster
 ```
 
 Déployez ensuite comme d’habitude avec `./scripts/k8s/deploy.sh`.
 
-## Étape par étape
+## Procédure détaillée
 
 ### 1) Déployer
 
-**Option A** — clé d’API dans l’environnement (une seule étape) :
+**Option A : clé d’API dans l’environnement (une étape)**
 
 ```bash
-# Replace with your provider: ANTHROPIC, GEMINI, OPENAI, or OPENROUTER
+# Remplacez par votre fournisseur : ANTHROPIC, GEMINI, OPENAI ou OPENROUTER
 export <PROVIDER>_API_KEY="..."
 ./scripts/k8s/deploy.sh
 ```
 
-Le script crée un Secret Kubernetes avec la clé d’API et un jeton Gateway généré automatiquement, puis déploie. Si le Secret existe déjà, il conserve le jeton Gateway actuel et toutes les clés de fournisseur qui ne sont pas modifiées.
+Le script crée un Secret Kubernetes contenant la clé d’API et un jeton de Gateway généré automatiquement, puis effectue le déploiement. Si le Secret existe déjà, il conserve le jeton de Gateway actuel ainsi que toutes les clés de fournisseurs qui ne sont pas modifiées.
 
-**Option B** — créer le secret séparément :
+**Option B : créer le secret séparément**
 
 ```bash
 export <PROVIDER>_API_KEY="..."
@@ -79,7 +79,7 @@ export <PROVIDER>_API_KEY="..."
 ./scripts/k8s/deploy.sh
 ```
 
-Utilisez `--show-token` avec l’une ou l’autre commande si vous voulez afficher le jeton sur stdout pour les tests locaux.
+Ajoutez `--show-token` à l’une ou l’autre commande pour afficher le jeton dans la sortie standard lors des tests locaux.
 
 ### 2) Accéder au Gateway
 
@@ -88,22 +88,22 @@ kubectl port-forward svc/openclaw 18789:18789 -n openclaw
 open http://localhost:18789
 ```
 
-## Ce qui est déployé
+## Ressources déployées
 
-```
-Namespace: openclaw (configurable via OPENCLAW_NAMESPACE)
-├── Deployment/openclaw        # Single pod, init container + gateway
-├── Service/openclaw           # ClusterIP on port 18789
-├── PersistentVolumeClaim      # 10Gi for agent state and config
+```text
+Espace de noms : openclaw (configurable via OPENCLAW_NAMESPACE)
+├── Deployment/openclaw        # Pod unique, conteneur d’initialisation + Gateway
+├── Service/openclaw           # ClusterIP sur le port 18789
+├── PersistentVolumeClaim      # 10Gi pour l’état et la configuration de l’agent
 ├── ConfigMap/openclaw-config  # openclaw.json + AGENTS.md
-└── Secret/openclaw-secrets    # Gateway token + API keys
+└── Secret/openclaw-secrets    # Jeton du Gateway + clés d’API
 ```
 
 ## Personnalisation
 
-### Instructions d’agent
+### Instructions de l’agent
 
-Modifiez le fichier `AGENTS.md` dans `scripts/k8s/manifests/configmap.yaml` et redéployez :
+Modifiez le fichier `AGENTS.md` dans `scripts/k8s/manifests/configmap.yaml`, puis redéployez :
 
 ```bash
 ./scripts/k8s/deploy.sh
@@ -111,11 +111,11 @@ Modifiez le fichier `AGENTS.md` dans `scripts/k8s/manifests/configmap.yaml` et r
 
 ### Configuration du Gateway
 
-Modifiez `openclaw.json` dans `scripts/k8s/manifests/configmap.yaml`. Consultez [Configuration du Gateway](/fr/gateway/configuration) pour la référence complète.
+Modifiez `openclaw.json` dans `scripts/k8s/manifests/configmap.yaml`. Consultez la [configuration du Gateway](/fr/gateway/configuration) pour obtenir la référence complète.
 
 ### Ajouter des fournisseurs
 
-Réexécutez avec des clés supplémentaires exportées :
+Relancez le déploiement après avoir exporté les clés supplémentaires :
 
 ```bash
 export ANTHROPIC_API_KEY="..."
@@ -124,9 +124,9 @@ export OPENAI_API_KEY="..."
 ./scripts/k8s/deploy.sh
 ```
 
-Les clés de fournisseur existantes restent dans le Secret sauf si vous les remplacez.
+Les clés de fournisseurs existantes restent dans le Secret, sauf si vous les remplacez.
 
-Ou appliquez un patch directement au Secret :
+Vous pouvez également modifier directement le Secret :
 
 ```bash
 kubectl patch secret openclaw-secrets -n openclaw \
@@ -145,18 +145,18 @@ OPENCLAW_NAMESPACE=my-namespace ./scripts/k8s/deploy.sh
 Modifiez le champ `image` dans `scripts/k8s/manifests/deployment.yaml` :
 
 ```yaml
-image: ghcr.io/openclaw/openclaw:latest # primary; official Docker Hub mirror: openclaw/openclaw:latest
+image: ghcr.io/openclaw/openclaw:slim # principale ; miroir Docker Hub officiel : openclaw/openclaw
 ```
 
-### Exposer au-delà de port-forward
+### Exposer le service au-delà de la redirection de port
 
-Les manifestes par défaut lient le Gateway au loopback à l’intérieur du pod. Cela fonctionne avec `kubectl port-forward`, mais pas avec un `Service` Kubernetes ou un chemin Ingress qui doit atteindre l’IP du pod.
+Par défaut, les manifestes associent le Gateway à l’interface de bouclage à l’intérieur du pod. Cette configuration fonctionne avec `kubectl port-forward`, mais pas avec un `Service` Kubernetes ni avec un chemin Ingress devant accéder directement à l’adresse IP du pod.
 
-Si vous voulez exposer le Gateway via un Ingress ou un équilibreur de charge :
+Pour exposer le Gateway par l’intermédiaire d’un Ingress ou d’un équilibreur de charge :
 
-- Remplacez le bind du Gateway dans `scripts/k8s/manifests/configmap.yaml`, de `loopback` vers un bind non-loopback qui correspond à votre modèle de déploiement
-- Gardez l’authentification Gateway activée et utilisez un point d’entrée approprié avec terminaison TLS
-- Configurez la Control UI pour l’accès distant au moyen du modèle de sécurité web pris en charge (par exemple HTTPS/Tailscale Serve et des origines explicitement autorisées si nécessaire)
+- Dans `scripts/k8s/manifests/configmap.yaml`, remplacez l’association du Gateway `loopback` par une association hors bouclage correspondant à votre modèle de déploiement.
+- Maintenez l’authentification du Gateway activée et utilisez un point d’entrée approprié avec terminaison TLS.
+- Configurez l’interface de contrôle pour l’accès à distance en utilisant le modèle de sécurité web pris en charge (par exemple HTTPS/Tailscale Serve et des origines autorisées explicites lorsque nécessaire).
 
 ## Redéployer
 
@@ -164,7 +164,7 @@ Si vous voulez exposer le Gateway via un Ingress ou un équilibreur de charge :
 ./scripts/k8s/deploy.sh
 ```
 
-Cela applique tous les manifestes et redémarre le pod pour prendre en compte toute modification de configuration ou de secret.
+Cette commande applique tous les manifestes et redémarre le pod afin de prendre en compte toutes les modifications apportées à la configuration ou aux secrets.
 
 ## Suppression
 
@@ -172,33 +172,33 @@ Cela applique tous les manifestes et redémarre le pod pour prendre en compte to
 ./scripts/k8s/deploy.sh --delete
 ```
 
-Cela supprime l’espace de noms et toutes les ressources qu’il contient, y compris le PVC.
+Cette commande supprime l’espace de noms et toutes les ressources qu’il contient, y compris le PVC.
 
 ## Notes d’architecture
 
-- Le Gateway se lie au loopback à l’intérieur du pod par défaut, donc la configuration incluse est destinée à `kubectl port-forward`
-- Aucune ressource à portée cluster — tout se trouve dans un seul espace de noms
-- Sécurité : capacités `readOnlyRootFilesystem`, `drop: ALL`, utilisateur non-root (UID 1000)
-- La configuration par défaut maintient la Control UI sur le chemin d’accès local plus sûr : bind loopback plus `kubectl port-forward` vers `http://127.0.0.1:18789`
-- Si vous allez au-delà de l’accès localhost, utilisez le modèle distant pris en charge : HTTPS/Tailscale plus le bind Gateway approprié et les paramètres d’origine de la Control UI
-- Les secrets sont générés dans un répertoire temporaire et appliqués directement au cluster — aucun élément secret n’est écrit dans le checkout du dépôt
+- Par défaut, le Gateway est associé à l’interface de bouclage à l’intérieur du pod ; la configuration fournie est donc destinée à `kubectl port-forward`.
+- Aucune ressource à l’échelle du cluster ; tout se trouve dans un seul espace de noms.
+- Renforcement de la sécurité : `readOnlyRootFilesystem`, capacités `drop: ALL`, utilisateur non-root (UID 1000).
+- La configuration par défaut maintient l’interface de contrôle sur le chemin d’accès local plus sûr : association à l’interface de bouclage et `kubectl port-forward` vers `http://127.0.0.1:18789`.
+- Si vous étendez l’accès au-delà de localhost, utilisez le modèle distant pris en charge : HTTPS/Tailscale, ainsi que les paramètres appropriés d’association du Gateway et d’origine de l’interface de contrôle.
+- Les secrets sont générés dans un répertoire temporaire et appliqués directement au cluster ; aucune donnée secrète n’est écrite dans la copie de travail du dépôt.
 
 ## Structure des fichiers
 
-```
+```text
 scripts/k8s/
-├── deploy.sh                   # Creates namespace + secret, deploys via kustomize
-├── create-kind.sh              # Local Kind cluster (auto-detects docker/podman)
+├── deploy.sh                   # Crée l’espace de noms et le secret, puis déploie via kustomize
+├── create-kind.sh              # Cluster Kind local (détecte automatiquement docker/podman)
 └── manifests/
-    ├── kustomization.yaml      # Kustomize base
+    ├── kustomization.yaml      # Base Kustomize
     ├── configmap.yaml          # openclaw.json + AGENTS.md
-    ├── deployment.yaml         # Pod spec with security hardening
-    ├── pvc.yaml                # 10Gi persistent storage
-    └── service.yaml            # ClusterIP on 18789
+    ├── deployment.yaml         # Spécification du pod avec renforcement de la sécurité
+    ├── pvc.yaml                # Stockage persistant de 10Gi
+    └── service.yaml            # ClusterIP sur 18789
 ```
 
-## Connexe
+## Ressources connexes
 
 - [Docker](/fr/install/docker)
-- [Runtime Docker VM](/fr/install/docker-vm-runtime)
+- [Environnement d’exécution de VM Docker](/fr/install/docker-vm-runtime)
 - [Vue d’ensemble de l’installation](/fr/install)

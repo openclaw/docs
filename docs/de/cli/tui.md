@@ -1,57 +1,69 @@
 ---
 read_when:
-    - Sie möchten eine Terminal-UI für das Gateway (remote-freundlich)
-    - Sie möchten url/token/session aus Skripten übergeben
+    - Sie möchten eine Terminal-Benutzeroberfläche für das Gateway (für Remotezugriff geeignet)
+    - Sie möchten URL/Token/Sitzung aus Skripten übergeben
     - Sie möchten die TUI im lokalen eingebetteten Modus ohne Gateway ausführen
-    - Sie möchten openclaw chat oder openclaw tui --local verwenden
+    - Sie möchten `openclaw chat` oder `openclaw tui --local` verwenden.
 summary: CLI-Referenz für `openclaw tui` (Gateway-gestützte oder lokal eingebettete Terminal-Benutzeroberfläche)
 title: TUI
 x-i18n:
-    generated_at: "2026-06-27T17:21:24Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:10:15Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: 514bbbcd0b695e8d4ccc87d1e242d816e264ac1f8b137f2bd891803ef7f48d5a
+    source_hash: 3e7b4a067e957c72836b22688f7446861b64fb7078b43e206bbe765ea0d62e57
     source_path: cli/tui.md
     workflow: 16
 ---
 
 # `openclaw tui`
 
-Öffnen Sie die mit dem Gateway verbundene Terminal-UI, oder führen Sie sie im lokalen eingebetteten Modus aus.
+Öffnen Sie die mit dem Gateway verbundene Terminal-Benutzeroberfläche oder führen Sie sie im lokalen eingebetteten
+Modus aus.
 
-Verwandt:
-
-- TUI-Leitfaden: [TUI](/de/web/tui)
+Zugehörige Anleitung: [TUI](/de/web/tui)
 
 ## Optionen
 
-| Flag                  | Standard                                  | Beschreibung                                                                                                                         |
-| --------------------- | ----------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
-| `--local`             | `false`                                   | Gegen die lokale eingebettete Agent-Laufzeitumgebung statt gegen ein Gateway ausführen.                                               |
-| `--url <url>`         | `gateway.remote.url` aus der Konfiguration | Gateway-WebSocket-URL.                                                                                                               |
-| `--token <token>`     | (keine)                                   | Gateway-Token, falls erforderlich.                                                                                                   |
-| `--password <pass>`   | (keine)                                   | Gateway-Passwort, falls erforderlich.                                                                                                |
-| `--session <key>`     | `main` (oder `global`, wenn der Geltungsbereich global ist) | Sitzungsschlüssel. Innerhalb eines Agent-Arbeitsbereichs wird dieser Agent automatisch ausgewählt, sofern kein Präfix angegeben ist. |
-| `--deliver`           | `false`                                   | Assistant-Antworten über konfigurierte Kanäle zustellen.                                                                             |
-| `--thinking <level>`  | (Modellstandard)                          | Überschreibung des Denklevels.                                                                                                       |
-| `--message <text>`    | (keine)                                   | Nach dem Verbinden eine Anfangsnachricht senden.                                                                                     |
-| `--timeout-ms <ms>`   | `agents.defaults.timeoutSeconds`          | Agent-Timeout. Ungültige Werte protokollieren eine Warnung und werden ignoriert.                                                      |
-| `--history-limit <n>` | `200`                                     | Verlaufseinträge, die beim Anhängen geladen werden.                                                                                  |
+| Flag                         | Standardwert                              | Beschreibung                                                                                                  |
+| ---------------------------- | ----------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| `--local`                    | `false`                                   | Wird mit der lokalen eingebetteten Agent-Runtime statt mit einem Gateway ausgeführt.                          |
+| `--url <url>`                | `gateway.remote.url` aus der Konfiguration | Gateway-WebSocket-URL.                                                                                        |
+| `--token <token>`            | (keiner)                                  | Gateway-Token, falls erforderlich.                                                                            |
+| `--password <pass>`          | (keines)                                  | Gateway-Passwort, falls erforderlich.                                                                         |
+| `--tls-fingerprint <sha256>` | `gateway.remote.tlsFingerprint`           | Erwarteter Fingerabdruck des TLS-Zertifikats für ein fest verknüpftes `wss://`-Gateway.                        |
+| `--session <key>`            | `main` (oder `global` bei globalem Geltungsbereich) | Sitzungsschlüssel. In einem Agent-Arbeitsbereich wird automatisch dieser Agent ausgewählt, sofern kein Präfix angegeben ist. |
+| `--deliver`                  | `false`                                   | Antworten des Assistenten über konfigurierte Kanäle zustellen.                                                |
+| `--thinking <level>`         | (Modellstandard)                          | Überschreibung der Denkstufe.                                                                                 |
+| `--message <text>`           | (keine)                                   | Nach dem Verbindungsaufbau eine erste Nachricht senden.                                                       |
+| `--timeout-ms <ms>`          | `agents.defaults.timeoutSeconds`          | Agent-Zeitüberschreitung. Ungültige Werte protokollieren eine Warnung und werden ignoriert.                    |
+| `--history-limit <n>`        | `200`                                     | Anzahl der beim Verbinden zu ladenden Verlaufseinträge.                                                       |
 
-Aliase: `openclaw chat` und `openclaw terminal` rufen denselben Befehl mit impliziertem `--local` auf.
+Aliasse: `openclaw chat` und `openclaw terminal` rufen diesen Befehl mit impliziertem
+`--local` auf.
 
-Hinweise:
+## Hinweise
 
-- `chat` und `terminal` sind Aliase für `openclaw tui --local`.
-- `--local` kann nicht mit `--url`, `--token` oder `--password` kombiniert werden.
-- `tui` löst konfigurierte Gateway-Auth-SecretRefs für Token-/Passwort-Auth nach Möglichkeit auf (`env`/`file`/`exec`-Provider).
-- Beim Start aus einem konfigurierten Agent-Arbeitsbereichsverzeichnis wählt TUI diesen Agent automatisch als Standard für den Sitzungsschlüssel aus (es sei denn, `--session` ist explizit `agent:<id>:...`).
-- Um den Gateway-Hostnamen in der Fußzeile für nicht lokale URL-gestützte Verbindungen anzuzeigen, führen Sie `openclaw config set tui.footer.showRemoteHost true` aus. Die Host-Beschriftung ist standardmäßig deaktiviert und erscheint nie für loopback- oder eingebettete lokale Verbindungen.
-- Der lokale Modus verwendet die eingebettete Agent-Laufzeitumgebung direkt. Die meisten lokalen Tools funktionieren, aber reine Gateway-Funktionen sind nicht verfügbar.
-- Der lokale Modus fügt `/auth [provider]` innerhalb der TUI-Befehlsoberfläche hinzu.
-- Plugin-Freigabesperren gelten auch im lokalen Modus. Tools, die eine Freigabe erfordern, fragen im Terminal nach einer Entscheidung; nichts wird stillschweigend automatisch freigegeben, nur weil das Gateway nicht beteiligt ist.
-- Sitzungs-[Ziele](/de/tools/goal) erscheinen in der Fußzeile und können mit `/goal` verwaltet werden.
+- `--local` kann nicht mit `--url`, `--token`, `--password` oder `--tls-fingerprint` kombiniert werden.
+- `tui` löst konfigurierte Gateway-Authentifizierungs-SecretRefs für die Token-/Passwortauthentifizierung
+  nach Möglichkeit auf (`env`-/`file`-/`exec`-Provider).
+- Ohne explizite URL oder Portangabe verwendet `tui` den aktiven lokalen Gateway-Port,
+  den das laufende Gateway aufgezeichnet hat. Explizite Angaben über `--url`, `OPENCLAW_GATEWAY_URL`,
+  `OPENCLAW_GATEWAY_PORT` und die Remote-Gateway-Konfiguration haben weiterhin Vorrang.
+- Beim Start innerhalb des Verzeichnisses eines konfigurierten Agent-Arbeitsbereichs wählt die TUI
+  diesen Agent automatisch als Standardwert für den Sitzungsschlüssel aus (es sei denn, `--session` lautet explizit
+  `agent:<id>:...`).
+- Um bei nicht lokalen, URL-basierten Verbindungen den Gateway-Hostnamen in der Fußzeile anzuzeigen,
+  führen Sie `openclaw config set tui.footer.showRemoteHost true` aus. Standardmäßig deaktiviert;
+  für Loopback- oder eingebettete lokale Verbindungen wird er nie angezeigt.
+- Der lokale Modus verwendet die eingebettete Agent-Runtime direkt. Die meisten lokalen Tools funktionieren,
+  Gateway-exklusive Funktionen sind jedoch nicht verfügbar.
+- Im lokalen Modus wird `/auth [provider]` zur Befehlsoberfläche der TUI hinzugefügt.
+- Die Genehmigungssperren für Plugins gelten auch im lokalen Modus: Tools, die eine Genehmigung erfordern,
+  fragen im Terminal nach einer Entscheidung; nichts wird stillschweigend automatisch genehmigt.
+- Sitzungs-[Ziele](/de/tools/goal) werden in der Fußzeile angezeigt und können mit
+  `/goal` verwaltet werden.
 
 ## Beispiele
 
@@ -61,22 +73,25 @@ openclaw tui --local
 openclaw tui
 openclaw tui --url ws://127.0.0.1:18789 --token <token>
 openclaw tui --session main --deliver
-openclaw chat --message "Compare my config to the docs and tell me what to fix"
-# when run inside an agent workspace, infers that agent automatically
+openclaw chat --message "Vergleiche meine Konfiguration mit der Dokumentation und sage mir, was ich korrigieren muss"
+# bei Ausführung in einem Agent-Arbeitsbereich wird dieser Agent automatisch abgeleitet
 openclaw tui --session bugfix
 ```
 
-## Konfigurations-Reparaturschleife
+## Reparaturschleife für die Konfiguration
 
-Verwenden Sie den lokalen Modus, wenn die aktuelle Konfiguration bereits validiert wird und Sie möchten, dass der eingebettete Agent sie prüft, mit der Dokumentation vergleicht und aus demselben Terminal heraus bei der Reparatur hilft:
+Verwenden Sie den lokalen Modus, damit der eingebettete Agent die aktuelle Konfiguration prüft, sie
+mit der Dokumentation vergleicht und bei ihrer Reparatur im selben Terminal hilft.
 
-Wenn `openclaw config validate` bereits fehlschlägt, verwenden Sie zuerst `openclaw configure` oder `openclaw doctor --fix`. `openclaw chat` umgeht die Schutzprüfung für ungültige Konfigurationen nicht.
+Falls `openclaw config validate` bereits fehlschlägt, führen Sie zuerst `openclaw configure` oder
+`openclaw doctor --fix` aus; `openclaw chat` umgeht die Schutzprüfung für
+ungültige Konfigurationen nicht.
 
 ```bash
 openclaw chat
 ```
 
-Dann innerhalb der TUI:
+Anschließend innerhalb der TUI:
 
 ```text
 !openclaw config file
@@ -85,9 +100,11 @@ Dann innerhalb der TUI:
 !openclaw doctor
 ```
 
-Wenden Sie gezielte Korrekturen mit `openclaw config set` oder `openclaw configure` an, und führen Sie anschließend `openclaw config validate` erneut aus. Siehe [TUI](/de/web/tui) und [Konfiguration](/de/cli/config).
+Wenden Sie gezielte Korrekturen mit `openclaw config set` oder `openclaw configure` an und
+führen Sie anschließend `openclaw config validate` erneut aus. Siehe [TUI](/de/web/tui) und
+[Konfiguration](/de/cli/config).
 
-## Verwandt
+## Verwandte Themen
 
 - [CLI-Referenz](/de/cli)
 - [TUI](/de/web/tui)

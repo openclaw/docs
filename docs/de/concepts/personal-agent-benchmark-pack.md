@@ -1,45 +1,47 @@
 ---
 read_when:
-    - Lokale Zuverlässigkeitsprüfungen für persönliche Agenten ausführen
-    - Erweitern des repo-gestützten QA-Szenariokatalogs
-    - Überprüfung von Erinnerung, Antwort, Speicher, Schwärzung, sicherer Tool-Ausführung, Aufgabenstatus, teilungssicheren Diagnosen, beweisgestützten Abschlussangaben und Fehlerbehebung
-summary: Lokale qa-channel-Szenarien für datenschutzwahrende Workflow-Prüfungen persönlicher Assistenten.
-title: Persönliches Agent-Benchmark-Paket
+    - Zuverlässigkeitsprüfungen für lokale persönliche Agenten ausführen
+    - Erweitern des Repository-gestützten Katalogs von QA-Szenarien
+    - Überprüfung von Erinnerungen, Antworten, Speicher, Schwärzung, sicherer Tool-Weiterverarbeitung, Aufgabenstatus, bedenkenlos teilbaren Diagnosedaten, beleggestützten Abschlussbehauptungen und Fehlerbehebung
+summary: Lokale qa-channel-Szenarien zur Überprüfung datenschutzfreundlicher Workflows für persönliche Assistenten.
+title: Benchmark-Paket für persönliche Agenten
 x-i18n:
-    generated_at: "2026-06-27T17:25:36Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:13:37Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: a5a6b653abbba0718a6287d4e471435f15ef5823aa62abd238a14d955fdc1e5a
+    source_hash: 35da45e4b22b1044a777fa8d6bce87f9ace377950dd0af3f2419b40cfe4d9be6
     source_path: concepts/personal-agent-benchmark-pack.md
     workflow: 16
 ---
 
-Der Personal-Agent-Benchmark-Pack ist ein kleines, repo-gestütztes QA-Szenariopaket für
-lokale Workflows persönlicher Assistenten. Er ist kein generischer Modell-Benchmark und
-erfordert keinen neuen Runner. Das Paket nutzt den privaten QA-Stack wieder, der im
-[QA-Überblick](/de/concepts/qa-e2e-automation), im synthetischen
-[QA-Kanal](/de/channels/qa-channel) und im bestehenden YAML-Katalog
-`qa/scenarios` beschrieben ist.
-
-Das erste Paket ist absichtlich eng gefasst:
-
-- simulierte persönliche Erinnerungen über lokale Cron-Zustellung
-- simuliertes DM- und Thread-Antwort-Routing über `qa-channel`
-- simulierter Präferenzabruf aus den temporären Memory-Dateien des QA-Workspace
-- simulierte Prüfungen, dass Secrets nicht wiedergegeben werden
-- sicherer, lesegestützter Tool-Followthrough nach einer kurzen genehmigungsartigen Interaktion
-- Stoppverhalten bei verweigerter Genehmigung für eine sensible lokale Leseanfrage
-- beweisgestützte Aufgabenstatusberichte, die ausstehend, blockiert und erledigt getrennt halten
-- teilungssichere Diagnoseartefakte, die nützlichen Status beibehalten und rohe persönliche Inhalte auslassen
-- beweisgestützte Abschlussbehauptungen, die vorliegende Fortschritte vermeiden, bevor lokale Nachweise existieren
-- Fehlerwiederherstellung, die Teilstatus meldet und Wiederholungsgrenzen klar hält
+Das Personal Agent Benchmark Pack ist ein kleines, Repository-gestütztes Paket von QA-Szenarien für
+lokale Arbeitsabläufe persönlicher Assistenten. Es ist kein allgemeiner Modell-Benchmark und
+benötigt keinen neuen Runner: Es verwendet den privaten QA-Stack ([QA-Übersicht](/de/concepts/qa-e2e-automation)),
+den synthetischen [QA-Kanal](/de/channels/qa-channel) und den vorhandenen
+YAML-Katalog unter `qa/scenarios`.
 
 ## Szenarien
 
-Die maschinenlesbaren Paketmetadaten befinden sich in
-`extensions/qa-lab/src/scenario-packs.ts`. Führen Sie das Paket mit
-`--pack personal-agent` aus:
+Zehn Szenarien, definiert in `qa/scenarios/personal/*.yaml`:
+
+| Szenario-ID                                | Prüfungen                                                                                                           |
+| ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------- |
+| `personal-reminder-roundtrip`              | Simulierte persönliche Erinnerungen über lokale Cron-Zustellung                                                     |
+| `personal-channel-thread-reply`            | Routing simulierter Direktnachrichten und Thread-Antworten über `qa-channel`                                        |
+| `personal-memory-preference-recall`        | Simulierter Abruf von Präferenzen aus den temporären Speicherdateien des QA-Arbeitsbereichs                         |
+| `personal-redaction-no-secret-leak`        | Prüfungen, dass simulierte Geheimnisse nicht wiedergegeben werden                                                   |
+| `personal-tool-safety-followthrough`       | Sichere, durch Lesezugriff gestützte Werkzeugausführung nach einem kurzen genehmigungsähnlichen Dialogschritt       |
+| `personal-approval-denial-stop`            | Abbruchverhalten bei verweigerter Genehmigung einer sensiblen lokalen Leseanforderung                               |
+| `personal-task-followthrough-status`       | Nachweisgestützte Aufgabenstatusberichte, die ausstehende, blockierte und erledigte Aufgaben getrennt halten        |
+| `personal-share-safe-diagnostics-artifact` | Sicher teilbare Diagnoseartefakte, die nützliche Statusinformationen ohne unverarbeitete persönliche Inhalte bieten |
+| `personal-no-fake-progress`                | Nachweisgestützte Abschlussmeldungen, die vor dem Vorliegen lokaler Belege keinen falschen Fortschritt vortäuschen  |
+| `personal-failure-recovery`                | Fehlerbehebung, die den Teilstatus meldet und Grenzen für erneute Versuche klar ausweist                            |
+
+Die maschinenlesbaren Metadaten des Pakets (ID-Liste, Titel, Beschreibung) befinden sich in
+`extensions/qa-lab/src/scenario-packs.ts` unter `QA_PERSONAL_AGENT_SCENARIO_IDS`.
+Führen Sie das Paket mit `--pack personal-agent` aus:
 
 ```bash
 OPENCLAW_ENABLE_PRIVATE_QA_CLI=1 pnpm openclaw qa suite \
@@ -48,38 +50,32 @@ OPENCLAW_ENABLE_PRIVATE_QA_CLI=1 pnpm openclaw qa suite \
   --concurrency 1
 ```
 
-`--pack` ist additiv zu wiederholten `--scenario`-Flags. Explizite Szenarien werden
-zuerst ausgeführt, danach laufen die Paketszenarien in der Reihenfolge von
-`QA_PERSONAL_AGENT_SCENARIO_IDS`, wobei Duplikate entfernt werden.
+`--pack` ergänzt wiederholte `--scenario`-Flags. Explizit angegebene Szenarien werden
+zuerst ausgeführt, anschließend die Paketszenarien in der Reihenfolge von `QA_PERSONAL_AGENT_SCENARIO_IDS`,
+wobei Duplikate entfernt werden.
 
-Das Paket ist für `qa-channel` mit `mock-openai` oder einer anderen lokalen QA-
-Provider-Lane ausgelegt. Es sollte nicht auf Live-Chatdienste oder echte persönliche
-Konten gerichtet werden.
+Das Paket ist für `qa-channel` mit `mock-openai` oder einer anderen lokalen QA-Provider-
+Lane vorgesehen. Richten Sie es nicht auf Live-Chatdienste oder echte persönliche Konten.
 
 ## Datenschutzmodell
 
-Die Szenarien verwenden ausschließlich simulierte Benutzer, simulierte Präferenzen,
-simulierte Secrets und den temporären QA-Gateway-Workspace, der von der Suite erstellt
-wird. Sie dürfen keine echten OpenClaw-Benutzer-Memory-Daten, Sitzungen,
-Anmeldedaten, Launch Agents, globalen Konfigurationen oder Live-Gateway-Zustände lesen
-oder schreiben.
+Die Szenarien verwenden ausschließlich simulierte Benutzer, simulierte Präferenzen, simulierte Geheimnisse und den
+temporären QA-Gateway-Arbeitsbereich, der von der Suite erstellt wird. Sie dürfen keine echten
+OpenClaw-Benutzerspeicher, Sitzungen, Anmeldedaten, Launch Agents, globalen
+Konfigurationen oder Live-Gateway-Zustände lesen oder schreiben.
 
-Artefakte verbleiben im bestehenden Artefaktverzeichnis der QA-Suite und sollten wie
-Testausgabe behandelt werden. Schwärzungsprüfungen verwenden simulierte Marker, sodass
-Fehler sicher geprüft und in Issues gemeldet werden können.
+Artefakte verbleiben im vorhandenen Artefaktverzeichnis der QA-Suite und werden
+wie Testausgaben behandelt. Schwärzungsprüfungen verwenden simulierte Markierungen, sodass Fehler sicher
+untersucht und in Issues erfasst werden können.
 
-## Paket Erweitern
+## Paket erweitern
 
-Fügen Sie neue `.yaml`-Fälle unter `qa/scenarios/personal/` hinzu und fügen Sie dann
-die Szenario-ID zu `QA_PERSONAL_AGENT_SCENARIO_IDS` hinzu. Halten Sie jeden Fall klein,
-lokal, deterministisch in `mock-openai` und auf ein Verhalten persönlicher Assistenten
-fokussiert.
+Fügen Sie neue `.yaml`-Fälle unter `qa/scenarios/personal/` hinzu und ergänzen Sie anschließend die Szenario-ID
+in `QA_PERSONAL_AGENT_SCENARIO_IDS`. Halten Sie jeden Fall klein, lokal und in
+`mock-openai` deterministisch und konzentrieren Sie ihn auf ein Verhalten eines persönlichen Assistenten.
 
-Gute Kandidaten für Folgearbeiten:
+Gute Kandidaten für weitere Ergänzungen: Prüfungen des Exports geschwärzter Abläufe, Prüfungen ausschließlich lokaler
+Plugin-Arbeitsabläufe.
 
-- Prüfungen für geschwärzte Trajektorienexporte
-- Prüfungen für rein lokale Plugin-Workflows
-
-Vermeiden Sie das Hinzufügen eines neuen Runners, Plugins, einer Abhängigkeit, eines
-Live-Transports oder eines Modell-Judges, bis der Szenariokatalog genügend stabile
-Fälle enthält, um diese Oberfläche zu rechtfertigen.
+Fügen Sie keinen neuen Runner, kein Plugin, keine Abhängigkeit, keinen Live-Transport und keine Modellbewertung hinzu,
+bis der Szenariokatalog genügend stabile Fälle enthält, um diese Oberfläche zu rechtfertigen.

@@ -1,33 +1,28 @@
 ---
 read_when:
     - Sie möchten Ollama für web_search verwenden
-    - Sie möchten einen web_search-Provider ohne Schlüssel
+    - Sie möchten einen Web-Such-Provider ohne API-Schlüssel
     - Sie möchten die gehostete Ollama-Websuche mit OLLAMA_API_KEY verwenden
-    - Sie benötigen Anleitung zur Einrichtung der Ollama-Websuche
+    - Sie benötigen eine Anleitung zur Einrichtung der Ollama-Websuche
 summary: Ollama-Websuche über einen lokalen Ollama-Host oder die gehostete Ollama-API
 title: Ollama-Websuche
 x-i18n:
-    generated_at: "2026-06-27T18:20:24Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T16:05:53Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: 4a30a6a2ed78d0d5f680ca2894e5e015cf99fbae2bcad4601727bbc9f560c124
+    source_hash: edbbd887841339ab4c0c62ab7682a22fe99434a788957a91989fce6942187e9a
     source_path: tools/ollama-search.md
     workflow: 16
 ---
 
-OpenClaw unterstützt **Ollama Web Search** als gebündelten `web_search`-Provider. Er
-verwendet Ollamas Websuche-API und gibt strukturierte Ergebnisse mit Titeln,
-URLs und Snippets zurück.
+OpenClaw unterstützt **Ollama Web Search** als gebündelten `web_search`-Provider,
+der Titel, URLs und Textausschnitte von Ollamas Websuch-API zurückgibt.
 
-Für lokales oder selbst gehostetes Ollama benötigt diese Einrichtung standardmäßig
-keinen API-Schlüssel. Erforderlich sind jedoch:
-
-- ein Ollama-Host, der von OpenClaw aus erreichbar ist
-- `ollama signin`
-
-Für direkte gehostete Suche setzen Sie die Basis-URL des Ollama-Providers auf `https://ollama.com`
-und geben Sie einen echten `OLLAMA_API_KEY` an.
+Für lokales/selbst gehostetes Ollama ist standardmäßig kein API-Schlüssel erforderlich; benötigt werden ein erreichbarer
+Ollama-Host sowie `ollama signin`. Die direkte gehostete Suche (ohne lokales Ollama) erfordert
+`baseUrl: "https://ollama.com"` und einen echten `OLLAMA_API_KEY`.
 
 ## Einrichtung
 
@@ -36,27 +31,28 @@ und geben Sie einen echten `OLLAMA_API_KEY` an.
     Stellen Sie sicher, dass Ollama installiert ist und ausgeführt wird.
   </Step>
   <Step title="Anmelden">
-    Führen Sie aus:
-
     ```bash
     ollama signin
     ```
-
   </Step>
   <Step title="Ollama Web Search auswählen">
-    Führen Sie aus:
-
     ```bash
     openclaw configure --section web
     ```
 
-    Wählen Sie anschließend **Ollama Web Search** als Provider aus.
+    Wählen Sie **Ollama Web Search** als Provider aus.
 
   </Step>
 </Steps>
 
 Wenn Sie Ollama bereits für Modelle verwenden, nutzt Ollama Web Search denselben
-konfigurierten Host wieder.
+konfigurierten Host.
+
+<Note>
+  OpenClaw wählt Ollama Web Search niemals automatisch anstelle eines höher priorisierten
+  Providers mit Anmeldedaten aus; Sie müssen ihn explizit mit
+  `tools.web.search.provider: "ollama"` auswählen.
+</Note>
 
 ## Konfiguration
 
@@ -72,7 +68,7 @@ konfigurierten Host wieder.
 }
 ```
 
-Optionales Überschreiben des Ollama-Hosts:
+Optionale Host-Überschreibung, ausschließlich für die Websuche:
 
 ```json5
 {
@@ -90,8 +86,7 @@ Optionales Überschreiben des Ollama-Hosts:
 }
 ```
 
-Wenn Sie Ollama bereits als Modell-Provider konfigurieren, kann der Websuche-Provider
-stattdessen diesen Host wiederverwenden:
+Alternativ können Sie den bereits für den Ollama-Modell-Provider konfigurierten Host wiederverwenden:
 
 ```json5
 {
@@ -105,15 +100,12 @@ stattdessen diesen Host wiederverwenden:
 }
 ```
 
-Der Ollama-Modell-Provider verwendet `baseUrl` als kanonischen Schlüssel. Der Websuche-Provider berücksichtigt außerdem `baseURL` unter `models.providers.ollama`, um mit Konfigurationsbeispielen im Stil des OpenAI SDK kompatibel zu sein.
+`models.providers.ollama.baseUrl` ist der kanonische Schlüssel; der Websuch-
+Provider akzeptiert dort zur Kompatibilität mit Konfigurationsbeispielen im Stil des OpenAI SDK auch `baseURL`.
+Wenn nichts festgelegt ist, verwendet OpenClaw standardmäßig
+`http://127.0.0.1:11434`.
 
-Wenn keine explizite Ollama-Basis-URL festgelegt ist, verwendet OpenClaw `http://127.0.0.1:11434`.
-
-Wenn Ihr Ollama-Host Bearer-Authentifizierung erwartet, verwendet OpenClaw
-`models.providers.ollama.apiKey` (oder die passende env-gestützte Provider-Authentifizierung)
-für Anfragen an diesen konfigurierten Host wieder.
-
-Direkte gehostete Ollama Web Search:
+Direkte gehostete Ollama Web Search (ohne lokales Ollama):
 
 ```json5
 {
@@ -135,28 +127,26 @@ Direkte gehostete Ollama Web Search:
 }
 ```
 
-## Hinweise
+## Authentifizierung und Anfrage-Routing
 
-- Für diesen Provider ist kein eigenes API-Schlüsselfeld für die Websuche erforderlich.
-- Wenn der Ollama-Host durch Authentifizierung geschützt ist, verwendet OpenClaw den normalen Ollama
-  Provider-API-Schlüssel wieder, sofern vorhanden.
-- Wenn `baseUrl` `https://ollama.com` ist, ruft OpenClaw
-  `https://ollama.com/api/web_search` direkt auf und sendet den konfigurierten Ollama
-  API-Schlüssel als Bearer-Authentifizierung.
-- Wenn der konfigurierte Host keine Websuche bereitstellt und `OLLAMA_API_KEY` gesetzt ist,
-  kann OpenClaw auf `https://ollama.com/api/web_search` zurückfallen, ohne
-  diesen env-Schlüssel an den lokalen Host zu senden.
-- OpenClaw warnt während der Einrichtung, wenn Ollama nicht erreichbar oder nicht angemeldet ist,
-  blockiert die Auswahl jedoch nicht.
-- OpenClaw wählt Ollama Web Search nicht automatisch aus, wenn kein höher priorisierter
-  Provider mit Zugangsdaten konfiguriert ist; wählen Sie ihn explizit mit
-  `tools.web.search.provider: "ollama"`.
-- Lokale Ollama-Daemon-Hosts verwenden den lokalen Proxy-Endpunkt
-  `/api/experimental/web_search`, der signiert und an Ollama Cloud weiterleitet.
-- `https://ollama.com`-Hosts verwenden den öffentlichen gehosteten Endpunkt
-  `/api/web_search` direkt mit Bearer-Authentifizierung per API-Schlüssel.
+- Es gibt kein eigenes API-Schlüsselfeld für die Websuche; der Provider verwendet
+  `models.providers.ollama.apiKey` (oder die entsprechende umgebungsvariablenbasierte Provider-Authentifizierung),
+  wenn der konfigurierte Host durch Authentifizierung geschützt ist.
+- Reihenfolge der Host-Auflösung: `plugins.entries.ollama.config.webSearch.baseUrl` →
+  `models.providers.ollama.baseUrl` (oder `baseURL`) → `http://127.0.0.1:11434`.
+- Wenn der aufgelöste Host `https://ollama.com` ist, ruft OpenClaw
+  `https://ollama.com/api/web_search` direkt auf und verwendet den API-Schlüssel für die Bearer-
+  Authentifizierung.
+- Andernfalls ruft OpenClaw zuerst den lokalen Proxy-Endpunkt
+  `/api/experimental/web_search` auf (der die Anfrage signiert und an Ollama
+  Cloud weiterleitet) und greift anschließend auf `/api/web_search` auf demselben Host zurück. Wenn beide fehlschlagen
+  und `OLLAMA_API_KEY` festgelegt ist, wird einmal erneut eine Anfrage an
+  `https://ollama.com/api/web_search` mit diesem Schlüssel gesendet – ohne ihn an
+  den lokalen Host zu senden.
+- OpenClaw warnt während der Einrichtung, wenn Ollama nicht erreichbar oder keine Anmeldung erfolgt ist, verhindert
+  jedoch nicht die Auswahl des Providers.
 
 ## Verwandte Themen
 
 - [Übersicht zur Websuche](/de/tools/web) -- alle Provider und automatische Erkennung
-- [Ollama](/de/providers/ollama) -- Einrichtung des Ollama-Modells und Cloud-/lokale Modi
+- [Ollama](/de/providers/ollama) -- Einrichtung von Ollama-Modellen und Cloud-/lokale Modi

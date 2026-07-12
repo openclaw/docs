@@ -1,20 +1,21 @@
 ---
 read_when:
-    - Sie möchten eine schnelle Diagnose des Channel-Zustands und der Empfänger der letzten Sitzungen
-    - Sie möchten einen einfügbaren „all“-Status zum Debuggen
-summary: CLI-Referenz für `openclaw status` (Diagnosen, Probes, Nutzungs-Snapshots)
+    - Sie möchten eine schnelle Diagnose des Kanalstatus und der Empfänger der letzten Sitzungen.
+    - Sie möchten einen einfügbaren „all“-Status für die Fehlerdiagnose.
+summary: CLI-Referenz für `openclaw status` (Diagnose, Prüfungen, Nutzungsmomentaufnahmen)
 title: openclaw status
 x-i18n:
-    generated_at: "2026-06-27T17:21:08Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:15:04Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: aeb9e99b2aa9eb12fe97c8ee018ac6a5227cad990d151c3579d16009c5b9258a
+    source_hash: 37b8a3297adbef855b468466ec1001d0721eef066899eb20d94c18933a8f257e
     source_path: cli/status.md
     workflow: 16
 ---
 
-Diagnose für Kanäle + Sitzungen.
+Diagnose für Kanäle und Sitzungen.
 
 ```bash
 openclaw status
@@ -23,31 +24,90 @@ openclaw status --deep
 openclaw status --usage
 ```
 
-Hinweise:
+| Flag                    | Beschreibung                                                                                                                      |
+| ----------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| `--all`                 | Vollständige Diagnose (schreibgeschützt, zum Einfügen geeignet). Umfasst Sicherheitsaudit, Plugin-Kompatibilität und Memory-Vektor-Prüfungen. |
+| `--deep`                | Führt Live-Prüfungen aus (WhatsApp Web + Telegram + Discord + Slack + Signal). Aktiviert außerdem das Sicherheitsaudit.            |
+| `--usage`               | Gibt normalisierte Provider-Nutzungszeiträume als `X% left` aus.                                                                  |
+| `--json`                | Maschinenlesbare Ausgabe.                                                                                                         |
+| `--verbose` / `--debug` | Gibt vor dem Bericht zusätzlich die unaufgelöste Gateway-Zielauflösung aus.                                                       |
 
-- `--deep` führt Live-Prüfungen aus (WhatsApp Web + Telegram + Discord + Slack + Signal).
-- Einfaches `openclaw status` bleibt auf dem schnellen, schreibgeschützten Pfad und markiert Speicher als `not checked` statt als nicht verfügbar, wenn die Speicherprüfung übersprungen wird. Aufwendige Sicherheitsprüfung, Plugin-Kompatibilität und Speicher-Vektor-Prüfungen bleiben `openclaw status --all`, `openclaw status --deep`, `openclaw security audit` und `openclaw memory status --deep` vorbehalten.
-- `status --json --all` meldet Speicherdetails aus der aktiven Speicher-Plugin-Laufzeitumgebung, die durch `plugins.slots.memory` ausgewählt wurde. Benutzerdefinierte Speicher-Plugins können das integrierte `agents.defaults.memorySearch.enabled` deaktiviert lassen und trotzdem ihren eigenen Datei-, Chunk-, Vektor- und FTS-Status melden.
-- `--usage` gibt normalisierte Provider-Nutzungsfenster als `X% left` aus.
-- Die Sitzungsstatusausgabe trennt `Execution:` von `Runtime:`. `Execution` ist der Sandbox-Pfad (`direct`, `docker/*`), während `Runtime` angibt, ob die Sitzung `OpenClaw Default`, `OpenAI Codex`, ein CLI-Backend oder ein ACP-Backend wie `codex (acp/acpx)` verwendet. Siehe [Agent-Laufzeitumgebungen](/de/concepts/agent-runtimes) für die Unterscheidung zwischen Provider, Modell und Laufzeitumgebung.
-- Die rohen Felder `usage_percent` / `usagePercent` von MiniMax stehen für verbleibendes Kontingent, daher invertiert OpenClaw sie vor der Anzeige; zählbasierte Felder haben Vorrang, wenn vorhanden. `model_remains`-Antworten bevorzugen den Chat-Modell-Eintrag, leiten die Fensterbeschriftung bei Bedarf aus Zeitstempeln ab und nehmen den Modellnamen in die Planbeschriftung auf.
-- Wenn der aktuelle Sitzungssnapshot spärlich ist, kann `/status` Token- und Cache-Zähler aus dem neuesten Transkript-Nutzungsprotokoll ergänzen. Vorhandene Live-Werte ungleich null haben weiterhin Vorrang vor Transkript-Fallback-Werten.
-- `/status` enthält kompakte Gateway-Prozesslaufzeit und Host-Systemlaufzeit.
-- Der Transkript-Fallback kann auch die aktive Laufzeitmodellbeschriftung wiederherstellen, wenn sie im Live-Sitzungseintrag fehlt. Wenn dieses Transkriptmodell vom ausgewählten Modell abweicht, löst status das Kontextfenster anhand des wiederhergestellten Laufzeitmodells statt anhand des ausgewählten Modells auf.
-- Wenn eine Sitzung an ein Modell angeheftet ist, das von der konfigurierten primären Einstellung abweicht, gibt status beide Werte, den Grund (`session override`) und den klaren Hinweis (`/model default`) aus. Die konfigurierte primäre Einstellung gilt für neue oder nicht angeheftete Sitzungen; vorhandene angeheftete Sitzungen behalten ihre Sitzungsauswahl, bis sie gelöscht wird.
-- Für die Prompt-Größenberechnung bevorzugt der Transkript-Fallback die größere Prompt-orientierte Gesamtsumme, wenn Sitzungsmetadaten fehlen oder kleiner sind, sodass Sitzungen mit benutzerdefiniertem Provider nicht auf Token-Anzeigen von `0` reduziert werden.
-- Die Ausgabe enthält sitzungsspezifische Speicher pro Agent, wenn mehrere Agenten konfiguriert sind.
-- Die Übersicht enthält Installations- und Laufzeitstatus des Gateway- und Node-Hostdiensts, sofern verfügbar.
-- Die Übersicht enthält Update-Kanal + Git-SHA (für Quellcode-Checkouts).
-- Update-Informationen erscheinen in der Übersicht; wenn ein Update verfügbar ist, gibt status einen Hinweis zum Ausführen von `openclaw update` aus (siehe [Aktualisieren](/de/install/updating)).
-- Fehler beim Aktualisieren von Modellpreisen werden als optionale Preiswarnungen angezeigt. Sie bedeuten
-  nicht, dass der Gateway oder die Kanäle fehlerhaft sind.
-- Schreibgeschützte Statusoberflächen (`status`, `status --json`, `status --all`) lösen unterstützte SecretRefs für ihre Ziel-Konfigurationspfade auf, wenn möglich.
-- Wenn eine unterstützte Kanal-SecretRef konfiguriert, aber im aktuellen Befehlspfad nicht verfügbar ist, bleibt status schreibgeschützt und meldet eine eingeschränkte Ausgabe, statt abzustürzen. Die Ausgabe für Menschen zeigt Warnungen wie „configured token unavailable in this command path“, und die JSON-Ausgabe enthält `secretDiagnostics`.
-- Wenn die befehlslokale SecretRef-Auflösung erfolgreich ist, bevorzugt status den aufgelösten Snapshot und entfernt vorübergehende Kanalmarkierungen wie „secret unavailable“ aus der endgültigen Ausgabe.
-- `status --all` enthält eine Secrets-Übersichtszeile und einen Diagnoseabschnitt, der Secret-Diagnosen zusammenfasst (zur besseren Lesbarkeit gekürzt), ohne die Berichtserstellung anzuhalten.
+Ein einfaches `openclaw status` bleibt auf dem schnellen schreibgeschützten Pfad und kennzeichnet den Memory-Status als
+`not checked` statt als nicht verfügbar, wenn die Memory-Prüfung übersprungen wird. Aufwendige
+Sicherheitsaudits, Plugin-Kompatibilitätsprüfungen und Memory-Vektor-Prüfungen bleiben
+`openclaw status --all`, `openclaw status --deep`, `openclaw security audit`
+und `openclaw memory status --deep` vorbehalten.
 
-## Verwandt
+## Sitzungs- und Modellauflösung
+
+- Die Ausgabe des Sitzungsstatus trennt `Execution:` von `Runtime:`. `Execution`
+  bezeichnet den Sandbox-Pfad (`direct`, `docker/*`), während `Runtime` angibt,
+  ob die Sitzung `OpenClaw Default`, `OpenAI Codex`, ein CLI-
+  Backend oder ein ACP-Backend wie `codex (acp/acpx)` verwendet. Unter
+  [Agent-Runtimes](/de/concepts/agent-runtimes) finden Sie Informationen zur Unterscheidung
+  zwischen Provider, Modell und Runtime.
+- Wenn der aktuelle Sitzungssnapshot nur wenige Daten enthält, kann `/status` Token-
+  und Cache-Zähler aus dem neuesten Transkript-Nutzungsprotokoll ergänzen. Vorhandene
+  Live-Werte ungleich null haben weiterhin Vorrang vor Transkript-Fallback-Werten.
+- Der Transkript-Fallback kann auch die Bezeichnung des aktiven Runtime-Modells wiederherstellen, wenn
+  sie im Live-Sitzungseintrag fehlt. Wenn dieses Transkriptmodell vom
+  ausgewählten Modell abweicht, löst der Status das Kontextfenster anhand des
+  wiederhergestellten Runtime-Modells statt anhand des ausgewählten Modells auf.
+- Für die Berechnung der Prompt-Größe bevorzugt der Transkript-Fallback die größere
+  Prompt-bezogene Gesamtsumme, wenn Sitzungsmetadaten fehlen oder kleiner sind, damit
+  Sitzungen benutzerdefinierter Provider nicht auf eine Anzeige von `0` Token zurückfallen.
+- Wenn eine Sitzung an ein Modell gebunden ist, das von der konfigurierten
+  primären Auswahl abweicht, gibt der Status beide Werte, den Grund (`session override`) und
+  den Hinweis `/model default` aus. Die konfigurierte primäre Auswahl gilt für neue oder
+  nicht gebundene Sitzungen; vorhandene gebundene Sitzungen behalten ihre Sitzungsauswahl,
+  bis sie aufgehoben wird.
+- Die Ausgabe umfasst sitzungsbezogene Speicher pro Agent, wenn mehrere Agenten
+  konfiguriert sind.
+
+## Nutzung und Kontingent
+
+- `--usage` gibt normalisierte Provider-Nutzungszeiträume als `X% left` aus.
+- Die ursprünglichen Felder `usage_percent` / `usagePercent` von MiniMax geben das verbleibende Kontingent an,
+  daher invertiert OpenClaw sie vor der Anzeige; anzahlbasierte Felder haben Vorrang, wenn
+  sie vorhanden sind. Bei `model_remains`-Antworten wird der Chat-Modelleintrag bevorzugt, die
+  Zeitraumbeschriftung bei Bedarf aus Zeitstempeln abgeleitet und der Modellname in
+  die Tarifbeschriftung aufgenommen.
+- Fehler beim Aktualisieren der Modellpreise werden als optionale Preiswarnungen angezeigt.
+  Sie bedeuten nicht, dass der Gateway oder die Kanäle fehlerhaft sind.
+
+## Übersicht und Aktualisierungsstatus
+
+- Die Übersicht enthält den Installations- und Runtime-Status des Gateway- und Node-Hostdienstes, sofern
+  verfügbar, sowie eine kompakte Angabe zur Laufzeit des Gateway-Prozesses und zur Laufzeit des Hostsystems.
+- Die Übersicht enthält den Aktualisierungskanal und den Git-SHA (für Quellcode-Checkouts).
+- Aktualisierungsinformationen werden in der Übersicht angezeigt; wenn eine Aktualisierung verfügbar ist, gibt der Status
+  einen Hinweis zur Ausführung von `openclaw update` aus (siehe [Aktualisierung](/de/install/updating)).
+
+## Secrets
+
+- Schreibgeschützte Statusoberflächen (`status`, `status --json`, `status --all`)
+  lösen unterstützte SecretRefs für ihre jeweiligen Konfigurationspfade auf, wenn
+  dies möglich ist.
+- Wenn eine unterstützte SecretRef für einen Kanal konfiguriert, aber im
+  aktuellen Befehlspfad nicht verfügbar ist, bleibt der Status schreibgeschützt und meldet eine eingeschränkte Ausgabe,
+  statt abzustürzen. Die menschenlesbare Ausgabe zeigt Warnungen wie „configured token
+  unavailable in this command path“ an, und die JSON-Ausgabe enthält
+  `secretDiagnostics`.
+- Wenn die befehlslokale SecretRef-Auflösung erfolgreich ist, bevorzugt der Status den
+  aufgelösten Snapshot und entfernt vorübergehende Kanalmarkierungen für „secret unavailable“
+  aus der endgültigen Ausgabe.
+- `status --all` enthält eine Übersichtszeile zu Secrets und einen Diagnoseabschnitt,
+  der Secret-Diagnosen zusammenfasst (zur besseren Lesbarkeit gekürzt), ohne
+  die Berichterstellung zu stoppen.
+
+## Memory
+
+`status --json --all` meldet Memory-Details aus der Runtime des aktiven Memory-Plugins,
+das durch `plugins.slots.memory` ausgewählt wird. Benutzerdefinierte Memory-Plugins können die integrierte Option
+`agents.defaults.memorySearch.enabled` deaktiviert lassen und dennoch
+ihren eigenen Status für Dateien, Chunks, Vektoren und FTS melden.
+
+## Verwandte Themen
 
 - [CLI-Referenz](/de/cli)
 - [Doctor](/de/gateway/doctor)

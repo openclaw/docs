@@ -1,173 +1,117 @@
 ---
 read_when:
     - Você quer fazer uma pergunta rápida à parte sobre a sessão atual
-    - Você está implementando ou depurando o comportamento de BTW entre clientes
+    - Você está implementando ou depurando o comportamento do BTW em diferentes clientes
 summary: Perguntas paralelas efêmeras com /btw
 title: A propósito, perguntas paralelas
 x-i18n:
-    generated_at: "2026-06-27T18:13:54Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:41:10Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: cf97c17fb02c2464b1d1b31cfec652d52c60be6ce0cad25eaf32a9c080843ef2
+    source_hash: 338a54d0e15ec90aebaeeaee551559a26f1437f7b6dcdde4a4b1e63347ad0759
     source_path: tools/btw.md
     workflow: 16
 ---
 
-`/btw` permite fazer uma pergunta lateral rápida sobre a **sessão atual** sem
-transformar essa pergunta em histórico normal de conversa. `/side` é um alias.
+`/btw` (alias `/side`) faz uma pergunta paralela rápida sobre a **sessão
+atual** sem adicioná-la ao histórico da conversa. Ele é baseado no `/btw` do
+Claude Code, adaptado ao Gateway e à arquitetura multicanal do OpenClaw.
 
-Ele é modelado a partir do comportamento de `/btw` do Claude Code, mas adaptado à
-arquitetura de Gateway e multicanal do OpenClaw.
+```text
+/btw o que mudou?
+/side o que significa este erro?
+```
 
 ## O que ele faz
 
-Quando você envia:
+1. Captura um snapshot da sessão atual como contexto em segundo plano (incluindo
+   qualquer prompt da execução principal em andamento).
+2. Executa uma consulta paralela separada e única, instruindo o modelo a responder apenas à
+   pergunta paralela e a não retomar nem direcionar a tarefa principal.
+3. Entrega a resposta como um resultado paralelo em tempo real, não como uma mensagem normal do assistente.
+4. Nunca grava a pergunta nem a resposta no histórico da sessão ou em `chat.history`.
 
-```text
-/btw what changed?
-```
+A execução principal, se houver uma ativa, permanece inalterada.
 
-O OpenClaw:
+Para sessões do harness Codex, o BTW cria uma ramificação da thread ativa do app-server
+Codex em uma thread filha efêmera, em vez de executar uma chamada separada ao provedor. Isso
+mantém intactos o OAuth do Codex e o comportamento nativo de ferramentas/threads, e a thread
+ramificada mantém a política de aprovação, o sandbox e a superfície nativa de ferramentas
+atuais da thread pai. A thread ramificada recebe um prompt de limite informando ao modelo que
+tudo o que vem antes é contexto de referência herdado, não instruções ativas,
+e que somente as mensagens após o limite estão ativas. `/btw` exige uma
+thread Codex existente; envie primeiro uma mensagem normal.
 
-1. captura um instantâneo do contexto da sessão atual,
-2. executa uma consulta lateral efêmera separada,
-3. responde apenas à pergunta lateral,
-4. deixa a execução principal intacta,
-5. **não** grava a pergunta nem a resposta do BTW no histórico da sessão,
-6. emite a resposta como um **resultado lateral ao vivo**, em vez de uma mensagem normal do assistente.
-
-O modelo mental importante é:
-
-- mesmo contexto de sessão
-- consulta lateral separada e única
-- mesmo transporte de harness nativo quando a sessão usa um harness nativo
-- sem poluição de contexto futuro
-- sem persistência de transcrição
-
-Para sessões de harness do Codex, o BTW permanece dentro do Codex ao bifurcar a thread
-ativa do app-server como uma thread lateral efêmera. Isso mantém o OAuth do Codex e o comportamento
-de thread nativa intactos, ao mesmo tempo em que isola a resposta lateral da transcrição
-pai. Assim como o `/side` do Codex, a thread lateral mantém as permissões atuais do Codex
-e a superfície de ferramentas nativas, com proteções que instruem o modelo a não
-tratar o trabalho herdado da thread pai como instruções ativas.
-
-Para aliases de runtime da CLI, o BTW usa o backend da CLI proprietário no modo de pergunta lateral
-em vez de recorrer a uma chamada direta ao provedor. O OpenClaw semeia contexto de
-conversa sanitizado em uma nova invocação única da CLI, desabilita o agrupamento de ferramentas
-MCP do OpenClaw e o estado reutilizável de sessão da CLI para essa invocação, e permite que o
-backend adicione quaisquer flags nativas da CLI de não retomar ou sem ferramentas que ele suporte. Runtimes diretos
-não CLI mantêm o caminho direto de execução única.
+Para aliases de runtime da CLI, o BTW invoca o backend da CLI responsável no modo de pergunta
+paralela única: ele fornece o contexto sanitizado da conversa a uma nova invocação da CLI
+com o agrupamento de ferramentas e o estado reutilizável da sessão desativados e adiciona
+quaisquer flags para não retomar/não usar ferramentas compatíveis com o backend. Runtimes diretos
+(que não sejam da CLI) usam uma chamada direta e única ao provedor.
 
 ## O que ele não faz
 
-`/btw` **não**:
-
-- cria uma nova sessão durável,
-- continua a tarefa principal inacabada,
-- grava dados de pergunta/resposta do BTW no histórico da transcrição,
-- aparece em `chat.history`,
-- sobrevive a um recarregamento.
-
-Ele é intencionalmente **efêmero**.
-
-## Como o contexto funciona
-
-O BTW usa a sessão atual apenas como **contexto de fundo**.
-
-Se a execução principal estiver ativa no momento, o OpenClaw captura um instantâneo do estado atual das mensagens
-e inclui o prompt principal em andamento como contexto de fundo, enquanto
-instrui explicitamente o modelo a:
-
-- responder apenas à pergunta lateral,
-- não retomar nem concluir a tarefa principal inacabada,
-- não direcionar a conversa pai.
-
-Isso mantém o BTW isolado da execução principal, ao mesmo tempo em que o deixa ciente do assunto
-da sessão.
+`/btw` não cria uma sessão durável, não continua a tarefa principal inacabada,
+não persiste dados da pergunta/resposta no histórico da transcrição e não sobrevive a um recarregamento.
 
 ## Modelo de entrega
 
-O BTW **não** é entregue como uma mensagem normal de transcrição do assistente.
+O chat normal do assistente usa o evento `chat` do Gateway. O BTW usa um evento
+`chat.side_result` separado para que os clientes não o confundam com o
+histórico normal da conversa. Como ele não é reproduzido a partir de `chat.history`,
+desaparece após o recarregamento.
 
-No nível do protocolo do Gateway:
+## Comportamento nas interfaces
 
-- o chat normal do assistente usa o evento `chat`
-- o BTW usa o evento `chat.side_result`
+| Interface         | Comportamento                                                                                                                                                                                                                                                                            |
+| ----------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| TUI               | Renderizado em linha no registro do chat, visivelmente distinto de uma resposta normal, podendo ser dispensado com `Enter` ou `Esc`.                                                                                                                                                                           |
+| Canais externos   | Entregue como uma resposta única claramente identificada (Telegram, WhatsApp e Discord não têm uma sobreposição efêmera local).                                                                                                                                                                         |
+| Interface de controle / web | Renderizado como um painel flutuante "Chat paralelo" fixado à thread. As respostas se acumulam como turnos, e um campo "Acompanhamento" faz a próxima pergunta paralela. Fechar (`Esc` ou o X) mantém a conversa e a reabre na próxima resposta; o botão da lixeira a descarta e interrompe uma execução pendente. |
 
-Essa separação é intencional. Se o BTW reutilizasse o caminho normal do evento `chat`,
-os clientes o tratariam como histórico regular de conversa.
+## Popup de seleção (Interface de controle)
 
-Como o BTW usa um evento ao vivo separado e não é reproduzido a partir de
-`chat.history`, ele desaparece após recarregar.
+Destacar texto dentro de uma mensagem de chat na Interface de controle abre um pequeno
+popup de seleção com duas ações:
 
-## Comportamento nas superfícies
+- **Mais detalhes** envia imediatamente uma pergunta `/btw` implícita, solicitando que o
+  modelo explique o texto destacado no contexto da sessão
+  atual. A resposta chega ao painel flutuante de chat paralelo.
+- **Perguntar no chat paralelo** preenche previamente o campo de composição com um rascunho `/btw` que cita o
+  texto destacado para que você possa digitar sua própria pergunta sobre ele.
 
-### TUI
+Ambas as ações seguem a semântica normal de `/btw`: a pergunta e a resposta ficam fora
+do histórico da sessão, e a execução principal permanece inalterada.
 
-Na TUI, o BTW é renderizado inline na visualização da sessão atual, mas permanece
-efêmero:
+## Quando usá-lo
 
-- visualmente distinto de uma resposta normal do assistente
-- dispensável com `Enter` ou `Esc`
-- não reproduzido ao recarregar
-
-### Canais externos
-
-Em canais como Telegram, WhatsApp e Discord, o BTW é entregue como uma
-resposta avulsa claramente rotulada, porque essas superfícies não têm um conceito local
-de sobreposição efêmera.
-
-A resposta ainda é tratada como um resultado lateral, não como histórico normal da sessão.
-
-### Control UI / web
-
-O Gateway emite o BTW corretamente como `chat.side_result`, e o BTW não é incluído
-em `chat.history`, portanto o contrato de persistência já está correto para a web.
-
-A Control UI atual ainda precisa de um consumidor dedicado de `chat.side_result` para
-renderizar o BTW ao vivo no navegador. Até que esse suporte do lado do cliente seja entregue, o BTW é um
-recurso no nível do Gateway com comportamento completo na TUI e em canais externos, mas ainda não
-uma UX completa no navegador.
-
-## Quando usar o BTW
-
-Use `/btw` quando você quiser:
-
-- uma explicação rápida sobre o trabalho atual,
-- uma resposta factual lateral enquanto uma execução longa ainda está em andamento,
-- uma resposta temporária que não deve se tornar parte do contexto futuro da sessão.
-
-Exemplos:
+Use `/btw` para obter um esclarecimento rápido, uma resposta factual paralela enquanto uma execução longa
+ainda está em andamento ou uma resposta temporária que não deve entrar no contexto futuro
+da sessão.
 
 ```text
-/btw what file are we editing?
-/side what changed while the main run continued?
-/btw what does this error mean?
-/btw summarize the current task in one sentence
-/btw what is 17 * 19?
+/btw qual arquivo estamos editando?
+/btw resuma a tarefa atual em uma frase
+/btw quanto é 17 * 19?
 ```
 
-## Quando não usar o BTW
-
-Não use `/btw` quando quiser que a resposta se torne parte do contexto de trabalho
-futuro da sessão.
-
-Nesse caso, pergunte normalmente na sessão principal em vez de usar BTW.
+Para qualquer informação que você queira que faça parte do futuro contexto de trabalho
+da sessão, faça a pergunta normalmente na sessão principal.
 
 ## Relacionados
 
 <CardGroup cols={2}>
-  <Card title="Slash commands" href="/pt-BR/tools/slash-commands" icon="terminal">
+  <Card title="Comandos de barra" href="/pt-BR/tools/slash-commands" icon="terminal">
     Catálogo de comandos nativos e diretivas de chat.
   </Card>
-  <Card title="Thinking levels" href="/pt-BR/tools/thinking" icon="brain">
-    Níveis de esforço de raciocínio para a chamada do modelo de pergunta lateral.
+  <Card title="Níveis de raciocínio" href="/pt-BR/tools/thinking" icon="brain">
+    Níveis de esforço de raciocínio para a chamada ao modelo da pergunta paralela.
   </Card>
-  <Card title="Session" href="/pt-BR/concepts/session" icon="comments">
+  <Card title="Sessão" href="/pt-BR/concepts/session" icon="comments">
     Chaves de sessão, histórico e semântica de persistência.
   </Card>
-  <Card title="Steer command" href="/pt-BR/tools/steer" icon="arrow-right">
-    Injete uma mensagem de direcionamento na execução ativa sem encerrá-la.
+  <Card title="Comando de direcionamento" href="/pt-BR/tools/steer" icon="arrow-right">
+    Injeta uma mensagem de direcionamento na execução ativa sem encerrá-la.
   </Card>
 </CardGroup>

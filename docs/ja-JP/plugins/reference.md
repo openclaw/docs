@@ -1,15 +1,16 @@
 ---
 read_when:
-    - 特定の OpenClaw Plugin 用のリファレンスページが必要です
-    - Plugin ドキュメントのカバレッジを監査しています
-summary: OpenClaw Plugin リファレンスページの生成済みインデックス
-title: Plugin リファレンス
+    - 特定の OpenClaw Plugin のリファレンスページが必要です
+    - Plugin ドキュメントの網羅性を監査しています
+summary: OpenClaw Pluginリファレンスページの生成済みインデックス
+title: Pluginリファレンス
 x-i18n:
-    generated_at: "2026-07-06T21:53:41Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:46:11Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: 7c269dafc82b188022b7b502d54956a885c0b9c89a002fb5bfdf77938e7a93e2
+    source_hash: 03099acfb0bcbe9814fa53f5d2d893a08a39f42bf713ff140e9604783f9cef0e
     source_path: plugins/reference.md
     workflow: 16
 ---
@@ -23,4 +24,5 @@ x-i18n:
 pnpm plugins:inventory:gen
 ```
 
-[Plugin インベントリ](/ja-JP/plugins/plugin-inventory)を使用して、配布、パッケージ、説明別に生成された 132 件すべての plugin リファレンスページを参照できます。
+[Plugin インベントリ](/ja-JP/plugins/plugin-inventory)では、生成された全 136
+件の Plugin リファレンスページを、配布形態、パッケージ、説明別に参照できます。

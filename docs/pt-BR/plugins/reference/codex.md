@@ -1,31 +1,32 @@
 ---
 read_when:
-    - Você está instalando, configurando ou auditando o Plugin codex
-summary: Harness de servidor de aplicativo do OpenClaw Codex e plugin de provedor de modelos com um catálogo GPT gerenciado pelo Codex.
+    - Você está instalando, configurando ou auditando o plugin codex
+summary: Harness do app-server do Codex, provedor de modelos e catálogo de sessões nativas.
 title: Plugin do Codex
 x-i18n:
-    generated_at: "2026-07-04T15:11:20Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:29:19Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: 110de9ddfc46f2b0d24a4fce167046206f7a671a82358ee62c7b5a970da7a81f
+    source_hash: cd187f48c5448e026d89eea4b37c9809940afa4bf6187776b7b121138840256f
     source_path: plugins/reference/codex.md
     workflow: 16
 ---
 
-# Plugin Codex
+# Plugin do Codex
 
-Harness de servidor de app Codex do OpenClaw e Plugin de provedor de modelos com um catálogo GPT gerenciado pelo Codex.
+Harness do servidor de aplicativo Codex, provedor de modelos e catálogo de sessões nativas.
 
 ## Distribuição
 
 - Pacote: `@openclaw/codex`
-- Rota de instalação: npm; ClawHub
+- Forma de instalação: npm; ClawHub
 
 ## Superfície
 
 provedores: codex; contratos: mediaUnderstandingProviders, migrationProviders, tools, webSearchProviders
 
-## Documentos relacionados
+## Documentação relacionada
 
 - [codex](/pt-BR/plugins/codex-harness)

@@ -1,129 +1,109 @@
 ---
 read_when:
-    - Installation d’OpenClaw sur Windows
+    - Installation d’OpenClaw sous Windows
     - Choisir entre Windows Hub, Windows natif et WSL2
-    - Configuration de l’application compagnon Windows ou du mode nœud Windows
-summary: 'Prise en charge de Windows : Hub Windows, CLI et Gateway natifs, configuration du Gateway WSL2, mode nœud et dépannage'
+    - Configuration de l’application compagnon Windows ou du mode Node Windows
+summary: 'Prise en charge de Windows : Hub Windows, CLI et Gateway natifs, configuration du Gateway sous WSL2, mode Node et dépannage'
 title: Windows
 x-i18n:
-    generated_at: "2026-06-27T17:44:30Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:38:42Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: e7c7bde33f27bce6c1136ccf688547ee82750d317a997c4a45b354c52ae1b690
+    source_hash: f1a756d3af3898f211c27c34e16bbcc08f71e214ca1e0d5680c15a091ae1c2ca
     source_path: platforms/windows.md
     workflow: 16
 ---
 
-OpenClaw fournit une application compagnon native **Windows Hub** ainsi que la prise en charge de la CLI Windows.
-Utilisez Windows Hub lorsque vous voulez une application de bureau avec configuration, état dans la zone de notification, chat,
-diagnostics du Centre de commande et capacités de Node Windows. Utilisez le programme d’installation PowerShell
-lorsque vous voulez accéder directement à la CLI/au Gateway. Utilisez WSL2 lorsque vous voulez l’environnement d’exécution
-Gateway le plus compatible avec Linux.
+OpenClaw fournit une application compagnon native **Windows Hub** ainsi qu’une prise en charge de la CLI sous Windows.
+Utilisez Windows Hub pour disposer d’une application de bureau avec configuration, état dans la zone de notification, chat, diagnostics du centre de commandes et fonctionnalités de Node Windows. Utilisez le programme d’installation PowerShell pour installer directement la CLI et le Gateway. Utilisez WSL2 pour bénéficier de l’environnement d’exécution Gateway le plus compatible avec Linux.
 
 ## Recommandé : Windows Hub
 
-Windows Hub est l’application compagnon WinUI native pour Windows 10 20H2+ et Windows 11. Elle s’installe sans privilèges administrateur et est publiée avec des programmes d’installation
-x64 et ARM64 signés dans les versions OpenClaw.
+Windows Hub est l’application compagnon WinUI native pour Windows 10 20H2+ et Windows 11. Elle s’installe sans privilèges d’administrateur et propose des programmes d’installation x64 et ARM64 signés sur sa propre page de versions.
 
-Téléchargez le dernier programme d’installation stable depuis la [page des versions OpenClaw](https://github.com/openclaw/openclaw/releases) :
+Windows Hub est publié indépendamment de la CLI et du Gateway OpenClaw. Téléchargez le dernier programme d’installation stable du Hub depuis la [page des versions de Windows Hub](https://github.com/openclaw/openclaw-windows-node/releases/latest) ou directement via `releases/latest/download` :
 
-- [OpenClawCompanion-Setup-x64.exe](https://github.com/openclaw/openclaw/releases/download/v2026.6.5/OpenClawCompanion-Setup-x64.exe)
-- [OpenClawCompanion-Setup-arm64.exe](https://github.com/openclaw/openclaw/releases/download/v2026.6.5/OpenClawCompanion-Setup-arm64.exe)
-- [Sommes de contrôle](https://github.com/openclaw/openclaw/releases/download/v2026.6.5/OpenClawCompanion-SHA256SUMS.txt)
+- [OpenClawCompanion-Setup-x64.exe](https://github.com/openclaw/openclaw-windows-node/releases/latest/download/OpenClawCompanion-Setup-x64.exe)
+- [OpenClawCompanion-Setup-arm64.exe](https://github.com/openclaw/openclaw-windows-node/releases/latest/download/OpenClawCompanion-Setup-arm64.exe)
 
-Si un lien de téléchargement ci-dessus renvoie une 404, consultez la [page des versions](https://github.com/openclaw/openclaw/releases) et recherchez les ressources `OpenClawCompanion-Setup-*` dans la dernière version.
+Si l’un des liens ci-dessus renvoie une erreur 404, consultez la [page des versions de Windows Hub](https://github.com/openclaw/openclaw-windows-node/releases) et ouvrez la version stable la plus récente de Windows Hub. Les versions stables habituelles d’OpenClaw proposent également un miroir d’une version de Windows Hub épinglée et validée pour la publication ; ce miroir peut être en retard par rapport à une version autonome plus récente du Hub.
 
-Après l’installation, lancez **OpenClaw Companion** depuis le menu Démarrer ou la zone de notification
-système. Le programme d’installation ajoute également des raccourcis pour la configuration du Gateway, le chat, les paramètres,
-la recherche de mises à jour et la désinstallation.
+Après l’installation, lancez **OpenClaw Companion** depuis le menu Start ou la zone de notification. Le programme d’installation ajoute également des raccourcis pour Gateway Setup, Chat, Settings, Check for Updates et la désinstallation.
 
-### Ce que Windows Hub inclut
+### Contenu de Windows Hub
 
-- état dans la zone de notification système et lancement à la connexion
-- configuration de premier démarrage pour un Gateway WSL local appartenant à l’application
-- paramètres de connexion pour les Gateways locaux, distants et tunnelisés par SSH
-- fenêtre de chat native, plus accès à l’interface utilisateur de contrôle dans le navigateur
-- diagnostics du Centre de commande pour les sessions, l’utilisation, les canaux, les nodes, l’association et
-  les commandes de réparation
-- mode Node Windows pour canvas contrôlé par l’agent, écran, caméra, notifications,
-  état de l’appareil, synthèse vocale, transcription vocale et `system.run` contrôlé
-- mode serveur MCP local pour les clients MCP tels que Claude Desktop, Claude Code et
-  Cursor
+- État dans la zone de notification et lancement à la connexion.
+- Configuration initiale d’un Gateway WSL local géré par l’application.
+- Paramètres de connexion pour les Gateways locaux, distants et accessibles par tunnel SSH.
+- Fenêtre de chat native et accès à l’interface de contrôle dans le navigateur.
+- Diagnostics du centre de commandes pour les sessions, l’utilisation, les canaux, les Nodes, l’association et les commandes de réparation.
+- Mode Node Windows pour le canevas, l’écran, la caméra, les notifications, l’état de l’appareil, la conversation et l’exécution contrôlée de `system.run` par l’agent.
+- Mode serveur MCP local pour les clients MCP tels que Claude Desktop, Claude Code et Cursor.
 
 ### Premier lancement
 
-Au premier lancement, Windows Hub ouvre la configuration lorsqu’aucun Gateway enregistré utilisable n’existe.
-Le chemin le plus rapide est **Configurer localement**, qui provisionne une distribution WSL
-`OpenClawGateway` appartenant à l’application, y installe le Gateway et associe l’application.
-Cela n’exporte ni ne modifie votre distribution Ubuntu existante.
+Au premier lancement, Windows Hub ouvre la configuration lorsqu’aucun Gateway enregistré et utilisable n’est disponible. Le chemin le plus rapide consiste à utiliser **Set up locally**, qui provisionne une distribution WSL `OpenClawGateway` gérée par l’application, y installe le Gateway et associe l’application. Cette opération n’exporte ni ne modifie votre distribution Ubuntu existante.
 
-Choisissez **Configuration avancée** ou ouvrez l’onglet Connexions si vous disposez déjà d’un
-Gateway. Vous pouvez vous connecter à :
+Choisissez **Advanced setup** ou ouvrez l’onglet Connections si vous disposez déjà d’un Gateway. Vous pouvez vous connecter à :
 
 - un Gateway local sur ce PC
 - un Gateway WSL sur ce PC
-- un Gateway distant par URL et jeton ou code de configuration
-- un Gateway accessible via un tunnel SSH
+- un Gateway distant à l’aide d’une URL et d’un jeton ou d’un code de configuration
+- un Gateway accessible par un tunnel SSH
 
-Une fois la configuration terminée, l’icône de la zone de notification devient verte. Ouvrez le **Centre de commande** depuis la
-zone de notification pour confirmer la connexion, l’association, l’état du Node et la santé des canaux.
+Une fois la configuration terminée, l’icône de la zone de notification devient verte. Ouvrez **Command Center** depuis la zone de notification pour vérifier la connexion, l’association, l’état du Node et le bon fonctionnement des canaux.
 
 ## Mode Node Windows
 
-Windows Hub peut s’enregistrer comme Node OpenClaw de premier ordre. L’agent peut alors utiliser
-les capacités natives Windows déclarées via le Gateway.
+Windows Hub peut s’enregistrer comme Node OpenClaw afin que l’agent puisse utiliser, via le Gateway, les fonctionnalités Windows natives déclarées. Les commandes du Node doivent être déclarées par celui-ci et autorisées par la politique du Gateway avant de pouvoir être exécutées ; consultez [Nodes](/fr/nodes#command-policy) pour connaître le modèle complet d’autorisation et de refus.
 
-Les commandes courantes incluent :
+Commandes courantes :
 
-- `canvas.present`, `canvas.hide`, `canvas.navigate`, `canvas.eval`,
-  `canvas.snapshot`
-- `screen.snapshot` et, avec adhésion explicite, `screen.record`
-- `camera.list` et, avec adhésion explicite, `camera.snap`, `camera.clip`
-- `system.notify`, `system.run`, `system.run.prepare`, `system.which`
-- `location.get`, `device.info`, `device.status`
-- `stt.transcribe`, `tts.speak`
+| Famille | Commandes                                                                            |
+| ------ | ------------------------------------------------------------------------------------ |
+| Canevas | `canvas.present`, `canvas.hide`, `canvas.navigate`, `canvas.eval`, `canvas.snapshot` |
+| Écran | `screen.snapshot` ; `screen.record` nécessite une activation explicite                |
+| Caméra | `camera.list` ; `camera.snap`, `camera.clip` nécessitent une activation explicite     |
+| Système | `system.notify`, `system.run`, `system.run.prepare`, `system.which`                  |
+| Appareil | `location.get`, `device.info`, `device.status`                                      |
+| Conversation | `talk.ptt.start`, `talk.ptt.stop`, `talk.ptt.cancel`, `talk.ptt.once`, `talk.speak` |
 
-Le mode Node nécessite l’association avec le Gateway. Si l’application affiche une demande d’association, approuvez-la
-depuis l’hôte du Gateway :
+Le mode Node nécessite une association avec le Gateway. Si l’application affiche une demande d’association, approuvez-la depuis l’hôte du Gateway :
 
 ```powershell
 openclaw devices list
-openclaw devices approve <request-id>
+openclaw devices approve <requestId>
 openclaw nodes status
 ```
 
-Le Gateway ne transmet que les commandes que le Node déclare et que la stratégie du serveur
-autorise. Les commandes sensibles pour la confidentialité, telles que `screen.record`, `camera.snap` et
-`camera.clip`, nécessitent une adhésion explicite à `gateway.nodes.allowCommands`.
+Le Gateway ne transmet que les commandes déclarées par le Node et autorisées par la politique du serveur. Les commandes sensibles pour la confidentialité, telles que `screen.record`, `camera.snap` et `camera.clip`, nécessitent une activation explicite dans `gateway.nodes.allowCommands`.
 
 ## Mode MCP local
 
-Windows Hub peut exposer le même registre de capacités natives Windows comme serveur
-MCP local sur loopback. C’est utile lorsque vous voulez que des clients MCP locaux pilotent
-les capacités Windows sans Gateway OpenClaw en cours d’exécution.
+Windows Hub peut exposer le même registre de fonctionnalités Windows natives sous forme de serveur MCP local sur l’interface de bouclage, afin que les clients MCP locaux puissent piloter les fonctionnalités Windows sans Gateway OpenClaw en cours d’exécution.
 
-Activez-le dans les paramètres de Windows Hub, dans la section développeur/avancée. L’application
-affiche le point de terminaison loopback et le jeton porteur une fois le serveur activé.
+Activez-le dans les Settings de Windows Hub, dans la section destinée aux développeurs et aux options avancées. L’application affiche le point de terminaison de bouclage et le jeton porteur une fois le serveur activé.
 
 Matrice des modes :
 
-| Mode Node | Serveur MCP | Comportement                         |
-| --------- | ----------- | ------------------------------------ |
-| désactivé | désactivé   | Application de bureau opérateur uniquement |
-| activé    | désactivé   | Node Windows connecté au Gateway     |
-| désactivé | activé      | Serveur MCP local uniquement         |
-| activé    | activé      | Node Gateway plus serveur MCP local  |
+| Mode Node | Serveur MCP | Comportement                       |
+| --------- | ---------- | ---------------------------------- |
+| désactivé | désactivé  | Application de bureau réservée à l’opérateur |
+| activé    | désactivé  | Node Windows connecté au Gateway   |
+| désactivé | activé     | Serveur MCP local uniquement       |
+| activé    | activé     | Node Gateway et serveur MCP local  |
 
 ## CLI et Gateway Windows natifs
 
-Pour une utilisation centrée sur le terminal, installez OpenClaw depuis PowerShell :
+Pour une utilisation axée sur le terminal, installez OpenClaw depuis PowerShell :
 
 ```powershell
 iwr -useb https://openclaw.ai/install.ps1 | iex
 ```
 
-Vérifiez :
+Vérifiez l’installation :
 
 ```powershell
 openclaw --version
@@ -131,21 +111,16 @@ openclaw doctor
 openclaw gateway status --json
 ```
 
-Les flux CLI et Gateway Windows natifs sont pris en charge et continuent de s’améliorer.
-Le démarrage géré utilise les tâches planifiées Windows lorsqu’elles sont disponibles. La tâche conserve le
-script lisible `gateway.cmd` dans le répertoire d’état OpenClaw, mais le lance via
-un wrapper WScript `gateway.vbs` généré afin que le Gateway en arrière-plan n’ouvre pas
-de fenêtre de console visible. Si la création de la tâche est refusée, OpenClaw se rabat sur un
-élément de connexion dans le dossier de démarrage par utilisateur.
+Le démarrage géré utilise les tâches planifiées Windows lorsqu’elles sont disponibles. La tâche conserve le script lisible `gateway.cmd` dans le répertoire d’état d’OpenClaw, mais le lance par l’intermédiaire d’un wrapper WScript `gateway.vbs` généré, afin que le Gateway en arrière-plan n’ouvre pas de fenêtre de console visible. Si la création de la tâche est refusée, OpenClaw utilise à la place un élément de connexion propre à l’utilisateur dans le dossier Startup.
 
-Pour installer le service Gateway :
+Installez le service Gateway :
 
 ```powershell
 openclaw gateway install
 openclaw gateway status --json
 ```
 
-Si vous voulez seulement utiliser la CLI sans service Gateway géré :
+Pour utiliser uniquement la CLI sans service Gateway géré :
 
 ```powershell
 openclaw onboard --non-interactive --skip-health
@@ -154,15 +129,13 @@ openclaw gateway run
 
 ## Gateway WSL2
 
-WSL2 reste l’environnement d’exécution Gateway le plus compatible avec Linux sous Windows. Windows Hub
-peut configurer pour vous un Gateway WSL appartenant à l’application, ou vous pouvez l’installer manuellement dans
-votre propre distribution.
+WSL2 reste l’environnement d’exécution Gateway le plus compatible avec Linux sous Windows. Windows Hub peut configurer pour vous un Gateway WSL géré par l’application, ou vous pouvez l’installer manuellement dans votre propre distribution.
 
 Configuration manuelle :
 
 ```powershell
 wsl --install
-# Or pick a distro explicitly:
+# Ou choisissez explicitement une distribution :
 wsl --list --online
 wsl --install -d Ubuntu-24.04
 ```
@@ -182,17 +155,16 @@ Redémarrez WSL depuis PowerShell :
 wsl --shutdown
 ```
 
-Installez ensuite OpenClaw dans WSL avec le démarrage rapide Linux :
+Installez ensuite OpenClaw dans WSL à l’aide du guide de démarrage rapide Linux :
 
 ```bash
 curl -fsSL https://openclaw.ai/install.sh | bash
 openclaw gateway status
 ```
 
-## Démarrage automatique du Gateway avant la connexion Windows
+## Démarrage automatique du Gateway avant la connexion à Windows
 
-Pour les configurations WSL sans interface, assurez-vous que toute la chaîne de démarrage s’exécute même lorsque personne ne se connecte
-à Windows.
+Pour les configurations WSL sans interface graphique, assurez-vous que toute la chaîne de démarrage s’exécute même si personne ne se connecte à Windows.
 
 Dans WSL :
 
@@ -208,16 +180,19 @@ Dans PowerShell en tant qu’administrateur :
 schtasks /create /tn "WSL Boot" /tr "wsl.exe -d Ubuntu --exec dbus-launch true" /sc onstart /ru "$env:USERNAME"
 ```
 
-Remplacez `Ubuntu` par le nom de votre distribution depuis :
+Remplacez `Ubuntu` par le nom de votre distribution obtenu avec :
 
 ```powershell
 wsl --list --verbose
 ```
 
-> **Remarque :** Deux changements par rapport aux anciennes recettes :
->
-> - **`dbus-launch true` au lieu de `/bin/true`** — Sur WSL ≥ 2.6.1.0, une régression ([microsoft/WSL #13416](https://github.com/microsoft/WSL/issues/13416)) entraîne l’arrêt par inactivité de la distribution 15 à 20 secondes après la sortie du dernier client, même avec linger activé. `dbus-launch true` conserve un processus enfant d’init en vie comme solution de contournement ([discussion communautaire, microsoft/WSL #9245](https://github.com/microsoft/WSL/discussions/9245)).
-> - **`/ru "$env:USERNAME"` au lieu de `/ru SYSTEM`** — Les distributions WSL par utilisateur (la configuration par défaut) ne sont pas visibles pour le compte SYSTEM ; la tâche semble s’exécuter, mais la distribution n’est jamais démarrée. L’exécuter avec votre propre compte évite ce problème. Windows demandera votre mot de passe lors de la création de la tâche.
+<Note>
+Deux modifications par rapport aux anciennes procédures :
+
+- **`dbus-launch true` au lieu de `/bin/true`** : sous WSL >= 2.6.1.0, une régression ([microsoft/WSL #13416](https://github.com/microsoft/WSL/issues/13416)) arrête la distribution pour cause d’inactivité 15-20 secondes après la fermeture du dernier client, même lorsque la persistance est activée. `dbus-launch true` maintient en vie un processus enfant d’init comme solution de contournement (discussion de la communauté, [microsoft/WSL #9245](https://github.com/microsoft/WSL/discussions/9245)).
+- **`/ru "$env:USERNAME"` au lieu de `/ru SYSTEM`** : les distributions WSL propres à l’utilisateur, qui constituent la configuration par défaut, ne sont pas visibles par le compte SYSTEM. La tâche semble donc s’exécuter, mais la distribution ne démarre jamais. L’exécution sous votre propre compte évite ce problème ; Windows vous demande votre mot de passe lors de la création de la tâche.
+
+</Note>
 
 Après le redémarrage, vérifiez depuis WSL :
 
@@ -226,11 +201,9 @@ systemctl --user is-enabled openclaw-gateway.service
 systemctl --user status openclaw-gateway.service --no-pager
 ```
 
-## Exposer les services WSL sur le LAN
+## Exposer les services WSL sur le réseau local
 
-WSL dispose de son propre réseau virtuel. Si une autre machine doit atteindre un service dans
-WSL, transférez un port Windows vers l’IP WSL actuelle. L’IP WSL peut changer après
-les redémarrages ; actualisez donc la règle de transfert si nécessaire.
+WSL possède son propre réseau virtuel. Si une autre machine doit accéder à un service dans WSL, redirigez un port Windows vers l’adresse IP WSL actuelle. L’adresse IP WSL peut changer après les redémarrages ; actualisez donc la règle de redirection si nécessaire.
 
 Exemple dans PowerShell en tant qu’administrateur :
 
@@ -251,60 +224,50 @@ New-NetFirewallRule -DisplayName "WSL SSH $ListenPort" -Direction Inbound `
 
 Remarques :
 
-- Depuis une autre machine, SSH cible l’IP de l’hôte Windows, par exemple
-  `ssh user@windows-host -p 2222`.
-- Les nodes distants doivent pointer vers une URL Gateway joignable, pas vers `127.0.0.1`.
-- Utilisez `listenaddress=0.0.0.0` pour l’accès LAN. Utilisez `127.0.0.1` pour un accès
-  local uniquement.
+- Une connexion SSH depuis une autre machine cible l’adresse IP de l’hôte Windows, par exemple `ssh user@windows-host -p 2222`.
+- Les Nodes distants doivent pointer vers une URL de Gateway accessible, et non vers `127.0.0.1`.
+- Utilisez `listenaddress=0.0.0.0` pour l’accès au réseau local et `127.0.0.1` pour un accès local uniquement.
 
-## Dépannage
+## Résolution des problèmes
 
 ### L’icône de la zone de notification n’apparaît pas
 
-Vérifiez dans le Gestionnaire des tâches la présence de `OpenClaw.Tray.WinUI.exe`. S’il est en cours d’exécution, ouvrez la
-zone des icônes masquées de la zone de notification et épinglez-le. S’il n’est pas en cours d’exécution, lancez **OpenClaw
-Companion** depuis le menu Démarrer.
+Recherchez `OpenClaw.Tray.WinUI.exe` dans Task Manager. S’il est en cours d’exécution, ouvrez la zone des icônes masquées de la zone de notification et épinglez-le. Sinon, lancez **OpenClaw Companion** depuis le menu Start.
 
 ### La configuration locale échoue
 
-Ouvrez le journal de configuration depuis Windows Hub ou inspectez :
+Ouvrez le journal de configuration depuis Windows Hub ou examinez :
 
 ```powershell
 notepad "$env:LOCALAPPDATA\OpenClawTray\Logs\Setup\easy-setup-latest.txt"
 ```
 
-Les causes courantes sont WSL désactivé, la virtualisation bloquée, un état WSL
-appartenant à l’application périmé ou une défaillance réseau pendant l’installation du package Gateway.
+Causes courantes : WSL désactivé, virtualisation bloquée, état WSL obsolète géré par l’application ou panne réseau pendant l’installation du paquet Gateway.
 
-### L’application indique que l’association est requise
+### L’application indique qu’une association est requise
 
-Approuvez la demande d’opérateur ou de Node depuis le Gateway :
+Approuvez la demande de l’opérateur ou du Node depuis le Gateway :
 
 ```powershell
 openclaw devices list
-openclaw devices approve <request-id>
+openclaw devices approve <requestId>
 ```
 
-Si l’appareil avait déjà un jeton, reconnectez-vous depuis l’onglet Connexions après
-approbation.
+Si l’appareil disposait déjà d’un jeton, reconnectez-vous depuis l’onglet Connections après l’approbation.
 
-### Le chat web ne peut pas atteindre un Gateway distant
+### Le chat Web ne peut pas accéder à un Gateway distant
 
-Le chat web distant nécessite HTTPS ou localhost. Pour les certificats autosignés, approuvez
-le certificat dans Windows ou utilisez un tunnel SSH vers une URL localhost.
+Le chat Web distant nécessite HTTPS ou localhost. Pour les certificats autosignés, approuvez le certificat dans Windows ou utilisez un tunnel SSH vers une URL localhost.
 
-### `screen.snapshot`, la caméra ou les commandes audio échouent
+### Les commandes `screen.snapshot`, de caméra ou audio échouent
 
-Confirmez les autorisations Windows pour la caméra, le microphone, la capture d’écran et
-les notifications. Les installations empaquetées déclarent les capacités protégées, mais Windows
-peut tout de même afficher une invite la première fois qu’une commande les utilise.
+Vérifiez les autorisations Windows relatives à la caméra, au microphone, à la capture d’écran et aux notifications. Les installations empaquetées déclarent les fonctionnalités protégées, mais Windows peut tout de même afficher une demande d’autorisation lors de la première utilisation par une commande.
 
 ### La connectivité Git ou GitHub échoue
 
-Certains réseaux bloquent ou limitent HTTPS vers GitHub. Si `git clone` ou `gh auth
-login` échoue, essayez un autre réseau, un VPN ou un proxy HTTP/HTTPS.
+Certains réseaux bloquent ou limitent le trafic HTTPS vers GitHub. Si `git clone` ou `gh auth login` échoue, essayez un autre réseau, un VPN ou un proxy HTTP/HTTPS.
 
-Pour l’authentification `gh` par jeton dans la session actuelle :
+Pour une authentification `gh` par jeton dans la session actuelle :
 
 ```powershell
 $env:GH_TOKEN="<your-token>"
@@ -312,11 +275,11 @@ gh auth status
 gh auth setup-git
 ```
 
-Ne validez jamais de jetons et ne les collez jamais dans des issues ou des pull requests.
+Ne validez jamais de jetons dans le dépôt et ne les collez jamais dans des issues ou des pull requests.
 
-## Connexe
+## Pages associées
 
-- [Vue d’ensemble de l’installation](/fr/install)
+- [Présentation de l’installation](/fr/install)
 - [Configuration de Node.js](/fr/install/node)
 - [Nodes](/fr/nodes)
 - [Interface de contrôle](/fr/web/control-ui)

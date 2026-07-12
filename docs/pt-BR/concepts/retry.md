@@ -1,60 +1,54 @@
 ---
 read_when:
-    - Atualização do comportamento de novas tentativas ou dos padrões do provedor
-    - Depuração de erros de envio ou limites de taxa do provedor
-summary: Política de novas tentativas para chamadas de saída para provedores
+    - Atualização do comportamento ou dos padrões de novas tentativas do provedor
+    - Depuração de erros de envio do provedor ou limites de taxa
+summary: Política de novas tentativas para chamadas de saída ao provedor
 title: Política de novas tentativas
 x-i18n:
-    generated_at: "2026-05-02T05:45:31Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:07:14Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: 7720092499effdfa011fc0a0310adb2ecddca9e94f57f749794eab1c9ab4c922
+    source_hash: 9be2bcb5af829b90042bfcbc5c0e5f5cc5a3cb03dd5472737c80fa0f15803361
     source_path: concepts/retry.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-## Metas
+## Objetivos
 
-- Tentar novamente por solicitação HTTP, não por fluxo de várias etapas.
+- Tentar novamente por requisição HTTP, não por fluxo de várias etapas.
 - Preservar a ordem tentando novamente apenas a etapa atual.
-- Evitar duplicar operações não idempotentes.
+- Evitar a duplicação de operações não idempotentes.
 
 ## Padrões
 
-- Tentativas: 3
-- Limite máximo de atraso: 30000 ms
-- Variação aleatória: 0.1 (10 por cento)
-- Padrões de provedor:
-  - Atraso mínimo do Telegram: 400 ms
-  - Atraso mínimo do Discord: 500 ms
+| Configuração            | Padrão    |
+| ----------------------- | --------- |
+| Tentativas              | 3         |
+| Limite máximo de atraso | 30000 ms  |
+| Jitter                  | 0.1 (10%) |
+| Atraso mín. do Telegram | 400 ms    |
+| Atraso mín. do Discord  | 500 ms    |
 
 ## Comportamento
 
 ### Provedores de modelos
 
-- O OpenClaw permite que os SDKs de provedores lidem com tentativas curtas normais.
-- Para SDKs baseados em Stainless, como Anthropic e OpenAI, respostas passíveis
-  de nova tentativa (`408`, `409`, `429` e `5xx`) podem incluir `retry-after-ms` ou
-  `retry-after`. Quando essa espera é maior que 60 segundos, o OpenClaw injeta
-  `x-should-retry: false` para que o SDK exponha o erro imediatamente e o failover
-  de modelo possa alternar para outro perfil de autenticação ou modelo alternativo.
-- Substitua o limite com `OPENCLAW_SDK_RETRY_MAX_WAIT_SECONDS=<seconds>`.
-  Defina como `0`, `false`, `off`, `none` ou `disabled` para permitir que os SDKs respeitem internamente longas
-  esperas de `Retry-After`.
+- O OpenClaw permite que os SDKs dos provedores tratem as tentativas curtas normais.
+- Para SDKs baseados em Stainless, como Anthropic e OpenAI, respostas que permitem nova tentativa (`408`, `409`, `429` e `5xx`) podem incluir `retry-after-ms` ou `retry-after`. Quando essa espera é superior a 60 segundos, o OpenClaw injeta `x-should-retry: false` para que o SDK retorne o erro imediatamente e o failover de modelo possa alternar para outro perfil de autenticação ou modelo alternativo.
+- Substitua o limite com `OPENCLAW_SDK_RETRY_MAX_WAIT_SECONDS=<seconds>`. Defina-o como `0`, `false`, `off`, `none` ou `disabled` para permitir que os SDKs respeitem internamente longas esperas de `Retry-After`.
 
 ### Discord
 
-- Tenta novamente em erros de limite de taxa (HTTP 429), tempos limite de solicitação, respostas HTTP 5xx
-  e falhas transitórias de transporte, como falhas de consulta DNS, redefinições de
-  conexão, fechamentos de socket e falhas de fetch.
-- Usa `retry_after` do Discord quando disponível; caso contrário, usa backoff exponencial.
+- Tenta novamente em erros de limite de taxa (HTTP 429), tempos limite de requisição, respostas HTTP 5xx e falhas transitórias de transporte, como falhas de consulta DNS, redefinições de conexão, fechamentos de socket e falhas de fetch.
+- Usa o `retry_after` do Discord quando disponível; caso contrário, usa recuo exponencial.
 
 ### Telegram
 
-- Tenta novamente em erros transitórios (429, tempo limite, conexão/redefinição/fechado, temporariamente indisponível).
-- Usa `retry_after` quando disponível; caso contrário, usa backoff exponencial.
-- Erros de análise de Markdown não são tentados novamente; eles recorrem a texto simples.
+- Tenta novamente em erros transitórios (429, tempo limite, conexão/redefinição/fechamento, temporariamente indisponível).
+- Usa `retry_after` quando disponível; caso contrário, usa recuo exponencial.
+- Erros de análise de HTML/Markdown não são tentados novamente; eles recorrem a texto simples na primeira tentativa.
 
 ## Configuração
 
@@ -85,10 +79,10 @@ Defina a política de novas tentativas por provedor em `~/.openclaw/openclaw.jso
 
 ## Observações
 
-- Novas tentativas se aplicam por solicitação (envio de mensagem, upload de mídia, reação, enquete, sticker).
+- As novas tentativas se aplicam por requisição (envio de mensagem, upload de mídia, reação, enquete, figurinha).
 - Fluxos compostos não tentam novamente etapas concluídas.
 
-## Relacionado
+## Relacionados
 
-- [Failover de modelos](/pt-BR/concepts/model-failover)
+- [Failover de modelo](/pt-BR/concepts/model-failover)
 - [Fila de comandos](/pt-BR/concepts/queue)

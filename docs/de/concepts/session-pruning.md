@@ -1,81 +1,70 @@
 ---
 read_when:
-    - Sie möchten das Anwachsen des Kontexts durch Tool-Ausgaben verringern
+    - Sie möchten das Kontextwachstum durch Tool-Ausgaben reduzieren
     - Sie möchten die Optimierung des Anthropic-Prompt-Caches verstehen
 summary: Alte Tool-Ergebnisse kürzen, um den Kontext schlank und das Caching effizient zu halten
 title: Sitzungsbereinigung
 x-i18n:
-    generated_at: "2026-04-26T11:27:32Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 3ea07f0ae23076906e2ff0246ac75813572f98cffa50afddb6a6b0af8964c4a9
-    source_path: concepts/session-pruning.md
-    workflow: 15
+    generated_at: "2026-07-12T15:20:06Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
+    provider: openai
+    source_hash: dd5cb4582cb8d9d7265213abe1f5b5893634882b9f8b3ce1deef746293dd07db
+    source_path: concepts/session-pruning.md
+    workflow: 16
 ---
 
-Die Sitzungsbereinigung kürzt **alte Tool-Ergebnisse** aus dem Kontext vor jedem LLM-
-Aufruf. Sie reduziert das Anwachsen des Kontexts durch angesammelte Tool-Ausgaben (Exec-Ergebnisse, Datei-
-Lesevorgänge, Suchergebnisse), ohne normalen Konversationstext umzuschreiben.
+Das Bereinigen von Sitzungen kürzt **alte Tool-Ergebnisse** vor jedem LLM-Aufruf aus dem Kontext. Es reduziert die Aufblähung des Kontexts durch angesammelte Tool-Ausgaben (Ausführungsergebnisse, gelesene Dateien, Suchergebnisse), ohne normalen Konversationstext umzuschreiben.
 
 <Info>
-Die Bereinigung erfolgt nur im Speicher -- sie verändert nicht das Sitzungs-Transkript auf der Festplatte.
-Ihr vollständiger Verlauf bleibt immer erhalten.
+Die Bereinigung erfolgt nur im Arbeitsspeicher – sie verändert nicht das auf dem Datenträger gespeicherte Sitzungsprotokoll. Ihr vollständiger Verlauf bleibt stets erhalten.
 </Info>
 
-## Warum das wichtig ist
+## Warum dies wichtig ist
 
-Lange Sitzungen sammeln Tool-Ausgaben an, die das Kontextfenster aufblähen. Das
-erhöht die Kosten und kann [Compaction](/de/concepts/compaction) früher als nötig erzwingen.
+In langen Sitzungen sammeln sich Tool-Ausgaben an, die das Kontextfenster aufblähen. Dies erhöht die Kosten und kann eine [Compaction](/de/concepts/compaction) früher als nötig erzwingen.
 
-Die Bereinigung ist besonders wertvoll für das **Anthropic-Prompt-Caching**. Nach Ablauf der Cache-
-TTL schreibt die nächste Anfrage den vollständigen Prompt erneut in den Cache. Die Bereinigung reduziert die
-Größe dieses Cache-Schreibvorgangs und senkt damit direkt die Kosten.
+Die Bereinigung ist besonders wertvoll für das **Prompt-Caching von Anthropic**. Nach Ablauf der Cache-TTL wird bei der nächsten Anfrage der gesamte Prompt erneut zwischengespeichert. Die Bereinigung reduziert die Größe des Cache-Schreibvorgangs und senkt dadurch direkt die Kosten.
 
-## So funktioniert es
+## Funktionsweise
 
-1. Warten, bis die Cache-TTL abläuft (standardmäßig 5 Minuten).
-2. Alte Tool-Ergebnisse für die normale Bereinigung finden (Konversationstext bleibt unberührt).
-3. Übergroße Ergebnisse **weich kürzen** -- Anfang und Ende beibehalten, `...` einfügen.
-4. Den Rest **hart leeren** -- durch einen Platzhalter ersetzen.
-5. Die TTL zurücksetzen, damit Folgeanfragen den frischen Cache wiederverwenden.
+Die Bereinigung wird im Modus `cache-ttl` ausgeführt und ist sowohl an eine Zeitprüfung als auch an eine Prüfung der Kontextgröße gebunden:
 
-## Legacy-Bildbereinigung
+1. Warten Sie, bis die Cache-TTL abgelaufen ist (standardmäßig 5 Minuten bei manueller Festlegung; die automatische Anthropic-Voreinstellung finden Sie unter [Intelligente Voreinstellungen](#smart-defaults)). Vor Ablauf der TTL wird die Bereinigung vollständig übersprungen, damit der Prompt-Cache bei zeitlich nah beieinanderliegenden Interaktionen wiederverwendet werden kann.
+2. Sobald die TTL abgelaufen ist, wird die Gesamtkontextgröße im Verhältnis zum Kontextfenster des Modells geschätzt. Liegt das Verhältnis unter `softTrimRatio` (standardmäßig 0.3), wird die Bereinigung übersprungen und die TTL-Uhr läuft weiter.
+3. **Sanftes Kürzen** übergroßer Tool-Ergebnisse oberhalb des Verhältnisses: Anfang und Ende werden beibehalten (standardmäßig jeweils 1500 Zeichen, zusammen auf 4000 Zeichen begrenzt), dazwischen wird `...` eingefügt.
+4. Liegt das Verhältnis weiterhin bei oder über `hardClearRatio` (standardmäßig 0.5) und verbleiben mindestens `minPrunableToolChars` (standardmäßig 50,000) Zeichen bereinigungsfähiger Tool-Inhalte, werden diese Ergebnisse **vollständig geleert**: Ihr Inhalt wird durch einen Platzhalter ersetzt (standardmäßig `[Old tool result content cleared]`).
+5. Die TTL-Uhr wird nur zurückgesetzt, wenn die Bereinigung den Kontext tatsächlich verändert hat, sodass nachfolgende Anfragen den neuen Cache wiederverwenden.
 
-OpenClaw erstellt außerdem eine separate idempotente Replay-Ansicht für Sitzungen, die
-rohe Bildblöcke oder Prompt-Hydration-Medienmarker im Verlauf speichern.
+Unabhängig von den Schwellenwerten gelten zwei Sicherheitsregeln: Die neuesten `keepLastAssistants` Assistenteninteraktionen (standardmäßig 3) werden niemals bereinigt, und nichts vor der ersten Benutzernachricht der Sitzung wird jemals bereinigt (dies schützt initiale Lesevorgänge wie `SOUL.md`/`USER.md`).
 
-- Dabei bleiben die **3 neuesten abgeschlossenen Turns** bytegenau erhalten, damit Prompt-
-  Cache-Präfixe für aktuelle Folgeanfragen stabil bleiben.
-- In der Replay-Ansicht können ältere, bereits verarbeitete Bildblöcke aus dem Verlauf von `user` oder
-  `toolResult` durch
-  `[image data removed - already processed by model]`
-  ersetzt werden.
-- Ältere textuelle Medienreferenzen wie `[media attached: ...]`,
-  `[Image: source: ...]` und `media://inbound/...` können durch
-  `[media reference removed - already processed by model]` ersetzt werden. Marker für Anhänge
-  im aktuellen Turn bleiben erhalten, damit Vision-Modelle weiterhin frische
-  Bilder hydrieren können.
-- Das rohe Sitzungs-Transkript wird nicht umgeschrieben, sodass Verlaufsansichten weiterhin
-  die ursprünglichen Nachrichteneinträge und ihre Bilder rendern können.
-- Dies ist getrennt von der normalen Cache-TTL-Bereinigung. Es existiert, um zu verhindern,
-  dass wiederholte Bild-Payloads oder veraltete Medienreferenzen bei späteren Turns
-  Prompt-Caches ungültig machen.
+Nur `toolResult`-Nachrichten kommen infrage; normaler Konversationstext bleibt unverändert. Mit `agents.defaults.contextPruning.tools.{allow,deny}` legen Sie fest, welche Tool-Namen bereinigt werden dürfen.
 
-## Intelligente Standardwerte
+## Bereinigung veralteter Bilder
 
-OpenClaw aktiviert die Bereinigung automatisch für Anthropic-Profile:
+OpenClaw erstellt außerdem eine separate idempotente Wiedergabeansicht für Sitzungen, deren Verlauf rohe Bildblöcke oder Medienmarker aus der Prompt-Hydration enthält.
 
-| Profiltyp                                                | Bereinigung aktiviert | Heartbeat |
-| -------------------------------------------------------- | --------------------- | --------- |
-| Anthropic-OAuth-/Token-Auth (einschließlich Wiederverwendung der Claude CLI) | Ja | 1 Stunde |
-| API-Schlüssel                                            | Ja                    | 30 min    |
+- Die **3 neuesten abgeschlossenen Interaktionen** werden bytegenau beibehalten, damit die Präfixe des Prompt-Caches für aktuelle Folgeanfragen stabil bleiben. Diese Anzahl umfasst alle abgeschlossenen Interaktionen, nicht nur solche mit Bildern, sodass auch reine Textinteraktionen das Fenster beanspruchen.
+- In der Wiedergabeansicht werden ältere, bereits verarbeitete Bildblöcke aus dem Verlauf von `user` oder `toolResult` durch `[image data removed - already processed by model]` ersetzt.
+- Ältere textuelle Medienreferenzen wie `[media attached: ...]`, `[Image: source: ...]` und `media://inbound/...` werden durch `[media reference removed - already processed by model]` ersetzt. Anhangsmarker der aktuellen Interaktion bleiben unverändert, damit Vision-Modelle neue Bilder weiterhin hydratisieren können.
+- Das rohe Sitzungsprotokoll wird nicht umgeschrieben, sodass Verlaufsansichten weiterhin die ursprünglichen Nachrichteneinträge und deren Bilder darstellen können.
+- Dies erfolgt getrennt von der oben beschriebenen normalen Cache-TTL-Bereinigung. Es verhindert, dass wiederholte Bildnutzlasten oder veraltete Medienreferenzen bei späteren Interaktionen Prompt-Caches unbrauchbar machen.
 
-Wenn Sie explizite Werte setzen, überschreibt OpenClaw diese nicht.
+## Intelligente Voreinstellungen
+
+Das gebündelte Anthropic-Plugin konfiguriert die Bereinigung und den Heartbeat-Takt automatisch, wenn es erstmals ein Anthropic-Authentifizierungsprofil (oder Claude-CLI-Authentifizierungsprofil) auflöst, jedoch nur für Felder, die Sie nicht bereits ausdrücklich festgelegt haben:
+
+| Authentifizierungsmodus                          | `contextPruning.mode` | `contextPruning.ttl` | `heartbeat.every` |
+| ------------------------------------------------ | --------------------- | -------------------- | ----------------- |
+| OAuth/Token (einschließlich Claude-CLI-Nutzung)   | `cache-ttl`           | `1h`                 | `1h`              |
+| API-Schlüssel                                     | `cache-ttl`           | `1h`                 | `30m`             |
+
+Wenn Sie `agents.defaults.contextPruning.mode` oder `agents.defaults.heartbeat.every` selbst festlegen, überschreibt OpenClaw diese Werte nicht. Diese automatische Voreinstellung wird nur bei der Authentifizierung für die Anthropic-Produktfamilie angewendet; bei anderen Providern bleibt die Bereinigung `off`, sofern Sie sie nicht konfigurieren.
 
 ## Aktivieren oder deaktivieren
 
-Für Nicht-Anthropic-Provider ist die Bereinigung standardmäßig deaktiviert. Zum Aktivieren:
+Bei Providern außerhalb der Anthropic-Produktfamilie ist die Bereinigung standardmäßig deaktiviert. So aktivieren Sie sie:
 
 ```json5
 {
@@ -87,27 +76,25 @@ Für Nicht-Anthropic-Provider ist die Bereinigung standardmäßig deaktiviert. Z
 }
 ```
 
-Zum Deaktivieren: `mode: "off"` setzen.
+So deaktivieren Sie sie: Legen Sie `mode: "off"` fest.
 
-## Bereinigung vs. Compaction
+## Bereinigung im Vergleich zur Compaction
 
-|            | Bereinigung         | Compaction              |
-| ---------- | ------------------- | ----------------------- |
-| **Was**    | Kürzt Tool-Ergebnisse | Fasst die Konversation zusammen |
-| **Gespeichert?** | Nein (pro Anfrage) | Ja (im Transkript)     |
-| **Umfang** | Nur Tool-Ergebnisse | Gesamte Konversation    |
+|                  | Bereinigung             | Compaction                  |
+| ---------------- | ----------------------- | --------------------------- |
+| **Was**          | Kürzt Tool-Ergebnisse   | Fasst die Konversation zusammen |
+| **Gespeichert?** | Nein (pro Anfrage)      | Ja (im Protokoll)           |
+| **Umfang**       | Nur Tool-Ergebnisse     | Gesamte Konversation        |
 
-Sie ergänzen sich -- die Bereinigung hält Tool-Ausgaben zwischen
-Compaction-Zyklen schlank.
+Beide ergänzen sich – die Bereinigung hält die Tool-Ausgaben zwischen Compaction-Zyklen schlank.
 
 ## Weiterführende Informationen
 
-- [Compaction](/de/concepts/compaction) -- zusammenfassungsbasierte Kontextreduktion
-- [Gateway-Konfiguration](/de/gateway/configuration) -- alle Konfigurationsoptionen für die Bereinigung
-  (`contextPruning.*`)
+- [Compaction](/de/concepts/compaction): kontextreduzierende Zusammenfassung
+- [Gateway-Konfiguration](/de/gateway/configuration): alle Konfigurationsoptionen für die Bereinigung (`contextPruning.*`)
 
-## Verwandt
+## Verwandte Themen
 
 - [Sitzungsverwaltung](/de/concepts/session)
-- [Sitzungstools](/de/concepts/session-tool)
-- [Context engine](/de/concepts/context-engine)
+- [Sitzungs-Tools](/de/concepts/session-tool)
+- [Kontext-Engine](/de/concepts/context-engine)

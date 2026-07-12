@@ -1,98 +1,100 @@
 ---
 read_when:
-    - OpenAI 호환 도구에서 Claude Max 구독을 사용하려는 경우
+    - OpenAI 호환 도구에서 Claude Max 구독을 사용하려고 합니다
     - Claude Code CLI를 래핑하는 로컬 API 서버가 필요합니다
-    - 구독 기반 Anthropic 액세스와 API 키 기반 Anthropic 액세스를 평가하려는 경우
+    - 구독 기반 Anthropic 액세스와 API 키 기반 액세스를 비교 평가하려고 합니다
 summary: Claude 구독 자격 증명을 OpenAI 호환 엔드포인트로 노출하는 커뮤니티 프록시
 title: Claude Max API 프록시
 x-i18n:
-    generated_at: "2026-06-28T20:44:06Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:38:56Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: 5d8800f7d5bd7adf9bff4825a45878a1bbde73b4d54afe4b5b4aa2b1b5523bee
+    source_hash: 5d0d9a70e14d7d444e57e9bcf169816fec4013a2680dfc9b1761e6ab32109e9f
     source_path: providers/claude-max-api-proxy.md
     workflow: 16
 ---
 
-**claude-max-api-proxy**는 Claude Max/Pro 구독을 OpenAI 호환 API 엔드포인트로 노출하는 커뮤니티 도구입니다. 이를 통해 OpenAI API 형식을 지원하는 모든 도구에서 구독을 사용할 수 있습니다.
+**claude-max-api-proxy**는 Claude Max/Pro 구독을 OpenAI 호환 API 엔드포인트로
+노출하는 커뮤니티 npm 패키지(OpenClaw plugin 아님)입니다. 따라서 Anthropic API 키
+대신 구독을 모든 OpenAI 호환 도구에서 사용할 수 있습니다.
 
 <Warning>
-이 경로는 기술적 호환성만을 위한 것입니다. Anthropic은 과거에 Claude Code 외부에서 일부 구독 사용을 차단한 적이 있습니다. 이 경로를 사용할지 직접 결정해야 하며, 이에 의존하기 전에 Anthropic의 현재 청구 규칙을 확인해야 합니다.
+기술적으로만 호환되며 공식적으로 승인된 경로가 아닙니다. Anthropic은 과거에
+Claude Code 외부에서 일부 구독 사용을 차단한 적이 있으므로, 이에 의존하기 전에
+Anthropic의 현재 결제 규칙을 확인하십시오.
 
-Anthropic의 현재 지원 문서에는 `claude -p`가 Agent SDK/프로그래밍 방식 사용이라고 되어 있습니다.
-Anthropic의 2026년 6월 15일 지원 업데이트는 발표된 별도 Agent SDK 크레딧 플랜을 일시 중지했습니다. 현재로서는 Claude Agent SDK, `claude -p`, 서드파티 앱 사용이 여전히 로그인된 구독의 사용 한도에서 차감됩니다.
-
-이 경로에 의존하기 전에 Anthropic의 [Agent SDK 플랜
-문서](https://support.claude.com/en/articles/15036540-use-the-claude-agent-sdk-with-your-claude-plan)와 Claude Code 지원 문서 중
+Anthropic의 Claude Code 문서에서는 `claude -p`를 Agent SDK/프로그래밍 방식
+사용으로 설명합니다. Anthropic의 2026년 6월 15일 지원 업데이트 기준으로 Claude Agent SDK,
+`claude -p`, 서드 파티 앱 사용량은 로그인한 구독의 사용량 한도에서 차감됩니다
+(이전에 발표된 별도의 Agent SDK 크레딧 요금제는 일시 중지되었습니다).
+Anthropic의 [Agent SDK 요금제
+문서](https://support.claude.com/en/articles/15036540-use-the-claude-agent-sdk-with-your-claude-plan),
 [Pro/Max](https://support.claude.com/en/articles/11145838-use-claude-code-with-your-pro-or-max-plan)
-또는
-[Team/Enterprise](https://support.claude.com/en/articles/11845131-use-claude-code-with-your-team-or-enterprise-plan)
-계정 문서를 확인하세요.
+및 [Team/Enterprise](https://support.claude.com/en/articles/11845131-use-claude-code-with-your-team-or-enterprise-plan)
+요금제 문서와 OpenClaw 자체 Claude CLI 결제 참고 사항은
+[Anthropic 제공자](/ko/providers/anthropic)를 참조하십시오.
 </Warning>
 
-## 왜 이것을 사용하나요?
+## 사용하는 이유
 
-| 접근 방식                  | 비용 경로                                      | 적합한 용도                                   |
-| ------------------------- | ----------------------------------------------- | ------------------------------------------ |
-| Anthropic API             | Claude Console 또는 클라우드를 통해 토큰당 결제   | 프로덕션 앱, 공유 자동화, 대량 사용 |
-| Claude 구독 프록시 | Claude Code / `claude -p` 플랜 및 크레딧 규칙 | 호환 도구를 사용한 개인 실험 |
+| 방식                      | 비용 경로                                       | 적합한 용도                                     |
+| ------------------------- | ----------------------------------------------- | ----------------------------------------------- |
+| Anthropic API 키          | Claude Console을 통해 토큰당 결제               | 프로덕션 앱, 공유 자동화, 대규모 사용           |
+| Claude 구독 프록시        | Claude Code / `claude -p` 요금제 및 크레딧 규칙 | 호환 도구를 활용한 개인 실험                    |
 
-Claude Max 또는 Pro 구독이 있고 이를 OpenAI 호환 도구와 함께 사용하려는 경우, 이 프록시는 일부 개인 워크플로에 맞을 수 있습니다. 이는 무제한 정액 경로가 아닙니다. 프로덕션 사용에는 API 키가 여전히 더 명확한 정책 및 청구 경로입니다.
+이 프록시를 사용하면 Claude Max 또는 Pro 구독을 OpenAI 호환 도구에서 사용할 수
+있습니다. 무제한 정액제 경로가 아니며 Claude Code의 사용량 한도를 그대로 적용받습니다.
+프로덕션 용도에서는 API 키가 여전히 더 명확한 결제 경로입니다.
 
 ## 작동 방식
 
-```
-Your App → claude-max-api-proxy → Claude Code CLI / claude -p → Anthropic
-     (OpenAI format)              (converts format)          (uses your login)
+```text
+애플리케이션 -> claude-max-api-proxy -> Claude Code CLI / claude -p -> Anthropic
+     (OpenAI 형식)                    (형식 변환)                    (사용자 로그인 사용)
 ```
 
-프록시는 다음을 수행합니다.
-
-1. `http://localhost:3456/v1/chat/completions`에서 OpenAI 형식 요청을 받습니다
-2. 이를 Claude Code CLI 명령으로 변환합니다
-3. OpenAI 형식으로 응답을 반환합니다(스트리밍 지원)
+프록시는 요청마다 Claude Code CLI를 하위 프로세스로 실행하고, OpenAI 형식의 채팅
+요청을 CLI 프롬프트로 변환한 다음, 응답을 OpenAI 형식으로 스트리밍하거나 반환합니다.
 
 ## 시작하기
 
 <Steps>
   <Step title="프록시 설치">
-    Node.js 22+와 Claude Code CLI가 필요합니다.
+    Node.js 20+와 인증된 Claude Code CLI가 필요합니다.
 
     ```bash
     npm install -g claude-max-api-proxy
 
-    # Verify Claude CLI is authenticated
+    # Claude CLI 인증 여부 확인
     claude --version
+    claude auth login   # 아직 인증하지 않은 경우
     ```
 
   </Step>
   <Step title="서버 시작">
     ```bash
     claude-max-api
-    # Server runs at http://localhost:3456
+    # 서버는 http://localhost:3456 에서 실행됩니다
     ```
   </Step>
   <Step title="프록시 테스트">
     ```bash
-    # Health check
     curl http://localhost:3456/health
-
-    # List models
     curl http://localhost:3456/v1/models
 
-    # Chat completion
     curl http://localhost:3456/v1/chat/completions \
       -H "Content-Type: application/json" \
       -d '{
         "model": "claude-opus-4",
-        "messages": [{"role": "user", "content": "Hello!"}]
+        "messages": [{"role": "user", "content": "안녕하세요!"}]
       }'
     ```
 
   </Step>
   <Step title="OpenClaw 구성">
-    OpenClaw가 프록시를 사용자 지정 OpenAI 호환 엔드포인트로 사용하도록 지정합니다.
+    프록시를 사용자 지정 OpenAI 호환 엔드포인트로 사용하도록 OpenClaw를 지정합니다.
 
     ```json5
     {
@@ -111,29 +113,38 @@ Your App → claude-max-api-proxy → Claude Code CLI / claude -p → Anthropic
   </Step>
 </Steps>
 
-## 내장 카탈로그
+<Note>
+아래 모델 ID는 OpenClaw의 Anthropic 모델 참조가 아니라 프록시 자체 카탈로그의
+ID입니다. 각 ID는 Claude Code CLI 모델 별칭(`opus`, `sonnet`, `haiku`)에
+매핑되므로, Anthropic이 CLI에서 해당 별칭을 업데이트할 때마다 실제 모델이
+변경됩니다. 특정 매핑에 의존하기 전에 프록시의 최신 README를 확인하십시오.
+</Note>
 
-| 모델 ID          | 매핑 대상         |
-| ----------------- | --------------- |
-| `claude-opus-4`   | Claude Opus 4   |
-| `claude-sonnet-4` | Claude Sonnet 4 |
-| `claude-haiku-4`  | Claude Haiku 4  |
+| 모델 ID            | CLI 별칭  | 현재 매핑       |
+| ------------------ | --------- | --------------- |
+| `claude-opus-4`    | `opus`    | Claude Opus 4.5 |
+| `claude-sonnet-4`  | `sonnet`  | Claude Sonnet 4 |
+| `claude-haiku-4`   | `haiku`   | Claude Haiku 4  |
 
 ## 고급 구성
 
 <AccordionGroup>
-  <Accordion title="프록시 스타일 OpenAI 호환 참고 사항">
-    이 경로는 다른 사용자 지정 `/v1` 백엔드와 동일한 프록시 스타일 OpenAI 호환 경로를 사용합니다.
+  <Accordion title="프록시 방식 OpenAI 호환 참고 사항">
+    이는 다른 모든 자체 호스팅 OpenAI 호환 백엔드와 동일한 경로인 OpenClaw의
+    범용 사용자 지정 `/v1` OpenAI 호환 경로를 사용합니다.
 
-    - 기본 OpenAI 전용 요청 구성은 적용되지 않습니다
-    - `service_tier`, Responses `store`, 프롬프트 캐시 힌트, OpenAI reasoning 호환 페이로드 구성은 없습니다
-    - 숨겨진 OpenClaw attribution 헤더(`originator`, `version`, `User-Agent`)는 프록시 URL에 삽입되지 않습니다
+    - OpenAI 네이티브 전용 요청 형식 조정은 적용되지 않습니다.
+    - `/fast`와 `service_tier`는 직접 `api.anthropic.com`으로 전송되는
+      트래픽에만 적용됩니다. 프록시 경로에서는 `service_tier`를 변경하지 않습니다
+      ([Anthropic 제공자 고속 모드](/ko/providers/anthropic#advanced-configuration) 참조).
+    - Responses `store`, 프롬프트 캐시 힌트 또는 OpenAI 추론 호환 페이로드 형식 조정은 지원하지 않습니다.
+    - OpenClaw의 OpenAI/Codex 출처 표시 헤더(`originator`, `version`,
+      `User-Agent`)는 네이티브 `api.openai.com` OAuth 트래픽에만 전송되며,
+      이 프록시와 같은 사용자 지정 `OPENAI_BASE_URL` 대상에는 전송되지 않습니다.
 
   </Accordion>
 
-  <Accordion title="LaunchAgent로 macOS에서 자동 시작">
-    프록시를 자동으로 실행하도록 LaunchAgent를 만듭니다.
-
+  <Accordion title="LaunchAgent를 사용하여 macOS에서 자동 시작">
     ```bash
     cat > ~/Library/LaunchAgents/com.claude-max-api.plist << 'EOF'
     <?xml version="1.0" encoding="UTF-8"?>
@@ -168,27 +179,26 @@ Your App → claude-max-api-proxy → Claude Code CLI / claude -p → Anthropic
 
 ## 참고 사항
 
-- 이는 Anthropic 또는 OpenClaw가 공식 지원하는 것이 아닌 **커뮤니티 도구**입니다
-- Claude Code CLI 인증이 완료된 활성 Claude Max/Pro 구독이 필요합니다
-- Claude Code `claude -p`의 청구, 사용 크레딧, 속도 제한 동작을 상속합니다
-- 프록시는 로컬에서 실행되며 데이터를 어떤 서드파티 서버에도 보내지 않습니다
-- 스트리밍 응답이 완전히 지원됩니다
+- Claude Code의 `claude -p` 결제, 사용량 크레딧 및 속도 제한 동작을 그대로 적용받습니다.
+- `127.0.0.1`에만 바인딩되며, CLI 자체의 Anthropic 호출 외에는 어떤 서드 파티 서버에도 데이터를 전송하지 않습니다.
+- 스트리밍 응답을 지원합니다.
+- 시작 시 인증 실패 여부를 확인하지 않으며 실제 채팅 요청이 실행될 때만 드러납니다. CLI가 인증되지 않은 경우 서버가 시작을 거부하는 대신 첫 번째 요청이 실패합니다.
 
 <Note>
-Claude CLI 또는 API 키를 사용한 기본 Anthropic 통합은 [Anthropic 제공자](/ko/providers/anthropic)를 참조하세요. OpenAI/Codex 구독은 [OpenAI 제공자](/ko/providers/openai)를 참조하세요.
+Claude CLI 또는 API 키를 사용하는 네이티브 Anthropic 통합은 [Anthropic 제공자](/ko/providers/anthropic)를 참조하십시오. OpenAI/Codex 구독은 [OpenAI 제공자](/ko/providers/openai)를 참조하십시오.
 </Note>
 
-## 관련 항목
+## 관련 문서
 
 <CardGroup cols={2}>
   <Card title="Anthropic 제공자" href="/ko/providers/anthropic" icon="bolt">
-    Claude CLI 또는 API 키를 사용한 기본 OpenClaw 통합입니다.
+    Claude CLI 또는 API 키를 사용하는 네이티브 OpenClaw 통합입니다.
   </Card>
   <Card title="OpenAI 제공자" href="/ko/providers/openai" icon="robot">
     OpenAI/Codex 구독용입니다.
   </Card>
   <Card title="모델 선택" href="/ko/concepts/model-providers" icon="layers">
-    모든 제공자, 모델 참조, 장애 조치 동작의 개요입니다.
+    모든 제공자, 모델 참조 및 장애 조치 동작의 개요입니다.
   </Card>
   <Card title="구성" href="/ko/gateway/configuration" icon="gear">
     전체 구성 참조입니다.

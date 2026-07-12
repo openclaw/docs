@@ -1,30 +1,31 @@
 ---
 read_when:
-    - Procurando suporte de SO ou caminhos de instalação
+    - Procurando compatibilidade com sistemas operacionais ou caminhos de instalação
     - Decidindo onde executar o Gateway
-summary: Visão geral de suporte da plataforma (Gateway + aplicativos complementares)
+summary: Visão geral do suporte a plataformas (Gateway + aplicativos complementares)
 title: Plataformas
 x-i18n:
-    generated_at: "2026-06-27T17:42:24Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:25:17Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: 4d6edfaf9c4b1f1bc824d4bddf8263244902676dd5df98da556a8a5f35afe566
+    source_hash: 6c91bf7fd41bf5433b9f1efb768a44dcf5fa55917cfc45f463688d00f23e725d
     source_path: platforms/index.md
     workflow: 16
 ---
 
 O núcleo do OpenClaw é escrito em TypeScript. **Node é o runtime recomendado**.
-Bun não é recomendado para o Gateway — há problemas conhecidos com canais do WhatsApp e
-Telegram; veja [Bun (experimental)](/pt-BR/install/bun) para detalhes.
+O Bun não é recomendado para o Gateway — há problemas conhecidos com os canais do WhatsApp e
+Telegram; consulte [Bun (experimental)](/pt-BR/install/bun) para obter detalhes.
 
-Existem aplicativos complementares para Windows Hub, macOS (aplicativo da barra de menus) e nós móveis
-(iOS/Android). Aplicativos complementares para Linux estão planejados, mas o Gateway já é totalmente
-compatível hoje. No Windows, escolha Windows Hub para o aplicativo desktop, instalação nativa via
-PowerShell para uso priorizando o terminal, ou WSL2 para o runtime do Gateway mais
+Há aplicativos complementares para o Windows Hub, macOS (aplicativo da barra de menus) e nodes móveis
+(iOS/Android). Aplicativos complementares para Linux estão planejados, mas o Gateway já é
+totalmente compatível. No Windows, escolha o Windows Hub para usar o aplicativo para desktop, a instalação
+nativa pelo PowerShell para uso prioritário do terminal ou o WSL2 para obter o runtime do Gateway mais
 compatível com Linux.
 
-## Escolha seu SO
+## Escolha seu sistema operacional
 
 - macOS: [macOS](/pt-BR/platforms/macos)
 - iOS: [iOS](/pt-BR/platforms/ios)
@@ -34,7 +35,7 @@ compatível com Linux.
 
 ## VPS e hospedagem
 
-- Hub VPS: [Hospedagem VPS](/pt-BR/vps)
+- Hub em VPS: [Hospedagem em VPS](/pt-BR/vps)
 - Fly.io: [Fly.io](/pt-BR/install/fly)
 - Hetzner (Docker): [Hetzner](/pt-BR/install/hetzner)
 - GCP (Compute Engine): [GCP](/pt-BR/install/gcp)
@@ -44,30 +45,30 @@ compatível com Linux.
 
 ## Links comuns
 
-- Guia de instalação: [Introdução](/pt-BR/start/getting-started)
+- Guia de instalação: [Primeiros passos](/pt-BR/start/getting-started)
 - Windows Hub: [Windows](/pt-BR/platforms/windows)
-- Runbook do Gateway: [Gateway](/pt-BR/gateway)
+- Manual operacional do Gateway: [Gateway](/pt-BR/gateway)
 - Configuração do Gateway: [Configuração](/pt-BR/gateway/configuration)
 - Status do serviço: `openclaw gateway status`
 
 ## Instalação do serviço Gateway (CLI)
 
-Use uma destas opções (todas compatíveis):
+Use uma destas opções (todas são compatíveis):
 
 - Assistente (recomendado): `openclaw onboard --install-daemon`
-- Direto: `openclaw gateway install`
+- Direta: `openclaw gateway install`
 - Fluxo de configuração: `openclaw configure` → selecione **Serviço Gateway**
-- Reparar/migrar: `openclaw doctor` (oferece instalar ou corrigir o serviço)
+- Reparar/migrar: `openclaw doctor` (oferece a instalação ou correção do serviço)
 
-O destino do serviço depende do SO:
+O destino do serviço depende do sistema operacional:
 
-- macOS: LaunchAgent (`ai.openclaw.gateway` ou `ai.openclaw.<profile>`; legado `com.openclaw.*`)
-- Linux/WSL2: serviço de usuário systemd (`openclaw-gateway[-<profile>].service`)
-- Windows nativo: Tarefa Agendada (`OpenClaw Gateway` ou `OpenClaw Gateway (<profile>)`), com fallback para um item de login por usuário na pasta Inicializar se a criação da tarefa for negada
+- macOS: LaunchAgent (`ai.openclaw.gateway` ou `ai.openclaw.<profile>` para um perfil nomeado)
+- Linux/WSL2: serviço de usuário do systemd (`openclaw-gateway[-<profile>].service`)
+- Windows nativo: Tarefa Agendada (`OpenClaw Gateway` ou `OpenClaw Gateway (<profile>)`), com um item de login por usuário na pasta Inicializar como alternativa caso a criação da tarefa seja negada
 
-## Relacionado
+## Relacionados
 
 - [Visão geral da instalação](/pt-BR/install)
 - [Windows Hub](/pt-BR/platforms/windows)
-- [Aplicativo macOS](/pt-BR/platforms/macos)
-- [Aplicativo iOS](/pt-BR/platforms/ios)
+- [Aplicativo para macOS](/pt-BR/platforms/macos)
+- [Aplicativo para iOS](/pt-BR/platforms/ios)

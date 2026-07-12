@@ -1,30 +1,31 @@
 ---
 read_when:
-    - Sie möchten schnell den Betriebszustand des laufenden Gateway prüfen
-summary: CLI-Referenz für `openclaw health` (Gateway-Zustands-Snapshot über RPC)
+    - Sie möchten den Status des laufenden Gateways schnell überprüfen
+summary: CLI-Referenz für `openclaw health` (Momentaufnahme des Gateway-Zustands über RPC)
 title: Zustand
 x-i18n:
-    generated_at: "2026-05-10T19:28:28Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:12:27Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: 26be7bbbf75c2eca1213fe145fdeeab6fee96798dff457278ac69a20145bf75d
+    source_hash: a26ce5ade9ab56c9751c3dde814c38a1e01e74d91c2fd57e56d3c44ca529d0d8
     source_path: cli/health.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
 # `openclaw health`
 
-Ruft den Health-Status vom laufenden Gateway ab.
+Ruft über WebSocket-RPC eine Zustandsmomentaufnahme vom laufenden Gateway ab (keine direkten Channel-Sockets von der CLI).
 
 ## Optionen
 
-| Flag             | Standardwert | Beschreibung                                                              |
-| ---------------- | ------------ | ------------------------------------------------------------------------- |
-| `--json`         | `false`      | Gibt maschinenlesbares JSON statt Text aus.                               |
-| `--timeout <ms>` | `10000`      | Verbindungs-Timeout in Millisekunden.                                     |
-| `--verbose`      | `false`      | Ausführliche Protokollierung. Erzwingt eine Live-Prüfung und erweitert die Ausgabe pro Agent. |
-| `--debug`        | `false`      | Alias für `--verbose`.                                                    |
+| Flag             | Standardwert | Beschreibung                                                                                                                 |
+| ---------------- | ------------ | ---------------------------------------------------------------------------------------------------------------------------- |
+| `--json`         | `false`      | Gibt maschinenlesbares JSON anstelle von Text aus.                                                                           |
+| `--timeout <ms>` | `10000`      | Zeitüberschreitung für die Verbindung in Millisekunden.                                                                      |
+| `--verbose`      | `false`      | Erzwingt eine Live-Prüfung und erweitert die Ausgabe auf alle konfigurierten Konten und Agenten.                              |
+| `--debug`        | `false`      | Alias für `--verbose`.                                                                                                       |
 
 Beispiele:
 
@@ -36,16 +37,14 @@ openclaw health --verbose
 openclaw health --debug
 ```
 
-Hinweise:
+## Verhalten
 
-- Standardmäßig fragt `openclaw health` das laufende Gateway nach seinem Health-Snapshot.
-  Wenn das Gateway bereits einen frischen zwischengespeicherten Snapshot hat, kann es diese
-  zwischengespeicherte Nutzlast zurückgeben und im Hintergrund aktualisieren.
-- `--verbose` erzwingt eine Live-Prüfung, gibt Verbindungsdetails des Gateway aus und
-  erweitert die menschenlesbare Ausgabe über alle konfigurierten Konten und Agenten hinweg.
-- Die Ausgabe enthält Session Stores pro Agent, wenn mehrere Agenten konfiguriert sind.
+- Ohne `--verbose` kann das Gateway eine zwischengespeicherte Momentaufnahme zurückgeben (bis zu 60 Sekunden aktuell und gegenüber dem Live-Zustand der Channel-Laufzeit unverändert) und sie im Hintergrund für den nächsten Aufrufer aktualisieren.
+- `--verbose` erzwingt eine Live-Prüfung (Prüfungen der Konten pro Channel), gibt Details zur Gateway-Verbindung aus und erweitert die menschenlesbare Ausgabe auf alle konfigurierten Konten und Agenten, statt nur auf den Standardagenten.
+- `--json` gibt immer die vollständige Momentaufnahme zurück: Channels, Prüfungen pro Konto, Plugin-Ladestatus, Quarantänestatus der Kontext-Engine, Cache-Status der Modellpreise, Zustand der Ereignisschleife und Sitzungsspeicher pro Agent.
 
-## Verwandt
+## Verwandte Themen
 
 - [CLI-Referenz](/de/cli)
-- [Gateway-Health](/de/gateway/health)
+- [`openclaw status`](/de/cli/status) — lokale Diagnose und Channel-Prüfungen ohne vollständige Zustandsmomentaufnahme
+- [Gateway-Zustand](/de/gateway/health)

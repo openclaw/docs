@@ -1,53 +1,62 @@
 ---
 read_when:
-    - 调试 Mac WebChat 视图或回环端口
-summary: macOS 应用如何嵌入 Gateway 网关 WebChat，以及如何调试它
+    - 调试 Mac WebChat 视图或环回端口
+summary: macOS 应用如何嵌入 Gateway 网关 WebChat，以及如何进行调试
 title: WebChat（macOS）
 x-i18n:
-    generated_at: "2026-07-06T10:51:23Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:34:15Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: 925751d15450c816fc81b59ac89a190d88ab8b77629b635913e0862ba94af1c0
+    source_hash: 7139ada530e4d5c3833500c36364d742dff301608a8a1a7902003b5f5384512c
     source_path: platforms/mac/webchat.md
     workflow: 16
 ---
 
-macOS 菜单栏应用将 WebChat UI 嵌入为原生 SwiftUI 视图。它连接到 Gateway 网关，并默认使用所选智能体的主会话（`main`，或当 `session.scope` 为 `global` 时使用 `global`），同时提供用于其他会话的会话切换器。
+macOS 菜单栏应用将 WebChat UI 作为原生 SwiftUI 视图嵌入。它连接到 Gateway 网关，并默认使用所选智能体的主会话（`main`；当 `session.scope` 为 `global` 时则为 `global`）。
+
+完整聊天窗口采用原生分栏视图：
+
+- **会话侧边栏**：支持搜索的会话列表，包含已固定和最近使用分区、未读指示器，以及用于固定/取消固定、复制会话键和删除的上下文菜单。工具栏按钮（或 Cmd-N）通过 `sessions.create` 创建真正的新会话。
+- **窗口工具栏**：上下文用量环（显示 token 数和会话成本，并带有紧凑操作）、思考级别选择器、模型选择器，以及会话操作菜单（新建会话、刷新、复制会话键、导出对话记录、压缩、清除历史记录）。
+- **对话记录和编辑器**：助手消息以带头像的纯文本呈现，用户消息以强调色气泡呈现。输入 `/` 会打开由 `commands.list` 提供支持的斜杠命令自动补全，并支持使用方向键/Tab/Return/Escape 进行键盘导航。右键单击消息可复制。
+
+菜单栏中的锚定式快速聊天面板保留紧凑的单栏布局和内联选择器。
 
 - **本地模式**：直接连接到本地 Gateway 网关 WebSocket。
 - **远程模式**：通过 SSH 转发 Gateway 网关控制端口，并将该隧道用作数据平面。
 
 ## 启动和调试
 
-- 手动：Lobster 菜单 -> “打开聊天”。
+- 手动：Lobster 菜单 -> "Open Chat"。
 - 测试时自动打开：
 
   ```bash
   dist/OpenClaw.app/Contents/MacOS/OpenClaw --chat
   ```
 
-  （`--webchat` 可作为旧版别名使用。）
+  （`--webchat` 作为旧版别名仍可使用。）
 
 - 日志：`./scripts/clawlog.sh`（子系统 `ai.openclaw`，类别 `WebChatSwiftUI`）。
 
-## 接线方式
+## 连接方式
 
 - 数据平面：Gateway 网关 WS 方法 `chat.history`、`chat.send`、`chat.abort`、`chat.inject`，以及事件 `chat`、`agent`、`presence`、`tick`、`health`。
-- `chat.history` 返回经过显示规范化的转录内容：可见文本中的内联指令标签会被剥离，纯文本工具调用 XML 载荷（`<tool_call>`、`<function_call>`、`<tool_calls>`、`<function_calls>`，包括被截断的块）和泄露的模型控制令牌会被剥离，精确为 `NO_REPLY`/`no_reply` 等纯静默令牌的 assistant 行会被省略，过大的行可以替换为截断占位符。
-- 会话：默认使用如上所述的主会话；UI 可以在会话之间切换。
-- 新手引导使用专用会话，以便将首次运行设置分离出来。
-- 离线缓存：应用会按每个网关保存近期聊天会话和转录内容的小型只读缓存（`~/Library/Application Support/OpenClaw/chat-cache.sqlite`）：冷启动会立即绘制最后已知的转录内容，并在 Gateway 网关响应后刷新；断开连接时仍可浏览近期聊天（发送会保持禁用，直到连接恢复）。
+- `chat.history` 返回经过显示标准化的对话记录：从可见文本中移除内联指令标签；移除纯文本工具调用 XML 载荷（`<tool_call>`、`<function_call>`、`<tool_calls>`、`<function_calls>`，包括截断的块）和泄漏的模型控制 token；省略仅包含静默 token 的助手行，例如完全匹配的 `NO_REPLY`/`no_reply`；过大的行可替换为截断占位符。
+- 会话：默认使用上述主会话；UI 可以在会话之间切换。
+- 新手引导使用专用会话，以便将首次运行设置与其他会话分开。
+- 离线缓存：应用会为每个 Gateway 网关保留一个小型只读缓存，其中包含最近的聊天会话和对话记录（`~/Library/Application Support/OpenClaw/chat-cache.sqlite`）：冷启动时会立即绘制最后已知的对话记录，并在 Gateway 网关响应后刷新；断开连接时仍可浏览最近的聊天（在连接恢复之前，发送功能保持禁用）。
 
-## 安全面
+## 安全边界
 
 - 远程模式仅通过 SSH 转发 Gateway 网关 WebSocket 控制端口。
 
 ## 已知限制
 
-- UI 针对聊天会话优化，而不是完整的浏览器沙箱。
+- UI 针对聊天会话进行了优化，并非完整的浏览器沙箱。
 
-## 相关
+## 相关内容
 
 - [WebChat](/zh-CN/web/webchat)
 - [macOS 应用](/zh-CN/platforms/macos)

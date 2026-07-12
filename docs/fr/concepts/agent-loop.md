@@ -1,194 +1,170 @@
 ---
 read_when:
-    - Vous avez besoin d’un guide exact de la boucle de l’agent ou des événements du cycle de vie
-    - Vous modifiez la mise en file d’attente des sessions, les écritures de transcription ou le comportement du verrou d’écriture de session
-summary: Cycle de vie de la boucle d’agent, flux et sémantique d’attente
-title: Boucle d’agent
+    - Vous avez besoin d’une présentation détaillée et exacte de la boucle de l’agent ou des événements du cycle de vie
+    - Vous modifiez la mise en file d’attente des sessions, les écritures de transcription ou le comportement du verrou d’écriture des sessions
+summary: Cycle de vie de la boucle de l’agent, flux et sémantique d’attente
+title: Boucle de l’agent
 x-i18n:
-    generated_at: "2026-06-27T17:22:35Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:18:28Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: 1ccfdf4a3ea6b9c946064f051e32c88cefbcb707c7426abe85b04294030eedaf
+    source_hash: 3793a2c765c72f7f4bb8e790ce4d61abc279cf3a8a7367ecf8759428d0192279
     source_path: concepts/agent-loop.md
     workflow: 16
 ---
 
-Une boucle agentique est l'exécution "réelle" complète d'un agent : réception → assemblage du contexte → inférence du modèle →
-exécution d'outils → réponses en streaming → persistance. C'est le chemin de référence qui transforme un message
-en actions et en réponse finale, tout en maintenant l'état de session cohérent.
+La boucle de l’agent est l’exécution sérialisée propre à chaque session qui transforme un message en
+actions et en réponse : réception, assemblage du contexte, inférence du modèle, exécution
+des outils, diffusion en continu, persistance.
 
-Dans OpenClaw, une boucle est une exécution unique et sérialisée par session qui émet des événements de cycle de vie et de flux
-pendant que le modèle réfléchit, appelle des outils et diffuse la sortie. Ce document explique comment cette boucle authentique est
-câblée de bout en bout.
+## Points d’entrée
 
-## Points d'entrée
+- RPC du Gateway : `agent` et `agent.wait`.
+- CLI : `openclaw agent`.
 
-- RPC Gateway : `agent` et `agent.wait`.
-- CLI : commande `agent`.
+## Séquence d’exécution
 
-## Fonctionnement (vue d'ensemble)
+1. Le RPC `agent` valide les paramètres, résout la session (`sessionKey`/`sessionId`), conserve les métadonnées de session et renvoie immédiatement `{ runId, acceptedAt }`.
+2. `agentCommand` exécute le tour : résout le modèle et les valeurs par défaut de réflexion/détail/traçage, charge l’instantané des Skills, appelle `runEmbeddedAgent` et émet un événement de secours de **fin/erreur de cycle de vie** si la boucle intégrée n’en a pas déjà émis un.
+3. `runEmbeddedAgent` : sérialise les exécutions au moyen de files d’attente propres à chaque session et globales, résout le modèle et le profil d’authentification, construit la session OpenClaw, s’abonne aux événements d’exécution, diffuse les deltas de l’assistant/des outils, impose le délai d’expiration de l’exécution (avec interruption à son expiration) et renvoie les charges utiles ainsi que les métadonnées d’utilisation. Pour les tours du serveur d’application Codex, il interrompt également un tour accepté qui cesse de produire une progression du serveur d’application avant un événement terminal.
+4. `subscribeEmbeddedAgentSession` relie les événements d’exécution au flux `agent` : événements d’outils vers `stream: "tool"`, deltas de l’assistant vers `stream: "assistant"`, événements de cycle de vie vers `stream: "lifecycle"` (`phase: "start" | "end" | "error"`).
+5. `agent.wait` (`waitForAgentRun`) attend une **fin/erreur de cycle de vie** pour un `runId` et renvoie `{ status: ok|error|timeout, startedAt, endedAt, error? }`.
 
-1. Le RPC `agent` valide les paramètres, résout la session (sessionKey/sessionId), persiste les métadonnées de session, renvoie immédiatement `{ runId, acceptedAt }`.
-2. `agentCommand` exécute l'agent :
-   - résout le modèle + les valeurs par défaut de réflexion/verbosité/trace
-   - charge l'instantané Skills
-   - appelle `runEmbeddedAgent` (runtime d'agent OpenClaw)
-   - émet **fin/erreur du cycle de vie** si la boucle intégrée n'en émet pas
-3. `runEmbeddedAgent` :
-   - sérialise les exécutions via des files par session + globales
-   - résout le modèle + le profil d'authentification et construit la session OpenClaw
-   - s'abonne aux événements du runtime et diffuse les deltas assistant/outil
-   - applique le délai d'expiration -> interrompt l'exécution s'il est dépassé
-   - pour les tours du serveur d'application Codex, interrompt un tour accepté qui cesse de produire une progression du serveur d'application avant un événement terminal
-   - renvoie les charges utiles + les métadonnées d'utilisation
-4. `subscribeEmbeddedAgentSession` relie les événements du runtime d'agent au flux OpenClaw `agent` :
-   - événements d'outil => `stream: "tool"`
-   - deltas assistant => `stream: "assistant"`
-   - événements de cycle de vie => `stream: "lifecycle"` (`phase: "start" | "end" | "error"`)
-5. `agent.wait` utilise `waitForAgentRun` :
-   - attend la **fin/erreur du cycle de vie** pour `runId`
-   - renvoie `{ status: ok|error|timeout, startedAt, endedAt, error? }`
+## Mise en file d’attente et concurrence
 
-## Mise en file + concurrence
+Les exécutions sont sérialisées par clé de session (voie de session) et, éventuellement, au moyen d’une voie globale, afin d’éviter les accès concurrents aux outils et aux sessions. Les canaux de messagerie choisissent un mode de file d’attente (steer/followup/collect/interrupt) qui alimente ce système de voies ; consultez [File d’attente des commandes](/fr/concepts/queue).
 
-- Les exécutions sont sérialisées par clé de session (voie de session) et, éventuellement, via une voie globale.
-- Cela évite les courses entre outils/sessions et garde l'historique de session cohérent.
-- Les canaux de messagerie peuvent choisir des modes de file (steer/followup/collect/interrupt) qui alimentent ce système de voies.
-  Voir [File de commandes](/fr/concepts/queue).
-- Les écritures de transcript sont aussi protégées par un verrou d'écriture de session sur le fichier de session. Le verrou est
-  conscient des processus et fondé sur fichier, ce qui lui permet de détecter les rédacteurs qui contournent la file en processus ou proviennent
-  d'un autre processus. Les rédacteurs de transcript de session attendent jusqu'à `session.writeLock.acquireTimeoutMs`
-  avant de signaler la session comme occupée ; la valeur par défaut est `60000` ms.
-- Les verrous d'écriture de session sont non réentrants par défaut. Si un assistant imbrique intentionnellement l'acquisition du
-  même verrou tout en préservant un seul rédacteur logique, il doit l'activer explicitement avec
-  `allowReentrant: true`.
+Les écritures de transcription sont en outre protégées par un verrou d’écriture de session sur le fichier de session. Le verrou tient compte des processus et repose sur un fichier ; il détecte donc les processus d’écriture qui contournent la file d’attente interne au processus ou proviennent d’un autre processus. Les processus d’écriture attendent jusqu’à `session.writeLock.acquireTimeoutMs` (`60000` ms par défaut ; remplacement par la variable d’environnement `OPENCLAW_SESSION_WRITE_LOCK_ACQUIRE_TIMEOUT_MS`) avant de signaler que la session est occupée.
 
-## Préparation de la session + de l'espace de travail
+Par défaut, les verrous d’écriture de session ne sont pas réentrants. Un utilitaire qui imbrique intentionnellement l’acquisition du même verrou tout en conservant un seul processus d’écriture logique doit l’activer avec `allowReentrant: true`.
 
-- L'espace de travail est résolu et créé ; les exécutions en bac à sable peuvent être redirigées vers une racine d'espace de travail en bac à sable.
-- Les Skills sont chargés (ou réutilisés depuis un instantané) et injectés dans l'environnement et le prompt.
-- Les fichiers d'amorçage/contexte sont résolus et injectés dans le rapport de prompt système.
-- Un verrou d'écriture de session est acquis ; `SessionManager` est ouvert et préparé avant le streaming. Tout
-  chemin ultérieur de réécriture, Compaction ou troncature du transcript doit prendre le même verrou avant d'ouvrir ou
-  de muter le fichier de transcript.
+## Préparation de la session et de l’espace de travail
 
-## Assemblage du prompt + prompt système
+- L’espace de travail est résolu et créé ; les exécutions dans un bac à sable peuvent être redirigées vers la racine d’un espace de travail de bac à sable.
+- Les Skills sont chargées (ou réutilisées à partir d’un instantané) et injectées dans l’environnement et le prompt.
+- Les fichiers d’amorçage et de contexte sont résolus et injectés dans le prompt système.
+- Un verrou d’écriture de session est acquis et la cible de transcription de la session est préparée avant le début de la diffusion. Tout chemin ultérieur de réécriture, de compaction ou de troncature de la transcription doit acquérir le même verrou avant de modifier les lignes de transcription SQLite.
 
-- Le prompt système est construit à partir du prompt de base d'OpenClaw, du prompt Skills, du contexte d'amorçage et des remplacements par exécution.
-- Les limites propres au modèle et les jetons réservés à la Compaction sont appliqués.
-- Voir [Prompt système](/fr/concepts/system-prompt) pour ce que le modèle voit.
+## Assemblage du prompt
 
-## Points d'accroche (où vous pouvez intercepter)
+Le prompt système est construit à partir du prompt de base d’OpenClaw, du prompt des Skills, du contexte d’amorçage et des remplacements propres à l’exécution. Les limites propres au modèle et les jetons réservés à la compaction sont appliqués. Consultez [Prompt système](/fr/concepts/system-prompt) pour savoir ce que voit le modèle.
 
-OpenClaw possède deux systèmes de points d'accroche :
+## Hooks
 
-- **Points d'accroche internes** (points d'accroche Gateway) : scripts pilotés par événements pour les commandes et les événements de cycle de vie.
-- **Points d'accroche Plugin** : points d'extension dans le cycle de vie de l'agent/outil et le pipeline Gateway.
+OpenClaw comporte deux systèmes de hooks :
 
-### Points d'accroche internes (points d'accroche Gateway)
+- **Hooks internes** (hooks du Gateway) : scripts pilotés par des événements pour les commandes et les événements de cycle de vie.
+- **Hooks de Plugin** : points d’extension dans le cycle de vie de l’agent/des outils et le pipeline du Gateway.
 
-- **`agent:bootstrap`** : s'exécute pendant la construction des fichiers d'amorçage avant la finalisation du prompt système.
-  Utilisez-le pour ajouter/supprimer des fichiers de contexte d'amorçage.
-- **Points d'accroche de commande** : `/new`, `/reset`, `/stop` et autres événements de commande (voir la documentation Hooks).
+### Hooks internes (hooks du Gateway)
 
-Voir [Hooks](/fr/automation/hooks) pour la configuration et des exemples.
+- **`agent:bootstrap`** : s’exécute pendant la construction des fichiers d’amorçage, avant la finalisation du prompt système. Utilisez-le pour ajouter ou supprimer des fichiers de contexte d’amorçage.
+- **Hooks de commande** : `/new`, `/reset`, `/stop` et autres événements de commande (consultez la documentation sur les hooks).
 
-### Points d'accroche Plugin (cycle de vie de l'agent + Gateway)
+Consultez [Hooks](/fr/automation/hooks) pour la configuration et des exemples.
 
-Ils s'exécutent dans la boucle d'agent ou le pipeline Gateway :
+### Hooks de Plugin
 
-- **`before_model_resolve`** : s'exécute avant la session (sans `messages`) pour remplacer de façon déterministe le fournisseur/modèle avant la résolution du modèle.
-- **`before_prompt_build`** : s'exécute après le chargement de la session (avec `messages`) pour injecter `prependContext`, `systemPrompt`, `prependSystemContext` ou `appendSystemContext` avant la soumission du prompt. Utilisez `prependContext` pour le texte dynamique par tour et les champs de contexte système pour les consignes stables qui doivent résider dans l'espace du prompt système.
-- **`before_agent_start`** : point d'accroche de compatibilité hérité qui peut s'exécuter dans l'une ou l'autre phase ; préférez les points d'accroche explicites ci-dessus.
-- **`before_agent_reply`** : s'exécute après les actions en ligne et avant l'appel LLM, ce qui permet à un Plugin de revendiquer le tour et de renvoyer une réponse synthétique ou de rendre le tour entièrement silencieux.
-- **`agent_end`** : inspecte la liste finale des messages et les métadonnées d'exécution après achèvement.
-- **`before_compaction` / `after_compaction`** : observe ou annote les cycles de Compaction.
-- **`before_tool_call` / `after_tool_call`** : intercepte les paramètres/résultats d'outils.
-- **`before_install`** : inspecte le matériel d'installation Skills ou Plugin préparé après l'exécution de la politique d'installation de l'opérateur, lorsque les points d'accroche Plugin sont chargés dans le processus OpenClaw actuel.
-- **`tool_result_persist`** : transforme de façon synchrone les résultats d'outils avant leur écriture dans un transcript de session appartenant à OpenClaw.
-- **`message_received` / `message_sending` / `message_sent`** : points d'accroche de messages entrants + sortants.
-- **`session_start` / `session_end`** : limites du cycle de vie de session.
-- **`gateway_start` / `gateway_stop`** : événements de cycle de vie Gateway.
+Ils s’exécutent dans la boucle de l’agent ou le pipeline du Gateway :
 
-Règles de décision des points d'accroche pour les garde-fous sortants/outils :
+| Hook                                                    | Exécution                                                                                                                                                                                                                                                                                        |
+| ------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `before_model_resolve`                                  | Avant la session (sans `messages`), pour remplacer de manière déterministe le fournisseur/modèle avant la résolution.                                                                                                                                                                                                |
+| `before_prompt_build`                                   | Après le chargement de la session (avec `messages`), pour injecter `prependContext`, `systemPrompt`, `prependSystemContext` ou `appendSystemContext` avant l’envoi. Utilisez `prependContext` pour le texte dynamique propre à chaque tour et les champs de contexte système pour les directives stables qui appartiennent à l’espace du prompt système. |
+| `before_agent_start`                                    | Hook de compatibilité hérité pouvant s’exécuter dans l’une ou l’autre phase ; préférez les hooks explicites ci-dessus.                                                                                                                                                                                                    |
+| `before_agent_reply`                                    | Après les actions intégrées, avant l’appel au LLM. Permet à un Plugin de prendre en charge le tour et de renvoyer une réponse synthétique ou de le rendre entièrement silencieux.                                                                                                                                                                |
+| `agent_end`                                             | Après la fin, avec la liste finale des messages et les métadonnées d’exécution.                                                                                                                                                                                                                             |
+| `before_compaction` / `after_compaction`                | Observe ou annote les cycles de compaction.                                                                                                                                                                                                                                                      |
+| `before_tool_call` / `after_tool_call`                  | Intercepte les paramètres/résultats des outils.                                                                                                                                                                                                                                                              |
+| `before_install`                                        | Après l’application de la politique d’installation de l’opérateur, sur les éléments d’installation de Skill/Plugin préparés, lorsque les hooks de Plugin sont chargés dans le processus actuel.                                                                                                                                                           |
+| `tool_result_persist`                                   | Transforme de manière synchrone les résultats des outils avant leur écriture dans une transcription de session appartenant à OpenClaw.                                                                                                                                                                                      |
+| `message_received` / `message_sending` / `message_sent` | Hooks des messages entrants et sortants.                                                                                                                                                                                                                                                         |
+| `session_start` / `session_end`                         | Limites du cycle de vie de la session.                                                                                                                                                                                                                                                               |
+| `gateway_start` / `gateway_stop`                        | Événements du cycle de vie du Gateway.                                                                                                                                                                                                                                                                   |
 
-- `before_tool_call` : `{ block: true }` est terminal et arrête les gestionnaires de priorité inférieure.
-- `before_tool_call` : `{ block: false }` est une absence d'opération et n'annule pas un blocage antérieur.
-- `before_install` : `{ block: true }` est terminal et arrête les gestionnaires de priorité inférieure.
-- `before_install` : `{ block: false }` est une absence d'opération et n'annule pas un blocage antérieur.
-- Utilisez `security.installPolicy`, et non `before_install`, pour les décisions d'autorisation/blocage d'installation appartenant à l'opérateur qui doivent couvrir les chemins d'installation et de mise à jour CLI.
-- `message_sending` : `{ cancel: true }` est terminal et arrête les gestionnaires de priorité inférieure.
-- `message_sending` : `{ cancel: false }` est une absence d'opération et n'annule pas une annulation antérieure.
+Règles de décision des hooks pour les protections des sorties/outils :
 
-Voir [Points d'accroche Plugin](/fr/plugins/hooks) pour l'API des points d'accroche et les détails d'enregistrement.
+- `before_tool_call` : `{ block: true }` est terminal et arrête les gestionnaires de priorité inférieure. `{ block: false }` est sans effet et n’annule pas un blocage antérieur.
+- `before_install` : mêmes sémantiques terminales/sans effet que ci-dessus. Utilisez `security.installPolicy`, et non `before_install`, pour les décisions d’autorisation/de blocage d’installation appartenant à l’opérateur qui doivent couvrir les chemins d’installation et de mise à jour de la CLI.
+- `message_sending` : `{ cancel: true }` est terminal et arrête les gestionnaires de priorité inférieure. `{ cancel: false }` est sans effet et n’annule pas une annulation antérieure.
 
-Les harnais peuvent adapter ces points d'accroche différemment. Le harnais de serveur d'application Codex conserve
-les points d'accroche Plugin d'OpenClaw comme contrat de compatibilité pour les surfaces miroir documentées,
-tandis que les points d'accroche natifs Codex restent un mécanisme Codex distinct de plus bas niveau.
+Consultez [Hooks de Plugin](/fr/plugins/hooks) pour l’API des hooks et les détails d’enregistrement.
 
-## Streaming + réponses partielles
+Les harnais peuvent adapter ces hooks. Le harnais du serveur d’application Codex conserve les hooks de Plugin OpenClaw comme contrat de compatibilité pour les surfaces documentées reproduites ; les hooks natifs de Codex constituent un mécanisme Codex distinct et de plus bas niveau.
 
-- Les deltas assistant sont diffusés depuis le runtime d'agent et émis comme événements `assistant`.
-- Le streaming de blocs peut émettre des réponses partielles soit sur `text_end`, soit sur `message_end`.
-- Le streaming de raisonnement peut être émis comme flux séparé ou comme réponses de bloc.
-- Voir [Streaming](/fr/concepts/streaming) pour le comportement de découpage et de réponse de bloc.
+## Diffusion en continu
 
-## Exécution d'outils + outils de messagerie
+- Les deltas de l’assistant sont diffusés depuis l’environnement d’exécution de l’agent sous forme d’événements `assistant`.
+- La diffusion par blocs peut émettre des réponses partielles lors de `text_end` ou `message_end`.
+- La diffusion du raisonnement peut être un flux distinct ou bloquer les réponses.
+- Consultez [Diffusion en continu](/fr/concepts/streaming) pour le découpage et le comportement des réponses par blocs.
 
-- Les événements de début/mise à jour/fin d'outil sont émis sur le flux `tool`.
-- Les résultats d'outils sont assainis pour la taille et les charges utiles d'image avant journalisation/émission.
-- Les envois d'outils de messagerie sont suivis pour supprimer les confirmations assistant en double.
+## Exécution des outils
 
-## Mise en forme de la réponse + suppression
+- Les événements de début/mise à jour/fin d’un outil sont émis sur le flux `tool`.
+- La taille et les charges utiles d’images des résultats d’outils sont assainies avant leur journalisation/émission.
+- Les envois par les outils de messagerie sont suivis afin d’éviter les confirmations en double de l’assistant.
 
-- Les charges utiles finales sont assemblées à partir de :
-  - texte assistant (et raisonnement facultatif)
-  - résumés d'outils en ligne (lorsque la verbosité est activée + autorisée)
-  - texte d'erreur assistant lorsque le modèle échoue
-- Le jeton silencieux exact `NO_REPLY` / `no_reply` est filtré des charges utiles
-  sortantes.
-- Les doublons d'outils de messagerie sont supprimés de la liste finale des charges utiles.
-- S'il ne reste aucune charge utile affichable et qu'un outil a échoué, une réponse de secours d'erreur d'outil est émise
-  (sauf si un outil de messagerie a déjà envoyé une réponse visible par l'utilisateur).
+## Mise en forme des réponses
 
-## Compaction + nouvelles tentatives
+Les charges utiles finales sont assemblées à partir du texte de l’assistant (ainsi que du raisonnement facultatif), des résumés intégrés des outils (lorsque le mode détaillé est activé et autorisé) et du texte d’erreur de l’assistant lorsque le modèle rencontre une erreur.
 
-- L'auto-Compaction émet des événements de flux `compaction` et peut déclencher une nouvelle tentative.
-- Lors d'une nouvelle tentative, les tampons en mémoire et les résumés d'outils sont réinitialisés pour éviter une sortie en double.
-- Voir [Compaction](/fr/concepts/compaction) pour le pipeline de Compaction.
+- Le jeton silencieux exact `NO_REPLY` est supprimé des charges utiles sortantes.
+- Les doublons des outils de messagerie sont supprimés de la liste finale des charges utiles.
+- S’il ne reste aucune charge utile affichable et qu’un outil a rencontré une erreur, une réponse d’erreur d’outil de secours est émise, sauf si un outil de messagerie a déjà envoyé une réponse visible par l’utilisateur.
 
-## Flux d'événements (aujourd'hui)
+## Compaction et nouvelles tentatives
 
-- `lifecycle` : émis par `subscribeEmbeddedAgentSession` (et comme secours par `agentCommand`)
-- `assistant` : deltas diffusés depuis le runtime d'agent
-- `tool` : événements d'outils diffusés depuis le runtime d'agent
+La compaction automatique émet des événements de flux `compaction` et peut déclencher une nouvelle tentative. Lors d’une nouvelle tentative, les tampons en mémoire et les résumés des outils sont réinitialisés afin d’éviter les sorties en double. Consultez [Compaction](/fr/concepts/compaction).
 
-## Gestion des canaux de chat
+## Flux d’événements
 
-- Les deltas assistant sont mis en tampon dans des messages de chat `delta`.
-- Un `final` de chat est émis à la **fin/erreur du cycle de vie**.
+- `lifecycle` : émis par `subscribeEmbeddedAgentSession` (et comme mécanisme de secours par `agentCommand`).
+- `assistant` : deltas diffusés depuis l’environnement d’exécution de l’agent.
+- `tool` : événements d’outils diffusés depuis l’environnement d’exécution de l’agent.
 
-## Délais d'expiration
+Le Gateway projette les événements de cycle de vie ainsi que les événements de début/fin des outils dans le
+[journal d’audit](/fr/cli/audit) borné qui ne contient que des métadonnées. Cette projection enregistre la provenance et
+les codes de résultat sans copier les prompts, les messages, les arguments des outils, les résultats des outils
+ni les erreurs brutes en dehors du chemin de transcription/d’exécution.
 
-- Valeur par défaut de `agent.wait` : 30 s (seulement l'attente). Le paramètre `timeoutMs` remplace cette valeur.
-- Runtime d'agent : valeur par défaut de `agents.defaults.timeoutSeconds` : 172800 s (48 heures) ; appliquée dans le minuteur d'interruption de `runEmbeddedAgent`.
-- Runtime Cron : le `timeoutSeconds` de tour d'agent isolé appartient à cron. Le planificateur démarre ce minuteur au début de l'exécution, interrompt l'exécution sous-jacente à l'échéance configurée, puis exécute un nettoyage borné avant d'enregistrer le délai d'expiration afin qu'une session enfant obsolète ne puisse pas laisser la voie bloquée.
-- Diagnostics de vivacité de session : avec les diagnostics activés, `diagnostics.stuckSessionWarnMs` classe les longues sessions `processing` qui n'ont aucune réponse, outil, statut, bloc ou progression ACP observés. Les exécutions intégrées actives, les appels de modèle et les appels d'outil sont signalés comme `session.long_running` ; les appels de modèle silencieux détenus restent aussi `session.long_running` jusqu'à `diagnostics.stuckSessionAbortMs` afin que les fournisseurs lents ou sans streaming ne soient pas signalés comme bloqués trop tôt. Le travail actif sans progression récente est signalé comme `session.stalled` ; les appels de modèle détenus passent à `session.stalled` au seuil d'interruption ou après celui-ci, et l'activité obsolète de modèle/outil sans propriétaire n'est pas masquée comme longue exécution. `session.stuck` est réservé à la tenue de livres récupérable des sessions obsolètes, y compris les sessions en file inactives avec activité de modèle/outil obsolète sans propriétaire. La tenue de livres des sessions obsolètes libère immédiatement la voie de session affectée une fois les garde-fous de récupération passés ; les exécutions intégrées bloquées ne sont interrompues et vidées qu'après `diagnostics.stuckSessionAbortMs` (par défaut : au moins 5 minutes et 3x le seuil d'avertissement) afin que le travail en file puisse reprendre sans couper des exécutions simplement lentes. La récupération émet des résultats structurés demandés/terminés, et l'état de diagnostic n'est marqué inactif que si la même génération de traitement est toujours courante. Les diagnostics `session.stuck` répétés appliquent un retour arrière tant que la session reste inchangée.
-- Délai d'inactivité du modèle : OpenClaw interrompt une requête de modèle lorsqu'aucun fragment de réponse n'arrive avant la fenêtre d'inactivité. `models.providers.<id>.timeoutSeconds` étend ce chien de garde d'inactivité pour les fournisseurs locaux/auto-hébergés lents, mais il reste borné par toute valeur inférieure de `agents.defaults.timeoutSeconds` ou par le délai propre à l'exécution, car ceux-ci contrôlent toute l'exécution de l'agent. Sinon, OpenClaw utilise `agents.defaults.timeoutSeconds` lorsqu'il est configuré, plafonné à 120 s par défaut. Les exécutions de modèle cloud déclenchées par Cron sans délai de modèle ou d'agent explicite utilisent le même chien de garde d'inactivité par défaut ; avec un délai d'exécution Cron explicite, les blocages de flux de modèle cloud sont plafonnés à 60 s afin que les solutions de secours de modèle configurées puissent s'exécuter avant l'échéance Cron externe. Les exécutions de modèle local ou auto-hébergé déclenchées par Cron désactivent le chien de garde implicite sauf si un délai explicite est configuré, et les délais d'exécution Cron explicites restent la fenêtre d'inactivité pour les fournisseurs locaux/auto-hébergés ; les fournisseurs locaux lents doivent donc définir `models.providers.<id>.timeoutSeconds`.
-- Délai d'expiration des requêtes HTTP du fournisseur : `models.providers.<id>.timeoutSeconds` s'applique aux récupérations HTTP de modèle de ce fournisseur, y compris la connexion, les en-têtes, le corps, le délai de requête SDK, la gestion d'interruption totale des récupérations protégées et le chien de garde d'inactivité du flux de modèle. Utilisez-le pour les fournisseurs locaux/auto-hébergés lents comme Ollama avant d'augmenter le délai de tout le runtime d'agent, et gardez le délai de l'agent/runtime au moins aussi élevé lorsque la requête de modèle doit s'exécuter plus longtemps.
+## Gestion des canaux de discussion
 
-## Où les choses peuvent se terminer plus tôt
+Les deltas de l’assistant sont mis en mémoire tampon dans des messages de discussion `delta`. Un message de discussion `final` est émis lors d’une **fin/erreur de cycle de vie**.
+
+## Délais d’expiration
+
+| Délai d’expiration                               | Valeur par défaut                     | Remarques                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| ------------------------------------------------ | -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `agent.wait`                                     | 30s                                    | Attente uniquement ; le paramètre `timeoutMs` remplace cette valeur. N’arrête pas l’exécution sous-jacente.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| Durée d’exécution de l’agent (`agents.defaults.timeoutSeconds`) | 172800s (48h)                          | Appliquée par le minuteur d’abandon de `runEmbeddedAgent`. Définissez `0` pour un budget d’exécution illimité ; les mécanismes de surveillance de l’activité du flux du modèle restent applicables.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| Tour d’agent isolé Cron                          | géré par Cron                          | Le planificateur démarre son propre minuteur au début de l’exécution, abandonne l’exécution à l’échéance configurée, puis effectue un nettoyage limité avant d’enregistrer l’expiration du délai, afin qu’une session enfant obsolète ne puisse pas maintenir le couloir bloqué.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| Délai d’inactivité du modèle                     | Cloud 120s ; auto-hébergé 300s         | OpenClaw abandonne une requête au modèle lorsqu’aucun fragment de réponse n’arrive avant l’expiration de la fenêtre d’inactivité. `models.providers.<id>.timeoutSeconds` prolonge ce mécanisme de surveillance de l’inactivité pour les fournisseurs locaux/auto-hébergés lents, mais reste limité par toute valeur finie inférieure de `agents.defaults.timeoutSeconds` ou par tout délai propre à l’exécution, car ceux-ci régissent l’intégralité de l’exécution de l’agent. Les budgets d’exécution illimités conservent le mécanisme de surveillance de l’inactivité propre à la classe du fournisseur. Les exécutions de modèles Cloud déclenchées par Cron sans délai explicite pour le modèle ou l’agent utilisent la même valeur par défaut ; avec un délai explicite d’exécution Cron, les blocages du flux d’un modèle Cloud sont limités à 60s afin que les modèles de secours configurés puissent encore s’exécuter avant l’échéance Cron externe. Les exécutions déclenchées par Cron sur des points de terminaison réellement locaux (baseUrl en boucle locale/privée) conservent la désactivation locale du délai d’inactivité ; les fournisseurs auto-hébergés utilisant des baseUrls réseau reçoivent le mécanisme de surveillance implicite de 300s. Avec un délai explicite d’exécution Cron, les blocages locaux/auto-hébergés sont limités à ce délai. Définissez `models.providers.<id>.timeoutSeconds` pour les fournisseurs locaux lents. |
+| Délai d’expiration des requêtes HTTP du fournisseur | `models.providers.<id>.timeoutSeconds` | Couvre la connexion, les en-têtes, le corps, le délai d’expiration des requêtes du SDK, la gestion de l’abandon de guarded-fetch et le mécanisme de surveillance de l’inactivité du flux du modèle pour ce fournisseur. Utilisez-le pour les fournisseurs locaux/auto-hébergés lents (par exemple Ollama) avant d’augmenter le délai d’exécution global de l’agent ; maintenez le délai de l’agent/de l’environnement d’exécution au moins aussi élevé lorsque la requête au modèle doit s’exécuter plus longtemps.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+
+### Diagnostic des sessions bloquées
+
+Lorsque les diagnostics sont activés, `diagnostics.stuckSessionWarnMs` (valeur par défaut : `120000` ms) classe les sessions `processing` de longue durée pour lesquelles aucune progression de réponse, d’outil, d’état, de bloc ou d’ACP n’a été observée :
+
+- Les exécutions intégrées actives, les appels de modèle et les appels d’outil sont signalés comme `session.long_running`. Les appels de modèle silencieux avec propriétaire restent `session.long_running` jusqu’à `diagnostics.stuckSessionAbortMs`, afin que les fournisseurs lents ou sans diffusion en continu ne soient pas signalés trop tôt comme bloqués.
+- Le travail actif sans progression récente est signalé comme `session.stalled`. Les appels de modèle avec propriétaire passent à `session.stalled` lorsque le seuil d’abandon est atteint ou dépassé ; les activités obsolètes de modèle ou d’outil sans propriétaire ne sont pas masquées comme étant de longue durée.
+- `session.stuck` est réservé à la comptabilité récupérable des sessions obsolètes, notamment aux sessions inactives en file d’attente présentant une activité obsolète de modèle ou d’outil sans propriétaire.
+
+La valeur par défaut de `diagnostics.stuckSessionAbortMs` est d’au moins 5 minutes et égale à 3x le seuil d’avertissement. La comptabilité des sessions obsolètes libère immédiatement le couloir de la session concernée une fois les contrôles de récupération réussis ; les exécutions intégrées bloquées ne sont abandonnées et purgées qu’après le seuil d’abandon, afin que le travail en file d’attente reprenne sans interrompre les exécutions simplement lentes. La récupération émet des résultats structurés de demande et d’achèvement ; l’état de diagnostic n’est marqué comme inactif que si la même génération de traitement est toujours actuelle, et les diagnostics `session.stuck` répétés appliquent un délai progressif tant que la session reste inchangée.
+
+## Situations pouvant entraîner un arrêt anticipé
 
 - Délai d’expiration de l’agent (abandon)
 - AbortSignal (annulation)
 - Déconnexion du Gateway ou délai d’expiration RPC
-- Délai d’expiration `agent.wait` (attente uniquement, n’arrête pas l’agent)
+- Délai d’expiration de `agent.wait` (attente uniquement, n’arrête pas l’agent)
 
-## Connexe
+## Ressources associées
 
-- [Outils](/fr/tools) — outils d’agent disponibles
-- [Hooks](/fr/automation/hooks) — scripts événementiels déclenchés par les événements du cycle de vie de l’agent
-- [Compaction](/fr/concepts/compaction) — comment les longues conversations sont résumées
-- [Approbations d’exécution](/fr/tools/exec-approvals) — points d’approbation pour les commandes shell
-- [Réflexion](/fr/tools/thinking) — configuration du niveau de réflexion/raisonnement
+- [Outils](/fr/tools) - outils disponibles pour l’agent
+- [Hooks](/fr/automation/hooks) - scripts pilotés par les événements et déclenchés par les événements du cycle de vie de l’agent
+- [Compaction](/fr/concepts/compaction) - méthode de synthèse des longues conversations
+- [Approbations d’exécution](/fr/tools/exec-approvals) - contrôles d’approbation pour les commandes shell
+- [Réflexion](/fr/tools/thinking) - configuration du niveau de réflexion/raisonnement

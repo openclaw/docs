@@ -1,37 +1,41 @@
 ---
-summary: Wie OpenClaw die integrierte Agent-Laufzeit, Provider, Sitzungen, Tools und Erweiterungen ausführt.
-title: Agent-Laufzeitarchitektur
+summary: 'Wie OpenClaw die integrierte Agenten-Runtime strukturiert: Codeorganisation, Abgrenzungen, Ressourcenmanifeste und Runtime-Auswahl.'
+title: Architektur der Agentenlaufzeit
 x-i18n:
-    generated_at: "2026-06-27T17:08:42Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:58:39Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: cd0ca61b10a4f7029590da8566b22cc44cf801af162e5f2c00c9561fe46e39e3
+    source_hash: 071a0cb076230ce02f2c2c1c21971379cf617f24faa8a9733570aae30a062019
     source_path: agent-runtime-architecture.md
     workflow: 16
 ---
 
-OpenClaw besitzt die integrierte Agent-Laufzeit direkt. Der Laufzeitcode liegt unter `src/agents/`, Modell-/Provider-Hilfsfunktionen liegen unter `src/llm/`, und Plugin-seitige Verträge werden über die `openclaw/plugin-sdk/*`-Barrels bereitgestellt.
+OpenClaw ist für die integrierte Agent-Runtime verantwortlich. Der Runtime-Code befindet sich unter `src/agents/`, der Modell-/Provider-Transport unter `src/llm/`, und die für Plugins vorgesehenen Verträge werden über die Barrels `openclaw/plugin-sdk/*` bereitgestellt.
 
-## Laufzeit-Layout
+## Runtime-Struktur
 
-- `src/agents/embedded-agent-runner/`: integrierte Agent-Versuchsschleife, Provider-Stream-Adapter, Compaction, Modellauswahl und Sitzungsanbindung.
-- `src/agents/sessions/`: Sitzungspersistenz, Laden von Erweiterungen, Ressourcenerkennung, Skills, Prompts, Themes und TUI-gestützte Tool-Renderer.
-- `packages/agent-core/`: wiederverwendbarer Agent-Kern, Low-Level-Harness-Typen, Nachrichten, Compaction-Hilfsfunktionen, Prompt-Vorlagen und Tool-/Sitzungsverträge.
-- `src/agents/runtime/`: OpenClaw-Fassade für `@openclaw/agent-core` plus lokale Proxy-Dienstprogramme.
-- `src/agents/agent-tools*.ts`: OpenClaw-eigene Tool-Definitionen, Schemas, Richtlinien, Before-/After-Hook-Adapter und Unterstützung für Host-Bearbeitungen.
-- `src/agents/agent-hooks/`: integrierte Laufzeit-Hooks wie Compaction-Schutzmechanismen und Kontextbereinigung.
-- `src/llm/`: Modell-/Provider-Registry, Transport-Hilfsfunktionen und Provider-spezifische Stream-Implementierungen.
+| Pfad                                | Verantwortungsbereich                                                                                                                                                                                                                  |
+| ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/agents/embedded-agent-runner/` | Integrierte Versuchsschleife (`run.ts`, `run/`), Modellauswahl und Provider-Normalisierung (`model*.ts`), anfragespezifische Parameter je Provider (`extra-params.*`), Compaction sowie Verknüpfung von Transkript und Sitzung.             |
+| `src/agents/sessions/`              | Sitzungspersistenz (`session-manager.ts`), Ressourcenerkennung (`package-manager.ts`, `resource-loader.ts`), Laden von `extensions` innerhalb der Sitzung, Prompt-Vorlagen, Skills, Themes und TUI-basierte Tool-Renderer (`tools/`).      |
+| `packages/agent-core/`              | Wiederverwendbarer Agent-Kern (`@openclaw/agent-core`): Agentenschleife, Harness-Typen, Nachrichten, Compaction-Hilfsfunktionen, Prompt-Vorlagen, Skills und Verträge für die Sitzungsspeicherung.                                        |
+| `src/agents/runtime/`               | OpenClaw-Fassade, die `@openclaw/agent-core` mit der LLM-Runtime des Plugin-SDK verbindet und diese zusammen mit lokalen Proxy-Hilfsfunktionen erneut exportiert.                                                                       |
+| `src/agents/agent-tools*.ts`        | OpenClaw-eigene Tool-Definitionen, Parameterschemas, Tool-Richtlinien, Adapter vor und nach Tool-Aufrufen sowie Bearbeitungs-Tools für Host und Sandbox.                                                                                |
+| `src/agents/agent-hooks/`           | Integrierte Runtime-Hooks: Compaction-Schutzmechanismus, Compaction-Anweisungen, Kontextbereinigung.                                                                                                                                   |
+| `src/agents/harness/`               | Harness-Registry, Auswahlrichtlinie und Lebenszyklus für die integrierten und von Plugins registrierten Harnesses.                                                                                                                     |
+| `src/llm/`                          | Modell-/Provider-Registry, Transport-Hilfsfunktionen und providerspezifische Stream-Implementierungen (`src/llm/providers/`).                                                                                                          |
 
 ## Grenzen
 
-Der Core-Code ruft die integrierte Laufzeit über OpenClaw-Module und SDK-Barrels auf, nicht über alte externe Agent-Pakete. Plugins verwenden dokumentierte `openclaw/plugin-sdk/*`-Einstiegspunkte und importieren keine `src/**`-Interna.
+Der Kern ruft die integrierte Runtime über OpenClaw-Module und SDK-Barrels auf; es verbleiben keine externen Pakete für Agent-Frameworks. Plugins verwenden die dokumentierten Einstiegspunkte `openclaw/plugin-sdk/*` und importieren keine Interna aus `src/**`.
 
-`@earendil-works/pi-tui` bleibt eine TUI-Abhängigkeit eines Drittanbieters. Sie wird von der lokalen TUI und den Sitzungs-Renderern als Toolkit für Terminal-Komponenten verwendet; sie zu internalisieren wäre ein separater Vendoring-Aufwand.
+`@earendil-works/pi-tui` bleibt eine Drittanbieterabhängigkeit: ein Toolkit für Terminalkomponenten, das von der lokalen TUI und den Tool-Renderern für Sitzungen verwendet wird. Seine Internalisierung wäre ein separates Vendoring-Vorhaben.
 
 ## Manifeste
 
-Ressourcenpakete deklarieren OpenClaw-Ressourcen in den Paketmetadaten:
+Ressourcenpakete deklarieren OpenClaw-Ressourcen in den `package.json`-Metadaten. Einträge sind Dateipfade oder Globs relativ zum Paketstamm:
 
 ```json
 {
@@ -44,13 +48,17 @@ Ressourcenpakete deklarieren OpenClaw-Ressourcen in den Paketmetadaten:
 }
 ```
 
-Der Paketmanager erkennt außerdem konventionelle Verzeichnisse `extensions/`, `skills/`, `prompts/` und `themes/`.
+Ressourcentypen, die nicht in einem Manifest aufgeführt sind, greifen auf die Erkennung der konventionellen Verzeichnisse `extensions/`, `skills/`, `prompts/` und `themes/` zurück.
 
-## Laufzeitauswahl
+## Runtime-Auswahl
 
-Die standardmäßige integrierte Laufzeit-ID ist `openclaw`. Plugin-Harnesses können zusätzliche Laufzeit-IDs registrieren. `auto` wählt einen unterstützenden Plugin-Harness aus, wenn einer vorhanden ist, und verwendet andernfalls die integrierte OpenClaw-Laufzeit.
+- Die ID der integrierten Runtime ist `openclaw`. Der veraltete Alias `pi` wird zu `openclaw` normalisiert; `codex-app-server` wird zu `codex` normalisiert.
+- Plugin-Harnesses registrieren zusätzliche Runtime-IDs (zum Beispiel `codex`).
+- Die Runtime-Richtlinie wird über die modell-/providerspezifische Konfiguration `agentRuntime.id` festgelegt (der Modelleintrag hat Vorrang vor dem Providereintrag). Nicht festgelegt oder `default` wird zu `auto` aufgelöst.
+- `auto` wählt einen registrierten Plugin-Harness aus, der die effektive Provider-Route unterstützt, andernfalls die integrierte OpenClaw-Runtime. Ein Provider- oder Modellpräfix allein wählt niemals einen Harness aus.
+- OpenAI darf `codex` nur für eine exakt übereinstimmende offizielle HTTPS-Route für Platform Responses oder ChatGPT Responses implizit auswählen, wenn keine vom Autor festgelegte Anforderungsüberschreibung vorliegt. Completions-Adapter, benutzerdefinierte Endpunkte und Routen mit vom Autor festgelegtem Anfrageverhalten verbleiben auf `openclaw`; offizielle Klartext-HTTP-Endpunkte werden abgelehnt. Siehe [Implizite OpenAI-Agent-Runtime](/de/providers/openai#implicit-agent-runtime).
 
 ## Verwandte Themen
 
-- [OpenClaw-Agent-Laufzeit-Workflow](/de/openclaw-agent-runtime)
-- [Agent-Laufzeiten](/de/concepts/agent-runtimes)
+- [Workflow der OpenClaw-Agent-Runtime](/de/openclaw-agent-runtime)
+- [Agent-Runtimes](/de/concepts/agent-runtimes)

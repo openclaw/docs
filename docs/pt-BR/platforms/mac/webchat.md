@@ -1,62 +1,62 @@
 ---
 read_when:
-    - Depuração da visualização WebChat no Mac ou da porta de loopback
-summary: Como o app para Mac incorpora o WebChat do Gateway e como depurá-lo
+    - Depuração da visualização do WebChat no Mac ou da porta de loopback
+summary: Como o aplicativo para Mac incorpora o WebChat do Gateway e como depurá-lo
 title: WebChat (macOS)
 x-i18n:
-    generated_at: "2026-05-06T09:05:57Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:26:51Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: 50680e099181421505e25cecab2ba331fdaf9839d07fef482ff04976b0fc583e
+    source_hash: 7139ada530e4d5c3833500c36364d742dff301608a8a1a7902003b5f5384512c
     source_path: platforms/mac/webchat.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-O app da barra de menus do macOS incorpora a UI do WebChat como uma visualização SwiftUI nativa. Ele
-se conecta ao Gateway e usa como padrão a **sessão main** do agente selecionado
-(com um seletor de sessões para outras sessões).
+O aplicativo da barra de menus do macOS incorpora a interface do WebChat como uma visualização SwiftUI nativa. Ele se conecta ao Gateway e usa por padrão a sessão principal do agente selecionado (`main`, ou `global` quando `session.scope` é `global`).
+
+A janela completa de chat é uma visualização dividida nativa:
+
+- **Barra lateral de sessões**: lista pesquisável de sessões com seções de sessões fixadas e recentes, indicadores de mensagens não lidas e menus de contexto para fixar/desafixar, copiar a chave da sessão e excluir. Um botão na barra de ferramentas (ou Cmd-N) cria uma nova sessão real por meio de `sessions.create`.
+- **Barra de ferramentas da janela**: anel de uso de contexto (tokens e custo da sessão, com uma ação compacta), seletor de nível de raciocínio, seletor de modelo e menu de ações da sessão (nova sessão, atualizar, copiar chave da sessão, exportar transcrição, compactar, limpar histórico).
+- **Transcrição e campo de composição**: as mensagens do assistente são renderizadas como texto simples com um avatar, e as mensagens do usuário como balões com cor de destaque. Digitar `/` abre o preenchimento automático de comandos de barra, fornecido por `commands.list`, com navegação pelo teclado usando as teclas de seta/Tab/Return/Escape. Clique com o botão direito em uma mensagem para copiá-la.
+
+O painel de chat rápido ancorado à barra de menus mantém o layout compacto de coluna única com seletores embutidos.
 
 - **Modo local**: conecta-se diretamente ao WebSocket do Gateway local.
-- **Modo remoto**: encaminha a porta de controle do Gateway por SSH e usa esse
-  túnel como plano de dados.
+- **Modo remoto**: encaminha a porta de controle do Gateway por SSH e usa esse túnel como plano de dados.
 
 ## Inicialização e depuração
 
-- Manual: menu Lobster → "Abrir Chat".
+- Manual: menu do Lobster -> "Open Chat".
 - Abertura automática para testes:
 
   ```bash
-  dist/OpenClaw.app/Contents/MacOS/OpenClaw --webchat
+  dist/OpenClaw.app/Contents/MacOS/OpenClaw --chat
   ```
+
+  (`--webchat` é aceito como um alias legado.)
 
 - Logs: `./scripts/clawlog.sh` (subsistema `ai.openclaw`, categoria `WebChatSwiftUI`).
 
-## Como ele é conectado
+## Como funciona a integração
 
-- Plano de dados: métodos WS do Gateway `chat.history`, `chat.send`, `chat.abort`,
-  `chat.inject` e eventos `chat`, `agent`, `presence`, `tick`, `health`.
-- `chat.history` retorna linhas de transcrição normalizadas para exibição: tags
-  de diretivas inline são removidas do texto visível, cargas XML de chamadas de ferramentas
-  em texto simples (incluindo `<tool_call>...</tool_call>`,
-  `<function_call>...</function_call>`, `<tool_calls>...</tool_calls>`,
-  `<function_calls>...</function_calls>` e blocos truncados de chamadas de ferramentas) e
-  tokens de controle de modelo ASCII/largura total vazados são removidos, linhas
-  puras de assistente com tokens silenciosos, como `NO_REPLY` / `no_reply` exatos, são
-  omitidas, e linhas grandes demais podem ser substituídas por placeholders.
-- Sessão: usa como padrão a sessão primária (`main`, ou `global` quando o escopo é
-  global). A UI pode alternar entre sessões.
+- Plano de dados: métodos WS do Gateway `chat.history`, `chat.send`, `chat.abort`, `chat.inject` e eventos `chat`, `agent`, `presence`, `tick`, `health`.
+- `chat.history` retorna uma transcrição normalizada para exibição: tags de diretivas embutidas são removidas do texto visível; cargas XML de chamadas de ferramentas em texto simples (`<tool_call>`, `<function_call>`, `<tool_calls>`, `<function_calls>`, incluindo blocos truncados) e tokens de controle do modelo expostos são removidos; linhas do assistente contendo apenas tokens silenciosos, como exatamente `NO_REPLY`/`no_reply`, são omitidas; e linhas grandes demais podem ser substituídas por um espaço reservado truncado.
+- Sessão: usa por padrão a sessão principal, conforme descrito acima; a interface pode alternar entre sessões.
 - A integração inicial usa uma sessão dedicada para manter a configuração da primeira execução separada.
+- Cache offline: o aplicativo mantém um pequeno cache somente leitura das sessões e transcrições recentes de chat por gateway (`~/Library/Application Support/OpenClaw/chat-cache.sqlite`): em inicializações a frio, a última transcrição conhecida é exibida imediatamente e atualizada assim que o Gateway responde, e os chats recentes permanecem acessíveis para consulta enquanto estiver desconectado (o envio permanece desativado até que a conexão seja restabelecida).
 
 ## Superfície de segurança
 
-- O modo remoto encaminha apenas a porta de controle WebSocket do Gateway por SSH.
+- O modo remoto encaminha por SSH somente a porta de controle WebSocket do Gateway.
 
 ## Limitações conhecidas
 
-- A UI é otimizada para sessões de chat (não para uma sandbox completa de navegador).
+- A interface é otimizada para sessões de chat, não para um sandbox completo de navegador.
 
-## Relacionado
+## Conteúdo relacionado
 
 - [WebChat](/pt-BR/web/webchat)
-- [app macOS](/pt-BR/platforms/macos)
+- [Aplicativo para macOS](/pt-BR/platforms/macos)

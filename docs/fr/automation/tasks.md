@@ -1,86 +1,83 @@
 ---
 read_when:
-    - Inspection des travaux en arrière-plan en cours ou récemment terminés
+    - Inspection des tâches en arrière-plan en cours ou récemment terminées
     - Débogage des échecs de livraison pour les exécutions d’agent détachées
     - Comprendre le lien entre les exécutions en arrière-plan, les sessions, Cron et Heartbeat
 sidebarTitle: Background tasks
-summary: Suivi des tâches en arrière-plan pour les exécutions ACP, les sous-agents, les tâches Cron isolées et les opérations CLI
+summary: Suivi des tâches en arrière-plan pour les exécutions ACP, les sous-agents, les exécutions Cron et les opérations CLI
 title: Tâches en arrière-plan
 x-i18n:
-    generated_at: "2026-06-27T17:09:00Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:02:05Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: 4a630a52d0d6bfd387a37415dd63fc4bfbce23f99eaa8cb780c3d6f8913675fd
+    source_hash: 0a945e8103c5df5a64785f326a9d0b08784ac32a2ca6fa3d4c399d75fc54be2b
     source_path: automation/tasks.md
     workflow: 16
 ---
 
 <Note>
-Vous cherchez la planification ? Consultez [Automation](/fr/automation) pour choisir le bon mécanisme. Cette page est le registre d’activité du travail en arrière-plan, pas le planificateur.
+Vous recherchez une solution de planification ? Consultez [Automatisation](/fr/automation) pour choisir le mécanisme approprié. Cette page est le registre d’activité des travaux en arrière-plan, pas le planificateur.
 </Note>
 
-Les tâches d’arrière-plan suivent le travail qui s’exécute **en dehors de votre session de conversation principale** : exécutions ACP, lancements de sous-agents, exécutions isolées de tâches Cron, et opérations initiées par la CLI.
+Les tâches en arrière-plan suivent les travaux qui s’exécutent **en dehors de votre session de conversation principale** : exécutions ACP, lancements de sous-agents, exécutions de tâches cron et opérations lancées depuis la CLI.
 
-Les tâches ne remplacent **pas** les sessions, les tâches Cron ni les Heartbeats - elles sont le **registre d’activité** qui enregistre quel travail détaché a eu lieu, quand, et s’il a réussi.
+Les tâches ne remplacent **pas** les sessions, les tâches cron ni les Heartbeats : elles constituent le **registre d’activité** qui consigne les travaux détachés effectués, leur date et leur réussite ou leur échec.
 
 <Note>
-Toutes les exécutions d’agent ne créent pas une tâche. Les tours Heartbeat et la discussion interactive normale n’en créent pas. Toutes les exécutions Cron, les lancements ACP, les lancements de sous-agents et les commandes d’agent CLI en créent.
+Chaque exécution d’agent ne crée pas nécessairement une tâche. Les tours de Heartbeat et les conversations interactives normales n’en créent pas. Toutes les exécutions cron, les créations de sessions ACP, les lancements de sous-agents et les commandes d’agent CLI distribuées par le Gateway en créent une.
 </Note>
 
-## TL;DR
+## En bref
 
-- Les tâches sont des **enregistrements**, pas des planificateurs - Cron et Heartbeat décident _quand_ le travail s’exécute, les tâches suivent _ce qui s’est passé_.
-- ACP, les sous-agents, toutes les tâches Cron et les opérations CLI créent des tâches. Les tours Heartbeat n’en créent pas.
-- Chaque tâche passe par `queued → running → terminal` (succeeded, failed, timed_out, cancelled ou lost).
-- Les tâches Cron restent actives tant que le runtime Cron possède toujours la tâche ; si l’état
-  du runtime en mémoire a disparu, la maintenance des tâches vérifie d’abord l’historique durable
-  des exécutions Cron avant de marquer une tâche comme perdue.
-- L’achèvement est piloté par push : le travail détaché peut notifier directement ou réveiller la
-  session/le Heartbeat demandeur lorsqu’il se termine, de sorte que les boucles d’interrogation de statut
-  sont généralement une mauvaise approche.
-- Les exécutions Cron isolées et les achèvements de sous-agents nettoient au mieux les onglets/processus de navigateur suivis pour leur session enfant avant la comptabilité finale du nettoyage.
-- La livraison Cron isolée supprime les réponses parent intermédiaires obsolètes tant que le travail des sous-agents descendants est encore en cours de vidage, et elle privilégie la sortie finale du descendant lorsqu’elle arrive avant la livraison.
-- Les notifications d’achèvement sont livrées directement à un canal ou mises en file d’attente pour le prochain Heartbeat.
-- `openclaw tasks list` affiche toutes les tâches ; `openclaw tasks audit` fait remonter les problèmes.
-- Les enregistrements terminaux sont conservés pendant 7 jours, puis automatiquement élagués.
+- Les tâches sont des **enregistrements**, pas des planificateurs : cron et Heartbeat déterminent _quand_ les travaux s’exécutent, tandis que les tâches suivent _ce qui s’est passé_.
+- ACP, les sous-agents, toutes les tâches cron et les opérations CLI créent des tâches. Les tours de Heartbeat n’en créent pas.
+- Chaque tâche passe par les états `queued → running → terminal` (succeeded, failed, timed_out, cancelled ou lost).
+- Les tâches cron restent actives tant que l’environnement d’exécution cron contrôle encore la tâche ; si l’état d’exécution en mémoire a disparu, la maintenance des tâches vérifie d’abord l’historique durable des exécutions cron avant de marquer une tâche comme perdue.
+- La fin des tâches est signalée par notification : les travaux détachés peuvent envoyer directement une notification ou réveiller la session ou le Heartbeat demandeur lorsqu’ils se terminent. Les boucles d’interrogation de l’état sont donc généralement inadaptées.
+- Dans la mesure du possible, les exécutions cron isolées et les sous-agents terminés nettoient les onglets et processus de navigateur suivis pour leur session enfant avant la comptabilisation finale du nettoyage.
+- La livraison des exécutions cron isolées supprime les réponses intermédiaires obsolètes du parent tant que les travaux des sous-agents descendants sont encore en cours de finalisation, et privilégie la sortie finale des descendants si elle arrive avant la livraison.
+- Les notifications de fin sont envoyées directement à un canal ou mises en file d’attente jusqu’au prochain Heartbeat.
+- `openclaw tasks list` affiche toutes les tâches ; `openclaw tasks audit` signale les problèmes.
+- Les enregistrements terminaux sont conservés pendant 7 jours (24 heures pour les enregistrements `lost`), puis automatiquement supprimés.
 
 ## Démarrage rapide
 
 <Tabs>
-  <Tab title="Lister et filtrer">
+  <Tab title="Répertorier et filtrer">
     ```bash
-    # List all tasks (newest first)
+    # Répertorier toutes les tâches (les plus récentes en premier)
     openclaw tasks list
 
-    # Filter by runtime or status
+    # Filtrer par environnement d’exécution ou par état
     openclaw tasks list --runtime acp
     openclaw tasks list --status running
     ```
 
   </Tab>
-  <Tab title="Inspecter">
+  <Tab title="Examiner">
     ```bash
-    # Show details for a specific task (by ID, run ID, or session key)
+    # Afficher les détails d’une tâche précise (par ID de tâche, ID d’exécution ou clé de session)
     openclaw tasks show <lookup>
     ```
   </Tab>
   <Tab title="Annuler et notifier">
     ```bash
-    # Cancel a running task (kills the child session)
+    # Annuler une tâche en cours d’exécution (met fin à la session enfant)
     openclaw tasks cancel <lookup>
 
-    # Change notification policy for a task
+    # Modifier la politique de notification d’une tâche
     openclaw tasks notify <lookup> state_changes
     ```
 
   </Tab>
   <Tab title="Audit et maintenance">
     ```bash
-    # Run a health audit
+    # Exécuter un audit d’intégrité
     openclaw tasks audit
 
-    # Preview or apply maintenance
+    # Prévisualiser ou appliquer la maintenance
     openclaw tasks maintenance
     openclaw tasks maintenance --apply
     ```
@@ -88,7 +85,7 @@ Toutes les exécutions d’agent ne créent pas une tâche. Les tours Heartbeat 
   </Tab>
   <Tab title="Flux de tâches">
     ```bash
-    # Inspect TaskFlow state
+    # Examiner l’état de TaskFlow
     openclaw tasks flow list
     openclaw tasks flow show <lookup>
     openclaw tasks flow cancel <lookup>
@@ -98,105 +95,99 @@ Toutes les exécutions d’agent ne créent pas une tâche. Les tours Heartbeat 
 
 ## Ce qui crée une tâche
 
-| Source                 | Type de runtime | Quand un enregistrement de tâche est créé                              | Politique de notification par défaut |
-| ---------------------- | --------------- | ---------------------------------------------------------------------- | ------------------------------------ |
-| Exécutions ACP en arrière-plan | `acp`        | Lancement d’une session ACP enfant                                     | `done_only`                          |
-| Orchestration de sous-agents | `subagent`   | Lancement d’un sous-agent via `sessions_spawn`                         | `done_only`                          |
-| Tâches Cron (tous types) | `cron`       | Chaque exécution Cron (session principale et isolée)                   | `silent`                             |
-| Opérations CLI         | `cli`           | Commandes `openclaw agent` exécutées via le Gateway                    | `silent`                             |
-| Tâches média d’agent   | `cli`           | Exécutions `image_generate`/`music_generate`/`video_generate` adossées à une session | `silent`              |
+| Source                    | Type d’environnement d’exécution | Moment de création de l’enregistrement de tâche                          | Politique de notification par défaut |
+| ------------------------- | -------------------------------- | ------------------------------------------------------------------------ | ------------------------------------ |
+| Exécutions ACP en arrière-plan | `acp`                       | Création d’une session ACP enfant                                        | `done_only`                          |
+| Orchestration de sous-agents | `subagent`                    | Lancement d’un sous-agent via `sessions_spawn`                            | `done_only`                          |
+| Tâches cron (tous types)  | `cron`                           | À chaque exécution cron (session principale et isolée)                    | `silent`                             |
+| Opérations CLI            | `cli`                            | Commandes `openclaw agent` exécutées par l’intermédiaire du gateway       | `silent`                             |
+| Tâches multimédias d’agent | `cli`                           | Exécutions `image_generate`/`music_generate`/`video_generate` adossées à une session | `silent`                    |
 
 <AccordionGroup>
-  <Accordion title="Valeurs par défaut de notification pour Cron et les médias">
-    Les tâches Cron de session principale utilisent par défaut la politique de notification `silent` - elles créent des enregistrements pour le suivi mais ne génèrent pas de notifications. Les tâches Cron isolées utilisent également `silent` par défaut, mais sont plus visibles parce qu’elles s’exécutent dans leur propre session.
+  <Accordion title="Valeurs par défaut des notifications pour cron et les contenus multimédias">
+    Les tâches cron (de session principale et isolées) utilisent la politique de notification `silent` : elles créent des enregistrements de suivi, mais ne génèrent aucune notification de tâche propre ; cron gère son propre mode de livraison.
 
-    Les exécutions `image_generate`, `music_generate` et `video_generate` adossées à une session utilisent également la politique de notification `silent`. Elles créent tout de même des enregistrements de tâche, mais l’achèvement est renvoyé à la session d’agent d’origine comme réveil interne afin que l’agent puisse rédiger lui-même le message de suivi et joindre le média terminé. L’agent demandeur suit son contrat normal de réponse visible : réponse finale automatique lorsqu’elle est configurée, ou `message(action="send")` plus `NO_REPLY` lorsque la session exige des réponses via l’outil de message. Si la session demandeuse n’est plus active ou si son réveil actif échoue, et que l’agent d’achèvement manque une partie ou la totalité des médias générés, OpenClaw envoie un repli direct idempotent avec uniquement les médias manquants vers la cible de canal d’origine.
+    Les exécutions `image_generate`, `music_generate` et `video_generate` adossées à une session utilisent également la politique de notification `silent`. Elles créent tout de même des enregistrements de tâche, mais leur fin est renvoyée à la session d’agent d’origine sous forme de réveil interne afin que l’agent puisse rédiger le message de suivi et y joindre lui-même les contenus multimédias terminés. L’agent demandeur respecte son contrat habituel de réponse visible : réponse finale automatique lorsqu’elle est configurée, ou `message(action="send")` suivi de `NO_REPLY` lorsque la session exige des réponses au moyen de l’outil de messagerie. Si la session demandeuse n’est plus active ou si son réveil actif échoue, et que l’agent de fin ne récupère pas tout ou partie des contenus multimédias générés, OpenClaw envoie directement à la cible du canal d’origine un message de secours idempotent contenant uniquement les contenus multimédias manquants.
 
   </Accordion>
-  <Accordion title="Garde-fou de génération média concurrente">
-    Tant qu’une tâche de génération média adossée à une session est encore active, les outils média agissent aussi comme garde-fous contre les relances accidentelles. Les appels `image_generate` répétés pour la même invite renvoient le statut de la tâche active correspondante, tandis qu’une invite d’image distincte peut lancer sa propre tâche. Les appels `music_generate` et `video_generate` renvoient toujours le statut de la tâche active pour cette session au lieu de démarrer une deuxième génération concurrente. Utilisez `action: "status"` lorsque vous voulez une recherche explicite de progression/statut côté agent.
+  <Accordion title="Protection contre les générations multimédias simultanées">
+    Tant qu’une tâche de génération multimédia adossée à une session est active, `image_generate`, `music_generate` et `video_generate` préviennent les nouvelles tentatives accidentelles : répéter l’appel avec la même invite ou requête renvoie l’état de la tâche active correspondante au lieu de créer un doublon, tandis qu’une invite distincte peut lancer sa propre tâche. Utilisez `action: "status"` pour demander explicitement la progression ou l’état depuis l’agent.
   </Accordion>
   <Accordion title="Ce qui ne crée pas de tâches">
-    - Tours Heartbeat - session principale ; voir [Heartbeat](/fr/gateway/heartbeat)
-    - Tours de discussion interactive normale
+    - Tours de Heartbeat dans la session principale ; consultez [Heartbeat](/fr/gateway/heartbeat)
+    - Tours de conversation interactive normale
     - Réponses directes à `/command`
 
   </Accordion>
 </AccordionGroup>
 
-## Cycle de vie des tâches
+## Cycle de vie d’une tâche
 
 ```mermaid
 stateDiagram-v2
     [*] --> queued
-    queued --> running : agent starts
-    running --> succeeded : completes ok
-    running --> failed : error
-    running --> timed_out : timeout exceeded
-    running --> cancelled : operator cancels
-    queued --> lost : session gone > 5 min
-    running --> lost : session gone > 5 min
+    queued --> running : démarrage de l’agent
+    running --> succeeded : fin réussie
+    running --> failed : erreur
+    running --> timed_out : délai d’expiration dépassé
+    queued --> cancelled : annulation par l’opérateur
+    running --> cancelled : annulation par l’opérateur
+    queued --> lost : état sous-jacent absent > 5 min
+    running --> lost : état sous-jacent absent > 5 min
 ```
 
-| Statut      | Ce que cela signifie                                                      |
-| ----------- | -------------------------------------------------------------------------- |
-| `queued`    | Créée, en attente du démarrage de l’agent                                  |
-| `running`   | Le tour d’agent est en cours d’exécution active                            |
-| `succeeded` | Terminée avec succès                                                       |
-| `failed`    | Terminée avec une erreur                                                   |
-| `timed_out` | A dépassé le délai d’expiration configuré                                  |
-| `cancelled` | Arrêtée par l’opérateur via `openclaw tasks cancel`                        |
-| `lost`      | Le runtime a perdu l’état d’appui faisant autorité après une période de grâce de 5 minutes |
+| État        | Signification                                                                 |
+| ----------- | ----------------------------------------------------------------------------- |
+| `queued`    | Créée, en attente du démarrage de l’agent                                     |
+| `running`   | Le tour de l’agent est en cours d’exécution                                   |
+| `succeeded` | Terminée avec succès                                                          |
+| `failed`    | Terminée avec une erreur                                                      |
+| `timed_out` | A dépassé le délai d’expiration configuré                                     |
+| `cancelled` | Arrêtée par l’opérateur via `openclaw tasks cancel`, ou exécution interrompue |
+| `lost`      | L’environnement d’exécution a perdu l’état sous-jacent faisant autorité après un délai de grâce de 5 minutes |
 
-Les transitions se produisent automatiquement - lorsque l’exécution d’agent associée se termine, le statut de la tâche est mis à jour en conséquence.
+Les transitions se produisent automatiquement : les événements du cycle de vie de l’exécution de l’agent (démarrage, fin, erreur) mettent à jour l’état de la tâche ; vous ne le gérez pas manuellement.
 
-L’achèvement de l’exécution d’agent fait autorité pour les enregistrements de tâches actifs. Une exécution détachée réussie se finalise en `succeeded`, les erreurs d’exécution ordinaires se finalisent en `failed`, et les résultats d’expiration ou d’abandon se finalisent en `timed_out`. Si un opérateur a déjà annulé la tâche, ou si le runtime a déjà enregistré un état terminal plus fort comme `failed`, `timed_out` ou `lost`, un signal de réussite ultérieur ne rétrograde pas ce statut terminal.
+La fin de l’exécution de l’agent fait autorité pour les enregistrements de tâches actives. Une exécution détachée réussie se termine à l’état `succeeded`, les erreurs d’exécution ordinaires à l’état `failed`, les expirations à l’état `timed_out` et les annulations ou interruptions à l’état `cancelled`. Une fois qu’une tâche est dans un état terminal, les signaux de cycle de vie ultérieurs ne peuvent pas la rétrograder : une tâche annulée par un opérateur ou déjà à l’état `failed`/`timed_out`/`lost` y reste même si un signal de réussite arrive ensuite.
 
-`lost` tient compte du runtime :
+L’état `lost` tient compte de l’environnement d’exécution :
 
-- Tâches ACP : les métadonnées de session ACP enfant sous-jacentes ont disparu.
-- Tâches de sous-agent : la session enfant sous-jacente a disparu du magasin de l’agent cible.
-- Tâches Cron : le runtime Cron ne suit plus la tâche comme active et l’historique durable
-  des exécutions Cron n’indique pas de résultat terminal pour cette exécution. L’audit CLI
-  hors ligne ne traite pas son propre état vide de runtime Cron dans le processus comme faisant autorité.
-- Tâches CLI : les tâches avec un identifiant d’exécution/source utilisent le contexte d’exécution actif, de sorte que
-  les lignes de session enfant ou de session de discussion persistantes ne les maintiennent pas actives après la disparition de
-  l’exécution possédée par le Gateway. Les tâches CLI héritées sans identité d’exécution se rabattent encore
-  sur la session enfant. Les exécutions `openclaw agent` adossées au Gateway se finalisent également
-  depuis leur résultat d’exécution, de sorte que les exécutions terminées ne restent pas actives jusqu’à ce que le balayeur
-  les marque `lost`.
+- Tâches ACP : seul un tour ACP actif dans le processus du Gateway prouve que l’exécution est active ; les métadonnées de session persistantes ne suffisent pas. L’audit CLI hors ligne reste prudent et ne récupère jamais les tâches ACP.
+- Tâches de sous-agent : la session enfant sous-jacente a disparu du stockage de l’agent cible (ou contient une marque de récupération après redémarrage).
+- Tâches cron : l’environnement d’exécution cron ne suit plus la tâche comme active et l’historique durable des exécutions cron n’indique aucun résultat terminal pour cette exécution. L’audit CLI hors ligne ne considère pas comme faisant autorité son propre état vide d’exécution cron dans le processus.
+- Tâches CLI : les tâches dotées d’un ID d’exécution ou d’un ID source utilisent le contexte d’exécution actif. Ainsi, les lignes persistantes de session enfant ou de session de conversation ne les maintiennent pas actives après la disparition de l’exécution contrôlée par le gateway. Les anciennes tâches CLI sans identité d’exécution continuent de se rabattre sur la session enfant. Les exécutions `openclaw agent` adossées au Gateway sont également finalisées à partir de leur résultat d’exécution ; les exécutions terminées ne restent donc pas actives jusqu’à ce que le processus de nettoyage les marque comme `lost`.
 
 ## Livraison et notifications
 
-Lorsqu’une tâche atteint un état terminal, OpenClaw vous notifie. Il existe deux chemins de livraison :
+Lorsqu’une tâche atteint un état terminal, OpenClaw vous en informe. Deux modes de livraison sont disponibles :
 
-**Livraison directe** - si la tâche a une cible de canal (le `requesterOrigin`), le message d’achèvement va directement à ce canal (Telegram, Discord, Slack, etc.). Les achèvements de tâches de groupe et de canal sont plutôt routés via la session demandeuse afin que l’agent parent puisse rédiger la réponse visible. Pour les achèvements de sous-agents, OpenClaw préserve aussi le routage de fil/sujet lié lorsqu’il est disponible et peut remplir un `to` / compte manquant depuis la route stockée de la session demandeuse (`lastChannel` / `lastTo` / `lastAccountId`) avant d’abandonner la livraison directe.
+**Livraison directe** : si la tâche possède une cible de canal (`requesterOrigin`), le message de fin est envoyé directement à ce canal (Discord, Slack, Telegram, etc.). Les fins de tâches de groupe et de canal sont plutôt acheminées par la session demandeuse afin que l’agent parent puisse rédiger la réponse visible. Pour les fins de sous-agents, OpenClaw conserve également, lorsqu’il est disponible, le routage associé au fil de discussion ou au sujet. Avant de renoncer à une livraison directe, il peut compléter un champ `to` ou un compte manquant à partir du routage enregistré dans la session demandeuse (`lastChannel` / `lastTo` / `lastAccountId`).
 
-**Livraison mise en file d’attente dans la session** - si la livraison directe échoue ou qu’aucune origine n’est définie, la mise à jour est mise en file d’attente comme événement système dans la session du demandeur et apparaît au prochain Heartbeat.
+**Livraison mise en file d’attente dans la session** : si la livraison directe échoue ou si aucune origine n’est définie, la mise à jour est ajoutée comme événement système dans la session demandeuse et apparaît lors du prochain Heartbeat.
 
 <Tip>
-L’achèvement d’une tâche déclenche un réveil Heartbeat immédiat afin que vous voyiez rapidement le résultat - vous n’avez pas à attendre le prochain tic Heartbeat planifié.
+Les fins de tâches mises en file d’attente dans une session déclenchent un réveil immédiat du Heartbeat. Vous voyez donc rapidement le résultat, sans devoir attendre la prochaine exécution planifiée du Heartbeat.
 </Tip>
 
-Cela signifie que le flux de travail habituel est basé sur le push : démarrez le travail détaché une fois, puis laissez le runtime vous réveiller ou vous notifier à l’achèvement. N’interrogez l’état de la tâche que lorsque vous avez besoin de débogage, d’intervention ou d’un audit explicite.
+Le fonctionnement habituel repose donc sur les notifications : lancez une seule fois le travail détaché, puis laissez l’environnement d’exécution vous réveiller ou vous avertir lorsqu’il se termine. N’interrogez l’état de la tâche que pour le débogage, une intervention ou un audit explicite.
 
 ### Politiques de notification
 
-Contrôlez le volume d’informations reçu pour chaque tâche :
+Contrôlez la quantité d’informations reçues pour chaque tâche :
 
-| Politique             | Ce qui est livré                                                       |
-| --------------------- | --------------------------------------------------------------------- |
-| `done_only` (par défaut) | Uniquement l’état terminal (succeeded, failed, etc.) - **c’est la valeur par défaut** |
-| `state_changes`       | Chaque transition d’état et mise à jour de progression                 |
-| `silent`              | Rien du tout                                                           |
+| Politique             | Contenu livré                                                     |
+| --------------------- | ----------------------------------------------------------------- |
+| `done_only` (par défaut) | Uniquement l’état terminal (succeeded, failed, etc.)            |
+| `state_changes`       | Chaque transition d’état et chaque mise à jour de progression     |
+| `silent`              | Aucun contenu (valeur par défaut pour les tâches cron, CLI et multimédias) |
 
-Modifiez la politique pendant qu’une tâche s’exécute :
+Modifiez la politique pendant l’exécution d’une tâche :
 
 ```bash
 openclaw tasks notify <lookup> state_changes
 ```
 
-## Référence CLI
+## Référence de la CLI
 
 <AccordionGroup>
   <Accordion title="tasks list">
@@ -204,15 +195,15 @@ openclaw tasks notify <lookup> state_changes
     openclaw tasks list [--runtime <acp|subagent|cron|cli>] [--status <status>] [--json]
     ```
 
-    Colonnes de sortie : ID de tâche, Type, Statut, Livraison, ID d’exécution, Session enfant, Résumé.
+    Colonnes de sortie : Task, Kind, Status, Delivery, Run, Child Session, Summary. La commande simple `openclaw tasks` se comporte comme `openclaw tasks list`.
 
   </Accordion>
   <Accordion title="tasks show">
     ```bash
-    openclaw tasks show <lookup>
+    openclaw tasks show <lookup> [--json]
     ```
 
-    Le jeton de recherche accepte un ID de tâche, un ID d’exécution ou une clé de session. Affiche l’enregistrement complet, y compris le minutage, l’état de livraison, l’erreur et le résumé terminal.
+    Le jeton de recherche accepte un ID de tâche, un ID d’exécution ou une clé de session. Affiche l’enregistrement complet, notamment les informations temporelles, l’état de livraison, l’erreur et le résumé terminal.
 
   </Accordion>
   <Accordion title="tasks cancel">
@@ -220,7 +211,7 @@ openclaw tasks notify <lookup> state_changes
     openclaw tasks cancel <lookup>
     ```
 
-    Pour les tâches ACP et de sous-agent, cela tue la session enfant. Pour les tâches suivies par la CLI, l’annulation est enregistrée dans le registre des tâches (il n’y a pas de handle de runtime enfant séparé). Le statut passe à `cancelled` et une notification de livraison est envoyée le cas échéant.
+    Pour les tâches ACP et de sous-agent, cette commande met fin à la session enfant ; les annulations ACP et cron passent par le Gateway en cours d’exécution (`tasks.cancel`). Pour les tâches suivies par la CLI, l’annulation est enregistrée dans le registre des tâches (il n’existe aucun handle d’environnement enfant distinct). L’état passe à `cancelled` et une notification de livraison est envoyée le cas échéant.
 
   </Accordion>
   <Accordion title="tasks notify">
@@ -230,45 +221,59 @@ openclaw tasks notify <lookup> state_changes
   </Accordion>
   <Accordion title="tasks audit">
     ```bash
-    openclaw tasks audit [--json]
+    openclaw tasks audit [--severity <warn|error>] [--code <name>] [--limit <n>] [--json]
     ```
 
-    Fait remonter les problèmes opérationnels. Les constats apparaissent également dans `openclaw status` lorsque des problèmes sont détectés.
+    Signale dans un rapport unique les problèmes opérationnels des tâches **et** des TaskFlows. Les constats apparaissent également dans `openclaw status` lorsque des problèmes sont détectés.
 
-    | Résultat                  | Gravité             | Déclencheur                                                                                                           |
-    | ------------------------- | ------------------- | --------------------------------------------------------------------------------------------------------------------- |
-    | `stale_queued`            | avertissement       | En file d’attente depuis plus de 10 minutes                                                                            |
-    | `stale_running`           | erreur              | En cours d’exécution depuis plus de 30 minutes                                                                         |
-    | `lost`                    | avertissement/erreur | La propriété de la tâche adossée au runtime a disparu ; les tâches perdues conservées avertissent jusqu’à `cleanupAfter`, puis deviennent des erreurs |
-    | `delivery_failed`         | avertissement       | La livraison a échoué et la politique de notification n’est pas `silent`                                               |
-    | `missing_cleanup`         | avertissement       | Tâche terminale sans horodatage de nettoyage                                                                           |
-    | `inconsistent_timestamps` | avertissement       | Violation de chronologie (par exemple, terminée avant d’avoir commencé)                                                |
+    Constats relatifs aux tâches :
+
+    | Constat                   | Gravité   | Déclencheur                                                                                                      |
+    | ------------------------- | ---------- | ------------------------------------------------------------------------------------------------------------ |
+    | `stale_queued`            | warn       | En file d’attente depuis plus de 10 minutes                                                                              |
+    | `stale_running`           | error      | En cours d’exécution depuis plus de 30 minutes                                                                             |
+    | `lost`                    | warn/error | La propriété de la tâche assurée par l’environnement d’exécution a disparu ; les tâches perdues conservées génèrent un avertissement jusqu’à `cleanupAfter`, puis deviennent des erreurs |
+    | `delivery_failed`         | warn       | La livraison a échoué et la politique de notification n’est pas `silent`                                                            |
+    | `missing_cleanup`         | warn       | Tâche terminale sans horodatage de nettoyage                                                                      |
+    | `inconsistent_timestamps` | warn       | Violation de la chronologie (par exemple, fin antérieure au début)                                                        |
+
+    Constats TaskFlow :
+
+    | Constat                | Gravité   | Déclencheur                                                                    |
+    | ---------------------- | ---------- | --------------------------------------------------------------------------- |
+    | `restore_failed`       | error      | Échec de la restauration du registre des flux depuis SQLite                                    |
+    | `stale_running`        | error      | Le flux en cours d’exécution n’a pas progressé depuis plus de 30 minutes                      |
+    | `stale_waiting`        | warn       | Le flux en attente n’a pas progressé depuis plus de 30 minutes                      |
+    | `stale_blocked`        | warn       | Le flux bloqué n’a pas progressé depuis plus de 30 minutes                      |
+    | `cancel_stuck`         | warn       | Annulation demandée il y a plus de 5 minutes, aucune tâche enfant active, flux toujours non terminal |
+    | `missing_linked_tasks` | warn/error | Flux géré obsolète sans tâche liée ni état d’attente                       |
+    | `blocked_task_missing` | warn       | Le flux bloqué pointe vers un identifiant de tâche qui n’existe plus                      |
 
   </Accordion>
-  <Accordion title="tasks maintenance">
+  <Accordion title="maintenance des tâches">
     ```bash
     openclaw tasks maintenance [--json]
     openclaw tasks maintenance --apply [--json]
     ```
 
-    Utilisez cette commande pour prévisualiser ou appliquer la réconciliation, l’horodatage de nettoyage et l’élagage des tâches, de l’état Task Flow et des lignes obsolètes du registre de sessions d’exécution cron.
+    Utilisez cette commande pour prévisualiser ou appliquer la réconciliation, l’ajout des horodatages de nettoyage et l’élagage des tâches, de l’état TaskFlow et des lignes obsolètes du registre des sessions d’exécution Cron.
 
-    La réconciliation tient compte du runtime :
+    La réconciliation tient compte de l’environnement d’exécution :
 
-    - Les tâches ACP/sous-agent vérifient leur session enfant sous-jacente.
-    - Les tâches de sous-agent dont la session enfant comporte une pierre tombale de récupération après redémarrage sont marquées comme perdues au lieu d’être traitées comme des sessions sous-jacentes récupérables.
-    - Les tâches Cron vérifient si le runtime cron possède toujours la tâche, puis récupèrent l’état terminal depuis les journaux persistés d’exécution cron/l’état de la tâche avant de se rabattre sur `lost`. Seul le processus Gateway fait autorité pour l’ensemble en mémoire des tâches cron actives ; l’audit CLI hors ligne utilise l’historique durable, mais ne marque pas une tâche cron comme perdue uniquement parce que ce Set local est vide.
-    - Les tâches CLI avec identité d’exécution vérifient le contexte d’exécution actif propriétaire, pas seulement les lignes de session enfant ou de session de chat.
+    - Les tâches ACP nécessitent un tour actif dans le processus du Gateway ; les tâches de sous-agent vérifient leur session enfant sous-jacente.
+    - Les tâches de sous-agent dont la session enfant possède une trace de récupération après redémarrage sont marquées comme perdues au lieu d’être considérées comme des sessions sous-jacentes récupérables.
+    - Les tâches Cron vérifient si l’environnement d’exécution Cron possède toujours la tâche planifiée, puis récupèrent l’état terminal depuis les journaux d’exécution Cron ou l’état persistant de la tâche planifiée avant d’utiliser `lost` en dernier recours. Seul le processus Gateway fait autorité pour l’ensemble en mémoire des tâches Cron actives ; l’audit hors ligne de la CLI utilise l’historique persistant, mais ne marque pas une tâche Cron comme perdue uniquement parce que cet ensemble local est vide.
+    - Les tâches CLI dotées d’une identité d’exécution vérifient le contexte d’exécution actif propriétaire, et pas seulement les lignes de session enfant ou de session de discussion.
 
-    Le nettoyage de complétion tient également compte du runtime :
+    Le nettoyage à l’achèvement tient également compte de l’environnement d’exécution :
 
-    - La complétion de sous-agent ferme au mieux les onglets/processus de navigateur suivis pour la session enfant avant que le nettoyage d’annonce continue.
-    - La complétion cron isolée ferme au mieux les onglets/processus de navigateur suivis pour la session cron avant que l’exécution ne se termine entièrement.
-    - La livraison cron isolée attend, si nécessaire, le suivi par sous-agent descendant et supprime le texte d’accusé de réception parent obsolète au lieu de l’annoncer.
-    - La livraison de complétion de sous-agent utilise uniquement le dernier texte assistant visible de l’enfant. La sortie tool/toolResult n’est pas promue en texte de résultat enfant. Les exécutions terminales échouées annoncent l’état d’échec sans rejouer le texte de réponse capturé.
+    - À l’achèvement d’un sous-agent, OpenClaw tente de fermer les onglets de navigateur et processus suivis pour la session enfant avant de poursuivre le nettoyage de l’annonce.
+    - À l’achèvement d’une exécution Cron isolée, OpenClaw tente de fermer les onglets de navigateur et processus suivis pour la session Cron avant la fin complète de l’exécution.
+    - La livraison Cron isolée attend, si nécessaire, la fin du suivi des sous-agents descendants et supprime le texte obsolète d’accusé de réception du parent au lieu de l’annoncer.
+    - La livraison à l’achèvement d’un sous-agent utilise uniquement le dernier texte visible de l’assistant enfant. La sortie de tool/toolResult n’est pas promue comme texte de résultat de l’enfant. Les exécutions terminales en échec annoncent l’état d’échec sans reproduire le texte de réponse capturé.
     - Les échecs de nettoyage ne masquent pas le résultat réel de la tâche.
 
-    Lors de l’application de la maintenance, OpenClaw supprime aussi les lignes obsolètes du registre de sessions `cron:<jobId>:run:<uuid>` âgées de plus de 7 jours, tout en préservant les lignes des tâches cron en cours d’exécution et en laissant intactes les lignes de sessions non cron.
+    Lors de l’application de la maintenance, OpenClaw supprime également les lignes obsolètes du registre des sessions `cron:<jobId>:run:<runId>` datant de plus de 7 jours, tout en conservant les lignes des tâches Cron en cours d’exécution et en laissant intactes les lignes de session non Cron.
 
   </Accordion>
   <Accordion title="tasks flow list | show | cancel">
@@ -278,107 +283,107 @@ openclaw tasks notify <lookup> state_changes
     openclaw tasks flow cancel <lookup>
     ```
 
-    Utilisez ces commandes lorsque le Task Flow d’orchestration est ce qui vous intéresse plutôt qu’un enregistrement individuel de tâche en arrière-plan.
+    Le jeton de recherche de flux accepte un identifiant de flux ou une clé de propriétaire. Utilisez ces commandes lorsque le [flux de tâches](/fr/automation/taskflow) d’orchestration vous intéresse davantage qu’un enregistrement individuel de tâche en arrière-plan.
 
   </Accordion>
 </AccordionGroup>
 
-## Tableau des tâches de chat (`/tasks`)
+## Tableau des tâches de discussion (`/tasks`)
 
-Utilisez `/tasks` dans n’importe quelle session de chat pour voir les tâches en arrière-plan liées à cette session. Le tableau affiche les tâches actives et récemment terminées avec le runtime, l’état, la chronologie, ainsi que les détails de progression ou d’erreur.
+Utilisez `/tasks` dans n’importe quelle session de discussion pour afficher les tâches en arrière-plan liées à cette session. Le tableau affiche jusqu’à cinq tâches actives ou récemment terminées, avec leur environnement d’exécution, leur état, leurs informations temporelles ainsi que le détail de leur progression ou de leur erreur.
 
-Lorsque la session actuelle n’a aucune tâche liée visible, `/tasks` se rabat sur les compteurs de tâches locaux à l’agent afin que vous obteniez tout de même une vue d’ensemble sans exposer les détails d’autres sessions.
+Lorsque la session actuelle ne comporte aucune tâche liée visible, `/tasks` se rabat sur le nombre de tâches locales de l’agent afin de fournir tout de même une vue d’ensemble sans divulguer les détails d’autres sessions.
 
-Pour le registre opérateur complet, utilisez la CLI : `openclaw tasks list`.
+Pour consulter le registre opérateur complet, utilisez la CLI : `openclaw tasks list`.
 
-## Intégration de l’état (pression des tâches)
+### Interface de contrôle
 
-`openclaw status` inclut un résumé des tâches en un coup d’œil :
+L’interface de contrôle web comporte une page **Tâches** dans la barre latérale, qui présente en direct les tâches en arrière-plan actives et récentes. Utilisez-la pour examiner la progression, ouvrir les sessions liées, actualiser le registre ou annuler les tâches en file d’attente et en cours d’exécution.
+
+Les volets de discussion comportent également un panneau réductible **Tâches en arrière-plan**, limité à l’agent du volet : tâches et sous-agents en cours d’exécution avec une commande d’arrêt, une section des éléments terminés et des liens Afficher la transcription vers la session enfant de chaque tâche. Ouvrez-le depuis le bouton d’activité dans l’en-tête du volet (ou depuis le bouton d’activité flottant dans une discussion à volet unique).
+
+## Intégration à l’état (pression des tâches)
+
+`openclaw status` comprend une ligne récapitulative des tâches :
 
 ```
-Tasks: 3 queued · 2 running · 1 issues
+Tâches    2 actives · 1 en attente · 1 en cours · 1 problème · audit sans anomalie · 6 suivies
 ```
 
-Le résumé indique :
+Le résumé compte le travail actif (`queued` + `running`), les échecs (`failed` + `timed_out` + `lost`), les constats d’audit et le nombre total d’enregistrements suivis ; la charge utile JSON détaille également les nombres par environnement d’exécution (`acp`, `subagent`, `cron`, `cli`).
 
-- **active** - nombre de `queued` + `running`
-- **failures** - nombre de `failed` + `timed_out` + `lost`
-- **byRuntime** - répartition par `acp`, `subagent`, `cron`, `cli`
-
-`/status` comme l’outil `session_status` utilisent un instantané des tâches tenant compte du nettoyage : les tâches actives sont privilégiées, les lignes terminées obsolètes sont masquées, et les échecs récents ne remontent que lorsqu’il ne reste aucun travail actif. Cela maintient la carte d’état centrée sur ce qui compte maintenant.
+`/status` et l’outil `session_status` utilisent tous deux un instantané des tâches tenant compte du nettoyage : les tâches actives sont privilégiées, les lignes expirées sont masquées et les tâches terminales n’apparaissent que pendant une courte période récente (5 minutes), en mettant l’accent sur les échecs lorsqu’il ne reste aucun travail actif. La carte d’état reste ainsi centrée sur ce qui importe à cet instant.
 
 ## Stockage et maintenance
 
-### Où résident les tâches
+### Emplacement des tâches
 
-Les enregistrements de tâches persistent dans SQLite à l’emplacement :
+Les enregistrements de tâches et l’état de livraison sont conservés dans la base de données d’état SQLite partagée d’OpenClaw :
 
 ```
-$OPENCLAW_STATE_DIR/tasks/runs.sqlite
+~/.openclaw/state/openclaw.sqlite   (tables : task_runs, task_delivery_state, flow_runs)
 ```
 
-Le registre est chargé en mémoire au démarrage du Gateway et synchronise les écritures vers SQLite pour garantir la durabilité entre les redémarrages.
-Le Gateway maintient le journal d’écriture anticipée SQLite borné en utilisant le seuil
-d’autocheckpoint par défaut de SQLite ainsi que des checkpoints `PASSIVE` périodiques. L’arrêt et
-les checkpoints de maintenance explicites utilisent toujours `TRUNCATE` afin que les fermetures normales puissent
-récupérer l’espace WAL sans obliger le balayeur en arrière-plan à attendre les lecteurs actifs.
+Définissez `OPENCLAW_STATE_DIR` pour déplacer l’ensemble de la racine d’état (par défaut `~/.openclaw`) ailleurs ; le chemin de la base de données partagée est déplacé avec elle.
+
+Le registre est chargé en mémoire lors de sa première utilisation et chaque écriture est conservée dans SQLite, de sorte que les enregistrements survivent aux redémarrages du Gateway. La croissance du WAL reste limitée grâce au seuil de point de contrôle automatique par défaut de SQLite et à des points de contrôle `PASSIVE` périodiques ; les points de contrôle à l’arrêt et lors d’une maintenance explicite utilisent `TRUNCATE`, afin que les fermetures normales récupèrent l’espace du WAL sans obliger le processus de nettoyage en arrière-plan à attendre les lecteurs actifs.
+
+Les anciens magasins annexes issus d’installations antérieures (`tasks/runs.sqlite`, `flows/registry.sqlite`) sont importés dans la base de données partagée par `openclaw doctor`.
 
 ### Maintenance automatique
 
-Un balayeur s’exécute toutes les **60 secondes** et gère quatre éléments :
+Un processus de nettoyage s’exécute toutes les **60 secondes** (premier passage environ 5 secondes après le démarrage du Gateway) et effectue quatre opérations :
 
 <Steps>
-  <Step title="Reconciliation">
-    Vérifie si les tâches actives disposent toujours d’un support runtime faisant autorité. Les tâches ACP/sous-agent utilisent l’état de session enfant, les tâches cron utilisent la propriété de tâche active, et les tâches CLI avec identité d’exécution utilisent le contexte d’exécution propriétaire. Si cet état sous-jacent a disparu depuis plus de 5 minutes, la tâche est marquée `lost`.
+  <Step title="Réconciliation">
+    Vérifie si les tâches actives disposent toujours d’un environnement d’exécution sous-jacent faisant autorité. Les tâches ACP nécessitent un tour actif dans le processus, les tâches de sous-agent utilisent l’état de la session enfant, les tâches Cron utilisent la propriété de la tâche active ainsi que l’historique persistant des exécutions, et les tâches CLI dotées d’une identité d’exécution utilisent le contexte d’exécution propriétaire. Si l’état sous-jacent a disparu depuis plus de 5 minutes (30 minutes pour les tâches natives de sous-agent sans enfant), la tâche est marquée `lost`.
   </Step>
-  <Step title="ACP session repair">
-    Ferme les sessions ACP ponctuelles terminales ou orphelines appartenant au parent, et ferme les sessions ACP persistantes terminales ou orphelines obsolètes uniquement lorsqu’aucune liaison de conversation active ne demeure.
+  <Step title="Réparation des sessions ACP">
+    Ferme les sessions ACP ponctuelles terminales ou orphelines appartenant au parent, et ferme les sessions ACP persistantes terminales obsolètes ou orphelines uniquement lorsqu’il ne reste aucune liaison active avec une conversation.
   </Step>
-  <Step title="Cleanup stamping">
-    Définit un horodatage `cleanupAfter` sur les tâches terminales (endedAt + 7 jours). Pendant la rétention, les tâches perdues apparaissent encore dans l’audit comme des avertissements ; après l’expiration de `cleanupAfter`, ou lorsque les métadonnées de nettoyage sont manquantes, ce sont des erreurs.
+  <Step title="Ajout de l’horodatage de nettoyage">
+    Définit un horodatage `cleanupAfter` sur les tâches terminales (heure de terminaison + période de conservation). Pendant la conservation, les tâches perdues apparaissent encore dans l’audit sous forme d’avertissements ; après l’expiration de `cleanupAfter`, ou lorsque les métadonnées de nettoyage sont absentes, elles deviennent des erreurs.
   </Step>
-  <Step title="Pruning">
-    Supprime les enregistrements au-delà de leur date `cleanupAfter`.
+  <Step title="Élagage">
+    Supprime les enregistrements dont la date `cleanupAfter` est dépassée.
   </Step>
 </Steps>
 
 <Note>
-**Rétention :** les enregistrements de tâches terminales sont conservés pendant **7 jours**, puis automatiquement élagués. Aucune configuration n’est nécessaire.
+**Conservation :** les enregistrements des tâches terminales sont conservés pendant **7 jours** (les enregistrements `lost` pendant **24 heures**), puis automatiquement élagués. Aucune configuration n’est nécessaire.
 </Note>
 
-## Relation entre les tâches et les autres systèmes
+## Relations entre les tâches et les autres systèmes
 
 <AccordionGroup>
-  <Accordion title="Tasks and Task Flow">
-    [Task Flow](/fr/automation/taskflow) est la couche d’orchestration de flux au-dessus des tâches en arrière-plan. Un flux unique peut coordonner plusieurs tâches pendant sa durée de vie à l’aide de modes de synchronisation gérés ou en miroir. Utilisez `openclaw tasks` pour inspecter les enregistrements de tâches individuels et `openclaw tasks flow` pour inspecter le flux d’orchestration.
-
-    Consultez [Task Flow](/fr/automation/taskflow) pour plus de détails.
+  <Accordion title="Tâches et flux de tâches">
+    Le [flux de tâches](/fr/automation/taskflow) est la couche d’orchestration des flux située au-dessus des tâches en arrière-plan. Un même flux peut coordonner plusieurs tâches au cours de son cycle de vie à l’aide de modes de synchronisation gérés ou reflétés. Utilisez `openclaw tasks` pour examiner les enregistrements de tâches individuels et `openclaw tasks flow` pour examiner le flux d’orchestration.
 
   </Accordion>
-  <Accordion title="Tasks and cron">
-    Les définitions de tâches Cron, l’état d’exécution runtime et l’historique des exécutions résident dans la base de données d’état SQLite partagée d’OpenClaw. **Chaque** exécution cron crée un enregistrement de tâche - à la fois en session principale et isolée. Les tâches cron de session principale utilisent par défaut la politique de notification `silent`, ce qui leur permet d’être suivies sans générer de notifications.
+  <Accordion title="Tâches et Cron">
+    Les définitions des tâches Cron, l’état d’exécution et l’historique des exécutions résident dans la base de données d’état SQLite partagée d’OpenClaw. **Chaque** exécution Cron crée un enregistrement de tâche, qu’elle utilise la session principale ou soit isolée, avec la politique de notification `silent`, de sorte que les exécutions Cron sont suivies sans générer leurs propres notifications de tâche.
 
     Consultez [Tâches Cron](/fr/automation/cron-jobs).
 
   </Accordion>
-  <Accordion title="Tasks and heartbeat">
-    Les exécutions Heartbeat sont des tours de session principale - elles ne créent pas d’enregistrements de tâche. Lorsqu’une tâche se termine, elle peut déclencher un réveil Heartbeat afin que vous voyiez le résultat rapidement.
+  <Accordion title="Tâches et Heartbeat">
+    Les exécutions Heartbeat sont des tours de la session principale : elles ne créent pas d’enregistrements de tâche. Lorsqu’une tâche se termine, elle peut déclencher un réveil Heartbeat afin que vous voyiez rapidement le résultat.
 
     Consultez [Heartbeat](/fr/gateway/heartbeat).
 
   </Accordion>
-  <Accordion title="Tasks and sessions">
-    Une tâche peut référencer un `childSessionKey` (où le travail s’exécute) et un `requesterSessionKey` (qui l’a démarrée). Son `agentId` identifie l’agent qui exécute le travail, tandis que les champs de demandeur et de propriétaire préservent le contexte de lancement et de contrôle. Les sessions constituent le contexte de conversation ; les tâches assurent le suivi d’activité par-dessus.
+  <Accordion title="Tâches et sessions">
+    Une tâche peut référencer une `childSessionKey` (où le travail s’exécute) et une `requesterSessionKey` (qui l’a démarré). Son `agentId` identifie l’agent exécutant le travail, tandis que les champs du demandeur et du propriétaire préservent le contexte de lancement et de contrôle. Les sessions représentent le contexte de conversation ; les tâches assurent le suivi des activités qui s’y superposent.
   </Accordion>
-  <Accordion title="Tasks and agent runs">
-    Le `runId` d’une tâche renvoie à l’exécution d’agent qui effectue le travail. Les événements de cycle de vie de l’agent (début, fin, erreur) mettent automatiquement à jour l’état de la tâche - vous n’avez pas besoin de gérer le cycle de vie manuellement.
+  <Accordion title="Tâches et exécutions d’agent">
+    Le `runId` d’une tâche renvoie à l’exécution d’agent qui effectue le travail. Les événements du cycle de vie de l’agent (début, fin, erreur) mettent automatiquement à jour l’état de la tâche ; vous n’avez pas à gérer ce cycle de vie manuellement.
   </Accordion>
 </AccordionGroup>
 
-## Associés
+## Ressources associées
 
-- [Automatisation](/fr/automation) - tous les mécanismes d’automatisation en un coup d’œil
-- [CLI : tâches](/fr/cli/tasks) - référence des commandes CLI
-- [Heartbeat](/fr/gateway/heartbeat) - tours périodiques de session principale
+- [Automatisation](/fr/automation) - vue d’ensemble de tous les mécanismes d’automatisation
+- [CLI : tâches](/fr/cli/tasks) - référence des commandes de la CLI
+- [Heartbeat](/fr/gateway/heartbeat) - tours périodiques de la session principale
 - [Tâches planifiées](/fr/automation/cron-jobs) - planification du travail en arrière-plan
-- [Task Flow](/fr/automation/taskflow) - orchestration de flux au-dessus des tâches
+- [Flux de tâches](/fr/automation/taskflow) - orchestration des flux au-dessus des tâches

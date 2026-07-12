@@ -1,20 +1,21 @@
 ---
-summary: Weiterleitung zu Task Flow
+summary: Weiterleitung zu TaskFlow
 title: ClawFlow
 x-i18n:
-    generated_at: "2026-04-30T06:38:02Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:59:02Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: dec1ddc0e784b4ad49d0f5e5a8e332032e40281b81fe27de99363178ff8d3272
+    source_hash: 34f259b25c73d08ab71935307e2736f3f9d57dd579ba0f1842a2bd334f656e47
     source_path: automation/clawflow.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-ClawFlow wurde in [Task-Flow](/de/automation/taskflow) umbenannt.
+ClawFlow wurde in [TaskFlow](/de/automation/taskflow) umbenannt. Informationen zur dauerhaften Orchestrierung mehrstufiger Abläufe finden Sie auf dieser Seite.
 
-## Verwandt
+## Verwandte Themen
 
-- [Task-Flow](/de/automation/taskflow)
+- [TaskFlow](/de/automation/taskflow)
 - [Daueraufträge](/de/automation/standing-orders)
 - [Hooks](/de/automation/hooks)

@@ -1,73 +1,59 @@
 ---
 read_when:
-    - Configurando ou depurando o controle remoto de Mac
-summary: fluxo do aplicativo macOS para controlar um gateway OpenClaw remoto
+    - Configurando ou depurando o controle remoto do Mac
+summary: Fluxo do aplicativo para macOS para controlar um Gateway remoto do OpenClaw
 title: Controle remoto
 x-i18n:
-    generated_at: "2026-07-03T23:29:16Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:21:56Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: 4d1ac5065011ef16085b3349ee7224fe3e806a6de61feaac2dcd5c9ed264227e
+    source_hash: bd3ee71838737c1b8cf67d91d00b135283f4284400c75309646e62921e8c3633
     source_path: platforms/mac/remote.md
     workflow: 16
 ---
 
-Este fluxo permite que o app macOS atue como um controle remoto completo para um Gateway do OpenClaw em execução em outro host (desktop/servidor). O app pode se conectar diretamente a URLs confiáveis de Gateway em LAN/Tailnet ou gerenciar um túnel SSH quando o Gateway remoto é somente loopback. Verificações de integridade, encaminhamento do Voice Wake e Web Chat reutilizam a mesma configuração remota de _Configurações → Geral_.
+Este fluxo permite que o aplicativo para macOS funcione como um controle remoto completo para um Gateway do OpenClaw executado em outro host (desktop/servidor). O aplicativo se conecta diretamente a URLs confiáveis do Gateway na LAN/Tailnet ou gerencia um túnel SSH quando o Gateway remoto aceita conexões apenas via loopback. As verificações de integridade, o encaminhamento da Ativação por Voz e o Web Chat reutilizam a mesma configuração remota de _Settings -> General_.
 
 ## Modos
 
-- **Local (este Mac)**: Tudo é executado no laptop. Sem SSH envolvido.
-- **Remoto via SSH (padrão)**: Os comandos do OpenClaw são executados no host remoto. O app para Mac abre uma conexão SSH com `-o BatchMode`, além da identidade/chave escolhida e de um encaminhamento de porta local.
-- **Remoto direto (ws/wss)**: Sem túnel SSH. O app para Mac se conecta diretamente à URL do Gateway (por exemplo, via LAN, Tailscale, Tailscale Serve ou um proxy reverso HTTPS público).
+- **Local (este Mac)**: tudo é executado no laptop; sem uso de SSH.
+- **Remoto via SSH (padrão)**: os comandos do OpenClaw são executados no host remoto. O aplicativo abre uma conexão SSH com `-o BatchMode`, a identidade/chave escolhida e um encaminhamento de porta local.
+- **Remoto direto (ws/wss)**: sem túnel SSH; o aplicativo se conecta diretamente à URL do Gateway (LAN, Tailscale, Tailscale Serve ou um proxy reverso HTTPS público).
 
 ## Transportes remotos
 
-O modo remoto oferece suporte a dois transportes:
+- **Túnel SSH** (padrão): usa `ssh -N -L ...` para encaminhar a porta do Gateway ao localhost. O Gateway vê o IP do Node como `127.0.0.1` porque o túnel usa loopback.
+- **Direto (ws/wss)**: conecta-se diretamente à URL do Gateway. O Gateway vê o IP real do cliente.
 
-- **Túnel SSH** (padrão): Usa `ssh -N -L ...` para encaminhar a porta do Gateway para localhost. O Gateway verá o IP do Node como `127.0.0.1` porque o túnel é loopback.
-- **Direto (ws/wss)**: Conecta diretamente à URL do Gateway. O Gateway vê o IP real do cliente.
+O aplicativo desativa a multiplexação de conexões SSH e a execução em segundo plano após a autenticação em seus próprios processos SSH, para poder monitorar e reiniciar o processo exato, mesmo que o alias selecionado habilite `ControlMaster` ou `ForkAfterAuthentication`.
 
-O app desativa multiplexação de conexão SSH e execução em segundo plano após autenticação para processos SSH pertencentes ao app, para que possa monitorar e reiniciar o processo exato mesmo quando o alias selecionado habilita `ControlMaster` ou `ForkAfterAuthentication`.
+A verificação da chave de host SSH é rigorosa por padrão porque as credenciais do Gateway trafegam por esse túnel. Para optar pelo comportamento de confiança próprio de um alias SSH gerenciado, defina `--ssh-host-key-policy openssh` por meio de `openclaw-mac configure-remote` ou defina `gateway.remote.sshHostKeyPolicy` diretamente como `"openssh"`. Revise o alias e qualquer configuração correspondente de `Host *` ou do sistema antes de optar por isso. Alterar o destino SSH (no aplicativo ou por meio de `configure-remote`) redefine a política como `strict`, a menos que você opte explicitamente por ela novamente para o novo destino.
 
-A verificação de chave de host SSH é estrita por padrão porque as credenciais do Gateway trafegam por esse túnel. Para um alias SSH gerenciado cujo comportamento de confiança você pretende usar explicitamente, habilite com `openclaw-mac configure-remote --ssh-target <alias> --ssh-host-key-policy openssh` ou defina `gateway.remote.sshHostKeyPolicy` como `"openssh"`. Essa habilitação usa a política efetiva de chave de host do OpenSSH; revise primeiro o alias e qualquer configuração correspondente de `Host *` ou do sistema. Alterar o destino SSH no app ou com `configure-remote` redefine a política para `strict`, a menos que você habilite explicitamente de novo.
+No modo de túnel SSH, os nomes de host descobertos na LAN/Tailnet são salvos como `gateway.remote.sshTarget`. O aplicativo mantém `gateway.remote.url` no endpoint do túnel local (por exemplo, `ws://127.0.0.1:18789`), para que a CLI, o Web Chat e o serviço de host do Node local usem o mesmo transporte de loopback. Quando a descoberta retorna tanto IPs brutos da Tailnet quanto nomes de host estáveis, o aplicativo prefere nomes do Tailscale MagicDNS ou da LAN, para que as conexões resistam melhor a alterações de endereço. Se a porta do túnel local for diferente da porta do Gateway remoto, defina `gateway.remote.remotePort` como a porta no host remoto.
 
-No modo de túnel SSH, nomes de host LAN/tailnet descobertos são salvos como
-`gateway.remote.sshTarget`. O app mantém `gateway.remote.url` no endpoint local
-do túnel, por exemplo `ws://127.0.0.1:18789`, para que a CLI, o Web Chat e
-o serviço local de host do Node usem todos o mesmo transporte loopback seguro.
-Quando a descoberta retorna tanto IPs brutos do Tailnet quanto nomes de host estáveis, o app
-prefere nomes Tailscale MagicDNS ou LAN para que as conexões remotas sobrevivam melhor
-a mudanças de endereço.
-Se a porta local do túnel diferir da porta remota do Gateway, defina
-`gateway.remote.remotePort` como a porta no host remoto.
-
-A automação de navegador no modo remoto pertence ao host do Node da CLI, não ao
-Node nativo do app macOS. O app inicia o serviço de host do Node instalado quando
-possível; se você precisar de controle de navegador a partir desse Mac, instale/inicie-o com
-`openclaw node install ...` e `openclaw node start` (ou execute
-`openclaw node run ...` em primeiro plano) e então direcione para esse
-Node com capacidade de navegador.
+A automação do navegador no modo remoto pertence ao host do Node da CLI, não ao Node do aplicativo nativo para macOS. O aplicativo inicia o serviço de host do Node instalado quando possível; para habilitar o controle do navegador nesse Mac, instale/inicie-o com `openclaw node install ...` e `openclaw node start` (ou execute `openclaw node run ...` em primeiro plano) e, em seguida, use como destino esse Node com suporte a navegador.
 
 ## Pré-requisitos no host remoto
 
 1. Instale Node + pnpm e compile/instale a CLI do OpenClaw (`pnpm install && pnpm build && pnpm link --global`).
-2. Garanta que `openclaw` esteja no PATH para shells não interativos (crie um symlink em `/usr/local/bin` ou `/opt/homebrew/bin`, se necessário).
-3. Somente para transporte SSH: abra o SSH com autenticação por chave. Recomendamos IPs do **Tailscale** para alcance estável fora da LAN.
+2. Verifique se `openclaw` está no PATH para shells não interativos (crie um link simbólico em `/usr/local/bin` ou `/opt/homebrew/bin`, se necessário).
+3. Para o transporte SSH: configure a autenticação SSH baseada em chave. IPs do Tailscale são recomendados para uma conectividade estável fora da LAN.
 
-## Configuração do app macOS
+## Configuração do aplicativo para macOS
 
-Para pré-configurar o app sem o fluxo de boas-vindas:
+Para pré-configurar o aplicativo sem o fluxo de boas-vindas, via SSH:
 
 ```bash
 openclaw-mac configure-remote \
-  --ssh-target user@gateway.local \
+  --ssh-target user@gateway-host \
   --local-port 18789 \
   --remote-port 18789 \
   --token "$OPENCLAW_GATEWAY_TOKEN"
 ```
 
-Para um Gateway já acessível em uma LAN ou Tailnet confiável, ignore o SSH por completo:
+Ou, para um Gateway que já esteja acessível em uma LAN ou Tailnet confiável, ignore completamente o SSH:
 
 ```bash
 openclaw-mac configure-remote \
@@ -75,64 +61,66 @@ openclaw-mac configure-remote \
   --token "$OPENCLAW_GATEWAY_TOKEN"
 ```
 
-Isso grava a configuração remota, marca a integração inicial como concluída e permite que o app controle
-o transporte selecionado quando iniciar.
+As duas formas gravam `~/.openclaw/openclaw.json`, marcam a integração inicial como concluída e permitem que o aplicativo gerencie o transporte selecionado na próxima inicialização. Os valores padrão de `--local-port`/`--remote-port` são `18789`. Outras opções: `--password`, `--identity <path>`, `--ssh-host-key-policy <strict|openssh>`, `--project-root <path>`, `--cli-path <path>`, `--json`. Execute `openclaw-mac configure-remote --help` para consultar a referência completa.
 
-1. Abra _Configurações → Geral_.
-2. Em **O OpenClaw é executado**, escolha **Remoto** e defina:
-   - **Transporte**: **Túnel SSH** ou **Direto (ws/wss)**.
-   - **Destino SSH**: `user@host` (`:port` opcional).
-     - Se o Gateway estiver na mesma LAN e anunciar Bonjour, escolha-o na lista descoberta para preencher este campo automaticamente.
-   - **URL do Gateway** (somente Direto): `wss://gateway.example.ts.net` (ou `ws://...` para local/LAN).
-   - **Arquivo de identidade** (avançado): caminho para sua chave.
-   - **Raiz do projeto** (avançado): caminho remoto do checkout usado para comandos.
-   - **Caminho da CLI** (avançado): caminho opcional para um entrypoint/binário `openclaw` executável (preenchido automaticamente quando anunciado).
-3. Clique em **Testar remoto**. Sucesso indica que o `openclaw status --json` remoto é executado corretamente. Falhas geralmente significam problemas de PATH/CLI; o código de saída 127 significa que a CLI não foi encontrada remotamente.
-4. Verificações de integridade e Web Chat agora serão executados automaticamente pelo transporte selecionado.
+Para configurar pela interface:
+
+1. Abra _Settings -> General_.
+2. Em **OpenClaw runs**, selecione **Remote** e defina:
+   - **Transport**: **SSH tunnel** ou **Direct (ws/wss)**.
+   - **SSH target**: `user@host` (`:port` opcional). Se o Gateway estiver na mesma LAN e anunciar via Bonjour, selecione-o na lista de dispositivos descobertos para preencher este campo automaticamente.
+   - **Gateway URL** (somente Direct): `wss://gateway.example.ts.net` (ou `ws://...` para rede local/LAN).
+   - **Identity file** (avançado): caminho para sua chave.
+   - **Project root** (avançado): caminho remoto do checkout usado para os comandos.
+   - **CLI path** (avançado): caminho opcional para um ponto de entrada/binário executável do `openclaw` (preenchido automaticamente quando anunciado).
+3. Clique em **Test remote**. O sucesso significa que `openclaw status --json` foi executado corretamente no host remoto. As falhas geralmente indicam problemas com PATH/CLI; o código de saída 127 significa que a CLI não foi encontrada no host remoto.
+4. As verificações de integridade e o Web Chat agora são executados automaticamente pelo transporte selecionado.
 
 ## Web Chat
 
-- **Túnel SSH**: O Web Chat se conecta ao Gateway pela porta de controle WebSocket encaminhada (padrão 18789).
-- **Direto (ws/wss)**: O Web Chat se conecta diretamente à URL configurada do Gateway.
-- Não há mais um servidor HTTP separado do WebChat.
+- **Túnel SSH**: conecta-se ao Gateway pela porta de controle WebSocket encaminhada (padrão: 18789).
+- **Direto (ws/wss)**: conecta-se diretamente à URL configurada do Gateway.
+- Não há um servidor HTTP separado para o Web Chat.
 
 ## Permissões
 
-- O host remoto precisa das mesmas aprovações TCC que o local (Automação, Acessibilidade, Gravação de Tela, Microfone, Reconhecimento de Fala, Notificações). Execute a integração inicial nessa máquina para concedê-las uma vez.
-- Nodes anunciam seu estado de permissão via `node.list` / `node.describe` para que os agentes saibam o que está disponível.
+- O host remoto precisa das mesmas aprovações TCC que o local (Automação, Acessibilidade, Gravação de Tela, Microfone, Reconhecimento de Fala e Notificações). Execute a integração inicial nessa máquina uma vez para concedê-las.
+- Os Nodes anunciam o estado de suas permissões por meio de `node.list` / `node.describe`, para que os agentes saibam o que está disponível.
 
-## Notas de segurança
+## Observações de segurança
 
-- Prefira binds de loopback no host remoto e conecte via SSH, Tailscale Serve ou uma URL direta confiável de Tailnet/LAN.
-- O tunelamento SSH exige por padrão uma chave de host já confiável. Confie primeiro na chave do host para que ela exista no arquivo known-hosts configurado, ou escolha explicitamente `gateway.remote.sshHostKeyPolicy: "openssh"` para um alias gerenciado cuja política de confiança do OpenSSH você aceita.
-- Se você fizer bind do Gateway a uma interface não loopback, exija autenticação válida do Gateway: token, senha ou um proxy reverso com reconhecimento de identidade usando `gateway.auth.mode: "trusted-proxy"`.
+- Prefira associações de loopback no host remoto e conecte-se via SSH, Tailscale Serve ou uma URL direta confiável da Tailnet/LAN.
+- Por padrão, o túnel SSH exige uma chave de host já confiável. Primeiro, confie na chave de host (adicione-a ao arquivo de hosts conhecidos configurado) ou defina explicitamente `gateway.remote.sshHostKeyPolicy: "openssh"` para um alias gerenciado cuja política de confiança do OpenSSH você aceite.
+- Se você associar o Gateway a uma interface que não seja de loopback, exija uma autenticação válida do Gateway: token, senha ou um proxy reverso com reconhecimento de identidade e `gateway.auth.mode: "trusted-proxy"`.
 - Consulte [Segurança](/pt-BR/gateway/security) e [Tailscale](/pt-BR/gateway/tailscale).
 
 ## Fluxo de login do WhatsApp (remoto)
 
-- Execute `openclaw channels login --verbose` **no host remoto**. Escaneie o QR com o WhatsApp no seu telefone.
-- Execute o login novamente nesse host se a autenticação expirar. A verificação de integridade exibirá problemas de vínculo.
+- Execute `openclaw channels login --channel whatsapp --verbose` **no host remoto**. Leia o código QR com o WhatsApp no seu telefone.
+- Execute novamente o login nesse host se a autenticação expirar. A verificação de integridade mostra problemas de vinculação.
 
 ## Solução de problemas
 
-- **exit 127 / não encontrado**: `openclaw` não está no PATH para shells sem login. Adicione-o a `/etc/paths`, ao rc do seu shell, ou crie um symlink em `/usr/local/bin`/`/opt/homebrew/bin`.
-- **Sonda de integridade falhou**: verifique o alcance SSH, o PATH e se o Baileys está logado (`openclaw status --json`).
-- **Web Chat travado**: confirme que o Gateway está em execução no host remoto e que a porta encaminhada corresponde à porta WS do Gateway; a UI exige uma conexão WS íntegra.
-- **IP do Node mostra 127.0.0.1**: esperado com o túnel SSH. Altere **Transporte** para **Direto (ws/wss)** se quiser que o Gateway veja o IP real do cliente.
-- **Dashboard funciona, mas as capacidades do Mac estão offline**: isso significa que a conexão de operador/controle do app está íntegra, mas a conexão do Node complementar não está conectada ou não tem sua superfície de comandos. Abra a seção de dispositivo da barra de menus e verifique se o Mac está `paired · disconnected`. Para endpoints Tailscale Serve `wss://*.ts.net`, o app detecta pins TLS legados obsoletos após rotação de certificado, limpa o pin obsoleto quando o macOS confia no novo certificado e tenta novamente automaticamente. Se o certificado não for confiável pelo sistema ou o host não for um nome Tailscale Serve, defina `gateway.remote.tlsFingerprint` como a impressão digital esperada do certificado, revise o certificado ou mude para **Remoto via SSH**.
-- **Voice Wake**: as frases de acionamento são encaminhadas automaticamente no modo remoto; nenhum encaminhador separado é necessário.
+| Sintoma                                          | Causa / correção                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| ------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `exit 127` / não encontrado                      | `openclaw` não está no PATH para shells que não são de login. Adicione-o a `/etc/paths`, ao arquivo rc do seu shell ou crie um link simbólico em `/usr/local/bin`/`/opt/homebrew/bin`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| Falha na sondagem de integridade                  | Verifique a conectividade SSH, o PATH e se o Baileys (WhatsApp) está conectado (`openclaw status --json`).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| Chat Web travado                                  | Confirme se o Gateway está em execução no host remoto e se a porta encaminhada corresponde à porta WS do Gateway; a interface exige uma conexão WS íntegra.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| O IP do Node mostra `127.0.0.1`                  | Isso é esperado com o túnel SSH. Altere **Transport** para **Direct (ws/wss)** se quiser que o Gateway veja o IP real do cliente.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| O painel funciona, mas os recursos do Mac estão offline | A conexão de operador/controle está íntegra, mas a conexão do Node complementar não está estabelecida ou não possui sua superfície de comandos. Abra a seção de dispositivos na barra de menus e verifique se o Mac aparece como `paired · disconnected`. Para endpoints do Tailscale Serve no formato `wss://*.ts.net`, o aplicativo detecta pins de certificado TLS folha legados e obsoletos após a rotação do certificado, remove o pin obsoleto assim que o macOS confia no novo certificado e tenta novamente de forma automática. Se o certificado não for confiável para o sistema ou o host não for um nome do Tailscale Serve, defina `gateway.remote.tlsFingerprint` como a impressão digital esperada do certificado, revise o certificado ou altere para **Remote over SSH**. |
+| Ativação por voz                                  | As frases de ativação são encaminhadas automaticamente no modo remoto; não é necessário um encaminhador separado.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
 
 ## Sons de notificação
 
-Escolha sons por notificação a partir de scripts com `openclaw` e `node.invoke`, por exemplo:
+Escolha os sons por notificação nos scripts com `openclaw nodes notify`, por exemplo:
 
 ```bash
-openclaw nodes notify --node <id> --title "Ping" --body "Remote gateway ready" --sound Glass
+openclaw nodes notify --node <id> --title "Ping" --body "Gateway remoto pronto" --sound Glass
 ```
 
-Não há mais um alternador global de "som padrão" no app; os chamadores escolhem um som (ou nenhum) por solicitação.
+Não há uma opção global de som padrão no aplicativo; os chamadores escolhem um som (ou nenhum) para cada solicitação.
 
 ## Relacionado
 
-- [App macOS](/pt-BR/platforms/macos)
+- [Aplicativo para macOS](/pt-BR/platforms/macos)
 - [Acesso remoto](/pt-BR/gateway/remote)

@@ -1,57 +1,58 @@
 ---
 read_when:
-    - Você precisa da visão geral da arquitetura de rede + segurança
-    - Você está depurando o acesso local versus via tailnet ou o pareamento
+    - Você precisa da visão geral da arquitetura de rede e da segurança
+    - Você está depurando o acesso local em comparação com o acesso via tailnet ou o pareamento
     - Você quer a lista canônica da documentação de rede
-summary: 'Hub de rede: superfícies do Gateway, pareamento, descoberta e segurança'
+summary: 'Hub de rede: interfaces do Gateway, pareamento, descoberta e segurança'
 title: Rede
 x-i18n:
-    generated_at: "2026-05-06T06:02:08Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:19:42Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: 7b0ff6c4ee46005aeac1612ea40f1ce3d5824aa507d0842788dbf4bffbaccfcc
+    source_hash: 9751bb0fe71009455b243b109ef7ef4eda08d58f940f7dcef305800a5ed89586
     source_path: network.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-Este hub vincula a documentação central sobre como o OpenClaw conecta, pareia e protege
-dispositivos entre localhost, LAN e tailnet.
+Este hub reúne links para a documentação principal sobre como o OpenClaw conecta, emparelha e protege
+dispositivos no localhost, na LAN e na tailnet.
 
-## Modelo central
+## Modelo principal
 
-A maioria das operações passa pelo Gateway (`openclaw gateway`), um único processo de longa duração que controla as conexões de canal e o plano de controle WebSocket.
+A maioria das operações passa pelo Gateway (`openclaw gateway`), um único processo de longa duração que gerencia as conexões de canais e o plano de controle WebSocket.
 
 - **Loopback primeiro**: o WS do Gateway usa `ws://127.0.0.1:18789` por padrão.
-  Associações sem loopback exigem um caminho válido de autenticação do gateway: autenticação
-  por token/senha de segredo compartilhado ou uma implantação `trusted-proxy`
-  sem loopback configurada corretamente.
-- **Um Gateway por host** é recomendado. Para isolamento, execute múltiplos gateways com perfis e portas isolados ([Múltiplos Gateways](/pt-BR/gateway/multiple-gateways)).
-- **Host do Canvas** é servido na mesma porta que o Gateway (`/__openclaw__/canvas/`, `/__openclaw__/a2ui/`), protegido pela autenticação do Gateway quando associado além do loopback.
-- **Acesso remoto** normalmente é feito por túnel SSH ou VPN Tailscale ([Acesso remoto](/pt-BR/gateway/remote)).
+  Vínculos que não sejam de loopback se recusam a iniciar sem um caminho válido de autenticação do gateway:
+  autenticação por token/senha de segredo compartilhado ou uma implantação
+  `trusted-proxy` que não seja de loopback e esteja configurada corretamente.
+- **Recomenda-se um Gateway por host**. Para isolamento, execute vários gateways com perfis e portas isolados ([Vários Gateways](/pt-BR/gateway/multiple-gateways)).
+- **O host do Canvas** é servido na mesma porta que o Gateway (`/__openclaw__/canvas/`, `/__openclaw__/a2ui/`), protegido pela autenticação do Gateway quando vinculado além do loopback.
+- **O acesso remoto** normalmente é feito por um túnel SSH ou pela VPN Tailscale ([Acesso remoto](/pt-BR/gateway/remote)).
 
-Referências principais:
+Principais referências:
 
 - [Arquitetura do Gateway](/pt-BR/concepts/architecture)
 - [Protocolo do Gateway](/pt-BR/gateway/protocol)
-- [Runbook do Gateway](/pt-BR/gateway)
-- [Superfícies web + modos de associação](/pt-BR/web)
+- [Guia operacional do Gateway](/pt-BR/gateway)
+- [Superfícies web + modos de vínculo](/pt-BR/web)
 
-## Pareamento + identidade
+## Emparelhamento + identidade
 
-- [Visão geral de pareamento (DM + nós)](/pt-BR/channels/pairing)
-- [Pareamento de nós controlado pelo Gateway](/pt-BR/gateway/pairing)
-- [CLI de dispositivos (pareamento + rotação de token)](/pt-BR/cli/devices)
-- [CLI de pareamento (aprovações por DM)](/pt-BR/cli/pairing)
+- [Visão geral do emparelhamento (MD + nodes)](/pt-BR/channels/pairing)
+- [Emparelhamento de nodes gerenciado pelo Gateway](/pt-BR/gateway/pairing)
+- [CLI de dispositivos (emparelhamento + rotação de token)](/pt-BR/cli/devices)
+- [CLI de emparelhamento (aprovações de MD)](/pt-BR/cli/pairing)
 
 Confiança local:
 
-- Conexões diretas por local loopback podem ser aprovadas automaticamente para pareamento, mantendo
-  a UX no mesmo host fluida.
+- Conexões locais diretas por loopback (sem cabeçalhos encaminhados/de proxy) podem ser
+  aprovadas automaticamente para emparelhamento, mantendo fluida a experiência no mesmo host.
 - O OpenClaw também tem um caminho restrito de autoconexão local ao backend/contêiner para
-  fluxos auxiliares confiáveis de segredo compartilhado.
-- Clientes em tailnet e LAN, incluindo associações de tailnet no mesmo host, ainda exigem
-  aprovação explícita de pareamento.
+  fluxos confiáveis de auxiliares com segredo compartilhado.
+- Clientes da tailnet e da LAN, incluindo vínculos de tailnet no mesmo host, ainda exigem
+  aprovação explícita de emparelhamento.
 
 ## Descoberta + transportes
 
@@ -60,12 +61,12 @@ Confiança local:
 - [Acesso remoto (SSH)](/pt-BR/gateway/remote)
 - [Tailscale](/pt-BR/gateway/tailscale)
 
-## Nós + transportes
+## Nodes + transportes
 
-- [Visão geral de nós](/pt-BR/nodes)
-- [Protocolo de ponte (nós legados, histórico)](/pt-BR/gateway/bridge-protocol)
-- [Runbook de nó: iOS](/pt-BR/platforms/ios)
-- [Runbook de nó: Android](/pt-BR/platforms/android)
+- [Visão geral dos nodes](/pt-BR/nodes)
+- [Protocolo de ponte (nodes legados, histórico)](/pt-BR/gateway/bridge-protocol)
+- [Guia operacional de node: iOS](/pt-BR/platforms/ios)
+- [Guia operacional de node: Android](/pt-BR/platforms/android)
 
 ## Segurança
 
@@ -76,5 +77,5 @@ Confiança local:
 
 ## Relacionado
 
-- [Runbook do Gateway](/pt-BR/gateway)
+- [Guia operacional do Gateway](/pt-BR/gateway)
 - [Acesso remoto](/pt-BR/gateway/remote)

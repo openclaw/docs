@@ -1,22 +1,23 @@
 ---
 read_when:
-    - Node est connecté, mais les outils camera/canvas/screen/exec échouent
-    - Vous avez besoin du modèle mental de l’appairage de Node par rapport aux approbations
-summary: Résoudre les problèmes d’appairage de nœuds, d’exigences de premier plan, d’autorisations et d’échecs d’outils
+    - Le Node est connecté, mais les outils de caméra, de canevas, d’écran et d’exécution échouent
+    - Vous devez comprendre le modèle mental de l’appairage des Node par rapport aux approbations
+summary: Résoudre les problèmes d’appairage des Node, d’exécution au premier plan, d’autorisations et de défaillances des outils
 title: Dépannage de Node
 x-i18n:
-    generated_at: "2026-05-11T20:43:12Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:35:29Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: d53f06367b63125f04b4b542c322e6e50e1f33153e0fbdd09e7a38772c69a438
+    source_hash: 53d082dcd2f4bb022eb683d72d193dbb6800b5a81a8f5ab9506d82feaa0dbc49
     source_path: nodes/troubleshooting.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-Utilisez cette page lorsqu’un nœud est visible dans le statut, mais que les outils du nœud échouent.
+Utilisez cette page lorsqu’un Node est visible dans l’état, mais que les outils de Node échouent.
 
-## Échelle de commandes
+## Séquence de commandes
 
 ```bash
 openclaw status
@@ -26,7 +27,7 @@ openclaw doctor
 openclaw channels status --probe
 ```
 
-Exécutez ensuite les vérifications propres au nœud :
+Exécutez ensuite les vérifications propres au Node :
 
 ```bash
 openclaw nodes status
@@ -34,15 +35,15 @@ openclaw nodes describe --node <idOrNameOrIp>
 openclaw approvals get --node <idOrNameOrIp>
 ```
 
-Signaux sains :
+Signaux indiquant un fonctionnement normal :
 
-- Le nœud est connecté et appairé pour le rôle `node`.
+- Le Node est connecté et appairé pour le rôle `node`.
 - `nodes describe` inclut la capacité que vous appelez.
-- Les approbations d’exécution affichent le mode/la liste d’autorisation attendus.
+- Les approbations d’exécution affichent le mode et la liste d’autorisation attendus.
 
-## Exigences de premier plan
+## Exigences d’exécution au premier plan
 
-`canvas.*`, `camera.*` et `screen.*` nécessitent le premier plan sur les nœuds iOS/Android.
+`canvas.*`, `camera.*` et `screen.*` ne fonctionnent qu’au premier plan sur les Nodes iOS/Android.
 
 Vérification et correction rapides :
 
@@ -52,24 +53,27 @@ openclaw nodes canvas snapshot --node <idOrNameOrIp>
 openclaw logs --follow
 ```
 
-Si vous voyez `NODE_BACKGROUND_UNAVAILABLE`, placez l’application du nœud au premier plan et réessayez.
+Si vous voyez `NODE_BACKGROUND_UNAVAILABLE`, placez l’application du Node au premier plan et réessayez.
 
 ## Matrice des autorisations
 
-| Capacité                     | iOS                                             | Android                                             | Application de nœud macOS           | Code d’échec typique           |
-| ---------------------------- | ----------------------------------------------- | --------------------------------------------------- | ----------------------------------- | ------------------------------ |
-| `camera.snap`, `camera.clip` | Caméra (+ micro pour l’audio du clip)           | Caméra (+ micro pour l’audio du clip)               | Caméra (+ micro pour l’audio du clip) | `*_PERMISSION_REQUIRED`        |
-| `screen.record`              | Enregistrement de l’écran (+ micro facultatif)  | Invite de capture d’écran (+ micro facultatif)      | Enregistrement de l’écran           | `*_PERMISSION_REQUIRED`        |
-| `location.get`               | Lors de l’utilisation ou Toujours (selon le mode) | Position au premier plan/en arrière-plan selon le mode | Autorisation de localisation        | `LOCATION_PERMISSION_REQUIRED` |
-| `system.run`                 | n/a (chemin de l’hôte du nœud)                  | n/a (chemin de l’hôte du nœud)                      | Approbations d’exécution requises   | `SYSTEM_RUN_DENIED`            |
+| Capacité                     | iOS                                             | Android                                                   | Application Node macOS                          | Code d’échec typique                           |
+| ---------------------------- | ----------------------------------------------- | --------------------------------------------------------- | ----------------------------------------------- | ---------------------------------------------- |
+| `camera.snap`, `camera.clip` | Caméra (+ micro pour l’audio du clip)           | Caméra (+ micro pour l’audio du clip)                     | Caméra (+ micro pour l’audio du clip)           | `*_PERMISSION_REQUIRED`                        |
+| `screen.record`              | Enregistrement de l’écran (+ micro facultatif)  | Invite de capture d’écran (+ micro facultatif)            | Enregistrement de l’écran                       | `*_PERMISSION_REQUIRED`                        |
+| `computer.act`               | non applicable                                  | non applicable                                            | Accessibilité + Enregistrement de l’écran       | `COMPUTER_DISABLED`, `ACCESSIBILITY_REQUIRED`  |
+| `location.get`               | Lors de l’utilisation ou Toujours (selon le mode) | Localisation au premier plan/en arrière-plan selon le mode | Autorisation de localisation                    | `LOCATION_PERMISSION_REQUIRED`                 |
+| `system.run`                 | non applicable (chemin de l’hôte du Node)       | non applicable (chemin de l’hôte du Node)                 | Approbations d’exécution requises               | `SYSTEM_RUN_DENIED`                            |
 
-## Appairage versus approbations
+## Appairage et approbations
 
-Ce sont des barrières différentes :
+Trois contrôles distincts déterminent si une commande de Node réussit :
 
-1. **Appairage de l’appareil** : ce nœud peut-il se connecter au Gateway ?
-2. **Politique de commande des nœuds du Gateway** : l’ID de commande RPC est-il autorisé par `gateway.nodes.allowCommands` / `denyCommands` et les valeurs par défaut de la plateforme ?
-3. **Approbations d’exécution** : ce nœud peut-il exécuter localement une commande shell spécifique ?
+1. **Appairage de l’appareil** : ce Node peut-il se connecter au Gateway ?
+2. **Politique de commandes de Node du Gateway** : l’identifiant de commande RPC est-il autorisé par `gateway.nodes.allowCommands` / `denyCommands` et les valeurs par défaut de la plateforme ?
+3. **Approbations d’exécution** : ce Node peut-il exécuter localement une commande shell spécifique ?
+
+L’appairage du Node est un contrôle d’identité et de confiance, pas une surface d’approbation par commande. Pour `system.run`, la politique propre au Node se trouve dans le fichier d’approbations d’exécution de ce Node (`openclaw approvals get --node ...`), et non dans l’enregistrement d’appairage du Gateway.
 
 Vérifications rapides :
 
@@ -80,29 +84,26 @@ openclaw approvals get --node <idOrNameOrIp>
 openclaw approvals allowlist add --node <idOrNameOrIp> "/usr/bin/uname"
 ```
 
-Si l’appairage est manquant, approuvez d’abord l’appareil du nœud.
-Si `nodes describe` ne contient pas une commande, vérifiez la politique de commande des nœuds du Gateway et si le nœud a réellement déclaré cette commande lors de la connexion.
-Si l’appairage est correct, mais que `system.run` échoue, corrigez les approbations d’exécution/la liste d’autorisation sur ce nœud.
+- Appairage manquant : approuvez d’abord l’appareil du Node.
+- Commande absente de `nodes describe` : vérifiez la politique de commandes de Node du Gateway et si le Node a effectivement déclaré cette commande lors de la connexion.
+- Appairage correct, mais échec de `system.run` : corrigez les approbations d’exécution ou la liste d’autorisation sur ce Node.
 
-L’appairage des nœuds est une barrière d’identité/de confiance, pas une surface d’approbation par commande. Pour `system.run`, la politique par nœud se trouve dans le fichier d’approbations d’exécution de ce nœud (`openclaw approvals get --node ...`), pas dans l’enregistrement d’appairage du Gateway.
+Pour les exécutions `host=node` fondées sur une approbation, le Gateway lie également l’exécution au `systemRunPlan` canonique préparé. Si un appelant ultérieur modifie la commande, le répertoire de travail ou les métadonnées de session avant la transmission de l’exécution approuvée, le Gateway rejette l’exécution en raison d’une incompatibilité avec l’approbation au lieu de faire confiance à la charge utile modifiée.
 
-Pour les exécutions `host=node` adossées à une approbation, le Gateway lie aussi l’exécution au
-`systemRunPlan` canonique préparé. Si un appelant ultérieur modifie la commande/le cwd ou les
-métadonnées de session avant que l’exécution approuvée soit transférée, le Gateway rejette
-l’exécution comme non-concordance d’approbation au lieu de faire confiance à la charge utile modifiée.
+## Codes d’erreur courants des Nodes
 
-## Codes d’erreur courants des nœuds
-
-- `NODE_BACKGROUND_UNAVAILABLE` → l’application est en arrière-plan ; ramenez-la au premier plan.
-- `CAMERA_DISABLED` → le bouton caméra est désactivé dans les paramètres du nœud.
-- `*_PERMISSION_REQUIRED` → autorisation du système d’exploitation manquante/refusée.
-- `LOCATION_DISABLED` → le mode de localisation est désactivé.
-- `LOCATION_PERMISSION_REQUIRED` → le mode de localisation demandé n’a pas été accordé.
-- `LOCATION_BACKGROUND_UNAVAILABLE` → l’application est en arrière-plan, mais seule l’autorisation Lors de l’utilisation existe.
-- `SYSTEM_RUN_DENIED: approval required` → la demande d’exécution nécessite une approbation explicite.
-- `SYSTEM_RUN_DENIED: allowlist miss` → commande bloquée par le mode liste d’autorisation.
-  Sur les hôtes de nœud Windows, les formes d’enveloppe shell comme `cmd.exe /c ...` sont traitées comme des absences de liste d’autorisation en
-  mode liste d’autorisation, sauf si elles sont approuvées via le flux de demande.
+| Code                                   | Signification                                                                                                                                                                                                                     |
+| -------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `NODE_BACKGROUND_UNAVAILABLE`          | L’application est en arrière-plan ; placez-la au premier plan.                                                                                                                                                                    |
+| `CAMERA_DISABLED`                      | Le commutateur de la caméra est désactivé dans les réglages du Node.                                                                                                                                                               |
+| `*_PERMISSION_REQUIRED`                | L’autorisation du système d’exploitation est manquante ou refusée.                                                                                                                                                                |
+| `LOCATION_DISABLED`                    | Le mode de localisation est désactivé.                                                                                                                                                                                            |
+| `LOCATION_PERMISSION_REQUIRED`         | Le mode de localisation demandé n’a pas été autorisé.                                                                                                                                                                             |
+| `LOCATION_BACKGROUND_UNAVAILABLE`      | L’application est en arrière-plan, mais seule l’autorisation Lors de l’utilisation est accordée.                                                                                                                                  |
+| `COMPUTER_DISABLED`                    | Activez **Allow Computer Control** dans l’application macOS, puis approuvez la mise à jour de l’appairage.                                                                                                                        |
+| `ACCESSIBILITY_REQUIRED`               | Accordez l’autorisation Accessibilité au paquet actuel de l’application OpenClaw dans les réglages système de macOS.                                                                                                              |
+| `SYSTEM_RUN_DENIED: approval required` | La demande d’exécution nécessite une approbation explicite.                                                                                                                                                                       |
+| `SYSTEM_RUN_DENIED: allowlist miss`    | La commande est bloquée par le mode de liste d’autorisation. Sur les hôtes de Node Windows, les formes utilisant un wrapper shell comme `cmd.exe /c ...` sont considérées comme absentes de la liste d’autorisation dans ce mode, sauf si elles sont approuvées via le flux de demande. |
 
 ## Boucle de récupération rapide
 
@@ -113,18 +114,21 @@ openclaw approvals get --node <idOrNameOrIp>
 openclaw logs --follow
 ```
 
-Si vous êtes toujours bloqué :
+Si le problème persiste :
 
-- Réapprouvez l’appairage de l’appareil.
-- Rouvrez l’application du nœud (premier plan).
-- Réaccordez les autorisations du système d’exploitation.
-- Recréez/ajustez la politique d’approbation d’exécution.
+- Approuvez de nouveau l’appairage de l’appareil.
+- Rouvrez l’application du Node au premier plan.
+- Accordez de nouveau les autorisations du système d’exploitation.
+- Recréez ou ajustez la politique d’approbation d’exécution.
 
-## Connexe
+Pour le contrôle de l’ordinateur, vérifiez également qu’un agent doté de capacités visuelles expose l’outil `computer`, que `screen.snapshot` réussit avec l’autorisation Enregistrement de l’écran et que `/phone status` affiche l’autorisation temporaire ou persistante du Gateway que vous souhaitiez. Une entrée `gateway.nodes.denyCommands` prévaut toujours sur `allowCommands`.
 
-- [Vue d’ensemble des nœuds](/fr/nodes)
-- [Nœuds caméra](/fr/nodes/camera)
+## Pages connexes
+
+- [Présentation des Nodes](/fr/nodes)
+- [Nodes de caméra](/fr/nodes/camera)
 - [Commande de localisation](/fr/nodes/location-command)
+- [Utilisation de l’ordinateur](/nodes/computer-use)
 - [Approbations d’exécution](/fr/tools/exec-approvals)
 - [Appairage du Gateway](/fr/gateway/pairing)
 - [Dépannage du Gateway](/fr/gateway/troubleshooting)

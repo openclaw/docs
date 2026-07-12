@@ -1,40 +1,39 @@
 ---
 read_when:
-    - Matrix-Clients erstellen, die reichhaltige OpenClaw-Antworten darstellen
-    - Debuggen von com.openclaw.presentation-Ereignisinhalten
-summary: Matrix-MessagePresentation-Metadaten für Clients mit OpenClaw-Unterstützung
-title: Metadaten zur Matrixdarstellung
+    - Matrix-Clients erstellen, die Rich Responses von OpenClaw darstellen
+    - Debugging des Ereignisinhalts von com.openclaw.presentation
+summary: Matrix-MessagePresentation-Metadaten für OpenClaw-kompatible Clients
+title: Matrix-Präsentationsmetadaten
 x-i18n:
-    generated_at: "2026-05-10T19:22:32Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:02:38Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: c89979b6007faaa6af44c7f2511f354b96f163bcd3d5e7f99c405b51c4950537
+    source_hash: c0de4d13c6cefc6f91dcc7a4b0edeea6bf001f3bd71f52c9f0498ad422783d8a
     source_path: channels/matrix-presentation.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-OpenClaw kann normalisierte `MessagePresentation`-Metadaten an ausgehende Matrix-`m.room.message`-Ereignisse unter `com.openclaw.presentation` anhängen.
+OpenClaw fügt ausgehenden Matrix-`m.room.message`-Ereignissen normalisierte `MessagePresentation`-Metadaten unter dem Inhaltsschlüssel `com.openclaw.presentation` hinzu.
 
-Standard-Matrix-Clients rendern weiterhin den reinen Text in `body`. OpenClaw-fähige Clients können die strukturierten Metadaten lesen und native Benutzeroberflächen wie Schaltflächen, Auswahlfelder, Kontextzeilen und Trennlinien rendern.
+Standardmäßige Matrix-Clients stellen weiterhin den Klartext-`body` dar. OpenClaw-kompatible Clients können die strukturierten Metadaten lesen und native UI-Elemente wie Schaltflächen, Auswahlfelder, Kontextzeilen und Trennlinien darstellen.
 
 ## Ereignisinhalt
-
-Die Metadaten werden im Inhalt des Matrix-Ereignisses gespeichert:
 
 ```json
 {
   "msgtype": "m.text",
-  "body": "Select model\n\n- DeepSeek: /model deepseek/deepseek-chat",
+  "body": "Modell auswählen\n\nModell auswählen:\n- DeepSeek",
   "com.openclaw.presentation": {
     "version": 1,
     "type": "message.presentation",
-    "title": "Select model",
+    "title": "Modell auswählen",
     "tone": "info",
     "blocks": [
       {
         "type": "select",
-        "placeholder": "Choose model",
+        "placeholder": "Modell auswählen",
         "options": [
           {
             "label": "DeepSeek",
@@ -47,39 +46,48 @@ Die Metadaten werden im Inhalt des Matrix-Ereignisses gespeichert:
 }
 ```
 
-`version` ist die Schemaversion der Matrix-Präsentationsmetadaten. `type` ist ein stabiler Diskriminator für OpenClaw-fähige Clients. Clients sollten unbekannte `type`-Werte, unbekannte Versionen, die sie nicht sicher interpretieren können, und unbekannte Blocktypen ignorieren.
+- `version` ist die Version des Metadatenschemas; die aktuelle Version ist `1`. `type` ist ein stabiler Diskriminator und lautet immer `"message.presentation"`. Der Matrix-Adapter gibt nur Payloads mit genau dieser Version und diesem Typ aus. Ebenso sollten Clients unbekannte Versionen, die sie nicht sicher interpretieren können, unbekannte `type`-Werte und unbekannte Blocktypen ignorieren.
+- `title` und `tone` (`info`, `success`, `warning`, `danger`, `neutral`) sind optionale Hinweise.
+- Schaltflächen und Auswahloptionen können zusätzlich zum bisherigen Zeichenfolgenwert `value` eine typisierte `action` (`{ "type": "command", "command": "/..." }` oder `{ "type": "callback", "value": "..." }`) enthalten. Wenn beide vorhanden sind, verwenden Sie vorzugsweise `action`.
 
 ## Fallback-Verhalten
 
-OpenClaw rendert immer einen lesbaren Fallback als reinen Text in `body`. Die strukturierten Metadaten sind additiv und dürfen nicht für grundlegende Matrix-Interoperabilität erforderlich sein.
+OpenClaw rendert immer eine lesbare Klartext-Fallback-Darstellung in `body`. Die strukturierten Metadaten sind eine Ergänzung und dürfen für die grundlegende Matrix-Interoperabilität nicht erforderlich sein.
 
-Nicht unterstützte Clients sollten weiterhin den Fallback-Text anzeigen. OpenClaw-fähige Clients können die strukturierten Metadaten für die Anzeige bevorzugen und zugleich den Fallback-Text für Kopieren, Suche, Benachrichtigungen und Barrierefreiheit beibehalten.
+Regeln für das Fallback-Rendering:
+
+- Inhalte von `title`, `text` und `context` werden als einfache Zeilen gerendert.
+- Schaltflächen mit einer `command`-Aktion werden als ``label: `/command` `` gerendert, damit der Befehl kopierbar bleibt. Schaltflächen mit einer `callback`-Aktion oder nur einem veralteten `value` werden ausschließlich mit ihrer Beschriftung gerendert, damit nicht transparente Callback-Werte privat bleiben; deaktivierte Schaltflächen werden immer ausschließlich mit ihrer Beschriftung gerendert. URL- und Web-App-Schaltflächen werden als `label: URL` gerendert.
+- Auswahlblöcke rendern den Platzhalter (oder `Options:`) als Überschrift, gefolgt von Optionszeilen, die ausschließlich die jeweilige Beschriftung enthalten.
+- Wenn nichts gerendert wird, beispielsweise bei einer Darstellung, die nur aus einer Trennlinie besteht, wird für den Body ersatzweise `---` verwendet.
+
+Nicht unterstützte Clients zeigen weiterhin den Fallback-Text an. OpenClaw-kompatible Clients können für die Anzeige die strukturierten Metadaten bevorzugen und zugleich den Fallback für Kopieren, Suche, Benachrichtigungen und Barrierefreiheit beibehalten.
 
 ## Unterstützte Blöcke
 
-Der ausgehende Matrix-Adapter gibt Unterstützung für Folgendes an:
+Der ausgehende Matrix-Adapter gibt native Unterstützung an für:
 
 - `buttons`
 - `select`
 - `context`
 - `divider`
 
-Clients sollten diese Blöcke als Best-Effort-Präsentationshinweise behandeln. Unbekannte Felder und unbekannte Blocktypen sollten ignoriert werden, statt das Rendern der gesamten Nachricht fehlschlagen zu lassen.
+`text`-Blöcke werden über den Fallback-Textkörper immer unterstützt. Behandeln Sie alle Blöcke als Best-Effort-Darstellungshinweise; ignorieren Sie unbekannte Felder und Blocktypen, anstatt die gesamte Nachricht fehlschlagen zu lassen.
 
 ## Interaktionen
 
-Diese Metadaten fügen keine Matrix-Callback-Semantik hinzu. Werte von Schaltflächen und Auswahloptionen sind Fallback-Interaktions-Payloads, in der Regel Slash-Befehle oder Textbefehle. Ein Matrix-Client, der Interaktion unterstützen möchte, kann den ausgewählten Wert als normale Nachricht zurück in den Raum senden.
+Diese Metadaten fügen keine Matrix-Callback-Semantik hinzu. Schaltflächen- und Auswahlwerte sind Fallback-Interaktionsnutzdaten, üblicherweise Slash-Befehle oder Textbefehle. Ein Matrix-Client, der Interaktionen unterstützen möchte, löst den Steuerelementwert auf (`action.command`, dann `action.value`, dann `value`) und sendet ihn als normale Nachricht zurück an den Raum.
 
 Beispielsweise kann eine Schaltfläche mit dem Wert `/model deepseek/deepseek-chat` verarbeitet werden, indem dieser Wert als verschlüsselte Matrix-Textnachricht im selben Raum gesendet wird.
 
 ## Beziehung zu Genehmigungsmetadaten
 
-`com.openclaw.presentation` ist für allgemeine Rich-Message-Präsentation vorgesehen.
+`com.openclaw.presentation` dient der allgemeinen Darstellung angereicherter Nachrichten.
 
-Genehmigungsaufforderungen verwenden die dedizierten `com.openclaw.approval`-Metadaten, da Genehmigungen sicherheitsrelevanten Zustand, Entscheidungen und Ausführungs-/Plugin-Details enthalten. Wenn beide Metadatenschlüssel im selben Ereignis vorhanden sind, sollten Clients den dedizierten Genehmigungs-Renderer bevorzugen.
+Genehmigungsaufforderungen verwenden die dedizierten `com.openclaw.approval`-Metadaten, da Genehmigungen sicherheitsrelevanten Status, Entscheidungen und Ausführungs-/Plugin-Details enthalten. Wenn beide Metadatenschlüssel im selben Ereignis vorhanden sind, sollten Clients den dedizierten Genehmigungs-Renderer bevorzugen.
 
 ## Mediennachrichten
 
-Wenn eine Antwort mehrere Medien-URLs enthält, sendet OpenClaw ein Matrix-Ereignis pro Medien-URL. Präsentationsmetadaten werden nur an das erste Medienereignis angehängt, damit Clients einen stabilen strukturierten Payload haben und doppelte Renderer vermieden werden.
+Wenn eine Antwort mehrere Medien-URLs enthält, sendet OpenClaw ein Matrix-Ereignis pro Medien-URL. Beschriftungstext und Darstellungsmetadaten werden nur an das erste Ereignis angehängt, sodass Clients eine einzige stabile strukturierte Nutzlast ohne doppelte Renderer erhalten. Dieselbe Regel gilt, wenn langer Text auf mehrere Ereignisse aufgeteilt wird: Die Metadaten werden nur mit dem ersten Ereignis übertragen.
 
-Halten Sie Präsentationsmetadaten kompakt. Umfangreicher benutzersichtbarer Text sollte in `body` verbleiben und den normalen Pfad zur Matrix-Textaufteilung verwenden.
+Halten Sie Darstellungsmetadaten kompakt. Umfangreicher für Benutzer sichtbarer Text sollte in `body` verbleiben und den normalen Matrix-Pfad zur Aufteilung von Text verwenden.

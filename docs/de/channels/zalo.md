@@ -1,41 +1,38 @@
 ---
 read_when:
     - Arbeiten an Zalo-Funktionen oder Webhooks
-summary: Supportstatus, Funktionen und Konfiguration des Zalo-Bots
+summary: Status, Funktionen und Konfiguration der Zalo-Bot-Unterstützung
 title: Zalo
 x-i18n:
-    generated_at: "2026-05-02T22:16:26Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:03:01Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: 6226af1217e1e8b03b485df99f6375872b487f7040c091f2bb2d85e18dec75d0
+    source_hash: 36e624f1abeeaee56d7376b9df9209f8e7614ade2f089bcecd76ff746b942765
     source_path: channels/zalo.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-Status: experimentell. Direktnachrichten werden unterstützt. Der Abschnitt [Funktionen](#capabilities) unten spiegelt das aktuelle Verhalten von Marketplace-Bots wider.
+Status: experimentell. Direktnachrichten und Gruppenchats sind beide implementiert; die nachstehende Tabelle [Funktionen](#capabilities) gibt das verifizierte Verhalten für Zalo Bot Creator-/Marketplace-Bots wieder.
 
-## Gebündeltes Plugin
+## Mitgeliefertes Plugin
 
-Zalo wird in aktuellen OpenClaw-Versionen als gebündeltes Plugin ausgeliefert, daher benötigen normale paketierte Builds keine separate Installation.
+Zalo wird in aktuellen OpenClaw-Versionen als mitgeliefertes Plugin ausgeliefert, daher benötigen paketierte Builds keine separate Installation.
 
-Wenn Sie eine ältere Version oder eine benutzerdefinierte Installation verwenden, die Zalo ausschließt, installieren Sie das npm-Paket direkt:
+Installieren Sie bei einem älteren Build oder einer benutzerdefinierten Installation, die Zalo ausschließt, das npm-Paket direkt:
 
-- Installation über die CLI: `openclaw plugins install @openclaw/zalo`
-- Fixierte Version: `openclaw plugins install @openclaw/zalo@2026.5.2`
-- Oder aus einem Source-Checkout: `openclaw plugins install ./path/to/local/zalo-plugin`
+- Installation: `openclaw plugins install @openclaw/zalo`
+- Angeheftete Version: `openclaw plugins install @openclaw/zalo@2026.6.11`
+- Aus einem lokalen Checkout: `openclaw plugins install ./path/to/local/zalo-plugin`
 - Details: [Plugins](/de/tools/plugin)
 
-## Schnelle Einrichtung (Einsteiger)
+## Schnelle Einrichtung
 
-1. Stellen Sie sicher, dass das Zalo-Plugin verfügbar ist.
-   - Aktuelle paketierte OpenClaw-Versionen bündeln es bereits.
-   - Ältere/benutzerdefinierte Installationen können es manuell mit den Befehlen oben hinzufügen.
-2. Legen Sie das Token fest:
-   - Env: `ZALO_BOT_TOKEN=...`
-   - Oder Konfiguration: `channels.zalo.accounts.default.botToken: "..."`.
-3. Starten Sie den Gateway neu (oder schließen Sie die Einrichtung ab).
-4. Der Zugriff auf Direktnachrichten erfolgt standardmäßig per Pairing; genehmigen Sie den Pairing-Code beim ersten Kontakt.
+1. Erstellen Sie unter [https://bot.zaloplatforms.com](https://bot.zaloplatforms.com) ein Bot-Token (anmelden, einen Bot erstellen, Einstellungen konfigurieren). Das Token hat das Format `numeric_id:secret`; bei Marketplace-Bots kann das verwendbare Laufzeit-Token in der Begrüßungsnachricht des Bots erscheinen.
+2. Legen Sie das Token entweder als Umgebungsvariable `ZALO_BOT_TOKEN=...` (nur Standardkonto) oder in der Konfiguration fest.
+3. Starten Sie das Gateway neu.
+4. Genehmigen Sie beim ersten Kontakt per Direktnachricht den Kopplungscode (die standardmäßige Direktnachrichtenrichtlinie ist Kopplung).
 
 Minimale Konfiguration:
 
@@ -55,205 +52,137 @@ Minimale Konfiguration:
 }
 ```
 
+Mehrere Konten: Fügen Sie unter `channels.zalo.accounts.<id>` weitere Einträge hinzu, jeweils mit eigenem `botToken`/`name`. `channels.zalo.botToken` (flach, ohne `accounts`) ist eine veraltete Kurzform für ein einzelnes Konto; bevorzugen Sie für neue Konfigurationen `accounts.<id>.*`.
+
 ## Was es ist
 
-Zalo ist eine Messaging-App mit Fokus auf Vietnam; ihre Bot API ermöglicht es dem Gateway, einen Bot für 1:1-Unterhaltungen auszuführen.
-Sie eignet sich gut für Support oder Benachrichtigungen, wenn Sie deterministisches Routing zurück zu Zalo wünschen.
+Zalo ist eine auf Vietnam ausgerichtete Messaging-App. Über ihre Bot API kann das Gateway einen Bot sowohl für 1:1-Unterhaltungen als auch für Gruppenchats ausführen, wobei die Antworten deterministisch an Zalo zurückgeleitet werden (das Modell wählt niemals Kanäle aus).
 
-Diese Seite beschreibt das aktuelle OpenClaw-Verhalten für **Zalo Bot Creator / Marketplace-Bots**.
-**Zalo Official Account (OA)-Bots** sind eine andere Zalo-Produktoberfläche und können sich anders verhalten.
+Diese Seite behandelt **Zalo Bot Creator-/Marketplace-Bots**. **Zalo Official Account (OA)-Bots** bilden eine andere Produktoberfläche und können sich anders verhalten; sie werden auf dieser Seite nicht behandelt.
 
-- Ein Zalo Bot API-Kanal, der dem Gateway gehört.
-- Deterministisches Routing: Antworten gehen zurück an Zalo; das Modell wählt niemals Kanäle aus.
-- Direktnachrichten teilen sich die Hauptsitzung des Agenten.
-- Der Abschnitt [Funktionen](#capabilities) unten zeigt die aktuelle Unterstützung für Marketplace-Bots.
-
-## Einrichtung (schneller Weg)
-
-### 1) Ein Bot-Token erstellen (Zalo Bot Platform)
-
-1. Gehen Sie zu [https://bot.zaloplatforms.com](https://bot.zaloplatforms.com) und melden Sie sich an.
-2. Erstellen Sie einen neuen Bot und konfigurieren Sie seine Einstellungen.
-3. Kopieren Sie das vollständige Bot-Token (typischerweise `numeric_id:secret`). Bei Marketplace-Bots kann das nutzbare Laufzeit-Token nach der Erstellung in der Willkommensnachricht des Bots erscheinen.
-
-### 2) Das Token konfigurieren (Env oder Konfiguration)
-
-Beispiel:
-
-```json5
-{
-  channels: {
-    zalo: {
-      enabled: true,
-      accounts: {
-        default: {
-          botToken: "12345689:abc-xyz",
-          dmPolicy: "pairing",
-        },
-      },
-    },
-  },
-}
-```
-
-Wenn Sie später zu einer Zalo-Bot-Oberfläche wechseln, auf der Gruppen verfügbar sind, können Sie gruppenspezifische Konfigurationen wie `groupPolicy` und `groupAllowFrom` explizit hinzufügen. Zum aktuellen Verhalten von Marketplace-Bots siehe [Funktionen](#capabilities).
-
-Env-Option: `ZALO_BOT_TOKEN=...` (funktioniert nur für das Standardkonto).
-
-Mehrkontenunterstützung: Verwenden Sie `channels.zalo.accounts` mit Token pro Konto und optionalem `name`.
-
-3. Starten Sie den Gateway neu. Zalo startet, wenn ein Token aufgelöst wurde (Env oder Konfiguration).
-4. Der Zugriff auf Direktnachrichten ist standardmäßig auf Pairing eingestellt. Genehmigen Sie den Code, wenn der Bot zum ersten Mal kontaktiert wird.
-
-## Funktionsweise (Verhalten)
+## Funktionsweise
 
 - Eingehende Nachrichten werden mit Medienplatzhaltern in den gemeinsamen Kanal-Umschlag normalisiert.
-- Antworten werden immer zurück an denselben Zalo-Chat geroutet.
-- Standardmäßig Long-Polling; Webhook-Modus ist mit `channels.zalo.webhookUrl` verfügbar.
+- Antworten werden immer an denselben Zalo-Chat zurückgeleitet; Antworten mit Zitat werden nicht verwendet (`replyToMode` ist fest deaktiviert).
+- Standardmäßig Long-Polling (`getUpdates`); der Webhook-Modus ist über `channels.zalo.webhookUrl` verfügbar.
+- In Gruppen ist eine @Erwähnung erforderlich, um den Bot auszulösen; dies ist nicht pro Kanal konfigurierbar.
 
-## Limits
+## Grenzwerte
 
-- Ausgehender Text wird in Abschnitte von 2000 Zeichen aufgeteilt (Limit der Zalo API).
-- Medien-Downloads/-Uploads sind durch `channels.zalo.mediaMaxMb` begrenzt (Standard 5).
-- Streaming ist standardmäßig blockiert, da das Limit von 2000 Zeichen Streaming weniger nützlich macht.
+| Grenzwert                      | Wert                                                                          |
+| ------------------------------ | ----------------------------------------------------------------------------- |
+| Segmentgröße ausgehender Texte | 2000 Zeichen (Grenzwert der Zalo API)                                         |
+| Mediengröße (ein-/ausgehend)   | `channels.zalo.mediaMaxMb`, Standardwert `5` MB                               |
+| Webhook-Anfragetext            | 1 MB, 30s Zeitüberschreitung beim Lesen                                       |
+| Webhook-Ratenlimit             | 120 Anfragen / 60s pro Pfad+Client-IP, danach HTTP 429                        |
+| Webhook-Duplikatereignisfenster | 5 Minuten (Schlüssel aus Pfad + Konto + Ereignisname + Chat + Absender + Nachrichten-ID) |
 
-## Zugriffskontrolle (Direktnachrichten)
+## Zugriffskontrolle
 
-### Zugriff auf Direktnachrichten
+### Direktnachrichten
 
-- Standard: `channels.zalo.dmPolicy = "pairing"`. Unbekannte Absender erhalten einen Pairing-Code; Nachrichten werden ignoriert, bis sie genehmigt wurden (Codes laufen nach 1 Stunde ab).
-- Genehmigen über:
+- `channels.zalo.dmPolicy`: `pairing` (Standard) | `allowlist` | `open` | `disabled`.
+- Kopplung: Unbekannte Absender erhalten einen Kopplungscode; Nachrichten werden bis zur Genehmigung ignoriert. Codes laufen nach 1 Stunde ab.
   - `openclaw pairing list zalo`
   - `openclaw pairing approve zalo <CODE>`
-- Pairing ist der standardmäßige Token-Austausch. Details: [Pairing](/de/channels/pairing)
-- `channels.zalo.allowFrom` akzeptiert numerische Benutzer-IDs (keine Benutzernamensuche verfügbar).
+  - Details: [Kopplung](/de/channels/pairing)
+- `channels.zalo.allowFrom` akzeptiert numerische Zalo-Benutzer-IDs (keine Suche nach Benutzernamen). `open` erfordert `"*"`.
 
-## Zugriffskontrolle (Gruppen)
+### Gruppen
 
-Für **Zalo Bot Creator / Marketplace-Bots** war Gruppenunterstützung praktisch nicht verfügbar, da der Bot überhaupt nicht zu einer Gruppe hinzugefügt werden konnte.
+Gruppenchats werden vom Plugin unterstützt (`chatTypes: ["direct", "group"]`) und durch Erwähnung sowie Gruppenrichtlinie beschränkt:
 
-Das bedeutet, dass die gruppenbezogenen Konfigurationsschlüssel unten im Schema existieren, aber für Marketplace-Bots nicht nutzbar waren:
+- `channels.zalo.groupPolicy`: `open` | `allowlist` | `disabled`.
+- `channels.zalo.groupAllowFrom` beschränkt, welche Absender-IDs den Bot in Gruppen auslösen können; wenn nicht festgelegt, wird auf `allowFrom` zurückgegriffen.
+- Standardauflösung: Wenn `channels.zalo` konfiguriert ist, wird ein nicht festgelegtes `groupPolicy` als `open` aufgelöst. Wenn `channels.zalo` vollständig fehlt, schließt die Laufzeit den Zugriff standardmäßig mit `allowlist`.
+- Aus der Praxis gemeldete Einschränkung: Bei einigen Marketplace-Bot-Konfigurationen konnte der Bot überhaupt keiner Gruppe hinzugefügt werden. Falls dies bei Ihnen auftritt, überprüfen Sie die Zalo Bot Platform-Einstellungen Ihres Bots; es handelt sich um eine plattformseitige Einschränkung, nicht um eine OpenClaw-Richtlinie.
 
-- `channels.zalo.groupPolicy` steuert die Verarbeitung eingehender Gruppennachrichten: `open | allowlist | disabled`.
-- `channels.zalo.groupAllowFrom` beschränkt, welche Absender-IDs den Bot in Gruppen auslösen können.
-- Wenn `groupAllowFrom` nicht gesetzt ist, fällt Zalo für Absenderprüfungen auf `allowFrom` zurück.
-- Laufzeithinweis: Wenn `channels.zalo` vollständig fehlt, fällt die Laufzeit aus Sicherheitsgründen weiterhin auf `groupPolicy="allowlist"` zurück.
-
-Die Gruppenrichtlinienwerte (wenn Gruppenzugriff auf Ihrer Bot-Oberfläche verfügbar ist) sind:
-
-- `groupPolicy: "disabled"` — blockiert alle Gruppennachrichten.
-- `groupPolicy: "open"` — erlaubt jedes Gruppenmitglied (nur bei Erwähnung).
-- `groupPolicy: "allowlist"` — standardmäßig geschlossen; nur erlaubte Absender werden akzeptiert.
-
-Wenn Sie eine andere Zalo-Bot-Produktoberfläche verwenden und funktionierendes Gruppenverhalten verifiziert haben, dokumentieren Sie dies separat, statt anzunehmen, dass es dem Marketplace-Bot-Ablauf entspricht.
-
-## Long-Polling vs. Webhook
+## Long-Polling oder Webhook
 
 - Standard: Long-Polling (keine öffentliche URL erforderlich).
-- Webhook-Modus: Setzen Sie `channels.zalo.webhookUrl` und `channels.zalo.webhookSecret`.
-  - Das Webhook-Secret muss 8-256 Zeichen lang sein.
+- Webhook-Modus: Legen Sie `channels.zalo.webhookUrl` und `channels.zalo.webhookSecret` fest.
   - Die Webhook-URL muss HTTPS verwenden.
-  - Zalo sendet Ereignisse zur Verifizierung mit dem Header `X-Bot-Api-Secret-Token`.
+  - Das Webhook-Geheimnis muss 8-256 Zeichen lang sein.
+  - Zalo sendet Ereignisse mit einem `X-Bot-Api-Secret-Token`-Header, der mit einem Vergleich in konstanter Zeit geprüft wird.
   - Gateway HTTP verarbeitet Webhook-Anfragen unter `channels.zalo.webhookPath` (standardmäßig der Pfad der Webhook-URL).
-  - Anfragen müssen `Content-Type: application/json` (oder `+json`-Medientypen) verwenden.
-  - Doppelte Ereignisse (`event_name + message_id`) werden für ein kurzes Wiederholungsfenster ignoriert.
-  - Burst-Traffic wird pro Pfad/Quelle ratenbegrenzt und kann HTTP 429 zurückgeben.
-
-**Hinweis:** getUpdates (Polling) und Webhook schließen sich laut Zalo API-Dokumentation gegenseitig aus.
+  - Anfragen müssen `Content-Type: application/json` (oder einen `+json`-Medientyp) verwenden.
+  - getUpdates-Polling und Webhook schließen sich gemäß der Zalo API-Dokumentation gegenseitig aus.
 
 ## Unterstützte Nachrichtentypen
 
-Eine schnelle Übersicht zur Unterstützung finden Sie unter [Funktionen](#capabilities). Die Hinweise unten ergänzen Details, wo das Verhalten zusätzlichen Kontext benötigt.
-
-- **Textnachrichten**: Vollständige Unterstützung mit Aufteilung in 2000-Zeichen-Abschnitte.
-- **Einfache URLs im Text**: Verhalten sich wie normale Texteingabe.
-- **Linkvorschauen / Rich-Link-Karten**: Siehe Marketplace-Bot-Status unter [Funktionen](#capabilities); sie lösten nicht zuverlässig eine Antwort aus.
-- **Bildnachrichten**: Siehe Marketplace-Bot-Status unter [Funktionen](#capabilities); die Verarbeitung eingehender Bilder war unzuverlässig (Tippanzeige ohne abschließende Antwort).
-- **Sticker**: Siehe Marketplace-Bot-Status unter [Funktionen](#capabilities).
-- **Sprachnotizen / Audiodateien / Video / generische Dateianhänge**: Siehe Marketplace-Bot-Status unter [Funktionen](#capabilities).
-- **Nicht unterstützte Typen**: Werden protokolliert (zum Beispiel Nachrichten von geschützten Benutzern).
+- Text: vollständig unterstützt, in Segmente von 2000 Zeichen aufgeteilt.
+- Medien: ein- und ausgehend, durch `mediaMaxMb` begrenzt.
+- Reaktionen, Threads, Umfragen, native Befehle: vom Plugin nicht unterstützt.
+- Streaming: Das Plugin deklariert die Fähigkeit zum Block-Streaming, Zalo verfügt jedoch über keine speziellen Einstellmöglichkeiten für ausgehende Warteschlangen oder die Zusammenführung von Text (anders als einige andere regionale Kanäle). Überprüfen Sie das aktuelle Verhalten in Ihrer Umgebung, falls dies für Ihren Anwendungsfall wichtig ist.
 
 ## Funktionen
 
-Diese Tabelle fasst das aktuelle Verhalten von **Zalo Bot Creator / Marketplace-Bots** in OpenClaw zusammen.
-
-| Funktion                    | Status                                          |
-| --------------------------- | ----------------------------------------------- |
-| Direktnachrichten           | ✅ Unterstützt                                  |
-| Gruppen                     | ❌ Für Marketplace-Bots nicht verfügbar         |
-| Medien (eingehende Bilder)  | ⚠️ Eingeschränkt / in Ihrer Umgebung verifizieren |
-| Medien (ausgehende Bilder)  | ⚠️ Für Marketplace-Bots nicht erneut getestet   |
-| Einfache URLs im Text       | ✅ Unterstützt                                  |
-| Linkvorschauen              | ⚠️ Unzuverlässig für Marketplace-Bots           |
-| Reaktionen                  | ❌ Nicht unterstützt                            |
-| Sticker                     | ⚠️ Keine Agent-Antwort für Marketplace-Bots     |
-| Sprachnotizen / Audio / Video | ⚠️ Keine Agent-Antwort für Marketplace-Bots   |
-| Dateianhänge                | ⚠️ Keine Agent-Antwort für Marketplace-Bots     |
-| Threads                     | ❌ Nicht unterstützt                            |
-| Umfragen                    | ❌ Nicht unterstützt                            |
-| Native Befehle              | ❌ Nicht unterstützt                            |
-| Streaming                   | ⚠️ Blockiert (2000-Zeichen-Limit)               |
+| Funktion                 | Status                                  |
+| ------------------------ | --------------------------------------- |
+| Direktnachrichten        | Unterstützt                             |
+| Gruppen                  | Unterstützt (Erwähnung erforderlich)    |
+| Medien (ein-/ausgehend)  | Unterstützt, durch `mediaMaxMb` begrenzt |
+| Reaktionen               | Nicht unterstützt                       |
+| Threads                  | Nicht unterstützt                       |
+| Umfragen                 | Nicht unterstützt                       |
+| Native Befehle           | Nicht unterstützt                       |
+| Antwort auf / Zitat      | Nicht verwendet (fest deaktiviert)      |
 
 ## Zustellziele (CLI/Cron)
 
-- Verwenden Sie eine Chat-ID als Ziel.
-- Beispiel: `openclaw message send --channel zalo --target 123456789 --message "hi"`.
+Verwenden Sie eine Chat-ID als Ziel:
+
+```bash
+openclaw message send --channel zalo --target 123456789 --message "Hallo"
+```
 
 ## Fehlerbehebung
 
 **Bot antwortet nicht:**
 
-- Prüfen Sie, ob das Token gültig ist: `openclaw channels status --probe`
-- Verifizieren Sie, dass der Absender genehmigt ist (Pairing oder allowFrom)
-- Prüfen Sie Gateway-Protokolle: `openclaw logs --follow`
+- Prüfen Sie das Token: `openclaw channels status --probe`
+- Vergewissern Sie sich, dass der Absender genehmigt ist (Kopplung oder `allowFrom`)
+- Prüfen Sie die Gateway-Protokolle: `openclaw logs --follow`
 
 **Webhook empfängt keine Ereignisse:**
 
-- Stellen Sie sicher, dass die Webhook-URL HTTPS verwendet
-- Verifizieren Sie, dass das Secret-Token 8-256 Zeichen lang ist
-- Bestätigen Sie, dass der HTTP-Endpunkt des Gateway unter dem konfigurierten Pfad erreichbar ist
-- Prüfen Sie, dass getUpdates-Polling nicht läuft (sie schließen sich gegenseitig aus)
+- Vergewissern Sie sich, dass die Webhook-URL HTTPS verwendet
+- Vergewissern Sie sich, dass das Geheimnis 8-256 Zeichen lang ist
+- Vergewissern Sie sich, dass der Gateway-HTTP-Endpunkt unter dem konfigurierten Pfad erreichbar ist
+- Vergewissern Sie sich, dass getUpdates-Polling nicht ebenfalls ausgeführt wird (beide schließen sich gegenseitig aus)
+- Eine Anfragespitze kann HTTP 429 zurückgeben (120 Anfragen / 60s pro Pfad+IP); warten Sie und versuchen Sie es erneut
 
-## Konfigurationsreferenz (Zalo)
+## Konfigurationsreferenz
 
 Vollständige Konfiguration: [Konfiguration](/de/gateway/configuration)
 
-Die flachen Schlüssel auf oberster Ebene (`channels.zalo.botToken`, `channels.zalo.dmPolicy` und ähnliche) sind eine Legacy-Kurzform für ein einzelnes Konto. Bevorzugen Sie für neue Konfigurationen `channels.zalo.accounts.<id>.*`. Beide Formen sind hier weiterhin dokumentiert, da sie im Schema existieren.
+| Einstellung                                    | Beschreibung                                              | Standardwert               |
+| ---------------------------------------------- | --------------------------------------------------------- | -------------------------- |
+| `channels.zalo.enabled`                        | Kanalstart aktivieren/deaktivieren                        | `true`                     |
+| `channels.zalo.accounts.<id>.botToken`         | Bot-Token von Zalo Bot Platform                           | -                          |
+| `channels.zalo.accounts.<id>.tokenFile`        | Token aus einer Datei lesen (Symlinks werden abgelehnt)   | -                          |
+| `channels.zalo.accounts.<id>.name`             | Anzeigename                                               | -                          |
+| `channels.zalo.accounts.<id>.enabled`          | Dieses Konto aktivieren/deaktivieren                      | `true`                     |
+| `channels.zalo.accounts.<id>.dmPolicy`         | Direktnachrichtenrichtlinie pro Konto                     | `pairing`                  |
+| `channels.zalo.accounts.<id>.allowFrom`        | Direktnachrichten-Zulassungsliste (Benutzer-IDs)          | -                          |
+| `channels.zalo.accounts.<id>.groupPolicy`      | Gruppenrichtlinie pro Konto                               | siehe [Gruppen](#groups)   |
+| `channels.zalo.accounts.<id>.groupAllowFrom`   | Zulassungsliste für Gruppenabsender; greift auf `allowFrom` zurück | -                 |
+| `channels.zalo.accounts.<id>.mediaMaxMb`       | Obergrenze für ein-/ausgehende Medien (MB)                | `5`                        |
+| `channels.zalo.accounts.<id>.webhookUrl`       | Webhook-Modus aktivieren (HTTPS erforderlich)             | -                          |
+| `channels.zalo.accounts.<id>.webhookSecret`    | Webhook-Geheimnis (8-256 Zeichen)                         | -                          |
+| `channels.zalo.accounts.<id>.webhookPath`      | Webhook-Pfad auf dem Gateway-HTTP-Server                  | Pfad der Webhook-URL       |
+| `channels.zalo.accounts.<id>.proxy`            | Proxy-URL für API-Anfragen                                | -                          |
+| `channels.zalo.accounts.<id>.responsePrefix`   | Überschreibung des Präfixes ausgehender Antworten         | -                          |
+| `channels.zalo.defaultAccount`                 | Standardkonto, wenn mehrere konfiguriert sind             | `default`                  |
 
-Provider-Optionen:
+`channels.zalo.botToken`, `channels.zalo.dmPolicy` und andere flache Schlüssel auf oberster Ebene sind die veraltete Kurzform für ein einzelnes Konto für die oben genannten Felder; beide Formen werden unterstützt.
 
-- `channels.zalo.enabled`: Kanalstart aktivieren/deaktivieren.
-- `channels.zalo.botToken`: Bot-Token von Zalo Bot Platform.
-- `channels.zalo.tokenFile`: Token aus einem regulären Dateipfad lesen. Symlinks werden abgelehnt.
-- `channels.zalo.dmPolicy`: `pairing | allowlist | open | disabled` (Standard: pairing).
-- `channels.zalo.allowFrom`: Allowlist für Direktnachrichten (Benutzer-IDs). `open` erfordert `"*"`. Der Assistent fragt nach numerischen IDs.
-- `channels.zalo.groupPolicy`: `open | allowlist | disabled` (Standard: allowlist). In der Konfiguration vorhanden; siehe [Funktionen](#capabilities) und [Zugriffskontrolle (Gruppen)](#access-control-groups) zum aktuellen Verhalten von Marketplace-Bots.
-- `channels.zalo.groupAllowFrom`: Allowlist für Gruppenabsender (Benutzer-IDs). Fällt auf `allowFrom` zurück, wenn nicht gesetzt.
-- `channels.zalo.mediaMaxMb`: Limit für eingehende/ausgehende Medien (MB, Standard 5).
-- `channels.zalo.webhookUrl`: Webhook-Modus aktivieren (HTTPS erforderlich).
-- `channels.zalo.webhookSecret`: Webhook-Secret (8-256 Zeichen).
-- `channels.zalo.webhookPath`: Webhook-Pfad auf dem HTTP-Server des Gateway.
-- `channels.zalo.proxy`: Proxy-URL für API-Anfragen.
+Umgebungsoption: `ZALO_BOT_TOKEN=...` wird nur als Token des Standardkontos aufgelöst.
 
-Mehrkontenoptionen:
+## Verwandte Themen
 
-- `channels.zalo.accounts.<id>.botToken`: Token pro Konto.
-- `channels.zalo.accounts.<id>.tokenFile`: Reguläre Token-Datei pro Konto. Symlinks werden abgelehnt.
-- `channels.zalo.accounts.<id>.name`: Anzeigename.
-- `channels.zalo.accounts.<id>.enabled`: Konto aktivieren/deaktivieren.
-- `channels.zalo.accounts.<id>.dmPolicy`: Richtlinie für Direktnachrichten pro Konto.
-- `channels.zalo.accounts.<id>.allowFrom`: Allowlist pro Konto.
-- `channels.zalo.accounts.<id>.groupPolicy`: Gruppenrichtlinie pro Konto. In der Konfiguration vorhanden; siehe [Funktionen](#capabilities) und [Zugriffskontrolle (Gruppen)](#access-control-groups) zum aktuellen Verhalten von Marketplace-Bots.
-- `channels.zalo.accounts.<id>.groupAllowFrom`: Allowlist für Gruppenabsender pro Konto.
-- `channels.zalo.accounts.<id>.webhookUrl`: Webhook-URL pro Konto.
-- `channels.zalo.accounts.<id>.webhookSecret`: Webhook-Secret pro Konto.
-- `channels.zalo.accounts.<id>.webhookPath`: Webhook-Pfad pro Konto.
-- `channels.zalo.accounts.<id>.proxy`: Proxy-URL pro Konto.
-
-## Verwandt
-
-- [Kanalübersicht](/de/channels) — alle unterstützten Kanäle
-- [Pairing](/de/channels/pairing) — Authentifizierung und Pairing-Ablauf für Direktnachrichten
-- [Gruppen](/de/channels/groups) — Gruppenchat-Verhalten und Erwähnungs-Gating
-- [Kanal-Routing](/de/channels/channel-routing) — Sitzungsrouting für Nachrichten
-- [Sicherheit](/de/gateway/security) — Zugriffsmodell und Härtung
+- [Kanalübersicht](/de/channels) - alle unterstützten Kanäle
+- [Kopplung](/de/channels/pairing) - Direktnachrichtenauthentifizierung und Kopplungsablauf
+- [Gruppen](/de/channels/groups) - Verhalten von Gruppenchats und Auslösung durch Erwähnung
+- [Kanalrouting](/de/channels/channel-routing) - Sitzungsrouting für Nachrichten
+- [Sicherheit](/de/gateway/security) - Zugriffsmodell und Absicherung

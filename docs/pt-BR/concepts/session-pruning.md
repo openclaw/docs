@@ -1,78 +1,70 @@
 ---
 read_when:
-    - Você quer reduzir o crescimento do contexto causado por saídas de ferramentas
-    - Você quer entender a otimização do cache de prompt da Anthropic
+    - Você quer reduzir o crescimento do contexto causado pelas saídas das ferramentas
+    - Você quer entender a otimização do cache de prompts da Anthropic
 summary: Remoção de resultados antigos de ferramentas para manter o contexto enxuto e o cache eficiente
-title: Poda de sessão
+title: Poda de sessões
 x-i18n:
-    generated_at: "2026-04-26T11:27:20Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 3ea07f0ae23076906e2ff0246ac75813572f98cffa50afddb6a6b0af8964c4a9
-    source_path: concepts/session-pruning.md
-    workflow: 15
+    generated_at: "2026-07-12T15:11:52Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
+    provider: openai
+    source_hash: dd5cb4582cb8d9d7265213abe1f5b5893634882b9f8b3ce1deef746293dd07db
+    source_path: concepts/session-pruning.md
+    workflow: 16
 ---
 
-A poda de sessão remove **resultados antigos de ferramentas** do contexto antes de cada
-chamada ao LLM. Ela reduz o inchaço do contexto causado pelo acúmulo de saídas de ferramentas (resultados de exec, leituras de arquivo, resultados de busca) sem reescrever o texto normal da conversa.
+A poda de sessão remove **resultados antigos de ferramentas** do contexto antes de cada chamada ao LLM. Ela reduz o excesso de contexto gerado por saídas acumuladas de ferramentas (resultados de execução, leituras de arquivos, resultados de pesquisa) sem reescrever o texto normal da conversa.
 
 <Info>
-A poda ocorre apenas em memória -- ela não modifica a transcrição da sessão em disco.
-Seu histórico completo é sempre preservado.
+A poda ocorre somente na memória -- ela não modifica a transcrição da sessão armazenada em disco. Seu histórico completo é sempre preservado.
 </Info>
 
-## Por que isso importa
+## Por que isso é importante
 
-Sessões longas acumulam saída de ferramentas que infla a janela de contexto. Isso
-aumenta o custo e pode forçar [Compaction](/pt-BR/concepts/compaction) mais cedo do que o
-necessário.
+Sessões longas acumulam saídas de ferramentas que ampliam a janela de contexto. Isso aumenta o custo e pode forçar a [Compaction](/pt-BR/concepts/compaction) antes do necessário.
 
-A poda é especialmente valiosa para o cache de prompt da Anthropic. Após o TTL do cache
-expirar, a próxima solicitação armazena novamente em cache o prompt completo. A poda reduz o
-tamanho da gravação do cache, diminuindo diretamente o custo.
+A poda é especialmente valiosa para o **cache de prompts da Anthropic**. Depois que o TTL do cache expira, a próxima solicitação armazena novamente em cache o prompt completo. A poda reduz o tamanho da gravação no cache, diminuindo diretamente o custo.
 
 ## Como funciona
 
-1. Aguarde o TTL do cache expirar (padrão de 5 minutos).
-2. Encontre resultados antigos de ferramentas para a poda normal (o texto da conversa é deixado intacto).
-3. **Corte suave** em resultados grandes demais -- mantenha o início e o fim, insira `...`.
-4. **Limpeza rígida** no restante -- substitua por um placeholder.
-5. Redefina o TTL para que solicitações seguintes reutilizem o cache novo.
+A poda é executada no modo `cache-ttl`, condicionada tanto a uma verificação de tempo quanto a uma verificação do tamanho do contexto:
 
-## Limpeza legada de imagens
+1. Aguarde o TTL do cache expirar (o padrão é 5 minutos quando definido manualmente; consulte [Padrões inteligentes](#smart-defaults) para ver o padrão automático da Anthropic). Antes que o TTL expire, a poda é totalmente ignorada para preservar a reutilização do cache de prompts em interações próximas.
+2. Depois que o TTL expirar, estime o tamanho total do contexto em relação à janela de contexto do modelo. Se a proporção estiver abaixo de `softTrimRatio` (padrão 0.3), ignore a poda e mantenha o relógio do TTL em execução.
+3. **Reduza parcialmente** os resultados de ferramentas que excederem a proporção: mantenha o início e o fim (por padrão, 1500 caracteres de cada, limitados a 4000 caracteres combinados) e insira `...` entre eles.
+4. Se a proporção ainda estiver igual ou acima de `hardClearRatio` (padrão 0.5) e restarem pelo menos `minPrunableToolChars` (padrão 50,000) caracteres de conteúdo de ferramentas que possa ser podado, **limpe completamente** esses resultados: substitua seu conteúdo por um espaço reservado (padrão `[Old tool result content cleared]`).
+5. Reinicie o relógio do TTL somente quando a poda realmente tiver alterado o contexto, para que as solicitações seguintes reutilizem o cache recém-criado.
 
-O OpenClaw também constrói uma visualização de replay idempotente separada para sessões que
-persistem blocos brutos de imagem ou marcadores de mídia de hidratação de prompt no histórico.
+Duas regras de segurança são aplicadas independentemente dos limites: as interações mais recentes do assistente definidas por `keepLastAssistants` (padrão 3) nunca são podadas, e nada anterior à primeira mensagem do usuário na sessão é podado (isso protege leituras de inicialização como `SOUL.md`/`USER.md`).
 
-- Ela preserva os **3 turnos concluídos mais recentes** byte por byte para que os
-  prefixos de cache de prompt para acompanhamentos recentes permaneçam estáveis.
-- Na visualização de replay, blocos de imagem mais antigos já processados do histórico de `user` ou
-  `toolResult` podem ser substituídos por
-  `[image data removed - already processed by model]`.
-- Referências textuais de mídia mais antigas, como `[media attached: ...]`,
-  `[Image: source: ...]` e `media://inbound/...`, podem ser substituídas por
-  `[media reference removed - already processed by model]`. Marcadores de anexo do turno atual
-  permanecem intactos para que modelos de visão ainda possam hidratar imagens novas.
-- A transcrição bruta da sessão não é reescrita, então visualizadores de histórico ainda podem
-  renderizar as entradas originais de mensagem e suas imagens.
-- Isso é separado da poda normal por TTL de cache. Existe para impedir que
-  cargas repetidas de imagem ou refs de mídia obsoletas invalidem caches de prompt em turnos posteriores.
+Somente mensagens `toolResult` são elegíveis; o texto normal da conversa permanece inalterado. Use `agents.defaults.contextPruning.tools.{allow,deny}` para definir quais nomes de ferramentas podem ser podados.
+
+## Limpeza de imagens legadas
+
+O OpenClaw também cria uma visualização de repetição separada e idempotente para sessões que mantêm no histórico blocos brutos de imagens ou marcadores de mídia usados na hidratação de prompts.
+
+- Ela preserva **as 3 interações concluídas mais recentes** byte por byte, para que os prefixos do cache de prompts permaneçam estáveis nas solicitações seguintes recentes. Essa contagem inclui todas as interações concluídas, não apenas aquelas que contêm imagens, portanto, interações somente de texto também ocupam a janela.
+- Na visualização de repetição, blocos de imagens mais antigos e já processados do histórico de `user` ou `toolResult` são substituídos por `[image data removed - already processed by model]`.
+- Referências textuais de mídia mais antigas, como `[media attached: ...]`, `[Image: source: ...]` e `media://inbound/...`, são substituídas por `[media reference removed - already processed by model]`. Os marcadores de anexos da interação atual permanecem intactos para que modelos de visão ainda possam hidratar imagens novas.
+- A transcrição bruta da sessão não é reescrita, portanto, os visualizadores do histórico ainda podem renderizar as entradas de mensagem originais e suas imagens.
+- Isso é separado da poda normal por TTL do cache descrita acima. Seu objetivo é impedir que cargas de imagens repetidas ou referências de mídia obsoletas invalidem os caches de prompts em interações posteriores.
 
 ## Padrões inteligentes
 
-O OpenClaw ativa automaticamente a poda para perfis Anthropic:
+O plugin Anthropic incluído configura automaticamente a poda e a cadência do Heartbeat na primeira vez que resolve um perfil de autenticação da Anthropic (ou da CLI do Claude), mas apenas para os campos que você ainda não definiu explicitamente:
 
-| Tipo de perfil                                         | Poda ativada | Heartbeat |
-| ------------------------------------------------------ | ------------ | --------- |
-| Autenticação OAuth/token da Anthropic (incluindo reutilização do Claude CLI) | Sim          | 1 hora    |
-| Chave de API                                           | Sim          | 30 min    |
+| Modo de autenticação                              | `contextPruning.mode` | `contextPruning.ttl` | `heartbeat.every` |
+| ------------------------------------------------- | --------------------- | -------------------- | ----------------- |
+| OAuth/token (incluindo reutilização da CLI do Claude) | `cache-ttl`        | `1h`                 | `1h`              |
+| Chave de API                                      | `cache-ttl`           | `1h`                 | `30m`             |
 
-Se você definir valores explícitos, o OpenClaw não os substituirá.
+Se você definir `agents.defaults.contextPruning.mode` ou `agents.defaults.heartbeat.every`, o OpenClaw não os substituirá. Esse padrão automático só é aplicado à autenticação da família Anthropic; para outros provedores, a poda fica `off`, a menos que você a configure.
 
 ## Ativar ou desativar
 
-A poda fica desativada por padrão para provedores não Anthropic. Para ativar:
+A poda fica desativada por padrão para provedores que não sejam da Anthropic. Para ativá-la:
 
 ```json5
 {
@@ -84,27 +76,25 @@ A poda fica desativada por padrão para provedores não Anthropic. Para ativar:
 }
 ```
 
-Para desativar: defina `mode: "off"`.
+Para desativá-la: defina `mode: "off"`.
 
-## Poda vs Compaction
+## Poda em comparação com Compaction
 
-|            | Poda                | Compaction              |
-| ---------- | ------------------- | ----------------------- |
-| **O quê**  | Remove resultados de ferramentas | Resume a conversa |
-| **Salvo?** | Não (por solicitação) | Sim (na transcrição)  |
-| **Escopo** | Apenas resultados de ferramentas | Conversa inteira     |
+|              | Poda                         | Compaction            |
+| ------------ | ---------------------------- | --------------------- |
+| **O quê**    | Reduz resultados de ferramentas | Resume a conversa  |
+| **Salvo?**   | Não (por solicitação)        | Sim (na transcrição)  |
+| **Escopo**   | Apenas resultados de ferramentas | Conversa inteira   |
 
-Elas se complementam -- a poda mantém a saída de ferramentas enxuta entre
-ciclos de Compaction.
+Elas se complementam -- a poda mantém a saída das ferramentas enxuta entre os ciclos de Compaction.
 
 ## Leitura adicional
 
-- [Compaction](/pt-BR/concepts/compaction) -- redução de contexto baseada em sumarização
-- [Configuração do Gateway](/pt-BR/gateway/configuration) -- todos os ajustes de configuração de poda
-  (`contextPruning.*`)
+- [Compaction](/pt-BR/concepts/compaction): redução de contexto baseada em resumo
+- [Configuração do Gateway](/pt-BR/gateway/configuration): todas as opções de configuração da poda (`contextPruning.*`)
 
-## Relacionados
+## Relacionado
 
-- [Gerenciamento de sessão](/pt-BR/concepts/session)
+- [Gerenciamento de sessões](/pt-BR/concepts/session)
 - [Ferramentas de sessão](/pt-BR/concepts/session-tool)
 - [Mecanismo de contexto](/pt-BR/concepts/context-engine)

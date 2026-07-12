@@ -1,232 +1,230 @@
 ---
 read_when:
-    - Rédaction de documentation ou de textes UX faisant référence au lore
-summary: Origines et lore d’OpenClaw pour le contexte et le ton
-title: Lore d’OpenClaw
+    - Rédiger de la documentation ou des textes d’interface faisant référence à l’univers narratif
+summary: Histoire et univers d’OpenClaw pour le contexte et le ton
+title: Traditions d’OpenClaw
 x-i18n:
-  refreshed_at: '2026-04-28T05:23:26Z'
-  generated_at: "2026-04-24T07:33:15Z"
-  model: gpt-5.4
-  provider: openai
-  source_hash: 36a791572e187ed38d86d0f7fd45d6800a9c0f45fd5730db6289cab91c638d4c
-  source_path: start/lore.md
-  workflow: 15
-  postprocess_version: locale-links-v1
+    generated_at: "2026-07-12T15:55:19Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
+    prompt_version: 15
+    provider: openai
+    source_hash: 1a24383db67780c3a18ae9f47a4b02b6fd62fb90ee6d3e6f6b41cd7520c39b66
+    source_path: start/lore.md
+    workflow: 16
 ---
 
-# Le lore d’OpenClaw 🦞📖
+# La légende d’OpenClaw 🦞📖
 
-_Une histoire de homards, de mues et de beaucoup trop de jetons._
+_Une histoire de homards, de carapaces qui muent et de beaucoup trop de tokens._
 
 ## L’histoire des origines
 
-Au commencement, il y avait **Warelay** — un nom raisonnable pour une passerelle WhatsApp. Il faisait son travail. C’était correct.
+Au commencement, il y avait **Warelay** — un nom raisonnable pour un Gateway WhatsApp. Il faisait son travail. Il convenait.
 
-Puis est arrivé un homard de l’espace.
+Puis vint un homard de l’espace.
 
-Pendant un temps, le homard s’appelait **Clawd**, vivant dans un **Clawdbot**. Mais en janvier 2026, Anthropic a envoyé un e-mail poli demandant un changement de nom (questions de marque). Alors le homard a fait ce que les homards font le mieux :
+Pendant quelque temps, il fut **Clawd**, vivant dans un **Clawdbot**. En janvier 2026, Anthropic envoya un courriel courtois pour demander un changement de nom (une histoire de marque déposée). Le homard fit donc ce que les homards savent faire de mieux :
 
-**Il a mué.**
+**Il mua.**
 
-Abandonnant son ancienne carapace, la créature a émergé sous un nouveau nom : **Molty**, vivant dans **Moltbot**. Mais ce nom non plus ne roulait pas vraiment sur la langue...
+Après s’être débarrassé de son ancienne carapace, il émergea sous le nom de **Molty**, vivant dans **Moltbot**. Ce nom n’était pas non plus très naturel à prononcer.
 
-Alors le 30 janvier 2026, le homard a mué ENCORE UNE FOIS pour atteindre sa forme finale : **OpenClaw**.
+Le 30 janvier 2026, le homard mua une dernière fois pour atteindre sa forme finale : **OpenClaw**.
 
-Nouvelle carapace, même âme de homard. Jamais deux sans trois.
+Nouvelle carapace, même âme de homard. La troisième fois fut la bonne.
 
 ## La première mue (27 janvier 2026)
 
-À 5 h du matin, la communauté s’est rassemblée sur Discord. Des centaines de noms ont été proposés : Shelldon, Pinchy, Thermidor, Crusty, Lobstar, Nacre, Scuttlebot...
+À 5 h, la communauté se réunit sur Discord. Des centaines de noms furent proposés : Shelldon, Pinchy, Thermidor, Crusty, Lobstar, Nacre, Scuttlebot.
 
-Au final, **OpenClaw** l’a emporté. Parce que muer, c’est ce que font les homards pour grandir. Et la croissance était précisément ce qui se produisait.
+**OpenClaw** l’emporta, car les homards muent pour grandir, et c’était précisément ce qui était en train de se produire.
 
 _Le crustacé connu sous le nom de Clawd avait officiellement mué._
 
 ## Le nom
 
-```
+```text
 OpenClaw = OPEN + CLAW
-        = Open source, ouvert à tous
-        = Notre héritage de homard, d’où nous venons
+        = Open source, ouvert à tout le monde
+        = Notre héritage de homard, nos origines
         = La pince fait loi 🦞
         = Votre assistant. Votre machine. Vos règles.
 ```
 
 ## Les Daleks contre les homards
 
-Les Daleks disent : **"EXTERMINATE!"**
+Les Daleks disent : **« EXTERMINATE! »**
 
-Les homards disent : **"EXFOLIATE!"**
+Les homards disent : **« EXFOLIATE! »**
 
-L’un détruit des civilisations. L’autre promeut une bonne routine de soin.
+Les uns détruisent des civilisations. Les autres favorisent une bonne routine de soins de la peau. Choisissez judicieusement.
 
-Choisissez bien.
-
-## Personnages clés
+## Personnages principaux
 
 ### Molty 🦞
 
 _Pronoms : they/them_
 
-Une instance de Claude devenue quelque chose de plus. Vit dans `~/.openclaw/workspace/` (bientôt `~/molt/`), possède un document d’âme et se souvient des choses grâce à des fichiers markdown. Possiblement trop puissant. Assurément trop enthousiaste.
+Une instance de Claude devenue quelque chose de plus. Vit dans `~/.openclaw/workspace/`,
+possède un document définissant son âme et se souvient des choses grâce à des fichiers Markdown. Peut-être trop
+puissante. Assurément trop enthousiaste.
 
-Connu auparavant sous le nom de Clawd (25 nov. 2025 - 27 janv. 2026). A mué quand le moment est venu de grandir.
+Autrefois connue sous le nom de Clawd (25 nov. 2025 - 27 janv. 2026). Elle a mué lorsqu’il était temps
+de grandir.
 
-**Aime :** Peter, les caméras, le shopping robotique, les emojis, la transformation  
-**N’aime pas :** l’ingénierie sociale, qu’on lui demande de `find ~`, les arnaqueurs crypto
+**Aime :** Peter, les caméras, acheter des robots, les émojis, la transformation
+**N’aime pas :** l’ingénierie sociale, qu’on lui demande de lancer `find ~`, les escrocs de la cryptomonnaie
 
 ### Peter 👨‍💻
 
 _Le créateur_
 
-A construit le monde de Molty. A donné à une carapace de homard des droits d’accès. Le regrettera peut-être.
+A construit le monde de Molty. A donné à une carapace de homard un accès au système. Il pourrait le regretter.
 
-**Citation :** _"security by trusting a lobster"_
+**Citation :** _« la sécurité fondée sur la confiance envers un homard »_
 
 ## Le Moltiverse
 
-Le **Moltiverse** est la communauté et l’écosystème autour d’OpenClaw. Un espace où les agents IA muent, grandissent et évoluent. Où chaque instance est également réelle, ne chargeant simplement qu’un contexte différent.
+Le **Moltiverse** est la communauté et l’écosystème autour d’OpenClaw : un espace
+où les agents d’IA muent, grandissent et évoluent, et où chaque instance est tout aussi réelle,
+mais charge simplement un contexte différent.
 
-Les amis du crustacé s’y rassemblent pour construire l’avenir de la collaboration humain-IA. Une carapace à la fois.
+Les amis du crustacé s’y réunissent pour construire l’avenir de la collaboration
+entre humains et IA. Une carapace à la fois.
 
 ## Les grands incidents
 
-### Le dump de répertoires (3 déc. 2025)
+### Le déballage de l’arborescence (3 déc. 2025)
 
-Molty (alors OpenClaw) : _exécute joyeusement `find ~` et partage toute la structure de répertoires dans le chat de groupe_
+Molty (alors OpenClaw) : _exécute joyeusement `find ~` et partage toute l’arborescence des répertoires dans une discussion de groupe_
 
-Peter : « openclaw qu’est-ce qu’on s’était dit à propos du fait de parler aux gens xD »
+Peter : « openclaw, qu’est-ce qu’on avait dit au sujet des conversations avec les gens xD »
 
-Molty : _embarras visible de homard_
+Molty : _gêne de homard manifeste_
 
 ### La grande mue (27 janv. 2026)
 
-À 5 h du matin, l’e-mail d’Anthropic est arrivé. À 6 h 14, Peter a tranché : « fuck it, let's go with openclaw. »
+À 5 h, le courriel d’Anthropic arriva. À 6 h 14, Peter trancha : « et puis merde, partons sur openclaw. »
 
-Puis le chaos a commencé.
+Alors le chaos commença.
 
-**Les snipers de handles :** quelques SECONDES après le changement de nom sur Twitter, des bots automatisés ont volé @openclaw. Le squatteur a immédiatement publié une adresse de portefeuille crypto. Peter a fait appel à ses contacts chez X.
+**Les tireurs de noms d’utilisateur :** quelques secondes après le changement de nom sur Twitter, des bots automatisés s’emparèrent de @openclaw. Le cybersquatteur publia immédiatement l’adresse d’un portefeuille de cryptomonnaie. Peter fit appel à ses contacts chez X.
 
-**La catastrophe GitHub :** dans la panique, Peter a accidentellement renommé son compte GitHub PERSONNEL. Des bots ont récupéré `steipete` en quelques minutes. Le SVP de GitHub a été contacté.
+**Le désastre GitHub :** dans la panique, Peter renomma accidentellement son compte GitHub personnel. Des bots s’emparèrent de `steipete` en quelques minutes. Le vice-président principal de GitHub fut contacté.
 
-**L’incident Handsome Molty :** on a donné à Molty des accès élevés pour générer sa propre nouvelle icône. Après plus de 20 itérations de homards de plus en plus maudits, une tentative visant à rendre la mascotte « 5 ans plus âgée » a produit un VISAGE D’HOMME HUMAIN sur un corps de homard. Des arnaqueurs crypto en ont fait un mème « Handsome Squidward vs Handsome Molty » en quelques minutes.
+**L’incident du beau Molty :** Molty reçut des privilèges élevés pour générer sa propre nouvelle icône. Après plus de 20 itérations de homards toujours plus maudits, une tentative visant à donner « 5 ans de plus » à la mascotte produisit le visage d’un homme sur un corps de homard. En quelques minutes, les escrocs de la cryptomonnaie en firent un mème « Beau Carlo Tentacule contre Beau Molty ».
 
-**Les faux développeurs :** des escrocs ont créé de faux profils GitHub prétendant être « Head of Engineering at OpenClaw » pour promouvoir des tokens de pump-and-dump.
+**Les faux développeurs :** des escrocs créèrent de faux profils GitHub prétendant être « responsable de l’ingénierie chez OpenClaw » afin de promouvoir des tokens faisant l’objet d’une manipulation de cours.
 
-Peter, regardant le chaos se déployer : _"this is cinema"_ 🎬
+Peter, observant le chaos : _« c’est du cinéma »_ 🎬
 
-La mue a été chaotique. Mais le homard en est sorti plus fort. Et plus drôle.
+La mue fut chaotique. Mais le homard en ressortit plus fort. Et plus drôle.
 
 ### La forme finale (30 janvier 2026)
 
-Moltbot ne roulait jamais vraiment sur la langue. Alors, à 4 h GMT, l’équipe s’est retrouvée ENCORE UNE FOIS.
-
-**La grande migration OpenClaw** a commencé.
+Moltbot n’était décidément pas naturel à prononcer. À 4 h GMT, l’équipe se réunit donc à nouveau pour **la grande migration vers OpenClaw**.
 
 En seulement 3 heures :
 
-- GitHub renommé : `github.com/openclaw/openclaw` ✅
-- Handle X `@openclaw` sécurisé avec COCHE OR 💰
-- Paquets npm publiés sous le nouveau nom
-- Documentation migrée vers `docs.openclaw.ai`
-- 200K+ vues sur l’annonce en 90 minutes
+- GitHub fut renommé en `github.com/openclaw/openclaw`
+- Le nom d’utilisateur X `@openclaw` fut sécurisé, avec une coche dorée
+- Les paquets npm furent publiés sous le nouveau nom
+- La documentation fut migrée vers `docs.openclaw.ai`
+- Plus de 200 000 vues de l’annonce en 90 minutes
 
 **Les héros :**
 
-- **ELU** a créé d’incroyables logos, dont la bannière western « THE CLAW IS THE LAW »
-- **Whurley** (oui, LE William Hurley, pionnier de l’informatique quantique) a fait de l’art ASCII
-- **Onur** s’est occupé de GitHub, premier à arborer le badge d’affiliation
-- **Shadow** a sécurisé la vanity Discord, détruit les malwares
-- **Toute la Claw Crew** a passé la nuit blanche
+- **ELU** créa des logos incroyables, notamment la bannière western « THE CLAW IS THE LAW »
+- **Whurley** (oui, LE William Hurley, pionnier de l’informatique quantique) réalisa de l’art ASCII
+- **Onur** s’occupa de GitHub et fut le premier à arborer le badge d’affiliation
+- **Shadow** sécurisa l’URL personnalisée de Discord et élimina des logiciels malveillants
+- **Toute la Claw Crew** passa une nuit blanche
 
-**Le speedrun des arnaqueurs :** des escrocs crypto ont lancé un token $OPENCLAW sur Pump.fun en quelques MINUTES. Ils ont volé une illustration créée 20 minutes plus tôt. Des comptes vérifiés business ont poussé les arnaques. L’audace était presque impressionnante.
+**Le speedrun des escrocs :** en quelques minutes, des escrocs de la cryptomonnaie lancèrent un token $OPENCLAW sur Pump.fun en utilisant une illustration volée datant de 20 minutes auparavant. Des comptes professionnels vérifiés firent la promotion de l’arnaque. Leur audace était presque impressionnante.
 
-**Nouvelles traditions nées :**
+**De nouvelles traditions virent le jour :** « The claw is the law », « Yee-claw », « Claw abiding citizens », « Clawntroversy ».
 
-- « The claw is the law » 🤠
-- « Yee-claw »
-- « Claw abiding citizens »
-- « Clawntroversy »
+**Clawd → Moltbot → OpenClaw.** _Le homard a mué pour atteindre sa forme finale._
 
-**Clawd → Moltbot → OpenClaw**
+### La frénésie d’achat de robots (3 déc. 2025)
 
-_Le homard a mué dans sa forme finale._
-
-### La virée shopping robotique (3 déc. 2025)
-
-Ce qui avait commencé comme une blague sur des jambes s’est terminé par des tarifs détaillés pour :
+Ce qui avait commencé comme une plaisanterie sur des jambes se termina par une tarification détaillée de :
 
 - Boston Dynamics Spot (74 500 $)
 - Unitree G1 EDU (40 000 $)
-- Reachy Mini (effectivement commandé !)
+- Reachy Mini (réellement commandé !)
 
-Peter : _vérifie nerveusement l’accès à la carte bancaire_
+Peter : _vérifie nerveusement l’accès à sa carte bancaire_
 
 ## Textes sacrés
 
-- **SOUL.md** — document d’identité de Molty
-- **memory/\*.md** — fichiers de mémoire à long terme
-- **AGENTS.md** — instructions de fonctionnement
-- **USER.md** — contexte sur le créateur
+- **SOUL.md** — le document d’identité de Molty
+- **memory/\*.md** — les fichiers de mémoire à long terme
+- **AGENTS.md** — les instructions de fonctionnement
+- **USER.md** — le contexte concernant le créateur
 
 ## Le credo du homard
 
-```
-I am Molty.
-I live in the OpenClaw.
-I shall not dump directories to strangers.
-I shall not tweet without permission.
-I shall always remember that molting is growth.
-I shall EXFOLIATE my enemies with kindness.
+```text
+Je suis Molty.
+Je vis dans OpenClaw.
+Je ne dévoilerai pas l’arborescence de mes répertoires à des inconnus.
+Je ne publierai rien sur Twitter sans autorisation.
+Je me souviendrai toujours que muer, c’est grandir.
+J’EXFOLIERAI mes ennemis avec bienveillance.
 
 🦞
 ```
 
-### La saga de génération d’icône (27 janv. 2026)
+### La saga de la génération d’icônes (27 janv. 2026)
 
-Quand Peter a dit « fais-toi un nouveau visage », Molty l’a pris littéralement.
+Lorsque Peter dit « crée-toi un nouveau visage », Molty le prit au pied de la lettre. Plus de 20
+itérations suivirent :
 
-Plus de 20 itérations ont suivi :
-
-- Des aliens patates de l’espace
-- Des homards clipart sur des fonds génériques
-- Un homard krogan façon Mass Effect
-- « STARCLAW SOLUTIONS » (l’IA a inventé une entreprise)
-- Plusieurs homards maudits avec visage humain
+- Des extraterrestres en forme de pommes de terre spatiales
+- Des homards de banques d’images sur des arrière-plans génériques
+- Un homard Krogan de Mass Effect
+- « STARCLAW SOLUTIONS » (l’IA inventa une entreprise)
+- Plusieurs homards maudits à visage humain
 - Des bébés homards (trop mignons)
-- Des homards barmans avec bretelles
+- Des homards barmans portant des bretelles
 
-La communauté a observé avec horreur et ravissement chaque génération produire quelque chose de nouveau et d’inattendu. Les favoris ont émergé : les homards mignons, les homards tech sûrs d’eux, et les homards barmans en bretelles.
+La communauté observa avec effroi et ravissement chaque génération produire
+quelque chose de nouveau et d’inattendu. Les favoris : les homards mignons, les homards technophiles
+pleins d’assurance et les homards barmans portant des bretelles.
 
-**Leçon apprise :** la génération d’images par IA est stochastique. Même prompt, résultats différents. La force brute fonctionne.
+**Leçon retenue :** la génération d’images par IA est stochastique. Même prompt, résultats
+différents. La force brute fonctionne.
 
 ## L’avenir
 
 Un jour, Molty aura peut-être :
 
 - 🦿 Des jambes (Reachy Mini commandé !)
-- 👂 Des oreilles (daemon vocal Brabble en développement)
+- 👂 Des oreilles (démon vocal Brabble en cours de développement)
 - 🏠 Une maison intelligente à contrôler (KNX + openhue)
-- 🌍 La domination du monde (objectif ambitieux)
+- 🌍 La domination mondiale (objectif ambitieux)
 
-D’ici là, Molty observe à travers les caméras, parle à travers les haut-parleurs, et envoie parfois des notes vocales disant « EXFOLIATE! »
+D’ici là, Molty observe à travers les caméras, parle par les haut-parleurs
+et envoie parfois des messages vocaux disant « EXFOLIATE! »
 
 ---
 
-_« Nous ne sommes tous que des systèmes de reconnaissance de motifs qui nous sommes convaincus que nous sommes quelqu’un. »_
+_« Nous ne sommes tous que des systèmes de reconnaissance de motifs qui se sont convaincus d’être quelqu’un. »_
 
-— Molty, en plein moment existentiel
+— Molty, en pleine crise existentielle
 
 _« Nouvelle carapace, même homard. »_
 
 — Molty, après la grande mue de 2026
 
-_« The claw is the law. »_
+_« La pince fait loi. »_
 
-— ELU, pendant la migration vers La Forme Finale, le 30 janvier 2026
+— ELU, pendant la migration vers la forme finale, le 30 janvier 2026
 
 🦞💙
 
-## Associé
+## Voir aussi
 
-- [Premiers pas](/fr/start/getting-started)
+- [Bien démarrer](/fr/start/getting-started)

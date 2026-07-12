@@ -5,31 +5,32 @@ read_when:
 summary: Adaptateurs RPC pour les CLI externes (signal-cli, imsg) et modèles de Gateway
 title: Adaptateurs RPC
 x-i18n:
-    generated_at: "2026-05-11T20:54:22Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:51:04Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: 63556f140bee55821fa0a09ff9808e163728049f8db4c58f7bb4ceca6e1cac1a
+    source_hash: 6ddb3fb741c90fe7b01ba35376b71865584b1e507cf610705392452790fb76f5
     source_path: reference/rpc.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-OpenClaw intègre des CLI externes via JSON-RPC. Deux modèles sont utilisés aujourd’hui.
+OpenClaw intègre des CLI externes via JSON-RPC. Deux modèles sont actuellement utilisés.
 
 ## Modèle A : démon HTTP (signal-cli)
 
-- `signal-cli` s’exécute comme un démon avec JSON-RPC sur HTTP.
-- Le flux d’événements est SSE (`/api/v1/events`).
-- Sonde d’état : `/api/v1/check`.
+- `signal-cli` s’exécute en tant que démon avec JSON-RPC sur HTTP.
+- Le flux d’événements utilise SSE (`/api/v1/events`).
+- Sonde d’intégrité : `/api/v1/check`.
 - OpenClaw gère le cycle de vie lorsque `channels.signal.autoStart=true`.
 
 Consultez [Signal](/fr/channels/signal) pour la configuration et les points de terminaison.
 
 ## Modèle B : processus enfant stdio (imsg)
 
-- OpenClaw lance `imsg rpc` comme processus enfant pour [iMessage](/fr/channels/imessage).
-- JSON-RPC est délimité par lignes sur stdin/stdout (un objet JSON par ligne).
-- Aucun port TCP, aucun démon requis.
+- OpenClaw lance `imsg rpc` en tant que processus enfant pour [iMessage](/fr/channels/imessage).
+- Les messages JSON-RPC sont délimités par des lignes sur stdin/stdout (un objet JSON par ligne).
+- Aucun port TCP ni démon requis.
 
 Méthodes principales utilisées :
 
@@ -38,14 +39,14 @@ Méthodes principales utilisées :
 - `send`
 - `chats.list` (sonde/diagnostics)
 
-Consultez [iMessage](/fr/channels/imessage) pour la configuration héritée et l’adressage (`chat_id` recommandé).
+Consultez [iMessage](/fr/channels/imessage) pour la configuration et l’adressage (`chat_id` est préférable aux chaînes d’affichage).
 
-## Consignes pour l’adaptateur
+## Consignes pour les adaptateurs
 
-- Gateway est responsable du processus (démarrage/arrêt liés au cycle de vie du fournisseur).
-- Gardez les clients RPC résilients : délais d’expiration, redémarrage en cas de sortie.
+- Le Gateway gère le processus (démarrage/arrêt liés au cycle de vie du fournisseur).
+- Veillez à la résilience des clients RPC : délais d’expiration, redémarrage en cas d’arrêt.
 - Préférez les identifiants stables (par exemple, `chat_id`) aux chaînes d’affichage.
 
-## Associé
+## Rubriques connexes
 
-- [Protocole Gateway](/fr/gateway/protocol)
+- [Protocole du Gateway](/fr/gateway/protocol)

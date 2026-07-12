@@ -1,70 +1,94 @@
 ---
 read_when:
-    - 올바른 `openclaw` 하위 명령 찾기
-    - 전역 플래그 또는 출력 스타일링 규칙 조회
-summary: 'OpenClaw CLI 색인: 명령 목록, 전역 플래그, 명령별 페이지 링크'
-title: CLI 참조
+    - 적합한 `openclaw` 하위 명령 찾기
+    - 전역 플래그 또는 출력 스타일 규칙 조회하기
+summary: 'OpenClaw CLI 색인: 명령어 목록, 전역 플래그 및 명령어별 페이지 링크'
+title: CLI 참조 자료
 x-i18n:
-    generated_at: "2026-07-02T00:48:15Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:05:00Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: 627ccd257834e9bc8cacf2f2ac4600530ff4aa1132d2c34fcb0922b29a1facce
+    source_hash: 91dce0026e177c0f0664f7a3dbe286630dcaec68b1abf2d4640e090f965515f3
     source_path: cli/index.md
     workflow: 16
 ---
 
-`openclaw`는 기본 CLI 진입점입니다. 각 핵심 명령에는 전용 참조 페이지가 있거나 별칭으로 연결되는 명령과 함께 문서화되어 있습니다. 이 색인은 CLI 전반에 적용되는 명령, 전역 플래그, 출력 스타일 규칙을 나열합니다.
+`openclaw`은 기본 CLI 진입점입니다. 각 핵심 명령에는 전용
+참조 페이지가 있거나 별칭 대상 명령과 함께 문서화되어 있습니다. 이 색인에는
+CLI 전반에 적용되는 명령, 전역 플래그 및 출력 스타일 규칙이 나열되어 있습니다.
 
-의도에 맞게 설정 명령을 사용하세요.
+목적별 설정 명령:
 
-- `openclaw setup` 및 `openclaw onboard`는 Gateway, 모델 인증, 작업 영역, 채널, Skills, 상태 점검을 위한 전체 안내식 최초 실행 경로를 실행합니다.
-- `openclaw setup --baseline`은 안내식 온보딩 흐름을 거치지 않고 기준 구성과 작업 영역을 생성합니다.
-- `openclaw configure`는 모델 인증, Gateway, 채널, Plugin 또는 Skills 같은 기존 설정의 특정 부분을 변경합니다.
-- 기준 구성이 존재한 뒤 `openclaw channels add`로 채널 계정을 구성합니다. 안내식 채널 설정에는 플래그 없이 실행하고, 스크립트에는 채널별 플래그를 함께 사용하세요.
+- `openclaw setup` 및 `openclaw onboard`는 먼저 추론을 검증한 다음, Gateway, 워크스페이스, 채널, Skills 및 상태 설정을 위해 Crestodian을 시작합니다.
+- `openclaw setup --baseline`은 안내형 온보딩 흐름을 거치지 않고 기준 구성과 워크스페이스를 생성합니다.
+- `openclaw configure`는 기존 설정에서 모델 인증, Gateway, 채널, Plugin 또는 Skills 등 특정 부분을 변경합니다.
+- `openclaw channels add`는 기준 구성이 존재한 후 채널 계정을 구성합니다. 안내형 설정에는 플래그 없이 실행하고, 스크립트에서는 채널별 플래그와 함께 실행하십시오.
 
 ## 명령 페이지
 
-| 영역                 | 명령                                                                                                                                                                                                                                  |
-| -------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 설정 및 온보딩 | [`crestodian`](/ko/cli/crestodian) · [`setup`](/ko/cli/setup) · [`onboard`](/ko/cli/onboard) · [`configure`](/ko/cli/configure) · [`config`](/ko/cli/config) · [`completion`](/ko/cli/completion) · [`doctor`](/ko/cli/doctor) · [`dashboard`](/ko/cli/dashboard) |
-| 재설정 및 제거  | [`backup`](/ko/cli/backup) · [`reset`](/ko/cli/reset) · [`uninstall`](/ko/cli/uninstall) · [`update`](/ko/cli/update)                                                                                                                                 |
-| 메시징 및 에이전트 | [`message`](/ko/cli/message) · [`agent`](/ko/cli/agent) · [`agents`](/ko/cli/agents) · [`attach`](/cli/attach) · [`acp`](/ko/cli/acp) · [`mcp`](/ko/cli/mcp)                                                                                             |
-| 상태 및 세션  | [`status`](/ko/cli/status) · [`health`](/ko/cli/health) · [`sessions`](/ko/cli/sessions)                                                                                                                                                           |
-| Gateway 및 로그     | [`gateway`](/ko/cli/gateway) · [`logs`](/ko/cli/logs) · [`system`](/ko/cli/system)                                                                                                                                                                 |
-| 모델 및 추론 | [`models`](/ko/cli/models) · [`infer`](/ko/cli/infer) · `capability` ([`infer`](/ko/cli/infer)의 별칭) · [`memory`](/ko/cli/memory) · [`commitments`](/ko/cli/commitments) · [`wiki`](/ko/cli/wiki)                                                      |
-| 네트워크 및 노드    | [`directory`](/ko/cli/directory) · [`nodes`](/ko/cli/nodes) · [`devices`](/ko/cli/devices) · [`node`](/ko/cli/node)                                                                                                                                   |
-| 런타임 및 샌드박스  | [`approvals`](/ko/cli/approvals) · `exec-policy` ([`approvals`](/ko/cli/approvals) 참조) · [`sandbox`](/ko/cli/sandbox) · [`tui`](/ko/cli/tui) · `chat`/`terminal` ([`tui --local`](/ko/cli/tui)의 별칭) · [`browser`](/ko/cli/browser)                 |
-| 자동화           | [`cron`](/ko/cli/cron) · [`tasks`](/ko/cli/tasks) · [`hooks`](/ko/cli/hooks) · [`webhooks`](/ko/cli/webhooks) · [`transcripts`](/ko/cli/transcripts)                                                                                                     |
-| 검색 및 문서   | [`dns`](/ko/cli/dns) · [`docs`](/ko/cli/docs)                                                                                                                                                                                                   |
-| 페어링 및 채널 | [`pairing`](/ko/cli/pairing) · [`qr`](/ko/cli/qr) · [`channels`](/ko/cli/channels)                                                                                                                                                                 |
-| 보안 및 Plugin | [`security`](/ko/cli/security) · [`secrets`](/ko/cli/secrets) · [`skills`](/ko/cli/skills) · [`plugins`](/ko/cli/plugins) · [`proxy`](/ko/cli/proxy)                                                                                                     |
-| 레거시 별칭       | [`daemon`](/ko/cli/daemon) (Gateway 서비스) · [`clawbot`](/ko/cli/clawbot) (네임스페이스)                                                                                                                                                         |
-| Plugin(선택 사항)   | [`path`](/ko/cli/path) · [`policy`](/ko/cli/policy) · [`voicecall`](/ko/cli/voicecall) · [`workboard`](/ko/cli/workboard) (설치된 경우)                                                                                                              |
+| 영역                         | 명령                                                                                                                                                                                                                                  |
+| ---------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 설정 및 온보딩         | [`crestodian`](/ko/cli/crestodian) · [`setup`](/ko/cli/setup) · [`onboard`](/ko/cli/onboard) · [`configure`](/ko/cli/configure) · [`config`](/ko/cli/config) · [`completion`](/ko/cli/completion) · [`doctor`](/ko/cli/doctor) · [`dashboard`](/ko/cli/dashboard) |
+| 재설정, 백업 및 마이그레이션 | [`backup`](/ko/cli/backup) · [`migrate`](/ko/cli/migrate) · [`reset`](/ko/cli/reset) · [`uninstall`](/ko/cli/uninstall) · [`update`](/ko/cli/update)                                                                                                     |
+| 메시징 및 에이전트         | [`message`](/ko/cli/message) · [`agent`](/ko/cli/agent) · [`agents`](/ko/cli/agents) · [`attach`](/ko/cli/attach) · [`acp`](/ko/cli/acp) · [`mcp`](/ko/cli/mcp)                                                                                             |
+| 상태 및 세션          | [`status`](/ko/cli/status) · [`health`](/ko/cli/health) · [`sessions`](/ko/cli/sessions) · [`audit`](/cli/audit)                                                                                                                                   |
+| Gateway 및 로그             | [`gateway`](/ko/cli/gateway) · [`logs`](/ko/cli/logs) · [`system`](/ko/cli/system)                                                                                                                                                                 |
+| 모델 및 추론         | [`models`](/ko/cli/models) · [`promos`](/ko/cli/promos) · [`infer`](/ko/cli/infer) · `capability`([`infer`](/ko/cli/infer)의 별칭) · [`memory`](/ko/cli/memory) · [`commitments`](/ko/cli/commitments) · [`wiki`](/ko/cli/wiki)                            |
+| 네트워크 및 Node            | [`directory`](/ko/cli/directory) · [`nodes`](/ko/cli/nodes) · [`devices`](/ko/cli/devices) · [`node`](/ko/cli/node)                                                                                                                                   |
+| 런타임 및 샌드박스          | [`approvals`](/ko/cli/approvals) · `exec-policy`([`approvals`](/ko/cli/approvals) 참조) · [`sandbox`](/ko/cli/sandbox) · [`tui`](/ko/cli/tui) · `chat`/`terminal`([`tui --local`](/ko/cli/tui)의 별칭) · [`browser`](/ko/cli/browser)                 |
+| 자동화                   | [`cron`](/ko/cli/cron) · [`tasks`](/ko/cli/tasks) · [`hooks`](/ko/cli/hooks) · [`webhooks`](/ko/cli/webhooks) · [`transcripts`](/ko/cli/transcripts)                                                                                                     |
+| 검색 및 문서           | [`dns`](/ko/cli/dns) · [`docs`](/ko/cli/docs)                                                                                                                                                                                                   |
+| 페어링 및 채널         | [`pairing`](/ko/cli/pairing) · [`qr`](/ko/cli/qr) · [`channels`](/ko/cli/channels)                                                                                                                                                                 |
+| 보안 및 Plugin         | [`security`](/ko/cli/security) · [`secrets`](/ko/cli/secrets) · [`skills`](/ko/cli/skills) · [`plugins`](/ko/cli/plugins) · [`proxy`](/ko/cli/proxy)                                                                                                     |
+| 레거시 별칭               | [`daemon`](/ko/cli/daemon)(Gateway 서비스) · [`clawbot`](/ko/cli/clawbot)(네임스페이스)                                                                                                                                                         |
+| Plugin(선택 사항)           | [`path`](/ko/cli/path) · [`policy`](/ko/cli/policy) · [`voicecall`](/ko/cli/voicecall) · [`workboard`](/ko/cli/workboard)(설치된 경우)                                                                                                              |
 
 ## 전역 플래그
 
-| 플래그                    | 목적                                                               |
-| ----------------------- | --------------------------------------------------------------------- |
-| `--dev`                 | 상태를 `~/.openclaw-dev` 아래로 격리하고 기본 포트를 이동합니다         |
-| `--profile <name>`      | 상태를 `~/.openclaw-<name>` 아래로 격리합니다                              |
-| `--container <name>`    | 실행 대상이 될 이름 있는 컨테이너를 지정합니다                                |
-| `--no-color`            | ANSI 색상을 비활성화합니다(`NO_COLOR=1`도 적용됨)                  |
-| `--update`              | [`openclaw update`](/ko/cli/update)의 단축형입니다(소스 설치에만 해당) |
-| `-V`, `--version`, `-v` | 버전을 출력하고 종료합니다                                                |
+| 플래그                    | 용도                                                                                                 |
+| ----------------------- | ------------------------------------------------------------------------------------------------------- |
+| `--dev`                 | 상태를 `~/.openclaw-dev` 아래에 격리하고, 기본 Gateway 포트를 19001로 설정하며, 파생 포트를 이동합니다              |
+| `--profile <name>`      | 상태를 `~/.openclaw-<name>` 아래에 격리합니다(`OPENCLAW_STATE_DIR`/`OPENCLAW_CONFIG_PATH`)                  |
+| `--container <name>`    | `<name>`이라는 실행 중인 Podman/Docker 컨테이너 내부에서 CLI를 실행합니다(기본값: 환경 변수 `OPENCLAW_CONTAINER`) |
+| `--log-level <level>`   | 파일 및 콘솔 출력의 전역 로그 수준을 재정의합니다                                                 |
+| `--no-color`            | ANSI 색상을 비활성화합니다(`NO_COLOR=1`도 적용됨)                                                    |
+| `--update`              | [`openclaw update`](/ko/cli/update)의 축약형입니다. 소스 체크아웃과 패키지 설치 모두에서 작동합니다    |
+| `-V`, `--version`, `-v` | 버전을 출력하고 종료합니다                                                                                  |
 
 ## 출력 모드
 
-- ANSI 색상과 진행 표시기는 TTY 세션에서만 렌더링됩니다.
-- OSC-8 하이퍼링크는 지원되는 곳에서 클릭 가능한 링크로 렌더링됩니다. 그렇지 않으면 CLI는 일반 URL로 대체합니다.
-- `--json`(및 지원되는 경우 `--plain`)은 깔끔한 출력을 위해 스타일링을 비활성화합니다.
-- 오래 실행되는 명령은 진행 표시기를 표시합니다(지원되는 경우 OSC 9;4).
+- ANSI 색상 및 진행률 표시기는 TTY 세션에서만 렌더링됩니다.
+- OSC-8 하이퍼링크는 지원되는 환경에서 클릭 가능한 링크로 렌더링되며, 그렇지 않으면
+  CLI가 일반 URL로 대체합니다.
+- `--json`(및 지원되는 경우 `--plain`)은 깔끔한 출력을 위해 스타일을 비활성화합니다.
+- 장시간 실행되는 명령은 진행률 표시기를 표시합니다(지원되는 경우 OSC 9;4).
 
-팔레트의 기준 소스: `src/terminal/palette.ts`.
+## 색상 팔레트
+
+OpenClaw은 CLI 출력에 랍스터 팔레트를 사용합니다.
+
+| 토큰          | 16진수       | 사용 용도                             |
+| -------------- | --------- | ------------------------------------ |
+| `accent`       | `#FF5A2D` | 제목, 레이블, 주요 강조 |
+| `accentBright` | `#FF7A3D` | 명령 이름, 강조              |
+| `accentDim`    | `#D14A22` | 보조 강조 텍스트             |
+| `info`         | `#FF8A5B` | 정보 값                 |
+| `success`      | `#2FBF71` | 성공 상태                       |
+| `warn`         | `#FFB020` | 경고, 옵션 플래그, 대체 동작    |
+| `error`        | `#E23D2D` | 오류, 실패                     |
+| `muted`        | `#8B7F77` | 약한 강조, 메타데이터                |
+
+팔레트의 기준 소스: `packages/terminal-core/src/palette.ts`.
 
 ## 명령 트리
 
 <Accordion title="전체 명령 트리">
+
+이 맵은 핵심 명령과 주요 하위 명령을 다룹니다. Plugin이 추가한
+하위 명령(예: `skills`, `plugins`, `wiki` 아래)은
+독립적으로 변경됩니다. 신뢰할 수 있는 최신 목록을 확인하려면 `<command> --help`를 실행하십시오.
 
 ```
 openclaw [--dev] [--profile <name>] <command>
@@ -85,6 +109,10 @@ openclaw [--dev] [--profile <name>] <command>
   backup
     create
     verify
+  migrate
+    list
+    plan <provider>
+    apply <provider>
   security
     audit
   secrets
@@ -97,6 +125,7 @@ openclaw [--dev] [--profile <name>] <command>
   update
     wizard
     status
+    repair
   channels
     list
     status
@@ -115,11 +144,14 @@ openclaw [--dev] [--profile <name>] <command>
     search
     install
     update
+    verify
+    workshop list|inspect|propose-create|propose-update|revise|apply|reject|quarantine
     list
     info
     check
   plugins
     list
+    search
     inspect
     install
     uninstall
@@ -127,7 +159,11 @@ openclaw [--dev] [--profile <name>] <command>
     enable
     disable
     doctor
-    marketplace list
+    build
+    validate
+    init
+    registry
+    marketplace list|entries|refresh
   workboard
     list
     create
@@ -154,14 +190,16 @@ openclaw [--dev] [--profile <name>] <command>
     status
     doctor
     init
-    ingest
     compile
     lint
+    ingest
+    okf import
     search
     get
-    apply
+    apply synthesis|metadata
     bridge import
     unsafe-local import
+    chatgpt import|rollback
     obsidian status|search|open|command|daily
   message
     send
@@ -209,6 +247,7 @@ openclaw [--dev] [--profile <name>] <command>
   health
   sessions
     cleanup
+  audit
   tasks
     list
     audit
@@ -221,6 +260,8 @@ openclaw [--dev] [--profile <name>] <command>
     call
     usage-cost
     health
+    stability
+    diagnostics export
     status
     probe
     discover
@@ -251,18 +292,21 @@ openclaw [--dev] [--profile <name>] <command>
     fallbacks list|add|remove|clear
     image-fallbacks list|add|remove|clear
     scan
+    auth list|add|login|setup-token|paste-token|paste-api-key|login-github-copilot
+    auth order get|set|clear
+  promos
+    list
+    claim <slug>
   infer (alias: capability)
     list
     inspect
     model run|list|inspect|providers|auth login|logout|status
     image generate|edit|describe|describe-many|providers
     audio transcribe|providers
-    tts convert|voices|providers|status|enable|disable|set-provider
+    tts convert|voices|personas|providers|status|enable|disable|set-provider|set-persona
     video generate|describe|providers
     web search|fetch|providers
     embedding create|providers
-    auth add|login|login-github-copilot|setup-token|paste-token
-    auth order get|set|clear
   sandbox
     list
     recreate
@@ -378,26 +422,31 @@ openclaw [--dev] [--profile <name>] <command>
   terminal (alias: tui --local)
 ```
 
-Plugin은 [`openclaw workboard`](/ko/cli/workboard) 또는 `openclaw voicecall` 같은 추가 최상위 명령을 더할 수 있습니다.
+Plugin은 [`openclaw workboard`](/ko/cli/workboard) 또는 `openclaw voicecall`과 같은
+추가 최상위 명령을 추가할 수 있습니다.
 
 </Accordion>
 
 ## 채팅 슬래시 명령
 
-채팅 메시지는 `/...` 명령을 지원합니다. [슬래시 명령](/ko/tools/slash-commands)을 참조하세요.
+채팅 메시지는 `/...` 명령을 지원합니다. [슬래시 명령](/ko/tools/slash-commands)을 참조하십시오.
 
-주요 항목:
+주요 명령:
 
-- `/status` — 빠른 진단.
-- `/trace` — 세션 범위 Plugin 추적/디버그 라인.
-- `/config` — 영구 구성 변경.
-- `/debug` — 런타임 전용 구성 재정의(메모리, 디스크 아님, `commands.debug: true` 필요).
+- `/status` - 빠른 진단을 수행합니다.
+- `/trace` - 세션 범위의 Plugin 추적/디버그 행을 표시합니다.
+- `/config` - 영구 저장되는 구성 변경을 수행합니다.
+- `/debug` - 런타임에만 적용되는 구성 재정의를 수행합니다(메모리에만 저장되며 디스크에는 저장되지 않음, `commands.debug: true` 필요).
 
 ## 사용량 추적
 
-OAuth/API 자격 증명을 사용할 수 있으면 `openclaw status --usage`와 Control UI가 제공자 사용량/할당량을 표시합니다. 데이터는 제공자 사용량 엔드포인트에서 직접 가져오며 `X% left`로 정규화됩니다. 현재 사용량 창이 있는 제공자: Anthropic, GitHub Copilot, Gemini CLI, OpenAI Codex, MiniMax, Xiaomi, z.ai.
+OAuth/API 자격 증명을 사용할 수 있으면 `openclaw status --usage`와 제어 UI에
+제공자 사용량/할당량이 표시됩니다. 데이터는 제공자의 사용량 엔드포인트에서
+직접 가져오며 `X% left` 형식으로 정규화됩니다. 현재 사용량 기간을 지원하는
+제공자는 Anthropic, Gemini CLI, GitHub Copilot, MiniMax, OpenAI Codex,
+Xiaomi 및 z.ai입니다.
 
-자세한 내용은 [사용량 추적](/ko/concepts/usage-tracking)을 참조하세요.
+자세한 내용은 [사용량 추적](/ko/concepts/usage-tracking)을 참조하십시오.
 
 ## 관련 항목
 

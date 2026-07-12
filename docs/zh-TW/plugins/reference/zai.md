@@ -1,14 +1,15 @@
 ---
 read_when:
     - 你正在安裝、設定或稽核 zai 外掛
-summary: 新增 Z.AI 模型提供者支援至 OpenClaw。
+summary: 為 OpenClaw 新增 Z.AI 模型供應商支援。
 title: Z.AI 外掛
 x-i18n:
-    generated_at: "2026-06-27T19:47:19Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:42:09Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: f02339093c874b13e97cfbeaca4a5343159079a008618faac435ac80f2f935c4
+    source_hash: 47eed5f843c7659c7b4aefb06ef919b5420998609ae8d46ac5ebcd5871b0f673
     source_path: plugins/reference/zai.md
     workflow: 16
 ---
@@ -17,14 +18,14 @@ x-i18n:
 
 為 OpenClaw 新增 Z.AI 模型提供者支援。
 
-## 發佈
+## 發布方式
 
 - 套件：`@openclaw/zai-provider`
-- 安裝路徑：npm；ClawHub：`clawhub:@openclaw/zai-provider`
+- 安裝途徑：npm；ClawHub：`clawhub:@openclaw/zai-provider`
 
 ## 介面
 
-providers: zai；contracts: mediaUnderstandingProviders
+提供者：zai；合約：mediaUnderstandingProviders、usageProviders
 
 ## 相關文件
 

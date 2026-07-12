@@ -2,41 +2,42 @@
 read_when:
     - Vous souhaitez utiliser la génération de vidéos Alibaba Wan dans OpenClaw
     - Vous devez configurer une clé API Model Studio ou DashScope pour la génération de vidéos
-summary: Génération de vidéos Alibaba Model Studio Wan dans OpenClaw
+summary: Génération de vidéos avec Alibaba Model Studio Wan dans OpenClaw
 title: Alibaba Model Studio
 x-i18n:
-    generated_at: "2026-05-06T07:34:55Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:50:14Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: c390da201e2c8685fafa6171a6028bf18fc676b2d46f784651f91cdc6137fdf2
+    source_hash: cb74e2361500ccfbc5d3c4f2d08c3b62aacba8c79c704570952e2181abacf9fb
     source_path: providers/alibaba.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-OpenClaw inclut un plugin `alibaba` intégré qui enregistre un fournisseur de génération vidéo pour les modèles Wan sur Alibaba Model Studio (le nom international de DashScope). Le plugin est activé par défaut ; vous devez seulement définir une clé API.
+Le plugin `alibaba` intégré enregistre un fournisseur de génération vidéo pour les modèles Wan sur Alibaba Model Studio (le nom international de DashScope). Il est activé par défaut ; seule une clé API est nécessaire.
 
-| Propriété        | Valeur                                                                          |
-| ---------------- | ------------------------------------------------------------------------------- |
-| ID du fournisseur | `alibaba`                                                                       |
-| Plugin           | intégré, `enabledByDefault: true`                                               |
-| Variables d’environnement d’auth | `MODELSTUDIO_API_KEY` → `DASHSCOPE_API_KEY` → `QWEN_API_KEY` (la première correspondance l’emporte) |
-| Indicateur d’onboarding | `--auth-choice alibaba-model-studio-api-key`                                    |
-| Indicateur CLI direct | `--alibaba-model-studio-api-key <key>`                                          |
-| Modèle par défaut | `alibaba/wan2.6-t2v`                                                            |
-| URL de base par défaut | `https://dashscope-intl.aliyuncs.com`                                           |
+| Propriété                  | Valeur                                                                          |
+| -------------------------- | ------------------------------------------------------------------------------- |
+| Identifiant du fournisseur | `alibaba`                                                                       |
+| Plugin                     | intégré, `enabledByDefault: true`                                                |
+| Variables d’environnement d’authentification | `MODELSTUDIO_API_KEY` → `DASHSCOPE_API_KEY` → `QWEN_API_KEY` (la première correspondance l’emporte) |
+| Option d’intégration       | `--auth-choice alibaba-model-studio-api-key`                                    |
+| Option CLI directe         | `--alibaba-model-studio-api-key <key>`                                          |
+| Modèle par défaut          | `alibaba/wan2.6-t2v`                                                            |
+| URL de base par défaut     | `https://dashscope-intl.aliyuncs.com`                                           |
 
-## Premiers pas
+## Bien démarrer
 
 <Steps>
   <Step title="Définir une clé API">
-    Utilisez l’onboarding pour stocker la clé pour le fournisseur `alibaba` :
+    Enregistrez la clé pour le fournisseur `alibaba` lors de l’intégration :
 
     ```bash
     openclaw onboard --auth-choice alibaba-model-studio-api-key
     ```
 
-    Ou transmettez la clé directement pendant l’installation/onboarding :
+    Vous pouvez également transmettre directement la clé :
 
     ```bash
     openclaw onboard --alibaba-model-studio-api-key <your-key>
@@ -46,8 +47,8 @@ OpenClaw inclut un plugin `alibaba` intégré qui enregistre un fournisseur de g
 
     ```bash
     export MODELSTUDIO_API_KEY=sk-...
-    # or DASHSCOPE_API_KEY=...
-    # or QWEN_API_KEY=...
+    # ou DASHSCOPE_API_KEY=...
+    # ou QWEN_API_KEY=...
     ```
 
   </Step>
@@ -69,46 +70,46 @@ OpenClaw inclut un plugin `alibaba` intégré qui enregistre un fournisseur de g
     openclaw models list --provider alibaba
     ```
 
-    La liste doit inclure les cinq modèles Wan intégrés. Si `MODELSTUDIO_API_KEY` n’est pas résolue, `openclaw models status --json` signale l’identifiant manquant sous `auth.unusableProfiles`.
+    La liste comprend les cinq modèles Wan intégrés. Si `MODELSTUDIO_API_KEY` ne peut pas être résolue, `openclaw models status --json` signale l’identifiant d’authentification manquant sous `auth.unusableProfiles`.
 
   </Step>
 </Steps>
 
 <Note>
-  Le plugin Alibaba et le [plugin Qwen](/fr/providers/qwen) s’authentifient tous deux auprès de DashScope et acceptent des variables d’environnement qui se chevauchent. Utilisez les ID de modèle `alibaba/...` pour piloter la surface vidéo Wan dédiée ; utilisez les ID `qwen/...` lorsque vous voulez la surface de discussion, d’embedding ou de compréhension multimédia de Qwen.
+  Le plugin Alibaba et le [plugin Qwen](/fr/providers/qwen) s’authentifient tous deux auprès de DashScope et acceptent des variables d’environnement qui se chevauchent. Utilisez les identifiants de modèle `alibaba/...` pour l’interface vidéo Wan dédiée ; utilisez les identifiants `qwen/...` pour la conversation, les plongements ou la compréhension multimédia de Qwen.
 </Note>
 
 ## Modèles Wan intégrés
 
-| Référence du modèle        | Mode                      |
-| -------------------------- | ------------------------- |
-| `alibaba/wan2.6-t2v`       | Texte vers vidéo (par défaut) |
-| `alibaba/wan2.6-i2v`       | Image vers vidéo          |
-| `alibaba/wan2.6-r2v`       | Référence vers vidéo      |
-| `alibaba/wan2.6-r2v-flash` | Référence vers vidéo (rapide) |
-| `alibaba/wan2.7-r2v`       | Référence vers vidéo      |
+| Référence du modèle        | Mode                               |
+| -------------------------- | ---------------------------------- |
+| `alibaba/wan2.6-t2v`       | Texte vers vidéo (par défaut)      |
+| `alibaba/wan2.6-i2v`       | Image vers vidéo                   |
+| `alibaba/wan2.6-r2v`       | Référence vers vidéo               |
+| `alibaba/wan2.6-r2v-flash` | Référence vers vidéo (rapide)      |
+| `alibaba/wan2.7-r2v`       | Référence vers vidéo               |
 
-## Capacités et limites
+## Fonctionnalités et limites
 
-Le fournisseur intégré reflète les limites de l’API vidéo Wan de DashScope. Les trois modes partagent le même plafond de nombre de vidéos et de durée par requête ; seule la forme de l’entrée diffère.
+Les trois modes partagent la même limite de nombre de vidéos et de durée par requête ; seule la forme des entrées diffère.
 
-| Mode               | Nombre max. de vidéos en sortie | Nombre max. d’images en entrée | Nombre max. de vidéos en entrée | Durée max. | Contrôles pris en charge                                  |
-| ------------------ | ----------------- | ---------------- | ---------------- | ------------ | --------------------------------------------------------- |
-| Texte vers vidéo   | 1                 | s/o              | s/o              | 10 s         | `size`, `aspectRatio`, `resolution`, `audio`, `watermark` |
-| Image vers vidéo   | 1                 | 1                | s/o              | 10 s         | `size`, `aspectRatio`, `resolution`, `audio`, `watermark` |
-| Référence vers vidéo | 1                 | s/o              | 4                | 10 s         | `size`, `aspectRatio`, `resolution`, `audio`, `watermark` |
+| Mode                    | Nombre maximal de vidéos en sortie | Nombre maximal d’images en entrée | Nombre maximal de vidéos en entrée | Durée maximale | Paramètres pris en charge                                  |
+| ----------------------- | ---------------------------------- | ---------------------------------- | ---------------------------------- | --------------- | ---------------------------------------------------------- |
+| Texte vers vidéo        | 1                                  | n/a                                | n/a                                | 10 s            | `size`, `aspectRatio`, `resolution`, `audio`, `watermark` |
+| Image vers vidéo        | 1                                  | 1                                  | n/a                                | 10 s            | `size`, `aspectRatio`, `resolution`, `audio`, `watermark` |
+| Référence vers vidéo    | 1                                  | n/a                                | 4                                  | 10 s            | `size`, `aspectRatio`, `resolution`, `audio`, `watermark` |
 
-Lorsqu’une requête omet `durationSeconds`, le fournisseur envoie la valeur par défaut acceptée par DashScope, soit **5 secondes**. Définissez explicitement `durationSeconds` dans l’[outil de génération vidéo](/fr/tools/video-generation) pour l’étendre jusqu’à 10 s.
+Une requête qui omet `durationSeconds` reçoit la valeur par défaut acceptée par DashScope, soit **5 secondes**. Définissez explicitement `durationSeconds` dans l’[outil de génération vidéo](/fr/tools/video-generation) pour prolonger la durée jusqu’à 10 s.
 
 <Warning>
-  Les entrées d’image et de vidéo de référence doivent être des URL `http(s)` distantes. Les chemins de fichiers locaux ne sont pas acceptés par les modes de référence de DashScope ; téléversez d’abord vers un stockage d’objets ou utilisez le flux de l’[outil média](/fr/tools/media-overview), qui produit déjà une URL publique.
+  Les images et vidéos de référence doivent être des URL `http(s)` distantes ; les modes de référence de DashScope rejettent les chemins de fichiers locaux. Téléversez-les d’abord dans un stockage d’objets ou utilisez le flux de l’[outil multimédia](/fr/tools/media-overview), qui produit déjà une URL publique.
 </Warning>
 
 ## Configuration avancée
 
 <AccordionGroup>
   <Accordion title="Remplacer l’URL de base de DashScope">
-    Le fournisseur utilise par défaut le point de terminaison international de DashScope. Pour cibler le point de terminaison de la région Chine, définissez :
+    Le fournisseur utilise par défaut le point de terminaison international de DashScope. Pour cibler le point de terminaison de la région Chine :
 
     ```json5
     {
@@ -126,41 +127,41 @@ Lorsqu’une requête omet `durationSeconds`, le fournisseur envoie la valeur pa
 
   </Accordion>
 
-  <Accordion title="Priorité des variables d’environnement d’auth">
-    OpenClaw résout la clé API Alibaba depuis les variables d’environnement dans cet ordre, en prenant la première valeur non vide :
+  <Accordion title="Priorité des variables d’environnement d’authentification">
+    OpenClaw résout la clé API Alibaba à partir des variables d’environnement dans l’ordre suivant, en prenant la première valeur non vide :
 
     1. `MODELSTUDIO_API_KEY`
     2. `DASHSCOPE_API_KEY`
     3. `QWEN_API_KEY`
 
-    Les entrées `auth.profiles` configurées (définies via `openclaw models auth login`) remplacent la résolution des variables d’environnement. Consultez les [profils d’auth dans la FAQ des modèles](/fr/help/faq-models#what-is-an-auth-profile) pour la rotation des profils, le cooldown et les mécanismes de remplacement.
+    Les entrées `auth.profiles` configurées (définies via `openclaw models auth login`) remplacent la résolution des variables d’environnement. Consultez les [profils d’authentification dans la FAQ sur les modèles](/fr/help/faq-models#auth-profiles-what-they-are-and-how-to-manage-them) pour en savoir plus sur la rotation des profils, le délai de récupération et les mécanismes de remplacement.
 
   </Accordion>
 
   <Accordion title="Relation avec le plugin Qwen">
     Les deux plugins intégrés communiquent avec DashScope et acceptent des clés API qui se chevauchent. Utilisez :
 
-    - les ID `alibaba/wan*.*` pour piloter le fournisseur vidéo Wan dédié documenté sur cette page.
-    - les ID `qwen/*` pour la discussion, l’embedding et la compréhension multimédia Qwen (voir [Qwen](/fr/providers/qwen)).
+    - les identifiants `alibaba/wan*.*` pour le fournisseur vidéo Wan dédié présenté sur cette page ;
+    - les identifiants `qwen/*` pour la conversation, les plongements et la compréhension multimédia de Qwen (voir [Qwen](/fr/providers/qwen)).
 
-    Définir `MODELSTUDIO_API_KEY` une seule fois authentifie les deux plugins, car la liste des variables d’environnement d’auth se chevauche intentionnellement ; vous n’avez pas besoin d’onboarder chaque plugin séparément.
+    Définir `MODELSTUDIO_API_KEY` une seule fois authentifie les deux plugins, car la liste des variables d’environnement d’authentification se chevauche intentionnellement ; il n’est pas nécessaire d’intégrer chaque plugin séparément.
 
   </Accordion>
 </AccordionGroup>
 
-## Associés
+## Ressources connexes
 
 <CardGroup cols={2}>
   <Card title="Génération vidéo" href="/fr/tools/video-generation" icon="video">
     Paramètres partagés de l’outil vidéo et sélection du fournisseur.
   </Card>
   <Card title="Qwen" href="/fr/providers/qwen" icon="microchip">
-    Configuration de la discussion, de l’embedding et de la compréhension multimédia Qwen avec la même authentification DashScope.
+    Configuration de la conversation, des plongements et de la compréhension multimédia de Qwen avec la même authentification DashScope.
   </Card>
   <Card title="Référence de configuration" href="/fr/gateway/config-agents#agent-defaults" icon="gear">
     Valeurs par défaut des agents et configuration des modèles.
   </Card>
-  <Card title="FAQ des modèles" href="/fr/help/faq-models" icon="circle-question">
-    Profils d’auth, changement de modèles et résolution des erreurs « no profile ».
+  <Card title="FAQ sur les modèles" href="/fr/help/faq-models" icon="circle-question">
+    Profils d’authentification, changement de modèle et résolution des erreurs « no profile ».
   </Card>
 </CardGroup>

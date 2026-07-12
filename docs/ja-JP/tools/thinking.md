@@ -1,151 +1,156 @@
 ---
 read_when:
-    - 思考、fast-mode、または verbose ディレクティブの解析やデフォルトの調整
-summary: /think、/fast、/verbose、/trace のディレクティブ構文と推論の可視性
+    - thinking、fast-mode、verbose の各ディレクティブの解析またはデフォルトの調整
+summary: /think、/fast、/verbose、/trace、および推論の表示に関するディレクティブ構文
 title: 思考レベル
 x-i18n:
-    generated_at: "2026-07-05T11:53:18Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:54:04Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: 11723a45d9b38c8eb32ca837dd2fa64eb737ca711e6d35f8a628dbc75ad10edc
+    source_hash: 75170dd48f83dcb3ebb70eea2b37160208618d0aae23253c82fe88ce3afbc0e2
     source_path: tools/thinking.md
     workflow: 16
 ---
 
-## 何をするか
+## 機能概要
 
-- 任意の受信本文内のインラインディレクティブ: `/t <level>`、`/think:<level>`、または `/thinking <level>`。
-- レベル (エイリアス): `off | minimal | low | medium | high | xhigh | adaptive | max`。おおよそ Anthropic の古典的な 「think」 < 「think hard」 < 「think harder」 < 「ultrathink」 というマジックワードの段階に対応します:
+- 受信本文内のインラインディレクティブ: `/t <level>`、`/think:<level>`、または `/thinking <level>`。
+- レベル（エイリアス）: `off | minimal | low | medium | high | xhigh | adaptive | max | ultra`。Anthropic の従来のマジックワード階層「think」<「think hard」<「think harder」<「ultrathink」におおむね対応します。
   - minimal ~ 「think」
   - low ~ 「think hard」
   - medium ~ 「think harder」
-  - high ~ 「ultrathink」 (最大予算)
-  - xhigh ~ 「ultrathink+」 (GPT-5.2+ と Codex モデル、および Anthropic Claude Opus 4.7+ effort)
-  - adaptive → プロバイダー管理の adaptive thinking (Anthropic/Bedrock の Claude 4.6、Anthropic Claude Opus 4.7+、および Google Gemini dynamic thinking で対応)
-  - max → プロバイダー最大 reasoning (Anthropic Claude Opus 4.7+。Ollama はこれをネイティブの最高 `think` effort にマップ)
-  - `x-high`、`x_high`、`extra-high`、`extra high`、および `extra_high` は `xhigh` にマップされます。
-  - `highest` は `high` にマップされます。
-- プロバイダーに関する注記:
-  - Thinking メニューとピッカーはプロバイダープロファイルによって駆動されます。プロバイダー Plugin は、binary `on` などのラベルを含め、選択されたモデルの正確なレベルセットを宣言します。
-  - `adaptive`、`xhigh`、`max` は、それらに対応するプロバイダー/モデルプロファイルでのみ表示されます。対応していないレベルの型付きディレクティブは、そのモデルで有効な選択肢とともに拒否されます。
-  - 既存の保存済み未対応レベルは、プロバイダープロファイルの順位によって再マップされます。`adaptive` は非 adaptive モデルでは `medium` にフォールバックし、`xhigh` と `max` は選択されたモデルで対応する最大の非 off レベルにフォールバックします。
-  - Anthropic Claude 4.6 モデルは、明示的な thinking レベルが設定されていない場合、デフォルトで `adaptive` になります。
-  - Anthropic Claude Opus 4.8 と Opus 4.7 は、thinking レベルを明示的に設定しない限り thinking をオフのままにします。Opus 4.8 のプロバイダー所有 effort デフォルトは、adaptive thinking が有効化された後は `high` です。
-  - Anthropic Claude Opus 4.7+ は `/think xhigh` を adaptive thinking と `output_config.effort: "xhigh"` にマップします。これは `/think` が thinking ディレクティブであり、`xhigh` が Opus の effort 設定であるためです。
-  - Anthropic Claude Opus 4.7+ は `/think max` も公開します。これは同じプロバイダー所有の最大 effort パスにマップされます。
-  - 直接の DeepSeek V4 モデルは `/think xhigh|max` を公開します。どちらも DeepSeek `reasoning_effort: "max"` にマップされ、より低い非 off レベルは `high` にマップされます。
-  - OpenRouter 経由の DeepSeek V4 モデルは `/think xhigh` を公開し、DeepSeek ネイティブのトップレベル `reasoning_effort` ではなく、OpenRouter 対応の `reasoning.effort` 値を送信します。より低い非 off レベルは `high` にマップされ、保存済みの `max` オーバーライドは `xhigh` にフォールバックします。
-  - Ollama の thinking 対応モデルは `/think low|medium|high|max` を公開します。Ollama のネイティブ API は `low`、`medium`、`high` の effort 文字列を受け入れるため、`max` はネイティブの `think: "high"` にマップされます。
-  - OpenAI GPT モデルは、モデル固有の Responses API effort 対応を通じて `/think` をマップします。`/think off` は対象モデルが対応している場合にのみ `reasoning.effort: "none"` を送信します。それ以外の場合、OpenClaw は未対応の値を送信する代わりに、無効化された reasoning ペイロードを省略します。
-  - カスタム OpenAI 互換カタログエントリーは、`models.providers.<provider>.models[].compat.supportedReasoningEfforts` に `"xhigh"` を含めることで `/think xhigh` にオプトインできます。これは送信側 OpenAI reasoning effort ペイロードをマップするものと同じ互換メタデータを使用するため、メニュー、セッション検証、エージェント CLI、`llm-task` がトランスポート挙動と一致します。
-  - 古い設定済みの OpenRouter Hunter Alpha 参照は、その廃止済みルートが reasoning フィールドを通じて最終回答テキストを返す可能性があったため、プロキシ reasoning 注入をスキップします。
-  - Google Gemini は `/think adaptive` を Gemini のプロバイダー所有 dynamic thinking にマップします。Gemini 3 リクエストは固定の `thinkingLevel` を省略し、Gemini 2.5 リクエストは `thinkingBudget: -1` を送信します。固定レベルは引き続き、そのモデルファミリーに最も近い Gemini `thinkingLevel` または予算にマップされます。
-  - Anthropic 互換ストリーミングパス上の MiniMax M2.x (`minimax/MiniMax-M2*`) は、モデルパラメーターまたはリクエストパラメーターで thinking を明示的に設定しない限り、デフォルトで `thinking: { type: "disabled" }` になります。これにより、M2.x の非ネイティブ Anthropic ストリーム形式から `reasoning_content` デルタが漏れることを避けます。MiniMax-M3 (および M3.x) は例外です。M3 は適切な Anthropic thinking ブロックを出力し、thinking が無効な場合は空の content を返すため、OpenClaw は M3 をプロバイダーの省略/adaptive thinking パスのままにします。
-  - Z.AI (`zai/*`) はほとんどの GLM モデルで binary (`on`/`off`) です。GLM-5.2 は例外です。これは `/think off|low|high|max` を公開し、`low` と `high` を Z.AI `reasoning_effort: "high"` にマップし、`max` を `reasoning_effort: "max"` にマップします。
-  - Moonshot Kimi K2.7 Code (`moonshot/kimi-k2.7-code`) は常に thinking します。そのプロファイルは `on` のみを公開し、OpenClaw は Moonshot が要求するとおり送信側 `thinking` フィールドを省略します。他の `moonshot/*` モデルは `/think off` を `thinking: { type: "disabled" }` にマップし、任意の非 `off` レベルを `thinking: { type: "enabled" }` にマップします。thinking が有効な場合、Moonshot は `tool_choice` `auto|none` のみを受け入れます。OpenClaw は互換性のない値を `auto` に正規化します。
+  - high ~ 「ultrathink」（最大予算）
+  - xhigh ~ 「ultrathink+」（GPT-5.2 以降および Codex モデル、さらに Anthropic Claude Opus 4.7 以降の effort）
+  - adaptive → プロバイダー管理の適応型思考（Anthropic/Bedrock 上の Claude 4.6、Anthropic Claude Opus 4.7 以降、および Google Gemini の動的思考でサポート）
+  - max → プロバイダーの最大推論（Anthropic Claude Opus 4.7 以降。Ollama では、これをネイティブの最高 `think` effort に対応付けます）
+  - ultra → 選択したモデル／ランタイムがサポートする場合、プロバイダーの最大推論に加えてプロアクティブなサブエージェントのオーケストレーションを使用
+  - `x-high`、`x_high`、`extra-high`、`extra high`、および `extra_high` は `xhigh` に対応付けられます。
+  - `highest` は `high` に対応付けられます。
+- プロバイダーに関する注意事項:
+  - 思考メニューと選択 UI は、プロバイダープロファイルによって決まります。プロバイダー Plugin は、バイナリの `on` などのラベルを含め、選択したモデルの正確なレベルセットを宣言します。
+  - `adaptive`、`xhigh`、`max`、および `ultra` は、それらをサポートするプロバイダー／モデル／ランタイムプロファイルでのみ提示されます。サポートされていないレベルの型付きディレクティブは、そのモデルで有効な選択肢とともに拒否されます。
+  - 保存済みの未サポートレベルは、プロバイダープロファイルの順位に基づいて再対応付けされます。非適応型モデルでは `adaptive` は `medium` にフォールバックし、`xhigh` と `max` は、選択したモデルがサポートするオフ以外の最大レベルにフォールバックします。
+  - Anthropic Claude 4.6 モデルでは、明示的な思考レベルが設定されていない場合、デフォルトは `adaptive` です。
+  - Anthropic Claude Opus 4.8 と Opus 4.7 は、思考レベルを明示的に設定しない限り、思考をオフのままにします。適応型思考を有効にした後の Opus 4.8 のプロバイダー所有のデフォルト effort は `high` です。
+  - Anthropic Claude Opus 4.7 以降では、`/think xhigh` を適応型思考と `output_config.effort: "xhigh"` の組み合わせに対応付けます。これは、`/think` が思考ディレクティブであり、`xhigh` が Opus の effort 設定であるためです。
+  - Anthropic Claude Opus 4.7 以降では `/think max` も公開され、同じプロバイダー所有の最大 effort パスに対応付けられます。
+  - DeepSeek V4 の直接接続モデルでは `/think xhigh|max` が公開され、どちらも DeepSeek の `reasoning_effort: "max"` に対応付けられます。一方、オフ以外のより低いレベルは `high` に対応付けられます。
+  - OpenRouter 経由の DeepSeek V4 モデルでは `/think xhigh` が公開され、DeepSeek ネイティブのトップレベル `reasoning_effort` の代わりに、OpenRouter がサポートする `reasoning.effort` 値を送信します。オフ以外のより低いレベルは `high` に対応付けられ、保存済みの `max` オーバーライドは `xhigh` にフォールバックします。
+  - 思考対応の Ollama モデルでは `/think low|medium|high|max` が公開されます。Ollama のネイティブ API は `low`、`medium`、および `high` の effort 文字列を受け付けるため、`max` はネイティブの `think: "high"` に対応付けられます。
+  - OpenAI GPT モデルでは、`/think` をモデル固有の Responses API effort サポートに基づいて対応付けます。`/think off` は、対象モデルがサポートする場合にのみ `reasoning.effort: "none"` を送信します。それ以外の場合、OpenClaw は未サポートの値を送信せず、無効化された推論ペイロードを省略します。
+  - GPT-5.6 Sol と Terra は、Codex ランタイムを通じてネイティブの `/think ultra` を公開します。GPT-5.6 Luna の Codex カタログは Ultra を提示しないため、公開されるレベルは `max` までです。
+  - 組み込みの OpenClaw ランタイムでは、GPT-5.6 Sol、Terra、および Luna 向けに論理的な `/think ultra` が公開されます。プロバイダーの最大 effort を送信し、実行スコープのプロアクティブなサブエージェントのオーケストレーションガイダンスを追加します。
+  - カスタムの OpenAI 互換カタログエントリでは、`models.providers.<provider>.models[].compat.supportedReasoningEfforts` に `"xhigh"` を含めることで、`/think xhigh` をオプトインできます。これは送信される OpenAI 推論 effort ペイロードの対応付けに使用するものと同じ互換性メタデータを使用するため、メニュー、セッション検証、エージェント CLI、および `llm-task` の動作がトランスポートの動作と一致します。
+  - 設定に残っている古い OpenRouter Hunter Alpha の参照では、廃止済みのそのルートが推論フィールドを通じて最終回答テキストを返す可能性があるため、プロキシによる推論の注入をスキップします。
+  - Google Gemini では、`/think adaptive` を Gemini のプロバイダー所有の動的思考に対応付けます。Gemini 3 のリクエストでは固定の `thinkingLevel` を省略し、Gemini 2.5 のリクエストでは `thinkingBudget: -1` を送信します。固定レベルは引き続き、そのモデルファミリーで最も近い Gemini の `thinkingLevel` または予算に対応付けられます。
+  - Anthropic 互換ストリーミングパス上の MiniMax M2.x（`minimax/MiniMax-M2*`）では、モデルパラメーターまたはリクエストパラメーターで思考を明示的に設定しない限り、デフォルトは `thinking: { type: "disabled" }` です。これにより、M2.x の非ネイティブな Anthropic ストリーム形式から `reasoning_content` デルタが漏れるのを防ぎます。MiniMax-M3（および M3.x）は例外です。M3 は適切な Anthropic 思考ブロックを出力し、思考を無効にすると空のコンテンツを返すため、OpenClaw は M3 をプロバイダーの省略／適応型思考パスのままにします。
+  - ほとんどの GLM モデルでは、Z.AI（`zai/*`）はバイナリ（`on`/`off`）です。GLM-5.2 は例外です。`/think off|low|high|max` を公開し、`low` と `high` を Z.AI の `reasoning_effort: "high"` に対応付け、`max` を `reasoning_effort: "max"` に対応付けます。
+  - Moonshot Kimi K2.7 Code（`moonshot/kimi-k2.7-code`）は常に思考します。そのプロファイルでは `on` のみが公開され、OpenClaw は Moonshot の要件に従って送信時の `thinking` フィールドを省略します。その他の `moonshot/*` モデルでは、`/think off` を `thinking: { type: "disabled" }` に対応付け、`off` 以外のレベルをすべて `thinking: { type: "enabled" }` に対応付けます。思考が有効な場合、Moonshot が受け付ける `tool_choice` は `auto|none` のみです。OpenClaw は互換性のない値を `auto` に正規化します。
 
 ## 解決順序
 
-1. メッセージ上のインラインディレクティブ (そのメッセージにのみ適用)。
-2. セッションオーバーライド (ディレクティブのみのメッセージを送信して設定)。
-3. エージェントごとのデフォルト (config 内の `agents.list[].thinkingDefault`)。
-4. グローバルデフォルト (config 内の `agents.defaults.thinkingDefault`)。
-5. フォールバック: 利用可能な場合はプロバイダー宣言のデフォルト。それ以外の場合、reasoning 対応モデルは `medium` またはそのモデルで対応する最も近い非 `off` レベルに解決され、非 reasoning モデルは `off` のままです。
+1. メッセージ内のインラインディレクティブ（そのメッセージにのみ適用）。
+2. セッションオーバーライド（ディレクティブのみのメッセージを送信して設定）。
+3. エージェント単位のデフォルト（設定内の `agents.list[].thinkingDefault`）。
+4. グローバルデフォルト（設定内の `agents.defaults.thinkingDefault`）。
+5. フォールバック：利用可能な場合はプロバイダーが宣言したデフォルト。それ以外の場合、推論対応モデルでは `medium`、またはそのモデルがサポートする最も近い非 `off` レベルに解決され、非推論モデルでは `off` のままになります。
 
-## セッションデフォルトの設定
+## セッションのデフォルトを設定する
 
-- ディレクティブ**のみ**のメッセージを送信します (空白は許可)。例: `/think:medium` または `/t high`。
-- これは現在のセッションに固定されます (デフォルトでは送信者ごと)。`/think default` を使用するとセッションオーバーライドをクリアし、設定済み/プロバイダーデフォルトを継承します。エイリアスには `inherit`、`clear`、`reset`、`unpin` があります。
-- `/think off` は明示的な off オーバーライドを保存します。セッションオーバーライドを変更またはクリアするまで thinking を無効にします。
-- 確認返信が送信されます (`Thinking level set to high.` / `Thinking disabled.`)。レベルが無効な場合 (例: `/thinking big`)、コマンドはヒント付きで拒否され、セッション状態は変更されません。
-- 引数なしで `/think` (または `/think:`) を送信すると、現在の thinking レベルを確認できます。
+- ディレクティブ**のみ**のメッセージ（空白文字は許可）を送信します（例：`/think:medium` または `/t high`）。
+- この設定は現在のセッションで維持されます（デフォルトでは送信者ごと）。セッションのオーバーライドを解除し、設定済みのデフォルトまたはプロバイダーのデフォルトを継承するには、`/think default` を使用します。エイリアスには `inherit`、`clear`、`reset`、`unpin` があります。
+- `/think off` は、明示的なオフのオーバーライドを保存します。セッションのオーバーライドを変更または解除するまで、思考が無効になります。
+- 確認応答が送信されます（`Thinking level set to high.` / `Thinking disabled.`）。レベルが無効な場合（例：`/thinking big`）、コマンドはヒントとともに拒否され、セッション状態は変更されません。
+- 引数なしで `/think`（または `/think:`）を送信すると、現在の思考レベルを確認できます。
 
 ## エージェントによる適用
 
-- **組み込み OpenClaw**: 解決されたレベルは、インプロセス OpenClaw エージェントランタイムに渡されます。
-- **Claude CLI バックエンド**: `claude-cli` を使用している場合、非 off レベルは `--effort` として Claude Code に渡されます。[CLI バックエンド](/ja-JP/gateway/cli-backends) を参照してください。
+- **組み込み OpenClaw**: 解決されたレベルが、プロセス内の OpenClaw エージェントランタイムに渡されます。
+- **Claude CLI バックエンド**: `claude-cli` を使用する場合、off 以外の具体的なレベルは `--effort` として Claude Code に渡されます。`adaptive` は設定済みの effort フラグを削除し、実効 effort の決定を Claude Code の環境、設定、モデルのデフォルトに委ねます。[CLI バックエンド](/ja-JP/gateway/cli-backends)を参照してください。
 
-## 高速モード (/fast)
+## 高速モード（/fast）
 
 - レベル: `auto|on|off|default`。
-- ディレクティブのみのメッセージはセッション高速モードオーバーライドを切り替え、`Fast mode set to auto.`、`Fast mode enabled.`、または `Fast mode disabled.` と返信します。`/fast default` を使用するとセッションオーバーライドをクリアし、設定済みデフォルトを継承します。エイリアスには `inherit`、`clear`、`reset`、`unpin` があります。
-- モードなしで `/fast` (または `/fast status`) を送信すると、現在有効な高速モード状態を確認できます。
-- OpenClaw は高速モードを次の順序で解決します:
-  1. インライン/ディレクティブのみの `/fast auto|on|off` オーバーライド (`/fast default` はこの層をクリア)
-  2. セッションオーバーライド
-  3. エージェントごとのデフォルト (`agents.list[].fastModeDefault`)
+- ディレクティブのみのメッセージは、セッションの高速モードオーバーライドを切り替え、`Fast mode set to auto.`、`Fast mode enabled.`、または `Fast mode disabled.` と応答します。セッションのオーバーライドを解除して設定済みのデフォルトを継承するには、`/fast default` を使用します。エイリアスには `inherit`、`clear`、`reset`、`unpin` があります。
+- 現在の実効高速モード状態を確認するには、モードを指定せずに `/fast`（または `/fast status`）を送信します。
+- OpenClaw は、次の順序で高速モードを解決します。
+  1. インラインまたはディレクティブのみの `/fast auto|on|off` オーバーライド（`/fast default` でこのレイヤーを解除）
+  2. セッションのオーバーライド
+  3. エージェントごとのデフォルト（`agents.list[].fastModeDefault`）
   4. モデルごとの設定: `agents.defaults.models["<provider>/<model>"].params.fastMode`
   5. フォールバック: `off`
-- `auto` はセッション/config モードを auto のままにしますが、新しい各モデル呼び出しを個別に解決します。auto カットオフ前に開始した呼び出しでは高速モードが有効になります。後続の retry、fallback、tool-result、または continuation 呼び出しは高速モード無効で開始します。カットオフのデフォルトは 60 秒です。変更するには、アクティブモデルで `agents.defaults.models["<provider>/<model>"].params.fastAutoOnSeconds` を設定します。
-- `openai/*` では、高速モードは対応する Responses リクエストで `service_tier=priority` を送信することで OpenAI priority processing にマップされます。
-- Codex バックエンドの `openai/*` / `openai-codex/*` モデルでは、高速モードは Codex Responses に同じ `service_tier=priority` フラグを送信します。ネイティブ Codex app-server ターンは `turn/start` または thread start/resume の場合のみ tier を受け取るため、`auto` はすでに実行中の app-server ターンを再 tier 化できません。OpenClaw が開始する次のモデルターンに適用されます。
-- OAuth 認証済みで `api.anthropic.com` に送信されるトラフィックを含む、直接の公開 `anthropic/*` リクエストでは、高速モードは Anthropic service tiers にマップされます。`/fast on` は `service_tier=auto` を設定し、`/fast off` は `service_tier=standard_only` を設定します。
-- Anthropic 互換パス上の `minimax/*` では、`/fast on` (または `params.fastMode: true`) は `MiniMax-M2.7` を `MiniMax-M2.7-highspeed` に書き換えます。
-- 明示的な Anthropic `serviceTier` / `service_tier` モデルパラメーターは、両方が設定されている場合に高速モードデフォルトをオーバーライドします。OpenClaw は引き続き、非 Anthropic プロキシベース URL では Anthropic service-tier 注入をスキップします。
-- `/status` は、高速モードが有効な場合は `Fast` を、設定済みモードが auto の場合は `Fast:auto` を表示します。
+- `auto` では、セッションまたは設定のモードは auto のまま維持されますが、新しいモデル呼び出しごとに独立して解決されます。auto のカットオフ前に開始した呼び出しでは高速モードが有効になり、それ以降の再試行、フォールバック、ツール結果、または継続の呼び出しは高速モードを無効にして開始されます。カットオフのデフォルトは 60 秒です。変更するには、アクティブなモデルで `agents.defaults.models["<provider>/<model>"].params.fastAutoOnSeconds` を設定します。
+- `openai/*` では、高速モードは、対応する Responses リクエストで `service_tier=priority` を送信することにより、OpenAI の優先処理に対応付けられます。
+- Codex をバックエンドとする `openai/*` / `openai-codex/*` モデルでは、高速モードによって Codex Responses にも同じ `service_tier=priority` フラグが送信されます。ネイティブ Codex app-server のターンがこの tier を受け取るのは、`turn/start` またはスレッドの開始/再開時のみです。そのため、`auto` では、すでに実行中の app-server ターンの tier を変更できません。これは OpenClaw が開始する次のモデルターンに適用されます。
+- `api.anthropic.com` に送信される OAuth 認証済みトラフィックを含む、公開 `anthropic/*` への直接リクエストでは、高速モードは Anthropic のサービス tier に対応付けられます。`/fast on` は `service_tier=auto` を設定し、`/fast off` は `service_tier=standard_only` を設定します。
+- Anthropic 互換パス上の `minimax/*` では、`/fast on`（または `params.fastMode: true`）によって `MiniMax-M2.7` が `MiniMax-M2.7-highspeed` に書き換えられます。
+- Anthropic の `serviceTier` / `service_tier` モデルパラメータが明示的に設定されている場合、高速モードのデフォルトよりも優先されます。OpenClaw は引き続き、Anthropic 以外のプロキシベース URL では Anthropic サービス tier の注入を省略します。
+- 高速モードが有効な場合、`/status` には `Fast` と表示され、設定モードが auto の場合は `Fast:auto` と表示されます。
 
-## 詳細ディレクティブ (/verbose または /v)
+## 詳細ディレクティブ（/verbose または /v）
 
-- レベル: `on` (最小) | `full` | `off` (デフォルト)。
-- ディレクティブのみのメッセージはセッション verbose を切り替え、`Verbose logging enabled.` / `Verbose logging disabled.` と返信します。無効なレベルは状態を変更せずにヒントを返します。
-- `/verbose off` は明示的なセッションオーバーライドを保存します。Sessions UI で `inherit` を選択してクリアします。
-- 認可された外部チャネル送信者は、セッション verbose オーバーライドを永続化できます。内部 Gateway/webchat クライアントが永続化するには `operator.admin` が必要です。
-- インラインディレクティブはそのメッセージにのみ影響します。それ以外の場合はセッション/グローバルデフォルトが適用されます。
-- 引数なしで `/verbose` (または `/verbose:`) を送信すると、現在の verbose レベルを確認できます。
-- verbose が on の場合、構造化されたツール結果を出力するエージェントは、各ツール呼び出しをメタデータのみの独立したメッセージとして送り返します。利用可能な場合は `<emoji> <tool-name>: <arg>` が先頭に付きます。これらのツール要約は、ストリーミングデルタではなく、各ツールの開始直後に送信されます (別バブル)。
-- ツール失敗の要約は通常モードでも表示されたままですが、生のエラー詳細サフィックスは verbose が `full` でない限り非表示になります。
-- verbose が `full` の場合、ツール出力も完了後に転送されます (別バブル、安全な長さに切り詰め)。実行中に `/verbose on|full|off` を切り替えると、以後のツールバブルは新しい設定に従います。
-- `agents.defaults.toolProgressDetail` は `/verbose` ツール要約と進捗ドラフトのツール行の形式を制御します。`🛠️ Exec: checking JS syntax` のようなコンパクトな人間向けラベルには `"explain"` (デフォルト) を使用します。デバッグのために生のコマンド/詳細も追加したい場合は `"raw"` を使用します。エージェントごとの `agents.list[].toolProgressDetail` はデフォルトをオーバーライドします。
+- レベル: `on`（最小限）| `full` | `off`（デフォルト）。
+- ディレクティブのみのメッセージは、セッションの詳細出力を切り替え、`Verbose logging enabled.` / `Verbose logging disabled.` と応答します。無効なレベルの場合は、状態を変更せずにヒントを返します。
+- `/verbose off` は、明示的なセッションオーバーライドを保存します。解除するには、Sessions UI で `inherit` を選択します。
+- 認可された外部チャンネルの送信者は、セッションの詳細出力オーバーライドを永続化できます。内部の Gateway/webchat クライアントが永続化するには、`operator.admin` が必要です。
+- インラインディレクティブは、そのメッセージだけに影響します。それ以外の場合は、セッションまたはグローバルのデフォルトが適用されます。
+- 現在の詳細出力レベルを確認するには、引数を指定せずに `/verbose`（または `/verbose:`）を送信します。
+- 詳細出力が有効な場合、構造化されたツール結果を生成するエージェントは、利用可能であれば `<emoji> <tool-name>: <arg>` という接頭辞を付け、各ツール呼び出しをメタデータのみの個別メッセージとして返します。これらのツール概要は、各ツールの開始直後に、ストリーミング差分ではなく個別の吹き出しとして送信されます。
+- ツール失敗の概要は通常モードでも表示されますが、生のエラー詳細の接尾辞は、詳細出力が `full` でない限り非表示になります。
+- 詳細出力が `full` の場合、ツール出力も完了後に転送されます（個別の吹き出しで、安全な長さに切り詰められます）。実行中に `/verbose on|full|off` を切り替えると、それ以降のツール吹き出しには新しい設定が適用されます。
+- `agents.defaults.toolProgressDetail` は、`/verbose` のツール概要と進捗下書きのツール行の形式を制御します。`🛠️ Exec: checking JS syntax` のような簡潔で人間向けのラベルを使用するには、`"explain"`（デフォルト）を使用します。デバッグ用に生のコマンドや詳細も追加する場合は、`"raw"` を使用します。エージェントごとの `agents.list[].toolProgressDetail` は、デフォルトをオーバーライドします。
   - `explain`: `🛠️ Exec: check JS syntax for /tmp/app.js`
   - `raw`: `🛠️ Exec: check JS syntax for /tmp/app.js, node --check /tmp/app.js`
 
-## Plugin トレースディレクティブ (/trace)
+## Plugin トレースディレクティブ（/trace）
 
-- レベル: `on` | `off` (デフォルト)。
-- ディレクティブのみのメッセージはセッション Plugin トレース出力を切り替え、`Plugin trace enabled.` / `Plugin trace disabled.` と返信します。
-- インラインディレクティブはそのメッセージにのみ影響します。それ以外の場合はセッション/グローバルデフォルトが適用されます。
-- 引数なしで `/trace` (または `/trace:`) を送信すると、現在のトレースレベルを確認できます。
-- `/trace` は `/verbose` より範囲が狭く、Active Memory debug summaries などの Plugin 所有の trace/debug 行のみを公開します。
-- トレース行は `/status` 内、および通常のアシスタント返信後のフォローアップ診断メッセージとして表示されることがあります。
+- レベル: `on` | `off`（デフォルト）。
+- ディレクティブのみのメッセージは、セッションの Plugin トレース出力を切り替え、`Plugin trace enabled.` / `Plugin trace disabled.` と応答します。
+- インラインディレクティブは、そのメッセージだけに影響します。それ以外の場合は、セッションまたはグローバルのデフォルトが適用されます。
+- 現在のトレースレベルを確認するには、引数を指定せずに `/trace`（または `/trace:`）を送信します。
+- `/trace` の範囲は `/verbose` より限定的です。Active Memory のデバッグ概要など、Plugin が所有するトレース行やデバッグ行のみを公開します。
+- トレース行は、`/status` 内、および通常のアシスタント応答後に続く診断メッセージとして表示される場合があります。
 
-## Reasoning の表示 (/reasoning)
+## 推論の表示（/reasoning）
 
 - レベル: `on|off|stream`。
-- ディレクティブのみのメッセージは、thinking ブロックを返信に表示するかどうかを切り替えます。
-- 有効な場合、reasoning は `Thinking` というプレフィックス付きの**別メッセージ**として送信されます。
-- `stream`: アクティブなチャネルが reasoning プレビューに対応している場合、返信生成中に reasoning をストリーミングし、その後 reasoning なしで最終回答を送信します。
+- ディレクティブのみのメッセージで、返信に思考ブロックを表示するかどうかを切り替えます。
+- 有効にすると、推論は `Thinking` という接頭辞が付いた**別のメッセージ**として送信されます。
+- `stream`: アクティブなチャネルが推論プレビューをサポートしている場合、返信の生成中に推論をストリーミングし、その後、推論を含まない最終回答を送信します。
 - エイリアス: `/reason`。
-- 引数なしで `/reasoning` (または `/reasoning:`) を送信すると、現在の reasoning レベルを確認できます。
-- 解決順序: インラインディレクティブ、次にセッションオーバーライド、次にエージェントごとのデフォルト (`agents.list[].reasoningDefault`)、次にグローバルデフォルト (`agents.defaults.reasoningDefault`)、次にフォールバック (`off`)。
+- 現在の推論レベルを確認するには、引数なしで `/reasoning`（または `/reasoning:`）を送信します。
+- 解決順序: インラインディレクティブ、セッションオーバーライド、エージェントごとのデフォルト（`agents.list[].reasoningDefault`）、グローバルデフォルト（`agents.defaults.reasoningDefault`）、フォールバック（`off`）の順です。
 
-不正な形式のローカルモデル推論タグは保守的に処理されます。閉じられた `<think>...</think>` ブロックは通常の返信では非表示のままで、すでに表示されたテキストの後にある閉じられていない推論も非表示になります。返信全体が単一の閉じられていない開始タグで囲まれており、そのままだと空のテキストとして配信される場合、OpenClaw は不正な形式の開始タグを削除し、残りのテキストを配信します。
+不正なローカルモデルの推論タグは保守的に処理されます。閉じられた `<think>...</think>` ブロックは通常の返信では非表示のままとなり、すでに表示されているテキストの後にある閉じられていない推論も非表示になります。返信全体が閉じられていない単一の開始タグで囲まれており、そのままでは空のテキストとして配信される場合、OpenClaw は不正な開始タグを削除し、残りのテキストを配信します。
 
-## 関連
+## 関連項目
 
-- 昇格モードのドキュメントは [昇格モード](/ja-JP/tools/elevated) にあります。
+- 昇格モードのドキュメントについては、[昇格モード](/ja-JP/tools/elevated)を参照してください。
 
 ## Heartbeat
 
-- Heartbeat プローブ本文は設定済みの Heartbeat プロンプトです（デフォルト: `Read HEARTBEAT.md if it exists (workspace context). Follow it strictly. Do not infer or repeat old tasks from prior chats. If nothing needs attention, reply HEARTBEAT_OK.`）。Heartbeat メッセージ内のインラインディレクティブは通常どおり適用されます（ただし Heartbeat からセッションのデフォルトを変更することは避けてください）。
-- Heartbeat の配信はデフォルトで最終ペイロードのみです。別個の `Thinking` メッセージ（利用可能な場合）も送信するには、`agents.defaults.heartbeat.includeReasoning: true` またはエージェントごとの `agents.list[].heartbeat.includeReasoning: true` を設定します。
+- Heartbeat プローブの本文は、設定された Heartbeat プロンプトです（デフォルト: `Read HEARTBEAT.md if it exists (workspace context). Follow it strictly. Do not infer or repeat old tasks from prior chats. If nothing needs attention, reply HEARTBEAT_OK.`）。Heartbeat メッセージ内のインラインディレクティブは通常どおり適用されます（ただし、Heartbeat からセッションのデフォルトを変更することは避けてください）。
+- Heartbeat の配信は、デフォルトでは最終ペイロードのみです。別個の `Thinking` メッセージも（利用可能な場合に）送信するには、`agents.defaults.heartbeat.includeReasoning: true` またはエージェントごとの `agents.list[].heartbeat.includeReasoning: true` を設定します。
 
 ## Web チャット UI
 
-- Web チャットの思考セレクターは、ページ読み込み時に受信セッションストア/設定からセッションに保存されたレベルを反映します。
-- 別のレベルを選択すると、`sessions.patch` を介してセッションの上書きが即座に書き込まれます。次回送信まで待たず、1 回限りの `thinkingOnce` 上書きでもありません。
-- 最初のオプションは常に上書きをクリアする選択肢です。継承された思考が無効な場合の `Inherited: Off` を含め、`Inherited: <resolved level>` と表示されます。
-- 明示的なピッカー選択では、プロバイダーラベルが存在する場合はそれを保持しつつ、直接のレベルラベルを使用します（たとえばプロバイダーラベル付きの `max` オプションでは `Maximum`）。
-- ピッカーは Gateway セッション行/デフォルトから返される `thinkingLevels` を使用し、`thinkingOptions` はレガシーのラベル一覧として保持されます。ブラウザー UI は独自のプロバイダー正規表現リストを保持しません。モデル固有のレベルセットは Plugin が所有します。
-- `/think:<level>` は引き続き機能し、同じ保存済みセッションレベルを更新するため、チャットディレクティブとピッカーは同期されたままになります。
+- ページの読み込み時に、Web チャットの思考セレクターには、受信セッションのストア／設定に保存されているセッションのレベルが反映されます。
+- 別のレベルを選択すると、`sessions.patch` を介してセッションのオーバーライドが即座に書き込まれます。次回の送信を待つことはなく、1 回限りの `thinkingOnce` オーバーライドでもありません。
+- モデル、推論、または速度ピッカーへの変更がまだ適用中の状態で送信すると、保留中のすべてのピッカーパッチが完了するまで待機します。変更に失敗した場合、メッセージは確認できるよう未送信のままになります。
+- 最初のオプションは常にオーバーライドを解除する選択肢です。継承された思考が無効な場合の `Inherited: Off` を含め、`Inherited: <resolved level>` と表示されます。
+- ピッカーで明示的に選択した項目には直接対応するレベルラベルが使用され、プロバイダーのラベルが存在する場合はそれが維持されます（たとえば、プロバイダーによってラベル付けされた `max` オプションの `Maximum`）。
+- ピッカーは Gateway のセッション行／デフォルトから返される `thinkingLevels` を使用し、`thinkingOptions` はレガシーなラベルリストとして維持されます。ブラウザー UI は独自のプロバイダー正規表現リストを保持しません。モデル固有のレベルセットは Plugin が所有します。
+- `/think:<level>` は引き続き機能し、同じ保存済みセッションレベルを更新するため、チャットディレクティブとピッカーの同期が維持されます。
 
 ## プロバイダープロファイル
 
-- プロバイダー Plugin は、モデルがサポートするレベルとデフォルトを定義するために `resolveThinkingProfile(ctx)` を公開できます。
-- Claude モデルをプロキシするプロバイダー Plugin は、直接の Anthropic カタログとプロキシカタログの整合性を保つために、`openclaw/plugin-sdk/provider-model-shared` の `resolveClaudeThinkingProfile(modelId)` を再利用する必要があります。
-- 各プロファイルレベルには、保存される正規の `id`（`off`、`minimal`、`low`、`medium`、`high`、`xhigh`、`adaptive`、または `max`）があり、表示用の `label` を含めることができます。バイナリプロバイダーは `{ id: "low", label: "on" }` を使用します。
-- プロファイルフックは、利用可能な場合、`reasoning`、`compat.thinkingFormat`、`compat.supportedReasoningEfforts` を含む統合済みカタログ情報を受け取ります。これらの情報を使用して、設定済みのリクエスト契約が対応するペイロードをサポートする場合にのみ、バイナリまたはカスタムプロファイルを公開してください。
-- 明示的な思考上書きを検証する必要があるツール Plugin は、`api.runtime.agent.resolveThinkingPolicy({ provider, model })` と `api.runtime.agent.normalizeThinkingLevel(...)` を使用する必要があります。独自のプロバイダー/モデルレベル一覧を保持してはいけません。
-- 設定済みカスタムモデルメタデータにアクセスできるツール Plugin は、`resolveThinkingPolicy` に `catalog` を渡すことで、`compat.supportedReasoningEfforts` のオプトインを Plugin 側の検証に反映できます。
-- 公開済みのレガシーフック（`supportsXHighThinking`、`isBinaryThinking`、`resolveDefaultThinkingLevel`）は互換性アダプターとして残りますが、新しいカスタムレベルセットでは `resolveThinkingProfile` を使用する必要があります。
-- Gateway 行/デフォルトは `thinkingLevels`、`thinkingOptions`、`thinkingDefault` を公開するため、ACP/チャットクライアントはランタイム検証で使用されるものと同じプロファイル ID とラベルをレンダリングします。
+- プロバイダー Plugin は `resolveThinkingProfile(ctx)` を公開して、モデルがサポートするレベルとデフォルトを定義できます。
+- Claude モデルをプロキシするプロバイダー Plugin は、Anthropic の直接カタログとプロキシカタログの整合性を維持するため、`openclaw/plugin-sdk/provider-model-shared` の `resolveClaudeThinkingProfile(modelId)` を再利用する必要があります。
+- 各プロファイルレベルには、保存される正規の `id`（`off`、`minimal`、`low`、`medium`、`high`、`xhigh`、`adaptive`、`max`、または `ultra`）があり、表示用の `label` を含めることができます。二値プロバイダーは `{ id: "low", label: "on" }` を使用します。
+- プロファイルフックは、利用可能な場合、`reasoning`、`compat.thinkingFormat`、`compat.supportedReasoningEfforts` を含む、統合されたカタログ情報を受け取ります。設定されたリクエスト契約が対応するペイロードをサポートする場合に限り、これらの情報を使用して二値またはカスタムプロファイルを公開してください。
+- 明示的な思考オーバーライドを検証する必要があるツール Plugin は、`api.runtime.agent.resolveThinkingPolicy({ provider, model, agentRuntime })` と `api.runtime.agent.normalizeThinkingLevel(...)` を使用する必要があります。独自のプロバイダー／モデルレベルリストを保持してはいけません。常時埋め込み実行など、ツールが実行パスを所有する場合は `agentRuntime` を渡します。
+- 設定済みのカスタムモデルメタデータにアクセスできるツール Plugin は、`resolveThinkingPolicy` に `catalog` を渡すことで、`compat.supportedReasoningEfforts` のオプトインを Plugin 側の検証に反映できます。
+- 公開済みのレガシーフック（`supportsXHighThinking`、`isBinaryThinking`、`resolveDefaultThinkingLevel`）は互換性アダプターとして維持されますが、新しいカスタムレベルセットでは `resolveThinkingProfile` を使用する必要があります。
+- Gateway の行／デフォルトは `thinkingLevels`、`thinkingOptions`、`thinkingDefault` を公開するため、ACP／チャットクライアントはランタイム検証で使用されるものと同じプロファイル ID とラベルをレンダリングできます。

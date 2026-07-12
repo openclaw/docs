@@ -1,27 +1,28 @@
 ---
 read_when:
-    - 你正在腳本或 CI 中自動化入門流程
-    - 你需要特定提供者的非互動式範例
+    - 你正在指令碼或 CI 中自動執行初始設定
+    - 你需要特定供應商的非互動式範例
 sidebarTitle: CLI automation
-summary: OpenClaw 命令列介面的腳本化入門與代理設定
+summary: OpenClaw 命令列介面的指令化新手引導與代理程式設定
 title: 命令列介面自動化
 x-i18n:
-    generated_at: "2026-07-05T11:44:03Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:49:16Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: 9373e7e3815d349e13b98ab68338ff41e8ad3004b49c242acd6c3f8e114f9e3c
+    source_hash: de3115fd0c675b92f22cf9c44ddd307a854e499c6f163235f991368429b2c152
     source_path: start/wizard-cli-automation.md
     workflow: 16
 ---
 
-使用 `openclaw onboard --non-interactive` 來編寫設定腳本。它需要 `--accept-risk`：非互動式設定可以在沒有確認提示的情況下寫入認證與常駐程式設定，因此此旗標是明確的風險確認。
+使用 `openclaw onboard --non-interactive` 以指令碼執行設定。此命令需要 `--accept-risk`：非互動式設定可在沒有確認提示的情況下寫入認證資訊與常駐程式設定，因此此旗標用於明確確認你已知悉風險。
 
 <Note>
-`--json` 不代表非互動模式。請為腳本明確傳入 `--non-interactive --accept-risk`。
+`--json` 不代表啟用非互動模式。請在指令碼中明確傳入 `--non-interactive --accept-risk`。
 </Note>
 
-## 基準非互動式範例
+## 基本非互動式範例
 
 ```bash
 openclaw onboard --non-interactive --accept-risk \
@@ -36,11 +37,11 @@ openclaw onboard --non-interactive --accept-risk \
   --skip-skills
 ```
 
-加入 `--json` 可取得機器可讀的摘要。
+加入 `--json` 以取得機器可讀的摘要。
 
-- `--gateway-port` 預設為 `18789`；只有在需要覆寫時才傳入。
-- `--skip-bootstrap` 會略過建立預設工作區檔案，適用於會預先填入自身工作區的自動化。
-- `--secret-input-mode ref` 會在認證設定檔中儲存由 env 支援的參照（`{ source: "env", provider: "default", id: "<ENV_VAR>" }`），而不是明文金鑰。在非互動式 `ref` 模式中，提供者 env 變數必須已設定於處理程序環境中：若傳入內嵌金鑰旗標但沒有對應的 env 變數，會快速失敗。
+- `--gateway-port` 預設為 `18789`；僅在需要覆寫時傳入。
+- `--skip-bootstrap` 會略過建立預設工作區檔案，適用於會預先填入自有工作區的自動化流程。
+- `--secret-input-mode ref` 會在驗證設定檔中儲存由環境變數支援的參照（`{ source: "env", provider: "default", id: "<ENV_VAR>" }`），而非明文金鑰。在非互動式 `ref` 模式中，供應商的環境變數必須已設定於程序環境中：若傳入行內金鑰旗標，卻未設定其對應的環境變數，命令會立即失敗。
 
 ```bash
 openclaw onboard --non-interactive --accept-risk \
@@ -49,10 +50,10 @@ openclaw onboard --non-interactive --accept-risk \
   --secret-input-mode ref
 ```
 
-## 提供者專屬範例
+## 各供應商專屬範例
 
 <AccordionGroup>
-  <Accordion title="Anthropic API key example">
+  <Accordion title="Anthropic API 金鑰範例">
     ```bash
     openclaw onboard --non-interactive --accept-risk \
       --mode local \
@@ -61,7 +62,7 @@ openclaw onboard --non-interactive --accept-risk \
       --gateway-bind loopback
     ```
   </Accordion>
-  <Accordion title="Cloudflare AI Gateway example">
+  <Accordion title="Cloudflare AI Gateway 範例">
     ```bash
     openclaw onboard --non-interactive --accept-risk \
       --mode local \
@@ -72,7 +73,7 @@ openclaw onboard --non-interactive --accept-risk \
       --gateway-bind loopback
     ```
   </Accordion>
-  <Accordion title="Gemini example">
+  <Accordion title="Gemini 範例">
     ```bash
     openclaw onboard --non-interactive --accept-risk \
       --mode local \
@@ -81,7 +82,7 @@ openclaw onboard --non-interactive --accept-risk \
       --gateway-bind loopback
     ```
   </Accordion>
-  <Accordion title="Mistral example">
+  <Accordion title="Mistral 範例">
     ```bash
     openclaw onboard --non-interactive --accept-risk \
       --mode local \
@@ -90,7 +91,7 @@ openclaw onboard --non-interactive --accept-risk \
       --gateway-bind loopback
     ```
   </Accordion>
-  <Accordion title="Moonshot example">
+  <Accordion title="Moonshot 範例">
     ```bash
     openclaw onboard --non-interactive --accept-risk \
       --mode local \
@@ -99,7 +100,7 @@ openclaw onboard --non-interactive --accept-risk \
       --gateway-bind loopback
     ```
   </Accordion>
-  <Accordion title="Ollama example">
+  <Accordion title="Ollama 範例">
     ```bash
     openclaw onboard --non-interactive --accept-risk \
       --mode local \
@@ -108,7 +109,7 @@ openclaw onboard --non-interactive --accept-risk \
       --gateway-bind loopback
     ```
   </Accordion>
-  <Accordion title="OpenCode example">
+  <Accordion title="OpenCode 範例">
     ```bash
     openclaw onboard --non-interactive --accept-risk \
       --mode local \
@@ -116,9 +117,9 @@ openclaw onboard --non-interactive --accept-risk \
       --opencode-zen-api-key "$OPENCODE_API_KEY" \
       --gateway-bind loopback
     ```
-    如需 Go 目錄，請切換為 `--auth-choice opencode-go --opencode-go-api-key "$OPENCODE_API_KEY"`。
+    若要使用 Go 目錄，請改用 `--auth-choice opencode-go --opencode-go-api-key "$OPENCODE_API_KEY"`。
   </Accordion>
-  <Accordion title="Synthetic example">
+  <Accordion title="Synthetic 範例">
     ```bash
     openclaw onboard --non-interactive --accept-risk \
       --mode local \
@@ -127,7 +128,7 @@ openclaw onboard --non-interactive --accept-risk \
       --gateway-bind loopback
     ```
   </Accordion>
-  <Accordion title="Vercel AI Gateway example">
+  <Accordion title="Vercel AI Gateway 範例">
     ```bash
     openclaw onboard --non-interactive --accept-risk \
       --mode local \
@@ -136,7 +137,7 @@ openclaw onboard --non-interactive --accept-risk \
       --gateway-bind loopback
     ```
   </Accordion>
-  <Accordion title="Z.AI example">
+  <Accordion title="Z.AI 範例">
     ```bash
     openclaw onboard --non-interactive --accept-risk \
       --mode local \
@@ -145,7 +146,7 @@ openclaw onboard --non-interactive --accept-risk \
       --gateway-bind loopback
     ```
   </Accordion>
-  <Accordion title="Custom provider example">
+  <Accordion title="自訂供應商範例">
     ```bash
     openclaw onboard --non-interactive --accept-risk \
       --mode local \
@@ -159,11 +160,11 @@ openclaw onboard --non-interactive --accept-risk \
       --gateway-bind loopback
     ```
 
-    `--custom-api-key` 是選用的；部分端點不需要認證。若省略，入門設定會檢查 env 中的 `CUSTOM_API_KEY`。`--custom-provider-id` 是選用的，省略時會從基底 URL 自動衍生。`--custom-compatibility` 預設為 `openai`（其他值：`openai-responses`、`anthropic`）。
+    `--custom-api-key` 為選用項目；部分端點不需要驗證。若省略，初始設定程序會檢查環境中的 `CUSTOM_API_KEY`。`--custom-provider-id` 為選用項目，省略時會根據基礎 URL 自動產生。`--custom-compatibility` 預設為 `openai`（其他值：`openai-responses`、`anthropic`）。
 
-    OpenClaw 會根據已知的視覺模型 ID 模式推斷圖片輸入支援（`gpt-4o`、`claude-3/4`、`gemini`、`-vl`/`vision` 後綴，以及類似模式）。針對未辨識的視覺模型，加入 `--custom-image-input` 可強制啟用；或加入 `--custom-text-input` 可強制僅使用文字。
+    OpenClaw 會根據已知的視覺模型 ID 模式推斷是否支援影像輸入（`gpt-4o`、`claude-3/4`、`gemini`、`-vl`/`vision` 後綴及類似模式）。若要為無法辨識的視覺模型強制啟用影像輸入，請加入 `--custom-image-input`；若要強制僅使用文字，請加入 `--custom-text-input`。
 
-    Ref 模式變體，將 `apiKey` 儲存為 `{ source: "env", provider: "default", id: "CUSTOM_API_KEY" }`：
+    參照模式變體，將 `apiKey` 儲存為 `{ source: "env", provider: "default", id: "CUSTOM_API_KEY" }`：
 
     ```bash
     export CUSTOM_API_KEY="your-key"
@@ -182,36 +183,36 @@ openclaw onboard --non-interactive --accept-risk \
   </Accordion>
 </AccordionGroup>
 
-Anthropic setup-token 認證仍受支援，但當本機 Claude 命令列介面登入可用時，OpenClaw 偏好重用 Claude 命令列介面。正式環境建議使用 Anthropic API 金鑰。
+Anthropic setup-token 驗證仍受支援，但當本機已有 Claude CLI 登入時，OpenClaw 會優先重用 Claude CLI。若用於正式環境，請優先使用 Anthropic API 金鑰。
 
-## 新增另一個 agent
+## 新增另一個代理程式
 
-`openclaw agents add <name>` 會建立一個獨立的 agent，並具備自己的工作區、工作階段與認證設定檔。在沒有 `--workspace`（且沒有其他旗標）的情況下執行，會啟動互動式精靈；傳入 `--workspace`、`--model`、`--agent-dir`、`--bind` 或 `--non-interactive` 中任一項，會以非互動方式執行，接著要求提供 `--workspace`。
+`openclaw agents add <name>` 會建立獨立的代理程式，並擁有自己的工作區、工作階段和驗證設定檔。不加 `--workspace`（且未使用其他旗標）執行時，會啟動互動式精靈；若傳入 `--workspace`、`--model`、`--agent-dir`、`--bind` 或 `--non-interactive` 中的任何一項，則會以非互動方式執行，此時必須提供 `--workspace`。
 
 ```bash
 openclaw agents add work \
   --workspace ~/.openclaw/workspace-work \
-  --model openai/gpt-5.5 \
+  --model openai/gpt-5.6-sol \
   --bind whatsapp:biz \
   --non-interactive \
   --json
 ```
 
-它寫入的設定鍵（新 agent ID 的 `agents.list[]` 項目）：
+此命令寫入的設定鍵（新代理程式 ID 的 `agents.list[]` 項目）：
 
 - `name`
 - `workspace`
 - `agentDir`
-- `model`（只有在傳入 `--model` 時）
+- `model`（僅在傳入 `--model` 時）
 
 注意事項：
 
 - 預設工作區（在互動式精靈中省略 `--workspace` 時）：`~/.openclaw/workspace-<agentId>`。
-- `--bind <channel[:accountId]>` 可重複使用；新增繫結可將傳入訊息路由至新的 agent（精靈也可以互動式完成此操作）。
-- agent 名稱會正規化為有效的 agent ID；`main` 為保留名稱。
+- `--bind <channel[:accountId]>` 可重複使用；新增繫結以將傳入訊息路由至新的代理程式（精靈也能以互動方式執行此操作）。
+- 代理程式名稱會正規化為有效的代理程式 ID；`main` 為保留值。
 
 ## 相關文件
 
-- 入門設定中心：[入門設定（命令列介面）](/zh-TW/start/wizard)
-- 完整參考：[命令列介面設定參考](/zh-TW/start/wizard-cli-reference)
-- 指令參考：[`openclaw onboard`](/zh-TW/cli/onboard)
+- 初始設定中心：[初始設定（命令列介面）](/zh-TW/start/wizard)
+- 完整參考資料：[命令列介面設定參考資料](/zh-TW/start/wizard-cli-reference)
+- 命令參考資料：[`openclaw onboard`](/zh-TW/cli/onboard)

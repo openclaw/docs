@@ -2,19 +2,20 @@
 summary: Redirecionar para /automation/cron-jobs
 title: Webhooks
 x-i18n:
-    generated_at: "2026-04-24T05:40:45Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: b0241fc7232c73d1f595f18fdf1a2d65475c6a82e3068b0aefb4f95f41712086
-    source_path: automation/webhook.md
-    workflow: 15
+    generated_at: "2026-07-12T14:53:04Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
+    provider: openai
+    source_hash: fde1180946aef371d4e44b24f3880f28e935a033c9a722ea3b188f893faf9e17
+    source_path: automation/webhook.md
+    workflow: 16
 ---
 
-Esta página foi movida para [Tarefas agendadas](/pt-BR/automation/cron-jobs#webhooks). Consulte [Tarefas agendadas](/pt-BR/automation/cron-jobs#webhooks) para a documentação de Webhook.
+Esta página foi movida. A documentação de Webhook agora está em [Tarefas agendadas](/pt-BR/automation/cron-jobs#webhooks).
 
 ## Relacionado
 
-- [Poll](/pt-BR/cli/message)
-- [Gmail PubSub](/pt-BR/automation/cron-jobs)
+- [Enquete](/pt-BR/cli/message)
+- [PubSub do Gmail](/pt-BR/automation/cron-jobs)
 - [Hooks](/pt-BR/automation/hooks)

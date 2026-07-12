@@ -1,59 +1,49 @@
 ---
 read_when:
-    - Einen Workspace manuell bootstrappen.
-summary: Workspace-Vorlage für `TOOLS.md`
-title: Vorlage für `TOOLS.md`
+    - Manuelles Initialisieren eines Arbeitsbereichs
+summary: Workspace-Vorlage für TOOLS.md
+title: TOOLS.md-Vorlage
 x-i18n:
-    generated_at: "2026-04-24T06:59:01Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 810b088129bfd963ffe603a7e0a07d099fd2551bf13ebcb702905e1b8135d017
-    source_path: reference/templates/TOOLS.md
-    workflow: 15
+    generated_at: "2026-07-12T16:00:13Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
+    provider: openai
+    source_hash: 20eab78b3b117566a1d33a70873e70ff2d5099543aa44e2719dc8d0797099afe
+    source_path: reference/templates/TOOLS.md
+    workflow: 16
 ---
 
-# TOOLS.md - Lokale Notizen
+# TOOLS.md – Lokale Notizen
 
-Skills definieren, _wie_ Tools funktionieren. Diese Datei ist für _Ihre_ Besonderheiten gedacht — also für Dinge, die in Ihrem Setup einzigartig sind.
-
-## Was hier hineingehört
-
-Dinge wie:
-
-- Namen und Orte von Kameras
-- SSH-Hosts und Aliase
-- Bevorzugte Stimmen für TTS
-- Namen von Lautsprechern/Räumen
-- Gerätenicknames
-- Alles, was umgebungsspezifisch ist
+Skills definieren, _wie_ Werkzeuge funktionieren. Diese Datei ist für _Ihre_ Besonderheiten bestimmt – alles, was nur für Ihre Einrichtung gilt: Kameranamen und -standorte, SSH-Hosts und -Aliasse, bevorzugte TTS-Stimmen, Lautsprecher-/Raumnamen, Gerätenamen und alles Umgebungsspezifische.
 
 ## Beispiele
 
 ```markdown
 ### Kameras
 
-- living-room → Hauptbereich, 180° Weitwinkel
+- living-room → Hauptbereich, 180°-Weitwinkel
 - front-door → Eingang, bewegungsgesteuert
 
 ### SSH
 
-- home-server → 192.168.1.100, user: admin
+- home-server → 192.168.1.100, Benutzer: admin
 
 ### TTS
 
 - Bevorzugte Stimme: "Nova" (warm, leicht britisch)
-- Standardlautsprecher: Kitchen HomePod
+- Standardlautsprecher: HomePod in der Küche
 ```
 
 ## Warum getrennt?
 
-Skills sind gemeinsam genutzt. Ihr Setup gehört Ihnen. Wenn Sie beides trennen, können Sie Skills aktualisieren, ohne Ihre Notizen zu verlieren, und Skills teilen, ohne Ihre Infrastruktur offenzulegen.
+Skills werden gemeinsam genutzt. Ihre Einrichtung gehört Ihnen. Wenn Sie beides getrennt halten, können Sie Skills aktualisieren, ohne Ihre Notizen zu verlieren, und Skills teilen, ohne Informationen über Ihre Infrastruktur preiszugeben.
 
 ---
 
-Fügen Sie alles hinzu, was Ihnen bei Ihrer Arbeit hilft. Das ist Ihr Spickzettel.
+Fügen Sie alles hinzu, was Ihnen bei Ihrer Arbeit hilft. Dies ist Ihr Spickzettel.
 
-## Verwandt
+## Verwandte Themen
 
-- [Agent workspace](/de/concepts/agent-workspace)
+- [Agent-Arbeitsbereich](/de/concepts/agent-workspace)

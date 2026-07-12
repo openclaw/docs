@@ -1,47 +1,57 @@
 ---
 read_when:
-    - Fehlerbehebung bei Integritätsindikatoren der mac-App
-summary: Wie die macOS-App Statuszustände der Gesundheit von Gateway/Baileys meldet
-title: Integritätsprüfungen (macOS)
+    - Fehlerbehebung bei Zustandsanzeigen der Mac-App
+summary: Wie die macOS-App den Integritätsstatus von Gateway und Kanälen meldet
+title: Systemdiagnosen (macOS)
 x-i18n:
-    generated_at: "2026-04-24T06:47:52Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: a7488b39b0eec013083f52e2798d719bec35780acad743a97f5646a6891810e5
-    source_path: platforms/mac/health.md
-    workflow: 15
+    generated_at: "2026-07-12T15:30:54Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
+    provider: openai
+    source_hash: a086c527796dbe453bdee1cc9cbe1e0fc1157de710c8c6de186411fe9aa3bc7b
+    source_path: platforms/mac/health.md
+    workflow: 16
 ---
 
 # Integritätsprüfungen unter macOS
 
-So sehen Sie in der Menüleisten-App, ob der verknüpfte Kanal gesund ist.
+So lesen Sie den Integritätsstatus des verknüpften Kanals in der Menüleisten-App ab.
 
 ## Menüleiste
 
-- Der Statuspunkt spiegelt jetzt die Baileys-Gesundheit wider:
-  - Grün: verknüpft + Socket wurde kürzlich geöffnet.
-  - Orange: verbindet sich/versucht erneut.
-  - Rot: abgemeldet oder Probe fehlgeschlagen.
-- Die sekundäre Zeile zeigt „linked · auth 12m“ oder den Fehlergrund.
-- Der Menüeintrag „Run Health Check“ löst eine On-Demand-Probe aus.
+Statuspunkt:
+
+- Grün: verknüpft + Prüfung erfolgreich.
+- Orange: verknüpft, aber eine Kanalprüfung meldet eine Beeinträchtigung/keine Verbindung.
+- Rot: noch nicht verknüpft.
+
+Die zweite Zeile lautet „verknüpft · Authentifizierung 12 Min.“ oder zeigt den Fehlergrund an.
+„Integritätsprüfung jetzt ausführen“ im Menü löst eine Prüfung bei Bedarf aus.
 
 ## Einstellungen
 
-- Der Reiter Allgemein erhält eine Health-Karte mit: Alter der verknüpften Auth, Pfad/Anzahl des Session-Stores, Zeitpunkt der letzten Prüfung, letzter Fehler/Statuscode sowie Buttons für Run Health Check / Reveal Logs.
-- Verwendet einen gecachten Snapshot, sodass die UI sofort lädt und bei Offline-Betrieb graceful zurückfällt.
-- Der Reiter **Channels** zeigt Kanalstatus + Steuerelemente für WhatsApp/Telegram an (Login-QR, Logout, Probe, letzter Disconnect/Fehler).
+- Die Registerkarte „Allgemein“ zeigt eine Integritätskarte: Statuspunkt, Zusammenfassungszeile (Verknüpfungsstatus +
+  Alter der Authentifizierung) und eine optionale Zeile mit Fehlerdetails sowie die Schaltflächen **Jetzt erneut versuchen** und
+  **Protokolle öffnen**.
+- Die **Registerkarte „Kanäle“** zeigt für WhatsApp und Telegram den Status und die Steuerelemente der einzelnen Kanäle (QR-Code zur Anmeldung,
+  Abmeldung, Prüfung, letzte Trennung/letzter Fehler).
 
-## Wie die Probe funktioniert
+## Funktionsweise der Prüfung
 
-- Die App führt etwa alle 60 Sekunden und auf Abruf `openclaw health --json` über `ShellExecutor` aus. Die Probe lädt Zugangsdaten und meldet den Status, ohne Nachrichten zu senden.
-- Cachen Sie den letzten guten Snapshot und den letzten Fehler getrennt, um Flackern zu vermeiden; zeigen Sie den Zeitstempel von beiden an.
+Die App ruft etwa alle 60 Sekunden und bei Bedarf über ihre bestehende WebSocket-
+Verbindung (nicht durch Aufruf einer CLI-Shell) den `health`-RPC des Gateways auf. Der RPC lädt
+die Anmeldedaten und meldet den Status, ohne Nachrichten zu senden. Die App speichert den letzten
+erfolgreichen Snapshot und den letzten Fehler getrennt im Cache, damit die Benutzeroberfläche sofort geladen wird und
+im Offlinebetrieb nicht flackert.
 
-## Im Zweifel
+## Im Zweifelsfall
 
-- Sie können weiterhin den CLI-Ablauf unter [Gateway health](/de/gateway/health) verwenden (`openclaw status`, `openclaw status --deep`, `openclaw health --json`) und `/tmp/openclaw/openclaw-*.log` für `web-heartbeat` / `web-reconnect` tailen.
+Verwenden Sie den CLI-Ablauf unter [Gateway-Integrität](/de/gateway/health) (`openclaw status`,
+`openclaw status --deep`, `openclaw health --json`) und verfolgen Sie
+`/tmp/openclaw/openclaw-*.log`, gefiltert nach `web-heartbeat` / `web-reconnect`.
 
-## Verwandt
+## Verwandte Themen
 
-- [Gateway health](/de/gateway/health)
+- [Gateway-Integrität](/de/gateway/health)
 - [macOS-App](/de/platforms/macos)

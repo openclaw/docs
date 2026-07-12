@@ -1,50 +1,80 @@
 ---
 read_when:
-    - Quieres habilitar el modo código de OpenClaw para una ejecución de agente
-    - Debes explicar por qué el modo código es diferente del modo Codex Code
-    - Estás revisando el contrato exec/wait, el sandbox QuickJS-WASI, la transformación de TypeScript o el puente oculto del catálogo de herramientas
-    - Estás agregando o revisando una integración interna del registro de espacios de nombres de modo código
+    - Quiere habilitar el modo de código de OpenClaw para una ejecución del agente
+    - Debes explicar por qué el modo de código es diferente del modo de código de Codex
+    - Está revisando el contrato compacto de herramientas, el entorno aislado QuickJS-WASI, la transformación de TypeScript o el puente oculto del catálogo de herramientas.
+    - Estás añadiendo o revisando una integración interna del registro de espacios de nombres del modo de código
 sidebarTitle: Code mode
-summary: 'Modo de código de OpenClaw: una superficie de herramientas exec/wait opcional respaldada por QuickJS-WASI y un catálogo de herramientas oculto limitado al run'
+summary: 'Modo de código de OpenClaw: una superficie de herramientas compacta y opcional, respaldada por QuickJS-WASI y un catálogo de herramientas oculto con alcance de ejecución'
 title: Modo de código
 x-i18n:
-    generated_at: "2026-07-05T11:43:20Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:49:29Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: da4803ad63634fd0f58adf09d143032fc6740331dab4e0769fae32461812f08c
+    source_hash: eb69afba5b1b204a78de0ccaf5f93922588db22ff8ee3faf40cc65af6c22f6be
     source_path: reference/code-mode.md
     workflow: 16
 ---
 
-El modo de código es una función experimental y opcional del runtime de agentes de OpenClaw. Cuando está habilitado, el modelo ya no ve todos los esquemas de herramientas habilitados; en cambio, para esa ejecución ve solo dos herramientas, `exec` y `wait`. El modelo escribe un pequeño programa en JavaScript o TypeScript que busca, describe y llama al catálogo de herramientas oculto.
+El modo de código es una característica experimental y opcional del entorno de ejecución de agentes de OpenClaw. Cuando
+está habilitado, el modelo deja de ver todos los esquemas de herramientas habilitados; en su lugar, ve
+`exec`, `wait` y cualquier herramienta exclusivamente directa cuyo resultado estructurado no pueda atravesar
+el puente de invitado que solo admite JSON. El modelo escribe un pequeño programa JavaScript o TypeScript
+que busca, describe e invoca el catálogo oculto de herramientas.
 
-Esta página documenta el modo de código de OpenClaw, no Codex Code Mode. Las dos funciones comparten un nombre y los mismos nombres de herramientas visibles para el modelo (`exec`, `wait`), pero son implementaciones separadas:
+Esta página documenta el modo de código de OpenClaw, no Codex Code Mode. Ambas características
+comparten un nombre y los mismos nombres de herramientas de control (`exec`, `wait`), pero son
+implementaciones independientes:
 
-- Codex Code Mode se ejecuta dentro del arnés de programación de Codex. Su herramienta `exec` es una herramienta de gramática libre: el modelo escribe código fuente JavaScript sin procesar (opcionalmente precedido por una línea pragma `// @exec: {...}` para opciones de ejecución), ejecutado en un runtime Deno/V8.
-- El modo de código de OpenClaw se ejecuta en el runtime genérico de agentes de OpenClaw y está deshabilitado salvo que se configure `tools.codeMode.enabled: true`. Su herramienta `exec` recibe una carga JSON `{ code, language }`, ejecutada en un worker QuickJS-WASI.
+- Codex Code Mode se ejecuta dentro del entorno de desarrollo de Codex. Su herramienta `exec` es una
+  herramienta de gramática libre: el modelo escribe código fuente JavaScript sin procesar (opcionalmente
+  precedido por una línea pragma `// @exec: {...}` para las opciones de ejecución), que se ejecuta
+  en un entorno de ejecución Deno/V8.
+- El modo de código de OpenClaw se ejecuta en el entorno de ejecución genérico de agentes de OpenClaw y está
+  deshabilitado a menos que se configure `tools.codeMode.enabled: true`. Su herramienta `exec`
+  recibe una carga JSON `{ code, language }`, que se ejecuta en un proceso de trabajo QuickJS-WASI.
 
-Ambas son superficies de ejecución de JavaScript, no superficies de comandos de shell. Trátalas como funciones independientes, implementadas de forma diferente, que casualmente exponen herramientas `exec`/`wait` con nombres idénticos.
+Ambas son superficies de ejecución de JavaScript, no superficies de comandos del shell. Deben tratarse
+como características independientes, implementadas de forma diferente, que casualmente exponen
+herramientas `exec`/`wait` con nombres idénticos.
 
 ## Qué hace
 
-- La lista de herramientas visible para el modelo pasa a ser exactamente `exec` y `wait`.
-- `exec` evalúa JavaScript o TypeScript generado por el modelo en un hilo worker QuickJS-WASI aislado.
-- Todas las demás herramientas habilitadas (núcleo de OpenClaw, Plugin, MCP, cliente) se ocultan del prompt del modelo y se exponen dentro del programa invitado mediante `ALL_TOOLS` y `tools`.
-- El código invitado busca en el catálogo oculto, describe el esquema de una herramienta y llama a una herramienta a través de la misma ruta de ejecución usada por los turnos normales del agente (política, aprobaciones, hooks y telemetría siguen aplicándose).
-- Las herramientas MCP se agrupan bajo el espacio de nombres `MCP`; en modo de código, esta es la única forma admitida de llamarlas.
-- `wait` reanuda una ejecución suspendida en modo de código cuando todavía hay llamadas a herramientas anidadas pendientes.
+- La lista de herramientas visible para el modelo pasa a ser `exec`, `wait`, además de cualquier herramienta exclusivamente directa,
+  como `computer`, cuyo resultado de imagen no puede atravesar el puente de invitado.
+- `exec` evalúa JavaScript o TypeScript generado por el modelo en un hilo de trabajo
+  QuickJS-WASI aislado.
+- Todas las herramientas habilitadas que pueden incluirse en el catálogo (núcleo de OpenClaw, Plugin, MCP, cliente) se ocultan del
+  prompt del modelo y se exponen dentro del programa invitado mediante `ALL_TOOLS`
+  y `tools`.
+- El código invitado busca en el catálogo oculto, describe el esquema de una herramienta e invoca
+  una herramienta mediante la misma ruta de ejecución que usan los turnos normales del agente (las políticas,
+  aprobaciones, hooks y la telemetría siguen aplicándose).
+- Las herramientas MCP se agrupan bajo el espacio de nombres `MCP`; en el modo de código, esta es la
+  única forma admitida de invocarlas.
+- `wait` reanuda una ejecución suspendida del modo de código cuando aún hay invocaciones de herramientas
+  anidadas pendientes.
 
-El modo de código cambia solo la superficie de orquestación orientada al modelo. No reemplaza herramientas, herramientas de Plugin, herramientas MCP, autenticación, política de aprobación, comportamiento de canal ni selección de modelo.
+El modo de código solo cambia la superficie de orquestación orientada al modelo. No
+sustituye las herramientas, las herramientas de Plugin, las herramientas MCP, la autenticación, la política de aprobación, el comportamiento
+del canal ni la selección del modelo.
 
 ## Por qué usarlo
 
-- Superficie de prompt más pequeña: los proveedores reciben dos herramientas de control en lugar de docenas o cientos de esquemas completos de herramientas.
-- Mejor orquestación: el modelo puede usar bucles, uniones, pequeñas transformaciones, lógica condicional y llamadas a herramientas anidadas en paralelo dentro de una celda de código.
-- Neutral respecto al proveedor: funciona con herramientas de OpenClaw, Plugin, MCP y cliente sin depender de ejecución de código nativa del proveedor.
-- Falla de forma cerrada: si el modo de código está habilitado pero el runtime QuickJS-WASI no está disponible, la ejecución falla en lugar de volver silenciosamente a una exposición directa amplia de herramientas.
+- Superficie del prompt más pequeña: los proveedores reciben dos herramientas de control y solo las pocas
+  herramientas directas requeridas, en lugar de decenas o cientos de esquemas completos de herramientas.
+- Mejor orquestación: el modelo puede usar bucles, combinaciones, pequeñas transformaciones,
+  lógica condicional e invocaciones paralelas de herramientas anidadas dentro de una sola celda de código.
+- Neutral respecto al proveedor: funciona con herramientas de OpenClaw, Plugin, MCP y cliente sin
+  depender de la ejecución de código nativa del proveedor.
+- Falla de forma segura: si el modo de código está habilitado, pero el entorno de ejecución QuickJS-WASI
+  no está disponible, la ejecución falla en lugar de recurrir silenciosamente a una exposición directa y amplia
+  de herramientas.
 
-Es más útil para agentes con un catálogo grande de herramientas habilitadas, o flujos de trabajo donde el modelo necesita buscar, combinar y llamar a varias herramientas antes de responder.
+Resulta especialmente útil para agentes con un catálogo grande de herramientas habilitadas o para flujos de trabajo en los que
+el modelo necesita buscar, combinar e invocar varias herramientas antes de responder.
 
 ## Habilitarlo
 
@@ -68,11 +98,15 @@ Forma abreviada:
 }
 ```
 
-El modo de código permanece desactivado cuando `tools.codeMode` se omite, es `false` o es un objeto sin `enabled: true`.
+El modo de código permanece desactivado cuando `tools.codeMode` se omite, es `false` o es un objeto
+sin `enabled: true`.
 
-Si usas agentes en sandbox con servidores MCP configurados, permite también el Plugin MCP incluido en la política de herramientas del sandbox, por ejemplo `tools.sandbox.tools.alsoAllow: ["bundle-mcp"]`. Consulta [Configuración: herramientas y proveedores personalizados](/es/gateway/config-tools#mcp-and-plugin-tools-inside-sandbox-tool-policy).
+Si se usan agentes en entornos aislados con servidores MCP configurados, también se debe permitir el
+Plugin MCP incluido en la política de herramientas del entorno aislado, por ejemplo,
+`tools.sandbox.tools.alsoAllow: ["bundle-mcp"]`. Consulte
+[Configuración: herramientas y proveedores personalizados](/es/gateway/config-tools#mcp-and-plugin-tools-inside-sandbox-tool-policy).
 
-Define límites explícitos para cotas más estrictas:
+Establezca límites explícitos para imponer restricciones más estrictas:
 
 ```json5
 {
@@ -92,7 +126,8 @@ Define límites explícitos para cotas más estrictas:
 }
 ```
 
-Para confirmar la forma de la carga del modelo durante la depuración, ejecuta el Gateway con registro dirigido:
+Para confirmar la forma de la carga del modelo durante la depuración, ejecute el Gateway con
+registros específicos:
 
 ```bash
 OPENCLAW_DEBUG_CODE_MODE=1 \
@@ -101,51 +136,55 @@ OPENCLAW_DEBUG_MODEL_PAYLOAD=tools \
 openclaw gateway
 ```
 
-Con el modo de código activo, los nombres de herramientas orientados al modelo registrados deberían ser `exec` y `wait`. Para la carga completa censurada del proveedor, añade `OPENCLAW_DEBUG_MODEL_PAYLOAD=full-redacted` durante una sesión breve de depuración.
+Con el modo de código activo, los nombres de herramientas orientados al modelo registrados deben ser `exec` y
+`wait`. Para obtener la carga completa y censurada del proveedor, añada
+`OPENCLAW_DEBUG_MODEL_PAYLOAD=full-redacted` durante una sesión breve de depuración.
 
 ## Recorrido técnico
 
-El resto de esta página cubre el contrato de runtime y los detalles de implementación para mantenedores, autores de Plugin que depuran la exposición de herramientas y operadores que validan despliegues de alto riesgo.
+El resto de esta página abarca el contrato del entorno de ejecución y los detalles de implementación,
+para responsables de mantenimiento, autores de Plugin que depuran la exposición de herramientas y operadores
+que validan implementaciones de alto riesgo.
 
-## Estado del runtime
+## Estado del entorno de ejecución
 
 |                     |                                                                                             |
 | ------------------- | ------------------------------------------------------------------------------------------- |
-| Runtime             | [`quickjs-wasi`](https://github.com/vercel-labs/quickjs-wasi)                               |
-| Estado predeterminado | deshabilitado                                                                             |
-| Estabilidad         | superficie experimental de OpenClaw (Codex Code Mode es una superficie separada y estable del arnés de Codex) |
-| Superficie objetivo | ejecuciones genéricas de agentes de OpenClaw                                                |
-| Postura de seguridad | el código del modelo es hostil                                                             |
-| Promesa de cara al usuario | habilitar el modo de código nunca vuelve silenciosamente a una exposición directa amplia de herramientas |
+| Entorno de ejecución | [`quickjs-wasi`](https://github.com/vercel-labs/quickjs-wasi)                               |
+| Estado predeterminado | deshabilitado                                                                               |
+| Estabilidad          | superficie experimental de OpenClaw (Codex Code Mode es una superficie estable e independiente del entorno de desarrollo de Codex) |
+| Superficie objetivo  | ejecuciones genéricas de agentes de OpenClaw                                                |
+| Postura de seguridad | el código del modelo es hostil                                                              |
+| Compromiso de cara al usuario | habilitar el modo de código nunca recurre silenciosamente a una exposición directa y amplia de herramientas |
 
 ## Alcance
 
-El modo de código es dueño de la forma de orquestación orientada al modelo para una ejecución preparada. No es dueño de la selección de modelo, el comportamiento de canal, la autenticación, la política de herramientas ni las implementaciones de herramientas.
+El modo de código controla la estructura de orquestación orientada al modelo para una ejecución preparada. No controla la selección del modelo, el comportamiento del canal, la autenticación, la política de herramientas ni las implementaciones de las herramientas.
 
-Dentro del alcance: definiciones de `exec`/`wait` visibles para el modelo, construcción del catálogo de herramientas oculto, ejecución invitada de JavaScript/TypeScript, runtime worker QuickJS-WASI, callbacks de host para buscar/describir/llamar, estado reanudable para programas invitados suspendidos, límites de salida/tiempo de espera/memoria/llamadas pendientes/snapshot y proyección de telemetría/trayectoria para llamadas a herramientas anidadas.
+Dentro del alcance: definiciones de herramientas de control/directas visibles para el modelo, construcción del catálogo oculto de herramientas, ejecución invitada de JavaScript/TypeScript, entorno de ejecución del proceso de trabajo de QuickJS-WASI, devoluciones de llamada del host para buscar/describir/llamar, estado reanudable para programas invitados suspendidos, límites de salida/tiempo de espera/memoria/llamadas pendientes/instantáneas y proyección de telemetría/trayectoria para llamadas a herramientas anidadas.
 
-Fuera del alcance: ejecución remota de código nativa del proveedor, semántica de ejecución de shell, cambios en la autorización existente de herramientas, scripts persistentes escritos por usuarios, acceso a gestor de paquetes/archivo/red/módulo en código invitado y reutilización directa de elementos internos de Codex Code Mode.
+Fuera del alcance: ejecución remota de código nativa del proveedor, semántica de ejecución del shell, cambios en la autorización existente de herramientas, scripts persistentes creados por usuarios, acceso al gestor de paquetes/archivos/red/módulos desde el código invitado y reutilización directa de los componentes internos del modo de código de Codex.
 
-Las herramientas propiedad del proveedor, como sandboxes remotos de Python, son herramientas separadas. Consulta [Ejecución de código](/es/tools/code-execution).
+Las herramientas controladas por el proveedor, como los entornos aislados remotos de Python, son herramientas independientes. Consulte [Ejecución de código](/es/tools/code-execution).
 
 ## Términos
 
-- **Modo de código**: el modo de runtime de OpenClaw que oculta las herramientas normales del modelo y expone solo `exec` y `wait`.
-- **Runtime invitado**: la VM JavaScript QuickJS-WASI que evalúa el código del modelo.
-- **Puente de host**: la superficie estrecha de callbacks compatible con JSON desde el código invitado de vuelta a OpenClaw.
-- **Catálogo**: la lista con alcance de ejecución de herramientas efectivas después de la resolución normal de política de herramientas, Plugin, MCP y herramientas de cliente.
-- **Llamada a herramienta anidada**: una llamada a herramienta hecha desde código invitado a través del puente de host.
-- **Snapshot**: estado serializado de la VM QuickJS-WASI guardado para que `wait` pueda continuar una ejecución suspendida en modo de código.
+- **Modo de código**: el modo de entorno de ejecución de OpenClaw que oculta las herramientas del modelo compatibles con el catálogo y expone `exec`, `wait`, además de las herramientas obligatorias exclusivamente directas.
+- **Entorno de ejecución invitado**: la máquina virtual JavaScript de QuickJS-WASI que evalúa el código del modelo.
+- **Puente del host**: la superficie limitada de devoluciones de llamada compatibles con JSON desde el código invitado hacia OpenClaw.
+- **Catálogo**: la lista de herramientas efectivas limitada a la ejecución, después de resolver la política normal de herramientas, los plugins, MCP y las herramientas del cliente.
+- **Llamada a herramienta anidada**: una llamada a herramienta realizada desde el código invitado mediante el puente del host.
+- **Instantánea**: estado serializado de la máquina virtual QuickJS-WASI que se guarda para que `wait` pueda continuar una ejecución suspendida del modo de código.
 
 ## Configuración
 
-`tools.codeMode.enabled` es la puerta de activación; definir otros campos no habilita la función por sí solo.
+`tools.codeMode.enabled` es el control de activación; establecer otros campos no habilita la función por sí solo.
 
-| Campo                 | Predeterminado                 | Límite                                          |
+| Campo                 | Valor predeterminado          | Límite                                          |
 | --------------------- | ------------------------------ | ----------------------------------------------- |
 | `enabled`             | `false`                        | booleano; solo `true` habilita el modo de código |
-| `runtime`             | `"quickjs-wasi"`               | único valor admitido                            |
-| `mode`                | `"only"`                       | expone `exec`/`wait`, oculta las herramientas normales del modelo |
+| `runtime`             | `"quickjs-wasi"`               | único valor compatible                          |
+| `mode`                | `"only"`                       | expone herramientas de control/directas y cataloga el resto |
 | `languages`           | `["javascript", "typescript"]` | cualquier subconjunto de los dos                |
 | `timeoutMs`           | `10000`                        | `100`-`60000`                                   |
 | `memoryLimitBytes`    | `67108864`                     | `1048576`-`1073741824`                          |
@@ -156,32 +195,47 @@ Las herramientas propiedad del proveedor, como sandboxes remotos de Python, son 
 | `searchDefaultLimit`  | `8`                            | limitado a `maxSearchLimit`                     |
 | `maxSearchLimit`      | `50`                           | `1`-`50`                                        |
 
-Si el modo de código está habilitado pero QuickJS-WASI no puede cargarse, OpenClaw falla de forma cerrada para esa ejecución; no expone silenciosamente las herramientas normales como alternativa.
+Si el modo de código está habilitado pero QuickJS-WASI no puede cargarse, OpenClaw aplica un cierre seguro para esa ejecución; no expone silenciosamente las herramientas normales como alternativa.
 
 ## Activación
 
 El modo de código se evalúa después de conocer la política efectiva de herramientas y antes de ensamblar la solicitud final al modelo:
 
-1. Resolver el agente, modelo, proveedor, sandbox, canal, remitente y política de ejecución.
-2. Crear la lista efectiva de herramientas de OpenClaw, añadiendo herramientas elegibles de Plugin, MCP y cliente.
-3. Aplicar la política de permitir/denegar.
-4. Si `tools.codeMode.enabled` es falso, continuar con la exposición normal de herramientas.
-5. Si está habilitado y las herramientas están activas para la ejecución, registrar las herramientas efectivas en el catálogo de modo de código.
-6. Eliminar todas las herramientas normales de la lista visible para el modelo; añadir `exec` y `wait`.
+1. Resuelve el agente, el modelo, el proveedor, el entorno aislado, el canal, el remitente y la
+   política de ejecución.
+2. Crea la lista efectiva de herramientas de OpenClaw y añade las herramientas de plugins, MCP y
+   cliente que cumplan los requisitos.
+3. Aplica la política de permisos y denegaciones.
+4. Si `tools.codeMode.enabled` es false, continúa con la exposición normal de herramientas.
+5. Si está habilitado y las herramientas están activas para la ejecución, conserva las herramientas
+   obligatorias de acceso exclusivamente directo y registra en el catálogo del modo de código
+   todas las herramientas efectivas que cumplan los requisitos del catálogo.
+6. Elimina las herramientas catalogadas de la lista visible para el modelo; añade `exec` y
+   `wait` junto con las herramientas de acceso exclusivamente directo conservadas.
 
-Las ejecuciones que intencionalmente no tienen herramientas (llamadas crudas al modelo, `disableTools: true` o una lista `tools.allow` vacía) no activan la superficie de modo de código incluso cuando `tools.codeMode.enabled: true` está configurado. El modo de código y OpenClaw Tool Search son mutuamente excluyentes para una ejecución; si se activa el modo de código, la Compaction de Tool Search no lo hace.
+Las ejecuciones que intencionadamente no tienen herramientas (llamadas directas al modelo, `disableTools: true`
+o una lista `tools.allow` vacía) no activan la superficie del modo de código aunque
+se configure `tools.codeMode.enabled: true`. El modo de código y la búsqueda de herramientas de OpenClaw
+son mutuamente excluyentes en una ejecución; si se activa el modo de código, no se realiza la
+Compaction de la búsqueda de herramientas.
 
-El catálogo de modo de código tiene alcance de ejecución y no debe filtrar herramientas de otro agente, sesión, remitente o ejecución.
+El catálogo del modo de código tiene el ámbito de la ejecución y no debe filtrar herramientas de otro
+agente, sesión, remitente o ejecución.
 
 ## Herramientas visibles para el modelo
 
-Cuando el modo de código está activo, el modelo ve exactamente `exec` y `wait`. Todas las demás herramientas habilitadas se ocultan de la lista de herramientas orientada al modelo y se registran en el catálogo de modo de código.
+Cuando el modo de código está activo, el modelo ve `exec`, `wait` y cualquier herramienta obligatoria
+de acceso exclusivamente directo. Todas las demás herramientas habilitadas se ocultan de la lista de
+herramientas presentada al modelo y se registran en el catálogo del modo de código.
 
-Usa `exec` para orquestación de herramientas, unión de datos, bucles, llamadas anidadas en paralelo y transformaciones estructuradas. Usa `wait` solo cuando `exec` devuelva un resultado reanudable `waiting`.
+Usa `exec` para orquestar herramientas, combinar datos, ejecutar bucles, realizar llamadas anidadas en paralelo
+y aplicar transformaciones estructuradas. Usa `wait` únicamente cuando `exec` devuelva un resultado
+`waiting` que se pueda reanudar.
 
 ## `exec`
 
-`exec` inicia una celda de modo de código y devuelve un resultado. El código de entrada es generado por el modelo y debe tratarse como hostil.
+`exec` inicia una celda del modo de código y devuelve un resultado. El código de entrada lo genera el modelo
+y debe tratarse como hostil.
 
 Entrada:
 
@@ -195,14 +249,22 @@ type CodeModeExecInput = {
 
 Reglas:
 
-- Uno de `code` o `command` debe no estar vacío.
-- `code` es el campo documentado orientado al modelo.
-- `command` se acepta como un alias compatible con exec para políticas de hooks y reescrituras de confianza (la herramienta normal `exec` de shell de OpenClaw también usa un campo `command`); cuando ambos están presentes, los valores deben coincidir.
-- `language` toma `"javascript"` como valor predeterminado; el esquema lo expone como un enum de cadena plano (`"javascript" | "typescript"`), no como una unión `oneOf`/`anyOf`, ya que algunos proveedores rechazan esas formas.
-- Si `language` es `"typescript"`, OpenClaw transpila antes de evaluar.
-- `exec` rechaza `import`, `require`, importación dinámica y patrones de cargador de módulos.
-- `exec` nunca expone recursivamente la implementación normal de shell `exec`.
-- Los eventos de hook externos de `exec` en modo de código llevan `toolKind: "code_mode_exec"` y `toolInputKind: "javascript" | "typescript"` (cuando se conoce), para que las políticas puedan distinguir celdas de modo de código de llamadas `exec` de estilo shell que comparten el mismo nombre de herramienta.
+- Uno de `code` o `command` debe tener un valor no vacío.
+- `code` es el campo documentado que se presenta al modelo.
+- `command` se acepta como alias compatible con exec para políticas de hooks y
+  reescrituras de confianza (la herramienta normal de ejecución de shell de OpenClaw también usa un campo
+  `command`); cuando ambos están presentes, los valores deben coincidir.
+- El valor predeterminado de `language` es `"javascript"`; el esquema lo expone como una enumeración plana
+  de cadenas (`"javascript" | "typescript"`), no como una unión `oneOf`/`anyOf`,
+  ya que algunos proveedores rechazan esas estructuras.
+- Si `language` es `"typescript"`, OpenClaw transpila el código antes de evaluarlo.
+- `exec` rechaza `import`, `require`, la importación dinámica y los patrones de carga
+  de módulos.
+- `exec` nunca expone recursivamente la implementación normal de `exec` del shell.
+- Los eventos de hooks del `exec` externo del modo de código contienen `toolKind: "code_mode_exec"` y
+  `toolInputKind: "javascript" | "typescript"` (cuando se conoce), para que las políticas puedan
+  distinguir las celdas del modo de código de las llamadas de tipo shell a `exec` que comparten el
+  mismo nombre de herramienta.
 
 Resultado:
 
@@ -234,19 +296,19 @@ type CodeModeFailedResult = {
 };
 ```
 
-`exec` devuelve `waiting` cuando la VM de QuickJS se suspende con estado reanudable que
+`exec` devuelve `waiting` cuando la VM de QuickJS se suspende con un estado reanudable que
 aún necesita una continuación visible para el modelo; el resultado incluye un `runId` para
-`wait`. Las llamadas de puente de espacios de nombres, incluidas las llamadas de espacios de nombres MCP, se drenan automáticamente
-dentro de la misma llamada `exec`/`wait` mientras están listas, por lo que un bloque de código
-compacto puede llamar a una herramienta MCP sin forzar una llamada de herramienta del modelo por cada espera
-de espacio de nombres.
+`wait`. Las llamadas al puente de espacios de nombres, incluidas las llamadas a espacios de nombres de MCP, se procesan automáticamente
+dentro de la misma llamada `exec`/`wait` mientras estén listas, por lo que un bloque de código
+compacto puede llamar a una herramienta MCP sin requerir una llamada de herramienta del modelo por cada
+espera de espacio de nombres.
 
-`exec` devuelve `completed` solo cuando la VM invitada no tiene trabajo pendiente y el
+`exec` devuelve `completed` únicamente cuando la VM invitada no tiene trabajo pendiente y el
 valor final es compatible con JSON después de que se ejecute el adaptador de salida de OpenClaw.
 
 ## `wait`
 
-`wait` continúa una VM de modo código suspendida.
+`wait` reanuda una máquina virtual suspendida en modo de código.
 
 Entrada:
 
@@ -258,31 +320,31 @@ type CodeModeWaitInput = {
 
 La salida es la misma unión `CodeModeResult` que devuelve `exec`.
 
-`wait` existe porque las herramientas anidadas de OpenClaw pueden ser lentas, interactivas, estar
-bloqueadas por aprobaciones o transmitir actualizaciones parciales; el modelo no debería tener que
-mantener abierta una llamada `exec` larga mientras el anfitrión espera trabajo externo.
+`wait` existe porque las herramientas anidadas de OpenClaw pueden ser lentas, interactivas, estar sujetas a aprobación
+o transmitir actualizaciones parciales; el modelo no debería tener que mantener abierta una única llamada larga a
+`exec` mientras el host espera a que finalice el trabajo externo.
 
 La instantánea/restauración de QuickJS-WASI es el mecanismo de reanudación:
 
-1. `exec` evalúa el código hasta completarse, fallar o suspenderse.
-2. Al suspenderse, OpenClaw toma una instantánea de la VM de QuickJS y registra el trabajo
-   pendiente del anfitrión.
-3. Cuando el trabajo pendiente se resuelve, `wait` restaura la instantánea de la VM y
-   vuelve a registrar las devoluciones de llamada del anfitrión mediante nombres estables.
-4. OpenClaw entrega resultados de herramientas anidadas en la VM restaurada y drena
+1. `exec` evalúa el código hasta que se completa, falla o se suspende.
+2. Cuando se suspende, OpenClaw crea una instantánea de la máquina virtual QuickJS y registra el trabajo pendiente
+   del host.
+3. Cuando finaliza el trabajo pendiente, `wait` restaura la instantánea de la máquina virtual y
+   vuelve a registrar las devoluciones de llamada del host mediante nombres estables.
+4. OpenClaw entrega los resultados de las herramientas anidadas a la máquina virtual restaurada y procesa
    los trabajos pendientes de QuickJS.
-5. `wait` devuelve `completed`, `failed` u otro resultado `waiting`.
+5. `wait` devuelve un resultado `completed`, `failed` u otro resultado `waiting`.
 
-Las instantáneas son estado de ejecución, no artefactos de usuario: viven solo en un
-mapa dentro del proceso (sin escritura en base de datos ni disco), tienen límite de tamaño, caducan y están
-limitadas a la ejecución y la sesión que las crearon.
+Las instantáneas son estado de ejecución, no artefactos del usuario: solo residen en un
+mapa en memoria dentro del proceso (sin escritura en la base de datos ni en el disco), tienen un tamaño limitado, caducan y están
+restringidas a la ejecución y la sesión que las crearon.
 
-`wait` falla (como resultado `failed`) cuando:
+`wait` falla (con un resultado `failed`) cuando:
 
 - `runId` es desconocido o su instantánea ya caducó.
-- el llamador no está en el mismo ámbito de ejecución/sesión que la ejecución suspendida.
-- ya hay un `wait` en curso para ese `runId`.
-- falla la restauración de QuickJS-WASI.
+- el autor de la llamada no está en el mismo ámbito de ejecución/sesión que la ejecución suspendida.
+- ya hay una operación `wait` en curso para ese `runId`.
+- la restauración de QuickJS-WASI falla.
 - la reanudación superaría `maxOutputBytes` o `maxSnapshotBytes`.
 
 ## API del entorno de ejecución invitado
@@ -298,8 +360,8 @@ declare function json(value: unknown): void;
 declare function yield_control(reason?: string): Promise<void>;
 ```
 
-`ALL_TOOLS` es metadato compacto para el catálogo con ámbito de ejecución; no
-contiene esquemas completos de forma predeterminada.
+`ALL_TOOLS` contiene metadatos compactos del catálogo con ámbito de ejecución; de forma predeterminada, no
+contiene los esquemas completos.
 
 ```typescript
 type ToolCatalogEntry = {
@@ -313,11 +375,11 @@ type ToolCatalogEntry = {
 ```
 
 Las herramientas de Plugin usan `source: "openclaw"` con `sourceName` establecido en el id del
-Plugin propietario; no hay un valor de origen `"plugin"` separado. `source: "mcp"` se
-usa solo para entradas MCP en metadatos `sourceName`/`mcp` (y se filtra
-de `ALL_TOOLS`/`tools.*`; consulta abajo).
+Plugin propietario; no hay un valor de origen `"plugin"` independiente. `source: "mcp"` se
+usa únicamente para entradas MCP en los metadatos `sourceName`/`mcp` (y se excluye
+de `ALL_TOOLS`/`tools.*`; véase más adelante).
 
-El esquema completo se carga solo bajo demanda:
+El esquema completo se carga solo cuando se solicita:
 
 ```typescript
 type ToolCatalogEntryWithSchema = ToolCatalogEntry & {
@@ -325,7 +387,7 @@ type ToolCatalogEntryWithSchema = ToolCatalogEntry & {
 };
 ```
 
-Ayudantes de catálogo:
+Funciones auxiliares del catálogo:
 
 ```typescript
 type ToolCatalog = {
@@ -336,22 +398,22 @@ type ToolCatalog = {
 };
 ```
 
-Las funciones de herramientas de conveniencia se instalan solo para nombres seguros no ambiguos:
+Las funciones de herramientas prácticas se instalan solo para nombres seguros inequívocos:
 
 ```typescript
 const files = await tools.search("read local file");
 const fileRead = await tools.describe(files[0].id);
 const content = await tools.call(fileRead.id, { path: "README.md" });
 
-// If the hidden catalog has an unambiguous `web_search` entry:
+// Si el catálogo oculto tiene una entrada `web_search` inequívoca:
 const hits = await tools.web_search({ query: "OpenClaw code mode" });
 ```
 
-Las entradas del catálogo MCP no se pueden llamar mediante `tools.call(...)` ni funciones de conveniencia
-en modo código; se exponen solo a través del espacio de nombres `MCP`
-generado. Los archivos de declaración de estilo TypeScript están disponibles a través de la
-superficie de archivo virtual `API` de solo lectura, de modo que los agentes puedan inspeccionar las firmas MCP
-sin agregar esquemas MCP al prompt:
+Las entradas del catálogo MCP no se pueden invocar mediante `tools.call(...)` ni mediante funciones
+prácticas en el modo de código; solo se exponen a través del espacio de nombres `MCP`
+generado. Los archivos de declaraciones con estilo de TypeScript están disponibles mediante la
+superficie virtual de archivos `API` de solo lectura, por lo que los agentes pueden inspeccionar las firmas MCP
+sin añadir los esquemas MCP al prompt:
 
 ```typescript
 const files = await API.list("mcp");
@@ -371,8 +433,7 @@ const prompt = await MCP.docs.prompts.get({
 });
 ```
 
-`API.read("mcp/<server>.d.ts")` devuelve declaraciones compactas inferidas a partir de los
-metadatos de herramientas MCP:
+`API.read("mcp/<server>.d.ts")` devuelve declaraciones compactas inferidas a partir de los metadatos de las herramientas MCP:
 
 ```typescript
 type McpToolResult = {
@@ -383,14 +444,14 @@ type McpToolResult = {
 };
 
 declare namespace MCP.github {
-  /** Return this TypeScript-style API header. */
+  /** Devuelve este encabezado de API con estilo de TypeScript. */
   function $api(toolName?: string, options?: { schema?: boolean }): Promise<McpApiHeader>;
 
   /**
-   * Create a GitHub issue.
-   * @param owner Repository owner
-   * @param repo Repository name
-   * @param title Issue title
+   * Crea una incidencia de GitHub.
+   * @param owner Propietario del repositorio
+   * @param repo Nombre del repositorio
+   * @param title Título de la incidencia
    */
   function createIssue(input: {
     owner: string;
@@ -401,38 +462,19 @@ declare namespace MCP.github {
 }
 ```
 
-Los archivos de declaración son virtuales, no se escriben bajo el espacio de trabajo ni el directorio
-de estado. Para cada llamada `exec` de modo código, OpenClaw crea el catálogo de herramientas
-con ámbito de ejecución, conserva las entradas MCP visibles, renderiza `mcp/index.d.ts` más un
-`mcp/<server>.d.ts` por cada servidor visible e inyecta esa pequeña tabla de solo lectura
-en el worker de QuickJS. El código invitado ve solo el objeto `API`:
-`API.list(prefix?)` devuelve metadatos de archivo y `API.read(path)` devuelve el
-contenido de declaración seleccionado. Se rechazan las rutas desconocidas y los segmentos
-`.`/`..`.
+Los archivos de declaración son virtuales; no se escriben en el espacio de trabajo ni en el directorio de estado. Para cada llamada `exec` del modo de código, OpenClaw crea el catálogo de herramientas con ámbito de ejecución, conserva las entradas MCP visibles, genera `mcp/index.d.ts` más un archivo `mcp/<server>.d.ts` por cada servidor visible e inyecta esa pequeña tabla de solo lectura en el worker de QuickJS. El código invitado solo ve el objeto `API`: `API.list(prefix?)` devuelve los metadatos de los archivos y `API.read(path)` devuelve el contenido de la declaración seleccionada. Se rechazan las rutas desconocidas y los segmentos `.`/`..`.
 
-Esto mantiene los esquemas MCP grandes fuera del prompt del modelo: el agente aprende que la
-API virtual existe a partir de la descripción de la herramienta `exec`, lee solo el archivo de
-declaración necesario y luego llama a `MCP.<server>.<tool>()` con un argumento de objeto.
-`MCP.<server>.$api()` sigue disponible como alternativa en línea para una
-respuesta de esquema de una sola herramienta dentro del programa.
+Esto mantiene los esquemas MCP grandes fuera del prompt del modelo: el agente descubre que la API virtual existe mediante la descripción de la herramienta `exec`, lee únicamente el archivo de declaración necesario y, a continuación, llama a `MCP.<server>.<tool>()` con un único argumento de objeto. `MCP.<server>.$api()` sigue disponible como alternativa en línea para obtener dentro del programa la respuesta del esquema de una sola herramienta.
 
-El entorno de ejecución invitado nunca ve objetos del anfitrión directamente. Las entradas y salidas cruzan
-el puente como valores compatibles con JSON con límites de tamaño explícitos.
+El entorno de ejecución invitado nunca ve directamente los objetos del host. Las entradas y salidas atraviesan el puente como valores compatibles con JSON y con límites de tamaño explícitos.
 
 ## Espacios de nombres internos
 
-Los espacios de nombres internos dan al modo código una API de dominio concisa sin agregar más
-herramientas visibles para el modelo. Una integración propiedad del cargador registra un espacio de nombres como
-`Issues` o `Calendar`; el código invitado llama entonces a ese espacio de nombres dentro del
-programa QuickJS mientras el modelo sigue viendo solo `exec` y `wait`.
+Los espacios de nombres internos proporcionan al modo de código una API de dominio concisa sin añadir más herramientas visibles para el modelo. Una integración gestionada por el cargador registra un espacio de nombres como `Issues` o `Calendar`; el código invitado llama después a ese espacio de nombres dentro del programa QuickJS, mientras que el modelo sigue viendo la superficie compacta de control/directa.
 
-Los espacios de nombres son internos por ahora. No hay una API pública de espacios de nombres del SDK de Plugin:
-los espacios de nombres de plugins externos necesitan un contrato propiedad del cargador para que la identidad del Plugin,
-los manifiestos instalados, el estado de autenticación y los descriptores de catálogo en caché no puedan desviarse
-de las herramientas de Plugin que respaldan el espacio de nombres. El modo código de core posee solo el
-sandbox, la serialización, el control del catálogo y el despacho del puente.
+Por ahora, los espacios de nombres son internos. No existe una API pública de espacios de nombres en el SDK de plugins: los espacios de nombres de plugins externos necesitan un contrato gestionado por el cargador para que la identidad del plugin, los manifiestos instalados, el estado de autenticación y los descriptores del catálogo almacenados en caché no se desincronicen de las herramientas del plugin que respaldan el espacio de nombres. El modo de código del núcleo solo gestiona el entorno aislado, la serialización, el control de acceso al catálogo y el envío a través del puente.
 
-El código invitado puede usar el global directo o el mapa `namespaces`:
+El código invitado puede usar el objeto global directo o el mapa `namespaces`:
 
 ```javascript
 const open = await Issues.list({ state: "open" });
@@ -442,38 +484,22 @@ return { count: open.length, alsoCount: alsoOpen.length };
 
 ### Ciclo de vida del registro
 
-El registro de espacios de nombres es local al proceso y se indexa por id de espacio de nombres:
+El registro de espacios de nombres es local al proceso y usa como clave el identificador del espacio de nombres:
 
 1. Un cargador de confianza llama a `registerCodeModeNamespaceForPlugin(pluginId, registration)`.
-2. El modo código crea el `ToolSearchRuntime` oculto para la ejecución y lee su
-   catálogo con ámbito de ejecución.
-3. `createCodeModeNamespaceRuntime(ctx, catalog)` conserva solo los registros
-   cuyos `requiredToolNames` son todos visibles y propiedad del mismo `pluginId`.
-4. Cada espacio de nombres visible llama a `createScope(ctx)` para la ejecución actual,
-   y recibe contexto de ejecución como `agentId`, `sessionKey`, `sessionId`,
-   `runId`, configuración y estado de aborto.
-5. Los datos de ámbito se serializan en un descriptor plano y se inyectan en QuickJS
-   como globales directos y `namespaces.<globalName>`.
-6. Las llamadas invitadas se suspenden a través del puente del worker, resuelven la ruta del espacio de nombres
-   en el anfitrión, asignan la llamada a una herramienta de catálogo declarada propiedad del Plugin y
-   ejecutan esa herramienta mediante `ToolSearchRuntime.callExactId`.
-7. Las llamadas de puente de espacio de nombres listas se drenan automáticamente dentro de la llamada
-   `exec`/`wait` activa; si el trabajo del espacio de nombres sigue pendiente al agotarse el tiempo de espera o
-   el invitado cede explícitamente, `wait` reanuda el mismo entorno de ejecución de espacio de nombres
-   más tarde.
-8. La reversión o desinstalación del Plugin llama a
-   `clearCodeModeNamespacesForPlugin(pluginId)` para que los globales obsoletos no
-   sobrevivan a una carga fallida del Plugin.
+2. El modo de código crea el `ToolSearchRuntime` oculto para la ejecución y lee su catálogo con ámbito de ejecución.
+3. `createCodeModeNamespaceRuntime(ctx, catalog)` conserva únicamente los registros cuyos `requiredToolNames` sean todos visibles y pertenezcan al mismo `pluginId`.
+4. Cada espacio de nombres visible llama a `createScope(ctx)` para la ejecución actual y recibe contexto de ejecución como `agentId`, `sessionKey`, `sessionId`, `runId`, la configuración y el estado de cancelación.
+5. Los datos del ámbito se serializan en un descriptor simple y se inyectan en QuickJS como objetos globales directos y como `namespaces.<globalName>`.
+6. Las llamadas del código invitado se suspenden a través del puente del worker, resuelven en el host la ruta del espacio de nombres, asignan la llamada a una herramienta declarada del catálogo propiedad del plugin y ejecutan esa herramienta mediante `ToolSearchRuntime.callExactId`.
+7. Las llamadas preparadas del puente de espacios de nombres se procesan automáticamente dentro de la llamada `exec`/`wait` activa; si el trabajo del espacio de nombres sigue pendiente al agotarse el tiempo de espera o si el código invitado cede el control explícitamente, `wait` reanuda más adelante el mismo entorno de ejecución del espacio de nombres.
+8. La reversión o desinstalación del plugin llama a `clearCodeModeNamespacesForPlugin(pluginId)` para que los objetos globales obsoletos no sobrevivan a una carga fallida del plugin.
 
-Las llamadas de espacio de nombres son llamadas a herramientas de catálogo: usan los mismos hooks de política,
-aprobaciones, manejo de aborto, telemetría, proyección de transcripción y comportamiento de
-suspensión/reanudación que `tools.call(...)`.
+Las llamadas a espacios de nombres son llamadas a herramientas del catálogo: utilizan los mismos hooks de políticas, aprobaciones, gestión de cancelaciones, telemetría, proyección de transcripciones y comportamiento de suspensión/reanudación que `tools.call(...)`.
 
-### Forma del registro
+### Estructura del registro
 
-Registra espacios de nombres desde la integración que posee las herramientas subyacentes. Mantén
-el ámbito pequeño y expón solo verbos de dominio que se asignen a herramientas de catálogo
-declaradas.
+Registre los espacios de nombres desde la integración propietaria de las herramientas subyacentes. Mantenga el ámbito reducido y exponga únicamente verbos de dominio que se correspondan con herramientas declaradas en el catálogo.
 
 ```typescript
 import {
@@ -486,9 +512,9 @@ const pluginId = "github";
 registerCodeModeNamespaceForPlugin(pluginId, {
   id: "github-issues",
   globalName: "Issues",
-  description: "GitHub issue helpers for the current repository.",
+  description: "Ayudantes para incidencias de GitHub en el repositorio actual.",
   requiredToolNames: ["github_list_issues", "github_update_issue"],
-  prompt: "Use Issues.list(params) and Issues.update(number, patch).",
+  prompt: "Use Issues.list(params) e Issues.update(number, patch).",
   createScope: (ctx) => ({
     repository: ctx.config,
     list: createCodeModeNamespaceTool("github_list_issues", ([params]) => params ?? {}),
@@ -500,142 +526,132 @@ registerCodeModeNamespaceForPlugin(pluginId, {
 });
 ```
 
-`createCodeModeNamespaceTool(toolName, inputMapper)` marca un miembro de ámbito como una
-función de espacio de nombres invocable. El `inputMapper` opcional recibe los argumentos
-del invitado y devuelve el objeto de entrada para la herramienta de catálogo subyacente; sin
-uno, se usa el primer argumento del invitado, o `{}` cuando se omite.
+`createCodeModeNamespaceTool(toolName, inputMapper)` marca un miembro del ámbito como una función invocable del espacio de nombres. El parámetro opcional `inputMapper` recibe los argumentos del código invitado y devuelve el objeto de entrada para la herramienta subyacente del catálogo; si no se proporciona, se usa el primer argumento del código invitado o `{}` cuando se omite.
 
-Las funciones sin procesar del anfitrión se rechazan antes de que se ejecute el código invitado:
+Las funciones sin procesar del host se rechazan antes de ejecutar el código invitado:
 
 ```typescript
 createScope: () => ({
-  // Wrong: this bypasses the catalog tool lifecycle and will be rejected.
+  // Incorrecto: esto omite el ciclo de vida de la herramienta del catálogo y se rechazará.
   list: async () => githubClient.listIssues(),
 });
 ```
 
 ### Propiedad y visibilidad
 
-La propiedad del espacio de nombres está vinculada al `pluginId` del llamador del registro.
-`requiredToolNames` es a la vez una puerta de visibilidad y una verificación de propiedad:
+La propiedad del espacio de nombres está vinculada al `pluginId` del autor de la llamada de registro. `requiredToolNames` sirve tanto de control de visibilidad como de comprobación de propiedad:
 
-- cada herramienta requerida debe existir en el catálogo de ejecución
-- cada herramienta requerida debe tener `sourceName === pluginId`
-- el espacio de nombres se oculta cuando falta alguna herramienta requerida o pertenece a
-  otro Plugin
-- cada ruta invocable solo puede apuntar a una herramienta nombrada en `requiredToolNames`
+- todas las herramientas requeridas deben existir en el catálogo de la ejecución
+- todas las herramientas requeridas deben tener `sourceName === pluginId`
+- el espacio de nombres se oculta cuando falta alguna herramienta requerida o esta pertenece a otro plugin
+- cada ruta invocable solo puede dirigirse a una herramienta cuyo nombre figure en `requiredToolNames`
 
-Esto impide que otro Plugin exponga un espacio de nombres registrando una herramienta
-con el mismo nombre y mantiene los espacios de nombres alineados con la política ordinaria de agentes: si
-la ejecución no puede ver las herramientas subyacentes, no puede ver el espacio de nombres.
+Esto impide que otro plugin exponga un espacio de nombres mediante el registro de una herramienta con el mismo nombre y mantiene los espacios de nombres alineados con las políticas normales del agente: si la ejecución no puede ver las herramientas subyacentes, tampoco puede ver el espacio de nombres.
 
-Por ejemplo, un espacio de nombres de GitHub debería vivir detrás de un Plugin propiedad de GitHub que
-posea la autenticación de GitHub, los clientes REST/GraphQL, los límites de tasa, las aprobaciones de escritura y
-las pruebas. El modo código de core no debería incrustar APIs específicas de GitHub, manejo de tokens
-ni política de proveedor.
+Por ejemplo, un espacio de nombres de GitHub debe estar detrás de un plugin propiedad de GitHub que gestione la autenticación de GitHub, los clientes REST/GraphQL, los límites de frecuencia, las aprobaciones de escritura y las pruebas. El modo de código del núcleo no debe integrar API específicas de GitHub, la gestión de tokens ni políticas de proveedores.
 
-### Reglas de serialización de ámbito
+### Reglas de serialización del ámbito
 
-`createScope(ctx)` puede devolver un objeto plano que contenga valores compatibles con JSON,
-arreglos, objetos anidados y marcadores de llamada `createCodeModeNamespaceTool(...)`.
-Los objetos del anfitrión nunca entran directamente en QuickJS.
+`createScope(ctx)` puede devolver un objeto simple que contenga valores compatibles con JSON, matrices, objetos anidados y marcadores de llamada `createCodeModeNamespaceTool(...)`. Los objetos del host nunca entran directamente en QuickJS.
 
 El serializador rechaza:
 
 - funciones sin procesar
 - grafos de objetos circulares
-- segmentos de ruta inseguros: `__proto__`, `constructor`, `prototype`, claves vacías,
-  o claves que contengan el separador interno de ruta
-- valores de `globalName` que no son identificadores de JavaScript
-- colisiones de `globalName` con globales integrados de modo código como `tools`,
+- segmentos de ruta no seguros: `__proto__`, `constructor`, `prototype`, claves vacías
+  o claves que contengan el separador de rutas interno
+- valores de `globalName` que no sean identificadores de JavaScript
+- colisiones de `globalName` con variables globales integradas del modo de código, como `tools`,
   `namespaces`, `text`, `json`, `yield_control`, `MCP`, `API`, `ALL_TOOLS` o
   `__openclaw*`
 
-Los valores que no se pueden serializar a JSON se convierten en valores alternativos seguros para JSON
-antes de cruzar el puente. Los datos binarios, handles, sockets, clientes e
-instancias de clases deberían permanecer detrás de herramientas de catálogo ordinarias.
+Los valores que no se puedan serializar como JSON se convierten en valores alternativos
+seguros para JSON antes de cruzar el puente. Los datos binarios, identificadores, sockets, clientes e
+instancias de clases deben permanecer detrás de las herramientas de catálogo ordinarias.
 
 ### Prompts
 
-La `description` del espacio de nombres y el `prompt` opcional se anexan al esquema
-`exec` visible para el modelo solo cuando el espacio de nombres es visible para esa ejecución. Úsalos
-para enseñar la superficie útil más pequeña:
+La `description` del espacio de nombres y el `prompt` opcional se añaden al esquema de `exec`
+visible para el modelo solo cuando el espacio de nombres es visible para esa ejecución. Úselos
+para enseñar la superficie útil mínima:
 
 ```typescript
 {
-  description: "Fiction production service helpers.",
+  description: "Herramientas auxiliares del servicio de producción de ficción.",
   prompt:
-    "Use Fictions.riskAudit(), Fictions.promoteIfReady(id, status), and Fictions.unpaidOver(amount).",
+    "Use Fictions.riskAudit(), Fictions.promoteIfReady(id, status) y Fictions.unpaidOver(amount).",
 }
 ```
 
-Mantén los prompts centrados en el contrato del espacio de nombres, no en la configuración de autenticación, el historial
+Mantenga los prompts centrados en el contrato del espacio de nombres, no en la configuración de autenticación, el historial
 de implementación ni el comportamiento no relacionado del plugin.
 
 ### Limpieza
 
-Los espacios de nombres son registros locales del proceso. Elimínalos cuando el
-plugin propietario se deshabilite, desinstale o revierta:
+Los espacios de nombres son registros locales del proceso. Elimínelos cuando el plugin
+propietario se deshabilite, se desinstale o se revierta:
 
 ```typescript
 clearCodeModeNamespacesForPlugin(pluginId);
 ```
 
-La limpieza del modo de código pertenece al plugin; borra los registros de espacios de nombres del plugin
-cuando termine su ciclo de vida en lugar de mantener manejadores de desmontaje por espacio de nombres.
-Las pruebas pueden llamar a `clearCodeModeNamespacesForTest()` para evitar filtrar
+La limpieza del modo de código corresponde al plugin; borre los registros de espacios de nombres del plugin
+cuando finalice su ciclo de vida, en lugar de conservar identificadores de desactivación por espacio de nombres.
+Las pruebas pueden llamar a `clearCodeModeNamespacesForTest()` para evitar que se filtren
 registros entre casos.
 
 ### Lista de comprobación de pruebas
 
-Los cambios de espacios de nombres deben cubrir el límite de seguridad y el comportamiento del invitado:
+Los cambios en espacios de nombres deben cubrir el límite de seguridad y el comportamiento del entorno invitado:
 
-- el texto del prompt del espacio de nombres aparece solo cuando las herramientas de respaldo son visibles
+- el texto del prompt del espacio de nombres aparece solo cuando las herramientas subyacentes son visibles
 - las herramientas con el mismo nombre de otro `sourceName` no exponen el espacio de nombres
-- se rechazan las funciones de alcance sin procesar
-- se rechazan los ids de espacios de nombres falsificados y las rutas falsificadas
+- se rechazan las funciones de ámbito sin procesar
+- se rechazan los identificadores de espacios de nombres falsificados y las rutas falsificadas
 - las rutas invocables no pueden apuntar a herramientas no declaradas
 - los objetos anidados y las referencias compartidas se serializan correctamente
-- las llamadas al espacio de nombres se ejecutan mediante herramientas del catálogo y devuelven detalles seguros para JSON
-- el código invitado puede capturar los fallos
+- las llamadas al espacio de nombres se ejecutan mediante herramientas de catálogo y devuelven detalles seguros para JSON
+- el código del entorno invitado puede capturar los fallos
 - las llamadas suspendidas al espacio de nombres se reanudan mediante `wait`
-- la reversión del plugin borra los registros de espacios de nombres propietarios
+- la reversión del plugin borra los registros de espacios de nombres que le pertenecen
 
-Los espacios de nombres complementan el catálogo genérico `tools.search`/`tools.call`: usa el
-catálogo para herramientas arbitrarias habilitadas de OpenClaw, plugins y clientes; usa `MCP`
-para herramientas MCP; usa otros espacios de nombres para APIs de dominio documentadas y propiedad del plugin
-cuando el código conciso sea más fiable que las búsquedas repetidas de esquemas.
+Los espacios de nombres complementan el catálogo genérico `tools.search`/`tools.call`: use el
+catálogo para herramientas habilitadas arbitrarias de OpenClaw, plugins y clientes; use `MCP`
+para las herramientas de MCP; use otros espacios de nombres para las API de dominio documentadas y
+propiedad de plugins, donde el código conciso sea más fiable que las consultas repetidas de esquemas.
 
 ## API de salida
 
-- `text(value)` anexa salida legible por humanos al array `output`.
-- `json(value)` anexa un elemento de salida estructurado después de una serialización compatible con JSON.
-- El valor devuelto final del código invitado se convierte en `value` en un resultado `completed`.
+- `text(value)` añade una salida legible para humanos al array `output`.
+- `json(value)` añade un elemento de salida estructurado después de una serialización
+  compatible con JSON.
+- El valor final devuelto por el código del entorno invitado se convierte en `value` en un resultado
+  `completed`.
 
 ```typescript
 type CodeModeOutput = { type: "text"; text: string } | { type: "json"; value: unknown };
 ```
 
-Reglas: el orden de salida coincide con las llamadas del invitado; la salida está limitada por
-`maxOutputBytes`; los valores no serializables se convierten en cadenas simples o
-errores; no se admiten valores binarios. Las imágenes y los archivos viajan mediante
-herramientas ordinarias de OpenClaw, no mediante el puente del modo de código.
+Reglas: el orden de salida coincide con el de las llamadas del invitado; la salida está limitada por
+`maxOutputBytes`; los valores no serializables se convierten en cadenas de texto simples o
+errores; no se admiten valores binarios. Las imágenes y los archivos se transfieren mediante
+las herramientas habituales de OpenClaw, no mediante el puente del modo de código.
 
 ## Catálogo de herramientas
 
-El catálogo oculto incluye herramientas después del filtrado de política efectivo, en este
+El catálogo oculto incluye las herramientas después de aplicar el filtrado efectivo de políticas, en este
 orden: herramientas principales de OpenClaw, herramientas de plugins incluidos, herramientas de plugins externos, herramientas MCP
-y luego herramientas proporcionadas por el cliente para la ejecución actual.
+y, por último, herramientas proporcionadas por el cliente para la ejecución actual.
 
-Los ids de catálogo son estables dentro de una ejecución y deterministas entre conjuntos de
-herramientas equivalentes cuando es posible. Forma real:
+Los identificadores del catálogo son estables dentro de una ejecución y, cuando es posible, deterministas entre
+conjuntos de herramientas equivalentes. Formato real:
 
 ```text
 <source>:<owner>:<tool-name>
 ```
 
-donde `<source>` es `openclaw`, `mcp` o `client` (las herramientas de plugin usan
-`openclaw` con el id del plugin como `<owner>`; las herramientas principales usan `openclaw:core:*`).
+donde `<source>` es `openclaw`, `mcp` o `client` (las herramientas de plugins usan
+`openclaw` con el identificador del plugin como `<owner>`; las herramientas principales usan `openclaw:core:*`).
 Ejemplos:
 
 ```text
@@ -645,136 +661,145 @@ mcp:github:create_issue
 client:app:select_file
 ```
 
-El catálogo omite las herramientas de control del modo de código: `exec`, `wait`, `tool_search_code`,
-`tool_search`, `tool_describe`, `tool_call`. Esto evita la recursión y mantiene
-estrecho el contrato orientado al modelo.
+El catálogo omite las herramientas de control del modo de código (`exec`, `wait`, `tool_search_code`,
+`tool_search`, `tool_describe`, `tool_call`) y las herramientas de uso exclusivamente directo. Los controles
+no deben recurrir al catálogo; las herramientas de uso exclusivamente directo siguen siendo visibles para el modelo
+porque sus resultados estructurados no pueden atravesar el puente de QuickJS.
 
-Las entradas MCP permanecen en el catálogo con alcance de ejecución para que la política, las aprobaciones, los hooks,
-la telemetría, la proyección de transcripción y los ids exactos de herramientas sigan compartidos con
-la ejecución normal de herramientas. Las vistas orientadas al invitado `ALL_TOOLS`, `tools.search(...)`,
-`tools.describe(...)` y `tools.call(...)` omiten las entradas MCP. El
-espacio de nombres generado `MCP.<server>.<tool>({ ...input })` se resuelve de vuelta al
-id exacto del catálogo y se despacha mediante la misma ruta del ejecutor.
+Las entradas de MCP permanecen en el catálogo con ámbito de ejecución para que las políticas, las aprobaciones, los hooks,
+la telemetría, la proyección de la transcripción y los identificadores exactos de las herramientas sigan compartiéndose con
+la ejecución normal de herramientas. Las vistas orientadas al entorno invitado `ALL_TOOLS`, `tools.search(...)`,
+`tools.describe(...)` y `tools.call(...)` omiten las entradas de MCP. El espacio de nombres
+generado `MCP.<server>.<tool>({ ...input })` se resuelve al identificador exacto del catálogo
+y se despacha mediante la misma ruta del ejecutor.
 
-## Interacción con Búsqueda de herramientas
+## Interacción con la búsqueda de herramientas
 
-El modo de código sustituye la superficie del modelo de Búsqueda de herramientas de OpenClaw en ejecuciones donde está
-activo.
+El modo de código sustituye la superficie del modelo de búsqueda de herramientas de OpenClaw en las ejecuciones donde
+está activo.
 
 Cuando `tools.codeMode.enabled` es true y se activa el modo de código:
 
 - OpenClaw no expone `tool_search_code`, `tool_search`, `tool_describe`
   ni `tool_call` como herramientas visibles para el modelo.
-- La misma idea de catalogación se mueve dentro del runtime invitado.
-- El runtime invitado recibe metadatos compactos de `ALL_TOOLS` y helpers de búsqueda/descripción/
+- La misma idea de catalogación se traslada al entorno de ejecución invitado.
+- El entorno de ejecución invitado recibe metadatos compactos de `ALL_TOOLS` y funciones auxiliares de búsqueda/descripción/
   llamada para herramientas que no son MCP.
-- Las llamadas MCP usan el espacio de nombres generado `MCP` y sus encabezados `$api()` en lugar
-  de `tools.call(...)`.
-- Las llamadas anidadas se despachan mediante la misma ruta de ejecutor de OpenClaw que usa Búsqueda de herramientas.
+- Las llamadas de MCP usan el espacio de nombres generado `MCP` y sus encabezados `$api()`
+  en lugar de `tools.call(...)`.
+- Las llamadas anidadas se despachan mediante la misma ruta del ejecutor de OpenClaw que usa la búsqueda de
+  herramientas.
 
-Consulta [Búsqueda de herramientas](/es/tools/tool-search) para el puente de catálogo compacto de OpenClaw
-que el modo de código sustituye en ejecuciones activas.
+Consulte [Búsqueda de herramientas](/es/tools/tool-search) para obtener información sobre el puente de catálogo compacto de OpenClaw
+que el modo de código sustituye en las ejecuciones activas.
 
 ## Nombres de herramientas y colisiones
 
-La herramienta `exec` visible para el modelo es la herramienta de modo de código. Si la herramienta normal de shell de OpenClaw
-`exec` está habilitada, se oculta del modelo y se cataloga como
+La herramienta `exec` visible para el modelo es la herramienta del modo de código. Si la herramienta normal de
+shell `exec` de OpenClaw está habilitada, se oculta del modelo y se cataloga como
 cualquier otra herramienta.
 
-Dentro del runtime invitado:
+Dentro del entorno de ejecución invitado:
 
-- `tools.call("openclaw:core:exec", input)` puede llamar a la herramienta shell exec si
+- `tools.call("openclaw:core:exec", input)` puede llamar a la herramienta de ejecución del shell si
   la política lo permite.
-- `tools.exec(...)` se instala solo si la entrada de catálogo shell exec tiene un
-  nombre seguro no ambiguo.
-- la herramienta `exec` de modo de código nunca está disponible recursivamente mediante `tools`.
+- `tools.exec(...)` se instala únicamente si la entrada del catálogo de ejecución del shell tiene un
+  nombre seguro inequívoco.
+- la herramienta `exec` del modo de código nunca está disponible de forma recursiva mediante `tools`.
 
 Si dos herramientas se normalizan al mismo nombre seguro de conveniencia, OpenClaw omite la
-función de conveniencia y exige `tools.call(id, input)`.
+función de conveniencia y requiere `tools.call(id, input)`.
 
-## Ejecución de herramientas anidadas
+## Ejecución anidada de herramientas
 
-Cada llamada de herramienta anidada cruza el puente del host y vuelve a entrar en OpenClaw,
-preservando: id de agente activo, id y clave de sesión, contexto de remitente y canal,
-política de sandbox, política de aprobación, hooks `before_tool_call` de plugin, señal de cancelación,
-actualizaciones de streaming cuando estén disponibles y eventos de trayectoria/auditoría.
+Cada llamada anidada a una herramienta cruza el puente del host y vuelve a entrar en OpenClaw,
+conservando: el id. del agente activo, el id. y la clave de sesión, el contexto del remitente y del canal,
+la política del entorno aislado, la política de aprobación, los hooks `before_tool_call` del Plugin, la señal de
+cancelación, las actualizaciones en streaming cuando estén disponibles y los eventos de trayectoria/auditoría.
 
-Las llamadas anidadas se proyectan en la transcripción como llamadas de herramientas reales para que los paquetes de
-soporte muestren lo ocurrido, con la proyección identificando la llamada de herramienta
-de modo de código padre y el id de herramienta anidada.
+Las llamadas anidadas se proyectan en la transcripción como llamadas reales a herramientas para que los paquetes de
+soporte muestren lo ocurrido; la proyección identifica la llamada principal a la herramienta
+del modo de código y el id. de la herramienta anidada.
 
-Se permiten llamadas anidadas paralelas hasta `maxPendingToolCalls`.
+Se permiten llamadas anidadas en paralelo hasta `maxPendingToolCalls`.
 
-## Ciclo de vida de ejecución e instantánea
+## Ciclo de vida de ejecuciones e instantáneas
 
-Cada ejecución de modo de código se rastrea en un mapa en proceso indexado por `runId` (no
-persistido en disco ni en una base de datos). `exec`/`wait` devuelven uno de tres estados de resultado:
-`completed`, `waiting` o `failed`.
+Cada ejecución del modo de código se rastrea en un mapa en memoria del proceso, indexado por `runId` (no
+se conserva en disco ni en una base de datos). `exec`/`wait` devuelven uno de tres estados de
+resultado: `completed`, `waiting` o `failed`.
 
 - Un resultado `waiting` almacena la instantánea de QuickJS, las solicitudes pendientes del puente y
-  metadatos de alcance (id de ejecución del agente, id/clave de sesión) hasta que `wait` lo reanuda o
+  los metadatos de ámbito (id. de ejecución del agente, id./clave de sesión) hasta que `wait` lo reanuda o
   caduca.
-- Los valores de `runId` caducados, de sesión incorrecta, de ejecución incorrecta y desconocidos/ya en reanudación
-  no producen un estado terminal distinto; emergen como un
+- La caducidad y los valores `runId` de una sesión incorrecta, una ejecución incorrecta o desconocidos/que ya se están reanudando
+  no producen un estado terminal distinto; se presentan como un
   resultado `failed` (`code: "invalid_input"`) con un mensaje como `code mode
 run is unavailable or expired.` o `code mode run belongs to a different
 session.`.
-- La instantánea de una ejecución se elimina del mapa tan pronto como se resuelve como
-  `completed` o `failed`, o se descarta al apagar el Gateway (nada
-  sobrevive a un reinicio, por diseño: esto es estado transitorio del runtime).
+- La instantánea de una ejecución se elimina del mapa en cuanto se resuelve como
+  `completed` o `failed`, o se descarta al cerrar el Gateway (nada
+  sobrevive a un reinicio: se trata de estado transitorio del entorno de ejecución).
+- Para trabajos de solo lectura, `exec` puede establecer `restartSafe: true`. OpenClaw entonces rechaza
+  las llamadas al catálogo con efectos secundarios y los espacios de nombres de plugins antes de la ejecución, y
+  marca los resultados suspendidos como seguros para reproducción. Si un reinicio interrumpe `wait`,
+  la [recuperación tras reinicio](/es/gateway/restart-recovery) reconstruye el turno a partir de la
+  transcripción en lugar de restaurar la instantánea local del proceso. El turno de recuperación
+  permanece limitado a herramientas principales de solo lectura auditadas y herramientas de plugins
+  explícitamente seguras para reproducción.
 - OpenClaw limita el número de ejecuciones suspendidas simultáneamente por proceso (64) y
-  rechaza nuevas suspensiones por encima de ese límite con `too many suspended code mode
+  rechaza nuevas suspensiones que superen ese límite con `too many suspended code mode
 runs.`.
 
 El almacenamiento de instantáneas está limitado por `maxSnapshotBytes` por ejecución, el límite por proceso
-de ejecuciones suspendidas anterior y `snapshotTtlSeconds`.
+de ejecuciones suspendidas indicado anteriormente y `snapshotTtlSeconds`.
 
-## Runtime QuickJS-WASI
+## Entorno de ejecución QuickJS-WASI
 
 OpenClaw carga `quickjs-wasi` como dependencia directa en el paquete propietario; no
 depende de una copia transitiva instalada para una dependencia no relacionada.
 
-Responsabilidades del runtime: compilar/cargar el módulo WebAssembly QuickJS-WASI;
-crear una VM aislada por cada ejecución o reanudación de modo de código; registrar callbacks del host
-con nombres estables; establecer límites de memoria e interrupción; evaluar JavaScript; drenar
-trabajos pendientes; crear instantáneas del estado suspendido de la VM; restaurar instantáneas para `wait`;
-desechar manejadores de VM e instantáneas después de estados terminales.
+Responsabilidades del entorno de ejecución: compilar/cargar el módulo WebAssembly de QuickJS-WASI;
+crear una máquina virtual aislada por cada ejecución o reanudación del modo de código; registrar callbacks del host
+con nombres estables; establecer límites de memoria e interrupción; evaluar JavaScript; vaciar
+los trabajos pendientes; crear instantáneas del estado suspendido de la máquina virtual; restaurar instantáneas para `wait`;
+liberar los manejadores y las instantáneas de la máquina virtual tras los estados terminales.
 
-El runtime se ejecuta en un hilo worker de Node.js, fuera del bucle de eventos principal de OpenClaw.
-Un bucle infinito del invitado no debe bloquear indefinidamente el proceso Gateway;
-el manejador de interrupciones del worker aplica el tiempo límite de reloj de pared
+El entorno de ejecución se ejecuta en un hilo worker de Node.js, fuera del bucle de eventos
+principal de OpenClaw. Un bucle infinito del invitado no debe bloquear indefinidamente el proceso
+del Gateway; el controlador de interrupciones del worker aplica el tiempo de espera de reloj
 independientemente de que el código invitado coopere.
 
 ## TypeScript
 
-El soporte de TypeScript es solo una transformación de fuente: la entrada aceptada es una
+La compatibilidad con TypeScript es únicamente una transformación de código fuente: la entrada aceptada es una
 cadena de código TypeScript; la salida es una cadena JavaScript evaluada por
 QuickJS-WASI. No hay comprobación de tipos, resolución de módulos ni
 `import`/`require`. Los diagnósticos se devuelven como resultados `failed`.
 
-El compilador de TypeScript se carga de forma diferida solo para celdas TypeScript; las celdas de
-JavaScript simple y el modo de código deshabilitado nunca lo cargan.
+El compilador de TypeScript se carga de forma diferida únicamente para las celdas TypeScript; las celdas de
+JavaScript simples y el modo de código deshabilitado nunca lo cargan.
 
 ## Límite de seguridad
 
-El código del modelo es hostil. El runtime usa defensa en profundidad:
+El código del modelo es hostil. El entorno de ejecución usa defensa en profundidad:
 
 - ejecuta QuickJS-WASI fuera del bucle de eventos principal, en un hilo worker
 - carga `quickjs-wasi` como dependencia directa, no mediante Codex ni un
   paquete transitivo
-- sin sistema de archivos, red, subprocesos, importación de módulos, variables de entorno
+- no proporciona sistema de archivos, red, subprocesos, importación de módulos, variables de entorno
   ni objetos globales del host en el invitado
-- usa límites de memoria e interrupción de QuickJS más un tiempo límite de reloj de pared
-  del proceso padre
-- aplica límites de salida, instantánea, registro y llamadas pendientes
-- serializa los valores del puente del host mediante un adaptador JSON estrecho
-- convierte errores del host en errores simples del invitado, nunca en objetos del ámbito del host
-- descarta instantáneas por timeout, cancelación, fin de sesión o caducidad
-- rechaza acceso recursivo a `exec`, `wait` y herramientas de control de Búsqueda de herramientas
-- evita que las colisiones de nombres de conveniencia oculten helpers del catálogo
+- usa límites de memoria e interrupción de QuickJS, además de un tiempo de espera de reloj
+  del proceso principal
+- aplica límites de salida, instantáneas, registros y llamadas pendientes
+- serializa los valores del puente del host mediante un adaptador JSON restringido
+- convierte los errores del host en errores simples del invitado, nunca en objetos del entorno del host
+- descarta las instantáneas al agotarse el tiempo, producirse una cancelación, finalizar la sesión o caducar
+- rechaza el acceso recursivo a `exec`, `wait` y las herramientas de control de búsqueda de herramientas
+- evita que las colisiones de nombres de conveniencia oculten los auxiliares del catálogo
 
-El sandbox es una capa de seguridad; los operadores aún pueden necesitar endurecimiento a nivel de SO
-para despliegues de alto riesgo.
+El entorno aislado es una capa de seguridad; es posible que los operadores sigan necesitando
+medidas de protección a nivel del sistema operativo para implementaciones de alto riesgo.
 
 ## Códigos de error
 
@@ -788,28 +813,28 @@ type CodeModeErrorCode =
   | "internal_error";
 ```
 
-`invalid_input` cubre argumentos incorrectos de `exec`/`wait`, lenguajes deshabilitados,
-acceso a módulos rechazado, fallos de transformación de TypeScript, valores de `runId` desconocidos/caducados/
-con alcance incorrecto y demasiadas ejecuciones suspendidas. `runtime_unavailable`
-cubre un worker QuickJS que no logra iniciar o sale con código distinto de cero.
+`invalid_input` abarca argumentos incorrectos de `exec`/`wait`, lenguajes deshabilitados,
+acceso rechazado a módulos, fallos de transformación de TypeScript, valores `runId` desconocidos/caducados/
+fuera del ámbito correcto y un exceso de ejecuciones suspendidas. `runtime_unavailable`
+abarca un worker de QuickJS que no puede iniciarse o termina con un código distinto de cero.
 
-Los errores devueltos al invitado son datos simples; las instancias `Error` del host, objetos de pila,
-prototipos y funciones del host no cruzan a QuickJS.
+Los errores devueltos al invitado son datos simples; las instancias `Error` del host, los objetos de
+pila, los prototipos y las funciones del host no se transfieren a QuickJS.
 
 ## Telemetría
 
-El campo `telemetry` de cada resultado informa: tamaño del catálogo oculto y desglose por fuente
-(conteos `openclaw`/`mcp`/`client`), conteos acumulados de búsqueda/descripción/llamada
-para el catálogo de la ejecución y los nombres de herramientas visibles para el modelo (`exec`,
-`wait`).
+El campo `telemetry` de cada resultado informa de: el tamaño del catálogo oculto y un desglose
+por origen (recuentos de `openclaw`/`mcp`/`client`), los recuentos acumulados de búsqueda/descripción/llamadas
+del catálogo de la ejecución y los nombres de herramientas visibles para el modelo (`exec`,
+`wait` y las herramientas conservadas de acceso exclusivamente directo).
 
 La telemetría no debe incluir secretos, valores de entorno sin procesar ni entradas de herramientas
-sin redactar más allá de la política de trayectoria existente de OpenClaw.
+sin censurar más allá de la política de trayectoria existente de OpenClaw.
 
 ## Depuración
 
-Usa registro dirigido del transporte del modelo cuando el modo de código se comporte de forma distinta a
-una ejecución normal de herramienta:
+Use el registro específico del transporte del modelo cuando el modo de código se comporte de forma diferente a
+una ejecución normal de herramientas:
 
 ```bash
 OPENCLAW_DEBUG_CODE_MODE=1 \
@@ -819,98 +844,100 @@ OPENCLAW_DEBUG_SSE=events \
 openclaw gateway
 ```
 
-Para depurar la forma del payload, usa `OPENCLAW_DEBUG_MODEL_PAYLOAD=full-redacted`.
-Esto registra una instantánea JSON limitada y redactada de la solicitud del modelo; úsalo solo
-durante la depuración, ya que los prompts y el texto de mensajes aún pueden aparecer.
+Para depurar la estructura de la carga útil, use `OPENCLAW_DEBUG_MODEL_PAYLOAD=full-redacted`.
+Esto registra una instantánea JSON limitada y censurada de la solicitud del modelo; úselo únicamente
+durante la depuración, ya que los prompts y el texto de los mensajes aún pueden aparecer.
 
-Para depurar streams, usa `OPENCLAW_DEBUG_SSE=peek` para registrar los primeros cinco
-eventos SSE redactados. El modo de código también falla en cerrado si el payload final del proveedor
-no contiene exactamente `exec` y `wait` después de que la superficie de modo de código
-se haya activado.
+Para depurar el flujo, use `OPENCLAW_DEBUG_SSE=peek` para registrar los primeros cinco
+eventos SSE redactados. El modo de código también falla de forma segura si la carga útil
+final del proveedor no contiene exactamente un `exec`, un `wait` y únicamente
+herramientas aprobadas de uso directo después de que se haya activado la superficie del modo de código.
 
-## Diseño de implementación
+## Estructura de la implementación
 
 - contrato de configuración: `tools.codeMode`
-- constructor de catálogo: herramientas efectivas a entradas compactas y mapa de ids
-- adaptador de superficie del modelo: reemplazar herramientas visibles por `exec` y `wait`
-- adaptador de runtime QuickJS-WASI: cargar, evaluar, crear instantánea, restaurar, desechar
-- supervisor de worker: timeout, cancelación, aislamiento de fallos
-- adaptador de puente: callbacks del host seguros para JSON y entrega de resultados
+- generador de catálogo: herramientas efectivas convertidas en entradas compactas y mapa de identificadores
+- adaptador de superficie del modelo: sustituye las herramientas visibles por herramientas de control y directas
+- adaptador de entorno de ejecución QuickJS-WASI: cargar, evaluar, crear instantáneas, restaurar, liberar
+- supervisor de procesos de trabajo: tiempo de espera, cancelación, aislamiento de fallos
+- adaptador de puente: devoluciones de llamada del host compatibles con JSON y entrega de resultados
 - adaptador de transformación de TypeScript
-- almacén de instantáneas: TTL, límites de tamaño, alcance de ejecución/sesión
-- proyección de trayectoria para llamadas de herramientas anidadas
+- almacén de instantáneas: TTL, límites de tamaño, ámbito de ejecución/sesión
+- proyección de trayectoria para llamadas a herramientas anidadas
 - contadores de telemetría y diagnósticos
 
-La implementación reutiliza conceptos de catálogo y ejecutor de Búsqueda de herramientas, pero
-no usa un hijo `node:vm` como sandbox.
+La implementación reutiliza conceptos de catálogo y ejecutor de la búsqueda de herramientas, pero
+no usa un proceso secundario `node:vm` como entorno aislado.
 
 ## Lista de comprobación de validación
 
-La cobertura del modo de código debe demostrar:
+La cobertura del modo de código debe demostrar que:
 
-- la configuración deshabilitada deja sin cambios la exposición existente de herramientas
-- la configuración de objeto sin `enabled: true` deja deshabilitado el modo código
-- la configuración habilitada expone solo `exec` y `wait` al modelo cuando las herramientas están
-  activas para la ejecución
-- las ejecuciones sin herramientas en bruto, `disableTools` y las listas de permitidos vacías no activan
-  la aplicación de la carga útil del modo código
-- todas las herramientas no MCP efectivas aparecen en `ALL_TOOLS`
+- la configuración deshabilitada no modifica la exposición existente de herramientas
+- la configuración como objeto sin `enabled: true` mantiene deshabilitado el modo de código
+- la configuración habilitada expone `exec`, `wait` y únicamente las herramientas obligatorias
+  de uso directo al modelo cuando las herramientas están activas para la ejecución
+- las ejecuciones sin herramientas sin procesar, `disableTools` y las listas de permitidos vacías no activan
+  la aplicación de requisitos sobre la carga útil del modo de código
+- todas las herramientas efectivas no MCP aptas para el catálogo aparecen en `ALL_TOOLS`
+- las herramientas de uso directo permanecen visibles para el modelo y no aparecen en `ALL_TOOLS`
 - las herramientas denegadas no aparecen en `ALL_TOOLS`
-- `tools.search`, `tools.describe` y `tools.call` funcionan para las herramientas de OpenClaw
-- `API.list("mcp")` y `API.read("mcp/<server>.d.ts")` exponen declaraciones MCP de estilo TypeScript
-  sin una llamada de puente/herramienta
-- el espacio de nombres MCP `$api()` sigue disponible como alternativa en línea para esquemas
-- las llamadas al espacio de nombres MCP funcionan para herramientas MCP visibles con una entrada de objeto, mientras
-  las entradas directas del catálogo MCP están ausentes de `tools.*`
-- las herramientas de control de Búsqueda de herramientas están ocultas tanto de la superficie del modelo como del
+- `tools.search`, `tools.describe` y `tools.call` funcionan con las herramientas de OpenClaw
+- `API.list("mcp")` y `API.read("mcp/<server>.d.ts")` exponen declaraciones de MCP
+  al estilo de TypeScript sin una llamada al puente o a una herramienta
+- `$api()` del espacio de nombres MCP permanece disponible como alternativa en línea para los esquemas
+- las llamadas al espacio de nombres MCP funcionan con las herramientas MCP visibles mediante una entrada de objeto, mientras
+  que las entradas directas del catálogo MCP no están presentes en `tools.*`
+- las herramientas de control de la búsqueda de herramientas están ocultas tanto en la superficie del modelo como en el
   catálogo oculto
-- las llamadas anidadas conservan el comportamiento de aprobación y hooks
-- `exec` de shell está oculto para el modelo, pero se puede llamar por id de catálogo cuando
+- las llamadas anidadas conservan el comportamiento de aprobación y de los hooks
+- el `exec` del shell está oculto para el modelo, pero puede invocarse mediante el identificador del catálogo cuando
   está permitido
-- `exec` y `wait` recursivos en modo código no se pueden llamar desde código invitado
-- la entrada TypeScript se transforma y evalúa sin cargar TypeScript en
-  rutas deshabilitadas o solo JavaScript
-- `import`, `require`, el sistema de archivos, la red y el acceso al entorno fallan
+- los `exec` y `wait` recursivos del modo de código no pueden invocarse desde el código invitado
+- la entrada de TypeScript se transforma y evalúa sin cargar TypeScript en
+  rutas deshabilitadas o exclusivas de JavaScript
+- el acceso mediante `import`, `require`, al sistema de archivos, a la red y al entorno falla
 - los bucles infinitos agotan el tiempo de espera y no pueden bloquear el Gateway
-- los fallos del límite de memoria terminan la VM invitada
-- los límites de salida e instantánea se aplican para llamadas completadas y suspendidas
+- los fallos por límite de memoria terminan la máquina virtual invitada
+- se aplican los límites de salida y de instantáneas a las llamadas completadas y suspendidas
 - `wait` reanuda una instantánea suspendida y devuelve el valor final
-- los valores de `runId` expirados, cancelados, de sesión incorrecta y desconocidos fallan
-- la reproducción y persistencia de la transcripción conservan las llamadas de control del modo código
+- los valores de `runId` caducados, cancelados, de una sesión incorrecta y desconocidos fallan
+- la reproducción y la persistencia de la transcripción conservan las llamadas de control del modo de código
 - la transcripción y la telemetría muestran claramente las llamadas a herramientas anidadas
 
 ## Plan de pruebas E2E
 
-Ejecuta estas pruebas como pruebas de integración o de extremo a extremo al cambiar el runtime:
+Ejecute estas pruebas como pruebas de integración o de extremo a extremo al modificar el entorno de ejecución:
 
-1. Inicia un Gateway con `tools.codeMode.enabled: false`.
-2. Envía un turno de agente con un pequeño conjunto directo de herramientas.
-3. Afirma que las herramientas visibles para el modelo no han cambiado.
-4. Reinicia con `tools.codeMode.enabled: true`.
-5. Envía un turno de agente con herramientas de prueba de OpenClaw, plugin, MCP y cliente.
-6. Afirma que la lista de herramientas visibles para el modelo es exactamente `exec`, `wait`.
-7. En `exec`, lee `ALL_TOOLS` y afirma que las herramientas de prueba efectivas están
-   presentes.
-8. En `exec`, llama a herramientas de OpenClaw/plugin/cliente mediante `tools.search`,
+1. Inicie un Gateway con `tools.codeMode.enabled: false`.
+2. Envíe un turno del agente con un conjunto pequeño de herramientas directas.
+3. Compruebe que las herramientas visibles para el modelo no hayan cambiado.
+4. Reinicie con `tools.codeMode.enabled: true`.
+5. Envíe un turno del agente con herramientas de prueba de OpenClaw, Plugin, MCP y cliente.
+6. Compruebe que la lista de herramientas visibles para el modelo sea `exec`, `wait` y únicamente las herramientas
+   de uso directo configuradas.
+7. En `exec`, lea `ALL_TOOLS` y compruebe que las herramientas de prueba efectivas aptas para el catálogo
+   estén presentes y que las herramientas de uso directo estén ausentes.
+8. En `exec`, invoque herramientas de OpenClaw, Plugin y cliente mediante `tools.search`,
    `tools.describe` y `tools.call`.
-9. En `exec`, llama a `API.list("mcp")` y `API.read("mcp/<server>.d.ts")` y
-   afirma que los archivos de declaración describen herramientas MCP visibles.
-10. En `exec`, llama a herramientas MCP mediante `MCP.<server>.<tool>({ ...input })` y
-    afirma que las entradas directas del catálogo MCP están ausentes de `ALL_TOOLS` y
+9. En `exec`, invoque `API.list("mcp")` y `API.read("mcp/<server>.d.ts")`, y
+   compruebe que los archivos de declaraciones describan las herramientas MCP visibles.
+10. En `exec`, invoque herramientas MCP mediante `MCP.<server>.<tool>({ ...input })` y
+    compruebe que las entradas directas del catálogo MCP estén ausentes de `ALL_TOOLS` y
     `tools.*`.
-11. Afirma que las herramientas denegadas están ausentes y no pueden llamarse mediante un id adivinado.
-12. Inicia una llamada a herramienta anidada que se resuelve después de que `exec` devuelva `waiting`.
-13. Llama a `wait` y afirma que la VM restaurada recibe el resultado de la herramienta.
-14. Afirma que la respuesta final contiene la salida producida después de la restauración.
-15. Afirma que el tiempo de espera agotado, la cancelación y la expiración de instantáneas limpian el estado del runtime.
-16. Exporta la trayectoria y afirma que las llamadas anidadas son visibles bajo la llamada
-    principal de modo código.
+11. Compruebe que las herramientas denegadas estén ausentes y no puedan invocarse mediante un identificador adivinado.
+12. Inicie una llamada a una herramienta anidada que se resuelva después de que `exec` devuelva `waiting`.
+13. Invoque `wait` y compruebe que la máquina virtual restaurada reciba el resultado de la herramienta.
+14. Compruebe que la respuesta final contenga la salida generada después de la restauración.
+15. Compruebe que el agotamiento del tiempo de espera, la cancelación y la caducidad de la instantánea limpien el estado del entorno de ejecución.
+16. Exporte la trayectoria y compruebe que las llamadas anidadas sean visibles bajo la llamada principal
+    del modo de código.
 
-Los cambios solo de documentación en esta página aun así deben ejecutar `pnpm check:docs`.
+Los cambios exclusivos de documentación en esta página deben seguir ejecutando `pnpm check:docs`.
 
-## Relacionado
+## Contenido relacionado
 
 - [Búsqueda de herramientas](/es/tools/tool-search)
-- [Runtimes de agentes](/es/concepts/agent-runtimes)
+- [Entornos de ejecución de agentes](/es/concepts/agent-runtimes)
 - [Herramienta Exec](/es/tools/exec)
 - [Ejecución de código](/es/tools/code-execution)

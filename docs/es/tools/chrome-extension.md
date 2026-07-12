@@ -1,88 +1,84 @@
 ---
 read_when:
-    - Quieres que un agente controle tu Chrome real con sesión iniciada desde tu teléfono
-    - Sigues encontrándote con el aviso de Chrome "¿Permitir la depuración remota?" sin nadie en el escritorio
-    - Quieres entender el modelo de seguridad de la toma de control del navegador mediante la extensión.
-summary: 'Extensión de Chrome: permite que OpenClaw controle tu Chrome con sesión iniciada sin aviso de depuración remota'
+    - Quieres que un agente controle tu Chrome real con la sesión iniciada desde tu teléfono
+    - Sigues encontrándote con el aviso de Chrome «Allow remote debugging?» cuando no hay nadie frente al equipo
+    - Quiere comprender el modelo de seguridad de la toma de control del navegador mediante la extensión
+summary: 'Extensión de Chrome: permite que OpenClaw controle tu sesión iniciada en Chrome sin mostrar el aviso de depuración remota'
 title: Extensión de Chrome
 x-i18n:
-    generated_at: "2026-07-06T10:53:17Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:52:44Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: c189e8f5585fb28544190690a2177e247d6f7e213b1e33c0534d74dde2eeae62
+    source_hash: cb3f7d4bd9d933e0e876d21a1edf07bafbdc18d0196ce636981bd11ad5f2facd
     source_path: tools/chrome-extension.md
     workflow: 16
 ---
 
 # Extensión de Chrome
 
-La extensión de Chrome de OpenClaw permite que un agente controle tus **pestañas
-de Chrome con sesión iniciada** sin lanzar un navegador gestionado separado y
-**sin** el aviso bloqueante de Chrome "¿Permitir depuración remota?".
+La extensión de Chrome de OpenClaw permite que un agente controle las **pestañas de Chrome
+con sesión iniciada** sin abrir un navegador administrado independiente y **sin** el
+aviso bloqueante de Chrome «Allow remote debugging?».
 
-Esto importa cuando controlas OpenClaw desde un teléfono (Telegram, WhatsApp,
-etc.): el perfil [`user`](/es/tools/browser#profiles-openclaw-user-chrome) se
-conecta mediante el puerto de depuración remota de Chrome, lo que muestra un
-diálogo de consentimiento en el escritorio que nadie puede pulsar cuando estás
-lejos. En su lugar, la extensión usa la API `chrome.debugger`, así que la única
-señal dentro de la página es el banner descartable de Chrome "OpenClaw empezó a
-depurar este navegador".
+Esto es importante cuando se controla OpenClaw desde un teléfono (Telegram, WhatsApp, etc.):
+el [perfil `user`](/es/tools/browser#profiles-openclaw-user-chrome) se conecta mediante
+el puerto de depuración remota de Chrome, lo que muestra un cuadro de diálogo de consentimiento
+en el escritorio que nadie puede pulsar cuando no se está presente. En su lugar, la extensión
+utiliza la API `chrome.debugger`, por lo que la única indicación dentro de la página es el
+banner descartable de Chrome «OpenClaw started debugging this browser».
 
-Esta es la misma estructura que usan las extensiones de Chrome de Claude de
-Anthropic y Codex de OpenAI.
+Esta es la misma arquitectura que utilizan las extensiones de Chrome de Claude de Anthropic
+y Codex de OpenAI.
 
 ## Cómo funciona
 
-Tres partes:
+Consta de tres partes:
 
-- **Servicio de control del navegador** (Gateway o host de nodo): la API a la
-  que llama la herramienta `browser`.
-- **Relay de la extensión** (WebSocket loopback): un servidor pequeño que el
-  servicio de control inicia en `127.0.0.1`. Presenta a OpenClaw un endpoint de
-  Chrome DevTools Protocol y se comunica con la extensión. Ambos lados se
-  autentican con un token local del host (ver abajo).
-- **Extensión de Chrome de OpenClaw** (MV3): se adjunta a las pestañas con
-  `chrome.debugger`, reenvía el tráfico CDP y gestiona el **grupo de pestañas
-  de OpenClaw**.
+- **Servicio de control del navegador** (Gateway o host del Node): la API a la que llama
+  la herramienta `browser`.
+- **Relé de la extensión** (WebSocket de bucle invertido): un pequeño servidor que el servicio
+  de control inicia en `127.0.0.1`. Proporciona a OpenClaw un punto de conexión del
+  protocolo Chrome DevTools y se comunica con la extensión. Ambas partes se autentican con
+  un token local del host (véase más adelante).
+- **Extensión de Chrome de OpenClaw** (MV3): se conecta a las pestañas mediante `chrome.debugger`,
+  reenvía el tráfico CDP y administra el **grupo de pestañas de OpenClaw**.
 
-OpenClaw solo ve y controla las pestañas que están en el **grupo de pestañas de
-OpenClaw**. El grupo es el límite de consentimiento: arrastra una pestaña dentro
-para compartirla, arrástrala fuera (o pulsa el botón de la barra de
-herramientas) para revocar el acceso al instante.
+OpenClaw solo puede ver y controlar las pestañas que están en el **grupo de pestañas de OpenClaw**.
+El grupo es el límite de consentimiento: arrastre una pestaña dentro para compartirla y arrástrela
+fuera (o haga clic en el botón de la barra de herramientas) para revocar el acceso al instante.
 
-## Instalar y emparejar
+## Instalación y vinculación
 
-1. Imprime la ruta de la extensión sin empaquetar:
+1. Muestre la ruta de la extensión sin empaquetar:
 
    ```bash
    openclaw browser extension path
    ```
 
-2. Abre `chrome://extensions`, activa **Modo de desarrollador**, haz clic en
-   **Cargar sin empaquetar** y selecciona el directorio impreso.
+2. Abra `chrome://extensions`, active **Developer mode**, haga clic en **Load
+   unpacked** y seleccione el directorio mostrado.
 
-3. Imprime la cadena de emparejamiento:
+3. Muestre la cadena de vinculación:
 
    ```bash
    openclaw browser extension pair
    ```
 
-4. Haz clic en el icono de OpenClaw en la barra de herramientas y pega la cadena
-   de emparejamiento en el popup. La insignia cambia a **ACTIVADO** cuando la
-   extensión se conecta al relay.
+4. Haga clic en el icono de OpenClaw de la barra de herramientas y pegue la cadena de vinculación
+   en la ventana emergente. La insignia cambia a **ON** cuando la extensión se conecta al relé.
 
-El token de emparejamiento es un **secreto local del host** creado en el primer
-uso y almacenado bajo `credentials/` en el directorio de estado (modo `0600`).
-Cada máquina que ejecuta un navegador —el host de Gateway y cada host de nodo de
-navegador— tiene su propio token, así que ninguna credencial tiene que viajar
-entre máquinas. Para rotarlo, elimina el archivo `browser-extension-relay.secret`
-y empareja de nuevo.
+El token de vinculación es un **secreto local del host** que se crea la primera vez que se usa y se
+almacena en `credentials/`, dentro del directorio de estado (modo `0600`). Cada máquina que
+ejecuta un navegador —el host del Gateway y cada host del Node del navegador— tiene su propio
+token, por lo que no es necesario transferir credenciales entre máquinas. Para rotarlo, elimine el
+archivo `browser-extension-relay.secret` y vuelva a realizar la vinculación.
 
-## Usarlo
+## Uso
 
-Selecciona el perfil integrado `chrome` en una llamada a la herramienta
-`browser`, o conviértelo en el predeterminado:
+Seleccione el perfil integrado `chrome` en una llamada a la herramienta `browser` o establézcalo
+como predeterminado:
 
 ```bash
 openclaw config set browser.defaultProfile chrome
@@ -98,31 +94,36 @@ openclaw config set browser.defaultProfile chrome
 }
 ```
 
-- Compartir una pestaña: haz clic en el botón de OpenClaw en la barra de
-  herramientas en esa pestaña (se une al grupo de pestañas de OpenClaw), o
-  arrastra cualquier pestaña al grupo.
-- El agente también puede abrir pestañas nuevas; estas entran automáticamente en
-  el grupo.
-- Revocar: haz clic de nuevo en el botón, arrastra la pestaña fuera del grupo o
-  descarta el banner de depuración de Chrome. El agente pierde el acceso a esa
-  pestaña de inmediato.
+- Para compartir una pestaña: haga clic en el botón de OpenClaw de la barra de herramientas
+  de esa pestaña (se unirá al grupo de pestañas de OpenClaw), o arrastre cualquier pestaña al grupo.
+- El agente también puede abrir pestañas nuevas, que se añaden automáticamente al grupo.
+- Para revocar el acceso: vuelva a hacer clic en el botón, arrastre la pestaña fuera del grupo
+  o descarte el banner de depuración de Chrome. El agente pierde el acceso a esa pestaña de inmediato.
 
-## Nodos de navegador remotos
+## Acceso remoto o entre máquinas
 
-La extensión funciona tanto si Chrome se ejecuta en el host de Gateway como en
-un [host de nodo de navegador](/es/tools/browser#local-vs-remote-control) separado.
-El relay siempre es solo loopback y se ejecuta **en la máquina con el
-navegador**:
+Chrome no tiene que ejecutarse en el host del Gateway. Se admiten tres topologías:
 
-- **Mismo host** (Gateway + Chrome en una máquina): empareja en esa máquina.
-- **Nodo remoto** (Chrome en un nodo, Gateway en otro lugar): ejecuta
-  `openclaw browser extension path` / `pair` **en el nodo**, carga y empareja la
-  extensión allí. Gateway proxifica las acciones del navegador hacia el nodo
-  mediante su enlace de nodo autenticado existente; el relay local del nodo
-  controla la extensión. No se abre ningún puerto entrante nuevo en el nodo.
+- **Mismo host** (Gateway y Chrome en una sola máquina): realice la vinculación en esa máquina
+  con `openclaw browser extension pair`. El relé solo admite conexiones de bucle invertido.
+- **Conexión directa a un Gateway remoto** (Chrome en el portátil, Gateway en un VPS y
+  **nada más en el portátil**): en el Gateway, ejecute
+  `openclaw browser extension pair --gateway-url wss://your-gateway.example.com`.
+  Esto muestra una cadena `wss://…/browser/extension#<secret>`; cargue y vincule la
+  extensión en el portátil. La extensión se conecta **directamente al Gateway**
+  mediante `wss://`: no se requiere ninguna instalación de OpenClaw, Node, CLI ni ningún
+  puerto de entrada abierto en el portátil. Esta es la opción para el alojamiento administrado.
+- **Mediante un host del Node del navegador** (Chrome en una máquina que ya ejecuta un Node
+  de OpenClaw): ejecute `pair` en el Node y realice la vinculación localmente; el Gateway
+  redirige las acciones del navegador al Node mediante su enlace de Node autenticado existente.
 
-El token de emparejamiento es por host, así que cada nodo imprime su propia
-cadena.
+El secreto de vinculación es específico de cada host (el del Gateway en el caso directo) y lo
+valida la ruta `/browser/extension` del Gateway. Para la conexión directa, publique el Gateway
+mediante TLS (`wss://`) para que el secreto de vinculación y el tráfico CDP estén cifrados.
+El secreto permanece en el fragmento de URL de la cadena de vinculación y se presenta durante
+el protocolo de enlace de WebSocket como una credencial de subprotocolo, por lo que los registros
+de acceso habituales del proxy no lo reciben en la URL de la solicitud. Asegúrese de que cualquier
+proxy inverso conserve el encabezado estándar `Sec-WebSocket-Protocol`.
 
 ## Diagnóstico
 
@@ -131,20 +132,20 @@ openclaw browser status --browser-profile chrome
 openclaw browser doctor --browser-profile chrome
 ```
 
-`doctor` informa que la comprobación del **relay de la extensión de Chrome**
-falla hasta que el popup de la extensión muestra **Conectado**.
+`doctor` indica que la comprobación del **relé de la extensión de Chrome** falla hasta que la
+ventana emergente de la extensión muestra **Connected**.
 
 ## Modelo de seguridad
 
-- El relay se vincula solo a loopback; ambos lados del WebSocket se autentican
-  con el token derivado, y el lado de la extensión se verifica por origen como
-  `chrome-extension://`.
-- El agente solo puede ver y controlar pestañas en el **grupo de pestañas de
-  OpenClaw**. Tus otras pestañas permanecen privadas.
-- En comparación con el perfil `user` (Chrome MCP), que expone todo tu navegador
-  con sesión iniciada una vez que apruebas el aviso de depuración remota, la
-  extensión mantiene la superficie compartida limitada a un grupo de pestañas
-  que controlas de un vistazo.
+- El relé solo escucha en la interfaz de bucle invertido; ambos extremos de WebSocket se autentican
+  con el token derivado y se comprueba que el origen de la extensión sea `chrome-extension://`.
+- La vinculación directa con el Gateway no acepta el token del relé en la URL de la solicitud;
+  la extensión incluida lo transporta en la lista de subprotocolos de WebSocket.
+- El agente solo puede ver y controlar las pestañas del **grupo de pestañas de OpenClaw**. Las
+  demás pestañas permanecen privadas.
+- En comparación con el perfil `user` (Chrome MCP), que expone todo el navegador con sesión
+  iniciada una vez aprobado el aviso de depuración remota, la extensión limita la superficie
+  compartida a un grupo de pestañas que se puede controlar de un vistazo.
 
-Ver también: [Navegador](/es/tools/browser) para el modelo completo de perfiles y
-los perfiles gestionados `openclaw` y `user` de Chrome MCP.
+Consulte también: [Navegador](/es/tools/browser) para conocer el modelo completo de perfiles y los
+perfiles administrados `openclaw` y `user` de Chrome MCP.

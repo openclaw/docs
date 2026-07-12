@@ -1,59 +1,47 @@
 ---
 read_when:
-    - Verhalten oder Standardeinstellungen von Sprach-Aktivierungswörtern ändern
-    - Hinzufügen neuer Node-Plattformen, die Wake-Word-Synchronisierung benötigen
-summary: Globale Sprach-Aktivierungswörter (Gateway-verwaltet) und wie sie über Nodes hinweg synchronisiert werden
+    - Verhalten oder Standardeinstellungen für Sprachaktivierungswörter ändern
+    - Hinzufügen neuer Node-Plattformen, die eine Aktivierungswort-Synchronisierung benötigen
+summary: Globale Sprachaktivierungswörter (vom Gateway verwaltet) und ihre Synchronisierung zwischen Nodes
 title: Sprachaktivierung
 x-i18n:
-    generated_at: "2026-06-27T17:40:42Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:37:13Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: 3c57955e8061eca2f9fec83500e829f183cd3ef9f794bf385823a28f9c89b0a4
+    source_hash: a8a8c7a8bb2ee5bbc57d9141cd8f2176246cc61952b0ed42257f83af2c777427
     source_path: nodes/voicewake.md
     workflow: 16
 ---
 
-OpenClaw behandelt **Wake Words als eine einzige globale Liste**, die dem **Gateway** gehört.
+Aktivierungswörter sind **eine globale, vom Gateway verwaltete Liste** — es gibt keine benutzerdefinierten Listen pro Node. Jede Node- oder App-Benutzeroberfläche kann die Liste bearbeiten; das Gateway speichert die Änderung dauerhaft und überträgt sie an alle verbundenen Clients.
 
-- Es gibt **keine benutzerdefinierten Wake Words pro Node**.
-- **Jede Node-/App-UI kann** die Liste bearbeiten; Änderungen werden vom Gateway gespeichert und an alle übertragen.
-- macOS und iOS behalten lokale Schalter zum **Aktivieren/Deaktivieren von Voice Wake** bei (lokale UX und Berechtigungen unterscheiden sich).
-- Android lässt Voice Wake derzeit deaktiviert und verwendet einen manuellen Mikrofonablauf im Voice-Tab.
+- **macOS**: lokaler Schalter zum Aktivieren/Deaktivieren von Voice Wake. Erfordert macOS 26+; Laufzeit-/PTT-Details finden Sie unter [Sprachaktivierung (macOS)](/de/platforms/mac/voicewake).
+- **iOS**: lokaler Schalter zum Aktivieren/Deaktivieren von Voice Wake in den Einstellungen.
+- **Android**: implementiert Voice Wake nicht. Der Tab „Voice“ verwendet eine manuelle Mikrofonaufnahme anstelle von Aktivierungswort-Triggern.
 
-## Speicherung (Gateway-Host)
+## Speicherung
 
-Wake Words und Routing-Regeln werden in der Gateway-Zustandsdatenbank gespeichert:
-
-- `~/.openclaw/state/openclaw.sqlite`
-
-Die aktiven Tabellen sind:
-
-- `voicewake_triggers`
-- `voicewake_routing_config`
-- `voicewake_routing_routes`
-
-Alte Dateien `settings/voicewake.json` und `settings/voicewake-routing.json` sind
-nur Eingaben für Doctor-Migrationen; zur Laufzeit werden die SQLite-Tabellen gelesen und geschrieben.
+Aktivierungswörter und Routingregeln befinden sich in der Zustandsdatenbank des Gateways, standardmäßig `~/.openclaw/state/openclaw.sqlite` (überschreibbar mit `OPENCLAW_STATE_DIR`), in den Tabellen `voicewake_triggers`, `voicewake_routing_config` und `voicewake_routing_routes`. Die veralteten Dateien `settings/voicewake.json` und `settings/voicewake-routing.json` dienen ausschließlich als Migrationseingaben für `openclaw doctor --fix` — die Laufzeit liest sie niemals.
 
 ## Protokoll
 
-### Methoden
+### Triggerliste
 
-- `voicewake.get` → `{ triggers: string[] }`
-- `voicewake.set` mit Parametern `{ triggers: string[] }` → `{ triggers: string[] }`
+| Methode         | Parameter                | Ergebnis                 |
+| --------------- | ------------------------ | ------------------------ |
+| `voicewake.get` | keine                    | `{ triggers: string[] }` |
+| `voicewake.set` | `{ triggers: string[] }` | `{ triggers: string[] }` |
 
-Hinweise:
+`voicewake.set` normalisiert die Eingabe: Leerraum wird entfernt, leere Einträge werden verworfen, höchstens 32 Trigger werden beibehalten und jeder Trigger wird auf 64 UTF-16-Codeeinheiten gekürzt, ohne Surrogatpaare zu trennen. Bei einem leeren Ergebnis werden die integrierten Standardwerte (`openclaw`, `claude`, `computer`) verwendet.
 
-- Trigger werden normalisiert (gekürzt, leere Einträge entfernt). Leere Listen fallen auf Standardwerte zurück.
-- Grenzwerte werden aus Sicherheitsgründen erzwungen (Obergrenzen für Anzahl/Länge).
+### Routing (vom Trigger zum Ziel)
 
-### Routing-Methoden (Trigger → Ziel)
-
-- `voicewake.routing.get` → `{ config: VoiceWakeRoutingConfig }`
-- `voicewake.routing.set` mit Parametern `{ config: VoiceWakeRoutingConfig }` → `{ config: VoiceWakeRoutingConfig }`
-
-Form von `VoiceWakeRoutingConfig`:
+| Methode                 | Parameter                            | Ergebnis                             |
+| ----------------------- | ------------------------------------ | ------------------------------------ |
+| `voicewake.routing.get` | keine                                | `{ config: VoiceWakeRoutingConfig }` |
+| `voicewake.routing.set` | `{ config: VoiceWakeRoutingConfig }` | `{ config: VoiceWakeRoutingConfig }` |
 
 ```json
 {
@@ -64,41 +52,31 @@ Form von `VoiceWakeRoutingConfig`:
 }
 ```
 
-Routenziele unterstützen genau eines von:
+Jedes `target` einer Route unterstützt genau eine der folgenden Formen:
 
 - `{ "mode": "current" }`
 - `{ "agentId": "main" }`
 - `{ "sessionKey": "agent:main:main" }`
 
+Grenzwerte: höchstens 32 Routen, Triggertext mit höchstens 64 Zeichen. Routentrigger werden für den Abgleich und die Erkennung von Duplikaten normalisiert, indem sie in Kleinbuchstaben umgewandelt, führende und nachgestellte Satzzeichen jedes Worts entfernt und Leerräume zusammengefasst werden (`"Hey, Bot!!"` und `"hey bot"` stimmen überein und gelten als Duplikate) — dies ist eine strengere Normalisierung als das oben für die globale Triggerliste verwendete einfache Entfernen von Leerraum.
+
 ### Ereignisse
 
-- `voicewake.changed`-Payload `{ triggers: string[] }`
-- `voicewake.routing.changed`-Payload `{ config: VoiceWakeRoutingConfig }`
+| Ereignis                    | Nutzdaten                            |
+| --------------------------- | ------------------------------------ |
+| `voicewake.changed`         | `{ triggers: string[] }`             |
+| `voicewake.routing.changed` | `{ config: VoiceWakeRoutingConfig }` |
 
-Wer sie empfängt:
+Beide werden an jeden WebSocket-Client mit Leseberechtigung (macOS-App, WebChat und ähnliche) sowie an jede verbundene Node übertragen. Eine Node erhält beide außerdem direkt nach dem Verbindungsaufbau als initiale Momentaufnahme.
 
-- Alle WebSocket-Clients (macOS-App, WebChat usw.)
-- Alle verbundenen Nodes (iOS/Android), außerdem beim Verbinden einer Node als anfänglicher Push des „aktuellen Zustands“.
+## Clientverhalten
 
-## Client-Verhalten
+- **macOS**: ruft `voicewake.set`/`voicewake.get` auf und lauscht auf `voicewake.changed`, um mit anderen Clients synchron zu bleiben.
+- **iOS**: ruft `voicewake.set`/`voicewake.get` auf und lauscht auf `voicewake.changed`, damit die lokale Erkennung von Aktivierungswörtern reaktionsfähig bleibt.
+- **Android**: gibt die Fähigkeit `voiceWake` nicht bekannt und verarbeitet keine Aktualisierungen der Aktivierungswörter.
 
-### macOS-App
-
-- Verwendet die globale Liste, um `VoiceWakeRuntime`-Trigger zu steuern.
-- Das Bearbeiten von „Trigger words“ in den Voice-Wake-Einstellungen ruft `voicewake.set` auf und verlässt sich anschließend auf die Übertragung, um andere Clients synchron zu halten.
-
-### iOS-Node
-
-- Verwendet die globale Liste für die Trigger-Erkennung von `VoiceWakeManager`.
-- Das Bearbeiten von Wake Words in den Einstellungen ruft `voicewake.set` auf (über den Gateway-WS) und hält außerdem die lokale Wake-Word-Erkennung reaktionsschnell.
-
-### Android-Node
-
-- Voice Wake ist derzeit in Android-Laufzeit/Einstellungen deaktiviert.
-- Android-Voice verwendet im Voice-Tab eine manuelle Mikrofonaufnahme statt Wake-Word-Triggern.
-
-## Verwandt
+## Verwandte Themen
 
 - [Sprechmodus](/de/nodes/talk)
-- [Audio und Sprachnotizen](/de/nodes/audio)
+- [Audio- und Sprachnachrichten](/de/nodes/audio)
 - [Medienverständnis](/de/nodes/media-understanding)

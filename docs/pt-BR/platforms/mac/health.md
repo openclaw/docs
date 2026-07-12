@@ -1,47 +1,57 @@
 ---
 read_when:
-    - Depurar indicadores de integridade do app para Mac
-summary: Como o app do macOS relata estados de integridade do gateway/Baileys
+    - Depuração dos indicadores de integridade do app para Mac
+summary: Como o app para macOS informa os estados de integridade do Gateway e dos canais
 title: Verificações de integridade (macOS)
 x-i18n:
-    generated_at: "2026-04-24T06:01:14Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: a7488b39b0eec013083f52e2798d719bec35780acad743a97f5646a6891810e5
-    source_path: platforms/mac/health.md
-    workflow: 15
+    generated_at: "2026-07-12T15:21:39Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
+    provider: openai
+    source_hash: a086c527796dbe453bdee1cc9cbe1e0fc1157de710c8c6de186411fe9aa3bc7b
+    source_path: platforms/mac/health.md
+    workflow: 16
 ---
 
 # Verificações de integridade no macOS
 
-Como ver se o canal vinculado está saudável a partir do app da barra de menus.
+Como consultar o estado de integridade dos canais vinculados no aplicativo da barra de menus.
 
 ## Barra de menus
 
-- O ponto de status agora reflete a integridade do Baileys:
-  - Verde: vinculado + socket aberto recentemente.
-  - Laranja: conectando/repetindo tentativas.
-  - Vermelho: sessão encerrada ou probe falhou.
-- A linha secundária mostra "linked · auth 12m" ou exibe o motivo da falha.
-- O item de menu "Run Health Check" aciona um probe sob demanda.
+Indicador de status:
+
+- Verde: vinculado + verificação íntegra.
+- Laranja: vinculado, mas a verificação de um canal indica degradação/ausência de conexão.
+- Vermelho: ainda não vinculado.
+
+A linha secundária exibe "vinculado · autenticação há 12 min" ou mostra o motivo da falha.
+"Run Health Check Now" no menu aciona uma verificação sob demanda.
 
 ## Configurações
 
-- A aba General ganha um cartão Health mostrando: idade da autenticação vinculada, caminho/contagem do armazenamento de sessão, hora da última verificação, último erro/código de status e botões para Run Health Check / Reveal Logs.
-- Usa um snapshot em cache para que a interface carregue instantaneamente e recue de forma elegante quando offline.
-- A aba **Channels** exibe status de canal + controles para WhatsApp/Telegram (QR de login, logout, probe, último disconnect/error).
+- A aba General exibe um cartão de integridade: indicador de status, linha de resumo (estado do vínculo +
+  tempo desde a autenticação) e uma linha opcional com detalhes da falha, com os botões **Retry now** e
+  **Open logs**.
+- A **aba Channels** exibe o status e os controles de cada canal (QR de login,
+  logout, verificação, última desconexão/erro) para WhatsApp e Telegram.
 
-## Como o probe funciona
+## Como a verificação funciona
 
-- O app executa `openclaw health --json` via `ShellExecutor` a cada ~60s e sob demanda. O probe carrega credenciais e relata o status sem enviar mensagens.
-- Faça cache do último snapshot válido e do último erro separadamente para evitar cintilação; mostre o timestamp de cada um.
+O aplicativo chama o RPC `health` do Gateway por meio de sua conexão WebSocket
+existente (sem executar a CLI em um shell) a cada ~60s e sob demanda. O RPC carrega
+as credenciais e informa o status sem enviar mensagens. O aplicativo armazena em cache o último
+snapshot válido e o último erro separadamente, para que a interface carregue instantaneamente e
+não fique piscando enquanto estiver offline.
 
 ## Em caso de dúvida
 
-- Você ainda pode usar o fluxo de CLI em [Integridade do Gateway](/pt-BR/gateway/health) (`openclaw status`, `openclaw status --deep`, `openclaw health --json`) e acompanhar `/tmp/openclaw/openclaw-*.log` para `web-heartbeat` / `web-reconnect`.
+Use o fluxo da CLI em [Integridade do Gateway](/pt-BR/gateway/health) (`openclaw status`,
+`openclaw status --deep`, `openclaw health --json`) e acompanhe
+`/tmp/openclaw/openclaw-*.log`, filtrando por `web-heartbeat` / `web-reconnect`.
 
 ## Relacionado
 
 - [Integridade do Gateway](/pt-BR/gateway/health)
-- [App do macOS](/pt-BR/platforms/macos)
+- [Aplicativo para macOS](/pt-BR/platforms/macos)

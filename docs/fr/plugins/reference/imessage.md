@@ -1,31 +1,32 @@
 ---
 read_when:
-    - Vous installez, configurez ou auditez le Plugin iMessage
-summary: Ajoute la surface du canal iMessage pour envoyer et recevoir des messages OpenClaw.
+    - Vous installez, configurez ou auditez le plugin iMessage
+summary: Ajoute l’interface du canal iMessage pour envoyer et recevoir des messages OpenClaw.
 title: Plugin iMessage
 x-i18n:
-    generated_at: "2026-05-02T20:54:56Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:40:58Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: 3cf902a898d37329fe52d3b7a26c0ecebd641a88c5e490ad678adccb2d9b0d8d
+    source_hash: 5c48bb24e59d5dea948c5f04f579df48b0ae51f923e5dc8a0fc35888ddbbc1c6
     source_path: plugins/reference/imessage.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
 # Plugin iMessage
 
-Ajoute la surface de canal iMessage pour envoyer et recevoir des messages OpenClaw.
+Ajoute l’interface de canal iMessage pour envoyer et recevoir des messages OpenClaw.
 
 ## Distribution
 
 - Paquet : `@openclaw/imessage`
-- Chemin d’installation : inclus dans OpenClaw
+- Méthode d’installation : inclus dans OpenClaw
 
-## Surface
+## Interface
 
-channels: imessage
+canaux : imessage ; Skills
 
-## Docs connexes
+## Documentation connexe
 
 - [imessage](/fr/channels/imessage)

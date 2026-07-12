@@ -1,27 +1,29 @@
 ---
 read_when:
-    - Você quer listar sessões armazenadas e ver atividades recentes
+    - Você quer listar as sessões armazenadas e ver as atividades recentes
 summary: Referência da CLI para `openclaw sessions` (listar sessões armazenadas + uso)
 title: Sessões
 x-i18n:
-    generated_at: "2026-07-04T20:28:05Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:06:49Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: 7c24ee8a632998624ee41945b26ace3bfe37cadf9447f7632c373784a9301bde
+    source_hash: 29820bd34035ba3a6539950bd18dc671739eaeee9ddea3d57455c16b945caffa
     source_path: cli/sessions.md
     workflow: 16
 ---
 
 # `openclaw sessions`
 
-Lista sessões de conversa armazenadas.
+Liste as sessões de conversa armazenadas.
 
-Listas de sessões não são verificações de atividade de canal/provedor. Elas mostram linhas de conversa persistidas nos armazenamentos de sessão. Um Discord, Slack, Telegram ou outro canal silencioso pode se reconectar com sucesso sem criar uma nova linha de sessão até que uma mensagem seja processada. Use `openclaw channels status --probe`, `openclaw status --deep` ou `openclaw health --verbose` quando precisar de conectividade de canal ao vivo.
-
-As respostas de `openclaw sessions` e Gateway `sessions.list` são limitadas por padrão para que armazenamentos grandes e de longa duração não monopolizem o processo da CLI nem o loop de eventos do Gateway. A CLI retorna as 100 sessões mais recentes por padrão; passe `--limit <n>` para uma janela menor/maior ou `--limit all` quando você intencionalmente precisar do armazenamento completo. Respostas JSON incluem `totalCount`, `limitApplied` e `hasMore` quando chamadores precisam mostrar que existem mais linhas.
-
-Clientes RPC podem passar `configuredAgentsOnly: true` para manter a fonte ampla de descoberta combinada, mas retornar somente linhas de agentes presentes atualmente na configuração. A Control UI usa esse modo por padrão para que armazenamentos de agentes excluídos ou existentes apenas em disco não reapareçam na visualização Sessions.
+As listas de sessões não são verificações de disponibilidade de canal/provedor. Elas mostram linhas de
+conversas persistidas nos armazenamentos de sessões. Um Discord, Slack, Telegram ou
+outro canal inativo pode se reconectar com sucesso sem criar uma nova linha de sessão
+até que uma mensagem seja processada. Use `openclaw channels status --probe`,
+`openclaw status --deep` ou `openclaw health --verbose` quando precisar verificar a
+conectividade do canal em tempo real.
 
 ```bash
 openclaw sessions
@@ -29,45 +31,39 @@ openclaw sessions --agent work
 openclaw sessions --all-agents
 openclaw sessions --active 120
 openclaw sessions --limit 25
-openclaw sessions --verbose
+openclaw sessions --store ./tmp/sessions.json
 openclaw sessions --json
 ```
 
-Seleção de escopo:
+Opções:
 
-- padrão: armazenamento do agente padrão configurado
-- `--verbose`: registro detalhado
-- `--agent <id>`: um armazenamento de agente configurado
-- `--all-agents`: agrega todos os armazenamentos de agentes configurados
-- `--store <path>`: caminho explícito do armazenamento (não pode ser combinado com `--agent` ou `--all-agents`)
-- `--limit <n|all>`: máximo de linhas para emitir (padrão `100`; `all` restaura a saída completa)
+| Opção                | Descrição                                                                 |
+| -------------------- | ------------------------------------------------------------------------- |
+| `--agent <id>`       | Um armazenamento de agente configurado (padrão: agente padrão configurado). |
+| `--all-agents`       | Agrega todos os armazenamentos de agentes configurados.                   |
+| `--store <path>`     | Caminho explícito do armazenamento (não pode ser combinado com `--agent` ou `--all-agents`). |
+| `--active <minutes>` | Mostra apenas sessões atualizadas nos últimos N minutos.                  |
+| `--limit <n\|all>`   | Máximo de linhas na saída (padrão `100`; `all` restaura a saída completa). |
+| `--json`             | Saída legível por máquina.                                                |
+| `--verbose`          | Registro detalhado.                                                       |
 
-Acompanhe o progresso de trajetória legível por humanos para sessões armazenadas:
+`openclaw sessions` e a RPC `sessions.list` do Gateway são limitados por padrão
+para que armazenamentos grandes e de longa duração não monopolizem o processo da CLI nem o loop de
+eventos do Gateway. A CLI retorna as 100 sessões mais recentes por padrão; passe `--limit <n>`
+para uma janela menor/maior ou `--limit all` quando precisar intencionalmente do
+armazenamento completo. As respostas JSON incluem `totalCount`, `limitApplied` e `hasMore`
+quando os clientes precisam indicar que existem mais linhas.
 
-```bash
-openclaw sessions tail
-openclaw sessions tail --follow
-openclaw sessions tail --session-key "agent:main:telegram:direct:123" --tail 25
-openclaw sessions --agent work tail --follow
-openclaw sessions --all-agents tail --follow
-```
+Os clientes RPC podem passar `configuredAgentsOnly: true` para manter a fonte ampla e combinada
+de descoberta, mas retornar apenas linhas de agentes atualmente presentes na configuração.
+A Control UI usa esse modo por padrão para que armazenamentos de agentes excluídos ou presentes
+somente no disco não reapareçam na visualização de Sessões.
 
-`openclaw sessions tail` renderiza eventos JSONL de trajetória recentes como linhas de progresso compactas. Sem `--session-key`, ele acompanha primeiro as sessões em execução e depois a sessão armazenada mais recente. `--tail <count>` controla quantos eventos existentes são impressos antes do modo de acompanhamento; o padrão é `80`, e `0` começa no fim atual. `--follow` continua observando os arquivos de trajetória selecionados, incluindo arquivos realocados referenciados por `<session>.trajectory-path.json`.
-
-A visualização de progresso é intencionalmente conservadora: texto de prompt, argumentos de ferramentas e corpos de resultados de ferramentas não são impressos. Chamadas de ferramentas mostram o nome da ferramenta com `{...redacted...}`; resultados de ferramentas mostram status como `ok`, `error` ou `done`; linhas de conclusão de modelo mostram provedor/modelo e status terminal.
-
-Exporte um pacote de trajetória para uma sessão armazenada:
-
-```bash
-openclaw sessions export-trajectory --session-key "agent:main:telegram:direct:123" --workspace .
-openclaw sessions export-trajectory --session-key "agent:main:telegram:direct:123" --output bug-123 --json
-```
-
-Este é o caminho de comando usado pelo comando de barra `/export-trajectory` depois que o proprietário aprova a solicitação de execução. O diretório de saída sempre é resolvido dentro de `.openclaw/trajectory-exports/` sob o workspace selecionado.
-
-`openclaw sessions --all-agents` lê armazenamentos de agentes configurados. A descoberta de sessões do Gateway e do ACP é mais ampla: ela também inclui armazenamentos existentes apenas em disco encontrados sob a raiz padrão `agents/` ou uma raiz `session.store` com template. Esses armazenamentos descobertos precisam resolver para arquivos `sessions.json` regulares dentro da raiz do agente; symlinks e caminhos fora da raiz são ignorados.
-
-Exemplos JSON:
+`--all-agents` lê os armazenamentos de agentes configurados. A descoberta de sessões do Gateway e do ACP
+é mais ampla: ela também inclui armazenamentos SQLite resolvidos a partir das
+raízes dos agentes configurados ou de uma raiz `session.store` baseada em modelo. Caminhos de seletores
+legados devem ser resolvidos dentro da raiz do agente; links simbólicos e caminhos fora da raiz são
+ignorados.
 
 `openclaw sessions --all-agents --json`:
 
@@ -85,15 +81,48 @@ Exemplos JSON:
   "hasMore": false,
   "activeMinutes": null,
   "sessions": [
-    { "agentId": "main", "key": "agent:main:main", "model": "gpt-5" },
-    { "agentId": "work", "key": "agent:work:main", "model": "claude-opus-4-6" }
+    { "agentId": "main", "key": "agent:main:main", "model": "openai/gpt-5.6-sol" },
+    { "agentId": "work", "key": "agent:work:main", "model": "anthropic/claude-sonnet-4-6" }
   ]
 }
 ```
 
+## Acompanhar o progresso da trajetória
+
+```bash
+openclaw sessions tail
+openclaw sessions tail --follow
+openclaw sessions tail --session-key "agent:main:telegram:direct:123" --tail 25
+openclaw sessions --agent work tail --follow
+openclaw sessions --all-agents tail --follow
+```
+
+`openclaw sessions tail` renderiza eventos recentes da trajetória de execução como linhas compactas
+de progresso. Sem `--session-key`, ele acompanha primeiro as sessões em execução e depois
+a sessão armazenada mais recente. `--tail <count>` controla quantos eventos existentes
+são impressos antes do modo de acompanhamento; o padrão é `80`, e `0` começa no final atual.
+`--follow` continua monitorando a sessão selecionada baseada em SQLite ou um arquivo explícito
+de trajetória legada.
+
+A visualização de progresso é intencionalmente conservadora: o texto do prompt, os argumentos das ferramentas
+e o conteúdo dos resultados das ferramentas não são impressos. As chamadas de ferramentas mostram o nome da ferramenta com
+`{...redacted...}`; os resultados das ferramentas mostram um status como `ok`, `error` ou `done`;
+as linhas de conclusão do modelo mostram o provedor/modelo e o status final.
+
+## Exportar um pacote de trajetória
+
+```bash
+openclaw sessions export-trajectory --session-key "agent:main:telegram:direct:123" --workspace .
+openclaw sessions export-trajectory --session-key "agent:main:telegram:direct:123" --output bug-123 --json
+```
+
+Este é o caminho de comando usado pelo comando de barra `/export-trajectory` depois que
+o proprietário aprova a solicitação de execução. O diretório de saída é sempre resolvido
+dentro de `.openclaw/trajectory-exports/`, no espaço de trabalho selecionado.
+
 ## Manutenção de limpeza
 
-Execute a manutenção agora (em vez de esperar pelo próximo ciclo de escrita):
+Execute a manutenção agora em vez de aguardar o próximo ciclo de gravação:
 
 ```bash
 openclaw sessions cleanup --dry-run
@@ -105,24 +134,42 @@ openclaw sessions cleanup --dry-run --fix-dm-scope
 openclaw sessions cleanup --json
 ```
 
-`openclaw sessions cleanup` usa as configurações `session.maintenance` da configuração:
+`openclaw sessions cleanup` usa as configurações de `session.maintenance` da configuração
+([Referência de configuração](/pt-BR/gateway/config-agents#session)):
 
-- Observação de escopo: `openclaw sessions cleanup` mantém armazenamentos de sessão, transcrições e sidecars de trajetória. Ele não remove histórico de execuções de Cron, que é gerenciado por `cron.runLog.keepLines` em [Configuração de Cron](/pt-BR/automation/cron-jobs#configuration) e explicado em [Manutenção de Cron](/pt-BR/automation/cron-jobs#maintenance).
-- A limpeza também remove transcrições primárias não referenciadas, pontos de verificação de Compaction e sidecars de trajetória mais antigos que `session.maintenance.pruneAfter`; arquivos ainda referenciados por `sessions.json` são preservados.
-- A limpeza relata separadamente a limpeza de sondas de execução de modelo de Gateway de curta duração como `modelRunPruned`. Isso corresponde apenas a chaves explícitas estritas no formato `agent:*:explicit:model-run-<uuid>`. A retenção fixa é `24h`, mas ela é condicionada à pressão: remove linhas obsoletas de sonda somente quando a manutenção/pressão de limite de entradas de sessão é atingida. Quando executada, a limpeza de execuções de modelo acontece antes da limpeza global de itens obsoletos e da limitação.
+- Observação de escopo: `openclaw sessions cleanup` mantém armazenamentos de sessões,
+  transcrições, linhas de trajetória e arquivos auxiliares de trajetórias legadas. Ele não
+  remove o histórico de execuções do Cron, que é gerenciado por `cron.runLog.keepLines`
+  ([Configuração do Cron](/pt-BR/automation/cron-jobs#configuration)).
+- A limpeza também remove artefatos de transcrições legadas/arquivadas sem referência,
+  pontos de verificação de Compaction e arquivos auxiliares de trajetórias mais antigos que
+  `session.maintenance.pruneAfter`; artefatos ainda referenciados por linhas de sessões do SQLite
+  são preservados.
+- A limpeza relata separadamente como `modelRunPruned` a remoção de sondagens de execução de modelo
+  de curta duração do Gateway. Isso corresponde apenas a chaves explícitas estritas no formato
+  `agent:*:explicit:model-run-<uuid>`. A retenção é fixa em `24h` e condicionada à pressão:
+  ela remove linhas de sondagem obsoletas apenas quando a pressão de manutenção/limite de entradas
+  de sessão é atingida. Quando executada, a limpeza de execuções de modelo ocorre antes da limpeza
+  global de dados obsoletos e da aplicação de limites.
 
-- `--dry-run`: pré-visualiza quantas entradas seriam removidas/limitadas sem escrever.
-  - No modo de texto, a simulação imprime uma tabela de ações por sessão (`Action`, `Key`, `Age`, `Model`, `Flags`) mais um resumo agrupado por rótulo de sessão para que você possa ver o que seria mantido versus removido.
-- `--enforce`: aplica a manutenção mesmo quando `session.maintenance.mode` é `warn`.
-- `--fix-missing`: remove entradas cujos arquivos de transcrição estão ausentes ou têm somente cabeçalho/estão vazios, mesmo que elas ainda não fossem normalmente removidas por idade/contagem.
-- `--fix-dm-scope`: quando `session.dmScope` é `main`, aposenta linhas obsoletas de DM direto com chave por par deixadas por roteamentos anteriores `per-peer`, `per-channel-peer` ou `per-account-channel-peer`. Use `--dry-run` primeiro; aplicar a limpeza remove essas linhas de `sessions.json` e preserva suas transcrições como arquivos excluídos.
-- `--active-key <key>`: protege uma chave ativa específica contra despejo por orçamento de disco. Ponteiros duráveis de conversas externas, como sessões de grupo e sessões de chat com escopo de thread, também são mantidos pela manutenção de idade/contagem/orçamento de disco.
-- `--agent <id>`: executa a limpeza para um armazenamento de agente configurado.
-- `--all-agents`: executa a limpeza para todos os armazenamentos de agentes configurados.
-- `--store <path>`: executa contra um arquivo `sessions.json` específico.
-- `--json`: imprime um resumo JSON. Com `--all-agents`, a saída inclui um resumo por armazenamento.
+Opções:
 
-Quando um Gateway está acessível, a limpeza sem simulação para armazenamentos de agentes configurados é enviada pelo Gateway para que compartilhe o mesmo gravador de armazenamento de sessão do tráfego em tempo de execução. Use `--store <path>` para reparo offline explícito de um arquivo de armazenamento.
+| Opção                | Descrição                                                                                                                                                                                                                                                                                                  |
+| -------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `--dry-run`          | Visualiza quantas entradas seriam removidas/limitadas sem gravar. No modo de texto, imprime uma tabela de ações por sessão (`Action`, `Key`, `Age`, `Model`, `Flags`), além de um resumo agrupado pelo rótulo da sessão.                                                                                         |
+| `--enforce`          | Aplica a manutenção mesmo quando `session.maintenance.mode` é `warn`.                                                                                                                                                                                                                                       |
+| `--fix-missing`      | Remove entradas legadas cujos artefatos de transcrição arquivados estão ausentes ou contêm apenas o cabeçalho/estão vazios, mesmo que normalmente ainda não fossem removidos por idade/contagem.                                                                                                              |
+| `--fix-dm-scope`     | Quando `session.dmScope` é `main`, desativa linhas obsoletas de mensagens diretas indexadas por par deixadas por roteamentos anteriores `per-peer`, `per-channel-peer` ou `per-account-channel-peer`. Use primeiro `--dry-run`; a aplicação remove essas linhas do SQLite e preserva seus artefatos de transcrição legados como arquivos excluídos. |
+| `--active-key <key>` | Protege uma chave ativa específica contra a remoção causada pelo orçamento de disco. Ponteiros duráveis para conversas externas, como sessões de grupo e sessões de chat com escopo de thread, também são mantidos pela manutenção por idade/contagem/orçamento de disco.                                        |
+| `--agent <id>`       | Executa a limpeza para um armazenamento de agente configurado.                                                                                                                                                                                                                                             |
+| `--all-agents`       | Executa a limpeza para todos os armazenamentos de agentes configurados.                                                                                                                                                                                                                                    |
+| `--store <path>`     | Executa em um caminho específico de seletor de armazenamento legado.                                                                                                                                                                                                                                       |
+| `--json`             | Imprime um resumo em JSON. Com `--all-agents`, a saída inclui um resumo por armazenamento.                                                                                                                                                                                                                  |
+
+Quando um Gateway está acessível, a limpeza que não seja uma simulação para armazenamentos de agentes configurados é
+enviada pelo Gateway para compartilhar o mesmo gravador do armazenamento de sessões usado pelo tráfego
+de execução. Use `--store <path>` para o reparo offline explícito de um seletor de armazenamento
+legado.
 
 `openclaw sessions cleanup --all-agents --dry-run --json`:
 
@@ -158,7 +205,9 @@ Quando um Gateway está acessível, a limpeza sem simulação para armazenamento
 
 ## Compactar uma sessão
 
-Recupere orçamento de contexto para uma sessão travada ou grande demais. `openclaw sessions compact <key>` é o wrapper de primeira classe em torno do RPC de Gateway `sessions.compact` e exige um Gateway em execução.
+Recupere o orçamento de contexto de uma sessão travada ou grande demais. `openclaw sessions
+compact <key>` é o wrapper de primeira classe em torno da RPC `sessions.compact`
+do Gateway e requer um Gateway em execução.
 
 ```bash
 openclaw sessions compact "agent:main:main"
@@ -166,28 +215,37 @@ openclaw sessions compact "agent:main:main" --max-lines 200
 openclaw sessions compact "agent:work:main" --agent work --json
 ```
 
-- Sem `--max-lines`, o Gateway resume a transcrição usando LLM. A CLI não impõe um prazo de cliente por padrão; o Gateway é dono do ciclo de vida de Compaction configurado.
-- Com `--max-lines <n>`, ele trunca para as últimas `n` linhas da transcrição e arquiva a transcrição anterior como um sidecar `.bak`.
+- Sem `--max-lines`, o LLM do Gateway resume a transcrição. Por padrão, a CLI
+  não impõe um prazo ao cliente; o Gateway controla o ciclo de vida
+  configurado da Compaction.
+- Com `--max-lines <n>`, ele trunca para as últimas `n` linhas da transcrição e
+  arquiva a transcrição anterior como um arquivo auxiliar `.bak`.
 - `--agent <id>`: agente proprietário da sessão; obrigatório para chaves `global`.
-- `--url` / `--token` / `--password`: substituições de conexão do Gateway.
-- `--timeout <ms>`: tempo limite RPC opcional do lado do cliente em milissegundos.
-- `--json`: imprime a carga RPC bruta.
+- `--url` / `--token` / `--password`: substituições da conexão com o Gateway.
+- `--timeout <ms>`: tempo limite RPC opcional do lado do cliente, em milissegundos.
+- `--json`: imprime a carga útil RPC bruta.
 
-O comando sai com status diferente de zero quando o Gateway relata falha na Compaction ou está inacessível, para que crons e scripts nunca confundam uma operação silenciosa sem efeito com sucesso.
+O comando é encerrado com código diferente de zero quando o Gateway relata uma Compaction com falha ou está
+inacessível, para que crons e scripts nunca confundam uma ausência silenciosa de operação com sucesso.
 
-> Observação: `openclaw agent --message '/compact ...'` **não** é um caminho de Compaction. Comandos de barra da CLI são rejeitados pela verificação de remetente autorizado; essa invocação sai com status diferente de zero com orientação apontando para cá em vez de silenciosamente não fazer nada.
+<Note>
+`openclaw agent --message '/compact ...'` **não** é um caminho de Compaction. Comandos de
+barra enviados pela CLI são rejeitados pela verificação de remetente autorizado; essa
+invocação é encerrada com código diferente de zero e fornece orientações que apontam para esta seção, em vez de silenciosamente
+não realizar nenhuma operação.
+</Note>
 
 ### RPC sessions.compact
 
 `openclaw gateway call sessions.compact --params '<json>'` aceita:
 
-| Campo      | Tipo        | Obrigatório | Descrição                                                |
-| ---------- | ----------- | ----------- | -------------------------------------------------------- |
-| `key`      | string      | sim         | Chave de sessão para compactar (por exemplo `agent:main:main`). |
-| `agentId`  | string      | não         | ID do agente proprietário da sessão (para chaves `global`). |
-| `maxLines` | inteiro ≥ 1 | não         | Trunca para as últimas N linhas em vez de resumir com LLM. |
+| Campo      | Tipo        | Obrigatório | Descrição                                                        |
+| ---------- | ----------- | ----------- | ---------------------------------------------------------------- |
+| `key`      | string      | sim         | Chave da sessão a compactar (por exemplo, `agent:main:main`).     |
+| `agentId`  | string      | não         | ID do agente proprietário da sessão (para chaves `global`).      |
+| `maxLines` | integer ≥ 1 | não         | Trunca para as últimas N linhas em vez de usar resumo por LLM.   |
 
-Exemplo de resposta de resumo por LLM:
+Exemplo de resposta com resumo por LLM:
 
 ```json
 {
@@ -198,7 +256,7 @@ Exemplo de resposta de resumo por LLM:
 }
 ```
 
-Exemplo de resposta de truncamento (`--max-lines 200`):
+Exemplo de resposta com truncamento (`--max-lines 200`):
 
 ```json
 {
@@ -210,8 +268,9 @@ Exemplo de resposta de truncamento (`--max-lines 200`):
 }
 ```
 
-## Relacionado
+## Relacionados
 
-- Configuração de sessão: [Referência de configuração](/pt-BR/gateway/config-agents#session)
+- [Configuração de sessão](/pt-BR/gateway/config-agents#session)
+- [Gerenciamento de sessões](/pt-BR/concepts/session)
+- [Compaction](/pt-BR/concepts/compaction)
 - [Referência da CLI](/pt-BR/cli)
-- [Gerenciamento de sessão](/pt-BR/concepts/session)

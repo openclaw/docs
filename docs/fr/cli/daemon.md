@@ -1,24 +1,23 @@
 ---
 read_when:
-    - Vous utilisez encore `openclaw daemon ...` dans les scripts
-    - Vous avez besoin des commandes de cycle de vie du service (install/start/stop/restart/status)
-summary: Référence CLI pour `openclaw daemon` (alias hérité pour la gestion du service Gateway)
+    - Vous utilisez toujours `openclaw daemon ...` dans les scripts
+    - Vous avez besoin de commandes de gestion du cycle de vie du service (install/start/stop/restart/status)
+summary: Référence de la CLI pour `openclaw daemon` (ancien alias pour la gestion du service Gateway)
 title: Démon
 x-i18n:
-    generated_at: "2026-06-30T13:59:43Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:09:54Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: 1a3ec72b22907994ecefac84b2b9e5b22bf1d922e5b2822a1c0db80f0362dade
+    source_hash: 4933885078d067ff2e077f25f14483aa5a10e3cd36951d0dc25c625d8b4d78e6
     source_path: cli/daemon.md
     workflow: 16
 ---
 
 # `openclaw daemon`
 
-Alias hérité pour les commandes de gestion du service Gateway.
-
-`openclaw daemon ...` correspond à la même surface de contrôle du service que les commandes de service `openclaw gateway ...`.
+Alias hérité pour la gestion du service Gateway. `openclaw daemon ...` correspond aux mêmes commandes de contrôle du service que `openclaw gateway ...`. Préférez [`openclaw gateway`](/fr/cli/gateway) pour la documentation et les exemples actuels.
 
 ## Utilisation
 
@@ -31,45 +30,34 @@ openclaw daemon restart
 openclaw daemon uninstall
 ```
 
-## Sous-commandes
+## Sous-commandes et options
 
-- `status` : afficher l’état d’installation du service et sonder l’état de santé du Gateway
-- `install` : installer le service (`launchd`/`systemd`/`schtasks`)
-- `uninstall` : supprimer le service
-- `start` : démarrer le service
-- `stop` : arrêter le service
-- `restart` : redémarrer le service
+| Sous-commande | Options                                                                                          |
+| ------------- | ------------------------------------------------------------------------------------------------ |
+| `status`      | `--url`, `--token`, `--password`, `--timeout`, `--no-probe`, `--require-rpc`, `--deep`, `--json` |
+| `install`     | `--port`, `--runtime <node\|bun>`, `--token`, `--wrapper <path>`, `--force`, `--json`            |
+| `uninstall`   | `--json`                                                                                         |
+| `start`       | `--json`                                                                                         |
+| `stop`        | `--json`, `--disable` (launchd uniquement : désactive durablement KeepAlive/RunAtLoad jusqu'au prochain démarrage) |
+| `restart`     | `--force`, `--safe`, `--skip-deferral`, `--wait <duration>`, `--json`                            |
 
-## Options courantes
+- `status` : affiche l'état d'installation du service (launchd/systemd/schtasks) et vérifie l'état de santé du Gateway.
+- `install` : installe le service ; `--force` réinstalle ou remplace une installation existante.
+- `restart --safe` : demande au Gateway en cours d'exécution de vérifier au préalable les tâches actives et de planifier un redémarrage unique et regroupé après leur achèvement, dans la limite de `gateway.reload.deferralTimeoutMs` (valeur par défaut : 300000ms/5 minutes ; définissez-la sur `0` pour attendre indéfiniment). Lorsque ce délai expire, le redémarrage est tout de même forcé. Un simple `restart` utilise directement le gestionnaire de services ; `--force` permet un redémarrage immédiat.
+- `restart --safe --skip-deferral` : contourne le mécanisme de report lié aux tâches actives afin que le Gateway redémarre immédiatement, même si des blocages sont signalés. Nécessite `--safe`.
 
-- `status` : `--url`, `--token`, `--password`, `--timeout`, `--no-probe`, `--require-rpc`, `--deep`, `--json`
-- `install` : `--port`, `--runtime <node|bun>`, `--token`, `--force`, `--json`
-- `restart` : `--safe`, `--skip-deferral`, `--force`, `--wait <duration>`, `--json`
-- cycle de vie (`uninstall|start|stop`) : `--json`
+## Remarques
 
-Remarques :
+- `status` résout, lorsque cela est possible, les SecretRefs d'authentification configurées pour l'authentification de la vérification. Si une SecretRef requise ne peut pas être résolue, `status --json` signale `rpc.authWarning` ; transmettez explicitement `--token`/`--password` ou résolvez d'abord la source du secret. Les avertissements d'authentification non résolue sont supprimés dès que la vérification réussit par ailleurs.
+- `status --deep` ajoute une analyse système de bonne foi pour rechercher d'autres services similaires au Gateway (affiche des conseils de nettoyage ; il reste recommandé de n'utiliser qu'un seul Gateway par machine) et exécute la validation de la configuration en mode tenant compte des plugins, ce qui fait apparaître les avertissements des manifestes de plugins ignorés par le chemin rapide utilisé par défaut.
+- Sur les installations Linux avec systemd, les vérifications de divergence du jeton inspectent les sources d'unité `Environment=` et `EnvironmentFile=`.
+- Les vérifications de divergence du jeton résolvent les SecretRefs de `gateway.auth.token` à l'aide de l'environnement d'exécution fusionné (d'abord l'environnement de la commande du service, puis celui du processus). Si l'authentification par jeton n'est pas effectivement active (`gateway.auth.mode` défini sur `password`/`none`/`trusted-proxy`, ou non défini alors que le mot de passe peut être prioritaire), la résolution du jeton de configuration est ignorée.
+- `install` vérifie qu'un `gateway.auth.token` géré par SecretRef peut être résolu, mais ne conserve jamais la valeur résolue dans les métadonnées d'environnement du service ; si la résolution échoue, l'installation est bloquée par sécurité.
+- Si `gateway.auth.token` et `gateway.auth.password` sont tous deux configurés alors que `gateway.auth.mode` n'est pas défini, `install` reste bloqué jusqu'à ce que vous définissiez explicitement le mode.
+- Sur macOS, `install` réserve au propriétaire l'accès aux fichiers plist LaunchAgent ainsi qu'au fichier d'environnement et au wrapper générés (mode `0600`/`0700`), au lieu d'intégrer les secrets dans `EnvironmentVariables`.
+- Pour exécuter plusieurs Gateways sur un même hôte, isolez les ports, la configuration, l'état et les espaces de travail. Consultez [Plusieurs gateways](/fr/gateway#multiple-gateways-same-host).
 
-- `status` résout les SecretRefs d’authentification configurées pour l’authentification de sonde lorsque c’est possible.
-- Si une SecretRef d’authentification requise n’est pas résolue dans ce chemin de commande, `daemon status --json` signale `rpc.authWarning` lorsque la connectivité/l’authentification de la sonde échoue ; passez explicitement `--token`/`--password` ou résolvez d’abord la source du secret.
-- Si la sonde réussit, les avertissements liés aux références d’authentification non résolues sont supprimés afin d’éviter les faux positifs.
-- `status --deep` ajoute une analyse de service au niveau système au mieux. Lorsqu’elle trouve d’autres services de type gateway, la sortie destinée aux humains affiche des indications de nettoyage et avertit qu’un seul gateway par machine reste la recommandation normale.
-- `status --deep` exécute aussi la validation de configuration en mode tenant compte des plugins et expose les avertissements de manifeste des plugins configurés (par exemple des métadonnées de configuration de canal manquantes), afin que les vérifications rapides d’installation et de mise à jour les détectent. Le `status` par défaut conserve le chemin rapide en lecture seule qui ignore la validation des plugins.
-- Sur les installations Linux systemd, les contrôles de dérive de jeton de `status` incluent les deux sources d’unité `Environment=` et `EnvironmentFile=`.
-- Les contrôles de dérive résolvent les SecretRefs `gateway.auth.token` avec l’environnement d’exécution fusionné (d’abord l’environnement de la commande de service, puis l’environnement du processus en repli).
-- Si l’authentification par jeton n’est pas effectivement active (`gateway.auth.mode` explicitement défini sur `password`/`none`/`trusted-proxy`, ou mode non défini lorsque le mot de passe peut prévaloir et qu’aucun candidat jeton ne peut prévaloir), les contrôles de dérive de jeton ignorent la résolution du jeton de configuration.
-- Lorsque l’authentification par jeton exige un jeton et que `gateway.auth.token` est géré par SecretRef, `install` vérifie que la SecretRef peut être résolue, mais ne persiste pas le jeton résolu dans les métadonnées d’environnement du service.
-- Si l’authentification par jeton exige un jeton et que la SecretRef de jeton configurée n’est pas résolue, l’installation échoue en mode fermé.
-- Si `gateway.auth.token` et `gateway.auth.password` sont tous deux configurés et que `gateway.auth.mode` n’est pas défini, l’installation est bloquée jusqu’à ce que le mode soit défini explicitement.
-- Sur macOS, `install` garde les plists LaunchAgent réservées au propriétaire et charge les valeurs d’environnement du service géré via un fichier et un wrapper réservés au propriétaire, au lieu de sérialiser des clés API ou des références d’environnement de profil d’authentification dans `EnvironmentVariables`.
-- Si vous exécutez intentionnellement plusieurs gateways sur un même hôte, isolez les ports, la configuration/l’état et les espaces de travail ; consultez [/gateway#multiple-gateways-same-host](/fr/gateway#multiple-gateways-same-host).
-- `restart --safe` demande au Gateway en cours d’exécution de vérifier au préalable le travail actif et de planifier un redémarrage coalescé après l’évacuation du travail actif. Le redémarrage sûr par défaut attend le travail actif jusqu’au `gateway.reload.deferralTimeoutMs` configuré (5 minutes par défaut) ; lorsque ce budget expire, le redémarrage est forcé. Définissez `gateway.reload.deferralTimeoutMs` sur `0` pour une attente sûre indéfinie qui ne force jamais. `restart` simple conserve le comportement existant du gestionnaire de service ; `--force` reste le chemin de remplacement immédiat.
-- `restart --safe --skip-deferral` exécute le redémarrage sûr tenant compte d’OpenClaw, mais contourne la barrière de report du travail actif afin que le Gateway émette le redémarrage immédiatement même lorsque des bloqueurs sont signalés. Échappatoire opérateur lorsqu’une exécution de tâche bloquée empêche le redémarrage sûr ; nécessite `--safe`.
+## Voir aussi
 
-## Préférer
-
-Utilisez [`openclaw gateway`](/fr/cli/gateway) pour la documentation et les exemples actuels.
-
-## Liens connexes
-
-- [Référence CLI](/fr/cli)
-- [Guide d’exploitation du Gateway](/fr/gateway)
+- [Référence de la CLI](/fr/cli)
+- [Guide d'exploitation du Gateway](/fr/gateway)

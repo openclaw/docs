@@ -1,178 +1,146 @@
 ---
 permalink: /security/formal-verification/
 read_when:
-    - Prüfung formaler Garantien oder Grenzen des Sicherheitsmodells
-    - Reproduzieren oder Aktualisieren von TLA+/TLC-Sicherheitsmodellprüfungen
-summary: Maschinell geprüfte Sicherheitsmodelle für die risikoreichsten Pfade von OpenClaw.
+    - Überprüfung formaler Garantien oder Einschränkungen des Sicherheitsmodells
+    - TLA+/TLC-Sicherheitsmodellprüfungen reproduzieren oder aktualisieren
+summary: Maschinell geprüfte Sicherheitsmodelle für die Pfade mit dem höchsten Risiko in OpenClaw.
 title: Formale Verifikation (Sicherheitsmodelle)
 x-i18n:
-    generated_at: "2026-05-06T07:03:00Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:53:25Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: 298b92f27abb8321be807fe4d95c7cd568a0fb8f543d168863b2adb9b3ddcde4
+    source_hash: 86342f6e2f54c08d5e0f8a08d0d488459650a6ace35e985ff886f847540202c9
     source_path: security/formal-verification.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-Diese Seite verfolgt die **formalen Sicherheitsmodelle** von OpenClaw (derzeit TLA+/TLC; weitere nach Bedarf).
+Die formalen Sicherheitsmodelle von OpenClaw (derzeit TLA+/TLC) liefern ein maschinell geprüftes Argument dafür, dass bestimmte Pfade mit dem höchsten Risiko — Autorisierung, Sitzungsisolation, Tool-Zugriffskontrolle und Sicherheit bei Fehlkonfigurationen — unter ausdrücklich genannten Annahmen die vorgesehenen Richtlinien durchsetzen.
 
-> Hinweis: Einige ältere Links können auf den früheren Projektnamen verweisen.
+> Hinweis: Einige ältere Links verweisen möglicherweise auf den früheren Projektnamen.
 
-**Ziel (Nordstern):** ein maschinengeprüftes Argument bereitstellen, dass OpenClaw seine
-beabsichtigte Sicherheitsrichtlinie durchsetzt (Autorisierung, Sitzungsisolation, Tool-Gating und
-Sicherheit bei Fehlkonfigurationen), unter expliziten Annahmen.
+## Was dies ist
 
-**Was dies ist (heute):** eine ausführbare, angreifergesteuerte **Security-Regression-Suite**:
+Eine ausführbare, angriffsorientierte Suite für Sicherheitsregressionstests:
 
-- Jede Aussage hat eine ausführbare Modellprüfung über einen endlichen Zustandsraum.
-- Viele Aussagen haben ein zugehöriges **negatives Modell**, das eine Gegenbeispiel-Ablaufspur für eine realistische Fehlerklasse erzeugt.
+- Für jede Aussage gibt es eine ausführbare Modellprüfung über einen endlichen Zustandsraum.
+- Für viele Aussagen gibt es ein zugehöriges Negativmodell, das für eine realistische Fehlerklasse eine Gegenbeispielspur erzeugt.
 
-**Was dies (noch) nicht ist:** ein Beweis, dass „OpenClaw in jeder Hinsicht sicher ist“ oder dass die vollständige TypeScript-Implementierung korrekt ist.
+Dies ist **kein** Beweis dafür, dass OpenClaw in jeder Hinsicht sicher ist, und es überprüft nicht die vollständige TypeScript-Implementierung.
 
-## Wo die Modelle liegen
+## Speicherort der Modelle
 
-Modelle werden in einem separaten Repo gepflegt: [vignesh07/openclaw-formal-models](https://github.com/vignesh07/openclaw-formal-models).
+Die Modelle werden in einem separaten Repository gepflegt: [vignesh07/openclaw-formal-models](https://github.com/vignesh07/openclaw-formal-models).
 
-## Wichtige Einschränkungen
+<Note>
+Dieses Repository ist derzeit nicht erreichbar (GitHub gibt zum Zeitpunkt der Erstellung „Repository not found“ zurück). Falls es für Sie weiterhin nicht erreichbar ist, fragen Sie in den Maintainer-Kanälen von OpenClaw nach dem aktuellen Speicherort, bevor Sie annehmen, dass die Modelle entfernt wurden.
+</Note>
 
-- Dies sind **Modelle**, nicht die vollständige TypeScript-Implementierung. Abweichungen zwischen Modell und Code sind möglich.
-- Ergebnisse sind durch den von TLC untersuchten Zustandsraum begrenzt; „grün“ impliziert keine Sicherheit über die modellierten Annahmen und Grenzen hinaus.
-- Einige Aussagen beruhen auf expliziten Umgebungsannahmen (z. B. korrekte Bereitstellung, korrekte Konfigurationseingaben).
+## Einschränkungen
+
+- Es handelt sich um Modelle, nicht um die vollständige TypeScript-Implementierung — Abweichungen zwischen Modell und Code sind möglich.
+- Die Ergebnisse sind durch den von TLC untersuchten Zustandsraum begrenzt. Ein grünes Ergebnis bedeutet keine Sicherheit über die modellierten Annahmen und Grenzen hinaus.
+- Einige Aussagen beruhen auf ausdrücklichen Annahmen zur Umgebung (beispielsweise eine korrekte Bereitstellung und korrekte Konfigurationseingaben).
 
 ## Ergebnisse reproduzieren
 
-Derzeit werden Ergebnisse reproduziert, indem das Modell-Repo lokal geklont und TLC ausgeführt wird (siehe unten). Eine zukünftige Iteration könnte Folgendes anbieten:
-
-- CI-ausgeführte Modelle mit öffentlichen Artefakten (Gegenbeispiel-Ablaufspuren, Ausführungsprotokolle)
-- einen gehosteten „Dieses Modell ausführen“-Workflow für kleine, begrenzte Prüfungen
-
-Erste Schritte:
+Klonen Sie das Modell-Repository und führen Sie TLC aus:
 
 ```bash
 git clone https://github.com/vignesh07/openclaw-formal-models
 cd openclaw-formal-models
 
-# Java 11+ required (TLC runs on the JVM).
-# The repo vendors a pinned `tla2tools.jar` (TLA+ tools) and provides `bin/tlc` + Make targets.
+# Java 11+ erforderlich (TLC wird auf der JVM ausgeführt).
+# Das Repository enthält eine festgelegte Version von tla2tools.jar und stellt bin/tlc sowie Make-Ziele bereit.
 
 make <target>
 ```
 
-### Gateway-Exposition und Fehlkonfiguration eines offenen Gateway
+Eine CI-Integration zurück in dieses Repository gibt es noch nicht. Eine zukünftige Version könnte über CI ausgeführte Modelle mit öffentlichen Artefakten (Gegenbeispielspuren, Ausführungsprotokolle) oder einen gehosteten „Dieses Modell ausführen“-Workflow für kleine, begrenzte Prüfungen ergänzen.
 
-**Aussage:** Eine Bindung über loopback hinaus ohne Auth kann eine entfernte Kompromittierung möglich machen / die Exposition erhöhen; Token/Passwort blockieren nicht authentifizierte Angreifer (gemäß den Modellannahmen).
+## Aussagen und Ziele
 
-- Grüne Läufe:
-  - `make gateway-exposure-v2`
-  - `make gateway-exposure-v2-protected`
-- Rot (erwartet):
-  - `make gateway-exposure-v2-negative`
+### Gateway-Exposition und Fehlkonfiguration eines offenen Gateways
 
-Siehe auch: `docs/gateway-exposure-matrix.md` im Modell-Repo.
+**Aussage:** Eine Bindung außerhalb der Loopback-Schnittstelle ohne Authentifizierung kann eine Kompromittierung aus der Ferne ermöglichen und erhöht die Exposition. Ein Token oder Passwort blockiert gemäß den Annahmen des Modells nicht authentifizierte Angreifer.
 
-### Node-Exec-Pipeline (Fähigkeit mit höchstem Risiko)
+| Ergebnis       | Ziele                                                            |
+| -------------- | ---------------------------------------------------------------- |
+| Grün           | `make gateway-exposure-v2`, `make gateway-exposure-v2-protected` |
+| Rot (erwartet) | `make gateway-exposure-v2-negative`                              |
 
-**Aussage:** `exec host=node` erfordert (a) eine Allowlist für Node-Befehle plus deklarierte Befehle und (b) Live-Genehmigung, wenn konfiguriert; Genehmigungen werden tokenisiert, um Replay zu verhindern (im Modell).
+Siehe auch `docs/gateway-exposure-matrix.md` im Modell-Repository.
 
-- Grüne Läufe:
-  - `make nodes-pipeline`
-  - `make approvals-token`
-- Rot (erwartet):
-  - `make nodes-pipeline-negative`
-  - `make approvals-token-negative`
+### Node-Ausführungspipeline (Funktion mit dem höchsten Risiko)
 
-### Pairing-Speicher (DM-Gating)
+**Aussage:** `exec host=node` erfordert (a) eine Positivliste für Node-Befehle sowie deklarierte Befehle und (b) eine aktuelle Genehmigung, sofern diese konfiguriert ist. Im Modell werden Genehmigungen mit Token versehen, um eine erneute Verwendung zu verhindern.
 
-**Aussage:** Pairing-Anfragen respektieren TTL und Obergrenzen für ausstehende Anfragen.
+| Ergebnis       | Ziele                                                           |
+| -------------- | --------------------------------------------------------------- |
+| Grün           | `make nodes-pipeline`, `make approvals-token`                   |
+| Rot (erwartet) | `make nodes-pipeline-negative`, `make approvals-token-negative` |
 
-- Grüne Läufe:
-  - `make pairing`
-  - `make pairing-cap`
-- Rot (erwartet):
-  - `make pairing-negative`
-  - `make pairing-cap-negative`
+### Kopplungsspeicher (DM-Zugriffskontrolle)
 
-### Ingress-Gating (Erwähnungen + Umgehung durch Steuerbefehl)
+**Aussage:** Kopplungsanfragen berücksichtigen die TTL und Obergrenzen für ausstehende Anfragen.
 
-**Aussage:** In Gruppenkontexten, die eine Erwähnung erfordern, kann ein nicht autorisierter „Steuerbefehl“ das Erwähnungs-Gating nicht umgehen.
+| Ergebnis       | Ziele                                                |
+| -------------- | ---------------------------------------------------- |
+| Grün           | `make pairing`, `make pairing-cap`                   |
+| Rot (erwartet) | `make pairing-negative`, `make pairing-cap-negative` |
 
-- Grün:
-  - `make ingress-gating`
-- Rot (erwartet):
-  - `make ingress-gating-negative`
+### Eingangs-Zugriffskontrolle (Erwähnungen und Umgehung durch Steuerbefehle)
 
-### Routing-/Sitzungsschlüssel-Isolation
+**Aussage:** In Gruppenkontexten, die eine Erwähnung erfordern, kann ein nicht autorisierter Steuerbefehl die Zugriffskontrolle für Erwähnungen nicht umgehen.
 
-**Aussage:** DMs von unterschiedlichen Peers fallen nicht in dieselbe Sitzung zusammen, es sei denn, dies ist explizit verknüpft/konfiguriert.
+| Ergebnis       | Ziele                          |
+| -------------- | ------------------------------ |
+| Grün           | `make ingress-gating`          |
+| Rot (erwartet) | `make ingress-gating-negative` |
 
-- Grün:
-  - `make routing-isolation`
-- Rot (erwartet):
-  - `make routing-isolation-negative`
+### Routing und Isolation von Sitzungsschlüsseln
 
-## v1++: zusätzliche begrenzte Modelle (Nebenläufigkeit, Wiederholungen, Trace-Korrektheit)
+**Aussage:** DMs von unterschiedlichen Kommunikationspartnern werden nicht in derselben Sitzung zusammengeführt, sofern sie nicht ausdrücklich verknüpft oder entsprechend konfiguriert sind.
 
-Dies sind Folgemodelle, die die Genauigkeit rund um reale Fehlermodi verbessern (nicht atomare Aktualisierungen, Wiederholungen und Nachrichten-Fan-out).
+| Ergebnis       | Ziele                             |
+| -------------- | --------------------------------- |
+| Grün           | `make routing-isolation`          |
+| Rot (erwartet) | `make routing-isolation-negative` |
 
-### Pairing-Speicher-Nebenläufigkeit / Idempotenz
+## v1++-Modelle: Nebenläufigkeit, Wiederholungsversuche und Korrektheit von Spuren
 
-**Aussage:** Ein Pairing-Speicher sollte `MaxPending` und Idempotenz selbst bei Interleavings erzwingen (d. h. „check-then-write“ muss atomar / gesperrt sein; Aktualisieren sollte keine Duplikate erzeugen).
+Weiterführende Modelle, die die Übereinstimmung mit realen Fehlermodi verbessern: nicht atomare Aktualisierungen, Wiederholungsversuche und Nachrichten-Fan-out.
 
-Was das bedeutet:
+### Nebenläufigkeit und Idempotenz des Kopplungsspeichers
 
-- Bei gleichzeitigen Anfragen können Sie `MaxPending` für einen Kanal nicht überschreiten.
-- Wiederholte Anfragen/Aktualisierungen für denselben `(channel, sender)` sollten keine doppelten live ausstehenden Zeilen erzeugen.
+**Aussage:** Der Kopplungsspeicher erzwingt `MaxPending` und Idempotenz auch bei verzahnten Abläufen — Prüfung und anschließendes Schreiben müssen atomar beziehungsweise gesperrt erfolgen, und eine Aktualisierung darf keine Duplikate erzeugen. Konkret gilt: Gleichzeitige Anfragen dürfen `MaxPending` für einen Kanal nicht überschreiten, und wiederholte Anfragen oder Aktualisierungen für dasselbe `(channel, sender)` erzeugen keine doppelten aktiven ausstehenden Zeilen.
 
-- Grüne Läufe:
-  - `make pairing-race` (atomare/gesperrte Obergrenzenprüfung)
-  - `make pairing-idempotency`
-  - `make pairing-refresh`
-  - `make pairing-refresh-race`
-- Rot (erwartet):
-  - `make pairing-race-negative` (nicht atomarer begin/commit-Obergrenzen-Wettlauf)
-  - `make pairing-idempotency-negative`
-  - `make pairing-refresh-negative`
-  - `make pairing-refresh-race-negative`
+| Ergebnis       | Ziele                                                                                                                                                                       |
+| -------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Grün           | `make pairing-race` (atomare/gesperrte Prüfung der Obergrenze), `make pairing-idempotency`, `make pairing-refresh`, `make pairing-refresh-race`                             |
+| Rot (erwartet) | `make pairing-race-negative` (nicht atomare Begin-/Commit-Konkurrenzsituation bei der Obergrenze), `make pairing-idempotency-negative`, `make pairing-refresh-negative`, `make pairing-refresh-race-negative` |
 
-### Ingress-Trace-Korrelation / Idempotenz
+### Korrelation und Idempotenz von Eingangsspuren
 
-**Aussage:** Ingestion sollte die Trace-Korrelation über Fan-out hinweg erhalten und bei Provider-Wiederholungen idempotent sein.
+**Aussage:** Die Aufnahme erhält die Spurenkorrelation über Fan-out hinweg und ist bei Wiederholungsversuchen des Providers idempotent. Wenn ein externes Ereignis in mehrere interne Nachrichten aufgeteilt wird, behält jeder Teil dieselbe Spuren-/Ereignisidentität. Wiederholungsversuche führen nicht zu einer doppelten Verarbeitung. Wenn Ereignis-IDs des Providers fehlen, greift die Deduplizierung auf einen sicheren Schlüssel zurück (beispielsweise die Spuren-ID), damit unterschiedliche Ereignisse nicht verworfen werden.
 
-Was das bedeutet:
+| Ergebnis       | Ziele                                                                                                                                       |
+| -------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| Grün           | `make ingress-trace`, `make ingress-trace2`, `make ingress-idempotency`, `make ingress-dedupe-fallback`                                     |
+| Rot (erwartet) | `make ingress-trace-negative`, `make ingress-trace2-negative`, `make ingress-idempotency-negative`, `make ingress-dedupe-fallback-negative` |
 
-- Wenn ein externes Ereignis zu mehreren internen Nachrichten wird, behält jeder Teil dieselbe Trace-/Ereignisidentität.
-- Wiederholungen führen nicht zu doppelter Verarbeitung.
-- Wenn Provider-Ereignis-IDs fehlen, fällt die Deduplizierung auf einen sicheren Schlüssel zurück (z. B. Trace-ID), um zu vermeiden, dass unterschiedliche Ereignisse verworfen werden.
+### Routing-Priorität von dmScope und identityLinks
 
-- Grün:
-  - `make ingress-trace`
-  - `make ingress-trace2`
-  - `make ingress-idempotency`
-  - `make ingress-dedupe-fallback`
-- Rot (erwartet):
-  - `make ingress-trace-negative`
-  - `make ingress-trace2-negative`
-  - `make ingress-idempotency-negative`
-  - `make ingress-dedupe-fallback-negative`
+**Aussage:** Das Routing hält DM-Sitzungen standardmäßig isoliert und führt Sitzungen nur dann zusammen, wenn dies über die Kanalpriorität und Identitätsverknüpfungen ausdrücklich konfiguriert ist. Kanalspezifische Überschreibungen von `dmScope` haben Vorrang vor globalen Standardwerten. `identityLinks` führen Sitzungen nur innerhalb ausdrücklich verknüpfter Gruppen zusammen, nicht über voneinander unabhängige Kommunikationspartner hinweg.
 
-### Routing-dmScope-Präzedenz + identityLinks
+| Ergebnis       | Ziele                                                                     |
+| -------------- | ------------------------------------------------------------------------- |
+| Grün           | `make routing-precedence`, `make routing-identitylinks`                   |
+| Rot (erwartet) | `make routing-precedence-negative`, `make routing-identitylinks-negative` |
 
-**Aussage:** Routing muss DM-Sitzungen standardmäßig isoliert halten und Sitzungen nur dann zusammenführen, wenn dies explizit konfiguriert ist (Kanalpräzedenz + Identitätsverknüpfungen).
+## Verwandte Themen
 
-Was das bedeutet:
-
-- Kanalspezifische dmScope-Overrides müssen gegenüber globalen Standardwerten Vorrang haben.
-- identityLinks sollten nur innerhalb explizit verknüpfter Gruppen zusammenführen, nicht über nicht verwandte Peers hinweg.
-
-- Grün:
-  - `make routing-precedence`
-  - `make routing-identitylinks`
-- Rot (erwartet):
-  - `make routing-precedence-negative`
-  - `make routing-identitylinks-negative`
-
-## Verwandt
-
-- [Threat Model](/de/security/THREAT-MODEL-ATLAS)
-- [Zum Threat Model beitragen](/de/security/CONTRIBUTING-THREAT-MODEL)
+- [Bedrohungsmodell](/de/security/THREAT-MODEL-ATLAS)
+- [Zum Bedrohungsmodell beitragen](/de/security/CONTRIBUTING-THREAT-MODEL)
+- [Reaktion auf Sicherheitsvorfälle](/de/security/incident-response)

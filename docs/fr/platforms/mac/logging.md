@@ -1,42 +1,41 @@
 ---
 read_when:
-    - Capturer les journaux macOS ou enquêter sur la journalisation de données privées
-    - Débogage des problèmes de cycle de vie de l’activation vocale et des sessions
-summary: 'Journalisation OpenClaw : journal de diagnostics rotatif dans un fichier + indicateurs de confidentialité du journal unifié'
-title: Journalisation macOS
+    - Collecte des journaux macOS ou investigation de la journalisation de données privées
+    - Débogage des problèmes liés au cycle de vie de l’activation vocale et des sessions
+summary: 'Journalisation OpenClaw : fichier journal de diagnostic avec rotation + indicateurs de confidentialité du journal unifié'
+title: Journalisation sous macOS
 x-i18n:
-    generated_at: "2026-05-06T07:31:34Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:37:58Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: 76c001008311d4e3f245add4cce32bdcc3eed9d897b30f6884c0649d2f0523df
+    source_hash: ef0fd91bd7fc0a8b5f598cfe8f5de551795a4badd0f6634c5bcbd4f3916bfc64
     source_path: platforms/mac/logging.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
 # Journalisation (macOS)
 
-## Journal de diagnostic rotatif sur fichier (volet Débogage)
+## Fichier journal de diagnostic avec rotation (volet Debug)
 
-OpenClaw achemine les journaux de l’app macOS via swift-log (journalisation unifiée par défaut) et peut écrire sur disque un journal local rotatif lorsque vous avez besoin d’une capture durable.
+L’application macOS journalise via swift-log (journalisation unifiée par défaut) et peut également écrire dans un fichier journal local avec rotation pour une conservation durable (`DiagnosticsFileLog`).
 
-- Niveau de détail : **volet Débogage → Journaux → Journalisation de l’app → Niveau de détail**
-- Activer : **volet Débogage → Journaux → Journalisation de l’app → « Écrire le journal de diagnostic rotatif (JSONL) »**
-- Emplacement : `~/Library/Logs/OpenClaw/diagnostics.jsonl` (rotation automatique ; les anciens fichiers reçoivent un suffixe `.1`, `.2`, …)
-- Effacer : **volet Débogage → Journaux → Journalisation de l’app → « Effacer »**
+- Activer : **Debug pane -> Logs -> App logging -> "Write rolling diagnostics log (JSONL)"** (désactivé par défaut).
+- Niveau de détail : sélecteur **Debug pane -> Logs -> App logging -> Verbosity**.
+- Emplacement : `~/Library/Logs/OpenClaw/diagnostics.jsonl`.
+- Rotation : rotation à 5 MB ; jusqu’à 5 sauvegardes portant les suffixes `.1`...`.5` (la plus ancienne est supprimée).
+- Effacer : **Debug pane -> Logs -> App logging -> "Clear"** supprime le fichier actif et toutes les sauvegardes.
 
-Remarques :
-
-- Cette option est **désactivée par défaut**. Activez-la uniquement pendant un débogage actif.
-- Traitez le fichier comme sensible ; ne le partagez pas sans vérification.
+Considérez ce fichier comme sensible ; ne le partagez pas sans l’avoir examiné.
 
 ## Données privées de la journalisation unifiée sur macOS
 
-La journalisation unifiée masque la plupart des charges utiles, sauf si un sous-système active `privacy -off`. D’après l’article de Peter sur les [étrangetés de confidentialité de la journalisation macOS](https://steipete.me/posts/2025/logging-privacy-shenanigans) (2025), ce comportement est contrôlé par un plist dans `/Library/Preferences/Logging/Subsystems/`, indexé par le nom du sous-système. Seules les nouvelles entrées de journal prennent en compte l’indicateur ; activez-le donc avant de reproduire un problème.
+La journalisation unifiée masque la plupart des charges utiles, sauf si un sous-système active `privacy -off`. Ce comportement est contrôlé par un fichier plist dans `/Library/Preferences/Logging/Subsystems/`, associé au nom du sous-système. Seules les nouvelles entrées de journal prennent en compte cette option ; activez-la donc avant de reproduire un problème. Contexte : [subtilités de confidentialité de la journalisation macOS](https://steipete.me/posts/2025/logging-privacy-shenanigans).
 
 ## Activer pour OpenClaw (`ai.openclaw`)
 
-- Écrivez d’abord le plist dans un fichier temporaire, puis installez-le atomiquement en tant que root :
+Écrivez d’abord le fichier plist dans un fichier temporaire, puis installez-le de manière atomique en tant que root :
 
 ```bash
 cat <<'EOF' >/tmp/ai.openclaw.plist
@@ -55,16 +54,15 @@ EOF
 sudo install -m 644 -o root -g wheel /tmp/ai.openclaw.plist /Library/Preferences/Logging/Subsystems/ai.openclaw.plist
 ```
 
-- Aucun redémarrage n’est nécessaire ; logd détecte le fichier rapidement, mais seules les nouvelles lignes de journal incluront les charges utiles privées.
-- Affichez la sortie plus riche avec l’assistant existant, par exemple `./scripts/clawlog.sh --category WebChat --last 5m`.
+Aucun redémarrage n’est nécessaire ; logd prend rapidement en compte le fichier, mais seules les nouvelles lignes de journal incluent les charges utiles privées. Consultez la sortie plus détaillée avec `./scripts/clawlog.sh --category WebChat --last 5m` (`--last`/`-l` définit la plage temporelle, `5m` par défaut ; `--category`/`-c` filtre par catégorie).
 
 ## Désactiver après le débogage
 
-- Supprimez la surcharge : `sudo rm /Library/Preferences/Logging/Subsystems/ai.openclaw.plist`.
-- Vous pouvez aussi exécuter `sudo log config --reload` pour forcer logd à abandonner immédiatement la surcharge.
-- N’oubliez pas que cette surface peut inclure des numéros de téléphone et le contenu de messages ; gardez le plist en place uniquement pendant que vous avez activement besoin de ces détails supplémentaires.
+- Supprimez la substitution : `sudo rm /Library/Preferences/Logging/Subsystems/ai.openclaw.plist`.
+- Vous pouvez également exécuter `sudo log config --reload` pour forcer logd à abandonner immédiatement la substitution.
+- Cette interface peut inclure des numéros de téléphone et le contenu des messages ; ne conservez le fichier plist en place que lorsqu’il est activement nécessaire.
 
-## Connexe
+## Pages connexes
 
-- [App macOS](/fr/platforms/macos)
+- [Application macOS](/fr/platforms/macos)
 - [Journalisation du Gateway](/fr/gateway/logging)

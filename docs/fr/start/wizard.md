@@ -1,56 +1,65 @@
 ---
 read_when:
-    - Exécution ou configuration de l’intégration CLI
-    - Configurer une nouvelle machine
+    - Exécution ou configuration de l’intégration via la CLI
+    - Configuration d’une nouvelle machine
 sidebarTitle: 'Onboarding: CLI'
-summary: 'CLI d’intégration : configuration guidée du Gateway, de l’espace de travail, des canaux et des skills'
+summary: 'Intégration via la CLI : vérifiez l’inférence, puis confiez le reste de la configuration à Crestodian'
 title: Intégration (CLI)
 x-i18n:
-    generated_at: "2026-06-28T20:45:22Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T16:00:51Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: 8abf6ac4644e0a49668cbfa1277f6eb3ac5b4fd822cd7805bb647c94ae76895f
+    source_hash: 62dd8fc2780940f738fc99f04ef0c765f5582161c55d11100fae3b4bbbb0ea15
     source_path: start/wizard.md
     workflow: 16
 ---
-
-CLI onboarding est le chemin de configuration terminal **recommandé** pour OpenClaw sur
-macOS, Linux ou Windows. Les utilisateurs du bureau Windows peuvent aussi commencer avec
-[Windows Hub](/fr/platforms/windows).
-Il configure un Gateway local ou une connexion à un Gateway distant, ainsi que les canaux, les Skills
-et les valeurs par défaut de l’espace de travail dans un seul flux guidé.
 
 ```bash
 openclaw onboard
 ```
 
-QuickStart ne prend généralement que quelques minutes, mais l’onboarding complet peut prendre plus de temps
-lorsque la connexion au fournisseur, l’appairage des canaux, l’installation du daemon, les téléchargements réseau,
-les Skills ou les plugins optionnels nécessitent une configuration supplémentaire. L’assistant affiche cette chronologie
-dès le départ, et les étapes optionnelles peuvent être ignorées puis reprises plus tard avec
-`openclaw configure`.
+L’intégration via la CLI est la méthode de configuration recommandée dans le terminal sous macOS, Linux et
+Windows (natif ou WSL2). Par défaut, elle détecte l’accès à l’IA déjà disponible sur
+la machine, le vérifie à l’aide d’une véritable complétion, puis démarre Crestodian afin de
+configurer l’espace de travail, le Gateway et les fonctionnalités facultatives. `openclaw setup` exécute le même processus ([Configuration](/fr/cli/setup) décrit
+la variante `--baseline` qui configure uniquement les paramètres). Les utilisateurs de l’application de bureau Windows peuvent également commencer
+depuis le [Hub Windows](/fr/platforms/windows).
+
+L’intégration guidée établit d’abord l’inférence. Elle détecte les accès à l’IA disponibles,
+exige une véritable complétion, puis démarre seulement ensuite [Crestodian](/fr/cli/crestodian)
+afin de configurer le reste d’OpenClaw. Le processus guidé ne propose ni Crestodian avant
+l’inférence ni de moyen d’ignorer l’IA.
+
+L’assistant classique reste disponible pour la connexion au fournisseur, la configuration
+d’un Gateway distant, l’association des canaux, le contrôle du daemon, les Skills et les importations. Exécutez-le explicitement
+avec `openclaw onboard --classic` ; l’écran des candidats d’inférence guidée ne
+lui délègue pas le processus. Une fois l’inférence validée, Crestodian peut utiliser `open channel
+wizard for <channel>` pour confier la configuration d’un canal nécessitant des secrets à un assistant
+de terminal masqué. Pour changer le fournisseur du modèle ou son authentification, quittez
+Crestodian et exécutez `openclaw onboard` ; Crestodian n’ouvre pas les processus guidés ou
+classiques des fournisseurs.
+
+<Info>
+Pour démarrer votre première discussion au plus vite : terminez la configuration guidée, exécutez `openclaw dashboard`, puis discutez dans
+le navigateur au moyen de l’interface de contrôle. Documentation : [Tableau de bord](/fr/web/dashboard).
+</Info>
 
 ## Paramètres régionaux
 
-L’assistant CLI localise le texte fixe de l’onboarding. Il détermine les paramètres régionaux à partir de
-`OPENCLAW_LOCALE`, puis `LC_ALL`, puis `LC_MESSAGES`, puis `LANG`, et se rabat
-sur l’anglais. Les paramètres régionaux pris en charge par l’assistant sont `en`, `zh-CN` et `zh-TW`.
+L’assistant localise le texte fixe de l’intégration. Ordre de résolution : `OPENCLAW_LOCALE`,
+`LC_ALL`, `LC_MESSAGES`, `LANG`, puis l’anglais. Paramètres régionaux pris en charge : `en`,
+`zh-CN`, `zh-TW`.
 
 ```bash
 OPENCLAW_LOCALE=zh-CN openclaw onboard
 ```
 
-Les noms et identifiants stables restent littéraux : `OpenClaw`, `Gateway`, `Tailscale`,
-les commandes, les clés de configuration, les URL, les ID de fournisseurs, les ID de modèles et les libellés de plugins/canaux
-ne sont pas traduits.
+Les noms de produits, commandes, clés de configuration, URL, identifiants de fournisseurs, identifiants de modèles et
+libellés de plugins/canaux restent en anglais, quels que soient les paramètres régionaux.
 
-<Info>
-Premier chat le plus rapide : ouvrez l’interface Control UI (aucune configuration de canal requise). Exécutez
-`openclaw dashboard` et discutez dans le navigateur. Documentation : [Dashboard](/fr/web/dashboard).
-</Info>
-
-Pour reconfigurer plus tard :
+Pour reconfigurer ultérieurement les paramètres sans rapport avec l’inférence :
 
 ```bash
 openclaw configure
@@ -58,99 +67,159 @@ openclaw agents add <name>
 ```
 
 <Note>
-`--json` n’implique pas le mode non interactif. Pour les scripts, utilisez `--non-interactive`.
+`--json` n’implique pas le mode non interactif. Pour les scripts, utilisez `--non-interactive` (voir [Automatisation de la CLI](/fr/start/wizard-cli-automation)).
 </Note>
 
 <Tip>
-L’onboarding CLI inclut une étape de recherche web où vous pouvez choisir un fournisseur
-tel que Brave, DuckDuckGo, Exa, Firecrawl, Gemini, Grok, Kimi, MiniMax Search,
-Ollama Web Search, Perplexity, SearXNG ou Tavily. Certains fournisseurs exigent une
-clé d’API, tandis que d’autres n’en nécessitent pas. Vous pouvez aussi configurer cela plus tard avec
-`openclaw configure --section web`. Documentation : [Outils web](/fr/tools/web).
+L’assistant classique comprend une étape de recherche Web permettant de choisir un fournisseur : Brave,
+DuckDuckGo, Exa, Firecrawl, Gemini, Grok, Kimi, MiniMax Search, Ollama Web
+Search, Perplexity, SearXNG ou Tavily. Certains nécessitent une clé d’API ; d’autres
+n’en nécessitent pas. Configurez cette option ultérieurement avec `openclaw configure --section web`. Documentation :
+[Outils Web](/fr/tools/web).
 </Tip>
 
-## QuickStart ou Avancé
+## Processus guidé par défaut
 
-L’onboarding commence par **QuickStart** (valeurs par défaut) ou **Avancé** (contrôle complet).
+La commande simple `openclaw onboard` suit ce processus :
+
+1. Acceptez l’avis de sécurité.
+2. Détectez les modèles configurés, les variables d’environnement contenant des clés d’API et les
+   CLI d’IA locales prises en charge.
+3. Testez le premier candidat détecté à l’aide d’une véritable complétion. En cas d’échec, affichez la
+   raison et passez au candidat utilisable suivant.
+4. Si la détection ne trouve plus de candidats, réessayez avec un candidat détecté ou saisissez une clé d’API
+   de fournisseur dans une invite masquée. L’intégration guidée
+   ne propose ni Crestodian ni de sortie permettant d’ignorer l’IA avant que l’inférence fonctionne.
+5. Enregistrez uniquement la route du modèle vérifié ainsi que l’état des identifiants/plugins
+   dont elle dépend. Les paramètres de l’espace de travail et du Gateway restent inchangés.
+6. Démarrez Crestodian avec le modèle vérifié afin qu’il puisse configurer l’espace de travail,
+   le Gateway, les canaux, les agents, les plugins et le reste de la configuration facultative.
+
+La réexécution de la commande sur une installation configurée teste d’abord le modèle
+par défaut actuel, ce qui transforme le processus guidé en une procédure de vérification et de réparation. Un échec
+de vérification ne remplace jamais automatiquement le modèle configuré ; l’intégration s’arrête et
+vous demande comment continuer. Exécutez `openclaw channels add` ou `openclaw configure` pour
+ajouter ultérieurement des éléments sans rapport avec l’inférence ; utilisez `openclaw onboard` pour modifier le fournisseur ou la route
+d’authentification.
+
+## Assistant classique : démarrage rapide ou avancé
+
+Exécutez `openclaw onboard --classic` pour ouvrir l’assistant complet. Il commence par vous
+proposer de choisir entre **Démarrage rapide** (valeurs par défaut) et **Avancé** (contrôle complet). Utilisez
+`--flow quickstart` ou `--flow advanced` (alias `manual`) pour sélectionner le processus classique
+et ignorer cette invite.
 
 <Tabs>
-  <Tab title="QuickStart (valeurs par défaut)">
-    - Gateway local (loopback)
+  <Tab title="Démarrage rapide (valeurs par défaut)">
+    - Gateway local, liaison sur l’interface de bouclage
     - Espace de travail par défaut (ou espace de travail existant)
     - Port du Gateway **18789**
-    - Authentification du Gateway **Token** (généré automatiquement, même en loopback)
-    - Politique d’outils par défaut pour les nouvelles configurations locales : `tools.profile: "coding"` (le profil explicite existant est conservé)
-    - Valeur par défaut d’isolation des DM : l’onboarding local écrit `session.dmScope: "per-channel-peer"` lorsque non défini. Détails : [Référence de configuration CLI](/fr/start/wizard-cli-reference#outputs-and-internals)
-    - Exposition Tailscale **Désactivée**
-    - Les DM Telegram + WhatsApp utilisent par défaut la **liste d’autorisation** (votre numéro de téléphone vous sera demandé)
+    - Authentification du Gateway par **jeton** (généré automatiquement, même sur l’interface de bouclage)
+    - Politique des outils : `tools.profile: "coding"` pour les nouvelles configurations (un profil explicite existant est conservé)
+    - Isolation des messages privés : `session.dmScope: "per-channel-peer"` pour les nouvelles configurations. Détails : [Référence de configuration de la CLI](/fr/start/wizard-cli-reference#outputs-and-internals)
+    - Exposition Tailscale **désactivée**
+    - Les messages privés Telegram et WhatsApp utilisent par défaut une **liste d’autorisation** : Telegram demande un identifiant utilisateur Telegram numérique, tandis que WhatsApp demande un numéro de téléphone
 
   </Tab>
   <Tab title="Avancé (contrôle complet)">
-    - Expose chaque étape (mode, espace de travail, Gateway, canaux, daemon, Skills).
+    - Présente toutes les étapes : mode, espace de travail, Gateway, canaux, daemon, Skills
 
   </Tab>
 </Tabs>
 
-## Ce que l’onboarding configure
+Le mode distant (`--mode remote`) utilise toujours le processus avancé ; il
+configure uniquement cette machine pour se connecter à un Gateway situé ailleurs et n’installe ni
+ne modifie jamais quoi que ce soit sur l’hôte distant.
 
-Le **mode local (par défaut)** vous guide à travers ces étapes :
+## Ce que configure l’intégration classique
 
-1. **Modèle/Auth** — choisissez n’importe quel fournisseur/flux d’authentification pris en charge (clé d’API, OAuth ou authentification manuelle propre au fournisseur), y compris Custom Provider
-   (compatible OpenAI, compatible Anthropic ou détection automatique Unknown). Choisissez un modèle par défaut.
-   Note de sécurité : si cet agent exécutera des outils ou traitera du contenu Webhook/hooks, préférez le modèle de dernière génération le plus puissant disponible et gardez une politique d’outils stricte. Les niveaux plus faibles/anciens sont plus faciles à injecter par prompt.
-   Pour les exécutions non interactives, `--secret-input-mode ref` stocke des références adossées à l’environnement dans les profils d’authentification au lieu de valeurs de clé d’API en clair.
-   En mode non interactif `ref`, la variable d’environnement du fournisseur doit être définie ; passer des indicateurs de clé en ligne sans cette variable d’environnement échoue immédiatement.
-   Dans les exécutions interactives, choisir le mode de référence secrète vous permet de pointer soit vers une variable d’environnement, soit vers une référence de fournisseur configurée (`file` ou `exec`), avec une validation préalable rapide avant l’enregistrement.
-   Pour Anthropic, l’onboarding/configuration interactif propose **Anthropic Claude CLI** comme chemin local préféré et **clé d’API Anthropic** comme chemin de production recommandé. Anthropic setup-token reste également disponible comme chemin d’authentification par jeton pris en charge.
-2. **Espace de travail** — emplacement des fichiers de l’agent (par défaut `~/.openclaw/workspace`). Initialise les fichiers de démarrage.
-3. **Gateway** — port, adresse de liaison, mode d’authentification, exposition Tailscale.
-   En mode token interactif, choisissez le stockage du token en clair par défaut ou optez pour SecretRef.
-   Chemin SecretRef de token non interactif : `--gateway-token-ref-env <ENV_VAR>`.
-4. **Canaux** — canaux de chat intégrés et plugins officiels tels que iMessage, Discord, Feishu, Google Chat, Mattermost, Microsoft Teams, QQ Bot, Signal, Slack, Telegram, WhatsApp, et plus encore.
-5. **Daemon** — installe un LaunchAgent (macOS), une unité utilisateur systemd (Linux/WSL2) ou une tâche planifiée Windows native avec solution de repli par dossier de démarrage propre à l’utilisateur.
-   Si l’authentification par token exige un token et que `gateway.auth.token` est géré par SecretRef, l’installation du daemon le valide mais ne persiste pas le token résolu dans les métadonnées d’environnement du service superviseur.
-   Si l’authentification par token exige un token et que la SecretRef de token configurée n’est pas résolue, l’installation du daemon est bloquée avec des instructions exploitables.
-   Si `gateway.auth.token` et `gateway.auth.password` sont tous deux configurés et que `gateway.auth.mode` n’est pas défini, l’installation du daemon est bloquée jusqu’à ce que le mode soit défini explicitement.
-6. **Vérification de santé** — démarre le Gateway et vérifie qu’il fonctionne.
-7. **Skills** — installe les Skills recommandées et les dépendances optionnelles.
+Le mode local (par défaut) vous guide à travers les étapes suivantes :
+
+1. **Modèle/authentification** - choisissez un processus d’authentification du fournisseur (clé d’API, OAuth ou
+   authentification manuelle propre au fournisseur), y compris un fournisseur personnalisé
+   (compatible avec OpenAI, compatible avec OpenAI Responses, compatible avec Anthropic ou
+   détection automatique inconnue). Choisissez un modèle par défaut.
+   Une nouvelle configuration avec une clé d’API OpenAI utilise par défaut `openai/gpt-5.6` (l’identifiant
+   simple de l’API directe correspond à Sol) ; une nouvelle configuration ChatGPT/Codex utilise par défaut
+   `openai/gpt-5.6-sol`. La réexécution de la configuration conserve un modèle explicite existant,
+   y compris `openai/gpt-5.5`. Sélectionnez explicitement `openai/gpt-5.5` si le
+   compte ne donne pas accès à GPT-5.6.
+   Remarque de sécurité : si cet agent doit exécuter des outils ou traiter le contenu
+   de webhooks/hooks, privilégiez le modèle de dernière génération le plus performant disponible et conservez
+   une politique d’outils stricte : les niveaux moins performants ou plus anciens sont plus vulnérables aux injections de prompts.
+   Pour les exécutions non interactives, `--secret-input-mode ref` stocke des références adossées à des variables
+   d’environnement plutôt que les valeurs des clés d’API en texte brut ; la variable d’environnement référencée doit déjà
+   être définie, sinon l’intégration échoue immédiatement. Le mode interactif de référence des secrets peut
+   pointer vers une variable d’environnement ou une référence de fournisseur configurée (`file` ou
+   `exec`), avec une vérification préalable rapide avant l’enregistrement. Après la configuration du modèle/de l’authentification,
+   l’assistant propose un test facultatif de complétion en direct ; en cas d’échec, vous pouvez revenir une fois à
+   la configuration du modèle/de l’authentification ou ignorer l’échec sans bloquer le reste de
+   l’assistant classique. L’ignorer ne déverrouille pas Crestodian ; la configuration conversationnelle
+   exige toujours une vérification d’inférence réussie.
+2. **Espace de travail** - répertoire des fichiers de l’agent (par défaut `~/.openclaw/workspace`). Initialise les fichiers d’amorçage.
+3. **Gateway** - port, adresse de liaison, mode d’authentification, exposition Tailscale. En
+   mode interactif avec jeton, choisissez le stockage du jeton en texte brut (par défaut) ou optez
+   pour un SecretRef. Chemin SecretRef non interactif : `--gateway-token-ref-env <ENV_VAR>`.
+4. **Canaux** - canaux de discussion intégrés et plugins officiels, notamment
+   Discord, Feishu, Google Chat, iMessage, Mattermost, Microsoft Teams,
+   QQ Bot, Signal, Slack, Telegram, WhatsApp et d’autres.
+5. **Daemon** - installe un LaunchAgent (macOS), une unité utilisateur systemd
+   (Linux/WSL2) ou une tâche planifiée Windows native avec un mécanisme de secours par utilisateur
+   dans le dossier de démarrage.
+   Si l’authentification par jeton est requise et que `gateway.auth.token` est géré par SecretRef,
+   l’installation du daemon le valide, mais n’enregistre pas le jeton résolu dans
+   les métadonnées d’environnement du service du superviseur ; un SecretRef non résolu bloque
+   l’installation et affiche des instructions. Si `gateway.auth.token` et
+   `gateway.auth.password` sont tous deux définis alors que `gateway.auth.mode` ne l’est pas, l’installation
+   est bloquée jusqu’à ce que vous définissiez explicitement le mode.
+6. **Vérification de l’état** - démarre le Gateway et vérifie qu’il est accessible.
+7. **Skills** - installe les Skills recommandés et leurs dépendances facultatives.
 
 <Note>
-Relancer l’onboarding n’efface **rien**, sauf si vous choisissez explicitement **Réinitialiser** (ou passez `--reset`).
-CLI `--reset` cible par défaut la configuration, les identifiants et les sessions ; utilisez `--reset-scope full` pour inclure l’espace de travail.
-Si la configuration est invalide ou contient des clés héritées, l’onboarding vous demande d’exécuter d’abord `openclaw doctor`.
+La réexécution de l’intégration ne supprime **rien**, sauf si vous choisissez explicitement
+**Réinitialiser** (ou utilisez `--reset`). Dans la CLI, `--reset` réinitialise par défaut la configuration, les identifiants
+et les sessions ; utilisez `--reset-scope full` pour supprimer également l’espace de travail. Si la
+configuration est invalide ou contient d’anciennes clés, l’intégration vous demande d’abord d’exécuter
+`openclaw doctor`.
 </Note>
 
-Le **mode distant** configure uniquement le client local pour se connecter à un Gateway ailleurs.
-Il n’installe ni ne modifie **rien** sur l’hôte distant.
+`--flow import` exécute un processus de migration détecté (par exemple Hermes) dans
+l’assistant classique au lieu d’une nouvelle configuration ; consultez [Migrer](/fr/cli/migrate) et les guides de migration sous
+[Installation](/fr/install/migrating-hermes). `openclaw onboard --modern` est un
+alias de compatibilité pour [Crestodian](/fr/cli/crestodian). Il utilise la même
+condition d’inférence que `openclaw crestodian` : une inférence vérifiée démarre
+l’assistant, tandis qu’un échec interactif renvoie à la configuration guidée de l’inférence.
 
 ## Ajouter un autre agent
 
-Utilisez `openclaw agents add <name>` pour créer un agent séparé avec son propre espace de travail,
-ses sessions et ses profils d’authentification. L’exécution sans `--workspace` lance l’onboarding.
+Utilisez `openclaw agents add <name>` pour créer un agent distinct disposant de ses propres
+espace de travail, sessions et profils d’authentification. Une exécution sans `--workspace` démarre
+un processus interactif pour le nom, l’espace de travail, l’authentification, les canaux et les liaisons ; il ne s’agit
+pas de l’assistant complet `openclaw onboard`.
 
-Ce qu’il définit :
+Paramètres définis :
 
 - `agents.list[].name`
 - `agents.list[].workspace`
 - `agents.list[].agentDir`
 
-Notes :
+Remarques :
 
-- Les espaces de travail par défaut suivent `~/.openclaw/workspace-<agentId>`.
-- Ajoutez `bindings` pour router les messages entrants (l’onboarding peut le faire).
-- Indicateurs non interactifs : `--model`, `--agent-dir`, `--bind`, `--non-interactive`.
+- Espace de travail par défaut : `~/.openclaw/workspace-<agentId>` (ou sous
+  `agents.defaults.workspace` si cette valeur est définie).
+- Ajoutez des `bindings` pour acheminer les messages entrants vers cet agent (l’intégration peut le faire pour vous).
+- Options non interactives : `--model`, `--agent-dir`, `--bind`, `--non-interactive`.
 
 ## Référence complète
 
-Pour des explications détaillées étape par étape et les sorties de configuration, consultez
-[Référence de configuration CLI](/fr/start/wizard-cli-reference).
-Pour des exemples non interactifs, consultez [Automatisation CLI](/fr/start/wizard-cli-automation).
-Pour la référence technique plus approfondie, y compris les détails RPC, consultez
-[Référence d’onboarding](/fr/reference/wizard).
+Pour obtenir une description détaillée du comportement étape par étape et des résultats de configuration, consultez la
+[Référence de configuration de la CLI](/fr/start/wizard-cli-reference).
+Pour des exemples non interactifs, consultez [Automatisation de la CLI](/fr/start/wizard-cli-automation).
+Pour la référence complète des options, consultez [`openclaw onboard`](/fr/cli/onboard).
 
 ## Documentation associée
 
-- Référence des commandes CLI : [`openclaw onboard`](/fr/cli/onboard)
-- Vue d’ensemble de l’onboarding : [Vue d’ensemble de l’onboarding](/fr/start/onboarding-overview)
-- Onboarding de l’application macOS : [Onboarding](/fr/start/onboarding)
-- Rituel de premier démarrage de l’agent : [Démarrage de l’agent](/fr/start/bootstrapping)
+- Référence des commandes de la CLI : [`openclaw onboard`](/fr/cli/onboard)
+- Présentation de l’intégration : [Présentation de l’intégration](/fr/start/onboarding-overview)
+- Intégration de l’application macOS : [Intégration](/fr/start/onboarding)
+- Rituel de premier démarrage de l’agent : [Amorçage de l’agent](/fr/start/bootstrapping)

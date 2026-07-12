@@ -1,65 +1,66 @@
 ---
 read_when:
-    - Expondo o Gateway pela LAN, tailnet, Tailscale Serve, Funnel ou um proxy reverso
+    - Exposição do Gateway via LAN, tailnet, Tailscale Serve, Funnel ou proxy reverso
     - Revisando uma implantação antes de permitir usuários reais de mensagens
-    - Revertendo uma configuração arriscada de acesso remoto ou DM
+    - Revertendo uma configuração arriscada de acesso remoto ou de mensagens diretas
 sidebarTitle: Exposure runbook
-summary: Lista de verificação de pré-voo e reversão antes de expor um Gateway do OpenClaw além do loopback
+summary: Checklist de pré-implantação e reversão antes de expor um Gateway do OpenClaw além da interface de loopback
 title: Runbook de exposição do Gateway
 x-i18n:
-    generated_at: "2026-06-27T17:33:57Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:16:01Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: c5e94cc03b9d79a03eb16aa04bad0fd311b72f27f14182c036832382dbce3d0f
+    source_hash: fb8e66af57e804325afc91281122b822183337177c734efe065c5fc18b175e72
     source_path: gateway/security/exposure-runbook.md
     workflow: 16
 ---
 
 <Warning>
-Exponha o Gateway somente depois que você puder explicar quem pode acessá-lo, como essas pessoas são
+Exponha o Gateway somente depois de conseguir explicar quem pode acessá-lo, como essas pessoas são
 autenticadas, quais agentes elas podem acionar e quais ferramentas esses agentes podem
-usar. Em caso de dúvida, volte ao acesso somente por loopback e execute novamente a auditoria.
+usar. Em caso de dúvida, retorne ao acesso somente por loopback e execute novamente a auditoria.
 </Warning>
 
-Este runbook transforma a orientação mais ampla de [Segurança](/pt-BR/gateway/security) em uma
+Este runbook transforma as orientações mais amplas de [Segurança](/pt-BR/gateway/security) em uma
 lista de verificação operacional para acesso remoto e exposição de mensagens.
 
 ## Escolha o padrão de exposição
 
-Prefira o padrão mais restrito que satisfaça o fluxo de trabalho.
+Prefira o padrão mais restrito que atenda ao fluxo de trabalho.
 
-| Padrão                    | Recomendado quando                                | Controles obrigatórios                                                                                   |
-| -------------------------- | ----------------------------------------------- | --------------------------------------------------------------------------------------------------- |
-| Loopback + túnel SSH      | Uso pessoal, acesso administrativo, depuração           | Mantenha `gateway.bind: "loopback"` e encaminhe por túnel `127.0.0.1:18789`                                        |
-| Loopback + Tailscale Serve | Acesso por tailnet pessoal à Interface de Controle/WebSocket | Mantenha o Gateway somente em loopback; dependa dos cabeçalhos de identidade do Tailscale apenas para superfícies compatíveis          |
-| Vínculo tailnet/LAN           | Rede privada dedicada com dispositivos conhecidos    | Autenticação do Gateway, lista de permissões no firewall, sem encaminhamento de porta pública                                            |
-| Proxy reverso confiável      | SSO/OIDC da organização na frente do Gateway       | Autenticação `trusted-proxy`, `trustedProxies` estritos, regras para sobrescrever/remover cabeçalhos, usuários permitidos explícitos |
-| Internet pública            | Implantações raras e de alto risco                     | Proxy com identidade, TLS, limites de taxa, listas de permissões estritas, sessões não principais em sandbox              |
+| Padrão                     | Recomendado quando                                      | Controles obrigatórios                                                                                                                                             |
+| -------------------------- | ------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Loopback + túnel SSH       | Uso pessoal, acesso administrativo, depuração           | Mantenha `gateway.bind: "loopback"` e crie um túnel para `127.0.0.1:18789`                                                                                          |
+| Loopback + Tailscale Serve | Acesso da tailnet pessoal à interface de controle/WebSocket | Mantenha o Gateway somente em loopback; os cabeçalhos de identidade do Tailscale autenticam apenas a superfície WebSocket da interface de controle, não outros caminhos de autenticação |
+| Bind na tailnet/LAN        | Rede privada dedicada com dispositivos conhecidos      | Autenticação do Gateway, lista de permissões do firewall, sem encaminhamento de porta pública                                                                      |
+| Proxy reverso confiável    | SSO/OIDC da organização à frente do Gateway             | Autenticação `trusted-proxy`, `trustedProxies` estrito, regras para sobrescrever/remover cabeçalhos, usuários permitidos explicitamente                             |
+| Internet pública           | Implantações raras e de alto risco                      | Proxy com reconhecimento de identidade, TLS, limites de taxa, listas de permissões estritas, sessões não principais em sandbox                                    |
 
-Evite encaminhamento direto de porta pública para o Gateway. Se você precisar de acesso público,
-coloque um proxy com identidade na frente dele e torne o proxy o único caminho de rede
-para o Gateway.
+Evite o encaminhamento direto de portas públicas para o Gateway. Se o acesso público for
+necessário, coloque um proxy com reconhecimento de identidade à frente dele e faça do proxy o
+único caminho de rede até o Gateway.
 
 ## Inventário prévio
 
-Registre estes itens antes de alterar políticas de vínculo, proxy, Tailscale ou canais:
+Registre estas informações antes de alterar políticas de bind, proxy, Tailscale ou canal:
 
-- Host do Gateway, usuário do sistema operacional e diretório de estado.
-- URL do Gateway e modo de vínculo.
-- Modo de autenticação, origem de token/senha ou origem de identidade do proxy confiável.
-- Todos os canais habilitados e se eles aceitam DMs, grupos ou Webhooks.
+- Host do Gateway, usuário do SO e diretório de estado (padrão: `~/.openclaw`).
+- URL e modo de bind do Gateway (`gateway.bind`; porta padrão `18789`).
+- Modo de autenticação, origem do token/senha ou origem da identidade do proxy confiável.
+- Todos os canais habilitados e se aceitam mensagens diretas, grupos ou webhooks.
 - Agentes acessíveis por remetentes não locais.
 - Perfil de ferramentas, modo de sandbox e política de ferramentas elevadas para cada agente acessível.
 - Credenciais externas disponíveis para esses agentes.
-- Local do backup de `~/.openclaw/openclaw.json` e credenciais.
+- Local do backup de `~/.openclaw/openclaw.json` e das credenciais.
 
-Se mais de uma pessoa puder enviar mensagens ao bot, trate isso como autoridade compartilhada
-e delegada sobre ferramentas, não como isolamento de host por usuário.
+Se mais de uma pessoa puder enviar mensagens ao bot, trate isso como autoridade delegada
+compartilhada sobre ferramentas, não como isolamento do host por usuário.
 
-## Verificações de base
+## Verificações de referência
 
-Execute estes comandos antes de abrir o acesso:
+Execute antes de liberar o acesso:
 
 ```bash
 openclaw doctor
@@ -68,20 +69,21 @@ openclaw security audit --deep
 openclaw health
 ```
 
-Resolva primeiro as descobertas críticas. Avisos podem ser aceitáveis somente quando forem
-intencionais e documentados para a implantação.
+Resolva primeiro as constatações críticas. Aceite avisos somente quando forem intencionais e
+documentados para a implantação. Consulte [Verificações da auditoria de segurança](/pt-BR/gateway/security/audit-checks)
+para saber o que cada `checkId` significa e qual é sua chave de correção.
 
-Para validação remota da CLI, passe as credenciais explicitamente:
+Para validação remota pela CLI, forneça as credenciais explicitamente:
 
 ```bash
 openclaw gateway probe --url ws://127.0.0.1:18789 --token "$OPENCLAW_GATEWAY_TOKEN"
 ```
 
-Não presuma que as credenciais da configuração local se aplicam a uma URL remota explícita.
+Não suponha que as credenciais da configuração local se apliquem a uma URL remota explícita.
 
-## Linha de base mínima segura
+## Referência mínima de segurança
 
-Use este formato como ponto de partida para implantações expostas:
+Use esta estrutura como ponto de partida para implantações expostas:
 
 ```json5
 {
@@ -108,74 +110,84 @@ Use este formato como ponto de partida para implantações expostas:
 }
 ```
 
-Depois amplie um controle por vez. Por exemplo, adicione uma lista de permissões específica
-para canais antes de habilitar ferramentas com capacidade de escrita, ou habilite um proxy
-reverso antes de aceitar tráfego remoto da Interface de Controle.
+Amplie um controle por vez: adicione uma lista de permissões para um canal específico antes de habilitar
+ferramentas com capacidade de escrita ou habilite um proxy reverso antes de aceitar tráfego remoto da
+interface de controle.
 
-A linha de base estrita `exec.security: "deny"` bloqueia todas as chamadas exec, incluindo
-diagnósticos benignos. Se diagnósticos ou comandos de baixo risco forem necessários, relaxe isso
-somente depois de escolher os remetentes, agentes, comandos e modo de aprovação específicos
-que correspondem ao seu modelo de ameaça.
+`tools.exec.security: "deny"` bloqueia todas as chamadas de execução, inclusive diagnósticos
+inofensivos. Se diagnósticos ou comandos de baixo risco forem necessários, flexibilize isso somente
+depois de escolher os remetentes, agentes, comandos e o modo de aprovação específicos que
+correspondam ao seu modelo de ameaças.
 
-## Exposição de DMs e grupos
+## Exposição de mensagens diretas e grupos
 
-Canais de mensagens são superfícies de entrada não confiáveis. Antes de permitir DMs ou grupos:
+Os canais de mensagens são superfícies de entrada não confiáveis. Antes de permitir mensagens diretas ou
+grupos:
 
-- Prefira `dmPolicy: "pairing"` ou listas `allowFrom` estritas.
-- Evite `dmPolicy: "open"` a menos que todo remetente seja confiável.
+- Prefira `dmPolicy: "pairing"` ou uma lista `allowFrom` estrita em vez de `dmPolicy: "open"`.
 - Não combine listas de permissões `"*"` com acesso amplo a ferramentas.
 - Exija menções em grupos, a menos que a sala seja rigidamente controlada.
-- Use `session.dmScope: "per-channel-peer"` quando várias pessoas puderem enviar DM ao bot.
-- Direcione canais compartilhados para agentes com ferramentas mínimas e sem credenciais pessoais.
+- Defina `session.dmScope: "per-channel-peer"` (ou `"per-account-channel-peer"` para
+  canais com várias contas) quando várias pessoas puderem enviar mensagens diretas ao bot, para que as sessões de mensagens diretas
+  não compartilhem contexto.
+- Encaminhe canais compartilhados para agentes com o mínimo de ferramentas e sem credenciais
+  pessoais.
 
-O pareamento aprova o remetente para acionar o bot. Ele não transforma esse remetente em
-um limite de segurança de host separado.
+O pareamento aprova o remetente para acionar o bot. Ele não transforma esse remetente em um
+limite de segurança de host separado.
 
-## Verificações de proxy reverso
+## Verificações do proxy reverso
 
-Para proxies com identidade:
+Para proxies com reconhecimento de identidade:
 
-- O proxy deve autenticar usuários antes de encaminhar para o Gateway.
-- O acesso direto à porta do Gateway deve ser bloqueado por firewall ou política de rede.
-- `gateway.trustedProxies` deve conter somente os IPs de origem do proxy.
-- O proxy deve remover ou sobrescrever cabeçalhos de identidade e encaminhamento fornecidos pelo cliente.
-- `gateway.auth.trustedProxy.allowUsers` deve listar os usuários esperados quando o proxy atende mais de um público.
-- O modo de proxy por loopback no mesmo host deve usar `allowLoopback` somente quando os processos locais forem confiáveis e o proxy for dono dos cabeçalhos de identidade.
+- O proxy deve autenticar os usuários antes de encaminhar solicitações ao Gateway.
+- O firewall ou a política de rede deve bloquear o acesso direto à porta do Gateway.
+- `gateway.trustedProxies` deve listar somente os IPs de origem do proxy.
+- O proxy deve remover ou sobrescrever cabeçalhos de identidade e encaminhamento
+  fornecidos pelo cliente.
+- Defina `gateway.auth.trustedProxy.allowUsers` quando o proxy atender a mais de
+  um público.
+- Use `gateway.auth.trustedProxy.allowLoopback` somente para um proxy no mesmo host,
+  quando os processos locais forem confiáveis e o proxy controlar os cabeçalhos de identidade.
 
-Execute `openclaw security audit --deep` após alterações no proxy. As descobertas de proxy confiável
-são intencionalmente de alto sinal porque o proxy se torna o limite de autenticação.
+Execute `openclaw security audit --deep` após alterações no proxy. As constatações sobre proxy confiável
+são altamente relevantes porque o proxy se torna o limite de
+autenticação.
 
 ## Revisão de ferramentas e sandbox
 
 Antes de expor um agente a remetentes remotos:
 
-- Confirme quais sessões são executadas no host versus no sandbox.
-- Negue ou exija aprovação para exec no host.
-- Mantenha ferramentas elevadas desabilitadas, a menos que um remetente específico e confiável precise delas.
-- Evite ferramentas de navegador, canvas, node, cron, gateway e criação de sessão para superfícies de mensagens abertas ou semiabertas.
-- Mantenha montagens de vínculo restritas e evite credenciais, home, socket do Docker e caminhos do sistema.
-- Use gateways, usuários do sistema operacional ou hosts separados para limites de confiança materialmente diferentes.
+- Confirme quais sessões são executadas no host e quais são executadas no sandbox.
+- Negue ou exija aprovação para execução no host.
+- Mantenha as ferramentas elevadas desabilitadas, a menos que um remetente específico e confiável precise delas.
+- Evite ferramentas de navegador, canvas, Node, Cron, Gateway e criação de sessões em superfícies de mensagens
+  abertas ou semiabertas.
+- Mantenha os pontos de montagem restritos; evite caminhos de credenciais, do diretório inicial, do soquete do Docker e do sistema.
+- Use Gateways, usuários do SO ou hosts separados para limites de confiança substancialmente
+  diferentes.
 
-Se usuários remotos não forem totalmente confiáveis, o isolamento deve vir de implantações
+Se os usuários remotos não forem totalmente confiáveis, o isolamento deve vir de implantações
 separadas, não apenas de prompts ou rótulos de sessão.
 
-## Validação pós-alteração
+## Validação após as alterações
 
 Após cada alteração de exposição:
 
 1. Execute novamente `openclaw security audit --deep`.
-2. Teste uma conexão autorizada bem-sucedida.
-3. Teste que um remetente ou sessão de navegador não autorizados são negados.
-4. Confirme que os logs redigem segredos.
-5. Confirme que o roteamento de DM/grupo alcança somente o agente pretendido.
-6. Confirme que ferramentas de alto impacto pedem aprovação ou são negadas.
+2. Confirme que uma conexão autorizada é estabelecida com sucesso.
+3. Confirme que um remetente ou uma sessão de navegador não autorizada é bloqueada.
+4. Confirme que os logs ocultam segredos.
+5. Confirme que o roteamento de mensagens diretas/grupos alcança somente o agente pretendido.
+6. Confirme que ferramentas de alto impacto solicitam aprovação ou são bloqueadas.
 7. Documente os avisos residuais aceitos.
 
-Não prossiga para a próxima alteração de exposição até que a atual seja compreendida.
+Não prossiga para a próxima alteração de exposição até que a atual seja
+compreendida.
 
 ## Plano de reversão
 
-Se o Gateway puder estar exposto demais:
+Se o Gateway puder estar excessivamente exposto:
 
 ```json5
 {
@@ -195,25 +207,25 @@ Se o Gateway puder estar exposto demais:
 }
 ```
 
-Então:
+Em seguida:
 
-1. Interrompa encaminhamentos públicos, Tailscale Funnel ou rotas de proxy reverso.
-2. Rotacione tokens/senhas do Gateway e credenciais de integração afetadas.
+1. Interrompa o encaminhamento público, o Tailscale Funnel ou as rotas do proxy reverso.
+2. Troque os tokens/senhas do Gateway e as credenciais de integração afetadas.
 3. Remova `"*"` e remetentes inesperados das listas de permissões.
-4. Revise logs de auditoria recentes, histórico de execuções, chamadas de ferramentas e alterações de configuração.
+4. Revise os logs de auditoria recentes, o histórico de execuções, as chamadas de ferramentas e as alterações de configuração.
 5. Execute novamente `openclaw security audit --deep`.
-6. Reabilite o acesso com o padrão mais restrito que satisfaça o fluxo de trabalho.
+6. Reative o acesso com o padrão mais restrito que atenda ao fluxo de trabalho.
 
-## Lista de verificação de revisão
+## Lista de verificação da revisão
 
 - O Gateway permanece somente em loopback, a menos que haja um motivo documentado.
-- O acesso não loopback tem autenticação, firewall e nenhuma rota direta pública.
-- Implantações com proxy confiável têm IPs de proxy e controles de cabeçalho estritos.
-- DMs usam pareamento ou listas de permissões, não acesso aberto por padrão.
-- Grupos exigem menções ou listas de permissões explícitas.
-- Canais compartilhados não alcançam credenciais pessoais.
-- Sessões não principais são executadas em modo sandbox.
-- Exec no host e ferramentas elevadas são negados ou protegidos por aprovação.
-- Logs redigem segredos.
-- Descobertas críticas de auditoria são resolvidas.
-- Etapas de reversão são testadas e documentadas.
+- O acesso fora de loopback tem autenticação, proteção por firewall e nenhuma rota pública direta.
+- Implantações com proxy confiável têm IPs de proxy estritos e controles de cabeçalhos.
+- As mensagens diretas usam pareamento ou listas de permissões, e não acesso aberto por padrão.
+- Os grupos exigem menções ou listas de permissões explícitas.
+- Os canais compartilhados não têm acesso a credenciais pessoais.
+- As sessões não principais são executadas no modo sandbox.
+- A execução no host e as ferramentas elevadas são bloqueadas ou condicionadas à aprovação.
+- Os logs ocultam segredos.
+- As constatações críticas da auditoria foram resolvidas.
+- As etapas de reversão foram testadas e documentadas.

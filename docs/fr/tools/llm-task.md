@@ -1,26 +1,27 @@
 ---
 read_when:
-    - Vous voulez une étape LLM uniquement en JSON dans les workflows
-    - Vous avez besoin d’une sortie de LLM validée par schéma pour l’automatisation
-summary: Tâches LLM en JSON uniquement pour les workflows (outil de Plugin facultatif)
-title: Tâche LLM
+    - Vous souhaitez une étape LLM produisant uniquement du JSON dans les workflows
+    - Vous avez besoin d’une sortie de LLM validée par un schéma pour l’automatisation
+summary: Tâches LLM avec sortie JSON uniquement pour les workflows (outil de Plugin facultatif)
+title: Tâche du LLM
 x-i18n:
-    generated_at: "2026-06-27T18:19:15Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:54:14Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: ab83202bd0954a948c933c80de17385eb385573b8e3974dba41ff876f91c3ddb
+    source_hash: 78ea533f43546fbdd66c7f7138b8dea0b12b02d38925689324b390a12d0c4c5a
     source_path: tools/llm-task.md
     workflow: 16
 ---
 
-`llm-task` est un **outil de Plugin facultatif** qui exécute une tâche LLM uniquement en JSON et
-renvoie une sortie structurée (éventuellement validée avec JSON Schema).
+`llm-task` est un **outil de Plugin facultatif** fourni qui exécute un unique
+appel LLM produisant uniquement du JSON et renvoie une sortie structurée,
+éventuellement validée par rapport à un schéma JSON. Il fournit aux moteurs de
+workflow tels que Lobster une étape LLM sans nécessiter de code OpenClaw
+personnalisé pour chaque workflow.
 
-C’est idéal pour les moteurs de workflow comme Lobster : vous pouvez ajouter une seule étape LLM
-sans écrire de code OpenClaw personnalisé pour chaque workflow.
-
-## Activer le Plugin
+## Activation
 
 1. Activez le Plugin :
 
@@ -34,7 +35,7 @@ sans écrire de code OpenClaw personnalisé pour chaque workflow.
 }
 ```
 
-2. Autorisez l’outil facultatif :
+2. Autorisez l’outil :
 
 ```json
 {
@@ -44,9 +45,11 @@ sans écrire de code OpenClaw personnalisé pour chaque workflow.
 }
 ```
 
-Utilisez `tools.allow` uniquement lorsque vous souhaitez un mode de liste d’autorisation restrictive.
+`alsoAllow` ajoute `llm-task` au profil d’outils actif sans restreindre les
+autres outils principaux. Utilisez plutôt `tools.allow` uniquement si vous
+souhaitez un mode restrictif fondé sur une liste d’autorisation.
 
-## Configuration (facultatif)
+## Configuration (facultative)
 
 ```json
 {
@@ -56,9 +59,9 @@ Utilisez `tools.allow` uniquement lorsque vous souhaitez un mode de liste d’au
         "enabled": true,
         "config": {
           "defaultProvider": "openai",
-          "defaultModel": "gpt-5.5",
+          "defaultModel": "gpt-5.6-sol",
           "defaultAuthProfileId": "main",
-          "allowedModels": ["openai/gpt-5.5"],
+          "allowedModels": ["openai/gpt-5.6-sol"],
           "maxTokens": 800,
           "timeoutMs": 30000
         }
@@ -68,55 +71,63 @@ Utilisez `tools.allow` uniquement lorsque vous souhaitez un mode de liste d’au
 }
 ```
 
-`allowedModels` est une liste d’autorisation de chaînes `provider/model`. Si elle est définie, toute requête
-hors de la liste est rejetée.
+`allowedModels` est une liste d’autorisation de chaînes `provider/model` ; toute
+requête visant un autre modèle est rejetée. Toutes les autres clés servent de
+valeurs de repli par appel lorsque l’appel d’outil omet le paramètre
+correspondant.
 
 ## Paramètres de l’outil
 
-- `prompt` (chaîne, obligatoire)
-- `input` (n’importe quel type, facultatif)
-- `schema` (objet, JSON Schema facultatif)
-- `provider` (chaîne, facultatif)
-- `model` (chaîne, facultatif)
-- `thinking` (chaîne, facultatif)
-- `authProfileId` (chaîne, facultatif)
-- `temperature` (nombre, facultatif)
-- `maxTokens` (nombre, facultatif)
-- `timeoutMs` (nombre, facultatif)
-
-`thinking` accepte les préréglages de raisonnement OpenClaw standard, comme `low` ou `medium`.
+| Paramètre       | Type   | Remarques                                                                                                                                                           |
+| --------------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `prompt`        | string | Obligatoire. Instruction de tâche destinée au LLM.                                                                                                                  |
+| `input`         | any    | Charge utile facultative ; sérialisée en JSON et ajoutée à l’invite.                                                                                                |
+| `schema`        | object | Schéma JSON facultatif que la sortie analysée doit respecter.                                                                                                       |
+| `provider`      | string | Remplace `defaultProvider` / le fournisseur par défaut de l’agent.                                                                                                  |
+| `model`         | string | Remplace `defaultModel` ; accepte les identifiants de modèle seuls, les alias ou une référence `provider/model` (un préfixe de fournisseur dupliqué est automatiquement supprimé). |
+| `thinking`      | string | Niveau de raisonnement (par ex. `low`, `medium`) ; doit être pris en charge par le modèle résolu.                                                                    |
+| `authProfileId` | string | Remplace `defaultAuthProfileId`.                                                                                                                                    |
+| `temperature`   | number | Appliqué au mieux ; tous les fournisseurs ne le prennent pas en charge.                                                                                             |
+| `maxTokens`     | number | Limite appliquée au mieux au nombre de jetons de sortie.                                                                                                            |
+| `timeoutMs`     | number | Délai d’expiration de l’exécution ; valeur par défaut : `30000`.                                                                                                    |
 
 ## Sortie
 
-Renvoie `details.json` contenant le JSON analysé (et le valide avec
-`schema` lorsqu’il est fourni).
+Renvoie `details.json` (le JSON analysé et validé par rapport au schéma), ainsi
+que `details.provider` et `details.model`, qui indiquent respectivement le
+fournisseur et le modèle réellement utilisés.
 
 ## Exemple : étape de workflow Lobster
 
 ### Limitation importante
 
-L’exemple ci-dessous suppose que la **CLI Lobster autonome** s’exécute dans un environnement où `openclaw.invoke` dispose déjà de l’URL Gateway et du contexte d’authentification corrects.
+L’exemple ci-dessous suppose que la **CLI Lobster autonome** s’exécute dans un
+environnement où `openclaw.invoke` dispose déjà de l’URL du Gateway et du
+contexte d’authentification appropriés.
 
-Pour l’exécuteur Lobster **intégré** fourni avec OpenClaw, ce modèle de CLI imbriquée n’est **pas fiable actuellement** :
+Pour l’exécuteur Lobster **intégré** fourni dans OpenClaw, ce modèle d’appel de
+CLI imbriqué n’est **actuellement pas fiable** :
 
 ```lobster
 openclaw.invoke --tool llm-task --action json --args-json '{ ... }'
 ```
 
-Tant que Lobster intégré ne dispose pas d’un pont pris en charge pour ce flux, préférez soit :
+Tant que Lobster intégré ne dispose pas d’une passerelle prise en charge pour ce
+flux, privilégiez l’une des options suivantes :
 
-- des appels directs à l’outil `llm-task` en dehors de Lobster, soit
-- des étapes Lobster qui ne reposent pas sur des appels `openclaw.invoke` imbriqués.
+- des appels directs à l’outil `llm-task` en dehors de Lobster ; ou
+- des étapes Lobster qui ne reposent pas sur des appels imbriqués à
+  `openclaw.invoke`.
 
-Exemple de CLI Lobster autonome :
+Exemple avec la CLI Lobster autonome :
 
 ```lobster
 openclaw.invoke --tool llm-task --action json --args-json '{
-  "prompt": "Given the input email, return intent and draft.",
+  "prompt": "À partir de l’e-mail fourni en entrée, renvoyez l’intention et une proposition de réponse.",
   "thinking": "low",
   "input": {
-    "subject": "Hello",
-    "body": "Can you help?"
+    "subject": "Bonjour",
+    "body": "Pouvez-vous m’aider ?"
   },
   "schema": {
     "type": "object",
@@ -130,16 +141,18 @@ openclaw.invoke --tool llm-task --action json --args-json '{
 }'
 ```
 
-## Notes de sécurité
+## Remarques de sécurité
 
-- L’outil est **uniquement en JSON** et demande au modèle de produire uniquement du JSON (sans
-  blocs de code, sans commentaire).
-- Aucun outil n’est exposé au modèle pour cette exécution.
-- Traitez la sortie comme non fiable sauf si vous la validez avec `schema`.
-- Placez les approbations avant toute étape ayant des effets de bord (send, post, exec).
+- **JSON uniquement** : le modèle reçoit l’instruction de renvoyer uniquement
+  une valeur JSON, sans blocs de code ni commentaires.
+- **Aucun outil** : les outils sont désactivés pour l’exécution sous-jacente, le
+  modèle ne peut donc pas effectuer d’appels externes pendant la tâche.
+- Considérez la sortie comme non fiable sauf si vous la validez avec `schema`.
+- Placez les approbations avant toute étape produisant des effets de bord
+  (envoi, publication, exécution) qui consomme cette sortie.
 
-## Connexe
+## Pages connexes
 
-- [Niveaux de réflexion](/fr/tools/thinking)
+- [Niveaux de raisonnement](/fr/tools/thinking)
 - [Sous-agents](/fr/tools/subagents)
-- [Commandes slash](/fr/tools/slash-commands)
+- [Commandes à barre oblique](/fr/tools/slash-commands)

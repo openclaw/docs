@@ -1,45 +1,68 @@
 ---
 read_when:
     - Exécution ou débogage du processus Gateway
-    - Analyse de l’application d’une instance unique
-summary: Garde singleton du Gateway utilisant la liaison de l’écouteur WebSocket
-title: Verrou du Gateway
+    - Étude de l’application d’une instance unique
+summary: 'Protection d’instance unique du Gateway : verrouillage de fichier et écoute WebSocket/HTTP'
+title: Verrouillage du Gateway
 x-i18n:
-    generated_at: "2026-04-30T16:28:55Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:20:19Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: 85a1cb55f08d47d36fde25900e4247ef01c9a6800bf017fbff44a337f299ce13
+    source_hash: 8c3ba4e8c12d6aadd089cb05722444eaa99d4b573553ac52a21c5c91e5ce1c09
     source_path: gateway/gateway-lock.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
 ## Pourquoi
 
-- Garantir qu’une seule instance de Gateway s’exécute par port de base sur le même hôte ; les Gateway supplémentaires doivent utiliser des profils isolés et des ports uniques.
-- Survivre aux plantages/SIGKILL sans laisser de fichiers de verrouillage obsolètes.
-- Échouer rapidement avec une erreur claire lorsque le port de contrôle est déjà occupé.
+- Un seul processus Gateway doit gérer une configuration et un port donnés sur un hôte ; exécutez les Gateway supplémentaires avec des profils isolés et des ports uniques.
+- Résister aux plantages/SIGKILL sans laisser de fichiers de verrouillage obsolètes.
+- Échouer rapidement avec une erreur claire lorsqu’un autre Gateway utilise déjà le port.
 
-## Mécanisme
+## Deux couches
 
-- Le Gateway acquiert d’abord un fichier de verrouillage par configuration dans le répertoire des verrous d’état et sonde le port configuré pour détecter un écouteur existant.
-- Si le propriétaire du verrou enregistré n’existe plus, si le port est libre ou si le verrou est obsolète, le démarrage récupère le verrou et continue.
-- Le Gateway lie ensuite l’écouteur HTTP/WebSocket (par défaut `ws://127.0.0.1:18789`) au moyen d’un écouteur TCP exclusif.
-- Si la liaison échoue avec `EADDRINUSE`, le démarrage lance `GatewayLockError("another gateway instance is already listening on ws://127.0.0.1:<port>")`.
-- À l’arrêt, le Gateway ferme le serveur HTTP/WebSocket et supprime le fichier de verrouillage.
+Au démarrage, la propriété de l’instance unique est imposée en deux étapes indépendantes, dans cet ordre :
 
-## Surface d’erreur
+1. **Verrouillage de fichier** acquiert un fichier de verrouillage propre à la configuration dans le répertoire de verrouillage de l’état. Lors de cette acquisition, le démarrage sonde le port configuré pour détecter un écouteur actif et identifier un propriétaire de verrouillage obsolète (après un plantage).
+2. **Liaison du socket** lie l’écouteur HTTP/WebSocket (par défaut `ws://127.0.0.1:18789`) en tant qu’écouteur TCP exclusif.
 
-- Si un autre processus détient le port, le démarrage lance `GatewayLockError("another gateway instance is already listening on ws://127.0.0.1:<port>")`.
-- Les autres échecs de liaison apparaissent sous la forme `GatewayLockError("failed to bind gateway socket on ws://127.0.0.1:<port>: …")`.
+Chaque couche peut échouer indépendamment et lève sa propre exception `GatewayLockError`.
+
+### Verrouillage de fichier
+
+- Si le fichier de verrouillage est absent, si le processus propriétaire enregistré n’existe plus ou si la sonde du port du propriétaire ne détecte aucun écouteur actif, le démarrage récupère le verrouillage et continue.
+- Si le verrouillage est activement détenu et qu’aucune des conditions ci-dessus ne s’applique, le démarrage réessaie pendant un maximum de 5 secondes (par défaut) avant d’abandonner :
+
+  ```text
+  GatewayLockError("Gateway déjà en cours d’exécution (pid <pid>) ; délai d’attente du verrouillage dépassé après <ms> ms")
+  ```
+
+### Liaison du socket
+
+- En cas de `EADDRINUSE`, le démarrage réessaie la liaison jusqu’à 20 fois à intervalles de 500ms (environ 10 secondes au total), afin de laisser passer une période `TIME_WAIT` après l’arrêt récent d’un processus.
+- Si le port est toujours utilisé après les nouvelles tentatives :
+
+  ```text
+  GatewayLockError("une autre instance de Gateway écoute déjà sur ws://127.0.0.1:<port>")
+  ```
+
+- Autres échecs de liaison :
+
+  ```text
+  GatewayLockError("échec de la liaison du socket Gateway sur ws://127.0.0.1:<port> : <cause>")
+  ```
+
+Lors de l’arrêt, le Gateway ferme le serveur HTTP/WebSocket et supprime le fichier de verrouillage.
 
 ## Notes opérationnelles
 
-- Si le port est occupé par un _autre_ processus, l’erreur est la même ; libérez le port ou choisissez-en un autre avec `openclaw gateway --port <port>`.
-- Sous un superviseur de service, un nouveau processus Gateway qui voit un répondant `/healthz` existant et sain laisse ce processus garder le contrôle. Sur systemd, le démarreur dupliqué se termine avec le code 78 afin que la valeur par défaut `RestartPreventExitStatus=78` empêche `Restart=always` de boucler sur un conflit de verrou ou `EADDRINUSE`. Si le processus existant ne devient jamais sain, les nouvelles tentatives sont bornées et le démarrage échoue avec une erreur de verrou claire au lieu de boucler indéfiniment.
-- L’application macOS conserve toujours sa propre garde PID légère avant de lancer le Gateway ; le verrou d’exécution est imposé par le fichier de verrouillage ainsi que par la liaison HTTP/WebSocket.
+- Si le port est occupé par un processus différent qui n’est pas un Gateway, l’erreur est la même ; libérez le port ou choisissez-en un autre avec `openclaw gateway --port <port>`.
+- Sous un superviseur de services, un nouveau processus Gateway qui rencontre l’une des erreurs ci-dessus sonde d’abord `/healthz` sur le processus existant. Si ce processus est sain, le nouveau processus lui laisse le contrôle au lieu d’échouer. Sous systemd, il se termine avec le code `78` ; le paramètre `RestartPreventExitStatus=78` de l’unité empêche `Restart=always` de boucler en cas de conflit de verrouillage ou de `EADDRINUSE`. Si le processus existant ne devient jamais sain, les nouvelles tentatives de sondage de l’état sont limitées dans le temps, puis le démarrage échoue avec l’erreur de verrouillage ci-dessus au lieu de boucler indéfiniment.
+- L’application macOS conserve sa propre protection légère par PID avant de lancer le Gateway ; le verrouillage de fichier et la liaison du socket décrits ci-dessus constituent l’application effective des règles lors de l’exécution.
 
-## Associé
+## Voir aussi
 
-- [Plusieurs Gateway](/fr/gateway/multiple-gateways) — exécuter plusieurs instances avec des ports uniques
-- [Dépannage](/fr/gateway/troubleshooting) — diagnostiquer `EADDRINUSE` et les conflits de ports
+- [Plusieurs Gateway](/fr/gateway/multiple-gateways) - exécution de plusieurs instances avec des ports uniques
+- [Dépannage](/fr/gateway/troubleshooting) - diagnostic de `EADDRINUSE` et des conflits de ports

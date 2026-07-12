@@ -1,24 +1,25 @@
 ---
 read_when:
-    - Vous voulez des embeddings de recherche en mémoire provenant d’un modèle GGUF local
-    - Vous configurez memorySearch.provider = "local"
-    - Vous avez besoin du Plugin OpenClaw qui possède l’environnement d’exécution node-llama-cpp
+    - Vous souhaitez utiliser les embeddings d’un modèle GGUF local pour la recherche en mémoire
+    - Vous configurez `memorySearch.provider = "local"`
+    - Vous avez besoin du plugin OpenClaw qui gère l’environnement d’exécution node-llama-cpp
 sidebarTitle: llama.cpp Provider
-summary: Installez le provider officiel llama.cpp pour les embeddings de mémoire GGUF locaux
+summary: Installez le fournisseur officiel llama.cpp pour les embeddings de mémoire GGUF locaux
 title: Fournisseur llama.cpp
 x-i18n:
-    generated_at: "2026-06-27T17:49:04Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:34:09Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: 3b0988c36c5ed5c61a7e97980df291fb43a0071e57c7460bf5a653f516114963
+    source_hash: 369ec199e8493356912337b849a84f829672e8872d17083c9a597f4e5294ebd5
     source_path: plugins/llama-cpp.md
     workflow: 16
 ---
 
-`llama-cpp` est le Plugin de fournisseur externe officiel pour les embeddings GGUF locaux.
-Il possède la dépendance d’exécution `node-llama-cpp` utilisée par
-`memorySearch.provider: "local"`.
+`llama-cpp` est le Plugin fournisseur externe officiel pour les embeddings GGUF
+locaux. Il enregistre l’identifiant de fournisseur d’embeddings `local` et gère la
+dépendance d’exécution `node-llama-cpp` utilisée par `memorySearch.provider: "local"`.
 
 Installez-le avant d’utiliser les embeddings de mémoire locaux :
 
@@ -26,13 +27,13 @@ Installez-le avant d’utiliser les embeddings de mémoire locaux :
 openclaw plugins install @openclaw/llama-cpp-provider
 ```
 
-Le paquet npm principal `openclaw` n’inclut pas `node-llama-cpp`. Conserver la
+Le paquet npm principal `openclaw` n’inclut pas `node-llama-cpp`. Le maintien de la
 dépendance native dans ce Plugin empêche les mises à jour npm normales d’OpenClaw de
-supprimer une exécution installée manuellement dans le répertoire du paquet OpenClaw.
+supprimer un environnement d’exécution installé manuellement dans le répertoire du paquet OpenClaw.
 
 ## Configuration
 
-Définissez le fournisseur de recherche en mémoire sur `local` :
+Définissez `memorySearch.provider` sur `local` :
 
 ```json5
 {
@@ -49,18 +50,48 @@ Définissez le fournisseur de recherche en mémoire sur `local` :
 }
 ```
 
-Le modèle par défaut est `embeddinggemma-300m-qat-Q8_0.gguf`. Vous pouvez également faire pointer
-`local.modelPath` vers un fichier `.gguf` local.
+Par défaut, `local.modelPath` utilise l’URI `hf:` indiquée ci-dessus (`embeddinggemma-300m-qat-Q8_0.gguf`).
+Faites-le pointer vers une autre URI `hf:` ou vers un fichier `.gguf` local pour utiliser un autre
+modèle. `local.modelCacheDir` remplace l’emplacement de mise en cache des modèles téléchargés
+(par défaut : `~/.node-llama-cpp/models`), et `local.contextSize` accepte un
+entier ou `"auto"`.
 
-## Exécution native
+Lorsque `local.contextSize` est numérique, le fournisseur transmet également cette exigence
+au placement automatique des couches sur le GPU de node-llama-cpp. Cela permet à node-llama-cpp d’adapter
+simultanément le modèle et le contexte d’embedding tout en conservant ses contrôles de sécurité
+mémoire. Avec `"auto"`, node-llama-cpp conserve son placement automatique habituel.
 
-Utilisez Node 24 pour le parcours d’installation native le plus fluide. Les checkouts source utilisant pnpm
-peuvent devoir approuver et reconstruire la dépendance native :
+## Environnement d’exécution natif
+
+Utilisez Node 24 pour bénéficier du processus d’installation native le plus fluide. Les extractions du code source utilisant
+pnpm peuvent nécessiter l’approbation et la reconstruction de la dépendance native :
 
 ```bash
 pnpm approve-builds
 pnpm rebuild node-llama-cpp
 ```
 
-Pour des embeddings locaux avec moins de friction, utilisez plutôt un fournisseur de service local comme
-Ollama ou LM Studio.
+## Diagnostics d’exécution
+
+Exécutez `openclaw memory status --deep` après le chargement du fournisseur pour examiner
+le backend et la build sélectionnés, les noms des périphériques, les couches déchargées sur le GPU, la taille
+de contexte demandée ainsi que le dernier instantané observé de la VRAM ou de la mémoire unifiée. Les valeurs de VRAM
+incluent un horodatage d’observation, car les lectures passives de l’état ne
+rechargent pas le modèle et n’interrogent pas le périphérique.
+
+Ces mêmes informations les plus récemment connues peuvent apparaître dans `openclaw doctor` lorsque le
+Gateway en cours d’exécution a déjà utilisé le fournisseur local. Une commande normale d’état ou de diagnostic
+ne charge pas de modèle uniquement pour collecter des diagnostics.
+
+## Dépannage
+
+Si `node-llama-cpp` est absent ou ne parvient pas à se charger, OpenClaw signale l’échec
+avec les instructions suivantes :
+
+1. Installez le Plugin : `openclaw plugins install @openclaw/llama-cpp-provider`.
+2. Utilisez Node 24 pour les installations/mises à jour natives.
+3. Depuis une extraction du code source avec pnpm : `pnpm approve-builds`, puis `pnpm rebuild node-llama-cpp`.
+
+Pour utiliser des embeddings locaux plus facilement, sans l’étape de compilation native, définissez
+`memorySearch.provider` sur un fournisseur d’embeddings distant tel que `lmstudio`,
+`ollama`, `openai` ou `voyage`.

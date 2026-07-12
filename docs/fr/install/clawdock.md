@@ -1,85 +1,87 @@
 ---
 read_when:
     - Vous utilisez souvent OpenClaw avec Docker et souhaitez des commandes quotidiennes plus courtes
-    - Vous souhaitez une couche d’assistance pour le tableau de bord, les journaux, la configuration des jetons et les flux d’appairage
-summary: Assistants shell ClawDock pour les installations OpenClaw basées sur Docker
+    - Vous souhaitez une couche d’assistance pour le tableau de bord, les journaux, la configuration des jetons et les procédures d’appairage.
+summary: Assistants shell ClawDock pour les installations d’OpenClaw basées sur Docker
 title: ClawDock
 x-i18n:
-    generated_at: "2026-05-06T07:27:15Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:25:45Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: 82d31ba74694cda9e195534ce33f7b61343546f174ceacd2607aeb1d5487229e
+    source_hash: 5bb829a3301178503f910931e86a39f7befeaf186044f4088a25dc80ea99130d
     source_path: install/clawdock.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-ClawDock est une petite couche d’assistance shell pour les installations OpenClaw basées sur Docker.
+ClawDock est une petite couche d’assistance shell pour les installations d’OpenClaw basées sur Docker.
 
-Elle vous fournit des commandes courtes comme `clawdock-start`, `clawdock-dashboard` et `clawdock-fix-token` au lieu d’invocations plus longues de type `docker compose ...`.
+Elle fournit des commandes courtes comme `clawdock-start`, `clawdock-dashboard` et `clawdock-fix-token` au lieu d’invocations `docker compose ...` plus longues.
 
 Si vous n’avez pas encore configuré Docker, commencez par [Docker](/fr/install/docker).
 
 ## Installation
-
-Utilisez le chemin canonique de l’assistant :
 
 ```bash
 mkdir -p ~/.clawdock && curl -sL https://raw.githubusercontent.com/openclaw/openclaw/main/scripts/clawdock/clawdock-helpers.sh -o ~/.clawdock/clawdock-helpers.sh
 echo 'source ~/.clawdock/clawdock-helpers.sh' >> ~/.zshrc && source ~/.zshrc
 ```
 
-Si vous aviez précédemment installé ClawDock depuis `scripts/shell-helpers/clawdock-helpers.sh`, réinstallez-le depuis le nouveau chemin `scripts/clawdock/clawdock-helpers.sh`. L’ancien chemin brut GitHub a été supprimé.
+Si vous aviez précédemment installé ClawDock depuis `scripts/shell-helpers/clawdock-helpers.sh`, réinstallez-le depuis le chemin actuel `scripts/clawdock/clawdock-helpers.sh` ; l’ancien chemin brut GitHub a été supprimé.
 
-## Ce que vous obtenez
+Lors de la première utilisation, les assistants détectent automatiquement votre copie de travail OpenClaw (en vérifiant des chemins courants comme `~/openclaw` et `~/projects/openclaw`) et mettent le résultat en cache dans `~/.clawdock/config`. Définissez vous-même `CLAWDOCK_DIR` si votre copie de travail se trouve ailleurs.
+
+## Fonctionnalités disponibles
 
 ### Opérations de base
 
-| Command            | Description            |
-| ------------------ | ---------------------- |
-| `clawdock-start`   | Démarrer le Gateway    |
-| `clawdock-stop`    | Arrêter le Gateway     |
-| `clawdock-restart` | Redémarrer le Gateway  |
-| `clawdock-status`  | Vérifier l’état du conteneur |
-| `clawdock-logs`    | Suivre les journaux du Gateway |
+| Commande            | Description                    |
+| ------------------- | ------------------------------ |
+| `clawdock-start`    | Démarrer le Gateway            |
+| `clawdock-stop`     | Arrêter le Gateway             |
+| `clawdock-restart`  | Redémarrer le Gateway          |
+| `clawdock-status`   | Vérifier l’état des conteneurs |
+| `clawdock-logs`     | Suivre les journaux du Gateway |
 
 ### Accès au conteneur
 
-| Command                   | Description                                   |
-| ------------------------- | --------------------------------------------- |
-| `clawdock-shell`          | Ouvrir un shell dans le conteneur du Gateway  |
-| `clawdock-cli <command>`  | Exécuter des commandes CLI OpenClaw dans Docker |
-| `clawdock-exec <command>` | Exécuter une commande arbitraire dans le conteneur |
+| Commande                  | Description                                         |
+| ------------------------- | --------------------------------------------------- |
+| `clawdock-shell`          | Ouvrir un shell dans le conteneur du Gateway        |
+| `clawdock-cli <command>`  | Exécuter des commandes CLI OpenClaw dans Docker     |
+| `clawdock-exec <command>` | Exécuter une commande arbitraire dans le conteneur  |
 
 ### Interface Web et appairage
 
-| Command                 | Description                  |
-| ----------------------- | ---------------------------- |
-| `clawdock-dashboard`    | Ouvrir l’URL de la Control UI |
-| `clawdock-devices`      | Lister les appairages d’appareils en attente |
-| `clawdock-approve <id>` | Approuver une demande d’appairage |
+| Commande                | Description                                    |
+| ----------------------- | ---------------------------------------------- |
+| `clawdock-dashboard`    | Ouvrir l’URL de l’interface de contrôle        |
+| `clawdock-devices`      | Répertorier les appairages d’appareils en attente |
+| `clawdock-approve <id>` | Approuver une demande d’appairage              |
 
 ### Configuration et maintenance
 
-| Command              | Description                                      |
-| -------------------- | ------------------------------------------------ |
-| `clawdock-fix-token` | Configurer le jeton du Gateway dans le conteneur |
-| `clawdock-update`    | Tirer, reconstruire et redémarrer                |
-| `clawdock-rebuild`   | Reconstruire uniquement l’image Docker           |
-| `clawdock-clean`     | Supprimer les conteneurs et les volumes          |
+| Commande             | Description                                                     |
+| -------------------- | --------------------------------------------------------------- |
+| `clawdock-fix-token` | Écrire le jeton du Gateway dans la configuration du conteneur   |
+| `clawdock-update`    | Récupérer, reconstruire et redémarrer                            |
+| `clawdock-rebuild`   | Reconstruire uniquement l’image Docker                           |
+| `clawdock-clean`     | Supprimer les conteneurs et les volumes                          |
 
 ### Utilitaires
 
-| Command                | Description                             |
-| ---------------------- | --------------------------------------- |
-| `clawdock-health`      | Exécuter un contrôle de santé du Gateway |
-| `clawdock-token`       | Afficher le jeton du Gateway            |
-| `clawdock-cd`          | Aller au répertoire du projet OpenClaw  |
-| `clawdock-config`      | Ouvrir `~/.openclaw`                    |
+| Commande               | Description                                                  |
+| ---------------------- | ------------------------------------------------------------ |
+| `clawdock-health`      | Exécuter une vérification de l’état du Gateway               |
+| `clawdock-token`       | Afficher le jeton du Gateway                                 |
+| `clawdock-cd`          | Accéder au répertoire du projet OpenClaw                     |
+| `clawdock-config`      | Ouvrir `~/.openclaw`                                         |
 | `clawdock-show-config` | Afficher les fichiers de configuration avec les valeurs masquées |
-| `clawdock-workspace`   | Ouvrir le répertoire de l’espace de travail |
+| `clawdock-workspace`   | Ouvrir le répertoire de l’espace de travail                  |
+| `clawdock-help`        | Répertorier toutes les commandes ClawDock                    |
 
-## Premier parcours
+## Première utilisation
 
 ```bash
 clawdock-start
@@ -96,14 +98,14 @@ clawdock-approve <request-id>
 
 ## Configuration et secrets
 
-ClawDock fonctionne avec la même séparation de configuration Docker que celle décrite dans [Docker](/fr/install/docker) :
+ClawDock lit deux fichiers `.env` distincts, conformément à la séparation décrite dans [Docker](/fr/install/docker) :
 
-- `<project>/.env` pour les valeurs propres à Docker, comme le nom de l’image, les ports et le jeton du Gateway
-- `~/.openclaw/.env` pour les clés de fournisseurs et les jetons de bots basés sur l’environnement
-- `~/.openclaw/agents/<agentId>/agent/auth-profiles.json` pour l’authentification OAuth/API-key de fournisseur stockée
-- `~/.openclaw/openclaw.json` pour la configuration du comportement
+- Le fichier `.env` du projet situé à côté de `docker-compose.yml` : les valeurs propres à Docker, comme le nom de l’image, les ports et `OPENCLAW_GATEWAY_TOKEN`. `clawdock-token` lit le jeton depuis ce fichier.
+- `~/.openclaw/.env` (monté dans le conteneur) : les secrets fournis par l’environnement et gérés par OpenClaw lui-même, avec `openclaw.json` et `agents/<agentId>/agent/auth-profiles.json`.
 
-Utilisez `clawdock-show-config` lorsque vous voulez inspecter rapidement les fichiers `.env` et `openclaw.json`. Il masque les valeurs `.env` dans sa sortie affichée.
+`clawdock-fix-token` copie le jeton depuis le fichier `.env` du projet vers les valeurs de configuration `gateway.remote.token` et `gateway.auth.token` du conteneur, puis redémarre le Gateway.
+
+Utilisez `clawdock-show-config` pour inspecter rapidement `openclaw.json` et les deux fichiers `.env` ; les valeurs des fichiers `.env` sont masquées dans la sortie affichée.
 
 ## Voir aussi
 
@@ -111,8 +113,8 @@ Utilisez `clawdock-show-config` lorsque vous voulez inspecter rapidement les fic
   <Card title="Docker" href="/fr/install/docker" icon="docker">
     Installation Docker canonique pour OpenClaw.
   </Card>
-  <Card title="Runtime de VM Docker" href="/fr/install/docker-vm-runtime" icon="cube">
-    Runtime de VM géré par Docker pour une isolation renforcée.
+  <Card title="Environnement d’exécution de machine virtuelle Docker" href="/fr/install/docker-vm-runtime" icon="cube">
+    Environnement d’exécution de machine virtuelle géré par Docker pour une isolation renforcée.
   </Card>
   <Card title="Mise à jour" href="/fr/install/updating" icon="arrow-up-right-from-square">
     Mise à jour du paquet OpenClaw et des services gérés.

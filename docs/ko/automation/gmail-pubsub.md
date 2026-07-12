@@ -1,19 +1,20 @@
 ---
-summary: /automation/cron-jobs로 리디렉션
+summary: /automation/cron-jobs로 리디렉션합니다
 title: Gmail PubSub
 x-i18n:
-    generated_at: "2026-04-24T06:02:33Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 4462fb58fa73ac3eb3d8d2994760b96424dcad3f1543e8ff10222936f6c54caf
-    source_path: automation/gmail-pubsub.md
-    workflow: 15
+    generated_at: "2026-07-12T14:57:40Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
+    provider: openai
+    source_hash: 1307459db642f4a11f9bb84fbedd73053a813ce9221cd1d63a0be99b6199dbf5
+    source_path: automation/gmail-pubsub.md
+    workflow: 16
 ---
 
-이 페이지는 [예약된 작업](/ko/automation/cron-jobs#gmail-pubsub-integration)(으)로 이동되었습니다. Gmail PubSub 문서는 [예약된 작업](/ko/automation/cron-jobs#gmail-pubsub-integration)을 참조하세요.
+이 페이지는 예약된 작업 페이지의 [Gmail PubSub 연동](/ko/automation/cron-jobs#gmail-pubsub-integration)으로 이동했습니다.
 
-## 관련
+## 관련 항목
 
-- [Webhook](/ko/automation/cron-jobs)
-- [자동화 문제 해결](/ko/automation/cron-jobs)
+- [Webhook](/ko/automation/cron-jobs#webhooks)
+- [문제 해결](/ko/automation/cron-jobs#troubleshooting)

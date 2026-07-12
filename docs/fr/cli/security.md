@@ -1,71 +1,97 @@
 ---
 read_when:
-    - Vous voulez exécuter un audit de sécurité rapide sur la configuration/l’état
-    - Vous voulez appliquer des suggestions de « correction » sûres (autorisations, resserrer les valeurs par défaut)
-summary: Référence CLI pour `openclaw security` (auditer et corriger les pièges de sécurité courants)
+    - Vous souhaitez effectuer un audit de sécurité rapide de la configuration et de l’état
+    - Vous souhaitez appliquer des suggestions de « correction » sûres (autorisations, renforcement des valeurs par défaut)
+summary: Référence de la CLI pour `openclaw security` (auditer et corriger les erreurs de configuration courantes en matière de sécurité)
 title: Sécurité
 x-i18n:
-    generated_at: "2026-06-27T17:21:06Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:13:13Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: 58876d7ab4dd3e5d3f5c915700b08ca234e5ccefdfc35a79e60a31e1fce21774
+    source_hash: 613d1afa63e46a7dc3474d0b175cf2389703a86b00f861b4140d64e11c28ece5
     source_path: cli/security.md
     workflow: 16
 ---
 
 # `openclaw security`
 
-Outils de sécurité (audit + corrections facultatives).
-
-Connexe :
-
-- Guide de sécurité : [Sécurité](/fr/gateway/security)
-
-## Audit
+Outils de sécurité : audit et correctifs sûrs facultatifs. Voir aussi : [Sécurité](/fr/gateway/security).
 
 ```bash
 openclaw security audit
 openclaw security audit --deep
 openclaw security audit --deep --password <password>
 openclaw security audit --deep --token <token>
+openclaw security audit --auth password --password <password>
 openclaw security audit --fix
 openclaw security audit --json
 ```
 
-La commande simple `security audit` reste sur le chemin froid configuration/système de fichiers/en lecture seule. Elle ne découvre pas par défaut les collecteurs de sécurité d’exécution des plugins ; les audits courants ne chargent donc pas chaque runtime de plugin installé. Utilisez `--deep` pour inclure des sondes Gateway actives au mieux et les collecteurs d’audit de sécurité appartenant aux plugins ; les appelants internes explicites peuvent aussi activer ces collecteurs appartenant aux plugins lorsqu’ils disposent déjà d’une portée d’exécution appropriée.
+## Modes d’audit
 
-L’audit avertit lorsque plusieurs expéditeurs de DM partagent la session principale et recommande le **mode DM sécurisé** : `session.dmScope="per-channel-peer"` (ou `per-account-channel-peer` pour les canaux multi-comptes) pour les boîtes de réception partagées.
-Cela sert au renforcement de boîtes de réception coopératives/partagées. Un seul Gateway partagé par des opérateurs mutuellement non fiables ou adversariaux n’est pas une configuration recommandée ; séparez les frontières de confiance avec des Gateway distincts (ou des utilisateurs/hôtes OS distincts).
-Il émet aussi `security.trust_model.multi_user_heuristic` lorsque la configuration suggère une entrée probablement partagée entre utilisateurs (par exemple une politique de DM/groupes ouverts, des cibles de groupe configurées ou des règles d’expéditeur génériques), et rappelle qu’OpenClaw utilise par défaut un modèle de confiance d’assistant personnel.
-Pour les configurations intentionnellement partagées entre utilisateurs, les recommandations d’audit sont d’isoler toutes les sessions, de limiter l’accès au système de fichiers à l’espace de travail, et de garder les identités ou identifiants personnels/privés hors de ce runtime.
-Il avertit aussi lorsque de petits modèles (`<=300B`) sont utilisés sans isolement en bac à sable et avec les outils web/navigateur activés.
-Pour l’entrée par webhook, le démarrage journalise un avertissement de sécurité non fatal et l’audit signale la réutilisation par `hooks.token` de valeurs d’authentification par secret partagé Gateway actives, notamment `gateway.auth.token` / `OPENCLAW_GATEWAY_TOKEN` et `gateway.auth.password` / `OPENCLAW_GATEWAY_PASSWORD`. Il avertit aussi lorsque :
+La commande simple `security audit` reste sur le chemin à froid de la configuration, du système de fichiers et de la lecture seule : elle ne découvre pas les collecteurs de sécurité d’exécution des plugins, afin que les audits courants ne chargent pas l’environnement d’exécution de chaque plugin installé. `--deep` ajoute des sondes en direct du Gateway, exécutées au mieux, ainsi que les collecteurs d’audit de sécurité appartenant aux plugins (les appelants internes explicites peuvent également choisir d’utiliser ces collecteurs lorsqu’ils disposent déjà d’une portée d’exécution appropriée).
+
+Si l’authentification par mot de passe du Gateway est fournie uniquement au démarrage, transmettez la même valeur avec `--auth password --password <password>` afin que l’audit puisse la comparer à `hooks.token`.
+
+## Éléments vérifiés
+
+**Modèle de confiance et messages privés**
+
+- Avertit lorsque plusieurs expéditeurs de messages privés partagent la session principale et recommande un mode sécurisé pour les messages privés : `session.dmScope="per-channel-peer"` (ou `per-account-channel-peer` pour les canaux multicomptes) pour les boîtes de réception partagées. Il s’agit d’un renforcement pour la coopération et les boîtes de réception partagées, et non d’une isolation entre opérateurs qui ne se font pas mutuellement confiance ; séparez les périmètres de confiance à l’aide de gateways distincts (ou d’utilisateurs du système d’exploitation ou d’hôtes distincts).
+- Émet `security.trust_model.multi_user_heuristic` lorsque la configuration suggère une entrée probablement partagée entre plusieurs utilisateurs (par exemple, une politique ouverte pour les messages privés ou les groupes, des cibles de groupe configurées ou des règles d’expéditeur avec caractères génériques) — le modèle de confiance par défaut d’OpenClaw est celui d’un assistant personnel (un seul opérateur), et non une isolation mutualisée hostile. Pour les configurations intentionnellement partagées entre plusieurs utilisateurs : placez toutes les sessions dans un bac à sable, limitez l’accès au système de fichiers à l’espace de travail et ne stockez aucune identité ni aucun identifiant d’authentification personnel ou privé dans cet environnement d’exécution.
+- Avertit lorsque de petits modèles (paramètres `<=300B`) sont utilisés sans bac à sable et avec les outils Web ou de navigateur activés.
+
+**Webhook/hooks**
+
+Au démarrage, un avertissement de sécurité non bloquant est consigné, et l’audit signale la réutilisation par `hooks.token` des valeurs actives d’authentification par secret partagé du Gateway (`gateway.auth.token` / `OPENCLAW_GATEWAY_TOKEN`, `gateway.auth.password` / `OPENCLAW_GATEWAY_PASSWORD`). Il avertit également lorsque :
 
 - `hooks.token` est court
 - `hooks.path="/"`
 - `hooks.defaultSessionKey` n’est pas défini
 - `hooks.allowedAgentIds` n’est pas restreint
-- les remplacements `sessionKey` de requête sont activés
-- les remplacements sont activés sans `hooks.allowedSessionKeyPrefixes`
+- les substitutions de `sessionKey` par requête sont activées
+- les substitutions sont activées sans `hooks.allowedSessionKeyPrefixes`
 
-Si l’authentification par mot de passe Gateway est fournie uniquement au démarrage, passez la même valeur à `openclaw security audit --auth password --password <password>` afin que l’audit puisse la comparer à `hooks.token`.
-Exécutez `openclaw doctor --fix` pour renouveler un `hooks.token` persistant réutilisé, puis mettez à jour les expéditeurs de hooks externes pour utiliser le nouveau jeton de hook.
+Exécutez `openclaw doctor --fix` pour renouveler un `hooks.token` persistant réutilisé, puis mettez à jour les expéditeurs de hooks externes afin qu’ils utilisent le nouveau jeton.
 
-Il avertit aussi lorsque des paramètres Docker de bac à sable sont configurés alors que le mode bac à sable est désactivé, lorsque `gateway.nodes.denyCommands` utilise des entrées inefficaces de type motif ou inconnues (correspondance exacte du nom de commande de nœud uniquement, pas de filtrage de texte shell), lorsque `gateway.nodes.allowCommands` active explicitement des commandes de nœud dangereuses, lorsque le profil global `tools.profile="minimal"` est remplacé par des profils d’outils d’agent, lorsque les outils d’écriture/édition sont désactivés mais que `exec` reste disponible sans frontière contraignante de système de fichiers en bac à sable, lorsque des DM ou groupes ouverts exposent des outils runtime/système de fichiers sans protections de bac à sable/espace de travail, et lorsque des outils de plugins installés peuvent être accessibles avec une politique d’outils permissive.
-Il signale aussi `gateway.allowRealIpFallback=true` (risque d’usurpation d’en-tête si les proxys sont mal configurés) et `discovery.mdns.mode="full"` (fuite de métadonnées via les enregistrements mDNS TXT).
-Il avertit aussi lorsque le navigateur en bac à sable utilise le réseau Docker `bridge` sans `sandbox.browser.cdpSourceRange`.
-Il signale aussi les modes réseau Docker dangereux du bac à sable (notamment `host` et les rattachements à des espaces de noms `container:*`).
-Il avertit aussi lorsque des conteneurs Docker de navigateur en bac à sable existants ont des étiquettes de hachage manquantes ou obsolètes (par exemple des conteneurs pré-migration sans `openclaw.browserConfigEpoch`) et recommande `openclaw sandbox recreate --browser --all`.
-Il avertit aussi lorsque les enregistrements d’installation de plugins/hooks basés sur npm ne sont pas épinglés, n’ont pas de métadonnées d’intégrité ou divergent des versions de paquet actuellement installées.
-Il avertit lorsque les listes d’autorisation de canaux s’appuient sur des noms/e-mails/étiquettes mutables plutôt que sur des ID stables (Discord, Slack, Google Chat, Microsoft Teams, Mattermost, portées IRC le cas échéant).
-Il avertit lorsque `gateway.auth.mode="none"` laisse les API HTTP Gateway accessibles sans secret partagé (`/tools/invoke` plus tout endpoint `/v1/*` activé).
-Les paramètres préfixés par `dangerous`/`dangerously` sont des contournements opérateur explicites d’urgence ; en activer un ne constitue pas, en soi, un rapport de vulnérabilité de sécurité.
-Pour l’inventaire complet des paramètres dangereux, consultez la section « Résumé des indicateurs non sécurisés ou dangereux » dans [Sécurité](/fr/gateway/security).
+**Bac à sable/outils**
 
-Les constats persistants intentionnels peuvent être acceptés avec `security.audit.suppressions`.
-Chaque suppression correspond à un `checkId` exact et peut être restreinte avec des sous-chaînes insensibles à la casse
-`titleIncludes` et/ou `detailIncludes` :
+- Avertit lorsque des paramètres Docker du bac à sable sont configurés alors que le mode bac à sable est désactivé.
+- Avertit lorsque `gateway.nodes.denyCommands` utilise des entrées inconnues ou ressemblant à des motifs, mais inefficaces (la correspondance porte uniquement sur le nom exact de la commande du Node, et non sur le filtrage du texte de l’interpréteur de commandes).
+- Avertit lorsque `gateway.nodes.allowCommands` active explicitement des commandes Node dangereuses.
+- Avertit lorsque la valeur globale `tools.profile="minimal"` est remplacée par des profils d’outils d’agents.
+- Avertit lorsque les outils d’écriture et de modification sont désactivés, mais que `exec` reste disponible sans périmètre contraignant du système de fichiers du bac à sable.
+- Avertit lorsque des messages privés ou des groupes ouverts exposent des outils d’exécution ou de système de fichiers sans protections de bac à sable ou d’espace de travail.
+- Avertit lorsque les outils de plugins installés peuvent être accessibles dans le cadre d’une politique d’outils permissive.
+
+**Navigateur du bac à sable**
+
+- Avertit lorsque le navigateur du bac à sable utilise le réseau Docker `bridge` sans `sandbox.browser.cdpSourceRange`.
+- Signale les modes réseau Docker dangereux pour le bac à sable, notamment `host` et les jonctions d’espaces de noms `container:*`.
+- Avertit lorsque des conteneurs Docker existants du navigateur du bac à sable ont des étiquettes de hachage absentes ou obsolètes (par exemple, les conteneurs antérieurs à la migration auxquels il manque `openclaw.browserConfigEpoch`) et recommande `openclaw sandbox recreate --browser --all`.
+
+**Réseau/découverte**
+
+- Signale `gateway.allowRealIpFallback=true` (risque d’usurpation d’en-tête si les proxys sont mal configurés).
+- Signale `discovery.mdns.mode="full"` (fuite de métadonnées par les enregistrements TXT mDNS).
+- Avertit lorsque `gateway.auth.mode="none"` laisse les API HTTP du Gateway accessibles sans secret partagé (`/tools/invoke` ainsi que tout point de terminaison `/v1/*` activé).
+
+**Plugins/canaux**
+
+- Avertit lorsque les enregistrements d’installation de plugins/hooks basés sur npm ne sont pas épinglés, ne contiennent pas de métadonnées d’intégrité ou divergent des versions des paquets actuellement installés.
+- Avertit lorsque les listes d’autorisation des canaux reposent sur des noms/adresses e-mail/étiquettes modifiables plutôt que sur des identifiants stables (pour les portées Discord, Slack, Google Chat, Microsoft Teams, Mattermost et IRC, le cas échéant).
+
+Les paramètres préfixés par `dangerous`/`dangerously` sont des dérogations explicites de dernier recours destinées aux opérateurs ; l’activation de l’un d’eux ne constitue pas, à elle seule, un signalement de vulnérabilité de sécurité. Pour l’inventaire complet des paramètres dangereux, consultez « Résumé des indicateurs non sécurisés ou dangereux » dans [Sécurité](/fr/gateway/security).
+
+## Comportement de SecretRef
+
+`security audit` résout les SecretRefs pris en charge en mode lecture seule pour les chemins ciblés. Si une SecretRef n’est pas disponible dans le chemin de commande actuel, l’audit se poursuit et signale `secretDiagnostics` au lieu de s’arrêter brutalement. `--token` et `--password` remplacent uniquement l’authentification de la vérification approfondie pour cette invocation de commande ; ils ne réécrivent ni la configuration ni les mappages SecretRef.
+
+## Suppressions
+
+Acceptez les constats persistants intentionnels avec `security.audit.suppressions`. Chaque suppression correspond à un `checkId` exact et peut être restreinte avec les sous-chaînes `titleIncludes` et/ou `detailIncludes`, sans distinction entre majuscules et minuscules :
 
 ```json
 {
@@ -83,59 +109,42 @@ Chaque suppression correspond à un `checkId` exact et peut être restreinte ave
 }
 ```
 
-Les constats supprimés sont retirés du `summary` actif et de la liste `findings`.
-La sortie JSON les conserve sous `suppressedFindings` à des fins d’auditabilité.
-Lorsque des suppressions sont configurées, la sortie active conserve aussi un constat d’information non supprimable
-`security.audit.suppressions.active` afin que les lecteurs sachent que l’audit
-a été filtré. Les indicateurs de configuration dangereuse sont émis à raison d’un indicateur par constat ; accepter un indicateur dangereux ne masque donc pas d’autres indicateurs activés qui partagent le même `checkId` `config.insecure_or_dangerous_flags`.
-Comme les suppressions peuvent masquer un risque persistant, leur ajout ou suppression via
-des commandes shell exécutées par un agent requiert une approbation exec, sauf si exec fonctionne déjà
-avec `security="full"` et `ask="off"` pour une automatisation locale fiable.
+Les constats supprimés sont retirés du `summary` actif et de la liste `findings`. La sortie JSON les conserve sous `suppressedFindings` à des fins d’auditabilité. Lorsque des suppressions sont configurées, la sortie active conserve également un constat informatif `security.audit.suppressions.active` non supprimable afin que les lecteurs puissent savoir que l’audit a été filtré. Les indicateurs de configuration dangereux donnent lieu à un constat par indicateur, de sorte que l’acceptation d’un indicateur dangereux ne masque pas les autres indicateurs activés qui partagent le même checkId `config.insecure_or_dangerous_flags`.
 
-Comportement de SecretRef :
-
-- `security audit` résout les SecretRefs pris en charge en mode lecture seule pour ses chemins ciblés.
-- Si une SecretRef est indisponible dans le chemin de commande actuel, l’audit continue et signale `secretDiagnostics` (au lieu de planter).
-- `--token` et `--password` remplacent uniquement l’authentification des sondes approfondies pour cette invocation de commande ; ils ne réécrivent pas la configuration ni les mappages SecretRef.
+Comme les suppressions peuvent masquer un risque persistant, leur ajout ou leur suppression au moyen de commandes shell exécutées par un agent nécessite une approbation d’exécution, sauf si l’exécution utilise déjà `security="full"` et `ask="off"` pour une automatisation locale fiable.
 
 ## Sortie JSON
-
-Utilisez `--json` pour les vérifications CI/politique :
 
 ```bash
 openclaw security audit --json | jq '.summary'
 openclaw security audit --deep --json | jq '.findings[] | select(.severity=="critical") | .checkId'
 ```
 
-Si `--fix` et `--json` sont combinés, la sortie inclut à la fois les actions de correction et le rapport final :
+Avec `--fix --json`, la sortie inclut à la fois les actions correctives et le rapport final :
 
 ```bash
 openclaw security audit --fix --json | jq '{fix: .fix.ok, summary: .report.summary}'
 ```
 
-## Ce que `--fix` change
+## Ce que modifie `--fix`
 
-`--fix` applique des remédiations sûres et déterministes :
+Applique des corrections sûres et déterministes :
 
-- bascule les `groupPolicy="open"` courants vers `groupPolicy="allowlist"` (y compris les variantes de compte dans les canaux pris en charge)
-- lorsque la politique de groupe WhatsApp bascule vers `allowlist`, alimente `groupAllowFrom` depuis
-  le fichier `allowFrom` stocké lorsque cette liste existe et que la configuration ne définit pas déjà
-  `allowFrom`
-- définit `logging.redactSensitive` de `"off"` à `"tools"`
-- renforce les permissions pour les fichiers d’état/configuration et les fichiers sensibles courants
-  (`credentials/*.json`, `auth-profiles.json`, `sessions.json`, sessions
-  `*.jsonl`)
-- renforce aussi les fichiers d’inclusion de configuration référencés depuis `openclaw.json`
-- utilise `chmod` sur les hôtes POSIX et des réinitialisations `icacls` sur Windows
+- remplace les valeurs courantes `groupPolicy="open"` par `groupPolicy="allowlist"` (y compris les variantes de compte dans les canaux pris en charge)
+- lorsque la politique de groupe WhatsApp passe à `allowlist`, initialise `groupAllowFrom` à partir du fichier `allowFrom` enregistré si cette liste existe et que la configuration ne définit pas déjà `allowFrom`
+- fait passer `logging.redactSensitive` de `"off"` à `"tools"`
+- renforce les autorisations pour l’état, la configuration et les fichiers sensibles courants (`credentials/*.json`, `auth-profiles.json`, `openclaw-agent.sqlite` et les anciens artefacts de session)
+- renforce également les autorisations des fichiers de configuration inclus référencés depuis `openclaw.json`
+- utilise `chmod` sur les hôtes POSIX et réinitialise les autorisations avec `icacls` sous Windows
 
-`--fix` ne fait **pas** :
+`--fix` ne permet **pas** de :
 
-- renouveler les jetons/mots de passe/clés API
+- renouveler les jetons, mots de passe ou clés d’API
 - désactiver les outils (`gateway`, `cron`, `exec`, etc.)
-- modifier les choix d’exposition bind/auth/réseau du gateway
-- supprimer ou réécrire les plugins/skills
+- modifier les choix d’adresse d’écoute, d’authentification ou d’exposition réseau du Gateway
+- supprimer ou réécrire les plugins ou Skills
 
-## Connexe
+## Voir aussi
 
-- [Référence CLI](/fr/cli)
+- [Référence de la CLI](/fr/cli)
 - [Audit de sécurité](/fr/gateway/security)

@@ -1,33 +1,34 @@
 ---
 read_when:
-    - Vous voulez accéder rapidement aux principales pages de documentation
-summary: Liens sélectionnés vers la documentation OpenClaw la plus utilisée.
+    - Vous souhaitez accéder rapidement aux principales pages de documentation
+summary: Liens sélectionnés vers les pages de documentation OpenClaw les plus consultées.
 title: Répertoire de documentation
 x-i18n:
-    generated_at: "2026-06-27T18:13:52Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:55:06Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: f7d45effe4df50fb544e9f6fd2fcd87f4ed674eba0042eace757dbfcad93d07a
+    source_hash: 48859dc0b31139f1f5acaa403e506cd6d9767ee32e502a4ef74340dbbc21918f
     source_path: start/docs-directory.md
     workflow: 16
 ---
 
 <Note>
 Cette page est un index organisé. Si vous débutez, commencez par [Bien démarrer](/fr/start/getting-started).
-Pour une carte complète de la documentation, consultez les [centres de documentation](/fr/start/hubs).
+Pour consulter la structure complète de la documentation, voir [Pôles de documentation](/fr/start/hubs).
 </Note>
 
 ## Commencez ici
 
-- [Centres de documentation (toutes les pages liées)](/fr/start/hubs)
+- [Pôles de documentation (toutes les pages sont liées)](/fr/start/hubs)
 - [Aide](/fr/help)
 - [Configuration](/fr/gateway/configuration)
 - [Exemples de configuration](/fr/gateway/configuration-examples)
 - [Commandes slash](/fr/tools/slash-commands)
 - [Routage multi-agent](/fr/concepts/multi-agent)
 - [Mise à jour et restauration](/fr/install/updating)
-- [Association (DM et nœuds)](/fr/channels/pairing)
+- [Appairage (messages privés et nœuds)](/fr/channels/pairing)
 - [Mode Nix](/fr/install/nix)
 - [Configuration de l’assistant OpenClaw](/fr/start/openclaw)
 - [Skills](/fr/tools/skills)
@@ -36,33 +37,33 @@ Pour une carte complète de la documentation, consultez les [centres de document
 - [Adaptateurs RPC](/fr/reference/rpc)
 - [Guide d’exploitation du Gateway](/fr/gateway)
 - [Nœuds (iOS et Android)](/fr/nodes)
-- [Surfaces web (UI de contrôle)](/fr/web)
+- [Interfaces web (interface de contrôle)](/fr/web)
 - [Découverte et transports](/fr/gateway/discovery)
-- [Accès distant](/fr/gateway/remote)
+- [Accès à distance](/fr/gateway/remote)
 
-## Fournisseurs et UX
+## Canaux et expérience utilisateur
 
-- [WebChat](/fr/web/webchat)
-- [UI de contrôle (navigateur)](/fr/web/control-ui)
-- [Telegram](/fr/channels/telegram)
+- [Interface de contrôle (navigateur)](/fr/web/control-ui)
 - [Discord](/fr/channels/discord)
-- [Mattermost](/fr/channels/mattermost)
-- [QQ Bot](/fr/channels/qqbot)
-- [iMessage](/fr/channels/imessage)
 - [Groupes](/fr/channels/groups)
-- [Messages de groupe WhatsApp](/fr/channels/group-messages)
+- [iMessage](/fr/channels/imessage)
+- [Mattermost](/fr/channels/mattermost)
+- [Contenu multimédia audio](/fr/nodes/audio)
 - [Images multimédias](/fr/nodes/images)
-- [Audio multimédia](/fr/nodes/audio)
+- [QQ Bot](/fr/channels/qqbot)
+- [Telegram](/fr/channels/telegram)
+- [WebChat](/fr/web/webchat)
+- [Messages de groupe WhatsApp](/fr/channels/group-messages)
 
-## Applications compagnes
+## Applications complémentaires
 
-- [Application macOS](/fr/platforms/macos)
-- [Application iOS](/fr/platforms/ios)
 - [Application Android](/fr/platforms/android)
-- [Hub Windows](/fr/platforms/windows)
+- [Application iOS](/fr/platforms/ios)
 - [Application Linux](/fr/platforms/linux)
+- [Application macOS](/fr/platforms/macos)
+- [Hub Windows](/fr/platforms/windows)
 
-## Opérations et sécurité
+## Exploitation et sécurité
 
 - [Sessions](/fr/concepts/session)
 - [Tâches Cron](/fr/automation/cron-jobs)
@@ -71,7 +72,7 @@ Pour une carte complète de la documentation, consultez les [centres de document
 - [Sécurité](/fr/gateway/security)
 - [Dépannage](/fr/gateway/troubleshooting)
 
-## Associé
+## Pages connexes
 
 - [Bien démarrer](/fr/start/getting-started)
-- [Centres de documentation](/fr/start/hubs)
+- [Pôles de documentation](/fr/start/hubs)

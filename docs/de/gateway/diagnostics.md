@@ -1,27 +1,27 @@
 ---
 read_when:
-    - Einen Fehlerbericht oder eine Supportanfrage vorbereiten
-    - Debugging von Gateway-Abstürzen, Neustarts, Speicherdruck oder übergroßen Nutzlasten
-    - Überprüfen, welche Diagnosedaten aufgezeichnet oder geschwärzt werden
-summary: Teilbare Gateway-Diagnosepakete für Fehlerberichte erstellen
+    - Vorbereiten eines Fehlerberichts oder einer Supportanfrage
+    - Fehlerbehebung bei Gateway-Abstürzen, Neustarts, Speicherdruck oder übergroßen Nutzdaten
+    - Überprüfen, welche Diagnosedaten erfasst oder geschwärzt werden
+summary: Erstellen Sie teilbare Gateway-Diagnosepakete für Fehlerberichte
 title: Diagnoseexport
 x-i18n:
-    generated_at: "2026-06-27T17:29:06Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:23:28Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: ce431bafa51a245f2a3829074b0ca92e2d30ddfc1ae9738eed46a4e51ae98208
+    source_hash: ee9014da15368971d8257f62707f013b579e607fa0d8413db51253612f0c0957
     source_path: gateway/diagnostics.md
     workflow: 16
 ---
 
-OpenClaw kann ein lokales Diagnose-Zip für Fehlerberichte erstellen. Es kombiniert
-bereinigten Gateway-Status, Health-Daten, Logs, Konfigurationsform und aktuelle stabilitätsbezogene
-Ereignisse ohne Payloads.
+OpenClaw kann für Fehlerberichte eine lokale Diagnose-`.zip` erstellen: bereinigter Gateway-
+Status, Zustand, Protokolle, Konfigurationsstruktur und aktuelle stabilitätsbezogene Ereignisse ohne Nutzdaten.
 
-Behandeln Sie Diagnose-Bundles wie Geheimnisse, bis Sie sie geprüft haben. Sie sind
-darauf ausgelegt, Payloads und Zugangsdaten auszulassen oder zu schwärzen, fassen aber weiterhin
-lokale Gateway-Logs und hostbezogenen Laufzeitstatus zusammen.
+Behandeln Sie Diagnosepakete bis zur Überprüfung wie Geheimnisse. Nutzdaten und Zugangsdaten
+werden standardmäßig geschwärzt, das Paket fasst jedoch weiterhin lokale Gateway-Protokolle und
+den Laufzeitstatus auf Hostebene zusammen.
 
 ## Schnellstart
 
@@ -29,13 +29,13 @@ lokale Gateway-Logs und hostbezogenen Laufzeitstatus zusammen.
 openclaw gateway diagnostics export
 ```
 
-Der Befehl gibt den geschriebenen Zip-Pfad aus. Um einen Pfad auszuwählen:
+Gibt den Pfad der geschriebenen ZIP-Datei aus. So wählen Sie einen Ausgabepfad:
 
 ```bash
 openclaw gateway diagnostics export --output openclaw-diagnostics.zip
 ```
 
-Für Automatisierung:
+Für die Automatisierung:
 
 ```bash
 openclaw gateway diagnostics export --json
@@ -43,103 +43,88 @@ openclaw gateway diagnostics export --json
 
 ## Chat-Befehl
 
-Owner können `/diagnostics [note]` im Chat verwenden, um einen lokalen Gateway-Export anzufordern.
-Verwenden Sie dies, wenn der Fehler in einer echten Konversation aufgetreten ist und Sie einen
-kopierbaren Bericht für den Support möchten:
+Eigentümer können in jeder Unterhaltung `/diagnostics [note]` ausführen, um einen lokalen
+Gateway-Export als einzelnen kopierbaren Supportbericht anzufordern:
 
-1. Senden Sie `/diagnostics` in der Konversation, in der Sie das Problem bemerkt haben. Fügen Sie
-   bei Bedarf eine kurze Notiz hinzu, zum Beispiel `/diagnostics bad tool choice`.
-2. OpenClaw sendet die Diagnose-Präambel und fordert eine explizite Exec-Genehmigung an.
-   Die Genehmigung führt `openclaw gateway diagnostics export --json` aus.
-   Genehmigen Sie Diagnosen nicht über eine Allow-All-Regel.
-3. Nach der Genehmigung antwortet OpenClaw mit einem einfügbaren Bericht, der den lokalen
-   Bundle-Pfad, eine Manifest-Zusammenfassung, Datenschutzhinweise und relevante Sitzungs-IDs enthält.
+1. Senden Sie `/diagnostics`, optional mit einer kurzen Notiz (`/diagnostics bad tool choice`).
+2. OpenClaw sendet eine Vorbemerkung und fordert eine einmalige ausdrückliche Ausführungsgenehmigung an, die
+   `openclaw gateway diagnostics export --json` ausführt. Genehmigen Sie Diagnosen nicht über
+   eine Regel, die alles erlaubt.
+3. Nach der Genehmigung antwortet OpenClaw mit dem lokalen Paketpfad, einer Manifest-
+   Zusammenfassung, Datenschutzhinweisen und relevanten Sitzungs-IDs.
 
-In Gruppenchats kann ein Owner weiterhin `/diagnostics` ausführen, aber OpenClaw postet die
-Diagnosedetails nicht zurück in den gemeinsamen Chat. Es sendet die Präambel,
-Genehmigungsaufforderungen, das Gateway-Exportergebnis und die Aufschlüsselung der Codex-Sitzungen/-Threads
-über die private Genehmigungsroute an den Owner. Die Gruppe erhält nur einen kurzen Hinweis,
-dass der Diagnoseablauf privat gesendet wurde. Wenn OpenClaw keine private
-Owner-Route finden kann, bricht der Befehl sicher ab und fordert den Owner auf, ihn aus einer Direktnachricht auszuführen.
+In Gruppenchats kann ein Eigentümer weiterhin `/diagnostics` ausführen, OpenClaw sendet das
+Exportergebnis, Genehmigungsaufforderungen und die Aufschlüsselung der Codex-Sitzungen/-Threads jedoch
+privat an den Eigentümer. Die Gruppe sieht nur einen kurzen Hinweis, dass die Diagnosen
+privat gesendet wurden. Wenn keine private Route zum Eigentümer vorhanden ist, schlägt der Befehl sicher
+fehl und fordert den Eigentümer auf, ihn in einer Direktnachricht auszuführen.
 
-Wenn die aktive OpenClaw-Sitzung den nativen OpenAI Codex-Harness verwendet,
-deckt dieselbe Exec-Genehmigung auch einen OpenAI-Feedback-Upload für die Codex-
-Laufzeit-Threads ab, die OpenClaw kennt. Dieser Upload ist vom lokalen
-Gateway-Zip getrennt und erscheint nur für Codex-Harness-Sitzungen. Vor der Genehmigung erklärt die
-Aufforderung, dass durch das Genehmigen der Diagnose auch Codex-Feedback gesendet wird, listet aber
-keine Codex-Sitzungs- oder Thread-IDs auf. Nach der Genehmigung listet die Chat-Antwort
-die Kanäle, OpenClaw-Sitzungs-IDs, Codex-Thread-IDs und lokalen Resume-Befehle
-für die Threads auf, die an OpenAI-Server gesendet wurden. Wenn Sie die
-Genehmigung ablehnen oder ignorieren, führt OpenClaw den Export nicht aus, sendet kein Codex-Feedback und
-gibt die Codex-IDs nicht aus.
+Wenn die aktive Sitzung das native OpenAI-Codex-Harness verwendet, deckt dieselbe
+Ausführungsgenehmigung auch das Hochladen von OpenAI-Feedback für die OpenClaw bekannten Codex-Threads
+ab. Dieser Upload ist vom lokalen Gateway-ZIP getrennt und erfolgt nur
+bei Codex-Harness-Sitzungen. Die Genehmigungsaufforderung weist darauf hin, dass die Genehmigung
+auch Codex-Feedback sendet, ohne Codex-Sitzungs- oder Thread-IDs aufzulisten. Nach
+der Genehmigung enthält die Antwort Kanäle, OpenClaw-Sitzungs-IDs, Codex-Thread-IDs und
+lokale Fortsetzungsbefehle für die an OpenAI gesendeten Threads. Wird die
+Genehmigung abgelehnt oder ignoriert, werden der Export, das Hochladen des Codex-Feedbacks und die
+Liste der Codex-IDs übersprungen.
 
-Dadurch wird der übliche Codex-Debugging-Ablauf kurz: bemerken Sie das Fehlverhalten in
-Telegram, Discord oder einem anderen Kanal, führen Sie `/diagnostics` aus, genehmigen Sie einmal, teilen Sie
-den Bericht mit dem Support und führen Sie dann lokal den ausgegebenen Befehl `codex resume <thread-id>` aus,
-wenn Sie den nativen Codex-Thread selbst prüfen möchten. Siehe
-[Codex-Harness](/de/plugins/codex-harness#inspect-codex-threads-locally) für
-diesen Prüfablauf.
+Dadurch bleibt die Codex-Debugging-Schleife kurz: Stellen Sie fehlerhaftes Verhalten in einem Kanal fest,
+führen Sie `/diagnostics` aus, genehmigen Sie einmalig, teilen Sie den Bericht und führen Sie anschließend den ausgegebenen
+Befehl `codex resume <thread-id>` lokal aus, wenn Sie den Thread selbst untersuchen
+möchten. Siehe [Codex-Harness](/de/plugins/codex-harness#inspect-codex-threads-locally).
 
-## Was der Export enthält
-
-Das Zip enthält:
+## Inhalt des Exports
 
 - `summary.md`: menschenlesbare Übersicht für den Support.
-- `diagnostics.json`: maschinenlesbare Zusammenfassung von Konfiguration, Logs, Status, Health-Daten
+- `diagnostics.json`: maschinenlesbare Zusammenfassung von Konfiguration, Protokollen, Status, Zustand
   und Stabilitätsdaten.
 - `manifest.json`: Exportmetadaten und Dateiliste.
-- Bereinigte Konfigurationsform und nicht geheime Konfigurationsdetails.
-- Bereinigte Log-Zusammenfassungen und aktuelle geschwärzte Log-Zeilen.
-- Bestmögliche Gateway-Status- und Health-Snapshots.
-- `stability/latest.json`: neuestes persistiertes Stabilitäts-Bundle, sofern verfügbar.
+- Bereinigte Konfigurationsstruktur und nicht geheime Konfigurationsdetails.
+- Bereinigte Protokollzusammenfassungen und aktuelle geschwärzte Protokollzeilen.
+- Nach bestem Bemühen erstellte Momentaufnahmen von Gateway-Status und -Zustand.
+- `stability/latest.json`: neuestes persistiertes Stabilitätspaket, sofern verfügbar.
 
-Der Export ist auch nützlich, wenn der Gateway fehlerhaft ist. Wenn der Gateway
-Status- oder Health-Anfragen nicht beantworten kann, werden die lokalen Logs, die Konfigurationsform und das neueste
-Stabilitäts-Bundle trotzdem gesammelt, sofern sie verfügbar sind.
+Der Export ist auch dann nützlich, wenn der Gateway nicht fehlerfrei funktioniert: Wenn Status-/Zustands-
+anfragen fehlschlagen, werden lokale Protokolle, die Konfigurationsstruktur und das neueste Stabilitätspaket
+weiterhin erfasst, sofern sie verfügbar sind.
 
 ## Datenschutzmodell
 
-Diagnosen sind darauf ausgelegt, teilbar zu sein. Der Export behält Betriebsdaten,
-die beim Debugging helfen, zum Beispiel:
+Beibehalten werden: Subsystemnamen, Plugin-IDs, Provider-IDs, Kanal-IDs, konfigurierte
+Modi, Statuscodes, Zeitspannen, Byte-Anzahlen, Warteschlangenstatus, Speicherwerte,
+bereinigte Protokollmetadaten, geschwärzte Betriebsmeldungen, Konfigurationsstruktur und
+nicht geheime Funktionseinstellungen.
 
-- Subsystemnamen, Plugin-IDs, Provider-IDs, Kanal-IDs und konfigurierte Modi
-- Statuscodes, Dauern, Byte-Zähler, Queue-Zustand und Speichermesswerte
-- bereinigte Log-Metadaten und geschwärzte betriebliche Meldungen
-- Konfigurationsform und nicht geheime Feature-Einstellungen
+Ausgelassen oder geschwärzt werden: Chattext, Prompts, Anweisungen, Webhook-Inhalte, Werkzeug-
+ausgaben, Zugangsdaten, API-Schlüssel, Token, Cookies, geheime Werte, unformatierte
+Anfrage-/Antwortinhalte, Konto-IDs, Nachrichten-IDs, unformatierte Sitzungs-IDs,
+Hostnamen und lokale Benutzernamen.
 
-Der Export lässt aus oder schwärzt:
+Wenn eine Protokollmeldung wie Text aus Nutzdaten eines Benutzers, Chats, Prompts oder Werkzeugs aussieht,
+vermerkt der Export nur, dass eine Nachricht ausgelassen wurde, sowie deren Byte-Anzahl.
 
-- Chat-Text, Prompts, Anweisungen, Webhook-Bodys und Tool-Ausgaben
-- Zugangsdaten, API-Schlüssel, Tokens, Cookies und geheime Werte
-- rohe Request- oder Response-Bodys
-- Konto-IDs, Nachrichten-IDs, rohe Sitzungs-IDs, Hostnamen und lokale Benutzernamen
+## Stabilitätsaufzeichnung
 
-Wenn eine Log-Meldung wie Benutzer-, Chat-, Prompt- oder Tool-Payload-Text aussieht, behält der
-Export nur bei, dass eine Nachricht ausgelassen wurde, sowie die Byte-Anzahl.
+Der Gateway zeichnet standardmäßig einen begrenzten, von Nutzdaten freien Stabilitätsdatenstrom auf, wenn
+Diagnosen aktiviert sind. Er erfasst Betriebsfakten, keine Inhalte.
 
-## Stabilitätsrekorder
+Derselbe Heartbeat prüft auch die Betriebsbereitschaft, wenn die Ereignisschleife oder CPU
+ausgelastet erscheint, und gibt `diagnostic.liveness.warning`-Ereignisse mit Ereignisschleifenverzögerung,
+Ereignisschleifenauslastung, CPU-Kern-Verhältnis, der Anzahl aktiver/wartender/eingereihter Sitzungen,
+der aktuellen Start-/Laufzeitphase (sofern bekannt), aktuellen Phasenzeitspannen und
+begrenzten Arbeitsbezeichnungen aus. Diese werden nur dann zu Gateway-Protokollzeilen der Stufe `warn`,
+wenn Arbeit wartet oder eingereiht ist oder wenn sich aktive Arbeit mit einer anhaltenden Ereignisschleifen-
+verzögerung überschneidet; andernfalls werden sie mit `debug` protokolliert. Betriebsbereitschaftsmessungen im Leerlauf werden weiterhin
+als Diagnoseereignisse aufgezeichnet, aber für sich genommen niemals zu einer Warnung hochgestuft.
 
-Der Gateway zeichnet standardmäßig einen begrenzten Stabilitätsstream ohne Payloads auf, wenn
-Diagnosen aktiviert sind. Er ist für betriebliche Fakten gedacht, nicht für Inhalte.
+Startphasen geben `diagnostic.phase.completed`-Ereignisse mit Wanduhr- und
+CPU-Zeitmessung aus. Diagnosen festgefahrener eingebetteter Ausführungen setzen `terminalProgressStale=true`,
+wenn der letzte Bridge-Fortschritt terminal erschien (beispielsweise ein unformatiertes Antwort-
+element oder ein Antwortabschlussereignis), der Gateway die eingebettete Ausführung jedoch weiterhin
+als aktiv betrachtet.
 
-Derselbe Diagnose-Heartbeat zeichnet Liveness-Samples auf, wenn der Gateway weiterläuft,
-aber die Node.js-Ereignisschleife oder CPU ausgelastet wirkt. Diese
-`diagnostic.liveness.warning`-Ereignisse enthalten Ereignisschleifenverzögerung, Ereignisschleifen-
-Auslastung, CPU-Kern-Verhältnis, Anzahl aktiver/wartender/eingereihter Sitzungen, die aktuelle
-Start-/Laufzeitphase, sofern bekannt, aktuelle Phasenabschnitte und begrenzte Labels für aktive/eingereihte
-Arbeit. Idle-Samples verbleiben in der Telemetrie auf `info`-Ebene. Liveness-Samples
-werden nur dann zu Gateway-Warnungen, wenn Arbeit wartet oder eingereiht ist, oder wenn aktive Arbeit
-mit anhaltender Ereignisschleifenverzögerung überlappt. Vorübergehende Max-Delay-Spitzen während
-ansonsten gesunder Hintergrundarbeit bleiben in Debug-Logs. Sie starten den
-Gateway nicht von selbst neu.
-
-Startphasen geben außerdem `diagnostic.phase.completed`-Ereignisse mit Wall-Clock- und
-CPU-Timing aus. Diagnoseereignisse für blockierte eingebettete Läufe setzen `terminalProgressStale=true`,
-wenn der letzte Bridge-Fortschritt terminal aussah, etwa ein rohes Response-Item oder
-Response-Completion-Ereignis, der Gateway den eingebetteten Lauf aber weiterhin als
-aktiv betrachtet.
-
-Den Live-Rekorder prüfen:
+So prüfen Sie die laufende Aufzeichnung:
 
 ```bash
 openclaw gateway stability
@@ -147,20 +132,20 @@ openclaw gateway stability --type payload.large
 openclaw gateway stability --json
 ```
 
-Das neueste persistierte Stabilitäts-Bundle nach einem fatalen Exit, Shutdown-
-Timeout oder Neustartfehler prüfen:
+So prüfen Sie das neueste persistierte Paket nach einem schwerwiegenden Abbruch, einer Zeitüberschreitung beim
+Herunterfahren oder einem Fehler beim Neustart:
 
 ```bash
 openclaw gateway stability --bundle latest
 ```
 
-Ein Diagnose-Zip aus dem neuesten persistierten Bundle erstellen:
+So erstellen Sie aus dem neuesten persistierten Paket eine Diagnose-ZIP-Datei:
 
 ```bash
 openclaw gateway stability --bundle latest --export
 ```
 
-Persistierte Bundles liegen unter `~/.openclaw/logs/stability/`, wenn Ereignisse vorhanden sind.
+Persistierte Pakete befinden sich unter `~/.openclaw/logs/stability/`, wenn Ereignisse vorhanden sind.
 
 ## Nützliche Optionen
 
@@ -171,20 +156,22 @@ openclaw gateway diagnostics export \
   --log-bytes 1000000
 ```
 
-- `--output <path>`: in einen bestimmten Zip-Pfad schreiben.
-- `--log-lines <count>`: maximale Anzahl bereinigter Log-Zeilen, die einbezogen werden.
-- `--log-bytes <bytes>`: maximale Log-Bytes, die geprüft werden.
-- `--url <url>`: Gateway-WebSocket-URL für Status- und Health-Snapshots.
-- `--token <token>`: Gateway-Token für Status- und Health-Snapshots.
-- `--password <password>`: Gateway-Passwort für Status- und Health-Snapshots.
-- `--timeout <ms>`: Timeout für Status- und Health-Snapshots.
-- `--no-stability-bundle`: Suche nach persistiertem Stabilitäts-Bundle überspringen.
-- `--json`: maschinenlesbare Exportmetadaten ausgeben.
+| Flag                    | Standardwert                                                                  | Beschreibung                                                 |
+| ----------------------- | ----------------------------------------------------------------------------- | ------------------------------------------------------------ |
+| `--output <path>`       | `$OPENCLAW_STATE_DIR/logs/support/openclaw-diagnostics-<timestamp>-<pid>.zip` | In einen bestimmten ZIP-Pfad (oder ein Verzeichnis) schreiben. |
+| `--log-lines <count>`   | `5000`                                                                        | Maximale Anzahl einzubeziehender bereinigter Protokollzeilen. |
+| `--log-bytes <bytes>`   | `1000000`                                                                     | Maximale Anzahl zu prüfender Protokollbytes.                  |
+| `--url <url>`           | -                                                                             | Gateway-WebSocket-URL für Status-/Zustandsmomentaufnahmen.    |
+| `--token <token>`       | -                                                                             | Gateway-Token für Status-/Zustandsmomentaufnahmen.            |
+| `--password <password>` | -                                                                             | Gateway-Passwort für Status-/Zustandsmomentaufnahmen.         |
+| `--timeout <ms>`        | `3000`                                                                        | Zeitüberschreitung für Status-/Zustandsmomentaufnahmen.       |
+| `--no-stability-bundle` | off                                                                           | Suche nach persistiertem Stabilitätspaket überspringen.       |
+| `--json`                | off                                                                           | Maschinenlesbare Exportmetadaten ausgeben.                    |
 
 ## Diagnosen deaktivieren
 
-Diagnosen sind standardmäßig aktiviert. Um den Stabilitätsrekorder und die
-Sammlung von Diagnoseereignissen zu deaktivieren:
+Diagnosen sind standardmäßig aktiviert. So deaktivieren Sie die Stabilitätsaufzeichnung und
+die Erfassung von Diagnoseereignissen:
 
 ```json5
 {
@@ -194,11 +181,11 @@ Sammlung von Diagnoseereignissen zu deaktivieren:
 }
 ```
 
-Das Deaktivieren von Diagnosen reduziert die Detailtiefe von Fehlerberichten. Es wirkt sich nicht auf normales
-Gateway-Logging aus.
+Das Deaktivieren von Diagnosen verringert den Detailgrad von Fehlerberichten; die normale
+Gateway-Protokollierung wird dadurch nicht beeinträchtigt.
 
-Snapshots bei kritischem Speicherdruck sind standardmäßig deaktiviert. Um Diagnose-
-Ereignisse beizubehalten und zusätzlich den Stabilitäts-Snapshot vor dem OOM zu erfassen:
+Momentaufnahmen bei kritischer Speicherauslastung sind standardmäßig deaktiviert. So erfassen Sie zusätzlich
+zu normalen Diagnoseereignissen die Stabilitätsmomentaufnahme vor einem OOM-Fehler:
 
 ```json5
 {
@@ -208,14 +195,15 @@ Ereignisse beizubehalten und zusätzlich den Stabilitäts-Snapshot vor dem OOM z
 }
 ```
 
-Verwenden Sie dies nur auf Hosts, die den zusätzlichen Dateisystem-Scan und Snapshot-
-Schreibvorgang während kritischen Speicherdrucks tolerieren können. Normale Speicherdruckereignisse zeichnen weiterhin
-RSS, Heap, Schwellenwert und Wachstumsfakten auf, wenn der Snapshot deaktiviert ist.
+Verwenden Sie dies nur auf Hosts, die den zusätzlichen Dateisystemscan und
+das Schreiben der Momentaufnahme während kritischer Speicherauslastung verkraften können. Normale Speicherauslastungsereignisse
+zeichnen weiterhin RSS-, Heap-, Schwellenwert- und Wachstumsfakten (`rss_threshold`,
+`heap_threshold`, `rss_growth`) auf, wenn die Momentaufnahme deaktiviert ist.
 
-## Verwandt
+## Verwandte Themen
 
-- [Health-Checks](/de/gateway/health)
+- [Zustandsprüfungen](/de/gateway/health)
 - [Gateway-CLI](/de/cli/gateway#gateway-diagnostics-export)
-- [Gateway-Protokoll](/de/gateway/protocol#system-and-identity)
-- [Logging](/de/logging)
-- [OpenTelemetry-Export](/de/gateway/opentelemetry) — separater Ablauf zum Streamen von Diagnosen an einen Collector
+- [Gateway-Protokoll](/de/gateway/protocol#rpc-method-families)
+- [Protokollierung](/de/logging)
+- [OpenTelemetry-Export](/de/gateway/opentelemetry) – separater Ablauf zum Streamen von Diagnosen an einen Collector

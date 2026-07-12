@@ -1,41 +1,40 @@
 ---
 read_when:
-    - Vous voulez l’historique du projet ou les crédits des contributeurs
+    - Vous souhaitez connaître l’histoire du projet ou les crédits des contributeurs
 summary: Origine du projet, contributeurs et licence.
 title: Crédits
 x-i18n:
-    generated_at: "2026-05-06T07:37:22Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:47:16Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: 4cda0d96a66d4a6fcf81553d39315ebe01e7ebb4a21bb2994e9a503825bc7fb6
+    source_hash: d0030d36d04ce73e4c87f3d973ca3e729485f87c4b4b454e957dd6615d096ec9
     source_path: reference/credits.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-## Le nom
-
-OpenClaw = CLAW + TARDIS, car tout homard de l’espace a besoin d’une machine à voyager dans le temps et l’espace.
+OpenClaw = CLAW + TARDIS : chaque homard de l’espace a besoin d’une machine à voyager dans le temps et l’espace.
 
 ## Crédits
 
-- **Peter Steinberger** ([@steipete](https://x.com/steipete)) - Créateur, celui qui murmure à l’oreille des homards
-- **Mario Zechner** ([@badlogicc](https://x.com/badlogicgames)) - Créateur de Pi, testeur d’intrusion de sécurité
-- **Clawd** - Le homard de l’espace qui a exigé un meilleur nom
+- **Peter Steinberger** ([@steipete](https://x.com/steipete)) - Créateur, chuchoteur de homards
+- **Mario Zechner** ([@badlogicc](https://x.com/badlogicgames)) - Créateur de Pi, testeur d’intrusion en sécurité
+- **Clawd** - Le homard de l’espace qui exigeait un meilleur nom
 
-## Contributeurs principaux
+## Principaux contributeurs
 
-- **Maxim Vovshin** (@Hyaxia, [36747317+Hyaxia@users.noreply.github.com](mailto:36747317+Hyaxia@users.noreply.github.com)) - Skill Blogwatcher
-- **Nacho Iacovino** (@nachoiacovino, [nacho.iacovino@gmail.com](mailto:nacho.iacovino@gmail.com)) - Analyse des lieux (Telegram et WhatsApp)
+- **Maxim Vovshin** (@Hyaxia, [36747317+Hyaxia@users.noreply.github.com](mailto:36747317+Hyaxia@users.noreply.github.com)) - Skill de surveillance de blogs
+- **Nacho Iacovino** (@nachoiacovino, [nacho.iacovino@gmail.com](mailto:nacho.iacovino@gmail.com)) - Analyse des emplacements (Telegram et WhatsApp)
 - **Vincent Koc** ([@vincentkoc](https://github.com/vincentkoc), [@vincent_koc](https://x.com/vincent_koc)) - Agents, télémétrie, hooks, sécurité
 
 ## Licence
 
-MIT - Libre comme un homard dans l’océan.
+MIT, droits d’auteur OpenClaw Foundation. Les mentions relatives aux tiers pour le code intégré ou adapté figurent dans `THIRD_PARTY_NOTICES.md`.
 
-> « Nous ne faisons tous que jouer avec nos propres prompts. » (Une IA, probablement dopée aux tokens)
+> « Nous ne faisons tous que jouer avec nos propres prompts. » (Une IA, probablement enivrée de tokens)
 
-## Connexe
+## Ressources connexes
 
-- [Utilisation des tokens et coûts](/fr/reference/token-use)
+- [Utilisation et coût des tokens](/fr/reference/token-use)
 - [Politique de publication](/fr/reference/RELEASING)

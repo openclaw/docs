@@ -1,44 +1,47 @@
 ---
 read_when:
-    - Vous voulez connecter OpenClaw aux SMS via Twilio
-    - Vous devez configurer un webhook SMS ou une liste d’autorisation
-summary: Configuration du canal SMS Twilio, des contrôles d’accès et du webhook
+    - Vous souhaitez connecter OpenClaw aux SMS via Twilio
+    - Vous devez configurer un Webhook SMS ou une liste d’autorisation
+summary: Configuration du canal SMS Twilio, contrôles d’accès et configuration du Webhook
 title: SMS
 x-i18n:
-    generated_at: "2026-06-27T17:12:45Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:03:29Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: 0c384fa3374450aa3facc749791b5d59165d9daf0920ea5438ad412522166f52
+    source_hash: 1ae0e0fee978a9837fc75ef7e9122bd06009df0d44de35fe9dff8aab120d5404
     source_path: channels/sms.md
     workflow: 16
 ---
 
-OpenClaw peut recevoir et envoyer des SMS via un numéro de téléphone Twilio ou un service de messagerie. Le Gateway enregistre une route de Webhook entrant, valide les signatures de requête Twilio par défaut et renvoie les réponses via l’API Messages de Twilio.
+OpenClaw reçoit et envoie des SMS par l’intermédiaire d’un numéro de téléphone ou d’un Messaging Service Twilio. Le Gateway enregistre une route Webhook entrante (par défaut `/webhooks/sms`), valide par défaut les signatures des requêtes Twilio et renvoie les réponses par l’intermédiaire de l’API Messages de Twilio.
+
+Statut : plugin officiel, installé séparément. Texte uniquement : aucun MMS/média, messages directs uniquement.
 
 <CardGroup cols={3}>
-  <Card title="Pairing" icon="link" href="/fr/channels/pairing">
-    La politique de messages directs par défaut pour les SMS est l’appairage.
+  <Card title="Association" icon="link" href="/fr/channels/pairing">
+    La politique de messages directs par défaut pour les SMS est l’association.
   </Card>
-  <Card title="Gateway security" icon="shield" href="/fr/gateway/security">
+  <Card title="Sécurité du Gateway" icon="shield" href="/fr/gateway/security">
     Examinez l’exposition du Webhook et les contrôles d’accès des expéditeurs.
   </Card>
-  <Card title="Channel troubleshooting" icon="wrench" href="/fr/channels/troubleshooting">
-    Diagnostics intercanaux et procédures de réparation.
+  <Card title="Dépannage des canaux" icon="wrench" href="/fr/channels/troubleshooting">
+    Diagnostics multicanaux et procédures de réparation.
   </Card>
 </CardGroup>
 
 ## Avant de commencer
 
-Vous avez besoin de :
+Vous avez besoin des éléments suivants :
 
-- Le Plugin SMS officiel installé avec `openclaw plugins install @openclaw/sms`.
-- Un compte Twilio avec un numéro de téléphone compatible SMS, ou un service de messagerie Twilio.
-- Le SID de compte Twilio et le jeton d’authentification.
-- Une URL HTTPS publique qui atteint votre Gateway OpenClaw.
-- Un choix de politique d’expéditeur : `pairing` pour un usage privé, `allowlist` pour les numéros de téléphone préapprouvés, ou `open` uniquement pour un accès SMS volontairement public.
+- Le plugin SMS officiel installé avec `openclaw plugins install @openclaw/sms`.
+- Un compte Twilio avec un numéro de téléphone compatible SMS, ou un Messaging Service Twilio.
+- L’Account SID et l’Auth Token Twilio.
+- Une URL HTTPS publique permettant d’accéder à votre Gateway OpenClaw.
+- Un choix de politique d’expéditeur : `pairing` (par défaut) pour un usage privé, `allowlist` pour des numéros de téléphone préapprouvés, ou `open` uniquement pour un accès SMS délibérément public.
 
-Utilisez un seul numéro Twilio pour les SMS et les appels vocaux si le numéro dispose des deux capacités. Configurez séparément le Webhook SMS et le Webhook vocal dans Twilio ; cette page couvre uniquement le Webhook SMS.
+Un même numéro Twilio peut servir à la fois pour les SMS et les [appels vocaux](/fr/plugins/voice-call) s’il dispose des deux capacités. Le Webhook SMS et le Webhook vocal sont configurés séparément dans Twilio et utilisent des chemins Gateway distincts ; cette page couvre uniquement le Webhook SMS.
 
 ## Configuration rapide
 
@@ -49,13 +52,13 @@ Utilisez un seul numéro Twilio pour les SMS et les appels vocaux si le numéro 
     ```
   </Step>
   <Step title="Créer ou choisir un expéditeur Twilio">
-    Dans Twilio, ouvrez **Numéros de téléphone > Gérer > Numéros actifs** et choisissez un numéro compatible SMS. Enregistrez :
+    Dans Twilio, ouvrez **Phone Numbers > Manage > Active numbers** et choisissez un numéro compatible SMS. Enregistrez les éléments suivants :
 
-    - SID du compte, par exemple `ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx`
-    - Jeton d’authentification
-    - Numéro de téléphone expéditeur, par exemple `+15551234567`
+    - Account SID, par exemple `ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx`
+    - Auth Token
+    - Numéro de téléphone de l’expéditeur, par exemple `+15551234567`
 
-    Si vous utilisez un service de messagerie plutôt qu’un numéro d’expéditeur fixe, enregistrez le SID du service de messagerie, par exemple `MGxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx`.
+    Si vous utilisez un Messaging Service au lieu d’un numéro d’expéditeur fixe, enregistrez le SID du Messaging Service, par exemple `MGxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx`.
 
   </Step>
 
@@ -87,19 +90,19 @@ openclaw config patch --file ./sms.patch.json5
 
   </Step>
 
-  <Step title="Pointer Twilio vers le Webhook du Gateway">
-    Dans les paramètres du numéro de téléphone Twilio, ouvrez **Messagerie** et définissez **Un message arrive** sur :
+  <Step title="Faire pointer Twilio vers le Webhook du Gateway">
+    Dans les paramètres du numéro de téléphone Twilio, ouvrez **Messaging** et définissez **A message comes in** sur :
 
 ```text
 https://gateway.example.com/webhooks/sms
 ```
 
-    Utilisez HTTP `POST`. Le chemin local par défaut est `/webhooks/sms` ; modifiez `channels.sms.webhookPath` si vous avez besoin d’une route différente.
+    Utilisez la méthode HTTP `POST`. Le chemin local par défaut est `/webhooks/sms` ; modifiez `channels.sms.webhookPath` si vous avez besoin d’une autre route.
 
   </Step>
 
   <Step title="Exposer le chemin exact du Webhook SMS">
-    Votre URL publique doit router le chemin SMS vers le processus Gateway. Si vous utilisez Tailscale Funnel pour les tests locaux, exposez explicitement `/webhooks/sms` :
+    Votre URL publique doit acheminer le chemin SMS vers le processus Gateway (port par défaut `18789`). Si vous utilisez Tailscale Funnel pour des tests locaux, exposez explicitement `/webhooks/sms` :
 
 ```bash
 tailscale funnel --bg --set-path /webhooks/sms http://127.0.0.1:<gateway-port>/webhooks/sms
@@ -116,23 +119,41 @@ tailscale funnel status
 openclaw gateway
 ```
 
-Envoyez un SMS au numéro Twilio. Le premier message crée une demande d’appairage. Approuvez-la :
+Envoyez un SMS au numéro Twilio. Le premier message crée une demande d’association. Approuvez-la :
 
 ```bash
 openclaw pairing list sms
 openclaw pairing approve sms <CODE>
 ```
 
-    Les codes d’appairage expirent après 1 heure.
+    Les codes d’association expirent après 1 heure.
 
   </Step>
 </Steps>
 
 ## Exemples de configuration
 
+Toutes les clés se trouvent sous `channels.sms` (et, pour chaque compte, sous `channels.sms.accounts.<id>`) :
+
+| Clé                                     | Valeur par défaut | Objectif                                                                    |
+| --------------------------------------- | ----------------- | --------------------------------------------------------------------------- |
+| `enabled`                               | `true`            | Active ou désactive le canal/compte.                                        |
+| `accountSid`                            | —                 | Account SID Twilio (`AC...`).                                               |
+| `authToken`                             | —                 | Auth Token Twilio ; chaîne en texte brut ou SecretRef.                      |
+| `fromNumber`                            | —                 | Numéro d’expéditeur au format E.164.                                        |
+| `messagingServiceSid`                   | —                 | SID du Messaging Service (`MG...`) utilisé si aucun `fromNumber` n’est résolu. |
+| `defaultTo`                             | —                 | Destination par défaut lorsqu’un flux d’envoi omet une cible explicite.     |
+| `webhookPath`                           | `/webhooks/sms`   | Chemin HTTP du Gateway pour les Webhooks Twilio entrants.                   |
+| `publicWebhookUrl`                      | —                 | URL publique configurée dans Twilio ; requise pour valider la signature.    |
+| `dangerouslyDisableSignatureValidation` | `false`           | Ignore les contrôles `X-Twilio-Signature` ; uniquement pour tester un tunnel local. |
+| `dmPolicy`                              | `"pairing"`       | `pairing`, `allowlist`, `open` ou `disabled`.                               |
+| `allowFrom`                             | `[]`              | Numéros d’expéditeur autorisés au format E.164, ou `"*"` avec `dmPolicy: "open"`. |
+| `textChunkLimit`                        | `1500`            | Nombre maximal de caractères par segment SMS sortant.                       |
+| `accounts`, `defaultAccount`            | —                 | Table de correspondance multicomptes et identifiant du compte par défaut.   |
+
 ### Fichier de configuration
 
-Utilisez la configuration par fichier lorsque vous voulez que la définition du canal soit transportée avec la configuration du Gateway :
+Utilisez la configuration par fichier lorsque vous souhaitez que la définition du canal soit intégrée à la configuration du Gateway :
 
 ```json5
 {
@@ -151,7 +172,19 @@ Utilisez la configuration par fichier lorsque vous voulez que la définition du 
 
 ### Variables d’environnement
 
-Utilisez la configuration par variables d’environnement pour les déploiements à compte unique où les secrets proviennent de l’environnement hôte :
+Les variables d’environnement s’appliquent uniquement au compte par défaut ; les valeurs de configuration ont priorité sur celles des variables d’environnement.
+
+| Variable                                        | Correspond à                                       |
+| ----------------------------------------------- | -------------------------------------------------- |
+| `TWILIO_ACCOUNT_SID`                            | `accountSid`                                       |
+| `TWILIO_AUTH_TOKEN`                             | `authToken`                                        |
+| `TWILIO_PHONE_NUMBER` (alias `TWILIO_SMS_FROM`) | `fromNumber`                                       |
+| `TWILIO_MESSAGING_SERVICE_SID`                  | `messagingServiceSid`                              |
+| `SMS_PUBLIC_WEBHOOK_URL`                        | `publicWebhookUrl`                                 |
+| `SMS_WEBHOOK_PATH`                              | `webhookPath`                                      |
+| `SMS_ALLOWED_USERS`                             | `allowFrom` (séparées par des virgules)            |
+| `SMS_TEXT_CHUNK_LIMIT`                          | `textChunkLimit`                                   |
+| `SMS_DANGEROUSLY_DISABLE_SIGNATURE_VALIDATION`  | `dangerouslyDisableSignatureValidation` (`"true"`) |
 
 ```bash
 export TWILIO_ACCOUNT_SID="ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
@@ -173,11 +206,9 @@ Activez ensuite le canal dans la configuration :
 }
 ```
 
-`TWILIO_SMS_FROM` est accepté comme alias de `TWILIO_PHONE_NUMBER`. Utilisez `TWILIO_MESSAGING_SERVICE_SID` au lieu d’un expéditeur par numéro de téléphone lorsque Twilio doit choisir l’expéditeur à partir d’un service de messagerie.
-
 ### Jeton d’authentification SecretRef
 
-`authToken` peut être une SecretRef. Utilisez ceci lorsque le Gateway doit résoudre le jeton d’authentification Twilio depuis l’environnement d’exécution des secrets OpenClaw au lieu de stocker la configuration en texte clair :
+`authToken` peut être une SecretRef (`source: "env" | "file" | "exec"`). Utilisez-la lorsque le Gateway doit résoudre le jeton d’authentification Twilio à partir de l’environnement d’exécution des secrets d’OpenClaw au lieu de le stocker en clair dans la configuration :
 
 ```json5
 {
@@ -194,31 +225,11 @@ Activez ensuite le canal dans la configuration :
 }
 ```
 
-La variable d’environnement ou le fournisseur de secrets référencé doit être visible par l’environnement d’exécution du Gateway. Redémarrez les processus Gateway gérés après avoir modifié les variables d’environnement de l’hôte.
+La variable d’environnement ou le fournisseur de secrets référencé doit être accessible à l’environnement d’exécution du Gateway. Redémarrez les processus Gateway gérés après avoir modifié les variables d’environnement de l’hôte.
 
-### Numéro privé uniquement sur liste d’autorisation
+### Expéditeur du service de messagerie
 
-Utilisez `allowlist` lorsque seuls des numéros de téléphone connus doivent pouvoir parler à l’agent :
-
-```json5
-{
-  channels: {
-    sms: {
-      enabled: true,
-      accountSid: "ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
-      authToken: "twilio-auth-token",
-      fromNumber: "+15551234567",
-      publicWebhookUrl: "https://gateway.example.com/webhooks/sms",
-      dmPolicy: "allowlist",
-      allowFrom: ["+15557654321"],
-    },
-  },
-}
-```
-
-### Expéditeur via service de messagerie
-
-Utilisez `messagingServiceSid` au lieu de `fromNumber` lorsque Twilio doit choisir l’expéditeur via un service de messagerie :
+Utilisez `messagingServiceSid` au lieu de `fromNumber` lorsque Twilio doit choisir l’expéditeur par l’intermédiaire d’un service de messagerie :
 
 ```json5
 {
@@ -237,9 +248,9 @@ Utilisez `messagingServiceSid` au lieu de `fromNumber` lorsque Twilio doit chois
 
 Si `fromNumber` et `messagingServiceSid` sont tous deux présents après la résolution de la configuration et des variables d’environnement, `fromNumber` est utilisé.
 
-### Cible sortante par défaut
+### Destination sortante par défaut
 
-Définissez `defaultTo` lorsque l’automatisation ou la livraison initiée par l’agent doit avoir une destination par défaut si un flux d’envoi omet une cible explicite :
+Définissez `defaultTo` lorsque les livraisons automatisées ou initiées par un agent doivent disposer d’une destination par défaut si un flux d’envoi omet une destination explicite :
 
 ```json5
 {
@@ -260,39 +271,55 @@ Définissez `defaultTo` lorsque l’automatisation ou la livraison initiée par 
 
 `channels.sms.dmPolicy` contrôle l’accès direct par SMS :
 
-- `pairing` (par défaut)
-- `allowlist` (nécessite au moins un expéditeur dans `allowFrom`)
-- `open` (nécessite que `allowFrom` inclue `"*"`)
-- `disabled`
+- `pairing` (par défaut) : les expéditeurs inconnus reçoivent un code d’association ; approuvez-les avec `openclaw pairing approve sms <CODE>`.
+- `allowlist` : seuls les expéditeurs figurant dans `allowFrom` sont traités. Une valeur `allowFrom` vide rejette tous les expéditeurs (le Gateway consigne un avertissement au démarrage).
+- `open` : la validation de la configuration exige que `allowFrom` contienne `"*"`. Sans ce caractère générique, seuls les numéros répertoriés peuvent discuter.
+- `disabled` : tous les messages privés entrants sont ignorés.
 
-Les entrées `allowFrom` doivent être des numéros de téléphone E.164 comme `+15551234567`. Les préfixes `sms:` sont acceptés et normalisés. Pour un assistant privé, privilégiez `dmPolicy: "allowlist"` avec des numéros de téléphone explicites.
+Les entrées de `allowFrom` doivent être des numéros de téléphone au format E.164, tels que `+15551234567`. Les préfixes `sms:` et `twilio-sms:` sont acceptés et normalisés. Pour un assistant privé, privilégiez `dmPolicy: "allowlist"` avec des numéros de téléphone explicites :
 
-## Envoyer des SMS
+```json5
+{
+  channels: {
+    sms: {
+      enabled: true,
+      accountSid: "ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+      authToken: "twilio-auth-token",
+      fromNumber: "+15551234567",
+      publicWebhookUrl: "https://gateway.example.com/webhooks/sms",
+      dmPolicy: "allowlist",
+      allowFrom: ["+15557654321"],
+    },
+  },
+}
+```
 
-Les cibles SMS sortantes utilisent le préfixe de service `sms:` avec le canal SMS sélectionné :
+## Envoi de SMS
+
+Lorsque le canal SMS est sélectionné, les destinations acceptent les numéros E.164 sans préfixe ou avec le préfixe `sms:` :
 
 ```bash
 openclaw message send --channel sms --target sms:+15551234567 --message "hello"
 ```
 
-Lorsque la sélection du canal est implicite, `twilio-sms:+15551234567` sélectionne ce canal sans prendre le contrôle du préfixe de service `sms:` existant, détenu par le canal et utilisé par iMessage.
+Lorsque la sélection du canal est implicite, le préfixe `twilio-sms:` sélectionne ce canal sans remplacer le préfixe de service `sms:`, qu’iMessage utilise pour choisir l’acheminement par SMS de l’opérateur pour ses propres destinations :
 
 ```bash
 openclaw message send --target twilio-sms:+15551234567 --message "hello"
 ```
 
-La CLI nécessite un `--target` explicite. `defaultTo` est destiné aux chemins d’automatisation et de livraison initiée par l’agent où la cible peut être résolue depuis la configuration du canal.
+La CLI exige une option `--target` explicite. `defaultTo` est destiné aux parcours de livraison automatisés ou initiés par un agent, dans lesquels la destination peut être résolue à partir de la configuration du canal.
 
-Les réponses de l’agent issues de conversations SMS entrantes retournent automatiquement à l’expéditeur via l’expéditeur Twilio configuré.
+Les réponses de l’agent dans les conversations SMS entrantes sont automatiquement renvoyées à l’expéditeur par l’intermédiaire de l’expéditeur Twilio configuré.
 
-La sortie SMS est du texte brut. OpenClaw supprime le markdown, aplatit les blocs de code clôturés, préserve les liens lisibles et découpe les longues réponses avant de les envoyer via Twilio.
+La sortie SMS est en texte brut. OpenClaw supprime le Markdown, aplatit les blocs de code délimités, réécrit les liens sous la forme `label (url)` et divise les réponses longues en segments d’au plus `textChunkLimit` caractères (1500 par défaut) avant de les envoyer par l’intermédiaire de Twilio.
 
 ## Vérifier la configuration
 
 Après le démarrage du Gateway :
 
 1. Confirmez que le journal du Gateway affiche la route du Webhook SMS.
-2. Exécutez une sonde côté Twilio :
+2. Exécutez une sonde côté Twilio (elle vérifie l’URL et la méthode du Webhook Twilio configuré, ainsi que les erreurs entrantes récentes) :
 
 ```bash
 openclaw channels capabilities --channel sms
@@ -304,15 +331,15 @@ openclaw channels status --channel sms --probe --json
 5. Approuvez le code d’appairage avec `openclaw pairing approve sms <CODE>`.
 6. Envoyez un autre SMS et confirmez que l’agent répond.
 
-Pour les tests sortants uniquement, utilisez :
+Pour tester uniquement l’envoi sortant, utilisez :
 
 ```bash
 openclaw message send --channel sms --target sms:+15557654321 --message "OpenClaw SMS test"
 ```
 
-### Test de bout en bout depuis macOS iMessage/SMS
+### Test de bout en bout depuis iMessage/SMS sous macOS
 
-Sur un Mac capable d’envoyer des SMS opérateur via Messages, vous pouvez utiliser `imsg` pour piloter le côté expéditeur sans toucher à votre téléphone :
+Sur un Mac capable d’envoyer des SMS par l’intermédiaire de l’opérateur dans Messages, vous pouvez utiliser `imsg` pour piloter l’expéditeur sans toucher à votre téléphone :
 
 ```bash
 imsg send --to "+15551234567" --service sms --text "OpenClaw SMS E2E $(date -u +%Y%m%dT%H%M%SZ)" --json
@@ -321,13 +348,24 @@ openclaw pairing approve sms <CODE>
 imsg send --to "+15551234567" --service sms --text "reply exactly SMS pong" --json
 ```
 
-Le premier message doit créer une demande d’appairage. Le second message doit recevoir la réponse de l’agent via Twilio.
+Le premier message doit créer une demande d’appairage. Le second doit recevoir la réponse de l’agent par l’intermédiaire de Twilio.
 
 ## Sécurité du Webhook
 
-Par défaut, OpenClaw valide `X-Twilio-Signature` à l’aide de `publicWebhookUrl` et `authToken`. Gardez `publicWebhookUrl` aligné octet pour octet avec l’URL configurée dans Twilio, y compris le schéma, l’hôte, le chemin et la chaîne de requête.
+Par défaut, OpenClaw valide `X-Twilio-Signature` à l’aide de `publicWebhookUrl` et de `authToken`. Veillez à ce que la partie point de terminaison de `publicWebhookUrl` corresponde octet pour octet à l’URL configurée dans Twilio, notamment le schéma, l’hôte, le chemin et la chaîne de requête. OpenClaw exclut du calcul de la signature les fragments de [surcharge de connexion](https://www.twilio.com/docs/usage/webhooks/webhooks-connection-overrides) Twilio (`#...`), comme l’exige Twilio.
 
-Pour les tests de tunnel local uniquement, vous pouvez définir :
+Indépendamment de la validation de la signature, la route du Webhook impose également les règles suivantes :
+
+- `POST` uniquement.
+- Limite de 30 requêtes par minute et par adresse IP source (HTTP 429 au-delà).
+- La valeur `AccountSid` de la charge utile doit correspondre à la valeur `accountSid` configurée (sinon HTTP 403).
+- Les valeurs `MessageSid` répétées sont dédupliquées pendant 10 minutes.
+- Le cache de rejeu de chaque compte SMS conserve jusqu’à 10 000 SID de messages actifs. Lorsque tous les emplacements sont actifs, les nouveaux Webhooks destinés à ce compte échouent de manière fermée avec une réponse HTTP 429 et un en-tête `Retry-After`, jusqu’à l’expiration de l’emplacement le plus ancien.
+- Les corps de requête dépassant 32 Ko sont rejetés.
+
+Par défaut, Twilio ne réessaie pas les requêtes ayant reçu une réponse HTTP 429 et ne documente pas la prise en charge de `Retry-After`. Les surcharges de connexion `#rp=4xx` et `#rp=all` activent les nouvelles tentatives pour les réponses 4xx, mais Twilio limite la transaction complète de nouvelle tentative à 15 secondes. Les tentatives peuvent donc prendre fin avant l’expiration d’un emplacement du cache de rejeu. Configurez une URL de secours si un autre gestionnaire doit recevoir les livraisons ayant échoué ; considérez une réponse 429 comme un rejet fermé, et non comme un mécanisme fiable de contre-pression.
+
+Pour tester uniquement avec un tunnel local, vous pouvez définir :
 
 ```json5
 {
@@ -339,9 +377,9 @@ Pour les tests de tunnel local uniquement, vous pouvez définir :
 }
 ```
 
-N’utilisez pas la validation de signature désactivée sur un Gateway public.
+N’utilisez pas la désactivation de la validation de signature sur un Gateway public.
 
-## Configuration multi-comptes
+## Configuration de plusieurs comptes
 
 Utilisez `accounts` lorsque vous exploitez plusieurs numéros Twilio :
 
@@ -366,29 +404,33 @@ Utilisez `accounts` lorsque vous exploitez plusieurs numéros Twilio :
 }
 ```
 
-Chaque compte doit utiliser un `webhookPath` distinct.
+Chaque compte doit utiliser un `webhookPath` distinct ; le Gateway refuse d’enregistrer une route de Webhook dont le chemin appartient déjà à un autre compte. Les valeurs de repli des variables d’environnement `TWILIO_*`/`SMS_*` s’appliquent uniquement au compte par défaut ; définissez `defaultAccount` pour changer le compte par défaut.
 
 ## Dépannage
 
-### Twilio renvoie 403 ou OpenClaw rejette le Webhook
+### Twilio renvoie une réponse 403 ou OpenClaw rejette le Webhook
 
-Vérifiez que `publicWebhookUrl` correspond exactement à l’URL configurée dans Twilio, y compris le schéma, l’hôte, le chemin et la chaîne de requête. Twilio signe la chaîne d’URL publique ; les réécritures de proxy et les noms d’hôte alternatifs peuvent donc casser la validation de signature.
+Vérifiez que `publicWebhookUrl` correspond exactement à l’URL configurée dans Twilio, notamment le schéma, l’hôte, le chemin et la chaîne de requête. Twilio signe la chaîne de l’URL publique ; les réécritures effectuées par le proxy et les autres noms d’hôte peuvent donc empêcher la validation de la signature.
+
+Une réponse 403 contenant `Invalid account` signifie que la valeur `AccountSid` de la charge utile entrante ne correspond pas à la valeur `accountSid` configurée ; vérifiez que le Webhook pointe vers le compte auquel appartient le numéro.
 
 ### Aucune demande d’appairage n’apparaît
 
-Vérifiez l’URL et la méthode du Webhook **Messagerie** du numéro Twilio. Il doit pointer vers l’URL du Webhook SMS et utiliser `POST`. Confirmez également que le Gateway est accessible depuis Internet public ou via votre tunnel.
+Vérifiez l’URL et la méthode du Webhook **Messaging** du numéro Twilio. Il doit pointer vers l’URL du Webhook SMS et utiliser `POST`. Confirmez également que le Gateway est accessible depuis l’Internet public ou par l’intermédiaire de votre tunnel.
 
-Si le journal des messages Twilio affiche l’erreur `11200`, Twilio a accepté le SMS entrant mais n’a pas pu atteindre votre Webhook. Vérifiez :
+Si le journal des messages Twilio affiche l’erreur `11200`, Twilio a accepté le SMS entrant, mais n’a pas pu atteindre votre Webhook. Vérifiez les points suivants :
 
-- **Messagerie > Un message arrive** dans Twilio pointe vers `publicWebhookUrl`.
+- Dans Twilio, **Messaging > A message comes in** pointe vers `publicWebhookUrl`.
 - La méthode est `POST`.
-- Le tunnel ou le proxy inverse expose le `webhookPath` exact ; pour Tailscale Funnel, exécutez `tailscale funnel status` et confirmez que `/webhooks/sms` est répertorié.
-- `publicWebhookUrl` utilise les mêmes schéma, hôte, chemin et chaîne de requête que ceux envoyés par Twilio, afin que la validation de signature puisse reproduire l’URL signée.
+- Le tunnel ou le proxy inverse expose le `webhookPath` exact ; pour Tailscale Funnel, exécutez `tailscale funnel status` et confirmez que `/webhooks/sms` figure dans la liste.
+- `publicWebhookUrl` utilise le même schéma, le même hôte, le même chemin et la même chaîne de requête que ceux envoyés par Twilio, afin que la validation de signature puisse reproduire l’URL signée.
 
-### Les envois sortants échouent
+`openclaw channels status --channel sms --probe` signale à la fois les paramètres de Webhook Twilio non concordants et les erreurs `11200` récentes.
 
-Confirmez que `accountSid`, `authToken`, et soit `fromNumber` soit `messagingServiceSid` sont résolus. Si vous utilisez un compte Twilio d’essai, le numéro de destination devra peut-être être vérifié dans Twilio avant que les SMS sortants puissent être envoyés.
+### Échec des envois sortants
 
-### Les messages arrivent mais l’agent ne répond pas
+Confirmez que `accountSid`, `authToken` et soit `fromNumber`, soit `messagingServiceSid` sont résolus. Si vous utilisez un compte d’essai Twilio, il peut être nécessaire de vérifier le numéro de destination dans Twilio avant de pouvoir envoyer des SMS sortants.
 
-Vérifiez `dmPolicy` et `allowFrom`. Avec la stratégie `pairing` par défaut, l’expéditeur doit être approuvé avant que les tours d’agent normaux soient traités.
+### Les messages arrivent, mais l’agent ne répond pas
+
+Vérifiez `dmPolicy` et `allowFrom`. Avec la politique `pairing` par défaut, l’expéditeur doit être approuvé avant le traitement des interactions normales avec l’agent.

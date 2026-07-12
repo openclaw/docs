@@ -1,101 +1,68 @@
 ---
 read_when:
     - Remote-Gateway-Setups ausführen oder Fehler beheben
-summary: Remotezugriff mit Gateway WS, SSH-Tunneln und Tailnets
-title: Remote-Zugriff
+summary: Remotezugriff über Gateway-WS, SSH-Tunnel und Tailnets
+title: Fernzugriff
 x-i18n:
-    generated_at: "2026-07-03T23:30:19Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:22:20Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: cb6fd38698480f1dff93a6e4819082711e8e4395556a2fd85a8eb772ef6fbe31
+    source_hash: 78daaad7bcb9f80072eaa2d6946bff9f28ba1ec4f95a68edb0d24cf7f9c3fec2
     source_path: gateway/remote.md
     workflow: 16
 ---
 
-Dieses Repo unterstützt entfernten Gateway-Zugriff, indem ein einzelnes Gateway (der Master) auf einem dedizierten Host (Desktop/Server) ausgeführt wird und Clients damit verbunden werden.
+OpenClaw führt einen Gateway (den Master) auf einem Host aus und verbindet jeden Client mit ihm. Der Gateway verwaltet Sitzungen, Authentifizierungsprofile, Kanäle und Zustand; alles andere ist ein Client.
 
-- Für **Betreiber (Sie / die macOS-App)**: Direkter LAN/Tailnet-WebSocket ist am einfachsten, wenn das Gateway erreichbar ist; SSH-Tunneling ist die universelle Ausweichlösung.
-- Für **Nodes (iOS/Android und zukünftige Geräte)**: Verbindung mit dem Gateway-**WebSocket** herstellen (LAN/Tailnet oder SSH-Tunnel nach Bedarf).
+- **Operatoren** (Sie oder die macOS-App): Eine direkte LAN-/Tailnet-WebSocket-Verbindung ist am einfachsten, wenn der Gateway erreichbar ist; SSH-Tunneling ist die universelle Ausweichlösung.
+- **Nodes** (iOS/Android und andere Geräte): Stellen eine Verbindung zum **WebSocket** des Gateways her (LAN/Tailnet oder SSH-Tunnel).
 
-## Die Kernidee
+## Das Grundprinzip
 
-- Der Gateway-WebSocket bindet normalerweise an **loopback** auf Ihrem konfigurierten Port (standardmäßig 18789).
-- Für die entfernte Nutzung stellen Sie ihn über Tailscale Serve oder ein vertrauenswürdiges LAN/Tailnet-Bind bereit, oder leiten Sie den loopback-Port über SSH weiter.
+Der Gateway-WebSocket bindet sich standardmäßig an **Loopback**, und zwar an Port `18789` (`gateway.port`). Für die Remotenutzung können Sie ihn entweder über Tailscale Serve bzw. eine vertrauenswürdige LAN-/Tailnet-Bindung bereitstellen oder den Loopback-Port über SSH weiterleiten.
 
-## Häufige VPN- und Tailnet-Setups
+## Topologieoptionen
 
-Betrachten Sie den **Gateway-Host** als den Ort, an dem der Agent läuft. Er besitzt Sessions, Auth-Profile, Channels und Zustand. Ihr Laptop, Desktop und Ihre Nodes verbinden sich mit diesem Host.
+| Einrichtung                              | Ausführungsort des Gateways                                                                                     | Am besten geeignet für                                                                                                                                                         |
+| ---------------------------------------- | --------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Dauerhaft aktiver Gateway in Ihrem Tailnet | Persistenter Host (VPS oder Heimserver), erreichbar über Tailscale oder SSH                                     | Laptops, die häufig in den Ruhezustand wechseln, aber einen ständig aktiven Agenten benötigen. Siehe [exe.dev](/de/install/exe-dev) (einfache VM) oder [Hetzner](/de/install/hetzner) (Produktions-VPS). |
+| Heim-Desktop                             | Desktop; der Laptop stellt über den Remotemodus der macOS-App eine Verbindung her (Settings → Connection → OpenClaw runs) | Den Agenten auf Hardware betreiben, die eingeschaltet bleibt. Runbook: [macOS-Remotezugriff](/de/platforms/mac/remote).                                                            |
+| Laptop                                   | Laptop, sicher über SSH-Tunnel oder Tailscale Serve bereitgestellt (`gateway.bind: "loopback"` beibehalten)     | Konfigurationen mit einem einzelnen Computer. Siehe [Tailscale](/de/gateway/tailscale) und [Web](/de/web).                                                                            |
 
-### Always-on-Gateway in Ihrem Tailnet
+Für dauerhaft aktive und Laptop-Konfigurationen sollten Sie vorzugsweise `gateway.bind: "loopback"` beibehalten und **Tailscale Serve** für die Control UI oder eine vertrauenswürdige LAN-/Tailnet-Bindung mit `gateway.remote.transport: "direct"` verwenden. Ein SSH-Tunnel ist die Ausweichlösung, die von jedem Computer aus funktioniert.
 
-Führen Sie das Gateway auf einem persistenten Host (VPS oder Home-Server) aus und erreichen Sie es über **Tailscale** oder SSH.
+## Befehlsablauf (was wo ausgeführt wird)
 
-- **Beste UX:** `gateway.bind: "loopback"` beibehalten und **Tailscale Serve** für die Control UI verwenden.
-- **Vertrauenswürdiges LAN/Tailnet:** Binden Sie das Gateway an eine private Schnittstelle und verbinden Sie sich direkt mit `gateway.remote.transport: "direct"`.
-- **Fallback:** loopback plus SSH-Tunnel von jedem Rechner beibehalten, der Zugriff benötigt.
-- **Beispiele:** [exe.dev](/de/install/exe-dev) (einfache VM) oder [Hetzner](/de/install/hetzner) (Produktions-VPS).
+Ein Gateway verwaltet Zustand und Kanäle; Nodes sind Peripheriegeräte. Beispiel (eine Telegram-Nachricht wird an ein Node-Tool weitergeleitet):
 
-Ideal, wenn Ihr Laptop häufig schläft, Sie den Agenten aber immer eingeschaltet haben möchten.
+1. Die Telegram-Nachricht trifft beim **Gateway** ein.
+2. Der Gateway führt den **Agenten** aus, der entscheidet, ob ein Node-Tool aufgerufen wird.
+3. Der Gateway ruft die **Node** über den Gateway-WebSocket auf (`node.invoke`-RPC).
+4. Die Node gibt das Ergebnis zurück; der Gateway antwortet in Telegram.
 
-### Home-Desktop führt das Gateway aus
-
-Der Laptop führt den Agenten **nicht** aus. Er verbindet sich entfernt:
-
-- Verwenden Sie den Remote-Modus der macOS-App (Einstellungen → Allgemein → OpenClaw wird ausgeführt).
-- Die App verbindet sich direkt, wenn das Gateway im LAN/Tailnet erreichbar ist, oder öffnet und verwaltet einen SSH-Tunnel, wenn Sie SSH auswählen.
-
-Runbook: [macOS-Remote-Zugriff](/de/platforms/mac/remote).
-
-### Laptop führt das Gateway aus
-
-Halten Sie das Gateway lokal, stellen Sie es aber sicher bereit:
-
-- SSH-Tunnel zum Laptop von anderen Rechnern aus, oder
-- Tailscale Serve für die Control UI und das Gateway nur über loopback erreichbar halten.
-
-Leitfäden: [Tailscale](/de/gateway/tailscale) und [Web-Übersicht](/de/web).
-
-## Befehlsfluss (was wo läuft)
-
-Ein Gateway-Dienst besitzt Zustand + Channels. Nodes sind Peripheriegeräte.
-
-Ablaufbeispiel (Telegram → Node):
-
-- Telegram-Nachricht trifft beim **Gateway** ein.
-- Gateway führt den **Agenten** aus und entscheidet, ob ein Node-Tool aufgerufen wird.
-- Gateway ruft den **Node** über den Gateway-WebSocket auf (`node.*` RPC).
-- Node gibt das Ergebnis zurück; Gateway antwortet zurück an Telegram.
-
-Hinweise:
-
-- **Nodes führen den Gateway-Dienst nicht aus.** Pro Host sollte nur ein Gateway laufen, außer Sie führen absichtlich isolierte Profile aus (siehe [Mehrere Gateways](/de/gateway/multiple-gateways)).
-- Der „Node-Modus“ der macOS-App ist nur ein Node-Client über den Gateway-WebSocket.
+Nodes führen den Gateway-Dienst nicht aus. Pro Host sollte nur ein Gateway ausgeführt werden, sofern Sie nicht bewusst isolierte Profile verwenden (siehe [Mehrere Gateways](/de/gateway/multiple-gateways)). Der „Node-Modus“ der macOS-App ist lediglich ein Node-Client über den Gateway-WebSocket.
 
 ## SSH-Tunnel (CLI + Tools)
 
-Erstellen Sie einen lokalen Tunnel zum entfernten Gateway-WS:
-
 ```bash
-ssh -N -L 18789:127.0.0.1:18789 user@host
+ssh -N -L 18789:127.0.0.1:18789 user@gateway-host
 ```
 
-Wenn der Tunnel aktiv ist:
-
-- `openclaw health` und `openclaw status --deep` erreichen das entfernte Gateway jetzt über `ws://127.0.0.1:18789`.
-- `openclaw gateway status`, `openclaw gateway health`, `openclaw gateway probe` und `openclaw gateway call` können bei Bedarf auch mit `--url` auf die weitergeleitete URL zielen.
+Bei aktivem Tunnel erreichen `openclaw health` und `openclaw status --deep` den entfernten Gateway über `ws://127.0.0.1:18789`. `openclaw gateway status`, `openclaw gateway health`, `openclaw gateway probe` und `openclaw gateway call` können über `--url` ebenfalls eine weitergeleitete URL ansprechen.
 
 <Note>
-Ersetzen Sie `18789` durch Ihr konfiguriertes `gateway.port` (oder `--port` oder `OPENCLAW_GATEWAY_PORT`).
+Ersetzen Sie `18789` durch Ihren konfigurierten `gateway.port` (oder `--port` / `OPENCLAW_GATEWAY_PORT`).
 </Note>
 
 <Warning>
-Wenn Sie `--url` übergeben, fällt die CLI nicht auf Konfigurations- oder Umgebungs-Anmeldedaten zurück. Geben Sie `--token` oder `--password` explizit an. Fehlende explizite Anmeldedaten sind ein Fehler.
+`--url` greift niemals auf Anmeldedaten aus der Konfiguration oder der Umgebung zurück. Übergeben Sie `--token` oder `--password` explizit; andernfalls sendet der Client keine Anmeldedaten, und die Verbindung schlägt fehl, wenn der Ziel-Gateway eine Authentifizierung erfordert.
 </Warning>
 
-## CLI-Remote-Standardwerte
+## Remote-Standardwerte der CLI
 
-Sie können ein Remote-Ziel dauerhaft speichern, damit CLI-Befehle es standardmäßig verwenden:
+Speichern Sie ein Remoteziel dauerhaft, damit CLI-Befehle es standardmäßig verwenden:
 
 ```json5
 {
@@ -109,17 +76,11 @@ Sie können ein Remote-Ziel dauerhaft speichern, damit CLI-Befehle es standardm�
 }
 ```
 
-Wenn das Gateway nur über loopback erreichbar ist, belassen Sie die URL bei `ws://127.0.0.1:18789` und öffnen Sie zuerst den SSH-Tunnel.
-Im SSH-Tunnel-Transport der macOS-App gehören erkannte Gateway-Hostnamen in
-`gateway.remote.sshTarget`; `gateway.remote.url` bleibt die lokale Tunnel-URL.
-Wenn sich diese Ports unterscheiden, setzen Sie `gateway.remote.remotePort` auf den Gateway-Port auf
-dem SSH-Host.
-Die Host-Key-Verifizierung ist standardmäßig strikt. Verwaltete Aliasse können explizit
-ihre effektive OpenSSH-Vertrauensrichtlinie mit
-`gateway.remote.sshHostKeyPolicy: "openssh"` verwenden; prüfen Sie die passenden Benutzer- und System-
-SSH-Einstellungen, bevor Sie dies aktivieren.
+Wenn der Gateway nur an Loopback gebunden ist, belassen Sie die URL bei `ws://127.0.0.1:18789` und öffnen Sie zuerst den SSH-Tunnel. Beim SSH-Tunnel-Transport der macOS-App wird der ermittelte Gateway-Hostname in `gateway.remote.sshTarget` eingetragen (`user@host` oder `user@host:port`); `gateway.remote.url` bleibt die lokale Tunnel-URL. Wenn sich der Remoteport vom lokalen Port unterscheidet, legen Sie `gateway.remote.remotePort` fest.
 
-Für ein Gateway, das bereits in einem vertrauenswürdigen LAN oder Tailnet erreichbar ist, verwenden Sie den Direktmodus:
+Die Hostschlüsselüberprüfung ist standardmäßig strikt (`gateway.remote.sshHostKeyPolicy: "strict"`). Setzen Sie sie auf `"openssh"`, um stattdessen Ihre effektive OpenSSH-Konfiguration zu verwenden; prüfen Sie vor der Aktivierung Ihre benutzerspezifischen und systemweiten SSH-Einstellungen.
+
+Verwenden Sie für einen Gateway, der bereits in einem vertrauenswürdigen LAN oder Tailnet erreichbar ist, den Direktmodus:
 
 ```json5
 {
@@ -134,62 +95,56 @@ Für ein Gateway, das bereits in einem vertrauenswürdigen LAN oder Tailnet erre
 }
 ```
 
-## Anmeldedaten-Priorität
+## Priorität der Anmeldedaten
 
-Die Auflösung der Gateway-Anmeldedaten folgt einem gemeinsamen Vertrag über Aufruf-/Probe-/Status-Pfade und Discord-Exec-Approval-Überwachung hinweg. Node-Host verwendet denselben Basisvertrag mit einer lokalen Modus-Ausnahme (er ignoriert absichtlich `gateway.remote.*`):
+Die Auflösung der Gateway-Anmeldedaten folgt für Aufruf-, Prüf- und Statuspfade sowie die Überwachung von Discord-Ausführungsgenehmigungen einem gemeinsamen Vertrag. Der Node-Host verwendet denselben Vertrag mit einer Ausnahme für den lokalen Modus (er ignoriert `gateway.remote.*`).
 
-- Explizite Anmeldedaten (`--token`, `--password` oder Tool-`gatewayToken`) gewinnen immer auf Aufrufpfaden, die explizite Auth akzeptieren.
-- URL-Override-Sicherheit:
-  - CLI-URL-Overrides (`--url`) verwenden niemals implizite Konfigurations-/Umgebungs-Anmeldedaten erneut.
-  - Env-URL-Overrides (`OPENCLAW_GATEWAY_URL`) dürfen nur Env-Anmeldedaten verwenden (`OPENCLAW_GATEWAY_TOKEN` / `OPENCLAW_GATEWAY_PASSWORD`).
+- Explizite Anmeldedaten (`--token`, `--password` oder das `gatewayToken` eines Tools) haben bei Aufrufpfaden, die eine explizite Authentifizierung akzeptieren, immer Vorrang.
+- Sicherheit bei URL-Überschreibungen:
+  - CLI-`--url` verwendet niemals implizite Anmeldedaten aus Konfiguration oder Umgebung.
+  - Die Umgebungsvariable `OPENCLAW_GATEWAY_URL` darf nur Umgebungs-Anmeldedaten verwenden (`OPENCLAW_GATEWAY_TOKEN` / `OPENCLAW_GATEWAY_PASSWORD`).
 - Standardwerte im lokalen Modus:
-  - token: `OPENCLAW_GATEWAY_TOKEN` -> `gateway.auth.token` -> `gateway.remote.token` (Remote-Fallback gilt nur, wenn lokale Auth-Token-Eingabe nicht gesetzt ist)
-  - password: `OPENCLAW_GATEWAY_PASSWORD` -> `gateway.auth.password` -> `gateway.remote.password` (Remote-Fallback gilt nur, wenn lokale Auth-Passwort-Eingabe nicht gesetzt ist)
-- Standardwerte im Remote-Modus:
-  - token: `gateway.remote.token` -> `OPENCLAW_GATEWAY_TOKEN` -> `gateway.auth.token`
-  - password: `OPENCLAW_GATEWAY_PASSWORD` -> `gateway.remote.password` -> `gateway.auth.password`
-- Node-Host-Ausnahme im lokalen Modus: `gateway.remote.token` / `gateway.remote.password` werden ignoriert.
-- Remote-Probe-/Status-Token-Prüfungen sind standardmäßig strikt: Sie verwenden nur `gateway.remote.token` (kein lokaler Token-Fallback), wenn sie auf den Remote-Modus zielen.
-- Gateway-Env-Overrides verwenden nur `OPENCLAW_GATEWAY_*`.
+  - Token: `OPENCLAW_GATEWAY_TOKEN` -> `gateway.auth.token` -> `gateway.remote.token` (Remote-Ausweichwert nur, wenn das lokale Token nicht festgelegt ist)
+  - Passwort: `OPENCLAW_GATEWAY_PASSWORD` -> `gateway.auth.password` -> `gateway.remote.password` (Remote-Ausweichwert nur, wenn das lokale Passwort nicht festgelegt ist)
+- Standardwerte im Remotemodus:
+  - Token: `gateway.remote.token` -> `OPENCLAW_GATEWAY_TOKEN` -> `gateway.auth.token`
+  - Passwort: `OPENCLAW_GATEWAY_PASSWORD` -> `gateway.remote.password` -> `gateway.auth.password`
+- Ausnahme für den lokalen Modus des Node-Hosts: `gateway.remote.token` / `gateway.remote.password` werden ignoriert.
+- Token-Prüfungen für Remoteprüfung und -status sind standardmäßig strikt: Beim Ansprechen des Remotemodus verwenden sie ausschließlich `gateway.remote.token` (kein Rückgriff auf das lokale Token).
+- Umgebungsüberschreibungen des Gateways verwenden ausschließlich `OPENCLAW_GATEWAY_*`.
 
-## Remote-Zugriff auf Chat-UI
+## Remotezugriff auf die Chat-UI
 
-WebChat verwendet keinen separaten HTTP-Port mehr. Die SwiftUI-Chat-UI verbindet sich direkt mit dem Gateway-WebSocket.
+WebChat besitzt keinen separaten HTTP-Port; die SwiftUI-Chat-UI stellt direkt eine Verbindung zum Gateway-WebSocket her.
 
-- Leiten Sie `18789` über SSH weiter (siehe oben), und verbinden Sie Clients dann mit `ws://127.0.0.1:18789`.
-- Für den LAN/Tailnet-Direktmodus verbinden Sie Clients mit der konfigurierten privaten `ws://`- oder sicheren `wss://`-URL.
-- Unter macOS bevorzugen Sie den Remote-Modus der App, der den ausgewählten Transport automatisch verwaltet.
+- Leiten Sie `18789` über SSH weiter (siehe oben) und verbinden Sie anschließend Clients mit `ws://127.0.0.1:18789`.
+- Verbinden Sie Clients im LAN-/Tailnet-Direktmodus mit der konfigurierten privaten `ws://`- oder sicheren `wss://`-URL.
+- Unter macOS verwaltet der Remotemodus der App den ausgewählten Transport automatisch.
 
-## Remote-Modus der macOS-App
+## Remotemodus der macOS-App
 
-Die macOS-Menüleisten-App kann dasselbe Setup vollständig steuern (Remote-Statusprüfungen, WebChat und Voice-Wake-Weiterleitung).
-
-Runbook: [macOS-Remote-Zugriff](/de/platforms/mac/remote).
+Die macOS-Menüleisten-App steuert dieselbe Einrichtung vollständig: Remotestatusprüfungen, WebChat und die Weiterleitung von Voice Wake. Runbook: [macOS-Remotezugriff](/de/platforms/mac/remote).
 
 ## Sicherheitsregeln (Remote/VPN)
 
-Kurzfassung: **Halten Sie das Gateway nur über loopback erreichbar**, sofern Sie nicht sicher sind, dass Sie ein Bind benötigen.
+Belassen Sie den Gateway **ausschließlich auf Loopback**, sofern Sie nicht sicher sind, dass Sie eine Bindung benötigen.
 
-- **Loopback + SSH/Tailscale Serve** ist die sicherste Voreinstellung (keine öffentliche Exposition).
-- Klartext-`ws://` wird für loopback, LAN, link-local, `.local`, `.ts.net` und Tailscale-CGNAT-Hosts akzeptiert. Öffentliche Remote-Hosts müssen `wss://` verwenden.
-- **Nicht-loopback-Binds** (`lan`/`tailnet`/`custom` oder `auto`, wenn loopback nicht verfügbar ist) müssen Gateway-Auth verwenden: Token, Passwort oder einen identity-aware Reverse Proxy mit `gateway.auth.mode: "trusted-proxy"`.
-- `gateway.remote.token` / `.password` sind Quellen für Client-Anmeldedaten. Sie konfigurieren **nicht** von selbst Server-Auth.
-- Lokale Aufrufpfade können `gateway.remote.*` nur als Fallback verwenden, wenn `gateway.auth.*` nicht gesetzt ist.
-- Wenn `gateway.auth.token` / `gateway.auth.password` explizit über SecretRef konfiguriert und nicht aufgelöst ist, schlägt die Auflösung geschlossen fehl (kein maskierender Remote-Fallback).
-- `gateway.remote.tlsFingerprint` pinnt das Remote-TLS-Zertifikat bei Verwendung von `wss://`, einschließlich macOS-Direktmodus. Ohne konfigurierten oder zuvor gespeicherten Pin pinnt macOS ein First-Use-Zertifikat nur, nachdem normales Systemvertrauen bestanden wurde; selbstsignierte oder Private-CA-Gateways, denen macOS noch nicht vertraut, benötigen einen expliziten Fingerprint oder Remote über SSH.
-- **Tailscale Serve** kann Control-UI-/WebSocket-Traffic über Identity-
-  Header authentifizieren, wenn `gateway.auth.allowTailscale: true`; HTTP-API-Endpunkte verwenden diese Tailscale-Header-Auth nicht und folgen stattdessen dem normalen HTTP-
-  Auth-Modus des Gateways. Dieser tokenlose Ablauf setzt voraus, dass der Gateway-Host vertrauenswürdig ist. Setzen Sie ihn auf
-  `false`, wenn Sie überall Shared-Secret-Auth wünschen.
-- **Trusted-proxy**-Auth erwartet standardmäßig Nicht-loopback-identity-aware-Proxy-Setups.
-  Same-Host-loopback-Reverse-Proxys benötigen explizit `gateway.auth.trustedProxy.allowLoopback = true`.
-- Behandeln Sie Browser-Steuerung wie Betreiberzugriff: nur Tailnet + bewusste Node-Kopplung.
+- **Loopback + SSH/Tailscale Serve** ist die sicherste Standardeinstellung (keine öffentliche Bereitstellung).
+- Unverschlüsseltes `ws://` wird für Loopback-, private/LAN- (RFC 1918), Link-Local-, CGNAT-, `.local`- und `.ts.net`-Hosts akzeptiert. Öffentliche Remotehosts müssen `wss://` verwenden.
+- **Nicht-Loopback-Bindungen** (`lan`/`tailnet`/`custom` oder `auto`, wenn Loopback nicht verfügbar ist) müssen die Gateway-Authentifizierung verwenden: Token, Passwort oder einen identitätsbewussten Reverse-Proxy mit `gateway.auth.mode: "trusted-proxy"`.
+- `gateway.remote.token` / `.password` sind Quellen für Client-Anmeldedaten; sie konfigurieren nicht eigenständig die Serverauthentifizierung.
+- Lokale Aufrufpfade können nur dann auf `gateway.remote.*` zurückgreifen, wenn `gateway.auth.*` nicht festgelegt ist.
+- Wenn `gateway.auth.token` / `gateway.auth.password` explizit über SecretRef konfiguriert und nicht aufgelöst ist, schlägt die Auflösung sicher fehl (kein kaschierender Remote-Ausweichwert).
+- `gateway.remote.tlsFingerprint` fixiert das entfernte TLS-Zertifikat für `wss://`, einschließlich des macOS-Direktmodus. Ohne gespeicherten Fingerabdruck fixiert macOS das Zertifikat erst bei der ersten Verwendung, nachdem die normale Systemvertrauensprüfung erfolgreich war; selbstsignierte Gateways oder Gateways mit privater Zertifizierungsstelle benötigen einen expliziten Fingerabdruck oder Remotezugriff über SSH.
+- **Tailscale Serve** kann Control-UI-/WebSocket-Datenverkehr über Identitätsheader authentifizieren, wenn `gateway.auth.allowTailscale: true` festgelegt ist. HTTP-API-Endpunkte verwenden diese Headerauthentifizierung nicht und folgen stattdessen dem normalen HTTP-Authentifizierungsmodus des Gateways. Dieser tokenlose Ablauf setzt voraus, dass der Gateway-Host vertrauenswürdig ist; setzen Sie ihn auf `false`, um überall eine Authentifizierung mit gemeinsamem Geheimnis zu verwenden.
+- Die **Trusted-Proxy**-Authentifizierung erwartet standardmäßig einen identitätsbewussten Proxy ohne Loopback. Loopback-Reverse-Proxys auf demselben Host erfordern explizit `gateway.auth.trustedProxy.allowLoopback = true`.
+- Behandeln Sie die Browsersteuerung wie Operatorzugriff: ausschließlich Tailnet plus bewusste Node-Kopplung.
 
-Tiefer Einblick: [Sicherheit](/de/gateway/security).
+Ausführliche Informationen: [Sicherheit](/de/gateway/security).
 
 ### macOS: persistenter SSH-Tunnel über LaunchAgent
 
-Für macOS-Clients, die sich mit einem entfernten Gateway verbinden, verwendet das einfachste persistente Setup einen SSH-`LocalForward`-Konfigurationseintrag plus einen LaunchAgent, um den Tunnel über Neustarts und Abstürze hinweg aktiv zu halten.
+Für macOS-Clients verwendet die einfachste persistente Einrichtung einen SSH-`LocalForward`-Konfigurationseintrag sowie einen LaunchAgent, der den Tunnel über Neustarts und Abstürze hinweg aktiv hält.
 
 #### Schritt 1: SSH-Konfiguration hinzufügen
 
@@ -213,15 +168,15 @@ ssh-copy-id -i ~/.ssh/id_rsa <REMOTE_USER>@<REMOTE_IP>
 
 #### Schritt 3: Gateway-Token konfigurieren
 
-Speichern Sie das Token in der Konfiguration, damit es über Neustarts hinweg erhalten bleibt:
-
 ```bash
 openclaw config set gateway.remote.token "<your-token>"
 ```
 
+Verwenden Sie stattdessen `gateway.remote.password`, wenn der entfernte Gateway die Passwortauthentifizierung verwendet. `OPENCLAW_GATEWAY_TOKEN` ist weiterhin als Überschreibung auf Shell-Ebene gültig, die dauerhafte Einrichtung des Remoteclients erfolgt jedoch über `gateway.remote.token` / `gateway.remote.password`.
+
 #### Schritt 4: LaunchAgent erstellen
 
-Speichern Sie dies als `~/Library/LaunchAgents/ai.openclaw.ssh-tunnel.plist`:
+Speichern Sie die Datei unter `~/Library/LaunchAgents/ai.openclaw.ssh-tunnel.plist`:
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -250,42 +205,35 @@ Speichern Sie dies als `~/Library/LaunchAgents/ai.openclaw.ssh-tunnel.plist`:
 launchctl bootstrap gui/$UID ~/Library/LaunchAgents/ai.openclaw.ssh-tunnel.plist
 ```
 
-Der Tunnel startet automatisch bei der Anmeldung, wird nach einem Absturz neu gestartet und hält den weitergeleiteten Port aktiv.
+Der Tunnel startet bei der Anmeldung automatisch, wird nach einem Absturz neu gestartet und hält den weitergeleiteten Port aktiv.
 
 <Note>
-Wenn Sie noch einen `com.openclaw.ssh-tunnel`-LaunchAgent aus einem älteren Setup haben, entladen und löschen Sie ihn.
+Wenn von einer älteren Einrichtung noch ein `com.openclaw.ssh-tunnel`-LaunchAgent vorhanden ist, entladen und löschen Sie ihn.
 </Note>
 
 #### Fehlerbehebung
 
-Prüfen, ob der Tunnel läuft:
-
 ```bash
+# Prüfen, ob der Tunnel ausgeführt wird
 ps aux | grep "ssh -N remote-gateway" | grep -v grep
 lsof -i :18789
-```
 
-Tunnel neu starten:
-
-```bash
+# Tunnel neu starten
 launchctl kickstart -k gui/$UID/ai.openclaw.ssh-tunnel
-```
 
-Tunnel stoppen:
-
-```bash
+# Tunnel stoppen
 launchctl bootout gui/$UID/ai.openclaw.ssh-tunnel
 ```
 
-| Konfigurationseintrag                | Funktion                                                     |
-| ------------------------------------ | ------------------------------------------------------------ |
-| `LocalForward 18789 127.0.0.1:18789` | Leitet lokalen Port 18789 an Remote-Port 18789 weiter        |
-| `ssh -N`                             | SSH ohne Ausführung entfernter Befehle (nur Port-Forwarding) |
-| `KeepAlive`                          | Startet den Tunnel automatisch neu, wenn er abstürzt         |
-| `RunAtLoad`                          | Startet den Tunnel, wenn der LaunchAgent bei der Anmeldung geladen wird |
+| Konfigurationseintrag                  | Funktion                                                            |
+| -------------------------------------- | ------------------------------------------------------------------- |
+| `LocalForward 18789 127.0.0.1:18789`   | Leitet den lokalen Port 18789 an den entfernten Port 18789 weiter   |
+| `ssh -N`                               | SSH ohne Ausführung entfernter Befehle (nur Portweiterleitung)      |
+| `KeepAlive`                            | Startet den Tunnel nach einem Absturz automatisch neu               |
+| `RunAtLoad`                            | Startet den Tunnel, wenn der LaunchAgent bei der Anmeldung geladen wird |
 
 ## Verwandte Themen
 
 - [Tailscale](/de/gateway/tailscale)
 - [Authentifizierung](/de/gateway/authentication)
-- [Remote-Gateway-Setup](/de/gateway/remote-gateway-readme)
+- [Einrichtung eines entfernten Gateways](/de/gateway/remote-gateway-readme)

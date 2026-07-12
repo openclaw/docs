@@ -1,191 +1,102 @@
 ---
 read_when:
-    - System-Prompt-Text, Werkzeugliste oder Zeit-/Heartbeat-Abschnitte bearbeiten
-    - Verhalten beim Workspace-Bootstrap oder bei der Skills-Injektion ändern
-summary: Was der OpenClaw-Systemprompt enthält und wie er zusammengesetzt wird
+    - Bearbeiten des System-Prompt-Texts, der Werkzeugliste oder der Zeit-/Heartbeat-Abschnitte
+    - Verhalten beim Bootstrap des Arbeitsbereichs oder bei der Skills-Injektion ändern
+summary: Was der OpenClaw-System-Prompt enthält und wie er zusammengestellt wird
 title: System-Prompt
 x-i18n:
-    generated_at: "2026-06-27T17:26:43Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:20:31Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: 31321b4df7494317b73c2a5609b1dc275463168ed5fe20ecb173e9bec76717cc
+    source_hash: 1aabd41b5d4b51ed139d47b506017322c240bb1002bae901886d5f7991c0dc5e
     source_path: concepts/system-prompt.md
     workflow: 16
 ---
 
-OpenClaw erstellt für jeden Agentenlauf einen benutzerdefinierten System-Prompt. Der Prompt ist **OpenClaw-owned** und verwendet keinen Laufzeit-Standard-Prompt.
+OpenClaw erstellt für jeden Agentenlauf einen eigenen System-Prompt; es gibt keinen standardmäßigen Laufzeit-Prompt.
 
-Der Prompt wird von OpenClaw zusammengesetzt und in jeden Agentenlauf injiziert.
+Die Zusammenstellung erfolgt in drei Schichten:
 
-Die Prompt-Zusammensetzung hat drei Ebenen:
+- `buildAgentSystemPrompt` rendert den Prompt aus expliziten Eingaben. Die Funktion bleibt ein reiner Renderer und liest die globale Konfiguration nicht direkt.
+- `resolveAgentSystemPromptConfig` löst konfigurationsgestützte Prompt-Optionen (Besitzeranzeige, TTS-Hinweise, Modellaliase, Zitiermodus für den Speicher, Delegierungsmodus für Sub-Agenten) für einen bestimmten Agenten auf.
+- Laufzeitadapter (eingebettet, CLI, Befehls-/Exportvorschauen, Compaction) erfassen aktuelle Fakten (Tools, Sandbox-Status, Kanalfunktionen, Kontextdateien, Prompt-Beiträge des Providers) und rufen die konfigurierte Prompt-Fassade auf.
 
-- `buildAgentSystemPrompt` rendert den Prompt aus expliziten Eingaben. Es sollte
-  ein reiner Renderer bleiben und die globale Konfiguration nicht direkt lesen.
-- `resolveAgentSystemPromptConfig` löst konfigurationsgestützte Prompt-Regler wie
-  Owner-Anzeige, TTS-Hinweise, Modell-Aliasse, Speicher-Zitationsmodus und
-  Delegationsmodus für Sub-Agenten für einen bestimmten Agenten auf.
-- Laufzeitadapter (Embedded, CLI, Befehls-/Exportvorschauen, Compaction) erfassen
-  Live-Fakten wie Tools, Sandbox-Status, Channel-Fähigkeiten, Kontextdateien
-  und Provider-Prompt-Beiträge und rufen dann die konfigurierte Prompt-Fassade auf.
+Dadurch bleiben exportierte und Debug-Prompt-Oberflächen mit Live-Läufen abgestimmt, ohne jedes Laufzeitdetail in einen einzigen monolithischen Builder zu verwandeln.
 
-Dadurch bleiben exportierte Debug-Prompt-Oberflächen mit Live-Läufen abgeglichen,
-ohne jedes laufzeitspezifische Detail in einen monolithischen Builder zu
-verwandeln.
+Provider-Plugins können cachebewusste Anleitungen beitragen, ohne den OpenClaw-eigenen Prompt zu ersetzen. Eine Provider-Laufzeit kann:
 
-Provider-Plugins können cache-bewusste Prompt-Anleitung beitragen, ohne den
-vollständigen OpenClaw-owned Prompt zu ersetzen. Die Provider-Laufzeit kann:
+- einen von drei benannten Kernabschnitten ersetzen: `interaction_style`, `tool_call_style`, `execution_bias`
+- oberhalb der Prompt-Cache-Grenze ein **stabiles Präfix** einfügen
+- unterhalb der Prompt-Cache-Grenze ein **dynamisches Suffix** einfügen
 
-- eine kleine Menge benannter Kernabschnitte ersetzen (`interaction_style`,
-  `tool_call_style`, `execution_bias`)
-- ein **stabiles Präfix** oberhalb der Prompt-Cache-Grenze injizieren
-- ein **dynamisches Suffix** unterhalb der Prompt-Cache-Grenze injizieren
+Verwenden Sie Provider-eigene Beiträge für die spezifische Abstimmung auf Modellfamilien. Behalten Sie den älteren Hook `before_prompt_build` für Kompatibilität oder wirklich globale Prompt-Änderungen vor.
 
-Verwenden Sie Provider-eigene Beiträge für modellspezifisches Tuning einer
-Modellfamilie. Behalten Sie die veraltete Prompt-Mutation `before_prompt_build`
-für Kompatibilität oder wirklich globale Prompt-Änderungen bei, nicht für
-normales Provider-Verhalten.
-
-Das Overlay der OpenAI GPT-5-Familie hält die Kern-Ausführungsregel klein und
-ergänzt modellspezifische Anleitung für Persona-Latching, knappe Ausgabe,
-Tool-Disziplin, parallele Suche, Lieferumfang, Verifizierung, fehlenden Kontext
-und Hygiene bei Terminal-Tools.
+Das gebündelte Overlay der OpenAI-/Codex-GPT-5-Familie (`resolveGpt5SystemPromptContribution`) verwendet diesen Mechanismus: einen `stablePrefix`-Verhaltensvertrag (Ausführungsrichtlinie, Tool-Disziplin, Ausgabevertrag, Abschlussvertrag) sowie eine optionale Überschreibung von `interaction_style` für einen freundlicheren Ton. Es gilt für jede `gpt-5*`-Modell-ID, die über die OpenAI- oder Codex-Plugins geleitet wird, und wird durch `agents.defaults.promptOverlays.gpt5.personality` (`"friendly"`/`"on"` oder `"off"`) gesteuert.
 
 ## Struktur
 
-Der Prompt ist absichtlich kompakt und verwendet feste Abschnitte:
+Der Prompt ist kompakt und enthält feste Abschnitte:
 
-- **Tooling**: Erinnerung an strukturierte Tools als Quelle der Wahrheit plus Laufzeit-Anleitung zur Tool-Nutzung.
-- **Execution Bias**: kompakte Anleitung zum konsequenten Abschließen: bei
-  umsetzbaren Anfragen innerhalb der Runde handeln, fortfahren bis erledigt
-  oder blockiert, sich von schwachen Tool-Ergebnissen erholen, veränderlichen
-  Zustand live prüfen und vor dem Finalisieren verifizieren.
-- **Safety**: kurze Guardrail-Erinnerung, machtsuchendes Verhalten oder das Umgehen von Aufsicht zu vermeiden.
-- **Skills** (wenn verfügbar): erklärt dem Modell, wie Skill-Anweisungen bei Bedarf geladen werden.
-- **OpenClaw Control**: weist das Modell an, für
-  Konfigurations-/Neustartarbeiten das `gateway`-Tool zu bevorzugen und keine CLI-Befehle zu erfinden.
-- **OpenClaw Self-Update**: wie Konfiguration sicher mit
-  `config.schema.lookup` inspiziert, mit `config.patch` gepatcht, die vollständige
-  Konfiguration mit `config.apply` ersetzt und `update.run` nur auf ausdrückliche
-  Benutzeranfrage ausgeführt wird. Das agentenseitige `gateway`-Tool verweigert
-  außerdem das Umschreiben von `tools.exec.ask` / `tools.exec.security`,
-  einschließlich veralteter `tools.bash.*`-Aliasse, die auf diese geschützten
-  Exec-Pfade normalisieren.
-- **Workspace**: Arbeitsverzeichnis (`agents.defaults.workspace`).
-- **Documentation**: lokaler Pfad zu OpenClaw-Dokumentation/-Quelle und wann sie zu lesen ist.
-- **Workspace Files (injected)**: zeigt an, dass Bootstrap-Dateien unten enthalten sind.
-- **Sandbox** (wenn aktiviert): zeigt Sandbox-Laufzeit, Sandbox-Pfade und ob erhöhte Exec-Rechte verfügbar sind.
-- **Current Date & Time**: nur Zeitzone (cache-stabil; die Live-Uhr kommt aus `session_status`).
-- **Assistant Output Directives**: kompakte Syntax für Anhänge, Sprachnotizen und Reply-Tags.
-- **Heartbeats**: Heartbeat-Prompt und Ack-Verhalten, wenn Heartbeats für den Standardagenten aktiviert sind.
-- **Runtime**: Host, Betriebssystem, Node, Modell, Repo-Root (wenn erkannt), Denkstufe (eine Zeile).
-- **Reasoning**: aktuelle Sichtbarkeitsstufe + Hinweis zum `/reasoning`-Schalter.
+- **Tools**: Hinweis, dass strukturierte Tools die maßgebliche Informationsquelle sind, sowie Anleitungen zur Tool-Nutzung während der Laufzeit. Wenn das experimentelle Tool `update_plan` aktiviert ist (`tools.experimental.planTool`), ergänzt dessen eigene Tool-Beschreibung: Verwenden Sie es nur für nicht triviale, mehrstufige Aufgaben, halten Sie höchstens einen Schritt auf `in_progress` und überspringen Sie es bei einfachen, einstufigen Aufgaben.
+- **Ausführungspriorität**: Bei umsetzbaren Anforderungen innerhalb des aktuellen Durchlaufs handeln, bis zum Abschluss oder bis zu einer Blockierung fortfahren, sich von unzureichenden Tool-Ergebnissen erholen, veränderlichen Status live prüfen und vor dem Abschluss verifizieren.
+- **Sicherheit**: Kurzer Leitplankenhinweis gegen machtorientiertes Verhalten oder die Umgehung von Aufsicht.
+- **Skills** (wenn verfügbar): Erläutert dem Modell, wie es Skill-Anweisungen bei Bedarf lädt.
+- **OpenClaw-Steuerung**: Für Konfigurations-/Neustartarbeiten bevorzugt das Tool `gateway` verwenden; keine CLI-Befehle erfinden.
+- **OpenClaw-Selbstaktualisierung**: Die Konfiguration sicher mit `config.schema.lookup` prüfen, mit `config.patch` ändern, die vollständige Konfiguration mit `config.apply` ersetzen und `update.run` nur auf ausdrücklichen Wunsch des Benutzers ausführen. Das agentenseitige Tool `gateway` weigert sich, `tools.exec.ask` / `tools.exec.security` neu zu schreiben; dies schließt ältere `tools.bash.*`-Aliase ein, die auf diese geschützten Pfade normalisiert werden.
+- **Arbeitsbereich**: Arbeitsverzeichnis (`agents.defaults.workspace`).
+- **Dokumentation**: Lokaler Pfad zu Dokumentation/Quellen und Hinweise dazu, wann diese zu lesen sind.
+- **Arbeitsbereichsdateien (eingefügt)**: Weist darauf hin, dass Bootstrap-Dateien nachfolgend enthalten sind.
+- **Sandbox** (wenn aktiviert): Sandbox-Laufzeit, Sandbox-Pfade, Verfügbarkeit erhöhter Ausführungsrechte.
+- **Aktuelles Datum und aktuelle Uhrzeit**: Nur die Zeitzone (cache-stabil; die aktuelle Uhrzeit stammt aus `session_status`).
+- **Direktiven für die Assistentenausgabe**: Kompakte Syntax für Anhänge, Sprachnachrichten und Antwort-Tags.
+- **Heartbeats**: Heartbeat-Prompt und Bestätigungsverhalten, wenn Heartbeats für den Standardagenten aktiviert sind.
+- **Laufzeit**: Host, Betriebssystem, Node, Modell, Repository-Stammverzeichnis (wenn erkannt), Denkstufe (eine Zeile).
+- **Schlussfolgerung**: Aktuelle Sichtbarkeitsstufe sowie Hinweis auf den Umschalter `/reasoning`.
 
-OpenClaw hält große stabile Inhalte, einschließlich **Project Context**, oberhalb
-der internen Prompt-Cache-Grenze. Flüchtige Channel-/Sitzungsabschnitte wie
-Control-UI-Einbettungsanleitung, **Messaging**, **Voice**, **Group Chat Context**,
-**Reactions**, **Heartbeats** und **Runtime** werden unterhalb dieser Grenze
-angefügt, damit lokale Backends mit Präfix-Caches das stabile Workspace-Präfix
-über Channel-Runden hinweg wiederverwenden können. Tool-Beschreibungen sollten
-ebenfalls vermeiden, aktuelle Channel-Namen einzubetten, wenn das akzeptierte
-Schema dieses Laufzeitdetail bereits enthält.
+Umfangreiche stabile Inhalte (einschließlich **Projektkontext**) bleiben oberhalb der internen Prompt-Cache-Grenze. Veränderliche Abschnitte pro Durchlauf (Einbettungsanleitung für die Control UI, **Nachrichtenübermittlung**, **Sprache**, **Gruppenchat-Kontext**, **Reaktionen**, **Heartbeats**, **Laufzeit**) werden unterhalb dieser Grenze angefügt, damit lokale Backends mit Präfix-Caches das stabile Arbeitsbereichspräfix über mehrere Kanaldurchläufe hinweg wiederverwenden können. Tool-Beschreibungen sollten keine aktuellen Kanalnamen einbetten, wenn das akzeptierte Schema dieses Laufzeitdetail bereits enthält.
 
-Der Tooling-Abschnitt enthält außerdem Laufzeit-Anleitung für lang laufende Arbeit:
+Die Tool-Anleitung enthält außerdem Hinweise für lang laufende Arbeiten:
 
-- Cron für zukünftige Nachfassaktionen (`check back later`, Erinnerungen, wiederkehrende Arbeit)
-  verwenden statt `exec`-Sleep-Schleifen, `yieldMs`-Delay-Tricks oder wiederholtem
-  `process`-Polling
-- `exec` / `process` nur für Befehle verwenden, die jetzt starten und im Hintergrund
-  weiterlaufen
-- wenn automatisches Aufwachen bei Abschluss aktiviert ist, den Befehl einmal
-  starten und sich auf den Push-basierten Aufwachpfad verlassen, wenn er Ausgabe
-  erzeugt oder fehlschlägt
-- `process` für Logs, Status, Eingabe oder Eingriffe verwenden, wenn Sie einen
-  laufenden Befehl prüfen müssen
-- wenn die Aufgabe größer ist, `sessions_spawn` bevorzugen; der Abschluss von
-  Sub-Agenten ist Push-basiert und kündigt sich automatisch beim Anfragenden an
-- `subagents list` / `sessions_list` nicht in einer Schleife pollen, nur um auf
-  den Abschluss zu warten
+- Cron für spätere Nachverfolgung (`check back later`, Erinnerungen, wiederkehrende Arbeiten) anstelle von `exec`-Warteschleifen, `yieldMs`-Verzögerungstricks oder wiederholtem `process`-Polling verwenden
+- `exec` / `process` nur für Befehle verwenden, die jetzt starten und im Hintergrund weiterlaufen
+- wenn das automatische Aufwecken bei Abschluss aktiviert ist, den Befehl einmal starten und sich auf den Push-basierten Aufweckpfad verlassen
+- `process` für Protokolle, Status, Eingaben oder Eingriffe bei einem laufenden Befehl verwenden
+- bei größeren Aufgaben `sessions_spawn` bevorzugen; der Abschluss von Sub-Agenten ist Push-basiert und wird dem Anfordernden automatisch mitgeteilt
+- `subagents list` / `sessions_list` nicht in einer Schleife abfragen, nur um auf den Abschluss zu warten
 
-`agents.defaults.subagents.delegationMode` kann diese Anleitung verstärken. Der
-Standardmodus `suggest` behält den grundlegenden Hinweis bei. `prefer` fügt einen
-dedizierten Abschnitt **Sub-Agent Delegation** hinzu, der den Hauptagenten anweist,
-als reaktionsschneller Koordinator zu handeln und alles, was über eine direkte
-Antwort hinausgeht, über `sessions_spawn` weiterzugeben. Dies betrifft nur den
-Prompt; die Tool-Policy steuert weiterhin, ob `sessions_spawn` verfügbar ist.
+`agents.defaults.subagents.delegationMode` (Standard `"suggest"`) kann dies verstärken. `"prefer"` fügt einen eigenen Abschnitt **Delegierung an Sub-Agenten** hinzu, der den Hauptagenten anweist, als reaktionsfähiger Koordinator zu handeln und alles, was über eine direkte Antwort hinausgeht, über `sessions_spawn` weiterzuleiten. Dies wirkt sich nur auf den Prompt aus; die Tool-Richtlinie bestimmt weiterhin, ob `sessions_spawn` verfügbar ist.
 
-Wenn das experimentelle Tool `update_plan` aktiviert ist, weist Tooling das
-Modell außerdem an, es nur für nicht triviale mehrstufige Arbeit zu verwenden,
-genau einen `in_progress`-Schritt beizubehalten und nach jedem Update nicht den
-gesamten Plan zu wiederholen.
+Die Sicherheitsleitplanken im System-Prompt sind Empfehlungen und keine Durchsetzung. Verwenden Sie Tool-Richtlinien, Ausführungsgenehmigungen, Sandboxing und Kanal-Zulassungslisten für eine strikte Durchsetzung; Betreiber können Prompt-Leitplanken absichtlich deaktivieren.
 
-Safety-Guardrails im System-Prompt sind beratend. Sie leiten das Modellverhalten, erzwingen aber keine Policy. Verwenden Sie Tool-Policy, Exec-Genehmigungen, Sandboxing und Channel-Allowlists für harte Durchsetzung; Betreiber können diese absichtlich deaktivieren.
-
-Auf Channels mit nativen Genehmigungskarten/-Buttons weist der Laufzeit-Prompt
-den Agenten nun an, zuerst diese native Genehmigungs-UI zu verwenden. Er sollte
-nur dann einen manuellen `/approve`-Befehl einfügen, wenn das Tool-Ergebnis sagt,
-dass Chat-Genehmigungen nicht verfügbar sind oder manuelle Genehmigung der
-einzige Weg ist.
+Bei Kanälen mit nativen Genehmigungskarten/-schaltflächen weist der Prompt den Agenten an, sich zunächst auf diese UI zu verlassen und einen manuellen `/approve`-Befehl nur dann anzugeben, wenn das Tool-Ergebnis meldet, dass Chat-Genehmigungen nicht verfügbar sind oder eine manuelle Genehmigung der einzige Weg ist.
 
 ## Prompt-Modi
 
-OpenClaw kann kleinere System-Prompts für Sub-Agenten rendern. Die Laufzeit setzt
-für jeden Lauf einen `promptMode` (keine benutzerseitige Konfiguration):
+OpenClaw rendert kleinere System-Prompts für Sub-Agenten. Die Laufzeit legt pro Durchlauf einen `promptMode` fest (keine benutzerseitige Konfiguration):
 
-- `full` (Standard): enthält alle oben genannten Abschnitte.
-- `minimal`: wird für Sub-Agenten verwendet; lässt **Memory Recall**, **OpenClaw
-  Self-Update**, **Model Aliases**, **User Identity**, **Assistant Output Directives**,
-  **Messaging**, **Silent Replies** und **Heartbeats** aus. Tooling, **Safety**,
-  **Skills** sofern bereitgestellt, Workspace, Sandbox, Current Date & Time (wenn
-  bekannt), Runtime und injizierter Kontext bleiben verfügbar.
-- `none`: gibt nur die Basis-Identitätszeile zurück.
+- `full` (Standard): alle oben genannten Abschnitte.
+- `minimal`: wird für Sub-Agenten verwendet; lässt den Speicher-Prompt-Abschnitt (gebündelt als **Speicherabruf**), **OpenClaw-Selbstaktualisierung**, **Modellaliase**, **Benutzeridentität**, **Direktiven für die Assistentenausgabe**, **Nachrichtenübermittlung**, **Stille Antworten** und **Heartbeats** aus. Tools, **Sicherheit**, **Skills** (wenn bereitgestellt), Arbeitsbereich, Sandbox, aktuelles Datum und aktuelle Uhrzeit (wenn bekannt), Laufzeit und eingefügter Kontext bleiben verfügbar.
+- `none`: gibt nur die grundlegende Identitätszeile zurück.
 
-Wenn `promptMode=minimal` ist, werden zusätzlich injizierte Prompts als **Subagent
-Context** statt **Group Chat Context** beschriftet.
+Unter `promptMode=minimal` werden zusätzlich eingefügte Prompts mit **Subagent-Kontext** statt mit **Gruppenchat-Kontext** bezeichnet.
 
-Für automatische Channel-Antwortläufe lässt OpenClaw den generischen Abschnitt
-**Silent Replies** weg, wenn direkter, Gruppen- oder nur Message-Tool-Kontext den
-Vertrag für sichtbare Antworten besitzt. Nur der alte automatische Gruppen-/
-Channel-Modus sollte `NO_REPLY` anzeigen; direkte Chats und reine Message-Tool-
-Antworten erhalten keine Anleitung zu Silent-Tokens.
+Bei automatischen Kanalantworten lässt OpenClaw den allgemeinen Abschnitt **Stille Antworten** weg, wenn der Direkt-, Gruppen- oder reine Nachrichtentool-Kontext bereits den Vertrag für sichtbare Antworten festlegt. Nur der ältere automatische Gruppen-/Kanalmodus zeigt `NO_REPLY`; Direktchats und reine Nachrichtentool-Antworten überspringen die Anleitung für stille Tokens.
 
 ## Prompt-Snapshots
 
-OpenClaw hält committete Prompt-Snapshots für den erfolgreichen Pfad der Codex-Laufzeit unter
-`test/fixtures/agents/prompt-snapshots/codex-runtime-happy-path/`. Sie rendern
-ausgewählte App-Server-Thread-/Turn-Parameter plus einen rekonstruierten
-modellgebundenen Prompt-Layer-Stack für direkte Telegram-, Discord-Gruppen- und
-Heartbeat-Runden. Dieser Stack enthält eine gepinnte Codex-`gpt-5.5`-Modell-
-Prompt-Fixture, die aus Codex' Modellkatalog-/Cache-Form generiert wurde, den
-Codex-Happy-Path-Developer-Text für Berechtigungen, OpenClaw-Developer-
-Anweisungen, rundenbezogene Collaboration-Mode-Anweisungen, wenn OpenClaw sie
-bereitstellt, Benutzereingabe der Runde und Referenzen auf die dynamischen Tool-
-Spezifikationen.
+OpenClaw verwaltet eingecheckte Prompt-Snapshots für den Codex-Laufzeit-Standardpfad unter `test/fixtures/agents/prompt-snapshots/codex-runtime-happy-path/`. Sie rendern ausgewählte App-Server-Thread-/Durchlaufparameter sowie einen rekonstruierten Stapel modellgebundener Prompt-Schichten für Telegram-Direkt-, Discord-Gruppen- und Heartbeat-Durchläufe: ein fixiertes Codex-`gpt-5.5`-Modell-Prompt-Fixture, den Codex-Entwicklertext zu Berechtigungen für den Standardpfad, OpenClaw-Entwickleranweisungen, durchlaufbezogene Anweisungen zum Zusammenarbeitsmodus, wenn OpenClaw diese bereitstellt, die Benutzereingabe des Durchlaufs und Verweise auf dynamische Tool-Spezifikationen.
 
-Aktualisieren Sie die gepinnte Codex-Modell-Prompt-Fixture mit
-`pnpm prompt:snapshots:sync-codex-model`. Standardmäßig sucht das Skript nach
-Codex' Laufzeit-Cache unter `$CODEX_HOME/models_cache.json`, dann unter
-`~/.codex/models_cache.json`, und fällt erst dann auf die Maintainer-Codex-
-Checkout-Konvention unter `~/code/codex/codex-rs/models-manager/models.json`
-zurück. Wenn keine dieser Quellen existiert, beendet sich der Befehl ohne
-Änderung der committeten Fixture. Übergeben Sie `--catalog <path>`, um aus einer
-bestimmten Datei `models_cache.json` oder `models.json` zu aktualisieren.
+Aktualisieren Sie das fixierte Codex-Modell-Prompt-Fixture mit `pnpm prompt:snapshots:sync-codex-model`. Standardmäßig sucht der Befehl nach `$CODEX_HOME/models_cache.json`, anschließend nach `~/.codex/models_cache.json` und dann gemäß der Maintainer-Checkout-Konvention nach `~/code/codex/codex-rs/models-manager/models.json`; wenn keine dieser Dateien vorhanden ist, wird der Befehl beendet, ohne das eingecheckte Fixture zu ändern. Übergeben Sie `--catalog <path>`, um die Aktualisierung aus einer bestimmten Datei `models_cache.json` oder `models.json` vorzunehmen.
 
-Diese Snapshots sind weiterhin keine Byte-für-Byte-Rohaufzeichnung einer OpenAI-Anfrage. Codex
-kann laufzeiteigenen Workspace-Kontext wie `AGENTS.md`, Umgebungskontext,
-Speicher, App-/Plugin-Anweisungen und eingebaute Default-Collaboration-Mode-
-Anweisungen innerhalb der Codex-Laufzeit hinzufügen, nachdem OpenClaw Thread-
-und Turn-Parameter sendet.
+Diese Snapshots sind keine bytegenaue Rohaufzeichnung einer OpenAI-Anfrage. Codex kann laufzeiteigenen Arbeitsbereichskontext (`AGENTS.md`, Umgebungskontext, Erinnerungen, App-/Plugin-Anweisungen, integrierte Anweisungen für den Standard-Zusammenarbeitsmodus) hinzufügen, nachdem OpenClaw Thread- und Durchlaufparameter gesendet hat.
 
-Regenerieren Sie sie mit `pnpm prompt:snapshots:gen` und verifizieren Sie Drift mit
-`pnpm prompt:snapshots:check`. CI führt die Drift-Prüfung im zusätzlichen
-Boundary-Shard aus, damit Prompt-Änderungen und Snapshot-Updates im selben PR
-zusammenbleiben.
+Generieren Sie sie mit `pnpm prompt:snapshots:gen` neu; prüfen Sie Abweichungen mit `pnpm prompt:snapshots:check`. CI führt die Abweichungsprüfung zusammen mit den zusätzlichen Grenz-Shards aus, sodass Prompt-Änderungen und Snapshot-Aktualisierungen im selben PR aufgenommen werden.
 
-## Workspace-Bootstrap-Injektion
+## Einfügung des Arbeitsbereich-Bootstraps
 
-Bootstrap-Dateien werden aus dem aktiven Workspace aufgelöst und dann an die
-Prompt-Oberfläche geleitet, die ihrer Lebensdauer entspricht:
+Bootstrap-Dateien werden aus dem aktiven Arbeitsbereich aufgelöst und an die Prompt-Oberfläche weitergeleitet, die ihrer Lebensdauer entspricht:
 
 - `AGENTS.md`
 - `SOUL.md`
@@ -193,113 +104,61 @@ Prompt-Oberfläche geleitet, die ihrer Lebensdauer entspricht:
 - `IDENTITY.md`
 - `USER.md`
 - `HEARTBEAT.md`
-- `BOOTSTRAP.md` (nur in brandneuen Workspaces)
+- `BOOTSTRAP.md` (nur in brandneuen Arbeitsbereichen)
 - `MEMORY.md`, wenn vorhanden
 
-Im nativen Codex-Harness vermeidet OpenClaw, stabile Workspace-Dateien in jeder
-Benutzerrunde zu wiederholen. Codex lädt `AGENTS.md` über seine eigene Project-
-Doc-Erkennung. `SOUL.md`, `IDENTITY.md`, `TOOLS.md` und `USER.md` werden als
-Codex-Developer-Anweisungen weitergeleitet. Die kompakte OpenClaw-Skills-Liste
-wird ebenfalls als rundenbezogene Collaboration-Developer-Anweisungen
-weitergeleitet. Inhalte aus `HEARTBEAT.md` werden nicht injiziert; Heartbeat-
-Runden erhalten eine Collaboration-Mode-Notiz, die auf die Datei verweist, wenn
-sie existiert und nicht leer ist. Inhalte aus `MEMORY.md` aus dem konfigurierten
-Agenten-Workspace werden nicht in jede native Codex-Runde eingefügt; wenn
-Speicher-Tools für diesen Workspace verfügbar sind, erhalten Codex-Runden eine
-kleine Workspace-Memory-Notiz in rundenbezogenen Collaboration-Developer-
-Anweisungen und sollten `memory_search` oder `memory_get` verwenden, wenn
-dauerhafter Speicher relevant ist. Wenn Tools deaktiviert sind, die Speichersuche
-nicht verfügbar ist oder der aktive Workspace vom Agenten-Speicher-Workspace
-abweicht, fällt `MEMORY.md` auf den normalen begrenzten Turn-Context-Pfad zurück.
-Aktiver `BOOTSTRAP.md`-Inhalt behält vorerst die normale Turn-Context-Rolle.
+Im nativen Codex-Harness vermeidet OpenClaw, stabile Arbeitsbereichsdateien in jedem Benutzerdurchlauf zu wiederholen. Codex lädt `AGENTS.md` über seine eigene Projektdokumenterkennung. `TOOLS.md` wird als vererbte Codex-Entwickleranweisung weitergeleitet. `SOUL.md`, `IDENTITY.md` und `USER.md` werden als durchlaufbezogene Entwickleranweisungen für die Zusammenarbeit weitergeleitet, damit native Codex-Sub-Agenten sie nicht erben. Der Inhalt von `HEARTBEAT.md` wird nicht direkt eingefügt; Heartbeat-Durchläufe erhalten einen Hinweis zum Zusammenarbeitsmodus, der auf die Datei verweist, wenn sie vorhanden und nicht leer ist. Der Inhalt von `MEMORY.md` wird ebenfalls nicht in jeden nativen Codex-Durchlauf eingefügt: Wenn Speicher-Tools für den Arbeitsbereich verfügbar sind, erhalten Codex-Durchläufe einen kurzen Hinweis zum Arbeitsbereichsspeicher, der das Modell zu `memory_search` oder `memory_get` führt. Wenn Tools deaktiviert sind, die Speichersuche nicht verfügbar ist oder sich der aktive Arbeitsbereich vom Agentenspeicher-Arbeitsbereich unterscheidet, fällt `MEMORY.md` auf den normalen begrenzten Durchlaufkontextpfad zurück. `BOOTSTRAP.md` behält die normale Rolle im Durchlaufkontext.
 
-Auf Nicht-Codex-Harnesses werden Bootstrap-Dateien weiterhin gemäß ihren
-bestehenden Gates in den OpenClaw-Prompt komponiert. `HEARTBEAT.md` wird bei
-normalen Läufen ausgelassen, wenn Heartbeats für den Standardagenten deaktiviert
-sind oder `agents.defaults.heartbeat.includeSystemPromptSection` false ist. Halten
-Sie injizierte Dateien knapp, besonders `MEMORY.md` außerhalb von Codex.
-`MEMORY.md` soll eine kuratierte Langzeitzusammenfassung bleiben; detaillierte
-Tagesnotizen gehören in `memory/*.md`, wo `memory_search` und `memory_get` sie
-bei Bedarf abrufen können. Überdimensionierte `MEMORY.md`-Dateien außerhalb von
-Codex erhöhen die Prompt-Nutzung und können wegen der unten genannten Grenzen für
-Bootstrap-Dateien teilweise injiziert werden.
+In Nicht-Codex-Harnesses werden Bootstrap-Dateien gemäß ihren bestehenden Bedingungen in den OpenClaw-Prompt aufgenommen. `HEARTBEAT.md` wird bei normalen Durchläufen ausgelassen, wenn Heartbeats für den Standardagenten deaktiviert sind oder `agents.defaults.heartbeat.includeSystemPromptSection` den Wert false hat. Halten Sie eingefügte Dateien kurz, insbesondere `MEMORY.md` außerhalb von Codex: Sie sollte eine kuratierte langfristige Zusammenfassung bleiben, während detaillierte tägliche Notizen in `memory/*.md` bei Bedarf über `memory_search` / `memory_get` abrufbar sind. Übermäßig große Nicht-Codex-Dateien vom Typ `MEMORY.md` erhöhen die Prompt-Nutzung und können gemäß den nachstehenden Grenzwerten für Bootstrap-Dateien nur teilweise eingefügt werden.
 
 <Note>
-Tägliche Dateien unter `memory/*.md` sind **nicht** Teil des normalen Bootstrap-Project-Context. In gewöhnlichen Runden wird bei Bedarf über die Tools `memory_search` und `memory_get` auf sie zugegriffen, sodass sie nicht gegen das Kontextfenster zählen, außer das Modell liest sie explizit. Reine `/new`- und `/reset`-Runden sind die Ausnahme: Die Laufzeit kann aktuellen täglichen Speicher als einmaligen Startup-Context-Block für diese erste Runde voranstellen.
+Tägliche Dateien unter `memory/*.md` sind **nicht** Teil des normalen Bootstrap-Projektkontexts. Bei gewöhnlichen Durchläufen wird bei Bedarf über `memory_search` / `memory_get` auf sie zugegriffen, sodass sie nicht auf das Kontextfenster angerechnet werden, sofern das Modell sie nicht ausdrücklich liest. Reine `/new`- und `/reset`-Durchläufe bilden die Ausnahme: Die Laufzeit kann aktuelle tägliche Erinnerungen als einmaligen Startkontextblock für diesen ersten Durchlauf voranstellen.
 </Note>
 
-Große Dateien werden mit einer Markierung gekürzt. Die maximale Größe pro Datei wird durch
-`agents.defaults.bootstrapMaxChars` gesteuert (Standard: 20000). Der gesamte injizierte Bootstrap-
-Inhalt über alle Dateien hinweg ist durch `agents.defaults.bootstrapTotalMaxChars`
-begrenzt (Standard: 60000). Fehlende Dateien injizieren eine kurze Fehlende-Datei-Markierung. Wenn eine Kürzung
-erfolgt, kann OpenClaw einen knappen Warnhinweis in den System-Prompt injizieren; steuern Sie dies mit
-`agents.defaults.bootstrapPromptTruncationWarning` (`off`, `once`, `always`;
-Standard: `always`). Detaillierte Roh-/Injektionszählungen bleiben in Diagnosen wie
-`/context`, `/status`, doctor und Logs.
+Große Dateien werden mit einer Markierung gekürzt:
 
-Bei Speicherdateien ist Kürzung kein Datenverlust: Die Datei bleibt auf der Festplatte intakt.
-Bei nativem Codex wird `MEMORY.md` bei Bedarf über Speicher-Tools gelesen, wenn
-verfügbar, mit begrenztem Prompt-Fallback, wenn Tools nicht ausgeführt werden können. Bei anderen
-Harnesses sieht das Modell nur die gekürzte injizierte Kopie, bis es den Speicher direkt liest oder
-durchsucht. Wenn `MEMORY.md` dort wiederholt gekürzt wird, destillieren
-Sie sie in eine kürzere dauerhafte Zusammenfassung und verschieben detaillierte Historie nach `memory/*.md`,
-oder erhöhen Sie die Bootstrap-Grenzen bewusst.
+| Grenzwert                                    | Konfigurationsschlüssel                             | Standard |
+| -------------------------------------------- | -------------------------------------------------- | -------- |
+| Maximale Zeichenanzahl pro Datei             | `agents.defaults.bootstrapMaxChars`                | 20000    |
+| Gesamtanzahl über alle Dateien hinweg        | `agents.defaults.bootstrapTotalMaxChars`           | 60000    |
+| Kürzungswarnung (`off`\|`once`\|`always`)    | `agents.defaults.bootstrapPromptTruncationWarning` | `always` |
 
-Sub-Agent-Sitzungen injizieren nur `AGENTS.md` und `TOOLS.md` (andere Bootstrap-Dateien
-werden herausgefiltert, um den Sub-Agent-Kontext klein zu halten).
+Fehlende Dateien fügen eine kurze Markierung für fehlende Dateien ein. Detaillierte Roh-/Einfügungszahlen verbleiben in Diagnoseausgaben wie `/context`, `/status`, doctor und Protokollen.
 
-Interne Hooks können diesen Schritt über `agent:bootstrap` abfangen, um die
-injizierten Bootstrap-Dateien zu verändern oder zu ersetzen (zum Beispiel `SOUL.md` durch eine alternative Persona zu ersetzen).
+Bei Speicherdateien bedeutet die Kürzung keinen Datenverlust: Die Datei bleibt auf dem Datenträger unverändert. Im nativen Codex wird `MEMORY.md` bei Bedarf über Speicher-Tools gelesen, wenn diese verfügbar sind, andernfalls über einen begrenzten Prompt-Rückfallpfad. In anderen Harnesses sieht das Modell nur die gekürzte eingefügte Kopie, bis es den Speicher direkt liest oder durchsucht. Wenn `MEMORY.md` wiederholt gekürzt wird, verdichten Sie die Datei zu einer kürzeren dauerhaften Zusammenfassung, verschieben Sie den detaillierten Verlauf nach `memory/*.md` oder erhöhen Sie die Bootstrap-Grenzwerte bewusst.
 
-Wenn Sie möchten, dass der Agent weniger generisch klingt, beginnen Sie mit dem
-[SOUL.md Personality Guide](/de/concepts/soul).
+Sub-Agent-Sitzungen injizieren nur `AGENTS.md` und `TOOLS.md` (andere Bootstrap-Dateien werden herausgefiltert, um den Kontext des Sub-Agents klein zu halten).
 
-Um zu prüfen, wie viel jede injizierte Datei beiträgt (roh vs. injiziert, Kürzung sowie Tool-Schema-Overhead), verwenden Sie `/context list` oder `/context detail`. Siehe [Kontext](/de/concepts/context).
+Interne Hooks können diesen Schritt über das Ereignis `agent:bootstrap` abfangen, um die injizierten Bootstrap-Dateien zu verändern oder zu ersetzen (beispielsweise um `SOUL.md` gegen eine alternative Persona auszutauschen).
 
-## Zeitbehandlung
+Damit die Ausgabe weniger generisch klingt, beginnen Sie mit dem [Persönlichkeitsleitfaden in SOUL.md](/de/concepts/soul).
 
-Der System-Prompt enthält einen eigenen Abschnitt **Aktuelles Datum & aktuelle Uhrzeit**, wenn die
-Zeitzone des Benutzers bekannt ist. Um den Prompt cache-stabil zu halten, enthält er jetzt nur noch
-die **Zeitzone** (keine dynamische Uhr oder Zeitformat).
+Um zu prüfen, wie viel jede injizierte Datei beiträgt (roh gegenüber injiziert, Kürzung, Overhead des Toolschemas), verwenden Sie `/context list` oder `/context detail`. Siehe [Kontext](/de/concepts/context).
 
-Verwenden Sie `session_status`, wenn der Agent die aktuelle Uhrzeit benötigt; die Statuskarte
-enthält eine Zeitstempelzeile. Dasselbe Tool kann optional einen modellspezifischen Override pro Sitzung
-setzen (`model=default` löscht ihn).
+## Zeitverarbeitung
 
-Konfigurieren Sie mit:
+Der Abschnitt **Aktuelles Datum und aktuelle Uhrzeit** erscheint nur, wenn die Zeitzone des Benutzers bekannt ist, und enthält ausschließlich die **Zeitzone** (keine dynamische Uhrzeit und kein Zeitformat), damit der Prompt-Cache stabil bleibt.
+
+Verwenden Sie `session_status`, wenn der Agent die aktuelle Uhrzeit benötigt; dessen Statuskarte enthält eine Zeitstempelzeile. Dasselbe Tool kann optional eine sitzungsspezifische Modellüberschreibung festlegen (`model=default` hebt sie auf).
+
+Konfigurieren Sie dies mit:
 
 - `agents.defaults.userTimezone`
 - `agents.defaults.timeFormat` (`auto` | `12` | `24`)
 
-Siehe [Datum & Uhrzeit](/de/date-time) für vollständige Verhaltensdetails.
+Ausführliche Informationen zum Verhalten finden Sie unter [Zeitzonen](/de/concepts/timezone) und [Datum und Uhrzeit](/de/date-time).
 
 ## Skills
 
-Wenn geeignete Skills vorhanden sind, injiziert OpenClaw eine kompakte **Liste verfügbarer Skills**
-(`formatSkillsForPrompt`), die den **Dateipfad** und die aus dem Inhalt abgeleitete
-`<version>`-Markierung für jeden Skill enthält. Der Prompt weist das Modell an, `read`
-zu verwenden, um die SKILL.md am aufgeführten Ort zu laden (Workspace, verwaltet oder gebündelt),
-und einen Skill erneut zu lesen, wenn seine `<version>` von einem vorherigen Turn abweicht. Wenn keine
-Skills geeignet sind, wird der Abschnitt Skills ausgelassen.
+Wenn geeignete Skills vorhanden sind, injiziert OpenClaw eine kompakte Liste `<available_skills>` (`formatSkillsForPrompt`) mit dem **Dateipfad** und einer aus dem Inhalt abgeleiteten Markierung `<version>sha256:...</version>` für jeden Skill. Der Prompt weist das Modell an, mit `read` die SKILL.md am angegebenen Speicherort (Workspace, verwaltet oder gebündelt) zu laden und einen Skill erneut zu lesen, wenn sich dessen `<version>` gegenüber einer vorherigen Runde unterscheidet. Wenn keine Skills geeignet sind, wird der Abschnitt „Skills“ weggelassen.
 
-Native Codex-Turns erhalten diese Liste als turn-bezogene Entwickleranweisungen zur Zusammenarbeit
-statt als Benutzereingabe pro Turn, außer leichtgewichtige Cron-Turns, die
-den exakt geplanten Prompt beibehalten. Andere Harnesses behalten den normalen Prompt-
-Abschnitt bei.
+Native Codex-Runden erhalten diese Liste als auf die jeweilige Runde beschränkte Entwickleranweisungen für die Zusammenarbeit statt als Benutzereingabe pro Runde. Ausgenommen sind leichtgewichtige Cron-Runden, die den exakten geplanten Prompt beibehalten. Andere Harnesses behalten den normalen Prompt-Abschnitt bei.
 
-Der Ort kann auf einen verschachtelten Skill verweisen, zum Beispiel
-`skills/personal/foo/SKILL.md`. Verschachtelung dient nur der Organisation; der Prompt verwendet weiterhin
-den flachen Skill-Namen aus dem Frontmatter von `SKILL.md`.
+Der Speicherort kann auf einen verschachtelten Skill verweisen, etwa `skills/personal/foo/SKILL.md`. Die Verschachtelung dient nur der Organisation; der Prompt verwendet den flachen Skill-Namen aus dem Frontmatter von `SKILL.md`.
 
-Eignung umfasst Metadaten-Gates für Skills, Laufzeitumgebungs-/Konfigurationsprüfungen
-und die effektive Skill-Allowlist des Agents, wenn `agents.defaults.skills` oder
-`agents.list[].skills` konfiguriert ist.
+Die Eignungsprüfung umfasst Metadaten-Gates für Skills, Prüfungen der Laufzeitumgebung und -konfiguration sowie die effektive Skill-Zulassungsliste des Agents, wenn `agents.defaults.skills` oder `agents.list[].skills` konfiguriert ist. In Plugins gebündelte Skills sind nur geeignet, wenn ihr zugehöriges Plugin aktiviert ist. Dadurch können Tool-Plugins ausführlichere Betriebsanleitungen bereitstellen, ohne all diese Hinweise in jede Toolbeschreibung einzubetten.
 
-Plugin-gebündelte Skills sind nur geeignet, wenn ihr besitzendes Plugin aktiviert ist.
-So können Tool-Plugins tiefere Betriebsanleitungen bereitstellen, ohne all diese
-Anleitungen direkt in jede Tool-Beschreibung einzubetten.
-
-```
+```xml
 <available_skills>
   <skill>
     <name>...</name>
@@ -310,47 +169,24 @@ Anleitungen direkt in jede Tool-Beschreibung einzubetten.
 </available_skills>
 ```
 
-Dadurch bleibt der Basis-Prompt klein, während gezielte Skill-Nutzung weiterhin möglich ist.
+Dadurch bleibt der Basis-Prompt klein, während die gezielte Verwendung von Skills weiterhin möglich ist. Die Größenbegrenzung wird vom Skills-Subsystem verwaltet, getrennt von der allgemeinen Größenbegrenzung für das Lesen und Injizieren zur Laufzeit:
 
-Das Budget für die Skills-Liste gehört dem Skills-Subsystem:
+| Geltungsbereich | Prompt-Budget für Skills                           | Budget für Laufzeitauszüge         |
+| --------------- | -------------------------------------------------- | ---------------------------------- |
+| Global          | `skills.limits.maxSkillsPromptChars`               | `agents.defaults.contextLimits.*`  |
+| Pro Agent       | `agents.list[].skillsLimits.maxSkillsPromptChars`  | `agents.list[].contextLimits.*`    |
 
-- Globaler Standard: `skills.limits.maxSkillsPromptChars`
-- Override pro Agent: `agents.list[].skillsLimits.maxSkillsPromptChars`
-
-Generische begrenzte Laufzeitauszüge verwenden eine andere Oberfläche:
-
-- `agents.defaults.contextLimits.*`
-- `agents.list[].contextLimits.*`
-
-Diese Trennung hält die Größenbemessung von Skills getrennt von der Größenbemessung für Laufzeit-Lesen/-Injektion, wie
-`memory_get`, Live-Tool-Ergebnisse und AGENTS.md-Aktualisierungen nach Compaction.
+Das Budget für Laufzeitauszüge umfasst `memory_get`, Live-Toolergebnisse und Aktualisierungen von `AGENTS.md` nach einer Compaction.
 
 ## Dokumentation
 
-Der System-Prompt enthält einen Abschnitt **Dokumentation**. Wenn lokale Dokumentation verfügbar ist, verweist er
-auf das lokale OpenClaw-Dokumentationsverzeichnis (`docs/` in einem Git-Checkout oder die gebündelten npm-
-Paketdokumente). Wenn lokale Dokumentation nicht verfügbar ist, fällt er auf
-[https://docs.openclaw.ai](https://docs.openclaw.ai) zurück.
+Der Abschnitt **Dokumentation** verweist auf lokale Dokumentation, sofern verfügbar (`docs/` in einem Git-Checkout oder die Dokumentation des gebündelten npm-Pakets), und verwendet andernfalls [https://docs.openclaw.ai](https://docs.openclaw.ai). Außerdem wird der Speicherort des OpenClaw-Quellcodes aufgeführt: Git-Checkouts stellen das lokale Quellstammverzeichnis bereit, während Paketinstallationen die GitHub-URL des Quellcodes zusammen mit der Anweisung erhalten, den Quellcode dort zu prüfen, wenn die Dokumentation unvollständig oder veraltet ist.
 
-Derselbe Abschnitt enthält außerdem den Quellort von OpenClaw. Git-Checkouts geben den lokalen
-Quell-Root frei, damit der Agent Code direkt prüfen kann. Paketinstallationen enthalten die GitHub-
-Quell-URL und weisen den Agent an, dort den Quellcode zu prüfen, wenn die Dokumentation unvollständig oder
-veraltet ist. Der Prompt erwähnt außerdem den öffentlichen Dokumentationsspiegel, den Community-Discord und ClawHub
-([https://clawhub.ai](https://clawhub.ai)) für die Entdeckung von Skills. Er rahmt die Dokumentation als
-Autorität für OpenClaw-Selbstwissen ein, bevor das Modell versteht, wie OpenClaw funktioniert,
-einschließlich Speicher/täglicher Notizen, Sitzungen, Tools, Gateway, Konfiguration, Befehle oder Projekt-
-kontext. Der Prompt weist das Modell an, zuerst lokale Dokumentation (oder den Dokumentationsspiegel, wenn lokale Dokumentation
-nicht verfügbar ist) zu verwenden und AGENTS.md, Projektkontext, Workspace-/Profil-/Speicher-
-notizen und `memory_search` als Anweisungskontext oder Benutzerspeicher statt als OpenClaw-
-Design- oder Implementierungswissen zu behandeln. Wenn die Dokumentation schweigt oder veraltet ist, sollte das Modell dies sagen
-und den Quellcode prüfen. Der Prompt weist das Modell außerdem an, `openclaw status` selbst auszuführen, wenn
-möglich, und den Benutzer nur zu fragen, wenn ihm der Zugriff fehlt.
-Speziell für Konfiguration verweist er Agents auf die `gateway`-Tool-Aktion
-`config.schema.lookup` für exakte feldspezifische Dokumentation und Einschränkungen, danach auf
-`docs/gateway/configuration.md` und `docs/gateway/configuration-reference.md`
-für breitere Anleitung.
+Der Prompt stellt die Dokumentation als maßgebliche Quelle für das Selbstwissen von OpenClaw dar, bevor das Modell nachvollzieht, wie OpenClaw funktioniert (Speicher/Tagesnotizen, Sitzungen, Tools, Gateway, Konfiguration, Befehle, Projektkontext). Er weist das Modell außerdem an, `AGENTS.md`, den Projektkontext, Workspace-/Profil-/Speichernotizen und `memory_search` als Anweisungskontext oder Benutzerspeicher zu behandeln und nicht als Wissen über Entwurf oder Implementierung von OpenClaw. Wenn die Dokumentation keine Angaben enthält oder veraltet ist, soll das Modell darauf hinweisen und den Quellcode prüfen. Außerdem wird das Modell angewiesen, `openclaw status` nach Möglichkeit selbst auszuführen und den Benutzer nur zu fragen, wenn es keinen Zugriff hat.
 
-## Verwandt
+Speziell für die Konfiguration verweist der Prompt Agents zunächst auf die Aktion `config.schema.lookup` des Tools `gateway`, um genaue Dokumentation und Einschränkungen auf Feldebene zu erhalten, und anschließend auf `docs/gateway/configuration.md` und `docs/gateway/configuration-reference.md` für weiterführende Hinweise.
+
+## Verwandte Themen
 
 - [Agent-Laufzeit](/de/concepts/agent)
 - [Agent-Workspace](/de/concepts/agent-workspace)

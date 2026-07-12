@@ -1,55 +1,29 @@
 ---
 read_when:
-    - OpenCode Go 카탈로그가 필요합니다
-    - Go에서 호스팅되는 모델의 런타임 모델 참조가 필요합니다
-summary: 공유 OpenCode 설정으로 OpenCode Go 카탈로그 사용
+    - OpenCode Go 카탈로그를 사용하려고 합니다
+    - Go에서 호스팅되는 모델의 런타임 모델 참조가 필요합니다.
+summary: 공유 OpenCode 설정으로 OpenCode Go 카탈로그 사용하기
 title: OpenCode Go
 x-i18n:
-    generated_at: "2026-06-27T18:03:34Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:40:56Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: eb4e6bd452eeebca5456b0cd70e7622e07ed050a07ff9d6d00926f32efe90569
+    source_hash: df647721e8966fd4fad3178550b071a2eb827148fe765bda53b3d7c97ceaadc2
     source_path: providers/opencode-go.md
     workflow: 16
 ---
 
-OpenCode Go는 [OpenCode](/ko/providers/opencode) 내 Go 카탈로그입니다.
-Zen 카탈로그와 동일한 `OPENCODE_API_KEY`를 사용하지만, 업스트림 모델별 라우팅이 올바르게 유지되도록 런타임
-제공자 ID `opencode-go`를 유지합니다.
+OpenCode Go는 [OpenCode](/ko/providers/opencode) 내의 Go 카탈로그입니다. Zen 카탈로그와
+`OPENCODE_API_KEY` 자격 증명을 공유하지만, 업스트림 모델별 라우팅이 올바르게
+유지되도록 자체 런타임 제공자 ID(`opencode-go`)를 사용합니다.
 
-| 속성             | 값                              |
-| ---------------- | ------------------------------- |
-| 런타임 제공자    | `opencode-go`                   |
-| 인증             | `OPENCODE_API_KEY`              |
-| 상위 설정        | [OpenCode](/ko/providers/opencode) |
-
-## 기본 제공 카탈로그
-
-OpenClaw는 대부분의 Go 카탈로그 행을 번들된 OpenClaw 모델 레지스트리에서 가져오고,
-레지스트리가 따라잡는 동안 현재 업스트림 행을 보완합니다. 현재 모델 목록을 보려면
-`openclaw models list --provider opencode-go`를 실행하세요.
-
-이 제공자에는 다음이 포함됩니다.
-
-| 모델 참조                       | 이름                  |
-| ------------------------------- | --------------------- |
-| `opencode-go/glm-5`             | GLM-5                 |
-| `opencode-go/glm-5.1`           | GLM-5.1               |
-| `opencode-go/glm-5.2`           | GLM-5.2               |
-| `opencode-go/kimi-k2.5`         | Kimi K2.5             |
-| `opencode-go/kimi-k2.6`         | Kimi K2.6 (3배 제한)  |
-| `opencode-go/kimi-k2.7-code`    | Kimi K2.7 Code        |
-| `opencode-go/deepseek-v4-pro`   | DeepSeek V4 Pro       |
-| `opencode-go/deepseek-v4-flash` | DeepSeek V4 Flash     |
-| `opencode-go/mimo-v2-omni`      | MiMo V2 Omni          |
-| `opencode-go/mimo-v2-pro`       | MiMo V2 Pro           |
-| `opencode-go/minimax-m2.5`      | MiniMax M2.5          |
-| `opencode-go/minimax-m2.7`      | MiniMax M2.7          |
-| `opencode-go/qwen3.5-plus`      | Qwen3.5 Plus          |
-| `opencode-go/qwen3.6-plus`      | Qwen3.6 Plus          |
-
-GLM-5.2는 100만 토큰 컨텍스트 창을 사용하며 최대 131K 출력 토큰을 지원합니다.
+| 속성             | 값                                                 |
+| ---------------- | -------------------------------------------------- |
+| 런타임 제공자    | `opencode-go`                                      |
+| 인증             | `OPENCODE_API_KEY` (별칭: `OPENCODE_ZEN_API_KEY`) |
+| 상위 설정        | [OpenCode](/ko/providers/opencode)                    |
 
 ## 시작하기
 
@@ -76,7 +50,7 @@ GLM-5.2는 100만 토큰 컨텍스트 창을 사용하며 최대 131K 출력 토
 
   <Tab title="비대화형">
     <Steps>
-      <Step title="키 직접 전달">
+      <Step title="키를 직접 전달">
         ```bash
         openclaw onboard --opencode-go-api-key "$OPENCODE_API_KEY"
         ```
@@ -90,7 +64,7 @@ GLM-5.2는 100만 토큰 컨텍스트 창을 사용하며 최대 131K 출력 토
   </Tab>
 </Tabs>
 
-## Config 예시
+## 구성 예시
 
 ```json5
 {
@@ -99,36 +73,63 @@ GLM-5.2는 100만 토큰 컨텍스트 창을 사용하며 최대 131K 출력 토
 }
 ```
 
+## 기본 제공 카탈로그
+
+현재 모델 목록을 확인하려면 `openclaw models list --provider opencode-go`를 실행하십시오.
+기본 제공 항목:
+
+| 모델 참조                       | 이름              | 컨텍스트  | 최대 출력  | 이미지 입력 |
+| ------------------------------- | ----------------- | --------- | ---------- | ----------- |
+| `opencode-go/deepseek-v4-pro`   | DeepSeek V4 Pro   | 1M        | 384K       | 아니요      |
+| `opencode-go/deepseek-v4-flash` | DeepSeek V4 Flash | 1M        | 384K       | 아니요      |
+| `opencode-go/glm-5`             | GLM-5             | 202,752   | 32,768     | 아니요      |
+| `opencode-go/glm-5.1`           | GLM-5.1           | 202,752   | 32,768     | 아니요      |
+| `opencode-go/glm-5.2`           | GLM-5.2           | 1M        | 131,072    | 아니요      |
+| `opencode-go/hy3-preview`       | HY3 Preview       | 262,144   | 32,768     | 아니요      |
+| `opencode-go/kimi-k2.5`         | Kimi K2.5         | 262,144   | 65,536     | 예          |
+| `opencode-go/kimi-k2.6`         | Kimi K2.6         | 262,144   | 65,536     | 예          |
+| `opencode-go/kimi-k2.7-code`    | Kimi K2.7 Code    | 262,144   | 262,144    | 예          |
+| `opencode-go/mimo-v2.5`         | MiMo V2.5         | 1M        | 128,000    | 예          |
+| `opencode-go/mimo-v2.5-pro`     | MiMo V2.5 Pro     | 1,048,576 | 128,000    | 아니요      |
+| `opencode-go/minimax-m2.5`      | MiniMax M2.5      | 204,800   | 65,536     | 아니요      |
+| `opencode-go/minimax-m2.7`      | MiniMax M2.7      | 204,800   | 131,072    | 아니요      |
+| `opencode-go/minimax-m3`        | MiniMax M3        | 204,800   | 131,072    | 아니요      |
+| `opencode-go/qwen3.5-plus`      | Qwen3.5 Plus      | 262,144   | 65,536     | 예          |
+| `opencode-go/qwen3.6-plus`      | Qwen3.6 Plus      | 262,144   | 65,536     | 예          |
+| `opencode-go/qwen3.7-max`       | Qwen3.7 Max       | 1M        | 65,536     | 아니요      |
+| `opencode-go/qwen3.7-plus`      | Qwen3.7 Plus      | 1M        | 65,536     | 예          |
+
 ## 고급 구성
 
 <AccordionGroup>
   <Accordion title="라우팅 동작">
-    모델 참조가 `opencode-go/...`를 사용할 때 OpenClaw는 모델별 라우팅을 자동으로 처리합니다.
-    추가 제공자 구성이 필요하지 않습니다.
+    OpenClaw는 모든 `opencode-go/...` 모델 참조를 자동으로 라우팅합니다. 추가
+    제공자 구성은 필요하지 않습니다.
   </Accordion>
 
   <Accordion title="런타임 참조 규칙">
-    런타임 참조는 명시적으로 유지됩니다. Zen은 `opencode/...`, Go는 `opencode-go/...`를 사용합니다.
-    이를 통해 두 카탈로그 모두에서 업스트림 모델별 라우팅이 올바르게 유지됩니다.
+    런타임 참조는 명시적으로 유지됩니다. Zen에는 `opencode/...`, Go에는
+    `opencode-go/...`를 사용합니다. 이를 통해 두 카탈로그 모두에서 업스트림 모델별 라우팅이 올바르게 유지됩니다.
   </Accordion>
 
   <Accordion title="공유 자격 증명">
-    동일한 `OPENCODE_API_KEY`가 Zen 및 Go 카탈로그 모두에 사용됩니다. 설정 중 키를 입력하면
-    두 런타임 제공자의 자격 증명이 저장됩니다.
+    하나의 `OPENCODE_API_KEY`로 Zen 및 Go 카탈로그를 모두 사용할 수 있습니다. 설정 중에
+    키를 입력하면 두 런타임 제공자의 자격 증명이 모두 저장됩니다.
   </Accordion>
 </AccordionGroup>
 
 <Tip>
-공유 온보딩 개요와 전체 Zen + Go 카탈로그 참조는 [OpenCode](/ko/providers/opencode)를 참조하세요.
+공유 온보딩 개요와 전체 Zen + Go 카탈로그 참조는 [OpenCode](/ko/providers/opencode)를
+참조하십시오.
 </Tip>
 
 ## 관련 항목
 
 <CardGroup cols={2}>
   <Card title="OpenCode(상위)" href="/ko/providers/opencode" icon="server">
-    공유 온보딩, 카탈로그 개요, 고급 참고 사항입니다.
+    공유 온보딩, 카탈로그 개요 및 고급 참고 사항입니다.
   </Card>
   <Card title="모델 선택" href="/ko/concepts/model-providers" icon="layers">
-    제공자, 모델 참조, 장애 조치 동작 선택입니다.
+    제공자와 모델 참조를 선택하고 장애 조치 동작을 구성하는 방법입니다.
   </Card>
 </CardGroup>

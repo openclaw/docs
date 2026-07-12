@@ -1,127 +1,135 @@
 ---
 read_when:
-    - Depuração de erros de escopo do operador ausente
-    - Revisando aprovações de pareamento de dispositivo ou node
+    - Depuração de erros de escopo de operador ausente
+    - Revisando aprovações de emparelhamento de dispositivos ou Nodes
     - Adição ou classificação de métodos RPC do Gateway
-summary: Funções, escopos e verificações no momento da aprovação do operador para clientes Gateway
-title: Escopos de operador
+summary: Funções de operador, escopos e verificações no momento da aprovação para clientes do Gateway
+title: Escopos do operador
 x-i18n:
-    generated_at: "2026-06-27T17:32:33Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:14:42Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: dc59453ae1a73b52276185de2cedd1ed4da027111168eda8107d6ba0b74aec2f
+    source_hash: cfda4486e8d31c01fb7ffff398dcc678d298194f0f0ce6308ae9e5388f5a2856
     source_path: gateway/operator-scopes.md
     workflow: 16
 ---
 
-Os escopos de operador definem o que um cliente Gateway pode fazer depois de se autenticar.
-Eles são uma proteção de plano de controle dentro de um único domínio confiável de operador Gateway,
-não isolamento multi-inquilino hostil. Se você precisa de separação forte entre
-pessoas, equipes ou máquinas, execute Gateways separados sob usuários do SO ou
-hosts separados.
+Os escopos de operador limitam o que um cliente do Gateway pode fazer após se autenticar.
+Eles são uma proteção do plano de controle dentro de um único domínio confiável de operador do Gateway,
+não um isolamento multilocatário hostil. Para uma separação forte entre pessoas,
+equipes ou máquinas, execute Gateways separados sob usuários ou hosts distintos do sistema operacional.
 
-Relacionado: [Segurança](/pt-BR/gateway/security), [Protocolo Gateway](/pt-BR/gateway/protocol),
-[Pareamento Gateway](/pt-BR/gateway/pairing), [CLI de dispositivos](/pt-BR/cli/devices).
+Relacionado: [Segurança](/pt-BR/gateway/security), [Protocolo do Gateway](/pt-BR/gateway/protocol),
+[Emparelhamento do Gateway](/pt-BR/gateway/pairing), [CLI de dispositivos](/pt-BR/cli/devices).
 
 ## Funções
 
-Clientes WebSocket do Gateway se conectam com uma função:
+Cada cliente WebSocket do Gateway se conecta com uma função:
 
-- `operator`: clientes de plano de controle, como CLI, Control UI, automação e
+- `operator`: clientes do plano de controle, como CLI, interface de controle, automação e
   processos auxiliares confiáveis.
-- `node`: hosts de capacidade, como macOS, iOS, Android ou nós sem interface que
-  expõem comandos por meio de `node.invoke`.
+- `node`: hosts de recursos (macOS, iOS, Android, sem interface gráfica) que expõem
+  comandos por meio de `node.invoke`.
 
-Métodos RPC de operador exigem a função `operator`. Métodos originados por node
+Os métodos RPC de operador exigem a função `operator`; os métodos originados por nodes
 exigem a função `node`.
 
 ## Níveis de escopo
 
-| Escopo                  | Significado                                                                                                                                                                                    |
-| ----------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `operator.read`         | Status somente leitura, listas, catálogo, logs, leituras de sessão e outras chamadas de plano de controle que não fazem mutações.                                                              |
-| `operator.write`        | Ações normais de operador que fazem mutações, como enviar mensagens, invocar ferramentas, atualizar configurações de conversa/voz e retransmissão de comandos de node. Também satisfaz `operator.read`. |
-| `operator.admin`        | Acesso administrativo ao plano de controle. Satisfaz todos os escopos `operator.*`. Necessário para mutação de configuração, atualizações, hooks nativos, namespaces reservados sensíveis e aprovações de alto risco. |
-| `operator.pairing`      | Gerenciamento de pareamento de dispositivos e nodes, incluindo listar, aprovar, rejeitar, remover, rotacionar e revogar registros de pareamento ou tokens de dispositivo.                      |
-| `operator.approvals`    | APIs de aprovação de exec e Plugin.                                                                                                                                                           |
-| `operator.talk.secrets` | Leitura da configuração do Talk com segredos incluídos.                                                                                                                                        |
+| Escopo                  | Significado                                                                                                                                                                                                 |
+| ----------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `operator.read`         | Status, listas, catálogo, logs, leituras de sessão e outras chamadas sem alteração, somente para leitura.                                                                                                   |
+| `operator.write`        | Ações de operador que causam alterações: enviar mensagens, invocar ferramentas, atualizar configurações de conversa/voz e retransmitir comandos de nodes. Também satisfaz `operator.read`.                  |
+| `operator.admin`        | Acesso administrativo. Satisfaz todos os escopos `operator.*`. Obrigatório para alterações de configuração, atualizações, hooks nativos, namespaces reservados e aprovações de alto risco.                  |
+| `operator.pairing`      | Gerenciamento do emparelhamento de dispositivos e nodes: listar, aprovar, rejeitar, remover, rotacionar e revogar.                                                                                          |
+| `operator.approvals`    | APIs de aprovação de execução e plugins.                                                                                                                                                                    |
+| `operator.talk.secrets` | Leitura da configuração de conversa com os segredos incluídos.                                                                                                                                              |
 
-Escopos `operator.*` futuros desconhecidos exigem uma correspondência exata, a menos que o chamador tenha
-`operator.admin`.
+Escopos `operator.*` futuros desconhecidos exigem uma correspondência exata, a menos que o chamador
+já tenha `operator.admin`.
 
-## O escopo do método é apenas o primeiro bloqueio
+## O escopo do método é apenas a primeira barreira
 
-Cada RPC do Gateway tem um escopo de método de privilégio mínimo. Esse escopo de método decide
-se a solicitação pode chegar ao handler. Alguns handlers então aplicam verificações mais rigorosas
-no momento da aprovação com base no item concreto que está sendo aprovado ou alterado.
+Cada RPC do Gateway tem um escopo de método de privilégio mínimo que determina se uma
+solicitação chega ao seu manipulador. Alguns manipuladores aplicam verificações mais rigorosas
+com base no item específico que está sendo aprovado ou alterado:
 
-Exemplos:
+- `device.pair.approve` pode ser acessado com `operator.pairing`, mas a aprovação de um
+  dispositivo de operador só pode emitir ou preservar escopos que o chamador já possui.
+- `node.pair.approve` pode ser acessado com `operator.pairing` e, em seguida, deriva escopos
+  de aprovação adicionais da lista de comandos declarada pelo node pendente.
+- `chat.send` é um método com escopo de gravação, mas os comandos de chat `/config set` e
+  `/config unset` exigem também `operator.admin`,
+  independentemente do escopo de envio de chat do chamador.
 
-- `device.pair.approve` é acessível com `operator.pairing`, mas aprovar um
-  dispositivo operador só pode emitir ou preservar escopos que o chamador já possui.
-- `node.pair.approve` é acessível com `operator.pairing` e então deriva escopos
-  extras de aprovação da lista pendente de comandos do node.
-- `chat.send` normalmente é um método com escopo de escrita, mas `/config set`
-  e `/config unset` persistentes exigem `operator.admin` no nível do comando.
+Isso permite que operadores com escopos menores realizem ações de emparelhamento de baixo risco sem
+tornar todas as aprovações de emparelhamento exclusivas para administradores.
 
-Isso permite que operadores com escopos menores executem ações de pareamento de baixo risco sem tornar
-toda aprovação de pareamento exclusiva para administradores.
+## Aprovações de emparelhamento de dispositivos
 
-## Aprovações de pareamento de dispositivos
-
-Registros de pareamento de dispositivos são a fonte durável das funções e escopos aprovados.
-Dispositivos já pareados não recebem acesso mais amplo silenciosamente: reconexões que pedem
-uma função mais ampla ou escopos mais amplos criam uma nova solicitação pendente de upgrade.
+Os registros de emparelhamento de dispositivos são a fonte persistente das funções e dos escopos aprovados.
+Um dispositivo já emparelhado não recebe silenciosamente um acesso mais amplo: uma reconexão
+que solicita uma função ou escopos mais amplos cria uma nova solicitação de atualização
+pendente.
 
 Ao aprovar uma solicitação de dispositivo:
 
-- Uma solicitação sem função de operador não precisa de aprovação de escopo de token de operador.
-- Uma solicitação para uma função de dispositivo não operador, como `node`, exige
-  `operator.admin`, mesmo quando `device.pair.approve` é acessível com
+- Uma solicitação sem função de operador não precisa de aprovação de escopo de operador.
+- Uma solicitação para uma função de dispositivo que não seja de operador (por exemplo, `node`) exige
+  `operator.admin`, embora o próprio `device.pair.approve` precise apenas de
   `operator.pairing`.
 - Uma solicitação para `operator.read`, `operator.write`, `operator.approvals`,
-  `operator.pairing` ou `operator.talk.secrets` exige que o chamador tenha
-  esses escopos ou `operator.admin`.
+  `operator.pairing` ou `operator.talk.secrets` exige que o chamador já
+  tenha esse escopo ou `operator.admin`.
 - Uma solicitação para `operator.admin` exige `operator.admin`.
 - Uma solicitação de reparo sem escopos explícitos pode herdar os escopos do token
-  de operador existente. Se esse token existente tiver escopo de administrador, a aprovação ainda exige
+  de operador existente; se esse token tiver escopo administrativo, a aprovação ainda exigirá
   `operator.admin`.
 
-Sessões de segredo compartilhado e proxy confiável sem privilégios de administrador podem aprovar solicitações de dispositivo operador
-somente dentro de seus próprios escopos de operador declarados. Aprovar funções não operadoras
-é exclusivo para administradores, mesmo quando essas sessões podem usar
-`operator.pairing` de outra forma.
+Sessões não administrativas com segredo compartilhado e proxy confiável só podem aprovar
+solicitações de dispositivos de operador dentro dos próprios escopos de operador declarados; a aprovação
+de funções que não sejam de operador é exclusiva para administradores, mesmo quando essas sessões podem usar
+`operator.pairing` de outras formas.
 
-Para sessões de token de dispositivo pareado, o gerenciamento também é autoescopado, a menos que o
-chamador tenha `operator.admin`: chamadores não administradores veem apenas suas próprias entradas de
-pareamento, podem aprovar ou rejeitar apenas sua própria solicitação pendente e podem rotacionar,
-revogar ou remover apenas sua própria entrada de dispositivo.
+Para sessões com token de dispositivo emparelhado, o gerenciamento é restrito ao próprio dispositivo, a menos que o chamador
+tenha `operator.admin`: um chamador não administrativo vê apenas as próprias entradas de emparelhamento e
+só pode aprovar, rejeitar, rotacionar, revogar ou remover a entrada do próprio dispositivo.
 
-## Aprovações de pareamento de Node
+## Aprovações de emparelhamento de nodes
 
-O `node.pair.*` legado usa um armazenamento separado de pareamento de nodes pertencente ao Gateway. Nodes WS
-usam pareamento de dispositivos com `role: node`, mas o mesmo vocabulário de nível de aprovação
-se aplica.
+Os métodos legados `node.pair.*` usam um armazenamento separado de emparelhamento de nodes, pertencente ao Gateway.
+Os nodes WS usam o emparelhamento de dispositivos (`role: node`), mas o mesmo vocabulário
+de aprovação se aplica. Consulte [Emparelhamento do Gateway](/pt-BR/gateway/pairing) para saber como os dois
+armazenamentos se relacionam.
 
-`node.pair.approve` usa a lista de comandos da solicitação pendente para derivar escopos
-necessários adicionais:
+`node.pair.approve` deriva escopos adicionais obrigatórios da lista de comandos
+da solicitação pendente:
 
-- Solicitação sem comandos: `operator.pairing`
-- Comandos de node que não são exec: `operator.pairing` + `operator.write`
-- `system.run`, `system.run.prepare` ou `system.which`:
-  `operator.pairing` + `operator.admin`
+| Comandos declarados                                    | Escopos obrigatórios                    |
+| ------------------------------------------------------ | --------------------------------------- |
+| nenhum                                                 | `operator.pairing`                      |
+| comandos de node que não sejam de execução             | `operator.pairing` + `operator.write`   |
+| `system.run`, `system.run.prepare` ou `system.which`    | `operator.pairing` + `operator.admin`   |
 
-O pareamento de Node estabelece identidade e confiança. Ele não substitui a política de aprovação de exec
-`system.run` própria do node.
+A aprovação de uma declaração de node não habilita comandos que tenham uma barreira de lista de permissões
+separada em tempo de execução. Por exemplo, aprovar um node que declara
+`computer.act` exige o escopo de emparelhamento mais o de gravação, mas apenas registra a superfície.
+Um administrador ou proprietário ainda precisa habilitar `computer.act`. Enquanto ele permanecer
+habilitado, invocá-lo por meio do método `node.invoke` com escopo de gravação não
+exige escopo administrativo para cada ação.
+
+O emparelhamento de nodes estabelece identidade e confiança; ele não substitui a política de aprovação
+de execução de `system.run` do próprio node.
 
 ## Autenticação por segredo compartilhado
 
-Autenticação por token/senha compartilhados do Gateway é tratada como acesso de operador confiável para
-esse Gateway. Superfícies HTTP compatíveis com OpenAI, `/tools/invoke` e endpoints HTTP de histórico de sessão
-restauram o conjunto padrão normal e completo de escopos de operador para
-autenticação bearer por segredo compartilhado, mesmo que um chamador envie escopos declarados mais estreitos.
+A autenticação por token/senha compartilhada do Gateway é tratada como acesso de operador confiável para
+esse Gateway. Superfícies HTTP compatíveis com OpenAI, `/tools/invoke` e endpoints HTTP
+do histórico de sessões restauram o conjunto padrão completo de escopos de operador para
+autenticação de portador com segredo compartilhado, mesmo que um chamador envie escopos declarados mais restritos.
 
-Modos que carregam identidade, como autenticação por proxy confiável ou `none` de ingresso privado,
-ainda podem respeitar escopos declarados explicitamente. Use Gateways separados para separação real de
+Modos associados a uma identidade, como autenticação por proxy confiável ou `none` de ingresso privado,
+ainda podem respeitar escopos declarados explicitamente. Use Gateways separados para uma separação real dos
 limites de confiança.

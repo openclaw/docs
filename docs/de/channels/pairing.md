@@ -1,16 +1,17 @@
 ---
 read_when:
     - Zugriffskontrolle für Direktnachrichten einrichten
-    - Einen neuen iOS-/Android-Node koppeln
-    - OpenClaw-Sicherheitslage überprüfen
-summary: 'Kopplungsübersicht: Genehmigen, wer Ihnen Direktnachrichten senden darf und welche Knoten beitreten dürfen'
+    - Koppeln eines neuen iOS-/Android-Node
+    - Überprüfung der Sicherheitslage von OpenClaw
+summary: 'Pairing-Übersicht: Genehmigen Sie, wer Ihnen Direktnachrichten senden darf und welche Nodes beitreten dürfen'
 title: Kopplung
 x-i18n:
-    generated_at: "2026-07-04T17:53:01Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:01:11Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: e9c6508b8fd991f3a61ce026d1d453364de566a5b1373a6311ad24f43dcdb267
+    source_hash: 32fcb7c9031afc1e18c9288c201b80aeee7ce8b44eb345492101949ec7c91358
     source_path: channels/pairing.md
     workflow: 16
 ---
@@ -18,50 +19,52 @@ x-i18n:
 „Pairing“ ist der explizite Schritt zur Zugriffsfreigabe in OpenClaw.
 Es wird an zwei Stellen verwendet:
 
-1. **DM-Pairing** (wer mit dem Bot sprechen darf)
+1. **DM-Pairing** (wer mit dem Bot kommunizieren darf)
 2. **Node-Pairing** (welche Geräte/Nodes dem Gateway-Netzwerk beitreten dürfen)
 
 Sicherheitskontext: [Sicherheit](/de/gateway/security)
 
-## 1) DM-Pairing (eingehender Chat-Zugriff)
+## 1) DM-Pairing (Zugriff auf eingehende Chats)
 
-Wenn ein Kanal mit der DM-Richtlinie `pairing` konfiguriert ist, erhalten unbekannte Absender einen Kurzcode, und ihre Nachricht wird **nicht verarbeitet**, bis Sie sie freigeben.
+Wenn ein Kanal mit der DM-Richtlinie `pairing` konfiguriert ist, erhalten unbekannte Absender einen kurzen Code, und ihre Nachricht wird **nicht verarbeitet**, bis Sie sie genehmigen.
 
-Standard-DM-Richtlinien sind hier dokumentiert: [Sicherheit](/de/gateway/security)
+Die standardmäßigen DM-Richtlinien sind hier dokumentiert: [Sicherheit](/de/gateway/security)
 
 `dmPolicy: "open"` ist nur dann öffentlich, wenn die effektive DM-Zulassungsliste `"*"` enthält.
-Setup und Validierung verlangen diesen Platzhalter für öffentlich offene Konfigurationen. Wenn der vorhandene
+Einrichtung und Validierung erfordern diesen Platzhalter für öffentlich zugängliche Konfigurationen. Wenn der vorhandene
 Zustand `open` mit konkreten `allowFrom`-Einträgen enthält, lässt die Laufzeit weiterhin
-nur diese Absender zu, und Freigaben im Pairing-Speicher erweitern den `open`-Zugriff nicht.
+nur diese Absender zu, und Genehmigungen im Pairing-Speicher erweitern den `open`-Zugriff nicht.
 
 Pairing-Codes:
 
 - 8 Zeichen, Großbuchstaben, keine mehrdeutigen Zeichen (`0O1I`).
 - **Laufen nach 1 Stunde ab**. Der Bot sendet die Pairing-Nachricht nur, wenn eine neue Anfrage erstellt wird (ungefähr einmal pro Stunde und Absender).
-- Ausstehende DM-Pairing-Anfragen sind standardmäßig auf **3 pro Kanal** begrenzt; zusätzliche Anfragen werden ignoriert, bis eine abläuft oder freigegeben wird.
+- Ausstehende DM-Pairing-Anfragen sind auf **3 pro Kanalkonto** begrenzt; zusätzliche Anfragen werden ignoriert, bis eine abläuft oder genehmigt wird.
 
-### Absender freigeben
+### Einen Absender genehmigen
 
 ```bash
 openclaw pairing list telegram
 openclaw pairing approve telegram <CODE>
 ```
 
-Wenn noch kein Befehls-Owner konfiguriert ist, initialisiert die Freigabe eines DM-Pairing-Codes auch
-`commands.ownerAllowFrom` mit dem freigegebenen Absender, beispielsweise `telegram:123456789`.
-Damit erhalten Erst-Setups einen expliziten Owner für privilegierte Befehle und Exec-
-Freigabeaufforderungen. Nachdem ein Owner vorhanden ist, gewähren spätere Pairing-Freigaben nur DM-
-Zugriff; sie fügen keine weiteren Owner hinzu.
+Fügen Sie dem Genehmigungsbefehl `--notify` hinzu, um den Anfragenden im selben Kanal zu benachrichtigen. Kanäle mit mehreren Konten verwenden `--account <id>`.
 
-Unterstützte Kanäle: `discord`, `feishu`, `googlechat`, `imessage`, `irc`, `line`, `matrix`, `mattermost`, `msteams`, `nextcloud-talk`, `nostr`, `openclaw-weixin`, `signal`, `slack`, `synology-chat`, `telegram`, `twitch`, `whatsapp`, `zalo`, `zalouser`.
+Wenn noch kein Befehlseigentümer konfiguriert ist, initialisiert die Genehmigung eines DM-Pairing-Codes außerdem
+`commands.ownerAllowFrom` mit dem genehmigten Absender, beispielsweise `telegram:123456789`.
+Dadurch erhalten Ersteinrichtungen einen expliziten Eigentümer für privilegierte Befehle und
+Genehmigungsaufforderungen für die Ausführung. Nachdem ein Eigentümer vorhanden ist, gewähren spätere Pairing-Genehmigungen nur DM-
+Zugriff; sie fügen keine weiteren Eigentümer hinzu.
+
+Unterstützte Kanäle (jedes installierte Kanal-Plugin, das Pairing deklariert; externe Plugins wie `openclaw-weixin` können weitere hinzufügen): `discord`, `feishu`, `googlechat`, `imessage`, `irc`, `line`, `matrix`, `mattermost`, `msteams`, `nextcloud-talk`, `nostr`, `signal`, `slack`, `sms`, `synology-chat`, `telegram`, `twitch`, `whatsapp`, `zalo`, `zalouser`.
 
 ### Wiederverwendbare Absendergruppen
 
-Verwenden Sie `accessGroups` auf oberster Ebene, wenn dieselbe vertrauenswürdige Absendermenge für
-mehrere Nachrichtenkanäle oder sowohl für DM- als auch Gruppen-Zulassungslisten gelten soll.
+Verwenden Sie `accessGroups` auf oberster Ebene, wenn dieselbe Gruppe vertrauenswürdiger Absender für
+mehrere Nachrichtenkanäle oder sowohl für DM- als auch Gruppenzulassungslisten gelten soll.
 
-Statische Gruppen verwenden `type: "message.senders"` und werden in Kanal-Zulassungslisten mit
-`accessGroup:<name>` referenziert:
+Statische Gruppen verwenden `type: "message.senders"` und werden mit
+`accessGroup:<name>` aus Kanalzulassungslisten referenziert:
 
 ```json5
 {
@@ -82,92 +85,103 @@ Statische Gruppen verwenden `type: "message.senders"` und werden in Kanal-Zulass
 }
 ```
 
-Access Groups sind hier ausführlich dokumentiert: [Access Groups](/de/channels/access-groups)
+Zugriffsgruppen werden hier ausführlich dokumentiert: [Zugriffsgruppen](/de/channels/access-groups)
 
-### Wo der Zustand gespeichert wird
+### Speicherort des Zustands
 
 Gespeichert unter `~/.openclaw/credentials/`:
 
 - Ausstehende Anfragen: `<channel>-pairing.json`
-- Speicher für freigegebene Zulassungsliste:
-  - Standardkonto: `<channel>-allowFrom.json`
-  - Nicht-Standardkonto: `<channel>-<accountId>-allowFrom.json`
+- Speicher der genehmigten Zulassungsliste: `<channel>-<accountId>-allowFrom.json` (Genehmigungen für das
+  Standardkonto verwenden `<channel>-default-allowFrom.json`)
 
-Verhalten bei Konten-Scopes:
+Verhalten des Kontobereichs:
 
-- Nicht-Standardkonten lesen/schreiben nur ihre gescopte Zulassungslisten-Datei.
-- Das Standardkonto verwendet die kanalbezogene, nicht gescopte Zulassungslisten-Datei.
+- Konten, die nicht das Standardkonto sind, lesen und schreiben nur ihre bereichsspezifische Zulassungslistendatei.
+- Das Standardkonto berücksichtigt außerdem weiterhin eine ältere, nicht bereichsspezifische Datei `<channel>-allowFrom.json`
+  aus früheren Installationen; Einträge aus beiden Dateien werden beim Lesen zusammengeführt.
 
-Behandeln Sie diese Daten als sensibel (sie steuern den Zugriff auf Ihren Assistenten).
+Behandeln Sie diese als vertraulich (sie steuern den Zugriff auf Ihren Assistenten).
 
 <Note>
-Der Pairing-Zulassungslisten-Speicher dient dem DM-Zugriff. Gruppenautorisierung ist separat.
-Die Freigabe eines DM-Pairing-Codes erlaubt diesem Absender nicht automatisch, Gruppenbefehle
-auszuführen oder den Bot in Gruppen zu steuern. Die Initialisierung des ersten Owners ist ein separater
-Konfigurationszustand in `commands.ownerAllowFrom`, und die Zustellung in Gruppenchats folgt weiterhin den
-Gruppen-Zulassungslisten des Kanals (zum Beispiel `groupAllowFrom`, `groups` oder kanalabhängigen
-Überschreibungen pro Gruppe oder pro Thema).
+Der Pairing-Zulassungslistenspeicher ist für den DM-Zugriff vorgesehen. Die Gruppenautorisierung erfolgt separat.
+Die Genehmigung eines DM-Pairing-Codes erlaubt diesem Absender nicht automatisch, Gruppenbefehle
+auszuführen oder den Bot in Gruppen zu steuern. Die Initialisierung des ersten Eigentümers ist ein separater Konfigurationszustand
+in `commands.ownerAllowFrom`, und die Zustellung von Gruppenchats folgt weiterhin den
+Gruppenzulassungslisten des Kanals (beispielsweise `groupAllowFrom`, `groups` oder Überschreibungen pro Gruppe
+oder Thema, je nach Kanal).
 </Note>
 
-## 2) Node-Geräte-Pairing (iOS/Android/macOS/headless Nodes)
+## 2) Pairing von Node-Geräten (iOS-/Android-/macOS-/Headless-Nodes)
 
-Nodes verbinden sich mit dem Gateway als **Geräte** mit `role: node`. Das Gateway
-erstellt eine Geräte-Pairing-Anfrage, die freigegeben werden muss.
+Nodes verbinden sich als **Geräte** mit `role: node` mit dem Gateway. Das Gateway
+erstellt eine Anfrage zum Geräte-Pairing, die genehmigt werden muss.
 
-### Über die Control UI koppeln (empfohlen)
+### Pairing über die Control UI (empfohlen)
 
 Verwenden Sie eine bereits verbundene Control-UI-Sitzung mit `operator.admin`-Zugriff:
 
-1. Öffnen Sie die Control UI und wählen Sie **Nodes** aus.
-2. Klicken Sie unter **Geräte** auf **Mobiles Gerät koppeln**.
-3. Öffnen Sie auf Ihrem Telefon die OpenClaw-App → **Einstellungen** → **Gateway**.
-4. Scannen Sie den QR-Code oder fügen Sie den Setup-Code ein und stellen Sie dann die Verbindung her.
+1. Öffnen Sie die Control UI und wählen Sie **Nodes**.
+2. Klicken Sie auf der Seite **Devices** auf **Pair mobile device**.
+3. Öffnen Sie auf Ihrem Telefon die OpenClaw-App → **Settings** → **Gateway**.
+4. Scannen Sie den QR-Code oder fügen Sie den Einrichtungscode ein und stellen Sie dann die Verbindung her.
 
-Offizielle OpenClaw-Apps für iOS und Android werden automatisch freigegeben, wenn ihre
-Setup-Code-Metadaten übereinstimmen. Wenn **Geräte** eine ausstehende Anfrage anzeigt (zum
-Beispiel für einen nicht offiziellen Client oder nicht übereinstimmende Metadaten), prüfen Sie Rolle und
-Scopes, bevor Sie sie freigeben.
+Offizielle OpenClaw-Apps für iOS und Android werden automatisch genehmigt, wenn ihre
+Metadaten des Einrichtungscodes übereinstimmen. Wenn unter **Pending approval** eine Anfrage angezeigt wird (zum
+Beispiel für einen nicht offiziellen Client oder nicht übereinstimmende Metadaten), prüfen Sie deren Rolle und
+Berechtigungsbereiche, bevor Sie sie genehmigen.
 
-Die Schaltfläche ist deaktiviert, wenn die aktuelle Control-UI-Sitzung keinen Administratorzugriff hat.
-Verwenden Sie in diesem Fall den untenstehenden CLI-Freigabeablauf vom Gateway-Host aus.
+Die Schaltfläche ist deaktiviert, wenn die aktuelle Control-UI-Sitzung keinen
+Administratorzugriff hat. Verwenden Sie in diesem Fall den nachfolgenden CLI-Genehmigungsablauf auf dem
+Gateway-Host.
 
-### Über Telegram koppeln
+### Pairing über Telegram
 
-Wenn Sie das `device-pair`-Plugin verwenden, können Sie das erstmalige Geräte-Pairing vollständig über Telegram durchführen:
+Wenn Sie das Plugin `device-pair` verwenden, können Sie das erstmalige Geräte-Pairing vollständig über Telegram durchführen:
 
-1. Senden Sie Ihrem Bot in Telegram eine Nachricht: `/pair`
-2. Der Bot antwortet mit zwei Nachrichten: einer Anleitungsnachricht und einer separaten Nachricht mit dem **Setup-Code** (in Telegram leicht zu kopieren/einzufügen).
-3. Öffnen Sie auf Ihrem Telefon die OpenClaw-iOS-App → Einstellungen → Gateway.
-4. Scannen Sie den QR-Code oder fügen Sie den Setup-Code ein und verbinden Sie sich.
-5. Die offizielle mobile App verbindet sich automatisch. Wenn `/pair pending` eine
-   Anfrage anzeigt, prüfen Sie Rolle und Scopes, bevor Sie sie freigeben.
+1. Senden Sie Ihrem Bot in Telegram die Nachricht: `/pair`
+2. Der Bot antwortet mit zwei Nachrichten: einer Anleitungsnachricht und einer separaten Nachricht mit dem **Einrichtungscode** (in Telegram leicht zu kopieren und einzufügen).
+3. Öffnen Sie auf Ihrem Telefon die OpenClaw-iOS-App → Settings → Gateway.
+4. Scannen Sie den QR-Code (`/pair qr`) oder fügen Sie den Einrichtungscode ein und stellen Sie die Verbindung her.
+5. Die offizielle mobile App stellt automatisch eine Verbindung her. Wenn `/pair pending` eine
+   Anfrage anzeigt, prüfen Sie deren Rolle und Berechtigungsbereiche, bevor Sie sie genehmigen.
 
-Der Setup-Code ist eine base64-codierte JSON-Nutzlast, die Folgendes enthält:
+Der Einrichtungscode ist eine Base64-codierte JSON-Nutzlast, die Folgendes enthält:
 
 - `url`: die Gateway-WebSocket-URL (`ws://...` oder `wss://...`)
-- `bootstrapToken`: ein kurzlebiges Bootstrap-Token für ein einzelnes Gerät, das für den initialen Pairing-Handshake verwendet wird
+- `urls`: sofern verfügbar, die geordneten LAN-/Tailnet-Routen, die die mobile App ausprobieren kann
+- `bootstrapToken`: ein einmal verwendbares Bootstrap-Token für den anfänglichen Pairing-Handshake; das Gateway lässt es nach 10 Minuten ablaufen
 
-Dieses Bootstrap-Token trägt das integrierte Pairing-Bootstrap-Profil:
+Führen Sie `/pair cleanup` aus, um nicht verwendete Einrichtungscodes ungültig zu machen, sobald das Pairing abgeschlossen ist.
 
-- Das integrierte Setup-Profil erlaubt nur die frische QR-/Setup-Code-Baseline:
-  `node` plus eine begrenzte `operator`-Übergabe
-- Das übergebene `node`-Token bleibt `scopes: []`
+Dieses Bootstrap-Token umfasst das integrierte Pairing-Bootstrap-Profil:
+
+- Das integrierte Einrichtungsprofil erlaubt nur die Baseline für neue QR-/Einrichtungscodes:
+  `node` sowie eine begrenzte `operator`-Übergabe
+- Das übergebene `node`-Token behält `scopes: []`
 - Das übergebene `operator`-Token ist auf `operator.approvals`,
-  `operator.read`, `operator.talk.secrets` und `operator.write` begrenzt
-- `operator.admin` wird durch den QR-/Setup-Code-Bootstrap nicht gewährt; dafür ist ein
-  separater freigegebener Operator-Pairing- oder Token-Ablauf erforderlich
-- Spätere Token-Rotation/-Widerruf bleiben sowohl durch den freigegebenen
-  Rollenvertrag des Geräts als auch durch die Operator-Scopes der aufrufenden Sitzung begrenzt
+  `operator.read`, `operator.talk.secrets` und `operator.write` beschränkt
+- `operator.admin` wird nicht durch den Bootstrap über QR-/Einrichtungscode gewährt; dafür ist ein
+  separater genehmigter Operator-Pairing- oder Token-Ablauf erforderlich
+- Eine spätere Rotation oder Sperrung von Tokens bleibt sowohl durch den genehmigten
+  Rollenvertrag des Geräts als auch durch die Operator-Berechtigungsbereiche der aufrufenden Sitzung begrenzt
 
-Behandeln Sie den Setup-Code wie ein Passwort, solange er gültig ist.
+Behandeln Sie den Einrichtungscode wie ein Passwort, solange er gültig ist.
 
-Für Tailscale, öffentliche oder andere entfernte mobile Pairing-Szenarien verwenden Sie Tailscale Serve/Funnel
-oder eine andere `wss://`-Gateway-URL. Klartext-Setup-Codes mit `ws://` werden nur
-für Loopback, private LAN-Adressen, `.local`-Bonjour-Hosts und den Android-
-Emulator-Host akzeptiert. Tailnet-CGNAT-Adressen, `.ts.net`-Namen und öffentliche Hosts werden weiterhin
-vor der QR-/Setup-Code-Ausgabe fail-closed abgelehnt.
+Verwenden Sie für Tailscale-, öffentliche oder andere entfernte mobile Pairings Tailscale Serve/Funnel
+oder eine andere `wss://`-Gateway-URL. Einrichtungscodes mit unverschlüsseltem `ws://` werden nur
+für Loopback-, private LAN-Adressen, `.local`-Bonjour-Hosts und den Host des Android-
+Emulators akzeptiert. Tailnet-CGNAT-Adressen, `.ts.net`-Namen und öffentliche Hosts werden weiterhin
+vor der Ausgabe des QR-/Einrichtungscodes standardmäßig abgelehnt.
 
-### Node-Gerät freigeben
+Für `gateway.bind=lan`-Einrichtungs-URLs erkennt OpenClaw dauerhafte HTTPS-Stamm-URLs von Tailscale Serve,
+die den Loopback-Port des aktiven Gateways als Proxy weiterleiten, und gibt sie
+zusammen mit der LAN-Route bekannt. Der Einrichtungsbefehl fügt diesen Fallback nur
+für `lan` hinzu; `custom` und `tailnet` behalten ihre explizit bekannt gegebenen Routen bei. Die
+iOS-App prüft die bekannt gegebenen Routen der Reihe nach und speichert den ersten erreichbaren
+Endpunkt.
+
+### Ein Node-Gerät genehmigen
 
 ```bash
 openclaw devices list
@@ -175,25 +189,25 @@ openclaw devices approve <requestId>
 openclaw devices reject <requestId>
 ```
 
-Wenn eine explizite Freigabe verweigert wird, weil die freigebende gekoppelte Gerätesitzung
-nur mit Pairing-Scope geöffnet wurde, versucht die CLI dieselbe Anfrage erneut mit
-`operator.admin`. Dadurch kann ein vorhandenes, adminfähiges gekoppeltes Gerät ein neues
-Control-UI-/Browser-Pairing wiederherstellen, ohne `devices/paired.json` manuell zu bearbeiten. Das
-Gateway validiert die erneut versuchte Verbindung weiterhin; Tokens, die sich nicht mit
-`operator.admin` authentifizieren können, bleiben blockiert.
+Wenn eine explizite Genehmigung abgelehnt wird, weil die genehmigende Sitzung des gekoppelten Geräts
+nur mit Pairing-Berechtigungsumfang geöffnet wurde, wiederholt die CLI dieselbe Anfrage mit
+`operator.admin`. Dadurch kann ein vorhandenes, administratorfähiges gekoppeltes Gerät ein neues
+Pairing für die Control UI bzw. den Browser wiederherstellen, ohne den Pairing-Speicher manuell zu bearbeiten. Das
+Gateway validiert die wiederholte Verbindung weiterhin; Tokens, die sich nicht
+mit `operator.admin` authentifizieren können, bleiben blockiert.
 
-Wenn dasselbe Gerät es mit anderen Authentifizierungsdetails erneut versucht (zum Beispiel mit anderer
-Rolle/anderen Scopes/anderem öffentlichen Schlüssel), wird die vorherige ausstehende Anfrage ersetzt und eine neue
+Wenn dasselbe Gerät den Versuch mit anderen Authentifizierungsdetails wiederholt (beispielsweise mit einer anderen
+Rolle, anderen Berechtigungsbereichen oder einem anderen öffentlichen Schlüssel), wird die vorherige ausstehende Anfrage ersetzt und eine neue
 `requestId` erstellt.
 
 <Note>
-Ein bereits gekoppeltes Gerät erhält nicht stillschweigend breiteren Zugriff. Wenn es sich erneut verbindet und mehr Scopes oder eine breitere Rolle anfordert, behält OpenClaw die bestehende Freigabe unverändert bei und erstellt eine neue ausstehende Upgrade-Anfrage. Verwenden Sie `openclaw devices list`, um den aktuell freigegebenen Zugriff mit dem neu angeforderten Zugriff zu vergleichen, bevor Sie freigeben.
+Ein bereits gekoppeltes Gerät erhält nicht unbemerkt umfassenderen Zugriff. Wenn es beim erneuten Verbinden weitere Berechtigungsbereiche oder eine umfassendere Rolle anfordert, behält OpenClaw die vorhandene Genehmigung unverändert bei und erstellt eine neue ausstehende Upgrade-Anfrage. Verwenden Sie `openclaw devices list`, um den aktuell genehmigten Zugriff mit dem neu angeforderten Zugriff zu vergleichen, bevor Sie die Genehmigung erteilen.
 </Note>
 
-### Optionales automatisches Freigeben von Nodes über vertrauenswürdige CIDRs
+### Optionale automatische Genehmigung von Nodes für vertrauenswürdige CIDRs
 
-Geräte-Pairing bleibt standardmäßig manuell. Für streng kontrollierte Node-Netzwerke
-können Sie sich mit expliziten CIDRs oder exakten IPs für die automatische erstmalige Node-Freigabe entscheiden:
+Das Geräte-Pairing erfolgt standardmäßig weiterhin manuell. Für streng kontrollierte Node-Netzwerke
+können Sie die automatische Genehmigung erstmaliger Nodes mit expliziten CIDRs oder exakten IP-Adressen aktivieren:
 
 ```json5
 {
@@ -207,30 +221,34 @@ können Sie sich mit expliziten CIDRs oder exakten IPs für die automatische ers
 }
 ```
 
-Dies gilt nur für frische `role: node`-Pairing-Anfragen ohne angeforderte
-Scopes. Operator-, Browser-, Control-UI- und WebChat-Clients erfordern weiterhin manuelle
-Freigabe. Änderungen an Rolle, Scope, Metadaten und öffentlichem Schlüssel erfordern weiterhin manuelle
-Freigabe.
+Dies gilt nur für neue Pairing-Anfragen mit `role: node` ohne angeforderte
+Berechtigungsbereiche. Operator-, Browser-, Control-UI- und WebChat-Clients erfordern weiterhin eine manuelle
+Genehmigung. Änderungen an Rolle, Berechtigungsumfang, Metadaten und öffentlichem Schlüssel erfordern weiterhin eine manuelle
+Genehmigung.
 
-### Zustandsspeicherung für Node-Pairing
+### Speicherung des Node-Pairing-Zustands
 
-Gespeichert unter `~/.openclaw/devices/`:
+Gespeichert in der gemeinsamen SQLite-Zustandsdatenbank unter `~/.openclaw/state/openclaw.sqlite`:
 
-- `pending.json` (kurzlebig; ausstehende Anfragen laufen ab)
-- `paired.json` (gekoppelte Geräte + Tokens)
+- ausstehende Anfragen für Geräte-Pairing (kurzlebig; sie laufen nach 5 Minuten ab)
+- gekoppelte Geräte und Tokens
+
+Ältere Gateways speicherten diesen Zustand in `~/.openclaw/devices/*.json`; diese Dateien werden
+beim Start des Gateways in SQLite importiert und mit dem Suffix `.migrated` archiviert.
 
 ### Hinweise
 
-- Die Legacy-API `node.pair.*` (CLI: `openclaw nodes pending|approve|reject|remove|rename`) ist ein
-  separater, vom Gateway verwalteter Pairing-Speicher. WS-Nodes benötigen weiterhin Geräte-Pairing.
-- Der Pairing-Datensatz ist die dauerhafte Quelle der Wahrheit für freigegebene Rollen. Aktive
-  Geräte-Tokens bleiben auf diese freigegebene Rollenmenge begrenzt; ein verwaister Token-Eintrag
-  außerhalb der freigegebenen Rollen schafft keinen neuen Zugriff.
+- Die API `node.pair.*` (CLI: `openclaw nodes pending|approve|reject|remove|rename`) verwaltet
+  Genehmigungen für Node-Funktionen, die in denselben Datensätzen gekoppelter Geräte gespeichert werden. WS-Nodes
+  erfordern weiterhin Geräte-Pairing; siehe [Node-Pairing](/de/gateway/pairing).
+- Der Pairing-Datensatz ist die dauerhafte maßgebliche Quelle für genehmigte Rollen. Aktive
+  Geräte-Tokens bleiben auf diese genehmigte Rollenmenge beschränkt; ein einzelner Token-Eintrag
+  außerhalb der genehmigten Rollen erzeugt keinen neuen Zugriff.
 
-## Verwandte Dokumentation
+## Zugehörige Dokumentation
 
-- Sicherheitsmodell + Prompt Injection: [Sicherheit](/de/gateway/security)
-- Sicher aktualisieren (Doctor ausführen): [Aktualisierung](/de/install/updating)
+- Sicherheitsmodell und Prompt-Injection: [Sicherheit](/de/gateway/security)
+- Sichere Aktualisierung (Doctor ausführen): [Aktualisierung](/de/install/updating)
 - Kanalkonfigurationen:
   - Telegram: [Telegram](/de/channels/telegram)
   - WhatsApp: [WhatsApp](/de/channels/whatsapp)

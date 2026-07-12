@@ -1,126 +1,130 @@
 ---
 read_when:
-    - OpenClaw で「context」が何を意味するのかを理解したい
-    - モデルが何かを「知っている」理由（または忘れた理由）をデバッグする
-    - コンテキストのオーバーヘッドを減らしたい場合（/context、/status、/compact）
-summary: 'コンテキスト: モデルが見る内容、構築方法、確認方法'
+    - OpenClaw における「コンテキスト」の意味を理解したい場合
+    - モデルが何かを「知っている」（または忘れた）理由をデバッグする
+    - コンテキストのオーバーヘッドを削減したい（/context、/status、/compact）
+summary: コンテキスト：モデルが参照する内容、その構築方法、確認方法
 title: コンテキスト
 x-i18n:
-    generated_at: "2026-07-05T11:13:10Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:29:20Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: 2b94bf7dd87318107840faced4e899e0a4acae5fe8ae55cfcb91ae72259c79aa
+    source_hash: 1eb3d342a601a447487640587f746cc80a133ede338a880741f53c3e01f20ed1
     source_path: concepts/context.md
     workflow: 16
 ---
 
-「コンテキスト」とは、**OpenClaw が 1 回の実行でモデルに送信するすべて**です。これはモデルの**コンテキストウィンドウ**（トークン制限）によって上限が決まります。
+「コンテキスト」とは、**OpenClaw が1回の実行でモデルに送信するすべてのもの**です。これはモデルの**コンテキストウィンドウ**（トークン上限）によって制限されます。
 
-初心者向けの考え方:
+初心者向けの考え方：
 
-- **システムプロンプト**（OpenClaw が構築）: ルール、ツール、Skills リスト、時刻/ランタイム、注入されたワークスペースファイル。
-- **会話履歴**: このセッションでのあなたのメッセージ + アシスタントのメッセージ。
-- **ツール呼び出し/結果 + 添付ファイル**: コマンド出力、ファイル読み取り、画像/音声など。
+- **システムプロンプト**（OpenClaw が構築）：ルール、ツール、Skills リスト、時刻／ランタイム、挿入されたワークスペースファイル。
+- **会話履歴**：このセッションにおけるあなたのメッセージとアシスタントのメッセージ。
+- **ツール呼び出し／結果と添付ファイル**：コマンド出力、ファイルの読み取り、画像／音声など。
 
-コンテキストは「メモリ」と_同じものではありません_: メモリはディスクに保存して後で再読み込みできます。コンテキストはモデルの現在のウィンドウ内にあるものです。
+コンテキストは「メモリ」と_同じものではありません_。メモリはディスクに保存して後で再読み込みできますが、コンテキストはモデルの現在のウィンドウ内にあるものです。
 
-## クイックスタート（コンテキストを調べる）
+## クイックスタート（コンテキストを確認）
 
-- `/status` → 「ウィンドウがどれくらい埋まっているか」の簡易表示 + セッション設定。
-- `/context list` → 何が注入されているか + おおよそのサイズ（ファイルごと + 合計）。
-- `/context detail` → より詳細な内訳: ファイルごと、ツールスキーマごとのサイズ、Skills エントリごとのサイズ、システムプロンプトサイズ、Compaction 可能なトランスクリプトメッセージ数。
-- `/context map` → 現在のセッションで追跡されているコンテキスト要因の WinDirStat 風ツリーマップ画像。
-- `/usage tokens` → 通常の返信に、返信ごとの使用量フッターを追加。
-- `/compact` → 古い履歴をコンパクトなエントリに要約し、ウィンドウ空間を解放。
+- `/status` → 「ウィンドウがどの程度埋まっているか」の概要とセッション設定。
+- `/context list` → 挿入されている内容と概算サイズ（ファイルごと＋合計）。
+- `/context detail` → より詳細な内訳：ファイルごと、ツールスキーマごと、Skills エントリごとのサイズ、システムプロンプトのサイズ、および圧縮可能なトランスクリプトメッセージ数。
+- `/context map` → 現在のセッションで追跡されているコンテキスト要因を示す、WinDirStat 形式のツリーマップ画像。
+- `/usage tokens` → 通常の応答に、応答ごとの使用量フッターを追加。
+- `/compact` → 古い履歴をコンパクトなエントリに要約して、ウィンドウの空き容量を増やす。
 
-関連項目: [スラッシュコマンド](/ja-JP/tools/slash-commands), [トークン使用量とコスト](/ja-JP/reference/token-use), [Compaction](/ja-JP/concepts/compaction)。
+関連項目：[スラッシュコマンド](/ja-JP/tools/slash-commands)、[トークン使用量とコスト](/ja-JP/reference/token-use)、[Compaction](/ja-JP/concepts/compaction)。
 
 ## 出力例
 
-値はモデル、プロバイダー、ツールポリシー、ワークスペース内の内容によって異なります。
+値はモデル、プロバイダー、ツールポリシー、ワークスペースの内容によって異なります。
 
 ### `/context list`
 
 ```text
-🧠 Context breakdown
-Workspace: <workspaceDir>
-Bootstrap max/file: 12,000 chars
-Sandbox: mode=non-main sandboxed=false
-System prompt (run): 38,412 chars (~9,603 tok) (Project Context 23,901 chars (~5,976 tok))
+🧠 コンテキストの内訳
+ワークスペース：<workspaceDir>
+ブートストラップの最大文字数／ファイル：12,000 文字
+サンドボックス：mode=non-main sandboxed=false
+システムプロンプト（実行）：38,412 文字（約9,603 tok）（プロジェクトコンテキスト 23,901 文字（約5,976 tok））
 
-Injected workspace files:
-- AGENTS.md: OK | raw 1,742 chars (~436 tok) | injected 1,742 chars (~436 tok)
-- SOUL.md: OK | raw 912 chars (~228 tok) | injected 912 chars (~228 tok)
-- TOOLS.md: TRUNCATED | raw 54,210 chars (~13,553 tok) | injected 20,962 chars (~5,241 tok)
-- IDENTITY.md: OK | raw 211 chars (~53 tok) | injected 211 chars (~53 tok)
-- USER.md: OK | raw 388 chars (~97 tok) | injected 388 chars (~97 tok)
-- HEARTBEAT.md: MISSING | raw 0 | injected 0
-- BOOTSTRAP.md: OK | raw 0 chars (~0 tok) | injected 0 chars (~0 tok)
+挿入されたワークスペースファイル：
+- AGENTS.md: OK | 元データ 1,742 文字（約436 tok）| 挿入済み 1,742 文字（約436 tok）
+- SOUL.md: OK | 元データ 912 文字（約228 tok）| 挿入済み 912 文字（約228 tok）
+- TOOLS.md: TRUNCATED | 元データ 54,210 文字（約13,553 tok）| 挿入済み 20,962 文字（約5,241 tok）
+- IDENTITY.md: OK | 元データ 211 文字（約53 tok）| 挿入済み 211 文字（約53 tok）
+- USER.md: OK | 元データ 388 文字（約97 tok）| 挿入済み 388 文字（約97 tok）
+- HEARTBEAT.md: MISSING | 元データ 0 | 挿入済み 0
+- BOOTSTRAP.md: OK | 元データ 0 文字（約0 tok）| 挿入済み 0 文字（約0 tok）
 
-Skills list (system prompt text): 2,184 chars (~546 tok) (12 skills)
-Tools: read, edit, write, exec, process, browser, message, sessions_send, …
-Tool list (system prompt text): 1,032 chars (~258 tok)
-Tool schemas (JSON): 31,988 chars (~7,997 tok) (counts toward context; not shown as text)
-Tools: (same as above)
+Skills リスト（システムプロンプトのテキスト）：2,184 文字（約546 tok）（12 skills）
+ツール：read, edit, write, exec, process, browser, message, sessions_send, …
+ツールリスト（システムプロンプトのテキスト）：1,032 文字（約258 tok）
+ツールスキーマ（JSON）：31,988 文字（約7,997 tok）（コンテキストに算入されるが、テキストとしては表示されない）
+ツール：（上記と同じ）
 
-Session tokens (cached): 14,250 total / ctx=32,000
+セッショントークン（キャッシュ済み）：合計 14,250 / ctx=32,000
 ```
 
 ### `/context detail`
 
 ```text
-🧠 Context breakdown (detailed)
+🧠 コンテキストの内訳（詳細）
 …
-Top skills (prompt entry size):
-- frontend-design: 412 chars (~103 tok)
-- oracle: 401 chars (~101 tok)
-… (+10 more skills)
+上位の Skills（プロンプトエントリのサイズ）：
+- frontend-design: 412 文字（約103 tok）
+- oracle: 401 文字（約101 tok）
+…（ほか10個の Skills）
 
-Top tools (schema size):
-- browser: 9,812 chars (~2,453 tok)
-- exec: 6,240 chars (~1,560 tok)
-… (+N more tools)
+上位のツール（スキーマサイズ）：
+- browser: 9,812 文字（約2,453 tok）
+- exec: 6,240 文字（約1,560 tok）
+…（ほかN個のツール）
 ```
 
 ### `/context map`
 
-最新のキャッシュ済み実行レポートから生成された画像を送信します。セッション内で通常のメッセージがまだ実行レポートを生成していない場合、`/context map` は見積もりを描画する代わりに、利用不可メッセージを返します。長方形の面積は、追跡対象のプロンプト文字数に比例します:
+最新のキャッシュ済み実行レポートとセッショントランスクリプトから生成した画像を送信します。セッション内で通常のメッセージによる実行レポートがまだ生成されていない場合、`/context map` は推定画像をレンダリングせず、利用不可のメッセージを返します。長方形の面積は、追跡対象のプロンプト文字数に比例します：
 
-- 注入されたワークスペースファイル
-- ベースのシステムプロンプトテキスト
+- 会話トランスクリプト（ユーザーメッセージ、アシスタントの応答、ツール結果、Compaction の要約）に加え、モデルにのみ届くターンごとのランタイムコンテキストとフックプロンプトの追加内容
+- 挿入されたワークスペースファイル
+- 基本システムプロンプトのテキスト
 - Skills プロンプトエントリ
-- ツール JSON スキーマ
+- ツールの JSON スキーマ
 
-`/context list`、`/context detail`、`/context json` は、実行レポートがキャッシュされていない場合でもオンデマンド見積もりを調べられます。
+セッションの進行に伴って会話グループが増大するため、マップはターンごとに変化します。Compaction の後は、要約タイルに縮約されます。
 
-## コンテキストウィンドウに含まれるもの
+実行レポートがキャッシュされていない場合でも、`/context list`、`/context detail`、`/context json` ではオンデマンドの推定値を確認できます。
 
-モデルが受け取るすべてが含まれます。例:
+## コンテキストウィンドウに算入されるもの
+
+モデルが受け取るものは、以下を含めすべて算入されます：
 
 - システムプロンプト（すべてのセクション）。
 - 会話履歴。
-- ツール呼び出し + ツール結果。
-- 添付ファイル/トランスクリプト（画像/音声/ファイル）。
-- Compaction 要約と pruning 成果物。
-- プロバイダーの「ラッパー」または隠しヘッダー（表示されませんが、カウントされます）。
+- ツール呼び出しとツール結果。
+- 添付ファイル／トランスクリプト（画像／音声／ファイル）。
+- Compaction の要約とプルーニング生成物。
+- プロバイダーの「ラッパー」または非表示ヘッダー（表示されなくても算入されます）。
 
-## OpenClaw がシステムプロンプトを構築する方法
+## OpenClaw がシステムプロンプトを構築する仕組み
 
-システムプロンプトは **OpenClaw が所有**し、実行ごとに再構築されます。含まれるもの:
+システムプロンプトは **OpenClaw が所有**し、実行ごとに再構築されます。以下が含まれます：
 
-- ツールリスト + 短い説明。
+- ツールリストと簡単な説明。
 - Skills リスト（メタデータのみ。下記参照）。
 - ワークスペースの場所。
-- 時刻（UTC + 設定されている場合は変換済みユーザー時刻）。
-- ランタイムメタデータ（ホスト/OS/モデル/thinking）。
-- **Project Context** の下に注入されたワークスペースのブートストラップファイル。
+- 時刻（UTC と、設定されている場合は変換後のユーザー時刻）。
+- ランタイムメタデータ（ホスト／OS／モデル／思考）。
+- **プロジェクトコンテキスト**に挿入されたワークスペースのブートストラップファイル。
 
-完全な内訳: [システムプロンプト](/ja-JP/concepts/system-prompt)。
+完全な内訳：[システムプロンプト](/ja-JP/concepts/system-prompt)。
 
-## 注入されるワークスペースファイル（Project Context）
+## 挿入されたワークスペースファイル（プロジェクトコンテキスト）
 
-デフォルトでは、OpenClaw は固定されたワークスペースファイル群を注入します（存在する場合）:
+デフォルトでは、OpenClaw は固定された一連のワークスペースファイル（存在する場合）を注入します。
 
 - `AGENTS.md`
 - `SOUL.md`
@@ -128,73 +132,78 @@ Top tools (schema size):
 - `IDENTITY.md`
 - `USER.md`
 - `HEARTBEAT.md`
-- `BOOTSTRAP.md`（初回実行のみ）
+- `BOOTSTRAP.md`（初回実行時のみ）
 
-大きなファイルは、`agents.defaults.bootstrapMaxChars`（デフォルト `20000` 文字）を使ってファイルごとに切り詰められます。OpenClaw はさらに、`agents.defaults.bootstrapTotalMaxChars`（デフォルト `60000` 文字）でファイル全体にまたがるブートストラップ注入の合計上限も適用します。`/context` は、**raw と injected** のサイズ、および切り詰めが発生したかどうかを表示します。
+大きなファイルは、`agents.defaults.bootstrapMaxChars`（デフォルトは `20000` 文字）を使用してファイルごとに切り詰められます。また、OpenClaw は `agents.defaults.bootstrapTotalMaxChars`（デフォルトは `60000` 文字）により、ファイル全体に対するブートストラップ注入量の上限を適用します。`/context` には、**元のサイズと注入後のサイズ**、および切り詰めが発生したかどうかが表示されます。
 
-切り詰めが発生した場合、ランタイムは Project Context の下にプロンプト内警告ブロックを注入できます。これは `agents.defaults.bootstrapPromptTruncationWarning`（`off`、`once`、`always`; デフォルト `always`）で設定します。
+切り詰めが発生した場合、ランタイムは Project Context の下にプロンプト内警告ブロックを注入できます。これは `agents.defaults.bootstrapPromptTruncationWarning`（`off`、`once`、`always`。デフォルトは `always`）で設定します。
 
-## Skills: 注入されるものとオンデマンドで読み込まれるもの
+## Skills：注入とオンデマンド読み込み
 
-システムプロンプトには、コンパクトな **Skills リスト**（名前 + 説明 + 場所）が含まれます。このリストには実際のオーバーヘッドがあります。
+システムプロンプトには、簡潔な **Skills リスト**（名前、説明、場所）が含まれます。このリストによる実際のオーバーヘッドがあります。
 
-Skill の指示はデフォルトでは含まれません。モデルは、**必要な場合にのみ** Skill の `SKILL.md` を `read` することが期待されます。
+Skills の手順は、デフォルトでは含まれません。モデルは、**必要な場合にのみ** Skills の `SKILL.md` を `read` することが想定されています。
 
-## ツール: 2 種類のコスト
+## ツール：2 種類のコスト
 
-ツールは 2 つの形でコンテキストに影響します:
+ツールは、次の 2 つの方法でコンテキストに影響します。
 
-1. システムプロンプト内の**ツールリストテキスト**（「Tooling」として表示されるもの）。
-2. **ツールスキーマ**（JSON）。これはモデルがツールを呼び出せるように送信されます。プレーンテキストとして表示されなくても、コンテキストにカウントされます。
+1. システムプロンプト内の**ツールリストのテキスト**（「Tooling」として表示されるもの）。
+2. **ツールスキーマ**（JSON）。モデルがツールを呼び出せるように、これらがモデルへ送信されます。プレーンテキストとして表示されなくても、コンテキストに含まれます。
 
-`/context detail` は、最も大きいツールスキーマを分解して表示するため、何が支配的かを確認できます。
+`/context detail` では、最も大きなツールスキーマの内訳が表示されるため、どれが大部分を占めているかを確認できます。
 
 ## コマンド、ディレクティブ、「インラインショートカット」
 
-スラッシュコマンドは Gateway によって処理されます。いくつか異なる動作があります:
+スラッシュコマンドは Gateway によって処理されます。動作にはいくつかの種類があります。
 
-- **スタンドアロンコマンド**: `/...` だけのメッセージはコマンドとして実行されます。
-- **ディレクティブ**: `/think`、`/fast`、`/verbose`、`/trace`、`/reasoning`、`/elevated`、`/exec`、`/model`、`/queue` は、モデルがメッセージを見る前に取り除かれます。
-  - ディレクティブのみのメッセージはセッション設定を永続化します。
-  - 通常メッセージ内のインラインディレクティブは、メッセージ単位のヒントとして機能します。
-- **インラインショートカット**（許可リストに含まれる送信者のみ）: 通常メッセージ内の特定の `/...` トークンは即座に実行できます（例: 「hey /status」）。モデルが残りのテキストを見る前に取り除かれます。
+- **単独コマンド**: `/...` のみで構成されるメッセージは、コマンドとして実行されます。
+- **ディレクティブ**: `/think`、`/fast`、`/verbose`、`/trace`、`/reasoning`、`/elevated`、`/exec`、`/model`、`/queue` は、モデルがメッセージを認識する前に取り除かれます。
+  - ディレクティブのみのメッセージは、セッション設定を保持します。
+  - 通常のメッセージ内のインラインディレクティブは、メッセージごとのヒントとして機能します。
+- **インラインショートカット**（許可リストに登録された送信者のみ）: 通常のメッセージ内にある特定の `/...` トークンは即座に実行でき（例: 「hey /status」）、残りのテキストをモデルが認識する前に取り除かれます。
 
 詳細: [スラッシュコマンド](/ja-JP/tools/slash-commands)。
 
-## セッション、Compaction、pruning（永続化されるもの）
+## セッション、Compaction、プルーニング（保持される内容）
 
-メッセージ間で何が永続化されるかは、仕組みによって異なります:
+メッセージ間で保持される内容は、仕組みによって異なります。
 
-- **通常履歴**は、ポリシーによって compact/prune されるまでセッショントランスクリプトに保持されます。
-- **Compaction** は要約をトランスクリプトに永続化し、最近のメッセージはそのまま保持します。
-- **Pruning** は、コンテキストウィンドウの空間を解放するため、_メモリ内_プロンプトから古いツール結果を削除しますが、セッショントランスクリプトを書き換えるわけではありません。完全な履歴は引き続きディスク上で調べられます。
+- **通常の履歴**は、ポリシーにより Compaction またはプルーニングされるまで、セッショントランスクリプトに保持されます。
+- **Compaction**は、要約をトランスクリプトに保持し、最近のメッセージはそのまま維持します。
+- **プルーニング**は、コンテキストウィンドウの空き容量を確保するため、古いツールの結果を_メモリ内_のプロンプトから削除しますが、セッショントランスクリプトは書き換えません。完全な履歴は引き続きディスク上で確認できます。
 
-ドキュメント: [セッション](/ja-JP/concepts/session), [Compaction](/ja-JP/concepts/compaction), [セッション pruning](/ja-JP/concepts/session-pruning)。
+ドキュメント: [セッション](/ja-JP/concepts/session)、[Compaction](/ja-JP/concepts/compaction)、[セッションのプルーニング](/ja-JP/concepts/session-pruning)。
 
-デフォルトでは、OpenClaw は組み立てと Compaction に組み込みの `legacy` コンテキストエンジンを使用します。`kind: "context-engine"` を提供する Plugin をインストールし、`plugins.slots.contextEngine` で選択すると、OpenClaw は代わりに、そのエンジンへコンテキスト組み立て、`/compact`、関連するサブエージェントのコンテキストライフサイクルフックを委譲します。`ownsCompaction: false` は legacy エンジンへの自動フォールバックを意味しません。アクティブなエンジンは引き続き `compact()` を正しく実装する必要があります。プラグ可能なインターフェイス、ライフサイクルフック、設定の全体については、[コンテキストエンジン](/ja-JP/concepts/context-engine)を参照してください。
+デフォルトでは、OpenClaw は組み立てと Compaction に組み込みの `legacy` コンテキストエンジンを使用します。`kind: "context-engine"` を提供する Plugin をインストールし、
+`plugins.slots.contextEngine` で選択すると、OpenClaw は代わりにコンテキストの
+組み立て、`/compact`、および関連するサブエージェントのコンテキストライフサイクルフックをその
+エンジンに委任します。`ownsCompaction: false` はレガシー
+エンジンへ自動的にフォールバックしません。アクティブなエンジンは、引き続き `compact()` を正しく実装する必要があります。完全な
+プラグイン可能インターフェース、ライフサイクルフック、および設定については、[コンテキストエンジン](/ja-JP/concepts/context-engine)を参照してください。
 
-## `/context` が実際に報告するもの
+## `/context` が実際に報告する内容
 
-`/context` は、利用可能な場合は最新の**実行時に構築された**システムプロンプトレポートを優先します:
+`/context` は、利用可能な場合、最新の**実行時に構築された**システムプロンプトレポートを優先します。
 
-- `System prompt (run)` = 最後の組み込み（ツール利用可能）実行から取得され、セッションストアに永続化されたもの。
-- `System prompt (estimate)` = 実行レポートが存在しない場合（またはレポートを生成しない CLI バックエンド経由で実行している場合）にその場で計算されたもの。
+- `System prompt (run)` = 最後に埋め込みで実行された（ツール使用可能な）run から取得され、セッションストアに永続化されます。
+- `System prompt (estimate)` = run レポートが存在しない場合（またはレポートを生成しない CLI バックエンド経由で実行している場合）に、その場で計算されます。
 
-どちらの場合も、サイズと上位の要因を報告します。完全なシステムプロンプトやツールスキーマをダンプすることは**ありません**。詳細モードでは、セッショントランスクリプトを Compaction で使われるものと同じ実会話メッセージ判定条件で比較するため、高いプロンプト/キャッシュ使用量と Compaction 可能な会話履歴を区別しやすくなります。
+どちらの場合も、サイズと上位の寄与要因が報告されます。システムプロンプト全体やツールスキーマがダンプされることは**ありません**。詳細モードでは、セッショントランスクリプトと、Compaction で使用されるものと同じ実際の会話メッセージ判定条件も比較されるため、プロンプトやキャッシュの使用量が多い状態と、圧縮可能な会話履歴を区別しやすくなります。
 
-## 関連
+## 関連項目
 
 <CardGroup cols={2}>
-  <Card title="Context engine" href="/ja-JP/concepts/context-engine" icon="puzzle-piece">
-    Plugin によるカスタムコンテキスト注入。
+  <Card title="コンテキストエンジン" href="/ja-JP/concepts/context-engine" icon="puzzle-piece">
+    Plugin によるカスタムコンテキストの注入。
   </Card>
   <Card title="Compaction" href="/ja-JP/concepts/compaction" icon="compress">
-    長い会話を要約し、モデルウィンドウ内に収める。
+    長い会話を要約して、モデルのコンテキストウィンドウ内に収めます。
   </Card>
-  <Card title="System prompt" href="/ja-JP/concepts/system-prompt" icon="message-lines">
-    システムプロンプトがどのように構築され、各ターンで何を注入するか。
+  <Card title="システムプロンプト" href="/ja-JP/concepts/system-prompt" icon="message-lines">
+    システムプロンプトの構築方法と、各ターンで注入される内容。
   </Card>
-  <Card title="Agent loop" href="/ja-JP/concepts/agent-loop" icon="arrows-rotate">
-    受信メッセージから最終返信までの完全なエージェント実行サイクル。
+  <Card title="エージェントループ" href="/ja-JP/concepts/agent-loop" icon="arrows-rotate">
+    受信メッセージから最終応答までの、エージェント実行サイクル全体。
   </Card>
 </CardGroup>

@@ -1,158 +1,181 @@
 ---
 read_when:
-    - Bonjour-Erkennung/-Ankündigung implementieren oder ändern
+    - Implementieren oder Ändern der Bonjour-Erkennung/-Ankündigung
     - Remote-Verbindungsmodi anpassen (direkt vs. SSH)
-    - Entwurf von Node-Discovery und Pairing für entfernte Nodes
-summary: Node-Erkennung und Transportwege (Bonjour, Tailscale, SSH) für die Suche nach dem Gateway
-title: Erkennung und Transporte
+    - Entwurf der Node-Erkennung und -Kopplung für Remote-Nodes
+summary: Node-Erkennung und -Transporte (Bonjour, Tailscale, SSH) zum Auffinden des Gateways
+title: Erkennung und Transportwege
 x-i18n:
-    generated_at: "2026-05-06T06:47:40Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:19:55Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: 7f53e1292d9e5b402186c48c777e7e665c790981a64679c783ae8d8a1f170ee1
+    source_hash: 3a3f1a6a1212ab0bc7021e77c88de059edcb8e09eff90d3e1e59451b9b20876b
     source_path: gateway/discovery.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-OpenClaw hat zwei unterschiedliche Probleme, die oberflächlich ähnlich aussehen:
+OpenClaw hat zwei verwandte, aber unterschiedliche Erkennungsprobleme:
 
-1. **Operator-Fernsteuerung**: die macOS-Menüleisten-App, die einen Gateway steuert, der an anderer Stelle ausgeführt wird.
-2. **Node-Kopplung**: iOS/Android (und künftige Nodes), die einen Gateway finden und sicher koppeln.
+1. **Fernsteuerung durch den Betreiber**: Die macOS-Menüleisten-App steuert ein Gateway, das an einem anderen Ort ausgeführt wird.
+2. **Node-Kopplung**: iOS/Android (und zukünftige Nodes) finden ein Gateway und koppeln sich sicher damit.
 
-Das Designziel ist, die gesamte Netzwerkerkennung/-ankündigung im **Node Gateway** (`openclaw gateway`) zu halten und Clients (Mac-App, iOS) als Konsumenten zu behandeln.
+Die gesamte Netzwerkerkennung/-ankündigung erfolgt im **Node Gateway**
+(`openclaw gateway`); Clients (Mac-App, iOS) sind ausschließlich Konsumenten.
 
 ## Begriffe
 
-- **Gateway**: ein einzelner, dauerhaft laufender Gateway-Prozess, der den Zustand besitzt (Sitzungen, Kopplung, Node-Registrierung) und Kanäle ausführt. Die meisten Setups verwenden einen pro Host; isolierte Multi-Gateway-Setups sind möglich.
-- **Gateway WS (Steuerebene)**: der WebSocket-Endpunkt standardmäßig auf `127.0.0.1:18789`; kann über `gateway.bind` an LAN/tailnet gebunden werden.
-- **Direkter WS-Transport**: ein LAN-/tailnet-seitiger Gateway-WS-Endpunkt (kein SSH).
-- **SSH-Transport (Fallback)**: Fernsteuerung durch Weiterleitung von `127.0.0.1:18789` über SSH.
+- **Gateway**: ein einzelner, dauerhaft laufender Prozess, der den Zustand verwaltet (Sitzungen,
+  Kopplung, Node-Registrierung) und Kanäle ausführt. Die meisten Konfigurationen verwenden einen pro Host;
+  isolierte Konfigurationen mit mehreren Gateways sind möglich.
+- **Gateway-WS (Steuerungsebene)**: der WebSocket-Endpunkt standardmäßig unter `127.0.0.1:18789`;
+  binden Sie ihn über `gateway.bind` an das LAN/Tailnet.
+- **Direkter WS-Transport**: ein zum LAN/Tailnet gerichteter Gateway-WS-Endpunkt (ohne SSH).
+- **SSH-Transport (Fallback)**: Fernsteuerung durch Weiterleitung von
+  `127.0.0.1:18789` über SSH.
 - **Legacy-TCP-Bridge (entfernt)**: älterer Node-Transport (siehe
-  [Bridge-Protokoll](/de/gateway/bridge-protocol)); wird nicht mehr für die
-  Erkennung angekündigt und ist nicht mehr Teil aktueller Builds.
+  [Bridge-Protokoll](/de/gateway/bridge-protocol)); wird nicht mehr zur
+  Erkennung angekündigt und ist nicht mehr Bestandteil aktueller Builds.
 
-Protokolldetails:
+Protokolldetails: [Gateway-Protokoll](/de/gateway/protocol),
+[Bridge-Protokoll (Legacy)](/de/gateway/bridge-protocol).
 
-- [Gateway-Protokoll](/de/gateway/protocol)
-- [Bridge-Protokoll (Legacy)](/de/gateway/bridge-protocol)
+## Warum sowohl direkte Verbindungen als auch SSH existieren
 
-## Warum wir sowohl direkt als auch SSH beibehalten
+- **Direktes WS** bietet die beste Benutzererfahrung im selben Netzwerk und innerhalb eines Tailnets: automatische
+  LAN-Erkennung über Bonjour, vom Gateway verwaltete Kopplungstoken und ACLs
+  sowie kein erforderlicher Shell-Zugriff.
+- **SSH** ist der universelle Fallback: Es funktioniert überall, wo Sie SSH-Zugriff haben, selbst
+  über voneinander unabhängige Netzwerke hinweg, ist unempfindlich gegenüber Multicast-/mDNS-Problemen und benötigt neben SSH
+  keinen neuen eingehenden Port.
 
-- **Direktes WS** bietet die beste UX im selben Netzwerk und innerhalb eines tailnet:
-  - automatische Erkennung im LAN über Bonjour
-  - Kopplungstoken + ACLs im Besitz des Gateway
-  - kein Shell-Zugriff erforderlich; die Protokolloberfläche kann eng und prüfbar bleiben
-- **SSH** bleibt der universelle Fallback:
-  - funktioniert überall dort, wo Sie SSH-Zugriff haben (auch über unabhängige Netzwerke hinweg)
-  - übersteht Multicast-/mDNS-Probleme
-  - erfordert außer SSH keine neuen eingehenden Ports
+## Erkennungsquellen
 
-## Erkennungsquellen (wie Clients erfahren, wo der Gateway ist)
+### 1) Bonjour / DNS-SD
 
-### 1) Bonjour- / DNS-SD-Erkennung
+Multicast-Bonjour funktioniert nach dem Best-Effort-Prinzip und überschreitet keine Netzwerkgrenzen. OpenClaw unterstützt außerdem
+das Durchsuchen desselben Gateway-Beacons über eine konfigurierte Wide-Area-DNS-SD-
+Domain, sodass die Erkennung sowohl `local.` im selben LAN als auch eine konfigurierte
+Unicast-DNS-SD-Domain für die netzwerkübergreifende Erkennung abdecken kann.
 
-Multicast-Bonjour ist Best-Effort und überschreitet keine Netzwerkgrenzen. OpenClaw kann denselben Gateway-Beacon auch über eine konfigurierte Wide-Area-DNS-SD-Domain durchsuchen, sodass die Erkennung Folgendes abdecken kann:
-
-- `local.` im selben LAN
-- eine konfigurierte Unicast-DNS-SD-Domain für netzwerkübergreifende Erkennung
-
-Zielrichtung:
-
-- Der **Gateway** kündigt seinen WS-Endpunkt über Bonjour an, wenn das gebündelte
-  `bonjour`-Plugin aktiviert ist. Das Plugin startet auf macOS-Hosts automatisch
-  und ist andernorts Opt-in.
-- Clients durchsuchen und zeigen eine Liste „Gateway auswählen“ an und speichern anschließend den gewählten Endpunkt.
+Das **Gateway** kündigt seinen WS-Endpunkt über Bonjour an, wenn das gebündelte
+`bonjour`-Plugin aktiviert ist; Clients suchen danach und zeigen eine Liste zur Gateway-Auswahl an,
+anschließend speichern sie den ausgewählten Endpunkt.
 
 Fehlerbehebung und Beacon-Details: [Bonjour](/de/gateway/bonjour).
 
-#### Service-Beacon-Details
+#### Details zum Dienst-Beacon
 
-- Servicetypen:
-  - `_openclaw-gw._tcp` (Gateway-Transport-Beacon)
+- Diensttyp: `_openclaw-gw._tcp` (Gateway-Transport-Beacon).
 - TXT-Schlüssel (nicht geheim):
-  - `role=gateway`
-  - `transport=gateway`
-  - `displayName=<friendly name>` (vom Operator konfigurierter Anzeigename)
-  - `lanHost=<hostname>.local`
-  - `gatewayPort=18789` (Gateway WS + HTTP)
-  - `gatewayTls=1` (nur wenn TLS aktiviert ist)
-  - `gatewayTlsSha256=<sha256>` (nur wenn TLS aktiviert ist und ein Fingerabdruck verfügbar ist)
-  - `canvasPort=<port>` (Canvas-Host-Port; derzeit identisch mit `gatewayPort`, wenn der Canvas-Host aktiviert ist)
-  - `tailnetDns=<magicdns>` (optionaler Hinweis; automatisch erkannt, wenn Tailscale verfügbar ist)
-  - `sshPort=<port>` (nur mDNS-Vollmodus; Wide-Area-DNS-SD kann dies auslassen, in diesem Fall bleiben SSH-Standardwerte bei `22`)
-  - `cliPath=<path>` (nur mDNS-Vollmodus; Wide-Area-DNS-SD schreibt dies weiterhin als Remote-Installationshinweis)
+
+  | Schlüssel                   | Hinweise                                                                                                                                                         |
+  | --------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+  | `role=gateway`              | Immer vorhanden.                                                                                                                                                 |
+  | `transport=gateway`         | Immer vorhanden.                                                                                                                                                 |
+  | `displayName=<name>`        | Vom Betreiber konfigurierter Anzeigename.                                                                                                                        |
+  | `lanHost=<hostname>.local`  | Nur LAN-mDNS-Ankündiger; wird nicht von Wide-Area-DNS-SD geschrieben.                                                                                            |
+  | `gatewayPort=18789`         | Gateway-WS- und HTTP-Port.                                                                                                                                       |
+  | `gatewayTls=1`              | Nur wenn TLS aktiviert ist.                                                                                                                                      |
+  | `gatewayTlsSha256=<sha256>` | Nur wenn TLS aktiviert und ein Fingerabdruck verfügbar ist.                                                                                                      |
+  | `tailnetDns=<magicdns>`     | Optionaler Hinweis; wird automatisch erkannt, wenn Tailscale verfügbar ist.                                                                                      |
+  | `sshPort=<port>`            | Nur vorhanden, wenn `discovery.mdns.mode="full"`; im standardmäßigen Modus `"minimal"` weggelassen (SSH verwendet standardmäßig `22`), sowohl beim LAN-Ankündiger als auch bei Wide-Area-DNS-SD. |
+  | `cliPath=<path>`            | Dieselbe Bedingung `discovery.mdns.mode="full"` wie bei `sshPort`; ein Hinweis auf den CLI-Pfad einer Remote-Installation.                                        |
+
+  Im Plugin-Erkennungsvertrag ist ein TXT-Schlüssel `canvasPort` für einen
+  zukünftigen Canvas-Host-Port definiert, aber kein aktueller Codepfad legt einen Wert fest, sodass er
+  derzeit nie ausgegeben wird.
 
 Sicherheitshinweise:
 
-- Bonjour-/mDNS-TXT-Einträge sind **nicht authentifiziert**. Clients müssen TXT-Werte nur als UX-Hinweise behandeln.
-- Routing (Host/Port) sollte den **aufgelösten Service-Endpunkt** (SRV + A/AAAA) gegenüber per TXT bereitgestellten `lanHost`, `tailnetDns` oder `gatewayPort` bevorzugen.
-- TLS-Pinning darf niemals zulassen, dass ein angekündigtes `gatewayTlsSha256` einen zuvor gespeicherten Pin überschreibt.
-- iOS-/Android-Nodes sollten eine explizite Bestätigung „diesem Fingerabdruck vertrauen“ verlangen, bevor ein erstmaliger Pin gespeichert wird (Out-of-Band-Verifizierung), wenn die gewählte Route sicher/TLS-basiert ist.
+- Bonjour-/mDNS-TXT-Einträge sind **nicht authentifiziert**. Clients dürfen TXT-
+  Werte nur als Hinweise für die Benutzerführung behandeln.
+- Beim Routing (Host/Port) sollte der **aufgelöste Dienstendpunkt**
+  (SRV + A/AAAA) gegenüber den per TXT bereitgestellten Werten `lanHost`, `tailnetDns` oder `gatewayPort` bevorzugt werden.
+- Beim TLS-Pinning darf ein angekündigter Wert `gatewayTlsSha256` niemals einen
+  zuvor gespeicherten Pin überschreiben.
+- iOS-/Android-Nodes sollten eine ausdrückliche Bestätigung zum Vertrauen dieses Fingerabdrucks
+  verlangen, bevor sie einen erstmaligen Pin speichern (Verifizierung über einen separaten Kanal),
+  wenn die ausgewählte Route sicher bzw. TLS-basiert ist.
 
-Aktivieren/deaktivieren/überschreiben:
+Aktivieren, deaktivieren und überschreiben:
 
-- `openclaw plugins enable bonjour` aktiviert LAN-Multicast-Ankündigungen.
-- `OPENCLAW_DISABLE_BONJOUR=1` deaktiviert Ankündigungen.
-- Wenn das Bonjour-Plugin aktiviert und `OPENCLAW_DISABLE_BONJOUR` nicht gesetzt ist,
-  kündigt Bonjour auf normalen Hosts an und deaktiviert sich automatisch in erkannten Containern.
-  Ein macOS-Gateway-Start mit leerer Konfiguration aktiviert das Plugin automatisch; Linux-,
-  Windows- und containerisierte Deployments benötigen eine explizite Aktivierung.
-  Verwenden Sie `0` nur auf Host, macvlan oder einem anderen mDNS-fähigen Netzwerk; verwenden Sie `1`, um
-  die Deaktivierung zu erzwingen.
-- `gateway.bind` in `~/.openclaw/openclaw.json` steuert den Gateway-Bind-Modus.
-- `OPENCLAW_SSH_PORT` überschreibt den angekündigten SSH-Port, wenn `sshPort` ausgegeben wird.
+- `openclaw plugins enable bonjour` aktiviert die LAN-Multicast-Ankündigung.
+- `discovery.mdns.mode` in `openclaw.json` steuert die mDNS-Übertragung:
+  `"minimal"` (Standard), `"full"` (fügt sowohl dem LAN-
+  Beacon als auch jeder Wide-Area-DNS-SD-Zone `cliPath`/`sshPort` hinzu) oder `"off"` (deaktiviert mDNS).
+- `OPENCLAW_DISABLE_BONJOUR=1` deaktiviert die Ankündigung erzwungenermaßen; `discovery.mdns.mode="off"`
+  deaktiviert sie unabhängig davon. `OPENCLAW_DISABLE_BONJOUR=0` ist eine ausdrückliche
+  Aktivierung, die die automatische Deaktivierung des Plugins in einem erkannten Container
+  (Docker, containerd, Kubernetes, LXC) überschreibt; sie überschreibt nicht
+  `discovery.mdns.mode="off"`. Das gebündelte `bonjour`-Plugin startet automatisch auf
+  macOS-Hosts (`enabledByDefaultOnPlatforms: ["darwin"]`) und deaktiviert sich automatisch
+  in erkannten Containern; Linux, Windows und andere containerisierte
+  Bereitstellungen müssen `plugins enable bonjour` ausdrücklich ausführen.
+- `gateway.bind` in `~/.openclaw/openclaw.json` steuert den Bindungsmodus des Gateways.
+- `OPENCLAW_SSH_PORT` überschreibt den angekündigten SSH-Port (wird nur wirksam,
+  wenn `discovery.mdns.mode="full"`).
 - `OPENCLAW_TAILNET_DNS` veröffentlicht einen `tailnetDns`-Hinweis (MagicDNS).
 - `OPENCLAW_CLI_PATH` überschreibt den angekündigten CLI-Pfad.
 
 ### 2) Tailnet (netzwerkübergreifend)
 
-Für Setups im Stil London/Wien hilft Bonjour nicht. Das empfohlene „direkte“ Ziel ist:
+Bei Gateways in unterschiedlichen physischen Netzwerken hilft Bonjour nicht. Das
+empfohlene direkte Ziel ist ein Tailscale-MagicDNS-Name (bevorzugt) oder eine
+stabile Tailnet-IP.
 
-- Tailscale-MagicDNS-Name (bevorzugt) oder eine stabile tailnet-IP.
+Wenn das Gateway erkennt, dass es unter Tailscale ausgeführt wird, veröffentlicht es
+`tailnetDns` als optionalen Hinweis für Clients (einschließlich Wide-Area-Beacons).
+Die macOS-App bevorzugt MagicDNS-Namen gegenüber unverarbeiteten Tailscale-IPs für die Gateway-
+Erkennung. Dies bleibt zuverlässig, wenn sich Tailnet-IPs ändern (Node-Neustarts,
+CGNAT-Neuzuweisung), da MagicDNS automatisch zur aktuellen IP auflöst.
 
-Wenn der Gateway erkennen kann, dass er unter Tailscale läuft, veröffentlicht er `tailnetDns` als optionalen Hinweis für Clients (einschließlich Wide-Area-Beacons).
+Bei der Kopplung mobiler Nodes lockern Erkennungshinweise niemals die Transportsicherheit auf
+Tailnet-/öffentlichen Routen:
 
-Die macOS-App bevorzugt jetzt MagicDNS-Namen gegenüber rohen Tailscale-IPs für die Gateway-Erkennung. Dies verbessert die Zuverlässigkeit, wenn sich tailnet-IPs ändern (z. B. nach Node-Neustarts oder CGNAT-Neuzuweisung), weil MagicDNS-Namen automatisch zur aktuellen IP auflösen.
-
-Für die Kopplung mobiler Nodes lockern Erkennungshinweise die Transportsicherheit auf tailnet-/öffentlichen Routen nicht:
-
-- iOS/Android verlangen weiterhin einen sicheren erstmaligen tailnet-/öffentlichen Verbindungspfad (`wss://` oder Tailscale Serve/Funnel).
-- Eine erkannte rohe tailnet-IP ist ein Routing-Hinweis, keine Erlaubnis, entferntes Klartext-`ws://` zu verwenden.
-- Privater LAN-Direktverbindungs-`ws://` bleibt unterstützt.
-- Wenn Sie den einfachsten Tailscale-Pfad für mobile Nodes möchten, verwenden Sie Tailscale Serve, sodass sowohl die Erkennung als auch der Setup-Code zum selben sicheren MagicDNS-Endpunkt auflösen.
+- iOS/Android erfordern weiterhin einen sicheren erstmaligen Verbindungspfad über das Tailnet/öffentliche Netz
+  (`wss://` oder Tailscale Serve/Funnel).
+- Eine erkannte unverarbeitete Tailnet-IP ist ein Routinghinweis und keine Erlaubnis,
+  unverschlüsseltes Remote-`ws://` zu verwenden.
+- Direkte private LAN-Verbindungen über `ws://` werden weiterhin unterstützt.
+- Verwenden Sie für den einfachsten Tailscale-Pfad auf mobilen Nodes Tailscale Serve, damit
+  sowohl Erkennung als auch Einrichtung zum selben sicheren MagicDNS-Endpunkt auflösen.
 
 ### 3) Manuelles / SSH-Ziel
 
-Wenn es keine direkte Route gibt (oder direkt deaktiviert ist), können Clients immer per SSH verbinden, indem sie den local loopback-Gateway-Port weiterleiten.
-
-Siehe [Remotezugriff](/de/gateway/remote).
+Wenn es keine direkte Route gibt (oder direkte Verbindungen deaktiviert sind), können Clients jederzeit
+über SSH eine Verbindung herstellen, indem sie den Loopback-Port des Gateways weiterleiten. Siehe
+[Remotezugriff](/de/gateway/remote).
 
 ## Transportauswahl (Client-Richtlinie)
 
-Empfohlenes Client-Verhalten:
-
 1. Wenn ein gekoppelter direkter Endpunkt konfiguriert und erreichbar ist, verwenden Sie ihn.
-2. Andernfalls, wenn die Erkennung einen Gateway auf `local.` oder in der konfigurierten Wide-Area-Domain findet, bieten Sie eine One-Tap-Auswahl „Diesen Gateway verwenden“ an und speichern Sie ihn als direkten Endpunkt.
-3. Andernfalls, wenn eine tailnet-DNS/IP konfiguriert ist, versuchen Sie direkt zu verbinden.
-   Für mobile Nodes auf tailnet-/öffentlichen Routen bedeutet direkt einen sicheren Endpunkt, nicht entferntes Klartext-`ws://`.
-4. Andernfalls auf SSH zurückfallen.
+2. Andernfalls, wenn die Erkennung ein Gateway unter `local.` oder in der konfigurierten Wide-Area-
+   Domain findet, bieten Sie eine Auswahl „Dieses Gateway verwenden“ mit einmaligem Tippen an und speichern Sie es als
+   direkten Endpunkt.
+3. Andernfalls, wenn eine Tailnet-DNS/IP konfiguriert ist, versuchen Sie eine direkte Verbindung. Für mobile Nodes auf
+   Tailnet-/öffentlichen Routen bedeutet „direkt“ einen sicheren Endpunkt und kein unverschlüsseltes
+   Remote-`ws://`.
+4. Andernfalls greifen Sie auf SSH zurück.
 
-## Kopplung + Authentifizierung (direkter Transport)
+## Kopplung und Authentifizierung (direkter Transport)
 
-Der Gateway ist die Source of Truth für die Zulassung von Nodes/Clients.
+Das Gateway ist die maßgebliche Instanz für die Zulassung von Nodes/Clients:
 
-- Kopplungsanfragen werden im Gateway erstellt/genehmigt/abgelehnt (siehe [Gateway-Kopplung](/de/gateway/pairing)).
-- Der Gateway erzwingt:
-  - Authentifizierung (Token / Schlüsselpaar)
-  - Bereiche/ACLs (der Gateway ist kein roher Proxy zu jeder Methode)
-  - Ratenbegrenzungen
+- Kopplungsanfragen werden im Gateway erstellt/genehmigt/abgelehnt (siehe
+  [Gateway-Kopplung](/de/gateway/pairing)).
+- Das Gateway erzwingt die Authentifizierung (Token/Schlüsselpaar), Geltungsbereiche/ACLs (es ist kein unbeschränkter
+  Proxy für jede Methode) und Ratenbegrenzungen.
 
-## Verantwortlichkeiten nach Komponente
+## Zuständigkeiten nach Komponente
 
-- **Gateway**: kündigt Erkennungs-Beacons an, besitzt Kopplungsentscheidungen und hostet den WS-Endpunkt.
-- **macOS-App**: hilft Ihnen, einen Gateway auszuwählen, zeigt Kopplungsaufforderungen an und verwendet SSH nur als Fallback.
-- **iOS-/Android-Nodes**: durchsuchen Bonjour als Komfortfunktion und verbinden sich mit dem gekoppelten Gateway WS.
+- **Gateway**: kündigt Erkennungs-Beacons an, verwaltet Kopplungsentscheidungen und hostet
+  den WS-Endpunkt.
+- **macOS-App**: unterstützt Sie bei der Auswahl eines Gateways, zeigt Kopplungsaufforderungen an und verwendet SSH
+  nur als Fallback.
+- **iOS-/Android-Nodes**: durchsuchen Bonjour als Komfortfunktion und stellen eine Verbindung zum
+  gekoppelten Gateway-WS her.
 
 ## Verwandte Themen
 

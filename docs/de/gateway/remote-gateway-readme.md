@@ -1,39 +1,40 @@
 ---
 read_when: Connecting the macOS app to a remote gateway over SSH
 summary: SSH-Tunnel-Einrichtung für OpenClaw.app zur Verbindung mit einem entfernten Gateway
-title: Remote-Gateway einrichten
+title: Einrichtung eines Remote-Gateways
 x-i18n:
-    generated_at: "2026-04-30T06:55:56Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:26:52Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: fccc75e672bf3295c335fc4d2f610e9cbb3f1882edd12ffb9d009120291bd2d9
+    source_hash: 842578eb74e99d115b04abff5e9673a6454fa6d2cf7905d056999469e1c6b66d
     source_path: gateway/remote-gateway-readme.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-> Dieser Inhalt wurde in [Remotezugriff](/de/gateway/remote#macos-persistent-ssh-tunnel-via-launchagent) zusammengeführt. Die aktuelle Anleitung finden Sie auf dieser Seite.
+<Note>
+Dieser Inhalt befindet sich jetzt unter [Remotezugriff](/de/gateway/remote#macos-persistent-ssh-tunnel-via-launchagent). Verwenden Sie diese Seite für die aktuelle Anleitung; diese Seite bleibt als Weiterleitungsziel bestehen.
+</Note>
 
-# OpenClaw.app mit einem Remote-Gateway ausführen
+# OpenClaw.app mit einem entfernten Gateway ausführen
 
-OpenClaw.app verwendet SSH-Tunneling, um eine Verbindung zu einem Remote-Gateway herzustellen. Diese Anleitung zeigt Ihnen, wie Sie dies einrichten.
-
-## Übersicht
+OpenClaw.app erreicht einen entfernten Gateway über einen SSH-Tunnel: Ein SSH-`LocalForward` ordnet einen lokalen Port dem Gateway-WebSocket-Port auf dem entfernten Host zu.
 
 ```mermaid
 flowchart TB
-    subgraph Client["Client Machine"]
+    subgraph Client["Clientcomputer"]
         direction TB
         A["OpenClaw.app"]
-        B["ws://127.0.0.1:18789\n(local port)"]
-        T["SSH Tunnel"]
+        B["ws://127.0.0.1:18789\n(lokaler Port)"]
+        T["SSH-Tunnel"]
 
         A --> B
         B --> T
     end
-    subgraph Remote["Remote Machine"]
+    subgraph Remote["Entfernter Computer"]
         direction TB
-        C["Gateway WebSocket"]
+        C["Gateway-WebSocket"]
         D["ws://127.0.0.1:18789"]
 
         C --> D
@@ -41,135 +42,26 @@ flowchart TB
     T --> C
 ```
 
-## Schnelle Einrichtung
+## Einrichtung
 
-### Schritt 1: SSH-Konfiguration hinzufügen
+1. Fügen Sie einen SSH-Konfigurationseintrag mit `LocalForward 18789 127.0.0.1:18789` hinzu (den vollständigen Konfigurationsblock finden Sie unter [Remotezugriff](/de/gateway/remote#macos-persistent-ssh-tunnel-via-launchagent)).
+2. Kopieren Sie Ihren SSH-Schlüssel mit `ssh-copy-id` auf den entfernten Host.
+3. Legen Sie `gateway.remote.token` (oder `gateway.remote.password`) mit `openclaw config set gateway.remote.token "<your-token>"` fest.
+4. Starten Sie den Tunnel: `ssh -N remote-gateway &`.
+5. Beenden und öffnen Sie OpenClaw.app erneut.
 
-Bearbeiten Sie `~/.ssh/config` und fügen Sie Folgendes hinzu:
-
-```ssh
-Host remote-gateway
-    HostName <REMOTE_IP>          # e.g., 172.27.187.184
-    User <REMOTE_USER>            # e.g., jefferson
-    LocalForward 18789 127.0.0.1:18789
-    IdentityFile ~/.ssh/id_rsa
-```
-
-Ersetzen Sie `<REMOTE_IP>` und `<REMOTE_USER>` durch Ihre Werte.
-
-### Schritt 2: SSH-Schlüssel kopieren
-
-Kopieren Sie Ihren öffentlichen Schlüssel auf den Remote-Rechner (Passwort einmal eingeben):
-
-```bash
-ssh-copy-id -i ~/.ssh/id_rsa <REMOTE_USER>@<REMOTE_IP>
-```
-
-### Schritt 3: Authentifizierung für den Remote-Gateway konfigurieren
-
-```bash
-openclaw config set gateway.remote.token "<your-token>"
-```
-
-Verwenden Sie stattdessen `gateway.remote.password`, wenn Ihr Remote-Gateway Passwortauthentifizierung nutzt.
-`OPENCLAW_GATEWAY_TOKEN` ist weiterhin als Override auf Shell-Ebene gültig, aber die dauerhafte Einrichtung
-für Remote-Clients ist `gateway.remote.token` / `gateway.remote.password`.
-
-### Schritt 4: SSH-Tunnel starten
-
-```bash
-ssh -N remote-gateway &
-```
-
-### Schritt 5: OpenClaw.app neu starten
-
-```bash
-# Quit OpenClaw.app (⌘Q), then reopen:
-open /path/to/OpenClaw.app
-```
-
-Die App verbindet sich nun über den SSH-Tunnel mit dem Remote-Gateway.
-
----
-
-## Tunnel beim Anmelden automatisch starten
-
-Damit der SSH-Tunnel automatisch startet, wenn Sie sich anmelden, erstellen Sie einen Launch Agent.
-
-### PLIST-Datei erstellen
-
-Speichern Sie dies als `~/Library/LaunchAgents/ai.openclaw.ssh-tunnel.plist`:
-
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-<dict>
-    <key>Label</key>
-    <string>ai.openclaw.ssh-tunnel</string>
-    <key>ProgramArguments</key>
-    <array>
-        <string>/usr/bin/ssh</string>
-        <string>-N</string>
-        <string>remote-gateway</string>
-    </array>
-    <key>KeepAlive</key>
-    <true/>
-    <key>RunAtLoad</key>
-    <true/>
-</dict>
-</plist>
-```
-
-### Launch Agent laden
-
-```bash
-launchctl bootstrap gui/$UID ~/Library/LaunchAgents/ai.openclaw.ssh-tunnel.plist
-```
-
-Der Tunnel wird nun:
-
-- Automatisch gestartet, wenn Sie sich anmelden
-- Neu gestartet, wenn er abstürzt
-- Im Hintergrund weiter ausgeführt
-
-Hinweis zu älteren Versionen: Entfernen Sie alle verbliebenen `com.openclaw.ssh-tunnel`-LaunchAgents, falls vorhanden.
-
----
-
-## Fehlerbehebung
-
-**Prüfen, ob der Tunnel ausgeführt wird:**
-
-```bash
-ps aux | grep "ssh -N remote-gateway" | grep -v grep
-lsof -i :18789
-```
-
-**Tunnel neu starten:**
-
-```bash
-launchctl kickstart -k gui/$UID/ai.openclaw.ssh-tunnel
-```
-
-**Tunnel stoppen:**
-
-```bash
-launchctl bootout gui/$UID/ai.openclaw.ssh-tunnel
-```
-
----
+Verwenden Sie für einen Tunnel, der Neustarts übersteht und automatisch erneut eine Verbindung herstellt, statt eines manuellen `ssh -N` die LaunchAgent-Einrichtung auf der Seite [Remotezugriff](/de/gateway/remote#macos-persistent-ssh-tunnel-via-launchagent).
 
 ## Funktionsweise
 
-| Komponente                           | Funktion                                                     |
-| ------------------------------------ | ------------------------------------------------------------ |
-| `LocalForward 18789 127.0.0.1:18789` | Leitet den lokalen Port 18789 an den Remote-Port 18789 weiter |
-| `ssh -N`                             | SSH ohne Ausführen von Remote-Befehlen (nur Portweiterleitung) |
-| `KeepAlive`                          | Startet den Tunnel automatisch neu, wenn er abstürzt         |
-| `RunAtLoad`                          | Startet den Tunnel, wenn der Agent geladen wird              |
+| Komponente                           | Funktion                                                                    |
+| ------------------------------------ | --------------------------------------------------------------------------- |
+| `LocalForward 18789 127.0.0.1:18789` | Leitet den lokalen Port 18789 an den entfernten Port 18789 weiter            |
+| `ssh -N`                             | SSH ohne Ausführung entfernter Befehle (nur Portweiterleitung)               |
+| `KeepAlive`                          | Startet den Tunnel bei einem Absturz automatisch neu (LaunchAgent)           |
+| `RunAtLoad`                          | Startet den Tunnel beim Laden des LaunchAgent (LaunchAgent)                  |
 
-OpenClaw.app verbindet sich auf Ihrem Client-Rechner mit `ws://127.0.0.1:18789`. Der SSH-Tunnel leitet diese Verbindung an Port 18789 auf dem Remote-Rechner weiter, auf dem der Gateway ausgeführt wird.
+OpenClaw.app stellt auf dem Client eine Verbindung zu `ws://127.0.0.1:18789` her. Der Tunnel leitet diese Verbindung an Port 18789 auf dem entfernten Host weiter, auf dem der Gateway ausgeführt wird.
 
 ## Verwandte Themen
 

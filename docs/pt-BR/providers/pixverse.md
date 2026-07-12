@@ -1,54 +1,58 @@
 ---
 read_when:
-    - Você quer usar a geração de vídeo do PixVerse no OpenClaw
-    - Você precisa da configuração da chave de API/ambiente do PixVerse
+    - Você quer usar a geração de vídeos do PixVerse no OpenClaw
+    - Você precisa configurar a chave da API e a variável de ambiente do PixVerse
     - Você quer tornar o PixVerse o provedor de vídeo padrão
-summary: Configuração da geração de vídeo do PixVerse no OpenClaw
+summary: Configuração da geração de vídeos do PixVerse no OpenClaw
 title: PixVerse
 x-i18n:
-    generated_at: "2026-06-27T18:05:54Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:41:05Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: 9967ec20f7a9db3413db12ed75f836ae0bee6610e765f049720988b43494d37b
+    source_hash: 50204c771deb315e7336325f2852e4b65dfba4264bbe288b819d44b8def1ce82
     source_path: providers/pixverse.md
     workflow: 16
 ---
 
-O OpenClaw fornece `pixverse` como um Plugin externo oficial para geração de vídeo hospedada do PixVerse. O Plugin registra o provedor `pixverse` no contrato `videoGenerationProviders`.
+OpenClaw fornece `pixverse` como um plugin externo oficial para geração de vídeos hospedada do PixVerse. O plugin registra o provedor `pixverse` no contrato `videoGenerationProviders`.
 
-| Propriedade       | Valor                                                                |
-| ----------------- | -------------------------------------------------------------------- |
-| ID do provedor    | `pixverse`                                                           |
-| Pacote do Plugin  | `@openclaw/pixverse-provider`                                        |
-| Var. env. de auth | `PIXVERSE_API_KEY`                                                   |
-| Flag de onboarding | `--auth-choice pixverse-api-key`                                    |
-| Flag direta da CLI | `--pixverse-api-key <key>`                                          |
-| API               | API PixVerse Platform v2 (envio de `video_id` mais polling de resultado) |
-| Modelo padrão     | `pixverse/v6`                                                        |
-| Região padrão da API | Internacional                                                    |
+| Propriedade          | Valor                                                                   |
+| -------------------- | ----------------------------------------------------------------------- |
+| ID do provedor       | `pixverse`                                                              |
+| Pacote do plugin     | `@openclaw/pixverse-provider`                                           |
+| Variável de ambiente de autenticação | `PIXVERSE_API_KEY`                                      |
+| Flag de integração   | `--auth-choice pixverse-api-key`                                        |
+| Flag direta da CLI   | `--pixverse-api-key <key>`                                              |
+| API                  | API da Plataforma PixVerse v2 (envio de `video_id` e consulta do resultado) |
+| Modelo padrão        | `pixverse/v6`                                                           |
+| Região padrão da API | Internacional                                                           |
 
 ## Primeiros passos
 
 <Steps>
-  <Step title="Instale o Plugin">
+  <Step title="Instale o plugin">
     ```bash
-    openclaw plugins install clawhub:@openclaw/pixverse-provider
+    openclaw plugins install @openclaw/pixverse-provider
     openclaw gateway restart
     ```
   </Step>
-  <Step title="Defina a chave de API">
+  <Step title="Defina a chave da API">
     ```bash
     openclaw onboard --auth-choice pixverse-api-key
     ```
 
-    O assistente pergunta se deve usar o endpoint Internacional
-    (`https://app-api.pixverse.ai/openapi/v2`) ou o endpoint CN
-    (`https://app-api.pixverseai.cn/openapi/v2`) antes de gravar `region` e
-    `baseUrl` na configuração do provedor.
+    O assistente solicita o endpoint Internacional ou CN (consulte a região da API
+    abaixo) antes de gravar `region` e `baseUrl` na configuração do provedor.
+    Execuções não interativas (chave fornecida por `--pixverse-api-key` ou `PIXVERSE_API_KEY`)
+    usam Internacional como padrão.
+
+    A integração também define `agents.defaults.videoGenerationModel.primary` como
+    `pixverse/v6` quando nenhum modelo de vídeo padrão ainda está configurado.
 
   </Step>
-  <Step title="Defina o PixVerse como o provedor de vídeo padrão">
+  <Step title="Altere o provedor de vídeo padrão existente (opcional)">
     ```bash
     openclaw config set agents.defaults.videoGenerationModel.primary "pixverse/v6"
     ```
@@ -60,38 +64,38 @@ O OpenClaw fornece `pixverse` como um Plugin externo oficial para geração de v
 
 ## Modos e modelos compatíveis
 
-O provedor expõe modelos de geração do PixVerse por meio da ferramenta de vídeo compartilhada do OpenClaw.
+O provedor disponibiliza os modelos de geração do PixVerse por meio da ferramenta de vídeo compartilhada do OpenClaw.
 
-| Modo           | Modelos              | Entrada de referência   |
-| -------------- | -------------------- | ----------------------- |
-| Texto para vídeo | `v6` (padrão), `c1` | Nenhuma                 |
-| Imagem para vídeo | `v6` (padrão), `c1` | 1 imagem local ou remota |
+| Modo           | Modelos               | Entrada de referência       |
+| -------------- | --------------------- | --------------------------- |
+| Texto para vídeo  | `v6` (padrão), `c1` | Nenhuma                     |
+| Imagem para vídeo | `v6` (padrão), `c1` | 1 imagem local ou remota    |
 
-Referências de imagem locais são enviadas para o PixVerse antes da solicitação de imagem para vídeo. URLs de imagem remotas são repassadas pelo endpoint de upload de imagem do PixVerse como `image_url`.
+As referências de imagens locais são enviadas ao PixVerse antes da solicitação de imagem para vídeo. URLs de imagens remotas são encaminhadas pelo endpoint de envio de imagens do PixVerse como `image_url`.
 
-| Opção           | Valores compatíveis                                                          |
-| --------------- | --------------------------------------------------------------------------- |
-| Duração         | 1-15 segundos                                                               |
-| Resolução       | `360P`, `540P`, `720P`, `1080P`                                             |
-| Proporção       | `16:9`, `4:3`, `1:1`, `3:4`, `9:16`, `2:3`, `3:2`, `21:9` para texto para vídeo |
-| Áudio gerado    | `audio: true`                                                               |
+| Opção          | Valores compatíveis                                                                                                               |
+| -------------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| Duração        | 1-15 segundos (padrão: 5)                                                                                                        |
+| Resolução      | `360P`, `540P`, `720P`, `1080P` (padrão: `540P`; solicitações de `480P` são mapeadas para `540P`)                                 |
+| Proporção      | `16:9` (padrão), `4:3`, `1:1`, `3:4`, `9:16`, `2:3`, `3:2`, `21:9`; apenas texto para vídeo; imagem para vídeo segue a imagem de origem |
+| Áudio gerado   | `audio: true`                                                                                                                      |
 
 <Note>
-A geração de template de imagem do PixVerse ainda não é exposta por meio de `image_generate`. Essa API é orientada por ID de template, enquanto o contrato compartilhado de geração de imagem do OpenClaw ainda não tem um conjunto de opções tipadas específico do PixVerse.
+A geração de modelos de imagem do PixVerse ainda não está disponível por meio de `image_generate`. Essa API é orientada por ID de modelo, enquanto o contrato compartilhado de geração de imagens do OpenClaw atualmente não possui um conjunto tipado de opções específico do PixVerse.
 </Note>
 
 ## Opções do provedor
 
 O provedor de vídeo aceita estas chaves opcionais específicas do provedor:
 
-| Opção                                | Tipo   | Efeito                            |
-| ------------------------------------ | ------ | --------------------------------- |
-| `seed`                               | number | Seed determinística quando compatível |
-| `negativePrompt` / `negative_prompt` | string | Prompt negativo                   |
-| `quality`                            | string | Qualidade do PixVerse, como `720p` |
-| `motionMode` / `motion_mode`         | string | Modo de movimento de imagem para vídeo |
-| `cameraMovement` / `camera_movement` | string | Predefinição de movimento de câmera do PixVerse |
-| `templateId` / `template_id`         | number | ID de template PixVerse ativado   |
+| Opção                                | Tipo   | Efeito                                             |
+| ------------------------------------ | ------ | -------------------------------------------------- |
+| `seed`                               | número | Semente determinística, de 0 a 2147483647          |
+| `negativePrompt` / `negative_prompt` | string | Prompt negativo                                    |
+| `quality`                            | string | Qualidade do PixVerse, como `720p`                  |
+| `motionMode` / `motion_mode`         | string | Modo de movimento de imagem para vídeo (padrão: `normal`) |
+| `cameraMovement` / `camera_movement` | string | Predefinição de movimento de câmera do PixVerse    |
+| `templateId` / `template_id`         | número | ID do modelo do PixVerse ativado                    |
 
 ## Configuração
 
@@ -111,21 +115,22 @@ O provedor de vídeo aceita estas chaves opcionais específicas do provedor:
 
 <AccordionGroup>
   <Accordion title="Região da API">
-    O OpenClaw usa por padrão a API internacional do PixVerse. Defina `models.providers.pixverse.region`
-    manualmente quando sua chave pertencer a uma região específica da plataforma PixVerse, ou use
-    `openclaw onboard --auth-choice pixverse-api-key` para escolher uma no assistente de configuração:
+    | Valor da região  | URL base da API do PixVerse                    |
+    | ---------------- | ---------------------------------------------- |
+    | `international`  | `https://app-api.pixverse.ai/openapi/v2`       |
+    | `cn`             | `https://app-api.pixverseai.cn/openapi/v2`     |
 
-    | Valor da região | URL base da API PixVerse                    |
-    | --------------- | --------------------------------------------- |
-    | `international` | `https://app-api.pixverse.ai/openapi/v2`      |
-    | `cn`            | `https://app-api.pixverseai.cn/openapi/v2`    |
+    Defina `models.providers.pixverse.region` manualmente quando sua chave pertencer a uma
+    região específica da plataforma PixVerse ou execute
+    `openclaw onboard --auth-choice pixverse-api-key` para escolher uma no
+    assistente de configuração:
 
     ```json5
     {
       models: {
         providers: {
           pixverse: {
-            region: "cn", // "international" or "cn"
+            region: "cn", // "international" ou "cn"
             baseUrl: "https://app-api.pixverseai.cn/openapi/v2",
             models: [],
           },
@@ -137,7 +142,7 @@ O provedor de vídeo aceita estas chaves opcionais específicas do provedor:
   </Accordion>
 
   <Accordion title="URL base personalizada">
-    Defina `models.providers.pixverse.baseUrl` somente ao rotear por um proxy compatível confiável.
+    Defina `models.providers.pixverse.baseUrl` somente ao encaminhar por um proxy compatível e confiável.
     `baseUrl` tem precedência sobre `region`.
 
     ```json5
@@ -154,20 +159,21 @@ O provedor de vídeo aceita estas chaves opcionais específicas do provedor:
 
   </Accordion>
 
-  <Accordion title="Polling de tarefa">
-    O PixVerse retorna um `video_id` da solicitação de geração. O OpenClaw faz polling de
-    `/openapi/v2/video/result/{video_id}` até que a tarefa seja concluída com sucesso, falhe
-    ou atinja o tempo limite.
+  <Accordion title="Consulta da tarefa">
+    O PixVerse retorna um `video_id` da solicitação de geração. O OpenClaw consulta
+    `/openapi/v2/video/result/{video_id}` a cada 5 segundos até que a tarefa
+    seja concluída, falhe ou atinja o tempo limite (padrão: 5 minutos; substitua com
+    `agents.defaults.videoGenerationModel.timeoutMs`).
   </Accordion>
 </AccordionGroup>
 
-## Relacionado
+## Conteúdo relacionado
 
 <CardGroup cols={2}>
-  <Card title="Geração de vídeo" href="/pt-BR/tools/video-generation" icon="video">
-    Parâmetros da ferramenta compartilhada, seleção de provedor e comportamento assíncrono.
+  <Card title="Geração de vídeos" href="/pt-BR/tools/video-generation" icon="video">
+    Parâmetros da ferramenta compartilhada, seleção do provedor e comportamento assíncrono.
   </Card>
   <Card title="Referência de configuração" href="/pt-BR/gateway/config-agents#agent-defaults" icon="gear">
-    Configurações padrão do agente, incluindo o modelo de geração de vídeo.
+    Configurações padrão do agente, incluindo o modelo de geração de vídeos.
   </Card>
 </CardGroup>

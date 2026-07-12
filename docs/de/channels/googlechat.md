@@ -1,145 +1,121 @@
 ---
 read_when:
-    - Arbeiten an Funktionen des Google Chat-Kanals
-summary: Supportstatus, Funktionen und Konfiguration der Google Chat-App
+    - Arbeiten an Funktionen des Google-Chat-Kanals
+summary: Supportstatus, Funktionen und Konfiguration der Google-Chat-App
 title: Google Chat
 x-i18n:
-    generated_at: "2026-06-27T17:09:48Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:59:25Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 15
     provider: openai
-    source_hash: 3d506f6e92bfb73940254ca906c7581f24ac49d3f498fcae213eae71c4449442
+    source_hash: 72a08c41f7da019f91265cbf7ae73134a0767c603449ebd8cd9a5354936a3b52
     source_path: channels/googlechat.md
     workflow: 16
 ---
 
-Status: herunterladbares Plugin für Direktnachrichten + Spaces über Google Chat API-Webhooks (nur HTTP).
+Google Chat wird als offizielles Plugin `@openclaw/googlechat` ausgeführt: Direktnachrichten und Gruppenbereiche über Webhooks der Google Chat API (nur HTTP-Endpunkt, kein Pub/Sub).
 
 ## Installation
-
-Installieren Sie Google Chat, bevor Sie den Kanal konfigurieren:
 
 ```bash
 openclaw plugins install @openclaw/googlechat
 ```
 
-Lokaler Checkout (wenn Sie aus einem Git-Repo ausführen):
+Lokaler Checkout (bei Ausführung aus einem Git-Repository):
 
 ```bash
 openclaw plugins install ./path/to/local/googlechat-plugin
 ```
 
-## Schnelle Einrichtung (Einsteiger)
+## Schnelleinrichtung (für Einsteiger)
 
-1. Erstellen Sie ein Google Cloud-Projekt und aktivieren Sie die **Google Chat API**.
-   - Gehen Sie zu: [Google Chat API-Anmeldedaten](https://console.cloud.google.com/apis/api/chat.googleapis.com/credentials)
+1. Erstellen Sie ein Google-Cloud-Projekt und aktivieren Sie die **Google Chat API**.
+   - Öffnen Sie: [Anmeldedaten für die Google Chat API](https://console.cloud.google.com/apis/api/chat.googleapis.com/credentials)
    - Aktivieren Sie die API, falls sie noch nicht aktiviert ist.
-2. Erstellen Sie ein **Dienstkonto**:
+2. Erstellen Sie ein **Service Account**:
    - Klicken Sie auf **Create Credentials** > **Service Account**.
-   - Benennen Sie es beliebig (z. B. `openclaw-chat`).
-   - Lassen Sie Berechtigungen leer (klicken Sie auf **Continue**).
-   - Lassen Sie Principals mit Zugriff leer (klicken Sie auf **Done**).
-3. Erstellen Sie den **JSON Key** und laden Sie ihn herunter:
-   - Klicken Sie in der Liste der Dienstkonten auf das gerade erstellte Konto.
-   - Wechseln Sie zum Tab **Keys**.
-   - Klicken Sie auf **Add Key** > **Create new key**.
-   - Wählen Sie **JSON** aus und klicken Sie auf **Create**.
+   - Geben Sie einen beliebigen Namen ein (z. B. `openclaw-chat`).
+   - Lassen Sie Berechtigungen und Hauptkonten leer (**Continue**, dann **Done**).
+3. Erstellen Sie den **JSON-Schlüssel** und laden Sie ihn herunter:
+   - Klicken Sie auf das neue Dienstkonto > Registerkarte **Keys** > **Add Key** > **Create new key** > **JSON** > **Create**.
 4. Speichern Sie die heruntergeladene JSON-Datei auf Ihrem Gateway-Host (z. B. `~/.openclaw/googlechat-service-account.json`).
-5. Erstellen Sie eine Google Chat-App in der [Google Cloud Console Chat-Konfiguration](https://console.cloud.google.com/apis/api/chat.googleapis.com/hangouts-chat):
-   - Füllen Sie die **Application info** aus:
-     - **App name**: (z. B. `OpenClaw`)
-     - **Avatar URL**: (z. B. `https://openclaw.ai/logo.png`)
-     - **Description**: (z. B. `Personal AI Assistant`)
+5. Erstellen Sie eine Google-Chat-App in der [Chat-Konfiguration der Google Cloud Console](https://console.cloud.google.com/apis/api/chat.googleapis.com/hangouts-chat):
+   - Füllen Sie **Application info** aus (App-Name, Avatar-URL, Beschreibung).
    - Aktivieren Sie **Interactive features**.
    - Aktivieren Sie unter **Functionality** die Option **Join spaces and group conversations**.
-   - Wählen Sie unter **Connection settings** die Option **HTTP endpoint URL** aus.
-   - Wählen Sie unter **Triggers** die Option **Use a common HTTP endpoint URL for all triggers** aus und setzen Sie sie auf die öffentliche URL Ihres Gateways, gefolgt von `/googlechat`.
-     - _Tipp: Führen Sie `openclaw status` aus, um die öffentliche URL Ihres Gateways zu finden._
-   - Aktivieren Sie unter **Visibility** die Option **Make this Chat app available to specific people and groups in `<Your Domain>`**.
-   - Geben Sie Ihre E-Mail-Adresse (z. B. `user@example.com`) in das Textfeld ein.
-   - Klicken Sie unten auf **Save**.
-6. **Aktivieren Sie den App-Status**:
-   - **Aktualisieren Sie die Seite** nach dem Speichern.
-   - Suchen Sie den Abschnitt **App status** (nach dem Speichern meist oben oder unten).
-   - Ändern Sie den Status zu **Live - available to users**.
-   - Klicken Sie erneut auf **Save**.
-7. Konfigurieren Sie OpenClaw mit dem Dienstkonto-Pfad + der Webhook-Audience:
-   - Env: `GOOGLE_CHAT_SERVICE_ACCOUNT_FILE=/path/to/service-account.json`
-   - Oder Konfiguration: `channels.googlechat.serviceAccountFile: "/path/to/service-account.json"`.
-8. Legen Sie Webhook-Audience-Typ + Wert fest (entspricht Ihrer Chat-App-Konfiguration).
-9. Starten Sie das Gateway. Google Chat sendet POST-Anfragen an Ihren Webhook-Pfad.
+   - Wählen Sie unter **Connection settings** die Option **HTTP endpoint URL**.
+   - Wählen Sie unter **Triggers** die Option **Use a common HTTP endpoint URL for all triggers** und legen Sie als Wert Ihre öffentliche Gateway-URL mit angehängtem `/googlechat` fest (siehe [Öffentliche URL](#public-url-webhook-only)).
+   - Aktivieren Sie unter **Visibility** die Option **Make this Chat app available to specific people and groups in `<Your Domain>`** und geben Sie Ihre E-Mail-Adresse ein.
+   - Klicken Sie auf **Save**.
+6. Aktivieren Sie den App-Status: Aktualisieren Sie die Seite, suchen Sie **App status**, setzen Sie ihn auf **Live - available to users** und klicken Sie erneut auf **Save**.
+7. Konfigurieren Sie OpenClaw mit dem Dienstkonto und der Webhook-Audience (muss mit der Chat-App-Konfiguration übereinstimmen):
+   - Umgebungsvariable: `GOOGLE_CHAT_SERVICE_ACCOUNT_FILE=/path/to/service-account.json` (nur Standardkonto), oder
+   - Konfiguration: siehe [Wichtige Konfigurationsoptionen](#config-highlights). `openclaw channels add --channel googlechat` akzeptiert außerdem `--audience-type`, `--audience`, `--webhook-path` und `--webhook-url`.
+8. Starten Sie das Gateway. Google Chat sendet POST-Anfragen an Ihren Webhook-Pfad (standardmäßig `/googlechat`).
 
 ## Zu Google Chat hinzufügen
 
-Sobald das Gateway läuft und Ihre E-Mail zur Sichtbarkeitsliste hinzugefügt wurde:
+Sobald das Gateway läuft und Ihre E-Mail-Adresse in der Sichtbarkeitsliste enthalten ist:
 
 1. Öffnen Sie [Google Chat](https://chat.google.com/).
-2. Klicken Sie auf das **+**-Symbol (Plus) neben **Direct Messages**.
-3. Geben Sie in der Suchleiste (wo Sie normalerweise Personen hinzufügen) den **App-Namen** ein, den Sie in der Google Cloud Console konfiguriert haben.
-   - **Hinweis**: Der Bot erscheint _nicht_ in der „Marketplace“-Durchsuchliste, da er eine private App ist. Sie müssen nach seinem Namen suchen.
-4. Wählen Sie Ihren Bot aus den Ergebnissen aus.
-5. Klicken Sie auf **Add** oder **Chat**, um eine 1:1-Unterhaltung zu starten.
-6. Senden Sie „Hello“, um den Assistenten auszulösen!
+2. Klicken Sie neben **Direct Messages** auf das Symbol **+** (Plus).
+3. Suchen Sie nach dem **App name**, den Sie in der Google Cloud Console konfiguriert haben.
+   - Der Bot erscheint _nicht_ in der Übersicht des Marketplace, da es sich um eine private App handelt; suchen Sie anhand des Namens nach ihm.
+4. Wählen Sie den Bot aus, klicken Sie auf **Add** oder **Chat** und senden Sie eine Nachricht.
 
 ## Öffentliche URL (nur Webhook)
 
-Google Chat-Webhooks erfordern einen öffentlichen HTTPS-Endpunkt. Aus Sicherheitsgründen sollten Sie **nur den Pfad `/googlechat`** im Internet verfügbar machen. Halten Sie das OpenClaw-Dashboard und andere sensible Endpunkte in Ihrem privaten Netzwerk.
+Google-Chat-Webhooks benötigen einen öffentlichen HTTPS-Endpunkt. Geben Sie aus Sicherheitsgründen **nur den Pfad `/googlechat`** für das Internet frei und halten Sie das OpenClaw-Dashboard sowie andere Endpunkte privat.
 
 ### Option A: Tailscale Funnel (empfohlen)
 
-Verwenden Sie Tailscale Serve für das private Dashboard und Funnel für den öffentlichen Webhook-Pfad. Dadurch bleibt `/` privat, während nur `/googlechat` veröffentlicht wird.
+Verwenden Sie Tailscale Serve für das private Dashboard und Funnel für den öffentlichen Webhook-Pfad.
 
-1. **Prüfen Sie, an welche Adresse Ihr Gateway gebunden ist:**
+1. Prüfen Sie, an welche Adresse Ihr Gateway gebunden ist:
 
    ```bash
    ss -tlnp | grep 18789
    ```
 
-   Notieren Sie die IP-Adresse (z. B. `127.0.0.1`, `0.0.0.0` oder Ihre Tailscale-IP wie `100.x.x.x`).
+   Notieren Sie sich die IP-Adresse (z. B. `127.0.0.1`, `0.0.0.0` oder eine Tailscale-Adresse vom Typ `100.x.x.x`).
 
-2. **Machen Sie das Dashboard nur im Tailnet verfügbar (Port 8443):**
+2. Geben Sie das Dashboard nur für das Tailnet frei (Port 8443):
 
    ```bash
-   # If bound to localhost (127.0.0.1 or 0.0.0.0):
+   # Bei Bindung an localhost (127.0.0.1 oder 0.0.0.0):
    tailscale serve --bg --https 8443 http://127.0.0.1:18789
 
-   # If bound to Tailscale IP only (e.g., 100.106.161.80):
-   tailscale serve --bg --https 8443 http://100.106.161.80:18789
+   # Bei ausschließlicher Bindung an eine Tailscale-IP:
+   tailscale serve --bg --https 8443 http://100.x.x.x:18789
    ```
 
-3. **Machen Sie nur den Webhook-Pfad öffentlich verfügbar:**
+3. Geben Sie nur den Webhook-Pfad öffentlich frei:
 
    ```bash
-   # If bound to localhost (127.0.0.1 or 0.0.0.0):
+   # Bei Bindung an localhost (127.0.0.1 oder 0.0.0.0):
    tailscale funnel --bg --set-path /googlechat http://127.0.0.1:18789/googlechat
 
-   # If bound to Tailscale IP only (e.g., 100.106.161.80):
-   tailscale funnel --bg --set-path /googlechat http://100.106.161.80:18789/googlechat
+   # Bei ausschließlicher Bindung an eine Tailscale-IP:
+   tailscale funnel --bg --set-path /googlechat http://100.x.x.x:18789/googlechat
    ```
 
-4. **Autorisieren Sie den Node für Funnel-Zugriff:**
-   Wenn Sie dazu aufgefordert werden, öffnen Sie die in der Ausgabe angezeigte Autorisierungs-URL, um Funnel für diesen Node in Ihrer Tailnet-Richtlinie zu aktivieren.
+4. Falls Sie dazu aufgefordert werden, öffnen Sie die in der Ausgabe angezeigte Autorisierungs-URL, um Funnel für diese Node zu aktivieren.
 
-5. **Überprüfen Sie die Konfiguration:**
+5. Überprüfen Sie die Konfiguration:
 
    ```bash
    tailscale serve status
    tailscale funnel status
    ```
 
-Ihre öffentliche Webhook-URL lautet:
-`https://<node-name>.<tailnet>.ts.net/googlechat`
+Ihre öffentliche Webhook-URL lautet `https://<node-name>.<tailnet>.ts.net/googlechat`; das Dashboard bleibt unter `https://<node-name>.<tailnet>.ts.net:8443/` ausschließlich über das Tailnet erreichbar. Verwenden Sie die öffentliche URL (ohne `:8443`) in der Google-Chat-App-Konfiguration.
 
-Ihr privates Dashboard bleibt auf das Tailnet beschränkt:
-`https://<node-name>.<tailnet>.ts.net:8443/`
-
-Verwenden Sie die öffentliche URL (ohne `:8443`) in der Google Chat-App-Konfiguration.
-
-> Hinweis: Diese Konfiguration bleibt über Neustarts hinweg bestehen. Um sie später zu entfernen, führen Sie `tailscale funnel reset` und `tailscale serve reset` aus.
+> Hinweis: Diese Konfiguration bleibt über Neustarts hinweg erhalten. Entfernen Sie sie später mit `tailscale funnel reset` und `tailscale serve reset`.
 
 ### Option B: Reverse Proxy (Caddy)
 
-Wenn Sie einen Reverse Proxy wie Caddy verwenden, proxyen Sie nur den spezifischen Pfad:
+Leiten Sie nur den Webhook-Pfad weiter:
 
 ```caddy
 your-domain.com {
@@ -147,41 +123,44 @@ your-domain.com {
 }
 ```
 
-Mit dieser Konfiguration wird jede Anfrage an `your-domain.com/` ignoriert oder als 404 zurückgegeben, während `your-domain.com/googlechat` sicher an OpenClaw weitergeleitet wird.
+Anfragen an `your-domain.com/` werden ignoriert oder mit 404 beantwortet, während `your-domain.com/googlechat` an OpenClaw weitergeleitet wird.
 
 ### Option C: Cloudflare Tunnel
 
-Konfigurieren Sie die Ingress-Regeln Ihres Tunnels so, dass nur der Webhook-Pfad weitergeleitet wird:
+Konfigurieren Sie die Ingress-Regeln des Tunnels so, dass nur der Webhook-Pfad weitergeleitet wird:
 
 - **Pfad**: `/googlechat` -> `http://localhost:18789/googlechat`
-- **Standardregel**: HTTP 404 (Not Found)
+- **Standardregel**: HTTP 404 (Nicht gefunden)
 
 ## Funktionsweise
 
-1. Google Chat sendet Webhook-POSTs an das Gateway. Jede Anfrage enthält einen Header `Authorization: Bearer <token>`.
-   - OpenClaw verifiziert die Bearer-Authentifizierung, bevor vollständige Webhook-Bodys gelesen/geparst werden, wenn der Header vorhanden ist.
-   - Google Workspace Add-on-Anfragen, die `authorizationEventObject.systemIdToken` im Body enthalten, werden über ein strengeres Pre-Auth-Body-Budget unterstützt.
-2. OpenClaw verifiziert das Token gegen den konfigurierten `audienceType` + `audience`:
-   - `audienceType: "app-url"` → Audience ist Ihre HTTPS-Webhook-URL.
-   - `audienceType: "project-number"` → Audience ist die Cloud-Projektnummer.
-3. Nachrichten werden nach Space weitergeleitet:
-   - Direktnachrichten verwenden den Sitzungsschlüssel `agent:<agentId>:googlechat:direct:<spaceId>`.
-   - Spaces verwenden den Sitzungsschlüssel `agent:<agentId>:googlechat:group:<spaceId>`.
-4. Der Zugriff auf Direktnachrichten erfolgt standardmäßig per Pairing. Unbekannte Absender erhalten einen Pairing-Code; genehmigen Sie ihn mit:
+1. Google Chat sendet JSON per POST an den Gateway-Webhook-Pfad (nur POST, JSON-Inhaltstyp erforderlich, Ratenbegrenzung pro IP).
+2. OpenClaw authentifiziert jede Anfrage vor der Weiterleitung:
+   - Chat-App-Ereignisse enthalten `Authorization: Bearer <token>`; das Token wird überprüft, bevor der vollständige Body geparst wird.
+   - Ereignisse von Google Workspace Add-ons enthalten das Token im Body (`authorizationEventObject.systemIdToken`) und werden vor der Überprüfung unter einem strengeren Budget für die Vorauthentifizierung gelesen (16 KB, 3 s).
+3. Das Token wird gegen `audienceType` + `audience` geprüft:
+   - `audienceType: "app-url"` → Die Audience ist Ihre HTTPS-Webhook-URL.
+   - `audienceType: "project-number"` → Die Audience ist die Cloud-Projektnummer.
+   - Add-on-Tokens unter `app-url` erfordern zusätzlich, dass `appPrincipal` auf die numerische OAuth-2.0-Client-ID der App gesetzt ist (21 Ziffern, keine E-Mail-Adresse); andernfalls schlägt die Überprüfung mit einer protokollierten Warnung fehl.
+4. Nachrichten werden nach Gruppenbereich weitergeleitet:
+   - Gruppenbereiche erhalten sitzungsbezogene Sitzungen `agent:<agentId>:googlechat:group:<spaceId>`; Antworten werden im Nachrichten-Thread gesendet.
+   - Direktnachrichten werden standardmäßig in der Hauptsitzung des Agenten zusammengeführt; legen Sie `session.dmScope` für separate Direktnachrichtensitzungen pro Gegenstelle fest (siehe [Sitzung](/de/concepts/session)).
+5. Der Zugriff per Direktnachricht verwendet standardmäßig Kopplung. Unbekannte Absender erhalten einen Kopplungscode; genehmigen Sie ihn mit:
    - `openclaw pairing approve googlechat <code>`
-5. Gruppen-Spaces erfordern standardmäßig eine @-Erwähnung. Verwenden Sie `botUser`, wenn die Erwähnungserkennung den Benutzernamen der App benötigt.
-6. Wenn eine Exec- oder Plugin-Genehmigungsanfrage aus Google Chat startet und ein stabiler `users/<id>`-Genehmiger konfiguriert ist, postet OpenClaw eine native Google Chat-Genehmigungskarte im ursprünglichen Space oder Thread. Die Kartenbuttons verwenden opake Callback-Tokens, und die manuelle Aufforderung `/approve <id> <decision>` wird nur angezeigt, wenn native Genehmigungszustellung nicht verfügbar ist.
+6. Gruppenbereiche erfordern standardmäßig eine @-Erwähnung. Erwähnungen werden anhand von Chat-Annotationen des Typs `USER_MENTION` erkannt, die auf die App verweisen; legen Sie `botUser` fest (z. B. `users/1234567890`), wenn für die Erkennung der Name der Benutzerressource der App benötigt wird.
+7. Wenn eine Genehmigung für einen Exec- oder Plugin-Vorgang aus Google Chat gestartet wird und ein stabiler Genehmiger vom Typ `users/<id>` konfiguriert ist, veröffentlicht OpenClaw eine native Genehmigungskarte (`cardsV2`) im ursprünglichen Gruppenbereich oder Thread. Die Schaltflächen der Karte enthalten undurchsichtige Callback-Tokens; die manuelle Aufforderung `/approve <id> <decision>` wird nur angezeigt, wenn die native Zustellung nicht verfügbar ist.
 
 ## Ziele
 
-Verwenden Sie diese Bezeichner für Zustellung und Allowlists:
+Verwenden Sie diese Kennungen für die Zustellung und Zulassungslisten:
 
 - Direktnachrichten: `users/<userId>` (empfohlen).
-- Die rohe E-Mail `name@example.com` ist veränderlich und wird nur für direkte Allowlist-Abgleiche verwendet, wenn `channels.googlechat.dangerouslyAllowNameMatching: true`.
-- Veraltet: `users/<email>` wird als Benutzer-ID behandelt, nicht als E-Mail-Allowlist.
-- Spaces: `spaces/<spaceId>`.
+- Gruppenbereiche: `spaces/<spaceId>`.
+- Die reine E-Mail-Adresse `name@example.com` ist veränderlich und wird nur für den Abgleich mit Zulassungslisten verwendet, wenn `channels.googlechat.dangerouslyAllowNameMatching: true` gesetzt ist.
+- Veraltet: `users/<email>` wird als Benutzer-ID behandelt, nicht als E-Mail-Eintrag in einer Zulassungsliste.
+- Die Präfixe `googlechat:`, `google-chat:` und `gchat:` werden akzeptiert und entfernt.
 
-## Konfigurationshighlights
+## Wichtige Konfigurationsoptionen
 
 ```json5
 {
@@ -189,11 +168,12 @@ Verwenden Sie diese Bezeichner für Zustellung und Allowlists:
     googlechat: {
       enabled: true,
       serviceAccountFile: "/path/to/service-account.json",
-      // or serviceAccountRef: { source: "file", provider: "filemain", id: "/channels/googlechat/serviceAccount" }
+      // oder serviceAccountRef: { source: "file", provider: "filemain", id: "/channels/googlechat/serviceAccount" }
       audienceType: "app-url",
       audience: "https://gateway.example.com/googlechat",
+      appPrincipal: "123456789012345678901", // nur Add-on-Überprüfung; numerische OAuth-Client-ID
       webhookPath: "/googlechat",
-      botUser: "users/1234567890", // optional; helps mention detection
+      botUser: "users/1234567890", // optional; unterstützt die Erkennung von Erwähnungen
       allowBots: false,
       dm: {
         policy: "pairing",
@@ -205,10 +185,9 @@ Verwenden Sie diese Bezeichner für Zustellung und Allowlists:
           enabled: true,
           requireMention: true,
           users: ["users/1234567890"],
-          systemPrompt: "Short answers only.",
+          systemPrompt: "Nur kurze Antworten.",
         },
       },
-      actions: { reactions: true },
       typingIndicator: "message",
       mediaMaxMb: 20,
     },
@@ -218,77 +197,72 @@ Verwenden Sie diese Bezeichner für Zustellung und Allowlists:
 
 Hinweise:
 
-- Dienstkonto-Anmeldedaten können auch inline mit `serviceAccount` (JSON-String) übergeben werden.
-- `serviceAccountRef` wird ebenfalls unterstützt (Env/File SecretRef), einschließlich refs pro Konto unter `channels.googlechat.accounts.<id>.serviceAccountRef`.
-- Der Standard-Webhook-Pfad ist `/googlechat`, wenn `webhookPath` nicht gesetzt ist.
-- `dangerouslyAllowNameMatching` aktiviert den Abgleich veränderlicher E-Mail-Principals für Allowlists erneut (Break-Glass-Kompatibilitätsmodus).
-- Reaktionen sind über das Tool `reactions` und `channels action` verfügbar, wenn `actions.reactions` aktiviert ist.
-- Native Genehmigungskarten verwenden Google Chat `cardsV2`-Buttonklicks, keine Reaktionsereignisse. Genehmiger stammen aus `dm.allowFrom` oder `defaultTo` und müssen stabile numerische `users/<id>`-Werte sein.
-- Nachrichtenaktionen stellen `send` für Text und `upload-file` für explizite Anhangsendungen bereit. `upload-file` akzeptiert `media` / `filePath` / `path` plus optional `message`, `filename` und Thread-Zielauswahl.
-- `typingIndicator` unterstützt `message` (Standard), `none` und `reaction` (`reaction` erfordert Benutzer-OAuth).
-- Anhänge werden über die Chat API heruntergeladen und in der Medienpipeline gespeichert (Größe durch `mediaMaxMb` begrenzt).
-- Von Bots verfasste Google Chat-Nachrichten werden standardmäßig ignoriert. Wenn Sie absichtlich `allowBots: true` setzen, verwenden akzeptierte von Bots verfasste Nachrichten den gemeinsamen [Bot-Loop-Schutz](/de/channels/bot-loop-protection). Konfigurieren Sie `channels.defaults.botLoopProtection` und überschreiben Sie dann mit `channels.googlechat.botLoopProtection` oder `channels.googlechat.groups.<space>.botLoopProtection`, wenn ein Space ein anderes Budget benötigt.
+- Anmeldedaten des Dienstkontos: `serviceAccountFile` (Pfad), `serviceAccount` (eingebettete JSON-Zeichenfolge oder Objekt) oder `serviceAccountRef` (SecretRef für Umgebung/Datei). Die Umgebungsvariablen `GOOGLE_CHAT_SERVICE_ACCOUNT` (eingebettetes JSON) und `GOOGLE_CHAT_SERVICE_ACCOUNT_FILE` (Pfad) gelten nur für das Standardkonto. Konfigurationen mit mehreren Konten verwenden `channels.googlechat.accounts.<id>` mit denselben Schlüsseln, einschließlich eines kontospezifischen `serviceAccountRef`.
+- Der standardmäßige Webhook-Pfad ist `/googlechat`, wenn `webhookPath` nicht festgelegt ist; alternativ kann `webhookUrl` den Pfad bereitstellen.
+- Gruppenschlüssel müssen stabile Gruppenbereichs-IDs (`spaces/<spaceId>`) sein. Schlüssel mit Anzeigenamen sind veraltet und werden entsprechend protokolliert.
+- `dangerouslyAllowNameMatching` aktiviert den Abgleich veränderlicher E-Mail-Hauptkonten für Zulassungslisten erneut (Kompatibilitätsmodus für Notfälle); Doctor warnt vor E-Mail-Einträgen.
+- Google-Chat-Reaktionsaktionen werden nicht bereitgestellt. Das Plugin verwendet die Authentifizierung per Dienstkonto, während die Google-Chat-Reaktionsendpunkte eine Benutzerauthentifizierung erfordern. Die vorhandene Konfiguration `actions.reactions` wird aus Kompatibilitätsgründen akzeptiert, hat jedoch keine Wirkung.
+- Native Genehmigungskarten verwenden Klicks auf Google-Chat-Schaltflächen vom Typ `cardsV2`, keine Reaktionsereignisse. Genehmiger stammen aus `dm.allowFrom` oder `defaultTo` und müssen stabile numerische Werte vom Typ `users/<id>` sein.
+- Nachrichtenaktionen stellen nur den textbasierten Vorgang `send` bereit. Das Hochladen von Google-Chat-Anhängen erfordert eine Benutzerauthentifizierung, während dieses Plugin eine Authentifizierung per Dienstkonto verwendet; daher wird das ausgehende Hochladen von Dateien nicht bereitgestellt.
+- `typingIndicator`: `message` (Standard) veröffentlicht einen Platzhalter `_<Bot> is typing..._` und wandelt ihn durch Bearbeitung in die erste Antwort um; `none` deaktiviert ihn; `reaction` erfordert Benutzer-OAuth und fällt bei Authentifizierung per Dienstkonto derzeit mit einem protokollierten Fehler auf `message` zurück.
+- Eingehende Anhänge (der erste Anhang pro Nachricht) werden über die Chat API in die Medienpipeline heruntergeladen und durch `mediaMaxMb` begrenzt (Standardwert 20).
+- Von Bots verfasste Nachrichten werden standardmäßig ignoriert. Mit `allowBots: true` verwenden akzeptierte Bot-Nachrichten den gemeinsamen [Bot-Schleifenschutz](/de/channels/bot-loop-protection): Konfigurieren Sie `channels.defaults.botLoopProtection` und überschreiben Sie ihn anschließend mit `channels.googlechat.botLoopProtection` oder `channels.googlechat.groups.<space>.botLoopProtection`.
 
-Details zur Secrets-Referenz: [Secrets-Verwaltung](/de/gateway/secrets).
+Details zu Secret-Referenzen: [Secret-Verwaltung](/de/gateway/secrets).
 
 ## Fehlerbehebung
 
-### 405 Method Not Allowed
+### 405 Methode nicht zulässig
 
-Wenn Google Cloud Logs Explorer Fehler wie diese anzeigt:
+Wenn der Google Cloud Logs Explorer Fehler wie diesen anzeigt:
 
+```text
+Statuscode: 405, Begründung: HTTP-Fehlerantwort: HTTP/1.1 405 Methode nicht zulässig
 ```
-status code: 405, reason phrase: HTTP error response: HTTP/1.1 405 Method Not Allowed
-```
 
-bedeutet das, dass der Webhook-Handler nicht registriert ist. Häufige Ursachen:
+Der Webhook-Handler ist nicht registriert. Häufige Ursachen:
 
-1. **Kanal nicht konfiguriert**: Der Abschnitt `channels.googlechat` fehlt in Ihrer Konfiguration. Überprüfen Sie dies mit:
+1. **Kanal nicht konfiguriert**: Der Abschnitt `channels.googlechat` fehlt. Überprüfen Sie dies mit:
 
    ```bash
    openclaw config get channels.googlechat
    ```
 
-   Wenn „Config path not found“ zurückgegeben wird, fügen Sie die Konfiguration hinzu (siehe [Konfigurationshighlights](#config-highlights)).
+   Wenn „Konfigurationspfad nicht gefunden“ zurückgegeben wird, fügen Sie die Konfiguration hinzu (siehe [Wichtige Konfigurationsoptionen](#config-highlights)).
 
-2. **Plugin nicht aktiviert**: Prüfen Sie den Plugin-Status:
+2. **Plugin nicht aktiviert**: Überprüfen Sie den Plugin-Status:
 
    ```bash
    openclaw plugins list | grep googlechat
    ```
 
-   Wenn „disabled“ angezeigt wird, fügen Sie `plugins.entries.googlechat.enabled: true` zu Ihrer Konfiguration hinzu.
+   Wenn „deaktiviert“ angezeigt wird, fügen Sie Ihrer Konfiguration `plugins.entries.googlechat.enabled: true` hinzu.
 
-3. **Gateway nicht neu gestartet**: Starten Sie nach dem Hinzufügen der Konfiguration das Gateway neu:
+3. **Gateway nach Konfigurationsänderungen nicht neu gestartet**:
 
    ```bash
    openclaw gateway restart
    ```
 
-Überprüfen Sie, ob der Kanal läuft:
+Überprüfen Sie, ob der Kanal ausgeführt wird:
 
 ```bash
 openclaw channels status
-# Should show: Google Chat default: enabled, configured, ...
+# Sollte anzeigen: Google Chat default: aktiviert, konfiguriert, ...
 ```
 
-### Andere Probleme
+### Weitere Probleme
 
-- Prüfen Sie `openclaw channels status --probe` auf Authentifizierungsfehler oder fehlende Audience-Konfiguration.
-- Wenn keine Nachrichten eintreffen, bestätigen Sie die Webhook-URL + Ereignisabonnements der Chat-App.
-- Wenn Erwähnungs-Gating Antworten blockiert, setzen Sie `botUser` auf den Benutzerressourcennamen der App und überprüfen Sie `requireMention`.
-- Verwenden Sie `openclaw logs --follow`, während Sie eine Testnachricht senden, um zu sehen, ob Anfragen das Gateway erreichen.
+- `openclaw channels status --probe` zeigt Authentifizierungsfehler und eine fehlende Audience-Konfiguration an (`audience` und `audienceType` sind beide erforderlich).
+- Wenn keine Nachrichten eingehen, überprüfen Sie die Webhook-URL und die Trigger-Konfiguration der Chat-App.
+- Wenn die Erwähnungsbeschränkung Antworten blockiert, setzen Sie `botUser` auf den Namen der Benutzerressource der App und überprüfen Sie `requireMention`.
+- `openclaw logs --follow` zeigt beim Senden einer Testnachricht, ob Anfragen das Gateway erreichen.
 
-Verwandte Dokumentation:
-
-- [Gateway-Konfiguration](/de/gateway/configuration)
-- [Sicherheit](/de/gateway/security)
-- [Reaktionen](/de/tools/reactions)
-
-## Verwandt
+## Verwandte Themen
 
 - [Kanalübersicht](/de/channels) — alle unterstützten Kanäle
-- [Kopplung](/de/channels/pairing) — DM-Authentifizierung und Kopplungsablauf
-- [Gruppen](/de/channels/groups) — Gruppenchat-Verhalten und Erwähnungs-Gating
 - [Kanal-Routing](/de/channels/channel-routing) — Sitzungs-Routing für Nachrichten
-- [Sicherheit](/de/gateway/security) — Zugriffsmodell und Härtung
+- [Gateway-Konfiguration](/de/gateway/configuration)
+- [Gruppen](/de/channels/groups) — Verhalten von Gruppenchats und Erwähnungssteuerung
+- [Kopplung](/de/channels/pairing) — DM-Authentifizierung und Kopplungsablauf
+- [Sicherheit](/de/gateway/security) — Zugriffsmodell und Absicherung
