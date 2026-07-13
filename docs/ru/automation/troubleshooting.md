@@ -2,9 +2,10 @@
 summary: Перенаправление на /automation/cron-jobs
 title: Устранение неполадок автоматизации
 x-i18n:
-    generated_at: "2026-07-12T11:09:27Z"
+    generated_at: "2026-07-13T17:52:24Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 24
     provider: openai
     source_hash: 2f279c2c51d880b58907cb3d3866c8a1103027d3bbf28e0f0f97d6a9c2cffc16
     source_path: automation/troubleshooting.md

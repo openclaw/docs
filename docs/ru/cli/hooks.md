@@ -3,351 +3,131 @@ read_when:
     - Вы хотите управлять хуками агента
     - Вы хотите проверить доступность хуков или включить хуки рабочей области
 summary: Справочник CLI для `openclaw hooks` (хуки агента)
-title: Hooks
+title: Хуки
 x-i18n:
-    generated_at: "2026-06-28T22:43:36Z"
-    model: gpt-5.5
+    generated_at: "2026-07-13T18:01:21Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 24
     provider: openai
-    source_hash: 56dd1ef82458dde3280e2cdfb4f3835211726517416e90625d3272d128eb9e0e
+    source_hash: f33d1e343771971bdc17dcafdabc6c4fc893b3080897862475a148e5f3957796
     source_path: cli/hooks.md
     workflow: 16
 ---
 
 # `openclaw hooks`
 
-Управляйте хуками агента (автоматизациями по событиям для команд вроде `/new`, `/reset` и запуска Gateway).
+Управление хуками агента (автоматизация на основе событий для таких команд, как `/new`, `/reset`, и запуска Gateway). Вызов `openclaw hooks` без аргументов эквивалентен `openclaw hooks list`.
 
-Запуск `openclaw hooks` без подкоманды эквивалентен `openclaw hooks list`.
+См. также: [Хуки](/ru/automation/hooks) — [Хуки плагинов](/ru/plugins/hooks)
 
-Связанные разделы:
-
-- Хуки: [Хуки](/ru/automation/hooks)
-- Хуки Plugin: [Хуки Plugin](/ru/plugins/hooks)
-
-## Список всех хуков
+## Список хуков
 
 ```bash
-openclaw hooks list
+openclaw hooks list [--eligible] [--json] [-v|--verbose]
 ```
 
-Показывает все обнаруженные хуки из рабочей области, управляемых, дополнительных и встроенных каталогов.
-При запуске Gateway внутренние обработчики хуков не загружаются, пока не настроен хотя бы один внутренний хук.
+Выводит хуки, обнаруженные в каталогах рабочей области, управляемых, дополнительных и встроенных хуков.
 
-**Параметры:**
-
-- `--eligible`: Показать только подходящие хуки (требования выполнены)
-- `--json`: Вывести как JSON
-- `-v, --verbose`: Показать подробную информацию, включая отсутствующие требования
-
-**Пример вывода:**
+- `--eligible`: только хуки, требования которых выполнены.
+- `--json`: структурированный вывод.
+- `-v, --verbose`: добавить столбец Missing с невыполненными требованиями.
 
 ```
-Hooks (4/4 ready)
+Хуки (готово 4/5)
 
-Ready:
-  🚀 boot-md ✓ - Run BOOT.md on gateway startup
-  📎 bootstrap-extra-files ✓ - Inject extra workspace bootstrap files during agent bootstrap
-  📝 command-logger ✓ - Log all command events to a centralized audit file
-  💾 session-memory ✓ - Save session context to memory when /new or /reset command is issued
+Готовы:
+  🚀 boot-md ✓ — Запускает BOOT.md при запуске Gateway
+  📎 bootstrap-extra-files ✓ — Добавляет дополнительные загрузочные файлы рабочей области при начальной загрузке агента
+  📝 command-logger ✓ — Записывает все события команд в централизованный файл аудита
+  💾 session-memory ✓ — Сохраняет контекст сеанса в память при выполнении команды /new или /reset
 ```
 
-**Пример (подробный вывод):**
+## Получение сведений о хуке
 
 ```bash
-openclaw hooks list --verbose
+openclaw hooks info <name> [--json]
 ```
 
-Показывает отсутствующие требования для неподходящих хуков.
+`<name>` — имя или ключ хука (например, `session-memory`). Показывает источник, пути к файлу и обработчику, домашнюю страницу, события и состояние каждого требования (двоичные файлы, переменные окружения, конфигурация, ОС).
 
-**Пример (JSON):**
+## Проверка соответствия требованиям
 
 ```bash
-openclaw hooks list --json
+openclaw hooks check [--json]
 ```
 
-Возвращает структурированный JSON для программного использования.
+Выводит сводку количества готовых и неготовых хуков; для неготовых хуков перечисляет причины блокировки каждого из них.
 
-## Получить информацию о хуке
-
-```bash
-openclaw hooks info <name>
-```
-
-Показывает подробную информацию о конкретном хуке.
-
-**Аргументы:**
-
-- `<name>`: имя хука или ключ хука (например, `session-memory`)
-
-**Параметры:**
-
-- `--json`: Вывести как JSON
-
-**Пример:**
-
-```bash
-openclaw hooks info session-memory
-```
-
-**Вывод:**
-
-```
-💾 session-memory ✓ Ready
-
-Save session context to memory when /new or /reset command is issued
-
-Details:
-  Source: openclaw-bundled
-  Path: /path/to/openclaw/hooks/bundled/session-memory/HOOK.md
-  Handler: /path/to/openclaw/hooks/bundled/session-memory/handler.ts
-  Homepage: https://docs.openclaw.ai/automation/hooks#session-memory
-  Events: command:new, command:reset
-
-Requirements:
-  Config: ✓ workspace.dir
-```
-
-## Проверить пригодность хуков
-
-```bash
-openclaw hooks check
-```
-
-Показывает сводку статуса пригодности хуков (сколько готово и сколько не готово).
-
-**Параметры:**
-
-- `--json`: Вывести как JSON
-
-**Пример вывода:**
-
-```
-Hooks Status
-
-Total hooks: 4
-Ready: 4
-Not ready: 0
-```
-
-## Включить хук
+## Включение хука
 
 ```bash
 openclaw hooks enable <name>
 ```
 
-Включает конкретный хук, добавляя его в вашу конфигурацию (по умолчанию `~/.openclaw/openclaw.json`).
+Добавляет или обновляет `hooks.internal.entries.<name>.enabled = true` в конфигурации, а также включает главный переключатель `hooks.internal.enabled` (Gateway не загружает внутренние обработчики хуков, пока не настроен хотя бы один хук). Команда завершается ошибкой, если хук не существует, управляется плагином или не соответствует требованиям (требования не выполнены).
 
-**Примечание:** Хуки рабочей области по умолчанию отключены, пока вы не включите их здесь или в конфигурации. Хуки, управляемые plugins, показывают `plugin:<id>` в `openclaw hooks list`, и их нельзя включить или отключить здесь. Вместо этого включите или отключите соответствующий plugin.
+Для хуков, управляемых плагинами, в `hooks list` отображается `plugin:<id>`; их нельзя включить или отключить здесь — вместо этого включите или отключите соответствующий плагин.
 
-**Аргументы:**
+После включения перезапустите Gateway (перезапустите приложение в строке меню macOS или процесс Gateway в среде разработки), чтобы он повторно загрузил хуки.
 
-- `<name>`: имя хука (например, `session-memory`)
-
-**Пример:**
-
-```bash
-openclaw hooks enable session-memory
-```
-
-**Вывод:**
-
-```
-✓ Enabled hook: 💾 session-memory
-```
-
-**Что делает команда:**
-
-- Проверяет, что хук существует и пригоден
-- Обновляет `hooks.internal.entries.<name>.enabled = true` в вашей конфигурации
-- Сохраняет конфигурацию на диск
-
-Если хук получен из `<workspace>/hooks/`, этот шаг явного включения обязателен перед тем,
-как Gateway сможет его загрузить.
-
-**После включения:**
-
-- Перезапустите gateway, чтобы хуки перезагрузились (перезапуск приложения в строке меню на macOS или перезапуск процесса gateway в разработке).
-
-## Отключить хук
+## Отключение хука
 
 ```bash
 openclaw hooks disable <name>
 ```
 
-Отключает конкретный хук, обновляя вашу конфигурацию.
+Устанавливает `hooks.internal.entries.<name>.enabled = false`. После этого перезапустите Gateway.
 
-**Аргументы:**
-
-- `<name>`: имя хука (например, `command-logger`)
-
-**Пример:**
+## Установка и обновление пакетов хуков
 
 ```bash
-openclaw hooks disable command-logger
-```
+openclaw plugins install <package>        # по умолчанию npm
+openclaw plugins install npm:<package>    # только npm
+openclaw plugins install <package> --pin  # закрепить разрешённую версию
+openclaw plugins install <path>           # локальный каталог или архив
+openclaw plugins install -l <path>        # связать локальный каталог вместо копирования
 
-**Вывод:**
-
-```
-⏸ Disabled hook: 📝 command-logger
-```
-
-**После отключения:**
-
-- Перезапустите gateway, чтобы хуки перезагрузились
-
-## Примечания
-
-- `openclaw hooks list --json`, `info --json` и `check --json` записывают структурированный JSON напрямую в stdout.
-- Хуки, управляемые Plugin, нельзя включить или отключить здесь; вместо этого включите или отключите владеющий plugin.
-
-## Установить пакеты хуков
-
-```bash
-openclaw plugins install <package>        # npm by default
-openclaw plugins install npm:<package>    # npm only
-openclaw plugins install <package> --pin  # pin version
-openclaw plugins install <path>           # local path
-```
-
-Устанавливает пакеты хуков через единый установщик plugins.
-
-`openclaw hooks install` по-прежнему работает как псевдоним совместимости, но выводит
-предупреждение об устаревании и перенаправляет на `openclaw plugins install`.
-
-Спецификации npm работают **только через реестр** (имя пакета + необязательная **точная версия** или
-**dist-tag**). Спецификации Git/URL/file и диапазоны semver отклоняются. Установка зависимостей
-выполняется локально для проекта с `--ignore-scripts` ради безопасности, даже если в вашей
-оболочке заданы глобальные настройки установки npm.
-
-Базовые спецификации и `@latest` остаются на стабильной ветке. Если npm разрешает любую из них
-в предварительную версию, OpenClaw останавливается и просит явно согласиться через
-тег предварительной версии, например `@beta`/`@rc`, или точную предварительную версию.
-
-**Что делает команда:**
-
-- Копирует пакет хуков в `~/.openclaw/hooks/<id>`
-- Включает установленные хуки в `hooks.internal.entries.*`
-- Записывает установку в `hooks.internal.installs`
-
-**Параметры:**
-
-- `-l, --link`: Связать локальный каталог вместо копирования (добавляет его в `hooks.internal.load.extraDirs`)
-- `--pin`: Записывать установки npm как точно разрешенные `name@version` в `hooks.internal.installs`
-
-**Поддерживаемые архивы:** `.zip`, `.tgz`, `.tar.gz`, `.tar`
-
-**Примеры:**
-
-```bash
-# Local directory
-openclaw plugins install ./my-hook-pack
-
-# Local archive
-openclaw plugins install ./my-hook-pack.zip
-
-# NPM package
-openclaw plugins install @openclaw/my-hook-pack
-
-# Link a local directory without copying
-openclaw plugins install -l ./my-hook-pack
-```
-
-Связанные пакеты хуков считаются управляемыми хуками из каталога,
-настроенного оператором, а не хуками рабочей области.
-
-## Обновить пакеты хуков
-
-```bash
 openclaw plugins update <id>
 openclaw plugins update --all
+openclaw plugins update --dry-run
 ```
 
-Обновляет отслеживаемые пакеты хуков на основе npm через единый обновлятор plugins.
+Пакеты хуков устанавливаются и обновляются через единый установщик и средство обновления плагинов; `openclaw hooks install` / `openclaw hooks update` по-прежнему работают как устаревшие псевдонимы, которые выводят предупреждение и перенаправляют выполнение командам `plugins`.
 
-`openclaw hooks update` по-прежнему работает как псевдоним совместимости, но выводит
-предупреждение об устаревании и перенаправляет на `openclaw plugins update`.
-
-**Параметры:**
-
-- `--all`: Обновить все отслеживаемые пакеты хуков
-- `--dry-run`: Показать, что изменилось бы, без записи
-
-Когда сохраненный хеш целостности существует и хеш полученного артефакта меняется,
-OpenClaw выводит предупреждение и запрашивает подтверждение перед продолжением. Используйте
-глобальный `--yes`, чтобы пропустить запросы в CI или неинтерактивных запусках.
+- Спецификации npm поддерживают только реестр: имя пакета и необязательная точная версия или тег дистрибутива. Спецификации Git, URL и файлов, а также диапазоны semver отклоняются. Зависимости устанавливаются локально для проекта с помощью `--ignore-scripts`.
+- Спецификации без префикса и `@latest` остаются на стабильном канале; если npm разрешает предварительную версию, OpenClaw останавливается и предлагает явно подтвердить её использование (`@beta`, `@rc` или точная предварительная версия).
+- Поддерживаемые архивы: `.zip`, `.tgz`, `.tar.gz`, `.tar`.
+- `-l, --link` связывает локальный каталог вместо его копирования (добавляет его в `hooks.internal.load.extraDirs`); связанные пакеты хуков являются управляемыми хуками из настроенного оператором каталога, а не хуками рабочей области.
+- `--pin` записывает установки npm как точную разрешённую `name@version` в `hooks.internal.installs`.
+- При установке пакет копируется в `~/.openclaw/hooks/<id>`, его хуки включаются в `hooks.internal.entries.*`, а сведения об установке записываются в `hooks.internal.installs`.
+- Если сохранённый хеш целостности больше не совпадает с полученным артефактом, OpenClaw выводит предупреждение и запрашивает подтверждение перед продолжением; передайте глобальный параметр `--yes`, чтобы пропустить запрос (например, в CI).
 
 ## Встроенные хуки
 
-### session-memory
+| Хук                   | События                                           | Назначение                                                                                                 |
+| --------------------- | ------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| boot-md               | `gateway:startup`                                 | Запускает `BOOT.md` при запуске Gateway для каждой настроенной области агента                     |
+| bootstrap-extra-files | `agent:bootstrap`                                 | Добавляет дополнительные загрузочные файлы (например, `AGENTS.md`/`TOOLS.md` монорепозитория) при начальной загрузке агента |
+| command-logger        | `command`                                         | Записывает события команд в `~/.openclaw/logs/commands.log`                                                 |
+| compaction-notifier   | `session:compact:before`, `session:compact:after` | Отправляет видимые уведомления в чат при начале и завершении Compaction сеанса                             |
+| session-memory        | `command:new`, `command:reset`                    | Сохраняет контекст сеанса в память при `/new` или `/reset`                          |
 
-Сохраняет контекст сессии в память, когда вы выполняете `/new` или `/reset`.
+Включите любой встроенный хук с помощью `openclaw hooks enable <hook-name>`. Подробное описание, ключи конфигурации и значения по умолчанию: [Встроенные хуки](/ru/automation/hooks#bundled-hooks).
 
-**Включить:**
-
-```bash
-openclaw hooks enable session-memory
-```
-
-**Вывод:** по умолчанию `~/.openclaw/workspace/memory/YYYY-MM-DD-HHMM.md`. Задайте `hooks.internal.entries.session-memory.llmSlug: true` для слагов имен файлов, сгенерированных моделью.
-
-**См.:** [документацию session-memory](/ru/automation/hooks#session-memory)
-
-### bootstrap-extra-files
-
-Внедряет дополнительные bootstrap-файлы (например, локальные для монорепозитория `AGENTS.md` / `TOOLS.md`) во время `agent:bootstrap`.
-
-**Включить:**
+### Файл журнала command-logger
 
 ```bash
-openclaw hooks enable bootstrap-extra-files
+tail -n 20 ~/.openclaw/logs/commands.log        # последние команды
+cat ~/.openclaw/logs/commands.log | jq .          # форматированный вывод
+grep '"action":"new"' ~/.openclaw/logs/commands.log | jq .   # фильтрация по действию
 ```
 
-**См.:** [документацию bootstrap-extra-files](/ru/automation/hooks#bootstrap-extra-files)
+## Примечания
 
-### command-logger
+- `hooks list --json`, `info --json` и `check --json` выводят структурированный JSON непосредственно в стандартный вывод.
 
-Записывает все события команд в централизованный файл аудита.
-
-**Включить:**
-
-```bash
-openclaw hooks enable command-logger
-```
-
-**Вывод:** `~/.openclaw/logs/commands.log`
-
-**Просмотреть логи:**
-
-```bash
-# Recent commands
-tail -n 20 ~/.openclaw/logs/commands.log
-
-# Pretty-print
-cat ~/.openclaw/logs/commands.log | jq .
-
-# Filter by action
-grep '"action":"new"' ~/.openclaw/logs/commands.log | jq .
-```
-
-**См.:** [документацию command-logger](/ru/automation/hooks#command-logger)
-
-### boot-md
-
-Запускает `BOOT.md` при запуске gateway (после запуска каналов).
-
-**События**: `gateway:startup`
-
-**Включить**:
-
-```bash
-openclaw hooks enable boot-md
-```
-
-**См.:** [документацию boot-md](/ru/automation/hooks#boot-md)
-
-## Связанные разделы
+## См. также
 
 - [Справочник CLI](/ru/cli)
 - [Хуки автоматизации](/ru/automation/hooks)

@@ -1,21 +1,22 @@
 ---
 read_when:
-    - Вы устанавливаете, настраиваете или проверяете Plugin web-readability
-summary: Извлекайте удобочитаемое содержимое статей из ответов локальной веб-загрузки в формате HTML.
-title: Plugin для удобного чтения веб-страниц
+    - Вы устанавливаете, настраиваете или проверяете плагин web-readability.
+summary: Извлекайте читаемое содержимое статей из локальных HTML-ответов веб-запросов.
+title: Плагин веб-читаемости
 x-i18n:
-    generated_at: "2026-07-12T11:41:59Z"
+    generated_at: "2026-07-13T18:25:34Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 24
     provider: openai
     source_hash: 5909a2da50238f14feecc519809d3b1dce90a49dc98142b4797bb45ad0e48cd1
     source_path: plugins/reference/web-readability.md
     workflow: 16
 ---
 
-# Plugin удобочитаемости веб-страниц
+# Плагин Web Readability
 
-Извлекает удобочитаемое содержимое статей из локальных ответов на веб-запросы в формате HTML.
+Извлекает удобное для чтения содержимое статей из локальных HTML-ответов при получении веб-страниц.
 
 ## Распространение
 

@@ -1,21 +1,22 @@
 ---
 read_when:
-    - Вы устанавливаете, настраиваете или проверяете Plugin brave
-summary: Plugin провайдера Brave Search для веб-поиска в OpenClaw.
-title: Plugin Brave
+    - Вы устанавливаете, настраиваете или проверяете плагин brave
+summary: Плагин провайдера Brave Search для веб-поиска в OpenClaw.
+title: Плагин Brave
 x-i18n:
-    generated_at: "2026-06-28T23:21:51Z"
-    model: gpt-5.5
+    generated_at: "2026-07-13T18:32:51Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 24
     provider: openai
     source_hash: 265b0efa840eb3ebc7bfc1cc47b703737bbd76050ac95e79825728030a166d37
     source_path: plugins/reference/brave.md
     workflow: 16
 ---
 
-# Plugin Brave
+# Плагин Brave
 
-Plugin поставщика Brave Search в OpenClaw для веб-поиска.
+Плагин провайдера Brave Search для веб-поиска в OpenClaw.
 
 ## Распространение
 
@@ -26,6 +27,6 @@ Plugin поставщика Brave Search в OpenClaw для веб-поиска.
 
 контракты: webSearchProviders
 
-## Связанные документы
+## Связанная документация
 
-- [brave](/ru/tools/brave-search)
+- [Brave](/ru/tools/brave-search)

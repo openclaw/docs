@@ -1,38 +1,39 @@
 ---
 read_when:
-    - Вам нужен полный список того, что поддерживает OpenClaw
-summary: Возможности OpenClaw в разных каналах, маршрутизации, медиа и UX.
+    - Вам нужен полный список возможностей OpenClaw
+summary: Возможности OpenClaw для разных каналов, маршрутизации, мультимедиа и UX.
 title: Возможности
 x-i18n:
-    generated_at: "2026-06-28T22:49:34Z"
-    model: gpt-5.5
+    generated_at: "2026-07-13T19:42:09Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 24
     provider: openai
-    source_hash: b69cead6fc3c6af91e95f8080d9ca409f24c314cf97f707b67d8fdeb84cf92fa
+    source_hash: 5bc3ebdd87a0f6ea0f3d75d029bf7cae469ecd9db84a165bd47c4896936fe303
     source_path: concepts/features.md
     workflow: 16
 ---
 
-## Главное
+## Основные возможности
 
 <Columns>
   <Card title="Каналы" icon="message-square" href="/ru/channels">
-    Discord, iMessage, Signal, Slack, Telegram, WhatsApp, WebChat и другие через единый Gateway.
+    Discord, iMessage, Signal, Slack, Telegram, WhatsApp, WebChat и другие каналы через единый Gateway.
   </Card>
   <Card title="Плагины" icon="plug" href="/ru/tools/plugin">
-    Встроенные плагины добавляют Matrix, Nextcloud Talk, Nostr, Twitch, Zalo и многое другое без отдельных установок в обычных актуальных релизах.
+    Официальные плагины добавляют Matrix, Nextcloud Talk, Nostr, Twitch, Zalo и десятки других интеграций с помощью одной команды установки.
   </Card>
   <Card title="Маршрутизация" icon="route" href="/ru/concepts/multi-agent">
-    Многоагентная маршрутизация с изолированными сеансами.
+    Маршрутизация между несколькими агентами с изолированными сеансами.
   </Card>
   <Card title="Медиа" icon="image" href="/ru/nodes/images">
-    Изображения, аудио, видео, документы и генерация изображений/видео.
+    Изображения, аудио, видео, документы, а также генерация изображений и видео.
   </Card>
-  <Card title="Приложения и UI" icon="monitor" href="/ru/platforms">
-    Windows Hub, Web Control UI, приложение для macOS и мобильные узлы.
+  <Card title="Приложения и интерфейс" icon="monitor" href="/ru/platforms">
+    Windows Hub, браузерный Control UI, приложение для строки меню macOS и мобильные узлы.
   </Card>
   <Card title="Мобильные узлы" icon="smartphone" href="/ru/nodes">
-    Узлы iOS и Android с сопряжением, голосом/чатом и расширенными командами устройства.
+    Узлы iOS и Android с сопряжением, голосовым и текстовым общением, а также расширенными командами для устройств.
   </Card>
 </Columns>
 
@@ -40,60 +41,64 @@ x-i18n:
 
 **Каналы:**
 
-- Встроенные каналы включают Discord, Google Chat, iMessage, IRC, Signal, Slack, Telegram, WebChat и WhatsApp
-- Встроенные каналы плагинов включают Feishu, LINE, Matrix, Mattermost, Microsoft Teams, Nextcloud Talk, Nostr, QQ Bot, Synology Chat, Tlon, Twitch, Zalo и Zalo Personal
-- Необязательные отдельно устанавливаемые канальные плагины включают Voice Call и сторонние пакеты, такие как WeChat
-- Сторонние канальные плагины могут дополнительно расширять Gateway, например WeChat
+- iMessage, Telegram и WebChat входят в основную установку; все остальные каналы представляют собой
+  официальные плагины, устанавливаемые с помощью `openclaw plugins install @openclaw/<id>` (или по запросу
+  во время `openclaw onboard` / `openclaw channels add`)
+- Каналы официальных плагинов: Discord, Feishu, Google Chat, IRC, LINE, Matrix, Mattermost,
+  Microsoft Teams, Nextcloud Talk, Nostr, QQ Bot, Raft, Signal, Slack, SMS, Synology Chat,
+  Tlon, Twitch, Voice Call, WhatsApp, Zalo и Zalo Personal
+- Каналы внешних плагинов, сопровождаемых вне репозитория OpenClaw: WeChat, Yuanbao и Zalo ClawBot
 - Поддержка групповых чатов с активацией по упоминанию
-- Безопасность личных сообщений с allowlist и сопряжением
+- Безопасность личных сообщений с помощью списков разрешённых пользователей и сопряжения
 
 **Агент:**
 
-- Встроенная среда выполнения агента со streaming инструментов
-- Многоагентная маршрутизация с изолированными сеансами для каждого рабочего пространства или отправителя
-- Сеансы: прямые чаты сворачиваются в общий `main`; группы изолированы
-- Streaming и разбиение на фрагменты для длинных ответов
+- Встроенная среда выполнения агента с потоковой передачей результатов инструментов
+- Маршрутизация между несколькими агентами с отдельными сеансами для каждой рабочей области или отправителя
+- Сеансы: личные чаты объединяются в общий `main`; группы изолированы
+- Потоковая передача и разбиение длинных ответов на части
 
 **Аутентификация и провайдеры:**
 
 - Более 35 провайдеров моделей (Anthropic, OpenAI, Google и другие)
 - Аутентификация по подписке через OAuth (например, OpenAI Codex)
-- Поддержка пользовательских и самостоятельно размещаемых провайдеров (vLLM, SGLang, Ollama и любая OpenAI-совместимая или Anthropic-совместимая конечная точка)
+- Поддержка пользовательских и самостоятельно размещённых провайдеров (vLLM, SGLang, Ollama, llama.cpp, LM Studio и
+  любые конечные точки, совместимые с OpenAI или Anthropic)
 
 **Медиа:**
 
-- Входящие и исходящие изображения, аудио, видео и документы
-- Общие поверхности возможностей генерации изображений и видео
-- Транскрибация голосовых заметок
-- Преобразование текста в речь с несколькими провайдерами
+- Приём и отправка изображений, аудио, видео и документов
+- Общие интерфейсы возможностей генерации изображений и видео
+- Расшифровка голосовых сообщений
+- Преобразование текста в речь с помощью нескольких провайдеров
 
 **Приложения и интерфейсы:**
 
 - WebChat и браузерный Control UI
-- Приложение-компаньон в строке меню macOS
-- Узел iOS с сопряжением, Canvas, камерой, записью экрана, геолокацией и голосом
-- Узел Android с сопряжением, чатом, голосом, Canvas, камерой и командами устройства
+- Вспомогательное приложение для строки меню macOS
+- Узел iOS с сопряжением, Canvas, камерой, записью экрана, геолокацией и голосовым управлением
+- Узел Android с сопряжением, чатом, голосовым управлением, Canvas, камерой и командами для устройства
 
 **Инструменты и автоматизация:**
 
-- Автоматизация браузера, exec, sandboxing
+- Автоматизация браузера, выполнение команд и изоляция в песочнице
 - Веб-поиск (Brave, DuckDuckGo, Exa, Firecrawl, Gemini, Grok, Kimi, MiniMax Search, Ollama Web Search, Perplexity, SearXNG, Tavily)
-- Cron-задания и планирование Heartbeat
+- Задания Cron и планирование Heartbeat
 - Skills, плагины и конвейеры рабочих процессов (Lobster)
 
-## См. также
+## Связанные материалы
 
 <CardGroup cols={2}>
   <Card title="Экспериментальные функции" href="/ru/concepts/experimental-features" icon="flask">
-    Опциональные функции, которые еще не поставляются в поверхности по умолчанию.
+    Включаемые по желанию функции, которые ещё не добавлены в интерфейс по умолчанию.
   </Card>
   <Card title="Среда выполнения агента" href="/ru/concepts/agent" icon="robot">
-    Модель среды выполнения агента и то, как запускаются выполнения.
+    Модель среды выполнения агента и порядок запуска задач.
   </Card>
   <Card title="Каналы" href="/ru/channels" icon="message-square">
-    Подключайте Telegram, WhatsApp, Discord, Slack и другие из одного Gateway.
+    Подключайте Telegram, WhatsApp, Discord, Slack и другие каналы через единый Gateway.
   </Card>
   <Card title="Плагины" href="/ru/tools/plugin" icon="plug">
-    Встроенные и сторонние плагины, расширяющие OpenClaw.
+    Официальные и внешние плагины, расширяющие возможности OpenClaw.
   </Card>
 </CardGroup>

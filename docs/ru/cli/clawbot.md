@@ -1,33 +1,30 @@
 ---
 read_when:
-    - Вы поддерживаете старые скрипты с помощью `openclaw clawbot ...`
-    - Вам нужны рекомендации по миграции на текущие команды
-summary: Справочник CLI для `openclaw clawbot` (пространство имен устаревшего псевдонима)
+    - Вы поддерживаете старые скрипты, использующие `openclaw clawbot ...`
+    - Вам нужны рекомендации по переходу на актуальные команды
+summary: Справочник CLI для `openclaw clawbot` (пространство имён устаревших псевдонимов)
 title: Clawbot
 x-i18n:
-    generated_at: "2026-06-28T22:42:10Z"
-    model: gpt-5.5
+    generated_at: "2026-07-13T18:00:03Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 24
     provider: openai
-    source_hash: 4ca7f189071d170a94ec3eda276a3ba1202ccdee43c610f214b65bda8375d300
+    source_hash: 6baf9b4e9bbe8bb31cdc4923c38cd45a883b6e5be921a403335e257dacdc2cd5
     source_path: cli/clawbot.md
     workflow: 16
 ---
 
 # `openclaw clawbot`
 
-Устаревшее пространство имен псевдонимов, сохраненное для обратной совместимости.
-
-Текущий поддерживаемый псевдоним:
-
-- `openclaw clawbot qr` (то же поведение, что и у [`openclaw qr`](/ru/cli/qr))
+Устаревшее пространство имён псевдонима сохранено для обратной совместимости. Оно регистрирует ту же QR-команду, что и CLI верхнего уровня, поэтому `openclaw clawbot qr` принимает все флаги [`openclaw qr`](/ru/cli/qr).
 
 ## Миграция
 
-Предпочитайте современные команды верхнего уровня напрямую:
+Предпочтительно использовать современную команду верхнего уровня:
 
 - `openclaw clawbot qr` -> `openclaw qr`
 
-## Связанное
+## Связанные материалы
 
-- [Справочник CLI](/ru/cli)
+- [Справочник по CLI](/ru/cli)

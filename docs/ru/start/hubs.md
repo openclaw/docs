@@ -1,69 +1,70 @@
 ---
 read_when:
     - Вам нужна полная карта документации
-summary: Центры, которые ссылаются на всю документацию OpenClaw
+summary: Центральные страницы со ссылками на всю документацию OpenClaw
 title: Центры документации
 x-i18n:
-    generated_at: "2026-06-28T23:48:01Z"
-    model: gpt-5.5
+    generated_at: "2026-07-13T20:18:38Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 24
     provider: openai
-    source_hash: d7d3f089e2caea1e1487c7c0375c62dfb007db05827a77d4e5616839023b9457
+    source_hash: 9b51fc77155b2e7ed6cb6e36d375585ebd457c3d89f97c4151877d1aae20717f
     source_path: start/hubs.md
     workflow: 16
 ---
 
 <Note>
-Если вы впервые знакомитесь с OpenClaw, начните с [Начало работы](/ru/start/getting-started).
+Если вы впервые знакомитесь с OpenClaw, начните с раздела [Начало работы](/ru/start/getting-started).
 </Note>
 
-Используйте эти хабы, чтобы найти все страницы, включая подробные разборы и справочную документацию, которые не отображаются в левой навигации.
+Используйте эти разделы, чтобы найти все страницы, включая подробные руководства и справочную документацию, которые не отображаются в левой панели навигации.
 
 ## Начните здесь
 
-- [Индекс](/ru)
+- [Главная](/ru)
 - [Начало работы](/ru/start/getting-started)
-- [Онбординг](/ru/start/onboarding)
-- [Онбординг (CLI)](/ru/start/wizard)
-- [Настройка](/ru/start/setup)
+- [Первоначальная настройка](/ru/start/onboarding)
+- [Первоначальная настройка (CLI)](/ru/start/wizard)
+- [Установка и настройка](/ru/start/setup)
 - [Панель управления (локальный Gateway)](http://127.0.0.1:18789/)
-- [Помощь](/ru/help)
+- [Справка](/ru/help)
 - [Каталог документации](/ru/start/docs-directory)
 - [Конфигурация](/ru/gateway/configuration)
 - [Примеры конфигурации](/ru/gateway/configuration-examples)
 - [Ассистент OpenClaw](/ru/start/openclaw)
-- [Витрина](/ru/start/showcase)
-- [Лор](/ru/start/lore)
+- [Демонстрация возможностей](/ru/start/showcase)
+- [История проекта](/ru/start/lore)
 
 ## Установка и обновления
 
 - [Docker](/ru/install/docker)
 - [Nix](/ru/install/nix)
-- [Обновление / откат](/ru/install/updating)
-- [Рабочий процесс Bun (экспериментально)](/ru/install/bun)
+- [Обновление и откат](/ru/install/updating)
+- [Рабочий процесс Bun (экспериментальный)](/ru/install/bun)
 
-## Основные концепции
+## Основные понятия
 
 - [Архитектура](/ru/concepts/architecture)
-- [Функции](/ru/concepts/features)
-- [Сетевой хаб](/ru/network)
+- [Возможности](/ru/concepts/features)
+- [Сетевой центр](/ru/network)
 - [Среда выполнения агента](/ru/concepts/agent)
 - [Рабочая область агента](/ru/concepts/agent-workspace)
 - [Память](/ru/concepts/memory)
 - [Цикл агента](/ru/concepts/agent-loop)
 - [Потоковая передача и разбиение на фрагменты](/ru/concepts/streaming)
-- [Маршрутизация нескольких агентов](/ru/concepts/multi-agent)
+- [Маршрутизация между агентами](/ru/concepts/multi-agent)
 - [Compaction](/ru/concepts/compaction)
-- [Сессии](/ru/concepts/session)
-- [Очистка сессий](/ru/concepts/session-pruning)
-- [Инструменты сессий](/ru/concepts/session-tool)
+- [Сеансы](/ru/concepts/session)
+- [Очистка сеансов](/ru/concepts/session-pruning)
+- [Инструменты сеанса](/ru/concepts/session-tool)
 - [Очередь](/ru/concepts/queue)
-- [Слэш-команды](/ru/tools/slash-commands)
+- [Команды с косой чертой](/ru/tools/slash-commands)
 - [Адаптеры RPC](/ru/reference/rpc)
 - [Схемы TypeBox](/ru/concepts/typebox)
-- [Обработка часовых поясов](/ru/concepts/timezone)
+- [Работа с часовыми поясами](/ru/concepts/timezone)
 - [Присутствие](/ru/concepts/presence)
-- [Обнаружение и транспорты](/ru/gateway/discovery)
+- [Обнаружение и транспортные протоколы](/ru/gateway/discovery)
 - [Bonjour](/ru/gateway/bonjour)
 - [Маршрутизация каналов](/ru/channels/channel-routing)
 - [Группы](/ru/channels/groups)
@@ -71,70 +72,70 @@ x-i18n:
 - [Переключение моделей при сбое](/ru/concepts/model-failover)
 - [OAuth](/ru/concepts/oauth)
 
-## Провайдеры и входящий трафик
+## Провайдеры и входящие подключения
 
-- [Хаб чат-каналов](/ru/channels)
-- [Хаб провайдеров моделей](/ru/providers/models)
-- [WhatsApp](/ru/channels/whatsapp)
-- [Telegram](/ru/channels/telegram)
-- [Slack](/ru/channels/slack)
+- [Центр каналов чата](/ru/channels)
+- [Центр провайдеров моделей](/ru/providers/models)
 - [Discord](/ru/channels/discord)
-- [Mattermost](/ru/channels/mattermost)
-- [Signal](/ru/channels/signal)
-- [QQ Bot](/ru/channels/qqbot)
 - [iMessage](/ru/channels/imessage)
-- [Разбор местоположения](/ru/channels/location)
+- [Mattermost](/ru/channels/mattermost)
+- [QQ Bot](/ru/channels/qqbot)
+- [Signal](/ru/channels/signal)
+- [Slack](/ru/channels/slack)
+- [Telegram](/ru/channels/telegram)
 - [WebChat](/ru/web/webchat)
-- [Webhooks](/ru/automation/cron-jobs#webhooks)
+- [WhatsApp](/ru/channels/whatsapp)
+- [Разбор местоположения](/ru/channels/location)
+- [Вебхуки](/ru/automation/cron-jobs#webhooks)
 - [Gmail Pub/Sub](/ru/automation/cron-jobs#gmail-pubsub-integration)
 
 ## Gateway и эксплуатация
 
-- [Инструкции по эксплуатации Gateway](/ru/gateway)
+- [Руководство по эксплуатации Gateway](/ru/gateway)
 - [Сетевая модель](/ru/network#core-model)
 - [Сопряжение Gateway](/ru/gateway/pairing)
 - [Блокировка Gateway](/ru/gateway/gateway-lock)
 - [Фоновый процесс](/ru/gateway/background-process)
-- [Состояние](/ru/gateway/health)
+- [Состояние системы](/ru/gateway/health)
 - [Heartbeat](/ru/gateway/heartbeat)
-- [Doctor](/ru/gateway/doctor)
-- [Журналирование](/ru/gateway/logging)
-- [Песочница](/ru/gateway/sandboxing)
+- [Диагностика](/ru/gateway/doctor)
+- [Ведение журналов](/ru/gateway/logging)
+- [Изоляция в песочнице](/ru/gateway/sandboxing)
 - [Панель управления](/ru/web/dashboard)
 - [Интерфейс управления](/ru/web/control-ui)
-- [Удаленный доступ](/ru/gateway/remote)
-- [README удаленного Gateway](/ru/gateway/remote-gateway-readme)
+- [Удалённый доступ](/ru/gateway/remote)
+- [README удалённого Gateway](/ru/gateway/remote-gateway-readme)
 - [Tailscale](/ru/gateway/tailscale)
 - [Безопасность](/ru/gateway/security)
 - [Устранение неполадок](/ru/gateway/troubleshooting)
 
 ## Инструменты и автоматизация
 
-- [Поверхность инструментов](/ru/tools)
+- [Набор инструментов](/ru/tools)
 - [OpenProse](/ru/prose)
 - [Справочник CLI](/ru/cli)
 - [Инструмент Exec](/ru/tools/exec)
 - [Инструмент PDF](/ru/tools/pdf)
-- [Режим повышенных прав](/ru/tools/elevated)
+- [Режим повышенных привилегий](/ru/tools/elevated)
 - [Задания Cron](/ru/automation/cron-jobs)
 - [Автоматизация](/ru/automation)
-- [Мышление и подробный вывод](/ru/tools/thinking)
+- [Рассуждение и подробный вывод](/ru/tools/thinking)
 - [Модели](/ru/concepts/models)
-- [Субагенты](/ru/tools/subagents)
-- [CLI отправки агенту](/ru/tools/agent-send)
+- [Подагенты](/ru/tools/subagents)
+- [Отправка агенту через CLI](/ru/tools/agent-send)
 - [Терминальный интерфейс](/ru/web/tui)
 - [Управление браузером](/ru/tools/browser)
 - [Браузер (устранение неполадок в Linux)](/ru/tools/browser-linux-troubleshooting)
 - [Опросы](/ru/cli/message)
 
-## Узлы, медиа, голос
+## Узлы, мультимедиа и голос
 
 - [Обзор узлов](/ru/nodes)
 - [Камера](/ru/nodes/camera)
 - [Изображения](/ru/nodes/images)
 - [Аудио](/ru/nodes/audio)
-- [Команда местоположения](/ru/nodes/location-command)
-- [Голосовое пробуждение](/ru/nodes/voicewake)
+- [Команда определения местоположения](/ru/nodes/location-command)
+- [Голосовая активация](/ru/nodes/voicewake)
 - [Режим разговора](/ru/nodes/talk)
 
 ## Платформы
@@ -143,42 +144,42 @@ x-i18n:
 - [macOS](/ru/platforms/macos)
 - [iOS](/ru/platforms/ios)
 - [Android](/ru/platforms/android)
-- [Хаб Windows](/ru/platforms/windows)
+- [Центр Windows](/ru/platforms/windows)
 - [Linux](/ru/platforms/linux)
-- [Веб-поверхности](/ru/web)
+- [Веб-интерфейсы](/ru/web)
 
-## Сопутствующее приложение macOS (расширенно)
+## Вспомогательное приложение для macOS (для опытных пользователей)
 
-- [Настройка среды разработки macOS](/ru/platforms/mac/dev-setup)
+- [Настройка среды разработки для macOS](/ru/platforms/mac/dev-setup)
 - [Строка меню macOS](/ru/platforms/mac/menu-bar)
-- [Голосовое пробуждение macOS](/ru/platforms/mac/voicewake)
-- [Голосовое наложение macOS](/ru/platforms/mac/voice-overlay)
-- [macOS WebChat](/ru/platforms/mac/webchat)
-- [macOS Canvas](/ru/platforms/mac/canvas)
+- [Голосовая активация в macOS](/ru/platforms/mac/voicewake)
+- [Голосовая панель в macOS](/ru/platforms/mac/voice-overlay)
+- [WebChat для macOS](/ru/platforms/mac/webchat)
+- [Холст macOS](/ru/platforms/mac/canvas)
 - [Дочерний процесс macOS](/ru/platforms/mac/child-process)
-- [Состояние macOS](/ru/platforms/mac/health)
+- [Состояние системы macOS](/ru/platforms/mac/health)
 - [Значок macOS](/ru/platforms/mac/icon)
-- [Журналирование macOS](/ru/platforms/mac/logging)
+- [Ведение журналов в macOS](/ru/platforms/mac/logging)
 - [Разрешения macOS](/ru/platforms/mac/permissions)
-- [Удаленный доступ macOS](/ru/platforms/mac/remote)
-- [Подписание macOS](/ru/platforms/mac/signing)
-- [Gateway macOS (launchd)](/ru/platforms/mac/bundled-gateway)
-- [macOS XPC](/ru/platforms/mac/xpc)
-- [Skills macOS](/ru/platforms/mac/skills)
-- [macOS Peekaboo](/ru/platforms/mac/peekaboo)
+- [Удалённый доступ в macOS](/ru/platforms/mac/remote)
+- [Подписание приложения для macOS](/ru/platforms/mac/signing)
+- [Gateway для macOS (launchd)](/ru/platforms/mac/bundled-gateway)
+- [XPC в macOS](/ru/platforms/mac/xpc)
+- [Skills для macOS](/ru/platforms/mac/skills)
+- [Peekaboo для macOS](/ru/platforms/mac/peekaboo)
 
-## Plugins
+## Плагины
 
-- [Обзор Plugins](/ru/tools/plugin)
-- [Создание Plugins](/ru/plugins/building-plugins)
-- [Хуки Plugin](/ru/plugins/hooks)
-- [Манифест Plugin](/ru/plugins/manifest)
+- [Обзор плагинов](/ru/tools/plugin)
+- [Создание плагинов](/ru/plugins/building-plugins)
+- [Хуки плагинов](/ru/plugins/hooks)
+- [Манифест плагина](/ru/plugins/manifest)
 - [Инструменты агента](/ru/plugins/building-plugins#registering-agent-tools)
-- [Пакеты Plugin](/ru/plugins/bundles)
+- [Пакеты плагинов](/ru/plugins/bundles)
 - [ClawHub](/ru/clawhub)
-- [Рецепты возможностей](/ru/plugins/adding-capabilities)
-- [Plugin голосовых вызовов](/ru/plugins/voice-call)
-- [Пользовательский Plugin Zalo](/ru/plugins/zalouser)
+- [Сборник рецептов для возможностей](/ru/plugins/adding-capabilities)
+- [Плагин голосовых вызовов](/ru/plugins/voice-call)
+- [Пользовательский плагин Zalo](/ru/plugins/zalouser)
 
 ## Рабочая область и шаблоны
 
@@ -196,14 +197,14 @@ x-i18n:
 
 ## Проект
 
-- [Благодарности](/ru/reference/credits)
+- [Участники проекта](/ru/reference/credits)
 
 ## Тестирование и выпуск
 
 - [Тестирование](/ru/reference/test)
-- [Политика выпусков](/ru/reference/RELEASING)
+- [Политика выпуска](/ru/reference/RELEASING)
 - [Модели устройств](/ru/reference/device-models)
 
-## Связанное
+## Связанные материалы
 
 - [Начало работы](/ru/start/getting-started)

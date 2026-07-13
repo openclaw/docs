@@ -1,21 +1,22 @@
 ---
 read_when:
-    - Вы устанавливаете, настраиваете или проверяете Plugin рабочей доски
+    - Вы устанавливаете, настраиваете или проверяете плагин рабочей доски
 summary: Рабочая панель для задач и сеансов, закреплённых за агентами.
-title: Plugin рабочей доски
+title: Плагин Workboard
 x-i18n:
-    generated_at: "2026-07-12T11:42:09Z"
+    generated_at: "2026-07-13T18:25:38Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 24
     provider: openai
     source_hash: 1e5a48a52d45dbe87b73020103c2bc3f0bd46305b4c0d26b3010864af65fa99c
     source_path: plugins/reference/workboard.md
     workflow: 16
 ---
 
-# Plugin рабочей доски
+# Плагин Workboard
 
-Панель рабочей доски для задач и сеансов, которыми управляют агенты.
+Рабочая панель для задач и сеансов, закреплённых за агентами.
 
 ## Распространение
 
@@ -28,4 +29,4 @@ x-i18n:
 
 ## Связанная документация
 
-- [рабочая доска](/ru/plugins/workboard)
+- [Workboard](/ru/plugins/workboard)

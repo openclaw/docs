@@ -2,16 +2,17 @@
 summary: Перенаправление на /gateway/authentication
 title: Мониторинг аутентификации
 x-i18n:
-    generated_at: "2026-07-12T11:10:04Z"
+    generated_at: "2026-07-13T19:29:18Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 24
     provider: openai
     source_hash: 2d2c52a0082ff90306c61fb33ee2f2dc74b8703c9d8ee7a13581e72d2d564f0a
     source_path: automation/auth-monitoring.md
     workflow: 16
 ---
 
-Эта страница перемещена. Аутентификация поставщиков моделей описана в разделе [Аутентификация](/ru/gateway/authentication); служебные скрипты для мониторинга состояния аутентификации находятся в разделе [Скрипты мониторинга аутентификации](/ru/help/scripts#auth-monitoring-scripts).
+Эта страница перемещена. Сведения об аутентификации у поставщиков моделей находятся в разделе [Аутентификация](/ru/gateway/authentication); эксплуатационные скрипты для мониторинга состояния аутентификации — в разделе [Скрипты мониторинга аутентификации](/ru/help/scripts#auth-monitoring-scripts).
 
 ## Связанные материалы
 

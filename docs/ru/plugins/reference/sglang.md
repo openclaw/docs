@@ -1,28 +1,29 @@
 ---
 read_when:
-    - Вы устанавливаете, настраиваете или аудируете Plugin sglang
-summary: Добавляет поддержку провайдера моделей SGLang в OpenClaw.
-title: Plugin SGLang
+    - Вы устанавливаете, настраиваете или проверяете плагин sglang
+summary: Добавляет в OpenClaw поддержку провайдера моделей SGLang.
+title: Плагин SGLang
 x-i18n:
-    generated_at: "2026-06-28T23:28:32Z"
-    model: gpt-5.5
+    generated_at: "2026-07-13T18:35:14Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 24
     provider: openai
     source_hash: e69fda19cbf93e1a1a1a6160419bc7296930a58813b5b443c4018db58df0a611
     source_path: plugins/reference/sglang.md
     workflow: 16
 ---
 
-# Plugin SGLang
+# Плагин SGLang
 
-Добавляет поддержку провайдера моделей SGLang в OpenClaw.
+Добавляет в OpenClaw поддержку провайдера моделей SGLang.
 
 ## Распространение
 
 - Пакет: `@openclaw/sglang-provider`
-- Способ установки: включен в OpenClaw
+- Способ установки: включён в OpenClaw
 
-## Поверхность
+## Интерфейс
 
 providers: sglang
 

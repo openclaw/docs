@@ -1,12 +1,13 @@
 ---
 read_when:
     - Вам нужен быстрый доступ к ключевым страницам документации
-summary: Подборка ссылок на наиболее часто используемую документацию OpenClaw.
+summary: Подборка ссылок на наиболее востребованные страницы документации OpenClaw.
 title: Каталог документации
 x-i18n:
-    generated_at: "2026-07-12T11:53:37Z"
+    generated_at: "2026-07-13T18:38:58Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 24
     provider: openai
     source_hash: 48859dc0b31139f1f5acaa403e506cd6d9767ee32e502a4ef74340dbbc21918f
     source_path: start/docs-directory.md
@@ -14,7 +15,7 @@ x-i18n:
 ---
 
 <Note>
-Эта страница представляет собой тщательно составленный указатель. Если вы здесь впервые, начните с раздела [Начало работы](/ru/start/getting-started).
+Эта страница представляет собой тщательно подобранный указатель. Если вы здесь впервые, начните с раздела [Начало работы](/ru/start/getting-started).
 Полную карту документации см. в разделе [Центры документации](/ru/start/hubs).
 </Note>
 
@@ -24,7 +25,7 @@ x-i18n:
 - [Справка](/ru/help)
 - [Конфигурация](/ru/gateway/configuration)
 - [Примеры конфигурации](/ru/gateway/configuration-examples)
-- [Команды со слешем](/ru/tools/slash-commands)
+- [Команды с косой чертой](/ru/tools/slash-commands)
 - [Маршрутизация между несколькими агентами](/ru/concepts/multi-agent)
 - [Обновление и откат](/ru/install/updating)
 - [Сопряжение (личные сообщения и узлы)](/ru/channels/pairing)
@@ -34,7 +35,7 @@ x-i18n:
 - [Конфигурация Skills](/ru/tools/skills-config)
 - [Шаблоны рабочего пространства](/ru/reference/templates/AGENTS)
 - [Адаптеры RPC](/ru/reference/rpc)
-- [Инструкция по эксплуатации Gateway](/ru/gateway)
+- [Руководство по эксплуатации Gateway](/ru/gateway)
 - [Узлы (iOS и Android)](/ru/nodes)
 - [Веб-интерфейсы (интерфейс управления)](/ru/web)
 - [Обнаружение и транспорты](/ru/gateway/discovery)
@@ -49,9 +50,9 @@ x-i18n:
 - [Mattermost](/ru/channels/mattermost)
 - [Медиа: аудио](/ru/nodes/audio)
 - [Медиа: изображения](/ru/nodes/images)
-- [QQ Bot](/ru/channels/qqbot)
+- [Бот QQ](/ru/channels/qqbot)
 - [Telegram](/ru/channels/telegram)
-- [WebChat](/ru/web/webchat)
+- [Веб-чат](/ru/web/webchat)
 - [Групповые сообщения WhatsApp](/ru/channels/group-messages)
 
 ## Сопутствующие приложения
@@ -66,8 +67,8 @@ x-i18n:
 
 - [Сеансы](/ru/concepts/session)
 - [Задания Cron](/ru/automation/cron-jobs)
-- [Webhook](/ru/automation/cron-jobs#webhooks)
-- [Перехватчики Gmail (Pub/Sub)](/ru/automation/cron-jobs#gmail-pubsub-integration)
+- [Вебхуки](/ru/automation/cron-jobs#webhooks)
+- [Обработчики Gmail (Pub/Sub)](/ru/automation/cron-jobs#gmail-pubsub-integration)
 - [Безопасность](/ru/gateway/security)
 - [Устранение неполадок](/ru/gateway/troubleshooting)
 

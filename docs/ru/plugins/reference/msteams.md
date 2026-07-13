@@ -1,21 +1,22 @@
 ---
 read_when:
-    - Вы устанавливаете, настраиваете или проверяете Plugin msteams
-summary: Plugin канала Microsoft Teams для разговоров с ботом в OpenClaw.
-title: Plugin Microsoft Teams
+    - Вы устанавливаете, настраиваете или проверяете плагин msteams
+summary: Плагин канала Microsoft Teams для общения с ботом в OpenClaw.
+title: Плагин Microsoft Teams
 x-i18n:
-    generated_at: "2026-07-12T11:42:55Z"
+    generated_at: "2026-07-13T20:06:58Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 24
     provider: openai
     source_hash: 32353faf19a94c9df5ffc57fbf0ef91391500e0ae317c9626edcbbcf295c697b
     source_path: plugins/reference/msteams.md
     workflow: 16
 ---
 
-# Plugin Microsoft Teams
+# Плагин Microsoft Teams
 
-Plugin канала Microsoft Teams для взаимодействия с ботами в OpenClaw.
+Плагин канала Microsoft Teams для OpenClaw, предназначенный для общения с ботами.
 
 ## Распространение
 

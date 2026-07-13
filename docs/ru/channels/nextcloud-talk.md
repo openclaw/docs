@@ -1,62 +1,54 @@
 ---
 read_when:
     - Работа над функциями канала Nextcloud Talk
-summary: Статус поддержки, возможности и конфигурация Nextcloud Talk
+summary: Статус поддержки, возможности и настройка Nextcloud Talk
 title: Nextcloud Talk
 x-i18n:
-    generated_at: "2026-06-28T22:35:43Z"
-    model: gpt-5.5
+    generated_at: "2026-07-13T17:53:28Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 24
     provider: openai
-    source_hash: e4b3b2d074cc8d3c19223dbb0c306c6861717d0f35e638e3aab04b03647fd248
+    source_hash: 59f4fe51555bcb13d630140866307b1a49ba077059818ec116ee50ef0c877b2b
     source_path: channels/nextcloud-talk.md
     workflow: 16
 ---
 
-Статус: встроенный Plugin (бот Webhook). Поддерживаются личные сообщения, комнаты, реакции и сообщения Markdown.
+Nextcloud Talk — это загружаемый плагин канала (`@openclaw/nextcloud-talk`), который подключает OpenClaw к самостоятельно размещённому экземпляру Nextcloud через webhook-бота Talk. Поддерживаются личные сообщения, комнаты, реакции и сообщения с Markdown; медиафайлы отправляются в виде URL.
 
-## Встроенный Plugin
-
-Nextcloud Talk поставляется как встроенный Plugin в текущих релизах OpenClaw, поэтому
-обычным пакетным сборкам не нужна отдельная установка.
-
-Если вы используете более старую сборку или пользовательскую установку, из которой исключен Nextcloud Talk,
-установите npm-пакет напрямую:
-
-Установка через CLI (реестр npm):
+## Установка
 
 ```bash
 openclaw plugins install @openclaw/nextcloud-talk
 ```
 
-Используйте пакет без версии, чтобы следовать текущему официальному тегу релиза. Закрепляйте точную
-версию только когда нужна воспроизводимая установка.
+Используйте спецификацию пакета без версии, чтобы получать текущий официальный тег выпуска. Закрепляйте точную версию только в том случае, если вам нужна воспроизводимая установка.
 
-Локальная рабочая копия (при запуске из git-репозитория):
+Из локальной рабочей копии (для процессов разработки):
 
 ```bash
 openclaw plugins install ./path/to/local/nextcloud-talk-plugin
 ```
 
-Подробнее: [Plugins](/ru/tools/plugin)
+После установки перезапустите Gateway. Подробнее: [Плагины](/ru/tools/plugin)
 
 ## Быстрая настройка (для начинающих)
 
-1. Убедитесь, что Plugin Nextcloud Talk доступен.
-   - Текущие пакетные релизы OpenClaw уже включают его.
-   - В более старые/пользовательские установки его можно добавить вручную командами выше.
-2. На вашем сервере Nextcloud создайте бота:
+1. Установите плагин (см. выше).
+2. Создайте бота на сервере Nextcloud:
 
    ```bash
    ./occ talk:bot:install "OpenClaw" "<shared-secret>" "<webhook-url>" --feature webhook --feature response --feature reaction
    ```
 
+   Сохраните `--feature response`: без него исходящие ответы завершаются ошибкой 401. Исправьте существующего бота с помощью `./occ talk:bot:state --feature webhook --feature response --feature reaction <botId> 1`.
+
 3. Включите бота в настройках целевой комнаты.
 4. Настройте OpenClaw:
    - Конфигурация: `channels.nextcloud-talk.baseUrl` + `channels.nextcloud-talk.botSecret`
-   - Или переменная окружения: `NEXTCLOUD_TALK_BOT_SECRET` (только учетная запись по умолчанию)
+   - Или переменные окружения: `NEXTCLOUD_TALK_BOT_SECRET` (только для учётной записи по умолчанию)
 
-   Настройка через CLI:
+   Настройка через CLI (`--url`/`--token` являются псевдонимами явных полей; `nc-talk` и `nc` работают как псевдонимы канала):
 
    ```bash
    openclaw channels add --channel nextcloud-talk \
@@ -80,7 +72,7 @@ openclaw plugins install ./path/to/local/nextcloud-talk-plugin
      --secret-file /path/to/nextcloud-talk-secret
    ```
 
-5. Перезапустите gateway (или завершите настройку).
+5. Перезапустите Gateway (или завершите настройку).
 
 Минимальная конфигурация:
 
@@ -99,24 +91,26 @@ openclaw plugins install ./path/to/local/nextcloud-talk-plugin
 
 ## Примечания
 
-- Боты не могут инициировать личные сообщения. Пользователь должен сначала написать боту.
-- URL Webhook должен быть доступен для Gateway; если используется прокси, задайте `webhookPublicUrl`.
-- Загрузка медиа не поддерживается API бота; медиа отправляются как URL.
-- Полезная нагрузка Webhook не различает личные сообщения и комнаты; задайте `apiUser` + `apiPassword`, чтобы включить определение типа комнаты (иначе личные сообщения обрабатываются как комнаты).
+- Боты не могут инициировать личные сообщения. Пользователь должен сначала отправить сообщение боту.
+- URL webhook должен быть доступен с сервера Nextcloud; задайте `webhookPublicUrl`, если Gateway находится за прокси-сервером. Запросы webhook подписываются с помощью HMAC-SHA256 и секрета бота; запросы с недействительными подписями отклоняются и ограничиваются по частоте.
+- API бота не поддерживает загрузку медиафайлов; исходящие медиафайлы добавляются как строка `Attachment: <url>`.
+- Полезная нагрузка webhook не различает личные сообщения и комнаты; задайте `apiUser` + `apiPassword`, чтобы включить определение типа комнаты (результаты кэшируются примерно на 5 минут). Без них каждый разговор считается комнатой.
+- Исходящие запросы проходят через защиту от SSRF. Для узла Nextcloud в доверенной частной или внутренней сети явно разрешите доступ с помощью `channels.nextcloud-talk.network.dangerouslyAllowPrivateNetwork: true`.
+- Если заданы `apiUser`/`apiPassword` и `webhookPublicUrl`, команда `openclaw channels status` проверяет бота и предупреждает об отсутствии функции `response`.
 
 ## Управление доступом (личные сообщения)
 
 - По умолчанию: `channels.nextcloud-talk.dmPolicy = "pairing"`. Неизвестные отправители получают код сопряжения.
-- Подтверждение:
+- Подтвердите с помощью:
   - `openclaw pairing list nextcloud-talk`
   - `openclaw pairing approve nextcloud-talk <CODE>`
-- Публичные личные сообщения: `channels.nextcloud-talk.dmPolicy="open"` плюс `channels.nextcloud-talk.allowFrom=["*"]`.
-- `allowFrom` сопоставляет только идентификаторы пользователей Nextcloud; отображаемые имена игнорируются.
+- Общедоступные личные сообщения: `channels.nextcloud-talk.dmPolicy="open"` вместе с `channels.nextcloud-talk.allowFrom=["*"]`.
+- `allowFrom` сопоставляет только идентификаторы пользователей Nextcloud (в нижнем регистре); отображаемые имена игнорируются.
 
 ## Комнаты (группы)
 
-- По умолчанию: `channels.nextcloud-talk.groupPolicy = "allowlist"` (доступ по упоминанию).
-- Добавьте комнаты в список разрешенных через `channels.nextcloud-talk.rooms`:
+- По умолчанию: `channels.nextcloud-talk.groupPolicy = "allowlist"` (требуется упоминание).
+- Разрешите комнаты с помощью списка `channels.nextcloud-talk.rooms`, ключами которого служат токены комнат; `"*"` задаёт значение по умолчанию с подстановочным знаком:
 
 ```json5
 {
@@ -130,55 +124,60 @@ openclaw plugins install ./path/to/local/nextcloud-talk-plugin
 }
 ```
 
-- Чтобы не разрешать ни одну комнату, оставьте список разрешенных пустым или задайте `channels.nextcloud-talk.groupPolicy="disabled"`.
+- Ключи для каждой комнаты: `requireMention` (по умолчанию true), `enabled` (false отключает комнату), `allowFrom` (список разрешённых отправителей для комнаты), `tools` (переопределения разрешения и запрета инструментов), `skills` (ограничение загружаемых Skills), `systemPrompt`.
+- Чтобы не разрешать ни одной комнаты, оставьте список разрешений пустым или задайте `channels.nextcloud-talk.groupPolicy="disabled"`.
 
 ## Возможности
 
-| Возможность         | Статус              |
-| ------------------- | ------------------- |
-| Личные сообщения    | Поддерживаются      |
-| Комнаты             | Поддерживаются      |
-| Ветки               | Не поддерживаются   |
-| Медиа               | Только URL          |
-| Реакции             | Поддерживаются      |
-| Встроенные команды  | Не поддерживаются   |
+| Функция          | Статус                |
+| ---------------- | --------------------- |
+| Личные сообщения | Поддерживается         |
+| Комнаты          | Поддерживается         |
+| Ветки обсуждений | Не поддерживается      |
+| Медиафайлы       | Только в виде URL      |
+| Реакции          | Поддерживается         |
+| Нативные команды | Не поддерживаются      |
 
-## Справочник конфигурации (Nextcloud Talk)
+## Справочник по конфигурации (Nextcloud Talk)
 
-Полная конфигурация: [Configuration](/ru/gateway/configuration)
+Полная конфигурация: [Конфигурация](/ru/gateway/configuration)
 
 Параметры провайдера:
 
-- `channels.nextcloud-talk.enabled`: включить/отключить запуск канала.
+- `channels.nextcloud-talk.enabled`: включение или отключение запуска канала.
 - `channels.nextcloud-talk.baseUrl`: URL экземпляра Nextcloud.
-- `channels.nextcloud-talk.botSecret`: общий секрет бота.
-- `channels.nextcloud-talk.botSecretFile`: путь к обычному файлу с секретом. Символические ссылки отклоняются.
-- `channels.nextcloud-talk.apiUser`: пользователь API для поиска комнат (определение личных сообщений).
-- `channels.nextcloud-talk.apiPassword`: пароль API/приложения для поиска комнат.
+- `channels.nextcloud-talk.botSecret`: общий секрет бота (строка или ссылка на секрет).
+- `channels.nextcloud-talk.botSecretFile`: путь к секрету в обычном файле. Символические ссылки отклоняются.
+- `channels.nextcloud-talk.apiUser`: пользователь API для поиска комнат (определения личных сообщений) и проверки состояния.
+- `channels.nextcloud-talk.apiPassword`: пароль API или приложения для поиска комнат.
 - `channels.nextcloud-talk.apiPasswordFile`: путь к файлу пароля API.
-- `channels.nextcloud-talk.webhookPort`: порт слушателя Webhook (по умолчанию: 8788).
-- `channels.nextcloud-talk.webhookHost`: хост Webhook (по умолчанию: 0.0.0.0).
-- `channels.nextcloud-talk.webhookPath`: путь Webhook (по умолчанию: /nextcloud-talk-webhook).
-- `channels.nextcloud-talk.webhookPublicUrl`: внешне доступный URL Webhook.
-- `channels.nextcloud-talk.dmPolicy`: `pairing | allowlist | open | disabled`.
-- `channels.nextcloud-talk.allowFrom`: список разрешенных для личных сообщений (идентификаторы пользователей). `open` требует `"*"`.
-- `channels.nextcloud-talk.groupPolicy`: `allowlist | open | disabled`.
-- `channels.nextcloud-talk.groupAllowFrom`: список разрешенных для групп (идентификаторы пользователей).
-- `channels.nextcloud-talk.rooms`: настройки и список разрешенных для отдельных комнат.
-- Статические группы доступа отправителей можно указывать в `allowFrom` и `groupAllowFrom` через `accessGroup:<name>`.
-- `channels.nextcloud-talk.historyLimit`: лимит истории группы (0 отключает).
-- `channels.nextcloud-talk.dmHistoryLimit`: лимит истории личных сообщений (0 отключает).
-- `channels.nextcloud-talk.dms`: переопределения для отдельных личных сообщений (historyLimit).
-- `channels.nextcloud-talk.textChunkLimit`: размер исходящего фрагмента текста (символы).
-- `channels.nextcloud-talk.chunkMode`: `length` (по умолчанию) или `newline` для разделения по пустым строкам (границам абзацев) перед разбиением по длине.
-- `channels.nextcloud-talk.blockStreaming`: отключить потоковую передачу блоков для этого канала.
-- `channels.nextcloud-talk.blockStreamingCoalesce`: настройка объединения потоковой передачи блоков.
-- `channels.nextcloud-talk.mediaMaxMb`: лимит входящих медиа (МБ).
+- `channels.nextcloud-talk.webhookPort`: порт прослушивателя webhook (по умолчанию: 8788).
+- `channels.nextcloud-talk.webhookHost`: узел webhook (по умолчанию: 0.0.0.0).
+- `channels.nextcloud-talk.webhookPath`: путь webhook (по умолчанию: /nextcloud-talk-webhook).
+- `channels.nextcloud-talk.webhookPublicUrl`: URL webhook, доступный извне.
+- `channels.nextcloud-talk.dmPolicy`: `pairing | allowlist | open | disabled` (по умолчанию: pairing). Для `open` требуется `allowFrom=["*"]`.
+- `channels.nextcloud-talk.allowFrom`: список разрешённых пользователей для личных сообщений (идентификаторы пользователей).
+- `channels.nextcloud-talk.groupPolicy`: `allowlist | open | disabled` (по умолчанию: allowlist).
+- `channels.nextcloud-talk.groupAllowFrom`: список разрешённых отправителей в комнатах (идентификаторы пользователей); если значение не задано, используется `allowFrom`.
+- `channels.nextcloud-talk.rooms`: настройки и список разрешений для отдельных комнат (см. выше).
+- На статические группы доступа отправителей можно ссылаться из `allowFrom` и `groupAllowFrom` с помощью `accessGroup:<name>`.
+- `channels.nextcloud-talk.historyLimit`: ограничение истории группы (0 отключает).
+- `channels.nextcloud-talk.dmHistoryLimit`: ограничение истории личных сообщений (0 отключает).
+- `channels.nextcloud-talk.dms`: переопределения для отдельных личных сообщений с ключами по идентификатору пользователя (`historyLimit`).
+- `channels.nextcloud-talk.textChunkLimit`: размер фрагмента исходящего текста в символах (по умолчанию: 4000).
+- `channels.nextcloud-talk.streaming.chunkMode`: `length` (по умолчанию) или `newline` для разделения по пустым строкам (границам абзацев) перед разделением по длине.
+- `channels.nextcloud-talk.streaming.block.enabled`: включение или отключение потоковой передачи блоков для этого канала.
+- `channels.nextcloud-talk.streaming.block.coalesce`: настройка объединения при потоковой передаче блоков.
+- `channels.nextcloud-talk.responsePrefix`: префикс исходящего ответа.
+- `channels.nextcloud-talk.markdown.tables`: режим отображения таблиц Markdown (`off | bullets | code | block`).
+- `channels.nextcloud-talk.mediaMaxMb`: ограничение размера входящих медиафайлов (МБ).
+- `channels.nextcloud-talk.network.dangerouslyAllowPrivateNetwork`: разрешение частным или внутренним узлам Nextcloud проходить защиту от SSRF.
+- `channels.nextcloud-talk.accounts.<id>`: переопределения для отдельных учётных записей (те же ключи); `defaultAccount` выбирает учётную запись по умолчанию. Переменные окружения `NEXTCLOUD_TALK_BOT_SECRET` / `NEXTCLOUD_TALK_API_PASSWORD` применяются только к учётной записи по умолчанию.
 
-## См. также
+## Связанные материалы
 
 - [Обзор каналов](/ru/channels) — все поддерживаемые каналы
-- [Сопряжение](/ru/channels/pairing) — аутентификация личных сообщений и поток сопряжения
-- [Группы](/ru/channels/groups) — поведение групповых чатов и доступ по упоминанию
-- [Маршрутизация каналов](/ru/channels/channel-routing) — маршрутизация сессий для сообщений
+- [Сопряжение](/ru/channels/pairing) — аутентификация в личных сообщениях и процесс сопряжения
+- [Группы](/ru/channels/groups) — поведение групповых чатов и требование упоминаний
+- [Маршрутизация каналов](/ru/channels/channel-routing) — маршрутизация сеансов для сообщений
 - [Безопасность](/ru/gateway/security) — модель доступа и усиление защиты

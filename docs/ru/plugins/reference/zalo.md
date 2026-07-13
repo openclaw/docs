@@ -1,21 +1,22 @@
 ---
 read_when:
-    - Вы устанавливаете, настраиваете или проверяете Plugin zalo
-summary: Plugin канала Zalo для OpenClaw, предназначенный для чатов с ботами и через webhook.
-title: Plugin Zalo
+    - Вы устанавливаете, настраиваете или проверяете плагин zalo
+summary: Плагин канала Zalo для OpenClaw, предназначенный для чатов с ботами и Webhook.
+title: Плагин Zalo
 x-i18n:
-    generated_at: "2026-07-12T11:44:13Z"
+    generated_at: "2026-07-13T20:08:58Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 24
     provider: openai
     source_hash: ff9da1e1591eaad36db74a27f817dd9dac8791af2d5030fcd3419ee50d2ed4aa
     source_path: plugins/reference/zalo.md
     workflow: 16
 ---
 
-# Plugin Zalo
+# Плагин Zalo
 
-Plugin канала Zalo для OpenClaw, предназначенный для чатов с ботами и через Webhook.
+Плагин канала Zalo для OpenClaw, предназначенный для чатов с ботами и Webhook.
 
 ## Распространение
 
@@ -28,4 +29,4 @@ Plugin канала Zalo для OpenClaw, предназначенный для 
 
 ## Связанная документация
 
-- [Zalo](/ru/channels/zalo)
+- [zalo](/ru/channels/zalo)

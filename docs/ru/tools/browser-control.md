@@ -1,59 +1,79 @@
 ---
 read_when:
-    - Сценарии или отладка браузера агента через локальный API управления
-    - Ищете справочник CLI `openclaw browser`
-    - Добавление пользовательской автоматизации браузера со снимками и ссылками
+    - Создание скриптов или отладка браузера агента через локальный API управления
+    - Ищете справочник по CLI `openclaw browser`?
+    - Добавление пользовательской автоматизации браузера со снимками и ссылками-идентификаторами
 summary: API управления браузером OpenClaw, справочник CLI и действия для сценариев
 title: API управления браузером
 x-i18n:
-    generated_at: "2026-06-28T23:49:54Z"
-    model: gpt-5.5
+    generated_at: "2026-07-13T18:41:10Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 24
     provider: openai
-    source_hash: ccfd1ec996b0fc211e2aefa0554e0fa5c7b0899ca981836134a3741b38bf7600
+    source_hash: 8063f55c9881e45e65492dc40e2902bf05feb08ae9a74986ba2d7621e0dbe71a
     source_path: tools/browser-control.md
     workflow: 16
 ---
 
-Для настройки, конфигурации и устранения неполадок см. [Browser](/ru/tools/browser).
-Эта страница является справочником по локальному управляющему HTTP API, CLI `openclaw browser` и шаблонам сценариев (снимки состояния, ссылки, ожидания, отладочные потоки).
+Для установки, настройки и устранения неполадок см. [Браузер](/ru/tools/browser).
+На этой странице приведена справочная информация по локальному управляющему HTTP API, `openclaw browser`
+CLI и шаблонам автоматизации (снимки, ссылки, ожидания, процессы отладки).
 
 ## Управляющий API (необязательно)
 
-Только для локальных интеграций Gateway предоставляет небольшой HTTP API через loopback.
-Этот автономный сервер включается явно — задайте переменную окружения `OPENCLAW_EAGER_BROWSER_CONTROL_SERVER=1` в окружении сервиса gateway и перезапустите gateway, прежде чем HTTP-эндпоинты станут доступны. Без этой переменной среда выполнения управления браузером по-прежнему работает через CLI и инструменты агента, но на управляющем loopback-порту ничего не слушает.
+Только для локальных интеграций Gateway предоставляет небольшой HTTP API, доступный через интерфейс обратной петли.
+Этот автономный сервер включается явно — задайте переменную среды
+`OPENCLAW_EAGER_BROWSER_CONTROL_SERVER=1` в среде службы Gateway
+и перезапустите Gateway, после чего HTTP-конечные точки станут доступны. Без
+этой переменной среда управления браузером продолжает работать через CLI и
+инструменты агента, но управляющий порт обратной петли не прослушивается.
 
-- Статус/запуск/остановка: `GET /`, `POST /start`, `POST /stop`
-- Вкладки: `GET /tabs`, `POST /tabs/open`, `POST /tabs/focus`, `DELETE /tabs/:targetId`
-- Снимок состояния/скриншот: `GET /snapshot`, `POST /screenshot`
+- Состояние/запуск/остановка: `GET /`, `GET /doctor`, `POST /start`, `POST /stop`, `POST /reset-profile`
+- Профили: `GET /profiles`, `POST /profiles/create`, `DELETE /profiles/:name`
+- Вкладки: `GET /tabs`, `POST /tabs/open`, `POST /tabs/focus`, `DELETE /tabs/:targetId`, `POST /tabs/action`
+- Снимок/снимок экрана: `GET /snapshot`, `POST /screenshot`
 - Действия: `POST /navigate`, `POST /act`
-- Хуки: `POST /hooks/file-chooser`, `POST /hooks/dialog`
+- Перехватчики: `POST /hooks/file-chooser`, `POST /hooks/dialog`
 - Загрузки: `POST /download`, `POST /wait/download`
 - Разрешения: `POST /permissions/grant`
 - Отладка: `GET /console`, `POST /pdf`
-- Отладка: `GET /errors`, `GET /requests`, `POST /trace/start`, `POST /trace/stop`, `POST /highlight`
+- Отладка: `GET /errors`, `GET /requests`, `GET /dialogs`, `POST /trace/start`, `POST /trace/stop`, `POST /highlight`
 - Сеть: `POST /response/body`
 - Состояние: `GET /cookies`, `POST /cookies/set`, `POST /cookies/clear`
 - Состояние: `GET /storage/:kind`, `POST /storage/:kind/set`, `POST /storage/:kind/clear`
 - Настройки: `POST /set/offline`, `POST /set/headers`, `POST /set/credentials`, `POST /set/geolocation`, `POST /set/media`, `POST /set/timezone`, `POST /set/locale`, `POST /set/device`
 
-Все эндпоинты принимают `?profile=<name>`. `POST /start?headless=true` запрашивает одноразовый headless-запуск для локальных управляемых профилей без изменения сохраненной конфигурации браузера; профили attach-only, удаленного CDP и существующего сеанса отклоняют это переопределение, потому что OpenClaw не запускает эти процессы браузера.
+`POST /tabs/action` — пакетная форма, которую CLI использует внутри для
+подкоманд `browser tab` (`{"action":"new"|"label"|"select"|"close"|"list", ...}`);
+при написании прямых сценариев предпочитайте специализированные маршруты вкладок, указанные выше.
 
-Для эндпоинтов вкладок `targetId` — это имя поля совместимости. Предпочитайте передавать `suggestedTargetId` из `GET /tabs` или `POST /tabs/open`; также принимаются метки и дескрипторы `tabId`, такие как `t1`. Необработанные идентификаторы целей CDP и уникальные необработанные префиксы target-id по-прежнему работают, но это нестабильные диагностические дескрипторы.
+Все конечные точки принимают `?profile=<name>`. `POST /start?headless=true` запрашивает
+одноразовый запуск в безоконном режиме для локальных управляемых профилей без изменения сохранённой
+конфигурации браузера; профили только для подключения, удалённого CDP и существующего сеанса отклоняют
+это переопределение, поскольку OpenClaw не запускает соответствующие браузерные процессы.
 
-Если настроена аутентификация gateway с общим секретом, HTTP-маршруты браузера также требуют аутентификацию:
+Для конечных точек вкладок `targetId` — имя поля для совместимости. Предпочтительно передавать
+`suggestedTargetId` из `GET /tabs` или `POST /tabs/open`; также принимаются метки и дескрипторы `tabId`,
+например `t1`. Необработанные идентификаторы целей CDP и уникальные префиксы необработанных
+идентификаторов целей по-прежнему работают, но являются непостоянными диагностическими дескрипторами.
+
+Если настроена аутентификация Gateway с общим секретом, HTTP-маршруты браузера также требуют аутентификации:
 
 - `Authorization: Bearer <gateway token>`
-- `x-openclaw-password: <gateway password>` или HTTP Basic auth с этим паролем
+- `x-openclaw-password: <gateway password>` или аутентификация HTTP Basic с этим паролем
 
 Примечания:
 
-- Этот автономный loopback API браузера **не** использует заголовки идентификации trusted-proxy или Tailscale Serve.
-- Если `gateway.auth.mode` имеет значение `none` или `trusted-proxy`, эти loopback-маршруты браузера не наследуют эти режимы с идентификацией; оставляйте их доступными только через loopback.
+- Этот автономный браузерный API обратной петли **не** использует заголовки идентификации доверенного прокси или
+  Tailscale Serve.
+- Если `gateway.auth.mode` имеет значение `none` или `trusted-proxy`, эти браузерные
+  маршруты обратной петли не наследуют соответствующие режимы передачи идентификационных данных; оставляйте их доступными только через интерфейс обратной петли.
 
 ### Контракт ошибок `/act`
 
-`POST /act` использует структурированный ответ об ошибке для валидации на уровне маршрута и сбоев политики:
+`POST /act` использует структурированный ответ об ошибке для ошибок проверки на уровне маршрута и
+нарушений политик:
 
 ```json
 { "error": "<message>", "code": "ACT_*" }
@@ -61,77 +81,96 @@ x-i18n:
 
 Текущие значения `code`:
 
-- `ACT_KIND_REQUIRED` (HTTP 400): `kind` отсутствует или не распознан.
-- `ACT_INVALID_REQUEST` (HTTP 400): полезная нагрузка действия не прошла нормализацию или валидацию.
-- `ACT_SELECTOR_UNSUPPORTED` (HTTP 400): `selector` использован с неподдерживаемым типом действия.
-- `ACT_EVALUATE_DISABLED` (HTTP 403): `evaluate` (или `wait --fn`) отключен конфигурацией.
-- `ACT_TARGET_ID_MISMATCH` (HTTP 403): верхнеуровневый или пакетный `targetId` конфликтует с целью запроса.
+- `ACT_KIND_REQUIRED` (HTTP 400): `kind` отсутствует или не распознано.
+- `ACT_INVALID_REQUEST` (HTTP 400): полезная нагрузка действия не прошла нормализацию или проверку.
+- `ACT_SELECTOR_UNSUPPORTED` (HTTP 400): `selector` использовалось с неподдерживаемым типом действия.
+- `ACT_EVALUATE_DISABLED` (HTTP 403): `evaluate` (или `wait --fn`) отключено в конфигурации.
+- `ACT_TARGET_ID_MISMATCH` (HTTP 403): `targetId` верхнего уровня или в пакете конфликтует с целью запроса.
 - `ACT_EXISTING_SESSION_UNSUPPORTED` (HTTP 501): действие не поддерживается для профилей существующего сеанса.
 
-Другие ошибки среды выполнения могут по-прежнему возвращать `{ "error": "<message>" }` без поля `code`.
+Другие ошибки среды выполнения по-прежнему могут возвращать `{ "error": "<message>" }` без
+поля `code`.
 
 ### Требование Playwright
 
-Некоторые возможности (navigate/act/AI-снимок состояния/снимок состояния ролей, скриншоты элементов, PDF) требуют Playwright. Если Playwright не установлен, эти эндпоинты возвращают понятную ошибку 501.
+Для некоторых функций (переход/действие/ИИ-снимок/ролевой снимок, снимки экрана элементов,
+PDF) требуется Playwright. Если Playwright не установлен, эти конечные точки возвращают
+понятную ошибку 501.
 
-Что по-прежнему работает без Playwright:
+Что продолжает работать без Playwright:
 
-- ARIA-снимки состояния
-- Снимки состояния доступности в стиле ролей (`--interactive`, `--compact`, `--depth`, `--efficient`), когда доступен CDP WebSocket для каждой вкладки. Это резервный вариант для инспекции и обнаружения ссылок; Playwright остается основным движком действий.
-- Скриншоты страниц для управляемого браузера `openclaw`, когда доступен CDP WebSocket для каждой вкладки
-- Скриншоты страниц для профилей `existing-session` / Chrome MCP
-- Скриншоты `existing-session` на основе ссылок (`--ref`) из вывода snapshot
+- Снимки ARIA
+- Снимки доступности в ролевом стиле (`--interactive`, `--compact`,
+  `--depth`, `--efficient`), когда доступен WebSocket CDP для отдельной вкладки. Это
+  резервный вариант для проверки и поиска ссылок; Playwright остаётся основным
+  механизмом выполнения действий.
+- Снимки экрана страницы для управляемого браузера `openclaw`, когда доступен WebSocket CDP
+  для отдельной вкладки
+- Снимки экрана страницы для профилей `existing-session` / Chrome MCP
+- Снимки экрана по ссылкам `existing-session` (`--ref`) из вывода снимка
 
-Что по-прежнему требует Playwright:
+Для чего по-прежнему требуется Playwright:
 
 - `navigate`
 - `act`
-- AI-снимки состояния, которые зависят от собственного формата AI-снимков Playwright
-- Скриншоты элементов по CSS-селекторам (`--element`)
-- полный экспорт браузера в PDF
+- ИИ-снимки, использующие собственный формат ИИ-снимков Playwright
+- Снимки экрана элементов по CSS-селектору (`--element`)
+- полный экспорт браузерной страницы в PDF
 
-Скриншоты элементов также отклоняют `--full-page`; маршрут возвращает `fullPage is not supported for element screenshots`.
+Снимки экрана элементов также не принимают `--full-page`; маршрут возвращает `fullPage is
+not supported for element screenshots`.
 
-Если вы видите `Playwright is not available in this gateway build`, в упакованном Gateway отсутствует основная зависимость среды выполнения браузера. Переустановите или обновите OpenClaw, затем перезапустите gateway. Для Docker также установите браузерные бинарные файлы Chromium, как показано ниже.
+Если отображается `Playwright is not available in this gateway build`, в поставляемом
+Gateway отсутствует основная зависимость среды выполнения браузера. Переустановите или обновите
+OpenClaw, затем перезапустите Gateway. Для Docker также установите двоичные файлы браузера
+Chromium, как показано ниже.
 
 #### Установка Playwright в Docker
 
-Если ваш Gateway работает в Docker, избегайте `npx playwright` (конфликты переопределения npm).
-Для пользовательских образов встройте Chromium в образ:
+Если Gateway работает в Docker, избегайте `npx playwright` (конфликты переопределений npm).
+Для пользовательских образов добавьте Chromium в образ при сборке:
 
 ```bash
 OPENCLAW_INSTALL_BROWSER=1 ./scripts/docker/setup.sh
 ```
 
-Для существующего образа установите через встроенный CLI:
+Для существующего образа выполните установку через поставляемый CLI:
 
 ```bash
 docker compose run --rm openclaw-cli \
   node /app/node_modules/playwright-core/cli.js install chromium
 ```
 
-Чтобы сохранять загрузки браузера, задайте `PLAYWRIGHT_BROWSERS_PATH` (например, `/home/node/.cache/ms-playwright`) и убедитесь, что `/home/node` сохраняется через `OPENCLAW_HOME_VOLUME` или bind mount. OpenClaw автоматически обнаруживает сохраненный Chromium в Linux. См. [Docker](/ru/install/docker).
+Чтобы сохранять загруженные файлы браузера, задайте `PLAYWRIGHT_BROWSERS_PATH` (например,
+`/home/node/.cache/ms-playwright`) и убедитесь, что `/home/node` сохраняется через
+`OPENCLAW_HOME_VOLUME` или подключение каталога хоста. OpenClaw автоматически обнаруживает сохранённый
+Chromium в Linux. См. [Docker](/ru/install/docker).
 
-## Как это работает (внутреннее)
+## Принцип работы (внутреннее устройство)
 
-Небольшой loopback-сервер управления принимает HTTP-запросы и подключается к браузерам на базе Chromium через CDP. Расширенные действия (click/type/snapshot/PDF) проходят через Playwright поверх CDP; когда Playwright отсутствует, доступны только операции без Playwright. Агент видит один стабильный интерфейс, пока локальные/удаленные браузеры и профили свободно меняются под ним.
+Небольшой управляющий сервер обратной петли принимает HTTP-запросы и подключается к браузерам на основе Chromium через CDP. Расширенные действия (щелчок/ввод/снимок/PDF) выполняются через Playwright поверх CDP; если Playwright отсутствует, доступны только операции, не зависящие от Playwright. Агент видит единый стабильный интерфейс, а локальные и удалённые браузеры и профили могут свободно заменяться на нижележащем уровне.
 
-## Краткий справочник CLI
+## Краткий справочник по CLI
 
-Все команды принимают `--browser-profile <name>` для выбора конкретного профиля и `--json` для машиночитаемого вывода.
+Все команды принимают `--browser-profile <name>` для выбора определённого профиля и `--json` для машиночитаемого вывода.
 
 <AccordionGroup>
 
-<Accordion title="Основы: статус, вкладки, открыть/фокус/закрыть">
+<Accordion title="Основы: состояние, вкладки, открытие/фокусировка/закрытие">
 
 ```bash
 openclaw browser status
+openclaw browser doctor
+openclaw browser doctor --deep    # добавить активную проверку снимка
 openclaw browser start
-openclaw browser start --headless # one-shot local managed headless launch
-openclaw browser stop            # also clears emulation on attach-only/remote CDP
+openclaw browser start --headless # одноразовый запуск локального управляемого браузера без окна
+openclaw browser stop            # также сбрасывает эмуляцию для подключения без запуска/удалённого CDP
+openclaw browser reset-profile   # перемещает данные браузера профиля в корзину
 openclaw browser tabs
-openclaw browser tab             # shortcut for current tab
+openclaw browser tab             # сокращение для текущей вкладки
 openclaw browser tab new
+openclaw browser tab new --label research
+openclaw browser tab label abcd1234 research
 openclaw browser tab select 2
 openclaw browser tab close 2
 openclaw browser open https://example.com
@@ -141,12 +180,23 @@ openclaw browser close abcd1234
 
 </Accordion>
 
-<Accordion title="Инспекция: скриншот, снимок состояния, консоль, ошибки, запросы">
+<Accordion title="Профили: просмотр, создание, удаление">
+
+```bash
+openclaw browser profiles
+openclaw browser create-profile --name research --color "#0066CC"
+openclaw browser create-profile --name attach --driver existing-session --cdp-url http://127.0.0.1:9222
+openclaw browser delete-profile --name research
+```
+
+</Accordion>
+
+<Accordion title="Проверка: снимок экрана, снимок, консоль, ошибки, запросы">
 
 ```bash
 openclaw browser screenshot
 openclaw browser screenshot --full-page
-openclaw browser screenshot --ref 12        # or --ref e12
+openclaw browser screenshot --ref 12        # или --ref e12
 openclaw browser screenshot --labels
 openclaw browser snapshot
 openclaw browser snapshot --format aria --limit 200
@@ -156,6 +206,7 @@ openclaw browser snapshot --labels
 openclaw browser snapshot --urls
 openclaw browser snapshot --selector "#main" --interactive
 openclaw browser snapshot --frame "iframe#main" --interactive
+openclaw browser snapshot --out snapshot.txt
 openclaw browser console --level error
 openclaw browser errors --clear
 openclaw browser requests --filter api --clear
@@ -165,13 +216,13 @@ openclaw browser responsebody "**/api" --max-chars 5000
 
 </Accordion>
 
-<Accordion title="Действия: navigate, click, type, drag, wait, evaluate">
+<Accordion title="Действия: переход, щелчок, ввод, перетаскивание, ожидание, вычисление">
 
 ```bash
 openclaw browser navigate https://example.com
 openclaw browser resize 1280 720
-openclaw browser click 12 --double           # or e12 for role refs
-openclaw browser click-coords 120 340        # viewport coordinates
+openclaw browser click 12 --double           # или e12 для ролевых ссылок
+openclaw browser click-coords 120 340        # координаты области просмотра
 openclaw browser type 23 "hello" --submit
 openclaw browser press Enter
 openclaw browser hover 44
@@ -181,6 +232,7 @@ openclaw browser select 9 OptionA OptionB
 openclaw browser download e12 report.pdf
 openclaw browser waitfordownload report.pdf
 openclaw browser upload /tmp/openclaw/uploads/file.pdf
+openclaw browser upload /tmp/openclaw/uploads/file.pdf --ref e12
 openclaw browser upload media://inbound/file.pdf
 openclaw browser fill --fields '[{"ref":"1","type":"text","value":"Ada"}]'
 openclaw browser dialog --accept
@@ -197,7 +249,7 @@ openclaw browser trace stop
 
 </Accordion>
 
-<Accordion title="Состояние: cookies, storage, offline, headers, geo, device">
+<Accordion title="Состояние: файлы cookie, хранилище, автономный режим, заголовки, геопозиция, устройство">
 
 ```bash
 openclaw browser cookies
@@ -208,7 +260,7 @@ openclaw browser storage local set theme dark
 openclaw browser storage session clear
 openclaw browser set offline on
 openclaw browser set headers --headers-json '{"X-Debug":"1"}'
-openclaw browser set credentials user pass            # --clear to remove
+openclaw browser set credentials user pass            # --clear для удаления
 openclaw browser set geo 37.7749 -122.4194 --origin "https://example.com"
 openclaw browser set media dark
 openclaw browser set timezone America/New_York
@@ -222,82 +274,95 @@ openclaw browser set device "iPhone 14"
 
 Примечания:
 
-- `upload` и `dialog` — это вызовы **взведения**; запускайте их перед click/press, который вызывает выбор файла/диалог. Если действие открывает модальное окно, ответ действия включает `blockedByDialog` и `browserState.dialogs.pending`; передайте этот `dialogId`, чтобы ответить напрямую. Диалоги, обработанные вне OpenClaw, отображаются в `browserState.dialogs.recent`.
-- `click`/`type`/и т. д. требуют `ref` из `snapshot` (числовой `12`, ролевая ссылка `e12` или действенная ARIA-ссылка `ax12`). CSS-селекторы намеренно не поддерживаются для действий. Используйте `click-coords`, когда видимая позиция в viewport — единственная надежная цель.
-- Пути загрузок и трассировок ограничены временными корнями OpenClaw: `/tmp/openclaw{,/downloads}` (резервный вариант: `${os.tmpdir()}/openclaw/...`).
-- `upload` принимает файлы из временного корня загрузок OpenClaw и входящие медиа, управляемые OpenClaw. Управляемые входящие медиа можно указывать как `media://inbound/<id>`, относительный к песочнице путь `media/inbound/<id>` или разрешенный путь внутри управляемого каталога входящих медиа. Вложенные media refs, обход каталогов, symlinks, hardlinks и произвольные локальные пути по-прежнему отклоняются.
-- `upload` также может напрямую задавать файловые input через `--input-ref` или `--element`.
+- Доступный агенту инструмент `browser` предоставляет `action=download` (обязательные `ref` и
+  `path`) и `action=waitfordownload` (необязательный `path`). Оба возвращают сохранённый
+  URL загрузки, предлагаемое имя файла и защищённый локальный путь. Явный перехват
+  загрузок доступен для управляемых профилей Playwright; профили существующих сеансов
+  возвращают ошибку неподдерживаемой операции.
+- Предпочитайте атомарную загрузку через диалог выбора: передавайте триггер `--ref` вместе с загрузкой, чтобы OpenClaw подготовил и выполнил нажатие в одном запросе. Вариант `upload` только с путями по-прежнему поддерживается, когда последующий триггер предусмотрен намеренно. Используйте `--input-ref` или `--element`, чтобы задать значение поля выбора файла напрямую. `dialog` — это вызов подготовки; выполните его перед нажатием кнопкой мыши или клавиши, которое открывает диалог. Если действие открывает модальное окно, ответ действия содержит `blockedByDialog` и `browserState.dialogs.pending`; передайте этот `dialogId`, чтобы ответить напрямую. Диалоги, обработанные вне OpenClaw, отображаются в `browserState.dialogs.recent`.
+- `click`/`type`/и т. д. требуют `ref` из `snapshot` (числовой `12`, ссылка роли `e12` или интерактивная ссылка ARIA `ax12`). CSS-селекторы намеренно не поддерживаются для действий. Используйте `click-coords`, когда единственной надёжной целью является позиция в видимой области просмотра.
+- Пути загрузок и трассировок ограничены временными корневыми каталогами OpenClaw: `/tmp/openclaw{,/downloads}` (резервный вариант: `${os.tmpdir()}/openclaw/...`).
+- `upload` принимает файлы из временного корневого каталога загрузок OpenClaw и
+  управляемых OpenClaw входящих медиафайлов. На управляемые входящие медиафайлы можно ссылаться как
+  `media://inbound/<id>`, через относительный для песочницы путь `media/inbound/<id>` или разрешённый
+  путь внутри каталога управляемых входящих медиафайлов. Вложенные ссылки на медиафайлы,
+  обход каталогов, символические ссылки, жёсткие ссылки и произвольные локальные пути по-прежнему отклоняются.
+- `upload` также может напрямую задавать значения полей выбора файла через `--input-ref` или `--element`.
 
-Стабильные идентификаторы и метки вкладок сохраняются при замене необработанной цели Chromium, когда OpenClaw может доказать замену вкладки, например по тому же URL или когда одна старая вкладка становится одной новой вкладкой после отправки формы. Необработанные target ids по-прежнему нестабильны; в сценариях предпочитайте `suggestedTargetId` из `tabs`.
+Стабильные идентификаторы и метки вкладок сохраняются при замене исходной цели Chromium, когда OpenClaw
+может достоверно определить заменяющую вкладку, например при наличии уникальной пары старой и новой вкладки для одного URL или
+когда после отправки формы одна старая вкладка заменяется одной новой. При неоднозначной
+замене нескольких вкладок с одинаковым URL назначаются новые дескрипторы. Исходные идентификаторы целей по-прежнему
+непостоянны; в скриптах предпочитайте `suggestedTargetId` из `tabs`.
 
-Краткий обзор флагов снимков состояния:
+Краткий обзор флагов снимков:
 
-- `--format ai` (по умолчанию с Playwright): AI-снимок с числовыми ref-идентификаторами (`aria-ref="<n>"`).
-- `--format aria`: дерево доступности с ref-идентификаторами `axN`. Когда Playwright доступен, OpenClaw связывает ref-идентификаторы с backend DOM id на живой странице, чтобы последующие действия могли их использовать; иначе считайте вывод предназначенным только для инспекции.
-- `--efficient` (или `--mode efficient`): компактный пресет снимка ролей. Установите `browser.snapshotDefaults.mode: "efficient"`, чтобы сделать его значением по умолчанию (см. [конфигурацию Gateway](/ru/gateway/configuration-reference#browser)).
-- `--interactive`, `--compact`, `--depth`, `--selector` принудительно используют снимок ролей с ref-идентификаторами вида `ref=e12`. `--frame "<iframe>"` ограничивает снимки ролей iframe.
-- С Playwright `--labels` добавляет снимок экрана с наложенными ref-метками
-  (печатает `MEDIA:<path>`) плюс массив `annotations` с ограничивающей рамкой
-  каждого ref-идентификатора. Для `screenshot` метки на базе Playwright работают с `--full-page`,
-  `--ref` и `--element`; для `snapshot` сопровождающий снимок экрана остается
-  только в пределах viewport. Профили existing-session/chrome-mcp отображают наложенные метки на
-  снимках страниц, но не возвращают `annotations` и не используют вспомогательную проекцию Playwright
-  для full-page/ref/element. Без Playwright или chrome-mcp
+- `--format ai` (по умолчанию с Playwright): снимок для ИИ с числовыми ссылками (`aria-ref="<n>"`).
+- `--format aria`: дерево доступности со ссылками `axN`. Когда Playwright доступен, OpenClaw связывает ссылки с идентификаторами DOM серверной части на активной странице, чтобы их можно было использовать для последующих действий; в противном случае считайте вывод предназначенным только для просмотра.
+- `--efficient` (или `--mode efficient`): компактный предустановленный снимок ролей. Задайте `browser.snapshotDefaults.mode: "efficient"`, чтобы сделать его вариантом по умолчанию (см. [конфигурацию Gateway](/ru/gateway/configuration-reference#browser)).
+- `--interactive`, `--compact`, `--depth`, `--selector` принудительно создают снимок ролей со ссылками `ref=e12`. `--frame "<iframe>"` ограничивает снимки ролей фреймом iframe.
+- При использовании Playwright параметр `--labels` добавляет снимок экрана с наложенными метками ссылок
+  (выводит `MEDIA:<path>`), а также массив `annotations` с ограничивающей
+  рамкой каждой ссылки. При `screenshot` метки на основе Playwright работают с `--full-page`,
+  `--ref` и `--element`; при `snapshot` сопутствующий снимок экрана по-прежнему
+  ограничен областью просмотра. Профили существующих сеансов и chrome-mcp отображают наложенные метки на
+  снимках страницы, но не возвращают `annotations` и не используют вспомогательную функцию Playwright
+  для проекции всей страницы, ссылок и элементов. Без Playwright или chrome-mcp
   снимки экрана с метками недоступны.
-- `--urls` добавляет обнаруженные назначения ссылок к AI-снимкам.
+- `--urls` добавляет обнаруженные адреса ссылок к снимкам для ИИ.
 
-## Снимки и ref-идентификаторы
+## Снимки и ссылки
 
-OpenClaw поддерживает два стиля "снимков":
+OpenClaw поддерживает два стиля «снимков»:
 
-- **AI-снимок (числовые ref-идентификаторы)**: `openclaw browser snapshot` (по умолчанию; `--format ai`)
-  - Вывод: текстовый снимок, включающий числовые ref-идентификаторы.
+- **Снимок для ИИ (числовые ссылки)**: `openclaw browser snapshot` (по умолчанию; `--format ai`)
+  - Вывод: текстовый снимок с числовыми ссылками.
   - Действия: `openclaw browser click 12`, `openclaw browser type 23 "hello"`.
-  - Внутри ref-идентификатор разрешается через `aria-ref` Playwright.
+  - Внутри ссылка разрешается через `aria-ref` Playwright.
 
-- **Снимок ролей (role refs вроде `e12`)**: `openclaw browser snapshot --interactive` (или `--compact`, `--depth`, `--selector`, `--frame`)
-  - Вывод: список/дерево на основе ролей с `[ref=e12]` (и необязательным `[nth=1]`).
+- **Снимок ролей (ссылки ролей вида `e12`)**: `openclaw browser snapshot --interactive` (или `--compact`, `--depth`, `--selector`, `--frame`)
+  - Вывод: список или дерево на основе ролей с `[ref=e12]` (и необязательным `[nth=1]`).
   - Действия: `openclaw browser click e12`, `openclaw browser highlight e12`.
-  - Внутри ref-идентификатор разрешается через `getByRole(...)` (плюс `nth()` для дубликатов).
+  - Внутри ссылка разрешается через `getByRole(...)` (а для дубликатов также через `nth()`).
   - Добавьте `--labels`, чтобы включить снимок экрана с наложенными метками `e12`. В
-    профилях на базе Playwright это также возвращает метаданные ограничивающих рамок для каждого ref-идентификатора
+    профилях на основе Playwright при этом также возвращаются метаданные ограничивающей рамки для каждой ссылки
     (`annotations[]`).
   - Добавьте `--urls`, когда текст ссылки неоднозначен и агенту нужны конкретные
-    цели навигации.
+    цели перехода.
 
-- **ARIA-снимок (ARIA refs вроде `ax12`)**: `openclaw browser snapshot --format aria`
+- **Снимок ARIA (ссылки ARIA вида `ax12`)**: `openclaw browser snapshot --format aria`
   - Вывод: дерево доступности в виде структурированных узлов.
-  - Действия: `openclaw browser click ax12` работает, когда путь снимка может связать
-    ref-идентификатор через Playwright и Chrome backend DOM ids.
-- Если Playwright недоступен, ARIA-снимки все равно могут быть полезны для
-  инспекции, но ref-идентификаторы могут быть недоступны для действий. Повторно снимите страницу с `--format ai`
-  или `--interactive`, когда нужны ref-идентификаторы для действий.
-- Docker-доказательство для резервного пути raw-CDP: `pnpm test:docker:browser-cdp-snapshot`
-  запускает Chromium с CDP, выполняет `browser doctor --deep` и проверяет, что снимки ролей
-  включают URL ссылок, кликабельные элементы, повышенные из курсора, и метаданные iframe.
+  - Действия: `openclaw browser click ax12` работает, когда путь создания снимка может связать
+    ссылку через Playwright и идентификаторы DOM серверной части Chrome.
+- Если Playwright недоступен, снимки ARIA всё равно могут быть полезны для
+  просмотра, но ссылки могут быть недоступны для действий. Создайте новый снимок с `--format ai`
+  или `--interactive`, когда нужны ссылки для действий.
+- Проверка в Docker для резервного пути через исходный CDP: `pnpm test:docker:browser-cdp-snapshot`
+  запускает Chromium с CDP, выполняет `browser doctor --deep` и проверяет, что снимки
+  ролей содержат URL ссылок, интерактивные элементы, определённые по курсору, и метаданные iframe.
 
-Поведение ref-идентификаторов:
+Поведение ссылок:
 
-- Ref-идентификаторы **не стабильны между навигациями**; если что-то не удалось, повторно выполните `snapshot` и используйте свежий ref-идентификатор.
-- `/act` возвращает текущий сырой `targetId` после замены, вызванной действием,
-  когда может доказать вкладку-замену. Продолжайте использовать стабильные id/метки вкладок для
+- Ссылки **не сохраняются при переходах**; если что-либо завершается с ошибкой, повторно выполните `snapshot` и используйте новую ссылку.
+- `/act` возвращает текущий исходный `targetId` после замены, вызванной действием,
+  если заменяющую вкладку удаётся достоверно определить. Продолжайте использовать стабильные идентификаторы и метки вкладок для
   последующих команд.
-- Если снимок ролей был сделан с `--frame`, ref-идентификаторы ролей ограничены этим iframe до следующего снимка ролей.
-- Неизвестные или устаревшие ref-идентификаторы `axN` быстро завершаются ошибкой вместо перехода к
-  селектору `aria-ref` Playwright. Когда это происходит, выполните свежий снимок той же вкладки.
+- Если снимок ролей был создан с `--frame`, ссылки ролей ограничены этим iframe до создания следующего снимка ролей.
+- Неизвестные или устаревшие ссылки `axN` немедленно завершаются с ошибкой вместо перехода к
+  селектору `aria-ref` Playwright. В таком случае создайте новый снимок на той же вкладке.
 
-## Расширенные ожидания
+## Расширенные возможности ожидания
 
-Можно ждать не только время/текст:
+Можно ожидать не только время или текст:
 
-- Ожидать URL (globs поддерживаются Playwright):
+- Ожидание URL (поддерживаются шаблоны glob Playwright):
   - `openclaw browser wait --url "**/dash"`
-- Ожидать состояние загрузки:
+- Ожидание состояния загрузки:
   - `openclaw browser wait --load networkidle`
-  - Поддерживается в управляемых профилях `openclaw` и raw/remote CDP. Профили `user` и `existing-session` отклоняют `networkidle`; используйте там ожидания по `--url`, `--text`, селектору или `--fn`.
-- Ожидать JS-предикат:
+  - Поддерживается в управляемых профилях `openclaw` и профилях исходного или удалённого CDP. Профили, использующие драйвер `existing-session` (включая профиль `user` по умолчанию), отклоняют `networkidle`; используйте в них ожидания `--url`, `--text`, селектора или `--fn`.
+- Ожидание выполнения предиката JS:
   - `openclaw browser wait --fn "window.ready===true"`
-- Ожидать, пока селектор станет видимым:
+- Ожидание появления селектора:
   - `openclaw browser wait "#main"`
 
 Их можно комбинировать:
@@ -310,67 +375,67 @@ openclaw browser wait "#main" \
   --timeout-ms 15000
 ```
 
-## Рабочие процессы отладки
+## Процессы отладки
 
-Когда действие завершается ошибкой (например, "not visible", "strict mode violation", "covered"):
+Если действие завершается с ошибкой (например, «не виден», «нарушение строгого режима», «перекрыт»):
 
 1. `openclaw browser snapshot --interactive`
-2. Используйте `click <ref>` / `type <ref>` (предпочитайте ref-идентификаторы ролей в интерактивном режиме)
-3. Если ошибка сохраняется: `openclaw browser highlight <ref>`, чтобы увидеть, на что нацелен Playwright
-4. Если страница ведет себя странно:
+2. Используйте `click <ref>` / `type <ref>` (в интерактивном режиме предпочитайте ссылки ролей)
+3. Если ошибка сохраняется: используйте `openclaw browser highlight <ref>`, чтобы увидеть, на что нацелен Playwright
+4. Если страница ведёт себя необычно:
    - `openclaw browser errors --clear`
    - `openclaw browser requests --filter api --clear`
-5. Для глубокой отладки: запишите трассировку:
+5. Для глубокой отладки запишите трассировку:
    - `openclaw browser trace start`
    - воспроизведите проблему
-   - `openclaw browser trace stop` (печатает `TRACE:<path>`)
+   - `openclaw browser trace stop` (выводит `TRACE:<path>`)
 
-## JSON-вывод
+## Вывод JSON
 
 `--json` предназначен для скриптов и структурированных инструментов.
 
 Примеры:
 
 ```bash
-openclaw browser status --json
-openclaw browser snapshot --interactive --json
-openclaw browser requests --filter api --json
-openclaw browser cookies --json
+openclaw browser --json status
+openclaw browser --json snapshot --interactive
+openclaw browser --json requests --filter api
+openclaw browser --json cookies
 ```
 
-Снимки ролей в JSON включают `refs` и небольшой блок `stats` (lines/chars/refs/interactive), чтобы инструменты могли оценивать размер и плотность полезной нагрузки.
+Снимки ролей в JSON содержат `refs`, а также небольшой блок `stats` (строки/символы/ссылки/интерактивные элементы), чтобы инструменты могли оценивать размер и плотность полезной нагрузки.
 
-## Настройки состояния и окружения
+## Параметры состояния и среды
 
-Они полезны для рабочих процессов вида "заставить сайт вести себя как X":
+Они полезны для сценариев «заставить сайт вести себя как X»:
 
-- Cookies: `cookies`, `cookies set`, `cookies clear`
+- Файлы cookie: `cookies`, `cookies set`, `cookies clear`
 - Хранилище: `storage local|session get|set|clear`
-- Offline: `set offline on|off`
-- Заголовки: `set headers --headers-json '{"X-Debug":"1"}'` (устаревший `set headers --json '{"X-Debug":"1"}'` остается поддерживаемым)
-- HTTP basic auth: `set credentials user pass` (или `--clear`)
+- Автономный режим: `set offline on|off`
+- Заголовки: `set headers --headers-json '{"X-Debug":"1"}'` (или позиционная форма `set headers '{"X-Debug":"1"}'`)
+- Базовая HTTP-аутентификация: `set credentials user pass` (или `--clear`)
 - Геолокация: `set geo <lat> <lon> --origin "https://example.com"` (или `--clear`)
-- Media: `set media dark|light|no-preference|none`
+- Медиа: `set media dark|light|no-preference|none`
 - Часовой пояс / локаль: `set timezone ...`, `set locale ...`
-- Устройство / viewport:
-  - `set device "iPhone 14"` (пресеты устройств Playwright)
+- Устройство / область просмотра:
+  - `set device "iPhone 14"` (предустановки устройств Playwright)
   - `set viewport 1280 720`
 
 ## Безопасность и конфиденциальность
 
-- Профиль браузера openclaw может содержать авторизованные сессии; считайте его чувствительным.
+- Профиль браузера openclaw может содержать активные сеансы входа; считайте его конфиденциальным.
 - `browser act kind=evaluate` / `openclaw browser evaluate` и `wait --fn`
-  выполняют произвольный JavaScript в контексте страницы. Prompt injection может направлять
-  это поведение. Отключите его с помощью `browser.evaluateEnabled=false`, если он вам не нужен.
+  выполняют произвольный JavaScript в контексте страницы. Инъекция промпта может
+  управлять этим выполнением. Отключите его с помощью `browser.evaluateEnabled=false`, если оно вам не требуется.
 - `openclaw browser evaluate --fn` принимает исходный код функции, выражение или
-  тело инструкции. Тела инструкций оборачиваются как async-функции, поэтому используйте
-  `return` для значения, которое нужно вернуть. Используйте `--timeout-ms <ms>`, когда
-  функция на стороне страницы может требовать больше времени, чем стандартный тайм-аут evaluate.
-- Для заметок о входе и антибот-защите (X/Twitter и т. д.) см. [Вход в браузер + публикация в X/Twitter](/ru/tools/browser-login).
-- Держите Gateway/Node-хост приватным (loopback или только tailnet).
-- Удаленные CDP endpoints имеют широкие возможности; туннелируйте и защищайте их.
+  тело инструкции. Тела инструкций оборачиваются в асинхронные функции, поэтому используйте
+  `return` для значения, которое требуется вернуть. Используйте `--timeout-ms <ms>`, если
+  функции на стороне страницы может потребоваться больше времени, чем предусмотрено стандартным тайм-аутом вычисления.
+- Сведения о входе и мерах против ботов (X/Twitter и т. д.) см. в разделе [Вход через браузер и публикация в X/Twitter](/ru/tools/browser-login).
+- Не предоставляйте общий доступ к хосту Gateway/Node (только loopback или tailnet).
+- Удалённые конечные точки CDP обладают широкими возможностями; используйте туннель и защищайте их.
 
-Пример strict-mode (по умолчанию блокировать частные/внутренние назначения):
+Пример строгого режима (частные и внутренние адреса по умолчанию блокируются):
 
 ```json5
 {
@@ -378,7 +443,7 @@ openclaw browser cookies --json
     ssrfPolicy: {
       dangerouslyAllowPrivateNetwork: false,
       hostnameAllowlist: ["*.example.com", "example.com"],
-      allowedHostnames: ["localhost"], // optional exact allow
+      allowedHostnames: ["localhost"], // необязательное точное разрешение
     },
   },
 }
@@ -386,7 +451,7 @@ openclaw browser cookies --json
 
 ## Связанные материалы
 
-- [Браузер](/ru/tools/browser) - обзор, конфигурация, профили, безопасность
-- [Вход в браузер](/ru/tools/browser-login) - вход на сайты
+- [Браузер](/ru/tools/browser) — обзор, конфигурация, профили, безопасность
+- [Вход через браузер](/ru/tools/browser-login) — вход на сайты
 - [Устранение неполадок браузера в Linux](/ru/tools/browser-linux-troubleshooting)
 - [Устранение неполадок браузера в WSL2](/ru/tools/browser-wsl2-windows-remote-cdp-troubleshooting)

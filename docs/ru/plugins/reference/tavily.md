@@ -1,19 +1,20 @@
 ---
 read_when:
-    - Вы устанавливаете, настраиваете или проверяете Plugin Tavily
+    - Вы устанавливаете, настраиваете или проверяете плагин tavily
 summary: Добавляет инструменты, доступные для вызова агентом. Добавляет поддержку провайдера веб-поиска.
-title: Plugin Tavily
+title: Плагин Tavily
 x-i18n:
-    generated_at: "2026-07-12T11:43:41Z"
+    generated_at: "2026-07-13T20:08:13Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 24
     provider: openai
     source_hash: 409da2bdfca9c2dd5a2c64565787175b57f2d43f09b1fa484ac54dd1f528c9fb
     source_path: plugins/reference/tavily.md
     workflow: 16
 ---
 
-# Plugin Tavily
+# Плагин Tavily
 
 Добавляет инструменты, доступные для вызова агентом. Добавляет поддержку провайдера веб-поиска.
 
@@ -22,7 +23,7 @@ x-i18n:
 - Пакет: `@openclaw/tavily-plugin`
 - Способ установки: npm; ClawHub: `clawhub:@openclaw/tavily-plugin`
 
-## Интерфейсы
+## Интерфейс
 
 контракты: инструменты, провайдеры веб-поиска; Skills
 

@@ -1,40 +1,42 @@
 ---
 read_when:
     - Вы хотите использовать Cloudflare AI Gateway с OpenClaw
-    - Необходим идентификатор учетной записи, идентификатор Gateway или переменная окружения с ключом API
-summary: Настройка Cloudflare AI Gateway (аутентификация + выбор модели)
-title: Gateway ИИ Cloudflare
+    - Вам нужны идентификатор учётной записи, идентификатор Gateway или переменная окружения с ключом API
+summary: Настройка Cloudflare AI Gateway (аутентификация и выбор модели)
+title: Cloudflare AI Gateway
 x-i18n:
-    generated_at: "2026-06-28T23:35:32Z"
-    model: gpt-5.5
+    generated_at: "2026-07-13T18:40:11Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 24
     provider: openai
-    source_hash: 05678faa049349c610a9c7ea9d23958bf51927453cf6987fef397cd273f6556b
+    source_hash: 02c7785616e7aee645bb3fc41ef6a3585e1f2f9d886fab1a06231e497effd045
     source_path: providers/cloudflare-ai-gateway.md
     workflow: 16
 ---
 
-Cloudflare AI Gateway находится перед API провайдеров и позволяет добавлять аналитику, кеширование и средства управления. Для Anthropic OpenClaw использует Anthropic Messages API через вашу конечную точку Gateway.
+[Cloudflare AI Gateway](https://developers.cloudflare.com/ai-gateway/) располагается перед API провайдеров и добавляет аналитику, кэширование и средства управления. Для Anthropic OpenClaw использует Anthropic Messages API через вашу конечную точку Gateway.
 
-| Свойство              | Значение                                                                                 |
-| --------------------- | ---------------------------------------------------------------------------------------- |
-| Провайдер             | `cloudflare-ai-gateway`                                                                  |
-| Базовый URL           | `https://gateway.ai.cloudflare.com/v1/<account_id>/<gateway_id>/anthropic`               |
-| Модель по умолчанию   | `cloudflare-ai-gateway/claude-sonnet-4-6`                                                |
-| Ключ API              | `CLOUDFLARE_AI_GATEWAY_API_KEY` (ваш ключ API провайдера для запросов через Gateway)     |
+| Свойство             | Значение                                                                                         |
+| -------------------- | ------------------------------------------------------------------------------------------------ |
+| Провайдер            | `cloudflare-ai-gateway`                                                                               |
+| Плагин               | официальный внешний пакет (`@openclaw/cloudflare-ai-gateway-provider`)                                                   |
+| Базовый URL          | `https://gateway.ai.cloudflare.com/v1/<account_id>/<gateway_id>/anthropic`                                                                               |
+| Модель по умолчанию  | `cloudflare-ai-gateway/claude-sonnet-4-6`                                                                               |
+| Ключ API             | `CLOUDFLARE_AI_GATEWAY_API_KEY` (ваш ключ API провайдера для запросов через Gateway)                           |
 
 <Note>
-Для моделей Anthropic, маршрутизируемых через Cloudflare AI Gateway, используйте ваш **ключ API Anthropic** как ключ провайдера.
+Для моделей Anthropic, маршрутизируемых через Cloudflare AI Gateway, используйте свой **ключ API Anthropic** в качестве ключа провайдера.
 </Note>
 
-Когда для моделей Anthropic Messages включен режим мышления, OpenClaw удаляет завершающие
-предзаполненные ходы ассистента перед отправкой полезной нагрузки через Cloudflare AI Gateway.
-Anthropic отклоняет предзаполнение ответов при расширенном мышлении, тогда как обычное
-предзаполнение без мышления остается доступным.
+Когда для моделей Anthropic Messages включён режим рассуждений, OpenClaw удаляет последние
+предзаполненные реплики ассистента перед отправкой полезной нагрузки через Cloudflare AI Gateway.
+Anthropic отклоняет предзаполнение ответа при расширенном режиме рассуждений, тогда как обычное
+предзаполнение без рассуждений остаётся доступным.
 
-## Установка Plugin
+## Установка плагина
 
-Установите официальный Plugin, затем перезапустите Gateway:
+Установите официальный плагин, затем перезапустите Gateway:
 
 ```bash
 openclaw plugins install @openclaw/cloudflare-ai-gateway-provider
@@ -44,17 +46,17 @@ openclaw gateway restart
 ## Начало работы
 
 <Steps>
-  <Step title="Задайте ключ API провайдера и сведения Gateway">
-    Запустите онбординг и выберите вариант аутентификации Cloudflare AI Gateway:
+  <Step title="Укажите ключ API провайдера и параметры Gateway">
+    Запустите первоначальную настройку и выберите вариант аутентификации Cloudflare AI Gateway:
 
     ```bash
     openclaw onboard --auth-choice cloudflare-ai-gateway-api-key
     ```
 
-    Будет запрошен ваш идентификатор учетной записи, идентификатор gateway и ключ API.
+    Система запросит идентификатор вашей учётной записи, идентификатор шлюза и ключ API.
 
   </Step>
-  <Step title="Задайте модель по умолчанию">
+  <Step title="Укажите модель по умолчанию">
     Добавьте модель в конфигурацию OpenClaw:
 
     ```json5
@@ -68,16 +70,16 @@ openclaw gateway restart
     ```
 
   </Step>
-  <Step title="Проверьте, что модель доступна">
+  <Step title="Убедитесь, что модель доступна">
     ```bash
     openclaw models list --provider cloudflare-ai-gateway
     ```
   </Step>
 </Steps>
 
-## Неинтерактивный пример
+## Пример неинтерактивной настройки
 
-Для скриптовых или CI-настроек передайте все значения в командной строке:
+Для сценариев автоматизации или CI передайте все значения в командной строке:
 
 ```bash
 openclaw onboard --non-interactive \
@@ -91,8 +93,8 @@ openclaw onboard --non-interactive \
 ## Расширенная конфигурация
 
 <AccordionGroup>
-  <Accordion title="Аутентифицированные gateway">
-    Если вы включили аутентификацию Gateway в Cloudflare, добавьте заголовок `cf-aig-authorization`. Это **дополнение к** вашему ключу API провайдера.
+  <Accordion title="Шлюзы с аутентификацией">
+    Если вы включили аутентификацию Gateway в Cloudflare, добавьте заголовок `cf-aig-authorization`. Он необходим **в дополнение к** ключу API провайдера.
 
     ```json5
     {
@@ -109,16 +111,16 @@ openclaw onboard --non-interactive \
     ```
 
     <Tip>
-    Заголовок `cf-aig-authorization` выполняет аутентификацию в самом Cloudflare Gateway, а ключ API провайдера (например, ваш ключ Anthropic) выполняет аутентификацию у вышестоящего провайдера.
+    Заголовок `cf-aig-authorization` выполняет аутентификацию непосредственно в Cloudflare Gateway, а ключ API провайдера (например, ваш ключ Anthropic) — у вышестоящего провайдера.
     </Tip>
 
   </Accordion>
 
   <Accordion title="Примечание об окружении">
-    Если Gateway работает как демон (launchd/systemd), убедитесь, что `CLOUDFLARE_AI_GATEWAY_API_KEY` доступен этому процессу.
+    Если Gateway работает как фоновая служба (launchd/systemd), убедитесь, что `CLOUDFLARE_AI_GATEWAY_API_KEY` доступен этому процессу.
 
     <Warning>
-    Ключ, экспортированный только в интерактивной оболочке, не поможет демону launchd/systemd, если это окружение также не импортировано туда. Задайте ключ в `~/.openclaw/.env` или через `env.shellEnv`, чтобы процесс gateway мог его прочитать.
+    Ключ, экспортированный только в интерактивной оболочке, не будет доступен службе launchd/systemd, если это окружение также не импортировано в неё. Задайте ключ в `~/.openclaw/.env` или через `env.shellEnv`, чтобы процесс Gateway мог его прочитать.
     </Warning>
 
   </Accordion>
@@ -128,9 +130,9 @@ openclaw onboard --non-interactive \
 
 <CardGroup cols={2}>
   <Card title="Выбор модели" href="/ru/concepts/model-providers" icon="layers">
-    Выбор провайдеров, ссылок на модели и поведения при отказе.
+    Выбор провайдеров, ссылок на модели и поведения при переключении после сбоя.
   </Card>
   <Card title="Устранение неполадок" href="/ru/help/troubleshooting" icon="wrench">
-    Общие сведения об устранении неполадок и часто задаваемые вопросы.
+    Общие рекомендации по устранению неполадок и часто задаваемые вопросы.
   </Card>
 </CardGroup>

@@ -1,13 +1,14 @@
 ---
 read_when:
-    - Вы ищете самые быстрые шаги по настройке
+    - Вам нужны самые быстрые шаги по настройке
     - Вы перешли сюда по старой ссылке
 summary: Краткое руководство перенесено в раздел «Начало работы».
 title: Быстрый старт
 x-i18n:
-    generated_at: "2026-07-12T11:52:31Z"
+    generated_at: "2026-07-13T18:47:15Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 24
     provider: openai
     source_hash: faff0c266d7e509952e1492ef224a83c39379461c7258e379296b167beb68ad0
     source_path: start/quickstart.md
@@ -15,7 +16,7 @@ x-i18n:
 ---
 
 <Info>
-Краткое руководство теперь является частью раздела [Начало работы](/ru/start/getting-started).
+Быстрый старт теперь является частью раздела [Начало работы](/ru/start/getting-started).
 </Info>
 
 <Columns>

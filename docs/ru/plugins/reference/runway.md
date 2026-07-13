@@ -1,31 +1,32 @@
 ---
 read_when:
-    - Вы устанавливаете, настраиваете или проверяете плагин runway
+    - Вы устанавливаете, настраиваете или проверяете плагин Runway
 summary: Добавляет поддержку провайдера генерации видео.
-title: Plugin Runway
+title: Плагин Runway
 x-i18n:
-    generated_at: "2026-06-28T23:28:25Z"
-    model: gpt-5.5
+    generated_at: "2026-07-13T18:35:12Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 24
     provider: openai
     source_hash: 52a36a1257fa59b6d159816496158940bdc2c84b1764cc822506b74f22b08465
     source_path: plugins/reference/runway.md
     workflow: 16
 ---
 
-# Plugin Runway
+# Плагин Runway
 
 Добавляет поддержку провайдера генерации видео.
 
-## Дистрибуция
+## Распространение
 
 - Пакет: `@openclaw/runway-provider`
-- Способ установки: включен в OpenClaw
+- Способ установки: входит в состав OpenClaw
 
-## Поверхность
+## Интерфейс
 
 контракты: videoGenerationProviders
 
 ## Связанная документация
 
-- [runway](/ru/providers/runway)
+- [Runway](/ru/providers/runway)

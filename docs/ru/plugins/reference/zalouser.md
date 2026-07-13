@@ -1,21 +1,22 @@
 ---
 read_when:
-    - Вы устанавливаете, настраиваете или проверяете Plugin zalouser
-summary: Plugin личной учетной записи Zalo для OpenClaw с нативной интеграцией zca-js.
-title: Plugin Zalo Personal
+    - Вы устанавливаете, настраиваете или проверяете плагин zalouser
+summary: Плагин личной учётной записи Zalo для OpenClaw с нативной интеграцией zca-js.
+title: Плагин Zalo Personal
 x-i18n:
-    generated_at: "2026-07-12T11:42:20Z"
+    generated_at: "2026-07-13T18:25:48Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 24
     provider: openai
     source_hash: c03db694c940cb1fb20f4a2f73512c9d3cf3c79e910cc6a0dd4aa38bd4465ed5
     source_path: plugins/reference/zalouser.md
     workflow: 16
 ---
 
-# Plugin Zalo Personal
+# Плагин Zalo Personal
 
-Plugin личной учетной записи Zalo для OpenClaw с нативной интеграцией zca-js.
+Плагин личной учётной записи Zalo для OpenClaw через нативную интеграцию zca-js.
 
 ## Распространение
 

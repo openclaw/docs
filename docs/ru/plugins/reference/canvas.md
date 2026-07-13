@@ -1,27 +1,28 @@
 ---
 read_when:
-    - Вы устанавливаете, настраиваете или проверяете Plugin canvas
-summary: Экспериментальные поверхности управления Canvas и рендеринга A2UI для сопряжённых узлов.
+    - Вы устанавливаете, настраиваете или проверяете плагин холста.
+summary: Экспериментальные средства управления Canvas и поверхности рендеринга A2UI для сопряжённых узлов.
 title: Плагин Canvas
 x-i18n:
-    generated_at: "2026-06-28T23:22:04Z"
-    model: gpt-5.5
+    generated_at: "2026-07-13T18:33:00Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 24
     provider: openai
     source_hash: 623f241907be5c88e7b20139f8a03e9c54e29df4bc7d3411fa90a029bfcb285f
     source_path: plugins/reference/canvas.md
     workflow: 16
 ---
 
-# Canvas Plugin
+# Плагин Canvas
 
-Экспериментальные поверхности управления Canvas и рендеринга A2UI для сопряженных узлов.
+Экспериментальные интерфейсы управления Canvas и рендеринга A2UI для сопряжённых узлов.
 
 ## Распространение
 
 - Пакет: `@openclaw/canvas-plugin`
-- Способ установки: включен в OpenClaw
+- Способ установки: входит в состав OpenClaw
 
-## Поверхность
+## Интерфейс
 
-контракты: инструменты; skills
+контракты: инструменты; Skills

@@ -1,21 +1,22 @@
 ---
 read_when:
-    - Вы устанавливаете, настраиваете или проверяете Plugin longcat.
-summary: Plugin провайдера LongCat для OpenClaw.
-title: Plugin LongCat
+    - Вы устанавливаете, настраиваете или проверяете плагин longcat
+summary: Плагин провайдера LongCat для OpenClaw.
+title: Плагин LongCat
 x-i18n:
-    generated_at: "2026-07-12T11:39:56Z"
+    generated_at: "2026-07-13T18:24:07Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 24
     provider: openai
     source_hash: f4a7a4085e102508c9f209f32d275dce91a844421d89ece7cde266e634752e21
     source_path: plugins/reference/longcat.md
     workflow: 16
 ---
 
-# Plugin LongCat
+# Плагин LongCat
 
-Plugin провайдера LongCat для OpenClaw.
+Плагин провайдера LongCat для OpenClaw.
 
 ## Распространение
 

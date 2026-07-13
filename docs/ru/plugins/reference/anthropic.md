@@ -1,31 +1,40 @@
 ---
 read_when:
-    - Вы устанавливаете, настраиваете или проверяете Plugin anthropic
-summary: Добавляет поддержку поставщика моделей Anthropic в OpenClaw.
-title: Plugin Anthropic
+    - Вы устанавливаете, настраиваете или проверяете плагин anthropic
+summary: Модели Anthropic, Claude CLI и встроенный каталог сессий Claude.
+title: Плагин Anthropic
 x-i18n:
-    generated_at: "2026-06-28T23:21:27Z"
-    model: gpt-5.5
+    generated_at: "2026-07-13T18:22:55Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 24
     provider: openai
-    source_hash: 7aa23ae2712061fc3f8e1fbb642d2cbfa2c40675fc5e41633d33619f41182499
+    source_hash: a482afe12e9e5b17d1ee88bf1d5515c436e0a8dab56418cfb631e35f5cf0279d
     source_path: plugins/reference/anthropic.md
     workflow: 16
 ---
 
-# Plugin Anthropic
+# Плагин Anthropic
 
-Добавляет поддержку поставщика моделей Anthropic в OpenClaw.
+Модели Anthropic, CLI Claude и встроенный каталог сеансов Claude.
 
 ## Распространение
 
 - Пакет: `@openclaw/anthropic-provider`
-- Маршрут установки: включен в OpenClaw
+- Способ установки: входит в состав OpenClaw
 
-## Поверхность
+## Интерфейс
 
-providers: anthropic; contracts: mediaUnderstandingProviders
+провайдеры: anthropic; контракты: mediaUnderstandingProviders, usageProviders
 
-## Связанные документы
+<!-- openclaw-plugin-reference:manual-start -->
+
+команды Node: anthropic.claude.sessions.list.v1,
+anthropic.claude.sessions.read.v1; контракты: mediaUnderstandingProviders,
+usageProviders
+
+<!-- openclaw-plugin-reference:manual-end -->
+
+## Связанная документация
 
 - [anthropic](/ru/providers/anthropic)

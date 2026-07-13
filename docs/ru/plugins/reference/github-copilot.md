@@ -1,30 +1,31 @@
 ---
 read_when:
     - Вы устанавливаете, настраиваете или проверяете плагин github-copilot
-summary: Добавляет поддержку провайдера моделей GitHub Copilot в OpenClaw.
-title: Plugin GitHub Copilot
+summary: Добавляет в OpenClaw поддержку провайдера моделей GitHub Copilot.
+title: Плагин GitHub Copilot
 x-i18n:
-    generated_at: "2026-06-28T23:24:29Z"
-    model: gpt-5.5
+    generated_at: "2026-07-13T18:33:51Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 24
     provider: openai
-    source_hash: 2845e2575d30865b06f318873da6da8085f4928d059176b514c3195a29a87e36
+    source_hash: 01b8a15fe2da9848cef18e0e24b1fdb1493e8f17046a7f82f1331f29c80f0660
     source_path: plugins/reference/github-copilot.md
     workflow: 16
 ---
 
-# GitHub Copilot Plugin
+# Плагин GitHub Copilot
 
-Добавляет поддержку провайдера моделей GitHub Copilot в OpenClaw.
+Добавляет в OpenClaw поддержку провайдера моделей GitHub Copilot.
 
 ## Распространение
 
 - Пакет: `@openclaw/github-copilot-provider`
-- Способ установки: включен в OpenClaw
+- Способ установки: включён в OpenClaw
 
 ## Интерфейс
 
-providers: github-copilot; contracts: memoryEmbeddingProviders
+провайдеры: github-copilot; контракты: memoryEmbeddingProviders, usageProviders
 
 ## Связанная документация
 

@@ -1,53 +1,46 @@
 ---
 read_when:
     - Обновление интерфейса настроек Skills в macOS
-    - Изменение ограничений Skills или поведения установки
-summary: Интерфейс настроек Skills в macOS и статус на базе Gateway
+    - Изменение условий доступности Skills или поведения установки
+summary: Интерфейс настроек Skills в macOS и состояние на основе Gateway
 title: Skills (macOS)
 x-i18n:
-    generated_at: "2026-06-28T23:13:01Z"
-    model: gpt-5.5
+    generated_at: "2026-07-13T18:18:53Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 24
     provider: openai
-    source_hash: 5ecc470f1645051e03ab4f51bcb4972da4853c690354bc8ea18a89fcd387d413
+    source_hash: fd9d8f1190320889029335e008c3605bd4bf0194f83398cedd4ae658fd90065c
     source_path: platforms/mac/skills.md
     workflow: 16
 ---
 
-Приложение для macOS отображает OpenClaw Skills через Gateway; оно не разбирает Skills локально.
+Приложение macOS предоставляет доступ к Skills OpenClaw через Gateway; локально оно не выполняет разбор Skills.
 
 ## Источник данных
 
-- `skills.status` (Gateway) возвращает все Skills, а также сведения о допустимости и недостающих требованиях
-  (включая блокировки allowlist для встроенных Skills).
-- Требования выводятся из `metadata.openclaw.requires` в каждом `SKILL.md`.
+- `skills.status` (Gateway) возвращает все Skills, а также сведения о соответствии требованиям и недостающих требованиях, включая блокировки списком разрешений для встроенных Skills.
+- Требования берутся из `metadata.openclaw.requires` в каждом `SKILL.md`.
 
 ## Действия установки
 
-- `metadata.openclaw.install` определяет варианты установки (brew/node/go/uv).
+- `metadata.openclaw.install` определяет варианты установки (brew/node/go/uv/download).
 - Приложение вызывает `skills.install`, чтобы запустить установщики на хосте Gateway.
-- Управляемая оператором `security.installPolicy` может блокировать установки Skills
-  через Gateway до запуска метаданных установщика. Встроенная блокировка опасного кода во время установки
-  не является частью потока установки Skills.
-- Если каждый вариант установки равен `download`, Gateway отображает все варианты
-  загрузки.
-- В противном случае Gateway выбирает один предпочтительный установщик с учетом текущих
-  предпочтений установки и бинарных файлов на хосте: сначала Homebrew, когда
-  `skills.install.preferBrew` включен и `brew` существует, затем `uv`, затем
-  настроенный менеджер Node из `skills.install.nodeManager`, затем более поздние
-  резервные варианты, такие как `go` или `download`.
+- Управляемые оператором `security.installPolicy` (`enabled`, `targets`, `exec`) могут блокировать установку Skills через Gateway до обработки метаданных установщика. Встроенное сканирование опасного кода (используемое при установке плагинов) не подключено к процессу установки Skills.
+- Если каждый вариант установки имеет значение `download`, Gateway предоставляет все варианты загрузки.
+- В противном случае Gateway выбирает один предпочтительный установщик с учётом текущих настроек установки (`skills.install.preferBrew`, `skills.install.nodeManager`) и бинарных файлов на хосте: сначала Homebrew, если включён `preferBrew` и присутствует `brew`, затем `uv`, затем настроенный менеджер Node, затем снова Homebrew, если он доступен (даже без `preferBrew`), затем `go` и, наконец, `download`.
 - Метки установки Node отражают настроенный менеджер Node, включая `yarn`.
 
-## Ключи окружения/API
+## Переменные окружения и ключи API
 
-- Приложение хранит ключи в `~/.openclaw/openclaw.json` в `skills.entries.<skillKey>`.
-- `skills.update` исправляет `enabled`, `apiKey` и `env`.
+- Приложение хранит ключи в `~/.openclaw/openclaw.json` в разделе `skills.entries.<skillKey>`.
+- `skills.update` обновляет `enabled`, `apiKey` и `env`.
 
-## Удаленный режим
+## Удалённый режим
 
-- Установка и обновления конфигурации выполняются на хосте Gateway (не на локальном Mac).
+- Установка и обновление конфигурации выполняются на хосте Gateway, а не на локальном компьютере Mac.
 
-## См. также
+## Связанные материалы
 
 - [Skills](/ru/tools/skills)
-- [приложение macOS](/ru/platforms/macos)
+- [Приложение macOS](/ru/platforms/macos)

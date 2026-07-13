@@ -1,19 +1,20 @@
 ---
 read_when:
-    - Вы устанавливаете, настраиваете или проверяете Plugin Perplexity
+    - Вы устанавливаете, настраиваете или проверяете плагин perplexity
 summary: Добавляет поддержку провайдера веб-поиска.
-title: Plugin Perplexity
+title: Плагин Perplexity
 x-i18n:
-    generated_at: "2026-07-12T11:40:49Z"
+    generated_at: "2026-07-13T20:07:29Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 24
     provider: openai
     source_hash: c649c4dc4df04ca668e924e2644af970d75eab404b8f57579e509aa061994ffe
     source_path: plugins/reference/perplexity.md
     workflow: 16
 ---
 
-# Plugin Perplexity
+# Плагин Perplexity
 
 Добавляет поддержку провайдера веб-поиска.
 

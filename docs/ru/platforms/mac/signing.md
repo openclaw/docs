@@ -1,50 +1,51 @@
 ---
 read_when:
-    - Сборка или подписание отладочных сборок для macOS
-summary: Шаги подписания отладочных сборок macOS, созданных скриптами упаковки
-title: Подписание для macOS
+    - Сборка или подпись отладочных сборок для macOS
+summary: Этапы подписывания отладочных сборок macOS, созданных скриптами упаковки
+title: Подписание в macOS
 x-i18n:
-    generated_at: "2026-07-12T11:33:15Z"
+    generated_at: "2026-07-13T19:58:47Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 24
     provider: openai
-    source_hash: 663c08c031417d5a9f048581421e4fe9f69480917582f74746af675bcca5cf95
+    source_hash: 406211dadc9293cf7983e75ae7dd98234f9088351234cf06c33df2f63d1b9b97
     source_path: platforms/mac/signing.md
     workflow: 16
 ---
 
-# Подпись mac (отладочные сборки)
+# Подписание macOS (отладочные сборки)
 
-[`scripts/package-mac-app.sh`](https://github.com/openclaw/openclaw/blob/main/scripts/package-mac-app.sh) собирает и упаковывает приложение по фиксированному пути (`dist/OpenClaw.app`), а затем вызывает [`scripts/codesign-mac-app.sh`](https://github.com/openclaw/openclaw/blob/main/scripts/codesign-mac-app.sh) для его подписи. Разрешения TCC привязаны к идентификатору пакета и подписи кода; если оба параметра остаются неизменными (а приложение сохраняет фиксированный путь) при повторных сборках, macOS не забывает предоставленные разрешения TCC (уведомления, универсальный доступ, запись экрана, микрофон, распознавание речи).
+[`scripts/package-mac-app.sh`](https://github.com/openclaw/openclaw/blob/main/scripts/package-mac-app.sh) собирает и упаковывает приложение по фиксированному пути (`dist/OpenClaw.app`), а затем вызывает [`scripts/codesign-mac-app.sh`](https://github.com/openclaw/openclaw/blob/main/scripts/codesign-mac-app.sh) для его подписания. Разрешения TCC привязаны к идентификатору пакета и подписи кода; сохранение обоих неизменными (и размещение приложения по фиксированному пути) при повторных сборках не позволяет macOS забывать предоставленные разрешения TCC (уведомления, универсальный доступ, запись экрана, микрофон, распознавание речи).
 
-- По умолчанию идентификатор отладочного пакета — `ai.openclaw.mac.debug` (можно переопределить с помощью `BUNDLE_ID=...`).
-- Node: `>=22.19.0 <23` или `>=23.11.0` (`engines` в `package.json` репозитория). Упаковщик также собирает интерфейс управления (`pnpm ui:build`).
-- По умолчанию требуется реальный сертификат подписи; если он не найден и переменная `ALLOW_ADHOC_SIGNING` не задана, скрипт подписи завершается с ошибкой. Одноразовая подпись (`SIGN_IDENTITY="-"`) включается только явно и не сохраняет разрешения TCC между повторными сборками. См. [разрешения macOS](/ru/platforms/mac/permissions).
-- Считывает `SIGN_IDENTITY` из окружения (например, `export SIGN_IDENTITY="Apple Development: Your Name (TEAMID)"` или сертификат Developer ID Application). Если переменная не задана, `codesign-mac-app.sh` автоматически выбирает сертификат в следующем порядке: Developer ID Application, Apple Distribution, Apple Development, а затем первый найденный действительный сертификат для подписи кода.
-- `CODESIGN_TIMESTAMP=auto` (по умолчанию) включает доверенные метки времени только для подписей Developer ID Application. Укажите `on` или `off`, чтобы принудительно включить или отключить их.
-- Добавляет в Info.plist поля `OpenClawBuildTimestamp` (время UTC в формате ISO8601) и `OpenClawGitCommit` (короткий хеш или `unknown`, если он недоступен), чтобы на вкладке «О программе» отображались данные о сборке, git и канале отладочной или релизной версии.
-- После подписания выполняет проверку Team ID и завершается с ошибкой, если какой-либо файл Mach-O внутри пакета имеет другой Team ID. Чтобы пропустить проверку, задайте `SKIP_TEAM_ID_CHECK=1`.
+- Идентификатор отладочного пакета по умолчанию — `ai.openclaw.mac.debug` (переопределяется с помощью `BUNDLE_ID=...`).
+- Node: `>=22.22.3 <23`, `>=24.15.0 <25` или `>=25.9.0` (`package.json` репозитория — `engines`). Упаковщик также собирает интерфейс управления (`pnpm ui:build`).
+- По умолчанию требуется настоящий сертификат подписи; если он не найден и `ALLOW_ADHOC_SIGNING` не задан, скрипт подписания завершается с ошибкой. Для использования ситуативной подписи (`SIGN_IDENTITY="-"`) требуется явное согласие, и такая подпись не сохраняет разрешения TCC между повторными сборками. См. [разрешения macOS](/ru/platforms/mac/permissions).
+- Считывает `SIGN_IDENTITY` из окружения (например, `export SIGN_IDENTITY="Apple Development: Your Name (TEAMID)"` или сертификат Developer ID Application). Если значение не задано, `codesign-mac-app.sh` автоматически выбирает сертификат в следующем порядке: Developer ID Application, Apple Distribution, Apple Development, затем первый найденный действительный сертификат подписи кода.
+- `CODESIGN_TIMESTAMP=auto` (по умолчанию) включает доверенные метки времени только для подписей Developer ID Application. Задайте `on`/`off`, чтобы принудительно включить или отключить их.
+- Добавляет в Info.plist значения `OpenClawBuildTimestamp` (ISO8601 UTC) и `OpenClawGitCommit` (короткий хеш, `unknown`, если он недоступен), чтобы на вкладке «Об приложении» отображались сведения о сборке, git и канале отладочной или выпускной версии.
+- После подписания выполняет проверку идентификатора команды и завершается с ошибкой, если какой-либо файл Mach-O внутри пакета имеет другой идентификатор команды. Задайте `SKIP_TEAM_ID_CHECK=1`, чтобы пропустить проверку.
 
 ## Использование
 
 ```bash
 # из корня репозитория
-scripts/package-mac-app.sh                                                      # автоматически выбирает сертификат; завершается с ошибкой, если сертификат не найден
-SIGN_IDENTITY="Developer ID Application: Your Name" scripts/package-mac-app.sh   # реальный сертификат
-ALLOW_ADHOC_SIGNING=1 scripts/package-mac-app.sh                                 # одноразовая подпись (разрешения не сохранятся)
-SIGN_IDENTITY="-" scripts/package-mac-app.sh                                     # явная одноразовая подпись (с тем же ограничением)
-DISABLE_LIBRARY_VALIDATION=1 scripts/package-mac-app.sh                          # обход несовпадения Team ID Sparkle только для разработки
+scripts/package-mac-app.sh                                                      # автоматически выбирает сертификат; ошибка, если он не найден
+SIGN_IDENTITY="Developer ID Application: Your Name" scripts/package-mac-app.sh   # настоящий сертификат
+ALLOW_ADHOC_SIGNING=1 scripts/package-mac-app.sh                                 # ситуативная подпись (разрешения не сохранятся)
+SIGN_IDENTITY="-" scripts/package-mac-app.sh                                     # явная ситуативная подпись (с той же оговоркой)
+DISABLE_LIBRARY_VALIDATION=1 scripts/package-mac-app.sh                          # обходной путь только для разработки при несовпадении идентификатора команды Sparkle
 ```
 
-### Примечание об одноразовой подписи
+### Примечание о ситуативном подписании
 
-`SIGN_IDENTITY="-"` отключает Hardened Runtime (`--options runtime`), чтобы предотвратить сбои при загрузке приложением встроенных фреймворков (например, Sparkle), у которых отличается Team ID. Одноразовые подписи также нарушают сохранение разрешений TCC; инструкции по восстановлению см. в разделе [разрешения macOS](/ru/platforms/mac/permissions).
+`SIGN_IDENTITY="-"` отключает Hardened Runtime (`--options runtime`), чтобы предотвратить сбои при загрузке приложением встроенных фреймворков (например, Sparkle), у которых нет того же идентификатора команды. Ситуативные подписи также нарушают сохранение разрешений TCC; инструкции по восстановлению см. в разделе [разрешения macOS](/ru/platforms/mac/permissions).
 
-## Метаданные сборки для раздела «О программе»
+## Метаданные сборки для вкладки «Об приложении»
 
-Вкладка «О программе» считывает `OpenClawBuildTimestamp` и `OpenClawGitCommit` из Info.plist, чтобы отображать версию, дату сборки, коммит git и тип сборки DEBUG (через `#if DEBUG`). После изменения кода повторно запустите упаковщик, чтобы обновить эти значения.
+Вкладка «Об приложении» считывает `OpenClawBuildTimestamp` и `OpenClawGitCommit` из Info.plist, чтобы отображать версию, дату сборки, коммит git и признак отладочной сборки DEBUG (через `#if DEBUG`). После изменения кода повторно запустите упаковщик, чтобы обновить эти значения.
 
 ## Связанные материалы
 
-- [Приложение для macOS](/ru/platforms/macos)
+- [Приложение macOS](/ru/platforms/macos)
 - [Разрешения macOS](/ru/platforms/mac/permissions)

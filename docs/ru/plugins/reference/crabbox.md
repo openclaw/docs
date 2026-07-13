@@ -1,12 +1,13 @@
 ---
 read_when:
-    - Вы устанавливаете, настраиваете или проверяете Plugin crabbox
-summary: Провайдер облачных исполнителей на базе CLI Crabbox.
+    - Вы устанавливаете, настраиваете или проверяете плагин crabbox
+summary: Провайдер облачных воркеров на базе CLI Crabbox.
 title: Плагин Crabbox
 x-i18n:
-    generated_at: "2026-07-12T11:38:43Z"
+    generated_at: "2026-07-13T18:23:16Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 24
     provider: openai
     source_hash: b52daa026c1a44ae7ca68d3974bc068fc41f6dd18f195d957be9afbd4bfebdea
     source_path: plugins/reference/crabbox.md

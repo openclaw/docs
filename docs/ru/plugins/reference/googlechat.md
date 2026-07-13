@@ -1,21 +1,22 @@
 ---
 read_when:
-    - Вы устанавливаете, настраиваете или проверяете Plugin googlechat.
+    - Вы устанавливаете, настраиваете или проверяете плагин googlechat
 summary: Плагин канала Google Chat для OpenClaw, поддерживающий пространства и личные сообщения.
-title: Plugin Google Chat
+title: Плагин Google Chat
 x-i18n:
-    generated_at: "2026-07-12T11:42:17Z"
+    generated_at: "2026-07-13T20:06:00Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 24
     provider: openai
     source_hash: 04febb1ead7d63e9ef79ecc52ce69f38a7c4eb404c90019717363f57477cd37d
     source_path: plugins/reference/googlechat.md
     workflow: 16
 ---
 
-# Plugin Google Chat
+# Плагин Google Chat
 
-Plugin канала Google Chat для OpenClaw, предназначенный для пространств и личных сообщений.
+Плагин канала OpenClaw Google Chat для пространств и личных сообщений.
 
 ## Распространение
 
@@ -24,8 +25,8 @@ Plugin канала Google Chat для OpenClaw, предназначенный 
 
 ## Интерфейс
 
-каналы: googlechat
+channels: googlechat
 
 ## Связанная документация
 
-- [googlechat](/ru/channels/googlechat)
+- [Google Chat](/ru/channels/googlechat)
