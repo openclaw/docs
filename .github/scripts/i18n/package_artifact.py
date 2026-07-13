@@ -31,11 +31,17 @@ Examples:
 from __future__ import annotations
 
 import argparse
+import collections
 import json
 import os
+import re
 import shutil
 import subprocess
 from pathlib import Path
+
+
+CANONICAL_I18N_MARKER_RE = re.compile(r"__OC_I18N_\d+__")
+I18N_MARKER_PREFIX_RE = re.compile(r"__oc_i18n_", re.IGNORECASE)
 
 
 def git_lines(args: list[str]) -> list[str]:
@@ -89,6 +95,35 @@ def read_pending_allowed(workspace: Path, locale: str, locale_slug: str, shard_i
 
 def write_lines(path: Path, lines: list[str]) -> None:
     path.write_text("\n".join(lines) + ("\n" if lines else ""), encoding="utf-8")
+
+
+def same_i18n_protocol_markers(source: str, translated: str) -> bool:
+    source = source.replace(r"\_", "_")
+    translated = translated.replace(r"\_", "_")
+    source_markers = collections.Counter(CANONICAL_I18N_MARKER_RE.findall(source))
+    translated_markers = collections.Counter(CANONICAL_I18N_MARKER_RE.findall(translated))
+    if source_markers != translated_markers:
+        return False
+    source_residual = CANONICAL_I18N_MARKER_RE.sub("", source)
+    translated_residual = CANONICAL_I18N_MARKER_RE.sub("", translated)
+    return len(I18N_MARKER_PREFIX_RE.findall(source_residual)) == len(I18N_MARKER_PREFIX_RE.findall(translated_residual))
+
+
+def leaked_i18n_protocol_paths(workspace: Path, locale: str, changed: list[str]) -> list[str]:
+    leaked: list[str] = []
+    locale_prefix = f"docs/{locale}/"
+    for file_name in changed:
+        if not file_name.startswith(locale_prefix) or not file_name.endswith((".md", ".mdx")):
+            continue
+        translated_path = workspace / file_name
+        source_path = workspace / "docs" / file_name.removeprefix(locale_prefix)
+        if not translated_path.is_file() or not source_path.is_file():
+            continue
+        source = source_path.read_text(encoding="utf-8")
+        translated = translated_path.read_text(encoding="utf-8")
+        if not same_i18n_protocol_markers(source, translated):
+            leaked.append(file_name)
+    return leaked
 
 
 def append_outputs(metadata: dict[str, object]) -> None:
@@ -148,6 +183,11 @@ def package_artifact(workspace: Path, openclaw_sync_dir: Path) -> dict[str, obje
         # The finalizer treats every changed-files.txt entry as a required
         # payload file, so allowed-but-missing TM paths must not be advertised.
         shard_changed = [line for line in changed if line in allowed and (workspace / line).is_file()]
+        leaked_paths = leaked_i18n_protocol_paths(workspace, locale, shard_changed)
+        if leaked_paths:
+            failed_reason = "i18n protocol marker leaked"
+            shard_changed = []
+            deleted = []
         if os.environ.get("ARTIFACT_ROLE") == "canary":
             shard_deleted = []
         elif shard_total == 1:

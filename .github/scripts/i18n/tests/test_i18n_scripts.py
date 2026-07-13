@@ -756,6 +756,48 @@ class I18NScriptTests(unittest.TestCase):
             self.assertTrue((artifact / "payload/docs/fr/index.md").exists())
             self.assertFalse((artifact / "payload/docs/.i18n/fr.tm.jsonl").exists())
 
+    def test_package_artifact_fails_closed_on_i18n_protocol_marker_leak(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            repo = Path(tmp)
+            init_repo(repo)
+            (repo / ".openclaw-sync").mkdir()
+            (repo / "docs/fr").mkdir(parents=True)
+            (repo / "docs/index.md").write_text("# Index\n", encoding="utf-8")
+            run_git(repo, "add", ".")
+            run_git(repo, "commit", "-m", "initial")
+
+            (repo / "docs/fr/index.md").write_text("# Index FR\n\\_\\_OC\\_I18N\\_900014\\_\\_\n", encoding="utf-8")
+            (repo / ".openclaw-sync/docs-i18n-fr-s0of1.txt").write_text(str(repo / "docs/index.md") + "\n", encoding="utf-8")
+
+            with chdir(repo), env(
+                {
+                    "GITHUB_WORKSPACE": str(repo),
+                    "LOCALE": "fr",
+                    "LOCALE_SLUG": "fr",
+                    "SOURCE_SHA": "source-a",
+                    "MODE": "full",
+                    "SHARD_INDEX": "0",
+                    "SHARD_TOTAL": "1",
+                    "WORKER_PARALLEL": "3",
+                    "THINKING_EFFORT": "xhigh",
+                    "PENDING_COUNT": "1",
+                    "TOTAL_PENDING_COUNT": "1",
+                    "ALL_COUNT": "1",
+                    "TRANSLATE_OUTCOME": "success",
+                    "MDX_CHECK_OUTCOME": "success",
+                    "MDX_REPAIR_OUTCOME": "skipped",
+                    "MDX_SCOPE_OUTCOME": "skipped",
+                    "MDX_RECHECK_OUTCOME": "skipped",
+                }
+            ):
+                metadata = package_artifact.package_artifact(repo, Path(".openclaw-sync"))
+
+            artifact = repo / ".openclaw-sync/artifacts/fr-s0of1"
+            self.assertEqual("i18n protocol marker leaked", metadata["failed_reason"])
+            self.assertEqual(0, metadata["changed_count"])
+            self.assertEqual("", (artifact / "changed-files.txt").read_text(encoding="utf-8"))
+            self.assertFalse((artifact / "payload/docs/fr/index.md").exists())
+
     def test_package_artifact_carries_translation_memory_only_on_first_shard(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             repo = Path(tmp)
