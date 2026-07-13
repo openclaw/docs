@@ -1317,6 +1317,7 @@
                 "pages": [
                   "tools/skills",
                   "tools/skill-workshop",
+                  "tools/self-learning",
                   "tools/creating-skills",
                   "tools/skills-config",
                   "tools/slash-commands",
@@ -2940,6 +2941,7 @@
                 "pages": [
                   "zh-TW/tools/skills",
                   "zh-TW/tools/skill-workshop",
+                  "zh-TW/tools/self-learning",
                   "zh-TW/tools/creating-skills",
                   "zh-TW/tools/skills-config",
                   "zh-TW/tools/slash-commands",
@@ -3906,6 +3908,7 @@
                 "pages": [
                   "ja-JP/tools/skills",
                   "ja-JP/tools/skill-workshop",
+                  "ja-JP/tools/self-learning",
                   "ja-JP/tools/creating-skills",
                   "ja-JP/tools/skills-config",
                   "ja-JP/tools/slash-commands",
@@ -4872,6 +4875,7 @@
                 "pages": [
                   "es/tools/skills",
                   "es/tools/skill-workshop",
+                  "es/tools/self-learning",
                   "es/tools/creating-skills",
                   "es/tools/skills-config",
                   "es/tools/slash-commands",
@@ -5838,6 +5842,7 @@
                 "pages": [
                   "pt-BR/tools/skills",
                   "pt-BR/tools/skill-workshop",
+                  "pt-BR/tools/self-learning",
                   "pt-BR/tools/creating-skills",
                   "pt-BR/tools/skills-config",
                   "pt-BR/tools/slash-commands",
@@ -6804,6 +6809,7 @@
                 "pages": [
                   "ko/tools/skills",
                   "ko/tools/skill-workshop",
+                  "ko/tools/self-learning",
                   "ko/tools/creating-skills",
                   "ko/tools/skills-config",
                   "ko/tools/slash-commands",
@@ -7770,6 +7776,7 @@
                 "pages": [
                   "de/tools/skills",
                   "de/tools/skill-workshop",
+                  "de/tools/self-learning",
                   "de/tools/creating-skills",
                   "de/tools/skills-config",
                   "de/tools/slash-commands",
@@ -8736,6 +8743,7 @@
                 "pages": [
                   "fr/tools/skills",
                   "fr/tools/skill-workshop",
+                  "fr/tools/self-learning",
                   "fr/tools/creating-skills",
                   "fr/tools/skills-config",
                   "fr/tools/slash-commands",
@@ -9702,6 +9710,7 @@
                 "pages": [
                   "hi/tools/skills",
                   "hi/tools/skill-workshop",
+                  "hi/tools/self-learning",
                   "hi/tools/creating-skills",
                   "hi/tools/skills-config",
                   "hi/tools/slash-commands",
@@ -10668,6 +10677,7 @@
                 "pages": [
                   "ar/tools/skills",
                   "ar/tools/skill-workshop",
+                  "ar/tools/self-learning",
                   "ar/tools/creating-skills",
                   "ar/tools/skills-config",
                   "ar/tools/slash-commands",
@@ -11634,6 +11644,7 @@
                 "pages": [
                   "it/tools/skills",
                   "it/tools/skill-workshop",
+                  "it/tools/self-learning",
                   "it/tools/creating-skills",
                   "it/tools/skills-config",
                   "it/tools/slash-commands",
@@ -12600,6 +12611,7 @@
                 "pages": [
                   "vi/tools/skills",
                   "vi/tools/skill-workshop",
+                  "vi/tools/self-learning",
                   "vi/tools/creating-skills",
                   "vi/tools/skills-config",
                   "vi/tools/slash-commands",
@@ -13566,6 +13578,7 @@
                 "pages": [
                   "nl/tools/skills",
                   "nl/tools/skill-workshop",
+                  "nl/tools/self-learning",
                   "nl/tools/creating-skills",
                   "nl/tools/skills-config",
                   "nl/tools/slash-commands",
@@ -14532,6 +14545,7 @@
                 "pages": [
                   "tr/tools/skills",
                   "tr/tools/skill-workshop",
+                  "tr/tools/self-learning",
                   "tr/tools/creating-skills",
                   "tr/tools/skills-config",
                   "tr/tools/slash-commands",
@@ -15498,6 +15512,7 @@
                 "pages": [
                   "uk/tools/skills",
                   "uk/tools/skill-workshop",
+                  "uk/tools/self-learning",
                   "uk/tools/creating-skills",
                   "uk/tools/skills-config",
                   "uk/tools/slash-commands",
@@ -16464,6 +16479,7 @@
                 "pages": [
                   "id/tools/skills",
                   "id/tools/skill-workshop",
+                  "id/tools/self-learning",
                   "id/tools/creating-skills",
                   "id/tools/skills-config",
                   "id/tools/slash-commands",
@@ -17430,6 +17446,7 @@
                 "pages": [
                   "pl/tools/skills",
                   "pl/tools/skill-workshop",
+                  "pl/tools/self-learning",
                   "pl/tools/creating-skills",
                   "pl/tools/skills-config",
                   "pl/tools/slash-commands",
@@ -18396,6 +18413,7 @@
                 "pages": [
                   "ru/tools/skills",
                   "ru/tools/skill-workshop",
+                  "ru/tools/self-learning",
                   "ru/tools/creating-skills",
                   "ru/tools/skills-config",
                   "ru/tools/slash-commands",
