@@ -10,6 +10,7 @@ const defaultRepoUrl = "https://github.com/openclaw/openclaw";
 const maxFileBytes = 180_000;
 const maxSearchChars = 600;
 const maxIndexBytes = 18 * 1024 * 1024;
+const maxGitOutputBytes = 64 * 1024 * 1024;
 
 const includeExts = new Set([
   ".cjs",
@@ -251,5 +252,8 @@ function normalizeRepoUrl(value) {
 }
 
 function git(dir, args) {
-  return execFileSync("git", ["-C", dir, ...args], { encoding: "utf8" }).trim();
+  return execFileSync("git", ["-C", dir, ...args], {
+    encoding: "utf8",
+    maxBuffer: maxGitOutputBytes,
+  }).trim();
 }
