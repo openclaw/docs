@@ -1544,6 +1544,7 @@
                   "platforms/windows",
                   "platforms/android",
                   "platforms/ios",
+                  "platforms/ios-healthkit",
                   "platforms/easyrunner"
                 ]
               },
@@ -3131,6 +3132,7 @@
                   "zh-TW/platforms/windows",
                   "zh-TW/platforms/android",
                   "zh-TW/platforms/ios",
+                  "zh-TW/platforms/ios-healthkit",
                   "zh-TW/platforms/easyrunner"
                 ]
               },
@@ -4095,6 +4097,7 @@
                   "ja-JP/platforms/windows",
                   "ja-JP/platforms/android",
                   "ja-JP/platforms/ios",
+                  "ja-JP/platforms/ios-healthkit",
                   "ja-JP/platforms/easyrunner"
                 ]
               },
@@ -5059,6 +5062,7 @@
                   "es/platforms/windows",
                   "es/platforms/android",
                   "es/platforms/ios",
+                  "es/platforms/ios-healthkit",
                   "es/platforms/easyrunner"
                 ]
               },
@@ -6023,6 +6027,7 @@
                   "pt-BR/platforms/windows",
                   "pt-BR/platforms/android",
                   "pt-BR/platforms/ios",
+                  "pt-BR/platforms/ios-healthkit",
                   "pt-BR/platforms/easyrunner"
                 ]
               },
@@ -6987,6 +6992,7 @@
                   "ko/platforms/windows",
                   "ko/platforms/android",
                   "ko/platforms/ios",
+                  "ko/platforms/ios-healthkit",
                   "ko/platforms/easyrunner"
                 ]
               },
@@ -7951,6 +7957,7 @@
                   "de/platforms/windows",
                   "de/platforms/android",
                   "de/platforms/ios",
+                  "de/platforms/ios-healthkit",
                   "de/platforms/easyrunner"
                 ]
               },
@@ -8915,6 +8922,7 @@
                   "fr/platforms/windows",
                   "fr/platforms/android",
                   "fr/platforms/ios",
+                  "fr/platforms/ios-healthkit",
                   "fr/platforms/easyrunner"
                 ]
               },
@@ -9879,6 +9887,7 @@
                   "hi/platforms/windows",
                   "hi/platforms/android",
                   "hi/platforms/ios",
+                  "hi/platforms/ios-healthkit",
                   "hi/platforms/easyrunner"
                 ]
               },
@@ -10843,6 +10852,7 @@
                   "ar/platforms/windows",
                   "ar/platforms/android",
                   "ar/platforms/ios",
+                  "ar/platforms/ios-healthkit",
                   "ar/platforms/easyrunner"
                 ]
               },
@@ -11807,6 +11817,7 @@
                   "it/platforms/windows",
                   "it/platforms/android",
                   "it/platforms/ios",
+                  "it/platforms/ios-healthkit",
                   "it/platforms/easyrunner"
                 ]
               },
@@ -12771,6 +12782,7 @@
                   "vi/platforms/windows",
                   "vi/platforms/android",
                   "vi/platforms/ios",
+                  "vi/platforms/ios-healthkit",
                   "vi/platforms/easyrunner"
                 ]
               },
@@ -13735,6 +13747,7 @@
                   "nl/platforms/windows",
                   "nl/platforms/android",
                   "nl/platforms/ios",
+                  "nl/platforms/ios-healthkit",
                   "nl/platforms/easyrunner"
                 ]
               },
@@ -14699,6 +14712,7 @@
                   "tr/platforms/windows",
                   "tr/platforms/android",
                   "tr/platforms/ios",
+                  "tr/platforms/ios-healthkit",
                   "tr/platforms/easyrunner"
                 ]
               },
@@ -15663,6 +15677,7 @@
                   "uk/platforms/windows",
                   "uk/platforms/android",
                   "uk/platforms/ios",
+                  "uk/platforms/ios-healthkit",
                   "uk/platforms/easyrunner"
                 ]
               },
@@ -16627,6 +16642,7 @@
                   "id/platforms/windows",
                   "id/platforms/android",
                   "id/platforms/ios",
+                  "id/platforms/ios-healthkit",
                   "id/platforms/easyrunner"
                 ]
               },
@@ -17591,6 +17607,7 @@
                   "pl/platforms/windows",
                   "pl/platforms/android",
                   "pl/platforms/ios",
+                  "pl/platforms/ios-healthkit",
                   "pl/platforms/easyrunner"
                 ]
               },
@@ -18555,6 +18572,7 @@
                   "ru/platforms/windows",
                   "ru/platforms/android",
                   "ru/platforms/ios",
+                  "ru/platforms/ios-healthkit",
                   "ru/platforms/easyrunner"
                 ]
               },
