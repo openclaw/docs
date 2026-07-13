@@ -1805,7 +1805,8 @@
                       "cli/flows",
                       "cli/node",
                       "cli/nodes",
-                      "cli/sandbox"
+                      "cli/sandbox",
+                      "cli/worker"
                     ]
                   },
                   {
@@ -3395,7 +3396,8 @@
                       "zh-TW/cli/flows",
                       "zh-TW/cli/node",
                       "zh-TW/cli/nodes",
-                      "zh-TW/cli/sandbox"
+                      "zh-TW/cli/sandbox",
+                      "zh-TW/cli/worker"
                     ]
                   },
                   {
@@ -4362,7 +4364,8 @@
                       "ja-JP/cli/flows",
                       "ja-JP/cli/node",
                       "ja-JP/cli/nodes",
-                      "ja-JP/cli/sandbox"
+                      "ja-JP/cli/sandbox",
+                      "ja-JP/cli/worker"
                     ]
                   },
                   {
@@ -5329,7 +5332,8 @@
                       "es/cli/flows",
                       "es/cli/node",
                       "es/cli/nodes",
-                      "es/cli/sandbox"
+                      "es/cli/sandbox",
+                      "es/cli/worker"
                     ]
                   },
                   {
@@ -6296,7 +6300,8 @@
                       "pt-BR/cli/flows",
                       "pt-BR/cli/node",
                       "pt-BR/cli/nodes",
-                      "pt-BR/cli/sandbox"
+                      "pt-BR/cli/sandbox",
+                      "pt-BR/cli/worker"
                     ]
                   },
                   {
@@ -7263,7 +7268,8 @@
                       "ko/cli/flows",
                       "ko/cli/node",
                       "ko/cli/nodes",
-                      "ko/cli/sandbox"
+                      "ko/cli/sandbox",
+                      "ko/cli/worker"
                     ]
                   },
                   {
@@ -8230,7 +8236,8 @@
                       "de/cli/flows",
                       "de/cli/node",
                       "de/cli/nodes",
-                      "de/cli/sandbox"
+                      "de/cli/sandbox",
+                      "de/cli/worker"
                     ]
                   },
                   {
@@ -9197,7 +9204,8 @@
                       "fr/cli/flows",
                       "fr/cli/node",
                       "fr/cli/nodes",
-                      "fr/cli/sandbox"
+                      "fr/cli/sandbox",
+                      "fr/cli/worker"
                     ]
                   },
                   {
@@ -10164,7 +10172,8 @@
                       "hi/cli/flows",
                       "hi/cli/node",
                       "hi/cli/nodes",
-                      "hi/cli/sandbox"
+                      "hi/cli/sandbox",
+                      "hi/cli/worker"
                     ]
                   },
                   {
@@ -11131,7 +11140,8 @@
                       "ar/cli/flows",
                       "ar/cli/node",
                       "ar/cli/nodes",
-                      "ar/cli/sandbox"
+                      "ar/cli/sandbox",
+                      "ar/cli/worker"
                     ]
                   },
                   {
@@ -12098,7 +12108,8 @@
                       "it/cli/flows",
                       "it/cli/node",
                       "it/cli/nodes",
-                      "it/cli/sandbox"
+                      "it/cli/sandbox",
+                      "it/cli/worker"
                     ]
                   },
                   {
@@ -13065,7 +13076,8 @@
                       "vi/cli/flows",
                       "vi/cli/node",
                       "vi/cli/nodes",
-                      "vi/cli/sandbox"
+                      "vi/cli/sandbox",
+                      "vi/cli/worker"
                     ]
                   },
                   {
@@ -14032,7 +14044,8 @@
                       "nl/cli/flows",
                       "nl/cli/node",
                       "nl/cli/nodes",
-                      "nl/cli/sandbox"
+                      "nl/cli/sandbox",
+                      "nl/cli/worker"
                     ]
                   },
                   {
@@ -14999,7 +15012,8 @@
                       "tr/cli/flows",
                       "tr/cli/node",
                       "tr/cli/nodes",
-                      "tr/cli/sandbox"
+                      "tr/cli/sandbox",
+                      "tr/cli/worker"
                     ]
                   },
                   {
@@ -15966,7 +15980,8 @@
                       "uk/cli/flows",
                       "uk/cli/node",
                       "uk/cli/nodes",
-                      "uk/cli/sandbox"
+                      "uk/cli/sandbox",
+                      "uk/cli/worker"
                     ]
                   },
                   {
@@ -16933,7 +16948,8 @@
                       "id/cli/flows",
                       "id/cli/node",
                       "id/cli/nodes",
-                      "id/cli/sandbox"
+                      "id/cli/sandbox",
+                      "id/cli/worker"
                     ]
                   },
                   {
@@ -17900,7 +17916,8 @@
                       "pl/cli/flows",
                       "pl/cli/node",
                       "pl/cli/nodes",
-                      "pl/cli/sandbox"
+                      "pl/cli/sandbox",
+                      "pl/cli/worker"
                     ]
                   },
                   {
@@ -18867,7 +18884,8 @@
                       "ru/cli/flows",
                       "ru/cli/node",
                       "ru/cli/nodes",
-                      "ru/cli/sandbox"
+                      "ru/cli/sandbox",
+                      "ru/cli/worker"
                     ]
                   },
                   {
