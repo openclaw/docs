@@ -1611,6 +1611,7 @@
                       "gateway/authentication",
                       "auth-credential-semantics",
                       "gateway/secrets",
+                      "gateway/1password",
                       "gateway/secrets-plan-contract",
                       "gateway/trusted-proxy-auth"
                     ]
@@ -3199,6 +3200,7 @@
                       "zh-TW/gateway/authentication",
                       "zh-TW/auth-credential-semantics",
                       "zh-TW/gateway/secrets",
+                      "zh-TW/gateway/1password",
                       "zh-TW/gateway/secrets-plan-contract",
                       "zh-TW/gateway/trusted-proxy-auth"
                     ]
@@ -4164,6 +4166,7 @@
                       "ja-JP/gateway/authentication",
                       "ja-JP/auth-credential-semantics",
                       "ja-JP/gateway/secrets",
+                      "ja-JP/gateway/1password",
                       "ja-JP/gateway/secrets-plan-contract",
                       "ja-JP/gateway/trusted-proxy-auth"
                     ]
@@ -5129,6 +5132,7 @@
                       "es/gateway/authentication",
                       "es/auth-credential-semantics",
                       "es/gateway/secrets",
+                      "es/gateway/1password",
                       "es/gateway/secrets-plan-contract",
                       "es/gateway/trusted-proxy-auth"
                     ]
@@ -6094,6 +6098,7 @@
                       "pt-BR/gateway/authentication",
                       "pt-BR/auth-credential-semantics",
                       "pt-BR/gateway/secrets",
+                      "pt-BR/gateway/1password",
                       "pt-BR/gateway/secrets-plan-contract",
                       "pt-BR/gateway/trusted-proxy-auth"
                     ]
@@ -7059,6 +7064,7 @@
                       "ko/gateway/authentication",
                       "ko/auth-credential-semantics",
                       "ko/gateway/secrets",
+                      "ko/gateway/1password",
                       "ko/gateway/secrets-plan-contract",
                       "ko/gateway/trusted-proxy-auth"
                     ]
@@ -8024,6 +8030,7 @@
                       "de/gateway/authentication",
                       "de/auth-credential-semantics",
                       "de/gateway/secrets",
+                      "de/gateway/1password",
                       "de/gateway/secrets-plan-contract",
                       "de/gateway/trusted-proxy-auth"
                     ]
@@ -8989,6 +8996,7 @@
                       "fr/gateway/authentication",
                       "fr/auth-credential-semantics",
                       "fr/gateway/secrets",
+                      "fr/gateway/1password",
                       "fr/gateway/secrets-plan-contract",
                       "fr/gateway/trusted-proxy-auth"
                     ]
@@ -9954,6 +9962,7 @@
                       "hi/gateway/authentication",
                       "hi/auth-credential-semantics",
                       "hi/gateway/secrets",
+                      "hi/gateway/1password",
                       "hi/gateway/secrets-plan-contract",
                       "hi/gateway/trusted-proxy-auth"
                     ]
@@ -10919,6 +10928,7 @@
                       "ar/gateway/authentication",
                       "ar/auth-credential-semantics",
                       "ar/gateway/secrets",
+                      "ar/gateway/1password",
                       "ar/gateway/secrets-plan-contract",
                       "ar/gateway/trusted-proxy-auth"
                     ]
@@ -11884,6 +11894,7 @@
                       "it/gateway/authentication",
                       "it/auth-credential-semantics",
                       "it/gateway/secrets",
+                      "it/gateway/1password",
                       "it/gateway/secrets-plan-contract",
                       "it/gateway/trusted-proxy-auth"
                     ]
@@ -12849,6 +12860,7 @@
                       "vi/gateway/authentication",
                       "vi/auth-credential-semantics",
                       "vi/gateway/secrets",
+                      "vi/gateway/1password",
                       "vi/gateway/secrets-plan-contract",
                       "vi/gateway/trusted-proxy-auth"
                     ]
@@ -13814,6 +13826,7 @@
                       "nl/gateway/authentication",
                       "nl/auth-credential-semantics",
                       "nl/gateway/secrets",
+                      "nl/gateway/1password",
                       "nl/gateway/secrets-plan-contract",
                       "nl/gateway/trusted-proxy-auth"
                     ]
@@ -14779,6 +14792,7 @@
                       "tr/gateway/authentication",
                       "tr/auth-credential-semantics",
                       "tr/gateway/secrets",
+                      "tr/gateway/1password",
                       "tr/gateway/secrets-plan-contract",
                       "tr/gateway/trusted-proxy-auth"
                     ]
@@ -15744,6 +15758,7 @@
                       "uk/gateway/authentication",
                       "uk/auth-credential-semantics",
                       "uk/gateway/secrets",
+                      "uk/gateway/1password",
                       "uk/gateway/secrets-plan-contract",
                       "uk/gateway/trusted-proxy-auth"
                     ]
@@ -16709,6 +16724,7 @@
                       "id/gateway/authentication",
                       "id/auth-credential-semantics",
                       "id/gateway/secrets",
+                      "id/gateway/1password",
                       "id/gateway/secrets-plan-contract",
                       "id/gateway/trusted-proxy-auth"
                     ]
@@ -17674,6 +17690,7 @@
                       "pl/gateway/authentication",
                       "pl/auth-credential-semantics",
                       "pl/gateway/secrets",
+                      "pl/gateway/1password",
                       "pl/gateway/secrets-plan-contract",
                       "pl/gateway/trusted-proxy-auth"
                     ]
@@ -18639,6 +18656,7 @@
                       "ru/gateway/authentication",
                       "ru/auth-credential-semantics",
                       "ru/gateway/secrets",
+                      "ru/gateway/1password",
                       "ru/gateway/secrets-plan-contract",
                       "ru/gateway/trusted-proxy-auth"
                     ]
