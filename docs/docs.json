@@ -53,6 +53,10 @@
   },
   "redirects": [
     {
+      "source": "/cli/crestodian",
+      "destination": "/cli/openclaw"
+    },
+    {
       "source": "/channels/bluebubbles",
       "destination": "/channels/imessage-from-bluebubbles"
     },
@@ -1751,7 +1755,7 @@
                     "group": "Gateway and service",
                     "pages": [
                       "cli/backup",
-                      "cli/crestodian",
+                      "cli/openclaw",
                       "cli/daemon",
                       "cli/doctor",
                       "cli/fleet",
@@ -3345,7 +3349,7 @@
                     "group": "Gateway and service",
                     "pages": [
                       "zh-TW/cli/backup",
-                      "zh-TW/cli/crestodian",
+                      "zh-TW/cli/openclaw",
                       "zh-TW/cli/daemon",
                       "zh-TW/cli/doctor",
                       "zh-TW/cli/fleet",
@@ -4316,7 +4320,7 @@
                     "group": "Gateway and service",
                     "pages": [
                       "ja-JP/cli/backup",
-                      "ja-JP/cli/crestodian",
+                      "ja-JP/cli/openclaw",
                       "ja-JP/cli/daemon",
                       "ja-JP/cli/doctor",
                       "ja-JP/cli/fleet",
@@ -5287,7 +5291,7 @@
                     "group": "Gateway and service",
                     "pages": [
                       "es/cli/backup",
-                      "es/cli/crestodian",
+                      "es/cli/openclaw",
                       "es/cli/daemon",
                       "es/cli/doctor",
                       "es/cli/fleet",
@@ -6258,7 +6262,7 @@
                     "group": "Gateway and service",
                     "pages": [
                       "pt-BR/cli/backup",
-                      "pt-BR/cli/crestodian",
+                      "pt-BR/cli/openclaw",
                       "pt-BR/cli/daemon",
                       "pt-BR/cli/doctor",
                       "pt-BR/cli/fleet",
@@ -7229,7 +7233,7 @@
                     "group": "Gateway and service",
                     "pages": [
                       "ko/cli/backup",
-                      "ko/cli/crestodian",
+                      "ko/cli/openclaw",
                       "ko/cli/daemon",
                       "ko/cli/doctor",
                       "ko/cli/fleet",
@@ -8200,7 +8204,7 @@
                     "group": "Gateway and service",
                     "pages": [
                       "de/cli/backup",
-                      "de/cli/crestodian",
+                      "de/cli/openclaw",
                       "de/cli/daemon",
                       "de/cli/doctor",
                       "de/cli/fleet",
@@ -9171,7 +9175,7 @@
                     "group": "Gateway and service",
                     "pages": [
                       "fr/cli/backup",
-                      "fr/cli/crestodian",
+                      "fr/cli/openclaw",
                       "fr/cli/daemon",
                       "fr/cli/doctor",
                       "fr/cli/fleet",
@@ -10142,7 +10146,7 @@
                     "group": "Gateway and service",
                     "pages": [
                       "hi/cli/backup",
-                      "hi/cli/crestodian",
+                      "hi/cli/openclaw",
                       "hi/cli/daemon",
                       "hi/cli/doctor",
                       "hi/cli/fleet",
@@ -11113,7 +11117,7 @@
                     "group": "Gateway and service",
                     "pages": [
                       "ar/cli/backup",
-                      "ar/cli/crestodian",
+                      "ar/cli/openclaw",
                       "ar/cli/daemon",
                       "ar/cli/doctor",
                       "ar/cli/fleet",
@@ -12084,7 +12088,7 @@
                     "group": "Gateway and service",
                     "pages": [
                       "it/cli/backup",
-                      "it/cli/crestodian",
+                      "it/cli/openclaw",
                       "it/cli/daemon",
                       "it/cli/doctor",
                       "it/cli/fleet",
@@ -13055,7 +13059,7 @@
                     "group": "Gateway and service",
                     "pages": [
                       "vi/cli/backup",
-                      "vi/cli/crestodian",
+                      "vi/cli/openclaw",
                       "vi/cli/daemon",
                       "vi/cli/doctor",
                       "vi/cli/fleet",
@@ -14026,7 +14030,7 @@
                     "group": "Gateway and service",
                     "pages": [
                       "nl/cli/backup",
-                      "nl/cli/crestodian",
+                      "nl/cli/openclaw",
                       "nl/cli/daemon",
                       "nl/cli/doctor",
                       "nl/cli/fleet",
@@ -14997,7 +15001,7 @@
                     "group": "Gateway and service",
                     "pages": [
                       "tr/cli/backup",
-                      "tr/cli/crestodian",
+                      "tr/cli/openclaw",
                       "tr/cli/daemon",
                       "tr/cli/doctor",
                       "tr/cli/fleet",
@@ -15968,7 +15972,7 @@
                     "group": "Gateway and service",
                     "pages": [
                       "uk/cli/backup",
-                      "uk/cli/crestodian",
+                      "uk/cli/openclaw",
                       "uk/cli/daemon",
                       "uk/cli/doctor",
                       "uk/cli/fleet",
@@ -16939,7 +16943,7 @@
                     "group": "Gateway and service",
                     "pages": [
                       "id/cli/backup",
-                      "id/cli/crestodian",
+                      "id/cli/openclaw",
                       "id/cli/daemon",
                       "id/cli/doctor",
                       "id/cli/fleet",
@@ -17910,7 +17914,7 @@
                     "group": "Gateway and service",
                     "pages": [
                       "pl/cli/backup",
-                      "pl/cli/crestodian",
+                      "pl/cli/openclaw",
                       "pl/cli/daemon",
                       "pl/cli/doctor",
                       "pl/cli/fleet",
@@ -18881,7 +18885,7 @@
                     "group": "Gateway and service",
                     "pages": [
                       "ru/cli/backup",
-                      "ru/cli/crestodian",
+                      "ru/cli/openclaw",
                       "ru/cli/daemon",
                       "ru/cli/doctor",
                       "ru/cli/fleet",
