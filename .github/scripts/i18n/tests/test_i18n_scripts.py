@@ -292,7 +292,7 @@ class I18NScriptTests(unittest.TestCase):
         full = (REPO_ROOT / ".github/workflows/translate-all.yml").read_text(encoding="utf-8")
         incremental = (REPO_ROOT / ".github/workflows/translate-incremental.yml").read_text(encoding="utf-8")
 
-        self.assertIn("npm install -g @openai/codex@0.144.3", reusable)
+        self.assertIn("npm install -g @openai/codex@0.144.4", reusable)
         self.assertIn("effort: max", reusable)
         self.assertNotIn('thinking_effort: "xhigh"', full)
         self.assertNotIn('thinking_effort: "xhigh"', incremental)

@@ -134,7 +134,7 @@ jobs:
 
       - name: Install Codex CLI
         if: steps.stale.outputs.skip != 'true'
-        run: npm install -g @openai/codex@0.144.3
+        run: npm install -g @openai/codex@0.144.4
 
       - name: Prune stale locale pages
         if: steps.stale.outputs.skip != 'true'
