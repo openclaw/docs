@@ -3,7 +3,7 @@
 Definition:
   This module owns locale selection, source-doc discovery, and shard expansion
   for translation workflow control scripts. Both full and incremental
-  workflows call these helpers so shard sizing cannot drift between lanes.
+  workflows share the sizing formula while each lane owns its workload limits.
 
 Parameters:
   Functions accept locale selectors, docs roots, batch sizes, and shard sizing

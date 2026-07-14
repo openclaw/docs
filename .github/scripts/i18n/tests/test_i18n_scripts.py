@@ -38,6 +38,7 @@ budget_check = load_module("budget_check")
 prepare = load_module("prepare")
 translation_plan = load_module("translation_plan")
 pending = load_module("build_pending_manifest")
+clear_pending_locale_outputs = load_module("clear_pending_locale_outputs")
 package_artifact = load_module("package_artifact")
 mdx_repair_scope = load_module("mdx_repair_scope")
 apply_artifacts = load_module("apply_artifacts")
@@ -228,6 +229,11 @@ class I18NScriptTests(unittest.TestCase):
         )
         self.assertIn("ARTIFACT_DIR: .openclaw-sync/i18n-artifacts/${{ inputs.locale_slug }}-s${{ inputs.shard_index }}of${{ inputs.shard_total }}", reusable)
         self.assertIn("include-hidden-files: true", reusable)
+        self.assertIn('PARTIAL_ARGS=(--allow-partial)', reusable)
+        self.assertIn('python "${I18N_SCRIPT_DIR}/clear_pending_locale_outputs.py"', reusable)
+        self.assertIn('if [ "${MODE}" = "full" ] && [ "$attempt" -eq 1 ]; then', reusable)
+        self.assertIn('PARTIAL_ARGS+=(--overwrite)', reusable)
+        self.assertIn('echo "docs-i18n strict completion check $attempt/$max_attempts"', reusable)
 
         self.assertIn('echo "I18N_SCRIPT_DIR=${I18N_SCRIPT_DIR}" >> "$GITHUB_ENV"', reusable)
         self.assertIn("ref: ${{ github.workflow_sha }}", reusable)
@@ -275,13 +281,120 @@ class I18NScriptTests(unittest.TestCase):
         self.assertIn("R2_UPLOAD_LOCALE: ${{ inputs.locale || '' }}", r2_pages)
         self.assertIn("R2_UPLOAD_PAGE_PATH: ${{ inputs.page_path || '' }}", r2_pages)
 
-    def test_translation_worker_overwrites_full_reconciliation_outputs(self) -> None:
+    def test_translation_worker_preserves_progress_across_full_retries(self) -> None:
         reusable = (REPO_ROOT / ".github/workflows/translate-locale-reusable.yml").read_text(encoding="utf-8")
         self.assertIn("MODE: ${{ inputs.mode }}", reusable)
-        self.assertIn('if [ "${MODE}" = "full" ]; then', reusable)
-        self.assertIn("TRANSLATE_ARGS+=(--overwrite)", reusable)
-        self.assertIn("TRANSLATE_ARGS+=(--allow-partial)", reusable)
-        self.assertIn('"${TRANSLATE_ARGS[@]}"', reusable)
+        self.assertIn('if [ "${MODE}" = "full" ] && [ "$attempt" -eq 1 ]; then', reusable)
+        self.assertIn("PARTIAL_ARGS+=(--overwrite)", reusable)
+        self.assertIn("PARTIAL_ARGS=(--allow-partial)", reusable)
+        self.assertIn('"${PARTIAL_ARGS[@]}"', reusable)
+        self.assertIn('if [ "${MODE}" != "full" ]; then\n                exit 0', reusable)
+        self.assertIn('if [ "${MODE}" = "full" ]; then\n              echo "docs-i18n strict completion check', reusable)
+        self.assertNotIn("TRANSLATE_ARGS", reusable)
+
+    def test_clear_pending_locale_outputs_removes_only_requested_locale_pages(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            docs = root / "docs"
+            source = docs / "guide/page.md"
+            source.parent.mkdir(parents=True)
+            source.write_text("# Source\n", encoding="utf-8")
+            requested = docs / "hi/guide/page.md"
+            untouched = docs / "hi/guide/other.md"
+            requested.parent.mkdir(parents=True)
+            requested.write_text("# Old\n", encoding="utf-8")
+            untouched.write_text("# Keep\n", encoding="utf-8")
+            manifest = root / "pending.txt"
+            manifest.write_text(f"{source.resolve()}\n", encoding="utf-8")
+
+            removed = clear_pending_locale_outputs.clear_pending_locale_outputs(docs, manifest, "hi")
+
+            self.assertEqual(1, removed)
+            self.assertFalse(requested.exists())
+            self.assertTrue(untouched.exists())
+
+    def test_clear_pending_locale_outputs_rejects_escape_before_deleting(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            docs = root / "docs"
+            source = docs / "guide/page.md"
+            source.parent.mkdir(parents=True)
+            source.write_text("# Source\n", encoding="utf-8")
+            localized = docs / "hi/guide/page.md"
+            localized.parent.mkdir(parents=True)
+            localized.write_text("# Old\n", encoding="utf-8")
+            outside = root / "outside.md"
+            outside.write_text("# Outside\n", encoding="utf-8")
+            manifest = root / "pending.txt"
+            manifest.write_text(f"{source.resolve()}\n{outside.resolve()}\n", encoding="utf-8")
+
+            with self.assertRaisesRegex(SystemExit, "must stay under docs"):
+                clear_pending_locale_outputs.clear_pending_locale_outputs(docs, manifest, "hi")
+
+            self.assertTrue(localized.exists())
+
+    def test_clear_pending_locale_outputs_rejects_source_symlink_without_remapping(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            docs = root / "docs"
+            source = docs / "guide/real.md"
+            source.parent.mkdir(parents=True)
+            source.write_text("# Source\n", encoding="utf-8")
+            alias = docs / "guide/alias.md"
+            alias.symlink_to(source)
+            real_output = docs / "hi/guide/real.md"
+            alias_output = docs / "hi/guide/alias.md"
+            real_output.parent.mkdir(parents=True)
+            real_output.write_text("# Real output\n", encoding="utf-8")
+            alias_output.write_text("# Alias output\n", encoding="utf-8")
+            manifest = root / "pending.txt"
+            manifest.write_text(f"{alias.parent.resolve() / alias.name}\n", encoding="utf-8")
+
+            with self.assertRaisesRegex(SystemExit, "must be canonical and must not use symlinks"):
+                clear_pending_locale_outputs.clear_pending_locale_outputs(docs, manifest, "hi")
+
+            self.assertTrue(real_output.exists())
+            self.assertTrue(alias_output.exists())
+
+    def test_clear_pending_locale_outputs_rejects_anchored_locale(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            docs = root / "docs"
+            source = docs / "guide/page.md"
+            source.parent.mkdir(parents=True)
+            source.write_text("# Source\n", encoding="utf-8")
+            localized = docs / "hi/guide/page.md"
+            localized.parent.mkdir(parents=True)
+            localized.write_text("# Old\n", encoding="utf-8")
+            manifest = root / "pending.txt"
+            manifest.write_text(f"{source.resolve()}\n", encoding="utf-8")
+
+            with self.assertRaisesRegex(SystemExit, "invalid locale"):
+                clear_pending_locale_outputs.clear_pending_locale_outputs(docs, manifest, "/")
+
+            self.assertTrue(localized.exists())
+
+    def test_clear_pending_locale_outputs_rejects_symlinked_parent(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            docs = root / "docs"
+            source = docs / "guide/page.md"
+            source.parent.mkdir(parents=True)
+            source.write_text("# Source\n", encoding="utf-8")
+            outside = root / "outside"
+            outside.mkdir()
+            outside_output = outside / "page.md"
+            outside_output.write_text("# Outside output\n", encoding="utf-8")
+            locale_root = docs / "hi"
+            locale_root.mkdir()
+            (locale_root / "guide").symlink_to(outside, target_is_directory=True)
+            manifest = root / "pending.txt"
+            manifest.write_text(f"{source.resolve()}\n", encoding="utf-8")
+
+            with self.assertRaisesRegex(SystemExit, "parent must not be a symlink"):
+                clear_pending_locale_outputs.clear_pending_locale_outputs(docs, manifest, "hi")
+
+            self.assertTrue(outside_output.exists())
 
     def test_translation_worker_timeout_accommodates_max_full_shards(self) -> None:
         reusable = (REPO_ROOT / ".github/workflows/translate-locale-reusable.yml").read_text(encoding="utf-8")
@@ -398,6 +511,18 @@ class I18NScriptTests(unittest.TestCase):
             result["batches"][0],
         )
         self.assertEqual("ru=ru", result["expected_locales"])
+
+    def test_full_plan_defaults_to_max_sized_shards(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            docs = Path(tmp) / "docs"
+            docs.mkdir()
+            for index in range(740):
+                (docs / f"page-{index:03d}.md").write_text("# Page\n", encoding="utf-8")
+
+            result = plan_full.plan_full("hi", 4, docs)
+
+            self.assertEqual(6, result["shard_total"])
+            self.assertEqual(6, len(result["batches"][0]))
 
     def test_full_plan_excludes_supported_locale_dirs_without_marker(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

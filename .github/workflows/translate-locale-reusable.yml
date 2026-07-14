@@ -179,16 +179,21 @@ jobs:
           fi
 
           mapfile -t DOC_FILES < "${pending_file}"
-          TRANSLATE_ARGS=()
           if [ "${MODE}" = "full" ]; then
-            TRANSLATE_ARGS+=(--overwrite)
-          else
-            TRANSLATE_ARGS+=(--allow-partial)
+            python "${I18N_SCRIPT_DIR}/clear_pending_locale_outputs.py" \
+              --pending-file "${pending_file}" \
+              --locale "${LOCALE}"
           fi
+
           attempt=1
           max_attempts=5
           while [ "$attempt" -le "$max_attempts" ]; do
-            echo "docs-i18n attempt $attempt/$max_attempts"
+            PARTIAL_ARGS=(--allow-partial)
+            if [ "${MODE}" = "full" ] && [ "$attempt" -eq 1 ]; then
+              PARTIAL_ARGS+=(--overwrite)
+            fi
+
+            echo "docs-i18n partial attempt $attempt/$max_attempts"
             if (
               cd source/scripts/docs-i18n
               go run . \
@@ -198,10 +203,29 @@ jobs:
                 --mode doc \
                 --thinking "${THINKING_EFFORT}" \
                 --parallel "${WORKER_PARALLEL}" \
-                "${TRANSLATE_ARGS[@]}" \
+                "${PARTIAL_ARGS[@]}" \
                 "${DOC_FILES[@]}"
             ); then
-              exit 0
+              if [ "${MODE}" != "full" ]; then
+                exit 0
+              fi
+            fi
+
+            if [ "${MODE}" = "full" ]; then
+              echo "docs-i18n strict completion check $attempt/$max_attempts"
+              if (
+                cd source/scripts/docs-i18n
+                go run . \
+                  --docs "$GITHUB_WORKSPACE/docs" \
+                  --lang "${LOCALE}" \
+                  --src en \
+                  --mode doc \
+                  --thinking "${THINKING_EFFORT}" \
+                  --parallel "${WORKER_PARALLEL}" \
+                  "${DOC_FILES[@]}"
+              ); then
+                exit 0
+              fi
             fi
 
             if [ "$attempt" -eq "$max_attempts" ]; then

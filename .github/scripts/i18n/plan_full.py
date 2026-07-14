@@ -10,8 +10,8 @@ Parameters:
   --target-locale: Locale slug/name to rerun, or all. Default: TARGET_LOCALE/all.
   --batch-size: Maximum locales per follow-up batch. Default: 4.
   --docs-root: Docs directory used to size full-translation shards. Default: docs.
-  --target-docs-per-shard: Desired source documents per shard. Default: 250.
-  --max-shards: Maximum shards per locale. Default: 4.
+  --target-docs-per-shard: Desired source documents per shard. Default: 125.
+  --max-shards: Maximum shards per locale. Default: 8.
 
 Outputs:
   GITHUB_OUTPUT receives locale_count, canary locale fields, selected_locales,
@@ -32,8 +32,6 @@ import os
 from pathlib import Path
 
 from translation_plan import (
-    DEFAULT_MAX_SHARDS,
-    DEFAULT_TARGET_DOCS_PER_SHARD,
     Locale,
     expand_shards,
     matrix_json,
@@ -46,6 +44,8 @@ from translation_plan import (
 
 MAX_BATCHES = 6
 DEFAULT_BATCH_SIZE = 4
+FULL_TARGET_DOCS_PER_SHARD = 125
+FULL_MAX_SHARDS = 8
 
 
 def build_batches(selected: list[Locale], batch_size: int) -> list[list[Locale]]:
@@ -96,8 +96,8 @@ def plan_full(
     target_locale: str,
     batch_size: int,
     docs_root: Path | None = None,
-    target_docs_per_shard: int = DEFAULT_TARGET_DOCS_PER_SHARD,
-    max_shards: int = DEFAULT_MAX_SHARDS,
+    target_docs_per_shard: int = FULL_TARGET_DOCS_PER_SHARD,
+    max_shards: int = FULL_MAX_SHARDS,
 ) -> dict[str, object]:
     selected = select_locales(target_locale)
     batches = build_batches(selected, batch_size)
@@ -131,8 +131,8 @@ Examples:
     parser.add_argument("--target-locale", default=os.environ.get("TARGET_LOCALE", "all"))
     parser.add_argument("--batch-size", default=DEFAULT_BATCH_SIZE, type=int)
     parser.add_argument("--docs-root", default="docs", type=Path)
-    parser.add_argument("--target-docs-per-shard", default=DEFAULT_TARGET_DOCS_PER_SHARD, type=int)
-    parser.add_argument("--max-shards", default=DEFAULT_MAX_SHARDS, type=int)
+    parser.add_argument("--target-docs-per-shard", default=FULL_TARGET_DOCS_PER_SHARD, type=int)
+    parser.add_argument("--max-shards", default=FULL_MAX_SHARDS, type=int)
     return parser.parse_args()
 
 
