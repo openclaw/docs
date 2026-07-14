@@ -134,7 +134,7 @@ jobs:
 
       - name: Install Codex CLI
         if: steps.stale.outputs.skip != 'true'
-        run: npm install -g @openai/codex@0.125.0
+        run: npm install -g @openai/codex@0.144.3
 
       - name: Prune stale locale pages
         if: steps.stale.outputs.skip != 'true'
@@ -247,7 +247,7 @@ jobs:
           openai-api-key: ${{ secrets.OPENCLAW_DOCS_AGENT_OPENAI_API_KEY || secrets.OPENCLAW_DOCS_I18N_OPENAI_API_KEY }}
           prompt-file: .openclaw-sync/docs-mdx-repair.md
           model: gpt-5.6
-          effort: xhigh
+          effort: max
           sandbox: workspace-write
           safety-strategy: drop-sudo
           codex-args: '["--full-auto"]'
