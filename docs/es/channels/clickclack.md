@@ -1,26 +1,27 @@
 ---
 read_when:
     - Conectar OpenClaw a un espacio de trabajo de ClickClack
-    - Pruebas de identidades de bots de ClickClack
-summary: Configuración del canal con token de bot de ClickClack y sintaxis del destino
+    - Prueba de identidades de bots de ClickClack
+summary: Configuración del canal mediante token de bot de ClickClack y sintaxis del destino
 title: ClickClack
 x-i18n:
-    generated_at: "2026-07-11T22:50:12Z"
+    generated_at: "2026-07-14T13:27:05Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 25
     provider: openai
-    source_hash: a1fee023fd87a7b00333c18a24edfb028b231540724ba6092cf7d2b663643641
+    source_hash: 76068c71c0d6cdb5153e74d69ec1a01a75f1bc6a5bcba636f5e41a1293c20139
     source_path: channels/clickclack.md
     workflow: 16
 ---
 
-ClickClack conecta OpenClaw con un espacio de trabajo de ClickClack autoalojado mediante tokens de bot de ClickClack con integración nativa.
+ClickClack conecta OpenClaw con un espacio de trabajo ClickClack autoalojado mediante tokens de bot ClickClack de primera clase.
 
-Use esta opción cuando quiera que un agente de OpenClaw aparezca como usuario bot de ClickClack. ClickClack admite bots de servicio independientes y bots propiedad de usuarios; los bots propiedad de usuarios conservan un `owner_user_id` y reciben únicamente los ámbitos del token que usted conceda.
+Utilice esta opción cuando desee que un agente de OpenClaw aparezca como usuario bot de ClickClack. ClickClack admite bots de servicio independientes y bots propiedad de usuarios; los bots propiedad de usuarios conservan un `owner_user_id` y reciben únicamente los ámbitos de token que se les concedan.
 
 ## Configuración rápida
 
-Cree un token de bot en el servidor de ClickClack:
+Cree un token de bot en el servidor ClickClack:
 
 ```bash
 clickclack admin bot create \
@@ -56,29 +57,29 @@ export CLICKCLACK_BOT_TOKEN="ccb_..."
 openclaw gateway
 ```
 
-Una cuenta solo se considera configurada cuando `baseUrl`, `token` y `workspace` están definidos. `workspace` acepta un identificador de espacio de trabajo (`wsp_...`), un slug o un nombre; el Gateway lo resuelve al identificador durante el inicio.
+Una cuenta se considera configurada únicamente cuando `baseUrl`, `token` y `workspace` están definidos. `workspace` acepta un id de espacio de trabajo (`wsp_...`), un slug o un nombre; el Gateway lo resuelve al id durante el inicio.
 
 ### Claves de configuración de la cuenta
 
-| Clave                   | Valor predeterminado  | Notas                                                                                              |
-| ----------------------- | --------------------- | -------------------------------------------------------------------------------------------------- |
-| `baseUrl`               | ninguno (obligatorio) | URL del servidor de ClickClack.                                                                    |
-| `token`                 | ninguno (obligatorio) | Cadena sin formato o referencia a secreto (`source: "env" \| "file" \| "exec"`).                   |
-| `workspace`             | ninguno (obligatorio) | Identificador, slug o nombre del espacio de trabajo.                                                |
-| `replyMode`             | `"agent"`             | `"agent"` ejecuta la canalización completa del agente; `"model"` envía finalizaciones breves y directas del modelo. |
-| `defaultTo`             | `"channel:general"`   | Destino utilizado cuando una ruta de salida no proporciona ninguno.                                |
-| `allowFrom`             | `["*"]`               | Lista de identificadores de usuario permitidos para mensajes directos y mensajes de canal entrantes. |
-| `botUserId`             | detectado automáticamente | Se obtiene de la identidad del token del bot durante el inicio.                                |
-| `agentId`               | valor predeterminado de la ruta | Fija los mensajes entrantes de esta cuenta a un solo agente.                           |
-| `toolsAllow`            | ninguno               | Lista de herramientas permitidas para las respuestas del agente desde esta cuenta.                 |
-| `model`, `systemPrompt` | ninguno               | Se utilizan en las finalizaciones de `replyMode: "model"`.                                         |
-| `reconnectMs`           | `1500`                | Retraso de reconexión en tiempo real (de 100 a 60000).                                              |
+| Clave                   | Valor predeterminado | Notas                                                                                   |
+| ----------------------- | ------------------- | --------------------------------------------------------------------------------------- |
+| `baseUrl`               | ninguno (obligatorio) | URL del servidor ClickClack.                                                            |
+| `token`                 | ninguno (obligatorio) | Cadena sin formato o referencia de secreto (`source: "env" \| "file" \| "exec"`).                        |
+| `workspace`             | ninguno (obligatorio) | Id, slug o nombre del espacio de trabajo.                                               |
+| `replyMode`             | `"agent"`           | `"agent"` ejecuta la canalización completa del agente; `"model"` envía respuestas breves directas del modelo. |
+| `defaultTo`             | `"channel:general"` | Destino utilizado cuando una ruta saliente no proporciona ninguno.                     |
+| `allowFrom`             | `["*"]`             | Lista de usuarios permitidos por id para mensajes directos y mensajes de canal entrantes. |
+| `botUserId`             | detectado automáticamente | Se resuelve a partir de la identidad del token de bot durante el inicio.                |
+| `agentId`               | ruta predeterminada | Fija los mensajes entrantes de esta cuenta a un agente.                                 |
+| `toolsAllow`            | ninguno             | Lista de herramientas permitidas para las respuestas del agente desde esta cuenta.     |
+| `model`, `systemPrompt` | ninguno             | Se utilizan en las respuestas de `replyMode: "model"`.                                   |
+| `reconnectMs`           | `1500`              | Retraso de reconexión en tiempo real (100 a 60000).                                     |
 
 Si `plugins.allow` es una lista restrictiva no vacía, seleccionar explícitamente
-ClickClack durante la configuración del canal o ejecutar `openclaw plugins enable clickclack`
-añade `clickclack` a dicha lista. La instalación durante la incorporación utiliza el mismo
+ClickClack en la configuración del canal o ejecutar `openclaw plugins enable clickclack`
+añade `clickclack` a esa lista. La instalación durante la incorporación utiliza el mismo
 comportamiento de selección explícita. Estas rutas no anulan `plugins.deny` ni una
-configuración global `plugins.enabled: false`. La ejecución directa de
+configuración global de `plugins.enabled: false`. La ejecución directa de
 `openclaw plugins install @openclaw/clickclack` sigue la política normal de
 instalación de plugins y también registra ClickClack en una lista de permitidos existente.
 
@@ -114,11 +115,11 @@ Cada cuenta abre su propia conexión en tiempo real con ClickClack y utiliza su 
 
 ## Modos de respuesta
 
-- `replyMode: "agent"` (predeterminado) procesa los mensajes entrantes mediante la canalización normal del agente, incluido el registro de sesiones y la política de herramientas.
-- `replyMode: "model"` omite la canalización del agente y utiliza `llm.complete` del entorno de ejecución del Plugin para respuestas breves y directas del bot (opcionalmente definidas mediante `model` y `systemPrompt`).
+- `replyMode: "agent"` (predeterminado) distribuye los mensajes entrantes a través de la canalización normal del agente, incluido el registro de sesiones y la política de herramientas.
+- `replyMode: "model"` omite la canalización del agente y utiliza el `llm.complete` del entorno de ejecución del plugin para las respuestas directas del bot, opcionalmente definidas por `model` y `systemPrompt`. El proveedor y el modelo seleccionados controlan el presupuesto de la respuesta.
 
-El modo de modelo ejecuta las finalizaciones con el identificador resuelto del agente del bot, lo cual requiere
-el indicador explícito de confianza `plugins.entries.clickclack.llm.allowAgentIdOverride: true`:
+El modo de modelo ejecuta las respuestas con el id resuelto del agente del bot, lo que requiere
+el indicador de confianza explícito `plugins.entries.clickclack.llm.allowAgentIdOverride: true`:
 
 ```json5
 {
@@ -134,27 +135,48 @@ el indicador explícito de confianza `plugins.entries.clickclack.llm.allowAgentI
 }
 ```
 
-Mantenga desactivado el indicador de confianza si solo utiliza el modo de respuesta `agent`
-predeterminado; no es necesario en ese caso.
+Mantenga desactivado el indicador de confianza si solo utiliza el modo de respuesta predeterminado `agent`; no es
+necesario en ese caso.
 
 Utilice el modo `agent` para obtener pruebas de correlación entre servicios. Para un
-identificador de mensaje autoritativo de ClickClack con su formato canónico `msg_<ulid>`, el canal deriva
-el identificador determinista de ejecución de OpenClaw `clickclack:<message-id>`. Cada llamada al modelo
-es entonces visible en los diagnósticos como `clickclack:<message-id>:model:<n>`; cuando ese
-turno utiliza ClawRouter, el mismo identificador de llamada al modelo se envía como `X-Request-ID`.
+id de mensaje de ClickClack autoritativo con su formato canónico `msg_<ulid>`, el canal deriva
+el id de ejecución determinista de OpenClaw `clickclack:<message-id>`. Cada llamada al modelo
+queda visible en los diagnósticos como `clickclack:<message-id>:model:<n>`; cuando ese
+turno utiliza ClawRouter, el mismo id de llamada al modelo se envía como `X-Request-ID`.
 El modo `model` omite los diagnósticos normales de ejecución y sesión del agente y, por tanto,
 no es adecuado para esta ruta de pruebas.
 
 Cuando un evento en tiempo real contiene un `payload.correlation_id` validado, el
 canal lo transmite como `X-Correlation-ID` en la obtención autoritativa del mensaje y
-en las solicitudes de respuesta resultantes de ClickClack. Los valores utilizan el conjunto seguro de
+en las solicitudes de respuesta de ClickClack resultantes. Los valores utilizan el conjunto seguro de
 128 caracteres de ClickClack (`A-Z`, `a-z`, `0-9`, `.`, `_`, `:` y `-`); los valores no válidos
 se omiten. Estas asociaciones contienen únicamente identificadores, nunca cuerpos de mensajes,
-indicaciones, finalizaciones, credenciales ni resultados de herramientas.
+prompts, respuestas, credenciales ni resultados de herramientas.
+
+## Entrega duradera de contenido multimedia
+
+Las respuestas del agente que contienen contenido multimedia utilizan obligatoriamente una entrega duradera. OpenClaw asigna
+nonces estables por cada parte del mensaje y carga antes de la primera escritura en ClickClack, de modo que
+un reintento reutiliza la misma carga y el mismo mensaje en lugar de consumir cuota de almacenamiento
+o publicar duplicados. Si una carga ya existe después de un reinicio,
+OpenClaw no vuelve a leer la ruta local original ni la URL remota del contenido multimedia.
+
+Este contrato de recuperación requiere un servidor ClickClack compatible con:
+
+- `GET /api/uploads/by-nonce` con
+  `X-ClickClack-Upload-Nonce: supported` para resultados encontrados y ausentes.
+- `GET /api/messages/by-nonce` con
+  `X-ClickClack-Message-Nonce: supported` para resultados encontrados y ausentes.
+- Creación idempotente de mensajes y asociación de archivos adjuntos para el mismo
+  nonce y la misma carga dentro del ámbito del propietario.
+
+Un error 404 genérico de un servidor antiguo no se considera prueba de que un envío esté ausente.
+OpenClaw deja la entrega sin resolver en lugar de arriesgarse a crear un duplicado; actualice
+ClickClack antes de habilitar respuestas del agente que generen contenido multimedia.
 
 ## Filas de actividad del agente
 
-De manera predeterminada, un canal de ClickClack no muestra nada mientras se ejecuta un turno del agente; solo se publica la respuesta final. Establezca `agentActivity: true` en una cuenta para publicar filas de mensajes persistentes `agent_commentary` y `agent_tool` mientras el turno está en curso:
+De forma predeterminada, un canal de ClickClack no muestra nada mientras se ejecuta un turno del agente; solo se publica la respuesta final. Defina `agentActivity: true` en una cuenta para publicar filas de mensaje duraderas `agent_commentary` y `agent_tool` mientras el turno está en curso:
 
 ```json5
 {
@@ -171,19 +193,27 @@ De manera predeterminada, un canal de ClickClack no muestra nada mientras se eje
 
 Requisitos y comportamiento:
 
-- **Desactivado de manera predeterminada.** Las configuraciones estándar y los servidores de ClickClack antiguos no se ven afectados.
-- **Requiere el ámbito de token `agent_activity:write`.** Este ámbito es independiente de `bot:write` y no se hereda de él; cree el token del bot con `--scopes bot:write,agent_activity:write` (o conceda el ámbito a un token existente) antes de habilitar la opción.
-- **Degradación de mejor esfuerzo.** Si el token carece de `agent_activity:write` o el servidor rechaza las escrituras de actividad, los fallos se registran y la respuesta final continúa entregándose normalmente; no aparece ninguna fila de actividad.
-- Las filas se agrupan por turno (`turn_id`) y se combinan para que cada paso lógico corresponda a una sola fila; las filas de herramientas utilizan el mismo formato de progreso que Discord/Slack/Telegram (nombre de la herramienta más los detalles del comando).
-- **Metadatos de atribución.** Las publicaciones creadas por el agente (las filas de actividad y la respuesta final) incluyen los campos `author_model` y `author_thinking`, resueltos a partir del modelo realmente utilizado para el turno (incluso después de recurrir a uno alternativo). Los servidores que no definen estas columnas ignoran los campos JSON desconocidos; los servidores que los conservan pueden responder «qué modelo dijo esta línea y con qué nivel de razonamiento» para cada mensaje.
+- **Desactivado de forma predeterminada.** Las configuraciones estándar y los servidores ClickClack antiguos no se ven afectados.
+- **Requiere el ámbito de token `agent_activity:write`.** Este ámbito es independiente de `bot:write` y no se hereda de él; cree el token de bot con `--scopes bot:write,agent_activity:write` (o conceda el ámbito a un token existente) antes de habilitar la opción.
+- **Degradación con el mejor esfuerzo.** Si el token no dispone de `agent_activity:write` o el servidor rechaza las escrituras de actividad, los fallos se registran y la respuesta final se entrega normalmente; no aparecen filas de actividad.
+- Las filas se agrupan por turno (`turn_id`), se fusionan para que cada paso lógico corresponda a una fila y las filas de herramientas utilizan el mismo formato de progreso que Discord/Slack/Telegram (nombre de la herramienta más detalles del comando).
+- **Metadatos de atribución.** Las publicaciones creadas por el agente (las filas de actividad y la respuesta final) incluyen los campos `author_model` y `author_thinking`, resueltos a partir del modelo utilizado realmente durante el turno (también después de una alternativa). Los servidores que no definen estas columnas ignoran los campos JSON desconocidos; los servidores que los conservan pueden responder «qué modelo dijo esta línea y con qué nivel de razonamiento» para cada mensaje.
 
 ## Destinos
 
-- `channel:<name-or-id>` envía a un canal del espacio de trabajo. Los destinos sin prefijo usan `channel:` de manera predeterminada.
+- `channel:<name-or-id>` envía a un canal del espacio de trabajo. Los destinos sin prefijo utilizan `channel:` de forma predeterminada.
 - `dm:<user_id>` crea o reutiliza una conversación directa con ese usuario.
 - `thread:<message_id>` responde en el hilo cuyo mensaje raíz es el indicado.
 
-Los destinos de salida explícitos también pueden incluir el prefijo de proveedor `clickclack:` o `cc:`.
+Los destinos salientes explícitos también pueden incluir el prefijo de proveedor `clickclack:` o `cc:`.
+
+El contenido multimedia saliente utiliza la API de carga de ClickClack y después adjunta la carga duradera
+al mensaje de canal, la respuesta de hilo o el mensaje directo creados. Los archivos locales y las
+URL remotas de contenido multimedia compatibles siguen la política normal de acceso a contenido multimedia de OpenClaw, con un límite
+de 64 MiB por archivo. Los envíos duraderos en cola utilizan nonces independientes dentro del ámbito del propietario para cada
+carga y parte del mensaje y, después, reintentan la asociación de archivos adjuntos con esos mismos
+objetos. Consulte [Entrega duradera de contenido multimedia](#durable-media-delivery) para conocer el contrato del servidor
+y el comportamiento de recuperación.
 
 Ejemplos:
 
@@ -197,16 +227,16 @@ openclaw message send --channel clickclack --target thread:msg_123 --message "fo
 
 La API de ClickClack aplica los ámbitos de los tokens de ClickClack.
 
-- `bot:read`: permite leer datos de espacios de trabajo, canales, mensajes, hilos, mensajes directos, tiempo real y perfiles.
-- `bot:write`: incluye `bot:read`, además de mensajes de canal, respuestas en hilos, mensajes directos y cargas de archivos.
-- `bot:admin`: incluye `bot:write`, además de la creación de canales.
-- `agent_activity:write`: filas persistentes de actividad del agente (`agent_commentary` / `agent_tool`). No se hereda de `bot:write` ni de `bot:admin`; solo es obligatorio cuando se establece `agentActivity: true`.
+- `bot:read`: lectura de datos del espacio de trabajo, canales, mensajes, hilos, mensajes directos, tiempo real y perfiles.
+- `bot:write`: `bot:read` más mensajes de canal, respuestas de hilo, mensajes directos y cargas.
+- `bot:admin`: `bot:write` más creación de canales.
+- `agent_activity:write`: filas duraderas de actividad del agente (`agent_commentary` / `agent_tool`). No se hereda de `bot:write` ni de `bot:admin`; solo es obligatorio cuando se define `agentActivity: true`.
 
 OpenClaw solo necesita `bot:write` para el chat normal del agente. Añada `agent_activity:write` al habilitar las [filas de actividad del agente](#agent-activity-rows).
 
 ## Solución de problemas
 
-- `ClickClack is not configured for account "<id>"`: establezca `baseUrl`, `token` (por ejemplo, mediante `CLICKCLACK_BOT_TOKEN`) y `workspace` para esa cuenta.
-- `ClickClack workspace not found: <value>`: establezca `workspace` en el identificador, slug o nombre del espacio de trabajo devuelto por ClickClack.
-- No hay respuestas entrantes: confirme que el token tenga acceso de lectura en tiempo real y tenga en cuenta que el bot ignora sus propios mensajes y los mensajes de otros bots.
-- Los envíos al canal fallan: compruebe que el bot sea miembro del espacio de trabajo y tenga `bot:write`.
+- `ClickClack is not configured for account "<id>"`: defina `baseUrl`, `token` (por ejemplo, mediante `CLICKCLACK_BOT_TOKEN`) y `workspace` para esa cuenta.
+- `ClickClack workspace not found: <value>`: defina `workspace` como el id, slug o nombre del espacio de trabajo devuelto por ClickClack.
+- No hay respuestas entrantes: confirme que el token dispone de acceso de lectura en tiempo real y tenga en cuenta que el bot ignora sus propios mensajes y los mensajes de otros bots.
+- Los envíos a canales fallan: compruebe que el bot pertenece al espacio de trabajo y dispone de `bot:write`.

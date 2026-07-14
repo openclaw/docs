@@ -2,66 +2,72 @@
 read_when:
     - Ejecución o depuración del proceso del Gateway
     - Investigación de la aplicación de instancia única
-summary: 'Protección de instancia única del Gateway: bloqueo de archivo y enlace de WebSocket/HTTP'
+summary: 'Protección de instancia única del Gateway: bloqueo de archivo y enlace WebSocket/HTTP'
 title: Bloqueo del Gateway
 x-i18n:
-    generated_at: "2026-07-11T23:07:10Z"
+    generated_at: "2026-07-14T13:40:26Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 25
     provider: openai
-    source_hash: 8c3ba4e8c12d6aadd089cb05722444eaa99d4b573553ac52a21c5c91e5ce1c09
+    source_hash: f5ac6d42c437b481c68a23a0aa4c00aeac9131acd76f3516ce3e949f325e265b
     source_path: gateway/gateway-lock.md
     workflow: 16
 ---
 
 ## Por qué
 
-- Solo un proceso de Gateway debe controlar una configuración y un puerto determinados en un host; ejecute gateways adicionales con perfiles aislados y puertos únicos.
-- Permite sobrevivir a fallos/SIGKILL sin dejar archivos de bloqueo obsoletos.
-- Falla de inmediato con un error claro cuando otro Gateway ya controla el puerto.
+- Solo un proceso de Gateway debe ser propietario de un directorio de estado; ejecute Gateways adicionales con perfiles, directorios de estado, configuraciones y puertos aislados.
+- Permite sobrevivir a fallos o SIGKILL sin dejar archivos de bloqueo obsoletos.
+- Falla de inmediato con un error claro cuando otro Gateway ya es propietario del puerto.
 
-## Dos capas
+## Tres capas
 
-El inicio aplica la propiedad de instancia única en dos pasos independientes, en este orden:
+El inicio aplica la propiedad en tres pasos, en este orden:
 
-1. El **bloqueo de archivo** adquiere un archivo de bloqueo por configuración en el directorio de bloqueos de estado. Como parte de la adquisición, el inicio sondea el puerto configurado en busca de un proceso en escucha activo para detectar un propietario del bloqueo obsoleto (debido a un fallo).
-2. La **vinculación del socket** vincula el proceso en escucha HTTP/WebSocket (valor predeterminado: `ws://127.0.0.1:18789`) como un proceso en escucha TCP exclusivo.
+1. El **bloqueo de propiedad del estado** adquiere un bloqueo asociado al directorio de estado canónico. Todos los Gateway participan, incluidos los Gateway iniciados con `OPENCLAW_ALLOW_MULTI_GATEWAY=1`, para que el mantenimiento destructivo de SQLite no entre en conflicto con un propietario activo.
+2. El **bloqueo de configuración** adquiere el bloqueo histórico por configuración y registra el puerto de ejecución. El modo multi-Gateway omite esta instancia única de configuración, pero conserva el bloqueo de propiedad del estado.
+3. El **enlace del socket** enlaza el servidor HTTP/WebSocket (valor predeterminado: `ws://127.0.0.1:18789`) como servidor TCP exclusivo.
 
 Cada capa puede fallar de forma independiente y genera su propio `GatewayLockError`.
 
-### Bloqueo de archivo
+### Bloqueos de estado y configuración
 
-- Si falta el archivo de bloqueo, el proceso propietario registrado ya no existe o el sondeo del puerto del propietario no muestra ningún proceso en escucha activo, el inicio recupera el bloqueo y continúa.
-- Si el bloqueo está activo y no se cumple ninguna de las condiciones anteriores, el inicio reintenta durante un máximo de 5 segundos (valor predeterminado) antes de desistir:
+- La vigencia del bloqueo se determina mediante el PID registrado, la identidad de inicio del proceso de la plataforma cuando está disponible y la identidad del proceso de Gateway. Un propietario verificado conserva la autoridad durante el inicio antes de que su puerto comience a escuchar.
+- Un coordinador de SQLite dedicado serializa la inspección de metadatos, la recuperación de propietarios obsoletos y la sustitución de bloqueos. Su transacción exclusiva se libera automáticamente si el proceso propietario falla.
+- Si falta un archivo de bloqueo o el proceso propietario registrado ya no existe, el inicio recupera el bloqueo y continúa.
+- Si cualquiera de los bloqueos está activo, el inicio vuelve a intentarlo durante un máximo de 5 segundos (de forma predeterminada) antes de desistir:
 
   ```text
-  GatewayLockError("gateway already running (pid <pid>); lock timeout after <ms>ms")
+  GatewayLockError("el gateway ya se está ejecutando (pid <pid>); tiempo de espera del bloqueo agotado tras <ms>ms")
   ```
 
-### Vinculación del socket
+### Enlace del socket
 
-- Ante `EADDRINUSE`, el inicio vuelve a intentar la vinculación hasta 20 veces en intervalos de 500 ms (aproximadamente 10 segundos en total) para esperar a que finalice una ventana `TIME_WAIT` tras la terminación reciente de un proceso.
+- En `EADDRINUSE`, el inicio vuelve a intentar el enlace hasta 20 veces, en intervalos de 500ms (aproximadamente 10 segundos en total), para superar un intervalo de `TIME_WAIT` tras la finalización reciente de un proceso.
 - Si el puerto sigue en uso después de los reintentos:
 
   ```text
-  GatewayLockError("another gateway instance is already listening on ws://127.0.0.1:<port>")
+  GatewayLockError("otra instancia del gateway ya está escuchando en ws://127.0.0.1:<port>")
   ```
 
-- Otros errores de vinculación:
+- Otros fallos de enlace:
 
   ```text
-  GatewayLockError("failed to bind gateway socket on ws://127.0.0.1:<port>: <cause>")
+  GatewayLockError("no se pudo enlazar el socket del gateway en ws://127.0.0.1:<port>: <cause>")
   ```
 
-Al apagarse, el Gateway cierra el servidor HTTP/WebSocket y elimina el archivo de bloqueo.
+Al apagarse, el Gateway cierra el servidor HTTP/WebSocket y elimina sus archivos
+de bloqueo de estado y configuración.
 
 ## Notas operativas
 
-- Si el puerto está ocupado por otro proceso que no es un Gateway, el error es el mismo; libere el puerto o elija otro con `openclaw gateway --port <port>`.
-- Con un supervisor de servicios, un nuevo proceso de Gateway que encuentra cualquiera de los errores anteriores primero sondea `/healthz` en el proceso existente. Si ese proceso está en buen estado, el nuevo proceso lo deja al mando en lugar de fallar. En systemd, termina con el código `78`; la opción `RestartPreventExitStatus=78` de la unidad evita que `Restart=always` entre en un bucle por un conflicto de bloqueo o `EADDRINUSE`. Si el proceso existente nunca alcanza un estado saludable, los reintentos del sondeo de estado tienen un límite temporal y, a continuación, el inicio falla con el error de bloqueo anterior en lugar de continuar indefinidamente en un bucle.
-- La aplicación para macOS mantiene su propia protección ligera mediante PID antes de iniciar el Gateway; el bloqueo de archivo y la vinculación del socket descritos anteriormente son los mecanismos reales de aplicación en tiempo de ejecución.
+- Si el puerto está ocupado por otro proceso que no es un Gateway, el error es el mismo; libere el puerto o elija otro mediante `openclaw gateway --port <port>`.
+- `OPENCLAW_ALLOW_MULTI_GATEWAY=1` permite varias instancias de configuración y ejecución, no un estado mutable compartido. Cada instancia sigue necesitando un `OPENCLAW_STATE_DIR` único.
+- Con un supervisor de servicios, un nuevo proceso de Gateway que detecta cualquiera de los errores anteriores primero comprueba `/healthz` en el proceso existente. Si ese proceso está en buen estado, el nuevo proceso permite que conserve el control en lugar de fallar. En systemd, termina con el código `78`; el `RestartPreventExitStatus=78` de la unidad evita que `Restart=always` se repita indefinidamente por un conflicto de bloqueo o de `EADDRINUSE`. Si el proceso existente nunca alcanza un estado correcto, los reintentos de comprobación de estado tienen un límite de tiempo y, a continuación, el inicio falla con el error de bloqueo anterior en lugar de repetirse indefinidamente.
+- La aplicación para macOS mantiene su propia protección ligera mediante PID antes de iniciar el Gateway; el archivo de bloqueo y el enlace del socket anteriores son los mecanismos reales de aplicación durante la ejecución.
 
-## Contenido relacionado
+## Temas relacionados
 
-- [Varios Gateways](/es/gateway/multiple-gateways) - ejecución de varias instancias con puertos únicos
+- [Varios Gateway](/es/gateway/multiple-gateways) - ejecución de varias instancias con puertos únicos
 - [Solución de problemas](/es/gateway/troubleshooting) - diagnóstico de `EADDRINUSE` y conflictos de puertos

@@ -1,30 +1,42 @@
 ---
 read_when:
-    - 您正在安裝、設定或稽核 opencode 外掛
-summary: 新增對 OpenClaw 的 OpenCode 模型供應商支援。
+    - 你正在安裝、設定或稽核 opencode 外掛
+summary: 為 OpenClaw 新增 OpenCode 模型供應商與原生工作階段目錄支援。
 title: OpenCode 外掛
 x-i18n:
-    generated_at: "2026-07-11T21:37:15Z"
+    generated_at: "2026-07-14T13:52:24Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 25
     provider: openai
-    source_hash: 8c1c1264da52e8f362e83b2733390ccc3b2fc1dd62f14f8e5211bbb8fa47e95f
+    source_hash: 0a9a0b180b42ba26be21a95967a96d0012e7529076f38206c1442f77acb96647
     source_path: plugins/reference/opencode.md
     workflow: 16
 ---
 
 # OpenCode 外掛
 
-為 OpenClaw 新增 OpenCode 模型供應商支援。
+為 OpenClaw 新增 OpenCode 模型供應商與原生工作階段目錄支援。
 
-## 發行方式
+## 發佈
 
 - 套件：`@openclaw/opencode-provider`
-- 安裝途徑：已包含於 OpenClaw
+- 安裝方式：隨附於 OpenClaw
 
 ## 介面
 
-供應商：opencode；合約：mediaUnderstandingProviders
+供應商：opencode；合約：mediaUnderstandingProviders；工作階段目錄：opencode
+
+## 原生工作階段
+
+OpenClaw 會在閘道與已配對節點上自動偵測 `opencode` 命令列介面。儲存的
+工作階段接著會顯示在工作階段側邊欄的 **OpenCode** 群組中，並可透過官方
+`opencode --pure db ... --format json` 與 `opencode --pure export` 命令，以唯讀方式
+瀏覽逐字記錄。受限環境與 `--pure` 模式可防止目錄瀏覽載入
+專案外掛或繼承無關的閘道認證資訊。
+
+若要停用探索功能，請在 **設定 > 外掛 > OpenCode** 下關閉 **OpenCode 工作階段目錄**。
+此功能預設為啟用。
 
 ## 相關文件
 

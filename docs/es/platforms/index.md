@@ -1,30 +1,31 @@
 ---
 read_when:
-    - Buscando compatibilidad con sistemas operativos o rutas de instalación
+    - ¿Busca compatibilidad con sistemas operativos o rutas de instalación?
     - Decidir dónde ejecutar el Gateway
-summary: Resumen de compatibilidad con plataformas (Gateway + aplicaciones complementarias)
+summary: Descripción general de la compatibilidad con plataformas (Gateway + aplicaciones complementarias)
 title: Plataformas
 x-i18n:
-    generated_at: "2026-07-11T23:14:58Z"
+    generated_at: "2026-07-14T13:52:39Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 25
     provider: openai
-    source_hash: 6c91bf7fd41bf5433b9f1efb768a44dcf5fa55917cfc45f463688d00f23e725d
+    source_hash: 40494f8567c0159d9b6024c174cf0f316a45b46c633a578efaf2388f679a88f2
     source_path: platforms/index.md
     workflow: 16
 ---
 
-El núcleo de OpenClaw está escrito en TypeScript. **Node es el entorno de ejecución recomendado**.
-Bun no se recomienda para el Gateway debido a problemas conocidos con los canales de WhatsApp y
-Telegram; consulta [Bun (experimental)](/es/install/bun) para obtener más información.
+El núcleo de OpenClaw está escrito en TypeScript. **Node es el entorno de ejecución requerido** porque
+el almacén de estado canónico utiliza `node:sqlite`. Bun sigue estando disponible para
+la instalación de dependencias y los scripts de paquetes; consulte [Bun](/es/install/bun).
 
 Existen aplicaciones complementarias para Windows Hub, macOS (aplicación de la barra de menús) y nodos móviles
-(iOS/Android). Se están planificando aplicaciones complementarias para Linux, pero actualmente el Gateway es
-totalmente compatible. En Windows, elige Windows Hub para usar la aplicación de escritorio, la instalación nativa
-con PowerShell si prefieres trabajar desde la terminal o WSL2 para obtener el entorno de ejecución del Gateway
-más compatible con Linux.
+(iOS/Android). Está previsto desarrollar aplicaciones complementarias para Linux, pero el Gateway ya
+es totalmente compatible. En Windows, elija Windows Hub como aplicación de escritorio, la instalación nativa
+mediante PowerShell para un uso centrado en la terminal o WSL2 para disponer del entorno de ejecución del Gateway
+con mayor compatibilidad con Linux.
 
-## Elige tu sistema operativo
+## Elija su sistema operativo
 
 - macOS: [macOS](/es/platforms/macos)
 - iOS: [iOS](/es/platforms/ios)
@@ -34,7 +35,7 @@ más compatible con Linux.
 
 ## VPS y alojamiento
 
-- Concentrador VPS: [Alojamiento en VPS](/es/vps)
+- Concentrador VPS: [Alojamiento VPS](/es/vps)
 - Fly.io: [Fly.io](/es/install/fly)
 - Hetzner (Docker): [Hetzner](/es/install/hetzner)
 - GCP (Compute Engine): [GCP](/es/install/gcp)
@@ -46,18 +47,18 @@ más compatible con Linux.
 
 - Guía de instalación: [Primeros pasos](/es/start/getting-started)
 - Windows Hub: [Windows](/es/platforms/windows)
-- Guía operativa del Gateway: [Gateway](/es/gateway)
+- Manual de operaciones del Gateway: [Gateway](/es/gateway)
 - Configuración del Gateway: [Configuración](/es/gateway/configuration)
 - Estado del servicio: `openclaw gateway status`
 
 ## Instalación del servicio Gateway (CLI)
 
-Usa una de estas opciones (todas son compatibles):
+Utilice una de estas opciones (todas son compatibles):
 
 - Asistente (recomendado): `openclaw onboard --install-daemon`
 - Directa: `openclaw gateway install`
-- Flujo de configuración: `openclaw configure` → selecciona **Servicio Gateway**
-- Reparación/migración: `openclaw doctor` (ofrece instalar o reparar el servicio)
+- Flujo de configuración: `openclaw configure` → seleccione **Servicio Gateway**
+- Reparación/migración: `openclaw doctor` (ofrece instalar o corregir el servicio)
 
 El destino del servicio depende del sistema operativo:
 
@@ -65,7 +66,7 @@ El destino del servicio depende del sistema operativo:
 - Linux/WSL2: servicio de usuario de systemd (`openclaw-gateway[-<profile>].service`)
 - Windows nativo: tarea programada (`OpenClaw Gateway` o `OpenClaw Gateway (<profile>)`), con un elemento de inicio de sesión por usuario en la carpeta Inicio como alternativa si se deniega la creación de la tarea
 
-## Contenido relacionado
+## Temas relacionados
 
 - [Descripción general de la instalación](/es/install)
 - [Windows Hub](/es/platforms/windows)
