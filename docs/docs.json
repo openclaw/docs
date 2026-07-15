@@ -1143,6 +1143,7 @@
                 "group": "Mainstream messaging",
                 "pages": [
                   "channels/discord",
+                  "channels/discord-activities",
                   "channels/slack",
                   "channels/telegram",
                   "channels/whatsapp",
@@ -2770,6 +2771,7 @@
                 "group": "Mainstream messaging",
                 "pages": [
                   "zh-TW/channels/discord",
+                  "zh-TW/channels/discord-activities",
                   "zh-TW/channels/slack",
                   "zh-TW/channels/telegram",
                   "zh-TW/channels/whatsapp",
@@ -3740,6 +3742,7 @@
                 "group": "Mainstream messaging",
                 "pages": [
                   "ja-JP/channels/discord",
+                  "ja-JP/channels/discord-activities",
                   "ja-JP/channels/slack",
                   "ja-JP/channels/telegram",
                   "ja-JP/channels/whatsapp",
@@ -4710,6 +4713,7 @@
                 "group": "Mainstream messaging",
                 "pages": [
                   "es/channels/discord",
+                  "es/channels/discord-activities",
                   "es/channels/slack",
                   "es/channels/telegram",
                   "es/channels/whatsapp",
@@ -5680,6 +5684,7 @@
                 "group": "Mainstream messaging",
                 "pages": [
                   "pt-BR/channels/discord",
+                  "pt-BR/channels/discord-activities",
                   "pt-BR/channels/slack",
                   "pt-BR/channels/telegram",
                   "pt-BR/channels/whatsapp",
@@ -6650,6 +6655,7 @@
                 "group": "Mainstream messaging",
                 "pages": [
                   "ko/channels/discord",
+                  "ko/channels/discord-activities",
                   "ko/channels/slack",
                   "ko/channels/telegram",
                   "ko/channels/whatsapp",
@@ -7620,6 +7626,7 @@
                 "group": "Mainstream messaging",
                 "pages": [
                   "de/channels/discord",
+                  "de/channels/discord-activities",
                   "de/channels/slack",
                   "de/channels/telegram",
                   "de/channels/whatsapp",
@@ -8590,6 +8597,7 @@
                 "group": "Mainstream messaging",
                 "pages": [
                   "fr/channels/discord",
+                  "fr/channels/discord-activities",
                   "fr/channels/slack",
                   "fr/channels/telegram",
                   "fr/channels/whatsapp",
@@ -9560,6 +9568,7 @@
                 "group": "Mainstream messaging",
                 "pages": [
                   "hi/channels/discord",
+                  "hi/channels/discord-activities",
                   "hi/channels/slack",
                   "hi/channels/telegram",
                   "hi/channels/whatsapp",
@@ -10530,6 +10539,7 @@
                 "group": "Mainstream messaging",
                 "pages": [
                   "ar/channels/discord",
+                  "ar/channels/discord-activities",
                   "ar/channels/slack",
                   "ar/channels/telegram",
                   "ar/channels/whatsapp",
@@ -11500,6 +11510,7 @@
                 "group": "Mainstream messaging",
                 "pages": [
                   "it/channels/discord",
+                  "it/channels/discord-activities",
                   "it/channels/slack",
                   "it/channels/telegram",
                   "it/channels/whatsapp",
@@ -12470,6 +12481,7 @@
                 "group": "Mainstream messaging",
                 "pages": [
                   "vi/channels/discord",
+                  "vi/channels/discord-activities",
                   "vi/channels/slack",
                   "vi/channels/telegram",
                   "vi/channels/whatsapp",
@@ -13440,6 +13452,7 @@
                 "group": "Mainstream messaging",
                 "pages": [
                   "nl/channels/discord",
+                  "nl/channels/discord-activities",
                   "nl/channels/slack",
                   "nl/channels/telegram",
                   "nl/channels/whatsapp",
@@ -14410,6 +14423,7 @@
                 "group": "Mainstream messaging",
                 "pages": [
                   "tr/channels/discord",
+                  "tr/channels/discord-activities",
                   "tr/channels/slack",
                   "tr/channels/telegram",
                   "tr/channels/whatsapp",
@@ -15380,6 +15394,7 @@
                 "group": "Mainstream messaging",
                 "pages": [
                   "uk/channels/discord",
+                  "uk/channels/discord-activities",
                   "uk/channels/slack",
                   "uk/channels/telegram",
                   "uk/channels/whatsapp",
@@ -16350,6 +16365,7 @@
                 "group": "Mainstream messaging",
                 "pages": [
                   "id/channels/discord",
+                  "id/channels/discord-activities",
                   "id/channels/slack",
                   "id/channels/telegram",
                   "id/channels/whatsapp",
@@ -17320,6 +17336,7 @@
                 "group": "Mainstream messaging",
                 "pages": [
                   "pl/channels/discord",
+                  "pl/channels/discord-activities",
                   "pl/channels/slack",
                   "pl/channels/telegram",
                   "pl/channels/whatsapp",
@@ -18290,6 +18307,7 @@
                 "group": "Mainstream messaging",
                 "pages": [
                   "ru/channels/discord",
+                  "ru/channels/discord-activities",
                   "ru/channels/slack",
                   "ru/channels/telegram",
                   "ru/channels/whatsapp",
