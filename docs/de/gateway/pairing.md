@@ -1,52 +1,52 @@
 ---
 read_when:
-    - Genehmigungen für die Node-Kopplung ohne macOS-Benutzeroberfläche implementieren
+    - Genehmigungen für das Node-Pairing ohne macOS-Benutzeroberfläche implementieren
     - CLI-Abläufe zur Genehmigung entfernter Nodes hinzufügen
-    - Erweiterung des Gateway-Protokolls um die Node-Verwaltung
+    - Gateway-Protokoll um Node-Verwaltung erweitern
 summary: 'Genehmigungen für Node-Funktionen: So erhalten Nodes nach der Gerätekopplung Zugriff auf Befehle'
 title: Node-Kopplung
 x-i18n:
-    generated_at: "2026-07-12T01:41:43Z"
+    generated_at: "2026-07-16T13:06:08Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 753b01681fa9be17df853b63210f54374d054a6dde37746a3b5fda69073af71d
+    source_hash: 9e4221d7ad6aa6a9cd8ae33f2d4330c2aa49783340fcf7a657c20d6a94c126d9
     source_path: gateway/pairing.md
     workflow: 16
 ---
 
-Die Node-Kopplung umfasst zwei Ebenen, die beide im Datensatz des gekoppelten Geräts in der SQLite-Statusdatenbank des Gateways gespeichert werden:
+Die Node-Kopplung umfasst zwei Ebenen, die beide im Datensatz des gekoppelten Geräts in der SQLite-Zustandsdatenbank des Gateways gespeichert sind:
 
-- **Gerätekopplung** (Rolle `node`) kontrolliert den `connect`-Handshake. Siehe
+- **Gerätekopplung** (Rolle `node`) sichert den `connect`-Handshake ab. Siehe
   [Automatische Gerätegenehmigung für vertrauenswürdige CIDRs](#trusted-cidr-device-auto-approval)
-  weiter unten und [Kanalkopplung](/de/channels/pairing).
-- **Genehmigung von Node-Fähigkeiten** (`node.pair.*`) kontrolliert, welche deklarierten
-  Fähigkeiten/Befehle ein verbundener Node bereitstellen darf. Der Gateway ist die
-  maßgebliche Quelle; Benutzeroberflächen (macOS-App, Control UI) dienen als Frontends,
-  die ausstehende Anfragen genehmigen oder ablehnen.
+  unten und [Kanalkopplung](/de/channels/pairing).
+- **Genehmigung von Node-Funktionen** (`node.pair.*`) steuert, welche deklarierten
+  Funktionen/Befehle ein verbundener Node bereitstellen darf. Das Gateway ist die
+  maßgebliche Instanz; Benutzeroberflächen (macOS-App, Control UI) sind Frontends, die ausstehende Anfragen genehmigen oder
+  ablehnen.
 
-Der frühere eigenständige Speicher für die Node-Kopplung (`nodes/paired.json` mit einem
-Token pro Node, im Januar 2026 aus dem Verbindungspfad entfernt) ist nicht mehr vorhanden:
-Gateways führen beim Start einmalig alle verbleibenden Einträge mit den Gerätedatensätzen
-zusammen und archivieren die veralteten Dateien mit dem Suffix `.migrated`. Die Unterstützung
-der veralteten TCP-Bridge wurde entfernt.
+Der frühere eigenständige Speicher für Node-Kopplungen (`nodes/paired.json` mit einem Node-spezifischen
+Token, im Januar 2026 aus dem Verbindungspfad entfernt) existiert nicht mehr: Gateways führen
+beim Start einmalig alle verbliebenen Zeilen mit den Gerätedatensätzen zusammen und archivieren die
+Legacy-Dateien mit dem Suffix `.migrated`. Die Unterstützung für die Legacy-TCP-Bridge wurde
+entfernt.
 
-## Funktionsweise der Genehmigung von Fähigkeiten
+## Funktionsweise der Funktionsgenehmigung
 
-1. Ein Node stellt eine Verbindung zum Gateway-WS her (die Gerätekopplung kontrolliert diesen Schritt).
-2. Der Gateway vergleicht den Umfang der deklarierten Fähigkeiten/Befehle mit dem
-   genehmigten Umfang; neue oder erweiterte Umfänge speichern eine **ausstehende Anfrage**
-   im Gerätedatensatz und lösen `node.pair.requested` aus.
-3. Sie genehmigen die Anfrage oder lehnen sie ab (über CLI oder Benutzeroberfläche).
-4. Bis zur Genehmigung bleiben Node-Befehle gefiltert; durch die Genehmigung wird der
-   deklarierte Umfang gemäß der normalen Befehlsrichtlinie verfügbar.
+1. Ein Node stellt eine Verbindung zum Gateway-WS her (die Gerätekopplung sichert diesen Schritt ab).
+2. Das Gateway vergleicht die deklarierte Funktions-/Befehlsoberfläche mit der
+   genehmigten; neue oder erweiterte Oberflächen speichern eine **ausstehende Anfrage** im
+   Gerätedatensatz und geben `node.pair.requested` aus.
+3. Sie genehmigen die Anfrage oder lehnen sie ab (CLI oder Benutzeroberfläche).
+4. Bis zur Genehmigung bleiben Node-Befehle gefiltert; nach der Genehmigung wird die deklarierte
+   Oberfläche gemäß der normalen Befehlsrichtlinie bereitgestellt.
 
 Ausstehende Anfragen laufen automatisch **5 Minuten nach dem letzten
-Wiederholungsversuch des Nodes** ab – bei einem Node, der aktiv versucht, die Verbindung
-wiederherzustellen, bleibt die eine ausstehende Anfrage bestehen, statt bei jedem Versuch
-eine neue Anfrage (und Genehmigungsaufforderung) zu erzeugen.
+Wiederholungsversuch des Nodes** ab — ein Node, der aktiv versucht, die Verbindung wiederherzustellen, hält seine eine ausstehende Anfrage aktiv,
+anstatt bei jedem Versuch eine neue Anfrage (und Genehmigungsaufforderung) zu erzeugen.
 
-## CLI-Arbeitsablauf (für Systeme ohne grafische Oberfläche geeignet)
+## CLI-Arbeitsablauf (für Headless-Betrieb geeignet)
 
 ```bash
 openclaw nodes pending
@@ -57,139 +57,131 @@ openclaw nodes remove --node <id|name|ip>
 openclaw nodes rename --node <id|name|ip> --name "Living Room iPad"
 ```
 
-`nodes status` zeigt gekoppelte/verbundene Nodes und deren Fähigkeiten an.
+`nodes status` zeigt gekoppelte/verbundene Nodes und ihre Funktionen an.
 
 ## API-Oberfläche (Gateway-Protokoll)
 
 Ereignisse:
 
-- `node.pair.requested` – wird ausgelöst, wenn eine neue ausstehende Anfrage erstellt wird.
-- `node.pair.resolved` – wird ausgelöst, wenn eine Anfrage genehmigt, abgelehnt oder
+- `node.pair.requested` - wird ausgegeben, wenn eine neue ausstehende Anfrage erstellt wird.
+- `node.pair.resolved` - wird ausgegeben, wenn eine Anfrage genehmigt, abgelehnt oder
   abgelaufen ist.
 
 Methoden:
 
-- `node.pair.list` – listet ausstehende und gekoppelte Nodes auf (`operator.pairing`).
-- `node.pair.approve` – genehmigt eine ausstehende Anfrage.
-- `node.pair.reject` – lehnt eine ausstehende Anfrage ab.
-- `node.pair.remove` – entfernt einen gekoppelten Node. Dadurch wird die Rolle `node`
-  des Geräts im Speicher für gekoppelte Geräte widerrufen, der genehmigte Node-Umfang
-  wird ebenfalls entfernt und die Sitzungen dieses Geräts mit der Node-Rolle werden
-  ungültig gemacht und getrennt. Bei einem Gerät mit **mehreren Rollen** (beispielsweise
-  einem Gerät, das auch `operator` besitzt) bleibt der Datensatz erhalten und nur die
-  Rolle `node` geht verloren; der Datensatz eines Geräts, das ausschließlich ein Node ist,
-  wird gelöscht. Autorisierung: Mit `operator.pairing` können Node-Datensätze ohne
-  Operator-Rolle entfernt werden; ein Aufrufer mit Gerätetoken, der seine **eigene**
-  Node-Rolle auf einem Gerät mit mehreren Rollen widerruft, benötigt zusätzlich
+- `node.pair.list` - ausstehende und gekoppelte Nodes auflisten (`operator.pairing`).
+- `node.pair.approve` - eine ausstehende Anfrage genehmigen.
+- `node.pair.reject` - eine ausstehende Anfrage ablehnen.
+- `node.pair.remove` - einen gekoppelten Node entfernen. Dadurch wird die Rolle `node`
+  des Geräts im Speicher für gekoppelte Geräte widerrufen, zugleich die genehmigte Node-Oberfläche entfernt und
+  die Node-Rollensitzungen dieses Geräts werden ungültig gemacht/getrennt. Ein Gerät mit **gemischten Rollen**
+  (zum Beispiel eines, das auch `operator` besitzt) behält seine Zeile und verliert nur
+  die Rolle `node`; die Zeile eines reinen Node-Geräts wird gelöscht. Autorisierung:
+  `operator.pairing` darf Node-Zeilen ohne Operatorrolle entfernen; ein Aufrufer mit Gerätetoken,
+  der auf einem Gerät mit gemischten Rollen seine **eigene** Node-Rolle widerruft, benötigt zusätzlich
   `operator.admin`.
-- `node.rename` – benennt den für Operatoren sichtbaren Anzeigenamen eines gekoppelten Nodes um.
+- `node.rename` - den für Operatoren sichtbaren Anzeigenamen eines gekoppelten Nodes ändern.
 
-In Version 2026.7 entfernt: `node.pair.request` und `node.pair.verify`. Ausstehende
-Anfragen werden vom Gateway selbst während der Node-Verbindung erstellt, und das
-eigenständige Token pro Node, dem diese Methoden dienten, existiert nicht mehr; für die
-Node-Authentifizierung wird das Gerätekopplungstoken verwendet.
+In 2026.7 entfernt: `node.pair.request` und `node.pair.verify`. Ausstehende
+Anfragen werden während Node-Verbindungen vom Gateway selbst erstellt, und das
+eigenständige Node-spezifische Token, dem sie dienten, existiert nicht mehr; die Node-Authentifizierung erfolgt über das
+Gerätekopplungstoken.
 
 Hinweise:
 
-- Bei Wiederverbindungen mit unverändertem Umfang wird die ausstehende Anfrage
-  wiederverwendet; wiederholte Anfragen aktualisieren die gespeicherten Node-Metadaten
-  und die neueste Positivlisten-Momentaufnahme der deklarierten Befehle zur Einsicht durch
-  Operatoren.
-- Die Ebenen der Operator-Berechtigungsumfänge und die Prüfungen zum Genehmigungszeitpunkt
-  sind unter [Operator-Berechtigungsumfänge](/de/gateway/operator-scopes) zusammengefasst.
+- Erneute Verbindungen mit unveränderter Oberfläche verwenden die ausstehende Anfrage erneut; wiederholte
+  Anfragen aktualisieren die gespeicherten Node-Metadaten und den neuesten Snapshot der
+  deklarierten Befehle auf der Positivliste zur Einsicht durch Operatoren.
+- Operator-Berechtigungsstufen und Prüfungen zum Genehmigungszeitpunkt werden unter
+  [Operator-Berechtigungen](/de/gateway/operator-scopes) zusammengefasst.
 - `node.pair.approve` verwendet die deklarierten Befehle der ausstehenden Anfrage, um
   zusätzliche Genehmigungsberechtigungen durchzusetzen:
   - Anfrage ohne Befehle: `operator.pairing`
-  - Anfrage mit Befehlen ohne Ausführung: `operator.pairing` + `operator.write`
-  - Anfrage für `system.run` / `system.run.prepare` / `system.which`:
-    `operator.pairing` + `operator.admin`
+  - gewöhnliche Befehlsanfrage: `operator.pairing` + `operator.write`
+  - administrativ sensible Anfrage, die `system.run`, `system.run.prepare`,
+    `system.which`, `browser.proxy`, `fs.listDir` oder
+    `system.execApprovals.get/set` enthält: `operator.pairing` + `operator.admin`
 
 <Warning>
-Die Genehmigung der Node-Kopplung zeichnet den vertrauenswürdigen Fähigkeitsumfang auf. Sie fixiert **nicht** den aktuellen Node-Befehlsumfang für jeden Node.
+Die Genehmigung der Node-Kopplung zeichnet die vertrauenswürdige Funktionsoberfläche auf. Sie fixiert **nicht** die aktive Node-Befehlsoberfläche pro Node.
 
-- Die aktuellen Node-Befehle ergeben sich aus den Deklarationen des Nodes beim
-  Verbindungsaufbau und werden durch die globale Node-Befehlsrichtlinie des Gateways
-  (`gateway.nodes.allowCommands` und `denyCommands`) gefiltert.
-- Die Positivlisten- und Abfragerichtlinie für `system.run` pro Node befindet sich auf dem
-  Node unter `exec.approvals.node.*`, nicht im Kopplungsdatensatz.
+- Aktive Node-Befehle stammen aus den Angaben des Nodes bei der Verbindung und werden anhand
+  der globalen Node-Befehlsrichtlinie des Gateways (`gateway.nodes.allowCommands` und
+  `denyCommands`) gefiltert.
+- Die Node-spezifische `system.run`-Zulassungs- und Nachfragerichtlinie befindet sich auf dem Node in
+  `exec.approvals.node.*`, nicht im Kopplungsdatensatz.
 
 </Warning>
 
-## Steuerung von Node-Befehlen (ab 2026.3.31)
+## Steuerung von Node-Befehlen (2026.3.31+)
 
 <Warning>
 **Inkompatible Änderung:** Ab `2026.3.31` sind Node-Befehle deaktiviert, bis die Node-Kopplung genehmigt wurde. Die Gerätekopplung allein reicht nicht mehr aus, um deklarierte Node-Befehle bereitzustellen.
 </Warning>
 
-Wenn ein Node zum ersten Mal eine Verbindung herstellt, wird die Kopplung automatisch
-angefordert. Bis diese Anfrage genehmigt wurde, werden alle ausstehenden Node-Befehle
-dieses Nodes gefiltert und nicht ausgeführt. Nach Genehmigung der Kopplung werden die
-deklarierten Befehle des Nodes gemäß der normalen Befehlsrichtlinie verfügbar.
+Wenn ein Node zum ersten Mal eine Verbindung herstellt, wird die Kopplung automatisch angefordert.
+Bis zur Genehmigung dieser Anfrage werden alle ausstehenden Node-Befehle dieses Nodes
+gefiltert und nicht ausgeführt. Sobald die Kopplung genehmigt wurde, werden die deklarierten
+Befehle des Nodes gemäß der normalen Befehlsrichtlinie verfügbar.
 
 Das bedeutet:
 
-- Nodes, bei denen zuvor allein die Gerätekopplung zur Bereitstellung von Befehlen
-  ausreichte, müssen jetzt zusätzlich die Node-Kopplung abschließen.
-- Vor der Kopplungsgenehmigung in die Warteschlange gestellte Befehle werden verworfen
-  und nicht zurückgestellt.
+- Nodes, die zuvor ausschließlich auf die Gerätekopplung angewiesen waren, um Befehle bereitzustellen, müssen
+  nun zusätzlich die Node-Kopplung abschließen.
+- Vor der Kopplungsgenehmigung in die Warteschlange gestellte Befehle werden verworfen, nicht zurückgestellt.
 
-## Vertrauensgrenzen für Node-Ereignisse (ab 2026.3.31)
+## Vertrauensgrenzen für Node-Ereignisse (2026.3.31+)
 
 <Warning>
-**Inkompatible Änderung:** Von Nodes stammende Ausführungen bleiben jetzt auf einen reduzierten vertrauenswürdigen Umfang beschränkt.
+**Inkompatible Änderung:** Von Nodes stammende Ausführungen bleiben nun auf eine reduzierte vertrauenswürdige Oberfläche beschränkt.
 </Warning>
 
-Von Nodes stammende Zusammenfassungen und zugehörige Sitzungsereignisse sind auf den
-vorgesehenen vertrauenswürdigen Umfang beschränkt. Benachrichtigungsgesteuerte oder von
-Nodes ausgelöste Abläufe, die zuvor auf einen umfassenderen Zugriff auf Host- oder
-Sitzungswerkzeuge angewiesen waren, müssen möglicherweise angepasst werden. Diese
-Absicherung verhindert, dass Node-Ereignisse über die Vertrauensgrenze des Nodes hinaus
-Zugriff auf Werkzeuge auf Hostebene erlangen.
+Von Nodes stammende Zusammenfassungen und zugehörige Sitzungsereignisse sind auf die
+vorgesehene vertrauenswürdige Oberfläche beschränkt. Benachrichtigungsgesteuerte oder von Nodes ausgelöste Abläufe, die
+zuvor auf umfassenderen Zugriff auf Host- oder Sitzungstools angewiesen waren, müssen möglicherweise angepasst werden.
+Diese Härtung verhindert, dass Node-Ereignisse über die zulässige Vertrauensgrenze des Nodes hinaus
+zu Toolzugriff auf Hostebene eskalieren.
 
-Dauerhafte Aktualisierungen der Node-Anwesenheit folgen derselben Identitätsgrenze: Das
-Ereignis `node.presence.alive` wird nur von authentifizierten Gerätesitzungen mit Node-Rolle
-akzeptiert und aktualisiert Kopplungsmetadaten nur, wenn die Geräte-/Node-Identität bereits
-gekoppelt ist. Ein selbst deklarierter Wert für `client.id` reicht nicht aus, um den Status
-der letzten Aktivität zu schreiben.
+Dauerhafte Aktualisierungen der Node-Präsenz folgen derselben Identitätsgrenze: Das
+Ereignis `node.presence.alive` wird nur von authentifizierten Node-Gerätesitzungen
+akzeptiert und aktualisiert Kopplungsmetadaten nur, wenn die Geräte-/Node-Identität
+bereits gekoppelt ist. Ein selbst deklarierter Wert `client.id` reicht nicht aus, um
+den Zuletzt-gesehen-Zustand zu schreiben.
 
 ## SSH-verifizierte automatische Gerätegenehmigung (Standard)
 
-Die erstmalige Gerätekopplung mit `role: node` von einer privaten/CGNAT-Adresse wird
-automatisch genehmigt, wenn der Gateway den **Besitz des Rechners über SSH nachweisen**
-kann: Er verbindet sich zurück zum Host der Kopplungsanfrage (`BatchMode`,
-`StrictHostKeyChecking=yes`), führt dort `openclaw node identity --json` aus und genehmigt
-die Anfrage nur, wenn die ID und der öffentliche Schlüssel des entfernten Geräts exakt mit
-der ausstehenden Anfrage übereinstimmen. Der Schlüsselabgleich gewährleistet die Sicherheit:
-Alleinige Erreichbarkeit führt niemals zur Genehmigung, sodass Mitnutzer derselben
-NAT-Umgebung, andere Benutzer auf einem gemeinsam genutzten Host und LAN-Spoofing
-weiterhin die normale Aufforderung auslösen.
+Die erstmalige Gerätekopplung für `role: node` von einer privaten/CGNAT-Adresse wird
+automatisch genehmigt, wenn das Gateway den **Maschinenbesitz über SSH nachweisen** kann: Es
+verbindet sich zurück zum Kopplungshost (`BatchMode`, `StrictHostKeyChecking=yes`),
+führt dort `openclaw node identity --json` aus und genehmigt nur, wenn die entfernte
+Geräte-ID und der öffentliche Schlüssel exakt mit der ausstehenden Anfrage übereinstimmen. Der Schlüsselabgleich
+gewährleistet die Sicherheit: Erreichbarkeit allein führt niemals zur Genehmigung, sodass NAT-Mitnutzer,
+andere Benutzer auf einem gemeinsam genutzten Host und LAN-Spoofing sämtlich auf die normale
+Aufforderung zurückfallen.
 
-Standardmäßig aktiviert. Voraussetzungen für die Ausführung:
+Standardmäßig aktiviert. Voraussetzungen für die Auslösung:
 
-- Der Benutzer des Gateway-Prozesses (oder `sshVerify.user`) kann sich nicht interaktiv
-  per SSH mit dem Node-Host verbinden (Schlüssel/Agent; Tailscale SSH funktioniert ebenfalls),
-  und der Hostschlüssel ist bereits vertrauenswürdig.
-- `openclaw` kann auf dem entfernten `PATH` für ein nicht interaktives `sh -lc` aufgelöst werden.
-- Die IP-Adresse der Verbindung ist eine direkte (nicht über einen Proxy geleitete und keine
-  Loopback-Adresse) private, ULA-, Link-Local- oder CGNAT-Adresse oder entspricht, sofern
-  festgelegt, `sshVerify.cidrs`.
-- Es gelten dieselben Mindestvoraussetzungen wie für die Genehmigung über vertrauenswürdige
-  CIDRs: ausschließlich neue Node-Kopplungen ohne Berechtigungsumfänge; Upgrades, Browser,
-  Control UI und WebChat zeigen immer eine Aufforderung an.
+- Der Benutzer des Gateway-Prozesses (oder `sshVerify.user`) kann nicht interaktiv per SSH auf den Node-Host zugreifen
+  (Schlüssel/Agent; Tailscale SSH funktioniert ebenfalls), und der Hostschlüssel ist
+  bereits vertrauenswürdig.
+- `openclaw` wird auf dem entfernten `PATH` für nicht interaktives `sh -lc` aufgelöst.
+- Die verbindende IP ist eine direkte (nicht über einen Proxy geleitete, nicht Loopback-) private, ULA-,
+  Link-Local- oder CGNAT-Adresse oder stimmt, sofern festgelegt, mit `sshVerify.cidrs` überein.
+- Dieselbe Mindestvoraussetzung wie für die Genehmigung vertrauenswürdiger CIDRs: nur neue Node-Kopplungen
+  ohne Berechtigungen; Upgrades, Browser, Control UI und WebChat fordern immer zur Genehmigung auf.
 
-Während eine Prüfung ausgeführt wird, wird der Node-Client angewiesen, die Versuche
-fortzusetzen (`wait_then_retry`), anstatt für eine manuelle Genehmigung zu pausieren.
-Schlägt die Prüfung fehl, fällt der nächste Versuch auf den normalen Ablauf mit Aufforderung
-zurück. Für fehlgeschlagene Ziele gilt eine kurze Sperrfrist (5 Minuten nach einer
-Schlüsselabweichung).
+Während eine Prüfung läuft, wird der Node-Client angewiesen, die Versuche fortzusetzen
+(`wait_then_retry`), anstatt für eine manuelle Genehmigung zu pausieren; schlägt die Prüfung
+fehl, fällt der nächste Versuch auf den normalen Aufforderungsablauf zurück. Fehlgeschlagene Ziele
+erhalten eine kurze Sperrzeit (5 Minuten nach einer fehlgeschlagenen Schlüsselübereinstimmung).
 
-Bei genehmigten Geräten werden `approvedVia: "ssh-verified"` und der erste deklarierte
-Fähigkeitsumfang im selben Schritt genehmigt – der Schlüsselabgleich weist bereits nach,
-dass der Node unter dem Konto des Operators auf einem Rechner ausgeführt wird, der ihm
-gehört. Dies entspricht derselben Aussage wie eine manuelle Genehmigung der Fähigkeiten.
-Bei späteren Erweiterungen des Umfangs wird weiterhin eine Aufforderung angezeigt.
+Genehmigte Geräte zeichnen `approvedVia: "ssh-verified"` auf, und ihre erste deklarierte
+Funktionsoberfläche wird im selben Schritt genehmigt — die Schlüsselübereinstimmung weist bereits nach,
+dass der Node unter dem Konto des Operators auf einer eigenen Maschine ausgeführt wird, was derselben
+Aussage entspricht, die eine manuelle Funktionsgenehmigung bestätigt. Spätere Oberflächenerweiterungen fordern weiterhin
+zur Genehmigung auf.
 
-Absichern oder deaktivieren:
+Härten oder deaktivieren:
 
 ```json5
 {
@@ -198,7 +190,7 @@ Absichern oder deaktivieren:
       pairing: {
         // Vollständig deaktivieren:
         sshVerify: false,
-        // ...oder Umfang und Parameter der Prüfung konfigurieren:
+        // ...oder Umfang/Parameter der Prüfung festlegen:
         // sshVerify: { user: "me", identity: "~/.ssh/probe", timeoutMs: 7000, cidrs: ["10.0.0.0/8"] },
       },
     },
@@ -208,20 +200,21 @@ Absichern oder deaktivieren:
 
 ## Automatische Genehmigung (macOS-App)
 
-Die macOS-App kann eine **stille Genehmigung** von Anfragen zu Node-Fähigkeiten versuchen,
+Die macOS-App kann eine **stille Genehmigung** von Anfragen für Node-Funktionen versuchen,
 wenn:
 
-- die Anfrage als `silent` markiert ist (der Gateway markiert den ersten Fähigkeitsumfang
+- die Anfrage mit `silent` gekennzeichnet ist (das Gateway kennzeichnet die erste Funktionsoberfläche
   als still, wenn die Gerätekopplung nicht interaktiv genehmigt wurde), und
-- die App eine SSH-Verbindung zum Gateway-Host mit demselben Benutzer verifizieren kann.
+- die App eine SSH-Verbindung zum Gateway-Host mit demselben
+  Benutzer verifizieren kann.
 
-Wenn die stille Genehmigung fehlschlägt, wird stattdessen die normale Aufforderung mit Approve/Reject angezeigt.
+Wenn die stille Genehmigung fehlschlägt, fällt sie auf die normale Approve/Reject-Aufforderung zurück.
 
 ## Automatische Gerätegenehmigung für vertrauenswürdige CIDRs
 
-Die WS-Gerätekopplung für `role: node` bleibt standardmäßig manuell. Für private
-Node-Netzwerke, in denen der Gateway dem Netzwerkpfad bereits vertraut, können Operatoren
-die Funktion mit expliziten CIDRs oder exakten IP-Adressen aktivieren:
+Die WS-Gerätekopplung für `role: node` bleibt standardmäßig manuell. Für private Node-
+Netzwerke, in denen das Gateway dem Netzwerkpfad bereits vertraut, können Operatoren dies
+mit expliziten CIDRs oder exakten IP-Adressen aktivieren:
 
 ```json5
 {
@@ -238,99 +231,105 @@ die Funktion mit expliziten CIDRs oder exakten IP-Adressen aktivieren:
 Sicherheitsgrenze:
 
 - Deaktiviert, wenn `gateway.nodes.pairing.autoApproveCidrs` nicht festgelegt ist.
-- Es gibt keinen pauschalen Modus zur automatischen Genehmigung für LANs oder private
-  Netzwerke; die SSH-verifizierte automatische Genehmigung (siehe oben) erfordert einen
-  kryptografischen Abgleich des Geräteschlüssels und niemals nur die räumliche Nähe im Netzwerk.
-- Nur eine neue Gerätekopplungsanfrage mit `role: node` ohne angeforderte
-  Berechtigungsumfänge ist zulässig.
+- Es gibt keinen pauschalen Modus für automatische Genehmigungen im LAN oder privaten Netzwerk; die SSH-verifizierte
+  automatische Genehmigung (oben) erfordert eine kryptografische Übereinstimmung des Geräteschlüssels, niemals
+  ausschließlich die lokale Netzwerknähe.
+- Nur eine neue Gerätekopplungsanfrage für `role: node` ohne angeforderte Berechtigungen ist
+  zulässig.
 - Operator-, Browser-, Control-UI- und WebChat-Clients bleiben manuell.
-- Upgrades von Rollen, Berechtigungsumfängen, Metadaten und öffentlichen Schlüsseln
-  bleiben manuell.
-- Pfade über vertrauenswürdige Proxy-Header mit Loopback auf demselben Host sind nicht
-  zulässig, da dieser Pfad von lokalen Aufrufern manipuliert werden kann.
+- Upgrades von Rolle, Berechtigung, Metadaten und öffentlichem Schlüssel bleiben manuell.
+- Loopback-Pfade für Trusted-Proxy-Header auf demselben Host sind nicht zulässig, da dieser
+  Pfad von lokalen Aufrufern gefälscht werden kann.
 
-## Bereinigung bei Ablösung stiller Kopplungen
+## Bereinigung bei Ersetzung stiller Kopplungen
 
-Nicht interaktive Genehmigungen zeichnen ihre Herkunft im Datensatz des gekoppelten Geräts
-auf: Genehmigungen durch lokale Richtlinien auf demselben Host als `silent`,
-Node-Genehmigungen über vertrauenswürdige CIDRs als `trusted-cidr` und SSH-verifizierte
-Node-Genehmigungen als `ssh-verified`. Clients, deren Statusverzeichnis flüchtig ist
-(temporäre Home-Verzeichnisse, Container, Sandboxes pro Ausführung), erzeugen bei jeder
-Ausführung ein neues Geräteschlüsselpaar und werden bei jeder Ausführung still als
-brandneues Gerät erneut gekoppelt – ohne Bereinigung wächst die Liste der gekoppelten
-Geräte bei jeder Ausführung um einen veralteten Datensatz.
+Nicht interaktive Genehmigungen zeichnen ihren Ursprung in der Zeile des gekoppelten Geräts auf:
+Genehmigungen durch lokale Richtlinien auf demselben Host als `silent`, Node-Genehmigungen für vertrauenswürdige CIDRs als
+`trusted-cidr`, SSH-verifizierte Node-Genehmigungen als `ssh-verified`. Clients mit einem flüchtigen Zustandsverzeichnis (temporäre Home-Verzeichnisse,
+Container, Sandboxes pro Ausführung) erzeugen bei jeder Ausführung ein neues Geräteschlüsselpaar, und jede
+Ausführung koppelt sich still als völlig neues Gerät — ohne Bereinigung wächst die Liste gekoppelter Geräte
+pro Ausführung um eine veraltete Zeile.
 
-Wenn der Gateway eine **lokale** Gerätekopplung still genehmigt, setzt er ältere, mit
-`silent` genehmigte Datensätze außer Betrieb, die demselben Client-Cluster angehören
-(übereinstimmende Werte für `clientId`, `clientMode` und Anzeigename) und derzeit nicht
-verbunden sind. Lokale Clients werden auf dem Gateway-Host selbst ausgeführt, daher kann
-der Cluster-Schlüssel nicht mit einem anderen Rechner übereinstimmen. Die Token der außer
-Betrieb gesetzten Datensätze verlieren sofort ihre Gültigkeit; alle übereinstimmenden
-veralteten Node-Kopplungseinträge werden gelöscht und ein Entfernungsereignis
-`node.pair.resolved` wird übertragen.
+Wenn das Gateway eine **lokale** Gerätekopplung still genehmigt, entfernt es
+ältere mit `silent` genehmigte Datensätze, die zum selben Client-Cluster gehören
+(übereinstimmende `clientId`, `clientMode` und Anzeigename) und derzeit nicht
+verbunden sind. Lokale Clients werden auf dem Gateway-Host selbst ausgeführt, sodass der Cluster-Schlüssel
+nicht mit einer anderen Maschine übereinstimmen kann. Entfernte Zeilen verlieren ihre Token sofort;
+jeder übereinstimmende Legacy-Node-Kopplungseintrag wird gelöscht und ein `node.pair.resolved`-
+Entfernungsereignis wird gesendet.
 
 Grenzen:
 
-- Nur Datensätze, deren letzte Genehmigung lokal auf demselben Host (`silent`) erfolgte,
-  sind sowohl als Auslöser als auch als Ziel zulässig. Kopplungen über vertrauenswürdige
-  CIDRs und SSH-verifizierte Kopplungen überschreiten Hostgrenzen, an denen
-  Anzeigemetadaten keine Rechneridentität darstellen. Daher werden sie niemals automatisch
-  entfernt – verwenden Sie dafür die Bereinigungsfunktion der Control UI oder
+- Nur Datensätze, deren letzte Genehmigung lokal auf demselben Host (`silent`) erfolgte, kommen
+  sowohl als Auslöser als auch als Ziel infrage. Durch vertrauenswürdige CIDRs und SSH verifizierte Kopplungen
+  erstrecken sich über mehrere Hosts, auf denen Anzeigemetadaten keine Maschinenidentität darstellen. Daher werden sie
+  niemals automatisch entfernt – verwenden Sie hierfür die Bereinigung in der Control UI oder
   `openclaw nodes remove`.
-- Vom Eigentümer genehmigte Kopplungen und Kopplungen über QR-/Einrichtungscodes
-  (Bootstrap) werden niemals automatisch entfernt. Datensätze, die genehmigt wurden,
-  bevor die Herkunft aufgezeichnet wurde, bleiben geschützt, auch nach einer späteren
-  stillen erneuten Genehmigung derselben Geräte-ID.
+- Vom Eigentümer genehmigte Kopplungen und Kopplungen per QR-/Einrichtungscode (Bootstrap) werden niemals
+  automatisch entfernt. Datensätze, die vor Einführung der Herkunftsinformationen genehmigt wurden, bleiben geschützt,
+  selbst nach einer späteren stillen erneuten Genehmigung derselben Geräte-ID.
 - Derzeit verbundene Geräte werden übersprungen, sodass gleichzeitige lokale Sitzungen mit
-  getrennten Statusverzeichnissen ihre Token behalten, solange sie aktiv sind. Datensätze,
-  die innerhalb der letzten Minute genehmigt wurden, werden ebenfalls übersprungen, damit
-  gleichzeitige Kopplungs-Handshakes einander nicht außer Betrieb setzen können, bevor ihre
-  Verbindungen registriert wurden.
-- Betroffene Clients sind konstruktionsbedingt lokal und werden daher bei ihrer nächsten
-  Verbindung erneut still gekoppelt.
+  separaten Zustandsverzeichnissen ihre Tokens behalten, solange sie aktiv sind. Datensätze, die
+  innerhalb der letzten Minute genehmigt wurden, werden ebenfalls übersprungen, sodass gleichzeitige Kopplungs-Handshakes
+  einander nicht aufheben können, bevor ihre Verbindungen registriert wurden.
+- Betroffene Clients sind grundsätzlich lokal und koppeln sich daher bei
+  ihrer nächsten Verbindung still erneut.
 
-## Automatische Genehmigung von Metadaten-Upgrades
+## Automatische Genehmigung bei Metadatenaktualisierungen
 
-Wenn ein bereits gekoppeltes Gerät die Verbindung ausschließlich mit Änderungen an nicht
-sensiblen Metadaten wiederherstellt (beispielsweise Anzeigename oder Hinweise zur
-Clientplattform), behandelt OpenClaw dies als `metadata-upgrade`. Die stille automatische
-Genehmigung ist eng begrenzt: Sie gilt nur für vertrauenswürdige lokale Wiederverbindungen
-außerhalb eines Browsers, die bereits den Besitz lokaler oder gemeinsam genutzter
-Anmeldedaten nachgewiesen haben. Dazu gehören Wiederverbindungen nativer Apps auf demselben
-Host nach Änderungen an den Metadaten der Betriebssystemversion. Browser-/Control-UI-Clients
-und entfernte Clients verwenden weiterhin den expliziten Ablauf zur erneuten Genehmigung.
-Upgrades von Berechtigungsumfängen (Lesen auf Schreiben/Administration) und Änderungen
-öffentlicher Schlüssel sind **nicht** für die automatische Genehmigung von
-Metadaten-Upgrades zulässig; sie bleiben explizite Anfragen zur erneuten Genehmigung.
+Wenn sich ein bereits gekoppeltes Gerät erneut verbindet und lediglich nicht vertrauliche Metadaten
+geändert wurden (beispielsweise Anzeigename oder Hinweise zur Clientplattform), behandelt OpenClaw
+dies als `metadata-upgrade`. Die stille automatische Genehmigung ist eng begrenzt: Sie gilt nur
+für vertrauenswürdige lokale Nicht-Browser-Wiederverbindungen, die bereits den Besitz
+lokaler oder gemeinsam genutzter Anmeldedaten nachgewiesen haben, einschließlich erneuter Verbindungen nativer Apps auf demselben Host nach
+Änderungen der Metadaten zur Betriebssystemversion. Browser-/Control-UI-Clients und Remote-Clients
+verwenden weiterhin den expliziten Ablauf zur erneuten Genehmigung. Erweiterungen des Geltungsbereichs (von Lesen auf
+Schreiben/Administration) und Änderungen des öffentlichen Schlüssels kommen **nicht** für eine
+automatische Genehmigung bei Metadatenaktualisierungen infrage; sie bleiben explizite Anfragen zur erneuten Genehmigung.
 
 ## Hilfsfunktionen für die QR-Kopplung
 
-`/pair qr` stellt die Kopplungsnutzdaten als strukturierte Medien dar, sodass mobile Clients und Browser-Clients sie direkt scannen können.
+`/pair qr` stellt die Kopplungsnutzlast als strukturierte Medien dar, sodass mobile und
+Browser-Clients sie direkt scannen können.
 
-Beim Löschen eines Geräts werden außerdem alle veralteten ausstehenden Kopplungsanfragen für diese Geräte-ID entfernt, sodass `nodes pending` nach einem Widerruf keine verwaisten Zeilen anzeigt.
+Beim Löschen eines Geräts werden auch alle veralteten ausstehenden Kopplungsanfragen für diese
+Geräte-ID entfernt, sodass `nodes pending` nach einem Widerruf keine verwaisten Zeilen anzeigt.
 
 ## Lokalität und weitergeleitete Header
 
-Bei der Gateway-Kopplung gilt eine Verbindung nur dann als local loopback, wenn sowohl der unverarbeitete Socket als auch alle Hinweise eines vorgeschalteten Proxys übereinstimmen. Wenn eine Anfrage über local loopback eingeht, aber Hinweise aus den Headern `Forwarded`, `X-Forwarded-*` oder `X-Real-IP` enthält, schließen diese weitergeleiteten Header die Einstufung als local loopback aus, und der Kopplungsvorgang erfordert eine ausdrückliche Genehmigung, anstatt die Anfrage stillschweigend als Verbindung vom selben Host zu behandeln. Die entsprechende Regel für die Operator-Authentifizierung finden Sie unter [Authentifizierung über vertrauenswürdige Proxys](/de/gateway/trusted-proxy-auth).
+Bei der Gateway-Kopplung gilt eine Verbindung nur dann als Loopback-Verbindung, wenn sowohl der rohe Socket
+als auch sämtliche Hinweise eines vorgeschalteten Proxys übereinstimmen. Wenn eine Anfrage über Loopback eingeht, aber
+`Forwarded`, einen beliebigen `X-Forwarded-*`- oder `X-Real-IP`-Header-Hinweis enthält, schließen diese
+Hinweise aus weitergeleiteten Headern die Einstufung als lokale Loopback-Verbindung aus, und der
+Kopplungspfad erfordert eine explizite Genehmigung, anstatt die
+Anfrage still als Verbindung auf demselben Host zu behandeln. Die entsprechende Regel für die
+Operatorauthentifizierung finden Sie unter
+[Authentifizierung über vertrauenswürdige Proxys](/de/gateway/trusted-proxy-auth).
 
 ## Speicherung (lokal, privat)
 
-Der Kopplungsstatus wird in den Datensätzen der gekoppelten Geräte in der gemeinsam genutzten SQLite-Statusdatenbank im Gateway-Statusverzeichnis gespeichert (standardmäßig `~/.openclaw`):
+Der Kopplungsstatus befindet sich in den Datensätzen der gekoppelten Geräte in der gemeinsamen SQLite-Zustandsdatenbank
+unter dem Gateway-Zustandsverzeichnis (standardmäßig `~/.openclaw`):
 
-- `~/.openclaw/state/openclaw.sqlite` (gekoppelte Geräte mit Geräteauthentifizierung, genehmigte Node-Oberflächen, ausstehende Oberflächenanfragen, ausstehende Gerätekopplungsanfragen und Bootstrap-Token)
+- `~/.openclaw/state/openclaw.sqlite` (gekoppelte Geräte mit Geräteauthentifizierung,
+  genehmigten Node-Oberflächen, ausstehenden Oberflächenanfragen, ausstehenden Gerätekopplungsanfragen
+  und Bootstrap-Tokens)
 
-Wenn Sie `OPENCLAW_STATE_DIR` überschreiben, wird die Datenbank entsprechend verschoben. Gateways, die von Versionen mit JSON-Speichern aktualisiert wurden, importieren diese beim Start und behalten die Archive `devices/*.json.migrated` und `nodes/*.json.migrated` bei.
+Wenn Sie `OPENCLAW_STATE_DIR` überschreiben, wird die Datenbank entsprechend verschoben. Gateways,
+die von Releases mit JSON-Speichern aktualisiert wurden, importieren diese beim Start und hinterlassen
+die Archive `devices/*.json.migrated` und `nodes/*.json.migrated`.
 
 Sicherheitshinweise:
 
-- Geräte-Token sind Geheimnisse; behandeln Sie die Statusdatenbank als vertraulich.
-- Zum Rotieren eines Geräte-Tokens werden `openclaw devices rotate` bzw. `device.token.rotate` verwendet.
+- Geräte-Tokens sind Geheimnisse; behandeln Sie die Zustandsdatenbank als vertraulich.
+- Zum Rotieren eines Geräte-Tokens dienen `openclaw devices rotate` /
+  `device.token.rotate`.
 
 ## Transportverhalten
 
 - Der Transport ist **zustandslos**; er speichert keine Mitgliedschaften.
-- Wenn das Gateway offline oder die Kopplung deaktiviert ist, können Nodes nicht gekoppelt werden.
-- Im Remote-Modus erfolgt die Kopplung mit dem Speicher des entfernten Gateways.
+- Wenn das Gateway offline oder die Kopplung deaktiviert ist, können sich Nodes nicht koppeln.
+- Im Remote-Modus erfolgt die Kopplung mit dem Speicher des Remote-Gateways.
 
 ## Verwandte Themen
 

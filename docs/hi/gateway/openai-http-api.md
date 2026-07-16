@@ -1,123 +1,34 @@
 ---
 read_when:
-    - OpenAI Chat Completions की अपेक्षा करने वाले टूल्स को एकीकृत करना
-summary: Gateway से OpenAI-संगत /v1/chat/completions HTTP endpoint उपलब्ध कराएँ
-title: OpenAI चैट कम्प्लीशन्स
+    - OpenAI Chat Completions की अपेक्षा करने वाले टूल्स का एकीकरण
+summary: Gateway से OpenAI-संगत /v1/chat/completions HTTP एंडपॉइंट उपलब्ध कराएँ
+title: OpenAI चैट पूर्णताएँ
 x-i18n:
-    generated_at: "2026-06-28T23:10:40Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T14:59:35Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: e8746f4f5964a5d0b948877b64b5d20440dea3aa45b36813c404cd06660792cf
+    source_hash: 9b1fffd2ce3da881ecd91adbb7c5d10b1d7adbd99af9b2ea4544b62ecbaf1f32
     source_path: gateway/openai-http-api.md
     workflow: 16
 ---
 
-OpenClaw का Gateway एक छोटा OpenAI-संगत Chat Completions endpoint सेवा दे सकता है.
+Gateway एक छोटी OpenAI-संगत Chat Completions सतह उपलब्ध करा सकता है। यह **डिफ़ॉल्ट रूप से अक्षम** है।
 
-यह endpoint **डिफ़ॉल्ट रूप से अक्षम** है. पहले इसे कॉन्फ़िग में सक्षम करें.
+सक्षम होने के बाद, यह इन सभी को Gateway वाले पोर्ट पर ही उपलब्ध कराता है (WS + HTTP मल्टीप्लेक्स):
 
-- `POST /v1/chat/completions`
-- Gateway जैसा ही पोर्ट (WS + HTTP multiplex): `http://<gateway-host>:<port>/v1/chat/completions`
+| विधि | पथ                    |
+| ------ | ---------------------- |
+| POST   | `/v1/chat/completions` |
+| GET    | `/v1/models`           |
+| GET    | `/v1/models/{id}`      |
+| POST   | `/v1/embeddings`       |
+| POST   | `/v1/responses`        |
 
-जब Gateway की OpenAI-संगत HTTP सतह सक्षम होती है, तो यह इन्हें भी सेवा देता है:
+अनुरोध सामान्य Gateway एजेंट रन के रूप में चलते हैं (`openclaw agent` के समान कोडपथ), इसलिए रूटिंग, अनुमतियाँ और कॉन्फ़िगरेशन आपके Gateway के अनुरूप होते हैं।
 
-- `GET /v1/models`
-- `GET /v1/models/{id}`
-- `POST /v1/embeddings`
-- `POST /v1/responses`
-
-अंदरूनी रूप से, अनुरोध सामान्य Gateway एजेंट रन के रूप में निष्पादित होते हैं (`openclaw agent` जैसा वही codepath), इसलिए routing/permissions/config आपके Gateway से मेल खाते हैं.
-
-## प्रमाणीकरण
-
-Gateway auth कॉन्फ़िगरेशन का उपयोग करता है.
-
-सामान्य HTTP auth पथ:
-
-- साझा-गुप्त auth (`gateway.auth.mode="token"` या `"password"`):
-  `Authorization: Bearer <token-or-password>`
-- विश्वसनीय पहचान-युक्त HTTP auth (`gateway.auth.mode="trusted-proxy"`):
-  कॉन्फ़िगर किए गए identity-aware proxy के माध्यम से रूट करें और उसे आवश्यक
-  identity headers इंजेक्ट करने दें
-- private-ingress खुला auth (`gateway.auth.mode="none"`):
-  कोई auth header आवश्यक नहीं
-
-नोट्स:
-
-- जब `gateway.auth.mode="token"` हो, तो `gateway.auth.token` (या `OPENCLAW_GATEWAY_TOKEN`) का उपयोग करें.
-- जब `gateway.auth.mode="password"` हो, तो `gateway.auth.password` (या `OPENCLAW_GATEWAY_PASSWORD`) का उपयोग करें.
-- जब `gateway.auth.mode="trusted-proxy"` हो, तो HTTP अनुरोध किसी
-  कॉन्फ़िगर किए गए trusted proxy स्रोत से आना चाहिए; same-host loopback proxies के लिए स्पष्ट
-  `gateway.auth.trustedProxy.allowLoopback = true` आवश्यक है.
-- Proxy को बायपास करने वाले आंतरिक same-host callers
-  स्थानीय direct fallback के रूप में `gateway.auth.password` / `OPENCLAW_GATEWAY_PASSWORD`
-  का उपयोग कर सकते हैं. कोई भी `Forwarded`, `X-Forwarded-*`, या `X-Real-IP` header evidence
-  अनुरोध को इसके बजाय trusted-proxy पथ पर रखता है.
-- यदि `gateway.auth.rateLimit` कॉन्फ़िगर है और बहुत अधिक auth विफलताएँ होती हैं, तो endpoint `Retry-After` के साथ `429` लौटाता है.
-
-## सुरक्षा सीमा (महत्वपूर्ण)
-
-इस endpoint को gateway instance के लिए **पूर्ण operator-access** सतह मानें.
-
-- यहाँ HTTP bearer auth कोई संकीर्ण per-user scope मॉडल नहीं है.
-- इस endpoint के लिए मान्य Gateway token/password को owner/operator credential जैसा माना जाना चाहिए.
-- अनुरोध trusted operator actions जैसे ही control-plane agent path से चलते हैं.
-- इस endpoint पर कोई अलग non-owner/per-user tool सीमा नहीं है; जब कोई caller यहाँ Gateway auth पास कर लेता है, तो OpenClaw उस caller को इस gateway के लिए trusted operator मानता है.
-- साझा-गुप्त auth modes (`token` और `password`) के लिए, endpoint सामान्य पूर्ण operator defaults को पुनर्स्थापित करता है, भले ही caller संकीर्ण `x-openclaw-scopes` header भेजे.
-- विश्वसनीय पहचान-युक्त HTTP modes (उदाहरण के लिए trusted proxy auth या `gateway.auth.mode="none"`) मौजूद होने पर `x-openclaw-scopes` का सम्मान करते हैं और अन्यथा सामान्य operator default scope set पर लौटते हैं.
-- यदि लक्ष्य agent policy sensitive tools की अनुमति देती है, तो यह endpoint उनका उपयोग कर सकता है.
-- इस endpoint को केवल loopback/tailnet/private ingress पर रखें; इसे सीधे public internet पर expose न करें.
-
-Auth matrix:
-
-- `gateway.auth.mode="token"` या `"password"` + `Authorization: Bearer ...`
-  - साझा gateway operator secret के possession को साबित करता है
-  - संकीर्ण `x-openclaw-scopes` को अनदेखा करता है
-  - पूर्ण default operator scope set को पुनर्स्थापित करता है:
-    `operator.admin`, `operator.approvals`, `operator.pairing`,
-    `operator.read`, `operator.talk.secrets`, `operator.write`
-  - इस endpoint पर chat turns को owner-sender turns मानता है
-- विश्वसनीय पहचान-युक्त HTTP modes (उदाहरण के लिए trusted proxy auth, या private ingress पर `gateway.auth.mode="none"`)
-  - किसी बाहरी trusted identity या deployment boundary को authenticate करते हैं
-  - header मौजूद होने पर `x-openclaw-scopes` का सम्मान करते हैं
-  - header अनुपस्थित होने पर सामान्य operator default scope set पर लौटते हैं
-  - owner semantics केवल तब खोते हैं जब caller स्पष्ट रूप से scopes को संकीर्ण करता है और `operator.admin` छोड़ देता है
-  - owner-level request controls जैसे `x-openclaw-model` के लिए `operator.admin` आवश्यक है
-
-[Security](/hi/gateway/security) और [Remote access](/hi/gateway/remote) देखें.
-
-## इस endpoint का उपयोग कब करें
-
-जब आप किसी मौजूदा gateway के साथ tooling या trusted app-side backend integrate कर रहे हों और gateway operator credentials को सुरक्षित रूप से रख सकते हों, तब `/v1/chat/completions` का उपयोग करें.
-
-- जब आपका integration उसी gateway के लिए बस एक और operator/client surface हो, तो नया built-in channel जोड़ने के बजाय इसे प्राथमिकता दें.
-- Native mobile clients के लिए जो सीधे remote gateway से connect करते हैं, [WebChat](/hi/web/webchat) या [Gateway Protocol](/hi/gateway/protocol) को प्राथमिकता दें और paired-device bootstrap/device-token flow लागू करें ताकि device को shared HTTP token/password की आवश्यकता न हो.
-- जब आप किसी बाहरी messaging network को उसके अपने users, rooms, webhook delivery, या outbound transport के साथ integrate कर रहे हों, तब इसके बजाय channel plugin बनाएँ. [Building plugins](/hi/plugins/building-plugins) देखें.
-
-## Agent-first model contract
-
-OpenClaw, OpenAI `model` field को raw provider model id नहीं, बल्कि **agent target** मानता है.
-
-- `model: "openclaw"` कॉन्फ़िगर किए गए default agent पर route करता है.
-- `model: "openclaw/default"` भी कॉन्फ़िगर किए गए default agent पर route करता है.
-- `model: "openclaw/<agentId>"` किसी विशिष्ट agent पर route करता है.
-
-वैकल्पिक request headers:
-
-- `x-openclaw-model: <provider/model-or-bare-id>` चुने गए agent के लिए backend model override करता है. Shared-secret bearer callers इस header का उपयोग कर सकते हैं. Identity-bearing callers, जैसे trusted-proxy या `x-openclaw-scopes` वाले private no-auth ingress requests, को `operator.admin` चाहिए; write-only callers को `403 missing scope: operator.admin` मिलता है.
-- `x-openclaw-agent-id: <agentId>` compatibility override के रूप में समर्थित बना रहता है.
-- `x-openclaw-session-key: <sessionKey>` session routing को स्पष्ट रूप से नियंत्रित करता है. मान को `subagent:`, `cron:`, या `acp:` जैसे reserved internal session namespaces का उपयोग नहीं करना चाहिए; ऐसे अनुरोध `400 invalid_request_error` के साथ अस्वीकार किए जाते हैं.
-- `x-openclaw-message-channel: <channel>` channel-aware prompts और policies के लिए synthetic ingress channel context सेट करता है.
-
-Compatibility aliases अभी भी स्वीकार किए जाते हैं:
-
-- `model: "openclaw:<agentId>"`
-- `model: "agent:<agentId>"`
-
-## Endpoint सक्षम करना
-
-`gateway.http.endpoints.chatCompletions.enabled` को `true` पर सेट करें:
+## एंडपॉइंट सक्षम करना
 
 ```json5
 {
@@ -131,170 +42,200 @@ Compatibility aliases अभी भी स्वीकार किए जात
 }
 ```
 
-## Endpoint अक्षम करना
+अक्षम करने के लिए `enabled: false` सेट करें (या इसे छोड़ दें)।
 
-`gateway.http.endpoints.chatCompletions.enabled` को `false` पर सेट करें:
+## सुरक्षा सीमा (महत्वपूर्ण)
+
+इस एंडपॉइंट को Gateway इंस्टेंस तक **पूर्ण ऑपरेटर पहुँच** मानें:
+
+- इस एंडपॉइंट के लिए मान्य Gateway टोकन/पासवर्ड किसी स्वामी/ऑपरेटर क्रेडेंशियल के बराबर है, न कि संकीर्ण प्रति-उपयोगकर्ता दायरे के।
+- अनुरोध विश्वसनीय ऑपरेटर कार्रवाइयों वाले उसी नियंत्रण-प्लेन एजेंट पथ से चलते हैं, इसलिए यदि लक्षित एजेंट की नीति संवेदनशील टूल की अनुमति देती है, तो यह एंडपॉइंट उनका उपयोग कर सकता है।
+- इसे केवल लूपबैक/टेलनेट/निजी इनग्रेस पर रखें। इसे सार्वजनिक इंटरनेट पर उजागर न करें।
+
+प्रमाणीकरण मैट्रिक्स:
+
+| प्रमाणीकरण पथ                                                                                            | व्यवहार                                                                                                                                                                                                                                                                                                  |
+| ---------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `gateway.auth.mode="token"` या `"password"` + `Authorization: Bearer ...`                            | साझा Gateway सीक्रेट के अधिकार को प्रमाणित करता है। किसी भी `x-openclaw-scopes` हेडर को अनदेखा करता है और पूरा डिफ़ॉल्ट ऑपरेटर दायरा सेट पुनर्स्थापित करता है: `operator.admin`, `operator.approvals`, `operator.pairing`, `operator.read`, `operator.talk.secrets`, `operator.write`। चैट टर्न को स्वामी-प्रेषक टर्न मानता है। |
+| पहचान-युक्त विश्वसनीय HTTP (विश्वसनीय-प्रॉक्सी प्रमाणीकरण, या निजी इनग्रेस पर `gateway.auth.mode="none"`) | मौजूद होने पर `x-openclaw-scopes` का पालन करता है; अनुपस्थित होने पर डिफ़ॉल्ट ऑपरेटर दायरा सेट का उपयोग करता है। स्वामी अर्थवत्ता केवल तब खोता है जब कॉलर स्पष्ट रूप से दायरों को सीमित करता है और `operator.admin` को छोड़ देता है। `x-openclaw-model` जैसे स्वामी-स्तरीय नियंत्रणों के लिए `operator.admin` आवश्यक है।                        |
+
+[ऑपरेटर दायरे](/hi/gateway/operator-scopes), [सुरक्षा](/hi/gateway/security), और [दूरस्थ पहुँच](/hi/gateway/remote) देखें।
+
+## प्रमाणीकरण
+
+Gateway प्रमाणीकरण कॉन्फ़िगरेशन का उपयोग करता है (उस मोड के विवरण के लिए [विश्वसनीय प्रॉक्सी प्रमाणीकरण](/hi/gateway/trusted-proxy-auth) देखें):
+
+| मोड                                | प्रमाणीकरण कैसे करें                                                                                                                                                                     |
+| ----------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `gateway.auth.mode="token"`         | `Authorization: Bearer <token>`। `gateway.auth.token` या `OPENCLAW_GATEWAY_TOKEN` के माध्यम से सेट करें।                                                                                              |
+| `gateway.auth.mode="password"`      | `Authorization: Bearer <password>`। `gateway.auth.password` या `OPENCLAW_GATEWAY_PASSWORD` के माध्यम से सेट करें।                                                                                     |
+| `gateway.auth.mode="trusted-proxy"` | कॉन्फ़िगर किए गए पहचान-जागरूक प्रॉक्सी के माध्यम से रूट करें; यह आवश्यक पहचान हेडर इंजेक्ट करता है। समान-होस्ट लूपबैक प्रॉक्सी के लिए स्पष्ट `gateway.auth.trustedProxy.allowLoopback = true` आवश्यक है। |
+| `gateway.auth.mode="none"`          | किसी प्रमाणीकरण हेडर की आवश्यकता नहीं (केवल निजी इनग्रेस)।                                                                                                                                         |
+
+टिप्पणियाँ:
+
+- `trusted-proxy` Gateway पर प्रॉक्सी को बायपास करने वाले समान-होस्ट कॉलर सीधे `gateway.auth.password` / `OPENCLAW_GATEWAY_PASSWORD` का उपयोग कर सकते हैं। किसी भी `Forwarded`, `X-Forwarded-*`, या `X-Real-IP` हेडर का प्रमाण अनुरोध को इसके बजाय विश्वसनीय-प्रॉक्सी पथ पर बनाए रखता है।
+- यदि `gateway.auth.rateLimit` कॉन्फ़िगर है और बहुत अधिक प्रमाणीकरण प्रयास विफल होते हैं, तो एंडपॉइंट `Retry-After` हेडर के साथ `429` लौटाता है।
+
+## इस एंडपॉइंट का उपयोग कब करें
+
+- जब आपका एकीकरण उसी Gateway के लिए केवल एक अन्य ऑपरेटर/क्लाइंट सतह हो, तो नया बिल्ट-इन चैनल जोड़ने के बजाय इसे प्राथमिकता दें।
+- दूरस्थ Gateway से सीधे कनेक्ट होने वाले नेटिव मोबाइल क्लाइंट के लिए, युग्मित-डिवाइस बूटस्ट्रैप/डिवाइस-टोकन प्रवाह के साथ [WebChat](/hi/web/webchat) या [Gateway प्रोटोकॉल](/hi/gateway/protocol) को प्राथमिकता दें, ताकि डिवाइस को साझा HTTP टोकन/पासवर्ड की आवश्यकता न हो।
+- अपने उपयोगकर्ताओं, रूम, Webhook डिलीवरी या आउटबाउंड ट्रांसपोर्ट वाले बाहरी मैसेजिंग नेटवर्क को एकीकृत करते समय इसके बजाय चैनल Plugin बनाएँ। [Plugin बनाना](/hi/plugins/building-plugins) देखें।
+
+## एजेंट-प्रथम मॉडल अनुबंध
+
+OpenClaw, OpenAI के `model` फ़ील्ड को अपरिष्कृत प्रदाता मॉडल आईडी नहीं, बल्कि **एजेंट लक्ष्य** मानता है।
+
+| `model` मान                                | यहाँ रूट होता है                                                                                                                |
+| -------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| `openclaw`                                   | कॉन्फ़िगर किया गया डिफ़ॉल्ट एजेंट                                                                                                 |
+| `openclaw/default`                           | कॉन्फ़िगर किया गया डिफ़ॉल्ट एजेंट (स्थिर उपनाम; अलग-अलग परिवेशों के बीच वास्तविक डिफ़ॉल्ट एजेंट आईडी बदलने पर भी हार्डकोड करना सुरक्षित है) |
+| `openclaw/<agentId>` या `openclaw:<agentId>` | विशिष्ट एजेंट                                                                                                           |
+| `agent:<agentId>`                            | विशिष्ट एजेंट (संगतता उपनाम)                                                                                     |
+
+वैकल्पिक अनुरोध हेडर:
+
+| हेडर                                          | प्रभाव                                                                                                                                                                                                                                                                      |
+| ----------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `x-openclaw-model: <provider/model-or-bare-id>` | चयनित एजेंट के लिए बैकएंड मॉडल को ओवरराइड करता है। साझा-सीक्रेट बेयरर कॉलर इसका सीधे उपयोग कर सकते हैं; पहचान-युक्त कॉलर (विश्वसनीय-प्रॉक्सी, या `x-openclaw-scopes` वाला निजी बिना-प्रमाणीकरण इनग्रेस) को `operator.admin` चाहिए, अन्यथा `403 missing scope: operator.admin`। |
+| `x-openclaw-agent-id: <agentId>`                | एजेंट चयन के लिए संगतता ओवरराइड।                                                                                                                                                                                                                                 |
+| `x-openclaw-session-key: <sessionKey>`          | स्पष्ट सत्र रूटिंग। यदि यह आरक्षित आंतरिक नेमस्पेस (`subagent:`, `cron:`, `acp:`) का उपयोग करता है, तो `400 invalid_request_error` के साथ अस्वीकृत किया जाता है।                                                                                                                                |
+| `x-openclaw-message-channel: <channel>`         | चैनल-जागरूक प्रॉम्प्ट/नीतियों के लिए कृत्रिम इनग्रेस चैनल संदर्भ सेट करता है।                                                                                                                                                                                              |
+
+`/v1/models` शीर्ष-स्तरीय एजेंट लक्ष्य (`openclaw`, `openclaw/default`, `openclaw/<agentId>`) सूचीबद्ध करता है, बैकएंड प्रदाता मॉडल या उप-एजेंट नहीं; उप-एजेंट आंतरिक निष्पादन टोपोलॉजी बने रहते हैं। यदि आप `x-openclaw-model` को छोड़ देते हैं, तो चयनित एजेंट अपने सामान्य कॉन्फ़िगर किए गए मॉडल के साथ चलता है।
+
+`/v1/embeddings` समान एजेंट-लक्ष्य `model` आईडी का उपयोग करता है। विशिष्ट एम्बेडिंग मॉडल चुनने के लिए `x-openclaw-model` भेजें (साझा-सीक्रेट कॉलर से, या `operator.admin` वाले पहचान-युक्त कॉलर से); अन्यथा अनुरोध चयनित एजेंट के सामान्य एम्बेडिंग सेटअप का उपयोग करता है।
+
+## सत्र व्यवहार
+
+डिफ़ॉल्ट रूप से एंडपॉइंट **प्रति अनुरोध स्टेटलेस** है (हर कॉल पर नई सत्र कुंजी बनाई जाती है)।
+
+यदि अनुरोध में OpenAI की `user` स्ट्रिंग शामिल है, तो Gateway उससे एक स्थिर सत्र कुंजी प्राप्त करता है, ताकि बार-बार किए गए कॉल एक एजेंट सत्र साझा कर सकें। कस्टम ऐप्स के लिए, प्रत्येक वार्तालाप थ्रेड में समान `user` मान का पुनः उपयोग करें; खाता-स्तरीय पहचानकर्ताओं से बचें, जब तक कि आप कई वार्तालापों/डिवाइसों को एक OpenClaw सत्र साझा नहीं करवाना चाहते। कई क्लाइंट/थ्रेड के बीच स्पष्ट रूटिंग नियंत्रण की आवश्यकता होने पर ही `x-openclaw-session-key` का उपयोग करें, और ऐप्लिकेशन-स्वामित्व वाली ऐसी कुंजियाँ रखें जो ऊपर दिए गए आरक्षित नेमस्पेस से बचें।
+
+## अनुरोध सीमाएँ (कॉन्फ़िगरेशन)
+
+डिफ़ॉल्ट मानों को `gateway.http.endpoints.chatCompletions` के अंतर्गत समायोजित किया जा सकता है:
 
 ```json5
 {
   gateway: {
     http: {
       endpoints: {
-        chatCompletions: { enabled: false },
+        chatCompletions: {
+          enabled: true,
+          maxBodyBytes: 20000000,
+          maxImageParts: 8,
+          maxTotalImageBytes: 20000000,
+          images: {
+            allowUrl: false,
+            urlAllowlist: ["cdn.example.com", "*.assets.example.com"],
+            allowedMimes: [
+              "image/jpeg",
+              "image/png",
+              "image/gif",
+              "image/webp",
+              "image/heic",
+              "image/heif",
+            ],
+            maxBytes: 10485760,
+            maxRedirects: 3,
+            timeoutMs: 10000,
+          },
+        },
       },
     },
   },
 }
 ```
 
-## Session behavior
+छोड़े जाने पर डिफ़ॉल्ट मान:
 
-डिफ़ॉल्ट रूप से endpoint **प्रति अनुरोध stateless** है (हर call में नई session key generate होती है).
+| कुंजी                   | डिफ़ॉल्ट                                                                     |
+| --------------------- | --------------------------------------------------------------------------- |
+| `maxBodyBytes`        | 20MB                                                                        |
+| `maxImageParts`       | 8 (नवीनतम उपयोगकर्ता संदेश से अधिकतम `image_url` भाग पढ़े जाते हैं)                 |
+| `maxTotalImageBytes`  | 20MB (एक अनुरोध में सभी `image_url` भागों के संचयी डीकोड किए गए बाइट) |
+| `images.allowUrl`     | `false` (URL-स्रोत वाले `image_url` भाग सक्षम किए बिना अस्वीकृत किए जाते हैं)         |
+| `images.maxBytes`     | प्रति चित्र 10MB                                                              |
+| `images.maxRedirects` | 3                                                                           |
+| `images.timeoutMs`    | 10s                                                                         |
 
-यदि अनुरोध में OpenAI `user` string शामिल है, तो Gateway उससे stable session key derive करता है, ताकि repeated calls एक agent session साझा कर सकें.
+HEIC/HEIF `image_url` स्रोत स्वीकार किए जाते हैं और साझा OpenClaw इमेज प्रोसेसर (Rastermill) के माध्यम से प्रदाता को भेजे जाने से पहले JPEG में सामान्यीकृत किए जाते हैं; बाहरी कोडेक समर्थन की आवश्यकता वाले प्रारूपों के लिए यह सिस्टम कन्वर्टर (`sips`, ImageMagick, GraphicsMagick, या ffmpeg) का फ़ॉलबैक उपयोग करता है।
 
-Custom apps के लिए, सबसे सुरक्षित default है कि प्रति conversation thread वही `user` value reuse करें. Account-level identifiers से बचें, जब तक आप स्पष्ट रूप से कई conversations या devices को एक OpenClaw session साझा कराना न चाहते हों. `x-openclaw-session-key` का उपयोग केवल तब करें जब आपको कई clients या threads में explicit routing control चाहिए, और application-owned keys चुनें जो `subagent:`, `cron:`, या `acp:` जैसे reserved internal namespaces से शुरू न हों.
+सुरक्षा नोट: किसी होस्टनाम को अनुमत सूची में डालने से निजी/आंतरिक IP अवरोधन निष्प्रभावी नहीं होता। इंटरनेट पर उपलब्ध Gateways के लिए, ऐप-स्तरीय सुरक्षा उपायों के अतिरिक्त नेटवर्क निर्गमन नियंत्रण लागू करें। [सुरक्षा](/hi/gateway/security) देखें।
 
-## यह सतह क्यों मायने रखती है
+## चैट टूल अनुबंध
 
-यह self-hosted frontends और tooling के लिए सबसे अधिक leverage वाला compatibility set है:
+`/v1/chat/completions` सामान्य OpenAI Chat क्लाइंट के साथ संगत फ़ंक्शन-टूल उपसमुच्चय का समर्थन करता है।
 
-- अधिकांश Open WebUI, LobeChat, और LibreChat setups `/v1/models` की अपेक्षा करते हैं.
-- कई RAG systems `/v1/embeddings` की अपेक्षा करते हैं.
-- मौजूदा OpenAI chat clients आमतौर पर `/v1/chat/completions` से शुरू कर सकते हैं.
-- अधिक agent-native clients बढ़ती संख्या में `/v1/responses` को प्राथमिकता देते हैं.
+### समर्थित अनुरोध फ़ील्ड
 
-## Model list और agent routing
+| फ़ील्ड                      | टिप्पणियाँ                                                                                                                                         |
+| -------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| `tools`                    | `{ "type": "function", "function": { ... } }` की सरणी                                                                                        |
+| `tool_choice`              | `"auto"`, `"none"`, `"required"`, या `{ "type": "function", "function": { "name": "..." } }`                                                  |
+| `messages[*].role: "tool"` | अनुवर्ती टर्न                                                                                                                               |
+| `messages[*].tool_call_id` | किसी टूल परिणाम को पिछले टूल कॉल से संबद्ध करता है                                                                                                 |
+| `max_completion_tokens`    | संख्या; प्रत्येक कॉल में कुल पूर्णता टोकन की सीमा (रीज़निंग टोकन सहित)। वर्तमान फ़ील्ड नाम; इसे और `max_tokens` दोनों को भेजने पर इसका उपयोग होता है। |
+| `max_tokens`               | संख्या; पुराना उपनाम, `max_completion_tokens` भी मौजूद होने पर अनदेखा किया जाता है।                                                                   |
+| `temperature`              | संख्या 0-2; सर्वोत्तम प्रयास के आधार पर अपस्ट्रीम प्रदाता को अग्रेषित की जाती है। सीमा से बाहर होने पर `400 invalid_request_error`।                                     |
+| `top_p`                    | संख्या 0-1; सर्वोत्तम प्रयास। सीमा से बाहर होने पर `400 invalid_request_error`।                                                                         |
+| `frequency_penalty`        | संख्या -2.0 से 2.0; सर्वोत्तम प्रयास। सीमा से बाहर होने पर `400 invalid_request_error`।                                                                 |
+| `presence_penalty`         | संख्या -2.0 से 2.0; सर्वोत्तम प्रयास। सीमा से बाहर होने पर `400 invalid_request_error`।                                                                 |
+| `seed`                     | पूर्णांक; सर्वोत्तम प्रयास। गैर-पूर्णांक मानों के लिए `400 invalid_request_error`।                                                                     |
+| `stop`                     | स्ट्रिंग या अधिकतम 4 स्ट्रिंग की सरणी; सर्वोत्तम प्रयास। 4 से अधिक अनुक्रमों या गैर-स्ट्रिंग/रिक्त प्रविष्टियों के लिए `400 invalid_request_error`।           |
 
-<AccordionGroup>
-  <Accordion title="`/v1/models` क्या लौटाता है?">
-    एक OpenClaw agent-target list.
+सभी सैंपलिंग और टोकन-सीमा फ़ील्ड समान एजेंट स्ट्रीम-पैरामीटर चैनल से भेजे जाते हैं और सर्वोत्तम प्रयास के आधार पर अग्रेषित किए जाते हैं:
 
-    लौटाए गए ids `openclaw`, `openclaw/default`, और `openclaw/<agentId>` entries हैं.
-    इन्हें सीधे OpenAI `model` values के रूप में उपयोग करें.
+- टोकन सीमा: वायर फ़ील्ड का नाम प्रदाता ट्रांसपोर्ट चुनता है: OpenAI-परिवार के एंडपॉइंट के लिए `max_completion_tokens`, और केवल पुराना नाम स्वीकार करने वाले प्रदाताओं (Mistral, Chutes) के लिए `max_tokens`।
+- `stop` ट्रांसपोर्ट के स्टॉप फ़ील्ड से मैप होता है: Chat Completions बैकएंड के लिए `stop`, Anthropic के लिए `stop_sequences`। OpenAI Responses API में स्टॉप पैरामीटर नहीं है, इसलिए Responses-समर्थित मॉडल पर `stop` लागू नहीं होता।
+- ChatGPT-आधारित Codex Responses बैकएंड निश्चित सर्वर-साइड सैंपलिंग का उपयोग करता है और अनुरोध के उस बैकएंड तक पहुँचने से पहले `temperature`/`top_p` को (`max_output_tokens`, `metadata`, `prompt_cache_retention`, `service_tier` के साथ) हटा देता है।
 
-  </Accordion>
-  <Accordion title="क्या `/v1/models` agents या sub-agents सूचीबद्ध करता है?">
-    यह top-level agent targets सूचीबद्ध करता है, backend provider models नहीं और sub-agents नहीं.
+### असमर्थित प्रकार
 
-    Sub-agents internal execution topology बने रहते हैं. वे pseudo-models के रूप में दिखाई नहीं देते.
+इनके लिए `400 invalid_request_error` लौटाता है:
 
-  </Accordion>
-  <Accordion title="`openclaw/default` क्यों शामिल है?">
-    `openclaw/default` कॉन्फ़िगर किए गए default agent का stable alias है.
+- गैर-सरणी `tools`, गैर-फ़ंक्शन टूल प्रविष्टियाँ, या अनुपस्थित `tool.function.name`
+- `tool_choice` के प्रकार, जैसे `allowed_tools` और `custom`
+- `tool_choice.function.name` मान, जो दिए गए किसी टूल से मेल नहीं खाते
 
-    इसका मतलब है कि clients एक predictable id का उपयोग जारी रख सकते हैं, भले ही environments के बीच वास्तविक default agent id बदल जाए.
+`tool_choice: "required"` और फ़ंक्शन-पिन किए गए `tool_choice` के लिए, एंडपॉइंट उपलब्ध क्लाइंट फ़ंक्शन-टूल सेट को सीमित करता है, रनटाइम को उत्तर देने से पहले क्लाइंट टूल कॉल करने का निर्देश देता है, और एजेंट प्रतिक्रिया में मेल खाने वाला संरचित क्लाइंट-टूल कॉल न होने पर त्रुटि देता है। यह कॉलर द्वारा दी गई HTTP `tools` सूची पर लागू होता है, प्रत्येक आंतरिक OpenClaw एजेंट टूल पर नहीं।
 
-  </Accordion>
-  <Accordion title="मैं backend model को कैसे override करूँ?">
-    `x-openclaw-model` का उपयोग करें. यह owner-level override है: यह Gateway shared-secret bearer token/password path के साथ काम करता है, और trusted proxy auth जैसे identity-bearing HTTP paths पर `operator.admin` की आवश्यकता होती है.
+### गैर-स्ट्रीमिंग टूल प्रतिक्रिया का स्वरूप
 
-    उदाहरण:
-    `x-openclaw-model: openai/gpt-5.4`
-    `x-openclaw-model: gpt-5.5`
-
-    यदि आप इसे छोड़ देते हैं, तो चुना गया agent अपने सामान्य configured model choice के साथ चलता है.
-
-  </Accordion>
-  <Accordion title="Embeddings इस contract में कैसे fit होते हैं?">
-    `/v1/embeddings` वही agent-target `model` ids उपयोग करता है.
-
-    `model: "openclaw/default"` या `model: "openclaw/<agentId>"` का उपयोग करें.
-    जब आपको कोई विशिष्ट embedding model चाहिए, तो उसे shared-secret caller या `operator.admin` वाले identity-bearing caller से `x-openclaw-model` में भेजें.
-    उस header के बिना, अनुरोध चुने गए agent के सामान्य embedding setup से होकर गुजरता है.
-
-  </Accordion>
-</AccordionGroup>
-
-## Streaming (SSE)
-
-Server-Sent Events (SSE) प्राप्त करने के लिए `stream: true` सेट करें:
-
-- `Content-Type: text/event-stream`
-- हर event line `data: <json>` है
-- Stream `data: [DONE]` के साथ समाप्त होता है
-
-## Chat tool contract
-
-`/v1/chat/completions` सामान्य OpenAI Chat clients के साथ compatible function-tool subset का समर्थन करता है.
-
-### समर्थित request fields
-
-- `tools`: `{ "type": "function", "function": { ... } }` की array
-- `tool_choice`: `"auto"`, `"none"`, `"required"`, या `{ "type": "function", "function": { "name": "..." } }`
-- `messages[*].role: "tool"` follow-up turns
-- `messages[*].tool_call_id` tool results को prior tool call से वापस bind करने के लिए
-- `max_completion_tokens`: number; total completion tokens (reasoning tokens शामिल) के लिए per-call cap. वर्तमान OpenAI Chat Completions field name; जब `max_completion_tokens` और `max_tokens` दोनों भेजे जाएँ तो preferred.
-- `max_tokens`: number; backwards compatibility के लिए legacy alias स्वीकार किया जाता है. जब `max_completion_tokens` भी मौजूद हो तो ignored.
-- `temperature`: number; best-effort sampling temperature agent stream-param channel के माध्यम से upstream provider को forward किया जाता है.
-- `top_p`: number; best-effort nucleus sampling agent stream-param channel के माध्यम से upstream provider को forward किया जाता है.
-- `frequency_penalty`: number; best-effort frequency penalty agent stream-param channel के माध्यम से upstream provider को forward किया जाता है. Validated range: -2.0 से 2.0. Out-of-range values के लिए `400 invalid_request_error` लौटाता है.
-- `presence_penalty`: number; best-effort presence penalty agent stream-param channel के माध्यम से upstream provider को forward किया जाता है. Validated range: -2.0 से 2.0. Out-of-range values के लिए `400 invalid_request_error` लौटाता है.
-- `seed`: number (integer); best-effort seed agent stream-param channel के माध्यम से upstream provider को forward किया जाता है. Non-integer values के लिए `400 invalid_request_error` लौटाता है.
-- `stop`: string या 4 strings तक की array; best-effort stop sequences agent stream-param channel के माध्यम से upstream provider को forward किए जाते हैं. 4 से अधिक sequences या non-string/empty entries के लिए `400 invalid_request_error` लौटाता है.
-
-जब कोई भी token-cap फ़ील्ड सेट किया जाता है, तो मान एजेंट stream-param चैनल के माध्यम से अपस्ट्रीम प्रदाता को भेजा जाता है। अपस्ट्रीम प्रदाता को भेजे गए वास्तविक वायर फ़ील्ड का नाम प्रदाता ट्रांसपोर्ट चुनता है: OpenAI-परिवार एंडपॉइंट के लिए `max_completion_tokens`, और उन प्रदाताओं के लिए `max_tokens` जो केवल विरासती नाम स्वीकार करते हैं (जैसे Mistral और Chutes)। सैंपलिंग फ़ील्ड (`temperature`, `top_p`, `frequency_penalty`, `presence_penalty`, `seed`) वही stream-param चैनल अपनाते हैं; ChatGPT-आधारित Codex Responses बैकएंड उन्हें सर्वर-साइड हटा देता है क्योंकि वह निश्चित सैंपलिंग का उपयोग करता है। `stop` भी stream-param चैनल पर चलता है और ट्रांसपोर्ट के stop फ़ील्ड से मैप होता है (Chat Completions बैकएंड के लिए `stop`, Anthropic के लिए `stop_sequences`); OpenAI Responses API में stop पैरामीटर नहीं है, इसलिए Responses-समर्थित मॉडलों पर `stop` लागू नहीं होता।
-
-### असमर्थित वैरिएंट
-
-एंडपॉइंट असमर्थित टूल वैरिएंट के लिए `400 invalid_request_error` लौटाता है, जिनमें शामिल हैं:
-
-- गैर-ऐरे `tools`
-- गैर-फ़ंक्शन टूल प्रविष्टियां
-- अनुपस्थित `tool.function.name`
-- `tool_choice` वैरिएंट जैसे `allowed_tools` और `custom`
-- `tool_choice.function.name` मान जो दिए गए `tools` से मेल नहीं खाते
-
-`tool_choice: "required"` और फ़ंक्शन-पिन किए गए `tool_choice` के लिए, एंडपॉइंट प्रदर्शित क्लाइंट फ़ंक्शन-टूल सेट को सीमित करता है, रनटाइम को प्रतिक्रिया देने से पहले क्लाइंट टूल कॉल करने का निर्देश देता है, और यदि एजेंट प्रतिक्रिया में मेल खाती संरचित क्लाइंट-टूल कॉल शामिल नहीं है तो त्रुटि लौटाता है। यह अनुबंध कॉलर द्वारा दी गई HTTP `tools` सूची पर लागू होता है, हर आंतरिक OpenClaw एजेंट टूल पर नहीं।
-
-### नॉन-स्ट्रीमिंग टूल प्रतिक्रिया आकार
-
-जब एजेंट टूल कॉल करने का निर्णय लेता है, तो प्रतिक्रिया यह उपयोग करती है:
+जब एजेंट टूल कॉल करता है, तो प्रतिक्रिया में इसका उपयोग होता है:
 
 - `choices[0].finish_reason = "tool_calls"`
-- `choices[0].message.tool_calls[]` प्रविष्टियां इनके साथ:
-  - `id`
-  - `type: "function"`
-  - `function.name`
-  - `function.arguments` (JSON string)
+- `choices[0].message.tool_calls[]` प्रविष्टियाँ, जिनमें `id`, `type: "function"`, `function.name`, `function.arguments` (JSON स्ट्रिंग) होते हैं
+- टूल कॉल से पहले सहायक की टिप्पणी, `choices[0].message.content` में (संभवतः रिक्त)
 
-टूल कॉल से पहले की असिस्टेंट टिप्पणी `choices[0].message.content` में लौटाई जाती है (संभवतः खाली)।
+### स्ट्रीमिंग टूल प्रतिक्रिया का स्वरूप
 
-### स्ट्रीमिंग टूल प्रतिक्रिया आकार
+जब `stream: true`, टूल कॉल क्रमिक SSE खंडों के रूप में आते हैं: एक आरंभिक सहायक भूमिका डेल्टा, वैकल्पिक सहायक टिप्पणी डेल्टा, टूल की पहचान और आर्ग्युमेंट के अंश ले जाने वाले एक या अधिक `delta.tool_calls` खंड, और फिर `finish_reason: "tool_calls"` तथा `data: [DONE]` वाला अंतिम खंड।
 
-जब `stream: true` हो, तो टूल कॉल incremental SSE chunks के रूप में उत्सर्जित होते हैं:
+यदि `stream_options.include_usage=true`, तो `[DONE]` से पहले उपयोग का अंतिम खंड उत्सर्जित किया जाता है।
 
-- प्रारंभिक assistant role delta
-- वैकल्पिक असिस्टेंट टिप्पणी deltas
-- एक या अधिक `delta.tool_calls` chunks जो टूल पहचान और argument fragments ले जाते हैं
-- `finish_reason: "tool_calls"` के साथ अंतिम chunk
-- `data: [DONE]`
+### टूल अनुवर्ती लूप
 
-यदि `stream_options.include_usage=true` हो, तो `[DONE]` से पहले एक trailing usage chunk उत्सर्जित होता है।
+`tool_calls` प्राप्त करने के बाद, अनुरोधित फ़ंक्शन निष्पादित करें और ऐसा अनुवर्ती अनुरोध भेजें जिसमें पिछला सहायक टूल-कॉल संदेश तथा मेल खाने वाले `tool_call_id` वाले एक या अधिक `role: "tool"` संदेश शामिल हों। अंतिम उत्तर तैयार करने के लिए यही एजेंट रीज़निंग लूप जारी रहता है।
 
-### टूल फॉलो-अप लूप
+## स्ट्रीमिंग (SSE)
 
-`tool_calls` प्राप्त करने के बाद, क्लाइंट को अनुरोधित फ़ंक्शन चलाने चाहिए और एक फॉलो-अप अनुरोध भेजना चाहिए जिसमें शामिल हो:
+Server-Sent Events प्राप्त करने के लिए `stream: true` सेट करें:
 
-- पिछला assistant tool-call message
-- मेल खाते `tool_call_id` के साथ एक या अधिक `role: "tool"` messages
+- `Content-Type: text/event-stream`
+- प्रत्येक इवेंट पंक्ति `data: <json>` होती है
+- स्ट्रीम `data: [DONE]` के साथ समाप्त होती है
 
-यह gateway एजेंट रन को वही reasoning loop जारी रखने और अंतिम असिस्टेंट उत्तर बनाने देता है।
-
-## Open WebUI त्वरित सेटअप
-
-बुनियादी Open WebUI कनेक्शन के लिए:
+## Open WebUI का त्वरित सेटअप
 
 - Base URL: `http://127.0.0.1:18789/v1`
-- macOS पर Docker base URL: `http://host.docker.internal:18789/v1`
-- API key: आपका Gateway bearer token
+- Docker on macOS base URL: `http://host.docker.internal:18789/v1`
+- API key: आपका Gateway बेयरर टोकन
 - Model: `openclaw/default`
 
-अपेक्षित व्यवहार:
-
-- `GET /v1/models` को `openclaw/default` सूचीबद्ध करना चाहिए
-- Open WebUI को chat model id के रूप में `openclaw/default` का उपयोग करना चाहिए
-- यदि आप उस एजेंट के लिए कोई विशिष्ट बैकएंड प्रदाता/मॉडल चाहते हैं, तो एजेंट का सामान्य डिफ़ॉल्ट मॉडल सेट करें या shared-secret caller या `operator.admin` वाले identity-bearing caller से `x-openclaw-model` भेजें
+अपेक्षित व्यवहार: `GET /v1/models` में `openclaw/default` सूचीबद्ध होता है, और Open WebUI इसे चैट मॉडल आईडी के रूप में उपयोग करता है। किसी विशिष्ट बैकएंड प्रदाता/मॉडल के लिए, एजेंट का सामान्य डिफ़ॉल्ट मॉडल सेट करें, या `x-openclaw-model` भेजें (साझा-सीक्रेट कॉलर, या `operator.admin` वाला पहचान-युक्त कॉलर)।
 
 त्वरित स्मोक परीक्षण:
 
@@ -303,11 +244,11 @@ curl -sS http://127.0.0.1:18789/v1/models \
   -H 'Authorization: Bearer YOUR_TOKEN'
 ```
 
-यदि वह `openclaw/default` लौटाता है, तो अधिकांश Open WebUI सेटअप उसी base URL और token से कनेक्ट हो सकते हैं।
+यदि यह `openclaw/default` लौटाता है, तो अधिकांश Open WebUI सेटअप समान Base URL और टोकन से कनेक्ट हो सकते हैं।
 
 ## उदाहरण
 
-एक ऐप वार्तालाप के लिए स्थिर सत्र:
+किसी एक ऐप वार्तालाप के लिए स्थिर सत्र:
 
 ```bash
 curl -sS http://127.0.0.1:18789/v1/chat/completions \
@@ -316,13 +257,13 @@ curl -sS http://127.0.0.1:18789/v1/chat/completions \
   -d '{
     "model": "openclaw/default",
     "user": "conv:YOUR_CONVERSATION_ID",
-    "messages": [{"role":"user","content":"Summarize my tasks for today"}]
+    "messages": [{"role":"user","content":"आज के लिए मेरे कार्यों का सारांश दें"}]
   }'
 ```
 
-उस वार्तालाप के लिए वही एजेंट सत्र जारी रखने हेतु बाद की कॉल में वही `user` मान दोबारा उपयोग करें।
+उसी एजेंट सत्र को जारी रखने के लिए उस वार्तालाप की बाद की कॉल में समान `user` मान का पुनः उपयोग करें।
 
-नॉन-स्ट्रीमिंग:
+गैर-स्ट्रीमिंग:
 
 ```bash
 curl -sS http://127.0.0.1:18789/v1/chat/completions \
@@ -330,7 +271,7 @@ curl -sS http://127.0.0.1:18789/v1/chat/completions \
   -H 'Content-Type: application/json' \
   -d '{
     "model": "openclaw/default",
-    "messages": [{"role":"user","content":"hi"}]
+    "messages": [{"role":"user","content":"नमस्ते"}]
   }'
 ```
 
@@ -344,7 +285,7 @@ curl -N http://127.0.0.1:18789/v1/chat/completions \
   -d '{
     "model": "openclaw/research",
     "stream": true,
-    "messages": [{"role":"user","content":"hi"}]
+    "messages": [{"role":"user","content":"नमस्ते"}]
   }'
 ```
 
@@ -362,7 +303,7 @@ curl -sS http://127.0.0.1:18789/v1/models/openclaw%2Fdefault \
   -H 'Authorization: Bearer YOUR_TOKEN'
 ```
 
-Embeddings बनाएं:
+एम्बेडिंग बनाएँ:
 
 ```bash
 curl -sS http://127.0.0.1:18789/v1/embeddings \
@@ -375,14 +316,10 @@ curl -sS http://127.0.0.1:18789/v1/embeddings \
   }'
 ```
 
-नोट्स:
-
-- `/v1/models` OpenClaw एजेंट targets लौटाता है, raw provider catalogs नहीं।
-- `openclaw/default` हमेशा मौजूद होता है ताकि एक स्थिर id सभी environments में काम करे।
-- Backend provider/model overrides `x-openclaw-model` में होते हैं, OpenAI `model` फ़ील्ड में नहीं। identity-bearing HTTP auth paths पर, इस header के लिए `operator.admin` आवश्यक है।
-- `/v1/embeddings` `input` को string या strings की array के रूप में support करता है।
+`/v1/embeddings`, `input` को स्ट्रिंग या स्ट्रिंग की सरणी के रूप में समर्थन करता है।
 
 ## संबंधित
 
 - [कॉन्फ़िगरेशन संदर्भ](/hi/gateway/configuration-reference)
+- [ऑपरेटर स्कोप](/hi/gateway/operator-scopes)
 - [OpenAI](/hi/providers/openai)

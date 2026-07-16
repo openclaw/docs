@@ -1,14 +1,15 @@
 ---
 read_when:
-    - Bạn đang cài đặt, cấu hình hoặc kiểm tra Plugin zalo
+    - Bạn đang cài đặt, cấu hình hoặc kiểm tra Plugin Zalo
 summary: Plugin kênh Zalo của OpenClaw dành cho các cuộc trò chuyện qua bot và webhook.
 title: Plugin Zalo
 x-i18n:
-    generated_at: "2026-07-12T08:17:33Z"
+    generated_at: "2026-07-16T15:41:13Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: ff9da1e1591eaad36db74a27f817dd9dac8791af2d5030fcd3419ee50d2ed4aa
+    source_hash: a4b94a8f8907373d12d0958496c18e5fb3dff0442a01e2a8a521993b9025d990
     source_path: plugins/reference/zalo.md
     workflow: 16
 ---
@@ -24,8 +25,8 @@ Plugin kênh Zalo của OpenClaw dành cho các cuộc trò chuyện qua bot và
 
 ## Bề mặt
 
-kênh: zalo
+kênh: `zalo`
 
 ## Tài liệu liên quan
 
-- [zalo](/vi/channels/zalo)
+- [Zalo](/vi/channels/zalo)

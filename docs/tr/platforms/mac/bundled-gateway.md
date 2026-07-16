@@ -1,80 +1,104 @@
 ---
 read_when:
-    - OpenClaw.app paketleniyor
+    - OpenClaw.app'i Paketleme
     - macOS Gateway launchd hizmetinde hata ayıklama
-    - macOS için Gateway CLI'yı yükleme
-summary: macOS’ta Gateway çalışma zamanı (harici launchd hizmeti)
-title: macOS üzerinde Gateway
+    - macOS için Gateway CLI'yi yükleme
+summary: macOS'te Gateway çalışma zamanı (harici launchd hizmeti)
+title: macOS'ta Gateway
 x-i18n:
-    generated_at: "2026-07-04T06:48:31Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T17:35:58Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 7a8b646f4cae43cb66acbf3527ef2af9ccaf4b6f2678a464586a110e5e9b3662
+    source_hash: 30c1ae14d8f8eaab73d0e2b725292d7411c2c8b5e0e0c32ad13989c01340d054
     source_path: platforms/mac/bundled-gateway.md
     workflow: 16
 ---
 
-OpenClaw.app artık Node/Bun veya Gateway çalışma zamanını paket halinde sunmaz. macOS uygulaması **harici** bir `openclaw` CLI kurulumunu bekler, Gateway'i alt süreç olarak başlatmaz ve Gateway'in çalışır durumda kalması için kullanıcı başına bir launchd servisini yönetir (veya zaten çalışan mevcut bir yerel Gateway varsa ona bağlanır).
+OpenClaw.app, Node veya Gateway çalışma zamanını paketlemez. macOS uygulaması,
+**harici** bir `openclaw` CLI kurulumu bekler, Gateway'i bir alt süreç
+olarak başlatmaz ve Gateway'in çalışır durumda kalmasını sağlamak için kullanıcı
+başına bir launchd hizmetini yönetir (veya zaten çalışan yerel bir Gateway'e bağlanır).
 
 ## Otomatik kurulum
 
-Yeni bir Mac'te, ilk kurulum sırasında **Bu Mac** seçeneğini seçin. Uygulama, Gateway sihirbazından önce imzalı, paketlenmiş yükleyicisini çalıştırır; `~/.openclaw` altına kullanıcı alanı Node çalışma zamanını ve eşleşen `openclaw` CLI'ı kurar, ardından kullanıcı başına launchd servisini kurup başlatır. Bu yol Terminal, Homebrew veya yönetici erişimi gerektirmez.
+Yeni bir Mac'te ilk kullanım kurulumu sırasında **This Mac** seçeneğini belirleyin. Uygulama,
+Gateway sihirbazından önce imzalı ve paketlenmiş yükleyici betiğini çalıştırır: kullanıcı
+alanına bir Node çalışma zamanı ve `~/.openclaw` altına eşleşen
+`openclaw` CLI'yi kurar, ardından kullanıcı başına launchd hizmetini kurup
+başlatır. Bu yol için Terminal, Homebrew veya yönetici erişimi gerekmez.
 
-Uygulama, Node veya Gateway yükünü değil, yükleyici betiğini paket halinde sunar. Bu nedenle kurulum, çalışma zamanını ve eşleşen OpenClaw paketini indirmek için internet bağlantısı gerektirir.
+Uygulama, Node veya Gateway yükünü değil yalnızca yükleyici betiğini paketler;
+kurulumun çalışma zamanını ve eşleşen OpenClaw paketini indirmesi için internet
+bağlantısı gerekir.
 
 ## Elle kurtarma
 
-Elle kurulum için Node 24 önerilir. Şu anda `22.19+` olan Node 22 LTS de çalışır. Ardından `openclaw` paketini küresel olarak kurun:
+Elle kurulum için Node 24.15+ önerilir; Node 22.22.3+ da çalışır.
+`openclaw` paketini genel olarak kurun:
 
 ```bash
 npm install -g openclaw@<version>
 ```
 
-Başarısız bir otomatik kurulumdan sonra **Kurulumu yeniden dene** seçeneğini kullanın. Bu da başarısız olursa, yukarıdaki komutla CLI'ı elle kurun, ardından ilk kurulumda **Yeniden kontrol et** seçeneğini seçin. Node, önerilen Gateway çalışma zamanı olmaya devam eder.
+Başarısız bir otomatik kurulumdan sonra **Retry setup** seçeneğini kullanın. Bu da başarısız
+olursa yukarıdaki komutla CLI'yi elle kurun, ardından ilk kullanım kurulumunda
+**Check again** seçeneğini belirleyin.
 
 ## Launchd (LaunchAgent olarak Gateway)
 
-Etiket:
+Etiket: `ai.openclaw.gateway` (varsayılan profil) veya adlandırılmış bir profil için
+`ai.openclaw.<profile>`.
 
-- `ai.openclaw.gateway` (veya `ai.openclaw.<profile>`; eski `com.openclaw.*` kalabilir)
+Plist konumu (kullanıcı başına): `~/Library/LaunchAgents/ai.openclaw.gateway.plist`
+(veya `ai.openclaw.<profile>.plist`).
 
-Plist konumu (kullanıcı başına):
-
-- `~/Library/LaunchAgents/ai.openclaw.gateway.plist`
-  (veya `~/Library/LaunchAgents/ai.openclaw.<profile>.plist`)
-
-Yönetici:
-
-- macOS uygulaması, Yerel modda LaunchAgent kurulumunu/güncellemesini üstlenir.
-- CLI da bunu kurabilir: `openclaw gateway install`.
+macOS uygulaması, Yerel modda varsayılan profil için LaunchAgent kurulumunu/güncellemesini
+yönetir. CLI de bunu doğrudan kurabilir: `openclaw gateway install`
+(adlandırılmış profiller `OPENCLAW_PROFILE` ortam değişkeni aracılığıyla seçilir).
 
 Davranış:
 
-- "OpenClaw Etkin", LaunchAgent'ı etkinleştirir/devre dışı bırakır.
-- Uygulamadan çıkmak gateway'i **durdurmaz** (launchd onu canlı tutar).
-- Yapılandırılmış bağlantı noktasında zaten bir Gateway çalışıyorsa, uygulama yeni bir tane başlatmak yerine ona bağlanır.
+- "OpenClaw Active", LaunchAgent'ı etkinleştirir/devre dışı bırakır.
+- Uygulamadan çıkmak Gateway'i **durdurmaz** (launchd onu çalışır durumda tutar).
+- Yapılandırılmış bağlantı noktasında zaten bir Gateway çalışıyorsa uygulama,
+  yenisini başlatmak yerine ona bağlanır.
 
-Günlükleme:
+Günlük kaydı:
 
-- launchd stdout: `~/Library/Logs/openclaw/gateway.log` (profiller `gateway-<profile>.log` kullanır)
-- launchd stderr: bastırılır
+- launchd standart çıktısı: `~/Library/Logs/openclaw/gateway.log` (profiller
+  `gateway-<profile>.log` kullanır)
+- launchd standart hatası: bastırılır
+- Ana makine tekrarlanan `EADDRINUSE` olaylarıyla veya hızlı yeniden
+  başlatmalarla döngüye girerse yinelenen `ai.openclaw.gateway` /
+  `ai.openclaw.node` LaunchAgent'larını ve
+  [Gateway sorun giderme](/tr/gateway/troubleshooting#macos-launchd-supervisor-loop-with-duplicate-gatewaynode-launchagents)
+  sayfasındaki launchd işaretleyici geçici çözümünü denetleyin.
 
 ## Sürüm uyumluluğu
 
-macOS uygulaması, Gateway sürümünü kendi sürümüyle karşılaştırarak kontrol eder. Mevcut bir CLI eksik veya uyumsuz olduğunda, ilk kurulum otomatik olarak yönetilen kurulumu çalıştırır. Kurulumu tekrarlamak için **Kurulumu yeniden dene** seçeneğini veya harici bir CLI'ı onardıktan sonra **Yeniden kontrol et** seçeneğini kullanın.
+macOS uygulaması, Gateway sürümünü kendi sürümüyle karşılaştırır. Mevcut bir CLI eksik
+veya uyumsuz olduğunda ilk kullanım kurulumu, yönetilen kurulumu otomatik olarak
+çalıştırır. Kurulumu yinelemek için **Retry setup** seçeneğini veya harici bir CLI'yi
+onardıktan sonra **Check again** seçeneğini kullanın.
 
-## macOS'ta durum dizini
+## macOS'taki durum dizini
 
-OpenClaw durumunu yerel, eşitlenmeyen bir diskte tutun. iCloud Drive ve diğer bulutla eşitlenen klasörlerden kaçının; çünkü eşitleme gecikmesi ve dosya kilitleri oturumları, kimlik bilgilerini ve Gateway durumunu etkileyebilir.
+OpenClaw durumunu yerel ve eşitlenmeyen bir diskte tutun. iCloud Drive'dan ve
+bulutla eşitlenen diğer klasörlerden kaçının; eşitleme gecikmesi ve dosya kilitleri
+oturumları, kimlik bilgilerini ve Gateway durumunu etkileyebilir.
 
-Yalnızca geçersiz kılma gerektiğinde `OPENCLAW_STATE_DIR` değerini yerel bir yola ayarlayın. `openclaw doctor`, yaygın bulutla eşitlenen durum yolları hakkında uyarır ve yerel depolamaya geri taşımayı önerir. Bkz.
+Yalnızca geçersiz kılmanız gerektiğinde `OPENCLAW_STATE_DIR` değerini yerel bir
+yol olarak ayarlayın. `openclaw doctor`, bulutla eşitlenen yaygın durum yolları
+hakkında uyarır ve yerel depolamaya geri taşımayı önerir. Bkz.
 [ortam değişkenleri](/tr/help/environment#path-related-env-vars) ve
 [Doctor](/tr/gateway/doctor).
 
-## Uygulama bağlantısını hata ayıklama
+## Uygulama bağlantısında hata ayıklama
 
-Uygulamanın kullandığı aynı Gateway WebSocket el sıkışmasını ve keşif mantığını çalıştırmak için bir kaynak checkout'undan macOS hata ayıklama CLI'ını kullanın:
+Uygulamanın kullandığı Gateway WebSocket el sıkışmasını ve keşif mantığını
+sınamak için bir kaynak kod kopyasından macOS hata ayıklama CLI'sini kullanın:
 
 ```bash
 cd apps/macos
@@ -82,9 +106,14 @@ swift run openclaw-mac connect --json
 swift run openclaw-mac discover --timeout 3000 --json
 ```
 
-`connect`, `--url`, `--token`, `--timeout` ve `--json` kabul eder. `discover`, `--timeout`, `--json` ve `--include-local` kabul eder. CLI keşfini uygulama tarafındaki bağlantı sorunlarından ayırmanız gerektiğinde keşif çıktısını `openclaw gateway discover --json` ile karşılaştırın.
+`connect`; `--url`, `--token`, `--timeout`, `--probe` ve `--json`
+seçeneklerini kabul eder (istemci kimliği geçersiz kılmalarıyla birlikte; tam liste
+için `--help` ile çalıştırın).
+`discover`; `--timeout`, `--json` ve `--include-local` seçeneklerini kabul eder. CLI keşfini
+uygulama tarafındaki bağlantı sorunlarından ayırmanız gerektiğinde keşif çıktısını
+`openclaw gateway discover --json` ile karşılaştırın.
 
-## Smoke kontrolü
+## Hızlı kontrol
 
 ```bash
 openclaw --version
@@ -103,4 +132,4 @@ openclaw gateway call health --url ws://127.0.0.1:18999 --timeout 3000
 ## İlgili
 
 - [macOS uygulaması](/tr/platforms/macos)
-- [Gateway runbook](/tr/gateway)
+- [Gateway çalışma kılavuzu](/tr/gateway)

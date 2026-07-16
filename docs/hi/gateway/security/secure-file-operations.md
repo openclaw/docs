@@ -1,84 +1,83 @@
 ---
 read_when:
-    - फ़ाइल पहुँच, आर्काइव निष्कर्षण, कार्यस्थान संग्रहण या Plugin फ़ाइल सिस्टम हेल्पर बदलना
-summary: OpenClaw स्थानीय फ़ाइल एक्सेस को सुरक्षित रूप से कैसे संभालता है, और वैकल्पिक fs-safe Python सहायक डिफ़ॉल्ट रूप से बंद क्यों होता है
+    - फ़ाइल एक्सेस, आर्काइव निष्कर्षण, वर्कस्पेस स्टोरेज या Plugin फ़ाइलसिस्टम सहायकों में बदलाव करना
+summary: OpenClaw स्थानीय फ़ाइल ऐक्सेस को सुरक्षित रूप से कैसे संभालता है, और वैकल्पिक fs-safe Python सहायक डिफ़ॉल्ट रूप से बंद क्यों है
 title: सुरक्षित फ़ाइल संचालन
 x-i18n:
-    generated_at: "2026-06-28T23:13:45Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T15:14:45Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 19d5b31ec2f2c7ab1033bdb55a701c60468dfac58142f726ecbc9ac933f68e30
+    source_hash: 5c8edf36ddbb8c8bc1edc52ecdf481affe5395d1779c679a40439167dfe70299
     source_path: gateway/security/secure-file-operations.md
     workflow: 16
 ---
 
-OpenClaw सुरक्षा-संवेदनशील स्थानीय फ़ाइल संचालन के लिए [`@openclaw/fs-safe`](https://github.com/openclaw/fs-safe) का उपयोग करता है: root-बाउंडेड पढ़ना/लिखना, atomic replacement, archive extraction, अस्थायी workspaces, JSON state, और secret-file handling.
+OpenClaw सुरक्षा-संवेदनशील स्थानीय फ़ाइल संचालनों के लिए [`@openclaw/fs-safe`](https://github.com/openclaw/fs-safe) का उपयोग करता है: रूट-सीमित पठन/लेखन, परमाण्विक प्रतिस्थापन, आर्काइव निष्कर्षण, अस्थायी कार्यस्थान, JSON स्थिति और गुप्त फ़ाइल प्रबंधन।
 
-लक्ष्य विश्वसनीय OpenClaw कोड के लिए एक सुसंगत **library guardrail** है, जिसे अविश्वसनीय path names मिलते हैं। यह sandbox नहीं है। host filesystem permissions, OS users, containers, और agent/tool policy अब भी वास्तविक blast radius को परिभाषित करते हैं।
+यह अविश्वसनीय पथ नाम प्राप्त करने वाले विश्वसनीय OpenClaw कोड के लिए एक **लाइब्रेरी सुरक्षा-सीमा** है, सैंडबॉक्स नहीं। होस्ट फ़ाइल सिस्टम अनुमतियाँ, OS उपयोगकर्ता, कंटेनर और एजेंट/टूल नीति अब भी वास्तविक प्रभाव-क्षेत्र निर्धारित करते हैं।
 
 ## डिफ़ॉल्ट: कोई Python सहायक नहीं
 
-OpenClaw fs-safe POSIX Python सहायक को डिफ़ॉल्ट रूप से **off** रखता है।
+OpenClaw, fs-safe POSIX Python सहायक को डिफ़ॉल्ट रूप से **बंद** रखता है:
 
-क्यों:
+- जब तक कोई ऑपरेटर स्पष्ट रूप से इसे न चुने, Gateway को स्थायी Python साइडकार शुरू नहीं करना चाहिए;
+- अधिकांश इंस्टॉलेशन को पैरेंट डायरेक्टरी में बदलाव के लिए अतिरिक्त सुरक्षा-सुदृढ़ीकरण की आवश्यकता नहीं होती;
+- Python को अक्षम रखने से डेस्कटॉप, Docker, CI और बंडल किए गए ऐप परिवेशों में रनटाइम व्यवहार पूर्वानुमेय रहता है।
 
-- Gateway को persistent Python sidecar तब तक spawn नहीं करना चाहिए जब तक कोई operator उसमें opt in न करे;
-- कई installs को अतिरिक्त parent-directory mutation hardening की आवश्यकता नहीं होती;
-- Python अक्षम रखने से desktop, Docker, CI, और bundled app environments में package/runtime व्यवहार अधिक पूर्वानुमेय रहता है।
-
-OpenClaw केवल डिफ़ॉल्ट बदलता है। यदि आप स्पष्ट रूप से कोई mode सेट करते हैं, तो fs-safe उसका सम्मान करता है:
+OpenClaw केवल _डिफ़ॉल्ट_ बदलता है। स्पष्ट सेटिंग को हमेशा प्राथमिकता मिलती है:
 
 ```bash
-# Default OpenClaw behavior: Node-only fs-safe fallbacks.
+# डिफ़ॉल्ट OpenClaw व्यवहार: केवल Node वाले fs-safe फ़ॉलबैक।
 OPENCLAW_FS_SAFE_PYTHON_MODE=off
 
-# Opt into the helper when available, falling back if unavailable.
+# उपलब्ध होने पर सहायक का उपयोग करें और अनुपलब्ध होने पर फ़ॉलबैक अपनाएँ।
 OPENCLAW_FS_SAFE_PYTHON_MODE=auto
 
-# Fail closed if the helper cannot start.
+# यदि सहायक शुरू न हो सके, तो सुरक्षित रूप से विफल हों।
 OPENCLAW_FS_SAFE_PYTHON_MODE=require
 
-# Optional explicit interpreter.
+# वैकल्पिक स्पष्ट इंटरप्रेटर पथ।
 OPENCLAW_FS_SAFE_PYTHON=/usr/bin/python3
 ```
 
-सामान्य fs-safe नाम भी काम करते हैं: `FS_SAFE_PYTHON_MODE` और `FS_SAFE_PYTHON`.
+सामान्य fs-safe परिवेश नाम भी काम करते हैं: `FS_SAFE_PYTHON_MODE` और `FS_SAFE_PYTHON`।
 
-## Python के बिना क्या सुरक्षित रहता है
+जब सहायक आपकी सुरक्षा व्यवस्था का हिस्सा हो, तो `require` का उपयोग करें (`auto` का नहीं); यदि सहायक शुरू नहीं हो सकता, तो `auto` बिना सूचना दिए केवल Node वाले व्यवहार पर वापस चला जाता है।
 
-सहायक off होने पर भी, OpenClaw इन चीज़ों के लिए fs-safe के Node paths का उपयोग करता है:
+## Python के बिना भी क्या सुरक्षित रहता है
 
-- `..`, absolute paths, और path separators जैसे relative-path escapes को अस्वीकार करना, जहाँ केवल names की अनुमति है;
-- ad-hoc `path.resolve(...).startsWith(...)` checks के बजाय trusted root handle के माध्यम से operations resolve करना;
-- उन APIs पर symlink और hardlink patterns अस्वीकार करना जिन्हें उस policy की आवश्यकता होती है;
-- जहाँ API file contents लौटाता या consume करता है, वहाँ identity checks के साथ files खोलना;
-- state/config files के लिए atomic sibling-temp writes;
-- reads और archive extraction के लिए byte limits;
-- secrets और state files के लिए private modes, जहाँ API उन्हें आवश्यक बनाता है।
+सहायक बंद होने पर भी OpenClaw को fs-safe की केवल Node वाली सुरक्षा-सीमाएँ मिलती हैं:
 
-ये protections सामान्य OpenClaw threat model को cover करते हैं: trusted Gateway code, जो एक ही trusted operator boundary के अंदर untrusted model/plugin/channel path input संभालता है।
+- सापेक्ष-पथ से बाहर निकलने (`..`), निरपेक्ष पथों और उन स्थानों पर पथ विभाजकों को अस्वीकार करता है जहाँ केवल साधारण नाम अनुमत हैं;
+- तात्कालिक `path.resolve(...).startsWith(...)` जाँचों के बजाय विश्वसनीय रूट हैंडल के माध्यम से संचालन हल करता है;
+- जिन API को ऐसी नीति की आवश्यकता होती है, उन पर सिमलिंक और हार्डलिंक पैटर्न अस्वीकार करता है;
+- जहाँ API फ़ाइल सामग्री लौटाता या उपयोग करता है, वहाँ पहचान जाँच के साथ फ़ाइलें खोलता है;
+- परमाण्विक समान-डायरेक्टरी अस्थायी फ़ाइल + नाम बदलने के माध्यम से स्थिति/कॉन्फ़िगरेशन फ़ाइलें लिखता है;
+- पठन और आर्काइव निष्कर्षण के लिए बाइट सीमाएँ लागू करता है;
+- जहाँ API को आवश्यकता होती है, वहाँ गुप्त और स्थिति फ़ाइलों पर निजी फ़ाइल मोड लागू करता है।
+
+यह OpenClaw के सामान्य ख़तरा मॉडल को कवर करता है: एक ही विश्वसनीय ऑपरेटर सीमा के भीतर अविश्वसनीय मॉडल/Plugin/चैनल पथ इनपुट संभालने वाला विश्वसनीय Gateway कोड।
 
 ## Python क्या जोड़ता है
 
-POSIX पर, fs-safe का वैकल्पिक सहायक एक persistent Python process रखता है और rename, remove, mkdir, stat/list, और कुछ write paths जैसे parent-directory mutations के लिए fd-relative filesystem operations का उपयोग करता है।
+POSIX पर वैकल्पिक सहायक एक स्थायी Python प्रक्रिया बनाए रखता है और पैरेंट डायरेक्टरी में बदलावों के लिए फ़ाइल डिस्क्रिप्टर-सापेक्ष फ़ाइल सिस्टम संचालनों का उपयोग करता है: नाम बदलना, हटाना, डायरेक्टरी बनाना, स्थिति/सूची प्राप्त करना और कुछ लेखन पथ।
 
-यह same-UID race windows को कम करता है, जहाँ दूसरा process validation और mutation के बीच parent directory को swap कर सकता है। यह उन hosts के लिए defense in depth है जहाँ untrusted local processes वही directories modify कर सकते हैं जिनमें OpenClaw operate कर रहा है।
+इससे समान UID वाली वे रेस विंडो कम होती हैं जिनमें सत्यापन और बदलाव के बीच कोई अन्य प्रक्रिया पैरेंट डायरेक्टरी को बदल देती है — ऐसे होस्ट पर अतिरिक्त स्तर की सुरक्षा जहाँ अविश्वसनीय स्थानीय प्रक्रियाएँ उन्हीं डायरेक्टरियों को बदल सकती हैं जिनमें OpenClaw काम करता है।
 
-यदि आपके deployment में यह जोखिम है और Python का मौजूद होना guaranteed है, तो उपयोग करें:
+यदि आपके डिप्लॉयमेंट में यह जोखिम है और Python की उपलब्धता सुनिश्चित है, तो यह सेट करें:
 
 ```bash
 OPENCLAW_FS_SAFE_PYTHON_MODE=require
 ```
 
-जब सहायक आपके security posture का हिस्सा हो, तो `auto` के बजाय `require` का उपयोग करें; यदि सहायक उपलब्ध नहीं है, तो `auto` जानबूझकर Node-only व्यवहार पर fallback करता है।
+## Plugin और कोर के लिए मार्गदर्शन
 
-## Plugin और core मार्गदर्शन
+- जब कोई पथ संदेश, मॉडल आउटपुट, कॉन्फ़िगरेशन या Plugin इनपुट से आता है, तो Plugin के लिए फ़ाइल एक्सेस कच्चे `fs` के बजाय `openclaw/plugin-sdk/*` सहायकों के माध्यम से होना चाहिए।
+- कोर कोड को `src/infra/*` के अंतर्गत fs-safe रैपरों का उपयोग करना चाहिए, ताकि OpenClaw की प्रक्रिया नीति लगातार लागू हो।
+- आर्काइव निष्कर्षण के लिए स्पष्ट आकार, प्रविष्टि-संख्या, लिंक और गंतव्य सीमाओं वाले fs-safe आर्काइव सहायकों का उपयोग करना चाहिए।
+- गुप्त डेटा के लिए OpenClaw के गुप्त सहायक या fs-safe के गुप्त/निजी-स्थिति सहायक उपयोग करें; `fs.writeFile` के आसपास स्वयं मोड जाँच न बनाएँ।
+- दुर्भावनापूर्ण स्थानीय उपयोगकर्ता से पृथक्करण के लिए केवल fs-safe पर निर्भर न रहें। अलग-अलग OS उपयोगकर्ताओं/होस्ट के अंतर्गत अलग Gateway चलाएँ या सैंडबॉक्सिंग का उपयोग करें।
 
-- Plugin-facing file access को raw `fs` के बजाय `openclaw/plugin-sdk/*` helpers से जाना चाहिए, जब path किसी message, model output, config, या plugin input से आता है।
-- Core code को `src/infra/*` के अंतर्गत local fs-safe wrappers का उपयोग करना चाहिए, ताकि OpenClaw की process policy सुसंगत रूप से लागू हो।
-- Archive extraction को स्पष्ट size, entry-count, link, और destination limits के साथ fs-safe archive helpers का उपयोग करना चाहिए।
-- Secrets को OpenClaw secret helpers या fs-safe secret/private-state helpers का उपयोग करना चाहिए; `fs.writeFile` के आसपास mode checks हाथ से न बनाएँ।
-- यदि आपको hostile local-user isolation चाहिए, तो केवल fs-safe पर निर्भर न रहें। अलग OS users/hosts के अंतर्गत अलग Gateways चलाएँ या sandboxing का उपयोग करें।
-
-संबंधित: [सुरक्षा](/hi/gateway/security), [Sandboxing](/hi/gateway/sandboxing), [Exec अनुमोदन](/hi/tools/exec-approvals), [Secrets](/hi/gateway/secrets).
+संबंधित: [सुरक्षा](/hi/gateway/security), [सैंडबॉक्सिंग](/hi/gateway/sandboxing), [Exec अनुमोदन](/hi/tools/exec-approvals), [गुप्त डेटा](/hi/gateway/secrets)।

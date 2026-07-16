@@ -1,32 +1,36 @@
 ---
 read_when:
-    - Chcesz szybko sparować aplikację węzła mobilnego z Gatewayem
-    - Potrzebujesz danych wyjściowych kodu konfiguracji do zdalnego/ręcznego udostępniania
+    - Chcesz szybko sparować mobilną aplikację Node z Gatewayem
+    - Potrzebne jest wyświetlenie kodu konfiguracji do zdalnego/ręcznego udostępnienia
 summary: Dokumentacja CLI dla `openclaw qr` (generowanie kodu QR do parowania urządzenia mobilnego i kodu konfiguracji)
 title: QR
 x-i18n:
-    generated_at: "2026-07-12T14:55:43Z"
+    generated_at: "2026-07-16T18:29:20Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 32641ff4e8035f6ca2eda849a59146125763af21c4105ae6cfa584da31ac070f
+    source_hash: f9d60a58126eae7eec5979f28bb511a09fa52b68cdd73727fca0b2de74efa84a
     source_path: cli/qr.md
     workflow: 16
 ---
 
 # `openclaw qr`
 
-Wygeneruj kod QR do parowania urządzenia mobilnego oraz kod konfiguracji na podstawie bieżącej konfiguracji Gateway.
+Wygeneruj kod QR parowania urządzenia mobilnego i kod konfiguracji na podstawie bieżącej konfiguracji Gateway.
 
 ```bash
 openclaw qr
 openclaw qr --setup-code-only
 openclaw qr --json
 openclaw qr --remote
+openclaw qr --limited
 openclaw qr --url wss://gateway.example/ws
 ```
 
-Oficjalne aplikacje OpenClaw na iOS i Androida łączą się automatycznie, gdy ich metadane kodu konfiguracji są zgodne. Jeśli żądanie nadal oczekuje (na przykład w przypadku nieoficjalnego klienta lub niezgodnych metadanych), sprawdź je i zatwierdź:
+Oficjalne aplikacje OpenClaw na iOS i Androida łączą się automatycznie, gdy metadane ich
+kodu konfiguracji są zgodne. Jeśli żądanie nadal oczekuje (na przykład w przypadku
+nieoficjalnego klienta lub niezgodnych metadanych), sprawdź je i zatwierdź:
 
 ```bash
 openclaw devices list
@@ -35,53 +39,59 @@ openclaw devices approve <requestId>
 
 ## Opcje
 
-- `--remote`: preferuje `gateway.remote.url`; jeśli ten adres URL nie jest ustawiony, używa `gateway.tailscale.mode=serve|funnel`. Ignoruje `publicUrl` Pluginu `device-pair`.
+- `--remote`: preferuje `gateway.remote.url`; jeśli ten adres URL nie jest ustawiony, używa zastępczo `gateway.tailscale.mode=serve|funnel`. Ignoruje `device-pair` Plugin `publicUrl`.
 - `--url <url>`: zastępuje adres URL Gateway używany w ładunku
 - `--public-url <url>`: zastępuje publiczny adres URL używany w ładunku
 - `--token <token>`: zastępuje token Gateway, względem którego uwierzytelnia się przepływ inicjalizacji
 - `--password <password>`: zastępuje hasło Gateway, względem którego uwierzytelnia się przepływ inicjalizacji
+- `--limited`: pomija administracyjny dostęp do Gateway w przekazywanym tokenie operatora
 - `--setup-code-only`: wyświetla tylko kod konfiguracji
 - `--no-ascii`: pomija renderowanie kodu QR w ASCII
-- `--json`: zwraca dane JSON (`setupCode`, `gatewayUrl`, opcjonalne `gatewayUrls`, `auth`, `urlSource`)
+- `--json`: generuje JSON (`setupCode`, `gatewayUrl`, opcjonalnie `gatewayUrls`, `auth`, `access`, opcjonalnie `accessDowngraded`, `urlSource`)
 
-Opcje `--token` i `--password` wzajemnie się wykluczają.
+`--token` i `--password` wzajemnie się wykluczają.
 
 ## Zawartość kodu konfiguracji
 
-Kod konfiguracji zawiera nieprzejrzysty, krótkotrwały `bootstrapToken`, a nie współdzielony token ani hasło Gateway. Wbudowany przepływ inicjalizacji wystawia:
+Kod konfiguracji zawiera nieprzezroczysty, krótkotrwały `bootstrapToken`, a nie współdzielony token ani hasło Gateway. W przypadku punktu końcowego `wss://` (lub pętli zwrotnej na tym samym hoście) domyślny przepływ inicjalizacji wydaje:
 
 - podstawowy token `node` z `scopes: []`
-- ograniczony token przekazania `operator`, zawężony do `operator.approvals`, `operator.read`, `operator.talk.secrets` i `operator.write`
+- pełny token przekazania `operator` dla natywnej aplikacji mobilnej z `operator.admin`, `operator.approvals`, `operator.read`, `operator.talk.secrets` i `operator.write`
 
-Zakresy modyfikacji parowania oraz `operator.admin` nadal wymagają osobno zatwierdzonego parowania operatora lub przepływu tokenu.
+Użyj `--limited`, aby zachować ten sam token węzła, jednocześnie pomijając `operator.admin` w przekazaniu operatora. Zakres modyfikacji parowania nigdy nie jest przekazywany przez kod konfiguracji.
 
-## Ustalanie adresu URL Gateway
+Konfiguracja `ws://` w postaci zwykłego tekstu w sieci LAN pozostaje dostępna, ale OpenClaw automatycznie używa
+profilu ograniczonego, ponieważ obserwator sieci mógłby przechwycić token okaziciela
+inicjalizacji i wykorzystać go wcześniej. Skonfiguruj `wss://` lub Tailscale Serve, a następnie wygeneruj nowy kod,
+aby uzyskać pełny dostęp.
 
-Parowanie urządzeń mobilnych jest bezpiecznie odrzucane w przypadku publicznych lub obsługiwanych przez Tailscale adresów URL Gateway korzystających z `ws://`: w takich przypadkach użyj Tailscale Serve/Funnel albo adresu URL Gateway z `wss://`. Prywatne adresy LAN i hosty Bonjour z domeną `.local` nadal są obsługiwane przez zwykłe `ws://`.
+## Rozpoznawanie adresu URL Gateway
 
-Gdy wybrany adres URL Gateway pochodzi z `gateway.bind=lan`, OpenClaw sprawdza również trwałe trasy zwracane przez `tailscale serve status --json`. Każdy główny adres HTTPS usługi Serve, który przekazuje ruch do portu local loopback aktywnego Gateway, jest uwzględniany jako trasa zapasowa. Polecenie QR dodaje tę trasę zapasową tylko dla `lan`; ustawienia `custom` i `tailnet` zachowują jawnie anonsowane trasy. Obecne klienty iOS sprawdzają anonsowane trasy w podanej kolejności i zapisują pierwszą osiągalną; starsze pole `url` pozostaje bez zmian dla starszych klientów.
+Parowanie urządzeń mobilnych bezpiecznie odrzuca adresy URL Gateway Tailscale/publiczne `ws://`: w ich przypadku użyj Tailscale Serve/Funnel lub adresu URL Gateway `wss://`. Prywatne adresy LAN i hosty Bonjour `.local` są nadal obsługiwane przez zwykły `ws://`, z ograniczonym dostępem operatora opisanym powyżej.
 
-W przypadku użycia `--remote` wymagane jest ustawienie `gateway.remote.url` lub `gateway.tailscale.mode=serve|funnel`.
+Gdy wybrany adres URL Gateway pochodzi z `gateway.bind=lan`, OpenClaw sprawdza również trwałe trasy `tailscale serve status --json`. Każdy główny adres HTTPS Serve, który pośredniczy w dostępie do portu pętli zwrotnej aktywnego Gateway, jest uwzględniany jako trasa zapasowa. Polecenie QR dodaje tę trasę zapasową tylko dla `lan`; `custom` i `tailnet` zachowują jawnie rozgłaszane trasy. Bieżące klienty iOS sprawdzają rozgłaszane trasy w podanej kolejności i zapisują pierwszą osiągalną; starsze pole `url` pozostaje bez zmian dla starszych klientów.
 
-## Ustalanie uwierzytelniania (bez `--remote`)
+W przypadku `--remote` wymagane jest jedno z `gateway.remote.url` lub `gateway.tailscale.mode=serve|funnel`.
 
-Jeśli nie przekazano w CLI wartości zastępującej dane uwierzytelniające, odwołania SecretRef lokalnego uwierzytelniania Gateway są rozwiązywane następująco:
+## Rozpoznawanie uwierzytelniania (bez `--remote`)
 
-| Warunek                                                                                                                           | Rozwiązywana wartość                       |
-| --------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------ |
-| `gateway.auth.mode="token"` lub tryb wywnioskowany bez nadrzędnego źródła hasła                                                   | `gateway.auth.token`                       |
-| `gateway.auth.mode="password"` lub tryb wywnioskowany bez nadrzędnego tokenu z konfiguracji uwierzytelniania lub środowiska        | `gateway.auth.password`                    |
-| Skonfigurowano zarówno `gateway.auth.token`, jak i `gateway.auth.password` (w tym SecretRefs), a `gateway.auth.mode` nie ustawiono | operacja kończy się niepowodzeniem; ustaw jawnie `gateway.auth.mode` |
+Jeśli nie podano zastąpienia uwierzytelniania w CLI, lokalne odwołania SecretRef uwierzytelniania Gateway są rozpoznawane w następujący sposób:
 
-## Ustalanie uwierzytelniania (`--remote`)
+| Warunek                                                                                                                      | Rozpoznawana wartość                       |
+| ---------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------ |
+| `gateway.auth.mode="token"` lub tryb wywnioskowany bez nadrzędnego źródła hasła                                                       | `gateway.auth.token`                         |
+| `gateway.auth.mode="password"` lub tryb wywnioskowany bez nadrzędnego tokenu z uwierzytelniania/środowiska                               | `gateway.auth.password`                         |
+| Skonfigurowano zarówno `gateway.auth.token`, jak i `gateway.auth.password` (w tym SecretRefs), a `gateway.auth.mode` nie jest ustawione | występuje błąd; ustaw jawnie `gateway.auth.mode` |
 
-Jeśli faktycznie aktywne zdalne dane uwierzytelniające są skonfigurowane jako SecretRefs i nie przekazano ani `--token`, ani `--password`, polecenie rozwiązuje je na podstawie aktywnej migawki Gateway. Jeśli Gateway jest niedostępny, polecenie natychmiast kończy się niepowodzeniem.
+## Rozpoznawanie uwierzytelniania (`--remote`)
+
+Jeśli faktycznie aktywne zdalne dane uwierzytelniające są skonfigurowane jako SecretRefs i nie przekazano ani `--token`, ani `--password`, polecenie rozpoznaje je z aktywnej migawki Gateway. Jeśli Gateway jest niedostępny, polecenie natychmiast kończy się błędem.
 
 <Note>
-Ta ścieżka polecenia wymaga Gateway obsługującego metodę RPC `secrets.resolve`. Starsze wersje Gateway zwracają błąd nieznanej metody.
+Ta ścieżka polecenia wymaga Gateway obsługującego metodę RPC `secrets.resolve`. Starsze Gateway zwracają błąd nieznanej metody.
 </Note>
 
-## Powiązane
+## Powiązane materiały
 
 - [Dokumentacja CLI](/pl/cli)
 - [Urządzenia](/pl/cli/devices)

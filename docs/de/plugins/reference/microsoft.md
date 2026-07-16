@@ -1,27 +1,28 @@
 ---
 read_when:
-    - Sie installieren, konfigurieren oder prüfen das Microsoft-Plugin.
-summary: Fügt Unterstützung für Text-zu-Sprache-Provider hinzu.
+    - Sie installieren, konfigurieren oder überprüfen das microsoft-Plugin
+summary: Fügt Unterstützung für Text-to-Speech-Provider hinzu.
 title: Microsoft-Plugin
 x-i18n:
-    generated_at: "2026-07-12T01:59:53Z"
+    generated_at: "2026-07-16T13:10:42Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: cd8cfbff1861d7e9d9dfee2c3ecba9dc3fcf21f5a9c2ea3d7866c2d9b456fd68
+    source_hash: 7657d1ada51f5df3d205bddde44a8fe5116a4d30d2f572e4c2f5c824d021a74c
     source_path: plugins/reference/microsoft.md
     workflow: 16
 ---
 
 # Microsoft-Plugin
 
-Fügt Unterstützung für einen Text-zu-Sprache-Provider hinzu.
+Fügt Unterstützung für einen Text-to-Speech-Provider hinzu.
 
-## Bereitstellung
+## Distribution
 
 - Paket: `@openclaw/microsoft-speech`
 - Installationsweg: in OpenClaw enthalten
 
-## Schnittstelle
+## Oberfläche
 
-Verträge: speechProviders
+Verträge: `speechProviders`

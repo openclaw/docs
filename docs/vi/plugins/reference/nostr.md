@@ -4,11 +4,12 @@ read_when:
 summary: Plugin kênh Nostr của OpenClaw dành cho tin nhắn trực tiếp được mã hóa bằng NIP-04.
 title: Plugin Nostr
 x-i18n:
-    generated_at: "2026-07-12T08:10:38Z"
+    generated_at: "2026-07-16T15:00:31Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: e56fd9eee17c55bcbba3d7b85d783930c10d2368f36173ac478b254c2bd5ec22
+    source_hash: 9efb2014cd168e3d847a045cf82fde3ec364ca3f6a75ee3ef8e1acfb92a79efa
     source_path: plugins/reference/nostr.md
     workflow: 16
 ---
@@ -24,7 +25,7 @@ Plugin kênh Nostr của OpenClaw dành cho tin nhắn trực tiếp được m�
 
 ## Bề mặt
 
-kênh: nostr
+kênh: `nostr`
 
 ## Tài liệu liên quan
 

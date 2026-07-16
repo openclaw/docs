@@ -1,30 +1,31 @@
 ---
 read_when:
-    - U installeert, configureert of controleert de litellm-plugin
+    - Je installeert, configureert of controleert de litellm-plugin
 summary: Voegt ondersteuning voor de LiteLLM-modelprovider toe aan OpenClaw.
 title: LiteLLM-plugin
 x-i18n:
-    generated_at: "2026-07-12T09:07:33Z"
+    generated_at: "2026-07-16T16:15:22Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 8bbe9b35112012185719c87aa0f027422f574e995cefcfe2bc1f243d9b3b43a9
+    source_hash: 3262796d0254cb5672312fc9d8012ea1f5527a2c31798e50cfbe9391f90f3402
     source_path: plugins/reference/litellm.md
     workflow: 16
 ---
 
-# LiteLLM-plugin
+# LiteLLM-Plugin
 
 Voegt ondersteuning voor de LiteLLM-modelprovider toe aan OpenClaw.
 
 ## Distributie
 
 - Pakket: `@openclaw/litellm-provider`
-- Installatieroute: inbegrepen in OpenClaw
+- Installatieroute: inbegrepen bij OpenClaw
 
 ## Oppervlak
 
-providers: litellm; contracts: imageGenerationProviders
+providers: `litellm`; contracten: `imageGenerationProviders`
 
 ## Gerelateerde documentatie
 

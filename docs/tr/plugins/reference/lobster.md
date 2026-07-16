@@ -1,27 +1,28 @@
 ---
 read_when:
-    - Lobster Plugin'ini kuruyor, yapılandırıyor veya denetliyorsunuz
-summary: Tür güvenli işlem hatları ve sürdürülebilir onaylar için Lobster iş akışı aracı Plugin'i.
+    - Lobster pluginini kuruyor, yapılandırıyor veya denetliyorsunuz
+summary: Türü belirlenmiş işlem hatları ve devam ettirilebilir onaylar için Lobster iş akışı aracı plugini.
 title: Lobster Plugin'i
 x-i18n:
-    generated_at: "2026-07-12T12:02:22Z"
+    generated_at: "2026-07-16T17:25:51Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: b91ea189fe8339380e2a7ef8a8761ea1591e1f1d8459b4a554211128c33f338b
+    source_hash: 7e3a1dce5531ba71bfe56f06b61e05612d6d155a63e61e1d496a0e1e25338926
     source_path: plugins/reference/lobster.md
     workflow: 16
 ---
 
-# Lobster plugin'i
+# Lobster Plugin
 
-Türü belirlenmiş işlem hatları ve sürdürülebilir onaylar için Lobster iş akışı aracı plugin'i.
+Türü belirlenmiş işlem hatları ve sürdürülebilir onaylar için Lobster iş akışı aracı Plugin'i.
 
 ## Dağıtım
 
 - Paket: `@openclaw/lobster`
 - Kurulum yolu: npm; ClawHub
 
-## Kapsam
+## Yüzey
 
-sözleşmeler: araçlar
+sözleşmeler: `tools`

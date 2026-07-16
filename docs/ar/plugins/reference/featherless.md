@@ -1,19 +1,20 @@
 ---
 read_when:
-    - أنت تثبّت Plugin ‏featherless أو تهيّئه أو تدقّق فيه
+    - أنت تثبّت أو تهيّئ أو تدقّق في Plugin ‏featherless
 summary: Plugin موفّر Featherless AI لـ OpenClaw.
 title: Plugin ‏Featherless
 x-i18n:
-    generated_at: "2026-07-12T06:20:43Z"
+    generated_at: "2026-07-16T14:49:50Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: b5365b6d07b7828408411c7fd15e0721692bb70e15c8ba01eb3d6d44a5a308bd
+    source_hash: cc85911d6fa5ee416b1abd11bd08466d1e8d245ad3edb03e315fb555b4ed38b3
     source_path: plugins/reference/featherless.md
     workflow: 16
 ---
 
-# Plugin ‏Featherless
+# Plugin Featherless
 
 Plugin موفّر Featherless AI لـ OpenClaw.
 
@@ -22,10 +23,10 @@ Plugin موفّر Featherless AI لـ OpenClaw.
 - الحزمة: `@openclaw/featherless-provider`
 - مسار التثبيت: npm؛ ClawHub: `clawhub:@openclaw/featherless-provider`
 
-## الواجهة
+## السطح
 
-الموفّرون: featherless
+الموفّرون: `featherless`
 
 ## الوثائق ذات الصلة
 
-- [featherless](/providers/featherless)
+- [featherless](/ar/providers/featherless)

@@ -1,71 +1,97 @@
 ---
 read_when:
-    - आप config/state पर एक त्वरित सुरक्षा ऑडिट चलाना चाहते हैं
-    - आप सुरक्षित "सुधार" सुझाव लागू करना चाहते हैं (अनुमतियाँ, डिफ़ॉल्ट को अधिक सख़्त करना)
-summary: '`openclaw security` के लिए CLI संदर्भ (सामान्य सुरक्षा चूकों का ऑडिट और सुधार)'
+    - आप कॉन्फ़िगरेशन/स्थिति पर त्वरित सुरक्षा ऑडिट चलाना चाहते हैं
+    - आप सुरक्षित "सुधार" सुझाव लागू करना चाहते हैं (अनुमतियाँ, डिफ़ॉल्ट सेटिंग को अधिक सख़्त बनाना)
+summary: '`openclaw security` के लिए CLI संदर्भ (ऑडिट करें और सामान्य सुरक्षा संबंधी चूकों को ठीक करें)'
 title: सुरक्षा
 x-i18n:
-    generated_at: "2026-06-28T22:52:51Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T14:03:56Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 58876d7ab4dd3e5d3f5c915700b08ca234e5ccefdfc35a79e60a31e1fce21774
+    source_hash: 613d1afa63e46a7dc3474d0b175cf2389703a86b00f861b4140d64e11c28ece5
     source_path: cli/security.md
     workflow: 16
 ---
 
 # `openclaw security`
 
-सुरक्षा टूल्स (ऑडिट + वैकल्पिक सुधार)।
-
-संबंधित:
-
-- सुरक्षा गाइड: [सुरक्षा](/hi/gateway/security)
-
-## ऑडिट
+सुरक्षा टूल: ऑडिट और वैकल्पिक सुरक्षित सुधार। संबंधित: [सुरक्षा](/hi/gateway/security)।
 
 ```bash
 openclaw security audit
 openclaw security audit --deep
 openclaw security audit --deep --password <password>
 openclaw security audit --deep --token <token>
+openclaw security audit --auth password --password <password>
 openclaw security audit --fix
 openclaw security audit --json
 ```
 
-सादा `security audit` ठंडे config/filesystem/read-only पथ पर रहता है। यह डिफ़ॉल्ट रूप से Plugin runtime सुरक्षा कलेक्टरों को खोजता नहीं है, इसलिए नियमित ऑडिट हर इंस्टॉल किए गए Plugin runtime को लोड नहीं करते। सर्वोत्तम-प्रयास लाइव Gateway प्रोब और Plugin-स्वामित्व वाले सुरक्षा ऑडिट कलेक्टर शामिल करने के लिए `--deep` का उपयोग करें; स्पष्ट आंतरिक कॉलर भी उन Plugin-स्वामित्व वाले कलेक्टरों में ऑप्ट इन कर सकते हैं जब उनके पास पहले से उपयुक्त runtime scope हो।
+## ऑडिट मोड
 
-जब कई DM प्रेषक मुख्य सत्र साझा करते हैं, तो ऑडिट चेतावनी देता है और **सुरक्षित DM मोड** की सिफारिश करता है: साझा inbox के लिए `session.dmScope="per-channel-peer"` (या multi-account channels के लिए `per-account-channel-peer`)।
-यह cooperative/shared inbox hardening के लिए है। परस्पर अविश्वसनीय/विरोधी operators द्वारा साझा किया गया एकल Gateway अनुशंसित setup नहीं है; अलग gateways (या अलग OS users/hosts) के साथ trust boundaries को विभाजित करें।
-जब config संभावित साझा-user ingress का संकेत देता है (उदाहरण के लिए खुली DM/group policy, configured group targets, या wildcard sender rules), तो यह `security.trust_model.multi_user_heuristic` भी emit करता है, और याद दिलाता है कि OpenClaw डिफ़ॉल्ट रूप से personal-assistant trust model है।
-जानबूझकर shared-user setups के लिए, ऑडिट guidance है कि सभी sessions को sandbox करें, filesystem access को workspace-scoped रखें, और personal/private identities या credentials को उस runtime से दूर रखें।
-जब छोटे models (`<=300B`) sandboxing के बिना और web/browser tools enabled के साथ उपयोग किए जाते हैं, तो यह चेतावनी भी देता है।
-Webhook ingress के लिए, startup एक non-fatal security warning log करता है और audit active Gateway shared-secret auth values के `hooks.token` reuse को flag करता है, जिसमें `gateway.auth.token` / `OPENCLAW_GATEWAY_TOKEN` और `gateway.auth.password` / `OPENCLAW_GATEWAY_PASSWORD` शामिल हैं। यह तब भी चेतावनी देता है जब:
+सामान्य `security audit` कोल्ड कॉन्फ़िगरेशन/फ़ाइल सिस्टम/केवल-पढ़ने योग्य पथ पर रहता है: यह Plugin रनटाइम सुरक्षा संग्राहकों का पता नहीं लगाता, इसलिए नियमित ऑडिट प्रत्येक इंस्टॉल किए गए Plugin रनटाइम को लोड नहीं करते। `--deep` सर्वोत्तम-प्रयास वाले लाइव Gateway प्रोब और Plugin-स्वामित्व वाले सुरक्षा ऑडिट संग्राहक जोड़ता है (स्पष्ट आंतरिक कॉलर भी इन संग्राहकों को चुन सकते हैं, यदि उनके पास पहले से उपयुक्त रनटाइम स्कोप हो)।
 
-- `hooks.token` छोटा हो
+यदि Gateway पासवर्ड प्रमाणीकरण केवल स्टार्टअप पर दिया गया है, तो वही मान `--auth password --password <password>` के साथ पास करें, ताकि ऑडिट उसे `hooks.token` के विरुद्ध जाँच सके।
+
+## यह क्या जाँचता है
+
+**DM/विश्वास मॉडल**
+
+- जब कई DM प्रेषक मुख्य सत्र साझा करते हैं, तो चेतावनी देता है और साझा इनबॉक्स के लिए सुरक्षित DM मोड की अनुशंसा करता है: `session.dmScope="per-channel-peer"` (या बहु-अकाउंट चैनलों के लिए `per-account-channel-peer`)। यह सहयोगी/साझा-इनबॉक्स सुदृढ़ीकरण है, परस्पर अविश्वसनीय ऑपरेटरों के लिए पृथक्करण नहीं; उसके लिए अलग-अलग Gateway (या अलग OS उपयोगकर्ताओं/होस्ट) के साथ विश्वास सीमाएँ विभाजित करें।
+- जब कॉन्फ़िगरेशन संभावित साझा-उपयोगकर्ता प्रवेश का संकेत देता है (उदाहरण के लिए, खुली DM/समूह नीति, कॉन्फ़िगर किए गए समूह लक्ष्य या वाइल्डकार्ड प्रेषक नियम), तब `security.trust_model.multi_user_heuristic` उत्सर्जित करता है—OpenClaw का डिफ़ॉल्ट विश्वास मॉडल व्यक्तिगत सहायक (एक ऑपरेटर) है, शत्रुतापूर्ण बहु-टेनेंट पृथक्करण नहीं। जानबूझकर किए गए साझा-उपयोगकर्ता सेटअप के लिए: सभी सत्रों को सैंडबॉक्स करें, फ़ाइल सिस्टम पहुँच को कार्यस्थान के स्कोप तक सीमित रखें और व्यक्तिगत/निजी पहचान या क्रेडेंशियल उस रनटाइम से दूर रखें।
+- जब छोटे मॉडल (`<=300B` पैरामीटर) सैंडबॉक्सिंग के बिना और वेब/ब्राउज़र टूल सक्षम करके उपयोग किए जाते हैं, तो चेतावनी देता है।
+
+**Webhook/हुक**
+
+स्टार्टअप एक गैर-घातक सुरक्षा चेतावनी लॉग करता है और ऑडिट सक्रिय Gateway साझा-सीक्रेट प्रमाणीकरण मानों (`gateway.auth.token` / `OPENCLAW_GATEWAY_TOKEN`, `gateway.auth.password` / `OPENCLAW_GATEWAY_PASSWORD`) के `hooks.token` पुनः उपयोग को चिह्नित करता है। यह निम्न स्थितियों में भी चेतावनी देता है:
+
+- `hooks.token` छोटा है
 - `hooks.path="/"`
-- `hooks.defaultSessionKey` unset हो
-- `hooks.allowedAgentIds` unrestricted हो
-- request `sessionKey` overrides enabled हों
-- overrides `hooks.allowedSessionKeyPrefixes` के बिना enabled हों
+- `hooks.defaultSessionKey` सेट नहीं है
+- `hooks.allowedAgentIds` अप्रतिबंधित है
+- अनुरोध के `sessionKey` ओवरराइड सक्षम हैं
+- `hooks.allowedSessionKeyPrefixes` के बिना ओवरराइड सक्षम हैं
 
-अगर Gateway password auth केवल startup पर supplied है, तो वही value `openclaw security audit --auth password --password <password>` को pass करें ताकि audit उसे `hooks.token` के विरुद्ध check कर सके।
-persisted reused `hooks.token` को rotate करने के लिए `openclaw doctor --fix` चलाएं, फिर external hook senders को नया hook token उपयोग करने के लिए update करें।
+स्थायी रूप से सहेजे गए और पुनः उपयोग किए गए `hooks.token` को बदलने के लिए `openclaw doctor --fix` चलाएँ, फिर बाहरी हुक प्रेषकों को नए टोकन का उपयोग करने के लिए अपडेट करें।
 
-जब sandbox mode off होने पर sandbox Docker settings configured हों, जब `gateway.nodes.denyCommands` ineffective pattern-like/unknown entries का उपयोग करे (केवल exact Node command-name matching, shell-text filtering नहीं), जब `gateway.nodes.allowCommands` dangerous Node commands को explicitly enable करे, जब global `tools.profile="minimal"` agent tool profiles द्वारा overridden हो, जब write/edit tools disabled हों लेकिन constraining sandbox filesystem boundary के बिना `exec` अभी भी available हो, जब open DMs या groups sandbox/workspace guards के बिना runtime/filesystem tools expose करें, और जब installed Plugin tools permissive tool policy के तहत reachable हो सकते हों, तो यह चेतावनी भी देता है।
-यह `gateway.allowRealIpFallback=true` (proxies misconfigured होने पर header-spoofing risk) और `discovery.mdns.mode="full"` (mDNS TXT records के जरिए metadata leakage) को भी flag करता है।
-जब sandbox browser Docker `bridge` network का उपयोग `sandbox.browser.cdpSourceRange` के बिना करता है, तो यह चेतावनी भी देता है।
-यह dangerous sandbox Docker network modes (जिसमें `host` और `container:*` namespace joins शामिल हैं) को भी flag करता है।
-जब मौजूदा sandbox browser Docker containers में missing/stale hash labels हों (उदाहरण के लिए pre-migration containers में `openclaw.browserConfigEpoch` missing हो), तो यह चेतावनी भी देता है और `openclaw sandbox recreate --browser --all` की सिफारिश करता है।
-जब npm-based Plugin/hook install records unpinned हों, integrity metadata missing हो, या currently installed package versions से drift हों, तो यह चेतावनी भी देता है।
-जब channel allowlists stable IDs के बजाय mutable names/emails/tags पर निर्भर हों, तो यह चेतावनी देता है (जहां लागू हो वहां Discord, Slack, Google Chat, Microsoft Teams, Mattermost, IRC scopes)।
-जब `gateway.auth.mode="none"` Gateway HTTP APIs को shared secret के बिना reachable छोड़ देता है (`/tools/invoke` और कोई भी enabled `/v1/*` endpoint), तो यह चेतावनी देता है।
-`dangerous`/`dangerously` prefix वाली settings explicit break-glass operator overrides हैं; इनमें से एक को enable करना अपने आप में security vulnerability report नहीं है।
-पूरी dangerous-parameter inventory के लिए, [सुरक्षा](/hi/gateway/security) में "असुरक्षित या dangerous flags summary" section देखें।
+**सैंडबॉक्स/टूल**
 
-जानबूझकर standing findings को `security.audit.suppressions` के साथ accept किया जा सकता है।
-हर suppression एक exact `checkId` से match करता है और
-`titleIncludes` और/या `detailIncludes` case-insensitive substrings के साथ narrow किया जा सकता है:
+- सैंडबॉक्स मोड बंद होने के बावजूद सैंडबॉक्स Docker सेटिंग कॉन्फ़िगर होने पर चेतावनी देता है।
+- जब `gateway.nodes.denyCommands` अप्रभावी पैटर्न-जैसी/अज्ञात प्रविष्टियों का उपयोग करता है, तो चेतावनी देता है (मिलान केवल सटीक Node कमांड नाम से होता है, शेल टेक्स्ट फ़िल्टरिंग से नहीं)।
+- जब `gateway.nodes.allowCommands` खतरनाक Node कमांड को स्पष्ट रूप से सक्षम करता है, तो चेतावनी देता है।
+- जब वैश्विक `tools.profile="minimal"` को एजेंट टूल प्रोफ़ाइल द्वारा ओवरराइड किया जाता है, तो चेतावनी देता है।
+- जब लिखने/संपादित करने वाले टूल अक्षम हैं, लेकिन किसी प्रतिबंधात्मक सैंडबॉक्स फ़ाइल सिस्टम सीमा के बिना `exec` अभी भी उपलब्ध है, तो चेतावनी देता है।
+- जब खुले DM या समूह सैंडबॉक्स/कार्यस्थान सुरक्षा उपायों के बिना रनटाइम/फ़ाइल सिस्टम टूल उजागर करते हैं, तो चेतावनी देता है।
+- जब इंस्टॉल किए गए Plugin टूल उदार टूल नीति के अंतर्गत पहुँच योग्य हो सकते हैं, तो चेतावनी देता है।
+
+**सैंडबॉक्स ब्राउज़र**
+
+- जब सैंडबॉक्स ब्राउज़र `sandbox.browser.cdpSourceRange` के बिना Docker `bridge` नेटवर्क का उपयोग करता है, तो चेतावनी देता है।
+- `host` और `container:*` नेमस्पेस जॉइन सहित खतरनाक सैंडबॉक्स Docker नेटवर्क मोड को चिह्नित करता है।
+- जब मौजूदा सैंडबॉक्स ब्राउज़र Docker कंटेनरों में हैश लेबल अनुपस्थित/पुराने होते हैं (उदाहरण के लिए, माइग्रेशन-पूर्व कंटेनर जिनमें `openclaw.browserConfigEpoch` नहीं है), तो चेतावनी देता है और `openclaw sandbox recreate --browser --all` की अनुशंसा करता है।
+
+**नेटवर्क/खोज**
+
+- `gateway.allowRealIpFallback=true` को चिह्नित करता है (यदि प्रॉक्सी गलत तरीके से कॉन्फ़िगर हैं, तो हेडर-स्पूफ़िंग का जोखिम)।
+- `discovery.mdns.mode="full"` को चिह्नित करता है (mDNS TXT रिकॉर्ड के माध्यम से मेटाडेटा लीक होना)।
+- जब `gateway.auth.mode="none"` साझा सीक्रेट के बिना Gateway HTTP API को पहुँच योग्य छोड़ता है (`/tools/invoke` और कोई भी सक्षम `/v1/*` एंडपॉइंट), तो चेतावनी देता है।
+
+**Plugin/चैनल**
+
+- जब npm-आधारित Plugin/हुक इंस्टॉल रिकॉर्ड किसी संस्करण पर पिन नहीं होते, इंटीग्रिटी मेटाडेटा अनुपस्थित होता है या वे वर्तमान इंस्टॉल किए गए पैकेज संस्करणों से भिन्न होते हैं, तो चेतावनी देता है।
+- जब चैनल अनुमति-सूचियाँ स्थिर ID के बजाय परिवर्तनशील नामों/ईमेल/टैग पर निर्भर होती हैं, तो चेतावनी देता है (जहाँ लागू हो वहाँ Discord, Slack, Google Chat, Microsoft Teams, Mattermost और IRC स्कोप)।
+
+`dangerous`/`dangerously` से उपसर्गित सेटिंग स्पष्ट आपातकालीन ऑपरेटर ओवरराइड हैं; किसी एक को सक्षम करना अपने-आप में सुरक्षा भेद्यता रिपोर्ट नहीं है। खतरनाक पैरामीटर की पूरी सूची के लिए [सुरक्षा](/hi/gateway/security) में "असुरक्षित या खतरनाक फ़्लैग का सारांश" देखें।
+
+## SecretRef का व्यवहार
+
+`security audit` अपने लक्षित पथों के लिए समर्थित SecretRef को केवल-पढ़ने योग्य मोड में रिज़ॉल्व करता है। यदि वर्तमान कमांड पथ में कोई SecretRef उपलब्ध नहीं है, तो ऑडिट क्रैश होने के बजाय जारी रहता है और `secretDiagnostics` रिपोर्ट करता है। `--token` और `--password` केवल उस कमांड इनवोकेशन के लिए डीप-प्रोब प्रमाणीकरण को ओवरराइड करते हैं; वे कॉन्फ़िगरेशन या SecretRef मैपिंग को दोबारा नहीं लिखते।
+
+## दमन
+
+जानबूझकर बने रहने वाले निष्कर्षों को `security.audit.suppressions` के साथ स्वीकार करें। प्रत्येक दमन किसी सटीक `checkId` से मेल खाता है और उसे केस-असंवेदी `titleIncludes` और/या `detailIncludes` उपस्ट्रिंग के साथ सीमित किया जा सकता है:
 
 ```json
 {
@@ -83,33 +109,18 @@ persisted reused `hooks.token` को rotate करने के लिए `open
 }
 ```
 
-Suppressed findings को active `summary` और `findings` list से हटा दिया जाता है।
-JSON output auditability के लिए उन्हें `suppressedFindings` के अंतर्गत रखता है।
-जब suppressions configured हों, active output एक unsuppressible
-`security.audit.suppressions.active` info finding भी रखता है ताकि readers जान सकें कि audit
-filtered था। Dangerous config flags हर finding में एक flag के रूप में emit होते हैं, इसलिए
-एक dangerous flag को accept करने से उसी
-`config.insecure_or_dangerous_flags` checkId को share करने वाले अन्य enabled flags hide नहीं होते।
-क्योंकि suppressions standing risk को hide कर सकते हैं, उन्हें
-agent-run shell commands के जरिए जोड़ने या हटाने के लिए exec approval चाहिए, जब तक exec पहले से trusted local automation के लिए
-`security="full"` और `ask="off"` के साथ running न हो।
+दमित निष्कर्ष सक्रिय `summary` और `findings` सूची से हटा दिए जाते हैं। ऑडिट-योग्यता के लिए JSON आउटपुट उन्हें `suppressedFindings` के अंतर्गत रखता है। दमन कॉन्फ़िगर होने पर सक्रिय आउटपुट एक अदमनीय `security.audit.suppressions.active` सूचना निष्कर्ष भी रखता है, ताकि पाठक जान सकें कि ऑडिट फ़िल्टर किया गया था। खतरनाक कॉन्फ़िगरेशन फ़्लैग प्रति निष्कर्ष एक फ़्लैग के रूप में उत्सर्जित होते हैं, इसलिए एक खतरनाक फ़्लैग को स्वीकार करने से समान `config.insecure_or_dangerous_flags` checkId साझा करने वाले अन्य सक्षम फ़्लैग नहीं छिपते।
 
-SecretRef behavior:
+क्योंकि दमन स्थायी जोखिम छिपा सकते हैं, एजेंट द्वारा चलाए गए शेल कमांड के माध्यम से उन्हें जोड़ने या हटाने के लिए exec अनुमोदन आवश्यक है, सिवाय इसके कि विश्वसनीय स्थानीय स्वचालन के लिए exec पहले से `security="full"` और `ask="off"` के साथ चल रहा हो।
 
-- `security audit` अपने targeted paths के लिए supported SecretRefs को read-only mode में resolve करता है।
-- अगर current command path में कोई SecretRef unavailable है, तो audit जारी रहता है और crash करने के बजाय `secretDiagnostics` report करता है।
-- `--token` और `--password` केवल उस command invocation के लिए deep-probe auth override करते हैं; वे config या SecretRef mappings को rewrite नहीं करते।
-
-## JSON output
-
-CI/policy checks के लिए `--json` का उपयोग करें:
+## JSON आउटपुट
 
 ```bash
 openclaw security audit --json | jq '.summary'
 openclaw security audit --deep --json | jq '.findings[] | select(.severity=="critical") | .checkId'
 ```
 
-अगर `--fix` और `--json` combine किए जाते हैं, तो output में fix actions और final report दोनों शामिल होते हैं:
+`--fix --json` के साथ आउटपुट में सुधार कार्रवाइयाँ और अंतिम रिपोर्ट, दोनों शामिल होते हैं:
 
 ```bash
 openclaw security audit --fix --json | jq '{fix: .fix.ok, summary: .report.summary}'
@@ -117,27 +128,23 @@ openclaw security audit --fix --json | jq '{fix: .fix.ok, summary: .report.summa
 
 ## `--fix` क्या बदलता है
 
-`--fix` सुरक्षित, deterministic remediations apply करता है:
+सुरक्षित, निर्धारक सुधार लागू करता है:
 
-- common `groupPolicy="open"` को `groupPolicy="allowlist"` में flip करता है (supported channels में account variants सहित)
-- जब WhatsApp group policy `allowlist` में flip होती है, तो stored `allowFrom` file से `groupAllowFrom` seed करता है
-  जब वह list मौजूद हो और config पहले से
-  `allowFrom` define न करता हो
-- `logging.redactSensitive` को `"off"` से `"tools"` पर set करता है
-- state/config और common sensitive files के लिए permissions tighten करता है
-  (`credentials/*.json`, `auth-profiles.json`, `sessions.json`, session
-  `*.jsonl`)
-- `openclaw.json` से referenced config include files को भी tighten करता है
-- POSIX hosts पर `chmod` और Windows पर `icacls` resets का उपयोग करता है
+- सामान्य `groupPolicy="open"` को `groupPolicy="allowlist"` में बदलता है (समर्थित चैनलों में अकाउंट प्रकारों सहित)
+- जब WhatsApp समूह नीति `allowlist` में बदलती है, तो संग्रहीत `allowFrom` फ़ाइल से `groupAllowFrom` को प्रारंभिक मान देता है, यदि वह सूची मौजूद हो और कॉन्फ़िगरेशन में `allowFrom` पहले से परिभाषित न हो
+- `logging.redactSensitive` को `"off"` से `"tools"` पर सेट करता है
+- स्थिति/कॉन्फ़िगरेशन और सामान्य संवेदनशील फ़ाइलों (`credentials/*.json`, `auth-profiles.json`, `openclaw-agent.sqlite` और पुराने सत्र आर्टिफ़ैक्ट) की अनुमतियाँ अधिक कड़ी करता है
+- `openclaw.json` से संदर्भित कॉन्फ़िगरेशन इन्क्लूड फ़ाइलों की अनुमतियाँ भी अधिक कड़ी करता है
+- POSIX होस्ट पर `chmod` और Windows पर `icacls` रीसेट का उपयोग करता है
 
-`--fix` यह **नहीं** करता:
+`--fix` निम्न कार्य **नहीं** करता:
 
-- tokens/passwords/API keys rotate करना
-- tools (`gateway`, `cron`, `exec`, आदि) disable करना
-- gateway bind/auth/network exposure choices बदलना
-- plugins/skills हटाना या rewrite करना
+- टोकन/पासवर्ड/API कुंजियाँ बदलना
+- टूल (`gateway`, `cron`, `exec` आदि) अक्षम करना
+- Gateway बाइंड/प्रमाणीकरण/नेटवर्क एक्सपोज़र विकल्प बदलना
+- Plugin/Skills हटाना या दोबारा लिखना
 
 ## संबंधित
 
-- [CLI reference](/hi/cli)
-- [Security audit](/hi/gateway/security)
+- [CLI संदर्भ](/hi/cli)
+- [सुरक्षा ऑडिट](/hi/gateway/security)

@@ -4,25 +4,25 @@ read_when:
 summary: Плагин лаборатории контроля качества OpenClaw с закрытым интерфейсом отладчика и средством запуска сценариев.
 title: Плагин QA Lab
 x-i18n:
-    generated_at: "2026-07-13T18:24:55Z"
+    generated_at: "2026-07-16T16:36:23Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
-    prompt_version: 24
+    prompt_version: 32
     provider: openai
-    source_hash: 39bdc390a578613a906f86a750124817f34123271f664fc39d06f2d3f81e3dd5
+    source_hash: 5ff549a56dd523a7158138b9a55cebc3a35bb81bb2612666be7f26b9241c1b0a
     source_path: plugins/reference/qa-lab.md
     workflow: 16
 ---
 
 # Плагин QA Lab
 
-Плагин лаборатории QA OpenClaw с приватным пользовательским интерфейсом отладчика и средством запуска сценариев.
+Плагин лаборатории контроля качества OpenClaw с приватным интерфейсом отладчика и средством запуска сценариев.
 
 ## Распространение
 
 - Пакет: `@openclaw/qa-lab`
-- Способ установки: только из рабочей копии исходного кода
+- Способ установки: только из исходного кода
 
 ## Интерфейс
 
-контракты: tools, webSearchProviders, workerProviders
+контракты: `tools`, `webSearchProviders`, `workerProviders`

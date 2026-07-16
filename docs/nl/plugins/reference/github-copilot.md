@@ -1,30 +1,31 @@
 ---
 read_when:
-    - U installeert, configureert of controleert de github-copilot-plugin
+    - Je installeert, configureert of controleert de github-copilot-plugin
 summary: Voegt ondersteuning voor de GitHub Copilot-modelprovider toe aan OpenClaw.
 title: GitHub Copilot-Plugin
 x-i18n:
-    generated_at: "2026-07-12T09:12:27Z"
+    generated_at: "2026-07-16T16:05:39Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 01b8a15fe2da9848cef18e0e24b1fdb1493e8f17046a7f82f1331f29c80f0660
+    source_hash: 3ed5a9098ac15afb0ecb77a0c723e178819a4f83e7da9728342d985e0f51f4c8
     source_path: plugins/reference/github-copilot.md
     workflow: 16
 ---
 
-# GitHub Copilot-Plugin
+# GitHub Copilot-plugin
 
 Voegt ondersteuning voor de GitHub Copilot-modelprovider toe aan OpenClaw.
 
 ## Distributie
 
 - Pakket: `@openclaw/github-copilot-provider`
-- Installatieroute: inbegrepen bij OpenClaw
+- Installatieroute: opgenomen in OpenClaw
 
 ## Oppervlak
 
-providers: github-copilot; contracten: memoryEmbeddingProviders, usageProviders
+providers: `github-copilot`; contracten: `memoryEmbeddingProviders`, `usageProviders`
 
 ## Gerelateerde documentatie
 

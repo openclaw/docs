@@ -1,30 +1,31 @@
 ---
 read_when:
-    - workboard Plugin을 설치, 구성 또는 감사하고 있습니다.
-summary: 에이전트가 담당하는 이슈와 세션을 위한 대시보드 작업 보드.
-title: 작업 보드 Plugin
+    - workboard Plugin을 설치, 구성 또는 감사하고 있습니다
+summary: 에이전트가 소유한 이슈와 세션을 위한 대시보드 작업 보드입니다.
+title: Workboard Plugin
 x-i18n:
-    generated_at: "2026-07-12T01:02:47Z"
+    generated_at: "2026-07-16T12:54:14Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 1e5a48a52d45dbe87b73020103c2bc3f0bd46305b4c0d26b3010864af65fa99c
+    source_hash: 7011f95388aafcc6bd2d4af0fc71296976b05f57d9314bbb4fa341b8de717fa2
     source_path: plugins/reference/workboard.md
     workflow: 16
 ---
 
-# 워크보드 Plugin
+# Workboard Plugin
 
-에이전트가 담당하는 이슈와 세션을 위한 대시보드 워크보드입니다.
+에이전트가 소유한 이슈와 세션을 위한 대시보드 워크보드입니다.
 
 ## 배포
 
 - 패키지: `@openclaw/workboard`
 - 설치 경로: OpenClaw에 포함됨
 
-## 제공 영역
+## 표면
 
-계약: 도구
+계약: `tools`
 
 ## 관련 문서
 

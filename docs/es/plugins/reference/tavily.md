@@ -1,14 +1,15 @@
 ---
 read_when:
-    - Estás instalando, configurando o auditando el plugin tavily
+    - Está instalando, configurando o auditando el plugin tavily
 summary: Añade herramientas que puede invocar el agente. Añade compatibilidad con proveedores de búsqueda web.
 title: Plugin de Tavily
 x-i18n:
-    generated_at: "2026-07-11T23:25:46Z"
+    generated_at: "2026-07-16T11:50:21Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 409da2bdfca9c2dd5a2c64565787175b57f2d43f09b1fa484ac54dd1f528c9fb
+    source_hash: c7bbeb8a0580d9248fdc1ffa08a556e8d2d91cb263f859b1d26a519ec2014f38
     source_path: plugins/reference/tavily.md
     workflow: 16
 ---
@@ -24,7 +25,7 @@ Añade herramientas que los agentes pueden invocar. Añade compatibilidad con el
 
 ## Superficie
 
-contratos: herramientas, proveedores de búsqueda web; Skills
+contratos: `tools`, `webSearchProviders`; Skills
 
 ## Documentación relacionada
 

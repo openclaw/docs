@@ -1,30 +1,31 @@
 ---
 read_when:
-    - Ви встановлюєте, налаштовуєте або перевіряєте Plugin для браузера
+    - Встановлення, налаштування або аудит плагіна браузера
 summary: Додає інструменти, які може викликати агент.
-title: Plugin браузера
+title: Браузерний Plugin
 x-i18n:
-    generated_at: "2026-07-12T13:35:38Z"
+    generated_at: "2026-07-16T18:17:34Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 2dcf562660fa3d05d22856335a7d2e6e467a432ee6dda5650efd94edde661ba4
+    source_hash: fa1ca51dce3992d718cdb6e6fec1656c224c021419852e2a2c467a334f251289
     source_path: plugins/reference/browser.md
     workflow: 16
 ---
 
-# Браузерний Plugin
+# Plugin браузера
 
 Додає інструменти, які може викликати агент.
 
 ## Розповсюдження
 
-- Пакет: `@openclaw/browser-plugin`
-- Спосіб встановлення: входить до складу OpenClaw
+- Пакунок: `@openclaw/browser-plugin`
+- Спосіб установлення: входить до складу OpenClaw
 
 ## Інтерфейс
 
-контракти: інструменти; Skills
+контракти: `tools`; навички
 
 ## Пов’язана документація
 

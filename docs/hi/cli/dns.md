@@ -1,29 +1,32 @@
 ---
 read_when:
-    - आप Tailscale + CoreDNS के माध्यम से व्यापक-क्षेत्र खोज (DNS-SD) चाहते हैं
+    - आप Tailscale + CoreDNS के माध्यम से वाइड-एरिया खोज (DNS-SD) चाहते हैं
     - You're setting up split DNS for a custom discovery domain (example: openclaw.internal)
-summary: '`openclaw dns` के लिए CLI संदर्भ (वाइड-एरिया डिस्कवरी हेल्पर)'
+summary: '`openclaw dns` (विस्तृत-क्षेत्र खोज सहायक) के लिए CLI संदर्भ'
 title: DNS
 x-i18n:
-    generated_at: "2026-06-28T22:48:47Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T13:53:05Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 460bdcbaa2c0c0fc1a4f5bdd76b904d8ac35195a25324c66421abfdc2044bb07
+    source_hash: bb07353df03f9d169e1aede2da0b711ffb68e8c9d21d51359e93e92cc0818ca2
     source_path: cli/dns.md
     workflow: 16
 ---
 
 # `openclaw dns`
 
-वाइड-एरिया खोज के लिए DNS सहायक (Tailscale + CoreDNS)। वर्तमान में macOS + Homebrew CoreDNS पर केंद्रित।
+व्यापक-क्षेत्र खोज (Tailscale + CoreDNS) के लिए DNS सहायक। वर्तमान में केवल macOS + Homebrew CoreDNS।
 
 संबंधित:
 
 - Gateway खोज: [खोज](/hi/gateway/discovery)
-- वाइड-एरिया खोज कॉन्फ़िगरेशन: [कॉन्फ़िगरेशन](/hi/gateway/configuration)
+- व्यापक-क्षेत्र खोज कॉन्फ़िगरेशन: [कॉन्फ़िगरेशन](/hi/gateway/configuration)
 
-## सेटअप
+## `dns setup`
+
+यूनिकास्ट DNS-SD खोज के लिए CoreDNS सेटअप की योजना बनाएँ या उसे लागू करें।
 
 ```bash
 openclaw dns setup
@@ -31,29 +34,25 @@ openclaw dns setup --domain openclaw.internal
 openclaw dns setup --apply
 ```
 
-## `dns setup`
+| विकल्प              | प्रभाव                                                                              |
+| ------------------- | ----------------------------------------------------------------------------------- |
+| `--domain <domain>` | व्यापक-क्षेत्र खोज डोमेन (उदाहरण के लिए `openclaw.internal`)।                       |
+| `--apply`           | CoreDNS कॉन्फ़िगरेशन इंस्टॉल/अपडेट करता है और सेवा को (पुनः) शुरू करता है। sudo आवश्यक है, केवल macOS। |
 
-यूनिकास्ट DNS-SD खोज के लिए CoreDNS सेटअप की योजना बनाएं या लागू करें।
+`--domain` के बिना, OpenClaw कॉन्फ़िगरेशन से `discovery.wideArea.domain` का उपयोग करता है।
 
-विकल्प:
+`--apply` के बिना, कमांड केवल निम्न जानकारी प्रिंट करता है:
 
-- `--domain <domain>`: वाइड-एरिया खोज डोमेन (उदाहरण के लिए `openclaw.internal`)
-- `--apply`: CoreDNS कॉन्फ़िगरेशन इंस्टॉल या अपडेट करें और सेवा को रीस्टार्ट करें (sudo आवश्यक; केवल macOS)
-
-यह क्या दिखाता है:
-
-- हल किया गया खोज डोमेन
-- ज़ोन फ़ाइल पथ
+- समाधान किया गया खोज डोमेन और ज़ोन फ़ाइल पथ
 - वर्तमान tailnet IP
 - अनुशंसित `openclaw.json` खोज कॉन्फ़िगरेशन
-- सेट करने के लिए Tailscale Split DNS नेमसर्वर/डोमेन मान
+- Tailscale व्यवस्थापक कंसोल में सेट किए जाने वाले Tailscale Split DNS नेमसर्वर/डोमेन मान
 
-नोट्स:
+`--apply` के साथ (केवल macOS, Homebrew CoreDNS आवश्यक):
 
-- `--apply` के बिना, कमांड केवल योजना बनाने वाला सहायक है और अनुशंसित सेटअप प्रिंट करता है।
-- यदि `--domain` छोड़ा गया है, तो OpenClaw कॉन्फ़िगरेशन से `discovery.wideArea.domain` का उपयोग करता है।
-- `--apply` वर्तमान में केवल macOS का समर्थन करता है और Homebrew CoreDNS की अपेक्षा करता है।
-- `--apply` आवश्यकता होने पर ज़ोन फ़ाइल को बूटस्ट्रैप करता है, सुनिश्चित करता है कि CoreDNS import stanza मौजूद है, और `coredns` brew सेवा को रीस्टार्ट करता है।
+- ज़ोन फ़ाइल मौजूद न होने पर उसे बूटस्ट्रैप करता है
+- CoreDNS इंपोर्ट स्टैंज़ा मौजूद न होने पर उसे जोड़ता है
+- `coredns` brew सेवा को पुनः शुरू करता है
 
 ## संबंधित
 

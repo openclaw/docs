@@ -1,14 +1,15 @@
 ---
 read_when:
-    - شما در حال نصب، پیکربندی یا ممیزی Plugin ‏exa هستید
-summary: پشتیبانی از ارائه‌دهندهٔ جست‌وجوی وب را اضافه می‌کند.
-title: Plugin اکسـا
+    - در حال نصب، پیکربندی یا ممیزی Plugin ‏exa هستید
+summary: پشتیبانی از ارائه‌دهنده جست‌وجوی وب را اضافه می‌کند.
+title: Plugin ‏Exa
 x-i18n:
-    generated_at: "2026-07-12T10:29:22Z"
+    generated_at: "2026-07-16T17:00:50Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 6170d70f03913f87b62f7a85647b4748032b7d01c56e909826e10e261e58160f
+    source_hash: 5822159a63a94184c1e1d1d3d9c0e0be8f02a3d1ae02d65f2ec6abb5e7f2bd20
     source_path: plugins/reference/exa.md
     workflow: 16
 ---
@@ -24,7 +25,7 @@ x-i18n:
 
 ## سطح
 
-قراردادها: webSearchProviders
+قراردادها: `webSearchProviders`
 
 ## مستندات مرتبط
 

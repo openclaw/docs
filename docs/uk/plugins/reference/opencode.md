@@ -1,30 +1,47 @@
 ---
 read_when:
-    - Ви встановлюєте, налаштовуєте або перевіряєте Plugin opencode.
-summary: Додає до OpenClaw підтримку постачальника моделей OpenCode.
+    - Ви встановлюєте, налаштовуєте або перевіряєте плагін opencode
+summary: Додає підтримку постачальника моделей OpenCode до OpenClaw.
 title: Plugin OpenCode
 x-i18n:
-    generated_at: "2026-07-12T13:31:12Z"
+    generated_at: "2026-07-16T18:21:40Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 8c1c1264da52e8f362e83b2733390ccc3b2fc1dd62f14f8e5211bbb8fa47e95f
+    source_hash: aecf396cfc645e4a036b8130ed7f33db9081dffda120c6d06ebe863dd3be3730
     source_path: plugins/reference/opencode.md
     workflow: 16
 ---
 
 # Plugin OpenCode
 
-Додає до OpenClaw підтримку постачальника моделей OpenCode.
+Додає підтримку провайдера моделей OpenCode до OpenClaw.
 
 ## Розповсюдження
 
-- Пакунок: `@openclaw/opencode-provider`
+- Пакет: `@openclaw/opencode-provider`
 - Спосіб установлення: входить до складу OpenClaw
 
-## Інтерфейс
+## Поверхня
 
-постачальники: opencode; контракти: mediaUnderstandingProviders
+провайдери: `opencode`; контракти: `mediaUnderstandingProviders`
+
+<!-- openclaw-plugin-reference:manual-start -->
+
+## Нативні сеанси
+
+OpenClaw автоматично виявляє CLI `opencode` на Gateway і спарених вузлах. Після цього збережені
+сеанси з’являються в групі **OpenCode** на бічній панелі сеансів із можливістю лише для читання
+переглядати стенограми за допомогою офіційних команд `opencode --pure db ... --format json`
+і `opencode --pure export`. Обмежене середовище та режим `--pure`
+не дають перегляду каталогу завантажувати плагіни проєкту або успадковувати не пов’язані з ним
+облікові дані Gateway.
+
+Вимкніть **OpenCode Session Catalog** у розділі **Config > Plugins > OpenCode**, щоб
+вимкнути виявлення. За замовчуванням його ввімкнено.
+
+<!-- openclaw-plugin-reference:manual-end -->
 
 ## Пов’язана документація
 

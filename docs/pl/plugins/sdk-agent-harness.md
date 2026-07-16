@@ -1,75 +1,82 @@
 ---
 read_when:
-    - Zmieniasz wbudowane środowisko uruchomieniowe agenta lub rejestr harnessów
-    - Rejestrujesz harness agenta z dołączonego lub zaufanego pluginu
-    - Musisz zrozumieć, jak Plugin Codex jest powiązany z dostawcami modeli
+    - Zmieniasz osadzone środowisko wykonawcze agenta lub rejestr uprzęży testowej
+    - Rejestrujesz środowisko agenta z dołączonego lub zaufanego pluginu
+    - Trzeba zrozumieć, w jaki sposób plugin Codex jest powiązany z dostawcami modeli
 sidebarTitle: Agent Harness
-summary: Eksperymentalna powierzchnia SDK dla pluginów zastępujących niskopoziomowy osadzony executor agenta
-title: Pluginy środowiska agentów
+summary: Eksperymentalny interfejs SDK dla pluginów zastępujących niskopoziomowy, wbudowany moduł wykonawczy agenta
+title: Pluginy środowiska wykonawczego agenta
 x-i18n:
-    generated_at: "2026-06-27T18:05:29Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T19:00:34Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: a368ae480c31c86c30786f91e5cf451c3489c681be8ee3955c1c2bd55e4b49e9
+    source_hash: 862d53022e48b93c98e98162f76460433b76005cba3188342d0977b951044106
     source_path: plugins/sdk-agent-harness.md
     workflow: 16
 ---
 
-**Harness agenta** to niskopoziomowy wykonawca jednej przygotowanej tury
-agenta OpenClaw. Nie jest dostawcą modelu, kanałem ani rejestrem narzędzi.
-Model pojęciowy przeznaczony dla użytkowników opisano w [Środowiskach uruchomieniowych agentów](/pl/concepts/agent-runtimes).
+**Środowisko wykonawcze agenta** to niskopoziomowy mechanizm wykonujący jedną przygotowaną turę agenta OpenClaw. Nie jest dostawcą modelu, kanałem ani rejestrem narzędzi. Model mentalny przeznaczony dla użytkownika opisano w sekcji [Środowiska uruchomieniowe agentów](/pl/concepts/agent-runtimes).
 
-Używaj tej powierzchni tylko dla dołączonych lub zaufanych natywnych Pluginów.
-Kontrakt wciąż jest eksperymentalny, ponieważ typy parametrów celowo
-odzwierciedlają bieżący osadzony runner.
+Z tej powierzchni należy korzystać wyłącznie w przypadku wbudowanych lub zaufanych natywnych pluginów. Kontrakt nadal jest eksperymentalny, ponieważ typy parametrów celowo odzwierciedlają bieżący osadzony mechanizm wykonawczy.
 
-## Kiedy używać harnessu
+## Kiedy używać środowiska wykonawczego
 
-Zarejestruj harness agenta, gdy rodzina modeli ma własne natywne środowisko
-sesji, a zwykły transport dostawcy OpenClaw jest niewłaściwą abstrakcją.
+Środowisko wykonawcze agenta należy zarejestrować, gdy rodzina modeli ma własne natywne środowisko uruchomieniowe sesji, a standardowy transport dostawcy OpenClaw jest niewłaściwą abstrakcją:
 
-Przykłady:
+- natywny serwer agenta programistycznego, który zarządza wątkami i Compaction
+- lokalny CLI lub demon, który musi strumieniować natywne zdarzenia planu, rozumowania i narzędzi
+- środowisko uruchomieniowe modelu, które oprócz transkrypcji sesji OpenClaw wymaga własnego identyfikatora wznowienia
 
-- natywny serwer agenta kodującego, który jest właścicielem wątków i Compaction
-- lokalny CLI lub daemon, który musi strumieniować natywne zdarzenia planu, rozumowania i narzędzi
-- środowisko uruchomieniowe modelu, które potrzebuje własnego identyfikatora wznowienia oprócz transkrypcji sesji OpenClaw
+Nie należy rejestrować środowiska wykonawczego wyłącznie po to, aby dodać nowe API LLM. Dla standardowych API modeli opartych na HTTP lub WebSocket należy utworzyć [plugin dostawcy](/pl/plugins/sdk-provider-plugins).
 
-**Nie** rejestruj harnessu tylko po to, aby dodać nowe API LLM. Dla zwykłych API modeli HTTP lub WebSocket zbuduj [Plugin dostawcy](/pl/plugins/sdk-provider-plugins).
+## Za co nadal odpowiada rdzeń
 
-## Co nadal należy do rdzenia
-
-Zanim harness zostanie wybrany, OpenClaw rozwiązał już:
+Przed wybraniem środowiska wykonawczego OpenClaw ma już określone:
 
 - dostawcę i model
-- stan uwierzytelniania środowiska uruchomieniowego
-- poziom myślenia i budżet kontekstu
+- stan uwierzytelniania środowiska uruchomieniowego, chyba że środowisko wykonawcze deklaruje, że odpowiada za inicjalizację uwierzytelniania
+- poziom rozumowania i budżet kontekstu
 - plik transkrypcji/sesji OpenClaw
-- obszar roboczy, sandbox i zasady narzędzi
-- wywołania zwrotne odpowiedzi kanału i wywołania zwrotne strumieniowania
-- zasady awaryjnego przełączania modelu i przełączania modeli na żywo
+- obszar roboczy, piaskownicę i zasady dotyczące narzędzi
+- wywołania zwrotne odpowiedzi kanału i wywołania zwrotne przesyłania strumieniowego
+- zasady awaryjnego wyboru modelu i przełączania modelu na żywo
 
-Ten podział jest celowy. Harness uruchamia przygotowaną próbę; nie wybiera
-dostawców, nie zastępuje dostarczania kanałem ani nie przełącza po cichu modeli.
+Środowisko wykonawcze uruchamia przygotowaną próbę; nie wybiera dostawców, nie zastępuje dostarczania przez kanał ani nie przełącza modeli bez powiadomienia.
 
-Przygotowana próba zawiera także `params.runtimePlan`, należący do OpenClaw
-pakiet zasad dla decyzji środowiska uruchomieniowego, które muszą pozostać wspólne dla OpenClaw i natywnych
-harnessów:
+### Inicjalizacja uwierzytelniania zarządzana przez środowisko wykonawcze
 
-- `runtimePlan.tools.normalize(...)` i
-  `runtimePlan.tools.logDiagnostics(...)` dla zasad schematu narzędzi świadomych dostawcy
-- `runtimePlan.transcript.resolvePolicy(...)` dla sanityzacji transkrypcji i
-  zasad naprawy wywołań narzędzi
-- `runtimePlan.delivery.isSilentPayload(...)` dla współdzielonego `NO_REPLY` i tłumienia
-  dostarczania mediów
-- `runtimePlan.outcome.classifyRunResult(...)` dla klasyfikacji awaryjnego przełączania modelu
-- `runtimePlan.observability` dla rozwiązanych metadanych dostawcy/modelu/harnessu
+Domyślnie rdzeń rozpoznaje dane uwierzytelniające dostawcy przed wywołaniem środowiska wykonawczego. Zaufane środowisko wykonawcze, które może uwierzytelnić się za pomocą własnego natywnego środowiska uruchomieniowego, może ustawić `authBootstrap: "harness"` w swojej statycznej rejestracji `AgentHarness`. Rdzeń pomija wtedy ogólną inicjalizację danych uwierzytelniających dostawcy i błąd braku danych uwierzytelniających dla każdej próby przejętej przez to środowisko wykonawcze.
 
-Harnessy mogą używać planu do decyzji, które muszą odpowiadać zachowaniu OpenClaw, ale
-nadal powinny traktować go jako należący do hosta stan próby. Nie mutuj go ani nie używaj do
-przełączania dostawców/modeli wewnątrz tury.
+Rdzeń nadal przekazuje zgodny, jawnie wybrany lub uporządkowany profil uwierzytelniania OpenClaw i jego magazyn o ograniczonym zakresie, jeśli taki istnieje. Środowisko wykonawcze musi przed wysłaniem żądań do modelu rozpoznać ten profil lub swoje natywne dane uwierzytelniające, ograniczać sekrety do zakresu próby i zgłaszać umożliwiające podjęcie działań błędy uwierzytelniania. Nie należy ustawiać tej możliwości dla środowiska wykonawczego, które tylko czasami odpowiada za uwierzytelnianie.
 
-## Rejestrowanie harnessu
+### Zweryfikowane artefakty środowiska uruchomieniowego konfiguracji
+
+Lokalne środowisko wykonawcze, które może zapewnić inferencję podczas początkowej konfiguracji, musi poświadczyć implementację, która ukończyła test. Gdy `params.captureRuntimeArtifact` ma wartość true, należy zwrócić nieprzezroczysty `result.runtimeArtifact` ze stabilnym identyfikatorem i odciskiem zawartości. Należy zarejestrować pasującą możliwość `runtimeArtifact.validate(...)`, która ponownie sprawdza to powiązanie bez ładowania innego środowiska wykonawczego ani skanowania niepowiązanych pluginów.
+
+Zweryfikowane kontynuacje OpenClaw przekazują również `params.expectedRuntimeArtifact`. Środowisko wykonawcze musi porównać go z dokładnie tym natywnym procesem, który pozyskało, i zakończyć się niepowodzeniem przed rozpoczęciem lub wznowieniem natywnego wątku, jeśli wartości się różnią. Zwykłe tury agenta pomijają oba pola, dzięki czemu obliczanie skrótu zawartości nie trafia na standardową ścieżkę krytyczną żądania. Zdalne środowiska wykonawcze lub środowiska oparte na WebSocket wymagają kontraktu poświadczenia serwera, zanim będą mogły uczestniczyć; sam ciąg wersji nie stanowi tożsamości artefaktu.
+
+Przygotowana próba zawiera również `params.runtimePlan`, pakiet zasad zarządzany przez OpenClaw na potrzeby decyzji środowiska uruchomieniowego, które muszą pozostać wspólne dla OpenClaw i natywnych środowisk wykonawczych:
+
+- `runtimePlan.tools.normalize(...)` i `runtimePlan.tools.logDiagnostics(...)` dla zależnych od dostawcy zasad schematu narzędzi
+- `runtimePlan.transcript.resolvePolicy(...)` dla zasad oczyszczania transkrypcji i naprawiania wywołań narzędzi
+- `runtimePlan.delivery.isSilentPayload(...)` dla współdzielonego `NO_REPLY` i wyłączania dostarczania multimediów
+- `runtimePlan.outcome.classifyRunResult(...)` dla klasyfikacji awaryjnego wyboru modelu
+- `runtimePlan.observability` dla określonych metadanych dostawcy/modelu/środowiska wykonawczego
+
+Środowiska wykonawcze mogą używać planu do podejmowania decyzji, które muszą być zgodne z zachowaniem OpenClaw, ale powinny traktować go jako zarządzany przez hosta stan próby: nie należy go modyfikować ani używać do przełączania dostawców lub modeli w trakcie tury.
+
+### Kontrakt transportu żądania
+
+`supports(ctx)` otrzymuje określony transport modelu w `ctx.modelProvider`. Wybraną trasę opisują dwa fakty zarządzane przez dostawcę, które nie zawierają sekretów:
+
+- `runtimePolicy.compatibleIds` zawiera identyfikatory środowisk uruchomieniowych, które dostawca deklaruje jako zgodne z daną trasą. Brak zasad oznacza, że dostawca nie zadeklarował zgodności na poziomie trasy; nie stanowi to pozwolenia na założenie obsługi.
+- `requestTransportOverrides: "none"` oznacza, że nie trzeba odtwarzać żadnego jawnie zdefiniowanego nadpisania żądania dostawcy/modelu. `"present"` oznacza, że istnieją jawnie zdefiniowane nagłówki, transport uwierzytelniania, proxy, TLS, zachowanie usługi lokalnej lub sieci prywatnej albo parametry żądania. Fakt ten nie ujawnia tych wartości.
+
+Gdy środowisko wykonawcze nie może odtworzyć przygotowanego transportu, należy zwrócić `{ supported: false, reason }`. Nie należy wnioskować o obsłudze przez odczytywanie surowej konfiguracji po dokonaniu wyboru. Jeśli przygotowanie uwierzytelniania tworzy wiele tras ponownych prób, jedno środowisko wykonawcze musi obsługiwać je wszystkie przed wysłaniem. Wybór niejawny używa OpenClaw, jeśli żaden plugin nie może obsłużyć pełnego zestawu; jawny lub utrwalony wybór pluginu kończy się bezpiecznym niepowodzeniem.
+
+## Rejestrowanie środowiska wykonawczego
 
 **Import:** `openclaw/plugin-sdk/agent-harness`
 
@@ -79,174 +86,159 @@ import { definePluginEntry } from "openclaw/plugin-sdk/plugin-entry";
 
 const myHarness: AgentHarness = {
   id: "my-harness",
-  label: "My native agent harness",
+  label: "Moje natywne środowisko wykonawcze agenta",
 
   supports(ctx) {
-    return ctx.provider === "my-provider"
+    const routeSupportsHarness =
+      ctx.modelProvider?.runtimePolicy?.compatibleIds.includes("my-harness") === true;
+    const canReproduceRequest = ctx.modelProvider?.requestTransportOverrides !== "present";
+    return ctx.provider === "my-provider" && routeSupportsHarness && canReproduceRequest
       ? { supported: true, priority: 100 }
-      : { supported: false };
+      : { supported: false, reason: "efektywna trasa nie jest zgodna ze środowiskiem wykonawczym" };
   },
 
   async runAttempt(params) {
-    // Start or resume your native thread.
-    // Use params.prompt, params.tools, params.images, params.onPartialReply,
-    // params.onAgentEvent, and the other prepared attempt fields.
+    // Uruchom lub wznów natywny wątek.
+    // Użyj params.prompt, params.tools, params.images, params.onPartialReply,
+    // params.onAgentEvent oraz pozostałych pól przygotowanej próby.
     return await runMyNativeTurn(params);
   },
 };
 
 export default definePluginEntry({
   id: "my-native-agent",
-  name: "My Native Agent",
-  description: "Runs selected models through a native agent daemon.",
+  name: "Mój natywny agent",
+  description: "Uruchamia wybrane modele za pośrednictwem natywnego demona agenta.",
   register(api) {
     api.registerAgentHarness(myHarness);
   },
 });
 ```
 
+`authBootstrap` celowo pominięto w tym ogólnym przykładzie. `authBootstrap: "harness"` należy dodać tylko wtedy, gdy środowisko wykonawcze spełnia powyższy kontrakt.
+
+### Delegowane wykonywanie
+
+Właściciel środowiska wykonawczego może ustawić `delegatedExecutionPluginIds` na identyfikatory zaufanych pluginów, które muszą wykonywać istniejącą sesję powiązaną z modelem, na przykład transport głosowy kontynuujący konwersację obsługiwaną przez Codex. Jest to statyczna zgoda właściciela, a nie lista dozwolonych elementów rdzenia. Zakres powinien pozostać wąski.
+
+Delegaci otrzymują wyłącznie zgodę na pracę i osadzone wykonywanie. OpenClaw wymaga dokładnego zapisanego klucza sesji, ścieżki magazynu i identyfikatora sesji; `modelSelectionLocked:
+true`; oraz zgodnych wartości `agentHarnessId` i `agentHarnessRuntimeOverride`. Wykonanie jest następnie ograniczone zakresem właściciela środowiska wykonawczego. Tworzenie, modyfikowanie, resetowanie, usuwanie i archiwizowanie sesji oraz modyfikowanie Gateway pozostają dostępne wyłącznie dla właściciela.
+
 ## Zasady wyboru
 
-OpenClaw wybiera harness po rozwiązaniu dostawcy/modelu:
+OpenClaw wybiera środowisko wykonawcze po określeniu dostawcy/modelu:
 
-1. Wygrywa zasada środowiska uruchomieniowego przypisana do modelu.
-2. Następna jest zasada środowiska uruchomieniowego przypisana do dostawcy.
-3. `auto` pyta zarejestrowane harnessy, czy obsługują rozwiązany
-   dostawca/model.
-4. Jeśli żaden zarejestrowany harness nie pasuje, OpenClaw używa swojego osadzonego środowiska uruchomieniowego.
+1. Pierwszeństwo mają zasady środowiska uruchomieniowego dotyczące modelu.
+2. Następne są zasady środowiska uruchomieniowego dotyczące dostawcy.
+3. `auto` pyta zarejestrowane środowiska wykonawcze, czy obsługują określoną efektywną trasę. Same prefiksy dostawcy/modelu nigdy nie wybierają środowiska wykonawczego.
+4. Jeśli żadne zarejestrowane środowisko wykonawcze nie pasuje, OpenClaw używa osadzonego środowiska uruchomieniowego.
 
-Awarie harnessów Pluginów są widoczne jako awarie uruchomienia. W trybie `auto` osadzona ścieżka awaryjna jest
-używana tylko wtedy, gdy żaden zarejestrowany harness Pluginu nie obsługuje rozwiązanego
-dostawcy/modelu. Gdy harness Pluginu przejmie uruchomienie, OpenClaw nie
-odtwarza tej samej tury przez inne środowisko uruchomieniowe, ponieważ może to zmienić
-semantykę uwierzytelniania/środowiska uruchomieniowego lub zduplikować skutki uboczne.
+Błędy środowiska wykonawczego pluginu są zgłaszane jako błędy wykonania. W trybie `auto` osadzony mechanizm awaryjny ma zastosowanie tylko wtedy, gdy żadne zarejestrowane środowisko wykonawcze pluginu nie obsługuje określonego dostawcy/modelu. Gdy środowisko wykonawcze pluginu przejmie wykonanie, OpenClaw nie odtwarza tej samej tury w innym środowisku uruchomieniowym, ponieważ mogłoby to zmienić semantykę uwierzytelniania/środowiska uruchomieniowego lub powielić skutki uboczne.
 
-Przypięcia środowiska uruchomieniowego dla całej sesji i całego agenta są ignorowane przez wybór. Obejmuje to
-nieaktualne wartości sesji `agentHarnessId`, `agents.defaults.agentRuntime`,
-`agents.list[].agentRuntime` i `OPENCLAW_AGENT_RUNTIME`. `/status` pokazuje
-efektywne środowisko uruchomieniowe wybrane z trasy dostawcy/modelu.
-Jeśli wybrany harness jest zaskakujący, włącz logowanie debugowania `agents/harness` i
-sprawdź ustrukturyzowany rekord Gateway `agent harness selected`. Zawiera on
-identyfikator wybranego harnessu, powód wyboru, zasadę środowiska uruchomieniowego/awaryjną oraz, w
-trybie `auto`, wynik obsługi każdego kandydata Pluginu.
+Skonfigurowane zasady środowiska uruchomieniowego pozostają miarodajne w kwestii żądanego środowiska uruchomieniowego. Utrwalona sesja `agentHarnessId` zachowuje własność swojej natywnej transkrypcji, gdy przygotowanie trasy/uwierzytelniania nadal trwa. Żaden z tych mechanizmów nie sprawia, że niezgodna trasa staje się zgodna: gdy przygotowane fakty są dostępne, wybrane lub przypięte środowisko wykonawcze musi je obsługiwać, w przeciwnym razie wykonanie kończy się bezpiecznym niepowodzeniem. `/status` pokazuje efektywne środowisko uruchomieniowe wybrane na podstawie zasad, utrwalonej własności i obsługi trasy. Stan przygotowania jest jawny: brak `runtimePolicy` pozostaje niezadeklarowany, zamiast być wywnioskowanym z przypadkowo dostępnych pól transportu. Gdy uwierzytelnianie zarządzane przez środowisko wykonawcze pozostawia nierozstrzygniętych wiele tras fizycznych, przygotowany fakt obsługi stanowi część wspólną ich zgodnych identyfikatorów środowisk uruchomieniowych i zgłasza nadpisania żądań, jeśli występują u któregokolwiek kandydata. Dlatego jeden kandydat bez deklaracji sprawia, że zgodność natywna jest pusta; `preparedAuth.source: "harness"` jest właścicielem uwierzytelniania, a nie pozwoleniem na wnioskowanie o obsłudze trasy.
 
-Dołączony Plugin Codex rejestruje `codex` jako identyfikator swojego harnessu. Rdzeń traktuje go
-jak zwykły identyfikator harnessu Pluginu; aliasy specyficzne dla Codex należą do Pluginu
-lub konfiguracji operatora, a nie do współdzielonego selektora środowiska uruchomieniowego.
+Jeśli wybrane środowisko wykonawcze jest zaskakujące, należy włączyć rejestrowanie debugowania `agents/harness` i sprawdzić ustrukturyzowany rekord `agent harness selected` bramy: zawiera identyfikator wybranego środowiska wykonawczego, powód wyboru, zasady środowiska uruchomieniowego/mechanizmu awaryjnego oraz, w trybie `auto`, wynik obsługi każdego kandydata pluginu.
 
-## Parowanie dostawcy i harnessu
+Wbudowany plugin Codex rejestruje `codex` jako swój identyfikator środowiska wykonawczego. Rdzeń traktuje go jak zwykły identyfikator środowiska wykonawczego pluginu; aliasy specyficzne dla Codex należą do pluginu lub konfiguracji operatora, a nie do współdzielonego selektora środowiska uruchomieniowego.
 
-Większość harnessów powinna również rejestrować dostawcę. Dostawca udostępnia reszcie
-OpenClaw referencje modeli, stan uwierzytelniania, metadane modeli i wybór `/model`.
-Następnie harness przejmuje tego dostawcę w `supports(...)`.
+## Parowanie dostawcy ze środowiskiem wykonawczym
 
-Dołączony Plugin Codex stosuje ten wzorzec:
+Większość środowisk wykonawczych powinna również rejestrować dostawcę. Dostawca udostępnia pozostałej części OpenClaw odwołania do modeli, stan uwierzytelniania, metadane modelu oraz wybór `/model`. Następnie środowisko wykonawcze przejmuje tego dostawcę w `supports(...)`.
 
-- preferowane referencje modelu użytkownika: `openai/gpt-5.5`
-- referencje zgodności: starsze referencje `codex/gpt-*` pozostają akceptowane, ale nowe
-  konfiguracje nie powinny używać ich jako zwykłych referencji dostawcy/modelu
-- identyfikator harnessu: `codex`
-- uwierzytelnianie: syntetyczna dostępność dostawcy, ponieważ harness Codex jest właścicielem
-  natywnego logowania/sesji Codex
-- żądanie app-server: OpenClaw wysyła do Codex sam identyfikator modelu i pozwala
-  harnessowi komunikować się z natywnym protokołem app-server
+Wbudowany plugin Codex korzysta z tego wzorca:
 
-Plugin Codex jest addytywny. Zwykłe referencje agentów `openai/gpt-*` u oficjalnego
-dostawcy OpenAI domyślnie wybierają harness Codex. Starsze referencje `codex/gpt-*`
-nadal wybierają dostawcę i harness Codex ze względu na zgodność.
+- preferowane odwołania do modeli użytkownika: `openai/gpt-5.6-sol`
+- odwołania zgodności: starsze odwołania `codex/gpt-*` pozostają akceptowane, ale nowe konfiguracje nie powinny używać ich jako standardowych odwołań dostawcy/modelu
+- identyfikator środowiska wykonawczego: `codex`
+- uwierzytelnianie: syntetyczna dostępność dostawcy, ponieważ środowisko wykonawcze Codex zarządza natywnym logowaniem/sesją Codex
+- żądanie serwera aplikacji: OpenClaw wysyła sam identyfikator modelu do Codex i pozwala środowisku wykonawczemu komunikować się z natywnym protokołem serwera aplikacji
 
-Konfigurację operatora, przykłady prefiksów modeli i konfiguracje wyłącznie dla Codex opisano w
-[Harnessie Codex](/pl/plugins/codex-harness).
+Plugin Codex jest rozwiązaniem addytywnym. Gdy zasady środowiska uruchomieniowego nie są ustawione lub mają wartość `auto`, OpenAI może wybrać Codex tylko wtedy, gdy zarządzany przez dostawcę kontrakt trasy deklaruje zgodność z `codex`: dokładna oficjalna trasa HTTPS Platform Responses lub ChatGPT Responses bez jawnie zdefiniowanego nadpisania żądania. Sam prefiks `openai/*` nigdy nie wybiera Codex. Niestandardowe punkty końcowe, adaptery Completions i jawnie zdefiniowane zachowanie żądań pozostają obsługiwane przez OpenClaw. Oficjalne punkty końcowe używające nieszyfrowanego HTTP są odrzucane. Starsze odwołania `codex/gpt-*` pozostają danymi wejściowymi zgodności. Zobacz [Niejawne środowisko uruchomieniowe agenta OpenAI](/pl/providers/openai#implicit-agent-runtime).
 
-OpenClaw wymaga app-server Codex `0.125.0` lub nowszego. Plugin Codex sprawdza
-uzgadnianie inicjalizacji app-server i blokuje starsze lub niewersjonowane serwery, aby
-OpenClaw działał tylko względem powierzchni protokołu, z którą został przetestowany. Minimalna wersja
-`0.125.0` obejmuje obsługę natywnego payloadu hooka MCP, która trafiła do
-Codex `0.124.0`, jednocześnie przypinając OpenClaw do nowszej przetestowanej stabilnej linii.
+Konfigurację operatora, przykłady prefiksów modeli i konfiguracje przeznaczone wyłącznie dla Codex opisano w sekcji [Środowisko wykonawcze Codex](/pl/plugins/codex-harness).
 
-### Warstwa pośrednia wyników narzędzi
+Plugin Codex wymusza minimalną wersję serwera aplikacji udokumentowaną w sekcji [Środowisko wykonawcze Codex](/pl/plugins/codex-harness). Sprawdza uzgadnianie inicjalizacyjne oraz blokuje starsze serwery i serwery bez wersji, dzięki czemu OpenClaw działa wyłącznie z przetestowaną powierzchnią protokołu.
 
-Dołączone Pluginy i jawnie włączone zainstalowane Pluginy z pasującymi kontraktami manifestu
-mogą dołączać neutralną względem środowiska uruchomieniowego warstwę pośrednią wyników narzędzi przez
-`api.registerAgentToolResultMiddleware(...)`, gdy ich manifest deklaruje
-docelowe identyfikatory środowisk uruchomieniowych w `contracts.agentToolResultMiddleware`. Ta zaufana
-powierzchnia jest przeznaczona dla asynchronicznych transformacji wyników narzędzi, które muszą działać, zanim OpenClaw lub Codex
-przekaże wynik narzędzia z powrotem do modelu.
+### Oprogramowanie pośredniczące wyników narzędzi
 
-Starsze dołączone Pluginy nadal mogą używać
-`api.registerCodexAppServerExtensionFactory(...)` dla warstwy pośredniej wyłącznie app-server Codex,
-ale nowe transformacje wyników powinny używać API neutralnego względem środowiska uruchomieniowego.
-Hook wyłącznie osadzonego runnera `api.registerEmbeddedExtensionFactory(...)` został usunięty;
-osadzone transformacje wyników narzędzi muszą używać neutralnej względem środowiska uruchomieniowego warstwy pośredniej.
+Wbudowane pluginy i jawnie włączone zainstalowane pluginy z pasującymi kontraktami manifestu mogą dołączać niezależne od środowiska uruchomieniowego oprogramowanie pośredniczące wyników narzędzi za pomocą `api.registerAgentToolResultMiddleware(...)`, gdy ich manifest deklaruje docelowe identyfikatory środowisk uruchomieniowych w `contracts.agentToolResultMiddleware`. Ta zaufana powierzchnia służy do asynchronicznych przekształceń wyników narzędzi, które muszą zostać wykonane, zanim OpenClaw lub Codex przekaże dane wyjściowe narzędzia z powrotem do modelu.
 
-### Klasyfikacja końcowego wyniku
+Starsze dołączone Pluginy mogą nadal używać
+`api.registerCodexAppServerExtensionFactory(...)` dla oprogramowania pośredniczącego przeznaczonego wyłącznie dla
+serwera aplikacji Codex, ale nowe transformacje wyników powinny korzystać z API niezależnego od środowiska uruchomieniowego. Punkt zaczepienia `api.registerEmbeddedExtensionFactory(...)`, przeznaczony
+wyłącznie dla osadzonego modułu wykonawczego, został usunięty; transformacje wyników narzędzi osadzonych muszą korzystać z oprogramowania pośredniczącego niezależnego od środowiska uruchomieniowego.
 
-Natywne harnessy, które są właścicielami własnej projekcji protokołu, mogą używać
+### Klasyfikacja wyniku końcowego
+
+Natywne mechanizmy testowe, które zarządzają własną projekcją protokołu, mogą używać
 `classifyAgentHarnessTerminalOutcome(...)` z
-`openclaw/plugin-sdk/agent-harness-runtime`, gdy ukończona tura nie wytworzyła
-widocznego tekstu asystenta. Helper zwraca `empty`, `reasoning-only` albo
-`planning-only`, aby zasada awaryjna OpenClaw mogła zdecydować, czy ponowić próbę z
-innym modelem. `planning-only` wymaga jawnego pola `planText` harnessu;
-OpenClaw nie wnioskuje go z prozy asystenta. Helper celowo pozostawia
-błędy promptu, trwające tury i celowe ciche odpowiedzi takie jak
-`NO_REPLY` bez klasyfikacji.
+`openclaw/plugin-sdk/agent-harness-runtime`, gdy ukończona tura nie wygenerowała
+widocznego tekstu asystenta. Funkcja pomocnicza zwraca `empty`, `reasoning-only` lub
+`planning-only`, aby zasady obsługi awaryjnej OpenClaw mogły zdecydować, czy ponowić próbę z
+innym modelem. `planning-only` wymaga jawnego pola `planText`
+mechanizmu testowego; OpenClaw nie wywnioskuje go z prozy asystenta. Funkcja pomocnicza
+celowo nie klasyfikuje błędów monitu, trwających tur ani zamierzonych cichych
+odpowiedzi, takich jak `NO_REPLY`.
 
-### Skutki uboczne końca agenta
+### Efekty uboczne zakończenia agenta
 
-Natywne harnessy muszą wywołać `runAgentEndSideEffects(...)` z
-`openclaw/plugin-sdk/agent-harness-runtime` po sfinalizowaniu próby. Funkcja
-wysyła przenośny hook `agent_end` i przechwytywanie badań OpenClaw bez
-opóźniania interaktywnych odpowiedzi. Użyj `awaitAgentEndSideEffects(...)` dla lokalnych,
-nieinteraktywnych uruchomień, w których próba nie może zostać rozwiązana przed zakończeniem tych skutków ubocznych.
-Oba helpery akceptują ten sam payload `{ event, ctx }` co
-`runAgentHarnessAgentEndHook(...)`; ich awarie nie zmieniają wyniku ukończonej
+Natywne mechanizmy testowe muszą wywołać `runAgentEndSideEffects(...)` z
+`openclaw/plugin-sdk/agent-harness-runtime` po sfinalizowaniu próby. Funkcja ta
+uruchamia przenośny punkt zaczepienia `agent_end` oraz przechwytywanie danych badawczych OpenClaw
+bez opóźniania odpowiedzi interaktywnych. Użyj `awaitAgentEndSideEffects(...)` w przypadku
+lokalnych, nieinteraktywnych uruchomień, w których próba nie może się zakończyć przed ukończeniem tych
+efektów ubocznych. Obie funkcje pomocnicze przyjmują ten sam ładunek `{ event, ctx }` co
+`runAgentHarnessAgentEndHook(...)`; ich błędy nie zmieniają wyniku ukończonej
 próby.
 
 ### Dane wejściowe użytkownika i powierzchnie narzędzi
 
-Natywne harnessy, które udostępniają żądanie danych wejściowych użytkownika na poziomie środowiska uruchomieniowego, powinny używać
-helperów danych wejściowych użytkownika z `openclaw/plugin-sdk/agent-harness-runtime`, aby sformatować
-prompt, dostarczyć go przez blokującą ścieżkę odpowiedzi OpenClaw i znormalizować
-odpowiedzi wyboru/swobodne z powrotem do natywnego kształtu odpowiedzi środowiska uruchomieniowego. Helper
-utrzymuje spójną prezentację kanału/TUI, podczas gdy każdy harness zachowuje własne
-parsowanie protokołu i cykl życia oczekującego żądania.
+Natywne mechanizmy testowe udostępniające żądanie danych wejściowych użytkownika na poziomie środowiska uruchomieniowego powinny korzystać z
+funkcji pomocniczych danych wejściowych użytkownika z `openclaw/plugin-sdk/agent-harness-runtime`, aby formatować
+monit, dostarczać go przez blokującą ścieżkę odpowiedzi OpenClaw oraz normalizować
+odpowiedzi wyboru lub w formie dowolnego tekstu z powrotem do natywnego formatu odpowiedzi środowiska uruchomieniowego. Funkcja
+pomocnicza zapewnia spójną prezentację w kanale/TUI, podczas gdy każdy mechanizm testowy zachowuje
+własne parsowanie protokołu i cykl życia oczekujących żądań.
 
-Natywne harnessy, które potrzebują kompaktowego routingu narzędzi podobnego do PI, powinny używać
+Natywne mechanizmy testowe wymagające kompaktowego routingu narzędzi podobnego do PI powinny używać
 `createAgentHarnessToolSurfaceRuntime(...)` z
-`openclaw/plugin-sdk/agent-harness-tool-runtime`. Jest on właścicielem
-wyboru kontroli wyszukiwania narzędzi/trybu kodu, oszczędnych domyślnych ustawień modeli lokalnych,
-filtrowania schematów zgodnych ze środowiskiem uruchomieniowym, wykonywania ukrytego katalogu, hydratacji
-katalogów i czyszczenia katalogu. Harnessy nadal są właścicielami swojej specyficznej dla SDK
-konwersji narzędzi i natywnego wywołania zwrotnego wykonania.
+`openclaw/plugin-sdk/agent-harness-tool-runtime`. Funkcja ta zarządza
+wyborem sterowania wyszukiwaniem narzędzi/trybem kodu, odchudzonymi ustawieniami domyślnymi modeli lokalnych,
+filtrowaniem schematów zgodnym ze środowiskiem uruchomieniowym, ukrytym wykonywaniem katalogu, wypełnianiem
+katalogów oraz czyszczeniem katalogu. Mechanizmy testowe nadal odpowiadają za konwersję narzędzi
+specyficzną dla własnego SDK oraz natywne wywołanie zwrotne wykonania.
 
-### Natywny tryb harnessu Codex
+### Natywny tryb mechanizmu testowego Codex
 
-Dołączony harness `codex` jest natywnym trybem Codex dla osadzonych tur agentów
-OpenClaw. Najpierw włącz dołączony Plugin `codex`, a jeśli Twoja konfiguracja używa restrykcyjnej listy dozwolonych, uwzględnij `codex` w
-`plugins.allow`. Konfiguracje natywnego app-server powinny używać `openai/gpt-*`; tury agentów OpenAI
-domyślnie wybierają harness Codex. Starsze trasy referencji modeli Codex powinny zostać naprawione za pomocą
-`openclaw doctor --fix`, a starsze referencje modeli `codex/*` pozostają aliasami zgodności
-dla natywnego harnessu.
+Dołączony mechanizm testowy `codex` jest natywnym trybem Codex dla osadzonych tur agenta OpenClaw.
+Najpierw włącz dołączony Plugin `codex` i dodaj `codex` do
+`plugins.allow`, jeśli konfiguracja używa restrykcyjnej listy dozwolonych elementów. Natywne konfiguracje serwera aplikacji
+powinny używać `openai/gpt-*`; tury agenta OpenAI wybierają mechanizm testowy Codex
+tylko wtedy, gdy efektywna trasa deklaruje zgodność z Codex. Starsze odwołania do modeli Codex
+należy naprawić za pomocą `openclaw doctor --fix`, a starsze odwołania do modeli `codex/*`
+pozostają aliasami zgodności dla natywnego mechanizmu testowego.
 
-Gdy ten tryb działa, Codex jest właścicielem natywnego identyfikatora wątku, zachowania wznowienia,
-Compaction i wykonywania app-server. OpenClaw nadal jest właścicielem kanału czatu,
-widocznego lustra transkrypcji, zasad narzędzi, zatwierdzeń, dostarczania mediów i wyboru
-sesji. Użyj `agentRuntime.id: "codex"` dostawcy/modelu, gdy musisz udowodnić,
-że tylko ścieżka app-server Codex może przejąć uruchomienie. Jawne środowiska uruchomieniowe Pluginów
-zamykają się awaryjnie; awarie wyboru app-server Codex i awarie środowiska uruchomieniowego nie są
-ponawiane przez inne środowisko uruchomieniowe.
+Podczas działania tego trybu Codex zarządza natywnym identyfikatorem wątku, zachowaniem wznawiania,
+Compaction oraz wykonywaniem przez serwer aplikacji. OpenClaw nadal zarządza kanałem czatu,
+widoczną kopią transkrypcji, zasadami narzędzi, zatwierdzeniami, dostarczaniem multimediów oraz wyborem
+sesji. Użyj dostawcy/modelu `agentRuntime.id: "codex"`, gdy trzeba
+wykazać, że uruchomienie może zostać przejęte wyłącznie przez ścieżkę serwera aplikacji Codex. Jawne środowiska uruchomieniowe
+Pluginów działają w trybie zamknięcia przy błędzie; błędy wyboru serwera aplikacji Codex i błędy środowiska uruchomieniowego
+nie są ponawiane za pośrednictwem innego środowiska uruchomieniowego.
 
 ## Rygor środowiska uruchomieniowego
 
-Domyślnie OpenClaw używa zasady środowiska uruchomieniowego dostawcy/modelu `auto`: zarejestrowane
-harnessy Pluginów mogą przejąć parę dostawca/model, a osadzone środowisko uruchomieniowe
-obsługuje turę, gdy żaden nie pasuje. Referencje agentów OpenAI u oficjalnego dostawcy OpenAI domyślnie wybierają Codex.
-Użyj jawnego środowiska uruchomieniowego Pluginu dostawcy/modelu, takiego jak
-`agentRuntime.id: "codex"`, gdy brak wyboru harnessu powinien zakończyć się awarią zamiast
-routingu przez osadzone środowisko uruchomieniowe. Awarie wybranych harnessów Pluginów zawsze
-kończą się twardą awarią. Nie blokuje to jawnego `agentRuntime.id: "openclaw"` dostawcy/modelu.
+Domyślnie OpenClaw używa zasad środowiska uruchomieniowego dostawcy/modelu `auto`: zarejestrowane
+mechanizmy testowe Pluginów mogą przejmować zgodne efektywne trasy, a osadzone
+środowisko uruchomieniowe obsługuje turę, gdy żaden z nich nie pasuje. Sam prefiks dostawcy/modelu nigdy
+nie wybiera mechanizmu testowego. Użyj jawnego środowiska uruchomieniowego Pluginu dla dostawcy/modelu, takiego jak
+`agentRuntime.id: "codex"`, gdy brak wyboru mechanizmu testowego powinien powodować błąd zamiast
+przekierowania przez osadzone środowisko uruchomieniowe. Jawny wybór nie zapewnia
+zgodności niezgodnej trasy. Błędy wybranych mechanizmów testowych Pluginów zawsze powodują
+błąd krytyczny. Nie blokuje to jawnego `agentRuntime.id: "openclaw"`
+dostawcy/modelu.
 
-Dla osadzonych uruchomień wyłącznie Codex:
+Dla osadzonych uruchomień wyłącznie z Codex:
 
 ```json
 {
@@ -261,14 +253,14 @@ Dla osadzonych uruchomień wyłącznie Codex:
   },
   "agents": {
     "defaults": {
-      "model": "openai/gpt-5.5"
+      "model": "openai/gpt-5.6-sol"
     }
   }
 }
 ```
 
-Jeśli chcesz backend CLI dla jednego kanonicznego modelu, umieść środowisko uruchomieniowe w tym
-wpisie modelu:
+Jeśli wymagane jest zaplecze CLI dla jednego modelu kanonicznego, umieść środowisko uruchomieniowe we wpisie tego
+modelu:
 
 ```json
 {
@@ -287,7 +279,7 @@ wpisie modelu:
 }
 ```
 
-Nadpisania dla poszczególnych agentów używają tego samego kształtu przypisanego do modelu:
+Nadpisania dla poszczególnych agentów używają tego samego formatu opartego na modelu:
 
 ```json
 {
@@ -295,9 +287,9 @@ Nadpisania dla poszczególnych agentów używają tego samego kształtu przypisa
     "list": [
       {
         "id": "codex-only",
-        "model": "openai/gpt-5.5",
+        "model": "openai/gpt-5.6-sol",
         "models": {
-          "openai/gpt-5.5": {
+          "openai/gpt-5.6-sol": {
             "agentRuntime": { "id": "codex" }
           }
         }
@@ -307,7 +299,7 @@ Nadpisania dla poszczególnych agentów używają tego samego kształtu przypisa
 }
 ```
 
-Starsze przykłady środowiska uruchomieniowego całego agenta, takie jak ten, są ignorowane:
+Starsze przykłady środowiska uruchomieniowego dla całego agenta, takie jak ten, są ignorowane:
 
 ```json
 {
@@ -321,54 +313,89 @@ Starsze przykłady środowiska uruchomieniowego całego agenta, takie jak ten, s
 }
 ```
 
-Przy jawnym środowisku uruchomieniowym Plugin sesja kończy się błędem wcześnie, gdy żądany
-harness nie jest zarejestrowany, nie obsługuje rozwiązanego dostawcy/modelu albo
-kończy się błędem przed wytworzeniem efektów ubocznych tury. Jest to celowe w przypadku wdrożeń
-wyłącznie z Codex oraz testów live, które muszą dowieść, że ścieżka serwera aplikacji Codex jest
+Przy jawnym środowisku uruchomieniowym Pluginu sesja kończy się błędem na wczesnym etapie, gdy żądany
+mechanizm testowy nie jest zarejestrowany, nie obsługuje rozpoznanego dostawcy/modelu lub
+ulegnie awarii przed wygenerowaniem efektów ubocznych tury. Jest to zamierzone w przypadku wdrożeń
+wyłącznie z Codex oraz testów na żywo, które muszą wykazać, że ścieżka serwera aplikacji Codex jest
 rzeczywiście używana.
 
-To ustawienie kontroluje tylko osadzony harness agenta. Nie wyłącza
-routingu modeli specyficznego dla dostawcy dla obrazów, wideo, muzyki, TTS, PDF ani innych typów.
+To ustawienie steruje wyłącznie osadzonym mechanizmem testowym agenta. Nie wyłącza
+routingu modeli specyficznego dla dostawcy w przypadku obrazów, filmów, muzyki, TTS, PDF ani innych typów.
 
-## Sesje natywne i lustrzana kopia transkrypcji
+## Natywne sesje i kopia transkrypcji
 
-Harness może przechowywać natywny identyfikator sesji, identyfikator wątku lub token wznowienia po stronie demona.
-Utrzymuj to powiązanie jawnie skojarzone z sesją OpenClaw i nadal
-odzwierciedlaj widoczne dla użytkownika dane wyjściowe asystenta/narzędzi w transkrypcji OpenClaw.
+Mechanizm testowy może przechowywać natywny identyfikator sesji, identyfikator wątku lub token wznawiania
+po stronie demona. Powiązanie to należy jawnie skojarzyć z sesją OpenClaw oraz
+nadal kopiować widoczne dla użytkownika dane wyjściowe asystenta/narzędzi do transkrypcji
+OpenClaw.
 
 Transkrypcja OpenClaw pozostaje warstwą zgodności dla:
 
 - historii sesji widocznej w kanale
 - wyszukiwania i indeksowania transkrypcji
-- przełączenia z powrotem na wbudowany harness OpenClaw w późniejszej turze
-- ogólnego zachowania `/new`, `/reset` i usuwania sesji
+- powrotu do wbudowanego mechanizmu testowego OpenClaw podczas późniejszej tury
+- ogólnego działania `/new`, `/reset` oraz usuwania sesji
 
-Jeśli Twój harness przechowuje powiązanie pomocnicze, zaimplementuj `reset(...)`, aby OpenClaw mógł
-wyczyścić je po zresetowaniu właścicielskiej sesji OpenClaw.
+Jeśli mechanizm testowy przechowuje powiązanie w pliku pomocniczym, zaimplementuj `reset(...)`, aby OpenClaw
+mógł je wyczyścić podczas resetowania nadrzędnej sesji OpenClaw.
 
-## Wyniki narzędzi i mediów
+## Wyniki narzędzi i multimediów
 
-Rdzeń tworzy listę narzędzi OpenClaw i przekazuje ją do przygotowanej próby.
-Gdy harness wykonuje dynamiczne wywołanie narzędzia, zwróć wynik narzędzia przez
-kształt wyniku harnessu zamiast samodzielnie wysyłać media do kanału.
+Rdzeń tworzy listę narzędzi OpenClaw i przekazuje ją do przygotowanej
+próby. Gdy mechanizm testowy wykonuje dynamiczne wywołanie narzędzia, zwróć wynik narzędzia
+za pośrednictwem formatu wyniku mechanizmu testowego zamiast samodzielnie wysyłać multimedia
+do kanału.
 
-Dzięki temu dane wyjściowe tekstu, obrazu, wideo, muzyki, TTS, zatwierdzeń i narzędzi komunikacyjnych
-pozostają na tej samej ścieżce dostarczania co uruchomienia obsługiwane przez OpenClaw.
+Dzięki temu dane wyjściowe tekstu, obrazów, filmów, muzyki, TTS, zatwierdzeń i narzędzi komunikacyjnych
+korzystają z tej samej ścieżki dostarczania co uruchomienia obsługiwane przez OpenClaw.
+
+### Końcowe wyniki narzędzi
+
+`AgentHarnessAttemptParams.observeToolTerminal` jest zarządzanym przez hosta akumulatorem
+końcowych wyników. Mechanizm testowy wykonujący dynamiczne narzędzia OpenClaw lub narzędzia natywne
+musi go wywołać, gdy każde narzędzie osiągnie jeden końcowy wynik, przed
+sfinalizowaniem wyniku próby. Mechanizmy testowe, które nie wykonują narzędzi, nie muszą
+go wywoływać.
+
+Zgłaszaj fakty z granicy wykonania:
+
+- Przekaż identyfikator wywołania protokołu, jeśli istnieje, kanoniczną nazwę narzędzia oraz
+  argumenty, które rzeczywiście dotarły do narzędzia po przygotowaniu lub przekształceniach punktów zaczepienia.
+- Ustaw `executionStarted: false`, gdy walidacja, zatwierdzenie lub inny mechanizm ochronny
+  zatrzymał wywołanie przed rozpoczęciem implementacji narzędzia. Gdy wysłanie mogło
+  już nastąpić, ostrożnie zgłoś `true`.
+- Zgłoś `outcome: "success"` lub `outcome: "failure"`. Uwzględnij ustrukturyzowane
+  pola błędu dostępne w środowisku uruchomieniowym zamiast wnioskować o błędzie z
+  wyświetlanego tekstu.
+- Używaj `nativeMutation` wyłącznie dla narzędzi natywnych, które nie korzystają z definicji narzędzia
+  OpenClaw. Podaj tam fakty dotyczące modyfikacji i ponownego odtwarzania zarządzane przez protokół; nie
+  kopiuj klasyfikatora modyfikacji OpenClaw do mechanizmu testowego.
+
+Wywołanie zwrotne zwraca kanoniczne rozstrzygnięcie dla danego wywołania. Przenieś jego
+`lastToolError` do `AgentHarnessAttemptResult` i użyj jego faktów dotyczących wykonania,
+argumentów oraz efektów ubocznych w projekcji mechanizmu testowego zamiast wyprowadzać
+równoległy stan. Host zachowuje nierozstrzygnięty błąd modyfikujący pomimo niepowiązanych
+udanych narzędzi i usuwa go dopiero po pomyślnym wykonaniu pasującej czynności.
+
+Wywołanie zwrotne pozostaje opcjonalne w celu zachowania zgodności źródłowej ze starszymi eksperymentalnymi
+mechanizmami testowymi. Opcjonalność nie oznacza, że mechanizm testowy wykonujący narzędzia może je ignorować:
+bez raportów końcowych OpenClaw nie może zachować prawdziwego stanu błędu narzędzia modyfikującego
+w kolejnych wywołaniach narzędzi, w tym podczas cichego ukończenia Heartbeat.
 
 ## Obecne ograniczenia
 
-- Publiczna ścieżka importu jest generyczna, ale niektóre aliasy typów prób/wyników nadal
-  zachowują starsze nazwy ze względu na zgodność.
-- Instalacja harnessów firm trzecich jest eksperymentalna. Preferuj Pluginy dostawców,
-  dopóki nie potrzebujesz natywnego środowiska uruchomieniowego sesji.
-- Przełączanie harnessów jest obsługiwane między turami. Nie przełączaj harnessów w
-  środku tury po rozpoczęciu działania natywnych narzędzi, zatwierdzeń, tekstu asystenta lub wysyłania
+- Publiczna ścieżka importu jest ogólna, ale niektóre aliasy typów prób/wyników
+  nadal zawierają starsze nazwy w celu zachowania zgodności.
+- Instalowanie mechanizmów testowych innych firm jest eksperymentalne. Preferuj Pluginy dostawców,
+  dopóki natywne środowisko uruchomieniowe sesji nie będzie potrzebne.
+- Przełączanie mechanizmów testowych między turami jest obsługiwane. Nie przełączaj mechanizmów testowych
+  w trakcie tury po rozpoczęciu działania natywnych narzędzi, zatwierdzeń, tekstu asystenta lub wysyłania
   wiadomości.
 
-## Powiązane
+## Powiązane materiały
 
 - [Omówienie SDK](/pl/plugins/sdk-overview)
-- [Pomocniki środowiska uruchomieniowego](/pl/plugins/sdk-runtime)
+- [Funkcje pomocnicze środowiska uruchomieniowego](/pl/plugins/sdk-runtime)
 - [Pluginy dostawców](/pl/plugins/sdk-provider-plugins)
-- [Harness Codex](/pl/plugins/codex-harness)
+- [Mechanizm testowy Codex](/pl/plugins/codex-harness)
 - [Dostawcy modeli](/pl/concepts/model-providers)

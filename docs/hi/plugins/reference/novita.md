@@ -1,30 +1,31 @@
 ---
 read_when:
-    - आप novita plugin को इंस्टॉल, कॉन्फ़िगर या ऑडिट कर रहे हैं
-summary: OpenClaw में Novita, Novita AI, Novitaai मॉडल प्रदाता समर्थन जोड़ता है।
+    - आप novita Plugin को इंस्टॉल, कॉन्फ़िगर या ऑडिट कर रहे हैं
+summary: OpenClaw में Novita, Novita AI और Novitaai मॉडल प्रदाता का समर्थन जोड़ता है।
 title: Novita Plugin
 x-i18n:
-    generated_at: "2026-06-28T23:47:09Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T16:16:55Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: ac6689ad781f0a0ead936521c1ce90a7347ed930b1e4ccd3d21efe640ac916c2
+    source_hash: f81eb61f5d7147b98c513240e93240a1439f1e39de20e62bc578e2b274a30ee9
     source_path: plugins/reference/novita.md
     workflow: 16
 ---
 
 # Novita Plugin
 
-OpenClaw में Novita, Novita AI, Novitaai मॉडल प्रदाता समर्थन जोड़ता है।
+OpenClaw में Novita, Novita AI और Novitaai मॉडल प्रदाता का समर्थन जोड़ता है।
 
 ## वितरण
 
 - पैकेज: `@openclaw/novita-provider`
-- स्थापना मार्ग: OpenClaw में शामिल
+- इंस्टॉल मार्ग: OpenClaw में शामिल
 
 ## सतह
 
-प्रदाता: novita, novita-ai, novitaai
+प्रदाता: `novita`, `novita-ai`, `novitaai`
 
 ## संबंधित दस्तावेज़
 

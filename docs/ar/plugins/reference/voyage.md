@@ -1,14 +1,15 @@
 ---
 read_when:
-    - أنت تثبّت Plugin ‏voyage أو تهيئه أو تدقّق فيه
+    - أنت تثبّت Plugin ‏voyage أو تهيّئه أو تدقّق فيه
 summary: يضيف دعم موفّر تضمينات الذاكرة.
 title: Plugin ‏Voyage
 x-i18n:
-    generated_at: "2026-07-12T06:22:37Z"
+    generated_at: "2026-07-16T14:53:59Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: ba1dcf8d6f7c45c01f855797333e9d510bc822b2f7442c5a0727ac2a208ffe36
+    source_hash: 30470935000d501180467314647efe876dc956ae57e53e13279e7670aea554e3
     source_path: plugins/reference/voyage.md
     workflow: 16
 ---
@@ -20,8 +21,8 @@ x-i18n:
 ## التوزيع
 
 - الحزمة: `@openclaw/voyage-provider`
-- مسار التثبيت: مضمن في OpenClaw
+- مسار التثبيت: مضمّن في OpenClaw
 
-## الواجهة
+## السطح
 
-العقود: memoryEmbeddingProviders
+العقود: `memoryEmbeddingProviders`

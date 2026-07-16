@@ -4,29 +4,29 @@ read_when:
 summary: Курируемый брокер секретов 1Password с политикой одобрения и историей аудита в SQLite.
 title: Плагин Onepassword
 x-i18n:
-    generated_at: "2026-07-13T18:34:43Z"
+    generated_at: "2026-07-16T17:15:54Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
-    prompt_version: 24
+    prompt_version: 32
     provider: openai
-    source_hash: c257d2ae8b09822153516c08d50db38b9107cef7eda1de2b6f2d485331c3ab7a
+    source_hash: 66ec7d6df81de3aeaff36453c3caba10f6822c5bcc6345fba62f2f2609a3bb70
     source_path: plugins/reference/onepassword.md
     workflow: 16
 ---
 
 # Плагин Onepassword
 
-Курируемый посредник для секретов 1Password с политикой подтверждения и историей аудита в SQLite.
+Курируемый брокер секретов 1Password с политикой подтверждения и историей аудита в SQLite.
 
 ## Распространение
 
 - Пакет: `@openclaw/onepassword`
-- Способ установки: включён в OpenClaw
+- Способ установки: входит в состав OpenClaw
 
 ## Интерфейс
 
-контракты: инструменты
+контракты: `tools`
 
-## Связанная документация
+## Связанные документы
 
-- [onepassword](/plugins/onepassword)
+- [onepassword](/ru/plugins/onepassword)

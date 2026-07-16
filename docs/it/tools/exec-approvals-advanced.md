@@ -1,38 +1,39 @@
 ---
 read_when:
-    - Configurazione di bin sicuri o profili bin sicuri personalizzati
+    - Configurazione di binari sicuri o profili personalizzati per binari sicuri
     - Inoltro delle approvazioni a Slack/Discord/Telegram o ad altri canali di chat
-    - Implementazione di un client di approvazione nativo per un canale
-summary: 'Approvazioni exec avanzate: binari sicuri, associazione dell’interprete, inoltro delle approvazioni, consegna nativa'
-title: Approvazioni exec — avanzate
+    - Implementazione di un client nativo per le approvazioni in un canale
+summary: 'Approvazioni exec avanzate: binari sicuri, associazione dell''interprete, inoltro delle approvazioni, distribuzione nativa'
+title: Approvazioni di esecuzione — avanzate
 x-i18n:
-    generated_at: "2026-06-27T18:19:34Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T15:08:19Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 3d936e1a1567d204981eec7c3262cf11f2af8fc1ed6213182954c2324718a270
+    source_hash: 99f123c7663378cc30ff9b6498c5cbc18ce9f20e9ac769755bab23af69ef1c7d
     source_path: tools/exec-approvals-advanced.md
     workflow: 16
 ---
 
-Argomenti avanzati sulle approvazioni exec: fast-path `safeBins`, binding di interprete/runtime
-e inoltro delle approvazioni ai canali chat (inclusa la consegna nativa).
-Per la policy di base e il flusso di approvazione, vedi [Approvazioni exec](/it/tools/exec-approvals).
+Argomenti avanzati sull'approvazione dell'esecuzione: il percorso rapido `safeBins`, l'associazione dell'interprete/runtime
+e l'inoltro delle approvazioni ai canali di chat (inclusa la consegna nativa).
+Per i criteri di base e il flusso di approvazione, vedere [Approvazioni dell'esecuzione](/it/tools/exec-approvals).
 
 ## Binari sicuri (solo stdin)
 
-`tools.exec.safeBins` definisce un piccolo elenco di binari **solo stdin** (per
-esempio `cut`) che possono essere eseguiti in modalita' allowlist **senza** voci
-allowlist esplicite. I binari sicuri rifiutano argomenti file posizionali e token simili a percorsi, quindi
-possono operare solo sul flusso in ingresso. Consideralo un fast-path ristretto per
-filtri di stream, non un elenco di attendibilita' generale.
+`tools.exec.safeBins` indica i binari **solo stdin** (ad esempio `cut`) che
+vengono eseguiti in modalità allowlist **senza** voci esplicite nell'allowlist. I binari sicuri rifiutano
+gli argomenti di file posizionali e i token simili a percorsi, pertanto possono operare solo sul
+flusso in ingresso. Va considerato un percorso rapido limitato per i filtri di flusso, non un
+elenco generale di elementi attendibili.
 
 <Warning>
-Non aggiungere binari di interpreti o runtime (per esempio `python3`, `node`,
-`ruby`, `bash`, `sh`, `zsh`) a `safeBins`. Se un comando puo' valutare codice,
-eseguire sottocomandi o leggere file per progettazione, preferisci voci allowlist esplicite
-e mantieni abilitati i prompt di approvazione. I binari sicuri personalizzati devono definire un
-profilo esplicito in `tools.exec.safeBinProfiles.<bin>`.
+**Non** aggiungere binari di interpreti o runtime (ad esempio `python3`, `node`,
+`ruby`, `bash`, `sh`, `zsh`) a `safeBins`. Se un comando può valutare codice,
+eseguire sottocomandi o leggere file per progettazione, preferire voci esplicite nell'allowlist
+e mantenere abilitate le richieste di approvazione. I binari sicuri personalizzati devono definire un profilo esplicito
+in `tools.exec.safeBinProfiles.<bin>`.
 </Warning>
 
 Binari sicuri predefiniti:
@@ -43,18 +44,20 @@ Binari sicuri predefiniti:
 
 [//]: # "SAFE_BIN_DEFAULTS:END"
 
-`grep` e `sort` non sono nell'elenco predefinito. Se scegli di abilitarli, mantieni voci
-allowlist esplicite per i loro flussi di lavoro non stdin. Per `grep` in modalita' binario sicuro,
-fornisci il pattern con `-e`/`--regexp`; la forma con pattern posizionale viene rifiutata
-cosi' gli operandi file non possono essere introdotti come posizionali ambigui.
+`grep` e `sort` non sono inclusi nell'elenco predefinito. Se si sceglie di abilitarli, mantenere voci
+esplicite nell'allowlist per i relativi flussi di lavoro che non usano stdin. Per `grep` in modalità binario sicuro,
+fornire il modello con `-e`/`--regexp`; la forma posizionale del modello viene rifiutata
+affinché gli operandi di file non possano essere introdotti di nascosto come argomenti posizionali ambigui.
 
-### Validazione argv e flag negati
+### Convalida di argv e flag negati
 
-La validazione e' deterministica solo in base alla forma di argv (nessun controllo di esistenza
-del filesystem host), il che impedisce comportamenti da oracolo sull'esistenza dei file dovuti a
-differenze tra allow/deny. Le opzioni orientate ai file sono negate per i binari sicuri predefiniti; le
-opzioni lunghe sono validate in modo fail-closed (flag sconosciuti e abbreviazioni ambigue sono
-rifiutati).
+La convalida è deterministica e si basa esclusivamente sulla struttura di argv (senza verifiche
+dell'esistenza nel file system dell'host), evitando così comportamenti da oracolo sull'esistenza dei file
+derivanti dalle differenze tra autorizzazione e negazione. Le opzioni orientate ai file sono negate per i binari sicuri predefiniti; le opzioni
+lunghe vengono convalidate in modalità fail-closed (i flag sconosciuti e le abbreviazioni ambigue vengono
+rifiutati). I flag booleani riconosciuti di sola lettura dei binari predefiniti (ad esempio
+`wc -l`, `tr -d`, `uniq -c`) vengono accettati, mentre i flag brevi non riconosciuti rimangono
+in modalità fail-closed e richiedono l'approvazione manuale.
 
 Flag negati per profilo di binario sicuro:
 
@@ -63,281 +66,409 @@ Flag negati per profilo di binario sicuro:
 - `grep`: `--dereference-recursive`, `--directories`, `--exclude-from`, `--file`, `--recursive`, `-R`, `-d`, `-f`, `-r`
 - `jq`: `--argfile`, `--from-file`, `--library-path`, `--rawfile`, `--slurpfile`, `-L`, `-f`
 - `sort`: `--compress-program`, `--files0-from`, `--output`, `--random-source`, `--temporary-directory`, `-T`, `-o`
+- `tail`: `--follow`, `--retry`, `-F`, `-f`
 - `wc`: `--files0-from`
 
 [//]: # "SAFE_BIN_DENIED_FLAGS:END"
 
-I binari sicuri forzano inoltre i token argv a essere trattati come **testo letterale** al momento
-dell'esecuzione (nessun globbing e nessuna espansione di `$VARS`) per i segmenti solo stdin, quindi pattern
-come `*` o `$HOME/...` non possono essere usati per introdurre letture di file.
+I binari sicuri impongono inoltre che i token di argv vengano trattati come **testo letterale** durante l'esecuzione
+(senza espansione dei caratteri jolly né di `$VARS`) per i segmenti solo stdin, pertanto
+modelli come `*` o `$HOME/...` non possono essere usati per introdurre di nascosto letture di file. `awk`,
+`sed` e `jq` sono sempre negati come binari sicuri perché la loro semantica non può essere
+convalidata come solo stdin: `jq` può leggere dati di ambiente e caricare codice jq da
+moduli o file di avvio. Per questi strumenti, usare una voce esplicita nell'allowlist o una richiesta di approvazione
+anziché `safeBins`.
 
 ### Directory di binari attendibili
 
-I binari sicuri devono risolversi da directory di binari attendibili (predefiniti di sistema piu'
-`tools.exec.safeBinTrustedDirs` facoltativo). Le voci `PATH` non sono mai considerate attendibili automaticamente.
-Le directory attendibili predefinite sono volutamente minime: `/bin`, `/usr/bin`. Se
-il tuo eseguibile di binario sicuro si trova in percorsi di package manager/utente (per esempio
-`/opt/homebrew/bin`, `/usr/local/bin`, `/opt/local/bin`, `/snap/bin`), aggiungili
+I binari sicuri devono essere risolti da directory di binari attendibili (valori predefiniti di sistema più
+`tools.exec.safeBinTrustedDirs` facoltativo). Le voci `PATH` non sono mai considerate automaticamente attendibili.
+Le directory attendibili predefinite sono intenzionalmente ridotte al minimo: `/bin`, `/usr/bin`. Se
+l'eseguibile del binario sicuro si trova in percorsi utente o del gestore di pacchetti (ad esempio
+`/opt/homebrew/bin`, `/usr/local/bin`, `/opt/local/bin`, `/snap/bin`), aggiungerli
 esplicitamente a `tools.exec.safeBinTrustedDirs`.
 
-### Concatenazione shell, wrapper e multiplexer
+### Concatenamento della shell, wrapper e multiplexer
 
-La concatenazione shell (`&&`, `||`, `;`) e' consentita quando ogni segmento di primo livello
-soddisfa l'allowlist (inclusi binari sicuri o auto-allow delle skill). Le redirezioni
-restano non supportate in modalita' allowlist. La sostituzione di comando (`$()` / backtick) e'
-rifiutata durante il parsing allowlist, anche dentro virgolette doppie; usa virgolette singole
-se ti serve testo letterale `$()`.
+Il concatenamento della shell (`&&`, `||`, `;`) è consentito quando ogni segmento di primo livello
+soddisfa l'allowlist (inclusi i binari sicuri o l'autorizzazione automatica delle skill). I reindirizzamenti
+rimangono non supportati in modalità allowlist. La sostituzione dei comandi (`$()` / accenti gravi) viene
+rifiutata durante l'analisi dell'allowlist, anche all'interno delle virgolette doppie; usare le virgolette
+singole se è necessario testo `$()` letterale.
 
-Nelle approvazioni companion-app su macOS, testo shell grezzo che contiene sintassi di controllo o
-espansione shell (`&&`, `||`, `;`, `|`, `` ` ``, `$`, `<`, `>`, `(`, `)`) e'
-trattato come mancata corrispondenza dell'allowlist a meno che il binario shell stesso non sia in allowlist.
+Nelle approvazioni dell'app complementare per macOS, il testo della shell non elaborato contenente sintassi di controllo o
+espansione della shell (`&&`, `||`, `;`, `|`, `` ` ``, `$`, `<`, `>`, `(`, `)`) viene
+considerato come non corrispondente all'allowlist, a meno che il binario della shell stesso non sia incluso nell'allowlist.
 
-Per wrapper shell (`bash|sh|zsh ... -c/-lc`), gli override env con ambito richiesta sono
-ridotti a una piccola allowlist esplicita (`TERM`, `LANG`, `LC_*`, `COLORTERM`,
+Per i wrapper della shell (`bash|sh|zsh ... -c/-lc`), le sostituzioni delle variabili di ambiente limitate alla richiesta vengono
+ridotte a una piccola allowlist esplicita (`TERM`, `LANG`, `LC_*`, `COLORTERM`,
 `NO_COLOR`, `FORCE_COLOR`).
 
-Per decisioni `allow-always` in modalita' allowlist, i wrapper di dispatch noti (`env`,
-`flock`, `nice`, `nohup`, `stdbuf`, `timeout`) persistono il percorso dell'eseguibile interno
-invece del percorso del wrapper. I multiplexer shell (`busybox`, `toybox`) sono
-scartati per gli applet shell (`sh`, `ash`, ecc.) nello stesso modo. Se un wrapper o
-multiplexer non puo' essere scartato in sicurezza, nessuna voce allowlist viene persistita
+Per le decisioni `allow-always` in modalità allowlist, i wrapper di invio trasparenti
+(ad esempio `env`, `flock`, `nice`, `nohup`, `stdbuf`, `timeout`) memorizzano il
+percorso dell'eseguibile interno anziché quello del wrapper. I multiplexer della shell
+(`busybox`, `toybox`) vengono estratti per le applet della shell (`sh`, `ash`, ecc.) nello
+stesso modo. Se un wrapper o un multiplexer non può essere estratto in sicurezza, nessuna voce nell'allowlist
+viene memorizzata automaticamente.
+
+Se si includono nell'allowlist interpreti come `python3` o `node`, preferire
+`tools.exec.strictInlineEval=true` affinché la valutazione inline richieda comunque un'approvazione
+esplicita. In modalità rigorosa, `allow-always` può comunque memorizzare invocazioni
+innocue di interpreti/script, ma i vettori di valutazione inline non vengono memorizzati
 automaticamente.
 
-Se metti in allowlist interpreti come `python3` o `node`, preferisci
-`tools.exec.strictInlineEval=true` cosi' l'eval inline richiede comunque un'approvazione
-esplicita. In modalita' strict, `allow-always` puo' ancora persistere invocazioni
-benigne di interprete/script, ma i carrier di inline-eval non sono persistiti
-automaticamente.
-
-### Binari sicuri rispetto ad allowlist
+### Binari sicuri e allowlist a confronto
 
 | Argomento        | `tools.exec.safeBins`                                  | Allowlist (`exec-approvals.json`)                                                  |
 | ---------------- | ------------------------------------------------------ | ---------------------------------------------------------------------------------- |
-| Obiettivo        | Consentire automaticamente filtri stdin ristretti      | Considerare attendibili in modo esplicito eseguibili specifici                     |
-| Tipo di match    | Nome eseguibile + policy argv del binario sicuro       | Glob del percorso eseguibile risolto, o glob del nome comando semplice per comandi invocati da PATH |
-| Ambito argomenti | Limitato dal profilo del binario sicuro e dalle regole sui token letterali | Match del percorso per impostazione predefinita; `argPattern` facoltativo puo' limitare argv parsato |
-| Esempi tipici    | `head`, `tail`, `tr`, `wc`                             | `jq`, `python3`, `node`, `ffmpeg`, CLI personalizzate                              |
-| Uso migliore     | Trasformazioni di testo a basso rischio nelle pipeline | Qualsiasi strumento con comportamento piu' ampio o effetti collaterali             |
+| Obiettivo        | Autorizzare automaticamente filtri stdin limitati      | Considerare esplicitamente attendibili eseguibili specifici                         |
+| Tipo di corrispondenza | Nome dell'eseguibile + criteri argv del binario sicuro | Glob del percorso risolto dell'eseguibile o glob del solo nome del comando per i comandi invocati tramite PATH |
+| Ambito degli argomenti | Limitato dal profilo del binario sicuro e dalle regole sui token letterali | Corrispondenza del percorso per impostazione predefinita; `argPattern` facoltativo può limitare argv analizzato |
+| Esempi tipici    | `head`, `tail`, `tr`, `wc`                             | `jq`, `python3`, `node`, `ffmpeg`, CLI personalizzate                                |
+| Utilizzo ottimale | Trasformazioni di testo a basso rischio nelle pipeline | Qualsiasi strumento con un comportamento più ampio o effetti collaterali            |
 
-Posizione di configurazione:
+Posizione della configurazione:
 
 - `safeBins` proviene dalla configurazione (`tools.exec.safeBins` o `agents.list[].tools.exec.safeBins` per agente).
 - `safeBinTrustedDirs` proviene dalla configurazione (`tools.exec.safeBinTrustedDirs` o `agents.list[].tools.exec.safeBinTrustedDirs` per agente).
-- `safeBinProfiles` proviene dalla configurazione (`tools.exec.safeBinProfiles` o `agents.list[].tools.exec.safeBinProfiles` per agente). Le chiavi profilo per agente sovrascrivono le chiavi globali.
-- Le voci allowlist vivono nel file delle approvazioni locale all'host sotto `agents.<id>.allowlist` (o tramite Control UI / `openclaw approvals allowlist ...`).
-- `openclaw security audit` avvisa con `tools.exec.safe_bins_interpreter_unprofiled` quando binari interprete/runtime compaiono in `safeBins` senza profili espliciti.
-- `openclaw doctor --fix` puo' creare lo scaffold delle voci personalizzate `safeBinProfiles.<bin>` mancanti come `{}` (rivedi e restringi dopo). I binari interprete/runtime non vengono scaffoldati automaticamente.
+- `safeBinProfiles` proviene dalla configurazione (`tools.exec.safeBinProfiles` o `agents.list[].tools.exec.safeBinProfiles` per agente). Le chiavi del profilo per agente hanno la precedenza sulle chiavi globali.
+- Le voci dell'allowlist risiedono nel file delle approvazioni locale dell'host in `agents.<id>.allowlist` (oppure tramite l'interfaccia di controllo / `openclaw approvals allowlist ...`).
+- `openclaw security audit` genera l'avviso `tools.exec.safe_bins_interpreter_unprofiled` quando binari di interpreti/runtime compaiono in `safeBins` senza profili espliciti.
+- `openclaw doctor --fix` può generare la struttura delle voci `safeBinProfiles.<bin>` personalizzate mancanti come `{}` (esaminarle e restringerle successivamente). I binari di interpreti/runtime non vengono generati automaticamente.
 
 Esempio di profilo personalizzato:
-__OC_I18N_900000__
-Se abiliti esplicitamente `jq` in `safeBins`, OpenClaw rifiuta comunque il builtin `env` in modalita' binario sicuro
-cosi' `jq -n env` non puo' scaricare l'ambiente del processo host senza un percorso allowlist esplicito
-o un prompt di approvazione.
 
-## Comandi interprete/runtime
+```json5
+{
+  tools: {
+    exec: {
+      safeBins: ["myfilter"],
+      safeBinProfiles: {
+        myfilter: {
+          minPositional: 0,
+          maxPositional: 0,
+          allowedValueFlags: ["-n", "--limit"],
+          deniedFlags: ["-f", "--file", "-c", "--command"],
+        },
+      },
+    },
+  },
+}
+```
 
-Le esecuzioni interprete/runtime supportate da approvazione sono intenzionalmente conservative:
+## Comandi di interpreti/runtime
 
-- Il contesto argv/cwd/env esatto e' sempre vincolato.
-- Le forme di script shell diretto e file runtime diretto sono vincolate best-effort a uno snapshot concreto di un file locale.
-- Le forme wrapper comuni dei package manager che si risolvono comunque in un file locale diretto (per esempio
-  `pnpm exec`, `pnpm node`, `npm exec`, `npx`) vengono scartate prima del binding.
-- Se OpenClaw non riesce a identificare esattamente un file locale concreto per un comando interprete/runtime
-  (per esempio script di pacchetto, forme eval, catene di loader specifiche del runtime o forme multi-file ambigue),
-  l'esecuzione supportata da approvazione viene negata invece di dichiarare una copertura semantica che non ha.
-- Per questi flussi di lavoro, preferisci sandboxing, un confine host separato o una allowlist esplicita attendibile/
-  un flusso completo in cui l'operatore accetta le semantiche piu' ampie del runtime.
+Le esecuzioni di interpreti/runtime basate sull'approvazione sono intenzionalmente conservative:
 
-Quando sono richieste approvazioni, lo strumento exec restituisce immediatamente un id approvazione. Usa quell'id per
-correlare gli eventi di sistema di esecuzione approvata successivi (`Exec finished`, e `Exec running` quando configurato).
-Se non arriva alcuna decisione prima del timeout, la richiesta viene trattata come timeout di approvazione e
-mostrata come diniego terminale del comando host. Per approvazioni asincrone dell'agente principale con una sessione
-di origine, OpenClaw riprende anche quella sessione con un followup interno cosi' l'agente osserva che
-il comando non e' stato eseguito invece di correggere in seguito un risultato mancante.
+- Il contesto esatto di argv/cwd/env viene sempre associato.
+- Le forme con script di shell diretto e file di runtime diretto vengono associate, al meglio possibile, a una singola istantanea concreta di un file
+  locale.
+- Le forme comuni dei wrapper dei gestori di pacchetti che si risolvono comunque in un singolo file locale diretto (ad esempio
+  `pnpm exec`, `pnpm node`, `npm exec`, `npx`) vengono estratte prima dell'associazione.
+- Se OpenClaw non riesce a identificare esattamente un singolo file locale concreto per un comando di interprete/runtime
+  (ad esempio script di pacchetto, forme di valutazione, catene di loader specifiche del runtime o forme ambigue con più file),
+  l'esecuzione basata sull'approvazione viene negata anziché dichiarare una copertura semantica che non
+  possiede.
+- Per questi flussi di lavoro, preferire il sandboxing, un confine host separato o un flusso
+  completo con allowlist esplicitamente attendibile, nel quale l'operatore accetti la semantica più ampia del runtime.
 
-### Comportamento di consegna del followup
+Quando sono richieste approvazioni, lo strumento di esecuzione restituisce immediatamente un ID di approvazione. Usare tale ID per
+correlare i successivi eventi di sistema dell'esecuzione approvata (`Exec finished` e `Exec running`, quando configurato).
+Se non viene ricevuta alcuna decisione prima del timeout, la richiesta viene considerata scaduta in attesa di approvazione e
+segnalata come negazione terminale del comando host. Per le approvazioni asincrone dell'agente principale con una sessione
+di origine, OpenClaw riprende inoltre tale sessione con un follow-up interno, affinché l'agente rilevi che
+il comando non è stato eseguito anziché tentare in seguito di correggere un risultato mancante. Le approvazioni di esecuzione in sospeso scadono
+dopo 30 minuti per impostazione predefinita.
 
-Dopo che un exec asincrono approvato termina, OpenClaw invia un turno `agent` di followup alla stessa sessione.
-Le approvazioni asincrone negate usano lo stesso percorso di followup della sessione principale per lo stato di diniego, ma
-non registrano handoff runtime elevati e non eseguono il comando. I dinieghi senza una sessione principale riprendibile
-sono soppressi oppure riportati tramite una route diretta sicura quando esiste.
+### Comportamento della consegna dei follow-up
 
-- Se esiste una destinazione di consegna esterna valida (canale consegnabile piu' target `to`), la consegna del followup usa quel canale.
-- Nei flussi solo webchat o sessione interna senza target esterno, la consegna del followup resta solo sessione (`deliver: false`).
-- Se un chiamante richiede esplicitamente consegna esterna strict senza un canale esterno risolvibile, la richiesta fallisce con `INVALID_REQUEST`.
-- Se `bestEffortDeliver` e' abilitato e non puo' essere risolto alcun canale esterno, la consegna viene declassata a solo sessione invece di fallire.
+Al termine di un'esecuzione asincrona approvata, OpenClaw invia un turno di follow-up `agent` alla stessa sessione.
+Le approvazioni asincrone negate usano lo stesso percorso di follow-up della sessione principale per lo stato di negazione, ma non
+registrano passaggi di consegna con privilegi elevati al runtime e non eseguono il comando. Le negazioni senza una sessione principale
+ripristinabile vengono soppresse oppure segnalate tramite un percorso diretto sicuro, quando disponibile.
 
-## Inoltro delle approvazioni ai canali chat
+- Se esiste una destinazione di consegna esterna valida (canale che supporta la consegna più destinazione `to`), la consegna del follow-up usa tale canale.
+- Nei flussi solo webchat o nelle sessioni interne senza destinazione esterna, la consegna del follow-up rimane limitata alla sessione (`deliver: false`).
+- Se un chiamante richiede esplicitamente una consegna esterna rigorosa senza un canale esterno risolvibile, la richiesta non riesce e restituisce `INVALID_REQUEST`.
+- Se `bestEffortDeliver` è abilitato e non è possibile risolvere alcun canale esterno, la consegna viene declassata a una consegna limitata alla sessione anziché non riuscire.
 
-Puoi inoltrare i prompt di approvazione exec a qualsiasi canale chat (inclusi i canali plugin) e approvarli
-con `/approve`. Questo usa la normale pipeline di consegna in uscita.
+## Inoltro delle approvazioni ai canali di chat
+
+È possibile inoltrare le richieste di approvazione dell'esecuzione a qualsiasi canale di chat (inclusi i canali dei Plugin) e approvarle
+con `/approve`. Questa operazione usa la normale pipeline di consegna in uscita.
 
 Configurazione:
-__OC_I18N_900001__
-Rispondi in chat:
-__OC_I18N_900002__
-Il comando `/approve` gestisce sia approvazioni exec sia approvazioni plugin. Se l'ID non corrisponde a un'approvazione exec in sospeso, controlla automaticamente le approvazioni plugin.
 
-### Inoltro delle approvazioni plugin
+```json5
+{
+  approvals: {
+    exec: {
+      enabled: true,
+      mode: "session", // "session" | "targets" | "both"
+      agentFilter: ["main"],
+      sessionFilter: ["discord"], // substring or regex
+      targets: [
+        { channel: "slack", to: "U12345678" },
+        { channel: "telegram", to: "123456789" },
+      ],
+    },
+  },
+}
+```
 
-L'inoltro delle approvazioni plugin usa la stessa pipeline di consegna delle approvazioni exec ma ha una
-configurazione indipendente sotto `approvals.plugin`. Abilitare o disabilitare una non influisce sull'altra.
-Per il comportamento di authoring dei plugin, i campi richiesta e le semantiche delle decisioni, vedi
-[Richieste di autorizzazione plugin](/plugins/plugin-permission-requests).
-__OC_I18N_900003__
-La forma della configurazione e' identica a `approvals.exec`: `enabled`, `mode`, `agentFilter`,
-`sessionFilter` e `targets` funzionano nello stesso modo.
+Risposta in chat:
 
-I canali che supportano risposte interattive condivise renderizzano gli stessi pulsanti di approvazione sia per approvazioni exec sia per
-approvazioni plugin. I canali senza UI interattiva condivisa ripiegano su testo semplice con istruzioni `/approve`.
-Le richieste di approvazione plugin possono limitare le decisioni disponibili. Le superfici di approvazione usano l'insieme di decisioni
-dichiarato dalla richiesta, e il Gateway rifiuta i tentativi di inviare una decisione che non era stata offerta.
+```
+/approve <id> allow-once
+/approve <id> allow-always
+/approve <id> deny
+```
+
+Il comando `/approve` gestisce sia le approvazioni di esecuzione sia le approvazioni dei plugin. Se l'ID non corrisponde a un'approvazione di esecuzione in sospeso, verifica automaticamente le approvazioni dei plugin. Questo fallback è limitato agli errori «approvazione non trovata»; un effettivo rifiuto o errore dell'approvazione di esecuzione non provoca silenziosamente un nuovo tentativo come approvazione di un plugin.
+
+### Inoltro delle approvazioni dei plugin
+
+L'inoltro delle approvazioni dei plugin usa la stessa pipeline di consegna delle approvazioni di esecuzione, ma dispone di una configurazione
+indipendente in `approvals.plugin`. L'abilitazione o la disabilitazione dell'una non influisce sull'altra.
+Per il comportamento relativo alla creazione dei plugin, i campi delle richieste e la semantica delle decisioni, vedere
+[Richieste di autorizzazione dei plugin](/plugins/plugin-permission-requests).
+
+```json5
+{
+  approvals: {
+    plugin: {
+      enabled: true,
+      mode: "targets",
+      agentFilter: ["main"],
+      targets: [
+        { channel: "slack", to: "U12345678" },
+        { channel: "telegram", to: "123456789" },
+      ],
+    },
+  },
+}
+```
+
+La struttura della configurazione è identica a `approvals.exec`: `enabled`, `mode`, `agentFilter`,
+`sessionFilter` e `targets` funzionano allo stesso modo.
+
+I canali che supportano risposte interattive condivise mostrano gli stessi pulsanti di approvazione sia per le approvazioni di esecuzione sia per
+quelle dei plugin. I canali privi di un'interfaccia interattiva condivisa ricorrono al testo semplice con istruzioni
+`/approve`. Le richieste di approvazione dei plugin possono limitare le decisioni disponibili: le interfacce di approvazione usano
+l'insieme di decisioni dichiarato dalla richiesta e il Gateway rifiuta i tentativi di inviare una decisione che non era
+stata proposta.
 
 ### Approvazioni nella stessa chat su qualsiasi canale
 
-Quando una richiesta di approvazione exec o plugin ha origine da una superficie chat consegnabile, la stessa chat
-puo' ora approvarla con `/approve` per impostazione predefinita. Questo si applica a canali come Slack, Matrix e
-Microsoft Teams oltre ai flussi Web UI e terminal UI esistenti.
+Quando una richiesta di approvazione di esecuzione o di un plugin proviene da una superficie di chat abilitata alla consegna, per impostazione predefinita la stessa chat
+può approvarla con `/approve`. Ciò si applica a Slack, Matrix, Microsoft Teams e
+chat abilitate alla consegna analoghe, oltre ai flussi esistenti dell'interfaccia web e dell'interfaccia del terminale, usando il
+normale modello di autenticazione del canale per tale conversazione. Se la chat di origine può già inviare comandi
+e ricevere risposte, le richieste di approvazione non richiedono più un adattatore di consegna nativo separato solo per
+rimanere in sospeso.
 
-Questo percorso condiviso di comandi testuali usa il normale modello di autorizzazione del canale per quella conversazione. Se la chat di origine può già inviare comandi e ricevere risposte, le richieste di approvazione non hanno più bisogno di un adattatore di recapito nativo separato solo per rimanere in sospeso.
+Anche Discord, Telegram e QQ bot supportano `/approve` nella stessa chat, ma questi canali continuano a usare il proprio
+elenco di approvatori risolto per l'autorizzazione, anche quando la consegna nativa delle approvazioni è disabilitata.
 
-Anche Discord e Telegram supportano `/approve` nella stessa chat, ma questi canali usano comunque l'elenco degli approvatori risolto per l'autorizzazione anche quando il recapito nativo delle approvazioni è disabilitato.
+### Consegna nativa delle approvazioni
 
-Per Telegram e altri client di approvazione nativi che chiamano direttamente il Gateway,
-questo fallback è intenzionalmente limitato agli errori di "approvazione non trovata". Un vero
-rifiuto/errore di approvazione exec non viene ritentato silenziosamente come approvazione di un Plugin.
+Alcuni canali possono anche fungere da client di approvazione nativi: Discord, Slack, Telegram, Matrix e QQ bot.
+I client nativi aggiungono messaggi diretti agli approvatori, distribuzione alla chat di origine ed esperienza utente interattiva di approvazione specifica del canale
+al flusso condiviso `/approve` nella stessa chat.
 
-### Recapito nativo delle approvazioni
+Quando sono disponibili schede o pulsanti di approvazione nativi, tale interfaccia nativa è il percorso principale rivolto all'agente.
+L'agente non deve mostrare anche un comando di chat `/approve` duplicato in testo semplice, a meno che il risultato dello strumento non indichi
+che le approvazioni tramite chat non sono disponibili o che l'approvazione manuale è l'unico percorso rimasto.
 
-Alcuni canali possono anche agire come client di approvazione nativi. I client nativi aggiungono DM agli approvatori, fanout della chat di origine e UX interattiva di approvazione specifica del canale sopra il flusso condiviso `/approve` nella stessa chat.
-
-Quando sono disponibili schede/pulsanti di approvazione nativi, quell'interfaccia utente nativa è il percorso principale
-rivolto all'agente. L'agente non dovrebbe anche ripetere un comando duplicato in chat semplice
-`/approve`, a meno che il risultato dello strumento dica che le approvazioni via chat non sono disponibili o che
-l'approvazione manuale è l'unico percorso rimanente.
-
-Se un client di approvazione nativo è configurato ma non è attivo alcun runtime nativo per
-il canale di origine, OpenClaw mantiene visibile il prompt deterministico locale `/approve`.
-Se il runtime nativo è attivo e tenta il recapito ma nessun target riceve la scheda,
-OpenClaw invia un avviso di fallback nella stessa chat con il comando esatto
-`/approve <id> <decision>`, così la richiesta può comunque essere risolta.
+Se un client di approvazione nativo è configurato ma non è attivo alcun runtime nativo per il canale di origine,
+OpenClaw mantiene visibile il prompt deterministico locale `/approve`. Se il runtime nativo è
+attivo e tenta la consegna, ma nessuna destinazione riceve la scheda, OpenClaw invia nella stessa chat un avviso di fallback
+con il comando `/approve <id> <decision>` esatto, affinché la richiesta possa comunque essere risolta.
 
 Modello generico:
 
-- la policy exec dell'host decide comunque se l'approvazione exec è richiesta
-- `approvals.exec` controlla l'inoltro dei prompt di approvazione ad altre destinazioni di chat
-- `channels.<channel>.execApprovals` controlla se i client nativi specifici per Discord, Slack, Telegram e canali simili
+- la politica di esecuzione dell'host determina comunque se è richiesta l'approvazione di esecuzione
+- `approvals.exec` controlla l'inoltro dei prompt di approvazione verso altre destinazioni di chat
+- `channels.<channel>.execApprovals` controlla se i client nativi specifici del canale per Discord, Slack, Telegram, QQ bot e canali analoghi
   sono abilitati
-- le approvazioni dei Plugin Slack possono usare il client di approvazione nativo di Slack quando la richiesta arriva da Slack
-  e gli approvatori del Plugin Slack vengono risolti; `approvals.plugin` può anche instradare le approvazioni dei Plugin a sessioni o target Slack anche quando le approvazioni exec Slack sono disabilitate
-- le schede di approvazione native di Google Chat gestiscono approvazioni exec e dei Plugin originate da spazi o thread di Google
-  Chat quando approvatori stabili `users/<id>` vengono risolti da `dm.allowFrom` o
+- le approvazioni dei plugin Slack possono usare il client di approvazione nativo di Slack quando la richiesta proviene da Slack
+  e gli approvatori dei plugin Slack vengono risolti; `approvals.plugin` può anche indirizzare le approvazioni dei plugin a sessioni
+  o destinazioni Slack anche quando le approvazioni di esecuzione Slack sono disabilitate
+- le schede di approvazione native di Google Chat gestiscono le approvazioni di esecuzione e dei plugin che provengono da spazi
+  o thread Google Chat quando approvatori `users/<id>` stabili vengono risolti da `dm.allowFrom` o
   `defaultTo`; non usano eventi di reazione per le decisioni
-- il recapito delle approvazioni tramite reazione in WhatsApp e Signal è controllato da `approvals.exec` e
-  `approvals.plugin`; non hanno blocchi `channels.<channel>.execApprovals`
+- la consegna delle approvazioni mediante reazioni su WhatsApp e Signal è subordinata a `approvals.exec` e
+  `approvals.plugin`; non dispongono di blocchi `channels.<channel>.execApprovals`
 
-I client di approvazione nativi abilitano automaticamente il recapito prima via DM quando tutte queste condizioni sono vere:
+I client di approvazione nativi abilitano automaticamente la consegna prioritaria tramite messaggio diretto quando sono vere tutte le seguenti condizioni:
 
-- il canale supporta il recapito nativo delle approvazioni
-- gli approvatori possono essere risolti da `execApprovals.approvers` espliciti o da un'identità
-  del proprietario come `commands.ownerAllowFrom`
-- `channels.<channel>.execApprovals.enabled` non è impostato o è `"auto"`
+- il canale supporta la consegna nativa delle approvazioni
+- gli approvatori possono essere risolti da `execApprovals.approvers` espliciti o dall'identità
+  del proprietario, come `commands.ownerAllowFrom`
+- `channels.<channel>.execApprovals.enabled` non è impostato oppure è `"auto"`
 
-Imposta `enabled: false` per disabilitare esplicitamente un client di approvazione nativo. Imposta `enabled: true` per forzarlo
-quando gli approvatori vengono risolti. Il recapito pubblico nella chat di origine resta esplicito tramite
-`channels.<channel>.execApprovals.target`.
+Impostare `enabled: false` per disabilitare esplicitamente un client di approvazione nativo. Impostare `enabled: true` per forzarne
+l'attivazione quando gli approvatori vengono risolti. La consegna pubblica alla chat di origine resta esplicita tramite
+`channels.<channel>.execApprovals.target`. Quando `target` nativo abilita la consegna alla chat di origine,
+i prompt di approvazione includono il testo del comando.
 
-FAQ: [Perché ci sono due configurazioni di approvazione exec per le approvazioni via chat?](/help/faq-first-run#why-are-there-two-exec-approval-configs-for-chat-approvals)
+Domande frequenti: [Perché esistono due configurazioni delle approvazioni di esecuzione per le approvazioni tramite chat?](/help/faq-first-run)
 
 - Discord: `channels.discord.execApprovals.*`
 - Slack: `channels.slack.execApprovals.*`
 - Telegram: `channels.telegram.execApprovals.*`
-- Google Chat: configura approvatori stabili con `channels.googlechat.dm.allowFrom` o
+- QQ bot: `channels.qqbot.execApprovals.*`
+- Google Chat: configurare approvatori stabili con `channels.googlechat.dm.allowFrom` o
   `channels.googlechat.defaultTo`; non è richiesto alcun blocco `execApprovals`
-- WhatsApp: usa `approvals.exec` e `approvals.plugin` per instradare i prompt di approvazione a WhatsApp
-- Signal: usa `approvals.exec` e `approvals.plugin` per instradare i prompt di approvazione a Signal
+- WhatsApp: usare `approvals.exec` e `approvals.plugin` per indirizzare i prompt di approvazione a WhatsApp
+- Signal: usare `approvals.exec` e `approvals.plugin` per indirizzare i prompt di approvazione a Signal
 
-Questi client di approvazione nativi aggiungono instradamento DM e fanout di canale opzionale sopra il flusso condiviso
-`/approve` nella stessa chat e i pulsanti di approvazione condivisi.
+Instradamento specifico dei client nativi:
 
-Comportamento condiviso:
-
-- Slack, Matrix, Microsoft Teams e chat recapitate simili usano il normale modello di autorizzazione del canale
-  per `/approve` nella stessa chat
-- quando un client di approvazione nativo si abilita automaticamente, il target predefinito di recapito nativo sono i DM degli approvatori
-- per Discord e Telegram, solo gli approvatori risolti possono approvare o negare
-- gli approvatori Discord possono essere espliciti (`execApprovals.approvers`) o dedotti da `commands.ownerAllowFrom`
-- gli approvatori Telegram possono essere espliciti (`execApprovals.approvers`) o dedotti da `commands.ownerAllowFrom`
-- gli approvatori Slack possono essere espliciti (`execApprovals.approvers`) o dedotti da `commands.ownerAllowFrom`
-- i DM di approvazione dei Plugin Slack usano gli approvatori dei Plugin Slack da `allowFrom` e l'instradamento predefinito dell'account,
-  non gli approvatori exec Slack
-- i pulsanti nativi Slack preservano il tipo dell'id approvazione, quindi gli id `plugin:` possono risolvere approvazioni dei Plugin
-  senza un secondo livello di fallback locale a Slack
-- le schede native di Google Chat preservano il fallback manuale `/approve` nel testo del messaggio, ma le callback dei pulsanti della scheda
-  trasportano solo token di azione opachi; id approvazione e decisione vengono recuperati dallo stato in sospeso lato server
-- le approvazioni emoji di WhatsApp gestiscono sia prompt exec sia prompt dei Plugin solo quando la famiglia di inoltro di primo livello corrispondente
-  è abilitata e instrada a WhatsApp; l'inoltro solo target a WhatsApp resta sul percorso di inoltro condiviso a meno che non corrisponda allo stesso target nativo di origine
-- le approvazioni tramite reazione di Signal gestiscono sia prompt exec sia prompt dei Plugin solo quando la famiglia di inoltro di primo livello corrispondente
-  è abilitata e instrada a Signal. Le approvazioni exec Signal dirette nella stessa chat possono
-  sopprimere il fallback locale `/approve` senza approvatori espliciti; la risoluzione delle reazioni Signal
+- Telegram usa per impostazione predefinita i messaggi diretti agli approvatori (`target: "dm"`). Passare a `channel` o `both` per mostrare
+  i prompt di approvazione anche nella chat o nell'argomento Telegram di origine. Per gli argomenti dei forum Telegram, OpenClaw
+  mantiene l'argomento per il prompt di approvazione e per il messaggio successivo all'approvazione.
+- gli approvatori Discord e Telegram possono essere espliciti (`execApprovals.approvers`) o dedotti da
+  `commands.ownerAllowFrom`; solo gli approvatori risolti possono approvare o rifiutare.
+- gli approvatori Slack possono essere espliciti (`execApprovals.approvers`) o dedotti da
+  `commands.ownerAllowFrom`. I messaggi diretti per l'approvazione dei plugin Slack usano gli approvatori dei plugin Slack da `allowFrom`
+  e l'instradamento predefinito dell'account, non gli approvatori delle esecuzioni Slack. I pulsanti nativi di Slack mantengono il tipo dell'ID di approvazione,
+  pertanto gli ID `plugin:` possono risolvere le approvazioni dei plugin senza un secondo livello di fallback locale a Slack.
+- le schede native di Google Chat mantengono nel testo del messaggio il fallback manuale `/approve`, ma i callback dei pulsanti
+  delle schede trasportano soltanto token di azione opachi; l'ID di approvazione e la decisione vengono recuperati dallo
+  stato in sospeso sul lato server.
+- le approvazioni tramite emoji di WhatsApp gestiscono sia i prompt di esecuzione sia quelli dei plugin quando la famiglia di
+  inoltro di primo livello corrispondente indirizza a WhatsApp. I prompt di origine nativi vengono associati direttamente; la consegna condivisa
+  in modalità destinazione associa gli stessi metadati tipizzati dell'approvazione alla ricevuta del messaggio WhatsApp accettato.
+- le approvazioni mediante reazione di Signal gestiscono sia i prompt di esecuzione sia quelli dei plugin solo quando la famiglia di inoltro di primo livello
+  corrispondente è abilitata e indirizza a Signal. Le approvazioni di esecuzione Signal dirette nella stessa chat possono
+  eliminare il fallback locale `/approve` senza approvatori espliciti; la risoluzione mediante reazione di Signal
   richiede comunque approvatori Signal espliciti da `channels.signal.allowFrom` o `defaultTo`.
-- l'instradamento DM/canale nativo di Matrix e le scorciatoie tramite reazione gestiscono sia approvazioni exec sia dei Plugin;
-  l'autorizzazione dei Plugin proviene comunque da `channels.matrix.dm.allowFrom`
-- i prompt nativi Matrix includono contenuto evento personalizzato `com.openclaw.approval` sul primo evento di prompt,
-  così i client Matrix consapevoli di OpenClaw possono leggere lo stato strutturato dell'approvazione mentre i client standard
-  mantengono il fallback `/approve` in testo semplice
-- il richiedente non deve essere necessariamente un approvatore
-- la chat di origine può approvare direttamente con `/approve` quando quella chat supporta già comandi e risposte
-- i pulsanti di approvazione nativi Discord instradano in base al tipo dell'id approvazione: gli id `plugin:` vanno
-  direttamente alle approvazioni dei Plugin, tutto il resto va alle approvazioni exec
-- i pulsanti di approvazione nativi Telegram seguono lo stesso fallback exec-a-Plugin limitato di `/approve`
-- quando `target` nativo abilita il recapito nella chat di origine, i prompt di approvazione includono il testo del comando
-- le approvazioni exec in sospeso scadono dopo 30 minuti per impostazione predefinita
-- se nessuna interfaccia operatore o client di approvazione configurato può accettare la richiesta, il prompt ripiega su `askFallback`
+- l'instradamento nativo di Matrix tramite messaggio diretto o canale e le scorciatoie mediante reazione gestiscono sia le approvazioni di esecuzione sia quelle dei plugin;
+  l'autorizzazione dei plugin continua a provenire da `channels.matrix.dm.allowFrom`. I prompt nativi di Matrix
+  includono il contenuto dell'evento personalizzato `com.openclaw.approval` nel primo evento del prompt, affinché i client
+  Matrix compatibili con OpenClaw possano leggere lo stato strutturato dell'approvazione, mentre i client standard mantengono il fallback
+  `/approve` in testo semplice.
+- i pulsanti di approvazione nativi di Discord e Telegram trasportano un tipo esplicito di proprietario, esecuzione o plugin, nei
+  dati di callback privati del trasporto e risolvono solo tale proprietario. I controlli `/approve` precedenti che non dispongono
+  di un tipo restano un percorso di compatibilità limitato: tentano solo i tipi di proprietario che l'attore può approvare,
+  proseguono esclusivamente dopo un risultato di approvazione non trovata e non deducono mai la proprietà dall'ID di approvazione.
+- il richiedente non deve necessariamente essere un approvatore.
+- se nessuna interfaccia dell'operatore o client di approvazione configurato può accettare la richiesta, il prompt ricorre a
+  `askFallback`.
 
-I comandi sensibili di gruppo riservati al proprietario, come `/diagnostics` e `/export-trajectory`, usano instradamento privato
-del proprietario per i prompt di approvazione e i risultati finali. OpenClaw prova prima una rotta privata sulla
-stessa superficie in cui il proprietario ha eseguito il comando. Se quella superficie non ha una rotta privata del proprietario, ripiega
-sulla prima rotta proprietario disponibile da `commands.ownerAllowFrom`, così un comando di gruppo Discord
-può comunque inviare approvazione e risultato al DM Telegram del proprietario quando Telegram è l'interfaccia privata
-principale configurata. La chat di gruppo riceve solo una breve conferma.
+I comandi di gruppo sensibili riservati al proprietario, come `/diagnostics` e `/export-trajectory`, usano l'instradamento privato
+del proprietario per i prompt di approvazione e i risultati finali. OpenClaw tenta innanzitutto un percorso privato sulla
+stessa superficie in cui il proprietario ha eseguito il comando. Se tale superficie non dispone di un percorso privato del proprietario, ricorre
+al primo percorso del proprietario disponibile da `commands.ownerAllowFrom`, così un comando di gruppo Discord
+può comunque inviare l'approvazione e il risultato al messaggio diretto Telegram del proprietario quando Telegram è configurato come
+interfaccia privata principale. La chat di gruppo riceve soltanto una breve conferma.
 
-Telegram usa per impostazione predefinita i DM degli approvatori (`target: "dm"`). Puoi passare a `channel` o `both` quando vuoi che le richieste di approvazione appaiano anche nella chat/nell'argomento Telegram di origine. Per gli argomenti dei forum Telegram, OpenClaw mantiene l'argomento per la richiesta di approvazione e per il follow-up successivo all'approvazione.
-
-Vedi:
+Vedere:
 
 - [Discord](/channels/discord)
 - [Telegram](/channels/telegram)
+- [QQ bot](/channels/qqbot)
 
-### Flusso IPC macOS
-__OC_I18N_900004__
-Note di sicurezza:
+### App ufficiali per operatori mobili
 
-- Modalità socket Unix `0600`, token archiviato in `exec-approvals.json`.
-- Controllo peer con lo stesso UID.
-- Challenge/response (nonce + token HMAC + hash della richiesta) + TTL breve.
+Le app ufficiali per iOS e Android possono anche esaminare le approvazioni di esecuzione in sospeso
+gestite dal Gateway quando viene usata una connessione `operator.admin` o quando il loro dispositivo
+`operator.approvals` associato è stato esplicitamente indicato come destinazione dalla richiesta. Leggono
+lo stesso record durevole e sanificato usato dalla
+Control UI, inviano una decisione che tiene conto del tipo e mostrano il risultato canonico
+della prima risposta del Gateway. Apple Watch riproduce questi prompt di approvazione tramite
+l'iPhone associato, con azioni per consentire una volta o rifiutare. La modalità Gateway diretta di Watch
+non esamina le approvazioni.
+
+La perdita di una conferma della risoluzione non rende autorevole la scelta inviata:
+l'app disabilita i controlli e legge nuovamente il record. Se ha prevalso un'altra superficie,
+l'app mostra la decisione registrata. I prompt in sospeso restano associati al
+Gateway che li ha emessi, pertanto il passaggio a un altro Gateway attivo non può reindirizzare un
+vecchio ID di approvazione.
+
+### Flusso IPC di macOS
+
+```
+Gateway -> Servizio Node (WS)
+                 |  IPC (UDS + token + HMAC + TTL)
+                 v
+             App Mac (UI + approvazioni + system.run)
+```
+
+Note sulla sicurezza:
+
+- modalità del socket Unix `0600`, token archiviato in `exec-approvals.json`.
+- verifica del peer con lo stesso UID.
+- challenge/response (nonce + token HMAC + hash della richiesta) + TTL breve.
 
 ## Domande frequenti
 
-### Quando verrebbero usati `accountId` e `threadId` su una destinazione di approvazione?
+### Quando si userebbero `accountId` e `threadId` in una destinazione di approvazione?
 
-Usa `accountId` quando il canale ha più identità configurate e la richiesta di approvazione deve uscire tramite un account specifico. Usa `threadId` quando la destinazione supporta argomenti o thread e la richiesta deve restare dentro quel thread invece che nella chat di livello superiore.
+Usare `accountId` quando il canale dispone di più identità configurate e il prompt di approvazione deve
+essere inviato tramite un account specifico. Usare `threadId` quando la destinazione supporta argomenti o
+thread e il prompt deve rimanere all'interno di tale thread invece che nella chat di primo livello.
 
-Un caso concreto di Telegram è un supergruppo operativo con argomenti del forum e due account bot Telegram. Il valore `to` indica il supergruppo, `accountId` seleziona l'account bot e `threadId` seleziona l'argomento del forum:
-__OC_I18N_900005__
-Con questa configurazione, le approvazioni exec inoltrate vengono pubblicate dall'account Telegram `ops-bot` nell'argomento `77` della chat `-1001234567890`. Una destinazione senza `accountId` usa l'account predefinito del canale, e una destinazione senza `threadId` pubblica nella destinazione di livello superiore.
+Un caso concreto di Telegram è un supergruppo operativo con argomenti del forum e due account bot
+Telegram. Il valore `to` identifica il supergruppo, `accountId` seleziona l'account bot e `threadId`
+seleziona l'argomento del forum:
 
-### Quando le approvazioni vengono inviate a una sessione, chiunque in quella sessione può approvarle?
+```json5
+{
+  approvals: {
+    exec: {
+      enabled: true,
+      mode: "targets",
+      targets: [
+        {
+          channel: "telegram",
+          to: "-1001234567890",
+          accountId: "ops-bot",
+          threadId: "77",
+        },
+      ],
+    },
+  },
+  channels: {
+    telegram: {
+      accounts: {
+        default: {
+          name: "Primary bot",
+          botToken: "env:TELEGRAM_PRIMARY_BOT_TOKEN",
+        },
+        "ops-bot": {
+          name: "Operations bot",
+          botToken: "env:TELEGRAM_OPS_BOT_TOKEN",
+        },
+      },
+    },
+  },
+}
+```
 
-No. La consegna alla sessione controlla solo dove appare la richiesta. Da sola non autorizza ogni partecipante in quella chat ad approvare.
+Con questa configurazione, le approvazioni di esecuzione inoltrate vengono pubblicate dall'account Telegram `ops-bot` nell'argomento
+`77` della chat `-1001234567890`. Una destinazione senza `accountId` usa l'account predefinito del canale e
+una destinazione senza `threadId` pubblica nella destinazione di primo livello.
 
-Per `/approve` generico nella stessa chat, il mittente deve essere già autorizzato per i comandi in quella sessione del canale. Se il canale espone approvatori espliciti per le approvazioni, tali approvatori possono autorizzare l'azione `/approve` anche quando non sono altrimenti autorizzati ai comandi in quella sessione.
+### Quando le approvazioni vengono inviate a una sessione, chiunque partecipi alla sessione può approvarle?
 
-Alcuni canali sono più restrittivi. Discord, Telegram, Matrix, i DM di approvazione nativi di Slack e client di approvazione nativi simili usano i loro elenchi di approvatori risolti per l'autorizzazione delle approvazioni. Per esempio, una richiesta di approvazione in un argomento del forum Telegram può essere visibile a tutti nell'argomento, ma solo gli ID utente numerici Telegram risolti da `channels.telegram.execApprovals.approvers` o `commands.ownerAllowFrom` possono approvarla o negarla.
+No. L'invio alla sessione controlla solo dove appare la richiesta. Di per sé non autorizza ogni
+partecipante alla chat ad approvare.
 
-## Correlati
+Per `/approve` generiche nella stessa chat, il mittente deve essere già autorizzato a eseguire comandi in quella
+sessione del canale. Se il canale espone esplicitamente soggetti abilitati alle approvazioni, questi possono autorizzare
+l'azione `/approve` anche se non sono altrimenti autorizzati a eseguire comandi nella sessione.
 
-- [Approvazioni exec](/it/tools/exec-approvals) — criterio di base e flusso di approvazione
-- [Strumento exec](/it/tools/exec)
-- [Modalità elevata](/it/tools/elevated)
-- [Skills](/it/tools/skills) — comportamento di autorizzazione automatica basato su skill
+Alcuni canali applicano criteri più rigidi. I messaggi diretti di approvazione nativi di Discord, Telegram, Matrix e Slack, nonché altri
+client di approvazione nativi analoghi, usano i rispettivi elenchi risolti di soggetti abilitati per l'autorizzazione delle approvazioni. Ad esempio,
+una richiesta di approvazione in un argomento del forum di Telegram può essere visibile a tutti i partecipanti all'argomento, ma solo gli ID utente
+Telegram numerici risolti da `channels.telegram.execApprovals.approvers` o
+`commands.ownerAllowFrom` possono approvarla o rifiutarla.
+
+## Argomenti correlati
+
+- [Approvazioni di esecuzione](/it/tools/exec-approvals) — criteri principali e flusso di approvazione
+- [Strumento di esecuzione](/it/tools/exec)
+- [Modalità con privilegi elevati](/it/tools/elevated)
+- [Skills](/it/tools/skills) — comportamento di autorizzazione automatica basato sulle skill

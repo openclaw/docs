@@ -4,11 +4,12 @@ read_when:
 summary: เพิ่มการรองรับผู้ให้บริการโมเดล Microsoft Foundry ให้กับ OpenClaw
 title: Plugin Microsoft Foundry
 x-i18n:
-    generated_at: "2026-07-12T16:27:58Z"
+    generated_at: "2026-07-16T19:34:53Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: c120a68393626e5ff9f24cd80bce4612a3772faf3722b93f2ff4677f743d0252
+    source_hash: f2ea554ce16cffeb4cc315e53d986d6f07b5e113fbb844c61c6575f19f8ad291
     source_path: plugins/reference/microsoft-foundry.md
     workflow: 16
 ---
@@ -24,7 +25,7 @@ x-i18n:
 
 ## พื้นผิว
 
-ผู้ให้บริการ: microsoft-foundry; สัญญา: imageGenerationProviders
+ผู้ให้บริการ: `microsoft-foundry`; สัญญา: `imageGenerationProviders`
 
 <!-- openclaw-plugin-reference:manual-start -->
 
@@ -42,32 +43,32 @@ x-i18n:
 
 การปรับใช้แชตของ Microsoft Foundry ใช้การอ้างอิงโมเดลของผู้ให้บริการ
 `microsoft-foundry/<deployment-name>` ขั้นตอนเริ่มต้นใช้งานจะค้นหาทรัพยากร
-และการปรับใช้ของ Foundry ด้วย Azure CLI จากนั้นเขียนชื่อการปรับใช้ที่เลือกลงใน
-การกำหนดค่าโมเดล
+และการปรับใช้ Foundry ด้วย Azure CLI จากนั้นเขียนชื่อการปรับใช้ที่เลือกลงในการกำหนดค่า
+โมเดล
 
-OpenClaw ใช้ปลายทาง `/openai/v1` ของ Foundry สำหรับ API แชตที่เข้ากันได้กับ
-OpenAI และรองรับ:
+OpenClaw ใช้ปลายทาง Foundry `/openai/v1` สำหรับ API แชต
+ที่เข้ากันได้กับ OpenAI ซึ่งรองรับ:
 
-- ตระกูลโมเดล GPT, `o*`, `computer-use-preview` และ DeepSeek-V4 จะใช้
+- ตระกูลโมเดล GPT, `o*`, `computer-use-preview` และ DeepSeek-V4 ใช้
   `openai-responses` เป็นค่าเริ่มต้น
-- การปรับใช้ MAI-DS-R1 และการปรับใช้การเติมข้อความแชตอื่น ๆ ใช้ `openai-completions`
+- MAI-DS-R1 และการปรับใช้การเติมข้อความแชตอื่นๆ ใช้ `openai-completions`
   เว้นแต่จะกำหนดค่า API ที่รองรับไว้อย่างชัดเจน
 - MAI-DS-R1 ถูกบันทึกว่ารองรับการให้เหตุผลผ่านเนื้อหาการให้เหตุผล ไม่ใช่
-  ผ่าน `reasoning_effort` เมทาดาทาโทเค็นบริบทและเอาต์พุตของโมเดลคือ
+  ผ่าน `reasoning_effort` เมทาดาทาของบริบทและโทเค็นเอาต์พุตมีขนาด
   163,840 โทเค็น
 
 การปรับใช้ Anthropic Claude ใน Microsoft Foundry ใช้รูปแบบ Anthropic Messages
-API ไม่ใช่รูปแบบ `/openai/v1` ที่เข้ากันได้กับ OpenAI ให้กำหนดค่าเป็นผู้ให้บริการ
-`anthropic-messages` แบบกำหนดเองจนกว่า Plugin Microsoft Foundry จะมีรันไทม์
-Anthropic แบบเนทีฟ เมื่อชื่อการปรับใช้ของ Foundry แตกต่างจากรหัสโมเดล
+API ไม่ใช่รูปแบบ `/openai/v1` ที่เข้ากันได้กับ OpenAI ให้กำหนดค่าเป็น
+ผู้ให้บริการ `anthropic-messages` แบบกำหนดเองจนกว่า Plugin Microsoft Foundry จะมี
+รันไทม์ Anthropic แบบเนทีฟ เมื่อชื่อการปรับใช้ Foundry แตกต่างจาก ID โมเดล
 Claude ให้ตั้งค่า `params.canonicalModelId` ในรายการโมเดล เพื่อให้ OpenClaw
-สามารถใช้สัญญาการรับส่งข้อมูลเฉพาะโมเดล จับคู่ `/think off` ได้อย่างถูกต้อง และ
-รักษาการคิดที่มีลายเซ็นไว้อย่างปลอดภัย
+สามารถใช้สัญญาการรับส่งข้อมูลเฉพาะโมเดล แมป `/think off` ได้อย่างถูกต้อง และ
+เก็บรักษาการคิดที่ลงนามไว้อย่างปลอดภัย
 
 ## การสร้างรูปภาพด้วย MAI
 
-Plugin จะลงทะเบียน `microsoft-foundry` สำหรับ `image_generate` ด้วยโมเดลรูปภาพ
-Microsoft AI ปัจจุบัน:
+Plugin ลงทะเบียน `microsoft-foundry` สำหรับ `image_generate` ด้วยโมเดล
+รูปภาพ Microsoft AI ปัจจุบัน:
 
 - `MAI-Image-2.5-Flash`
 - `MAI-Image-2.5`
@@ -75,7 +76,7 @@ Microsoft AI ปัจจุบัน:
 - `MAI-Image-2`
 
 ใช้ชื่อการปรับใช้รูปภาพ MAI ที่ปรับใช้แล้วเป็นการอ้างอิงโมเดล ผู้ให้บริการ
-ไม่ได้ประกาศโมเดลรูปภาพเริ่มต้น เนื่องจาก API ของ MAI ต้องการชื่อการปรับใช้ของคุณ
+ไม่ประกาศโมเดลรูปภาพเริ่มต้น เนื่องจาก API ของ MAI ต้องการชื่อการปรับใช้ของคุณ
 ในฟิลด์ `model` ของคำขอ:
 
 ```json5
@@ -91,24 +92,24 @@ Microsoft AI ปัจจุบัน:
 }
 ```
 
-การสร้างจากพรอมต์เพียงอย่างเดียวจะเรียกปลายทางการสร้างของ MAI ใน Microsoft Foundry:
+การสร้างจากพรอมต์เพียงอย่างเดียวจะเรียกปลายทางการสร้าง MAI ของ Microsoft Foundry:
 `/mai/v1/images/generations` การแก้ไขด้วยรูปภาพอ้างอิงจะเรียก
 `/mai/v1/images/edits` และจำกัดเฉพาะการปรับใช้ `MAI-Image-2.5-Flash` และ
 `MAI-Image-2.5`
 
-การสร้างจากพรอมต์เพียงอย่างเดียวสามารถใช้ชื่อการปรับใช้แบบกำหนดเองได้โดยกำหนดค่า
-เพียงปลายทาง Foundry สำหรับการแก้ไขรูปภาพด้วยชื่อการปรับใช้แบบกำหนดเอง ให้เลือก
-การปรับใช้ผ่านขั้นตอนเริ่มต้นใช้งาน หรือระบุเมทาดาทาของโมเดลเพื่อให้ OpenClaw ตรวจสอบได้
+การสร้างจากพรอมต์เพียงอย่างเดียวสามารถใช้ชื่อการปรับใช้แบบกำหนดเองโดยกำหนดค่าเพียง
+ปลายทาง Foundry สำหรับการแก้ไขรูปภาพด้วยชื่อการปรับใช้แบบกำหนดเอง ให้เลือก
+การปรับใช้ผ่านขั้นตอนเริ่มต้นใช้งานหรือใส่เมทาดาทาของโมเดล เพื่อให้ OpenClaw ตรวจสอบได้
 ว่าการปรับใช้นั้นรองรับโดย `MAI-Image-2.5-Flash` หรือ `MAI-Image-2.5`
 
 ข้อจำกัดของรูปภาพ MAI:
 
 - เอาต์พุต: รูปภาพ PNG หนึ่งรูปต่อคำขอ
-- ขนาด: ค่าเริ่มต้น `1024x1024`; ทั้งความกว้างและความสูงต้องไม่น้อยกว่า 768 พิกเซล
+- ขนาด: ค่าเริ่มต้น `1024x1024`; ทั้งความกว้างและความสูงต้องมีอย่างน้อย 768 px
 - จำนวนพิกเซลทั้งหมด: ความกว้าง × ความสูงต้องไม่เกิน 1,048,576
 - การแก้ไข: รูปภาพอินพุต PNG หรือ JPEG หนึ่งรูป
-- ระบบจะไม่ส่งคำแนะนำร่วมที่ไม่รองรับ เช่น `aspectRatio`, `resolution`, `quality`,
-  `background` และ `outputFormat` ที่ไม่ใช่ PNG ไปยัง Microsoft Foundry
+- คำใบ้ร่วมที่ไม่รองรับ เช่น `aspectRatio`, `resolution`, `quality`,
+  `background` และ `outputFormat` ที่ไม่ใช่ PNG จะไม่ถูกส่งไปยัง Microsoft Foundry
 
 ## การแก้ไขปัญหา
 

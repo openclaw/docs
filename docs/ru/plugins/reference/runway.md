@@ -4,12 +4,12 @@ read_when:
 summary: Добавляет поддержку провайдера генерации видео.
 title: Плагин Runway
 x-i18n:
-    generated_at: "2026-07-13T18:35:12Z"
+    generated_at: "2026-07-16T16:36:30Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
-    prompt_version: 24
+    prompt_version: 32
     provider: openai
-    source_hash: 52a36a1257fa59b6d159816496158940bdc2c84b1764cc822506b74f22b08465
+    source_hash: 48cff38962414711cf75563073a527f73ed7d824ad1d96c2ba9591f782de0ad3
     source_path: plugins/reference/runway.md
     workflow: 16
 ---
@@ -25,7 +25,7 @@ x-i18n:
 
 ## Интерфейс
 
-контракты: videoGenerationProviders
+контракты: `videoGenerationProviders`
 
 ## Связанная документация
 

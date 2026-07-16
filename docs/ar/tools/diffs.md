@@ -1,45 +1,37 @@
 ---
 read_when:
-    - تريد أن تعرض الوكلاء تعديلات الكود أو Markdown كفروقات
-    - تريد عنوان URL لعارض جاهز للوحة الرسم أو ملف فرق مُصيَّر
-    - تحتاج إلى عناصر diff مؤقتة ومضبوطة بإعدادات افتراضية آمنة
+    - تريد من الوكلاء عرض تعديلات الشيفرة أو Markdown على شكل فروق.
+    - تريد عنوان URL لعارض جاهز للوحة أو ملف فروق مُصيَّرًا
+    - تحتاج إلى عناصر مؤقتة ومضبوطة لعرض الفروق، بإعدادات افتراضية آمنة
 sidebarTitle: Diffs
-summary: عارض فروقات للقراءة فقط ومصيّر ملفات للوكلاء (أداة Plugin اختيارية)
+summary: عارض فروق للقراءة فقط ومصيّر ملفات للوكلاء (أداة Plugin اختيارية)
 title: الفروقات
 x-i18n:
-    generated_at: "2026-06-27T18:40:02Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T14:58:56Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: ea3d8e9e026e10b2f3658b795c07ea21062896ab0d45a8cb2dc7e0e9ed9aa658
+    source_hash: f28a8ac4191f72376ba5c8823337bd337e3fac236ea4ecc2204e6dcf2930e607
     source_path: tools/diffs.md
     workflow: 16
 ---
 
-`diffs` هي أداة Plugin اختيارية تتضمن إرشادات نظام مدمجة قصيرة وSkill مرافقة تحوّل محتوى التغييرات إلى أثر diff للقراءة فقط للوكلاء.
+`diffs` هي أداة Plugin مضمّنة اختيارية تحوّل نص ما قبل/ما بعد أو تصحيحًا موحّدًا إلى ناتج فرق للقراءة فقط. كما تضيف إرشادات موجزة للوكيل في بداية مطالبة النظام، وتأتي مع مهارة مصاحبة لتوفير تعليمات أشمل.
 
-تقبل إما:
+الإدخال: نص `before` + `after`، أو `patch` موحّد (وهما متنافيان).
 
-- نص `before` و`after`
-- `patch` موحدًا
-
-يمكنها إرجاع:
-
-- عنوان URL لعارض Gateway لعرض canvas
-- مسار ملف مُصيَّر (PNG أو PDF) لتسليم الرسائل
-- كلا المخرجين في استدعاء واحد
-
-عند تمكينها، تضيف Plugin إرشادات استخدام موجزة في مساحة مطالبة النظام، وتكشف أيضًا عن Skill مفصلة للحالات التي يحتاج فيها الوكيل إلى تعليمات أكمل.
+الإخراج: عنوان URL لعارض Gateway للعرض على اللوحة، أو مسار ملف PNG/PDF معروض لتسليمه في رسالة، أو كلاهما.
 
 ## البدء السريع
 
 <Steps>
-  <Step title="ثبّت Plugin">
+  <Step title="تثبيت Plugin">
     ```bash
     openclaw plugins install diffs
     ```
   </Step>
-  <Step title="مكّن Plugin">
+  <Step title="تمكين Plugin">
     ```json5
     {
       plugins: {
@@ -52,24 +44,24 @@ x-i18n:
     }
     ```
   </Step>
-  <Step title="اختر وضعًا">
+  <Step title="اختيار وضع">
     <Tabs>
       <Tab title="view">
-        تدفقات canvas أولًا: يستدعي الوكلاء `diffs` مع `mode: "view"` ويفتحون `details.viewerUrl` باستخدام `canvas present`.
+        تدفقات تفضّل اللوحة: تستدعي الوكلاء `diffs` باستخدام `mode: "view"` وتفتح `details.viewerUrl` باستخدام `canvas present`.
       </Tab>
       <Tab title="file">
-        تسليم ملف الدردشة: يستدعي الوكلاء `diffs` مع `mode: "file"` ويرسلون `details.filePath` باستخدام `message` مع `path` أو `filePath`.
+        تسليم الملفات في الدردشة: تستدعي الوكلاء `diffs` باستخدام `mode: "file"` وترسل `details.filePath` مع `message` باستخدام `path` أو `filePath`.
       </Tab>
       <Tab title="both">
-        مدمج: يستدعي الوكلاء `diffs` مع `mode: "both"` للحصول على كلا الأثرين في استدعاء واحد.
+        الوضع المدمج (الافتراضي): تستدعي الوكلاء `diffs` باستخدام `mode: "both"` للحصول على الناتجين في استدعاء واحد.
       </Tab>
     </Tabs>
   </Step>
 </Steps>
 
-## تعطيل إرشادات النظام المدمجة
+## تعطيل إرشادات النظام المضمّنة
 
-إذا أردت إبقاء أداة `diffs` ممكّنة مع تعطيل إرشادات مطالبة النظام المدمجة بها، فاضبط `plugins.entries.diffs.hooks.allowPromptInjection` على `false`:
+للاحتفاظ بالأداة مع حذف الإرشادات المضافة في بداية مطالبة النظام، اضبط `plugins.entries.diffs.hooks.allowPromptInjection` على `false`:
 
 ```json5
 {
@@ -86,156 +78,102 @@ x-i18n:
 }
 ```
 
-يحظر هذا خطاف `before_prompt_build` الخاص بـ Plugin diffs مع إبقاء Plugin والأداة وSkill المرافقة متاحة.
-
-إذا أردت تعطيل كل من الإرشادات والأداة، فعطّل Plugin بدلًا من ذلك.
-
-## سير عمل الوكيل المعتاد
-
-<Steps>
-  <Step title="استدعِ diffs">
-    يستدعي الوكيل أداة `diffs` مع الإدخال.
-  </Step>
-  <Step title="اقرأ التفاصيل">
-    يقرأ الوكيل حقول `details` من الاستجابة.
-  </Step>
-  <Step title="اعرض">
-    يفتح الوكيل إما `details.viewerUrl` باستخدام `canvas present`، أو يرسل `details.filePath` باستخدام `message` مع `path` أو `filePath`، أو يفعل الأمرين معًا.
-  </Step>
-</Steps>
-
-## أمثلة الإدخال
-
-<Tabs>
-  <Tab title="قبل وبعد">
-    ```json
-    {
-      "before": "# Hello\n\nOne",
-      "after": "# Hello\n\nTwo",
-      "path": "docs/example.md",
-      "mode": "view"
-    }
-    ```
-  </Tab>
-  <Tab title="Patch">
-    ```json
-    {
-      "patch": "diff --git a/src/example.ts b/src/example.ts\n--- a/src/example.ts\n+++ b/src/example.ts\n@@ -1 +1 @@\n-const x = 1;\n+const x = 2;\n",
-      "mode": "both"
-    }
-    ```
-  </Tab>
-</Tabs>
+يؤدي هذا إلى حظر خطاف `before_prompt_build` الخاص بالـPlugin مع إبقاء الأداة والمهارة متاحتين. لتعطيل الإرشادات والأداة معًا، عطّل Plugin بدلًا من ذلك.
 
 ## مرجع إدخال الأداة
 
-كل الحقول اختيارية ما لم يُذكر خلاف ذلك.
+جميع الحقول اختيارية ما لم يُذكر خلاف ذلك.
 
 <ParamField path="before" type="string">
-  النص الأصلي. مطلوب مع `after` عند حذف `patch`.
+  النص الأصلي. مطلوب مع `after` عند إغفال `patch`.
 </ParamField>
 <ParamField path="after" type="string">
-  النص المحدّث. مطلوب مع `before` عند حذف `patch`.
+  النص المحدّث. مطلوب مع `before` عند إغفال `patch`.
 </ParamField>
 <ParamField path="patch" type="string">
-  نص diff موحد. متنافي مع `before` و`after`.
+  نص فرق موحّد. يتنافى مع `before` و`after`.
 </ParamField>
 <ParamField path="path" type="string">
-  اسم ملف العرض لوضع قبل وبعد.
+  اسم الملف المعروض لوضع ما قبل/ما بعد.
 </ParamField>
 <ParamField path="lang" type="string">
-  تلميح تجاوز اللغة لوضع قبل وبعد. القيم غير المعروفة واللغات خارج مجموعة العارض الافتراضية تعود إلى نص عادي ما لم تكن
-  Diff Viewer Language Pack Plugin مثبتة.
+  تلميح لتجاوز اللغة في وضع ما قبل/ما بعد. تعود القيم غير المعروفة واللغات الخارجة عن مجموعة العارض الافتراضية إلى النص العادي ما لم يكن Plugin حزمة لغات عارض الفروق مثبتًا.
 </ParamField>
-
 <ParamField path="title" type="string">
   تجاوز عنوان العارض.
 </ParamField>
 <ParamField path="mode" type='"view" | "file" | "both"'>
-  وضع الإخراج. القيمة الافتراضية هي إعداد Plugin الافتراضي `defaults.mode`. الاسم المستعار المهمل: `"image"` يتصرف مثل `"file"` وما زال مقبولًا للتوافق مع الإصدارات السابقة.
+  وضع الإخراج. يستخدم افتراضيًا إعداد Plugin الافتراضي `defaults.mode` ‏(`both`). اسم بديل مهمل: يتصرف `"image"` بالطريقة نفسها تمامًا مثل `"file"`.
 </ParamField>
 <ParamField path="theme" type='"light" | "dark"'>
-  سمة العارض. القيمة الافتراضية هي إعداد Plugin الافتراضي `defaults.theme`.
+  سمة العارض. تستخدم افتراضيًا إعداد Plugin الافتراضي `defaults.theme`.
 </ParamField>
 <ParamField path="layout" type='"unified" | "split"'>
-  تخطيط diff. القيمة الافتراضية هي إعداد Plugin الافتراضي `defaults.layout`.
+  تخطيط الفرق. يستخدم افتراضيًا إعداد Plugin الافتراضي `defaults.layout`.
 </ParamField>
 <ParamField path="expandUnchanged" type="boolean">
-  توسيع الأقسام غير المتغيرة عند توفر السياق الكامل. خيار لكل استدعاء فقط (وليس مفتاحًا افتراضيًا لـ Plugin).
+  توسيع الأقسام غير المتغيرة عند توفر السياق الكامل. خيار لكل استدعاء فقط (وليس مفتاحًا افتراضيًا للـPlugin).
 </ParamField>
 <ParamField path="fileFormat" type='"png" | "pdf"'>
-  تنسيق الملف المُصيَّر. القيمة الافتراضية هي إعداد Plugin الافتراضي `defaults.fileFormat`.
+  تنسيق الملف المعروض. يستخدم افتراضيًا إعداد Plugin الافتراضي `defaults.fileFormat`.
 </ParamField>
 <ParamField path="fileQuality" type='"standard" | "hq" | "print"'>
-  إعداد جودة مسبق لتصيير PNG أو PDF.
+  إعداد مسبق للجودة لعرض PNG/PDF.
 </ParamField>
 <ParamField path="fileScale" type="number">
   تجاوز مقياس الجهاز (`1`-`4`).
 </ParamField>
 <ParamField path="fileMaxWidth" type="number">
-  أقصى عرض تصيير بوحدات بكسل CSS (`640`-`2400`).
+  أقصى عرض للتصيير بوحدات بكسل CSS ‏(`640`-`2400`).
 </ParamField>
 <ParamField path="ttlSeconds" type="number" default="1800">
-  مدة بقاء الأثر بالثواني لمخرجات العارض والملف المستقل. الحد الأقصى 21600.
+  مدة بقاء الناتج بالثواني لمخرجات العارض والملفات المستقلة. الحد الأقصى `21600`.
 </ParamField>
 <ParamField path="baseUrl" type="string">
-  تجاوز أصل عنوان URL للعارض. يتجاوز `viewerBaseUrl` الخاص بـ Plugin. يجب أن يكون `http` أو `https`، بلا استعلام/تجزئة.
+  تجاوز أصل عنوان URL للعارض. يتجاوز `viewerBaseUrl` الخاص بالـPlugin. يجب أن يكون `http` أو `https`، من دون استعلام/تجزئة.
 </ParamField>
 
 <AccordionGroup>
-  <Accordion title="أسماء الإدخال المستعارة القديمة">
-    ما زالت مقبولة للتوافق مع الإصدارات السابقة:
-
-    - `format` -> `fileFormat`
-    - `imageFormat` -> `fileFormat`
-    - `imageQuality` -> `fileQuality`
-    - `imageScale` -> `fileScale`
-    - `imageMaxWidth` -> `fileMaxWidth`
-
-  </Accordion>
   <Accordion title="التحقق والحدود">
-    - `before` و`after` بحد أقصى 512 KiB لكل منهما.
-    - `patch` بحد أقصى 2 MiB.
-    - `path` بحد أقصى 2048 بايت.
-    - `lang` بحد أقصى 128 بايت.
-    - `title` بحد أقصى 1024 بايت.
-    - سقف تعقيد Patch: بحد أقصى 128 ملفًا و120000 سطر إجمالي.
-    - يتم رفض جمع `patch` مع `before` أو `after`.
-    - حدود أمان الملف المُصيَّر (تنطبق على PNG وPDF):
-      - `fileQuality: "standard"`: بحد أقصى 8 MP (8,000,000 بكسل مُصيَّر).
-      - `fileQuality: "hq"`: بحد أقصى 14 MP (14,000,000 بكسل مُصيَّر).
-      - `fileQuality: "print"`: بحد أقصى 24 MP (24,000,000 بكسل مُصيَّر).
-      - PDF له أيضًا حد أقصى قدره 50 صفحة.
+    - `before`/`after`: بحد أقصى 512 KiB لكل منهما.
+    - `patch`: بحد أقصى 2 MiB.
+    - `path`: بحد أقصى 2048 بايت.
+    - `lang`: بحد أقصى 128 بايت.
+    - `title`: بحد أقصى 1024 بايت.
+    - حد تعقيد التصحيح: بحد أقصى 128 ملفًا و120000 سطر إجمالًا.
+    - يُرفض `patch` مع `before`/`after`.
+    - حدود أمان الملف المعروض (PNG وPDF):
+      - `fileQuality: "standard"`: بحد أقصى 8 MP ‏(8,000,000 بكسل معروض).
+      - `fileQuality: "hq"`: بحد أقصى 14 MP.
+      - `fileQuality: "print"`: بحد أقصى 24 MP.
+      - يقتصر PDF أيضًا على 50 صفحة.
 
   </Accordion>
 </AccordionGroup>
 
 ## تمييز الصياغة
 
-يتضمن OpenClaw تمييز الصياغة للغات المصدر والتكوين والتوثيق الشائعة:
+اللغات المضمّنة:
 
-`javascript`, `typescript`, `tsx`, `jsx`, `json`, `markdown`, `yaml`, `css`, `html`, `sh`, `python`, `go`, `rust`, `java`, `c`, `cpp`, `csharp`, `php`, `sql`, `docker`, `ruby`, `swift`, `kotlin`, `r`, `dart`, `lua`, `powershell`, `xml`, و`toml`.
+`javascript`، `typescript`، `tsx`، `jsx`، `json`، `markdown`، `yaml`، `css`، `html`، `sh`، `python`، `go`، `rust`، `java`، `c`، `cpp`، `csharp`، `php`، `sql`، `docker`، `ruby`، `swift`، `kotlin`، `r`، `dart`، `lua`، `powershell`، `xml`، و`toml`.
 
-تتم تسوية الأسماء المستعارة الشائعة مثل `js` و`ts` و`bash` و`md` و`yml` و`c++` و`dockerfile` و`rb` و`kt` و`ps1` إلى تلك اللغات الافتراضية.
+تُطبّع الأسماء البديلة الشائعة (`js`، `ts`، `bash`، `md`، `yml`، `c++`، `dockerfile`، `rb`، `kt`، `ps1`، إلخ) إلى تلك اللغات.
 
-ثبّت Plugin حزمة لغة عارض الفروقات لتمييز لغات أخرى:
+ثبّت Plugin حزمة لغات عارض الفروق لمزيد من اللغات (Astro وVue وSvelte وMDX وGraphQL وTerraform/HCL وNix وClojure وElixir وHaskell وOCaml وScala وZig وSolidity وVerilog/VHDL وFortran وMATLAB وLaTeX وMermaid وSass/Less/SCSS وNginx وApache وCSV وdotenv وINI وdiff والمزيد):
 
 ```bash
 openclaw plugins install clawhub:@openclaw/diffs-language-pack
 ```
 
-عند توفر حزمة اللغة، يستطيع OpenClaw تمييز عدد أكبر بكثير من اللغات. إذا لم تكن الحزمة مثبتة، فستظل الملفات خارج القائمة الافتراضية تُعرض كنص عادي قابل للقراءة. تشمل الأمثلة Astro وVue وSvelte وMDX وGraphQL وTerraform/HCL وNix وClojure وElixir وHaskell وOCaml وScala وZig وSolidity وVerilog/VHDL وFortran وMATLAB وLaTeX وMermaid وSass/Less/SCSS وNginx وApache وCSV وdotenv وINI وملفات diff.
-
-راجع [Plugin حزمة لغة الفروقات](/ar/plugins/reference/diffs-language-pack) للتفاصيل و[لغات Shiki](https://shiki.style/languages) لفهرس اللغات والأسماء المستعارة الصادر من Shiki.
+من دون الحزمة، تظل اللغات غير المدعومة معروضة كنص عادي قابل للقراءة. راجع [Plugin حزمة لغات Diffs](/ar/plugins/reference/diffs-language-pack) و[لغات Shiki](https://shiki.style/languages) للاطلاع على الكتالوج الأساسي.
 
 ## عقد تفاصيل الإخراج
 
-تعيد الأداة بيانات وصفية منظمة تحت `details`.
+تتضمن جميع النتائج الناجحة `changed`: يعيد إدخال ما قبل/ما بعد المتطابق `false` من دون إنشاء ناتج؛ وتعيد النتائج المعروضة `true`.
 
 <AccordionGroup>
-  <Accordion title="Viewer fields">
-    الحقول المشتركة للأوضاع التي تنشئ عارضًا:
-
+  <Accordion title="حقول العارض (وضعا view وboth)">
+    - `changed`
     - `artifactId`
     - `viewerUrl`
     - `viewerPath`
@@ -244,16 +182,15 @@ openclaw plugins install clawhub:@openclaw/diffs-language-pack
     - `inputKind`
     - `fileCount`
     - `mode`
-    - `context` (`agentId` و`sessionId` و`messageChannel` و`agentAccountId` عند توفرها)
+    - `context` ‏(`agentId`، `sessionId`، `messageChannel`، `agentAccountId` عند توفرها)
 
   </Accordion>
-  <Accordion title="File fields">
-    حقول الملف عند عرض PNG أو PDF:
-
+  <Accordion title="حقول الملف (وضعا file وboth)">
+    - `changed`
     - `artifactId`
     - `expiresAt`
     - `filePath`
-    - `path` (القيمة نفسها مثل `filePath`، للتوافق مع أداة الرسائل)
+    - `path` (القيمة نفسها لـ`filePath`، للتوافق مع أداة الرسائل)
     - `fileBytes`
     - `fileFormat`
     - `fileQuality`
@@ -261,38 +198,25 @@ openclaw plugins install clawhub:@openclaw/diffs-language-pack
     - `fileMaxWidth`
 
   </Accordion>
-  <Accordion title="Compatibility aliases">
-    تُعاد أيضًا للجهات المستدعية الحالية:
-
-    - `format` (القيمة نفسها مثل `fileFormat`)
-    - `imagePath` (القيمة نفسها مثل `filePath`)
-    - `imageBytes` (القيمة نفسها مثل `fileBytes`)
-    - `imageQuality` (القيمة نفسها مثل `fileQuality`)
-    - `imageScale` (القيمة نفسها مثل `fileScale`)
-    - `imageMaxWidth` (القيمة نفسها مثل `fileMaxWidth`)
-
-  </Accordion>
 </AccordionGroup>
 
-ملخص سلوك الوضع:
+| الوضع     | المُعاد                                                                                         |
+| -------- | ----------------------------------------------------------------------------------------------- |
+| `"view"` | حقول العارض فقط.                                                                             |
+| `"file"` | حقول الملف فقط، من دون ناتج للعارض.                                                           |
+| `"both"` | حقول العارض بالإضافة إلى حقول الملف. إذا فشل عرض الملف، يظل العارض يُعاد مع `fileError`. |
 
-| الوضع     | ما الذي يُعاد                                                                                                       |
-| -------- | ---------------------------------------------------------------------------------------------------------------------- |
-| `"view"` | حقول العارض فقط.                                                                                                    |
-| `"file"` | حقول الملف فقط، بدون عنصر عارض.                                                                                  |
-| `"both"` | حقول العارض بالإضافة إلى حقول الملف. إذا فشل عرض الملف، فسيظل العارض يُعاد مع `fileError` والاسم المستعار `imageError`. |
+### الأقسام غير المتغيرة المطوية
 
-## الأقسام غير المتغيرة المطوية
+يعرض العارض صفوفًا مثل `N unmodified lines`. لا تظهر عناصر تحكم التوسيع إلا عندما يحتوي الفرق المعروض على بيانات سياق قابلة للتوسيع (وهو المعتاد لإدخال ما قبل/ما بعد). تحذف كثير من التصحيحات الموحّدة نصوص السياق من مقاطعها، لذلك قد يظهر الصف من دون عنصر تحكم للتوسيع؛ وهذا متوقع وليس خطأ. لا ينطبق `expandUnchanged` إلا عند وجود سياق قابل للتوسيع.
 
-- يمكن للعارض إظهار صفوف مثل `N unmodified lines`.
-- عناصر التحكم في التوسيع على تلك الصفوف شرطية وليست مضمونة لكل نوع إدخال.
-- تظهر عناصر التحكم في التوسيع عندما يحتوي الفرق المعروض على بيانات سياق قابلة للتوسيع، وهذا شائع لإدخال ما قبل وما بعد.
-- في كثير من إدخالات التصحيحات الموحدة، لا تكون أجسام السياق المحذوفة متاحة في مقاطع التصحيح المحللة، لذلك قد يظهر الصف بدون عناصر تحكم في التوسيع. هذا سلوك متوقع.
-- ينطبق `expandUnchanged` فقط عند وجود سياق قابل للتوسيع.
+### التنقل بين ملفات متعددة
 
-## افتراضيات Plugin
+تبدأ التصحيحات التي تمس أكثر من ملف ببطاقة ملخص للملفات المتغيرة: إجمالي أعداد `+N` / `-N`، والأعداد لكل ملف، وشارات الإضافة/الحذف/إعادة التسمية، وروابط ارتساء تنتقل إلى كل ملف. تحتفظ ملفات PNG/PDF المعروضة بأعداد ترويسة كل ملف، لكنها تحذف مفاتيح تبديل العرض التفاعلية لأنها عناصر تحكم غير فعالة في ملف ثابت.
 
-اضبط الافتراضيات على مستوى Plugin في `~/.openclaw/openclaw.json`:
+## الإعدادات الافتراضية للـPlugin
+
+عيّن الإعدادات الافتراضية على مستوى Plugin في `~/.openclaw/openclaw.json`:
 
 ```json5
 {
@@ -325,30 +249,12 @@ openclaw plugins install clawhub:@openclaw/diffs-language-pack
 }
 ```
 
-الافتراضيات المدعومة:
+مفاتيح `defaults` المدعومة: `fontFamily`، `fontSize`، `lineSpacing`، `layout`، `showLineNumbers`، `diffIndicators`، `wordWrap`، `background`، `theme`، `fileFormat`، `fileQuality`، `fileScale`، `fileMaxWidth`، `mode`، `ttlSeconds`. تتجاوز معاملات استدعاء الأداة الصريحة هذه الإعدادات.
 
-- `fontFamily`
-- `fontSize`
-- `lineSpacing`
-- `layout`
-- `showLineNumbers`
-- `diffIndicators`
-- `wordWrap`
-- `background`
-- `theme`
-- `fileFormat`
-- `fileQuality`
-- `fileScale`
-- `fileMaxWidth`
-- `mode`
-- `ttlSeconds`
-
-تتجاوز معاملات الأداة الصريحة هذه الافتراضيات.
-
-### إعداد عنوان URL عارض دائم
+### إعداد عنوان URL الدائم للعارض
 
 <ParamField path="viewerBaseUrl" type="string">
-  بديل احتياطي مملوك لـ Plugin لروابط العارض المُعادة عندما لا تمرر استدعاءة الأداة `baseUrl`. يجب أن يكون `http` أو `https`، بدون استعلام/تجزئة.
+  الخيار الاحتياطي المملوك للـPlugin لروابط العارض المعادة عندما لا يمرر استدعاء الأداة `baseUrl`. يجب أن يكون `http` أو `https`، من دون استعلام/تجزئة.
 </ParamField>
 
 ```json5
@@ -369,7 +275,7 @@ openclaw plugins install clawhub:@openclaw/diffs-language-pack
 ## إعداد الأمان
 
 <ParamField path="security.allowRemoteViewer" type="boolean" default="false">
-  `false`: تُرفض الطلبات غير local loopback إلى مسارات العارض. `true`: يُسمح بالعارضين البعيدين إذا كان المسار المرمّز صالحًا.
+  `false`: تُرفض الطلبات الواردة إلى مسارات العارض من عناوين غير الاسترجاع المحلي. `true`: يُسمح بالعارضات البعيدة إذا كان المسار المرمّز صالحًا.
 </ParamField>
 
 ```json5
@@ -389,79 +295,57 @@ openclaw plugins install clawhub:@openclaw/diffs-language-pack
 }
 ```
 
-## دورة حياة العناصر والتخزين
+## دورة حياة الناتج وتخزينه
 
-- تُخزَّن الآثار ضمن المجلد الفرعي المؤقت: `$TMPDIR/openclaw-diffs`.
-- تحتوي بيانات تعريف أثر العارض على:
-  - معرّف أثر عشوائي (20 حرفًا سداسيًا)
-  - رمز عشوائي (48 حرفًا سداسيًا)
-  - `createdAt` و`expiresAt`
-  - مسار `viewer.html` المخزَّن
-- قيمة TTL الافتراضية للأثر هي 30 دقيقة عند عدم تحديدها.
-- الحد الأقصى المقبول لقيمة TTL للعارض هو 6 ساعات.
-- يعمل التنظيف بصورة انتهازية بعد إنشاء الأثر.
-- تُحذف الآثار منتهية الصلاحية.
-- يزيل التنظيف الاحتياطي المجلدات القديمة التي يتجاوز عمرها 24 ساعة عند غياب بيانات التعريف.
+- توجد النواتج ضمن `$TMPDIR/openclaw-diffs`.
+- تخزّن بيانات العارض الوصفية معرّف ناتج عشوائيًا من 20 محرفًا سداسيًا عشريًا، ورمزًا عشوائيًا من 48 محرفًا سداسيًا عشريًا، و`createdAt`/`expiresAt`، ومسار `viewer.html` المخزّن.
+- مدة بقاء الناتج الافتراضية: 30 دقيقة. أقصى مدة بقاء مقبولة: 6 ساعات.
+- تُشغّل عملية التنظيف انتهازيًا بعد كل استدعاء لإنشاء ناتج؛ وتُحذف النواتج المنتهية.
+- تزيل عملية المسح الاحتياطية المجلدات القديمة التي يزيد عمرها على 24 ساعة عند غياب البيانات الوصفية.
 
 ## عنوان URL للعارض وسلوك الشبكة
 
-مسار العارض:
-
-- `/plugins/diffs/view/{artifactId}/{token}`
+مسار العارض: `/plugins/diffs/view/{artifactId}/{token}`
 
 أصول العارض:
 
 - `/plugins/diffs/assets/viewer.js`
 - `/plugins/diffs/assets/viewer-runtime.js`
-- `/plugins/diffs-language-pack/assets/viewer.js` عندما يستخدم الفرق لغة من حزمة لغة عارض الفروقات
+- `/plugins/diffs-language-pack/assets/viewer.js` (فقط عندما يستخدم الفرق لغة حزمة لغات)
 
-يحلّ مستند العارض تلك الأصول نسبةً إلى عنوان URL للعارض، لذلك يُحفَظ بادئ مسار `baseUrl` الاختياري لطلبات الأصول أيضًا.
+يحلّ مستند العارض هذه الأصول نسبةً إلى عنوان URL للعارض، لذا تُطبَّق أيضًا بادئة المسار الاختيارية `baseUrl` على طلبات الأصول.
 
-سلوك إنشاء عنوان URL:
+ترتيب حل عنوان URL: ‏`baseUrl` لاستدعاء الأداة (بعد التحقق الصارم) -> ‏`viewerBaseUrl` للـ Plugin -> القيمة الافتراضية للاسترجاع الحلقي `127.0.0.1`. إذا كان وضع ربط Gateway هو `custom` وكانت `gateway.customBindHost` مضبوطة، فسيُستخدم ذلك المضيف بدلًا من الاسترجاع الحلقي.
 
-- إذا تم توفير `baseUrl` في استدعاء الأداة، فيُستخدم بعد تحقق صارم.
-- وإلا، إذا تم تكوين `viewerBaseUrl` في Plugin، فيُستخدم.
-- من دون أي من التجاوزين، يكون عنوان URL للعارض افتراضيًا على loopback `127.0.0.1`.
-- إذا كان وضع ربط Gateway هو `custom` وتم ضبط `gateway.customBindHost`، فيُستخدم ذلك المضيف.
-
-قواعد `baseUrl`:
-
-- يجب أن يكون `http://` أو `https://`.
-- تُرفض الاستعلامات والهاش.
-- يُسمح بالأصل مع مسار أساسي اختياري.
+قواعد `baseUrl`: يجب أن تكون `http://` أو `https://`؛ تُرفض سلسلة الاستعلام والتجزئة؛ ويُسمح بالأصل مع مسار أساسي اختياري.
 
 ## نموذج الأمان
 
 <AccordionGroup>
-  <Accordion title="تقوية العارض">
-    - يقتصر افتراضيًا على loopback.
-    - مسارات عارض مرمّزة مع تحقق صارم من المعرّف والرمز.
-    - CSP لاستجابة العارض:
-      - `default-src 'none'`
-      - السكربتات والأصول من المصدر نفسه فقط
-      - لا يوجد `connect-src` صادر
-    - تقييد الإخفاقات البعيدة عند تمكين الوصول البعيد:
-      - 40 إخفاقًا كل 60 ثانية
-      - قفل لمدة 60 ثانية (`429 Too Many Requests`)
+  <Accordion title="تعزيز أمان العارض">
+    - الاسترجاع الحلقي فقط افتراضيًا.
+    - مسارات عارض مزوّدة برموز مميزة مع تحقق صارم من أنماط المعرّفات والرموز المميزة.
+    - سياسة CSP لاستجابة العارض: `default-src 'none'`؛ لا تُحمَّل البرامج النصية/الأصول إلا من المصدر نفسه؛ ولا يُسمح باتصالات `connect-src` الصادرة.
+    - تقييد حالات الإخفاق البعيدة عند تمكين الوصول البعيد: يؤدي حدوث 40 إخفاقًا خلال 60 ثانية إلى حظر لمدة 60 ثانية (`429 Too Many Requests`).
 
   </Accordion>
-  <Accordion title="تقوية عرض الملفات">
-    - توجيه طلبات متصفح لقطات الشاشة يرفض افتراضيًا.
-    - يُسمح فقط بأصول العارض المحلية من `http://127.0.0.1/plugins/diffs/assets/*`.
+  <Accordion title="تعزيز أمان عرض الملفات">
+    - يُرفض توجيه طلبات متصفح لقطات الشاشة افتراضيًا.
+    - لا يُسمح إلا بأصول العارض المحلية من `http://127.0.0.1/plugins/diffs/assets/*`.
     - تُحظر طلبات الشبكة الخارجية.
 
   </Accordion>
 </AccordionGroup>
 
-## متطلبات المتصفح لوضع الملف
+## متطلبات المتصفح لوضع الملفات
 
-يحتاج `mode: "file"` و`mode: "both"` إلى متصفح متوافق مع Chromium.
+تحتاج `mode: "file"` و`mode: "both"` إلى متصفح متوافق مع Chromium.
 
 ترتيب الحل:
 
 <Steps>
-  <Step title="التكوين">
-    `browser.executablePath` في تكوين OpenClaw.
+  <Step title="الإعداد">
+    `browser.executablePath` في إعداد OpenClaw.
   </Step>
   <Step title="متغيرات البيئة">
     - `OPENCLAW_BROWSER_EXECUTABLE_PATH`
@@ -469,66 +353,57 @@ openclaw plugins install clawhub:@openclaw/diffs-language-pack
     - `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH`
 
   </Step>
-  <Step title="الاحتياطي الخاص بالمنصة">
-    احتياطي اكتشاف أمر/مسار المنصة.
+  <Step title="الخيار الاحتياطي للنظام الأساسي">
+    مسارات التثبيت الشائعة وعمليات البحث عبر `PATH` عن Chrome وChromium وEdge وBrave.
   </Step>
 </Steps>
 
-نص فشل شائع:
-
-- `Diff PNG/PDF rendering requires a Chromium-compatible browser...`
-
-أصلح ذلك بتثبيت Chrome أو Chromium أو Edge أو Brave، أو بضبط أحد خيارات مسار الملف التنفيذي أعلاه.
+نص الإخفاق الشائع: `Diff PNG/PDF rendering requires a Chromium-compatible browser...`. أصلح ذلك بتثبيت Chrome أو Chromium أو Edge أو Brave، أو بضبط أحد خيارات مسار الملف التنفيذي أعلاه.
 
 ## استكشاف الأخطاء وإصلاحها
 
 <AccordionGroup>
-  <Accordion title="أخطاء التحقق من الإدخال">
-    - `Provide patch or both before and after text.` — أدرج كلًا من `before` و`after`، أو وفّر `patch`.
-    - `Provide either patch or before/after input, not both.` — لا تخلط بين أوضاع الإدخال.
-    - `Invalid baseUrl: ...` — استخدم أصل `http(s)` مع مسار اختياري، من دون استعلام/هاش.
-    - `{field} exceeds maximum size (...)` — قلّل حجم الحمولة.
-    - رفض الرقعة الكبيرة — قلّل عدد ملفات الرقعة أو إجمالي الأسطر.
+  <Accordion title="أخطاء التحقق من صحة الإدخال">
+    - `Provide patch or both before and after text.` -- أدرج كلًا من `before` و`after`، أو وفّر `patch`.
+    - `Provide either patch or before/after input, not both.` -- لا تخلط بين أوضاع الإدخال.
+    - `Invalid baseUrl: ...` -- استخدم أصل `http(s)` مع مسار اختياري، ومن دون استعلام/تجزئة.
+    - `{field} exceeds maximum size (...)` -- قلّل حجم الحمولة.
+    - رفض التصحيح الكبير -- قلّل عدد ملفات التصحيح أو إجمالي الأسطر.
 
   </Accordion>
   <Accordion title="إمكانية الوصول إلى العارض">
-    - يُحلّ عنوان URL للعارض إلى `127.0.0.1` افتراضيًا.
-    - في سيناريوهات الوصول البعيد، إما:
-      - اضبط `viewerBaseUrl` في Plugin، أو
-      - مرّر `baseUrl` لكل استدعاء أداة، أو
-      - استخدم `gateway.bind=custom` و`gateway.customBindHost`
-    - إذا كان `gateway.trustedProxies` يتضمن loopback لوكيل على المضيف نفسه (مثل Tailscale Serve)، فإن طلبات عارض loopback الخام من دون ترويسات عنوان IP للعميل المُعاد توجيهها تفشل مغلقة حسب التصميم.
-    - لذلك الهيكل الوكيلي:
-      - فضّل `mode: "file"` أو `mode: "both"` عندما تحتاج إلى مرفق فقط، أو
-      - مكّن `security.allowRemoteViewer` عمدًا واضبط `viewerBaseUrl` في Plugin أو مرّر `baseUrl` لوكيل/عام عندما تحتاج إلى عنوان URL عارض قابل للمشاركة
-    - مكّن `security.allowRemoteViewer` فقط عندما تقصد إتاحة وصول خارجي إلى العارض.
+    - يُحل عنوان URL للعارض إلى `127.0.0.1` افتراضيًا.
+    - للوصول البعيد، اضبط إما `viewerBaseUrl` للـ Plugin، أو مرّر `baseUrl` لكل استدعاء، أو استخدم `gateway.bind=custom` مع `gateway.customBindHost`.
+    - إذا تضمنت `gateway.trustedProxies` الاسترجاع الحلقي لوكيل على المضيف نفسه (مثل Tailscale Serve)، فستُرفض طلبات العارض المباشرة عبر الاسترجاع الحلقي التي لا تحتوي على ترويسات عنوان IP المُمرَّر للعميل، وذلك عن قصد.
+    - لطوبولوجيا الوكيل هذه، يُفضّل استخدام `mode: "file"`/`"both"` لمرفق، أو تمكين `security.allowRemoteViewer` عمدًا إلى جانب `viewerBaseUrl` للـ Plugin/‏`baseUrl` للوكيل للحصول على رابط عارض قابل للمشاركة.
+    - لا تمكّن `security.allowRemoteViewer` إلا عندما يكون الوصول الخارجي إلى العارض مقصودًا.
 
   </Accordion>
-  <Accordion title="صف الأسطر غير المعدلة لا يحتوي زر توسيع">
-    يمكن أن يحدث هذا مع إدخال الرقعة عندما لا تحمل الرقعة سياقًا قابلًا للتوسيع. هذا متوقع ولا يشير إلى فشل في العارض.
+  <Accordion title="لا يحتوي صف الأسطر غير المعدّلة على زر توسيع">
+    هذا متوقع لإدخال تصحيح يفتقر إلى سياق قابل للتوسيع؛ وليس إخفاقًا في العارض.
   </Accordion>
   <Accordion title="لم يتم العثور على الأثر">
-    - انتهت صلاحية الأثر بسبب TTL.
-    - تغيّر الرمز أو المسار.
-    - أزال التنظيف بيانات قديمة.
+    - انتهت صلاحية الأثر بسبب مدة البقاء.
+    - تغيّر الرمز المميز أو المسار.
+    - أزالت عملية التنظيف البيانات القديمة.
 
   </Accordion>
 </AccordionGroup>
 
 ## إرشادات التشغيل
 
-- فضّل `mode: "view"` للمراجعات التفاعلية المحلية في اللوحة.
-- فضّل `mode: "file"` لقنوات الدردشة الصادرة التي تحتاج إلى مرفق.
-- أبقِ `allowRemoteViewer` معطّلًا ما لم يتطلب النشر لديك عناوين URL بعيدة للعارض.
-- اضبط `ttlSeconds` قصيرة وصريحة للفروقات الحساسة.
-- تجنّب إرسال الأسرار في إدخال الفرق عندما لا يكون ذلك مطلوبًا.
-- إذا كانت قناتك تضغط الصور بقوة (مثل Telegram أو WhatsApp)، ففضّل مخرجات PDF (`fileFormat: "pdf"`).
+- يُفضّل `mode: "view"` للمراجعات التفاعلية المحلية في اللوحة.
+- يُفضّل `mode: "file"` لقنوات الدردشة الصادرة التي تحتاج إلى مرفق.
+- أبقِ `allowRemoteViewer` معطّلة ما لم يتطلب نشرك عناوين URL بعيدة للعارض.
+- اضبط مدة `ttlSeconds` قصيرة وصريحة للفروق الحساسة.
+- تجنّب إرسال الأسرار في إدخال الفرق عندما لا تكون مطلوبة.
+- إذا كانت قناتك تضغط الصور بشدة (مثل Telegram أو WhatsApp)، فيُفضّل إخراج PDF ‏(`fileFormat: "pdf"`).
 
 <Note>
-محرك عرض الفروقات مدعوم من [Diffs](https://diffs.com).
+يعمل محرك عرض الفروق بواسطة [Diffs](https://diffs.com).
 </Note>
 
-## ذات صلة
+## ذو صلة
 
 - [المتصفح](/ar/tools/browser)
 - [Plugins](/ar/tools/plugin)

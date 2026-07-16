@@ -1,35 +1,36 @@
 ---
 read_when:
-    - आप Kubernetes क्लस्टर पर OpenClaw चलाना चाहते हैं
-    - आप Kubernetes वातावरण में OpenClaw का परीक्षण करना चाहते हैं
-summary: Kustomize के साथ Kubernetes क्लस्टर पर OpenClaw Gateway डिप्लॉय करें
-title: Kubernetes
+    - आप OpenClaw को Kubernetes क्लस्टर पर चलाना चाहते हैं
+    - आप Kubernetes परिवेश में OpenClaw का परीक्षण करना चाहते हैं
+summary: Kustomize के साथ Kubernetes क्लस्टर में OpenClaw Gateway डिप्लॉय करें
+title: कुबेरनेट्स
 x-i18n:
-    generated_at: "2026-06-28T23:21:30Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T15:28:14Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 5a38c2754b4a5267e79854958a252b2e4bc9811da191d8ccf3ac597534cc8e7a
+    source_hash: c05eb0eb923fa1f515aca1f6dcb6073aba69af0bdf30233243027edfedd45a39
     source_path: install/kubernetes.md
     workflow: 16
 ---
 
-OpenClaw को Kubernetes पर चलाने के लिए एक न्यूनतम शुरुआती बिंदु — production-ready deployment नहीं। यह core resources को कवर करता है और इसे आपके environment के अनुसार अनुकूलित करने के लिए बनाया गया है।
+Kubernetes पर OpenClaw चलाने के लिए एक न्यूनतम शुरुआती बिंदु, न कि उत्पादन के लिए तैयार परिनियोजन। इसमें मुख्य संसाधन शामिल हैं और इसे आपके परिवेश के अनुसार अनुकूलित किया जाना है।
 
-## Helm क्यों नहीं?
+## Helm क्यों नहीं
 
-OpenClaw कुछ config files वाला एक single container है। मुख्य customization agent content (markdown files, skills, config overrides) में है, infrastructure templating में नहीं। Kustomize Helm chart के overhead के बिना overlays संभालता है। अगर आपका deployment अधिक जटिल हो जाता है, तो इन manifests के ऊपर Helm chart की layer जोड़ी जा सकती है।
+OpenClaw कुछ कॉन्फ़िगरेशन फ़ाइलों वाला एकल कंटेनर है। महत्वपूर्ण अनुकूलन एजेंट सामग्री (Markdown फ़ाइलें, स्किल्स, कॉन्फ़िगरेशन ओवरराइड) में होता है, न कि इन्फ़्रास्ट्रक्चर टेम्पलेटिंग में। Kustomize, Helm चार्ट के अतिरिक्त भार के बिना ओवरले संभालता है। यदि आपका परिनियोजन अधिक जटिल हो जाए, तो इन मैनिफ़ेस्ट के ऊपर Helm चार्ट की परत जोड़ें।
 
 ## आपको क्या चाहिए
 
-- चल रहा Kubernetes cluster (AKS, EKS, GKE, k3s, kind, OpenShift, आदि)
-- आपके cluster से जुड़ा `kubectl`
-- कम से कम एक model provider के लिए API key
+- चलता हुआ Kubernetes क्लस्टर (AKS, EKS, GKE, k3s, kind, OpenShift आदि)
+- `kubectl` आपके क्लस्टर से जुड़ा हुआ
+- कम-से-कम एक मॉडल प्रदाता के लिए API कुंजी
 
-## Quick start
+## त्वरित शुरुआत
 
 ```bash
-# Replace with your provider: ANTHROPIC, GEMINI, OPENAI, or OPENROUTER
+# अपने प्रदाता से बदलें: ANTHROPIC, GEMINI, OPENAI, या OPENROUTER
 export <PROVIDER>_API_KEY="..."
 ./scripts/k8s/deploy.sh
 
@@ -37,41 +38,40 @@ kubectl port-forward svc/openclaw 18789:18789 -n openclaw
 open http://localhost:18789
 ```
 
-Control UI के लिए configured shared secret प्राप्त करें। यह deploy script
-default रूप से token auth बनाती है:
+`deploy.sh` डिफ़ॉल्ट रूप से टोकन प्रमाणीकरण बनाता है। Control UI के लिए जनरेट किया गया gateway टोकन प्राप्त करें:
 
 ```bash
 kubectl get secret openclaw-secrets -n openclaw -o jsonpath='{.data.OPENCLAW_GATEWAY_TOKEN}' | base64 -d
 ```
 
-Local debugging के लिए, `./scripts/k8s/deploy.sh --show-token` deploy के बाद token print करता है।
+स्थानीय डीबगिंग के लिए, `./scripts/k8s/deploy.sh --show-token` परिनियोजन के बाद टोकन प्रिंट करता है।
 
-## Kind के साथ local testing
+## Kind के साथ स्थानीय परीक्षण
 
-अगर आपके पास cluster नहीं है, तो [Kind](https://kind.sigs.k8s.io/) के साथ locally एक बनाएं:
+यदि आपके पास क्लस्टर नहीं है, तो [Kind](https://kind.sigs.k8s.io/) के साथ स्थानीय रूप से एक क्लस्टर बनाएँ:
 
 ```bash
-./scripts/k8s/create-kind.sh           # auto-detects docker or podman
-./scripts/k8s/create-kind.sh --delete  # tear down
+./scripts/k8s/create-kind.sh           # docker या podman का स्वतः पता लगाता है
+./scripts/k8s/create-kind.sh --delete  # हटाता है
 ```
 
-फिर हमेशा की तरह `./scripts/k8s/deploy.sh` के साथ deploy करें।
+फिर `./scripts/k8s/deploy.sh` के साथ सामान्य रूप से परिनियोजित करें।
 
-## Step by step
+## चरण-दर-चरण
 
-### 1) Deploy
+### 1) परिनियोजित करें
 
-**Option A** — environment में API key (एक step):
+**विकल्प A: परिवेश में API कुंजी (एक चरण)**
 
 ```bash
-# Replace with your provider: ANTHROPIC, GEMINI, OPENAI, or OPENROUTER
+# अपने प्रदाता से बदलें: ANTHROPIC, GEMINI, OPENAI, या OPENROUTER
 export <PROVIDER>_API_KEY="..."
 ./scripts/k8s/deploy.sh
 ```
 
-Script API key और auto-generated gateway token के साथ Kubernetes Secret बनाती है, फिर deploy करती है। अगर Secret पहले से मौजूद है, तो यह current gateway token और नहीं बदली जा रही provider keys को preserve करती है।
+स्क्रिप्ट API कुंजी और स्वतः जनरेट किए गए gateway टोकन के साथ एक Kubernetes Secret बनाती है, फिर परिनियोजन करती है। यदि Secret पहले से मौजूद है, तो यह मौजूदा gateway टोकन और उन सभी प्रदाता कुंजियों को सुरक्षित रखती है जिन्हें बदला नहीं जा रहा है।
 
-**Option B** — secret अलग से बनाएं:
+**विकल्प B: सीक्रेट अलग से बनाएँ**
 
 ```bash
 export <PROVIDER>_API_KEY="..."
@@ -79,43 +79,43 @@ export <PROVIDER>_API_KEY="..."
 ./scripts/k8s/deploy.sh
 ```
 
-अगर आप local testing के लिए token को stdout पर print करना चाहते हैं, तो किसी भी command के साथ `--show-token` का उपयोग करें।
+स्थानीय परीक्षण के लिए टोकन को stdout पर प्रिंट करने हेतु किसी भी कमांड में `--show-token` जोड़ें।
 
-### 2) Gateway access करें
+### 2) gateway तक पहुँचें
 
 ```bash
 kubectl port-forward svc/openclaw 18789:18789 -n openclaw
 open http://localhost:18789
 ```
 
-## क्या deploy होता है
+## क्या परिनियोजित होता है
 
-```
-Namespace: openclaw (configurable via OPENCLAW_NAMESPACE)
-├── Deployment/openclaw        # Single pod, init container + gateway
-├── Service/openclaw           # ClusterIP on port 18789
-├── PersistentVolumeClaim      # 10Gi for agent state and config
+```text
+Namespace: openclaw (OPENCLAW_NAMESPACE के माध्यम से कॉन्फ़िगर करने योग्य)
+├── Deployment/openclaw        # एकल पॉड, init कंटेनर + gateway
+├── Service/openclaw           # पोर्ट 18789 पर ClusterIP
+├── PersistentVolumeClaim      # एजेंट स्थिति और कॉन्फ़िगरेशन के लिए 10Gi
 ├── ConfigMap/openclaw-config  # openclaw.json + AGENTS.md
-└── Secret/openclaw-secrets    # Gateway token + API keys
+└── Secret/openclaw-secrets    # Gateway टोकन + API कुंजियाँ
 ```
 
-## Customization
+## अनुकूलन
 
-### Agent instructions
+### एजेंट निर्देश
 
-`scripts/k8s/manifests/configmap.yaml` में `AGENTS.md` edit करें और redeploy करें:
+`scripts/k8s/manifests/configmap.yaml` में `AGENTS.md` संपादित करें और दोबारा परिनियोजित करें:
 
 ```bash
 ./scripts/k8s/deploy.sh
 ```
 
-### Gateway config
+### Gateway कॉन्फ़िगरेशन
 
-`scripts/k8s/manifests/configmap.yaml` में `openclaw.json` edit करें। पूरी reference के लिए [Gateway configuration](/hi/gateway/configuration) देखें।
+`scripts/k8s/manifests/configmap.yaml` में `openclaw.json` संपादित करें। पूर्ण संदर्भ के लिए [Gateway कॉन्फ़िगरेशन](/hi/gateway/configuration) देखें।
 
-### Providers जोड़ें
+### प्रदाता जोड़ें
 
-Additional keys export करके फिर से चलाएं:
+अतिरिक्त कुंजियाँ एक्सपोर्ट करके दोबारा चलाएँ:
 
 ```bash
 export ANTHROPIC_API_KEY="..."
@@ -124,9 +124,9 @@ export OPENAI_API_KEY="..."
 ./scripts/k8s/deploy.sh
 ```
 
-Existing provider keys Secret में रहती हैं जब तक आप उन्हें overwrite नहीं करते।
+मौजूदा प्रदाता कुंजियाँ Secret में बनी रहती हैं, जब तक कि आप उन्हें अधिलेखित न करें।
 
-या Secret को directly patch करें:
+या सीधे Secret को पैच करें:
 
 ```bash
 kubectl patch secret openclaw-secrets -n openclaw \
@@ -134,71 +134,71 @@ kubectl patch secret openclaw-secrets -n openclaw \
 kubectl rollout restart deployment/openclaw -n openclaw
 ```
 
-### Custom namespace
+### कस्टम नेमस्पेस
 
 ```bash
 OPENCLAW_NAMESPACE=my-namespace ./scripts/k8s/deploy.sh
 ```
 
-### Custom image
+### कस्टम इमेज
 
-`scripts/k8s/manifests/deployment.yaml` में `image` field edit करें:
+`scripts/k8s/manifests/deployment.yaml` में `image` फ़ील्ड संपादित करें:
 
 ```yaml
-image: ghcr.io/openclaw/openclaw:latest # primary; official Docker Hub mirror: openclaw/openclaw:latest
+image: ghcr.io/openclaw/openclaw:slim # प्राथमिक; आधिकारिक Docker Hub मिरर: openclaw/openclaw
 ```
 
-### Port-forward से आगे expose करें
+### पोर्ट-फ़ॉरवर्ड से आगे एक्सपोज़ करें
 
-Default manifests gateway को pod के अंदर loopback से bind करते हैं। यह `kubectl port-forward` के साथ काम करता है, लेकिन ऐसे Kubernetes `Service` या Ingress path के साथ काम नहीं करता जिसे pod IP तक पहुंचना होता है।
+डिफ़ॉल्ट मैनिफ़ेस्ट पॉड के भीतर gateway को लूपबैक से बाइंड करते हैं। यह `kubectl port-forward` के साथ काम करता है, लेकिन ऐसे Kubernetes `Service` या Ingress पथ के साथ नहीं, जिसे सीधे पॉड IP तक पहुँचना हो।
 
-अगर आप gateway को Ingress या load balancer के through expose करना चाहते हैं:
+Ingress या लोड बैलेंसर के माध्यम से gateway को एक्सपोज़ करने के लिए:
 
-- `scripts/k8s/manifests/configmap.yaml` में gateway bind को `loopback` से बदलकर अपने deployment model से matching non-loopback bind करें
-- Gateway auth enabled रखें और proper TLS-terminated entrypoint का उपयोग करें
-- Supported web security model का उपयोग करके remote access के लिए Control UI configure करें (उदाहरण के लिए HTTPS/Tailscale Serve और जरूरत होने पर explicit allowed origins)
+- `scripts/k8s/manifests/configmap.yaml` में gateway बाइंड को `loopback` से ऐसे गैर-लूपबैक बाइंड में बदलें जो आपके परिनियोजन मॉडल से मेल खाता हो।
+- Gateway प्रमाणीकरण सक्षम रखें और उचित TLS-टर्मिनेटेड प्रवेश-बिंदु का उपयोग करें।
+- समर्थित वेब सुरक्षा मॉडल का उपयोग करके दूरस्थ पहुँच के लिए Control UI कॉन्फ़िगर करें (उदाहरण के लिए HTTPS/Tailscale Serve और आवश्यकता होने पर स्पष्ट रूप से अनुमत ऑरिजिन)।
 
-## Re-deploy
+## दोबारा परिनियोजित करें
 
 ```bash
 ./scripts/k8s/deploy.sh
 ```
 
-यह सभी manifests apply करता है और किसी भी config या secret changes को pick up करने के लिए pod restart करता है।
+यह सभी मैनिफ़ेस्ट लागू करता है और किसी भी कॉन्फ़िगरेशन या सीक्रेट परिवर्तन को अपनाने के लिए पॉड को पुनः आरंभ करता है।
 
-## Teardown
+## हटाना
 
 ```bash
 ./scripts/k8s/deploy.sh --delete
 ```
 
-यह namespace और उसमें मौजूद सभी resources delete करता है, जिसमें PVC भी शामिल है।
+यह नेमस्पेस और उसमें मौजूद सभी संसाधनों को हटा देता है, जिसमें PVC भी शामिल है।
 
-## Architecture notes
+## आर्किटेक्चर संबंधी टिप्पणियाँ
 
-- Gateway default रूप से pod के अंदर loopback से bind होता है, इसलिए included setup `kubectl port-forward` के लिए है
-- कोई cluster-scoped resources नहीं — सब कुछ एक single namespace में रहता है
-- Security: `readOnlyRootFilesystem`, `drop: ALL` capabilities, non-root user (UID 1000)
-- Default config Control UI को safer local-access path पर रखता है: loopback bind plus `kubectl port-forward` to `http://127.0.0.1:18789`
-- अगर आप localhost access से आगे बढ़ते हैं, तो supported remote model का उपयोग करें: HTTPS/Tailscale plus appropriate gateway bind and Control UI origin settings
-- Secrets temp directory में generate होते हैं और directly cluster पर apply किए जाते हैं — repo checkout में कोई secret material नहीं लिखा जाता
+- Gateway डिफ़ॉल्ट रूप से पॉड के भीतर लूपबैक से बाइंड होता है, इसलिए शामिल सेटअप `kubectl port-forward` के लिए है।
+- कोई क्लस्टर-स्कोप संसाधन नहीं है; सब कुछ एक ही नेमस्पेस में रहता है।
+- सुरक्षा सुदृढ़ीकरण: `readOnlyRootFilesystem`, `drop: ALL` क्षमताएँ, गैर-रूट उपयोगकर्ता (UID 1000)।
+- डिफ़ॉल्ट कॉन्फ़िगरेशन Control UI को अधिक सुरक्षित स्थानीय-पहुँच पथ पर रखता है: लूपबैक बाइंड और `kubectl port-forward` को `http://127.0.0.1:18789` पर सेट करना।
+- यदि आप localhost पहुँच से आगे बढ़ते हैं, तो समर्थित दूरस्थ मॉडल का उपयोग करें: HTTPS/Tailscale के साथ उपयुक्त gateway बाइंड और Control UI ऑरिजिन सेटिंग्स।
+- सीक्रेट अस्थायी डायरेक्टरी में जनरेट किए जाते हैं और सीधे क्लस्टर पर लागू होते हैं; कोई भी सीक्रेट सामग्री रेपो चेकआउट में नहीं लिखी जाती।
 
-## File structure
+## फ़ाइल संरचना
 
-```
+```text
 scripts/k8s/
-├── deploy.sh                   # Creates namespace + secret, deploys via kustomize
-├── create-kind.sh              # Local Kind cluster (auto-detects docker/podman)
+├── deploy.sh                   # नेमस्पेस + सीक्रेट बनाता है, kustomize के माध्यम से परिनियोजित करता है
+├── create-kind.sh              # स्थानीय Kind क्लस्टर (docker/podman का स्वतः पता लगाता है)
 └── manifests/
-    ├── kustomization.yaml      # Kustomize base
+    ├── kustomization.yaml      # Kustomize आधार
     ├── configmap.yaml          # openclaw.json + AGENTS.md
-    ├── deployment.yaml         # Pod spec with security hardening
-    ├── pvc.yaml                # 10Gi persistent storage
-    └── service.yaml            # ClusterIP on 18789
+    ├── deployment.yaml         # सुरक्षा सुदृढ़ीकरण के साथ पॉड विनिर्देश
+    ├── pvc.yaml                # 10Gi स्थायी संग्रहण
+    └── service.yaml            # 18789 पर ClusterIP
 ```
 
-## Related
+## संबंधित
 
 - [Docker](/hi/install/docker)
-- [Docker VM runtime](/hi/install/docker-vm-runtime)
-- [Install overview](/hi/install)
+- [Docker VM रनटाइम](/hi/install/docker-vm-runtime)
+- [इंस्टॉलेशन का अवलोकन](/hi/install)

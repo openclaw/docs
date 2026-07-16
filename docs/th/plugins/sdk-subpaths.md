@@ -1,413 +1,437 @@
 ---
 read_when:
-    - การเลือกพาธย่อย plugin-sdk ที่เหมาะสมสำหรับการ import ของ Plugin
-    - การตรวจสอบเส้นทางย่อยของ Plugin ที่บันเดิลมาและส่วนติดต่อของตัวช่วย
-summary: 'แค็ตตาล็อกพาธย่อยของ Plugin SDK: การนำเข้าใดอยู่ที่ไหน จัดกลุ่มตามหมวดหมู่'
-title: เส้นทางย่อยของ Plugin SDK
+    - การเลือกพาธย่อยของ plugin-sdk ที่เหมาะสมสำหรับการนำเข้า Plugin
+    - การตรวจสอบพาธย่อยของ Plugin ที่รวมมาให้และส่วนติดต่อของตัวช่วย
+summary: 'แค็ตตาล็อกพาธย่อยของ Plugin SDK: การนำเข้าแต่ละรายการอยู่ที่ใด โดยจัดกลุ่มตามหมวดหมู่'
+title: พาธย่อยของ Plugin SDK
 x-i18n:
-    generated_at: "2026-07-04T11:08:09Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T19:35:40Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 2a77f70197aca279d44d2b9db62bf9f936594311bb46c3da682413c3fa1378e5
+    source_hash: 937b616d7a95c250f7ff328ea3faa12143272722ffa638f50214fdd72ef5f225
     source_path: plugins/sdk-subpaths.md
     workflow: 16
 ---
 
-Plugin SDK ถูกเปิดเผยเป็นชุดของ subpath สาธารณะแบบแคบภายใต้
-`openclaw/plugin-sdk/` หน้านี้จัดทำบัญชี subpath ที่ใช้กันทั่วไปโดยจัดกลุ่มตาม
-วัตถุประสงค์ รายการ entrypoint สำหรับคอมไพเลอร์ที่สร้างขึ้นอยู่ใน
-`scripts/lib/plugin-sdk-entrypoints.json`; package exports เป็นชุดย่อยสาธารณะ
-หลังหัก subpath สำหรับทดสอบ/ภายในเฉพาะ repo ที่ระบุไว้ใน
-`scripts/lib/plugin-sdk-private-local-only-subpaths.json` ผู้ดูแลสามารถตรวจนับ
-public export ได้ด้วย `pnpm plugin-sdk:surface` และตรวจ subpath ตัวช่วยที่สงวนไว้และยังใช้งานอยู่ได้ด้วย
-`pnpm plugins:boundary-report:summary`; helper exports ที่สงวนไว้แต่ไม่ได้ใช้งาน
-จะทำให้รายงาน CI ล้มเหลว แทนที่จะค้างอยู่ใน SDK สาธารณะเป็นหนี้ความเข้ากันได้ที่หลับอยู่
+Plugin SDK เปิดให้ใช้งานเป็นชุดพาธย่อยสาธารณะที่มีขอบเขตเฉพาะภายใต้
+`openclaw/plugin-sdk/` หน้านี้รวบรวมพาธย่อยที่ใช้กันทั่วไปโดยจัดกลุ่มตาม
+วัตถุประสงค์ โดยมีไฟล์สามไฟล์ที่กำหนดพื้นผิวนี้:
 
-สำหรับคู่มือการเขียน Plugin โปรดดู [ภาพรวม Plugin SDK](/th/plugins/sdk-overview)
+- `scripts/lib/plugin-sdk-entrypoints.json`: รายการจุดเข้าใช้งานที่ได้รับการดูแล
+  ซึ่งระบบบิลด์จะคอมไพล์
+- `scripts/lib/plugin-sdk-private-local-only-subpaths.json`: พาธย่อยสำหรับ
+  การทดสอบ/การใช้งานภายในเฉพาะในรีโพซิทอรี รายการส่งออกของแพ็กเกจคือรายการทั้งหมดที่หักรายการนี้ออก
+- `src/plugin-sdk/entrypoints.ts`: เมทาดาทาการจำแนกประเภทสำหรับพาธย่อย
+  ที่เลิกใช้แล้ว ตัวช่วยแบบรวมชุดที่สงวนไว้ facade แบบรวมชุดที่รองรับ และ
+  พื้นผิวสาธารณะที่ Plugin เป็นเจ้าของ
 
-## จุดเข้า Plugin
+ผู้ดูแลตรวจสอบจำนวนรายการส่งออกสาธารณะด้วย `pnpm plugin-sdk:surface` และ
+พาธย่อยของตัวช่วยที่สงวนไว้ซึ่งยังใช้งานอยู่ด้วย `pnpm plugins:boundary-report:summary`;
+รายการส่งออกตัวช่วยที่สงวนไว้แต่ไม่ได้ใช้งานจะทำให้รายงาน CI ล้มเหลว แทนที่จะคงอยู่ใน
+SDK สาธารณะในฐานะภาระความเข้ากันได้ที่ไม่มีการใช้งาน
 
-| Subpath                        | exports หลัก                                                                                                                                                            |
-| ------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `plugin-sdk/plugin-entry`      | `definePluginEntry`                                                                                                                                                    |
-| `plugin-sdk/core`              | `defineChannelPluginEntry`, `createChatChannelPlugin`, `createChannelPluginBase`, `defineSetupPluginEntry`, `buildChannelConfigSchema`, `buildJsonChannelConfigSchema` |
-| `plugin-sdk/config-schema`     | `OpenClawSchema`                                                                                                                                                       |
-| `plugin-sdk/provider-entry`    | `defineSingleProviderPluginEntry`                                                                                                                                      |
-| `plugin-sdk/migration`         | ตัวช่วยรายการ migration provider เช่น `createMigrationItem`, ค่าคงที่ของเหตุผล, ตัวทำเครื่องหมายสถานะรายการ, ตัวช่วย redaction และ `summarizeMigrationItems`                 |
-| `plugin-sdk/migration-runtime` | ตัวช่วย runtime migration เช่น `copyMigrationFileItem`, `resolvePlannedMigrationTargets`, `withCachedMigrationConfigRuntime` และ `writeMigrationReport`            |
-| `plugin-sdk/health`            | การลงทะเบียน health-check ของ Doctor, การตรวจจับ, การซ่อมแซม, การเลือก, ระดับความรุนแรง และประเภท finding สำหรับผู้ใช้ health ที่มาพร้อมชุด                                               |
+สำหรับคู่มือการเขียน Plugin โปรดดู[ภาพรวม Plugin SDK](/th/plugins/sdk-overview)
 
-### ตัวช่วยความเข้ากันได้ที่เลิกใช้แล้วและตัวช่วยทดสอบ
+## จุดเข้าใช้งาน Plugin
 
-subpath ที่เลิกใช้แล้วจะยังคงถูก export สำหรับ Plugin รุ่นเก่า แต่โค้ดใหม่ควรใช้
-subpath SDK แบบเจาะจงด้านล่าง รายการที่ดูแลอยู่คือ
-`scripts/lib/plugin-sdk-deprecated-public-subpaths.json`; CI จะปฏิเสธการ import
-สำหรับ production ที่มาพร้อมชุดจากรายการนี้ barrel แบบกว้าง เช่น `compat`, `config-types`,
-`infra-runtime`, `text-runtime` และ `zod` มีไว้เพื่อความเข้ากันได้เท่านั้น ให้ import `zod`
-โดยตรงจาก `zod`
+| พาธย่อย                        | รายการส่งออกหลัก                                                                                                                                                                                             |
+| ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `plugin-sdk/plugin-entry`      | `definePluginEntry`                                                                                                                                                                                     |
+| `plugin-sdk/core`              | `defineChannelPluginEntry`, `createChatChannelPlugin`, `createChannelPluginBase`, `defineSetupPluginEntry`, `buildChannelConfigSchema`, `buildJsonChannelConfigSchema`, `resolveTailscalePublishedHost` |
+| `plugin-sdk/provider-entry`    | `defineSingleProviderPluginEntry`                                                                                                                                                                       |
+| `plugin-sdk/migration`         | ตัวช่วยรายการผู้ให้บริการการย้ายข้อมูล เช่น `createMigrationItem` ค่าคงที่ของเหตุผล เครื่องหมายสถานะรายการ ตัวช่วยปกปิดข้อมูล และ `summarizeMigrationItems`                                                  |
+| `plugin-sdk/migration-runtime` | ตัวช่วยการย้ายข้อมูลขณะรันไทม์ เช่น `copyMigrationFileItem`, `resolvePlannedMigrationTargets`, `withCachedMigrationConfigRuntime` และ `writeMigrationReport`                                             |
+| `plugin-sdk/health`            | การลงทะเบียน การตรวจจับ การซ่อมแซม การเลือก ระดับความรุนแรง และชนิดข้อค้นพบของการตรวจสุขภาพ Doctor สำหรับตัวใช้งานด้านสุขภาพแบบรวมชุด                                                                                |
+| `plugin-sdk/config-schema`     | เลิกใช้แล้ว สคีมา Zod ของ `openclaw.json` ระดับราก (`OpenClawSchema`); ให้กำหนดสคีมาเฉพาะภายใน Plugin แทน และตรวจสอบความถูกต้องด้วย `plugin-sdk/json-schema-runtime`                                                  |
 
-subpath ตัวช่วยทดสอบที่รองรับด้วย Vitest ของ OpenClaw เป็นแบบเฉพาะ repo เท่านั้น และไม่ใช่
-package exports อีกต่อไป: `agent-runtime-test-contracts`,
+### ตัวช่วยด้านความเข้ากันได้และการทดสอบที่เลิกใช้แล้ว
+
+พาธย่อยที่เลิกใช้แล้วยังคงส่งออกไว้สำหรับ Plugin รุ่นเก่า แต่โค้ดใหม่ควรใช้
+พาธย่อย SDK ที่มีขอบเขตเฉพาะด้านล่าง รายการที่ได้รับการดูแลคือ
+`scripts/lib/plugin-sdk-deprecated-public-subpaths.json`; CI จะปฏิเสธการนำเข้าสำหรับ
+การใช้งานจริงแบบรวมชุดจากรายการนี้ barrel แบบกว้าง เช่น `plugin-sdk/compat`,
+`plugin-sdk/config-types`, `plugin-sdk/infra-runtime` และ
+`plugin-sdk/text-runtime` มีไว้เพื่อความเข้ากันได้เท่านั้น และ `plugin-sdk/zod` เป็น
+การส่งออกซ้ำเพื่อความเข้ากันได้: ให้นำเข้า `zod` โดยตรงจาก `zod` barrel โดเมน
+แบบกว้าง ได้แก่ `plugin-sdk/agent-runtime`, `plugin-sdk/channel-lifecycle`,
+`plugin-sdk/channel-runtime`, `plugin-sdk/cli-runtime`,
+`plugin-sdk/conversation-runtime`, `plugin-sdk/hook-runtime`,
+`plugin-sdk/media-runtime`, `plugin-sdk/plugin-runtime` และ
+`plugin-sdk/security-runtime` ก็เลิกใช้แล้วเช่นกัน โดยให้ใช้พาธย่อยที่มีขอบเขตเฉพาะ
+แทน
+
+พาธย่อยตัวช่วยทดสอบของ OpenClaw ที่ใช้ Vitest เป็นพื้นฐานมีไว้เฉพาะในรีโพซิทอรีและ
+ไม่ใช่รายการส่งออกของแพ็กเกจอีกต่อไป ได้แก่ `agent-runtime-test-contracts`,
 `channel-contract-testing`, `channel-target-testing`, `channel-test-helpers`,
-`plugin-test-api`, `plugin-test-contracts`, `plugin-test-runtime`,
-`provider-http-test-mocks`, `provider-test-contracts`, `test-env`,
-`test-fixtures`, `test-node-mocks` และ `testing`
+`plugin-state-test-runtime`, `plugin-test-api`, `plugin-test-contracts`,
+`plugin-test-runtime`, `provider-http-test-mocks`, `provider-test-contracts`,
+`reply-payload-testing`, `sqlite-runtime-testing`, `test-env`, `test-fixtures`,
+`test-node-mocks` และ `testing` พื้นผิวตัวช่วยแบบรวมชุดที่เป็นส่วนตัว
+`ssrf-runtime-internal` และ `codex-native-task-runtime` ก็มีไว้เฉพาะในรีโพซิทอรี
+เช่นกัน
 
-### subpath ตัวช่วย Plugin ที่มาพร้อมชุดซึ่งสงวนไว้
+### พาธย่อยตัวช่วย Plugin แบบรวมชุดที่สงวนไว้
 
-subpath เหล่านี้เป็นพื้นผิวความเข้ากันได้ที่ Plugin เป็นเจ้าของสำหรับ Plugin ที่มาพร้อมชุด
-ซึ่งเป็นเจ้าของ subpath นั้น ไม่ใช่ API ของ SDK ทั่วไป: `plugin-sdk/codex-mcp-projection` และ
-`plugin-sdk/codex-native-task-runtime` การ import extension ข้ามเจ้าของถูกบล็อก
-โดย guardrails ของสัญญา package
+`plugin-sdk/codex-mcp-projection` เป็นพาธย่อยที่สงวนไว้เพียงรายการเดียว: พื้นผิว
+ความเข้ากันได้ที่ Plugin เป็นเจ้าของสำหรับ Codex Plugin แบบรวมชุด ไม่ใช่ API ของ SDK ทั่วไป
+การนำเข้าข้าม Plugin ที่มีเจ้าของต่างกันถูกปิดกั้นด้วยกลไกควบคุมสัญญาของแพ็กเกจ และ
+CI จะล้มเหลวเมื่อไม่มีการนำเข้าพาธย่อยที่สงวนไว้อีกต่อไป
+`plugin-sdk/codex-native-task-runtime` มีไว้เฉพาะในรีโพซิทอรีและไม่ใช่รายการ
+ส่งออกของแพ็กเกจ
 
-<AccordionGroup>
+`src/plugin-sdk/entrypoints.ts` ยังติดตาม facade แบบรวมชุดที่รองรับ ซึ่งเป็นจุดเข้าใช้งาน
+SDK ที่มี Plugin แบบรวมชุดของตนรองรับอยู่ จนกว่าสัญญาทั่วไปจะเข้ามาแทนที่
+ได้แก่ `plugin-sdk/discord`, `plugin-sdk/lmstudio`, `plugin-sdk/lmstudio-runtime`,
+`plugin-sdk/matrix`, `plugin-sdk/mattermost`,
+`plugin-sdk/memory-core-engine-runtime`, `plugin-sdk/provider-zai-endpoint`,
+`plugin-sdk/qa-runner-runtime`, `plugin-sdk/telegram-account`,
+`plugin-sdk/tts-runtime` และ `plugin-sdk/zalouser` หลายรายการในกลุ่มนี้ก็
+เลิกใช้สำหรับโค้ดใหม่แล้วเช่นกัน โปรดดูหมายเหตุของแต่ละแถวด้านล่าง
+
+  <AccordionGroup>
   <Accordion title="พาธย่อยของช่องทาง">
-    | พาธย่อย | รายการ export หลัก |
+    | พาธย่อย | รายการส่งออกหลัก |
     | --- | --- |
-    | `plugin-sdk/channel-core` | `defineChannelPluginEntry`, `defineSetupPluginEntry`, `createChatChannelPlugin`, `createChannelPluginBase` |
-    | `plugin-sdk/config-schema` | การ export สคีมา Zod ของ `openclaw.json` ระดับรูท (`OpenClawSchema`) |
+    | `plugin-sdk/channel-core` | `defineChannelPluginEntry`, `defineSetupPluginEntry`, `createChatChannelPlugin`, `createChannelPluginBase`, `createChannelConfigUiHints` |
     | `plugin-sdk/json-schema-runtime` | ตัวช่วยตรวจสอบความถูกต้องของ JSON Schema แบบแคชสำหรับสคีมาที่ Plugin เป็นเจ้าของ |
-    | `plugin-sdk/channel-setup` | `createOptionalChannelSetupSurface`, `createOptionalChannelSetupAdapter`, `createOptionalChannelSetupWizard`, รวมถึง `DEFAULT_ACCOUNT_ID`, `createTopLevelChannelDmPolicy`, `setSetupChannelEnabled`, `splitSetupEntries` |
-    | `plugin-sdk/setup` | ตัวช่วยวิซาร์ดการตั้งค่าที่ใช้ร่วมกัน, ตัวแปลการตั้งค่า, พรอมป์ allowlist, ตัวสร้างสถานะการตั้งค่า |
+    | `plugin-sdk/channel-setup` | `createOptionalChannelSetupSurface`, `createOptionalChannelSetupAdapter`, `createOptionalChannelSetupWizard` รวมถึง `DEFAULT_ACCOUNT_ID`, `createTopLevelChannelDmPolicy`, `setSetupChannelEnabled`, `splitSetupEntries` |
+    | `plugin-sdk/setup` | ตัวช่วยวิซาร์ดการตั้งค่าที่ใช้ร่วมกัน ตัวแปลการตั้งค่า พรอมต์รายการที่อนุญาต และตัวสร้างสถานะการตั้งค่า |
     | `plugin-sdk/setup-runtime` | `createSetupTranslator`, `createPatchedAccountSetupAdapter`, `createEnvPatchedAccountSetupAdapter`, `createSetupInputPresenceValidator`, `noteChannelLookupFailure`, `noteChannelLookupSummary`, `promptResolvedAllowFrom`, `splitSetupEntries`, `createAllowlistSetupWizardProxy`, `createDelegatedSetupWizardProxy` |
-    | `plugin-sdk/setup-adapter-runtime` | alias ความเข้ากันได้ที่เลิกใช้แล้ว; ใช้ `plugin-sdk/setup-runtime` |
+    | `plugin-sdk/setup-adapter-runtime` | นามแฝงเพื่อความเข้ากันได้ที่เลิกใช้แล้ว ให้ใช้ `plugin-sdk/setup-runtime` |
     | `plugin-sdk/setup-tools` | `formatCliCommand`, `detectBinary`, `extractArchive`, `resolveBrewExecutable`, `formatDocsLink`, `CONFIG_DIR` |
-    | `plugin-sdk/account-core` | ตัวช่วย config หลายบัญชี/action-gate, ตัวช่วย fallback บัญชีเริ่มต้น |
-    | `plugin-sdk/account-id` | `DEFAULT_ACCOUNT_ID`, ตัวช่วยทำให้ account-id เป็นมาตรฐาน |
-    | `plugin-sdk/account-resolution` | ตัวช่วยค้นหาบัญชี + default-fallback |
-    | `plugin-sdk/account-helpers` | ตัวช่วย account-list/account-action แบบแคบ |
-    | `plugin-sdk/access-groups` | ตัวช่วยแยกวิเคราะห์ allowlist ของ access-group และวินิจฉัยกลุ่มแบบปกปิดข้อมูล |
+    | `plugin-sdk/account-core` | ตัวช่วยการกำหนดค่าแบบหลายบัญชี/เกตการดำเนินการ และตัวช่วยการย้อนกลับไปใช้บัญชีเริ่มต้น |
+    | `plugin-sdk/account-id` | `DEFAULT_ACCOUNT_ID` และตัวช่วยปรับรหัสบัญชีให้อยู่ในรูปแบบมาตรฐาน |
+    | `plugin-sdk/account-resolution` | ตัวช่วยค้นหาบัญชีและย้อนกลับไปใช้ค่าเริ่มต้น |
+    | `plugin-sdk/account-helpers` | ตัวช่วยเฉพาะทางสำหรับรายการบัญชี/การดำเนินการกับบัญชี |
+    | `plugin-sdk/access-groups` | ตัวช่วยแยกวิเคราะห์รายการกลุ่มการเข้าถึงที่อนุญาตและวินิจฉัยกลุ่มแบบปกปิดข้อมูล |
     | `plugin-sdk/channel-pairing` | `createChannelPairingController` |
-    | `plugin-sdk/channel-reply-pipeline` | facade ความเข้ากันได้ที่เลิกใช้แล้ว ใช้ `plugin-sdk/channel-outbound` |
+    | `plugin-sdk/channel-reply-pipeline` | ฟาซาดเพื่อความเข้ากันได้ที่เลิกใช้แล้ว ให้ใช้ `plugin-sdk/channel-outbound` |
     | `plugin-sdk/channel-config-helpers` | `createHybridChannelConfigAdapter`, `resolveChannelDmAccess`, `resolveChannelDmAllowFrom`, `resolveChannelDmPolicy`, `normalizeChannelDmPolicy`, `normalizeLegacyDmAliases` |
-    | `plugin-sdk/channel-config-schema` | primitive ของสคีมา config ช่องทางที่ใช้ร่วมกัน รวมถึงตัวสร้าง Zod และ JSON/TypeBox โดยตรง |
-    | `plugin-sdk/bundled-channel-config-schema` | สคีมา config ช่องทาง OpenClaw ที่ bundled สำหรับ Plugin bundled ที่ดูแลอยู่เท่านั้น |
-    | `plugin-sdk/chat-channel-ids` | `BUNDLED_CHAT_CHANNEL_IDS`, `BUNDLED_CHAT_CHANNEL_ENVELOPE_PREFIXES`, `ChatChannelId` รหัสช่องทางแชต bundled/official แบบ canonical รวมถึงป้ายกำกับ/alias สำหรับ formatter สำหรับ Plugin ที่ต้องจำแนกข้อความที่มีคำนำหน้า envelope โดยไม่ต้อง hardcode ตารางของตัวเอง |
-    | `plugin-sdk/channel-config-schema-legacy` | alias ความเข้ากันได้ที่เลิกใช้แล้วสำหรับสคีมา config ช่องทาง bundled-channel |
-    | `plugin-sdk/telegram-command-config` | ตัวช่วยทำให้คำสั่งแบบกำหนดเองของ Telegram เป็นมาตรฐาน/ตรวจสอบความถูกต้อง พร้อม fallback ตามสัญญา bundled |
-    | `plugin-sdk/command-gating` | ตัวช่วย gate การอนุญาตคำสั่งแบบแคบ |
+    | `plugin-sdk/channel-config-schema` | องค์ประกอบพื้นฐานของสคีมาการกำหนดค่าช่องทางที่ใช้ร่วมกัน พร้อมด้วย Zod และตัวสร้าง JSON/TypeBox โดยตรง |
+    | `plugin-sdk/bundled-channel-config-schema` | สคีมาการกำหนดค่าช่องทาง OpenClaw ที่รวมมาให้ สำหรับ Plugin แบบรวมที่ได้รับการดูแลเท่านั้น |
+    | `plugin-sdk/chat-channel-ids` | `BUNDLED_CHAT_CHANNEL_IDS`, `BUNDLED_CHAT_CHANNEL_ENVELOPE_PREFIXES`, `ChatChannelId` รหัสช่องทางแชตแบบรวม/ทางการที่เป็นมาตรฐาน พร้อมป้ายกำกับ/นามแฝงของตัวจัดรูปแบบสำหรับ Plugin ที่ต้องจดจำข้อความซึ่งมีคำนำหน้าซองข้อมูลโดยไม่ต้องฮาร์ดโค้ดตารางของตนเอง |
+    | `plugin-sdk/channel-config-schema-legacy` | นามแฝงเพื่อความเข้ากันได้ที่เลิกใช้แล้วสำหรับสคีมาการกำหนดค่าช่องทางแบบรวม |
+    | `plugin-sdk/telegram-command-config` | การปรับชื่อ/คำอธิบายคำสั่ง Telegram ให้อยู่ในรูปแบบมาตรฐานและการตรวจสอบรายการซ้ำ/ข้อขัดแย้งที่เลิกใช้แล้ว สำหรับโค้ด Plugin ใหม่ ให้ใช้การจัดการการกำหนดค่าคำสั่งภายใน Plugin |
+    | `plugin-sdk/command-gating` | ตัวช่วยเฉพาะทางสำหรับเกตการอนุญาตคำสั่ง |
     | `plugin-sdk/channel-policy` | `resolveChannelGroupRequireMention` |
-    | `plugin-sdk/channel-ingress` | facade ความเข้ากันได้ของ ingress ช่องทางระดับต่ำที่เลิกใช้แล้ว เส้นทางรับใหม่ควรใช้ `plugin-sdk/channel-ingress-runtime` |
-    | `plugin-sdk/channel-ingress-runtime` | ตัว resolve runtime ingress ช่องทางระดับสูงแบบทดลองและตัวสร้าง route fact สำหรับเส้นทางรับช่องทางที่ย้ายแล้ว ควรใช้สิ่งนี้แทนการประกอบ effective allowlist, command allowlist, และ projection แบบ legacy ในแต่ละ Plugin ดู [API ingress ช่องทาง](/th/plugins/sdk-channel-ingress) |
-    | `plugin-sdk/channel-lifecycle` | facade ความเข้ากันได้ที่เลิกใช้แล้ว ใช้ `plugin-sdk/channel-outbound` |
-    | `plugin-sdk/channel-outbound` | สัญญา lifecycle ของข้อความ รวมถึงตัวเลือก reply pipeline, receipt, live preview/streaming, ตัวช่วย lifecycle, identity ขาออก, การวางแผน payload, การส่งแบบ durable, และตัวช่วย context การส่งข้อความ ดู [API ขาออกของช่องทาง](/th/plugins/sdk-channel-outbound) |
-    | `plugin-sdk/channel-message` | alias ความเข้ากันได้ที่เลิกใช้แล้วสำหรับ `plugin-sdk/channel-outbound` รวมถึง facade reply-dispatch แบบ legacy |
-    | `plugin-sdk/channel-message-runtime` | alias ความเข้ากันได้ที่เลิกใช้แล้วสำหรับ `plugin-sdk/channel-outbound` รวมถึง facade reply-dispatch แบบ legacy |
-    | `plugin-sdk/inbound-envelope` | ตัวช่วย route ขาเข้า + ตัวสร้าง envelope ที่ใช้ร่วมกัน |
-    | `plugin-sdk/inbound-reply-dispatch` | facade ความเข้ากันได้ที่เลิกใช้แล้ว ใช้ `plugin-sdk/channel-inbound` สำหรับ runner ขาเข้าและ dispatch predicate และใช้ `plugin-sdk/channel-outbound` สำหรับตัวช่วยส่งข้อความ |
-    | `plugin-sdk/messaging-targets` | alias การแยกวิเคราะห์เป้าหมายที่เลิกใช้แล้ว; ใช้ `plugin-sdk/channel-targets` |
-    | `plugin-sdk/outbound-media` | ตัวช่วยโหลดสื่อขาออกและสถานะ hosted-media ที่ใช้ร่วมกัน |
-    | `plugin-sdk/outbound-send-deps` | facade ความเข้ากันได้ที่เลิกใช้แล้ว ใช้ `plugin-sdk/channel-outbound` |
-    | `plugin-sdk/outbound-runtime` | facade ความเข้ากันได้ที่เลิกใช้แล้ว ใช้ `plugin-sdk/channel-outbound` |
-    | `plugin-sdk/poll-runtime` | ตัวช่วยทำให้ poll เป็นมาตรฐานแบบแคบ |
-    | `plugin-sdk/thread-bindings-runtime` | lifecycle ของ thread-binding และตัวช่วย adapter |
-    | `plugin-sdk/agent-media-payload` | ตัวสร้าง payload สื่อของ agent แบบ legacy |
-    | `plugin-sdk/conversation-runtime` | ตัวช่วย binding ของ conversation/thread, pairing, และ configured-binding |
-    | `plugin-sdk/runtime-config-snapshot` | ตัวช่วย snapshot ของ runtime config |
-    | `plugin-sdk/runtime-group-policy` | ตัวช่วย resolve group-policy ของ runtime |
-    | `plugin-sdk/channel-status` | ตัวช่วย snapshot/summary สถานะช่องทางที่ใช้ร่วมกัน |
-    | `plugin-sdk/channel-config-primitives` | primitive ของ channel config-schema แบบแคบ |
-    | `plugin-sdk/channel-config-writes` | ตัวช่วยการอนุญาตเขียน config ช่องทาง |
-    | `plugin-sdk/channel-plugin-common` | การ export prelude ของ Plugin ช่องทางที่ใช้ร่วมกัน |
-    | `plugin-sdk/allowlist-config-edit` | ตัวช่วยแก้ไข/อ่าน config allowlist |
-    | `plugin-sdk/group-access` | ตัวช่วยตัดสินใจ group-access ที่ใช้ร่วมกัน |
-    | `plugin-sdk/direct-dm`, `plugin-sdk/direct-dm-access` | facade ความเข้ากันได้ที่เลิกใช้แล้ว ใช้ `plugin-sdk/channel-inbound` |
-    | `plugin-sdk/direct-dm-guard-policy` | ตัวช่วยนโยบาย guard ก่อน crypto สำหรับ direct-DM แบบแคบ |
-    | `plugin-sdk/discord` | facade ความเข้ากันได้ของ Discord ที่เลิกใช้แล้วสำหรับ `@openclaw/discord@2026.3.13` ที่เผยแพร่แล้วและความเข้ากันได้ของ owner ที่ติดตามอยู่; Plugin ใหม่ควรใช้พาธย่อยของ SDK ช่องทางแบบทั่วไป |
-    | `plugin-sdk/telegram-account` | facade ความเข้ากันได้ของการ resolve บัญชี Telegram ที่เลิกใช้แล้วสำหรับความเข้ากันได้ของ owner ที่ติดตามอยู่; Plugin ใหม่ควรใช้ตัวช่วย runtime ที่ฉีดเข้ามาหรือพาธย่อยของ SDK ช่องทางแบบทั่วไป |
-    | `plugin-sdk/zalouser` | facade ความเข้ากันได้ของ Zalo Personal ที่เลิกใช้แล้วสำหรับแพ็กเกจ Lark/Zalo ที่เผยแพร่แล้วซึ่งยัง import การอนุญาตคำสั่งผู้ส่ง; Plugin ใหม่ควรใช้ `plugin-sdk/command-auth` |
-    | `plugin-sdk/interactive-runtime` | การนำเสนอข้อความเชิงความหมาย, การส่งมอบ, และตัวช่วยตอบกลับแบบ interactive legacy ดู [การนำเสนอข้อความ](/th/plugins/message-presentation) |
-    | `plugin-sdk/channel-inbound` | ตัวช่วยขาเข้าที่ใช้ร่วมกันสำหรับการจัดประเภท event, การสร้าง context, การจัดรูปแบบ, root, debounce, การจับคู่ mention, mention-policy, และการบันทึก log ขาเข้า |
-    | `plugin-sdk/channel-inbound-debounce` | ตัวช่วย debounce ขาเข้าแบบแคบ |
-    | `plugin-sdk/channel-mention-gating` | ตัวช่วย mention-policy, mention marker, และข้อความ mention แบบแคบ โดยไม่มีพื้นผิว runtime ขาเข้าที่กว้างกว่า |
-    | `plugin-sdk/channel-envelope`, `plugin-sdk/channel-inbound-roots`, `plugin-sdk/channel-location`, `plugin-sdk/channel-logging` | facade ความเข้ากันได้ที่เลิกใช้แล้ว ใช้ `plugin-sdk/channel-inbound` หรือ `plugin-sdk/channel-outbound` |
-    | `plugin-sdk/channel-pairing-paths` | facade ความเข้ากันได้ที่เลิกใช้แล้ว ใช้ `plugin-sdk/channel-pairing` |
-    | `plugin-sdk/channel-reply-options-runtime` | facade ความเข้ากันได้ที่เลิกใช้แล้ว ใช้ `plugin-sdk/channel-outbound` |
-    | `plugin-sdk/channel-streaming` | facade ความเข้ากันได้ที่เลิกใช้แล้ว ใช้ `plugin-sdk/channel-outbound` |
-    | `plugin-sdk/channel-send-result` | ประเภทผลลัพธ์การตอบกลับ |
-    | `plugin-sdk/channel-actions` | ตัวช่วย message-action ของช่องทาง รวมถึงตัวช่วยสคีมา native ที่เลิกใช้แล้วซึ่งเก็บไว้เพื่อความเข้ากันได้ของ Plugin |
-    | `plugin-sdk/channel-route` | ตัวช่วยทำให้ route เป็นมาตรฐานที่ใช้ร่วมกัน, การ resolve เป้าหมายที่ขับเคลื่อนด้วย parser, การแปลง thread-id เป็น string, คีย์ route สำหรับ dedupe/compact, ประเภท parsed-target, และตัวช่วยเปรียบเทียบ route/target |
-    | `plugin-sdk/channel-targets` | ตัวช่วยแยกวิเคราะห์เป้าหมาย; caller ที่เปรียบเทียบ route ควรใช้ `plugin-sdk/channel-route` |
-    | `plugin-sdk/channel-contract` | ประเภทสัญญาของช่องทาง |
-    | `plugin-sdk/channel-feedback` | การ wiring feedback/reaction |
-    | `plugin-sdk/channel-secret-runtime` | ตัวช่วย secret-contract แบบแคบ เช่น `collectSimpleChannelFieldAssignments`, `getChannelSurface`, `pushAssignment`, และประเภทเป้าหมาย secret |
+    | `plugin-sdk/channel-ingress-runtime` | ตัวแก้ไขรันไทม์ขาเข้าของช่องทางระดับสูงแบบทดลองและตัวสร้างข้อเท็จจริงของเส้นทางสำหรับพาธรับข้อมูลของช่องทางที่ย้ายแล้ว ควรใช้สิ่งนี้แทนการประกอบรายการที่อนุญาตที่มีผล รายการคำสั่งที่อนุญาต และโปรเจกชันแบบเดิมในแต่ละ Plugin ดู [API ขาเข้าของช่องทาง](/th/plugins/sdk-channel-ingress) |
+    | `plugin-sdk/channel-lifecycle` | ฟาซาดเพื่อความเข้ากันได้ที่เลิกใช้แล้ว ให้ใช้ `plugin-sdk/channel-outbound` |
+    | `plugin-sdk/channel-outbound` | สัญญาวงจรชีวิตของข้อความ พร้อมตัวเลือกไปป์ไลน์การตอบกลับ ใบตอบรับ ตัวอย่างแบบสด/การสตรีม ตัวช่วยวงจรชีวิต อัตลักษณ์ขาออก การวางแผนเพย์โหลด การส่งแบบคงทน และตัวช่วยบริบทการส่งข้อความ ดู [API ขาออกของช่องทาง](/th/plugins/sdk-channel-outbound) |
+    | `plugin-sdk/channel-message` | นามแฝงเพื่อความเข้ากันได้ที่เลิกใช้แล้วสำหรับ `plugin-sdk/channel-outbound` |
+    | `plugin-sdk/channel-message-runtime` | นามแฝงเพื่อความเข้ากันได้ที่เลิกใช้แล้วสำหรับ `plugin-sdk/channel-outbound` |
+    | `plugin-sdk/inbound-envelope` | ตัวช่วยสร้างเส้นทางขาเข้าและซองข้อมูลที่ใช้ร่วมกัน |
+    | `plugin-sdk/inbound-reply-dispatch` | ฟาซาดเพื่อความเข้ากันได้ที่เลิกใช้แล้ว ให้ใช้ `plugin-sdk/channel-inbound` สำหรับตัวรันขาเข้าและเพรดิเคตการส่งต่อ และใช้ `plugin-sdk/channel-outbound` สำหรับตัวช่วยส่งข้อความ |
+    | `plugin-sdk/messaging-targets` | นามแฝงการแยกวิเคราะห์เป้าหมายที่เลิกใช้แล้ว ให้ใช้ `plugin-sdk/channel-targets` |
+    | `plugin-sdk/outbound-media` | ตัวช่วยโหลดสื่อขาออกและสถานะสื่อที่โฮสต์ไว้ซึ่งใช้ร่วมกัน |
+    | `plugin-sdk/outbound-send-deps` | ฟาซาดเพื่อความเข้ากันได้ที่เลิกใช้แล้ว ให้ใช้ `plugin-sdk/channel-outbound` |
+    | `plugin-sdk/outbound-runtime` | ฟาซาดเพื่อความเข้ากันได้ที่เลิกใช้แล้ว ให้ใช้ `plugin-sdk/channel-outbound` |
+    | `plugin-sdk/poll-runtime` | ตัวช่วยเฉพาะทางสำหรับปรับโพลให้อยู่ในรูปแบบมาตรฐาน |
+    | `plugin-sdk/thread-bindings-runtime` | ตัวช่วยวงจรชีวิตและอะแดปเตอร์สำหรับการผูกเธรด |
+    | `plugin-sdk/agent-media-payload` | รูทและตัวโหลดเพย์โหลดสื่อของเอเจนต์ |
+    | `plugin-sdk/conversation-runtime` | บาร์เรลแบบกว้างที่เลิกใช้แล้วสำหรับการผูกการสนทนา/เธรด การจับคู่ และตัวช่วยการผูกที่กำหนดค่าไว้ ควรใช้พาธย่อยการผูกที่เฉพาะเจาะจง เช่น `plugin-sdk/thread-bindings-runtime` และ `plugin-sdk/session-binding-runtime` |
+    | `plugin-sdk/runtime-group-policy` | ตัวช่วยแก้ไขนโยบายกลุ่มในรันไทม์ |
+    | `plugin-sdk/channel-status` | ตัวช่วยสแนปช็อต/สรุปสถานะช่องทางที่ใช้ร่วมกัน |
+    | `plugin-sdk/channel-config-primitives` | องค์ประกอบพื้นฐานเฉพาะทางของสคีมาการกำหนดค่าช่องทาง |
+    | `plugin-sdk/channel-config-writes` | ตัวช่วยการอนุญาตให้เขียนการกำหนดค่าช่องทาง |
+    | `plugin-sdk/channel-plugin-common` | รายการส่งออกส่วนเริ่มต้นของ Plugin ช่องทางที่ใช้ร่วมกัน |
+    | `plugin-sdk/allowlist-config-edit` | ตัวช่วยแก้ไข/อ่านการกำหนดค่ารายการที่อนุญาต |
+    | `plugin-sdk/group-access` | ตัวช่วยตัดสินใจการเข้าถึงกลุ่มที่เลิกใช้แล้ว ให้ใช้ `resolveChannelMessageIngress` จาก `plugin-sdk/channel-ingress-runtime` |
+    | `plugin-sdk/direct-dm`, `plugin-sdk/direct-dm-access` | ฟาซาดเพื่อความเข้ากันได้ที่เลิกใช้แล้ว ให้ใช้ `plugin-sdk/channel-inbound` |
+    | `plugin-sdk/direct-dm-guard-policy` | ตัวช่วยนโยบายการป้องกันก่อนเข้ารหัสสำหรับ DM โดยตรงแบบเฉพาะทาง |
+    | `plugin-sdk/discord` | ฟาซาดเพื่อความเข้ากันได้ของ Discord ที่เลิกใช้แล้วสำหรับ `@openclaw/discord@2026.3.13` ที่เผยแพร่และความเข้ากันได้ของเจ้าของที่มีการติดตาม Plugin ใหม่ควรใช้พาธย่อย SDK ช่องทางแบบทั่วไป |
+    | `plugin-sdk/telegram-account` | ฟาซาดเพื่อความเข้ากันได้ในการแก้ไขบัญชี Telegram ที่เลิกใช้แล้วสำหรับความเข้ากันได้ของเจ้าของที่มีการติดตาม Plugin ใหม่ควรใช้ตัวช่วยรันไทม์ที่แทรกเข้ามาหรือพาธย่อย SDK ช่องทางแบบทั่วไป |
+    | `plugin-sdk/zalouser` | ฟาซาดเพื่อความเข้ากันได้ของ Zalo Personal ที่เลิกใช้แล้วสำหรับแพ็กเกจ Lark/Zalo ที่เผยแพร่ซึ่งยังคงนำเข้าการอนุญาตคำสั่งของผู้ส่ง Plugin ใหม่ควรใช้พาธย่อย SDK ช่องทางแบบทั่วไป |
+    | `plugin-sdk/interactive-runtime` | ตัวช่วยการนำเสนอ การส่งมอบ และการตอบกลับแบบโต้ตอบเดิมของข้อความเชิงความหมาย ดู [การนำเสนอข้อความ](/th/plugins/message-presentation) |
+    | `plugin-sdk/channel-inbound` | ตัวช่วยขาเข้าที่ใช้ร่วมกันสำหรับการจำแนกเหตุการณ์ การสร้างบริบท การจัดรูปแบบ รูท การหน่วง การจับคู่การกล่าวถึง นโยบายการกล่าวถึง และการบันทึกขาเข้า |
+    | `plugin-sdk/channel-inbound-debounce` | ตัวช่วยการหน่วงขาเข้าแบบเฉพาะทาง |
+    | `plugin-sdk/channel-mention-gating` | ตัวช่วยเฉพาะทางสำหรับนโยบายการกล่าวถึง เครื่องหมายการกล่าวถึง และข้อความการกล่าวถึง โดยไม่มีพื้นผิวรันไทม์ขาเข้าที่กว้างกว่า |
+    | `plugin-sdk/channel-envelope`, `plugin-sdk/channel-inbound-roots`, `plugin-sdk/channel-location`, `plugin-sdk/channel-logging` | ฟาซาดเพื่อความเข้ากันได้ที่เลิกใช้แล้ว ให้ใช้ `plugin-sdk/channel-inbound` หรือ `plugin-sdk/channel-outbound` |
+    | `plugin-sdk/channel-pairing-paths` | ฟาซาดเพื่อความเข้ากันได้ที่เลิกใช้แล้ว ให้ใช้ `plugin-sdk/channel-pairing` |
+    | `plugin-sdk/channel-reply-options-runtime` | ฟาซาดเพื่อความเข้ากันได้ที่เลิกใช้แล้ว ให้ใช้ `plugin-sdk/channel-outbound` |
+    | `plugin-sdk/channel-streaming` | ฟาซาดเพื่อความเข้ากันได้ที่เลิกใช้แล้ว ให้ใช้ `plugin-sdk/channel-outbound` |
+    | `plugin-sdk/channel-send-result` | ชนิดผลลัพธ์การตอบกลับ |
+    | `plugin-sdk/channel-actions` | ตัวช่วยการดำเนินการกับข้อความของช่องทาง พร้อมตัวช่วยสคีมาเนทีฟที่เลิกใช้แล้วแต่ยังคงไว้เพื่อความเข้ากันได้ของ Plugin |
+    | `plugin-sdk/channel-route` | ตัวช่วยที่ใช้ร่วมกันสำหรับการปรับเส้นทางให้อยู่ในรูปแบบมาตรฐาน การแก้ไขเป้าหมายที่ขับเคลื่อนด้วยพาร์เซอร์ การแปลงรหัสเธรดเป็นสตริง คีย์เส้นทางแบบขจัดข้อมูลซ้ำ/กระชับ ชนิดเป้าหมายที่แยกวิเคราะห์แล้ว และการเปรียบเทียบเส้นทาง/เป้าหมาย |
+    | `plugin-sdk/channel-targets` | ตัวช่วยแยกวิเคราะห์เป้าหมาย ผู้เรียกใช้การเปรียบเทียบเส้นทางควรใช้ `plugin-sdk/channel-route` |
+    | `plugin-sdk/channel-contract` | ชนิดสัญญาของช่องทาง |
+    | `plugin-sdk/channel-feedback` | การเชื่อมโยงข้อเสนอแนะ/ปฏิกิริยา |
   </Accordion>
 
-ตระกูลตัวช่วยช่องทางที่เลิกใช้แล้วยังคงมีให้ใช้เฉพาะเพื่อความเข้ากันได้กับ
-Plugin ที่เผยแพร่แล้วเท่านั้น แผนการนำออกคือ: เก็บไว้ตลอดช่วงเวลาการย้าย
-Plugin ภายนอก, ให้ Plugin ใน repo/bundled ใช้ `channel-inbound` และ
-`channel-outbound`, จากนั้นนำพาธย่อยความเข้ากันได้ออกในการล้าง SDK ครั้งใหญ่ถัดไป
-สิ่งนี้ใช้กับตระกูล channel message/runtime เดิม, channel
-streaming, direct-DM access, ส่วนย่อยของตัวช่วยขาเข้า, reply-options,
-และ pairing-path
+ตระกูลตัวช่วยช่องทางที่เลิกใช้แล้วจะยังคงใช้งานได้เฉพาะเพื่อความเข้ากันได้กับ Plugin ที่เผยแพร่แล้วเท่านั้น แผนการนำออกคือ: คงไว้ตลอดช่วงการย้าย Plugin ภายนอก ให้ Plugin ในรีโพซิทอรี/ที่รวมมาในชุดใช้งาน `channel-inbound` และ `channel-outbound` ต่อไป จากนั้นนำพาธย่อยเพื่อความเข้ากันได้ออกในการปรับปรุง SDK ครั้งใหญ่ถัดไป ทั้งนี้ครอบคลุมตระกูลเดิมสำหรับข้อความ/รันไทม์ของช่องทาง การสตรีมของช่องทาง การเข้าถึง DM โดยตรง ตัวช่วยขาเข้าที่แยกย่อย ตัวเลือกการตอบกลับ และพาธการจับคู่
 
-  <Accordion title="Provider subpaths">
-    | พาธย่อย | เอ็กซ์พอร์ตหลัก |
+  <Accordion title="พาธย่อยของผู้ให้บริการ">
+    | พาธย่อย | การส่งออกหลัก |
     | --- | --- |
     | `plugin-sdk/provider-entry` | `defineSingleProviderPluginEntry` |
-    | `plugin-sdk/lmstudio` | ฟาซาดผู้ให้บริการ LM Studio ที่รองรับสำหรับการตั้งค่า การค้นพบแค็ตตาล็อก และการเตรียมโมเดลรันไทม์ |
-    | `plugin-sdk/lmstudio-runtime` | ฟาซาดรันไทม์ LM Studio ที่รองรับสำหรับค่าเริ่มต้นของเซิร์ฟเวอร์ภายในเครื่อง การค้นพบโมเดล ส่วนหัวคำขอ และตัวช่วยสำหรับโมเดลที่โหลดแล้ว |
-    | `plugin-sdk/provider-setup` | ตัวช่วยการตั้งค่าผู้ให้บริการภายในเครื่อง/แบบโฮสต์เองที่คัดสรรแล้ว |
-    | `plugin-sdk/self-hosted-provider-setup` | ตัวช่วยการตั้งค่าผู้ให้บริการแบบโฮสต์เองที่เข้ากันได้กับ OpenAI แบบเฉพาะจุด |
-    | `plugin-sdk/cli-backend` | ค่าเริ่มต้นของแบ็กเอนด์ CLI + ค่าคงที่ watchdog |
-    | `plugin-sdk/provider-auth-runtime` | ตัวช่วยการแก้ไขคีย์ API ขณะรันไทม์สำหรับ Plugin ผู้ให้บริการ |
-    | `plugin-sdk/provider-oauth-runtime` | ชนิด callback ของ OAuth ผู้ให้บริการทั่วไป การเรนเดอร์หน้า callback ตัวช่วย PKCE/state การแยกวิเคราะห์อินพุตการอนุญาต ตัวช่วยการหมดอายุของโทเค็น และตัวช่วยการยกเลิก |
-    | `plugin-sdk/provider-auth-api-key` | ตัวช่วย onboarding/การเขียนโปรไฟล์สำหรับคีย์ API เช่น `upsertApiKeyProfile` |
+    | `plugin-sdk/lmstudio` | ส่วนติดต่อผู้ให้บริการ LM Studio ที่รองรับ สำหรับการตั้งค่า การค้นพบแค็ตตาล็อก และการเตรียมโมเดลขณะรันไทม์ |
+    | `plugin-sdk/lmstudio-runtime` | ส่วนติดต่อรันไทม์ LM Studio ที่รองรับ สำหรับค่าเริ่มต้นของเซิร์ฟเวอร์ภายใน การค้นพบโมเดล ส่วนหัวคำขอ และตัวช่วยสำหรับโมเดลที่โหลดแล้ว |
+    | `plugin-sdk/provider-setup` | ตัวช่วยการตั้งค่าผู้ให้บริการภายใน/โฮสต์เองที่คัดสรรไว้ |
+    | `plugin-sdk/self-hosted-provider-setup` | ตัวช่วยการตั้งค่าแบบโฮสต์เองที่เข้ากันได้กับ OpenAI ซึ่งเลิกใช้แล้ว ให้ใช้ `plugin-sdk/provider-setup` หรือตัวช่วยการตั้งค่าที่ Plugin เป็นเจ้าของ |
+    | `plugin-sdk/cli-backend` | ค่าเริ่มต้นของแบ็กเอนด์ CLI + ค่าคงที่ของ watchdog |
+    | `plugin-sdk/provider-auth-runtime` | ตัวช่วยรันไทม์การยืนยันตัวตนของผู้ให้บริการ: โฟลว์ OAuth แบบ loopback การแลกเปลี่ยนโทเค็น การคงข้อมูลการยืนยันตัวตน และการระบุ API key |
+    | `plugin-sdk/provider-oauth-runtime` | ชนิดคอลแบ็ก OAuth ทั่วไปของผู้ให้บริการ การเรนเดอร์หน้าคอลแบ็ก ตัวช่วย PKCE/สถานะ การแยกวิเคราะห์อินพุตการอนุญาต ตัวช่วยการหมดอายุของโทเค็น และตัวช่วยยกเลิก |
+    | `plugin-sdk/provider-auth-api-key` | ตัวช่วยการเริ่มต้นใช้งาน API key/การเขียนโปรไฟล์ เช่น `upsertApiKeyProfile` |
     | `plugin-sdk/provider-auth-result` | ตัวสร้างผลลัพธ์การยืนยันตัวตน OAuth มาตรฐาน |
-    | `plugin-sdk/provider-env-vars` | ตัวช่วยค้นหา env-var สำหรับการยืนยันตัวตนผู้ให้บริการ |
-    | `plugin-sdk/provider-auth` | `createProviderApiKeyAuthMethod`, `ensureApiKeyFromOptionEnvOrPrompt`, `upsertAuthProfile`, `upsertApiKeyProfile`, `writeOAuthCredentials`, ตัวช่วยนำเข้าการยืนยันตัวตน OpenAI Codex, เอ็กซ์พอร์ตความเข้ากันได้ `resolveOpenClawAgentDir` ที่เลิกใช้แล้ว |
-    | `plugin-sdk/provider-model-shared` | `ProviderReplayFamily`, `buildProviderReplayFamilyHooks`, `normalizeModelCompat`, ตัวสร้างนโยบาย replay ที่ใช้ร่วมกัน, ตัวช่วย endpoint ของผู้ให้บริการ และตัวช่วย normalization ของ model-id ที่ใช้ร่วมกัน |
-    | `plugin-sdk/provider-catalog-live-runtime` | ตัวช่วยแค็ตตาล็อกโมเดลผู้ให้บริการแบบสดสำหรับการค้นพบสไตล์ `/models` ที่มีการป้องกัน: `buildLiveModelProviderConfig`, `fetchLiveProviderModelRows`, `getCachedLiveProviderModelRows`, `fetchLiveProviderModelIds`, `LiveModelCatalogHttpError`, `clearLiveCatalogCacheForTests`, การกรอง model-id, แคช TTL และ fallback แบบสแตติก |
-    | `plugin-sdk/provider-catalog-runtime` | hook รันไทม์การเสริมแค็ตตาล็อกผู้ให้บริการ และจุดเชื่อมต่อรีจิสทรี plugin-provider สำหรับการทดสอบสัญญา |
+    | `plugin-sdk/provider-env-vars` | ตัวช่วยค้นหาตัวแปรสภาพแวดล้อมสำหรับการยืนยันตัวตนของผู้ให้บริการ |
+    | `plugin-sdk/provider-auth` | `createProviderApiKeyAuthMethod`, `ensureApiKeyFromOptionEnvOrPrompt`, `upsertAuthProfile`, `upsertApiKeyProfile`, `writeOAuthCredentials`, ตัวช่วยนำเข้าการยืนยันตัวตน OpenAI Codex, การส่งออกเพื่อความเข้ากันได้ `resolveOpenClawAgentDir` ซึ่งเลิกใช้แล้ว |
+    | `plugin-sdk/provider-model-shared` | `ProviderReplayFamily`, `buildProviderReplayFamilyHooks`, `normalizeModelCompat`, ตัวสร้างนโยบายการเล่นซ้ำที่ใช้ร่วมกัน ตัวช่วยเอนด์พอยต์ของผู้ให้บริการ และตัวช่วยปรับโมเดล ID ให้เป็นมาตรฐานที่ใช้ร่วมกัน |
+    | `plugin-sdk/provider-catalog-live-runtime` | ตัวช่วยแค็ตตาล็อกโมเดลผู้ให้บริการแบบสดสำหรับการค้นพบในรูปแบบ `/models` ที่มีการป้องกัน: `buildLiveModelProviderConfig`, `fetchLiveProviderModelRows`, `getCachedLiveProviderModelRows`, `fetchLiveProviderModelIds`, `LiveModelCatalogHttpError`, `clearLiveCatalogCacheForTests`, การกรองโมเดล ID, แคช TTL และทางเลือกสำรองแบบคงที่ |
+    | `plugin-sdk/provider-catalog-runtime` | ฮุกรันไทม์สำหรับเสริมแค็ตตาล็อกผู้ให้บริการ และจุดเชื่อมต่อรีจิสทรีผู้ให้บริการของ Plugin สำหรับการทดสอบสัญญา |
     | `plugin-sdk/provider-catalog-shared` | `findCatalogTemplate`, `buildSingleProviderApiKeyCatalog`, `buildManifestModelProviderConfig`, `supportsNativeStreamingUsageCompat`, `applyProviderNativeStreamingUsageCompat` |
-    | `plugin-sdk/provider-http` | ตัวช่วยความสามารถ HTTP/endpoint ของผู้ให้บริการทั่วไป ข้อผิดพลาด HTTP ของผู้ให้บริการ และตัวช่วยฟอร์ม multipart สำหรับการถอดเสียงเสียง |
-    | `plugin-sdk/provider-web-fetch-contract` | ตัวช่วยสัญญา config/selection ของ web-fetch แบบแคบ เช่น `enablePluginInConfig` และ `WebFetchProviderPlugin` |
-    | `plugin-sdk/provider-web-fetch` | ตัวช่วยการลงทะเบียน/แคชผู้ให้บริการ web-fetch |
-    | `plugin-sdk/provider-web-search-config-contract` | ตัวช่วย config/credential ของ web-search แบบแคบสำหรับผู้ให้บริการที่ไม่ต้องการการเชื่อมต่อการเปิดใช้ Plugin |
-    | `plugin-sdk/provider-web-search-contract` | ตัวช่วยสัญญา config/credential ของ web-search แบบแคบ เช่น `createWebSearchProviderContractFields`, `enablePluginInConfig`, `resolveProviderWebSearchPluginConfig` และตัวตั้งค่า/ตัวอ่าน credential แบบมีขอบเขต |
-    | `plugin-sdk/provider-web-search` | ตัวช่วยการลงทะเบียน/แคช/รันไทม์ผู้ให้บริการ web-search |
+    | `plugin-sdk/provider-http` | ตัวช่วยความสามารถ HTTP/เอนด์พอยต์ทั่วไปของผู้ให้บริการ ข้อผิดพลาด HTTP ของผู้ให้บริการ และตัวช่วยฟอร์ม multipart สำหรับการถอดเสียง |
+    | `plugin-sdk/provider-web-fetch-contract` | ตัวช่วยสัญญาการกำหนดค่า/การเลือกสำหรับการดึงข้อมูลเว็บแบบเฉพาะเจาะจง เช่น `enablePluginInConfig` และ `WebFetchProviderPlugin` |
+    | `plugin-sdk/provider-web-fetch` | ตัวช่วยการลงทะเบียน/แคชผู้ให้บริการดึงข้อมูลเว็บ |
+    | `plugin-sdk/provider-web-search-config-contract` | ตัวช่วยการกำหนดค่า/ข้อมูลรับรองสำหรับการค้นหาเว็บแบบเฉพาะเจาะจง สำหรับผู้ให้บริการที่ไม่จำเป็นต้องเชื่อมโยงการเปิดใช้งาน Plugin |
+    | `plugin-sdk/provider-web-search-contract` | ตัวช่วยสัญญาการกำหนดค่า/ข้อมูลรับรองสำหรับการค้นหาเว็บแบบเฉพาะเจาะจง เช่น `createWebSearchProviderContractFields`, `enablePluginInConfig`, `resolveProviderWebSearchPluginConfig` และตัวตั้งค่า/ตัวรับข้อมูลรับรองตามขอบเขต |
+    | `plugin-sdk/provider-web-search` | ตัวช่วยการลงทะเบียน/แคช/รันไทม์ของผู้ให้บริการค้นหาเว็บ |
     | `plugin-sdk/embedding-providers` | ชนิดผู้ให้บริการ embedding ทั่วไปและตัวช่วยอ่าน รวมถึง `EmbeddingProviderAdapter`, `getEmbeddingProvider(...)` และ `listEmbeddingProviders(...)`; Plugin ลงทะเบียนผู้ให้บริการผ่าน `api.registerEmbeddingProvider(...)` เพื่อบังคับใช้ความเป็นเจ้าของ manifest |
-    | `plugin-sdk/provider-tools` | `ProviderToolCompatFamily`, `buildProviderToolCompatFamilyHooks` และการล้าง schema + diagnostics ของ DeepSeek/Gemini/OpenAI |
-    | `plugin-sdk/provider-usage` | ชนิด snapshot การใช้งานผู้ให้บริการ ตัวช่วย fetch การใช้งานที่ใช้ร่วมกัน และ fetcher ของผู้ให้บริการ เช่น `fetchClaudeUsage` |
-    | `plugin-sdk/provider-stream` | `ProviderStreamFamily`, `buildProviderStreamFamilyHooks`, `composeProviderStreamWrappers`, ชนิด stream wrapper, ความเข้ากันได้ของ tool-call แบบข้อความล้วน และตัวช่วย wrapper ที่ใช้ร่วมกันของ Anthropic/Bedrock/DeepSeek V4/Google/Kilocode/Moonshot/OpenAI/OpenRouter/Z.A.I/MiniMax/Copilot |
-    | `plugin-sdk/provider-stream-shared` | ตัวช่วย stream wrapper ของผู้ให้บริการแบบใช้ร่วมกันสาธารณะ รวมถึง `composeProviderStreamWrappers`, `createOpenAICompatibleCompletionsThinkingOffWrapper`, `createPlainTextToolCallCompatWrapper`, `createPayloadPatchStreamWrapper`, `createToolStreamWrapper`, `normalizeOpenAICompatibleReasoningPayload`, `setQwenChatTemplateThinking` และยูทิลิตี stream ที่เข้ากันได้กับ Anthropic/DeepSeek/OpenAI |
-    | `plugin-sdk/provider-transport-runtime` | ตัวช่วย transport ผู้ให้บริการแบบ native เช่น guarded fetch, การดึงข้อความผลลัพธ์เครื่องมือ, การแปลงข้อความ transport และ stream เหตุการณ์ transport ที่เขียนได้ |
-    | `plugin-sdk/provider-onboard` | ตัวช่วยแพตช์ config สำหรับ onboarding |
+    | `plugin-sdk/provider-tools` | `ProviderToolCompatFamily`, `buildProviderToolCompatFamilyHooks` และการล้างสคีมา + การวินิจฉัยสำหรับ DeepSeek/Gemini/OpenAI |
+    | `plugin-sdk/provider-usage` | ชนิดสแนปช็อตการใช้งานของผู้ให้บริการ ตัวช่วยดึงข้อมูลการใช้งานที่ใช้ร่วมกัน และตัวดึงข้อมูลของผู้ให้บริการ เช่น `fetchClaudeUsage` |
+    | `plugin-sdk/provider-stream` | `ProviderStreamFamily`, `buildProviderStreamFamilyHooks`, `composeProviderStreamWrappers`, ชนิดตัวห่อหุ้มสตรีม ความเข้ากันได้ของการเรียกเครื่องมือแบบข้อความธรรมดา และตัวช่วยตัวห่อหุ้มที่ใช้ร่วมกันสำหรับ Anthropic/Google/Kilocode/MiniMax/Moonshot/OpenAI/OpenRouter/Z.AI |
+    | `plugin-sdk/provider-stream-shared` | ตัวช่วยตัวห่อหุ้มสตรีมของผู้ให้บริการแบบสาธารณะที่ใช้ร่วมกัน รวมถึง `composeProviderStreamWrappers`, `createOpenAICompatibleCompletionsThinkingOffWrapper`, `createPlainTextToolCallCompatWrapper`, `createPayloadPatchStreamWrapper`, `createToolStreamWrapper`, `normalizeOpenAICompatibleReasoningPayload`, `setQwenChatTemplateThinking` และยูทิลิตีสตรีมที่เข้ากันได้กับ Anthropic/DeepSeek/OpenAI |
+    | `plugin-sdk/provider-transport-runtime` | ตัวช่วยการขนส่งแบบเนทีฟของผู้ให้บริการ เช่น การดึงข้อมูลที่มีการป้องกัน การแยกข้อความผลลัพธ์ของเครื่องมือ การแปลงข้อความการขนส่ง และสตรีมเหตุการณ์การขนส่งที่เขียนได้ |
+    | `plugin-sdk/provider-onboard` | ตัวช่วยแพตช์การกำหนดค่าสำหรับการเริ่มต้นใช้งาน |
     | `plugin-sdk/global-singleton` | ตัวช่วย singleton/map/cache ภายในกระบวนการ |
-    | `plugin-sdk/group-activation` | ตัวช่วยโหมดการเปิดใช้กลุ่มแบบแคบและการแยกวิเคราะห์คำสั่ง |
+    | `plugin-sdk/group-activation` | ตัวช่วยโหมดการเปิดใช้งานกลุ่มและการแยกวิเคราะห์คำสั่งแบบเฉพาะเจาะจง |
   </Accordion>
 
-snapshot การใช้งานผู้ให้บริการโดยทั่วไปจะรายงาน `windows` โควตาหนึ่งรายการหรือมากกว่า โดยแต่ละรายการมี
-ป้ายกำกับ เปอร์เซ็นต์ที่ใช้แล้ว และเวลารีเซ็ตที่เป็นตัวเลือก ผู้ให้บริการที่เปิดเผยข้อความยอดคงเหลือหรือ
-สถานะบัญชีแทนหน้าต่างโควตาที่รีเซ็ตได้ ควรคืนค่า
-`summary` พร้อมอาร์เรย์ `windows` ว่าง แทนที่จะสร้างเปอร์เซ็นต์ขึ้นมาเอง
-OpenClaw แสดงข้อความสรุปนั้นในเอาต์พุตสถานะ; ใช้ `error` เฉพาะเมื่อ
-endpoint การใช้งานล้มเหลวหรือไม่ส่งคืนข้อมูลการใช้งานที่ใช้ได้
+โดยปกติ สแนปช็อตการใช้งานของผู้ให้บริการจะรายงานโควตา `windows` อย่างน้อยหนึ่งรายการ โดยแต่ละรายการมี
+ป้ายกำกับ เปอร์เซ็นต์ที่ใช้ และเวลารีเซ็ตซึ่งระบุหรือไม่ก็ได้ ผู้ให้บริการที่แสดงยอดคงเหลือหรือ
+ข้อความสถานะบัญชีแทนช่วงโควตาที่รีเซ็ตได้ ควรส่งคืน
+`summary` พร้อมอาร์เรย์ `windows` ว่าง แทนการสร้างเปอร์เซ็นต์ขึ้นมา
+OpenClaw จะแสดงข้อความสรุปนั้นในเอาต์พุตสถานะ ให้ใช้ `error` เฉพาะเมื่อ
+เอนด์พอยต์การใช้งานล้มเหลวหรือไม่ส่งคืนข้อมูลการใช้งานที่นำไปใช้ได้
 
-  <Accordion title="Auth and security subpaths">
-    | พาธย่อย | เอ็กซ์พอร์ตหลัก |
+  <Accordion title="พาธย่อยสำหรับการยืนยันตัวตนและความปลอดภัย">
+    | พาธย่อย | การส่งออกหลัก |
     | --- | --- |
-    | `plugin-sdk/command-auth` | `resolveControlCommandGate`, ตัวช่วยรีจิสทรีคำสั่ง รวมถึงการจัดรูปแบบเมนูอาร์กิวเมนต์แบบไดนามิก, ตัวช่วยการอนุญาตผู้ส่ง |
-    | `plugin-sdk/command-status` | ตัวสร้างข้อความคำสั่ง/วิธีใช้ เช่น `buildCommandsMessagePaginated` และ `buildHelpMessage` |
-    | `plugin-sdk/approval-auth-runtime` | ตัวช่วยการแก้ไขผู้อนุมัติและการยืนยันตัวตนการกระทำในแชตเดียวกัน |
-    | `plugin-sdk/approval-client-runtime` | ตัวช่วยโปรไฟล์/ตัวกรองการอนุมัติ exec แบบ native |
-    | `plugin-sdk/approval-delivery-runtime` | อะแดปเตอร์ความสามารถ/การส่งมอบการอนุมัติแบบ native |
-    | `plugin-sdk/approval-gateway-runtime` | ตัวช่วยการแก้ไข Gateway การอนุมัติที่ใช้ร่วมกัน |
-    | `plugin-sdk/approval-handler-adapter-runtime` | ตัวช่วยโหลดอะแดปเตอร์การอนุมัติแบบ native ที่เบาสำหรับ entrypoint ช่องทางร้อน |
-    | `plugin-sdk/approval-handler-runtime` | ตัวช่วยรันไทม์ handler การอนุมัติที่กว้างกว่า; ควรใช้จุดเชื่อมต่อ adapter/gateway ที่แคบกว่าเมื่อเพียงพอ |
-    | `plugin-sdk/approval-native-runtime` | ตัวช่วยเป้าหมายการอนุมัติแบบ native, การผูกบัญชี, route-gate, forwarding fallback และการระงับ prompt ของ local native exec |
-    | `plugin-sdk/approval-reaction-runtime` | binding reaction การอนุมัติแบบฮาร์ดโค้ด, payload prompt ของ reaction, store เป้าหมาย reaction, ตัวช่วยข้อความ hint ของ reaction และเอ็กซ์พอร์ตความเข้ากันได้สำหรับการระงับ prompt ของ local native exec |
-    | `plugin-sdk/approval-reply-runtime` | ตัวช่วย payload การตอบกลับการอนุมัติ exec/Plugin |
-    | `plugin-sdk/approval-runtime` | ตัวช่วย payload การอนุมัติ exec/Plugin, ตัวช่วยการกำหนดเส้นทาง/รันไทม์การอนุมัติแบบ native และตัวช่วยการแสดงผลการอนุมัติแบบมีโครงสร้าง เช่น `formatApprovalDisplayPath` |
-    | `plugin-sdk/reply-dedupe` | ตัวช่วยรีเซ็ตการ dedupe การตอบกลับขาเข้าแบบแคบ |
-    | `plugin-sdk/channel-contract-testing` | ตัวช่วยทดสอบสัญญาช่องทางแบบแคบโดยไม่มี barrel ทดสอบแบบกว้าง |
-    | `plugin-sdk/command-auth-native` | การยืนยันตัวตนคำสั่งแบบ native, การจัดรูปแบบเมนูอาร์กิวเมนต์แบบไดนามิก และตัวช่วยเป้าหมายเซสชันแบบ native |
-    | `plugin-sdk/command-detection` | ตัวช่วยการตรวจจับคำสั่งที่ใช้ร่วมกัน |
-    | `plugin-sdk/command-primitives-runtime` | predicate ข้อความคำสั่งที่เบาสำหรับพาธช่องทางร้อน |
-    | `plugin-sdk/command-surface` | การ normalize body คำสั่งและตัวช่วย command-surface |
+    | `plugin-sdk/command-auth` | พื้นผิวการอนุญาตคำสั่งแบบกว้างซึ่งเลิกใช้แล้ว (`resolveControlCommandGate`, ตัวช่วยรีจิสทรีคำสั่ง รวมถึงการจัดรูปแบบเมนูอาร์กิวเมนต์แบบไดนามิก, ตัวช่วยการอนุญาตผู้ส่ง); ให้ใช้การอนุญาตที่ทางเข้าช่องทาง/รันไทม์ หรือตัวช่วยสถานะคำสั่ง |
+    | `plugin-sdk/command-status` | ตัวสร้างข้อความคำสั่ง/ความช่วยเหลือ เช่น `buildCommandsMessagePaginated` และ `buildHelpMessage` |
+    | `plugin-sdk/approval-auth-runtime` | ตัวช่วยระบุผู้อนุมัติและการยืนยันตัวตนสำหรับการดำเนินการในแชตเดียวกัน |
+    | `plugin-sdk/approval-client-runtime` | ตัวช่วยโปรไฟล์/ตัวกรองการอนุมัติ exec แบบเนทีฟ |
+    | `plugin-sdk/approval-delivery-runtime` | อะแดปเตอร์ความสามารถ/การส่งมอบการอนุมัติแบบเนทีฟ |
+    | `plugin-sdk/approval-gateway-runtime` | ตัวระบุ Gateway การอนุมัติที่ใช้ร่วมกัน |
+    | `plugin-sdk/approval-reference-runtime` | ตัวช่วยตัวระบุตำแหน่งถาวรแบบกำหนดแน่นอน สำหรับคอลแบ็กการอนุมัติที่ถูกจำกัดโดยการขนส่ง |
+    | `plugin-sdk/approval-handler-adapter-runtime` | ตัวช่วยโหลดอะแดปเตอร์การอนุมัติแบบเนทีฟที่มีน้ำหนักเบา สำหรับจุดเข้าช่องทางที่ใช้งานบ่อย |
+    | `plugin-sdk/approval-handler-runtime` | ตัวช่วยรันไทม์ของตัวจัดการการอนุมัติที่ครอบคลุมกว่า ควรใช้จุดเชื่อมต่ออะแดปเตอร์/Gateway ที่เฉพาะเจาะจงกว่าเมื่อเพียงพอ |
+    | `plugin-sdk/approval-native-runtime` | ตัวช่วยเป้าหมายการอนุมัติแบบเนทีฟ การผูกบัญชี เกตเส้นทาง ทางเลือกสำรองสำหรับการส่งต่อ และการระงับพรอมต์ exec แบบเนทีฟภายใน |
+    | `plugin-sdk/approval-reaction-runtime` | การผูกรีแอ็กชันการอนุมัติแบบฮาร์ดโค้ด เพย์โหลดพรอมต์รีแอ็กชัน ที่เก็บเป้าหมายรีแอ็กชัน ตัวช่วยข้อความคำแนะนำรีแอ็กชัน และการส่งออกเพื่อความเข้ากันได้สำหรับการระงับพรอมต์ exec แบบเนทีฟภายใน |
+    | `plugin-sdk/approval-reply-runtime` | ตัวช่วยเพย์โหลดการตอบกลับการอนุมัติ exec/Plugin |
+    | `plugin-sdk/approval-runtime` | ตัวช่วยเพย์โหลดการอนุมัติ exec/Plugin, ตัวสร้างความสามารถการอนุมัติ, ตัวช่วยการยืนยันตัวตน/โปรไฟล์การอนุมัติ, ตัวช่วยการกำหนดเส้นทาง/รันไทม์การอนุมัติแบบเนทีฟ และตัวช่วยแสดงผลการอนุมัติแบบมีโครงสร้าง เช่น `formatApprovalDisplayPath` |
+    | `plugin-sdk/reply-dedupe` | ตัวช่วยรีเซ็ตการขจัดรายการซ้ำของการตอบกลับขาเข้าแบบเฉพาะเจาะจงซึ่งเลิกใช้แล้ว |
+    | `plugin-sdk/command-auth-native` | การยืนยันตัวตนคำสั่งแบบเนทีฟ การจัดรูปแบบเมนูอาร์กิวเมนต์แบบไดนามิก และตัวช่วยเป้าหมายเซสชันแบบเนทีฟ |
+    | `plugin-sdk/command-detection` | ตัวช่วยตรวจจับคำสั่งที่ใช้ร่วมกัน |
+    | `plugin-sdk/command-primitives-runtime` | เพรดิเคตข้อความคำสั่งที่มีน้ำหนักเบา สำหรับพาธช่องทางที่ใช้งานบ่อย |
+    | `plugin-sdk/command-surface` | ตัวช่วยปรับเนื้อหาคำสั่งให้เป็นมาตรฐานและพื้นผิวคำสั่ง |
     | `plugin-sdk/allow-from` | `formatAllowFromLowercase` |
-    | `plugin-sdk/provider-auth-login-flow-runtime` | ตัวช่วยโฟลว์เข้าสู่ระบบการยืนยันตัวตนผู้ให้บริการแบบ lazy สำหรับการจับคู่อุปกรณ์ด้วย code ในช่องทางส่วนตัวและ Web UI |
-    | `plugin-sdk/channel-secret-runtime` | ตัวช่วยรวบรวมสัญญา secret แบบแคบสำหรับพื้นผิว secret ของช่องทาง/Plugin |
-    | `plugin-sdk/secret-ref-runtime` | ตัวช่วย typing ของ `coerceSecretRef` และ SecretRef แบบแคบสำหรับการแยกวิเคราะห์ secret-contract/config |
-    | `plugin-sdk/secret-provider-integration` | สัญญา manifest และ preset การผสานรวมผู้ให้บริการ SecretRef แบบ type-only สำหรับ Plugin ที่เผยแพร่ preset ผู้ให้บริการ secret ภายนอก |
-    | `plugin-sdk/security-runtime` | ตัวช่วย trust, การกั้น DM, ไฟล์/พาธที่จำกัดใน root ที่ใช้ร่วมกัน รวมถึงการเขียนแบบ create-only, การแทนที่ไฟล์ atomic แบบ sync/async, การเขียน temp แบบ sibling, fallback การย้ายข้ามอุปกรณ์, ตัวช่วย file-store ส่วนตัว, guard ของ symlink-parent, external-content, การ redact ข้อความอ่อนไหว, การเปรียบเทียบ secret แบบ constant-time และตัวช่วยการรวบรวม secret |
-    | `plugin-sdk/ssrf-policy` | ตัวช่วยนโยบาย allowlist โฮสต์และ SSRF ของเครือข่ายส่วนตัว |
-    | `plugin-sdk/ssrf-dispatcher` | ตัวช่วย pinned-dispatcher แบบแคบโดยไม่มีพื้นผิวรันไทม์ infra แบบกว้าง |
-    | `plugin-sdk/ssrf-runtime` | pinned-dispatcher, fetch ที่ป้องกัน SSRF, ข้อผิดพลาด SSRF และตัวช่วยนโยบาย SSRF |
-    | `plugin-sdk/secret-input` | ตัวช่วยแยกวิเคราะห์อินพุต secret |
-    | `plugin-sdk/webhook-ingress` | ตัวช่วยคำขอ/เป้าหมาย Webhook และการบังคับชนิด websocket/body แบบ raw |
-    | `plugin-sdk/webhook-request-guards` | ตัวช่วยขนาด/timeout ของ body คำขอ |
+    | `plugin-sdk/provider-auth-login-flow-runtime` | ตัวช่วยโฟลว์เข้าสู่ระบบการยืนยันตัวตนของผู้ให้บริการแบบ lazy สำหรับการจับคู่ด้วยรหัสอุปกรณ์ในช่องทางส่วนตัวและ Web UI |
+    | `plugin-sdk/channel-secret-runtime` | พื้นผิวสัญญาความลับแบบกว้างซึ่งเลิกใช้แล้ว (`collectSimpleChannelFieldAssignments`, `getChannelSurface`, `pushAssignment`, ชนิดเป้าหมายความลับ); ควรใช้พาธย่อยเฉพาะด้านล่าง |
+    | `plugin-sdk/channel-secret-basic-runtime` | การส่งออกสัญญาความลับแบบเฉพาะเจาะจงและตัวสร้างรีจิสทรีเป้าหมาย สำหรับพื้นผิวความลับของช่องทาง/Plugin ที่ไม่ใช่ TTS |
+    | `plugin-sdk/channel-secret-tts-runtime` | ตัวช่วยกำหนดความลับ TTS ของช่องทางแบบซ้อนที่เฉพาะเจาะจง |
+    | `plugin-sdk/secret-ref-runtime` | การกำหนดชนิด การระบุค่า และการค้นหาพาธเป้าหมายของแผนสำหรับ SecretRef แบบเฉพาะเจาะจง เพื่อใช้แยกวิเคราะห์สัญญาความลับ/การกำหนดค่า |
+    | `plugin-sdk/secret-provider-integration` | สัญญา manifest และพรีเซ็ตการผสานรวมผู้ให้บริการ SecretRef แบบชนิดเท่านั้น สำหรับ Plugin ที่เผยแพร่พรีเซ็ตผู้ให้บริการความลับภายนอก |
+    | `plugin-sdk/security-runtime` | barrel แบบกว้างซึ่งเลิกใช้แล้ว สำหรับความเชื่อถือ การควบคุม DM ตัวช่วยไฟล์/พาธที่จำกัดภายในรูท รวมถึงการเขียนแบบสร้างเท่านั้น การแทนที่ไฟล์แบบอะตอมมิกทั้งซิงก์/อะซิงก์ การเขียนไฟล์ชั่วคราวข้างเคียง ทางเลือกสำรองสำหรับการย้ายข้ามอุปกรณ์ ตัวช่วยที่เก็บไฟล์ส่วนตัว การป้องกันพาเรนต์ที่เป็น symlink เนื้อหาภายนอก การปกปิดข้อความละเอียดอ่อน การเปรียบเทียบความลับแบบใช้เวลาคงที่ และตัวช่วยรวบรวมความลับ; ควรใช้พาธย่อยด้านความปลอดภัย/SSRF/ความลับที่เฉพาะเจาะจง |
+    | `plugin-sdk/ssrf-policy` | ตัวช่วยรายการโฮสต์ที่อนุญาตและนโยบาย SSRF สำหรับเครือข่ายส่วนตัว |
+    | `plugin-sdk/ssrf-dispatcher` | ตัวช่วย pinned dispatcher แบบเฉพาะเจาะจงที่ไม่รวมพื้นผิวรันไทม์โครงสร้างพื้นฐานแบบกว้าง |
+    | `plugin-sdk/ssrf-runtime` | ตัวช่วย pinned dispatcher การดึงข้อมูลที่มีการป้องกัน SSRF ข้อผิดพลาด SSRF และนโยบาย SSRF |
+    | `plugin-sdk/secret-input` | ตัวช่วยแยกวิเคราะห์อินพุตความลับ |
+    | `plugin-sdk/webhook-ingress` | ตัวช่วยคำขอ/เป้าหมาย Webhook และการบังคับแปลง websocket/body แบบดิบ |
+    | `plugin-sdk/webhook-request-guards` | ตัวช่วยขนาด/การหมดเวลาของเนื้อหาคำขอ และ `runDetachedWebhookWork` สำหรับการประมวลผลหลังการตอบรับที่มีการติดตาม |
   </Accordion>
 
-  <Accordion title="Runtime and storage subpaths">
-    | เส้นทางย่อย | เอ็กซ์พอร์ตหลัก |
+  <Accordion title="พาธย่อยของรันไทม์และพื้นที่จัดเก็บ">
+    | พาธย่อย | รายการส่งออกหลัก |
     | --- | --- |
-    | `plugin-sdk/runtime` | ตัวช่วยรันไทม์/การบันทึก/การสำรองข้อมูล/การติดตั้ง Plugin แบบกว้าง |
-    | `plugin-sdk/runtime-env` | ตัวช่วย env รันไทม์, logger, timeout, retry และ backoff แบบแคบ |
-    | `plugin-sdk/browser-config` | ฟาซาดคอนฟิกเบราว์เซอร์ที่รองรับสำหรับโปรไฟล์/ค่าเริ่มต้นที่ทำให้เป็นมาตรฐานแล้ว, การแยกวิเคราะห์ URL ของ CDP และตัวช่วย auth สำหรับการควบคุมเบราว์เซอร์ |
-    | `plugin-sdk/agent-harness-task-runtime` | ตัวช่วยวงจรชีวิตงานและการส่งมอบเมื่อเสร็จสิ้นทั่วไปสำหรับเอเจนต์ที่มี harness หนุนหลังซึ่งใช้ขอบเขตงานที่ host ออกให้ |
-    | `plugin-sdk/codex-mcp-projection` | ตัวช่วย Codex แบบ bundled ที่สงวนไว้สำหรับฉายคอนฟิกเซิร์ฟเวอร์ MCP ของผู้ใช้เข้าไปในคอนฟิกเธรดของ Codex; ไม่ใช่สำหรับ Plugin ของบุคคลที่สาม |
-    | `plugin-sdk/codex-native-task-runtime` | ตัวช่วย Codex แบบ bundled ส่วนตัวสำหรับการเดินสาย task mirror/รันไทม์แบบ native; ไม่ใช่สำหรับ Plugin ของบุคคลที่สาม |
-    | `plugin-sdk/channel-runtime-context` | ตัวช่วยลงทะเบียนและค้นหา runtime-context ของช่องทางทั่วไป |
-    | `plugin-sdk/matrix` | ฟาซาดความเข้ากันได้ของ Matrix ที่เลิกใช้แล้วสำหรับแพ็กเกจช่องทางของบุคคลที่สามรุ่นเก่า; Plugin ใหม่ควรอิมพอร์ต `plugin-sdk/run-command` โดยตรง |
-    | `plugin-sdk/mattermost` | ฟาซาดความเข้ากันได้ของ Mattermost ที่เลิกใช้แล้วสำหรับแพ็กเกจช่องทางของบุคคลที่สามรุ่นเก่า; Plugin ใหม่ควรอิมพอร์ตเส้นทางย่อย SDK ทั่วไปโดยตรง |
+    | `plugin-sdk/runtime` | ตัวช่วยสำหรับรันไทม์/การบันทึกล็อก/การสำรองข้อมูล คำเตือนเกี่ยวกับพาธติดตั้ง Plugin และตัวช่วยสำหรับโปรเซส |
+    | `plugin-sdk/runtime-env` | ตัวช่วยแบบเจาะจงสำหรับสภาพแวดล้อมรันไทม์ ตัวบันทึกล็อก การหมดเวลา การลองใหม่ และการหน่วงเวลาแบบทวีคูณ |
+    | `plugin-sdk/browser-config` | Facade การกำหนดค่าเบราว์เซอร์ที่รองรับ สำหรับโปรไฟล์/ค่าเริ่มต้นที่ปรับให้เป็นมาตรฐาน การแยกวิเคราะห์ URL ของ CDP และตัวช่วยการยืนยันตัวตนสำหรับการควบคุมเบราว์เซอร์ |
+    | `plugin-sdk/agent-harness-task-runtime` | ตัวช่วยทั่วไปสำหรับวงจรชีวิตของงานและการส่งมอบเมื่อเสร็จสิ้น สำหรับเอเจนต์ที่มี harness รองรับโดยใช้ขอบเขตงานที่โฮสต์กำหนด |
+    | `plugin-sdk/codex-mcp-projection` | ตัวช่วย Codex แบบรวมในชุดที่สงวนไว้ สำหรับฉายการกำหนดค่าเซิร์ฟเวอร์ MCP ของผู้ใช้ไปยังการกำหนดค่าเธรด Codex ไม่ได้มีไว้สำหรับ Plugin ของบุคคลที่สาม |
+    | `plugin-sdk/codex-native-task-runtime` | ตัวช่วย Codex แบบรวมในชุดและอยู่ภายในรีโพสำหรับการเชื่อมต่อมิเรอร์งานดั้งเดิม/รันไทม์ ไม่ใช่รายการส่งออกของแพ็กเกจ |
+    | `plugin-sdk/channel-runtime-context` | ตัวช่วยทั่วไปสำหรับการลงทะเบียนและค้นหาบริบทรันไทม์ของช่องทาง |
+    | `plugin-sdk/matrix` | Facade ความเข้ากันได้ของ Matrix ที่เลิกใช้แล้วสำหรับแพ็กเกจช่องทางของบุคคลที่สามรุ่นเก่า Plugin ใหม่ควรนำเข้า `plugin-sdk/run-command` โดยตรง |
+    | `plugin-sdk/mattermost` | Facade ความเข้ากันได้ของ Mattermost ที่เลิกใช้แล้วสำหรับแพ็กเกจช่องทางของบุคคลที่สามรุ่นเก่า Plugin ใหม่ควรนำเข้าพาธย่อย SDK ทั่วไปโดยตรง |
     | `plugin-sdk/runtime-store` | `createPluginRuntimeStore` |
-    | `plugin-sdk/plugin-runtime` | ตัวช่วยคำสั่ง/hook/http/interactive ของ Plugin ที่ใช้ร่วมกัน |
-    | `plugin-sdk/hook-runtime` | ตัวช่วยไปป์ไลน์ Webhook/hook ภายในที่ใช้ร่วมกัน |
-    | `plugin-sdk/lazy-runtime` | ตัวช่วยอิมพอร์ต/ผูกค่ารันไทม์แบบ lazy เช่น `createLazyRuntimeModule`, `createLazyRuntimeMethod` และ `createLazyRuntimeSurface` |
-    | `plugin-sdk/process-runtime` | ตัวช่วย exec ของ process |
-    | `plugin-sdk/cli-runtime` | ตัวช่วยการจัดรูปแบบ CLI, การรอ, เวอร์ชัน, การเรียกด้วยอาร์กิวเมนต์ และกลุ่มคำสั่งแบบ lazy |
-    | `plugin-sdk/qa-live-transport-scenarios` | ids สถานการณ์ QA ของ live transport ที่ใช้ร่วมกัน, ตัวช่วย baseline coverage และตัวช่วยเลือกสถานการณ์ |
-    | `plugin-sdk/gateway-method-runtime` | ตัวช่วย dispatch เมธอด Gateway ที่สงวนไว้สำหรับ route HTTP ของ Plugin ที่ประกาศ `contracts.gatewayMethodDispatch: ["authenticated-request"]` |
-    | `plugin-sdk/gateway-runtime` | ไคลเอนต์ Gateway, ตัวช่วยเริ่มไคลเอนต์ที่พร้อม event loop, RPC ของ CLI สำหรับ gateway, ข้อผิดพลาดโปรโตคอล gateway, การระบุ host LAN ที่ประกาศ และตัวช่วยแพตช์สถานะช่องทาง |
-    | `plugin-sdk/config-contracts` | พื้นผิวคอนฟิกแบบ type-only ที่เจาะจงสำหรับรูปทรงคอนฟิกของ Plugin เช่น `OpenClawConfig` และชนิดคอนฟิกช่องทาง/ผู้ให้บริการ |
-    | `plugin-sdk/plugin-config-runtime` | ตัวช่วยค้นหาคอนฟิก Plugin ระหว่างรันไทม์ เช่น `requireRuntimeConfig`, `resolvePluginConfigObject` และ `resolveLivePluginConfigObject` |
-    | `plugin-sdk/config-mutation` | ตัวช่วยแก้ไขคอนฟิกแบบ transactional เช่น `mutateConfigFile`, `replaceConfigFile` และ `logConfigUpdated` |
-    | `plugin-sdk/message-tool-delivery-hints` | สตริง hint เมตาดาต้าการส่งมอบ message-tool ที่ใช้ร่วมกัน |
-    | `plugin-sdk/runtime-config-snapshot` | ตัวช่วย snapshot คอนฟิก process ปัจจุบัน เช่น `getRuntimeConfig`, `getRuntimeConfigSnapshot` และ setter สำหรับ test snapshot |
-    | `plugin-sdk/telegram-command-config` | การทำให้ชื่อคำสั่ง/คำอธิบายของ Telegram เป็นมาตรฐาน และการตรวจสอบรายการซ้ำ/ข้อขัดแย้ง แม้พื้นผิวสัญญา Telegram แบบ bundled จะไม่พร้อมใช้งาน |
-    | `plugin-sdk/text-autolink-runtime` | การตรวจจับ autolink ของการอ้างอิงไฟล์โดยไม่ใช้ text barrel แบบกว้าง |
-    | `plugin-sdk/approval-reaction-runtime` | binding ของ approval reaction ที่ฮาร์ดโค้ด, payload ของ prompt reaction, store ของเป้าหมาย reaction, ตัวช่วยข้อความ hint ของ reaction และเอ็กซ์พอร์ตความเข้ากันได้สำหรับการระงับ prompt exec native ภายในเครื่อง |
-    | `plugin-sdk/approval-runtime` | ตัวช่วย approval สำหรับ exec/Plugin, builder ของ approval-capability, ตัวช่วย auth/profile, ตัวช่วย routing/รันไทม์แบบ native และการจัดรูปแบบเส้นทางแสดง approval แบบมีโครงสร้าง |
-    | `plugin-sdk/reply-runtime` | ตัวช่วยรันไทม์ inbound/reply ที่ใช้ร่วมกัน, chunking, dispatch, Heartbeat, reply planner |
-    | `plugin-sdk/reply-dispatch-runtime` | ตัวช่วย dispatch/finalize reply และ label การสนทนาแบบแคบ |
-    | `plugin-sdk/reply-history` | ตัวช่วยประวัติ reply ช่วงสั้นที่ใช้ร่วมกัน โค้ด message-turn ใหม่ควรใช้ `createChannelHistoryWindow`; ตัวช่วย map ระดับต่ำกว่ายังคงเป็นเอ็กซ์พอร์ตความเข้ากันได้ที่เลิกใช้แล้วเท่านั้น |
+    | `plugin-sdk/plugin-runtime` | Barrel แบบกว้างที่เลิกใช้แล้วสำหรับตัวช่วยคำสั่ง/ฮุก/http/การโต้ตอบของ Plugin ควรใช้พาธย่อยรันไทม์ Plugin ที่เจาะจง |
+    | `plugin-sdk/hook-runtime` | Barrel แบบกว้างที่เลิกใช้แล้วสำหรับตัวช่วย Webhook/ไปป์ไลน์ฮุกภายใน ควรใช้พาธย่อยรันไทม์ฮุก/Plugin ที่เจาะจง |
+    | `plugin-sdk/lazy-runtime` | ตัวช่วยการนำเข้า/ผูกมัดรันไทม์แบบ lazy เช่น `createLazyRuntimeModule`, `createLazyRuntimeMethod` และ `createLazyRuntimeSurface` |
+    | `plugin-sdk/process-runtime` | ตัวช่วยเรียกใช้โปรเซส |
+    | `plugin-sdk/node-host` | ตัวช่วยแก้ไขตำแหน่งไฟล์ปฏิบัติการบนโฮสต์ Node และดำเนินการ PTY ต่อ |
+    | `plugin-sdk/cli-runtime` | Barrel แบบกว้างที่เลิกใช้แล้วสำหรับการจัดรูปแบบ CLI การรอ เวอร์ชัน การเรียกใช้ด้วยอาร์กิวเมนต์ และตัวช่วยกลุ่มคำสั่งแบบ lazy ควรใช้พาธย่อย CLI/รันไทม์ที่เจาะจง |
+    | `plugin-sdk/qa-runner-runtime` | Facade ที่รองรับซึ่งเปิดเผยสถานการณ์ QA ของ Plugin ผ่านพื้นผิวคำสั่ง CLI |
+    | `plugin-sdk/tts-runtime` | Facade ที่รองรับสำหรับสคีมาการกำหนดค่าการแปลงข้อความเป็นเสียงและตัวช่วยรันไทม์ |
+    | `plugin-sdk/gateway-method-runtime` | ตัวช่วยจัดส่งเมธอด Gateway ที่สงวนไว้สำหรับเส้นทาง HTTP ของ Plugin ซึ่งประกาศ `contracts.gatewayMethodDispatch: ["authenticated-request"]` |
+    | `plugin-sdk/gateway-runtime` | ไคลเอนต์ Gateway ตัวช่วยเริ่มต้นไคลเอนต์เมื่อ event loop พร้อม RPC ของ CLI สำหรับ Gateway ข้อผิดพลาดของโปรโตคอล Gateway การแก้ไขโฮสต์ LAN ที่ประกาศ และตัวช่วยแพตช์สถานะช่องทาง |
+    | `plugin-sdk/config-contracts` | พื้นผิวการกำหนดค่าแบบชนิดข้อมูลเท่านั้นที่เจาะจง สำหรับรูปแบบการกำหนดค่า Plugin เช่น `OpenClawConfig` และชนิดการกำหนดค่าช่องทาง/ผู้ให้บริการ |
+    | `plugin-sdk/plugin-config-runtime` | ตัวช่วยการกำหนดค่า Plugin ขณะรันไทม์ เช่น `mergeDeep`, `requireRuntimeConfig`, `resolvePluginConfigObject` และ `resolveLivePluginConfigObject` |
+    | `plugin-sdk/config-mutation` | ตัวช่วยแก้ไขการกำหนดค่าแบบธุรกรรม เช่น `mutateConfigFile`, `replaceConfigFile` และ `logConfigUpdated` |
+    | `plugin-sdk/message-tool-delivery-hints` | สตริงคำแนะนำเมทาดาทาการส่งมอบที่ใช้ร่วมกันสำหรับเครื่องมือข้อความ |
+    | `plugin-sdk/runtime-config-snapshot` | ตัวช่วยสแนปช็อตการกำหนดค่าของโปรเซสปัจจุบัน เช่น `getRuntimeConfig`, `getRuntimeConfigSnapshot` และตัวตั้งค่าสแนปช็อตสำหรับการทดสอบ |
+    | `plugin-sdk/text-autolink-runtime` | การตรวจจับลิงก์อัตโนมัติของการอ้างอิงไฟล์โดยไม่ใช้ Barrel ข้อความแบบกว้าง |
+    | `plugin-sdk/reply-runtime` | ตัวช่วยรันไทม์ขาเข้า/การตอบกลับที่ใช้ร่วมกัน การแบ่งเป็นส่วน การจัดส่ง Heartbeat และตัววางแผนการตอบกลับ |
+    | `plugin-sdk/reply-dispatch-runtime` | ตัวช่วยแบบเจาะจงสำหรับการจัดส่ง/ปิดท้ายการตอบกลับและป้ายกำกับการสนทนา |
+    | `plugin-sdk/reply-history` | ตัวช่วยประวัติการตอบกลับในช่วงเวลาสั้นที่ใช้ร่วมกัน โค้ดรอบข้อความใหม่ควรใช้ `createChannelHistoryWindow` ส่วนตัวช่วยแผนที่ระดับล่างยังคงเป็นเพียงรายการส่งออกเพื่อความเข้ากันได้ที่เลิกใช้แล้ว |
     | `plugin-sdk/reply-reference` | `createReplyReferencePlanner` |
-    | `plugin-sdk/reply-chunking` | ตัวช่วย chunking ข้อความ/markdown แบบแคบ |
-    | `plugin-sdk/session-store-runtime` | ตัวช่วย workflow ของเซสชัน (`getSessionEntry`, `listSessionEntries`, `patchSessionEntry`, `upsertSessionEntry`), การอ่านข้อความ transcript ผู้ใช้/ผู้ช่วยล่าสุดแบบมีขอบเขตตามอัตลักษณ์เซสชัน, ตัวช่วยเส้นทาง store เซสชันเดิม/session-key, การอ่าน updated-at และตัวช่วยความเข้ากันได้ทั้ง store/เส้นทางไฟล์เฉพาะช่วงเปลี่ยนผ่าน |
-    | `plugin-sdk/session-transcript-runtime` | อัตลักษณ์ transcript, ตัวช่วย target/read/write แบบ scoped, การเผยแพร่การอัปเดต, write locks และ key สำหรับ transcript memory hit |
-    | `plugin-sdk/sqlite-runtime` | ตัวช่วย schema, เส้นทาง และ transaction ของเอเจนต์ SQLite ที่เจาะจงสำหรับรันไทม์ first-party |
-    | `plugin-sdk/cron-store-runtime` | ตัวช่วยเส้นทาง/load/save ของ Cron store |
-    | `plugin-sdk/state-paths` | ตัวช่วยเส้นทางไดเรกทอรี State/OAuth |
-    | `plugin-sdk/plugin-state-runtime` | ชนิด keyed-state ของ SQLite sidecar สำหรับ Plugin พร้อมการตั้งค่า pragma การเชื่อมต่อและการบำรุงรักษา WAL แบบรวมศูนย์สำหรับฐานข้อมูลที่ Plugin เป็นเจ้าของ |
-    | `plugin-sdk/routing` | ตัวช่วย binding ของ route/session-key/account เช่น `resolveAgentRoute`, `buildAgentSessionKey` และ `resolveDefaultAgentBoundAccountId` |
-    | `plugin-sdk/status-helpers` | ตัวช่วยสรุปสถานะช่องทาง/account ที่ใช้ร่วมกัน, ค่าเริ่มต้น runtime-state และตัวช่วยเมตาดาต้าของ issue |
-    | `plugin-sdk/target-resolver-runtime` | ตัวช่วย resolver เป้าหมายที่ใช้ร่วมกัน |
-    | `plugin-sdk/string-normalization-runtime` | ตัวช่วยทำ slug/string ให้เป็นมาตรฐาน |
-    | `plugin-sdk/request-url` | ดึง URL แบบสตริงจากอินพุตที่คล้าย fetch/request |
-    | `plugin-sdk/run-command` | ตัวรันคำสั่งแบบจับเวลาพร้อมผลลัพธ์ stdout/stderr ที่ทำให้เป็นมาตรฐานแล้ว |
-    | `plugin-sdk/param-readers` | ตัวอ่านพารามิเตอร์ tool/CLI ทั่วไป |
-    | `plugin-sdk/tool-plugin` | กำหนด Plugin agent-tool แบบ typed อย่างง่าย และเปิดเผยเมตาดาต้าแบบ static สำหรับการสร้าง manifest |
-    | `plugin-sdk/tool-payload` | ดึง payload ที่ทำให้เป็นมาตรฐานแล้วจากออบเจ็กต์ผลลัพธ์ของ tool |
-    | `plugin-sdk/tool-send` | ดึงฟิลด์เป้าหมายการส่งแบบ canonical จากอาร์กิวเมนต์ของ tool |
-    | `plugin-sdk/sandbox` | ชนิด backend ของ sandbox และตัวช่วยคำสั่ง SSH/OpenShell รวมถึง preflight คำสั่ง exec แบบ fail-fast |
-    | `plugin-sdk/temp-path` | ตัวช่วยเส้นทาง temp-download ที่ใช้ร่วมกันและพื้นที่ทำงาน temp ที่ปลอดภัยแบบส่วนตัว |
-    | `plugin-sdk/logging-core` | ตัวช่วย logger และการปกปิดข้อมูลของ subsystem |
-    | `plugin-sdk/markdown-table-runtime` | ตัวช่วยโหมดและการแปลงตาราง Markdown |
-    | `plugin-sdk/model-session-runtime` | ตัวช่วย override model/เซสชัน เช่น `applyModelOverrideToSessionEntry` และ `resolveAgentMaxConcurrent` |
-    | `plugin-sdk/talk-config-runtime` | ตัวช่วย resolve คอนฟิก talk provider |
-    | `plugin-sdk/json-store` | ตัวช่วยอ่าน/เขียนสถานะ JSON ขนาดเล็ก |
-    | `plugin-sdk/json-unsafe-integers` | ตัวช่วยแยกวิเคราะห์ JSON ที่เก็บ literal จำนวนเต็มที่ไม่ปลอดภัยเป็นสตริง |
-    | `plugin-sdk/file-lock` | ตัวช่วย file-lock แบบ re-entrant |
-    | `plugin-sdk/persistent-dedupe` | ตัวช่วย dedupe cache ที่มีดิสก์หนุนหลัง |
-    | `plugin-sdk/acp-runtime` | ตัวช่วยรันไทม์/เซสชัน ACP และ reply-dispatch |
-    | `plugin-sdk/acp-runtime-backend` | ตัวช่วยลงทะเบียน ACP backend และ reply-dispatch แบบ lightweight สำหรับ Plugin ที่โหลดตอนเริ่มต้น |
-    | `plugin-sdk/acp-binding-resolve-runtime` | การ resolve binding ของ ACP แบบ read-only โดยไม่มีการอิมพอร์ต lifecycle startup |
-    | `plugin-sdk/agent-config-primitives` | primitive schema คอนฟิกรันไทม์เอเจนต์แบบแคบ |
-    | `plugin-sdk/boolean-param` | ตัวอ่านพารามิเตอร์ boolean แบบหลวม |
-    | `plugin-sdk/dangerous-name-runtime` | ตัวช่วย resolve การจับคู่ชื่ออันตราย |
-    | `plugin-sdk/device-bootstrap` | ตัวช่วย bootstrap อุปกรณ์และ pairing token |
-    | `plugin-sdk/extension-shared` | primitive ตัวช่วย passive-channel, สถานะ และ ambient proxy ที่ใช้ร่วมกัน |
-    | `plugin-sdk/models-provider-runtime` | ตัวช่วย reply ของคำสั่ง/ผู้ให้บริการ `/models` |
+    | `plugin-sdk/reply-chunking` | ตัวช่วยแบบเจาะจงสำหรับแบ่งข้อความ/Markdown เป็นส่วน |
+    | `plugin-sdk/session-store-runtime` | ตัวช่วยเวิร์กโฟลว์เซสชัน (`getSessionEntry`, `listSessionEntries`, `patchSessionEntry`, `upsertSessionEntry`) ตัวช่วยซ่อมแซม/วงจรชีวิต (`deleteSessionEntry`, `cleanupSessionLifecycleArtifacts`, `resolveSessionStoreBackupPaths`) ตัวช่วยมาร์กเกอร์สำหรับค่า `sessionFile` ช่วงเปลี่ยนผ่าน การอ่านข้อความทรานสคริปต์ล่าสุดของผู้ใช้/ผู้ช่วยแบบมีขอบเขตตามข้อมูลประจำตัวของเซสชัน ตัวช่วยพาธที่เก็บเซสชัน/คีย์เซสชัน และการอ่านเวลาที่อัปเดต โดยไม่มีการนำเข้าการเขียน/บำรุงรักษาการกำหนดค่าแบบกว้าง |
+    | `plugin-sdk/session-transcript-runtime` | ข้อมูลประจำตัวของทรานสคริปต์ ตัวช่วยเป้าหมาย/อ่าน/เขียนแบบมีขอบเขต การฉายรายการข้อความที่มองเห็นได้ การเผยแพร่การอัปเดต ล็อกการเขียน และคีย์การพบข้อมูลในหน่วยความจำทรานสคริปต์ |
+    | `plugin-sdk/sqlite-runtime` | ตัวช่วยแบบเจาะจงสำหรับสคีมาเอเจนต์ SQLite พาธ และธุรกรรมสำหรับรันไทม์ของบุคคลที่หนึ่ง โดยไม่มีส่วนควบคุมวงจรชีวิตฐานข้อมูล |
+    | `plugin-sdk/cron-store-runtime` | ตัวช่วยพาธ/โหลด/บันทึกที่เก็บ Cron |
+    | `plugin-sdk/state-paths` | ตัวช่วยพาธไดเรกทอรีสถานะ/OAuth |
+    | `plugin-sdk/plugin-state-runtime` | ชนิดสถานะแบบใช้คีย์ของ SQLite sidecar สำหรับ Plugin พร้อม pragma การเชื่อมต่อแบบรวมศูนย์ การบำรุงรักษา WAL ที่ผ่านการตรวจสอบ และตัวช่วยย้ายสคีมา STRICT แบบอะตอมสำหรับฐานข้อมูลที่ Plugin เป็นเจ้าของ |
+    | `plugin-sdk/routing` | ตัวช่วยผูกมัดเส้นทาง/คีย์เซสชัน/บัญชี เช่น `resolveAgentRoute`, `buildAgentSessionKey` และ `resolveDefaultAgentBoundAccountId` |
+    | `plugin-sdk/status-helpers` | ตัวช่วยสรุปสถานะช่องทาง/บัญชีที่ใช้ร่วมกัน ค่าเริ่มต้นสถานะรันไทม์ และตัวช่วยเมทาดาทาปัญหา |
+    | `plugin-sdk/target-resolver-runtime` | ตัวช่วยแก้ไขเป้าหมายที่ใช้ร่วมกัน |
+    | `plugin-sdk/string-normalization-runtime` | ตัวช่วยปรับ slug/สตริงให้เป็นมาตรฐาน |
+    | `plugin-sdk/request-url` | แยก URL แบบสตริงออกจากอินพุตที่มีลักษณะคล้าย fetch/request |
+    | `plugin-sdk/run-command` | ตัวเรียกใช้คำสั่งแบบกำหนดเวลา พร้อมผลลัพธ์ stdout/stderr ที่ปรับให้เป็นมาตรฐาน |
+    | `plugin-sdk/param-readers` | ตัวอ่านพารามิเตอร์ทั่วไปของเครื่องมือ/CLI |
+    | `plugin-sdk/tool-plugin` | กำหนด Plugin เครื่องมือเอเจนต์แบบมีชนิดข้อมูลอย่างง่าย และเปิดเผยเมทาดาทาคงที่สำหรับการสร้างแมนิเฟสต์ |
+    | `plugin-sdk/tool-payload` | แยกเพย์โหลดที่ปรับให้เป็นมาตรฐานออกจากออบเจ็กต์ผลลัพธ์เครื่องมือ |
+    | `plugin-sdk/tool-send` | แยกฟิลด์เป้าหมายการส่งแบบมาตรฐานออกจากอาร์กิวเมนต์ของเครื่องมือ |
+    | `plugin-sdk/sandbox` | ชนิดแบ็กเอนด์ Sandbox และตัวช่วยคำสั่ง SSH/OpenShell รวมถึงการตรวจสอบคำสั่ง exec ล่วงหน้าแบบหยุดทันทีเมื่อผิดพลาด |
+    | `plugin-sdk/temp-path` | ตัวช่วยพาธดาวน์โหลดชั่วคราวที่ใช้ร่วมกันและพื้นที่ทำงานชั่วคราวส่วนตัวที่ปลอดภัย |
+    | `plugin-sdk/logging-core` | ตัวบันทึกล็อกของระบบย่อยและตัวช่วยปกปิดข้อมูล |
+    | `plugin-sdk/markdown-table-runtime` | โหมดตาราง Markdown และตัวช่วยการแปลง |
+    | `plugin-sdk/model-session-runtime` | ตัวช่วยแทนที่โมเดล/เซสชัน เช่น `applyModelOverrideToSessionEntry` และ `resolveAgentMaxConcurrent` |
+    | `plugin-sdk/talk-config-runtime` | ตัวช่วยแก้ไขการกำหนดค่าผู้ให้บริการสนทนา |
+    | `plugin-sdk/json-store` | ตัวช่วยขนาดเล็กสำหรับอ่าน/เขียนสถานะ JSON |
+    | `plugin-sdk/json-unsafe-integers` | ตัวช่วยแยกวิเคราะห์ JSON ที่เก็บลิเทอรัลจำนวนเต็มที่ไม่ปลอดภัยไว้เป็นสตริง |
+    | `plugin-sdk/file-lock` | ตัวช่วยล็อกไฟล์แบบกลับเข้าได้ |
+    | `plugin-sdk/persistent-dedupe` | ตัวช่วยแคชขจัดรายการซ้ำที่มีดิสก์รองรับ |
+    | `plugin-sdk/acp-runtime` | ตัวช่วยรันไทม์/เซสชัน ACP และการจัดส่งการตอบกลับ |
+    | `plugin-sdk/acp-runtime-backend` | ตัวช่วยลงทะเบียนแบ็กเอนด์ ACP แบบน้ำหนักเบาและจัดส่งการตอบกลับสำหรับ Plugin ที่โหลดเมื่อเริ่มต้น |
+    | `plugin-sdk/acp-binding-resolve-runtime` | การแก้ไขการผูกมัด ACP แบบอ่านอย่างเดียวโดยไม่นำเข้าส่วนเริ่มต้นวงจรชีวิต |
+    | `plugin-sdk/agent-config-primitives` | Primitive สคีมาการกำหนดค่ารันไทม์ของเอเจนต์ที่เลิกใช้แล้ว ให้นำเข้า primitive ของสคีมาจากพื้นผิวที่ Plugin ซึ่งได้รับการบำรุงรักษาเป็นเจ้าของ |
+    | `plugin-sdk/boolean-param` | ตัวอ่านพารามิเตอร์บูลีนแบบยืดหยุ่น |
+    | `plugin-sdk/dangerous-name-runtime` | ตัวช่วยแก้ไขการจับคู่ชื่อที่เป็นอันตราย |
+    | `plugin-sdk/device-bootstrap` | ตัวช่วยบูตสแตรปอุปกรณ์และโทเค็นการจับคู่ รวมถึง `BOOTSTRAP_HANDOFF_OPERATOR_SCOPES` |
+    | `plugin-sdk/extension-shared` | Primitive ตัวช่วยที่ใช้ร่วมกันสำหรับช่องทางแบบรับอย่างเดียว สถานะ และพร็อกซีแวดล้อม |
+    | `plugin-sdk/models-provider-runtime` | ตัวช่วยการตอบกลับสำหรับคำสั่ง/ผู้ให้บริการ `/models` |
     | `plugin-sdk/skill-commands-runtime` | ตัวช่วยแสดงรายการคำสั่ง Skill |
-    | `plugin-sdk/native-command-registry` | ตัวช่วย registry/build/serialize คำสั่ง native |
-    | `plugin-sdk/agent-harness` | พื้นผิว trusted-plugin แบบทดลองสำหรับ agent harness ระดับต่ำ: ชนิด harness, ตัวช่วย steer/abort ของ active-run, ตัวช่วย bridge tool ของ OpenClaw, ตัวช่วยนโยบาย tool ของ runtime-plan, การจำแนก terminal outcome, ตัวช่วยจัดรูปแบบ/รายละเอียดความคืบหน้าของ tool และยูทิลิตี้ผลลัพธ์ของ attempt |
-    | `plugin-sdk/provider-zai-endpoint` | ฟาซาดการตรวจจับ endpoint ที่ Z.AI provider เป็นเจ้าของซึ่งเลิกใช้แล้ว; ใช้ API สาธารณะของ Plugin Z.AI |
-    | `plugin-sdk/async-lock-runtime` | ตัวช่วย async lock ภายใน process สำหรับไฟล์สถานะรันไทม์ขนาดเล็ก |
-    | `plugin-sdk/channel-activity-runtime` | ตัวช่วย telemetry กิจกรรมช่องทาง |
-    | `plugin-sdk/concurrency-runtime` | ตัวช่วย concurrency ของงาน async แบบมีขอบเขต |
-    | `plugin-sdk/dedupe-runtime` | ตัวช่วย dedupe cache แบบ in-memory และแบบมี persistent-backed |
-    | `plugin-sdk/delivery-queue-runtime` | ตัวช่วย drain การส่งมอบ outbound ที่รอดำเนินการ |
-    | `plugin-sdk/file-access-runtime` | ตัวช่วยเส้นทาง local-file และ media-source ที่ปลอดภัย |
-    | `plugin-sdk/heartbeat-runtime` | ตัวช่วย wake, event และ visibility ของ Heartbeat |
+    | `plugin-sdk/native-command-registry` | ตัวช่วยรีจิสทรี/สร้าง/ทำให้เป็นอนุกรมสำหรับคำสั่งดั้งเดิม |
+    | `plugin-sdk/agent-harness` | พื้นผิวทดลองสำหรับ Plugin ที่เชื่อถือได้สำหรับ harness เอเจนต์ระดับล่าง: ชนิด harness ตัวช่วยควบคุมทิศทาง/ยกเลิกการทำงานที่กำลังดำเนินอยู่ ตัวช่วยบริดจ์เครื่องมือ OpenClaw ตัวช่วยนโยบายเครื่องมือแผนรันไทม์ การจัดประเภทผลลัพธ์ปลายทาง การจัดรูปแบบ/รายละเอียดความคืบหน้าของเครื่องมือ และยูทิลิตีผลลัพธ์ของความพยายาม |
+    | `plugin-sdk/provider-zai-endpoint` | Facade การตรวจจับเอนด์พอยต์ที่ผู้ให้บริการ Z.AI เป็นเจ้าของซึ่งเลิกใช้แล้ว ให้ใช้ API สาธารณะของ Plugin Z.AI |
+    | `plugin-sdk/async-lock-runtime` | ตัวช่วยล็อกแบบอะซิงโครนัสภายในโปรเซสสำหรับไฟล์สถานะรันไทม์ขนาดเล็ก |
+    | `plugin-sdk/channel-activity-runtime` | ตัวช่วยเทเลเมทรีกิจกรรมช่องทาง |
+    | `plugin-sdk/concurrency-runtime` | ตัวช่วยควบคุมการทำงานพร้อมกันของงานอะซิงโครนัสแบบมีขอบเขต |
+    | `plugin-sdk/dedupe-runtime` | ตัวช่วยแคชขจัดรายการซ้ำในหน่วยความจำและที่มีพื้นที่จัดเก็บถาวรรองรับ |
+    | `plugin-sdk/delivery-queue-runtime` | ตัวช่วยระบายการส่งมอบขาออกที่รอดำเนินการ |
+    | `plugin-sdk/file-access-runtime` | ตัวช่วยพาธไฟล์ภายในเครื่องและแหล่งสื่อที่ปลอดภัย |
+    | `plugin-sdk/heartbeat-runtime` | ตัวช่วยปลุก เหตุการณ์ และการมองเห็นของ Heartbeat |
+    | `plugin-sdk/expect-runtime` | ตัวช่วยยืนยันค่าที่จำเป็นสำหรับค่าคงที่รันไทม์ที่พิสูจน์ได้ |
     | `plugin-sdk/number-runtime` | ตัวช่วยบังคับแปลงเป็นตัวเลข |
-    | `plugin-sdk/secure-random-runtime` | ตัวช่วย token/UUID ที่ปลอดภัย |
-    | `plugin-sdk/system-event-runtime` | ตัวช่วยคิว event ระบบ |
-    | `plugin-sdk/transport-ready-runtime` | ตัวช่วยรอความพร้อมของ transport |
-    | `plugin-sdk/exec-approvals-runtime` | ตัวช่วยไฟล์นโยบาย exec approval โดยไม่มี infra-runtime barrel แบบกว้าง |
-    | `plugin-sdk/infra-runtime` | shim ความเข้ากันได้ที่เลิกใช้แล้ว; ใช้เส้นทางย่อยรันไทม์ที่เจาะจงด้านบน |
-    | `plugin-sdk/collection-runtime` | ตัวช่วย cache ขนาดเล็กแบบมีขอบเขต |
-    | `plugin-sdk/diagnostic-runtime` | ตัวช่วย flag วินิจฉัย, event และ trace-context |
-    | `plugin-sdk/error-runtime` | กราฟข้อผิดพลาด, การจัดรูปแบบ, ตัวช่วยจำแนกข้อผิดพลาดที่ใช้ร่วมกัน, `isApprovalNotFoundError` |
-    | `plugin-sdk/fetch-runtime` | wrapped fetch, proxy, ตัวเลือก EnvHttpProxyAgent และตัวช่วย lookup แบบ pinned |
-    | `plugin-sdk/runtime-fetch` | fetch รันไทม์ที่รับรู้ dispatcher โดยไม่มีการอิมพอร์ต proxy/guarded-fetch |
-    | `plugin-sdk/inline-image-data-url-runtime` | ตัวช่วย sanitizer ของ URL ข้อมูลภาพ inline และ sniffing ลายเซ็น โดยไม่มีพื้นผิวรันไทม์ media แบบกว้าง |
-    | `plugin-sdk/response-limit-runtime` | ตัวอ่าน response-body แบบมีขอบเขตโดยไม่มีพื้นผิวรันไทม์ media แบบกว้าง |
-    | `plugin-sdk/session-binding-runtime` | สถานะ binding การสนทนาปัจจุบันโดยไม่มี routing ของ binding ที่กำหนดค่าไว้หรือ pairing stores |
-    | `plugin-sdk/session-store-runtime` | ตัวช่วย session-store โดยไม่มีการอิมพอร์ตการเขียน/บำรุงรักษาคอนฟิกแบบกว้าง |
-    | `plugin-sdk/sqlite-runtime` | ตัวช่วย schema, เส้นทาง และ transaction ของเอเจนต์ SQLite ที่เจาะจงโดยไม่มีการควบคุม lifecycle ของฐานข้อมูล |
-    | `plugin-sdk/context-visibility-runtime` | การ resolve การมองเห็นบริบทและการกรองบริบทเสริมโดยไม่มีการอิมพอร์ตคอนฟิก/security แบบกว้าง |
-    | `plugin-sdk/string-coerce-runtime` | ตัวช่วยบังคับแปลงและทำ primitive record/string ให้เป็นมาตรฐานแบบแคบ โดยไม่มีการอิมพอร์ต markdown/logging |
-    | `plugin-sdk/host-runtime` | ตัวช่วยทำ hostname และ host ของ SCP ให้เป็นมาตรฐาน |
-    | `plugin-sdk/retry-runtime` | ตัวช่วยคอนฟิก retry และตัวรัน retry |
-    | `plugin-sdk/agent-runtime` | ตัวช่วยไดเรกทอรี/อัตลักษณ์/พื้นที่ทำงานของเอเจนต์ รวมถึง `resolveAgentDir`, `resolveDefaultAgentDir` และเอ็กซ์พอร์ตความเข้ากันได้ `resolveOpenClawAgentDir` ที่เลิกใช้แล้ว |
-    | `plugin-sdk/directory-runtime` | การ query/dedup ไดเรกทอรีที่มีคอนฟิกหนุนหลัง |
+    | `plugin-sdk/secure-random-runtime` | ตัวช่วยโทเค็น/UUID ที่ปลอดภัย |
+    | `plugin-sdk/system-event-runtime` | ตัวช่วยคิวเหตุการณ์ระบบ |
+    | `plugin-sdk/transport-ready-runtime` | ตัวช่วยรอความพร้อมของการขนส่ง |
+    | `plugin-sdk/exec-approvals-runtime` | ตัวช่วยไฟล์นโยบายอนุมัติการเรียกใช้โดยไม่ใช้ Barrel infra-runtime แบบกว้าง |
+    | `plugin-sdk/infra-runtime` | Shim ความเข้ากันได้ที่เลิกใช้แล้ว ให้ใช้พาธย่อยรันไทม์ที่เจาะจงด้านบน |
+    | `plugin-sdk/collection-runtime` | ตัวช่วยแคชขนาดเล็กแบบมีขอบเขต |
+    | `plugin-sdk/diagnostic-runtime` | ตัวช่วยแฟล็ก เหตุการณ์ และบริบทการติดตามเพื่อการวินิจฉัย |
+    | `plugin-sdk/error-runtime` | ตัวช่วยกราฟข้อผิดพลาด การจัดรูปแบบ และการจัดประเภทข้อผิดพลาดที่ใช้ร่วมกัน `PlatformMessageNotDispatchedError`, `isApprovalNotFoundError` |
+    | `plugin-sdk/fetch-runtime` | ตัวช่วย fetch แบบห่อหุ้ม พร็อกซี ตัวเลือก EnvHttpProxyAgent และการค้นหาแบบตรึง |
+    | `plugin-sdk/runtime-fetch` | fetch ขณะรันไทม์ที่รับรู้ Dispatcher โดยไม่นำเข้าพร็อกซี/guarded-fetch |
+    | `plugin-sdk/inline-image-data-url-runtime` | ตัวช่วยล้างข้อมูล URL รูปภาพแบบอินไลน์และตรวจจับลายเซ็น โดยไม่ใช้พื้นผิวรันไทม์สื่อแบบกว้าง |
+    | `plugin-sdk/response-limit-runtime` | ตัวอ่านเนื้อหาการตอบกลับที่จำกัดตามจำนวนไบต์ เวลาว่าง และกำหนดเวลา โดยไม่ใช้พื้นผิวรันไทม์สื่อแบบกว้าง |
+    | `plugin-sdk/session-binding-runtime` | สถานะการผูกมัดการสนทนาปัจจุบัน โดยไม่มีการกำหนดเส้นทางการผูกมัดที่กำหนดค่าไว้หรือที่เก็บการจับคู่ |
+    | `plugin-sdk/context-visibility-runtime` | การแก้ไขการมองเห็นบริบทและการกรองบริบทเสริม โดยไม่นำเข้าการกำหนดค่า/ความปลอดภัยแบบกว้าง |
+    | `plugin-sdk/string-coerce-runtime` | ตัวช่วย primitive แบบเจาะจงสำหรับการบังคับแปลงและปรับเรคคอร์ด/สตริงให้เป็นมาตรฐาน โดยไม่นำเข้า Markdown/การบันทึกล็อก |
+    | `plugin-sdk/html-entity-runtime` | การถอดรหัสเอนทิตี HTML5 ที่ลงท้ายด้วยเซมิโคลอนในรอบเดียว โดยไม่ใช้ยูทิลิตีข้อความแบบกว้าง |
+    | `plugin-sdk/text-utility-runtime` | ตัวช่วยข้อความและพาธระดับล่าง รวมถึงการ Escape HTML ห้าเอนทิตี |
+    | `plugin-sdk/widget-html` | การตรวจจับเอกสารที่สมบูรณ์ การตรวจสอบขนาด และข้อผิดพลาดอินพุตเครื่องมือสำหรับวิดเจ็ต HTML แบบสมบูรณ์ในตัว |
+    | `plugin-sdk/host-runtime` | ตัวช่วยปรับชื่อโฮสต์และโฮสต์ SCP ให้เป็นมาตรฐาน |
+    | `plugin-sdk/retry-runtime` | ตัวช่วยการกำหนดค่าการลองใหม่และตัวเรียกใช้การลองใหม่ |
+    | `plugin-sdk/agent-runtime` | Barrel แบบกว้างที่เลิกใช้แล้วสำหรับตัวช่วยไดเรกทอรี/ข้อมูลประจำตัว/พื้นที่ทำงานของเอเจนต์ รวมถึง `resolveAgentDir`, `resolveDefaultAgentDir` และรายการส่งออกความเข้ากันได้ `resolveOpenClawAgentDir` ที่เลิกใช้แล้ว ควรใช้พาธย่อยเอเจนต์/รันไทม์ที่เจาะจง |
+    | `plugin-sdk/directory-runtime` | การสืบค้น/ขจัดรายการซ้ำของไดเรกทอรีที่มีการกำหนดค่ารองรับ |
     | `plugin-sdk/keyed-async-queue` | `KeyedAsyncQueue` |
   </Accordion>
 
   <Accordion title="เส้นทางย่อยสำหรับความสามารถและการทดสอบ">
-    | เส้นทางย่อย | การส่งออกหลัก |
+    | เส้นทางย่อย | รายการส่งออกหลัก |
     | --- | --- |
-    | `plugin-sdk/media-runtime` | ตัวช่วยร่วมสำหรับดึง/แปลง/จัดเก็บสื่อ รวมถึง `saveRemoteMedia`, `saveResponseMedia`, `readRemoteMediaBuffer` และ `fetchRemoteMedia` ที่เลิกใช้แล้ว; ควรใช้ตัวช่วยจัดเก็บก่อนการอ่านบัฟเฟอร์เมื่อ URL ควรถูกแปลงเป็นสื่อของ OpenClaw |
-    | `plugin-sdk/media-mime` | การทำให้ MIME เป็นมาตรฐานแบบจำกัด, การแมปนามสกุลไฟล์, การตรวจจับ MIME และตัวช่วยชนิดสื่อ |
-    | `plugin-sdk/media-store` | ตัวช่วยจัดเก็บสื่อแบบจำกัด เช่น `saveMediaBuffer` และ `saveMediaStream` |
-    | `plugin-sdk/media-generation-runtime` | ตัวช่วยร่วมสำหรับการสลับไปใช้ตัวสำรองในการสร้างสื่อ, การเลือกตัวเลือกที่เป็นไปได้ และข้อความเมื่อไม่มีโมเดล |
-    | `plugin-sdk/media-understanding` | ประเภทผู้ให้บริการสำหรับความเข้าใจสื่อ พร้อมการส่งออกตัวช่วยด้านรูปภาพ/เสียง/การสกัดข้อมูลแบบมีโครงสร้างสำหรับผู้ให้บริการ |
-    | `plugin-sdk/text-chunking` | ตัวช่วยแบ่งชิ้น/เรนเดอร์ข้อความและ markdown, การแปลงตาราง markdown, การลบแท็กคำสั่ง และยูทิลิตีข้อความที่ปลอดภัย |
-    | `plugin-sdk/text-chunking` | ตัวช่วยแบ่งชิ้นข้อความขาออก |
-    | `plugin-sdk/speech` | ประเภทผู้ให้บริการเสียงพูด พร้อมการส่งออกตัวช่วยด้านคำสั่ง, รีจิสทรี, การตรวจสอบความถูกต้อง, ตัวสร้าง TTS ที่เข้ากันได้กับ OpenAI และตัวช่วยเสียงพูดสำหรับผู้ให้บริการ |
-    | `plugin-sdk/speech-core` | การส่งออกร่วมของประเภทผู้ให้บริการเสียงพูด, รีจิสทรี, คำสั่ง, การทำให้เป็นมาตรฐาน และตัวช่วยเสียงพูด |
-    | `plugin-sdk/realtime-transcription` | ประเภทผู้ให้บริการถอดเสียงแบบเรียลไทม์, ตัวช่วยรีจิสทรี และตัวช่วยเซสชัน WebSocket ร่วม |
-    | `plugin-sdk/realtime-bootstrap-context` | ตัวช่วยบูตสแตรปโปรไฟล์แบบเรียลไทม์สำหรับการฉีดบริบท `IDENTITY.md`, `USER.md` และ `SOUL.md` แบบมีขอบเขต |
-    | `plugin-sdk/realtime-voice` | ประเภทผู้ให้บริการเสียงแบบเรียลไทม์, ตัวช่วยรีจิสทรี และตัวช่วยพฤติกรรมเสียงแบบเรียลไทม์ร่วม รวมถึงการติดตามกิจกรรมเอาต์พุต |
-    | `plugin-sdk/image-generation` | ประเภทผู้ให้บริการสร้างรูปภาพ พร้อมตัวช่วย URL สำหรับแอสเซตรูปภาพ/ข้อมูล และตัวสร้างผู้ให้บริการรูปภาพที่เข้ากันได้กับ OpenAI |
-    | `plugin-sdk/image-generation-core` | ประเภทร่วมสำหรับการสร้างรูปภาพ, การสลับไปใช้ตัวสำรอง, การยืนยันตัวตน และตัวช่วยรีจิสทรี |
-    | `plugin-sdk/music-generation` | ประเภทผู้ให้บริการ/คำขอ/ผลลัพธ์สำหรับการสร้างเพลง |
-    | `plugin-sdk/music-generation-core` | ประเภทร่วมสำหรับการสร้างเพลง, ตัวช่วยการสลับไปใช้ตัวสำรอง, การค้นหาผู้ให้บริการ และการแยกวิเคราะห์การอ้างอิงโมเดล |
-    | `plugin-sdk/video-generation` | ประเภทผู้ให้บริการ/คำขอ/ผลลัพธ์สำหรับการสร้างวิดีโอ |
-    | `plugin-sdk/video-generation-core` | ประเภทร่วมสำหรับการสร้างวิดีโอ, ตัวช่วยการสลับไปใช้ตัวสำรอง, การค้นหาผู้ให้บริการ และการแยกวิเคราะห์การอ้างอิงโมเดล |
-    | `plugin-sdk/transcripts` | ประเภทผู้ให้บริการแหล่งที่มาทรานสคริปต์ร่วม, ตัวช่วยรีจิสทรี, ตัวอธิบายเซสชัน และเมตาดาต้าถ้อยคำ |
+    | `plugin-sdk/media-runtime` | barrel สื่อแบบกว้างที่เลิกใช้แล้ว ซึ่งรวมถึง `saveRemoteMedia`, `saveResponseMedia`, `readRemoteMediaBuffer` และ `fetchRemoteMedia` ที่เลิกใช้แล้ว ให้เลือกใช้ `plugin-sdk/media-store`, `plugin-sdk/media-mime`, `plugin-sdk/outbound-media` และเส้นทางย่อยของรันไทม์ความสามารถแทน และควรเลือกใช้ตัวช่วยของสโตร์ก่อนการอ่านบัฟเฟอร์เมื่อ URL ควรถูกแปลงเป็นสื่อของ OpenClaw |
+    | `plugin-sdk/media-mime` | ตัวช่วยแบบเจาะจงสำหรับการปรับ MIME ให้เป็นมาตรฐาน การแมปนามสกุลไฟล์ การตรวจหา MIME และชนิดสื่อ |
+    | `plugin-sdk/media-store` | ตัวช่วยสโตร์สื่อแบบเจาะจง เช่น `saveMediaBuffer` และ `saveMediaStream` |
+    | `plugin-sdk/media-generation-runtime` | ตัวช่วยการสลับไปใช้ตัวสำรองร่วมกันสำหรับการสร้างสื่อ การเลือกตัวเลือก และข้อความแจ้งเมื่อไม่มีโมเดล |
+    | `plugin-sdk/media-understanding` | ชนิดผู้ให้บริการสำหรับการทำความเข้าใจสื่อ รวมถึงรายการส่งออกของตัวช่วยสำหรับรูปภาพ เสียง และการสกัดข้อมูลแบบมีโครงสร้างที่ใช้กับผู้ให้บริการ |
+    | `plugin-sdk/text-chunking` | การแบ่งข้อความขาออกและช่วงโดยรักษาออฟเซ็ต การแบ่ง Markdown และตัวช่วยเรนเดอร์ การแยกโทเค็นแท็ก HTML โดยคำนึงถึงเครื่องหมายคำพูด การแปลงตาราง Markdown การลบแท็กคำสั่ง และยูทิลิตีข้อความที่ปลอดภัย |
+    | `plugin-sdk/speech` | ชนิดผู้ให้บริการเสียงพูด รวมถึงรายการส่งออกของคำสั่ง รีจิสทรี การตรวจสอบ ตัวสร้าง TTS ที่เข้ากันได้กับ OpenAI และตัวช่วยเสียงพูดสำหรับผู้ให้บริการ |
+    | `plugin-sdk/speech-core` | ชนิดผู้ให้บริการเสียงพูด รีจิสทรี คำสั่ง การปรับให้เป็นมาตรฐาน และรายการส่งออกของตัวช่วยเสียงพูดที่ใช้ร่วมกัน |
+    | `plugin-sdk/realtime-transcription` | ชนิดผู้ให้บริการการถอดเสียงแบบเรียลไทม์ ตัวช่วยรีจิสทรี และตัวช่วยเซสชัน WebSocket ที่ใช้ร่วมกัน |
+    | `plugin-sdk/realtime-bootstrap-context` | ตัวช่วยเริ่มต้นโปรไฟล์แบบเรียลไทม์สำหรับการแทรกบริบท `IDENTITY.md`, `USER.md` และ `SOUL.md` แบบมีขอบเขต |
+    | `plugin-sdk/realtime-voice` | ชนิดผู้ให้บริการเสียงแบบเรียลไทม์ ตัวช่วยรีจิสทรี และตัวช่วยพฤติกรรมเสียงแบบเรียลไทม์ที่ใช้ร่วมกัน รวมถึงการติดตามกิจกรรมเอาต์พุต |
+    | `plugin-sdk/image-generation` | ชนิดผู้ให้บริการการสร้างรูปภาพ รวมถึงตัวช่วยแอสเซ็ตรูปภาพ/URL ข้อมูล และตัวสร้างผู้ให้บริการรูปภาพที่เข้ากันได้กับ OpenAI |
+    | `plugin-sdk/image-generation-core` | ชนิด การสลับไปใช้ตัวสำรอง การยืนยันตัวตน และตัวช่วยรีจิสทรีสำหรับการสร้างรูปภาพที่ใช้ร่วมกัน |
+    | `plugin-sdk/music-generation` | ชนิดผู้ให้บริการ/คำขอ/ผลลัพธ์สำหรับการสร้างเพลง |
+    | `plugin-sdk/music-generation-core` | ชนิดการสร้างเพลง ตัวช่วยการสลับไปใช้ตัวสำรอง การค้นหาผู้ให้บริการ และการแยกวิเคราะห์การอ้างอิงโมเดลที่ใช้ร่วมกันซึ่งเลิกใช้แล้ว ให้เลือกใช้พื้นผิวผู้ให้บริการเพลงที่ Plugin เป็นเจ้าของ |
+    | `plugin-sdk/video-generation` | ชนิดผู้ให้บริการ/คำขอ/ผลลัพธ์สำหรับการสร้างวิดีโอ |
+    | `plugin-sdk/video-generation-core` | ชนิดการสร้างวิดีโอ ตัวช่วยการสลับไปใช้ตัวสำรอง การค้นหาผู้ให้บริการ และการแยกวิเคราะห์การอ้างอิงโมเดลที่ใช้ร่วมกัน |
+    | `plugin-sdk/transcripts` | ชนิดผู้ให้บริการแหล่งที่มาของข้อความถอดเสียง ตัวช่วยรีจิสทรี ตัวอธิบายเซสชัน และเมทาดาทาของถ้อยคำที่ใช้ร่วมกัน |
     | `plugin-sdk/webhook-targets` | รีจิสทรีเป้าหมาย Webhook และตัวช่วยติดตั้งเส้นทาง |
-    | `plugin-sdk/webhook-path` | นามแฝงความเข้ากันได้ที่เลิกใช้แล้ว; ใช้ `plugin-sdk/webhook-ingress` |
-    | `plugin-sdk/web-media` | ตัวช่วยร่วมสำหรับโหลดสื่อระยะไกล/ในเครื่อง |
-    | `plugin-sdk/zod` | การส่งออกซ้ำเพื่อความเข้ากันได้ที่เลิกใช้แล้ว; นำเข้า `zod` จาก `zod` โดยตรง |
-    | `plugin-sdk/testing` | จุดรวมการส่งออกความเข้ากันได้ที่เลิกใช้แล้วภายในรีโพสำหรับการทดสอบ OpenClaw แบบเดิม การทดสอบใหม่ในรีโพควรนำเข้าเส้นทางย่อยการทดสอบในเครื่องที่เจาะจงแทน เช่น `plugin-sdk/agent-runtime-test-contracts`, `plugin-sdk/plugin-test-runtime`, `plugin-sdk/channel-test-helpers`, `plugin-sdk/test-env` หรือ `plugin-sdk/test-fixtures` |
-    | `plugin-sdk/plugin-test-api` | ตัวช่วย `createTestPluginApi` ขั้นต่ำภายในรีโพสำหรับการทดสอบหน่วยของการลงทะเบียน Plugin โดยตรงโดยไม่ต้องนำเข้าบริดจ์ตัวช่วยทดสอบของรีโพ |
-    | `plugin-sdk/agent-runtime-test-contracts` | ฟิกซ์เจอร์สัญญาอะแดปเตอร์รันไทม์เอเจนต์เนทีฟภายในรีโพสำหรับการทดสอบการยืนยันตัวตน, การส่งมอบ, การสำรอง, ฮุกเครื่องมือ, โอเวอร์เลย์พรอมป์, สคีมา และการฉายทรานสคริปต์ |
-    | `plugin-sdk/channel-test-helpers` | ตัวช่วยทดสอบที่มุ่งเน้นช่องทางภายในรีโพสำหรับสัญญาการกระทำ/การตั้งค่า/สถานะทั่วไป, การยืนยันไดเรกทอรี, วงจรชีวิตการเริ่มต้นบัญชี, เธรดดิ้งคอนฟิกการส่ง, ม็อกรันไทม์, ปัญหาสถานะ, การส่งมอบขาออก และการลงทะเบียนฮุก |
-    | `plugin-sdk/channel-target-testing` | ชุดกรณีข้อผิดพลาดการแปลงเป้าหมายร่วมภายในรีโพสำหรับการทดสอบช่องทาง |
-    | `plugin-sdk/plugin-test-contracts` | ตัวช่วยสัญญาภายในรีโพสำหรับแพ็กเกจ Plugin, การลงทะเบียน, อาร์ติแฟกต์สาธารณะ, การนำเข้าโดยตรง, API รันไทม์ และผลข้างเคียงจากการนำเข้า |
-    | `plugin-sdk/provider-test-contracts` | ตัวช่วยสัญญาภายในรีโพสำหรับรันไทม์ผู้ให้บริการ, การยืนยันตัวตน, การค้นพบ, ออนบอร์ด, แคตตาล็อก, วิซาร์ด, ความสามารถด้านสื่อ, นโยบายเล่นซ้ำ, เสียงสด STT แบบเรียลไทม์, การค้นหา/ดึงข้อมูลเว็บ และสตรีม |
-    | `plugin-sdk/provider-http-test-mocks` | ม็อก HTTP/การยืนยันตัวตนของ Vitest แบบเลือกใช้ภายในรีโพสำหรับการทดสอบผู้ให้บริการที่ใช้ `plugin-sdk/provider-http` |
-    | `plugin-sdk/test-fixtures` | ฟิกซ์เจอร์ทั่วไปภายในรีโพสำหรับการจับรันไทม์ CLI, บริบทแซนด์บ็อกซ์, ตัวเขียน skill, ข้อความเอเจนต์, เหตุการณ์ระบบ, การโหลดโมดูลใหม่, เส้นทาง Plugin ที่บันเดิลมา, ข้อความเทอร์มินัล, การแบ่งชิ้น, โทเค็นการยืนยันตัวตน และเคสแบบมีชนิด |
-    | `plugin-sdk/test-node-mocks` | ตัวช่วยม็อกบิวต์อิน Node แบบเจาะจงภายในรีโพสำหรับใช้ภายในแฟกทอรี `vi.mock("node:*")` ของ Vitest |
+    | `plugin-sdk/webhook-path` | นามแฝงเพื่อความเข้ากันได้ที่เลิกใช้แล้ว ให้ใช้ `plugin-sdk/webhook-ingress` |
+    | `plugin-sdk/web-media` | ตัวช่วยโหลดสื่อจากระยะไกล/ภายในเครื่องที่ใช้ร่วมกัน |
+    | `plugin-sdk/zod` | การส่งออกซ้ำเพื่อความเข้ากันได้ที่เลิกใช้แล้ว ให้นำเข้า `zod` จาก `zod` โดยตรง |
+    | `plugin-sdk/plugin-test-api` | ตัวช่วย `createTestPluginApi` ขั้นต่ำภายในรีโปสำหรับการทดสอบหน่วยการลงทะเบียน Plugin โดยตรง โดยไม่ต้องนำเข้าบริดจ์ตัวช่วยทดสอบของรีโป |
+    | `plugin-sdk/agent-runtime-test-contracts` | ฟิกซ์เจอร์สัญญาอะแดปเตอร์รันไทม์เอเจนต์แบบเนทีฟภายในรีโป สำหรับการทดสอบการยืนยันตัวตน การส่งมอบ การสลับไปใช้ตัวสำรอง ฮุกเครื่องมือ โอเวอร์เลย์พรอมต์ สคีมา และการฉายภาพทรานสคริปต์ |
+    | `plugin-sdk/channel-test-helpers` | ตัวช่วยทดสอบที่เน้นช่องทางภายในรีโป สำหรับสัญญาการดำเนินการ/การตั้งค่า/สถานะทั่วไป การตรวจสอบไดเรกทอรี วงจรชีวิตการเริ่มต้นบัญชี การส่งต่อคอนฟิกการส่ง ม็อกรันไทม์ ปัญหาสถานะ การส่งมอบขาออก และการลงทะเบียนฮุก |
+    | `plugin-sdk/channel-target-testing` | ชุดกรณีทดสอบข้อผิดพลาดของการแก้ไขเป้าหมายที่ใช้ร่วมกันภายในรีโปสำหรับการทดสอบช่องทาง |
+    | `plugin-sdk/channel-contract-testing` | ตัวช่วยทดสอบสัญญาช่องทางแบบเจาะจงภายในรีโป โดยไม่ใช้ barrel การทดสอบแบบกว้าง |
+    | `plugin-sdk/plugin-test-contracts` | ตัวช่วยสัญญาภายในรีโปสำหรับแพ็กเกจ Plugin การลงทะเบียน อาร์ติแฟกต์สาธารณะ การนำเข้าโดยตรง API รันไทม์ และผลข้างเคียงจากการนำเข้า |
+    | `plugin-sdk/plugin-state-test-runtime` | ตัวช่วยทดสอบภายในรีโปสำหรับสโตร์สถานะ Plugin คิวขาเข้า และฐานข้อมูลสถานะ |
+    | `plugin-sdk/provider-test-contracts` | ตัวช่วยสัญญาภายในรีโปสำหรับรันไทม์ผู้ให้บริการ การยืนยันตัวตน การค้นพบ การเริ่มต้นใช้งาน แค็ตตาล็อก วิซาร์ด ความสามารถด้านสื่อ นโยบายเล่นซ้ำ เสียงสดสำหรับ STT แบบเรียลไทม์ การค้นหา/ดึงข้อมูลเว็บ และสตรีม |
+    | `plugin-sdk/provider-http-test-mocks` | ม็อก HTTP/การยืนยันตัวตนของ Vitest แบบเลือกใช้ภายในรีโป สำหรับการทดสอบผู้ให้บริการที่เรียกใช้ `plugin-sdk/provider-http` |
+    | `plugin-sdk/reply-payload-testing` | ตัวช่วยภายในรีโปสำหรับแนบเมทาดาทากับฟิกซ์เจอร์เพย์โหลดการตอบกลับ |
+    | `plugin-sdk/sqlite-runtime-testing` | ตัวช่วยวงจรชีวิต SQLite ภายในรีโปสำหรับการทดสอบของบุคคลที่หนึ่ง |
+    | `plugin-sdk/test-fixtures` | ฟิกซ์เจอร์ภายในรีโปสำหรับการจับรันไทม์ CLI ทั่วไป บริบทแซนด์บ็อกซ์ ตัวเขียนสกิล ข้อความเอเจนต์ เหตุการณ์ระบบ การโหลดโมดูลใหม่ เส้นทาง Plugin ที่รวมมาให้ ข้อความเทอร์มินัล การแบ่งส่วน โทเค็นการยืนยันตัวตน และกรณีที่มีชนิด |
+    | `plugin-sdk/test-node-mocks` | ตัวช่วยม็อก Node builtin แบบเจาะจงภายในรีโป สำหรับใช้ภายในแฟกทอรี `vi.mock("node:*")` ของ Vitest |
   </Accordion>
 
-  <Accordion title="เส้นทางย่อยหน่วยความจำ">
-    | เส้นทางย่อย | การส่งออกหลัก |
+  <Accordion title="เส้นทางย่อยของหน่วยความจำ">
+    | เส้นทางย่อย | รายการส่งออกหลัก |
     | --- | --- |
-    | `plugin-sdk/memory-core` | พื้นผิวตัวช่วย memory-core ที่บันเดิลมาสำหรับตัวช่วยตัวจัดการ/คอนฟิก/ไฟล์/CLI |
-    | `plugin-sdk/memory-core-engine-runtime` | ฟาซาดรันไทม์ดัชนี/การค้นหาหน่วยความจำ |
-    | `plugin-sdk/memory-core-host-embedding-registry` | ตัวช่วยรีจิสทรีผู้ให้บริการ embedding หน่วยความจำขนาดเบา |
-    | `plugin-sdk/memory-core-host-engine-foundation` | การส่งออกเอนจิน foundation ของโฮสต์หน่วยความจำ |
-    | `plugin-sdk/memory-core-host-engine-embeddings` | สัญญา embedding ของโฮสต์หน่วยความจำ, การเข้าถึงรีจิสทรี, ผู้ให้บริการในเครื่อง และตัวช่วยแบตช์/ระยะไกลทั่วไป `registerMemoryEmbeddingProvider` บนพื้นผิวนี้เลิกใช้แล้ว; ใช้ API ผู้ให้บริการ embedding ทั่วไปสำหรับผู้ให้บริการใหม่ |
-    | `plugin-sdk/memory-core-host-engine-qmd` | การส่งออกเอนจิน QMD ของโฮสต์หน่วยความจำ |
-    | `plugin-sdk/memory-core-host-engine-storage` | การส่งออกเอนจินจัดเก็บของโฮสต์หน่วยความจำ |
-    | `plugin-sdk/memory-core-host-multimodal` | ตัวช่วยมัลติโหมดของโฮสต์หน่วยความจำ |
-    | `plugin-sdk/memory-core-host-query` | ตัวช่วยคิวรีของโฮสต์หน่วยความจำ |
-    | `plugin-sdk/memory-core-host-secret` | ตัวช่วยความลับของโฮสต์หน่วยความจำ |
-    | `plugin-sdk/memory-core-host-events` | นามแฝงความเข้ากันได้ที่เลิกใช้แล้ว; ใช้ `plugin-sdk/memory-host-events` |
+    | `plugin-sdk/memory-core` | นามแฝงเพื่อความเข้ากันได้ที่เลิกใช้แล้ว ให้ใช้ `plugin-sdk/memory-host-core` |
+    | `plugin-sdk/memory-core-engine-runtime` | facade รันไทม์ดัชนี/การค้นหาหน่วยความจำที่เลิกใช้แล้ว ให้เลือกใช้เส้นทางย่อยของโฮสต์หน่วยความจำที่ไม่ผูกกับผู้จำหน่าย |
+    | `plugin-sdk/memory-core-host-embedding-registry` | ตัวช่วยรีจิสทรีผู้ให้บริการ embedding ของหน่วยความจำแบบน้ำหนักเบา |
+    | `plugin-sdk/memory-core-host-engine-foundation` | รายการส่งออกของเอนจินพื้นฐานสำหรับโฮสต์หน่วยความจำ |
+    | `plugin-sdk/memory-core-host-engine-embeddings` | สัญญา embedding ของโฮสต์หน่วยความจำ การเข้าถึงรีจิสทรี ผู้ให้บริการภายในเครื่อง และตัวช่วยทั่วไปสำหรับการทำงานแบบแบตช์/ระยะไกล `registerMemoryEmbeddingProvider` บนพื้นผิวนี้เลิกใช้แล้ว ให้ใช้ API ผู้ให้บริการ embedding ทั่วไปสำหรับผู้ให้บริการรายใหม่ |
+    | `plugin-sdk/memory-core-host-engine-qmd` | รายการส่งออกของเอนจิน QMD สำหรับโฮสต์หน่วยความจำ |
+    | `plugin-sdk/memory-core-host-engine-storage` | รายการส่งออกของเอนจินพื้นที่จัดเก็บสำหรับโฮสต์หน่วยความจำ |
+    | `plugin-sdk/memory-core-host-multimodal` | ตัวช่วยมัลติโมดัลของโฮสต์หน่วยความจำที่เลิกใช้แล้ว ให้เลือกใช้เส้นทางย่อยของโฮสต์หน่วยความจำที่ไม่ผูกกับผู้จำหน่าย |
+    | `plugin-sdk/memory-core-host-query` | ตัวช่วยการสืบค้นของโฮสต์หน่วยความจำที่เลิกใช้แล้ว ให้เลือกใช้เส้นทางย่อยของโฮสต์หน่วยความจำที่ไม่ผูกกับผู้จำหน่าย |
+    | `plugin-sdk/memory-core-host-secret` | ตัวช่วยข้อมูลลับของโฮสต์หน่วยความจำ |
+    | `plugin-sdk/memory-core-host-events` | นามแฝงเพื่อความเข้ากันได้ที่เลิกใช้แล้ว ให้ใช้ `plugin-sdk/memory-host-events` |
     | `plugin-sdk/memory-core-host-status` | ตัวช่วยสถานะของโฮสต์หน่วยความจำ |
     | `plugin-sdk/memory-core-host-runtime-cli` | ตัวช่วยรันไทม์ CLI ของโฮสต์หน่วยความจำ |
     | `plugin-sdk/memory-core-host-runtime-core` | ตัวช่วยรันไทม์แกนหลักของโฮสต์หน่วยความจำ |
     | `plugin-sdk/memory-core-host-runtime-files` | ตัวช่วยไฟล์/รันไทม์ของโฮสต์หน่วยความจำ |
-    | `plugin-sdk/memory-host-core` | นามแฝงที่เป็นกลางต่อผู้ขายสำหรับตัวช่วยรันไทม์แกนหลักของโฮสต์หน่วยความจำ |
-    | `plugin-sdk/memory-host-events` | นามแฝงที่เป็นกลางต่อผู้ขายสำหรับตัวช่วยบันทึกเหตุการณ์ของโฮสต์หน่วยความจำ |
-    | `plugin-sdk/memory-host-files` | นามแฝงความเข้ากันได้ที่เลิกใช้แล้ว; ใช้ `plugin-sdk/memory-core-host-runtime-files` |
-    | `plugin-sdk/memory-host-markdown` | ตัวช่วย managed-markdown ร่วมสำหรับ Plugin ที่อยู่ใกล้กับหน่วยความจำ |
-    | `plugin-sdk/memory-host-search` | ฟาซาดรันไทม์ Active Memory สำหรับการเข้าถึงตัวจัดการการค้นหา |
-    | `plugin-sdk/memory-host-status` | นามแฝงความเข้ากันได้ที่เลิกใช้แล้ว; ใช้ `plugin-sdk/memory-core-host-status` |
+    | `plugin-sdk/memory-host-core` | นามแฝงที่ไม่ผูกกับผู้จำหน่ายสำหรับตัวช่วยรันไทม์แกนหลักของโฮสต์หน่วยความจำ |
+    | `plugin-sdk/memory-host-events` | นามแฝงที่ไม่ผูกกับผู้จำหน่ายสำหรับตัวช่วยบันทึกเหตุการณ์ของโฮสต์หน่วยความจำ |
+    | `plugin-sdk/memory-host-files` | นามแฝงเพื่อความเข้ากันได้ที่เลิกใช้แล้ว ให้ใช้ `plugin-sdk/memory-core-host-runtime-files` |
+    | `plugin-sdk/memory-host-markdown` | ตัวช่วย Markdown ที่มีการจัดการซึ่งใช้ร่วมกันสำหรับ Plugin ที่เกี่ยวข้องกับหน่วยความจำ |
+    | `plugin-sdk/memory-host-search` | facade รันไทม์ Active Memory สำหรับการเข้าถึงตัวจัดการการค้นหา |
+    | `plugin-sdk/memory-host-status` | นามแฝงเพื่อความเข้ากันได้ที่เลิกใช้แล้ว ให้ใช้ `plugin-sdk/memory-core-host-status` |
   </Accordion>
 
-  <Accordion title="เส้นทางย่อยตัวช่วยที่บันเดิลมาและสงวนไว้">
-    เส้นทางย่อย SDK สำหรับตัวช่วยที่บันเดิลมาและสงวนไว้เป็นพื้นผิวเฉพาะเจ้าของแบบจำกัดสำหรับ
-    โค้ด Plugin ที่บันเดิลมา เส้นทางเหล่านี้ถูกติดตามในรายการสินค้าคงคลังของ SDK เพื่อให้การสร้าง
-    แพ็กเกจและการตั้งนามแฝงยังคงกำหนดได้แน่นอน แต่ไม่ใช่ API สำหรับการเขียน Plugin
-    ทั่วไป สัญญาโฮสต์ที่นำกลับมาใช้ใหม่ได้ควรใช้เส้นทางย่อย SDK ทั่วไป
-    เช่น `plugin-sdk/gateway-runtime`, `plugin-sdk/security-runtime` และ
+  <Accordion title="เส้นทางย่อยของตัวช่วยแบบรวมที่สงวนไว้">
+    เส้นทางย่อย SDK ของตัวช่วยแบบรวมที่สงวนไว้เป็นพื้นผิวแบบเจาะจงและแคบ
+    สำหรับโค้ด Plugin ที่รวมมาให้ โดยมีเจ้าของเฉพาะ พื้นผิวเหล่านี้ถูกติดตามในคลังรายการ SDK เพื่อให้การบิลด์แพ็กเกจ
+    และการกำหนดนามแฝงมีความแน่นอน แต่ไม่ใช่ API ทั่วไปสำหรับ
+    การพัฒนา Plugin สัญญาโฮสต์ใหม่ที่นำกลับมาใช้ซ้ำได้ควรใช้เส้นทางย่อย SDK ทั่วไป
+    เช่น `plugin-sdk/gateway-runtime`, `plugin-sdk/ssrf-runtime` และ
     `plugin-sdk/plugin-config-runtime`
 
     | เส้นทางย่อย | เจ้าของและวัตถุประสงค์ |
     | --- | --- |
-    | `plugin-sdk/codex-mcp-projection` | ตัวช่วย Plugin Codex ที่บันเดิลมาสำหรับฉายคอนฟิกเซิร์ฟเวอร์ MCP ของผู้ใช้เข้าสู่คอนฟิกเธรด app-server ของ Codex |
-    | `plugin-sdk/codex-native-task-runtime` | ตัวช่วย Plugin Codex ที่บันเดิลมาสำหรับมิเรอร์ซับเอเจนต์เนทีฟ app-server ของ Codex เข้าสู่สถานะงานของ OpenClaw |
+    | `plugin-sdk/codex-mcp-projection` | ตัวช่วยของ Plugin Codex ที่รวมมาให้ สำหรับฉายคอนฟิกเซิร์ฟเวอร์ MCP ของผู้ใช้ไปยังคอนฟิกเธรดของเซิร์ฟเวอร์แอป Codex (การส่งออกแพ็กเกจที่สงวนไว้) |
+    | `plugin-sdk/codex-native-task-runtime` | ตัวช่วยของ Plugin Codex ที่รวมมาให้ สำหรับสะท้อนซับเอเจนต์แบบเนทีฟของเซิร์ฟเวอร์แอป Codex ไปยังสถานะงานของ OpenClaw (ใช้ภายในรีโปเท่านั้น ไม่ใช่การส่งออกแพ็กเกจ) |
 
   </Accordion>
 </AccordionGroup>
 
 ## ที่เกี่ยวข้อง
 
-- [ภาพรวม Plugin SDK](/th/plugins/sdk-overview)
-- [การตั้งค่า Plugin SDK](/th/plugins/sdk-setup)
+- [ภาพรวม SDK ของ Plugin](/th/plugins/sdk-overview)
+- [การตั้งค่า SDK ของ Plugin](/th/plugins/sdk-setup)
 - [การสร้าง Plugin](/th/plugins/building-plugins)

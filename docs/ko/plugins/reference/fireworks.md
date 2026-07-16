@@ -1,19 +1,20 @@
 ---
 read_when:
-    - fireworks Plugin을 설치, 구성 또는 감사하고 있습니다.
+    - fireworks Plugin을 설치, 구성 또는 감사하고 있습니다
 summary: OpenClaw에 Fireworks 모델 제공자 지원을 추가합니다.
 title: Fireworks Plugin
 x-i18n:
-    generated_at: "2026-07-12T01:00:22Z"
+    generated_at: "2026-07-16T12:51:04Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 1750e345f485fa7d8735a16278422188ad761b0c682cd5f09227f4407d502203
+    source_hash: f50d32c05d94cd14dbbc3dc25659884dbe3c23c2d613bceaaae573e942a545d5
     source_path: plugins/reference/fireworks.md
     workflow: 16
 ---
 
-# Fireworks Plugin
+# Fireworks plugin
 
 OpenClaw에 Fireworks 모델 제공자 지원을 추가합니다.
 
@@ -22,10 +23,10 @@ OpenClaw에 Fireworks 모델 제공자 지원을 추가합니다.
 - 패키지: `@openclaw/fireworks-provider`
 - 설치 경로: npm; ClawHub: `clawhub:@openclaw/fireworks-provider`
 
-## 노출 영역
+## 제공 기능
 
-제공자: fireworks
+제공자: `fireworks`
 
 ## 관련 문서
 
-- [fireworks](/ko/providers/fireworks)
+- [Fireworks](/ko/providers/fireworks)

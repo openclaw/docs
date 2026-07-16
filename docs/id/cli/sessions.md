@@ -1,40 +1,29 @@
 ---
 read_when:
     - Anda ingin mencantumkan sesi yang tersimpan dan melihat aktivitas terbaru
-summary: Referensi CLI untuk `openclaw sessions` (daftar sesi tersimpan + penggunaan)
+summary: Referensi CLI untuk `openclaw sessions` (mencantumkan sesi tersimpan + penggunaan)
 title: Sesi
 x-i18n:
-    generated_at: "2026-07-04T20:43:24Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T17:57:24Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 7c24ee8a632998624ee41945b26ace3bfe37cadf9447f7632c373784a9301bde
+    source_hash: e00d846229dfad1ada1a8c9a548e26f26247d3f7e5a35106903f6cd4818878b5
     source_path: cli/sessions.md
     workflow: 16
 ---
 
 # `openclaw sessions`
 
-Cantumkan sesi percakapan yang tersimpan.
+Mencantumkan sesi percakapan yang tersimpan.
 
-Daftar sesi bukan pemeriksaan keaktifan channel/provider. Daftar ini menampilkan baris
+Daftar sesi bukanlah pemeriksaan keaktifan channel/provider. Daftar ini menampilkan baris
 percakapan yang dipersistenkan dari penyimpanan sesi. Discord, Slack, Telegram, atau
-channel lain yang senyap dapat tersambung ulang dengan sukses tanpa membuat baris sesi baru
+channel lain yang tidak aktif dapat berhasil terhubung kembali tanpa membuat baris sesi baru
 hingga sebuah pesan diproses. Gunakan `openclaw channels status --probe`,
-`openclaw status --deep`, atau `openclaw health --verbose` ketika Anda memerlukan
+`openclaw status --deep`, atau `openclaw health --verbose` saat Anda memerlukan
 konektivitas channel langsung.
-
-Respons `openclaw sessions` dan Gateway `sessions.list` dibatasi secara
-default agar penyimpanan besar yang berumur panjang tidak memonopoli proses CLI atau
-event loop Gateway. CLI mengembalikan 100 sesi terbaru secara default; teruskan
-`--limit <n>` untuk jendela yang lebih kecil/besar atau `--limit all` ketika Anda sengaja
-memerlukan seluruh penyimpanan. Respons JSON menyertakan `totalCount`, `limitApplied`, dan
-`hasMore` ketika pemanggil perlu menunjukkan bahwa masih ada baris lain.
-
-Klien RPC dapat meneruskan `configuredAgentsOnly: true` untuk mempertahankan sumber
-penemuan gabungan yang luas tetapi hanya mengembalikan baris untuk agen yang saat ini ada di konfigurasi.
-Control UI menggunakan mode itu secara default agar penyimpanan agen yang dihapus atau hanya ada di disk
-tidak muncul kembali di tampilan Sessions.
 
 ```bash
 openclaw sessions
@@ -42,51 +31,39 @@ openclaw sessions --agent work
 openclaw sessions --all-agents
 openclaw sessions --active 120
 openclaw sessions --limit 25
-openclaw sessions --verbose
+openclaw sessions --store ./tmp/sessions.json
 openclaw sessions --json
 ```
 
-Pemilihan cakupan:
+Flag:
 
-- default: penyimpanan agen default yang dikonfigurasi
-- `--verbose`: pencatatan log verbose
-- `--agent <id>`: satu penyimpanan agen yang dikonfigurasi
-- `--all-agents`: agregasikan semua penyimpanan agen yang dikonfigurasi
-- `--store <path>`: jalur penyimpanan eksplisit (tidak dapat digabungkan dengan `--agent` atau `--all-agents`)
-- `--limit <n|all>`: jumlah baris maksimum untuk dikeluarkan (default `100`; `all` memulihkan keluaran penuh)
+| Flag                 | Deskripsi                                                            |
+| -------------------- | ---------------------------------------------------------------------- |
+| `--agent <id>`       | Satu penyimpanan agen yang dikonfigurasi (default: agen default yang dikonfigurasi).        |
+| `--all-agents`       | Menggabungkan semua penyimpanan agen yang dikonfigurasi.                                 |
+| `--store <path>`     | Jalur penyimpanan eksplisit (tidak dapat digabungkan dengan `--agent` atau `--all-agents`). |
+| `--active <minutes>` | Hanya menampilkan sesi yang diperbarui dalam N menit terakhir.                  |
+| `--limit <n\|all>`   | Jumlah maksimum baris yang dihasilkan (default `100`; `all` memulihkan keluaran penuh).        |
+| `--json`             | Keluaran yang dapat dibaca mesin.                                               |
+| `--verbose`          | Pencatatan log terperinci.                                                       |
 
-Pantau progres trajektori yang mudah dibaca manusia untuk sesi tersimpan:
+`openclaw sessions` dan RPC Gateway `sessions.list` dibatasi secara default
+agar penyimpanan besar yang berumur panjang tidak dapat memonopoli proses CLI atau loop
+peristiwa Gateway. Secara default, CLI mengembalikan 100 sesi terbaru; berikan `--limit <n>`
+untuk rentang yang lebih kecil/besar atau `--limit all` ketika Anda sengaja memerlukan
+seluruh penyimpanan. Respons JSON menyertakan `totalCount`, `limitApplied`, dan `hasMore`
+ketika pemanggil perlu menunjukkan bahwa masih ada baris lain.
 
-```bash
-openclaw sessions tail
-openclaw sessions tail --follow
-openclaw sessions tail --session-key "agent:main:telegram:direct:123" --tail 25
-openclaw sessions --agent work tail --follow
-openclaw sessions --all-agents tail --follow
-```
+Klien RPC dapat memberikan `configuredAgentsOnly: true` untuk mempertahankan sumber
+penemuan gabungan yang luas, tetapi hanya mengembalikan baris untuk agen yang saat ini ada dalam konfigurasi.
+Control UI menggunakan mode tersebut secara default agar penyimpanan agen yang dihapus atau hanya ada di disk
+tidak muncul kembali dalam tampilan Sesi.
 
-`openclaw sessions tail` merender peristiwa JSONL trajektori terbaru sebagai baris progres ringkas. Tanpa `--session-key`, perintah ini memantau sesi yang sedang berjalan terlebih dahulu, lalu sesi tersimpan terbaru. `--tail <count>` mengontrol berapa banyak peristiwa yang sudah ada dicetak sebelum mode ikuti; defaultnya `80`, dan `0` dimulai di akhir saat ini. `--follow` terus memantau file trajektori yang dipilih, termasuk file yang dipindahkan yang dirujuk oleh `<session>.trajectory-path.json`.
-
-Tampilan progres sengaja dibuat konservatif: teks prompt, argumen tool, dan isi hasil tool tidak dicetak. Panggilan tool menampilkan nama tool dengan `{...redacted...}`; hasil tool menampilkan status seperti `ok`, `error`, atau `done`; baris penyelesaian model menampilkan provider/model dan status terminal.
-
-Ekspor bundle trajektori untuk sesi tersimpan:
-
-```bash
-openclaw sessions export-trajectory --session-key "agent:main:telegram:direct:123" --workspace .
-openclaw sessions export-trajectory --session-key "agent:main:telegram:direct:123" --output bug-123 --json
-```
-
-Ini adalah jalur perintah yang digunakan oleh perintah slash `/export-trajectory` setelah
-pemilik menyetujui permintaan exec. Direktori keluaran selalu di-resolve
-di dalam `.openclaw/trajectory-exports/` di bawah workspace yang dipilih.
-
-`openclaw sessions --all-agents` membaca penyimpanan agen yang dikonfigurasi. Penemuan sesi
-Gateway dan ACP lebih luas: keduanya juga menyertakan penyimpanan yang hanya ada di disk yang ditemukan di bawah
-root `agents/` default atau root `session.store` bertemplat. Penyimpanan
-yang ditemukan tersebut harus di-resolve ke file `sessions.json` reguler di dalam
-root agen; symlink dan jalur di luar root dilewati.
-
-Contoh JSON:
+`--all-agents` membaca penyimpanan agen yang dikonfigurasi. Penemuan sesi
+Gateway dan ACP lebih luas: keduanya juga menyertakan penyimpanan SQLite yang ditemukan dari
+root agen yang dikonfigurasi atau root `session.store` bertemplat. Jalur pemilih
+lama harus ditemukan di dalam root agen; symlink dan jalur di luar root
+dilewati.
 
 `openclaw sessions --all-agents --json`:
 
@@ -104,15 +81,48 @@ Contoh JSON:
   "hasMore": false,
   "activeMinutes": null,
   "sessions": [
-    { "agentId": "main", "key": "agent:main:main", "model": "gpt-5" },
-    { "agentId": "work", "key": "agent:work:main", "model": "claude-opus-4-6" }
+    { "agentId": "main", "key": "agent:main:main", "model": "openai/gpt-5.6-sol" },
+    { "agentId": "work", "key": "agent:work:main", "model": "anthropic/claude-sonnet-4-6" }
   ]
 }
 ```
 
+## Memantau progres lintasan
+
+```bash
+openclaw sessions tail
+openclaw sessions tail --follow
+openclaw sessions tail --session-key "agent:main:telegram:direct:123" --tail 25
+openclaw sessions --agent work tail --follow
+openclaw sessions --all-agents tail --follow
+```
+
+`openclaw sessions tail` merender peristiwa lintasan runtime terbaru sebagai baris
+progres ringkas. Tanpa `--session-key`, perintah ini terlebih dahulu memantau sesi yang berjalan, lalu
+sesi tersimpan terbaru. `--tail <count>` mengontrol jumlah peristiwa yang sudah ada
+yang dicetak sebelum mode ikuti; default `80`, dan `0` dimulai dari bagian akhir saat ini.
+`--follow` terus memantau sesi terpilih yang didukung SQLite atau file
+lintasan lama eksplisit.
+
+Tampilan progres sengaja dibuat konservatif: teks prompt, argumen alat,
+dan isi hasil alat tidak dicetak. Pemanggilan alat menampilkan nama alat dengan
+`{...redacted...}`; hasil alat menampilkan status seperti `ok`, `error`, atau `done`;
+baris penyelesaian model menampilkan provider/model dan status terminal.
+
+## Mengekspor bundel lintasan
+
+```bash
+openclaw sessions export-trajectory --session-key "agent:main:telegram:direct:123" --workspace .
+openclaw sessions export-trajectory --session-key "agent:main:telegram:direct:123" --output bug-123 --json
+```
+
+Ini adalah jalur perintah yang digunakan oleh perintah garis miring `/export-trajectory` setelah
+pemilik menyetujui permintaan eksekusi. Direktori keluaran selalu ditemukan
+di dalam `.openclaw/trajectory-exports/` pada ruang kerja yang dipilih.
+
 ## Pemeliharaan pembersihan
 
-Jalankan pemeliharaan sekarang (alih-alih menunggu siklus tulis berikutnya):
+Jalankan pemeliharaan sekarang alih-alih menunggu siklus penulisan berikutnya:
 
 ```bash
 openclaw sessions cleanup --dry-run
@@ -124,26 +134,42 @@ openclaw sessions cleanup --dry-run --fix-dm-scope
 openclaw sessions cleanup --json
 ```
 
-`openclaw sessions cleanup` menggunakan pengaturan `session.maintenance` dari konfigurasi:
+`openclaw sessions cleanup` menggunakan pengaturan `session.maintenance` dari konfigurasi
+([Referensi konfigurasi](/id/gateway/config-agents#session)):
 
-- Catatan cakupan: `openclaw sessions cleanup` memelihara penyimpanan sesi, transkrip, dan sidecar trajektori. Perintah ini tidak memangkas riwayat eksekusi cron, yang dikelola oleh `cron.runLog.keepLines` di [Konfigurasi Cron](/id/automation/cron-jobs#configuration) dan dijelaskan di [Pemeliharaan Cron](/id/automation/cron-jobs#maintenance).
-- Pembersihan juga memangkas transkrip primer yang tidak direferensikan, checkpoint Compaction, dan sidecar trajektori yang lebih lama dari `session.maintenance.pruneAfter`; file yang masih direferensikan oleh `sessions.json` dipertahankan.
-- Pembersihan melaporkan pembersihan probe model-run gateway berumur pendek secara terpisah sebagai `modelRunPruned`. Ini hanya cocok dengan key eksplisit ketat berbentuk seperti `agent:*:explicit:model-run-<uuid>`. Retensi tetapnya adalah `24h`, tetapi dibatasi tekanan: ini hanya menghapus baris probe basi ketika pemeliharaan entri sesi/tekanan batas tercapai. Ketika berjalan, pembersihan model-run terjadi sebelum pembersihan basi global dan pembatasan.
+- Catatan cakupan: `openclaw sessions cleanup` memelihara penyimpanan sesi,
+  transkrip, baris lintasan, dan file pendamping lintasan lama. Perintah ini tidak
+  memangkas riwayat eksekusi Cron, yang secara otomatis mempertahankan 2000 baris terbaru per pekerjaan
+  ([Konfigurasi Cron](/id/automation/cron-jobs#configuration)).
+- Pembersihan juga memangkas artefak transkrip lama/arsip yang tidak dirujuk,
+  titik pemeriksaan Compaction, dan file pendamping lintasan yang lebih lama dari
+  `session.maintenance.pruneAfter`; artefak yang masih dirujuk oleh baris sesi SQLite
+  dipertahankan.
+- Pembersihan melaporkan pembersihan probe eksekusi model Gateway berumur pendek secara terpisah sebagai
+  `modelRunPruned`. Ini hanya cocok dengan kunci eksplisit ketat yang berbentuk seperti
+  `agent:*:explicit:model-run-<uuid>`. Retensinya ditetapkan sebesar `24h` dan
+  dibatasi oleh tekanan: baris probe usang hanya dihapus ketika tekanan
+  pemeliharaan/batas entri sesi tercapai. Ketika dijalankan, pembersihan eksekusi model
+  dilakukan sebelum pembersihan global untuk data usang dan pembatasan.
 
-- `--dry-run`: pratinjau berapa banyak entri yang akan dipangkas/dibatasi tanpa menulis.
-  - Dalam mode teks, dry-run mencetak tabel tindakan per sesi (`Action`, `Key`, `Age`, `Model`, `Flags`) ditambah ringkasan yang dikelompokkan menurut label sesi sehingga Anda dapat melihat apa yang akan dipertahankan vs dihapus.
-- `--enforce`: terapkan pemeliharaan bahkan ketika `session.maintenance.mode` adalah `warn`.
-- `--fix-missing`: hapus entri yang file transkripnya hilang atau hanya header/kosong, meskipun entri tersebut biasanya belum memenuhi usia/jumlah untuk dikeluarkan.
-- `--fix-dm-scope`: ketika `session.dmScope` adalah `main`, pensiunkan baris direct-DM berkunci peer yang basi yang tertinggal dari routing `per-peer`, `per-channel-peer`, atau `per-account-channel-peer` sebelumnya. Gunakan `--dry-run` terlebih dahulu; menerapkan pembersihan menghapus baris tersebut dari `sessions.json` dan mempertahankan transkripnya sebagai arsip terhapus.
-- `--active-key <key>`: lindungi key aktif tertentu dari penggusuran anggaran disk. Penunjuk percakapan eksternal yang tahan lama, seperti sesi grup dan sesi chat bercakupan thread, juga dipertahankan oleh pemeliharaan usia/jumlah/anggaran disk.
-- `--agent <id>`: jalankan pembersihan untuk satu penyimpanan agen yang dikonfigurasi.
-- `--all-agents`: jalankan pembersihan untuk semua penyimpanan agen yang dikonfigurasi.
-- `--store <path>`: jalankan terhadap file `sessions.json` tertentu.
-- `--json`: cetak ringkasan JSON. Dengan `--all-agents`, keluaran menyertakan satu ringkasan per penyimpanan.
+Flag:
 
-Ketika Gateway dapat dijangkau, pembersihan non-dry-run untuk penyimpanan agen yang dikonfigurasi
-dikirim melalui Gateway sehingga berbagi penulis penyimpanan sesi yang sama dengan traffic runtime.
-Gunakan `--store <path>` untuk perbaikan offline eksplisit pada file penyimpanan.
+| Flag                 | Deskripsi                                                                                                                                                                                                                                                                                                |
+| -------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `--dry-run`          | Menampilkan pratinjau jumlah entri yang akan dipangkas/dibatasi tanpa melakukan penulisan. Dalam mode teks, mencetak tabel tindakan per sesi (`Action`, `Key`, `Age`, `Model`, `Flags`) serta ringkasan yang dikelompokkan berdasarkan label sesi.                                                                                                       |
+| `--enforce`          | Menerapkan pemeliharaan meskipun `session.maintenance.mode` adalah `warn`.                                                                                                                                                                                                                                          |
+| `--fix-missing`      | Menghapus entri lama yang artefak transkrip arsipnya hilang atau hanya berisi header/kosong, meskipun entri tersebut biasanya belum akan dikeluarkan berdasarkan usia/jumlah.                                                                                                                                                             |
+| `--fix-dm-scope`     | Ketika `session.dmScope` adalah `main`, menghentikan baris DM langsung berkunci peer yang sudah usang dan ditinggalkan oleh perutean `per-peer`, `per-channel-peer`, atau `per-account-channel-peer` sebelumnya. Gunakan `--dry-run` terlebih dahulu; penerapannya menghapus baris tersebut dari SQLite dan mempertahankan artefak transkrip lamanya sebagai arsip yang dihapus. |
+| `--active-key <key>` | Melindungi kunci aktif tertentu dari pengusiran akibat anggaran disk. Penunjuk percakapan eksternal yang tahan lama, seperti sesi grup dan sesi obrolan bercakupan utas, juga dipertahankan oleh pemeliharaan usia/jumlah/anggaran disk.                                                                                               |
+| `--agent <id>`       | Menjalankan pembersihan untuk satu penyimpanan agen yang dikonfigurasi.                                                                                                                                                                                                                                                                |
+| `--all-agents`       | Menjalankan pembersihan untuk semua penyimpanan agen yang dikonfigurasi.                                                                                                                                                                                                                                                               |
+| `--store <path>`     | Menjalankan pembersihan terhadap jalur pemilih penyimpanan lama tertentu.                                                                                                                                                                                                                                                         |
+| `--json`             | Mencetak ringkasan JSON. Dengan `--all-agents`, keluaran menyertakan satu ringkasan per penyimpanan.                                                                                                                                                                                                                          |
+
+Ketika Gateway dapat dijangkau, pembersihan selain simulasi untuk penyimpanan agen yang dikonfigurasi
+dikirim melalui Gateway agar menggunakan penulis penyimpanan sesi yang sama dengan lalu lintas
+runtime. Gunakan `--store <path>` untuk perbaikan luring eksplisit pada pemilih
+penyimpanan lama.
 
 `openclaw sessions cleanup --all-agents --dry-run --json`:
 
@@ -177,9 +203,11 @@ Gunakan `--store <path>` untuk perbaikan offline eksplisit pada file penyimpanan
 }
 ```
 
-## Padatkan sesi
+## Memadatkan sesi
 
-Rebut kembali anggaran konteks untuk sesi yang macet atau terlalu besar. `openclaw sessions compact <key>` adalah wrapper kelas utama di sekitar RPC gateway `sessions.compact` dan memerlukan gateway yang berjalan.
+Mengambil kembali anggaran konteks untuk sesi yang macet atau terlalu besar. `openclaw sessions
+compact <key>` adalah pembungkus kelas utama untuk RPC Gateway `sessions.compact`
+dan memerlukan Gateway yang sedang berjalan.
 
 ```bash
 openclaw sessions compact "agent:main:main"
@@ -187,16 +215,25 @@ openclaw sessions compact "agent:main:main" --max-lines 200
 openclaw sessions compact "agent:work:main" --agent work --json
 ```
 
-- Tanpa `--max-lines`, gateway LLM-meringkas transkrip. CLI tidak memberlakukan deadline klien secara default; gateway memiliki siklus hidup compaction yang dikonfigurasi.
-- Dengan `--max-lines <n>`, perintah ini memotong ke `n` baris transkrip terakhir dan mengarsipkan transkrip sebelumnya sebagai sidecar `.bak`.
-- `--agent <id>`: agen yang memiliki sesi; wajib untuk key `global`.
-- `--url` / `--token` / `--password`: override koneksi gateway.
-- `--timeout <ms>`: timeout RPC sisi klien opsional dalam milidetik.
-- `--json`: cetak payload RPC mentah.
+- Tanpa `--max-lines`, Gateway menggunakan LLM untuk meringkas transkrip. Secara default, CLI
+  tidak menetapkan tenggat klien; Gateway mengelola siklus hidup
+  Compaction yang dikonfigurasi.
+- Dengan `--max-lines <n>`, transkrip dipangkas hingga `n` baris terakhir dan
+  transkrip sebelumnya diarsipkan sebagai file pendamping `.bak`.
+- `--agent <id>`: agen yang memiliki sesi; wajib untuk kunci `global`.
+- `--url` / `--token` / `--password`: penggantian koneksi Gateway.
+- `--timeout <ms>`: batas waktu RPC sisi klien opsional dalam milidetik.
+- `--json`: mencetak payload RPC mentah.
 
-Perintah keluar non-nol ketika gateway melaporkan compaction gagal atau tidak dapat dijangkau, sehingga cron dan skrip tidak pernah keliru menganggap no-op senyap sebagai keberhasilan.
+Perintah keluar dengan status non-zero ketika Gateway melaporkan Compaction yang gagal atau tidak
+dapat dijangkau, sehingga cron dan skrip tidak pernah menganggap no-op tanpa keluaran sebagai keberhasilan.
 
-> Catatan: `openclaw agent --message '/compact ...'` **bukan** jalur compaction. Perintah slash dari CLI ditolak oleh pemeriksaan pengirim berwenang; invokasi itu keluar non-nol dengan panduan yang menunjuk ke sini alih-alih diam-diam no-op.
+<Note>
+`openclaw agent --message '/compact ...'` **bukan** jalur Compaction. Perintah
+slash dari CLI ditolak oleh pemeriksaan pengirim yang diotorisasi; pemanggilan
+tersebut keluar dengan status non-zero disertai panduan yang mengarah ke sini,
+alih-alih melakukan no-op tanpa keluaran.
+</Note>
 
 ### RPC sessions.compact
 
@@ -204,11 +241,11 @@ Perintah keluar non-nol ketika gateway melaporkan compaction gagal atau tidak da
 
 | Bidang     | Tipe        | Wajib | Deskripsi                                                  |
 | ---------- | ----------- | ----- | ---------------------------------------------------------- |
-| `key`      | string      | ya    | Key sesi untuk dipadatkan (misalnya `agent:main:main`).    |
-| `agentId`  | string      | tidak | Id agen yang memiliki sesi (untuk key `global`).           |
-| `maxLines` | integer ≥ 1 | tidak | Potong ke N baris terakhir alih-alih ringkasan LLM.        |
+| `key`      | string      | ya    | Kunci sesi yang akan di-compact (misalnya `agent:main:main`). |
+| `agentId`  | string      | tidak | ID agen pemilik sesi (untuk kunci `global`).          |
+| `maxLines` | integer ≥ 1 | tidak | Pangkas hingga N baris terakhir sebagai pengganti peringkasan LLM. |
 
-Contoh respons ringkasan LLM:
+Contoh respons peringkasan LLM:
 
 ```json
 {
@@ -219,7 +256,7 @@ Contoh respons ringkasan LLM:
 }
 ```
 
-Contoh respons pemotongan (`--max-lines 200`):
+Contoh respons pemangkasan (`--max-lines 200`):
 
 ```json
 {
@@ -233,6 +270,7 @@ Contoh respons pemotongan (`--max-lines 200`):
 
 ## Terkait
 
-- Konfigurasi sesi: [Referensi konfigurasi](/id/gateway/config-agents#session)
+- [Konfigurasi sesi](/id/gateway/config-agents#session)
+- [Pengelolaan sesi](/id/concepts/session)
+- [Compaction](/id/concepts/compaction)
 - [Referensi CLI](/id/cli)
-- [Manajemen sesi](/id/concepts/session)

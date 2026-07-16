@@ -1,30 +1,31 @@
 ---
 read_when:
-    - شما در حال نصب، پیکربندی یا ممیزی Plugin‏ lmstudio هستید
-summary: پشتیبانی از ارائه‌دهندهٔ مدل LM Studio را به OpenClaw اضافه می‌کند.
-title: Plugin‏ LM Studio
+    - در حال نصب، پیکربندی یا ممیزی Plugin ‏lmstudio هستید
+summary: پشتیبانی از ارائه‌دهنده مدل LM Studio را به OpenClaw اضافه می‌کند.
+title: Plugin ‏LM Studio
 x-i18n:
-    generated_at: "2026-07-12T10:30:17Z"
+    generated_at: "2026-07-16T17:28:08Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: ec6c84ec422c0795d00f744239fcad96a5a01ef4fddd4823ba0b6ed93444a75b
+    source_hash: 8fc13cb8579875fab911aaf456f1b632426761b173cc06a8a7f60698e96cfb16
     source_path: plugins/reference/lmstudio.md
     workflow: 16
 ---
 
-# Plugin ‏LM Studio
+# Plugin LM Studio
 
 پشتیبانی از ارائه‌دهنده مدل LM Studio را به OpenClaw اضافه می‌کند.
 
 ## توزیع
 
 - بسته: `@openclaw/lmstudio-provider`
-- روش نصب: در OpenClaw گنجانده شده است
+- مسیر نصب: در OpenClaw گنجانده شده است
 
-## سطوح
+## سطح
 
-ارائه‌دهندگان: lmstudio؛ قراردادها: memoryEmbeddingProviders
+ارائه‌دهندگان: `lmstudio`؛ قراردادها: `memoryEmbeddingProviders`
 
 ## مستندات مرتبط
 

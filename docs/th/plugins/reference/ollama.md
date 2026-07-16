@@ -1,14 +1,15 @@
 ---
 read_when:
     - คุณกำลังติดตั้ง กำหนดค่า หรือตรวจสอบ Plugin ollama
-summary: เพิ่มการรองรับผู้ให้บริการโมเดล Ollama และ Ollama Cloud ให้กับ OpenClaw
+summary: เพิ่มการรองรับผู้ให้บริการโมเดล Ollama และ Ollama Cloud ใน OpenClaw
 title: Plugin Ollama
 x-i18n:
-    generated_at: "2026-07-12T16:34:22Z"
+    generated_at: "2026-07-16T19:34:00Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 2d37136b5bcc8e6f9efb2cfcae52836546e62a5526215118490598e2c4152810
+    source_hash: 53410854f05d88fda0e6c7d4fe06d9288fc9cd55e3cbbeffd0fae9347f2c787d
     source_path: plugins/reference/ollama.md
     workflow: 16
 ---
@@ -22,9 +23,9 @@ x-i18n:
 - แพ็กเกจ: `@openclaw/ollama-provider`
 - ช่องทางการติดตั้ง: รวมอยู่ใน OpenClaw
 
-## ส่วนเชื่อมต่อ
+## ส่วนที่เปิดให้ใช้งาน
 
-ผู้ให้บริการ: ollama, ollama-cloud; สัญญา: memoryEmbeddingProviders, tools, webSearchProviders
+ผู้ให้บริการ: `ollama`, `ollama-cloud`; สัญญา: `memoryEmbeddingProviders`, `tools`, `webSearchProviders`
 
 ## เอกสารที่เกี่ยวข้อง
 

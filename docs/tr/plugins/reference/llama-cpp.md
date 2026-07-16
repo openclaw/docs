@@ -1,19 +1,20 @@
 ---
 read_when:
-    - llama-cpp Plugin'ini kuruyor, yapılandırıyor veya denetliyorsunuz
+    - llama-cpp Pluginini kuruyor, yapılandırıyor veya denetliyorsunuz
 summary: node-llama-cpp aracılığıyla yerel GGUF gömmeleri.
 title: Llama Cpp Plugin'i
 x-i18n:
-    generated_at: "2026-07-12T12:02:21Z"
+    generated_at: "2026-07-16T17:25:49Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: be9fd199e252fd3f905e8064316e45b9b2816945a2e5e16a56a6a88fdd55ef8e
+    source_hash: 925f11cac19e9fdb6a1638c51f171999041d8139ccd61f706191c508892a0a1e
     source_path: plugins/reference/llama-cpp.md
     workflow: 16
 ---
 
-# Llama Cpp Plugin'i
+# Llama Cpp plugin'i
 
 node-llama-cpp aracılığıyla yerel GGUF gömmeleri.
 
@@ -24,7 +25,7 @@ node-llama-cpp aracılığıyla yerel GGUF gömmeleri.
 
 ## Yüzey
 
-sözleşmeler: embeddingProviders
+sözleşmeler: `embeddingProviders`
 
 ## İlgili belgeler
 

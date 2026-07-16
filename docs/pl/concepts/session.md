@@ -1,131 +1,160 @@
 ---
 read_when:
     - Chcesz zrozumieć routing i izolację sesji
-    - Chcesz skonfigurować zakres DM dla konfiguracji z wieloma użytkownikami
-    - Debugujesz codzienne resetowanie sesji lub resetowanie sesji po okresie bezczynności
+    - Chcesz skonfigurować zakres wiadomości prywatnych dla konfiguracji z wieloma użytkownikami
+    - Debugowanie codziennych resetów sesji lub resetów po okresie bezczynności
 summary: Jak OpenClaw zarządza sesjami konwersacji
 title: Zarządzanie sesjami
 x-i18n:
-    generated_at: "2026-06-27T17:29:31Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T18:16:42Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: f65249b17c8b45f569531134471683e9f458015b02af29ddf4aa6e1e5c2eac05
+    source_hash: 8ec9e33b4d288fa12016092ab2201431631fc9cb77e6e9d4261d348d5a849f65
     source_path: concepts/session.md
     workflow: 16
 ---
 
-OpenClaw organizuje konwersacje w **sesje**. Każda wiadomość jest kierowana do
-sesji na podstawie miejsca, z którego pochodzi -- wiadomości prywatnych, czatów grupowych, zadań Cron itd.
+OpenClaw kieruje każdą wiadomość przychodzącą do **sesji** na podstawie jej
+źródła: wiadomości prywatne, czaty grupowe, zadania Cron itd. Cały stan sesji
+należy do **Gateway**; klienci interfejsu użytkownika pobierają dane sesji z Gateway.
 
 ## Jak kierowane są wiadomości
 
-| Źródło             | Zachowanie                  |
-| ------------------ | --------------------------- |
-| Wiadomości prywatne | Domyślnie współdzielona sesja |
-| Czaty grupowe      | Izolowana dla każdej grupy  |
-| Pokoje/kanały      | Izolowana dla każdego pokoju |
-| Zadania Cron       | Nowa sesja dla każdego uruchomienia |
-| Webhooki           | Izolowana dla każdego hooka |
+| Źródło              | Zachowanie                        |
+| ------------------- | --------------------------------- |
+| Wiadomości prywatne | Domyślnie współdzielona sesja     |
+| Czaty grupowe       | Izolowana sesja dla każdej grupy |
+| Pokoje/kanały       | Izolowana sesja dla każdego pokoju |
+| Zadania Cron        | Nowa sesja przy każdym uruchomieniu |
+| Webhooki            | Izolowana sesja dla każdego punktu zaczepienia |
 
 ## Izolacja wiadomości prywatnych
 
-Domyślnie wszystkie wiadomości prywatne współdzielą jedną sesję dla zachowania ciągłości. To jest odpowiednie dla
-konfiguracji z jednym użytkownikiem.
+Domyślnie wszystkie wiadomości prywatne współdzielą jedną sesję w celu
+zachowania ciągłości, co jest odpowiednie w konfiguracjach dla jednego użytkownika.
 
 <Warning>
-Jeśli wiele osób może wysyłać wiadomości do Twojego agenta, włącz izolację wiadomości prywatnych. Bez niej wszyscy
-użytkownicy współdzielą ten sam kontekst konwersacji -- prywatne wiadomości Alice byłyby
-widoczne dla Boba.
+Jeśli z agentem może komunikować się wiele osób, należy włączyć izolację wiadomości
+prywatnych. Bez niej wszyscy użytkownicy współdzielą ten sam kontekst rozmowy,
+więc prywatne wiadomości Alicji byłyby widoczne dla Boba.
 </Warning>
-
-**Rozwiązanie:**
 
 ```json5
 {
   session: {
-    dmScope: "per-channel-peer", // isolate by channel + sender
+    dmScope: "per-channel-peer", // izoluj według kanału i nadawcy
   },
 }
 ```
 
-Inne opcje:
+Opcje `session.dmScope`:
 
-- `main` (domyślne) -- wszystkie wiadomości prywatne współdzielą jedną sesję.
-- `per-peer` -- izolacja według nadawcy (między kanałami).
-- `per-channel-peer` -- izolacja według kanału + nadawcy (zalecane).
-- `per-account-channel-peer` -- izolacja według konta + kanału + nadawcy.
+| Wartość                      | Zachowanie                                  |
+| ---------------------------- | ------------------------------------------- |
+| `main` (domyślnie)           | Wszystkie wiadomości prywatne współdzielą jedną sesję |
+| `per-peer`                 | Izoluj według nadawcy między kanałami       |
+| `per-channel-peer`         | Izoluj według kanału i nadawcy (zalecane)   |
+| `per-account-channel-peer` | Izoluj według konta, kanału i nadawcy       |
 
 <Tip>
-Jeśli ta sama osoba kontaktuje się z Tobą z wielu kanałów, użyj
-`session.identityLinks`, aby połączyć jej tożsamości, tak by współdzieliły jedną sesję.
+Jeśli ta sama osoba kontaktuje się z różnych kanałów, należy użyć
+`session.identityLinks`, aby przypisać jej tożsamości do jednego kanonicznego identyfikatora
+rozmówcy, dzięki czemu będą współdzielić sesję.
 </Tip>
 
 ### Dokowanie połączonych kanałów
 
-Polecenia dokowania pozwalają użytkownikowi przenieść trasę odpowiedzi bieżącej sesji czatu bezpośredniego do
-innego połączonego kanału bez rozpoczynania nowej sesji. Zobacz
-[Dokowanie kanałów](/pl/concepts/channel-docking), aby poznać przykłady, konfigurację i
-rozwiązywanie problemów.
+Polecenia dokowania przenoszą trasę odpowiedzi bieżącej sesji czatu prywatnego
+do innego połączonego kanału bez rozpoczynania nowej sesji. Przykłady,
+konfigurację i rozwiązywanie problemów zawiera [Dokowanie kanałów](/pl/concepts/channel-docking).
 
-Zweryfikuj konfigurację za pomocą `openclaw security audit`.
+Konfigurację można zweryfikować za pomocą `openclaw security audit`.
 
 ## Cykl życia sesji
 
-Sesje są ponownie używane do momentu wygaśnięcia:
+Sesje są używane ponownie, dopóki nie wygasną zgodnie z `session.reset`:
 
-- **Codzienny reset** (domyślny) -- nowa sesja o 4:00 czasu lokalnego na hoście
-  Gateway. Codzienna świeżość jest oparta na tym, kiedy bieżący `sessionId` został uruchomiony, a nie
-  na późniejszych zapisach metadanych.
-- **Reset bezczynności** (opcjonalny) -- nowa sesja po okresie braku aktywności. Ustaw
-  `session.reset.idleMinutes`. Świeżość bezczynności jest oparta na ostatniej rzeczywistej
-  interakcji użytkownika/kanału, więc zdarzenia systemowe Heartbeat, Cron i exec nie
-  utrzymują sesji przy życiu.
-- **Reset ręczny** -- wpisz `/new` lub `/reset` na czacie. `/new <model>` także
-  przełącza model.
+- **Reset dzienny** (domyślnie `mode: "daily"`) — nowa sesja o skonfigurowanej
+  godzinie lokalnej (`session.reset.atHour`, domyślnie `4`, 0-23) na hoście Gateway. Aktualność
+  dzienna zależy od czasu rozpoczęcia bieżącej `sessionId`, a nie od późniejszych
+  zapisów metadanych.
+- **Reset po bezczynności** (`mode: "idle"`) — nowa sesja po `session.reset.idleMinutes`
+  bezczynności. Aktualność po bezczynności zależy od ostatniej rzeczywistej interakcji
+  użytkownika/kanału, dlatego zdarzenia systemowe Heartbeat, Cron i exec nie
+  podtrzymują sesji.
+- **Reset ręczny** — wpisz na czacie `/new` lub `/reset`. `/new <model>`
+  również przełącza model.
 
-Gdy skonfigurowane są zarówno reset codzienny, jak i reset bezczynności, wygrywa ten, który wygaśnie jako pierwszy.
-Tury zdarzeń systemowych Heartbeat, Cron, exec i inne mogą zapisywać metadane sesji,
-ale te zapisy nie przedłużają świeżości resetu codziennego ani resetu bezczynności. Gdy reset
-przenosi sesję, oczekujące powiadomienia zdarzeń systemowych dla starej sesji są
-odrzucane, aby nieaktualne aktualizacje w tle nie były dodawane przed pierwszym promptem w
-nowej sesji.
+Gdy skonfigurowano zarówno reset dzienny, jak i reset po bezczynności, obowiązuje
+ten, który nastąpi wcześniej. Tury zdarzeń systemowych Heartbeat, Cron, exec i
+innych mogą zapisywać metadane sesji, ale zapisy te nie przedłużają okresu
+aktualności resetu dziennego ani resetu po bezczynności. Gdy reset odnawia sesję,
+oczekujące powiadomienia o zdarzeniach systemowych ze starej sesji są odrzucane,
+aby nieaktualne informacje z procesów w tle nie zostały dodane na początku
+pierwszego promptu w nowej sesji.
 
-Sesje z aktywną sesją CLI należącą do providera nie są odcinane przez domyślny niejawny
-reset dzienny. Użyj `/reset` albo skonfiguruj jawnie `session.reset`, gdy te
-sesje powinny wygasać według timera.
+Sesje z aktywną sesją CLI należącą do dostawcy nie są przerywane przez domyślny
+niejawny reset dzienny. Gdy takie sesje powinny wygasać według czasomierza, należy
+użyć `/reset` lub jawnie skonfigurować `session.reset`.
 
-## Gdzie przechowywany jest stan
+Domyślne ustawienie można zastąpić dla każdego typu czatu lub kanału:
 
-Cały stan sesji należy do **Gateway**. Klienci UI odpytują Gateway o
-dane sesji.
+```json5
+{
+  session: {
+    reset: { mode: "daily", atHour: 4 },
+    resetByType: {
+      group: { mode: "idle", idleMinutes: 120 },
+      thread: { mode: "daily", atHour: 6 },
+    },
+    resetByChannel: {
+      discord: { mode: "idle", idleMinutes: 10080 },
+    },
+  },
+}
+```
 
-- **Magazyn:** `~/.openclaw/agents/<agentId>/sessions/sessions.json`
-- **Transkrypty:** `~/.openclaw/agents/<agentId>/sessions/<sessionId>.jsonl`
+`resetByType` obsługuje `direct` (starszy alias `dm`), `group` i `thread`.
+Starsze ustawienie najwyższego poziomu `session.idleMinutes` nadal działa jako alias
+zgodności domyślnego trybu bezczynności, gdy nie ustawiono bloku
+`session.reset`/`resetByType`.
 
-`sessions.json` przechowuje oddzielne znaczniki czasu cyklu życia:
+## Lokalizacja stanu
 
-- `sessionStartedAt`: kiedy rozpoczął się bieżący `sessionId`; reset codzienny używa tej wartości.
-- `lastInteractionAt`: ostatnia interakcja użytkownika/kanału, która przedłuża czas życia bezczynności.
-- `updatedAt`: ostatnia mutacja wiersza magazynu; przydatne do wyświetlania i przycinania, ale nie
-  autorytatywne dla świeżości resetu codziennego/bezczynności.
+- **Wiersze sesji środowiska uruchomieniowego:** `~/.openclaw/agents/<agentId>/agent/openclaw-agent.sqlite`
+- **Zarchiwizowane pliki transkrypcji:** `~/.openclaw/agents/<agentId>/sessions/`
+- **Źródło migracji starszych wierszy:** `~/.openclaw/agents/<agentId>/sessions/sessions.json`
 
-Starsze wiersze bez `sessionStartedAt` są rozwiązywane z nagłówka sesji JSONL
-transkryptu, jeśli jest dostępny. Jeśli starszy wiersz nie ma także `lastInteractionAt`,
-świeżość bezczynności wraca do czasu rozpoczęcia tej sesji, a nie do późniejszych
-zapisów porządkowych.
+Wiersze sesji w bazie danych SQLite poszczególnych agentów przechowują oddzielne
+znaczniki czasu cyklu życia:
 
-## Utrzymanie sesji
+- `sessionStartedAt`: czas rozpoczęcia bieżącej `sessionId`; używany przez reset dzienny.
+- `lastInteractionAt`: ostatnia interakcja użytkownika/kanału przedłużająca okres aktywności.
+- `updatedAt`: ostatnia modyfikacja wiersza magazynu; przydatna podczas wyświetlania i usuwania,
+  ale niemiarodajna dla aktualności resetu dziennego lub resetu po bezczynności.
 
-OpenClaw automatycznie ogranicza rozmiar magazynu sesji w czasie. Domyślnie działa
-w trybie `enforce` i wykonuje czyszczenie podczas utrzymania. Ustaw
-`session.maintenance.mode` na `"warn"`, aby zgłaszać, co zostałoby wyczyszczone, bez modyfikowania magazynu/plików:
+Podczas migracji ze starszych instalacji uruchomienie Gateway i `openclaw doctor
+--fix` automatycznie importują starsze wiersze `sessions.json` oraz aktywną historię
+transkrypcji JSONL do SQLite. Wiersze bez `sessionStartedAt` są rozpoznawane na
+podstawie nagłówka sesji w starszej transkrypcji JSONL, jeśli jest dostępny. Jeśli
+starszy wiersz nie zawiera również `lastInteractionAt`, aktualność po bezczynności
+jest ustalana na podstawie czasu rozpoczęcia tej sesji, a nie późniejszych zapisów
+technicznych. Aby jawnie sprawdzić dane lub uzyskać dowody walidacji, należy użyć
+`openclaw doctor --session-sqlite inspect
+--session-sqlite-all-agents` i [sekwencji migracji narzędzia Doctor](/pl/cli/doctor#session-sqlite-migration).
+
+## Konserwacja sesji
+
+OpenClaw ogranicza rozmiar magazynu sesji w czasie za pomocą `session.maintenance`;
+poniżej przedstawiono wartości domyślne:
 
 ```json5
 {
   session: {
     maintenance: {
-      mode: "enforce",
+      mode: "enforce", // "enforce" wykonuje czyszczenie; "warn" tylko zgłasza
       pruneAfter: "30d",
       maxEntries: 500,
     },
@@ -133,48 +162,57 @@ w trybie `enforce` i wykonuje czyszczenie podczas utrzymania. Ustaw
 }
 ```
 
-Dla produkcyjnych limitów `maxEntries` zapisy runtime Gateway używają małego bufora wysokiego progu i czyszczą partiami z powrotem do skonfigurowanego limitu. Odczyty magazynu sesji nie przycinają ani nie ograniczają wpisów podczas uruchamiania Gateway. Pozwala to uniknąć pełnego czyszczenia magazynu przy każdym uruchomieniu lub izolowanej sesji Cron. `openclaw sessions cleanup --enforce` stosuje limit natychmiast.
+W przypadku limitów `maxEntries` o rozmiarze produkcyjnym zapisy środowiska
+uruchomieniowego Gateway wykorzystują mały bufor przekroczenia limitu i partiami
+zmniejszają liczbę wpisów do skonfigurowanego maksimum. Odczyty magazynu sesji
+nie usuwają ani nie ograniczają wpisów podczas uruchamiania Gateway, dzięki czemu
+uruchamianie i izolowane sesje Cron nie ponoszą kosztu pełnego czyszczenia
+magazynu. `openclaw sessions cleanup --enforce` natychmiast stosuje limit.
 
-Sesje próbne uruchomień modelu Gateway są domyślnie krótkotrwałe. Pasujące wiersze z
-ściśle jawnymi kluczami, takimi jak `agent:*:explicit:model-run-<uuid>`, używają stałej retencji `24h`,
-ale czyszczenie jest sterowane presją: usuwa nieaktualne wiersze próbne tylko wtedy, gdy
-osiągnięta zostanie presja utrzymania/limitu wpisów sesji. Gdy czyszczenie uruchomień modelu działa,
-wykonuje się przed szerszym progiem wieku nieaktualnych wpisów i limitem wpisów. Zwykłe sesje bezpośrednie,
-grupowe, wątków, Cron, hooków, Heartbeat, ACP i sub-agentów nie dziedziczą
-tej 24-godzinnej retencji.
+Sesje sond uruchomień modelu Gateway są domyślnie krótkotrwałe. Wiersze pasujące
+do `agent:*:explicit:model-run-<uuid>` używają stałego okresu przechowywania `24h`,
+ale czyszczenie zależy od obciążenia: usuwa nieaktualne wiersze sond tylko po
+osiągnięciu progu konserwacji/limitu wpisów sesji i jest wykonywane przed
+ogólniejszym limitem wieku nieaktualnych wpisów oraz limitem liczby wpisów.
+Zwykłe sesje prywatne, grupowe, wątków, Cron, punktów zaczepienia, Heartbeat,
+ACP i podagentów nie dziedziczą tego 24-godzinnego okresu przechowywania.
 
-Utrzymanie zachowuje trwałe zewnętrzne wskaźniki konwersacji, w tym sesje grupowe
-i sesje czatu ograniczone do wątku, jednocześnie nadal pozwalając syntetycznym wpisom Cron,
-hooków, Heartbeat, ACP i sub-agentów starzeć się i wygasać.
+Konserwacja zachowuje trwałe zewnętrzne wskaźniki konwersacji, w tym sesje
+grupowe i sesje czatu ograniczone do wątku, jednocześnie umożliwiając wygasanie
+syntetycznych wpisów Cron, punktów zaczepienia, Heartbeat, ACP i podagentów.
 
-Jeśli wcześniej używano izolacji wiadomości bezpośrednich, a później przywrócono
-`session.dmScope` do `main`, podejrzyj nieaktualne wiersze DM kluczowane peerem za pomocą
+Jeśli wcześniej używano izolacji wiadomości prywatnych, a następnie przywrócono
+wartość `session.dmScope` na `main`, nieaktualne wiersze wiadomości
+prywatnych z kluczami rozmówców można wyświetlić za pomocą
 `openclaw sessions cleanup --dry-run --fix-dm-scope`. Zastosowanie tej samej flagi
-wycofuje te stare wiersze bezpośrednich DM i zachowuje ich transkrypty jako usunięte
-archiwa.
+wycofuje stare wiersze bezpośrednich wiadomości prywatnych i zachowuje ich
+transkrypcje jako usunięte archiwa.
 
-Podejrzyj za pomocą `openclaw sessions cleanup --dry-run`.
+Podgląd dowolnego przebiegu konserwacji można wyświetlić za pomocą `openclaw sessions cleanup --dry-run`.
 
-## Inspekcja sesji
+## Sprawdzanie sesji
 
-- `openclaw status` -- ścieżka magazynu sesji i ostatnia aktywność.
-- `openclaw sessions --json` -- wszystkie sesje (filtruj za pomocą `--active <minutes>`).
-- `/status` na czacie -- użycie kontekstu, model i przełączniki.
-- `/context list` -- co znajduje się w prompcie systemowym.
+| Polecenie                    | Wyświetlane informacje                           |
+| ---------------------------- | ------------------------------------------------ |
+| `openclaw status`          | Ścieżka magazynu sesji i ostatnia aktywność      |
+| `openclaw sessions --json` | Wszystkie sesje (filtrowanie za pomocą `--active <minutes>`) |
+| `/status` na czacie          | Użycie kontekstu, model i przełączniki           |
+| `/context list`            | Zawartość promptu systemowego                     |
 
-## Więcej informacji
+## Dalsza lektura
 
-- [Przycinanie sesji](/pl/concepts/session-pruning) -- skracanie wyników narzędzi
-- [Compaction](/pl/concepts/compaction) -- podsumowywanie długich konwersacji
-- [Narzędzia sesji](/pl/concepts/session-tool) -- narzędzia agenta do pracy między sesjami
-- [Szczegółowe omówienie zarządzania sesjami](/pl/reference/session-management-compaction) --
-  schemat magazynu, transkrypty, polityka wysyłania, metadane pochodzenia i zaawansowana konfiguracja
-- [Wielu agentów](/pl/concepts/multi-agent) — kierowanie i izolacja sesji między agentami
-- [Zadania w tle](/pl/automation/tasks) — jak odłączona praca tworzy rekordy zadań z odwołaniami do sesji
-- [Kierowanie kanałów](/pl/channels/channel-routing) — jak przychodzące wiadomości są kierowane do sesji
+- [Wyszukiwanie sesji](/pl/concepts/session-search) — wyszukiwanie pełnotekstowe w poprzednich transkrypcjach
+- [Ograniczanie sesji](/pl/concepts/session-pruning) — skracanie wyników narzędzi
+- [Compaction](/pl/concepts/compaction) — podsumowywanie długich konwersacji
+- [Narzędzia sesji](/pl/concepts/session-tool) — narzędzia agenta do pracy między sesjami
+- [Szczegółowe omówienie zarządzania sesjami](/pl/reference/session-management-compaction) —
+  schemat magazynu, transkrypcje, zasady wysyłania, metadane pochodzenia i zaawansowana konfiguracja
+- [Wielu agentów](/pl/concepts/multi-agent) — kierowanie i izolowanie sesji między agentami
+- [Zadania w tle](/pl/automation/tasks) — sposób, w jaki odłączona praca tworzy rekordy zadań z odwołaniami do sesji
+- [Kierowanie kanałów](/pl/channels/channel-routing) — sposób kierowania wiadomości przychodzących do sesji
 
 ## Powiązane
 
-- [Przycinanie sesji](/pl/concepts/session-pruning)
+- [Ograniczanie sesji](/pl/concepts/session-pruning)
 - [Narzędzia sesji](/pl/concepts/session-tool)
 - [Kolejka poleceń](/pl/concepts/queue)

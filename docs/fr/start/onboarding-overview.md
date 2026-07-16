@@ -3,57 +3,59 @@ read_when:
     - Choisir un parcours d’intégration
     - Configuration d’un nouvel environnement
 sidebarTitle: Onboarding Overview
-summary: Vue d’ensemble des options et des parcours d’intégration d’OpenClaw
-title: Vue d’ensemble de l’intégration
+summary: Présentation des options et des parcours d’intégration d’OpenClaw
+title: Vue d’ensemble de la prise en main
 x-i18n:
-    generated_at: "2026-07-12T03:20:50Z"
+    generated_at: "2026-07-16T13:49:42Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 3460887108dc078c963802a32238133814afcc7d36b27eb4760280328ee070e5
+    source_hash: 4bcda1dcfb91f388ca6bef59f9bdf5177571d93c0d89c45025ef837628fa7ba0
     source_path: start/onboarding-overview.md
     workflow: 16
 ---
 
-OpenClaw propose une intégration initiale via le terminal et l’application macOS. Toutes deux commencent par établir l’inférence :
-elles détectent les accès existants à l’IA, exigent une complétion réelle, puis lancent
-Crestodian afin de configurer le reste de l’installation. Si un Gateway accessible et configuré
-dont l’agent par défaut dispose déjà d’un modèle configuré est détecté, l’intégration initiale est ignorée et
-l’interface utilisateur normale de l’agent s’ouvre. Le parcours dans le terminal propose également l’assistant classique complet pour
+OpenClaw propose un parcours d’intégration dans le terminal et dans l’app macOS. Les deux commencent par établir l’inférence :
+ils détectent les accès existants à l’IA, exigent une complétion en direct, puis seulement
+démarrent OpenClaw afin de configurer le reste de l’installation. Un Gateway accessible et configuré,
+dont l’agent par défaut dispose déjà d’un modèle configuré, ignore l’intégration et ouvre
+l’interface utilisateur normale de l’agent. Le parcours dans le terminal propose également l’assistant classique complet pour
 une configuration détaillée.
 
-## Quel parcours dois-je utiliser ?
+## Quel parcours utiliser ?
 
-|                    | Intégration initiale via la CLI               | Intégration initiale via l’application macOS |
-| ------------------ | --------------------------------------------- | -------------------------------------------- |
-| **Plateformes**     | macOS, Linux, Windows (natif ou WSL2)         | macOS uniquement                             |
-| **Interface**       | Configuration de l’inférence, puis Crestodian | Configuration de l’inférence, puis Crestodian |
-| **Idéal pour**      | Serveurs, sans interface graphique, contrôle total | Mac de bureau, configuration visuelle    |
-| **Automatisation**  | `--non-interactive` pour les scripts          | Manuelle uniquement                          |
-| **Commande**        | `openclaw onboard`                            | Lancer l’application                         |
+|                 | Intégration via la CLI                     | Intégration via l’app macOS       |
+| --------------- | ------------------------------------------ | --------------------------------- |
+| **Plateformes** | macOS, Linux, Windows (natif ou WSL2)      | macOS uniquement                  |
+| **Interface**   | Configuration de l’inférence, puis OpenClaw | Configuration de l’inférence, puis OpenClaw |
+| **Idéal pour**  | Serveurs, sans interface graphique, contrôle total | Mac de bureau, configuration visuelle |
+| **Automatisation** | `--non-interactive` pour les scripts     | Manuelle uniquement               |
+| **Commande**    | `openclaw onboard`                         | Lancer l’app                      |
 
-La plupart des utilisateurs devraient commencer par **l’intégration initiale via la CLI** : elle fonctionne
-partout et offre le plus de contrôle.
+La plupart des utilisateurs devraient commencer par **l’intégration via la CLI** : elle fonctionne partout et vous offre
+le plus de contrôle.
 
-## Ce que configure l’intégration initiale
+## Ce que configure l’intégration
 
 La phase guidée d’inférence établit uniquement :
 
-1. **Fournisseur de modèle et authentification** — accès détecté ou clé API vérifiée
-2. **Inférence vérifiée** — une véritable complétion avec le modèle effectif de
-   l’agent par défaut
+1. **Fournisseur de modèle et authentification** — accès détecté ou connexion vérifiée à un fournisseur,
+   clé API ou jeton
+2. **Inférence vérifiée** — une véritable complétion avec le modèle effectif
+   de l’agent par défaut
 
-Une fois cette complétion réussie, Crestodian peut configurer l’espace de travail, le Gateway,
+Une fois cette complétion réussie, OpenClaw peut configurer l’espace de travail, le Gateway,
 le service Gateway, les canaux, les agents, les plugins et d’autres fonctionnalités facultatives.
 
-L’assistant classique de la CLI peut également configurer :
+L’assistant CLI classique peut également configurer :
 
 1. **Canaux** (facultatif) — canaux de discussion intégrés et fournis, tels que
    Discord, Feishu, Google Chat, iMessage, Mattermost, Microsoft Teams,
-   Telegram, WhatsApp, entre autres
+   Telegram, WhatsApp, et bien d’autres
 2. **Contrôles avancés du Gateway** — mode distant, paramètres réseau et choix du démon
 
-## Intégration initiale via la CLI
+## Intégration via la CLI
 
 Exécutez dans n’importe quel terminal :
 
@@ -61,45 +63,48 @@ Exécutez dans n’importe quel terminal :
 openclaw onboard
 ```
 
-Le parcours guidé détecte les accès existants à l’IA, teste en conditions réelles les options dans l’ordre,
-passe à la suivante en cas d’échec et propose la saisie manuelle masquée d’une clé. Il n’enregistre
-le modèle et les identifiants qu’après une complétion réussie, puis lance Crestodian
-pour configurer l’espace de travail, le Gateway, les canaux, les agents, les plugins et d’autres
-fonctionnalités facultatives. Il n’existe ni Crestodian avant l’inférence, ni parcours permettant d’ignorer l’IA, ni
-basculement vers l’assistant classique au sein du parcours. Quittez, puis exécutez `openclaw onboard --classic` si vous
-préférez utiliser l’assistant classique.
+Le parcours guidé détecte les accès existants à l’IA, teste en direct les candidats dans l’ordre,
+et passe au suivant en cas d’échec. Si toutes les options détectées sont épuisées, il affiche d’abord OpenAI,
+Anthropic, xAI (Grok), Google et OpenRouter. **Plus…** contient les
+autres fournisseurs, regroupés par fournisseur, avec les régions, les offres et les méthodes prises en charge
+par navigateur, appareil, clé API ou jeton dans un second menu. Il n’enregistre le modèle
+et l’identifiant qu’après une complétion réussie, puis démarre OpenClaw afin de
+configurer l’espace de travail, le Gateway, les canaux, les agents, les plugins et d’autres fonctionnalités
+facultatives. **Ignorer pour le moment** quitte sans démarrer OpenClaw. Il n’existe aucun
+passage au parcours classique en cours de processus ; quittez, puis exécutez `openclaw onboard --classic` si vous préférez
+utiliser l’assistant classique.
 
-Une fois l’inférence réussie, Crestodian peut confier la configuration des canaux à un assistant
-de terminal avec saisie masquée. Il n’ouvre pas la configuration guidée ou classique du fournisseur ; quittez Crestodian et
+Une fois l’inférence réussie, OpenClaw peut confier la configuration des canaux à un assistant
+de terminal avec saisie masquée. Il n’ouvre pas la configuration guidée ou classique du fournisseur ; quittez OpenClaw et
 exécutez `openclaw onboard` pour modifier le fournisseur de modèle ou son authentification.
 
-Utilisez `openclaw onboard --classic` pour une configuration détaillée du modèle et de l’authentification, des canaux, des Skills,
+Utilisez `openclaw onboard --classic` pour une configuration détaillée du modèle/de l’authentification, des canaux, des Skills,
 du Gateway distant ou de l’importation. L’ajout de `--install-daemon` sélectionne également le
 parcours classique et installe le service en arrière-plan en une seule étape. Utilisez `openclaw
-crestodian` pour une configuration conversationnelle hors inférence et les réparations. `openclaw
-onboard --modern` est un alias de compatibilité qui utilise la même étape obligatoire d’inférence
-en conditions réelles.
+openclaw` pour la configuration conversationnelle hors inférence et la réparation. `openclaw
+onboard --modern` est un alias de compatibilité qui utilise la même étape obligatoire
+d’inférence en direct.
 
-Référence complète : [Intégration initiale (CLI)](/fr/start/wizard)
+Référence complète : [Intégration (CLI)](/fr/start/wizard)
 Documentation de la commande CLI : [`openclaw onboard`](/fr/cli/onboard)
 
-## Intégration initiale via l’application macOS
+## Intégration via l’app macOS
 
-Ouvrez l’application OpenClaw. Si son Gateway local ou distant configuré est accessible
-et que l’agent par défaut dispose déjà d’un modèle configuré, l’application ignore l’intégration initiale
-et Crestodian, puis ouvre immédiatement l’interface utilisateur normale de l’agent.
+Ouvrez l’app OpenClaw. Si son Gateway local ou distant configuré est accessible
+et que l’agent par défaut dispose déjà d’un modèle configuré, l’app ignore l’intégration
+et OpenClaw, puis ouvre immédiatement l’interface utilisateur normale de l’agent.
 
-Pour un Gateway nouveau ou incomplet, le parcours de premier lancement détecte les accès existants à l’IA
-(Claude Code, Codex ou clés API), teste en conditions réelles la meilleure
-option et ne l’enregistre qu’après une réponse réelle ; il se rabat automatiquement sur l’option suivante et
-propose une étape vérifiée de saisie manuelle de la clé API si rien n’est trouvé. Les
-identifiants sensibles utilisent une saisie masquée. Une fois l’inférence réussie, Crestodian démarre et
+Pour un Gateway nouveau ou incomplet, le parcours de premier démarrage détecte les accès existants à l’IA
+(Claude Code, Codex ou clés API), teste en direct la meilleure
+option et ne l’enregistre qu’après une véritable réponse — en se rabattant automatiquement
+sur une autre option et en proposant une étape manuelle vérifiée de saisie de clé API si rien n’est trouvé. Les identifiants
+sensibles utilisent une saisie masquée. Une fois l’inférence réussie, OpenClaw démarre et
 aide à configurer le reste.
 
-Gemini CLI reste disponible pour les agents ordinaires après la configuration, mais n’est pas
-proposé pour cette étape obligatoire d’inférence, car il ne permet pas d’imposer la sonde sans outil.
+Gemini CLI reste disponible pour les agents normaux après la configuration, mais n’est pas
+proposé pour cette étape obligatoire d’inférence, car il ne peut pas imposer la sonde sans outil.
 
-Référence complète : [Intégration initiale (application macOS)](/fr/start/onboarding)
+Référence complète : [Intégration (app macOS)](/fr/start/onboarding)
 
 ## Fournisseurs personnalisés ou non répertoriés
 
@@ -108,9 +113,9 @@ Si votre fournisseur n’est pas répertorié, exécutez `openclaw onboard --cla
 
 - Compatibilité du point de terminaison : compatible avec OpenAI (`/chat/completions`), compatible avec OpenAI Responses (`/responses`), compatible avec Anthropic (`/messages`) ou inconnue (teste les trois et effectue une détection automatique)
 - URL de base et clé API (la clé API est facultative si le point de terminaison n’en exige pas)
-- Identifiant du modèle et alias facultatif du modèle
+- ID du modèle et alias facultatif du modèle
 
-Plusieurs points de terminaison personnalisés peuvent coexister : chacun reçoit son propre identifiant de point de terminaison.
+Plusieurs points de terminaison personnalisés peuvent coexister — chacun reçoit son propre ID de point de terminaison.
 
 ## Pages connexes
 

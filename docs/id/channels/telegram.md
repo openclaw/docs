@@ -1,29 +1,30 @@
 ---
 read_when:
-    - Mengerjakan fitur Telegram atau Webhook
-summary: Status dukungan bot Telegram, kemampuan, dan konfigurasi
+    - Mengerjakan fitur Telegram atau webhook
+summary: Status dukungan, kemampuan, dan konfigurasi bot Telegram
 title: Telegram
 x-i18n:
-    generated_at: "2026-07-03T17:40:21Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T17:54:26Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 202d6eaaf9348203855659d30616368995bce9269082e60dfed67c8d444abf18
+    source_hash: 51c155afeb147b92a55f181be269ce13c4fd6b609a94d680cd7e091cd4a7c236
     source_path: channels/telegram.md
     workflow: 16
 ---
 
-Siap produksi untuk DM bot dan grup melalui grammY. Long polling adalah mode bawaan; mode Webhook bersifat opsional.
+Siap produksi untuk DM dan grup bot melalui grammY. Long polling adalah transport default; mode webhook bersifat opsional.
 
 <CardGroup cols={3}>
-  <Card title="Penyandingan" icon="link" href="/id/channels/pairing">
-    Kebijakan DM bawaan untuk Telegram adalah penyandingan.
+  <Card title="Pemasangan" icon="link" href="/id/channels/pairing">
+    Kebijakan DM default untuk Telegram adalah pemasangan.
   </Card>
-  <Card title="Pemecahan masalah kanal" icon="wrench" href="/id/channels/troubleshooting">
-    Diagnostik lintas kanal dan playbook perbaikan.
+  <Card title="Pemecahan masalah saluran" icon="wrench" href="/id/channels/troubleshooting">
+    Panduan diagnostik dan perbaikan lintas saluran.
   </Card>
   <Card title="Konfigurasi Gateway" icon="settings" href="/id/gateway/configuration">
-    Pola dan contoh konfigurasi kanal lengkap.
+    Pola dan contoh konfigurasi saluran lengkap.
   </Card>
 </CardGroup>
 
@@ -31,9 +32,10 @@ Siap produksi untuk DM bot dan grup melalui grammY. Long polling adalah mode baw
 
 <Steps>
   <Step title="Buat token bot di BotFather">
-    Buka Telegram dan chat dengan **@BotFather** (pastikan handle persis `@BotFather`).
+    Kedua alur menghasilkan token yang ditempelkan ke OpenClaw — pilih salah satu:
 
-    Jalankan `/newbot`, ikuti prompt, dan simpan tokennya.
+    - **Alur chat**: buka Telegram, mulai chat dengan **@BotFather** (pastikan handle-nya tepat `@BotFather`), jalankan `/newbot`, ikuti petunjuknya, lalu simpan token.
+    - **Alur web**: buka [aplikasi web BotFather](https://t.me/BotFather?startapp) — aplikasi ini berjalan di setiap klien Telegram, termasuk [web.telegram.org](https://web.telegram.org) — buat bot melalui UI, lalu salin tokennya.
 
   </Step>
 
@@ -52,12 +54,12 @@ Siap produksi untuk DM bot dan grup melalui grammY. Long polling adalah mode baw
 }
 ```
 
-    Fallback env: `TELEGRAM_BOT_TOKEN=...` (hanya akun bawaan).
-    Telegram **tidak** menggunakan `openclaw channels login telegram`; konfigurasikan token di config/env, lalu mulai gateway.
+    Fallback env: `TELEGRAM_BOT_TOKEN` (hanya akun default; akun bernama harus menggunakan `botToken` atau `tokenFile`).
+    Telegram **tidak** menggunakan `openclaw channels login telegram`; tetapkan token dalam konfigurasi/env, lalu mulai Gateway.
 
   </Step>
 
-  <Step title="Mulai gateway dan setujui DM pertama">
+  <Step title="Mulai Gateway dan setujui DM pertama">
 
 ```bash
 openclaw gateway
@@ -65,130 +67,126 @@ openclaw pairing list telegram
 openclaw pairing approve telegram <CODE>
 ```
 
-    Kode penyandingan kedaluwarsa setelah 1 jam.
+    Kode pemasangan kedaluwarsa setelah 1 jam.
 
   </Step>
 
   <Step title="Tambahkan bot ke grup">
-    Tambahkan bot ke grup Anda, lalu dapatkan kedua ID yang dibutuhkan akses grup:
+    Tambahkan bot ke grup Anda, lalu dapatkan dua ID yang diperlukan untuk akses grup:
 
-    - ID pengguna Telegram Anda, digunakan di `allowFrom` / `groupAllowFrom`
-    - ID chat grup Telegram, digunakan sebagai kunci di bawah `channels.telegram.groups`
+    - ID pengguna Telegram Anda, untuk `allowFrom` / `groupAllowFrom`
+    - ID chat grup Telegram, sebagai kunci di bawah `channels.telegram.groups`
 
-    Untuk penyiapan pertama kali, dapatkan ID chat grup dari `openclaw logs --follow`, bot ID terusan, atau Bot API `getUpdates`. Setelah grup diizinkan, `/whoami@<bot_username>` dapat mengonfirmasi ID pengguna dan grup.
+    Dapatkan ID chat grup dari `openclaw logs --follow`, bot ID penerusan, atau `getUpdates` Bot API. Setelah grup diizinkan, `/whoami@<bot_username>` mengonfirmasi ID pengguna dan grup.
 
-    ID supergroup Telegram negatif yang dimulai dengan `-100` adalah ID chat grup. Letakkan di bawah `channels.telegram.groups`, bukan di bawah `groupAllowFrom`.
+    ID supergrup negatif yang diawali dengan `-100` adalah ID chat grup. ID tersebut ditempatkan di bawah `channels.telegram.groups`, bukan `groupAllowFrom`.
 
   </Step>
 </Steps>
 
 <Note>
-Urutan resolusi token bersifat sadar akun. Dalam praktiknya, nilai config mengalahkan fallback env, dan `TELEGRAM_BOT_TOKEN` hanya berlaku untuk akun bawaan.
-Setelah startup berhasil, OpenClaw menyimpan identitas bot dalam cache di direktori state hingga 24 jam agar restart dapat menghindari panggilan Telegram `getMe` tambahan; mengubah atau menghapus token akan menghapus cache tersebut.
+Resolusi token mempertimbangkan akun: `tokenFile` mengungguli `botToken` yang mengungguli env, dan konfigurasi selalu mengungguli `TELEGRAM_BOT_TOKEN` (yang hanya diresolusi untuk akun default). Setelah berhasil dimulai, OpenClaw menyimpan identitas bot dalam cache hingga 24 jam agar mulai ulang tidak memerlukan panggilan `getMe` tambahan; mengubah atau menghapus token akan menghapus cache tersebut.
 </Note>
 
 ## Pengaturan sisi Telegram
 
 <AccordionGroup>
   <Accordion title="Mode privasi dan visibilitas grup">
-    Bot Telegram secara bawaan menggunakan **Mode Privasi**, yang membatasi pesan grup yang mereka terima.
+    Bot Telegram secara default menggunakan **Privacy Mode**, yang membatasi pesan grup yang diterimanya.
 
-    Jika bot harus melihat semua pesan grup, lakukan salah satu:
+    Untuk melihat semua pesan grup, lakukan salah satu hal berikut:
 
     - nonaktifkan mode privasi melalui `/setprivacy`, atau
     - jadikan bot sebagai admin grup.
 
-    Saat mengubah mode privasi, hapus + tambahkan kembali bot di setiap grup agar Telegram menerapkan perubahan.
+    Setelah mengubah mode privasi, hapus lalu tambahkan kembali bot di setiap grup agar Telegram menerapkan perubahan tersebut.
 
   </Accordion>
 
   <Accordion title="Izin grup">
-    Status admin dikontrol di pengaturan grup Telegram.
-
-    Bot admin menerima semua pesan grup, yang berguna untuk perilaku grup yang selalu aktif.
-
+    Status admin dikontrol dalam pengaturan grup Telegram. Bot admin menerima semua pesan grup, yang berguna untuk perilaku grup yang selalu aktif.
   </Accordion>
 
-  <Accordion title="Toggle BotFather yang berguna">
+  <Accordion title="Pengaturan BotFather yang berguna">
 
-    - `/setjoingroups` untuk mengizinkan/menolak penambahan grup
-    - `/setprivacy` untuk perilaku visibilitas grup
+    - `/setjoingroups` — izinkan/tolak penambahan ke grup
+    - `/setprivacy` — perilaku visibilitas grup
+
+    Pengaturan yang sama tersedia di [aplikasi web BotFather](https://t.me/BotFather?startapp) jika Anda lebih memilih UI daripada perintah chat.
 
   </Accordion>
 </AccordionGroup>
+
+## Mini App dasbor
+
+Jalankan `/dashboard` dalam DM dengan bot untuk membuka dasbor OpenClaw di dalam Telegram.
+
+Persyaratan:
+
+- `gateway.tailscale.mode: "serve"` atau `"funnel"` untuk URL HTTPS Mini App yang dipublikasikan.
+- ID pengguna Telegram numerik Anda harus tercantum dalam `allowFrom` efektif milik akun yang dipilih atau dalam `commands.ownerAllowFrom`.
+- Gunakan DM. Dalam grup, `/dashboard` membalas dengan `open this in a DM with the bot` dan tidak mengirim tombol.
+- Instalasi Docker: mode Serve/Funnel mengharuskan Gateway mengikat loopback di samping `tailscaled`, yang tidak dapat dipenuhi oleh jaringan bridge dengan port yang dipublikasikan. Jalankan kontainer Gateway dengan `network_mode: host` dan pasang soket `tailscaled` host (`/var/run/tailscale`) beserta CLI `tailscale` ke dalam kontainer.
+
+Mini App merupakan jalur v1 khusus Tailscale dan tidak mendukung iframe Telegram Web.
 
 ## Kontrol akses dan aktivasi
 
 ### Identitas bot grup
 
-Di grup Telegram dan topik forum, mention eksplisit handle bot yang dikonfigurasi (misalnya `@my_bot`) diperlakukan sebagai penyapaan ke agen OpenClaw yang dipilih, bahkan ketika nama persona agen berbeda dari nama pengguna Telegram. Kebijakan senyap grup tetap berlaku untuk trafik grup yang tidak terkait, tetapi handle bot itu sendiri tidak dianggap sebagai "orang lain."
+Dalam grup dan topik forum, penyebutan eksplisit handle bot yang dikonfigurasi (misalnya `@my_bot`) ditujukan kepada agen OpenClaw yang dipilih, meskipun nama persona agen berbeda dari nama pengguna Telegram. Kebijakan senyap grup tetap berlaku untuk lalu lintas yang tidak terkait, tetapi handle bot itu sendiri tidak pernah dianggap sebagai "orang lain."
 
 <Tabs>
   <Tab title="Kebijakan DM">
     `channels.telegram.dmPolicy` mengontrol akses pesan langsung:
 
-    - `pairing` (bawaan)
-    - `allowlist` (memerlukan setidaknya satu ID pengirim di `allowFrom`)
-    - `open` (memerlukan `allowFrom` untuk menyertakan `"*"`)
+    - `pairing` (default)
+    - `allowlist` (memerlukan setidaknya satu ID pengirim dalam `allowFrom`)
+    - `open` (mengharuskan `allowFrom` menyertakan `"*"`)
     - `disabled`
 
-    `dmPolicy: "open"` dengan `allowFrom: ["*"]` memungkinkan akun Telegram apa pun yang menemukan atau menebak nama pengguna bot untuk memberi perintah ke bot. Gunakan hanya untuk bot yang sengaja dibuat publik dengan alat yang dibatasi ketat; bot satu pemilik sebaiknya menggunakan `allowlist` dengan ID pengguna numerik.
+    `dmPolicy: "open"` dengan `allowFrom: ["*"]` memungkinkan setiap akun Telegram yang menemukan atau menebak nama pengguna bot untuk memerintah bot. Gunakan hanya untuk bot yang sengaja dibuat publik dengan alat yang dibatasi secara ketat; bot dengan satu pemilik sebaiknya menggunakan `allowlist` dengan ID pengguna numerik.
 
     `channels.telegram.allowFrom` menerima ID pengguna Telegram numerik. Prefiks `telegram:` / `tg:` diterima dan dinormalisasi.
-    Dalam konfigurasi multi-akun, `channels.telegram.allowFrom` tingkat atas yang restriktif diperlakukan sebagai batas keamanan: entri `allowFrom: ["*"]` tingkat akun tidak membuat akun tersebut publik kecuali allowlist akun efektif masih berisi wildcard eksplisit setelah penggabungan.
+    Dalam konfigurasi multiakun, `channels.telegram.allowFrom` tingkat atas yang restriktif merupakan batas keamanan: `allowFrom: ["*"]` tingkat akun tidak membuat akun tersebut publik kecuali daftar izin efektif hasil penggabungan masih berisi wildcard eksplisit.
     `dmPolicy: "allowlist"` dengan `allowFrom` kosong memblokir semua DM dan ditolak oleh validasi konfigurasi.
-    Penyiapan hanya meminta ID pengguna numerik.
-    Jika Anda telah meningkatkan versi dan konfigurasi Anda berisi entri allowlist `@username`, jalankan `openclaw doctor --fix` untuk menyelesaikannya (upaya terbaik; memerlukan token bot Telegram).
-    Jika sebelumnya Anda bergantung pada berkas allowlist pairing-store, `openclaw doctor --fix` dapat memulihkan entri ke `channels.telegram.allowFrom` dalam alur allowlist (misalnya saat `dmPolicy: "allowlist"` belum memiliki ID eksplisit).
+    Penyiapan hanya meminta ID pengguna numerik. Jika konfigurasi Anda memiliki entri daftar izin `@username` dari penyiapan lama, jalankan `openclaw doctor --fix` untuk meresolusinya menjadi ID numerik (upaya terbaik; memerlukan token bot Telegram).
+    Jika sebelumnya Anda mengandalkan file daftar izin penyimpanan pemasangan, `openclaw doctor --fix` dapat memulihkan entri ke dalam `channels.telegram.allowFrom` untuk alur daftar izin (misalnya ketika `dmPolicy: "allowlist"` belum memiliki ID eksplisit).
 
-    Untuk bot dengan satu pemilik, pilih `dmPolicy: "allowlist"` dengan ID numerik `allowFrom` eksplisit agar kebijakan akses tetap tahan lama dalam konfigurasi (alih-alih bergantung pada persetujuan pairing sebelumnya).
+    Untuk bot dengan satu pemilik, utamakan `dmPolicy: "allowlist"` dengan ID numerik `allowFrom` eksplisit daripada mengandalkan persetujuan pemasangan sebelumnya.
 
-    Kebingungan umum: persetujuan pairing DM tidak berarti "pengirim ini diotorisasi di mana saja".
-    Pairing memberikan akses DM. Jika belum ada pemilik perintah, pairing pertama yang disetujui juga menetapkan `commands.ownerAllowFrom` sehingga perintah khusus pemilik dan persetujuan eksekusi memiliki akun operator eksplisit.
-    Otorisasi pengirim grup tetap berasal dari allowlist konfigurasi eksplisit.
-    Jika Anda ingin "Saya diotorisasi sekali dan baik DM maupun perintah grup berfungsi", masukkan ID pengguna Telegram numerik Anda di `channels.telegram.allowFrom`; untuk perintah khusus pemilik, pastikan `commands.ownerAllowFrom` berisi `telegram:<your user id>`.
+    Kebingungan umum: persetujuan pemasangan DM tidak berarti "pengirim ini diberi otorisasi di mana pun." Pemasangan hanya memberikan akses DM. Jika belum ada pemilik perintah, pemasangan pertama yang disetujui juga menetapkan `commands.ownerAllowFrom`, sehingga perintah khusus pemilik dan persetujuan eksekusi memiliki akun operator eksplisit. Otorisasi pengirim grup tetap berasal dari daftar izin konfigurasi eksplisit.
+    Agar satu identitas diotorisasi untuk DM dan perintah grup: masukkan ID pengguna Telegram numerik Anda ke dalam `channels.telegram.allowFrom`, dan untuk perintah khusus pemilik, pastikan `commands.ownerAllowFrom` berisi `telegram:<your user id>`.
 
     ### Menemukan ID pengguna Telegram Anda
 
-    Lebih aman (tanpa bot pihak ketiga):
+    Lebih aman (tanpa bot pihak ketiga): kirim DM ke bot Anda, jalankan `openclaw logs --follow`, lalu baca `from.id`.
 
-    1. Kirim DM ke bot Anda.
-    2. Jalankan `openclaw logs --follow`.
-    3. Baca `from.id`.
-
-    Metode resmi Bot API:
+    Metode Bot API resmi:
 
 ```bash
 curl "https://api.telegram.org/bot<bot_token>/getUpdates"
 ```
 
-    Metode pihak ketiga (kurang privat): `@userinfobot` atau `@getidsbot`.
+    Pihak ketiga (privasi lebih rendah): `@userinfobot` atau `@getidsbot`.
 
   </Tab>
 
-  <Tab title="Kebijakan grup dan allowlist">
-    Dua kontrol berlaku bersama:
+  <Tab title="Kebijakan grup dan daftar izin">
+    Dua kontrol berlaku secara bersamaan:
 
     1. **Grup mana yang diizinkan** (`channels.telegram.groups`)
-       - tidak ada konfigurasi `groups`:
-         - dengan `groupPolicy: "open"`: grup apa pun dapat melewati pemeriksaan ID grup
-         - dengan `groupPolicy: "allowlist"` (default): grup diblokir sampai Anda menambahkan entri `groups` (atau `"*"`)
-       - `groups` dikonfigurasi: bertindak sebagai allowlist (ID eksplisit atau `"*"`)
+       - tanpa konfigurasi `groups`, `groupPolicy: "open"`: grup apa pun lolos pemeriksaan ID grup
+       - tanpa konfigurasi `groups`, `groupPolicy: "allowlist"` (default): semua grup diblokir hingga Anda menambahkan entri `groups` (atau `"*"`)
+       - `groups` dikonfigurasi: bertindak sebagai daftar izin (ID eksplisit atau `"*"`)
 
-    2. **Pengirim mana yang diizinkan di grup** (`channels.telegram.groupPolicy`)
-       - `open`
-       - `allowlist` (default)
-       - `disabled`
+    2. **Pengirim mana yang diizinkan dalam grup** (`channels.telegram.groupPolicy`)
+       - `open` / `allowlist` (default) / `disabled`
 
-    `groupAllowFrom` digunakan untuk pemfilteran pengirim grup. Jika tidak diatur, Telegram menggunakan fallback ke `allowFrom`.
-    Entri `groupAllowFrom` harus berupa ID pengguna Telegram numerik (prefiks `telegram:` / `tg:` dinormalisasi).
-    Jangan masukkan ID chat grup atau supergrup Telegram di `groupAllowFrom`. ID chat negatif berada di bawah `channels.telegram.groups`.
-    Entri non-numerik diabaikan untuk otorisasi pengirim.
-    Batas keamanan (`2026.2.25+`): autentikasi pengirim grup **tidak** mewarisi persetujuan pairing-store DM.
-    Pairing tetap hanya untuk DM. Untuk grup, tetapkan `groupAllowFrom` atau `allowFrom` per grup/per topik.
-    Jika `groupAllowFrom` tidak diatur, Telegram menggunakan fallback ke konfigurasi `allowFrom`, bukan pairing store.
-    Pola praktis untuk bot dengan satu pemilik: tetapkan ID pengguna Anda di `channels.telegram.allowFrom`, biarkan `groupAllowFrom` tidak diatur, dan izinkan grup target di bawah `channels.telegram.groups`.
-    Catatan runtime: jika `channels.telegram` sama sekali tidak ada, runtime default ke fail-closed `groupPolicy="allowlist"` kecuali `channels.defaults.groupPolicy` ditetapkan secara eksplisit.
+    `groupAllowFrom` memfilter pengirim grup; jika tidak ditetapkan, Telegram menggunakan `allowFrom` sebagai fallback (bukan penyimpanan pemasangan — autentikasi pengirim grup tidak pernah mewarisi persetujuan penyimpanan pemasangan DM, sebuah batas keamanan sejak `2026.2.25`).
+    Entri `groupAllowFrom` harus berupa ID pengguna Telegram numerik (prefiks `telegram:` / `tg:` dinormalisasi); entri nonnumerik diabaikan. Jangan masukkan ID chat grup atau supergrup di sini — ID chat negatif ditempatkan di bawah `channels.telegram.groups`.
+    Pola praktis untuk bot dengan satu pemilik: tetapkan ID pengguna Anda dalam `channels.telegram.allowFrom`, biarkan `groupAllowFrom` tidak ditetapkan, dan izinkan grup target di bawah `channels.telegram.groups`.
+    Jika `channels.telegram` sama sekali tidak ada dalam konfigurasi, runtime secara default menggunakan `groupPolicy="allowlist"` yang tertutup jika gagal, kecuali `channels.defaults.groupPolicy` ditetapkan secara eksplisit.
 
     Penyiapan grup khusus pemilik:
 
@@ -210,9 +208,9 @@ curl "https://api.telegram.org/bot<bot_token>/getUpdates"
 }
 ```
 
-    Uji dari grup dengan `@<bot_username> ping`. Pesan grup biasa tidak memicu bot saat `requireMention: true`.
+    Uji dari grup dengan `@<bot_username> ping`. Pesan grup biasa tidak memicu bot selama `requireMention: true`.
 
-    Contoh: izinkan anggota mana pun dalam satu grup tertentu:
+    Izinkan semua anggota dalam satu grup tertentu:
 
 ```json5
 {
@@ -229,7 +227,7 @@ curl "https://api.telegram.org/bot<bot_token>/getUpdates"
 }
 ```
 
-    Contoh: izinkan hanya pengguna tertentu di dalam satu grup tertentu:
+    Izinkan hanya pengguna tertentu dalam satu grup tertentu:
 
 ```json5
 {
@@ -247,34 +245,23 @@ curl "https://api.telegram.org/bot<bot_token>/getUpdates"
 ```
 
     <Warning>
-      Kesalahan umum: `groupAllowFrom` bukan allowlist grup Telegram.
+      Kesalahan umum: `groupAllowFrom` bukan daftar izin grup.
 
-      - Masukkan ID chat grup atau supergrup Telegram negatif seperti `-1001234567890` di bawah `channels.telegram.groups`.
-      - Masukkan ID pengguna Telegram seperti `8734062810` di bawah `groupAllowFrom` saat Anda ingin membatasi orang di dalam grup yang diizinkan yang dapat memicu bot.
-      - Gunakan `groupAllowFrom: ["*"]` hanya saat Anda ingin anggota mana pun dari grup yang diizinkan dapat berbicara dengan bot.
+      - ID chat grup/supergrup Telegram negatif (`-1001234567890`) ditempatkan di bawah `channels.telegram.groups`.
+      - ID pengguna Telegram (`8734062810`) ditempatkan di bawah `groupAllowFrom` untuk membatasi siapa saja di dalam grup yang diizinkan yang dapat memicu bot.
+      - Gunakan `groupAllowFrom: ["*"]` hanya untuk mengizinkan semua anggota grup yang diizinkan berbicara dengan bot.
 
     </Warning>
 
   </Tab>
 
-  <Tab title="Perilaku mention">
-    Balasan grup memerlukan mention secara default.
+  <Tab title="Perilaku penyebutan">
+    Balasan grup secara default memerlukan penyebutan. Penyebutan dapat berasal dari:
 
-    Mention dapat berasal dari:
+    - penyebutan `@botusername` native, atau
+    - pola penyebutan dalam `agents.list[].groupChat.mentionPatterns` atau `messages.groupChat.mentionPatterns`
 
-    - mention native `@botusername`, atau
-    - pola mention di:
-      - `agents.list[].groupChat.mentionPatterns`
-      - `messages.groupChat.mentionPatterns`
-
-    Toggle perintah tingkat sesi:
-
-    - `/activation always`
-    - `/activation mention`
-
-    Ini hanya memperbarui status sesi. Gunakan konfigurasi untuk persistensi.
-
-    Contoh konfigurasi persisten:
+    Pengalih tingkat sesi (hanya status, tidak dipersistenkan): `/activation always`, `/activation mention`. Gunakan konfigurasi agar persisten:
 
 ```json5
 {
@@ -288,77 +275,47 @@ curl "https://api.telegram.org/bot<bot_token>/getUpdates"
 }
 ```
 
-    Konteks riwayat grup selalu aktif untuk grup dan dibatasi oleh
-    `historyLimit`. Tetapkan `channels.telegram.historyLimit: 0` untuk menonaktifkan
-    jendela riwayat grup Telegram. Kunci lama `includeGroupHistoryContext`
-    dihapus oleh `openclaw doctor --fix`.
+    Konteks riwayat grup selalu aktif dan dibatasi oleh `historyLimit`. Tetapkan `channels.telegram.historyLimit: 0` untuk menonaktifkan jendela riwayat grup. `openclaw doctor --fix` menghapus kunci `includeGroupHistoryContext` yang telah dihentikan.
 
-    Mendapatkan ID chat grup:
-
-    - teruskan pesan grup ke `@userinfobot` / `@getidsbot`
-    - atau baca `chat.id` dari `openclaw logs --follow`
-    - atau periksa Bot API `getUpdates`
-    - setelah grup diizinkan, jalankan `/whoami@<bot_username>` jika perintah native diaktifkan
+    Mendapatkan ID chat grup: teruskan pesan grup ke `@userinfobot` / `@getidsbot`, baca `chat.id` dari `openclaw logs --follow`, periksa `getUpdates` Bot API, atau (setelah grup diizinkan) jalankan `/whoami@<bot_username>`.
 
   </Tab>
 </Tabs>
 
 ## Perilaku runtime
 
-- Telegram dimiliki oleh proses gateway.
-- Perutean bersifat deterministik: balasan masuk Telegram dibalas kembali ke Telegram (model tidak memilih channel).
-- Pesan masuk dinormalisasi ke dalam envelope channel bersama dengan metadata balasan, placeholder media, dan konteks rantai balasan yang dipersistenkan untuk balasan Telegram yang telah diamati gateway.
-- Sesi grup diisolasi berdasarkan ID grup. Topik forum menambahkan `:topic:<threadId>` agar topik tetap terisolasi.
-- Pesan DM dapat membawa `message_thread_id`; OpenClaw mempertahankannya untuk balasan. Sesi topik DM hanya dipisah ketika Telegram `getMe` melaporkan `has_topics_enabled: true` untuk bot; jika tidak, DM tetap berada pada sesi datar.
-- Long polling menggunakan grammY runner dengan pengurutan per-chat/per-thread. Konkurensi sink runner keseluruhan menggunakan `agents.defaults.maxConcurrent`.
-- Startup multi-akun membatasi probe Telegram `getMe` yang berjalan serentak agar armada bot besar tidak menyebarkan setiap probe akun sekaligus.
-- Long polling dijaga di dalam setiap proses gateway sehingga hanya satu poller aktif yang dapat menggunakan token bot pada satu waktu. Jika Anda masih melihat konflik `getUpdates` 409, kemungkinan gateway OpenClaw lain, skrip, atau poller eksternal sedang menggunakan token yang sama.
-- Restart watchdog long-polling dipicu setelah 120 detik tanpa liveness `getUpdates` yang selesai secara default. Tingkatkan `channels.telegram.pollingStallThresholdMs` hanya jika deployment Anda masih melihat restart polling-stall palsu selama pekerjaan yang berjalan lama. Nilainya dalam milidetik dan diizinkan dari `30000` hingga `600000`; override per-akun didukung.
-- Telegram Bot API tidak memiliki dukungan tanda terima baca (`sendReadReceipts` tidak berlaku).
+- Telegram berjalan di dalam proses Gateway.
+- Perutean bersifat deterministik: balasan masuk Telegram dikirim kembali ke Telegram (model tidak memilih saluran).
+- Pesan masuk dinormalisasi ke dalam amplop saluran bersama dengan metadata balasan, placeholder media, dan konteks rantai balasan tersimpan untuk balasan yang telah diamati Gateway.
+- Sesi grup diisolasi berdasarkan ID grup. Topik forum menambahkan `:topic:<threadId>`.
+- Pesan DM dapat membawa `message_thread_id`; OpenClaw mempertahankannya untuk balasan. Sesi topik DM dipisahkan hanya ketika `getMe` Telegram melaporkan `has_topics_enabled: true` untuk bot; jika tidak, DM tetap menggunakan sesi datar.
+- Long polling menggunakan runner grammY dengan pengurutan per obrolan/per utas. Konkurensi sink runner menggunakan `agents.defaults.maxConcurrent`.
+- Startup multiakun membatasi probe `getMe` serentak agar armada bot besar tidak menjalankan probe untuk setiap akun sekaligus.
+- Setiap proses Gateway melindungi long polling sehingga hanya satu poller aktif yang dapat menggunakan token bot pada satu waktu. Konflik 409 `getUpdates` yang terus-menerus menunjukkan bahwa Gateway OpenClaw lain, skrip, atau poller eksternal menggunakan token yang sama.
+- Secara default, watchdog polling memulai ulang setelah 120 detik tanpa liveness `getUpdates` yang selesai. Naikkan `channels.telegram.pollingStallThresholdMs` (30000-600000, penggantian per akun didukung) hanya jika deployment Anda mengalami mulai ulang palsu akibat polling macet selama pekerjaan yang berjalan lama.
+- Telegram Bot API tidak mendukung tanda pesan telah dibaca (`sendReadReceipts` tidak berlaku).
 
 <Note>
-  `channels.telegram.dm.threadReplies` dan `channels.telegram.direct.<chatId>.threadReplies` telah dihapus. Jalankan `openclaw doctor --fix` setelah upgrade jika config Anda masih memiliki key tersebut. Perutean topik DM sekarang mengikuti kapabilitas bot dari Telegram `getMe.has_topics_enabled`, yang dikendalikan oleh mode ber-thread BotFather: bot dengan topik aktif menggunakan sesi DM scoped thread ketika Telegram mengirim `message_thread_id`; DM lain tetap berada pada sesi datar.
+  `channels.telegram.dm.threadReplies` dan `channels.telegram.direct.<chatId>.threadReplies` telah dihapus. Jalankan `openclaw doctor --fix` setelah melakukan upgrade jika konfigurasi Anda masih memiliki kunci tersebut. Perutean topik DM kini mengikuti `getMe.has_topics_enabled` Telegram (dikendalikan oleh mode utas BotFather): bot yang mengaktifkan topik menggunakan sesi DM yang tercakup per utas ketika Telegram mengirim `message_thread_id`; DM lainnya tetap menggunakan sesi datar.
 </Note>
 
 ## Referensi fitur
 
 <AccordionGroup>
-  <Accordion title="Pratinjau stream langsung (edit pesan)">
-    OpenClaw dapat melakukan stream balasan parsial secara real time:
-
-    - chat langsung: pesan pratinjau + `editMessageText`
-    - grup/topik: pesan pratinjau + `editMessageText`
-
-    Persyaratan:
+  <Accordion title="Pratinjau streaming langsung (pengeditan pesan)">
+    OpenClaw melakukan streaming balasan parsial secara waktu nyata dalam obrolan langsung, grup, dan topik: mengirim pesan pratinjau, lalu melakukan `editMessageText` berulang kali, dan menyelesaikannya di tempat.
 
     - `channels.telegram.streaming` adalah `off | partial | block | progress` (default: `partial`)
-    - pratinjau jawaban awal yang pendek di-debounce, lalu diwujudkan setelah jeda terbatas jika run masih aktif
-    - `progress` mempertahankan satu draf status yang dapat diedit untuk progres tool, menampilkan label status stabil ketika aktivitas jawaban tiba sebelum progres tool, membersihkannya saat selesai, dan mengirim jawaban final sebagai pesan normal
-    - `streaming.preview.toolProgress` mengontrol apakah pembaruan tool/progres menggunakan ulang pesan pratinjau yang sama yang diedit (default: `true` ketika streaming pratinjau aktif)
-    - `streaming.preview.commandText` mengontrol detail perintah/eksekusi di dalam baris progres tool tersebut: `raw` (default, mempertahankan perilaku rilis) atau `status` (hanya label tool)
-    - `streaming.progress.commentary` (default: `false`) memilih ikut menyertakan teks komentar/preambule asisten di draf progres sementara
-    - legacy `channels.telegram.streamMode`, nilai boolean `streaming`, dan key pratinjau draf native yang sudah dihentikan terdeteksi; jalankan `openclaw doctor --fix` untuk memigrasikannya ke config streaming saat ini
+    - pratinjau jawaban awal yang singkat ditunda dengan debounce, lalu diwujudkan setelah penundaan terbatas jika proses masih aktif
+    - `progress` mempertahankan satu draf status yang dapat diedit untuk progres alat, menampilkan label status stabil ketika aktivitas jawaban tiba sebelum progres alat, menghapusnya saat selesai, dan mengirim jawaban akhir sebagai pesan normal
+    - `streaming.preview.toolProgress` mengontrol apakah pembaruan alat/progres menggunakan kembali pesan pratinjau yang diedit yang sama (default: `true` ketika streaming pratinjau aktif)
+    - `streaming.preview.commandText` mengontrol detail perintah/eksekusi di dalam baris tersebut: `raw` (default) atau `status` (hanya label alat)
+    - `streaming.progress.commentary` (default: `false`) mengaktifkan teks komentar/pembuka asisten dalam draf progres sementara
+    - `channels.telegram.streamMode` lama, nilai boolean `streaming`, dan kunci pratinjau draf native yang telah dihentikan akan terdeteksi; jalankan `openclaw doctor --fix` untuk memigrasikannya
 
-    Pembaruan pratinjau progres tool adalah baris status pendek yang ditampilkan saat tool berjalan, misalnya eksekusi perintah, pembacaan file, pembaruan perencanaan, ringkasan patch, atau teks preambule/komentar Codex dalam mode app-server Codex. Telegram mengaktifkannya secara default agar sesuai dengan perilaku OpenClaw yang dirilis dari `v2026.4.22` dan setelahnya.
+    Baris progres alat adalah pembaruan status singkat yang ditampilkan saat alat berjalan (eksekusi perintah, pembacaan file, pembaruan perencanaan, ringkasan patch, pembuka/komentar Codex dalam mode app-server). Telegram mengaktifkannya secara default (sesuai dengan perilaku yang dirilis sejak `v2026.4.22`+).
 
-    Untuk mempertahankan pratinjau yang diedit untuk teks jawaban tetapi menyembunyikan baris progres tool, atur:
-
-    ```json
-    {
-      "channels": {
-        "telegram": {
-          "streaming": {
-            "mode": "partial",
-            "preview": {
-              "toolProgress": false
-            }
-          }
-        }
-      }
-    }
-    ```
-
-    Untuk menjaga progres tool tetap terlihat tetapi menyembunyikan teks perintah/eksekusi, atur:
+    Pertahankan pengeditan pratinjau jawaban, tetapi sembunyikan baris progres alat:
 
     ```json
     {
@@ -366,16 +323,29 @@ curl "https://api.telegram.org/bot<bot_token>/getUpdates"
         "telegram": {
           "streaming": {
             "mode": "partial",
-            "preview": {
-              "commandText": "status"
-            }
+            "preview": { "toolProgress": false }
           }
         }
       }
     }
     ```
 
-    Gunakan mode `progress` ketika Anda menginginkan progres tool yang terlihat tanpa mengedit jawaban final ke dalam pesan yang sama. Letakkan kebijakan teks perintah di bawah `streaming.progress`:
+    Pertahankan progres alat agar terlihat, tetapi sembunyikan teks perintah/eksekusi:
+
+    ```json
+    {
+      "channels": {
+        "telegram": {
+          "streaming": {
+            "mode": "partial",
+            "preview": { "commandText": "status" }
+          }
+        }
+      }
+    }
+    ```
+
+    Mode `progress` menampilkan progres alat tanpa mengedit jawaban akhir ke dalam pesan tersebut. Tempatkan kebijakan teks perintah di bawah `streaming.progress`:
 
     ```json
     {
@@ -393,35 +363,24 @@ curl "https://api.telegram.org/bot<bot_token>/getUpdates"
     }
     ```
 
-    Gunakan `streaming.mode: "off"` hanya ketika Anda menginginkan pengiriman final saja: edit pratinjau Telegram dinonaktifkan dan obrolan tool/progres generik ditekan, bukan dikirim sebagai pesan status mandiri. Prompt persetujuan, payload media, dan error tetap dirutekan melalui pengiriman final normal. Gunakan `streaming.preview.toolProgress: false` ketika Anda hanya ingin mempertahankan edit pratinjau jawaban sambil menyembunyikan baris status progres tool.
+    `streaming.mode: "off"` menonaktifkan pengeditan pratinjau dan menyembunyikan percakapan umum alat/progres alih-alih mengirimkannya sebagai pesan status mandiri; permintaan persetujuan, media, dan kesalahan tetap dirutekan melalui pengiriman akhir normal. `streaming.preview.toolProgress: false` hanya mempertahankan pengeditan pratinjau jawaban.
 
     <Note>
-      Balasan kutipan terpilih Telegram adalah pengecualian. Ketika `replyToMode` adalah `"first"`, `"all"`, atau `"batched"` dan pesan masuk menyertakan teks kutipan terpilih, OpenClaw mengirim jawaban final melalui jalur quote-reply native Telegram alih-alih mengedit pratinjau jawaban, sehingga `streaming.preview.toolProgress` tidak dapat menampilkan baris status pendek untuk giliran tersebut. Balasan pesan saat ini tanpa teks kutipan terpilih tetap mempertahankan streaming pratinjau. Atur `replyToMode: "off"` ketika visibilitas progres tool lebih penting daripada balasan kutipan native, atau atur `streaming.preview.toolProgress: false` untuk mengakui trade-off tersebut.
+      Balasan kutipan terpilih merupakan pengecualian. Ketika `replyToMode` adalah `first`, `all`, atau `batched` dan pesan masuk memiliki teks kutipan terpilih, OpenClaw mengirim jawaban akhir melalui jalur balasan kutipan native Telegram alih-alih mengedit pratinjau jawaban, sehingga `streaming.preview.toolProgress` tidak dapat menampilkan baris status pada giliran tersebut. Balasan ke pesan saat ini tanpa teks kutipan terpilih tetap melakukan streaming. Tetapkan `replyToMode: "off"` ketika visibilitas progres alat lebih penting daripada balasan kutipan native, atau `streaming.preview.toolProgress: false` untuk menerima konsekuensi tersebut.
     </Note>
 
-    Untuk balasan hanya teks:
+    Untuk balasan yang hanya berisi teks: pratinjau singkat menerima pengeditan akhir di tempat; hasil akhir panjang yang dibagi menjadi beberapa pesan menggunakan kembali pratinjau sebagai bagian pertama, lalu hanya mengirim sisanya; hasil akhir mode progres menghapus draf status dan menggunakan pengiriman akhir normal; jika pengeditan akhir gagal sebelum penyelesaian dikonfirmasi, OpenClaw beralih ke pengiriman akhir normal dan membersihkan pratinjau usang. Untuk balasan kompleks (payload media), OpenClaw selalu beralih ke pengiriman akhir normal dan membersihkan pratinjau.
 
-    - pratinjau DM/grup/topik pendek: OpenClaw mempertahankan pesan pratinjau yang sama dan melakukan edit final di tempat
-    - final teks panjang yang dipecah menjadi beberapa pesan Telegram menggunakan ulang pratinjau yang ada sebagai chunk final pertama jika memungkinkan, lalu hanya mengirim chunk yang tersisa
-    - final mode progres membersihkan draf status dan menggunakan pengiriman final normal alih-alih mengedit draf menjadi jawaban
-    - jika edit final gagal sebelum teks selesai dikonfirmasi, OpenClaw menggunakan pengiriman final normal dan membersihkan pratinjau yang sudah stale
+    Streaming pratinjau dan streaming blok bersifat saling eksklusif — ketika streaming blok diaktifkan secara eksplisit, OpenClaw melewati streaming pratinjau untuk menghindari streaming ganda.
 
-    Untuk balasan kompleks (misalnya payload media), OpenClaw fallback ke pengiriman final normal lalu membersihkan pesan pratinjau.
-
-    Streaming pratinjau terpisah dari streaming blok. Ketika streaming blok diaktifkan secara eksplisit untuk Telegram, OpenClaw melewati stream pratinjau untuk menghindari streaming ganda.
-
-    Perilaku stream penalaran:
-
-    - `/reasoning stream` menggunakan jalur pratinjau penalaran channel yang didukung; di Telegram, ini melakukan stream penalaran ke pratinjau langsung saat menghasilkan
-    - pratinjau penalaran dihapus setelah pengiriman final; gunakan `/reasoning on` ketika penalaran harus tetap terlihat
-    - jawaban final dikirim tanpa teks penalaran
+    Penalaran: `/reasoning stream` melakukan streaming penalaran ke pratinjau langsung selama pembuatan, lalu menghapus pratinjau penalaran setelah pengiriman akhir (gunakan `/reasoning on` agar tetap terlihat). Jawaban akhir dikirim tanpa teks penalaran.
 
   </Accordion>
 
   <Accordion title="Pemformatan pesan kaya">
-    Teks keluar menggunakan pesan HTML Telegram standar secara default agar balasan tetap mudah dibaca di klien Telegram saat ini. Mode kompatibilitas ini mendukung bold, italic, tautan, kode, spoiler, dan kutipan normal, tetapi tidak mendukung blok khusus kaya Bot API 10.1 seperti tabel native, detail, media kaya, dan formula.
+    Secara default, teks keluar menggunakan pesan HTML Telegram standar yang dapat dibaca di semua klien saat ini: tebal, miring, tautan, kode, spoiler, kutipan — bukan blok khusus kaya Bot API 10.2 (tabel native, detail, media kaya, rumus).
 
-    Atur `channels.telegram.richMessages: true` untuk memilih ikut menggunakan pesan kaya Bot API 10.1:
+    Aktifkan pesan kaya Bot API 10.2:
 
 ```json5
 {
@@ -433,86 +392,62 @@ curl "https://api.telegram.org/bot<bot_token>/getUpdates"
 }
 ```
 
-    Ketika diaktifkan:
+    Ketika diaktifkan: agen diberi tahu bahwa pesan kaya tersedia untuk bot/akun ini (dengan kontrak penulisan Markdown + pulau HTML yang didukung); teks Markdown dirender melalui IR Markdown OpenClaw sebagai blok kaya Bot API 10.2 bertipe (judul, tabel, detail, daftar periksa, media kaya, rumus, peta, kolase); keterangan media tetap menggunakan keterangan HTML Telegram (pesan kaya tidak menggantikan keterangan, dan keterangan dibatasi hingga 1024 karakter).
 
-    - Agent diberi tahu bahwa pesan kaya Telegram tersedia untuk bot/akun ini.
-    - Teks Markdown dirender melalui Markdown IR OpenClaw dan dikirim sebagai HTML kaya Telegram.
-    - Payload HTML kaya eksplisit mempertahankan tag Bot API 10.1 yang didukung seperti heading, tabel, detail, media kaya, dan formula.
-    - Caption media tetap menggunakan caption HTML Telegram karena pesan kaya tidak menggantikan caption.
+    Hal ini menjauhkan teks model dari sigil Markdown kaya Telegram, sehingga mata uang seperti `$400-600K` tidak diuraikan sebagai matematika. Teks kaya yang panjang otomatis dibagi sesuai batas Telegram. Tabel yang melebihi batas 20 kolom akan beralih ke blok kode.
 
-    Ini menjauhkan teks model dari sigil Telegram Rich Markdown, sehingga mata uang seperti `$400-600K` tidak diparsing sebagai matematika. Teks kaya yang panjang dipecah secara otomatis sesuai batas teks kaya dan blok kaya Telegram. Tabel yang melampaui batas kolom Telegram dikirim sebagai blok kode.
+    Default: nonaktif, demi kompatibilitas klien — beberapa klien Desktop, Web, Android, dan pihak ketiga saat ini merender pesan kaya yang diterima sebagai tidak didukung. Biarkan ini nonaktif kecuali setiap klien yang digunakan bersama bot dapat merendernya. `/status` menunjukkan apakah pesan kaya aktif atau nonaktif untuk sesi saat ini.
 
-    Default: nonaktif untuk kompatibilitas klien. Pesan kaya memerlukan klien Telegram yang kompatibel; beberapa klien Desktop, Web, Android, dan pihak ketiga saat ini menampilkan pesan kaya yang diterima sebagai tidak didukung. Biarkan opsi ini dinonaktifkan kecuali setiap klien yang digunakan dengan bot dapat merendernya. `/status` menampilkan apakah sesi Telegram saat ini menyalakan atau mematikan pesan kaya.
-
-    Pratinjau tautan diaktifkan secara default. `channels.telegram.linkPreview: false` melewati deteksi entity otomatis untuk teks kaya.
+    Pratinjau tautan aktif secara default. `channels.telegram.linkPreview: false` menonaktifkan deteksi entitas otomatis untuk teks kaya.
 
   </Accordion>
 
-  <Accordion title="Perintah native dan perintah kustom">
-    Pendaftaran menu perintah Telegram ditangani saat startup dengan `setMyCommands`.
+  <Accordion title="Perintah native dan perintah khusus">
+    Menu perintah Telegram didaftarkan saat startup dengan `setMyCommands`. `commands.native: "auto"` mengaktifkan perintah native untuk Telegram.
 
-    Default perintah native:
-
-    - `commands.native: "auto"` mengaktifkan perintah native untuk Telegram
-
-    Tambahkan entri menu perintah kustom:
+    Tambahkan entri menu perintah khusus:
 
 ```json5
 {
   channels: {
     telegram: {
       customCommands: [
-        { command: "backup", description: "Git backup" },
-        { command: "generate", description: "Create an image" },
+        { command: "backup", description: "Cadangan Git" },
+        { command: "generate", description: "Buat gambar" },
       ],
     },
   },
 }
 ```
 
-    Aturan:
+    Aturan: nama dinormalisasi (menghapus awalan `/`, menjadi huruf kecil); pola valid `a-z`, `0-9`, `_`, panjang 1-32; perintah khusus tidak dapat menggantikan perintah native; konflik/duplikat dilewati dan dicatat.
 
-    - nama dinormalisasi (hapus `/` di awal, huruf kecil)
-    - pola valid: `a-z`, `0-9`, `_`, panjang `1..32`
-    - perintah kustom tidak dapat menimpa perintah native
-    - konflik/duplikat dilewati dan dicatat
+    Perintah khusus hanyalah entri menu — perintah tersebut tidak menerapkan perilaku secara otomatis. Perintah Plugin/skill tetap dapat berfungsi ketika diketik meskipun tidak ditampilkan dalam menu Telegram. Jika perintah native dinonaktifkan, perintah bawaan akan dihapus; perintah khusus/Plugin tetap dapat didaftarkan jika dikonfigurasi.
 
-    Catatan:
+    Kegagalan penyiapan umum:
 
-    - perintah kustom hanya berupa entri menu; perintah tersebut tidak otomatis mengimplementasikan perilaku
-    - perintah plugin/skill tetap dapat berfungsi ketika diketik meskipun tidak ditampilkan di menu Telegram
+    - `setMyCommands failed` dengan `BOT_COMMANDS_TOO_MUCH` setelah percobaan ulang pemangkasan berarti menu masih melampaui batas; kurangi perintah Plugin/skill/khusus atau nonaktifkan `channels.telegram.commands.native`.
+    - Kegagalan `deleteWebhook`, `deleteMyCommands`, atau `setMyCommands` dengan `404: Not Found`, sementara perintah curl langsung Bot API berfungsi, biasanya berarti `channels.telegram.apiRoot` ditetapkan ke endpoint `/bot<TOKEN>` lengkap. `apiRoot` harus berupa root Bot API saja; `openclaw doctor --fix` menghapus akhiran `/bot<TOKEN>` yang tidak disengaja.
+    - `getMe returned 401` berarti Telegram menolak token bot yang dikonfigurasi. Perbarui `botToken`, `tokenFile`, atau `TELEGRAM_BOT_TOKEN` (akun default) dengan token BotFather saat ini; OpenClaw berhenti sebelum polling sehingga hal ini tidak dilaporkan sebagai kegagalan pembersihan Webhook.
+    - `setMyCommands failed` dengan kesalahan jaringan/fetch biasanya berarti DNS/HTTPS keluar ke `api.telegram.org` diblokir.
 
-    Jika perintah native dinonaktifkan, bawaan dihapus. Perintah kustom/plugin mungkin tetap terdaftar jika dikonfigurasi.
+    ### Perintah penyandingan perangkat (Plugin `device-pair`)
 
-    Kegagalan setup umum:
+    Ketika terpasang:
 
-    - `setMyCommands failed` dengan `BOT_COMMANDS_TOO_MUCH` berarti menu Telegram masih meluap setelah dipangkas; kurangi perintah plugin/skill/kustom atau nonaktifkan `channels.telegram.commands.native`.
-    - `deleteWebhook`, `deleteMyCommands`, atau `setMyCommands` gagal dengan `404: Not Found` sementara perintah curl Bot API langsung berfungsi dapat berarti `channels.telegram.apiRoot` disetel ke endpoint lengkap `/bot<TOKEN>`. `apiRoot` harus hanya berupa root Bot API, dan `openclaw doctor --fix` menghapus akhiran `/bot<TOKEN>` yang tidak sengaja.
-    - `getMe returned 401` berarti Telegram menolak token bot yang dikonfigurasi. Perbarui `botToken`, `tokenFile`, atau `TELEGRAM_BOT_TOKEN` dengan token BotFather saat ini; OpenClaw berhenti sebelum polling sehingga ini tidak dilaporkan sebagai kegagalan pembersihan webhook.
-    - `setMyCommands failed` dengan error jaringan/fetch biasanya berarti DNS/HTTPS keluar ke `api.telegram.org` diblokir.
+    1. `/pair` menghasilkan kode penyiapan
+    2. tempelkan kode di aplikasi iOS
+    3. `/pair pending` mencantumkan permintaan yang tertunda (termasuk peran/cakupan)
+    4. setujui: `/pair approve <requestId>`, `/pair approve` (satu-satunya permintaan yang tertunda), atau `/pair approve latest`
 
-    ### Perintah pemasangan perangkat (plugin `device-pair`)
+    Jika perangkat mencoba kembali dengan detail autentikasi yang berubah (peran, cakupan, kunci publik), permintaan tertunda sebelumnya digantikan dengan `requestId` baru; jalankan kembali `/pair pending` sebelum menyetujui.
 
-    Ketika plugin `device-pair` terinstal:
-
-    1. `/pair` menghasilkan kode setup
-    2. tempel kode di aplikasi iOS
-    3. `/pair pending` mencantumkan permintaan tertunda (termasuk peran/scope)
-    4. setujui permintaan:
-       - `/pair approve <requestId>` untuk persetujuan eksplisit
-       - `/pair approve` ketika hanya ada satu permintaan tertunda
-       - `/pair approve latest` untuk yang paling baru
-
-    Kode setup membawa token bootstrap berumur pendek. Bootstrap kode setup bawaan mengembalikan token node tahan lama dengan `scopes: []` plus token handoff operator terbatas untuk onboarding mobile tepercaya. Token operator tersebut dapat membaca konfigurasi native saat setup, tetapi tidak memberikan scope mutasi pemasangan atau `operator.admin`.
-
-    Jika perangkat mencoba ulang dengan detail auth yang berubah (misalnya peran/scope/public key), permintaan tertunda sebelumnya digantikan dan permintaan baru menggunakan `requestId` berbeda. Jalankan ulang `/pair pending` sebelum menyetujui.
-
-    Detail selengkapnya: [Pemasangan](/id/channels/pairing#pair-via-telegram-recommended-for-ios).
+    Detail selengkapnya: [Penyandingan](/id/channels/pairing#pair-via-telegram).
 
   </Accordion>
 
-  <Accordion title="Tombol inline">
-    Konfigurasikan cakupan keyboard inline:
+  <Accordion title="Tombol sebaris">
+    Konfigurasikan cakupan papan ketik sebaris:
 
 ```json5
 {
@@ -544,15 +479,7 @@ curl "https://api.telegram.org/bot<bot_token>/getUpdates"
 }
 ```
 
-    Cakupan:
-
-    - `off`
-    - `dm`
-    - `group`
-    - `all`
-    - `allowlist` (default)
-
-    Legacy `capabilities: ["inlineButtons"]` dipetakan ke `inlineButtons: "all"`.
+    Cakupan: `off`, `dm`, `group`, `all`, `allowlist` (default). `capabilities: ["inlineButtons"]` lama dipetakan ke `"all"`.
 
     Contoh tindakan pesan:
 
@@ -561,13 +488,13 @@ curl "https://api.telegram.org/bot<bot_token>/getUpdates"
   action: "send",
   channel: "telegram",
   to: "123456789",
-  message: "Choose an option:",
+  message: "Pilih opsi:",
   buttons: [
     [
-      { text: "Yes", callback_data: "yes" },
-      { text: "No", callback_data: "no" },
+      { text: "Ya", callback_data: "yes" },
+      { text: "Tidak", callback_data: "no" },
     ],
-    [{ text: "Cancel", callback_data: "cancel" }],
+    [{ text: "Batal", callback_data: "cancel" }],
   ],
 }
 ```
@@ -579,88 +506,64 @@ curl "https://api.telegram.org/bot<bot_token>/getUpdates"
   action: "send",
   channel: "telegram",
   to: "123456789",
-  message: "Open app:",
+  message: "Buka aplikasi:",
   presentation: {
     blocks: [
       {
         type: "buttons",
-        buttons: [{ label: "Launch", web_app: { url: "https://example.com/app" } }],
+        buttons: [{ label: "Luncurkan", web_app: { url: "https://example.com/app" } }],
       },
     ],
   },
 }
 ```
 
-    Tombol `web_app` Telegram hanya berfungsi di obrolan privat antara pengguna dan
-    bot.
+    Tombol `web_app` hanya berfungsi dalam obrolan pribadi antara pengguna dan bot.
 
-    Klik callback yang tidak diklaim oleh handler interaktif Plugin terdaftar
-    diteruskan ke agen sebagai teks:
-    `callback_data: <value>`
+    Klik callback yang tidak diklaim oleh pengendali interaktif plugin terdaftar diteruskan ke agen sebagai teks: `callback_data: <value>`.
 
   </Accordion>
 
-  <Accordion title="Tindakan pesan Telegram untuk agen dan automasi">
-    Tindakan alat Telegram meliputi:
+  <Accordion title="Tindakan pesan Telegram untuk agen dan otomatisasi">
+    Tindakan:
 
-    - `sendMessage` (`to`, `content`, opsional `mediaUrl`, `replyToMessageId`, `messageThreadId`)
+    - `sendMessage` (`to`, `content`, `mediaUrl` opsional, `replyToMessageId`, `messageThreadId`)
     - `react` (`chatId`, `messageId`, `emoji`)
     - `deleteMessage` (`chatId`, `messageId`)
-    - `editMessage` (`chatId`, `messageId`, `content` atau `caption`, opsional tombol inline `presentation`; edit yang hanya berisi tombol memperbarui markup balasan)
-    - `createForumTopic` (`chatId`, `name`, opsional `iconColor`, `iconCustomEmojiId`)
+    - `editMessage` (`chatId`, `messageId`, `content` atau `caption`, tombol sebaris `presentation` opsional; pengeditan khusus tombol memperbarui markup balasan)
+    - `createForumTopic` (`chatId`, `name`, `iconColor` opsional, `iconCustomEmojiId`)
 
-    Tindakan pesan kanal mengekspos alias ergonomis (`send`, `react`, `delete`, `edit`, `sticker`, `sticker-search`, `topic-create`).
+    Alias ergonomis: `send`, `react`, `delete`, `edit`, `sticker`, `sticker-search`, `topic-create`.
 
-    Kontrol gating:
+    Pembatasan: `channels.telegram.actions.sendMessage`, `deleteMessage`, `reactions`, `sticker` (default: dinonaktifkan). `edit`, `createForumTopic`, dan `editForumTopic` diaktifkan secara default tanpa sakelar khusus.
+    Pengiriman runtime menggunakan snapshot konfigurasi/rahasia aktif dari proses mulai/muat ulang, sehingga jalur tindakan tidak menyelesaikan ulang nilai `SecretRef` pada setiap pengiriman.
 
-    - `channels.telegram.actions.sendMessage`
-    - `channels.telegram.actions.deleteMessage`
-    - `channels.telegram.actions.reactions`
-    - `channels.telegram.actions.sticker` (default: dinonaktifkan)
-
-    Catatan: `edit` dan `topic-create` saat ini diaktifkan secara default dan tidak memiliki toggle `channels.telegram.actions.*` terpisah.
-    Pengiriman runtime menggunakan snapshot config/secret aktif (startup/reload), sehingga jalur tindakan tidak melakukan resolusi ulang SecretRef ad hoc per pengiriman.
-
-    Semantik penghapusan reaksi: [/tools/reactions](/id/tools/reactions)
+    Semantik penghapusan reaksi: [/tools/reactions](/id/tools/reactions).
 
   </Accordion>
 
-  <Accordion title="Tag threading balasan">
-    Telegram mendukung tag threading balasan eksplisit dalam output yang dihasilkan:
+  <Accordion title="Tag rangkaian balasan">
+    Tag rangkaian balasan eksplisit dalam keluaran yang dihasilkan:
 
-    - `[[reply_to_current]]` membalas pesan pemicu
-    - `[[reply_to:<id>]]` membalas ID pesan Telegram tertentu
+    - `[[reply_to_current]]` — membalas pesan pemicu
+    - `[[reply_to:<id>]]` — membalas ID pesan tertentu
 
-    `channels.telegram.replyToMode` mengontrol penanganan:
+    `channels.telegram.replyToMode`: `off` (default), `first`, `all`.
 
-    - `off` (default)
-    - `first`
-    - `all`
+    Saat rangkaian balasan diaktifkan dan teks/keterangan asli tersedia, OpenClaw otomatis menambahkan kutipan asli. Telegram membatasi teks kutipan asli hingga 1024 unit kode UTF-16; pesan yang lebih panjang dikutip dari awal dan beralih ke balasan biasa jika Telegram menolak kutipan tersebut.
 
-    Saat threading balasan diaktifkan dan teks atau caption Telegram asli tersedia, OpenClaw otomatis menyertakan kutipan native Telegram. Telegram membatasi teks kutipan native hingga 1024 unit kode UTF-16, sehingga pesan yang lebih panjang dikutip dari awal dan fallback ke balasan biasa jika Telegram menolak kutipan tersebut.
-
-    Catatan: `off` menonaktifkan threading balasan implisit. Tag `[[reply_to_*]]` eksplisit tetap dihormati.
+    `off` hanya menonaktifkan rangkaian balasan implisit; tag `[[reply_to_*]]` eksplisit tetap dipatuhi.
 
   </Accordion>
 
-  <Accordion title="Topik forum dan perilaku thread">
-    Supergroup forum:
+  <Accordion title="Topik forum dan perilaku utas">
+    Supergrup forum: kunci sesi topik menambahkan `:topic:<threadId>`; balasan dan indikator sedang mengetik diarahkan ke utas topik; jalur konfigurasi topik adalah `channels.telegram.groups.<chatId>.topics.<threadId>`.
 
-    - kunci sesi topik menambahkan `:topic:<threadId>`
-    - balasan dan pengetikan menargetkan thread topik
-    - jalur config topik:
-      `channels.telegram.groups.<chatId>.topics.<threadId>`
+    Topik umum (`threadId=1`) merupakan kasus khusus: pengiriman pesan menghilangkan `message_thread_id` (Telegram menolak `sendMessage(...thread_id=1)` dengan "utas tidak ditemukan"), tetapi tindakan mengetik tetap menyertakan `message_thread_id` (secara empiris diperlukan agar indikator sedang mengetik muncul).
 
-    Kasus khusus topik General (`threadId=1`):
+    Entri topik mewarisi pengaturan grup kecuali ditimpa (`requireMention`, `allowFrom`, `skills`, `systemPrompt`, `enabled`, `groupPolicy`). `agentId` hanya berlaku untuk topik dan tidak mewarisi default grup. `topics."*"` menetapkan default bagi setiap topik dalam grup tersebut; ID topik yang persis tetap mengungguli `"*"`.
 
-    - pengiriman pesan menghilangkan `message_thread_id` (Telegram menolak `sendMessage(...thread_id=1)`)
-    - tindakan pengetikan tetap menyertakan `message_thread_id`
-
-    Pewarisan topik: entri topik mewarisi pengaturan grup kecuali diganti (`requireMention`, `allowFrom`, `skills`, `systemPrompt`, `enabled`, `groupPolicy`).
-    `agentId` hanya untuk topik dan tidak diwarisi dari default grup.
-    `topics."*"` menetapkan default untuk setiap topik dalam grup tersebut; ID topik yang persis tetap mengungguli `"*"`.
-
-    **Perutean agen per topik**: Setiap topik dapat dirutekan ke agen berbeda dengan mengatur `agentId` dalam config topik. Ini memberi setiap topik workspace, memori, dan sesi terisolasi sendiri. Contoh:
+    **Perutean agen per topik**: setiap topik dapat dirutekan ke agen yang berbeda melalui `agentId` dalam konfigurasi topik, sehingga memiliki ruang kerja, memori, dan sesinya sendiri:
 
     ```json5
     {
@@ -669,9 +572,9 @@ curl "https://api.telegram.org/bot<bot_token>/getUpdates"
           groups: {
             "-1001234567890": {
               topics: {
-                "1": { agentId: "main" },      // General topic → main agent
-                "3": { agentId: "zu" },        // Dev topic → zu agent
-                "5": { agentId: "coder" }      // Code review → coder agent
+                "1": { agentId: "main" },      // Topik umum -> agen utama
+                "3": { agentId: "zu" },        // Topik pengembangan -> agen zu
+                "5": { agentId: "coder" }      // Tinjauan kode -> agen coder
               }
             }
           }
@@ -680,29 +583,21 @@ curl "https://api.telegram.org/bot<bot_token>/getUpdates"
     }
     ```
 
-    Setiap topik kemudian memiliki kunci sesinya sendiri: `agent:zu:telegram:group:-1001234567890:topic:3`
+    Setiap topik kemudian memiliki kunci sesinya sendiri, misalnya `agent:zu:telegram:group:-1001234567890:topic:3`.
 
-    **Binding topik ACP persisten**: Topik forum dapat memasang pin sesi harness ACP melalui binding ACP bertipe tingkat atas (`bindings[]` dengan `type: "acp"` dan `match.channel: "telegram"`, `peer.kind: "group"`, serta id berkualifikasi topik seperti `-1001234567890:topic:42`). Saat ini dicakupkan ke topik forum dalam grup/supergroup. Lihat [Agen ACP](/id/tools/acp-agents).
+    **Pengikatan topik ACP persisten**: topik forum dapat menyematkan sesi harness ACP melalui pengikatan bertipe tingkat teratas (`bindings[]` dengan `type: "acp"`, `match.channel: "telegram"`, `peer.kind: "group"`, dan ID berkualifikasi topik seperti `-1001234567890:topic:42`). Saat ini cakupannya terbatas pada topik forum dalam grup/supergrup. Lihat [Agen ACP](/id/tools/acp-agents).
 
-    **Spawn ACP terikat thread dari chat**: `/acp spawn <agent> --thread here|auto` mengikat topik saat ini ke sesi ACP baru; tindak lanjut dirutekan langsung ke sana. OpenClaw memasang pin konfirmasi spawn di dalam topik. Memerlukan `channels.telegram.threadBindings.spawnSessions` tetap diaktifkan (default: `true`).
+    **Pemunculan ACP yang terikat utas dari obrolan**: `/acp spawn <agent> --thread here|auto` mengikat topik saat ini ke sesi ACP baru; tindak lanjut dirutekan langsung ke sana, dan OpenClaw menyematkan konfirmasi pemunculan dalam topik. Memerlukan `channels.telegram.threadBindings.spawnSessions` (default: `true`).
 
-    Konteks template mengekspos `MessageThreadId` dan `IsForum`. Obrolan DM dengan `message_thread_id` mempertahankan metadata balasan; obrolan tersebut menggunakan kunci sesi sadar thread hanya ketika Telegram `getMe` melaporkan `has_topics_enabled: true` untuk bot.
-    Penggantian `dm.threadReplies` dan `direct.*.threadReplies` sebelumnya sengaja dipensiunkan; gunakan mode threaded BotFather sebagai satu-satunya sumber kebenaran dan jalankan `openclaw doctor --fix` untuk menghapus kunci config usang.
+    Konteks templat mengekspos `MessageThreadId` dan `IsForum`. Obrolan DM dengan `message_thread_id` mempertahankan metadata balasan, tetapi hanya menggunakan kunci sesi yang menyadari utas saat `getMe` Telegram melaporkan `has_topics_enabled: true`.
+    Penimpaan `dm.threadReplies` dan `direct.*.threadReplies` yang telah dihentikan sudah dihapus; mode berutas BotFather menjadi satu-satunya sumber kebenaran. Jalankan `openclaw doctor --fix` untuk menghapus kunci konfigurasi usang.
 
   </Accordion>
 
   <Accordion title="Audio, video, dan stiker">
     ### Pesan audio
 
-    Telegram membedakan catatan suara dan file audio.
-
-    - default: perilaku file audio
-    - tag `[[audio_as_voice]]` dalam balasan agen untuk memaksa pengiriman catatan suara
-    - transkrip catatan suara masuk dibingkai sebagai teks yang dibuat mesin,
-      tidak tepercaya dalam konteks agen; deteksi mention tetap menggunakan transkrip
-      mentah sehingga pesan suara dengan gating mention tetap berfungsi.
-
-    Contoh tindakan pesan:
+    Telegram membedakan catatan suara dari berkas audio. Default: perilaku berkas audio; gunakan tag `[[audio_as_voice]]` dalam balasan agen untuk memaksa pengiriman catatan suara. Transkrip catatan suara masuk dibingkai sebagai teks buatan mesin yang tidak tepercaya dalam konteks agen, tetapi deteksi penyebutan tetap menggunakan transkrip mentah agar pesan suara yang dibatasi penyebutan tetap berfungsi.
 
 ```json5
 {
@@ -716,9 +611,7 @@ curl "https://api.telegram.org/bot<bot_token>/getUpdates"
 
     ### Pesan video
 
-    Telegram membedakan berkas video dan catatan video.
-
-    Contoh aksi pesan:
+    Telegram membedakan berkas video dari catatan video. Catatan video tidak mendukung keterangan; teks pesan yang diberikan dikirim secara terpisah.
 
 ```json5
 {
@@ -730,27 +623,32 @@ curl "https://api.telegram.org/bot<bot_token>/getUpdates"
 }
 ```
 
-    Catatan video tidak mendukung keterangan; teks pesan yang diberikan dikirim secara terpisah.
+    ### Lokasi dan tempat
+
+    Gunakan tindakan `send` yang ada dengan satu objek `location` mandiri. Koordinat mengirim pin asli; menambahkan `name` dan `address` akan mengirim kartu tempat asli. Pengiriman lokasi tidak dapat digabungkan dengan teks pesan atau media.
+
+```json5
+{
+  action: "send",
+  channel: "telegram",
+  to: "123456789",
+  location: {
+    latitude: 48.858844,
+    longitude: 2.294351,
+    accuracy: 12,
+    name: "Eiffel Tower",
+    address: "Champ de Mars, Paris",
+  },
+}
+```
 
     ### Stiker
 
-    Penanganan stiker masuk:
+    Masuk: WEBP statis diunduh dan diproses (placeholder `<media:sticker>`); TGS animasi dan WEBM video dilewati.
 
-    - WEBP statis: diunduh dan diproses (placeholder `<media:sticker>`)
-    - TGS animasi: dilewati
-    - WEBM video: dilewati
+    Bidang konteks stiker: `Sticker.emoji`, `Sticker.setName`, `Sticker.fileId`, `Sticker.fileUniqueId`, `Sticker.cachedDescription`. Deskripsi disimpan dalam cache di status plugin SQLite OpenClaw untuk mengurangi panggilan visi berulang.
 
-    Kolom konteks stiker:
-
-    - `Sticker.emoji`
-    - `Sticker.setName`
-    - `Sticker.fileId`
-    - `Sticker.fileUniqueId`
-    - `Sticker.cachedDescription`
-
-    Deskripsi stiker di-cache dalam status Plugin SQLite OpenClaw untuk mengurangi panggilan vision berulang.
-
-    Aktifkan aksi stiker:
+    Aktifkan tindakan stiker:
 
 ```json5
 {
@@ -764,7 +662,7 @@ curl "https://api.telegram.org/bot<bot_token>/getUpdates"
 }
 ```
 
-    Aksi kirim stiker:
+    Kirim:
 
 ```json5
 {
@@ -775,7 +673,7 @@ curl "https://api.telegram.org/bot<bot_token>/getUpdates"
 }
 ```
 
-    Cari stiker yang di-cache:
+    Cari stiker yang tersimpan dalam cache:
 
 ```json5
 {
@@ -788,64 +686,44 @@ curl "https://api.telegram.org/bot<bot_token>/getUpdates"
 
   </Accordion>
 
-  <Accordion title="Reaction notifications">
-    Reaksi Telegram diterima sebagai pembaruan `message_reaction` (terpisah dari payload pesan).
-
-    Jika diaktifkan, OpenClaw mengantrekan peristiwa sistem seperti:
-
-    - `Telegram reaction added: 👍 by Alice (@alice) on msg 42`
-
-    Konfigurasi:
+  <Accordion title="Notifikasi reaksi">
+    Reaksi Telegram masuk sebagai pembaruan `message_reaction`, terpisah dari muatan pesan. Saat diaktifkan, OpenClaw mengantrekan peristiwa sistem seperti `Telegram reaction added: 👍 by Alice (@alice) on msg 42`.
 
     - `channels.telegram.reactionNotifications`: `off | own | all` (default: `own`)
     - `channels.telegram.reactionLevel`: `off | ack | minimal | extensive` (default: `minimal`)
 
-    Catatan:
+    `own` berarti hanya reaksi pengguna terhadap pesan yang dikirim bot (upaya terbaik melalui cache pesan terkirim). Peristiwa reaksi tetap mematuhi kontrol akses Telegram (`dmPolicy`, `allowFrom`, `groupPolicy`, `groupAllowFrom`); pengirim yang tidak berwenang akan diabaikan.
 
-    - `own` berarti reaksi pengguna hanya terhadap pesan yang dikirim bot (upaya terbaik melalui cache pesan terkirim).
-    - Peristiwa reaksi tetap mematuhi kontrol akses Telegram (`dmPolicy`, `allowFrom`, `groupPolicy`, `groupAllowFrom`); pengirim tidak sah akan dibuang.
-    - Telegram tidak menyediakan ID utas dalam pembaruan reaksi.
-      - grup non-forum diarahkan ke sesi obrolan grup
-      - grup forum diarahkan ke sesi topik umum grup (`:topic:1`), bukan topik asal yang persis
+    Telegram tidak menyediakan ID utas dalam pembaruan reaksi: grup nonforum dirutekan ke sesi obrolan grup; grup forum dirutekan ke sesi topik umum (`:topic:1`), bukan ke topik asal yang persis.
 
-    `allowed_updates` untuk polling/Webhook menyertakan `message_reaction` secara otomatis.
+    `allowed_updates` untuk polling/webhook menyertakan `message_reaction` secara otomatis.
 
   </Accordion>
 
-  <Accordion title="Ack reactions">
-    `ackReaction` mengirim emoji pengakuan saat OpenClaw memproses pesan masuk. `ackReactionScope` menentukan *kapan* emoji itu benar-benar dikirim.
+  <Accordion title="Reaksi pengakuan">
+    `ackReaction` mengirim emoji pengakuan saat OpenClaw memproses pesan masuk. `messages.ackReactionScope` menentukan *kapan* emoji tersebut dikirim.
 
-    **Urutan resolusi emoji (`ackReaction`):**
+    **Urutan resolusi emoji:**
 
     - `channels.telegram.accounts.<accountId>.ackReaction`
     - `channels.telegram.ackReaction`
     - `messages.ackReaction`
-    - fallback emoji identitas agen (`agents.list[].identity.emoji`, jika tidak ada "👀")
+    - fallback emoji identitas agen (`agents.list[].identity.emoji`, jika tidak "👀")
 
-    Catatan:
+    Telegram mengharapkan emoji unicode (misalnya "👀"); gunakan `""` untuk menonaktifkan reaksi bagi suatu saluran atau akun.
 
-    - Telegram mengharapkan emoji unicode (misalnya "👀").
-    - Gunakan `""` untuk menonaktifkan reaksi bagi channel atau akun.
+    **Cakupan (`messages.ackReactionScope`, default `"group-mentions"`; saat ini tidak ada penimpaan akun Telegram atau saluran Telegram):**
 
-    **Cakupan (`messages.ackReactionScope`):**
-
-    Penyedia Telegram membaca cakupan dari `messages.ackReactionScope` (default `"group-mentions"`). Saat ini tidak ada override tingkat akun Telegram atau tingkat channel Telegram.
-
-    Nilai: `"all"` (DM + grup), `"direct"` (hanya DM), `"group-all"` (setiap pesan grup, tanpa DM), `"group-mentions"` (grup saat bot disebut; **tanpa DM** — ini adalah default), `"off"` / `"none"` (dinonaktifkan).
+    `all` (DM + grup, termasuk peristiwa ruang ambien), `direct` (hanya DM), `group-all` (setiap pesan grup kecuali peristiwa ruang ambien, tanpa DM), `group-mentions` (grup saat bot disebut; **tanpa DM** — default), `off` / `none` (dinonaktifkan).
 
     <Note>
-    Cakupan default (`"group-mentions"`) tidak memicu reaksi ack dalam pesan langsung. Untuk mendapatkan reaksi ack pada DM Telegram masuk, atur `messages.ackReactionScope` ke `"direct"` atau `"all"`. Nilai ini dibaca saat penyedia Telegram mulai berjalan, sehingga restart Gateway diperlukan agar perubahan berlaku.
+    Cakupan default (`group-mentions`) tidak memicu reaksi pengakuan dalam DM atau peristiwa ruang ambien. Gunakan `direct` atau `all` untuk DM; hanya `all` yang mengakui peristiwa ruang ambien. Nilai ini dibaca saat penyedia Telegram dimulai, sehingga Gateway harus dimulai ulang agar perubahan diterapkan.
     </Note>
 
   </Accordion>
 
-  <Accordion title="Config writes from Telegram events and commands">
-    Penulisan konfigurasi channel diaktifkan secara default (`configWrites !== false`).
-
-    Penulisan yang dipicu Telegram mencakup:
-
-    - peristiwa migrasi grup (`migrate_to_chat_id`) untuk memperbarui `channels.telegram.groups`
-    - `/config set` dan `/config unset` (memerlukan pengaktifan perintah)
+  <Accordion title="Penulisan konfigurasi dari peristiwa dan perintah Telegram">
+    Penulisan konfigurasi saluran diaktifkan secara default (`configWrites !== false`). Penulisan yang dipicu Telegram mencakup peristiwa migrasi grup (`migrate_to_chat_id`, memperbarui `channels.telegram.groups`) dan `/config set` / `/config unset` (memerlukan pengaktifan perintah).
 
     Nonaktifkan:
 
@@ -861,34 +739,32 @@ curl "https://api.telegram.org/bot<bot_token>/getUpdates"
 
   </Accordion>
 
-  <Accordion title="Long polling vs webhook">
-    Default-nya adalah long polling. Untuk mode Webhook, atur `channels.telegram.webhookUrl` dan `channels.telegram.webhookSecret`; opsional `webhookPath`, `webhookHost`, `webhookPort` (default `/telegram-webhook`, `127.0.0.1`, `8787`).
+  <Accordion title="Long polling dibandingkan dengan webhook">
+    Defaultnya adalah long polling. Untuk mode webhook, tetapkan `channels.telegram.webhookUrl` dan `channels.telegram.webhookSecret`; `webhookPath` opsional (default `/telegram-webhook`), `webhookHost` (default `127.0.0.1`), `webhookPort` (default `8787`), `webhookCertPath` (PEM sertifikat yang ditandatangani sendiri untuk penyiapan IP langsung atau tanpa domain).
 
-    Dalam mode long-polling, OpenClaw mempertahankan watermark restart hanya setelah sebuah pembaruan berhasil didispatch. Jika handler gagal, pembaruan tersebut tetap dapat dicoba ulang dalam proses yang sama dan tidak ditulis sebagai selesai untuk deduplikasi restart.
+    Dalam mode long polling, OpenClaw menyimpan penanda mulai ulang hanya setelah pembaruan berhasil dikirimkan; pengendali yang gagal membiarkan pembaruan tersebut dapat dicoba ulang dalam proses yang sama alih-alih menandainya selesai.
 
-    Listener lokal mengikat ke `127.0.0.1:8787`. Untuk ingress publik, pasang proxy balik di depan port lokal atau atur `webhookHost: "0.0.0.0"` secara sengaja.
+    Listener lokal terikat ke `127.0.0.1:8787` secara default. Untuk ingress publik, tempatkan proksi terbalik di depan port lokal, atau tetapkan `webhookHost: "0.0.0.0"` secara sengaja.
 
-    Mode Webhook memvalidasi guard permintaan, token rahasia Telegram, dan body JSON sebelum mengembalikan `200` ke Telegram.
-    OpenClaw kemudian memproses pembaruan secara asinkron melalui lane bot per-obrolan/per-topik yang sama seperti yang digunakan oleh long polling, sehingga giliran agen yang lambat tidak menahan ACK pengiriman Telegram.
+    Mode webhook memvalidasi pengaman permintaan, token rahasia Telegram, dan isi JSON, lalu melakukan commit pembaruan ke antrean ingress durabel sebelum mengembalikan `200` kosong. Adopsi durabel yang berhasil menyertakan `x-openclaw-delivery-accepted: durable`; respons kesehatan, perutean, autentikasi, validasi, dan kesalahan penyimpanan tidak menyertakan header ini. Proksi terbalik dan pengontrol host dapat mewajibkan header tersebut untuk membedakan adopsi OpenClaw dari `200` kosong generik tanpa menyimpulkan penerimaan berdasarkan waktu respons.
+
+    OpenClaw kemudian memproses pembaruan secara asinkron melalui lane bot per obrolan/per topik yang sama seperti yang digunakan oleh long polling, sehingga giliran agen yang lambat tidak menahan ACK pengiriman Telegram.
 
   </Accordion>
 
   <Accordion title="Batas, percobaan ulang, dan target CLI">
-    - Default `channels.telegram.textChunkLimit` adalah 4000.
-    - `channels.telegram.chunkMode="newline"` mengutamakan batas paragraf (baris kosong) sebelum pemisahan berdasarkan panjang.
-    - `channels.telegram.mediaMaxMb` (default 100) membatasi ukuran media Telegram masuk dan keluar.
-    - `channels.telegram.mediaGroupFlushMs` (default 500) mengontrol berapa lama album/grup media Telegram ditampung sebelum OpenClaw mengirimkannya sebagai satu pesan masuk. Tingkatkan jika bagian album datang terlambat; turunkan untuk mengurangi latensi balasan album.
-    - `channels.telegram.timeoutSeconds` mengganti batas waktu klien API Telegram (jika tidak diatur, default grammY berlaku). Klien bot membatasi nilai yang dikonfigurasi di bawah penjaga permintaan teks/pengetikan keluar 60 detik agar grammY tidak membatalkan pengiriman balasan yang terlihat sebelum penjaga transport dan cadangan OpenClaw dapat berjalan. Long polling tetap menggunakan penjaga permintaan `getUpdates` 45 detik agar polling menganggur tidak ditinggalkan tanpa batas.
-    - `channels.telegram.pollingStallThresholdMs` default ke `120000`; sesuaikan antara `30000` dan `600000` hanya untuk restart polling-stall positif palsu.
-    - riwayat konteks grup menggunakan `channels.telegram.historyLimit` atau `messages.groupChat.historyLimit` (default 50); `0` menonaktifkan.
-    - konteks tambahan balasan/kutipan/terusan dinormalisasi menjadi satu jendela konteks percakapan terpilih ketika gateway telah mengamati pesan induk; cache pesan yang diamati berada di status Plugin SQLite OpenClaw, dan `openclaw doctor --fix` mengimpor sidecar lama. Telegram hanya menyertakan satu `reply_to_message` dangkal dalam pembaruan, jadi rantai yang lebih lama daripada cache dibatasi oleh payload pembaruan Telegram saat ini.
-    - allowlist Telegram terutama membatasi siapa yang dapat memicu agen, bukan batas penyuntingan konteks tambahan penuh.
-    - Kontrol riwayat DM:
-      - `channels.telegram.dmHistoryLimit`
-      - `channels.telegram.dms["<user_id>"].historyLimit`
-    - Konfigurasi `channels.telegram.retry` berlaku untuk helper pengiriman Telegram (CLI/alat/tindakan) untuk error API keluar yang dapat dipulihkan. Pengiriman balasan akhir masuk juga menggunakan percobaan ulang safe-send terbatas untuk kegagalan pra-koneksi Telegram, tetapi tidak mencoba ulang amplop jaringan pasca-kirim yang ambigu yang dapat menggandakan pesan terlihat.
+    - `channels.telegram.textChunkLimit` bawaan 4000; `streaming.chunkMode="newline"` mengutamakan batas paragraf (baris kosong) sebelum pemisahan berdasarkan panjang.
+    - `channels.telegram.mediaMaxMb` (bawaan 100) membatasi ukuran media masuk dan keluar.
+    - `channels.telegram.mediaGroupFlushMs` (bawaan 500, rentang 10-60000) mengontrol berapa lama album/grup media ditampung sebelum OpenClaw mengirimkannya sebagai satu pesan masuk. Tingkatkan jika bagian album tiba terlambat; kurangi untuk mengurangi latensi balasan album.
+    - `channels.telegram.timeoutSeconds` mengganti batas waktu klien API (bawaan grammY berlaku jika tidak ditetapkan). Klien bot membatasi nilai yang dikonfigurasi di bawah pengaman permintaan teks keluar/pengetikan 60 detik agar grammY tidak membatalkan pengiriman balasan yang terlihat sebelum pengaman transportasi dan mekanisme cadangan OpenClaw dapat berjalan. Long polling tetap menggunakan pengaman permintaan `getUpdates` selama 45 detik agar polling menganggur tidak dibiarkan tanpa batas waktu.
+    - `channels.telegram.pollingStallThresholdMs` secara bawaan bernilai 120000; sesuaikan antara 30000 dan 600000 hanya untuk mulai ulang akibat deteksi macet polling positif palsu.
+    - riwayat konteks grup menggunakan `channels.telegram.historyLimit` atau `messages.groupChat.historyLimit` (bawaan 50); `0` menonaktifkannya.
+    - konteks tambahan balasan/kutipan/penerusan dinormalisasi menjadi satu jendela konteks percakapan yang dipilih ketika Gateway telah mengamati pesan induk; cache pesan yang diamati berada dalam status Plugin SQLite OpenClaw, dan `openclaw doctor --fix` mengimpor file pendamping lama. Telegram hanya menyertakan satu `reply_to_message` dangkal per pembaruan, sehingga rantai yang lebih lama daripada cache dibatasi pada muatan tersebut.
+    - daftar izin Telegram terutama membatasi siapa yang dapat memicu agen, bukan merupakan batas penyuntingan konteks tambahan secara menyeluruh.
+    - riwayat DM: `channels.telegram.dmHistoryLimit`, `channels.telegram.dms["<user_id>"].historyLimit`.
+    - `channels.telegram.retry` berlaku pada pembantu pengiriman Telegram (CLI/alat/tindakan) untuk kesalahan API keluar yang dapat dipulihkan. Pengiriman balasan akhir masuk menggunakan percobaan ulang pengiriman aman yang terbatas untuk kegagalan sebelum koneksi, tetapi tidak mencoba ulang amplop jaringan ambigu setelah pengiriman yang dapat menduplikasi pesan yang terlihat.
 
-    Target pengiriman CLI dan alat pesan dapat berupa ID chat numerik, nama pengguna, atau target topik forum:
+    Target pengiriman CLI dan alat pesan menerima ID obrolan numerik, nama pengguna, atau target topik forum:
 
 ```bash
 openclaw message send --channel telegram --target 123456789 --message "hi"
@@ -896,67 +772,53 @@ openclaw message send --channel telegram --target @name --message "hi"
 openclaw message send --channel telegram --target -1001234567890:topic:42 --message "hi topic"
 ```
 
-    Poll Telegram menggunakan `openclaw message poll` dan mendukung topik forum:
+    Jajak pendapat menggunakan `openclaw message poll` dan mendukung topik forum:
 
 ```bash
 openclaw message poll --channel telegram --target 123456789 \
-  --poll-question "Ship it?" --poll-option "Yes" --poll-option "No"
+  --poll-question "Kirim?" --poll-option "Ya" --poll-option "Tidak"
 openclaw message poll --channel telegram --target -1001234567890:topic:42 \
-  --poll-question "Pick a time" --poll-option "10am" --poll-option "2pm" \
+  --poll-question "Pilih waktu" --poll-option "10 pagi" --poll-option "2 siang" \
   --poll-duration-seconds 300 --poll-public
 ```
 
-    Flag poll khusus Telegram:
+    Flag jajak pendapat khusus Telegram: `--poll-duration-seconds` (5-600), `--poll-anonymous`, `--poll-public`, `--thread-id` (atau target `:topic:`). `--poll-option` mengulangi 2-12 kali (batas opsi Telegram).
 
-    - `--poll-duration-seconds` (5-600)
-    - `--poll-anonymous`
-    - `--poll-public`
-    - `--thread-id` untuk topik forum (atau gunakan target `:topic:`)
+    Pengiriman Telegram juga mendukung `--presentation` dengan blok `buttons` untuk papan ketik sebaris (ketika `channels.telegram.capabilities.inlineButtons` mengizinkannya), `--pin` atau `--delivery '{"pin":true}'` untuk meminta pengiriman yang disematkan ketika bot dapat menyematkan pesan dalam obrolan tersebut, dan `--force-document` untuk mengirim gambar, GIF, serta video keluar sebagai dokumen alih-alih unggahan terkompresi/animasi/video.
 
-    Pengiriman Telegram juga mendukung:
-
-    - `--presentation` dengan blok `buttons` untuk keyboard inline ketika `channels.telegram.capabilities.inlineButtons` mengizinkannya
-    - `--pin` atau `--delivery '{"pin":true}'` untuk meminta pengiriman yang disematkan ketika bot dapat menyematkan di chat tersebut
-    - `--force-document` untuk mengirim gambar, GIF, dan video keluar sebagai dokumen, bukan unggahan foto terkompresi, media animasi, atau video
-
-    Pembatasan tindakan:
-
-    - `channels.telegram.actions.sendMessage=false` menonaktifkan pesan Telegram keluar, termasuk poll
-    - `channels.telegram.actions.poll=false` menonaktifkan pembuatan poll Telegram sambil tetap mengaktifkan pengiriman biasa
+    Pembatasan tindakan: `channels.telegram.actions.sendMessage=false` menonaktifkan semua pesan keluar termasuk jajak pendapat; `channels.telegram.actions.poll=false` menonaktifkan pembuatan jajak pendapat dengan tetap mengaktifkan pengiriman biasa.
 
   </Accordion>
 
-  <Accordion title="Persetujuan exec di Telegram">
-    Telegram mendukung persetujuan exec di DM pemberi persetujuan dan secara opsional dapat memposting prompt di chat atau topik asal. Pemberi persetujuan harus berupa ID pengguna Telegram numerik.
+  <Accordion title="Persetujuan eksekusi di Telegram">
+    Telegram mendukung persetujuan eksekusi dalam DM pemberi persetujuan dan secara opsional dapat memposting permintaan dalam obrolan atau topik asal. Pemberi persetujuan harus berupa ID pengguna Telegram numerik.
 
-    Jalur konfigurasi:
-
-    - `channels.telegram.execApprovals.enabled` (otomatis aktif ketika setidaknya satu pemberi persetujuan dapat diresolusikan)
-    - `channels.telegram.execApprovals.approvers` (fallback ke ID pemilik numerik dari `commands.ownerAllowFrom`)
-    - `channels.telegram.execApprovals.target`: `dm` (default) | `channel` | `both`
+    - `channels.telegram.execApprovals.enabled` (`"auto"` mengaktifkannya ketika setidaknya satu pemberi persetujuan dapat diidentifikasi)
+    - `channels.telegram.execApprovals.approvers` (beralih ke ID pemilik numerik dari `commands.ownerAllowFrom`)
+    - `channels.telegram.execApprovals.target`: `dm` (bawaan) | `channel` | `both`
     - `agentFilter`, `sessionFilter`
 
-    `channels.telegram.allowFrom`, `groupAllowFrom`, dan `defaultTo` mengontrol siapa yang dapat berbicara ke bot dan ke mana bot mengirim balasan normal. Kunci tersebut tidak menjadikan seseorang pemberi persetujuan exec. Pasangan DM pertama yang disetujui mem-bootstrap `commands.ownerAllowFrom` ketika belum ada pemilik perintah, sehingga penyiapan satu pemilik tetap berfungsi tanpa menduplikasi ID di bawah `execApprovals.approvers`.
+    `channels.telegram.allowFrom`, `groupAllowFrom`, dan `defaultTo` mengontrol siapa yang dapat berkomunikasi dengan bot dan ke mana bot mengirim balasan biasa — pengaturan tersebut tidak menjadikan seseorang sebagai pemberi persetujuan eksekusi. Pemasangan DM pertama yang disetujui melakukan bootstrap pada `commands.ownerAllowFrom` ketika belum ada pemilik perintah, sehingga penyiapan dengan satu pemilik berfungsi tanpa menduplikasi ID di bawah `execApprovals.approvers`.
 
-    Pengiriman kanal menampilkan teks perintah di chat; aktifkan `channel` atau `both` hanya di grup/topik tepercaya. Ketika prompt tiba di topik forum, OpenClaw mempertahankan topik untuk prompt persetujuan dan tindak lanjutnya. Persetujuan exec kedaluwarsa setelah 30 menit secara default.
+    Pengiriman saluran menampilkan teks perintah dalam obrolan; aktifkan `channel` atau `both` hanya dalam grup/topik tepercaya. Ketika permintaan masuk ke topik forum, OpenClaw mempertahankan topik untuk permintaan persetujuan dan tindak lanjut. Persetujuan eksekusi secara bawaan kedaluwarsa setelah 30 menit.
 
-    Tombol persetujuan inline juga membutuhkan `channels.telegram.capabilities.inlineButtons` untuk mengizinkan permukaan target (`dm`, `group`, atau `all`). ID persetujuan yang diawali dengan `plugin:` diresolusikan melalui persetujuan plugin; lainnya diresolusikan melalui persetujuan exec terlebih dahulu.
+    Tombol persetujuan sebaris juga mengharuskan `channels.telegram.capabilities.inlineButtons` mengizinkan permukaan target (`dm`, `group`, atau `all`). ID persetujuan dengan awalan `plugin:` diselesaikan melalui persetujuan Plugin; ID lainnya diselesaikan melalui persetujuan eksekusi terlebih dahulu.
 
-    Lihat [Persetujuan exec](/id/tools/exec-approvals).
+    Lihat [Persetujuan eksekusi](/id/tools/exec-approvals).
 
   </Accordion>
 </AccordionGroup>
 
-## Kontrol balasan error
+## Kontrol balasan kesalahan
 
-Ketika agen mengalami error pengiriman atau penyedia, kebijakan error mengontrol apakah pesan error dikirim ke chat Telegram:
+Ketika agen mengalami kesalahan pengiriman atau penyedia, kebijakan kesalahan mengontrol apakah pesan kesalahan sampai ke obrolan Telegram:
 
-| Kunci                               | Nilai                      | Default         | Deskripsi                                                                                                                                                                                               |
-| ----------------------------------- | -------------------------- | --------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `channels.telegram.errorPolicy`     | `always`, `once`, `silent` | `always`        | `always` — kirim setiap pesan error ke chat. `once` — kirim setiap pesan error unik satu kali per jendela cooldown (menekan error identik yang berulang). `silent` — jangan pernah kirim pesan error ke chat. |
-| `channels.telegram.errorCooldownMs` | angka (ms)                 | `14400000` (4j) | Jendela cooldown untuk kebijakan `once`. Setelah error dikirim, pesan error yang sama ditekan hingga interval ini berlalu. Mencegah spam error selama gangguan.                                      |
+| Kunci                               | Nilai                      | Bawaan          | Deskripsi                                                                                                                                                                                               |
+| ----------------------------------- | -------------------------- | --------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `channels.telegram.errorPolicy`     | `always`, `once`, `silent` | `always`        | `always` mengirim setiap pesan kesalahan ke obrolan. `once` mengirim setiap pesan kesalahan unik satu kali per jendela jeda (menekan kesalahan identik yang berulang). `silent` tidak pernah mengirim pesan kesalahan ke obrolan. |
+| `channels.telegram.errorCooldownMs` | angka (md)                 | `14400000` (4j) | Jendela jeda untuk kebijakan `once`. Setelah kesalahan dikirim, pesan yang sama ditekan hingga interval ini berlalu. Mencegah spam kesalahan selama gangguan.                                           |
 
-Override per akun, per grup, dan per topik didukung (pewarisan yang sama seperti kunci konfigurasi Telegram lainnya).
+Penggantian per akun, per grup, dan per topik didukung (pewarisan yang sama seperti kunci konfigurasi Telegram lainnya).
 
 ```json5
 {
@@ -966,7 +828,7 @@ Override per akun, per grup, dan per topik didukung (pewarisan yang sama seperti
       errorCooldownMs: 120000,
       groups: {
         "-1001234567890": {
-          errorPolicy: "silent", // suppress errors in this group
+          errorPolicy: "silent", // tekan kesalahan dalam grup ini
         },
       },
     },
@@ -977,56 +839,52 @@ Override per akun, per grup, dan per topik didukung (pewarisan yang sama seperti
 ## Pemecahan masalah
 
 <AccordionGroup>
-  <Accordion title="Bot tidak merespons pesan grup tanpa mention">
+  <Accordion title="Bot tidak merespons pesan grup tanpa penyebutan">
 
-    - Jika `requireMention=false`, mode privasi Telegram harus mengizinkan visibilitas penuh.
-      - BotFather: `/setprivacy` -> Disable
-      - lalu hapus + tambahkan kembali bot ke grup
-    - `openclaw channels status` memperingatkan ketika konfigurasi mengharapkan pesan grup tanpa mention.
-    - `openclaw channels status --probe` dapat memeriksa ID grup numerik eksplisit; wildcard `"*"` tidak dapat diperiksa keanggotaannya.
-    - uji sesi cepat: `/activation always`.
+    - Jika `requireMention=false`, mode privasi Telegram harus mengizinkan visibilitas penuh: BotFather `/setprivacy` -> Disable, lalu hapus dan tambahkan kembali bot ke grup.
+    - `openclaw channels status` memberikan peringatan ketika konfigurasi mengharapkan pesan grup tanpa penyebutan.
+    - `openclaw channels status --probe` memeriksa ID grup numerik eksplisit; wildcard `"*"` tidak dapat diperiksa keanggotaannya.
+    - Pengujian sesi cepat: `/activation always`.
 
   </Accordion>
 
   <Accordion title="Bot sama sekali tidak melihat pesan grup">
 
-    - ketika `channels.telegram.groups` ada, grup harus dicantumkan (atau menyertakan `"*"`)
-    - verifikasi keanggotaan bot di grup
-    - tinjau log: `openclaw logs --follow` untuk alasan dilewati
+    - Ketika `channels.telegram.groups` ada, grup harus dicantumkan (atau menyertakan `"*"`).
+    - Verifikasi keanggotaan bot dalam grup.
+    - Tinjau `openclaw logs --follow` untuk mengetahui alasan dilewati.
 
   </Accordion>
 
-  <Accordion title="Perintah berfungsi sebagian atau tidak sama sekali">
+  <Accordion title="Perintah hanya berfungsi sebagian atau tidak sama sekali">
 
-    - otorisasi identitas pengirim Anda (pairing dan/atau `allowFrom` numerik)
-    - otorisasi perintah tetap berlaku bahkan ketika kebijakan grup adalah `open`
-    - `setMyCommands failed` dengan `BOT_COMMANDS_TOO_MUCH` berarti menu native memiliki terlalu banyak entri; kurangi perintah plugin/skill/kustom atau nonaktifkan menu native
-    - Panggilan startup `deleteMyCommands` / `setMyCommands` dan panggilan pengetikan `sendChatAction` dibatasi dan dicoba ulang satu kali melalui cadangan transport Telegram saat batas waktu permintaan. Error jaringan/fetch yang persisten biasanya menunjukkan masalah keterjangkauan DNS/HTTPS ke `api.telegram.org`
+    - Otorisasi identitas pengirim Anda (pemasangan dan/atau `allowFrom` numerik); otorisasi perintah tetap berlaku bahkan ketika kebijakan grup adalah `open`.
+    - `setMyCommands failed` dengan `BOT_COMMANDS_TOO_MUCH` berarti menu asli memiliki terlalu banyak entri; kurangi perintah Plugin/Skills/kustom atau nonaktifkan menu asli.
+    - Panggilan awal `deleteMyCommands` / `setMyCommands` dan panggilan pengetikan `sendChatAction` dibatasi dan dicoba ulang satu kali melalui mekanisme cadangan transportasi Telegram saat batas waktu permintaan tercapai. Kesalahan jaringan/fetch yang terus terjadi biasanya berarti DNS/HTTPS ke `api.telegram.org` tidak dapat dijangkau.
 
   </Accordion>
 
-  <Accordion title="Startup melaporkan token tidak terotorisasi">
+  <Accordion title="Proses awal melaporkan token tidak sah">
 
-    - `getMe returned 401` adalah kegagalan autentikasi Telegram untuk token bot yang dikonfigurasi.
-    - Salin ulang atau buat ulang token bot di BotFather, lalu perbarui `channels.telegram.botToken`, `channels.telegram.tokenFile`, `channels.telegram.accounts.<id>.botToken`, atau `TELEGRAM_BOT_TOKEN` untuk akun default.
-    - `deleteWebhook 401 Unauthorized` selama startup juga merupakan kegagalan auth; memperlakukannya sebagai "tidak ada webhook" hanya akan menunda kegagalan token buruk yang sama ke panggilan API berikutnya.
+    - `getMe returned 401` adalah kegagalan autentikasi Telegram untuk token bot yang dikonfigurasi. Salin ulang atau buat ulang token di BotFather, lalu perbarui `channels.telegram.botToken`, `tokenFile`, `accounts.<id>.botToken`, atau `TELEGRAM_BOT_TOKEN` (akun bawaan).
+    - `deleteWebhook 401 Unauthorized` selama proses awal juga merupakan kegagalan autentikasi; memperlakukannya sebagai "tidak ada webhook" hanya akan menunda kegagalan token buruk yang sama hingga panggilan API berikutnya.
 
   </Accordion>
 
   <Accordion title="Ketidakstabilan polling atau jaringan">
 
-    - Node 22+ + fetch/proxy kustom dapat memicu perilaku batal seketika jika tipe AbortSignal tidak cocok.
-    - Beberapa host meresolusikan `api.telegram.org` ke IPv6 terlebih dahulu; egress IPv6 yang rusak dapat menyebabkan kegagalan API Telegram intermiten.
-    - Jika log menyertakan `TypeError: fetch failed` atau `Network request for 'getUpdates' failed!`, OpenClaw sekarang mencoba ulang ini sebagai error jaringan yang dapat dipulihkan.
-    - Selama startup polling, OpenClaw menggunakan kembali probe startup `getMe` yang berhasil untuk grammY sehingga runner tidak memerlukan `getMe` kedua sebelum `getUpdates` pertama.
-    - Jika `deleteWebhook` gagal dengan error jaringan sementara selama startup polling, OpenClaw melanjutkan ke long polling alih-alih membuat panggilan control-plane pra-polling lain. Webhook yang masih aktif muncul sebagai konflik `getUpdates`; OpenClaw lalu membangun ulang transport Telegram dan mencoba ulang pembersihan webhook.
-    - Jika soket Telegram didaur ulang pada kadens tetap yang pendek, periksa `channels.telegram.timeoutSeconds` yang rendah; klien bot membatasi nilai yang dikonfigurasi di bawah penjaga permintaan keluar dan `getUpdates`, tetapi rilis lama dapat membatalkan setiap polling atau balasan ketika nilai ini diatur di bawah penjaga tersebut.
-    - Jika log menyertakan `Polling stall detected`, OpenClaw memulai ulang polling dan membangun ulang transport Telegram setelah 120 detik tanpa liveness long-poll yang selesai secara default.
-    - `openclaw channels status --probe` dan `openclaw doctor` memperingatkan ketika akun polling yang berjalan belum menyelesaikan `getUpdates` setelah grace startup, ketika akun webhook yang berjalan belum menyelesaikan `setWebhook` setelah grace startup, atau ketika aktivitas transport polling terakhir yang berhasil sudah basi.
-    - Tingkatkan `channels.telegram.pollingStallThresholdMs` hanya ketika panggilan `getUpdates` yang berjalan lama sehat tetapi host Anda masih melaporkan restart polling-stall positif palsu. Stall persisten biasanya mengarah ke masalah proxy, DNS, IPv6, atau egress TLS antara host dan `api.telegram.org`.
-    - Telegram juga menghormati env proxy proses untuk transport Bot API, termasuk `HTTP_PROXY`, `HTTPS_PROXY`, `ALL_PROXY`, dan varian huruf kecilnya. `NO_PROXY` / `no_proxy` tetap dapat melewati `api.telegram.org`.
-    - Jika proxy terkelola OpenClaw dikonfigurasi melalui `OPENCLAW_PROXY_URL` untuk lingkungan layanan dan tidak ada env proxy standar, Telegram juga menggunakan URL tersebut untuk transport Bot API.
-    - Pada host VPS dengan egress/TLS langsung yang tidak stabil, rutekan panggilan API Telegram melalui `channels.telegram.proxy`:
+    - Node 22+ dengan fetch/proksi khusus dapat memicu perilaku pembatalan langsung jika tipe `AbortSignal` tidak cocok.
+    - Beberapa host menguraikan `api.telegram.org` ke IPv6 terlebih dahulu; jalur keluar IPv6 yang rusak menyebabkan kegagalan API berselang.
+    - Log dengan `TypeError: fetch failed` atau `Network request for 'getUpdates' failed!` dicoba ulang sebagai kesalahan jaringan yang dapat dipulihkan.
+    - Selama proses awal polling, OpenClaw menggunakan kembali pemeriksaan `getMe` awal yang berhasil untuk grammY sehingga runner tidak memerlukan `getMe` kedua sebelum `getUpdates` pertama.
+    - Jika `deleteWebhook` gagal akibat kesalahan jaringan sementara selama proses awal polling, OpenClaw melanjutkan ke long polling alih-alih melakukan panggilan bidang kontrol lain sebelum polling. Webhook yang masih aktif kemudian muncul sebagai konflik `getUpdates`; OpenClaw membangun ulang transportasi dan mencoba kembali pembersihan webhook.
+    - Jika soket Telegram didaur ulang dalam interval tetap yang singkat, periksa apakah `channels.telegram.timeoutSeconds` rendah — klien bot membatasi nilai yang dikonfigurasi di bawah pengaman permintaan keluar dan `getUpdates`, tetapi rilis yang lebih lama dapat membatalkan setiap polling atau balasan ketika nilai ini ditetapkan di bawah pengaman tersebut.
+    - `Polling stall detected` dalam log berarti OpenClaw memulai ulang polling dan membangun ulang transportasi setelah secara bawaan 120 detik tanpa kelangsungan long polling yang selesai.
+    - `openclaw channels status --probe` dan `openclaw doctor` memberikan peringatan ketika akun polling yang berjalan belum menyelesaikan `getUpdates` setelah masa tenggang proses awal, akun webhook yang berjalan belum menyelesaikan `setWebhook` setelah masa tenggang proses awal, atau aktivitas transportasi polling terakhir yang berhasil sudah kedaluwarsa.
+    - Naikkan `channels.telegram.pollingStallThresholdMs` hanya ketika panggilan `getUpdates` yang berjalan lama dalam keadaan sehat tetapi host Anda masih melaporkan mulai ulang akibat polling macet positif palsu. Kemacetan yang terus terjadi biasanya menunjukkan masalah proksi, DNS, IPv6, atau jalur keluar TLS ke `api.telegram.org`.
+    - Telegram mematuhi env proksi proses untuk transportasi Bot API: `HTTP_PROXY`, `HTTPS_PROXY`, `ALL_PROXY`, dan varian huruf kecil. `NO_PROXY` / `no_proxy` masih dapat melewati `api.telegram.org`.
+    - Jika `OPENCLAW_PROXY_URL` ditetapkan untuk lingkungan layanan dan tidak ada env proksi standar, Telegram juga menggunakan URL tersebut untuk transportasi Bot API.
+    - Pada host VPS dengan jalur keluar langsung/TLS yang tidak stabil, arahkan panggilan API Telegram melalui proksi:
 
 ```yaml
 channels:
@@ -1034,8 +892,8 @@ channels:
     proxy: socks5://<user>:<password>@proxy-host:1080
 ```
 
-    - Node 22+ default ke `autoSelectFamily=true` (kecuali WSL2). Urutan hasil DNS Telegram mengikuti `OPENCLAW_TELEGRAM_DNS_RESULT_ORDER`, lalu `channels.telegram.network.dnsResultOrder`, lalu default proses seperti `NODE_OPTIONS=--dns-result-order=ipv4first`; jika tidak ada yang berlaku, Node 22+ beralih ke `ipv4first`.
-    - Jika host Anda adalah WSL2 atau secara eksplisit bekerja lebih baik dengan perilaku khusus IPv4, paksa pemilihan family:
+    - Node 22+ secara default menggunakan `autoSelectFamily=true` (kecuali WSL2). Urutan hasil DNS Telegram mengikuti `OPENCLAW_TELEGRAM_DNS_RESULT_ORDER`, lalu `channels.telegram.network.dnsResultOrder`, kemudian default proses (misalnya `NODE_OPTIONS=--dns-result-order=ipv4first`), dengan fallback ke `ipv4first` pada Node 22+ jika tidak ada yang berlaku.
+    - Di WSL2, atau ketika perilaku khusus IPv4 bekerja lebih baik, paksa pemilihan keluarga:
 
 ```yaml
 channels:
@@ -1044,11 +902,7 @@ channels:
       autoSelectFamily: false
 ```
 
-    - Jawaban rentang benchmark RFC 2544 (`198.18.0.0/15`) sudah diizinkan
-      untuk unduhan media Telegram secara default. Jika fake-IP tepercaya atau
-      proksi transparan menulis ulang `api.telegram.org` ke alamat
-      privat/internal/penggunaan-khusus lain selama unduhan media, Anda dapat ikut
-      serta dalam bypass khusus Telegram:
+    - Jawaban rentang tolok ukur RFC 2544 (`198.18.0.0/15`) sudah diizinkan secara default untuk pengunduhan media Telegram. Jika fake-IP tepercaya atau proksi transparan menulis ulang `api.telegram.org` menjadi alamat privat/internal/penggunaan khusus lainnya selama pengunduhan media, aktifkan bypass khusus Telegram:
 
 ```yaml
 channels:
@@ -1057,24 +911,14 @@ channels:
       dangerouslyAllowPrivateNetwork: true
 ```
 
-    - Opt-in yang sama tersedia per akun di
-      `channels.telegram.accounts.<accountId>.network.dangerouslyAllowPrivateNetwork`.
-    - Jika proksi Anda me-resolve host media Telegram menjadi `198.18.x.x`, biarkan
-      flag berbahaya tetap nonaktif terlebih dahulu. Media Telegram sudah mengizinkan
-      rentang benchmark RFC 2544 secara default.
+    - Opsi yang sama tersedia per akun di `channels.telegram.accounts.<accountId>.network.dangerouslyAllowPrivateNetwork`.
+    - Jika proksi Anda me-resolve host media Telegram ke `198.18.x.x`, biarkan flag berbahaya tetap nonaktif terlebih dahulu — rentang tersebut sudah diizinkan secara default.
 
     <Warning>
-      `channels.telegram.network.dangerouslyAllowPrivateNetwork` melemahkan proteksi
-      SSRF media Telegram. Gunakan hanya untuk lingkungan proksi tepercaya yang
-      dikendalikan operator seperti routing fake-IP Clash, Mihomo, atau Surge ketika
-      mereka mensintesis jawaban privat atau penggunaan-khusus di luar rentang benchmark
-      RFC 2544. Biarkan nonaktif untuk akses Telegram internet publik normal.
+      `channels.telegram.network.dangerouslyAllowPrivateNetwork` memperlemah perlindungan SSRF media Telegram. Gunakan hanya untuk lingkungan proksi tepercaya yang dikendalikan operator (perutean fake-IP Clash, Mihomo, Surge) yang menyintesis jawaban privat atau penggunaan khusus di luar rentang tolok ukur RFC 2544. Biarkan tetap nonaktif untuk akses Telegram normal melalui internet publik.
     </Warning>
 
-    - Override lingkungan (sementara):
-      - `OPENCLAW_TELEGRAM_DISABLE_AUTO_SELECT_FAMILY=1`
-      - `OPENCLAW_TELEGRAM_ENABLE_AUTO_SELECT_FAMILY=1`
-      - `OPENCLAW_TELEGRAM_DNS_RESULT_ORDER=ipv4first`
+    - Override lingkungan sementara: `OPENCLAW_TELEGRAM_DISABLE_AUTO_SELECT_FAMILY=1`, `OPENCLAW_TELEGRAM_ENABLE_AUTO_SELECT_FAMILY=1`, `OPENCLAW_TELEGRAM_DNS_RESULT_ORDER=ipv4first`.
     - Validasi jawaban DNS:
 
 ```bash
@@ -1085,34 +929,34 @@ dig +short api.telegram.org AAAA
   </Accordion>
 </AccordionGroup>
 
-Bantuan lainnya: [Pemecahan masalah channel](/id/channels/troubleshooting).
+Bantuan lainnya: [Pemecahan masalah saluran](/id/channels/troubleshooting).
 
 ## Referensi konfigurasi
 
 Referensi utama: [Referensi konfigurasi - Telegram](/id/gateway/config-channels#telegram).
 
-<Accordion title="Bidang Telegram bernilai sinyal tinggi">
+<Accordion title="Kolom Telegram dengan sinyal tinggi">
 
-- startup/auth: `enabled`, `botToken`, `tokenFile`, `accounts.*` (`tokenFile` harus menunjuk ke file reguler; symlink ditolak)
-- kontrol akses: `dmPolicy`, `allowFrom`, `groupPolicy`, `groupAllowFrom`, `groups`, `groups.*.topics.*`, `bindings[]` tingkat atas (`type: "acp"`)
-- default topik: `groups.<chatId>.topics."*"` berlaku untuk topik forum yang tidak cocok; ID topik persis menimpanya
+- startup/autentikasi: `enabled`, `botToken`, `tokenFile` (harus berupa berkas biasa; symlink ditolak), `accounts.*`
+- kontrol akses: `dmPolicy`, `allowFrom`, `groupPolicy`, `groupAllowFrom`, `groups`, `groups.*.topics.*`, tingkat teratas `bindings[]` (`type: "acp"`)
+- default topik: `groups.<chatId>.topics."*"` berlaku untuk topik forum yang tidak cocok; ID topik yang tepat akan menimpanya
 - persetujuan exec: `execApprovals`, `accounts.*.execApprovals`
 - perintah/menu: `commands.native`, `commands.nativeSkills`, `customCommands`
-- threading/balasan: `replyToMode`
-- streaming: `streaming` (pratinjau), `streaming.preview.toolProgress`, `blockStreaming`
-- pemformatan/pengiriman: `textChunkLimit`, `chunkMode`, `richMessages`, `linkPreview`, `responsePrefix`
+- utas/balasan: `replyToMode`, `threadBindings`
+- streaming: `streaming` (mode `off | partial | block | progress`), `streaming.preview.toolProgress`
+- pemformatan/pengiriman: `textChunkLimit`, `streaming.chunkMode`, `richMessages`, `markdown.tables` (`off | bullets | code | block`), `linkPreview`, `responsePrefix`
 - media/jaringan: `mediaMaxMb`, `mediaGroupFlushMs`, `timeoutSeconds`, `pollingStallThresholdMs`, `retry`, `network.autoSelectFamily`, `network.dangerouslyAllowPrivateNetwork`, `proxy`
-- root API kustom: `apiRoot` (hanya root Bot API; jangan sertakan `/bot<TOKEN>`)
-- webhook: `webhookUrl`, `webhookSecret`, `webhookPath`, `webhookHost`
-- aksi/kapabilitas: `capabilities.inlineButtons`, `actions.sendMessage|editMessage|deleteMessage|reactions|sticker`
+- root API khusus: `apiRoot` (hanya root Bot API; jangan sertakan `/bot<TOKEN>`), `trustedLocalFileRoots` (root absolut `file_path` untuk Bot API yang di-host sendiri)
+- Webhook: `webhookUrl`, `webhookSecret`, `webhookPath`, `webhookHost`, `webhookPort`, `webhookCertPath`
+- tindakan/kapabilitas: `capabilities.inlineButtons`, `actions.sendMessage|editMessage|deleteMessage|reactions|sticker|createForumTopic|editForumTopic`
 - reaksi: `reactionNotifications`, `reactionLevel`
-- error: `errorPolicy`, `errorCooldownMs`
+- kesalahan: `errorPolicy`, `errorCooldownMs`, `silentErrorReplies`
 - penulisan/riwayat: `configWrites`, `historyLimit`, `dmHistoryLimit`, `dms.*.historyLimit`
 
 </Accordion>
 
 <Note>
-Prioritas multi-akun: ketika dua atau lebih ID akun dikonfigurasi, atur `channels.telegram.defaultAccount` (atau sertakan `channels.telegram.accounts.default`) agar routing default eksplisit. Jika tidak, OpenClaw beralih ke ID akun ternormalisasi pertama dan `openclaw doctor` memberi peringatan. Akun bernama mewarisi `channels.telegram.allowFrom` / `groupAllowFrom`, tetapi tidak nilai `accounts.default.*`.
+Prioritas multi-akun: dengan dua ID akun atau lebih yang dikonfigurasi, tetapkan `channels.telegram.defaultAccount` (atau sertakan `channels.telegram.accounts.default`) agar perutean default dinyatakan secara eksplisit. Jika tidak, OpenClaw menggunakan ID akun ternormalisasi pertama sebagai fallback dan `openclaw doctor` akan memberikan peringatan. Akun bernama mewarisi `channels.telegram.allowFrom` / `groupAllowFrom`, tetapi tidak mewarisi nilai `accounts.default.*`.
 </Note>
 
 ## Terkait
@@ -1122,18 +966,18 @@ Prioritas multi-akun: ketika dua atau lebih ID akun dikonfigurasi, atur `channel
     Pasangkan pengguna Telegram ke Gateway.
   </Card>
   <Card title="Grup" icon="users" href="/id/channels/groups">
-    Perilaku allowlist grup dan topik.
+    Perilaku daftar izin grup dan topik.
   </Card>
-  <Card title="Routing channel" icon="route" href="/id/channels/channel-routing">
+  <Card title="Perutean saluran" icon="route" href="/id/channels/channel-routing">
     Rutekan pesan masuk ke agen.
   </Card>
   <Card title="Keamanan" icon="shield" href="/id/gateway/security">
-    Model ancaman dan pengerasan.
+    Model ancaman dan penguatan keamanan.
   </Card>
-  <Card title="Routing multi-agen" icon="sitemap" href="/id/concepts/multi-agent">
+  <Card title="Perutean multi-agen" icon="sitemap" href="/id/concepts/multi-agent">
     Petakan grup dan topik ke agen.
   </Card>
   <Card title="Pemecahan masalah" icon="wrench" href="/id/channels/troubleshooting">
-    Diagnostik lintas-channel.
+    Diagnostik lintas saluran.
   </Card>
 </CardGroup>

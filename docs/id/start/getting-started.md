@@ -1,33 +1,34 @@
 ---
 read_when:
-    - Penyiapan pertama kali dari nol
-    - Anda menginginkan cara tercepat untuk mendapatkan chat yang berfungsi
+    - Penyiapan pertama kali dari awal
+    - Anda menginginkan cara tercepat untuk mengaktifkan chat yang berfungsi
 summary: Instal OpenClaw dan jalankan percakapan pertama Anda dalam hitungan menit.
 title: Memulai
 x-i18n:
-    generated_at: "2026-07-12T14:40:51Z"
+    generated_at: "2026-07-16T18:42:11Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 308ca58b8a11832b5a4c0d4634d1c88ef44681ef755a18d675bcff60b5aba929
+    source_hash: 8f50073b059477636b94e128cec90b41dcc21c8bb132e34900e68409cacf70eb
     source_path: start/getting-started.md
     workflow: 16
 ---
 
-Instal OpenClaw, jalankan orientasi awal, dan mengobrol dengan asisten AI Anda dalam waktu sekitar 5
-menit. Setelah selesai, Anda akan memiliki Gateway yang berjalan, autentikasi yang telah dikonfigurasi, dan
+Instal OpenClaw, jalankan orientasi, dan mulai mengobrol dengan asisten AI Anda dalam waktu sekitar 5
+menit. Setelah selesai, Anda akan memiliki Gateway yang berjalan, autentikasi yang dikonfigurasi, dan
 sesi obrolan yang berfungsi.
 
 ## Yang Anda perlukan
 
-- **Node.js 22.19+, 23.11+, atau 24+** (24 adalah versi bawaan yang direkomendasikan)
-- **Kunci API** dari penyedia model (Anthropic, OpenAI, Google, dan sebagainya) — Anda akan diminta memasukkannya saat orientasi awal
+- **Node.js 22.22.3+, 24.15+, atau 25.9+** (24 adalah versi bawaan yang direkomendasikan)
+- **Kunci API** dari penyedia model (Anthropic, OpenAI, Google, dll.) — proses orientasi akan memintanya
 
 <Tip>
 Periksa versi Node Anda dengan `node --version`.
-**Pengguna Windows:** aplikasi Windows Hub native adalah cara termudah untuk menggunakan desktop. Jalur
-penginstal PowerShell dan Gateway WSL2 juga didukung. Lihat [Windows](/id/platforms/windows).
-Perlu menginstal Node? Lihat [Penyiapan Node](/id/install/node).
+**Pengguna Windows:** aplikasi Hub Windows native adalah jalur desktop yang paling mudah. Penginstal
+PowerShell dan jalur Gateway WSL2 juga didukung. Lihat [Windows](/id/platforms/windows).
+Perlu menginstal Node? Lihat [penyiapan Node](/id/install/node).
 </Tip>
 
 ## Penyiapan cepat
@@ -57,26 +58,26 @@ Perlu menginstal Node? Lihat [Penyiapan Node](/id/install/node).
     </Note>
 
   </Step>
-  <Step title="Jalankan orientasi awal">
+  <Step title="Jalankan orientasi">
     ```bash
     openclaw onboard --install-daemon
     ```
 
-    Wisaya akan memandu Anda memilih penyedia model, menetapkan kunci API,
-    dan mengonfigurasi Gateway. Mulai Cepat biasanya hanya memerlukan beberapa menit, tetapi
-    proses masuk ke penyedia, pemasangan saluran, instalasi daemon, pengunduhan melalui jaringan, Skills,
-    atau Plugin opsional dapat membuat orientasi awal lengkap memerlukan waktu lebih lama. Lewati langkah
+    Wizard memandu Anda memilih penyedia model, menetapkan kunci API,
+    dan mengonfigurasi Gateway. QuickStart biasanya hanya memerlukan beberapa menit, tetapi
+    proses masuk ke penyedia, pemasangan kanal, instalasi daemon, unduhan jaringan, Skills,
+    atau Plugin opsional dapat membuat keseluruhan proses orientasi memerlukan waktu lebih lama. Lewati langkah
     opsional dan kembali lagi nanti dengan `openclaw configure`.
 
-    Lihat [Orientasi awal (CLI)](/id/start/wizard) untuk referensi lengkap.
+    Lihat [Orientasi (CLI)](/id/start/wizard) untuk referensi lengkap.
 
   </Step>
-  <Step title="Pastikan Gateway sedang berjalan">
+  <Step title="Verifikasi bahwa Gateway sedang berjalan">
     ```bash
     openclaw gateway status
     ```
 
-    Anda akan melihat Gateway mendengarkan pada porta 18789.
+    Anda akan melihat Gateway mendengarkan pada port 18789.
 
   </Step>
   <Step title="Buka dasbor">
@@ -90,17 +91,17 @@ Perlu menginstal Node? Lihat [Penyiapan Node](/id/install/node).
   <Step title="Kirim pesan pertama Anda">
     Ketik pesan dalam obrolan UI Kontrol dan Anda akan menerima balasan dari AI.
 
-    Ingin mengobrol dari ponsel? Saluran yang paling cepat disiapkan adalah
-    [Telegram](/id/channels/telegram) (hanya memerlukan token bot). Lihat [Saluran](/id/channels)
+    Ingin mengobrol melalui ponsel? Kanal yang paling cepat disiapkan adalah
+    [Telegram](/id/channels/telegram) (cukup token bot). Lihat [Kanal](/id/channels)
     untuk semua opsi.
 
   </Step>
 </Steps>
 
-<Accordion title="Lanjutan: pasang build UI Kontrol khusus">
+<Accordion title="Lanjutan: pasang build UI Kontrol kustom">
   Jika Anda mengelola build dasbor yang dilokalkan atau disesuaikan, arahkan
   `gateway.controlUi.root` ke direktori yang berisi aset statis hasil build
-  dan `index.html` Anda.
+  dan `index.html`.
 
 ```bash
 mkdir -p "$HOME/.openclaw/control-ui-custom"
@@ -129,10 +130,10 @@ openclaw dashboard
 
 </Accordion>
 
-## Langkah berikutnya
+## Langkah selanjutnya
 
 <Columns>
-  <Card title="Hubungkan saluran" href="/id/channels" icon="message-square">
+  <Card title="Hubungkan kanal" href="/id/channels" icon="message-square">
     Discord, Feishu, iMessage, Matrix, Microsoft Teams, Signal, Slack, Telegram, WhatsApp, Zalo, dan lainnya.
   </Card>
   <Card title="Pemasangan dan keamanan" href="/id/channels/pairing" icon="shield">
@@ -147,11 +148,11 @@ openclaw dashboard
 </Columns>
 
 <Accordion title="Lanjutan: variabel lingkungan">
-  Jika Anda menjalankan OpenClaw sebagai akun layanan atau menginginkan jalur khusus:
+  Jika Anda menjalankan OpenClaw sebagai akun layanan atau menginginkan jalur kustom:
 
 - `OPENCLAW_HOME` — direktori beranda untuk resolusi jalur internal
-- `OPENCLAW_STATE_DIR` — mengganti direktori status
-- `OPENCLAW_CONFIG_PATH` — mengganti jalur file konfigurasi
+- `OPENCLAW_STATE_DIR` — ganti direktori status
+- `OPENCLAW_CONFIG_PATH` — ganti jalur file konfigurasi
 
 Referensi lengkap: [Variabel lingkungan](/id/help/environment).
 </Accordion>
@@ -159,5 +160,5 @@ Referensi lengkap: [Variabel lingkungan](/id/help/environment).
 ## Terkait
 
 - [Ikhtisar instalasi](/id/install)
-- [Ikhtisar saluran](/id/channels)
+- [Ikhtisar kanal](/id/channels)
 - [Penyiapan](/id/start/setup)

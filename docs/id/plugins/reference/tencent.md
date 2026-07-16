@@ -4,11 +4,12 @@ read_when:
 summary: Menambahkan dukungan penyedia model Tencent TokenHub dan Tencent Tokenplan ke OpenClaw.
 title: Plugin Tencent
 x-i18n:
-    generated_at: "2026-07-12T14:28:15Z"
+    generated_at: "2026-07-16T18:33:56Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 7f7925d89feaded27708e3f31d08ed4e29650cb8ce1152011fd920ed4fb864ef
+    source_hash: c053ff4f5e142ac9414c03388352474da68e86715ff4f7f00781c3dfced185c4
     source_path: plugins/reference/tencent.md
     workflow: 16
 ---
@@ -24,7 +25,7 @@ Menambahkan dukungan penyedia model Tencent TokenHub dan Tencent Tokenplan ke Op
 
 ## Permukaan
 
-penyedia: tencent-tokenhub, tencent-tokenplan
+penyedia: `tencent-tokenhub`, `tencent-tokenplan`
 
 ## Dokumentasi terkait
 

@@ -1,27 +1,28 @@
 ---
 read_when:
-    - Ви встановлюєте, налаштовуєте або перевіряєте Plugin llm-task.
-summary: Універсальний інструмент LLM, що повертає лише JSON, для структурованих завдань, які можна викликати з робочих процесів.
+    - Ви встановлюєте, налаштовуєте або перевіряєте плагін llm-task.
+summary: Універсальний інструмент LLM, що працює лише з JSON, для структурованих завдань, які можна викликати з робочих процесів.
 title: Plugin завдань LLM
 x-i18n:
-    generated_at: "2026-07-12T13:36:59Z"
+    generated_at: "2026-07-16T18:20:42Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 527b0c04ff3d4b5342f7505da3a37ee108bf1536dde5469a1948b8dd35fed9ac
+    source_hash: f8fc174bfe90291cd834aeae37acc80cd4026ec563a3e39c14248a6f392922a4
     source_path: plugins/reference/llm-task.md
     workflow: 16
 ---
 
-# Plugin завдань LLM
+# Plugin для завдань LLM
 
 Універсальний інструмент LLM, що працює лише з JSON, для структурованих завдань, які можна викликати з робочих процесів.
 
 ## Розповсюдження
 
-- Пакет: `@openclaw/llm-task`
-- Спосіб установлення: входить до складу OpenClaw
+- Пакунок: `@openclaw/llm-task`
+- Спосіб встановлення: входить до складу OpenClaw
 
 ## Інтерфейс
 
-контракти: інструменти
+контракти: `tools`

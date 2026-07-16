@@ -1,104 +1,112 @@
 ---
 read_when:
-    - आप stable/beta/dev के बीच स्विच करना चाहते हैं
-    - आप किसी विशिष्ट संस्करण, टैग या SHA को पिन करना चाहते हैं
-    - आप पूर्व-रिलीज़ को टैग या प्रकाशित कर रहे हैं
+    - आप stable/extended-stable/beta/dev के बीच स्विच करना चाहते हैं
+    - आप किसी विशिष्ट वर्ज़न, टैग या SHA को पिन करना चाहते हैं
+    - आप प्रीरिलीज़ को टैग या प्रकाशित कर रहे हैं
 sidebarTitle: Release Channels
-summary: 'स्थिर, बीटा और dev चैनल: अर्थ, स्विचिंग, पिनिंग और टैगिंग'
+summary: 'स्थिर, विस्तारित-स्थिर, बीटा और डेवलपमेंट चैनल: अर्थ, स्विचिंग, पिनिंग और टैगिंग'
 title: रिलीज़ चैनल
 x-i18n:
-    generated_at: "2026-06-28T23:19:51Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T15:32:32Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 7b5b0b8b43dd15b3fdd83d28c5d0292d260594325ad6e6e95533720ba3e59277
+    source_hash: a99e31f5121c0ab8696e638cb10a7ce16e8f32c81e4b2bef1f703eef71191494
     source_path: install/development-channels.md
     workflow: 16
 ---
 
-OpenClaw तीन अपडेट चैनल शिप करता है:
+OpenClaw चार अपडेट चैनलों के साथ उपलब्ध होता है:
 
-- **stable**: npm dist-tag `latest`। अधिकांश उपयोगकर्ताओं के लिए अनुशंसित।
-- **beta**: npm dist-tag `beta` जब यह वर्तमान हो; यदि beta अनुपलब्ध है या
-  नवीनतम stable रिलीज़ से पुराना है, तो अपडेट फ्लो `latest` पर वापस चला जाता है।
-- **dev**: `main` (git) का गतिशील हेड। npm dist-tag: `dev` (प्रकाशित होने पर)।
-  `main` ब्रांच प्रयोग और सक्रिय विकास के लिए है। इसमें
-  अधूरी सुविधाएँ या ब्रेकिंग बदलाव हो सकते हैं। इसे उत्पादन gateways के लिए उपयोग न करें।
+- **स्थिर**: npm dist-tag `latest`। अधिकांश उपयोगकर्ताओं के लिए अनुशंसित।
+- **विस्तारित-स्थिर**: npm dist-tag `extended-stable`। एक पूरी तरह नया, पीछे चलने वाला
+  समर्थित-माह पैकेज चैनल। यह केवल पैकेज के लिए है, और इंस्टॉलेशन
+  केवल फ़ोरग्राउंड में होता है। संग्रहीत चयन को केवल-पढ़ने योग्य अपडेट संकेत मिलते हैं जब
+  `update.checkOnStart` सक्षम हो, लेकिन वे कभी स्वतः लागू नहीं होते।
+- **बीटा**: npm dist-tag `beta`। जब `beta` अनुपलब्ध हो
+  या वर्तमान स्थिर रिलीज़ से पुराना हो, तब `latest` पर वापस जाता है।
+- **डेव**: `main` (git) का गतिशील शीर्ष। प्रकाशित होने पर npm dist-tag `dev`। `main`
+  प्रयोग और सक्रिय विकास के लिए है; इसमें अधूरी
+  सुविधाएँ या ब्रेकिंग बदलाव हो सकते हैं। इसे प्रोडक्शन Gateway के लिए न चलाएँ।
 
-हम आमतौर पर stable builds को पहले **beta** में शिप करते हैं, वहाँ उनका परीक्षण करते हैं, फिर एक
-स्पष्ट promotion चरण चलाते हैं जो सत्यापित build को संस्करण संख्या बदले बिना
-`latest` पर ले जाता है। Maintainers ज़रूरत पड़ने पर stable रिलीज़ को
-सीधे `latest` पर भी प्रकाशित कर सकते हैं। npm installs के लिए dist-tags ही सत्य का स्रोत हैं।
+स्थिर बिल्ड सामान्यतः पहले **बीटा** पर उपलब्ध होते हैं, वहाँ उनकी जाँच होती है, फिर बिना
+संस्करण बढ़ाए उन्हें **नवीनतम** पर प्रोमोट किया जाता है। मेंटेनर
+सीधे `latest` पर भी प्रकाशित कर सकते हैं। npm इंस्टॉलेशन के लिए dist-tags सत्य का स्रोत हैं।
 
 ## चैनल बदलना
 
 ```bash
 openclaw update --channel stable
+openclaw update --channel extended-stable
 openclaw update --channel beta
 openclaw update --channel dev
 ```
 
-`--channel` आपकी पसंद को config (`update.channel`) में बनाए रखता है और
-install method को संरेखित करता है:
+`--channel` चयन को कॉन्फ़िग में `update.channel` में सहेजता है और दोनों
+इंस्टॉल पथों को संचालित करता है:
 
-- **`stable`** (package installs): npm dist-tag `latest` के माध्यम से अपडेट होता है।
-- **`beta`** (package installs): npm dist-tag `beta` को प्राथमिकता देता है, लेकिन
-  जब `beta` अनुपलब्ध हो या वर्तमान stable tag से पुराना हो, तो `latest` पर वापस जाता है।
-- **`stable`** (git installs): नवीनतम stable git tag को checkout करता है, और
-  `-alpha.N`, `-beta.N`, `-rc.N`, `-dev.N`,
-  `-next.N`, `-preview.N`, `-canary.N`, `-nightly.N` जैसे semver prerelease tags
-  तथा अन्य prerelease suffixes को बाहर रखता है।
-- **`beta`** (git installs): नवीनतम beta git tag को प्राथमिकता देता है, लेकिन beta अनुपलब्ध या पुराना होने पर
-  नवीनतम stable git tag पर वापस जाता है।
-- **`dev`**: git checkout सुनिश्चित करता है (डिफ़ॉल्ट `~/openclaw`, या
-  `OPENCLAW_HOME` सेट होने पर `$OPENCLAW_HOME/openclaw`; `OPENCLAW_GIT_DIR` से
-  override करें), `main` पर स्विच करता है, upstream पर rebase करता है, build करता है, और
-  उस checkout से global CLI install करता है।
+| चैनल           | npm/पैकेज इंस्टॉलेशन                                                                                                                                                                   | git इंस्टॉलेशन                                                                                                                                                       |
+| ----------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `stable`          | dist-tag `latest`                                                                                                                                                                      | नवीनतम स्थिर git टैग (`-alpha.N`, `-beta.N`, `-rc.N`, `-dev.N`, `-next.N`, `-preview.N`, `-canary.N`, `-nightly.N`, और अन्य नामित प्रीरिलीज़ प्रत्ययों को छोड़कर) |
+| `extended-stable` | सार्वजनिक npm `extended-stable` चयनकर्ता को हल करता है, चयनित पैकेज की सटीक पुष्टि करता है और वही सटीक संस्करण इंस्टॉल करता है। `latest`, `beta`, या `dev` पर वापस जाए बिना बंद होकर विफल होता है। | असमर्थित: OpenClaw चेकआउट को अपरिवर्तित छोड़ता है और पैकेज इंस्टॉलेशन उपयोग करने के लिए कहता है                                                                     |
+| `beta`            | dist-tag `beta`, जब `beta` अनुपलब्ध या पुराना हो तो `latest` पर वापस जाता है                                                                                                              | नवीनतम बीटा git टैग, बीटा अनुपलब्ध या पुराना होने पर नवीनतम स्थिर git टैग पर वापस जाता है                                                                       |
+| `dev`             | dist-tag `dev` (दुर्लभ; अधिकांश डेव उपयोगकर्ता git इंस्टॉलेशन चलाते हैं)                                                                                                                                 | फ़ेच करता है, चेकआउट को अपस्ट्रीम `main` शाखा पर रीबेस करता है, बिल्ड करता है और वैश्विक CLI को फिर से इंस्टॉल करता है                                                                 |
+
+`dev` git इंस्टॉलेशन के लिए, डिफ़ॉल्ट चेकआउट `~/openclaw` है (या
+जब `OPENCLAW_HOME` सेट हो तब `$OPENCLAW_HOME/openclaw`); इसे
+`OPENCLAW_GIT_DIR` से ओवरराइड करें।
 
 <Tip>
-यदि आप stable और dev को समानांतर रखना चाहते हैं, तो दो clones रखें और अपने gateway को stable वाले पर इंगित करें।
+स्थिर और डेव को समानांतर रखने के लिए, दो अलग-अलग चेकआउट उपयोग करें और प्रत्येक Gateway को उसके अपने चेकआउट पर इंगित करें।
 </Tip>
 
-## One-off संस्करण या tag targeting
+## एकबारगी संस्करण या टैग लक्ष्यीकरण
 
-एकल अपडेट के लिए किसी विशिष्ट dist-tag, version, या package spec को target करने के लिए `--tag` का उपयोग करें,
-**बिना** अपने persisted channel को बदले:
+एकल अपडेट के लिए किसी विशिष्ट dist-tag, संस्करण या पैकेज विनिर्देश को लक्षित करने हेतु `--tag` का उपयोग करें,
+और ऐसा करते समय सहेजे गए चैनल को **न बदलें**:
 
 ```bash
-# Install a specific version
+# कोई विशिष्ट संस्करण इंस्टॉल करें
 openclaw update --tag 2026.4.1-beta.1
 
-# Install from the beta dist-tag (one-off, does not persist)
+# बीटा dist-tag से इंस्टॉल करें (एकबारगी, सहेजा नहीं जाता)
 openclaw update --tag beta
 
-# Switch to the moving GitHub main checkout
+# गतिशील GitHub main चेकआउट पर जाएँ (स्थायी)
 openclaw update --channel dev
 
-# Install a specific npm package spec
+# कोई विशिष्ट npm पैकेज विनिर्देश इंस्टॉल करें
 openclaw update --tag openclaw@2026.4.1-beta.1
 
-# Install from GitHub main once without persisting the channel
+# चैनल सहेजे बिना GitHub main से एक बार इंस्टॉल करें
 openclaw update --tag main
 ```
 
-नोट्स:
+टिप्पणियाँ:
 
-- `--tag` केवल **package (npm) installs** पर लागू होता है। Git installs इसे अनदेखा करते हैं।
-- tag persist नहीं किया जाता। आपका अगला `openclaw update` सामान्य रूप से आपके configured
-  channel का उपयोग करता है।
-- package installs के लिए, OpenClaw staged npm install से पहले GitHub/git source specs को
-  एक temporary tarball में pre-pack करता है। जब आप moving `main`
-  checkout को अपना persistent install बनाना चाहते हैं, तो `--channel dev` या
-  `--install-method git --version main` का उपयोग करें।
-- Downgrade protection: यदि target version आपके वर्तमान version से पुराना है,
-  OpenClaw पुष्टि के लिए prompt करता है (`--yes` से skip करें)।
-- `--channel beta`, `--tag beta` से अलग है: channel flow beta अनुपलब्ध या पुराना होने पर
-  stable/latest पर वापस जा सकता है, जबकि `--tag beta` उस एक run के लिए
-  raw `beta` dist-tag को target करता है।
+- `--tag` केवल **पैकेज (npm) इंस्टॉलेशन** पर लागू होता है; git इंस्टॉलेशन इसे अनदेखा करते हैं।
+- टैग सहेजा नहीं जाता; अगला `openclaw update` कॉन्फ़िगर किए गए
+  चैनल का उपयोग करता है।
+- `--tag main` उस एक रन के लिए npm-संगत विनिर्देश `github:openclaw/openclaw#main`
+  से मैप होता है। स्थायी गतिशील `main` इंस्टॉलेशन के लिए,
+  `openclaw update --channel dev` उपयोग करें (पैकेज इंस्टॉलेशन git चेकआउट पर स्विच होते हैं)
+  या इंस्टॉलर की git विधि से पुनः इंस्टॉल करें:
+  `curl -fsSL https://openclaw.ai/install.sh | bash -s -- --install-method git --version main`।
+  npm इंस्टॉल पथ GitHub/git स्रोत लक्ष्यों को सीधे अस्वीकार करता है और
+  इसके बजाय आपको git विधि की ओर निर्देशित करता है।
+- डाउनग्रेड सुरक्षा: यदि लक्षित संस्करण वर्तमान
+  संस्करण से पुराना है, तो OpenClaw पुष्टि माँगता है (`--yes` से छोड़ें)।
+- विस्तारित-स्थिर हमेशा अपने सत्यापित सटीक पैकेज लक्ष्य का उपयोग करता है। यह
+  `--tag extended-stable` का एकबारगी उपनाम नहीं है, और `--tag` को प्रभावी
+  विस्तारित-स्थिर चैनल के साथ संयोजित नहीं किया जा सकता।
+- `--channel beta`, `--tag beta` से अलग है: चैनल प्रवाह बीटा
+  अनुपलब्ध या पुराना होने पर स्थिर/नवीनतम पर वापस जा सकता है, जबकि `--tag beta` उस एक रन के लिए हमेशा
+  कच्चे `beta` dist-tag को लक्षित करता है।
 
-## Dry run
+## ड्राई रन
 
-बदलाव किए बिना preview करें कि `openclaw update` क्या करेगा:
+बदलाव किए बिना देखें कि `openclaw update` क्या करेगा:
 
 ```bash
 openclaw update --dry-run
@@ -107,17 +115,21 @@ openclaw update --tag 2026.4.1-beta.1 --dry-run
 openclaw update --dry-run --json
 ```
 
-dry run प्रभावी channel, target version, planned actions, और
-downgrade confirmation की आवश्यकता होगी या नहीं दिखाता है।
+ड्राई रन प्रभावी चैनल, लक्षित संस्करण, नियोजित कार्रवाइयों
+और डाउनग्रेड पुष्टि की आवश्यकता होगी या नहीं, इसकी रिपोर्ट देता है।
 
-## Plugins और channels
+## Plugin और चैनल
 
-जब आप `openclaw update` के साथ channels बदलते हैं, OpenClaw plugin
-sources को भी sync करता है:
+`openclaw update` से चैनल बदलने पर Plugin स्रोत भी सिंक होते हैं:
 
-- `dev` git checkout से bundled plugins को प्राथमिकता देता है।
-- `stable` और `beta` npm-installed plugin packages को restore करते हैं।
-- npm-installed plugins core update पूरा होने के बाद update किए जाते हैं।
+- `dev` उन इंस्टॉल किए गए Plugin को, जिनका बंडल किया गया समकक्ष है, वापस
+  उनके बंडल किए गए (git चेकआउट) स्रोत पर ले जाता है।
+- `stable` और `beta` npm से इंस्टॉल किए गए या ClawHub से इंस्टॉल किए गए Plugin
+  पैकेज पुनर्स्थापित करते हैं।
+- `extended-stable` योग्य आधिकारिक npm Plugin को bare/default
+  या `latest` आशय के साथ सटीक इंस्टॉल किए गए कोर संस्करण में हल करता है। यह रनटाइम पर
+  Plugin `@extended-stable` टैग की क्वेरी नहीं करता।
+- npm से इंस्टॉल किए गए Plugin कोर अपडेट पूरा होने के बाद अपडेट किए जाते हैं।
 
 ## वर्तमान स्थिति जाँचना
 
@@ -125,31 +137,34 @@ sources को भी sync करता है:
 openclaw update status
 ```
 
-active channel, install kind (git या package), current version, और
-source (config, git tag, git branch, या default) दिखाता है।
+सक्रिय चैनल (उसे निर्धारित करने वाले स्रोत सहित: कॉन्फ़िग, git टैग,
+git शाखा, इंस्टॉल किया गया संस्करण या डिफ़ॉल्ट), इंस्टॉलेशन प्रकार (git या पैकेज),
+वर्तमान संस्करण और अपडेट उपलब्धता दिखाता है।
 
-## Tagging best practices
+## टैगिंग की सर्वोत्तम प्रथाएँ
 
-- उन releases को tag करें जिन पर आप git checkouts को land कराना चाहते हैं (`vYYYY.M.PATCH` stable के लिए,
-  `vYYYY.M.PATCH-beta.N` beta के लिए; `-alpha.N`, `-rc.N`, और `-next.N` जैसे named semver prerelease suffixes
-  stable targets नहीं हैं)।
-- `vYYYY.M.PATCH-1` और `v1.0.1-1` जैसे legacy numeric stable tags अभी भी
-  compatibility के लिए stable git tags के रूप में पहचाने जाते हैं।
-- `vYYYY.M.PATCH.beta.N` भी compatibility के लिए पहचाना जाता है, लेकिन `-beta.N` को प्राथमिकता दें।
-- tags को immutable रखें: कभी भी किसी tag को move या reuse न करें।
-- npm dist-tags npm installs के लिए सत्य का स्रोत बने रहते हैं:
-  - `latest` -> stable
-  - `beta` -> candidate build या beta-first stable build
-  - `dev` -> main snapshot (वैकल्पिक)
+- उन रिलीज़ को टैग करें जिन पर आप git चेकआउट को पहुँचाना चाहते हैं: स्थिर के लिए `vYYYY.M.PATCH`,
+  बीटा के लिए `vYYYY.M.PATCH-beta.N`। `-alpha.N`, `-rc.N`,
+  और `-next.N` जैसे नामित प्रीरिलीज़ प्रत्यय स्थिर या बीटा लक्ष्य नहीं हैं।
+- `vYYYY.M.PATCH-1` और `v1.0.1-1` जैसे पुराने संख्यात्मक स्थिर टैग अभी भी
+  संगतता के लिए स्थिर git टैग के रूप में पहचाने जाते हैं।
+- `vYYYY.M.PATCH.beta.N` (डॉट से अलग किया गया) भी संगतता के लिए पहचाना जाता है;
+  `-beta.N` को प्राथमिकता दें।
+- टैग को अपरिवर्तनीय रखें: किसी टैग को कभी स्थानांतरित या पुनः उपयोग न करें।
+- npm इंस्टॉलेशन के लिए npm dist-tags सत्य का स्रोत बने रहते हैं:
+  - `latest` -> स्थिर
+  - `extended-stable` -> पीछे चलने वाली समर्थित-माह पैकेज रिलीज़
+  - `beta` -> उम्मीदवार बिल्ड या पहले-बीटा स्थिर बिल्ड
+  - `dev` -> main स्नैपशॉट (वैकल्पिक)
 
-## macOS app availability
+## macOS ऐप उपलब्धता
 
-Beta और dev builds में macOS app release **नहीं** हो सकती। यह ठीक है:
+बीटा और डेव बिल्ड में macOS ऐप रिलीज़ शामिल **नहीं** हो सकती। यह सामान्य है:
 
-- git tag और npm dist-tag फिर भी प्रकाशित किए जा सकते हैं।
-- release notes या changelog में "no macOS build for this beta" का उल्लेख करें।
+- git टैग और npm dist-tag फिर भी स्वतंत्र रूप से प्रकाशित हो सकते हैं।
+- रिलीज़ नोट्स या बदलाव-सूची में "इस बीटा के लिए कोई macOS बिल्ड नहीं" स्पष्ट रूप से लिखें।
 
 ## संबंधित
 
 - [अपडेट करना](/hi/install/updating)
-- [Installer internals](/hi/install/installer)
+- [इंस्टॉलर की आंतरिक कार्यप्रणाली](/hi/install/installer)

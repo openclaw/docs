@@ -1,51 +1,52 @@
 ---
 read_when:
-    - تشغيل عملية Gateway أو تصحيحها
-summary: دليل تشغيل لخدمة Gateway ودورة الحياة والعمليات
+    - تشغيل عملية Gateway أو تصحيح أخطائها
+summary: دليل تشغيل خدمة Gateway ودورة حياتها وعملياتها
 title: دليل تشغيل Gateway
 x-i18n:
-    generated_at: "2026-06-27T17:39:09Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T14:18:56Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: b0bbbcad26df135e1475cbeb14f1299b48bae62be759b2e6c6f82164d175601b
+    source_hash: d8b50b6041905c321887ea0f579f8d4c3b74552b2b72c37ec655e43a53dfc130
     source_path: gateway/index.md
     workflow: 16
 ---
 
-استخدم هذه الصفحة لبدء تشغيل اليوم الأول وعمليات اليوم الثاني لخدمة Gateway.
+استخدم هذه الصفحة لبدء تشغيل خدمة Gateway في اليوم الأول ولعملياتها التشغيلية في اليوم الثاني.
 
 <CardGroup cols={2}>
-  <Card title="استكشاف الأخطاء المتعمق" icon="siren" href="/ar/gateway/troubleshooting">
-    تشخيصات تبدأ بالأعراض مع تسلسلات أوامر دقيقة وبصمات سجلات.
+  <Card title="استكشاف الأخطاء وإصلاحها بعمق" icon="siren" href="/ar/gateway/troubleshooting">
+    تشخيصات تبدأ بالأعراض، مع تسلسلات أوامر دقيقة وبصمات للسجلات.
   </Card>
-  <Card title="التكوين" icon="sliders" href="/ar/gateway/configuration">
-    دليل إعداد موجه بالمهام + مرجع التكوين الكامل.
+  <Card title="التهيئة" icon="sliders" href="/ar/gateway/configuration">
+    دليل إعداد موجّه نحو المهام + مرجع كامل للتهيئة.
   </Card>
   <Card title="إدارة الأسرار" icon="key-round" href="/ar/gateway/secrets">
     عقد SecretRef، وسلوك لقطة وقت التشغيل، وعمليات الترحيل/إعادة التحميل.
   </Card>
   <Card title="عقد خطة الأسرار" icon="shield-check" href="/ar/gateway/secrets-plan-contract">
-    قواعد الهدف/المسار الدقيقة لـ `secrets apply` وسلوك ملف تعريف المصادقة القائم على المراجع فقط.
+    قواعد الهدف/المسار الدقيقة لـ `secrets apply` وسلوك ملف تعريف المصادقة المعتمد على المراجع فقط.
   </Card>
 </CardGroup>
 
-## بدء تشغيل محلي خلال 5 دقائق
+## بدء التشغيل المحلي خلال 5 دقائق
 
 <Steps>
-  <Step title="ابدأ Gateway">
+  <Step title="بدء Gateway">
 
 ```bash
 openclaw gateway --port 18789
-# debug/trace mirrored to stdio
+# عكس مخرجات التصحيح/التتبّع إلى الإدخال والإخراج القياسيين
 openclaw gateway --port 18789 --verbose
-# force-kill listener on selected port, then start
+# إنهاء المستمع بالقوة على المنفذ المحدد، ثم بدء التشغيل
 openclaw gateway --force
 ```
 
   </Step>
 
-  <Step title="تحقق من صحة الخدمة">
+  <Step title="التحقق من سلامة الخدمة">
 
 ```bash
 openclaw gateway status
@@ -53,46 +54,39 @@ openclaw status
 openclaw logs --follow
 ```
 
-الخط الأساس السليم: `Runtime: running`، و`Connectivity probe: ok`، و`Capability: ...` بما يطابق ما تتوقعه. استخدم `openclaw gateway status --require-rpc` عندما تحتاج إلى إثبات RPC بنطاق قراءة، وليس مجرد قابلية الوصول.
+خط الأساس السليم: `Runtime: running` و`Connectivity probe: ok` وسطر `Capability` يطابق ما تتوقعه. استخدم `openclaw gateway status --require-rpc` لإثبات RPC ضمن نطاق القراءة، وليس لمجرد إثبات إمكانية الوصول.
 
   </Step>
 
-  <Step title="تحقق من جاهزية القناة">
+  <Step title="التحقق من جاهزية القنوات">
 
 ```bash
 openclaw channels status --probe
 ```
 
-مع Gateway قابل للوصول، يشغل هذا فحوصات قنوات مباشرة لكل حساب وتدقيقات اختيارية.
-إذا تعذر الوصول إلى Gateway، يعود CLI إلى ملخصات قنوات قائمة على التكوين فقط بدلا
-من مخرجات الفحص المباشر.
+عندما يكون Gateway قابلًا للوصول، يشغّل هذا فحوصات مباشرة للقنوات لكل حساب وعمليات تدقيق اختيارية. إذا تعذّر الوصول إلى Gateway، تعود CLI إلى ملخصات القنوات المستندة إلى التهيئة فقط.
 
   </Step>
 </Steps>
 
 <Note>
-تراقب إعادة تحميل تكوين Gateway مسار ملف التكوين النشط (المحلول من افتراضيات الملف الشخصي/الحالة، أو `OPENCLAW_CONFIG_PATH` عند تعيينه).
-الوضع الافتراضي هو `gateway.reload.mode="hybrid"`.
-بعد أول تحميل ناجح، تخدم العملية العاملة لقطة التكوين النشطة الموجودة في الذاكرة؛ وتبدل إعادة التحميل الناجحة تلك اللقطة ذريًا.
+تراقب إعادة تحميل تهيئة Gateway مسار ملف التهيئة النشط (المستخرج من الإعدادات الافتراضية لملف التعريف/الحالة، أو `OPENCLAW_CONFIG_PATH` عند تعيينه). الوضع الافتراضي هو `gateway.reload.mode="hybrid"`. بعد أول تحميل ناجح، تخدم العملية الجارية لقطة التهيئة النشطة في الذاكرة؛ وتستبدل إعادة التحميل الناجحة تلك اللقطة ذريًا.
 </Note>
 
 ## نموذج وقت التشغيل
 
-- عملية واحدة تعمل دائمًا للتوجيه، ومستوى التحكم، واتصالات القنوات.
-- منفذ واحد متعدد الإرسال لـ:
-  - تحكم/RPC عبر WebSocket
-  - واجهات HTTP API (`/v1/models`، `/v1/embeddings`، `/v1/chat/completions`، `/v1/responses`، `/tools/invoke`)
-  - مسارات HTTP الخاصة بـ Plugin، مثل `/api/v1/admin/rpc` الاختياري
-  - Control UI والخطافات
-- وضع الربط الافتراضي: `loopback`.
-- المصادقة مطلوبة افتراضيًا. تستخدم إعدادات السر المشترك
-  `gateway.auth.token` / `gateway.auth.password` (أو
-  `OPENCLAW_GATEWAY_TOKEN` / `OPENCLAW_GATEWAY_PASSWORD`)، ويمكن لإعدادات
-  الوكيل العكسي غير القائمة على local loopback استخدام `gateway.auth.mode: "trusted-proxy"`.
+- عملية واحدة دائمة التشغيل للتوجيه ومستوى التحكم واتصالات القنوات.
+- منفذ واحد متعدد الإرسال من أجل:
+  - التحكم/RPC عبر WebSocket
+  - واجهات HTTP البرمجية (`/v1/models` و`/v1/embeddings` و`/v1/chat/completions` و`/v1/responses` و`/tools/invoke`)
+  - مسارات HTTP الخاصة بالـ Plugin، مثل `/api/v1/admin/rpc` الاختياري
+  - واجهة التحكم والخطافات
+- وضع الربط الافتراضي: `loopback`. داخل بيئة حاوية مكتشفة، يكون الإعداد الافتراضي الفعلي هو `auto` (يُحل إلى `0.0.0.0` لإعادة توجيه المنافذ)، ما لم يكن عرض/نفق Tailscale نشطًا، إذ يفرض دائمًا `loopback`.
+- المصادقة مطلوبة افتراضيًا. تستخدم إعدادات السر المشترك `gateway.auth.token` / `gateway.auth.password` (أو `OPENCLAW_GATEWAY_TOKEN` / `OPENCLAW_GATEWAY_PASSWORD`) ويمكن لإعدادات الوكيل العكسي غير المرتبطة بعنوان loopback استخدام `gateway.auth.mode: "trusted-proxy"`.
 
 ## نقاط نهاية متوافقة مع OpenAI
 
-أصبح سطح التوافق الأعلى عائدًا في OpenClaw الآن:
+سطح التوافق الأعلى تأثيرًا في OpenClaw:
 
 - `GET /v1/models`
 - `GET /v1/models/{id}`
@@ -100,51 +94,43 @@ openclaw channels status --probe
 - `POST /v1/chat/completions`
 - `POST /v1/responses`
 
-لماذا تهم هذه المجموعة:
+أهمية هذه المجموعة:
 
-- تفحص معظم تكاملات Open WebUI وLobeChat وLibreChat `/v1/models` أولًا.
-- تتوقع العديد من مسارات RAG والذاكرة `/v1/embeddings`.
-- تفضل العملاء الأصلية للوكلاء بشكل متزايد `/v1/responses`.
+- تتحقق معظم تكاملات Open WebUI وLobeChat وLibreChat من `/v1/models` أولًا.
+- تتوقع كثير من مسارات RAG والذاكرة وجود `/v1/embeddings`.
+- تفضّل العملاء المصممة أصلًا للوكلاء `/v1/responses` بصورة متزايدة.
 
-ملاحظة تخطيط:
+صُمّم `/v1/models` للوكلاء أولًا: فهو يعيد `openclaw` و`openclaw/default` و`openclaw/<agentId>` لكل وكيل تمت تهيئته. يُعد `openclaw/default` الاسم المستعار الثابت الذي يرتبط دائمًا بالوكيل الافتراضي المهيأ. أرسل `x-openclaw-model` عندما تريد تجاوز موفّر/نموذج الواجهة الخلفية؛ وإلا يبقى النموذج العادي وإعداد التضمين للوكيل المحدد هما المتحكّمين.
 
-- `/v1/models` موجه للوكلاء أولًا: يعيد `openclaw` و`openclaw/default` و`openclaw/<agentId>`.
-- `openclaw/default` هو الاسم المستعار المستقر الذي يطابق دائمًا الوكيل الافتراضي المكون.
-- استخدم `x-openclaw-model` عندما تريد تجاوز موفر/نموذج الخلفية؛ وإلا يبقى النموذج العادي وإعداد التضمين للوكيل المحدد هو المتحكم.
+تعمل جميع هذه العناصر على منفذ Gateway الرئيسي وتستخدم حد مصادقة المشغّل الموثوق نفسه الذي تستخدمه بقية واجهة HTTP البرمجية لـ Gateway.
 
-تعمل كل هذه على منفذ Gateway الرئيسي وتستخدم حد مصادقة المشغل الموثوق نفسه كبقية HTTP API الخاصة بـ Gateway.
-
-‏Admin HTTP RPC (`POST /api/v1/admin/rpc`) هو مسار Plugin منفصل ومعطل افتراضيًا لأدوات المضيف التي لا يمكنها استخدام WebSocket RPC. راجع [Admin HTTP RPC](/ar/plugins/admin-http-rpc).
+يُعد RPC الإداري عبر HTTP ‏(`POST /api/v1/admin/rpc`) مسار Plugin منفصلًا ومعطّلًا افتراضيًا لأدوات المضيف التي لا يمكنها استخدام RPC عبر WebSocket. راجع [RPC الإداري عبر HTTP](/ar/plugins/admin-http-rpc).
 
 ### أسبقية المنفذ والربط
 
-| الإعداد      | ترتيب الحل                                              |
-| ------------ | ------------------------------------------------------------- |
-| منفذ Gateway | `--port` → `OPENCLAW_GATEWAY_PORT` → `gateway.port` → `18789` |
-| وضع الربط    | CLI/override → `gateway.bind` → `loopback`                    |
+| الإعداد      | ترتيب الحل                                                     |
+| ------------ | -------------------------------------------------------------------- |
+| منفذ Gateway | `--port` → `OPENCLAW_GATEWAY_PORT` → `gateway.port` → `18789`        |
+| وضع الربط    | CLI/التجاوز → `gateway.bind` → `loopback` (أو `auto` في الحاويات) |
 
-تسجل خدمات Gateway المثبتة قيمة `--port` المحلولة في بيانات المشرف الوصفية. بعد تغيير `gateway.port`، شغل `openclaw doctor --fix` أو `openclaw gateway install --force` حتى يبدأ launchd/systemd/schtasks العملية على المنفذ الجديد.
+تسجّل خدمات Gateway المثبّتة قيمة `--port` التي تم حلها ضمن بيانات المشرف الوصفية. بعد تغيير `gateway.port`، شغّل `openclaw doctor --fix` أو `openclaw gateway install --force` كي تبدأ launchd/systemd/schtasks العملية على المنفذ الجديد.
 
-يستخدم بدء تشغيل Gateway المنفذ والربط الفعالين نفسيهما عندما يهيئ أصول
-Control UI المحلية لعمليات الربط غير القائمة على local loopback. على سبيل المثال، يهيئ `--bind lan --port 3000`
-كلًا من `http://localhost:3000` و`http://127.0.0.1:3000` قبل تشغيل
-تحقق وقت التشغيل. أضف أي أصول متصفحات بعيدة، مثل عناوين URL لوكيل HTTPS، إلى
-`gateway.controlUi.allowedOrigins` صراحة.
+يستخدم بدء تشغيل Gateway المنفذ الفعلي والربط نفسيهما عند تهيئة أصول واجهة التحكم المحلية لعمليات الربط غير المرتبطة بعنوان loopback. على سبيل المثال، يهيّئ `--bind lan --port 3000` القيمتين `http://localhost:3000` و`http://127.0.0.1:3000` قبل تشغيل التحقق في وقت التشغيل. أضف صراحةً أي أصول لمتصفحات بعيدة، مثل عناوين URL لوكيل HTTPS، إلى `gateway.controlUi.allowedOrigins`.
 
-### أوضاع إعادة التحميل الساخن
+### أوضاع إعادة التحميل الفوري
 
 | `gateway.reload.mode` | السلوك                                   |
 | --------------------- | ------------------------------------------ |
-| `off`                 | لا إعادة تحميل للتكوين                           |
-| `hot`                 | تطبيق التغييرات الآمنة ساخنًا فقط                |
-| `restart`             | إعادة التشغيل عند تغييرات تتطلب إعادة التحميل         |
-| `hybrid` (افتراضي)    | تطبيق ساخن عندما يكون آمنًا، وإعادة التشغيل عند الحاجة |
+| `off`                 | عدم إعادة تحميل التهيئة                           |
+| `hot`                 | تطبيق التغييرات الآمنة فوريًا فقط                |
+| `restart`             | إعادة التشغيل عند التغييرات التي تتطلب إعادة التحميل         |
+| `hybrid` (افتراضي)    | التطبيق الفوري عندما يكون آمنًا، وإعادة التشغيل عند الحاجة |
 
-## مجموعة أوامر المشغل
+## مجموعة أوامر المشغّل
 
 ```bash
 openclaw gateway status
-openclaw gateway status --deep   # adds a system-level service scan
+openclaw gateway status --deep   # يضيف فحصًا للخدمة على مستوى النظام
 openclaw gateway status --json
 openclaw gateway install
 openclaw gateway restart
@@ -154,14 +140,11 @@ openclaw logs --follow
 openclaw doctor
 ```
 
-`gateway status --deep` مخصص لاكتشاف خدمات إضافي (LaunchDaemons/وحدات نظام systemd/schtasks)، وليس فحص صحة RPC أعمق.
+يُستخدم `gateway status --deep` لاكتشاف خدمات إضافية (LaunchDaemons/وحدات نظام systemd/schtasks)، وليس لإجراء فحص سلامة RPC أعمق.
 
-## عدة بوابات Gateway (المضيف نفسه)
+## بوابات Gateway متعددة (على المضيف نفسه)
 
-ينبغي لمعظم التثبيتات تشغيل Gateway واحد لكل جهاز. يمكن لـ Gateway واحد استضافة عدة
-وكلاء وقنوات.
-
-لا تحتاج إلى عدة بوابات Gateway إلا عندما تريد عمدًا عزلًا أو بوت إنقاذ.
+ينبغي لمعظم عمليات التثبيت تشغيل Gateway واحد لكل جهاز. يمكن لـ Gateway واحد استضافة عدة وكلاء وقنوات. لا تحتاج إلى عدة بوابات Gateway إلا عندما تريد عمدًا العزل أو روبوت إنقاذ.
 
 فحوصات مفيدة:
 
@@ -170,15 +153,11 @@ openclaw gateway status --deep
 openclaw gateway probe
 ```
 
-ما المتوقع:
+ما يمكن توقعه:
 
-- يمكن أن يبلغ `gateway status --deep` عن `Other gateway-like services detected (best effort)`
-  ويطبع تلميحات تنظيف عندما تظل تثبيتات launchd/systemd/schtasks القديمة موجودة.
-- يمكن أن يحذر `gateway probe` من `multiple reachable gateway identities` عندما تجيب بوابات Gateway
-  مميزة، أو عندما يتعذر على OpenClaw إثبات أن الأهداف القابلة للوصول هي Gateway نفسه.
-  يُعد نفق SSH، أو عنوان URL لوكيل، أو عنوان URL بعيد مكون إلى Gateway نفسه بوابة
-  Gateway واحدة مع عدة وسائل نقل، حتى عندما تختلف منافذ النقل.
-- إذا كان ذلك مقصودًا، فاعزل المنافذ، والتكوين/الحالة، وجذور مساحة العمل لكل Gateway.
+- يمكن لـ `gateway status --deep` الإبلاغ عن `Other gateway-like services detected (best effort)` وطباعة تلميحات التنظيف عندما تظل عمليات تثبيت launchd/systemd/schtasks القديمة موجودة.
+- يمكن لـ `gateway probe` التحذير من `multiple reachable gateway identities` عندما تستجيب بوابات Gateway مختلفة، أو عندما يتعذر على OpenClaw إثبات أن الأهداف القابلة للوصول هي Gateway نفسه. يُعد نفق SSH أو عنوان URL لوكيل أو عنوان URL بعيد مهيأ إلى Gateway نفسه بوابة Gateway واحدة ذات وسائل نقل متعددة، حتى عندما تختلف منافذ النقل.
+- إذا كان ذلك مقصودًا، فاعزل المنافذ والتهيئة/الحالة وجذور مساحات العمل لكل Gateway.
 
 قائمة تحقق لكل مثيل:
 
@@ -194,30 +173,30 @@ OPENCLAW_CONFIG_PATH=~/.openclaw/a.json OPENCLAW_STATE_DIR=~/.openclaw-a opencla
 OPENCLAW_CONFIG_PATH=~/.openclaw/b.json OPENCLAW_STATE_DIR=~/.openclaw-b openclaw gateway --port 19002
 ```
 
-إعداد مفصل: [/gateway/multiple-gateways](/ar/gateway/multiple-gateways).
+الإعداد التفصيلي: [/gateway/multiple-gateways](/ar/gateway/multiple-gateways).
 
 ## الوصول عن بُعد
 
-المفضل: Tailscale/VPN.
-البديل: نفق SSH.
+المفضّل: Tailscale/VPN.
+الخيار الاحتياطي: نفق SSH.
 
 ```bash
-ssh -N -L 18789:127.0.0.1:18789 user@host
+ssh -N -L 18789:127.0.0.1:18789 user@gateway-host
 ```
 
-ثم صِل العملاء محليًا إلى `ws://127.0.0.1:18789`.
+ثم صِل العملاء محليًا بـ `ws://127.0.0.1:18789`.
 
 <Warning>
-لا تتجاوز أنفاق SSH مصادقة Gateway. بالنسبة إلى مصادقة السر المشترك، يظل على العملاء
-إرسال `token`/`password` حتى عبر النفق. بالنسبة إلى الأوضاع الحاملة للهوية،
-لا يزال على الطلب استيفاء مسار المصادقة ذلك.
+لا تتجاوز أنفاق SSH مصادقة Gateway. بالنسبة إلى مصادقة السر المشترك، يجب على العملاء
+مع ذلك إرسال `token`/`password` حتى عبر النفق. أما في الأوضاع الحاملة للهوية،
+فيظل على الطلب استيفاء مسار المصادقة ذاك.
 </Warning>
 
-راجع: [Gateway البعيد](/ar/gateway/remote)، [المصادقة](/ar/gateway/authentication)، [Tailscale](/ar/gateway/tailscale).
+راجع: [Gateway البعيد](/ar/gateway/remote)، و[المصادقة](/ar/gateway/authentication)، و[Tailscale](/ar/gateway/tailscale).
 
 ## الإشراف ودورة حياة الخدمة
 
-استخدم التشغيل الخاضع للإشراف للحصول على موثوقية شبيهة بالإنتاج.
+استخدم عمليات التشغيل الخاضعة للإشراف لتحقيق موثوقية شبيهة ببيئة الإنتاج.
 
 <Tabs>
   <Tab title="macOS (launchd)">
@@ -229,15 +208,15 @@ openclaw gateway restart
 openclaw gateway stop
 ```
 
-استخدم `openclaw gateway restart` لإعادة التشغيل. لا تسلسل `openclaw gateway stop` و`openclaw gateway start` كبديل لإعادة التشغيل.
+استخدم `openclaw gateway restart` لعمليات إعادة التشغيل. لا تسلسل `openclaw gateway stop` و`openclaw gateway start` باعتبارهما بديلًا لإعادة التشغيل.
 
-على macOS، يستخدم `gateway stop` افتراضيًا `launchctl bootout` — وهذا يزيل LaunchAgent من جلسة الإقلاع الحالية دون استمرار تعطيل، لذلك يستمر استرداد KeepAlive التلقائي في العمل بعد الأعطال غير المتوقعة ويعيد `gateway start` التمكين بنظافة. لمنع إعادة التشغيل التلقائي بشكل دائم عبر عمليات إعادة الإقلاع، مرر `--disable`: `openclaw gateway stop --disable`.
+على macOS، يستخدم `gateway stop` القيمة `launchctl bootout` افتراضيًا. يؤدي ذلك إلى إزالة LaunchAgent من جلسة الإقلاع الحالية دون حفظ حالة التعطيل، بحيث يظل الاسترداد التلقائي عبر KeepAlive يعمل بعد الأعطال غير المتوقعة، ويعيد `gateway start` التمكين بصورة سليمة. لمنع إعادة التشغيل التلقائي بصورة دائمة عبر عمليات إعادة الإقلاع، مرّر `--disable`: ‏`openclaw gateway stop --disable`.
 
-تسميات LaunchAgent هي `ai.openclaw.gateway` (افتراضي) أو `ai.openclaw.<profile>` (ملف شخصي مسمى). يدقق `openclaw doctor` ويصلح انحراف تكوين الخدمة.
+تكون تسميات LaunchAgent هي `ai.openclaw.gateway` (افتراضي) أو `ai.openclaw.<profile>` (ملف تعريف مسمّى). يدقّق `openclaw doctor` انحراف تهيئة الخدمة ويصلحه.
 
   </Tab>
 
-  <Tab title="Linux (مستخدم systemd)">
+  <Tab title="Linux (systemd للمستخدم)">
 
 ```bash
 openclaw gateway install
@@ -248,21 +227,26 @@ openclaw gateway status
 للاستمرارية بعد تسجيل الخروج، فعّل البقاء:
 
 ```bash
-sudo loginctl enable-linger <user>
+sudo loginctl enable-linger $(whoami)
 ```
 
-مثال وحدة مستخدم يدوية عندما تحتاج إلى مسار تثبيت مخصص:
+على خادم بلا واجهة رسومية ومن دون جلسة سطح مكتب، تأكد أيضًا من تعيين `XDG_RUNTIME_DIR` إلى (`export XDG_RUNTIME_DIR=/run/user/$(id -u)`) قبل إعادة محاولة أوامر `systemctl --user`.
+
+مثال يدوي لوحدة مستخدم عندما تحتاج إلى مسار تثبيت مخصص:
 
 ```ini
 [Unit]
 Description=OpenClaw Gateway
 After=network-online.target
 Wants=network-online.target
+StartLimitBurst=5
+StartLimitIntervalSec=60
 
 [Service]
 ExecStart=/usr/local/bin/openclaw gateway --port 18789
 Restart=always
 RestartSec=5
+RestartPreventExitStatus=78
 TimeoutStopSec=30
 TimeoutStartSec=30
 SuccessExitStatus=0 143
@@ -284,14 +268,14 @@ openclaw gateway restart
 openclaw gateway stop
 ```
 
-يستخدم بدء التشغيل المُدار الأصلي على Windows مهمة مجدولة باسم `OpenClaw Gateway`
-(أو `OpenClaw Gateway (<profile>)` للملفات الشخصية المسماة). إذا رُفض إنشاء المهمة المجدولة،
-يعود OpenClaw إلى مشغل في مجلد بدء التشغيل لكل مستخدم
+يستخدم بدء التشغيل المُدار الأصلي في Windows مهمة مجدولة باسم `OpenClaw Gateway`
+(أو `OpenClaw Gateway (<profile>)` لملفات التعريف المسماة). إذا رُفض إنشاء المهمة المجدولة،
+يعود OpenClaw إلى مشغّل في مجلد بدء التشغيل لكل مستخدم
 يشير إلى `gateway.cmd` داخل دليل الحالة.
 
   </Tab>
 
-  <Tab title="Linux (خدمة نظام)">
+  <Tab title="Linux (خدمة النظام)">
 
 استخدم وحدة نظام للمضيفين متعددي المستخدمين/دائمي التشغيل.
 
@@ -300,16 +284,18 @@ sudo systemctl daemon-reload
 sudo systemctl enable --now openclaw-gateway[-<profile>].service
 ```
 
-استخدم نص الخدمة نفسه كوحدة المستخدم، لكن ثبته ضمن
+استخدم نص الخدمة نفسه المستخدم لوحدة المستخدم، ولكن ثبّته ضمن
 `/etc/systemd/system/openclaw-gateway[-<profile>].service` وعدّل
 `ExecStart=` إذا كان ملف `openclaw` التنفيذي موجودًا في مكان آخر.
 
-لا تسمح أيضًا لـ `openclaw doctor --fix` بتثبيت خدمة Gateway على مستوى المستخدم للملف الشخصي/المنفذ نفسه. يرفض Doctor ذلك التثبيت التلقائي عندما يجد خدمة OpenClaw Gateway على مستوى النظام؛ استخدم `OPENCLAW_SERVICE_REPAIR_POLICY=external` عندما تملك وحدة النظام دورة الحياة.
+لا تسمح أيضًا لـ `openclaw doctor --fix` بتثبيت خدمة Gateway على مستوى المستخدم لملف التعريف/المنفذ نفسه. يرفض Doctor ذلك التثبيت التلقائي عندما يعثر على خدمة Gateway لـ OpenClaw على مستوى النظام؛ استخدم `OPENCLAW_SERVICE_REPAIR_POLICY=external` عندما تكون وحدة النظام هي المالكة لدورة الحياة.
 
   </Tab>
 </Tabs>
 
-## المسار السريع لملف تعريف التطوير
+تنتهي أخطاء التهيئة غير الصالحة بالرمز `78`. تستخدم وحدات systemd في Linux القيمة `RestartPreventExitStatus=78` لإيقاف إعادة التشغيل حتى إصلاح التهيئة. لا تتضمن launchd وWindows Task Scheduler قاعدة مكافئة للإيقاف بحسب رمز الخروج، لذلك يحتفظ Gateway أيضًا بسجل عمليات الإقلاع السريعة غير النظيفة ويمنع البدء التلقائي لحسابات القنوات/الموفّرين بعد تكرار إخفاقات بدء التشغيل. في ذلك الوضع الآمن، يظل مستوى التحكم قيد التشغيل للفحص والإصلاح، وترفض عمليات إعادة تحميل التهيئة الفورية و`secrets.reload` عمليات إعادة تشغيل القنوات تلقائيًا، ويمكن لطلب صريح من المشغّل عبر `channels.start` تجاوز المنع.
+
+## مسار سريع لملف تعريف التطوير
 
 ```bash
 openclaw --dev setup
@@ -317,35 +303,35 @@ openclaw --dev gateway --allow-unconfigured
 openclaw --dev status
 ```
 
-تتضمن الافتراضيات حالة/تكوينًا معزولين ومنفذ Gateway أساسيًا `19001`.
+تتضمن الإعدادات الافتراضية حالة/تهيئة معزولتين ومنفذ Gateway أساسيًا بقيمة `19001`.
 
-## مرجع سريع للبروتوكول (عرض المشغل)
+## مرجع سريع للبروتوكول (منظور المشغّل)
 
-- يجب أن يكون أول إطار عميل `connect`.
-- يعيد Gateway لقطة `hello-ok` (`presence`، `health`، `stateVersion`، `uptimeMs`، الحدود/السياسة).
-- `hello-ok.features.methods` / `events` هي قائمة اكتشاف محافظة، وليست
-  تفريغًا مولدًا لكل مسار مساعد قابل للاستدعاء.
+- يجب أن يكون إطار العميل الأول هو `connect`.
+- يعيد Gateway إطار `hello-ok` يتضمن `snapshot` ‏(`presence`، `health`، `stateVersion`، `uptimeMs`) بالإضافة إلى حدود `policy` ‏(`maxPayload`، `maxBufferedBytes`، `tickIntervalMs`).
+- يمثل `hello-ok.features.methods` / `events` قائمة استكشاف متحفظة، وليس
+  تفريغًا مولّدًا لكل مسار مساعد قابل للاستدعاء.
 - الطلبات: `req(method, params)` → `res(ok/payload|error)`.
-- تتضمن الأحداث الشائعة `connect.challenge`، و`agent`، و`chat`،
-  و`session.message`، و`session.operation`، و`session.tool`، و`sessions.changed`،
-  و`presence`، و`tick`، و`health`، و`heartbeat`، وأحداث دورة حياة الاقتران/الموافقة،
-  و`shutdown`.
+- تشمل الأحداث الشائعة `connect.challenge`، و`agent`، و`chat`،
+  و`session.message`، و`session.operation`، و`session.tool`، والأحداث الاختيارية
+  `session.approval`، و`sessions.changed`، و`presence`، و`tick`، و`health`،
+  و`heartbeat`، وأحداث دورة حياة الاقتران/الموافقة، و`shutdown`.
 
-تشغيلات الوكيل ذات مرحلتين:
+تُنفَّذ عمليات الوكيل على مرحلتين:
 
-1. إقرار قبول فوري (`status:"accepted"`)
-2. استجابة إكمال نهائية (`status:"ok"|"error"`)، مع أحداث `agent` متدفقة بينهما.
+1. إقرار فوري بالقبول (`status:"accepted"`)
+2. استجابة الإكمال النهائية (`status:"ok"|"error"`)، مع بث أحداث `agent` بينهما.
 
-راجع مستندات البروتوكول الكاملة: [بروتوكول Gateway](/ar/gateway/protocol).
+راجع وثائق البروتوكول الكاملة: [بروتوكول Gateway](/ar/gateway/protocol).
 
-## الفحوصات التشغيلية
+## فحوص التشغيل
 
-### الحيوية
+### التحقق من بقاء الخدمة
 
-- افتح WS وأرسل `connect`.
-- توقع استجابة `hello-ok` مع لقطة.
+- افتح اتصال WS وأرسل `connect`.
+- توقّع استجابة `hello-ok` تتضمن لقطة للحالة.
 
-### الجاهزية
+### التحقق من الجاهزية
 
 ```bash
 openclaw gateway status
@@ -353,41 +339,34 @@ openclaw channels status --probe
 openclaw health
 ```
 
-### استرداد الفجوات
+### الاسترداد من الفجوات
 
-لا تُعاد الأحداث. عند وجود فجوات في التسلسل، حدّث الحالة (`health`، `system-presence`) قبل المتابعة.
+لا تُعاد أحداث البث. عند وجود فجوات في التسلسل، حدّث الحالة (`health`، `system-presence`) قبل المتابعة.
 
-## بصمات الفشل الشائعة
+## مؤشرات الأعطال الشائعة
 
-| التوقيع                                                       | المشكلة المحتملة                                                                  |
-| -------------------------------------------------------------- | --------------------------------------------------------------------------------- |
-| `refusing to bind gateway ... without auth`                    | ربط غير local loopback من دون مسار مصادقة Gateway صالح                            |
-| `another gateway instance is already listening` / `EADDRINUSE` | تعارض في المنفذ                                                                   |
-| `Gateway start blocked: set gateway.mode=local`                | تم ضبط الإعدادات على الوضع البعيد، أو ختم الوضع المحلي مفقود من إعدادات تالفة     |
-| `unauthorized` أثناء الاتصال                                  | عدم تطابق المصادقة بين العميل وGateway                                            |
+| المؤشر                                                        | المشكلة المحتملة                                                                  |
+| -------------------------------------------------------------- | ----------------------------------------------------------------------------- |
+| `refusing to bind gateway ... without auth`                    | الربط بعنوان غير استرجاعي من دون مسار مصادقة صالح لـ Gateway                           |
+| `another gateway instance is already listening` / `EADDRINUSE` | تعارض في المنفذ                                                                 |
+| `Gateway start blocked: set gateway.mode=local`                | تم ضبط الإعدادات على الوضع البعيد، أو أن `gateway.mode` مفقود من إعدادات تالفة |
+| `unauthorized` أثناء الاتصال                                  | عدم تطابق المصادقة بين العميل وGateway                                      |
 
-للحصول على مسارات تشخيص كاملة، استخدم [استكشاف أخطاء Gateway وإصلاحها](/ar/gateway/troubleshooting).
+للاطلاع على مسارات التشخيص الكاملة، استخدم [استكشاف أخطاء Gateway وإصلاحها](/ar/gateway/troubleshooting).
 
 ## ضمانات السلامة
 
-- تفشل عملاء بروتوكول Gateway بسرعة عندما يكون Gateway غير متاح (من دون رجوع ضمني إلى قناة مباشرة).
-- تُرفض الإطارات الأولى غير الصالحة أو غير الخاصة بالاتصال وتُغلق.
-- يُصدر الإيقاف المنظّم حدث `shutdown` قبل إغلاق المقبس.
+- تفشل عملاء بروتوكول Gateway فورًا عند عدم توفر Gateway (من دون رجوع ضمني إلى قناة مباشرة).
+- تُرفض الإطارات الأولى غير الصالحة أو التي لا تمثل اتصالًا، ويُغلق الاتصال.
+- يرسل الإيقاف الآمن حدث `shutdown` قبل إغلاق المقبس.
 
----
-
-ذات صلة:
-
-- [استكشاف الأخطاء وإصلاحها](/ar/gateway/troubleshooting)
-- [عملية الخلفية](/ar/gateway/background-process)
-- [الإعدادات](/ar/gateway/configuration)
-- [الصحة](/ar/gateway/health)
-- [Doctor](/ar/gateway/doctor)
-- [المصادقة](/ar/gateway/authentication)
-
-## ذات صلة
+## ذو صلة
 
 - [الإعدادات](/ar/gateway/configuration)
 - [استكشاف أخطاء Gateway وإصلاحها](/ar/gateway/troubleshooting)
-- [الوصول البعيد](/ar/gateway/remote)
+- [العملية الخلفية](/ar/gateway/background-process)
+- [الصحة](/ar/gateway/health)
+- [Doctor](/ar/gateway/doctor)
+- [المصادقة](/ar/gateway/authentication)
+- [الوصول عن بُعد](/ar/gateway/remote)
 - [إدارة الأسرار](/ar/gateway/secrets)

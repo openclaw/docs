@@ -1,20 +1,20 @@
 ---
 read_when:
-    - Вы устанавливаете, настраиваете или проверяете плагин document-extract
-summary: Извлекайте текст и резервные изображения страниц из локальных вложений документов.
+    - Вы устанавливаете, настраиваете или проверяете плагин document-extract.
+summary: Извлечение текста и резервных изображений страниц из локальных вложений документов.
 title: Плагин извлечения документов
 x-i18n:
-    generated_at: "2026-07-13T18:23:28Z"
+    generated_at: "2026-07-16T17:12:57Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
-    prompt_version: 24
+    prompt_version: 32
     provider: openai
-    source_hash: 3745783e57c15e75caf28491c6693c64fea018593662a43268e299ed42c3d574
+    source_hash: 173a860c28f293b52ed4a155dfb308713f0c0f5ef22c988c26b2440e1d63cf23
     source_path: plugins/reference/document-extract.md
     workflow: 16
 ---
 
-# Плагин извлечения из документов
+# Плагин Document Extract
 
 Извлекает текст и резервные изображения страниц из локальных вложений документов.
 
@@ -25,8 +25,8 @@ x-i18n:
 
 ## Интерфейс
 
-контракты: documentExtractors
+контракты: `documentExtractors`
 
-## Связанная документация
+## Связанные документы
 
-- [извлечение из документов](/ru/tools/pdf)
+- [document-extract](/ru/tools/pdf)

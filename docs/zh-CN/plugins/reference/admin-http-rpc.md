@@ -2,13 +2,14 @@
 read_when:
     - 你正在安装、配置或审计 admin-http-rpc 插件
 summary: OpenClaw 管理 HTTP RPC 端点。
-title: 管理员 HTTP RPC 插件
+title: 管理 HTTP RPC 插件
 x-i18n:
-    generated_at: "2026-07-11T20:45:59Z"
+    generated_at: "2026-07-16T11:43:46Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 58909f4c97bfacc22d3a597939ff8724ec111995841822962c66305140aef4ba
+    source_hash: 3e3875dd776c0f4dd58977b503de22989ddab5add4dd37a0e1c7f5cb4e306044
     source_path: plugins/reference/admin-http-rpc.md
     workflow: 16
 ---
@@ -20,11 +21,11 @@ OpenClaw 管理 HTTP RPC 端点。
 ## 分发
 
 - 软件包：`@openclaw/admin-http-rpc`
-- 安装方式：OpenClaw 内置
+- 安装方式：内置于 OpenClaw
 
 ## 接口
 
-契约：gatewayMethodDispatch
+契约：`gatewayMethodDispatch`
 
 ## 相关文档
 

@@ -1,14 +1,15 @@
 ---
 read_when:
-    - Instalujesz, konfigurujesz lub przeprowadzasz audyt pluginu Twitch
+    - Instalowanie, konfigurowanie lub audytowanie pluginu Twitch
 summary: Plugin kanału Twitch dla OpenClaw do obsługi czatu i moderacji.
-title: Plugin Twitch
+title: Plugin Twitcha
 x-i18n:
-    generated_at: "2026-07-12T15:27:39Z"
+    generated_at: "2026-07-16T18:59:42Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: fc1bbe93d4d91427cf9c53abd4ed6833c9a06520f466cc31a24f94f6f0f327d7
+    source_hash: 6a931d467430d05b7a93471a1b8fd4b7b7d6cdc010ec0bcc5cb36d777888f105
     source_path: plugins/reference/twitch.md
     workflow: 16
 ---
@@ -22,10 +23,10 @@ Plugin kanału Twitch dla OpenClaw do obsługi czatu i procesów moderacji.
 - Pakiet: `@openclaw/twitch`
 - Sposób instalacji: npm; ClawHub
 
-## Interfejs
+## Powierzchnia
 
-kanały: twitch
+kanały: `twitch`
 
 ## Powiązana dokumentacja
 
-- [twitch](/pl/channels/twitch)
+- [Twitch](/pl/channels/twitch)

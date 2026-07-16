@@ -1,31 +1,32 @@
 ---
 read_when:
-    - คุณกำลังติดตั้ง กำหนดค่า หรือตรวจสอบ Plugin Deepgram
+    - คุณกำลังติดตั้ง กำหนดค่า หรือตรวจสอบ Plugin deepgram
 summary: เพิ่มการรองรับผู้ให้บริการด้านการทำความเข้าใจสื่อ เพิ่มการรองรับผู้ให้บริการด้านการถอดเสียงแบบเรียลไทม์
 title: Plugin Deepgram
 x-i18n:
-    generated_at: "2026-07-12T16:27:00Z"
+    generated_at: "2026-07-16T19:26:54Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 93383c01d5a5e1e1d412d396ec1def12f388fc7c5da102573373dbc8180497a3
+    source_hash: ababdaeda58a97236e3dd96bdf51a0ce560278bbeb20a731d05f51d28bfb4155
     source_path: plugins/reference/deepgram.md
     workflow: 16
 ---
 
 # Plugin Deepgram
 
-เพิ่มการรองรับผู้ให้บริการสำหรับการทำความเข้าใจสื่อ และเพิ่มการรองรับผู้ให้บริการถอดเสียงแบบเรียลไทม์
+เพิ่มการรองรับผู้ให้บริการด้านการทำความเข้าใจสื่อ เพิ่มการรองรับผู้ให้บริการถอดเสียงแบบเรียลไทม์
 
 ## การเผยแพร่
 
 - แพ็กเกจ: `@openclaw/deepgram-provider`
-- วิธีติดตั้ง: รวมอยู่ใน OpenClaw
+- ช่องทางการติดตั้ง: รวมอยู่ใน OpenClaw
 
-## ส่วนติดต่อ
+## ส่วนเชื่อมต่อ
 
-สัญญา: mediaUnderstandingProviders, realtimeTranscriptionProviders
+สัญญา: `mediaUnderstandingProviders`, `realtimeTranscriptionProviders`
 
 ## เอกสารที่เกี่ยวข้อง
 
-- [Deepgram](/th/providers/deepgram)
+- [deepgram](/th/providers/deepgram)

@@ -1,47 +1,47 @@
 ---
 read_when:
     - GitHub से या स्थानीय रूप से Mantis Slack डेस्कटॉप QA चलाना
-    - धीमे Mantis Slack डेस्कटॉप रन की डिबगिंग
-    - source, prehydrated, या warm-lease मोड चुनना
-    - PR पर स्क्रीनशॉट और वीडियो प्रमाण पोस्ट करना
-summary: 'Mantis Slack डेस्कटॉप QA के लिए ऑपरेटर रनबुक: GitHub dispatch, स्थानीय CLI, warm VNC leases, hydrate modes, timing interpretation, artifacts, और failure handling.'
+    - धीमी Mantis Slack डेस्कटॉप रन की डीबगिंग
+    - स्रोत, पूर्व-हाइड्रेटेड या वार्म-लीज़ मोड चुनना
+    - किसी PR पर स्क्रीनशॉट और वीडियो साक्ष्य पोस्ट करना
+summary: 'Mantis Slack डेस्कटॉप QA के लिए ऑपरेटर रनबुक: GitHub डिस्पैच, स्थानीय CLI, वार्म VNC लीज़, हाइड्रेट मोड, समय-निर्धारण की व्याख्या, आर्टिफ़ैक्ट और विफलता प्रबंधन।'
 title: Mantis Slack डेस्कटॉप रनबुक
 x-i18n:
-    generated_at: "2026-06-28T22:58:34Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T14:27:18Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: d9310b460a4da84afab72f9e5b5515a94e74b4f4a5030332bd2021d60deb07cc
+    source_hash: b3e956d99fc43a7b6fe65e2e820812b0e0e8b9e32badd25be27c74d302ab30dc
     source_path: concepts/mantis-slack-desktop-runbook.md
     workflow: 16
 ---
 
-Mantis Slack desktop QA Slack-वर्ग की उन बगों के लिए वास्तविक-UI lane है जिन्हें
-Linux desktop, VNC rescue, Slack Web, वास्तविक OpenClaw gateway, स्क्रीनशॉट,
-वीडियो, और PR evidence comment की आवश्यकता होती है।
+Mantis Slack डेस्कटॉप QA, Slack-श्रेणी के उन बगों के लिए वास्तविक-UI लेन है जिनके लिए
+Linux डेस्कटॉप, VNC बचाव, Slack Web, वास्तविक OpenClaw Gateway, स्क्रीनशॉट,
+वीडियो और PR साक्ष्य टिप्पणी आवश्यक हैं। इसका उपयोग तब करें जब यूनिट परीक्षण या हेडलेस
+Slack लाइव लेन बग को सिद्ध नहीं कर सकते।
 
-इसे तब उपयोग करें जब unit tests या headless Slack live lane बग को सिद्ध नहीं कर सकते।
+## स्टोरेज मॉडल
 
-## Storage model
+Mantis तीन स्टोरेज परतों का उपयोग करता है:
 
-Mantis तीन अलग-अलग storage layers का उपयोग करता है:
+- **प्रदाता इमेज** - Crabbox के स्वामित्व में, क्लाउड प्रदाता खाते में संग्रहीत।
+  इसमें मशीन क्षमताएँ (Chrome/Chromium, ffmpeg, scrot,
+  Node/corepack/pnpm, नेटिव बिल्ड टूल) और खाली कैश डायरेक्टरी होती हैं।
+- **वार्म लीज़ स्थिति** - वर्तमान ऑपरेटर सत्र के स्वामित्व में। लीज़ के सक्रिय रहने तक इसमें
+  लॉग-इन किया हुआ ब्राउज़र प्रोफ़ाइल, `/var/cache/crabbox/pnpm`, और तैयार स्रोत
+  चेकआउट हो सकते हैं।
+- **Mantis आर्टिफ़ैक्ट** - OpenClaw रन के स्वामित्व में। ये
+  `.artifacts/qa-e2e/mantis/...` के अंतर्गत रहते हैं; GitHub Actions इन्हें अपलोड करता है और Mantis
+  GitHub App PR पर इनलाइन साक्ष्य की टिप्पणी करता है।
 
-- Provider image: Crabbox के स्वामित्व में और cloud provider account में संग्रहीत।
-  इसमें Chrome/Chromium, ffmpeg, scrot, Node/corepack/pnpm, native build tools,
-  और खाली cache directories जैसी machine capabilities होती हैं।
-- Warm lease state: वर्तमान operator session के स्वामित्व में। Lease सक्रिय रहने तक इसमें
-  logged-in browser profile, `/var/cache/crabbox/pnpm`, और prepared source
-  checkout हो सकते हैं।
-- Mantis artifacts: OpenClaw run के स्वामित्व में। वे
-  `.artifacts/qa-e2e/mantis/...` के अंतर्गत रहते हैं, फिर GitHub Actions उन्हें upload करता है और
-  Mantis GitHub App PR पर inline evidence comment करता है।
+किसी प्रदाता इमेज में कभी भी सीक्रेट, ब्राउज़र कुकी, Slack लॉगिन स्थिति, रिपॉज़िटरी चेकआउट,
+`node_modules`, या `dist/` शामिल न करें।
 
-Secrets, browser cookies, Slack login state, repository checkouts,
-`node_modules`, या `dist/` को कभी भी prebaked provider image में न डालें।
+## GitHub डिस्पैच
 
-## GitHub dispatch
-
-Workflow को `main` से चलाएँ:
+वर्कफ़्लो को `main` से चलाएँ:
 
 ```bash
 gh workflow run mantis-slack-desktop-smoke.yml \
@@ -54,29 +54,24 @@ gh workflow run mantis-slack-desktop-smoke.yml \
   -f hydrate_mode=source
 ```
 
-Allowed `candidate_ref` values जानबूझकर सीमित हैं क्योंकि workflow
-live credentials का उपयोग करता है: current `main` ancestry, release tags, या
-`openclaw/openclaw` से open PR head।
+`candidate_ref` प्रतिबंधित है क्योंकि वर्कफ़्लो लाइव क्रेडेंशियल का उपयोग करता है: इसे
+वर्तमान `main` वंशावली, किसी रिलीज़ टैग, या
+`openclaw/openclaw` में किसी खुले PR हेड में रिज़ॉल्व होना आवश्यक है।
 
-Workflow लिखता है:
+वर्कफ़्लो निम्न आउटपुट देता है:
 
-- uploaded artifact: `mantis-slack-desktop-smoke-<run-id>-<attempt>`;
-- Mantis GitHub App से inline PR comment;
-- `slack-desktop-smoke.png`;
-- `slack-desktop-smoke.mp4`;
-- `slack-desktop-smoke-preview.gif`;
-- `slack-desktop-smoke-change.mp4`;
-- `mantis-slack-desktop-smoke-summary.json`;
-- `mantis-slack-desktop-smoke-report.md`;
-- remote logs जैसे `slack-desktop-command.log`, `openclaw-gateway.log`,
-  `chrome.log`, और `ffmpeg.log`।
+- अपलोड किया गया आर्टिफ़ैक्ट `mantis-slack-desktop-smoke-<run-id>-<attempt>`
+- Mantis GitHub App से इनलाइन PR टिप्पणी
+- `slack-desktop-smoke.png`, `slack-desktop-smoke.mp4`
+- `slack-desktop-smoke-preview.gif`, `slack-desktop-smoke-change.mp4`
+- `mantis-slack-desktop-smoke-summary.json`, `mantis-slack-desktop-smoke-report.md`
+- रिमोट लॉग: `slack-desktop-command.log`, `openclaw-gateway.log`, `chrome.log`, `ffmpeg.log`
 
-PR comment को छिपे हुए
-`<!-- mantis-slack-desktop-smoke -->` marker द्वारा वहीं update किया जाता है।
+PR टिप्पणी को छिपे हुए `<!-- mantis-slack-desktop-smoke -->` मार्कर के माध्यम से उसी स्थान पर अपडेट किया जाता है।
 
-## Local CLI
+## स्थानीय CLI
 
-Cold source proof:
+कोल्ड स्रोत प्रमाण:
 
 ```bash
 pnpm openclaw qa mantis slack-desktop-smoke \
@@ -92,7 +87,7 @@ pnpm openclaw qa mantis slack-desktop-smoke \
   --hydrate-mode source
 ```
 
-VNC rescue के लिए VM रखें:
+VNC बचाव के लिए VM को बनाए रखें:
 
 ```bash
 pnpm openclaw qa mantis slack-desktop-smoke \
@@ -109,7 +104,7 @@ VNC खोलें:
 crabbox vnc --provider aws --id <cbx_id> --open
 ```
 
-Warm lease का पुनः उपयोग करें:
+वार्म लीज़ का पुनः उपयोग करें:
 
 ```bash
 pnpm openclaw qa mantis slack-desktop-smoke \
@@ -120,11 +115,10 @@ pnpm openclaw qa mantis slack-desktop-smoke \
   --hydrate-mode source
 ```
 
-`--hydrate-mode prehydrated` का उपयोग केवल तब करें जब reused remote workspace में पहले से
-`node_modules` और built `dist/` हों। यदि वे
-मौजूद नहीं हैं तो Mantis fail closed करता है।
+`--hydrate-mode prehydrated` का उपयोग केवल तभी करें जब पुनः उपयोग किए गए रिमोट वर्कस्पेस में पहले से
+`node_modules` और बिल्ड किया हुआ `dist/` हो; अन्यथा Mantis सुरक्षित रूप से विफल हो जाता है।
 
-Native Slack approval UI सिद्ध करें:
+नेटिव Slack अनुमोदन UI को सिद्ध करें:
 
 ```bash
 pnpm openclaw qa mantis slack-desktop-smoke \
@@ -136,82 +130,79 @@ pnpm openclaw qa mantis slack-desktop-smoke \
   --hydrate-mode source
 ```
 
-Approval checkpoint mode `--gateway-setup` के साथ mutually exclusive है। यह
-opt-in `slack-approval-exec-native` और `slack-approval-plugin-native`
-scenarios चलाता है जब तक आप explicit approval checkpoint `--scenario` flags पास नहीं करते; अन्य
-Slack scenarios को VM शुरू होने से पहले reject कर दिया जाता है। Slack QA runner
-देखे गए वास्तविक Slack API message से प्रत्येक checkpoint JSON file लिखता है, फिर
-remote watcher उस message snapshot को
+`--approval-checkpoints` और `--gateway-setup` परस्पर अनन्य हैं। यदि आप स्पष्ट अनुमोदन-चेकपॉइंट
+`--scenario` पास नहीं करते, तो यह ऑप्ट-इन `slack-approval-exec-native` और
+`slack-approval-plugin-native` परिदृश्य चलाता है; अन्य Slack परिदृश्य VM शुरू होने से पहले
+अस्वीकार कर दिए जाते हैं। Slack QA रनर वास्तविक Slack API संदेश से प्रत्येक चेकपॉइंट JSON
+फ़ाइल लिखता है, फिर रिमोट वॉचर उस संदेश को
 `approval-checkpoints/<scenario>-pending.png` और
-`approval-checkpoints/<scenario>-resolved.png` में render करता है। यदि कोई checkpoint
-JSON, message evidence, ack JSON, या rendered screenshot missing या empty है तो run fail होता है।
+`approval-checkpoints/<scenario>-resolved.png` में रेंडर करता है। यदि कोई
+चेकपॉइंट JSON, संदेश साक्ष्य, ack JSON, या रेंडर किया गया स्क्रीनशॉट अनुपस्थित
+या खाली हो, तो रन विफल हो जाता है।
 
-Cold GitHub Actions leases में Slack Web cookies नहीं होते, इसलिए उनका browser
-capture Slack sign-in पर पहुँच सकता है। Approval checkpoint proof के लिए,
-`slack-desktop-smoke.png` के बजाय rendered checkpoint images और Slack QA artifacts पर भरोसा करें।
-Browser screenshot में स्वयं Slack Web दिखना आवश्यक हो तभी manually logged-in Slack
-Web profile के साथ kept warm lease का उपयोग करें।
+कोल्ड GitHub Actions लीज़ में Slack Web कुकी नहीं होतीं, इसलिए उनका ब्राउज़र कैप्चर
+Slack साइन-इन स्क्रीन पर पहुँच सकता है। अनुमोदन-चेकपॉइंट प्रमाण के लिए,
+`slack-desktop-smoke.png` के बजाय रेंडर की गई चेकपॉइंट इमेज और Slack QA आर्टिफ़ैक्ट पर भरोसा करें।
+ब्राउज़र स्क्रीनशॉट में स्वयं Slack Web दिखाना आवश्यक होने पर ही मैन्युअल रूप से
+लॉग-इन किए गए Slack Web प्रोफ़ाइल वाली बनाए रखी गई वार्म लीज़ का उपयोग करें।
 
-## Hydrate modes
+## हाइड्रेट मोड
 
-| Mode          | कब उपयोग करें                              | Remote behavior                                                                       | Tradeoff                                           |
-| ------------- | ------------------------------------------ | ------------------------------------------------------------------------------------- | -------------------------------------------------- |
-| `source`      | Normal PR proof, cold machines, CI         | VM के अंदर `pnpm install --frozen-lockfile --prefer-offline` और `pnpm build` चलाता है | सबसे धीमा, सबसे मजबूत source-checkout proof       |
-| `prehydrated` | आपने जानबूझकर reused lease तैयार किया है  | मौजूदा `node_modules` और `dist/` की आवश्यकता होती है; install/build skip करता है     | तेज, लेकिन केवल operator-controlled warm leases के लिए valid |
+| मोड          | कब उपयोग करें                                  | रिमोट व्यवहार                                                                       | समझौता                                                 |
+| ------------- | ----------------------------------------- | ------------------------------------------------------------------------------------- | -------------------------------------------------------- |
+| `source`      | सामान्य PR प्रमाण, कोल्ड मशीनें, CI        | VM के भीतर `pnpm install --frozen-lockfile --prefer-offline` और `pnpm build` चलाता है | सबसे धीमा, सबसे सशक्त स्रोत-चेकआउट प्रमाण                 |
+| `prehydrated` | आपने जानबूझकर पुनः उपयोग की गई लीज़ तैयार की है | मौजूदा `node_modules` और `dist/` आवश्यक हैं; इंस्टॉल/बिल्ड छोड़ देता है                     | तेज़, लेकिन केवल ऑपरेटर-नियंत्रित वार्म लीज़ के लिए मान्य |
 
-GitHub Actions हमेशा VM run से पहले candidate checkout तैयार करता है। इसका
-pnpm store OS, Node version, और lockfile द्वारा cached होता है। VM source run भी
-उपस्थित होने पर `/var/cache/crabbox/pnpm` का उपयोग करता है।
+GitHub Actions, VM रन से पहले हमेशा उम्मीदवार चेकआउट तैयार करता है। इसका
+pnpm स्टोर OS, Node संस्करण और लॉकफ़ाइल के आधार पर कैश किया जाता है। उपलब्ध होने पर VM का
+`source` रन भी `/var/cache/crabbox/pnpm` का पुनः उपयोग करता है।
 
-## Timing interpretation
+## समय की व्याख्या
 
-`mantis-slack-desktop-smoke-report.md` में phase timings शामिल हैं:
+`mantis-slack-desktop-smoke-report.md` में चरणों का समय शामिल है:
 
-- `crabbox.warmup`: cloud provider boot, desktop/browser readiness, और SSH।
-- `crabbox.inspect`: lease metadata lookup।
-- `credentials.prepare`: Convex credential lease acquisition।
-- `crabbox.remote_run`: sync, browser launch, OpenClaw install/build या
-  hydrate validation, gateway startup, screenshot, और video capture।
-- `artifacts.copy`: VM से rsync back।
+- `crabbox.warmup` - क्लाउड प्रदाता बूट, डेस्कटॉप/ब्राउज़र तैयारी, SSH।
+- `crabbox.inspect` - लीज़ मेटाडेटा लुकअप।
+- `credentials.prepare` - Convex क्रेडेंशियल लीज़ अधिग्रहण।
+- `crabbox.remote_run` - सिंक, ब्राउज़र लॉन्च, OpenClaw इंस्टॉल/बिल्ड या
+  हाइड्रेट सत्यापन, Gateway स्टार्टअप, स्क्रीनशॉट और वीडियो कैप्चर।
+- `artifacts.copy` - VM से वापस rsync।
 
-`crabbox.remote_run` को `accepted` mark किया जा सकता है जब Crabbox non-zero
-remote status लौटाता है, लेकिन Mantis ने ऐसा metadata copy कर लिया हो जो सिद्ध करता है कि या तो OpenClaw
-gateway setup पूरा हुआ या Slack QA command स्वयं successfully exited हुई।
-`accepted` को failed scenario नहीं, बल्कि pass-with-explanation मानें।
+जब Crabbox गैर-शून्य रिमोट स्थिति लौटाता है, लेकिन Mantis ने ऐसा मेटाडेटा कॉपी किया हो जो
+यह सिद्ध करता हो कि OpenClaw Gateway सेटअप पूरा हुआ या Slack QA कमांड स्वयं सफलतापूर्वक
+समाप्त हुआ, तब `crabbox.remote_run`, `accepted` दिखा सकता है।
+`accepted` को विफल परिदृश्य नहीं, बल्कि स्पष्टीकरण सहित उत्तीर्ण मानें।
 
-यदि run धीमा है:
+यदि कोई रन धीमा है:
 
-- warmup dominate करता है: बेहतर Crabbox provider image prebake या promote करें;
-- `source` में remote_run dominate करता है: warm lease उपयोग करें, pnpm store reuse सुधारें,
-  या machine prerequisites को provider image में ले जाएँ;
-- `prehydrated` में remote_run dominate करता है: remote workspace वास्तव में
-  ready नहीं था, या gateway/browser/Slack setup धीमा है;
-- artifact copy dominate करता है: video size और artifact directory contents inspect करें।
+- वार्मअप प्रमुख है: बेहतर Crabbox प्रदाता इमेज को पहले से बेक या प्रमोट करें।
+- `source` में `remote_run` प्रमुख है: वार्म लीज़ का उपयोग करें, pnpm स्टोर
+  के पुनः उपयोग में सुधार करें, या मशीन की पूर्वापेक्षाएँ प्रदाता इमेज में ले जाएँ।
+- `prehydrated` में `remote_run` प्रमुख है: रिमोट वर्कस्पेस वास्तव में
+  तैयार नहीं था, या Gateway/ब्राउज़र/Slack सेटअप धीमा है।
+- आर्टिफ़ैक्ट कॉपी प्रमुख है: वीडियो का आकार और आर्टिफ़ैक्ट डायरेक्टरी की सामग्री जाँचें।
 
-## Evidence checklist
+## साक्ष्य चेकलिस्ट
 
-अच्छे PR comment में दिखना चाहिए:
+एक अच्छी PR टिप्पणी में यह दिखता है:
 
-- scenario id और candidate SHA;
-- GitHub Actions run URL;
-- artifact URL;
-- inline approval checkpoint screenshot, या
-  logged-in warm lease से Slack Web screenshot;
-- उपलब्ध होने पर inline animated preview;
-- full MP4 और trimmed MP4 links;
-- pass/fail status;
-- attached report में timing summary।
+- परिदृश्य id और उम्मीदवार SHA
+- GitHub Actions रन URL और आर्टिफ़ैक्ट URL
+- इनलाइन अनुमोदन-चेकपॉइंट स्क्रीनशॉट, या लॉग-इन की गई वार्म लीज़ से Slack Web स्क्रीनशॉट
+- उपलब्ध होने पर इनलाइन एनिमेटेड पूर्वावलोकन
+- पूर्ण MP4 और ट्रिम किए गए MP4 लिंक
+- उत्तीर्ण/विफल स्थिति और रिपोर्ट का समय सारांश
 
-Screenshots या videos को repository में commit न करें। उन्हें GitHub
-Actions artifacts या PR comment में रखें।
+स्क्रीनशॉट या वीडियो को रिपॉज़िटरी में कमिट न करें। उन्हें GitHub
+Actions आर्टिफ़ैक्ट या PR टिप्पणी में रखें।
 
-## Failure handling
+## विफलता प्रबंधन
 
-यदि workflow VM run से पहले fail होता है, तो पहले Actions job inspect करें। सामान्य
-कारण untrusted `candidate_ref`, missing environment secrets, या candidate
-install/build failure होते हैं।
+यदि वर्कफ़्लो VM रन से पहले विफल हो जाता है, तो पहले Actions जॉब जाँचें।
+सामान्य कारण: अविश्वसनीय `candidate_ref`, अनुपस्थित परिवेश सीक्रेट, या
+उम्मीदवार इंस्टॉल/बिल्ड विफलता।
 
-यदि VM run fail होता है लेकिन screenshots copy back हुए हैं, तो inspect करें:
+यदि VM रन विफल हो जाता है लेकिन स्क्रीनशॉट वापस कॉपी किए गए थे, तो इन्हें जाँचें:
 
 ```bash
 cat mantis-slack-desktop-smoke-report.md
@@ -222,18 +213,18 @@ cat chrome.log
 cat ffmpeg.log
 ```
 
-यदि run ने lease रखा है, तो report के `crabbox vnc ...` command से VNC खोलें।
-काम पूरा होने पर lease stop करें:
+यदि रन ने लीज़ बनाए रखी है, तो रिपोर्ट के `crabbox vnc ...`
+कमांड से VNC खोलें, फिर काम पूरा होने पर लीज़ रोकें:
 
 ```bash
 crabbox stop --provider aws <cbx_id-or-slug>
 ```
 
-यदि Slack login expired हो गया है, तो kept lease पर VNC में उसे repair करें और
-`--lease-id` के साथ rerun करें। उस browser profile को provider image में bake न करें।
+यदि Slack लॉगिन समाप्त हो गया है, तो बनाए रखी गई लीज़ पर VNC में उसे सुधारें और
+`--lease-id` के साथ फिर से चलाएँ। उस ब्राउज़र प्रोफ़ाइल को प्रदाता इमेज में शामिल न करें।
 
-## Related
+## संबंधित
 
-- [QA overview](/hi/concepts/qa-e2e-automation)
-- [Slack channel](/hi/channels/slack)
-- [Testing](/hi/help/testing)
+- [QA अवलोकन](/hi/concepts/qa-e2e-automation)
+- [Slack चैनल](/hi/channels/slack)
+- [परीक्षण](/hi/help/testing)

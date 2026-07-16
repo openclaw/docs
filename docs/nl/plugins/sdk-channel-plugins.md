@@ -4,322 +4,470 @@ read_when:
     - Je wilt OpenClaw verbinden met een berichtenplatform
     - Je moet het adapteroppervlak van ChannelPlugin begrijpen
 sidebarTitle: Channel Plugins
-summary: Stapsgewijze gids voor het bouwen van een berichtenkanaal-Plugin voor OpenClaw
+summary: Stapsgewijze handleiding voor het bouwen van een Plugin voor een berichtenkanaal in OpenClaw
 title: Kanaalplugins bouwen
 x-i18n:
-    generated_at: "2026-07-02T22:40:24Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T16:08:40Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 84490ebdd482d1f09827af38274d06beea6d7fd72071e66beb79fcc12c86656a
+    source_hash: 2c6398dd0b4789b9f4aaf7ad2d1786a7e6388cb8fbb74e8ecaecae7ac0a5eb90
     source_path: plugins/sdk-channel-plugins.md
     workflow: 16
 ---
 
-Deze gids loopt door het bouwen van een kanaalplugin die OpenClaw verbindt met een
-berichtenplatform. Aan het einde heb je een werkend kanaal met DM-beveiliging,
-koppeling, antwoordthreading en uitgaande berichten.
+Deze handleiding bouwt een kanaalplugin die OpenClaw verbindt met een
+berichtenplatform: DM-beveiliging, koppeling, antwoordthreads en uitgaande berichten.
 
 <Info>
-  Als je nog niet eerder een OpenClaw-plugin hebt gebouwd, lees dan eerst
-  [Aan de slag](/nl/plugins/building-plugins) voor de basispakketstructuur
-  en manifestconfiguratie.
+  Nieuw met OpenClaw-plugins? Lees eerst [Aan de slag](/nl/plugins/building-plugins)
+  voor de pakketstructuur en het instellen van het manifest.
 </Info>
 
-## Hoe kanaalplugins werken
+## Waar jouw plugin verantwoordelijk voor is
 
-Kanaalplugins hebben geen eigen tools voor verzenden/bewerken/reageren nodig. OpenClaw houdt één
-gedeelde `message`-tool in de kern. Jouw plugin beheert:
+Kanaalplugins implementeren geen tools voor verzenden, bewerken of reageren; de kern biedt één
+gedeelde `message`-tool. Jouw plugin is verantwoordelijk voor:
 
-- **Configuratie** - accountresolutie en installatiewizard
-- **Beveiliging** - DM-beleid en allowlists
-- **Koppeling** - DM-goedkeuringsflow
-- **Sessiesyntaxis** - hoe providerspecifieke gespreks-id's worden gekoppeld aan basischats, thread-id's en ouder-fallbacks
-- **Uitgaand** - tekst, media en polls naar het platform verzenden
-- **Threading** - hoe antwoorden worden gethread
-- **Heartbeat-typen** - optionele typ-/bezig-signalen voor Heartbeat-afleverdoelen
+- **Configuratie** - accountomzetting en configuratiewizard
+- **Beveiliging** - DM-beleid en toelatingslijsten
+- **Koppeling** - DM-goedkeuringsstroom
+- **Sessiegrammatica** - hoe providerspecifieke gespreks-id's worden toegewezen aan basis-
+  chats, thread-id's en terugvalopties voor bovenliggende items
+- **Uitgaand** - tekst, media en peilingen naar het platform verzenden
+- **Threading** - hoe antwoorden in threads worden geplaatst
+- **Heartbeat-typindicatie** - optionele typ-/bezigsignalen voor Heartbeat-bezorgings-
+  doelen
 
-De kern beheert de gedeelde berichtentool, promptbedrading, de buitenste sessiesleutelvorm,
-generieke `:thread:`-boekhouding en dispatch.
+De kern is verantwoordelijk voor de gedeelde berichtentool, promptbedrading, de buitenste vorm van de sessiesleutel,
+algemene `:thread:`-boekhouding en verzending.
 
-Nieuwe kanaalplugins moeten ook een `message`-adapter beschikbaar stellen met
-`defineChannelMessageAdapter` uit `openclaw/plugin-sdk/channel-outbound`. De
-adapter declareert welke duurzame definitieve verzendmogelijkheden het native transport
-daadwerkelijk ondersteunt en wijst tekst-/mediaverzendingen naar dezelfde transportfuncties als
-de legacy `outbound`-adapter. Declareer een mogelijkheid alleen wanneer een contracttest
-het native side effect en de geretourneerde ontvangstbevestiging bewijst.
-Zie voor het volledige API-contract, voorbeelden, mogelijkhedenmatrix, ontvangstregels, live
-preview-finalisatie, beleid voor ontvangstbevestigingen, tests en migratietabel
-[API voor uitgaande kanalen](/nl/plugins/sdk-channel-outbound).
-Als de bestaande `outbound`-adapter al de juiste verzendmethoden en
-mogelijkheidsmetadata heeft, gebruik dan `createChannelMessageAdapterFromOutbound(...)` om
-de `message`-adapter af te leiden in plaats van handmatig nog een bridge te schrijven.
-Adapterverzendingen moeten `MessageReceipt`-waarden retourneren. Wanneer compatibiliteitscode
-nog legacy-id's nodig heeft, leid die dan af met `listMessageReceiptPlatformIds(...)`
-of `resolveMessageReceiptPrimaryId(...)` in plaats van parallelle
-`messageIds`-velden in nieuwe lifecycle-code te behouden.
-Kanalen met preview-ondersteuning moeten ook `message.live.capabilities` declareren met
-de exacte live lifecycle die ze beheren, zoals `draftPreview`,
-`previewFinalization`, `progressUpdates`, `nativeStreaming` of
-`quietFinalization`. Kanalen die een conceptpreview op dezelfde plek finaliseren, moeten
-ook `message.live.finalizer.capabilities` declareren, zoals `finalEdit`,
-`normalFallback`, `discardPending`, `previewReceipt` en
-`retainOnAmbiguousFailure`, en de runtimelogica routeren via
-`defineFinalizableLivePreviewAdapter(...)` plus
-`deliverWithFinalizableLivePreviewAdapter(...)`. Houd die mogelijkheden onderbouwd
-met tests voor `verifyChannelMessageLiveCapabilityAdapterProofs(...)` en
-`verifyChannelMessageLiveFinalizerProofs(...)`, zodat native preview-,
-voortgangs-, bewerkings-, fallback-/retentie-, opruim- en ontvangstgedrag niet
-stilzwijgend kan afwijken.
+## Berichtenadapter
+
+Stel een `message`-adapter met `defineChannelMessageAdapter` uit
+`openclaw/plugin-sdk/channel-outbound` beschikbaar. Declareer alleen de duurzame mogelijkheden voor definitieve verzending
+die jouw native transport daadwerkelijk ondersteunt, onderbouwd door een contracttest
+die het native neveneffect en het geretourneerde ontvangstbewijs bewijst. Laat tekst-/mediaverzending
+dezelfde transportfuncties gebruiken als de verouderde `outbound`-adapter. Zie voor
+het volledige API-contract, de mogelijkhedenmatrix, regels voor ontvangstbewijzen, afronding van
+livevoorbeelden, beleid voor ontvangstbevestigingen, tests en de migratietabel
+[API voor uitgaande kanaalberichten](/nl/plugins/sdk-channel-outbound).
+
+Als je bestaande `outbound`-adapter al de juiste verzendmethoden en
+mogelijkhedenmetadata heeft, leid je de `message`-adapter af met
+`createChannelMessageAdapterFromOutbound(...)` in plaats van handmatig nog een
+brug te schrijven. Adapterverzendingen retourneren `MessageReceipt`-waarden. Leid verouderde id's
+af met `listMessageReceiptPlatformIds(...)` of
+`resolveMessageReceiptPrimaryId(...)` in plaats van parallelle `messageIds`-
+velden te behouden.
+
+Declareer live- en finalisatiemogelijkheden nauwkeurig - de kern gebruikt deze om te bepalen
+wat een kanaal kan doen, en een afwijking tussen het gedeclareerde en werkelijke gedrag is een
+mislukte contracttest:
+
+| Oppervlak                             | Waarden                                                                                          |
+| ------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| `message.live.capabilities`           | `draftPreview`, `previewFinalization`, `progressUpdates`, `nativeStreaming`, `quietFinalization` |
+| `message.live.finalizer.capabilities` | `finalEdit`, `normalFallback`, `discardPending`, `previewReceipt`, `retainOnAmbiguousFailure`    |
+
+Kanalen die een conceptvoorbeeld ter plaatse afronden, moeten de runtimelogica
+via `defineFinalizableLivePreviewAdapter(...)` plus
+`deliverWithFinalizableLivePreviewAdapter(...)` leiden en de gedeclareerde
+mogelijkheden onderbouwen met `verifyChannelMessageLiveCapabilityAdapterProofs(...)`-
+en `verifyChannelMessageLiveFinalizerProofs(...)`-tests, zodat native voorbeeld-,
+voortgangs-, bewerkings-, terugval-/bewaar-, opschonings- en ontvangstbewijsgedrag niet
+ongemerkt kan afwijken.
+
 Inkomende ontvangers die platformbevestigingen uitstellen, moeten
 `message.receive.defaultAckPolicy` en `supportedAckPolicies` declareren in plaats van
-bevestigingstiming te verbergen in monitor-lokale state. Dek elk gedeclareerd beleid af met
+de timing van bevestigingen in lokale monitorstatus te verbergen. Dek elk gedeclareerd beleid af met
 `verifyChannelMessageReceiveAckPolicyAdapterProofs(...)`.
 
-Legacy antwoordhelpers zoals `createChannelTurnReplyPipeline`,
-`dispatchInboundReplyWithBase` en `recordInboundSessionAndDispatchReply`
-blijven beschikbaar voor compatibiliteitsdispatchers. Gebruik die namen niet voor nieuwe
-kanaalcode; nieuwe plugins moeten beginnen met de `message`-adapter, ontvangstbevestigingen en
-ontvangst-/verzend-lifecyclehelpers op `openclaw/plugin-sdk/channel-outbound`.
+Verouderde antwoordhelpers zoals `dispatchInboundReplyWithBase` en
+`recordInboundSessionAndDispatchReply` blijven beschikbaar voor compatibiliteits-
+dispatchers. Gebruik ze niet voor nieuwe kanaalcode; begin in plaats daarvan met de `message`-
+adapter, ontvangstbewijzen en levenscyclushelpers voor ontvangen/verzenden op
+`openclaw/plugin-sdk/channel-outbound`.
+
+### Inkomende toegang (experimenteel)
 
 Kanalen die inkomende autorisatie migreren, kunnen het experimentele
-`openclaw/plugin-sdk/channel-ingress-runtime`-subpad gebruiken vanuit runtime-ontvangstpaden.
-Het subpad houdt platformlookup en side effects in de plugin, terwijl
-allowlist-stateresolutie, route-/afzender-/opdracht-/gebeurtenis-/activatiebeslissingen,
-geredigeerde diagnostiek en turn-toelatingsmapping worden gedeeld. Houd
-normalisatie van pluginidentiteit in de descriptor die je aan de resolver doorgeeft; serialiseer geen
-ruwe matchwaarden uit de opgeloste state of beslissing. Zie
-[API voor kanaalingang](/nl/plugins/sdk-channel-ingress) voor het API-ontwerp,
-de eigendomsgrens en testverwachtingen.
+`openclaw/plugin-sdk/channel-ingress-runtime`-subpad vanuit runtime-ontvangstpaden
+gebruiken. Het accepteert platformfeiten, onbewerkte toelatingslijsten, routebeschrijvingen, opdracht-
+feiten en toegangsgroepconfiguratie, en retourneert vervolgens projecties voor afzender/route/opdracht/activatie
+plus de geordende toegangsgrafiek, terwijl platformopzoekingen en neveneffecten
+in de plugin blijven. Houd de normalisatie van de pluginidentiteit in de
+beschrijving die je aan de resolver doorgeeft; serialiseer geen onbewerkte overeenkomende waarden uit
+de opgeloste status of beslissing. Zie
+[API voor kanaaltoegang](/nl/plugins/sdk-channel-ingress) voor het API-ontwerp,
+de verantwoordelijkheidsgrens en de testverwachtingen.
 
-Als je kanaal typindicatoren buiten inkomende antwoorden ondersteunt, stel dan
+### Typindicatoren
+
+Als je kanaal typindicatoren buiten inkomende antwoorden ondersteunt, stel je
 `heartbeat.sendTyping(...)` beschikbaar op de kanaalplugin. De kern roept dit aan met het
-opgeloste Heartbeat-afleverdoel voordat de Heartbeat-modelrun start en
-gebruikt de gedeelde lifecycle voor typ-keepalive en opruiming. Voeg `heartbeat.clearTyping(...)`
-toe wanneer het platform een expliciet stopsignaal nodig heeft.
+opgeloste Heartbeat-bezorgingsdoel voordat de uitvoering van het Heartbeat-model begint en
+gebruikt de gedeelde levenscyclus voor het actief houden en opschonen van de typindicatie. Voeg
+`heartbeat.clearTyping(...)` toe wanneer het platform een expliciet stopsignaal nodig heeft.
 
-Als je kanaal berichtentoolparameters toevoegt die mediabronnen dragen, stel die
-parameternamen dan beschikbaar via `describeMessageTool(...).mediaSourceParams`. De kern gebruikt
-die expliciete lijst voor sandbox-padnormalisatie en beleid voor uitgaande mediatoegang,
-zodat plugins geen gedeelde-kern-special cases nodig hebben voor providerspecifieke
-avatar-, bijlage- of omslagafbeeldingsparameters.
-Geef bij voorkeur een op actie gebaseerde map terug, zoals
-`{ "set-profile": ["avatarUrl", "avatarPath"] }`, zodat niet-gerelateerde acties niet
-de media-argumenten van een andere actie erven. Een platte array werkt nog steeds voor parameters die
-bewust worden gedeeld over elke blootgestelde actie.
-Kanalen die een tijdelijke openbare URL moeten blootstellen voor een mediaverzoek aan platformzijde
-kunnen `createHostedOutboundMediaStore(...)` uit
-`openclaw/plugin-sdk/outbound-media` gebruiken met plugin-state stores. Houd
-platformrouteparsing en tokenhandhaving in de kanaalplugin; de gedeelde helper
-beheert alleen het laden van media, vervalmetadata, chunk-rijen en opruiming.
+### Parameters voor mediabronnen
+
+Als je kanaal berichtentoolparameters toevoegt die mediabronnen bevatten, stel je
+die parameternamen beschikbaar via `plugin.actions.describeMessageTool(...).mediaSourceParams`.
+De kern gebruikt die expliciete lijst voor de normalisatie van sandboxpaden en het beleid voor
+toegang tot uitgaande media, zodat plugins geen speciale gevallen in de gedeelde kern nodig hebben voor
+providerspecifieke avatar-, bijlage- of omslagafbeeldingsparameters.
+
+Geef de voorkeur aan een op acties gebaseerde toewijzing zoals `{ "set-profile": ["avatarUrl", "avatarPath"] }`,
+zodat niet-gerelateerde acties de media-argumenten van een andere actie niet overnemen. Een platte matrix
+werkt nog steeds voor parameters die bewust door elke beschikbare actie worden gedeeld.
+
+Kanalen die een tijdelijke openbare URL beschikbaar moeten stellen zodat media
+door het platform kunnen worden opgehaald, kunnen `createHostedOutboundMediaStore(...)` uit
+`openclaw/plugin-sdk/outbound-media` gebruiken met Plugin-statusopslag. Houd het parseren van
+platformroutes en het afdwingen van tokens in de kanaalplugin; de gedeelde helper
+beheert alleen het laden van media, vervalmetadata, chunkrijen en opschoning.
+
+### Vormgeving van native payloads
 
 Als je kanaal providerspecifieke vormgeving nodig heeft voor `message(action="send")`,
 gebruik dan bij voorkeur `actions.prepareSendPayload(...)`. Plaats native kaarten, blokken, embeds of
-andere duurzame data onder `payload.channelData.<channel>` en laat de kern
-de daadwerkelijke verzending uitvoeren via de outbound-/message-adapter. Gebruik
-`actions.handleAction(...)` voor verzenden alleen als compatibiliteitsfallback voor
-payloads die niet kunnen worden geserialiseerd en opnieuw geprobeerd.
+andere duurzame gegevens onder `payload.channelData.<channel>` en laat core deze via
+de adapter voor uitgaande berichten verzenden. Gebruik `actions.handleAction(...)` voor verzenden
+alleen als compatibiliteitsfallback voor payloads die niet kunnen worden geserialiseerd en
+opnieuw geprobeerd.
 
-Als je platform extra scope binnen gespreks-id's opslaat, houd die parsing dan
-in de plugin met `messaging.resolveSessionConversation(...)`. Dat is de
-canonieke hook voor het koppelen van `rawId` aan de basisgespreks-id, optionele thread-id,
-expliciete `baseConversationId` en eventuele `parentConversationCandidates`.
-Wanneer je `parentConversationCandidates` retourneert, houd ze dan geordend van de
-smalste ouder naar het breedste/basisgesprek.
+### Grammatica voor sessiegesprekken
 
-Gebruik `openclaw/plugin-sdk/channel-route` wanneer plugincode route-achtige velden moet normaliseren,
-een child-thread met de bovenliggende route moet vergelijken, of een
-stabiele deduplicatiesleutel moet bouwen uit `{ channel, to, accountId, threadId }`. De helper
-normaliseert numerieke thread-id's op dezelfde manier als de kern, dus plugins moeten dit verkiezen
-boven ad-hocvergelijkingen met `String(threadId)`.
-Plugins met providerspecifieke doelgrammatica moeten
-`messaging.resolveOutboundSessionRoute(...)` beschikbaar stellen, zodat de kern provider-native
-sessie- en threadidentiteit krijgt zonder parser-shims te gebruiken.
+Als je platform extra bereik opslaat in gespreks-id's, houd het parseren daarvan
+in de Plugin met `messaging.resolveSessionConversation(...)`. Dat is de
+canonieke hook voor het toewijzen van `rawId` aan het basisgespreks-id, een optioneel
+thread-id, expliciete `baseConversationId` en eventuele
+`parentConversationCandidates`. Wanneer je `parentConversationCandidates` retourneert,
+rangschik je deze van de meest specifieke bovenliggende entiteit naar het breedste/basisgesprek.
 
-Gebundelde plugins die dezelfde parsing nodig hebben voordat het kanaalregister opstart,
-kunnen ook een top-level `session-key-api.ts`-bestand beschikbaar stellen met een bijbehorende
-`resolveSessionConversation(...)`-export. De kern gebruikt dat bootstrap-veilige oppervlak
-alleen wanneer het runtime-pluginregister nog niet beschikbaar is.
+`messaging.resolveParentConversationCandidates(...)` is een verouderde
+compatibiliteitsfallback voor Plugins die alleen bovenliggende fallbacks nodig hebben naast
+het generieke/ruwe id. Als beide hooks bestaan, gebruikt core eerst
+`resolveSessionConversation(...).parentConversationCandidates` en valt het alleen
+terug op `resolveParentConversationCandidates(...)` wanneer de canonieke
+hook deze weglaat.
 
-`messaging.resolveParentConversationCandidates(...)` blijft beschikbaar als
-legacy compatibiliteitsfallback wanneer een plugin alleen ouder-fallbacks nodig heeft boven op
-de generieke/ruwe id. Als beide hooks bestaan, gebruikt de kern eerst
-`resolveSessionConversation(...).parentConversationCandidates` en valt alleen terug op
-`resolveParentConversationCandidates(...)` wanneer de canonieke hook ze weglaat.
+Gebundelde Plugins die dezelfde parsing nodig hebben voordat het kanaalregister opstart,
+kunnen een `session-key-api.ts`-bestand op het hoogste niveau beschikbaar stellen met een overeenkomende
+`resolveSessionConversation(...)`-export (zie de Feishu- en Telegram-
+Plugins). Core gebruikt dit bootstrapveilige oppervlak alleen wanneer het runtime-
+Pluginregister nog niet beschikbaar is.
+
+Gebruik `openclaw/plugin-sdk/channel-route` wanneer Plugincode routeachtige
+velden moet normaliseren, een onderliggende thread met de bovenliggende route moet vergelijken of een
+stabiele deduplicatiesleutel uit `{ channel, to, accountId, threadId }` moet opbouwen. De helper
+normaliseert numerieke thread-id's op dezelfde manier als core, dus gebruik deze bij voorkeur in plaats van ad-hoc
+`String(threadId)`-vergelijkingen. Plugins met providerspecifieke doelgrammatica
+moeten `messaging.resolveOutboundSessionRoute(...)` beschikbaar stellen, zodat core
+provider-native sessie- en threadidentiteit krijgt zonder parsershims.
+
+### Ondersteuning voor accountgebonden gesprekskoppelingen
+
+Stel `conversationBindings.supportsCurrentConversationBinding` in wanneer het kanaal
+generieke koppelingen voor het huidige gesprek ondersteunt. `createChatChannelPlugin(...)`
+stelt deze statische mogelijkheid standaard in op `true`.
+
+Als de ondersteuning per geconfigureerd account verschilt, implementeer dan ook
+`conversationBindings.isCurrentConversationBindingSupported({ accountId })`.
+Core evalueert deze synchrone hook pas nadat de statische mogelijkheid is
+ingeschakeld. Als `false` wordt geretourneerd, zijn generieke mogelijkheden en bewerkingen
+voor het huidige gesprek, zoals koppelen, opzoeken, vermelden, bijwerken en ontkoppelen, niet beschikbaar voor dat account.
+Als de hook wordt weggelaten, geldt de statische mogelijkheid voor elk account.
+
+Bepaal het antwoord aan de hand van reeds geladen accountconfiguratie of runtimestatus. Deze
+hook beheert alleen generieke koppelingen voor het huidige gesprek; deze vervangt geen
+geconfigureerde koppelingsregels of sessieroutering die eigendom is van de Plugin. Contracttests
+moeten ten minste één ondersteund en één niet-ondersteund account omvatten via het
+`ChannelPlugin["conversationBindings"]`-contract dat wordt geëxporteerd door
+`openclaw/plugin-sdk/channel-core`.
 
 ## Goedkeuringen en kanaalmogelijkheden
 
-De meeste kanaalplugins hebben geen goedkeuringsspecifieke code nodig.
+De meeste kanaalplugins hebben geen goedkeuringsspecifieke code nodig. Core beheert
+`/approve` binnen dezelfde chat, gedeelde payloads voor goedkeuringsknoppen en generieke fallbackbezorging.
+`ChannelPlugin.approvals` is verwijderd; plaats feiten over bezorging, native gedrag, rendering en autorisatie
+van goedkeuringen in plaats daarvan in één `approvalCapability`-object. `plugin.auth` is alleen
+voor inloggen/uitloggen; core leest geen autorisatiehooks voor goedkeuringen meer uit dat object.
 
-- Core is eigenaar van `/approve` in dezelfde chat, gedeelde payloads voor goedkeuringsknoppen en generieke fallbacklevering.
-- Geef de voorkeur aan één `approvalCapability`-object op de kanaalplugin wanneer het kanaal goedkeuringsspecifiek gedrag nodig heeft.
-- `ChannelPlugin.approvals` is verwijderd. Zet feiten over goedkeuringslevering/native/render/auth op `approvalCapability`.
-- `plugin.auth` is alleen voor inloggen/uitloggen; core leest geen goedkeurings-auth-hooks meer uit dat object.
-- `approvalCapability.authorizeActorAction` en `approvalCapability.getActionAvailabilityState` zijn de canonieke approval-auth-seam.
-- Gebruik `approvalCapability.getActionAvailabilityState` voor beschikbaarheid van goedkeuringsauth in dezelfde chat. Houd geconfigureerde goedkeurders beschikbaar voor `/approve`, zelfs wanneer native levering is uitgeschakeld; gebruik in plaats daarvan de native initiërende-surface-status voor leverings-/setupbegeleiding.
-- Als je kanaal native exec-goedkeuringen aanbiedt, gebruik dan `approvalCapability.getExecInitiatingSurfaceState` voor de initiërende-surface/native-client-status wanneer die verschilt van goedkeuringsauth in dezelfde chat. Core gebruikt die exec-specifieke hook om `enabled` van `disabled` te onderscheiden, te bepalen of het initiërende kanaal native exec-goedkeuringen ondersteunt en het kanaal op te nemen in fallbackbegeleiding voor native clients. `createApproverRestrictedNativeApprovalCapability(...)` vult dit in voor het gangbare geval.
-- Gebruik `outbound.shouldSuppressLocalPayloadPrompt` of `outbound.beforeDeliverPayload` voor kanaalspecifiek payload-lifecycle-gedrag, zoals het verbergen van dubbele lokale goedkeuringsprompts of het verzenden van typindicatoren vóór levering.
-- Gebruik `approvalCapability.delivery` alleen voor native goedkeuringsrouting of fallbackonderdrukking.
-- Gebruik `approvalCapability.nativeRuntime` voor native goedkeuringsfeiten die eigendom zijn van het kanaal. Houd dit lazy op hot kanaal-entrypoints met `createLazyChannelApprovalNativeRuntimeAdapter(...)`, dat je runtime-module op aanvraag kan importeren terwijl core nog steeds de goedkeuringslifecycle kan samenstellen.
-- Gebruik `approvalCapability.render` alleen wanneer een kanaal echt aangepaste goedkeuringspayloads nodig heeft in plaats van de gedeelde renderer.
-- Gebruik `approvalCapability.describeExecApprovalSetup` wanneer het kanaal wil dat het antwoord op het uitgeschakelde pad uitlegt welke exacte config-knoppen nodig zijn om native exec-goedkeuringen in te schakelen. De hook ontvangt `{ channel, channelLabel, accountId }`; kanalen met benoemde accounts moeten account-scoped paden renderen, zoals `channels.<channel>.accounts.<id>.execApprovals.*`, in plaats van top-level defaults.
-- Gebruik `approvalCapability.describePluginApprovalSetup` wanneer begeleiding bij falende Plugin-goedkeuring veilig kan worden getoond voor no-route- en timeoutfouten bij Plugin-goedkeuring. `createApproverRestrictedNativeApprovalCapability(...)` leidt dit niet af uit `describeExecApprovalSetup`; geef dezelfde helper alleen expliciet door wanneer Plugin- en exec-goedkeuringen echt dezelfde native setup gebruiken.
-- Als een kanaal stabiele, eigenaarachtige DM-identiteiten kan afleiden uit bestaande config, gebruik dan `createResolvedApproverActionAuthAdapter` uit `openclaw/plugin-sdk/approval-runtime` om `/approve` in dezelfde chat te beperken zonder goedkeuringsspecifieke core-logica toe te voegen.
-- Als aangepaste goedkeuringsauth bewust alleen fallback in dezelfde chat toestaat, retourneer dan `markImplicitSameChatApprovalAuthorization({ authorized: true })` uit `openclaw/plugin-sdk/approval-auth-runtime`; anders behandelt core het resultaat als expliciete goedkeurderautorisatie.
-- Als een kanaaleigen native callback goedkeuringen direct oplost, gebruik dan `isImplicitSameChatApprovalAuthorization(...)` vóór het oplossen, zodat impliciete fallback nog steeds via de normale actorautorisatie van het kanaal loopt.
-- Als een kanaal native goedkeuringslevering nodig heeft, houd kanaalcode dan gericht op targetnormalisatie plus transport-/presentatiefeiten. Gebruik `createChannelExecApprovalProfile`, `createChannelNativeOriginTargetResolver`, `createChannelApproverDmTargetResolver` en `createApproverRestrictedNativeApprovalCapability` uit `openclaw/plugin-sdk/approval-runtime`. Zet de kanaalspecifieke feiten achter `approvalCapability.nativeRuntime`, idealiter via `createChannelApprovalNativeRuntimeAdapter(...)` of `createLazyChannelApprovalNativeRuntimeAdapter(...)`, zodat core de handler kan samenstellen en requestfiltering, routing, dedupe, verval, Gateway-abonnement en routed-elsewhere-meldingen kan beheren. `nativeRuntime` is opgesplitst in een paar kleinere seams:
-- Gebruik `createNativeApprovalChannelRouteGates` uit `openclaw/plugin-sdk/approval-native-runtime` wanneer een kanaal zowel native levering vanaf de sessie-oorsprong als expliciete forwardingtargets voor goedkeuringen ondersteunt. De helper centraliseert selectie van goedkeuringsconfig, `mode`-afhandeling, agent-/sessiefilters, accountbinding, sessietargetmatching en targetlistmatching, terwijl callers nog steeds eigenaar zijn van het kanaal-id, de standaard forwardingmodus, accountlookup, transport-enabled-check, targetnormalisatie en resolutie van turn-source-targets. Gebruik dit niet om core-owned kanaalbeleidsdefaults te maken; geef de gedocumenteerde standaardmodus van het kanaal expliciet door.
-- `createChannelNativeOriginTargetResolver` gebruikt standaard de gedeelde channel-route-matcher voor `{ to, accountId, threadId }`-targets. Geef `targetsMatch` alleen door wanneer een kanaal provider-specifieke equivalentieregels heeft, zoals Slack-timestamp-prefixmatching.
-- Geef `normalizeTargetForMatch` door aan `createChannelNativeOriginTargetResolver` wanneer het kanaal provider-id's moet canoniseren voordat de standaard route-matcher of een aangepaste `targetsMatch`-callback draait, terwijl het oorspronkelijke target voor levering behouden blijft. Gebruik `normalizeTarget` alleen wanneer het opgeloste leveringstarget zelf gecanoniseerd moet worden.
-- `availability` - of het account is geconfigureerd en of een request moet worden afgehandeld
-- `presentation` - map het gedeelde approval-viewmodel naar pending/resolved/expired native payloads of definitieve acties
-- `transport` - bereid targets voor en verzend/update/verwijder native goedkeuringsberichten
-- `interactions` - optionele bind-/unbind-/clear-action-hooks voor native knoppen of reacties, plus een optionele `cancelDelivered`-hook. Implementeer `cancelDelivered` wanneer `deliverPending` in-process of persistente state registreert (zoals een reaction-target-store), zodat die state kan worden vrijgegeven als een handlerstop de levering annuleert voordat `bindPending` draait of wanneer `bindPending` geen handle retourneert
+Gebruik `approvalCapability.delivery` alleen voor native goedkeuringsroutering of het
+onderdrukken van fallbacks, en `approvalCapability.render` alleen wanneer een kanaal werkelijk
+aangepaste goedkeuringspayloads nodig heeft in plaats van de gedeelde renderer.
+
+### Autorisatie voor goedkeuringen
+
+- `approvalCapability.authorizeActorAction` en
+  `approvalCapability.getActionAvailabilityState` vormen de canonieke
+  scheiding voor goedkeuringsautorisatie.
+- Gebruik `getActionAvailabilityState` voor de beschikbaarheid van goedkeuringsautorisatie binnen dezelfde chat.
+  Houd geconfigureerde goedkeurders beschikbaar voor `/approve`, zelfs wanneer native bezorging
+  is uitgeschakeld; gebruik in plaats daarvan de status van het native initiërende oppervlak voor
+  richtlijnen over bezorging en configuratie.
+- Als je kanaal native uitvoeringsgoedkeuringen beschikbaar stelt, gebruik dan
+  `approvalCapability.getExecInitiatingSurfaceState` voor de
+  status van het initiërende oppervlak/de native client wanneer deze verschilt van goedkeuringsautorisatie
+  binnen dezelfde chat. Core gebruikt die uitvoeringsspecifieke hook om onderscheid te maken tussen `enabled` en
+  `disabled`, te bepalen of het initiërende kanaal native uitvoeringsgoedkeuringen
+  ondersteunt en het kanaal op te nemen in fallbackrichtlijnen voor native clients.
+  `createApproverRestrictedNativeApprovalCapability(...)` vult dit in voor
+  het gebruikelijke geval.
+- Als een kanaal stabiele eigenaarachtige DM-identiteiten uit bestaande configuratie kan afleiden,
+  gebruik dan `createResolvedApproverActionAuthAdapter` uit
+  `openclaw/plugin-sdk/approval-runtime` om `/approve` binnen dezelfde chat te beperken
+  zonder goedkeuringsspecifieke corelogica toe te voegen.
+- Als aangepaste goedkeuringsautorisatie opzettelijk alleen fallback binnen dezelfde chat toestaat, retourneer dan
+  `markImplicitSameChatApprovalAuthorization({ authorized: true })` uit
+  `openclaw/plugin-sdk/approval-auth-runtime`; anders behandelt core het
+  resultaat als expliciete autorisatie van een goedkeurder.
+- Als een native callback die eigendom is van een kanaal goedkeuringen rechtstreeks afhandelt, gebruik dan
+  `isImplicitSameChatApprovalAuthorization(...)` vóór het afhandelen, zodat impliciete
+  fallback nog steeds via de normale actorautorisatie van het kanaal verloopt.
+
+### Levenscyclus van payloads en configuratierichtlijnen
+
+- Gebruik `outbound.shouldSuppressLocalPayloadPrompt` of
+  `outbound.beforeDeliverPayload` voor kanaalspecifiek gedrag rond de levenscyclus van payloads,
+  zoals het verbergen van dubbele lokale goedkeuringsprompts of het verzenden van typindicatoren
+  vóór bezorging.
+- Gebruik `approvalCapability.describeExecApprovalSetup` wanneer het kanaal wil
+  dat het antwoord voor het uitgeschakelde pad precies uitlegt welke configuratieopties nodig zijn om
+  native uitvoeringsgoedkeuringen in te schakelen. De hook ontvangt `{ channel, channelLabel, accountId }`;
+  kanalen met benoemde accounts moeten accountgebonden paden renderen, zoals
+  `channels.<channel>.accounts.<id>.execApprovals.*`, in plaats van standaardwaarden
+  op het hoogste niveau.
+- Gebruik `approvalCapability.describePluginApprovalSetup` wanneer richtlijnen bij mislukte
+  Plugingoedkeuringen veilig kunnen worden weergegeven bij fouten zonder route en time-outs
+  van Plugingoedkeuringen. `createApproverRestrictedNativeApprovalCapability(...)` leidt
+  dit niet af uit `describeExecApprovalSetup`; geef dezelfde helper alleen expliciet door
+  wanneer Plugin- en uitvoeringsgoedkeuringen daadwerkelijk dezelfde native configuratie gebruiken.
+
+### Native bezorging van goedkeuringen
+
+Als een kanaal native bezorging van goedkeuringen nodig heeft, houd de kanaalcode dan gericht op
+doelnormalisatie plus feiten over transport en presentatie. Gebruik
+`createChannelExecApprovalProfile`, `createChannelNativeOriginTargetResolver`,
+`createChannelApproverDmTargetResolver` en
+`createApproverRestrictedNativeApprovalCapability` uit
+`openclaw/plugin-sdk/approval-runtime`. Plaats de kanaalspecifieke feiten achter
+`approvalCapability.nativeRuntime`, bij voorkeur via
+`createChannelApprovalNativeRuntimeAdapter(...)` of
+`createLazyChannelApprovalNativeRuntimeAdapter(...)`, zodat core de
+handler kan samenstellen en het filteren, routeren, dedupliceren en verlopen van aanvragen, het Gateway-
+abonnement en meldingen over routering naar elders kan beheren.
+
+`nativeRuntime` is opgesplitst in enkele kleinere scheidingen:
+
+- `availability` - of het account is geconfigureerd en of een verzoek
+  moet worden afgehandeld
+- `presentation` - zet het gedeelde goedkeuringsweergavemodel om in
+  openstaande/opgeloste/verlopen systeemeigen payloads of definitieve acties
+- `transport` - bereid doelen voor en verzend/update/verwijder systeemeigen
+  goedkeuringsberichten
+- `interactions` - optionele hooks voor het koppelen/ontkoppelen/wissen van acties voor systeemeigen knoppen
+  of reacties, plus een optionele `cancelDelivered`-hook. Implementeer
+  `cancelDelivered` wanneer `deliverPending` procesinterne of persistente
+  status registreert (zoals een opslag voor reactiedoelen), zodat die status kan worden vrijgegeven als het
+  stoppen van een handler de levering annuleert voordat `bindPending` wordt uitgevoerd, of wanneer
+  `bindPending` geen handle retourneert
 - `observe` - optionele hooks voor leveringsdiagnostiek
-- Als het kanaal runtime-owned objecten nodig heeft, zoals een client, token, Bolt-app of webhook-ontvanger, registreer die dan via `openclaw/plugin-sdk/channel-runtime-context`. Het generieke runtime-contextregister laat core capability-driven handlers bootstrappen vanuit kanaal-startup-state zonder goedkeuringsspecifieke wrapper-glue toe te voegen.
-- Grijp alleen naar de lower-level `createChannelApprovalHandler` of `createChannelNativeApprovalRuntime` wanneer de capability-driven seam nog niet expressief genoeg is.
-- Native goedkeuringskanalen moeten zowel `accountId` als `approvalKind` via die helpers routeren. `accountId` houdt multi-account-goedkeuringsbeleid scoped naar het juiste botaccount, en `approvalKind` houdt exec- versus Plugin-goedkeuringsgedrag beschikbaar voor het kanaal zonder hardcoded branches in core.
-- Core is nu ook eigenaar van goedkeurings-reroute-meldingen. Kanaalplugins moeten geen eigen follow-upberichten "goedkeuring ging naar DM's / een ander kanaal" verzenden vanuit `createChannelNativeApprovalRuntime`; expose in plaats daarvan accurate origin- en approver-DM-routing via de gedeelde approval-capability-helpers en laat core daadwerkelijke leveringen aggregeren voordat er een melding terug naar de initiërende chat wordt geplaatst.
-- Behoud de geleverde goedkeurings-id-soort end-to-end. Native clients mogen
-  exec- versus Plugin-goedkeuringsrouting niet raden of herschrijven vanuit kanaallokale state.
-- Verschillende goedkeuringssoorten kunnen bewust verschillende native surfaces aanbieden.
-  Huidige gebundelde voorbeelden:
-  - Slack houdt native goedkeuringsrouting beschikbaar voor zowel exec- als Plugin-id's.
-  - Matrix behoudt dezelfde native DM-/kanaalrouting en reaction-UX voor exec-
-    en Plugin-goedkeuringen, terwijl auth nog steeds per goedkeuringssoort kan verschillen.
-- `createApproverRestrictedNativeApprovalAdapter` bestaat nog steeds als compatibiliteitswrapper, maar nieuwe code moet de capability-builder verkiezen en `approvalCapability` op de plugin exposen.
 
-Voor hot kanaal-entrypoints geef je de voorkeur aan de smallere runtime-subpaden wanneer je slechts
-één deel van die familie nodig hebt:
+Andere goedkeuringshelpers:
+
+- Gebruik `createNativeApprovalChannelRouteGates` uit
+  `openclaw/plugin-sdk/approval-native-runtime` wanneer een kanaal zowel
+  systeemeigen levering vanuit de sessieoorsprong als expliciete doorstuurdoelen voor goedkeuringen ondersteunt. De
+  helper centraliseert de selectie van goedkeuringsconfiguratie, de afhandeling van `mode`, agent-/sessie-
+  filters, accountkoppeling, afstemming van sessiedoelen en afstemming van doellijsten,
+  terwijl aanroepers verantwoordelijk blijven voor de kanaal-id, de standaarddoorstuurmodus, het
+  opzoeken van accounts, de controle of transport is ingeschakeld, doelnormalisatie en
+  doelresolutie vanuit de beurtbron. Gebruik deze niet om door de kern beheerde standaardwaarden voor kanaalbeleid
+  te maken; geef de gedocumenteerde standaardmodus van het kanaal expliciet door.
+- `createChannelNativeOriginTargetResolver` gebruikt standaard de gedeelde matcher voor kanaalroutes
+  voor `{ to, accountId, threadId }`-doelen. Geef
+  `targetsMatch` alleen door wanneer een kanaal providerspecifieke equivalentieregels heeft,
+  zoals het vergelijken van Slack-tijdstempelvoorvoegsels. Geef `normalizeTargetForMatch` door wanneer
+  het kanaal provider-id's moet canonicaliseren voordat de standaardroutematcher
+  of een aangepaste `targetsMatch`-callback wordt uitgevoerd, terwijl het
+  oorspronkelijke doel voor levering behouden blijft. Gebruik `normalizeTarget` alleen wanneer het opgeloste
+  leveringsdoel zelf moet worden gecanonicaliseerd.
+- Als het kanaal door de runtime beheerde objecten nodig heeft, zoals een client, token, Bolt-
+  app of Webhook-ontvanger, registreer deze dan via
+  `openclaw/plugin-sdk/channel-runtime-context`. Met het generieke runtime-contextregister
+  kan de kern door mogelijkheden aangestuurde handlers opstarten vanuit de opstartstatus van het kanaal
+  zonder goedkeuringsspecifieke wrapperlijm toe te voegen.
+- Gebruik de lagere `createChannelApprovalHandler` of
+  `createChannelNativeApprovalRuntime` alleen wanneer de door mogelijkheden aangestuurde naad
+  nog niet expressief genoeg is.
+- Systeemeigen goedkeuringskanalen moeten zowel `accountId` als `approvalKind`
+  via die helpers routeren. `accountId` beperkt goedkeuringsbeleid voor meerdere accounts
+  tot het juiste botaccount en `approvalKind` houdt het goedkeuringsgedrag
+  voor exec versus Plugin beschikbaar voor het kanaal zonder hardgecodeerde vertakkingen in
+  de kern.
+- De kern beheert ook meldingen over het omleiden van goedkeuringen. Kanaalplugins mogen
+  niet hun eigen vervolgberichten met "goedkeuring is naar privéberichten/een ander kanaal gestuurd" verzenden vanuit
+  `createChannelNativeApprovalRuntime`; stel in plaats daarvan nauwkeurige routering voor oorsprong +
+  privéberichten van goedkeurders beschikbaar via de gedeelde helpers voor goedkeuringsmogelijkheden en laat
+  de kern de daadwerkelijke leveringen verzamelen voordat een melding wordt teruggestuurd naar de
+  chat waarin het verzoek is gestart.
+- Behoud het type van de geleverde goedkeurings-id van begin tot eind. Systeemeigen clients mogen
+  niet op basis van lokale kanaalstatus de routering van exec- versus Plugin-goedkeuringen raden of
+  herschrijven.
+- Geef die expliciete `approvalKind` door aan `resolveApprovalOverGateway`. Dit gebruikt
+  de canonieke `approval.resolve`-service en retourneert de geregistreerde winnaar wanneer
+  een ander oppervlak als eerste antwoordt. De oudere expliciete invoer `resolveMethod`
+  blijft bestaan voor door opdrachten ondersteunde bedieningselementen; nieuwe systeemeigen acties mogen deze niet gebruiken of
+  het type afleiden uit een id.
+- Verschillende goedkeuringstypen kunnen bewust verschillende systeemeigen
+  oppervlakken beschikbaar stellen. Huidige gebundelde voorbeelden: Matrix behoudt dezelfde systeemeigen privébericht-/kanaal-
+  routering en reactie-UX voor exec- en Plugin-goedkeuringen, terwijl
+  authenticatie nog steeds per goedkeuringstype kan verschillen; Slack houdt systeemeigen goedkeuringsroutering beschikbaar
+  voor zowel exec- als Plugin-id's.
+- `createApproverRestrictedNativeApprovalAdapter` bestaat nog steeds als
+  compatibiliteitswrapper, maar nieuwe code moet bij voorkeur de mogelijkhedenbouwer gebruiken
+  en `approvalCapability` beschikbaar stellen op de Plugin.
+
+### Smallere runtime-subpaden voor goedkeuringen
+
+Geef voor intensief gebruikte kanaalingangen de voorkeur aan deze smallere subpaden boven de bredere
+`approval-runtime`-barrel wanneer je slechts één onderdeel van die familie nodig hebt:
 
 - `openclaw/plugin-sdk/approval-auth-runtime`
 - `openclaw/plugin-sdk/approval-client-runtime`
 - `openclaw/plugin-sdk/approval-delivery-runtime`
 - `openclaw/plugin-sdk/approval-gateway-runtime`
+- `openclaw/plugin-sdk/approval-reference-runtime`
 - `openclaw/plugin-sdk/approval-handler-adapter-runtime`
 - `openclaw/plugin-sdk/approval-handler-runtime`
 - `openclaw/plugin-sdk/approval-native-runtime`
 - `openclaw/plugin-sdk/approval-reply-runtime`
 - `openclaw/plugin-sdk/channel-runtime-context`
 
-Geef op dezelfde manier de voorkeur aan `openclaw/plugin-sdk/setup-runtime`,
-`openclaw/plugin-sdk/setup-runtime`,
-`openclaw/plugin-sdk/reply-runtime`,
+Geef ook de voorkeur aan `openclaw/plugin-sdk/reply-runtime`,
 `openclaw/plugin-sdk/reply-dispatch-runtime`,
 `openclaw/plugin-sdk/reply-reference` en
-`openclaw/plugin-sdk/reply-chunking` wanneer je de bredere umbrella-
-surface niet nodig hebt.
+`openclaw/plugin-sdk/reply-chunking` boven bredere overkoepelende oppervlakken wanneer je
+ze niet allemaal nodig hebt.
 
-Specifiek voor setup:
+### Setup-subpaden
 
-- `openclaw/plugin-sdk/setup-runtime` dekt de runtime-safe setuphelpers:
-  `createSetupTranslator`, import-safe setup-patchadapters (`createPatchedAccountSetupAdapter`,
-  `createEnvPatchedAccountSetupAdapter`,
-  `createSetupInputPresenceValidator`), lookup-note-output,
+- `openclaw/plugin-sdk/setup-runtime` omvat de runtime-veilige setuphelpers:
+  `createSetupTranslator`, importveilige adapters voor setuppatches
+  (`createPatchedAccountSetupAdapter`, `createEnvPatchedAccountSetupAdapter`,
+  `createSetupInputPresenceValidator`), uitvoer van opzoeknotities,
   `promptResolvedAllowFrom`, `splitSetupEntries` en de gedelegeerde
-  setup-proxy-builders
-- `openclaw/plugin-sdk/setup-runtime` bevat de env-aware adapter-seam voor
-  `createEnvPatchedAccountSetupAdapter`
-- `openclaw/plugin-sdk/channel-setup` dekt de optional-install setup-
-  builders plus een paar setup-safe primitives:
-  `createOptionalChannelSetupSurface`, `createOptionalChannelSetupAdapter`,
+  bouwers voor setup-proxy's.
+- `openclaw/plugin-sdk/channel-setup` omvat de setupbouwers
+  voor optionele installatie plus enkele setupveilige primitieven: `createOptionalChannelSetupSurface`,
+  `createOptionalChannelSetupAdapter`, `createOptionalChannelSetupWizard`,
+  `DEFAULT_ACCOUNT_ID`, `createTopLevelChannelDmPolicy`,
+  `setSetupChannelEnabled` en `splitSetupEntries`.
+- Gebruik de bredere `openclaw/plugin-sdk/setup`-naad alleen wanneer je ook
+  de zwaardere gedeelde setup-/configuratiehelpers nodig hebt, zoals
+  `moveSingleAccountChannelSectionToDefaultAccount(...)`.
 
-Als je kanaal env-driven setup of auth ondersteunt en generieke startup-/config-
-flows die env-namen moeten kennen voordat runtime laadt, declareer ze dan in het
-pluginmanifest met `channelEnvVars`. Houd kanaalruntime `envVars` of lokale
-constanten alleen voor operatorgerichte tekst.
+Als je kanaal op setupoppervlakken alleen "installeer eerst deze Plugin" wil weergeven,
+geef dan de voorkeur aan `createOptionalChannelSetupSurface(...)`. De gegenereerde
+adapter/wizard weigert standaard configuratieschrijfbewerkingen en voltooiing, en hergebruikt
+hetzelfde bericht over de vereiste installatie bij validatie, voltooiing en
+de tekst van de documentatielink.
+
+Als je kanaal door omgevingsvariabelen aangestuurde setup of authenticatie ondersteunt en generieke opstart-/configuratiestromen
+die omgevingsnamen moeten kennen voordat de runtime wordt geladen, declareer ze dan in het
+Plugin-manifest met `channelEnvVars`. Behoud `envVars` van de kanaalruntime of lokale
+constanten alleen voor op beheerders gerichte tekst.
 
 Als je kanaal kan verschijnen in `status`, `channels list`, `channels status` of
-SecretRef-scans voordat de pluginruntime start, voeg dan `openclaw.setupEntry` toe in
-`package.json`. Dat entrypoint moet veilig te importeren zijn in read-only command-
-paden en moet de kanaalmetadata, setup-safe config-adapter, status-
-adapter en kanaalsecret-targetmetadata retourneren die nodig zijn voor die samenvattingen. Start geen
-clients, listeners of transportruntimes vanuit de setup-entry.
+SecretRef-scans voordat de Plugin-runtime start, voeg dan `openclaw.setupEntry` toe in
+`package.json`. Dat ingangspunt moet veilig kunnen worden geïmporteerd in alleen-lezen opdrachtpaden
+en moet de kanaalmetadata, de setupveilige configuratieadapter,
+statusadapter en metadata voor geheime kanaaldoelen retourneren die nodig zijn voor die
+samenvattingen. Start geen clients, listeners of transportruntimes vanuit de
+setupingang.
 
-Houd ook het importpad van de hoofd-kanaal-entry smal. Discovery kan de
-entry en de kanaalpluginmodule evalueren om capabilities te registreren zonder het
-kanaal te activeren. Bestanden zoals `channel-plugin-api.ts` moeten het kanaal-
-pluginobject exporteren zonder setupwizards, transportclients, socket-
-listeners, subprocess-launchers of service-startupmodules te importeren. Zet die runtime-
-onderdelen in modules die worden geladen vanuit `registerFull(...)`, runtime-setters of lazy
-capability-adapters.
+Houd ook het importpad van de hoofdkanaalingang beperkt. Discovery kan
+de ingang en de kanaalpluginmodule evalueren om mogelijkheden te registreren zonder
+het kanaal te activeren. Bestanden zoals `channel-plugin-api.ts` moeten
+het kanaalpluginobject exporteren zonder setupwizards, transport-
+clients, socketlisteners, subprocess-starters of serviceopstartmodules te importeren.
+Plaats die runtimeonderdelen in modules die worden geladen vanuit `registerFull(...)`, runtime-
+setters of luie mogelijkhedenadapters.
 
-`createOptionalChannelSetupWizard`, `DEFAULT_ACCOUNT_ID`,
-`createTopLevelChannelDmPolicy`, `setSetupChannelEnabled` en
-`splitSetupEntries`
+### Andere beperkte kanaalsubpaden
 
-- gebruik de bredere `openclaw/plugin-sdk/setup`-seam alleen wanneer je ook de
-  zwaardere gedeelde setup-/confighelpers nodig hebt, zoals
-  `moveSingleAccountChannelSectionToDefaultAccount(...)`
+Geef voor andere intensief gebruikte kanaalpaden de voorkeur aan de beperkte helpers boven bredere verouderde
+oppervlakken:
 
-Als je kanaal alleen "installeer eerst deze plugin" wil adverteren in setup-
-surfaces, geef dan de voorkeur aan `createOptionalChannelSetupSurface(...)`. De gegenereerde
-adapter/wizard falen gesloten bij config-writes en finalization, en ze hergebruiken
-hetzelfde install-required-bericht voor validatie, finalize en docs-link-
-tekst.
-
-Voor andere hot kanaalpaden geef je de voorkeur aan de smalle helpers boven bredere legacy-
-surfaces:
-
-- `openclaw/plugin-sdk/account-core`,
-  `openclaw/plugin-sdk/account-id`,
+- `openclaw/plugin-sdk/account-core`, `openclaw/plugin-sdk/account-id`,
   `openclaw/plugin-sdk/account-resolution` en
   `openclaw/plugin-sdk/account-helpers` voor configuratie met meerdere accounts en
-  fallback voor standaardaccounts
+  terugval naar het standaardaccount
 - `openclaw/plugin-sdk/inbound-envelope` en
-  `openclaw/plugin-sdk/channel-inbound` voor inkomende route/envelope en
-  record-and-dispatch-bedrading
+  `openclaw/plugin-sdk/channel-inbound` voor inkomende route/envelop en
+  bedrading voor registreren en doorsturen
 - `openclaw/plugin-sdk/channel-targets` voor helpers voor doelparsing
 - `openclaw/plugin-sdk/outbound-media` voor het laden van media en
-  `openclaw/plugin-sdk/channel-outbound` voor uitgaande identiteit/send-delegates
+  `openclaw/plugin-sdk/channel-outbound` voor delegaten voor uitgaande identiteit/verzending
   en payloadplanning
 - `buildThreadAwareOutboundSessionRoute(...)` uit
   `openclaw/plugin-sdk/channel-core` wanneer een uitgaande route een expliciete
-  `replyToId`/`threadId` moet behouden of de huidige `:thread:`-sessie moet
-  herstellen nadat de basissessiesleutel nog steeds overeenkomt. Provider-Plugins kunnen
-  prioriteit, suffixgedrag en normalisatie van thread-id's overschrijven wanneer hun platform
-  native semantiek voor threadaflevering heeft.
-- `openclaw/plugin-sdk/thread-bindings-runtime` voor de levenscyclus van threadbindings
-  en adapterregistratie
-- `openclaw/plugin-sdk/agent-media-payload` alleen wanneer een legacy agent/media
-  payload-veldindeling nog steeds vereist is
-- `openclaw/plugin-sdk/telegram-command-config` voor Telegram-normalisatie van aangepaste opdrachten,
-  validatie van duplicaten/conflicten en een fallback-stabiel contract voor opdrachtconfiguratie
+  `replyToId`/`threadId` moet behouden of de huidige `:thread:`-
+  sessie moet herstellen nadat de basissessiesleutel nog steeds overeenkomt. Providerplugins kunnen
+  prioriteit, achtervoegselgedrag en normalisatie van thread-id's overschrijven wanneer
+  hun platform systeemeigen semantiek voor threadlevering heeft.
+- `openclaw/plugin-sdk/thread-bindings-runtime` voor de levenscyclus
+  van threadkoppelingen en adapterregistratie
+- `openclaw/plugin-sdk/agent-media-payload` alleen wanneer een verouderde veldindeling
+  voor agent-/mediapayloads nog vereist is
+- `openclaw/plugin-sdk/telegram-command-config` (verouderd: geen gebundelde
+  Plugin gebruikt dit in productie) voor normalisatie van aangepaste Telegram-opdrachten,
+  validatie van duplicaten/conflicten en een opdrachtconfiguratiecontract
+  dat stabiel blijft bij terugval; geef voor nieuwe Plugincode de voorkeur aan lokale verwerking van opdrachtconfiguratie in de Plugin
 
-Kanalen alleen voor auth kunnen meestal bij het standaardpad blijven: core handelt goedkeuringen af en de Plugin stelt alleen uitgaande/auth-mogelijkheden beschikbaar. Native goedkeuringskanalen zoals Matrix, Slack, Telegram en aangepaste chattransports moeten de gedeelde native helpers gebruiken in plaats van hun eigen goedkeuringslevenscyclus te bouwen.
+Kanalen met alleen authenticatie kunnen doorgaans bij het standaardpad stoppen: de kern verwerkt
+goedkeuringen en de Plugin stelt alleen uitgaande/authenticatiemogelijkheden beschikbaar. Systeemeigen
+goedkeuringskanalen zoals Matrix, Slack, Telegram en aangepaste chattransporten
+moeten de gedeelde systeemeigen helpers gebruiken in plaats van een eigen goedkeuringslevenscyclus
+te bouwen.
 
 ## Beleid voor inkomende vermeldingen
 
-Houd verwerking van inkomende vermeldingen gesplitst in twee lagen:
+Houd de verwerking van inkomende vermeldingen opgesplitst in twee lagen:
 
 - door de Plugin beheerde bewijsverzameling
-- gedeelde beleidsevaluatie
+- evaluatie van gedeeld beleid
 
 Gebruik `openclaw/plugin-sdk/channel-mention-gating` voor beslissingen over vermeldingsbeleid.
-Gebruik `openclaw/plugin-sdk/channel-inbound` alleen wanneer je de bredere inkomende
-helperbarrel nodig hebt.
+Gebruik `openclaw/plugin-sdk/channel-inbound` alleen wanneer je de bredere
+barrel met inkomende helpers nodig hebt.
 
-Goed geschikt voor Plugin-lokale logica:
+Geschikt voor lokale logica in de Plugin:
 
-- detectie van antwoord-aan-bot
-- detectie van geciteerde bot
-- controles op threaddeelname
+- detectie van antwoorden aan de bot
+- detectie van geciteerde botberichten
+- controles op deelname aan threads
 - uitsluitingen voor service-/systeemberichten
-- platform-native caches die nodig zijn om botdeelname te bewijzen
+- platformeigen caches die nodig zijn om deelname van de bot aan te tonen
 
-Goed geschikt voor de gedeelde helper:
+Geschikt voor de gedeelde helper:
 
 - `requireMention`
-- expliciet vermeldingsresultaat
-- allowlist voor impliciete vermeldingen
-- opdrachtbypass
-- definitieve overslabeslissing
+- resultaat van expliciete vermelding
+- toegestane lijst voor impliciete vermeldingen
+- omzeiling voor opdrachten
+- definitieve beslissing om over te slaan
 
-Voorkeursflow:
+Aanbevolen stroom:
 
 1. Bereken lokale vermeldingsfeiten.
 2. Geef die feiten door aan `resolveInboundMentionDecision({ facts, policy })`.
-3. Gebruik `decision.effectiveWasMentioned`, `decision.shouldBypassMention` en `decision.shouldSkip` in je inkomende gate.
+3. Gebruik `decision.effectiveWasMentioned`, `decision.shouldBypassMention` en
+   `decision.shouldSkip` in je inkomende poort.
 
 ```typescript
 import {
@@ -328,15 +476,20 @@ import {
   resolveInboundMentionDecision,
 } from "openclaw/plugin-sdk/channel-inbound";
 
-const mentionMatch = matchesMentionWithExplicit(text, {
+const wasMentioned = matchesMentionWithExplicit({
+  text,
   mentionRegexes,
-  mentionPatterns,
+  explicit: {
+    hasAnyMention,
+    isExplicitlyMentioned,
+    canResolveExplicit,
+  },
 });
 
 const facts = {
   canDetectMention: true,
-  wasMentioned: mentionMatch.matched,
-  hasAnyMention: mentionMatch.hasExplicitMention,
+  wasMentioned,
+  hasAnyMention,
   implicitMentionKinds: [
     ...implicitMentionKindWhen("reply_to_bot", isReplyToBot),
     ...implicitMentionKindWhen("quoted_bot", isQuoteOfBot),
@@ -358,30 +511,29 @@ const decision = resolveInboundMentionDecision({
 if (decision.shouldSkip) return;
 ```
 
+`matchesMentionWithExplicit(...)` retourneert een booleaanse waarde. `hasAnyMention`,
+`isExplicitlyMentioned` en `canResolveExplicit` zijn afkomstig uit de eigen
+systeemeigen vermeldingsmetadata van het kanaal (berichtentiteiten, vlaggen voor antwoorden aan de bot en vergelijkbare gegevens);
+geef waarden voor `false`/`undefined` op wanneer je platform deze niet kan detecteren.
+
 `api.runtime.channel.mentions` stelt dezelfde gedeelde vermeldingshelpers beschikbaar voor
-gebundelde kanaal-Plugins die al afhankelijk zijn van runtime-injectie:
+gebundelde kanaalplugins die al afhankelijk zijn van runtime-injectie:
+`buildMentionRegexes`, `matchesMentionPatterns`, `matchesMentionWithExplicit`,
+`implicitMentionKindWhen`, `resolveInboundMentionDecision`.
 
-- `buildMentionRegexes`
-- `matchesMentionPatterns`
-- `matchesMentionWithExplicit`
-- `implicitMentionKindWhen`
-- `resolveInboundMentionDecision`
+Als je alleen `implicitMentionKindWhen` en `resolveInboundMentionDecision` nodig hebt,
+importeer ze dan uit `openclaw/plugin-sdk/channel-mention-gating` om te voorkomen dat
+ongerelateerde inkomende runtimehelpers worden geladen.
 
-Als je alleen `implicitMentionKindWhen` en
-`resolveInboundMentionDecision` nodig hebt, importeer dan uit
-`openclaw/plugin-sdk/channel-mention-gating` om te voorkomen dat ongerelateerde inkomende
-runtimehelpers worden geladen.
-
-Gebruik `resolveInboundMentionDecision({ facts, policy })` voor vermeldingsgating.
-
-## Doorloop
+## Stapsgewijze uitleg
 
 <Steps>
   <a id="step-1-package-and-manifest"></a>
-  <Step title="Package and manifest">
-    Maak de standaard Plugin-bestanden. Het veld `channel` in `package.json` is
-    wat dit een kanaal-Plugin maakt. Zie [Plugin Setup and Config](/nl/plugins/sdk-setup#openclaw-channel)
-    voor het volledige pakketmetadatasurface:
+  <Step title="Pakket en manifest">
+    Maak de standaardpluginbestanden. Het veld `channels` in
+    `openclaw.plugin.json` (niet een veld `kind`) geeft aan dat een manifest
+    eigenaar is van een kanaal. Zie voor alle pakketmetadata
+    [Plugin instellen en configureren](/nl/plugins/sdk-setup#openclaw-channel):
 
     <CodeGroup>
     ```json package.json
@@ -395,7 +547,7 @@ Gebruik `resolveInboundMentionDecision({ facts, policy })` voor vermeldingsgatin
         "channel": {
           "id": "acme-chat",
           "label": "Acme Chat",
-          "blurb": "Connect OpenClaw to Acme Chat."
+          "blurb": "Verbind OpenClaw met Acme Chat."
         }
       }
     }
@@ -404,10 +556,9 @@ Gebruik `resolveInboundMentionDecision({ facts, policy })` voor vermeldingsgatin
     ```json openclaw.plugin.json
     {
       "id": "acme-chat",
-      "kind": "channel",
       "channels": ["acme-chat"],
       "name": "Acme Chat",
-      "description": "Acme Chat channel plugin",
+      "description": "Kanaalplugin voor Acme Chat",
       "configSchema": {
         "type": "object",
         "additionalProperties": false,
@@ -428,7 +579,7 @@ Gebruik `resolveInboundMentionDecision({ facts, policy })` voor vermeldingsgatin
           },
           "uiHints": {
             "token": {
-              "label": "Bot token",
+              "label": "Bottoken",
               "sensitive": true
             }
           }
@@ -439,15 +590,18 @@ Gebruik `resolveInboundMentionDecision({ facts, policy })` voor vermeldingsgatin
     </CodeGroup>
 
     `configSchema` valideert `plugins.entries.acme-chat.config`. Gebruik dit voor
-    Plugin-beheerde instellingen die niet de kanaalaccountconfiguratie zijn. `channelConfigs`
-    valideert `channels.acme-chat` en is de cold-path-bron die door configuratieschema,
-    setup en UI-surfaces wordt gebruikt voordat de Plugin-runtime laadt.
+    instellingen die eigendom zijn van de plugin en niet tot de configuratie van het kanaalaccount behoren.
+    `channelConfigs.acme-chat.schema` valideert `channels.acme-chat` en is de
+    bron in het koude pad die door het configuratieschema, de installatie en UI-oppervlakken wordt gebruikt voordat de
+    pluginruntime wordt geladen. Zie [Pluginmanifest](/nl/plugins/manifest) voor het volledige
+    overzicht van velden op het hoogste niveau.
 
   </Step>
 
-  <Step title="Build the channel plugin object">
-    De interface `ChannelPlugin` heeft veel optionele adaptersurfaces. Begin met
-    het minimum - `id` en `setup` - en voeg adapters toe wanneer je ze nodig hebt.
+  <Step title="Het kanaalpluginobject bouwen">
+    De interface `ChannelPlugin` heeft veel optionele adapteroppervlakken. Begin met
+    het minimum — `id`, `config` en `setup` — en voeg adapters toe wanneer je
+    ze nodig hebt.
 
     Maak `src/channel.ts`:
 
@@ -457,7 +611,7 @@ Gebruik `resolveInboundMentionDecision({ facts, policy })` voor vermeldingsgatin
       createChannelPluginBase,
     } from "openclaw/plugin-sdk/channel-core";
     import type { OpenClawConfig } from "openclaw/plugin-sdk/channel-core";
-    import { acmeChatApi } from "./client.js"; // your platform API client
+    import { acmeChatApi } from "./client.js"; // je API-client voor het platform
 
     type ResolvedAccount = {
       accountId: string | null;
@@ -472,7 +626,7 @@ Gebruik `resolveInboundMentionDecision({ facts, policy })` voor vermeldingsgatin
     ): ResolvedAccount {
       const section = (cfg.channels as Record<string, any>)?.["acme-chat"];
       const token = section?.token;
-      if (!token) throw new Error("acme-chat: token is required");
+      if (!token) throw new Error("acme-chat: token is vereist");
       return {
         accountId: accountId ?? null,
         token,
@@ -484,7 +638,10 @@ Gebruik `resolveInboundMentionDecision({ facts, policy })` voor vermeldingsgatin
     export const acmeChatPlugin = createChatChannelPlugin<ResolvedAccount>({
       base: createChannelPluginBase({
         id: "acme-chat",
-        setup: {
+        // Het oplossen/inspecteren van accounts hoort bij `config`, niet bij `setup`.
+        // `setup` omvat schrijfbewerkingen voor onboarding (applyAccountConfig, validateInput).
+        config: {
+          listAccountIds: () => ["default"],
           resolveAccount,
           inspectAccount(cfg, accountId) {
             const section =
@@ -496,9 +653,18 @@ Gebruik `resolveInboundMentionDecision({ facts, policy })` voor vermeldingsgatin
             };
           },
         },
+        setup: {
+          applyAccountConfig: ({ cfg, input }) => ({
+            ...cfg,
+            channels: {
+              ...cfg.channels,
+              "acme-chat": { ...(cfg.channels as any)?.["acme-chat"], ...input },
+            },
+          }),
+        },
       }),
 
-      // DM security: who can message the bot
+      // DM-beveiliging: wie de bot berichten mag sturen
       security: {
         dm: {
           channelKey: "acme-chat",
@@ -508,23 +674,24 @@ Gebruik `resolveInboundMentionDecision({ facts, policy })` voor vermeldingsgatin
         },
       },
 
-      // Pairing: approval flow for new DM contacts
+      // Koppelen: goedkeuringsproces voor nieuwe DM-contacten
       pairing: {
         text: {
-          idLabel: "Acme Chat username",
-          message: "Send this code to verify your identity:",
+          idLabel: "Acme Chat-gebruikersnaam",
+          message: "Stuur deze code om je identiteit te verifiëren:",
           notify: async ({ target, code }) => {
-            await acmeChatApi.sendDm(target, `Pairing code: ${code}`);
+            await acmeChatApi.sendDm(target, `Koppelingscode: ${code}`);
           },
         },
       },
 
-      // Threading: how replies are delivered
+      // Threading: hoe antwoorden worden afgeleverd
       threading: { topLevelReplyToMode: "reply" },
 
-      // Outbound: send messages to the platform
+      // Uitgaand: berichten naar het platform sturen
       outbound: {
         attachedResults: {
+          channel: "acme-chat",
           sendText: async (params) => {
             const result = await acmeChatApi.sendMessage(
               params.to,
@@ -542,34 +709,34 @@ Gebruik `resolveInboundMentionDecision({ facts, policy })` voor vermeldingsgatin
     });
     ```
 
-    Gebruik voor kanalen die zowel canonieke DM-sleutels op topniveau als legacy geneste sleutels accepteren de helpers uit `plugin-sdk/channel-config-helpers`: `resolveChannelDmAccess`, `resolveChannelDmPolicy`, `resolveChannelDmAllowFrom` en `normalizeChannelDmPolicy` houden accountlokale waarden vóór overgenomen rootwaarden. Combineer dezelfde resolver met doctor-reparatie via `normalizeLegacyDmAliases`, zodat runtime en migratie hetzelfde contract lezen.
+    Voor kanalen die zowel canonieke DM-sleutels op het hoogste niveau als verouderde geneste sleutels accepteren, gebruik je de helpers uit `plugin-sdk/channel-config-helpers`: `resolveChannelDmAccess`, `resolveChannelDmPolicy`, `resolveChannelDmAllowFrom` en `normalizeChannelDmPolicy` geven accountspecifieke waarden voorrang op overgenomen hoofdwaarden. Koppel dezelfde resolver via `normalizeLegacyDmAliases` aan herstel door doctor, zodat de runtime en migratie hetzelfde contract lezen.
 
-    <Accordion title="What createChatChannelPlugin does for you">
-      In plaats van low-level adapterinterfaces handmatig te implementeren, geef je
+    <Accordion title="Wat createChatChannelPlugin voor je doet">
+      In plaats van adapterinterfaces op laag niveau handmatig te implementeren, geef je
       declaratieve opties door en stelt de builder ze samen:
 
-      | Optie | Wat het bedraadt |
+      | Optie | Wat deze koppelt |
       | --- | --- |
-      | `security.dm` | Gescopeerde DM-beveiligingsresolver uit configuratievelden |
-      | `pairing.text` | Op tekst gebaseerde DM-koppelflow met code-uitwisseling |
-      | `threading` | Resolver voor antwoord-aan-modus (vast, account-gescopeerd of aangepast) |
-      | `outbound.attachedResults` | Verzendfuncties die resultaatmetadata retourneren (bericht-ID's) |
+      | `security.dm` | Begrensde resolver voor DM-beveiliging op basis van configuratievelden |
+      | `pairing.text` | Tekstgebaseerd DM-koppelingsproces met code-uitwisseling |
+      | `threading` | Resolver voor antwoordmodus (vast, accountspecifiek of aangepast) |
+      | `outbound.attachedResults` | Verzendfuncties die resultaatmetadata retourneren (bericht-ID's); vereist een aangrenzende `channel`-id zodat de kern het geretourneerde afleveringsresultaat kan markeren |
 
-      Je kunt ook ruwe adapterobjecten doorgeven in plaats van de declaratieve opties
+      Je kunt in plaats van de declaratieve opties ook onbewerkte adapterobjecten doorgeven
       als je volledige controle nodig hebt.
 
-      Ruwe uitgaande adapters kunnen een functie `chunker(text, limit, ctx)` definiëren.
-      De optionele `ctx.formatting` bevat beslissingen over opmaak tijdens aflevering
-      zoals `maxLinesPerMessage`; pas dit toe vóór het verzenden, zodat antwoordthreading
-      en chunkgrenzen eenmaal door gedeelde uitgaande aflevering worden opgelost.
+      Onbewerkte uitgaande adapters kunnen een functie `chunker(text, limit, ctx)` definiëren.
+      De optionele `ctx.formatting` bevat beslissingen over opmaak tijdens aflevering,
+      zoals `maxLinesPerMessage`; pas deze vóór het verzenden toe, zodat antwoordthreads
+      en segmentgrenzen eenmaal door de gedeelde uitgaande aflevering worden bepaald.
       Verzendcontexten bevatten ook `replyToIdSource` (`implicit` of `explicit`)
-      wanneer een native antwoorddoel is opgelost, zodat payloadhelpers expliciete
-      antwoordtags kunnen behouden zonder een impliciet eenmalig antwoordslot te verbruiken.
+      wanneer een native antwoorddoel is opgelost, zodat payloadhelpers
+      expliciete antwoordtags kunnen behouden zonder een impliciet, eenmalig antwoordslot te verbruiken.
     </Accordion>
 
   </Step>
 
-  <Step title="Wire the entry point">
+  <Step title="Het ingangspunt aansluiten">
     Maak `index.ts`:
 
     ```typescript index.ts
@@ -579,20 +746,20 @@ Gebruik `resolveInboundMentionDecision({ facts, policy })` voor vermeldingsgatin
     export default defineChannelPluginEntry({
       id: "acme-chat",
       name: "Acme Chat",
-      description: "Acme Chat channel plugin",
+      description: "Kanaalplugin voor Acme Chat",
       plugin: acmeChatPlugin,
       registerCliMetadata(api) {
         api.registerCli(
           ({ program }) => {
             program
               .command("acme-chat")
-              .description("Acme Chat management");
+              .description("Acme Chat-beheer");
           },
           {
             descriptors: [
               {
                 name: "acme-chat",
-                description: "Acme Chat management",
+                description: "Acme Chat-beheer",
                 hasSubcommands: false,
               },
             ],
@@ -605,21 +772,21 @@ Gebruik `resolveInboundMentionDecision({ facts, policy })` voor vermeldingsgatin
     });
     ```
 
-    Plaats kanaal-beheerde CLI-descriptors in `registerCliMetadata(...)` zodat OpenClaw
-    ze in de hoofdhelp kan tonen zonder de volledige kanaal-runtime te activeren,
-    terwijl normale volledige loads nog steeds dezelfde descriptors oppikken voor echte
-    commandoregistratie. Gebruik `registerFull(...)` voor werk dat alleen voor de runtime is.
-    Als `registerFull(...)` gateway-RPC-methoden registreert, gebruik dan een
-    plugin-specifiek voorvoegsel. Core-beheerdersnaamruimten (`config.*`,
+    Plaats CLI-descriptors die eigendom zijn van het kanaal in `registerCliMetadata(...)`, zodat OpenClaw
+    ze in de hoofdhulp kan tonen zonder de volledige kanaalruntime te activeren,
+    terwijl normale volledige laadbewerkingen dezelfde descriptors blijven gebruiken voor de daadwerkelijke
+    commandoregistratie. Houd `registerFull(...)` gereserveerd voor werk dat alleen tijdens runtime plaatsvindt.
+    `defineChannelPluginEntry` verwerkt de scheiding tussen registratiemodi automatisch.
+    Als `registerFull(...)` Gateway-RPC-methoden registreert, gebruik dan een
+    pluginspecifiek voorvoegsel. De beheerdersnaamruimten van de kern (`config.*`,
     `exec.approvals.*`, `wizard.*`, `update.*`) blijven gereserveerd en worden altijd
-    opgelost naar `operator.admin`.
-    `defineChannelPluginEntry` handelt de splitsing in registratiemodus automatisch af. Zie
-    [Entry Points](/nl/plugins/sdk-entrypoints#definechannelpluginentry) voor alle
+    omgezet naar `operator.admin`. Zie
+    [Ingangspunten](/nl/plugins/sdk-entrypoints#definechannelpluginentry) voor alle
     opties.
 
   </Step>
 
-  <Step title="Een setup-entry toevoegen">
+  <Step title="Een installatie-ingang toevoegen">
     Maak `setup-entry.ts` voor lichtgewicht laden tijdens onboarding:
 
     ```typescript setup-entry.ts
@@ -629,33 +796,33 @@ Gebruik `resolveInboundMentionDecision({ facts, policy })` voor vermeldingsgatin
     export default defineSetupPluginEntry(acmeChatPlugin);
     ```
 
-    OpenClaw laadt dit in plaats van de volledige entry wanneer het kanaal is uitgeschakeld
-    of niet is geconfigureerd. Dit voorkomt dat zware runtime-code tijdens setup-flows wordt geladen.
-    Zie [Setup en Config](/nl/plugins/sdk-setup#setup-entry) voor details.
+    OpenClaw laadt dit in plaats van het volledige ingangspunt wanneer het kanaal is uitgeschakeld
+    of niet is geconfigureerd. Zo wordt voorkomen dat zware runtimecode tijdens installatieprocessen wordt geladen.
+    Zie [Installatie en configuratie](/nl/plugins/sdk-setup#setup-entry) voor details.
 
-    Gebundelde workspace-kanalen die setup-veilige exports opsplitsen in sidecar-
-    modules kunnen `defineBundledChannelSetupEntry(...)` gebruiken vanuit
-    `openclaw/plugin-sdk/channel-entry-contract` wanneer ze ook een
-    expliciete runtime-setter tijdens setup nodig hebben.
+    Gebundelde werkruimtekanelen die installatieveilige exports over aanvullende
+    modules verdelen, kunnen `defineBundledChannelSetupEntry(...)` uit
+    `openclaw/plugin-sdk/channel-entry-contract` gebruiken wanneer ze ook een
+    expliciete runtimesetter voor de installatiefase nodig hebben.
 
   </Step>
 
   <Step title="Inkomende berichten verwerken">
-    Je Plugin moet berichten van het platform ontvangen en doorsturen naar
-    OpenClaw. Het gebruikelijke patroon is een Webhook die de aanvraag verifieert en
-    deze via de inkomende handler van je kanaal dispatcht:
+    Je plugin moet berichten van het platform ontvangen en doorsturen naar
+    OpenClaw. Het gebruikelijke patroon is een Webhook die het verzoek verifieert en
+    het via de handler voor inkomende berichten van je kanaal doorstuurt:
 
     ```typescript
     registerFull(api) {
       api.registerHttpRoute({
         path: "/acme-chat/webhook",
-        auth: "plugin", // plugin-managed auth (verify signatures yourself)
+        auth: "plugin", // door de plugin beheerde authenticatie (verifieer zelf de handtekeningen)
         handler: async (req, res) => {
           const event = parseWebhookPayload(req);
 
-          // Your inbound handler dispatches the message to OpenClaw.
-          // The exact wiring depends on your platform SDK -
-          // see a real example in the bundled Microsoft Teams or Google Chat plugin package.
+          // Je handler voor inkomende berichten stuurt het bericht door naar OpenClaw.
+          // De precieze aansluiting hangt af van je platform-SDK —
+          // bekijk een echt voorbeeld in het gebundelde pluginpakket voor Microsoft Teams of Google Chat.
           await handleAcmeChatInbound(api, event);
 
           res.statusCode = 200;
@@ -667,16 +834,16 @@ Gebruik `resolveInboundMentionDecision({ facts, policy })` voor vermeldingsgatin
     ```
 
     <Note>
-      Verwerking van inkomende berichten is kanaalspecifiek. Elke kanaal-Plugin beheert
-      zijn eigen inkomende pipeline. Bekijk gebundelde kanaal-Plugins
-      (bijvoorbeeld het Plugin-pakket voor Microsoft Teams of Google Chat) voor echte patronen.
+      De verwerking van inkomende berichten is kanaalspecifiek. Elke kanaalplugin beheert
+      zijn eigen inkomende pijplijn. Bekijk gebundelde kanaalplugins
+      (bijvoorbeeld het pluginpakket voor Microsoft Teams of Google Chat) voor praktijkvoorbeelden.
     </Note>
 
   </Step>
 
 <a id="step-6-test"></a>
 <Step title="Testen">
-Schrijf colocated tests in `src/channel.test.ts`:
+Schrijf tests op dezelfde locatie in `src/channel.test.ts`:
 
     ```typescript src/channel.test.ts
     import { describe, it, expect } from "vitest";
@@ -689,7 +856,7 @@ Schrijf colocated tests in `src/channel.test.ts`:
             "acme-chat": { token: "test-token", allowFrom: ["user1"] },
           },
         } as any;
-        const account = acmeChatPlugin.setup!.resolveAccount(cfg, undefined);
+        const account = acmeChatPlugin.config.resolveAccount(cfg, undefined);
         expect(account.token).toBe("test-token");
       });
 
@@ -697,81 +864,82 @@ Schrijf colocated tests in `src/channel.test.ts`:
         const cfg = {
           channels: { "acme-chat": { token: "test-token" } },
         } as any;
-        const result = acmeChatPlugin.setup!.inspectAccount!(cfg, undefined);
+        const result = acmeChatPlugin.config.inspectAccount!(cfg, undefined);
         expect(result.configured).toBe(true);
         expect(result.tokenStatus).toBe("available");
       });
 
       it("reports missing config", () => {
         const cfg = { channels: {} } as any;
-        const result = acmeChatPlugin.setup!.inspectAccount!(cfg, undefined);
+        const result = acmeChatPlugin.config.inspectAccount!(cfg, undefined);
         expect(result.configured).toBe(false);
       });
     });
     ```
 
     ```bash
-    pnpm test -- <bundled-plugin-root>/acme-chat/
+    pnpm test <bundled-plugin-root>/acme-chat/
     ```
 
-    Voor gedeelde testhelpers, zie [Testen](/nl/plugins/sdk-testing).
+    Zie [Testen](/nl/plugins/sdk-testing) voor gedeelde testhulpprogramma's.
 
 </Step>
 </Steps>
 
 ## Bestandsstructuur
 
-```
+```text
 <bundled-plugin-root>/acme-chat/
-├── package.json              # openclaw.channel metadata
-├── openclaw.plugin.json      # Manifest with config schema
+├── package.json              # metagegevens van openclaw.channel
+├── openclaw.plugin.json      # Manifest met configuratieschema
 ├── index.ts                  # defineChannelPluginEntry
 ├── setup-entry.ts            # defineSetupPluginEntry
-├── api.ts                    # Public exports (optional)
-├── runtime-api.ts            # Internal runtime exports (optional)
+├── api.ts                    # Openbare exports (optioneel)
+├── runtime-api.ts            # Interne runtime-exports (optioneel)
 └── src/
     ├── channel.ts            # ChannelPlugin via createChatChannelPlugin
     ├── channel.test.ts       # Tests
-    ├── client.ts             # Platform API client
-    └── runtime.ts            # Runtime store (if needed)
+    ├── client.ts             # API-client voor het platform
+    └── runtime.ts            # Runtime-opslag (indien nodig)
 ```
 
 ## Geavanceerde onderwerpen
 
 <CardGroup cols={2}>
-  <Card title="Threading-opties" icon="git-branch" href="/nl/plugins/sdk-entrypoints#registration-mode">
-    Vaste, account-scoped of aangepaste antwoordmodi
+  <Card title="Threadopties" icon="git-branch" href="/nl/plugins/sdk-entrypoints#registration-mode">
+    Vaste, accountgebonden of aangepaste antwoordmodi
   </Card>
-  <Card title="Integratie met berichtentool" icon="puzzle" href="/nl/plugins/architecture#channel-plugins-and-the-shared-message-tool">
+  <Card title="Integratie van berichtentools" icon="puzzle" href="/nl/plugins/architecture#channel-plugins-and-the-shared-message-tool">
     describeMessageTool en actiedetectie
   </Card>
-  <Card title="Doelresolutie" icon="crosshair" href="/nl/plugins/architecture-internals#channel-target-resolution">
+  <Card title="Doelbepaling" icon="crosshair" href="/nl/plugins/architecture-internals#channel-target-resolution">
     inferTargetChatType, looksLikeId, reservedLiterals, resolveTarget
   </Card>
-  <Card title="Runtime-helpers" icon="settings" href="/nl/plugins/sdk-runtime">
+  <Card title="Runtime-hulpprogramma's" icon="settings" href="/nl/plugins/sdk-runtime">
     TTS, STT, media, subagent via api.runtime
   </Card>
-  <Card title="API voor inkomende kanalen" icon="bolt" href="/nl/plugins/sdk-channel-inbound">
-    Gedeelde levenscyclus voor inkomende gebeurtenissen: opnemen, oplossen, vastleggen, dispatchen, finaliseren
+  <Card title="API voor inkomende kanaalgebeurtenissen" icon="bolt" href="/nl/plugins/sdk-channel-inbound">
+    Gedeelde levenscyclus van inkomende gebeurtenissen: opnemen, bepalen, vastleggen, doorsturen, voltooien
   </Card>
 </CardGroup>
 
 <Note>
-Sommige gebundelde helper-seams bestaan nog steeds voor onderhoud en
-compatibiliteit van gebundelde Plugins. Ze zijn niet het aanbevolen patroon voor nieuwe kanaal-Plugins;
-geef de voorkeur aan de generieke subpaden voor kanaal/setup/antwoord/runtime uit het gemeenschappelijke SDK-
-oppervlak, tenzij je die gebundelde Plugin-familie rechtstreeks onderhoudt.
+Er bestaan nog enkele gebundelde hulpinterfaces voor het onderhoud en de
+compatibiliteit van gebundelde plugins. Ze zijn niet het aanbevolen patroon
+voor nieuwe kanaalplugins; geef de voorkeur aan de generieke subpaden voor
+kanaal, configuratie, antwoorden en runtime van het gemeenschappelijke
+SDK-oppervlak, tenzij je die gebundelde pluginfamilie rechtstreeks onderhoudt.
 </Note>
 
 ## Volgende stappen
 
-- [Provider-Plugins](/nl/plugins/sdk-provider-plugins) - als je Plugin ook modellen levert
-- [SDK-overzicht](/nl/plugins/sdk-overview) - volledige importreferentie voor subpaden
+- [Providerplugins](/nl/plugins/sdk-provider-plugins) - als je plugin ook modellen aanbiedt
+- [SDK-overzicht](/nl/plugins/sdk-overview) - volledige referentie voor imports via subpaden
 - [SDK-testen](/nl/plugins/sdk-testing) - testhulpprogramma's en contracttests
-- [Plugin-manifest](/nl/plugins/manifest) - volledig manifestschema
+- [Pluginmanifest](/nl/plugins/manifest) - volledig manifestschema
 
 ## Gerelateerd
 
-- [Plugin SDK-setup](/nl/plugins/sdk-setup)
+- [Plugin SDK-configuratie](/nl/plugins/sdk-setup)
 - [Plugins bouwen](/nl/plugins/building-plugins)
-- [Agent-harness-Plugins](/nl/plugins/sdk-agent-harness)
+- [Plugins voor de agent-harnas](/nl/plugins/sdk-agent-harness)

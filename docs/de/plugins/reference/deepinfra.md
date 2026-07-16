@@ -1,14 +1,15 @@
 ---
 read_when:
     - Sie installieren, konfigurieren oder prüfen das deepinfra-Plugin.
-summary: Fügt OpenClaw Unterstützung für den DeepInfra-Modell-Provider hinzu.
+summary: Fügt Unterstützung für den DeepInfra-Modell-Provider zu OpenClaw hinzu.
 title: DeepInfra-Plugin
 x-i18n:
-    generated_at: "2026-07-12T01:58:42Z"
+    generated_at: "2026-07-16T13:21:15Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 67ee0e714d812bbb72a05233ac52a17da796631766a9222bb9caa4d441c8433f
+    source_hash: a50c58ec2a78966e8f9c4d04f8d21dc3e343c7428ce091d400d154c79b1b5ca2
     source_path: plugins/reference/deepinfra.md
     workflow: 16
 ---
@@ -22,9 +23,9 @@ Fügt OpenClaw Unterstützung für den DeepInfra-Modell-Provider hinzu.
 - Paket: `@openclaw/deepinfra-provider`
 - Installationsweg: npm; ClawHub: `clawhub:@openclaw/deepinfra-provider`
 
-## Schnittstelle
+## Oberfläche
 
-Provider: deepinfra; Verträge: imageGenerationProviders, mediaUnderstandingProviders, memoryEmbeddingProviders, speechProviders, videoGenerationProviders
+Provider: `deepinfra`; Verträge: `imageGenerationProviders`, `mediaUnderstandingProviders`, `memoryEmbeddingProviders`, `speechProviders`, `videoGenerationProviders`
 
 ## Zugehörige Dokumentation
 

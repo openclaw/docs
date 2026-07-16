@@ -1,27 +1,28 @@
 ---
 read_when:
-    - Estás instalando, configurando o auditando el plugin de diferencias
+    - Está instalando, configurando o auditando el plugin de diferencias
 summary: Plugin de visualización de diferencias de solo lectura y renderizador de archivos de OpenClaw para agentes.
 title: Plugin de diferencias
 x-i18n:
-    generated_at: "2026-07-11T23:20:01Z"
+    generated_at: "2026-07-16T11:51:04Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 836ed7a32a0868ee24eacf8f72e8c7888ebbd5d07ca62b2b6170d6a1919f7382
+    source_hash: c8e55537310879d09b50472db7a80a73402477faf5b09da463b6306275e90121
     source_path: plugins/reference/diffs.md
     workflow: 16
 ---
 
 # Plugin de diferencias
 
-Plugin de visualización de diferencias de solo lectura de OpenClaw y renderizador de archivos para agentes.
+Plugin de visualización de diferencias de solo lectura y renderizador de archivos de OpenClaw para agentes.
 
 ## Distribución
 
 - Paquete: `@openclaw/diffs`
-- Vía de instalación: npm; ClawHub
+- Ruta de instalación: npm; ClawHub
 
 ## Superficie
 
-contratos: herramientas; Skills
+contratos: `tools`; Skills

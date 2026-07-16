@@ -1,14 +1,15 @@
 ---
 read_when:
-    - U installeert, configureert of controleert de qianfan-Plugin
+    - Je installeert, configureert of controleert de qianfan-plugin
 summary: Voegt ondersteuning voor de Qianfan-modelprovider toe aan OpenClaw.
-title: Qianfan-Plugin
+title: Qianfan-plugin
 x-i18n:
-    generated_at: "2026-07-12T09:08:29Z"
+    generated_at: "2026-07-16T16:07:22Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 49d639836cefb6c96502e614e1b5d06615fbef31a50ea186e1a02c060882019a
+    source_hash: 586bf29ac08b1a682ac387a21ed8df9baebd7c923278eb4b8f5b8659580be363
     source_path: plugins/reference/qianfan.md
     workflow: 16
 ---
@@ -24,7 +25,7 @@ Voegt ondersteuning voor de Qianfan-modelprovider toe aan OpenClaw.
 
 ## Oppervlak
 
-providers: qianfan
+providers: `qianfan`
 
 ## Gerelateerde documentatie
 

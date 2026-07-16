@@ -1,37 +1,37 @@
 ---
 read_when:
-    - Ses ekleri için Deepgram konuşmayı metne dönüştürme özelliğini istiyorsunuz
-    - Sesli Arama için Deepgram akışlı transkripsiyonunu kullanmak istiyorsunuz
+    - Ses ekleri için Deepgram konuşmayı metne dönüştürme özelliğini kullanmak istiyorsunuz
+    - Voice Call için Deepgram akışlı transkripsiyonunu kullanmak istiyorsunuz
     - Hızlı bir Deepgram yapılandırma örneğine ihtiyacınız var
 summary: Gelen sesli notlar için Deepgram transkripsiyonu
 title: Deepgram
 x-i18n:
-    generated_at: "2026-07-12T12:08:19Z"
+    generated_at: "2026-07-16T17:51:58Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 8b0f407829ba47344ad92c5fe63aacd0ce234909c439c96370e7bd900cadff8b
+    source_hash: 74652e089899423d117dae6267e7c9af09e52ec91ee15e3532fcb2d705f43099
     source_path: providers/deepgram.md
     workflow: 16
 ---
 
-Deepgram, bir konuşmayı metne dönüştürme API'sidir. OpenClaw bunu `tools.media.audio`
-üzerinden gelen ses/sesli not transkripsiyonu ve
-`plugins.entries.voice-call.config.streaming` üzerinden Voice Call akışlı STT
+Deepgram, konuşmayı metne dönüştürme API'sidir. OpenClaw bunu, `tools.media.audio` üzerinden gelen seslerin/sesli notların
+yazıya dökülmesi ve `plugins.entries.voice-call.config.streaming` üzerinden Sesli Arama akışlı STT
 için kullanır.
 
-Toplu transkripsiyon, ses dosyasının tamamını Deepgram'a yükler ve
-transkripti yanıt işlem hattına (`{{Transcript}}` + `[Audio]` bloğu) ekler.
-Voice Call akışı, canlı G.711 u-law karelerini Deepgram'ın WebSocket `listen`
-uç noktası üzerinden iletir ve Deepgram döndürdükçe kısmi/nihai transkriptleri
+Toplu yazıya dökme, ses dosyasının tamamını Deepgram'a yükler ve dökümü
+yanıt işlem hattına ekler (`{{Transcript}}` + `[Audio]` bloğu).
+Sesli Arama akışı, canlı G.711 u-law karelerini Deepgram'ın WebSocket
+`listen` uç noktası üzerinden iletir ve Deepgram döndürdükçe kısmi/nihai dökümleri
 yayar.
 
-| Ayrıntı        | Değer                                                      |
-| -------------- | ---------------------------------------------------------- |
-| Web sitesi     | [deepgram.com](https://deepgram.com)                       |
-| Belgeler       | [developers.deepgram.com](https://developers.deepgram.com) |
-| Kimlik doğrulama | `DEEPGRAM_API_KEY`                                       |
-| Varsayılan model | `nova-3`                                                 |
+| Ayrıntı       | Değer                                                      |
+| ------------- | ---------------------------------------------------------- |
+| Web sitesi    | [deepgram.com](https://deepgram.com)                       |
+| Belgeler      | [developers.deepgram.com](https://developers.deepgram.com) |
+| Kimlik doğrulama | `DEEPGRAM_API_KEY`                                      |
+| Varsayılan model | `nova-3`                                      |
 
 ## Başlarken
 
@@ -56,22 +56,21 @@ yayar.
     ```
   </Step>
   <Step title="Sesli not gönderin">
-    Bağlı herhangi bir kanal üzerinden sesli mesaj gönderin. OpenClaw, mesajı
-    Deepgram aracılığıyla metne dönüştürür ve transkripti yanıt işlem hattına ekler.
+    Bağlı herhangi bir kanal üzerinden sesli mesaj gönderin. OpenClaw bunu
+    Deepgram aracılığıyla yazıya döker ve dökümü yanıt işlem hattına ekler.
   </Step>
 </Steps>
 
 ## Yapılandırma seçenekleri
 
-| Seçenek    | Yol                                   | Açıklama                                   |
-| ---------- | ------------------------------------- | ------------------------------------------ |
+| Seçenek    | Yol                                   | Açıklama                              |
+| ---------- | ------------------------------------- | ------------------------------------- |
 | `model`    | `tools.media.audio.models[].model`    | Deepgram model kimliği (varsayılan: `nova-3`) |
-| `language` | `tools.media.audio.models[].language` | Dil ipucu (isteğe bağlı)                   |
+| `language` | `tools.media.audio.models[].language` | Dil ipucu (isteğe bağlı)              |
 
-`providerOptions.deepgram`, ek sorgu parametrelerini doğrudan Deepgram
-`/listen` isteğine birleştirir; dolayısıyla Deepgram tarafından desteklenen
-tüm parametre adları kullanılabilir (örneğin `detect_language`, `punctuate`,
-`smart_format`):
+`providerOptions.deepgram`, ek sorgu parametrelerini doğrudan
+Deepgram `/listen` isteğiyle birleştirir; dolayısıyla Deepgram'ın desteklediği tüm parametre adları kullanılabilir
+(örneğin `detect_language`, `punctuate`, `smart_format`):
 
 <Tabs>
   <Tab title="Dil ipucuyla">
@@ -111,20 +110,21 @@ tüm parametre adları kullanılabilir (örneğin `detect_language`, `punctuate`
   </Tab>
 </Tabs>
 
-## Voice Call akışlı STT
+## Sesli Arama akışlı STT
 
-Paketle birlikte gelen `deepgram` Plugin'i, Voice Call Plugin'i için gerçek
-zamanlı bir transkripsiyon sağlayıcısı da kaydeder.
+Paketle gelen `deepgram` plugin'i, Sesli Arama plugin'i için
+gerçek zamanlı bir yazıya dökme sağlayıcısını da kaydeder.
 
-| Ayar            | Yapılandırma yolu                                                       | Varsayılan                           |
-| --------------- | ----------------------------------------------------------------------- | ------------------------------------ |
-| API anahtarı    | `plugins.entries.voice-call.config.streaming.providers.deepgram.apiKey` | `DEEPGRAM_API_KEY` değerine geri döner |
-| Model           | `...deepgram.model`                                                     | `nova-3`                             |
-| Dil             | `...deepgram.language`                                                  | (ayarlanmamış)                       |
-| Kodlama         | `...deepgram.encoding`                                                  | `mulaw`                              |
-| Örnekleme hızı  | `...deepgram.sampleRate`                                                | `8000`                               |
-| Uç nokta belirleme | `...deepgram.endpointingMs`                                          | `800`                                |
-| Ara sonuçlar    | `...deepgram.interimResults`                                            | `true`                               |
+| Ayar            | Yapılandırma yolu                                                       | Varsayılan                                   |
+| --------------- | ----------------------------------------------------------------------- | -------------------------------------------- |
+| API anahtarı    | `plugins.entries.voice-call.config.streaming.providers.deepgram.apiKey` | `DEEPGRAM_API_KEY` değerine geri döner       |
+| Temel URL       | `...deepgram.baseUrl`                                                   | `DEEPGRAM_BASE_URL` veya Deepgram'ın genel API'si |
+| Model           | `...deepgram.model`                                                     | `nova-3`                                     |
+| Dil             | `...deepgram.language`                                                  | (ayarlanmamış)                                |
+| Kodlama         | `...deepgram.encoding`                                                  | `mulaw`                                      |
+| Örnekleme hızı  | `...deepgram.sampleRate`                                                | `8000`                                       |
+| Uç noktalama    | `...deepgram.endpointingMs`                                             | `800`                                        |
+| Ara sonuçlar    | `...deepgram.interimResults`                                            | `true`                                       |
 
 ```json5
 {
@@ -151,26 +151,32 @@ zamanlı bir transkripsiyon sağlayıcısı da kaydeder.
 }
 ```
 
+Bir [Deepgram özel uç noktası](https://developers.deepgram.com/reference/custom-endpoints) için
+`baseUrl` değerini, tüm temel yolları içerecek ancak `/listen` değerini içermeyecek şekilde uç nokta kökü olarak ayarlayın.
+Gerçek zamanlı uç noktalar `http://`, `https://`, `ws://` ve `wss://` değerlerini kabul eder. HTTP
+WS'ye, HTTPS WSS'ye eşlenir ve açık WebSocket şemaları değişmeden kalır.
+Hatalı biçimlendirilmiş URL'ler ve diğer şemalar, oturum kurulumu sırasında başarısız olur.
+
 <Note>
-Voice Call, telefon sesini 8 kHz G.711 u-law biçiminde alır. Deepgram akış
-sağlayıcısının varsayılanları `encoding: "mulaw"` ve `sampleRate: 8000`
-olduğundan Twilio medya kareleri doğrudan iletilebilir.
+Sesli Arama, telefon sesini 8 kHz G.711 u-law olarak alır. Deepgram
+akış sağlayıcısının varsayılanları `encoding: "mulaw"` ve `sampleRate: 8000` olduğundan,
+Twilio medya kareleri doğrudan iletilebilir.
 </Note>
 
 ## Notlar
 
 <AccordionGroup>
   <Accordion title="Kimlik doğrulama">
-    Kimlik doğrulama, standart sağlayıcı kimlik doğrulama sırasını izler.
-    `DEEPGRAM_API_KEY` en basit yoldur.
+    Kimlik doğrulama, standart sağlayıcı kimlik doğrulama sırasını izler. `DEEPGRAM_API_KEY`
+    en basit yöntemdir.
   </Accordion>
   <Accordion title="Proxy ve özel uç noktalar">
-    Proxy kullanırken uç noktaları veya üstbilgileri `tools.media.audio.baseUrl`
-    ve `tools.media.audio.headers` ile geçersiz kılın.
+    Proxy kullanırken uç noktaları veya üst bilgileri `tools.media.audio.baseUrl` ve
+    `tools.media.audio.headers` ile geçersiz kılın.
   </Accordion>
   <Accordion title="Çıktı davranışı">
-    Çıktı, diğer sağlayıcılarla aynı ses kurallarını izler (boyut sınırları,
-    zaman aşımları, transkript ekleme).
+    Çıktı, diğer sağlayıcılarla aynı ses kurallarını izler (boyut sınırları, zaman aşımları,
+    döküm ekleme).
   </Accordion>
 </AccordionGroup>
 
@@ -181,7 +187,7 @@ olduğundan Twilio medya kareleri doğrudan iletilebilir.
     Ses, görüntü ve video işleme hattına genel bakış.
   </Card>
   <Card title="Yapılandırma" href="/tr/gateway/configuration" icon="gear">
-    Medya aracı ayarlarını içeren tam yapılandırma başvurusu.
+    Medya aracı ayarlarını içeren eksiksiz yapılandırma referansı.
   </Card>
   <Card title="Sorun giderme" href="/tr/help/troubleshooting" icon="wrench">
     Yaygın sorunlar ve hata ayıklama adımları.

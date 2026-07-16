@@ -1,19 +1,20 @@
 ---
 read_when:
-    - Estás instalando, configurando o auditando el plugin voyage
-summary: Añade compatibilidad con proveedores de embeddings de memoria.
+    - Está instalando, configurando o auditando el plugin voyage
+summary: Añade compatibilidad con proveedores de incrustaciones de memoria.
 title: Plugin de Voyage
 x-i18n:
-    generated_at: "2026-07-11T23:22:01Z"
+    generated_at: "2026-07-16T11:54:50Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: ba1dcf8d6f7c45c01f855797333e9d510bc822b2f7442c5a0727ac2a208ffe36
+    source_hash: 30470935000d501180467314647efe876dc956ae57e53e13279e7670aea554e3
     source_path: plugins/reference/voyage.md
     workflow: 16
 ---
 
-# Plugin de Voyage
+# Plugin Voyage
 
 Añade compatibilidad con proveedores de embeddings de memoria.
 
@@ -24,4 +25,4 @@ Añade compatibilidad con proveedores de embeddings de memoria.
 
 ## Superficie
 
-contratos: memoryEmbeddingProviders
+contratos: `memoryEmbeddingProviders`

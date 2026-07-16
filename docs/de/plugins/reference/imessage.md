@@ -4,29 +4,29 @@ read_when:
 summary: Fügt die iMessage-Kanalschnittstelle zum Senden und Empfangen von OpenClaw-Nachrichten hinzu.
 title: iMessage-Plugin
 x-i18n:
-    generated_at: "2026-07-12T15:43:58Z"
+    generated_at: "2026-07-16T13:09:55Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
-    prompt_version: 15
+    prompt_version: 32
     provider: openai
-    source_hash: 5c48bb24e59d5dea948c5f04f579df48b0ae51f923e5dc8a0fc35888ddbbc1c6
+    source_hash: fe0dc8c9efc3e0852931ae702baca2acb7a554505ca227cc4933f375f7de1be0
     source_path: plugins/reference/imessage.md
     workflow: 16
 ---
 
 # iMessage-Plugin
 
-Fügt die iMessage-Kanalschnittstelle zum Senden und Empfangen von OpenClaw-Nachrichten hinzu.
+Fügt die iMessage-Kanaloberfläche zum Senden und Empfangen von OpenClaw-Nachrichten hinzu.
 
 ## Distribution
 
 - Paket: `@openclaw/imessage`
 - Installationsweg: in OpenClaw enthalten
 
-## Schnittstelle
+## Oberfläche
 
-Kanäle: imessage; Skills
+Kanäle: `imessage`; Skills
 
 ## Zugehörige Dokumentation
 
-- [imessage](/de/channels/imessage)
+- [iMessage](/de/channels/imessage)

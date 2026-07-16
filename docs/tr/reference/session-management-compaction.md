@@ -1,480 +1,323 @@
 ---
 read_when:
-    - Oturum kimliklerini, transcript JSONL’i veya sessions.json alanlarını hata ayıklamanız gerekiyor
-    - Otomatik Compaction davranışını değiştiriyorsunuz veya "Compaction öncesi" bakım ekliyorsunuz
-    - Bellek temizlemeleri veya sessiz sistem turları uygulamak istiyorsunuz
-summary: 'Derinlemesine inceleme: oturum deposu ve transkriptler, yaşam döngüsü ve (otomatik)Compaction iç işleyişi'
-title: Oturum yönetimi derinlemesine inceleme
+    - Oturum kimliklerinde, transkript olaylarında veya oturum satırı alanlarında hata ayıklamanız gerekiyor
+    - Otomatik Compaction davranışını değiştiriyor veya "Compaction öncesi" düzenleme işlemleri ekliyorsunuz
+    - Bellek boşaltmalarını veya sessiz sistem turlarını uygulamak istiyorsunuz
+summary: 'Derinlemesine inceleme: oturum deposu ve transkriptler, yaşam döngüsü ve (otomatik) Compaction iç işleyişi'
+title: Oturum yönetimine derinlemesine bakış
 x-i18n:
-    generated_at: "2026-07-04T20:41:00Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T17:42:25Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: c97994f674e14ec01b2eaadc10a61e524f5071f95b2ef84957d71abacbdc719b
+    source_hash: 7551a94a4e2dc8be8b69503795309d0200cc3b5d7231b54083dbcaade697b06c
     source_path: reference/session-management-compaction.md
     workflow: 16
 ---
 
-OpenClaw, oturumları bu alanlarda uçtan uca yönetir:
+Tek bir **Gateway işlemi**, oturum durumunu uçtan uca yönetir. Kullanıcı arayüzleri (macOS uygulaması, web Control UI, TUI), oturum listeleri ve token sayıları için Gateway'i sorgular. Uzak modda oturum dosyaları uzak ana makinede bulunur; bu nedenle yerel Mac'inizdeki dosyaları denetlemek, Gateway'in kullandıklarını yansıtmaz.
 
-- **Oturum yönlendirme** (gelen iletilerin bir `sessionKey` ile nasıl eşleştiği)
-- **Oturum deposu** (`sessions.json`) ve neleri izlediği
-- **Transkript kalıcılığı** (`*.jsonl`) ve yapısı
-- **Transkript hijyeni** (çalıştırmalardan önce sağlayıcıya özgü düzeltmeler)
-- **Bağlam sınırları** (bağlam penceresi ve izlenen token'lar)
-- **Compaction** (elle ve otomatik Compaction) ve Compaction öncesi işlerin nereye bağlanacağı
-- **Sessiz bakım** (kullanıcıya görünür çıktı üretmemesi gereken bellek yazmaları)
-
-Önce daha üst düzey bir genel bakış istiyorsanız şunlarla başlayın:
-
-- [Oturum yönetimi](/tr/concepts/session)
-- [Compaction](/tr/concepts/compaction)
-- [Belleğe genel bakış](/tr/concepts/memory)
-- [Bellek arama](/tr/concepts/memory-search)
-- [Oturum budama](/tr/concepts/session-pruning)
-- [Transkript hijyeni](/tr/reference/transcript-hygiene)
-
----
-
-## Doğruluk kaynağı: Gateway
-
-OpenClaw, oturum durumunun sahibi olan tek bir **Gateway süreci** etrafında tasarlanmıştır.
-
-- UI'lar (macOS uygulaması, web Control UI, TUI), oturum listeleri ve token sayıları için Gateway'i sorgulamalıdır.
-- Uzak modda, oturum dosyaları uzak ana makinededir; "yerel Mac dosyalarınızı kontrol etmek" Gateway'in ne kullandığını yansıtmaz.
-
----
+Önce genel bakış belgeleri: [Oturum yönetimi](/tr/concepts/session), [Compaction](/tr/concepts/compaction), [Belleğe genel bakış](/tr/concepts/memory), [Bellek araması](/tr/concepts/memory-search), [Oturum budama](/tr/concepts/session-pruning), [Transkript düzeni](/tr/reference/transcript-hygiene), tam yapılandırma referansı için [Agent yapılandırması](/tr/gateway/config-agents).
 
 ## İki kalıcılık katmanı
 
-OpenClaw oturumları iki katmanda kalıcı hale getirir:
+1. **Oturum satırları (agent başına SQLite)** - anahtar/değer eşlemesi `sessionKey -> SessionEntry`. Gateway'in yönettiği değiştirilebilir çalışma zamanı durumu. Meta verileri izler: geçerli oturum kimliği, son etkinlik, açma/kapatma ayarları, token sayaçları.
+2. **Transkript olayları (agent başına SQLite)** - yalnızca eklemeli, ağaç yapılıdır (girdilerde `id` + `parentId` bulunur). Konuşmayı, araç çağrılarını ve Compaction özetlerini depolar; sonraki dönüşler için model bağlamını yeniden oluşturur. Compaction denetim noktaları, sıkıştırılmış ardıl transkript üzerindeki meta verilerdir; yeni bir Compaction, ikinci bir `.checkpoint.*.jsonl` kopyası yazmaz.
 
-1. **Oturum deposu (`sessions.json`)**
-   - Anahtar/değer eşlemesi: `sessionKey -> SessionEntry`
-   - Küçük, değiştirilebilir, düzenlemesi (veya girdileri silmesi) güvenli
-   - Oturum meta verilerini izler (geçerli oturum kimliği, son etkinlik, geçişler, token sayaçları vb.)
+Eski kurulumlarda agent `sessions/`
+dizini altında hâlâ `sessions.json` dosyaları bulunabilir. Bu dosyaları eski oturum satırı geçiş girdileri veya açıkça belirtilmiş
+çevrimdışı bakım hedefleri olarak değerlendirin. Gateway başlangıcı ve `openclaw doctor --fix`, etkin eski satırları
+ve transkript geçmişini agent başına SQLite deposuna otomatik olarak aktarır.
+Açık inceleme veya doğrulama kanıtı gerektiğinde `openclaw doctor --session-sqlite inspect
+--session-sqlite-all-agents` komutunu çalıştırın, ardından [Doctor geçiş
+sırasını](/tr/cli/doctor#session-sqlite-migration) izleyin. Eski transkript
+yapıtları arşivlendikten sonra geçiş başarısız olursa bu sıradaki Doctor kurtarma modunu kullanın.
+Kurtarma, geçiş bildirimlerini kullanır, yalnızca etkilenen arşivlenmiş destek
+yapıtlarını geri yükler, istendiğinde temizlenmiş bir GitHub sorun raporu hazırlar ve etkin
+çalışma zamanının JSONL dosyalarını yeniden okumasına neden olmaz.
 
-2. **Transkript (`<sessionId>.jsonl`)**
-   - Ağaç yapılı, yalnızca eklemeli transkript (girdiler `id` + `parentId` içerir)
-   - Gerçek konuşmayı + araç çağrılarını + Compaction özetlerini depolar
-   - Gelecekteki turlar için model bağlamını yeniden oluşturmak üzere kullanılır
-   - Compaction kontrol noktaları, sıkıştırılmış ardıl transkript üzerinde meta verilerdir. Yeni Compaction'lar ikinci bir `.checkpoint.*.jsonl`
-     kopyası yazmaz.
-
-Gateway geçmiş okuyucuları, yüzey açıkça rastgele geçmiş erişimine ihtiyaç duymadıkça
-tüm transkripti belleğe almaktan kaçınmalıdır. İlk sayfa geçmişi,
-gömülü sohbet geçmişi, yeniden başlatma kurtarması ve token/kullanım kontrolleri sınırlı kuyruk
-okumaları kullanır. Tam transkript taramaları, dosya yolu artı `mtimeMs`/`size` ile
-önbelleğe alınan ve eşzamanlı okuyucular arasında paylaşılan asenkron transkript dizini üzerinden geçer.
-
----
+Gateway geçmiş okuyucuları, yüzey rastgele geçmiş erişimi gerektirmedikçe transkriptin tamamını bellekte oluşturmaz. İlk sayfa geçmişi, gömülü sohbet geçmişi, yeniden başlatma kurtarması ve token/kullanım denetimleri SQLite'tan sınırlı kuyruk okumaları kullanır. Tam transkript taramaları eşzamansız transkript dizini üzerinden gerçekleştirilir ve eşzamanlı okuyucular arasında paylaşılır.
 
 ## Disk üzerindeki konumlar
 
-Gateway ana makinesinde, her ajan için:
+Agent başına, Gateway ana makinesinde (`src/config/sessions.ts` aracılığıyla çözümlenir):
 
-- Depo: `~/.openclaw/agents/<agentId>/sessions/sessions.json`
-- Transkriptler: `~/.openclaw/agents/<agentId>/sessions/<sessionId>.jsonl`
-  - Telegram konu oturumları: `.../<sessionId>-topic-<threadId>.jsonl`
-
-OpenClaw bunları `src/config/sessions.ts` aracılığıyla çözümler.
-
----
+- Çalışma zamanı oturum satırı deposu: `~/.openclaw/agents/<agentId>/agent/openclaw-agent.sqlite`
+- Çalışma zamanı transkript satırları: `~/.openclaw/agents/<agentId>/agent/openclaw-agent.sqlite`
+- Eski/arşiv transkript yapıtları: `~/.openclaw/agents/<agentId>/sessions/`
+- Eski satır geçiş girdisi: `~/.openclaw/agents/<agentId>/sessions/sessions.json`
 
 ## Depo bakımı ve disk denetimleri
 
-Oturum kalıcılığında `sessions.json`, transkript yapıtları ve trajectory yan dosyaları için otomatik bakım denetimleri (`session.maintenance`) vardır:
+`session.maintenance`, SQLite oturum satırları, SQLite transkript satırları, arşiv yapıtları ve yörünge yan dosyaları için otomatik bakımı denetler:
 
-- `mode`: `enforce` (varsayılan) veya `warn`
-- `pruneAfter`: eski girdi yaş sınırı (varsayılan `30d`)
-- `maxEntries`: `sessions.json` içindeki girdileri sınırlar (varsayılan `500`)
-- Kısa ömürlü Gateway model çalıştırma probe saklama süresi sabit olarak `24h` değerindedir, ancak baskıya bağlıdır: eski katı probe satırlarını yalnızca oturum girdisi bakım/sınır baskısına ulaşıldığında kaldırır. Bu yalnızca `agent:*:explicit:model-run-<uuid>` ile eşleşen katı açık probe anahtarları için geçerlidir ve çalıştığında genel eski girdi temizliği/sınırlamasından önce çalışır.
-- `resetArchiveRetention`: `*.reset.<timestamp>` transkript arşivleri için saklama süresi (varsayılan: `pruneAfter` ile aynı; `false` temizliği devre dışı bırakır)
-- `maxDiskBytes`: isteğe bağlı oturumlar dizini bütçesi
-- `highWaterBytes`: temizlik sonrası isteğe bağlı hedef (varsayılan `maxDiskBytes` değerinin `%80`'i)
+| Anahtar                 | Varsayılan            | Notlar                                                                                      |
+| ----------------------- | --------------------- | ------------------------------------------------------------------------------------------- |
+| `mode`                  | `"enforce"`           | veya `"warn"` (yalnızca raporlar, değişiklik yapmaz)                                        |
+| `pruneAfter`            | `"30d"`               | eski girdiler için yaş sınırı                                                               |
+| `maxEntries`            | `500`                 | oturum girdisi üst sınırı                                                                   |
+| `resetArchiveRetention` | tut (yaş sınırı yok)  | `*.reset.*`/`*.deleted.*` transkript arşivleri için yaş sınırı; bir süre belirtilmesi silmeyi etkinleştirir |
+| `maxDiskBytes`          | `2gb`                 | agent başına oturum disk bütçesi; `false` devre dışı bırakır                               |
+| `highWaterBytes`        | `maxDiskBytes` değerinin %80'i | bütçe temizliğinden sonraki hedef                                                            |
 
-Normal Gateway yazmaları, süreç içi değişiklikleri bir çalışma zamanı dosya kilidi almadan seri hale getiren depo başına bir oturum yazıcısından geçer. Sıcak yol yama yardımcıları, bu yazıcı yuvasını tuttukları sırada doğrulanmış değiştirilebilir önbelleği ödünç alır; böylece büyük `sessions.json` dosyaları her meta veri güncellemesi için klonlanmaz veya yeniden okunmaz. Çalışma zamanı kodu `updateSessionStore(...)` veya `updateSessionStoreEntry(...)` kullanmayı tercih etmelidir; doğrudan tüm depo kaydetmeleri uyumluluk ve çevrimdışı bakım araçlarıdır. Bir Gateway erişilebilir olduğunda, dry-run olmayan `openclaw sessions cleanup` ve `openclaw agents delete`, depo değişikliklerini Gateway'e devreder; böylece temizlik aynı yazıcı kuyruğuna katılır. `--store <path>`, doğrudan dosya bakımı için açık çevrimdışı onarım yoludur. `maxEntries` temizliği üretim boyutlu sınırlar için hâlâ toplu yapılır; bu nedenle bir depo, bir sonraki yüksek su seviyesi temizliği onu tekrar aşağı çekmeden önce yapılandırılmış sınırı kısa süreliğine aşabilir. Oturum deposu okumaları, Gateway başlangıcı sırasında girdileri budamaz veya sınırlamaz; temizlik için yazmaları ya da `openclaw sessions cleanup --enforce` kullanın. `openclaw sessions cleanup --enforce`, disk bütçesi yapılandırılmamış olsa bile yapılandırılmış sınırı yine hemen uygular ve eski başvurulmayan transkript, kontrol noktası ve trajectory yapıtlarını budar.
+Arşivlenmiş transkriptler varsayılan olarak saklanır ve çalışma zamanı desteklediğinde zstd (`*.jsonl.<reason>.<timestamp>.zst`) ile sıkıştırılır; böylece bir oturumu silmek veya sıfırlamak konuşma geçmişini hiçbir zaman sessizce atmaz. Disk bütçesi, etkin oturumlara dokunmadan önce en eski arşivleri çıkarır.
 
-Bakım, grup oturumları ve iş parçacığı kapsamlı sohbet oturumları gibi kalıcı dış konuşma işaretçilerini korur,
-ancak cron, hook'lar, Heartbeat, ACP ve alt ajanlara yönelik sentetik çalışma zamanı girdileri
-yapılandırılmış yaş, sayı veya disk bütçesini aştıklarında yine de kaldırılabilir. Gateway model çalıştırma probe oturumları, yalnızca anahtarları tam olarak
-`agent:*:explicit:model-run-<uuid>` ile eşleştiğinde ayrı `24h` model çalıştırma saklamasını kullanır; diğer açık oturumlar
-bu saklamanın parçası değildir. Model çalıştırma temizliği yalnızca oturum girdisi sınırı
-baskısı altında uygulanır. Yalıtılmış cron çalıştırmaları, model çalıştırma probe saklamasından bağımsız olarak kendi `cron.sessionRetention` denetimini korur.
+`maxDiskBytes` için etkin SQLite uygulaması, oturum başına oturum satırı JSON'u ile transkript olayı JSON baytlarını ölçer; eski çevrimdışı bakım uygulaması ise seçilen oturum dizinindeki dosyaları ölçer.
 
-OpenClaw artık Gateway yazmaları sırasında otomatik `sessions.json.bak.*` döndürme yedekleri oluşturmaz. Eski `session.maintenance.rotateBytes` anahtarı yok sayılır ve `openclaw doctor --fix` onu eski yapılandırmalardan kaldırır.
+Gateway model çalıştırma yoklama oturumları (`agent:*:explicit:model-run-<uuid>` ile eşleşen anahtarlar) ayrı ve sabit bir `24h` saklama süresine sahiptir. Bu budama baskıya bağlıdır: yalnızca oturum girdisi bakım/sınır baskısına ulaşıldığında ve yalnızca genel eski girdi temizliği/sınır adımından önce çalışır. Açıkça belirtilen diğer oturumlar bu saklama süresini kullanmaz.
 
-Transkript değişiklikleri, transkript dosyasında bir oturum yazma kilidi kullanır. Kilit alma,
-meşgul oturum hatası gösterilmeden önce `session.writeLock.acquireTimeoutMs` kadar bekler; varsayılan `60000`
-ms'dir. Bunu yalnızca meşru hazırlık, temizlik, Compaction veya transkript yansıtma işleri
-yavaş makinelerde daha uzun süre çakıştığında artırın. `session.writeLock.staleMs`, mevcut bir kilidin
-ne zaman eski sayılarak geri alınabileceğini denetler; varsayılan `1800000` ms'dir. `session.writeLock.maxHoldMs`, süreç içi
-watchdog serbest bırakma eşiğini denetler; varsayılan `300000` ms'dir. Acil durum env geçersiz kılmaları
-`OPENCLAW_SESSION_WRITE_LOCK_ACQUIRE_TIMEOUT_MS`, `OPENCLAW_SESSION_WRITE_LOCK_STALE_MS` ve
-`OPENCLAW_SESSION_WRITE_LOCK_MAX_HOLD_MS` değerleridir.
+Disk bütçesi temizliği için uygulama sırası (`mode: "enforce"`):
 
-Disk bütçesi temizliği için zorlama sırası (`mode: "enforce"`):
+1. Önce en eski arşivlenmiş transkript yapıtlarını, sahipsiz eski yapıtları veya sahipsiz yörünge yapıtlarını kaldırın.
+2. Hâlâ hedefin üzerindeyse en eski oturum girdilerini ve bunların transkript satırlarını veya yörünge yapıtlarını çıkarın.
+3. Kullanım `highWaterBytes` değerine eşit veya bundan düşük olana kadar yineleyin.
 
-1. Önce en eski arşivlenmiş, sahipsiz transkript veya sahipsiz trajectory yapıtlarını kaldır.
-2. Hâlâ hedefin üzerindeyse, en eski oturum girdilerini ve onların transkript/trajectory dosyalarını çıkar.
-3. Kullanım `highWaterBytes` değerinde veya altında olana kadar devam et.
+`mode: "warn"`, depoda veya dosyalarda değişiklik yapmadan olası çıkarmaları bildirir.
 
-`mode: "warn"` içinde OpenClaw olası çıkarmaları bildirir ancak depoyu/dosyaları değiştirmez.
-
-Bakımı isteğe bağlı çalıştırın:
+Bakımı isteğe bağlı olarak çalıştırın:
 
 ```bash
 openclaw sessions cleanup --dry-run
 openclaw sessions cleanup --enforce
 ```
 
----
+Bakım, grup oturumları ve iş parçacığı kapsamlı sohbet oturumları gibi kalıcı harici konuşma işaretçilerini korur; ancak sentetik çalışma zamanı girdileri (cron, kancalar, Heartbeat, ACP, alt agent'lar), yapılandırılan yaş, sayı veya disk bütçesini aştıklarında yine de kaldırılabilir. Yalıtılmış cron çalıştırmaları, model çalıştırma yoklama saklama süresinden bağımsız ayrı bir `cron.sessionRetention` denetimi kullanır.
 
-## Cron oturumları ve çalıştırma günlükleri
+Normal Gateway yazmaları, agent başına SQLite değişikliklerini çalışma zamanı yazıcı yolu üzerinden seri hâle getiren oturum erişimcisi aracılığıyla gerçekleştirilir. Çalışma zamanı kodu `src/config/sessions/session-accessor.ts` içindeki erişimci yardımcılarını tercih etmelidir; eski `sessions.json` yardımcıları geçiş ve çevrimdışı bakım araçlarıdır. Bir Gateway'e erişilebildiğinde, dry-run olmayan `openclaw sessions cleanup` ve `openclaw agents delete`, temizliğin aynı yazıcı kuyruğuna katılması için depo değişikliklerini Gateway'e devreder; `--store <path>`, seçilen eski depo için açık çevrimdışı onarım yoludur ve her zaman yerel kalır (`--dry-run` de öyledir). `maxEntries` temizliği, üretim boyutundaki depolar için toplu olarak gerçekleştirilir; bu nedenle bir depo, sonraki yüksek su seviyesi temizliği onu yeniden yapılandırılmış sınırın altına indirene kadar yapılandırılan sınırı kısa süreliğine aşabilir. Okumalar, Gateway başlangıcı sırasında girdileri hiçbir zaman budamaz veya sınırlamaz; bunu yalnızca yazmalar ya da `openclaw sessions cleanup --enforce` yapar. İkincisi ayrıca sınırı hemen uygular ve yapılandırılmış disk bütçesi olmasa bile eski, başvurulmayan transkript, denetim noktası ve yörünge yapıtlarını budar.
 
-Yalıtılmış cron çalıştırmaları da oturum girdileri/transkriptler oluşturur ve bunların özel saklama denetimleri vardır:
+OpenClaw artık Gateway yazmaları sırasında otomatik `sessions.json.bak.*` döndürme yedekleri oluşturmaz. Geçerli şema, eski `session.maintenance.rotateBytes` anahtarını reddeder ve `openclaw doctor --fix` bunu eski yapılandırmalardan kaldırır.
 
-- `cron.sessionRetention` (varsayılan `24h`), eski yalıtılmış cron çalıştırma oturumlarını oturum deposundan budar (`false` devre dışı bırakır).
-- `cron.runLog.keepLines`, cron işi başına saklanan SQLite çalıştırma geçmişi satırlarını budar (varsayılan: `2000`). `cron.runLog.maxBytes`, eski dosya destekli çalıştırma günlükleri için kabul edilmeye devam eder.
+Transkript değişiklikleri, SQLite transkript hedefi için oturum yazma kuyruğunu kullanır:
 
-Cron zorla yeni bir yalıtılmış çalıştırma oturumu oluşturduğunda, yeni satırı yazmadan önce önceki
-`cron:<jobId>` oturum girdisini temizler. Düşünme/hızlı/ayrıntılı ayarları, etiketler ve açıkça
-kullanıcı tarafından seçilmiş model/auth geçersiz kılmaları gibi güvenli
-tercihleri taşır. Yeni bir yalıtılmış çalıştırmanın eski bir çalıştırmadan bayat teslimat veya
-çalışma zamanı yetkisi devralamaması için kanal/grup yönlendirme, gönderme veya kuyruk ilkesi,
-yükseltme, kaynak ve ACP çalışma zamanı bağlaması gibi ortam konuşma bağlamını bırakır.
+| Ayar                                 | Varsayılan | Ortam değişkeni geçersiz kılması                 |
+| ------------------------------------ | ---------- | ------------------------------------------------ |
+| `session.writeLock.acquireTimeoutMs` | `60000`   | `OPENCLAW_SESSION_WRITE_LOCK_ACQUIRE_TIMEOUT_MS` |
+| `session.writeLock.staleMs`          | `1800000` | `OPENCLAW_SESSION_WRITE_LOCK_STALE_MS`           |
+| `session.writeLock.maxHoldMs`        | `300000`  | `OPENCLAW_SESSION_WRITE_LOCK_MAX_HOLD_MS`        |
 
----
+`acquireTimeoutMs`, bir kilit beklemesinin vazgeçmeden önce meşgul oturum hatası göstermesi için geçen süredir; bunu yalnızca yavaş makinelerde meşru hazırlık, temizlik, Compaction veya transkript yansıtma çalışmaları daha uzun süre çakışıyorsa artırın. `staleMs`, mevcut bir kilidin ne zaman eski kabul edilerek geri alınabileceğini belirtir. `maxHoldMs`, işlem içi gözetleyici serbest bırakma eşiğidir.
+
+### SQLite Geçişinden Sonra Eski Sürüme Dönme
+
+Dosya tabanlı eski bir OpenClaw sürümünü çalıştırmadan önce arşivlenmiş eski transkript yapıtlarını geri yükleyin:
+
+```bash
+openclaw doctor --session-sqlite restore --session-sqlite-all-agents
+```
+
+Geçiş, destek ve geri alma için eski `sessions.json` dosyalarını yerinde bırakır;
+ancak SQLite'a aktarılmış etkin transkript JSONL dosyaları
+`session-sqlite-import-archive/` içine yeniden adlandırılır. Dosya tabanlı eski çalışma zamanları,
+`sessions.json` içindeki `sessionFile` yollarını izler; bu nedenle başlangıçtan
+önce bu yapıtların geri yüklenmesi gerekir. Geri yükleme, geçiş bildirimlerini kullanır, yalnızca özgün yolları
+eksik olan kayıtlı arşiv yapıtlarını taşır ve ileri kurtarma için SQLite veritabanını
+yerinde bırakır.
+
+SQLite geçişinden sonra oluşturulan oturumlar yalnızca SQLite'ta bulunur ve dosya tabanlı
+eski bir çalışma zamanında görünmez. Eski sürüme döndükten sonra yeniden yükseltme yaparsanız OpenClaw'ın geri yüklenen eski
+yapıtları aktarmadan önce doğrulayabilmesi için Doctor inceleme ve doğrulama sırasını yeniden çalıştırın.
+
+## Cron oturumları ve çalışma günlükleri
+
+Yalıtılmış cron çalıştırmaları, özel saklama süresine sahip kendi oturum girdilerini/transkriptlerini oluşturur:
+
+- `cron.sessionRetention` (varsayılan `"24h"`), eski yalıtılmış cron çalıştırma oturumlarını depodan budar; `false` devre dışı bırakır.
+- Çalıştırma geçmişi, cron işi başına en yeni 2000 terminal satırını saklar. Kaybolan satırlar 24 saatlik temizleme aralığını korur.
+
+Cron zorunlu olarak yeni bir yalıtılmış çalıştırma oturumu oluşturduğunda, yeni satırı yazmadan önce önceki `cron:<jobId>` oturum girdisini temizler: güvenli tercihleri (düşünme/hızlı/ayrıntılı/gerekçelendirme ayarları, etiketler, görünen ad) ve kullanıcı tarafından açıkça seçilmiş model/kimlik doğrulama geçersiz kılmalarını taşır; ancak ortam konuşma bağlamını (kanal/grup yönlendirmesi, gönderme/kuyruk ilkesi, yükseltme, kaynak, ACP çalışma zamanı bağlaması) kaldırır. Böylece yeni bir yalıtılmış çalıştırma, eski bir çalıştırmadan güncelliğini yitirmiş teslimat veya çalışma zamanı yetkisini devralamaz.
 
 ## Oturum anahtarları (`sessionKey`)
 
-Bir `sessionKey`, _hangi konuşma kovasında_ olduğunuzu tanımlar (yönlendirme + yalıtım).
+Bir `sessionKey`, hangi konuşma bölümünde bulunduğunuzu belirler (yönlendirme + yalıtım). Standart kurallar: [/concepts/session](/tr/concepts/session).
 
-Yaygın örüntüler:
-
-- Ana/doğrudan sohbet (ajan başına): `agent:<agentId>:<mainKey>` (varsayılan `main`)
-- Grup: `agent:<agentId>:<channel>:group:<id>`
-- Oda/kanal (Discord/Slack): `agent:<agentId>:<channel>:channel:<id>` veya `...:room:<id>`
-- Cron: `cron:<job.id>`
-- Webhook: `hook:<uuid>` (geçersiz kılınmadığı sürece)
-
-Kanonik kurallar [/concepts/session](/tr/concepts/session) adresinde belgelenmiştir.
-
----
+| Kalıp                        | Örnek                                                       |
+| ---------------------------- | ----------------------------------------------------------- |
+| Ana/doğrudan sohbet (agent başına) | `agent:<agentId>:<mainKey>` (varsayılan `main`)                |
+| Grup                         | `agent:<agentId>:<channel>:group:<id>`                      |
+| Oda/kanal (Discord/Slack)    | `agent:<agentId>:<channel>:channel:<id>` veya `...:room:<id>` |
+| Cron                         | `cron:<job.id>`                                             |
+| Webhook                      | `hook:<uuid>` (geçersiz kılınmadıkça)                       |
 
 ## Oturum kimlikleri (`sessionId`)
 
-Her `sessionKey`, geçerli bir `sessionId` değerine (konuşmayı sürdüren transkript dosyası) işaret eder.
+Her `sessionKey`, geçerli bir `sessionId` değerine (konuşmayı sürdüren SQLite transkript kimliği) işaret eder. Karar mantığı, `src/auto-reply/reply/session.ts` içindeki `initSessionState()` konumunda bulunur.
 
-Genel kurallar:
+- **Sıfırlama** (`/new`, `/reset`), söz konusu `sessionKey` için yeni bir `sessionId` oluşturur.
+- **Günlük sıfırlama** (varsayılan olarak Gateway ana makinesinin yerel saatine göre 4:00), sıfırlama sınırından sonraki ilk mesajda yeni bir `sessionId` oluşturur.
+- **Boşta kalma süresinin dolması** (`session.reset.idleMinutes` veya eski `session.idleMinutes`), boşta kalma aralığından sonra bir mesaj geldiğinde yeni bir `sessionId` oluşturur. Hem günlük sıfırlama hem de boşta kalma süresi yapılandırılmışsa önce dolan süre geçerli olur.
+- **Control UI yeniden bağlantısında sürdürme**, Gateway bir operatör UI istemcisinden eşleşen `sessionId` değerini aldığında, yeniden bağlantı sonrasında gönderilen tek bir ileti için o anda görünür olan oturumu korur. Bu tek kullanımlık bir sinyaldir; olağan eski gönderimler yine yeni bir `sessionId` oluşturur.
+- **Sistem olayları** (Heartbeat, Cron uyandırmaları, exec bildirimleri, Gateway kayıt işlemleri) oturum satırını değiştirebilir ancak günlük/boşta kalma sıfırlamasının güncelliğini hiçbir zaman uzatmaz. Sıfırlama geçişi, yeni istem oluşturulmadan önce önceki oturuma ait kuyruğa alınmış sistem olayı bildirimlerini atar.
+- **Üst öğeden çatallama ilkesi**, bir iş parçacığı veya alt ajan çatalı oluştururken OpenClaw'ın etkin dalını kullanır. Bu dal çok büyükse (sabit bir dahili sınırın üzerinde; şu anda 100K token), OpenClaw başarısız olmak veya kullanılamaz geçmişi devralmak yerine alt öğeyi yalıtılmış bağlamla başlatır. Boyutlandırma otomatiktir ve yapılandırılamaz; eski `session.parentForkMaxTokens` yapılandırması `openclaw doctor --fix` tarafından kaldırılır.
+- **Operatör çatalları**: `sessions.create { parentSessionKey, fork: true }`, transkripti üst öğenin mevcut durumundan dallanan yeni bir oturum oluşturur (yukarıdaki boyut sınırı dâhil, alt ajan başlatmalarıyla aynı çatallama mekanizması). Üst öğede etkin bir çalıştırma varken çatallama reddedilir; açıkça bir model geçirilmediği sürece üst öğenin model seçimi devralınır ve alt öğe, yeni token sayaçlarıyla `forkedFromParent` olarak işaretlenir.
 
-- **Sıfırlama** (`/new`, `/reset`), ilgili `sessionKey` için yeni bir `sessionId` oluşturur.
-- **Günlük sıfırlama** (varsayılan olarak Gateway ana makinesinde yerel saatle 04:00), sıfırlama sınırından sonraki ilk iletide yeni bir `sessionId` oluşturur.
-- **Boşta kalma süresi dolması** (`session.reset.idleMinutes` veya eski `session.idleMinutes`), boşta kalma penceresinden sonra bir ileti geldiğinde yeni bir `sessionId` oluşturur. Günlük + boşta kalma birlikte yapılandırıldığında, hangisinin süresi önce dolarsa o kazanır.
-- **Control UI yeniden bağlanma sürdürmesi**, Gateway bir operatör UI istemcisinden eşleşen `sessionId` değerini aldığında, bir yeniden bağlanma gönderimi için o anda görünür olan oturumu koruyabilir. Sıradan bayat gönderimler yine yeni bir `sessionId` oluşturur.
-- **Sistem olayları** (Heartbeat, cron uyandırmaları, exec bildirimleri, Gateway defter tutma) oturum satırını değiştirebilir ancak günlük/boşta sıfırlama tazeliğini uzatmaz. Sıfırlama devri, yeni istem oluşturulmadan önce önceki oturum için kuyruğa alınmış sistem olayı bildirimlerini atar.
-- **Üst fork ilkesi**, bir iş parçacığı veya alt ajan fork'u oluştururken OpenClaw'ın etkin dalını kullanır. Bu dal çok büyükse OpenClaw, başarısız olmak veya kullanılamaz geçmişi devralmak yerine alt öğeyi yalıtılmış bağlamla başlatır. Boyutlandırma ilkesi otomatiktir; eski `session.parentForkMaxTokens` yapılandırması `openclaw doctor --fix` tarafından kaldırılır.
+## Oturum deposu şeması
 
-Uygulama ayrıntısı: karar `src/auto-reply/reply/session.ts` içindeki `initSessionState()` içinde verilir.
+Çalışma zamanı deposu, `SessionEntry` değerlerini ajan başına SQLite'ta tutar. Değer türü, `src/config/sessions.ts` içindeki `SessionEntry` türüdür. Temel alanlar (kapsamlı değildir):
 
----
+- `sessionId`: SQLite transkript satırlarını adreslemek için kullanılan mevcut transkript kimliği
+- `sessionStartedAt`: mevcut `sessionId` için başlangıç zaman damgası; günlük sıfırlama güncelliği bunu kullanır. Eski satırlar bunu JSONL oturum başlığından türetebilir.
+- `lastInteractionAt`: son gerçek kullanıcı/kanal etkileşiminin zaman damgası; boşta kalma sıfırlamasının güncelliği bunu kullanır, böylece Heartbeat, Cron ve exec olayları oturumları etkin tutmaz. Bu alanı içermeyen eski satırlar, kurtarılan oturum başlangıç zamanına geri döner.
+- `updatedAt`: listeleme/budama/kayıt işlemleri için kullanılan son depo satırı değişikliği zaman damgası; günlük/boşta kalma güncelliğinin yetkili kaynağı değildir.
+- `archivedAt`: isteğe bağlı arşiv zaman damgası. Arşivlenen oturumlar transkriptleri bozulmadan depoda kalır ve normal etkin listelerin dışında tutulur.
+- `pinnedAt`: isteğe bağlı sabitleme zaman damgası. Etkin sabitlenmiş oturumlar sabitlenmemiş oturumlardan önce sıralanır; bir oturum arşivlendiğinde sabitlemesi kaldırılır.
+- Codex iş parçacığı birlikte çalışabilirliği: her iki alan da Codex iş parçacığı yönetimi biçimini izler; aktarım sırasındaki `archived`/`pinned` boole değerleri her zaman zaman damgasından türetilir ve Codex `threads.archived_at` semantiği ile camelCase serileştirmesine uygun olarak sunucu tarafında damgalanır. OpenClaw zaman damgaları epoch milisaniyesi, Codex ise epoch saniyesi kullandığından köprüler dönüşümü `codex` Plugin bağlantı noktasında yapar. Codex henüz bir sabitleme API'sine sahip değildir (yalnızca `thread/archive`/`thread/unarchive`); böyle bir API sunulana kadar sabitlenmiş durum OpenClaw tarafında kalır ve sunulduğunda eşleşen biçim, bağlı oturumların sabitleme durumunu mekanik olarak çift yönlü aktarmasına olanak tanır.
+- Codex gözetimi yalnızca arşivlenmemiş yerel iş parçacıklarını listeler. Gateway'e yerel bir `idle` veya etkinlik durumu bilinmeyen `notLoaded` iş parçacığı, yalnızca operatör başka hiçbir Codex işleminin ona sahip olmadığını açıkça onayladıktan sonra yerel `thread/archive` aracılığıyla arşivlenebilir; Plugin önce işlem düzeyindeki durumu yeniden okur ve ardından iş parçacığı katalogdan kaybolur. Bu okuma, başka bir App Server işleminin iş parçacığını kullanmadığını kanıtlayamaz. OpenClaw etkin ve hata durumundaki satırları arşivlemeyi reddeder; eşleştirilmiş Node arşivleme ise Node köprüsü akış hâlindeki iş parçacığının tüm yaşam döngüsünü yönetebilene kadar kullanılamaz. Yerel bir Codex istemcisinde arşivden çıkarılan iş parçacığı yeniden görünmeye uygun hâle gelir.
+- `lastReadAt` / `markedUnreadAt`: `sessions.patch { unread }` tarafından sunucu tarafında damgalanan okuma durumu zaman damgalarıdır; `unread: false` bir okumayı kaydeder (`lastReadAt` değerini ayarlar, `markedUnreadAt` değerini temizler); `unread: true` ise bir sonraki okumaya kadar oturumu okunmamış olarak işaretler. Oturum satırları türetilmiş bir `unread` boole değeri sunar: açıkça okunmamış olarak işaretlenmiş veya son etkinlikten önce okunmuş. Hiçbir zaman okunmuş olarak işaretlenmeyen oturumlar `unread: false` olarak kalır; böylece mevcut kurulumlarda yükseltme sonrasında bildirimler birden etkinleşmez.
+- `lastActivityAt`: okunmamış sayılmaya değer etkinlik olarak kabul edilen son tamamlanmış ajan çalıştırmasının zaman damgası (kullanıcı, kanal ve Cron çalıştırmaları). Heartbeat ve dahili olay dönüşleri ile meta veri yamaları bunu güncellemez; `updatedAt` bir etkinlik sinyali değildir.
+- `sessionFile`: taşıma/arşiv uyumluluğu için korunan eski işaretçi; etkin çalışma zamanı SQLite kimliğini kullanır
+- `chatType`: `direct | group | room`
+- `provider`, `subject`, `room`, `space`, `displayName`: grup/kanal etiketleme meta verileri
+- Geçişler: `thinkingLevel`, `verboseLevel`, `reasoningLevel`, `elevatedLevel`, `sendPolicy` (oturum başına geçersiz kılma)
+- Model seçimi: `providerOverride`, `modelOverride`, `authProfileOverride`
+- Token sayaçları (mümkün olan en iyi tahmin/sağlayıcıya bağlı): `inputTokens`, `outputTokens`, `totalTokens`, `contextTokens`
+- `compactionCount`: bu oturum anahtarı için otomatik Compaction işleminin kaç kez tamamlandığı
+- `memoryFlushAt` / `memoryFlushCompactionCount`: Compaction öncesindeki son bellek boşaltımının zaman damgası ve Compaction sayısı
 
-## Oturum deposu şeması (`sessions.json`)
+Gateway yetkili kaynaktır: oturumlar çalışırken girdileri yeniden yazabilir veya yeniden yükleyebilir. Dosya destekli eski kurulumlarda,
+`sessions.json` dosyasını düzenleyip çalışma zamanının bu dosyayı okumaya devam etmesini beklemek yerine
+`openclaw doctor --session-sqlite import --session-sqlite-all-agents` ile taşıma yapın.
 
-Deponun değer türü `src/config/sessions.ts` içindeki `SessionEntry` türüdür.
+## Transkript olay yapısı
 
-Ana alanlar (kapsamlı değildir):
+Transkriptler OpenClaw oturum erişimcisi tarafından yönetilir ve kimlik tabanlı yardımcılar aracılığıyla çalışma zamanı koduna sunulur. Olay akışı yalnızca eklemelidir:
 
-- `sessionId`: geçerli transkript kimliği (`sessionFile` ayarlanmadıkça dosya adı bundan türetilir)
-- `sessionStartedAt`: geçerli `sessionId` için başlangıç zaman damgası; günlük sıfırlama
-  güncelliği bunu kullanır. Eski satırlar bunu JSONL oturum başlığından türetebilir.
-- `lastInteractionAt`: son gerçek kullanıcı/kanal etkileşimi zaman damgası; boşta sıfırlama
-  güncelliği bunu kullanır, böylece heartbeat, cron ve exec olayları oturumları
-  canlı tutmaz. Bu alanı olmayan eski satırlar, boşta güncelliği için kurtarılan oturum başlangıç
-  zamanına geri döner.
-- `updatedAt`: listeleme, budama ve
-  defter tutma için kullanılan son depo satırı mutasyonu zaman damgası. Günlük/boşta sıfırlama güncelliği için yetkili kaynak değildir.
-- `archivedAt`: isteğe bağlı arşiv zaman damgası. Arşivlenen oturumlar transkriptleri bozulmadan depoda kalır
-  ve normal etkin listelerden hariç tutulur.
-- `pinnedAt`: isteğe bağlı sabitleme zaman damgası. Etkin sabitlenmiş oturumlar
-  sabitlenmemiş oturumlardan önce sıralanır; bir oturumu arşivlemek sabitlemesini temizler.
-- Codex iş parçacığı birlikte çalışabilirliği: her iki alan da Codex iş parçacığı yönetimi biçimini izler —
-  aktarım hattındaki `archived`/`pinned` boolean değerleri her zaman
-  zaman damgasından türetilir ve sunucu tarafında damgalanır; Codex `threads.archived_at`
-  semantiği ve camelCase serileştirmesiyle eşleşir. OpenClaw zaman damgaları epoch
-  milisaniyeleridir, Codex ise epoch saniyeleri kullanır; bu nedenle köprüler codex
-  plugin sınırında dönüştürme yapar. Codex'in henüz sabitleme API'si yoktur (yalnızca `thread/archive`/`thread/unarchive`);
-  sabitlenmiş durum, bir tane var olana kadar OpenClaw tarafında kalır; o noktada
-  eşleşen biçim bağlı oturumların sabitleme durumunu mekanik olarak gidiş dönüş yapmasını sağlar.
-- `sessionFile`: isteğe bağlı açık transkript yolu geçersiz kılması
-- `chatType`: `direct | group | room` (UI'lara ve gönderme politikasına yardımcı olur)
-- `provider`, `subject`, `room`, `space`, `displayName`: grup/kanal etiketleme için meta veriler
-- Açma kapama ayarları:
-  - `thinkingLevel`, `verboseLevel`, `reasoningLevel`, `elevatedLevel`
-  - `sendPolicy` (oturum başına geçersiz kılma)
-- Model seçimi:
-  - `providerOverride`, `modelOverride`, `authProfileOverride`
-- Token sayaçları (en iyi çaba / sağlayıcıya bağlı):
-  - `inputTokens`, `outputTokens`, `totalTokens`, `contextTokens`
-- `compactionCount`: bu oturum anahtarı için otomatik Compaction'ın kaç kez tamamlandığı
-- `memoryFlushAt`: son Compaction öncesi bellek temizlemesinin zaman damgası
-- `memoryFlushCompactionCount`: son temizleme çalıştığında Compaction sayısı
-
-Depoyu düzenlemek güvenlidir, ancak yetkili kaynak Gateway'dir: oturumlar çalışırken girdileri yeniden yazabilir veya yeniden doldurabilir.
-
----
-
-## Transkript yapısı (`*.jsonl`)
-
-Transkriptler `openclaw/plugin-sdk/agent-sessions` öğesinin `SessionManager`'ı tarafından yönetilir.
-
-Dosya JSONL'dir:
-
-- İlk satır: oturum başlığı (`type: "session"`, `id`, `cwd`, `timestamp`, isteğe bağlı `parentSession` içerir)
-- Sonra: `id` + `parentId` (ağaç) içeren oturum girdileri
+- İlk girdi: oturum başlığı - `type: "session"`, `id`, `cwd`, `timestamp`, isteğe bağlı `parentSession`.
+- Ardından: `id` + `parentId` içeren girdiler (ağaç yapısı).
 
 Dikkate değer girdi türleri:
 
-- `message`: kullanıcı/asistan/toolResult iletileri
-- `custom_message`: model bağlamına giren uzantı tarafından enjekte edilen iletiler (UI'dan gizlenebilir)
-- `custom`: model bağlamına girmeyen uzantı durumu
+- `message`: kullanıcı/asistan/toolResult mesajları
+- `custom_message`: model bağlamına _giren_, uzantı tarafından eklenmiş mesaj (`display: true` olduğunda TUI'da işlenir, `display: false` olduğunda tamamen gizlenir)
+- `custom`: model bağlamına _girmeyen_ uzantı durumu (yeniden yüklemeler arasında uzantı durumunu kalıcı tutmak için)
 - `compaction`: `firstKeptEntryId` ve `tokensBefore` içeren kalıcı Compaction özeti
-- `branch_summary`: bir ağaç dalında gezinirken kalıcı özet
+- `branch_summary`: bir ağaç dalında gezinirken kalıcı tutulan özet
 
-OpenClaw transkriptleri bilerek "düzeltmez"; Gateway bunları okumak/yazmak için `SessionManager` kullanır.
-
----
+OpenClaw transkriptleri kasıtlı olarak "düzeltmez"; Gateway bunları okumak/yazmak için `SessionManager` kullanır.
 
 ## Bağlam pencereleri ve izlenen tokenlar
 
-İki farklı kavram önemlidir:
+İki farklı kavram vardır:
 
-1. **Model bağlam penceresi**: model başına sert sınır (modelin görebildiği tokenlar)
-2. **Oturum deposu sayaçları**: `sessions.json` içine yazılan hareketli istatistikler (/status ve panolar için kullanılır)
+1. **Model bağlam penceresi**: model başına sabit üst sınır (modelin görebildiği tokenlar). Model kataloğundan gelir ve yapılandırma aracılığıyla geçersiz kılınabilir.
+2. **Oturum deposu sayaçları**: oturum satırına yazılan hareketli istatistiklerdir (`/status` ve panolar için kullanılır). `contextTokens` bir çalışma zamanı tahmin/raporlama değeridir; bunu kesin bir garanti olarak değerlendirmeyin.
 
-Sınırları ayarlıyorsanız:
+Sınırlar hakkında daha fazla bilgi: [/reference/token-use](/tr/reference/token-use).
 
-- Bağlam penceresi model kataloğundan gelir (ve yapılandırma üzerinden geçersiz kılınabilir).
-- Depodaki `contextTokens` bir çalışma zamanı tahmini/raporlama değeridir; bunu katı bir garanti olarak değerlendirmeyin.
+## Compaction: nedir?
 
-Daha fazlası için bkz. [/token-use](/tr/reference/token-use).
+Compaction, eski konuşmaları transkriptte kalıcı bir `compaction` girdisi hâlinde özetler ve son mesajları olduğu gibi korur. Compaction sonrasında gelecek dönüşler, Compaction özetini ve `firstKeptEntryId` sonrasındaki mesajları görür. Compaction, oturum budamasının aksine **kalıcıdır**; bkz. [/concepts/session-pruning](/tr/concepts/session-pruning).
 
----
+Compaction sonrasında AGENTS.md bölümünün yeniden eklenmesi `agents.defaults.compaction.postCompactionSections` aracılığıyla isteğe bağlıdır; ayarlanmadığında veya `[]` olduğunda OpenClaw, Compaction özetinin üzerine AGENTS.md alıntıları eklemez.
 
-## Compaction: nedir
+### Parça sınırları ve araç eşleştirme
 
-Compaction, eski konuşmayı transkriptte kalıcı bir `compaction` girdisine özetler ve son iletileri olduğu gibi tutar.
+OpenClaw, uzun bir transkripti Compaction parçalarına bölerken asistan araç çağrılarını eşleşen `toolResult` girdileriyle birlikte tutar:
 
-Compaction sonrasında gelecekteki turlar şunları görür:
+- Token payına dayalı bölme bir araç çağrısı ile sonucu arasına denk gelecekse OpenClaw çifti ayırmak yerine sınırı asistanın araç çağrısı mesajına kaydırır.
+- Sondaki bir araç sonucu bloğu aksi hâlde parçayı hedefin üzerine çıkaracaksa OpenClaw bekleyen araç bloğunu korur ve özetlenmemiş kuyruğu olduğu gibi bırakır.
+- İptal edilmiş/hatalı araç çağrısı blokları, bekleyen bir bölmeyi açık tutmaz.
 
-- Compaction özeti
-- `firstKeptEntryId` sonrasındaki iletiler
+## Otomatik Compaction ne zaman gerçekleşir?
 
-Compaction sonrasında AGENTS.md bölümü yeniden enjekte etme, `agents.defaults.compaction.postCompactionSections` ile isteğe bağlıdır; ayarlanmamışsa veya `[]` ise,
-OpenClaw Compaction özetinin üzerine AGENTS.md alıntıları eklemez.
+Gömülü OpenClaw ajanında iki tetikleyici vardır:
 
-Compaction **kalıcıdır** (oturum budamanın aksine). Bkz. [/concepts/session-pruning](/tr/concepts/session-pruning).
+1. **Taşma kurtarması**: model bir bağlam taşması hatası döndürür (`request_too_large`, `context length exceeded`, `input exceeds the maximum number of tokens`, `input token count exceeds the maximum number of input tokens`, `input is too long for the model`, `ollama error: context length exceeded` ve sağlayıcıya özgü diğer varyantlar); Compaction uygulayıp yeniden dener. Sağlayıcı denenen token sayısını bildirdiğinde OpenClaw, gözlemlenen bu sayıyı taşma kurtarma Compaction işlemine iletir; sağlayıcı taşmayı doğrular ancak ayrıştırılabilir bir sayı sunmazsa OpenClaw, Compaction motorlarına ve tanılamaya bütçeyi asgari düzeyde aşan sentetik bir sayı geçirir. Taşma kurtarması yine başarısız olursa OpenClaw, sessizce yeni bir oturum kimliğine geçmek yerine açık yönergeler sunar ve mevcut oturum eşlemesini korur; mesajı yeniden deneyin, `/compact` veya `/new` çalıştırın.
+2. **Eşik bakımı**: başarılı bir dönüşten sonra `contextTokens > contextWindow - reserveTokens` olduğunda; burada `contextWindow` modelin bağlam penceresi, `reserveTokens` ise istemler ve bir sonraki model çıktısı için ayrılan paydır.
 
-## Compaction parça sınırları ve araç eşleştirmesi
+Bu iki tetikleyicinin dışında iki ek koruma çalışır:
 
-OpenClaw uzun bir transkripti Compaction parçalarına böldüğünde,
-asistan araç çağrılarını eşleşen `toolResult` girdileriyle eşlenmiş tutar.
+- **Ön kontrol yerel Compaction**: etkin transkript bu boyuta ulaştığında sonraki çalıştırmayı açmadan önce yerel Compaction işlemini tetiklemek için `agents.defaults.compaction.maxActiveTranscriptBytes` değerini (bayt veya `"20mb"` gibi bir dize) ayarlayın. Bu, ham arşivleme değil, yerel yeniden açma maliyetine yönelik bir boyut korumasıdır; normal semantik Compaction yine çalışır ve sıkıştırılmış özetin yeni bir ardıl transkript hâline gelmesi için `truncateAfterCompaction` gerektirir.
+- **Dönüş ortası ön kontrolü**: araç döngüsü koruması eklemek için `agents.defaults.compaction.midTurnPrecheck.enabled: true` değerini (varsayılan `false`) ayarlayın. Bir araç sonucu eklendikten sonra ve bir sonraki model çağrısından önce OpenClaw, dönüş başlangıcında kullanılan ön kontrol bütçe mantığıyla istem baskısını tahmin eder. Bağlam artık sığmıyorsa koruma satır içinde Compaction uygulamaz; yapılandırılmış bir dönüş ortası ön kontrol sinyali oluşturur, mevcut istem gönderimini durdurur ve dış çalıştırma döngüsünün mevcut kurtarma yolunu kullanmasına izin verir (yeterli olduğunda aşırı büyük araç sonuçlarını kısaltır veya yapılandırılmış Compaction modunu tetikleyip yeniden dener). Sağlayıcı destekli koruyucu Compaction dâhil olmak üzere hem `default` hem de `safeguard` Compaction modlarıyla çalışır. `maxActiveTranscriptBytes` değerinden bağımsızdır: bayt boyutu koruması bir dönüş açılmadan önce, dönüş ortası ön kontrolü ise daha sonra, yeni araç sonuçları eklendikten sonra çalışır.
 
-- Token payı bölmesi bir araç çağrısı ile sonucu arasına denk gelirse, OpenClaw
-  çifti ayırmak yerine sınırı asistan araç çağrısı iletisine kaydırır.
-- Sondaki bir araç sonucu bloğu aksi halde parçayı hedefin üzerine çıkaracaksa,
-  OpenClaw bekleyen bu araç bloğunu korur ve özetlenmemiş kuyruğu
-  olduğu gibi tutar.
-- Durdurulan/hatalı araç çağrısı blokları bekleyen bir bölmeyi açık tutmaz.
-
----
-
-## Otomatik Compaction ne zaman gerçekleşir (OpenClaw çalışma zamanı)
-
-Gömülü OpenClaw ajanında otomatik Compaction iki durumda tetiklenir:
-
-1. **Taşma kurtarma**: model bir bağlam taşması hatası döndürür
-   (`request_too_large`, `context length exceeded`, `input exceeds the maximum
-number of tokens`, `input token count exceeds the maximum number of input
-tokens`, `input is too long for the model`, `ollama error: context length
-exceeded` ve benzer sağlayıcı biçimli varyantlar) → compact → yeniden dene.
-   Sağlayıcı denenen token sayısını bildirdiğinde, OpenClaw gözlemlenen bu sayıyı
-   taşma kurtarma Compaction'ına iletir. Sağlayıcı taşmayı doğrular ancak
-   ayrıştırılabilir bir sayı sunmazsa, OpenClaw Compaction motorlarına ve tanılamalara bütçeyi
-   asgari düzeyde aşan sentetik bir sayı geçirir.
-   Taşma kurtarma hâlâ başarısız olursa, OpenClaw kullanıcıya açık rehberlik sunar
-   ve oturum anahtarını sessizce yeni bir oturum kimliğine döndürmek yerine
-   geçerli oturum eşlemesini korur. Sonraki adım operatör denetimindedir:
-   iletiyi yeniden dene, `/compact` çalıştır veya yeni bir oturum
-   tercih edildiğinde `/new` çalıştır.
-2. **Eşik bakımı**: başarılı bir turdan sonra, şu olduğunda:
-
-`contextTokens > contextWindow - reserveTokens`
-
-Burada:
-
-- `contextWindow` modelin bağlam penceresidir
-- `reserveTokens` istemler + sonraki model çıktısı için ayrılmış boşluktur
-
-Bunlar OpenClaw çalışma zamanı semantik değerleridir.
-
-OpenClaw, `agents.defaults.compaction.maxActiveTranscriptBytes` ayarlandığında ve
-etkin transkript dosyası bu boyuta ulaştığında, sonraki çalıştırmayı açmadan önce
-ön kontrol yerel Compaction da tetikleyebilir. Bu, yerel yeniden açma maliyeti için dosya boyutu korumasıdır,
-ham arşivleme değildir: OpenClaw yine normal semantik Compaction çalıştırır
-ve sıkıştırılmış özetin yeni bir ardıl transkript olabilmesi için `truncateAfterCompaction` gerektirir.
-
-Gömülü OpenClaw çalıştırmaları için `agents.defaults.compaction.midTurnPrecheck.enabled: true`
-isteğe bağlı bir araç döngüsü koruması ekler. Bir araç sonucu eklendikten sonra ve
-sonraki model çağrısından önce, OpenClaw tur başlangıcında kullanılan aynı ön kontrol
-bütçe mantığını kullanarak istem baskısını tahmin eder. Bağlam artık sığmıyorsa, koruma
-OpenClaw çalışma zamanının `transformContext` kancası içinde compact yapmaz. Yapılandırılmış
-tur ortası ön kontrol sinyali yükseltir, geçerli istem gönderimini durdurur ve
-dış çalıştırma döngüsünün mevcut kurtarma yolunu kullanmasına izin verir: bu yeterli olduğunda
-aşırı büyük araç sonuçlarını keser veya yapılandırılmış Compaction modunu tetikleyip yeniden dener. Seçenek
-varsayılan olarak devre dışıdır ve sağlayıcı destekli safeguard Compaction dahil olmak üzere hem `default` hem de `safeguard`
-Compaction modlarıyla çalışır.
-Bu, `maxActiveTranscriptBytes` değerinden bağımsızdır: byte boyutu koruması
-bir tur açılmadan önce çalışır, tur ortası ön kontrol ise yeni araç sonuçları eklendikten sonra gömülü OpenClaw araç
-döngüsünde daha sonra çalışır.
-
----
-
-## Compaction ayarları (`reserveTokens`, `keepRecentTokens`)
-
-OpenClaw çalışma zamanının Compaction ayarları ajan ayarlarında bulunur:
+## Compaction ayarları
 
 ```json5
 {
-  compaction: {
-    enabled: true,
-    reserveTokens: 16384,
-    keepRecentTokens: 20000,
+  agents: {
+    defaults: {
+      compaction: {
+        enabled: true,
+        reserveTokens: 16384,
+        keepRecentTokens: 20000,
+      },
+    },
   },
 }
 ```
 
-OpenClaw gömülü çalıştırmalar için ayrıca bir güvenlik tabanı uygular:
+OpenClaw, gömülü çalıştırmalar için bir güvenlik alt sınırı da uygular: `compaction.reserveTokens`, `reserveTokensFloor` değerinin (varsayılan `20000`) altındaysa OpenClaw bunu yükseltir. Alt sınırı devre dışı bırakmak için `agents.defaults.compaction.reserveTokensFloor: 0` değerini ayarlayın. Etkin modelin bağlam penceresi biliniyorsa hem alt sınır hem de nihai etkin rezerv, rezervin tüm istem bütçesini tüketemeyeceği şekilde sınırlandırılır. Bu, küçük bağlamlı modellerin (örneğin 16K token'lık yerel bir modelin) ilk token'dan itibaren Compaction sürecine girmesini önler; bilinen bir bağlam penceresi yoksa yapılandırılmış ve mevcut rezerv bütçeleri sınırlandırılmaz. Alt sınırın amacı: Compaction kaçınılmaz hâle gelmeden önce çok turlu "bakım" işlemleri (aşağıdaki bellek boşaltma gibi) için yeterli boşluk bırakmaktır. Uygulama: `src/agents/agent-settings.ts` içindeki `applyAgentCompactionSettingsFromConfig()`; gömülü çalıştırıcı turu ve Compaction kurulum yollarından çağrılır.
 
-- `compaction.reserveTokens < reserveTokensFloor` ise OpenClaw bunu yükseltir.
-- Varsayılan taban `20000` tokendır.
-- Tabanı devre dışı bırakmak için `agents.defaults.compaction.reserveTokensFloor: 0` ayarlayın.
-- Zaten daha yüksekse OpenClaw bunu olduğu gibi bırakır.
-- Manuel `/compact`, açık bir `agents.defaults.compaction.keepRecentTokens`
-  değerine uyar ve OpenClaw çalışma zamanının son kuyruk kesme noktasını korur. Açık bir tutma bütçesi olmadan,
-  manuel Compaction katı bir denetim noktası olarak kalır ve yeniden oluşturulan bağlam
-  yeni özetten başlar.
-- Yeni araç sonuçlarından sonra ve sonraki model
-  çağrısından önce isteğe bağlı araç döngüsü ön kontrolünü çalıştırmak için `agents.defaults.compaction.midTurnPrecheck.enabled: true` ayarlayın. Bu yalnızca bir tetikleyicidir; özet üretimi hâlâ yapılandırılmış
-  Compaction yolunu kullanır. Bir
-  tur başlangıcı etkin transkript byte boyutu koruması olan `maxActiveTranscriptBytes` değerinden bağımsızdır.
-- Etkin
-  transkript büyüdüğünde bir turdan önce yerel Compaction çalıştırmak için `agents.defaults.compaction.maxActiveTranscriptBytes` değerini bir byte değeri veya
-  `"20mb"` gibi bir dize olarak ayarlayın. Bu koruma yalnızca
-  `truncateAfterCompaction` da etkinleştirildiğinde etkindir. Devre dışı bırakmak için ayarlamadan bırakın veya `0` olarak ayarlayın.
-- `agents.defaults.compaction.truncateAfterCompaction` etkinleştirildiğinde,
-  OpenClaw etkin transkripti Compaction sonrasında sıkıştırılmış bir ardıl JSONL'ye döndürür.
-  Dal/geri yükleme denetim noktası eylemleri bu sıkıştırılmış ardılı kullanır;
-  eski Compaction öncesi denetim noktası dosyaları başvuruldukları sürece okunabilir kalır.
+Manuel `/compact`, açıkça belirtilen bir `agents.defaults.compaction.keepRecentTokens` değerine uyar ve çalışma zamanının yakın geçmiş kuyruğu kesim noktasını korur. Açıkça belirtilmiş bir koruma bütçesi yoksa manuel Compaction kesin bir denetim noktasıdır ve yeniden oluşturulan bağlam yeni özetten başlar.
 
-Neden: Compaction kaçınılmaz hale gelmeden önce çok turlu "temizlik" (bellek yazmaları gibi) için yeterli boşluk bırakmak.
-
-Uygulama: `src/agents/agent-settings.ts` içinde `applyAgentCompactionSettingsFromConfig()`
-(gömülü çalıştırıcı turundan ve Compaction kurulum yollarından çağrılır).
-
----
+`truncateAfterCompaction` etkinleştirildiğinde OpenClaw, Compaction sonrasında etkin transkripti sıkıştırılmış ardılına döndürür. Dal/geri yükleme denetim noktası eylemleri bu sıkıştırılmış ardılı kullanır; eski Compaction öncesi denetim noktası dosyaları, bunlara başvurulduğu sürece okunabilir kalır.
 
 ## Takılabilir Compaction sağlayıcıları
 
-Plugin'ler, plugin API'sindeki `registerCompactionProvider()` aracılığıyla bir Compaction sağlayıcısı kaydedebilir. `agents.defaults.compaction.provider` kayıtlı bir sağlayıcı kimliğine ayarlandığında, safeguard uzantısı özetlemeyi yerleşik `summarizeInStages` işlem hattı yerine bu sağlayıcıya devreder.
+Plugin'ler, Plugin API'sindeki `registerCompactionProvider()` aracılığıyla bir Compaction sağlayıcısı kaydeder. `agents.defaults.compaction.provider` kayıtlı bir sağlayıcı kimliğine ayarlandığında koruma uzantısı, özetleme işlemini yerleşik `summarizeInStages` işlem hattı yerine bu sağlayıcıya devreder.
 
-- `provider`: kayıtlı bir Compaction sağlayıcı Plugin'inin kimliği. Varsayılan LLM özetlemesi için ayarlamadan bırakın.
-- Bir `provider` ayarlamak `mode: "safeguard"` değerini zorunlu kılar.
-- Sağlayıcılar, yerleşik yolla aynı Compaction talimatlarını ve tanımlayıcı koruma politikasını alır.
-- Safeguard, sağlayıcı çıktısından sonra son tur ve bölünmüş tur sonek bağlamını hâlâ korur.
-- Yerleşik safeguard özetlemesi, önceki özetin tamamını olduğu gibi korumak yerine
-  önceki özetleri yeni iletilerle yeniden damıtır.
-- Safeguard modu varsayılan olarak özet kalite denetimlerini etkinleştirir; hatalı biçimlendirilmiş çıktı durumunda yeniden deneme davranışını atlamak için
-  `qualityGuard.enabled: false` ayarlayın.
-- Sağlayıcı başarısız olursa veya boş sonuç döndürürse, OpenClaw otomatik olarak yerleşik LLM özetlemesine geri döner.
-- Çağıran iptaline saygı göstermek için abort/timeout sinyalleri yeniden fırlatılır (yutulmaz).
+- `provider`: kayıtlı bir Compaction sağlayıcısı Plugin'inin kimliği. Varsayılan LLM özetlemesini kullanmak için ayarlamadan bırakın. Bir `provider` ayarlamak `mode: "safeguard"` kullanımını zorunlu kılar.
+- Sağlayıcılar, yerleşik yolla aynı Compaction talimatlarını ve tanımlayıcı koruma politikasını alır; koruma mekanizması, sağlayıcı çıktısından sonra da son turların ve bölünmüş turların sonek bağlamını korur.
+- Yerleşik koruma özetlemesi, önceki özetin tamamını olduğu gibi korumak yerine önceki özetleri yeni mesajlarla yeniden damıtır.
+- Koruma modu, özet kalitesi denetimlerini varsayılan olarak etkinleştirir; hatalı biçimlendirilmiş çıktıda yeniden deneme davranışını atlamak için `qualityGuard.enabled: false` değerini ayarlayın.
+- Sağlayıcı başarısız olursa veya boş bir sonuç döndürürse OpenClaw otomatik olarak yerleşik LLM özetlemesine geri döner. Çağıranın açıkça tetiklediği iptal/zaman aşımı sinyalleri yutulmaz, yeniden fırlatılır; böylece iptale her zaman uyulur.
 
 Kaynak: `src/plugins/compaction-provider.ts`, `src/agents/agent-hooks/compaction-safeguard.ts`.
 
----
-
 ## Kullanıcının görebildiği yüzeyler
 
-Compaction ve oturum durumunu şunlarla gözlemleyebilirsiniz:
-
-- `/status` (herhangi bir sohbet oturumunda)
+- Herhangi bir sohbet oturumunda `/status`
 - `openclaw status` (CLI)
-- `openclaw sessions` / `sessions --json`
+- `openclaw sessions` / `openclaw sessions --json`
 - Gateway günlükleri (`pnpm gateway:watch` veya `openclaw logs --follow`): `embedded run auto-compaction start` + `complete`
-- Ayrıntılı mod: `🧹 Auto-compaction complete` + Compaction sayısı
+- Ayrıntılı mod: `🧹 Auto-compaction complete` ve Compaction sayısı
 
----
+## Sessiz bakım (`NO_REPLY`)
 
-## Sessiz temizlik (`NO_REPLY`)
+OpenClaw, kullanıcının ara çıktıları görmemesi gereken arka plan görevleri için "sessiz" turları destekler.
 
-OpenClaw, kullanıcının ara çıktıyı görmemesi gereken arka plan görevleri için "sessiz" turları destekler.
+- Asistan, "kullanıcıya yanıt iletme" anlamına gelen tam sessiz token `NO_REPLY` / `no_reply` ile çıktısına başlar. OpenClaw bunu teslimat katmanında kaldırır/bastırır.
+- Tam sessiz token bastırma işlemi büyük/küçük harfe duyarsızdır: tüm yük yalnızca sessiz token'dan oluşuyorsa hem `NO_REPLY` hem de `no_reply` geçerli sayılır.
+- `2026.1.10` itibarıyla OpenClaw, kısmi bir parça `NO_REPLY` ile başladığında taslak/yazıyor akışını da bastırır; böylece sessiz işlemler turun ortasında kısmi çıktı sızdırmaz.
+- Bu yalnızca gerçek arka plan/teslimatsız turlar içindir; sıradan, eyleme dönük kullanıcı istekleri için bir kestirme değildir.
 
-Kural:
+## Compaction öncesi bellek boşaltma
 
-- Asistan çıktısına, "kullanıcıya yanıt iletme" anlamına gelen tam sessiz belirteç `NO_REPLY` /
-  `no_reply` ile başlar.
-- OpenClaw bunu teslim katmanında çıkarır/bastırır.
-- Tam sessiz belirteç bastırma büyük/küçük harfe duyarlı değildir; bu nedenle tüm yük yalnızca sessiz belirteç olduğunda `NO_REPLY` ve
-  `no_reply` ikisi de geçerli sayılır.
-- Bu yalnızca gerçek arka plan/teslimatsız dönüşler içindir; sıradan, eyleme dönük kullanıcı istekleri için bir kısayol değildir.
+Otomatik Compaction gerçekleşmeden önce OpenClaw, kalıcı durumu diske (örneğin ajan çalışma alanındaki `memory/YYYY-MM-DD.md`) yazan sessiz bir ajansal tur çalıştırabilir; böylece Compaction kritik bağlamı silemez. Oturum bağlamı kullanımını izler ve kullanım Compaction eşiğinin altındaki yumuşak eşiği geçtiğinde, tam sessiz token `NO_REPLY` / `no_reply` kullanarak sessiz bir "belleği şimdi yaz" yönergesi gönderir; böylece kullanıcı hiçbir şey görmez.
 
-`2026.1.10` itibarıyla OpenClaw, kısmi bir parça `NO_REPLY` ile başladığında **taslak/yazma akışını** da bastırır; böylece sessiz işlemler dönüş sırasında kısmi çıktıyı sızdırmaz.
+Yapılandırma (`agents.defaults.compaction.memoryFlush`), tam başvuru için bkz. [/gateway/config-agents](/tr/gateway/config-agents#agentsdefaultscompaction):
 
----
-
-## Compaction öncesi "bellek boşaltma" (uygulandı)
-
-Amaç: otomatik Compaction gerçekleşmeden önce, kalıcı durumu diske yazan sessiz bir aracılı dönüş çalıştırmak (ör. ajan çalışma alanında `memory/YYYY-MM-DD.md`), böylece Compaction kritik bağlamı silemez.
-
-OpenClaw **ön eşik boşaltma** yaklaşımını kullanır:
-
-1. Oturum bağlamı kullanımını izle.
-2. "Yumuşak eşiği" geçtiğinde (OpenClaw çalışma zamanının Compaction eşiğinin altında), ajana sessiz bir "belleği şimdi yaz" yönergesi çalıştır.
-3. Kullanıcının hiçbir şey görmemesi için tam sessiz belirteç `NO_REPLY` / `no_reply` kullan.
-
-Yapılandırma (`agents.defaults.compaction.memoryFlush`):
-
-- `enabled` (varsayılan: `true`)
-- `model` (boşaltma dönüşü için isteğe bağlı tam sağlayıcı/model geçersiz kılması, örneğin `ollama/qwen3:8b`)
-- `softThresholdTokens` (varsayılan: `4000`)
-- `prompt` (boşaltma dönüşü için kullanıcı iletisi)
-- `systemPrompt` (boşaltma dönüşü için eklenen ek sistem istemi)
+| Anahtar                     | Varsayılan       | Notlar                                                                                                                                 |
+| --------------------------- | ---------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| `enabled`                   | `true`           |                                                                                                                                        |
+| `model`                     | ayarlanmamış     | yalnızca boşaltma turu için tam sağlayıcı/model geçersiz kılması; örneğin `ollama/qwen3:8b`                                             |
+| `softThresholdTokens`       | `4000`           | boşaltmayı tetikleyen, Compaction eşiğinin altındaki fark                                                                               |
+| `forceFlushTranscriptBytes` | ayarlanmamış (devre dışı) | token sayaçları güncel olmasa bile transkript dosyası bu bayt boyutuna (veya `"2mb"` gibi bir dizeye) ulaştığında boşaltmayı zorunlu kılar; `0` devre dışı bırakır |
+| `prompt`                    | yerleşik         | boşaltma turunun kullanıcı mesajı                                                                                                       |
+| `systemPrompt`              | yerleşik         | boşaltma turuna eklenen ilave sistem istemi                                                                                             |
 
 Notlar:
 
-- Varsayılan istem/sistem istemi, teslimi bastırmak için bir `NO_REPLY` ipucu içerir.
-- `model` ayarlandığında, boşaltma dönüşü etkin oturum yedek zincirini devralmadan bu modeli kullanır; böylece yalnızca yerel bakım işleri sessizce ücretli bir konuşma modeline geri dönmez.
-- Boşaltma her Compaction döngüsünde bir kez çalışır (`sessions.json` içinde izlenir).
-- Boşaltma yalnızca gömülü OpenClaw oturumları için çalışır (CLI arka uçları bunu atlar).
+- Varsayılan istem/sistem istemi, teslimatı bastırmak için bir `NO_REPLY` ipucu içerir.
+- `model` ayarlandığında boşaltma turu, etkin oturumun geri dönüş zincirini devralmadan bu modeli kullanır; böylece yalnızca yerel bakım işlemleri, başarısızlık durumunda fark edilmeden ücretli bir konuşma modeline geri dönmez.
+- Boşaltma, her Compaction döngüsünde bir kez çalışır (oturum satırında izlenir).
+- Boşaltma yalnızca gömülü OpenClaw oturumları için çalışır; CLI arka uçları ve Heartbeat turları bunu atlar.
 - Oturum çalışma alanı salt okunur olduğunda (`workspaceAccess: "ro"` veya `"none"`) boşaltma atlanır.
-- Çalışma alanı dosya düzeni ve yazma kalıpları için bkz. [Bellek](/tr/concepts/memory).
+- Çalışma alanı dosya düzeni ve yazma kalıpları için [Bellek](/tr/concepts/memory) bölümüne bakın.
 
-OpenClaw ayrıca uzantı API'sinde bir `session_before_compact` kancası sunar, ancak OpenClaw'ın boşaltma mantığı bugün Gateway tarafında bulunur.
-
----
+OpenClaw, uzantı API'sinde bir `session_before_compact` kancası sunar; ancak yukarıdaki boşaltma mantığı bu kancada değil, Gateway tarafında (`src/auto-reply/reply/memory-flush.ts`, `src/auto-reply/reply/agent-runner-memory.ts`) bulunur.
 
 ## Sorun giderme kontrol listesi
 
-- Oturum anahtarı yanlış mı? [/concepts/session](/tr/concepts/session) ile başlayın ve `/status` içindeki `sessionKey` değerini doğrulayın.
-- Depo ile transkript uyuşmuyor mu? `openclaw status` çıktısından Gateway konağını ve depo yolunu doğrulayın.
-- Compaction spam'i mi? Şunları kontrol edin:
-  - model bağlam penceresi (çok küçük)
-  - Compaction ayarları (`reserveTokens` model penceresi için çok yüksekse daha erken Compaction'a neden olabilir)
-  - araç sonucu şişmesi: oturum budamayı etkinleştirin/ayarlayın
-- Sessiz dönüşler sızıyor mu? Yanıtın `NO_REPLY` ile başladığını (büyük/küçük harfe duyarsız tam belirteç) ve akış bastırma düzeltmesini içeren bir derlemede olduğunuzu doğrulayın.
+- **Oturum anahtarı yanlış mı?** [/concepts/session](/tr/concepts/session) ile başlayın ve `/status` içindeki `sessionKey` değerini doğrulayın.
+- **Depo ile transkript uyuşmuyor mu?** Gateway ana makinesini ve `openclaw status` tarafından belirtilen depo yolunu doğrulayın.
+- **Compaction sürekli mi tekrarlanıyor?** Modelin bağlam penceresini (çok küçük olması sık Compaction yapılmasını zorunlu kılar), `reserveTokens` değerini (model penceresi için çok yüksek olması Compaction'ın daha erken yapılmasına neden olur) ve araç sonucu şişmesini (oturum budamasını ayarlayın) kontrol edin.
+- **Küçük bir yerel modelde her istem taşıyor gibi mi görünüyor?** Sağlayıcının doğru model bağlam penceresini bildirdiğini doğrulayın. OpenClaw, etkin rezervi yalnızca bu pencere biliniyorsa sınırlandırabilir.
+- **Sessiz turlar sızıyor mu?** Yanıtın tam sessiz token `NO_REPLY` ile başladığını (büyük/küçük harfe duyarsız) ve akış bastırma düzeltmesini içeren bir derlemeyi (`2026.1.10`+) kullandığınızı doğrulayın.
 
-## İlgili
+## İlgili konular
 
 - [Oturum yönetimi](/tr/concepts/session)
 - [Oturum budama](/tr/concepts/session-pruning)
 - [Bağlam motoru](/tr/concepts/context-engine)
+- [Ajan yapılandırma başvurusu](/tr/gateway/config-agents)

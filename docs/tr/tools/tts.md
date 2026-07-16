@@ -1,43 +1,44 @@
 ---
 read_when:
-    - Yanıtlar için metinden sese özelliğini etkinleştirme
-    - Bir TTS sağlayıcısını, yedek zinciri veya personayı yapılandırma
+    - Yanıtlar için metinden konuşmaya özelliğini etkinleştirme
+    - Bir TTS sağlayıcısını, yedek zincirini veya kişiliği yapılandırma
     - /tts komutlarını veya yönergelerini kullanma
 sidebarTitle: Text to speech (TTS)
-summary: Giden yanıtlar için metinden sese — sağlayıcılar, personalar, eğik çizgi komutları ve kanal bazlı çıktı
+summary: Giden yanıtlar için metinden konuşmaya — sağlayıcılar, kişilikler, eğik çizgi komutları ve kanal başına çıktı
 title: Metinden konuşmaya
 x-i18n:
-    generated_at: "2026-06-28T01:27:02Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T17:42:59Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 94835daf766286e937c57828818a4ee0a20e6d5894b7d51d6f98fc7ebdaffe35
+    source_hash: 4ba17f56927507a73b5b116f5f13bb7b612b4ba7669f5ad240d5c96a6620c611
     source_path: tools/tts.md
     workflow: 16
 ---
 
-OpenClaw, giden yanıtları **14 konuşma sağlayıcısı** genelinde sese dönüştürebilir
-ve Feishu, Matrix, Telegram ve WhatsApp üzerinde yerel sesli mesajlar,
-diğer her yerde ses ekleri, telephony ve Talk için PCM/Ulaw akışları teslim edebilir.
+OpenClaw, giden yanıtları **14 konuşma sağlayıcısı** üzerinden sese dönüştürür:
+Feishu, Matrix, Telegram ve WhatsApp'ta yerel sesli mesajlar; diğer her yerde ses
+ekleri; telefon ve Talk için ise PCM/Ulaw akışları.
 
-TTS, Talk'ın `stt-tts` modunun konuşma çıktısı yarısıdır. Sağlayıcıya özgü
-`realtime` Talk oturumları, bu TTS yolunu çağırmak yerine konuşmayı realtime
-sağlayıcısının içinde sentezler; `transcription` oturumları ise bir
-asistan sesli yanıtı sentezlemez.
+TTS, Talk'ın `stt-tts` modunun konuşma çıkışı yarısıdır (`talk.speak` çağrıları da
+aynı sentez yolunu kullanır). Sağlayıcıya özgü `realtime` Talk oturumları konuşmayı
+gerçek zamanlı sağlayıcı içinde sentezler; `transcription` oturumları ise hiçbir zaman
+asistanın sesli yanıtını sentezlemez.
 
 ## Hızlı başlangıç
 
 <Steps>
-  <Step title="Pick a provider">
+  <Step title="Bir sağlayıcı seçin">
     OpenAI ve ElevenLabs en güvenilir barındırılan seçeneklerdir. Microsoft ve
-    Local CLI bir API anahtarı olmadan çalışır. Tam liste için
-    [sağlayıcı matrisine](#supported-providers) bakın.
+    Yerel CLI, API anahtarı olmadan çalışır. Tam liste için [sağlayıcı matrisine](#supported-providers)
+    bakın.
   </Step>
-  <Step title="Set the API key">
-    Sağlayıcınız için env var'ı dışa aktarın (örneğin `OPENAI_API_KEY`,
-    `ELEVENLABS_API_KEY`). Microsoft ve Local CLI anahtar gerektirmez.
+  <Step title="API anahtarını ayarlayın">
+    Sağlayıcınızın ortam değişkenini dışa aktarın (örneğin `OPENAI_API_KEY`,
+    `ELEVENLABS_API_KEY`). Microsoft ve Yerel CLI için anahtar gerekmez.
   </Step>
-  <Step title="Enable in config">
+  <Step title="Yapılandırmada etkinleştirin">
     `messages.tts.auto: "always"` ve `messages.tts.provider` değerlerini ayarlayın:
 
     ```json5
@@ -52,57 +53,59 @@ asistan sesli yanıtı sentezlemez.
     ```
 
   </Step>
-  <Step title="Try it in chat">
-    `/tts status` mevcut durumu gösterir. `/tts audio Hello from OpenClaw`
+  <Step title="Sohbette deneyin">
+    `/tts status` geçerli durumu gösterir. `/tts audio Hello from OpenClaw`
     tek seferlik bir sesli yanıt gönderir.
   </Step>
 </Steps>
 
 <Note>
-Auto-TTS varsayılan olarak **kapalıdır**. `messages.tts.provider` ayarlanmamışsa,
-OpenClaw kayıt defterinin otomatik seçim sırasındaki ilk yapılandırılmış
-sağlayıcıyı seçer. Yerleşik `tts` agent aracı yalnızca açık niyet içindir:
-kullanıcı ses istemedikçe, `/tts` kullanmadıkça veya Auto-TTS/directive
-konuşmayı etkinleştirmedikçe normal sohbet metin olarak kalır.
+Otomatik TTS varsayılan olarak **kapalıdır**. `messages.tts.provider` ayarlanmamışsa
+OpenClaw, kayıt defterindeki otomatik seçim sırasına göre yapılandırılmış ilk sağlayıcıyı seçer.
+Yerleşik `tts` ajan aracı yalnızca açık niyetle çalışır: kullanıcı ses istemedikçe,
+`/tts` kullanmadıkça veya Otomatik TTS/yönerge
+konuşmasını etkinleştirmedikçe normal sohbet metin olarak kalır.
 </Note>
 
 ## Desteklenen sağlayıcılar
 
-| Sağlayıcı         | Kimlik doğrulama                                                                                                 | Notlar                                                                                      |
+| Sağlayıcı          | Kimlik doğrulama                                                                                                             | Notlar                                                                                       |
 | ----------------- | ---------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- |
-| **Azure Speech**  | `AZURE_SPEECH_KEY` + `AZURE_SPEECH_REGION` (ayrıca `AZURE_SPEECH_API_KEY`, `SPEECH_KEY`, `SPEECH_REGION`)        | Yerel Ogg/Opus sesli not çıktısı ve telephony.                                              |
-| **DeepInfra**     | `DEEPINFRA_API_KEY`                                                                                              | OpenAI uyumlu TTS. Varsayılan olarak `hexgrad/Kokoro-82M`.                                  |
-| **ElevenLabs**    | `ELEVENLABS_API_KEY` veya `XI_API_KEY`                                                                           | Ses klonlama, çok dilli, `seed` ile deterministik; Discord ses oynatma için akışlıdır.      |
-| **Google Gemini** | `GEMINI_API_KEY` veya `GOOGLE_API_KEY`                                                                           | Gemini API toplu TTS; `promptTemplate: "audio-profile-v1"` ile persona farkındalığı.        |
-| **Gradium**       | `GRADIUM_API_KEY`                                                                                                | Sesli not ve telephony çıktısı.                                                             |
-| **Inworld**       | `INWORLD_API_KEY`                                                                                                | Akışlı TTS API. Yerel Opus sesli not ve PCM telephony.                                      |
-| **Local CLI**     | yok                                                                                                              | Yapılandırılmış yerel bir TTS komutunu çalıştırır.                                          |
-| **Microsoft**     | yok                                                                                                              | `node-edge-tts` üzerinden genel Edge neural TTS. En iyi çaba, SLA yok.                      |
-| **MiniMax**       | `MINIMAX_API_KEY` (veya Token Plan: `MINIMAX_OAUTH_TOKEN`, `MINIMAX_CODE_PLAN_KEY`, `MINIMAX_CODING_API_KEY`)    | T2A v2 API. Varsayılan olarak `speech-2.8-hd`.                                              |
-| **OpenAI**        | `OPENAI_API_KEY`                                                                                                 | Otomatik özet için de kullanılır; persona `instructions` desteği vardır.                    |
-| **OpenRouter**    | `OPENROUTER_API_KEY` (`models.providers.openrouter.apiKey` yeniden kullanılabilir)                               | Varsayılan model `hexgrad/kokoro-82m`.                                                      |
-| **Volcengine**    | `VOLCENGINE_TTS_API_KEY` veya `BYTEPLUS_SEED_SPEECH_API_KEY` (eski AppID/token: `VOLCENGINE_TTS_APPID`/`_TOKEN`) | BytePlus Seed Speech HTTP API.                                                              |
-| **Vydra**         | `VYDRA_API_KEY`                                                                                                  | Paylaşılan görüntü, video ve konuşma sağlayıcısı.                                           |
-| **xAI**           | `XAI_API_KEY`                                                                                                    | xAI toplu TTS. Yerel Opus sesli not **desteklenmez**.                                       |
-| **Xiaomi MiMo**   | `XIAOMI_API_KEY`                                                                                                 | Xiaomi sohbet tamamlama üzerinden MiMo TTS.                                                 |
+| **Azure Speech**  | `AZURE_SPEECH_KEY` + `AZURE_SPEECH_REGION` (ayrıca `AZURE_SPEECH_API_KEY`, `SPEECH_KEY`, `SPEECH_REGION`)          | Yerel Ogg/Opus sesli not çıkışı ve telefon desteği.                                            |
+| **DeepInfra**     | `DEEPINFRA_API_KEY`                                                                                              | OpenAI uyumlu TTS. Varsayılan değer `hexgrad/Kokoro-82M`.                                    |
+| **ElevenLabs**    | `ELEVENLABS_API_KEY` veya `XI_API_KEY`                                                                             | Ses klonlama, çok dillilik, `seed` aracılığıyla belirlenebilirlik; Discord ses oynatımı için akış halinde sunulur. |
+| **Google Gemini** | `GEMINI_API_KEY` veya `GOOGLE_API_KEY`                                                                             | Gemini API toplu TTS; `promptTemplate: "audio-profile-v1"` aracılığıyla persona duyarlı.               |
+| **Gradium**       | `GRADIUM_API_KEY`                                                                                                | Sesli not ve telefon çıkışı.                                                            |
+| **Inworld**       | `INWORLD_API_KEY`                                                                                                | Akışlı TTS API'si. Yerel Opus sesli not ve PCM telefon desteği.                                |
+| **Yerel CLI**     | yok                                                                                                             | Yapılandırılmış yerel bir TTS komutu çalıştırır.                                                        |
+| **Microsoft**     | yok                                                                                                             | `node-edge-tts` üzerinden herkese açık Edge sinirsel TTS. En iyi çaba esasına dayalıdır, SLA yoktur.                            |
+| **MiniMax**       | `MINIMAX_API_KEY` (veya Token Planı: `MINIMAX_OAUTH_TOKEN`, `MINIMAX_CODE_PLAN_KEY`, `MINIMAX_CODING_API_KEY`)      | T2A v2 API'si. Varsayılan değer `speech-2.8-hd`.                                                    |
+| **OpenAI**        | `OPENAI_API_KEY`                                                                                                 | Otomatik özet için de kullanılır; `instructions` personasını destekler.                                |
+| **OpenRouter**    | `OPENROUTER_API_KEY` (`models.providers.openrouter.apiKey` yeniden kullanılabilir)                                            | Varsayılan model `hexgrad/kokoro-82m`.                                                         |
+| **Volcengine**    | `VOLCENGINE_TTS_API_KEY` veya `BYTEPLUS_SEED_SPEECH_API_KEY` (eski AppID/token: `VOLCENGINE_TTS_APPID`/`_TOKEN`) | BytePlus Seed Speech HTTP API'si.                                                              |
+| **Vydra**         | `VYDRA_API_KEY`                                                                                                  | Paylaşılan görüntü, video ve konuşma sağlayıcısı.                                                   |
+| **xAI**           | `XAI_API_KEY`                                                                                                    | xAI toplu TTS. Yerel Opus sesli not **desteklenmez**.                                 |
+| **Xiaomi MiMo**   | `XIAOMI_API_KEY`                                                                                                 | Xiaomi sohbet tamamlamaları üzerinden MiMo TTS.                                                   |
 
-Birden fazla sağlayıcı yapılandırılmışsa, önce seçilen sağlayıcı kullanılır ve
-diğerleri fallback seçenekleri olur. Otomatik özet `summaryModel` (veya
-`agents.defaults.model.primary`) kullanır; bu nedenle özetleri etkin tutarsanız
-o sağlayıcının da kimliği doğrulanmış olmalıdır.
+Birden fazla sağlayıcı yapılandırılmışsa önce seçilen sağlayıcı kullanılır ve
+diğerleri yedek seçenekler olarak değerlendirilir. Otomatik özet, `summaryModel` (veya
+`agents.defaults.model.primary`) kullanır; bu nedenle özetleri etkin
+tutarsanız ilgili sağlayıcıda da kimlik doğrulaması yapılmalıdır.
 
 <Warning>
-Paketlenen **Microsoft** sağlayıcısı, `node-edge-tts` üzerinden Microsoft Edge'in
-çevrimiçi neural TTS hizmetini kullanır. Bu, yayımlanmış SLA veya kotası olmayan
-genel bir web hizmetidir; en iyi çaba olarak değerlendirin. Eski sağlayıcı id'si
-`edge`, `microsoft` olarak normalize edilir ve `openclaw doctor --fix` kalıcı
-config'i yeniden yazar; yeni config'ler her zaman `microsoft` kullanmalıdır.
+Paketle birlikte gelen **Microsoft** sağlayıcısı, `node-edge-tts` üzerinden Microsoft Edge'in çevrimiçi sinirsel TTS
+hizmetini kullanır. Yayımlanmış bir SLA'sı veya kotası olmayan herkese açık bir web hizmetidir;
+en iyi çaba esasına dayalı olarak değerlendirin. Eski sağlayıcı kimliği `edge`,
+`microsoft` olarak normalleştirilir ve `openclaw doctor --fix` kalıcı
+yapılandırmayı yeniden yazar; yeni yapılandırmalar her zaman `microsoft` kullanmalıdır.
 </Warning>
 
 ## Yapılandırma
 
-TTS config'i `~/.openclaw/openclaw.json` içinde `messages.tts` altında bulunur.
-Bir preset seçin ve sağlayıcı bloğunu uyarlayın:
+TTS yapılandırması, `~/.openclaw/openclaw.json` içindeki `messages.tts` altında bulunur. Bir
+ön ayar seçin ve sağlayıcı bloğunu uyarlayın. Aşağıda gösterilen `speakerVoice`/`speakerVoiceId`
+alanları standarttır; her sağlayıcının kendi `voice`/`voiceId`/
+`voiceName` alan adları eski diğer adlar olarak çalışmaya devam eder.
 
 <Tabs>
   <Tab title="Azure Speech">
@@ -158,8 +161,8 @@ Bir preset seçin ve sağlayıcı bloğunu uyarlayın:
           apiKey: "${GEMINI_API_KEY}",
           model: "gemini-3.1-flash-tts-preview",
           speakerVoice: "Kore",
-          // Optional natural-language style prompts:
-          // audioProfile: "Speak in a calm, podcast-host tone.",
+          // İsteğe bağlı doğal dil stil istemleri:
+          // audioProfile: "Sakin, podcast sunucusu tonuyla konuş.",
           // speakerName: "Alex",
         },
       },
@@ -206,7 +209,7 @@ Bir preset seçin ve sağlayıcı bloğunu uyarlayın:
 }
 ```
   </Tab>
-  <Tab title="Local CLI">
+  <Tab title="Yerel CLI">
 ```json5
 {
   messages: {
@@ -226,7 +229,7 @@ Bir preset seçin ve sağlayıcı bloğunu uyarlayın:
 }
 ```
   </Tab>
-  <Tab title="Microsoft (no key)">
+  <Tab title="Microsoft (anahtar gerekmez)">
 ```json5
 {
   messages: {
@@ -380,14 +383,14 @@ Bir preset seçin ve sağlayıcı bloğunu uyarlayın:
   </Tab>
 </Tabs>
 
-Xiaomi `mimo-v2.5-tts-voicedesign` için `speakerVoice` değerini atlayın ve
-`style` değerini ses tasarımı prompt'u olarak ayarlayın. OpenClaw bu prompt'u
-TTS `user` mesajı olarak gönderir ve voicedesign modeli için `audio.voice`
-göndermez.
+Xiaomi `mimo-v2.5-tts-voicedesign` için `speakerVoice` alanını atlayın ve `style` değerini
+ses tasarımı istemi olarak ayarlayın. OpenClaw bu istemi TTS `user` mesajı olarak gönderir
+ve voicedesign modeli için `audio.voice` göndermez.
 
-### Agent başına ses geçersiz kılmaları
+### Aracı başına ses geçersiz kılmaları
 
-`agents.list[].tts` değerini, bir ajanın farklı bir sağlayıcı, ses, model, persona veya otomatik TTS moduyla konuşması gerektiğinde kullanın. Ajan bloğu `messages.tts` üzerine derin birleştirme uygular, böylece sağlayıcı kimlik bilgileri global sağlayıcı yapılandırmasında kalabilir:
+Bir aracının farklı bir sağlayıcı, ses, model, persona veya otomatik TTS moduyla konuşması gerektiğinde `agents.list[].tts` kullanın. Aracı bloğu
+`messages.tts` üzerine derin birleştirme uygular; böylece sağlayıcı kimlik bilgileri genel sağlayıcı yapılandırmasında kalabilir:
 
 ```json5
 {
@@ -415,18 +418,23 @@ göndermez.
 }
 ```
 
-Ajan başına bir persona sabitlemek için sağlayıcı yapılandırmasının yanında `agents.list[].tts.persona` ayarlayın; bu, yalnızca o ajan için global `messages.tts.persona` değerini geçersiz kılar.
+Aracı başına bir personayı sabitlemek için sağlayıcı yapılandırmasının yanında
+`agents.list[].tts.persona` ayarlayın; bu, yalnızca o aracı için genel `messages.tts.persona` değerini geçersiz kılar.
 
-Otomatik yanıtlar, `/tts audio`, `/tts status` ve `tts` ajan aracı için öncelik sırası:
+Otomatik yanıtlar, `/tts audio`, `/tts status` ve
+`tts` aracı aracı için öncelik sırası:
 
 1. `messages.tts`
 2. etkin `agents.list[].tts`
 3. kanal `channels.<channel>.tts` desteklediğinde kanal geçersiz kılması
-4. kanal `channels.<channel>.accounts.<id>.tts` geçirdiğinde hesap geçersiz kılması
+4. kanal `channels.<channel>.accounts.<id>.tts` ilettiğinde hesap geçersiz kılması
 5. bu ana makine için yerel `/tts` tercihleri
 6. [model geçersiz kılmaları](#model-driven-directives) etkinleştirildiğinde satır içi `[[tts:...]]` yönergeleri
 
-Kanal ve hesap geçersiz kılmaları `messages.tts` ile aynı şekli kullanır ve önceki katmanların üzerine derin birleştirilir; böylece paylaşılan sağlayıcı kimlik bilgileri `messages.tts` içinde kalabilirken bir kanal veya bot hesabı yalnızca konuşmacı sesini, modeli, persona değerini veya otomatik modu değiştirebilir:
+Kanal ve hesap geçersiz kılmaları, `messages.tts` ile aynı şekli kullanır ve
+önceki katmanların üzerine derin birleştirme uygular; böylece paylaşılan sağlayıcı kimlik bilgileri
+`messages.tts` içinde kalırken bir kanal veya bot hesabı yalnızca konuşmacı sesini, modeli, personayı
+veya otomatik modu değiştirebilir:
 
 ```json5
 {
@@ -456,9 +464,10 @@ Kanal ve hesap geçersiz kılmaları `messages.tts` ile aynı şekli kullanır v
 
 ## Personalar
 
-Bir **persona**, sağlayıcılar arasında deterministik olarak uygulanabilen kararlı bir sözlü kimliktir. Bir sağlayıcıyı tercih edebilir, sağlayıcıdan bağımsız istem amacını tanımlayabilir ve sesler, modeller, istem şablonları, tohumlar ve ses ayarları için sağlayıcıya özel bağlamalar taşıyabilir.
+Bir **persona**, sağlayıcılar genelinde belirlenimsel olarak uygulanabilen kararlı bir konuşma kimliğidir. Bir sağlayıcıyı tercih edebilir, sağlayıcıdan bağımsız istem
+amacını tanımlayabilir ve sesler, modeller, istem şablonları, çekirdek değerleri ve ses ayarları için sağlayıcıya özgü bağlamalar taşıyabilir.
 
-### Minimal persona
+### Asgari persona
 
 ```json5
 {
@@ -468,7 +477,7 @@ Bir **persona**, sağlayıcılar arasında deterministik olarak uygulanabilen ka
       persona: "narrator",
       personas: {
         narrator: {
-          label: "Narrator",
+          label: "Anlatıcı",
           provider: "elevenlabs",
           providers: {
             elevenlabs: {
@@ -494,17 +503,17 @@ Bir **persona**, sağlayıcılar arasında deterministik olarak uygulanabilen ka
       personas: {
         alfred: {
           label: "Alfred",
-          description: "Dry, warm British butler narrator.",
+          description: "Kuru mizahlı, sıcak bir İngiliz uşak anlatıcı.",
           provider: "google",
           fallbackPolicy: "preserve-persona",
           prompt: {
-            profile: "A brilliant British butler. Dry, witty, warm, charming, emotionally expressive, never generic.",
-            scene: "A quiet late-night study. Close-mic narration for a trusted operator.",
-            sampleContext: "The speaker is answering a private technical request with concise confidence and dry warmth.",
-            style: "Refined, understated, lightly amused.",
-            accent: "British English.",
-            pacing: "Measured, with short dramatic pauses.",
-            constraints: ["Do not read configuration values aloud.", "Do not explain the persona."],
+            profile: "Zeki bir İngiliz uşak. Kuru mizahlı, nüktedan, sıcak, çekici, duygularını ifade eden ve asla sıradan olmayan.",
+            scene: "Gece geç saatlerde sessiz bir çalışma odası. Güvenilir bir operatör için yakın mikrofonlu anlatım.",
+            sampleContext: "Konuşmacı, özel bir teknik isteği özlü bir özgüven ve kuru bir sıcaklıkla yanıtlıyor.",
+            style: "Zarif, ölçülü ve hafifçe eğlenmiş.",
+            accent: "Britanya İngilizcesi.",
+            pacing: "Ölçülü, kısa dramatik duraklamalarla.",
+            constraints: ["Yapılandırma değerlerini sesli okumayın.", "Personayı açıklamayın."],
           },
           providers: {
             google: {
@@ -535,71 +544,94 @@ Bir **persona**, sağlayıcılar arasında deterministik olarak uygulanabilen ka
 
 ### Persona çözümleme
 
-Etkin persona deterministik olarak seçilir:
+Etkin persona belirlenimsel olarak seçilir:
 
-1. ayarlanmışsa `/tts persona <id>` yerel tercihi.
+1. ayarlanmışsa yerel `/tts persona <id>` tercihi.
 2. ayarlanmışsa `messages.tts.persona`.
 3. Persona yok.
 
-Sağlayıcı seçimi açık olan öncelikli çalışır:
+Sağlayıcı seçimi, açık seçimlere öncelik vererek çalışır:
 
 1. Doğrudan geçersiz kılmalar (CLI, gateway, Talk, izin verilen TTS yönergeleri).
-2. `/tts provider <id>` yerel tercihi.
+2. Yerel `/tts provider <id>` tercihi.
 3. Etkin personanın `provider` değeri.
 4. `messages.tts.provider`.
-5. Kayıt defteri otomatik seçimi.
+5. Kayıt defterinden otomatik seçim.
 
-Her sağlayıcı denemesi için OpenClaw yapılandırmaları şu sırayla birleştirir:
+OpenClaw, her sağlayıcı denemesinde yapılandırmaları şu sırayla birleştirir:
 
 1. `messages.tts.providers.<id>`
 2. `messages.tts.personas.<persona>.providers.<id>`
 3. Güvenilir istek geçersiz kılmaları
-4. İzin verilen model tarafından yayımlanan TTS yönergesi geçersiz kılmaları
+4. İzin verilen, model tarafından yayımlanan TTS yönergesi geçersiz kılmaları
 
-### Sağlayıcılar persona istemlerini nasıl kullanır
+### Sağlayıcılar persona istemlerini nasıl kullanır?
 
-Persona istem alanları (`profile`, `scene`, `sampleContext`, `style`, `accent`, `pacing`, `constraints`) **sağlayıcıdan bağımsızdır**. Her sağlayıcı bunları nasıl kullanacağına kendisi karar verir:
+Persona istem alanları (`profile`, `scene`, `sampleContext`, `style`, `accent`,
+`pacing`, `constraints`) **sağlayıcıdan bağımsızdır**. Bunların nasıl kullanılacağına
+her sağlayıcı kendisi karar verir:
 
 <AccordionGroup>
   <Accordion title="Google Gemini">
-    Persona istem alanlarını yalnızca etkili Google sağlayıcı yapılandırması `promptTemplate: "audio-profile-v1"` veya `personaPrompt` ayarladığında bir Gemini TTS istem yapısına sarar. Eski `audioProfile` ve `speakerName` alanları hâlâ Google'a özel istem metni olarak başa eklenir. Bir `[[tts:text]]` bloğunun içindeki `[whispers]` veya `[laughs]` gibi satır içi ses etiketleri Gemini transkriptinin içinde korunur; OpenClaw bu etiketleri üretmez.
+    Persona istem alanlarını **yalnızca** etkin Google sağlayıcı yapılandırması
+    `promptTemplate: "audio-profile-v1"` veya `personaPrompt` ayarladığında bir Gemini TTS istem yapısına
+    sarar. Eski `audioProfile` ve `speakerName` alanları hâlâ Google'a özgü istem metni olarak
+    başa eklenir. Bir `[[tts:text]]` bloğundaki `[whispers]` veya
+    `[laughs]` gibi satır içi ses etiketleri Gemini transkriptinde korunur;
+    OpenClaw bu etiketleri oluşturmaz.
   </Accordion>
   <Accordion title="OpenAI">
-    Persona istem alanlarını yalnızca açık bir OpenAI `instructions` yapılandırılmadığında isteğin `instructions` alanına eşler. Açık `instructions` her zaman önceliklidir.
+    Persona istem alanlarını, **yalnızca** açık bir OpenAI `instructions`
+    yapılandırılmamışsa isteğin `instructions` alanına eşler. Açık `instructions`
+    her zaman önceliklidir.
   </Accordion>
   <Accordion title="Diğer sağlayıcılar">
-    Yalnızca `personas.<id>.providers.<provider>` altındaki sağlayıcıya özel persona bağlamalarını kullanır. Sağlayıcı kendi persona istemi eşlemesini uygulamadıkça persona istem alanları yok sayılır.
+    Yalnızca `personas.<id>.providers.<provider>` altındaki sağlayıcıya özgü persona bağlamalarını
+    kullanır. Sağlayıcı kendi persona istemi eşlemesini uygulamadığı sürece
+    persona istem alanları yok sayılır.
   </Accordion>
 </AccordionGroup>
 
 ### Geri dönüş ilkesi
 
-`fallbackPolicy`, bir personanın denenen sağlayıcı için **bağlaması olmadığında** davranışı denetler:
+`fallbackPolicy`, bir personanın denenen sağlayıcı için **hiçbir bağlaması olmadığında**
+davranışı denetler:
 
-| İlke                | Davranış                                                                                                                                      |
-| ------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
-| `preserve-persona`  | **Varsayılan.** Sağlayıcıdan bağımsız istem alanları kullanılabilir kalır; sağlayıcı bunları kullanabilir veya yok sayabilir.                 |
-| `provider-defaults` | Bu deneme için persona istem hazırlığından çıkarılır; diğer sağlayıcılara geri dönüş sürerken sağlayıcı kendi nötr varsayılanlarını kullanır. |
-| `fail`              | Bu sağlayıcı denemesini `reasonCode: "not_configured"` ve `personaBinding: "missing"` ile atlar. Geri dönüş sağlayıcıları yine denenir.       |
+| İlke               | Davranış                                                                                                                                         |
+| ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `preserve-persona`  | **Varsayılan.** Sağlayıcıdan bağımsız istem alanları kullanılabilir kalır; sağlayıcı bunları kullanabilir veya yok sayabilir.                     |
+| `provider-defaults` | Persona, bu deneme için istem hazırlığına dahil edilmez; diğer sağlayıcılara geri dönüş sürerken sağlayıcı kendi bağımsız varsayılanlarını kullanır. |
+| `fail`              | Bu sağlayıcı denemesini `reasonCode: "not_configured"` ve `personaBinding: "missing"` ile atla. Geri dönüş sağlayıcıları yine denenir.              |
 
-Tüm TTS isteği yalnızca denenen **her** sağlayıcı atlandığında veya başarısız olduğunda başarısız olur.
+TTS isteğinin tamamı yalnızca denenen **tüm** sağlayıcılar atlandığında
+veya başarısız olduğunda başarısız olur.
 
-Talk oturumu sağlayıcı seçimi oturum kapsamındadır. Bir Talk istemcisi sağlayıcı kimliklerini, model kimliklerini, ses kimliklerini ve yerel ayarları `talk.catalog` içinden seçmeli ve bunları Talk oturumu veya devir isteği üzerinden geçirmelidir. Bir ses oturumu açmak `messages.tts` veya global Talk sağlayıcı varsayılanlarını değiştirmemelidir.
+Talk oturumu sağlayıcı seçimi oturum kapsamındadır. Bir Talk istemcisi
+sağlayıcı kimliklerini, model kimliklerini, ses kimliklerini ve yerel ayarları `talk.catalog` içinden seçmeli ve
+bunları Talk oturumu veya devir isteği aracılığıyla iletmelidir. Bir ses oturumu açmak,
+`messages.tts` değerini veya genel Talk sağlayıcı varsayılanlarını değiştirmemelidir.
 
 ## Model odaklı yönergeler
 
-Varsayılan olarak asistan, tek bir yanıt için sesi, modeli veya hızı geçersiz kılmak üzere `[[tts:...]]` yönergeleri ve yalnızca seste görünmesi gereken ifade ipuçları için isteğe bağlı bir `[[tts:text]]...[[/tts:text]]` bloğu yayabilir:
+Varsayılan olarak asistan, tek bir yanıt için sesi, modeli veya hızı geçersiz kılmak üzere
+`[[tts:...]]` yönergeleri ve yalnızca seste görünmesi gereken ifade ipuçları için isteğe bağlı bir
+`[[tts:text]]...[[/tts:text]]` bloğu **yayımlayabilir**:
 
 ```text
-Here you go.
+Buyurun.
 
 [[tts:speakerVoiceId=pMsXgVXv3BLzUgSXRplE model=eleven_v3 speed=1.1]]
-[[tts:text]](laughs) Read the song once more.[[/tts:text]]
+[[tts:text]](güler) Şarkıyı bir kez daha oku.[[/tts:text]]
 ```
 
-`messages.tts.auto` `"tagged"` olduğunda, sesi tetiklemek için **yönergeler zorunludur**. Akışlı blok teslimi, bitişik bloklara bölünmüş olsa bile kanal görmeden önce yönergeleri görünür metinden çıkarır.
+`messages.tts.auto`, `"tagged"` olduğunda sesi tetiklemek için **yönergeler gereklidir**.
+Akışlı blok teslimi, bitişik bloklara bölünmüş olsalar bile kanal görmeden önce yönergeleri
+görünür metinden çıkarır.
 
-`modelOverrides.allowProvider: true` olmadıkça `provider=...` yok sayılır. Bir yanıt `provider=...` bildirdiğinde, o yönergedeki diğer anahtarlar yalnızca o sağlayıcı tarafından ayrıştırılır; desteklenmeyen anahtarlar çıkarılır ve TTS yönergesi uyarıları olarak bildirilir.
+`provider=...`, `modelOverrides.allowProvider: true` olmadığı sürece yok sayılır. Bir
+yanıt `provider=...` bildirdiğinde, bu yönergedeki diğer anahtarlar yalnızca
+o sağlayıcı tarafından ayrıştırılır; desteklenmeyen anahtarlar çıkarılır ve TTS
+yönergesi uyarıları olarak bildirilir.
 
 **Kullanılabilir yönerge anahtarları:**
 
@@ -607,20 +639,20 @@ Here you go.
 - `speakerVoice` / `speakerVoiceId` (eski takma adlar: `voice`, `voiceName`, `voice_name`, `google_voice`, `voiceId`)
 - `model` / `google_model`
 - `stability`, `similarityBoost`, `style`, `speed`, `useSpeakerBoost`
-- `vol` / `volume` (MiniMax ses düzeyi, 0-10)
-- `pitch` (MiniMax tam sayı perde, −12 ile 12; kesirli değerler kırpılır)
+- `vol` / `volume` (MiniMax ses düzeyi, `(0, 10]`)
+- `pitch` (MiniMax tam sayı perde değeri, −12 ile 12; kesirli değerler kesilir)
 - `emotion` (Volcengine duygu etiketi)
 - `applyTextNormalization` (`auto|on|off`)
 - `languageCode` (ISO 639-1)
 - `seed`
 
-**Model geçersiz kılmalarını tamamen devre dışı bırakın:**
+**Model geçersiz kılmalarını tamamen devre dışı bırakma:**
 
 ```json5
 { messages: { tts: { modelOverrides: { enabled: false } } } }
 ```
 
-**Diğer düğmeleri yapılandırılabilir tutarken sağlayıcı değiştirmeye izin verin:**
+**Diğer ayarları yapılandırılabilir tutarken sağlayıcı değiştirmeye izin verme:**
 
 ```json5
 { messages: { tts: { modelOverrides: { enabled: true, allowProvider: true, allowSeed: false } } } }
@@ -628,7 +660,8 @@ Here you go.
 
 ## Eğik çizgi komutları
 
-Tek komut `/tts`. Discord üzerinde OpenClaw ayrıca `/voice` kaydeder çünkü `/tts` yerleşik bir Discord komutudur; metin `/tts ...` yine çalışır.
+Tek komut: `/tts`. Discord'da `/tts` yerleşik bir Discord komutu olduğundan,
+OpenClaw ayrıca `/voice` kaydeder; metin biçimindeki `/tts ...` yine çalışır.
 
 ```text
 /tts off | on | status
@@ -642,160 +675,151 @@ Tek komut `/tts`. Discord üzerinde OpenClaw ayrıca `/voice` kaydeder çünkü 
 ```
 
 <Note>
-Komutlar yetkili bir gönderici gerektirir (izin listesi/sahip kuralları geçerlidir) ve `commands.text` ya da yerel komut kaydı etkin olmalıdır.
+Komutlar yetkili bir gönderici gerektirir (izin listesi/sahip kuralları uygulanır) ve
+`commands.text` veya yerel komut kaydı etkinleştirilmiş olmalıdır.
 </Note>
 
 Davranış notları:
 
-- `/tts on`, yerel TTS tercihini `always` olarak yazar; `/tts off` bunu `off` olarak yazar.
+- `/tts on`, yerel TTS tercihini `always` konumuna yazar; `/tts off` ise `off` konumuna yazar.
 - `/tts chat on|off|default`, geçerli sohbet için oturum kapsamlı bir otomatik TTS geçersiz kılması yazar.
 - `/tts persona <id>`, yerel persona tercihini yazar; `/tts persona off` bunu temizler.
-- `/tts latest`, geçerli oturum transkriptinden en son asistan yanıtını okur ve bunu bir kez ses olarak gönderir. Yinelenen ses gönderimlerini bastırmak için oturum girdisinde yalnızca o yanıtın karmasını saklar.
-- `/tts audio`, tek seferlik bir sesli yanıt üretir (TTS'yi **açmaz**).
+- `/tts latest`, geçerli oturum transkriptinden en son asistan yanıtını okur ve bir kez ses olarak gönderir. Yinelenen ses gönderimlerini önlemek için oturum girdisinde yalnızca bu yanıtın karmasını saklar.
+- `/tts audio`, tek seferlik bir sesli yanıt oluşturur (TTS'yi **etkinleştirmez**).
+- `/tts limit <chars>`, **100–4096** aralığını kabul eder (4096, Telegram altyazı/mesaj üst sınırıdır); bu aralığın dışındaki değerler reddedilir.
 - `limit` ve `summary`, ana yapılandırmada değil **yerel tercihlerde** saklanır.
 - `/tts status`, en son deneme için geri dönüş tanılamalarını içerir: `Fallback: <primary> -> <used>`, `Attempts: ...` ve deneme başına ayrıntı (`provider:outcome(reasonCode) latency`).
-- `/status`, TTS etkinleştirildiğinde etkin TTS modunu ve yapılandırılmış sağlayıcı, model, ses ve temizlenmiş özel uç nokta meta verilerini gösterir.
+- `/status`, TTS etkinleştirildiğinde etkin TTS modunun yanı sıra yapılandırılmış sağlayıcıyı, modeli, sesi ve hassas bilgilerden arındırılmış özel uç nokta meta verilerini gösterir.
 
 ## Kullanıcı başına tercihler
 
-Eğik çizgi komutları yerel geçersiz kılmaları `prefsPath` konumuna yazar. Varsayılan değer `~/.openclaw/settings/tts.json` olur; `OPENCLAW_TTS_PREFS` ortam değişkeni veya `messages.tts.prefsPath` ile geçersiz kılın.
+Eğik çizgi komutları yerel geçersiz kılmaları `prefsPath` konumuna yazar. Varsayılan değer
+`~/.openclaw/settings/tts.json`; bunu `OPENCLAW_TTS_PREFS` ortam değişkeni
+veya `messages.tts.prefsPath` ile geçersiz kılın.
 
-| Saklanan alan | Etki                                           |
-| ------------- | ---------------------------------------------- |
-| `auto`        | Yerel otomatik TTS geçersiz kılması (`always`, `off`, …) |
-| `provider`    | Yerel birincil sağlayıcı geçersiz kılması      |
-| `persona`     | Yerel persona geçersiz kılması                 |
-| `maxLength`   | Özet eşiği (varsayılan `1500` karakter)        |
-| `summarize`   | Özet anahtarı (varsayılan `true`)              |
+| Saklanan alan | Etki                                                                             |
+| ------------ | -------------------------------------------------------------------------------- |
+| `auto`       | Yerel otomatik TTS geçersiz kılma ayarı (`always`, `off`, …)                                     |
+| `provider`   | Yerel birincil sağlayıcı geçersiz kılma ayarı                                    |
+| `persona`    | Yerel persona geçersiz kılma ayarı                                               |
+| `maxLength`  | Özetleme/kırpma eşiği (varsayılan `1500` karakter, `/tts limit` aralığı 100–4096) |
+| `summarize`  | Özetleme açma/kapama ayarı (varsayılan `true`)                                  |
 
-Bunlar, bu ana makine için `messages.tts` ve etkin `agents.list[].tts` bloğundan gelen etkili yapılandırmayı geçersiz kılar.
+Bunlar, söz konusu ana makine için `messages.tts` ile etkin
+`agents.list[].tts` bloğundan gelen geçerli yapılandırmayı geçersiz kılar.
 
-## Çıktı biçimleri (sabit)
+## Çıkış biçimleri
 
-TTS ses teslimi kanal yeteneklerine göre yönlendirilir. Kanal Plugin'leri, ses tarzı TTS'nin sağlayıcılardan yerel bir `voice-note` hedefi istemesi mi yoksa normal `audio-file` sentezini koruyup yalnızca uyumlu çıktıyı ses teslimi için işaretlemesi mi gerektiğini bildirir.
+TTS ses iletimi, kanal yeteneklerine göre belirlenir. Kanal Pluginleri,
+ses tarzı TTS'nin sağlayıcılardan yerel bir `voice-note` hedefi istemesi mi,
+yoksa normal `audio-file` sentezini sürdürmesi mi gerektiğini ve kanalın
+yerel olmayan çıkışı göndermeden önce dönüştürüp dönüştürmediğini bildirir.
 
-- **Sesli not destekli kanallar**: sesli not yanıtları Opus'u tercih eder (ElevenLabs'ten `opus_48000_64`, OpenAI'den `opus`).
-  - 48kHz / 64kbps, sesli mesaj için iyi bir denge sağlar.
-- **Feishu / WhatsApp**: bir sesli not yanıtı MP3/WebM/WAV/M4A
-  veya başka bir olası ses dosyası olarak üretildiğinde, kanal plugin'i yerel sesli mesajı göndermeden önce bunu `ffmpeg` ile 48kHz
-  Ogg/Opus biçimine dönüştürür. WhatsApp, sonucu Baileys `audio` yükü üzerinden `ptt: true` ve
-  `audio/ogg; codecs=opus` ile gönderir. Dönüştürme başarısız olursa Feishu özgün
-  dosyayı ek olarak alır; WhatsApp ise uyumsuz bir PTT yükü yayımlamak yerine gönderimi
-  başarısız yapar.
-- **Diğer kanallar**: MP3 (ElevenLabs'ten `mp3_44100_128`, OpenAI'den `mp3`).
-  - 44.1kHz / 128kbps, konuşma netliği için varsayılan dengedir.
-- **MiniMax**: normal ses ekleri için MP3 (`speech-2.8-hd` modeli, 32kHz örnekleme hızı). Kanalın duyurduğu sesli not hedefleri için, kanal dönüştürmeyi duyuruyorsa OpenClaw teslimden önce MiniMax MP3'ünü `ffmpeg` ile 48kHz Opus'a dönüştürür.
-- **Xiaomi MiMo**: varsayılan olarak MP3 veya yapılandırıldığında WAV. Kanalın duyurduğu sesli not hedefleri için, kanal dönüştürmeyi duyuruyorsa OpenClaw teslimden önce Xiaomi çıktısını `ffmpeg` ile 48kHz Opus'a dönüştürür.
-- **Yerel CLI**: yapılandırılmış `outputFormat` değerini kullanır. Sesli not hedefleri
-  Ogg/Opus'a dönüştürülür ve telefon çıktısı `ffmpeg` ile ham 16 kHz mono PCM'ye
-  dönüştürülür.
-- **Google Gemini**: Gemini API TTS ham 24kHz PCM döndürür. OpenClaw bunu ses ekleri için WAV olarak sarar, sesli not hedefleri için 48kHz Opus'a dönüştürür ve Talk/telefon için PCM'yi doğrudan döndürür.
-- **Gradium**: ses ekleri için WAV, sesli not hedefleri için Opus ve telefon için 8 kHz'de `ulaw_8000`.
-- **Inworld**: normal ses ekleri için MP3, sesli not hedefleri için yerel `OGG_OPUS` ve Talk/telefon için 22050 Hz'de ham `PCM`.
-- **xAI**: varsayılan olarak MP3; `responseFormat` `mp3`, `wav`, `pcm`, `mulaw` veya `alaw` olabilir. OpenClaw xAI'nin toplu REST TTS uç noktasını kullanır ve eksiksiz bir ses eki döndürür; xAI'nin akışlı TTS WebSocket'i bu sağlayıcı yolunda kullanılmaz. Yerel Opus sesli not biçimi bu yol tarafından desteklenmez.
-- **Microsoft**: `microsoft.outputFormat` değerini kullanır (varsayılan `audio-24khz-48kbitrate-mono-mp3`).
-  - Paketlenmiş aktarım bir `outputFormat` kabul eder, ancak tüm biçimler hizmetten kullanılabilir değildir.
-  - Çıktı biçimi değerleri Microsoft Speech çıktı biçimlerini izler (Ogg/WebM Opus dahil).
-  - Telegram `sendVoice` OGG/MP3/M4A kabul eder; garantili Opus sesli mesajlara ihtiyacınız varsa OpenAI/ElevenLabs kullanın.
-  - Yapılandırılmış Microsoft çıktı biçimi başarısız olursa OpenClaw MP3 ile yeniden dener.
+| Hedef                                 | Biçim                                                                                                                                 |
+| ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| Feishu / Matrix / Telegram / WhatsApp | Sesli not yanıtlarında **Opus** tercih edilir (ElevenLabs'den `opus_48000_64`, OpenAI'dan `opus`). 48 kHz / 64 kbps, netlik ile boyutu dengeler. |
+| Diğer kanallar                        | **MP3** (ElevenLabs'den `mp3_44100_128`, OpenAI'dan `mp3`). 44.1 kHz / 128 kbps, konuşma için varsayılan dengedir.                  |
+| Talk / telefon                        | Sağlayıcıya özgü **PCM** (Inworld 22050 Hz, Google 24 kHz) veya telefon için Gradium'dan `ulaw_8000`.                                 |
 
-OpenAI/ElevenLabs çıktı biçimleri kanal başına sabittir (yukarıya bakın).
+Sağlayıcıya özgü notlar:
+
+- **Feishu / WhatsApp kod dönüştürmesi:** Bir sesli not yanıtı MP3/WebM/WAV/M4A veya ses dosyası olması muhtemel başka bir biçimde geldiğinde kanal Plugini, yerel sesli mesajı göndermeden önce bunu `ffmpeg` (`libopus`, 64 kbps) ile 48 kHz Ogg/Opus biçimine dönüştürür. WhatsApp, sonucu `ptt: true` ve `audio/ogg; codecs=opus` ile Baileys `audio` yükü üzerinden gönderir. Kod dönüştürme başarısız olursa: Feishu hatayı yakalar ve özgün dosyayı normal bir ek olarak göndermeye geri döner; WhatsApp'ta geri dönüş yoktur, bu nedenle uyumsuz bir PTT yükü göndermek yerine gönderim işleminin kendisi başarısız olur.
+- **MiniMax:** Normal ses ekleri için MP3 (`speech-2.8-hd` modeli, 32 kHz örnekleme hızı); kanalın bildirdiği sesli not hedefleri için `ffmpeg` ile 48 kHz Opus biçimine dönüştürülür.
+- **Xiaomi MiMo:** Varsayılan olarak MP3 veya yapılandırıldığında WAV; kanalın bildirdiği sesli not hedefleri için `ffmpeg` ile 48 kHz Opus biçimine dönüştürülür.
+- **Yerel CLI:** Yapılandırılmış `outputFormat` değerini kullanır. Sesli not hedefleri Ogg/Opus biçimine, telefon çıkışı ise `ffmpeg` ile ham 16 kHz mono PCM biçimine dönüştürülür.
+- **Google Gemini:** Ham 24 kHz PCM döndürür. OpenClaw bunu ses ekleri için WAV olarak paketler, sesli not hedefleri için 48 kHz Opus biçimine dönüştürür ve Talk/telefon için doğrudan PCM döndürür.
+- **Gradium:** Ses ekleri için WAV, sesli not hedefleri için Opus ve telefon için 8 kHz'de `ulaw_8000`.
+- **Inworld:** Normal ses ekleri için MP3, sesli not hedefleri için yerel `OGG_OPUS` ve Talk/telefon için 22050 Hz'de ham `PCM`.
+- **xAI:** Varsayılan olarak MP3; ses dosyası sentezinde hem arabelleğe alınmış hem de akışlı çıkış için `mp3`, `wav`, `pcm`, `mulaw` veya `alaw` kullanılabilir. xAI'ın `pcm`, `mulaw` ve `alaw` çıkışları başlıksız ham ses olduğundan, sesli not hedefleri akış için MP3'ü ve arabelleğe alınmış geri dönüş için MP3'ü kullanır. Arabelleğe alınmış sentez, xAI'ın toplu REST `/v1/tts` uç noktasını kullanır; `textToSpeechStream` yerel `wss://api.x.ai/v1/tts` kullanır. Bu, gerçek zamanlı ses sözleşmesi değildir. Yerel Opus sesli not biçimi desteklenmez.
+- **Microsoft:** `microsoft.outputFormat` kullanır (varsayılan `audio-24khz-48kbitrate-mono-mp3`).
+  - Paketle birlikte gelen taşıma, bir `outputFormat` kabul eder ancak hizmet tüm biçimleri sunmaz.
+  - Çıkış biçimi değerleri, Microsoft Speech çıkış biçimlerini izler (Ogg/WebM Opus dâhil).
+  - Telegram `sendVoice`, OGG/MP3/M4A kabul eder; Opus sesli mesajlarının garanti edilmesi gerekiyorsa OpenAI/ElevenLabs kullanın.
+  - Yapılandırılmış Microsoft çıkış biçimi başarısız olursa OpenClaw işlemi MP3 ile yeniden dener.
+  - Açık bir ses geçersiz kılma ayarı belirlenmemişse ve varsayılan İngilizce ses kullanılıyorsa yanıt metni ağırlıklı olarak CJK karakterlerinden oluştuğunda OpenClaw otomatik olarak Çince bir sinir ağı sesine (`zh-CN-XiaoxiaoNeural`, `zh-CN` yerel ayarı) geçer.
+
+OpenAI ve ElevenLabs çıkış biçimleri, yukarıda listelendiği şekilde kanal başına sabittir.
 
 ## Otomatik TTS davranışı
 
 `messages.tts.auto` etkinleştirildiğinde OpenClaw:
 
 - Yanıt zaten yapılandırılmış medya içeriyorsa TTS'yi atlar.
-- Çok kısa yanıtları atlar (10 karakterin altında).
-- Özetler etkinse uzun yanıtları `summaryModel` (veya `agents.defaults.model.primary`)
-  kullanarak özetler.
-- Üretilen sesi yanıta ekler.
-- `mode: "final"` içinde, metin akışı tamamlandıktan sonra akışlı final yanıtları için
-  yine yalnızca sesli TTS gönderir; üretilen medya, normal yanıt ekleriyle aynı
+- Çok kısa yanıtları (10 karakterden kısa) atlar.
+- Özetler etkinleştirildiğinde uzun yanıtları
+  `summaryModel` (veya `agents.defaults.model.primary`) kullanarak özetler.
+- Oluşturulan sesi yanıta ekler.
+- `mode: "final"` modunda, metin akışı tamamlandıktan sonra akışla iletilen nihai yanıtlar için
+  yine yalnızca ses içeren TTS gönderir; oluşturulan medya, normal yanıt ekleriyle aynı
   kanal medya normalleştirmesinden geçer.
 
-Yanıt `maxLength` değerini aşarsa ve özet kapalıysa (veya özet modeli için API anahtarı yoksa),
-ses atlanır ve normal metin yanıtı gönderilir.
+Yanıt `maxLength` değerini aşarsa OpenClaw sesi hiçbir zaman tamamen atlamaz:
+
+- **Özet açık** (varsayılan) ve bir özet modeli kullanılabilir: metni
+  yaklaşık `maxLength` karaktere özetler, ardından özeti sentezler.
+- **Özet kapalıysa**, özetleme başarısız olursa veya özet modeli için API anahtarı
+  yoksa: metni `maxLength` karakterle sınırlar ve kısaltılmış metni
+  sentezler.
 
 ```text
-Reply -> TTS enabled?
-  no  -> send text
-  yes -> has media / short?
-          yes -> send text
-          no  -> length > limit?
-                   no  -> TTS -> attach audio
-                   yes -> summary enabled?
-                            no  -> send text
-                            yes -> summarize -> TTS -> attach audio
+Yanıt -> TTS etkin mi?
+  hayır -> metni gönder
+  evet  -> medya içeriyor mu / kısa mı?
+           evet  -> metni gönder
+           hayır -> uzunluk > sınır mı?
+                     hayır -> TTS -> sesi ekle
+                     evet  -> özet etkin ve kullanılabilir mi?
+                               hayır -> kısalt -> TTS -> sesi ekle
+                               evet  -> özetle -> TTS -> sesi ekle
 ```
 
-## Kanala göre çıktı biçimleri
-
-| Hedef                                 | Biçim                                                                                                                                |
-| ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
-| Feishu / Matrix / Telegram / WhatsApp | Sesli not yanıtları **Opus**'u tercih eder (ElevenLabs'ten `opus_48000_64`, OpenAI'den `opus`). 48 kHz / 64 kbps netlik ve boyutu dengeler. |
-| Diğer kanallar                        | **MP3** (ElevenLabs'ten `mp3_44100_128`, OpenAI'den `mp3`). Konuşma için varsayılan 44.1 kHz / 128 kbps.                             |
-| Talk / telefon                        | Sağlayıcıya özgü **PCM** (Inworld 22050 Hz, Google 24 kHz) veya telefon için Gradium'dan `ulaw_8000`.                                |
-
-Sağlayıcı başına notlar:
-
-- **Feishu / WhatsApp dönüştürme:** Bir sesli not yanıtı MP3/WebM/WAV/M4A olarak geldiğinde, kanal plugin'i `ffmpeg` ile 48 kHz Ogg/Opus'a dönüştürür. WhatsApp, Baileys üzerinden `ptt: true` ve `audio/ogg; codecs=opus` ile gönderir. Dönüştürme başarısız olursa: Feishu özgün dosyayı eklemeye geri döner; WhatsApp ise uyumsuz bir PTT yükü yayımlamak yerine gönderimi başarısız yapar.
-- **MiniMax / Xiaomi MiMo:** Varsayılan MP3 (MiniMax `speech-2.8-hd` için 32 kHz); `ffmpeg` aracılığıyla sesli not hedefleri için 48 kHz Opus'a dönüştürülür.
-- **Yerel CLI:** Yapılandırılmış `outputFormat` değerini kullanır. Sesli not hedefleri Ogg/Opus'a, telefon çıktısı ham 16 kHz mono PCM'ye dönüştürülür.
-- **Google Gemini:** Ham 24 kHz PCM döndürür. OpenClaw ekler için WAV olarak sarar, sesli not hedefleri için 48 kHz Opus'a dönüştürür, Talk/telefon için PCM'yi doğrudan döndürür.
-- **Inworld:** MP3 ekleri, yerel `OGG_OPUS` sesli not, Talk/telefon için ham `PCM` 22050 Hz.
-- **xAI:** Varsayılan olarak MP3; `responseFormat` `mp3|wav|pcm|mulaw|alaw` olabilir. xAI'nin toplu REST uç noktasını kullanır — akışlı WebSocket TTS **kullanılmaz**. Yerel Opus sesli not biçimi **desteklenmez**.
-- **Microsoft:** `microsoft.outputFormat` değerini kullanır (varsayılan `audio-24khz-48kbitrate-mono-mp3`). Telegram `sendVoice` OGG/MP3/M4A kabul eder; garantili Opus sesli mesajlara ihtiyacınız varsa OpenAI/ElevenLabs kullanın. Yapılandırılmış Microsoft biçimi başarısız olursa OpenClaw MP3 ile yeniden dener.
-
-OpenAI ve ElevenLabs çıktı biçimleri yukarıda listelendiği gibi kanal başına sabittir.
-
-## Alan başvurusu
+## Alan referansı
 
 <AccordionGroup>
-  <Accordion title="Top-level messages.tts.*">
+  <Accordion title="Üst düzey messages.tts.*">
     <ParamField path="auto" type='"off" | "always" | "inbound" | "tagged"'>
-      Otomatik TTS modu. `inbound` yalnızca gelen bir sesli mesajdan sonra ses gönderir; `tagged` yalnızca yanıt `[[tts:...]]` yönergeleri veya bir `[[tts:text]]` bloğu içerdiğinde ses gönderir.
+      Otomatik TTS modu. `inbound` yalnızca gelen bir sesli mesajdan sonra ses gönderir; `tagged` yalnızca yanıt `[[tts:...]]` yönergelerini veya bir `[[tts:text]]` bloğunu içerdiğinde ses gönderir.
     </ParamField>
     <ParamField path="enabled" type="boolean" deprecated>
-      Eski geçiş anahtarı. `openclaw doctor --fix` bunu `auto` değerine taşır.
+      Eski geçiş anahtarı. `openclaw doctor --fix` bunu `auto` biçimine geçirir.
     </ParamField>
     <ParamField path="mode" type='"final" | "all"' default="final">
-      `"all"` final yanıtlara ek olarak araç/blok yanıtlarını da içerir.
+      `"all"`, nihai yanıtlara ek olarak araç/blok yanıtlarını da içerir.
     </ParamField>
     <ParamField path="provider" type="string">
-      Konuşma sağlayıcısı kimliği. Ayarlanmadığında OpenClaw, kayıt otomatik seçim sırasındaki ilk yapılandırılmış sağlayıcıyı kullanır. Eski `provider: "edge"`, `openclaw doctor --fix` tarafından `"microsoft"` olarak yeniden yazılır.
+      Konuşma sağlayıcısı kimliği. Ayarlanmadığında OpenClaw, kayıt defterinin otomatik seçim sırasındaki ilk yapılandırılmış sağlayıcıyı kullanır. Eski `provider: "edge"`, `openclaw doctor --fix` tarafından `"microsoft"` olarak yeniden yazılır.
     </ParamField>
     <ParamField path="persona" type="string">
-      `personas` içinden etkin persona kimliği. Küçük harfe normalleştirilir.
+      `personas` içindeki etkin persona kimliği. Küçük harfe dönüştürülür.
     </ParamField>
     <ParamField path="personas.<id>" type="object">
-      Kararlı konuşulan kimlik. Alanlar: `label`, `description`, `provider`, `fallbackPolicy`, `prompt`, `providers.<provider>`. Bkz. [Personalar](#personas).
+      Kararlı konuşma kimliği. Alanlar: `label`, `description`, `provider`, `fallbackPolicy`, `prompt`, `providers.<provider>`. Bkz. [Personalar](#personas).
     </ParamField>
     <ParamField path="summaryModel" type="string">
-      Otomatik özet için ucuz model; varsayılan `agents.defaults.model.primary`. `provider/model` veya yapılandırılmış bir model takma adını kabul eder.
+      Otomatik özet için düşük maliyetli model; varsayılanı `agents.defaults.model.primary`. `provider/model` veya yapılandırılmış bir model diğer adını kabul eder.
     </ParamField>
     <ParamField path="modelOverrides" type="object">
-      Modelin TTS yönergeleri yaymasına izin verin. `enabled` varsayılan olarak `true`; `allowProvider` varsayılan olarak `false`.
+      Modelin TTS yönergeleri oluşturmasına izin verir. `enabled` varsayılan olarak `true`; `allowProvider` ise varsayılan olarak `false` değerini alır.
     </ParamField>
     <ParamField path="providers.<id>" type="object">
-      Konuşma sağlayıcısı kimliğine göre anahtarlanmış sağlayıcıya ait ayarlar. Eski doğrudan bloklar (`messages.tts.openai`, `.elevenlabs`, `.microsoft`, `.edge`) `openclaw doctor --fix` tarafından yeniden yazılır; yalnızca `messages.tts.providers.<id>` kaydedin.
+      Konuşma sağlayıcısı kimliğine göre anahtarlanan, sağlayıcının sahip olduğu ayarlar. Eski doğrudan bloklar (`messages.tts.openai`, `.elevenlabs`, `.microsoft`, `.edge`) `openclaw doctor --fix` tarafından yeniden yazılır; yalnızca `messages.tts.providers.<id>` kaydedilmelidir.
     </ParamField>
-    <ParamField path="maxTextLength" type="number">
-      TTS giriş karakterleri için kesin üst sınır. Aşılırsa `/tts audio` başarısız olur.
+    <ParamField path="maxTextLength" type="number" default="4096">
+      TTS giriş karakterleri için kesin üst sınır. Aşıldığında `/tts audio`, `tts.convert` ve `tts.speak` başarısız olur.
     </ParamField>
-    <ParamField path="timeoutMs" type="number">
-      Milisaniye cinsinden istek zaman aşımı.
+    <ParamField path="timeoutMs" type="number" default="30000">
+      Milisaniye cinsinden istek zaman aşımı. Ayarlanmışsa çağrı başına `timeoutMs` (ajan aracı, gateway) önceliklidir; aksi takdirde açıkça yapılandırılmış `messages.tts.timeoutMs`, plugin tarafından tanımlanan tüm sağlayıcı varsayılanlarına göre önceliklidir.
     </ParamField>
     <ParamField path="prefsPath" type="string">
-      Yerel tercih JSON yolunu geçersiz kılın (sağlayıcı/sınır/özet). Varsayılan `~/.openclaw/settings/tts.json`.
+      Yerel tercihler JSON yolunu geçersiz kılar (sağlayıcı/sınır/özet). Varsayılan `~/.openclaw/settings/tts.json`.
     </ParamField>
   </Accordion>
 
   <Accordion title="Azure Speech">
-    <ParamField path="apiKey" type="string">Ortam: `AZURE_SPEECH_KEY`, `AZURE_SPEECH_API_KEY` veya `SPEECH_KEY`.</ParamField>
-    <ParamField path="region" type="string">Azure Speech bölgesi (ör. `eastus`). Ortam: `AZURE_SPEECH_REGION` veya `SPEECH_REGION`.</ParamField>
-    <ParamField path="endpoint" type="string">İsteğe bağlı Azure Speech uç noktası geçersiz kılması (`baseUrl` takma adı).</ParamField>
-    <ParamField path="speakerVoice" type="string">Azure ses ShortName. Varsayılan `en-US-JennyNeural`. Eski takma ad: `voice`.</ParamField>
+    <ParamField path="apiKey" type="string">Ortam değişkeni: `AZURE_SPEECH_KEY`, `AZURE_SPEECH_API_KEY` veya `SPEECH_KEY`.</ParamField>
+    <ParamField path="region" type="string">Azure Speech bölgesi (ör. `eastus`). Ortam değişkeni: `AZURE_SPEECH_REGION` veya `SPEECH_REGION`.</ParamField>
+    <ParamField path="endpoint" type="string">İsteğe bağlı Azure Speech uç noktası geçersiz kılma değeri (diğer adı `baseUrl`).</ParamField>
+    <ParamField path="speakerVoice" type="string">Azure sesinin ShortName değeri. Varsayılan `en-US-JennyNeural`. Eski diğer ad: `voice`.</ParamField>
     <ParamField path="lang" type="string">SSML dil kodu. Varsayılan `en-US`.</ParamField>
     <ParamField path="outputFormat" type="string">Standart ses için Azure `X-Microsoft-OutputFormat`. Varsayılan `audio-24khz-48kbitrate-mono-mp3`.</ParamField>
     <ParamField path="voiceNoteOutputFormat" type="string">Sesli not çıktısı için Azure `X-Microsoft-OutputFormat`. Varsayılan `ogg-24khz-16bit-mono-opus`.</ParamField>
@@ -803,162 +827,158 @@ OpenAI ve ElevenLabs çıktı biçimleri yukarıda listelendiği gibi kanal baş
 
   <Accordion title="ElevenLabs">
     <ParamField path="apiKey" type="string">`ELEVENLABS_API_KEY` veya `XI_API_KEY` değerine geri döner.</ParamField>
-    <ParamField path="model" type="string">Model kimliği (ör. `eleven_multilingual_v2`, `eleven_v3`).</ParamField>
-    <ParamField path="speakerVoiceId" type="string">ElevenLabs ses kimliği. Eski takma ad: `voiceId`.</ParamField>
+    <ParamField path="model" type="string">Model kimliği. Varsayılan `eleven_multilingual_v2`. Eski `eleven_turbo_v2_5`/`eleven_turbo_v2` kimlikleri, eşleşen `flash` modeline normalleştirilir.</ParamField>
+    <ParamField path="speakerVoiceId" type="string">ElevenLabs ses kimliği. Varsayılan `pMsXgVXv3BLzUgSXRplE`. Eski diğer ad: `voiceId`.</ParamField>
     <ParamField path="voiceSettings" type="object">
-      `stability`, `similarityBoost`, `style` (her biri `0..1`), `useSpeakerBoost` (`true|false`), `speed` (`0.5..2.0`, `1.0` = normal).
+      `stability`, `similarityBoost`, `style` (her biri `0..1`, varsayılanları `0.5`/`0.75`/`0`), `useSpeakerBoost` (`true|false`, varsayılan `true`), `speed` (`0.5..2.0`, varsayılan `1.0`).
     </ParamField>
     <ParamField path="applyTextNormalization" type='"auto" | "on" | "off"'>Metin normalleştirme modu.</ParamField>
     <ParamField path="languageCode" type="string">2 harfli ISO 639-1 (ör. `en`, `de`).</ParamField>
-    <ParamField path="seed" type="number">En iyi çaba düzeyinde determinizm için `0..4294967295` tam sayısı.</ParamField>
-    <ParamField path="baseUrl" type="string">ElevenLabs API temel URL'sini geçersiz kılın.</ParamField>
+    <ParamField path="seed" type="number">Olanaklar ölçüsünde belirlenimlilik için tam sayı `0..4294967295`.</ParamField>
+    <ParamField path="baseUrl" type="string">ElevenLabs API temel URL'sini geçersiz kılar.</ParamField>
   </Accordion>
 
   <Accordion title="Google Gemini">
-    <ParamField path="apiKey" type="string">`GEMINI_API_KEY` / `GOOGLE_API_KEY` değerine geri döner. Atlanırsa TTS, ortam geri dönüşünden önce `models.providers.google.apiKey` değerini yeniden kullanabilir.</ParamField>
-    <ParamField path="model" type="string">Gemini TTS modeli. Varsayılan `gemini-3.1-flash-tts-preview`.</ParamField>
-    <ParamField path="speakerVoice" type="string">Gemini önceden oluşturulmuş ses adı. Varsayılan `Kore`. Eski takma adlar: `voiceName`, `voice`.</ParamField>
-    <ParamField path="audioProfile" type="string">Konuşulan metinden önce eklenen doğal dil tarzı istem.</ParamField>
-    <ParamField path="speakerName" type="string">İsteminiz adlandırılmış bir konuşmacı kullandığında konuşulan metinden önce eklenen isteğe bağlı konuşmacı etiketi.</ParamField>
-    <ParamField path="promptTemplate" type='"audio-profile-v1"'>Etkin persona istem alanlarını deterministik bir Gemini TTS istem yapısına sarmak için `audio-profile-v1` olarak ayarlayın.</ParamField>
-    <ParamField path="personaPrompt" type="string">Şablonun Director's Notes bölümüne eklenen Google'a özel ek persona istem metni.</ParamField>
+    <ParamField path="apiKey" type="string">`GEMINI_API_KEY` / `GOOGLE_API_KEY` değerlerine geri döner. Belirtilmezse TTS, ortam değişkenine geri dönmeden önce `models.providers.google.apiKey` değerini yeniden kullanabilir.</ParamField>
+    <ParamField path="model" type="string">Gemini TTS modeli. Varsayılan: `gemini-3.1-flash-tts-preview`.</ParamField>
+    <ParamField path="speakerVoice" type="string">Gemini hazır ses adı. Varsayılan: `Kore`. Eski takma adlar: `voiceName`, `voice`.</ParamField>
+    <ParamField path="audioProfile" type="string">Seslendirilecek metnin başına eklenen doğal dilde stil istemi.</ParamField>
+    <ParamField path="speakerName" type="string">İsteminizde adlandırılmış bir konuşmacı kullanıldığında seslendirilecek metnin başına eklenen isteğe bağlı konuşmacı etiketi.</ParamField>
+    <ParamField path="promptTemplate" type='"audio-profile-v1"'>Etkin persona istemi alanlarını belirlenimci bir Gemini TTS istem yapısıyla sarmalamak için `audio-profile-v1` olarak ayarlayın.</ParamField>
+    <ParamField path="personaPrompt" type="string">Şablonun Yönetmen Notları'na eklenen, Google'a özgü ilave persona istemi metni.</ParamField>
     <ParamField path="baseUrl" type="string">Yalnızca `https://generativelanguage.googleapis.com` kabul edilir.</ParamField>
   </Accordion>
 
   <Accordion title="Gradium">
-    <ParamField path="apiKey" type="string">Ortam: `GRADIUM_API_KEY`.</ParamField>
-    <ParamField path="baseUrl" type="string">Varsayılan `https://api.gradium.ai`.</ParamField>
-    <ParamField path="speakerVoiceId" type="string">Varsayılan Emma (`YTpq7expH9539ERJ`). Eski takma ad: `voiceId`.</ParamField>
+    <ParamField path="apiKey" type="string">Ortam değişkeni: `GRADIUM_API_KEY`.</ParamField>
+    <ParamField path="baseUrl" type="string">`api.gradium.ai` üzerindeki HTTPS Gradium API URL'si. Varsayılan: `https://api.gradium.ai`.</ParamField>
+    <ParamField path="speakerVoiceId" type="string">Varsayılan: Emma (`YTpq7expH9539ERJ`). Eski takma ad: `voiceId`.</ParamField>
   </Accordion>
 
   <Accordion title="Inworld">
     ### Birincil Inworld
 
-    <ParamField path="apiKey" type="string">Ortam: `INWORLD_API_KEY`.</ParamField>
-    <ParamField path="baseUrl" type="string">Varsayılan `https://api.inworld.ai`.</ParamField>
-    <ParamField path="modelId" type="string">Varsayılan `inworld-tts-1.5-max`. Ayrıca: `inworld-tts-1.5-mini`, `inworld-tts-1-max`, `inworld-tts-1`.</ParamField>
-    <ParamField path="speakerVoiceId" type="string">Varsayılan `Sarah`. Eski takma ad: `voiceId`.</ParamField>
-    <ParamField path="temperature" type="number">Örnekleme sıcaklığı `0..2`.</ParamField>
+    <ParamField path="apiKey" type="string">Ortam değişkeni: `INWORLD_API_KEY`.</ParamField>
+    <ParamField path="baseUrl" type="string">Varsayılan: `https://api.inworld.ai`.</ParamField>
+    <ParamField path="modelId" type="string">Varsayılan: `inworld-tts-1.5-max`. Ayrıca: `inworld-tts-1.5-mini`, `inworld-tts-1-max`, `inworld-tts-1`.</ParamField>
+    <ParamField path="speakerVoiceId" type="string">Varsayılan: `Sarah`. Eski takma ad: `voiceId`.</ParamField>
+    <ParamField path="temperature" type="number">Örnekleme sıcaklığı `0..2` (0 hariç).</ParamField>
 
   </Accordion>
 
-  <Accordion title="Local CLI (tts-local-cli)">
-    <ParamField path="command" type="string">CLI TTS için yerel çalıştırılabilir dosya veya komut dizesi.</ParamField>
+  <Accordion title="Yerel CLI (tts-local-cli)">
+    <ParamField path="command" type="string">CLI TTS için yerel yürütülebilir dosya veya komut dizesi.</ParamField>
     <ParamField path="args" type="string[]">Komut bağımsız değişkenleri. `{{Text}}`, `{{OutputPath}}`, `{{OutputDir}}`, `{{OutputBase}}` yer tutucularını destekler.</ParamField>
-    <ParamField path="outputFormat" type='"mp3" | "opus" | "wav"'>Beklenen CLI çıktı biçimi. Ses ekleri için varsayılan `mp3`.</ParamField>
-    <ParamField path="timeoutMs" type="number">Milisaniye cinsinden komut zaman aşımı. Varsayılan `120000`.</ParamField>
+    <ParamField path="outputFormat" type='"mp3" | "opus" | "wav"'>Beklenen CLI çıktı biçimi. Ses ekleri için varsayılan: `mp3`.</ParamField>
+    <ParamField path="timeoutMs" type="number">Milisaniye cinsinden komut zaman aşımı. Varsayılan: `120000`.</ParamField>
     <ParamField path="cwd" type="string">İsteğe bağlı komut çalışma dizini.</ParamField>
-    <ParamField path="env" type="Record<string, string>">Komut için isteğe bağlı ortam geçersiz kılmaları.</ParamField>
+    <ParamField path="env" type="Record<string, string>">Komut için isteğe bağlı ortam değişkeni geçersiz kılmaları.</ParamField>
+
+    Komutun standart çıktısı ile oluşturulan veya dönüştürülen ses 50 MiB ile sınırlıdır. Tanılama amaçlı standart hata çıktısı 1 MiB ile sınırlıdır. Sınırlardan biri aşıldığında OpenClaw komutu sonlandırır ve sentezi başarısız kılar.
+
   </Accordion>
 
-  <Accordion title="Microsoft (no API key)">
-    <ParamField path="enabled" type="boolean" default="true">Microsoft konuşma kullanımına izin ver.</ParamField>
-    <ParamField path="speakerVoice" type="string">Microsoft neural voice adı (örn. `en-US-MichelleNeural`). Eski takma ad: `voice`.</ParamField>
-    <ParamField path="lang" type="string">Dil kodu (örn. `en-US`).</ParamField>
-    <ParamField path="outputFormat" type="string">Microsoft çıktı biçimi. Varsayılan `audio-24khz-48kbitrate-mono-mp3`. Tüm biçimler paketlenmiş Edge destekli aktarım tarafından desteklenmez.</ParamField>
-    <ParamField path="rate / pitch / volume" type="string">Yüzde dizeleri (örn. `+10%`, `-5%`).</ParamField>
-    <ParamField path="saveSubtitles" type="boolean">Ses dosyasının yanına JSON altyazıları yaz.</ParamField>
+  <Accordion title="Microsoft (API anahtarı yok)">
+    <ParamField path="enabled" type="boolean" default="true">Microsoft konuşma kullanımına izin verin.</ParamField>
+    <ParamField path="speakerVoice" type="string">Microsoft sinir ağı ses adı (ör. `en-US-MichelleNeural`). Eski takma ad: `voice`. Varsayılan İngilizce ses etkinse ve yanıt metninde CJK karakterleri baskınsa OpenClaw otomatik olarak `zh-CN-XiaoxiaoNeural` değerine geçer.</ParamField>
+    <ParamField path="lang" type="string">Dil kodu (ör. `en-US`).</ParamField>
+    <ParamField path="outputFormat" type="string">Microsoft çıktı biçimi. Varsayılan: `audio-24khz-48kbitrate-mono-mp3`. Tüm biçimler paketle birlikte gelen Edge tabanlı aktarım tarafından desteklenmez.</ParamField>
+    <ParamField path="rate / pitch / volume" type="string">Yüzde dizeleri (ör. `+10%`, `-5%`).</ParamField>
+    <ParamField path="saveSubtitles" type="boolean">Ses dosyasının yanına JSON altyazıları yazın.</ParamField>
     <ParamField path="proxy" type="string">Microsoft konuşma istekleri için proxy URL'si.</ParamField>
     <ParamField path="timeoutMs" type="number">İstek zaman aşımı geçersiz kılması (ms).</ParamField>
-    <ParamField path="edge.*" type="object" deprecated>Eski takma ad. Kalıcı yapılandırmayı `providers.microsoft` olarak yeniden yazmak için `openclaw doctor --fix` çalıştırın.</ParamField>
+    <ParamField path="edge.*" type="object" deprecated>Eski takma ad. Kalıcı yapılandırmayı `providers.microsoft` olarak yeniden yazmak için `openclaw doctor --fix` komutunu çalıştırın.</ParamField>
   </Accordion>
 
   <Accordion title="MiniMax">
-    <ParamField path="apiKey" type="string">`MINIMAX_API_KEY` değerine geri döner. `MINIMAX_OAUTH_TOKEN`, `MINIMAX_CODE_PLAN_KEY` veya `MINIMAX_CODING_API_KEY` üzerinden Token Plan kimlik doğrulaması.</ParamField>
-    <ParamField path="baseUrl" type="string">Varsayılan `https://api.minimax.io`. Ortam: `MINIMAX_API_HOST`.</ParamField>
-    <ParamField path="model" type="string">Varsayılan `speech-2.8-hd`. Ortam: `MINIMAX_TTS_MODEL`.</ParamField>
-    <ParamField path="speakerVoiceId" type="string">Varsayılan `English_expressive_narrator`. Ortam: `MINIMAX_TTS_VOICE_ID`. Eski takma ad: `voiceId`.</ParamField>
-    <ParamField path="speed" type="number">`0.5..2.0`. Varsayılan `1.0`.</ParamField>
-    <ParamField path="vol" type="number">`(0, 10]`. Varsayılan `1.0`.</ParamField>
-    <ParamField path="pitch" type="number">Tam sayı `-12..12`. Varsayılan `0`. Kesirli değerler istekten önce kırpılır.</ParamField>
+    <ParamField path="apiKey" type="string">`MINIMAX_API_KEY` değerine geri döner. `MINIMAX_OAUTH_TOKEN`, `MINIMAX_CODE_PLAN_KEY` veya `MINIMAX_CODING_API_KEY` aracılığıyla Token Plan kimlik doğrulaması.</ParamField>
+    <ParamField path="baseUrl" type="string">Varsayılan: `https://api.minimax.io`. Ortam değişkeni: `MINIMAX_API_HOST`.</ParamField>
+    <ParamField path="model" type="string">Varsayılan: `speech-2.8-hd`. Ortam değişkeni: `MINIMAX_TTS_MODEL`.</ParamField>
+    <ParamField path="speakerVoiceId" type="string">Varsayılan: `English_expressive_narrator`. Ortam değişkeni: `MINIMAX_TTS_VOICE_ID`. Eski takma ad: `voiceId`.</ParamField>
+    <ParamField path="speed" type="number">`0.5..2.0`. Varsayılan: `1.0`.</ParamField>
+    <ParamField path="vol" type="number">`(0, 10]`. Varsayılan: `1.0`.</ParamField>
+    <ParamField path="pitch" type="number">Tam sayı `-12..12`. Varsayılan: `0`. Kesirli değerler istekten önce kesilir.</ParamField>
   </Accordion>
 
   <Accordion title="OpenAI">
     <ParamField path="apiKey" type="string">`OPENAI_API_KEY` değerine geri döner.</ParamField>
-    <ParamField path="model" type="string">OpenAI TTS model kimliği (örn. `gpt-4o-mini-tts`).</ParamField>
-    <ParamField path="speakerVoice" type="string">Ses adı (örn. `alloy`, `cedar`). Eski takma ad: `voice`.</ParamField>
-    <ParamField path="instructions" type="string">Açık OpenAI `instructions` alanı. Ayarlandığında persona prompt alanları otomatik olarak eşlenmez.</ParamField>
-    <ParamField path="extraBody / extra_body" type="Record<string, unknown>">Oluşturulan OpenAI TTS alanlarından sonra `/audio/speech` istek gövdelerine birleştirilen ek JSON alanları. Bunu, `lang` gibi sağlayıcıya özgü anahtarlar gerektiren Kokoro gibi OpenAI uyumlu uç noktalar için kullanın; güvenli olmayan prototype anahtarları yok sayılır.</ParamField>
+    <ParamField path="model" type="string">OpenAI TTS model kimliği. Varsayılan: `gpt-4o-mini-tts`.</ParamField>
+    <ParamField path="speakerVoice" type="string">Ses adı (ör. `alloy`, `cedar`). Varsayılan: `coral`. Eski takma ad: `voice`.</ParamField>
+    <ParamField path="instructions" type="string">Açık OpenAI `instructions` alanı. Ayarlandığında persona istemi alanları otomatik olarak **eşlenmez**.</ParamField>
+    <ParamField path="extraBody / extra_body" type="Record<string, unknown>">Oluşturulan OpenAI TTS alanlarından sonra `/audio/speech` istek gövdeleriyle birleştirilen ek JSON alanları. Bunu, `lang` gibi sağlayıcıya özgü anahtarlar gerektiren Kokoro benzeri OpenAI uyumlu uç noktalar için kullanın; güvenli olmayan prototip anahtarları yok sayılır.</ParamField>
     <ParamField path="baseUrl" type="string">
-      OpenAI TTS uç noktasını geçersiz kılın. Çözüm sırası: yapılandırma → `OPENAI_TTS_BASE_URL` → `https://api.openai.com/v1`. Varsayılan olmayan değerler OpenAI uyumlu TTS uç noktaları olarak ele alınır; bu nedenle özel model ve ses adları kabul edilir.
+      OpenAI TTS uç noktasını geçersiz kılın. Çözümleme sırası: yapılandırma → `OPENAI_TTS_BASE_URL` → `https://api.openai.com/v1`. Varsayılan olmayan değerler OpenAI uyumlu TTS uç noktaları olarak değerlendirilir; bu nedenle özel model ve ses adları kabul edilir ve `speed`, `0.25..4.0` aralık denetimini kaybeder.
     </ParamField>
   </Accordion>
 
   <Accordion title="OpenRouter">
-    <ParamField path="apiKey" type="string">Ortam: `OPENROUTER_API_KEY`. `models.providers.openrouter.apiKey` yeniden kullanılabilir.</ParamField>
-    <ParamField path="baseUrl" type="string">Varsayılan `https://openrouter.ai/api/v1`. Eski `https://openrouter.ai/v1` normalleştirilir.</ParamField>
-    <ParamField path="model" type="string">Varsayılan `hexgrad/kokoro-82m`. Takma ad: `modelId`.</ParamField>
-    <ParamField path="speakerVoice" type="string">Varsayılan `af_alloy`. Eski takma adlar: `voice`, `voiceId`.</ParamField>
-    <ParamField path="responseFormat" type='"mp3" | "pcm"'>Varsayılan `mp3`.</ParamField>
-    <ParamField path="speed" type="number">Sağlayıcıya özgü hız geçersiz kılması.</ParamField>
+    <ParamField path="apiKey" type="string">Ortam değişkeni: `OPENROUTER_API_KEY`. `models.providers.openrouter.apiKey` yeniden kullanılabilir.</ParamField>
+    <ParamField path="baseUrl" type="string">Varsayılan: `https://openrouter.ai/api/v1`. Eski `https://openrouter.ai/v1` normalleştirilir.</ParamField>
+    <ParamField path="model" type="string">Varsayılan: `hexgrad/kokoro-82m`. Takma ad: `modelId`.</ParamField>
+    <ParamField path="speakerVoice" type="string">Varsayılan: `af_alloy`. Eski takma adlar: `voice`, `voiceId`.</ParamField>
+    <ParamField path="responseFormat" type='"mp3" | "pcm"'>Varsayılan: `mp3`.</ParamField>
+    <ParamField path="speed" type="number">Sağlayıcının yerel hız geçersiz kılması.</ParamField>
   </Accordion>
 
   <Accordion title="Volcengine (BytePlus Seed Speech)">
-    <ParamField path="apiKey" type="string">Ortam: `VOLCENGINE_TTS_API_KEY` veya `BYTEPLUS_SEED_SPEECH_API_KEY`.</ParamField>
-    <ParamField path="resourceId" type="string">Varsayılan `seed-tts-1.0`. Ortam: `VOLCENGINE_TTS_RESOURCE_ID`. Projenizin TTS 2.0 yetkisi olduğunda `seed-tts-2.0` kullanın.</ParamField>
-    <ParamField path="appKey" type="string">Uygulama anahtarı üst bilgisi. Varsayılan `aGjiRDfUWi`. Ortam: `VOLCENGINE_TTS_APP_KEY`.</ParamField>
-    <ParamField path="baseUrl" type="string">Seed Speech TTS HTTP uç noktasını geçersiz kılın. Ortam: `VOLCENGINE_TTS_BASE_URL`.</ParamField>
-    <ParamField path="speakerVoice" type="string">Ses türü. Varsayılan `en_female_anna_mars_bigtts`. Ortam: `VOLCENGINE_TTS_VOICE`. Eski takma ad: `voice`.</ParamField>
-    <ParamField path="speedRatio" type="number">Sağlayıcıya özgü hız oranı.</ParamField>
-    <ParamField path="emotion" type="string">Sağlayıcıya özgü duygu etiketi.</ParamField>
-    <ParamField path="appId / token / cluster" type="string" deprecated>Eski Volcengine Speech Console alanları. Ortam: `VOLCENGINE_TTS_APPID`, `VOLCENGINE_TTS_TOKEN`, `VOLCENGINE_TTS_CLUSTER` (varsayılan `volcano_tts`).</ParamField>
+    <ParamField path="apiKey" type="string">Ortam değişkeni: `VOLCENGINE_TTS_API_KEY` veya `BYTEPLUS_SEED_SPEECH_API_KEY`.</ParamField>
+    <ParamField path="resourceId" type="string">Varsayılan: `seed-tts-1.0`. Ortam değişkeni: `VOLCENGINE_TTS_RESOURCE_ID`. Projenizde TTS 2.0 yetkisi varsa `seed-tts-2.0` kullanın.</ParamField>
+    <ParamField path="appKey" type="string">Uygulama anahtarı üstbilgisi. Varsayılan: `aGjiRDfUWi`. Ortam değişkeni: `VOLCENGINE_TTS_APP_KEY`.</ParamField>
+    <ParamField path="baseUrl" type="string">Seed Speech TTS HTTP uç noktasını geçersiz kılın. Ortam değişkeni: `VOLCENGINE_TTS_BASE_URL`.</ParamField>
+    <ParamField path="speakerVoice" type="string">Ses türü. Varsayılan: `en_female_anna_mars_bigtts`. Ortam değişkeni: `VOLCENGINE_TTS_VOICE`. Eski takma ad: `voice`.</ParamField>
+    <ParamField path="speedRatio" type="number">Sağlayıcının yerel hız oranı, `0.2..3`.</ParamField>
+    <ParamField path="emotion" type="string">Sağlayıcının yerel duygu etiketi.</ParamField>
+    <ParamField path="appId / token / cluster" type="string" deprecated>Eski Volcengine Speech Console alanları. Ortam değişkenleri: `VOLCENGINE_TTS_APPID`, `VOLCENGINE_TTS_TOKEN`, `VOLCENGINE_TTS_CLUSTER` (varsayılan: `volcano_tts`).</ParamField>
   </Accordion>
 
   <Accordion title="xAI">
-    <ParamField path="apiKey" type="string">Ortam: `XAI_API_KEY`.</ParamField>
-    <ParamField path="baseUrl" type="string">Varsayılan `https://api.x.ai/v1`. Ortam: `XAI_BASE_URL`.</ParamField>
-    <ParamField path="speakerVoiceId" type="string">Varsayılan `eve`. Canlı sesler: `ara`, `eve`, `leo`, `rex`, `sal`, `una`. Eski takma ad: `voiceId`.</ParamField>
-    <ParamField path="language" type="string">BCP-47 dil kodu veya `auto`. Varsayılan `en`.</ParamField>
-    <ParamField path="responseFormat" type='"mp3" | "wav" | "pcm" | "mulaw" | "alaw"'>Varsayılan `mp3`.</ParamField>
-    <ParamField path="speed" type="number">Sağlayıcıya özgü hız geçersiz kılması.</ParamField>
+    <ParamField path="apiKey" type="string">Ortam değişkeni: `XAI_API_KEY`.</ParamField>
+    <ParamField path="baseUrl" type="string">Varsayılan: `https://api.x.ai/v1`. Ortam değişkeni: `XAI_BASE_URL`.</ParamField>
+    <ParamField path="speakerVoiceId" type="string">Varsayılan: `eve`. Kimlik doğrulamasıyla `openclaw infer tts voices --provider xai` güncel yerleşik kataloğu getirir; kimlik doğrulaması olmadan çevrimdışı geri dönüş seçenekleri `ara`, `eve`, `leo`, `rex` ve `sal` listelenir. Hesaba özel ses kimlikleri, yerleşik listede bulunmadıklarında bile iletilir. Eski takma ad: `voiceId`.</ParamField>
+    <ParamField path="language" type="string">BCP-47 dil kodu veya `auto`. Varsayılan: `en`.</ParamField>
+    <ParamField path="responseFormat" type='"mp3" | "wav" | "pcm" | "mulaw" | "alaw"'>Varsayılan: `mp3`.</ParamField>
+    <ParamField path="speed" type="number">Sağlayıcının yerel hız geçersiz kılması, `0.7..1.5`.</ParamField>
   </Accordion>
 
   <Accordion title="Xiaomi MiMo">
-    <ParamField path="apiKey" type="string">Ortam: `XIAOMI_API_KEY`.</ParamField>
-    <ParamField path="baseUrl" type="string">Varsayılan `https://api.xiaomimimo.com/v1`. Ortam: `XIAOMI_BASE_URL`.</ParamField>
-    <ParamField path="model" type="string">Varsayılan `mimo-v2.5-tts`. Ortam: `XIAOMI_TTS_MODEL`. `mimo-v2-tts` ve `mimo-v2.5-tts-voicedesign` seçeneklerini de destekler.</ParamField>
-    <ParamField path="speakerVoice" type="string">Hazır ses modelleri için varsayılan `mimo_default`. Ortam: `XIAOMI_TTS_VOICE`. Eski takma ad: `voice`. `mimo-v2.5-tts-voicedesign` için gönderilmez.</ParamField>
-    <ParamField path="format" type='"mp3" | "wav"'>Varsayılan `mp3`. Ortam: `XIAOMI_TTS_FORMAT`.</ParamField>
-    <ParamField path="style" type="string">Kullanıcı mesajı olarak gönderilen isteğe bağlı doğal dil stil talimatı; seslendirilmez. `mimo-v2.5-tts-voicedesign` için bu, ses tasarımı promptudur; atlanırsa OpenClaw bir varsayılan sağlar.</ParamField>
+    <ParamField path="apiKey" type="string">Ortam değişkeni: `XIAOMI_API_KEY`.</ParamField>
+    <ParamField path="baseUrl" type="string">Varsayılan: `https://api.xiaomimimo.com/v1`. Ortam değişkeni: `XIAOMI_BASE_URL`.</ParamField>
+    <ParamField path="model" type="string">Varsayılan: `mimo-v2.5-tts`. Ortam değişkeni: `XIAOMI_TTS_MODEL`. `mimo-v2-tts` ve `mimo-v2.5-tts-voicedesign` değerlerini de destekler.</ParamField>
+    <ParamField path="speakerVoice" type="string">Önceden ayarlanmış ses modelleri için varsayılan: `mimo_default`. Ortam değişkeni: `XIAOMI_TTS_VOICE`. Eski takma ad: `voice`. `mimo-v2.5-tts-voicedesign` için gönderilmez.</ParamField>
+    <ParamField path="format" type='"mp3" | "wav"'>Varsayılan: `mp3`. Ortam değişkeni: `XIAOMI_TTS_FORMAT`.</ParamField>
+    <ParamField path="style" type="string">Kullanıcı mesajı olarak gönderilen isteğe bağlı doğal dilde stil talimatı; seslendirilmez. `mimo-v2.5-tts-voicedesign` için bu, ses tasarımı istemidir; belirtilmezse OpenClaw varsayılan bir değer sağlar.</ParamField>
   </Accordion>
 </AccordionGroup>
 
-## Agent aracı
+## Ajan aracı
 
-`tts` aracı metni konuşmaya dönüştürür ve yanıt teslimi için bir ses eki
-döndürür. Feishu, Matrix, Telegram ve WhatsApp üzerinde ses, dosya eki yerine
-sesli mesaj olarak teslim edilir. Feishu ve WhatsApp, `ffmpeg` kullanılabilir
-olduğunda bu yolda Opus olmayan TTS çıktısını dönüştürebilir.
+`tts` aracı, metni konuşmaya dönüştürür ve yanıtın teslimi için bir ses eki döndürür. Feishu, Matrix, Telegram ve WhatsApp'ta ses, dosya eki yerine sesli mesaj olarak teslim edilir. `ffmpeg` kullanılabildiğinde Feishu ve WhatsApp, Opus olmayan TTS çıktısını bu yolda dönüştürebilir.
 
-WhatsApp, sesi Baileys üzerinden PTT ses notu olarak (`audio` ile
-`ptt: true`) gönderir ve istemciler ses notlarında altyazıları tutarlı şekilde
-işlemediği için görünür metni PTT sesinden **ayrı olarak** gönderir.
+WhatsApp, sesi Baileys üzerinden PTT sesli notu olarak (`ptt: true` ile `audio`) gönderir ve istemciler sesli notlardaki altyazıları tutarlı biçimde görüntülemediğinden görünür metni PTT sesinden **ayrı** gönderir.
 
-Araç isteğe bağlı `channel` ve `timeoutMs` alanlarını kabul eder; `timeoutMs`,
-milisaniye cinsinden çağrı başına sağlayıcı istek zaman aşımıdır. Çağrı başına
-değerler `messages.tts.timeoutMs` değerini geçersiz kılar; yapılandırılmış TTS
-zaman aşımları, Plugin tarafından yazılmış sağlayıcı varsayılanlarını geçersiz kılar.
+Araç, isteğe bağlı `channel` ve `timeoutMs` alanlarını kabul eder; `timeoutMs`, çağrı başına milisaniye cinsinden sağlayıcı isteği zaman aşımıdır. Çağrı başına değerler `messages.tts.timeoutMs` değerini geçersiz kılar; yapılandırılmış TTS zaman aşımları, Plugin tarafından tanımlanan tüm sağlayıcı varsayılanlarını geçersiz kılar.
 
 ## Gateway RPC
 
-| Yöntem            | Amaç                                     |
-| ----------------- | ---------------------------------------- |
-| `tts.status`      | Geçerli TTS durumunu ve son denemeyi oku. |
+| Yöntem            | Amaç                                         |
+| ----------------- | -------------------------------------------- |
+| `tts.status`      | Geçerli TTS durumunu ve son denemeyi oku.    |
 | `tts.enable`      | Yerel otomatik tercihi `always` olarak ayarla. |
 | `tts.disable`     | Yerel otomatik tercihi `off` olarak ayarla. |
-| `tts.convert`     | Tek seferlik metin → ses.                |
-| `tts.setProvider` | Yerel sağlayıcı tercihini ayarla.        |
-| `tts.setPersona`  | Yerel persona tercihini ayarla.          |
-| `tts.providers`   | Yapılandırılmış sağlayıcıları ve durumu listele. |
+| `tts.convert`     | Tek seferlik metin → ses.                    |
+| `tts.setProvider` | Yerel sağlayıcı tercihini ayarla.            |
+| `tts.personas`    | Yapılandırılmış personaları ve etkin olanı listele. |
+| `tts.setPersona`  | Yerel persona tercihini ayarla.              |
+| `tts.providers`   | Yapılandırılmış sağlayıcıları ve durumlarını listele. |
 
 ## Hizmet bağlantıları
 
 - [OpenAI metinden konuşmaya kılavuzu](https://platform.openai.com/docs/guides/text-to-speech)
-- [OpenAI Audio API başvurusu](https://platform.openai.com/docs/api-reference/audio)
+- [OpenAI Audio API referansı](https://platform.openai.com/docs/api-reference/audio)
 - [Azure Speech REST metinden konuşmaya](https://learn.microsoft.com/azure/ai-services/speech-service/rest-text-to-speech)
 - [Azure Speech sağlayıcısı](/tr/providers/azure-speech)
 - [ElevenLabs Metinden Konuşmaya](https://elevenlabs.io/docs/api-reference/text-to-speech)
-- [ElevenLabs Kimlik Doğrulama](https://elevenlabs.io/docs/api-reference/authentication)
+- [ElevenLabs Kimlik Doğrulaması](https://elevenlabs.io/docs/api-reference/authentication)
 - [Gradium](/tr/providers/gradium)
 - [Inworld TTS API](https://docs.inworld.ai/tts/tts)
 - [MiniMax T2A v2 API](https://platform.minimaxi.com/document/T2A%20V2)
@@ -970,8 +990,8 @@ zaman aşımları, Plugin tarafından yazılmış sağlayıcı varsayılanların
 
 ## İlgili
 
-- [Medya genel bakışı](/tr/tools/media-overview)
+- [Medyaya genel bakış](/tr/tools/media-overview)
 - [Müzik oluşturma](/tr/tools/music-generation)
 - [Video oluşturma](/tr/tools/video-generation)
 - [Eğik çizgi komutları](/tr/tools/slash-commands)
-- [Sesli arama Plugin'i](/tr/plugins/voice-call)
+- [Sesli arama plugini](/tr/plugins/voice-call)

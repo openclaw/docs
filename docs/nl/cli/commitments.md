@@ -1,23 +1,26 @@
 ---
 read_when:
-    - U wilt afgeleide vervolgtoezeggingen inspecteren
+    - Je wilt afgeleide toezeggingen voor vervolgacties inspecteren
     - Je wilt openstaande check-ins negeren
-    - U controleert wat de Heartbeat mogelijk aflevert
-summary: CLI-referentie voor `openclaw commitments` (afgeleide vervolgacties bekijken en negeren)
+    - Je controleert wat Heartbeat mogelijk kan afleveren
+summary: CLI-referentie voor `openclaw commitments` (afgeleide vervolgacties bekijken en sluiten)
 title: '`openclaw commitments`'
 x-i18n:
-    generated_at: "2026-07-12T08:43:47Z"
+    generated_at: "2026-07-16T15:19:20Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 4323273a5d73975532f4728dc5e40c5d59e0c6d2e31a538f96bf3451e3fdf4d9
+    source_hash: db8a7d8f5756ccb18ed0990fcedf50d1072bb67e775c29eefdbd1a7dd795b7b0
     source_path: cli/commitments.md
     workflow: 16
 ---
 
-Afgeleide vervolgtoezeggingen weergeven en beheren.
+Vervolgtoezeggingen weergeven en beheren die zijn afgeleid uit gesprekken.
 
-Toezeggingen zijn opt-in (`commitments.enabled`), kortstondige herinneringen aan vervolgacties die worden aangemaakt op basis van de gesprekscontext en door Heartbeat worden afgeleverd. Zie [Afgeleide toezeggingen](/nl/concepts/commitments) voor de conceptuele handleiding en configuratie.
+Toezeggingen zijn opt-in (`commitments.enabled`), kortstondige herinneringen voor vervolgacties
+die worden aangemaakt op basis van gesprekscontext en via Heartbeat worden afgeleverd. Zie
+[Afgeleide toezeggingen](/nl/concepts/commitments) voor de conceptuele handleiding en configuratie.
 
 Zonder subopdracht geeft `openclaw commitments` de openstaande toezeggingen weer.
 
@@ -34,7 +37,7 @@ openclaw commitments dismiss <id...> [--json]
 - `--all`: alle statussen weergeven in plaats van alleen openstaande toezeggingen.
 - `--agent <id>`: filteren op één agent-id.
 - `--status <status>`: filteren op status. Waarden: `pending`, `sent`,
-  `dismissed`, `snoozed` of `expired`. Onbekende waarden sluiten af met een foutmelding.
+  `dismissed`, `snoozed` of `expired`. Bij onbekende waarden wordt het programma met een fout afgesloten.
 - `--json`: machineleesbare JSON uitvoeren.
 
 `dismiss` markeert de opgegeven toezeggings-id's als `dismissed`, zodat Heartbeat
@@ -48,7 +51,7 @@ Openstaande toezeggingen weergeven:
 openclaw commitments
 ```
 
-Alle opgeslagen toezeggingen weergeven:
+Elke opgeslagen toezegging weergeven:
 
 ```bash
 openclaw commitments --all
@@ -80,18 +83,18 @@ openclaw commitments --all --json
 
 ## Uitvoer
 
-Tekstuitvoer toont het aantal toezeggingen, het opslagpad, eventuele actieve filters
+Tekstuitvoer toont het aantal toezeggingen, het pad naar de gedeelde SQLite-database, eventuele actieve filters
 en één rij per toezegging:
 
 - toezeggings-id
 - status
-- type (`event_check_in`, `deadline_check`, `care_check_in` of `open_loop`)
+- soort (`event_check_in`, `deadline_check`, `care_check_in` of `open_loop`)
 - vroegste vervaltijd
 - bereik (agent/kanaal/doel)
-- voorgestelde tekst voor de check-in
+- voorgestelde tekst voor het contactmoment
 
 JSON-uitvoer bevat het aantal, de actieve status- en agentfilters, het
-opslagpad voor toezeggingen en de volledige opgeslagen records.
+pad naar de gedeelde SQLite-database en de volledige opgeslagen records.
 
 ## Gerelateerd
 

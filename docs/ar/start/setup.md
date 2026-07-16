@@ -1,64 +1,65 @@
 ---
 read_when:
     - إعداد جهاز جديد
-    - تريد «الأحدث والأفضل» دون تعطيل إعدادك الشخصي
-summary: إعدادات متقدمة وسير عمل التطوير لـ OpenClaw
+    - تريد «الأحدث والأفضل» من دون تعطيل إعدادك الشخصي
+summary: إعدادات متقدمة وسير عمل تطوير OpenClaw
 title: الإعداد
 x-i18n:
-    generated_at: "2026-06-27T18:37:22Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T15:09:05Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 81cad59d4eab731ba548452211bfc578d6f79e38431057c52cc3580d3b9d9944
+    source_hash: c40d6d2bf2814465f3cc49c65d4c1498671420af728ce8012d13af3fba67025a
     source_path: start/setup.md
     workflow: 16
 ---
 
 <Note>
-إذا كنت تُعدّ OpenClaw لأول مرة، فابدأ بـ [بدء الاستخدام](/ar/start/getting-started).
-لتفاصيل الإعداد الأولي، راجع [الإعداد الأولي (CLI)](/ar/start/wizard).
+إذا كنت تُجري الإعداد للمرة الأولى، فابدأ بـ[بدء الاستخدام](/ar/start/getting-started).
+للاطلاع على تفاصيل التهيئة الأولية، راجع [التهيئة الأولية (CLI)](/ar/start/wizard).
 </Note>
 
 ## الخلاصة
 
-اختر سير عمل الإعداد بناءً على عدد المرات التي تريد فيها التحديثات وما إذا كنت تريد تشغيل Gateway بنفسك:
+اختر سير عمل للإعداد بناءً على مدى تكرار التحديثات التي تريدها وما إذا كنت تريد تشغيل Gateway بنفسك:
 
-- **يبقى التخصيص خارج المستودع:** احتفظ بالإعدادات ومساحة العمل في `~/.openclaw/openclaw.json` و`~/.openclaw/workspace/` حتى لا تمسّها تحديثات المستودع.
+- **توجد التخصيصات خارج المستودع:** احتفظ بإعداداتك ومساحة عملك في `~/.openclaw/openclaw.json` و`~/.openclaw/workspace/` حتى لا تؤثر فيهما تحديثات المستودع.
 - **سير العمل المستقر (موصى به لمعظم المستخدمين):** ثبّت تطبيق macOS ودعه يشغّل Gateway المضمّن.
-- **سير عمل أحدث التغييرات (للتطوير):** شغّل Gateway بنفسك عبر `pnpm gateway:watch`، ثم دع تطبيق macOS يتصل في الوضع المحلي.
+- **سير عمل أحدث الميزات (للتطوير):** شغّل Gateway بنفسك عبر `pnpm gateway:watch`، ثم دع تطبيق macOS يتصل به في الوضع المحلي.
 
-## المتطلبات المسبقة (من المصدر)
+## المتطلبات الأساسية (من المصدر)
 
-- يوصى بـ Node 24 (لا يزال Node 22 LTS، حاليًا `22.19+`، مدعومًا)
-- `pnpm` مطلوب لنسخ المصدر. يحمّل OpenClaw Plugins المضمّنة من حزم مساحة عمل pnpm
-  `extensions/*` في وضع التطوير، لذلك لا يجهّز `npm install` في الجذر
+- يوصى باستخدام Node 24.15+ (لا يزال Node 22 LTS، حاليًا `22.22.3+`، مدعومًا)
+- يلزم `pnpm` لعمليات سحب الشيفرة المصدرية. يحمّل OpenClaw الـ plugins المضمّنة من حزم مساحة عمل pnpm في
+  `extensions/*` ضمن وضع التطوير، ولذلك لا يُعِدّ `npm install` في الجذر
   شجرة المصدر كاملة.
-- Docker (اختياري؛ فقط للإعداد داخل الحاويات/e2e - راجع [Docker](/ar/install/docker))
+- Docker (اختياري؛ للإعداد ضمن حاويات/اختبارات e2e فقط — راجع [Docker](/ar/install/docker))
 
-## استراتيجية التخصيص (حتى لا تؤذيك التحديثات)
+## استراتيجية التخصيص (حتى لا تتسبب التحديثات في مشكلات)
 
-إذا كنت تريد "مخصصًا لي 100%" _مع_ تحديثات سهلة، فاحتفظ بتخصيصك في:
+إذا كنت تريد إعدادًا «مخصصًا لي بنسبة 100%» _مع_ سهولة التحديث، فاحتفظ بتخصيصاتك في:
 
-- **الإعدادات:** `~/.openclaw/openclaw.json` (بصيغة تشبه JSON/JSON5)
-- **مساحة العمل:** `~/.openclaw/workspace` (Skills، مطالبات، ذاكرات؛ اجعلها مستودع git خاصًا)
+- **الإعدادات:** `~/.openclaw/openclaw.json` (JSON/شبيه بـ JSON5)
+- **مساحة العمل:** `~/.openclaw/workspace` (Skills والموجّهات والذكريات؛ اجعلها مستودع git خاصًا)
 
-ابدأ التهيئة مرة واحدة:
-
-```bash
-openclaw setup
-```
-
-من داخل هذا المستودع، استخدم مدخل CLI المحلي:
+هيّئ مجلدَي الإعدادات ومساحة العمل مرة واحدة، من دون تشغيل معالج التهيئة الأولية الكامل:
 
 ```bash
-openclaw setup
+openclaw setup --baseline
 ```
 
-إذا لم يكن لديك تثبيت عام بعد، فشغّله عبر `pnpm openclaw setup`.
+لم تُجرِ تثبيتًا عامًا بعد؟ شغّله من هذا المستودع بدلًا من ذلك:
+
+```bash
+pnpm openclaw setup --baseline
+```
+
+(يُعدّ `openclaw setup` المجرّد، من دون `--baseline`، اسمًا بديلًا لـ `openclaw onboard` ويشغّل المعالج التفاعلي الكامل.)
 
 ## تشغيل Gateway من هذا المستودع
 
-بعد `pnpm build`، يمكنك تشغيل CLI المجمّع مباشرةً:
+بعد `pnpm build`، يمكنك تشغيل CLI المضمّن في الحزمة مباشرةً:
 
 ```bash
 node openclaw.mjs gateway --port 18789 --verbose
@@ -66,121 +67,127 @@ node openclaw.mjs gateway --port 18789 --verbose
 
 ## سير العمل المستقر (تطبيق macOS أولًا)
 
-1. ثبّت وشغّل **OpenClaw.app** (شريط القوائم).
-2. أكمل قائمة تحقق الإعداد الأولي/الأذونات (مطالبات TCC).
-3. تأكد أن Gateway في الوضع **محلي** ويعمل (يديره التطبيق).
-4. اربط الأسطح (مثال: WhatsApp):
+1. ثبّت **OpenClaw.app** وشغّله (شريط القوائم).
+2. أكمل قائمة التحقق الخاصة بالتهيئة الأولية/الأذونات (مطالبات TCC).
+3. تأكد من أن Gateway في الوضع **Local** وقيد التشغيل (يديره التطبيق).
+4. اربط قنوات الاتصال (مثال: WhatsApp):
 
 ```bash
 openclaw channels login
 ```
 
-5. تحقق سريعًا:
+5. تحقق سريع:
 
 ```bash
 openclaw health
 ```
 
-إذا لم يكن الإعداد الأولي متاحًا في إصدارك:
+إذا لم تكن التهيئة الأولية متاحة في نسختك:
 
 - شغّل `openclaw setup`، ثم `openclaw channels login`، ثم ابدأ Gateway يدويًا (`openclaw gateway`).
 
-## سير عمل أحدث التغييرات (Gateway في طرفية)
+## سير عمل أحدث الميزات (Gateway في نافذة طرفية)
 
-الهدف: العمل على Gateway المكتوب بـ TypeScript، والحصول على إعادة تحميل فورية، مع إبقاء واجهة تطبيق macOS متصلة.
+الهدف: العمل على Gateway المكتوب بلغة TypeScript، والحصول على إعادة تحميل فورية، وإبقاء واجهة تطبيق macOS متصلة.
 
-### 0) (اختياري) شغّل تطبيق macOS من المصدر أيضًا
+### 0) (اختياري) تشغيل تطبيق macOS من المصدر أيضًا
 
-إذا كنت تريد تطبيق macOS على أحدث التغييرات أيضًا:
+إذا كنت تريد أيضًا استخدام أحدث نسخة تطويرية من تطبيق macOS:
 
 ```bash
 ./scripts/restart-mac.sh
 ```
 
-### 1) ابدأ Gateway التطوير
+### 1) بدء Gateway الخاص بالتطوير
 
 ```bash
 pnpm install
-# First run only (or after resetting local OpenClaw config/workspace)
+# التشغيل الأول فقط (أو بعد إعادة ضبط إعدادات/مساحة عمل OpenClaw المحلية)
 pnpm openclaw setup
 pnpm gateway:watch
 ```
 
-يبدأ `gateway:watch` أو يعيد تشغيل عملية مراقبة Gateway في جلسة tmux
-مسمّاة ويتصل بها تلقائيًا من الطرفيات التفاعلية. تبقى الصدفات غير التفاعلية
-منفصلة وتطبع `tmux attach -t openclaw-gateway-watch-main`؛ استخدم
-`OPENCLAW_GATEWAY_WATCH_ATTACH=0 pnpm gateway:watch` لإبقاء تشغيل تفاعلي
-منفصلًا، أو `pnpm gateway:watch:raw` لوضع المراقبة في الواجهة. يعيد المراقب
-التحميل عند تغييرات المصدر والإعدادات وبيانات تعريف Plugins المضمّنة ذات الصلة. إذا خرج
-Gateway المُراقَب أثناء بدء التشغيل، يشغّل `gateway:watch`
-`openclaw doctor --fix --non-interactive` مرة واحدة ويعيد المحاولة؛ عيّن
-`OPENCLAW_GATEWAY_WATCH_AUTO_DOCTOR=0` لتعطيل تمرير الإصلاح الخاص بالتطوير هذا.
-`pnpm openclaw setup` هو خطوة التهيئة المحلية لمرة واحدة للإعدادات/مساحة العمل عند نسخة مصدر جديدة.
-لا يعيد `pnpm gateway:watch` بناء `dist/control-ui`، لذلك أعد تشغيل `pnpm ui:build` بعد تغييرات `ui/` أو استخدم `pnpm ui:dev` أثناء تطوير Control UI.
+يبدأ `gateway:watch` عملية مراقبة Gateway أو يعيد تشغيلها ضمن جلسة tmux
+مُسمّاة (`openclaw-gateway-watch-main`)، ويتصل بها تلقائيًا من النوافذ الطرفية
+التفاعلية. تبقى واجهات الأوامر غير التفاعلية منفصلة وتطبع
+`tmux attach -t openclaw-gateway-watch-main`؛ استخدم
+`OPENCLAW_GATEWAY_WATCH_ATTACH=0 pnpm gateway:watch` لإبقاء التشغيل التفاعلي
+منفصلًا، أو `pnpm gateway:watch:raw` لوضع المراقبة في الواجهة الأمامية. يوقف المراقب
+خدمة Gateway المثبّتة للملف الشخصي النشط قبل تولّي
+المنفذ المضبوط/الافتراضي، ما يمنع مشرف الخدمة من استبدال
+عملية المصدر. تظل الخدمة مثبّتة؛ شغّل `pnpm openclaw gateway start`
+عند الانتهاء من المراقبة. يظل جزء tmux متاحًا بعد فشل بدء التشغيل
+حتى تتمكن نافذة طرفية أخرى أو وكيل آخر من الاتصال به أو التقاط سجلاته. يعيد المراقب
+التحميل عند حدوث تغييرات ذات صلة في المصدر والإعدادات والبيانات الوصفية للـ plugins المضمّنة. إذا خرج
+Gateway المراقَب أثناء بدء التشغيل، يشغّل `gateway:watch`
+الأمر `openclaw doctor --fix --non-interactive` مرة واحدة ثم يعيد المحاولة؛ اضبط
+`OPENCLAW_GATEWAY_WATCH_AUTO_DOCTOR=0` لتعطيل مرحلة الإصلاح المخصصة للتطوير فقط.
+لا يعيد `pnpm gateway:watch` بناء `dist/control-ui`، لذا أعد تشغيل `pnpm ui:build` بعد تغييرات `ui/` أو استخدم `pnpm ui:dev` أثناء تطوير واجهة التحكم.
 
-### 2) وجّه تطبيق macOS إلى Gateway الذي يعمل لديك
+### 2) توجيه تطبيق macOS إلى Gateway قيد التشغيل
 
 في **OpenClaw.app**:
 
-- وضع الاتصال: **محلي**
-  سيتصل التطبيق بالبوابة العاملة على المنفذ المُعدّ.
+- Connection Mode: **Local**
+  سيتصل التطبيق بـ Gateway قيد التشغيل على المنفذ المضبوط.
 
-### 3) تحقق
+### 3) التحقق
 
-- يجب أن تعرض حالة Gateway داخل التطبيق **"استخدام Gateway موجود ..."**
+- يجب أن تعرض حالة Gateway داخل التطبيق **"Using existing gateway …"**
 - أو عبر CLI:
 
 ```bash
 openclaw health
 ```
 
-### أخطاء شائعة
+### الأخطاء الشائعة
 
-- **منفذ خاطئ:** القيمة الافتراضية لـ Gateway WS هي `ws://127.0.0.1:18789`؛ أبقِ التطبيق وCLI على المنفذ نفسه.
-- **مكان وجود الحالة:**
+- **المنفذ الخاطئ:** يستخدم اتصال WS الخاص بـ Gateway المنفذ `ws://127.0.0.1:18789` افتراضيًا؛ أبقِ التطبيق وCLI على المنفذ نفسه.
+- **أماكن تخزين الحالة:**
   - حالة القناة/المزوّد: `~/.openclaw/credentials/`
   - ملفات تعريف مصادقة النموذج: `~/.openclaw/agents/<agentId>/agent/auth-profiles.json`
-  - الجلسات: `~/.openclaw/agents/<agentId>/sessions/`
+  - الجلسات والنصوص المفرّغة: `~/.openclaw/agents/<agentId>/agent/openclaw-agent.sqlite`
+  - آثار الجلسات القديمة/المؤرشفة: `~/.openclaw/agents/<agentId>/sessions/`
   - السجلات: `/tmp/openclaw/`
 
 ## خريطة تخزين بيانات الاعتماد
 
-استخدم هذا عند تصحيح المصادقة أو تحديد ما يجب نسخه احتياطيًا:
+استخدم هذه الخريطة عند تصحيح مشكلات المصادقة أو تحديد ما ينبغي نسخه احتياطيًا:
 
 - **WhatsApp**: `~/.openclaw/credentials/whatsapp/<accountId>/creds.json`
-- **رمز بوت Telegram**: الإعدادات/env أو `channels.telegram.tokenFile` (ملف عادي فقط؛ تُرفض الروابط الرمزية)
-- **رمز بوت Discord**: الإعدادات/env أو SecretRef (مزوّدو env/file/exec)
-- **رموز Slack**: الإعدادات/env (`channels.slack.*`)
+- **رمز بوت Telegram**: الإعدادات/متغيرات البيئة أو `channels.telegram.tokenFile` (ملف عادي فقط؛ تُرفض الروابط الرمزية)
+- **رمز بوت Discord**: الإعدادات/متغيرات البيئة أو SecretRef (مزوّدو env/file/exec)
+- **رموز Slack**: الإعدادات/متغيرات البيئة (`channels.slack.*`)
 - **قوائم السماح بالاقتران**:
   - `~/.openclaw/credentials/<channel>-allowFrom.json` (الحساب الافتراضي)
   - `~/.openclaw/credentials/<channel>-<accountId>-allowFrom.json` (الحسابات غير الافتراضية)
 - **ملفات تعريف مصادقة النموذج**: `~/.openclaw/agents/<agentId>/agent/auth-profiles.json`
-- **حمولة الأسرار المدعومة بملف (اختياري)**: `~/.openclaw/secrets.json`
+- **حمولة الأسرار المخزّنة في ملف (اختياري)**: `~/.openclaw/secrets.json`
 - **استيراد OAuth القديم**: `~/.openclaw/credentials/oauth.json`
   مزيد من التفاصيل: [الأمان](/ar/gateway/security#credential-storage-map).
 
 ## التحديث (من دون إفساد إعدادك)
 
-- أبقِ `~/.openclaw/workspace` و`~/.openclaw/` بوصفهما "أشياءك الخاصة"؛ لا تضع المطالبات/الإعدادات الشخصية داخل مستودع `openclaw`.
-- تحديث المصدر: `git pull` + `pnpm install` + تابع استخدام `pnpm gateway:watch`.
+- احتفظ بـ `~/.openclaw/workspace` و`~/.openclaw/` بوصفهما «ملفاتك الخاصة»؛ لا تضع موجّهاتك أو إعداداتك الشخصية في مستودع `openclaw`.
+- تحديث المصدر: `git pull` + `pnpm install` + واصل استخدام `pnpm gateway:watch`.
 
 ## Linux (خدمة مستخدم systemd)
 
-تستخدم تثبيتات Linux خدمة **مستخدم** systemd. افتراضيًا، يوقف systemd خدمات
-المستخدم عند تسجيل الخروج/الخمول، ما يقتل Gateway. يحاول الإعداد الأولي تفعيل
-الإبقاء لك (قد يطلب sudo). إذا كان لا يزال معطلًا، فشغّل:
+تستخدم عمليات التثبيت على Linux خدمة **مستخدم** تابعة لـ systemd. يوقف systemd افتراضيًا
+خدمات المستخدم عند تسجيل الخروج/الخمول، ما يؤدي إلى إيقاف Gateway. تحاول التهيئة الأولية تمكين
+استمرار الخدمة نيابةً عنك (وقد تطلب sudo). إذا ظل معطّلًا، فشغّل:
 
 ```bash
 sudo loginctl enable-linger $USER
 ```
 
-للخوادم الدائمة التشغيل أو متعددة المستخدمين، فكّر في خدمة **نظام** بدلًا من
-خدمة مستخدم (لا حاجة إلى الإبقاء). راجع [دليل تشغيل Gateway](/ar/gateway) لملاحظات systemd.
+بالنسبة إلى الخوادم دائمة التشغيل أو متعددة المستخدمين، فكّر في استخدام خدمة **نظام**
+بدلًا من خدمة مستخدم (لا حاجة إلى استمرار الخدمة). راجع [دليل تشغيل Gateway](/ar/gateway) للاطلاع على ملاحظات systemd.
 
 ## مستندات ذات صلة
 
-- [دليل تشغيل Gateway](/ar/gateway) (الأعلام، الإشراف، المنافذ)
-- [إعدادات Gateway](/ar/gateway/configuration) (مخطط الإعدادات + أمثلة)
+- [دليل تشغيل Gateway](/ar/gateway) (العلامات والإشراف والمنافذ)
+- [إعداد Gateway](/ar/gateway/configuration) (مخطط الإعدادات + أمثلة)
 - [Discord](/ar/channels/discord) و[Telegram](/ar/channels/telegram) (وسوم الرد + إعدادات replyToMode)
 - [إعداد مساعد OpenClaw](/ar/start/openclaw)
 - [تطبيق macOS](/ar/platforms/macos) (دورة حياة Gateway)

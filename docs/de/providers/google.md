@@ -2,14 +2,15 @@
 read_when:
     - Sie möchten Google-Gemini-Modelle mit OpenClaw verwenden
     - Sie benötigen den API-Schlüssel oder den OAuth-Authentifizierungsablauf
-summary: Google-Gemini-Einrichtung (API-Schlüssel + OAuth, Bilderzeugung, Medienverständnis, TTS, Websuche)
+summary: Google-Gemini-Einrichtung (API-Schlüssel + OAuth, Bildgenerierung, Medienverständnis, TTS, Websuche)
 title: Google (Gemini)
 x-i18n:
-    generated_at: "2026-07-12T02:04:40Z"
+    generated_at: "2026-07-16T13:19:48Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 423f9b048a705815e886690fa13f5b02f7e67707195b7b461f6b4765528a4756
+    source_hash: fe8a58044bea7ce2598da94787334af2bb4a2ff58872c62115697fa0079daf0a
     source_path: providers/google.md
     workflow: 16
 ---
@@ -19,17 +20,20 @@ Das Google-Plugin bietet Zugriff auf Gemini-Modelle über Google AI Studio sowie
 - Provider: `google`
 - Authentifizierung: `GEMINI_API_KEY` oder `GOOGLE_API_KEY`
 - API: Google Gemini API
-- Laufzeitoption: `agentRuntime.id: "google-gemini-cli"` verwendet Gemini-CLI-OAuth erneut, während die Modellreferenzen kanonisch als `google/*` erhalten bleiben.
+- Laufzeitoption: `agentRuntime.id: "google-gemini-cli"` verwendet Gemini CLI OAuth wieder, während die Modellreferenzen in der kanonischen Form `google/*` bleiben.
 
 ## Erste Schritte
 
-Wählen Sie Ihre bevorzugte Authentifizierungsmethode aus und führen Sie die Einrichtungsschritte aus.
+Wählen Sie Ihre bevorzugte Authentifizierungsmethode und führen Sie die Einrichtungsschritte aus.
 
 <Tabs>
   <Tab title="API-Schlüssel">
-    **Am besten geeignet für:** standardmäßigen Gemini-API-Zugriff über Google AI Studio.
+    **Am besten geeignet für:** standardmäßigen Zugriff auf die Gemini API über Google AI Studio.
 
     <Steps>
+      <Step title="API-Schlüssel abrufen">
+        Erstellen Sie in [Google AI Studio](https://aistudio.google.com/apikey) einen kostenlosen Schlüssel.
+      </Step>
       <Step title="Onboarding ausführen">
         ```bash
         openclaw onboard --auth-choice gemini-api-key
@@ -63,18 +67,17 @@ Wählen Sie Ihre bevorzugte Authentifizierungsmethode aus und führen Sie die Ei
     </Steps>
 
     <Tip>
-    Sowohl `GEMINI_API_KEY` als auch `GOOGLE_API_KEY` werden akzeptiert. Verwenden Sie die Variable, die Sie bereits konfiguriert haben.
+    `GEMINI_API_KEY` und `GOOGLE_API_KEY` werden beide akzeptiert. Verwenden Sie die Variable, die Sie bereits konfiguriert haben.
     </Tip>
 
   </Tab>
 
   <Tab title="Gemini CLI (OAuth)">
-    **Am besten geeignet für:** die Wiederverwendung einer bestehenden Gemini-CLI-Anmeldung über PKCE-OAuth anstelle eines separaten API-Schlüssels.
+    **Am besten geeignet für:** die Anmeldung mit Ihrem Google-Konto über Gemini CLI OAuth anstelle eines separaten API-Schlüssels.
 
     <Warning>
     Der Provider `google-gemini-cli` ist eine inoffizielle Integration. Einige Benutzer
-    berichten von Kontoeinschränkungen bei dieser Art der OAuth-Nutzung. Die Verwendung
-    erfolgt auf eigenes Risiko.
+    berichten von Kontoeinschränkungen bei dieser Verwendung von OAuth. Die Nutzung erfolgt auf eigenes Risiko.
     </Warning>
 
     <Steps>
@@ -89,8 +92,8 @@ Wählen Sie Ihre bevorzugte Authentifizierungsmethode aus und führen Sie die Ei
         npm install -g @google/gemini-cli
         ```
 
-        OpenClaw unterstützt sowohl Homebrew-Installationen als auch globale npm-Installationen,
-        einschließlich gängiger Windows-/npm-Verzeichnisstrukturen.
+        OpenClaw unterstützt sowohl Homebrew-Installationen als auch globale npm-Installationen, einschließlich
+        gängiger Windows-/npm-Verzeichnisstrukturen.
       </Step>
       <Step title="Über OAuth anmelden">
         ```bash
@@ -108,7 +111,7 @@ Wählen Sie Ihre bevorzugte Authentifizierungsmethode aus und führen Sie die Ei
     - Laufzeit: `google-gemini-cli`
     - Alias: `gemini-cli`
 
-    Die Gemini-API-Modell-ID von Gemini 3.1 Pro lautet `gemini-3.1-pro-preview`. OpenClaw akzeptiert der Einfachheit halber die kürzere Form `google/gemini-3.1-pro` als Alias und normalisiert sie vor Provider-Aufrufen.
+    Die Gemini-API-Modell-ID von Gemini 3.1 Pro lautet `gemini-3.1-pro-preview`. OpenClaw akzeptiert die kürzere Form `google/gemini-3.1-pro` als praktischen Alias und normalisiert sie vor Provider-Aufrufen.
 
     **Umgebungsvariablen:**
 
@@ -116,48 +119,51 @@ Wählen Sie Ihre bevorzugte Authentifizierungsmethode aus und führen Sie die Ei
     - `OPENCLAW_GEMINI_OAUTH_CLIENT_SECRET` / `GEMINI_CLI_OAUTH_CLIENT_SECRET`
 
     <Note>
-    Wenn Gemini-CLI-OAuth-Anfragen nach der Anmeldung fehlschlagen, legen Sie
-    `GOOGLE_CLOUD_PROJECT` oder `GOOGLE_CLOUD_PROJECT_ID` auf dem Gateway-Host fest und versuchen Sie es erneut.
+    Wenn Gemini CLI OAuth-Anfragen nach der Anmeldung fehlschlagen, legen Sie `GOOGLE_CLOUD_PROJECT` oder
+    `GOOGLE_CLOUD_PROJECT_ID` auf dem Gateway-Host fest und versuchen Sie es erneut.
     </Note>
 
     <Note>
-    Wenn die Anmeldung vor dem Start des Browserablaufs fehlschlägt, stellen Sie sicher,
-    dass der lokale Befehl `gemini` installiert und unter `PATH` verfügbar ist.
+    Wenn die Anmeldung vor dem Start des Browserablaufs fehlschlägt, stellen Sie sicher, dass der lokale Befehl `gemini`
+    installiert und unter `PATH` verfügbar ist.
     </Note>
 
-    Modellreferenzen vom Typ `google-gemini-cli/*` sind veraltete Kompatibilitätsaliasse.
-    Neue Konfigurationen sollten Modellreferenzen vom Typ `google/*` zusammen mit der
-    Laufzeit `google-gemini-cli` verwenden, wenn eine lokale Ausführung über Gemini CLI gewünscht ist.
+    Die automatische Onboarding-Erkennung führt eine vorhandene Gemini-CLI-Anmeldung auf, testet sie jedoch
+    nie automatisch, da Gemini CLI keine werkzeugfreie Prüfung bietet. Wählen Sie Gemini CLI
+    OAuth oder einen Gemini-API-Schlüssel aus, um fortzufahren.
+
+    Modellreferenzen vom Typ `google-gemini-cli/*` sind veraltete Kompatibilitätsaliase. Neue
+    Konfigurationen sollten Modellreferenzen vom Typ `google/*` zusammen mit der Laufzeit `google-gemini-cli`
+    verwenden, wenn eine lokale Ausführung über Gemini CLI gewünscht ist.
 
   </Tab>
 </Tabs>
 
 <Note>
-`google/gemini-3-pro-preview` wurde am 09.03.2026 eingestellt; verwenden Sie stattdessen `google/gemini-3.1-pro-preview`. Wenn Sie die Einrichtung des Gemini-API-Schlüssels erneut ausführen (`openclaw onboard --auth-choice gemini-api-key` oder `openclaw models auth login --provider google`), wird ein veraltetes konfiguriertes Standardmodell auf das aktuelle Modell umgestellt.
+`google/gemini-3-pro-preview` wurde am 2026-03-09 eingestellt; verwenden Sie stattdessen `google/gemini-3.1-pro-preview`. Wenn Sie die Einrichtung des Gemini-API-Schlüssels erneut ausführen (`openclaw onboard --auth-choice gemini-api-key` oder `openclaw models auth login --provider google`), wird ein veraltetes konfiguriertes Standardmodell auf das aktuelle Modell umgestellt.
 </Note>
 
 ## Funktionen
 
-| Funktion                  | Unterstützt                    |
-| ------------------------- | ------------------------------ |
-| Chatvervollständigungen   | Ja                             |
-| Bilderzeugung             | Ja                             |
-| Musikerzeugung            | Ja                             |
-| Text-zu-Sprache           | Ja                             |
-| Echtzeitsprachübertragung | Ja (Google Live API)           |
-| Bildverständnis           | Ja                             |
-| Audiotranskription        | Ja                             |
-| Videoverständnis          | Ja                             |
-| Websuche (Grounding)      | Ja                             |
-| Denken/Schlussfolgern     | Ja (Gemini 2.5+ / Gemini 3+)   |
-| Gemma-4-Modelle           | Ja                             |
+| Funktion               | Unterstützt                   |
+| ---------------------- | ----------------------------- |
+| Chat-Vervollständigungen | Ja                          |
+| Bilderzeugung          | Ja                            |
+| Musikerzeugung         | Ja                            |
+| Text-zu-Sprache        | Ja                            |
+| Echtzeit-Sprache       | Ja (Google Live API)          |
+| Bildverständnis        | Ja                            |
+| Audiotranskription     | Ja                            |
+| Videoverständnis       | Ja                            |
+| Websuche (Grounding)   | Ja                            |
+| Denken/Schlussfolgern  | Ja (Gemini 2.5+ / Gemini 3+)  |
+| Gemma-4-Modelle        | Ja                            |
 
 ## Websuche
 
-Der mitgelieferte Websuch-Provider `gemini` verwendet Gemini Google Search Grounding.
-Konfigurieren Sie unter `plugins.entries.google.config.webSearch` einen dedizierten
-Suchschlüssel oder lassen Sie nach `GEMINI_API_KEY` den Wert von
-`models.providers.google.apiKey` wiederverwenden:
+Der gebündelte Websuch-Provider `gemini` verwendet Grounding über die Google-Suche von Gemini.
+Konfigurieren Sie unter `plugins.entries.google.config.webSearch` einen dedizierten Suchschlüssel
+oder lassen Sie nach `GEMINI_API_KEY` den Wert `models.providers.google.apiKey` wiederverwenden:
 
 ```json5
 {
@@ -177,37 +183,36 @@ Suchschlüssel oder lassen Sie nach `GEMINI_API_KEY` den Wert von
 }
 ```
 
-Bei den Anmeldedaten hat der dedizierte Wert `webSearch.apiKey` Vorrang, gefolgt von
-`GEMINI_API_KEY` und anschließend `models.providers.google.apiKey`. `webSearch.baseUrl`
-ist optional und für Betreiber-Proxys oder kompatible Gemini-API-Endpunkte vorgesehen.
-Wenn der Wert ausgelassen wird, verwendet die Gemini-Websuche
-`models.providers.google.baseUrl` erneut. Informationen zum Provider-spezifischen
-Werkzeugverhalten finden Sie unter [Gemini-Suche](/de/tools/gemini-search).
+Bei den Anmeldedaten hat der dedizierte Wert `webSearch.apiKey` Vorrang, gefolgt von `GEMINI_API_KEY`
+und anschließend `models.providers.google.apiKey`. `webSearch.baseUrl` ist optional und
+für Betreiber-Proxys oder kompatible Gemini-API-Endpunkte vorgesehen. Wird der Wert weggelassen,
+verwendet die Gemini-Websuche `models.providers.google.baseUrl` wieder. Informationen zum providerspezifischen Werkzeugverhalten finden Sie unter
+[Gemini-Suche](/de/tools/gemini-search).
 
 <Tip>
-Gemini-3-Modelle verwenden `thinkingLevel` anstelle von `thinkingBudget`. OpenClaw
-ordnet die Steuerung des Schlussfolgerns für Gemini 3, Gemini 3.1 und Aliasse vom Typ
-`gemini-*-latest` `thinkingLevel` zu, sodass Standardausführungen und Ausführungen mit
-niedriger Latenz keine deaktivierten `thinkingBudget`-Werte senden.
+Gemini-3-Modelle verwenden `thinkingLevel` anstelle von `thinkingBudget`. OpenClaw ordnet
+die Steuerung des Schlussfolgerns für Gemini 3, Gemini 3.1 und den Alias `gemini-*-latest`
+`thinkingLevel` zu, damit Standardausführungen und Ausführungen mit niedriger Latenz keine deaktivierten
+Werte für `thinkingBudget` senden.
 
-`/think adaptive` behält Googles dynamische Denksemantik bei, anstatt eine feste
-OpenClaw-Stufe auszuwählen. Gemini 3 und Gemini 3.1 lassen einen festen Wert für
-`thinkingLevel` aus, sodass Google die Stufe auswählen kann. Gemini 2.5 sendet Googles
-dynamischen Sentinelwert `thinkingBudget: -1`.
+`/think adaptive` behält die Semantik des dynamischen Denkens von Google bei, anstatt
+eine feste OpenClaw-Stufe auszuwählen. Gemini 3 und Gemini 3.1 lassen einen festen Wert für `thinkingLevel` weg, sodass
+Google die Stufe auswählen kann; Gemini 2.5 sendet den dynamischen Sentinelwert von Google
+`thinkingBudget: -1`.
 
-Gemma-4-Modelle (zum Beispiel `gemma-4-26b-a4b-it`) unterstützen den Denkmodus.
-OpenClaw schreibt `thinkingBudget` für Gemma 4 in einen unterstützten Google-Wert für
-`thinkingLevel` um. Wenn das Denken auf `off` gesetzt wird, bleibt es deaktiviert,
-anstatt `MINIMAL` zugeordnet zu werden.
+Gemma-4-Modelle (zum Beispiel `gemma-4-26b-a4b-it`) unterstützen den Denkmodus. OpenClaw
+schreibt `thinkingBudget` für Gemma 4 in einen von Google unterstützten Wert für `thinkingLevel` um.
+Wenn das Denken auf `off` gesetzt wird, bleibt es deaktiviert, anstatt `MINIMAL`
+zugeordnet zu werden.
 
-Gemini 2.5 Pro funktioniert nur im Denkmodus und lehnt ein explizites
-`thinkingBudget: 0` ab. OpenClaw entfernt diesen Wert aus Anfragen an Gemini 2.5 Pro,
+Gemini 2.5 Pro funktioniert nur im Denkmodus und lehnt einen expliziten Wert für
+`thinkingBudget: 0` ab; OpenClaw entfernt diesen Wert aus Anfragen an Gemini 2.5 Pro,
 anstatt ihn zu senden.
 </Tip>
 
 ## Bilderzeugung
 
-Der mitgelieferte Google-Provider für die Bilderzeugung verwendet standardmäßig
+Der gebündelte Bilderzeugungs-Provider `google` verwendet standardmäßig
 `google/gemini-3.1-flash-image-preview`.
 
 - Unterstützt außerdem `google/gemini-3-pro-image-preview`
@@ -215,7 +220,7 @@ Der mitgelieferte Google-Provider für die Bilderzeugung verwendet standardmäß
 - Bearbeitungsmodus: aktiviert, bis zu 5 Eingabebilder
 - Geometriesteuerung: `size`, `aspectRatio` und `resolution`
 
-So verwenden Sie Google als standardmäßigen Bild-Provider:
+So verwenden Sie Google als standardmäßigen Bilderzeugungs-Provider:
 
 ```json5
 {
@@ -235,12 +240,12 @@ Informationen zu gemeinsamen Werkzeugparametern, zur Provider-Auswahl und zum Fa
 
 ## Videoerzeugung
 
-Das mitgelieferte Google-Plugin registriert über das gemeinsame Werkzeug
-`video_generate` auch die Videoerzeugung.
+Das gebündelte Plugin `google` registriert außerdem die Videoerzeugung über das gemeinsame
+Werkzeug `video_generate`.
 
-- Standardvideomodell: `google/veo-3.1-fast-generate-preview`
+- Standard-Videomodell: `google/veo-3.1-fast-generate-preview`
 - Modi: Text-zu-Video, Bild-zu-Video und Abläufe mit einer einzelnen Videoreferenz
-- Unterstützt `aspectRatio` (`16:9`, `9:16`) und `resolution` (`720P`, `1080P`); Veo unterstützt derzeit keine Audioausgabe
+- Unterstützt `aspectRatio` (`16:9`, `9:16`) und `resolution` (`720P`, `1080P`); die Audioausgabe wird derzeit von Veo nicht unterstützt
 - Unterstützte Dauern: **4, 6 oder 8 Sekunden** (andere Werte werden auf den nächstgelegenen zulässigen Wert gesetzt)
 
 So verwenden Sie Google als standardmäßigen Video-Provider:
@@ -263,13 +268,13 @@ Informationen zu gemeinsamen Werkzeugparametern, zur Provider-Auswahl und zum Fa
 
 ## Musikerzeugung
 
-Das mitgelieferte Google-Plugin registriert über das gemeinsame Werkzeug
-`music_generate` auch die Musikerzeugung.
+Das gebündelte Plugin `google` registriert außerdem die Musikerzeugung über das gemeinsame
+Werkzeug `music_generate`.
 
-- Standardmusikmodell: `google/lyria-3-clip-preview`
+- Standard-Musikmodell: `google/lyria-3-clip-preview`
 - Unterstützt außerdem `google/lyria-3-pro-preview`
 - Prompt-Steuerung: `lyrics` und `instrumental`
-- Ausgabeformat: standardmäßig `mp3`, zusätzlich `wav` bei `google/lyria-3-pro-preview`
+- Ausgabeformat: standardmäßig `mp3`, zusätzlich `wav` unter `google/lyria-3-pro-preview`
 - Referenzeingaben: bis zu 10 Bilder
 - Sitzungsbasierte Ausführungen werden über den gemeinsamen Aufgaben-/Statusablauf abgekoppelt, einschließlich `action: "status"`
 
@@ -293,18 +298,18 @@ Informationen zu gemeinsamen Werkzeugparametern, zur Provider-Auswahl und zum Fa
 
 ## Text-zu-Sprache
 
-Der mitgelieferte Google-Sprach-Provider verwendet den TTS-Pfad der Gemini API mit
+Der gebündelte Sprach-Provider `google` verwendet den TTS-Pfad der Gemini API mit
 `gemini-3.1-flash-tts-preview`.
 
 - Standardstimme: `Kore`
 - Authentifizierung: `messages.tts.providers.google.apiKey`, `models.providers.google.apiKey`, `GEMINI_API_KEY` oder `GOOGLE_API_KEY`
-- Ausgabe: WAV für reguläre TTS-Anhänge, Opus für Sprachnachrichtenziele, PCM für Talk/Telefonie
-- Sprachnachrichtenausgabe: Google-PCM wird als WAV gekapselt und mit `ffmpeg` in Opus mit 48 kHz transkodiert
+- Ausgabe: WAV für reguläre TTS-Anhänge, Opus für Sprachnotiz-Ziele, PCM für Talk/Telefonie
+- Sprachnotiz-Ausgabe: Google PCM wird als WAV verpackt und mit `ffmpeg` in Opus mit 48 kHz transkodiert
 
-Der Batch-Pfad für Gemini TTS von Google gibt das erzeugte Audio in der abgeschlossenen
-`generateContent`-Antwort zurück. Verwenden Sie für gesprochene Unterhaltungen mit
-möglichst geringer Latenz den von der Gemini Live API unterstützten
-Google-Echtzeitsprach-Provider anstelle von Batch-TTS.
+Der Batch-TTS-Pfad von Gemini bei Google gibt das erzeugte Audio in der abgeschlossenen
+Antwort `generateContent` zurück. Verwenden Sie für gesprochene Unterhaltungen mit niedrigstmöglicher Latenz
+anstelle von Batch-TTS den Echtzeit-Sprach-Provider von Google, der auf der Gemini Live API
+basiert.
 
 So verwenden Sie Google als standardmäßigen TTS-Provider:
 
@@ -318,7 +323,7 @@ So verwenden Sie Google als standardmäßigen TTS-Provider:
         google: {
           model: "gemini-3.1-flash-tts-preview",
           speakerVoice: "Kore",
-          audioProfile: "Speak professionally with a calm tone.",
+          audioProfile: "Sprechen Sie professionell in einem ruhigen Ton.",
         },
       },
     },
@@ -327,48 +332,46 @@ So verwenden Sie Google als standardmäßigen TTS-Provider:
 ```
 
 Gemini API TTS verwendet natürlichsprachliche Prompts zur Stilsteuerung. Legen Sie
-`audioProfile` fest, um dem gesprochenen Text einen wiederverwendbaren Stil-Prompt
-voranzustellen. Legen Sie `speakerName` fest, wenn sich Ihr Prompt-Text auf einen
-benannten Sprecher bezieht.
+`audioProfile` fest, um dem gesprochenen Text einen wiederverwendbaren Stil-Prompt voranzustellen. Legen Sie
+`speakerName` fest, wenn Ihr Prompt-Text auf einen benannten Sprecher verweist.
 
-Gemini API TTS akzeptiert im Text außerdem ausdrucksstarke Audio-Tags in eckigen
-Klammern, beispielsweise `[whispers]` oder `[laughs]`. Damit die Tags nicht in der
-sichtbaren Chatantwort erscheinen, aber an TTS gesendet werden, platzieren Sie sie
-in einem Block vom Typ `[[tts:text]]...[[/tts:text]]`:
+Gemini API TTS akzeptiert im Text außerdem ausdrucksstarke Audio-Tags in eckigen Klammern,
+wie `[whispers]` oder `[laughs]`. Damit die Tags nicht in der sichtbaren Chat-Antwort erscheinen,
+aber an TTS gesendet werden, platzieren Sie sie in einem `[[tts:text]]...[[/tts:text]]`-
+Block:
 
 ```text
-Hier ist der bereinigte Antworttext.
+Hier ist der unveränderte Antworttext.
 
-[[tts:text]][flüstert] Hier ist die gesprochene Version.[[/tts:text]]
+[[tts:text]][whispers] Hier ist die gesprochene Version.[[/tts:text]]
 ```
 
 <Note>
-Ein auf die Gemini API beschränkter API-Schlüssel aus der Google Cloud Console ist für
-diesen Provider gültig. Hierbei handelt es sich nicht um den separaten API-Pfad von
-Cloud Text-to-Speech.
+Ein auf die Gemini API beschränkter API-Schlüssel aus der Google Cloud Console ist für diesen
+Provider gültig. Dies ist nicht der separate API-Pfad für Cloud Text-to-Speech.
 </Note>
 
-## Echtzeitsprachübertragung
+## Echtzeit-Sprache
 
-Das mitgelieferte Google-Plugin registriert einen von der Gemini Live API unterstützten
-Echtzeitsprach-Provider für Backend-Audiobrücken wie Voice Call und Google Meet.
+Das gebündelte Plugin `google` registriert einen Echtzeit-Sprach-Provider auf Basis der
+Gemini Live API für Backend-Audiobrücken wie Voice Call und Google Meet.
 
-| Einstellung                  | Konfigurationspfad                                                   | Standardwert                                                                                  |
-| ---------------------------- | -------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
-| Modell                       | `plugins.entries.voice-call.config.realtime.providers.google.model`  | `gemini-3.1-flash-live-preview`                                                              |
-| Stimme                       | `...google.voice`                                                    | `Kore`                                                                                       |
-| Temperatur                   | `...google.temperature`                                              | (nicht festgelegt)                                                                           |
-| VAD-Startempfindlichkeit     | `...google.startSensitivity`                                         | (nicht festgelegt)                                                                           |
-| VAD-Endempfindlichkeit       | `...google.endSensitivity`                                           | (nicht festgelegt)                                                                           |
-| Stilledauer                  | `...google.silenceDurationMs`                                        | (nicht festgelegt)                                                                           |
-| Aktivitätsbehandlung         | `...google.activityHandling`                                         | Google-Standardwert, `start-of-activity-interrupts`                                           |
-| Turn-Abdeckung               | `...google.turnCoverage`                                             | Google-Standardwert, `audio-activity-and-all-video`                                           |
-| Automatische VAD deaktivieren | `...google.automaticActivityDetectionDisabled`                      | `false`                                                                                      |
-| Sitzungsfortsetzung          | `...google.sessionResumption`                                        | `true`                                                                                       |
-| Kontextkomprimierung         | `...google.contextWindowCompression`                                 | `true`                                                                                       |
-| API-Schlüssel                | `...google.apiKey`                                                   | Fällt auf `models.providers.google.apiKey`, `GEMINI_API_KEY` oder `GOOGLE_API_KEY` zurück     |
+| Einstellung                 | Konfigurationspfad                                                   | Standardwert                                                                          |
+| --------------------------- | -------------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
+| Modell                      | `plugins.entries.voice-call.config.realtime.providers.google.model` | `gemini-3.1-flash-live-preview`                                                       |
+| Stimme                      | `...google.voice`                                                   | `Kore`                                                                                |
+| Temperatur                  | `...google.temperature`                                             | (nicht festgelegt)                                                                    |
+| VAD-Startempfindlichkeit    | `...google.startSensitivity`                                        | (nicht festgelegt)                                                                    |
+| VAD-Endempfindlichkeit      | `...google.endSensitivity`                                          | (nicht festgelegt)                                                                    |
+| Stilledauer                 | `...google.silenceDurationMs`                                       | (nicht festgelegt)                                                                    |
+| Aktivitätsbehandlung        | `...google.activityHandling`                                        | Google-Standardwert, `start-of-activity-interrupts`                                  |
+| Abdeckung des Sprecherzugs  | `...google.turnCoverage`                                            | Google-Standardwert, `audio-activity-and-all-video`                                  |
+| Automatische VAD deaktivieren | `...google.automaticActivityDetectionDisabled`                    | `false`                                                                               |
+| Sitzungsfortsetzung         | `...google.sessionResumption`                                       | `true`                                                                                |
+| Kontextkomprimierung        | `...google.contextWindowCompression`                                | `true`                                                                                |
+| API-Schlüssel               | `...google.apiKey`                                                  | Fällt auf `models.providers.google.apiKey`, `GEMINI_API_KEY` oder `GOOGLE_API_KEY` zurück |
 
-Beispielkonfiguration für Voice Call in Echtzeit:
+Beispiel für eine Echtzeitkonfiguration für Sprachanrufe:
 
 ```json5
 {
@@ -399,33 +402,33 @@ Beispielkonfiguration für Voice Call in Echtzeit:
 <Note>
 Die Google Live API verwendet bidirektionales Audio und Funktionsaufrufe über einen WebSocket.
 OpenClaw passt das Audio der Telefonie-/Meet-Bridge an den PCM-Live-API-Stream von Gemini an und
-behält Tool-Aufrufe im gemeinsamen Vertrag für Echtzeitsprachkommunikation. Lassen Sie `temperature`
-nicht festgelegt, sofern Sie keine Änderungen am Sampling benötigen. OpenClaw lässt nicht positive Werte
-weg, da Google Live bei `temperature: 0` Transkripte ohne Audio zurückgeben kann.
-Die Transkription der Gemini API wird ohne `languageCodes` aktiviert; das aktuelle Google
-SDK lehnt Hinweise auf Sprachcodes in diesem API-Pfad ab.
+behält Tool-Aufrufe im gemeinsamen Echtzeit-Sprachvertrag. Lassen Sie `temperature`
+nicht festgelegt, sofern Sie keine Änderungen am Sampling benötigen; OpenClaw lässt nicht positive Werte weg,
+da Google Live für `temperature: 0` Transkripte ohne Audio zurückgeben kann.
+Die Transkription der Gemini API ist ohne `languageCodes` aktiviert; das aktuelle Google
+SDK weist Hinweise zum Sprachcode auf diesem API-Pfad zurück.
 </Note>
 
 <Note>
-Gemini 3.1 Live akzeptiert Konversationstext über Echtzeiteingaben und verwendet
-sequenzielle Funktionsaufrufe. OpenClaw lässt die älteren Felder `NON_BLOCKING`, für die
-Planung von Funktionsantworten und für affektive Dialoge bei diesem Modell weg. Bevorzugen Sie
-`thinkingLevel`; konfigurierte positive `thinkingBudget`-Werte werden der
+Gemini 3.1 Live akzeptiert Konversationstext über die Echtzeiteingabe und verwendet
+sequenzielle Funktionsaufrufe. OpenClaw lässt für dieses Modell die älteren Felder
+`NON_BLOCKING`, die Planung von Funktionsantworten und affektive Dialoge weg. Bevorzugen Sie
+`thinkingLevel`; konfigurierte positive Werte für `thinkingBudget` werden der
 nächstgelegenen unterstützten Stufe zugeordnet, während `-1` den Google-Standardwert beibehält. Siehe den
 [Funktionsvergleich für Gemini Live](https://ai.google.dev/gemini-api/docs/live-api/capabilities).
 </Note>
 
 <Note>
-Control UI Talk unterstützt Google-Live-Browsersitzungen mit eingeschränkten Einmal-
-Tokens. Reine Backend-Provider für Echtzeitsprachkommunikation können auch über den generischen
-Gateway-Relay-Transport ausgeführt werden, wobei die Provider-Anmeldedaten auf dem Gateway verbleiben.
+Control UI Talk unterstützt Google-Live-Browsersitzungen mit eingeschränkten Einmaltokens.
+Reine Backend-Provider für Echtzeitsprache können auch über den generischen
+Gateway-Relay-Transport ausgeführt werden, der die Provider-Anmeldedaten auf dem Gateway belässt.
 </Note>
 
 Führen Sie zur Live-Verifizierung durch Maintainer
 `OPENAI_API_KEY=... GEMINI_API_KEY=... node --import tsx scripts/dev/realtime-talk-live-smoke.ts` aus.
-Der Smoke-Test deckt außerdem die Backend-/WebRTC-Pfade von OpenAI ab; der Google-Abschnitt erstellt dieselbe
-eingeschränkte Live-API-Tokenstruktur, die von Control UI Talk verwendet wird, öffnet den
-WebSocket-Endpunkt des Browsers, sendet die anfänglichen Einrichtungsdaten und wartet auf
+Der Smoke-Test deckt außerdem OpenAI-Backend-/WebRTC-Pfade ab; der Google-Abschnitt stellt dieselbe
+Form eingeschränkter Live-API-Tokens aus, die Control UI Talk verwendet, öffnet den
+WebSocket-Endpunkt des Browsers, sendet die anfängliche Setup-Nutzlast und wartet auf
 `setupComplete`.
 
 ## Erweiterte Konfiguration
@@ -433,16 +436,16 @@ WebSocket-Endpunkt des Browsers, sendet die anfänglichen Einrichtungsdaten und 
 <AccordionGroup>
   <Accordion title="Direkte Wiederverwendung des Gemini-Caches">
     Bei direkten Ausführungen der Gemini API (`api: "google-generative-ai"`) übergibt OpenClaw
-    ein konfiguriertes `cachedContent`-Handle an Gemini-Anfragen.
+    einen konfigurierten `cachedContent`-Handle an Gemini-Anfragen.
 
-    - Konfigurieren Sie modellbezogene oder globale Parameter entweder mit
-      `cachedContent` oder dem veralteten `cached_content`.
-    - Parameter aus einem spezifischeren Geltungsbereich (Modellebene vor globaler Ebene) haben immer Vorrang.
-      Wenn im selben Geltungsbereich beide Schlüssel festgelegt sind, hat `cached_content` Vorrang.
-      Verwenden Sie nur einen Schlüssel pro Geltungsbereich, um unerwartetes Verhalten zu vermeiden.
+    - Konfigurieren Sie modellspezifische oder globale Parameter entweder mit
+      `cachedContent` oder dem veralteten `cached_content`
+    - Parameter aus einem spezifischeren Gültigkeitsbereich (Modellebene vor globaler Ebene) haben stets Vorrang.
+      Wenn beide Schlüssel innerhalb desselben Gültigkeitsbereichs festgelegt sind, hat `cached_content` Vorrang.
+      Verwenden Sie nur einen Schlüssel pro Gültigkeitsbereich, um Überraschungen zu vermeiden.
     - Beispielwert: `cachedContents/prebuilt-context`
-    - Die Nutzung bei einem Gemini-Cachetreffer wird aus dem vorgelagerten
-      `cachedContentTokenCount` in OpenClaw als `cacheRead` normalisiert.
+    - Die Nutzung bei einem Gemini-Cache-Treffer wird aus dem vorgelagerten
+      `cachedContentTokenCount` in OpenClaw `cacheRead` normalisiert.
 
     ```json5
     {
@@ -462,24 +465,24 @@ WebSocket-Endpunkt des Browsers, sendet die anfänglichen Einrichtungsdaten und 
 
   </Accordion>
 
-  <Accordion title="Nutzungshinweise für die Gemini CLI">
-    Bei Verwendung des OAuth-Providers `google-gemini-cli` verwendet OpenClaw standardmäßig die
-    `stream-json`-Ausgabe der Gemini CLI und normalisiert die Nutzung anhand der abschließenden
-    `stats`-Nutzlast. Veraltete Überschreibungen mit `--output-format json` verwenden weiterhin den
+  <Accordion title="Hinweise zur Verwendung der Gemini CLI">
+    Bei Verwendung des OAuth-Providers `google-gemini-cli` nutzt OpenClaw standardmäßig die Ausgabe
+    `stream-json` der Gemini CLI und normalisiert die Nutzung aus der abschließenden
+    `stats`-Nutzlast. Veraltete Überschreibungen von `--output-format json` verwenden weiterhin den
     JSON-Parser.
 
     - Der gestreamte Antworttext stammt aus den `message`-Ereignissen des Assistenten.
     - Bei der veralteten JSON-Ausgabe stammt der Antworttext aus dem CLI-JSON-Feld `response`.
-    - Wenn die CLI `usage` leer lässt, wird auf `stats` zurückgegriffen.
-    - `stats.cached` wird in OpenClaw als `cacheRead` normalisiert.
-    - Wenn `stats.input` fehlt, leitet OpenClaw die Eingabe-Token aus
+    - Die Nutzung fällt auf `stats` zurück, wenn die CLI `usage` leer lässt.
+    - `stats.cached` wird in OpenClaw `cacheRead` normalisiert.
+    - Wenn `stats.input` fehlt, leitet OpenClaw die Eingabetokens aus
       `stats.input_tokens - stats.cached` ab.
 
   </Accordion>
 
   <Accordion title="Umgebungs- und Daemon-Einrichtung">
-    Wenn der Gateway als Daemon (launchd/systemd) ausgeführt wird, stellen Sie sicher, dass
-    `GEMINI_API_KEY` für diesen Prozess verfügbar ist (beispielsweise in `~/.openclaw/.env` oder über
+    Wenn der Gateway als Daemon (launchd/systemd) ausgeführt wird, stellen Sie sicher, dass `GEMINI_API_KEY`
+    für diesen Prozess verfügbar ist (beispielsweise in `~/.openclaw/.env` oder über
     `env.shellEnv`).
   </Accordion>
 </AccordionGroup>

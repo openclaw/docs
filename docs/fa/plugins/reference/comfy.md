@@ -1,30 +1,31 @@
 ---
 read_when:
-    - شما در حال نصب، پیکربندی یا ممیزی Plugin ‏comfy هستید
+    - در حال نصب، پیکربندی یا ممیزی Plugin comfy هستید
 summary: پشتیبانی از ارائه‌دهندهٔ مدل ComfyUI را به OpenClaw اضافه می‌کند.
-title: Plugin‏ ComfyUI
+title: Plugin ‏ComfyUI
 x-i18n:
-    generated_at: "2026-07-12T10:28:46Z"
+    generated_at: "2026-07-16T16:54:43Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: cf099e744fc11e302995d0df9f0cbc543702b92c54424aab11502ac2552f642e
+    source_hash: 83d9455f2aabd9cb26b7d2a65a3b57957d46c17681c6b6ff515b904aa72093c8
     source_path: plugins/reference/comfy.md
     workflow: 16
 ---
 
-# Plugin ‏ComfyUI
+# Plugin ComfyUI
 
 پشتیبانی از ارائه‌دهنده مدل ComfyUI را به OpenClaw اضافه می‌کند.
 
 ## توزیع
 
 - بسته: `@openclaw/comfy-provider`
-- روش نصب: در OpenClaw گنجانده شده است
+- مسیر نصب: در OpenClaw گنجانده شده است
 
 ## سطح
 
-ارائه‌دهندگان: comfy؛ قراردادها: imageGenerationProviders، musicGenerationProviders، videoGenerationProviders
+ارائه‌دهندگان: `comfy`؛ قراردادها: `imageGenerationProviders`، `musicGenerationProviders`، `videoGenerationProviders`
 
 ## مستندات مرتبط
 

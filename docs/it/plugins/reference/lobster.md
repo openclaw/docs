@@ -1,27 +1,28 @@
 ---
 read_when:
-    - Stai installando, configurando o verificando il plugin lobster
-summary: Plugin dello strumento di workflow Lobster per pipeline tipizzate e approvazioni ripristinabili.
+    - Si sta installando, configurando o verificando il plugin Lobster
+summary: Plugin dello strumento per flussi di lavoro Lobster per pipeline tipizzate e approvazioni ripristinabili.
 title: Plugin Lobster
 x-i18n:
-    generated_at: "2026-07-12T07:19:19Z"
+    generated_at: "2026-07-16T14:49:45Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: b91ea189fe8339380e2a7ef8a8761ea1591e1f1d8459b4a554211128c33f338b
+    source_hash: 7e3a1dce5531ba71bfe56f06b61e05612d6d155a63e61e1d496a0e1e25338926
     source_path: plugins/reference/lobster.md
     workflow: 16
 ---
 
 # Plugin Lobster
 
-Plugin dello strumento per flussi di lavoro Lobster, destinato a pipeline tipizzate e approvazioni ripristinabili.
+Plugin dello strumento per flussi di lavoro Lobster per pipeline tipizzate e approvazioni ripristinabili.
 
 ## Distribuzione
 
 - Pacchetto: `@openclaw/lobster`
-- Metodo di installazione: npm; ClawHub
+- Percorso di installazione: npm; ClawHub
 
 ## Superficie
 
-contratti: strumenti
+contratti: `tools`

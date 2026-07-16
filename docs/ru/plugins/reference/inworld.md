@@ -4,12 +4,12 @@ read_when:
 summary: Потоковый синтез речи Inworld (MP3, OGG_OPUS, PCM для телефонии).
 title: Плагин Inworld
 x-i18n:
-    generated_at: "2026-07-13T18:34:01Z"
+    generated_at: "2026-07-16T16:42:53Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
-    prompt_version: 24
+    prompt_version: 32
     provider: openai
-    source_hash: 02d912c51460e181e100bc227575cafd1ab3c49494057d2df1e26571000020a8
+    source_hash: 3682eb0f40307e258cd34b0c1f7963f710e6e8852aad7f10efb8cedb023291f1
     source_path: plugins/reference/inworld.md
     workflow: 16
 ---
@@ -25,8 +25,8 @@ x-i18n:
 
 ## Интерфейс
 
-контракты: speechProviders
+контракты: `speechProviders`
 
-## Связанная документация
+## Связанные документы
 
 - [Inworld](/ru/providers/inworld)

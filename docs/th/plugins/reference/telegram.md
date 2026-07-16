@@ -1,30 +1,31 @@
 ---
 read_when:
     - คุณกำลังติดตั้ง กำหนดค่า หรือตรวจสอบ Plugin Telegram
-summary: เพิ่มช่องทาง Telegram สำหรับส่งและรับข้อความ OpenClaw
+summary: เพิ่มพื้นผิวช่องทาง Telegram สำหรับส่งและรับข้อความ OpenClaw
 title: Plugin Telegram
 x-i18n:
-    generated_at: "2026-07-12T16:32:05Z"
+    generated_at: "2026-07-16T19:36:14Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: cada3e82983630e71fa5cc32aa2ef0801eff1cab620f1e7f5c2dfdd3a565924e
+    source_hash: dbd5996e8c937820ef1280eaadcbdede3f52c2f2fc435025bb9707229d8822cb
     source_path: plugins/reference/telegram.md
     workflow: 16
 ---
 
 # Plugin Telegram
 
-เพิ่มช่องทาง Telegram สำหรับส่งและรับข้อความ OpenClaw
+เพิ่มพื้นผิวช่องทาง Telegram สำหรับส่งและรับข้อความ OpenClaw
 
-## การจัดจำหน่าย
+## การเผยแพร่
 
 - แพ็กเกจ: `@openclaw/telegram`
-- วิธีติดตั้ง: รวมอยู่ใน OpenClaw
+- ช่องทางการติดตั้ง: รวมอยู่ใน OpenClaw
 
-## ส่วนเชื่อมต่อ
+## พื้นผิว
 
-ช่องทาง: telegram
+ช่องทาง: `telegram`
 
 ## เอกสารที่เกี่ยวข้อง
 

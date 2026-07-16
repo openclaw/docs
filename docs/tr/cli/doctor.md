@@ -1,46 +1,42 @@
 ---
 read_when:
-    - Bağlantı/kimlik doğrulama sorunlarınız var ve rehberli düzeltmeler istiyorsunuz
-    - Güncellediniz ve hızlı bir doğrulama istiyorsunuz
-summary: '`openclaw doctor` için CLI başvurusu (sağlık kontrolleri + rehberli onarımlar)'
-title: Doktor
+    - Bağlantı/kimlik doğrulama sorunlarınız var ve yönlendirmeli çözümler istiyorsunuz
+    - Güncelleme yaptınız ve hızlı bir doğrulama istiyorsunuz
+summary: '`openclaw doctor` için CLI referansı (durum denetimleri + yönlendirmeli onarımlar)'
+title: Doctor
 x-i18n:
-    generated_at: "2026-06-28T00:22:05Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T16:56:51Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: cf7c07cd39053fce7efa81d968ef0f2666f6f5331581e72d2684843519c63b43
+    source_hash: 322af63f52a3d864e46da332353ca921a4462e13fa849986d936524759f80ccc
     source_path: cli/doctor.md
     workflow: 16
 ---
 
 # `openclaw doctor`
 
-Gateway ve kanallar için sağlık denetimleri + hızlı düzeltmeler.
+Gateway, kanallar, pluginler, Skills, model yönlendirme, yerel durum ve yapılandırma geçişleri için sistem durumu kontrolleri ve hızlı düzeltmeler. Bir şey beklendiği gibi çalışmadığında ve sorunun ne olduğunu tek bir komutun açıklamasını istediğinizde bunu kullanın.
 
 İlgili:
 
 - Sorun giderme: [Sorun giderme](/tr/gateway/troubleshooting)
 - Güvenlik denetimi: [Güvenlik](/tr/gateway/security)
 
-## Neden Kullanılır
+## Çalışma biçimleri
 
-`openclaw doctor`, OpenClaw sağlık yüzeyidir. Gateway,
-kanallar, plugin'ler, Skills, model yönlendirme, yerel durum veya yapılandırma geçişleri
-beklendiği gibi davranmadığında ve neyin yanlış olduğunu açıklayabilecek tek bir komut
-istediğinizde kullanın.
+Doctor'ın beş çalışma biçimi vardır:
 
-Doctor'un üç duruşu vardır:
+| Çalışma biçimi           | Komut                                     | Davranış                                                                                       |
+| ------------------------ | ----------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| İnceleme                 | `openclaw doctor`                         | İnsan odaklı kontroller ve yönlendirmeli istemler.                                              |
+| Onarım                   | `openclaw doctor --fix`                   | Etkileşimsiz onarım güvenli olmadığı sürece istemleri kullanarak desteklenen onarımları uygular. |
+| Lint                     | `openclaw doctor --lint`                  | CI, ön kontrol ve inceleme geçitleri için salt okunur yapılandırılmış bulgular.                  |
+| Paylaşılan SQLite bakımı | `openclaw doctor --state-sqlite compact`  | Standart paylaşılan durum veritabanını açıkça denetim noktasına alır, sıkıştırır ve doğrular.    |
+| Oturum SQLite geçişi     | `openclaw doctor --session-sqlite <mode>` | Oturum durumunu inceler, içe aktarır, doğrular, sıkıştırır, kurtarır veya geri yükler.           |
 
-| Duruş   | Komut                    | Davranış                                                                                 |
-| ------- | ------------------------ | ---------------------------------------------------------------------------------------- |
-| İncele  | `openclaw doctor`        | İnsan odaklı denetimler ve yönlendirmeli istemler.                                       |
-| Onar    | `openclaw doctor --fix`  | Etkileşimsiz onarım güvenli olmadığı sürece istemleri kullanarak desteklenen onarımları uygular. |
-| Lint    | `openclaw doctor --lint` | CI, preflight ve inceleme kapıları için salt okunur yapılandırılmış bulgular.             |
-
-Otomasyon kararlı bir sonuç gerektirdiğinde `--lint` seçeneğini tercih edin. Bir
-insan operatör doctor'ın yapılandırmayı veya durumu bilinçli olarak düzenlemesini istediğinde
-`--fix` seçeneğini tercih edin.
+Otomasyon kararlı bir sonuca ihtiyaç duyduğunda `--lint` tercih edin. Bir insan operatör doctor'ın yapılandırmayı veya durumu düzenlemesini istediğinde `--fix` tercih edin.
 
 ## Örnekler
 
@@ -57,44 +53,57 @@ openclaw doctor --fix --non-interactive
 openclaw doctor --generate-gateway-token
 openclaw doctor --post-upgrade
 openclaw doctor --post-upgrade --json
+openclaw doctor --state-sqlite compact
+openclaw doctor --state-sqlite compact --json
+openclaw doctor --session-sqlite inspect --session-sqlite-all-agents
+openclaw doctor --session-sqlite dry-run --session-sqlite-agent main --json
+openclaw doctor --session-sqlite import --session-sqlite-all-agents
+openclaw doctor --session-sqlite validate --session-sqlite-all-agents --json
+openclaw doctor --session-sqlite compact --session-sqlite-all-agents
+openclaw doctor --session-sqlite recover --github-issue
+openclaw doctor --session-sqlite restore --session-sqlite-all-agents
 ```
 
-Kanala özgü izinler için `doctor` yerine kanal problarını kullanın:
+Kanala özgü izinler için `doctor` yerine kanal yoklamalarını kullanın:
 
 ```bash
 openclaw channels capabilities --channel discord --target channel:<channel-id>
 openclaw channels status --probe
 ```
 
-Hedefli Discord yetenek probu botun etkin kanal izinlerini raporlar; durum probu yapılandırılmış Discord kanallarını ve sesli otomatik katılım hedeflerini denetler.
+`channels capabilities`, belirli bir kanal hedefi için botun geçerli izinlerini bildirir. `channels status --probe`, yapılandırılmış tüm kanalları ve sese otomatik katılma hedeflerini denetler.
 
 ## Seçenekler
 
-- `--no-workspace-suggestions`: çalışma alanı belleği/arama önerilerini devre dışı bırak
-- `--yes`: sormadan varsayılanları kabul et
-- `--repair`: sormadan önerilen servis dışı onarımları uygula; Gateway servis kurulumları ve yeniden yazımları hâlâ etkileşimli onay veya açık Gateway komutları gerektirir
-- `--fix`: `--repair` için diğer ad
-- `--force`: gerektiğinde özel servis yapılandırmasının üzerine yazmak dahil agresif onarımları uygula
-- `--non-interactive`: istem olmadan çalıştır; yalnızca güvenli geçişler ve servis dışı onarımlar
-- `--generate-gateway-token`: bir Gateway token'ı oluştur ve yapılandır
-- `--allow-exec`: secret'ları doğrularken doctor'ın yapılandırılmış exec SecretRef'lerini yürütmesine izin ver
-- `--deep`: ek Gateway kurulumları için sistem servislerini tara ve son Gateway supervisor yeniden başlatma devirlerini raporla
-- `--lint`: modernleştirilmiş sağlık denetimlerini salt okunur modda çalıştır ve tanılama bulguları üret
-- `--post-upgrade`: yükseltme sonrası Plugin uyumluluk problarını çalıştır; bulguları stdout'a yazar; hata düzeyinde bulgular varsa kod 1 ile çıkar
-- `--json`: `--lint` ile insan çıktısı yerine JSON bulguları üret; `--post-upgrade` ile makine tarafından okunabilir bir JSON zarfı (`{ probesRun, findings }`) üret
-- `--severity-min <level>`: `--lint` ile `info`, `warning` veya `error` altındaki bulguları düşür
-- `--all`: `--lint` ile varsayılan otomasyon kümesinden hariç tutulan isteğe bağlı denetimler dahil tüm kayıtlı denetimleri çalıştır
-- `--skip <id>`: `--lint` ile bir denetim id'sini atla; birden fazla atlamak için tekrarla
-- `--only <id>`: `--lint` ile yalnızca bir denetim id'sini çalıştır; küçük bir seçili küme çalıştırmak için tekrarla
+| Seçenek                         | Etki                                                                                                                                                                                                            |
+| ------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `--no-workspace-suggestions`    | Çalışma alanı belleği/arama önerilerini devre dışı bırakır.                                                                                                                                                       |
+| `--yes`                         | İstem göstermeden varsayılanları kabul eder.                                                                                                                                                                     |
+| `--repair` / `--fix`            | Önerilen hizmet dışı onarımları istem göstermeden uygular (`--fix` bir diğer addır). Gateway hizmeti kurulumları/yeniden yazımları için hâlâ etkileşimli onay veya açık `gateway` komutları gerekir. |
+| `--force`                       | Özel hizmet yapılandırmasının üzerine yazmak da dâhil olmak üzere kapsamlı onarımlar uygular.                                                                                                                     |
+| `--non-interactive`             | İstem göstermeden çalışır; yalnızca güvenli geçişleri ve hizmet dışı onarımları uygular.                                                                                                                          |
+| `--generate-gateway-token`      | Bir Gateway tokeni oluşturur ve yapılandırır.                                                                                                                                                                    |
+| `--allow-exec`                  | Gizli bilgileri doğrularken doctor'ın yapılandırılmış `exec` SecretRef'lerini yürütmesine izin verir.                                                                                                 |
+| `--deep`                        | Ek Gateway kurulumları için sistem hizmetlerini tarar; yakın zamandaki Gateway gözetmen yeniden başlatma devirlerini bildirir.                                                                                    |
+| `--lint`                        | Modernleştirilmiş sistem durumu kontrollerini salt okunur modda çalıştırır ve tanılama bulguları üretir.                                                                                                          |
+| `--post-upgrade`                | Yükseltme sonrası plugin uyumluluk yoklamalarını çalıştırır; bulgular stdout'a gönderilir; hata düzeyinde herhangi bir bulgu varsa çıkış kodu 1 olur.                                                             |
+| `--state-sqlite <mode>`         | Açık paylaşılan durum SQLite bakımını çalıştırır. Tek mod `compact` şeklindedir.                                                                                                                         |
+| `--session-sqlite <mode>`       | Hedeflenen oturum SQLite geçiş modunu çalıştırır: `inspect`, `dry-run`, `import`, `validate`, `compact`, `recover` veya `restore`.                    |
+| `--session-sqlite-store <path>` | `--session-sqlite` ile: eski bir `sessions.json` deposu yolu seçer.                                                                                                                                            |
+| `--session-sqlite-agent <id>`   | `--session-sqlite` ile: yapılandırılmış bir ajan seçer.                                                                                                                                                          |
+| `--session-sqlite-all-agents`   | `--session-sqlite` ile: yapılandırılmış ve keşfedilmiş ajan depolarını seçer.                                                                                                                                     |
+| `--github-issue`                | `--session-sqlite recover` ile: temizlenmiş bir openclaw/openclaw sorun raporu hazırlar; doctor, `--yes` veya etkileşimli onay sonrasında bunu `gh` ile oluşturur.                                  |
+| `--json`                        | `--lint` ile: JSON bulguları. `--post-upgrade` ile: `{ probesRun, findings }`. `--state-sqlite` veya `--session-sqlite` ile: bakım raporunu JSON olarak üretir.                                               |
+| `--severity-min <level>`        | `--lint` ile: `info`, `warning` veya `error` altındaki bulguları çıkarır.                                                                                                |
+| `--all`                         | `--lint` ile: varsayılan kümeden çıkarılan isteğe bağlı kontroller dâhil tüm kayıtlı kontrolleri çalıştırır.                                                                                            |
+| `--skip <id>`                   | `--lint` ile: bir kontrol kimliğini atlar. Yinelenebilir.                                                                                                                                                |
+| `--only <id>`                   | `--lint` ile: yalnızca belirtilen kontrol kimliklerini çalıştırır. Yinelenebilir.                                                                                                                        |
+
+`--severity-min`, `--all`, `--only` ve `--skip` yalnızca `--lint` ile birlikte kabul edilir; `--json` ise `--lint`, `--post-upgrade`, `--state-sqlite` ve `--session-sqlite` ile kabul edilir.
 
 ## Lint modu
 
-`openclaw doctor --lint`, doctor denetimleri için salt okunur otomasyon duruşudur.
-Yapılandırılmış sağlık denetimi yolunu kullanır, istem göstermez ve yapılandırmayı/durumu
-onarmaz ya da yeniden yazmaz. Yönlendirmeli onarım istemleri yerine makine tarafından
-okunabilir bulgular istediğinizde CI, preflight betikleri ve inceleme iş akışlarında kullanın.
-`--json`, `--severity-min`, `--all`, `--only` ve `--skip` gibi Lint çıktısı seçenekleri
-yalnızca `--lint` ile kabul edilir.
+`openclaw doctor --lint` salt okunurdur: istem, onarım ve yapılandırma/durum yeniden yazımı yoktur.
 
 ```bash
 openclaw doctor --lint
@@ -103,17 +112,18 @@ openclaw doctor --lint --json
 openclaw doctor --lint --all
 openclaw doctor --lint --allow-exec
 openclaw doctor --lint --only core/doctor/gateway-config --json
+openclaw doctor --lint --only core/doctor/local-audio-acceleration --severity-min info
 ```
 
-İnsan çıktısı kompakttır:
+İnsanlar için çıktı özlüdür:
 
 ```text
-doctor --lint: ran 6 check(s), 1 finding(s)
-  [warning] core/doctor/gateway-config gateway.mode - gateway.mode is unset; gateway start will be blocked.
-    fix: Run `openclaw configure` and set Gateway mode (local/remote), or `openclaw config set gateway.mode local`.
+doctor --lint: 6 kontrol çalıştırıldı, 1 bulgu bulundu
+  [warning] core/doctor/gateway-config gateway.mode - gateway.mode ayarlanmamış; gateway başlatma işlemi engellenecek.
+    düzeltme: `openclaw configure` komutunu çalıştırıp Gateway modunu (local/remote) ayarlayın veya `openclaw config set gateway.mode local` komutunu çalıştırın.
 ```
 
-JSON çıktısı, lint çalıştırmaları için betik yüzeyidir:
+JSON çıktısı, betik oluşturma arayüzüdür:
 
 ```json
 {
@@ -124,84 +134,58 @@ JSON çıktısı, lint çalıştırmaları için betik yüzeyidir:
     {
       "checkId": "core/doctor/gateway-config",
       "severity": "warning",
-      "message": "gateway.mode is unset; gateway start will be blocked.",
+      "message": "gateway.mode ayarlanmamış; gateway başlatma işlemi engellenecek.",
       "path": "gateway.mode",
-      "fixHint": "Run `openclaw configure` and set Gateway mode (local/remote), or `openclaw config set gateway.mode local`."
+      "fixHint": "`openclaw configure` komutunu çalıştırıp Gateway modunu (local/remote) ayarlayın veya `openclaw config set gateway.mode local` komutunu çalıştırın."
     }
   ]
 }
 ```
 
-Çıkış davranışı:
+Çıkış kodları:
 
-- `0`: seçilen önem eşiğinde veya üstünde bulgu yok
-- `1`: en az bir bulgu seçilen eşiği karşılıyor
-- `2`: lint bulguları üretilemeden önce komut/çalışma zamanı hatası
+| Kod | Anlam                                                                 |
+| --- | --------------------------------------------------------------------- |
+| `0`  | Seçilen önem derecesi eşiğinde veya üzerinde bulgu yoktur.             |
+| `1`  | En az bir bulgu seçilen eşiği karşılar.                                |
+| `2`  | Lint bulguları üretilemeden önce komut/çalışma zamanı hatası oluşmuştur. |
 
-`--severity-min`, hem görünür bulguları hem de çıkış eşiğini kontrol eder. Örneğin,
-`openclaw doctor --lint --severity-min error`, daha düşük önem düzeyindeki `info` veya
-`warning` bulguları mevcut olsa bile hiçbir bulgu yazdırmayıp `0` ile çıkabilir.
+`--severity-min`, hem hangi bulguların yazdırılacağını hem de çıkış eşiğini denetler: daha düşük önem derecesine sahip `info`/`warning` bulguları mevcut olsa bile `openclaw doctor --lint --severity-min error` hiçbir şey yazdırmadan `0` koduyla çıkabilir.
 
-`--all`, önem filtrelemesinden önce hangi denetimlerin seçileceğini kontrol eder.
-Varsayılan lint çalıştırması kararlı otomasyon kapısıdır ve derin, tarihsel veya
-onarılabilir eski kalıntıları ortaya çıkarma olasılığı daha yüksek olduğu için bilinçli
-olarak isteğe bağlı tutulan denetimleri hariç tutar. Her denetim id'sini listelemeden
-tam lint envanterini istediğinizde `--all` kullanın. `--only <id>` en kesin seçici
-olmaya devam eder ve kayıtlı herhangi bir denetimi id ile çalıştırabilir.
+`--all`, önem derecesi filtrelemesinden önce hangi kontrollerin seçileceğini denetler. Varsayılan lint çalıştırması; derin, geçmişe yönelik veya onarılabilir eski kalıntıları ortaya çıkarma olasılığı daha yüksek olan kontrolleri dışlar; eksiksiz envanter için `--all` kullanın. `--only <id>` en hassas seçicidir ve kayıtlı herhangi bir kontrolü kimliğine göre çalıştırabilir.
 
-## Yapılandırılmış Sağlık Denetimleri
+`core/doctor/local-audio-acceleration`, otomatik seçilen yerel STT komutunu, ayrı ayrı yetenekli/istenen/gözlemlenen arka uç kanıtlarını ve bir konuşma modeli yüklemeden geri dönüş sırasını bildirir. Bilgilendirme amaçlı bir bulgu üretir; bu nedenle görüntülemek için `--severity-min info` ekleyin.
 
-Modern doctor denetimleri küçük bir yapılandırılmış sözleşme kullanır:
+## Yapılandırılmış sistem durumu kontrolleri
+
+Modern doctor kontrolleri küçük ve ayrık bir sözleşme kullanır:
 
 ```ts
 detect(ctx, scope?) -> HealthFinding[]
 repair?(ctx, findings) -> HealthRepairResult
 ```
 
-`detect()`, `doctor --lint` için güç sağlar. `repair()` isteğe bağlıdır ve yalnızca
-`doctor --fix` / `doctor --repair` tarafından dikkate alınır. Bu şekle geçirilmemiş
-denetimler eski doctor katkı akışını kullanmaya devam eder.
+`detect()`, `doctor --lint` işlevini destekler. `repair()` isteğe bağlıdır ve yalnızca `doctor --fix` / `doctor --repair` altında çalışır. Henüz bu yapıya geçirilmemiş kontroller, eski doctor katkı akışını kullanmaya devam eder.
 
-Bu ayrım bilinçlidir: `detect()` tanılamayı sahiplenirken `repair()` neyi değiştirdiğini
-veya değiştireceğini raporlamayı sahiplenir. Onarım bağlamları `dryRun`/`diff` istekleri
-taşıyabilir ve onarım sonuçları yapılandırma/dosya düzenlemeleri için yapılandırılmış
-`diffs`, servis, süreç, paket, durum veya diğer yan etkiler için de `effects`
-döndürebilir. Bu, dönüştürülmüş denetimlerin mutasyon planlamasını `detect()` içine
-taşımadan `doctor --fix --dry-run` ve diff raporlamasına doğru büyümesini sağlar.
+Onarım bağlamları `dryRun`/`diff` isteklerini taşıyabilir; onarım sonuçları yapılandırılmış `diffs` (yapılandırma/dosya düzenlemeleri) ve `effects` (hizmet, işlem, paket, durum veya diğer yan etkiler) döndürebilir. Böylece dönüştürülen kontroller, değişiklik planlamasını `detect()` içine taşımadan `doctor --fix --dry-run` yönünde gelişebilir.
 
-`repair()`, istenen onarımı deneyip denemediğini `status:
-"repaired" | "skipped" | "failed"` ile raporlar. Atlanan durum `repaired` anlamına
-gelir, bu nedenle basit onarım denetimlerinin yalnızca değişiklikleri döndürmesi yeterlidir.
-Onarım `skipped` veya `failed` döndürdüğünde, doctor nedeni raporlar ve o denetim için
-doğrulama çalıştırmaz.
-
-Başarılı bir yapılandırılmış onarımdan sonra doctor, onarılmış bulguları kapsam olarak
-kullanarak `detect()` işlevini yeniden çalıştırır. Denetimler odaklı doğrulama için seçili
-bulguları, yolları veya `ocPath` değerlerini kullanabilir. Bulgu hâlâ mevcutsa doctor
-değişikliği sessizce tamamlanmış saymak yerine bir onarım uyarısı raporlar.
+`repair()`, `status: "repaired" | "skipped" | "failed"` bildirir (durumun belirtilmemesi `repaired` anlamına gelir). Onarım `skipped` veya `failed` döndürdüğünde doctor nedeni bildirir ve söz konusu denetim için doğrulamayı atlar. Başarılı bir onarımdan sonra doctor, onarılan bulgularla sınırlandırılmış `detect()` işlemini yeniden çalıştırır; bulgu hâlâ mevcutsa değişikliği tamamlanmış saymak yerine bir onarım uyarısı bildirir.
 
 Bir bulgu şunları içerir:
 
 | Alan              | Amaç                                                   |
 | ----------------- | ------------------------------------------------------ |
-| `checkId`         | Atla/yalnızca filtreleri ve CI allowlist'leri için kararlı id. |
-| `severity`        | `info`, `warning` veya `error`.                        |
-| `message`         | İnsan tarafından okunabilir sorun ifadesi.             |
-| `path`            | Varsa yapılandırma, dosya veya mantıksal yol.           |
-| `line` / `column` | Varsa kaynak konumu.                                   |
-| `ocPath`          | Bir denetim işaret edebiliyorsa kesin `oc://` adresi.  |
-| `fixHint`         | Önerilen operatör eylemi veya onarım özeti.            |
+| `checkId`         | Atlama/yalnızca filtreleri ve CI izin listeleri için kararlı kimlik. |
+| `severity`        | `info`, `warning` veya `error`.                         |
+| `message`         | İnsan tarafından okunabilir sorun açıklaması.          |
+| `path`            | Mevcut olduğunda yapılandırma, dosya veya mantıksal yol. |
+| `line` / `column` | Mevcut olduğunda kaynak konumu.                         |
+| `ocPath`          | Bir denetim belirli bir adresi gösterebildiğinde kesin `oc://` adresi. |
+| `fixHint`         | Önerilen operatör eylemi veya onarım özeti.             |
 
-Modernleştirilmiş çekirdek doctor denetimleri, insan odaklı `doctor` / `doctor --fix`
-davranışlarını sahiplenen sıralı doctor katkısına bağlı kalır. Paylaşılan yapılandırılmış
-sağlık kaydı uzantı noktasıdır: paketli ve plugin destekli denetimler, sahip paketleri
-etkin komut yolunda kaydettikten sonra çekirdek doctor denetimlerinin ardından çalışır.
-`openclaw/plugin-sdk/health` alt yolu, bu uzantı tüketicileri için aynı sözleşmeyi
-sunar.
+Modernleştirilmiş çekirdek doctor denetimleri, insanlara yönelik `doctor` / `doctor --fix` davranışlarının sahibi olan sıralı doctor katkısına bağlı kalır. Paylaşılan yapılandırılmış sağlık kayıt defteri genişletme noktasıdır: paketle birlikte gelen ve plugin destekli denetimler, sahip paketleri bunları etkin komut yoluna kaydettikten sonra çekirdek doctor denetimlerinin ardından çalışır. `openclaw/plugin-sdk/health`, plugin yazarlarına aynı sözleşmeyi sunar.
 
-## Denetim Seçimi
-
-Bir iş akışı odaklı bir kapı istediğinde `--only` ve `--skip` kullanın:
+## Denetim seçimi
 
 ```bash
 openclaw doctor --lint --only core/doctor/gateway-config --json
@@ -209,59 +193,228 @@ openclaw doctor --lint --skip core/doctor/skills-readiness
 openclaw doctor --lint --all --skip core/doctor/session-locks
 ```
 
-`--only` ve `--skip` tam denetim id'lerini kabul eder ve tekrarlanabilir. Bir `--only`
-id'si kayıtlı değilse, o id için hiçbir denetim çalışmaz; odaklı bir kapının beklediğiniz
-denetimleri seçtiğini doğrulamak için komutun `checksRun` ve `checksSkipped` alanlarını
-kullanın.
+`--only` ve `--skip` tam denetim kimliklerini kabul eder ve yinelenebilir. Bir `--only` kimliği kayıtlı değilse bu kimlik için hiçbir denetim çalışmaz; odaklanmış bir geçidin beklediğiniz denetimleri seçtiğini doğrulamak için çıktıda `checksRun`/`checksSkipped` kullanın.
 
-## Yükseltme Sonrası Mod
+## Yükseltme sonrası modu
 
-`openclaw doctor --post-upgrade`, bir derleme veya yükseltmeden sonra zincirlenmek üzere
-tasarlanmış Plugin uyumluluk problarını çalıştırır. Bulgular stdout'a yazılır; herhangi
-bir bulguda `level: "error"` varsa komut kod 1 ile çıkar. CI, topluluk `fork-upgrade`
-skill'i ve diğer yükseltme sonrası smoke araçları için uygun, makine tarafından okunabilir
-bir zarf (`{ probesRun, findings }`) almak üzere `--json` ekleyin. Kurulu Plugin dizini
-eksik veya hatalı biçimlendirilmişse JSON modu yine bu zarfı bir `plugin.index_unavailable`
-hata bulgusuyla üretir.
+`openclaw doctor --post-upgrade`, bir derleme veya yükseltmenin ardından zincirleme çalıştırılmak üzere plugin uyumluluk yoklamalarını çalıştırır. Bulgular stdout'a gönderilir; herhangi bir bulguda `level: "error"` varsa çıkış kodu 1 olur. CI, topluluk `fork-upgrade` becerisi ve diğer yükseltme sonrası hızlı denetim araçları için uygun, makine tarafından okunabilir bir zarf (`{ probesRun, findings }`) elde etmek üzere `--json` ekleyin. Yüklü plugin dizini eksik veya hatalı biçimlendirilmişse JSON modu yine de `plugin.index_unavailable` hata bulgusunu içeren zarfı yayınlar.
 
-Notlar:
+Konteyner imajı başlatma işlemi, olağan "güncellemeden sonra doctor'ı
+çalıştırın" akışının istisnasıdır. `openclaw gateway run` yeni bir OpenClaw sürümünde
+başladığında hazır olduğunu bildirmeden önce güvenli durum ve plugin onarımlarını
+çalıştırır. Onarım güvenle tamamlanamazsa başlatma işlemi sonlanır ve konteyneri
+normal biçimde yeniden başlatmadan önce aynı bağlanmış durum/yapılandırmaya karşı
+aynı imajı `openclaw doctor --fix` ile bir kez çalıştırmanızı söyler.
 
-- Nix modunda (`OPENCLAW_NIX_MODE=1`), salt okunur doctor denetimleri çalışmaya devam eder, ancak `openclaw.json` değiştirilemez olduğu için `doctor --fix`, `doctor --repair`, `doctor --yes` ve `doctor --generate-gateway-token` devre dışıdır. Bunun yerine bu kurulumun Nix kaynağını düzenleyin; nix-openclaw için agent öncelikli [Hızlı Başlangıç](https://github.com/openclaw/nix-openclaw#quick-start) bölümünü kullanın.
-- Etkileşimli istemler (keychain/OAuth düzeltmeleri gibi) yalnızca stdin bir TTY olduğunda ve `--non-interactive` **ayarlanmamışsa** çalışır. Headless çalıştırmalar (Cron, Telegram, terminal yok) istemleri atlar.
-- Performans: etkileşimsiz `doctor` çalıştırmaları, headless sağlık denetimlerinin hızlı kalması için istekli Plugin yüklemeyi atlar. Etkileşimli doctor oturumları, eski sağlık ve onarım akışının ihtiyaç duyduğu Plugin yüzeylerini yine de yükler.
-- `--lint`, `--non-interactive` seçeneğinden daha katıdır: her zaman salt okunurdur, asla istem göstermez ve asla güvenli migration’ları uygulamaz. Doctor’ın değişiklik yapmasını istediğinizde `doctor --fix` veya `doctor --repair` çalıştırın.
-- Varsayılan olarak doctor, gizli bilgileri denetlerken `exec` SecretRef’lerini yürütmez. `openclaw doctor --allow-exec` veya `openclaw doctor --lint --allow-exec` komutlarını yalnızca doctor’ın yapılandırılmış bu gizli bilgi çözücülerini çalıştırmasını özellikle istediğinizde kullanın.
-- `--fix` (`--repair` için alias), `~/.openclaw/openclaw.json.bak` konumuna bir yedek yazar ve bilinmeyen yapılandırma anahtarlarını kaldırıp her kaldırmayı listeler.
-- Modernleştirilmiş sağlık denetimleri `doctor --fix` için bir `repair()` yolu sunabilir; bunu sunmayan denetimler mevcut doctor onarım akışı üzerinden devam eder.
-- `doctor --fix --non-interactive`, eksik veya eski Gateway servis tanımlarını bildirir ancak update onarım modu dışında bunları kurmaz veya yeniden yazmaz. Eksik bir servis için `openclaw gateway install` çalıştırın ya da launcher’ı özellikle değiştirmek istediğinizde `openclaw gateway install --force` kullanın.
-- Durum bütünlüğü denetimleri artık sessions dizinindeki yetim transcript dosyalarını algılar. Bunları `.deleted.<timestamp>` olarak arşivlemek etkileşimli onay gerektirir; `--fix`, `--yes` ve headless çalıştırmalar onları yerinde bırakır.
-- Doctor ayrıca eski Cron job biçimleri için `~/.openclaw/cron/jobs.json` (veya `cron.store`) dosyasını tarar ve kanonik satırları SQLite’a içe aktarmadan önce bunları yeniden yazar.
-- Doctor, açık `payload.model` override’ları olan Cron job’ları; sağlayıcı namespace sayıları ve `agents.defaults.model` ile uyuşmazlıklar dahil bildirir. Böylece varsayılan modeli devralmayan zamanlanmış işler auth veya faturalandırma incelemeleri sırasında görünür olur.
-- Linux’ta doctor, kullanıcının crontab’ı hâlâ eski `~/.openclaw/bin/ensure-whatsapp.sh` betiğini çalıştırıyorsa uyarır; bu betik artık bakımlı değildir ve Cron systemd user-bus ortamına sahip olmadığında yanlış WhatsApp Gateway kesinti günlükleri üretebilir.
-- WhatsApp etkin olduğunda doctor, yerel `openclaw-tui` istemcileri hâlâ çalışırken bozulmuş bir Gateway event loop olup olmadığını denetler. `doctor --fix`, WhatsApp yanıtlarının eski TUI yenileme döngülerinin arkasında kuyruğa alınmaması için yalnızca doğrulanmış yerel TUI istemcilerini durdurur.
-- Doctor; birincil modeller, fallback’ler, görsel/video üretim modelleri, Heartbeat/subagent/Compaction override’ları, hook’lar, kanal model override’ları ve eski session route pin’leri genelindeki eski `openai-codex/*` model ref’lerini kanonik `openai/*` ref’lerine yeniden yazar. `--fix` ayrıca eski `openai-codex:*` auth profillerini ve `auth.order.openai-codex` girdilerini `openai:*` biçimine taşır, Codex niyetini sağlayıcı/model kapsamlı `agentRuntime.id: "codex"` girdilerine aktarır, eski tüm-agent/session runtime pin’lerini kaldırır ve onarılmış OpenAI agent ref’lerini doğrudan OpenAI API-key auth yerine Codex auth routing üzerinde tutar.
-- Doctor, eski OpenClaw sürümleri tarafından oluşturulan eski Plugin bağımlılık staging durumunu temizler ve bunu peer dependency olarak bildiren yönetilen npm Plugin’leri için host `openclaw` paketini yeniden link’ler. Ayrıca `plugins.entries`, yapılandırılmış kanallar, yapılandırılmış sağlayıcı/arama ayarları veya yapılandırılmış agent runtime’ları gibi yapılandırma tarafından referans verilen eksik indirilebilir Plugin’leri onarır. Paket güncellemeleri sırasında doctor, paket değişimi tamamlanana kadar package-manager Plugin onarımını atlar; yapılandırılmış bir Plugin hâlâ kurtarma gerektiriyorsa daha sonra `openclaw doctor --fix` komutunu yeniden çalıştırın. İndirme başarısız olursa doctor kurulum hatasını bildirir ve sonraki onarım denemesi için yapılandırılmış Plugin girdisini korur.
-- Doctor, Plugin keşfi sağlıklı olduğunda `plugins.allow`/`plugins.deny`/`plugins.entries` içinden eksik Plugin id’lerini, ayrıca eşleşen boşa düşmüş kanal yapılandırmasını, Heartbeat hedeflerini ve kanal model override’larını kaldırarak eski Plugin yapılandırmasını onarır.
-- Doctor, etkilenen `plugins.entries.<id>` girdisini devre dışı bırakıp geçersiz `config` payload’unu kaldırarak geçersiz Plugin yapılandırmasını karantinaya alır. Gateway başlatma zaten yalnızca bu bozuk Plugin’i atlar, böylece diğer Plugin’ler ve kanallar çalışmaya devam edebilir.
-- Gateway yaşam döngüsüne başka bir supervisor sahip olduğunda `OPENCLAW_SERVICE_REPAIR_POLICY=external` ayarlayın. Doctor Gateway/servis sağlığını yine de bildirir ve servis dışı onarımları uygular, ancak servis kurulumunu/başlatmasını/yeniden başlatmasını/bootstrap işlemini ve eski servis temizliğini atlar.
-- Linux’ta doctor, etkin olmayan ekstra Gateway benzeri systemd unit’lerini yok sayar ve onarım sırasında çalışan bir systemd Gateway servisi için komut/entrypoint metadata’sını yeniden yazmaz. Etkin launcher’ı özellikle değiştirmek istediğinizde önce servisi durdurun veya `openclaw gateway install --force` kullanın.
-- Doctor, eski düz Talk yapılandırmasını (`talk.voiceId`, `talk.modelId` ve benzerleri) otomatik olarak `talk.provider` + `talk.providers.<provider>` biçimine taşır.
-- Yalnızca nesne anahtarı sırası farklı olduğunda tekrarlanan `doctor --fix` çalıştırmaları artık Talk normalleştirmesini bildirmez/uygulamaz.
-- Doctor bir bellek araması hazırlık denetimi içerir ve embedding kimlik bilgileri eksik olduğunda `openclaw configure --section model` önerebilir.
-- Doctor, yapılandırılmış komut sahibi olmadığında uyarır. Komut sahibi, yalnızca owner komutlarını çalıştırmaya ve tehlikeli eylemleri onaylamaya izin verilen insan operatör hesabıdır. DM eşleştirmesi yalnızca birinin botla konuşmasına izin verir; ilk owner bootstrap var olmadan önce bir göndereni onayladıysanız `commands.ownerAllowFrom` değerini açıkça ayarlayın.
-- Doctor, Codex modu agent’lar yapılandırıldığında ve operatörün Codex home dizininde kişisel Codex CLI varlıkları bulunduğunda bir bilgi notu bildirir. Yerel Codex app-server başlatmaları izole agent başına home dizinleri kullanır; bu nedenle gerekiyorsa önce Codex Plugin’ini kurun, ardından bilinçli olarak yükseltilmesi gereken varlıkların envanterini çıkarmak için `openclaw migrate plan codex` kullanın.
-- Doctor, emekli edilmiş `plugins.entries.codex.config.codexDynamicToolsProfile` değerini kaldırır; Codex app-server, Codex’e özgü workspace araçlarını her zaman native tutar.
-- Doctor, varsayılan agent için izin verilen Skills mevcut runtime ortamında bin’ler, env var’lar, yapılandırma veya OS gereksinimleri eksik olduğu için kullanılamadığında uyarır. `doctor --fix`, kullanılamayan bu skills’i `skills.entries.<skill>.enabled=false` ile devre dışı bırakabilir; skill’i etkin tutmak istediğinizde bunun yerine eksik gereksinimi kurun/yapılandırın.
-- Sandbox modu etkin ancak Docker kullanılamıyorsa doctor, düzeltme önerisiyle (`install Docker` veya `openclaw config set agents.defaults.sandbox.mode off`) yüksek sinyalli bir uyarı bildirir.
-- Eski sandbox registry dosyaları veya shard dizinleri mevcutsa (`~/.openclaw/sandbox/containers.json`, `~/.openclaw/sandbox/browsers.json`, `~/.openclaw/sandbox/containers/` veya `~/.openclaw/sandbox/browsers/`), doctor bunları bildirir; `openclaw doctor --fix` geçerli girdileri SQLite’a taşır ve geçersiz eski dosyaları karantinaya alır.
-- `gateway.auth.token`/`gateway.auth.password` SecretRef tarafından yönetiliyor ve mevcut komut yolunda kullanılamıyorsa doctor salt okunur bir uyarı bildirir ve düz metin fallback kimlik bilgileri yazmaz. Exec destekli SecretRef’ler için doctor, `--allow-exec` yoksa yürütmeyi atlar.
-- Bir fix yolunda kanal SecretRef incelemesi başarısız olursa doctor erken çıkmak yerine devam eder ve bir uyarı bildirir.
-- Durum dizini migration’larından sonra doctor, etkin varsayılan Telegram veya Discord hesapları env fallback’e bağlı olduğunda ve `TELEGRAM_BOT_TOKEN` veya `DISCORD_BOT_TOKEN` doctor işleminde kullanılamadığında uyarır.
-- Telegram `allowFrom` kullanıcı adı otomatik çözümlemesi (`doctor --fix`), mevcut komut yolunda çözümlenebilir bir Telegram token gerektirir. Token incelemesi kullanılamıyorsa doctor bir uyarı bildirir ve o geçiş için otomatik çözümlemeyi atlar.
+## Paylaşılan durum SQLite sıkıştırması
 
-## macOS: `launchctl` env override’ları
+`openclaw doctor --state-sqlite compact`,
+`<state-dir>/state/openclaw.sqlite` konumundaki kurallı paylaşılan durum veritabanı için
+açık çevrimdışı bakımdır. İsteğe bağlı bir veritabanı yolunu kabul etmez,
+normal Gateway işlemi tarafından hiçbir zaman çağrılmaz ve
+`openclaw doctor --fix` kapsamına dahil değildir. Komut, Gateway başlatmasıyla aynı
+durum sahipliği kilidini alır ve doğrulama, denetim noktası oluşturma, `VACUUM`
+ve son bütünlük denetimleri boyunca bu kilidi tutar. Bir Gateway veya başka bir
+SQLite bakım komutu bu kilidin sahibiyken çalışmayı reddeder. `OPENCLAW_ALLOW_MULTI_GATEWAY=1`,
+yapılandırma başına Gateway tekil örneğini atlasa bile durum kilidi etkin kalır;
+bu nedenle bakımın Gateway'i algılaması için operatör kabuğunun Gateway hizmetinin
+ortamını devralması gerekmez.
 
-Daha önce `launchctl setenv OPENCLAW_GATEWAY_TOKEN ...` (veya `...PASSWORD`) çalıştırdıysanız, bu değer yapılandırma dosyanızı override eder ve kalıcı "unauthorized" hatalarına neden olabilir.
+Önce Gateway'i durdurun ve doğrulanmış bir yedek oluşturun:
+
+```bash
+openclaw gateway stop
+openclaw backup create --verify
+openclaw doctor --state-sqlite compact --json
+openclaw gateway start
+```
+
+Komut:
+
+1. Kurallı paylaşılan durum yolunda normal bir dosya gerektirir. Eksik bir
+   veritabanı `skipped` olarak bildirilir ve işlem başarıyla sonlanır.
+2. Denetim noktası oluşturmadan veya dosyayı değiştirmeden önce desteklenen
+   mevcut şema sürümünü ve `schema_meta.role = "global"` değerini doğrular.
+3. Meşgul olmayan bir `wal_checkpoint(TRUNCATE)` gerektirir. Denetim noktası meşgulse
+   kalan tüm OpenClaw süreçlerini durdurup yeniden deneyin.
+4. `auto_vacuum` değerini `INCREMENTAL` olarak ayarlar, tam bir `VACUUM` çalıştırır
+   ve yeniden denetim noktası oluşturur.
+5. `quick_check`, `integrity_check` ve `foreign_key_check` işlemlerini çalıştırır, ardından
+   yalnızca sahip izinlerini veritabanına ve SQLite yardımcı dosyalarına yeniden uygular.
+
+JSON çıktısı, sıkıştırmadan önceki ve sonraki veritabanı ve WAL boyutlarını,
+boş liste sayfalarını, sayfa boyutunu ve `auto_vacuum` değerini; ayrıca geri
+kazanılan baytları ve `quick_check` ile `integrity_check` sonuçlarını bildirir.
+`foreign_key_check` hata durumunda kapalı olacak şekilde zorunlu kılınır ve ayrı bir
+başarı alanı yoktur. SQLite, `auto_vacuum` değerini yok için `0`,
+tam için `1` ve artımlı için `2` olarak bildirir.
+
+Şema eskiyse, çalışan OpenClaw derlemesinden yeniyse veya bir ajan veritabanına
+aitse sıkıştırma değişiklik yapmadan başarısız olur. Eski bir paylaşılan durum
+şeması için önce `openclaw doctor --fix` çalıştırın. Daha yeni bir şema için uyumlu
+bir yedeği geri yükleyin veya OpenClaw'ı yükseltin.
+
+## Oturum SQLite geçişi
+
+OpenClaw, eski oturum satırlarını ve döküm geçmişini Gateway başlatması sırasında
+ve `openclaw doctor --fix` sırasında her ajanın SQLite veritabanına otomatik olarak
+aktarır. `openclaw doctor --session-sqlite <mode>`, bu geçişe yönelik
+inceleme ve doğrulama aracıdır. Güncel çalışma zamanı oturum satırları
+`~/.openclaw/agents/<agentId>/agent/openclaw-agent.sqlite` konumunda bulunur. Eski
+`sessions.json` dosyaları geçiş kaynaklarıdır. Etkin döküm JSONL dosyaları
+başarıyla içe aktarıldıktan sonra içe aktarılır ve etkin oturumlar dizininin
+dışında arşivlenir; arşiv katmanındaki JSONL dosyaları çalışma zamanı geri
+dönüşleri değil, destek yapıtları olarak kalır.
+
+Modlar:
+
+| Mod        | Davranış                                                                                                               |
+| ---------- | ---------------------------------------------------------------------------------------------------------------------- |
+| `inspect`  | İçe aktarmadan eski ve SQLite sayılarını, ayrıca başvurulmayan JSONL dosyalarını okur.                                  |
+| `dry-run`  | Eski girdileri ve döküm JSONL dosyalarını ayrıştırır, içe aktarılabilir satırları sayar ve SQLite satırlarını yazmadan sorunları bildirir. |
+| `import`   | Seçili hedefler için eski girdileri ve döküm olaylarını SQLite'a aktarır.                                               |
+| `validate` | Seçili eski kaynakları SQLite satırları ve döküm olay sayılarıyla karşılaştırır.                                        |
+| `compact`  | Büyük silme veya arşiv temizliğinden sonra boş sayfaları geri kazanmak için seçili ajan SQLite veritabanlarında denetim noktası oluşturur ve VACUUM çalıştırır. |
+| `recover`  | En son başarısız geçiş çalışmasını geri yükler, hedeflerini doğrular ve temizlenmiş bir GitHub sorun raporu hazırlar.    |
+| `restore`  | Kayıtlı geçiş bildirimlerinden arşivlenmiş döküm yapıtlarını SQLite verilerini silmeden geri yükler.                    |
+
+Seçiciler:
+
+- Varsayılan: söz konusu eski depo dosyası mevcutsa yapılandırılmış varsayılan ajan deposu.
+- `--session-sqlite-agent <id>`: yapılandırılmış tek bir ajan.
+- `--session-sqlite-all-agents`: yapılandırılmış ajan depoları ve keşfedilen ajan depoları.
+- `--session-sqlite-store <path>`: açıkça belirtilmiş tek bir eski `sessions.json` yolu.
+
+Elle inceleme sırası:
+
+```bash
+openclaw doctor --session-sqlite inspect --session-sqlite-all-agents
+openclaw doctor --session-sqlite dry-run --session-sqlite-all-agents --json
+openclaw doctor --session-sqlite import --session-sqlite-all-agents
+openclaw doctor --session-sqlite validate --session-sqlite-all-agents --json
+openclaw doctor --session-sqlite compact --session-sqlite-all-agents
+openclaw doctor --session-sqlite recover --github-issue
+```
+
+Önemli geçmiş içeren bir kurulumda `import` çalıştırmadan önce OpenClaw
+durum dizinini yedekleyin. Seçili eski bir girdi SQLite'ta eksik olduğunda, bir
+oturum kimliği farklı olduğunda veya bir döküm olay sayısı farklı olduğunda
+`validate` sıfırdan farklı bir kodla sonlanır. `--session-sqlite-store <path>` kullanırken
+raporun beklenen hedef sayısını içerdiğini kontrol edin; mevcut olmayan, açıkça
+belirtilmiş bir depo yolu hiçbir hedef seçmez.
+
+SQLite silme işlemleri önce veritabanı içindeki sayfaları geri kazanır; veritabanı
+dosyasını hemen küçültmeleri gerekmez. Büyük dökümleri sildikten veya arşivledikten
+sonra WAL dosyalarında denetim noktası oluşturmak, `VACUUM` çalıştırmak
+ve önceki/sonraki veritabanı ile WAL boyutlarını bildirmek için
+`openclaw doctor --session-sqlite compact --session-sqlite-all-agents` çalıştırın. Sıkıştırma; güncel ajan şemasına sahip normal bir
+dosya, seçili ajanın kalıcı sahip meta verileri ve doctor sürecinde açık tanıtıcı
+bulunmamasını gerektirir. Yıkıcı `import`, `compact`,
+`recover` ve `restore` modları, tüm işlemleri boyunca Gateway
+başlatmasıyla aynı durum sahipliği kilidini tutar; `inspect`,
+`dry-run` ve `validate` salt okunur kalır ve bu kilidi almaz.
+Önce Gateway'i durdurun. Yıkıcı modlar, canlı yazma işlemleriyle veya başka bir
+bakım komutuyla yarışmak yerine başarısız olur. Yıkıcı bir `--session-sqlite-store`
+hedefi etkin durum dizininin içinde olmalıdır; başka bir kurulumun bakımını
+yapmadan önce `OPENCLAW_STATE_DIR` değerini deponun sahibi olan durum dizinine
+ayarlayın. Mevcut sabit bağlantılı hedefler reddedilir çünkü başka bir yol,
+kilitli durum dizininin dışında aynı veritabanı inode'unu paylaşabilir. Aynı
+sahiplik denetimleri SQLite WAL, paylaşılan bellek ve geri alma günlüğü yardımcı
+dosyalarını da kapsar.
+
+Her içe aktarma, döküm yapıtlarını arşive taşımadan önce
+`~/.openclaw/session-sqlite-migration-runs/` altında bir bildirim yazar. Başlatma işlemi, yapıtlar
+taşındıktan sonra başarısız bir oturum SQLite geçişi bildirirse kurtarmayı
+çalıştırın:
+
+```bash
+openclaw doctor --session-sqlite recover --github-issue
+```
+
+Kurtarma en son başarısız geçiş bildirimini seçer, yalnızca bildirimin arşivlenmiş
+yapıtlarını geri yükler, etkilenen hedefleri doğrular, temizlenmiş
+`.failure.md` ve `.failure.json` raporlarını yeniler ve döküm içeriklerini,
+ham ortamı, gizli bilgileri ve sınırsız yapılandırmayı içermeyen bir GitHub sorun
+gövdesi hazırlar. Başarısız geçiş bildirimi bulunmadığında ancak seçili bir ajan
+SQLite veritabanı bozuk olduğunda, veritabanı olmadığında veya ana veritabanı
+olmadan günlük yardımcı dosyalarına sahip olduğunda kurtarma, dosya kümesinin
+tamamını geçici bir inceleme dizinine kopyalar. SQLite, özgün adli inceleme
+dosyalarına dokunulmadan önce bu tek kullanımlık kopyadaki geçerli bir etkin
+günlüğü geri alabilir; ardından `quick_check`, `integrity_check` ve
+`foreign_key_check` çalışır. Başarısız bütünlük denetimleri veya sahipsiz yardımcı
+dosyalar, keşfedilen kümenin tamamını tek bir `.corrupt-<timestamp>` son ekiyle
+yeniden adlandırarak DB, WAL, SHM ve geri alma günlüğü dosyalarını korur.
+Yakalanan bir yeniden adlandırma hatası, başarısızlığı bildirmeden önce taşınmış
+dosyaları geri alır; böylece kurtarılabilir bir dosya kümesi sessizce bölünmez.
+Kurtarmadan önce Gateway'i durdurun; etkin biçimde değişen bir SQLite dosya
+kümesini kopyalamak veya yeniden adlandırmak güvenli değildir ve işletim
+sistemleri arasında farklı davranır. `--github-issue --yes` ile doctor, GitHub
+CLI'ı kullanarak `openclaw/openclaw` içinde sorunu oluşturur; onay olmadan yerel
+destek raporunu yazar ve önceden doldurulmuş bir sorun URL'si yazdırır.
+
+`restore`, daha düşük düzeyli geri alma işlemi olarak kalır. Bildirim
+`sourcePath -> archivePath` kayıtlarını kullanır, arşivlenmiş yapıtları yalnızca özgün
+yol eksik olduğunda geri taşır, her iki yol da mevcut olduğunda çakışmaları
+bildirir ve SQLite veritabanını yerinde bırakır.
+
+### Oturum SQLite Geçişinden Sonra Eski Sürüme Dönme
+
+Dosya destekli eski bir OpenClaw sürümünü başlatmadan önce arşivlenmiş eski
+döküm yapıtlarını geri yükleyin:
+
+```bash
+openclaw doctor --session-sqlite restore --session-sqlite-all-agents
+```
+
+Eski sürümler, `sessions.json` girdilerini ve bu girdilerde kaydedilen `sessionFile` yollarını
+okur. SQLite geçişinden sonra başarılı içe aktarmalar, etkin JSONL
+transkriptlerini `session-sqlite-import-archive/` içine taşır; bu nedenle geri yükleme, manifestte kaydedilmiş bu yapıtları
+özgün yollarına geri taşıyana kadar eski çalışma zamanı bu geçmişi
+göremez.
+
+Geri yükleme SQLite verilerini silmez. SQLite'a geçişten sonra oluşturulan oturumlar
+yalnızca SQLite'ta bulunur ve eski çalışma zamanında görünmez. Daha sonra
+yeniden yükseltirseniz OpenClaw'ın içe aktarmadan önce geri yüklenen eski yapıtları
+SQLite satırlarıyla karşılaştırabilmesi için yukarıdaki normal geçiş doğrulama sırasını çalıştırın.
+
+## Notlar
+
+- Nix modunda (`OPENCLAW_NIX_MODE=1`), salt okunur doctor denetimleri çalışmaya devam eder ancak `openclaw.json` değiştirilemez olduğundan `doctor --fix`, `doctor --repair`, `doctor --yes` ve `doctor --generate-gateway-token` devre dışıdır. Bunun yerine bu kurulumun Nix kaynağını düzenleyin; nix-openclaw için önce agent yaklaşımını kullanan [Hızlı Başlangıç](https://github.com/openclaw/nix-openclaw#quick-start) kılavuzunu kullanın.
+- Etkileşimli istemler (anahtar zinciri/OAuth düzeltmeleri vb.) yalnızca stdin bir TTY olduğunda ve `--non-interactive` **ayarlanmadığında** çalışır. Başsız çalıştırmalar (cron, Telegram, terminal yok) istemleri atlar.
+- Etkileşimsiz `doctor` çalıştırmaları, başsız sistem durumu denetimlerinin hızlı kalması için önceden Plugin yüklemeyi atlar. Etkileşimli oturumlar, eski sistem durumu/onarım akışının gerektirdiği Plugin yüzeylerini yüklemeye devam eder.
+- `--lint`, `--non-interactive` seçeneğinden daha katıdır: her zaman salt okunurdur, hiçbir zaman istem göstermez ve güvenli geçişleri hiçbir zaman uygulamaz. Doctor'ın değişiklik yapmasını istediğinizde `doctor --fix` veya `doctor --repair` kullanın.
+- Doctor, gizli değerleri denetlerken varsayılan olarak `exec` SecretRef'lerini yürütmez. Yalnızca doctor'ın yapılandırılmış gizli değer çözümleyicilerini çalıştırmasını bilinçli olarak istediğinizde `--allow-exec` seçeneğini (`--lint` ile veya onsuz) kullanın.
+- Herhangi bir yapılandırma yazma işlemi (`--fix` onarımı dâhil), yedeği `~/.openclaw/openclaw.json.bak` konumuna döndürür (numaralandırılmış `.bak.1`..`.bak.4` halkasıyla). `--fix` ayrıca şema doğrulamasının bildirdiği bilinmeyen yapılandırma anahtarlarını kaldırır ve kaldırılanların her birini listeler; kısmen yazılmış yükseltme durumu, geçişi tamamlanmadan kaldırılmasın diye güncelleme sürerken bu işlemi atlar.
+- Gateway yaşam döngüsünü başka bir gözetmen yönetiyorsa `OPENCLAW_SERVICE_REPAIR_POLICY=external` ayarlayın. Doctor, Gateway/hizmet durumunu bildirmeye ve hizmet dışı onarımları uygulamaya devam eder ancak hizmet kurma/başlatma/yeniden başlatma/önyükleme işlemlerini ve eski hizmet temizliğini atlar.
+- Linux'ta doctor, etkin olmayan ek Gateway benzeri systemd birimlerini yok sayar ve onarım sırasında çalışan bir systemd Gateway hizmetinin komut/giriş noktası meta verilerini yeniden yazmaz. Önce hizmeti durdurun veya etkin başlatıcıyı değiştirmek için `openclaw gateway install --force` kullanın.
+- `doctor --fix --non-interactive`, eksik veya güncelliğini yitirmiş Gateway hizmeti tanımlarını bildirir ancak güncelleme onarım modu dışında bunları kurmaz ya da yeniden yazmaz. Eksik bir hizmet için `openclaw gateway install`, başlatıcıyı değiştirmek için ise `openclaw gateway install --force` çalıştırın.
+- Durum bütünlüğü denetimleri, oturumlar dizinindeki sahipsiz transkript dosyalarını algılar. Bunları `.deleted.<timestamp>` olarak arşivlemek etkileşimli onay gerektirir; `--fix`, `--yes` ve başsız çalıştırmalar bunları yerinde bırakır.
+- Doctor, eski cron işi biçimlerini bulmak için `~/.openclaw/cron/jobs.json` (veya `cron.store`) dosyasını tarar ve standart satırları SQLite'a aktarmadan önce bunları yeniden yazar.
+- Doctor, açık bir `payload.model` geçersiz kılması bulunan cron işlerini; sağlayıcı ad alanı sayıları ve `agents.defaults.model` ile uyuşmazlıklar dâhil olmak üzere bildirir. Böylece varsayılan modeli devralmayan zamanlanmış işler, kimlik doğrulama veya faturalandırma incelemeleri sırasında görülebilir.
+- Doctor, hâlâ devam ediyor olarak işaretlenen (`state.runningAtMs`) cron işlerini bildirir; bu durum `openclaw cron list` içinde bunların `running` olarak görünmesine neden olabilir. Bu denetim salt okunurdur: işaretlenmiş bir işi şu anda hiçbir Gateway yürütmüyorsa sonraki cron hizmeti başlangıcı kesintiye uğrayan çalıştırmayı kaydeder ve işareti temizler.
+- Linux'ta doctor, kullanıcının crontab'i hâlâ bakımı yapılmayan eski `~/.openclaw/bin/ensure-whatsapp.sh` komutunu çalıştırdığında uyarır; cron, systemd kullanıcı veri yolu ortamına sahip olmadığında bu komut `Gateway inactive` durumunu yanlış bildirebilir.
+- WhatsApp etkinleştirildiğinde doctor, yerel `openclaw-tui` istemcileri çalışmaya devam ederken performansı düşmüş bir Gateway olay döngüsü olup olmadığını denetler. `doctor --fix`, WhatsApp yanıtlarının güncelliğini yitirmiş TUI yenileme döngülerinin arkasında kuyruğa alınmaması için yalnızca doğrulanmış yerel TUI istemcilerini durdurur.
+- Doctor; birincil modeller, geri dönüşler, model izin listeleri, görüntü/video oluşturma modelleri, Heartbeat/alt agent/Compaction geçersiz kılmaları, kancalar, kanal modeli geçersiz kılmaları, cron yükleri ve güncelliğini yitirmiş oturum/transkript rota sabitlemeleri genelindeki eski `codex/*` ve `openai-codex/*` model başvurularını standart `openai/*` başvuruları olarak yeniden yazar. `--fix` ayrıca güvenli olduğunda eski `models.providers.codex` ve `models.providers.openai-codex` yapılandırmalarını birleştirir, eski `openai-codex:*` kimlik doğrulama profillerini ve `auth.order.openai-codex` girdilerini `openai:*` konumuna geçirir, Codex amacını sağlayıcı/model kapsamlı `agentRuntime.id: "codex"` girdilerine taşır, güncelliğini yitirmiş tüm-agent/oturum çalışma zamanı sabitlemelerini kaldırır ve onarılan OpenAI agent başvurularını doğrudan OpenAI API anahtarı kimlik doğrulaması yerine Codex kimlik doğrulama yönlendirmesinde tutar.
+- Doctor, başvurulan profillerin tamamı kaldırılmış olmasına rağmen uyumlu saklanmış kimlik bilgilerinin bulunduğu, boş olmayan `auth.order.<provider>` listelerini bildirir. `doctor --fix` yalnızca güncelliğini yitirmiş bu geçersiz kılmaları silerek agent başına otomatik kimlik bilgisi seçimini geri yükler; açıkça boş sıralamalar, kısmen geçerli listeler ve uyumlu saklanmış kimlik bilgisi bulunmayan sıralamalar değişmeden kalır. Etkin bir SQLite kimlik doğrulama deposu okunamıyorsa veya bozuksa doctor bu onarımı neden atladığını açıklar. Yapılandırma yeniden yükleme modu yazma işlemini otomatik olarak uygulamıyorsa kimlik doğrulama durumunu yeniden denetlemeden önce çalışan Gateway'i yeniden başlatın.
+- Doctor, eski OpenClaw sürümlerinden kalan eski Plugin bağımlılığı hazırlama durumunu temizler ve eş bağımlılık olarak bildiren yönetilen npm Plugin'leri için ana makinenin `openclaw` paketini yeniden bağlar. Ayrıca yapılandırmanın başvurduğu eksik indirilebilir Plugin'leri (`plugins.entries`, yapılandırılmış kanallar, yapılandırılmış sağlayıcı/arama ayarları, yapılandırılmış agent çalışma zamanları) onarır. Paket güncellemeleri sırasında doctor, paket değişimi tamamlanana kadar paket yöneticisi Plugin onarımını atlar; yapılandırılmış bir Plugin hâlâ kurtarma gerektiriyorsa daha sonra `openclaw doctor --fix` komutunu yeniden çalıştırın. İndirme başarısız olursa doctor kurulum hatasını bildirir ve bir sonraki onarım denemesi için yapılandırılmış Plugin girdisini korur.
+- Doctor, Plugin keşfi sağlıklı olduğunda eksik Plugin kimliklerini `plugins.allow`/`plugins.deny`/`plugins.entries` alanlarından ve bunlarla eşleşen sahipsiz kanal yapılandırmasından, Heartbeat hedeflerinden ve kanal modeli geçersiz kılmalarından kaldırarak güncelliğini yitirmiş Plugin yapılandırmasını onarır.
+- Doctor, etkilenen `plugins.entries.<id>` girdisini devre dışı bırakıp geçersiz `config` yükünü kaldırarak geçersiz Plugin yapılandırmasını karantinaya alır. Gateway başlangıcı zaten yalnızca bu hatalı Plugin'i atladığından diğer Plugin'ler ve kanallar çalışmaya devam eder.
+- Doctor, kullanımdan kaldırılan `plugins.entries.codex.config.codexDynamicToolsProfile` öğesini kaldırır; Codex app-server, Codex'e özgü çalışma alanı araçlarını her zaman yerel olarak tutar.
+- Doctor, eski düz Talk yapılandırmasını (`talk.voiceId`, `talk.modelId` ve benzerleri) otomatik olarak `talk.provider` + `talk.providers.<provider>` biçimine geçirir. Tek fark nesne anahtarı sırası olduğunda yinelenen `doctor --fix` çalıştırmaları artık Talk normalleştirmesini bildirmez/uygulamaz.
+- Doctor, bir bellek arama hazırlık denetimi içerir ve gömme kimlik bilgileri eksik olduğunda `openclaw configure --section model` önerebilir.
+- Doctor, hiçbir komut sahibi yapılandırılmadığında uyarır. Komut sahibi, yalnızca sahibin kullanabildiği komutları çalıştırmasına ve tehlikeli eylemleri onaylamasına izin verilen insan operatör hesabıdır. DM eşleştirmesi yalnızca birinin botla konuşmasına izin verir; ilk sahip önyüklemesi kullanıma sunulmadan önce bir göndericiyi onayladıysanız `commands.ownerAllowFrom` değerini açıkça ayarlayın.
+- Doctor, Codex modlu agent'lar yapılandırıldığında ve operatörün Codex ana dizininde kişisel Codex CLI varlıkları bulunduğunda bir bilgi notu bildirir. Yerel Codex app-server başlatmaları, agent başına yalıtılmış ana dizinler kullanır; gerekirse önce Codex Plugin'ini kurun, ardından bilinçli olarak yükseltilmesi gereken varlıkların envanterini çıkarmak için `openclaw migrate plan codex` kullanın.
+- Doctor, varsayılan agent için izin verilen Skills mevcut çalışma zamanı ortamında kullanılamadığında (eksik ikili dosyalar, ortam değişkenleri, yapılandırma veya işletim sistemi gereksinimleri) uyarır. `doctor --fix`, kullanılamayan bu Skills öğelerini `skills.entries.<skill>.enabled=false` ile devre dışı bırakabilir; Skills öğesini etkin tutmak istiyorsanız bunun yerine eksik gereksinimi kurun/yapılandırın.
+- Korumalı alan modu etkin ancak Docker kullanılamıyorsa doctor, düzeltme adımlarıyla (`install Docker` veya `openclaw config set agents.defaults.sandbox.mode off`) birlikte yüksek önem taşıyan bir uyarı bildirir.
+- Eski korumalı alan kayıt defteri dosyaları veya parça dizinleri (`~/.openclaw/sandbox/containers.json`, `~/.openclaw/sandbox/browsers.json`, `~/.openclaw/sandbox/containers/` veya `~/.openclaw/sandbox/browsers/`) mevcutsa doctor bunları bildirir; `--fix` geçerli girdileri SQLite'a geçirir ve geçersiz eski dosyaları karantinaya alır.
+- `gateway.auth.token`/`gateway.auth.password`, SecretRef tarafından yönetiliyorsa ve geçerli komut yolunda kullanılamıyorsa doctor salt okunur bir uyarı bildirir ve düz metin geri dönüş kimlik bilgileri yazmaz. Yürütme tabanlı SecretRef'ler için doctor, `--allow-exec` mevcut olmadığı sürece yürütmeyi atlar.
+- Bir düzeltme yolunda kanal SecretRef incelemesi başarısız olursa doctor erken çıkmak yerine devam eder ve bir uyarı bildirir.
+- Durum dizini geçişlerinden sonra doctor, etkin varsayılan Telegram veya Discord hesapları ortam geri dönüşüne bağlı olduğunda ve `TELEGRAM_BOT_TOKEN` ya da `DISCORD_BOT_TOKEN` doctor işlemi tarafından kullanılamadığında uyarır.
+- Telegram `allowFrom` kullanıcı adının otomatik çözümlenmesi (`doctor --fix`), geçerli komut yolunda çözümlenebilir bir Telegram token'ı gerektirir. Token incelemesi kullanılamıyorsa doctor bir uyarı bildirir ve o geçişte otomatik çözümlemeyi atlar.
+
+## macOS: `launchctl` ortam geçersiz kılmaları
+
+Daha önce `launchctl setenv OPENCLAW_GATEWAY_TOKEN ...` (veya `...PASSWORD`) çalıştırdıysanız bu değer, yapılandırma dosyanızı geçersiz kılar ve kalıcı "yetkisiz" hatalarına neden olabilir.
 
 ```bash
 launchctl getenv OPENCLAW_GATEWAY_TOKEN
@@ -273,5 +426,5 @@ launchctl unsetenv OPENCLAW_GATEWAY_PASSWORD
 
 ## İlgili
 
-- [CLI referansı](/tr/cli)
+- [CLI başvurusu](/tr/cli)
 - [Gateway doctor](/tr/gateway/doctor)

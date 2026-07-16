@@ -4,28 +4,29 @@ read_when:
 summary: Ajoute la prise en charge du fournisseur de modèles Cerebras à OpenClaw.
 title: Plugin Cerebras
 x-i18n:
-    generated_at: "2026-07-12T02:56:03Z"
+    generated_at: "2026-07-16T13:31:44Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 272a592b6099b7dc30c48e40e004ca01c1113a1fcf65917ac6266987a63ec01f
+    source_hash: 4a393776e3fdb0d7a26e5f01bab84b3b8cd451c077019d9ac725d1079c1bb86f
     source_path: plugins/reference/cerebras.md
     workflow: 16
 ---
 
 # Plugin Cerebras
 
-Ajoute à OpenClaw la prise en charge du fournisseur de modèles Cerebras.
+Ajoute la prise en charge du fournisseur de modèles Cerebras à OpenClaw.
 
 ## Distribution
 
 - Paquet : `@openclaw/cerebras-provider`
-- Méthode d’installation : npm ; ClawHub : `clawhub:@openclaw/cerebras-provider`
+- Mode d’installation : npm ; ClawHub : `clawhub:@openclaw/cerebras-provider`
 
-## Interface
+## Surface
 
-fournisseurs : cerebras
+fournisseurs : `cerebras`
 
 ## Documentation associée
 
-- [cerebras](/fr/providers/cerebras)
+- [Cerebras](/fr/providers/cerebras)

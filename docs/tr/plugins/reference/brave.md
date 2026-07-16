@@ -1,21 +1,22 @@
 ---
 read_when:
-    - Brave pluginini kuruyor, yapılandırıyor veya denetliyorsunuz
-summary: Web araması için OpenClaw Brave Search sağlayıcı Plugin'i.
-title: Brave Plugin'i
+    - brave pluginini yüklüyor, yapılandırıyor veya denetliyorsunuz
+summary: Web araması için OpenClaw Brave Search sağlayıcı plugini.
+title: Brave eklentisi
 x-i18n:
-    generated_at: "2026-07-12T12:01:08Z"
+    generated_at: "2026-07-16T17:42:52Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 265b0efa840eb3ebc7bfc1cc47b703737bbd76050ac95e79825728030a166d37
+    source_hash: de92722ae6d104db350455fd075c8a0d29dcc7bb92753cc0503fbbef00ed532c
     source_path: plugins/reference/brave.md
     workflow: 16
 ---
 
-# Brave Plugin
+# Brave plugin'i
 
-Web araması için OpenClaw Brave Search sağlayıcı Plugin'i.
+Web araması için OpenClaw Brave Search sağlayıcı plugin'i.
 
 ## Dağıtım
 
@@ -24,7 +25,7 @@ Web araması için OpenClaw Brave Search sağlayıcı Plugin'i.
 
 ## Yüzey
 
-sözleşmeler: webSearchProviders
+sözleşmeler: `webSearchProviders`
 
 ## İlgili belgeler
 

@@ -1,26 +1,27 @@
 ---
 read_when:
-    - En hızlı yerel geliştirme döngüsünü istiyorsunuz (bun + watch)
+    - Bağımlılıkları yüklemek veya paket betiklerini Bun ile çalıştırmak istiyorsunuz
     - Bun yükleme/yama/yaşam döngüsü betiği sorunlarıyla karşılaştınız
-summary: 'Bun iş akışı (deneysel): kurulumlar ve pnpm''e kıyasla dikkat edilmesi gerekenler'
-title: Bun (deneysel)
+summary: Kurulumlar ve paket betikleri için Bun iş akışı; çalışma zamanında Node gereklidir
+title: Bun
 x-i18n:
-    generated_at: "2026-07-12T12:24:26Z"
+    generated_at: "2026-07-16T17:33:09Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: b836be354166ceb073d170e472e8b69c3f517e754fe71417df1d85d27a18ae94
+    source_hash: b822f700123b91c785eb881ebf28a63e77915b46dfd44beb9dbf63fb71aaa0d2
     source_path: install/bun.md
     workflow: 16
 ---
 
 <Warning>
-Bun, Gateway çalışma zamanı için önerilmez (WhatsApp ve Telegram ile ilgili bilinen sorunlar vardır). Üretimde Node kullanın.
+Bun, gerekli `node:sqlite` API'sini sağlamadığı için OpenClaw CLI'ı veya Gateway'i çalıştıramaz. Tüm OpenClaw çalışma zamanı komutları için desteklenen bir Node sürümü yükleyin.
 </Warning>
 
-Bun, TypeScript'i doğrudan çalıştırmak için isteğe bağlı bir yerel çalışma zamanıdır (`bun run ...`, `bun --watch ...`). Varsayılan paket yöneticisi, tam olarak desteklenen ve dokümantasyon araçları tarafından kullanılan `pnpm` olarak kalır. Bun, `pnpm-lock.yaml` dosyasını kullanamaz ve bu dosyayı yok sayar.
+Bun, isteğe bağlı bir bağımlılık yükleyicisi ve paket betiği çalıştırıcısı olarak kullanılabilir. Varsayılan paket yöneticisi, tam olarak desteklenen ve dokümantasyon araçları tarafından kullanılan `pnpm` olmaya devam eder. Bun, `pnpm-lock.yaml` kullanamaz ve bunu yok sayar.
 
-## Kurulum
+## Yükleme
 
 <Steps>
   <Step title="Bağımlılıkları yükleyin">
@@ -28,7 +29,7 @@ Bun, TypeScript'i doğrudan çalıştırmak için isteğe bağlı bir yerel çal
     bun install
     ```
 
-    `bun.lock` / `bun.lockb` dosyaları git tarafından yok sayılır, dolayısıyla depoda gereksiz değişiklik oluşmaz. Kilit dosyasına yazmayı tamamen atlamak için:
+    `bun.lock` / `bun.lockb` git tarafından yok sayılır, dolayısıyla depoda gereksiz değişiklik oluşmaz. Kilit dosyasına yazmayı tamamen atlamak için:
 
     ```sh
     bun install --no-save
@@ -40,6 +41,9 @@ Bun, TypeScript'i doğrudan çalıştırmak için isteğe bağlı bir yerel çal
     bun run build
     bun run vitest run
     ```
+
+    OpenClaw'ın kendisini başlatan komutlar yine Node üzerinden çalıştırılmalıdır.
+
   </Step>
 </Steps>
 
@@ -47,8 +51,8 @@ Bun, TypeScript'i doğrudan çalıştırmak için isteğe bağlı bir yerel çal
 
 Bun, açıkça güvenilir olarak işaretlenmedikçe bağımlılık yaşam döngüsü betiklerini engeller. Bu depo için yaygın olarak engellenen betikler gerekli değildir:
 
-- `baileys` `preinstall`: Node ana sürümünün >= 20 olup olmadığını denetler (OpenClaw, Node 22.19+ veya 23.11+ gerektirir; Node 24 önerilir)
-- `protobufjs` `postinstall`: uyumsuz sürüm şemaları hakkında uyarılar verir (derleme çıktısı oluşturmaz)
+- `baileys` `preinstall`: Node ana sürümünün >= 20 olup olmadığını denetler (OpenClaw, Node 24 önerilmek üzere Node 22.22.3+, 24.15+ veya 25.9+ gerektirir)
+- `protobufjs` `postinstall`: uyumsuz sürüm şemaları hakkında uyarılar verir (derleme çıktısı yoktur)
 
 Bu betikleri gerektiren bir çalışma zamanı sorunuyla karşılaşırsanız bunları açıkça güvenilir olarak işaretleyin:
 
@@ -58,10 +62,10 @@ bun pm trust baileys protobufjs
 
 ## Dikkat edilmesi gerekenler
 
-Bazı paket betikleri kendi içinde `pnpm` kullanımını sabit kodlar (örneğin `check:docs`, `ui:*`, `protocol:check`). Bunları `bun run` aracılığıyla çalıştırmak yine de kabuk üzerinden `pnpm` komutunu çağırır; bu nedenle söz konusu betikleri doğrudan `pnpm` ile çalıştırın.
+Bazı paket betikleri dahili olarak `pnpm` değerini sabit kodlar (örneğin `check:docs`, `ui:*`, `protocol:check`). Bunları `bun run` aracılığıyla çalıştırmak yine `pnpm` komutunu bir kabukta başlatır; bu nedenle söz konusu betikleri doğrudan `pnpm` aracılığıyla çalıştırın.
 
-## İlgili konular
+## İlgili
 
-- [Kuruluma genel bakış](/tr/install)
+- [Yüklemeye genel bakış](/tr/install)
 - [Node.js](/tr/install/node)
 - [Güncelleme](/tr/install/updating)

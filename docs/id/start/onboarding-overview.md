@@ -1,116 +1,121 @@
 ---
 read_when:
-    - Memilih jalur orientasi
+    - Memilih jalur orientasi awal
     - Menyiapkan lingkungan baru
 sidebarTitle: Onboarding Overview
 summary: Ikhtisar opsi dan alur orientasi OpenClaw
-title: Gambaran umum orientasi awal
+title: Ikhtisar orientasi
 x-i18n:
-    generated_at: "2026-07-12T14:41:11Z"
+    generated_at: "2026-07-16T18:36:50Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 3460887108dc078c963802a32238133814afcc7d36b27eb4760280328ee070e5
+    source_hash: 4bcda1dcfb91f388ca6bef59f9bdf5177571d93c0d89c45025ef837628fa7ba0
     source_path: start/onboarding-overview.md
     workflow: 16
 ---
 
-OpenClaw memiliki onboarding melalui terminal dan aplikasi macOS. Keduanya menyiapkan inferensi terlebih dahulu:
-keduanya mendeteksi akses AI yang sudah ada, mewajibkan penyelesaian langsung, dan baru kemudian memulai
-Crestodian untuk mengonfigurasi penyiapan yang tersisa. Gateway yang dapat dijangkau dan telah dikonfigurasi,
-dengan agen default yang sudah memiliki model terkonfigurasi, akan melewati onboarding dan membuka
-antarmuka agen normal. Alur terminal juga menawarkan wisaya klasik lengkap untuk
+OpenClaw memiliki orientasi awal melalui terminal dan aplikasi macOS. Keduanya menyiapkan inferensi terlebih dahulu:
+keduanya mendeteksi akses AI yang ada, mewajibkan completion langsung, dan baru setelah itu memulai
+OpenClaw untuk mengonfigurasi penyiapan lainnya. Gateway yang dapat dijangkau dan telah dikonfigurasi,
+dengan agen default yang sudah memiliki model terkonfigurasi, akan melewati orientasi awal dan membuka
+UI agen normal. Alur terminal juga menawarkan wizard klasik lengkap untuk
 penyiapan terperinci.
 
-## Jalur mana yang sebaiknya saya gunakan?
+## Jalur mana yang sebaiknya digunakan?
 
-|                 | Onboarding CLI                         | Onboarding aplikasi macOS         |
-| --------------- | -------------------------------------- | --------------------------------- |
-| **Platform**    | macOS, Linux, Windows (native atau WSL2) | Hanya macOS                     |
-| **Antarmuka**   | Penyiapan inferensi, lalu Crestodian   | Penyiapan inferensi, lalu Crestodian |
-| **Paling cocok untuk** | Server, tanpa antarmuka grafis, kontrol penuh | Mac desktop, penyiapan visual |
-| **Otomatisasi** | `--non-interactive` untuk skrip        | Hanya manual                      |
+|                | Orientasi awal CLI                         | Orientasi awal aplikasi macOS           |
+| -------------- | -------------------------------------- | ------------------------------ |
+| **Platform**  | macOS, Linux, Windows (native atau WSL2) | Khusus macOS                     |
+| **Antarmuka**  | Penyiapan inferensi, lalu OpenClaw         | Penyiapan inferensi, lalu OpenClaw |
+| **Paling cocok untuk**   | Server, tanpa antarmuka grafis, kontrol penuh        | Mac desktop, penyiapan visual      |
+| **Otomatisasi** | `--non-interactive` untuk skrip        | Hanya manual                    |
 | **Perintah**    | `openclaw onboard`                     | Jalankan aplikasi                 |
 
-Sebagian besar pengguna sebaiknya memulai dengan **onboarding CLI** — ini berfungsi di
-semua platform dan memberi Anda kendali paling besar.
+Sebagian besar pengguna sebaiknya memulai dengan **orientasi awal CLI** — alur ini berfungsi di mana saja dan memberi
+Anda kontrol paling besar.
 
-## Yang dikonfigurasi oleh onboarding
+## Yang dikonfigurasi oleh orientasi awal
 
 Fase inferensi terpandu hanya menyiapkan:
 
-1. **Penyedia model dan autentikasi** — akses yang terdeteksi atau kunci API yang telah diverifikasi
-2. **Inferensi terverifikasi** — penyelesaian nyata pada model efektif
-   milik agen default
+1. **Penyedia model dan autentikasi** — akses yang terdeteksi atau proses masuk penyedia yang telah diverifikasi,
+   kunci API, atau token
+2. **Inferensi terverifikasi** — completion nyata pada model efektif
+   agen default
 
-Setelah penyelesaian tersebut berhasil, Crestodian dapat mengonfigurasi ruang kerja, Gateway,
+Setelah completion tersebut berhasil, OpenClaw dapat mengonfigurasi ruang kerja, Gateway,
 layanan Gateway, saluran, agen, plugin, dan fitur opsional lainnya.
 
-Wisaya CLI klasik juga dapat mengonfigurasi:
+Wizard CLI klasik juga dapat mengonfigurasi:
 
-1. **Saluran** (opsional) — saluran obrolan bawaan dan terbundel seperti
+1. **Saluran** (opsional) — saluran obrolan bawaan dan yang dibundel seperti
    Discord, Feishu, Google Chat, iMessage, Mattermost, Microsoft Teams,
    Telegram, WhatsApp, dan lainnya
 2. **Kontrol Gateway lanjutan** — mode jarak jauh, pengaturan jaringan, dan pilihan daemon
 
-## Onboarding CLI
+## Orientasi awal CLI
 
-Jalankan di terminal apa pun:
+Jalankan di terminal mana pun:
 
 ```bash
 openclaw onboard
 ```
 
-Alur terpandu mendeteksi akses AI yang sudah ada, menguji kandidat secara langsung sesuai urutan,
-beralih ke kandidat berikutnya jika gagal, dan menawarkan entri kunci manual yang disamarkan. Alur ini hanya menyimpan
-model dan kredensial setelah penyelesaian berhasil, kemudian memulai Crestodian
-untuk mengonfigurasi ruang kerja, Gateway, saluran, agen, plugin, dan fitur
-opsional lainnya. Tidak ada Crestodian sebelum inferensi, jalur untuk melewati AI, atau
-peralihan ke alur klasik dari dalam alur. Keluar dan jalankan `openclaw onboard --classic` jika Anda
-ingin menggunakan wisaya klasik.
+Alur terpandu mendeteksi akses AI yang ada, menguji kandidat secara langsung secara berurutan,
+dan beralih ke kandidat berikutnya jika gagal. Jika semua upaya deteksi telah dilakukan, alur ini menampilkan OpenAI,
+Anthropic, xAI (Grok), Google, dan OpenRouter terlebih dahulu. **Lainnya…** berisi
+penyedia lainnya dalam kelompok penyedia, dengan wilayah, paket, serta metode
+browser, perangkat, kunci API, atau token yang didukung dalam menu kedua. Alur ini hanya menyimpan model
+dan kredensial setelah completion berhasil, lalu memulai OpenClaw untuk
+mengonfigurasi ruang kerja, Gateway, saluran, agen, plugin, dan fitur opsional
+lainnya. **Lewati untuk saat ini** akan keluar tanpa memulai OpenClaw. Tidak ada
+peralihan ke alur klasik di dalam alur ini; keluar dan jalankan `openclaw onboard --classic` jika Anda menginginkan
+wizard klasik sebagai gantinya.
 
-Setelah inferensi berhasil, Crestodian dapat menyerahkan penyiapan saluran kepada wisaya terminal
-dengan masukan yang disamarkan. Crestodian tidak membuka penyiapan penyedia terpandu maupun klasik; keluar dari Crestodian dan
+Setelah inferensi berhasil, OpenClaw dapat menyerahkan penyiapan saluran ke wizard terminal
+dengan input tersamarkan. Alur ini tidak membuka penyiapan penyedia terpandu maupun klasik; keluar dari OpenClaw dan
 jalankan `openclaw onboard` untuk mengubah penyedia model atau autentikasinya.
 
-Gunakan `openclaw onboard --classic` untuk penyiapan model/autentikasi, saluran, Skills,
-Gateway jarak jauh, atau impor secara terperinci. Menambahkan `--install-daemon` juga memilih
+Gunakan `openclaw onboard --classic` untuk penyiapan terperinci terkait model/autentikasi, saluran, skill,
+Gateway jarak jauh, atau impor. Menambahkan `--install-daemon` juga akan memilih
 alur klasik dan memasang layanan latar belakang dalam satu langkah. Gunakan `openclaw
-crestodian` untuk penyiapan dan perbaikan non-inferensi secara percakapan. `openclaw
+openclaw` untuk penyiapan dan perbaikan non-inferensi secara percakapan. `openclaw
 onboard --modern` adalah alias kompatibilitas yang menggunakan gerbang inferensi langsung
 yang sama.
 
-Referensi lengkap: [Onboarding (CLI)](/id/start/wizard)
+Referensi lengkap: [Orientasi awal (CLI)](/id/start/wizard)
 Dokumentasi perintah CLI: [`openclaw onboard`](/id/cli/onboard)
 
-## Onboarding aplikasi macOS
+## Orientasi awal aplikasi macOS
 
-Buka aplikasi OpenClaw. Jika Gateway lokal atau jarak jauh yang dikonfigurasinya dapat dijangkau
-dan agen default sudah memiliki model yang dikonfigurasi, aplikasi akan melewati onboarding
-dan Crestodian, lalu langsung membuka antarmuka agen normal.
+Buka aplikasi OpenClaw. Jika Gateway lokal atau jarak jauh yang dikonfigurasi dapat dijangkau
+dan agen default sudah memiliki model terkonfigurasi, aplikasi akan melewati orientasi awal
+dan OpenClaw, lalu segera membuka UI agen normal.
 
-Untuk Gateway baru atau belum lengkap, alur penggunaan pertama mendeteksi akses AI yang
-sudah ada (Claude Code, Codex, atau kunci API), menguji opsi terbaik secara
-langsung, dan menyimpannya hanya setelah menerima balasan nyata — beralih secara otomatis jika gagal dan
-menawarkan langkah kunci API manual terverifikasi jika tidak ada yang ditemukan. Kredensial
-sensitif menggunakan masukan yang disamarkan. Setelah inferensi berhasil, Crestodian dimulai dan
-membantu mengonfigurasi sisanya.
+Untuk Gateway baru atau yang belum lengkap, alur penggunaan pertama mendeteksi akses AI
+yang ada (Claude Code, Codex, atau kunci API), menguji langsung opsi
+terbaik, dan hanya menyimpannya setelah menerima respons nyata — secara otomatis beralih ke opsi lain dan
+menawarkan langkah kunci API manual yang terverifikasi jika tidak ada yang ditemukan. Kredensial
+sensitif menggunakan input tersamarkan. Setelah inferensi berhasil, OpenClaw dimulai dan
+membantu mengonfigurasi bagian lainnya.
 
-Gemini CLI tetap tersedia bagi agen normal setelah penyiapan, tetapi tidak
-ditawarkan untuk gerbang inferensi ini karena tidak dapat menerapkan pemeriksaan tanpa alat.
+Gemini CLI tetap tersedia untuk agen normal setelah penyiapan, tetapi tidak
+ditawarkan untuk gerbang inferensi ini karena tidak dapat memberlakukan pemeriksaan tanpa alat.
 
-Referensi lengkap: [Onboarding (Aplikasi macOS)](/id/start/onboarding)
+Referensi lengkap: [Orientasi awal (Aplikasi macOS)](/id/start/onboarding)
 
 ## Penyedia khusus atau yang tidak tercantum
 
 Jika penyedia Anda tidak tercantum, jalankan `openclaw onboard --classic`, pilih
 **Penyedia Khusus**, lalu masukkan:
 
-- Kompatibilitas titik akhir: kompatibel dengan OpenAI (`/chat/completions`), kompatibel dengan OpenAI Responses (`/responses`), kompatibel dengan Anthropic (`/messages`), atau tidak diketahui (memeriksa ketiganya dan mendeteksi secara otomatis)
-- URL dasar dan kunci API (kunci API bersifat opsional jika titik akhir tidak memerlukannya)
+- Kompatibilitas endpoint: kompatibel dengan OpenAI (`/chat/completions`), kompatibel dengan OpenAI Responses (`/responses`), kompatibel dengan Anthropic (`/messages`), atau tidak diketahui (memeriksa ketiganya dan mendeteksinya secara otomatis)
+- URL dasar dan kunci API (kunci API bersifat opsional jika endpoint tidak memerlukannya)
 - ID model dan alias model opsional
 
-Beberapa titik akhir khusus dapat digunakan secara bersamaan — masing-masing mendapatkan ID titik akhirnya sendiri.
+Beberapa endpoint khusus dapat digunakan bersamaan — masing-masing mendapatkan ID endpoint tersendiri.
 
 ## Terkait
 

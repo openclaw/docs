@@ -1,59 +1,47 @@
 ---
 read_when:
-    - Zmiana zachowania lub wartości domyślnych słów wybudzających sterowania głosowego
-    - Dodawanie nowych platform Node wymagających synchronizacji frazy wybudzającej
-summary: Globalne słowa wybudzania głosem (należące do Gateway) i sposób ich synchronizacji między węzłami
-title: Wybudzanie głosowe
+    - Zmiana działania lub ustawień domyślnych słów aktywujących głosowo
+    - Dodawanie nowych platform Node wymagających synchronizacji słowa wybudzającego
+summary: Globalne słowa wybudzające głosem (zarządzane przez Gateway) i sposób ich synchronizacji między węzłami
+title: Aktywacja głosowa
 x-i18n:
-    generated_at: "2026-06-27T17:45:36Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T18:42:37Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 3c57955e8061eca2f9fec83500e829f183cd3ef9f794bf385823a28f9c89b0a4
+    source_hash: aef2a5bba664ce10fb6ab457bb6d202639dcc6c0a9df61567e7cb402c290bbec
     source_path: nodes/voicewake.md
     workflow: 16
 ---
 
-OpenClaw traktuje **słowa wybudzające jako jedną globalną listę**, której właścicielem jest **Gateway**.
+Słowa aktywujące są **jedną globalną listą należącą do Gateway** — nie ma niestandardowych list dla poszczególnych węzłów. Każdy węzeł lub interfejs aplikacji może edytować listę; Gateway utrwala zmianę i rozsyła ją do wszystkich połączonych klientów.
 
-- Nie ma **niestandardowych słów wybudzających dla poszczególnych węzłów**.
-- **Interfejs dowolnego węzła/aplikacji może edytować** listę; zmiany są utrwalane przez Gateway i rozsyłane do wszystkich.
-- macOS i iOS zachowują lokalne przełączniki **włączonego/wyłączonego wybudzania głosowego** (lokalny UX i uprawnienia się różnią).
-- Android obecnie utrzymuje wybudzanie głosowe wyłączone i używa ręcznego przepływu mikrofonu na karcie Głos.
+- **macOS**: lokalny przełącznik włączania/wyłączania aktywacji głosowej. Wymaga systemu macOS 26+; szczegóły dotyczące środowiska uruchomieniowego/PTT zawiera sekcja [Aktywacja głosowa (macOS)](/pl/platforms/mac/voicewake).
+- **iOS**: lokalny przełącznik włączania/wyłączania aktywacji głosowej w Settings.
+- **Android**: lokalny przełącznik włączania/wyłączania aktywacji głosowej i edytor słów aktywujących w Settings → Voice. Wymaga rozpoznawania mowy na urządzeniu z systemem Android.
 
-## Przechowywanie (host Gateway)
+## Przechowywanie
 
-Słowa wybudzające i reguły routingu są przechowywane w bazie danych stanu gateway:
-
-- `~/.openclaw/state/openclaw.sqlite`
-
-Aktywne tabele to:
-
-- `voicewake_triggers`
-- `voicewake_routing_config`
-- `voicewake_routing_routes`
-
-Starsze pliki `settings/voicewake.json` i `settings/voicewake-routing.json` są
-wyłącznie danymi wejściowymi migracji doctor; runtime odczytuje i zapisuje tabele SQLite.
+Słowa aktywujące i reguły routingu znajdują się w bazie danych stanu Gateway, domyślnie `~/.openclaw/state/openclaw.sqlite` (można to zmienić za pomocą `OPENCLAW_STATE_DIR`), w tabelach `voicewake_triggers`, `voicewake_routing_config`, `voicewake_routing_routes`. Starsze `settings/voicewake.json` i `settings/voicewake-routing.json` służą wyłącznie jako dane wejściowe migracji `openclaw doctor --fix` — środowisko uruchomieniowe nigdy ich nie odczytuje.
 
 ## Protokół
 
-### Metody
+### Lista wyzwalaczy
 
-- `voicewake.get` → `{ triggers: string[] }`
-- `voicewake.set` z parametrami `{ triggers: string[] }` → `{ triggers: string[] }`
+| Metoda          | Parametry                   | Wynik                   |
+| --------------- | --------------------------- | ----------------------- |
+| `voicewake.get` | brak                     | `{ triggers: string[] }` |
+| `voicewake.set` | `{ triggers: string[] }` | `{ triggers: string[] }` |
 
-Uwagi:
+`voicewake.set` normalizuje dane wejściowe: usuwa białe znaki z początku i końca, odrzuca puste wpisy, zachowuje najwyżej 32 wyzwalacze i skraca każdy z nich do 64 jednostek kodowych UTF-16 bez rozdzielania par surogatów. Pusty wynik powoduje użycie wbudowanych wartości domyślnych (`openclaw`, `claude`, `computer`).
 
-- Wyzwalacze są normalizowane (przycinane, puste wartości są usuwane). Puste listy wracają do wartości domyślnych.
-- Limity są egzekwowane ze względów bezpieczeństwa (ograniczenia liczby/długości).
+### Routing (od wyzwalacza do celu)
 
-### Metody routingu (wyzwalacz → cel)
-
-- `voicewake.routing.get` → `{ config: VoiceWakeRoutingConfig }`
-- `voicewake.routing.set` z parametrami `{ config: VoiceWakeRoutingConfig }` → `{ config: VoiceWakeRoutingConfig }`
-
-Kształt `VoiceWakeRoutingConfig`:
+| Metoda                  | Parametry                               | Wynik                               |
+| ----------------------- | --------------------------------------- | ----------------------------------- |
+| `voicewake.routing.get` | brak                                 | `{ config: VoiceWakeRoutingConfig }` |
+| `voicewake.routing.set` | `{ config: VoiceWakeRoutingConfig }` | `{ config: VoiceWakeRoutingConfig }` |
 
 ```json
 {
@@ -64,41 +52,31 @@ Kształt `VoiceWakeRoutingConfig`:
 }
 ```
 
-Cele tras obsługują dokładnie jedną z poniższych postaci:
+Każdy `target` trasy obsługuje dokładnie jedną z następujących wartości:
 
 - `{ "mode": "current" }`
 - `{ "agentId": "main" }`
 - `{ "sessionKey": "agent:main:main" }`
 
+Limity: najwyżej 32 trasy, tekst wyzwalacza o długości najwyżej 64 znaków. Wyzwalacze tras są normalizowane na potrzeby dopasowywania i wykrywania duplikatów przez zmianę liter na małe, usuwanie początkowych i końcowych znaków interpunkcyjnych z każdego słowa oraz zwijanie białych znaków (`"Hey, Bot!!"` i `"hey bot"` są dopasowywane i uznawane za duplikaty) — jest to bardziej rygorystyczna normalizacja niż samo usuwanie białych znaków z początku i końca, stosowane powyżej dla globalnej listy wyzwalaczy.
+
 ### Zdarzenia
 
-- Ładunek `voicewake.changed` `{ triggers: string[] }`
-- Ładunek `voicewake.routing.changed` `{ config: VoiceWakeRoutingConfig }`
+| Zdarzenie                   | Ładunek                              |
+| --------------------------- | ------------------------------------ |
+| `voicewake.changed`         | `{ triggers: string[] }`             |
+| `voicewake.routing.changed` | `{ config: VoiceWakeRoutingConfig }` |
 
-Kto je otrzymuje:
+Oba są rozsyłane do każdego klienta WebSocket z zakresem odczytu (aplikacji macOS, WebChat i podobnych) oraz do każdego połączonego węzła. Węzeł otrzymuje również oba zdarzenia jako początkową migawkę bezpośrednio po połączeniu.
 
-- Wszyscy klienci WebSocket (aplikacja macOS, WebChat itd.)
-- Wszystkie połączone węzły (iOS/Android), a także przy połączeniu węzła jako początkowe wysłanie „bieżącego stanu”.
+## Zachowanie klientów
 
-## Zachowanie klienta
+- **macOS**: wywołuje `voicewake.set`/`voicewake.get` i nasłuchuje `voicewake.changed`, aby zachować synchronizację z innymi klientami.
+- **iOS**: wywołuje `voicewake.set`/`voicewake.get` i nasłuchuje `voicewake.changed`, aby lokalne wykrywanie słów aktywujących reagowało bez opóźnień.
+- **Android**: wywołuje `voicewake.set`/`voicewake.get`, nasłuchuje `voicewake.changed` i po włączeniu ogłasza `voiceWake`. Rozpoznawanie odbywa się na urządzeniu i tylko na pierwszym planie; zostaje wstrzymane, gdy Talk, ręczne dyktowanie, nagrywanie notatki głosowej lub odtwarzanie mowy z wiadomości korzysta z dźwięku.
 
-### Aplikacja macOS
+## Powiązane materiały
 
-- Używa globalnej listy do bramkowania wyzwalaczy `VoiceWakeRuntime`.
-- Edycja „Słów wyzwalających” w ustawieniach wybudzania głosowego wywołuje `voicewake.set`, a następnie polega na rozgłoszeniu, aby utrzymać synchronizację innych klientów.
-
-### Węzeł iOS
-
-- Używa globalnej listy do wykrywania wyzwalaczy `VoiceWakeManager`.
-- Edycja słów wybudzających w ustawieniach wywołuje `voicewake.set` (przez Gateway WS) i utrzymuje lokalne wykrywanie słów wybudzających w gotowości.
-
-### Węzeł Android
-
-- Wybudzanie głosowe jest obecnie wyłączone w runtime/ustawieniach Androida.
-- Głos w Androidzie używa ręcznego przechwytywania mikrofonu na karcie Głos zamiast wyzwalaczy słów wybudzających.
-
-## Powiązane
-
-- [Tryb rozmowy](/pl/nodes/talk)
+- [Tryb Talk](/pl/nodes/talk)
 - [Dźwięk i notatki głosowe](/pl/nodes/audio)
 - [Rozumienie multimediów](/pl/nodes/media-understanding)

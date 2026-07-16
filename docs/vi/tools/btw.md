@@ -1,173 +1,118 @@
 ---
 read_when:
-    - Bạn muốn hỏi nhanh một câu hỏi bên lề về phiên hiện tại
-    - Bạn đang triển khai hoặc gỡ lỗi hành vi BTW trên các máy khách
+    - Bạn muốn hỏi nhanh một câu hỏi phụ về phiên hiện tại
+    - Bạn đang triển khai hoặc gỡ lỗi hành vi BTW trên các ứng dụng khách
 summary: Câu hỏi phụ tạm thời với /btw
-title: Nhân tiện, các câu hỏi phụ
+title: Nhân tiện, các câu hỏi ngoài lề
 x-i18n:
-    generated_at: "2026-06-27T18:13:43Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T15:52:15Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: cf97c17fb02c2464b1d1b31cfec652d52c60be6ce0cad25eaf32a9c080843ef2
+    source_hash: 338a54d0e15ec90aebaeeaee551559a26f1437f7b6dcdde4a4b1e63347ad0759
     source_path: tools/btw.md
     workflow: 16
 ---
 
-`/btw` cho phép bạn hỏi nhanh một câu hỏi phụ về **phiên hiện tại** mà không
-biến câu hỏi đó thành lịch sử hội thoại thông thường. `/side` là một bí danh.
+`/btw` (bí danh `/side`) đặt một câu hỏi phụ nhanh về **phiên
+hiện tại** mà không thêm câu hỏi đó vào lịch sử hội thoại. Tính năng này được xây dựng dựa trên
+`/btw` của Claude Code, được điều chỉnh cho phù hợp với Gateway và kiến trúc
+đa kênh của OpenClaw.
 
-Nó được mô phỏng theo hành vi `/btw` của Claude Code, nhưng được điều chỉnh cho
-Gateway và kiến trúc đa kênh của OpenClaw.
+```text
+/btw có gì thay đổi?
+/side lỗi này có nghĩa là gì?
+```
 
 ## Chức năng
 
-Khi bạn gửi:
+1. Chụp nhanh phiên hiện tại làm ngữ cảnh nền (bao gồm mọi lời nhắc
+   của lượt chạy chính đang diễn ra).
+2. Chạy một truy vấn phụ riêng biệt, dùng một lần, yêu cầu mô hình chỉ trả lời
+   câu hỏi phụ và không tiếp tục hoặc điều hướng tác vụ chính.
+3. Gửi câu trả lời dưới dạng kết quả phụ trực tiếp, không phải tin nhắn trợ lý thông thường.
+4. Không bao giờ ghi câu hỏi hoặc câu trả lời vào lịch sử phiên hay `chat.history`.
 
-```text
-/btw what changed?
-```
+Lượt chạy chính, nếu đang hoạt động, sẽ không bị ảnh hưởng.
 
-OpenClaw:
+Đối với các phiên dùng bộ khung Codex, BTW phân nhánh luồng app-server Codex đang hoạt động thành
+một luồng con tạm thời thay vì thực hiện một lệnh gọi nhà cung cấp riêng biệt. Cách này
+giữ nguyên OAuth của Codex cùng hành vi gốc của công cụ/luồng, đồng thời luồng
+được phân nhánh giữ nguyên chính sách phê duyệt, sandbox và bề mặt công cụ gốc
+hiện tại của luồng cha. Luồng được phân nhánh nhận một lời nhắc ranh giới cho mô hình biết rằng
+mọi nội dung trước đó là ngữ cảnh tham chiếu được kế thừa, không phải chỉ thị đang có hiệu lực,
+và chỉ các tin nhắn sau ranh giới mới có hiệu lực. `/btw` yêu cầu
+đã có một luồng Codex; trước tiên hãy gửi một tin nhắn thông thường.
 
-1. chụp nhanh ngữ cảnh phiên hiện tại,
-2. chạy một truy vấn phụ tạm thời riêng biệt,
-3. chỉ trả lời câu hỏi phụ,
-4. để nguyên lượt chạy chính,
-5. **không** ghi câu hỏi hoặc câu trả lời BTW vào lịch sử phiên,
-6. phát câu trả lời dưới dạng **kết quả phụ trực tiếp** thay vì một tin nhắn trợ lý thông thường.
+Đối với các bí danh runtime CLI, BTW gọi phần phụ trợ CLI sở hữu ở chế độ
+câu hỏi phụ dùng một lần: tính năng này nạp ngữ cảnh hội thoại đã được làm sạch vào một lần gọi CLI
+mới, trong đó tính năng gộp công cụ và trạng thái phiên có thể tái sử dụng bị tắt, đồng thời thêm
+mọi cờ không-tiếp-tục/không-công-cụ mà phần phụ trợ hỗ trợ. Các runtime trực tiếp (không phải CLI)
+thay vào đó sử dụng một lệnh gọi trực tiếp đến nhà cung cấp dùng một lần.
 
-Mô hình tư duy quan trọng là:
+## Những gì tính năng này không thực hiện
 
-- cùng ngữ cảnh phiên
-- truy vấn phụ một lần riêng biệt
-- cùng phương thức truyền tải harness gốc khi phiên dùng harness gốc
-- không làm nhiễu ngữ cảnh tương lai
-- không lưu bản ghi hội thoại
-
-Đối với các phiên harness Codex, BTW vẫn nằm trong Codex bằng cách fork luồng
-app-server đang hoạt động thành một luồng phụ tạm thời. Điều đó giữ nguyên OAuth
-Codex và hành vi luồng gốc, đồng thời vẫn cô lập câu trả lời phụ khỏi bản ghi
-hội thoại cha. Giống như `/side` của Codex, luồng phụ giữ các quyền Codex hiện
-tại và bề mặt công cụ gốc, với các guardrail yêu cầu mô hình không xem công việc
-kế thừa từ luồng cha là chỉ dẫn đang hoạt động.
-
-Đối với các bí danh runtime CLI, BTW dùng backend CLI sở hữu ở chế độ câu hỏi
-phụ thay vì rơi về một lệnh gọi provider trực tiếp. OpenClaw đưa ngữ cảnh hội
-thoại đã được làm sạch vào một lần gọi CLI một lần mới, tắt việc đóng gói công
-cụ MCP của OpenClaw và trạng thái phiên CLI có thể tái sử dụng cho lần gọi đó,
-và để backend thêm mọi cờ no-resume hoặc no-tools gốc của CLI mà nó hỗ trợ. Các
-runtime không phải CLI trực tiếp vẫn giữ đường dẫn một lần trực tiếp.
-
-## Những điều nó không làm
-
-`/btw` **không**:
-
-- tạo một phiên bền vững mới,
-- tiếp tục tác vụ chính chưa hoàn tất,
-- ghi dữ liệu câu hỏi/câu trả lời BTW vào lịch sử bản ghi hội thoại,
-- xuất hiện trong `chat.history`,
-- tồn tại sau khi tải lại.
-
-Nó được thiết kế là **tạm thời**.
-
-## Cách ngữ cảnh hoạt động
-
-BTW dùng phiên hiện tại chỉ làm **ngữ cảnh nền**.
-
-Nếu lượt chạy chính hiện đang hoạt động, OpenClaw chụp nhanh trạng thái tin
-nhắn hiện tại và bao gồm prompt chính đang chạy làm ngữ cảnh nền, đồng thời yêu
-cầu rõ mô hình:
-
-- chỉ trả lời câu hỏi phụ,
-- không tiếp tục hoặc hoàn tất tác vụ chính chưa xong,
-- không điều hướng cuộc hội thoại cha.
-
-Điều đó giữ BTW tách biệt khỏi lượt chạy chính, đồng thời vẫn giúp nó nhận biết
-phiên đang nói về điều gì.
+`/btw` không tạo phiên lâu dài, tiếp tục tác vụ chính chưa hoàn tất,
+lưu dữ liệu câu hỏi/câu trả lời vào lịch sử bản ghi hoặc tồn tại sau khi tải lại.
 
 ## Mô hình phân phối
 
-BTW **không** được phân phối như một tin nhắn bản ghi hội thoại trợ lý thông thường.
+Trò chuyện trợ lý thông thường sử dụng sự kiện Gateway `chat`. BTW sử dụng một
+sự kiện `chat.side_result` riêng để ứng dụng khách không thể nhầm sự kiện này với
+lịch sử hội thoại thông thường. Vì sự kiện này không được phát lại từ `chat.history`, nó
+sẽ biến mất sau khi tải lại.
 
-Ở cấp giao thức Gateway:
+## Hành vi trên các giao diện
 
-- chat trợ lý thông thường dùng sự kiện `chat`
-- BTW dùng sự kiện `chat.side_result`
+| Giao diện          | Hành vi                                                                                                                                                                                                                                                                            |
+| ----------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| TUI               | Được hiển thị nội tuyến trong nhật ký trò chuyện, khác biệt rõ ràng so với câu trả lời thông thường và có thể đóng bằng `Enter` hoặc `Esc`.                                                                                                                                                                           |
+| Kênh bên ngoài | Được gửi dưới dạng câu trả lời dùng một lần có nhãn rõ ràng (Telegram, WhatsApp, Discord không có lớp phủ tạm thời cục bộ).                                                                                                                                                                         |
+| Control UI / web  | Được hiển thị dưới dạng bảng nổi "Trò chuyện phụ" được ghim vào luồng. Các câu trả lời tích lũy thành nhiều lượt và ô nhập "Hỏi tiếp" dùng để đặt câu hỏi phụ tiếp theo. Đóng (`Esc` hoặc dấu X) sẽ giữ lại cuộc hội thoại và mở lại khi có câu trả lời tiếp theo; nút thùng rác sẽ xóa cuộc hội thoại và dừng lượt chạy đang chờ. |
 
-Sự tách biệt này là có chủ đích. Nếu BTW tái sử dụng đường dẫn sự kiện `chat`
-thông thường, client sẽ xem nó như lịch sử hội thoại thường lệ.
+## Cửa sổ bật lên khi chọn (Control UI)
 
-Vì BTW dùng một sự kiện trực tiếp riêng và không được phát lại từ
-`chat.history`, nó biến mất sau khi tải lại.
+Việc tô sáng văn bản trong một tin nhắn trò chuyện trên Control UI sẽ mở một
+cửa sổ bật lên nhỏ với hai thao tác:
 
-## Hành vi bề mặt
+- **Thêm chi tiết** ngay lập tức gửi một câu hỏi `/btw` ngầm định, yêu cầu
+  mô hình giải thích văn bản được tô sáng trong ngữ cảnh của phiên
+  hiện tại. Câu trả lời xuất hiện trong bảng trò chuyện phụ nổi.
+- **Hỏi trong trò chuyện phụ** điền sẵn vào ô soạn thảo một bản nháp `/btw` có trích dẫn
+  văn bản được tô sáng để bạn có thể nhập câu hỏi của riêng mình về văn bản đó.
 
-### TUI
+Cả hai thao tác đều tuân theo ngữ nghĩa `/btw` thông thường: câu hỏi và câu trả lời
+không được đưa vào lịch sử phiên, đồng thời lượt chạy chính không bị ảnh hưởng.
 
-Trong TUI, BTW được hiển thị nội tuyến trong chế độ xem phiên hiện tại, nhưng
-nó vẫn là tạm thời:
+## Khi nào nên sử dụng
 
-- khác biệt rõ ràng với một câu trả lời trợ lý thông thường
-- có thể đóng bằng `Enter` hoặc `Esc`
-- không được phát lại khi tải lại
-
-### Kênh bên ngoài
-
-Trên các kênh như Telegram, WhatsApp và Discord, BTW được gửi dưới dạng một câu
-trả lời một lần có nhãn rõ ràng vì các bề mặt đó không có khái niệm lớp phủ tạm
-thời cục bộ.
-
-Câu trả lời vẫn được xử lý như một kết quả phụ, không phải lịch sử phiên thông thường.
-
-### Control UI / web
-
-Gateway phát BTW đúng cách dưới dạng `chat.side_result`, và BTW không được bao
-gồm trong `chat.history`, nên hợp đồng lưu bền đã đúng cho web.
-
-Control UI hiện tại vẫn cần một consumer `chat.side_result` chuyên dụng để hiển
-thị BTW trực tiếp trong trình duyệt. Cho đến khi hỗ trợ phía client đó được hoàn
-thiện, BTW là một tính năng cấp Gateway với đầy đủ hành vi trong TUI và kênh
-bên ngoài, nhưng chưa phải là một UX trình duyệt hoàn chỉnh.
-
-## Khi nào nên dùng BTW
-
-Dùng `/btw` khi bạn muốn:
-
-- làm rõ nhanh về công việc hiện tại,
-- một câu trả lời phụ mang tính sự kiện trong khi một lượt chạy dài vẫn đang tiếp diễn,
-- một câu trả lời tạm thời không nên trở thành một phần của ngữ cảnh phiên trong tương lai.
-
-Ví dụ:
+Sử dụng `/btw` để yêu cầu giải thích nhanh, nhận câu trả lời phụ về dữ kiện trong khi một lượt chạy dài
+vẫn đang diễn ra hoặc nhận câu trả lời tạm thời không nên được đưa vào ngữ cảnh
+phiên trong tương lai.
 
 ```text
-/btw what file are we editing?
-/side what changed while the main run continued?
-/btw what does this error mean?
-/btw summarize the current task in one sentence
-/btw what is 17 * 19?
+/btw chúng ta đang chỉnh sửa tệp nào?
+/btw tóm tắt tác vụ hiện tại trong một câu
+/btw 17 * 19 bằng bao nhiêu?
 ```
 
-## Khi nào không nên dùng BTW
-
-Không dùng `/btw` khi bạn muốn câu trả lời trở thành một phần của ngữ cảnh làm
-việc tương lai của phiên.
-
-Trong trường hợp đó, hãy hỏi bình thường trong phiên chính thay vì dùng BTW.
+Đối với bất kỳ nội dung nào bạn muốn trở thành một phần trong ngữ cảnh làm việc
+tương lai của phiên, hãy đặt câu hỏi theo cách thông thường trong phiên chính.
 
 ## Liên quan
 
 <CardGroup cols={2}>
-  <Card title="Slash commands" href="/vi/tools/slash-commands" icon="terminal">
-    Danh mục lệnh gốc và chỉ thị chat.
+  <Card title="Lệnh dấu gạch chéo" href="/vi/tools/slash-commands" icon="terminal">
+    Danh mục lệnh gốc và các chỉ thị trò chuyện.
   </Card>
-  <Card title="Thinking levels" href="/vi/tools/thinking" icon="brain">
-    Các mức nỗ lực suy luận cho lệnh gọi mô hình câu hỏi phụ.
+  <Card title="Mức độ suy luận" href="/vi/tools/thinking" icon="brain">
+    Các mức nỗ lực suy luận cho lệnh gọi mô hình xử lý câu hỏi phụ.
   </Card>
-  <Card title="Session" href="/vi/concepts/session" icon="comments">
-    Khóa phiên, lịch sử và ngữ nghĩa lưu bền.
+  <Card title="Phiên" href="/vi/concepts/session" icon="comments">
+    Khóa phiên, lịch sử và ngữ nghĩa lưu giữ.
   </Card>
-  <Card title="Steer command" href="/vi/tools/steer" icon="arrow-right">
-    Chèn một tin nhắn điều hướng vào lượt chạy đang hoạt động mà không kết thúc nó.
+  <Card title="Lệnh điều hướng" href="/vi/tools/steer" icon="arrow-right">
+    Chèn một tin nhắn điều hướng vào lượt chạy đang hoạt động mà không kết thúc lượt chạy.
   </Card>
 </CardGroup>

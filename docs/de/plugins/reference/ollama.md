@@ -1,14 +1,15 @@
 ---
 read_when:
-    - Sie installieren, konfigurieren oder überprüfen das Ollama-Plugin
-summary: Fügt Unterstützung für die Modell-Provider Ollama und Ollama Cloud zu OpenClaw hinzu.
+    - Sie installieren, konfigurieren oder prüfen das ollama-Plugin.
+summary: Fügt OpenClaw Unterstützung für die Modell-Provider Ollama und Ollama Cloud hinzu.
 title: Ollama-Plugin
 x-i18n:
-    generated_at: "2026-07-12T02:00:13Z"
+    generated_at: "2026-07-16T13:11:08Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 2d37136b5bcc8e6f9efb2cfcae52836546e62a5526215118490598e2c4152810
+    source_hash: 53410854f05d88fda0e6c7d4fe06d9288fc9cd55e3cbbeffd0fae9347f2c787d
     source_path: plugins/reference/ollama.md
     workflow: 16
 ---
@@ -22,9 +23,9 @@ Fügt OpenClaw Unterstützung für die Modell-Provider Ollama und Ollama Cloud h
 - Paket: `@openclaw/ollama-provider`
 - Installationsweg: in OpenClaw enthalten
 
-## Schnittstelle
+## Oberfläche
 
-Provider: ollama, ollama-cloud; Verträge: memoryEmbeddingProviders, tools, webSearchProviders
+Provider: `ollama`, `ollama-cloud`; Verträge: `memoryEmbeddingProviders`, `tools`, `webSearchProviders`
 
 ## Zugehörige Dokumentation
 

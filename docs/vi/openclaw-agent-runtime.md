@@ -1,90 +1,86 @@
 ---
 read_when:
-    - Làm việc trên mã hoặc bài kiểm thử runtime agent của OpenClaw
-    - Đang chạy các luồng lint, kiểm tra kiểu và kiểm thử trực tiếp của agent-runtime
-summary: 'Quy trình làm việc dành cho nhà phát triển cho runtime tác nhân OpenClaw: xây dựng, kiểm thử và xác thực trực tiếp'
-title: Quy trình làm việc của runtime tác tử OpenClaw
+    - Làm việc với mã runtime hoặc các bài kiểm thử của tác tử OpenClaw
+    - Chạy các quy trình lint, kiểm tra kiểu và kiểm thử trực tiếp cho môi trường chạy tác tử
+summary: 'Quy trình làm việc dành cho nhà phát triển đối với môi trường chạy tác nhân OpenClaw: xây dựng, kiểm thử và xác thực trực tiếp'
+title: Quy trình runtime của tác tử OpenClaw
 x-i18n:
-    generated_at: "2026-06-27T17:40:45Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T14:37:54Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: fbe2a192ff7954577f8cbeae33676cbfd330f297d31c1917d2ab52898c2c5064
+    source_hash: 044f05779bef4ad18478081ba44d84356723c8a0be764440aa9d2b976d167324
     source_path: openclaw-agent-runtime.md
     workflow: 16
 ---
 
-Một quy trình hợp lý để làm việc trên thời gian chạy agent OpenClaw trong OpenClaw.
+Quy trình làm việc dành cho nhà phát triển đối với runtime của agent (`src/agents/`) trong kho lưu trữ OpenClaw.
 
 ## Kiểm tra kiểu và lint
 
-- Cổng kiểm tra cục bộ mặc định: `pnpm check`
-- Cổng build: `pnpm build` khi thay đổi có thể ảnh hưởng đến đầu ra build, đóng gói, hoặc ranh giới lazy-loading/module
-- Cổng đầy đủ trước khi land cho thay đổi thời gian chạy agent: `pnpm check && pnpm test`
+- Cổng kiểm tra cục bộ mặc định: `pnpm check` (kiểm tra kiểu, lint, các biện pháp bảo vệ chính sách)
+- Cổng kiểm tra bản dựng: `pnpm build` khi thay đổi có thể ảnh hưởng đến đầu ra bản dựng, việc đóng gói hoặc các ranh giới tải lười/mô-đun
+- Cổng kiểm tra đầy đủ trước khi đẩy lên: `pnpm build && pnpm check && pnpm check:test-types && pnpm test`
 
-## Chạy kiểm thử thời gian chạy agent
+## Chạy các bài kiểm thử runtime của agent
 
-Chạy trực tiếp bộ kiểm thử thời gian chạy agent bằng Vitest:
+Chạy các bộ kiểm thử đơn vị cho runtime của agent:
 
 ```bash
 pnpm test \
   "src/agents/agent-*.test.ts" \
   "src/agents/embedded-agent-*.test.ts" \
-  "src/agents/agent-tools*.test.ts" \
-  "src/agents/agent-settings.test.ts" \
-  "src/agents/agent-tool-definition-adapter*.test.ts" \
   "src/agents/agent-hooks/**/*.test.ts"
 ```
 
-Để bao gồm bài kiểm tra nhà cung cấp trực tiếp:
+Mẫu glob đầu tiên cũng bao gồm các bộ kiểm thử `agent-tools*`, `agent-settings` và
+`agent-tool-definition-adapter*`.
+
+Các bài kiểm thử trực tiếp bị loại khỏi cấu hình kiểm thử đơn vị; hãy chạy chúng thông qua
+trình bao kiểm thử trực tiếp (thiết lập `OPENCLAW_LIVE_TEST=1` và yêu cầu thông tin xác thực của nhà cung cấp):
 
 ```bash
-OPENCLAW_LIVE_TEST=1 pnpm test src/agents/embedded-agent-runner-extraparams.live.test.ts
+pnpm test:live src/agents/embedded-agent-runner-extraparams.live.test.ts
 ```
-
-Phần này bao phủ các bộ kiểm thử đơn vị chính của thời gian chạy agent:
-
-- `src/agents/agent-*.test.ts`
-- `src/agents/embedded-agent-*.test.ts`
-- `src/agents/agent-tools*.test.ts`
-- `src/agents/agent-settings.test.ts`
-- `src/agents/agent-tool-definition-adapter.test.ts`
-- `src/agents/agent-hooks/*.test.ts`
 
 ## Kiểm thử thủ công
 
-Luồng được khuyến nghị:
+- Chạy Gateway ở chế độ phát triển (bỏ qua kết nối kênh thông qua `OPENCLAW_SKIP_CHANNELS=1`): `pnpm gateway:dev`
+- Kích hoạt một lượt agent thông qua Gateway: `pnpm openclaw agent --message "Hello" --thinking low`
+- Sử dụng TUI để gỡ lỗi tương tác: `pnpm tui`
 
-- Chạy Gateway ở chế độ dev:
-  - `pnpm gateway:dev`
-- Kích hoạt agent trực tiếp:
-  - `pnpm openclaw agent --message "Hello" --thinking low`
-- Dùng TUI để gỡ lỗi tương tác:
-  - `pnpm tui`
+Để kiểm tra hành vi gọi công cụ, hãy yêu cầu một thao tác `read` hoặc `exec` để có thể theo dõi
+việc truyền trực tuyến từ công cụ và xử lý tải trọng.
 
-Đối với hành vi gọi công cụ, hãy yêu cầu một hành động `read` hoặc `exec` để bạn có thể thấy quá trình truyền công cụ và xử lý payload.
+## Đặt lại về trạng thái sạch
 
-## Đặt lại từ đầu
+Trạng thái nằm trong thư mục trạng thái của OpenClaw: mặc định là `~/.openclaw`, hoặc
+`$OPENCLAW_STATE_DIR` khi được thiết lập. Các đường dẫn tương đối với thư mục đó:
 
-Trạng thái nằm trong thư mục trạng thái OpenClaw. Mặc định là `~/.openclaw`. Nếu `OPENCLAW_STATE_DIR` được đặt, hãy dùng thư mục đó thay thế.
+| Đường dẫn                                      | Nội dung lưu trữ                                                    |
+| ---------------------------------------------- | ------------------------------------------------------------------ |
+| `openclaw.json`                                | Cấu hình                                                            |
+| `state/openclaw.sqlite`                        | Cơ sở dữ liệu trạng thái runtime dùng chung                         |
+| `agents/<agentId>/agent/openclaw-agent.sqlite` | Hồ sơ xác thực mô hình theo từng agent (khóa API + OAuth) và trạng thái runtime |
+| `credentials/`                                 | Thông tin xác thực của nhà cung cấp/kênh nằm ngoài kho hồ sơ xác thực |
+| `agents/<agentId>/sessions/`                   | Lịch sử bản chép lời và nguồn di chuyển phiên cũ                    |
+| `sessions/`                                    | Kho phiên một agent cũ (chỉ dành cho các bản cài đặt cũ)           |
+| `workspace/`                                   | Không gian làm việc mặc định của agent (các agent bổ sung sử dụng `workspace-<agentId>`)   |
 
-Để đặt lại mọi thứ:
+Xóa các đường dẫn đó để đặt lại hoàn toàn. Các tùy chọn đặt lại có phạm vi hẹp hơn:
 
-- `openclaw.json` cho cấu hình
-- `agents/<agentId>/agent/auth-profiles.json` cho hồ sơ xác thực mô hình (khóa API + OAuth)
-- `credentials/` cho trạng thái nhà cung cấp/kênh vẫn còn nằm ngoài kho hồ sơ xác thực
-- `agents/<agentId>/sessions/` cho lịch sử phiên agent
-- `agents/<agentId>/sessions/sessions.json` cho chỉ mục phiên
-- `sessions/` nếu các đường dẫn legacy tồn tại
-- `workspace/` nếu bạn muốn một workspace trống
+- Chỉ phiên: không xóa `agents/<agentId>/agent/openclaw-agent.sqlite`; các hàng phiên nằm ở đó cùng với trạng thái khác theo từng agent. Sử dụng `/new` hoặc `/reset` để bắt đầu một phiên mới cho một cuộc trò chuyện và `openclaw sessions cleanup` để bảo trì phiên.
+- Giữ lại xác thực: giữ nguyên `agents/<agentId>/agent/openclaw-agent.sqlite` và `credentials/`.
 
-Nếu bạn chỉ muốn đặt lại phiên, hãy xóa `agents/<agentId>/sessions/` cho agent đó. Nếu bạn muốn giữ xác thực, hãy giữ nguyên `agents/<agentId>/agent/auth-profiles.json` và mọi trạng thái nhà cung cấp trong `credentials/`.
+Các tệp `auth-profiles.json` cũ không còn được đọc trong thời gian chạy;
+`openclaw doctor --fix` nhập chúng vào kho SQLite.
 
-## Tham khảo
+## Tài liệu tham khảo
 
 - [Kiểm thử](/vi/help/testing)
 - [Bắt đầu](/vi/start/getting-started)
 
 ## Liên quan
 
-- [Kiến trúc thời gian chạy agent OpenClaw](/vi/agent-runtime-architecture)
+- [Kiến trúc runtime của agent OpenClaw](/vi/agent-runtime-architecture)

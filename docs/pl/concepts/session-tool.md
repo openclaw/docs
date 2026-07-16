@@ -1,42 +1,36 @@
 ---
 read_when:
-    - Chcesz zrozumieć, jakimi narzędziami sesji dysponuje agent
-    - Chcesz skonfigurować dostęp między sesjami lub uruchamianie subagentów
-    - Chcesz sprawdzić stan uruchomionego subagenta
-summary: Narzędzia agenta do statusu między sesjami, przywoływania informacji, komunikacji i orkiestracji podagentów
+    - Chcesz zrozumieć, jakie narzędzia sesji ma agent
+    - Chcesz skonfigurować dostęp między sesjami lub uruchamianie podagentów
+    - Chcesz sprawdzić stan uruchomionego podagenta
+summary: Narzędzia agenta do obsługi statusu między sesjami, przywoływania informacji, komunikacji i koordynacji podagentów
 title: Narzędzia sesji
 x-i18n:
-    generated_at: "2026-07-04T20:45:13Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T18:33:59Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 2f344642b8d234984719cc603b4ac8773314a0bffdb0ac7d5a7280e584c5f530
+    source_hash: fb0827e2eff6e53d3e7ef6f7d7f0497d8b431fcb23cb4b54c5851229086423cc
     source_path: concepts/session-tool.md
     workflow: 16
 ---
 
-OpenClaw daje agentom narzędzia do pracy między sesjami, sprawdzania statusu i
-koordynowania podagentów.
+OpenClaw udostępnia agentom narzędzia do pracy między sesjami, sprawdzania stanu i koordynowania podagentów.
 
 ## Dostępne narzędzia
 
-| Narzędzie          | Co robi                                                                      |
-| ------------------ | --------------------------------------------------------------------------- |
-| `sessions_list`    | Wyświetla listę sesji z opcjonalnymi filtrami (rodzaj, etykieta, agent, archiwum, podgląd) |
-| `sessions_history` | Odczytuje transkrypt konkretnej sesji                                        |
-| `sessions_send`    | Wysyła wiadomość do innej sesji i opcjonalnie czeka                         |
-| `sessions_spawn`   | Uruchamia izolowaną sesję podagenta do pracy w tle                          |
-| `sessions_yield`   | Kończy bieżącą turę i czeka na dalsze wyniki podagenta                      |
-| `subagents`        | Wyświetla status uruchomionych podagentów dla tej sesji                     |
-| `session_status`   | Pokazuje kartę w stylu `/status` i opcjonalnie ustawia nadpisanie modelu dla sesji |
+| Narzędzie          | Działanie                                                                    |
+| ------------------ | ---------------------------------------------------------------------------- |
+| `sessions_list`    | Wyświetla sesje z opcjonalnymi filtrami (rodzaj, etykieta, agent, archiwum, podgląd) |
+| `sessions_history` | Odczytuje transkrypcję określonej sesji                                      |
+| `sessions_send`    | Wysyła wiadomość do innej sesji i opcjonalnie oczekuje                       |
+| `sessions_spawn`   | Uruchamia izolowaną sesję podagenta do pracy w tle                            |
+| `sessions_yield`   | Kończy bieżącą turę i oczekuje na kolejne wyniki podagentów                   |
+| `subagents`        | Wyświetla stan podagentów uruchomionych w tej sesji                           |
+| `session_status`   | Wyświetla kartę w stylu `/status` i opcjonalnie ustawia nadpisanie modelu dla sesji |
 
-Te narzędzia nadal podlegają aktywnemu profilowi narzędzi oraz zasadom
-zezwalania/odmowy. `tools.profile: "coding"` obejmuje pełny zestaw koordynacji
-sesji, w tym `sessions_spawn`, `sessions_yield` i `subagents`.
-`tools.profile: "messaging"` obejmuje narzędzia komunikacji między sesjami
-(`sessions_list`, `sessions_history`, `sessions_send`, `session_status`), ale
-nie obejmuje uruchamiania podagentów. Aby zachować profil wiadomości i nadal
-zezwolić na natywne delegowanie, dodaj:
+Narzędzia te nadal podlegają aktywnemu profilowi narzędzi oraz zasadom zezwalania i blokowania. `tools.profile: "coding"` obejmuje pełny zestaw koordynowania sesji, w tym `sessions_spawn`, `sessions_yield` i `subagents`. `tools.profile: "messaging"` obejmuje narzędzia do komunikacji między sesjami (`sessions_list`, `sessions_history`, `sessions_send`, `session_status`), ale nie pozwala uruchamiać podagentów. Aby zachować profil komunikacyjny i jednocześnie zezwolić na natywne delegowanie, należy dodać:
 
 ```json5
 {
@@ -47,173 +41,105 @@ zezwolić na natywne delegowanie, dodaj:
 }
 ```
 
-Zasady grup, dostawców, piaskownicy i poszczególnych agentów nadal mogą usuwać
-te narzędzia po etapie profilu. Użyj `/tools` z dotkniętej sesji, aby sprawdzić
-efektywną listę narzędzi.
+Zasady grupy, dostawcy, piaskownicy i poszczególnych agentów nadal mogą usuwać te narzędzia po zastosowaniu profilu. Aby sprawdzić obowiązującą listę narzędzi, należy użyć `/tools` w odpowiedniej sesji.
 
 ## Wyświetlanie i odczytywanie sesji
 
-`sessions_list` zwraca sesje wraz z ich kluczem, agentId, rodzajem, kanałem,
-modelem, licznikami tokenów i znacznikami czasu. Filtruj według rodzaju (`main`,
-`group`, `cron`, `hook`, `node`), dokładnej wartości `label`, dokładnej wartości
-`agentId`, tekstu wyszukiwania lub ostatniej aktywności (`activeMinutes`).
-Domyślnie zwracane są aktywne sesje; przekaż `archived: true`, aby sprawdzić
-zarchiwizowane sesje. Wiersze obejmują stan przypięcia i archiwizacji. Gdy
-potrzebujesz triage’u w stylu skrzynki odbiorczej, narzędzie może też poprosić
-o tytuł pochodny ograniczony widocznością, fragment podglądu ostatniej wiadomości
-lub ograniczone najnowsze wiadomości w każdym wierszu. Tytuły pochodne i podglądy
-są tworzone tylko dla sesji, które wywołujący już może widzieć zgodnie ze
-skonfigurowaną zasadą widoczności narzędzi sesji, więc niepowiązane sesje
-pozostają ukryte. Gdy widoczność jest ograniczona, `sessions_list` zwraca
-opcjonalne metadane `visibility`, pokazujące efektywny tryb i ostrzeżenie, że
-wyniki mogą być ograniczone zakresem.
+`sessions_list` zwraca sesje wraz z ich kluczem, agentId, rodzajem, kanałem, modelem, liczbą tokenów i znacznikami czasu. Można filtrować według `kinds` (tablica; akceptowane wartości: `main`, `group`, `cron`, `hook`, `node`, `other`), dokładnego `label`, dokładnego `agentId`, tekstu `search` lub czasu od ostatniej aktywności (`activeMinutes`). Domyślnie zwracane są aktywne sesje; aby zamiast nich sprawdzić zarchiwizowane sesje, należy przekazać `archived: true`. Wiersze zawierają stan `pinned` i `archived`. Gdy potrzebna jest selekcja podobna do skrzynki odbiorczej, należy ustawić `includeDerivedTitles`, `includeLastMessage` lub `messageLimit` (maksymalnie 20): tytuł pochodny ograniczony zakresem widoczności, fragment podglądu ostatniej wiadomości albo ograniczony zestaw ostatnich wiadomości w każdym wierszu. Tytuły pochodne i podglądy są generowane wyłącznie dla sesji, które wywołujący może już zobaczyć zgodnie ze skonfigurowaną zasadą widoczności narzędzi sesji, dlatego niepowiązane sesje pozostają ukryte. Gdy widoczność jest ograniczona, `sessions_list` zwraca opcjonalne metadane `visibility` przedstawiające obowiązujący tryb oraz ostrzeżenie, że zakres wyników może być ograniczony.
 
-`sessions_history` pobiera transkrypt rozmowy dla konkretnej sesji.
-Domyślnie wyniki narzędzi są wykluczone -- przekaż `includeTools: true`, aby je
-zobaczyć. Użyj `limit` dla najnowszego ograniczonego ogona. Przekaż `offset: 0`,
-gdy potrzebujesz metadanych paginacji, a następnie przekazuj zwrócone wartości
-`nextOffset`, aby stronicować wstecz przez starsze okna transkryptu OpenClaw bez
-odczytywania surowych plików transkryptu. Jawne strony przesunięcia nie scalają
-zewnętrznych importów awaryjnych CLI; użyj domyślnego widoku najnowszego ogona,
-gdy potrzebujesz tej scalonej historii wyświetlania.
+`sessions_history` pobiera transkrypcję rozmowy dla określonej sesji. Domyślnie wyniki narzędzi są wykluczone; aby je wyświetlić, należy przekazać `includeTools: true`. Aby uzyskać najnowszy ograniczony fragment końcowy, należy użyć `limit`. Gdy potrzebne są metadane paginacji, należy przekazać `offset: 0`, a następnie używać zwróconych wartości `nextOffset`, aby stronicować wstecz przez starsze okna transkrypcji OpenClaw bez odczytywania surowych plików transkrypcji. Strony z jawnym przesunięciem nie scalają zewnętrznych importów awaryjnych CLI; gdy potrzebna jest scalona historia wyświetlania, należy użyć domyślnego widoku najnowszego fragmentu końcowego (bez `offset`).
+
 Zwracany widok jest celowo ograniczony i filtrowany pod kątem bezpieczeństwa:
 
 - tekst asystenta jest normalizowany przed przywołaniem:
-  - tagi myślenia są usuwane
+  - tagi rozumowania są usuwane
   - bloki szkieletowe `<relevant-memories>` / `<relevant_memories>` są usuwane
-  - bloki ładunku XML wywołań narzędzi w zwykłym tekście, takie jak `<tool_call>...</tool_call>`,
-    `<function_call>...</function_call>`, `<tool_calls>...</tool_calls>` i
-    `<function_calls>...</function_calls>`, są usuwane, w tym ucięte
-    ładunki, które nigdy nie zamykają się poprawnie
-  - zdegradowane szkielety wywołań/wyników narzędzi, takie jak `[Tool Call: ...]`,
-    `[Tool Result ...]` i `[Historical context ...]`, są usuwane
-  - ujawnione tokeny sterowania modelu, takie jak `<|assistant|>`, inne tokeny ASCII
-    `<|...|>` oraz warianty pełnej szerokości `<｜...｜>` są usuwane
-  - nieprawidłowy XML wywołań narzędzi MiniMax, taki jak `<invoke ...>` /
-    `</minimax:tool_call>`, jest usuwany
-- tekst przypominający poświadczenia/tokeny jest redagowany przed zwróceniem
+  - bloki ładunku XML wywołań narzędzi w zwykłym tekście, takie jak `<tool_call>...</tool_call>`, `<function_call>...</function_call>`, `<tool_calls>...</tool_calls>` i `<function_calls>...</function_calls>`, są usuwane, w tym obcięte ładunki, które nie zostały poprawnie zamknięte
+  - zdegradowane elementy szkieletowe wywołań narzędzi i ich wyników, takie jak `[Tool Call: ...]`, `[Tool Result ...]` i `[Historical context ...]`, są usuwane
+  - ujawnione tokeny sterujące modelu, takie jak `<|assistant|>`, inne tokeny ASCII `<|...|>` oraz pełnoszerokie warianty `<｜...｜>`, są usuwane
+  - nieprawidłowo sformatowany kod XML wywołań narzędzi MiniMax, taki jak `<invoke ...>` / `</minimax:tool_call>`, jest usuwany
+- tekst przypominający dane uwierzytelniające lub tokeny jest redagowany przed zwróceniem
 - długie bloki tekstu są obcinane
-- bardzo duże historie mogą pomijać starsze wiersze lub zastąpić zbyt duży wiersz
-  wpisem `[sessions_history omitted: message too large]`
-- narzędzie raportuje flagi podsumowania, takie jak `truncated`, `droppedMessages`,
-  `contentTruncated`, `contentRedacted`, `bytes`, oraz metadane paginacji
+- w bardzo obszernych historiach starsze wiersze mogą zostać pominięte, a zbyt duży wiersz może zostać zastąpiony przez `[sessions_history omitted: message too large]`
+- narzędzie zgłasza flagi podsumowania, takie jak `truncated`, `droppedMessages`, `contentTruncated`, `contentRedacted`, `bytes`, oraz metadane paginacji
 
-Oba narzędzia akceptują albo **klucz sesji** (np. `"main"`), albo **identyfikator sesji**
-z poprzedniego wywołania listy.
+Oba narzędzia przyjmują **klucz sesji** (na przykład `"main"`) albo **identyfikator sesji** z poprzedniego wywołania listy.
 
-Jeśli potrzebujesz dokładnego transkryptu bajt po bajcie, sprawdź plik transkryptu
-na dysku zamiast traktować `sessions_history` jako surowy zrzut.
+Jeśli potrzebna jest dokładna surowa transkrypcja, należy sprawdzić wiersze transkrypcji SQLite o odpowiednim zakresie zamiast traktować `sessions_history` jako niefiltrowany zrzut.
 
 ## Wysyłanie wiadomości między sesjami
 
-`sessions_send` dostarcza wiadomość do innej sesji i opcjonalnie czeka na
-odpowiedź:
+`sessions_send` dostarcza wiadomość do innej sesji i opcjonalnie oczekuje na odpowiedź:
 
-- **Wyślij i zapomnij:** ustaw `timeoutSeconds: 0`, aby dodać do kolejki i wrócić
-  natychmiast.
-- **Czekaj na odpowiedź:** ustaw limit czasu i uzyskaj odpowiedź w miejscu wywołania.
+- **Wyślij i nie oczekuj:** należy ustawić `timeoutSeconds: 0`, aby dodać wiadomość do kolejki i natychmiast zwrócić sterowanie.
+- **Oczekiwanie na odpowiedź:** należy ustawić limit czasu, aby otrzymać odpowiedź bezpośrednio w wyniku.
 
-Sesje czatu o zakresie wątku, takie jak klucze Slack lub Discord kończące się na
-`:thread:<id>`, nie są prawidłowymi celami `sessions_send`. Użyj klucza sesji
-kanału nadrzędnego do koordynacji między agentami, aby wiadomości kierowane przez
-narzędzia nie pojawiały się w aktywnym wątku widocznym dla człowieka.
+Sesje czatu ograniczone do wątku, na przykład klucze kończące się na `:thread:<id>`, nie są prawidłowymi celami `sessions_send`. Do koordynacji między agentami należy używać klucza nadrzędnej sesji kanału, aby wiadomości kierowane przez narzędzia nie pojawiały się w aktywnym wątku widocznym dla użytkownika.
 
-Wiadomości i dalsze odpowiedzi A2A są oznaczane jako dane między sesjami w
-prompcie odbiorcy (`[Inter-session message ... isUser=false]`) oraz w pochodzeniu
-transkryptu. Agent odbierający powinien traktować je jako dane kierowane przez
-narzędzie, a nie jako bezpośrednią instrukcję napisaną przez użytkownika końcowego.
+Wiadomości i kolejne odpowiedzi A2A są oznaczane jako dane między sesjami w monicie odbierającym (`[Inter-session message ... isUser=false]`) oraz w pochodzeniu transkrypcji. Agent odbierający powinien traktować je jako dane kierowane przez narzędzie, a nie jako instrukcje napisane bezpośrednio przez użytkownika końcowego.
 
-Po odpowiedzi celu OpenClaw może uruchomić **pętlę odpowiedzi zwrotnych**, w której
-agenci naprzemiennie wysyłają wiadomości (do `session.agentToAgent.maxPingPongTurns`,
-zakres 0-20, domyślnie 5). Agent docelowy może odpowiedzieć
-`REPLY_SKIP`, aby zakończyć wcześniej.
+Gdy cel odpowie, OpenClaw może uruchomić **pętlę odpowiedzi zwrotnych**, w której agenci wymieniają się wiadomościami (do `session.agentToAgent.maxPingPongTurns`, zakres 0–20, domyślnie 5). Agent docelowy może odpowiedzieć `REPLY_SKIP`, aby zakończyć wcześniej.
 
-## Pomocniki statusu i koordynacji
+Należy przekazać `watch: true`, aby dodatkowo zarejestrować nadawcę jako obserwatora zmian stanu celu: gdy później inny uczestnik wyśle do celu bezpośrednią wiadomość od człowieka lub zmieni jego cel, nadawca otrzyma powiadomienie systemowe wskazujące `session_status` `changesSince`. Rejestracja następuje po pomyślnym wysłaniu, dotyczy sesji, która faktycznie otrzymała wiadomość, i rozpoczyna się od jej bieżącej wersji stanu, dlatego powiadomienia wywołują tylko późniejsze zmiany. Wynik zgłasza `watched: true`, gdy rejestracja się powiedzie. Zobacz [Świadomość stanu sesji](/concepts/session-state).
 
-`session_status` to lekkie narzędzie równoważne `/status` dla bieżącej lub innej
-widocznej sesji. Raportuje użycie, czas, stan modelu/środowiska uruchomieniowego
-oraz powiązany kontekst zadań w tle, gdy jest obecny. Tak jak `/status`, może
-uzupełnić rzadkie liczniki tokenów/pamięci podręcznej z najnowszego wpisu użycia
-transkryptu, a `model=default` czyści nadpisanie dla sesji. Użyj
-`sessionKey="current"` dla bieżącej sesji wywołującego; widoczne etykiety klienta,
-takie jak `openclaw-tui`, nie są kluczami sesji.
+## Pomocnicze narzędzia stanu i koordynacji
 
-Gdy dostępne są metadane trasy, `session_status` obejmuje także widoczny blok JSON
-`Route context` oraz odpowiadające mu ustrukturyzowane pola `details`. Te pola
-odróżniają klucz sesji od trasy, która aktualnie obsługuje uruchomienie na żywo:
+`session_status` jest lekkim narzędziem równoważnym `/status` dla bieżącej lub innej widocznej sesji. Zgłasza użycie, czas, stan modelu i środowiska wykonawczego oraz — jeśli występuje — kontekst powiązanego zadania w tle. Podobnie jak `/status`, może uzupełniać niepełne liczniki tokenów i pamięci podręcznej na podstawie najnowszego wpisu użycia w transkrypcji, a `model=default` usuwa nadpisanie dla sesji. Dla bieżącej sesji wywołującego należy użyć `sessionKey="current"`; widoczne etykiety klienta, takie jak `openclaw-tui`, nie są kluczami sesji.
 
-- `origin` to miejsce, w którym sesja została utworzona, albo dostawca wywnioskowany
-  z prefiksu klucza sesji możliwego do dostarczenia, gdy starszy stan nie ma
-  zapisanych metadanych pochodzenia.
-- `active` to bieżąca trasa uruchomienia na żywo. Jest raportowana tylko dla
-  sesji na żywo lub bieżącej sesji obsługiwanej teraz.
-- `deliveryContext` to utrwalona trasa dostarczania zapisana w sesji,
-  której OpenClaw może ponownie użyć do późniejszego dostarczenia, nawet gdy
-  aktywna powierzchnia jest inna.
+Gdy dostępne są metadane routingu, `session_status` zawiera również widoczny blok JSON `Route context` oraz odpowiadające mu ustrukturyzowane pola `details`. Pola te odróżniają klucz sesji od trasy, która obecnie obsługuje aktywne wykonanie:
 
-`sessions_yield` celowo kończy bieżącą turę, aby następną wiadomością mogło być
-zdarzenie uzupełniające, na które czekasz. Użyj go po uruchomieniu podagentów, gdy
-chcesz, aby wyniki zakończenia dotarły jako następna wiadomość zamiast budować
-pętle odpytywania.
+- `origin` określa miejsce utworzenia sesji albo dostawcę wywnioskowanego z prefiksu klucza sesji umożliwiającej dostarczenie, gdy starszy stan nie zawiera zapisanych metadanych pochodzenia.
+- `active` to bieżąca trasa aktywnego wykonania. Jest zgłaszana wyłącznie dla aktywnej lub bieżącej sesji, która jest obecnie obsługiwana.
+- `deliveryContext` to utrwalona trasa dostarczania zapisana w sesji, której OpenClaw może ponownie użyć do późniejszego dostarczania, nawet gdy aktywny interfejs jest inny.
 
-`subagents` to pomocnik widoczności dla już uruchomionych podagentów OpenClaw.
-Obsługuje `action: "list"` do sprawdzania aktywnych/najnowszych uruchomień.
+## Zmiany stanu sesji
+
+OpenClaw przechowuje trwały dziennik sygnałów istotnych zmian stanu sesji (bezpośrednich wiadomości od człowieka do obserwowanych sesji, wyników wykonań potomnych, zmian celów i Compaction). Wiersze `sessions_list` i `session_status` udostępniają `stateVersion` sesji, a `session_status` przyjmuje `changesSince: <version>`, aby zwrócić typowane zdarzenia po tej wersji, wraz z dokładnym sygnałem `historyGap`, gdy żądana wersja jest starsza niż zachowana historia. Obserwatorzy — automatycznie rodzice uruchamiający procesy potomne, jawnie `sessions_send watch: true` — otrzymują jedno zbiorcze powiadomienie o nieaktualnym stanie, gdy inny uczestnik zmieni obserwowaną sesję.
+
+Pełny model — rodzaje zdarzeń, rejestrację obserwatorów, protokół powiadomień zapobiegający spamowi, przepływ uzgadniania i bieżące ograniczenia — opisano w sekcji [Świadomość stanu sesji](/concepts/session-state).
+
+`sessions_yield` celowo kończy bieżącą turę, aby następna wiadomość mogła być oczekiwanym zdarzeniem uzupełniającym. Należy go użyć po uruchomieniu podagentów, gdy wyniki ukończenia mają nadejść jako następna wiadomość zamiast tworzenia pętli odpytywania.
+
+`subagents` jest narzędziem pomocniczym widoczności dla już uruchomionych podagentów OpenClaw. Obsługuje `action: "list"` do sprawdzania aktywnych i ostatnich wykonań.
 
 ## Uruchamianie podagentów
 
-`sessions_spawn` domyślnie tworzy izolowaną sesję dla zadania w tle.
-Zawsze działa nieblokująco -- natychmiast zwraca `runId` i
-`childSessionKey`. Natywne uruchomienia podagentów otrzymują oddelegowane zadanie
-w pierwszej widocznej wiadomości `[Subagent Task]` sesji podrzędnej, podczas gdy
-prompt systemowy przenosi tylko reguły środowiska uruchomieniowego podagenta i
-kontekst routingu.
+`sessions_spawn` domyślnie tworzy izolowaną sesję dla zadania w tle. Operacja jest zawsze nieblokująca; natychmiast zwraca `runId` i `childSessionKey`. Natywne wykonania podagentów otrzymują delegowane zadanie w pierwszej widocznej wiadomości `[Subagent Task]` sesji potomnej, natomiast monit systemowy zawiera wyłącznie reguły środowiska wykonawczego podagenta i kontekst routingu.
 
-Kluczowe opcje:
+Najważniejsze opcje:
 
-- `runtime: "subagent"` (domyślnie) albo `"acp"` dla zewnętrznych agentów harness.
-- Nadpisania `model` i `thinking` dla sesji podrzędnej.
-- `thread: true`, aby powiązać uruchomienie z wątkiem czatu (Discord, Slack itd.).
-- `sandbox: "require"`, aby wymusić piaskownicę na elemencie podrzędnym.
-- `context: "fork"` dla natywnych podagentów, gdy element podrzędny potrzebuje
-  bieżącego transkryptu żądającego; pomiń tę opcję albo użyj `context: "isolated"`
-  dla czystego elementu podrzędnego. Natywne podagenty powiązane z wątkiem
-  domyślnie używają `context: "fork"`, chyba że `threadBindings.defaultSpawnContext`
-  mówi inaczej.
+- `runtime: "subagent"` (domyślnie) lub `"acp"` dla agentów zewnętrznego mechanizmu uruchamiania.
+- nadpisania `model` i `thinking` dla sesji potomnej.
+- `thread: true` wiążące uruchomienie z wątkiem czatu (Discord, Slack itp.).
+- `sandbox: "require"` wymuszające piaskownicę dla procesu potomnego.
+- `context: "fork"` dla natywnych podagentów, gdy proces potomny potrzebuje transkrypcji bieżącego wnioskodawcy; aby utworzyć czysty proces potomny, należy pominąć tę opcję lub użyć `context: "isolated"`. `context: "fork"` jest prawidłowe tylko z `runtime: "subagent"`. Natywne podagenty powiązane z wątkiem domyślnie używają `context: "fork"`, chyba że `threadBindings.defaultSpawnContext` stanowi inaczej.
 
-Domyślne podagenty liściowe nie otrzymują narzędzi sesji. Gdy
-`maxSpawnDepth >= 2`, podagenty koordynujące poziomu 1 dodatkowo otrzymują
-`sessions_spawn`, `subagents`, `sessions_list` i `sessions_history`, aby mogły
-zarządzać własnymi elementami podrzędnymi. Uruchomienia liściowe nadal nie
-otrzymują rekurencyjnych narzędzi koordynacji.
+Domyślne podagenty końcowe nie otrzymują narzędzi sesji. Gdy `maxSpawnDepth >= 2`, podagenty koordynujące na głębokości 1 otrzymują dodatkowo `sessions_spawn`, `subagents`, `sessions_list` i `sessions_history`, aby mogły zarządzać własnymi procesami potomnymi. Wykonania końcowe nadal nie otrzymują narzędzi do rekurencyjnego koordynowania.
 
-Po zakończeniu krok ogłoszenia publikuje wynik w kanale żądającego. Dostarczenie
-zakończenia zachowuje powiązany routing wątku/tematu, gdy jest dostępny, a jeśli
-pochodzenie zakończenia identyfikuje tylko kanał, OpenClaw nadal może ponownie
-użyć zapisanej trasy sesji żądającego (`lastChannel` / `lastTo`) do bezpośredniego
-dostarczenia.
+Po ukończeniu etap ogłoszenia publikuje wynik w kanale wnioskodawcy. Dostarczanie informacji o ukończeniu zachowuje powiązany routing wątku lub tematu, gdy jest dostępny, a jeśli pochodzenie ukończenia wskazuje tylko kanał, OpenClaw może nadal ponownie użyć zapisanej trasy sesji wnioskodawcy (`lastChannel` / `lastTo`) do bezpośredniego dostarczenia.
 
-Zachowanie specyficzne dla ACP opisano w [Agentach ACP](/pl/tools/acp-agents).
+Zachowanie specyficzne dla ACP opisano w sekcji [Agenci ACP](/pl/tools/acp-agents).
 
 ## Widoczność
 
-Narzędzia sesji mają zakres ograniczający to, co agent może zobaczyć:
+Zakres narzędzi sesji ogranicza dane widoczne dla agenta:
 
 | Poziom  | Zakres                                   |
 | ------- | ---------------------------------------- |
 | `self`  | Tylko bieżąca sesja                      |
-| `tree`  | Bieżąca sesja + uruchomione podagenty    |
+| `tree`  | Bieżąca sesja i uruchomione podagenty    |
 | `agent` | Wszystkie sesje tego agenta              |
 | `all`   | Wszystkie sesje (między agentami, jeśli skonfigurowano) |
 
-Domyślnie używane jest `tree`. Sesje w piaskownicy są ograniczane do `tree`
-niezależnie od konfiguracji.
+Wartością domyślną jest `tree`. Sesje w piaskownicy są ograniczone do `tree` niezależnie od konfiguracji.
 
 ## Dalsza lektura
 
-- [Zarządzanie sesjami](/pl/concepts/session) -- routing, cykl życia, utrzymanie
-- [Agenci ACP](/pl/tools/acp-agents) -- uruchamianie zewnętrznego harness
-- [Wielu agentów](/pl/concepts/multi-agent) -- architektura wielu agentów
-- [Konfiguracja Gateway](/pl/gateway/configuration) -- opcje konfiguracji narzędzi sesji
+- [Zarządzanie sesjami](/pl/concepts/session): routing, cykl życia, utrzymanie
+- [Podagenci](/pl/tools/subagents): cykl życia sesji podrzędnych i dostarczanie
+- [Agenci ACP](/pl/tools/acp-agents): uruchamianie zewnętrznych środowisk wykonawczych
+- [Wieloagentowość](/pl/concepts/multi-agent): architektura wieloagentowa
+- [Konfiguracja Gateway](/pl/gateway/configuration): opcje konfiguracji narzędzia sesji
 
 ## Powiązane
 

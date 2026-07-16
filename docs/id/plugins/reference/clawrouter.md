@@ -1,14 +1,15 @@
 ---
 read_when:
-    - Anda sedang memasang, mengonfigurasi, atau mengaudit plugin clawrouter
+    - Anda sedang menginstal, mengonfigurasi, atau mengaudit plugin clawrouter
 summary: Menambahkan dukungan penyedia model ClawRouter ke OpenClaw.
 title: Plugin ClawRouter
 x-i18n:
-    generated_at: "2026-07-12T14:26:12Z"
+    generated_at: "2026-07-16T18:25:16Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 9e9b6bb73e00ead4df682d7c5873b1fd97f84c7c9fe29d4f511403c598651f82
+    source_hash: 86cb1c6ea40d38f916642ba922daeef19115e667ff4069a63fa5b40f5f48e344
     source_path: plugins/reference/clawrouter.md
     workflow: 16
 ---
@@ -20,11 +21,11 @@ Menambahkan dukungan penyedia model ClawRouter ke OpenClaw.
 ## Distribusi
 
 - Paket: `@openclaw/clawrouter`
-- Jalur instalasi: disertakan dalam OpenClaw
+- Rute instalasi: disertakan dalam OpenClaw
 
 ## Permukaan
 
-penyedia: clawrouter; kontrak: usageProviders
+penyedia: `clawrouter`; kontrak: `usageProviders`
 
 ## Dokumentasi terkait
 

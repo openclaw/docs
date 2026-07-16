@@ -1,84 +1,80 @@
 ---
 read_when:
-    - Werken aan OpenClaw-agentruntimecode of -tests
-    - Agent-runtime lint-, typecheck- en live-testflows uitvoeren
-summary: 'Ontwikkelaarsworkflow voor de OpenClaw-agentruntime: bouwen, testen en livevalidatie'
+    - Werken aan runtimecode of tests voor OpenClaw-agenten
+    - Lint-, typecheck- en livetestflows voor de agent-runtime uitvoeren
+summary: 'Workflow voor ontwikkelaars van de OpenClaw-agentruntime: bouwen, testen en live valideren'
 title: OpenClaw-agentruntimeworkflow
 x-i18n:
-    generated_at: "2026-06-27T17:45:43Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T15:52:01Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: fbe2a192ff7954577f8cbeae33676cbfd330f297d31c1917d2ab52898c2c5064
+    source_hash: 044f05779bef4ad18478081ba44d84356723c8a0be764440aa9d2b976d167324
     source_path: openclaw-agent-runtime.md
     workflow: 16
 ---
 
-Een verstandige workflow voor werken aan de OpenClaw-agentruntime in OpenClaw.
+Ontwikkelaarsworkflow voor de agentruntime (`src/agents/`) in de OpenClaw-repository.
 
 ## Typecontrole en linting
 
-- Standaard lokale gate: `pnpm check`
-- Build-gate: `pnpm build` wanneer de wijziging build-uitvoer, packaging of lazy-loading-/modulegrenzen kan beïnvloeden
-- Volledige landingsgate voor wijzigingen aan de agentruntime: `pnpm check && pnpm test`
+- Standaard lokale controle: `pnpm check` (typecontrole, linting, beleidscontroles)
+- Buildcontrole: `pnpm build` wanneer de wijziging invloed kan hebben op builduitvoer, packaging of grenzen voor lazy loading/modules
+- Volledige controle vóór pushen: `pnpm build && pnpm check && pnpm check:test-types && pnpm test`
 
 ## Agentruntimetests uitvoeren
 
-Voer de agentruntime-testset direct uit met Vitest:
+Voer de unit-testsuites voor de agentruntime uit:
 
 ```bash
 pnpm test \
   "src/agents/agent-*.test.ts" \
   "src/agents/embedded-agent-*.test.ts" \
-  "src/agents/agent-tools*.test.ts" \
-  "src/agents/agent-settings.test.ts" \
-  "src/agents/agent-tool-definition-adapter*.test.ts" \
   "src/agents/agent-hooks/**/*.test.ts"
 ```
 
-Om de live provider-oefening op te nemen:
+Het eerste globpatroon omvat ook de suites `agent-tools*`, `agent-settings` en
+`agent-tool-definition-adapter*`.
+
+Live tests zijn uitgesloten van de unitconfiguratie; voer ze uit via de live
+wrapper (stelt `OPENCLAW_LIVE_TEST=1` in en vereist providerreferenties):
 
 ```bash
-OPENCLAW_LIVE_TEST=1 pnpm test src/agents/embedded-agent-runner-extraparams.live.test.ts
+pnpm test:live src/agents/embedded-agent-runner-extraparams.live.test.ts
 ```
-
-Dit dekt de belangrijkste unit-suites voor de agentruntime:
-
-- `src/agents/agent-*.test.ts`
-- `src/agents/embedded-agent-*.test.ts`
-- `src/agents/agent-tools*.test.ts`
-- `src/agents/agent-settings.test.ts`
-- `src/agents/agent-tool-definition-adapter.test.ts`
-- `src/agents/agent-hooks/*.test.ts`
 
 ## Handmatig testen
 
-Aanbevolen flow:
+- Voer de Gateway uit in ontwikkelmodus (slaat kanaalverbindingen over via `OPENCLAW_SKIP_CHANNELS=1`): `pnpm gateway:dev`
+- Activeer één agentbeurt via de Gateway: `pnpm openclaw agent --message "Hello" --thinking low`
+- Gebruik de TUI voor interactief debuggen: `pnpm tui`
 
-- Voer de Gateway uit in dev-modus:
-  - `pnpm gateway:dev`
-- Activeer de agent direct:
-  - `pnpm openclaw agent --message "Hello" --thinking low`
-- Gebruik de TUI voor interactief debuggen:
-  - `pnpm tui`
+Vraag voor het gedrag van toolaanroepen om een actie met `read` of `exec`, zodat je
+toolstreaming en payloadverwerking kunt volgen.
 
-Voor gedrag van tool-calls vraag je om een `read`- of `exec`-actie, zodat je toolstreaming en payloadverwerking kunt zien.
+## Volledige reset
 
-## Reset met schone lei
+De status bevindt zich in de OpenClaw-statusmap: standaard `~/.openclaw`, of
+`$OPENCLAW_STATE_DIR` wanneer deze is ingesteld. Paden relatief ten opzichte van die map:
 
-State staat onder de OpenClaw-state-directory. Standaard is dit `~/.openclaw`. Als `OPENCLAW_STATE_DIR` is ingesteld, gebruik dan in plaats daarvan die directory.
+| Pad                                            | Bevat                                                                         |
+| ---------------------------------------------- | ----------------------------------------------------------------------------- |
+| `openclaw.json`                             | Configuratie                                                                  |
+| `state/openclaw.sqlite`                             | Gedeelde database met runtimestatus                                           |
+| `agents/<agentId>/agent/openclaw-agent.sqlite`                             | Modelauthenticatieprofielen per agent (API-sleutels + OAuth) en runtimestatus |
+| `credentials/`                             | Provider-/kanaalreferenties buiten de opslag voor authenticatieprofielen      |
+| `agents/<agentId>/sessions/`                             | Transcriptgeschiedenis en bronnen voor migratie van verouderde sessies        |
+| `sessions/`                             | Verouderde sessieopslag voor één agent (alleen oude installaties)             |
+| `workspace/`                             | Standaardwerkruimte voor agents (extra agents gebruiken `workspace-<agentId>`)   |
 
-Alles resetten:
+Verwijder deze paden voor een volledige reset. Beperktere resets:
 
-- `openclaw.json` voor configuratie
-- `agents/<agentId>/agent/auth-profiles.json` voor model-auth-profielen (API-sleutels + OAuth)
-- `credentials/` voor provider-/channel-state die nog buiten de auth-profielstore staat
-- `agents/<agentId>/sessions/` voor agentsessiegeschiedenis
-- `agents/<agentId>/sessions/sessions.json` voor de sessie-index
-- `sessions/` als legacy-paden bestaan
-- `workspace/` als je een lege workspace wilt
+- Alleen sessies: verwijder `agents/<agentId>/agent/openclaw-agent.sqlite` niet; sessierijen staan daar naast andere status per agent. Gebruik `/new` of `/reset` om voor één chat een nieuwe sessie te starten en `openclaw sessions cleanup` voor sessieonderhoud.
+- Authenticatie behouden: laat `agents/<agentId>/agent/openclaw-agent.sqlite` en `credentials/` staan.
 
-Als je alleen sessies wilt resetten, verwijder dan `agents/<agentId>/sessions/` voor die agent. Als je auth wilt behouden, laat dan `agents/<agentId>/agent/auth-profiles.json` en eventuele provider-state onder `credentials/` staan.
+Verouderde `auth-profiles.json`-bestanden worden tijdens runtime niet meer gelezen;
+`openclaw doctor --fix` importeert ze in de SQLite-opslag.
 
 ## Referenties
 
@@ -87,4 +83,4 @@ Als je alleen sessies wilt resetten, verwijder dan `agents/<agentId>/sessions/` 
 
 ## Gerelateerd
 
-- [OpenClaw-architectuur voor agentruntime](/nl/agent-runtime-architecture)
+- [Architectuur van de OpenClaw-agentruntime](/nl/agent-runtime-architecture)

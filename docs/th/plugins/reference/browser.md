@@ -4,11 +4,12 @@ read_when:
 summary: เพิ่มเครื่องมือที่เอเจนต์สามารถเรียกใช้ได้
 title: Plugin เบราว์เซอร์
 x-i18n:
-    generated_at: "2026-07-12T16:32:16Z"
+    generated_at: "2026-07-16T19:32:02Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 2dcf562660fa3d05d22856335a7d2e6e467a432ee6dda5650efd94edde661ba4
+    source_hash: fa1ca51dce3992d718cdb6e6fec1656c224c021419852e2a2c467a334f251289
     source_path: plugins/reference/browser.md
     workflow: 16
 ---
@@ -20,11 +21,11 @@ x-i18n:
 ## การเผยแพร่
 
 - แพ็กเกจ: `@openclaw/browser-plugin`
-- วิธีติดตั้ง: รวมอยู่ใน OpenClaw
+- ช่องทางการติดตั้ง: รวมอยู่ใน OpenClaw
 
 ## ส่วนติดต่อ
 
-สัญญา: เครื่องมือ; Skills
+สัญญา: `tools`; Skills
 
 ## เอกสารที่เกี่ยวข้อง
 

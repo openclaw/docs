@@ -1,116 +1,129 @@
 ---
 read_when:
-    - आप /new, /reset, /stop, और एजेंट लाइफ़साइकल इवेंट्स के लिए इवेंट-संचालित ऑटोमेशन चाहते हैं
-    - आप hooks बनाना, इंस्टॉल करना या debug करना चाहते हैं
-summary: 'हुक्स: कमांड और जीवनचक्र घटनाओं के लिए इवेंट-संचालित स्वचालन'
-title: Hooks
+    - आप /new, /reset, /stop और एजेंट जीवनचक्र इवेंट के लिए इवेंट-संचालित स्वचालन चाहते हैं
+    - आप hooks बनाना, इंस्टॉल करना या डीबग करना चाहते हैं
+summary: 'हुक्स: कमांड और जीवनचक्र घटनाओं के लिए घटना-संचालित स्वचालन'
+title: हुक्स
 x-i18n:
-    generated_at: "2026-06-28T22:32:33Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T13:09:11Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 0259739b0547ba4826b540d392c6d6b72c6bec24fd50d5e297817694fd728438
+    source_hash: ba09acf45cc09d4ce84b9dda36af2a720ccefbfaed23a1558dd36358ce56701a
     source_path: automation/hooks.md
     workflow: 16
 ---
 
-हुक छोटे स्क्रिप्ट होते हैं जो Gateway के अंदर कुछ होने पर चलते हैं। उन्हें डायरेक्टरियों से खोजा जा सकता है और `openclaw hooks` से निरीक्षित किया जा सकता है। Gateway आंतरिक हुक केवल तब लोड करता है जब आप हुक सक्षम करते हैं या कम से कम एक हुक एंट्री, हुक पैक, लेगेसी हैंडलर, या अतिरिक्त हुक डायरेक्टरी कॉन्फ़िगर करते हैं।
+Hooks छोटी स्क्रिप्ट होती हैं जो एजेंट इवेंट सक्रिय होने पर Gateway के भीतर चलती हैं: `/new`, `/reset`, `/stop` जैसे कमांड, सेशन Compaction, Gateway जीवनचक्र और संदेश प्रवाह। इन्हें डायरेक्टरियों से खोजा जाता है और `openclaw hooks` से प्रबंधित किया जाता है। Gateway आंतरिक Hooks को तभी लोड करता है, जब आप Hooks सक्षम करते हैं या कम-से-कम एक Hook प्रविष्टि, Hook पैक, लेगेसी हैंडलर या अतिरिक्त Hook डायरेक्टरी कॉन्फ़िगर करते हैं।
 
-OpenClaw में दो प्रकार के हुक होते हैं:
+OpenClaw में Hooks दो प्रकार के होते हैं:
 
-- **आंतरिक हुक** (यह पेज): Gateway के अंदर तब चलते हैं जब एजेंट इवेंट फायर होते हैं, जैसे `/new`, `/reset`, `/stop`, या लाइफ़साइकल इवेंट।
-- **Webhooks**: बाहरी HTTP एंडपॉइंट जो अन्य सिस्टमों को OpenClaw में काम ट्रिगर करने देते हैं। देखें [Webhooks](/hi/automation/cron-jobs#webhooks)।
+- **आंतरिक Hooks** (यह पृष्ठ): एजेंट इवेंट सक्रिय होने पर Gateway के भीतर चलते हैं।
+- **Webhooks**: बाहरी HTTP एंडपॉइंट, जो अन्य सिस्टम को OpenClaw में कार्य शुरू करने देते हैं। [Webhooks](/hi/automation/cron-jobs#webhooks) देखें।
 
-हुक Plugin के अंदर भी बंडल किए जा सकते हैं। `openclaw hooks list` स्टैंडअलोन हुक और Plugin-प्रबंधित हुक, दोनों दिखाता है।
+Hooks को Plugins के भीतर भी बंडल किया जा सकता है। `openclaw hooks list` स्टैंडअलोन Hooks और Plugin-प्रबंधित Hooks (जिन्हें `plugin:<id>` के रूप में दिखाया जाता है), दोनों दिखाता है।
 
 ## सही सतह चुनें
 
-OpenClaw में कई एक्सटेंशन सतहें हैं जो समान दिखती हैं लेकिन अलग समस्याएँ हल करती हैं:
+OpenClaw में कई एक्सटेंशन सतहें हैं जो देखने में समान लगती हैं, लेकिन अलग-अलग समस्याएँ हल करती हैं:
 
-| यदि आप चाहते हैं...                                                                                                     | उपयोग करें...                                | क्यों                                                                                           |
+| यदि आप यह करना चाहते हैं...                                                                                                     | इसका उपयोग करें...                                | कारण                                                                                           |
 | --------------------------------------------------------------------------------------------------------------------- | ------------------------------------- | --------------------------------------------------------------------------------------------- |
-| `/new` पर स्नैपशॉट सहेजना, `/reset` लॉग करना, `message:sent` के बाद बाहरी API कॉल करना, या मोटा ऑपरेटर ऑटोमेशन जोड़ना | आंतरिक हुक (`HOOK.md`, यह पेज) | फ़ाइल-आधारित हुक ऑपरेटर-प्रबंधित साइड इफ़ेक्ट और कमांड/लाइफ़साइकल ऑटोमेशन के लिए हैं |
-| प्रॉम्प्ट फिर से लिखना, टूल ब्लॉक करना, आउटबाउंड संदेश रद्द करना, या क्रमबद्ध मिडलवेयर/नीति जोड़ना                              | `api.on(...)` के माध्यम से टाइप्ड Plugin हुक  | टाइप्ड हुक में स्पष्ट कॉन्ट्रैक्ट, प्राथमिकताएँ, मर्ज नियम, और ब्लॉक/रद्द सेमांटिक्स होते हैं      |
-| केवल टेलीमेट्री एक्सपोर्ट या ऑब्ज़र्वेबिलिटी जोड़ना                                                                            | डायग्नॉस्टिक इवेंट                     | ऑब्ज़र्वेबिलिटी एक अलग इवेंट बस है, नीति हुक सतह नहीं                              |
+| `/new` पर स्नैपशॉट सहेजना, `/reset` को लॉग करना, `message:sent` के बाद बाहरी API कॉल करना या मोटे स्तर का ऑपरेटर ऑटोमेशन जोड़ना | आंतरिक Hooks (`HOOK.md`, यह पृष्ठ) | फ़ाइल-आधारित Hooks ऑपरेटर-प्रबंधित साइड इफ़ेक्ट और कमांड/जीवनचक्र ऑटोमेशन के लिए होते हैं |
+| प्रॉम्प्ट फिर से लिखना, टूल ब्लॉक करना, आउटबाउंड संदेश रद्द करना या क्रमबद्ध मिडलवेयर/नीति जोड़ना                              | `api.on(...)` के माध्यम से टाइप किए गए Plugin Hooks  | टाइप किए गए Hooks में स्पष्ट अनुबंध, प्राथमिकताएँ, मर्ज नियम और ब्लॉक/रद्द करने की अर्थवत्ता होती है      |
+| केवल टेलीमेट्री का निर्यात या ऑब्ज़र्वेबिलिटी जोड़ना                                                                            | डायग्नोस्टिक इवेंट                     | ऑब्ज़र्वेबिलिटी एक अलग इवेंट बस है, नीति Hook सतह नहीं                              |
 
-जब आप ऐसा ऑटोमेशन चाहते हैं जो छोटे इंस्टॉल किए गए इंटीग्रेशन जैसा व्यवहार करे, तब आंतरिक हुक इस्तेमाल करें। जब आपको रनटाइम लाइफ़साइकल नियंत्रण चाहिए, तब टाइप्ड Plugin हुक इस्तेमाल करें।
+जब आप ऐसा ऑटोमेशन चाहते हों जो एक छोटे इंस्टॉल किए गए इंटीग्रेशन की तरह काम करे, तो आंतरिक Hooks का उपयोग करें। जब आपको रनटाइम जीवनचक्र नियंत्रण चाहिए, तो टाइप किए गए Plugin Hooks का उपयोग करें।
 
-## क्विक स्टार्ट
+## त्वरित शुरुआत
 
 ```bash
-# List available hooks
+# उपलब्ध hooks सूचीबद्ध करें
 openclaw hooks list
 
-# Enable a hook
+# किसी hook को सक्षम करें
 openclaw hooks enable session-memory
 
-# Check hook status
+# hook की स्थिति जाँचें
 openclaw hooks check
 
-# Get detailed information
+# विस्तृत जानकारी प्राप्त करें
 openclaw hooks info session-memory
 ```
 
 ## इवेंट प्रकार
 
-| इवेंट                    | कब फायर होता है                                              |
+Hooks इस तालिका की किसी विशिष्ट कुंजी की सदस्यता लेते हैं, या उस परिवार की प्रत्येक क्रिया प्राप्त करने के लिए
+केवल परिवार के नाम (`command`, `session`, `agent`, `gateway`, `message`) की सदस्यता लेते हैं।
+OpenClaw कोर इनके अलावा कुछ भी उत्सर्जित नहीं करता, इसलिए कोई अन्य नाम लगभग
+हमेशा टाइपो होता है, जो Hook को बिना किसी सूचना के निष्क्रिय छोड़ देता है (केवल कस्टम
+इवेंट उत्सर्जित करने वाला Plugin ही उसे सक्रिय कर सकता है)। Hook लोडर ऐसे नामों
+(उदाहरण के लिए `command:nwe`) के लिए चेतावनी लॉग करता है और `openclaw hooks info <name>` उन्हें चिह्नित करता है, इसलिए
+कभी न चलने वाले Hook का निदान किया जा सकता है।
+
+| इवेंट                    | यह कब सक्रिय होता है                                              |
 | ------------------------ | ---------------------------------------------------------- |
-| `command:new`            | `/new` कमांड जारी किया गया                                      |
-| `command:reset`          | `/reset` कमांड जारी किया गया                                    |
-| `command:stop`           | `/stop` कमांड जारी किया गया                                     |
-| `command`                | कोई भी कमांड इवेंट (सामान्य लिस्नर)                       |
-| `session:compact:before` | Compaction इतिहास का सारांश बनाने से पहले                       |
-| `session:compact:after`  | Compaction पूरी होने के बाद                                 |
-| `session:patch`          | जब सेशन प्रॉपर्टियाँ बदली जाती हैं                       |
+| `command:new`            | `/new` कमांड जारी होने पर                                      |
+| `command:reset`          | `/reset` कमांड जारी होने पर                                    |
+| `command:stop`           | `/stop` कमांड जारी होने पर                                     |
+| `command`                | कोई भी कमांड इवेंट (सामान्य लिसनर)                       |
+| `session:compact:before` | Compaction द्वारा इतिहास का सारांश बनाने से पहले                       |
+| `session:compact:after`  | Compaction पूरा होने के बाद                                 |
+| `session:patch`          | सेशन गुणों में बदलाव होने पर                       |
 | `agent:bootstrap`        | वर्कस्पेस बूटस्ट्रैप फ़ाइलें इंजेक्ट होने से पहले              |
-| `gateway:startup`        | चैनल शुरू होने और हुक लोड होने के बाद                  |
-| `gateway:shutdown`       | जब Gateway शटडाउन शुरू होता है                               |
+| `gateway:startup`        | चैनल शुरू होने और Hooks लोड होने के बाद                  |
+| `gateway:shutdown`       | Gateway शटडाउन शुरू होने पर                               |
 | `gateway:pre-restart`    | अपेक्षित Gateway रीस्टार्ट से पहले                         |
 | `message:received`       | किसी भी चैनल से इनबाउंड संदेश                           |
 | `message:transcribed`    | ऑडियो ट्रांसक्रिप्शन पूरा होने के बाद                        |
-| `message:preprocessed`   | मीडिया और लिंक प्रीप्रोसेसिंग पूरी होने या स्किप होने के बाद |
-| `message:sent`           | आउटबाउंड संदेश डिलीवर हुआ                                 |
+| `message:preprocessed`   | मीडिया और लिंक की प्रीप्रोसेसिंग पूरी होने या छोड़े जाने के बाद |
+| `message:sent`           | आउटबाउंड प्रेषण का प्रयास होने पर (`context.success` में परिणाम होता है) |
 
-## हुक लिखना
+## Hooks लिखना
 
-### हुक संरचना
+### Hook संरचना
 
-हर हुक एक डायरेक्टरी है जिसमें दो फ़ाइलें होती हैं:
+प्रत्येक Hook एक डायरेक्टरी होता है जिसमें दो फ़ाइलें होती हैं:
 
-```
+```text
 my-hook/
-├── HOOK.md          # Metadata + documentation
-└── handler.ts       # Handler implementation
+├── HOOK.md          # मेटाडेटा + दस्तावेज़
+└── handler.ts       # हैंडलर कार्यान्वयन
 ```
 
-### HOOK.md फ़ॉर्मैट
+हैंडलर फ़ाइल `handler.ts`, `handler.js`, `index.ts` या `index.js` हो सकती है।
+
+### HOOK.md प्रारूप
 
 ```markdown
 ---
 name: my-hook
-description: "Short description of what this hook does"
+description: "यह hook क्या करता है, इसका संक्षिप्त विवरण"
 metadata:
   { "openclaw": { "emoji": "🔗", "events": ["command:new"], "requires": { "bins": ["node"] } } }
 ---
 
-# My Hook
+# मेरा Hook
 
-Detailed documentation goes here.
+विस्तृत दस्तावेज़ यहाँ दिए जाते हैं।
 ```
 
 **मेटाडेटा फ़ील्ड** (`metadata.openclaw`):
 
 | फ़ील्ड      | विवरण                                          |
 | ---------- | ---------------------------------------------------- |
-| `emoji`    | CLI के लिए डिस्प्ले इमोजी                                |
-| `events`   | सुनने के लिए इवेंट की ऐरे                        |
-| `export`   | उपयोग करने के लिए नामित एक्सपोर्ट (डिफ़ॉल्ट `"default"`)        |
+| `emoji`    | CLI के लिए प्रदर्शित इमोजी                                |
+| `events`   | सुने जाने वाले इवेंट की सरणी                        |
+| `export`   | उपयोग किया जाने वाला नामित एक्सपोर्ट (डिफ़ॉल्ट `"default"`)        |
 | `os`       | आवश्यक प्लेटफ़ॉर्म (जैसे, `["darwin", "linux"]`)     |
-| `requires` | आवश्यक `bins`, `anyBins`, `env`, या `config` पाथ |
-| `always`   | पात्रता जाँचों को बायपास करें (बूलियन)                  |
+| `requires` | आवश्यक `bins`, `anyBins`, `env` या `config` पाथ |
+| `always`   | पात्रता जाँच को बायपास करना (बूलियन)                  |
+| `hookKey`  | कॉन्फ़िगरेशन कुंजी ओवरराइड (डिफ़ॉल्ट Hook का नाम)      |
+| `homepage` | `openclaw hooks info` द्वारा दिखाई जाने वाली दस्तावेज़ URL              |
 | `install`  | इंस्टॉलेशन विधियाँ                                 |
 
-### हैंडलर इम्प्लीमेंटेशन
+### हैंडलर कार्यान्वयन
 
 ```typescript
 const handler = async (event) => {
@@ -118,49 +131,52 @@ const handler = async (event) => {
     return;
   }
 
-  console.log(`[my-hook] New command triggered`);
-  // Your logic here
+  console.log(`[my-hook] नया कमांड सक्रिय हुआ`);
+  // आपका तर्क यहाँ
 
-  // Optionally send a reply on replyable surfaces
-  event.messages.push("Hook executed!");
+  // उत्तर देने योग्य सतहों पर वैकल्पिक रूप से उत्तर भेजें
+  event.messages.push("Hook निष्पादित हुआ!");
 };
 
 export default handler;
 ```
 
-हर इवेंट में शामिल होता है: `type`, `action`, `sessionKey`, `timestamp`, `messages` (केवल जवाब देने योग्य सतहों पर जवाब यहाँ पुश करें), और `context` (इवेंट-विशिष्ट डेटा)। एजेंट और टूल Plugin हुक कॉन्टेक्स्ट में `trace` भी शामिल हो सकता है, एक रीड-ओनली W3C-संगत डायग्नॉस्टिक ट्रेस कॉन्टेक्स्ट जिसे Plugin OTEL सहसंबंध के लिए स्ट्रक्चर्ड लॉग में पास कर सकते हैं।
+प्रत्येक इवेंट में ये शामिल होते हैं: `type`, `action`, `sessionKey`, `timestamp`, `messages` और `context` (इवेंट-विशिष्ट डेटा)। एजेंट और टूल Hooks के लिए टाइप किए गए Plugin Hook संदर्भों में `trace` भी शामिल हो सकता है, जो केवल-पढ़ने योग्य W3C-संगत डायग्नोस्टिक ट्रेस संदर्भ है और जिसे Plugins OTEL सहसंबंध के लिए संरचित लॉग में भेज सकते हैं।
 
-`event.messages` केवल जवाब देने योग्य सतहों जैसे
-`command:*` और `message:received` पर अपने आप डिलीवर किया जाता है। केवल लाइफ़साइकल इवेंट जैसे
-`agent:bootstrap`, `session:*`, `gateway:*`, या `message:sent` में
-जवाब चैनल नहीं होता और वे पुश किए गए संदेशों को अनदेखा करते हैं।
+`event.messages` में भेजी गई स्ट्रिंग केवल
+`command:new` और `command:reset` के लिए चैट में वापस पहुँचाई जाती हैं (मूल
+बातचीत के उत्तर के रूप में रूट की जाती हैं) और `session:compact:before` / `session:compact:after`
+के लिए (Compaction स्थिति सूचनाओं के रूप में भेजी जाती हैं)। `command:stop`, `message:*`, `agent:bootstrap`, `session:patch` और
+`gateway:*` सहित अन्य सभी इवेंट भेजे गए संदेशों को अनदेखा करते हैं।
 
-### इवेंट कॉन्टेक्स्ट हाइलाइट
+### इवेंट संदर्भ की मुख्य बातें
 
-**कमांड इवेंट** (`command:new`, `command:reset`): `context.sessionEntry`, `context.previousSessionEntry`, `context.commandSource`, `context.workspaceDir`, `context.cfg`।
+**कमांड इवेंट** (`command:new`, `command:reset`): `context.sessionEntry`, `context.previousSessionEntry`, `context.commandSource`, `context.senderId`, `context.workspaceDir`, `context.cfg`।
 
-**संदेश इवेंट** (`message:received`): `context.from`, `context.content`, `context.channelId`, `context.metadata` (प्रोवाइडर-विशिष्ट डेटा जिसमें `senderId`, `senderName`, `guildId` शामिल हैं)। `context.content` कमांड-जैसे संदेशों के लिए गैर-रिक्त कमांड बॉडी को प्राथमिकता देता है, फिर कच्ची इनबाउंड बॉडी और जेनेरिक बॉडी पर वापस जाता है; इसमें एजेंट-ओनली एनरिचमेंट जैसे थ्रेड इतिहास या लिंक सारांश शामिल नहीं होते।
+**कमांड इवेंट** (`command:stop`): `context.sessionEntry`, `context.sessionId`, `context.commandSource`, `context.senderId`।
 
-**संदेश इवेंट** (`message:sent`): `context.to`, `context.content`, `context.success`, `context.channelId`।
+**संदेश इवेंट** (`message:received`): `context.from`, `context.content`, `context.channelId`, `context.metadata` (`senderId`, `senderName`, `guildId` सहित प्रदाता-विशिष्ट डेटा)। `context.content` कमांड-जैसे संदेशों के लिए पहले गैर-रिक्त कमांड बॉडी को प्राथमिकता देता है, फिर कच्ची इनबाउंड बॉडी और सामान्य बॉडी पर वापस जाता है; इसमें थ्रेड इतिहास या लिंक सारांश जैसे केवल-एजेंट संवर्धन शामिल नहीं होते।
+
+**संदेश इवेंट** (`message:sent`): `context.to`, `context.content`, `context.success`, `context.channelId`, और प्रेषण विफल होने पर `context.error`।
 
 **संदेश इवेंट** (`message:transcribed`): `context.transcript`, `context.from`, `context.channelId`, `context.mediaPath`।
 
-**संदेश इवेंट** (`message:preprocessed`): `context.bodyForAgent` (अंतिम एनरिच्ड बॉडी), `context.from`, `context.channelId`।
+**संदेश इवेंट** (`message:preprocessed`): `context.bodyForAgent` (अंतिम संवर्धित बॉडी), `context.from`, `context.channelId`।
 
-**बूटस्ट्रैप इवेंट** (`agent:bootstrap`): `context.bootstrapFiles` (म्यूटेबल ऐरे), `context.agentId`।
+**बूटस्ट्रैप इवेंट** (`agent:bootstrap`): `context.bootstrapFiles` (परिवर्तनीय सरणी), `context.agentId`।
 
-**सेशन पैच इवेंट** (`session:patch`): `context.sessionEntry`, `context.patch` (केवल बदले हुए फ़ील्ड), `context.cfg`। केवल विशेषाधिकार प्राप्त क्लाइंट पैच इवेंट ट्रिगर कर सकते हैं।
+**सेशन पैच इवेंट** (`session:patch`): `context.sessionEntry`, `context.patch` (केवल बदले हुए फ़ील्ड), `context.cfg`। केवल विशेषाधिकार प्राप्त क्लाइंट ही पैच इवेंट सक्रिय कर सकते हैं; संदर्भ एक क्लोन है, इसलिए हैंडलर लाइव सेशन प्रविष्टि को परिवर्तित नहीं कर सकते।
 
-**Compaction इवेंट**: `session:compact:before` में `messageCount`, `tokenCount` शामिल हैं। `session:compact:after` में `compactedCount`, `summaryLength`, `tokensBefore`, `tokensAfter` जोड़े जाते हैं।
+**Compaction इवेंट**: `session:compact:before` में `messageCount`, `tokenCount` शामिल होते हैं। `session:compact:after` में `compactedCount`, `summaryLength`, `tokensBefore`, `tokensAfter` भी जोड़े जाते हैं।
 
-`command:stop` उपयोगकर्ता द्वारा `/stop` जारी करने को देखता है; यह रद्दीकरण/कमांड
-लाइफ़साइकल है, एजेंट-फ़ाइनलाइज़ेशन गेट नहीं। जिन Plugin को प्राकृतिक अंतिम उत्तर का निरीक्षण करना हो
-और एजेंट से एक और पास माँगना हो, उन्हें इसके बजाय टाइप्ड
-Plugin हुक `before_agent_finalize` इस्तेमाल करना चाहिए। देखें [Plugin हुक](/hi/plugins/hooks)।
+`command:stop` उपयोगकर्ता द्वारा `/stop` जारी किए जाने को देखता है; यह रद्दीकरण/कमांड
+जीवनचक्र है, एजेंट-अंतिमीकरण गेट नहीं। जिन Plugins को किसी
+स्वाभाविक अंतिम उत्तर का निरीक्षण करके एजेंट से एक और चरण माँगना हो, उन्हें इसके बजाय टाइप किए गए
+Plugin Hook `before_agent_finalize` का उपयोग करना चाहिए। [Plugin Hooks](/hi/plugins/hooks) देखें।
 
-**Gateway लाइफ़साइकल इवेंट**: `gateway:shutdown` में `reason` और `restartExpectedMs` शामिल होते हैं और Gateway शटडाउन शुरू होने पर फायर होता है। `gateway:pre-restart` में वही कॉन्टेक्स्ट शामिल होता है लेकिन केवल तब फायर होता है जब शटडाउन अपेक्षित रीस्टार्ट का हिस्सा हो और एक सीमित `restartExpectedMs` मान दिया गया हो। शटडाउन के दौरान, हर लाइफ़साइकल हुक प्रतीक्षा बेस्ट-एफ़र्ट और सीमित होती है ताकि हैंडलर रुक जाए तो भी शटडाउन जारी रहे। डिफ़ॉल्ट प्रतीक्षा बजट `gateway:shutdown` के लिए 5 सेकंड और `gateway:pre-restart` के लिए 10 सेकंड है।
+**Gateway जीवनचक्र इवेंट**: `gateway:shutdown` में `reason` और `restartExpectedMs` शामिल होते हैं और यह Gateway शटडाउन शुरू होने पर सक्रिय होता है। `gateway:pre-restart` में समान संदर्भ शामिल होता है, लेकिन यह तभी सक्रिय होता है जब शटडाउन किसी अपेक्षित रीस्टार्ट का हिस्सा हो और सीमित `restartExpectedMs` मान दिया गया हो। शटडाउन के दौरान, प्रत्येक जीवनचक्र Hook की प्रतीक्षा सर्वोत्तम-प्रयास और सीमित होती है, ताकि कोई हैंडलर अटक जाने पर भी शटडाउन जारी रहे। डिफ़ॉल्ट प्रतीक्षा बजट `gateway:shutdown` के लिए 5 सेकंड और `gateway:pre-restart` के लिए 10 सेकंड है।
 
-जब चैनल अभी भी उपलब्ध हों, छोटे रीस्टार्ट नोटिस के लिए `gateway:pre-restart` इस्तेमाल करें:
+जब चैनल अभी भी उपलब्ध हों, तब संक्षिप्त रीस्टार्ट सूचनाओं के लिए `gateway:pre-restart` का उपयोग करें:
 
 ```typescript
 import { execFile } from "node:child_process";
@@ -180,47 +196,47 @@ export default async function handler(event) {
     "--mode",
     "now",
     "--text",
-    `Gateway restarting in ~${restartInSeconds}s (${event.context.reason}). Checkpoint now.`,
+    `Gateway लगभग ${restartInSeconds}s में रीस्टार्ट हो रहा है (${event.context.reason})। अभी चेकपॉइंट बनाएँ।`,
   ]);
 }
 ```
 
-`gateway:shutdown` (या `gateway:pre-restart`) इवेंट और शटडाउन क्रम के बाकी हिस्से के बीच, Gateway हर उस सेशन के लिए एक टाइप्ड `session_end` Plugin हुक भी फायर करता है जो प्रोसेस रुकने के समय अभी भी सक्रिय था। साधारण SIGTERM/SIGINT स्टॉप के लिए इवेंट का `reason` `shutdown` होता है और जब बंद होना अपेक्षित रीस्टार्ट के हिस्से के रूप में शेड्यूल किया गया था तब `restart`। यह ड्रेन सीमित है ताकि धीमा `session_end` हैंडलर प्रोसेस एक्ज़िट को ब्लॉक न कर सके, और जिन सेशन को replace / reset / delete / compaction के माध्यम से पहले ही फ़ाइनलाइज़ किया जा चुका है उन्हें डबल-फायरिंग से बचाने के लिए स्किप किया जाता है।
+`gateway:shutdown` (या `gateway:pre-restart`) इवेंट और शेष शटडाउन क्रम के बीच, Gateway हर उस सेशन के लिए टाइप किया गया `session_end` Plugin Hook भी सक्रिय करता है, जो प्रक्रिया रुकने के समय अभी सक्रिय था। साधारण SIGTERM/SIGINT स्टॉप के लिए इवेंट का `reason`, `shutdown` होता है और अपेक्षित रीस्टार्ट के हिस्से के रूप में क्लोज़ निर्धारित होने पर `restart` होता है। यह ड्रेन सीमित होता है, ताकि धीमा `session_end` हैंडलर प्रक्रिया को बंद होने से न रोक सके, और replace / reset / delete / Compaction के माध्यम से पहले ही अंतिम रूप दिए जा चुके सेशन छोड़ दिए जाते हैं, ताकि दोबारा सक्रिय न हों।
 
-## हुक खोज
+## Hook खोज
 
-हुक इन डायरेक्टरियों से, बढ़ती ओवरराइड प्राथमिकता के क्रम में, खोजे जाते हैं:
+Hooks चार स्रोतों से खोजे जाते हैं:
 
-1. **बंडल्ड हुक**: OpenClaw के साथ शिप किए गए
-2. **Plugin हुक**: इंस्टॉल किए गए Plugin के अंदर बंडल किए गए हुक
-3. **प्रबंधित हुक**: `~/.openclaw/hooks/` (यूज़र-इंस्टॉल्ड, वर्कस्पेसों में साझा)। `hooks.internal.load.extraDirs` से अतिरिक्त डायरेक्टरियाँ इसी प्राथमिकता को साझा करती हैं।
-4. **वर्कस्पेस हुक**: `<workspace>/hooks/` (प्रति-एजेंट, स्पष्ट रूप से सक्षम होने तक डिफ़ॉल्ट रूप से अक्षम)
+1. **बंडल किए गए Hooks**: OpenClaw के साथ भेजे जाते हैं
+2. **Plugin Hooks**: इंस्टॉल किए गए Plugins के भीतर बंडल किए जाते हैं; समान नाम वाले बंडल किए गए Hooks को ओवरराइड कर सकते हैं
+3. **प्रबंधित Hooks**: `~/.openclaw/hooks/` (उपयोगकर्ता द्वारा इंस्टॉल किए गए, सभी वर्कस्पेस में साझा); बंडल किए गए और Plugin Hooks को ओवरराइड कर सकते हैं। `hooks.internal.load.extraDirs` की अतिरिक्त डायरेक्टरियाँ समान प्राथमिकता साझा करती हैं।
+4. **वर्कस्पेस Hooks**: `<workspace>/hooks/` (प्रति-एजेंट, स्पष्ट रूप से सक्षम किए जाने तक डिफ़ॉल्ट रूप से अक्षम)
 
-वर्कस्पेस हुक नए हुक नाम जोड़ सकते हैं लेकिन समान नाम वाले बंडल्ड, प्रबंधित, या Plugin-प्रदत्त हुक को ओवरराइड नहीं कर सकते।
+Workspace हुक नए हुक नाम जोड़ सकते हैं, लेकिन समान नाम वाले बंडल किए गए, प्रबंधित या Plugin-प्रदत्त हुक को ओवरराइड नहीं कर सकते।
 
-Gateway स्टार्टअप पर आंतरिक हुक खोज को तब तक स्किप करता है जब तक आंतरिक हुक कॉन्फ़िगर न हों। बंडल्ड या प्रबंधित हुक को `openclaw hooks enable <name>` से सक्षम करें, हुक पैक इंस्टॉल करें, या ऑप्ट इन करने के लिए `hooks.internal.enabled=true` सेट करें। जब आप एक नामित हुक सक्षम करते हैं, Gateway केवल उस हुक का हैंडलर लोड करता है; `hooks.internal.enabled=true`, अतिरिक्त हुक डायरेक्टरियाँ, और लेगेसी हैंडलर व्यापक खोज में ऑप्ट इन करते हैं।
+आंतरिक हुक कॉन्फ़िगर होने तक Gateway स्टार्टअप पर आंतरिक हुक खोज को छोड़ देता है। बंडल किए गए या प्रबंधित हुक को `openclaw hooks enable <name>` से सक्षम करें, हुक पैक इंस्टॉल करें या ऑप्ट इन करने के लिए `hooks.internal.enabled=true` सेट करें। जब आप किसी नामित हुक को सक्षम करते हैं, तो Gateway केवल उसी हुक का हैंडलर लोड करता है; `hooks.internal.enabled=true`, अतिरिक्त हुक डायरेक्टरियाँ और लीगेसी हैंडलर व्यापक खोज के लिए ऑप्ट इन करते हैं।
 
 ### हुक पैक
 
-हुक पैक npm पैकेज होते हैं जो `package.json` में `openclaw.hooks` के माध्यम से हुक एक्सपोर्ट करते हैं। इसके साथ इंस्टॉल करें:
+हुक पैक ऐसे npm पैकेज हैं जो `package.json` में `openclaw.hooks` के माध्यम से हुक एक्सपोर्ट करते हैं। इससे इंस्टॉल करें:
 
 ```bash
 openclaw plugins install <path-or-spec>
 ```
 
-Npm स्पेक केवल रजिस्ट्री-ओनली हैं (पैकेज नाम + वैकल्पिक सटीक वर्शन या dist-tag)। Git/URL/फ़ाइल स्पेक और semver रेंज अस्वीकार किए जाते हैं।
+Npm स्पेसिफ़िकेशन केवल रजिस्ट्री के लिए हैं (पैकेज नाम + वैकल्पिक सटीक वर्ज़न या dist-tag)। Git/URL/file स्पेसिफ़िकेशन और semver रेंज अस्वीकार कर दी जाती हैं। पुराने `openclaw hooks install` और `openclaw hooks update` कमांड, `openclaw plugins install` / `openclaw plugins update` के बहिष्कृत उपनाम हैं।
 
-## बंडल्ड हुक
+## बंडल किए गए हुक
 
-| हुक                  | इवेंट्स                                            | यह क्या करता है                                                   |
+| हुक                   | इवेंट                                             | यह क्या करता है                                                 |
 | --------------------- | ------------------------------------------------- | -------------------------------------------------------------- |
-| session-memory        | `command:new`, `command:reset`                    | सत्र संदर्भ को `<workspace>/memory/` में सहेजता है                 |
-| bootstrap-extra-files | `agent:bootstrap`                                 | glob पैटर्न से अतिरिक्त bootstrap फाइलें इंजेक्ट करता है          |
+| session-memory        | `command:new`, `command:reset`                    | सेशन संदर्भ को `<workspace>/memory/` में सहेजता है                 |
+| bootstrap-extra-files | `agent:bootstrap`                                 | glob पैटर्न से अतिरिक्त बूटस्ट्रैप फ़ाइलें इंजेक्ट करता है          |
 | command-logger        | `command`                                         | सभी कमांड को `~/.openclaw/logs/commands.log` में लॉग करता है           |
-| compaction-notifier   | `session:compact:before`, `session:compact:after` | सत्र Compaction शुरू/समाप्त होने पर दिखाई देने वाली चैट सूचनाएं भेजता है |
+| compaction-notifier   | `session:compact:before`, `session:compact:after` | सेशन Compaction शुरू/समाप्त होने पर दृश्यमान चैट सूचनाएँ भेजता है |
 | boot-md               | `gateway:startup`                                 | Gateway शुरू होने पर `BOOT.md` चलाता है                         |
 
-किसी भी bundled हुक को सक्षम करें:
+किसी भी बंडल किए गए हुक को सक्षम करें:
 
 ```bash
 openclaw hooks enable <hook-name>
@@ -228,13 +244,13 @@ openclaw hooks enable <hook-name>
 
 <a id="session-memory"></a>
 
-### session-memory विवरण
+### session-memory का विवरण
 
-अंतिम 15 उपयोगकर्ता/सहायक संदेश निकालता है और होस्ट की स्थानीय तारीख का उपयोग करके `<workspace>/memory/YYYY-MM-DD-HHMM.md` में सहेजता है। मेमोरी कैप्चर पृष्ठभूमि में चलता है, ताकि `/new` और `/reset` स्वीकृतियां transcript पढ़ने या वैकल्पिक slug जनरेशन से विलंबित न हों। कॉन्फिगर किए गए मॉडल के साथ वर्णनात्मक filename slugs बनाने के लिए `hooks.internal.entries.session-memory.llmSlug: true` सेट करें। `workspace.dir` कॉन्फिगर होना आवश्यक है।
+अंतिम उपयोगकर्ता/सहायक संदेशों (डिफ़ॉल्ट 15, `hooks.internal.entries.session-memory.messages` से कॉन्फ़िगर करने योग्य) को निकालता है और होस्ट की स्थानीय तारीख का उपयोग करके उन्हें `<workspace>/memory/YYYY-MM-DD-HHMM.md` में सहेजता है। मेमोरी कैप्चर पृष्ठभूमि में चलता है, इसलिए ट्रांसक्रिप्ट पढ़ने या वैकल्पिक स्लग जनरेशन से `/new` और `/reset` की अभिस्वीकृतियों में देरी नहीं होती। वर्णनात्मक फ़ाइलनाम स्लग जनरेट करने के लिए `hooks.internal.entries.session-memory.llmSlug: true` सेट करें और वैकल्पिक रूप से `hooks.internal.entries.session-memory.model` को किसी कॉन्फ़िगर किए गए उपनाम, जैसे `sonnet`, एजेंट के डिफ़ॉल्ट प्रदाता पर एक साधारण मॉडल ID या किसी `provider/model` संदर्भ पर सेट करें। `model` छोड़े जाने पर स्लग जनरेशन एजेंट के डिफ़ॉल्ट मॉडल का उपयोग करता है और अनुपलब्ध होने पर टाइमस्टैम्प स्लग पर वापस जाता है। `workspace.dir` का कॉन्फ़िगर होना आवश्यक है।
 
 <a id="bootstrap-extra-files"></a>
 
-### bootstrap-extra-files कॉन्फिगरेशन
+### bootstrap-extra-files कॉन्फ़िगरेशन
 
 ```json
 {
@@ -251,40 +267,41 @@ openclaw hooks enable <hook-name>
 }
 ```
 
-Paths workspace के सापेक्ष resolve होते हैं। केवल पहचाने गए bootstrap basenames लोड किए जाते हैं (`AGENTS.md`, `SOUL.md`, `TOOLS.md`, `IDENTITY.md`, `USER.md`, `HEARTBEAT.md`, `BOOTSTRAP.md`, `MEMORY.md`)।
+`patterns` और `files` को `paths` के उपनामों के रूप में स्वीकार किया जाता है। पथ Workspace के सापेक्ष रिज़ॉल्व होते हैं और उसके अंदर ही रहने चाहिए। केवल मान्य बूटस्ट्रैप बेसनाम लोड किए जाते हैं (`AGENTS.md`, `SOUL.md`, `TOOLS.md`, `IDENTITY.md`, `USER.md`, `HEARTBEAT.md`, `BOOTSTRAP.md`, `MEMORY.md`)।
 
 <a id="command-logger"></a>
 
-### command-logger विवरण
+### command-logger का विवरण
 
-हर slash command को `~/.openclaw/logs/commands.log` में लॉग करता है।
+हर स्लैश कमांड को JSON पंक्ति (टाइमस्टैम्प, क्रिया, सेशन कुंजी, प्रेषक ID, स्रोत) के रूप में `~/.openclaw/logs/commands.log` में लॉग करता है।
 
 <a id="compaction-notifier"></a>
 
-### compaction-notifier विवरण
+### compaction-notifier का विवरण
 
-जब OpenClaw सत्र transcript को compact करना शुरू और पूरा करता है, तो वर्तमान बातचीत में छोटे status संदेश भेजता है। इससे chat surfaces पर लंबे turns कम भ्रमित करते हैं, क्योंकि उपयोगकर्ता देख सकता है कि सहायक संदर्भ का सारांश बना रहा है और Compaction के बाद जारी रखेगा।
+जब OpenClaw सेशन ट्रांसक्रिप्ट को कॉम्पैक्ट करना शुरू और समाप्त करता है, तब वर्तमान वार्तालाप में छोटे स्थिति संदेश भेजता है। इससे चैट इंटरफ़ेस पर लंबे टर्न कम भ्रमित करते हैं, क्योंकि उपयोगकर्ता देख सकता है कि सहायक संदर्भ का सारांश बना रहा है और Compaction के बाद जारी रखेगा।
 
 <a id="boot-md"></a>
 
-### boot-md विवरण
+### boot-md का विवरण
 
-Gateway शुरू होने पर सक्रिय workspace से `BOOT.md` चलाता है।
+यदि फ़ाइल उस एजेंट के रिज़ॉल्व किए गए Workspace में मौजूद है, तो प्रत्येक कॉन्फ़िगर किए गए एजेंट स्कोप के लिए Gateway स्टार्टअप पर `BOOT.md` चलाता है।
 
-## Plugin हुक्स
+## Plugin हुक
 
-Plugins गहरे integration के लिए Plugin SDK के माध्यम से typed hooks रजिस्टर कर सकते हैं:
-tool calls को intercept करना, prompts को modify करना, message flow को control करना, और भी बहुत कुछ।
+Plugins अधिक गहन एकीकरण के लिए Plugin SDK के माध्यम से टाइप किए गए हुक पंजीकृत कर सकते हैं:
+टूल कॉल को इंटरसेप्ट करना, प्रॉम्प्ट संशोधित करना, संदेश प्रवाह नियंत्रित करना और बहुत कुछ।
 जब आपको `before_tool_call`, `before_agent_reply`,
-`before_install`, या अन्य in-process lifecycle hooks की जरूरत हो, तो plugin hooks का उपयोग करें।
+`before_install` या अन्य इन-प्रोसेस लाइफ़साइकल हुक की आवश्यकता हो, तब Plugin हुक का उपयोग करें।
 
-Plugin-managed internal hooks अलग होते हैं: वे इस पेज के
-coarse command/lifecycle event system में भाग लेते हैं और `openclaw hooks list` में
-`plugin:<id>` के रूप में दिखाई देते हैं। इन्हें side effects और hook packs के साथ compatibility के लिए उपयोग करें, ordered middleware या policy gates के लिए नहीं।
+Plugin-प्रबंधित आंतरिक हुक अलग होते हैं: वे इस पृष्ठ की
+स्थूल कमांड/लाइफ़साइकल इवेंट प्रणाली में भाग लेते हैं और `openclaw hooks list` में
+`plugin:<id>` के रूप में दिखाई देते हैं। उनका उपयोग हुक पैक के साथ साइड इफ़ेक्ट और संगतता के लिए करें,
+क्रमबद्ध मिडलवेयर या नीति गेट के लिए नहीं।
 
-पूर्ण plugin hook reference के लिए, [Plugin hooks](/hi/plugins/hooks) देखें।
+Plugin हुक का पूरा संदर्भ देखने के लिए [Plugin हुक](/hi/plugins/hooks) देखें।
 
-## कॉन्फिगरेशन
+## कॉन्फ़िगरेशन
 
 ```json
 {
@@ -300,7 +317,7 @@ coarse command/lifecycle event system में भाग लेते हैं
 }
 ```
 
-प्रति-हुक environment variables:
+प्रति-हुक परिवेश मान किसी हुक की `requires.env` पात्रता जाँच (प्रोसेस परिवेश के साथ) को पूरा करते हैं और हैंडलर उन्हें अपनी हुक कॉन्फ़िगरेशन प्रविष्टि से पढ़ सकते हैं:
 
 ```json
 {
@@ -317,7 +334,7 @@ coarse command/lifecycle event system में भाग लेते हैं
 }
 ```
 
-अतिरिक्त hook directories:
+अतिरिक्त हुक डायरेक्टरियाँ:
 
 ```json
 {
@@ -332,63 +349,63 @@ coarse command/lifecycle event system में भाग लेते हैं
 ```
 
 <Note>
-पुराना `hooks.internal.handlers` array config format अभी भी backwards compatibility के लिए समर्थित है, लेकिन नए hooks को discovery-based system का उपयोग करना चाहिए।
+पश्चगामी संगतता के लिए लीगेसी `hooks.internal.handlers` ऐरे कॉन्फ़िगरेशन प्रारूप अभी भी समर्थित है, लेकिन नए हुक को खोज-आधारित प्रणाली का उपयोग करना चाहिए।
 </Note>
 
 ## CLI संदर्भ
 
 ```bash
-# List all hooks (add --eligible, --verbose, or --json)
+# सभी हुक सूचीबद्ध करें (--eligible, --verbose या --json जोड़ें)
 openclaw hooks list
 
-# Show detailed info about a hook
+# किसी हुक की विस्तृत जानकारी दिखाएँ
 openclaw hooks info <hook-name>
 
-# Show eligibility summary
+# पात्रता सारांश दिखाएँ
 openclaw hooks check
 
-# Enable/disable
+# सक्षम/अक्षम करें
 openclaw hooks enable <hook-name>
 openclaw hooks disable <hook-name>
 ```
 
-## श्रेष्ठ अभ्यास
+## सर्वोत्तम अभ्यास
 
-- **Handlers तेज रखें।** Hooks command processing के दौरान चलते हैं। भारी काम को `void processInBackground(event)` के साथ fire-and-forget करें।
-- **Errors को सहजता से handle करें।** जोखिम भरे operations को try/catch में wrap करें; throw न करें ताकि अन्य handlers चल सकें।
-- **Events को जल्दी filter करें।** यदि event type/action प्रासंगिक नहीं है, तो तुरंत return करें।
-- **विशिष्ट event keys का उपयोग करें।** overhead कम करने के लिए `"events": ["command"]` के बजाय `"events": ["command:new"]` को प्राथमिकता दें।
+- **हैंडलर तेज़ रखें।** हुक कमांड प्रोसेसिंग के दौरान चलते हैं। `void processInBackground(event)` के साथ भारी कार्य को शुरू करके उसके पूरा होने की प्रतीक्षा न करें।
+- **त्रुटियों को सुचारु रूप से संभालें।** जोखिमपूर्ण ऑपरेशन को try/catch में लपेटें; अपवाद न फेंकें, ताकि अन्य हैंडलर चल सकें।
+- **इवेंट को जल्दी फ़िल्टर करें।** यदि इवेंट प्रकार/क्रिया प्रासंगिक नहीं है, तो तुरंत लौटें।
+- **विशिष्ट इवेंट कुंजियों का उपयोग करें।** ओवरहेड कम करने के लिए `"events": ["command"]` के बजाय `"events": ["command:new"]` को प्राथमिकता दें।
 
 ## समस्या निवारण
 
-### Hook discover नहीं हुआ
+### हुक नहीं मिला
 
 ```bash
-# Verify directory structure
+# डायरेक्टरी संरचना सत्यापित करें
 ls -la ~/.openclaw/hooks/my-hook/
-# Should show: HOOK.md, handler.ts
+# यह दिखना चाहिए: HOOK.md, handler.ts
 
-# List all discovered hooks
+# खोजे गए सभी हुक सूचीबद्ध करें
 openclaw hooks list
 ```
 
-### Hook eligible नहीं है
+### हुक पात्र नहीं है
 
 ```bash
 openclaw hooks info my-hook
 ```
 
-गुम binaries (PATH), environment variables, config values, या OS compatibility की जांच करें।
+गुम बाइनरी (PATH), परिवेश चर, कॉन्फ़िगरेशन मान या OS संगतता की जाँच करें।
 
-### Hook execute नहीं हो रहा है
+### हुक निष्पादित नहीं हो रहा
 
-1. पुष्टि करें कि hook enabled है: `openclaw hooks list`
-2. अपना Gateway process restart करें ताकि hooks reload हों।
-3. Gateway logs जांचें: `./scripts/clawlog.sh | grep hook`
+1. सत्यापित करें कि हुक सक्षम है: `openclaw hooks list`
+2. हुक फिर से लोड करने के लिए अपनी Gateway प्रोसेस पुनः आरंभ करें।
+3. Gateway लॉग जाँचें: `openclaw logs --follow | grep -i hook`
 
 ## संबंधित
 
-- [CLI संदर्भ: hooks](/hi/cli/hooks)
+- [CLI संदर्भ: हुक](/hi/cli/hooks)
 - [Webhooks](/hi/automation/cron-jobs#webhooks)
-- [Plugin hooks](/hi/plugins/hooks) — in-process plugin lifecycle hooks
-- [कॉन्फिगरेशन](/hi/gateway/configuration-reference#hooks)
+- [Plugin हुक](/hi/plugins/hooks) — इन-प्रोसेस Plugin लाइफ़साइकल हुक
+- [कॉन्फ़िगरेशन](/hi/gateway/configuration-reference#hooks)

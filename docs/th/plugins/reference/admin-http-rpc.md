@@ -1,31 +1,32 @@
 ---
 read_when:
     - คุณกำลังติดตั้ง กำหนดค่า หรือตรวจสอบ Plugin admin-http-rpc
-summary: เอนด์พอยต์ HTTP RPC สำหรับผู้ดูแลระบบ OpenClaw
+summary: เอ็นด์พอยต์ HTTP RPC สำหรับผู้ดูแลระบบ OpenClaw
 title: Plugin RPC ผ่าน HTTP สำหรับผู้ดูแลระบบ
 x-i18n:
-    generated_at: "2026-07-12T16:25:59Z"
+    generated_at: "2026-07-16T19:31:41Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 58909f4c97bfacc22d3a597939ff8724ec111995841822962c66305140aef4ba
+    source_hash: 3e3875dd776c0f4dd58977b503de22989ddab5add4dd37a0e1c7f5cb4e306044
     source_path: plugins/reference/admin-http-rpc.md
     workflow: 16
 ---
 
-# Plugin RPC ผ่าน HTTP สำหรับผู้ดูแลระบบ
+# Plugin RPC HTTP สำหรับผู้ดูแลระบบ
 
 ปลายทาง RPC ผ่าน HTTP สำหรับผู้ดูแลระบบของ OpenClaw
 
 ## การเผยแพร่
 
 - แพ็กเกจ: `@openclaw/admin-http-rpc`
-- ช่องทางการติดตั้ง: รวมอยู่ใน OpenClaw
+- เส้นทางการติดตั้ง: รวมอยู่ใน OpenClaw
 
-## ส่วนเชื่อมต่อ
+## ส่วนติดต่อ
 
-สัญญา: gatewayMethodDispatch
+สัญญา: `gatewayMethodDispatch`
 
 ## เอกสารที่เกี่ยวข้อง
 
-- [RPC ผ่าน HTTP สำหรับผู้ดูแลระบบ](/th/plugins/admin-http-rpc)
+- [RPC HTTP สำหรับผู้ดูแลระบบ](/th/plugins/admin-http-rpc)

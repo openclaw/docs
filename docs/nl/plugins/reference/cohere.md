@@ -1,19 +1,20 @@
 ---
 read_when:
-    - Je installeert, configureert of controleert de cohere-Plugin
+    - Je installeert, configureert of controleert de cohere-plugin
 summary: OpenClaw-providerplugin voor Cohere.
 title: Cohere-plugin
 x-i18n:
-    generated_at: "2026-07-12T09:12:47Z"
+    generated_at: "2026-07-16T16:17:54Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 08bdb32e07d1b28d19a89c2eb082348b4b04ddb42d0b7f145aa3513287bb72d9
+    source_hash: 8d419e7596d93838f7f0efb1e1809d69b0f90f9a169aee9f926c88554ebbcc32
     source_path: plugins/reference/cohere.md
     workflow: 16
 ---
 
-# Cohere-Plugin
+# Cohere-plugin
 
 OpenClaw-providerplugin voor Cohere.
 
@@ -24,8 +25,8 @@ OpenClaw-providerplugin voor Cohere.
 
 ## Oppervlak
 
-providers: cohere
+providers: `cohere`
 
 ## Gerelateerde documentatie
 
-- [cohere](/nl/providers/cohere)
+- [Cohere](/nl/providers/cohere)

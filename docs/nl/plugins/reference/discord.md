@@ -4,18 +4,19 @@ read_when:
 summary: OpenClaw Discord-kanaalplugin voor kanalen, privéberichten, opdrachten en appgebeurtenissen.
 title: Discord-plugin
 x-i18n:
-    generated_at: "2026-07-12T09:13:08Z"
+    generated_at: "2026-07-16T16:14:03Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 9e3305f8ad8eb84fd350bdfa0983b4fd8f848e0697ecf3e779e31cd6cb44dbf5
+    source_hash: 1ea967057cff724152c080ea4629197d939688d1e9d009f5fc784357d3d5c75f
     source_path: plugins/reference/discord.md
     workflow: 16
 ---
 
-# Discord-Plugin
+# Discord-plugin
 
-OpenClaw Discord-kanaalplugin voor kanalen, privéberichten, opdrachten en app-gebeurtenissen.
+OpenClaw Discord-kanaalplugin voor kanalen, DM's, opdrachten en appgebeurtenissen.
 
 ## Distributie
 
@@ -24,8 +25,8 @@ OpenClaw Discord-kanaalplugin voor kanalen, privéberichten, opdrachten en app-g
 
 ## Oppervlak
 
-kanalen: discord; contracten: transcriptSourceProviders; Skills
+kanalen: `discord`; contracten: `tools`, `transcriptSourceProviders`; Skills
 
 ## Gerelateerde documentatie
 
-- [discord](/nl/channels/discord)
+- [Discord](/nl/channels/discord)

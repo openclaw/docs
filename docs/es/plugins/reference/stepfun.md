@@ -1,21 +1,22 @@
 ---
 read_when:
     - Está instalando, configurando o auditando el plugin stepfun
-summary: Añade compatibilidad con StepFun y con el proveedor de modelos StepFun Plan a OpenClaw.
+summary: Añade a OpenClaw compatibilidad con StepFun y con el proveedor de modelos StepFun Plan.
 title: Plugin de StepFun
 x-i18n:
-    generated_at: "2026-07-11T23:25:44Z"
+    generated_at: "2026-07-16T11:50:10Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 02e2b7fbfb03a348a8a5d368e6fd039cf834ab7d2a9bf82f79729f360660b5de
+    source_hash: f7eec327cc70524383af493c7f2c7a988877dca0108edd9061a8b5a38c6f4c7e
     source_path: plugins/reference/stepfun.md
     workflow: 16
 ---
 
-# Plugin de StepFun
+# Plugin StepFun
 
-Añade compatibilidad con StepFun y con el proveedor de modelos StepFun Plan a OpenClaw.
+Añade compatibilidad con StepFun y con el proveedor de modelos StepFun Plan en OpenClaw.
 
 ## Distribución
 
@@ -24,8 +25,8 @@ Añade compatibilidad con StepFun y con el proveedor de modelos StepFun Plan a O
 
 ## Superficie
 
-proveedores: stepfun, stepfun-plan
+proveedores: `stepfun`, `stepfun-plan`
 
 ## Documentación relacionada
 
-- [stepfun](/es/providers/stepfun)
+- [StepFun](/es/providers/stepfun)

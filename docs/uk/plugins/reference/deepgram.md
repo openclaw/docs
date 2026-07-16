@@ -1,30 +1,31 @@
 ---
 read_when:
-    - Ви встановлюєте, налаштовуєте або перевіряєте Plugin deepgram
-summary: Додає підтримку провайдерів для розпізнавання медіавмісту. Додає підтримку провайдерів транскрибування в реальному часі.
-title: Plugin Deepgram
+    - Ви встановлюєте, налаштовуєте або перевіряєте plugin deepgram
+summary: Додає підтримку постачальника для розпізнавання медіаданих. Додає підтримку постачальника для транскрибування в реальному часі.
+title: Плагін Deepgram
 x-i18n:
-    generated_at: "2026-07-12T13:34:10Z"
+    generated_at: "2026-07-16T18:19:46Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 93383c01d5a5e1e1d412d396ec1def12f388fc7c5da102573373dbc8180497a3
+    source_hash: ababdaeda58a97236e3dd96bdf51a0ce560278bbeb20a731d05f51d28bfb4155
     source_path: plugins/reference/deepgram.md
     workflow: 16
 ---
 
 # Plugin Deepgram
 
-Додає підтримку постачальника розпізнавання медіа. Додає підтримку постачальника транскрибування в реальному часі.
+Додає підтримку постачальника розуміння медіа. Додає підтримку постачальника транскрибування в реальному часі.
 
 ## Розповсюдження
 
-- Пакет: `@openclaw/deepgram-provider`
-- Спосіб встановлення: входить до складу OpenClaw
+- Пакунок: `@openclaw/deepgram-provider`
+- Спосіб установлення: включено до OpenClaw
 
-## Інтерфейс
+## Поверхня
 
-контракти: mediaUnderstandingProviders, realtimeTranscriptionProviders
+контракти: `mediaUnderstandingProviders`, `realtimeTranscriptionProviders`
 
 ## Пов’язана документація
 

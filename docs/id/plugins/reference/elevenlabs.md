@@ -1,31 +1,32 @@
 ---
 read_when:
-    - Anda sedang memasang, mengonfigurasi, atau mengaudit plugin elevenlabs
+    - Anda sedang menginstal, mengonfigurasi, atau mengaudit plugin elevenlabs
 summary: Menambahkan dukungan penyedia pemahaman media. Menambahkan dukungan penyedia transkripsi waktu nyata. Menambahkan dukungan penyedia teks-ke-ucapan.
-title: Plugin ElevenLabs
+title: Plugin Elevenlabs
 x-i18n:
-    generated_at: "2026-07-12T14:31:14Z"
+    generated_at: "2026-07-16T18:25:59Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 6a1461a4e6be6145245df937d9438aaba563febe02dd44141f0d1da1ea1c409b
+    source_hash: 2a25d78114eca6ddd519a09e457c7158b6049e52ec62040009fd202fd06dba7f
     source_path: plugins/reference/elevenlabs.md
     workflow: 16
 ---
 
-# Plugin ElevenLabs
+# Plugin Elevenlabs
 
 Menambahkan dukungan penyedia pemahaman media. Menambahkan dukungan penyedia transkripsi waktu nyata. Menambahkan dukungan penyedia teks-ke-ucapan.
 
 ## Distribusi
 
 - Paket: `@openclaw/elevenlabs-speech`
-- Jalur instalasi: disertakan dalam OpenClaw
+- Rute instalasi: disertakan dalam OpenClaw
 
 ## Permukaan
 
-kontrak: mediaUnderstandingProviders, realtimeTranscriptionProviders, speechProviders
+kontrak: `mediaUnderstandingProviders`, `realtimeTranscriptionProviders`, `speechProviders`
 
 ## Dokumentasi terkait
 
-- [ElevenLabs](/id/providers/elevenlabs)
+- [elevenlabs](/id/providers/elevenlabs)

@@ -4,11 +4,12 @@ read_when:
 summary: OpenClaw에 SGLang 모델 제공자 지원을 추가합니다.
 title: SGLang Plugin
 x-i18n:
-    generated_at: "2026-07-12T01:02:59Z"
+    generated_at: "2026-07-16T12:53:23Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: e69fda19cbf93e1a1a1a6160419bc7296930a58813b5b443c4018db58df0a611
+    source_hash: bfb586c08e6729c6b8a3bcf2487ef614c8d428bf6cdd9ba4aa74285ba2d2099e
     source_path: plugins/reference/sglang.md
     workflow: 16
 ---
@@ -20,11 +21,11 @@ OpenClaw에 SGLang 모델 제공자 지원을 추가합니다.
 ## 배포
 
 - 패키지: `@openclaw/sglang-provider`
-- 설치 경로: OpenClaw에 포함
+- 설치 경로: OpenClaw에 포함됨
 
-## 제공 범위
+## 인터페이스
 
-제공자: sglang
+제공자: `sglang`
 
 ## 관련 문서
 

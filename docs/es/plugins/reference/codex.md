@@ -1,31 +1,31 @@
 ---
 read_when:
-    - Está instalando, configurando o auditando el Plugin Codex
-summary: Infraestructura de app-server de Codex, proveedor de modelos y catálogo de sesiones nativas.
+    - Está instalando, configurando o auditando el plugin codex
+summary: Arnés de app-server de Codex y catálogo de sesiones nativas.
 title: Plugin de Codex
 x-i18n:
-    generated_at: "2026-07-12T14:44:43Z"
+    generated_at: "2026-07-16T11:51:39Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
-    prompt_version: 15
+    prompt_version: 32
     provider: openai
-    source_hash: cd187f48c5448e026d89eea4b37c9809940afa4bf6187776b7b121138840256f
+    source_hash: 792786efc87586a9aee8193d2023cbd8bab7e8a64c8e5f849456ad23be7e8616
     source_path: plugins/reference/codex.md
     workflow: 16
 ---
 
-# Plugin de Codex
+# Plugin Codex
 
-Entorno de ejecución del servidor de aplicaciones de Codex, proveedor de modelos y catálogo de sesiones nativas.
+Entorno de ejecución del servidor de aplicaciones Codex y catálogo de sesiones nativas.
 
 ## Distribución
 
 - Paquete: `@openclaw/codex`
-- Método de instalación: npm; ClawHub
+- Vía de instalación: npm; ClawHub
 
 ## Superficie
 
-proveedores: codex; contratos: mediaUnderstandingProviders, migrationProviders, tools, webSearchProviders
+contratos: `mediaUnderstandingProviders`, `migrationProviders`, `tools`, `webSearchProviders`
 
 ## Documentación relacionada
 

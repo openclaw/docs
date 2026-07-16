@@ -1,42 +1,44 @@
 ---
 read_when:
-    - WhatsApp समूहों को विशेष रूप से कॉन्फ़िगर करना
+    - विशेष रूप से WhatsApp समूहों को कॉन्फ़िगर करना
     - WhatsApp सक्रियण मोड बदलना (`mention` बनाम `always`)
-    - WhatsApp समूह सत्र कुंजियों या लंबित-संदेश संदर्भ को ट्यून करना
+    - WhatsApp समूह सत्र कुंजियों या लंबित-संदेश संदर्भ को समायोजित करना
 sidebarTitle: WhatsApp groups
-summary: WhatsApp समूह संदेश प्रबंधन — सक्रियण, अनुमति-सूचियाँ, सत्र, और संदर्भ इंजेक्शन
+summary: WhatsApp समूह संदेश प्रबंधन — सक्रियण, अनुमति सूचियाँ, सत्र और संदर्भ अंतःक्षेपण
 title: WhatsApp समूह संदेश
 x-i18n:
-    generated_at: "2026-06-28T22:34:55Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T13:15:52Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 790866fd959b43d94b745082f3c90920b81c0a016492e9e164c600663f1b2eee
+    source_hash: bd1adb379a4cae4ee9b4b9950d7519e62e1fc0e72ece25ec1b337ee3cb803cda
     source_path: channels/group-messages.md
     workflow: 16
 ---
 
-क्रॉस-चैनल समूह मॉडल (Discord, iMessage, Matrix, Microsoft Teams, Signal, Slack, Telegram, WhatsApp, Zalo) के लिए, [समूह](/hi/channels/groups) देखें। यह पेज उस मॉडल के ऊपर WhatsApp-विशिष्ट व्यवहार कवर करता है: सक्रियण, समूह allowlists, प्रति-समूह session keys, और pending-message context injection.
+क्रॉस-चैनल समूह मॉडल (Discord, iMessage, Matrix, Microsoft Teams, QQBot, Signal, Slack, Telegram, WhatsApp, Zalo) के लिए, [समूह](/hi/channels/groups) देखें। यह पृष्ठ उस मॉडल के अतिरिक्त WhatsApp-विशिष्ट व्यवहार को शामिल करता है: सक्रियण, समूह अनुमति-सूचियाँ, प्रति-समूह सत्र कुंजियाँ, और लंबित-संदेश संदर्भ अंतःक्षेपण।
 
-लक्ष्य: OpenClaw को WhatsApp समूहों में रहने दें, केवल ping किए जाने पर जगाएं, और उस thread को व्यक्तिगत DM session से अलग रखें।
+लक्ष्य: OpenClaw को WhatsApp समूहों में रहने दें, केवल पिंग किए जाने पर सक्रिय होने दें, और उस थ्रेड को व्यक्तिगत DM सत्र से अलग रखें।
 
 <Note>
-`agents.list[].groupChat.mentionPatterns` का उपयोग Telegram, Discord, Slack, और iMessage भी करते हैं। multi-agent setups के लिए, इसे प्रति agent सेट करें, या global fallback के रूप में `messages.groupChat.mentionPatterns` का उपयोग करें।
+`agents.list[].groupChat.mentionPatterns` अन्य चैनलों की उल्लेख-गेटिंग के साथ साझा किया जाता है। बहु-एजेंट सेटअप के लिए, इसे प्रति एजेंट सेट करें, या वैश्विक फ़ॉलबैक के रूप में `messages.groupChat.mentionPatterns` का उपयोग करें। इनमें से कोई भी सेट न होने पर, पैटर्न एजेंट की पहचान के नाम/इमोजी से प्राप्त किए जाते हैं।
 </Note>
 
 ## व्यवहार
 
-- सक्रियण modes: `mention` (default) या `always`। `mention` के लिए ping चाहिए (वास्तविक WhatsApp @-mentions via `mentionedJids`, safe regex patterns, या text में कहीं भी bot का E.164)। `always` हर message पर agent को जगाता है लेकिन उसे केवल तभी reply करना चाहिए जब वह meaningful value जोड़ सके; अन्यथा यह exact silent token `NO_REPLY` / `no_reply` लौटाता है। Defaults config (`channels.whatsapp.groups`) में सेट किए जा सकते हैं और `/activation` के जरिए प्रति group override किए जा सकते हैं। जब `channels.whatsapp.groups` सेट हो, तो यह group allowlist के रूप में भी काम करता है (सभी को allow करने के लिए `"*"` शामिल करें)।
-- समूह नीति: `channels.whatsapp.groupPolicy` नियंत्रित करता है कि group messages स्वीकार किए जाते हैं या नहीं (`open|disabled|allowlist`)। `allowlist` `channels.whatsapp.groupAllowFrom` का उपयोग करता है (fallback: explicit `channels.whatsapp.allowFrom`)। Default `allowlist` है (senders जोड़ने तक blocked)।
-- प्रति-समूह sessions: session keys `agent:<agentId>:whatsapp:group:<jid>` जैसी दिखती हैं ताकि `/verbose on`, `/trace on`, या `/think high` जैसे commands (standalone messages के रूप में भेजे गए) उसी group तक scoped रहें; व्यक्तिगत DM state अछूती रहती है। Heartbeat group threads के लिए skip किए जाते हैं।
-- Context injection: **pending-only** group messages (default 50) जो run trigger _नहीं_ करते, उन्हें `[Chat messages since your last reply - for context]` के अंतर्गत prefix किया जाता है, और triggering line `[Current message - respond to this]` के अंतर्गत होती है। Session में पहले से मौजूद messages दोबारा inject नहीं किए जाते।
-- Sender surfacing: हर group batch अब `[from: Sender Name (+E164)]` के साथ समाप्त होता है ताकि OpenClaw जान सके कि कौन बोल रहा है।
-- Ephemeral/view-once: text/mentions निकालने से पहले हम उन्हें unwrap करते हैं, इसलिए उनके अंदर के pings अभी भी trigger करते हैं।
-- Group system prompt: group session के पहले turn पर (और जब भी `/activation` mode बदलता है) हम system prompt में एक छोटा blurb inject करते हैं जैसे `You are replying inside the WhatsApp group "<subject>". Group members: Alice (+44...), Bob (+43...), ... Activation: trigger-only ... Address the specific sender noted in the message context.` यदि metadata उपलब्ध नहीं है, तब भी हम agent को बताते हैं कि यह group chat है।
+- सक्रियण मोड: `mention` (डिफ़ॉल्ट) या `always`। `mention` के लिए पिंग आवश्यक है: वास्तविक WhatsApp @-उल्लेख (`mentionedJids`), कॉन्फ़िगर किया गया regex पैटर्न, टेक्स्ट में कहीं भी बॉट के E.164 अंक, या बॉट के किसी संदेश का उद्धृत उत्तर (साझा-नंबर स्व-चैट सेटअप को छोड़कर)। `always` प्रत्येक संदेश पर एजेंट को सक्रिय करता है, लेकिन अंतःक्षेपित समूह प्रॉम्प्ट उसे केवल तभी उत्तर देने के लिए कहता है जब उससे उपयोगिता बढ़ती हो, अन्यथा सटीक मौन टोकन `NO_REPLY` (अक्षर-केस से स्वतंत्र) लौटाने के लिए कहता है। डिफ़ॉल्ट कॉन्फ़िगरेशन (`channels.whatsapp.groups` `requireMention`) से आते हैं और `/activation` के माध्यम से प्रति समूह ओवरराइड किए जा सकते हैं।
+- समूह अनुमति-सूची: जब `channels.whatsapp.groups` सेट हो, केवल सूचीबद्ध समूह JID स्वीकार किए जाते हैं (सभी को अनुमति देने के लिए `"*"` शामिल करें); गैर-सूचीबद्ध समूहों के संदेश लॉग संकेत के साथ हटा दिए जाते हैं।
+- समूह नीति: `channels.whatsapp.groupPolicy` नियंत्रित करता है कि समूह संदेश स्वीकार किए जाएँ या नहीं (`open|disabled|allowlist`)। `allowlist`, `channels.whatsapp.groupAllowFrom` का उपयोग करता है (फ़ॉलबैक: स्पष्ट `channels.whatsapp.allowFrom`)। डिफ़ॉल्ट `allowlist` है (जब तक आप प्रेषक नहीं जोड़ते, तब तक अवरुद्ध)।
+- प्रति-समूह सत्र: सत्र कुंजियाँ `agent:<agentId>:whatsapp:group:<jid>` जैसी दिखती हैं (गैर-डिफ़ॉल्ट खाते `:thread:whatsapp-account-<accountId>` जोड़ते हैं), इसलिए `/verbose on`, `/trace on`, या `/think high` जैसे निर्देश (स्वतंत्र संदेशों के रूप में भेजे गए) उसी समूह तक सीमित रहते हैं; व्यक्तिगत DM स्थिति अपरिवर्तित रहती है।
+- संदर्भ अंतःक्षेपण: **केवल-लंबित** समूह संदेश (डिफ़ॉल्ट 50), जिन्होंने रन ट्रिगर _नहीं_ किया था, `[Chat messages since your last reply - for context]` के अंतर्गत उपसर्गित किए जाते हैं, जबकि ट्रिगर करने वाली पंक्ति `[Current message - respond to this]` के अंतर्गत होती है। रन के बाद लंबित विंडो साफ़ कर दी जाती है; सत्र में पहले से मौजूद संदेश दोबारा अंतःक्षेपित नहीं किए जाते।
+- प्रेषक अभिसूचन: प्रत्येक समूह पंक्ति संदेश एनवेलप के भीतर प्रेषक लेबल रखती है, उदाहरण के लिए `[WhatsApp <groupJid> <timestamp>] Alice (+447700900123): text`, और प्रेषक की पहचान तथा समूह का विषय/सदस्य अविश्वसनीय वार्तालाप-मेटाडेटा ब्लॉक में साथ भेजे जाते हैं।
+- अल्पकालिक/एक-बार-दृश्य: टेक्स्ट/उल्लेख निकालने से पहले रैपर खोले जाते हैं, इसलिए उनके अंदर के पिंग फिर भी ट्रिगर करते हैं।
+- समूह सिस्टम प्रॉम्प्ट: समूह सत्र का पहला टर्न (और `/activation` द्वारा मोड बदलने के बाद का कोई भी टर्न) सिस्टम प्रॉम्प्ट में सक्रियण मार्गदर्शन अंतःक्षेपित करता है (`Activation: trigger-only ...` या `Activation: always-on ...`, साथ में "विशिष्ट प्रेषक को संबोधित करें")। स्थायी समूह-चैट डिलीवरी मार्गदर्शन ("आप WhatsApp समूह चैट में हैं...") हमेशा शामिल रहता है।
 
-## Config example (WhatsApp)
+## कॉन्फ़िगरेशन उदाहरण (WhatsApp)
 
-`~/.openclaw/openclaw.json` में `groupChat` block जोड़ें ताकि display-name pings तब भी काम करें जब WhatsApp text body में visual `@` हटा देता है:
+WhatsApp द्वारा टेक्स्ट बॉडी से दृश्य `@` हटाए जाने पर भी प्रदर्शन-नाम पिंग को काम करने दें:
 
 ```json5
 {
@@ -45,6 +47,7 @@ x-i18n:
       groups: {
         "*": { requireMention: true },
       },
+      historyLimit: 50, // लंबित समूह संदर्भ विंडो (डिफ़ॉल्ट 50)
     },
   },
   agents: {
@@ -52,7 +55,6 @@ x-i18n:
       {
         id: "main",
         groupChat: {
-          historyLimit: 50,
           mentionPatterns: ["@?openclaw", "\\+?15555550123"],
         },
       },
@@ -61,43 +63,44 @@ x-i18n:
 }
 ```
 
-नोट्स:
+टिप्पणियाँ:
 
-- Regexes case-insensitive हैं और अन्य config regex surfaces जैसे ही safe-regex guardrails का उपयोग करते हैं; invalid patterns और unsafe nested repetition ignore किए जाते हैं।
-- जब कोई contact tap करता है तो WhatsApp अभी भी canonical mentions `mentionedJids` के जरिए भेजता है, इसलिए number fallback की जरूरत कम पड़ती है लेकिन यह उपयोगी safety net है।
+- Regex अक्षर-केस से स्वतंत्र हैं और अन्य कॉन्फ़िगरेशन regex सतहों जैसे ही सुरक्षित-regex सुरक्षा-नियमों का उपयोग करते हैं; अमान्य पैटर्न और असुरक्षित नेस्टेड पुनरावृत्ति अनदेखी की जाती है।
+- जब कोई संपर्क पर टैप करता है, तब भी WhatsApp `mentionedJids` के माध्यम से कैनोनिकल उल्लेख भेजता है, इसलिए नंबर फ़ॉलबैक की आवश्यकता शायद ही कभी पड़ती है, लेकिन यह एक उपयोगी सुरक्षा-जाल है।
+- लंबित-संदर्भ विंडो इस क्रम में निर्धारित होती है: `channels.whatsapp.accounts.<id>.historyLimit` → `channels.whatsapp.historyLimit` → `messages.groupChat.historyLimit` → 50।
 
-### सक्रियण command (owner-only)
+### सक्रियण कमांड (केवल स्वामी)
 
-Group chat command का उपयोग करें:
+समूह चैट कमांड का उपयोग करें:
 
 - `/activation mention`
 - `/activation always`
 
-केवल owner number (from `channels.whatsapp.allowFrom`, या unset होने पर bot का अपना E.164) इसे बदल सकता है। Current activation mode देखने के लिए group में standalone message के रूप में `/status` भेजें।
+केवल स्वामी नंबर (`channels.whatsapp.allowFrom` से, या इसके सेट न होने पर बॉट का अपना E.164) इसे बदल सकते हैं; किसी अन्य व्यक्ति का `/activation` अनदेखा किया जाता है और केवल संदर्भ के रूप में संग्रहीत होता है। वर्तमान सक्रियण मोड देखने के लिए समूह में `/status` को स्वतंत्र संदेश के रूप में भेजें।
 
 ## उपयोग कैसे करें
 
-1. अपने WhatsApp account (जो OpenClaw चला रहा है) को group में जोड़ें।
-2. `@openclaw …` कहें (या number शामिल करें)। जब तक आप `groupPolicy: "open"` सेट नहीं करते, केवल allowlisted senders इसे trigger कर सकते हैं।
-3. Agent prompt में recent group context और trailing `[from: …]` marker शामिल होगा ताकि वह सही व्यक्ति को address कर सके।
-4. Session-level directives (`/verbose on`, `/trace on`, `/think high`, `/new` या `/reset`, `/compact`) केवल उस group के session पर लागू होते हैं; उन्हें standalone messages के रूप में भेजें ताकि वे register हों। आपका व्यक्तिगत DM session independent रहता है।
+1. अपने WhatsApp खाते (जिस पर OpenClaw चल रहा है) को समूह में जोड़ें।
+2. `@openclaw ...` कहें (या नंबर शामिल करें)। जब तक आप `groupPolicy: "open"` सेट नहीं करते, केवल अनुमति-सूचीबद्ध प्रेषक ही इसे ट्रिगर कर सकते हैं।
+3. एजेंट प्रॉम्प्ट में लंबित समूह संदर्भ और प्रेषक-लेबल वाली पंक्तियाँ शामिल होती हैं, ताकि वह सही व्यक्ति को संबोधित कर सके।
+4. सत्र निर्देश (`/verbose on`, `/trace on`, `/think high`, `/new` या `/reset`, `/compact`) केवल उस समूह के सत्र पर लागू होते हैं; उन्हें स्वतंत्र संदेशों के रूप में भेजें ताकि वे पंजीकृत हों। आपका व्यक्तिगत DM सत्र स्वतंत्र रहता है।
 
-## Testing / verification
+## परीक्षण / सत्यापन
 
-- Manual smoke:
-  - Group में `@openclaw` ping भेजें और sender name का reference देने वाला reply confirm करें।
-  - दूसरा ping भेजें और verify करें कि history block शामिल है और फिर next turn पर clear हो जाता है।
-- Gateway logs (`--verbose` के साथ run करें) check करें ताकि `from: <groupJid>` और `[from: …]` suffix दिखाने वाली `inbound web message` entries दिखें।
+- मैन्युअल स्मोक परीक्षण:
+  - समूह में `@openclaw` पिंग भेजें और पुष्टि करें कि उत्तर में प्रेषक के नाम का संदर्भ है।
+  - दूसरा पिंग भेजें और सत्यापित करें कि इतिहास ब्लॉक शामिल है, फिर अगले टर्न पर साफ़ हो जाता है।
+- Gateway लॉग में (`--verbose` के साथ चलाएँ) `inbound web message` प्रविष्टियाँ देखें, जो `from: <groupJid>` और प्रेषक-लेबल वाली बॉडी दिखाती हैं।
 
-## ज्ञात विचार
+## ज्ञात विचारणीय बिंदु
 
-- Groups के लिए Heartbeats जानबूझकर skip किए जाते हैं ताकि noisy broadcasts से बचा जा सके।
-- Echo suppression combined batch string का उपयोग करता है; यदि आप mentions के बिना identical text दो बार भेजते हैं, तो केवल पहले को response मिलेगा।
-- Session store entries session store (`~/.openclaw/agents/<agentId>/sessions/sessions.json` by default) में `agent:<agentId>:whatsapp:group:<jid>` के रूप में दिखाई देंगी; missing entry का मतलब केवल इतना है कि group ने अभी तक run trigger नहीं किया है।
-- Groups में typing indicators `agents.defaults.typingMode` का पालन करते हैं। जब visible replies message-tool-only mode में opt into किए जाते हैं, typing default रूप से तुरंत शुरू हो जाती है ताकि group members देख सकें कि agent काम कर रहा है, भले ही कोई automatic final reply post न हो। Explicit typing-mode config फिर भी wins करता है।
+- Heartbeats एजेंट के मुख्य सत्र में चलते हैं; समूह सत्रों को कभी भी Heartbeat रन नहीं मिलते।
+- प्रतिध्वनि-दमन प्रति सत्र संयुक्त प्रॉम्प्ट (इतिहास + वर्तमान संदेश) को याद रखता है, ताकि बॉट के स्वयं डिलीवर किए गए संदेश इसे दोबारा ट्रिगर न करें; समान दोहराए गए बैच को प्रतिध्वनि मानकर छोड़ा जा सकता है।
+- सत्र स्टोर प्रविष्टियाँ प्रति-एजेंट SQLite सत्र स्टोर में `agent:<agentId>:whatsapp:group:<jid>` के रूप में दिखाई देती हैं; प्रविष्टि का न होना केवल यह दर्शाता है कि समूह ने अभी तक कोई रन ट्रिगर नहीं किया है।
+- टाइपिंग संकेतक `session.typingMode` / `agents.defaults.typingMode` का पालन करते हैं। जब दृश्य उत्तरों के लिए केवल-संदेश-टूल मोड चुना जाता है, तो डिफ़ॉल्ट रूप से टाइपिंग तुरंत शुरू हो जाती है, ताकि समूह के सदस्य एजेंट को काम करते हुए देख सकें, भले ही कोई स्वचालित अंतिम उत्तर पोस्ट न किया जाए। स्पष्ट टाइपिंग-मोड कॉन्फ़िगरेशन फिर भी प्राथमिकता लेता है।
 
 ## संबंधित
 
 - [समूह](/hi/channels/groups)
-- [Channel routing](/hi/channels/channel-routing)
-- [Broadcast groups](/hi/channels/broadcast-groups)
+- [चैनल रूटिंग](/hi/channels/channel-routing)
+- [प्रसारण समूह](/hi/channels/broadcast-groups)

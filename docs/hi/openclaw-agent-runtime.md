@@ -1,89 +1,85 @@
 ---
 read_when:
-    - OpenClaw एजेंट रनटाइम कोड या परीक्षणों पर काम करना
-    - agent-runtime lint, typecheck, और live test फ़्लो चलाना
-summary: 'OpenClaw एजेंट रनटाइम के लिए डेवलपर वर्कफ़्लो: बिल्ड, टेस्ट, और लाइव वैलिडेशन'
+    - OpenClaw एजेंट रनटाइम कोड या परीक्षणों पर कार्य करना
+    - एजेंट-रनटाइम लिंट, टाइपचेक और लाइव परीक्षण प्रवाह चलाना
+summary: 'OpenClaw एजेंट रनटाइम के लिए डेवलपर कार्यप्रवाह: बिल्ड, परीक्षण और लाइव सत्यापन'
 title: OpenClaw एजेंट रनटाइम कार्यप्रवाह
 x-i18n:
-    generated_at: "2026-06-28T23:26:01Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T15:40:03Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: fbe2a192ff7954577f8cbeae33676cbfd330f297d31c1917d2ab52898c2c5064
+    source_hash: 044f05779bef4ad18478081ba44d84356723c8a0be764440aa9d2b976d167324
     source_path: openclaw-agent-runtime.md
     workflow: 16
 ---
 
-OpenClaw में OpenClaw एजेंट रनटाइम पर काम करने के लिए एक समझदार वर्कफ़्लो।
+OpenClaw रेपो में एजेंट रनटाइम (`src/agents/`) के लिए डेवलपर वर्कफ़्लो।
 
 ## टाइप जाँच और लिंटिंग
 
-- डिफ़ॉल्ट स्थानीय गेट: `pnpm check`
-- बिल्ड गेट: `pnpm build` जब बदलाव बिल्ड आउटपुट, पैकेजिंग, या लेज़ी-लोडिंग/मॉड्यूल सीमाओं को प्रभावित कर सकता हो
-- एजेंट-रनटाइम बदलावों के लिए पूरा लैंडिंग गेट: `pnpm check && pnpm test`
+- डिफ़ॉल्ट स्थानीय गेट: `pnpm check` (टाइप जाँच, लिंट, नीति सुरक्षा-जाँच)
+- बिल्ड गेट: जब परिवर्तन बिल्ड आउटपुट, पैकेजिंग या लेज़ी-लोडिंग/मॉड्यूल सीमाओं को प्रभावित कर सकता हो, तब `pnpm build`
+- पुश से पहले का पूर्ण गेट: `pnpm build && pnpm check && pnpm check:test-types && pnpm test`
 
 ## एजेंट रनटाइम परीक्षण चलाना
 
-एजेंट-रनटाइम परीक्षण सेट को सीधे Vitest के साथ चलाएँ:
+एजेंट रनटाइम यूनिट सुइट चलाएँ:
 
 ```bash
 pnpm test \
   "src/agents/agent-*.test.ts" \
   "src/agents/embedded-agent-*.test.ts" \
-  "src/agents/agent-tools*.test.ts" \
-  "src/agents/agent-settings.test.ts" \
-  "src/agents/agent-tool-definition-adapter*.test.ts" \
   "src/agents/agent-hooks/**/*.test.ts"
 ```
 
-लाइव प्रोवाइडर अभ्यास शामिल करने के लिए:
+पहला ग्लॉब `agent-tools*`, `agent-settings`, और
+`agent-tool-definition-adapter*` सुइट को भी कवर करता है।
+
+लाइव परीक्षण यूनिट कॉन्फ़िगरेशन से बाहर रखे गए हैं; उन्हें लाइव
+रैपर के माध्यम से चलाएँ (`OPENCLAW_LIVE_TEST=1` सेट करता है और प्रदाता क्रेडेंशियल आवश्यक हैं):
 
 ```bash
-OPENCLAW_LIVE_TEST=1 pnpm test src/agents/embedded-agent-runner-extraparams.live.test.ts
+pnpm test:live src/agents/embedded-agent-runner-extraparams.live.test.ts
 ```
 
-यह मुख्य एजेंट रनटाइम यूनिट सुइट्स को कवर करता है:
+## मैन्युअल परीक्षण
 
-- `src/agents/agent-*.test.ts`
-- `src/agents/embedded-agent-*.test.ts`
-- `src/agents/agent-tools*.test.ts`
-- `src/agents/agent-settings.test.ts`
-- `src/agents/agent-tool-definition-adapter.test.ts`
-- `src/agents/agent-hooks/*.test.ts`
+- Gateway को डेवलपमेंट मोड में चलाएँ (`OPENCLAW_SKIP_CHANNELS=1` के माध्यम से चैनल कनेक्शन छोड़ देता है): `pnpm gateway:dev`
+- Gateway के माध्यम से एजेंट का एक टर्न ट्रिगर करें: `pnpm openclaw agent --message "Hello" --thinking low`
+- इंटरैक्टिव डीबगिंग के लिए TUI का उपयोग करें: `pnpm tui`
 
-## मैनुअल परीक्षण
+टूल कॉल के व्यवहार के लिए, किसी `read` या `exec` कार्रवाई का प्रॉम्प्ट दें, ताकि आप
+टूल स्ट्रीमिंग और पेलोड प्रबंधन देख सकें।
 
-अनुशंसित प्रवाह:
+## पूरी तरह रीसेट करना
 
-- Gateway को डेवलपमेंट मोड में चलाएँ:
-  - `pnpm gateway:dev`
-- एजेंट को सीधे ट्रिगर करें:
-  - `pnpm openclaw agent --message "Hello" --thinking low`
-- इंटरैक्टिव डीबगिंग के लिए TUI का उपयोग करें:
-  - `pnpm tui`
+स्टेट OpenClaw स्टेट डायरेक्टरी में रहता है: डिफ़ॉल्ट रूप से `~/.openclaw`, या
+सेट होने पर `$OPENCLAW_STATE_DIR`। उस डायरेक्टरी के सापेक्ष पाथ:
 
-टूल कॉल व्यवहार के लिए, `read` या `exec` क्रिया के लिए प्रॉम्प्ट दें ताकि आप टूल स्ट्रीमिंग और पेलोड हैंडलिंग देख सकें।
+| पाथ                                           | इसमें क्या रहता है                                                              |
+| ---------------------------------------------- | ------------------------------------------------------------------ |
+| `openclaw.json`                                | कॉन्फ़िगरेशन                                                             |
+| `state/openclaw.sqlite`                        | साझा रनटाइम स्टेट डेटाबेस                                      |
+| `agents/<agentId>/agent/openclaw-agent.sqlite` | प्रत्येक एजेंट के मॉडल प्रमाणीकरण प्रोफ़ाइल (API कुंजियाँ + OAuth) और रनटाइम स्टेट |
+| `credentials/`                                 | प्रमाणीकरण प्रोफ़ाइल स्टोर के बाहर प्रदाता/चैनल क्रेडेंशियल        |
+| `agents/<agentId>/sessions/`                   | ट्रांसक्रिप्ट इतिहास और लेगेसी सेशन माइग्रेशन स्रोत            |
+| `sessions/`                                    | लेगेसी एकल-एजेंट सेशन स्टोर (केवल पुराने इंस्टॉलेशन)              |
+| `workspace/`                                   | डिफ़ॉल्ट एजेंट वर्कस्पेस (अतिरिक्त एजेंट `workspace-<agentId>` का उपयोग करते हैं)   |
 
-## साफ़-स्लेट रीसेट
+पूर्ण रीसेट के लिए उन पाथ को हटाएँ। अधिक सीमित रीसेट:
 
-स्टेट OpenClaw स्टेट डायरेक्टरी के अंतर्गत रहता है। डिफ़ॉल्ट `~/.openclaw` है। यदि `OPENCLAW_STATE_DIR` सेट है, तो उसके बजाय उस डायरेक्टरी का उपयोग करें।
+- केवल सेशन: `agents/<agentId>/agent/openclaw-agent.sqlite` को न हटाएँ; सेशन पंक्तियाँ अन्य प्रति-एजेंट स्टेट के साथ वहीं रहती हैं। किसी एक चैट के लिए नया सेशन शुरू करने हेतु `/new` या `/reset`, और सेशन रखरखाव के लिए `openclaw sessions cleanup` का उपयोग करें।
+- प्रमाणीकरण बनाए रखें: `agents/<agentId>/agent/openclaw-agent.sqlite` और `credentials/` को यथास्थान रहने दें।
 
-सब कुछ रीसेट करने के लिए:
-
-- कॉन्फ़िग के लिए `openclaw.json`
-- मॉडल auth प्रोफ़ाइलों (API कुंजियाँ + OAuth) के लिए `agents/<agentId>/agent/auth-profiles.json`
-- प्रोवाइडर/चैनल स्टेट के लिए `credentials/`, जो अभी भी auth प्रोफ़ाइल स्टोर के बाहर रहता है
-- एजेंट सेशन इतिहास के लिए `agents/<agentId>/sessions/`
-- सेशन इंडेक्स के लिए `agents/<agentId>/sessions/sessions.json`
-- यदि लेगेसी पाथ मौजूद हों, तो `sessions/`
-- यदि आप खाली वर्कस्पेस चाहते हैं, तो `workspace/`
-
-यदि आप केवल सेशन रीसेट करना चाहते हैं, तो उस एजेंट के लिए `agents/<agentId>/sessions/` हटाएँ। यदि आप auth बनाए रखना चाहते हैं, तो `agents/<agentId>/agent/auth-profiles.json` और `credentials/` के अंतर्गत किसी भी प्रोवाइडर स्टेट को यथावत छोड़ दें।
+लेगेसी `auth-profiles.json` फ़ाइलें अब रनटाइम पर नहीं पढ़ी जातीं;
+`openclaw doctor --fix` उन्हें SQLite स्टोर में आयात करता है।
 
 ## संदर्भ
 
 - [परीक्षण](/hi/help/testing)
-- [शुरुआत करना](/hi/start/getting-started)
+- [आरंभ करना](/hi/start/getting-started)
 
 ## संबंधित
 

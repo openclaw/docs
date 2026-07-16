@@ -1,14 +1,15 @@
 ---
 read_when:
     - Vous installez, configurez ou auditez le plugin google-meet
-summary: Plugin de participant Google Meet pour OpenClaw permettant de rejoindre des appels via les transports Chrome ou Twilio.
+summary: Plugin de participation à Google Meet pour OpenClaw, permettant de rejoindre des appels via les transports Chrome ou Twilio.
 title: Plugin Google Meet
 x-i18n:
-    generated_at: "2026-07-12T03:08:04Z"
+    generated_at: "2026-07-16T13:32:39Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 2f0086a8b48f6e120ad391a99d60a14d7682910ca3ad176e41a51b341e9bdb49
+    source_hash: fc104cbff8e36ec1eb7288beaf249b321a638cd32ef09d3809266a5344b29959
     source_path: plugins/reference/google-meet.md
     workflow: 16
 ---
@@ -24,7 +25,7 @@ Plugin de participant Google Meet pour OpenClaw permettant de rejoindre des appe
 
 ## Surface
 
-contrats : outils
+contrats : `tools`
 
 ## Documentation associée
 

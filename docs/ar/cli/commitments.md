@@ -2,26 +2,27 @@
 read_when:
     - تريد فحص التزامات المتابعة المستنتجة
     - تريد تجاهل تسجيلات الوصول المعلّقة
-    - أنت تدقق في ما قد يسلّمه Heartbeat
-summary: مرجع CLI للأمر `openclaw commitments` (فحص إجراءات المتابعة المستنتجة ورفضها)
+    - أنت تدقق فيما قد يسلّمه Heartbeat
+summary: مرجع CLI لـ `openclaw commitments` (فحص المتابعات المستنتجة وتجاهلها)
 title: '`openclaw commitments`'
 x-i18n:
-    generated_at: "2026-07-12T05:43:29Z"
+    generated_at: "2026-07-16T13:42:43Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 4323273a5d73975532f4728dc5e40c5d59e0c6d2e31a538f96bf3451e3fdf4d9
+    source_hash: db8a7d8f5756ccb18ed0990fcedf50d1072bb67e775c29eefdbd1a7dd795b7b0
     source_path: cli/commitments.md
     workflow: 16
 ---
 
-عرض التزامات المتابعة المستنتجة وإدارتها.
+سرد التزامات المتابعة المستنتجة وإدارتها.
 
 الالتزامات ميزة اختيارية (`commitments.enabled`)، وهي ذكريات متابعة قصيرة الأجل
 تُنشأ من سياق المحادثة وتُسلَّم عبر Heartbeat. راجع
 [الالتزامات المستنتجة](/ar/concepts/commitments) للاطلاع على الدليل المفاهيمي والإعدادات.
 
-عند عدم تحديد أمر فرعي، يعرض `openclaw commitments` الالتزامات المعلّقة.
+عند عدم تحديد أمر فرعي، يسرد `openclaw commitments` الالتزامات المعلّقة.
 
 ## الاستخدام
 
@@ -35,8 +36,8 @@ openclaw commitments dismiss <id...> [--json]
 
 - `--all`: عرض جميع الحالات بدلًا من الالتزامات المعلّقة فقط.
 - `--agent <id>`: التصفية حسب معرّف وكيل واحد.
-- `--status <status>`: التصفية حسب الحالة. القيم: `pending` و`sent`
-  و`dismissed` و`snoozed` و`expired`. تؤدي القيم غير المعروفة إلى الخروج مع ظهور خطأ.
+- `--status <status>`: التصفية حسب الحالة. القيم: `pending`، و`sent`،
+  و`dismissed`، و`snoozed`، أو `expired`. تؤدي القيم غير المعروفة إلى الخروج مع ظهور خطأ.
 - `--json`: إخراج JSON قابل للقراءة آليًا.
 
 يضع `dismiss` علامة `dismissed` على معرّفات الالتزامات المحددة، كي لا
@@ -44,13 +45,13 @@ openclaw commitments dismiss <id...> [--json]
 
 ## أمثلة
 
-عرض الالتزامات المعلّقة:
+سرد الالتزامات المعلّقة:
 
 ```bash
 openclaw commitments
 ```
 
-عرض جميع الالتزامات المخزّنة:
+سرد كل التزام مخزّن:
 
 ```bash
 openclaw commitments --all
@@ -74,26 +75,26 @@ openclaw commitments --status snoozed
 openclaw commitments dismiss cm_abc123 cm_def456
 ```
 
-التصدير بصيغة JSON:
+التصدير بتنسيق JSON:
 
 ```bash
 openclaw commitments --all --json
 ```
 
-## المخرجات
+## الإخراج
 
-تطبع المخرجات النصية عدد الالتزامات ومسار التخزين وأي عوامل تصفية نشطة،
+يطبع الإخراج النصي عدد الالتزامات، ومسار قاعدة بيانات SQLite المشتركة، وأي عوامل تصفية نشطة،
 وصفًا واحدًا لكل التزام:
 
 - معرّف الالتزام
 - الحالة
-- النوع (`event_check_in` أو `deadline_check` أو `care_check_in` أو `open_loop`)
-- أقرب وقت استحقاق
+- النوع (`event_check_in`، أو `deadline_check`، أو `care_check_in`، أو `open_loop`)
+- أقرب موعد استحقاق
 - النطاق (الوكيل/القناة/الهدف)
-- نص المتابعة المقترح
+- النص المقترح للمتابعة
 
-تتضمن مخرجات JSON العدد وعوامل تصفية الحالة والوكيل النشطة ومسار
-تخزين الالتزامات والسجلات المخزّنة كاملةً.
+يتضمن إخراج JSON العدد، وعوامل تصفية الحالة والوكيل النشطة،
+ومسار قاعدة بيانات SQLite المشتركة، والسجلات المخزّنة كاملةً.
 
 ## ذو صلة
 

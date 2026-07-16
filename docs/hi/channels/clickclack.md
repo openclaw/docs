@@ -1,93 +1,126 @@
 ---
 read_when:
-    - OpenClaw को ClickClack कार्यक्षेत्र से कनेक्ट करना
+    - OpenClaw को ClickClack कार्यस्थान से कनेक्ट करना
     - ClickClack बॉट पहचानों का परीक्षण
-summary: ClickClack bot-token चैनल सेटअप और लक्ष्य सिंटैक्स
-title: ClickClack
+summary: ClickClack बॉट-टोकन चैनल सेटअप और लक्ष्य सिंटैक्स
+title: क्लिकक्लैक
 x-i18n:
-    generated_at: "2026-06-28T22:34:22Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T13:14:42Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 17d5dd79c29122916474a54069306e8e040a68c15c46bd217391bc97dd5d5bb5
+    source_hash: 2c422664ecdc9e41eb1810ca61654b886f1c51357fb9f48054d30c20a86ea8bc
     source_path: channels/clickclack.md
     workflow: 16
 ---
 
-ClickClack, OpenClaw को प्रथम-श्रेणी ClickClack बॉट टोकन के माध्यम से self-hosted ClickClack वर्कस्पेस से जोड़ता है।
+ClickClack प्रथम-श्रेणी ClickClack बॉट टोकन के माध्यम से OpenClaw को स्वयं-होस्ट किए गए ClickClack कार्यक्षेत्र से जोड़ता है।
 
-इसका उपयोग तब करें जब आप चाहते हैं कि OpenClaw एजेंट ClickClack बॉट उपयोगकर्ता के रूप में दिखाई दे। ClickClack स्वतंत्र सेवा बॉट और उपयोगकर्ता-स्वामित्व वाले बॉट का समर्थन करता है; उपयोगकर्ता-स्वामित्व वाले बॉट `owner_user_id` रखते हैं और केवल वे टोकन स्कोप प्राप्त करते हैं जिन्हें आप अनुमति देते हैं।
+इसका उपयोग तब करें जब आप चाहते हों कि कोई OpenClaw एजेंट ClickClack बॉट उपयोगकर्ता के रूप में दिखाई दे। ClickClack स्वतंत्र सेवा बॉट और उपयोगकर्ता-स्वामित्व वाले बॉट का समर्थन करता है; उपयोगकर्ता-स्वामित्व वाले बॉट एक `owner_user_id` रखते हैं और केवल आपके द्वारा प्रदान किए गए टोकन स्कोप प्राप्त करते हैं।
 
 ## त्वरित सेटअप
 
-ClickClack में बॉट टोकन बनाएँ:
+ClickClack में **Workspace settings → Integrations → OpenClaw** खोलें, एक
+बॉट बनाएँ और उसका टोकन कॉपी करें। फिर चैनल कॉन्फ़िगर करें:
 
 ```bash
-clickclack admin bot create \
-  --workspace <workspace_id_or_slug> \
-  --name "OpenClaw" \
-  --handle openclaw \
-  --scopes bot:write \
-  --plain
+openclaw channels add clickclack --base-url https://clickclack.example.com --token ccb_... --workspace default
 ```
 
-उपयोगकर्ता-स्वामित्व वाले बॉट के लिए, `--owner <user_id>` जोड़ें।
+`workspace` कार्यक्षेत्र आईडी (`wsp_...`), स्लग या प्रदर्शन नाम स्वीकार करता है।
+`channels add` सहेजने के बाद सर्वर, टोकन और कार्यक्षेत्र को सत्यापित करता है, फिर
+बताता है कि चल रहे Gateway ने नया खाता अपनाया या नहीं। यदि OpenClaw
+पहले से चल रहा है, तो ClickClack स्वतः कनेक्ट हो जाता है और दूसरी कमांड की
+आवश्यकता नहीं होती। अन्यथा, इसे इससे शुरू करें:
 
-OpenClaw कॉन्फ़िगर करें:
+```bash
+openclaw gateway
+```
+
+निर्देशित सेटअप के लिए, चलाएँ:
+
+```bash
+openclaw onboard
+```
+
+ClickClack चुनें, फिर संकेत मिलने पर सर्वर URL, बॉट टोकन और कार्यक्षेत्र
+दर्ज करें। निर्देशित सेटअप सहेजने के बाद सर्वर, टोकन और कार्यक्षेत्र की जाँच करता है;
+विफल जाँच कॉन्फ़िगरेशन को हटाती नहीं है।
+
+### विकल्प: परिवेश-आधारित टोकन
+
+डिफ़ॉल्ट खाता कॉन्फ़िग में टोकन संग्रहीत करने के बजाय `CLICKCLACK_BOT_TOKEN`
+पढ़ सकता है:
+
+```bash
+export CLICKCLACK_BOT_TOKEN="ccb_..."
+openclaw channels add clickclack --base-url https://clickclack.example.com --workspace default --use-env
+openclaw gateway
+```
+
+नामित खातों को कॉन्फ़िगर किया गया टोकन या टोकन फ़ाइल उपयोग करनी होगी; साझा परिवेश
+चर को जानबूझकर केवल डिफ़ॉल्ट खाते तक सीमित रखा गया है।
+
+### JSON5 संदर्भ
+
+समतुल्य कॉन्फ़िग संरचना यह है:
 
 ```json5
 {
-  plugins: {
-    entries: {
-      clickclack: {
-        llm: {
-          allowAgentIdOverride: true,
-        },
-      },
-    },
-  },
   channels: {
     clickclack: {
       enabled: true,
-      baseUrl: "https://app.clickclack.chat",
+      baseUrl: "https://clickclack.example.com",
       token: { source: "env", provider: "default", id: "CLICKCLACK_BOT_TOKEN" },
       workspace: "default",
       defaultTo: "channel:general",
-      agentId: "clickclack-bot",
-      replyMode: "model",
     },
   },
 }
 ```
 
-फिर चलाएँ:
+किसी खाते को केवल तभी कॉन्फ़िगर किया हुआ माना जाता है जब `baseUrl`, एक टोकन स्रोत और
+`workspace` सभी सेट हों। डिफ़ॉल्ट खाते के लिए टोकन स्रोत `token`, `tokenFile` या
+`CLICKCLACK_BOT_TOKEN` हो सकता है। `workspace` कार्यक्षेत्र
+आईडी (`wsp_...`), स्लग या नाम स्वीकार करता है; Gateway स्टार्टअप पर इसे आईडी में रूपांतरित करता है।
 
-```bash
-export CLICKCLACK_BOT_TOKEN="ccb_..."
-openclaw gateway
-```
+### खाता कॉन्फ़िग कुंजियाँ
 
-यदि `plugins.allow` एक गैर-खाली प्रतिबंधात्मक सूची है, तो चैनल सेटअप में ClickClack को स्पष्ट रूप से चुनना या `openclaw plugins enable clickclack` चलाना उस सूची में `clickclack` जोड़ देता है। ऑनबोर्डिंग इंस्टॉलेशन भी यही स्पष्ट-चयन व्यवहार उपयोग करता है। ये पथ `plugins.deny` या वैश्विक `plugins.enabled: false` सेटिंग को ओवरराइड नहीं करते। सीधे `openclaw plugins install @openclaw/clickclack` सामान्य Plugin-इंस्टॉल नीति का पालन करता है और मौजूदा allowlist में ClickClack को भी दर्ज करता है।
+| कुंजी                     | डिफ़ॉल्ट             | टिप्पणियाँ                                                                                   |
+| ----------------------- | ------------------- | --------------------------------------------------------------------------------------- |
+| `baseUrl`               | कोई नहीं (आवश्यक)     | ClickClack सर्वर URL।                                                                  |
+| `token`                 | कोई नहीं                | सादे स्ट्रिंग या सीक्रेट संदर्भ (`source: "env" \| "file" \| "exec"`) के रूप में बॉट टोकन।        |
+| `tokenFile`             | कोई नहीं                | बॉट-टोकन फ़ाइल का पथ; `token` पर प्राथमिकता लेता है।                                |
+| `workspace`             | कोई नहीं (आवश्यक)     | कार्यक्षेत्र आईडी, स्लग या नाम।                                                            |
+| `replyMode`             | `"agent"`           | `"agent"` पूर्ण एजेंट पाइपलाइन चलाता है; `"model"` छोटे प्रत्यक्ष मॉडल पूर्णताएँ भेजता है। |
+| `defaultTo`             | `"channel:general"` | तब उपयोग किया जाने वाला लक्ष्य जब आउटबाउंड पथ कोई लक्ष्य न दे।                                      |
+| `allowFrom`             | `["*"]`             | इनबाउंड DM और चैनल संदेशों के लिए उपयोगकर्ता-आईडी अनुमति-सूची।                                 |
+| `botUserId`             | स्वतः-पहचाना गया       | स्टार्टअप पर बॉट टोकन पहचान से निर्धारित।                                        |
+| `agentId`               | रूट डिफ़ॉल्ट       | इस खाते के इनबाउंड संदेशों को एक एजेंट पर पिन करें।                                       |
+| `toolsAllow`            | कोई नहीं                | इस खाते से एजेंट के उत्तरों के लिए टूल अनुमति-सूची।                                     |
+| `model`, `systemPrompt` | कोई नहीं                | `replyMode: "model"` पूर्णताओं द्वारा उपयोग किया जाता है।                                               |
+| `commandMenu`           | `true`              | ClickClack कंपोज़र स्वतःपूर्णता में नेटिव कमांड प्रकाशित करें।                            |
+| `reconnectMs`           | `1500`              | रीयलटाइम पुनःकनेक्शन विलंब (100 से 60000)।                                                |
 
-## कई बॉट
+यदि `plugins.allow` एक गैर-रिक्त प्रतिबंधात्मक सूची है, तो चैनल सेटअप में
+ClickClack को स्पष्ट रूप से चुनना या `openclaw plugins enable clickclack` चलाना
+उस सूची में `clickclack` जोड़ देता है। ऑनबोर्डिंग इंस्टॉलेशन भी यही
+स्पष्ट-चयन व्यवहार उपयोग करता है। ये पथ `plugins.deny` या वैश्विक
+`plugins.enabled: false` सेटिंग को ओवरराइड नहीं करते। प्रत्यक्ष
+`openclaw plugins install @openclaw/clickclack` सामान्य
+Plugin-इंस्टॉल नीति का पालन करता है और मौजूदा अनुमति-सूची में ClickClack को भी दर्ज करता है।
 
-हर खाता अपना ClickClack रीयलटाइम कनेक्शन खोलता है और अपना बॉट टोकन उपयोग करता है।
+## एकाधिक बॉट
+
+प्रत्येक खाता अपना ClickClack रीयलटाइम कनेक्शन खोलता है और अपना बॉट टोकन उपयोग करता है।
 
 ```json5
 {
-  plugins: {
-    entries: {
-      clickclack: {
-        llm: {
-          allowAgentIdOverride: true,
-        },
-      },
-    },
-  },
   channels: {
     clickclack: {
       enabled: true,
-      baseUrl: "https://app.clickclack.chat",
+      baseUrl: "https://clickclack.example.com",
       defaultAccount: "service",
       accounts: {
         service: {
@@ -95,14 +128,12 @@ openclaw gateway
           workspace: "default",
           defaultTo: "channel:general",
           agentId: "service-bot",
-          replyMode: "model",
         },
-        peter: {
-          token: { source: "env", provider: "default", id: "CLICKCLACK_PETER_BOT_TOKEN" },
+        support: {
+          token: { source: "env", provider: "default", id: "CLICKCLACK_SUPPORT_BOT_TOKEN" },
           workspace: "default",
           defaultTo: "dm:usr_...",
-          agentId: "peter-bot",
-          replyMode: "model",
+          agentId: "support-bot",
         },
       },
     },
@@ -110,36 +141,171 @@ openclaw gateway
 }
 ```
 
-`replyMode: "model"` छोटे बॉट जवाबों के लिए सीधे `api.runtime.llm.complete` का उपयोग करता है।
-जब कोई खाता `agentId` सेट करता है, तो OpenClaw को स्पष्ट `plugins.entries.clickclack.llm.allowAgentIdOverride` भरोसा-बिट चाहिए होता है ताकि Plugin उस बॉट एजेंट के लिए completion चला सके। यदि आप केवल डिफ़ॉल्ट एजेंट रूट उपयोग करते हैं, तो इसे बंद रखें।
+## उत्तर मोड
+
+- `replyMode: "agent"` (डिफ़ॉल्ट) सत्र रिकॉर्डिंग और टूल नीति सहित, सामान्य एजेंट पाइपलाइन के माध्यम से इनबाउंड संदेश भेजता है।
+- `replyMode: "model"` एजेंट पाइपलाइन को छोड़ देता है और प्रत्यक्ष बॉट उत्तरों के लिए Plugin रनटाइम के `llm.complete` का उपयोग करता है, जिसे वैकल्पिक रूप से `model` और `systemPrompt` द्वारा आकार दिया जाता है। चयनित प्रदाता और मॉडल पूर्णता बजट के स्वामी होते हैं।
+
+मॉडल मोड निर्धारित बॉट एजेंट आईडी के विरुद्ध पूर्णताएँ चलाता है, जिसके लिए
+स्पष्ट `plugins.entries.clickclack.llm.allowAgentIdOverride: true` विश्वास
+बिट आवश्यक है:
+
+```json5
+{
+  plugins: {
+    entries: {
+      clickclack: {
+        llm: {
+          allowAgentIdOverride: true,
+        },
+      },
+    },
+  },
+}
+```
+
+यदि आप केवल डिफ़ॉल्ट `agent` उत्तर मोड उपयोग करते हैं, तो विश्वास बिट बंद रखें;
+वहाँ इसकी आवश्यकता नहीं है।
+
+## कमांड मेनू
+
+Gateway स्टार्टअप पर, प्रत्येक कॉन्फ़िगर किया गया खाता OpenClaw के नेटिव
+कमांड ClickClack में प्रकाशित करता है। वे कंपोज़र स्वतःपूर्णता में बॉट के
+हैंडल के लेबल के साथ दिखाई देते हैं। प्रत्येक स्टार्टअप पर प्रकाशित सेट पूर्णतः बदल दिया जाता है,
+जिसमें नेटिव कमांड कैटलॉग खाली होने पर पुराने मेनू को साफ़ करना भी शामिल है।
+
+कमांड-मेनू सिंक डिफ़ॉल्ट रूप से सक्षम है। ऑप्ट आउट करने के लिए किसी खाते पर
+`commandMenu: false` सेट करें:
+
+```json5
+{
+  channels: {
+    clickclack: {
+      enabled: true,
+      token: { source: "env", provider: "default", id: "CLICKCLACK_BOT_TOKEN" },
+      workspace: "default",
+      commandMenu: false,
+    },
+  },
+}
+```
+
+टोकन को `commands:write` की आवश्यकता होती है। वर्तमान ClickClack `bot:write` और
+`bot:admin` बंडल में वह स्कोप शामिल है और इसे अलग से भी प्रदान किया जा सकता है।
+कमांड मेनू प्रस्तुत होने से पहले बनाए गए टोकन में स्कोप जोड़ने या प्रतिस्थापन
+टोकन की आवश्यकता हो सकती है।
+
+सिंक सर्वोत्तम प्रयास के आधार पर होता है और प्रत्येक Gateway प्रारंभ पर एक बार चलता है। अनुपलब्ध स्कोप या नेटवर्क
+विफलता चेतावनी लॉग करती है; एंडपॉइंट रहित पुराना ClickClack सर्वर डीबग
+स्तर पर लॉग करता है। इनमें से कोई भी विफलता रीयलटाइम स्टार्टअप को अवरुद्ध नहीं करती। एजेंट के ऑफ़लाइन होने पर भी मेनू
+उपलब्ध रहते हैं और बॉट के कार्यक्षेत्र छोड़ने पर हटा दिए जाते हैं।
+
+यह रिलीज़ केवल नेटिव कमांड विनिर्देश प्रकाशित करती है। उपनाम तथा
+Skill-, Plugin- या कस्टम-कमांड कैटलॉग मेनू में नहीं जोड़े जाते। यदि कोई
+नाम HTTP स्लैश कमांड के रूप में भी पंजीकृत है, तो ClickClack पहले उस
+पंजीकरण को भेजता है; अन्य मेनू कमांड सामान्य संदेश
+वितरण से होकर आगे बढ़ते हैं।
+
+क्रॉस-सेवा सहसंबंध प्रमाण के लिए `agent` मोड उपयोग करें। उसके कैनोनिकल
+`msg_<ulid>` आकार में आधिकारिक ClickClack संदेश आईडी के लिए, चैनल
+नियतात्मक OpenClaw रन आईडी `clickclack:<message-id>` प्राप्त करता है। प्रत्येक मॉडल कॉल
+फिर निदान में `clickclack:<message-id>:model:<n>` के रूप में दिखाई देती है; जब वह
+टर्न ClawRouter उपयोग करता है, तो वही मॉडल-कॉल आईडी `X-Request-ID` के रूप में भेजी जाती है।
+`model` मोड सामान्य एजेंट रन/सत्र निदान को बायपास करता है और इसलिए
+इस प्रमाण पथ के लिए उपयुक्त नहीं है।
+
+जब किसी रीयलटाइम इवेंट में सत्यापित `payload.correlation_id` होता है, तो
+चैनल उसे आधिकारिक संदेश फ़ेच और परिणामी ClickClack उत्तर अनुरोधों पर
+`X-Correlation-ID` के रूप में ले जाता है। मान ClickClack के सुरक्षित
+128-वर्ण सेट (`A-Z`, `a-z`, `0-9`, `.`, `_`, `:` और `-`) का उपयोग करते हैं; अमान्य मान
+छोड़ दिए जाते हैं। इन संयोजनों में केवल पहचानकर्ता होते हैं, संदेश के मुख्य भाग,
+प्रॉम्प्ट, पूर्णताएँ, क्रेडेंशियल या टूल आउटपुट कभी नहीं।
+
+## टिकाऊ मीडिया वितरण
+
+मीडिया वाले एजेंट उत्तर आवश्यक टिकाऊ वितरण उपयोग करते हैं। OpenClaw
+पहली ClickClack राइट से पहले स्थिर प्रति-भाग संदेश और अपलोड नॉन्स निर्धारित करता है, ताकि
+पुनःप्रयास संग्रहण कोटा खर्च करने या डुप्लिकेट प्रकाशित करने के बजाय उसी अपलोड और संदेश का पुनः उपयोग करे।
+यदि पुनःप्रारंभ के बाद कोई अपलोड पहले से मौजूद है, तो
+OpenClaw मूल स्थानीय पथ या दूरस्थ मीडिया URL को दोबारा नहीं पढ़ता।
+
+इस पुनर्प्राप्ति अनुबंध के लिए ऐसे ClickClack सर्वर की आवश्यकता है जो इनका समर्थन करता हो:
+
+- `GET /api/uploads/by-nonce` जिसमें
+  प्राप्त और अनुपलब्ध परिणामों पर `X-ClickClack-Upload-Nonce: supported` हो।
+- `GET /api/messages/by-nonce` जिसमें
+  प्राप्त और अनुपलब्ध परिणामों पर `X-ClickClack-Message-Nonce: supported` हो।
+- समान स्वामी-स्कोप वाले नॉन्स और अपलोड के लिए आइडेम्पोटेंट संदेश निर्माण और अटैचमेंट संबद्धता।
+
+पुराने सर्वर के सामान्य 404 को इस प्रमाण के रूप में नहीं माना जाता कि कोई प्रेषण अनुपस्थित है।
+डुप्लिकेट का जोखिम उठाने के बजाय OpenClaw वितरण को अनसुलझा छोड़ देता है; मीडिया उत्पन्न करने वाले
+एजेंट उत्तर सक्षम करने से पहले ClickClack अपडेट करें।
+
+## एजेंट गतिविधि पंक्तियाँ
+
+डिफ़ॉल्ट रूप से एजेंट टर्न चलने के दौरान ClickClack चैनल कुछ नहीं दिखाता; केवल अंतिम उत्तर आता है। टर्न की प्रगति के दौरान टिकाऊ `agent_commentary` और `agent_tool` संदेश पंक्तियाँ प्रकाशित करने के लिए किसी खाते पर `agentActivity: true` सेट करें:
+
+```json5
+{
+  channels: {
+    clickclack: {
+      enabled: true,
+      token: { source: "env", provider: "default", id: "CLICKCLACK_BOT_TOKEN" },
+      workspace: "default",
+      agentActivity: true,
+    },
+  },
+}
+```
+
+आवश्यकताएँ और व्यवहार:
+
+- **डिफ़ॉल्ट रूप से बंद।** मानक सेटअप और पुराने ClickClack सर्वर अप्रभावित रहते हैं।
+- **`agent_activity:write` टोकन स्कोप आवश्यक है।** यह स्कोप `bot:write` से अलग है और उससे इनहेरिट नहीं होता; विकल्प सक्षम करने से पहले `--scopes bot:write,agent_activity:write` के साथ बॉट टोकन बनाएँ (या किसी मौजूदा टोकन को यह स्कोप प्रदान करें)।
+- **सर्वोत्तम-प्रयास अवक्रमण।** यदि टोकन में `agent_activity:write` नहीं है या सर्वर गतिविधि राइट अस्वीकार करता है, तो विफलताएँ लॉग होती हैं और अंतिम उत्तर फिर भी सामान्य रूप से वितरित होता है; कोई गतिविधि पंक्ति दिखाई नहीं देती।
+- पंक्तियाँ प्रति टर्न (`turn_id`) समूहीकृत होती हैं, इस प्रकार संयोजित होती हैं कि एक तार्किक चरण एक पंक्ति हो, और टूल पंक्तियाँ Discord/Slack/Telegram के समान प्रगति फ़ॉर्मेटिंग (टूल नाम और कमांड विवरण) उपयोग करती हैं।
+- **एट्रिब्यूशन मेटाडेटा।** एजेंट द्वारा लिखी पोस्ट (गतिविधि पंक्तियाँ और अंतिम उत्तर) टर्न के लिए वास्तव में उपयोग किए गए मॉडल से निर्धारित `author_model` और `author_thinking` फ़ील्ड रखती हैं (फ़ॉलबैक के बाद भी)। जो सर्वर इन कॉलम को परिभाषित नहीं करते, वे अज्ञात JSON फ़ील्ड को अनदेखा करते हैं; जो सर्वर इन्हें स्थायी रखते हैं, वे प्रति संदेश "किस मॉडल ने यह पंक्ति किस चिंतन स्तर पर कही" का उत्तर दे सकते हैं।
 
 ## लक्ष्य
 
-- `channel:<name-or-id>` वर्कस्पेस चैनल में भेजता है। Bare लक्ष्य डिफ़ॉल्ट रूप से `channel:` होते हैं।
-- `dm:<user_id>` उस उपयोगकर्ता के साथ सीधी बातचीत बनाता है या फिर से उपयोग करता है।
-- `thread:<message_id>` मौजूदा थ्रेड में जवाब देता है।
+- `channel:<name-or-id>` किसी कार्यस्थान चैनल पर भेजता है। बिना उपसर्ग वाले लक्ष्य डिफ़ॉल्ट रूप से `channel:` होते हैं।
+- `dm:<user_id>` उस उपयोगकर्ता के साथ प्रत्यक्ष वार्तालाप बनाता है या मौजूदा वार्तालाप का पुनः उपयोग करता है।
+- `thread:<message_id>` उस संदेश से शुरू होने वाले थ्रेड में उत्तर देता है।
+
+स्पष्ट आउटबाउंड लक्ष्यों में `clickclack:` या `cc:` प्रदाता उपसर्ग भी हो सकता है।
+
+आउटबाउंड मीडिया ClickClack के अपलोड API का उपयोग करता है और फिर स्थायी अपलोड को
+बनाए गए चैनल संदेश, थ्रेड उत्तर या DM से संलग्न करता है। स्थानीय फ़ाइलें और समर्थित
+दूरस्थ मीडिया URL OpenClaw की सामान्य मीडिया-पहुँच नीति का पालन करते हैं, जिसमें प्रति फ़ाइल
+64 MiB की सीमा है। स्थायी कतारबद्ध प्रेषण प्रत्येक अपलोड और संदेश भाग के लिए अलग-अलग
+स्वामी-स्कोप वाले नॉन्स का उपयोग करते हैं, फिर उन्हीं ऑब्जेक्ट के साथ संलग्नक संबद्धता का
+पुनः प्रयास करते हैं। सर्वर अनुबंध और पुनर्प्राप्ति व्यवहार के लिए [स्थायी मीडिया डिलीवरी](#durable-media-delivery)
+देखें।
 
 उदाहरण:
 
 ```bash
-openclaw message send --channel clickclack --target channel:general --message "hello"
-openclaw message send --channel clickclack --target dm:usr_123 --message "hello"
-openclaw message send --channel clickclack --target thread:msg_123 --message "following up"
+openclaw message send --channel clickclack --target channel:general --message "नमस्ते"
+openclaw message send --channel clickclack --target dm:usr_123 --message "नमस्ते"
+openclaw message send --channel clickclack --target thread:msg_123 --message "आगे की जानकारी"
 ```
 
 ## अनुमतियाँ
 
 ClickClack टोकन स्कोप ClickClack API द्वारा लागू किए जाते हैं।
 
-- `bot:read`: वर्कस्पेस/चैनल/संदेश/थ्रेड/DM/रीयलटाइम/प्रोफ़ाइल डेटा पढ़ें।
-- `bot:write`: `bot:read` के साथ चैनल संदेश, थ्रेड जवाब, DM, और अपलोड।
+- `bot:read`: कार्यस्थान/चैनल/संदेश/थ्रेड/DM/रीयल-टाइम/प्रोफ़ाइल डेटा पढ़ें।
+- `bot:write`: `bot:read` के साथ चैनल संदेश, थ्रेड उत्तर, DM, अपलोड और कमांड-मेन्यू प्रकाशन।
 - `bot:admin`: `bot:write` के साथ चैनल निर्माण।
+- `commands:write`: बॉट का कमांड मेन्यू प्रकाशित करें। वर्तमान `bot:write` और `bot:admin` बंडलों में शामिल है और अलग से भी प्रदान किया जा सकता है।
+- `agent_activity:write`: स्थायी एजेंट गतिविधि पंक्तियाँ (`agent_commentary` / `agent_tool`)। `bot:write` या `bot:admin` द्वारा इनहेरिट नहीं होतीं; केवल `agentActivity: true` सेट होने पर आवश्यक हैं।
 
-सामान्य एजेंट चैट के लिए OpenClaw को केवल `bot:write` चाहिए।
+सामान्य एजेंट चैट और कमांड-मेन्यू सिंक के लिए OpenClaw को केवल वर्तमान `bot:write` की आवश्यकता होती है। [एजेंट गतिविधि पंक्तियाँ](#agent-activity-rows) सक्षम करते समय `agent_activity:write` जोड़ें।
 
 ## समस्या निवारण
 
-- `ClickClack is not configured`: `channels.clickclack.token` या `CLICKCLACK_BOT_TOKEN` सेट करें।
-- `workspace not found`: `workspace` को ClickClack द्वारा लौटाए गए वर्कस्पेस id या slug पर सेट करें।
-- कोई इनबाउंड जवाब नहीं: पुष्टि करें कि टोकन के पास रीयलटाइम पढ़ने की पहुँच है और बॉट अपने ही संदेशों का जवाब नहीं दे रहा है।
-- चैनल भेजना विफल होता है: सत्यापित करें कि बॉट वर्कस्पेस का सदस्य है और उसके पास `bot:write` है।
+- `ClickClack is not configured for account "<id>"`: उस खाते के लिए `baseUrl`, `token` (उदाहरण के लिए `CLICKCLACK_BOT_TOKEN` के माध्यम से) और `workspace` सेट करें।
+- `ClickClack workspace not found: <value>`: `workspace` को ClickClack द्वारा लौटाई गई कार्यस्थान आईडी, स्लग या नाम पर सेट करें।
+- कोई इनबाउंड उत्तर नहीं: पुष्टि करें कि टोकन के पास रीयल-टाइम पढ़ने की पहुँच है और ध्यान दें कि बॉट अपने संदेशों तथा अन्य बॉट के संदेशों को अनदेखा करता है।
+- चैनल प्रेषण विफल होते हैं: सत्यापित करें कि बॉट कार्यस्थान का सदस्य है और उसके पास `bot:write` है।
+- कोई कमांड मेन्यू नहीं: पुष्टि करें कि `commandMenu`, `false` नहीं है, ClickClack सर्वर `PUT /api/bots/self/commands` का समर्थन करता है और टोकन के पास `commands:write` है।

@@ -5,11 +5,12 @@ read_when:
 summary: Cài đặt OpenClaw và bắt đầu cuộc trò chuyện đầu tiên chỉ trong vài phút.
 title: Bắt đầu sử dụng
 x-i18n:
-    generated_at: "2026-07-12T08:23:07Z"
+    generated_at: "2026-07-16T15:04:22Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 308ca58b8a11832b5a4c0d4634d1c88ef44681ef755a18d675bcff60b5aba929
+    source_hash: 8f50073b059477636b94e128cec90b41dcc21c8bb132e34900e68409cacf70eb
     source_path: start/getting-started.md
     workflow: 16
 ---
@@ -20,14 +21,14 @@ phiên trò chuyện hoạt động.
 
 ## Những gì bạn cần
 
-- **Node.js 22.19+, 23.11+ hoặc 24+** (24 là phiên bản mặc định được khuyến nghị)
+- **Node.js 22.22.3+, 24.15+ hoặc 25.9+** (24 là phiên bản mặc định được khuyến nghị)
 - **Khóa API** từ một nhà cung cấp mô hình (Anthropic, OpenAI, Google, v.v.) — quy trình thiết lập ban đầu sẽ yêu cầu bạn nhập khóa
 
 <Tip>
 Kiểm tra phiên bản Node bằng `node --version`.
-**Người dùng Windows:** ứng dụng Windows Hub gốc là lựa chọn dễ nhất trên máy tính. Trình cài đặt
-PowerShell và các phương thức chạy Gateway qua WSL2 cũng được hỗ trợ. Xem [Windows](/vi/platforms/windows).
-Bạn cần cài đặt Node? Xem [Thiết lập Node](/vi/install/node).
+**Người dùng Windows:** ứng dụng Windows Hub gốc là cách dễ nhất để sử dụng trên máy tính. Trình cài đặt
+PowerShell và các phương thức chạy Gateway trên WSL2 cũng được hỗ trợ. Xem [Windows](/vi/platforms/windows).
+Cần cài đặt Node? Xem [Thiết lập Node](/vi/install/node).
 </Tip>
 
 ## Thiết lập nhanh
@@ -62,13 +63,13 @@ Bạn cần cài đặt Node? Xem [Thiết lập Node](/vi/install/node).
     openclaw onboard --install-daemon
     ```
 
-    Trình hướng dẫn sẽ giúp bạn chọn nhà cung cấp mô hình, thiết lập khóa API
+    Trình hướng dẫn sẽ giúp bạn chọn nhà cung cấp mô hình, đặt khóa API
     và cấu hình Gateway. QuickStart thường chỉ mất vài phút, nhưng
-    việc đăng nhập vào nhà cung cấp, ghép nối kênh, cài đặt daemon, tải xuống qua mạng, thiết lập Skills
-    hoặc các Plugin tùy chọn có thể khiến toàn bộ quy trình thiết lập ban đầu mất nhiều thời gian hơn. Hãy bỏ qua các
+    việc đăng nhập vào nhà cung cấp, ghép nối kênh, cài đặt daemon, tải xuống qua mạng, thiết lập skills
+    hoặc các plugin tùy chọn có thể khiến toàn bộ quy trình thiết lập ban đầu mất nhiều thời gian hơn. Hãy bỏ qua các
     bước tùy chọn và quay lại sau bằng `openclaw configure`.
 
-    Xem [Thiết lập ban đầu (CLI)](/vi/start/wizard) để biết tài liệu tham khảo đầy đủ.
+    Xem [Thiết lập ban đầu (CLI)](/vi/start/wizard) để tham khảo đầy đủ.
 
   </Step>
   <Step title="Xác minh Gateway đang chạy">
@@ -84,30 +85,30 @@ Bạn cần cài đặt Node? Xem [Thiết lập Node](/vi/install/node).
     openclaw dashboard
     ```
 
-    Lệnh này mở giao diện điều khiển trong trình duyệt. Nếu giao diện tải được thì mọi thứ đang hoạt động.
+    Thao tác này mở giao diện điều khiển trong trình duyệt. Nếu giao diện tải được thì mọi thứ đang hoạt động.
 
   </Step>
   <Step title="Gửi tin nhắn đầu tiên">
     Nhập một tin nhắn trong phần trò chuyện của giao diện điều khiển và bạn sẽ nhận được phản hồi từ AI.
 
-    Bạn muốn trò chuyện bằng điện thoại? Kênh thiết lập nhanh nhất là
+    Thay vào đó, bạn muốn trò chuyện từ điện thoại? Kênh thiết lập nhanh nhất là
     [Telegram](/vi/channels/telegram) (chỉ cần mã thông báo bot). Xem [Các kênh](/vi/channels)
     để biết tất cả tùy chọn.
 
   </Step>
 </Steps>
 
-<Accordion title="Nâng cao: gắn một bản dựng giao diện điều khiển tùy chỉnh">
-  Nếu bạn duy trì một bản dựng bảng điều khiển đã được bản địa hóa hoặc tùy chỉnh, hãy đặt
-  `gateway.controlUi.root` trỏ đến thư mục chứa các tài nguyên tĩnh đã dựng
-  và tệp `index.html`.
+<Accordion title="Nâng cao: gắn bản dựng giao diện điều khiển tùy chỉnh">
+  Nếu bạn duy trì một bản dựng bảng điều khiển đã được bản địa hóa hoặc tùy chỉnh, hãy trỏ
+  `gateway.controlUi.root` đến thư mục chứa các tài nguyên tĩnh đã dựng
+  và `index.html`.
 
 ```bash
 mkdir -p "$HOME/.openclaw/control-ui-custom"
 # Sao chép các tệp tĩnh đã dựng của bạn vào thư mục đó.
 ```
 
-Sau đó thiết lập:
+Sau đó đặt:
 
 ```json
 {
@@ -136,27 +137,27 @@ openclaw dashboard
     Discord, Feishu, iMessage, Matrix, Microsoft Teams, Signal, Slack, Telegram, WhatsApp, Zalo và nhiều nền tảng khác.
   </Card>
   <Card title="Ghép nối và an toàn" href="/vi/channels/pairing" icon="shield">
-    Kiểm soát những người có thể nhắn tin cho tác nhân của bạn.
+    Kiểm soát những ai có thể gửi tin nhắn cho tác tử của bạn.
   </Card>
   <Card title="Cấu hình Gateway" href="/vi/gateway/configuration" icon="settings">
-    Mô hình, công cụ, môi trường cô lập và các thiết lập nâng cao.
+    Mô hình, công cụ, hộp cát và các cài đặt nâng cao.
   </Card>
-  <Card title="Khám phá công cụ" href="/vi/tools" icon="wrench">
-    Trình duyệt, thực thi lệnh, tìm kiếm web, Skills và các Plugin.
+  <Card title="Duyệt công cụ" href="/vi/tools" icon="wrench">
+    Trình duyệt, thực thi lệnh, tìm kiếm web, skills và plugin.
   </Card>
 </Columns>
 
 <Accordion title="Nâng cao: biến môi trường">
   Nếu bạn chạy OpenClaw bằng tài khoản dịch vụ hoặc muốn sử dụng các đường dẫn tùy chỉnh:
 
-- `OPENCLAW_HOME` — thư mục chính để phân giải đường dẫn nội bộ
+- `OPENCLAW_HOME` — thư mục chính dùng để phân giải đường dẫn nội bộ
 - `OPENCLAW_STATE_DIR` — ghi đè thư mục trạng thái
 - `OPENCLAW_CONFIG_PATH` — ghi đè đường dẫn tệp cấu hình
 
 Tài liệu tham khảo đầy đủ: [Biến môi trường](/vi/help/environment).
 </Accordion>
 
-## Nội dung liên quan
+## Liên quan
 
 - [Tổng quan về cài đặt](/vi/install)
 - [Tổng quan về các kênh](/vi/channels)

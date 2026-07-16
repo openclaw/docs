@@ -4,19 +4,19 @@ read_when:
 summary: Плагин личной учётной записи Zalo для OpenClaw с нативной интеграцией zca-js.
 title: Плагин Zalo Personal
 x-i18n:
-    generated_at: "2026-07-13T18:25:48Z"
+    generated_at: "2026-07-16T16:37:35Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
-    prompt_version: 24
+    prompt_version: 32
     provider: openai
-    source_hash: c03db694c940cb1fb20f4a2f73512c9d3cf3c79e910cc6a0dd4aa38bd4465ed5
+    source_hash: 5c6617fe9868c56c0ecd4065109f58f8483e2fcef7730456826366c24dceee8b
     source_path: plugins/reference/zalouser.md
     workflow: 16
 ---
 
 # Плагин Zalo Personal
 
-Плагин личной учётной записи Zalo для OpenClaw через нативную интеграцию zca-js.
+Плагин личной учетной записи Zalo для OpenClaw с нативной интеграцией zca-js.
 
 ## Распространение
 
@@ -25,9 +25,9 @@ x-i18n:
 
 ## Интерфейс
 
-каналы: zalouser; контракты: инструменты
+каналы: `zalouser`; контракты: `tools`
 
-## Связанная документация
+## Связанные документы
 
 - [zalouser](/ru/channels/zalouser)
 - [zalouser](/ru/plugins/zalouser)

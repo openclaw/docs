@@ -1,31 +1,32 @@
 ---
 read_when:
-    - شما در حال نصب، پیکربندی یا ممیزی Plugin ‏github-copilot هستید
+    - در حال نصب، پیکربندی یا ممیزی Plugin ‏github-copilot هستید
 summary: پشتیبانی از ارائه‌دهنده مدل GitHub Copilot را به OpenClaw اضافه می‌کند.
 title: Plugin گیت‌هاب کوپایلت
 x-i18n:
-    generated_at: "2026-07-12T10:30:46Z"
+    generated_at: "2026-07-16T16:55:18Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 01b8a15fe2da9848cef18e0e24b1fdb1493e8f17046a7f82f1331f29c80f0660
+    source_hash: 3ed5a9098ac15afb0ecb77a0c723e178819a4f83e7da9728342d985e0f51f4c8
     source_path: plugins/reference/github-copilot.md
     workflow: 16
 ---
 
-# Plugin گیت‌هاب کوپایلوت
+# Plugin ‏GitHub Copilot
 
-پشتیبانی از ارائه‌دهندهٔ مدل گیت‌هاب کوپایلوت را به OpenClaw اضافه می‌کند.
+پشتیبانی از ارائه‌دهنده مدل GitHub Copilot را به OpenClaw اضافه می‌کند.
 
 ## توزیع
 
 - بسته: `@openclaw/github-copilot-provider`
-- روش نصب: همراه OpenClaw ارائه می‌شود
+- مسیر نصب: در OpenClaw گنجانده شده است
 
 ## سطح
 
-ارائه‌دهندگان: github-copilot؛ قراردادها: memoryEmbeddingProviders، usageProviders
+ارائه‌دهندگان: `github-copilot`؛ قراردادها: `memoryEmbeddingProviders`، `usageProviders`
 
 ## مستندات مرتبط
 
-- [گیت‌هاب کوپایلوت](/fa/providers/github-copilot)
+- [github-copilot](/fa/providers/github-copilot)

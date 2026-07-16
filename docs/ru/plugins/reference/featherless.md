@@ -4,12 +4,12 @@ read_when:
 summary: Плагин провайдера Featherless AI для OpenClaw.
 title: Плагин Featherless
 x-i18n:
-    generated_at: "2026-07-13T20:05:39Z"
+    generated_at: "2026-07-16T16:34:38Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
-    prompt_version: 24
+    prompt_version: 32
     provider: openai
-    source_hash: b5365b6d07b7828408411c7fd15e0721692bb70e15c8ba01eb3d6d44a5a308bd
+    source_hash: cc85911d6fa5ee416b1abd11bd08466d1e8d245ad3edb03e315fb555b4ed38b3
     source_path: plugins/reference/featherless.md
     workflow: 16
 ---
@@ -25,8 +25,8 @@ x-i18n:
 
 ## Интерфейс
 
-провайдеры: featherless
+провайдеры: `featherless`
 
 ## Связанная документация
 
-- [featherless](/providers/featherless)
+- [featherless](/ru/providers/featherless)

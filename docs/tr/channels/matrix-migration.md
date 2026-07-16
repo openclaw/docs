@@ -2,113 +2,81 @@
 read_when:
     - Mevcut bir Matrix kurulumunu yükseltme
     - Şifrelenmiş Matrix geçmişini ve cihaz durumunu taşıma
-summary: OpenClaw'ın önceki Matrix Plugin'ini yerinde nasıl yükselttiği, şifrelenmiş durum kurtarma sınırları ve manuel kurtarma adımları dahil.
+summary: OpenClaw'un önceki Matrix pluginini yerinde nasıl yükselttiği; şifrelenmiş durum kurtarma sınırları ve manuel kurtarma adımları dâhil.
 title: Matrix geçişi
 x-i18n:
-    generated_at: "2026-06-28T00:13:27Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T16:49:54Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 796d27aa3f08388b78e005d5e93ee4a04bc9ae9bb1f214b83c3ba19165042755
+    source_hash: 33d5ac134338c8032ca1507ceee6eade2d37b3c86f0045fb883304ad208cd5e5
     source_path: channels/matrix-migration.md
     workflow: 16
 ---
 
-Önceki herkese açık `matrix` plugin'inden mevcut uygulamaya yükseltin.
+Önceki herkese açık `matrix` Plugin'inden mevcut uygulamaya yükseltin.
 
-Çoğu kullanıcı için yükseltme yerinde yapılır:
+Çoğu kullanıcı için yükseltme doğrudan uygulanır:
 
-- plugin `@openclaw/matrix` olarak kalır
+- Plugin `@openclaw/matrix` olarak kalır
 - kanal `matrix` olarak kalır
 - yapılandırmanız `channels.matrix` altında kalır
 - önbelleğe alınmış kimlik bilgileri `~/.openclaw/credentials/matrix/` altında kalır
 - çalışma zamanı durumu `~/.openclaw/matrix/` altında kalır
 
-Yapılandırma anahtarlarını yeniden adlandırmanız veya plugin'i yeni bir adla yeniden yüklemeniz gerekmez.
+Yapılandırma anahtarlarını yeniden adlandırmanız veya Plugin'i yeni bir adla yeniden yüklemeniz gerekmez.
 Kök `openclaw` paketi artık Matrix çalışma zamanı kodunu veya Matrix SDK
-bağımlılıklarını paketlemez. Bir güncellemeden sonra `openclaw channels status` Matrix'in yapılandırıldığını ama
-plugin'in eksik olduğunu gösterirse `openclaw doctor --fix` veya
+bağımlılıklarını içermez. `openclaw channels status` Matrix'in yapılandırıldığını ancak
+Plugin'in yüklü olmadığını gösteriyorsa `openclaw doctor --fix` veya
 `openclaw plugins install @openclaw/matrix` komutunu çalıştırın; Matrix SDK paketlerini
 kök OpenClaw paketine yüklemeyin.
 
 ## Geçişin otomatik olarak yaptıkları
 
-Gateway başladığında ve [`openclaw doctor --fix`](/tr/gateway/doctor) komutunu çalıştırdığınızda OpenClaw eski Matrix durumunu otomatik olarak onarmaya çalışır.
-İşlem yapılabilir herhangi bir Matrix geçiş adımı disk üzerindeki durumu değiştirmeden önce OpenClaw odaklı bir kurtarma anlık görüntüsü oluşturur veya yeniden kullanır.
-
-`openclaw update` kullandığınızda kesin tetikleyici, OpenClaw'ın nasıl kurulduğuna bağlıdır:
-
-- kaynak kurulumları güncelleme akışı sırasında `openclaw doctor --fix` çalıştırır, ardından varsayılan olarak gateway'i yeniden başlatır
-- paket yöneticisi kurulumları paketi günceller, etkileşimsiz bir doctor geçişi çalıştırır, ardından başlangıcın Matrix geçişini tamamlayabilmesi için varsayılan gateway yeniden başlatmasına güvenir
-- `openclaw update --no-restart` kullanırsanız başlangıç destekli Matrix geçişi, daha sonra `openclaw doctor --fix` çalıştırıp gateway'i yeniden başlatana kadar ertelenir
+Matrix geçişi [`openclaw doctor --fix`](/tr/gateway/doctor) çalıştırıldığında ve Matrix istemcisi başlatılırken SQLite deposunun yanında hâlâ dosya tabanlı yardımcı durum bulması hâlinde yedek seçenek olarak çalışır.
 
 Otomatik geçiş şunları kapsar:
 
-- `~/Backups/openclaw-migrations/` altında geçiş öncesi anlık görüntü oluşturma veya yeniden kullanma
 - önbelleğe alınmış Matrix kimlik bilgilerinizi yeniden kullanma
 - aynı hesap seçimini ve `channels.matrix` yapılandırmasını koruma
-- en eski düz Matrix eşitleme deposunu mevcut hesap kapsamlı konuma taşıma
-- hedef hesap güvenle çözümlenebildiğinde en eski düz Matrix kripto deposunu mevcut hesap kapsamlı konuma taşıma
-- daha önce kaydedilmiş bir Matrix oda anahtarı yedeği şifre çözme anahtarını, bu anahtar yerel olarak mevcut olduğunda eski rust kripto deposundan çıkarma
-- erişim belirteci daha sonra değiştiğinde aynı Matrix hesabı, homeserver ve kullanıcı için en eksiksiz mevcut belirteç karması depolama kökünü yeniden kullanma
-- Matrix erişim belirteci değişmiş ama hesap/cihaz kimliği aynı kalmışsa bekleyen şifrelenmiş durum geri yükleme meta verileri için kardeş belirteç karması depolama köklerini tarama
-- sonraki Matrix başlangıcında yedeklenmiş oda anahtarlarını yeni kripto deposuna geri yükleme
+- dosya tabanlı yardımcı durumu (`bot-storage.json` eşitleme önbelleği, `recovery-key.json`, `legacy-crypto-migration.json`, IndexedDB anlık görüntüleri) Matrix SQLite durumuna aktarma; taşınan dosyalar `.migrated` son ekiyle arşivlenir
+- erişim belirteci daha sonra değiştiğinde aynı Matrix hesabı, ana sunucu, kullanıcı ve cihaz için mevcut en eksiksiz belirteç karması depolama kökünü yeniden kullanma
 
-Anlık görüntü ayrıntıları:
+## 2026.4'ten eski OpenClaw sürümlerinden yükseltme
 
-- OpenClaw başarılı bir anlık görüntüden sonra `~/.openclaw/matrix/migration-snapshot.json` konumuna bir işaretçi dosyası yazar; böylece sonraki başlangıç ve onarım geçişleri aynı arşivi yeniden kullanabilir.
-- Bu otomatik Matrix geçiş anlık görüntüleri yalnızca yapılandırmayı + durumu yedekler (`includeWorkspace: false`).
-- Matrix yalnızca uyarı niteliğinde geçiş durumuna sahipse, örneğin `userId` veya `accessToken` hâlâ eksik olduğu için, OpenClaw henüz anlık görüntüyü oluşturmaz çünkü işlem yapılabilir bir Matrix mutasyonu yoktur.
-- Anlık görüntü adımı başarısız olursa OpenClaw, kurtarma noktası olmadan durumu değiştirmek yerine o çalıştırma için Matrix geçişini atlar.
+2026.6 serisine kadar olan sürümler ayrıca özgün düz, tek depolu
+Matrix düzenini (`~/.openclaw/matrix/bot-storage.json` ile
+`~/.openclaw/matrix/crypto/`) taşıyor ve eski rust şifreleme deposundan
+şifrelenmiş durum kurtarmayı hazırlıyordu. Mevcut sürümler artık bu geçişi içermez.
 
-Çok hesaplı yükseltmeler hakkında:
+Hâlâ düz düzeni kullanan bir kurulumu yükseltiyorsanız önce
+bir 2026.6 sürümüne yükseltin, `openclaw doctor --fix` komutunu çalıştırın ve düz
+deponun ve kurtarılabilir oda anahtarlarının taşınması için Gateway'i bir kez
+başlatın. Ardından en son sürüme güncelleyin.
 
-- en eski düz Matrix deposu (`~/.openclaw/matrix/bot-storage.json` ve `~/.openclaw/matrix/crypto/`) tek depolu bir düzenden gelmiştir, bu yüzden OpenClaw onu yalnızca çözümlenmiş tek bir Matrix hesap hedefine geçirebilir
-- zaten hesap kapsamlı olan eski Matrix depoları, yapılandırılmış her Matrix hesabı için algılanır ve hazırlanır
-
-## Geçişin otomatik olarak yapamadıkları
-
-Önceki herkese açık Matrix plugin'i Matrix oda anahtarı yedeklerini **otomatik olarak** oluşturmazdı. Yerel kripto durumunu kalıcı hale getirir ve cihaz doğrulaması isterdi, ancak oda anahtarlarınızın homeserver'a yedeklendiğini garanti etmezdi.
-
-Bu, bazı şifrelenmiş kurulumların yalnızca kısmen geçirilebileceği anlamına gelir.
-
-OpenClaw şunları otomatik olarak kurtaramaz:
-
-- hiç yedeklenmemiş, yalnızca yerel oda anahtarları
-- hedef Matrix hesabı `homeserver`, `userId` veya `accessToken` hâlâ kullanılamadığı için henüz çözümlenemediğinde şifrelenmiş durum
-- birden fazla Matrix hesabı yapılandırılmış ama `channels.matrix.defaultAccount` ayarlanmamışsa tek bir paylaşılan düz Matrix deposunun otomatik geçişi
-- standart Matrix paketi yerine bir repo yoluna sabitlenmiş özel plugin yolu kurulumları
-- eski depoda yedeklenmiş anahtarlar olduğu halde şifre çözme anahtarı yerel olarak tutulmamışsa eksik kurtarma anahtarı
-
-Mevcut uyarı kapsamı:
-
-- özel Matrix plugin yolu kurulumları hem gateway başlangıcı hem de `openclaw doctor` tarafından gösterilir
-
-Eski kurulumunuzda hiç yedeklenmemiş, yalnızca yerel şifrelenmiş geçmiş varsa bazı eski şifrelenmiş mesajlar yükseltmeden sonra okunamaz kalabilir.
+Önceki herkese açık Matrix Plugin'i Matrix oda anahtarı yedeklerini otomatik olarak **oluşturmuyordu**. Eski kurulumunuzda hiç yedeklenmemiş, yalnızca yerel şifrelenmiş geçmiş varsa geçiş yolundan bağımsız olarak bazı eski şifrelenmiş mesajlar yükseltmeden sonra okunamaz durumda kalabilir.
 
 ## Önerilen yükseltme akışı
 
-1. OpenClaw'ı ve Matrix plugin'ini normal şekilde güncelleyin.
-   Başlangıcın Matrix geçişini hemen tamamlayabilmesi için `--no-restart` olmadan düz `openclaw update` komutunu tercih edin.
+1. OpenClaw ve Matrix Plugin'ini normal şekilde güncelleyin.
 2. Şunu çalıştırın:
 
    ```bash
    openclaw doctor --fix
    ```
 
-   Matrix için işlem yapılabilir geçiş işi varsa doctor önce geçiş öncesi anlık görüntüyü oluşturur veya yeniden kullanır ve arşiv yolunu yazdırır.
-
 3. Gateway'i başlatın veya yeniden başlatın.
-4. Mevcut doğrulama ve yedekleme durumunu kontrol edin:
+4. Mevcut doğrulama ve yedekleme durumunu denetleyin:
 
    ```bash
    openclaw matrix verify status
    openclaw matrix verify backup status
    ```
 
-5. Onardığınız Matrix hesabının kurtarma anahtarını hesaba özgü bir ortam değişkenine koyun. Tek bir varsayılan hesap için `MATRIX_RECOVERY_KEY` uygundur. Birden fazla hesap için hesap başına bir değişken kullanın, örneğin `MATRIX_RECOVERY_KEY_ASSISTANT`, ve komuta `--account assistant` ekleyin.
+5. Onardığınız Matrix hesabının kurtarma anahtarını hesaba özgü bir ortam değişkenine yerleştirin. Tek bir varsayılan hesap için `MATRIX_RECOVERY_KEY` uygundur. Birden fazla hesap için hesap başına bir değişken kullanın; örneğin `MATRIX_RECOVERY_KEY_ASSISTANT` ve komuta `--account assistant` ekleyin.
 
-6. OpenClaw size kurtarma anahtarı gerektiğini söylerse eşleşen hesap için komutu çalıştırın:
+6. OpenClaw bir kurtarma anahtarının gerektiğini bildirirse eşleşen hesap için komutu çalıştırın:
 
    ```bash
    printf '%s\n' "$MATRIX_RECOVERY_KEY" | openclaw matrix verify backup restore --recovery-key-stdin
@@ -122,236 +90,85 @@ Eski kurulumunuzda hiç yedeklenmemiş, yalnızca yerel şifrelenmiş geçmiş v
    printf '%s\n' "$MATRIX_RECOVERY_KEY_ASSISTANT" | openclaw matrix verify device --recovery-key-stdin --account assistant
    ```
 
-   Kurtarma anahtarı kabul edilirse ve yedek kullanılabiliyorsa, ancak `Cross-signing verified`
-   hâlâ `no` ise başka bir Matrix istemcisinden kendi kendine doğrulamayı tamamlayın:
+   Kurtarma anahtarı kabul edilir ve yedek kullanılabilir durumdaysa ancak `Cross-signing verified`
+   hâlâ `no` ise öz doğrulamayı başka bir Matrix istemcisinden tamamlayın:
 
    ```bash
    openclaw matrix verify self
    ```
 
-   İsteği başka bir Matrix istemcisinde kabul edin, emojileri veya ondalıkları karşılaştırın
-   ve yalnızca eşleştiklerinde `yes` yazın. Komut yalnızca
-   `Cross-signing verified` `yes` olduğunda başarıyla çıkar.
+   İsteği başka bir Matrix istemcisinde kabul edin, emojileri veya ondalık sayıları karşılaştırın
+   ve yalnızca eşleşiyorlarsa `yes` yazın. Komut, başarı bildirmeden önce tam Matrix
+   kimlik güveninin oluşmasını bekler.
 
-8. Kurtarılamayan eski geçmişi bilerek terk ediyorsanız ve gelecekteki mesajlar için yeni bir yedek temeli istiyorsanız şunu çalıştırın:
+8. Kurtarılamayan eski geçmişten bilerek vazgeçiyor ve gelecekteki mesajlar için yeni bir yedekleme temeli istiyorsanız şunu çalıştırın:
 
    ```bash
    openclaw matrix verify backup reset --yes
    ```
 
-9. Henüz sunucu tarafı anahtar yedeği yoksa gelecekteki kurtarmalar için bir tane oluşturun:
+   Yalnızca eski kurtarma anahtarının yeni yedeğin kilidini artık açmaması gerekiyorsa `--rotate-recovery-key` ekleyin.
+
+9. Henüz sunucu tarafında bir anahtar yedeği yoksa gelecekteki kurtarmalar için bir tane oluşturun:
 
    ```bash
    openclaw matrix verify bootstrap
    ```
 
-## Şifrelenmiş geçiş nasıl çalışır
-
-Şifrelenmiş geçiş iki aşamalı bir süreçtir:
-
-1. Başlangıç veya `openclaw doctor --fix`, şifrelenmiş geçiş işlem yapılabilir durumdaysa geçiş öncesi anlık görüntüyü oluşturur veya yeniden kullanır.
-2. Başlangıç veya `openclaw doctor --fix`, eski Matrix kripto deposunu etkin Matrix plugin kurulumu üzerinden inceler.
-3. Bir yedek şifre çözme anahtarı bulunursa OpenClaw bunu yeni kurtarma anahtarı akışına yazar ve oda anahtarı geri yüklemeyi beklemede olarak işaretler.
-4. Sonraki Matrix başlangıcında OpenClaw yedeklenmiş oda anahtarlarını otomatik olarak yeni kripto deposuna geri yükler.
-
-Eski depo hiç yedeklenmemiş oda anahtarları bildirirse OpenClaw, kurtarma başarılı olmuş gibi davranmak yerine uyarır.
-
-## Yaygın iletiler ve anlamları
-
-### Yükseltme ve algılama iletileri
-
-`Matrix plugin upgraded in place.`
-
-- Anlamı: eski disk üzerindeki Matrix durumu algılandı ve mevcut düzene geçirildi.
-- Ne yapılmalı: aynı çıktı uyarılar da içermiyorsa hiçbir şey.
-
-`Matrix migration snapshot created before applying Matrix upgrades.`
-
-- Anlamı: OpenClaw, Matrix durumunu değiştirmeden önce bir kurtarma arşivi oluşturdu.
-- Ne yapılmalı: geçişin başarılı olduğunu doğrulayana kadar yazdırılan arşiv yolunu saklayın.
-
-`Matrix migration snapshot reused before applying Matrix upgrades.`
-
-- Anlamı: OpenClaw mevcut bir Matrix geçiş anlık görüntüsü işaretçisi buldu ve yinelenen yedek oluşturmak yerine bu arşivi yeniden kullandı.
-- Ne yapılmalı: geçişin başarılı olduğunu doğrulayana kadar yazdırılan arşiv yolunu saklayın.
-
-`Legacy Matrix state detected at ... but channels.matrix is not configured yet.`
-
-- Anlamı: eski Matrix durumu var, ancak Matrix yapılandırılmadığı için OpenClaw bunu mevcut bir Matrix hesabına eşleyemiyor.
-- Ne yapılmalı: `channels.matrix` yapılandırın, ardından `openclaw doctor --fix` komutunu yeniden çalıştırın veya gateway'i yeniden başlatın.
-
-`Legacy Matrix state detected at ... but the new account-scoped target could not be resolved yet (need homeserver, userId, and access token for channels.matrix...).`
-
-- Anlamı: OpenClaw eski durumu buldu, ancak hâlâ kesin mevcut hesap/cihaz kökünü belirleyemiyor.
-- Ne yapılmalı: çalışan bir Matrix oturum açmasıyla gateway'i bir kez başlatın veya önbelleğe alınmış kimlik bilgileri mevcut olduktan sonra `openclaw doctor --fix` komutunu yeniden çalıştırın.
-
-`Legacy Matrix state detected at ... but multiple Matrix accounts are configured and channels.matrix.defaultAccount is not set.`
-
-- Anlamı: OpenClaw tek bir paylaşılan düz Matrix deposu buldu, ancak hangi adlandırılmış Matrix hesabının onu alacağını tahmin etmeyi reddediyor.
-- Ne yapılmalı: `channels.matrix.defaultAccount` değerini hedeflenen hesaba ayarlayın, ardından `openclaw doctor --fix` komutunu yeniden çalıştırın veya gateway'i yeniden başlatın.
-
-`Matrix legacy sync store not migrated because the target already exists (...)`
-
-- Anlamı: yeni hesap kapsamlı konumda zaten bir eşitleme veya kripto deposu var, bu yüzden OpenClaw otomatik olarak üzerine yazmadı.
-- Ne yapılmalı: çakışan hedefi elle kaldırmadan veya taşımadan önce mevcut hesabın doğru hesap olduğunu doğrulayın.
-
-`Failed migrating Matrix legacy sync store (...)` veya `Failed migrating Matrix legacy crypto store (...)`
-
-- Anlamı: OpenClaw eski Matrix durumunu taşımayı denedi ama dosya sistemi işlemi başarısız oldu.
-- Ne yapılmalı: dosya sistemi izinlerini ve disk durumunu inceleyin, ardından `openclaw doctor --fix` komutunu yeniden çalıştırın.
-
-`Legacy Matrix encrypted state detected at ... but channels.matrix is not configured yet.`
-
-- Anlamı: OpenClaw eski bir şifrelenmiş Matrix deposu buldu, ancak bunu iliştirecek mevcut Matrix yapılandırması yok.
-- Ne yapılmalı: `channels.matrix` yapılandırın, ardından `openclaw doctor --fix` komutunu yeniden çalıştırın veya gateway'i yeniden başlatın.
-
-`Legacy Matrix encrypted state detected at ... but the account-scoped target could not be resolved yet (need homeserver, userId, and access token for channels.matrix...).`
-
-- Anlamı: şifrelenmiş depo var, ancak OpenClaw bunun hangi mevcut hesap/cihaza ait olduğuna güvenle karar veremiyor.
-- Ne yapılmalı: çalışan bir Matrix oturum açmasıyla gateway'i bir kez başlatın veya önbelleğe alınmış kimlik bilgileri mevcut olduktan sonra `openclaw doctor --fix` komutunu yeniden çalıştırın.
-
-`Legacy Matrix encrypted state detected at ... but multiple Matrix accounts are configured and channels.matrix.defaultAccount is not set.`
-
-- Anlamı: OpenClaw tek bir paylaşılan düz eski kripto deposu buldu, ancak hangi adlandırılmış Matrix hesabının onu alacağını tahmin etmeyi reddediyor.
-- Ne yapılmalı: `channels.matrix.defaultAccount` değerini hedeflenen hesaba ayarlayın, ardından `openclaw doctor --fix` komutunu yeniden çalıştırın veya gateway'i yeniden başlatın.
-
-`Matrix migration warnings are present, but no on-disk Matrix mutation is actionable yet. No pre-migration snapshot was needed.`
-
-- Anlamı: OpenClaw eski Matrix durumunu algıladı, ancak geçiş hâlâ eksik kimlik veya kimlik bilgisi verileri nedeniyle engelleniyor.
-- Ne yapılmalı: Matrix oturum açmayı veya yapılandırma kurulumunu tamamlayın, ardından `openclaw doctor --fix` komutunu yeniden çalıştırın veya gateway'i yeniden başlatın.
-
-`Legacy Matrix encrypted state was detected, but the Matrix plugin helper is unavailable. Install or repair @openclaw/matrix so OpenClaw can inspect the old rust crypto store before upgrading.`
-
-- Anlamı: OpenClaw eski şifreli Matrix durumunu buldu, ancak normalde bu depoyu inceleyen Matrix Plugin'deki yardımcı giriş noktasını yükleyemedi.
-- Ne yapılmalı: Matrix Plugin'i yeniden yükleyin veya onarın (`openclaw plugins install @openclaw/matrix` ya da bir repo checkout'u için `openclaw plugins install ./path/to/local/matrix-plugin`), ardından `openclaw doctor --fix` komutunu yeniden çalıştırın veya gateway'i yeniden başlatın.
-
-`Matrix plugin helper path is unsafe: ... Reinstall @openclaw/matrix and try again.`
-
-- Anlamı: OpenClaw, Plugin kökünün dışına çıkan veya Plugin sınırı denetimlerinden geçemeyen bir yardımcı dosya yolu buldu, bu yüzden içe aktarmayı reddetti.
-- Ne yapılmalı: Matrix Plugin'i güvenilir bir yoldan yeniden yükleyin, ardından `openclaw doctor --fix` komutunu yeniden çalıştırın veya gateway'i yeniden başlatın.
-
-`- Failed creating a Matrix migration snapshot before repair: ...`
-
-`- Skipping Matrix migration changes for now. Resolve the snapshot failure, then rerun "openclaw doctor --fix".`
-
-- Anlamı: OpenClaw, önce kurtarma anlık görüntüsünü oluşturamadığı için Matrix durumunu değiştirmeyi reddetti.
-- Ne yapılmalı: yedekleme hatasını giderin, ardından `openclaw doctor --fix` komutunu yeniden çalıştırın veya gateway'i yeniden başlatın.
+## Yaygın mesajlar ve anlamları
 
 `Failed migrating legacy Matrix client storage: ...`
 
-- Anlamı: Matrix istemci tarafı geri dönüşü eski düz depolamayı buldu, ancak taşıma başarısız oldu. OpenClaw artık sessizce yeni bir depo ile başlamak yerine bu geri dönüşü durdurur.
-- Ne yapılmalı: dosya sistemi izinlerini veya çakışmaları inceleyin, eski durumu olduğu gibi koruyun ve hatayı düzelttikten sonra yeniden deneyin.
+- Anlamı: Matrix istemci tarafı yedek seçeneği dosya tabanlı yardımcı durum buldu ancak SQLite'a aktarma başarısız oldu. OpenClaw, sessizce yeni bir depoyla başlamak yerine tamamlanan taşımaları geri alır ve bu yedek seçeneği durdurur.
+- Yapılması gereken: dosya sistemi izinlerini veya çakışmaları inceleyin, eski durumu sağlam tutun ve hatayı düzelttikten sonra yeniden deneyin.
 
 `Matrix is installed from a custom path: ...`
 
-- Anlamı: Matrix bir yol kurulumuna sabitlenmiş, bu yüzden ana hat güncellemeleri onu otomatik olarak reponun standart Matrix paketiyle değiştirmez.
-- Ne yapılmalı: varsayılan Matrix Plugin'e dönmek istediğinizde `openclaw plugins install @openclaw/matrix` ile yeniden yükleyin.
+- Anlamı: Matrix bir yol kurulumuna sabitlenmiştir; bu nedenle ana sürüm güncellemeleri onu varsayılan Matrix paketiyle otomatik olarak değiştirmez.
+- Yapılması gereken: varsayılan Matrix Plugin'ine dönmek istediğinizde `openclaw plugins install @openclaw/matrix` ile yeniden yükleyin.
 
-### Şifreli durum kurtarma iletileri
+`Matrix is installed from a custom path that no longer exists: ...`
 
-`matrix: restored X/Y room key(s) from legacy encrypted-state backup`
+- Anlamı: Plugin kurulum kaydınız artık mevcut olmayan yerel bir yolu gösteriyor.
+- Yapılması gereken: `openclaw plugins install @openclaw/matrix` ile veya bir depo çalışma kopyasından çalıştırıyorsanız `openclaw plugins install ./path/to/local/matrix-plugin` ile yeniden yükleyin. `openclaw doctor --fix` eski Matrix Plugin başvurularını da sizin için kaldırabilir.
 
-- Anlamı: yedeklenmiş oda anahtarları yeni kripto deposuna başarıyla geri yüklendi.
-- Ne yapılmalı: genellikle hiçbir şey.
+### Manuel kurtarma mesajları
 
-`matrix: N legacy local-only room key(s) were never backed up and could not be restored automatically`
+`openclaw matrix verify status` ve `openclaw matrix verify backup status`, oda anahtarı yedeği bu cihazda sağlıklı olmadığında bir `Backup issue:` satırıyla birlikte `Next steps:` yönlendirmesi yazdırır:
 
-- Anlamı: bazı eski oda anahtarları yalnızca eski yerel depoda vardı ve Matrix yedeğine hiç yüklenmemişti.
-- Ne yapılmalı: bu anahtarları başka bir doğrulanmış istemciden elle kurtaramazsanız bazı eski şifreli geçmişin kullanılamaz kalmasını bekleyin.
+| Yedekleme sorunu                                                      | Anlamı                                             | Düzeltme                                                                                                                                  |
+| --------------------------------------------------------------------- | -------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| `no room-key backup exists on the homeserver`                         | geri yüklenecek bir şey yok                        | oda anahtarı yedeği oluşturmak için `openclaw matrix verify bootstrap`                                                                     |
+| `backup decryption key is not loaded on this device`                  | anahtar mevcut ancak burada etkin değil            | `openclaw matrix verify backup restore`; anahtar hâlâ yüklenemiyorsa kurtarma anahtarını `--recovery-key-stdin` üzerinden aktarın                 |
+| `backup decryption key could not be loaded from secret storage (...)` | gizli depolama yüklenemedi veya desteklenmiyor     | kurtarma anahtarını aktarın: `printf '%s\n' "$MATRIX_RECOVERY_KEY" \| openclaw matrix verify backup restore --recovery-key-stdin`                                |
+| `backup key mismatch (...)`                                           | depolanan anahtar etkin sunucu yedeğiyle eşleşmiyor | etkin sunucu yedekleme anahtarıyla `verify backup restore --recovery-key-stdin` komutunu yeniden çalıştırın veya yeni bir temel için `verify backup reset --yes` kullanın |
+| `backup signature chain is not trusted by this device`                | cihaz henüz çapraz imzalama zincirine güvenmiyor   | `verify device --recovery-key-stdin`, ardından güven hâlâ eksikse başka bir doğrulanmış istemciden `verify self`                        |
+| `backup exists but is not active on this device`                      | sunucu yedeği mevcut, yerel oturum etkin değil     | önce cihazı doğrulayın, ardından `openclaw matrix verify backup status` ile yeniden denetleyin                                                   |
+| `backup trust state could not be fully determined`                    | tanılama sonuçsuz kaldı                            | `openclaw matrix verify status --verbose`                                                                                                 |
 
-`Legacy Matrix encrypted state for account "..." has backed-up room keys, but no local backup decryption key was found. Ask the operator to run "openclaw matrix verify backup restore --recovery-key-stdin" after upgrade if they have the recovery key.`
-
-- Anlamı: yedek mevcut, ancak OpenClaw kurtarma anahtarını otomatik olarak kurtaramadı.
-- Ne yapılmalı: `printf '%s\n' "$MATRIX_RECOVERY_KEY" | openclaw matrix verify backup restore --recovery-key-stdin` komutunu çalıştırın.
-
-`Failed inspecting legacy Matrix encrypted state for account "..." (...): ...`
-
-- Anlamı: OpenClaw eski şifreli depoyu buldu, ancak kurtarmaya hazırlanmak için yeterince güvenli biçimde inceleyemedi.
-- Ne yapılmalı: `openclaw doctor --fix` komutunu yeniden çalıştırın. Tekrarlanırsa eski durum dizinini olduğu gibi koruyun ve başka bir doğrulanmış Matrix istemcisi ile `printf '%s\n' "$MATRIX_RECOVERY_KEY" | openclaw matrix verify backup restore --recovery-key-stdin` kullanarak kurtarın.
-
-`Legacy Matrix backup key was found for account "...", but .../recovery-key.json already contains a different recovery key. Leaving the existing file unchanged.`
-
-- Anlamı: OpenClaw bir yedek anahtar çakışması algıladı ve geçerli recovery-key dosyasının otomatik olarak üzerine yazmayı reddetti.
-- Ne yapılmalı: herhangi bir geri yükleme komutunu yeniden denemeden önce hangi kurtarma anahtarının doğru olduğunu doğrulayın.
-
-`Legacy Matrix encrypted state for account "..." cannot be fully converted automatically because the old rust crypto store does not expose all local room keys for export.`
-
-- Anlamı: bu, eski depolama biçiminin kesin sınırıdır.
-- Ne yapılmalı: yedeklenmiş anahtarlar yine de geri yüklenebilir, ancak yalnızca yerel olan şifreli geçmiş kullanılamaz kalabilir.
-
-`matrix: failed restoring room keys from legacy encrypted-state backup: ...`
-
-- Anlamı: yeni Plugin geri yüklemeyi denedi, ancak Matrix bir hata döndürdü.
-- Ne yapılmalı: `openclaw matrix verify backup status` komutunu çalıştırın, ardından gerekirse `printf '%s\n' "$MATRIX_RECOVERY_KEY" | openclaw matrix verify backup restore --recovery-key-stdin` ile yeniden deneyin.
-
-### Elle kurtarma iletileri
-
-`Backup key is not loaded on this device. Run 'openclaw matrix verify backup restore' to load it and restore old room keys.`
-
-- Anlamı: OpenClaw bir yedek anahtarınız olması gerektiğini biliyor, ancak bu cihazda etkin değil.
-- Ne yapılmalı: `openclaw matrix verify backup restore` komutunu çalıştırın veya gerekirse `MATRIX_RECOVERY_KEY` ayarlayıp `printf '%s\n' "$MATRIX_RECOVERY_KEY" | openclaw matrix verify backup restore --recovery-key-stdin` komutunu çalıştırın.
-
-`Store a recovery key with 'openclaw matrix verify device --recovery-key-stdin', then run 'openclaw matrix verify backup restore'.`
-
-- Anlamı: bu cihazda şu anda kurtarma anahtarı depolanmıyor.
-- Ne yapılmalı: `MATRIX_RECOVERY_KEY` ayarlayın, `printf '%s\n' "$MATRIX_RECOVERY_KEY" | openclaw matrix verify device --recovery-key-stdin` komutunu çalıştırın, ardından yedeği geri yükleyin.
-
-`Backup key mismatch on this device. Re-run 'openclaw matrix verify device --recovery-key-stdin' with the matching recovery key.`
-
-- Anlamı: depolanan anahtar etkin Matrix yedeğiyle eşleşmiyor.
-- Ne yapılmalı: `MATRIX_RECOVERY_KEY` değerini doğru anahtara ayarlayın ve `printf '%s\n' "$MATRIX_RECOVERY_KEY" | openclaw matrix verify device --recovery-key-stdin` komutunu çalıştırın.
-
-Kurtarılamayan eski şifreli geçmişi kaybetmeyi kabul ediyorsanız bunun yerine
-geçerli yedek temel çizgisini `openclaw matrix verify backup reset --yes` ile sıfırlayabilirsiniz. Depolanan
-yedek sırrı bozuk olduğunda, bu sıfırlama gizli depolamayı da yeniden oluşturabilir; böylece
-yeni yedek anahtarı yeniden başlatmadan sonra doğru şekilde yüklenebilir.
-
-`Backup trust chain is not verified on this device. Re-run 'openclaw matrix verify device --recovery-key-stdin'.`
-
-- Anlamı: yedek mevcut, ancak bu cihaz çapraz imzalama zincirine henüz yeterince güçlü biçimde güvenmiyor.
-- Ne yapılmalı: `MATRIX_RECOVERY_KEY` ayarlayın ve `printf '%s\n' "$MATRIX_RECOVERY_KEY" | openclaw matrix verify device --recovery-key-stdin` komutunu çalıştırın.
+Diğer kurtarma hataları:
 
 `Matrix recovery key is required`
 
-- Anlamı: bir kurtarma anahtarı gerekli olduğu halde sağlamadan bir kurtarma adımı denediniz.
-- Ne yapılmalı: komutu `--recovery-key-stdin` ile yeniden çalıştırın; örneğin `printf '%s\n' "$MATRIX_RECOVERY_KEY" | openclaw matrix verify device --recovery-key-stdin`.
+- Anlamı: kurtarma anahtarının gerekli olduğu bir kurtarma adımını anahtar sağlamadan çalıştırmayı denediniz.
+- Yapılması gereken: komutu `--recovery-key-stdin` ile yeniden çalıştırın; örneğin `printf '%s\n' "$MATRIX_RECOVERY_KEY" | openclaw matrix verify device --recovery-key-stdin`.
 
 `Invalid Matrix recovery key: ...`
 
 - Anlamı: sağlanan anahtar ayrıştırılamadı veya beklenen biçimle eşleşmedi.
-- Ne yapılmalı: Matrix istemcinizdeki veya recovery-key dosyanızdaki tam kurtarma anahtarıyla yeniden deneyin.
+- Yapılması gereken: Matrix istemcinizdeki veya kurtarma anahtarı dışa aktarımındaki kurtarma anahtarının aynısıyla yeniden deneyin.
 
 `Matrix recovery key was applied, but this device still lacks full Matrix identity trust.`
 
-- Anlamı: OpenClaw kurtarma anahtarını uygulayabildi, ancak Matrix bu cihaz için hâlâ
-  tam çapraz imzalama kimlik güveni oluşturmadı. Komut çıktısında
-  `Recovery key accepted`, `Backup usable`,
-  `Cross-signing verified` ve `Device verified by owner` değerlerini denetleyin.
-- Ne yapılmalı: `openclaw matrix verify self` komutunu çalıştırın, isteği başka bir
-  Matrix istemcisinde kabul edin, SAS'i karşılaştırın ve yalnızca eşleştiğinde `yes` yazın.
-  Komut, başarı bildirmeden önce tam Matrix kimlik güvenini bekler. Yalnızca
-  geçerli çapraz imzalama kimliğini bilinçli olarak değiştirmek istediğinizde
-  `printf '%s\n' "$MATRIX_RECOVERY_KEY" | openclaw matrix verify bootstrap --recovery-key-stdin --force-reset-cross-signing`
-  komutunu kullanın.
+- Anlamı: kurtarma anahtarı kullanılabilir yedekleme materyalinin kilidini açtı ancak Matrix bu cihaz için tam çapraz imzalama kimlik güvenini oluşturmadı. Komut çıktısında `Recovery key accepted`, `Backup usable`, `Cross-signing verified` ve `Device verified by owner` değerlerini denetleyin.
+- Yapılması gereken: `openclaw matrix verify self` komutunu çalıştırın, isteği başka bir Matrix istemcisinde kabul edin, SAS'ı karşılaştırın ve yalnızca eşleştiğinde `yes` yazın. `printf '%s\n' "$MATRIX_RECOVERY_KEY" | openclaw matrix verify bootstrap --recovery-key-stdin --force-reset-cross-signing` seçeneğini yalnızca mevcut çapraz imzalama kimliğini bilerek değiştirmek istediğinizde kullanın.
 
-`Matrix key backup is not active on this device after loading from secret storage.`
+Kurtarılamayan eski şifrelenmiş geçmişi kaybetmeyi kabul ediyorsanız bunun yerine
+mevcut yedekleme temelini `openclaw matrix verify backup reset --yes` ile sıfırlayabilirsiniz. Depolanan
+yedekleme gizli anahtarı bozuksa bu sıfırlama, yeni yedekleme anahtarının yeniden
+başlatma sonrasında doğru şekilde yüklenebilmesi için gizli depolamayı da onarır.
 
-- Anlamı: gizli depolama bu cihazda etkin bir yedekleme oturumu üretmedi.
-- Ne yapılmalı: önce cihazı doğrulayın, ardından `openclaw matrix verify backup status` ile yeniden denetleyin.
-
-`Matrix crypto backend cannot load backup keys from secret storage. Verify this device with 'openclaw matrix verify device --recovery-key-stdin' first.`
-
-- Anlamı: cihaz doğrulaması tamamlanana kadar bu cihaz gizli depolamadan geri yükleyemez.
-- Ne yapılmalı: önce `printf '%s\n' "$MATRIX_RECOVERY_KEY" | openclaw matrix verify device --recovery-key-stdin` komutunu çalıştırın.
-
-### Özel Plugin kurulum iletileri
-
-`Matrix is installed from a custom path that no longer exists: ...`
-
-- Anlamı: Plugin kurulum kaydınız artık mevcut olmayan bir yerel yolu işaret ediyor.
-- Ne yapılmalı: `openclaw plugins install @openclaw/matrix` ile yeniden yükleyin veya bir repo checkout'undan çalıştırıyorsanız `openclaw plugins install ./path/to/local/matrix-plugin`.
-
-## Şifreli geçmiş hâlâ geri gelmiyorsa
+## Şifrelenmiş geçmiş yine de geri gelmezse
 
 Bu denetimleri sırayla çalıştırın:
 
@@ -361,11 +178,11 @@ openclaw matrix verify backup status --verbose
 printf '%s\n' "$MATRIX_RECOVERY_KEY" | openclaw matrix verify backup restore --recovery-key-stdin --verbose
 ```
 
-Yedek başarıyla geri yükleniyor ancak bazı eski odalarda hâlâ geçmiş eksikse, bu eksik anahtarlar büyük olasılıkla önceki Plugin tarafından hiç yedeklenmemiştir.
+Yedek başarıyla geri yüklenir ancak bazı eski odalarda geçmiş hâlâ eksikse bu eksik anahtarlar muhtemelen önceki Plugin tarafından hiç yedeklenmemiştir.
 
-## Gelecekteki iletiler için temiz başlamak istiyorsanız
+## Gelecekteki mesajlar için yeni bir başlangıç yapmak istiyorsanız
 
-Kurtarılamayan eski şifreli geçmişi kaybetmeyi kabul ediyor ve yalnızca bundan sonrası için temiz bir yedek temel çizgisi istiyorsanız şu komutları sırayla çalıştırın:
+Kurtarılamayan eski şifrelenmiş geçmişi kaybetmeyi kabul ediyor ve bundan sonrası için yalnızca temiz bir yedekleme temeli istiyorsanız şu komutları sırayla çalıştırın:
 
 ```bash
 openclaw matrix verify backup reset --yes
@@ -373,12 +190,12 @@ openclaw matrix verify backup status --verbose
 openclaw matrix verify status
 ```
 
-Bundan sonra cihaz hâlâ doğrulanmamışsa, Matrix istemcinizden SAS emoji veya ondalık kodları karşılaştırıp eşleştiklerini onaylayarak doğrulamayı tamamlayın.
+Cihaz bundan sonra hâlâ doğrulanmamışsa Matrix istemcinizdeki SAS emoji veya ondalık kodlarını karşılaştırıp eşleştiklerini onaylayarak doğrulamayı tamamlayın.
 
 ## İlgili
 
 - [Matrix](/tr/channels/matrix): kanal kurulumu ve yapılandırması.
-- [Matrix push rules](/tr/channels/matrix-push-rules): bildirim yönlendirmesi.
-- [Doctor](/tr/gateway/doctor): sağlık denetimi ve otomatik migration tetikleyicisi.
-- [Migration guide](/tr/install/migrating): tüm migration yolları (makine taşımaları, sistemler arası içe aktarmalar).
-- [Plugins](/tr/tools/plugin): Plugin kurulumu ve kaydı.
+- [Matrix anlık bildirim kuralları](/tr/channels/matrix-push-rules): bildirim yönlendirmesi.
+- [Doctor](/tr/gateway/doctor): sistem durumu denetimi ve otomatik geçiş tetikleyicisi.
+- [Geçiş kılavuzu](/tr/install/migrating): tüm geçiş yolları (makine taşımaları, sistemler arası aktarımlar).
+- [Plugin'ler](/tr/tools/plugin): Plugin yükleme ve kaydetme.

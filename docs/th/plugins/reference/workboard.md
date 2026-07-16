@@ -1,21 +1,22 @@
 ---
 read_when:
     - คุณกำลังติดตั้ง กำหนดค่า หรือตรวจสอบ Plugin กระดานงาน
-summary: กระดานงานแดชบอร์ดสำหรับปัญหาและเซสชันที่เอเจนต์รับผิดชอบ
-title: Plugin เวิร์กบอร์ด
+summary: กระดานงานแดชบอร์ดสำหรับปัญหาและเซสชันที่เอเจนต์เป็นเจ้าของ
+title: Plugin กระดานงาน
 x-i18n:
-    generated_at: "2026-07-12T16:32:42Z"
+    generated_at: "2026-07-16T19:35:12Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 1e5a48a52d45dbe87b73020103c2bc3f0bd46305b4c0d26b3010864af65fa99c
+    source_hash: 7011f95388aafcc6bd2d4af0fc71296976b05f57d9314bbb4fa341b8de717fa2
     source_path: plugins/reference/workboard.md
     workflow: 16
 ---
 
-# Plugin Workboard
+# Plugin เวิร์กบอร์ด
 
-กระดานงานแดชบอร์ดสำหรับปัญหาและเซสชันที่เอเจนต์เป็นเจ้าของ
+แดชบอร์ดเวิร์กบอร์ดสำหรับปัญหาและเซสชันที่เอเจนต์เป็นเจ้าของ
 
 ## การเผยแพร่
 
@@ -24,8 +25,8 @@ x-i18n:
 
 ## ส่วนติดต่อ
 
-สัญญา: เครื่องมือ
+สัญญา: `tools`
 
 ## เอกสารที่เกี่ยวข้อง
 
-- [กระดานงาน](/th/plugins/workboard)
+- [เวิร์กบอร์ด](/th/plugins/workboard)

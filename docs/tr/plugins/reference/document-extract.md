@@ -1,21 +1,22 @@
 ---
 read_when:
-    - document-extract Plugin'ini kuruyor, yapılandırıyor veya denetliyorsunuz
-summary: Yerel belge eklerinden metni ve yedek sayfa görüntülerini çıkarın.
-title: Belge Çıkarma plugin'i
+    - document-extract Pluginini yüklüyor, yapılandırıyor veya denetliyorsunuz
+summary: Yerel belge eklerinden metni ve yedek sayfa görsellerini çıkarın.
+title: Belge Ayıklama plugini
 x-i18n:
-    generated_at: "2026-07-12T12:32:51Z"
+    generated_at: "2026-07-16T17:24:50Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 3745783e57c15e75caf28491c6693c64fea018593662a43268e299ed42c3d574
+    source_hash: 173a860c28f293b52ed4a155dfb308713f0c0f5ef22c988c26b2440e1d63cf23
     source_path: plugins/reference/document-extract.md
     workflow: 16
 ---
 
-# Belge Ayıklama plugini
+# Belge Ayıklama plugin'i
 
-Yerel belge eklerinden metin ve yedek sayfa görsellerini ayıklayın.
+Yerel belge eklerinden metni ve yedek sayfa görüntülerini ayıklayın.
 
 ## Dağıtım
 
@@ -24,7 +25,7 @@ Yerel belge eklerinden metin ve yedek sayfa görsellerini ayıklayın.
 
 ## Yüzey
 
-sözleşmeler: documentExtractors
+sözleşmeler: `documentExtractors`
 
 ## İlgili belgeler
 

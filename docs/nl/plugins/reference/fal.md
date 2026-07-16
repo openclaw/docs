@@ -1,14 +1,15 @@
 ---
 read_when:
     - Je installeert, configureert of controleert de fal-plugin
-summary: Voegt ondersteuning voor de fal-modelprovider toe aan OpenClaw.
+summary: Voegt ondersteuning voor de modelprovider fal toe aan OpenClaw.
 title: fal-Plugin
 x-i18n:
-    generated_at: "2026-07-12T09:12:24Z"
+    generated_at: "2026-07-16T16:05:27Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: f62d6a642a6edaa581fb23fa27dade77486c827d460f19aa23750959f5aa6f1c
+    source_hash: 5341c85c74911d5d49849cfbee4d31a7a8bdf38a24ca68566118f4a0ced81d2e
     source_path: plugins/reference/fal.md
     workflow: 16
 ---
@@ -20,11 +21,11 @@ Voegt ondersteuning voor de fal-modelprovider toe aan OpenClaw.
 ## Distributie
 
 - Pakket: `@openclaw/fal-provider`
-- Installatieroute: inbegrepen bij OpenClaw
+- Installatieroute: opgenomen in OpenClaw
 
 ## Oppervlak
 
-providers: fal; contracten: imageGenerationProviders, musicGenerationProviders, videoGenerationProviders
+providers: `fal`; contracten: `imageGenerationProviders`, `musicGenerationProviders`, `videoGenerationProviders`
 
 ## Gerelateerde documentatie
 

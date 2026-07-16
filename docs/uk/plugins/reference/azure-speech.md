@@ -1,30 +1,31 @@
 ---
 read_when:
-    - Ви встановлюєте, налаштовуєте або перевіряєте Plugin azure-speech.
+    - Ви встановлюєте, налаштовуєте або перевіряєте plugin azure-speech
 summary: Перетворення тексту на мовлення за допомогою Azure AI Speech (MP3, нативні голосові нотатки Ogg/Opus, телефонія PCM).
-title: Plugin Azure Speech
+title: Плагін Azure Speech
 x-i18n:
-    generated_at: "2026-07-12T13:35:28Z"
+    generated_at: "2026-07-16T18:18:33Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: fdcf7c9166d90a92362478ebc361a2917b9e29c0a7dfdcfa86d34003647a8034
+    source_hash: fb4dfda1962ddee004eaeb01a3f6f24fc6fb81b89df394cc55c777d5e0bbf0a7
     source_path: plugins/reference/azure-speech.md
     workflow: 16
 ---
 
-# Plugin Azure Speech
+# Плагін Azure Speech
 
-Перетворення тексту на мовлення за допомогою Azure AI Speech (MP3, нативні голосові нотатки Ogg/Opus, телефонія PCM).
+Перетворення тексту на мовлення Azure AI Speech (MP3, голосові нотатки у нативному форматі Ogg/Opus, PCM-телефонія).
 
 ## Розповсюдження
 
 - Пакет: `@openclaw/azure-speech`
-- Спосіб установлення: входить до складу OpenClaw
+- Спосіб встановлення: входить до складу OpenClaw
 
 ## Інтерфейс
 
-контракти: speechProviders
+контракти: `speechProviders`
 
 ## Пов’язана документація
 

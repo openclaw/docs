@@ -4,24 +4,25 @@ read_when:
 summary: เพิ่มการรองรับผู้ให้บริการ embedding สำหรับหน่วยความจำ
 title: Plugin Voyage
 x-i18n:
-    generated_at: "2026-07-12T16:29:19Z"
+    generated_at: "2026-07-16T19:36:34Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: ba1dcf8d6f7c45c01f855797333e9d510bc822b2f7442c5a0727ac2a208ffe36
+    source_hash: 30470935000d501180467314647efe876dc956ae57e53e13279e7670aea554e3
     source_path: plugins/reference/voyage.md
     workflow: 16
 ---
 
 # Plugin Voyage
 
-เพิ่มการรองรับผู้ให้บริการการฝังเวกเตอร์หน่วยความจำ
+เพิ่มการรองรับผู้ให้บริการเวกเตอร์ฝังสำหรับหน่วยความจำ
 
 ## การเผยแพร่
 
 - แพ็กเกจ: `@openclaw/voyage-provider`
 - ช่องทางการติดตั้ง: รวมอยู่ใน OpenClaw
 
-## ส่วนเชื่อมต่อ
+## พื้นผิว
 
-สัญญา: memoryEmbeddingProviders
+สัญญา: `memoryEmbeddingProviders`

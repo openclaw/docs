@@ -1,30 +1,31 @@
 ---
 read_when:
-    - أنت تثبّت Plugin ‏duckduckgo أو تضبطه أو تدقّق فيه
-summary: يضيف دعم موفّر البحث على الويب.
+    - أنت تثبّت Plugin ‏duckduckgo أو تهيّئه أو تدقّقه
+summary: يضيف دعمًا لمزوّد البحث على الويب.
 title: Plugin ‏DuckDuckGo
 x-i18n:
-    generated_at: "2026-07-12T06:20:23Z"
+    generated_at: "2026-07-16T14:39:51Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 3b7960979d5dae6c64eb740dcd6f82f3f1fc466aa93cc9b64bdd08293881529c
+    source_hash: fb12e8fecf07142dec329318d78cd43286e0b0056fb1860fb46ee1c95ab63e41
     source_path: plugins/reference/duckduckgo.md
     workflow: 16
 ---
 
-# Plugin ‏DuckDuckGo
+# Plugin DuckDuckGo
 
-يضيف دعمًا لمزوّد البحث على الويب.
+يضيف دعم موفّر البحث على الويب.
 
 ## التوزيع
 
 - الحزمة: `@openclaw/duckduckgo-plugin`
-- مسار التثبيت: مُضمّن في OpenClaw
+- مسار التثبيت: مضمن في OpenClaw
 
-## الواجهة
+## السطح
 
-العقود: webSearchProviders
+العقود: `webSearchProviders`
 
 ## الوثائق ذات الصلة
 

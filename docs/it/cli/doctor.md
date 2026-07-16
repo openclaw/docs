@@ -1,45 +1,42 @@
 ---
 read_when:
-    - Hai problemi di connettività/autenticazione e vuoi correzioni guidate
-    - Hai aggiornato e vuoi un controllo di coerenza
+    - Si riscontrano problemi di connettività/autenticazione e si desiderano procedure guidate per risolverli
+    - Hai effettuato un aggiornamento e vuoi una verifica di correttezza di base
 summary: Riferimento CLI per `openclaw doctor` (controlli di integrità + riparazioni guidate)
 title: Diagnostica
 x-i18n:
-    generated_at: "2026-06-27T17:19:21Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T14:06:41Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: cf7c07cd39053fce7efa81d968ef0f2666f6f5331581e72d2684843519c63b43
+    source_hash: 322af63f52a3d864e46da332353ca921a4462e13fa849986d936524759f80ccc
     source_path: cli/doctor.md
     workflow: 16
 ---
 
 # `openclaw doctor`
 
-Controlli di integrità + correzioni rapide per il Gateway e i canali.
+Controlli di integrità e correzioni rapide per Gateway, canali, plugin, Skills, instradamento dei modelli, stato locale e migrazioni della configurazione. Utilizzarlo ogni volta che qualcosa non si comporta come previsto e si desidera che un singolo comando spieghi il problema.
 
 Correlati:
 
 - Risoluzione dei problemi: [Risoluzione dei problemi](/it/gateway/troubleshooting)
-- Audit di sicurezza: [Sicurezza](/it/gateway/security)
+- Controllo di sicurezza: [Sicurezza](/it/gateway/security)
 
-## Perché Usarlo
+## Modalità operative
 
-`openclaw doctor` è la superficie di integrità di OpenClaw. Usalo quando il Gateway,
-i canali, i plugin, le Skills, l'instradamento dei modelli, lo stato locale o le migrazioni della configurazione
-non si comportano come previsto e vuoi un unico comando che possa spiegare cosa
-non va.
+Doctor dispone di cinque modalità operative:
 
-Doctor ha tre modalità:
+| Modalità operativa       | Comando                                   | Comportamento                                                                                                  |
+| ------------------------ | ----------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| Ispezione                | `openclaw doctor`                         | Controlli rivolti agli utenti e richieste guidate.                                                             |
+| Riparazione              | `openclaw doctor --fix`                   | Applica le riparazioni supportate, richiedendo conferma salvo quando la riparazione non interattiva è sicura.   |
+| Lint                     | `openclaw doctor --lint`                  | Risultati strutturati in sola lettura per CI, controlli preliminari e criteri di revisione.                     |
+| Manutenzione SQLite condivisa | `openclaw doctor --state-sqlite compact`  | Esegue esplicitamente checkpoint, Compaction e verifica del DB canonico dello stato condiviso.                 |
+| Migrazione SQLite delle sessioni | `openclaw doctor --session-sqlite <mode>` | Ispeziona, importa, convalida, compatta, recupera o ripristina lo stato delle sessioni.                         |
 
-| Modalità  | Comando                  | Comportamento                                                                  |
-| --------- | ------------------------ | ------------------------------------------------------------------------------ |
-| Ispeziona | `openclaw doctor`        | Controlli orientati alle persone e prompt guidati.                             |
-| Ripara    | `openclaw doctor --fix`  | Applica le riparazioni supportate, usando prompt salvo quando la riparazione non interattiva è sicura. |
-| Lint      | `openclaw doctor --lint` | Risultati strutturati di sola lettura per CI, preflight e gate di revisione.   |
-
-Preferisci `--lint` quando l'automazione richiede un risultato stabile. Preferisci `--fix` quando un
-operatore umano vuole intenzionalmente che doctor modifichi configurazione o stato.
+Preferire `--lint` quando l'automazione richiede un risultato stabile. Preferire `--fix` quando un operatore umano desidera che doctor modifichi la configurazione o lo stato.
 
 ## Esempi
 
@@ -56,44 +53,57 @@ openclaw doctor --fix --non-interactive
 openclaw doctor --generate-gateway-token
 openclaw doctor --post-upgrade
 openclaw doctor --post-upgrade --json
+openclaw doctor --state-sqlite compact
+openclaw doctor --state-sqlite compact --json
+openclaw doctor --session-sqlite inspect --session-sqlite-all-agents
+openclaw doctor --session-sqlite dry-run --session-sqlite-agent main --json
+openclaw doctor --session-sqlite import --session-sqlite-all-agents
+openclaw doctor --session-sqlite validate --session-sqlite-all-agents --json
+openclaw doctor --session-sqlite compact --session-sqlite-all-agents
+openclaw doctor --session-sqlite recover --github-issue
+openclaw doctor --session-sqlite restore --session-sqlite-all-agents
 ```
 
-Per le autorizzazioni specifiche del canale, usa le sonde dei canali invece di `doctor`:
+Per le autorizzazioni specifiche dei canali, utilizzare le verifiche dei canali anziché `doctor`:
 
 ```bash
 openclaw channels capabilities --channel discord --target channel:<channel-id>
 openclaw channels status --probe
 ```
 
-La sonda mirata delle capacità Discord segnala le autorizzazioni effettive del bot sul canale; la sonda di stato esegue l'audit dei canali Discord configurati e delle destinazioni di accesso automatico alla voce.
+`channels capabilities` segnala le autorizzazioni effettive del bot per una specifica destinazione del canale. `channels status --probe` controlla tutti i canali configurati e le destinazioni di accesso vocale automatico.
 
 ## Opzioni
 
-- `--no-workspace-suggestions`: disabilita i suggerimenti di memoria/ricerca del workspace
-- `--yes`: accetta i valori predefiniti senza prompt
-- `--repair`: applica le riparazioni non di servizio consigliate senza prompt; le installazioni e riscritture del servizio Gateway richiedono comunque conferma interattiva o comandi Gateway espliciti
-- `--fix`: alias di `--repair`
-- `--force`: applica riparazioni aggressive, inclusa la sovrascrittura della configurazione di servizio personalizzata quando necessario
-- `--non-interactive`: esegui senza prompt; solo migrazioni sicure e riparazioni non di servizio
-- `--generate-gateway-token`: genera e configura un token Gateway
-- `--allow-exec`: consenti a doctor di eseguire SecretRefs exec configurati durante la verifica dei segreti
-- `--deep`: scansiona i servizi di sistema per installazioni Gateway aggiuntive e segnala i recenti passaggi di consegne del riavvio del supervisore Gateway
-- `--lint`: esegui controlli di integrità modernizzati in modalità di sola lettura ed emetti risultati diagnostici
-- `--post-upgrade`: esegui sonde di compatibilità dei plugin post-upgrade; emette risultati su stdout; termina con codice 1 se sono presenti risultati di livello errore
-- `--json`: con `--lint`, emetti risultati JSON invece dell'output umano; con `--post-upgrade`, emetti una busta JSON leggibile dalla macchina (`{ probesRun, findings }`)
-- `--severity-min <level>`: con `--lint`, elimina i risultati sotto `info`, `warning` o `error`
-- `--all`: con `--lint`, esegui tutti i controlli registrati, inclusi i controlli opt-in esclusi dal set di automazione predefinito
-- `--skip <id>`: con `--lint`, salta un id di controllo; ripeti per saltarne più di uno
-- `--only <id>`: con `--lint`, esegui solo un id di controllo; ripeti per eseguire un piccolo set selezionato
+| Opzione                         | Effetto                                                                                                                                                                                           |
+| ------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `--no-workspace-suggestions`    | Disabilita i suggerimenti per la memoria e la ricerca nell'area di lavoro.                                                                                                                        |
+| `--yes`                         | Accetta le impostazioni predefinite senza richiedere conferma.                                                                                                                                    |
+| `--repair` / `--fix`            | Applica le riparazioni consigliate non relative ai servizi senza richiedere conferma (`--fix` è un alias). Le installazioni o riscritture del servizio Gateway richiedono comunque una conferma interattiva o comandi `gateway` espliciti. |
+| `--force`                       | Applica riparazioni invasive, inclusa la sovrascrittura della configurazione personalizzata dei servizi.                                                                                          |
+| `--non-interactive`             | Esegue senza richieste di conferma; solo migrazioni sicure e riparazioni non relative ai servizi.                                                                                                 |
+| `--generate-gateway-token`      | Genera e configura un token del Gateway.                                                                                                                                                          |
+| `--allow-exec`                  | Consente a doctor di eseguire i SecretRef `exec` configurati durante la verifica dei segreti.                                                                                         |
+| `--deep`                        | Analizza i servizi di sistema alla ricerca di installazioni aggiuntive del Gateway; segnala i recenti passaggi di consegne dei riavvii del supervisore del Gateway.                                |
+| `--lint`                        | Esegue controlli di integrità modernizzati in modalità di sola lettura ed emette risultati diagnostici.                                                                                           |
+| `--post-upgrade`                | Esegue verifiche di compatibilità dei plugin successive all'aggiornamento; i risultati vengono inviati a stdout; codice di uscita 1 se è presente un risultato di livello errore.                  |
+| `--state-sqlite <mode>`         | Esegue la manutenzione SQLite esplicita dello stato condiviso. L'unica modalità è `compact`.                                                                                              |
+| `--session-sqlite <mode>`       | Esegue la modalità di migrazione SQLite mirata delle sessioni: `inspect`, `dry-run`, `import`, `validate`, `compact`, `recover` o `restore`. |
+| `--session-sqlite-store <path>` | Con `--session-sqlite`: seleziona un percorso dell'archivio `sessions.json` precedente.                                                                                                        |
+| `--session-sqlite-agent <id>`   | Con `--session-sqlite`: seleziona un agente configurato.                                                                                                                                          |
+| `--session-sqlite-all-agents`   | Con `--session-sqlite`: seleziona gli archivi degli agenti configurati e rilevati.                                                                                                                |
+| `--github-issue`                | Con `--session-sqlite recover`: prepara una segnalazione di problema anonimizzata per openclaw/openclaw; doctor la crea con `gh` dopo `--yes` o una conferma interattiva.          |
+| `--json`                        | Con `--lint`: risultati JSON. Con `--post-upgrade`: `{ probesRun, findings }`. Con `--state-sqlite` o `--session-sqlite`: il rapporto di manutenzione in formato JSON.                         |
+| `--severity-min <level>`        | Con `--lint`: omette i risultati inferiori a `info`, `warning` o `error`.                                                                                |
+| `--all`                         | Con `--lint`: esegue tutti i controlli registrati, inclusi quelli facoltativi esclusi dal gruppo predefinito.                                                                            |
+| `--skip <id>`                   | Con `--lint`: ignora un ID di controllo. Ripetibile.                                                                                                                                    |
+| `--only <id>`                   | Con `--lint`: esegue solo gli ID di controllo specificati. Ripetibile.                                                                                                                  |
+
+`--severity-min`, `--all`, `--only` e `--skip` sono accettati solo insieme a `--lint`; `--json` è accettato con `--lint`, `--post-upgrade`, `--state-sqlite` e `--session-sqlite`.
 
 ## Modalità lint
 
-`openclaw doctor --lint` è la modalità di automazione di sola lettura per i controlli doctor.
-Usa il percorso strutturato dei controlli di integrità, non mostra prompt e non ripara
-né riscrive configurazione/stato. Usala in CI, negli script di preflight e nei workflow di revisione
-quando vuoi risultati leggibili dalla macchina invece di prompt di riparazione guidati.
-Le opzioni di output lint come `--json`, `--severity-min`, `--all`, `--only` e `--skip`
-sono accettate solo con `--lint`.
+`openclaw doctor --lint` è in sola lettura: nessuna richiesta di conferma, nessuna riparazione, nessuna riscrittura della configurazione o dello stato.
 
 ```bash
 openclaw doctor --lint
@@ -102,17 +112,18 @@ openclaw doctor --lint --json
 openclaw doctor --lint --all
 openclaw doctor --lint --allow-exec
 openclaw doctor --lint --only core/doctor/gateway-config --json
+openclaw doctor --lint --only core/doctor/local-audio-acceleration --severity-min info
 ```
 
-L'output umano è compatto:
+L'output destinato agli utenti è compatto:
 
 ```text
-doctor --lint: ran 6 check(s), 1 finding(s)
-  [warning] core/doctor/gateway-config gateway.mode - gateway.mode is unset; gateway start will be blocked.
-    fix: Run `openclaw configure` and set Gateway mode (local/remote), or `openclaw config set gateway.mode local`.
+doctor --lint: eseguiti 6 controlli, 1 risultato
+  [warning] core/doctor/gateway-config gateway.mode - gateway.mode non è impostato; l'avvio del Gateway verrà bloccato.
+    correzione: eseguire `openclaw configure` e impostare la modalità del Gateway (local/remote), oppure `openclaw config set gateway.mode local`.
 ```
 
-L'output JSON è la superficie di scripting per le esecuzioni lint:
+L'output JSON è l'interfaccia per gli script:
 
 ```json
 {
@@ -123,83 +134,58 @@ L'output JSON è la superficie di scripting per le esecuzioni lint:
     {
       "checkId": "core/doctor/gateway-config",
       "severity": "warning",
-      "message": "gateway.mode is unset; gateway start will be blocked.",
+      "message": "gateway.mode non è impostato; l'avvio del Gateway verrà bloccato.",
       "path": "gateway.mode",
-      "fixHint": "Run `openclaw configure` and set Gateway mode (local/remote), or `openclaw config set gateway.mode local`."
+      "fixHint": "Eseguire `openclaw configure` e impostare la modalità del Gateway (local/remote), oppure `openclaw config set gateway.mode local`."
     }
   ]
 }
 ```
 
-Comportamento di uscita:
+Codici di uscita:
 
-- `0`: nessun risultato pari o superiore alla soglia di gravità selezionata
-- `1`: almeno un risultato soddisfa la soglia selezionata
-- `2`: errore di comando/runtime prima che possano essere prodotti risultati lint
+| Codice | Significato                                                                  |
+| ------ | ---------------------------------------------------------------------------- |
+| `0`  | Nessun risultato pari o superiore alla soglia di gravità selezionata.        |
+| `1`  | Almeno un risultato raggiunge la soglia selezionata.                          |
+| `2`  | Errore del comando o di runtime prima che sia possibile produrre i risultati del lint. |
 
-`--severity-min` controlla sia i risultati visibili sia la soglia di uscita. Per
-esempio, `openclaw doctor --lint --severity-min error` può non stampare alcun risultato e
-uscire con `0` anche quando esistono risultati `info` o `warning` di gravità inferiore.
+`--severity-min` determina sia quali risultati vengono visualizzati sia la soglia di uscita: `openclaw doctor --lint --severity-min error` può non visualizzare nulla e terminare con `0` anche quando esistono risultati `info`/`warning` di gravità inferiore.
 
-`--all` controlla quali controlli vengono selezionati prima del filtro per gravità. L'esecuzione lint
-predefinita è il gate di automazione stabile ed esclude i controlli che sono
-intenzionalmente opt-in perché sono profondi, storici o più propensi a
-far emergere residui legacy riparabili. Usa `--all` quando vuoi l'inventario lint
-completo senza elencare ogni id di controllo. `--only <id>` resta il selettore più preciso
-e può eseguire qualsiasi controllo registrato per id.
+`--all` determina quali controlli vengono selezionati prima del filtro per gravità. L'esecuzione lint predefinita esclude i controlli approfonditi, storici o con maggiori probabilità di rilevare residui precedenti riparabili; utilizzare `--all` per l'inventario completo. `--only <id>` è il selettore più preciso e può eseguire qualsiasi controllo registrato tramite ID.
 
-## Controlli di Integrità Strutturati
+`core/doctor/local-audio-acceleration` segnala il comando STT locale selezionato automaticamente, le prove distinte del backend disponibile/richiesto/osservato e l'ordine delle alternative senza caricare un modello vocale. Emette un risultato informativo, quindi includere `--severity-min info` per visualizzarlo.
 
-I controlli doctor moderni usano un piccolo contratto strutturato:
+## Controlli di integrità strutturati
+
+I moderni controlli di doctor utilizzano un piccolo contratto suddiviso:
 
 ```ts
 detect(ctx, scope?) -> HealthFinding[]
 repair?(ctx, findings) -> HealthRepairResult
 ```
 
-`detect()` alimenta `doctor --lint`. `repair()` è opzionale ed è considerato solo
-da `doctor --fix` / `doctor --repair`. I controlli che non sono stati migrati a questa
-forma continuano a usare il flusso legacy dei contributi doctor.
+`detect()` alimenta `doctor --lint`. `repair()` è facoltativo e viene eseguito solo con `doctor --fix` / `doctor --repair`. I controlli non ancora migrati a questa struttura utilizzano ancora il flusso di contributi precedente di doctor.
 
-La separazione è intenzionale: `detect()` possiede la diagnosi, mentre `repair()` possiede
-il resoconto di ciò che ha cambiato o cambierebbe. I contesti di riparazione possono portare
-richieste `dryRun`/`diff` e i risultati della riparazione possono restituire `diffs` strutturati per
-modifiche di configurazione/file più `effects` per effetti collaterali su servizio, processo, pacchetto, stato o altri
-effetti. Questo consente ai controlli convertiti di evolvere verso `doctor --fix --dry-run`
-e il reporting dei diff senza spostare la pianificazione delle mutazioni in `detect()`.
+I contesti di riparazione possono contenere richieste `dryRun`/`diff`; i risultati delle riparazioni possono restituire `diffs` strutturati (modifiche alla configurazione o ai file) e `effects` (effetti collaterali relativi a servizi, processi, pacchetti, stato o altro), consentendo ai controlli convertiti di evolvere verso `doctor --fix --dry-run` senza spostare la pianificazione delle modifiche in `detect()`.
 
-`repair()` segnala se ha tentato la riparazione richiesta con `status:
-"repaired" | "skipped" | "failed"`. Uno stato omesso significa `repaired`, quindi i controlli di
-riparazione semplici devono restituire solo le modifiche. Quando la riparazione restituisce `skipped` o
-`failed`, doctor segnala il motivo e non esegue la validazione per quel controllo.
-
-Dopo una riparazione strutturata riuscita, doctor riesegue `detect()` con i
-risultati riparati come scope. I controlli possono usare risultati selezionati, percorsi o valori `ocPath`
-per una validazione mirata. Se il risultato è ancora presente, doctor segnala un
-avviso di riparazione invece di trattare la modifica come completata silenziosamente.
+`repair()` segnala `status: "repaired" | "skipped" | "failed"` (l'assenza dello stato indica `repaired`). Quando la riparazione restituisce `skipped` o `failed`, doctor segnala il motivo e ignora la convalida per quel controllo. Dopo una riparazione riuscita, doctor esegue nuovamente `detect()` limitandolo ai risultati riparati; se il risultato è ancora presente, doctor segnala un avviso di riparazione anziché considerare la modifica completata.
 
 Un risultato include:
 
-| Campo             | Scopo                                                  |
+| Campo             | Scopo                                                |
 | ----------------- | ------------------------------------------------------ |
-| `checkId`         | Id stabile per filtri skip/only e allowlist CI.        |
-| `severity`        | `info`, `warning` o `error`.                           |
-| `message`         | Descrizione del problema leggibile da una persona.     |
-| `path`            | Percorso di configurazione, file o logico quando disponibile. |
-| `line` / `column` | Posizione nel sorgente quando disponibile.             |
-| `ocPath`          | Indirizzo `oc://` preciso quando un controllo può puntarvi. |
-| `fixHint`         | Azione operatore suggerita o riepilogo della riparazione. |
+| `checkId`         | ID stabile per i filtri di esclusione/selezione e le allowlist CI.     |
+| `severity`        | `info`, `warning` o `error`.                         |
+| `message`         | Descrizione del problema leggibile dagli utenti.                      |
+| `path`            | Configurazione, file o percorso logico, quando disponibile.          |
+| `line` / `column` | Posizione nel sorgente, quando disponibile.                        |
+| `ocPath`          | Indirizzo `oc://` preciso, quando un controllo può indicarne uno. |
+| `fixHint`         | Azione suggerita all'operatore o riepilogo della riparazione.           |
 
-I controlli doctor core modernizzati restano collegati al contributo doctor ordinato
-che possiede il loro comportamento umano `doctor` / `doctor --fix`. Il registro di integrità
-strutturato condiviso è il punto di estensione: i controlli forniti in bundle e supportati da plugin vengono eseguiti
-dopo i controlli doctor core una volta che il pacchetto proprietario li registra nel percorso di
-comando attivo. Il sottopercorso `openclaw/plugin-sdk/health` espone lo stesso
-contratto per quei consumatori di estensioni.
+I controlli doctor modernizzati del core restano associati al contributo doctor ordinato che gestisce il relativo comportamento `doctor` / `doctor --fix` per gli utenti. Il registro condiviso e strutturato dello stato di integrità è il punto di estensione: i controlli integrati e quelli supportati dai plugin vengono eseguiti dopo i controlli doctor del core, una volta registrati dal pacchetto proprietario nel percorso di comando attivo. `openclaw/plugin-sdk/health` espone lo stesso contratto agli autori di plugin.
 
-## Selezione dei Controlli
-
-Usa `--only` e `--skip` quando un workflow vuole un gate focalizzato:
+## Selezione dei controlli
 
 ```bash
 openclaw doctor --lint --only core/doctor/gateway-config --json
@@ -207,59 +193,223 @@ openclaw doctor --lint --skip core/doctor/skills-readiness
 openclaw doctor --lint --all --skip core/doctor/session-locks
 ```
 
-`--only` e `--skip` accettano id di controllo completi e possono essere ripetuti. Se un id `--only`
-non è registrato, nessun controllo viene eseguito per quell'id; usa i campi `checksRun`
-e `checksSkipped` del comando per verificare che un gate focalizzato stia selezionando i controlli che
-ti aspetti.
+`--only` e `--skip` accettano gli ID completi dei controlli e possono essere ripetuti. Se un ID `--only` non è registrato, non viene eseguito alcun controllo per tale ID; usare `checksRun`/`checksSkipped` nell'output per verificare che un gate mirato selezioni i controlli previsti.
 
-## Modalità post-upgrade
+## Modalità post-aggiornamento
 
-`openclaw doctor --post-upgrade` esegue sonde di compatibilità dei plugin pensate per essere
-concatenate dopo una build o un upgrade. I risultati vengono emessi su stdout; il comando
-termina con codice 1 se un qualsiasi risultato ha `level: "error"`. Aggiungi `--json` per ricevere una
-busta leggibile dalla macchina (`{ probesRun, findings }`) adatta a CI, alla
-skill community `fork-upgrade` e ad altri strumenti smoke post-upgrade. Se l'indice dei
-plugin installati è mancante o malformato, la modalità JSON emette comunque quella
-busta con un risultato di errore `plugin.index_unavailable`.
+`openclaw doctor --post-upgrade` esegue verifiche di compatibilità dei plugin da concatenare dopo una build o un aggiornamento. I risultati vengono inviati a stdout; il codice di uscita è 1 se un risultato contiene `level: "error"`. Aggiungere `--json` per ottenere un contenitore leggibile dalle macchine (`{ probesRun, findings }`), adatto alla CI, alla skill della community `fork-upgrade` e ad altri strumenti di smoke test post-aggiornamento. Se l'indice dei plugin installati è mancante o non valido, la modalità JSON emette comunque il contenitore con un risultato di errore `plugin.index_unavailable`.
 
-Note:
+L'avvio dell'immagine del container costituisce un'eccezione al consueto flusso "eseguire doctor dopo
+l'aggiornamento". Quando `openclaw gateway run` viene avviato con una nuova versione di OpenClaw,
+esegue riparazioni sicure dello stato e dei plugin prima di dichiararsi pronto. Se la riparazione non può
+terminare in sicurezza, l'avvio si interrompe e indica di eseguire una volta la stessa immagine con
+`openclaw doctor --fix` sullo stesso stato/configurazione montato prima di riavviare
+normalmente il container.
 
-- In modalità Nix (`OPENCLAW_NIX_MODE=1`), i controlli doctor in sola lettura continuano a funzionare, ma `doctor --fix`, `doctor --repair`, `doctor --yes` e `doctor --generate-gateway-token` sono disabilitati perché `openclaw.json` è immutabile. Modifica invece la sorgente Nix per questa installazione; per nix-openclaw, usa la [Guida rapida](https://github.com/openclaw/nix-openclaw#quick-start) agent-first.
-- I prompt interattivi (come le correzioni keychain/OAuth) vengono eseguiti solo quando stdin è un TTY e `--non-interactive` **non** è impostato. Le esecuzioni senza terminale (Cron, Telegram, nessun terminale) salteranno i prompt.
-- Prestazioni: le esecuzioni non interattive di `doctor` saltano il caricamento anticipato dei Plugin, così i controlli di integrità senza terminale restano rapidi. Le sessioni doctor interattive caricano comunque le superfici Plugin necessarie al flusso legacy di integrità e riparazione.
-- `--lint` è più rigoroso di `--non-interactive`: è sempre in sola lettura, non mostra mai prompt e non applica mai migrazioni sicure. Esegui `doctor --fix` o `doctor --repair` quando vuoi che doctor apporti modifiche.
-- Per impostazione predefinita, doctor non esegue SecretRefs `exec` durante il controllo dei segreti. Usa `openclaw doctor --allow-exec` o `openclaw doctor --lint --allow-exec` solo quando vuoi intenzionalmente che doctor esegua quei resolver di segreti configurati.
-- `--fix` (alias di `--repair`) scrive un backup in `~/.openclaw/openclaw.json.bak` e rimuove le chiavi di configurazione sconosciute, elencando ogni rimozione.
-- I controlli di integrità modernizzati possono esporre un percorso `repair()` per `doctor --fix`; i controlli che non ne espongono uno continuano tramite il flusso di riparazione doctor esistente.
-- `doctor --fix --non-interactive` segnala definizioni del servizio Gateway mancanti o obsolete, ma non le installa né le riscrive fuori dalla modalità di riparazione aggiornamento. Esegui `openclaw gateway install` per un servizio mancante, oppure `openclaw gateway install --force` quando vuoi intenzionalmente sostituire il launcher.
-- I controlli di integrità dello stato ora rilevano file di trascrizione orfani nella directory delle sessioni. L’archiviazione come `.deleted.<timestamp>` richiede una conferma interattiva; `--fix`, `--yes` e le esecuzioni senza terminale li lasciano al loro posto.
-- Doctor scansiona anche `~/.openclaw/cron/jobs.json` (o `cron.store`) alla ricerca di forme legacy dei job Cron e le riscrive prima di importare righe canoniche in SQLite.
-- Doctor segnala i job Cron con override espliciti di `payload.model`, inclusi i conteggi dei namespace dei provider e le discrepanze rispetto a `agents.defaults.model`, così i job pianificati che non ereditano il modello predefinito sono visibili durante indagini su autenticazione o fatturazione.
-- Su Linux, doctor avvisa quando il crontab dell’utente esegue ancora il legacy `~/.openclaw/bin/ensure-whatsapp.sh`; quello script non è più mantenuto e può registrare falsi disservizi del Gateway WhatsApp quando Cron non dispone dell’ambiente systemd user-bus.
-- Quando WhatsApp è abilitato, doctor controlla se esiste un loop di eventi Gateway degradato con client `openclaw-tui` locali ancora in esecuzione. `doctor --fix` arresta solo i client TUI locali verificati, così le risposte WhatsApp non restano in coda dietro loop di aggiornamento TUI obsoleti.
-- Doctor riscrive i riferimenti modello legacy `openai-codex/*` in riferimenti canonici `openai/*` su modelli primari, fallback, modelli di generazione immagini/video, override Heartbeat/subagent/Compaction, hook, override modello dei canali e pin obsoleti delle route di sessione. `--fix` migra anche i profili di autenticazione legacy `openai-codex:*` e le voci `auth.order.openai-codex` a `openai:*`, sposta l’intento Codex in voci `agentRuntime.id: "codex"` con ambito provider/modello, rimuove pin runtime obsoleti a livello di agente/sessione e mantiene i riferimenti degli agenti OpenAI riparati sul routing di autenticazione Codex invece che sull’autenticazione diretta con chiave API OpenAI.
-- Doctor pulisce lo stato legacy di staging delle dipendenze Plugin creato da versioni precedenti di OpenClaw e ricollega il pacchetto host `openclaw` per i Plugin npm gestiti che lo dichiarano come dipendenza peer. Ripara anche Plugin scaricabili mancanti a cui fa riferimento la configurazione, come `plugins.entries`, canali configurati, impostazioni provider/ricerca configurate o runtime agente configurati. Durante gli aggiornamenti dei pacchetti, doctor salta la riparazione dei Plugin tramite package manager finché lo scambio del pacchetto non è completo; esegui di nuovo `openclaw doctor --fix` dopo, se un Plugin configurato richiede ancora il ripristino. Se il download non riesce, doctor segnala l’errore di installazione e conserva la voce Plugin configurata per il prossimo tentativo di riparazione.
-- Doctor ripara la configurazione Plugin obsoleta rimuovendo gli ID Plugin mancanti da `plugins.allow`/`plugins.deny`/`plugins.entries`, oltre alla configurazione canale pendente corrispondente, ai target Heartbeat e agli override modello dei canali quando la discovery dei Plugin è sana.
-- Doctor mette in quarantena la configurazione Plugin non valida disabilitando la voce `plugins.entries.<id>` interessata e rimuovendo il relativo payload `config` non valido. L’avvio del Gateway salta già solo quel Plugin non valido, così gli altri Plugin e canali possono continuare a funzionare.
-- Imposta `OPENCLAW_SERVICE_REPAIR_POLICY=external` quando un altro supervisor possiede il ciclo di vita del Gateway. Doctor segnala comunque l’integrità di Gateway/servizio e applica riparazioni non relative al servizio, ma salta installazione/avvio/riavvio/bootstrap del servizio e pulizia dei servizi legacy.
-- Su Linux, doctor ignora unità systemd extra simili al Gateway ma inattive e non riscrive i metadati command/entrypoint per un servizio Gateway systemd in esecuzione durante la riparazione. Arresta prima il servizio oppure usa `openclaw gateway install --force` quando vuoi intenzionalmente sostituire il launcher attivo.
-- Doctor migra automaticamente la configurazione Talk flat legacy (`talk.voiceId`, `talk.modelId` e simili) in `talk.provider` + `talk.providers.<provider>`.
-- Esecuzioni ripetute di `doctor --fix` non segnalano/applicano più la normalizzazione Talk quando l’unica differenza è l’ordine delle chiavi dell’oggetto.
-- Doctor include un controllo di prontezza della ricerca in memoria e può consigliare `openclaw configure --section model` quando mancano le credenziali di embedding.
-- Doctor avvisa quando non è configurato alcun proprietario dei comandi. Il proprietario dei comandi è l’account dell’operatore umano autorizzato a eseguire comandi riservati al proprietario e ad approvare azioni pericolose. L’abbinamento DM consente solo a qualcuno di parlare con il bot; se hai approvato un mittente prima che esistesse il bootstrap del primo proprietario, imposta esplicitamente `commands.ownerAllowFrom`.
-- Doctor segnala una nota informativa quando sono configurati agenti in modalità Codex ed esistono asset personali della CLI Codex nella home Codex dell’operatore. Gli avvii locali del server app Codex usano home isolate per agente, quindi installa prima il Plugin Codex se necessario, poi usa `openclaw migrate plan codex` per inventariare gli asset da promuovere deliberatamente.
-- Doctor rimuove `plugins.entries.codex.config.codexDynamicToolsProfile` ritirato; il server app Codex mantiene sempre nativi gli strumenti workspace nativi Codex.
-- Doctor avvisa quando Skills consentite per l’agente predefinito non sono disponibili nell’ambiente runtime corrente perché mancano binari, variabili env, configurazione o requisiti del sistema operativo. `doctor --fix` può disabilitare quelle Skills non disponibili con `skills.entries.<skill>.enabled=false`; installa/configura invece il requisito mancante quando vuoi mantenere attiva la skill.
-- Se la modalità sandbox è abilitata ma Docker non è disponibile, doctor segnala un avviso ad alto segnale con rimedio (`install Docker` oppure `openclaw config set agents.defaults.sandbox.mode off`).
-- Se sono presenti file legacy del registro sandbox o directory shard (`~/.openclaw/sandbox/containers.json`, `~/.openclaw/sandbox/browsers.json`, `~/.openclaw/sandbox/containers/` o `~/.openclaw/sandbox/browsers/`), doctor li segnala; `openclaw doctor --fix` migra le voci valide in SQLite e mette in quarantena i file legacy non validi.
-- Se `gateway.auth.token`/`gateway.auth.password` sono gestiti da SecretRef e non disponibili nel percorso del comando corrente, doctor segnala un avviso in sola lettura e non scrive credenziali fallback in chiaro. Per SecretRef basati su exec, doctor salta l’esecuzione a meno che non sia presente `--allow-exec`.
-- Se l’ispezione di un SecretRef di canale non riesce in un percorso di correzione, doctor continua e segnala un avviso invece di uscire in anticipo.
-- Dopo le migrazioni della directory di stato, doctor avvisa quando account Telegram o Discord predefiniti abilitati dipendono dal fallback env e `TELEGRAM_BOT_TOKEN` o `DISCORD_BOT_TOKEN` non è disponibile per il processo doctor.
-- La risoluzione automatica degli username `allowFrom` di Telegram (`doctor --fix`) richiede un token Telegram risolvibile nel percorso del comando corrente. Se l’ispezione del token non è disponibile, doctor segnala un avviso e salta la risoluzione automatica per quel passaggio.
+## Compaction SQLite dello stato condiviso
 
-## macOS: override env di `launchctl`
+`openclaw doctor --state-sqlite compact` è una manutenzione offline esplicita per
+il database canonico dello stato condiviso in
+`<state-dir>/state/openclaw.sqlite`. Non accetta un percorso di database
+arbitrario, non viene mai richiamato dal normale funzionamento del Gateway e non fa parte di
+`openclaw doctor --fix`. Il comando acquisisce lo stesso blocco di proprietà dello stato usato
+all'avvio del Gateway e lo mantiene durante la convalida, il checkpoint, `VACUUM` e
+i controlli finali di integrità. Si rifiuta di essere eseguito mentre un Gateway o un altro
+comando di manutenzione SQLite detiene tale blocco. Il blocco dello stato rimane attivo quando
+`OPENCLAW_ALLOW_MULTI_GATEWAY=1` ignora il singleton Gateway per configurazione, quindi una
+shell dell'operatore non deve ereditare l'ambiente del servizio Gateway affinché la
+manutenzione possa rilevarlo.
 
-Se in precedenza hai eseguito `launchctl setenv OPENCLAW_GATEWAY_TOKEN ...` (o `...PASSWORD`), quel valore sovrascrive il file di configurazione e può causare errori persistenti di “non autorizzato”.
+Arrestare il Gateway e creare prima un backup verificato:
+
+```bash
+openclaw gateway stop
+openclaw backup create --verify
+openclaw doctor --state-sqlite compact --json
+openclaw gateway start
+```
+
+Il comando:
+
+1. Richiede un file normale nel percorso canonico dello stato condiviso. Un database
+   mancante viene segnalato come `skipped` e l'esecuzione termina correttamente.
+2. Convalida la versione dello schema attualmente supportata e
+   `schema_meta.role = "global"` prima di eseguire il checkpoint o modificare il file.
+3. Richiede un `wal_checkpoint(TRUNCATE)` non occupato. Arrestare ogni processo OpenClaw
+   ancora in esecuzione e riprovare se il checkpoint è occupato.
+4. Imposta `auto_vacuum` su `INCREMENTAL`, esegue un `VACUUM` completo ed esegue
+   nuovamente il checkpoint.
+5. Esegue `quick_check`, `integrity_check` e `foreign_key_check`, quindi
+   riapplica le autorizzazioni riservate al proprietario al database e ai file sidecar SQLite.
+
+L'output JSON segnala le dimensioni del database e del WAL, le pagine della freelist, la dimensione delle pagine e
+il valore `auto_vacuum` prima e dopo la Compaction, oltre ai byte recuperati e ai
+risultati `quick_check` e `integrity_check`. `foreign_key_check` viene applicato
+in modalità fail-closed e non dispone di un campo separato per l'esito positivo. SQLite segnala `auto_vacuum` come
+`0` per nessuna, `1` per completa e `2` per incrementale.
+
+La Compaction non riesce senza apportare modifiche quando lo schema è obsoleto, più recente della
+build OpenClaw in esecuzione o appartiene a un database di un agente. Eseguire prima
+`openclaw doctor --fix` per uno schema dello stato condiviso obsoleto. Ripristinare un
+backup compatibile oppure aggiornare OpenClaw per uno schema più recente.
+
+## Migrazione SQLite delle sessioni
+
+OpenClaw importa automaticamente le righe delle sessioni legacy e la cronologia delle trascrizioni nel database
+SQLite di ciascun agente durante l'avvio del Gateway e durante
+`openclaw doctor --fix`. `openclaw doctor --session-sqlite <mode>` è lo
+strumento mirato di ispezione e convalida per tale migrazione. Le righe delle sessioni del runtime
+corrente si trovano in
+`~/.openclaw/agents/<agentId>/agent/openclaw-agent.sqlite`. I file
+`sessions.json` legacy sono origini della migrazione. I file JSONL delle trascrizioni attive vengono
+importati e archiviati fuori dalla directory delle sessioni attive dopo
+un'importazione riuscita; i file JSONL nel livello di archivio restano artefatti di supporto, non
+fallback del runtime.
+
+Modalità:
+
+| Modalità       | Comportamento                                                                                                               |
+| ---------- | ---------------------------------------------------------------------------------------------------------------------- |
+| `inspect`  | Legge i conteggi legacy e SQLite, oltre ai file JSONL non referenziati, senza eseguire l'importazione.                                       |
+| `dry-run`  | Analizza le voci legacy e i file JSONL delle trascrizioni, conta le righe importabili e segnala i problemi senza scrivere righe SQLite. |
+| `import`   | Importa le voci legacy e gli eventi delle trascrizioni in SQLite per le destinazioni selezionate.                                      |
+| `validate` | Confronta le origini legacy selezionate con le righe SQLite e i conteggi degli eventi delle trascrizioni.                                   |
+| `compact`  | Esegue il checkpoint e VACUUM sui database SQLite degli agenti selezionati per recuperare le pagine libere dopo eliminazioni consistenti o la pulizia dell'archivio.    |
+| `recover`  | Ripristina l'ultima esecuzione di migrazione non riuscita, ne convalida le destinazioni e prepara una segnalazione GitHub sanitizzata.            |
+| `restore`  | Ripristina gli artefatti delle trascrizioni archiviati dai manifesti di migrazione registrati senza eliminare i dati SQLite.                  |
+
+Selettori:
+
+- Predefinito: l'archivio dell'agente predefinito configurato, quando il relativo file di archivio legacy esiste.
+- `--session-sqlite-agent <id>`: un agente configurato.
+- `--session-sqlite-all-agents`: gli archivi degli agenti configurati più quelli rilevati.
+- `--session-sqlite-store <path>`: un percorso legacy `sessions.json` esplicito.
+
+Sequenza di ispezione manuale:
+
+```bash
+openclaw doctor --session-sqlite inspect --session-sqlite-all-agents
+openclaw doctor --session-sqlite dry-run --session-sqlite-all-agents --json
+openclaw doctor --session-sqlite import --session-sqlite-all-agents
+openclaw doctor --session-sqlite validate --session-sqlite-all-agents --json
+openclaw doctor --session-sqlite compact --session-sqlite-all-agents
+openclaw doctor --session-sqlite recover --github-issue
+```
+
+Eseguire il backup della directory di stato di OpenClaw prima di eseguire `import` su un'installazione con
+una cronologia importante. `validate` termina con un codice diverso da zero quando una voce legacy selezionata è
+assente da SQLite, un ID di sessione è diverso o il conteggio degli eventi di una trascrizione è diverso.
+Quando si usa `--session-sqlite-store <path>`, verificare che il resoconto contenga il
+numero previsto di destinazioni; un percorso di archivio esplicito inesistente non seleziona alcuna destinazione.
+
+Le eliminazioni SQLite recuperano prima le pagine all'interno del database; non necessariamente
+riducono immediatamente il file del database. Dopo aver eliminato o archiviato trascrizioni di grandi dimensioni,
+eseguire `openclaw doctor --session-sqlite compact --session-sqlite-all-agents`
+per effettuare il checkpoint dei file WAL, eseguire `VACUUM` e segnalare le dimensioni del database e del WAL
+prima e dopo. La Compaction richiede un file normale con lo schema corrente dell'agente, i
+metadati persistenti del proprietario dell'agente selezionato e nessun handle aperto nel processo
+doctor. Le modalità distruttive `import`, `compact`, `recover` e `restore`
+mantengono lo stesso blocco di proprietà dello stato usato all'avvio del Gateway per l'intera operazione;
+`inspect`, `dry-run` e `validate` restano di sola lettura e non lo acquisiscono. Arrestare
+prima il Gateway. Le modalità distruttive non riescono anziché entrare in conflitto con scritture attive o
+con un altro comando di manutenzione. Una destinazione distruttiva `--session-sqlite-store`
+deve trovarsi nella directory di stato attiva; impostare `OPENCLAW_STATE_DIR` sulla
+directory di stato proprietaria dell'archivio prima di eseguire la manutenzione di un'altra installazione.
+Le destinazioni con hard link esistenti vengono rifiutate perché un altro percorso può condividere lo
+stesso inode del database fuori dalla directory di stato bloccata. Gli stessi controlli di proprietà
+coprono i file sidecar WAL, di memoria condivisa e del journal di rollback di SQLite.
+
+Ogni importazione scrive un manifesto in
+`~/.openclaw/session-sqlite-migration-runs/` prima di spostare gli artefatti delle trascrizioni
+nell'archivio. Se all'avvio viene segnalata una migrazione SQLite delle sessioni non riuscita dopo lo
+spostamento degli artefatti, eseguire il ripristino:
+
+```bash
+openclaw doctor --session-sqlite recover --github-issue
+```
+
+Il ripristino seleziona il manifesto più recente di una migrazione non riuscita, ripristina solo gli
+artefatti archiviati indicati dal manifesto, convalida le destinazioni interessate, aggiorna i
+resoconti sanitizzati `.failure.md` e `.failure.json` e prepara il corpo di una segnalazione GitHub
+che esclude il contenuto delle trascrizioni, l'ambiente non elaborato, i segreti e una
+configurazione senza limiti. Quando non esiste un manifesto di migrazione non riuscita ma il database SQLite
+di un agente selezionato è danneggiato, non è un database oppure presenta file sidecar del journal senza un
+database principale, il ripristino copia l'insieme completo dei file in una directory temporanea
+di ispezione. SQLite può eseguire il rollback di un hot journal valido in tale copia eliminabile
+prima dell'esecuzione di `quick_check`, `integrity_check` e `foreign_key_check`, mentre i
+file forensi originali restano invariati. I controlli di integrità non riusciti o i
+file sidecar orfani conservano i file DB, WAL, SHM e del journal di rollback rinominando
+l'intero insieme rilevato con un unico suffisso `.corrupt-<timestamp>`. Un errore di ridenominazione
+intercettato ripristina i file già spostati prima di segnalare l'errore, evitando che un
+insieme di file recuperabile venga suddiviso senza alcuna indicazione. Arrestare il Gateway prima del ripristino;
+copiare o rinominare un insieme di file SQLite in modifica attiva non è sicuro e produce
+comportamenti diversi tra i sistemi operativi. Con `--github-issue --yes`, doctor usa
+la CLI GitHub per creare la segnalazione in `openclaw/openclaw`; senza conferma,
+scrive il resoconto di supporto locale e stampa un URL precompilato per la segnalazione.
+
+`restore` resta l'operazione di annullamento di livello inferiore. Usa i record
+`sourcePath -> archivePath` del manifesto, riporta gli artefatti archiviati nel percorso originale solo quando
+quest'ultimo non esiste, segnala i conflitti quando entrambi i percorsi esistono e lascia
+il database SQLite al suo posto.
+
+### Downgrade dopo la migrazione SQLite delle sessioni
+
+Prima di avviare una versione precedente di OpenClaw basata su file, ripristinare gli
+artefatti legacy archiviati delle trascrizioni:
+
+```bash
+openclaw doctor --session-sqlite restore --session-sqlite-all-agents
+```
+
+Le versioni precedenti leggevano le voci `sessions.json` e i percorsi `sessionFile` registrati
+in tali voci. Dopo la migrazione a SQLite, le importazioni riuscite spostano le trascrizioni JSONL
+attive in `session-sqlite-import-archive/`, pertanto il runtime precedente non può
+vedere tale cronologia finché il ripristino non riporta gli artefatti registrati nel manifesto nei
+percorsi originali.
+
+Il ripristino non elimina i dati SQLite. Le sessioni create dopo il passaggio a SQLite
+esistono solo in SQLite e non appariranno nel runtime precedente. Se in seguito
+si esegue nuovamente l'aggiornamento, utilizzare la normale sequenza di convalida della migrazione indicata sopra affinché OpenClaw possa
+confrontare gli artefatti legacy ripristinati con le righe SQLite prima dell'importazione.
+
+## Note
+
+- In modalità Nix (`OPENCLAW_NIX_MODE=1`), i controlli di doctor in sola lettura continuano a funzionare, ma `doctor --fix`, `doctor --repair`, `doctor --yes` e `doctor --generate-gateway-token` sono disabilitati perché `openclaw.json` è immutabile. Modificare invece il sorgente Nix per questa installazione; per nix-openclaw, utilizzare la [Guida rapida](https://github.com/openclaw/nix-openclaw#quick-start) incentrata sull'agente.
+- I prompt interattivi (correzioni del portachiavi/OAuth e così via) vengono eseguiti solo quando stdin è un TTY e `--non-interactive` **non** è impostato. Le esecuzioni headless (cron, Telegram, senza terminale) ignorano i prompt.
+- Le esecuzioni non interattive di `doctor` evitano il caricamento anticipato dei Plugin, affinché i controlli di integrità headless rimangano rapidi. Le sessioni interattive continuano a caricare le superfici dei Plugin necessarie al flusso legacy di controllo dell'integrità e riparazione.
+- `--lint` è più rigoroso di `--non-interactive`: è sempre in sola lettura, non mostra mai prompt e non applica mai migrazioni sicure. Utilizzare `doctor --fix` o `doctor --repair` quando si desidera che doctor apporti modifiche.
+- Per impostazione predefinita, doctor non esegue i SecretRef `exec` durante il controllo dei segreti. Utilizzare `--allow-exec` (con o senza `--lint`) solo quando si desidera intenzionalmente che doctor esegua i resolver di segreti configurati.
+- Qualsiasi scrittura della configurazione (inclusa una riparazione `--fix`) ruota un backup in `~/.openclaw/openclaw.json.bak` (con un anello numerato `.bak.1`..`.bak.4`). `--fix` elimina inoltre le chiavi di configurazione sconosciute segnalate dalla convalida dello schema, elencando ogni rimozione; questa operazione viene omessa mentre è in corso un aggiornamento, affinché lo stato dell'aggiornamento scritto parzialmente non venga rimosso prima del completamento della relativa migrazione.
+- Impostare `OPENCLAW_SERVICE_REPAIR_POLICY=external` quando un altro supervisore gestisce il ciclo di vita del Gateway. Doctor continua a segnalare lo stato del Gateway/servizio e applica le riparazioni non relative al servizio, ma ignora l'installazione, l'avvio, il riavvio e il bootstrap del servizio, nonché la pulizia del servizio legacy.
+- Su Linux, doctor ignora le unità systemd aggiuntive inattive simili al Gateway e, durante la riparazione, non riscrive i metadati di comando/entrypoint per un servizio Gateway systemd in esecuzione. Arrestare prima il servizio oppure utilizzare `openclaw gateway install --force` per sostituire il programma di avvio attivo.
+- `doctor --fix --non-interactive` segnala definizioni del servizio Gateway mancanti o obsolete, ma non le installa né le riscrive al di fuori della modalità di riparazione dell'aggiornamento. Eseguire `openclaw gateway install` per un servizio mancante oppure `openclaw gateway install --force` per sostituire il programma di avvio.
+- I controlli di integrità dello stato rilevano i file di trascrizione orfani nella directory delle sessioni. La loro archiviazione come `.deleted.<timestamp>` richiede una conferma interattiva; `--fix`, `--yes` e le esecuzioni headless li lasciano nella posizione corrente.
+- Doctor analizza `~/.openclaw/cron/jobs.json` (o `cron.store`) per individuare formati legacy dei processi cron e li riscrive prima di importare le righe canoniche in SQLite.
+- Doctor segnala i processi cron con un'override esplicita `payload.model`, inclusi i conteggi per spazio dei nomi del provider e le discrepanze rispetto a `agents.defaults.model`, affinché i processi pianificati che non ereditano il modello predefinito siano visibili durante le indagini su autenticazione o fatturazione.
+- Doctor segnala i processi cron ancora contrassegnati come in corso (`state.runningAtMs`), che possono essere mostrati da `openclaw cron list` come `running`. Questo controllo è in sola lettura: se nessun Gateway sta attualmente eseguendo un processo contrassegnato, al successivo avvio il servizio cron registra l'esecuzione interrotta e rimuove il contrassegno.
+- Su Linux, doctor avvisa quando la crontab dell'utente esegue ancora il componente legacy non più mantenuto `~/.openclaw/bin/ensure-whatsapp.sh`, che può segnalare erroneamente `Gateway inactive` quando cron non dispone dell'ambiente del bus utente systemd.
+- Quando WhatsApp è abilitato, doctor verifica la presenza di un ciclo degli eventi del Gateway degradato con client `openclaw-tui` locali ancora in esecuzione. `doctor --fix` arresta solo i client TUI locali verificati, affinché le risposte di WhatsApp non vengano accodate dietro cicli di aggiornamento TUI obsoleti.
+- Doctor riscrive i riferimenti ai modelli legacy `codex/*` e `openai-codex/*` come riferimenti canonici `openai/*` nei modelli primari, nei fallback, negli elenchi consentiti dei modelli, nei modelli di generazione di immagini/video, negli override di Heartbeat/subagente/Compaction, negli hook, negli override dei modelli dei canali, nei payload cron e nei pin obsoleti delle route di sessioni/trascrizioni. `--fix` unisce inoltre, quando è sicuro, la configurazione legacy `models.providers.codex` e `models.providers.openai-codex`, migra i profili di autenticazione legacy `openai-codex:*` e le voci `auth.order.openai-codex` in `openai:*`, sposta l'intento Codex nelle voci `agentRuntime.id: "codex"` con ambito provider/modello, rimuove i pin di runtime obsoleti relativi all'intero agente o alla sessione e mantiene i riferimenti degli agenti OpenAI riparati sull'instradamento dell'autenticazione Codex anziché sull'autenticazione diretta tramite chiave API OpenAI.
+- Doctor segnala gli elenchi `auth.order.<provider>` non vuoti i cui profili di riferimento sono tutti scomparsi mentre esistono credenziali compatibili archiviate. `doctor --fix` elimina solo tali override obsoleti, ripristinando la selezione automatica delle credenziali per agente; gli ordini esplicitamente vuoti, gli elenchi parzialmente validi e gli ordini privi di credenziali compatibili archiviate rimangono invariati. Se un archivio di autenticazione SQLite attivo è illeggibile o non valido, doctor spiega perché ha ignorato questa riparazione. Riavviare un Gateway in esecuzione prima di ricontrollare lo stato dell'autenticazione se la relativa modalità di ricaricamento della configurazione non applica automaticamente la scrittura.
+- Doctor elimina lo stato legacy di staging delle dipendenze dei Plugin delle versioni precedenti di OpenClaw e ricollega il pacchetto host `openclaw` per i Plugin npm gestiti che lo dichiarano come dipendenza peer. Ripara inoltre i Plugin scaricabili mancanti a cui fa riferimento la configurazione (`plugins.entries`, canali configurati, impostazioni configurate del provider/di ricerca, runtime degli agenti configurati). Durante gli aggiornamenti dei pacchetti, doctor ignora la riparazione dei Plugin tramite il gestore pacchetti finché la sostituzione del pacchetto non è completa; eseguire nuovamente `openclaw doctor --fix` in seguito se un Plugin configurato necessita ancora di ripristino. Se un download non riesce, doctor segnala l'errore di installazione e conserva la voce del Plugin configurato per il successivo tentativo di riparazione.
+- Doctor ripara la configurazione obsoleta dei Plugin rimuovendo gli ID dei Plugin mancanti da `plugins.allow`/`plugins.deny`/`plugins.entries`, nonché la configurazione dei canali non più valida corrispondente, le destinazioni Heartbeat e gli override dei modelli dei canali, quando il rilevamento dei Plugin funziona correttamente.
+- Doctor mette in quarantena la configurazione non valida dei Plugin disabilitando la voce `plugins.entries.<id>` interessata e rimuovendone il payload `config` non valido. L'avvio del Gateway ignora già solo tale Plugin non valido, consentendo agli altri Plugin e canali di continuare a funzionare.
+- Doctor rimuove il componente ritirato `plugins.entries.codex.config.codexDynamicToolsProfile`; l'app-server Codex mantiene sempre nativi gli strumenti dell'area di lavoro nativi di Codex.
+- Doctor migra automaticamente la configurazione Talk piatta legacy (`talk.voiceId`, `talk.modelId` e simili) in `talk.provider` + `talk.providers.<provider>`. Le esecuzioni ripetute di `doctor --fix` non segnalano/applicano più la normalizzazione Talk quando l'unica differenza è l'ordine delle chiavi dell'oggetto.
+- Doctor include un controllo dell'idoneità della ricerca in memoria e può consigliare `openclaw configure --section model` quando mancano le credenziali per gli embedding.
+- Doctor avvisa quando non è configurato alcun proprietario dei comandi. Il proprietario dei comandi è l'account dell'operatore umano autorizzato a eseguire comandi riservati al proprietario e ad approvare azioni pericolose. L'associazione tramite DM consente soltanto di comunicare con il bot; se un mittente è stato approvato prima che esistesse il bootstrap del primo proprietario, impostare esplicitamente `commands.ownerAllowFrom`.
+- Doctor segnala una nota informativa quando sono configurati agenti in modalità Codex e nella home Codex dell'operatore sono presenti risorse personali della CLI Codex. Gli avvii locali dell'app-server Codex utilizzano home isolate per agente; se necessario, installare prima il Plugin Codex, quindi utilizzare `openclaw migrate plan codex` per inventariare le risorse da promuovere deliberatamente.
+- Doctor avvisa quando le Skills consentite per l'agente predefinito non sono disponibili nell'ambiente di runtime corrente (binari, variabili d'ambiente, configurazione o requisiti del sistema operativo mancanti). `doctor --fix` può disabilitare tali Skills non disponibili mediante `skills.entries.<skill>.enabled=false`; se si desidera mantenere attiva la skill, installare/configurare invece il requisito mancante.
+- Se la modalità sandbox è abilitata ma Docker non è disponibile, doctor segnala un avviso ad alta rilevanza con le azioni correttive (`install Docker` o `openclaw config set agents.defaults.sandbox.mode off`).
+- Se sono presenti file del registro sandbox o directory di shard legacy (`~/.openclaw/sandbox/containers.json`, `~/.openclaw/sandbox/browsers.json`, `~/.openclaw/sandbox/containers/` o `~/.openclaw/sandbox/browsers/`), doctor li segnala; `--fix` migra le voci valide in SQLite e mette in quarantena i file legacy non validi.
+- Se `gateway.auth.token`/`gateway.auth.password` sono gestiti tramite SecretRef e non sono disponibili nel percorso del comando corrente, doctor segnala un avviso in sola lettura e non scrive credenziali di fallback in testo normale. Per i SecretRef basati su exec, doctor ignora l'esecuzione a meno che non sia presente `--allow-exec`.
+- Se l'ispezione dei SecretRef dei canali non riesce in un percorso di correzione, doctor prosegue e segnala un avviso anziché terminare anticipatamente.
+- Dopo le migrazioni della directory dello stato, doctor avvisa quando gli account Telegram o Discord predefiniti abilitati dipendono dal fallback tramite variabile d'ambiente e `TELEGRAM_BOT_TOKEN` o `DISCORD_BOT_TOKEN` non è disponibile per il processo doctor.
+- La risoluzione automatica del nome utente `allowFrom` di Telegram (`doctor --fix`) richiede un token Telegram risolvibile nel percorso del comando corrente. Se l'ispezione del token non è disponibile, doctor segnala un avviso e ignora la risoluzione automatica per tale esecuzione.
+
+## macOS: override dell'ambiente `launchctl`
+
+Se in precedenza è stato eseguito `launchctl setenv OPENCLAW_GATEWAY_TOKEN ...` (o `...PASSWORD`), tale valore sostituisce il file di configurazione e può causare errori persistenti di "non autorizzato".
 
 ```bash
 launchctl getenv OPENCLAW_GATEWAY_TOKEN

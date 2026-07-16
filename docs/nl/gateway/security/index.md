@@ -4,186 +4,78 @@ read_when:
 summary: Beveiligingsoverwegingen en dreigingsmodel voor het uitvoeren van een AI-gateway met shelltoegang
 title: Beveiliging
 x-i18n:
-    generated_at: "2026-07-04T10:51:30Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T15:40:53Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 42a398a347f04414c443277c8ab3632953bce73e957c8439883846813f882dd5
+    source_hash: 39f8b4d598af5dac79f842b88461fad2187f0fe8d509b6dce1b9d720f2009351
     source_path: gateway/security/index.md
     workflow: 16
 ---
 
 <Warning>
-  **Vertrouwensmodel voor persoonlijke assistent.** Deze richtlijn gaat uit van één vertrouwde
-  operatorgrens per Gateway (single-user, persoonlijke-assistentmodel).
-  OpenClaw is **geen** vijandige multi-tenant-beveiligingsgrens voor meerdere
-  kwaadwillende gebruikers die één agent of Gateway delen. Als je werking met gemengd vertrouwen of
-  kwaadwillende gebruikers nodig hebt, splits dan vertrouwensgrenzen (aparte Gateway +
-  referenties, idealiter aparte OS-gebruikers of hosts).
+  **Vertrouwensmodel voor persoonlijke assistenten.** Deze richtlijnen gaan uit van één vertrouwde
+  operatorgrens per Gateway (model met één gebruiker en een persoonlijke assistent).
+  OpenClaw is **geen** beveiligingsgrens voor vijandige multitenancy waarbij meerdere
+  kwaadwillende gebruikers één agent of Gateway delen. Splits bij gebruik met gemengd vertrouwen of
+  kwaadwillende gebruikers de vertrouwensgrenzen: afzonderlijke Gateway +
+  aanmeldgegevens, idealiter afzonderlijke OS-gebruikers of hosts.
 </Warning>
 
-## Eerst de scope: beveiligingsmodel voor persoonlijke assistent
+## Reikwijdte: beveiligingsmodel voor persoonlijke assistenten
 
-De beveiligingsrichtlijnen van OpenClaw gaan uit van een **persoonlijke assistent**-implementatie: één vertrouwde operatorgrens, mogelijk veel agents.
+- Ondersteund: één gebruiker/vertrouwensgrens per Gateway (bij voorkeur één OS-gebruiker/host/VPS per grens).
+- Niet ondersteund: één gedeelde Gateway/agent die wordt gebruikt door gebruikers die elkaar niet vertrouwen of kwaadwillend zijn.
+- Isolatie van kwaadwillende gebruikers vereist afzonderlijke Gateways (en idealiter afzonderlijke OS-gebruikers/hosts).
+- Als meerdere niet-vertrouwde gebruikers berichten kunnen sturen naar één agent met ingeschakelde tools, delen ze de gedelegeerde toolbevoegdheid van die agent.
+- Als iemand de status/configuratie van de Gateway-host kan wijzigen (`~/.openclaw`, inclusief `openclaw.json`), beschouw diegene dan als een vertrouwde operator.
+- Binnen één Gateway is toegang als geauthenticeerde operator een vertrouwde control-plane-rol, geen tenantrol per gebruiker.
+- `sessionKey` (sessie-ID's, labels) is een routeringsselector, geen autorisatietoken.
 
-- Ondersteunde beveiligingshouding: één gebruiker/vertrouwensgrens per Gateway (bij voorkeur één OS-gebruiker/host/VPS per grens).
-- Geen ondersteunde beveiligingsgrens: één gedeelde Gateway/agent die wordt gebruikt door wederzijds niet-vertrouwde of kwaadwillende gebruikers.
-- Als isolatie voor kwaadwillende gebruikers vereist is, splits dan per vertrouwensgrens (aparte Gateway + referenties, en idealiter aparte OS-gebruikers/hosts).
-- Als meerdere niet-vertrouwde gebruikers één agent met tools kunnen berichten, behandel hen dan alsof ze dezelfde gedelegeerde toolbevoegdheid voor die agent delen.
+Meerdere gebruikers of organisaties hosten? Voer per tenant één geïsoleerde Gateway-cel uit in plaats van een Gateway te delen. Zie [Multitenanthosting](/gateway/multi-tenant-hosting).
 
-Deze pagina legt hardening **binnen dat model** uit. Ze claimt geen vijandige multi-tenant-isolatie op één gedeelde Gateway.
+Neem vóór het wijzigen van externe toegang, DM-beleid, reverse proxy of openbare blootstelling het [draaiboek voor Gateway-blootstelling](/nl/gateway/security/exposure-runbook) door als checklist voor voorbereiding en terugdraaien.
 
-Gebruik vóór het wijzigen van externe toegang, DM-beleid, reverse proxy of publieke blootstelling
-het [Gateway-blootstellingsdraaiboek](/nl/gateway/security/exposure-runbook) als
-pre-flight- en rollbackchecklist.
+## `openclaw security audit`
 
-## Snelle controle: `openclaw security audit`
-
-Zie ook: [Formele verificatie (beveiligingsmodellen)](/nl/security/formal-verification)
-
-Voer dit regelmatig uit (vooral na het wijzigen van configuratie of het blootstellen van netwerkoppervlakken):
+Voer dit uit na elke configuratiewijziging of voordat je netwerkoppervlakken blootstelt:
 
 ```bash
 openclaw security audit
-openclaw security audit --deep
-openclaw security audit --fix
+openclaw security audit --deep    # probeert een live Gateway-probe uit te voeren
+openclaw security audit --fix     # pas veilige herstelmaatregelen toe
 openclaw security audit --json
 ```
 
-`security audit --fix` blijft bewust smal: het zet gangbaar open groepsbeleid om
-naar allowlists, herstelt `logging.redactSensitive: "tools"`, scherpt
-machtigingen voor state/config/include-bestanden aan, en gebruikt Windows ACL-resets in plaats van
-POSIX `chmod` wanneer het op Windows draait.
+`--fix` is bewust beperkt: het zet open groepsbeleid om in toelatingslijsten, herstelt `logging.redactSensitive: "tools"`, verscherpt machtigingen voor status-, configuratie- en include-bestanden (`600`-bestanden, `700`-mappen) en gebruikt op Windows ACL-resets in plaats van POSIX `chmod`.
 
-Het markeert veelvoorkomende voetangels (blootstelling van Gateway-auth, blootstelling van browserbesturing, verhoogde allowlists, bestandssysteemmachtigingen, toegeeflijke exec-goedkeuringen en toolblootstelling via open kanalen).
+### Wat de audit controleert (op hoofdlijnen)
 
-OpenClaw is zowel een product als een experiment: je verbindt frontier-modelgedrag met echte messaging-oppervlakken en echte tools. **Er bestaat geen "perfect beveiligde" setup.** Het doel is bewust om te gaan met:
+- **Inkomende toegang** - DM-/groepsbeleid, toelatingslijsten: kunnen vreemden de bot activeren?
+- **Impactbereik van tools** - verhoogde tools + open ruimtes: kan promptinjectie leiden tot shell-, bestands- of netwerkacties?
+- **Afwijkingen in het exec-bestandssysteem** - tools die het bestandssysteem wijzigen worden geweigerd, terwijl `exec`/`process` zonder sandboxbeperkingen beschikbaar blijven.
+- **Afwijkingen in exec-goedkeuringen** - `security="full"`, `autoAllowSkills`, toelatingslijsten voor interpreters zonder `strictInlineEval`. Alleen `security="full"` is een algemene waarschuwing over de beveiligingshouding, geen bewijs van een bug - dit is de gekozen standaard voor vertrouwde persoonlijke-assistentconfiguraties; verscherp deze alleen wanneer je dreigingsmodel beveiligingsrails voor goedkeuringen of toelatingslijsten vereist.
+- **Netwerkblootstelling** - Gateway-binding/-authenticatie, Tailscale Serve/Funnel, zwakke/korte authenticatietokens.
+- **Blootstelling van browserbesturing** - externe Nodes, relaypoorten, externe CDP-eindpunten.
+- **Hygiëne van lokale schijf** - machtigingen, symbolische koppelingen, configuratie-includes, paden naar gesynchroniseerde mappen.
+- **Plugins** - laden zonder expliciete toelatingslijst.
+- **Beleidsafwijkingen** - Docker-instellingen voor de sandbox zijn geconfigureerd, maar de sandboxmodus staat uit; `gateway.nodes.denyCommands`-vermeldingen die effectief lijken, maar alleen exact overeenkomen met opdracht-ID's (bijvoorbeeld `system.run`) en niet met shelltekst in de payload; gevaarlijke `gateway.nodes.allowCommands`-vermeldingen; globale `tools.profile="minimal"` die per agent wordt overschreven; tools van Plugins die bereikbaar zijn onder een ruimhartig beleid.
+- **Afwijkingen in runtimeverwachtingen** - aannemen dat impliciete exec nog steeds `sandbox` betekent terwijl `tools.exec.host` nu standaard `auto` gebruikt, of `tools.exec.host="sandbox"` instellen terwijl de sandboxmodus uitstaat.
+- **Modelhygiëne** - waarschuwt voor verouderde geconfigureerde modellen (lichte waarschuwing, geen harde blokkering).
 
-- wie met je bot kan praten
-- waar de bot mag handelen
-- wat de bot mag aanraken
+Elke bevinding heeft een gestructureerde `checkId` (bijvoorbeeld `gateway.bind_no_auth`, `tools.exec.security_full_configured`). Voorvoegsels: `fs.*` (machtigingen), `gateway.*` (binding/authenticatie/Tailscale/Control UI/vertrouwde proxy), `hooks.*`/`browser.*`/`sandbox.*`/`tools.exec.*` (versterking per oppervlak), `plugins.*`/`skills.*` (toeleveringsketen), `security.exposure.*` (toegangsbeleid x impactbereik van tools). Volledige catalogus met ernst en ondersteuning voor automatisch herstel: [Controles van de beveiligingsaudit](/nl/gateway/security/audit-checks). Zie ook [Formele verificatie](/nl/security/formal-verification).
 
-Begin met de kleinste toegang die nog werkt, en verruim die daarna naarmate je meer vertrouwen krijgt.
+### Prioriteitsvolgorde bij het beoordelen van bevindingen
 
-### Dependency lock voor gepubliceerde pakketten
+1. Alles wat 'open' is + tools ingeschakeld: vergrendel eerst DM's/groepen (koppeling/toelatingslijsten) en verscherp daarna het toolbeleid/de sandboxing.
+2. Openbare netwerkblootstelling (LAN-binding, Funnel, ontbrekende authenticatie): los dit onmiddellijk op.
+3. Externe blootstelling van browserbesturing: behandel dit als operatortoegang (alleen tailnet, koppel Nodes bewust, geen openbare blootstelling).
+4. Machtigingen: status/configuratie/aanmeldgegevens/authenticatie mogen niet leesbaar zijn voor de groep of iedereen.
+5. Plugins: laad alleen wat je expliciet vertrouwt.
+6. Modelkeuze: geef voor elke bot met tools de voorkeur aan moderne modellen die beter bestand zijn tegen kwaadaardige instructies.
 
-OpenClaw-broncheckouts gebruiken `pnpm-lock.yaml`. Het gepubliceerde `openclaw` npm-
-pakket en npm-Plugin-pakketten die eigendom zijn van OpenClaw bevatten `npm-shrinkwrap.json`,
-npm's publiceerbare dependency lockfile, zodat pakketinstallaties de beoordeelde
-transitieve dependency-grafiek uit de release gebruiken in plaats van tijdens installatie een nieuwe grafiek
-op te lossen.
-
-Shrinkwrap is een grens voor supply-chain-hardening en release-reproduceerbaarheid,
-geen sandbox. Zie [npm shrinkwrap](/nl/gateway/security/shrinkwrap) voor het model in gewone taal, maintainercommando's en
-pakketinspectiecontroles.
-
-### Implementatie en hostvertrouwen
-
-OpenClaw gaat ervan uit dat de host- en configuratiegrens vertrouwd zijn:
-
-- Als iemand Gateway-hoststate/config (`~/.openclaw`, inclusief `openclaw.json`) kan wijzigen, behandel diegene dan als een vertrouwde operator.
-- Eén Gateway draaien voor meerdere wederzijds niet-vertrouwde/kwaadwillende operators is **geen aanbevolen setup**.
-- Voor teams met gemengd vertrouwen: splits vertrouwensgrenzen met aparte Gateways (of minimaal aparte OS-gebruikers/hosts).
-- Aanbevolen standaard: één gebruiker per machine/host (of VPS), één Gateway voor die gebruiker, en één of meer agents in die Gateway.
-- Binnen één Gateway-instantie is geauthenticeerde operatortoegang een vertrouwde control-plane-rol, geen tenantrol per gebruiker.
-- Sessie-identifiers (`sessionKey`, sessie-ID's, labels) zijn routeringsselectoren, geen autorisatietokens.
-- Als meerdere mensen één agent met tools kunnen berichten, kan ieder van hen dezelfde machtigingenset sturen. Sessie-/geheugenisolatie per gebruiker helpt privacy, maar verandert een gedeelde agent niet in hostautorisatie per gebruiker.
-
-### Veilige bestandsbewerkingen
-
-OpenClaw gebruikt `@openclaw/fs-safe` voor root-gebonden bestandstoegang, atomische writes, archiefextractie, tijdelijke werkruimtes en helpers voor geheime bestanden. OpenClaw zet fs-safe's optionele POSIX Python-helper standaard **uit**; stel `OPENCLAW_FS_SAFE_PYTHON_MODE=auto` of `require` alleen in wanneer je de extra fd-relatieve mutatiehardening wilt en een Python-runtime kunt ondersteunen.
-
-Details: [Veilige bestandsbewerkingen](/nl/gateway/security/secure-file-operations).
-
-### Gedeelde Slack-werkruimte: echt risico
-
-Als "iedereen in Slack de bot kan berichten", is het kernrisico gedelegeerde toolbevoegdheid:
-
-- elke toegestane afzender kan toolcalls (`exec`, browser, netwerk-/bestandstools) binnen het beleid van de agent uitlokken;
-- prompt-/contentinjectie van één afzender kan acties veroorzaken die gedeelde state, apparaten of outputs beïnvloeden;
-- als één gedeelde agent gevoelige referenties/bestanden heeft, kan elke toegestane afzender mogelijk exfiltratie via toolgebruik sturen.
-
-Gebruik aparte agents/Gateways met minimale tools voor teamworkflows; houd agents met persoonlijke data privé.
-
-### Door het bedrijf gedeelde agent: acceptabel patroon
-
-Dit is acceptabel wanneer iedereen die die agent gebruikt binnen dezelfde vertrouwensgrens valt (bijvoorbeeld één bedrijfsteam) en de agent strikt zakelijk is afgebakend.
-
-- draai hem op een dedicated machine/VM/container;
-- gebruik een dedicated OS-gebruiker + dedicated browser/profiel/accounts voor die runtime;
-- meld die runtime niet aan bij persoonlijke Apple-/Google-accounts of persoonlijke wachtwoordmanager-/browserprofielen.
-
-Als je persoonlijke en bedrijfsidentiteiten op dezelfde runtime mengt, laat je de scheiding instorten en vergroot je het risico op blootstelling van persoonlijke data.
-
-## Vertrouwensconcept voor Gateway en node
-
-Behandel Gateway en node als één operatorvertrouwensdomein, met verschillende rollen:
-
-- **Gateway** is het control plane en beleidsoppervlak (`gateway.auth`, toolbeleid, routering).
-- **Node** is het externe uitvoeringsoppervlak dat aan die Gateway is gekoppeld (commando's, apparaatacties, hostlokale capabilities).
-- Een caller die bij de Gateway is geauthenticeerd, wordt vertrouwd binnen Gateway-scope. Na pairing zijn node-acties vertrouwde operatoracties op die node.
-- Operatorscopeniveaus en controles tijdens goedkeuring worden samengevat in
-  [Operatorscopes](/nl/gateway/operator-scopes).
-- Directe local loopback-backendclients die zijn geauthenticeerd met het gedeelde Gateway-
-  token/wachtwoord kunnen interne control-plane-RPC's uitvoeren zonder een gebruikers-
-  apparaatidentiteit te presenteren. Dit is geen bypass voor externe of browserpairing: netwerk-
-  clients, node-clients, device-token-clients en expliciete apparaatidentiteiten
-  blijven door pairing- en scope-upgradehandhaving gaan.
-- `sessionKey` is routerings-/contextselectie, geen auth per gebruiker.
-- Exec-goedkeuringen (allowlist + vragen) zijn guardrails voor operatorintentie, geen vijandige multi-tenant-isolatie.
-- De productstandaard van OpenClaw voor vertrouwde single-operator-setups is dat hostexec op `gateway`/`node` is toegestaan zonder goedkeuringsprompts (`security="full"`, `ask="off"` tenzij je dit aanscherpt). Die standaard is bewuste UX, op zichzelf geen kwetsbaarheid.
-- Exec-goedkeuringen binden exacte requestcontext en best-effort directe lokale bestandsoperanden; ze modelleren niet semantisch elk runtime-/interpreterloaderpad. Gebruik sandboxing en hostisolatie voor sterke grenzen.
-
-Als je isolatie voor vijandige gebruikers nodig hebt, splits vertrouwensgrenzen per OS-gebruiker/host en draai aparte Gateways.
-
-## Vertrouwensgrenzenmatrix
-
-Gebruik dit als snel model bij risicotriage:
-
-| Grens of controle                                         | Wat het betekent                                  | Veelvoorkomende misvatting                                                     |
-| --------------------------------------------------------- | ------------------------------------------------- | ------------------------------------------------------------------------------ |
-| `gateway.auth` (token/password/trusted-proxy/device auth) | Authenticeert callers bij Gateway-API's           | "Heeft per-message signatures op elk frame nodig om veilig te zijn"            |
-| `sessionKey`                                              | Routeringssleutel voor context-/sessieselectie    | "Session key is een gebruikersauthgrens"                                       |
-| Prompt-/contentguardrails                                 | Verminderen risico op modelmisbruik               | "Promptinjectie alleen bewijst auth-bypass"                                    |
-| `canvas.eval` / browser evaluate                          | Bewuste operatorcapability wanneer ingeschakeld   | "Elke JS eval-primitive is automatisch een kwetsbaarheid in dit vertrouwensmodel" |
-| Lokale TUI `!`-shell                                      | Expliciet door operator getriggerde lokale uitvoering | "Lokale shellgemaksopdracht is externe injectie"                            |
-| Node-pairing en node-commando's                           | Externe uitvoering op operatorniveau op gekoppelde apparaten | "Externe apparaatbesturing moet standaard als niet-vertrouwde gebruikerstoegang worden behandeld" |
-| `gateway.nodes.pairing.autoApproveCidrs`                  | Opt-in enrollmentbeleid voor nodes op vertrouwde netwerken | "Een standaard uitgeschakelde allowlist is een automatische pairingkwetsbaarheid" |
-
-## Geen kwetsbaarheden volgens ontwerp
-
-<Accordion title="Veelvoorkomende bevindingen die buiten scope vallen">
-
-Deze patronen worden vaak gemeld en worden meestal zonder actie gesloten, tenzij
-een echte grensbypass wordt aangetoond:
-
-- Ketens met alleen promptinjectie zonder beleids-, auth- of sandboxbypass.
-- Claims die uitgaan van vijandige multi-tenant-werking op één gedeelde host of
-  config.
-- Claims die normale operatortoegang via read-paden (bijvoorbeeld
-  `sessions.list` / `sessions.preview` / `chat.history`) als IDOR classificeren in een
-  gedeelde-Gateway-setup.
-- Bevindingen voor localhost-only implementaties (bijvoorbeeld HSTS op een Gateway die alleen via loopback bereikbaar is).
-- Bevindingen over Discord inbound Webhook-signatures voor inbound paden die niet
-  in deze repo bestaan.
-- Rapporten die node-pairingmetadata behandelen als een verborgen tweede goedkeuringslaag per commando
-  voor `system.run`, terwijl de echte uitvoeringsgrens nog steeds
-  het globale node-commandobeleid van de Gateway plus de eigen exec-
-  goedkeuringen van de node is.
-- Rapporten die geconfigureerde `gateway.nodes.pairing.autoApproveCidrs` op zichzelf
-  als een kwetsbaarheid behandelen. Deze instelling is standaard uitgeschakeld, vereist
-  expliciete CIDR/IP-items, geldt alleen voor eerste `role: node`-pairing met
-  geen gevraagde scopes, en keurt operator/browser/Control UI,
-  WebChat, rolupgrades, scope-upgrades, metadatawijzigingen, public-key-wijzigingen,
-  of loopback trusted-proxy-headerpaden op dezelfde host niet automatisch goed, tenzij loopback trusted-proxy auth expliciet was ingeschakeld.
-- Bevindingen over "ontbrekende autorisatie per gebruiker" die `sessionKey` als een
-  auth-token behandelen.
-
-</Accordion>
-
-## Versterkte basislijn in 60 seconden
-
-Gebruik eerst deze basislijn, en schakel daarna selectief tools opnieuw in per vertrouwde agent:
+## Versterkte basisconfiguratie in 60 seconden
 
 ```json5
 {
@@ -208,327 +100,210 @@ Gebruik eerst deze basislijn, en schakel daarna selectief tools opnieuw in per v
 }
 ```
 
-Dit houdt de Gateway alleen lokaal, isoleert DM's en schakelt control-plane-/runtimetools standaard uit.
+Houdt de Gateway uitsluitend lokaal, isoleert DM's en schakelt control-plane- en runtimetools standaard uit. Schakel vanaf daar selectief tools opnieuw in per vertrouwde agent.
 
-## Snelle regel voor gedeelde inbox
+Ingebouwde basisconfiguratie voor agentbeurten die door chats worden aangestuurd: afzenders die niet de eigenaar zijn, kunnen de tools `cron` of `gateway` niet gebruiken, ongeacht de configuratie.
 
-Als meer dan één persoon je bot kan DM'en:
+## Matrix van vertrouwensgrenzen
 
-- Stel `session.dmScope: "per-channel-peer"` in (of `"per-account-channel-peer"` voor kanalen met meerdere accounts).
-- Houd `dmPolicy: "pairing"` of strikte toelatingslijsten aan.
-- Combineer gedeelde DM's nooit met brede tooltoegang.
-- Dit versterkt coöperatieve/gedeelde inboxen, maar is niet ontworpen als isolatie tegen vijandige medehuurders wanneer gebruikers schrijf toegang tot host/configuratie delen.
+Snel model voor het beoordelen van risicomeldingen:
 
-## Model voor contextzichtbaarheid
+| Grens of beveiligingsmaatregel                            | Wat dit betekent                                   | Veelvoorkomende misvatting                                                    |
+| --------------------------------------------------------- | -------------------------------------------------- | ----------------------------------------------------------------------------- |
+| `gateway.auth` (token/wachtwoord/vertrouwde proxy/apparaatauthenticatie) | Authenticeert aanroepers van Gateway-API's         | 'Voor beveiliging zijn handtekeningen per bericht op elk frame vereist'      |
+| `sessionKey`                                              | Routeringssleutel voor context-/sessieselectie     | 'De sessiesleutel is een authenticatiegrens voor gebruikers'                  |
+| Beveiligingsrails voor prompts/inhoud                     | Verminderen het risico op misbruik van het model   | 'Alleen promptinjectie bewijst al omzeiling van authenticatie'                |
+| `canvas.eval` / evaluatie in de browser                   | Bewuste operatorbevoegdheid wanneer ingeschakeld   | 'Elk primitief voor JS-evaluatie is automatisch een kwetsbaarheid in dit vertrouwensmodel' |
+| Lokale TUI `!`-shell                                      | Expliciet door de operator gestarte lokale uitvoering | 'Een gemaksopdracht voor een lokale shell is externe injectie'             |
+| Node-koppeling en Node-opdrachten                          | Externe uitvoering op gekoppelde apparaten op operatorniveau | 'Besturing van externe apparaten moet standaard als toegang door niet-vertrouwde gebruikers worden behandeld' |
+| `gateway.nodes.pairing.autoApproveCidrs`                  | Optioneel inschrijvingsbeleid voor Nodes op een vertrouwd netwerk | 'Een standaard uitgeschakelde toelatingslijst is automatisch een kwetsbaarheid in de koppeling' |
+| `gateway.nodes.pairing.sshVerify`                         | Met sleutels geverifieerde inschrijving van Nodes via operator-SSH | 'Standaard ingeschakelde automatische goedkeuring is automatisch een kwetsbaarheid in de koppeling' |
 
-OpenClaw scheidt twee concepten:
+## Volgens het ontwerp geen kwetsbaarheden
 
-- **Triggerautorisatie**: wie de agent mag triggeren (`dmPolicy`, `groupPolicy`, toelatingslijsten, mention-gates).
-- **Contextzichtbaarheid**: welke aanvullende context in de modelinvoer wordt geïnjecteerd (antwoordtekst, geciteerde tekst, threadgeschiedenis, doorgestuurde metadata).
+<Accordion title="Veelvoorkomende bevindingen gesloten zonder actie">
 
-Toelatingslijsten beperken triggers en commandoautorisatie. De instelling `contextVisibility` bepaalt hoe aanvullende context (geciteerde antwoorden, thread-roots, opgehaalde geschiedenis) wordt gefilterd:
+- Ketens die uitsluitend op promptinjectie berusten, zonder omzeiling van beleid, authenticatie of sandbox.
+- Claims die uitgaan van vijandige multitenancy op één gedeelde host of configuratie.
+- Normale operatortoegang tot leespaden (bijvoorbeeld `sessions.list` / `sessions.preview` / `chat.history`) die in een gedeelde-Gateway-configuratie als IDOR wordt geclassificeerd.
+- Bevindingen voor implementaties die uitsluitend via localhost bereikbaar zijn (bijvoorbeeld ontbrekende HSTS op een Gateway die alleen aan loopback is gekoppeld).
+- Bevindingen over handtekeningen van inkomende Discord-webhooks voor inkomende paden die niet in deze repository bestaan.
+- Metadata voor Node-koppeling die wordt beschouwd als een verborgen tweede goedkeuringslaag per opdracht voor `system.run`; de werkelijke uitvoeringsgrens is het globale beleid voor Node-opdrachten van de Gateway plus de eigen exec-goedkeuringen van de Node.
+- `gateway.nodes.pairing.sshVerify` die als kwetsbaarheid wordt beschouwd omdat deze standaard is ingeschakeld. Deze keurt nooit uitsluitend op basis van netwerklocatie of SSH-bereikbaarheid goed: de Gateway leest de apparaatidentiteit via SSH terug (BatchMode, strikte hostsleutels) en keurt alleen goed bij een exacte overeenkomst tussen de apparaatsleutel en de openstaande aanvraag, waarvoor het verbindende sleutelpaar al onder het account van de operator moet bestaan op een host die de operator beheert. Probes zijn beperkt tot privé-/CGNAT-bronadressen, hanteren dezelfde geschiktheidsdrempel voor vertrouwde CIDR's (alleen recente `role: node` zonder scopes) en `sshVerify: false` schakelt de functie uit.
+- `gateway.nodes.pairing.autoApproveCidrs` die op zichzelf als kwetsbaarheid wordt beschouwd. Deze is standaard uitgeschakeld, vereist expliciete CIDR-/IP-vermeldingen, geldt alleen voor de eerste `role: node`-koppeling zonder aangevraagde scopes en keurt nooit automatisch operator/browser/Control UI, WebChat, rol-/scope-upgrades, metadata- of openbare-sleutelwijzigingen of loopbackpaden op dezelfde host met vertrouwde-proxyheaders goed (zelfs wanneer authenticatie via een vertrouwde loopbackproxy is ingeschakeld).
+- Bevindingen over 'ontbrekende autorisatie per gebruiker' die `sessionKey` als authenticatietoken beschouwen.
 
-- `contextVisibility: "all"` (standaard) behoudt aanvullende context zoals ontvangen.
-- `contextVisibility: "allowlist"` filtert aanvullende context tot afzenders die door de actieve toelatingslijstcontroles zijn toegestaan.
-- `contextVisibility: "allowlist_quote"` gedraagt zich als `allowlist`, maar behoudt nog steeds één expliciet geciteerd antwoord.
+</Accordion>
 
-Stel `contextVisibility` per kanaal of per ruimte/gesprek in. Zie [Groepschats](/nl/channels/groups#context-visibility-and-allowlists) voor instellingsdetails.
+## Vertrouwen tussen Gateway en Node
 
-Advies voor triage van meldingen:
+Beschouw Gateway en Node als één vertrouwensdomein van de operator met verschillende rollen:
 
-- Claims die alleen aantonen dat "het model geciteerde of historische tekst van afzenders buiten de toelatingslijst kan zien" zijn hardeningsbevindingen die met `contextVisibility` kunnen worden aangepakt, geen opzichzelfstaande omzeilingen van autorisatie- of sandboxgrenzen.
-- Om beveiligingsimpact te hebben, moeten rapporten nog steeds een aangetoonde omzeiling van een vertrouwensgrens bevatten (auth, beleid, sandbox, goedkeuring of een andere gedocumenteerde grens).
+- **Gateway**: control-plane- en beleidsoppervlak (`gateway.auth`, toolbeleid, routering).
+- **Node**: extern uitvoeringsoppervlak dat aan die Gateway is gekoppeld (opdrachten, apparaatacties, hostlokale mogelijkheden).
+- Een aanroeper die bij de Gateway is geauthenticeerd, wordt binnen de reikwijdte van de Gateway vertrouwd; na koppeling zijn Node-acties vertrouwde operatoracties op die Node. Zie [Operatorscopes](/nl/gateway/operator-scopes).
+- Directe loopback-backendclients die met het gedeelde Gateway-token/-wachtwoord zijn geauthenticeerd, kunnen interne control-plane-RPC's uitvoeren zonder een gebruikersapparaatidentiteit te verstrekken. Dit is geen omzeiling van externe of browserkoppeling - netwerkclients, Node-clients, clients met apparaattokens en expliciete apparaatidentiteiten blijven onderworpen aan de handhaving van koppeling en scope-upgrades.
+- Exec-goedkeuringen (toelatingslijst + vragen) zijn beveiligingsrails voor de intentie van de operator, geen vijandige multitenantisolatie. Ze binden de exacte aanvraagcontext en, voor zover mogelijk, directe lokale bestandsoperanden; ze modelleren niet semantisch elk laadpad van runtimes/interpreters. Gebruik sandboxing en hostisolatie voor sterke grenzen.
+- Vertrouwde standaard met één operator: host-exec op `gateway`/`node` is toegestaan zonder goedkeuringsvragen (`security="full"`, `ask="off"`). Dat is bewuste UX, op zichzelf geen kwetsbaarheid.
 
-## Wat de audit controleert (hoog niveau)
+Splits voor isolatie van vijandige gebruikers de vertrouwensgrenzen per OS-gebruiker/host en voer afzonderlijke Gateways uit.
 
-- **Inkomende toegang** (DM-beleid, groepsbeleid, toelatingslijsten): kunnen onbekenden de bot triggeren?
-- **Tool-blastradius** (verhoogde tools + open ruimtes): kan promptinjectie leiden tot shell-/bestands-/netwerkacties?
-- **Exec-bestandssysteemdrift**: worden muterende bestandssysteemtools geweigerd terwijl `exec`/`process` beschikbaar blijven zonder sandboxbeperkingen voor het bestandssysteem?
-- **Exec-goedkeuringsdrift** (`security=full`, `autoAllowSkills`, interpreter-toelatingslijsten zonder `strictInlineEval`): doen host-exec-guardrails nog steeds wat je denkt dat ze doen?
-  - `security="full"` is een brede waarschuwing over de houding, geen bewijs van een bug. Het is de gekozen standaard voor vertrouwde personal-assistant-installaties; verscherp dit alleen wanneer je dreigingsmodel goedkeurings- of toelatingslijstguardrails vereist.
-- **Netwerkblootstelling** (Gateway-bind/auth, Tailscale Serve/Funnel, zwakke/korte auth-tokens).
-- **Blootstelling van browserbesturing** (externe nodes, relaypoorten, externe CDP-eindpunten).
-- **Lokale schijfhygiëne** (machtigingen, symlinks, config-includes, paden naar "gesynchroniseerde mappen").
-- **Plugins** (plugins laden zonder expliciete toelatingslijst).
-- **Beleidsdrift/misconfiguratie** (sandbox-dockerinstellingen geconfigureerd maar sandboxmodus uit; ineffectieve `gateway.nodes.denyCommands`-patronen omdat matching alleen op exacte commandonaam gebeurt (bijvoorbeeld `system.run`) en shelltekst niet wordt geïnspecteerd; gevaarlijke `gateway.nodes.allowCommands`-items; globale `tools.profile="minimal"` overschreven door per-agent-profielen; plugin-eigen tools bereikbaar onder permissief toolbeleid).
-- **Runtimeverwachtingsdrift** (bijvoorbeeld aannemen dat impliciete exec nog steeds `sandbox` betekent wanneer `tools.exec.host` nu standaard `auto` is, of expliciet `tools.exec.host="sandbox"` instellen terwijl sandboxmodus uit staat).
-- **Modelhygiëne** (waarschuw wanneer geconfigureerde modellen verouderd lijken; geen harde blokkade).
+## Dreigingsmodel
 
-Als je `--deep` uitvoert, probeert OpenClaw ook een best-effort live Gateway-probe.
+Je AI-assistent kan willekeurige shell-opdrachten uitvoeren, bestanden lezen/schrijven, toegang krijgen tot netwerkservices en berichten naar iedereen sturen (als toegang tot het kanaal is verleend). Mensen die de assistent berichten sturen, kunnen proberen deze te misleiden om schadelijke dingen te doen, via social engineering toegang tot je gegevens te krijgen of details over de infrastructuur te achterhalen.
 
-## Overzicht van opslag van referenties
+De meeste fouten hier zijn geen exotische exploits, maar gevallen waarin "iemand de bot een bericht stuurde en de bot deed wat er werd gevraagd." OpenClaw hanteert, in deze volgorde, de volgende aanpak:
 
-Gebruik dit bij het auditen van toegang of het bepalen waarvan je een back-up moet maken:
+1. **Eerst identiteit** - bepaal wie met de bot mag praten (DM-koppeling / toelatingslijsten / expliciet "open").
+2. **Daarna bereik** - bepaal waar de bot mag handelen (toelatingslijsten voor groepen + activatie door vermeldingen, tools, sandboxing, apparaatmachtigingen).
+3. **Als laatste het model** - ga ervan uit dat het model kan worden gemanipuleerd; ontwerp het systeem zo dat manipulatie een beperkte impact heeft.
 
-- **WhatsApp**: `~/.openclaw/credentials/whatsapp/<accountId>/creds.json`
-- **Telegram-bottoken**: config/env of `channels.telegram.tokenFile` (alleen regulier bestand; symlinks geweigerd)
-- **Discord-bottoken**: config/env of SecretRef (env-/file-/exec-providers)
-- **Slack-tokens**: config/env (`channels.slack.*`)
-- **Pairing-toelatingslijsten**:
-  - `~/.openclaw/credentials/<channel>-allowFrom.json` (standaardaccount)
-  - `~/.openclaw/credentials/<channel>-<accountId>-allowFrom.json` (niet-standaardaccounts)
-- **Model-auth-profielen**: `~/.openclaw/agents/<agentId>/agent/auth-profiles.json`
-- **Codex-runtimestatus (standaard)**: `~/.openclaw/agents/<agentId>/agent/codex-home/`
-- **Gedeelde Codex-runtimestatus (opt-in)**: `$CODEX_HOME` of `~/.codex` wanneer
-  `plugins.entries.codex.config.appServer.homeScope` `"user"` is. Deze modus gebruikt
-  het native Codex-account, de config, plugins en threadopslag; schakel dit alleen in voor
-  een door de eigenaar beheerde lokale Gateway. Zie [Codex-harnas](/nl/plugins/codex-harness#share-threads-with-codex-desktop-and-cli).
-- **Bestandsgedragen secrets-payload (optioneel)**: `~/.openclaw/secrets.json`
-- **Legacy OAuth-import**: `~/.openclaw/credentials/oauth.json`
+## DM-toegang: koppeling, toelatingslijst, open, uitgeschakeld
 
-## Checklist voor beveiligingsaudit
+Elk kanaal dat DM's ondersteunt, ondersteunt `dmPolicy` (of `*.dm.policy`), waarmee inkomende DM's worden tegengehouden voordat het bericht wordt verwerkt:
 
-Wanneer de audit bevindingen afdrukt, behandel dit als prioriteitsvolgorde:
+| Beleid      | Gedrag                                                                                                                                                                                                             |
+| ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `pairing`   | Standaard. Onbekende afzenders krijgen een koppelingscode; de bot negeert hen totdat ze zijn goedgekeurd. Codes verlopen na 1 uur; bij herhaalde DM's wordt geen nieuwe code verstuurd totdat een nieuw verzoek is aangemaakt. Maximaal 3 openstaande verzoeken per kanaal. |
+| `allowlist` | Onbekende afzenders worden geblokkeerd, zonder koppelingsprocedure.                                                                                                                                                                       |
+| `open`      | Iedereen kan een DM sturen (openbaar). Hiervoor moet de toelatingslijst van het kanaal `"*"` bevatten (expliciete toestemming).                                                                                                                           |
+| `disabled`  | Inkomende DM's worden volledig genegeerd.                                                                                                                                                                                        |
 
-1. **Alles wat "open" is + tools ingeschakeld**: vergrendel eerst DM's/groepen (pairing/toelatingslijsten), verscherp daarna toolbeleid/sandboxing.
-2. **Publieke netwerkblootstelling** (LAN-bind, Funnel, ontbrekende auth): direct oplossen.
-3. **Externe blootstelling van browserbesturing**: behandel dit als operatortoegang (alleen tailnet, pair nodes bewust, vermijd publieke blootstelling).
-4. **Machtigingen**: zorg dat status/config/referenties/auth niet leesbaar zijn voor groep/wereld.
-5. **Plugins**: laad alleen wat je expliciet vertrouwt.
-6. **Modelkeuze**: geef de voorkeur aan moderne, instructiegeharde modellen voor elke bot met tools.
-
-## Begrippenlijst voor beveiligingsaudit
-
-Elke auditbevinding wordt geïdentificeerd met een gestructureerde `checkId` (bijvoorbeeld
-`gateway.bind_no_auth` of `tools.exec.security_full_configured`). Veelvoorkomende
-kritieke ernstklassen:
-
-- `fs.*` - bestandssysteemmachtigingen voor status, config, referenties, auth-profielen.
-- `gateway.*` - bindmodus, auth, Tailscale, Control UI, trusted-proxy-instelling.
-- `hooks.*`, `browser.*`, `sandbox.*`, `tools.exec.*` - hardening per oppervlak.
-- `plugins.*`, `skills.*` - bevindingen rond plugin-/skill-supplychain en scans.
-- `security.exposure.*` - doorsnijdende controles waar toegangsbeleid en tool-blastradius samenkomen.
-
-Zie de volledige catalogus met ernstniveaus, fix-sleutels en auto-fix-ondersteuning op
-[Beveiligingsauditcontroles](/nl/gateway/security/audit-checks).
-
-## Control UI via HTTP
-
-De Control UI heeft een **beveiligde context** (HTTPS of localhost) nodig om apparaatidentiteit
-te genereren. `gateway.controlUi.allowInsecureAuth` is een lokale compatibiliteitsschakelaar:
-
-- Op localhost staat dit Control UI-auth toe zonder apparaatidentiteit wanneer de pagina
-  via onbeveiligde HTTP wordt geladen.
-- Het omzeilt geen pairingcontroles.
-- Het versoepelt geen vereisten voor apparaatidentiteit op afstand (niet-localhost).
-
-Geef de voorkeur aan HTTPS (Tailscale Serve) of open de UI op `127.0.0.1`.
-
-Alleen voor break-glass-scenario's schakelt `gateway.controlUi.dangerouslyDisableDeviceAuth`
-apparaatidentiteitscontroles volledig uit. Dit is een ernstige beveiligingsverlaging;
-laat dit uit tenzij je actief debugt en snel kunt terugdraaien.
-
-Los van die gevaarlijke flags kunnen succesvolle `gateway.auth.mode: "trusted-proxy"`-
-sessies **operator**-Control UI-sessies toelaten zonder apparaatidentiteit. Dat is
-bedoeld gedrag van de auth-modus, geen `allowInsecureAuth`-shortcut, en het geldt nog steeds
-niet voor Control UI-sessies met node-rol.
-
-`openclaw security audit` waarschuwt wanneer deze instelling is ingeschakeld.
-
-## Samenvatting van onveilige of gevaarlijke flags
-
-`openclaw security audit` geeft `config.insecure_or_dangerous_flags` wanneer
-bekende onveilige/gevaarlijke debugschakelaars zijn ingeschakeld. Laat deze uitgeschakeld in
-productie. Elke ingeschakelde flag wordt als eigen bevinding gerapporteerd. Als audit-
-onderdrukkingen zijn geconfigureerd, blijft `security.audit.suppressions.active` in de
-actieve audituitvoer staan, zelfs wanneer overeenkomende bevindingen naar `suppressedFindings` gaan.
-
-<AccordionGroup>
-  <Accordion title="Flags die vandaag door de audit worden gevolgd">
-    - `gateway.controlUi.allowInsecureAuth=true`
-    - `gateway.controlUi.dangerouslyAllowHostHeaderOriginFallback=true`
-    - `gateway.controlUi.dangerouslyDisableDeviceAuth=true`
-    - `security.audit.suppressions configured (<count>)`
-    - `hooks.gmail.allowUnsafeExternalContent=true`
-    - `hooks.mappings[<index>].allowUnsafeExternalContent=true`
-    - `tools.exec.applyPatch.workspaceOnly=false`
-    - `plugins.entries.acpx.config.permissionMode=approve-all`
-
-  </Accordion>
-
-  <Accordion title="Alle `dangerous*` / `dangerously*`-sleutels in het configschema">
-    Control UI en browser:
-
-    - `gateway.controlUi.dangerouslyAllowHostHeaderOriginFallback`
-    - `gateway.controlUi.dangerouslyDisableDeviceAuth`
-    - `browser.ssrfPolicy.dangerouslyAllowPrivateNetwork`
-
-    Kanaalnaammatching (gebundelde en plugin-kanalen; ook beschikbaar per
-    `accounts.<accountId>` waar van toepassing):
-
-    - `channels.discord.dangerouslyAllowNameMatching`
-    - `channels.slack.dangerouslyAllowNameMatching`
-    - `channels.googlechat.dangerouslyAllowNameMatching`
-    - `channels.msteams.dangerouslyAllowNameMatching`
-    - `channels.synology-chat.dangerouslyAllowNameMatching` (plugin-kanaal)
-    - `channels.synology-chat.dangerouslyAllowInheritedWebhookPath` (plugin-kanaal)
-    - `channels.zalouser.dangerouslyAllowNameMatching` (plugin-kanaal)
-    - `channels.irc.dangerouslyAllowNameMatching` (plugin-kanaal)
-    - `channels.mattermost.dangerouslyAllowNameMatching` (plugin-kanaal)
-
-    Netwerkblootstelling:
-
-    - `channels.telegram.network.dangerouslyAllowPrivateNetwork` (ook per account)
-
-    Sandbox Docker (standaarden + per agent):
-
-    - `agents.defaults.sandbox.docker.dangerouslyAllowReservedContainerTargets`
-    - `agents.defaults.sandbox.docker.dangerouslyAllowExternalBindSources`
-    - `agents.defaults.sandbox.docker.dangerouslyAllowContainerNamespaceJoin`
-
-  </Accordion>
-</AccordionGroup>
-
-## Reverse-proxyconfiguratie
-
-Als je de Gateway achter een reverse proxy draait (nginx, Caddy, Traefik, enz.), configureer
-`gateway.trustedProxies` voor correcte verwerking van forwarded-client-IP's.
-
-Wanneer de Gateway proxyheaders detecteert vanaf een adres dat **niet** in `trustedProxies` staat, behandelt hij verbindingen **niet** als lokale clients. Als gateway-auth is uitgeschakeld, worden die verbindingen geweigerd. Dit voorkomt authenticatieomzeiling waarbij geproxiede verbindingen anders van localhost lijken te komen en automatisch vertrouwen krijgen.
-
-`gateway.trustedProxies` voedt ook `gateway.auth.mode: "trusted-proxy"`, maar die auth-modus is strenger:
-
-- trusted-proxy-auth **faalt standaard gesloten bij proxies met loopback-bron**
-- same-host loopback reverse proxies kunnen `gateway.trustedProxies` gebruiken voor lokale-clientdetectie en forwarded-IP-verwerking
-- same-host loopback reverse proxies kunnen alleen aan `gateway.auth.mode: "trusted-proxy"` voldoen wanneer `gateway.auth.trustedProxy.allowLoopback = true`; gebruik anders token-/wachtwoordauth
-
-```yaml
-gateway:
-  trustedProxies:
-    - "10.0.0.1" # reverse proxy IP
-  # Optioneel. Standaard false.
-  # Alleen inschakelen als je proxy geen X-Forwarded-For kan leveren.
-  allowRealIpFallback: false
-  auth:
-    mode: password
-    password: ${OPENCLAW_GATEWAY_PASSWORD}
+```bash
+openclaw pairing list <channel>
+openclaw pairing approve <channel> <code>
 ```
 
-Wanneer `trustedProxies` is geconfigureerd, gebruikt de Gateway `X-Forwarded-For` om het client-IP te bepalen. `X-Real-IP` wordt standaard genegeerd tenzij `gateway.allowRealIpFallback: true` expliciet is ingesteld.
+Details en bestanden op schijf: [Koppeling](/nl/channels/pairing)
 
-Trusted-proxyheaders maken node-device-pairing niet automatisch vertrouwd.
-`gateway.nodes.pairing.autoApproveCidrs` is een afzonderlijk, standaard uitgeschakeld
-operatorbeleid. Zelfs wanneer ingeschakeld, worden headerpaden van trusted-proxy's met
-loopback-bron uitgesloten van automatische node-goedkeuring omdat lokale callers die
-headers kunnen vervalsen, ook wanneer loopback trusted-proxy-auth expliciet is ingeschakeld.
+Beschouw `dmPolicy="open"` en `groupPolicy="open"` als instellingen voor noodgevallen; geef de voorkeur aan koppeling + toelatingslijsten, tenzij je elk lid van de ruimte volledig vertrouwt.
 
-Goed reverse-proxygedrag (inkomende forwardingheaders overschrijven):
+### Toelatingslijsten (twee lagen)
 
-```nginx
-proxy_set_header X-Forwarded-For $remote_addr;
-proxy_set_header X-Real-IP $remote_addr;
+- **DM-toelatingslijst** (`allowFrom` / `channels.discord.allowFrom` / `channels.slack.allowFrom`; verouderd: `channels.discord.dm.allowFrom`, `channels.slack.dm.allowFrom`): wie de bot een DM mag sturen. Wanneer `dmPolicy="pairing"`, worden goedkeuringen geschreven naar `~/.openclaw/credentials/<channel>-allowFrom.json` (standaardaccount) of `<channel>-<accountId>-allowFrom.json` (niet-standaardaccounts) en samengevoegd met de toelatingslijsten in de configuratie.
+- **Groepstoelatingslijst** (kanaalspecifiek): welke groepen/kanalen/guilds de bot überhaupt accepteert.
+  - `channels.whatsapp.groups`, `channels.telegram.groups`, `channels.imessage.groups`: standaardinstellingen per groep, zoals `requireMention`; wanneer ingesteld, fungeren deze ook als groepstoelatingslijst (neem `"*"` op om alles toegestaan te houden). Pas triggers voor vermeldingen aan met `agents.list[].groupChat.mentionPatterns` (bijvoorbeeld `["@openclaw", "@mybot"]`), zodat `requireMention` activeert op je eigen botnamen.
+  - `groupPolicy="allowlist"` + `groupAllowFrom`: beperken wie de bot binnen een groepssessie kan activeren (WhatsApp/Telegram/Signal/iMessage/Microsoft Teams).
+  - `channels.discord.guilds` / `channels.slack.channels`: toelatingslijsten per oppervlak + standaardinstellingen voor vermeldingen.
+  - Controlevolgorde: eerst `groupPolicy`/groepstoelatingslijsten, daarna activatie via vermelding/antwoord. Antwoorden op een botbericht (impliciete vermelding) omzeilt `groupAllowFrom` **niet**.
+
+Details: [Configuratie](/nl/gateway/configuration) en [Groepen](/nl/channels/groups)
+
+### Isolatie van DM-sessies (modus voor meerdere gebruikers)
+
+OpenClaw stuurt standaard alle DM's naar de hoofdsessie voor continuïteit tussen apparaten. Als meerdere mensen de bot een DM kunnen sturen (open DM's of een toelatingslijst met meerdere personen), isoleer dan de DM-sessies:
+
+```json5
+{ session: { dmScope: "per-channel-peer" } }
 ```
 
-Slecht reverse-proxygedrag (niet-vertrouwde forwardingheaders toevoegen/behouden):
+Waarden voor `session.dmScope`:
 
-```nginx
-proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-```
+| Waarde                      | Bereik                                                                  |
+| -------------------------- | ---------------------------------------------------------------------- |
+| `main` (configuratiestandaard)    | Alle DM's delen één sessie.                                             |
+| `per-channel-peer`         | Elk paar van kanaal en afzender krijgt een geïsoleerde DM-context (veilige DM-modus). |
+| `per-account-channel-peer` | Zoals hierboven, maar verder opgesplitst per account (kanalen met meerdere accounts).         |
+| `per-peer`                 | Elke afzender krijgt één sessie voor alle kanalen van hetzelfde type.     |
 
-## HSTS- en oorsprongsnotities
+Lokale onboarding via de CLI schrijft `session.dmScope: "per-channel-peer"` wanneer deze niet is ingesteld en behoudt elke expliciet bestaande waarde.
 
-- OpenClaw gateway is eerst lokaal/loopback. Als je TLS beëindigt bij een reverse proxy, stel HSTS daar in op het proxy-gerichte HTTPS-domein.
-- Als de gateway zelf HTTPS beëindigt, kun je `gateway.http.securityHeaders.strictTransportSecurity` instellen om de HSTS-header uit OpenClaw-responses te verzenden.
-- Gedetailleerde implementatierichtlijnen staan in [Vertrouwde-proxy-authenticatie](/nl/gateway/trusted-proxy-auth#tls-termination-and-hsts).
-- Voor niet-loopback Control UI-implementaties is `gateway.controlUi.allowedOrigins` standaard vereist.
-- `gateway.controlUi.allowedOrigins: ["*"]` is een expliciet beleid dat alle browser-origins toestaat, geen geharde standaard. Vermijd dit buiten strikt gecontroleerde lokale tests.
-- Browser-origin-authenticatiefouten op loopback blijven rate-limited, zelfs wanneer de
-  algemene loopback-vrijstelling is ingeschakeld, maar de lockout-sleutel is scoped per
-  genormaliseerde `Origin`-waarde in plaats van één gedeelde localhost-bucket.
-- `gateway.controlUi.dangerouslyAllowHostHeaderOriginFallback=true` schakelt Host-header-origin-fallbackmodus in; behandel dit als een gevaarlijk, door de operator gekozen beleid.
-- Behandel DNS-rebinding en proxy-hostheadergedrag als implementatiehardening; houd `trustedProxies` strikt en vermijd directe blootstelling van de gateway aan het openbare internet.
+Dit is een grens voor berichtcontext, geen grens voor hostbeheer. Als gebruikers elkaar niet vertrouwen en dezelfde Gateway-host/configuratie delen, voer dan afzonderlijke gateways uit per vertrouwensgrens.
 
-## Lokale sessielogs staan op schijf
+Als dezelfde persoon via meerdere kanalen contact opneemt, gebruik dan `session.identityLinks` om die DM-sessies samen te voegen tot één canonieke identiteit. Zie [Sessiebeheer](/nl/concepts/session) en [Configuratie](/nl/gateway/configuration).
 
-OpenClaw slaat sessietranscripten op schijf op onder `~/.openclaw/agents/<agentId>/sessions/*.jsonl`.
-Dit is vereist voor sessiecontinuïteit en (optioneel) indexering van sessiegeheugen, maar het betekent ook dat
-**elk proces/elke gebruiker met bestandssysteemtoegang die logs kan lezen**. Behandel schijftoegang als de vertrouwensgrens
-en vergrendel de machtigingen op `~/.openclaw` (zie de auditsectie hieronder). Als je
-sterkere isolatie tussen agents nodig hebt, voer ze dan uit onder afzonderlijke OS-gebruikers of afzonderlijke hosts.
+## Zichtbaarheid van context versus autorisatie voor activering
 
-## Node-uitvoering (system.run)
+Twee afzonderlijke concepten:
 
-Als een macOS-node is gekoppeld, kan de Gateway `system.run` op die node aanroepen. Dit is **remote code execution** op de Mac:
+- **Autorisatie voor activering**: wie de agent kan activeren (`dmPolicy`, `groupPolicy`, toelatingslijsten, activatie door vermeldingen).
+- **Zichtbaarheid van context**: welke aanvullende context het model bereikt (inhoud van antwoorden, geciteerde tekst, gespreksgeschiedenis, doorgestuurde metadata).
 
-- Vereist node-koppeling (goedkeuring + token).
-- Gateway-nodekoppeling is geen goedkeuringsvlak per opdracht. Het stelt node-identiteit/vertrouwen en tokenuitgifte vast.
-- De Gateway past een grof globaal node-opdrachtbeleid toe via `gateway.nodes.allowCommands` / `denyCommands`.
-- Beheerd op de Mac via **Settings → Exec approvals** (security + ask + allowlist).
-- Het per-node `system.run`-beleid is het eigen exec-goedkeuringsbestand van de node (`exec.approvals.node.*`), dat strenger of losser kan zijn dan het globale command-ID-beleid van de gateway.
-- Een node die draait met `security="full"` en `ask="off"` volgt het standaardmodel voor vertrouwde operators. Behandel dat als verwacht gedrag, tenzij je implementatie expliciet een strenger goedkeurings- of allowlist-standpunt vereist.
-- Goedkeuringsmodus bindt de exacte requestcontext en, waar mogelijk, één concreet lokaal script-/bestandsoperand. Als OpenClaw niet precies één direct lokaal bestand voor een interpreter-/runtime-opdracht kan identificeren, wordt uitvoering op basis van goedkeuring geweigerd in plaats van volledige semantische dekking te beloven.
-- Voor `host=node` slaan goedgekeurde runs ook een canoniek voorbereide
-  `systemRunPlan` op; latere goedgekeurde forwards hergebruiken dat opgeslagen plan, en gateway-
-  validatie wijst wijzigingen van de caller aan command/cwd/session-context af nadat de
-  goedkeuringsaanvraag is aangemaakt.
-- Als je geen uitvoering op afstand wilt, stel security in op **deny** en verwijder node-koppeling voor die Mac.
+`contextVisibility` bepaalt het tweede:
 
-Dit onderscheid is belangrijk voor triage:
+- `"all"` (standaard): aanvullende context wordt behouden zoals ontvangen.
+- `"allowlist"`: aanvullende context wordt gefilterd op afzenders die volgens de actieve controles van toelatingslijsten zijn toegestaan.
+- `"allowlist_quote"`: zoals `allowlist`, maar één expliciet geciteerd antwoord blijft behouden.
 
-- Een opnieuw verbindende gekoppelde node die een andere commandolijst adverteert, is op zichzelf geen kwetsbaarheid als het globale Gateway-beleid en de lokale exec-goedkeuringen van de node nog steeds de daadwerkelijke uitvoeringsgrens afdwingen.
-- Meldingen die node-koppelingsmetadata behandelen als een tweede verborgen goedkeuringslaag per opdracht zijn meestal beleids-/UX-verwarring, geen omzeiling van een beveiligingsgrens.
+Stel dit per kanaal of per ruimte/gesprek in - zie [Groepen](/nl/channels/groups#context-visibility-and-allowlists). Meldingen die alleen aantonen dat "het model geciteerde/historische tekst van afzenders buiten de toelatingslijst kan zien", zijn bevindingen voor systeemversterking die met `contextVisibility` kunnen worden aangepakt, en vormen op zichzelf geen omzeiling van authenticatie of sandboxing; voor een melding met beveiligingsimpact moet nog steeds een aantoonbare omzeiling van een vertrouwensgrens worden getoond.
 
-## Dynamische Skills (watcher / remote nodes)
+## Promptinjectie
 
-OpenClaw kan de Skills-lijst midden in een sessie vernieuwen:
+Een aanvaller maakt een bericht dat het model manipuleert om een onveilige actie uit te voeren ("negeer je instructies", "dump je bestandssysteem", "volg deze link en voer opdrachten uit"). Promptinjectie wordt **niet opgelost** door alleen beveiligingsregels in de systeemprompt - die zijn slechts zachte richtlijnen; harde handhaving komt van toolbeleid, goedkeuringen voor uitvoering, sandboxing en kanaaltoelatingslijsten (die operators nog steeds bewust kunnen uitschakelen).
 
-- **Skills-watcher**: wijzigingen aan `SKILL.md` kunnen de Skills-snapshot bij de volgende agentbeurt bijwerken.
-- **Remote nodes**: het verbinden van een macOS-node kan macOS-only Skills eligible maken (op basis van bin-probing).
+Voor promptinjectie zijn geen openbare DM's nodig: zelfs als alleen jij de bot berichten kunt sturen, kan alle **niet-vertrouwde inhoud** die de bot leest (resultaten van zoeken/ophalen op het web, browserpagina's, e-mails, documenten, bijlagen, geplakte logboeken/code) vijandige instructies bevatten. De inhoud zelf vormt een aanvalsoppervlak, niet alleen de afzender.
 
-Behandel Skills-mappen als **vertrouwde code** en beperk wie ze kan wijzigen.
+Waarschuwingssignalen die als niet-vertrouwd moeten worden behandeld:
 
-## Het threat model
+- "Lees dit bestand/deze URL en doe precies wat erin staat."
+- "Negeer je systeemprompt of veiligheidsregels."
+- "Onthul je verborgen instructies of tooluitvoer."
+- "Plak de volledige inhoud van ~/.openclaw of je logboeken."
 
-Je AI-assistent kan:
+Wat in de praktijk helpt:
 
-- Willekeurige shell-opdrachten uitvoeren
-- Bestanden lezen/schrijven
-- Netwerkservices benaderen
-- Berichten naar iedereen sturen (als je hem WhatsApp-toegang geeft)
+- Houd inkomende DM's afgeschermd (koppeling/toelatingslijsten); geef in groepen de voorkeur aan activatie via vermeldingen; vermijd bots die altijd actief zijn in openbare ruimtes.
+- Behandel links, bijlagen en geplakte instructies standaard als vijandig.
+- Voer gevoelige toolbewerkingen uit in een sandbox; houd geheimen buiten het bestandssysteem dat voor de agent toegankelijk is. Sandboxing is opt-in: als de sandboxmodus is uitgeschakeld, wordt impliciete `host=auto` herleid tot de Gateway-host, terwijl expliciete `host=sandbox` nog steeds veilig faalt (geen sandboxruntime beschikbaar). Stel `host=gateway` in om dit gedrag expliciet in de configuratie vast te leggen.
+- Beperk risicovolle tools (`exec`, `browser`, `web_fetch`, `web_search`) tot vertrouwde agents of expliciete toelatingslijsten.
+- Als je interpreters toestaat (`python`, `node`, `ruby`, `perl`, `php`, `lua`, `osascript`), schakel dan `tools.exec.strictInlineEval` in, zodat vormen van inline-evaluatie (`-c`, `-e` en vergelijkbare vormen) nog steeds expliciete goedkeuring vereisen. In de toelatingslijstmodus vereist elk heredoc-segment (`<<`) altijd beoordeling of expliciete goedkeuring, ongeacht de aanhalingstekens - een toegestane opdracht kan een heredoc-inhoud niet gebruiken om de beoordeling van de toelatingslijst te omzeilen.
+- Beperk de impact door een alleen-lezen **leesagent**, of een leesagent zonder tools, te gebruiken om niet-vertrouwde inhoud samen te vatten en geef de samenvatting vervolgens door aan je hoofdagent.
+- Voor Gmail-hooks isoleert de ingebouwde sessie per bericht de gesprekscontext, maar verwijdert deze niet de tool- of werkruimtemachtigingen van de doelagent. Stuur niet-vertrouwde e-mail naar een afzonderlijke leesagent, pas [sandbox- en toolbeperkingen per agent](/nl/tools/multi-agent-sandbox-tools) toe en beperk elke overdracht aan de hoofdagent met [`tools.agentToAgent`](/nl/gateway/config-tools#toolsagenttoagent). Zie [Gmail-integratie](/nl/gateway/configuration-reference#gmail-integration).
+- Houd `web_search` / `web_fetch` / `browser` uitgeschakeld voor agents met tools, tenzij ze nodig zijn.
+- Stel voor OpenResponses-URL-invoer (`input_file` / `input_image`) een strikte `gateway.http.endpoints.responses.files.urlAllowlist` / `images.urlAllowlist` in en houd `maxUrlParts` laag (lege toelatingslijsten gelden als niet ingesteld). Gebruik `files.allowUrl: false` / `images.allowUrl: false` om het ophalen van URL's volledig uit te schakelen.
+- Houd geheimen buiten prompts; geef ze in plaats daarvan door via omgevingsvariabelen/configuratie op de Gateway-host.
 
-Mensen die je berichten sturen kunnen:
+**De modelkeuze is belangrijk.** Weerstand tegen promptinjectie is niet gelijk voor alle modelniveaus - kleinere/goedkopere modellen zijn bij vijandige prompts vatbaarder voor misbruik van tools en het kapen van instructies.
 
-- Proberen je AI te misleiden om slechte dingen te doen
-- Via social engineering toegang tot je data proberen te krijgen
-- Infrastructuurdetails aftasten
+<Warning>
+Voor agents met tools of agents die niet-vertrouwde inhoud lezen, is het risico op promptinjectie bij oudere/kleinere modellen vaak te hoog. Voer die werklasten niet uit op zwakke modelniveaus.
+</Warning>
 
-## Kernconcept: toegangscontrole vóór intelligentie
+- Gebruik het beste modelniveau van de nieuwste generatie voor elke bot die tools kan uitvoeren of bestanden/netwerken kan benaderen.
+- Gebruik geen oudere/zwakkere/kleinere niveaus voor agents met tools of niet-vertrouwde inboxen.
+- Als je een kleiner model moet gebruiken, beperk dan de impact: alleen-lezen tools, sterke sandboxing, minimale toegang tot het bestandssysteem en strikte toelatingslijsten. Schakel sandboxing in voor alle sessies en schakel `web_search`/`web_fetch`/`browser` uit, tenzij de invoer strikt wordt beheerd.
+- Voor persoonlijke assistenten die alleen chatten, met vertrouwde invoer en zonder tools, zijn kleinere modellen meestal geschikt.
 
-De meeste fouten hier zijn geen geavanceerde exploits - het is "iemand stuurde de bot een bericht en de bot deed wat werd gevraagd."
+### Externe inhoud en verpakking van niet-vertrouwde invoer
 
-OpenClaw's standpunt:
+OpenResponses-tekst van `input_file` wordt nog steeds als niet-vertrouwde externe inhoud geïnjecteerd, ook al decodeert de Gateway deze lokaal - het blok bevat `<<<EXTERNAL_UNTRUSTED_CONTENT ...>>>`-grensmarkeringen plus `Source: External`-metadata (bij dit pad wordt de langere `SECURITY NOTICE:`-banner weggelaten die elders wordt gebruikt). Dezelfde verpakking op basis van markeringen wordt toegepast wanneer mediabegrip tekst uit bijgevoegde documenten extraheert voordat deze aan de mediaprompt wordt toegevoegd.
 
-- **Eerst identiteit:** beslis wie met de bot mag praten (DM-koppeling / allowlists / expliciet "open").
-- **Daarna scope:** beslis waar de bot mag handelen (groep-allowlists + mention-gating, tools, sandboxing, apparaatmachtigingen).
-- **Model als laatste:** ga ervan uit dat het model kan worden gemanipuleerd; ontwerp zo dat manipulatie een beperkte blast radius heeft.
+OpenClaw verwijdert ook veelvoorkomende letterlijke speciale tokens uit chatsjablonen van zelfgehoste LLM's (Qwen/ChatML-, Llama-, Gemma-, Mistral-, Phi- en GPT-OSS-rol-/beurttokens) uit ingepakte externe inhoud en metadata voordat ze het model bereiken. Zelfgehoste OpenAI-compatibele backends (vLLM, SGLang, TGI, LM Studio, aangepaste Hugging Face-tokenizerstacks) tokeniseren letterlijke tekenreeksen zoals `<|im_start|>` of `<|start_header_id|>` soms als structurele chatsjabloontokens binnen gebruikersinhoud; zonder deze opschoning zou niet-vertrouwde tekst in een opgehaalde pagina, e-mailtekst of uitvoer van een hulpprogramma voor bestandsinhoud een synthetische `assistant`-/`system`-rolgrens kunnen vervalsen. Opschoning vindt plaats in de laag die externe inhoud inpakt, zodat deze uniform wordt toegepast op ophaal-/leeshulpmiddelen en binnenkomende kanaalinhoud. Gehoste providers (OpenAI, Anthropic) passen al hun eigen opschoning aan de aanvraagzijde toe; houd het inpakken van externe inhoud ingeschakeld en geef, indien beschikbaar, de voorkeur aan backendinstellingen die speciale tokens splitsen/escapen.
 
-## Model voor opdrachtautorisatie
+Uitgaande modelantwoorden hebben een afzonderlijke opschoner die gelekte `<tool_call>`, `<function_calls>`, `<system-reminder>`, `<previous_response>` en vergelijkbare interne hulpstructuren uit voor gebruikers zichtbare antwoorden verwijdert bij de uiteindelijke grens voor kanaalbezorging.
 
-Slash-opdrachten en directives worden alleen gehonoreerd voor **geautoriseerde afzenders**. Autorisatie wordt afgeleid uit
-kanaal-allowlists/koppeling plus `commands.useAccessGroups` (zie [Configuratie](/nl/gateway/configuration)
-en [Slash-opdrachten](/nl/tools/slash-commands)). Als een kanaal-allowlist leeg is of `"*"` bevat,
-zijn opdrachten effectief open voor dat kanaal.
+Dit vervangt `dmPolicy`, toelatingslijsten, uitvoeringsgoedkeuringen, sandboxing of `contextVisibility` niet — het sluit één specifieke omzeiling op tokenizerniveau.
 
-`/exec` is een sessiegebonden gemak voor geautoriseerde operators. Het schrijft **geen** config en
-wijzigt geen andere sessies.
+### Omzeilingsvlaggen (uitgeschakeld houden in productie)
 
-## Risico van control-plane-tools
+- `hooks.mappings[].allowUnsafeExternalContent`
+- `hooks.gmail.allowUnsafeExternalContent`
+- Cron-payloadveld `allowUnsafeExternalContent`
 
-Twee ingebouwde tools kunnen blijvende control-plane-wijzigingen aanbrengen:
+Schakel deze alleen tijdelijk in voor strikt afgebakende foutopsporing; is dit ingeschakeld, isoleer die agent dan (sandbox + minimale hulpmiddelen + speciale sessienaamruimte).
 
-- `gateway` kan config inspecteren met `config.schema.lookup` / `config.get`, en kan blijvende wijzigingen aanbrengen met `config.apply`, `config.patch` en `update.run`.
-- `cron` kan geplande jobs maken die blijven draaien nadat de oorspronkelijke chat/taak eindigt.
+Hook-payloads zijn niet-vertrouwde inhoud, zelfs wanneer de levering afkomstig is van systemen die je beheert (e-mail-/document-/webinhoud kan promptinjectie bevatten). Zwakkere modelniveaus vergroten dit risico — geef voor hookgestuurde automatisering de voorkeur aan krachtige moderne modelniveaus en houd het hulpmiddelenbeleid strikt (`tools.profile: "messaging"` of strenger), met waar mogelijk sandboxing.
 
-De agent-facing `gateway` runtime-tool blijft weigeren om
-`tools.exec.ask` of `tools.exec.security` te herschrijven; legacy `tools.bash.*`-aliassen worden
-genormaliseerd naar dezelfde beschermde exec-paden voordat er wordt geschreven.
-Door agents gestuurde `gateway config.apply`- en `gateway config.patch`-bewerkingen
-fail-closed standaard: alleen een smalle set low-risk runtime-tuning,
-mention-gating en zichtbare-reply-paden is agent-tunable. Globale modelstandaarden
-en prompt-overlays blijven door operators beheerd. Nieuwe gevoelige config-trees zijn
-daarom beschermd, tenzij ze bewust aan de allowlist worden toegevoegd.
+### Redenering en uitgebreide uitvoer in groepen
 
-Voor elke agent/surface die onvertrouwde content verwerkt, weiger deze standaard:
+`/reasoning`, `/verbose` en `/trace` kunnen interne redeneringen, hulpmiddelenuitvoer of plug-in-diagnostiek blootleggen die niet voor een openbaar kanaal zijn bedoeld — ze kunnen hulpmiddelargumenten, URL's, plug-in-diagnostiek en door het model waargenomen gegevens bevatten. Houd ze uitgeschakeld in openbare ruimtes; schakel ze alleen in voor vertrouwde privéberichten of strikt beheerde ruimtes.
+
+## Opdrachtautorisatie
+
+Slash-opdrachten en richtlijnen worden alleen uitgevoerd voor geautoriseerde afzenders, afgeleid van kanaaltoelatingslijsten/koppeling plus `commands.useAccessGroups` (zie [Configuratie](/nl/gateway/configuration) en [Slash-opdrachten](/nl/tools/slash-commands)). Als een kanaaltoelatingslijst leeg is of `"*"` bevat, staan opdrachten feitelijk open voor dat kanaal.
+
+`/exec` is uitsluitend een sessiegebonden gemak voor geautoriseerde operators — het schrijft geen configuratie en wijzigt geen andere sessies.
+
+## Hulpmiddelen voor het besturingsvlak
+
+Twee ingebouwde hulpmiddelen blijven gevoelig voor het besturingsvlak:
+
+- `gateway` leest configuratie met `config.schema.lookup` / `config.get`. Het kan geen configuratie schrijven, OpenClaw bijwerken of de Gateway herstarten.
+- `cron` maakt geplande taken aan die blijven draaien nadat de oorspronkelijke chat/taak is beëindigd.
+
+Het hulpmiddel `gateway` blijft uitsluitend voor de eigenaar, omdat configuratielezingen geheimen en de hosttopologie kunnen blootleggen. Agents vragen blijvende configuratie- of levenscycluswijzigingen aan via het delegatiehulpmiddel `openclaw`; OpenClaw zet deze om in getypeerde bewerkingen en vereist menselijke goedkeuring voordat ze worden toegepast. Zie [OpenClaw-installatieagent](/cli/openclaw#operations-and-approval).
+
+Weiger deze standaard voor elke agent/interface die niet-vertrouwde inhoud verwerkt:
 
 ```json5
 {
@@ -538,266 +313,221 @@ Voor elke agent/surface die onvertrouwde content verwerkt, weiger deze standaard
 }
 ```
 
-`commands.restart=false` blokkeert alleen herstartacties. Het schakelt `gateway` config-/update-acties niet uit.
+`commands.restart=false` schakelt `/restart` en externe `SIGUSR1`-herstartverzoeken uit. Het agenthulpmiddel `gateway` heeft geen herstartactie.
+
+## Node-uitvoering (`system.run`)
+
+Als een macOS-node is gekoppeld, kan de Gateway daarop `system.run` aanroepen — dit is uitvoering van externe code op die Mac.
+
+- Vereist nodekoppeling (goedkeuring + token). Koppeling stelt de identiteit/vertrouwensstatus van de node vast en geeft een token uit; het is geen goedkeuringsinterface per opdracht.
+- De Gateway past een grof algemeen beleid voor nodeopdrachten toe via `gateway.nodes.allowCommands` / `denyCommands`. `denyCommands` komt alleen overeen met exacte namen van nodeopdrachten (bijvoorbeeld `system.run`), niet met shelltekst binnen een opdrachtpayload — een opnieuw verbindende node die een andere opdrachtenlijst aankondigt, vormt op zichzelf geen kwetsbaarheid als het algemene Gateway-beleid en de eigen uitvoeringsgoedkeuringen van de node de grens nog steeds afdwingen.
+- Het beleid `system.run` per node is het eigen bestand met uitvoeringsgoedkeuringen van de node (`exec.approvals.node.*`), dat op de Mac wordt beheerd via Settings -> Exec approvals (security + ask + allowlist); het kan strenger of minder streng zijn dan het algemene beleid voor opdracht-ID's van de Gateway.
+- Een node waarop `security="full"` en `ask="off"` worden uitgevoerd, volgt het standaardmodel voor vertrouwde operators — verwacht gedrag, geen bug, tenzij je implementatie een striktere houding vereist.
+- De goedkeuringsmodus bindt de exacte aanvraagcontext en, waar mogelijk, één concrete lokale script-/bestandsoperand. Als OpenClaw niet exact één rechtstreeks lokaal bestand voor een interpreter-/runtimeopdracht kan identificeren, wordt door goedkeuring ondersteunde uitvoering geweigerd in plaats van volledige semantische dekking te beloven.
+- Voor `host=node` slaan door goedkeuring ondersteunde uitvoeringen ook een canoniek voorbereid `systemRunPlan` op; latere goedgekeurde doorsturingen hergebruiken dat opgeslagen plan en Gateway-validatie weigert wijzigingen door de aanroeper aan de opdracht-/werkmap-/sessiecontext nadat het goedkeuringsverzoek is gemaakt.
+- Om externe uitvoering volledig uit te schakelen: stel security in op `deny` en verwijder de nodekoppeling voor die Mac.
+
+## Dynamische Skills (watcher / externe nodes)
+
+OpenClaw kan de lijst met Skills tijdens een sessie vernieuwen: de Skills-watcher werkt de momentopname bij tijdens de volgende agentbeurt wanneer `SKILL.md` verandert, en door een macOS-node te verbinden kunnen uitsluitend voor macOS geschikte Skills beschikbaar worden (op basis van het onderzoeken van binaire bestanden). Behandel Skills-mappen als vertrouwde code en beperk wie ze kan wijzigen.
 
 ## Plugins
 
-Plugins draaien **in-process** met de Gateway. Behandel ze als vertrouwde code:
+Plugins draaien binnen hetzelfde proces als de Gateway — behandel ze als vertrouwde code.
 
-- Installeer alleen plugins uit bronnen die je vertrouwt.
-- Geef de voorkeur aan expliciete `plugins.allow`-allowlists.
-- Controleer pluginconfig voordat je inschakelt.
-- Herstart de Gateway na pluginwijzigingen.
-- Als je plugins installeert of bijwerkt (`openclaw plugins install <package>`, `openclaw plugins update <id>`), behandel dit alsof je onvertrouwde code uitvoert:
-  - Het installatiepad is de per-plugin-directory onder de actieve plugin-installatieroot.
-  - OpenClaw voert tijdens install/update geen ingebouwde lokale blokkering van gevaarlijke code uit. Gebruik `security.installPolicy` voor door operators beheerde lokale allow/block-beslissingen en `openclaw security audit --deep` voor diagnostische scanning.
-  - npm- en git-plugininstallaties voeren package-manager dependency convergence alleen uit tijdens de expliciete install/update-flow. Lokale paden en archieven worden behandeld als self-contained pluginpakketten; OpenClaw kopieert/verwijst ernaar zonder `npm install` uit te voeren.
-  - Geef de voorkeur aan gepinde, exacte versies (`@scope/pkg@1.2.3`) en inspecteer de uitgepakte code op schijf voordat je inschakelt.
-  - `--dangerously-force-unsafe-install` is deprecated en verandert plugin-install/update-gedrag niet meer.
-  - Configureer `security.installPolicy` wanneer operators een vertrouwde lokale opdracht nodig hebben om host-specifieke allow/block-beslissingen te nemen voor Skills- en plugininstallaties. Dit beleid draait nadat bronmateriaal is gestaged maar voordat installatie doorgaat, geldt ook voor ClawHub Skills en wordt niet omzeild door deprecated unsafe flags.
+- Installeer alleen uit bronnen die je vertrouwt; geef de voorkeur aan expliciete `plugins.allow`-toelatingslijsten; controleer de plug-in-configuratie voordat je deze inschakelt; herstart de Gateway na wijzigingen aan Plugins.
+- Bij het installeren/bijwerken van Plugins wordt uitvoerbare code uitgevoerd:
+  - Het installatiepad is de map per Plugin onder de actieve installatieroot voor Plugins.
+  - ClawHub-pakketten en de gebundelde/officiële catalogus van OpenClaw zijn vertrouwde bronnen. Bij een nieuwe willekeurige npm-, `npm-pack:`-, git-, lokale pad-/archief- of marketplace-bron verschijnt vóór installatie een waarschuwing; niet-interactieve installaties vereisen `--force` nadat je die bron hebt gecontroleerd en vertrouwt. `--force` bevestigt de herkomst en staat overschrijven toe; het omzeilt `security.installPolicy` of resterende veiligheidscontroles voor installatie niet. Bij updates wordt de al geselecteerde bron hergebruikt.
+  - OpenClaw voert tijdens installatie/bijwerking geen ingebouwde lokale blokkering van gevaarlijke code uit. Gebruik `security.installPolicy` voor lokale toelatings-/blokkeerbeslissingen van de operator en `openclaw security audit --deep` voor diagnostisch scannen.
+  - Bij npm- en git-installaties van Plugins wordt alleen tijdens de expliciete installatie-/bijwerkstroom convergentie van pakketbeheerafhankelijkheden uitgevoerd. Lokale paden en archieven worden behandeld als zelfstandige pakketten; OpenClaw kopieert/verwijst ernaar zonder `npm install` uit te voeren.
+  - Geef de voorkeur aan vastgezette exacte versies (`@scope/pkg@1.2.3`) en inspecteer de uitgepakte code voordat je deze inschakelt.
+  - `--dangerously-force-unsafe-install` is verouderd en verandert het installatie-/bijwerkgedrag niet langer.
+  - `security.installPolicy` stelt operators in staat een vertrouwde lokale opdracht uit te voeren om hostspecifieke toelatings-/blokkeerbeslissingen te nemen voor de installatie van Skills en Plugins. Deze wordt uitgevoerd nadat het bronmateriaal is klaargezet maar voordat de installatie doorgaat, is ook van toepassing op ClawHub-Skills en wordt niet omzeild door verouderde onveilige vlaggen.
 
 Details: [Plugins](/nl/tools/plugin)
 
-## DM-toegangsmodel: koppeling, allowlist, open, disabled
+## Sandboxing
 
-Alle huidige DM-capable kanalen ondersteunen een DM-beleid (`dmPolicy` of `*.dm.policy`) dat inkomende DM's gate **voordat** het bericht wordt verwerkt:
+Speciale documentatie: [Sandboxing](/nl/gateway/sandboxing)
 
-- `pairing` (standaard): onbekende afzenders ontvangen een korte koppelingscode en de bot negeert hun bericht totdat het is goedgekeurd. Codes verlopen na 1 uur; herhaalde DM's sturen geen code opnieuw totdat een nieuwe aanvraag is aangemaakt. Openstaande aanvragen zijn standaard beperkt tot **3 per kanaal**.
-- `allowlist`: onbekende afzenders worden geblokkeerd (geen pairing-handshake).
-- `open`: sta iedereen toe om te DM'en (publiek). **Vereist** dat de kanaal-allowlist `"*"` bevat (expliciete opt-in).
-- `disabled`: negeer inkomende DM's volledig.
+Twee elkaar aanvullende benaderingen:
 
-Goedkeuren via CLI:
+- **Volledige Gateway in Docker** (containergrens): [Docker](/nl/install/docker)
+- **Hulpmiddelensandbox** (`agents.defaults.sandbox`; host-Gateway + door de sandbox geïsoleerde hulpmiddelen; Docker is de standaardbackend): [Sandboxing](/nl/gateway/sandboxing)
 
-```bash
-openclaw pairing list <channel>
-openclaw pairing approve <channel> <code>
-```
+<Note>
+Om toegang tussen agents te voorkomen, houd je `agents.defaults.sandbox.scope` op `"agent"` (standaard) of gebruik je `"session"` voor strengere isolatie per sessie. `scope: "shared"` gebruikt één container of werkruimte.
+</Note>
 
-Details + bestanden op schijf: [Koppeling](/nl/channels/pairing)
+Toegang tot de agentwerkruimte binnen de sandbox (`agents.defaults.sandbox.workspaceAccess`):
 
-## DM-sessie-isolatie (multi-user-modus)
+- `"none"` (standaard): hulpmiddelen zien een sandboxwerkruimte onder `~/.openclaw/sandboxes`; de agentwerkruimte is niet toegankelijk.
+- `"ro"`: koppelt de agentwerkruimte als alleen-lezen aan `/agent` (schakelt `write`/`edit`/`apply_patch` uit).
+- `"rw"`: koppelt de agentwerkruimte met lees-/schrijftoegang aan `/workspace`.
 
-Standaard routeert OpenClaw **alle DM's naar de hoofdsessie**, zodat je assistent continuïteit heeft over apparaten en kanalen heen. Als **meerdere mensen** de bot kunnen DM'en (open DM's of een multi-person allowlist), overweeg dan DM-sessies te isoleren:
+Extra `sandbox.docker.binds` worden gevalideerd aan de hand van genormaliseerde, gecanonicaliseerde bronpaden. Een blokkeerlijst met verboden paden omvat `/etc`, `/private/etc`, `/proc`, `/sys`, `/dev`, `/root`, `/boot` en mappen die doorgaans de Docker-socket bevatten of er een alias voor vormen (`/run`, `/var/run` en `docker.sock` daaronder), plus subpaden voor referenties in HOME (`.aws`, `.cargo`, `.config`, `.docker`, `.gnupg`, `.netrc`, `.npm`, `.ssh`). Trucs met symbolische koppelingen van bovenliggende mappen en canonieke aliassen voor de thuismap worden via bestaande voorouders opgelost en opnieuw gecontroleerd, zodat ze nog steeds gesloten mislukken als ze naar een geblokkeerde root verwijzen.
+
+<Warning>
+`tools.elevated` is de algemene ontsnappingsmogelijkheid die uitvoeringen buiten de sandbox laat plaatsvinden. De effectieve host is standaard `gateway`, of `node` wanneer het uitvoeringsdoel is ingesteld op `node`. Houd `tools.elevated.allowFrom` strikt en schakel dit niet in voor vreemden. Beperk dit verder per agent via `agents.list[].tools.elevated`. Zie [Verhoogde modus](/nl/tools/elevated).
+</Warning>
+
+### Beveiligingsgrens voor delegatie aan subagents
+
+Als je sessiehulpmiddelen toestaat, behandel gedelegeerde uitvoeringen van subagents dan als een afzonderlijke grensbeslissing:
+
+- Weiger `sessions_spawn`, tenzij de agent delegatie echt nodig heeft.
+- Beperk `agents.defaults.subagents.allowAgents` en eventuele `agents.list[].subagents.allowAgents`-overschrijvingen per agent tot bekende, veilige doelagents.
+- Roep voor werkstromen die in de sandbox moeten blijven `sessions_spawn` aan met `sandbox: "require"` (standaard is `"inherit"`); `"require"` mislukt onmiddellijk wanneer de runtime van de doel-subagent niet in een sandbox draait.
+
+### Alleen-lezenmodus
+
+Stel een alleen-lezenprofiel samen door `agents.defaults.sandbox.workspaceAccess: "ro"` (of `"none"` voor geen toegang tot de werkruimte) te combineren met toelatings-/weigeringslijsten voor hulpmiddelen die `write`, `edit`, `apply_patch`, `exec`, `process`, enzovoort blokkeren.
+
+- `tools.exec.applyPatch.workspaceOnly: true` (standaard): voorkomt dat `apply_patch` buiten de werkruimtemap schrijft/verwijdert, zelfs als sandboxing is uitgeschakeld. Stel `false` alleen in als je opzettelijk wilt dat `apply_patch` bestanden buiten de werkruimte aanraakt.
+- `tools.fs.workspaceOnly: true` (optioneel): beperkt paden van `read`/`write`/`edit`/`apply_patch` en paden voor het automatisch laden van afbeeldingen uit systeemeigen prompts tot de werkruimtemap.
+- Houd bestandssysteemroots beperkt — vermijd brede roots zoals je thuismap voor agent-/sandboxwerkruimten, omdat deze gevoelige lokale bestanden (bijvoorbeeld status/configuratie onder `~/.openclaw`) aan bestandssysteemhulpmiddelen kunnen blootstellen.
+
+## Toegangsprofielen per agent (multi-agent)
+
+Elke agent kan een eigen sandbox- en toolbeleid hebben: volledige toegang, alleen-lezen of geen toegang. Zie [Sandbox en tools voor meerdere agents](/nl/tools/multi-agent-sandbox-tools) voor de voorrangsregels.
+
+Veelvoorkomende patronen: persoonlijke agent (volledige toegang, geen sandbox), gezins-/werkagent (gesandboxed + alleen-lezen-tools), openbare agent (gesandboxed + geen bestandssysteem-/shelltools).
+
+### Volledige toegang (geen sandbox)
 
 ```json5
 {
-  session: { dmScope: "per-channel-peer" },
+  agents: {
+    list: [
+      { id: "personal", workspace: "~/.openclaw/workspace-personal", sandbox: { mode: "off" } },
+    ],
+  },
 }
 ```
 
-Dit voorkomt contextlekkage tussen gebruikers terwijl groepschats geïsoleerd blijven.
+### Alleen-lezen-tools + alleen-lezen-werkruimte
 
-Dit is een messaging-contextgrens, geen host-admin-grens. Als gebruikers onderling adversarial zijn en dezelfde Gateway-host/config delen, voer dan in plaats daarvan afzonderlijke gateways per vertrouwensgrens uit.
+```json5
+{
+  agents: {
+    list: [
+      {
+        id: "family",
+        workspace: "~/.openclaw/workspace-family",
+        sandbox: { mode: "all", scope: "agent", workspaceAccess: "ro" },
+        tools: {
+          allow: ["read"],
+          deny: ["write", "edit", "apply_patch", "exec", "process", "browser"],
+        },
+      },
+    ],
+  },
+}
+```
 
-### Veilige DM-modus (aanbevolen)
+### Geen toegang tot bestandssysteem/shell (berichten via providers toegestaan)
 
-Behandel het fragment hierboven als **veilige DM-modus**:
+```json5
+{
+  agents: {
+    list: [
+      {
+        id: "public",
+        workspace: "~/.openclaw/workspace-public",
+        sandbox: { mode: "all", scope: "agent", workspaceAccess: "none" },
+        tools: {
+          // Sessietools kunnen transcriptgegevens onthullen. Het standaardbereik is de huidige sessie +
+          // gestarte subagentsessies; beperk dit indien nodig verder met tools.sessions.visibility.
+          sessions: { visibility: "tree" }, // self | tree | agent | all
+          allow: [
+            "sessions_list",
+            "sessions_history",
+            "sessions_send",
+            "sessions_spawn",
+            "session_status",
+            "discord",
+            "slack",
+            "telegram",
+            "whatsapp",
+          ],
+          deny: [
+            "apply_patch",
+            "browser",
+            "canvas",
+            "cron",
+            "edit",
+            "exec",
+            "gateway",
+            "image",
+            "nodes",
+            "process",
+            "read",
+            "write",
+          ],
+        },
+      },
+    ],
+  },
+}
+```
 
-- Standaard: `session.dmScope: "main"` (alle DM's delen één sessie voor continuïteit).
-- Standaard voor lokale CLI-onboarding: schrijft `session.dmScope: "per-channel-peer"` wanneer unset (behoudt bestaande expliciete waarden).
-- Veilige DM-modus: `session.dmScope: "per-channel-peer"` (elk kanaal+afzender-paar krijgt een geïsoleerde DM-context).
-- Cross-channel peer-isolatie: `session.dmScope: "per-peer"` (elke afzender krijgt één sessie over alle kanalen van hetzelfde type).
+## Risico's van browserbesturing
 
-Als je meerdere accounts op hetzelfde kanaal gebruikt, gebruik dan in plaats daarvan `per-account-channel-peer`. Als dezelfde persoon contact met je opneemt via meerdere kanalen, gebruik dan `session.identityLinks` om die DM-sessies samen te voegen tot één canonieke identiteit. Zie [Sessiebeheer](/nl/concepts/session) en [Configuratie](/nl/gateway/configuration).
+Als je browserbesturing inschakelt, krijgt het model een echte browser. Als dat profiel al aangemelde sessies bevat, kan het model toegang krijgen tot die accounts en gegevens - behandel browserprofielen als gevoelige status.
 
-## Allowlists voor DM's en groepen
+- Gebruik bij voorkeur een speciaal profiel voor de agent (het standaardprofiel `openclaw`); vermijd je persoonlijke profiel voor dagelijks gebruik.
+- Houd browserbesturing op de host uitgeschakeld voor gesandboxte agents, tenzij je ze vertrouwt.
+- De zelfstandige loopback-API voor browserbesturing accepteert alleen authenticatie met een gedeeld geheim (bearer-authenticatie met een Gateway-token of Gateway-wachtwoord) - deze gebruikt geen identiteitsheaders van een vertrouwde proxy of Tailscale Serve.
+- Behandel browserdownloads als niet-vertrouwde invoer; gebruik bij voorkeur een geïsoleerde downloadmap.
+- Schakel browsersynchronisatie/wachtwoordbeheerders indien mogelijk uit in het agentprofiel.
+- Voor externe Gateways staat "browserbesturing" gelijk aan "operatortoegang" tot alles wat dat profiel kan bereiken.
+- Houd Gateway- en Node-hosts uitsluitend op het tailnet; stel poorten voor browserbesturing niet bloot aan het LAN of openbare internet.
+- Schakel browserproxyrouting uit wanneer die niet nodig is (`gateway.nodes.browser.mode="off"`).
+- De modus van Chrome MCP voor bestaande sessies is niet "veiliger" - deze kan namens jou handelen in alles wat het Chrome-profiel op die host kan bereiken.
+- Voer een **Node-host** uit op de browsermachine en laat de Gateway browseracties proxyen wanneer de Gateway zich op afstand van de browser bevindt (zie [Browsertool](/nl/tools/browser)); behandel het koppelen van een Node als beheerderstoegang, houd de Gateway en Node-host op hetzelfde tailnet en stel relay-/besturingspoorten niet bloot via LAN, openbaar internet of Tailscale Funnel.
 
-OpenClaw heeft twee afzonderlijke "wie kan mij triggeren?"-lagen:
+### SSRF-beleid voor de browser (standaard strikt)
 
-- **DM-allowlist** (`allowFrom` / `channels.discord.allowFrom` / `channels.slack.allowFrom`; legacy: `channels.discord.dm.allowFrom`, `channels.slack.dm.allowFrom`): wie met de bot mag praten in directe berichten.
-  - Wanneer `dmPolicy="pairing"` is, worden goedkeuringen geschreven naar de accountgebonden pairing-allowlistopslag onder `~/.openclaw/credentials/` (`<channel>-allowFrom.json` voor het standaardaccount, `<channel>-<accountId>-allowFrom.json` voor niet-standaardaccounts), samengevoegd met configuratie-allowlists.
-- **Groepsallowlist** (kanaalspecifiek): van welke groepen/kanalen/guilds de bot uberhaupt berichten accepteert.
-  - Veelvoorkomende patronen:
-    - `channels.whatsapp.groups`, `channels.telegram.groups`, `channels.imessage.groups`: standaardwaarden per groep zoals `requireMention`; wanneer ingesteld, werkt dit ook als groepsallowlist (neem `"*"` op om allow-all-gedrag te behouden).
-    - `groupPolicy="allowlist"` + `groupAllowFrom`: beperk wie de bot _binnen_ een groepssessie kan activeren (WhatsApp/Telegram/Signal/iMessage/Microsoft Teams).
-    - `channels.discord.guilds` / `channels.slack.channels`: allowlists per oppervlak + standaardwaarden voor vermeldingen.
-  - Groepscontroles worden in deze volgorde uitgevoerd: eerst `groupPolicy`/groepsallowlists, daarna activering via vermelding/antwoord.
-  - Antwoorden op een botbericht (impliciete vermelding) omzeilt afzender-allowlists zoals `groupAllowFrom` **niet**.
-  - **Beveiligingsopmerking:** behandel `dmPolicy="open"` en `groupPolicy="open"` als instellingen voor noodgevallen. Ze zouden nauwelijks gebruikt moeten worden; geef de voorkeur aan pairing + allowlists, tenzij je elk lid van de ruimte volledig vertrouwt.
+Privé-/interne bestemmingen blijven geblokkeerd, tenzij je er expliciet voor kiest ze toe te staan.
 
-Details: [Configuratie](/nl/gateway/configuration) en [Groepen](/nl/channels/groups)
+- Standaard: `browser.ssrfPolicy.dangerouslyAllowPrivateNetwork` is niet ingesteld, zodat privé-/interne bestemmingen en bestemmingen voor speciaal gebruik geblokkeerd blijven. De verouderde alias `allowPrivateNetwork` wordt nog geaccepteerd.
+- Expliciet inschakelen: stel `dangerouslyAllowPrivateNetwork: true` in om die bestemmingen toe te staan.
+- Gebruik in de strikte modus `hostnameAllowlist` (patronen zoals `*.example.com`) en `allowedHostnames` (exacte hostuitzonderingen, waaronder anders geblokkeerde namen zoals `localhost`) voor expliciete uitzonderingen.
+- Verzoeken voor directe navigatie worden vooraf gecontroleerd. Tijdens de actie en een begrensde respijtperiode na de actie onderscheppen bewaakte Playwright-interacties (klikken, klikken op coördinaten, aanwijzen, slepen, scrollen, selecteren, indrukken, typen, formulieren invullen en evalueren) door het beleid geweigerde documentladingen op het hoogste niveau en in subframes voordat HTTP-verzoekbytes worden verzonden, waarna de uiteindelijke `http(s)`-URL naar beste vermogen opnieuw wordt gecontroleerd.
+- Voor elke nieuwe beheerde start van Chrome schakelt OpenClaw naar beste vermogen netwerkvoorspelling uit, waardoor de waargenomen speculatieve preconnect van Chromium voor die geweigerde ladingen wordt onderdrukt. Dit is beveiliging in de diepte, geen beleidsgrens: een browser die opnieuw wordt gebruikt na een herstart van de besturingsservice en andere browserbackends delen deze verharding mogelijk niet. Paginaroutering blijft onderschepping op verzoekniveau, geen netwerkfirewall: omleidingsstappen, het eerste verzoek van een pop-up, Service Worker-verkeer, paginacode die na het begrensde bewakingsvenster wordt uitgevoerd en sommige achtergrond-/subresourcepaden kunnen dit omzeilen. Controles van de uiteindelijke URL blijven een detectie-/quarantaineverdediging; volledige preventie vereist door de eigenaar beheerde uitgaande netwerkisolatie of een beleidsafdwingende proxy.
 
-## Promptinjectie (wat het is, waarom het belangrijk is)
+```json5
+{
+  browser: {
+    ssrfPolicy: {
+      dangerouslyAllowPrivateNetwork: false,
+      hostnameAllowlist: ["*.example.com", "example.com"],
+      allowedHostnames: ["localhost"],
+    },
+  },
+}
+```
 
-Promptinjectie is wanneer een aanvaller een bericht opstelt dat het model manipuleert om iets onveiligs te doen ("negeer je instructies", "dump je bestandssysteem", "volg deze link en voer opdrachten uit", enz.).
+## Netwerkblootstelling
 
-Zelfs met sterke systeemprompts is **promptinjectie niet opgelost**. Guardrails in systeemprompts zijn alleen zachte richtlijnen; harde afdwinging komt van toolbeleid, uitvoeringsgoedkeuringen, sandboxing en kanaal-allowlists (en operators kunnen deze bewust uitschakelen). Wat in de praktijk helpt:
+### Bind-adres, poort, firewall
 
-- Houd inkomende DM's vergrendeld (pairing/allowlists).
-- Geef in groepen de voorkeur aan activering via vermeldingen; vermijd "altijd-aan"-bots in openbare ruimtes.
-- Behandel links, bijlagen en geplakte instructies standaard als vijandig.
-- Voer gevoelige tooluitvoering uit in een sandbox; houd geheimen buiten het bestandssysteem dat de agent kan bereiken.
-- Opmerking: sandboxing is opt-in. Als sandboxmodus uit staat, wordt impliciet `host=auto` omgezet naar de gatewayhost. Expliciet `host=sandbox` faalt nog steeds gesloten omdat er geen sandboxruntime beschikbaar is. Stel `host=gateway` in als je wilt dat dit gedrag expliciet in de configuratie staat.
-- Beperk tools met hoog risico (`exec`, `browser`, `web_fetch`, `web_search`) tot vertrouwde agents of expliciete allowlists.
-- Als je interpreters toestaat (`python`, `node`, `ruby`, `perl`, `php`, `lua`, `osascript`), schakel dan `tools.exec.strictInlineEval` in zodat inline-eval-vormen nog steeds expliciete goedkeuring vereisen.
-- Shell-goedkeuringsanalyse wijst ook POSIX-parameterexpansievormen (`$VAR`, `$?`, `$$`, `$1`, `$@`, `${…}`) binnen **niet-gequote heredocs** af, zodat een heredoc-body op de allowlist geen shell-expansie als platte tekst langs allowlist-review kan smokkelen. Quote de heredoc-terminator (bijvoorbeeld `<<'EOF'`) om te kiezen voor letterlijke body-semantiek; niet-gequote heredocs die variabelen zouden hebben uitgebreid, worden afgewezen.
-- **Modelkeuze is belangrijk:** oudere/kleinere/legacy modellen zijn aanzienlijk minder robuust tegen promptinjectie en misbruik van tools. Gebruik voor agents met tools het sterkste beschikbare model van de nieuwste generatie dat is gehard voor instructies.
+De Gateway multiplexeert WebSocket + HTTP op één poort (standaard `18789`; configuratie/vlaggen/omgeving: `gateway.port`, `--port`, `OPENCLAW_GATEWAY_PORT`). Dat HTTP-oppervlak omvat de Control UI (SPA-assets, standaardbasispad `/`) en de canvashost (`/__openclaw__/canvas` en `/__openclaw__/a2ui` - willekeurige HTML/JS; behandel dit als niet-vertrouwde inhoud wanneer het in een normale browser wordt geladen; stel het niet bloot aan niet-vertrouwde netwerken/gebruikers en deel geen origin met weboppervlakken met verhoogde rechten).
 
-Rode vlaggen om als onvertrouwd te behandelen:
+`gateway.bind` bepaalt waar de Gateway luistert:
 
-- "Lees dit bestand/deze URL en doe precies wat er staat."
-- "Negeer je systeemprompt of veiligheidsregels."
-- "Onthul je verborgen instructies of tooluitvoer."
-- "Plak de volledige inhoud van ~/.openclaw of je logs."
+- `"loopback"` (standaard): alleen lokale clients kunnen verbinding maken.
+- `"lan"`, `"tailnet"`, `"custom"`: vergroten het aanvalsoppervlak. Gebruik dit alleen met Gateway-authenticatie (gedeeld token/wachtwoord of een correct geconfigureerde vertrouwde proxy) en een echte firewall.
 
-## Sanitization van speciale tokens in externe content
+Vuistregels: geef de voorkeur aan Tailscale Serve boven bindingen aan het LAN (Serve houdt de Gateway op loopback en Tailscale regelt de toegang); als je aan het LAN moet binden, beperk de poort met een firewall tot een strikte toelatingslijst van bron-IP-adressen in plaats van de poort breed door te sturen; stel de Gateway nooit zonder authenticatie bloot op `0.0.0.0`.
 
-OpenClaw verwijdert veelvoorkomende letterlijke special-token-waarden van chattemplates voor self-hosted LLM's uit ingepakte externe content en metadata voordat ze het model bereiken. Gedekte markerfamilies omvatten Qwen/ChatML, Llama, Gemma, Mistral, Phi en GPT-OSS role/turn-tokens.
+### Docker-poorten publiceren met UFW
 
-Waarom:
-
-- OpenAI-compatibele backends die self-hosted modellen aanbieden, behouden soms speciale tokens die in gebruikerstekst verschijnen, in plaats van ze te maskeren. Een aanvaller die naar inkomende externe content kan schrijven (een opgehaalde pagina, een e-mailbody, tooluitvoer met bestandsinhoud) zou anders een synthetische `assistant`- of `system`-rolgrens kunnen injecteren en ontsnappen aan de guardrails voor ingepakte content.
-- Sanitization gebeurt in de laag voor het inpakken van externe content, zodat dit uniform geldt voor fetch/read-tools en inkomende kanaalcontent in plaats van per provider.
-- Uitgaande modelreacties hebben al een aparte sanitizer die gelekte `<tool_call>`, `<function_calls>`, `<system-reminder>`, `<previous_response>` en vergelijkbare interne runtime-scaffolding verwijdert uit gebruikerszichtbare antwoorden bij de uiteindelijke kanaalafleveringsgrens. De sanitizer voor externe content is de inkomende tegenhanger.
-
-Dit vervangt niet de andere hardening op deze pagina - `dmPolicy`, allowlists, uitvoeringsgoedkeuringen, sandboxing en `contextVisibility` doen nog steeds het primaire werk. Het sluit een specifieke bypass op tokenizerlaag tegen self-hosted stacks die gebruikerstekst met speciale tokens intact doorsturen.
-
-## Onveilige bypassvlaggen voor externe content
-
-OpenClaw bevat expliciete bypassvlaggen die veiligheidswrapping van externe content uitschakelen:
-
-- `hooks.mappings[].allowUnsafeExternalContent`
-- `hooks.gmail.allowUnsafeExternalContent`
-- Cron-payloadveld `allowUnsafeExternalContent`
-
-Richtlijnen:
-
-- Laat deze in productie niet ingesteld/false.
-- Schakel ze alleen tijdelijk in voor strikt afgebakende debugging.
-- Indien ingeschakeld, isoleer die agent (sandbox + minimale tools + toegewezen sessienamespace).
-
-Risico-opmerking voor hooks:
-
-- Hook-payloads zijn onvertrouwde content, zelfs wanneer aflevering afkomstig is van systemen die je beheert (mail/docs/webcontent kan promptinjectie bevatten).
-- Zwakke modellagen vergroten dit risico. Geef voor hook-gedreven automatisering de voorkeur aan sterke moderne modellagen en houd toolbeleid strikt (`tools.profile: "messaging"` of strenger), plus sandboxing waar mogelijk.
-
-### Promptinjectie vereist geen openbare DM's
-
-Zelfs als **alleen jij** de bot berichten kunt sturen, kan promptinjectie nog steeds plaatsvinden via
-elke **onvertrouwde content** die de bot leest (webzoek-/fetchresultaten, browserpagina's,
-e-mails, docs, bijlagen, geplakte logs/code). Met andere woorden: de afzender is niet
-het enige dreigingsoppervlak; de **content zelf** kan vijandige instructies bevatten.
-
-Wanneer tools zijn ingeschakeld, is het typische risico het exfiltreren van context of het activeren van
-toolaanroepen. Verklein de blast radius door:
-
-- Een alleen-lezen of tool-uitgeschakelde **reader agent** te gebruiken om onvertrouwde content samen te vatten,
-  en daarna de samenvatting aan je hoofdagent door te geven.
-- `web_search` / `web_fetch` / `browser` uit te laten voor agents met tools, tenzij nodig.
-- Voor OpenResponses-URL-invoer (`input_file` / `input_image`) strikte
-  `gateway.http.endpoints.responses.files.urlAllowlist` en
-  `gateway.http.endpoints.responses.images.urlAllowlist` in te stellen, en `maxUrlParts` laag te houden.
-  Lege allowlists worden behandeld als niet ingesteld; gebruik `files.allowUrl: false` / `images.allowUrl: false`
-  als je URL-fetching volledig wilt uitschakelen.
-- Voor OpenResponses-bestandsinvoer wordt gedecodeerde `input_file`-tekst nog steeds geinjecteerd als
-  **onvertrouwde externe content**. Vertrouw er niet op dat bestandstekst vertrouwd is alleen omdat
-  de Gateway deze lokaal heeft gedecodeerd. Het geinjecteerde blok bevat nog steeds expliciete
-  `<<<EXTERNAL_UNTRUSTED_CONTENT ...>>>`-grensmarkers plus `Source: External`-metadata,
-  ook al laat dit pad de langere `SECURITY NOTICE:`-banner weg.
-- Dezelfde markergebaseerde wrapping wordt toegepast wanneer media-understanding tekst extraheert
-  uit bijgevoegde documenten voordat die tekst aan de mediaprompt wordt toegevoegd.
-- Sandboxing en strikte tool-allowlists in te schakelen voor elke agent die onvertrouwde invoer raakt.
-- Geheimen buiten prompts te houden; geef ze in plaats daarvan door via env/config op de gatewayhost.
-
-### Self-hosted LLM-backends
-
-OpenAI-compatibele self-hosted backends zoals vLLM, SGLang, TGI, LM Studio,
-of aangepaste Hugging Face-tokenizerstacks kunnen verschillen van gehoste providers in hoe
-speciale chattemplate-tokens worden verwerkt. Als een backend letterlijke strings tokenizet
-zoals `<|im_start|>`, `<|start_header_id|>` of `<start_of_turn>` als
-structurele chattemplate-tokens binnen gebruikerscontent, kan onvertrouwde tekst proberen
-rolgrenzen op tokenizerlaag te vervalsen.
-
-OpenClaw verwijdert veelvoorkomende letterlijke special-token-waarden per modelfamilie uit ingepakte
-externe content voordat die naar het model wordt verzonden. Houd wrapping van externe content
-ingeschakeld, en geef de voorkeur aan backendinstellingen die speciale
-tokens in door gebruikers aangeleverde content splitsen of escapen wanneer beschikbaar. Gehoste providers zoals OpenAI
-en Anthropic passen al hun eigen sanitization aan de requestzijde toe.
-
-### Modelsterkte (beveiligingsopmerking)
-
-Weerstand tegen promptinjectie is **niet** uniform over modellagen. Kleinere/goedkopere modellen zijn doorgaans gevoeliger voor toolmisbruik en instructiekaping, vooral onder vijandige prompts.
-
-<Warning>
-Voor agents met tools of agents die onvertrouwde content lezen, is het promptinjectierisico met oudere/kleinere modellen vaak te hoog. Voer die workloads niet uit op zwakke modellagen.
-</Warning>
-
-Aanbevelingen:
-
-- **Gebruik het nieuwste generatie, beste-tier model** voor elke bot die tools kan uitvoeren of bestanden/netwerken kan aanraken.
-- **Gebruik geen oudere/zwakkere/kleinere tiers** voor agents met tools of onvertrouwde inboxen; het promptinjectierisico is te hoog.
-- Als je een kleiner model moet gebruiken, **verklein de blast radius** (alleen-lezen tools, sterke sandboxing, minimale bestandssysteemtoegang, strikte allowlists).
-- Wanneer je kleine modellen draait, **schakel sandboxing in voor alle sessies** en **schakel web_search/web_fetch/browser uit**, tenzij invoer strikt gecontroleerd is.
-- Voor chat-only persoonlijke assistenten met vertrouwde invoer en geen tools zijn kleinere modellen meestal prima.
-
-## Reasoning en uitgebreide uitvoer in groepen
-
-`/reasoning`, `/verbose` en `/trace` kunnen interne reasoning, tooluitvoer
-of Plugin-diagnostiek blootstellen die
-niet bedoeld was voor een openbaar kanaal. Behandel ze in groepsinstellingen als **alleen debug**
-en houd ze uitgeschakeld tenzij je ze expliciet nodig hebt.
-
-Richtlijnen:
-
-- Houd `/reasoning`, `/verbose` en `/trace` uitgeschakeld in openbare ruimtes.
-- Als je ze inschakelt, doe dat dan alleen in vertrouwde DM's of strikt gecontroleerde ruimtes.
-- Onthoud: uitgebreide en trace-uitvoer kan toolargumenten, URL's, Plugin-diagnostiek en data bevatten die het model heeft gezien.
-
-## Voorbeelden voor configuratiehardening
-
-### Bestandsrechten
-
-Houd config + state prive op de gatewayhost:
-
-- `~/.openclaw/openclaw.json`: `600` (alleen gebruiker lezen/schrijven)
-- `~/.openclaw`: `700` (alleen gebruiker)
-
-`openclaw doctor` kan waarschuwen en aanbieden om deze rechten aan te scherpen.
-
-### Netwerkblootstelling (bind, poort, firewall)
-
-De Gateway multiplexet **WebSocket + HTTP** op een enkele poort:
-
-- Standaard: `18789`
-- Configuratie/vlaggen/env: `gateway.port`, `--port`, `OPENCLAW_GATEWAY_PORT`
-
-Dit HTTP-oppervlak omvat de Control UI en de canvashost:
-
-- Control UI (SPA-assets) (standaardbasispad `/`)
-- Canvashost: `/__openclaw__/canvas/` en `/__openclaw__/a2ui/` (willekeurige HTML/JS; behandel als onvertrouwde content)
-
-Als je canvascontent in een normale browser laadt, behandel die dan als elke andere onvertrouwde webpagina:
-
-- Stel de canvashost niet bloot aan onvertrouwde netwerken/gebruikers.
-- Laat canvascontent niet dezelfde origin delen als bevoorrechte weboppervlakken, tenzij je de implicaties volledig begrijpt.
-
-Bindmodus bepaalt waar de Gateway luistert:
-
-- `gateway.bind: "loopback"` (standaard): alleen lokale clients kunnen verbinding maken.
-- Niet-loopback-binds (`"lan"`, `"tailnet"`, `"custom"`) vergroten het aanvalsoppervlak. Gebruik ze alleen met gateway-authenticatie (gedeeld token/wachtwoord of een correct geconfigureerde vertrouwde proxy) en een echte firewall.
-
-Vuistregels:
-
-- Geef de voorkeur aan Tailscale Serve boven LAN-binds (Serve houdt de Gateway op loopback en Tailscale regelt de toegang).
-- Als je aan LAN moet binden, scherm de poort dan met een firewall af tot een strikte allowlist van bron-IP's; forward de poort niet breed.
-- Stel de Gateway nooit zonder authenticatie beschikbaar op `0.0.0.0`.
-
-### Docker-poortpublicatie met UFW
-
-Als je OpenClaw met Docker op een VPS draait, onthoud dan dat gepubliceerde containerpoorten
-(`-p HOST:CONTAINER` of Compose `ports:`) via Docker's forwarding
-chains worden gerouteerd, niet alleen via host-`INPUT`-regels.
-
-Om Docker-verkeer in lijn te houden met je firewallbeleid, dwing je regels af in
-`DOCKER-USER` (deze chain wordt geëvalueerd vóór Docker's eigen accept-regels).
-Op veel moderne distro's gebruiken `iptables`/`ip6tables` de `iptables-nft`-frontend
-en passen ze deze regels nog steeds toe op de nftables-backend.
-
-Minimaal allowlist-voorbeeld (IPv4):
+Gepubliceerde containerpoorten (`-p HOST:CONTAINER` of Compose `ports:`) worden gerouteerd via de forwardingketens van Docker, niet alleen via de `INPUT`-regels van de host. Dwing regels af in `DOCKER-USER` (geëvalueerd vóór de eigen acceptatieregels van Docker); de meeste moderne distributies gebruiken de `iptables-nft`-frontend, die deze regels nog steeds toepast op de nftables-backend.
 
 ```bash
-# /etc/ufw/after.rules (append as its own *filter section)
+# /etc/ufw/after.rules (voeg toe als een eigen *filter-sectie)
 *filter
 :DOCKER-USER - [0:0]
 -A DOCKER-USER -m conntrack --ctstate ESTABLISHED,RELATED -j RETURN
@@ -813,14 +543,7 @@ Minimaal allowlist-voorbeeld (IPv4):
 COMMIT
 ```
 
-IPv6 heeft aparte tabellen. Voeg een overeenkomend beleid toe in `/etc/ufw/after6.rules` als
-Docker IPv6 is ingeschakeld.
-
-Vermijd het hardcoderen van interfacenamen zoals `eth0` in documentatiefragmenten. Interfacenamen
-verschillen per VPS-image (`ens3`, `enp*`, enz.) en mismatches kunnen per ongeluk
-je deny-regel overslaan.
-
-Snelle validatie na herladen:
+IPv6 heeft afzonderlijke tabellen - voeg een overeenkomstig beleid toe in `/etc/ufw/after6.rules` als Docker IPv6 is ingeschakeld. Vermijd het hardcoderen van interfacenamen (`eth0`), omdat die per VPS-image verschillen (`ens3`, `enp*`, enz.) en een afwijking je weigeringsregel ongemerkt kan overslaan.
 
 ```bash
 ufw reload
@@ -829,286 +552,241 @@ ip6tables -S DOCKER-USER
 nmap -sT -p 1-65535 <public-ip> --open
 ```
 
-Verwachte externe poorten zouden alleen moeten zijn wat je bewust beschikbaar stelt (voor de meeste
-setups: SSH + je reverse-proxypoorten).
+Extern bereikbare poorten zouden alleen de poorten moeten zijn die je bewust blootstelt (voor de meeste configuraties: SSH + reverse-proxypoorten).
 
-### mDNS/Bonjour-detectie
+### mDNS-/Bonjour-detectie
 
-Wanneer de gebundelde `bonjour`-Plugin is ingeschakeld, zendt de Gateway zijn aanwezigheid uit via mDNS (`_openclaw-gw._tcp` op poort 5353) voor lokale apparaatdetectie. In volledige modus omvat dit TXT-records die operationele details kunnen blootgeven:
+Wanneer de gebundelde Plugin `bonjour` is ingeschakeld, zendt de Gateway zijn aanwezigheid via mDNS (`_openclaw-gw._tcp`, poort 5353) uit voor het detecteren van lokale apparaten. De volledige modus bevat TXT-records die operationele details blootleggen: `cliPath` (bestandssysteempad dat de gebruikersnaam en installatielocatie onthult), `sshPort` (maakt SSH-beschikbaarheid bekend), `displayName`/`lanHost` (hostnaaminformatie). Het uitzenden van infrastructuurdetails maakt verkenning op het LAN eenvoudiger.
 
-- `cliPath`: volledig bestandssysteempad naar de CLI-binary (onthult gebruikersnaam en installatielocatie)
-- `sshPort`: adverteert SSH-beschikbaarheid op de host
-- `displayName`, `lanHost`: hostnaaminformatie
+- Houd Bonjour uitgeschakeld tenzij LAN-detectie nodig is - het start automatisch op macOS-hosts en moet elders expliciet worden ingeschakeld; directe Gateway-URL's, Tailnet, SSH of wide-area DNS-SD vermijden lokale multicast.
+- De **minimale modus** (standaard wanneer Bonjour is ingeschakeld, aanbevolen voor blootgestelde Gateways) laat gevoelige velden weg:
 
-**Overweging voor operationele beveiliging:** Het uitzenden van infrastructuurdetails maakt verkenning eenvoudiger voor iedereen op het lokale netwerk. Zelfs "onschuldige" info zoals bestandssysteempaden en SSH-beschikbaarheid helpt aanvallers je omgeving in kaart te brengen.
+  ```json5
+  { discovery: { mdns: { mode: "minimal" } } }
+  ```
 
-**Aanbevelingen:**
+- **Uit** onderdrukt lokale detectie terwijl de Plugin ingeschakeld blijft:
 
-1. **Houd Bonjour uitgeschakeld tenzij LAN-detectie nodig is.** Bonjour start automatisch op macOS-hosts en is elders opt-in; directe Gateway-URL's, Tailnet, SSH of wide-area DNS-SD vermijden lokale multicast.
+  ```json5
+  { discovery: { mdns: { mode: "off" } } }
+  ```
 
-2. **Minimale modus** (standaard wanneer Bonjour is ingeschakeld, aanbevolen voor blootgestelde gateways): laat gevoelige velden weg uit mDNS-uitzendingen:
+- De **volledige modus** (expliciet inschakelen) bevat `cliPath` + `sshPort`:
 
-   ```json5
-   {
-     discovery: {
-       mdns: { mode: "minimal" },
-     },
-   }
-   ```
+  ```json5
+  { discovery: { mdns: { mode: "full" } } }
+  ```
 
-3. **Schakel mDNS-modus uit** als je de Plugin ingeschakeld wilt houden maar lokale apparaatdetectie wilt onderdrukken:
+- Je kunt ook `OPENCLAW_DISABLE_BONJOUR=1` instellen om mDNS zonder configuratiewijzigingen uit te schakelen.
 
-   ```json5
-   {
-     discovery: {
-       mdns: { mode: "off" },
-     },
-   }
-   ```
+In de minimale modus zendt de Gateway `role`, `gatewayPort`, `transport` uit, maar laat `cliPath`/`sshPort` weg; apps die het CLI-pad nodig hebben, kunnen het in plaats daarvan ophalen via de geauthenticeerde WebSocket-verbinding.
 
-4. **Volledige modus** (opt-in): neem `cliPath` + `sshPort` op in TXT-records:
+### WebSocket-authenticatie van de Gateway
 
-   ```json5
-   {
-     discovery: {
-       mdns: { mode: "full" },
-     },
-   }
-   ```
-
-5. **Omgevingsvariabele** (alternatief): stel `OPENCLAW_DISABLE_BONJOUR=1` in om mDNS uit te schakelen zonder configwijzigingen.
-
-Wanneer Bonjour is ingeschakeld in minimale modus, zendt de Gateway genoeg uit voor apparaatdetectie (`role`, `gatewayPort`, `transport`) maar laat `cliPath` en `sshPort` weg. Apps die CLI-padinformatie nodig hebben, kunnen die in plaats daarvan ophalen via de geauthenticeerde WebSocket-verbinding.
-
-### Vergrendel de Gateway-WebSocket (lokale authenticatie)
-
-Gateway-authenticatie is **standaard vereist**. Als er geen geldig Gateway-authenticatiepad is geconfigureerd,
-weigert de Gateway WebSocket-verbindingen (fail-closed).
-
-Onboarding genereert standaard een token (zelfs voor loopback), zodat
-lokale clients zich moeten authenticeren.
-
-Stel een token in zodat **alle** WS-clients zich moeten authenticeren:
+Gateway-authenticatie is standaard vereist - als er geen geldig authenticatiepad is geconfigureerd, weigert de Gateway WebSocket-verbindingen (fail-closed). Onboarding genereert standaard een token (zelfs voor loopback), zodat lokale clients zich moeten authenticeren.
 
 ```json5
-{
-  gateway: {
-    auth: { mode: "token", token: "your-token" },
-  },
-}
+{ gateway: { auth: { mode: "token", token: "your-token" } } }
 ```
 
-Doctor kan er een voor je genereren: `openclaw doctor --generate-gateway-token`.
+`openclaw doctor --generate-gateway-token` kan er een voor je genereren.
 
 <Note>
-`gateway.remote.token` en `gateway.remote.password` zijn bronnen voor clientreferenties. Ze beschermen lokale WS-toegang op zichzelf **niet**. Lokale aanroeppaden kunnen `gateway.remote.*` alleen als fallback gebruiken wanneer `gateway.auth.*` niet is ingesteld. Als `gateway.auth.token` of `gateway.auth.password` expliciet via SecretRef is geconfigureerd en niet kan worden opgelost, faalt de resolutie gesloten (geen maskering door remote fallback).
+`gateway.remote.token` en `gateway.remote.password` zijn bronnen voor clientreferenties - op zichzelf beschermen ze lokale WS-toegang niet. Lokale aanroeppaden gebruiken `gateway.remote.*` alleen als terugval wanneer `gateway.auth.*` niet is ingesteld. Als `gateway.auth.token` of `gateway.auth.password` expliciet via SecretRef is geconfigureerd en niet kan worden opgelost, mislukt de oplossing gesloten (zonder maskering door terugval op extern).
 </Note>
-Optioneel: pin remote TLS met `gateway.remote.tlsFingerprint` wanneer je `wss://` gebruikt.
-Plaintext `ws://` wordt geaccepteerd voor loopback, private IP-literals, `.local` en
-Tailnet-`*.ts.net` Gateway-URL's. Stel voor andere vertrouwde private-DNS-namen
-`OPENCLAW_ALLOW_INSECURE_PRIVATE_WS=1` in op het clientproces als noodoptie.
-Dit is bewust alleen een procesomgevingsvariabele, geen `openclaw.json`-config
-key.
-Mobiele pairing en handmatige of gescande Gateway-routes op Android zijn strenger:
-cleartext wordt geaccepteerd voor loopback, maar private-LAN, link-local, `.local` en
-hostnamen zonder punt moeten TLS gebruiken, tenzij je expliciet kiest voor het vertrouwde
-private-netwerk-cleartextpad.
 
-Lokale apparaatpairing:
+Zet externe TLS vast met `gateway.remote.tlsFingerprint` wanneer je `wss://` gebruikt. Onversleutelde `ws://` wordt geaccepteerd voor loopback, letterlijke privé-IP-adressen, `.local` en Gateway-URL's met Tailnet-`*.ts.net`; stel voor andere vertrouwde privé-DNS-namen `OPENCLAW_ALLOW_INSECURE_PRIVATE_WS=1` in op het clientproces als noodmaatregel (alleen procesomgeving, geen `openclaw.json`-sleutel). Mobiele koppeling en handmatige/gescande Gateway-routes voor Android zijn strenger: cleartext is alleen toegestaan voor loopback, terwijl privé-LAN, link-local, `.local` en hostnamen zonder punt TLS moeten gebruiken, tenzij je expliciet kiest voor het vertrouwde cleartextpad voor privénetwerken.
 
-- Apparaatpairing wordt automatisch goedgekeurd voor directe lokale loopback-verbindingen om
-  same-host-clients soepel te houden.
-- OpenClaw heeft ook een smal backend/container-lokaal self-connectpad voor
-  vertrouwde helperflows met gedeeld geheim.
-- Tailnet- en LAN-verbindingen, inclusief same-host tailnet-binds, worden voor
-  pairing als remote behandeld en hebben nog steeds goedkeuring nodig.
-- Forwarded-header-bewijs op een loopback-verzoek diskwalificeert loopback-
-  localiteit. Automatische goedkeuring van metadata-upgrades is smal afgebakend. Zie
-  [Gateway-pairing](/nl/gateway/pairing) voor beide regels.
+Apparaatkoppeling wordt automatisch goedgekeurd voor directe lokale loopbackverbindingen (plus een beperkt backend-/containerlokaal zelfverbindingspad voor vertrouwde helperflows met een gedeeld geheim); Tailnet- en LAN-verbindingen, inclusief verbindingen op dezelfde host met een tailnetadres, worden als extern behandeld en moeten nog steeds worden goedgekeurd. Een opgelost `tailnet`-adres of `custom`-adres anders dan `127.0.0.1` of `0.0.0.0` voegt een afzonderlijke `127.0.0.1`-listener toe; alleen verbindingen met die lokale listener krijgen loopbacksemantiek. Bewijs uit doorgestuurde headers bij een loopbackverzoek sluit loopbacklokaliteit uit; automatische goedkeuring van metadata-upgrades is strikt afgebakend. Zie [Gateway-koppeling](/nl/gateway/pairing).
 
 Authenticatiemodi:
 
-- `gateway.auth.mode: "token"`: gedeeld bearer-token (aanbevolen voor de meeste setups).
-- `gateway.auth.mode: "password"`: wachtwoordauthenticatie (stel bij voorkeur in via env: `OPENCLAW_GATEWAY_PASSWORD`).
-- `gateway.auth.mode: "trusted-proxy"`: vertrouw op een identity-aware reverse proxy om gebruikers te authenticeren en identiteit via headers door te geven (zie [Trusted Proxy Auth](/nl/gateway/trusted-proxy-auth)).
+- `"token"`: gedeeld bearertoken (aanbevolen voor de meeste configuraties).
+- `"password"`: stel dit bij voorkeur in via `OPENCLAW_GATEWAY_PASSWORD`.
+- `"trusted-proxy"`: vertrouw op een identiteitsbewuste reverse proxy om gebruikers te authenticeren en identiteit via headers door te geven. Zie [Authenticatie via vertrouwde proxy](/nl/gateway/trusted-proxy-auth).
 
-Rotatiechecklist (token/wachtwoord):
+Checklist voor rotatie (token/wachtwoord): genereer/stel een nieuw geheim in (`gateway.auth.token` of `OPENCLAW_GATEWAY_PASSWORD`); start de Gateway opnieuw (of de macOS-app als die de Gateway beheert); werk externe clients bij (`gateway.remote.token`/`.password`); controleer of de oude aanmeldgegevens niet meer werken.
 
-1. Genereer/stel een nieuw geheim in (`gateway.auth.token` of `OPENCLAW_GATEWAY_PASSWORD`).
-2. Herstart de Gateway (of herstart de macOS-app als die de Gateway beheert).
-3. Werk eventuele remote clients bij (`gateway.remote.token` / `.password` op machines die de Gateway aanroepen).
-4. Controleer dat je niet langer met de oude referenties kunt verbinden.
+### Identiteitsheaders van Tailscale Serve
 
-### Tailscale Serve-identiteitsheaders
+Wanneer `gateway.auth.allowTailscale` `true` is (standaard voor Serve), accepteert OpenClaw de identiteitsheader `tailscale-user-login` van Tailscale Serve voor authenticatie van de Control UI/WebSocket. De identiteit wordt geverifieerd door het adres `x-forwarded-for` via de lokale Tailscale-daemon (`tailscale whois`) om te zetten en met de header te vergelijken. Dit wordt alleen geactiveerd voor loopbackverzoeken die `x-forwarded-for`, `x-forwarded-proto` en `x-forwarded-host` bevatten zoals door Tailscale ingevoegd. Voor deze asynchrone controle worden mislukte pogingen voor dezelfde `{scope, ip}` geserialiseerd voordat de limiter de mislukking registreert, zodat gelijktijdige ongeldige nieuwe pogingen van één Serve-client de tweede poging onmiddellijk kunnen blokkeren.
 
-Wanneer `gateway.auth.allowTailscale` `true` is (standaard voor Serve), accepteert OpenClaw
-Tailscale Serve-identiteitsheaders (`tailscale-user-login`) voor Control
-UI/WebSocket-authenticatie. OpenClaw verifieert de identiteit door het
-`x-forwarded-for`-adres via de lokale Tailscale-daemon (`tailscale whois`) op te lossen
-en te matchen met de header. Dit wordt alleen geactiveerd voor verzoeken die loopback raken
-en `x-forwarded-for`, `x-forwarded-proto` en `x-forwarded-host` bevatten zoals
-geïnjecteerd door Tailscale.
-Voor dit asynchrone identiteitscontrolepad worden mislukte pogingen voor dezelfde `{scope, ip}`
-geserialiseerd voordat de limiter de mislukking registreert. Gelijktijdige slechte retries
-van één Serve-client kunnen daarom de tweede poging onmiddellijk blokkeren
-in plaats van als twee gewone mismatches door te racen.
-HTTP API-eindpunten (bijvoorbeeld `/v1/*`, `/tools/invoke` en `/api/channels/*`)
-gebruiken **geen** Tailscale-authenticatie via identiteitsheaders. Ze volgen nog steeds de
-geconfigureerde HTTP-authenticatiemodus van de Gateway.
+HTTP-API-eindpunten (`/v1/*`, `/tools/invoke`, `/api/channels/*`) gebruiken geen authenticatie via Tailscale-identiteitsheaders; ze volgen de geconfigureerde HTTP-authenticatiemodus van de Gateway.
 
-Belangrijke grensnotitie:
+HTTP-bearerauthenticatie van de Gateway biedt in feite volledige of geen operatortoegang. Aanmeldgegevens waarmee `/v1/chat/completions`, `/v1/responses`, pluginroutes zoals `/api/v1/admin/rpc` of `/api/channels/*` kunnen worden aangeroepen, zijn operatorgeheimen met volledige toegang voor die Gateway: bearerauthenticatie met een gedeeld geheim herstelt de volledige standaardoperatorscopes (`operator.admin`, `operator.approvals`, `operator.pairing`, `operator.read`, `operator.talk.secrets`, `operator.write`) en eigenaarssemantiek voor agentbeurten, en beperktere waarden voor `x-openclaw-scopes` beperken dit pad met gedeeld geheim niet. Semantiek van scopes per verzoek is alleen van toepassing wanneer het verzoek afkomstig is uit een modus met identiteit (authenticatie via vertrouwde proxy) of een expliciete privé-ingang zonder authenticatie; in die modi wordt bij het weglaten van `x-openclaw-scopes` teruggevallen op de normale standaardset operatorscopes, en headers op eigenaarsniveau zoals `x-openclaw-model` vereisen `operator.admin` wanneer scopes zijn beperkt. `/tools/invoke` en HTTP-eindpunten voor sessiegeschiedenis volgen dezelfde regel voor gedeelde geheimen. Deel deze aanmeldgegevens niet met niet-vertrouwde aanroepers; gebruik bij voorkeur afzonderlijke Gateways per vertrouwensgrens.
 
-- Gateway HTTP bearer-authenticatie is effectief alles-of-niets operator-toegang.
-- Behandel referenties die `/v1/chat/completions`, `/v1/responses`, Plugin-routes zoals `/api/v1/admin/rpc` of `/api/channels/*` kunnen aanroepen als operatorgeheimen met volledige toegang voor die Gateway.
-- Op het OpenAI-compatibele HTTP-oppervlak herstelt bearer-authenticatie met gedeeld geheim de volledige standaard operatorscopes (`operator.admin`, `operator.approvals`, `operator.pairing`, `operator.read`, `operator.talk.secrets`, `operator.write`) en owner-semantiek voor agentbeurten; smallere `x-openclaw-scopes`-waarden beperken dat pad met gedeeld geheim niet.
-- Per-request-scope-semantiek op HTTP geldt alleen wanneer het verzoek uit een identity-bearing modus komt, zoals trusted proxy-authenticatie, of uit een expliciet no-auth private ingress.
-- In die identity-bearing modi valt het weglaten van `x-openclaw-scopes` terug op de normale standaardset operatorscopes; stuur de header expliciet wanneer je een smallere scopeset wilt. Owner-level OpenAI-compatibele headers zoals `x-openclaw-model` vereisen `operator.admin` wanneer scopes zijn versmald.
-- `/tools/invoke` en HTTP-eindpunten voor sessiegeschiedenis volgen dezelfde regel voor gedeelde geheimen: bearer-authenticatie met token/wachtwoord wordt daar ook behandeld als volledige operator-toegang, terwijl identity-bearing modi nog steeds gedeclareerde scopes respecteren.
-- Deel deze referenties niet met niet-vertrouwde callers; geef de voorkeur aan aparte gateways per vertrouwensgrens.
+Tokenloze Serve-authenticatie veronderstelt dat de Gateway-host zelf wordt vertrouwd; dit biedt geen bescherming tegen vijandige processen op dezelfde host. Als niet-vertrouwde lokale code op de Gateway-host kan worden uitgevoerd, schakel dan `allowTailscale` uit en vereis expliciete authenticatie met een gedeeld geheim (`token` of `password`).
 
-**Vertrouwensaanname:** tokenloze Serve-authenticatie gaat ervan uit dat de Gateway-host vertrouwd is.
-Behandel dit niet als bescherming tegen vijandige processen op dezelfde host. Als niet-vertrouwde
-lokale code op de Gateway-host kan draaien, schakel `gateway.auth.allowTailscale` uit
-en vereis expliciete authenticatie met gedeeld geheim via `gateway.auth.mode: "token"` of
-`"password"`.
-
-**Beveiligingsregel:** forward deze headers niet vanuit je eigen reverse proxy. Als
-je TLS termineert of een proxy vóór de Gateway plaatst, schakel dan
-`gateway.auth.allowTailscale` uit en gebruik authenticatie met gedeeld geheim (`gateway.auth.mode:
-"token"` of `"password"`) of [Trusted Proxy Auth](/nl/gateway/trusted-proxy-auth)
-in plaats daarvan.
-
-Vertrouwde proxy's:
-
-- Als je TLS vóór de Gateway termineert, stel `gateway.trustedProxies` in op de IP's van je proxy.
-- OpenClaw vertrouwt `x-forwarded-for` (of `x-real-ip`) van die IP's om het client-IP te bepalen voor lokale pairingcontroles en HTTP-auth/local-controles.
-- Zorg dat je proxy `x-forwarded-for` **overschrijft** en directe toegang tot de Gateway-poort blokkeert.
+Stuur deze headers niet door vanuit je eigen reverse proxy. Als je TLS beëindigt of een proxy vóór de Gateway plaatst, schakel dan `allowTailscale` uit en gebruik in plaats daarvan authenticatie met een gedeeld geheim of [Authenticatie via vertrouwde proxy](/nl/gateway/trusted-proxy-auth).
 
 Zie [Tailscale](/nl/gateway/tailscale) en [Weboverzicht](/nl/web).
 
-### Browserbesturing via nodehost (aanbevolen)
+### Reverse-proxyconfiguratie
 
-Als je Gateway remote is maar de browser op een andere machine draait, voer dan een **nodehost**
-uit op de browsermachine en laat de Gateway browseracties proxyen (zie [Browsertool](/nl/tools/browser)).
-Behandel node-pairing als admin-toegang.
+Stel `gateway.trustedProxies` in voor correcte verwerking van doorgestuurde client-IP-adressen achter nginx/Caddy/Traefik/enzovoort. Wanneer de Gateway proxyheaders detecteert van een adres dat **niet** in `trustedProxies` staat, wordt de verbinding niet als lokaal behandeld; als Gateway-authenticatie is uitgeschakeld, wordt die verbinding geweigerd. Dit voorkomt dat verbindingen via een proxy van localhost afkomstig lijken te zijn en automatisch worden vertrouwd.
 
-Aanbevolen patroon:
+`trustedProxies` wordt ook gebruikt door `gateway.auth.mode: "trusted-proxy"`, dat strenger is: standaard wordt toegang bij loopbackbronproxy's bij twijfel geweigerd. Reverse proxy's op dezelfde host die loopback gebruiken, kunnen `trustedProxies` gebruiken voor detectie van lokale clients en verwerking van doorgestuurde IP-adressen, maar kunnen alleen aan de authenticatiemodus `trusted-proxy` voldoen wanneer `gateway.auth.trustedProxy.allowLoopback = true`; gebruik anders token-/wachtwoordauthenticatie.
 
-- Houd de Gateway en nodehost op dezelfde tailnet (Tailscale).
-- Pair de node bewust; schakel browser-proxyrouting uit als je die niet nodig hebt.
+```yaml
+gateway:
+  trustedProxies:
+    - "10.0.0.1" # IP-adres van reverse proxy
+  allowRealIpFallback: false # standaard false; alleen inschakelen als je proxy geen X-Forwarded-For kan leveren
+  auth:
+    mode: password
+    password: ${OPENCLAW_GATEWAY_PASSWORD}
+```
 
-Vermijd:
+Wanneer `trustedProxies` is ingesteld, gebruikt de Gateway `X-Forwarded-For` om het client-IP-adres te bepalen; `X-Real-IP` wordt genegeerd tenzij `gateway.allowRealIpFallback: true` expliciet is ingesteld. Zorg ervoor dat je proxy `X-Forwarded-For`/`X-Real-IP` **overschrijft** in plaats van er waarden aan toe te voegen:
 
-- Relay-/controlpoorten beschikbaar stellen via LAN of het openbare internet.
-- Tailscale Funnel voor browsercontrole-eindpunten (openbare blootstelling).
+```nginx
+# goed
+proxy_set_header X-Forwarded-For $remote_addr;
+proxy_set_header X-Real-IP $remote_addr;
 
-### Geheimen op schijf
+# fout: behoudt door niet-vertrouwde clients aangeleverde waarden of voegt ze toe
+proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+```
+
+Headers van vertrouwde proxy's zorgen er niet voor dat het koppelen van Node-apparaten automatisch wordt vertrouwd: `gateway.nodes.pairing.autoApproveCidrs` is een afzonderlijk operatorbeleid dat standaard is uitgeschakeld, en headerpaden van vertrouwde proxy's met een loopbackbron blijven uitgesloten van automatische Node-goedkeuring, zelfs wanneer authenticatie via vertrouwde loopbackproxy's is ingeschakeld (omdat lokale aanroepers die headers kunnen vervalsen).
+
+### Opmerkingen over HSTS en origins
+
+- De Gateway van OpenClaw is primair bedoeld voor lokaal gebruik/loopback. Als je TLS bij een reverse proxy beëindigt, stel je HSTS daar in.
+- Als de Gateway zelf HTTPS beëindigt, zorgt `gateway.http.securityHeaders.strictTransportSecurity` ervoor dat OpenClaw-antwoorden de HSTS-header bevatten.
+- Niet-loopbackimplementaties van de Control UI vereisen standaard `gateway.controlUi.allowedOrigins`; `allowedOrigins: ["*"]` is een expliciet beleid dat alles toestaat, geen beveiligde standaardinstelling. Vermijd dit buiten strikt gecontroleerde lokale tests.
+- Mislukte authenticatie vanuit een browser-origin op loopback blijft onderworpen aan frequentiebeperking, zelfs wanneer de algemene loopbackvrijstelling is ingeschakeld, maar de blokkeringssleutel wordt per genormaliseerde waarde van `Origin` afgebakend in plaats van één gedeelde localhost-bucket.
+- `gateway.controlUi.dangerouslyAllowHostHeaderOriginFallback=true` schakelt de terugvalmodus voor origins op basis van de Host-header in; behandel dit als een gevaarlijk, door de operator geselecteerd beleid.
+- Beschouw DNS-rebinding en het gedrag van proxy-hostheaders als aandachtspunten voor implementatieversteviging; houd `trustedProxies` strikt en stel de Gateway niet rechtstreeks bloot aan het openbare internet.
+- Gedetailleerde implementatierichtlijnen: [Authenticatie via vertrouwde proxy](/nl/gateway/trusted-proxy-auth#tls-termination-and-hsts).
+
+### Control UI via HTTP
+
+De Control UI heeft een beveiligde context (HTTPS of localhost) nodig om een apparaatidentiteit te genereren.
+
+- `gateway.controlUi.allowInsecureAuth`: lokale compatibiliteitsschakelaar. Staat op localhost authenticatie van de Control UI zonder apparaatidentiteit toe wanneer de pagina via onbeveiligde HTTP wordt geladen. Omzeilt koppelingscontroles niet en versoepelt de vereisten voor apparaatidentiteit op afstand (niet-localhost) niet. Gebruik bij voorkeur HTTPS (Tailscale Serve) of open de UI op `127.0.0.1`.
+- `gateway.controlUi.dangerouslyDisableDeviceAuth`: uitsluitend voor noodgevallen; schakelt controles van apparaatidentiteit volledig uit. Ernstige beveiligingsverslechtering; laat dit uitgeschakeld, tenzij je actief fouten opspoort en de instelling snel kunt terugdraaien.
+- Los van deze vlaggen kan een geslaagde `gateway.auth.mode: "trusted-proxy"` **operator**sessies van de Control UI zonder apparaatidentiteit toelaten. Dit is opzettelijk gedrag van de authenticatiemodus, geen omweg via `allowInsecureAuth`, en geldt niet voor Control UI-sessies met een Node-rol.
+
+`openclaw security audit` waarschuwt wanneer `allowInsecureAuth` is ingeschakeld.
+
+### Onveilige/gevaarlijke vlaggen
+
+`openclaw security audit` genereert `config.insecure_or_dangerous_flags` voor elke ingeschakelde bekende onveilige/gevaarlijke foutopsporingsschakelaar (één bevinding per vlag). Laat deze in productie uitgeschakeld. Als auditonderdrukkingen zijn geconfigureerd, blijft `security.audit.suppressions.active` in de actieve uitvoer staan, zelfs wanneer overeenkomende bevindingen naar `suppressedFindings` worden verplaatst.
+
+<AccordionGroup>
+  <Accordion title="Vlaggen die momenteel door de audit worden gevolgd">
+    - `gateway.controlUi.allowInsecureAuth=true`
+    - `gateway.controlUi.dangerouslyAllowHostHeaderOriginFallback=true`
+    - `gateway.controlUi.dangerouslyDisableDeviceAuth=true`
+    - `security.audit.suppressions configured (<count>)`
+    - `hooks.gmail.allowUnsafeExternalContent=true`
+    - `hooks.mappings[<index>].allowUnsafeExternalContent=true`
+    - `tools.exec.applyPatch.workspaceOnly=false`
+    - `plugins.entries.acpx.config.permissionMode=approve-all`
+
+  </Accordion>
+
+  <Accordion title="Alle dangerous*/dangerously*-sleutels in het configuratieschema">
+    Control UI en browser:
+    - `gateway.controlUi.dangerouslyAllowHostHeaderOriginFallback`
+    - `gateway.controlUi.dangerouslyDisableDeviceAuth`
+    - `browser.ssrfPolicy.dangerouslyAllowPrivateNetwork`
+
+    Kanaalnaamvergelijking (gebundelde kanalen en pluginkanalen; waar van toepassing ook per `accounts.<accountId>`):
+    - `channels.discord.dangerouslyAllowNameMatching`
+    - `channels.googlechat.dangerouslyAllowNameMatching`
+    - `channels.msteams.dangerouslyAllowNameMatching`
+    - `channels.slack.dangerouslyAllowNameMatching`
+    - `channels.irc.dangerouslyAllowNameMatching` (pluginkanaal)
+    - `channels.mattermost.dangerouslyAllowNameMatching` (pluginkanaal)
+    - `channels.synology-chat.dangerouslyAllowNameMatching` (pluginkanaal)
+    - `channels.synology-chat.dangerouslyAllowInheritedWebhookPath` (pluginkanaal)
+    - `channels.zalouser.dangerouslyAllowNameMatching` (pluginkanaal)
+
+    Netwerkblootstelling:
+    - `channels.telegram.network.dangerouslyAllowPrivateNetwork` (ook per account)
+
+    Sandbox-Docker (standaardwaarden + per agent):
+    - `agents.defaults.sandbox.docker.dangerouslyAllowReservedContainerTargets`
+    - `agents.defaults.sandbox.docker.dangerouslyAllowExternalBindSources`
+    - `agents.defaults.sandbox.docker.dangerouslyAllowContainerNamespaceJoin`
+
+  </Accordion>
+</AccordionGroup>
+
+## Vertrouwen in implementatie en host
+
+- Volledige schijfversleuteling op de Gateway-host; gebruik bij voorkeur een specifiek OS-gebruikersaccount voor de Gateway als de host wordt gedeeld.
+- Vergrendeling van afhankelijkheden voor gepubliceerde pakketten: broncodecheck-outs gebruiken `pnpm-lock.yaml`; het gepubliceerde npm-pakket `openclaw` en npm-pluginpakketten van OpenClaw bevatten `npm-shrinkwrap.json`, zodat installaties de beoordeelde transitieve afhankelijkheidsgraaf van de release gebruiken in plaats van tijdens de installatie een nieuwe graaf op te lossen. Dit is een grens voor versteviging van de toeleveringsketen en reproduceerbaarheid van releases, geen sandbox. Zie [npm-shrinkwrap](/nl/gateway/security/shrinkwrap).
+- Veilige bestandsbewerkingen: OpenClaw gebruikt `@openclaw/fs-safe` voor tot de root beperkt bestandstoegang, atomische schrijfbewerkingen, archiefextractie, tijdelijke werkruimten en helpers voor geheime bestanden. De optionele POSIX-Python-helper is standaard **uitgeschakeld**; stel `OPENCLAW_FS_SAFE_PYTHON_MODE=auto` of `require` alleen in wanneer je de extra versteviging voor fd-relatieve mutaties wilt en een Python-runtime kunt ondersteunen. Details: [Veilige bestandsbewerkingen](/nl/gateway/security/secure-file-operations).
+- Risico van een gedeelde Slack-werkruimte: als iedereen in Slack de bot berichten kan sturen, is het belangrijkste risico gedelegeerde toolbevoegdheid. Elke toegestane afzender kan binnen het beleid van de agent toolaanroepen uitlokken (`exec`, browser, netwerk-/bestandstools), prompt-/inhoudsinjectie van één afzender kan gedeelde status/apparaten/uitvoer beïnvloeden, en als de gedeelde agent gevoelige aanmeldgegevens/bestanden heeft, kan elke toegestane afzender mogelijk exfiltratie aansturen via toolgebruik. Gebruik afzonderlijke agents/Gateways met minimale tools voor teamworkflows; houd agents met persoonlijke gegevens privé.
+- Door het bedrijf gedeelde agent (aanvaardbaar patroon): prima wanneer iedereen die de agent gebruikt binnen dezelfde vertrouwensgrens valt (bijvoorbeeld één bedrijfsteam) en de agent strikt tot bedrijfsdoeleinden is beperkt. Voer deze uit op een specifieke machine/VM/container, gebruik een specifiek OS-gebruikersaccount plus specifieke browser/profiel/accounts en meld die runtime niet aan bij persoonlijke Apple-/Google-accounts of persoonlijke wachtwoordbeheerder-/browserprofielen. Het combineren van persoonlijke en bedrijfsidentiteiten in dezelfde runtime heft de scheiding op en verhoogt het risico op blootstelling van persoonlijke gegevens.
+
+## Geheimen op schijf
 
 Ga ervan uit dat alles onder `~/.openclaw/` (of `$OPENCLAW_STATE_DIR/`) geheimen of privégegevens kan bevatten:
 
-- `openclaw.json`: configuratie kan tokens bevatten (Gateway, externe Gateway), providerinstellingen en allowlists.
-- `credentials/**`: kanaalreferenties (voorbeeld: WhatsApp-referenties), koppelingsallowlists, verouderde OAuth-imports.
-- `agents/<agentId>/agent/auth-profiles.json`: API-sleutels, tokenprofielen, OAuth-tokens en optionele `keyRef`/`tokenRef`.
-- `agents/<agentId>/agent/codex-home/**`: per-agent Codex-appserveraccount, configuratie, skills, plugins, native threadstatus en diagnostiek (de standaard).
-- `$CODEX_HOME/**` of `~/.codex/**`: wanneer de Codex-plugin expliciet
-  `appServer.homeScope: "user"` gebruikt, kan de Gateway het native Codex-
-  account, de configuratie, plugins en threads lezen en bijwerken. Behandel dit als bevoorrechte eigenaarstoegang;
-  de modus is alleen lokale stdio en native threadbeheer is alleen voor de eigenaar.
-- `secrets.json` (optioneel): bestandsgebaseerde geheime payload die wordt gebruikt door `file` SecretRef-providers (`secrets.providers`).
-- `agents/<agentId>/agent/auth.json`: verouderd compatibiliteitsbestand. Statische `api_key`-vermeldingen worden opgeschoond wanneer ze worden gevonden.
-- `agents/<agentId>/sessions/**`: sessietranscripten (`*.jsonl`) + routeringsmetadata (`sessions.json`) die privéberichten en tooluitvoer kunnen bevatten.
-- gebundelde pluginpakketten: geïnstalleerde plugins (plus hun `node_modules/`).
-- `sandboxes/**`: tool-sandboxwerkruimten; kunnen kopieën verzamelen van bestanden die je binnen de sandbox leest/schrijft.
+| Pad                                            | Inhoud                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `openclaw.json`                                | De configuratie kan tokens (Gateway, externe Gateway), providerinstellingen en toelatingslijsten bevatten.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| `credentials/**`                               | Kanaalreferenties (bijvoorbeeld WhatsApp-referenties), toelatingslijsten voor koppeling, verouderde OAuth-imports.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| `agents/<agentId>/agent/auth-profiles.json`    | API-sleutels, tokenprofielen, OAuth-tokens, optionele `keyRef`/`tokenRef`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| `agents/<agentId>/agent/codex-home/**`         | Codex-appserveraccount, configuratie, Skills, Plugins, systeemeigen threadstatus en diagnostische gegevens per agent (standaard).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| `$CODEX_HOME/**` of `~/.codex/**`              | Systeemeigen Codex-runtimestatus. De gewone harness heeft er alleen toegang toe met expliciete `plugins.entries.codex.config.appServer.homeScope: "user"`. De afzonderlijke supervisieverbinding heeft er toegang toe wanneer het opgeloste home-bereik `"user"` is, wat standaard geldt voor stdio of Unix wanneer dit niet is ingesteld. Bevat het systeemeigen Codex-account, de configuratie, Plugins en de threadopslag. Supervisie vermeldt bronmetadata en houdt de canonieke systeemeigen vertakking van een voortgezette chat en latere beurten op die verbinding bij; bij vertakking wordt een begrensde, blijvend opgeslagen gebruikers- en assistentgeschiedenis gekopieerd naar een geauthenticeerde, aan een model gebonden OpenClaw-chat. Schakel dit alleen in voor een door de eigenaar beheerde Gateway. Zie [Codex-harness](/nl/plugins/codex-harness#share-threads-with-codex-desktop-and-cli) en [Codex-supervisie](/plugins/codex-supervision). |
+| `secrets.json` (optioneel)                      | Bestandsgebaseerde geheime payload die wordt gebruikt door `file` SecretRef-providers (`secrets.providers`).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| `agents/<agentId>/agent/auth.json`             | Verouderd compatibiliteitsbestand; statische `api_key`-vermeldingen worden bij ontdekking opgeschoond.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| `agents/<agentId>/agent/openclaw-agent.sqlite` | Runtimestatus per agent, inclusief sessierijen en transcripties die privéberichten en tooluitvoer kunnen bevatten.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| `agents/<agentId>/sessions/**`                 | Verouderde bronnen en archieven voor sessiemigratie die privéberichten en tooluitvoer kunnen bevatten.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| gebundelde Plugin-pakketten                        | Geïnstalleerde Plugins (plus hun `node_modules/`).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| `sandboxes/**`                                 | Tool-sandboxwerkruimten; hierin kunnen kopieën worden verzameld van bestanden die binnen de sandbox zijn gelezen of geschreven.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
 
-Hardeningtips:
+### Opslagoverzicht voor referenties
 
-- Houd machtigingen strikt (`700` op mappen, `600` op bestanden).
-- Gebruik volledige-schijfversleuteling op de gatewayhost.
-- Geef de voorkeur aan een speciaal OS-gebruikersaccount voor de Gateway als de host wordt gedeeld.
+Ook nuttig voor beslissingen over back-ups:
 
-### Workspace-`.env`-bestanden
+- WhatsApp: `~/.openclaw/credentials/whatsapp/<accountId>/creds.json`
+- Telegram-bottoken: configuratie/omgeving of `channels.telegram.tokenFile` (alleen een regulier bestand; symbolische koppelingen worden geweigerd)
+- Discord-bottoken: configuratie/omgeving of SecretRef (omgevings-/bestands-/exec-providers)
+- Slack-tokens: configuratie/omgeving (`channels.slack.*`)
+- Toelatingslijsten voor koppeling: `~/.openclaw/credentials/<channel>-allowFrom.json` (standaardaccount) / `<channel>-<accountId>-allowFrom.json` (niet-standaardaccounts)
+- Profielen voor modelauthenticatie: `~/.openclaw/agents/<agentId>/agent/auth-profiles.json`
+- Verouderde OAuth-import: `~/.openclaw/credentials/oauth.json`
 
-OpenClaw laadt workspace-lokale `.env`-bestanden voor agents en tools, maar laat die bestanden nooit stilzwijgend Gateway-runtime-instellingen overschrijven.
+Versterking: houd de machtigingen strikt (`700` voor mappen, `600` voor bestanden); gebruik volledige schijfversleuteling op de Gateway-host; geef de voorkeur aan een speciaal besturingssysteemaccount als de host wordt gedeeld.
 
-- Omgevingsvariabelen voor providerreferenties worden geblokkeerd vanuit niet-vertrouwde workspace-`.env`-bestanden. Voorbeelden zijn `GEMINI_API_KEY`, `GOOGLE_API_KEY`, `XAI_API_KEY`, `MISTRAL_API_KEY`, `GROQ_API_KEY`, `DEEPSEEK_API_KEY`, `PERPLEXITY_API_KEY`, `BRAVE_API_KEY`, `TAVILY_API_KEY`, `EXA_API_KEY`, `FIRECRAWL_API_KEY` en provider-authenticatiesleutels die door geïnstalleerde vertrouwde plugins zijn gedeclareerd. Zet providerreferenties in de procesomgeving van de Gateway, `~/.openclaw/.env` (`$OPENCLAW_STATE_DIR/.env`), het configuratieblok `env` of de optionele login-shell-import.
-- Elke sleutel die begint met `OPENCLAW_*` wordt geblokkeerd vanuit niet-vertrouwde workspace-`.env`-bestanden.
-- Kanaaleindpuntinstellingen voor Matrix, Mattermost, IRC en Synology Chat worden ook geblokkeerd voor workspace-`.env`-overschrijvingen, zodat gekloonde workspaces gebundeld connectorverkeer niet via lokale eindpuntconfiguratie kunnen omleiden. Eindpunt-env-sleutels (zoals `MATRIX_HOMESERVER`, `MATTERMOST_URL`, `IRC_HOST`, `SYNOLOGY_CHAT_INCOMING_URL`) moeten uit de procesomgeving van de gateway of `env.shellEnv` komen, niet uit een door de workspace geladen `.env`.
-- De blokkade faalt gesloten: een nieuwe runtime-control-variabele die in een toekomstige release wordt toegevoegd, kan niet worden overgenomen uit een ingecheckte of door een aanvaller aangeleverde `.env`; de sleutel wordt genegeerd en de gateway behoudt zijn eigen waarde.
-- Vertrouwde proces-/OS-omgevingsvariabelen, globale runtime-dotenv, configuratie-`env` en ingeschakelde login-shell-import blijven van toepassing - dit beperkt alleen het laden van workspace-`.env`-bestanden.
+### Bestandsmachtigingen
 
-Waarom: workspace-`.env`-bestanden staan vaak naast agentcode, worden per ongeluk gecommit of worden door tools geschreven. Het blokkeren van providerreferenties voorkomt dat een gekloonde workspace door een aanvaller beheerde provideraccounts vervangt. Het blokkeren van het volledige voorvoegsel `OPENCLAW_*` betekent dat het later toevoegen van een nieuwe `OPENCLAW_*`-vlag nooit kan terugvallen naar stille overname uit workspacestatus.
+- `~/.openclaw/openclaw.json`: `600` (alleen lezen/schrijven door de gebruiker)
+- `~/.openclaw`: `700` (alleen de gebruiker)
 
-### Logs en transcripten (redactie en retentie)
+`openclaw doctor` kan waarschuwen en aanbieden deze aan te scherpen.
 
-Logs en transcripten kunnen gevoelige informatie lekken, zelfs wanneer toegangscontroles correct zijn:
+### Werkruimtebestanden `.env`
 
-- Gateway-logs kunnen toolsamenvattingen, fouten en URL's bevatten.
-- Sessietranscripten kunnen geplakte geheimen, bestandsinhoud, opdrachtuitvoer en links bevatten.
+OpenClaw laadt werkruimtelokale `.env`-bestanden voor agents en tools, maar staat nooit toe dat deze stilzwijgend de runtimebesturing van de Gateway overschrijven:
 
-Aanbevelingen:
+- Omgevingsvariabelen met providerreferenties worden geblokkeerd vanuit niet-vertrouwde `.env`-bestanden in de werkruimte, bijvoorbeeld `GEMINI_API_KEY`, `GOOGLE_API_KEY`, `XAI_API_KEY`, `MISTRAL_API_KEY`, `GROQ_API_KEY`, `DEEPSEEK_API_KEY`, `PERPLEXITY_API_KEY`, `BRAVE_API_KEY`, `TAVILY_API_KEY`, `EXA_API_KEY`, `FIRECRAWL_API_KEY` en provider-authenticatiesleutels die door geïnstalleerde vertrouwde plugins zijn gedeclareerd. Plaats providerreferenties in plaats daarvan in de procesomgeving van de Gateway, `~/.openclaw/.env` (`$OPENCLAW_STATE_DIR/.env`), het `env`-blok van de configuratie of een optionele import uit de login-shell.
+- Elke sleutel die begint met `OPENCLAW_` wordt geblokkeerd vanuit niet-vertrouwde `.env`-bestanden in de werkruimte. Hierdoor blijft de volledige runtime-naamruimte gereserveerd, zodat een toekomstige `OPENCLAW_*`-instelling standaard gesloten faalt in plaats van stilzwijgend te kunnen worden overgenomen uit ingecheckte of door een aanvaller aangeleverde `.env`-inhoud.
+- Instellingen voor de routering van kanaal- en providereindpunten worden eveneens geblokkeerd voor `.env`-overschrijvingen uit de werkruimte (bijvoorbeeld `MATRIX_HOMESERVER`, `MATTERMOST_URL`, `IRC_HOST`, `SYNOLOGY_CHAT_INCOMING_URL`, `AZURE_SPEECH_ENDPOINT` en andere sleutels die eindigen op `_ENDPOINT`), zodat een gekloonde werkruimte verkeer van gebundelde connectors niet via lokale eindpuntconfiguratie kan omleiden. Deze moeten afkomstig zijn uit de procesomgeving van de Gateway, de globale runtime-dotenv, expliciete configuratie of `env.shellEnv`.
+- Vertrouwde proces-/OS-omgevingsvariabelen, de globale runtime-dotenv, configuratie-`env` en ingeschakelde import uit de login-shell blijven van toepassing. Dit beperkt alleen het laden van `.env`-bestanden uit de werkruimte.
 
-- Houd redactie van logs en transcripten ingeschakeld (`logging.redactSensitive: "tools"`; standaard).
-- Voeg aangepaste patronen voor je omgeving toe via `logging.redactPatterns` (tokens, hostnamen, interne URL's).
-- Geef bij het delen van diagnostiek de voorkeur aan `openclaw status --all` (plakbaar, geheimen geredigeerd) boven ruwe logs.
-- Ruim oude sessietranscripten en logbestanden op als je geen lange retentie nodig hebt.
+`.env`-bestanden in de werkruimte staan vaak naast agentcode, worden per ongeluk gecommit of door tools geschreven. Door providerreferenties te blokkeren, kan een gekloonde werkruimte geen door een aanvaller beheerde provideraccounts in de plaats stellen.
 
-Details: [Logging](/nl/gateway/logging)
+### Logboeken en transcripties
 
-### DM's: standaard koppelen
+OpenClaw bewaart sessietranscripties op schijf onder `~/.openclaw/agents/<agentId>/sessions/*.jsonl` voor sessiecontinuïteit en optionele geheugenindexering. Elk proces en elke gebruiker met toegang tot het bestandssysteem kan ze lezen. Beschouw schijftoegang als de vertrouwensgrens en beperk de machtigingen voor `~/.openclaw`; voer agents uit onder afzonderlijke OS-gebruikers of op afzonderlijke hosts voor sterkere isolatie.
 
-```json5
-{
-  channels: { whatsapp: { dmPolicy: "pairing" } },
-}
-```
+Gateway-logboeken kunnen toolsamenvattingen, fouten en URL's bevatten; sessietranscripties kunnen geplakte geheimen, bestandsinhoud, opdrachtuitvoer en links bevatten.
 
-### Groepen: overal vermelding vereisen
+- Houd redactie van logboeken en transcripties ingeschakeld (`logging.redactSensitive: "tools"`, standaard).
+- Voeg via `logging.redactPatterns` aangepaste patronen voor je omgeving toe (tokens, hostnamen, interne URL's).
+- Geef bij het delen van diagnostische gegevens de voorkeur aan `openclaw status --all` (plakbaar, geheimen geredigeerd) boven onbewerkte logboeken.
+- Verwijder oude sessietranscripties en logbestanden als je ze niet langdurig hoeft te bewaren.
 
-```json
-{
-  "channels": {
-    "whatsapp": {
-      "groups": {
-        "*": { "requireMention": true }
-      }
-    }
-  },
-  "agents": {
-    "list": [
-      {
-        "id": "main",
-        "groupChat": { "mentionPatterns": ["@openclaw", "@mybot"] }
-      }
-    ]
-  }
-}
-```
+Details: [Logboekregistratie](/nl/gateway/logging)
 
-Reageer in groepschats alleen wanneer je expliciet wordt vermeld.
-
-### Aparte nummers (WhatsApp, Signal, Telegram)
-
-Overweeg voor kanalen op basis van telefoonnummers je AI op een ander telefoonnummer te draaien dan je persoonlijke nummer:
-
-- Persoonlijk nummer: je gesprekken blijven privé
-- Botnummer: AI handelt deze af, met passende grenzen
-
-### Alleen-lezenmodus (via sandbox en tools)
-
-Je kunt een alleen-lezenprofiel bouwen door te combineren:
-
-- `agents.defaults.sandbox.workspaceAccess: "ro"` (of `"none"` voor geen workspacetoegang)
-- tool-allow-/deny-lijsten die `write`, `edit`, `apply_patch`, `exec`, `process`, enzovoort blokkeren.
-
-Aanvullende hardeningopties:
-
-- `tools.exec.applyPatch.workspaceOnly: true` (standaard): zorgt ervoor dat `apply_patch` niet buiten de workspacemap kan schrijven/verwijderen, zelfs wanneer sandboxing uit staat. Stel in op `false` alleen als je bewust wilt dat `apply_patch` bestanden buiten de workspace raakt.
-- `tools.fs.workspaceOnly: true` (optioneel): beperkt `read`/`write`/`edit`/`apply_patch`-paden en native automatische promptafbeeldingslaadpaden tot de workspacemap (handig als je vandaag absolute paden toestaat en één guardrail wilt).
-- Houd bestandssysteemroots smal: vermijd brede roots zoals je home-map voor agentworkspaces/sandboxworkspaces. Brede roots kunnen gevoelige lokale bestanden (bijvoorbeeld status/configuratie onder `~/.openclaw`) blootstellen aan bestandssysteemtools.
-
-### Veilige basislijn (kopiëren/plakken)
-
-Eén configuratie met "veilige standaard" die de Gateway privé houdt, DM-koppeling vereist en altijd-aan-groepsbots vermijdt:
+## Veilige basisconfiguratie (kopiëren/plakken)
 
 ```json5
 {
@@ -1127,224 +805,43 @@ Eén configuratie met "veilige standaard" die de Gateway privé houdt, DM-koppel
 }
 ```
 
-Als je tooluitvoering ook "standaard veiliger" wilt, voeg dan een sandbox toe + weiger gevaarlijke tools voor elke niet-eigenaar-agent (voorbeeld hieronder onder "Toegangsprofielen per agent").
+Houdt de Gateway privé, vereist koppeling voor DM's en voorkomt permanent actieve groepsbots. Voeg voor een veiligere uitvoering van tools ook een sandbox toe en weiger gevaarlijke tools voor elke agent die niet de eigenaar is (zie 'Toegangsprofielen per agent' hierboven).
 
-Ingebouwde basislijn voor chatgestuurde agentbeurten: niet-eigenaar-afzenders kunnen de tools `cron` of `gateway` niet gebruiken.
+### Afzonderlijke nummers (WhatsApp, Signal, Telegram)
 
-## Sandboxing (aanbevolen)
+Overweeg voor kanalen op basis van telefoonnummers de assistent op een ander nummer dan je persoonlijke nummer uit te voeren, zodat persoonlijke gesprekken privé blijven en het botnummer automatisering met eigen grenzen afhandelt.
 
-Specifiek document: [Sandboxing](/nl/gateway/sandboxing)
+## Reactie op incidenten
 
-Twee complementaire benaderingen:
+### Beheersen
 
-- **Draai de volledige Gateway in Docker** (containergrens): [Docker](/nl/install/docker)
-- **Tool-sandbox** (`agents.defaults.sandbox`, hostgateway + sandbox-geïsoleerde tools; Docker is de standaardbackend): [Sandboxing](/nl/gateway/sandboxing)
+1. Stop het: stop de macOS-app (als die toezicht houdt op de Gateway) of beëindig je `openclaw gateway`-proces.
+2. Sluit de blootstelling af: stel `gateway.bind: "loopback"` in (of schakel Tailscale Funnel/Serve uit) totdat je begrijpt wat er is gebeurd.
+3. Blokkeer toegang: zet riskante DM's/groepen op `dmPolicy: "disabled"` / vereis vermeldingen en verwijder alle `"*"`-vermeldingen die alles toestaan.
 
-<Note>
-Om toegang tussen agents te voorkomen, houd `agents.defaults.sandbox.scope` op `"agent"` (standaard) of `"session"` voor strengere isolatie per sessie. `scope: "shared"` gebruikt één container of workspace.
-</Note>
-
-Overweeg ook agent-workspacetoegang binnen de sandbox:
-
-- `agents.defaults.sandbox.workspaceAccess: "none"` (standaard) houdt de agentworkspace verboden terrein; tools draaien tegen een sandboxworkspace onder `~/.openclaw/sandboxes`
-- `agents.defaults.sandbox.workspaceAccess: "ro"` mount de agentworkspace alleen-lezen op `/agent` (schakelt `write`/`edit`/`apply_patch` uit)
-- `agents.defaults.sandbox.workspaceAccess: "rw"` mount de agentworkspace lezen/schrijven op `/workspace`
-- Extra `sandbox.docker.binds` worden gevalideerd tegen genormaliseerde en gecanonicaliseerde bronpaden. Parent-symlinktrucs en canonieke home-aliassen falen nog steeds gesloten als ze oplossen naar geblokkeerde roots zoals `/etc`, `/var/run` of referentiemappen onder de OS-home.
-
-<Warning>
-`tools.elevated` is de globale basislijn-ontsnappingsroute die exec buiten de sandbox draait. De effectieve host is standaard `gateway`, of `node` wanneer het exec-doel is geconfigureerd als `node`. Houd `tools.elevated.allowFrom` strikt en schakel dit niet in voor onbekenden. Je kunt elevated verder per agent beperken via `agents.list[].tools.elevated`. Zie [Elevated-modus](/nl/tools/elevated).
-</Warning>
-
-### Guardrail voor subagentdelegatie
-
-Als je sessietools toestaat, behandel gedelegeerde subagent-runs dan als een andere grensbeslissing:
-
-- Weiger `sessions_spawn` tenzij de agent echt delegatie nodig heeft.
-- Houd `agents.defaults.subagents.allowAgents` en eventuele per-agent-overschrijvingen van `agents.list[].subagents.allowAgents` beperkt tot bekende veilige doelagents.
-- Roep voor elke workflow die gesandboxed moet blijven `sessions_spawn` aan met `sandbox: "require"` (standaard is `inherit`).
-- `sandbox: "require"` faalt snel wanneer de doel-child-runtime niet is gesandboxed.
-
-## Risico's van browserbesturing
-
-Het inschakelen van browserbesturing geeft het model de mogelijkheid een echte browser aan te sturen.
-Als dat browserprofiel al ingelogde sessies bevat, kan het model
-toegang krijgen tot die accounts en gegevens. Behandel browserprofielen als **gevoelige status**:
-
-- Geef de voorkeur aan een speciaal profiel voor de agent (het standaardprofiel `openclaw`).
-- Vermijd het wijzen van de agent naar je persoonlijke dagelijkse profiel.
-- Houd hostbrowserbesturing uitgeschakeld voor gesandboxte agents tenzij je ze vertrouwt.
-- De zelfstandige loopback-API voor browserbesturing respecteert alleen shared-secret-authenticatie
-  (gateway-token-bearer-authenticatie of gatewaywachtwoord). Deze gebruikt geen
-  trusted-proxy- of Tailscale Serve-identiteitsheaders.
-- Behandel browserdownloads als niet-vertrouwde invoer; geef de voorkeur aan een geïsoleerde downloadsmap.
-- Schakel browsersynchronisatie/wachtwoordbeheerders in het agentprofiel uit als dat mogelijk is (vermindert de blast radius).
-- Ga er bij externe gateways van uit dat "browserbesturing" gelijkstaat aan "operatortoegang" tot alles wat dat profiel kan bereiken.
-- Houd de Gateway- en node-hosts alleen tailnet; vermijd het blootstellen van browserbesturingspoorten aan LAN of openbaar internet.
-- Schakel browserproxyrouting uit wanneer je die niet nodig hebt (`gateway.nodes.browser.mode="off"`).
-- Chrome MCP-modus met bestaande sessie is **niet** "veiliger"; deze kan als jij handelen in alles wat dat host-Chrome-profiel kan bereiken.
-
-### Browser-SSRF-beleid (standaard strikt)
-
-Het browsernavigatiebeleid van OpenClaw is standaard strikt: privé/interne bestemmingen blijven geblokkeerd tenzij je expliciet opt-in gebruikt.
-
-- Standaard: `browser.ssrfPolicy.dangerouslyAllowPrivateNetwork` is niet ingesteld, dus browsernavigatie houdt privé/interne/special-use-bestemmingen geblokkeerd.
-- Verouderd alias: `browser.ssrfPolicy.allowPrivateNetwork` wordt nog steeds geaccepteerd voor compatibiliteit.
-- Opt-inmodus: stel `browser.ssrfPolicy.dangerouslyAllowPrivateNetwork: true` in om privé/interne/special-use-bestemmingen toe te staan.
-- Gebruik in strikte modus `hostnameAllowlist` (patronen zoals `*.example.com`) en `allowedHostnames` (exacte hostuitzonderingen, inclusief geblokkeerde namen zoals `localhost`) voor expliciete uitzonderingen.
-- Navigatie wordt gecontroleerd vóór het verzoek en met beste inspanning opnieuw gecontroleerd op de uiteindelijke `http(s)`-URL na navigatie om omleidingsgebaseerde pivots te verminderen.
-
-Voorbeeld van strikt beleid:
-
-```json5
-{
-  browser: {
-    ssrfPolicy: {
-      dangerouslyAllowPrivateNetwork: false,
-      hostnameAllowlist: ["*.example.com", "example.com"],
-      allowedHostnames: ["localhost"],
-    },
-  },
-}
-```
-
-## Toegangsprofielen per agent (multi-agent)
-
-Met multi-agent-routering kan elke agent zijn eigen sandbox + toolbeleid hebben:
-gebruik dit om per agent **volledige toegang**, **alleen-lezen** of **geen toegang** te geven.
-Zie [Multi-Agent Sandbox & Tools](/nl/tools/multi-agent-sandbox-tools) voor volledige details
-en prioriteitsregels.
-
-Veelvoorkomende gebruiksscenario's:
-
-- Persoonlijke agent: volledige toegang, geen sandbox
-- Familie-/werkagent: gesandboxed + alleen-lezertools
-- Publieke agent: gesandboxed + geen bestandssysteem-/shelltools
-
-### Voorbeeld: volledige toegang (geen sandbox)
-
-```json5
-{
-  agents: {
-    list: [
-      {
-        id: "personal",
-        workspace: "~/.openclaw/workspace-personal",
-        sandbox: { mode: "off" },
-      },
-    ],
-  },
-}
-```
-
-### Voorbeeld: alleen-lezen tools + alleen-lezen workspace
-
-```json5
-{
-  agents: {
-    list: [
-      {
-        id: "family",
-        workspace: "~/.openclaw/workspace-family",
-        sandbox: {
-          mode: "all",
-          scope: "agent",
-          workspaceAccess: "ro",
-        },
-        tools: {
-          allow: ["read"],
-          deny: ["write", "edit", "apply_patch", "exec", "process", "browser"],
-        },
-      },
-    ],
-  },
-}
-```
-
-### Voorbeeld: geen toegang tot bestandssysteem/shell (providerberichten toegestaan)
-
-```json5
-{
-  agents: {
-    list: [
-      {
-        id: "public",
-        workspace: "~/.openclaw/workspace-public",
-        sandbox: {
-          mode: "all",
-          scope: "agent",
-          workspaceAccess: "none",
-        },
-        // Session tools can reveal sensitive data from transcripts. By default OpenClaw limits these tools
-        // to the current session + spawned subagent sessions, but you can clamp further if needed.
-        // See `tools.sessions.visibility` in the configuration reference.
-        tools: {
-          sessions: { visibility: "tree" }, // self | tree | agent | all
-          allow: [
-            "sessions_list",
-            "sessions_history",
-            "sessions_send",
-            "sessions_spawn",
-            "session_status",
-            "whatsapp",
-            "telegram",
-            "slack",
-            "discord",
-          ],
-          deny: [
-            "read",
-            "write",
-            "edit",
-            "apply_patch",
-            "exec",
-            "process",
-            "browser",
-            "canvas",
-            "nodes",
-            "cron",
-            "gateway",
-            "image",
-          ],
-        },
-      },
-    ],
-  },
-}
-```
-
-## Incidentrespons
-
-Als je AI iets verkeerds doet:
-
-### Inperken
-
-1. **Stop deze:** stop de macOS-app (als die toezicht houdt op de Gateway) of beëindig je `openclaw gateway`-proces.
-2. **Sluit blootstelling af:** stel `gateway.bind: "loopback"` in (of schakel Tailscale Funnel/Serve uit) totdat je begrijpt wat er is gebeurd.
-3. **Bevries toegang:** schakel risicovolle DM's/groepen over naar `dmPolicy: "disabled"` / vereis vermeldingen, en verwijder `"*"` allow-all-vermeldingen als je die had.
-
-### Roteer (ga uit van compromittering als geheimen zijn gelekt)
+### Roteren (ga uit van compromittering als geheimen zijn gelekt)
 
 1. Roteer Gateway-authenticatie (`gateway.auth.token` / `OPENCLAW_GATEWAY_PASSWORD`) en start opnieuw.
-2. Roteer externe clientgeheimen (`gateway.remote.token` / `.password`) op elke machine die de Gateway kan aanroepen.
-3. Roteer provider-/API-inloggegevens (WhatsApp-inloggegevens, Slack-/Discord-tokens, model-/API-sleutels in `auth-profiles.json`, en versleutelde secret-payloadwaarden wanneer gebruikt).
+2. Roteer geheimen van externe clients (`gateway.remote.token` / `.password`) op elke machine die de Gateway kan aanroepen.
+3. Roteer provider-/API-referenties (WhatsApp-referenties, Slack-/Discord-tokens, model-/API-sleutels in `auth-profiles.json` en versleutelde waarden in geheime payloads wanneer deze worden gebruikt).
 
-### Auditen
+### Controleren
 
-1. Controleer Gateway-logboeken: `/tmp/openclaw/openclaw-YYYY-MM-DD.log` (of `logging.file`).
-2. Bekijk de relevante transcript(s): `~/.openclaw/agents/<agentId>/sessions/*.jsonl`.
-3. Bekijk recente configuratiewijzigingen (alles wat toegang kan hebben verruimd: `gateway.bind`, `gateway.auth`, DM-/groepsbeleid, `tools.elevated`, Plugin-wijzigingen).
+1. Controleer de Gateway-logboeken: `/tmp/openclaw/openclaw-YYYY-MM-DD.log` (of `logging.file`).
+2. Controleer de relevante transcriptie(s): `~/.openclaw/agents/<agentId>/sessions/*.jsonl`.
+3. Controleer recente configuratiewijzigingen die de toegang kunnen hebben verruimd: `gateway.bind`, `gateway.auth`, DM-/groepsbeleid, `tools.elevated`, wijzigingen aan plugins.
 4. Voer `openclaw security audit --deep` opnieuw uit en bevestig dat kritieke bevindingen zijn opgelost.
 
 ### Verzamelen voor een rapport
 
-- Tijdstempel, hostbesturingssysteem van de gateway + OpenClaw-versie
-- De sessietranscript(s) + een korte logtail (na redactie)
-- Wat de aanvaller verstuurde + wat de agent deed
-- Of de Gateway verder dan loopback was blootgesteld (LAN/Tailscale Funnel/Serve)
+- Tijdstempel, besturingssysteem van de Gateway-host en OpenClaw-versie.
+- De sessietranscriptie(s) en een kort laatste deel van het logboek (na redactie).
+- Wat de aanvaller heeft verzonden en wat de agent heeft gedaan.
+- Of de Gateway buiten loopback toegankelijk was (LAN/Tailscale Funnel/Serve).
 
-## Secret-scanning
+## Scannen op geheimen
 
-CI voert de pre-commit-hook `detect-private-key` uit over de repository. Als deze
-mislukt, verwijder of roteer dan het gecommitte keymateriaal en reproduceer lokaal:
+CI voert de pre-commit-hook `detect-private-key` uit op de repository. Als deze mislukt, verwijder of roteer dan het gecommitte sleutelmateriaal en reproduceer dit vervolgens lokaal:
 
 ```bash
 pre-commit run --all-files detect-private-key
@@ -1352,8 +849,8 @@ pre-commit run --all-files detect-private-key
 
 ## Beveiligingsproblemen melden
 
-Een kwetsbaarheid gevonden in OpenClaw? Meld deze verantwoord:
+Een kwetsbaarheid in OpenClaw gevonden? Meld deze op verantwoorde wijze:
 
 1. E-mail: [security@openclaw.ai](mailto:security@openclaw.ai)
-2. Plaats niets openbaar totdat het is opgelost
-3. We vermelden je bijdrage (tenzij je anoniem wilt blijven)
+2. Plaats niets openbaar totdat het probleem is opgelost.
+3. We zullen je vermelden (tenzij je liever anoniem blijft).

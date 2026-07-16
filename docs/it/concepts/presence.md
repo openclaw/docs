@@ -1,125 +1,144 @@
 ---
 read_when:
-    - Debug della scheda Istanze
-    - Indagine sulle righe di istanze duplicate o obsolete
-    - Modifica della connessione WS del Gateway o dei beacon system-event
-summary: Come vengono prodotte, unite e visualizzate le voci di presenza di OpenClaw
+    - Debug dello stato in tempo reale nella pagina Dispositivi dell'interfaccia di controllo
+    - Analisi delle righe di istanze duplicate o obsolete
+    - Modifica della connessione WS del Gateway o dei beacon degli eventi di sistema
+summary: Come vengono generate, unite e visualizzate le voci di presenza di OpenClaw
 title: Presenza
 x-i18n:
-    generated_at: "2026-05-06T08:46:39Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T14:09:26Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 6ab76e81fc1842c747b0a33da8cf9874e3537c5ab023450ee1a6a314453e7263
+    source_hash: b50291e26ddc06fac888847c9e94eba5f9351b1b8d06c55fd6bec16a38d0b6a5
     source_path: concepts/presence.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-La "presenza" di OpenClaw è una vista leggera, best-effort, di:
+OpenClaw "presence" è una vista leggera e basata sul massimo impegno di:
 
-- il **Gateway** stesso, e
-- **i client connessi al Gateway** (app Mac, WebChat, CLI, ecc.)
+- il **Gateway** stesso e
+- i **client visibili all'utente connessi al Gateway** (app per Mac, WebChat, nodi ecc.)
 
-La presenza viene usata principalmente per renderizzare la scheda **Istanze** dell'app macOS e per
-fornire visibilità rapida agli operatori.
+La presenza mostra i metadati della connessione in tempo reale nella pagina **Dispositivi** dell'interfaccia di controllo
+(in **Impostazioni → Dispositivi**) e nella scheda **Istanze** dell'app macOS.
 
-## Campi di presenza (cosa viene mostrato)
+Questa pagina descrive l'elenco dei client del Gateway. Per rilevare il Mac utilizzato
+più di recente e instradare lì gli avvisi dei nodi, consultare
+[Presenza del computer attivo](/nodes/presence).
 
-Le voci di presenza sono oggetti strutturati con campi come:
+## Campi della presenza (cosa viene visualizzato)
 
-- `instanceId` (facoltativo ma fortemente consigliato): identità stabile del client (di solito `connect.client.instanceId`)
-- `host`: nome host leggibile
-- `ip`: indirizzo IP best-effort
+Le voci di presenza sono oggetti strutturati con campi quali:
+
+- `instanceId` (facoltativo ma fortemente consigliato): identità stabile del client (solitamente `connect.client.instanceId`)
+- `host`: nome host facilmente comprensibile
+- `ip`: indirizzo IP determinato in base al massimo impegno
 - `version`: stringa della versione del client
-- `deviceFamily` / `modelIdentifier`: suggerimenti sull'hardware
-- `mode`: `ui`, `webchat`, `cli`, `backend`, `probe`, `test`, `node`, ...
-- `lastInputSeconds`: "secondi dall'ultimo input dell'utente" (se noto)
-- `reason`: `self`, `connect`, `node-connected`, `periodic`, ...
-- `ts`: timestamp dell'ultimo aggiornamento (ms dall'epoch)
+- `deviceFamily` / `modelIdentifier`: indicazioni sull'hardware
+- `mode`: `ui`, `webchat`, `cli`, `backend`, `node`, `probe`, `test`
+- `lastInputSeconds`: secondi trascorsi dall'ultimo input dell'utente, se noto
+- `reason`: stringa in formato libero fornita dal client; il Gateway stesso emette solo `self`, `connect` e `disconnect`
+- `deviceId`, `roles`, `scopes`: identità del dispositivo e indicazioni sul ruolo/ambito provenienti dall'handshake di connessione
+- `ts`: timestamp dell'ultimo aggiornamento (ms dall'epoca)
 
-## Produttori (da dove proviene la presenza)
+## Produttori (origine della presenza)
 
-Le voci di presenza sono prodotte da più sorgenti e **unite**.
+Le voci di presenza sono prodotte da più fonti e vengono **unite**.
 
-### 1) Voce self del Gateway
+### 1) Voce del Gateway stesso
 
-Il Gateway inizializza sempre una voce "self" all'avvio, così le UI mostrano l'host del Gateway
-anche prima che si connettano client.
+All'avvio, il Gateway inserisce sempre una voce relativa a sé stesso affinché le interfacce mostrino l'host del Gateway
+anche prima della connessione di qualsiasi client.
 
 ### 2) Connessione WebSocket
 
-Ogni client WS inizia con una richiesta `connect`. Dopo un handshake riuscito, il
-Gateway esegue l'upsert di una voce di presenza per quella connessione.
+Ogni client WS inizia con una richiesta `connect`. Quando l'handshake riesce, il
+Gateway inserisce o aggiorna una voce di presenza per quella connessione.
 
-#### Perché i comandi CLI una tantum non vengono mostrati
+#### Perché le connessioni effimere del piano di controllo non vengono visualizzate
 
-La CLI spesso si connette per comandi brevi e una tantum. Per evitare di riempire di rumore l'elenco
-Istanze, `client.mode === "cli"` **non** viene trasformato in una voce di presenza.
+I comandi CLI, i client RPC di backend e le sonde spesso si connettono brevemente. Per evitare
+di conservare queste frequenti variazioni per l'intero TTL della presenza, i client in modalità `cli`, `backend`
+o `probe` **non** vengono trasformati in voci di presenza. I client in modalità di test
+continuano a essere monitorati perché le suite di test li usano come sostituti dei client reali.
 
 ### 3) Beacon `system-event`
 
-I client possono inviare beacon periodici più ricchi tramite il metodo `system-event`. L'app Mac
-lo usa per segnalare nome host, IP e `lastInputSeconds`.
+I client possono inviare beacon periodici più dettagliati tramite il metodo `system-event`. L'app per Mac
+lo usa per segnalare il nome host, l'IP e `lastInputSeconds`.
 
-### 4) Connessioni Node (role: node)
+### 4) Connessioni dei nodi (ruolo: nodo)
 
-Quando un node si connette tramite il WebSocket del Gateway con `role: node`, il Gateway
-esegue l'upsert di una voce di presenza per quel node (lo stesso flusso degli altri client WS).
+Quando un nodo si connette tramite il WebSocket del Gateway con `role: node`, il Gateway
+inserisce o aggiorna una voce di presenza per quel nodo (seguendo lo stesso flusso degli altri client WS).
 
 ## Regole di unione e deduplicazione (perché `instanceId` è importante)
 
-Le voci di presenza sono memorizzate in una singola mappa in memoria:
+Le voci di presenza vengono archiviate in un'unica mappa in memoria, le cui chiavi non distinguono tra maiuscole e minuscole
+e corrispondono al primo valore disponibile tra i seguenti, nell'ordine: l'ID di un dispositivo associato, `connect.client.instanceId`
+o, come ultima risorsa, l'ID specifico della connessione.
 
-- Le voci sono indicizzate da una **chiave di presenza**.
-- La chiave migliore è un `instanceId` stabile (da `connect.client.instanceId`) che sopravvive ai riavvii.
-- Le chiavi non distinguono tra maiuscole e minuscole.
-
-Se un client si riconnette senza un `instanceId` stabile, può comparire come riga
-**duplicata**.
+I client effimeri del piano di controllo sono completamente esclusi dal monitoraggio (vedere
+sopra), pertanto i relativi ID di connessione non diventano mai chiavi. Per tutti gli altri client, il
+ripiego sull'ID di connessione implica che un client che si riconnette senza un
+`instanceId` stabile venga visualizzato come riga **duplicata**.
 
 ## TTL e dimensione limitata
 
 La presenza è intenzionalmente effimera:
 
 - **TTL:** le voci più vecchie di 5 minuti vengono eliminate
-- **Voci massime:** 200 (le più vecchie vengono rimosse per prime)
+- **Numero massimo di voci:** 200 (le più vecchie vengono eliminate per prime)
 
-Questo mantiene l'elenco aggiornato ed evita una crescita illimitata della memoria.
+Ciò mantiene aggiornato l'elenco ed evita una crescita illimitata della memoria.
 
-## Avvertenza su remoto/tunnel (IP di loopback)
+## Avvertenza su connessioni remote/tunnel (IP di loopback)
 
-Quando un client si connette tramite un tunnel SSH o un inoltro di porta locale, il Gateway può
-vedere l'indirizzo remoto come `127.0.0.1`. Per evitare di sovrascrivere un IP valido segnalato dal client,
-gli indirizzi remoti di loopback vengono ignorati.
+Quando un client si connette tramite un tunnel SSH o un inoltro di porta locale, il Gateway
+può rilevare l'indirizzo remoto come `127.0.0.1`. Per evitare di registrare l'indirizzo del tunnel
+come IP del client, la gestione della connessione omette completamente `ip` per
+i client rilevati come locali (loopback), anziché scrivere l'indirizzo di loopback
+nella voce.
 
-## Consumatori
+## Utilizzatori
+
+### Pagina Dispositivi dell'interfaccia di controllo
+
+La pagina **Dispositivi** combina `system-presence` con i record persistenti di associazione e dei
+nodi. Fissa per primo il beacon del Gateway stesso e usa gli ID corrispondenti del dispositivo o
+dell'istanza per i metadati in tempo reale relativi a piattaforma, versione, modello e tempo trascorso dall'ultimo input.
 
 ### Scheda Istanze di macOS
 
-L'app macOS renderizza l'output di `system-presence` e applica un piccolo indicatore di stato
-(Attivo/Inattivo/Obsoleto) in base all'età dell'ultimo aggiornamento.
+L'app macOS visualizza l'output di `system-presence` e applica un piccolo indicatore
+di stato (Attivo/Inattivo/Obsoleto) in base al tempo trascorso dall'ultimo aggiornamento.
 
 ## Suggerimenti per il debug
 
-- Per vedere l'elenco grezzo, chiama `system-presence` sul Gateway.
-- Se vedi duplicati:
-  - verifica che i client inviino un `client.instanceId` stabile nell'handshake
-  - verifica che i beacon periodici usino lo stesso `instanceId`
-  - controlla se nella voce derivata dalla connessione manca `instanceId` (in quel caso i duplicati sono previsti)
+- Per visualizzare l'elenco non elaborato, chiamare `system-presence` sul Gateway.
+- Se vengono visualizzati duplicati:
+  - verificare che i client inviino un `client.instanceId` stabile durante l'handshake
+  - verificare che i beacon periodici usino lo stesso `instanceId`
+  - controllare se nella voce derivata dalla connessione manca `instanceId` (i duplicati sono previsti)
 
-## Correlati
+## Contenuti correlati
 
 <CardGroup cols={2}>
-  <Card title="Indicatori di digitazione" href="/it/concepts/typing-indicators" icon="ellipsis">
-    Quando vengono inviati gli indicatori di digitazione e come configurarli.
+  <Card title="Presenza del computer attivo" href="/nodes/presence" icon="computer-mouse">
+    In che modo l'input fisico del Mac seleziona un nodo attivo e instrada gli avvisi di connessione.
   </Card>
-  <Card title="Streaming e suddivisione in chunk" href="/it/concepts/streaming" icon="bars-staggered">
-    Streaming in uscita, suddivisione in chunk e formattazione per canale.
+  <Card title="Indicatori di digitazione" href="/it/concepts/typing-indicators" icon="ellipsis">
+    Quando vengono inviati gli indicatori di digitazione e come regolarli.
+  </Card>
+  <Card title="Streaming e suddivisione in blocchi" href="/it/concepts/streaming" icon="bars-staggered">
+    Streaming in uscita, suddivisione in blocchi e formattazione specifica per canale.
   </Card>
   <Card title="Architettura del Gateway" href="/it/concepts/architecture" icon="diagram-project">
-    Componenti del Gateway e protocollo WebSocket che guida gli aggiornamenti di presenza.
+    I componenti del Gateway e il protocollo WebSocket che gestisce gli aggiornamenti della presenza.
   </Card>
   <Card title="Protocollo del Gateway" href="/it/gateway/protocol" icon="plug">
-    Il protocollo wire per `connect`, `system-event` e `system-presence`.
+    Il protocollo di comunicazione per `connect`, `system-event` e `system-presence`.
   </Card>
 </CardGroup>

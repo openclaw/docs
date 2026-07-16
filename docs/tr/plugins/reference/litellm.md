@@ -1,19 +1,20 @@
 ---
 read_when:
-    - litellm Pluginini kuruyor, yapılandırıyor veya denetliyorsunuz
+    - litellm pluginini kuruyor, yapılandırıyor veya denetliyorsunuz
 summary: OpenClaw'a LiteLLM model sağlayıcısı desteği ekler.
 title: LiteLLM Plugin'i
 x-i18n:
-    generated_at: "2026-07-12T12:33:33Z"
+    generated_at: "2026-07-16T17:44:35Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 8bbe9b35112012185719c87aa0f027422f574e995cefcfe2bc1f243d9b3b43a9
+    source_hash: 3262796d0254cb5672312fc9d8012ea1f5527a2c31798e50cfbe9391f90f3402
     source_path: plugins/reference/litellm.md
     workflow: 16
 ---
 
-# LiteLLM Plugin
+# LiteLLM plugini
 
 OpenClaw'a LiteLLM model sağlayıcısı desteği ekler.
 
@@ -24,7 +25,7 @@ OpenClaw'a LiteLLM model sağlayıcısı desteği ekler.
 
 ## Yüzey
 
-sağlayıcılar: litellm; sözleşmeler: imageGenerationProviders
+sağlayıcılar: `litellm`; sözleşmeler: `imageGenerationProviders`
 
 ## İlgili belgeler
 

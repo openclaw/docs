@@ -1,21 +1,22 @@
 ---
 read_when:
-    - Stai installando, configurando o verificando il Plugin anthropic
-summary: Aggiunge il supporto al provider di modelli Anthropic in OpenClaw.
+    - Si sta installando, configurando o verificando il plugin Anthropic
+summary: Modelli Anthropic, CLI Claude e catalogo nativo delle sessioni Claude.
 title: Plugin Anthropic
 x-i18n:
-    generated_at: "2026-05-02T20:50:50Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T14:43:27Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 7aa23ae2712061fc3f8e1fbb642d2cbfa2c40675fc5e41633d33619f41182499
+    source_hash: 11d3c7879a9dc6de35e67f9812b878918d908d41555c181920deb4f1f9cba22e
     source_path: plugins/reference/anthropic.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
 # Plugin Anthropic
 
-Aggiunge a OpenClaw il supporto per il provider di modelli Anthropic.
+Modelli Anthropic, CLI Claude e catalogo nativo delle sessioni Claude.
 
 ## Distribuzione
 
@@ -24,7 +25,15 @@ Aggiunge a OpenClaw il supporto per il provider di modelli Anthropic.
 
 ## Superficie
 
-providers: anthropic; contracts: mediaUnderstandingProviders
+provider: `anthropic`; contratti: `mediaUnderstandingProviders`, `usageProviders`
+
+<!-- openclaw-plugin-reference:manual-start -->
+
+comandi Node: anthropic.claude.sessions.list.v1,
+anthropic.claude.sessions.read.v1; contratti: mediaUnderstandingProviders,
+usageProviders
+
+<!-- openclaw-plugin-reference:manual-end -->
 
 ## Documentazione correlata
 

@@ -1,31 +1,32 @@
 ---
 read_when:
-    - Ви встановлюєте, налаштовуєте або перевіряєте Plugin google-meet
-summary: Plugin учасника Google Meet для OpenClaw, що дає змогу приєднуватися до дзвінків через транспорти Chrome або Twilio.
-title: Плагін Google Meet
+    - Ви встановлюєте, налаштовуєте або перевіряєте плагін google-meet
+summary: Плагін учасника Google Meet для OpenClaw, що дає змогу приєднуватися до викликів через транспорти Chrome або Twilio.
+title: Plugin Google Meet
 x-i18n:
-    generated_at: "2026-07-12T13:30:00Z"
+    generated_at: "2026-07-16T18:19:48Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 2f0086a8b48f6e120ad391a99d60a14d7682910ca3ad176e41a51b341e9bdb49
+    source_hash: fc104cbff8e36ec1eb7288beaf249b321a638cd32ef09d3809266a5344b29959
     source_path: plugins/reference/google-meet.md
     workflow: 16
 ---
 
-# Плагін Google Meet
+# Plugin Google Meet
 
-Плагін учасника Google Meet для OpenClaw, призначений для приєднання до викликів через транспортні засоби Chrome або Twilio.
+Plugin учасника Google Meet для OpenClaw, призначений для приєднання до викликів через транспорти Chrome або Twilio.
 
 ## Розповсюдження
 
-- Пакет: `@openclaw/google-meet`
+- Пакунок: `@openclaw/google-meet`
 - Спосіб установлення: npm; ClawHub
 
 ## Інтерфейс
 
-контракти: інструменти
+контракти: `tools`
 
 ## Пов’язана документація
 
-- [google-meet](/uk/plugins/google-meet)
+- [Google Meet](/uk/plugins/google-meet)

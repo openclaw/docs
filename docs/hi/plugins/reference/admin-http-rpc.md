@@ -1,21 +1,22 @@
 ---
 read_when:
     - आप admin-http-rpc Plugin को इंस्टॉल, कॉन्फ़िगर या ऑडिट कर रहे हैं
-summary: OpenClaw व्यवस्थापक HTTP RPC एंडपॉइंट।
-title: व्यवस्थापक Http Rpc Plugin
+summary: OpenClaw एडमिन HTTP RPC एंडपॉइंट।
+title: एडमिन HTTP RPC Plugin
 x-i18n:
-    generated_at: "2026-06-28T23:40:11Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T16:26:45Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 58909f4c97bfacc22d3a597939ff8724ec111995841822962c66305140aef4ba
+    source_hash: 3e3875dd776c0f4dd58977b503de22989ddab5add4dd37a0e1c7f5cb4e306044
     source_path: plugins/reference/admin-http-rpc.md
     workflow: 16
 ---
 
-# प्रशासक HTTP RPC Plugin
+# Admin Http Rpc Plugin
 
-OpenClaw प्रशासक HTTP RPC एंडपॉइंट।
+OpenClaw एडमिन HTTP RPC एंडपॉइंट।
 
 ## वितरण
 
@@ -24,7 +25,7 @@ OpenClaw प्रशासक HTTP RPC एंडपॉइंट।
 
 ## सतह
 
-contracts: gatewayMethodDispatch
+अनुबंध: `gatewayMethodDispatch`
 
 ## संबंधित दस्तावेज़
 

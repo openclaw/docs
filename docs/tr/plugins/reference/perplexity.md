@@ -1,19 +1,20 @@
 ---
 read_when:
     - perplexity pluginini kuruyor, yapılandırıyor veya denetliyorsunuz
-summary: Web araması sağlayıcısı desteği ekler.
+summary: Web arama sağlayıcısı desteği ekler.
 title: Perplexity Plugin'i
 x-i18n:
-    generated_at: "2026-07-12T12:34:29Z"
+    generated_at: "2026-07-16T17:26:36Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: c649c4dc4df04ca668e924e2644af970d75eab404b8f57579e509aa061994ffe
+    source_hash: 0d483c483a637445c34236d86e627dcf1e1caa63a546056bba8079c482021862
     source_path: plugins/reference/perplexity.md
     workflow: 16
 ---
 
-# Perplexity Plugin'i
+# Perplexity plugin'i
 
 Web arama sağlayıcısı desteği ekler.
 
@@ -24,8 +25,8 @@ Web arama sağlayıcısı desteği ekler.
 
 ## Yüzey
 
-sözleşmeler: webSearchProviders
+sözleşmeler: `webSearchProviders`
 
 ## İlgili belgeler
 
-- [Perplexity](/tr/tools/perplexity-search)
+- [perplexity](/tr/tools/perplexity-search)

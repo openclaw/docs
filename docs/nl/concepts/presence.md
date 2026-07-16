@@ -1,125 +1,144 @@
 ---
 read_when:
-    - Het tabblad Instanties debuggen
+    - Live-status debuggen op de pagina Apparaten van de Control UI
     - Dubbele of verouderde instantierijen onderzoeken
     - Gateway-WS-verbinding of bakens voor systeemgebeurtenissen wijzigen
-summary: Hoe OpenClaw-aanwezigheidsvermeldingen worden geproduceerd, samengevoegd en weergegeven
+summary: Hoe OpenClaw-aanwezigheidsvermeldingen worden aangemaakt, samengevoegd en weergegeven
 title: Aanwezigheid
 x-i18n:
-    generated_at: "2026-05-06T09:09:49Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T15:32:46Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 6ab76e81fc1842c747b0a33da8cf9874e3537c5ab023450ee1a6a314453e7263
+    source_hash: b50291e26ddc06fac888847c9e94eba5f9351b1b8d06c55fd6bec16a38d0b6a5
     source_path: concepts/presence.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-OpenClaw-"aanwezigheid" is een lichte, best-effort-weergave van:
+OpenClaw-"aanwezigheid" is een lichtgewicht weergave op basis van redelijke inspanning van:
 
 - de **Gateway** zelf, en
-- **clients die met de Gateway zijn verbonden** (mac-app, WebChat, CLI, enz.)
+- **voor gebruikers zichtbare clients die met de Gateway zijn verbonden** (Mac-app, WebChat, nodes, enz.)
 
-Aanwezigheid wordt vooral gebruikt om het tabblad **Instanties** van de macOS-app te renderen en om
-operators snel inzicht te geven.
+Aanwezigheid toont live verbindingsmetadata op de pagina **Devices** van de Control UI
+(onder **Settings → Devices**) en op het tabblad **Instances** van de macOS-app.
+
+Deze pagina behandelt het clientoverzicht van de Gateway. Zie
+[Aanwezigheid van actieve computer](/nodes/presence) om de Mac te detecteren die je het laatst
+hebt gebruikt en node-waarschuwingen daarheen te routeren.
 
 ## Aanwezigheidsvelden (wat wordt weergegeven)
 
-Aanwezigheidsitems zijn gestructureerde objecten met velden zoals:
+Aanwezigheidsvermeldingen zijn gestructureerde objecten met velden zoals:
 
-- `instanceId` (optioneel maar sterk aanbevolen): stabiele clientidentiteit (meestal `connect.client.instanceId`)
-- `host`: mensvriendelijke hostnaam
-- `ip`: best-effort-IP-adres
-- `version`: clientversietekenreeks
-- `deviceFamily` / `modelIdentifier`: hardwarehints
-- `mode`: `ui`, `webchat`, `cli`, `backend`, `probe`, `test`, `node`, ...
-- `lastInputSeconds`: "seconden sinds laatste gebruikersinvoer" (indien bekend)
-- `reason`: `self`, `connect`, `node-connected`, `periodic`, ...
-- `ts`: tijdstempel van laatste update (ms sinds epoch)
+- `instanceId` (optioneel, maar sterk aanbevolen): stabiele clientidentiteit (meestal `connect.client.instanceId`)
+- `host`: gebruiksvriendelijke hostnaam
+- `ip`: IP-adres op basis van redelijke inspanning
+- `version`: tekenreeks met de clientversie
+- `deviceFamily` / `modelIdentifier`: hardware-aanwijzingen
+- `mode`: `ui`, `webchat`, `cli`, `backend`, `node`, `probe`, `test`
+- `lastInputSeconds`: seconden sinds de laatste gebruikersinvoer, indien bekend
+- `reason`: vrije tekenreeks die door de client wordt aangeleverd; de Gateway zelf verzendt alleen `self`, `connect` en `disconnect`
+- `deviceId`, `roles`, `scopes`: apparaatidentiteit en aanwijzingen voor rol/bereik uit de verbindingshandshake
+- `ts`: tijdstempel van de laatste update (ms sinds de epoch)
 
 ## Producenten (waar aanwezigheid vandaan komt)
 
-Aanwezigheidsitems worden door meerdere bronnen geproduceerd en **samengevoegd**.
+Aanwezigheidsvermeldingen worden door meerdere bronnen geproduceerd en **samengevoegd**.
 
-### 1) Zelfitem van de Gateway
+### 1) Zelfvermelding van de Gateway
 
-De Gateway initialiseert bij het opstarten altijd een "zelf"-item, zodat UI's de gatewayhost tonen
-nog voordat er clients verbinding maken.
+De Gateway maakt bij het opstarten altijd een "zelf"-vermelding aan, zodat UI's de Gateway-host
+weergeven, zelfs voordat er clients verbinding maken.
 
 ### 2) WebSocket-verbinding
 
-Elke WS-client begint met een `connect`-verzoek. Na een succesvolle handshake
-upsert de Gateway een aanwezigheidsitem voor die verbinding.
+Elke WS-client begint met een `connect`-verzoek. Na een geslaagde handshake
+voegt de Gateway een aanwezigheidsvermelding voor die verbinding in of werkt deze bij.
 
-#### Waarom eenmalige CLI-opdrachten niet verschijnen
+#### Waarom kortstondige verbindingen op het besturingsvlak niet worden weergegeven
 
-De CLI maakt vaak verbinding voor korte, eenmalige opdrachten. Om te voorkomen dat de
-Instanties-lijst wordt overspoeld, wordt `client.mode === "cli"` **niet** omgezet in een aanwezigheidsitem.
+CLI-opdrachten, backend-RPC-clients en probes maken vaak kort verbinding. Om te voorkomen
+dat deze wisselingen gedurende de volledige aanwezigheids-TTL worden bewaard, worden clients in de modus `cli`, `backend`
+of `probe` **niet** omgezet in aanwezigheidsvermeldingen. Clients in testmodus
+blijven bijgehouden, omdat testsuites ze gebruiken als vervanging voor echte clients.
 
 ### 3) `system-event`-bakens
 
-Clients kunnen rijkere periodieke bakens verzenden via de methode `system-event`. De mac-
-app gebruikt dit om hostnaam, IP en `lastInputSeconds` te rapporteren.
+Clients kunnen via de methode `system-event` uitgebreidere periodieke bakens verzenden. De Mac-app
+gebruikt dit om de hostnaam, het IP-adres en `lastInputSeconds` te rapporteren.
 
-### 4) Node-verbindingen (role: node)
+### 4) Node-verbindingen (rol: node)
 
-Wanneer een node via de Gateway-WebSocket verbinding maakt met `role: node`, upsert de Gateway
-een aanwezigheidsitem voor die node (dezelfde flow als bij andere WS-clients).
+Wanneer een node via de Gateway-WebSocket verbinding maakt met `role: node`, voegt de Gateway
+een aanwezigheidsvermelding voor die node in of werkt deze bij (dezelfde stroom als voor andere WS-clients).
 
-## Samenvoeg- en deduplicatieregels (waarom `instanceId` belangrijk is)
+## Regels voor samenvoegen en dedupliceren (waarom `instanceId` belangrijk is)
 
-Aanwezigheidsitems worden opgeslagen in één in-memory map:
+Aanwezigheidsvermeldingen worden opgeslagen in één kaart in het geheugen, met hoofdletterongevoelige
+sleutels op basis van de eerste beschikbare waarde, in deze volgorde: een gekoppelde apparaat-id, `connect.client.instanceId`
+of, als laatste redmiddel, de id per verbinding.
 
-- Items worden gesleuteld op een **aanwezigheidssleutel**.
-- De beste sleutel is een stabiele `instanceId` (uit `connect.client.instanceId`) die herstarts overleeft.
-- Sleutels zijn niet hoofdlettergevoelig.
-
-Als een client opnieuw verbinding maakt zonder een stabiele `instanceId`, kan deze als een
-**dubbele** rij verschijnen.
+Kortstondige clients op het besturingsvlak worden volledig uitgesloten van bijhouden (zie
+hierboven), zodat hun verbindings-id's nooit sleutels worden. Voor elke andere client betekent
+de terugval op de verbindings-id dat een client die opnieuw verbinding maakt zonder een stabiele
+`instanceId` als een **dubbele** rij wordt weergegeven.
 
 ## TTL en begrensde grootte
 
-Aanwezigheid is bewust vluchtig:
+Aanwezigheid is opzettelijk kortstondig:
 
-- **TTL:** items ouder dan 5 minuten worden opgeschoond
-- **Max. items:** 200 (oudste worden eerst verwijderd)
+- **TTL:** vermeldingen ouder dan 5 minuten worden verwijderd
+- **Maximumaantal vermeldingen:** 200 (oudste eerst verwijderd)
 
-Dit houdt de lijst actueel en voorkomt onbegrensde geheugengroei.
+Hierdoor blijft de lijst actueel en wordt onbeperkte geheugengroei voorkomen.
 
-## Aandachtspunt bij remote/tunnel (loopback-IP's)
+## Kanttekening bij verbindingen op afstand/tunnels (loopback-IP-adressen)
 
-Wanneer een client verbinding maakt via een SSH-tunnel / lokale poortforward, kan de Gateway
-het externe adres zien als `127.0.0.1`. Om te voorkomen dat een goed door de client gerapporteerd
-IP wordt overschreven, worden loopback-adressen op afstand genegeerd.
+Wanneer een client verbinding maakt via een SSH-tunnel/lokale poortdoorschakeling, kan de Gateway
+het externe adres als `127.0.0.1` zien. Om te voorkomen dat dit tunneladres
+als het IP-adres van de client wordt vastgelegd, laat de verbindingsafhandeling `ip` volledig weg voor
+clients die als lokaal (loopback) zijn gedetecteerd, in plaats van het loopback-adres
+in de vermelding te schrijven.
 
 ## Consumenten
 
-### macOS-tabblad Instanties
+### Pagina Devices van de Control UI
 
-De macOS-app rendert de uitvoer van `system-presence` en past een kleine statusindicator
-(Actief/Inactief/Verouderd) toe op basis van de leeftijd van de laatste update.
+De pagina **Devices** combineert `system-presence` met duurzame koppelings- en node-
+records. Het zelfbaken van de Gateway wordt bovenaan vastgezet en overeenkomende apparaat- of
+instantie-id's worden gebruikt voor live metadata over platform, versie, model en recentheid van invoer.
 
-## Debugtips
+### Tabblad Instances van macOS
 
-- Roep `system-presence` aan op de Gateway om de ruwe lijst te zien.
+De macOS-app geeft de uitvoer van `system-presence` weer en past een kleine status-
+indicator (Active/Idle/Stale) toe op basis van de ouderdom van de laatste update.
+
+## Tips voor foutopsporing
+
+- Roep `system-presence` aan op de Gateway om de onbewerkte lijst te bekijken.
 - Als je duplicaten ziet:
-  - controleer of clients een stabiele `client.instanceId` in de handshake verzenden
+  - controleer of clients tijdens de handshake een stabiele `client.instanceId` verzenden
   - controleer of periodieke bakens dezelfde `instanceId` gebruiken
-  - controleer of bij het uit de verbinding afgeleide item `instanceId` ontbreekt (duplicaten zijn dan verwacht)
+  - controleer of `instanceId` ontbreekt in de van de verbinding afgeleide vermelding (duplicaten zijn dan te verwachten)
 
 ## Gerelateerd
 
 <CardGroup cols={2}>
+  <Card title="Aanwezigheid van actieve computer" href="/nodes/presence" icon="computer-mouse">
+    Hoe fysieke invoer op een Mac een actieve node selecteert en verbindingswaarschuwingen routeert.
+  </Card>
   <Card title="Typindicatoren" href="/nl/concepts/typing-indicators" icon="ellipsis">
     Wanneer typindicatoren worden verzonden en hoe je ze afstemt.
   </Card>
-  <Card title="Streaming en chunking" href="/nl/concepts/streaming" icon="bars-staggered">
-    Uitgaande streaming, chunking en kanaalspecifieke opmaak.
+  <Card title="Streaming en opdelen" href="/nl/concepts/streaming" icon="bars-staggered">
+    Uitgaande streaming, opdelen en opmaak per kanaal.
   </Card>
   <Card title="Gateway-architectuur" href="/nl/concepts/architecture" icon="diagram-project">
     Gateway-componenten en het WebSocket-protocol dat aanwezigheidsupdates aanstuurt.
   </Card>
   <Card title="Gateway-protocol" href="/nl/gateway/protocol" icon="plug">
-    Het wireprotocol voor `connect`, `system-event` en `system-presence`.
+    Het wire-protocol voor `connect`, `system-event` en `system-presence`.
   </Card>
 </CardGroup>

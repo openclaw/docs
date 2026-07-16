@@ -1,19 +1,20 @@
 ---
 read_when:
-    - venice pluginini kuruyor, yapılandırıyor veya denetliyorsunuz
+    - venice Pluginini yüklüyor, yapılandırıyor veya denetliyorsunuz
 summary: OpenClaw'a Venice model sağlayıcısı desteği ekler.
-title: Venice plugini
+title: Venice Plugin'i
 x-i18n:
-    generated_at: "2026-07-12T12:39:08Z"
+    generated_at: "2026-07-16T17:27:24Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 18324266b1b8434f6d31616ce81da8ea3ec15f5bddf429a3938d5df4665d01cb
+    source_hash: b3c239945f079f119dafef21fb2eb30bd5f96cc8ad6dd163aa60d21f990a0f2f
     source_path: plugins/reference/venice.md
     workflow: 16
 ---
 
-# Venice Plugin'i
+# Venice plugin
 
 OpenClaw'a Venice model sağlayıcısı desteği ekler.
 
@@ -24,7 +25,7 @@ OpenClaw'a Venice model sağlayıcısı desteği ekler.
 
 ## Yüzey
 
-sağlayıcılar: venice; sözleşmeler: usageProviders
+sağlayıcılar: `venice`; sözleşmeler: `usageProviders`
 
 ## İlgili belgeler
 

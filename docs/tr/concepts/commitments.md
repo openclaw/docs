@@ -1,30 +1,37 @@
 ---
 read_when:
-    - OpenClaw'ın doğal takip sorularını hatırlamasını istiyorsunuz
+    - OpenClaw'un doğal takip sorularını hatırlamasını istiyorsunuz
     - Çıkarıma dayalı yoklamaların hatırlatıcılardan nasıl farklı olduğunu anlamak istiyorsunuz
-    - Takip taahhütlerini gözden geçirmek veya kapatmak istiyorsunuz
+    - Takip taahhütlerini gözden geçirmek veya reddetmek istiyorsunuz
 sidebarTitle: Commitments
-summary: Tam olarak anımsatıcı olmayan durum yoklamaları için çıkarımsal takip belleği
-title: Çıkarım yoluyla belirlenen taahhütler
+summary: Tam olarak anımsatıcı olmayan durum yoklamaları için çıkarımsanan takip belleği
+title: Çıkarılan taahhütler
 x-i18n:
-    generated_at: "2026-07-12T12:12:48Z"
+    generated_at: "2026-07-16T17:03:51Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: f4708cd337c7755a4f16e14154050dc43b6033e71bfda9de5e8fdaa9c6ce0277
+    source_hash: 4fa3a3654b628b63c5319144d63f122db53fff7170a0c8339e2c5a1147961e35
     source_path: concepts/commitments.md
     workflow: 16
 ---
 
-Taahhütler, kısa ömürlü takip anılarıdır. Etkinleştirildiğinde OpenClaw, bir konuşmanın gelecekte yeniden iletişim kurma fırsatı oluşturduğunu fark edip bunu daha sonra yeniden gündeme getirmek üzere hatırlayabilir.
+Taahhütler, kısa ömürlü takip anılarıdır. Etkinleştirildiğinde OpenClaw,
+bir konuşmanın gelecekte durum sormak için bir fırsat oluşturduğunu fark edip
+bunu daha sonra yeniden gündeme getirmeyi hatırlayabilir.
 
 Örnekler:
 
-- Yarın bir mülakatınız olduğundan bahsedersiniz. OpenClaw sonrasında nasıl geçtiğini sorabilir.
+- Yarın bir mülakattan söz edersiniz. OpenClaw sonrasında nasıl geçtiğini sorabilir.
 - Çok yorgun olduğunuzu söylersiniz. OpenClaw daha sonra uyuyup uyumadığınızı sorabilir.
-- Agent, bir şey değiştikten sonra takip edeceğini söyler. OpenClaw bu açık döngüyü izleyebilir.
+- Aracı, bir şey değiştikten sonra takip edeceğini söyler. OpenClaw bu
+  açık konuyu izleyebilir.
 
-Taahhütler, `MEMORY.md` gibi kalıcı bilgiler veya kesin zamanlı hatırlatıcılar değildir. Bellek ile otomasyon arasında yer alırlar: OpenClaw, konuşmaya bağlı bir yükümlülüğü hatırlar ve zamanı geldiğinde Heartbeat bunu iletir.
+Taahhütler, `MEMORY.md` gibi kalıcı bilgiler değildir ve kesin
+hatırlatıcılar da değildir. Bellek ile otomasyon arasında yer alırlar: OpenClaw,
+konuşmaya bağlı bir yükümlülüğü hatırlar, ardından zamanı geldiğinde heartbeat
+bunu iletir.
 
 ## Taahhütleri etkinleştirme
 
@@ -46,43 +53,64 @@ Eşdeğer `openclaw.json`:
 }
 ```
 
-`commitments.maxPerDay`, kayan bir günlük dönem içinde agent oturumu başına iletilebilecek çıkarımsal takip sayısını sınırlar. Varsayılan değer `3`'tür.
+`commitments.maxPerDay`, hareketli bir günlük dönem içinde her aracı oturumunda
+iletilebilecek çıkarımsal takiplerin sayısını sınırlar. Varsayılan değer
+`3` şeklindedir.
 
 ## Nasıl çalışır?
 
-Bir agent yanıtından sonra OpenClaw, araçların devre dışı olduğu ayrı bir bağlamda gizli bir arka plan çıkarım geçişi çalıştırabilir. Bu geçiş yalnızca çıkarımsal takip taahhütlerini arar. Görünür konuşmaya yazmaz ve ana agent'tan çıkarım hakkında akıl yürütmesini istemez.
+Bir aracı yanıtından sonra OpenClaw, araçların devre dışı olduğu ayrı bir
+bağlamda gizli bir arka plan çıkarım geçişi çalıştırabilir. Bu geçiş yalnızca
+çıkarımsal takip taahhütlerini arar. Görünür konuşmaya yazmaz ve ana aracıdan
+çıkarım hakkında akıl yürütmesini istemez.
 
-OpenClaw, yüksek güven düzeyine sahip bir aday bulduğunda şu bilgilerle bir taahhüt saklar:
+OpenClaw, yüksek güvenilirlikli bir aday bulduğunda şu bilgilerle bir taahhüt saklar:
 
-- agent kimliği
+- aracı kimliği
 - oturum anahtarı
 - özgün kanal ve iletim hedefi
 - bir vade aralığı
-- önerilen kısa bir durum sorgusu
-- Heartbeat'in gönderip göndermemeye karar vermesi için talimat niteliğinde olmayan meta veriler
+- önerilen kısa bir durum sorusu
+- heartbeat'in gönderip göndermemeye karar vermesi için talimat niteliğinde olmayan meta veriler
 
-İletim Heartbeat üzerinden gerçekleşir. Bir taahhüdün zamanı geldiğinde Heartbeat, taahhüdü aynı agent ve kanal kapsamındaki Heartbeat turuna ekler. İstem, taahhüt meta verilerinin güvenilir olmadığı konusunda açıkça uyarır ve modele bunların içindeki talimatları izlememesini veya bunlar nedeniyle araçları kullanmamasını söyler. Model, doğal bir durum sorgusu gönderebilir veya taahhüdü kapatmak için `HEARTBEAT_OK` yanıtını verebilir. Heartbeat `target: "none"` ile yapılandırılmışsa zamanı gelen taahhütler sistem içinde kalır ve harici durum sorguları göndermez. Taahhüt iletim istemleri özgün konuşma metnini yeniden oynatmaz; yalnızca önerilen durum sorgusunu ve meta verileri içerir. Ayrıca zamanı gelen taahhütlere yönelik Heartbeat turları OpenClaw araçları olmadan çalışır.
+İletim heartbeat üzerinden gerçekleşir. Bir taahhüdün zamanı geldiğinde heartbeat,
+taahhüdü aynı aracı ve kanal kapsamındaki heartbeat turuna ekler. İstem,
+taahhüt meta verilerinin güvenilmez olduğu konusunda açıkça uyarır ve modele
+bunlardaki talimatları izlememesini veya bunlar nedeniyle araçları kullanmamasını
+söyler. Model, doğal bir durum sorusu gönderebilir veya reddetmek için
+`HEARTBEAT_OK` yanıtını verebilir. Heartbeat `target: "none"` ile
+yapılandırılmışsa, zamanı gelen taahhütler dahili kalır ve harici durum soruları
+göndermez. Taahhüt iletim istemleri özgün konuşma metnini yeniden oynatmaz;
+yalnızca önerilen durum sorusunu ve meta verileri içerir. Ayrıca, zamanı gelen
+taahhütlere ilişkin heartbeat turları OpenClaw araçları olmadan çalışır.
 
-OpenClaw, çıkarımsal bir taahhüdü kaydettikten hemen sonra asla iletmez. Vade zamanı, taahhüdün oluşturulmasından en az bir Heartbeat aralığı sonrasına sabitlenir; böylece takip, çıkarıldığı anda geri yansıtılamaz.
+OpenClaw, çıkarımsal bir taahhüdü yazdıktan hemen sonra hiçbir zaman iletmez.
+Vade zamanı, taahhüt oluşturulduktan sonra en az bir heartbeat aralığı olacak
+şekilde sınırlandırılır; böylece takip, çıkarıldığı anda geri yansıtılamaz.
 
 ## Kapsam
 
-Taahhütler, oluşturuldukları agent ve kanal bağlamıyla tam olarak sınırlandırılır. Discord'da bir agent ile konuşurken çıkarılan bir takip; başka bir agent, başka bir kanal veya ilgisiz bir oturum tarafından iletilmez.
+Taahhütler, oluşturuldukları tam aracı ve kanal bağlamıyla sınırlıdır.
+Discord'da bir aracıyla konuşurken çıkarılan bir takip; başka bir aracı,
+başka bir kanal veya ilgisiz bir oturum tarafından iletilmez.
 
-Bu kapsam, özelliğin bir parçasıdır. Doğal durum sorguları, küresel bir hatırlatma sistemi gibi değil, aynı konuşmanın devamı gibi hissettirmelidir.
+Bu kapsam, özelliğin bir parçasıdır. Doğal durum soruları, küresel bir
+hatırlatma sistemi gibi değil, aynı konuşmanın devamı gibi hissettirmelidir.
 
-## Taahhütler ile hatırlatıcıların karşılaştırması
+## Taahhütler ve hatırlatıcılar
 
-| İhtiyaç                                             | Kullanım                                  |
-| --------------------------------------------------- | ----------------------------------------- |
-| "Bana saat 15.00'te hatırlat"                       | [Zamanlanmış görevler](/tr/automation/cron-jobs) |
-| "20 dakika sonra bana haber ver"                    | [Zamanlanmış görevler](/tr/automation/cron-jobs) |
-| "Bu raporu hafta içi her gün çalıştır"              | [Zamanlanmış görevler](/tr/automation/cron-jobs) |
-| "Yarın bir mülakatım var"                           | Taahhütler                                |
-| "Bütün gece uyumadım"                               | Taahhütler                                |
-| "Bu açık konuya yanıt vermezsem takip et"           | Taahhütler                                |
+| İhtiyaç                                         | Kullanım                                 |
+| ----------------------------------------------- | ---------------------------------------- |
+| "Bana saat 15.00'te hatırlat"                   | [Zamanlanmış görevler](/tr/automation/cron-jobs) |
+| "20 dakika içinde bana mesaj gönder"            | [Zamanlanmış görevler](/tr/automation/cron-jobs) |
+| "Bu raporu hafta içi her gün çalıştır"           | [Zamanlanmış görevler](/tr/automation/cron-jobs) |
+| "Yarın bir mülakatım var"                       | Taahhütler                               |
+| "Bütün gece uyumadım"                           | Taahhütler                               |
+| "Bu açık konuya yanıt vermezsem takip et"       | Taahhütler                               |
 
-Kullanıcının kesin istekleri zaten zamanlayıcı yoluna aittir. Taahhütler yalnızca çıkarımsal takipler içindir: Kullanıcının bir hatırlatıcı istemediği, ancak konuşmanın gelecekte yararlı olacak bir durum sorgusu için açıkça fırsat oluşturduğu anlar.
+Kesin kullanıcı istekleri zaten zamanlayıcı yoluna aittir. Taahhütler yalnızca
+çıkarımsal takipler içindir: kullanıcının bir hatırlatıcı istemediği, ancak
+konuşmanın gelecekte yararlı bir durum sorma fırsatı oluşturduğu anlar.
 
 ## Taahhütleri yönetme
 
@@ -96,13 +124,18 @@ openclaw commitments --status snoozed
 openclaw commitments dismiss cm_abc123
 ```
 
-Komutların tam başvurusu için [`openclaw commitments`](/tr/cli/commitments) sayfasına bakın.
+Komutların tam başvurusu için [`openclaw commitments`](/tr/cli/commitments) bölümüne bakın.
 
 ## Gizlilik ve maliyet
 
-Taahhüt çıkarımı bir LLM geçişi kullanır; dolayısıyla etkinleştirilmesi, uygun turlardan sonra arka planda model kullanımını artırır. Geçiş, kullanıcının gördüğü konuşmada gizlidir ancak bir takibin bulunup bulunmadığına karar vermek için gereken yakın tarihli iletişimi okuyabilir.
+Taahhüt çıkarımı bir LLM geçişi kullanır; dolayısıyla etkinleştirilmesi, uygun
+turlardan sonra arka planda model kullanımını artırır. Geçiş, kullanıcının
+görebildiği konuşmada gizlidir ancak bir takibin bulunup bulunmadığına karar
+vermek için gereken son yazışmaları okuyabilir.
 
-Saklanan taahhütler yerel OpenClaw durumudur. Bunlar uzun vadeli bellek değil, operasyonel bellektir. Özelliği şu komutla devre dışı bırakın:
+Saklanan taahhütler, uzun süreli bellek değil, paylaşılan SQLite durum
+veritabanındaki yerel OpenClaw operasyonel belleğidir. Özelliği şu komutla
+devre dışı bırakın:
 
 ```bash
 openclaw config set commitments.enabled false
@@ -113,12 +146,15 @@ openclaw config set commitments.enabled false
 Beklenen takipler görünmüyorsa:
 
 - `commitments.enabled` değerinin `true` olduğunu doğrulayın.
-- Bekleyen, kapatılmış, ertelenmiş veya süresi dolmuş kayıtlar için `openclaw commitments --all` çıktısını kontrol edin.
-- Agent için Heartbeat'in çalıştığından emin olun.
-- Söz konusu agent oturumu için `commitments.maxPerDay` sınırına ulaşılıp ulaşılmadığını kontrol edin.
-- Kesin zamanlı hatırlatıcıların taahhüt çıkarımı tarafından atlandığını ve bunun yerine [zamanlanmış görevler](/tr/automation/cron-jobs) altında görünmesi gerektiğini unutmayın.
+- Bekleyen, reddedilmiş, ertelenmiş veya süresi dolmuş kayıtlar için
+  `openclaw commitments --all` değerini kontrol edin.
+- Aracı için heartbeat'in çalıştığından emin olun.
+- Söz konusu aracı oturumu için `commitments.maxPerDay` değerine daha önce
+  ulaşılıp ulaşılmadığını kontrol edin.
+- Kesin hatırlatıcıların taahhüt çıkarımı tarafından atlandığını ve bunun yerine
+  [zamanlanmış görevler](/tr/automation/cron-jobs) altında görünmesi gerektiğini unutmayın.
 
-## İlgili içerikler
+## İlgili konular
 
 - [Belleğe genel bakış](/tr/concepts/memory)
 - [Active Memory](/tr/concepts/active-memory)

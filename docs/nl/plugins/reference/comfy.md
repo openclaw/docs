@@ -1,19 +1,20 @@
 ---
 read_when:
-    - U installeert, configureert of controleert de comfy-plugin
+    - Je installeert, configureert of controleert de comfy-plugin
 summary: Voegt ondersteuning voor de ComfyUI-modelprovider toe aan OpenClaw.
-title: ComfyUI-plugin
+title: ComfyUI-Plugin
 x-i18n:
-    generated_at: "2026-07-12T09:06:26Z"
+    generated_at: "2026-07-16T16:04:59Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: cf099e744fc11e302995d0df9f0cbc543702b92c54424aab11502ac2552f642e
+    source_hash: 83d9455f2aabd9cb26b7d2a65a3b57957d46c17681c6b6ff515b904aa72093c8
     source_path: plugins/reference/comfy.md
     workflow: 16
 ---
 
-# ComfyUI-Plugin
+# ComfyUI-plugin
 
 Voegt ondersteuning voor de ComfyUI-modelprovider toe aan OpenClaw.
 
@@ -24,7 +25,7 @@ Voegt ondersteuning voor de ComfyUI-modelprovider toe aan OpenClaw.
 
 ## Oppervlak
 
-providers: comfy; contracten: imageGenerationProviders, musicGenerationProviders, videoGenerationProviders
+providers: `comfy`; contracten: `imageGenerationProviders`, `musicGenerationProviders`, `videoGenerationProviders`
 
 ## Gerelateerde documentatie
 

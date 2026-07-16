@@ -1,21 +1,22 @@
 ---
 read_when:
-    - Ви встановлюєте, налаштовуєте або перевіряєте Plugin moonshot
+    - Ви встановлюєте, налаштовуєте або перевіряєте Plugin moonshot.
 summary: Додає підтримку постачальника моделей Moonshot до OpenClaw.
 title: Plugin Moonshot
 x-i18n:
-    generated_at: "2026-07-12T13:35:20Z"
+    generated_at: "2026-07-16T18:26:01Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 477307769a710ac8d430a837d7b5ffda012a942f3b44f367bf4ea0770b87f48e
+    source_hash: 0e39089229bca657afa3e2c4285856701b05b73cd0d1b90e1ea3611d60bd3d13
     source_path: plugins/reference/moonshot.md
     workflow: 16
 ---
 
 # Plugin Moonshot
 
-Додає до OpenClaw підтримку постачальника моделей Moonshot.
+Додає підтримку постачальника моделей Moonshot до OpenClaw.
 
 ## Розповсюдження
 
@@ -24,8 +25,8 @@ x-i18n:
 
 ## Інтерфейс
 
-постачальники: moonshot; контракти: mediaUnderstandingProviders, webSearchProviders
+постачальники: `moonshot`; контракти: `mediaUnderstandingProviders`, `webSearchProviders`
 
 ## Пов’язана документація
 
-- [moonshot](/uk/providers/moonshot)
+- [Moonshot](/uk/providers/moonshot)

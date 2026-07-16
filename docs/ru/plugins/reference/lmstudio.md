@@ -4,12 +4,12 @@ read_when:
 summary: Добавляет в OpenClaw поддержку провайдера моделей LM Studio.
 title: Плагин LM Studio
 x-i18n:
-    generated_at: "2026-07-13T18:24:03Z"
+    generated_at: "2026-07-16T16:35:23Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
-    prompt_version: 24
+    prompt_version: 32
     provider: openai
-    source_hash: ec6c84ec422c0795d00f744239fcad96a5a01ef4fddd4823ba0b6ed93444a75b
+    source_hash: 8fc13cb8579875fab911aaf456f1b632426761b173cc06a8a7f60698e96cfb16
     source_path: plugins/reference/lmstudio.md
     workflow: 16
 ---
@@ -21,11 +21,11 @@ x-i18n:
 ## Распространение
 
 - Пакет: `@openclaw/lmstudio-provider`
-- Способ установки: входит в состав OpenClaw
+- Способ установки: включён в OpenClaw
 
 ## Интерфейс
 
-провайдеры: lmstudio; контракты: memoryEmbeddingProviders
+провайдеры: `lmstudio`; контракты: `memoryEmbeddingProviders`
 
 ## Связанная документация
 

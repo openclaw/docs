@@ -2,13 +2,14 @@
 read_when:
     - Anda sedang menginstal, mengonfigurasi, atau mengaudit plugin qqbot
 summary: Plugin saluran Bot QQ OpenClaw untuk alur kerja grup dan pesan langsung.
-title: Plugin bot QQ
+title: Plugin Bot QQ
 x-i18n:
-    generated_at: "2026-07-12T14:28:03Z"
+    generated_at: "2026-07-16T18:27:53Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 10e67c8c8bd01a2fcd3ca55c32f6941cd52551ad241cb16a2ea38c62d80cfeb9
+    source_hash: afc0633399e0fe6d37bf233fabbac0806e32a5e8151b5b841a3d9f51d1cde455
     source_path: plugins/reference/qqbot.md
     workflow: 16
 ---
@@ -24,7 +25,7 @@ Plugin saluran QQ Bot OpenClaw untuk alur kerja grup dan pesan langsung.
 
 ## Permukaan
 
-saluran: qqbot; kontrak: alat; Skills
+saluran: `qqbot`; kontrak: `tools`; skills
 
 ## Dokumentasi terkait
 

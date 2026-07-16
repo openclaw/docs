@@ -1,14 +1,15 @@
 ---
 read_when:
-    - Ви встановлюєте, налаштовуєте або перевіряєте Plugin comfy
+    - Ви встановлюєте, налаштовуєте або перевіряєте plugin comfy.
 summary: Додає підтримку постачальника моделей ComfyUI до OpenClaw.
 title: Plugin ComfyUI
 x-i18n:
-    generated_at: "2026-07-12T13:29:17Z"
+    generated_at: "2026-07-16T18:19:18Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: cf099e744fc11e302995d0df9f0cbc543702b92c54424aab11502ac2552f642e
+    source_hash: 83d9455f2aabd9cb26b7d2a65a3b57957d46c17681c6b6ff515b904aa72093c8
     source_path: plugins/reference/comfy.md
     workflow: 16
 ---
@@ -19,12 +20,12 @@ x-i18n:
 
 ## Розповсюдження
 
-- Пакет: `@openclaw/comfy-provider`
+- Пакунок: `@openclaw/comfy-provider`
 - Спосіб установлення: входить до складу OpenClaw
 
-## Інтерфейс
+## Поверхня
 
-постачальники: comfy; контракти: imageGenerationProviders, musicGenerationProviders, videoGenerationProviders
+постачальники: `comfy`; контракти: `imageGenerationProviders`, `musicGenerationProviders`, `videoGenerationProviders`
 
 ## Пов’язана документація
 

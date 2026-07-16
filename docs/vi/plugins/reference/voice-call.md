@@ -4,18 +4,19 @@ read_when:
 summary: Plugin cuộc gọi thoại OpenClaw dành cho các cuộc gọi điện thoại qua Twilio, Telnyx và Plivo.
 title: Plugin Cuộc gọi thoại
 x-i18n:
-    generated_at: "2026-07-12T08:17:20Z"
+    generated_at: "2026-07-16T15:02:10Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: b0e298a2d8701d6fd531b761f8c14477b8c37a376af43127aa67c2fa6ff1b02d
+    source_hash: d99726d6581f0aa6ebd248a12bc223c01ae072d1f4c3f3d87ca82d2a6b594514
     source_path: plugins/reference/voice-call.md
     workflow: 16
 ---
 
 # Plugin cuộc gọi thoại
 
-Plugin cuộc gọi thoại OpenClaw dành cho các cuộc gọi điện thoại qua Twilio, Telnyx và Plivo.
+Plugin cuộc gọi thoại của OpenClaw dành cho các cuộc gọi điện thoại qua Twilio, Telnyx và Plivo.
 
 ## Phân phối
 
@@ -24,7 +25,7 @@ Plugin cuộc gọi thoại OpenClaw dành cho các cuộc gọi điện thoại
 
 ## Bề mặt
 
-hợp đồng: công cụ; Skills
+hợp đồng: `tools`; kỹ năng
 
 ## Tài liệu liên quan
 

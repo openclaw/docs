@@ -1,14 +1,15 @@
 ---
 read_when:
     - 你正在安装、配置或审计 deepgram 插件
-summary: 新增媒体理解提供商支持。新增实时转写提供商支持。
+summary: 新增媒体理解提供商支持。新增实时转录提供商支持。
 title: Deepgram 插件
 x-i18n:
-    generated_at: "2026-07-11T20:46:47Z"
+    generated_at: "2026-07-16T11:48:44Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 93383c01d5a5e1e1d412d396ec1def12f388fc7c5da102573373dbc8180497a3
+    source_hash: ababdaeda58a97236e3dd96bdf51a0ce560278bbeb20a731d05f51d28bfb4155
     source_path: plugins/reference/deepgram.md
     workflow: 16
 ---
@@ -20,11 +21,11 @@ x-i18n:
 ## 分发
 
 - 软件包：`@openclaw/deepgram-provider`
-- 安装方式：已包含在 OpenClaw 中
+- 安装方式：随 OpenClaw 提供
 
 ## 接口
 
-契约：mediaUnderstandingProviders、realtimeTranscriptionProviders
+契约：`mediaUnderstandingProviders`、`realtimeTranscriptionProviders`
 
 ## 相关文档
 

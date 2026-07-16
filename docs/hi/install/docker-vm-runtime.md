@@ -1,69 +1,68 @@
 ---
 read_when:
-    - आप Docker के साथ क्लाउड VM पर OpenClaw तैनात कर रहे हैं
-    - आपको साझा बाइनरी बेक, persistence, और अपडेट flow की ज़रूरत है
-summary: लंबे समय तक चलने वाले OpenClaw Gateway होस्ट के लिए साझा Docker VM रनटाइम चरण
+    - आप Docker के साथ क्लाउड VM पर OpenClaw परिनियोजित कर रहे हैं
+    - आपको साझा बाइनरी निर्माण, स्थायित्व और अपडेट प्रवाह की आवश्यकता है
+summary: दीर्घकालिक OpenClaw Gateway होस्ट के लिए साझा Docker VM रनटाइम चरण
 title: Docker VM रनटाइम
 x-i18n:
-    generated_at: "2026-06-28T23:19:52Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T15:25:01Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: e6a01c20ac6b85a32167fd1d897368ee0ebc6997cbc95a25f831ea7dd2e623c9
+    source_hash: d1c474b1f826077ac03c7aaa1e334ed2f38d2de2770f32f2cc907846ecc8bb19
     source_path: install/docker-vm-runtime.md
     workflow: 16
 ---
 
-GCP, Hetzner और समान VPS प्रदाताओं जैसे VM-आधारित Docker इंस्टॉलेशन के लिए साझा runtime चरण।
+GCP, Hetzner और समान VPS प्रदाताओं जैसे VM-आधारित Docker इंस्टॉलेशन के लिए साझा रनटाइम चरण।
 
-## आवश्यक बाइनरीज़ को इमेज में बेक करें
+## आवश्यक बाइनरी को इमेज में शामिल करें
 
-चलते हुए कंटेनर के अंदर बाइनरीज़ इंस्टॉल करना एक जाल है।
-runtime पर इंस्टॉल की गई कोई भी चीज़ restart पर खो जाएगी।
+चल रहे कंटेनर के भीतर बाइनरी इंस्टॉल करना एक जाल है: रनटाइम पर इंस्टॉल की गई हर चीज़
+पुनः आरंभ होने पर खो जाती है। किसी skill को जिन बाहरी बाइनरी की आवश्यकता है, उन सभी को
+बिल्ड के समय इमेज में शामिल करें।
 
-Skills के लिए आवश्यक सभी बाहरी बाइनरीज़ इमेज build time पर इंस्टॉल होनी चाहिए।
+नीचे दिए गए उदाहरण वर्णानुक्रम में केवल तीन बाइनरी शामिल करते हैं:
 
-नीचे दिए गए उदाहरण केवल तीन सामान्य बाइनरीज़ दिखाते हैं:
+- `gog` (जो `gogcli` से है) Gmail एक्सेस के लिए
+- `goplaces` Google Places के लिए
+- `wacli` WhatsApp के लिए
 
-- Gmail access के लिए `gog` (`gogcli` से)
-- Google Places के लिए `goplaces`
-- WhatsApp के लिए `wacli`
+ये उदाहरण हैं, पूरी सूची नहीं। इसी पैटर्न का उपयोग करके अपनी
+skills की आवश्यकता के अनुसार जितनी बाइनरी चाहिए, इंस्टॉल करें। बाद में जब आप ऐसी skill जोड़ें जिसे नई
+बाइनरी की आवश्यकता हो:
 
-ये उदाहरण हैं, पूरी सूची नहीं।
-आप इसी पैटर्न का उपयोग करके जितनी ज़रूरत हो उतनी बाइनरीज़ इंस्टॉल कर सकते हैं।
+1. Dockerfile अपडेट करें।
+2. इमेज फिर से बिल्ड करें।
+3. कंटेनर पुनः आरंभ करें।
 
-यदि आप बाद में नई Skills जोड़ते हैं जो अतिरिक्त बाइनरीज़ पर निर्भर करती हैं, तो आपको:
-
-1. Dockerfile अपडेट करना होगा
-2. इमेज फिर से बनानी होगी
-3. कंटेनरों को restart करना होगा
-
-**उदाहरण Dockerfile**
+**Dockerfile का उदाहरण**
 
 ```dockerfile
 FROM node:24-bookworm
 
 RUN apt-get update && apt-get install -y socat && rm -rf /var/lib/apt/lists/*
 
-# Example binary 1: Gmail CLI (gogcli — installs as `gog`)
-# Copy the current Linux asset URL from https://github.com/steipete/gogcli/releases
+# उदाहरण बाइनरी 1: Gmail CLI (gogcli — `gog` के रूप में इंस्टॉल होती है)
+# वर्तमान Linux एसेट URL को https://github.com/steipete/gogcli/releases से कॉपी करें
 RUN curl -L https://github.com/steipete/gogcli/releases/latest/download/gogcli_linux_amd64.tar.gz \
   | tar -xzO gog > /usr/local/bin/gog; \
   chmod +x /usr/local/bin/gog
 
-# Example binary 2: Google Places CLI
-# Copy the current Linux asset URL from https://github.com/steipete/goplaces/releases
+# उदाहरण बाइनरी 2: Google Places CLI
+# वर्तमान Linux एसेट URL को https://github.com/steipete/goplaces/releases से कॉपी करें
 RUN curl -L https://github.com/steipete/goplaces/releases/latest/download/goplaces_linux_amd64.tar.gz \
   | tar -xzO goplaces > /usr/local/bin/goplaces; \
   chmod +x /usr/local/bin/goplaces
 
-# Example binary 3: WhatsApp CLI
-# Copy the current Linux asset URL from https://github.com/steipete/wacli/releases
+# उदाहरण बाइनरी 3: WhatsApp CLI
+# वर्तमान Linux एसेट URL को https://github.com/steipete/wacli/releases से कॉपी करें
 RUN curl -L https://github.com/steipete/wacli/releases/latest/download/wacli-linux-amd64.tar.gz \
   | tar -xzO wacli > /usr/local/bin/wacli; \
   chmod +x /usr/local/bin/wacli
 
-# Add more binaries below using the same pattern
+# इसी पैटर्न का उपयोग करके नीचे और बाइनरी जोड़ें
 
 WORKDIR /app
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc ./
@@ -84,20 +83,19 @@ CMD ["node","dist/index.js"]
 ```
 
 <Note>
-ऊपर दिए गए URL उदाहरण हैं। ARM-आधारित VM के लिए, `arm64` assets चुनें। पुनरुत्पादनीय builds के लिए, versioned release URL pin करें।
+ऊपर दिए गए URL उदाहरण हैं। ARM-आधारित VM के लिए `arm64` एसेट चुनें। पुनरुत्पाद्य बिल्ड के लिए, संस्करणयुक्त रिलीज़ URL पिन करें।
 </Note>
 
-## Build और launch
+## बिल्ड करें और शुरू करें
 
 ```bash
 docker compose build
 docker compose up -d openclaw-gateway
 ```
 
-यदि `pnpm install --frozen-lockfile` के दौरान build `Killed` या `exit code 137` के साथ विफल होता है, तो VM में memory कम है।
-फिर से कोशिश करने से पहले बड़ी machine class का उपयोग करें।
+यदि `pnpm install --frozen-lockfile` के दौरान बिल्ड `Killed` या निकास कोड 137 के साथ विफल हो जाता है, तो VM में मेमोरी समाप्त हो गई है। पुनः प्रयास करने से पहले बड़े मशीन वर्ग का उपयोग करें।
 
-बाइनरीज़ सत्यापित करें:
+बाइनरी सत्यापित करें:
 
 ```bash
 docker compose exec openclaw-gateway which gog
@@ -105,47 +103,44 @@ docker compose exec openclaw-gateway which goplaces
 docker compose exec openclaw-gateway which wacli
 ```
 
-अपेक्षित output:
+अपेक्षित आउटपुट:
 
-```
+```text
 /usr/local/bin/gog
 /usr/local/bin/goplaces
 /usr/local/bin/wacli
 ```
 
-Gateway सत्यापित करें:
+सत्यापित करें कि Gateway चालू है:
 
 ```bash
 docker compose logs -f openclaw-gateway
+curl -fsS http://127.0.0.1:18789/healthz
 ```
 
-अपेक्षित output:
+`/healthz` द्वारा 200 प्रतिक्रिया लौटना पुष्टि करता है कि Gateway प्रक्रिया सुन रही है और स्वस्थ है; अंतर्निहित इमेज `HEALTHCHECK` उसी एंडपॉइंट को पोल करती है।
 
-```
-[gateway] listening on ws://0.0.0.0:18789
-```
+## क्या कहाँ स्थायी रहता है
 
-## क्या कहाँ persist होता है
+OpenClaw Docker में चलता है, लेकिन Docker सत्य का स्रोत नहीं है। सभी दीर्घकालिक अवस्थाओं को पुनः आरंभ, पुनर्निर्माण और रीबूट के बाद भी बने रहना चाहिए।
 
-OpenClaw Docker में चलता है, लेकिन Docker सत्य का स्रोत नहीं है।
-सभी long-lived state को restarts, rebuilds और reboots के बाद भी बने रहना चाहिए।
+| घटक                    | स्थान                                                   | स्थायित्व तंत्र            | टिप्पणियाँ                                                                                                           |
+| ---------------------- | ------------------------------------------------------ | ---------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| Gateway कॉन्फ़िगरेशन   | `/home/node/.openclaw/`                                | होस्ट वॉल्यूम माउंट         | इसमें `openclaw.json` शामिल है                                                                                       |
+| चैनल/प्रदाता क्रेडेंशियल | `/home/node/.openclaw/credentials/`                    | होस्ट वॉल्यूम माउंट         | चैनल और प्रदाता की क्रेडेंशियल सामग्री                                                                                 |
+| मॉडल प्रमाणीकरण प्रोफ़ाइल | `/home/node/.openclaw/agents/`                         | होस्ट वॉल्यूम माउंट         | `agents/<agentId>/agent/auth-profiles.json` (OAuth, API कुंजियाँ)                                                       |
+| लेगेसी OAuth कुंजी फ़ाइल | `/home/node/.config/openclaw/`                         | होस्ट वॉल्यूम माउंट         | माइग्रेशन-पूर्व OAuth साइडकार के लिए केवल-पठन संगतता; `openclaw doctor --fix` इन्हें `auth-profiles.json` में माइग्रेट करता है |
+| Skill कॉन्फ़िगरेशन     | `/home/node/.openclaw/skills/`                         | होस्ट वॉल्यूम माउंट         | Skill-स्तरीय अवस्था                                                                                                   |
+| एजेंट कार्यक्षेत्र      | `/home/node/.openclaw/workspace/`                      | होस्ट वॉल्यूम माउंट         | कोड और एजेंट आर्टिफ़ैक्ट                                                                                               |
+| WhatsApp सत्र          | `/home/node/.openclaw/`                                | होस्ट वॉल्यूम माउंट         | QR लॉगिन सुरक्षित रखता है                                                                                              |
+| Gmail कीरिंग           | `/home/node/.openclaw/`                                | होस्ट वॉल्यूम + पासवर्ड     | `GOG_KEYRING_PASSWORD` आवश्यक है                                                                                     |
+| Plugin पैकेज           | `/home/node/.openclaw/npm`, `/home/node/.openclaw/git` | होस्ट वॉल्यूम माउंट         | डाउनलोड किए जा सकने वाले Plugin पैकेज रूट                                                                              |
+| बाहरी बाइनरी           | `/usr/local/bin/`                                      | Docker इमेज                | बिल्ड के समय शामिल करना आवश्यक है                                                                                      |
+| Node रनटाइम            | कंटेनर फ़ाइल सिस्टम                                    | Docker इमेज                | प्रत्येक इमेज बिल्ड पर फिर से बनाया जाता है                                                                             |
+| OS पैकेज               | कंटेनर फ़ाइल सिस्टम                                    | Docker इमेज                | रनटाइम पर इंस्टॉल न करें                                                                                                |
+| Docker कंटेनर          | अस्थायी                                                 | पुनः आरंभ करने योग्य        | नष्ट करना सुरक्षित है                                                                                                  |
 
-| घटक                | स्थान                                                   | persistence mechanism   | नोट्स                                                        |
-| ------------------- | ------------------------------------------------------ | ---------------------- | ------------------------------------------------------------- |
-| Gateway config      | `/home/node/.openclaw/`                                | होस्ट volume mount     | `openclaw.json`, `.env` शामिल हैं                            |
-| Model auth profiles | `/home/node/.openclaw/agents/`                         | होस्ट volume mount     | `agents/<agentId>/agent/auth-profiles.json` (OAuth, API keys) |
-| Auth profile key    | `/home/node/.config/openclaw/`                         | होस्ट volume mount     | OAuth auth profile token material के लिए स्थानीय encryption key |
-| Skill configs       | `/home/node/.openclaw/skills/`                         | होस्ट volume mount     | Skill-level state                                             |
-| Agent workspace     | `/home/node/.openclaw/workspace/`                      | होस्ट volume mount     | code और agent artifacts                                      |
-| WhatsApp session    | `/home/node/.openclaw/`                                | होस्ट volume mount     | QR login को सुरक्षित रखता है                                 |
-| Gmail keyring       | `/home/node/.openclaw/`                                | होस्ट volume + password | `GOG_KEYRING_PASSWORD` आवश्यक है                              |
-| Plugin packages     | `/home/node/.openclaw/npm`, `/home/node/.openclaw/git` | होस्ट volume mount     | downloadable Plugin package roots                             |
-| External binaries   | `/usr/local/bin/`                                      | Docker image           | build time पर बेक करना आवश्यक है                             |
-| Node runtime        | कंटेनर filesystem                                      | Docker image           | हर image build पर फिर से बनता है                             |
-| OS packages         | कंटेनर filesystem                                      | Docker image           | runtime पर इंस्टॉल न करें                                    |
-| Docker container    | अस्थायी                                               | restartable            | नष्ट करना सुरक्षित है                                         |
-
-## Updates
+## अपडेट
 
 VM पर OpenClaw अपडेट करने के लिए:
 

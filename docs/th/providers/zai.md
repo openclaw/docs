@@ -1,15 +1,16 @@
 ---
 read_when:
     - คุณต้องการใช้โมเดล Z.AI / GLM ใน OpenClaw
-    - คุณต้องตั้งค่า `ZAI_API_KEY` แบบง่าย ๆ
+    - คุณต้องตั้งค่า ZAI_API_KEY แบบง่ายๆ
 summary: ใช้ Z.AI (โมเดล GLM) กับ OpenClaw
 title: Z.AI
 x-i18n:
-    generated_at: "2026-07-12T16:40:24Z"
+    generated_at: "2026-07-16T19:41:42Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: ab29149da39cbf82fe041ea5932a860c461320e14bf26f83f69060d7ae0ae00a
+    source_hash: 7f7adf0e2f436f9081891013c0092ce4717bf302b2a4a2e997d9561d7d40211a
     source_path: providers/zai.md
     workflow: 16
 ---
@@ -18,16 +19,16 @@ Z.AI คือแพลตฟอร์ม API สำหรับโมเดล 
 ใช้คีย์ API สำหรับการยืนยันตัวตน สร้างคีย์ API ของคุณในคอนโซล Z.AI
 OpenClaw ใช้ผู้ให้บริการ `zai` ร่วมกับคีย์ API ของ Z.AI
 
-| คุณสมบัติ | ค่า                                           |
+| คุณสมบัติ | ค่า                                        |
 | -------- | -------------------------------------------- |
 | ผู้ให้บริการ | `zai`                                        |
 | แพ็กเกจ  | `@openclaw/zai-provider`                     |
-| การยืนยันตัวตน | `ZAI_API_KEY` (นามแฝงเดิม: `Z_AI_API_KEY`) |
-| API      | การเติมข้อความสนทนาของ Z.AI (การยืนยันตัวตนแบบ Bearer) |
+| การยืนยันตัวตน     | `ZAI_API_KEY` (นามแฝงเดิม: `Z_AI_API_KEY`) |
+| API      | Z.AI Chat Completions (การยืนยันตัวตนแบบ Bearer)          |
 
 ## โมเดล GLM
 
-GLM เป็นตระกูลโมเดล ไม่ใช่ผู้ให้บริการแยกต่างหาก ใน OpenClaw โมเดล GLM ใช้
+GLM คือตระกูลโมเดล ไม่ใช่ผู้ให้บริการแยกต่างหาก ใน OpenClaw โมเดล GLM ใช้
 การอ้างอิง เช่น `zai/glm-5.2`: ผู้ให้บริการ `zai`, รหัสโมเดล `glm-5.2`
 
 ## เริ่มต้นใช้งาน
@@ -39,16 +40,16 @@ openclaw plugins install @openclaw/zai-provider
 ```
 
 <Tabs>
-  <Tab title="Auto-detect endpoint">
-    **เหมาะที่สุดสำหรับ:** ผู้ใช้ส่วนใหญ่ OpenClaw จะตรวจสอบเอ็นด์พอยต์ Z.AI ที่รองรับด้วยคีย์ API ของคุณ และใช้ URL ฐานที่ถูกต้องโดยอัตโนมัติ
+  <Tab title="ตรวจหาปลายทางอัตโนมัติ">
+    **เหมาะที่สุดสำหรับ:** ผู้ใช้ส่วนใหญ่ OpenClaw จะตรวจสอบปลายทาง Z.AI ที่รองรับด้วยคีย์ API ของคุณ และใช้ URL ฐานที่ถูกต้องโดยอัตโนมัติ
 
     <Steps>
-      <Step title="Run onboarding">
+      <Step title="เรียกใช้การเริ่มต้นตั้งค่า">
         ```bash
         openclaw onboard --auth-choice zai-api-key
         ```
       </Step>
-      <Step title="Verify the model is listed">
+      <Step title="ตรวจสอบว่าโมเดลอยู่ในรายการ">
         ```bash
         openclaw models list --all --provider zai
         ```
@@ -57,26 +58,26 @@ openclaw plugins install @openclaw/zai-provider
 
   </Tab>
 
-  <Tab title="Explicit regional endpoint">
-    **เหมาะที่สุดสำหรับ:** ผู้ใช้ที่ต้องการบังคับใช้ Coding Plan หรือพื้นผิว API ทั่วไปแบบเฉพาะเจาะจง
+  <Tab title="ระบุปลายทางภูมิภาคอย่างชัดเจน">
+    **เหมาะที่สุดสำหรับ:** ผู้ใช้ที่ต้องการบังคับใช้พื้นผิว API ของ Coding Plan หรือ API ทั่วไปที่เจาะจง
 
     <Steps>
-      <Step title="Pick the right onboarding choice">
+      <Step title="เลือกตัวเลือกการเริ่มต้นตั้งค่าที่ถูกต้อง">
         ```bash
-        # Coding Plan Global (recommended for Coding Plan users)
+        # Coding Plan ทั่วโลก (แนะนำสำหรับผู้ใช้ Coding Plan)
         openclaw onboard --auth-choice zai-coding-global
 
-        # Coding Plan CN (China region)
+        # Coding Plan CN (ภูมิภาคจีน)
         openclaw onboard --auth-choice zai-coding-cn
 
-        # General API
+        # API ทั่วไป
         openclaw onboard --auth-choice zai-global
 
-        # General API CN (China region)
+        # API ทั่วไป CN (ภูมิภาคจีน)
         openclaw onboard --auth-choice zai-cn
         ```
       </Step>
-      <Step title="Verify the model is listed">
+      <Step title="ตรวจสอบว่าโมเดลอยู่ในรายการ">
         ```bash
         openclaw models list --all --provider zai
         ```
@@ -86,28 +87,60 @@ openclaw plugins install @openclaw/zai-provider
   </Tab>
 </Tabs>
 
-### เอ็นด์พอยต์
+### ปลายทาง
 
-| ตัวเลือกการเริ่มต้นใช้งาน | URL ฐาน                                      | โมเดลเริ่มต้น |
+| ตัวเลือกการเริ่มต้นตั้งค่า   | URL ฐาน                                      | โมเดลเริ่มต้น |
 | ------------------- | --------------------------------------------- | ------------- |
 | `zai-global`        | `https://api.z.ai/api/paas/v4`                | `glm-5.1`     |
 | `zai-cn`            | `https://open.bigmodel.cn/api/paas/v4`        | `glm-5.1`     |
 | `zai-coding-global` | `https://api.z.ai/api/coding/paas/v4`         | `glm-5.2`     |
 | `zai-coding-cn`     | `https://open.bigmodel.cn/api/coding/paas/v4` | `glm-5.2`     |
 
-`zai-api-key` จะตรวจหาเอ็นด์พอยต์หนึ่งในสี่รายการนี้โดยอัตโนมัติ ด้วยการทดสอบคีย์ของคุณกับ API
-การเติมข้อความสนทนาของแต่ละเอ็นด์พอยต์ โดยตรวจสอบเอ็นด์พอยต์ทั่วไป (`zai-global`
-จากนั้น `zai-cn`) ก่อนเอ็นด์พอยต์ Coding Plan (`zai-coding-global` จากนั้น
-`zai-coding-cn`) และหยุดที่เอ็นด์พอยต์แรกที่ยอมรับคำขอ
-ใช้ `--auth-choice` แบบระบุชัดเจนเพื่อบังคับใช้เอ็นด์พอยต์ Coding Plan หากคีย์ของคุณ
-ใช้งานได้กับทั้งสองประเภท
+`zai-api-key` จะตรวจหาหนึ่งในสี่ตัวเลือกนี้โดยอัตโนมัติ ด้วยการทดสอบคีย์ของคุณกับ
+API chat-completions ของแต่ละปลายทาง โดยตรวจสอบปลายทางทั่วไป (`zai-global`,
+จากนั้น `zai-cn`) ก่อนปลายทาง Coding Plan (`zai-coding-global`, จากนั้น
+`zai-coding-cn`) และหยุดที่ปลายทางแรกที่ยอมรับคำขอ
+ใช้ `--auth-choice` แบบระบุชัดเจนเพื่อบังคับใช้ปลายทาง Coding Plan หากคีย์ของคุณ
+ใช้งานได้กับทั้งสองแบบ
+
+## ขีดจำกัดอัตราและภาวะโหลดเกิน
+
+เอกสารของ Z.AI ระบุว่า Coding Plan และเครื่องมือเอเจนต์อเนกประสงค์เป็นบริการ
+ที่มีการจัดการความจุ ในเอกสารของ Z.AI:
+
+- [เครื่องมือเอเจนต์อเนกประสงค์](https://docs.z.ai/devpack/tool/others)
+  ซึ่งรวมถึง OpenClaw จะให้บริการตามขีดความสามารถที่มี ในช่วงที่มีโหลดการอนุมานสูง
+  ซึ่งโดยทั่วไปอยู่ระหว่างเวลา 2-6 PM ตามเวลาสิงคโปร์ คำขอบางรายการอาจพบ
+  ขีดจำกัดอัตราชั่วคราว
+- [ขีดจำกัดอัตราและการทำงานพร้อมกันของ Coding Plan](https://docs.z.ai/devpack/usage-policy)
+  จะผูกกับระดับแผนและอาจปรับเปลี่ยนแบบไดนามิกตามความพร้อมของทรัพยากร
+  ช่วงนอกเวลาเร่งด่วนอาจรองรับการทำงานพร้อมกันได้มากขึ้น
+- [รหัสข้อผิดพลาด API `1302`](https://docs.z.ai/api-reference/api-code) หมายถึง "ถึง
+  ขีดจำกัดอัตราสำหรับคำขอแล้ว" รหัสข้อผิดพลาด API `1305` หมายถึง "บริการอาจมี
+  โหลดเกินชั่วคราว โปรดลองอีกครั้งภายหลัง"
+
+หากพบการตอบกลับ `429` หรือ `1305` ชั่วคราวในช่วงที่มีการใช้งานหนาแน่น ให้รอและ
+ลองส่งคำขออีกครั้ง หากความล้มเหลวเกิดซ้ำได้นอกช่วงเวลาเร่งด่วน หรือเกิดขึ้นเฉพาะ
+กับปลายทาง โมเดล หรือรูปแบบคำขอใดรูปแบบหนึ่ง ให้ตรวจสอบปลายทางและโมเดล
+ที่กำหนดค่าไว้ก่อน:
+
+```bash
+openclaw models list --all --provider zai
+openclaw config get models.providers.zai.baseUrl
+```
+
+คีย์ Coding Plan ควรใช้ปลายทาง Coding Plan เช่น
+`https://api.z.ai/api/coding/paas/v4`; คีย์ API ทั่วไปควรใช้ปลายทาง API ทั่วไป
+เช่น `https://api.z.ai/api/paas/v4` ความล้มเหลวที่เกิดขึ้นต่อเนื่องกับ
+คีย์และปลายทางเดิมอาจบ่งชี้ถึงการปฏิเสธจากฝั่งผู้ให้บริการหรือข้อจำกัดของแผน
+ไม่ใช่การจำกัดอัตราตามปกติเนื่องจากโหลดสูงในช่วงเวลาเร่งด่วน
 
 ## ตัวอย่างการกำหนดค่า
 
 <Tip>
-`zai-api-key` ช่วยให้ OpenClaw ตรวจหาเอ็นด์พอยต์ Z.AI ที่ตรงกับคีย์และ
+`zai-api-key` ช่วยให้ OpenClaw ตรวจหาปลายทาง Z.AI ที่ตรงกับคีย์และ
 ใช้ URL ฐานที่ถูกต้องโดยอัตโนมัติ ใช้ตัวเลือกภูมิภาคแบบระบุชัดเจนเมื่อ
-คุณต้องการบังคับใช้ Coding Plan หรือพื้นผิว API ทั่วไปแบบเฉพาะเจาะจง
+ต้องการบังคับใช้พื้นผิว API ของ Coding Plan หรือ API ทั่วไปที่เจาะจง
 </Tip>
 
 ```json5
@@ -116,7 +149,7 @@ openclaw plugins install @openclaw/zai-provider
   models: {
     providers: {
       zai: {
-        // GLM-5.2 uses the Coding Plan endpoint.
+        // GLM-5.2 ใช้ปลายทาง Coding Plan
         baseUrl: "https://api.z.ai/api/coding/paas/v4",
       },
     },
@@ -127,19 +160,19 @@ openclaw plugins install @openclaw/zai-provider
 
 ## แค็ตตาล็อกในตัว
 
-Plugin ผู้ให้บริการ `zai` มาพร้อมแค็ตตาล็อกในไฟล์ประกาศของ Plugin ดังนั้นการแสดงรายการ
+Plugin ผู้ให้บริการ `zai` มาพร้อมแค็ตตาล็อกในไฟล์ manifest ของ Plugin ดังนั้นการแสดงรายการ
 แบบอ่านอย่างเดียวจึงสามารถแสดงแถว GLM ที่รู้จักได้โดยไม่ต้องโหลดรันไทม์ของผู้ให้บริการ:
 
 ```bash
 openclaw models list --all --provider zai
 ```
 
-ปัจจุบันแค็ตตาล็อกที่อ้างอิงจากไฟล์ประกาศประกอบด้วย:
+ปัจจุบันแค็ตตาล็อกที่อ้างอิงจาก manifest ประกอบด้วย:
 
-| การอ้างอิงโมเดล       | หมายเหตุ                        |
+| การอ้างอิงโมเดล            | หมายเหตุ                           |
 | -------------------- | ------------------------------- |
 | `zai/glm-5.2`        | ค่าเริ่มต้นของ Coding Plan; บริบท 1M |
-| `zai/glm-5.1`        | ค่าเริ่มต้นของ API ทั่วไป       |
+| `zai/glm-5.1`        | ค่าเริ่มต้นของ API ทั่วไป             |
 | `zai/glm-5`          |                                 |
 | `zai/glm-5-turbo`    |                                 |
 | `zai/glm-5v-turbo`   |                                 |
@@ -159,9 +192,9 @@ openclaw models list --all --provider zai
 
 <Note>
 การตั้งค่า Coding Plan ใช้ `zai/glm-5.2` เป็นค่าเริ่มต้น ส่วนการตั้งค่า API ทั่วไปยังคงใช้
-`zai/glm-5.1` บนเอ็นด์พอยต์ Coding Plan การตรวจหาอัตโนมัติจะถอยไปใช้
-`glm-5.1` และจากนั้น `glm-4.7` เมื่อคีย์หรือแผนไม่เปิดให้ใช้ GLM-5.2 เวอร์ชัน
-และความพร้อมใช้งานของ GLM อาจเปลี่ยนแปลงได้ ให้เรียกใช้ `openclaw models list --all --provider zai`
+`zai/glm-5.1` ในปลายทาง Coding Plan การตรวจหาอัตโนมัติจะถอยกลับไปใช้
+`glm-5.1` และจากนั้น `glm-4.7` เมื่อคีย์/แผนไม่เปิดให้ใช้ GLM-5.2 เวอร์ชันและ
+ความพร้อมใช้งานของ GLM อาจเปลี่ยนแปลงได้ ให้เรียกใช้ `openclaw models list --all --provider zai`
 เพื่อดูแค็ตตาล็อกที่เวอร์ชันซึ่งติดตั้งอยู่รู้จัก
 </Note>
 
@@ -169,31 +202,31 @@ openclaw models list --all --provider zai
 
 <Tabs>
   <Tab title="GLM-5.2">
-    ช่วงทั้งหมด: `off`, `low`, `high`, `max` (ค่าเริ่มต้นคือ `off`) OpenClaw จะแมป
+    ช่วงทั้งหมด: `off`, `low`, `high`, `max` (ค่าเริ่มต้น `off`) OpenClaw จะแมป
     `low` และ `high` ไปยังระดับความพยายามในการให้เหตุผล `high` ของ Z.AI และแมป `max` ไปยัง
     ระดับความพยายาม `max` ของ Z.AI ผ่าน `reasoning_effort` ในเพย์โหลดคำขอ
   </Tab>
-  <Tab title="Other GLM models">
-    สลับได้เพียงสองค่า: `off` และ `low` (แสดงเป็น `on` ในตัวเลือก) โดยค่าเริ่มต้นคือ
+  <Tab title="โมเดล GLM อื่นๆ">
+    สลับได้เพียงสองค่า: `off` และ `low` (แสดงเป็น `on` ในตัวเลือก) ค่าเริ่มต้นคือ
     `off` การตั้งค่าการคิดเป็น `off` จะส่ง `thinking: { type: "disabled" }`;
-    ระดับอื่นทั้งหมดจะไม่แก้ไขเพย์โหลดคำขอ (ใช้พฤติกรรมการให้เหตุผลเริ่มต้น
-    ของ Z.AI)
+    ระดับอื่นใดจะไม่แก้ไขเพย์โหลดคำขอ (ใช้พฤติกรรมการให้เหตุผล
+    เริ่มต้นของ Z.AI)
   </Tab>
 </Tabs>
 
-การตั้งค่าการคิดเป็น `off` ช่วยหลีกเลี่ยงการตอบกลับที่ใช้โควตาผลลัพธ์ไปกับ
+การตั้งค่าการคิดเป็น `off` จะช่วยหลีกเลี่ยงการตอบกลับที่ใช้โควตาเอาต์พุตไปกับ
 `reasoning_content` ก่อนข้อความที่มองเห็นได้
 
 ## การกำหนดค่าขั้นสูง
 
 <AccordionGroup>
-  <Accordion title="Forward-resolving unknown GLM-5 models">
-    รหัส `glm-5*` ที่ไม่รู้จักยังคงแก้ไขการอ้างอิงแบบส่งต่อในเส้นทางของผู้ให้บริการได้ โดย
-    สร้างเมทาดาทาที่ผู้ให้บริการเป็นเจ้าของจากแม่แบบ `glm-4.7` เมื่อรหัส
+  <Accordion title="การแก้ไขโมเดล GLM-5 ที่ไม่รู้จักแบบส่งต่อ">
+    รหัส `glm-5*` ที่ไม่รู้จักยังคงได้รับการแก้ไขแบบส่งต่อในเส้นทางของผู้ให้บริการ โดย
+    สังเคราะห์ข้อมูลเมตาที่ผู้ให้บริการเป็นเจ้าของจากเทมเพลต `glm-4.7` เมื่อรหัส
     ตรงกับรูปแบบปัจจุบันของตระกูล GLM-5
   </Accordion>
 
-  <Accordion title="Tool-call streaming">
+  <Accordion title="การสตรีมการเรียกใช้เครื่องมือ">
     `tool_stream` เปิดใช้งานเป็นค่าเริ่มต้นสำหรับการสตรีมการเรียกใช้เครื่องมือของ Z.AI หากต้องการปิดใช้งาน:
 
     ```json5
@@ -212,9 +245,9 @@ openclaw models list --all --provider zai
 
   </Accordion>
 
-  <Accordion title="Preserved thinking">
-    การเก็บรักษาการคิดเป็นคุณสมบัติที่ต้องเลือกเปิดใช้ เนื่องจาก Z.AI กำหนดให้ส่ง
-    `reasoning_content` ในประวัติทั้งหมดซ้ำ ซึ่งเพิ่มจำนวนโทเค็นของพรอมต์ เปิดใช้งาน
+  <Accordion title="การเก็บรักษาการคิด">
+    การเก็บรักษาการคิดเป็นคุณสมบัติที่ต้องเลือกเปิดใช้ เนื่องจาก Z.AI กำหนดให้เล่นซ้ำ
+    `reasoning_content` ในอดีตทั้งหมด ซึ่งเพิ่มจำนวนโทเค็นพรอมต์ เปิดใช้งาน
     แยกตามโมเดล:
 
     ```json5
@@ -231,44 +264,44 @@ openclaw models list --all --provider zai
     }
     ```
 
-    เมื่อเปิดใช้งานและเปิดการคิดอยู่ OpenClaw จะส่ง
-    `thinking: { type: "enabled", clear_thinking: false }` และส่ง
-    `reasoning_content` ก่อนหน้าซ้ำสำหรับทรานสคริปต์เดียวกันที่เข้ากันได้กับ OpenAI คีย์พารามิเตอร์แบบ snake_case
+    เมื่อเปิดใช้งานและเปิดการคิด OpenClaw จะส่ง
+    `thinking: { type: "enabled", clear_thinking: false }` และเล่นซ้ำ
+    `reasoning_content` ก่อนหน้าสำหรับทรานสคริปต์ที่เข้ากันได้กับ OpenAI เดียวกัน คีย์พารามิเตอร์แบบ snake_case
     `preserve_thinking` ใช้งานเป็นนามแฝงได้
 
-    ผู้ใช้ขั้นสูงยังคงสามารถเขียนทับเพย์โหลดของผู้ให้บริการแบบเจาะจงได้ด้วย
+    ผู้ใช้ขั้นสูงยังสามารถแทนที่เพย์โหลดที่ส่งไปยังผู้ให้บริการโดยตรงด้วย
     `params.extra_body.thinking`
 
   </Accordion>
 
-  <Accordion title="Image understanding">
-    Plugin Z.AI ลงทะเบียนความสามารถในการทำความเข้าใจภาพ
+  <Accordion title="การทำความเข้าใจรูปภาพ">
+    Plugin Z.AI ลงทะเบียนความสามารถในการทำความเข้าใจรูปภาพ
 
-    | คุณสมบัติ    | ค่า         |
+    | คุณสมบัติ      | ค่า       |
     | ------------- | ----------- |
-    | โมเดล        | `glm-4.6v`  |
+    | โมเดล         | `glm-4.6v`  |
 
-    ระบบจะแก้ไขการอ้างอิงความสามารถในการทำความเข้าใจภาพโดยอัตโนมัติจากการยืนยันตัวตน Z.AI ที่กำหนดค่าไว้ โดยไม่
+    ระบบจะแก้ไขความสามารถในการทำความเข้าใจรูปภาพโดยอัตโนมัติจากการยืนยันตัวตน Z.AI ที่กำหนดค่าไว้ โดยไม่
     ต้องกำหนดค่าเพิ่มเติม
 
   </Accordion>
 
-  <Accordion title="Auth details">
+  <Accordion title="รายละเอียดการยืนยันตัวตน">
     - Z.AI ใช้การยืนยันตัวตนแบบ Bearer ด้วยคีย์ API ของคุณ
-    - ตัวเลือกการเริ่มต้นใช้งาน `zai-api-key` จะตรวจหาเอ็นด์พอยต์ Z.AI ที่ตรงกันโดยอัตโนมัติ ด้วยการทดสอบเอ็นด์พอยต์ที่รองรับด้วยคีย์ของคุณ
-    - ใช้ตัวเลือกภูมิภาคแบบระบุชัดเจน (`zai-coding-global`, `zai-coding-cn`, `zai-global`, `zai-cn`) เมื่อต้องการบังคับใช้พื้นผิว API แบบเฉพาะเจาะจง
-    - ตัวแปรสภาพแวดล้อมเดิม `Z_AI_API_KEY` ยังคงได้รับการยอมรับ โดย OpenClaw จะคัดลอกค่าไปยัง `ZAI_API_KEY` เมื่อเริ่มต้นระบบ หากยังไม่ได้ตั้งค่า `ZAI_API_KEY`
+    - ตัวเลือกการเริ่มต้นตั้งค่า `zai-api-key` จะตรวจหาปลายทาง Z.AI ที่ตรงกันโดยอัตโนมัติ ด้วยการทดสอบปลายทางที่รองรับด้วยคีย์ของคุณ
+    - ใช้ตัวเลือกภูมิภาคแบบระบุชัดเจน (`zai-coding-global`, `zai-coding-cn`, `zai-global`, `zai-cn`) เมื่อต้องการบังคับใช้พื้นผิว API ที่เจาะจง
+    - ตัวแปรสภาพแวดล้อมเดิม `Z_AI_API_KEY` ยังคงใช้ได้ โดย OpenClaw จะคัดลอกค่าไปยัง `ZAI_API_KEY` เมื่อเริ่มทำงาน หากไม่ได้ตั้งค่า `ZAI_API_KEY`
 
   </Accordion>
 </AccordionGroup>
 
-## ที่เกี่ยวข้อง
+## เนื้อหาที่เกี่ยวข้อง
 
 <CardGroup cols={2}>
-  <Card title="Model selection" href="/th/concepts/model-providers" icon="layers">
+  <Card title="การเลือกโมเดล" href="/th/concepts/model-providers" icon="layers">
     การเลือกผู้ให้บริการ การอ้างอิงโมเดล และพฤติกรรมการสลับไปใช้ระบบสำรอง
   </Card>
-  <Card title="Configuration reference" href="/th/gateway/configuration-reference" icon="gear">
+  <Card title="ข้อมูลอ้างอิงการกำหนดค่า" href="/th/gateway/configuration-reference" icon="gear">
     สคีมาการกำหนดค่า OpenClaw ฉบับเต็ม รวมถึงการตั้งค่าผู้ให้บริการและโมเดล
   </Card>
 </CardGroup>

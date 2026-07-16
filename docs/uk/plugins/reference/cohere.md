@@ -1,31 +1,32 @@
 ---
 read_when:
     - Ви встановлюєте, налаштовуєте або перевіряєте плагін cohere
-summary: Plugin постачальника Cohere для OpenClaw.
-title: Plugin Cohere
+summary: Плагін провайдера Cohere для OpenClaw.
+title: Плагін Cohere
 x-i18n:
-    generated_at: "2026-07-12T13:35:50Z"
+    generated_at: "2026-07-16T18:18:18Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 08bdb32e07d1b28d19a89c2eb082348b4b04ddb42d0b7f145aa3513287bb72d9
+    source_hash: 8d419e7596d93838f7f0efb1e1809d69b0f90f9a169aee9f926c88554ebbcc32
     source_path: plugins/reference/cohere.md
     workflow: 16
 ---
 
-# Plugin Cohere
+# Плагін Cohere
 
-Plugin провайдера Cohere для OpenClaw.
+Плагін провайдера Cohere для OpenClaw.
 
 ## Розповсюдження
 
-- Пакет: `@openclaw/cohere-provider`
-- Спосіб установлення: входить до складу OpenClaw; npm; ClawHub: `clawhub:@openclaw/cohere-provider`
+- Пакунок: `@openclaw/cohere-provider`
+- Спосіб установлення: включено до OpenClaw; npm; ClawHub: `clawhub:@openclaw/cohere-provider`
 
-## Інтерфейс
+## Поверхня
 
-провайдери: cohere
+провайдери: `cohere`
 
 ## Пов’язана документація
 
-- [cohere](/uk/providers/cohere)
+- [Cohere](/uk/providers/cohere)

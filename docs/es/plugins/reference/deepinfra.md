@@ -1,14 +1,15 @@
 ---
 read_when:
     - Está instalando, configurando o auditando el plugin deepinfra
-summary: Añade compatibilidad con el proveedor de modelos DeepInfra en OpenClaw.
+summary: Añade compatibilidad con el proveedor de modelos DeepInfra a OpenClaw.
 title: Plugin de DeepInfra
 x-i18n:
-    generated_at: "2026-07-11T23:23:54Z"
+    generated_at: "2026-07-16T11:52:02Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 67ee0e714d812bbb72a05233ac52a17da796631766a9222bb9caa4d441c8433f
+    source_hash: a50c58ec2a78966e8f9c4d04f8d21dc3e343c7428ce091d400d154c79b1b5ca2
     source_path: plugins/reference/deepinfra.md
     workflow: 16
 ---
@@ -24,8 +25,8 @@ Añade compatibilidad con el proveedor de modelos DeepInfra a OpenClaw.
 
 ## Superficie
 
-proveedores: deepinfra; contratos: imageGenerationProviders, mediaUnderstandingProviders, memoryEmbeddingProviders, speechProviders, videoGenerationProviders
+proveedores: `deepinfra`; contratos: `imageGenerationProviders`, `mediaUnderstandingProviders`, `memoryEmbeddingProviders`, `speechProviders`, `videoGenerationProviders`
 
 ## Documentación relacionada
 
-- [deepinfra](/es/providers/deepinfra)
+- [DeepInfra](/es/providers/deepinfra)

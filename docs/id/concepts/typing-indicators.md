@@ -1,52 +1,44 @@
 ---
 read_when:
-    - Mengubah perilaku atau nilai default indikator pengetikan
-summary: Kapan OpenClaw menampilkan indikator mengetik dan cara menyesuaikannya
+    - Mengubah perilaku atau pengaturan default indikator pengetikan
+summary: Kapan OpenClaw menampilkan indikator sedang mengetik dan cara menyesuaikannya
 title: Indikator pengetikan
 x-i18n:
-    generated_at: "2026-06-27T17:27:20Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T18:07:27Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: fa76889d0f6262f1092abefee02aee8fe944651dc89d3a697ccc86e16558ed60
+    source_hash: 55e5ec38f47e0612b25b5561790e9b8a17ea4e215c4038bb89af83f861089e03
     source_path: concepts/typing-indicators.md
     workflow: 16
 ---
 
-Indikator mengetik dikirim ke saluran chat saat sebuah run aktif. Gunakan
-`agents.defaults.typingMode` untuk mengontrol **kapan** mengetik dimulai dan `typingIntervalSeconds`
-untuk mengontrol **seberapa sering** indikator diperbarui.
+Indikator mengetik dikirim ke kanal obrolan saat suatu proses aktif. Gunakan `agents.defaults.typingMode` untuk mengontrol **kapan** aktivitas mengetik dimulai dan `typingIntervalSeconds` untuk mengontrol **seberapa sering** indikator diperbarui (interval keepalive, default 6 detik).
 
 ## Default
 
-Saat `agents.defaults.typingMode` **tidak diatur**, OpenClaw mempertahankan perilaku lama:
+Saat `agents.defaults.typingMode` **tidak ditetapkan**:
 
-- **Chat langsung**: mengetik dimulai segera setelah loop model dimulai.
-- **Chat grup dengan mention**: mengetik dimulai segera.
-- **Chat grup tanpa mention**: mengetik dimulai saat run yang diterima memiliki
-  aktivitas yang terlihat oleh pengguna, seperti aktivitas eksekusi harness atau teks pesan.
-- **Run Heartbeat**: mengetik dimulai saat run heartbeat dimulai jika
-  target heartbeat yang terselesaikan adalah chat yang mendukung pengetikan dan pengetikan tidak dinonaktifkan.
+- **Obrolan langsung**: aktivitas mengetik segera dimulai setelah perulangan model dimulai.
+- **Obrolan grup dengan sebutan**: aktivitas mengetik segera dimulai.
+- **Obrolan grup tanpa sebutan**: aktivitas mengetik dimulai saat proses yang diterima memiliki aktivitas yang terlihat oleh pengguna, seperti aktivitas eksekusi harness atau teks pesan.
+- **Proses Heartbeat**: aktivitas mengetik dimulai saat proses Heartbeat dimulai, jika target Heartbeat yang ditentukan adalah obrolan yang mendukung indikator mengetik dan indikator mengetik tidak dinonaktifkan.
 
 ## Mode
 
-Atur `agents.defaults.typingMode` ke salah satu dari:
+Tetapkan `agents.defaults.typingMode` ke salah satu dari:
 
-- `never` - tidak ada indikator mengetik, kapan pun.
-- `instant` - mulai mengetik **segera setelah loop model dimulai**, meskipun run
-  kemudian hanya mengembalikan token balasan senyap.
-- `thinking` - mulai mengetik pada **delta penalaran pertama** atau pada eksekusi
-  harness aktif setelah giliran diterima.
-- `message` - mulai mengetik pada **aktivitas balasan pertama yang terlihat oleh pengguna**, seperti
-  eksekusi harness aktif atau delta teks non-senyap. Token balasan senyap seperti
-  `NO_REPLY` tidak dihitung sebagai aktivitas teks.
+- `never` - tidak pernah menampilkan indikator mengetik.
+- `instant` - mulai mengetik **segera setelah perulangan model dimulai**, meskipun proses tersebut kemudian hanya mengembalikan token balasan senyap.
+- `thinking` - mulai mengetik pada **delta penalaran pertama**, atau saat eksekusi harness aktif setelah giliran diterima.
+- `message` - mulai mengetik pada **aktivitas balasan pertama yang terlihat oleh pengguna**, seperti eksekusi harness aktif atau delta teks non-senyap. Token balasan senyap seperti `NO_REPLY` tidak dihitung sebagai aktivitas teks.
 
-Urutan "seberapa awal dipicu":
-`never` → `message`/`thinking` → `instant`
+Urutan berdasarkan "seberapa awal indikator dipicu": `never` -> `message`/`thinking` -> `instant`.
 
 ## Konfigurasi
 
-Atur default tingkat agen:
+Tetapkan default tingkat agen:
 
 ```json5
 {
@@ -59,7 +51,7 @@ Atur default tingkat agen:
 }
 ```
 
-Timpa mode atau irama per sesi:
+Timpa mode atau interval untuk setiap sesi:
 
 ```json5
 {
@@ -72,26 +64,19 @@ Timpa mode atau irama per sesi:
 
 ## Catatan
 
-- Mode `message` tidak dimulai dari token balasan senyap, tetapi eksekusi aktif
-  masih dapat menampilkan pengetikan sebelum teks asisten tersedia.
-- `thinking` tetap bereaksi terhadap penalaran yang dialirkan (`reasoningLevel: "stream"`),
-  dan juga dapat dimulai dari eksekusi aktif sebelum delta penalaran tiba.
-- Pengetikan Heartbeat adalah sinyal keaktifan untuk target pengiriman yang terselesaikan. Ini
-  dimulai saat awal run heartbeat alih-alih mengikuti waktu stream `message` atau `thinking`.
-  Atur `typingMode: "never"` untuk menonaktifkannya.
-- Heartbeat tidak menampilkan pengetikan saat `target: "none"`, saat target tidak dapat
-  diselesaikan, saat pengiriman chat dinonaktifkan untuk heartbeat, atau saat
-  saluran tidak mendukung pengetikan.
-- `typingIntervalSeconds` mengontrol **irama penyegaran**, bukan waktu mulai.
-  Default-nya adalah 6 detik.
+- Mode `message` tidak dimulai oleh token balasan senyap, tetapi eksekusi aktif tetap dapat menampilkan indikator mengetik sebelum teks asisten tersedia.
+- `thinking` tetap merespons penalaran yang dialirkan (`reasoningLevel: "stream"`), dan juga dapat dimulai oleh eksekusi aktif sebelum delta penalaran tiba.
+- Indikator mengetik Heartbeat merupakan sinyal keaktifan untuk target pengiriman yang ditentukan. Indikator ini dimulai saat proses Heartbeat dimulai, alih-alih mengikuti waktu aliran `message` atau `thinking`. Tetapkan `typingMode: "never"` untuk menonaktifkannya.
+- Heartbeat tidak menampilkan indikator mengetik saat target Heartbeat adalah `"none"`, saat target tidak dapat ditentukan, saat pengiriman obrolan dinonaktifkan untuk Heartbeat, atau saat kanal tidak mendukung indikator mengetik.
+- `typingIntervalSeconds` mengontrol **interval pembaruan**, bukan waktu mulai. Default: 6 detik.
 
 ## Terkait
 
 <CardGroup cols={2}>
-  <Card title="Presence" href="/id/concepts/presence" icon="signal">
-    Cara Gateway melacak klien yang terhubung dan menampilkannya di tab Instans macOS.
+  <Card title="Kehadiran" href="/id/concepts/presence" icon="signal">
+    Cara Gateway melacak klien yang terhubung untuk halaman Perangkat UI Kontrol dan tab Instans macOS.
   </Card>
-  <Card title="Streaming dan chunking" href="/id/concepts/streaming" icon="bars-staggered">
-    Perilaku streaming keluar, batas chunk, dan pengiriman khusus saluran.
+  <Card title="Streaming dan pemotongan" href="/id/concepts/streaming" icon="bars-staggered">
+    Perilaku streaming keluar, batas potongan, dan pengiriman khusus kanal.
   </Card>
 </CardGroup>

@@ -4,11 +4,12 @@ read_when:
 summary: Fournisseur de workers cloud reposant sur la CLI Crabbox.
 title: Plugin Crabbox
 x-i18n:
-    generated_at: "2026-07-12T03:07:31Z"
+    generated_at: "2026-07-16T13:31:58Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: b52daa026c1a44ae7ca68d3974bc068fc41f6dd18f195d957be9afbd4bfebdea
+    source_hash: e2c0b8d23b37746d79bedb93361bcec779ed03bca9bb8e08ad43a21d6d40be12
     source_path: plugins/reference/crabbox.md
     workflow: 16
 ---
@@ -19,17 +20,17 @@ Fournisseur de workers cloud reposant sur la CLI Crabbox.
 
 ## Distribution
 
-- Paquet : `@openclaw/crabbox-provider`
-- Mode d’installation : inclus dans OpenClaw
+- Paquet : `@openclaw/crabbox-provider`
+- Méthode d’installation : inclus dans OpenClaw
 
 ## Surface
 
-contrats : workerProviders
+contrats : `workerProviders`
 
 <!-- openclaw-plugin-reference:manual-start -->
 
 ## Configuration
 
-Consultez [Environnements de workers cloud](/fr/gateway/configuration-reference#crabbox-profile) pour le schéma du profil et les notes sur le cycle de vie.
+Consultez [Environnements de workers cloud](/fr/gateway/configuration-reference#crabbox-profile) pour le schéma du profil et les notes relatives au cycle de vie.
 
 <!-- openclaw-plugin-reference:manual-end -->

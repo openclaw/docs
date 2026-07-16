@@ -4,11 +4,12 @@ read_when:
 summary: Plugin ช่องทาง SMS ของ Twilio สำหรับข้อความตัวอักษรของ OpenClaw
 title: Plugin SMS
 x-i18n:
-    generated_at: "2026-07-12T16:28:54Z"
+    generated_at: "2026-07-16T19:34:36Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 2e0da43b962f03693599043ea61a6fedbc3e40d562c1c3374c840e952c8aa12d
+    source_hash: 4ed15181e55eabaa76908bfd5308ff5e7046085bbb4e7f529b7b67695282601c
     source_path: plugins/reference/sms.md
     workflow: 16
 ---
@@ -24,7 +25,7 @@ Plugin ช่องทาง SMS ของ Twilio สำหรับข้อค
 
 ## พื้นผิว
 
-ช่องทาง: sms
+ช่องทาง: `sms`
 
 ## เอกสารที่เกี่ยวข้อง
 

@@ -1,101 +1,102 @@
 ---
 read_when:
     - Pakowanie OpenClaw.app
-    - Debugowanie usługi launchd Gateway w macOS
-    - Instalowanie CLI Gateway dla macOS
-summary: Środowisko uruchomieniowe Gateway w macOS (zewnętrzna usługa launchd)
-title: Gateway na macOS
+    - Debugowanie usługi launchd Gateway na macOS
+    - Instalowanie CLI Gateway dla systemu macOS
+summary: Środowisko uruchomieniowe Gateway w systemie macOS (zewnętrzna usługa launchd)
+title: Gateway w systemie macOS
 x-i18n:
-    generated_at: "2026-07-04T06:54:03Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T18:47:47Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 7a8b646f4cae43cb66acbf3527ef2af9ccaf4b6f2678a464586a110e5e9b3662
+    source_hash: 30c1ae14d8f8eaab73d0e2b725292d7411c2c8b5e0e0c32ad13989c01340d054
     source_path: platforms/mac/bundled-gateway.md
     workflow: 16
 ---
 
-OpenClaw.app nie zawiera już w pakiecie Node/Bun ani środowiska uruchomieniowego Gateway. Aplikacja macOS
-oczekuje **zewnętrznej** instalacji `openclaw` CLI, nie uruchamia Gateway jako
-procesu potomnego i zarządza usługą launchd dla użytkownika, aby utrzymywać Gateway
-w działaniu (albo dołącza do istniejącego lokalnego Gateway, jeśli już działa).
+OpenClaw.app nie zawiera środowiska Node ani środowiska uruchomieniowego Gateway. Aplikacja macOS
+oczekuje **zewnętrznej** instalacji CLI `openclaw`, nie uruchamia Gateway jako
+procesu podrzędnego i zarządza usługą launchd dla każdego użytkownika, aby Gateway
+pozostawał uruchomiony (lub łączy się z już uruchomionym lokalnym Gateway).
 
 ## Automatyczna konfiguracja
 
-Na świeżym Macu wybierz **Ten Mac** podczas onboardingu. Aplikacja uruchamia swój podpisany,
-dołączony instalator przed kreatorem Gateway, instaluje środowisko uruchomieniowe Node w przestrzeni użytkownika
-i pasujące `openclaw` CLI w `~/.openclaw`, a następnie instaluje i uruchamia
-usługę launchd dla użytkownika. Ta ścieżka nie wymaga Terminala, Homebrew ani
-dostępu administratora.
+Na nowym komputerze Mac podczas wdrażania wybierz **This Mac**. Przed kreatorem
+Gateway aplikacja uruchamia podpisany, dołączony skrypt instalacyjny: instaluje
+środowisko uruchomieniowe Node w przestrzeni użytkownika oraz odpowiedni CLI `openclaw` w `~/.openclaw`,
+a następnie instaluje i uruchamia usługę launchd dla użytkownika. Ta ścieżka nie wymaga
+Terminala, Homebrew ani dostępu administratora.
 
-Aplikacja zawiera w pakiecie skrypt instalatora, a nie ładunek Node ani Gateway. Konfiguracja
-wymaga więc połączenia z internetem, aby pobrać środowisko uruchomieniowe i pasujący
-pakiet OpenClaw.
+Aplikacja zawiera tylko skrypt instalacyjny, a nie pakiet Node ani Gateway;
+konfiguracja wymaga połączenia z internetem w celu pobrania środowiska uruchomieniowego i odpowiedniego
+pakietu OpenClaw.
 
 ## Ręczne odzyskiwanie
 
-Node 24 jest zalecany do ręcznej instalacji. Node 22 LTS, obecnie `22.19+`,
-również działa. Następnie zainstaluj `openclaw` globalnie:
+Do instalacji ręcznej zalecany jest Node 24.15+; działa również Node 22.22.3+. Zainstaluj
+`openclaw` globalnie:
 
 ```bash
 npm install -g openclaw@<version>
 ```
 
-Użyj **Ponów konfigurację** po nieudanej automatycznej konfiguracji. Jeśli to nadal się nie powiedzie, zainstaluj
-CLI ręcznie za pomocą powyższego polecenia, a następnie wybierz **Sprawdź ponownie** w
-onboardingu. Node pozostaje zalecanym środowiskiem uruchomieniowym Gateway.
+Po nieudanej konfiguracji automatycznej użyj opcji **Retry setup**. Jeśli nadal się nie powiedzie,
+zainstaluj CLI ręcznie za pomocą powyższego polecenia, a następnie podczas wdrażania wybierz **Check again**.
 
 ## Launchd (Gateway jako LaunchAgent)
 
-Etykieta:
+Etykieta: `ai.openclaw.gateway` (profil domyślny) lub `ai.openclaw.<profile>`
+dla profilu nazwanego.
 
-- `ai.openclaw.gateway` (lub `ai.openclaw.<profile>`; starsze `com.openclaw.*` może pozostać)
+Lokalizacja plist (dla użytkownika): `~/Library/LaunchAgents/ai.openclaw.gateway.plist`
+(lub `ai.openclaw.<profile>.plist`).
 
-Lokalizacja plist (dla użytkownika):
+W trybie lokalnym aplikacja macOS zarządza instalacją i aktualizacją LaunchAgent dla profilu domyślnego.
+CLI również może zainstalować go bezpośrednio: `openclaw gateway install`
+(profile nazwane wybiera się za pomocą zmiennej środowiskowej `OPENCLAW_PROFILE`).
 
-- `~/Library/LaunchAgents/ai.openclaw.gateway.plist`
-  (lub `~/Library/LaunchAgents/ai.openclaw.<profile>.plist`)
+Działanie:
 
-Menedżer:
+- „OpenClaw Active” włącza lub wyłącza LaunchAgent.
+- Zamknięcie aplikacji **nie** zatrzymuje Gateway (launchd utrzymuje go przy życiu).
+- Jeśli Gateway jest już uruchomiony na skonfigurowanym porcie, aplikacja łączy się
+  z nim zamiast uruchamiać nowy.
 
-- Aplikacja macOS odpowiada za instalację/aktualizację LaunchAgent w trybie lokalnym.
-- CLI też może go zainstalować: `openclaw gateway install`.
+Rejestrowanie:
 
-Zachowanie:
-
-- „OpenClaw aktywny” włącza/wyłącza LaunchAgent.
-- Zamknięcie aplikacji **nie** zatrzymuje gateway (launchd utrzymuje go przy życiu).
-- Jeśli Gateway już działa na skonfigurowanym porcie, aplikacja dołącza do
-  niego zamiast uruchamiać nowy.
-
-Logowanie:
-
-- stdout launchd: `~/Library/Logs/openclaw/gateway.log` (profile używają `gateway-<profile>.log`)
-- stderr launchd: wyciszone
+- Standardowe wyjście launchd: `~/Library/Logs/openclaw/gateway.log` (profile używają
+  `gateway-<profile>.log`)
+- Standardowe wyjście błędów launchd: wyciszone
+- Jeśli host wpada w pętlę z powtarzającymi się komunikatami `EADDRINUSE` lub szybkimi restartami, sprawdź,
+  czy nie ma zduplikowanych LaunchAgentów `ai.openclaw.gateway` / `ai.openclaw.node`, oraz obejście
+  znacznika launchd opisane w sekcji
+  [rozwiązywania problemów z Gateway](/pl/gateway/troubleshooting#macos-launchd-supervisor-loop-with-duplicate-gatewaynode-launchagents).
 
 ## Zgodność wersji
 
-Aplikacja macOS sprawdza wersję Gateway względem własnej wersji. Onboarding
-automatycznie uruchamia zarządzaną konfigurację, gdy istniejącego CLI brakuje albo jest
-niezgodne. Użyj **Ponów konfigurację**, aby powtórzyć instalację, albo **Sprawdź ponownie**
+Aplikacja macOS porównuje wersję Gateway ze swoją wersją. Podczas wdrażania
+zarządzana konfiguracja jest uruchamiana automatycznie, gdy istniejącego CLI brakuje lub
+jest niezgodny. Użyj opcji **Retry setup**, aby powtórzyć instalację, albo **Check again**
 po naprawieniu zewnętrznego CLI.
 
-## Katalog stanu w macOS
+## Katalog stanu w systemie macOS
 
-Przechowuj stan OpenClaw na lokalnym, niesynchronizowanym dysku. Unikaj iCloud Drive i innych
-folderów synchronizowanych z chmurą, ponieważ opóźnienia synchronizacji i blokady plików mogą wpływać na sesje,
+Stan OpenClaw należy przechowywać na lokalnym, niesynchronizowanym dysku. Unikaj iCloud Drive i innych
+folderów synchronizowanych z chmurą; opóźnienia synchronizacji i blokady plików mogą wpływać na sesje,
 dane uwierzytelniające i stan Gateway.
 
-Ustaw `OPENCLAW_STATE_DIR` na ścieżkę lokalną tylko wtedy, gdy potrzebujesz nadpisania.
+Ustaw `OPENCLAW_STATE_DIR` na lokalną ścieżkę tylko wtedy, gdy konieczne jest nadpisanie ustawienia.
 `openclaw doctor` ostrzega przed typowymi ścieżkami stanu synchronizowanymi z chmurą i zaleca
-powrót do lokalnej pamięci. Zobacz
-[zmienne środowiskowe](/pl/help/environment#path-related-env-vars) i
+powrót do lokalnej pamięci masowej. Zobacz
+[zmienne środowiskowe](/pl/help/environment#path-related-env-vars) oraz
 [Doctor](/pl/gateway/doctor).
 
 ## Debugowanie łączności aplikacji
 
-Użyj debugowego CLI macOS z checkoutu źródeł, aby wykonać ten sam handshake WebSocket
-Gateway i logikę wykrywania, których używa aplikacja:
+Użyj debugowego CLI macOS z kopii roboczej kodu źródłowego, aby przetestować ten sam mechanizm
+uzgadniania połączenia WebSocket z Gateway i logikę wykrywania, których używa aplikacja:
 
 ```bash
 cd apps/macos
@@ -103,12 +104,13 @@ swift run openclaw-mac connect --json
 swift run openclaw-mac discover --timeout 3000 --json
 ```
 
-`connect` akceptuje `--url`, `--token`, `--timeout` i `--json`. `discover`
-akceptuje `--timeout`, `--json` i `--include-local`. Porównaj wynik wykrywania
-z `openclaw gateway discover --json`, gdy musisz oddzielić wykrywanie CLI
-od problemów z połączeniem po stronie aplikacji.
+`connect` obsługuje `--url`, `--token`, `--timeout`, `--probe` oraz `--json`
+(a także nadpisania tożsamości klienta; uruchom z `--help`, aby wyświetlić pełną listę).
+`discover` obsługuje `--timeout`, `--json` oraz `--include-local`. Porównaj
+wyniki wykrywania z `openclaw gateway discover --json`, gdy trzeba
+odróżnić problemy z wykrywaniem przez CLI od problemów z połączeniem po stronie aplikacji.
 
-## Test smoke
+## Test dymny
 
 ```bash
 openclaw --version
@@ -127,4 +129,4 @@ openclaw gateway call health --url ws://127.0.0.1:18999 --timeout 3000
 ## Powiązane
 
 - [aplikacja macOS](/pl/platforms/macos)
-- [runbook Gateway](/pl/gateway)
+- [podręcznik operacyjny Gateway](/pl/gateway)

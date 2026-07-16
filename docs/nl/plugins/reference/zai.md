@@ -4,16 +4,17 @@ read_when:
 summary: Voegt ondersteuning voor de Z.AI-modelprovider toe aan OpenClaw.
 title: Z.AI-plugin
 x-i18n:
-    generated_at: "2026-07-12T09:14:26Z"
+    generated_at: "2026-07-16T16:08:27Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 47eed5f843c7659c7b4aefb06ef919b5420998609ae8d46ac5ebcd5871b0f673
+    source_hash: c722638d50bf95db7a8a95b688d53dab3a944633eeb1d7734939819a87f81278
     source_path: plugins/reference/zai.md
     workflow: 16
 ---
 
-# Z.AI-Plugin
+# Z.AI-plugin
 
 Voegt ondersteuning voor de Z.AI-modelprovider toe aan OpenClaw.
 
@@ -24,7 +25,7 @@ Voegt ondersteuning voor de Z.AI-modelprovider toe aan OpenClaw.
 
 ## Oppervlak
 
-providers: zai; contracten: mediaUnderstandingProviders, usageProviders
+providers: `zai`; contracten: `mediaUnderstandingProviders`, `usageProviders`
 
 ## Gerelateerde documentatie
 

@@ -1,21 +1,22 @@
 ---
 read_when:
-    - Está instalando, configurando o auditando el plugin memory-lancedb.
+    - Está instalando, configurando o auditando el plugin memory-lancedb
 summary: Plugin de memoria a largo plazo de OpenClaw basado en LanceDB, con recuperación automática, captura automática y búsqueda vectorial.
-title: Plugin de memoria LanceDB
+title: Plugin de memoria Lancedb
 x-i18n:
-    generated_at: "2026-07-11T23:20:44Z"
+    generated_at: "2026-07-16T11:52:42Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: db3843c421abdf738723f87f5bf12ed7acc2e6638e5869c2ad10b4b5722d402d
+    source_hash: b3fc4d560d4f38a17eca034f44dc890e144d97610b9660a5674b6a6fd2a341d7
     source_path: plugins/reference/memory-lancedb.md
     workflow: 16
 ---
 
-# Plugin de memoria LanceDB
+# Plugin Memory Lancedb
 
-Plugin de memoria a largo plazo de OpenClaw respaldado por LanceDB, con recuperación automática, captura automática y búsqueda vectorial.
+Plugin de memoria a largo plazo de OpenClaw basado en LanceDB, con recuperación automática, captura automática y búsqueda vectorial.
 
 ## Distribución
 
@@ -24,7 +25,7 @@ Plugin de memoria a largo plazo de OpenClaw respaldado por LanceDB, con recupera
 
 ## Superficie
 
-contratos: herramientas
+contratos: `tools`
 
 ## Documentación relacionada
 

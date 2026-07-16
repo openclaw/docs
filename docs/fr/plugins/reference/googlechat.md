@@ -4,28 +4,29 @@ read_when:
 summary: Plugin de canal Google Chat d’OpenClaw pour les espaces et les messages directs.
 title: Plugin Google Chat
 x-i18n:
-    generated_at: "2026-07-12T02:57:01Z"
+    generated_at: "2026-07-16T13:35:12Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 04febb1ead7d63e9ef79ecc52ce69f38a7c4eb404c90019717363f57477cd37d
+    source_hash: d800ec6b317e15fd14e3990d84a9ca2f29026607921629198f5032be2b0a3281
     source_path: plugins/reference/googlechat.md
     workflow: 16
 ---
 
 # Plugin Google Chat
 
-Plugin de canal Google Chat pour OpenClaw, destiné aux espaces et aux messages directs.
+Plugin de canal Google Chat d’OpenClaw pour les espaces et les messages directs.
 
 ## Distribution
 
 - Paquet : `@openclaw/googlechat`
-- Méthode d’installation : npm ; ClawHub
+- Mode d’installation : npm ; ClawHub
 
 ## Surface
 
-canaux : googlechat
+canaux : `googlechat`
 
 ## Documentation associée
 
-- [googlechat](/fr/channels/googlechat)
+- [Google Chat](/fr/channels/googlechat)

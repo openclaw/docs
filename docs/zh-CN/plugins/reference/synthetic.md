@@ -1,14 +1,15 @@
 ---
 read_when:
-    - 你正在安装、配置或审核 synthetic 插件
+    - 你正在安装、配置或审计 Synthetic 插件
 summary: 为 OpenClaw 添加 Synthetic 模型提供商支持。
-title: 合成插件
+title: Synthetic 插件
 x-i18n:
-    generated_at: "2026-07-11T20:48:48Z"
+    generated_at: "2026-07-16T11:51:59Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 4d899363b3dac4128f3e2a1e30ad11cd5ae0c11cc5229d3f03e15429e2741f8d
+    source_hash: 755ddf08e8ec91654c81f64a6c3e566281be320d8f5e54b64fbbc993c8919df2
     source_path: plugins/reference/synthetic.md
     workflow: 16
 ---
@@ -20,12 +21,12 @@ x-i18n:
 ## 分发
 
 - 软件包：`@openclaw/synthetic-provider`
-- 安装方式：随 OpenClaw 内置
+- 安装途径：内置于 OpenClaw
 
-## 接口范围
+## 接口
 
-提供商：synthetic
+提供商：`synthetic`
 
 ## 相关文档
 
-- [synthetic](/zh-CN/providers/synthetic)
+- [Synthetic](/zh-CN/providers/synthetic)

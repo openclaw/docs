@@ -1,51 +1,52 @@
 ---
 read_when:
-    - การเรียกใช้หรือดีบักกระบวนการ Gateway
-summary: คู่มือปฏิบัติการสำหรับบริการ Gateway วงจรชีวิต และการดำเนินงาน
+    - การเรียกใช้หรือแก้ไขข้อบกพร่องของกระบวนการ Gateway
+summary: คู่มือการปฏิบัติงานสำหรับบริการ Gateway วงจรชีวิต และการดำเนินงาน
 title: คู่มือปฏิบัติการ Gateway
 x-i18n:
-    generated_at: "2026-06-27T17:34:50Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T19:15:30Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: b0bbbcad26df135e1475cbeb14f1299b48bae62be759b2e6c6f82164d175601b
+    source_hash: d8b50b6041905c321887ea0f579f8d4c3b74552b2b72c37ec655e43a53dfc130
     source_path: gateway/index.md
     workflow: 16
 ---
 
-ใช้หน้านี้สำหรับการเริ่มต้นวันแรกและการปฏิบัติการวันที่สองของบริการ Gateway
+ใช้หน้านี้สำหรับการเริ่มต้นบริการ Gateway ในวันแรกและการดำเนินงานตั้งแต่วันที่สองเป็นต้นไป
 
 <CardGroup cols={2}>
-  <Card title="การแก้ปัญหาเชิงลึก" icon="siren" href="/th/gateway/troubleshooting">
-    การวินิจฉัยตามอาการก่อน พร้อมลำดับคำสั่งที่แน่นอนและรูปแบบลายเซ็นของล็อก
+  <Card title="การแก้ไขปัญหาเชิงลึก" icon="siren" href="/th/gateway/troubleshooting">
+    การวินิจฉัยโดยเริ่มจากอาการ พร้อมลำดับคำสั่งและรูปแบบบันทึกที่แน่นอน
   </Card>
   <Card title="การกำหนดค่า" icon="sliders" href="/th/gateway/configuration">
-    คู่มือตั้งค่าตามงาน + เอกสารอ้างอิงการกำหนดค่าแบบครบถ้วน
+    คู่มือการตั้งค่าตามงาน + เอกสารอ้างอิงการกำหนดค่าฉบับเต็ม
   </Card>
-  <Card title="การจัดการความลับ" icon="key-round" href="/th/gateway/secrets">
+  <Card title="การจัดการข้อมูลลับ" icon="key-round" href="/th/gateway/secrets">
     สัญญา SecretRef, พฤติกรรมสแนปช็อตขณะรันไทม์ และการดำเนินการย้าย/โหลดใหม่
   </Card>
-  <Card title="สัญญาแผนความลับ" icon="shield-check" href="/th/gateway/secrets-plan-contract">
-    กฎเป้าหมาย/พาธของ `secrets apply` ที่แน่นอน และพฤติกรรมโปรไฟล์การยืนยันตัวตนแบบ ref-only
+  <Card title="สัญญาแผนข้อมูลลับ" icon="shield-check" href="/th/gateway/secrets-plan-contract">
+    กฎเป้าหมาย/พาธ `secrets apply` ที่แน่นอน และพฤติกรรมโปรไฟล์การยืนยันตัวตนแบบอ้างอิงเท่านั้น
   </Card>
 </CardGroup>
 
-## การเริ่มต้นในเครื่องภายใน 5 นาที
+## การเริ่มต้นภายในเครื่องใน 5 นาที
 
 <Steps>
   <Step title="เริ่ม Gateway">
 
 ```bash
 openclaw gateway --port 18789
-# debug/trace mirrored to stdio
+# สะท้อน debug/trace ไปยัง stdio
 openclaw gateway --port 18789 --verbose
-# force-kill listener on selected port, then start
+# บังคับยุติตัวรับฟังบนพอร์ตที่เลือก แล้วเริ่มทำงาน
 openclaw gateway --force
 ```
 
   </Step>
 
-  <Step title="ตรวจสอบสุขภาพของบริการ">
+  <Step title="ตรวจสอบสถานะบริการ">
 
 ```bash
 openclaw gateway status
@@ -53,7 +54,7 @@ openclaw status
 openclaw logs --follow
 ```
 
-ค่าพื้นฐานที่ดี: `Runtime: running`, `Connectivity probe: ok` และ `Capability: ...` ที่ตรงกับสิ่งที่คุณคาดไว้ ใช้ `openclaw gateway status --require-rpc` เมื่อคุณต้องการหลักฐาน RPC ในขอบเขตการอ่าน ไม่ใช่แค่การเข้าถึงได้
+ค่าพื้นฐานที่สมบูรณ์: `Runtime: running`, `Connectivity probe: ok` และบรรทัด `Capability` ที่ตรงตามที่คาดไว้ ใช้ `openclaw gateway status --require-rpc` เพื่อพิสูจน์ RPC ขอบเขตการอ่าน ไม่ใช่แค่การเข้าถึงได้
 
   </Step>
 
@@ -63,36 +64,29 @@ openclaw logs --follow
 openclaw channels status --probe
 ```
 
-เมื่อ Gateway เข้าถึงได้ คำสั่งนี้จะรันการตรวจสอบช่องทางแบบสดต่อบัญชีและการตรวจสอบเพิ่มเติมที่เป็นตัวเลือก
-หาก Gateway เข้าถึงไม่ได้ CLI จะถอยกลับไปใช้สรุปช่องทางจากการกำหนดค่าเท่านั้นแทน
-ผลลัพธ์การตรวจสอบแบบสด
+เมื่อเข้าถึง Gateway ได้ คำสั่งนี้จะเรียกใช้โพรบช่องทางแบบสดแยกตามบัญชีและการตรวจสอบเสริม หากเข้าถึง Gateway ไม่ได้ CLI จะกลับไปใช้สรุปช่องทางจากการกำหนดค่าเท่านั้น
 
   </Step>
 </Steps>
 
 <Note>
-การโหลดการกำหนดค่า Gateway ใหม่จะเฝ้าดูพาธไฟล์การกำหนดค่าที่ใช้งานอยู่ (แก้จากค่าเริ่มต้นของโปรไฟล์/สถานะ หรือ `OPENCLAW_CONFIG_PATH` เมื่อกำหนดไว้)
-โหมดเริ่มต้นคือ `gateway.reload.mode="hybrid"`
-หลังจากโหลดสำเร็จครั้งแรก กระบวนการที่กำลังรันจะให้บริการสแนปช็อตการกำหนดค่าในหน่วยความจำที่ใช้งานอยู่; การโหลดใหม่ที่สำเร็จจะสลับสแนปช็อตนั้นแบบอะตอมิก
+การโหลดการกำหนดค่า Gateway ใหม่จะเฝ้าดูพาธไฟล์การกำหนดค่าที่ใช้งานอยู่ (ซึ่งแก้ไขจากค่าเริ่มต้นของโปรไฟล์/สถานะ หรือ `OPENCLAW_CONFIG_PATH` เมื่อตั้งค่าไว้) โหมดเริ่มต้นคือ `gateway.reload.mode="hybrid"` หลังจากโหลดสำเร็จครั้งแรก กระบวนการที่ทำงานอยู่จะให้บริการจากสแนปช็อตการกำหนดค่าในหน่วยความจำที่ใช้งานอยู่ และการโหลดใหม่ที่สำเร็จจะสลับสแนปช็อตนั้นแบบอะตอมมิก
 </Note>
 
 ## โมเดลรันไทม์
 
-- กระบวนการที่เปิดตลอดหนึ่งกระบวนการสำหรับการกำหนดเส้นทาง, control plane และการเชื่อมต่อช่องทาง
-- พอร์ตเดียวแบบ multiplex สำหรับ:
+- กระบวนการที่ทำงานตลอดเวลาหนึ่งกระบวนการสำหรับการกำหนดเส้นทาง ระนาบควบคุม และการเชื่อมต่อช่องทาง
+- พอร์ตมัลติเพล็กซ์เดียวสำหรับ:
   - การควบคุม/RPC ผ่าน WebSocket
-  - HTTP APIs (`/v1/models`, `/v1/embeddings`, `/v1/chat/completions`, `/v1/responses`, `/tools/invoke`)
-  - เส้นทาง HTTP ของ Plugin เช่น `/api/v1/admin/rpc` ที่เป็นตัวเลือก
-  - Control UI และ hook
-- โหมด bind เริ่มต้น: `loopback`
-- ต้องมีการยืนยันตัวตนโดยค่าเริ่มต้น การตั้งค่าแบบ shared-secret ใช้
-  `gateway.auth.token` / `gateway.auth.password` (หรือ
-  `OPENCLAW_GATEWAY_TOKEN` / `OPENCLAW_GATEWAY_PASSWORD`) และการตั้งค่า reverse-proxy
-  แบบ non-loopback สามารถใช้ `gateway.auth.mode: "trusted-proxy"` ได้
+  - HTTP API (`/v1/models`, `/v1/embeddings`, `/v1/chat/completions`, `/v1/responses`, `/tools/invoke`)
+  - เส้นทาง HTTP ของ Plugin เช่น `/api/v1/admin/rpc` ที่เลือกใช้ได้
+  - UI ควบคุมและฮุก
+- โหมดผูกค่าเริ่มต้น: `loopback` ภายในสภาพแวดล้อมคอนเทนเนอร์ที่ตรวจพบ ค่าเริ่มต้นที่มีผลคือ `auto` (แก้ไขเป็น `0.0.0.0` สำหรับการส่งต่อพอร์ต) เว้นแต่ Tailscale serve/funnel จะทำงานอยู่ ซึ่งจะบังคับใช้ `loopback` เสมอ
+- ต้องมีการยืนยันตัวตนโดยค่าเริ่มต้น การตั้งค่าแบบข้อมูลลับที่ใช้ร่วมกันใช้ `gateway.auth.token` / `gateway.auth.password` (หรือ `OPENCLAW_GATEWAY_TOKEN` / `OPENCLAW_GATEWAY_PASSWORD`) และการตั้งค่า reverse proxy ที่ไม่ใช่ loopback สามารถใช้ `gateway.auth.mode: "trusted-proxy"`
 
-## เอนด์พอยต์ที่เข้ากันได้กับ OpenAI
+## ปลายทางที่เข้ากันได้กับ OpenAI
 
-พื้นผิวความเข้ากันได้ที่ให้ประโยชน์สูงสุดของ OpenClaw ตอนนี้คือ:
+พื้นผิวความเข้ากันได้ที่ให้ประโยชน์สูงสุดของ OpenClaw:
 
 - `GET /v1/models`
 - `GET /v1/models/{id}`
@@ -102,49 +96,41 @@ openclaw channels status --probe
 
 เหตุผลที่ชุดนี้สำคัญ:
 
-- การผสานรวม Open WebUI, LobeChat และ LibreChat ส่วนใหญ่มักตรวจสอบ `/v1/models` ก่อน
-- pipeline ของ RAG และหน่วยความจำจำนวนมากคาดหวัง `/v1/embeddings`
-- ไคลเอนต์แบบ agent-native นิยมใช้ `/v1/responses` มากขึ้น
+- การผสานรวม Open WebUI, LobeChat และ LibreChat ส่วนใหญ่จะตรวจสอบ `/v1/models` ก่อน
+- ไปป์ไลน์ RAG และหน่วยความจำจำนวนมากคาดหวัง `/v1/embeddings`
+- ไคลเอนต์แบบเนทีฟสำหรับเอเจนต์นิยมใช้ `/v1/responses` มากขึ้นเรื่อย ๆ
 
-หมายเหตุการวางแผน:
+`/v1/models` ให้ความสำคัญกับเอเจนต์เป็นอันดับแรก โดยจะส่งคืน `openclaw`, `openclaw/default` และ `openclaw/<agentId>` สำหรับทุกเอเจนต์ที่กำหนดค่าไว้ `openclaw/default` คือชื่อแทนที่เสถียรซึ่งแมปกับเอเจนต์เริ่มต้นที่กำหนดค่าไว้เสมอ ส่ง `x-openclaw-model` เมื่อต้องการแทนที่ผู้ให้บริการ/โมเดลแบ็กเอนด์ มิฉะนั้นโมเดลปกติและการตั้งค่าการฝังของเอเจนต์ที่เลือกจะยังคงเป็นตัวควบคุม
 
-- `/v1/models` ให้ความสำคัญกับเอเจนต์ก่อน: ส่งคืน `openclaw`, `openclaw/default` และ `openclaw/<agentId>`
-- `openclaw/default` เป็น alias ที่เสถียรซึ่งแมปไปยังเอเจนต์เริ่มต้นที่กำหนดค่าไว้เสมอ
-- ใช้ `x-openclaw-model` เมื่อคุณต้องการ override provider/model ของ backend; มิฉะนั้น การตั้งค่าโมเดลและ embedding ปกติของเอเจนต์ที่เลือกจะยังคงควบคุมอยู่
+ทั้งหมดนี้ทำงานบนพอร์ต Gateway หลักและใช้ขอบเขตการยืนยันตัวตนของผู้ควบคุมที่เชื่อถือได้เดียวกับส่วนอื่นของ Gateway HTTP API
 
-ทั้งหมดนี้รันบนพอร์ต Gateway หลักและใช้ขอบเขตการยืนยันตัวตนของผู้ปฏิบัติการที่เชื่อถือได้เดียวกันกับส่วนที่เหลือของ Gateway HTTP API
+RPC ผู้ดูแลระบบผ่าน HTTP (`POST /api/v1/admin/rpc`) เป็นเส้นทาง Plugin แยกต่างหากที่ปิดไว้โดยค่าเริ่มต้น สำหรับเครื่องมือโฮสต์ที่ไม่สามารถใช้ WebSocket RPC ได้ ดู [RPC ผู้ดูแลระบบผ่าน HTTP](/th/plugins/admin-http-rpc)
 
-Admin HTTP RPC (`POST /api/v1/admin/rpc`) เป็นเส้นทาง Plugin แยกต่างหากที่ปิดโดยค่าเริ่มต้น สำหรับเครื่องมือโฮสต์ที่ใช้ WebSocket RPC ไม่ได้ ดู [Admin HTTP RPC](/th/plugins/admin-http-rpc)
+### ลำดับความสำคัญของพอร์ตและการผูก
 
-### ลำดับความสำคัญของพอร์ตและ bind
+| การตั้งค่า      | ลำดับการแก้ไขค่า                                                     |
+| ------------ | -------------------------------------------------------------------- |
+| พอร์ต Gateway | `--port` → `OPENCLAW_GATEWAY_PORT` → `gateway.port` → `18789`        |
+| โหมดการผูก    | CLI/ค่าที่แทนที่ → `gateway.bind` → `loopback` (หรือ `auto` ในคอนเทนเนอร์) |
 
-| การตั้งค่า | ลำดับการแก้ค่า |
-| ------------ | ------------------------------------------------------------- |
-| พอร์ต Gateway | `--port` → `OPENCLAW_GATEWAY_PORT` → `gateway.port` → `18789` |
-| โหมด Bind | CLI/override → `gateway.bind` → `loopback` |
+บริการ Gateway ที่ติดตั้งไว้จะบันทึก `--port` ที่แก้ไขค่าแล้วในข้อมูลเมตาของตัวควบคุมกระบวนการ หลังจากเปลี่ยน `gateway.port` ให้เรียกใช้ `openclaw doctor --fix` หรือ `openclaw gateway install --force` เพื่อให้ launchd/systemd/schtasks เริ่มกระบวนการบนพอร์ตใหม่
 
-บริการ Gateway ที่ติดตั้งแล้วจะบันทึก `--port` ที่แก้ค่าแล้วไว้ใน metadata ของ supervisor หลังจากเปลี่ยน `gateway.port` ให้รัน `openclaw doctor --fix` หรือ `openclaw gateway install --force` เพื่อให้ launchd/systemd/schtasks เริ่มกระบวนการบนพอร์ตใหม่
+การเริ่มต้น Gateway ใช้พอร์ตและการผูกที่มีผลเดียวกันเมื่อสร้างค่าเริ่มต้นของต้นทาง UI ควบคุมภายในเครื่องสำหรับการผูกที่ไม่ใช่ loopback ตัวอย่างเช่น `--bind lan --port 3000` จะสร้างค่าเริ่มต้น `http://localhost:3000` และ `http://127.0.0.1:3000` ก่อนการตรวจสอบรันไทม์ เพิ่มต้นทางเบราว์เซอร์ระยะไกล เช่น URL พร็อกซี HTTPS ลงใน `gateway.controlUi.allowedOrigins` อย่างชัดเจน
 
-การเริ่มต้น Gateway ใช้พอร์ตและ bind ที่มีผลเดียวกันเมื่อ seed origin ของ
-Control UI ในเครื่องสำหรับ bind แบบ non-loopback ตัวอย่างเช่น `--bind lan --port 3000`
-จะ seed `http://localhost:3000` และ `http://127.0.0.1:3000` ก่อนที่การตรวจสอบ
-รันไทม์จะรัน เพิ่ม origin ของเบราว์เซอร์ระยะไกล เช่น HTTPS proxy URLs ลงใน
-`gateway.controlUi.allowedOrigins` อย่างชัดเจน
+### โหมดโหลดใหม่แบบทันที
 
-### โหมด hot reload
-
-| `gateway.reload.mode` | พฤติกรรม |
+| `gateway.reload.mode` | พฤติกรรม                                   |
 | --------------------- | ------------------------------------------ |
-| `off` | ไม่มีการโหลดการกำหนดค่าใหม่ |
-| `hot` | ใช้เฉพาะการเปลี่ยนแปลงที่ปลอดภัยสำหรับ hot reload |
-| `restart` | รีสตาร์ตเมื่อมีการเปลี่ยนแปลงที่ต้องโหลดใหม่ด้วยการรีสตาร์ต |
-| `hybrid` (ค่าเริ่มต้น) | ใช้ hot-apply เมื่อปลอดภัย และรีสตาร์ตเมื่อจำเป็น |
+| `off`                 | ไม่โหลดการกำหนดค่าใหม่                           |
+| `hot`                 | ใช้เฉพาะการเปลี่ยนแปลงที่ปลอดภัยต่อการโหลดทันที                |
+| `restart`             | เริ่มใหม่เมื่อมีการเปลี่ยนแปลงที่ต้องโหลดใหม่         |
+| `hybrid` (ค่าเริ่มต้น)    | ใช้แบบทันทีเมื่อปลอดภัย และเริ่มใหม่เมื่อจำเป็น |
 
-## ชุดคำสั่งสำหรับผู้ปฏิบัติการ
+## ชุดคำสั่งสำหรับผู้ควบคุม
 
 ```bash
 openclaw gateway status
-openclaw gateway status --deep   # adds a system-level service scan
+openclaw gateway status --deep   # เพิ่มการสแกนบริการระดับระบบ
 openclaw gateway status --json
 openclaw gateway install
 openclaw gateway restart
@@ -154,34 +140,26 @@ openclaw logs --follow
 openclaw doctor
 ```
 
-`gateway status --deep` ใช้สำหรับการค้นพบบริการเพิ่มเติม (LaunchDaemons/หน่วย systemd system
-/schtasks) ไม่ใช่การตรวจสอบสุขภาพ RPC ที่ลึกขึ้น
+`gateway status --deep` ใช้สำหรับการค้นหาบริการเพิ่มเติม (LaunchDaemons/ยูนิตระบบ systemd/schtasks) ไม่ใช่โพรบสถานะ RPC ที่ลึกขึ้น
 
-## Gateway หลายตัว (โฮสต์เดียวกัน)
+## Gateway หลายรายการ (โฮสต์เดียวกัน)
 
-การติดตั้งส่วนใหญ่ควรรันหนึ่ง Gateway ต่อเครื่อง Gateway เดียวสามารถโฮสต์
-เอเจนต์และช่องทางได้หลายรายการ
+การติดตั้งส่วนใหญ่ควรเรียกใช้ Gateway หนึ่งรายการต่อเครื่อง Gateway รายการเดียวสามารถโฮสต์เอเจนต์และช่องทางหลายรายการได้ คุณต้องใช้ Gateway หลายรายการเฉพาะเมื่อตั้งใจแยกการทำงานหรือต้องการบอตกู้คืน
 
-คุณต้องมี Gateway หลายตัวเฉพาะเมื่อคุณตั้งใจต้องการการแยกส่วนหรือบอทกู้คืน
-
-การตรวจสอบที่มีประโยชน์:
+การตรวจสอบที่เป็นประโยชน์:
 
 ```bash
 openclaw gateway status --deep
 openclaw gateway probe
 ```
 
-สิ่งที่คาดหวัง:
+สิ่งที่ควรคาดหวัง:
 
-- `gateway status --deep` อาจรายงาน `Other gateway-like services detected (best effort)`
-  และพิมพ์คำแนะนำการล้างข้อมูลเมื่อยังมีการติดตั้ง launchd/systemd/schtasks เก่าค้างอยู่
-- `gateway probe` อาจเตือนเกี่ยวกับ `multiple reachable gateway identities` เมื่อ Gateway
-  ที่แตกต่างกันตอบกลับ หรือเมื่อ OpenClaw พิสูจน์ไม่ได้ว่าเป้าหมายที่เข้าถึงได้เป็น Gateway เดียวกัน
-  SSH tunnel, proxy URL หรือ URL ระยะไกลที่กำหนดค่าไว้ไปยัง Gateway เดียวกันนับเป็น
-  Gateway เดียวที่มีหลาย transport แม้พอร์ต transport จะแตกต่างกัน
-- หากเป็นความตั้งใจ ให้แยกพอร์ต, config/state และ workspace root ต่อ Gateway
+- `gateway status --deep` สามารถรายงาน `Other gateway-like services detected (best effort)` และแสดงคำแนะนำการล้างข้อมูลเมื่อยังมีการติดตั้ง launchd/systemd/schtasks ที่ล้าสมัยอยู่
+- `gateway probe` สามารถเตือนเกี่ยวกับ `multiple reachable gateway identities` เมื่อ Gateway คนละรายการตอบกลับ หรือเมื่อ OpenClaw ไม่สามารถพิสูจน์ได้ว่าเป้าหมายที่เข้าถึงได้เป็น Gateway รายการเดียวกัน อุโมงค์ SSH, URL พร็อกซี หรือ URL ระยะไกลที่กำหนดค่าไปยัง Gateway เดียวกัน ถือเป็น Gateway หนึ่งรายการที่มีการรับส่งหลายรูปแบบ แม้ว่าพอร์ตการรับส่งจะแตกต่างกัน
+- หากตั้งใจให้เป็นเช่นนั้น ให้แยกพอร์ต การกำหนดค่า/สถานะ และรากของเวิร์กสเปซสำหรับแต่ละ Gateway
 
-รายการตรวจสอบต่อ instance:
+รายการตรวจสอบต่ออินสแตนซ์:
 
 - `gateway.port` ที่ไม่ซ้ำกัน
 - `OPENCLAW_CONFIG_PATH` ที่ไม่ซ้ำกัน
@@ -200,25 +178,25 @@ OPENCLAW_CONFIG_PATH=~/.openclaw/b.json OPENCLAW_STATE_DIR=~/.openclaw-b opencla
 ## การเข้าถึงระยะไกล
 
 แนะนำ: Tailscale/VPN
-ทางเลือกสำรอง: SSH tunnel
+ทางเลือกสำรอง: อุโมงค์ SSH
 
 ```bash
-ssh -N -L 18789:127.0.0.1:18789 user@host
+ssh -N -L 18789:127.0.0.1:18789 user@gateway-host
 ```
 
-จากนั้นเชื่อมต่อไคลเอนต์ภายในเครื่องไปที่ `ws://127.0.0.1:18789`
+จากนั้นเชื่อมต่อไคลเอนต์ภายในเครื่องไปยัง `ws://127.0.0.1:18789`
 
 <Warning>
-SSH tunnels ไม่ได้ข้ามการยืนยันตัวตนของ Gateway สำหรับการยืนยันตัวตนแบบ shared-secret ไคลเอนต์ยังคง
-ต้องส่ง `token`/`password` แม้ผ่าน tunnel สำหรับโหมดที่มีข้อมูลประจำตัว
-คำขอยังคงต้องผ่านพาธการยืนยันตัวตนนั้น
+อุโมงค์ SSH ไม่ได้ข้ามการยืนยันตัวตนของ Gateway สำหรับการยืนยันตัวตนแบบข้อมูลลับที่ใช้ร่วมกัน ไคลเอนต์ยังคง
+ต้องส่ง `token`/`password` แม้ผ่านอุโมงค์ สำหรับโหมดที่มีข้อมูลระบุตัวตน
+คำขอยังคงต้องผ่านเส้นทางการยืนยันตัวตนนั้น
 </Warning>
 
-ดู: [Remote Gateway](/th/gateway/remote), [Authentication](/th/gateway/authentication), [Tailscale](/th/gateway/tailscale)
+ดู: [Gateway ระยะไกล](/th/gateway/remote), [การยืนยันตัวตน](/th/gateway/authentication), [Tailscale](/th/gateway/tailscale)
 
-## การควบคุมดูแลและวงจรชีวิตบริการ
+## การควบคุมและวงจรชีวิตบริการ
 
-ใช้การรันแบบมี supervisor เพื่อความน่าเชื่อถือระดับใกล้ production
+ใช้การทำงานภายใต้ตัวควบคุมกระบวนการเพื่อความน่าเชื่อถือระดับใกล้เคียงการใช้งานจริง
 
 <Tabs>
   <Tab title="macOS (launchd)">
@@ -230,15 +208,15 @@ openclaw gateway restart
 openclaw gateway stop
 ```
 
-ใช้ `openclaw gateway restart` สำหรับการรีสตาร์ต อย่าต่อคำสั่ง `openclaw gateway stop` และ `openclaw gateway start` เพื่อใช้แทนการรีสตาร์ต
+ใช้ `openclaw gateway restart` สำหรับการเริ่มใหม่ อย่าต่อคำสั่ง `openclaw gateway stop` และ `openclaw gateway start` เพื่อใช้แทนการเริ่มใหม่
 
-บน macOS, `gateway stop` ใช้ `launchctl bootout` โดยค่าเริ่มต้น — การดำเนินการนี้ลบ LaunchAgent ออกจากเซสชันบูตปัจจุบันโดยไม่บันทึกการปิดใช้งานถาวร ดังนั้นการกู้คืนอัตโนมัติของ KeepAlive ยังทำงานหลังจากเกิดการล่มที่ไม่คาดคิด และ `gateway start` เปิดใช้งานใหม่ได้อย่างสะอาด หากต้องการระงับการเกิดใหม่อัตโนมัติข้ามการรีบูตแบบถาวร ให้ส่ง `--disable`: `openclaw gateway stop --disable`
+บน macOS, `gateway stop` ใช้ `launchctl bootout` โดยค่าเริ่มต้น การดำเนินการนี้จะนำ LaunchAgent ออกจากเซสชันการบูตปัจจุบันโดยไม่บันทึกการปิดใช้งานอย่างถาวร ทำให้การกู้คืนอัตโนมัติของ KeepAlive ยังคงทำงานหลังจากเกิดข้อขัดข้องโดยไม่คาดคิด และ `gateway start` สามารถเปิดใช้งานใหม่ได้อย่างเรียบร้อย หากต้องการระงับการเกิดกระบวนการใหม่อัตโนมัติข้ามการรีบูตอย่างถาวร ให้ส่ง `--disable`: `openclaw gateway stop --disable`
 
-label ของ LaunchAgent คือ `ai.openclaw.gateway` (ค่าเริ่มต้น) หรือ `ai.openclaw.<profile>` (โปรไฟล์ที่มีชื่อ) `openclaw doctor` ตรวจสอบและซ่อมแซมความคลาดเคลื่อนของการกำหนดค่าบริการ
+ป้ายกำกับ LaunchAgent คือ `ai.openclaw.gateway` (ค่าเริ่มต้น) หรือ `ai.openclaw.<profile>` (โปรไฟล์ที่มีชื่อ) `openclaw doctor` จะตรวจสอบและซ่อมแซมความคลาดเคลื่อนของการกำหนดค่าบริการ
 
   </Tab>
 
-  <Tab title="Linux (systemd user)">
+  <Tab title="Linux (systemd ผู้ใช้)">
 
 ```bash
 openclaw gateway install
@@ -246,24 +224,29 @@ systemctl --user enable --now openclaw-gateway[-<profile>].service
 openclaw gateway status
 ```
 
-เพื่อให้คงอยู่หลังออกจากระบบ ให้เปิดใช้ lingering:
+หากต้องการให้ทำงานต่อหลังออกจากระบบ ให้เปิดใช้งาน lingering:
 
 ```bash
-sudo loginctl enable-linger <user>
+sudo loginctl enable-linger $(whoami)
 ```
 
-ตัวอย่าง user-unit แบบ manual เมื่อคุณต้องการพาธติดตั้งที่กำหนดเอง:
+บนเซิร์ฟเวอร์แบบไม่มีส่วนแสดงผลที่ไม่มีเซสชันเดสก์ท็อป ให้ตรวจสอบด้วยว่าได้ตั้งค่า `XDG_RUNTIME_DIR` (`export XDG_RUNTIME_DIR=/run/user/$(id -u)`) ก่อนลองคำสั่ง `systemctl --user` อีกครั้ง
+
+ตัวอย่างยูนิตผู้ใช้แบบกำหนดเองเมื่อต้องการพาธการติดตั้งเฉพาะ:
 
 ```ini
 [Unit]
 Description=OpenClaw Gateway
 After=network-online.target
 Wants=network-online.target
+StartLimitBurst=5
+StartLimitIntervalSec=60
 
 [Service]
 ExecStart=/usr/local/bin/openclaw gateway --port 18789
 Restart=always
 RestartSec=5
+RestartPreventExitStatus=78
 TimeoutStopSec=30
 TimeoutStartSec=30
 SuccessExitStatus=0 143
@@ -276,7 +259,7 @@ WantedBy=default.target
 
   </Tab>
 
-  <Tab title="Windows (native)">
+  <Tab title="Windows (เนทีฟ)">
 
 ```powershell
 openclaw gateway install
@@ -285,32 +268,34 @@ openclaw gateway restart
 openclaw gateway stop
 ```
 
-การเริ่มต้นที่จัดการโดย Windows native ใช้ Scheduled Task ชื่อ `OpenClaw Gateway`
+การเริ่มต้นภายใต้การจัดการแบบเนทีฟของ Windows ใช้งาน Scheduled Task ชื่อ `OpenClaw Gateway`
 (หรือ `OpenClaw Gateway (<profile>)` สำหรับโปรไฟล์ที่มีชื่อ) หากการสร้าง Scheduled Task
-ถูกปฏิเสธ OpenClaw จะถอยกลับไปใช้ตัวเรียกจาก Startup-folder ต่อผู้ใช้
-ที่ชี้ไปยัง `gateway.cmd` ภายในไดเรกทอรีสถานะ
+ถูกปฏิเสธ OpenClaw จะกลับไปใช้ตัวเรียกใช้งานในโฟลเดอร์ Startup สำหรับผู้ใช้แต่ละราย
+ซึ่งชี้ไปยัง `gateway.cmd` ภายในไดเรกทอรีสถานะ
 
   </Tab>
 
-  <Tab title="Linux (system service)">
+  <Tab title="Linux (บริการระบบ)">
 
-ใช้ system unit สำหรับโฮสต์แบบหลายผู้ใช้/เปิดตลอดเวลา
+ใช้ยูนิตระบบสำหรับโฮสต์ที่มีผู้ใช้หลายคน/ทำงานตลอดเวลา
 
 ```bash
 sudo systemctl daemon-reload
 sudo systemctl enable --now openclaw-gateway[-<profile>].service
 ```
 
-ใช้เนื้อหา service เดียวกับ user unit แต่ติดตั้งไว้ใต้
+ใช้เนื้อหาบริการเดียวกับยูนิตผู้ใช้ แต่ติดตั้งไว้ภายใต้
 `/etc/systemd/system/openclaw-gateway[-<profile>].service` และปรับ
-`ExecStart=` หาก binary `openclaw` ของคุณอยู่ที่อื่น
+`ExecStart=` หากไบนารี `openclaw` อยู่ที่อื่น
 
-อย่าให้ `openclaw doctor --fix` ติดตั้งบริการ Gateway ระดับผู้ใช้สำหรับโปรไฟล์/พอร์ตเดียวกันด้วย Doctor จะปฏิเสธการติดตั้งอัตโนมัตินั้นเมื่อพบบริการ OpenClaw Gateway ระดับระบบ; ใช้ `OPENCLAW_SERVICE_REPAIR_POLICY=external` เมื่อ system unit เป็นเจ้าของวงจรชีวิต
+อย่าให้ `openclaw doctor --fix` ติดตั้งบริการ Gateway ระดับผู้ใช้สำหรับโปรไฟล์/พอร์ตเดียวกันด้วย Doctor จะปฏิเสธการติดตั้งอัตโนมัตินั้นเมื่อตรวจพบบริการ Gateway ของ OpenClaw ระดับระบบ ให้ใช้ `OPENCLAW_SERVICE_REPAIR_POLICY=external` เมื่อยูนิตระบบเป็นเจ้าของวงจรชีวิต
 
   </Tab>
 </Tabs>
 
-## เส้นทางด่วนสำหรับโปรไฟล์ Dev
+ข้อผิดพลาดจากการกำหนดค่าที่ไม่ถูกต้องจะออกด้วยรหัส `78` ยูนิต systemd ของ Linux ใช้ `RestartPreventExitStatus=78` เพื่อหยุดการเรียกใช้ซ้ำจนกว่าจะแก้ไขการกำหนดค่า launchd และ Windows Task Scheduler ไม่มีกฎหยุดตามรหัสออกที่เทียบเท่า ดังนั้น Gateway จึงบันทึกประวัติการบูตที่ไม่สมบูรณ์อย่างรวดเร็วไว้ด้วย และระงับการเริ่มต้นบัญชีช่องทาง/ผู้ให้บริการโดยอัตโนมัติหลังจากเริ่มต้นล้มเหลวซ้ำ ๆ ในโหมดปลอดภัยดังกล่าว ระนาบควบคุมยังคงเริ่มทำงานเพื่อให้ตรวจสอบและซ่อมแซมได้ การโหลดการกำหนดค่าใหม่แบบทันทีและ `secrets.reload` จะปฏิเสธการเริ่มช่องทางใหม่โดยอัตโนมัติ และคำขอ `channels.start` จากผู้ควบคุมอย่างชัดเจนสามารถแทนที่การระงับนี้ได้
+
+## เส้นทางด่วนสำหรับโปรไฟล์พัฒนา
 
 ```bash
 openclaw --dev setup
@@ -318,35 +303,35 @@ openclaw --dev gateway --allow-unconfigured
 openclaw --dev status
 ```
 
-ค่าเริ่มต้นรวมถึง state/config ที่แยกไว้ และพอร์ต Gateway พื้นฐาน `19001`
+ค่าเริ่มต้นประกอบด้วยสถานะ/การกำหนดค่าที่แยกจากกัน และพอร์ต Gateway พื้นฐาน `19001`
 
-## เอกสารอ้างอิงย่อของโปรโตคอล (มุมมองผู้ปฏิบัติการ)
+## เอกสารอ้างอิงด่วนของโปรโตคอล (มุมมองผู้ควบคุม)
 
-- เฟรมแรกของไคลเอนต์ต้องเป็น `connect`
-- Gateway ส่งคืนสแนปช็อต `hello-ok` (`presence`, `health`, `stateVersion`, `uptimeMs`, limits/policy)
-- `hello-ok.features.methods` / `events` เป็นรายการค้นพบแบบอนุรักษ์นิยม ไม่ใช่
-  dump ที่สร้างจากทุกเส้นทาง helper ที่เรียกได้
+- เฟรมแรกของไคลเอ็นต์ต้องเป็น `connect`
+- Gateway ส่งคืนเฟรม `hello-ok` พร้อม `snapshot` (`presence`, `health`, `stateVersion`, `uptimeMs`) รวมถึงขีดจำกัด `policy` (`maxPayload`, `maxBufferedBytes`, `tickIntervalMs`)
+- `hello-ok.features.methods` / `events` เป็นรายการสำหรับการค้นหาแบบอนุรักษนิยม ไม่ใช่
+  รายการที่สร้างขึ้นจากทุกเส้นทางตัวช่วยที่เรียกใช้ได้
 - คำขอ: `req(method, params)` → `res(ok/payload|error)`
 - เหตุการณ์ทั่วไปประกอบด้วย `connect.challenge`, `agent`, `chat`,
-  `session.message`, `session.operation`, `session.tool`, `sessions.changed`,
-  `presence`, `tick`, `health`, `heartbeat`, เหตุการณ์วงจรชีวิตการจับคู่/การอนุมัติ
-  และ `shutdown`
+  `session.message`, `session.operation`, `session.tool`, เหตุการณ์ที่ต้องเลือกรับ
+  `session.approval`, `sessions.changed`, `presence`, `tick`, `health`,
+  `heartbeat`, เหตุการณ์วงจรชีวิตการจับคู่/การอนุมัติ และ `shutdown`
 
-การรันเอเจนต์มีสองขั้นตอน:
+การเรียกใช้เอเจนต์มีสองขั้นตอน:
 
-1. ack ยอมรับทันที (`status:"accepted"`)
-2. การตอบกลับเมื่อเสร็จสิ้นสุดท้าย (`status:"ok"|"error"`) พร้อมเหตุการณ์ `agent` แบบสตรีมระหว่างทาง
+1. การตอบรับทันทีว่าได้รับคำขอแล้ว (`status:"accepted"`)
+2. การตอบกลับเมื่อเสร็จสมบูรณ์ขั้นสุดท้าย (`status:"ok"|"error"`) โดยมีการสตรีมเหตุการณ์ `agent` ในระหว่างนั้น
 
-ดูเอกสารโปรโตคอลฉบับเต็ม: [Gateway Protocol](/th/gateway/protocol)
+ดูเอกสารโปรโตคอลฉบับเต็ม: [โปรโตคอล Gateway](/th/gateway/protocol)
 
-## การตรวจสอบการปฏิบัติการ
+## การตรวจสอบการทำงาน
 
-### ความมีชีวิต
+### การยังทำงานอยู่
 
 - เปิด WS และส่ง `connect`
-- คาดหวังการตอบกลับ `hello-ok` พร้อมสแนปช็อต
+- คาดว่าจะได้รับการตอบกลับ `hello-ok` พร้อมสแนปช็อต
 
-### ความพร้อม
+### ความพร้อมใช้งาน
 
 ```bash
 openclaw gateway status
@@ -354,41 +339,34 @@ openclaw channels status --probe
 openclaw health
 ```
 
-### การกู้คืนช่องว่าง
+### การกู้คืนเมื่อมีช่องว่าง
 
-เหตุการณ์จะไม่ถูก replay เมื่อมีช่องว่างของลำดับ ให้รีเฟรชสถานะ (`health`, `system-presence`) ก่อนดำเนินการต่อ
+เหตุการณ์จะไม่ถูกเล่นซ้ำ เมื่อพบช่องว่างในลำดับ ให้รีเฟรชสถานะ (`health`, `system-presence`) ก่อนดำเนินการต่อ
 
 ## รูปแบบความล้มเหลวที่พบบ่อย
 
-| ลายเซ็น                                                       | ปัญหาที่เป็นไปได้                                                             |
-| -------------------------------------------------------------- | ------------------------------------------------------------------------------- |
-| `refusing to bind gateway ... without auth`                    | ผูกกับที่อยู่ที่ไม่ใช่ loopback โดยไม่มีพาธการยืนยันตัวตนของ Gateway ที่ถูกต้อง |
+| รูปแบบ                                                         | ปัญหาที่เป็นไปได้                                                              |
+| -------------------------------------------------------------- | ----------------------------------------------------------------------------- |
+| `refusing to bind gateway ... without auth`                    | ผูกกับอินเทอร์เฟซที่ไม่ใช่ลูปแบ็กโดยไม่มีเส้นทางการยืนยันตัวตน Gateway ที่ถูกต้อง |
 | `another gateway instance is already listening` / `EADDRINUSE` | พอร์ตขัดแย้ง                                                                  |
-| `Gateway start blocked: set gateway.mode=local`                | ตั้งค่าคอนฟิกเป็นโหมดระยะไกล หรือสแตมป์โหมด local หายไปจากคอนฟิกที่เสียหาย |
-| `unauthorized` during connect                                  | การยืนยันตัวตนไม่ตรงกันระหว่างไคลเอนต์กับ Gateway                            |
+| `Gateway start blocked: set gateway.mode=local`                | กำหนดค่าคอนฟิกเป็นโหมดระยะไกล หรือ `gateway.mode` หายไปจากคอนฟิกที่เสียหาย |
+| `unauthorized` ระหว่างการเชื่อมต่อ                                  | การยืนยันตัวตนระหว่างไคลเอ็นต์กับ Gateway ไม่ตรงกัน                           |
 
-สำหรับลำดับขั้นการวินิจฉัยแบบครบถ้วน ให้ใช้ [การแก้ไขปัญหา Gateway](/th/gateway/troubleshooting)
+สำหรับลำดับขั้นการวินิจฉัยฉบับเต็ม โปรดดู [การแก้ไขปัญหา Gateway](/th/gateway/troubleshooting)
 
 ## การรับประกันด้านความปลอดภัย
 
-- ไคลเอนต์โปรโตคอล Gateway ล้มเหลวอย่างรวดเร็วเมื่อ Gateway ไม่พร้อมใช้งาน (ไม่มี fallback ไปยัง direct-channel โดยนัย)
-- เฟรมแรกที่ไม่ถูกต้องหรือไม่ใช่การเชื่อมต่อจะถูกปฏิเสธและปิด
-- การปิดระบบอย่างนุ่มนวลจะปล่อยเหตุการณ์ `shutdown` ก่อนปิดซ็อกเก็ต
-
----
-
-ที่เกี่ยวข้อง:
-
-- [การแก้ไขปัญหา](/th/gateway/troubleshooting)
-- [กระบวนการเบื้องหลัง](/th/gateway/background-process)
-- [การกำหนดค่า](/th/gateway/configuration)
-- [สุขภาพ](/th/gateway/health)
-- [Doctor](/th/gateway/doctor)
-- [การยืนยันตัวตน](/th/gateway/authentication)
+- ไคลเอ็นต์โปรโตคอล Gateway จะล้มเหลวทันทีเมื่อ Gateway ไม่พร้อมใช้งาน (ไม่มีการย้อนกลับไปใช้ช่องทางโดยตรงโดยปริยาย)
+- เฟรมแรกที่ไม่ถูกต้องหรือไม่ใช่เฟรมเชื่อมต่อจะถูกปฏิเสธและปิดการเชื่อมต่อ
+- การปิดระบบอย่างเหมาะสมจะส่งเหตุการณ์ `shutdown` ก่อนปิดซ็อกเก็ต
 
 ## ที่เกี่ยวข้อง
 
 - [การกำหนดค่า](/th/gateway/configuration)
 - [การแก้ไขปัญหา Gateway](/th/gateway/troubleshooting)
-- [การเข้าถึงระยะไกล](/th/gateway/remote)
-- [การจัดการความลับ](/th/gateway/secrets)
+- [กระบวนการเบื้องหลัง](/th/gateway/background-process)
+- [สถานะระบบ](/th/gateway/health)
+- [Doctor](/th/gateway/doctor)
+- [การยืนยันตัวตน](/th/gateway/authentication)
+- [การเข้าถึงจากระยะไกล](/th/gateway/remote)
+- [การจัดการข้อมูลลับ](/th/gateway/secrets)

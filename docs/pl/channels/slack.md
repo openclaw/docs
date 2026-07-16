@@ -1,60 +1,62 @@
 ---
 read_when:
-    - Konfigurowanie Slack lub debugowanie trybu gniazda Slack, HTTP albo relay
-summary: Konfiguracja Slack i zachowanie w czasie wykonywania (tryb Socket, adresy URL żądań HTTP i tryb przekaźnika)
+    - Konfigurowanie Slacka lub debugowanie trybu gniazda, HTTP albo przekaźnika w Slacku
+summary: Konfiguracja Slacka i zachowanie środowiska uruchomieniowego (Socket Mode, adresy URL żądań HTTP i tryb przekazywania)
 title: Slack
 x-i18n:
-    generated_at: "2026-06-27T17:14:04Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T18:02:40Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 95acddb569b1ddc184609f0918336a7465d409351a0406f48fd5dd92a79ca9d6
+    source_hash: b0b3c4ddcd4ea46448bf4fcba4713a92cd487a3ab69077f6b808fbcc65608c7f
     source_path: channels/slack.md
     workflow: 16
 ---
 
-Gotowe do produkcji dla wiadomości prywatnych i kanałów przez integracje aplikacji Slack. Domyślnym trybem jest Socket Mode; obsługiwane są też adresy URL żądań HTTP. Tryb przekaźnika jest przeznaczony do zarządzanych wdrożeń, w których zaufany router odpowiada za wejście Slack.
+Obsługa Slack obejmuje wiadomości prywatne i kanały za pośrednictwem integracji aplikacji Slack. Domyślnym transportem jest Socket Mode; obsługiwane są również adresy URL żądań HTTP. Tryb przekaźnikowy jest przeznaczony dla zarządzanych wdrożeń, w których zaufany router obsługuje ruch przychodzący ze Slack.
 
 <CardGroup cols={3}>
-  <Card title="Pairing" icon="link" href="/pl/channels/pairing">
-    Wiadomości prywatne Slack domyślnie używają trybu parowania.
+  <Card title="Parowanie" icon="link" href="/pl/channels/pairing">
+    Wiadomości prywatne Slack domyślnie korzystają z trybu parowania.
   </Card>
-  <Card title="Slash commands" icon="terminal" href="/pl/tools/slash-commands">
-    Natywne zachowanie poleceń i katalog poleceń.
+  <Card title="Polecenia z ukośnikiem" icon="terminal" href="/pl/tools/slash-commands">
+    Natywne działanie poleceń i katalog poleceń.
   </Card>
-  <Card title="Channel troubleshooting" icon="wrench" href="/pl/channels/troubleshooting">
-    Diagnostyka międzykanałowa i instrukcje naprawcze.
+  <Card title="Rozwiązywanie problemów z kanałami" icon="wrench" href="/pl/channels/troubleshooting">
+    Diagnostyka międzykanałowa i procedury naprawcze.
   </Card>
 </CardGroup>
 
-## Wybór Socket Mode albo adresów URL żądań HTTP
+## Wybór transportu
 
-Oba transporty są gotowe do produkcji i zapewniają równoważność funkcji dla wiadomości, poleceń ukośnikiem, App Home oraz interaktywności. Wybieraj według kształtu wdrożenia, a nie funkcji.
+Socket Mode i adresy URL żądań HTTP zapewniają taki sam zakres funkcji w przypadku obsługi wiadomości, poleceń z ukośnikiem, App Home i interakcji. Wybór powinien zależeć od architektury wdrożenia, a nie od funkcji.
 
 | Kwestia                      | Socket Mode (domyślnie)                                                                                                                                | Adresy URL żądań HTTP                                                                                              |
 | ---------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
-| Publiczny URL Gateway           | Nie jest wymagany                                                                                                                                         | Wymagany (DNS, TLS, reverse proxy lub tunel)                                                                   |
-| Sieć wychodząca             | Wychodzące WSS do `wss-primary.slack.com` musi być osiągalne                                                                                            | Bez wychodzącego WS; tylko przychodzący HTTPS                                                                             |
-| Wymagane tokeny                | Token bota + App-Level Token z `connections:write`                                                                                                 | Token bota + Signing Secret                                                                                     |
-| Laptop deweloperski / za zaporą | Działa bez zmian                                                                                                                                          | Wymaga publicznego tunelu (ngrok, Cloudflare Tunnel, Tailscale Funnel) albo stagingowego Gateway                          |
-| Skalowanie poziome           | Jedna sesja Socket Mode na aplikację na host; wiele Gateway wymaga osobnych aplikacji Slack                                                                 | Bezstanowy handler POST; wiele replik Gateway może współdzielić jedną aplikację za load balancerem                     |
-| Wiele kont na jednym Gateway | Obsługiwane; każde konto otwiera własne WS                                                                                                             | Obsługiwane; każde konto potrzebuje unikalnego `webhookPath` (domyślnie `/slack/events`), aby rejestracje nie kolidowały |
-| Transport poleceń ukośnikiem      | Dostarczane przez połączenie WS; `slash_commands[].url` jest ignorowane                                                                                  | Slack wysyła POST do `slash_commands[].url`; pole jest wymagane, aby polecenie zostało obsłużone                           |
-| Podpisywanie żądań              | Nie jest używane (uwierzytelnianiem jest App-Level Token)                                                                                                               | Slack podpisuje każde żądanie; OpenClaw weryfikuje je za pomocą `signingSecret`                                              |
-| Odzyskiwanie po zerwaniu połączenia  | Automatyczne ponowne łączenie Slack SDK jest włączone; OpenClaw ponownie uruchamia też nieudane sesje Socket Mode z ograniczonym backoffem. Obowiązuje strojenie transportu dla timeoutu pong. | Brak trwałego połączenia do zerwania; ponowienia są wykonywane dla każdego żądania przez Slack                                           |
+| Publiczny adres URL Gateway           | Niewymagany                                                                                                                                         | Wymagany (DNS, TLS, odwrotny serwer proxy lub tunel)                                                                   |
+| Sieć wychodząca             | Musi być dostępne wychodzące połączenie WSS z `wss-primary.slack.com`                                                                                            | Brak wychodzącego WS; tylko przychodzący HTTPS                                                                             |
+| Wymagane tokeny                | Token bota + token poziomu aplikacji z `connections:write`                                                                                                 | Token bota + sekret podpisywania                                                                                     |
+| Laptop deweloperski / za zaporą sieciową | Działa bez dodatkowej konfiguracji                                                                                                                                          | Wymaga publicznego tunelu (ngrok, Cloudflare Tunnel, Tailscale Funnel) lub testowego Gateway                          |
+| Skalowanie poziome           | Jedna sesja Socket Mode na aplikację i hosta; wiele instancji Gateway wymaga oddzielnych aplikacji Slack                                                                 | Bezstanowa obsługa POST; wiele replik Gateway może współdzielić jedną aplikację za modułem równoważenia obciążenia                     |
+| Wiele kont w jednym Gateway | Obsługiwane; każde konto otwiera własne WS                                                                                                             | Obsługiwane; każde konto wymaga unikatowej wartości `webhookPath` (domyślnie `/slack/events`), aby rejestracje ze sobą nie kolidowały |
+| Transport poleceń z ukośnikiem      | Dostarczane przez połączenie WS; `slash_commands[].url` jest ignorowane                                                                                  | Slack wysyła żądania POST do `slash_commands[].url`; pole jest wymagane do przekazania polecenia                           |
+| Podpisywanie żądań              | Nieużywane (uwierzytelnianie odbywa się za pomocą tokenu poziomu aplikacji)                                                                                                               | Slack podpisuje każde żądanie; OpenClaw weryfikuje je za pomocą `signingSecret`                                              |
+| Odzyskiwanie po zerwaniu połączenia  | Automatyczne ponowne łączenie zestawu SDK Slack jest włączone; OpenClaw również ponownie uruchamia nieudane sesje Socket Mode z ograniczonym wykładniczym opóźnieniem. Obowiązuje dostrajanie transportu związane z limitem czasu pong. | Brak trwałego połączenia, które można zerwać; ponowienia są wykonywane przez Slack dla poszczególnych żądań                                           |
 
 <Note>
-  **Wybierz Socket Mode** dla hostów z jednym Gateway, laptopów deweloperskich i sieci lokalnych, które mogą łączyć się wychodząco z `*.slack.com`, ale nie mogą przyjmować przychodzącego HTTPS.
+  **Socket Mode należy wybrać** w przypadku hostów z pojedynczym Gateway, laptopów deweloperskich i sieci lokalnych, które mogą nawiązywać połączenia wychodzące z `*.slack.com`, ale nie mogą przyjmować przychodzących połączeń HTTPS.
 
-**Wybierz adresy URL żądań HTTP**, gdy uruchamiasz wiele replik Gateway za load balancerem, gdy wychodzące WSS jest zablokowane, ale przychodzące HTTPS jest dozwolone, albo gdy już kończysz Webhooki Slack na reverse proxy.
+**Adresy URL żądań HTTP należy wybrać** w przypadku uruchamiania wielu replik Gateway za modułem równoważenia obciążenia, gdy wychodzące WSS jest zablokowane, ale przychodzące HTTPS jest dozwolone, lub gdy webhooki Slack są już terminowane na odwrotnym serwerze proxy.
 </Note>
 
-### Tryb przekaźnika
+<Warning>
+  Slack może utrzymywać wiele połączeń Socket Mode dla jednej aplikacji i dostarczać każde obciążenie do dowolnego połączenia. Oddzielne instancje OpenClaw Gateway współdzielące aplikację Slack wymagają zatem równoważnej konfiguracji routingu i autoryzacji. W przeciwnym razie należy użyć oddzielnej aplikacji Slack dla każdego Gateway, pojedynczego przekaźnika ruchu przychodzącego lub adresów URL żądań HTTP za modułem równoważenia obciążenia. Zobacz [Korzystanie z Socket Mode](https://docs.slack.dev/apis/events-api/using-socket-mode#using-multiple-connections).
+</Warning>
 
-Tryb przekaźnika oddziela wejście Slack od Gateway OpenClaw. Zaufany router utrzymuje
-pojedyncze połączenie Slack Socket Mode, wybiera docelowy Gateway i przekazuje typowane
-zdarzenie przez uwierzytelniony websocket. Gateway nadal używa swojego tokena bota do
-wychodzących wywołań Slack Web API.
+### Tryb przekaźnikowy
+
+Tryb przekaźnikowy oddziela ruch przychodzący ze Slack od OpenClaw Gateway. Zaufany router obsługuje pojedyncze połączenie Slack Socket Mode, wybiera docelowy Gateway i przekazuje typowane zdarzenie przez uwierzytelnione połączenie websocket. Gateway nadal używa własnego tokenu bota do wychodzących wywołań Slack Web API.
 
 ```json5
 {
@@ -72,31 +74,240 @@ wychodzących wywołań Slack Web API.
 }
 ```
 
-URL przekaźnika musi używać `wss://`, chyba że wskazuje localhost. Traktuj token bearer i
-tablicę tras routera jako część granicy autoryzacji Slack: kierowane zdarzenia trafiają do
-standardowego handlera wiadomości Slack jako autoryzowane aktywacje. Dostarczone przez router `slack_identity`
-w ramce websocket `hello` może ustawić domyślną nazwę użytkownika i ikonę dla ruchu wychodzącego; jawna
-tożsamość przekazana przez wywołującego nadal ma pierwszeństwo. Połączenie przekaźnika łączy się ponownie z tym samym
-ograniczonym czasem backoffu używanym przez Socket Mode i czyści tożsamość dostarczoną przez router za każdym razem,
-gdy się rozłączy.
+Adres URL przekaźnika musi używać `wss://`, chyba że wskazuje localhost. Token okaziciela i tabelę tras routera należy traktować jako część granicy autoryzacji Slack: kierowane zdarzenia trafiają do standardowej obsługi wiadomości Slack jako autoryzowane aktywacje. Dostarczona przez router wartość `slack_identity` w ramce websocket `hello` może ustawić domyślną wychodzącą nazwę użytkownika i ikonę; jawna tożsamość podana przez wywołującego nadal ma pierwszeństwo. Połączenie z przekaźnikiem jest ponownie nawiązywane z takim samym ograniczonym wykładniczym opóźnieniem jak Socket Mode i usuwa tożsamość dostarczoną przez router przy każdym rozłączeniu.
+
+### Instalacje obejmujące całą organizację Enterprise Grid
+
+Jedno konto Slack może odbierać wiadomości ze wszystkich obszarów roboczych objętych
+instalacją obejmującą całą organizację Enterprise Grid. Należy wybrać bezpośredni Socket Mode lub adresy URL
+żądań HTTP; tryb przekaźnikowy nie jest obsługiwany w przypadku kont korporacyjnych. Oba
+poniższe manifesty o najmniejszych uprawnieniach włączają wyłącznie ścieżkę zdarzeń V1 `message` i `app_mention`,
+natychmiastowe odpowiedzi oraz reakcje stanu obsługiwane przez odbiornik.
+
+#### Socket Mode
+
+```json
+{
+  "display_information": {
+    "name": "OpenClaw",
+    "description": "Slack connector for OpenClaw"
+  },
+  "features": {
+    "bot_user": { "display_name": "OpenClaw", "always_online": true }
+  },
+  "oauth_config": {
+    "scopes": {
+      "bot": [
+        "app_mentions:read",
+        "channels:history",
+        "channels:read",
+        "chat:write",
+        "files:read",
+        "files:write",
+        "groups:history",
+        "groups:read",
+        "im:history",
+        "im:read",
+        "mpim:history",
+        "mpim:read",
+        "reactions:write",
+        "users:read"
+      ]
+    }
+  },
+  "settings": {
+    "org_deploy_enabled": true,
+    "socket_mode_enabled": true,
+    "event_subscriptions": {
+      "bot_events": [
+        "app_mention",
+        "message.channels",
+        "message.groups",
+        "message.im",
+        "message.mpim"
+      ]
+    }
+  }
+}
+```
+
+Administrator organizacji Enterprise Grid lub właściciel organizacji musi zatwierdzić aplikację, zainstalować ją na
+poziomie organizacji i wybrać obszary robocze objęte instalacją.
+Przed uruchomieniem OpenClaw należy potwierdzić, że aplikacja jest dostępna we wszystkich zamierzonych obszarach roboczych.
+Następnie należy wygenerować token poziomu aplikacji z `connections:write` dla Socket Mode
+i skopiować token bota z instalacji organizacyjnej. Należy skonfigurować konto
+korzystające z tokenu bota zainstalowanego w organizacji:
+
+```json5
+{
+  channels: {
+    slack: {
+      enabled: true,
+      mode: "socket",
+      enterpriseOrgInstall: true,
+      appToken: { source: "env", provider: "default", id: "SLACK_APP_TOKEN" },
+      botToken: { source: "env", provider: "default", id: "SLACK_BOT_TOKEN" },
+      dmPolicy: "open",
+      allowFrom: ["*"],
+      groupPolicy: "allowlist",
+      channels: {
+        C0123456789: { requireMention: true },
+      },
+    },
+  },
+}
+```
+
+#### Adresy URL żądań HTTP
+
+Trybu HTTP należy użyć, gdy Gateway ma publiczny punkt końcowy HTTPS i nie otwiera
+połączenia Socket Mode. Przykładowy adres URL należy zastąpić publicznym adresem URL
+`webhookPath` Gateway (domyślnie `/slack/events`):
+
+```json
+{
+  "display_information": {
+    "name": "OpenClaw",
+    "description": "Slack connector for OpenClaw"
+  },
+  "features": {
+    "bot_user": { "display_name": "OpenClaw", "always_online": true }
+  },
+  "oauth_config": {
+    "scopes": {
+      "bot": [
+        "app_mentions:read",
+        "channels:history",
+        "channels:read",
+        "chat:write",
+        "files:read",
+        "files:write",
+        "groups:history",
+        "groups:read",
+        "im:history",
+        "im:read",
+        "mpim:history",
+        "mpim:read",
+        "reactions:write",
+        "users:read"
+      ]
+    }
+  },
+  "settings": {
+    "org_deploy_enabled": true,
+    "event_subscriptions": {
+      "request_url": "https://gateway-host.example.com/slack/events",
+      "bot_events": [
+        "app_mention",
+        "message.channels",
+        "message.groups",
+        "message.im",
+        "message.mpim"
+      ]
+    }
+  }
+}
+```
+
+Administrator organizacji Enterprise Grid lub właściciel organizacji musi zatwierdzić aplikację, zainstalować ją na
+poziomie organizacji i wybrać obszary robocze objęte instalacją.
+Po zweryfikowaniu przez Slack adresu Request URL należy skopiować token bota instalacji organizacyjnej oraz
+wartość **Basic Information -> App Credentials -> Signing Secret** aplikacji. Należy skonfigurować
+konto korporacyjne z tą samą ścieżką Request URL:
+
+```json5
+{
+  channels: {
+    slack: {
+      enabled: true,
+      mode: "http",
+      enterpriseOrgInstall: true,
+      botToken: { source: "env", provider: "default", id: "SLACK_BOT_TOKEN" },
+      signingSecret: {
+        source: "env",
+        provider: "default",
+        id: "SLACK_SIGNING_SECRET",
+      },
+      webhookPath: "/slack/events",
+      dmPolicy: "open",
+      allowFrom: ["*"],
+      groupPolicy: "allowlist",
+      channels: {
+        C0123456789: { requireMention: true },
+      },
+    },
+  },
+}
+```
+
+Podczas uruchamiania OpenClaw weryfikuje `enterpriseOrgInstall` za pomocą Slack `auth.test`.
+Token zainstalowany w organizacji bez tej flagi lub token obszaru roboczego z tą flagą
+powoduje niepowodzenie uruchomienia. Slack pozostaje źródłem prawdy określającym, które obszary robocze
+udzieliły dostępu instalacji; OpenClaw następnie stosuje skonfigurowane zasady dotyczące kanałów, użytkowników,
+wiadomości prywatnych i wzmianek do każdego dostarczonego zdarzenia. Enterprise V1 odrzuca wszystkie utworzone
+przez boty zdarzenia `message` i `app_mention` przed przekazaniem, niezależnie od
+`allowBots`, ponieważ instalacje organizacyjne nie zapewniają stabilnej tożsamości
+bota kwalifikowanej przez obszar roboczy, potrzebnej do zapobiegania pętlom.
+
+Obsługa Enterprise jest celowo ograniczona do bezpośrednich zdarzeń Socket Mode lub HTTP
+`message` i `app_mention` oraz ich natychmiastowych odpowiedzi. Tryb przekaźnikowy,
+polecenia z ukośnikiem, interakcje, App Home, odbiorniki zdarzeń reakcji, przypięcia, narzędzia
+akcji Slack, natywne zatwierdzenia Slack, powiązania, dostarczanie kolejkowane lub zaplanowane
+oraz wysyłanie proaktywne są niedostępne dla konta korporacyjnego. Wychodzące reakcje
+potwierdzenia, pisania i stanu są obsługiwane przez klienta Slack należącego do
+odbiornika i wymagają `reactions:write`; przychodzące powiadomienia o reakcjach
+i narzędzia akcji reakcji pozostają niedostępne.
+
+Natychmiastowe odpowiedzi korzystają ze standardowego mechanizmu dostarczania Slack dla fragmentów,
+multimediów, metadanych, zastępczej tożsamości, podglądów linków i potwierdzeń, ale tylko wtedy, gdy
+zweryfikowany klient należący do odbiornika pozostaje w aktywnym przebiegu zdarzenia. Kolejka wysyłania
+w pamięci oraz rekordy uczestnictwa w wątkach są rozdzielone według obszaru roboczego danego
+zdarzenia; sam klient nigdy nie jest serializowany ani utrwalany.
+
+Klucze zasad kanałów i wpisy `dm.groupChannels` muszą używać nieprzetworzonych, stabilnych identyfikatorów kanałów Slack lub
+formatu `channel:<id>`. OpenClaw normalizuje oba formaty do nieprzetworzonego identyfikatora kanału na potrzeby
+dopasowywania w czasie działania; prefiksy `slack:`, `group:` i `mpim:` powodują błąd uruchamiania.
+Wpisy zasad użytkowników muszą używać stabilnych identyfikatorów użytkowników Slack; nazwy, slugi, nazwy wyświetlane
+i adresy e-mail powodują błąd uruchamiania. Identyfikatory muszą używać kanonicznego prefiksu i treści Slack zapisanych
+wielkimi literami (na przykład `C0123456789` lub `U0123456789`); warianty pisane małymi literami i
+krótkie, podobne identyfikatory powodują błąd uruchamiania. Konta Enterprise nie mogą włączyć
+`dangerouslyAllowNameMatching`. Konta Enterprise mogą ustawić globalną wartość
+`mentionPatterns.mode`, ale `mentionPatterns.allowIn` i
+`mentionPatterns.denyIn` powodują błąd uruchamiania, ponieważ same identyfikatory kanałów Slack nie są
+kwalifikowane obszarem roboczym i mogą być ponownie używane w różnych obszarach roboczych. Instalacje w obszarach roboczych
+zachowują dotychczasowe zachowanie wzorców wzmianek o ograniczonym zakresie. Każdy zaakceptowany obszar roboczy
+otrzymuje osobną tożsamość routingu, sesji, transkrypcji, deduplikacji, historii i pamięci podręcznej,
+nawet gdy identyfikatory Slack się pokrywają. W strumieniu `message` obsługiwane są zwykłe wiadomości użytkowników
+oraz tworzone przez użytkowników zdarzenia `file_share`; inne podtypy wiadomości są
+odrzucane przed autoryzacją lub obsługą zdarzeń systemowych.
+
+Wiadomości bezpośrednie Enterprise muszą być wyłączone (`dm.enabled=false` lub
+`dmPolicy="disabled"`) albo jawnie otwarte za pomocą `dmPolicy="open"` oraz
+obowiązującej dla konta wartości `allowFrom` zawierającej literał `"*"`. Pusta
+lista dozwolonych lub identyfikatory konkretnych użytkowników bez `"*"` powodują błąd uruchamiania. Parowanie i
+listy użytkowników dopuszczonych do wiadomości bezpośrednich są odrzucane, ponieważ identyfikatory użytkowników Slack nie są
+kwalifikowane obszarem roboczym w tych magazynach autoryzacji. Zasady kanałów i nadawców
+nadal mają zastosowanie do wiadomości na kanałach.
 
 ## Instalacja
-
-Zainstaluj Slack przed skonfigurowaniem kanału:
 
 ```bash
 openclaw plugins install @openclaw/slack
 ```
 
-`plugins install` rejestruje i włącza Plugin. Plugin nadal nic nie robi, dopóki nie skonfigurujesz aplikacji Slack i ustawień kanału poniżej. Zobacz [Pluginy](/pl/tools/plugin), aby poznać ogólne zachowanie Pluginów i reguły instalacji.
+`plugins install` rejestruje i włącza Plugin. Nie wykonuje żadnych działań, dopóki nie zostaną skonfigurowane aplikacja Slack i poniższe ustawienia kanału. Ogólne zasady instalowania pluginów opisano w sekcji [Pluginy](/pl/tools/plugin).
 
 ## Szybka konfiguracja
 
+Manifesty w tej sekcji tworzą instalację ograniczoną do obszaru roboczego. W przypadku
+instalacji w całej organizacji Enterprise Grid należy zamiast tego użyć dedykowanego
+[manifestu i przepływu pracy dla całej organizacji](#enterprise-grid-org-wide-installs).
+
 <Tabs>
-  <Tab title="Socket Mode (default)">
+  <Tab title="Socket Mode (domyślnie)">
     <Steps>
-      <Step title="Create a new Slack app">
-        Otwórz [api.slack.com/apps](https://api.slack.com/apps/new) → **Create New App** → **From a manifest** → wybierz swój workspace → wklej jeden z poniższych manifestów → **Next** → **Create**.
+      <Step title="Utwórz nową aplikację Slack">
+        Otwórz [api.slack.com/apps](https://api.slack.com/apps/new) → **Create New App** → **From a manifest** → wybierz obszar roboczy → wklej jeden z poniższych manifestów → **Next** → **Create**.
 
         <CodeGroup>
 
@@ -104,7 +315,7 @@ openclaw plugins install @openclaw/slack
 {
   "display_information": {
     "name": "OpenClaw",
-    "description": "Slack connector for OpenClaw"
+    "description": "Łącznik Slack dla OpenClaw"
   },
   "features": {
     "bot_user": { "display_name": "OpenClaw", "always_online": true },
@@ -114,20 +325,20 @@ openclaw plugins install @openclaw/slack
       "messages_tab_read_only_enabled": false
     },
     "assistant_view": {
-      "assistant_description": "OpenClaw connects Slack assistant threads to OpenClaw agents.",
+      "assistant_description": "OpenClaw łączy wątki asystenta Slack z agentami OpenClaw.",
       "suggested_prompts": [
-        { "title": "What can you do?", "message": "What can you help me with?" },
+        { "title": "Co potrafisz?", "message": "W czym możesz mi pomóc?" },
         {
-          "title": "Summarize this channel",
-          "message": "Summarize the recent activity in this channel."
+          "title": "Podsumuj ten kanał",
+          "message": "Podsumuj ostatnią aktywność na tym kanale."
         },
-        { "title": "Draft a reply", "message": "Help me draft a reply." }
+        { "title": "Przygotuj odpowiedź", "message": "Pomóż mi przygotować odpowiedź." }
       ]
     },
     "slash_commands": [
       {
         "command": "/openclaw",
-        "description": "Send a message to OpenClaw",
+        "description": "Wyślij wiadomość do OpenClaw",
         "should_escape": false
       }
     ]
@@ -190,7 +401,7 @@ openclaw plugins install @openclaw/slack
 {
   "display_information": {
     "name": "OpenClaw",
-    "description": "Slack connector for OpenClaw"
+    "description": "Łącznik Slack dla OpenClaw"
   },
   "features": {
     "bot_user": { "display_name": "OpenClaw", "always_online": true },
@@ -200,20 +411,20 @@ openclaw plugins install @openclaw/slack
       "messages_tab_read_only_enabled": false
     },
     "assistant_view": {
-      "assistant_description": "OpenClaw connects Slack assistant threads to OpenClaw agents.",
+      "assistant_description": "OpenClaw łączy wątki asystenta Slack z agentami OpenClaw.",
       "suggested_prompts": [
-        { "title": "What can you do?", "message": "What can you help me with?" },
+        { "title": "Co potrafisz?", "message": "W czym możesz mi pomóc?" },
         {
-          "title": "Summarize this channel",
-          "message": "Summarize the recent activity in this channel."
+          "title": "Podsumuj ten kanał",
+          "message": "Podsumuj ostatnią aktywność na tym kanale."
         },
-        { "title": "Draft a reply", "message": "Help me draft a reply." }
+        { "title": "Przygotuj odpowiedź", "message": "Pomóż mi przygotować odpowiedź." }
       ]
     },
     "slash_commands": [
       {
         "command": "/openclaw",
-        "description": "Send a message to OpenClaw",
+        "description": "Wyślij wiadomość do OpenClaw",
         "should_escape": false
       }
     ]
@@ -256,17 +467,17 @@ openclaw plugins install @openclaw/slack
         </CodeGroup>
 
         <Note>
-          **Recommended** odpowiada pełnemu zestawowi funkcji Pluginu Slack: App Home, poleceniom ukośnikiem, plikom, reakcjom, pinom, grupowym wiadomościom prywatnym oraz odczytom emoji/usergroup. Wybierz **Minimal**, gdy polityka workspace ogranicza zakresy — obejmuje wiadomości prywatne, historię kanałów/grup, wzmianki i polecenia ukośnikiem, ale usuwa pliki, reakcje, piny, grupowe wiadomości prywatne (`mpim:*`), `emoji:read` i `usergroups:read`. Zobacz [listę kontrolną manifestu i zakresów](#manifest-and-scope-checklist), aby poznać uzasadnienie każdego zakresu i opcje addytywne, takie jak dodatkowe polecenia ukośnikiem.
+          Wariant **Zalecany** odpowiada pełnemu zestawowi funkcji pluginu Slack: App Home, poleceniom ukośnikowym, plikom, reakcjom, przypięciom, grupowym wiadomościom bezpośrednim oraz odczytowi emoji i grup użytkowników. Wybierz wariant **Minimalny**, gdy zasady obszaru roboczego ograniczają zakresy — obejmuje on wiadomości bezpośrednie, historię kanałów i grup, wzmianki oraz polecenia ukośnikowe, ale pomija pliki, reakcje, przypięcia, grupowe wiadomości bezpośrednie (`mpim:*`), `emoji:read` i `usergroups:read`. Uzasadnienie poszczególnych zakresów i opcje rozszerzające, takie jak dodatkowe polecenia ukośnikowe, opisano w sekcji [Lista kontrolna manifestu i zakresów](#manifest-and-scope-checklist).
         </Note>
 
         Po utworzeniu aplikacji przez Slack:
 
-        - **Basic Information -> App-Level Tokens -> Generate Token and Scopes**: dodaj `connections:write`, zapisz, skopiuj App-Level Token.
-        - **Install App -> Install to Workspace**: skopiuj Bot User OAuth Token.
+        - **Basic Information -> App-Level Tokens -> Generate Token and Scopes**: dodaj `connections:write`, zapisz i skopiuj token poziomu aplikacji.
+        - **Install App -> Install to Workspace**: skopiuj token OAuth użytkownika bota.
 
       </Step>
 
-      <Step title="Configure OpenClaw">
+      <Step title="Skonfiguruj OpenClaw">
 
         Zalecana konfiguracja SecretRef:
 
@@ -289,7 +500,7 @@ openclaw config patch --file ./slack.socket.patch.json5 --dry-run
 openclaw config patch --file ./slack.socket.patch.json5
 ```
 
-        Zapasowy wariant env (tylko konto domyślne):
+        Zastępcze użycie zmiennych środowiskowych (tylko konto domyślne):
 
 ```bash
 SLACK_APP_TOKEN=slack-app-token-example
@@ -298,7 +509,7 @@ SLACK_BOT_TOKEN=slack-bot-token-example
 
       </Step>
 
-      <Step title="Start gateway">
+      <Step title="Uruchom Gateway">
 
 ```bash
 openclaw gateway
@@ -312,7 +523,7 @@ openclaw gateway
   <Tab title="Adresy URL żądań HTTP">
     <Steps>
       <Step title="Utwórz nową aplikację Slack">
-        Otwórz [api.slack.com/apps](https://api.slack.com/apps/new) → **Create New App** → **From a manifest** → wybierz swój obszar roboczy → wklej jeden z poniższych manifestów → zastąp `https://gateway-host.example.com/slack/events` publicznym adresem URL Gateway → **Next** → **Create**.
+        Otwórz [api.slack.com/apps](https://api.slack.com/apps/new) → **Create New App** → **From a manifest** → wybierz obszar roboczy → wklej jeden z poniższych manifestów → zastąp `https://gateway-host.example.com/slack/events` publicznym adresem URL Gateway → **Next** → **Create**.
 
         <CodeGroup>
 
@@ -320,7 +531,7 @@ openclaw gateway
 {
   "display_information": {
     "name": "OpenClaw",
-    "description": "Slack connector for OpenClaw"
+    "description": "Łącznik Slack dla OpenClaw"
   },
   "features": {
     "bot_user": { "display_name": "OpenClaw", "always_online": true },
@@ -330,20 +541,20 @@ openclaw gateway
       "messages_tab_read_only_enabled": false
     },
     "assistant_view": {
-      "assistant_description": "OpenClaw connects Slack assistant threads to OpenClaw agents.",
+      "assistant_description": "OpenClaw łączy wątki asystenta Slack z agentami OpenClaw.",
       "suggested_prompts": [
-        { "title": "What can you do?", "message": "What can you help me with?" },
+        { "title": "Co potrafisz?", "message": "W czym możesz mi pomóc?" },
         {
-          "title": "Summarize this channel",
-          "message": "Summarize the recent activity in this channel."
+          "title": "Podsumuj ten kanał",
+          "message": "Podsumuj ostatnią aktywność na tym kanale."
         },
-        { "title": "Draft a reply", "message": "Help me draft a reply." }
+        { "title": "Przygotuj odpowiedź", "message": "Pomóż mi przygotować odpowiedź." }
       ]
     },
     "slash_commands": [
       {
         "command": "/openclaw",
-        "description": "Send a message to OpenClaw",
+        "description": "Wyślij wiadomość do OpenClaw",
         "should_escape": false,
         "url": "https://gateway-host.example.com/slack/events"
       }
@@ -412,7 +623,7 @@ openclaw gateway
 {
   "display_information": {
     "name": "OpenClaw",
-    "description": "Slack connector for OpenClaw"
+    "description": "Łącznik Slack dla OpenClaw"
   },
   "features": {
     "bot_user": { "display_name": "OpenClaw", "always_online": true },
@@ -422,20 +633,20 @@ openclaw gateway
       "messages_tab_read_only_enabled": false
     },
     "assistant_view": {
-      "assistant_description": "OpenClaw connects Slack assistant threads to OpenClaw agents.",
+      "assistant_description": "OpenClaw łączy wątki asystenta Slack z agentami OpenClaw.",
       "suggested_prompts": [
-        { "title": "What can you do?", "message": "What can you help me with?" },
+        { "title": "Co potrafisz?", "message": "W czym możesz mi pomóc?" },
         {
-          "title": "Summarize this channel",
-          "message": "Summarize the recent activity in this channel."
+          "title": "Podsumuj ten kanał",
+          "message": "Podsumuj ostatnią aktywność na tym kanale."
         },
-        { "title": "Draft a reply", "message": "Help me draft a reply." }
+        { "title": "Przygotuj odpowiedź", "message": "Pomóż mi przygotować odpowiedź." }
       ]
     },
     "slash_commands": [
       {
         "command": "/openclaw",
-        "description": "Send a message to OpenClaw",
+        "description": "Wyślij wiadomość do OpenClaw",
         "should_escape": false,
         "url": "https://gateway-host.example.com/slack/events"
       }
@@ -484,17 +695,17 @@ openclaw gateway
         </CodeGroup>
 
         <Note>
-          **Recommended** odpowiada pełnemu zestawowi funkcji Plugin Slack; **Minimal** pomija pliki, reakcje, przypięcia, grupowe wiadomości bezpośrednie (`mpim:*`), `emoji:read` i `usergroups:read` dla restrykcyjnych obszarów roboczych. Zobacz [listę kontrolną manifestu i zakresów](#manifest-and-scope-checklist), aby poznać uzasadnienie poszczególnych zakresów.
+          Wariant **Zalecany** odpowiada pełnemu zestawowi funkcji pluginu Slack; wariant **Minimalny** pomija pliki, reakcje, przypięcia, grupowe wiadomości prywatne (`mpim:*`), `emoji:read` i `usergroups:read` na potrzeby restrykcyjnych obszarów roboczych. Uzasadnienie poszczególnych zakresów znajduje się w sekcji [Lista kontrolna manifestu i zakresów](#manifest-and-scope-checklist).
         </Note>
 
         <Info>
-          Trzy pola URL (`slash_commands[].url`, `event_subscriptions.request_url` oraz `interactivity.request_url` / `message_menu_options_url`) wskazują ten sam punkt końcowy OpenClaw. Schemat manifestu Slack wymaga nadania im oddzielnych nazw, ale OpenClaw wyznacza trasy według typu ładunku, więc wystarczy jeden `webhookPath` (domyślnie `/slack/events`). Polecenia slash bez `slash_commands[].url` będą po cichu nic nie robić w trybie HTTP.
+          Wszystkie trzy pola adresów URL (`slash_commands[].url`, `event_subscriptions.request_url` oraz `interactivity.request_url` / `message_menu_options_url`) wskazują ten sam punkt końcowy OpenClaw. Schemat manifestu Slack wymaga nadania im osobnych nazw, ale OpenClaw kieruje żądania według typu ładunku, więc wystarczy pojedynczy `webhookPath` (domyślnie `/slack/events`). Polecenia ukośnikowe bez `slash_commands[].url` w trybie HTTP po cichu nie wykonują żadnej operacji.
         </Info>
 
         Po utworzeniu aplikacji przez Slack:
 
         - **Basic Information → App Credentials**: skopiuj **Signing Secret** do weryfikacji żądań.
-        - **Install App -> Install to Workspace**: skopiuj token OAuth użytkownika bota.
+        - **Install App -> Install to Workspace**: skopiuj Bot User OAuth Token.
 
       </Step>
 
@@ -523,14 +734,14 @@ openclaw config patch --file ./slack.http.patch.json5
 ```
 
         <Note>
-        Używaj unikalnych ścieżek Webhook dla HTTP z wieloma kontami
+        Używaj unikatowych ścieżek webhooków dla konfiguracji HTTP z wieloma kontami
 
-        Nadaj każdemu kontu odrębny `webhookPath` (domyślnie `/slack/events`), aby rejestracje nie kolidowały.
+        Nadaj każdemu kontu odrębny `webhookPath` (domyślnie `/slack/events`), aby rejestracje nie powodowały kolizji.
         </Note>
 
       </Step>
 
-      <Step title="Uruchom gateway">
+      <Step title="Uruchom Gateway">
 
 ```bash
 openclaw gateway
@@ -542,9 +753,9 @@ openclaw gateway
   </Tab>
 </Tabs>
 
-## Strojenie transportu trybu Socket Mode
+## Dostrajanie transportu Socket Mode
 
-OpenClaw domyślnie ustawia limit czasu oczekiwania na pong klienta Slack SDK na 15 sekund dla trybu Socket Mode. Nadpisuj ustawienia transportu tylko wtedy, gdy potrzebujesz strojenia specyficznego dla obszaru roboczego lub hosta:
+OpenClaw domyślnie ustawia limit czasu oczekiwania klienta Slack SDK na odpowiedź pong w trybie Socket Mode na 15 sekund. Ustawienia transportu należy nadpisywać tylko wtedy, gdy potrzebne jest dostrojenie specyficzne dla obszaru roboczego lub hosta:
 
 ```json5
 {
@@ -561,26 +772,26 @@ OpenClaw domyślnie ustawia limit czasu oczekiwania na pong klienta Slack SDK na
 }
 ```
 
-Używaj tego tylko dla obszarów roboczych w trybie Socket Mode, które rejestrują przekroczenia limitu czasu pong websocketu Slack lub pingów serwera, albo działają na hostach ze znanym głodzeniem pętli zdarzeń. `clientPingTimeout` to czas oczekiwania na pong po wysłaniu przez SDK pingu klienta; `serverPingTimeout` to czas oczekiwania na pingi serwera Slack. Wiadomości i zdarzenia aplikacji pozostają stanem aplikacji, a nie sygnałami żywotności transportu.
+Należy używać tego wyłącznie w obszarach roboczych korzystających z Socket Mode, które rejestrują przekroczenia limitu czasu odpowiedzi pong lub pingów serwera websocket Slack, albo działają na hostach ze znanym problemem blokowania pętli zdarzeń. `clientPingTimeout` określa czas oczekiwania na pong po wysłaniu przez SDK pingu klienta; `serverPingTimeout` określa czas oczekiwania na pingi serwera Slack. Wiadomości i zdarzenia aplikacji pozostają stanem aplikacji, a nie sygnałami aktywności transportu.
 
 Uwagi:
 
-- `socketMode` jest ignorowane w trybie HTTP Request URL.
-- Bazowe ustawienia `channels.slack.socketMode` mają zastosowanie do wszystkich kont Slack, chyba że zostaną nadpisane. Nadpisania dla poszczególnych kont używają `channels.slack.accounts.<accountId>.socketMode`; ponieważ jest to nadpisanie obiektu, uwzględnij każde pole strojenia gniazda, którego chcesz użyć dla tego konta.
+- `socketMode` jest ignorowany w trybie HTTP Request URL.
+- Podstawowe ustawienia `channels.slack.socketMode` mają zastosowanie do wszystkich kont Slack, o ile nie zostaną nadpisane. Nadpisania dla poszczególnych kont używają `channels.slack.accounts.<accountId>.socketMode`; ponieważ jest to nadpisanie obiektu, należy uwzględnić każde pole dostrajania połączenia, które ma być używane przez dane konto.
 - Tylko `clientPingTimeout` ma wartość domyślną OpenClaw (`15000`). `serverPingTimeout` i `pingPongLoggingEnabled` są przekazywane do Slack SDK tylko wtedy, gdy zostały skonfigurowane.
-- Opóźnienie ponownego uruchomienia trybu Socket Mode zaczyna się od około 2 sekund i jest ograniczone do około 30 sekund. Odzyskiwalne błędy uruchamiania, oczekiwania na uruchomienie i rozłączenia są ponawiane, dopóki kanał się nie zatrzyma. Trwałe błędy konta i poświadczeń, takie jak nieprawidłowe uwierzytelnienie, unieważnione tokeny lub brakujące zakresy, kończą się szybko zamiast ponawiać próby bez końca.
+- Opóźnienie ponownego uruchomienia Socket Mode zaczyna się od około 2 sekund i jest ograniczone do około 30 sekund. Możliwe do odzyskania błędy uruchamiania, oczekiwania na uruchomienie i rozłączenia są ponawiane do czasu zatrzymania kanału. Trwałe błędy konta i danych uwierzytelniających, takie jak nieprawidłowe uwierzytelnianie, unieważnione tokeny lub brakujące zakresy, powodują natychmiastowe niepowodzenie zamiast ponawiania w nieskończoność.
 
 ## Lista kontrolna manifestu i zakresów
 
-Bazowy manifest aplikacji Slack jest taki sam dla trybu Socket Mode i HTTP Request URLs. Różni się tylko blok `settings` (oraz `url` polecenia ukośnikowego).
+Podstawowy manifest aplikacji Slack jest taki sam dla Socket Mode i HTTP Request URLs. Różni się tylko blok `settings` (oraz `url` polecenia ukośnikowego).
 
-Bazowy manifest (domyślny tryb Socket Mode):
+Manifest podstawowy (domyślny Socket Mode):
 
 ```json
 {
   "display_information": {
     "name": "OpenClaw",
-    "description": "Slack connector for OpenClaw"
+    "description": "Łącznik Slack dla OpenClaw"
   },
   "features": {
     "bot_user": { "display_name": "OpenClaw", "always_online": true },
@@ -590,20 +801,20 @@ Bazowy manifest (domyślny tryb Socket Mode):
       "messages_tab_read_only_enabled": false
     },
     "assistant_view": {
-      "assistant_description": "OpenClaw connects Slack assistant threads to OpenClaw agents.",
+      "assistant_description": "OpenClaw łączy wątki asystenta Slack z agentami OpenClaw.",
       "suggested_prompts": [
-        { "title": "What can you do?", "message": "What can you help me with?" },
+        { "title": "Co potrafisz?", "message": "W czym możesz mi pomóc?" },
         {
-          "title": "Summarize this channel",
-          "message": "Summarize the recent activity in this channel."
+          "title": "Podsumuj ten kanał",
+          "message": "Podsumuj ostatnią aktywność na tym kanale."
         },
-        { "title": "Draft a reply", "message": "Help me draft a reply." }
+        { "title": "Przygotuj odpowiedź", "message": "Pomóż mi przygotować odpowiedź." }
       ]
     },
     "slash_commands": [
       {
         "command": "/openclaw",
-        "description": "Send a message to OpenClaw",
+        "description": "Wyślij wiadomość do OpenClaw",
         "should_escape": false
       }
     ]
@@ -662,7 +873,7 @@ Bazowy manifest (domyślny tryb Socket Mode):
 }
 ```
 
-Dla **trybu HTTP Request URLs** zastąp `settings` wariantem HTTP i dodaj `url` do każdego polecenia ukośnikowego. Wymagany jest publiczny URL:
+W przypadku **trybu HTTP Request URLs** zastąp `settings` wariantem HTTP i dodaj `url` do każdego polecenia ukośnikowego. Wymagany jest publiczny adres URL:
 
 ```json
 {
@@ -670,7 +881,7 @@ Dla **trybu HTTP Request URLs** zastąp `settings` wariantem HTTP i dodaj `url` 
     "slash_commands": [
       {
         "command": "/openclaw",
-        "description": "Send a message to OpenClaw",
+        "description": "Wyślij wiadomość do OpenClaw",
         "should_escape": false,
         "url": "https://gateway-host.example.com/slack/events"
       }
@@ -708,142 +919,142 @@ Dla **trybu HTTP Request URLs** zastąp `settings` wariantem HTTP i dodaj `url` 
 
 ### Dodatkowe ustawienia manifestu
 
-Udostępnij różne funkcje, które rozszerzają powyższe ustawienia domyślne.
+Udostępnij dodatkowe funkcje rozszerzające powyższe ustawienia domyślne.
 
-Domyślny manifest włącza kartę **Home** w Slack App Home i subskrybuje `app_home_opened`. Gdy członek workspace otwiera kartę Home, OpenClaw publikuje bezpieczny domyślny widok Home za pomocą `views.publish`; nie zawiera on żadnego payloadu konwersacji ani prywatnej konfiguracji. Karta **Messages** pozostaje włączona dla wiadomości prywatnych Slack. Manifest włącza też wątki asystenta Slack za pomocą `features.assistant_view`, `assistant:write`, `assistant_thread_started` i `assistant_thread_context_changed`; wątki asystenta są kierowane do własnych sesji wątków OpenClaw i utrzymują kontekst wątku dostarczony przez Slack dostępny dla agenta.
+Domyślny manifest włącza kartę **Home** w Slack App Home i subskrybuje `app_home_opened`. Gdy członek obszaru roboczego otwiera kartę Home, OpenClaw publikuje bezpieczny domyślny widok strony głównej z `views.publish`; nie zawiera on ładunku rozmowy ani prywatnej konfiguracji. Gdy włączony jest tryb pojedynczego polecenia ukośnikowego, wskazówka dotycząca polecenia używa `channels.slack.slashCommand.name`; instalacje korzystające z poleceń natywnych lub bez poleceń ukośnikowych pomijają tę wskazówkę. Karta **Messages** pozostaje włączona dla wiadomości prywatnych Slack. Manifest włącza również wątki asystenta Slack za pomocą `features.assistant_view`, `assistant:write`, `assistant_thread_started` i `assistant_thread_context_changed`; wątki asystenta są kierowane do własnych sesji wątków OpenClaw i zachowują kontekst wątku dostarczony przez Slack, aby był dostępny dla agenta.
 
 <AccordionGroup>
-  <Accordion title="Optional native slash commands">
+  <Accordion title="Opcjonalne natywne polecenia ukośnikowe">
 
-    Zamiast jednego skonfigurowanego polecenia można używać wielu [natywnych poleceń slash](#commands-and-slash-behavior), z pewnymi zastrzeżeniami:
+    Zamiast pojedynczego skonfigurowanego polecenia można użyć wielu [natywnych poleceń ukośnikowych](#commands-and-slash-behavior), z następującymi zastrzeżeniami:
 
-    - Używaj `/agentstatus` zamiast `/status`, ponieważ polecenie `/status` jest zarezerwowane.
-    - Jednocześnie można udostępnić nie więcej niż 25 poleceń slash.
+    - Użyj `/agentstatus` zamiast `/status`, ponieważ polecenie `/status` jest zarezerwowane.
+    - W aplikacji Slack można jednocześnie zarejestrować maksymalnie 25 poleceń ukośnikowych (limit platformy Slack).
 
     Zastąp istniejącą sekcję `features.slash_commands` podzbiorem [dostępnych poleceń](/pl/tools/slash-commands#command-list):
 
     <Tabs>
-      <Tab title="Socket Mode (default)">
+      <Tab title="Socket Mode (domyślny)">
 
 ```json
 {
   "slash_commands": [
     {
       "command": "/new",
-      "description": "Start a new session",
+      "description": "Rozpocznij nową sesję",
       "usage_hint": "[model]"
     },
     {
       "command": "/reset",
-      "description": "Reset the current session"
+      "description": "Zresetuj bieżącą sesję"
     },
     {
       "command": "/compact",
-      "description": "Compact the session context",
+      "description": "Skompaktuj kontekst sesji",
       "usage_hint": "[instructions]"
     },
     {
       "command": "/stop",
-      "description": "Stop the current run"
+      "description": "Zatrzymaj bieżące uruchomienie"
     },
     {
       "command": "/session",
-      "description": "Manage thread-binding expiry",
-      "usage_hint": "idle <duration|off> or max-age <duration|off>"
+      "description": "Zarządzaj wygaśnięciem powiązania wątku",
+      "usage_hint": "idle <duration|off> lub max-age <duration|off>"
     },
     {
       "command": "/think",
-      "description": "Set the thinking level",
+      "description": "Ustaw poziom myślenia",
       "usage_hint": "<level>"
     },
     {
       "command": "/verbose",
-      "description": "Toggle verbose output",
+      "description": "Przełącz szczegółowe dane wyjściowe",
       "usage_hint": "on|off|full"
     },
     {
       "command": "/fast",
-      "description": "Show or set fast mode",
+      "description": "Pokaż lub ustaw tryb szybki",
       "usage_hint": "[status|on|off]"
     },
     {
       "command": "/reasoning",
-      "description": "Toggle reasoning visibility",
+      "description": "Przełącz widoczność rozumowania",
       "usage_hint": "[on|off|stream]"
     },
     {
       "command": "/elevated",
-      "description": "Toggle elevated mode",
+      "description": "Przełącz tryb podwyższonych uprawnień",
       "usage_hint": "[on|off|ask|full]"
     },
     {
       "command": "/exec",
-      "description": "Show or set exec defaults",
+      "description": "Pokaż lub ustaw wartości domyślne wykonywania",
       "usage_hint": "host=<auto|sandbox|gateway|node> security=<deny|allowlist|full> ask=<off|on-miss|always> node=<id>"
     },
     {
       "command": "/approve",
-      "description": "Approve or deny pending approval requests",
+      "description": "Zatwierdź lub odrzuć oczekujące prośby o zatwierdzenie",
       "usage_hint": "<id> <decision>"
     },
     {
       "command": "/model",
-      "description": "Show or set the model",
+      "description": "Pokaż lub ustaw model",
       "usage_hint": "[name|#|status]"
     },
     {
       "command": "/models",
-      "description": "List providers/models",
+      "description": "Wyświetl dostawców/modele",
       "usage_hint": "[provider] [page] [limit=<n>|size=<n>|all]"
     },
     {
       "command": "/help",
-      "description": "Show the short help summary"
+      "description": "Pokaż krótkie podsumowanie pomocy"
     },
     {
       "command": "/commands",
-      "description": "Show the generated command catalog"
+      "description": "Pokaż wygenerowany katalog poleceń"
     },
     {
       "command": "/tools",
-      "description": "Show what the current agent can use right now",
+      "description": "Pokaż, z czego bieżący agent może teraz korzystać",
       "usage_hint": "[compact|verbose]"
     },
     {
       "command": "/agentstatus",
-      "description": "Show runtime status, including provider usage/quota when available"
+      "description": "Pokaż stan środowiska uruchomieniowego, w tym wykorzystanie/limit dostawcy, jeśli są dostępne"
     },
     {
       "command": "/tasks",
-      "description": "List active/recent background tasks for the current session"
+      "description": "Wyświetl aktywne/niedawne zadania w tle dla bieżącej sesji"
     },
     {
       "command": "/context",
-      "description": "Explain how context is assembled",
+      "description": "Wyjaśnij sposób składania kontekstu",
       "usage_hint": "[list|detail|json]"
     },
     {
       "command": "/whoami",
-      "description": "Show your sender identity"
+      "description": "Pokaż tożsamość nadawcy"
     },
     {
       "command": "/skill",
-      "description": "Run a skill by name",
+      "description": "Uruchom umiejętność według nazwy",
       "usage_hint": "<name> [input]"
     },
     {
       "command": "/btw",
-      "description": "Ask a side question without changing session context",
+      "description": "Zadaj pytanie poboczne bez zmiany kontekstu sesji",
       "usage_hint": "<question>"
     },
     {
       "command": "/side",
-      "description": "Ask a side question without changing session context",
+      "description": "Zadaj pytanie poboczne bez zmiany kontekstu sesji",
       "usage_hint": "<question>"
     },
     {
       "command": "/usage",
-      "description": "Control the usage footer or show cost summary",
+      "description": "Steruj stopką wykorzystania lub pokaż podsumowanie kosztów",
       "usage_hint": "off|tokens|full|cost"
     }
   ]
@@ -851,41 +1062,41 @@ Domyślny manifest włącza kartę **Home** w Slack App Home i subskrybuje `app_
 ```
 
       </Tab>
-      <Tab title="HTTP Request URLs">
-        Użyj tej samej listy `slash_commands` co w Socket Mode powyżej i dodaj `"url": "https://gateway-host.example.com/slack/events"` do każdego wpisu. Przykład:
+      <Tab title="Adresy URL żądań HTTP">
+        Użyj tej samej listy `slash_commands` co powyżej dla trybu Socket Mode i dodaj `"url": "https://gateway-host.example.com/slack/events"` do każdego wpisu. Przykład:
 
 ```json
 {
   "slash_commands": [
     {
       "command": "/new",
-      "description": "Start a new session",
+      "description": "Rozpocznij nową sesję",
       "usage_hint": "[model]",
       "url": "https://gateway-host.example.com/slack/events"
     },
     {
       "command": "/help",
-      "description": "Show the short help summary",
+      "description": "Pokaż krótkie podsumowanie pomocy",
       "url": "https://gateway-host.example.com/slack/events"
     }
   ]
 }
 ```
 
-        Powtórz tę wartość `url` przy każdym poleceniu na liście.
+        Powtórz tę wartość `url` dla każdego polecenia na liście.
 
       </Tab>
     </Tabs>
 
   </Accordion>
-  <Accordion title="Optional authorship scopes (write operations)">
-    Dodaj zakres bota `chat:write.customize`, jeśli chcesz, aby wiadomości wychodzące używały tożsamości aktywnego agenta (niestandardowej nazwy użytkownika i ikony) zamiast domyślnej tożsamości aplikacji Slack.
+  <Accordion title="Opcjonalne zakresy autorstwa (operacje zapisu)">
+    Dodaj zakres bota `chat:write.customize`, jeśli wiadomości wychodzące mają używać tożsamości aktywnego agenta (niestandardowej nazwy użytkownika i ikony) zamiast domyślnej tożsamości aplikacji Slack.
 
-    Jeśli używasz ikony emoji, Slack oczekuje składni `:emoji_name:`.
+    Jeśli używana jest ikona emoji, Slack oczekuje składni `:emoji_name:`.
 
   </Accordion>
-  <Accordion title="Optional user-token scopes (read operations)">
-    Jeśli konfigurujesz `channels.slack.userToken`, typowe zakresy odczytu to:
+  <Accordion title="Opcjonalne zakresy tokenu użytkownika (operacje odczytu)">
+    Jeśli skonfigurowano `channels.slack.userToken`, typowe zakresy odczytu to:
 
     - `channels:history`, `groups:history`, `im:history`, `mpim:history`
     - `channels:read`, `groups:read`, `im:read`, `mpim:read`
@@ -893,42 +1104,42 @@ Domyślny manifest włącza kartę **Home** w Slack App Home i subskrybuje `app_
     - `reactions:read`
     - `pins:read`
     - `emoji:read`
-    - `search:read` (jeśli polegasz na odczytach wyszukiwania Slack)
+    - `search:read` (jeśli używane są odczyty wyszukiwania Slack)
 
   </Accordion>
 </AccordionGroup>
 
 ## Model tokenów
 
-- `botToken` + `appToken` są wymagane dla Socket Mode.
+- `botToken` + `appToken` są wymagane w trybie Socket Mode.
 - Tryb HTTP wymaga `botToken` + `signingSecret`.
-- Tryb relay wymaga `botToken` oraz `relay.url`, `relay.authToken` i `relay.gatewayId`; nie używa tokenu aplikacji ani sekretu podpisywania.
-- `botToken`, `appToken`, `signingSecret`, `relay.authToken` i `userToken` akceptują zwykłe ciągi tekstowe
-  albo obiekty SecretRef.
-- Tokeny z konfiguracji zastępują fallback env.
-- Fallback env `SLACK_BOT_TOKEN` / `SLACK_APP_TOKEN` ma zastosowanie tylko do konta domyślnego.
-- `userToken` jest dostępny tylko w konfiguracji (bez fallbacku env) i domyślnie działa tylko do odczytu (`userTokenReadOnly: true`).
+- Tryb przekaźnika wymaga `botToken` oraz `relay.url`, `relay.authToken` i `relay.gatewayId`; nie używa tokenu aplikacji ani sekretu podpisywania.
+- `botToken`, `appToken`, `signingSecret`, `relay.authToken` i `userToken` akceptują ciągi
+  tekstowe w postaci jawnej lub obiekty SecretRef.
+- Tokeny konfiguracji zastępują wartości rezerwowe ze środowiska.
+- Wartości rezerwowe zmiennych środowiskowych `SLACK_BOT_TOKEN`, `SLACK_APP_TOKEN` i `SLACK_USER_TOKEN` mają zastosowanie wyłącznie do konta domyślnego.
+- `userToken` domyślnie działa tylko do odczytu (`userTokenReadOnly: true`).
 
-Zachowanie migawki statusu:
+Zachowanie migawki stanu:
 
-- Inspekcja konta Slack śledzi pola `*Source` i `*Status`
-  dla poszczególnych poświadczeń (`botToken`, `appToken`, `signingSecret`, `userToken`).
-- Status to `available`, `configured_unavailable` albo `missing`.
-- `configured_unavailable` oznacza, że konto jest skonfigurowane przez SecretRef
-  lub inne nieosadzone źródło sekretu, ale bieżąca ścieżka polecenia/środowiska uruchomieniowego
-  nie mogła rozwiązać rzeczywistej wartości.
-- W trybie HTTP uwzględniany jest `signingSecretStatus`; w Socket Mode
+- Inspekcja konta Slack śledzi dla każdego poświadczenia pola `*Source` i `*Status`
+  (`botToken`, `appToken`, `signingSecret`, `userToken`).
+- Stan to `available`, `configured_unavailable` lub `missing`.
+- `configured_unavailable` oznacza, że konto skonfigurowano za pomocą SecretRef
+  lub innego źródła sekretu niewprowadzonego bezpośrednio, ale bieżąca ścieżka polecenia/środowiska uruchomieniowego
+  nie mogła rozpoznać rzeczywistej wartości.
+- W trybie HTTP uwzględniany jest `signingSecretStatus`; w trybie Socket Mode
   wymagana para to `botTokenStatus` + `appTokenStatus`.
 
 <Tip>
-W przypadku akcji/odczytów katalogu token użytkownika może być preferowany, gdy jest skonfigurowany. Do zapisów preferowany pozostaje token bota; zapisy z użyciem tokenu użytkownika są dozwolone tylko wtedy, gdy `userTokenReadOnly: false`, a token bota jest niedostępny.
+W przypadku akcji/odczytów katalogu token użytkownika może być preferowany, jeśli został skonfigurowany. W przypadku zapisów nadal preferowany jest token bota; zapisy z użyciem tokenu użytkownika są dozwolone tylko wtedy, gdy `userTokenReadOnly: false`, a token bota jest niedostępny.
 </Tip>
 
 ## Akcje i bramki
 
-Akcje Slack są kontrolowane przez `channels.slack.actions.*`.
+Akcjami Slack steruje `channels.slack.actions.*`.
 
-Dostępne grupy akcji w bieżących narzędziach Slack:
+Grupy akcji dostępne w bieżących narzędziach Slack:
 
 | Grupa      | Domyślnie |
 | ---------- | ------- |
@@ -938,60 +1149,60 @@ Dostępne grupy akcji w bieżących narzędziach Slack:
 | memberInfo | włączone |
 | emojiList  | włączone |
 
-Bieżące akcje wiadomości Slack obejmują `send`, `upload-file`, `download-file`, `read`, `edit`, `delete`, `pin`, `unpin`, `list-pins`, `member-info` i `emoji-list`. `download-file` akceptuje identyfikatory plików Slack pokazywane w placeholderach plików przychodzących i zwraca podglądy obrazów dla obrazów albo lokalne metadane pliku dla innych typów plików.
+Bieżące akcje wiadomości Slack obejmują `send`, `upload-file`, `download-file`, `read`, `edit`, `delete`, `pin`, `unpin`, `list-pins`, `member-info` i `emoji-list`. `download-file` akceptuje identyfikatory plików Slack widoczne w symbolach zastępczych plików przychodzących i zwraca podglądy obrazów lub lokalne metadane plików w przypadku innych typów plików.
 
-## Kontrola dostępu i routing
+## Kontrola dostępu i trasowanie
 
-  <Tabs>
-  <Tab title="Zasady DM">
-    `channels.slack.dmPolicy` kontroluje dostęp do DM. `channels.slack.allowFrom` jest kanoniczną listą dozwolonych DM.
+<Tabs>
+  <Tab title="Zasady wiadomości bezpośrednich">
+    `channels.slack.dmPolicy` steruje dostępem do wiadomości bezpośrednich. `channels.slack.allowFrom` jest kanoniczną listą dozwolonych wiadomości bezpośrednich.
 
-    - `pairing` (domyślne)
+    - `pairing` (domyślnie)
     - `allowlist`
-    - `open` (wymaga, aby `channels.slack.allowFrom` zawierało `"*"`)
+    - `open` (wymaga, aby `channels.slack.allowFrom` zawierał `"*"`)
     - `disabled`
 
-    Flagi DM:
+    Flagi wiadomości bezpośrednich:
 
     - `dm.enabled` (domyślnie true)
     - `channels.slack.allowFrom`
-    - `dm.allowFrom` (starsze)
-    - `dm.groupEnabled` (grupowe DM domyślnie false)
+    - `dm.allowFrom` (starsza wersja)
+    - `dm.groupEnabled` (domyślnie false dla grupowych wiadomości bezpośrednich)
     - `dm.groupChannels` (opcjonalna lista dozwolonych MPIM)
 
-    Priorytet wielu kont:
+    Pierwszeństwo w konfiguracji wielu kont:
 
-    - `channels.slack.accounts.default.allowFrom` dotyczy tylko konta `default`.
+    - `channels.slack.accounts.default.allowFrom` ma zastosowanie wyłącznie do konta `default`.
     - Nazwane konta dziedziczą `channels.slack.allowFrom`, gdy ich własne `allowFrom` nie jest ustawione.
     - Nazwane konta nie dziedziczą `channels.slack.accounts.default.allowFrom`.
 
-    Starsze `channels.slack.dm.policy` i `channels.slack.dm.allowFrom` nadal są odczytywane dla zgodności. `openclaw doctor --fix` migruje je do `dmPolicy` i `allowFrom`, gdy może to zrobić bez zmiany dostępu.
+    Starsze `channels.slack.dm.policy` i `channels.slack.dm.allowFrom` są nadal odczytywane w celu zachowania zgodności. `openclaw doctor --fix` migruje je do `dmPolicy` i `allowFrom`, gdy może to zrobić bez zmiany dostępu.
 
-    Parowanie w DM używa `openclaw pairing approve slack <code>`.
+    Parowanie w wiadomościach bezpośrednich używa `openclaw pairing approve slack <code>`.
 
   </Tab>
 
-  <Tab title="Zasady kanału">
-    `channels.slack.groupPolicy` kontroluje obsługę kanałów:
+  <Tab title="Zasady kanałów">
+    `channels.slack.groupPolicy` steruje obsługą kanałów:
 
     - `open`
     - `allowlist`
     - `disabled`
 
-    Lista dozwolonych kanałów znajduje się pod `channels.slack.channels` i **musi używać stabilnych identyfikatorów kanałów Slack** (na przykład `C12345678`) jako kluczy konfiguracji.
+    Lista dozwolonych kanałów znajduje się w `channels.slack.channels` i **musi używać stabilnych identyfikatorów kanałów Slack** (na przykład `C12345678`) jako kluczy konfiguracji.
 
-    Uwaga dotycząca środowiska uruchomieniowego: jeśli `channels.slack` całkowicie brakuje (konfiguracja tylko przez env), środowisko uruchomieniowe wraca do `groupPolicy="allowlist"` i zapisuje ostrzeżenie w logu (nawet jeśli `channels.defaults.groupPolicy` jest ustawione).
+    Uwaga dotycząca środowiska uruchomieniowego: jeśli całkowicie brakuje `channels.slack` (konfiguracja wyłącznie za pomocą środowiska), środowisko uruchomieniowe przechodzi awaryjnie na `groupPolicy="allowlist"` i rejestruje ostrzeżenie (nawet jeśli ustawiono `channels.defaults.groupPolicy`).
 
-    Rozpoznawanie nazw/ID:
+    Rozpoznawanie nazwy/identyfikatora:
 
-    - wpisy listy dozwolonych kanałów i wpisy listy dozwolonych DM są rozpoznawane podczas uruchamiania, gdy dostęp tokena na to pozwala
-    - nierozpoznane wpisy nazw kanałów są zachowywane zgodnie z konfiguracją, ale domyślnie ignorowane przy routingu
-    - autoryzacja przychodząca i routing kanałów domyślnie najpierw używają ID; bezpośrednie dopasowanie nazwy użytkownika/sluga wymaga `channels.slack.dangerouslyAllowNameMatching: true`
+    - wpisy listy dozwolonych kanałów i listy dozwolonych wiadomości bezpośrednich są rozpoznawane podczas uruchamiania, gdy pozwala na to dostęp tokenu
+    - nierozpoznane wpisy nazw kanałów są zachowywane zgodnie z konfiguracją, ale domyślnie ignorowane podczas trasowania
+    - autoryzacja przychodząca i trasowanie kanałów domyślnie opierają się najpierw na identyfikatorze; bezpośrednie dopasowywanie nazwy użytkownika/identyfikatora tekstowego wymaga `channels.slack.dangerouslyAllowNameMatching: true`
 
     <Warning>
-    Klucze oparte na nazwach (`#channel-name` lub `channel-name`) **nie** pasują przy `groupPolicy: "allowlist"`. Wyszukiwanie kanału domyślnie najpierw używa ID, więc klucz oparty na nazwie nigdy nie zostanie poprawnie skierowany, a wszystkie wiadomości w tym kanale będą cicho blokowane. Różni się to od `groupPolicy: "open"`, gdzie klucz kanału nie jest wymagany do routingu, a klucz oparty na nazwie wydaje się działać.
+    Klucze oparte na nazwach (`#channel-name` lub `channel-name`) **nie** są dopasowywane w ramach `groupPolicy: "allowlist"`. Wyszukiwanie kanału domyślnie opiera się najpierw na identyfikatorze, dlatego klucz oparty na nazwie nigdy nie zostanie pomyślnie przetrasowany, a wszystkie wiadomości na tym kanale zostaną po cichu zablokowane. Różni się to od `groupPolicy: "open"`, gdzie klucz kanału nie jest wymagany do trasowania i klucz oparty na nazwie pozornie działa.
 
-    Zawsze używaj ID kanału Slack jako klucza. Aby go znaleźć: kliknij kanał w Slack prawym przyciskiem myszy → **Copy link** — ID (`C...`) pojawia się na końcu URL.
+    Zawsze używaj identyfikatora kanału Slack jako klucza. Aby go znaleźć: kliknij kanał prawym przyciskiem myszy w Slack → **Copy link** — identyfikator (`C...`) znajduje się na końcu adresu URL.
 
     Poprawnie:
 
@@ -1001,14 +1212,14 @@ Bieżące akcje wiadomości Slack obejmują `send`, `upload-file`, `download-fil
         slack: {
           groupPolicy: "allowlist",
           channels: {
-            C12345678: { allow: true, requireMention: true },
+            C12345678: { enabled: true, requireMention: true },
           },
         },
       },
     }
     ```
 
-    Niepoprawnie (cicho blokowane przy `groupPolicy: "allowlist"`):
+    Niepoprawnie (po cichu blokowane w ramach `groupPolicy: "allowlist"`):
 
     ```json5
     {
@@ -1016,7 +1227,7 @@ Bieżące akcje wiadomości Slack obejmują `send`, `upload-file`, `download-fil
         slack: {
           groupPolicy: "allowlist",
           channels: {
-            "#eng-my-channel": { allow: true, requireMention: true },
+            "#eng-my-channel": { enabled: true, requireMention: true },
           },
         },
       },
@@ -1026,69 +1237,76 @@ Bieżące akcje wiadomości Slack obejmują `send`, `upload-file`, `download-fil
 
   </Tab>
 
-  <Tab title="Wzmianki i użytkownicy kanału">
-    Wiadomości w kanałach domyślnie wymagają wzmianki.
+  <Tab title="Wzmianki i użytkownicy kanałów">
+    Wiadomości na kanałach domyślnie wymagają wzmianki.
 
     Źródła wzmianek:
 
     - jawna wzmianka o aplikacji (`<@botId>`)
     - wzmianka o grupie użytkowników Slack (`<!subteam^S...>`), gdy użytkownik bota jest członkiem tej grupy użytkowników; wymaga `usergroups:read`
-    - wzorce regex wzmianek (`agents.list[].groupChat.mentionPatterns`, fallback `messages.groupChat.mentionPatterns`)
-    - niejawne zachowanie wątku odpowiedzi do bota (wyłączone, gdy `thread.requireExplicitMention` ma wartość `true`)
+    - wzorce wyrażeń regularnych wzmianek (`agents.list[].groupChat.mentionPatterns`, wartość rezerwowa `messages.groupChat.mentionPatterns`)
+    - niejawne odpowiadanie w wątku na wiadomość bota (wyłączone, gdy `thread.requireExplicitMention` ma wartość `true`)
 
-    Kontrole dla kanału (`channels.slack.channels.<id>`; nazwy tylko przez rozpoznawanie podczas uruchamiania lub `dangerouslyAllowNameMatching`):
+    Ustawienia dla poszczególnych kanałów (`channels.slack.channels.<id>`; nazwy wyłącznie przez rozpoznawanie podczas uruchamiania lub `dangerouslyAllowNameMatching`):
 
     - `requireMention`
+    - `ignoreOtherMentions`
+    - `replyToMode` (`off|first|all|batched`; zastępuje tryb odpowiedzi konta/typu czatu dla tego kanału)
     - `users` (lista dozwolonych)
     - `allowBots`
     - `skills`
     - `systemPrompt`
     - `tools`, `toolsBySender`
     - format klucza `toolsBySender`: `channel:`, `id:`, `e164:`, `username:`, `name:` lub symbol wieloznaczny `"*"`
-      (starsze klucze bez prefiksu nadal mapują tylko do `id:`)
+      (starsze klucze bez prefiksu nadal są mapowane wyłącznie na `id:`)
 
-    `allowBots` jest zachowawcze dla kanałów i kanałów prywatnych: wiadomości w pokojach utworzone przez boty są akceptowane tylko wtedy, gdy wysyłający bot jest jawnie wymieniony na liście dozwolonych `users` tego pokoju, albo gdy co najmniej jeden jawny identyfikator właściciela Slack z `channels.slack.allowFrom` jest obecnie członkiem pokoju. Symbole wieloznaczne i wpisy właścicieli oparte na nazwie wyświetlanej nie spełniają warunku obecności właściciela. Obecność właściciela używa Slack `conversations.members`; upewnij się, że aplikacja ma odpowiedni zakres odczytu dla typu pokoju (`channels:read` dla kanałów publicznych, `groups:read` dla kanałów prywatnych). Jeśli wyszukiwanie członków się nie powiedzie, OpenClaw odrzuca wiadomość w pokoju utworzoną przez bota.
+    `ignoreOtherMentions` (domyślnie `false`) odrzuca wiadomości kanału, które wspominają innego użytkownika lub grupę użytkowników, ale nie tego bota. Nie ma to wpływu na wiadomości prywatne ani grupowe wiadomości prywatne (MPIM). Filtr wymaga rozpoznanego identyfikatora użytkownika bota z `auth.test`; jeśli ta tożsamość jest niedostępna (na przykład w przypadku tożsamości korzystającej wyłącznie z tokenu użytkownika), mechanizm przepuszcza wiadomości bez zmian.
 
-    Akceptowane wiadomości Slack utworzone przez boty używają wspólnej [ochrony przed pętlą bota](/pl/channels/bot-loop-protection). Skonfiguruj `channels.defaults.botLoopProtection` dla domyślnego budżetu, a następnie nadpisz go za pomocą `channels.slack.botLoopProtection` lub `channels.slack.channels.<id>.botLoopProtection`, gdy obszar roboczy lub kanał potrzebuje innego limitu.
+    `allowBots` działa zachowawczo w przypadku kanałów i kanałów prywatnych: wiadomości w pomieszczeniu utworzone przez bota są akceptowane tylko wtedy, gdy wysyłający bot jest jawnie wymieniony na liście dozwolonych `users` tego pomieszczenia albo gdy co najmniej jeden jawny identyfikator właściciela Slack z `channels.slack.allowFrom` należy obecnie do tego pomieszczenia. Symbole wieloznaczne i wpisy właścicieli oparte na nazwach wyświetlanych nie potwierdzają obecności właściciela. Obecność właściciela wykorzystuje `conversations.members` Slack; należy upewnić się, że aplikacja ma odpowiedni zakres odczytu dla danego typu pomieszczenia (`channels:read` dla kanałów publicznych, `groups:read` dla kanałów prywatnych). Jeśli wyszukiwanie członków się nie powiedzie, OpenClaw odrzuca wiadomość w pomieszczeniu utworzoną przez bota.
+
+    Zaakceptowane wiadomości Slack utworzone przez bota korzystają ze wspólnej [ochrony przed pętlami botów](/pl/channels/bot-loop-protection). Należy skonfigurować `channels.defaults.botLoopProtection` jako domyślny limit, a następnie nadpisać go za pomocą `channels.slack.botLoopProtection` lub `channels.slack.channels.<id>.botLoopProtection`, gdy obszar roboczy lub kanał wymaga innego limitu.
 
   </Tab>
 </Tabs>
 
 ## Wątki, sesje i znaczniki odpowiedzi
 
-- Wiadomości prywatne są trasowane jako `direct`; kanały jako `channel`; MPIM jako `group`.
-- Powiązania tras Slack akceptują surowe identyfikatory peerów oraz formy celu Slack, takie jak `channel:C12345678`, `user:U12345678` i `<@U12345678>`.
-- Przy domyślnym `session.dmScope=main` wiadomości prywatne Slack są łączone z główną sesją agenta.
+- Wiadomości prywatne są kierowane jako `direct`; kanały jako `channel`; MPIM jako `group`.
+- Powiązania tras Slack akceptują nieprzetworzone identyfikatory elementów równorzędnych oraz formy celów Slack, takie jak `channel:C12345678`, `user:U12345678` i `<@U12345678>`.
+- Przy domyślnym ustawieniu `session.dmScope=main` wiadomości prywatne Slack są łączone z główną sesją agenta.
 - Sesje kanałów: `agent:<agentId>:slack:channel:<channelId>`.
-- Zwykłe wiadomości najwyższego poziomu w kanale pozostają w sesji przypisanej do kanału, nawet gdy `replyToMode` nie jest ustawione na `off`.
-- Odpowiedzi w wątkach Slack używają nadrzędnego Slack `thread_ts` jako sufiksów sesji (`:thread:<threadTs>`), nawet gdy wychodzące wątkowanie odpowiedzi jest wyłączone przez `replyToMode="off"`.
-- OpenClaw zasila kwalifikujący się korzeń najwyższego poziomu kanału do `agent:<agentId>:slack:channel:<channelId>:thread:<rootTs>`, gdy oczekuje się, że ten korzeń rozpocznie widoczny wątek Slack, dzięki czemu korzeń i późniejsze odpowiedzi w wątku współdzielą jedną sesję OpenClaw. Dotyczy to zdarzeń `app_mention`, jawnych dopasowań bota lub skonfigurowanego wzorca wzmianek oraz kanałów `requireMention: false` z `replyToMode` innym niż `off`.
+- Zwykłe wiadomości najwyższego poziomu w kanale pozostają w sesji przypisanej do kanału, nawet gdy `replyToMode` ma wartość inną niż `off`.
+- Odpowiedzi w wątkach Slack używają nadrzędnego `thread_ts` Slack jako sufiksu sesji (`:thread:<threadTs>`), nawet gdy tworzenie wątków odpowiedzi wychodzących jest wyłączone przez `replyToMode="off"`.
+- OpenClaw inicjuje kwalifikujący się główny wpis kanału w `agent:<agentId>:slack:channel:<channelId>:thread:<rootTs>`, gdy oczekuje się, że ten wpis rozpocznie widoczny wątek Slack, dzięki czemu wpis główny i późniejsze odpowiedzi w wątku współdzielą jedną sesję OpenClaw. Dotyczy to zdarzeń `app_mention`, jawnych dopasowań wzorców wzmianki o bocie lub skonfigurowanych wzorców wzmianek oraz kanałów `requireMention: false` z ustawieniem `replyToMode` innym niż `off`.
 - Domyślna wartość `channels.slack.thread.historyScope` to `thread`; domyślna wartość `thread.inheritParent` to `false`.
-- `channels.slack.thread.initialHistoryLimit` kontroluje, ile istniejących wiadomości wątku jest pobieranych, gdy zaczyna się nowa sesja wątku (domyślnie `20`; ustaw `0`, aby wyłączyć).
-- `channels.slack.thread.requireExplicitMention` (domyślnie `false`): gdy `true`, tłumi niejawne wzmianki w wątku, aby bot odpowiadał tylko na jawne wzmianki `@bot` wewnątrz wątków, nawet gdy bot już uczestniczył w wątku. Bez tego odpowiedzi w wątku, w którym uczestniczył bot, omijają bramkowanie `requireMention`.
+- `channels.slack.thread.initialHistoryLimit` określa liczbę istniejących wiadomości wątku pobieranych przy rozpoczynaniu nowej sesji wątku (domyślnie `20`; ustawienie `0` wyłącza tę funkcję).
+- `channels.slack.thread.requireExplicitMention` (domyślnie `false`): gdy ustawiono `true`, pomija niejawne wzmianki w wątkach, dzięki czemu bot odpowiada wyłącznie na jawne wzmianki `@bot` wewnątrz wątków, nawet jeśli wcześniej uczestniczył w danym wątku. Bez tego odpowiedzi w wątku, w którym uczestniczył bot, omijają kontrolę `requireMention`.
 
-Elementy sterujące wątkowaniem odpowiedzi:
+Ustawienia wątków odpowiedzi:
 
+- `channels.slack.channels.<id>.replyToMode`: nadpisanie dla poszczególnych kanałów dotyczące wiadomości w kanałach i kanałach prywatnych Slack
 - `channels.slack.replyToMode`: `off|first|all|batched` (domyślnie `off`)
 - `channels.slack.replyToModeByChatType`: dla każdego `direct|group|channel`
-- starsze rozwiązanie awaryjne dla czatów bezpośrednich: `channels.slack.dm.replyToMode`
+- starsze ustawienie zastępcze dla czatów bezpośrednich: `channels.slack.dm.replyToMode`
 
 Obsługiwane są ręczne znaczniki odpowiedzi:
 
 - `[[reply_to_current]]`
 - `[[reply_to:<id>]]`
 
-W przypadku jawnych odpowiedzi w wątku Slack z narzędzia `message` ustaw `replyBroadcast: true` z `action: "send"` oraz `threadId` lub `replyTo`, aby poprosić Slack o dodatkowe nadanie odpowiedzi w wątku do kanału nadrzędnego. To odwzorowuje flagę Slack `chat.postMessage` `reply_broadcast` i jest obsługiwane tylko dla wysyłek tekstu lub Block Kit, nie dla przesyłania multimediów.
+W przypadku jawnych odpowiedzi w wątkach Slack wysyłanych za pomocą narzędzia `message` należy ustawić `replyBroadcast: true` wraz z `action: "send"` oraz `threadId` lub `replyTo`, aby Slack również opublikował odpowiedź z wątku w kanale nadrzędnym. Odpowiada to fladze `reply_broadcast` elementu `chat.postMessage` Slack i jest obsługiwane wyłącznie w przypadku wysyłania tekstu lub Block Kit, a nie przesyłania multimediów.
 
-Gdy wywołanie narzędzia `message` działa wewnątrz wątku Slack i celuje w ten sam kanał, OpenClaw zwykle dziedziczy bieżący wątek Slack zgodnie z `replyToMode`. Ustaw `topLevel: true` dla `action: "send"` lub `action: "upload-file"`, aby wymusić nową wiadomość w kanale nadrzędnym. `threadId: null` jest akceptowane jako to samo wycofanie do poziomu najwyższego.
+Gdy wywołanie narzędzia `message` działa wewnątrz wątku Slack i wskazuje ten sam kanał, OpenClaw zwykle dziedziczy bieżący wątek Slack zgodnie z obowiązującym ustawieniem `replyToMode` konta, typu czatu lub kanału. Automatyczne odpowiedzi oraz wywołania `send` lub `upload-file` w tym samym kanale używają tego samego nadpisania dla kanału. Aby wymusić nową wiadomość w kanale nadrzędnym, należy ustawić `topLevel: true` w `action: "send"` lub `action: "upload-file"`. `threadId: null` jest akceptowane jako równoważna rezygnacja na najwyższym poziomie.
 
 <Note>
-`replyToMode="off"` wyłącza wychodzące wątkowanie odpowiedzi Slack, w tym jawne znaczniki `[[reply_to_*]]`. Nie spłaszcza ono przychodzących sesji wątków Slack: wiadomości już opublikowane wewnątrz wątku Slack nadal są trasowane do sesji `:thread:<threadTs>`. Różni się to od Telegram, gdzie jawne znaczniki są nadal respektowane w trybie `"off"`. Wątki Slack ukrywają wiadomości przed kanałem, podczas gdy odpowiedzi Telegram pozostają widoczne w treści.
+`replyToMode="off"` wyłącza tworzenie wątków dla wychodzących odpowiedzi Slack, w tym jawne znaczniki `[[reply_to_*]]`. Nie spłaszcza jednak przychodzących sesji wątków Slack: wiadomości opublikowane już wewnątrz wątku Slack nadal są kierowane do sesji `:thread:<threadTs>`. Różni się to od Telegram, gdzie jawne znaczniki są nadal respektowane w trybie `"off"`. Wątki Slack ukrywają wiadomości w kanale, natomiast odpowiedzi Telegram pozostają widoczne bezpośrednio w rozmowie.
 </Note>
 
-## Reakcje potwierdzenia
+## Reakcje potwierdzające
 
-`ackReaction` wysyła emoji potwierdzenia, gdy OpenClaw przetwarza wiadomość przychodzącą. `ackReactionScope` decyduje, _kiedy_ to emoji faktycznie jest wysyłane.
+`ackReaction` wysyła emoji potwierdzenia podczas przetwarzania przez OpenClaw wiadomości przychodzącej. `ackReactionScope` określa, _kiedy_ to emoji jest faktycznie wysyłane.
+
+Domyślnie potwierdzenie pozostaje statyczne, podczas gdy natywny stan wątku asystenta Slack pokazuje postęp za pomocą zmieniających się komunikatów ładowania. Aby zamiast tego włączyć cykl reakcji oczekiwanie/myślenie/narzędzie/gotowe/błąd, należy ustawić `messages.statusReactions.enabled: true`.
 
 ### Emoji (`ackReaction`)
 
@@ -1097,50 +1315,50 @@ Kolejność rozstrzygania:
 - `channels.slack.accounts.<accountId>.ackReaction`
 - `channels.slack.ackReaction`
 - `messages.ackReaction`
-- awaryjne emoji tożsamości agenta (`agents.list[].identity.emoji`, w przeciwnym razie `"eyes"` / 👀)
+- zastępcze emoji tożsamości agenta (`agents.list[].identity.emoji`, w przeciwnym razie `"eyes"` / 👀)
 
 Uwagi:
 
 - Slack oczekuje krótkich kodów (na przykład `"eyes"`).
-- Użyj `""`, aby wyłączyć reakcję dla konta Slack lub globalnie.
+- Aby wyłączyć reakcję dla konta Slack lub globalnie, należy użyć `""`.
 
 ### Zakres (`messages.ackReactionScope`)
 
-Dostawca Slack odczytuje zakres z `messages.ackReactionScope` (domyślnie `"group-mentions"`). Obecnie nie ma nadpisania na poziomie konta Slack ani kanału Slack; wartość jest globalna dla Gateway.
+Dostawca Slack odczytuje zakres z `messages.ackReactionScope` (domyślnie `"group-mentions"`). Obecnie nie ma nadpisania na poziomie konta ani kanału Slack; wartość jest globalna dla Gateway.
 
 Wartości:
 
-- `"all"`: reaguj w wiadomościach prywatnych i grupach.
+- `"all"`: reaguj w wiadomościach prywatnych i grupach, w tym na zdarzenia otoczenia w pomieszczeniu.
 - `"direct"`: reaguj tylko w wiadomościach prywatnych.
-- `"group-all"`: reaguj na każdą wiadomość grupową (bez wiadomości prywatnych).
-- `"group-mentions"` (domyślnie): reaguj w grupach, ale tylko wtedy, gdy bot jest wspomniany (lub w grupowych elementach wzmiankowalnych, które wyraziły zgodę). **Wiadomości prywatne są wykluczone.**
+- `"group-all"`: reaguj na każdą wiadomość grupową z wyjątkiem zdarzeń otoczenia w pomieszczeniu (bez wiadomości prywatnych).
+- `"group-mentions"` (domyślnie): reaguj w grupach, ale tylko wtedy, gdy bot jest wspomniany (lub w elementach grupowych obsługujących wzmianki, które wyraziły zgodę). **Wiadomości prywatne są wykluczone.**
 - `"off"` / `"none"`: nigdy nie reaguj.
 
 <Note>
-Domyślny zakres (`"group-mentions"`) nie uruchamia reakcji potwierdzenia w wiadomościach bezpośrednich. Aby zobaczyć skonfigurowane `ackReaction` (na przykład `"eyes"`) przy przychodzących wiadomościach prywatnych Slack, ustaw `messages.ackReactionScope` na `"direct"` lub `"all"`. `messages.ackReactionScope` jest odczytywane podczas uruchamiania dostawcy Slack, więc do zastosowania zmiany potrzebne jest ponowne uruchomienie Gateway.
+Domyślny zakres (`"group-mentions"`) nie uruchamia reakcji potwierdzających w wiadomościach bezpośrednich ani przy zdarzeniach otoczenia w pomieszczeniu. Aby skonfigurowane `ackReaction` (na przykład `"eyes"`) było widoczne przy przychodzących wiadomościach prywatnych Slack i cichych zdarzeniach w pomieszczeniu, należy ustawić `messages.ackReactionScope` na `"all"`. `messages.ackReactionScope` jest odczytywane podczas uruchamiania dostawcy Slack, dlatego zastosowanie zmiany wymaga ponownego uruchomienia Gateway.
 </Note>
 
 ```json5
 {
   messages: {
     ackReaction: "eyes",
-    ackReactionScope: "all", // react in DMs and groups
+    ackReactionScope: "all", // reaguj w wiadomościach prywatnych i grupach
   },
 }
 ```
 
 ## Strumieniowanie tekstu
 
-`channels.slack.streaming` kontroluje zachowanie podglądu na żywo:
+`channels.slack.streaming` steruje zachowaniem podglądu na żywo:
 
 - `off`: wyłącz strumieniowanie podglądu na żywo.
 - `partial` (domyślnie): zastępuj tekst podglądu najnowszym częściowym wynikiem.
-- `block`: dołączaj porcjowane aktualizacje podglądu.
-- `progress`: pokazuj tekst statusu postępu podczas generowania, a następnie wyślij tekst końcowy.
-- `streaming.preview.toolProgress`: gdy podgląd wersji roboczej jest aktywny, trasuj aktualizacje narzędzi/postępu do tej samej edytowanej wiadomości podglądu (domyślnie: `true`). Ustaw `false`, aby zachować osobne wiadomości narzędzi/postępu.
-- `streaming.preview.commandText` / `streaming.progress.commandText`: ustaw na `status`, aby zachować kompaktowe wiersze postępu narzędzi, ukrywając surowy tekst polecenia/wykonania (domyślnie: `raw`).
+- `block`: dołączaj fragmentaryczne aktualizacje podglądu.
+- `progress`: wyświetlaj tekst stanu postępu podczas generowania, a następnie wyślij tekst końcowy.
+- `streaming.preview.toolProgress`: gdy podgląd wersji roboczej jest aktywny, kieruj aktualizacje narzędzi i postępu do tej samej edytowanej wiadomości podglądu (domyślnie: `true`). Ustaw `false`, aby zachować oddzielne wiadomości narzędzi i postępu.
+- `streaming.preview.commandText` / `streaming.progress.commandText`: ustaw `status`, aby zachować zwięzłe wiersze postępu narzędzi, jednocześnie ukrywając nieprzetworzony tekst poleceń i wykonania (domyślnie: `raw`).
 
-Ukryj surowy tekst polecenia/wykonania, zachowując kompaktowe wiersze postępu:
+Ukrywanie nieprzetworzonego tekstu poleceń i wykonania przy zachowaniu zwięzłych wierszy postępu:
 
 ```json
 {
@@ -1158,18 +1376,18 @@ Ukryj surowy tekst polecenia/wykonania, zachowując kompaktowe wiersze postępu:
 }
 ```
 
-`channels.slack.streaming.nativeTransport` kontroluje natywne strumieniowanie tekstu Slack, gdy `channels.slack.streaming.mode` to `partial` (domyślnie: `true`).
+`channels.slack.streaming.nativeTransport` steruje natywnym strumieniowaniem tekstu Slack, gdy `channels.slack.streaming.mode` ma wartość `partial` (domyślnie: `true`).
 
-Natywne karty zadań postępu Slack są opcjonalne dla trybu postępu. Ustaw `channels.slack.streaming.progress.nativeTaskCards` na `true` z `channels.slack.streaming.mode="progress"`, aby wysłać natywną dla Slack kartę planu/zadania, gdy praca jest w toku, a następnie zaktualizować tę samą kartę zadania po ukończeniu. Bez tej flagi tryb postępu zachowuje przenośne działanie podglądu wersji roboczej.
+Natywne karty zadań postępu Slack są opcjonalne w trybie postępu. Należy ustawić `channels.slack.streaming.progress.nativeTaskCards` na `true` wraz z `channels.slack.streaming.mode="progress"`, aby podczas wykonywania pracy wysyłać natywną kartę planu lub zadania Slack, a następnie zaktualizować tę samą kartę po zakończeniu. Bez tej flagi tryb postępu zachowuje przenośne działanie podglądu wersji roboczej.
 
-- Wątek odpowiedzi musi być dostępny, aby pojawiły się natywne strumieniowanie tekstu i status wątku asystenta Slack. Wybór wątku nadal podąża za `replyToMode`.
-- Kanały, czaty grupowe i korzenie wiadomości prywatnych najwyższego poziomu nadal mogą używać zwykłego podglądu wersji roboczej, gdy natywne strumieniowanie jest niedostępne lub nie istnieje wątek odpowiedzi.
-- Wiadomości prywatne Slack najwyższego poziomu domyślnie pozostają poza wątkiem, więc nie pokazują natywnego podglądu strumienia/statusu w stylu wątku Slack; zamiast tego OpenClaw publikuje i edytuje podgląd wersji roboczej w wiadomości prywatnej.
-- Multimedia i ładunki nietekstowe wracają do zwykłego dostarczania.
-- Końcowe multimedia/błędy anulują oczekujące edycje podglądu; kwalifikujące się końcowe teksty/bloki są opróżniane tylko wtedy, gdy mogą edytować podgląd w miejscu.
-- Jeśli strumieniowanie zawiedzie w trakcie odpowiedzi, OpenClaw wraca do zwykłego dostarczania pozostałych ładunków.
+- Aby natywne strumieniowanie tekstu i stan wątku asystenta Slack były widoczne, musi być dostępny wątek odpowiedzi. Wybór wątku nadal podlega `replyToMode`.
+- Kanały, czaty grupowe i główne wpisy wiadomości prywatnych nadal mogą używać zwykłego podglądu wersji roboczej, gdy natywne strumieniowanie jest niedostępne lub nie istnieje wątek odpowiedzi.
+- Wiadomości prywatne najwyższego poziomu Slack domyślnie pozostają poza wątkami, dlatego nie wyświetlają natywnego podglądu strumienia ani stanu w stylu wątku Slack; zamiast tego OpenClaw publikuje i edytuje podgląd wersji roboczej w wiadomości prywatnej.
+- Multimedia i ładunki inne niż tekstowe korzystają ze zwykłego sposobu dostarczania.
+- Końcowe multimedia lub błędy anulują oczekujące edycje podglądu; kwalifikujące się końcowe treści tekstowe lub blokowe są zatwierdzane tylko wtedy, gdy można edytować podgląd w miejscu.
+- Jeśli strumieniowanie nie powiedzie się w trakcie odpowiedzi, OpenClaw przechodzi na zwykłe dostarczanie pozostałych ładunków.
 
-Użyj podglądu wersji roboczej zamiast natywnego strumieniowania tekstu Slack:
+Używanie podglądu wersji roboczej zamiast natywnego strumieniowania tekstu Slack:
 
 ```json5
 {
@@ -1184,7 +1402,7 @@ Użyj podglądu wersji roboczej zamiast natywnego strumieniowania tekstu Slack:
 }
 ```
 
-Włącz natywne karty zadań postępu Slack:
+Włączanie natywnych kart zadań postępu Slack:
 
 ```json5
 {
@@ -1204,14 +1422,14 @@ Włącz natywne karty zadań postępu Slack:
 
 Starsze klucze:
 
-- `channels.slack.streamMode` (`replace | status_final | append`) jest starszym aliasem uruchomieniowym dla `channels.slack.streaming.mode`.
-- boolean `channels.slack.streaming` jest starszym aliasem uruchomieniowym dla `channels.slack.streaming.mode` i `channels.slack.streaming.nativeTransport`.
-- starsze `channels.slack.nativeStreaming` jest aliasem uruchomieniowym dla `channels.slack.streaming.nativeTransport`.
-- Uruchom `openclaw doctor --fix`, aby przepisać utrwaloną konfigurację strumieniowania Slack na klucze kanoniczne.
+- `channels.slack.streamMode` (`replace | status_final | append`) jest starszym aliasem `channels.slack.streaming.mode`.
+- wartość logiczna `channels.slack.streaming` jest starszym aliasem `channels.slack.streaming.mode` i `channels.slack.streaming.nativeTransport`.
+- klucze najwyższego poziomu `channels.slack.chunkMode` i `channels.slack.nativeStreaming` są starszymi aliasami `channels.slack.streaming.chunkMode` i `channels.slack.streaming.nativeTransport`.
+- Starsze aliasy nie są odczytywane w czasie działania; należy uruchomić `openclaw doctor --fix`, aby przepisać zapisaną konfigurację strumieniowania Slack na klucze kanoniczne.
 
-## Awaryjna reakcja pisania
+## Zastępcza reakcja pisania
 
-`typingReaction` dodaje tymczasową reakcję do przychodzącej wiadomości Slack, gdy OpenClaw przetwarza odpowiedź, a następnie usuwa ją po zakończeniu przebiegu. Jest to najbardziej przydatne poza odpowiedziami w wątkach, które używają domyślnego wskaźnika statusu „pisze...”.
+`typingReaction` dodaje tymczasową reakcję do przychodzącej wiadomości Slack podczas przetwarzania odpowiedzi przez OpenClaw, a następnie usuwa ją po zakończeniu przebiegu. Jest to najbardziej przydatne poza odpowiedziami w wątkach, które korzystają z domyślnego wskaźnika stanu „pisze...”.
 
 Kolejność rozstrzygania:
 
@@ -1221,42 +1439,54 @@ Kolejność rozstrzygania:
 Uwagi:
 
 - Slack oczekuje krótkich kodów (na przykład `"hourglass_flowing_sand"`).
-- Reakcja jest typu best-effort, a czyszczenie jest próbowane automatycznie po zakończeniu odpowiedzi lub ścieżki błędu.
+- Reakcja jest podejmowana w miarę możliwości, a próba jej usunięcia następuje automatycznie po zakończeniu odpowiedzi lub ścieżki błędu.
 
-## Multimedia, dzielenie na fragmenty i dostarczanie
+## Wprowadzanie głosowe
+
+Aby obecnie mówić do OpenClaw w Slack, należy wysłać klip dźwiękowy Slack do aplikacji OpenClaw. Mikrofon dyktowania Slackbot jest oddzielną funkcją należącą do Slack, a nie interfejsem API aplikacji.
+
+- **[Dyktowanie głosowe w Slackbot](https://slack.com/help/articles/202026038-How-to-use-Slackbot)** działa w prywatnej konwersacji użytkownika ze Slackbot. Slack przekształca nagranie w monit Slackbot, ale nie udostępnia aplikacjom Slack innych firm pliku audio, zdarzenia dyktowania, monitu ani znacznika źródła danych wejściowych za pośrednictwem Events API. Plugin Slack OpenClaw nie może go włączyć ani odbierać.
+- **[Klipy audio Slack](https://slack.com/help/articles/4406235165587-Record-audio-and-video-clips-in-Slack)** to pliki przechowywane w Slack, które można publikować w wiadomości prywatnej OpenClaw, kanale lub wątku. OpenClaw pobiera dostępny klip przy użyciu tokenu bota, normalizuje metadane MIME klipu ze Slack i przekazuje go do współdzielonego [potoku transkrypcji dźwięku](/pl/nodes/audio). Zalecany manifest aplikacji zawiera wymagany zakres `files:read`.
+
+Klipy audio i dyktowanie w Slackbot mają inne zasady prywatności: klipy podlegają zasadom przechowywania plików Slack, a OpenClaw pobiera je do transkrypcji, natomiast według Slack dźwięk dyktowania nie jest przechowywany.
+
+Na kanale z `requireMention: true` klip audio bez podpisu może spełnić warunek, jeśli zawiera wypowiedziany skonfigurowany wzorzec wzmianki (`agents.list[].groupChat.mentionPatterns`, z wartością rezerwową `messages.groupChat.mentionPatterns`). OpenClaw autoryzuje nadawcę przed pobraniem lub transkrypcją klipu, a następnie dopuszcza go tylko wtedy, gdy transkrypcja jest zgodna ze wzorcem. Nieudana lub niezgodna wstępna transkrypcja jest usuwana wraz z pobranym klipem; nie jest zachowywana w historii kanału. Natywnej tożsamości Slack `@bot` nie można wywnioskować z mowy, dlatego należy skonfigurować wzorzec wypowiadanego imienia lub dodać wpisaną wzmiankę. Jeśli włączono powtarzanie transkrypcji, jej treść jest wysyłana dopiero po dopuszczeniu.
+
+## Multimedia, dzielenie i dostarczanie
 
 <AccordionGroup>
   <Accordion title="Załączniki przychodzące">
-    Załączniki plików Slack są pobierane z prywatnych adresów URL hostowanych przez Slack (przepływ żądania uwierzytelnianego tokenem) i zapisywane w magazynie multimediów, gdy pobieranie się powiedzie i pozwalają na to limity rozmiaru. Symbole zastępcze plików zawierają Slack `fileId`, aby agenci mogli pobrać oryginalny plik za pomocą `download-file`.
+    Załączniki plikowe Slack są pobierane z prywatnych adresów URL hostowanych przez Slack (przepływ żądań uwierzytelnianych tokenem) i zapisywane w magazynie multimediów, jeśli pobieranie się powiedzie i pozwalają na to limity rozmiaru. Symbole zastępcze plików zawierają `fileId` Slack, aby agenci mogli pobrać oryginalny plik za pomocą `download-file`.
 
-    Pobieranie używa ograniczonych limitów czasu bezczynności i całkowitych. Jeśli pobieranie pliku Slack się zatrzyma lub nie powiedzie, OpenClaw kontynuuje przetwarzanie wiadomości i wraca do symbolu zastępczego pliku.
+    Pobieranie korzysta z ograniczonych limitów czasu bezczynności i całkowitego czasu. Jeśli pobieranie pliku ze Slack zatrzyma się lub nie powiedzie, OpenClaw kontynuuje przetwarzanie wiadomości i używa symbolu zastępczego pliku.
 
-    Limit rozmiaru przychodzącego w czasie wykonywania domyślnie wynosi `20MB`, chyba że zostanie nadpisany przez `channels.slack.mediaMaxMb`.
+    Domyślny limit rozmiaru przychodzących danych środowiska uruchomieniowego wynosi `20MB`, chyba że zostanie zastąpiony przez `channels.slack.mediaMaxMb`.
 
   </Accordion>
 
-  <Accordion title="Tekst wychodzący i pliki">
-    - fragmenty tekstu używają `channels.slack.textChunkLimit` (domyślnie 4000)
-    - `channels.slack.chunkMode="newline"` włącza dzielenie najpierw według akapitów
-    - wysyłki plików używają API przesyłania Slack i mogą zawierać odpowiedzi w wątku (`thread_ts`)
-    - limit wychodzących multimediów podąża za `channels.slack.mediaMaxMb`, gdy jest skonfigurowany; w przeciwnym razie wysyłki kanału używają domyślnych wartości rodzaju MIME z potoku multimediów
+  <Accordion title="Tekst i pliki wychodzące">
+    - fragmenty tekstu używają `channels.slack.textChunkLimit` (domyślnie `8000`, z ograniczeniem do własnego limitu długości wiadomości Slack)
+    - `channels.slack.streaming.chunkMode="newline"` włącza dzielenie w pierwszej kolejności według akapitów
+    - wysyłanie plików korzysta z interfejsów API przesyłania Slack i może obejmować odpowiedzi w wątku (`thread_ts`)
+    - w przypadku długich podpisów plików pierwszy fragment tekstu zgodny z ograniczeniami Slack jest używany jako komentarz do przesłanego pliku, a pozostałe fragmenty są wysyłane jako kolejne wiadomości
+    - limit wychodzących multimediów jest zgodny z `channels.slack.mediaMaxMb`, jeśli skonfigurowano tę wartość; w przeciwnym razie wysyłanie kanałowe korzysta z wartości domyślnych zależnych od rodzaju MIME z potoku multimediów
 
   </Accordion>
 
   <Accordion title="Cele dostarczania">
-    Preferowane jawne cele:
+    Preferowane cele jawne:
 
     - `user:<id>` dla wiadomości prywatnych
     - `channel:<id>` dla kanałów
 
-    Wiadomości prywatne Slack zawierające tylko tekst/bloki mogą publikować bezpośrednio do identyfikatorów użytkowników; przesyłanie plików i wysyłki wątkowane najpierw otwierają wiadomość prywatną przez API konwersacji Slack, ponieważ te ścieżki wymagają konkretnego identyfikatora konwersacji.
+    Wiadomości prywatne Slack zawierające tylko tekst lub bloki mogą być publikowane bezpośrednio przy użyciu identyfikatorów użytkowników; przesyłanie plików i wysyłanie w wątkach najpierw otwiera wiadomość prywatną za pomocą interfejsów API konwersacji Slack, ponieważ te ścieżki wymagają konkretnego identyfikatora konwersacji.
 
   </Accordion>
 </AccordionGroup>
 
-## Polecenia i zachowanie slash
+## Polecenia i działanie ukośnika
 
-Polecenia slash pojawiają się w Slack jako pojedyncze skonfigurowane polecenie albo wiele natywnych poleceń. Skonfiguruj `channels.slack.slashCommand`, aby zmienić domyślne ustawienia poleceń:
+Polecenia z ukośnikiem pojawiają się w Slack jako jedno skonfigurowane polecenie lub wiele poleceń natywnych. Skonfiguruj `channels.slack.slashCommand`, aby zmienić ustawienia domyślne poleceń:
 
 - `enabled: false`
 - `name: "openclaw"`
@@ -1267,35 +1497,151 @@ Polecenia slash pojawiają się w Slack jako pojedyncze skonfigurowane polecenie
 /openclaw /help
 ```
 
-Natywne polecenia wymagają [dodatkowych ustawień manifestu](#additional-manifest-settings) w aplikacji Slack i są zamiast tego włączane przez `channels.slack.commands.native: true` albo `commands.native: true` w konfiguracjach globalnych.
+Polecenia natywne wymagają [dodatkowych ustawień manifestu](#additional-manifest-settings) w aplikacji Slack i są zamiast tego włączane za pomocą `channels.slack.commands.native: true` lub `commands.native: true` w konfiguracjach globalnych.
 
-- Automatyczny tryb natywnych poleceń jest **wyłączony** dla Slack, więc `commands.native: "auto"` nie włącza natywnych poleceń Slack.
+- Automatyczny tryb poleceń natywnych jest **wyłączony** dla Slack, dlatego `commands.native: "auto"` nie włącza natywnych poleceń Slack.
 
 ```txt
 /help
 ```
 
-Natywne menu argumentów używają adaptacyjnej strategii renderowania, która pokazuje modal potwierdzenia przed wysłaniem wybranej wartości opcji:
+Menu argumentów natywnych są renderowane w następujący sposób, według kolejności priorytetów:
 
-- do 5 opcji: bloki przycisków
-- 6-100 opcji: statyczne menu wyboru
-- więcej niż 100 opcji: zewnętrzny wybór z asynchronicznym filtrowaniem opcji, gdy dostępne są handlery opcji interaktywności
-- przekroczone limity Slack: zakodowane wartości opcji wracają do przycisków
+- 3–5 wystarczająco krótkich opcji: menu przepełnienia („...”)
+- więcej niż 100 opcji, gdy dostępne jest asynchroniczne filtrowanie opcji: wybór zewnętrzny
+- 1–2 opcje lub dowolna opcja, której zakodowana wartość jest zbyt długa dla pola wyboru: bloki przycisków
+- w pozostałych przypadkach (6–100 opcji lub więcej niż 100 bez filtrowania asynchronicznego): statyczne menu wyboru, dzielone po 100 opcji na menu
 
 ```txt
 /think
 ```
 
-Sesje slash używają izolowanych kluczy, takich jak `agent:<agentId>:slack:slash:<userId>`, i nadal kierują wykonania poleceń do docelowej sesji konwersacji za pomocą `CommandTargetSessionKey`.
+Sesje ukośnika używają odizolowanych kluczy, takich jak `agent:<agentId>:slack:slash:<userId>`, i nadal kierują wykonania poleceń do sesji docelowej konwersacji przy użyciu `CommandTargetSessionKey`.
 
-## Interaktywne odpowiedzi
+## Natywne wykresy
+
+Publiczny blok Block Kit [`data_visualization`](https://docs.slack.dev/reference/block-kit/blocks/data-visualization-block/) Slack
+renderuje w wiadomościach wykresy liniowe, słupkowe, warstwowe i kołowe. OpenClaw mapuje przenośny
+blok `presentation` `chart` na tę natywną postać; poza zwykłym dostępem do wiadomości
+`chat:write` nie są wymagane żadne dodatkowe zakresy OAuth,
+przesyłanie plików, mechanizm renderowania obrazów ani konfiguracja Slack.
+
+```json
+{
+  "blocks": [
+    {
+      "type": "chart",
+      "chartType": "bar",
+      "title": "Przychody kwartalne",
+      "categories": ["I kw.", "II kw."],
+      "series": [{ "name": "Przychody", "values": [120, 145] }],
+      "xLabel": "Kwartał"
+    }
+  ]
+}
+```
+
+Limity Slack są wymuszane przed renderowaniem natywnym:
+
+- tytuł i opcjonalne etykiety osi: 50 znaków
+- wykres kołowy: 1–12 dodatnich segmentów
+- wykres liniowy/słupkowy/warstwowy: 1–12 serii o unikatowych nazwach i 1–20 wspólnych kategorii
+- etykiety segmentów, kategorii i serii: 20 znaków
+- każda seria musi zawierać po jednej skończonej wartości dla każdej kategorii; wartości wykresów innych niż kołowe
+  mogą być ujemne
+
+Każdy natywny wykres zawiera również reprezentację tekstową najwyższego poziomu dla czytników
+ekranu, powiadomień, duplikowania sesji oraz klientów, które nie mogą renderować
+bloku. Standardowe prezentacje wysyłane do innych kanałów OpenClaw otrzymują te same
+deterministyczne dane wykresu w postaci tekstu, chyba że deklarują obsługę wykresów natywnych. Jeśli
+podczas etapowego wdrażania Slack odrzuci wykres z błędem `invalid_blocks`, OpenClaw
+usuwa odrzucone natywne bloki danych, zachowuje wszystkie sąsiadujące elementy sterujące i wysyła
+pełną reprezentację wykresu jako widoczny tekst.
+
+Slack akceptuje obecnie maksymalnie dwa bloki `data_visualization` na wiadomość. Gdy
+prezentacja zawiera więcej niż dwa prawidłowe wykresy, OpenClaw zachowuje ich kolejność
+i kontynuuje renderowanie natywne w kolejnych wiadomościach, umieszczając nie więcej niż dwa
+wykresy w każdej wiadomości.
+
+[Ogłoszenie dla deweloperów](https://docs.slack.dev/changelog/2026/06/16/block-kit-data-visualization-block/)
+Slack opisuje ten blok jako funkcję Block Kit przeznaczoną dla aplikacji i nie określa żadnego ograniczenia
+zależnego od płatnego planu. Informacja o dostępności w planach Business+/Enterprise dotyczy
+automatycznego generowania wykresów przez AI Slackbot, które jest odrębne od wysyłania przez aplikację
+już ustrukturyzowanego wykresu Block Kit. Wykresy są blokami przeznaczonymi wyłącznie do wiadomości, a nie treścią App
+Home, okna modalnego ani Canvas.
+
+## Natywne tabele
+
+Bieżący blok Block Kit [`data_table`](https://docs.slack.dev/reference/block-kit/blocks/data-table-block/)
+Slack renderuje w wiadomościach ustrukturyzowane wiersze i kolumny. OpenClaw mapuje jawny
+przenośny blok `presentation` `table` na `data_table`; nie używa starszego
+[bloku `table`](https://docs.slack.dev/reference/block-kit/blocks/table-block/) Slack.
+Poza zwykłym dostępem do wiadomości `chat:write` nie jest wymagany żaden dodatkowy zakres OAuth ani konfiguracja Slack.
+
+```json
+{
+  "blocks": [
+    {
+      "type": "table",
+      "caption": "Otwarty lejek",
+      "headers": ["Konto", "Etap", "ARR"],
+      "rows": [
+        ["Acme", "Wygrana", 125000],
+        ["Globex", "Weryfikacja", 82000]
+      ],
+      "rowHeaderColumnIndex": 0
+    }
+  ]
+}
+```
+
+OpenClaw mapuje komórki nagłówków i ciągów znaków na komórki `raw_text` Slack. Komórki liczbowe
+są mapowane na `raw_number`, przy czym skończona wartość liczbowa zostaje zachowana na potrzeby natywnego sortowania
+i filtrowania. `rowHeaderColumnIndex`, jeśli występuje, oznacza tę kolumnę numerowaną od zera
+jako nagłówki wierszy Slack.
+
+Opublikowane limity `data_table` Slack są wymuszane przed renderowaniem natywnym:
+
+- 1–20 kolumn
+- 1–100 wierszy danych oraz wiersz nagłówka
+- taka sama liczba komórek w każdym wierszu
+- maksymalnie 10 000 znaków łącznie we wszystkich komórkach tabel w jednej wiadomości
+
+Wiele prawidłowych bloków tabel może być renderowanych natywnie, dopóki wiadomość
+mieści się w łącznym limicie znaków. Tabela, której nie można wyrenderować w natywnych
+ograniczeniach, jest przekształcana w kompletny deterministyczny tekst zamiast tracić wiersze lub
+komórki. Jeśli tekst przekracza rozmiar jednej wiadomości Slack, wysyłanie i odpowiedzi na polecenia z ukośnikiem używają
+uporządkowanych fragmentów tekstu. Edycja tabeli kończy się jawnym błędem rozmiaru zamiast
+po cichu obcinać wiersze istniejącej wiadomości.
+
+Każda natywna tabela utworzona z przenośnej prezentacji zawiera również reprezentację tekstową
+najwyższego poziomu dla czytników ekranu, powiadomień, duplikowania sesji oraz
+klientów, które nie mogą renderować bloku. Surowe wartości wykresów i tabel pozostają dosłowne
+w reprezentacji rezerwowej, dlatego dane komórki takie jak `<@U123>` nie stają się wzmianką Slack.
+Jeśli Slack odrzuci natywne bloki wykresów lub tabel z błędem `invalid_blocks`, OpenClaw
+usuwa wszystkie natywne bloki danych w jednym ograniczonym kroku odzyskiwania, zachowuje prawidłowe
+sąsiadujące bloki, takie jak przyciski i pola wyboru, oraz wysyła kompletny widoczny tekst wykresu
+i tabeli z wyłączonym formatowaniem Slack. Dostarczanie poleceń z ukośnikiem
+śledzi budżet pięciu wywołań `response_url` Slack dla całego polecenia. Przed każdą
+partią odpowiedzi wybiera kompletny plan mieszczący się w pozostałej liczbie wywołań lub zgłasza błąd
+przed opublikowaniem tej partii.
+
+Tylko jawne bloki tabel `presentation` są przekształcane w tabele natywne.
+Tabele potokowe Markdown pozostają tekstem w pierwotnej postaci; OpenClaw nie odgaduje struktury
+tabeli ani typów komórek. Istniejący zaufani producenci natywnych bloków Slack mogą nadal
+przekazywać surowe bloki przez `channelData.slack.blocks`; OpenClaw tworzy tekst rezerwowy
+z prawidłowych surowych komórek `data_table`, natomiast nieprawidłowe bloki niestandardowe mogą
+zostać zredukowane do podpisu lub ogólnej reprezentacji rezerwowej Block Kit. Przenośne dane wyjściowe agenta, CLI
+i pluginu powinny używać `presentation`.
+
+## Odpowiedzi interaktywne
 
 Slack może renderować tworzone przez agenta interaktywne elementy sterujące odpowiedziami, ale ta funkcja jest domyślnie wyłączona.
-W przypadku nowych wyników agenta, CLI i pluginu preferuj współdzielone przyciski
-`presentation` lub bloki wyboru. Używają tej samej ścieżki interakcji Slack,
-a jednocześnie degradują się poprawnie na innych kanałach.
+W przypadku nowych danych wyjściowych agenta, CLI i pluginu zaleca się używanie współdzielonych
+przycisków lub bloków wyboru `presentation`. Korzystają one z tej samej ścieżki interakcji Slack,
+a jednocześnie mogą być upraszczane na innych kanałach.
 
-Włącz globalnie:
+Włączanie globalne:
 
 ```json5
 {
@@ -1309,7 +1655,7 @@ Włącz globalnie:
 }
 ```
 
-Lub włącz tylko dla jednego konta Slack:
+Można też włączyć tę funkcję tylko dla jednego konta Slack:
 
 ```json5
 {
@@ -1327,84 +1673,85 @@ Lub włącz tylko dla jednego konta Slack:
 }
 ```
 
-Po włączeniu agenci nadal mogą emitować przestarzałe dyrektywy odpowiedzi tylko dla Slack:
+Po włączeniu agenci mogą nadal emitować przestarzałe dyrektywy odpowiedzi przeznaczone wyłącznie dla Slack:
 
 - `[[slack_buttons: Approve:approve, Reject:reject]]`
 - `[[slack_select: Choose a target | Canary:canary, Production:production]]`
 
-Te dyrektywy kompilują się do Slack Block Kit i kierują kliknięcia lub wybory
-z powrotem przez istniejącą ścieżkę zdarzeń interakcji Slack. Zachowaj je dla starych
-promptów i awaryjnych ścieżek specyficznych dla Slack; dla nowych przenośnych
-elementów sterujących używaj współdzielonej prezentacji.
+Dyrektywy te są kompilowane do formatu Slack Block Kit, a kliknięcia lub wybory są kierowane
+z powrotem przez istniejącą ścieżkę zdarzeń interakcji Slack. Należy je zachować dla starych
+monitów i mechanizmów awaryjnych specyficznych dla Slack; w przypadku nowych
+przenośnych elementów sterujących należy używać współdzielonej prezentacji.
 
-Interfejsy API kompilatora dyrektyw są również przestarzałe dla nowego kodu producenta:
+Interfejsy API kompilatora dyrektyw również są przestarzałe dla nowego kodu producentów:
 
 - `compileSlackInteractiveReplies(...)`
 - `parseSlackOptionsLine(...)`
 - `isSlackInteractiveRepliesEnabled(...)`
 - `buildSlackInteractiveBlocks(...)`
 
-Dla nowych elementów sterujących renderowanych w Slack używaj ładunków
-`presentation` oraz `buildSlackPresentationBlocks(...)`.
+W przypadku nowych elementów sterujących renderowanych w Slack należy używać ładunków `presentation` i `buildSlackPresentationBlocks(...)`.
 
 Uwagi:
 
-- To jest starszy interfejs UI specyficzny dla Slack. Inne kanały nie tłumaczą dyrektyw Slack Block
+- To starszy interfejs użytkownika specyficzny dla Slacka. Inne kanały nie tłumaczą dyrektyw Slack Block
   Kit na własne systemy przycisków.
-- Wartości wywołań zwrotnych interakcji to nieprzezroczyste tokeny generowane przez OpenClaw, a nie surowe wartości tworzone przez agenta.
-- Jeśli wygenerowane bloki interaktywne przekroczyłyby limity Slack Block Kit, OpenClaw wraca do oryginalnej odpowiedzi tekstowej zamiast wysyłać nieprawidłowy ładunek bloków.
+- Wartości interaktywnych wywołań zwrotnych to wygenerowane przez OpenClaw nieprzezroczyste tokeny, a nie nieprzetworzone wartości utworzone przez agenta.
+- Jeśli wygenerowane interaktywne bloki przekroczyłyby limity Slack Block Kit, OpenClaw zamiast wysyłać nieprawidłowy ładunek bloków używa pierwotnej odpowiedzi tekstowej.
 
-### Przesyłanie modali należących do pluginu
+### Przesyłanie formularzy modalnych obsługiwane przez plugin
 
-Pluginy Slack, które rejestrują obsługę interakcji, mogą też otrzymywać zdarzenia cyklu życia modala
+Pluginy Slacka, które rejestrują procedurę obsługi interakcji, mogą również odbierać zdarzenia cyklu życia
 `view_submission` i `view_closed`, zanim OpenClaw skompaktuje
-ładunek do widocznego dla agenta zdarzenia systemowego. Podczas otwierania modala Slack użyj jednego z tych wzorców routingu:
+ładunek na potrzeby zdarzenia systemowego widocznego dla agenta. Podczas otwierania formularza modalnego Slacka należy użyć jednego z tych
+wzorców routingu:
 
 - Ustaw `callback_id` na `openclaw:<namespace>:<payload>`.
-- Albo zachowaj istniejące `callback_id` i umieść `pluginInteractiveData:
-"<namespace>:<payload>"` w `private_metadata` modala.
+- Można też zachować istniejące `callback_id` i umieścić `pluginInteractiveData:
+"<namespace>:<payload>"` w `private_metadata` formularza modalnego.
 
-Handler otrzymuje `ctx.interaction.kind` jako `view_submission` lub
-`view_closed`, znormalizowane `inputs` oraz pełny surowy obiekt `stateValues` ze
-Slack. Routing oparty wyłącznie na identyfikatorze callback wystarcza, aby wywołać handler pluginu; dołącz
-istniejące pola routingu użytkownika/sesji z `private_metadata` modala, gdy
-modal ma również utworzyć widoczne dla agenta zdarzenie systemowe. Agent otrzymuje
-zwarte, zredagowane zdarzenie systemowe `Slack interaction: ...`. Jeśli handler zwróci
-`systemEvent.summary`, `systemEvent.reference` lub `systemEvent.data`, te
-pola zostaną dołączone do tego zwartego zdarzenia, aby agent mógł odwołać się do
-pamięci należącej do pluginu bez oglądania pełnego ładunku formularza.
+Procedura obsługi otrzymuje `ctx.interaction.kind` jako `view_submission` lub
+`view_closed`, znormalizowane `inputs` oraz pełny, nieprzetworzony obiekt `stateValues` ze
+Slacka. Routing wyłącznie według identyfikatora wywołania zwrotnego wystarcza do wywołania procedury obsługi pluginu; jeśli
+formularz modalny powinien również wygenerować zdarzenie systemowe widoczne dla agenta, należy uwzględnić
+istniejące pola routingu użytkownika/sesji `private_metadata` formularza modalnego. Agent otrzymuje
+zwarte, zredagowane zdarzenie systemowe `Slack interaction: ...`. Jeśli procedura obsługi zwróci
+`systemEvent.summary`, `systemEvent.reference` lub `systemEvent.data`, pola te
+zostaną uwzględnione w tym zwartym zdarzeniu, dzięki czemu agent może odwołać się do
+pamięci należącej do pluginu bez dostępu do pełnego ładunku formularza.
 
-## Natywne zatwierdzenia w Slack
+## Natywne zatwierdzenia w Slacku
 
-Slack może działać jako natywny klient zatwierdzeń z interaktywnymi przyciskami i interakcjami, zamiast wracać do Web UI lub terminala.
+Slack może działać jako natywny klient zatwierdzania z interaktywnymi przyciskami i interakcjami, zamiast korzystać awaryjnie z interfejsu WWW lub terminala.
 
-- Zatwierdzenia exec i pluginu mogą renderować się jako natywne prompty Slack Block Kit.
-- `channels.slack.execApprovals.*` pozostaje konfiguracją włączania natywnego klienta zatwierdzeń exec oraz routingu DM/kanału.
-- DM zatwierdzeń exec używają `channels.slack.execApprovals.approvers` lub `commands.ownerAllowFrom`.
-- Zatwierdzenia pluginu używają natywnych przycisków Slack, gdy Slack jest włączony jako natywny klient zatwierdzeń dla sesji źródłowej albo gdy `approvals.plugin` kieruje do źródłowej sesji Slack lub celu Slack.
-- DM zatwierdzeń pluginu używają zatwierdzających pluginu Slack z `channels.slack.allowFrom`, `allowFrom` nazwanego konta lub domyślnej trasy konta.
-- Autoryzacja zatwierdzającego nadal jest egzekwowana: zatwierdzający tylko exec nie mogą zatwierdzać żądań pluginu, chyba że są również zatwierdzającymi pluginu.
+- Zatwierdzenia wykonania i pluginów mogą być wyświetlane jako natywne monity Slack Block Kit.
+- `channels.slack.execApprovals.*` nadal odpowiada za włączanie natywnego klienta zatwierdzania wykonania oraz konfigurację routingu wiadomości prywatnych/kanałów.
+- Wiadomości prywatne dotyczące zatwierdzania wykonania używają `channels.slack.execApprovals.approvers` lub `commands.ownerAllowFrom`.
+- Zatwierdzenia pluginów używają natywnych przycisków Slacka, gdy Slack jest włączony jako natywny klient zatwierdzania dla sesji źródłowej albo gdy `approvals.plugin` kieruje do źródłowej sesji Slacka lub miejsca docelowego w Slacku.
+- Wiadomości prywatne dotyczące zatwierdzania pluginów korzystają z osób zatwierdzających pluginy Slacka z `channels.slack.allowFrom`, `allowFrom` nazwanego konta lub domyślnej trasy konta.
+- Autoryzacja osoby zatwierdzającej jest nadal wymuszana: osoby uprawnione tylko do zatwierdzania wykonania nie mogą zatwierdzać żądań pluginów, chyba że są również osobami zatwierdzającymi pluginy.
 
-Używa to tej samej współdzielonej powierzchni przycisków zatwierdzania co inne kanały. Gdy `interactivity` jest włączone w ustawieniach aplikacji Slack, prompty zatwierdzeń renderują się jako przyciski Block Kit bezpośrednio w konwersacji.
-Gdy te przyciski są obecne, stanowią podstawowy UX zatwierdzania; OpenClaw
-powinien dołączać ręczne polecenie `/approve` tylko wtedy, gdy wynik narzędzia wskazuje, że zatwierdzenia na czacie są niedostępne albo ręczne zatwierdzenie jest jedyną ścieżką.
+Wykorzystuje to tę samą współdzieloną powierzchnię przycisków zatwierdzania co inne kanały. Gdy `interactivity` jest włączone w ustawieniach aplikacji Slack, monity o zatwierdzenie są wyświetlane jako przyciski Block Kit bezpośrednio w rozmowie.
+Gdy te przyciski są dostępne, stanowią podstawowy interfejs zatwierdzania; OpenClaw
+powinien dołączać ręczne polecenie `/approve` tylko wtedy, gdy wynik narzędzia wskazuje, że
+zatwierdzanie na czacie jest niedostępne lub ręczne zatwierdzenie jest jedyną możliwością.
 
 Ścieżka konfiguracji:
 
 - `channels.slack.execApprovals.enabled`
-- `channels.slack.execApprovals.approvers` (opcjonalne; gdy to możliwe, wraca do `commands.ownerAllowFrom`)
+- `channels.slack.execApprovals.approvers` (opcjonalne; w miarę możliwości używa awaryjnie `commands.ownerAllowFrom`)
 - `channels.slack.execApprovals.target` (`dm` | `channel` | `both`, domyślnie: `dm`)
 - `agentFilter`, `sessionFilter`
 
-Slack automatycznie włącza natywne zatwierdzenia exec, gdy `enabled` nie jest ustawione lub ma wartość `"auto"` i rozpoznano co najmniej jednego
-zatwierdzającego exec. Slack może także obsługiwać natywne zatwierdzenia pluginu przez tę ścieżkę natywnego klienta,
-gdy zatwierdzający pluginu Slack zostaną rozpoznani, a żądanie pasuje do filtrów natywnego klienta. Ustaw
-`enabled: false`, aby jawnie wyłączyć Slack jako natywnego klienta zatwierdzeń. Ustaw `enabled: true`, aby
-wymusić natywne zatwierdzenia po rozpoznaniu zatwierdzających. Wyłączenie zatwierdzeń exec Slack nie wyłącza
-dostarczania natywnych zatwierdzeń pluginu Slack włączonego przez `approvals.plugin`; dostarczanie zatwierdzeń pluginu
-używa zamiast tego zatwierdzających pluginu Slack.
+Slack automatycznie włącza natywne zatwierdzanie wykonania, gdy `enabled` nie jest ustawione lub ma wartość `"auto"` i uda się wskazać co najmniej jedną
+osobę zatwierdzającą wykonanie. Slack może również obsługiwać natywne zatwierdzenia pluginów za pośrednictwem tej ścieżki
+natywnego klienta, gdy uda się wskazać osoby zatwierdzające pluginy Slacka, a żądanie spełnia filtry natywnego klienta. Ustaw
+`enabled: false`, aby jawnie wyłączyć Slacka jako natywnego klienta zatwierdzania. Ustaw `enabled: true`, aby
+wymusić natywne zatwierdzenia, gdy uda się wskazać osoby zatwierdzające. Wyłączenie zatwierdzania wykonania w Slacku nie wyłącza
+natywnego dostarczania zatwierdzeń pluginów w Slacku włączonego przez `approvals.plugin`; dostarczanie zatwierdzeń pluginów
+korzysta zamiast tego z osób zatwierdzających pluginy Slacka.
 
-Domyślne zachowanie bez jawnej konfiguracji zatwierdzeń exec Slack:
+Domyślne zachowanie bez jawnej konfiguracji zatwierdzania wykonania w Slacku:
 
 ```json5
 {
@@ -1414,8 +1761,8 @@ Domyślne zachowanie bez jawnej konfiguracji zatwierdzeń exec Slack:
 }
 ```
 
-Jawna konfiguracja natywna Slack jest potrzebna tylko wtedy, gdy chcesz nadpisać zatwierdzających, dodać filtry albo
-włączyć dostarczanie do czatu źródłowego:
+Jawna konfiguracja natywna dla Slacka jest potrzebna tylko w celu zastąpienia osób zatwierdzających, dodania filtrów lub
+włączenia dostarczania na czacie źródłowym:
 
 ```json5
 {
@@ -1431,43 +1778,71 @@ włączyć dostarczanie do czatu źródłowego:
 }
 ```
 
-Współdzielone przekazywanie `approvals.exec` jest osobne. Używaj go tylko wtedy, gdy prompty zatwierdzeń exec muszą być również
-kierowane do innych czatów lub jawnych celów poza pasmem. Współdzielone przekazywanie `approvals.plugin` także jest
-osobne; natywne dostarczanie Slack tłumi ten fallback tylko wtedy, gdy Slack może obsłużyć żądanie zatwierdzenia pluginu
-natywnie.
+Współdzielone przekazywanie `approvals.exec` jest odrębne. Należy go używać tylko wtedy, gdy monity o zatwierdzenie wykonania muszą być również
+kierowane do innych czatów lub jawnych zewnętrznych miejsc docelowych. Współdzielone przekazywanie `approvals.plugin` również jest
+odrębne; natywne dostarczanie w Slacku pomija ten mechanizm awaryjny tylko wtedy, gdy Slack może natywnie obsłużyć żądanie
+zatwierdzenia pluginu.
 
-To samo czatowe `/approve` działa również w kanałach Slack i DM, które już obsługują polecenia. Zobacz [Zatwierdzenia exec](/pl/tools/exec-approvals), aby poznać pełny model przekazywania zatwierdzeń.
+`/approve` na tym samym czacie działa również w kanałach i wiadomościach prywatnych Slacka, które już obsługują polecenia. Pełny model przekazywania zatwierdzeń opisano w sekcji [Zatwierdzanie wykonania](/pl/tools/exec-approvals).
 
 ## Zdarzenia i zachowanie operacyjne
 
 - Edycje/usunięcia wiadomości są mapowane na zdarzenia systemowe.
-- Transmisje wątków (odpowiedzi w wątku z opcją „Wyślij również do kanału”) są przetwarzane jako zwykłe wiadomości użytkownika.
+- Transmisje wątku (odpowiedzi w wątku z opcją „Also send to channel”) są przetwarzane jako zwykłe wiadomości użytkownika.
 - Zdarzenia dodania/usunięcia reakcji są mapowane na zdarzenia systemowe.
-- Zdarzenia dołączenia/opuszczenia przez członka, utworzenia/zmiany nazwy kanału oraz dodania/usunięcia przypięcia są mapowane na zdarzenia systemowe.
-- `channel_id_changed` może migrować klucze konfiguracji kanału, gdy `configWrites` jest włączone.
-- Metadane tematu/celu kanału są traktowane jako niezaufany kontekst i mogą być wstrzykiwane do kontekstu routingu.
-- Rozpoczynający wątek oraz początkowe zasiewanie kontekstu historii wątku są filtrowane przez skonfigurowane listy dozwolonych nadawców, gdy ma to zastosowanie.
-- Akcje bloków, skróty i interakcje modali emitują strukturalne zdarzenia systemowe `Slack interaction: ...` z bogatymi polami ładunku:
-  - akcje bloków: wybrane wartości, etykiety, wartości selektorów oraz metadane `workflow_*`
-  - skróty globalne: metadane callback i aktora, kierowane do bezpośredniej sesji aktora
-  - skróty wiadomości: callback, aktor, kanał, wątek oraz kontekst wybranej wiadomości
-  - zdarzenia modalne `view_submission` i `view_closed` z kierowanymi metadanymi kanału oraz danymi wejściowymi formularza
+- Dołączenie/opuszczenie przez członka, utworzenie/zmiana nazwy kanału oraz dodanie/usunięcie przypięcia są mapowane na zdarzenia systemowe.
+- Opcjonalne odpytywanie o obecność może zmapować zaobserwowane przejście ludzkiego uczestnika z `away` do `active` na ostatnio aktywną kwalifikującą się sesję Slacka tego uczestnika. Domyślnie jest wyłączone.
+- `channel_id_changed` może migrować klucze konfiguracji kanałów, gdy włączone jest `configWrites`.
+- Metadane tematu/celu kanału są traktowane jako niezaufany kontekst i mogą zostać wstrzyknięte do kontekstu routingu.
+- Wiadomość rozpoczynająca wątek i początkowe zasilanie kontekstu historią wątku są w stosownych przypadkach filtrowane według skonfigurowanych list dozwolonych nadawców.
+- Działania bloków, skróty i interakcje z formularzami modalnymi emitują ustrukturyzowane zdarzenia systemowe `Slack interaction: ...` z rozbudowanymi polami ładunku:
+  - działania bloków: wybrane wartości, etykiety, wartości selektorów i metadane `workflow_*`
+  - skróty globalne: metadane wywołania zwrotnego i wykonawcy, kierowane do bezpośredniej sesji wykonawcy
+  - skróty wiadomości: kontekst wywołania zwrotnego, wykonawcy, kanału, wątku i wybranej wiadomości
+  - zdarzenia formularzy modalnych `view_submission` i `view_closed` z kierowanymi metadanymi kanału i danymi wejściowymi formularza
 
-Zdefiniuj skróty globalne lub wiadomości w konfiguracji aplikacji Slack i użyj dowolnego niepustego identyfikatora callback. OpenClaw potwierdza pasujące ładunki skrótów, stosuje tę samą politykę nadawców DM/kanału co inne interakcje Slack i kolejkuje oczyszczone zdarzenie dla kierowanej sesji agenta. Identyfikatory wyzwalaczy i adresy URL odpowiedzi są redagowane z kontekstu agenta.
+W konfiguracji aplikacji Slack należy zdefiniować skróty globalne lub skróty wiadomości i użyć dowolnego niepustego identyfikatora wywołania zwrotnego. OpenClaw potwierdza pasujące ładunki skrótów, stosuje te same zasady dotyczące nadawców wiadomości prywatnych/kanałów co w przypadku innych interakcji Slacka i umieszcza oczyszczone zdarzenie w kolejce kierowanej sesji agenta. Identyfikatory wyzwalaczy i adresy URL odpowiedzi są redagowane z kontekstu agenta.
+
+### Zdarzenia obecności
+
+Slack nie wysyła zmian obecności przez Events API ani Socket Mode. Zamiast tego OpenClaw może odpytywać [`users.getPresence`](https://docs.slack.dev/reference/methods/users.getPresence/) w przypadku ludzkich uczestników, których wiadomości przeszły standardowe kontrole dostępu i routingu Slacka.
+
+```json5
+{
+  channels: {
+    slack: {
+      presenceEvents: { mode: "auto" },
+      channels: {
+        C0123456789: { presenceEvents: { mode: "on" } },
+        C0987654321: { presenceEvents: { mode: "off" } },
+      },
+    },
+  },
+}
+```
+
+- `off` (domyślnie): brak czasomierza obecności i wywołań API Slacka.
+- `auto`: monitoruje wiadomości prywatne, MPIM-y i wątki Slacka aktywne w ciągu ostatnich 24 godzin, z maksymalnie 8 zaobserwowanymi ludzkimi uczestnikami. Sesje kanałów najwyższego poziomu są wykluczone.
+- `on`: monitoruje te same rozmowy bez limitu uczestników i uwzględnia sesje kanałów najwyższego poziomu. Należy użyć nadpisania dla kanału, aby wymusić lub wyłączyć monitorowanie jednego kanału.
+
+OpenClaw odpytuje najwyżej 45 unikatowych użytkowników na minutę na konto Slack, inicjuje stan na podstawie pierwszego wyniku bez wybudzania agenta i wybudza go tylko po zaobserwowaniu przejścia z `away` do `active`. Dla każdego konta Slack i użytkownika obowiązuje trwały 8-godzinny okres wyciszenia, nawet jeśli dana osoba uczestniczy w kilku wątkach. Zdarzenie jest kierowane wyłącznie do ostatnio aktywnej kwalifikującej się rozmowy tej osoby i nakazuje agentowi sprawdzić pamięć/wiki oraz znany kontekst strefy czasowej przed podjęciem decyzji o wysłaniu jednego krótkiego powitania. Agent może zachować milczenie.
+
+Token bota wymaga `users:read`, które jest już uwzględnione w zalecanym manifeście. Zdarzenia obecności są niedostępne w instalacjach Enterprise Grid obejmujących całą organizację.
 
 ## Dokumentacja konfiguracji
 
-Główna dokumentacja: [Dokumentacja konfiguracji - Slack](/pl/gateway/config-channels#slack).
+Główna dokumentacja: [Dokumentacja konfiguracji — Slack](/pl/gateway/config-channels#slack).
 
-<Accordion title="Najważniejsze pola Slack">
+<Accordion title="Najważniejsze pola Slacka">
 
-- tryb/uwierzytelnianie: `mode`, `botToken`, `appToken`, `signingSecret`, `webhookPath`, `accounts.*`
-- dostęp DM: `dm.enabled`, `dmPolicy`, `allowFrom` (starsze: `dm.policy`, `dm.allowFrom`), `dm.groupEnabled`, `dm.groupChannels`
-- przełącznik zgodności: `dangerouslyAllowNameMatching` (awaryjny; pozostaw wyłączony, jeśli nie jest potrzebny)
-- dostęp do kanału: `groupPolicy`, `channels.*`, `channels.*.users`, `channels.*.requireMention`
+- tryb/uwierzytelnianie: `mode`, `enterpriseOrgInstall`, `botToken`, `appToken`, `signingSecret`, `webhookPath`, `accounts.*`
+- dostęp do wiadomości prywatnych: `dm.enabled`, `dmPolicy`, `allowFrom` (starsze: `dm.policy`, `dm.allowFrom`), `dm.groupEnabled`, `dm.groupChannels`
+- przełącznik zgodności: `dangerouslyAllowNameMatching` (awaryjny; pozostawić wyłączony, jeśli nie jest potrzebny)
+- dostęp do kanałów: `groupPolicy`, `channels.*`, `channels.*.users`, `channels.*.requireMention`
 - wątki/historia: `replyToMode`, `replyToModeByChatType`, `thread.*`, `historyLimit`, `dmHistoryLimit`, `dms.*.historyLimit`
-- dostarczanie: `textChunkLimit`, `chunkMode`, `mediaMaxMb`, `streaming`, `streaming.nativeTransport`, `streaming.preview.toolProgress`
-- rozwijanie linków: `unfurlLinks` (domyślnie: `false`), `unfurlMedia` do kontroli podglądu linków/mediów w `chat.postMessage`; ustaw `unfurlLinks: true`, aby ponownie włączyć podglądy linków
+- wybudzenia na podstawie obecności: `presenceEvents.mode`, `channels.*.presenceEvents.mode` (`off|auto|on`; domyślnie `off`)
+- dostarczanie: `textChunkLimit`, `streaming.chunkMode`, `mediaMaxMb`, `streaming`, `streaming.nativeTransport`, `streaming.preview.toolProgress`
+- rozwijanie: `unfurlLinks` (domyślnie: `false`), `unfurlMedia` do sterowania podglądem łączy/multimediów `chat.postMessage`; ustaw `unfurlLinks: true`, aby ponownie włączyć podglądy łączy
 - operacje/funkcje: `configWrites`, `commands.native`, `slashCommand.*`, `actions.*`, `userToken`, `userTokenReadOnly`
 
 </Accordion>
@@ -1479,11 +1854,11 @@ Główna dokumentacja: [Dokumentacja konfiguracji - Slack](/pl/gateway/config-ch
     Sprawdź kolejno:
 
     - `groupPolicy`
-    - lista dozwolonych kanałów (`channels.slack.channels`) — **klucze muszą być identyfikatorami kanałów** (`C12345678`), a nie nazwami (`#channel-name`). Klucze oparte na nazwach po cichu zawodzą przy `groupPolicy: "allowlist"`, ponieważ routing kanału jest domyślnie oparty najpierw na identyfikatorze. Aby znaleźć identyfikator: kliknij kanał w Slack prawym przyciskiem myszy → **Copy link** — wartość `C...` na końcu adresu URL to identyfikator kanału.
+    - lista dozwolonych kanałów (`channels.slack.channels`) — **klucze muszą być identyfikatorami kanałów** (`C12345678`), a nie nazwami (`#channel-name`). Klucze oparte na nazwach zawodzą bez komunikatu przy `groupPolicy: "allowlist"`, ponieważ routing kanałów domyślnie opiera się przede wszystkim na identyfikatorach. Aby znaleźć identyfikator: kliknij kanał prawym przyciskiem myszy w Slacku → **Copy link** — wartość `C...` na końcu adresu URL jest identyfikatorem kanału.
     - `requireMention`
     - lista dozwolonych `users` dla kanału
-    - `messages.groupChat.visibleReplies`: zwykłe żądania grupy/kanału domyślnie używają `"automatic"`. Jeśli wybrano `"message_tool"`, a logi pokazują tekst asystenta bez wywołania `message(action=send)`, model pominął widoczną ścieżkę narzędzia wiadomości. Tekst końcowy pozostaje prywatny w tym trybie; sprawdź szczegółowy log Gateway pod kątem stłumionych metadanych ładunku albo ustaw wartość na `"automatic"`, jeśli chcesz, aby każda normalna końcowa odpowiedź asystenta była publikowana przez starszą ścieżkę.
-    - `messages.groupChat.unmentionedInbound`: jeśli ma wartość `"room_event"`, dozwolona rozmowa w kanale bez wzmianki jest kontekstem otoczenia i pozostaje cicha, chyba że agent wywoła narzędzie `message`. Zobacz [Zdarzenia otoczenia pokoju](/pl/channels/ambient-room-events).
+    - `messages.groupChat.visibleReplies`: standardowe żądania grupowe/kanałowe mają domyślnie wartość `"automatic"`. Jeśli włączono `"message_tool"`, a dzienniki pokazują tekst asystenta bez wywołania `message(action=send)`, model pominął widoczną ścieżkę narzędzia wiadomości. Tekst końcowy pozostaje prywatny w tym trybie; należy sprawdzić szczegółowy dziennik Gateway pod kątem metadanych pominiętego ładunku albo ustawić wartość `"automatic"`, jeśli każda standardowa końcowa odpowiedź asystenta ma być publikowana za pośrednictwem starszej ścieżki.
+    - `messages.groupChat.unmentionedInbound`: jeśli ma wartość `"room_event"`, niewspominane wypowiedzi na dozwolonym kanale stanowią kontekst otoczenia i pozostają bez odpowiedzi, chyba że agent wywoła narzędzie `message`. Zobacz [Zdarzenia otoczenia w pokoju](/pl/channels/ambient-room-events).
 
 ```json5
 {
@@ -1505,16 +1880,16 @@ openclaw doctor
 
   </Accordion>
 
-  <Accordion title="Wiadomości DM ignorowane">
+  <Accordion title="Ignorowanie wiadomości prywatnych">
     Sprawdź:
 
     - `channels.slack.dm.enabled`
     - `channels.slack.dmPolicy` (lub starsze `channels.slack.dm.policy`)
-    - zatwierdzenia parowania / wpisy listy dozwolonych (`dmPolicy: "open"` nadal wymaga `channels.slack.allowFrom: ["*"]`)
-    - grupowe DM używają obsługi MPIM; włącz `channels.slack.dm.groupEnabled` i, jeśli skonfigurowano, dołącz MPIM w `channels.slack.dm.groupChannels`
-    - zdarzenia DM Slack Assistant: szczegółowe logi wspominające `drop message_changed`
-      zwykle oznaczają, że Slack wysłał edytowane zdarzenie wątku Assistant bez
-      możliwego do odzyskania ludzkiego nadawcy w metadanych wiadomości
+    - zatwierdzenia parowania / wpisy na liście dozwolonych (`dmPolicy: "open"` nadal wymaga `channels.slack.allowFrom: ["*"]`)
+    - grupowe wiadomości prywatne używają obsługi MPIM; włącz `channels.slack.dm.groupEnabled` i, jeśli skonfigurowano, uwzględnij MPIM w `channels.slack.dm.groupChannels`
+    - zdarzenia wiadomości prywatnych Slack Assistant: szczegółowe logi zawierające `drop message_changed`
+      zwykle oznaczają, że Slack wysłał zdarzenie edytowanego wątku Assistant bez
+      możliwego do ustalenia nadawcy będącego człowiekiem w metadanych wiadomości
 
 ```bash
 openclaw pairing list slack
@@ -1522,53 +1897,53 @@ openclaw pairing list slack
 
   </Accordion>
 
-  <Accordion title="Socket mode nie łączy się">
+  <Accordion title="Tryb Socket nie nawiązuje połączenia">
     Zweryfikuj tokeny bota i aplikacji oraz włączenie Socket Mode w ustawieniach aplikacji Slack.
     App-Level Token wymaga `connections:write`, a token bota Bot User OAuth Token
-    musi należeć do tej samej aplikacji/przestrzeni roboczej Slack co token aplikacji.
+    musi należeć do tej samej aplikacji Slack i przestrzeni roboczej co token aplikacji.
 
     Jeśli `openclaw channels status --probe --json` pokazuje `botTokenStatus` lub
     `appTokenStatus: "configured_unavailable"`, konto Slack jest
-    skonfigurowane, ale bieżące środowisko uruchomieniowe nie mogło rozwiązać wartości
-    opartej na SecretRef.
+    skonfigurowane, ale bieżące środowisko wykonawcze nie mogło rozpoznać wartości
+    obsługiwanej przez SecretRef.
 
-    Dzienniki takie jak `slack socket mode failed to start; retry ...` oznaczają możliwe do odzyskania
-    błędy uruchomienia. Brakujące zakresy, unieważnione tokeny i nieprawidłowe uwierzytelnianie kończą się
-    natychmiastowym niepowodzeniem. Dziennik `slack token mismatch ...` oznacza, że token bota i token aplikacji
-    wydają się należeć do różnych aplikacji Slack; popraw dane uwierzytelniające aplikacji Slack.
+    Logi takie jak `slack socket mode failed to start; retry ...` oznaczają możliwe do usunięcia
+    błędy uruchamiania. Brakujące zakresy, unieważnione tokeny i nieprawidłowe uwierzytelnianie
+    powodują natomiast natychmiastowe niepowodzenie. Log `slack token mismatch ...` oznacza, że token bota i token aplikacji
+    prawdopodobnie należą do różnych aplikacji Slack; popraw dane uwierzytelniające aplikacji Slack.
 
   </Accordion>
 
-  <Accordion title="HTTP mode not receiving events">
-    Sprawdź:
+  <Accordion title="Tryb HTTP nie odbiera zdarzeń">
+    Zweryfikuj:
 
-    - sekret podpisywania
-    - ścieżkę Webhook
+    - sekret podpisujący
+    - ścieżkę Webhooka
     - adresy Slack Request URLs (Events + Interactivity + Slash Commands)
-    - unikatowe `webhookPath` dla każdego konta HTTP
-    - publiczny URL kończy TLS i przekazuje żądania do ścieżki Gateway
-    - ścieżka `request_url` aplikacji Slack dokładnie odpowiada `channels.slack.webhookPath` (domyślnie `/slack/events`)
+    - unikalną wartość `webhookPath` dla każdego konta HTTP
+    - czy publiczny adres URL kończy połączenie TLS i przekazuje żądania do ścieżki Gateway
+    - czy ścieżka `request_url` aplikacji Slack dokładnie odpowiada `channels.slack.webhookPath` (domyślnie `/slack/events`)
 
-    Jeśli w migawkach kont pojawia się `signingSecretStatus: "configured_unavailable"`,
-    konto HTTP jest skonfigurowane, ale bieżące środowisko uruchomieniowe nie mogło
-    rozwiązać sekretu podpisywania opartego na SecretRef.
+    Jeśli `signingSecretStatus: "configured_unavailable"` pojawia się w migawkach
+    konta, konto HTTP jest skonfigurowane, ale bieżące środowisko wykonawcze nie mogło
+    rozpoznać sekretu podpisującego obsługiwanego przez SecretRef.
 
-    Powtarzający się dziennik `slack: webhook path ... already registered` oznacza, że dwa konta HTTP
-    używają tego samego `webhookPath`; nadaj każdemu kontu osobną ścieżkę.
+    Powtarzający się log `slack: webhook path ... already registered` oznacza, że dwa konta HTTP
+    używają tej samej wartości `webhookPath`; przypisz każdemu kontu odrębną ścieżkę.
 
   </Accordion>
 
-  <Accordion title="Native/slash commands not firing">
-    Sprawdź, czy chodziło Ci o:
+  <Accordion title="Polecenia natywne/ukośnikowe nie są wykonywane">
+    Sprawdź, czy zamierzonym trybem jest:
 
-    - tryb poleceń natywnych (`channels.slack.commands.native: true`) z pasującymi poleceniami slash zarejestrowanymi w Slack
-    - albo tryb pojedynczego polecenia slash (`channels.slack.slashCommand.enabled: true`)
+    - tryb poleceń natywnych (`channels.slack.commands.native: true`) z odpowiadającymi poleceniami ukośnikowymi zarejestrowanymi w Slack
+    - lub tryb pojedynczego polecenia ukośnikowego (`channels.slack.slashCommand.enabled: true`)
 
-    Slack nie tworzy ani nie usuwa poleceń slash automatycznie. `commands.native: "auto"` nie włącza natywnych poleceń Slack; użyj `true` i utwórz pasujące polecenia w aplikacji Slack. W trybie HTTP każde polecenie slash Slack musi zawierać URL Gateway. W trybie Socket Mode ładunki poleceń przychodzą przez websocket, a Slack ignoruje `slash_commands[].url`.
+    Slack nie tworzy ani nie usuwa poleceń ukośnikowych automatycznie. `commands.native: "auto"` nie włącza natywnych poleceń Slack; użyj `true` i utwórz odpowiadające polecenia w aplikacji Slack. W trybie HTTP każde polecenie ukośnikowe Slack musi zawierać adres URL Gateway. W Socket Mode ładunki poleceń docierają przez websocket, a Slack ignoruje `slash_commands[].url`.
 
-    Sprawdź także `commands.useAccessGroups`, autoryzację DM, listy dozwolonych kanałów
+    Sprawdź również `commands.useAccessGroups`, autoryzację wiadomości prywatnych, listy dozwolonych kanałów
     oraz listy dozwolonych `users` dla poszczególnych kanałów. Slack zwraca błędy efemeryczne dla
-    zablokowanych nadawców poleceń slash, w tym:
+    zablokowanych nadawców poleceń ukośnikowych, w tym:
 
     - `This channel is not allowed.`
     - `You are not authorized to use this command here.`
@@ -1576,90 +1951,93 @@ openclaw pairing list slack
   </Accordion>
 </AccordionGroup>
 
-## Dokumentacja obsługi obrazu w załącznikach
+## Informacje o załącznikach multimedialnych
 
-Slack może dołączyć pobrane multimedia do tury agenta, gdy pobieranie plików Slack powiedzie się i pozwalają na to limity rozmiaru. Pliki obrazów mogą przejść przez ścieżkę rozumienia multimediów albo bezpośrednio do modelu odpowiedzi obsługującego obraz; inne pliki są zachowywane jako kontekst pliku możliwy do pobrania, zamiast być traktowane jako wejście obrazu.
+Slack może dołączyć pobrane multimedia do tury agenta, jeśli pobieranie plików ze Slack zakończy się powodzeniem i pozwalają na to limity rozmiaru. Klipy audio mogą zostać poddane transkrypcji, pliki obrazów mogą zostać przekazane ścieżką rozpoznawania multimediów lub bezpośrednio do modelu odpowiedzi obsługującego analizę obrazu, a pozostałe pliki pozostają dostępne jako kontekst plików możliwych do pobrania.
 
 ### Obsługiwane typy multimediów
 
-| Typ multimediów               | Źródło              | Bieżące zachowanie                                                             | Uwagi                                                                     |
-| ----------------------------- | ------------------- | ------------------------------------------------------------------------------ | ------------------------------------------------------------------------- |
-| Obrazy JPEG / PNG / GIF / WebP | URL pliku Slack     | Pobierane i dołączane do tury w celu obsługi przez ścieżki obsługujące obraz   | Limit na plik: `channels.slack.mediaMaxMb` (domyślnie 20 MB)              |
-| Pliki PDF                     | URL pliku Slack     | Pobierane i udostępniane jako kontekst pliku dla narzędzi takich jak `download-file` lub `pdf` | Dane przychodzące Slack nie konwertują automatycznie PDF-ów na wejście obrazu |
-| Inne pliki                    | URL pliku Slack     | Pobierane, gdy to możliwe, i udostępniane jako kontekst pliku                  | Pliki binarne nie są traktowane jako wejście obrazu                       |
-| Odpowiedzi w wątku            | Pliki wiadomości początkowej wątku | Pliki wiadomości głównej mogą zostać dołączone jako kontekst, gdy odpowiedź nie ma bezpośrednich multimediów | Wiadomości początkowe zawierające tylko pliki używają symbolu zastępczego załącznika |
-| Wiadomości z wieloma obrazami | Wiele plików Slack  | Każdy plik jest oceniany niezależnie                                           | Przetwarzanie Slack jest ograniczone do ośmiu plików na wiadomość         |
+| Typ multimediów                | Źródło               | Bieżące działanie                                                                  | Uwagi                                                                     |
+| ------------------------------ | -------------------- | --------------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| Klipy audio Slack              | Adres URL pliku Slack | Pobierane i kierowane przez współdzieloną transkrypcję audio                       | Wymaga `files:read` oraz działającego modelu lub CLI `tools.media.audio` |
+| Obrazy JPEG / PNG / GIF / WebP | Adres URL pliku Slack | Pobierane i dołączane do tury w celu obsługi przez funkcje rozpoznawania obrazu    | Limit na plik: `channels.slack.mediaMaxMb` (domyślnie 20 MB)                       |
+| Pliki PDF                      | Adres URL pliku Slack | Pobierane i udostępniane jako kontekst pliku dla narzędzi takich jak `download-file` lub `pdf` | Dane przychodzące ze Slack nie konwertują automatycznie plików PDF na dane wejściowe analizy obrazu |
+| Inne pliki                     | Adres URL pliku Slack | Pobierane, gdy jest to możliwe, i udostępniane jako kontekst pliku                 | Pliki binarne nie są traktowane jako dane wejściowe obrazu                |
+| Odpowiedzi w wątku             | Pliki wiadomości początkowej wątku | Pliki wiadomości głównej mogą zostać załadowane jako kontekst, gdy odpowiedź nie zawiera bezpośrednich multimediów | Wiadomości początkowe zawierające tylko pliki używają symbolu zastępczego załącznika |
+| Wiadomości z wieloma plikami   | Wiele plików Slack    | Każdy plik jest oceniany niezależnie                                               | Przetwarzanie Slack jest ograniczone do ośmiu plików na wiadomość         |
 
 ### Potok danych przychodzących
 
-Gdy przychodzi wiadomość Slack z załącznikami plików:
+Po nadejściu wiadomości Slack z załącznikami:
 
-1. OpenClaw pobiera plik z prywatnego URL Slack przy użyciu tokena bota.
-2. Po powodzeniu plik jest zapisywany w magazynie multimediów.
-3. Pobrane ścieżki multimediów i typy zawartości są dodawane do kontekstu przychodzącego.
-4. Ścieżki modelu/narzędzia obsługujące obrazy mogą używać załączników obrazów z tego kontekstu.
-5. Pliki niebędące obrazami pozostają dostępne jako metadane pliku lub odniesienia do multimediów dla narzędzi, które potrafią je obsłużyć.
+1. OpenClaw pobiera plik z prywatnego adresu URL Slack przy użyciu tokenu bota.
+2. Po pomyślnym pobraniu plik zostaje zapisany w magazynie multimediów.
+3. Ścieżki pobranych multimediów i typy zawartości są dodawane do kontekstu danych przychodzących.
+4. Klipy audio są kierowane do współdzielonego potoku transkrypcji; ścieżki modeli i narzędzi obsługujących obrazy mogą korzystać z załączników obrazów z tego samego kontekstu.
+5. Pozostałe pliki są dostępne jako metadane plików lub odwołania do multimediów dla narzędzi, które potrafią je obsłużyć.
 
-### Dziedziczenie załączników z początku wątku
+### Dziedziczenie załączników z wiadomości głównej wątku
 
-Gdy wiadomość przychodzi w wątku (ma nadrzędny `thread_ts`):
+Gdy wiadomość nadchodzi w wątku (ma element nadrzędny `thread_ts`):
 
-- Jeśli sama odpowiedź nie ma bezpośrednich multimediów, a dołączona wiadomość główna ma pliki, Slack może dołączyć pliki główne jako kontekst początku wątku.
+- Jeśli sama odpowiedź nie zawiera bezpośrednich multimediów, a dołączona wiadomość główna zawiera pliki, Slack może załadować pliki wiadomości głównej jako kontekst wiadomości rozpoczynającej wątek.
+- Pliki wiadomości głównej są ładowane wyłącznie podczas inicjowania nowej lub zresetowanej sesji wątku. Późniejsze odpowiedzi zawierające tylko tekst ponownie wykorzystują istniejący kontekst sesji i nie dołączają ponownie plików wiadomości głównej jako nowych multimediów.
 - Bezpośrednie załączniki odpowiedzi mają pierwszeństwo przed załącznikami wiadomości głównej.
-- Wiadomość główna, która ma tylko pliki i nie ma tekstu, jest reprezentowana symbolem zastępczym załącznika, aby mechanizm awaryjny nadal mógł uwzględnić jej pliki.
+- Wiadomość główna zawierająca wyłącznie pliki i bez tekstu jest reprezentowana przez symbol zastępczy załącznika, dzięki czemu mechanizm rezerwowy może nadal uwzględnić jej pliki.
 
 ### Obsługa wielu załączników
 
-Gdy pojedyncza wiadomość Slack zawiera wiele załączników plików:
+Gdy pojedyncza wiadomość Slack zawiera wiele załączników:
 
 - Każdy załącznik jest przetwarzany niezależnie przez potok multimediów.
-- Pobrane odniesienia do multimediów są agregowane w kontekście wiadomości.
+- Odwołania do pobranych multimediów są agregowane w kontekście wiadomości.
 - Kolejność przetwarzania odpowiada kolejności plików Slack w ładunku zdarzenia.
-- Niepowodzenie pobrania jednego załącznika nie blokuje pozostałych.
+- Niepowodzenie pobierania jednego załącznika nie blokuje pozostałych.
 
-### Limity rozmiaru, pobierania i modelu
+### Limity rozmiaru, pobierania i modeli
 
-- **Limit rozmiaru**: Domyślnie 20 MB na plik. Konfigurowalne przez `channels.slack.mediaMaxMb`.
-- **Niepowodzenia pobierania**: Pliki, których Slack nie może udostępnić, wygasłe URL-e, niedostępne pliki, pliki przekraczające limit oraz odpowiedzi HTML uwierzytelniania/logowania Slack są pomijane, zamiast być zgłaszane jako nieobsługiwane formaty.
-- **Model obsługujący obraz**: Analiza obrazu używa aktywnego modelu odpowiedzi, gdy obsługuje on obraz, albo modelu obrazu skonfigurowanego w `agents.defaults.imageModel`.
+- **Limit rozmiaru**: domyślnie 20 MB na plik. Można go skonfigurować za pomocą `channels.slack.mediaMaxMb`.
+- **Limit transkrypcji audio**: `tools.media.audio.maxBytes` obowiązuje również, gdy pobrany plik jest wysyłany do dostawcy transkrypcji lub CLI.
+- **Niepowodzenia pobierania**: pliki, których Slack nie może udostępnić, wygasłe adresy URL, niedostępne pliki, pliki przekraczające limit rozmiaru oraz odpowiedzi HTML uwierzytelniania/logowania Slack są pomijane zamiast zgłaszania ich jako nieobsługiwanych formatów.
+- **Model rozpoznawania obrazu**: analiza obrazów używa aktywnego modelu odpowiedzi, jeśli obsługuje on rozpoznawanie obrazu, lub modelu obrazu skonfigurowanego w `agents.defaults.imageModel`.
 
 ### Znane ograniczenia
 
-| Scenariusz                            | Bieżące zachowanie                                                       | Obejście                                                                    |
-| ------------------------------------- | ------------------------------------------------------------------------ | --------------------------------------------------------------------------- |
-| Wygasły URL pliku Slack               | Plik pominięty; nie pokazuje się błąd                                    | Prześlij plik ponownie w Slack                                             |
-| Model obsługujący obraz nieskonfigurowany | Załączniki obrazów są przechowywane jako odniesienia do multimediów, ale nie są analizowane jako obrazy | Skonfiguruj `agents.defaults.imageModel` albo użyj modelu odpowiedzi obsługującego obraz |
-| Bardzo duże obrazy (> 20 MB domyślnie) | Pomijane zgodnie z limitem rozmiaru                                      | Zwiększ `channels.slack.mediaMaxMb`, jeśli Slack pozwala                    |
-| Przekazane/udostępnione załączniki     | Tekst i multimedia obrazu/pliku hostowane przez Slack są obsługiwane w miarę możliwości | Udostępnij ponownie bezpośrednio w wątku OpenClaw                           |
-| Załączniki PDF                         | Przechowywane jako kontekst pliku/multimediów, nie są automatycznie kierowane przez analizę obrazu | Użyj `download-file` dla metadanych pliku albo narzędzia `pdf` do analizy PDF |
+| Scenariusz                                    | Bieżące działanie                                                                  | Obejście                                                                       |
+| --------------------------------------------- | ---------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
+| Wygasły adres URL pliku Slack                 | Plik jest pomijany; błąd nie jest wyświetlany                                      | Prześlij plik ponownie w Slack                                                |
+| Transkrypcja audio jest niedostępna           | Klip pozostaje dołączony, ale transkrypcja nie jest tworzona                       | Skonfiguruj `tools.media.audio` lub zainstaluj obsługiwane lokalne CLI do transkrypcji |
+| Klip bez podpisu nie przechodzi bramki wzmianki | Odrzucony po prywatnej transkrypcji spekulacyjnej; transkrypcja i pobrany plik są usuwane | Skonfiguruj wzorzec wzmianki wypowiedzianej nazwy, dodaj wpisaną wzmiankę o bocie lub użyj wiadomości prywatnej |
+| Model rozpoznawania obrazu nie jest skonfigurowany | Załączniki obrazów są przechowywane jako odwołania do multimediów, ale nie są analizowane jako obrazy | Skonfiguruj `agents.defaults.imageModel` lub użyj modelu odpowiedzi obsługującego rozpoznawanie obrazu |
+| Bardzo duże obrazy (> 20 MB domyślnie)        | Pomijane zgodnie z limitem rozmiaru                                                 | Zwiększ `channels.slack.mediaMaxMb`, jeśli Slack na to pozwala                         |
+| Przekazane/udostępnione załączniki            | Tekst oraz multimedia obrazów/plików przechowywane w Slack są obsługiwane w miarę możliwości | Udostępnij ponownie bezpośrednio w wątku OpenClaw                             |
+| Załączniki PDF                                | Przechowywane jako kontekst pliku/multimediów, bez automatycznego kierowania przez analizę obrazu | Użyj `download-file` do obsługi metadanych pliku lub narzędzia `pdf` do analizy PDF |
 
 ### Powiązana dokumentacja
 
-- [Potok rozumienia multimediów](/pl/nodes/media-understanding)
+- [Potok rozpoznawania multimediów](/pl/nodes/media-understanding)
+- [Audio i notatki głosowe](/pl/nodes/audio)
 - [Narzędzie PDF](/pl/tools/pdf)
-- Epik: [#51349](https://github.com/openclaw/openclaw/issues/51349) — włączenie obsługi obrazu w załącznikach Slack
-- Testy regresji: [#51353](https://github.com/openclaw/openclaw/issues/51353)
-- Weryfikacja na żywo: [#51354](https://github.com/openclaw/openclaw/issues/51354)
 
 ## Powiązane
 
 <CardGroup cols={2}>
-  <Card title="Pairing" icon="link" href="/pl/channels/pairing">
+  <Card title="Parowanie" icon="link" href="/pl/channels/pairing">
     Sparuj użytkownika Slack z Gateway.
   </Card>
-  <Card title="Groups" icon="users" href="/pl/channels/groups">
-    Zachowanie kanałów i grupowych DM.
+  <Card title="Grupy" icon="users" href="/pl/channels/groups">
+    Działanie kanałów i grupowych wiadomości prywatnych.
   </Card>
-  <Card title="Channel routing" icon="route" href="/pl/channels/channel-routing">
+  <Card title="Trasowanie kanałów" icon="route" href="/pl/channels/channel-routing">
     Kieruj wiadomości przychodzące do agentów.
   </Card>
-  <Card title="Security" icon="shield" href="/pl/gateway/security">
-    Model zagrożeń i utwardzanie.
+  <Card title="Bezpieczeństwo" icon="shield" href="/pl/gateway/security">
+    Model zagrożeń i wzmacnianie zabezpieczeń.
   </Card>
-  <Card title="Configuration" icon="sliders" href="/pl/gateway/configuration">
-    Układ konfiguracji i pierwszeństwo.
+  <Card title="Konfiguracja" icon="sliders" href="/pl/gateway/configuration">
+    Układ konfiguracji i kolejność pierwszeństwa.
   </Card>
-  <Card title="Slash commands" icon="terminal" href="/pl/tools/slash-commands">
-    Katalog poleceń i zachowanie.
+  <Card title="Polecenia ukośnikowe" icon="terminal" href="/pl/tools/slash-commands">
+    Katalog poleceń i ich działanie.
   </Card>
 </CardGroup>

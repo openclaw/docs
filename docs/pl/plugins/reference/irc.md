@@ -1,14 +1,15 @@
 ---
 read_when:
-    - Instalujesz, konfigurujesz lub audytujesz plugin IRC
+    - Instalowanie, konfigurowanie lub przeprowadzanie audytu pluginu IRC
 summary: Dodaje obsługę kanału IRC do wysyłania i odbierania wiadomości OpenClaw.
 title: Plugin IRC
 x-i18n:
-    generated_at: "2026-07-12T15:29:27Z"
+    generated_at: "2026-07-16T18:57:12Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: ef4c5df880542d4d3554320f4d183a2464ef8b31d0e86edc1b6c63e1e41f35d3
+    source_hash: 91f258b4abd854e62fff7c769a6482e5dd2da6bdfbb831fd217a1f792ba2d255
     source_path: plugins/reference/irc.md
     workflow: 16
 ---
@@ -22,10 +23,10 @@ Dodaje obsługę kanału IRC do wysyłania i odbierania wiadomości OpenClaw.
 - Pakiet: `@openclaw/irc`
 - Sposób instalacji: npm; ClawHub: `clawhub:@openclaw/irc`
 
-## Powierzchnia
+## Interfejs
 
-kanały: irc
+kanały: `irc`
 
 ## Powiązana dokumentacja
 
-- [irc](/pl/channels/irc)
+- [IRC](/pl/channels/irc)

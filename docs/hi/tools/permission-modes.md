@@ -1,31 +1,32 @@
 ---
 read_when:
-    - कमांड अनुमतियों के लिए auto, ask, allowlist, full, या deny चुनना
-    - tools.exec.mode के माध्यम से Codex Guardian-समीक्षित अनुमोदन कॉन्फ़िगर करना
-    - OpenClaw exec अनुमोदनों की ACPX harness अनुमतियों से तुलना
-summary: होस्ट exec, Codex Guardian अनुमोदनों, और ACPX हार्नेस सत्रों के लिए अनुमति मोड
+    - कमांड अनुमतियों के लिए auto, ask, allowlist, full या deny चुनना
+    - tools.exec.mode के माध्यम से Codex Guardian द्वारा समीक्षित अनुमोदनों को कॉन्फ़िगर करना
+    - OpenClaw exec अनुमोदनों की ACPX हार्नेस अनुमतियों से तुलना
+summary: होस्ट निष्पादन के लिए अनुमति मोड, Codex Guardian अनुमोदन और ACPX हार्नेस सत्र
 title: अनुमति मोड
 x-i18n:
-    generated_at: "2026-06-29T00:22:29Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T17:34:30Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 6ce89cadb45b3b96ce9ab62b35c06610d02f0ff02f15ef7d2128c59fbebb325a
+    source_hash: f580e66508c1f69e868ed26a62d88a675f86a4d1ca738650dc5af82e967f3ac3
     source_path: tools/permission-modes.md
     workflow: 16
 ---
 
-अनुमति मोड तय करते हैं कि कोई एजेंट होस्ट कमांड चलाने, फ़ाइलें लिखने, या अतिरिक्त पहुँच के लिए बैकएंड हार्नेस से अनुरोध करने से पहले कितने अधिकार रखता है। जब आप चाहते हैं कि OpenClaw पहले allowlists का उपयोग करे, फिर छूटे हुए मामलों के लिए Codex नेटिव auto-review या मानव स्वीकृति मार्ग अपनाए, तो `tools.exec.mode: "auto"` से शुरू करें।
+अनुमति मोड तय करते हैं कि कोई एजेंट होस्ट कमांड चलाने, फ़ाइलें लिखने या अतिरिक्त एक्सेस के लिए बैकएंड हार्नेस से अनुरोध करने से पहले कितना अधिकार रखता है।
 
 <Note>
   अनुमति मोड `tools.exec.host=auto` से अलग है। `tools.exec.host`
-  चुनता है कि कमांड कहाँ चलेगी। `tools.exec.mode` चुनता है कि होस्ट exec को
-  कैसे स्वीकृत किया जाएगा।
+  यह चुनता है कि कमांड कहाँ चलता है। `tools.exec.mode` यह चुनता है कि होस्ट निष्पादन को
+  कैसे स्वीकृत किया जाता है।
 </Note>
 
 ## अनुशंसित डिफ़ॉल्ट
 
-उन कोडिंग एजेंटों के लिए `auto` का उपयोग करें जिन्हें हर छूटे हुए मामले को मानव prompt बनाए बिना उपयोगी होस्ट पहुँच चाहिए:
+उन कोडिंग एजेंटों के लिए `auto` का उपयोग करें जिन्हें हर चूक पर मानव प्रॉम्प्ट उत्पन्न किए बिना उपयोगी होस्ट एक्सेस चाहिए:
 
 ```bash
 openclaw config set tools.exec.mode auto
@@ -39,25 +40,25 @@ openclaw gateway restart
 openclaw exec-policy show
 ```
 
-`auto` मोड में, OpenClaw निर्धारक allowlist मिलानों को सीधे चलाता है। स्वीकृति से छूटे हुए मामले पहले OpenClaw के नेटिव auto reviewer से गुजरते हैं, फिर आवश्यकता होने पर कॉन्फ़िगर किए गए मानव स्वीकृति मार्ग पर वापस जाते हैं।
+## OpenClaw होस्ट निष्पादन मोड
 
-## OpenClaw होस्ट exec मोड
+`tools.exec.mode` होस्ट `exec` के लिए सामान्यीकृत नीति सतह है। प्रत्येक मोड एक अंतर्निहित `security` (अनुमति-सूची की कठोरता) और `ask` (चूक होने पर प्रॉम्प्ट) युग्म में बदलता है:
 
-`tools.exec.mode` होस्ट `exec` के लिए सामान्यीकृत नीति सतह है।
+| मोड        | security / ask          | व्यवहार                                                                                      | कब उपयोग करें                                              |
+| ----------- | ----------------------- | --------------------------------------------------------------------------------------------- | ----------------------------------------------------- |
+| `deny`      | `deny` / `off`          | होस्ट निष्पादन को पूरी तरह अवरुद्ध करें।                                                                     | किसी भी होस्ट कमांड की अनुमति नहीं है।                         |
+| `allowlist` | `allowlist` / `off`     | केवल अनुमति-सूची वाले कमांड चलाएँ; चूकों को बिना सूचना अस्वीकार करें।                                          | आपके पास ज्ञात-सुरक्षित कमांड समूह है।                    |
+| `ask`       | `allowlist` / `on-miss` | अनुमति-सूची से मेल खाने वाले कमांड चलाएँ; चूक होने पर मानव से पूछें।                                                 | प्रत्येक नए कमांड की समीक्षा मानव द्वारा की जानी चाहिए।              |
+| `auto`      | `allowlist` / `on-miss` | अनुमति-सूची से मेल खाने वाले कमांड चलाएँ; मानव स्वीकृति पर वापस जाने से पहले चूकों को स्वचालित समीक्षा के माध्यम से भेजें। | कोडिंग सत्रों को व्यावहारिक, संरक्षित एक्सेस चाहिए।        |
+| `full`      | `full` / `off`          | बिना प्रॉम्प्ट के होस्ट निष्पादन चलाएँ।                                                                | इस विश्वसनीय होस्ट/सत्र में स्वीकृति द्वार छोड़े जाने चाहिए। |
 
-| मोड        | व्यवहार                                     | कब उपयोग करें                                              |
-| ----------- | -------------------------------------------- | ----------------------------------------------------- |
-| `deny`      | होस्ट exec को ब्लॉक करें।                             | कोई होस्ट कमांड अनुमत नहीं है।                         |
-| `allowlist` | केवल allowlisted कमांड चलाएँ।               | आपके पास ज्ञात-सुरक्षित कमांड सेट है।                    |
-| `ask`       | allowlist मिलान चलाएँ और छूटे मामलों पर पूछें।     | किसी मानव को नई कमांड की समीक्षा करनी चाहिए।                   |
-| `auto`      | allowlist मिलान चलाएँ, फिर auto-review का उपयोग करें। | कोडिंग सत्रों को व्यावहारिक सुरक्षित पहुँच चाहिए।        |
-| `full`      | बिना prompts के होस्ट exec चलाएँ।               | इस विश्वसनीय होस्ट/सत्र को स्वीकृति gates छोड़ देने चाहिए। |
+`ask` और `auto` समान अनुमति-सूची/पूछने की सेटिंग साझा करते हैं; `auto` इसके अतिरिक्त मूल स्वचालित समीक्षक को सक्षम करता है, जो चूकों पर स्वयं निर्णय लेता है और केवल तब कॉन्फ़िगर किए गए मानव स्वीकृति मार्ग को सौंपता है जब वह सुरक्षित रूप से स्वीकृति नहीं दे सकता।
 
-पूरी होस्ट exec नीति, स्थानीय approvals फ़ाइल, allowlist schema, safe bins, और forwarding व्यवहार के लिए, [Exec approvals](/hi/tools/exec-approvals) देखें।
+संपूर्ण होस्ट निष्पादन नीति, स्थानीय स्वीकृति फ़ाइल, अनुमति-सूची स्कीमा, सुरक्षित बाइनरी और अग्रेषण व्यवहार के लिए [निष्पादन स्वीकृतियाँ](/hi/tools/exec-approvals) देखें।
 
 ## Codex Guardian मैपिंग
 
-नेटिव Codex app-server सत्रों के लिए, जब स्थानीय Codex आवश्यकताएँ इसकी अनुमति देती हैं, `tools.exec.mode: "auto"` Codex Guardian-समीक्षित approvals से मैप होता है। OpenClaw आमतौर पर भेजता है:
+मूल Codex ऐप-सर्वर सत्रों के लिए, स्थानीय Codex आवश्यकताओं द्वारा अनुमति मिलने पर `tools.exec.mode: "auto"` Codex को Guardian द्वारा समीक्षित स्वीकृतियों की ओर निर्देशित करता है। सामान्य परिणामी मान:
 
 | Codex फ़ील्ड         | सामान्य मान     |
 | ------------------- | ----------------- |
@@ -65,23 +66,23 @@ openclaw exec-policy show
 | `approvalsReviewer` | `auto_review`     |
 | `sandbox`           | `workspace-write` |
 
-`auto` मोड में, OpenClaw पुराने असुरक्षित Codex overrides जैसे `approvalPolicy: "never"` या `sandbox: "danger-full-access"` को संरक्षित नहीं करता। `tools.exec.mode: "full"` का उपयोग केवल तब करें जब आप जानबूझकर बिना-स्वीकृति वाली स्थिति चाहते हों।
+`auto` मोड इस नीति को किसी भी कॉन्फ़िगर किए गए Codex सैंडबॉक्स/स्वीकृति ओवरराइड पर लागू करता है, इसलिए यह `approvalPolicy: "never"` और `sandbox: "danger-full-access"` जैसे पुराने असुरक्षित संयोजनों को सुरक्षित नहीं रखता। `tools.exec.mode: "deny"` और `"allowlist"` Codex ऐप-सर्वर के स्थानीय निष्पादन को पूरी तरह अवरुद्ध करते हैं। `tools.exec.mode: "full"` का उपयोग केवल तभी करें जब आप जानबूझकर स्वीकृति-रहित स्थिति चाहते हों।
 
-app-server setup, auth order, और नेटिव Codex runtime विवरण के लिए, [Codex harness](/hi/plugins/codex-harness) देखें।
+ऐप-सर्वर सेटअप, प्रमाणीकरण क्रम और मूल Codex रनटाइम विवरण के लिए [Codex हार्नेस](/hi/plugins/codex-harness) देखें।
 
 ## ACPX हार्नेस अनुमतियाँ
 
-ACPX सत्र non-interactive होते हैं, इसलिए वे TTY permission prompt पर क्लिक नहीं कर सकते। ACPX `plugins.entries.acpx.config` के अंतर्गत अलग harness-level settings का उपयोग करता है:
+ACPX सत्र गैर-संवादात्मक होते हैं, इसलिए वे TTY अनुमति प्रॉम्प्ट पर क्लिक नहीं कर सकते। ACPX `plugins.entries.acpx.config` के अंतर्गत अलग हार्नेस-स्तरीय सेटिंग का उपयोग करता है:
 
-| सेटिंग                     | सामान्य मान    | अर्थ                                     |
+| सेटिंग                     | मान          | अर्थ                                     |
 | --------------------------- | --------------- | ------------------------------------------- |
-| `permissionMode`            | `approve-reads` | केवल reads को auto-approve करें।                    |
-| `permissionMode`            | `approve-all`   | writes और shell commands को auto-approve करें।     |
-| `permissionMode`            | `deny-all`      | सभी permission prompts अस्वीकार करें।                |
-| `nonInteractivePermissions` | `fail`          | जब prompt आवश्यक हो, तो abort करें।      |
-| `nonInteractivePermissions` | `deny`          | prompt अस्वीकार करें और संभव होने पर जारी रखें। |
+| `permissionMode`            | `approve-reads` | केवल पढ़ने की क्रियाओं को स्वतः स्वीकृत करें।                    |
+| `permissionMode`            | `approve-all`   | लिखने की क्रियाओं और शेल कमांड को स्वतः स्वीकृत करें।     |
+| `permissionMode`            | `deny-all`      | सभी अनुमति प्रॉम्प्ट अस्वीकार करें।                |
+| `nonInteractivePermissions` | `fail`          | प्रॉम्प्ट आवश्यक होने पर निरस्त करें।      |
+| `nonInteractivePermissions` | `deny`          | प्रॉम्प्ट अस्वीकार करें और संभव होने पर जारी रखें। |
 
-ACPX अनुमतियाँ OpenClaw exec approvals से अलग सेट करें:
+ACPX अनुमतियों को OpenClaw निष्पादन स्वीकृतियों से अलग सेट करें:
 
 ```bash
 openclaw config set plugins.entries.acpx.config.permissionMode approve-all
@@ -89,31 +90,31 @@ openclaw config set plugins.entries.acpx.config.nonInteractivePermissions fail
 openclaw gateway restart
 ```
 
-बिना-prompt हार्नेस सत्र के ACPX break-glass समकक्ष के रूप में `approve-all` का उपयोग करें। setup विवरण और failure modes के लिए, [ACP agents setup](/hi/tools/acp-agents-setup#permission-configuration) देखें।
+स्वीकृति-रहित हार्नेस सत्र के ACPX आपातकालीन समकक्ष के रूप में `approve-all` का उपयोग करें। सेटअप विवरण और विफलता मोड के लिए [ACP एजेंट सेटअप](/hi/tools/acp-agents-setup#permission-configuration) देखें।
 
 ## मोड चुनना
 
 | लक्ष्य                                          | कॉन्फ़िगर करें                                                   |
 | --------------------------------------------- | ----------------------------------------------------------- |
-| होस्ट कमांड पूरी तरह ब्लॉक करें                | `tools.exec.mode: "deny"`                                   |
+| होस्ट कमांड पूरी तरह अवरुद्ध करें                | `tools.exec.mode: "deny"`                                   |
 | केवल ज्ञात-सुरक्षित कमांड चलने दें              | `tools.exec.mode: "allowlist"`                              |
-| हर नई कमांड shape के लिए मानव से पूछें       | `tools.exec.mode: "ask"`                                    |
-| मानवों से पहले Codex/OpenClaw auto-review का उपयोग करें  | `tools.exec.mode: "auto"`                                   |
-| होस्ट exec approvals पूरी तरह छोड़ें             | `tools.exec.mode: "full"` plus matching host approvals file |
-| non-interactive ACPX सत्रों को write/exec करने दें | `plugins.entries.acpx.config.permissionMode: "approve-all"` |
+| प्रत्येक नए कमांड स्वरूप के लिए मानव से पूछें       | `tools.exec.mode: "ask"`                                    |
+| मानवों से पहले Codex/OpenClaw स्वचालित समीक्षा का उपयोग करें  | `tools.exec.mode: "auto"`                                   |
+| होस्ट निष्पादन स्वीकृतियाँ पूरी तरह छोड़ें             | `tools.exec.mode: "full"` और मेल खाती होस्ट स्वीकृति फ़ाइल |
+| गैर-संवादात्मक ACPX सत्रों को लिखने/निष्पादित करने दें | `plugins.entries.acpx.config.permissionMode: "approve-all"` |
 
-यदि मोड बदलने के बाद भी कोई कमांड prompt करती है या विफल होती है, तो दोनों layers जाँचें:
+मोड बदलने के बाद भी यदि कोई कमांड प्रॉम्प्ट करता है या विफल होता है, तो दोनों परतों का निरीक्षण करें:
 
 ```bash
 openclaw approvals get
 openclaw exec-policy show
 ```
 
-होस्ट exec OpenClaw config और host-local approvals फ़ाइल के अधिक सख्त परिणाम का उपयोग करता है। ACPX हार्नेस अनुमतियाँ होस्ट exec approvals को ढीला नहीं करतीं, और होस्ट exec approvals ACPX हार्नेस prompts को ढीला नहीं करते।
+होस्ट निष्पादन OpenClaw कॉन्फ़िगरेशन और होस्ट-स्थानीय स्वीकृति फ़ाइल में से अधिक कठोर परिणाम का उपयोग करता है। ACPX हार्नेस अनुमतियाँ होस्ट निष्पादन स्वीकृतियों को शिथिल नहीं करतीं, और होस्ट निष्पादन स्वीकृतियाँ ACPX हार्नेस प्रॉम्प्ट को शिथिल नहीं करतीं।
 
 ## संबंधित
 
-- [Exec approvals](/hi/tools/exec-approvals)
-- [Exec approvals - advanced](/hi/tools/exec-approvals-advanced)
-- [Codex harness](/hi/plugins/codex-harness)
-- [ACP agents setup](/hi/tools/acp-agents-setup#permission-configuration)
+- [निष्पादन स्वीकृतियाँ](/hi/tools/exec-approvals)
+- [निष्पादन स्वीकृतियाँ - उन्नत](/hi/tools/exec-approvals-advanced)
+- [Codex हार्नेस](/hi/plugins/codex-harness)
+- [ACP एजेंट सेटअप](/hi/tools/acp-agents-setup#permission-configuration)

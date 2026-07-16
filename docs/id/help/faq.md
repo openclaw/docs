@@ -1,173 +1,134 @@
 ---
 read_when:
-    - Menjawab pertanyaan dukungan umum tentang penyiapan, instalasi, onboarding, atau runtime
-    - Mencermati masalah yang dilaporkan pengguna sebelum debugging lebih mendalam
-summary: Pertanyaan yang sering diajukan tentang penyiapan, konfigurasi, dan penggunaan OpenClaw
-title: Pertanyaan Umum
+    - Menjawab pertanyaan umum tentang penyiapan, instalasi, orientasi awal, atau dukungan runtime
+    - Melakukan triase masalah yang dilaporkan pengguna sebelum proses debugging lebih mendalam
+summary: Pertanyaan umum tentang penyiapan, konfigurasi, dan penggunaan OpenClaw
+title: Tanya Jawab Umum
 x-i18n:
-    generated_at: "2026-07-03T17:43:41Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T18:12:21Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 4d55385d187c20dfce05022b76fcaa054c19fc22e46da66d4a24e2538dd95708
+    source_hash: 913757fcc748a15370dc49874b54184d891c954df45b76c8a3212da5bc1da845
     source_path: help/faq.md
     workflow: 16
 ---
 
-Jawaban cepat plus pemecahan masalah yang lebih mendalam untuk penyiapan dunia nyata (pengembangan lokal, VPS, multi-agen, OAuth/kunci API, failover model). Untuk diagnostik runtime, lihat [Pemecahan Masalah](/id/gateway/troubleshooting). Untuk referensi konfigurasi lengkap, lihat [Konfigurasi](/id/gateway/configuration).
+Jawaban cepat beserta pemecahan masalah yang lebih mendalam untuk penyiapan dunia nyata (pengembangan lokal, VPS, multiagen, kunci OAuth/API, failover model). Untuk diagnostik runtime, lihat [Pemecahan Masalah](/id/gateway/troubleshooting). Untuk referensi konfigurasi lengkap, lihat [Konfigurasi](/id/gateway/configuration).
 
-## 60 detik pertama jika ada yang rusak
+## 60 detik pertama jika terjadi masalah
 
-1. **Status cepat (pemeriksaan pertama)**
-
-   ```bash
-   openclaw status
-   ```
-
-   Ringkasan lokal cepat: OS + pembaruan, keterjangkauan gateway/layanan, agen/sesi, konfigurasi provider + masalah runtime (ketika gateway dapat dijangkau).
-
-2. **Laporan yang dapat ditempel (aman dibagikan)**
-
-   ```bash
-   openclaw status --all
-   ```
-
-   Diagnosis hanya-baca dengan ekor log (token disamarkan).
-
-3. **Status daemon + port**
-
-   ```bash
-   openclaw gateway status
-   ```
-
-   Menampilkan runtime supervisor vs keterjangkauan RPC, URL target probe, dan konfigurasi yang kemungkinan digunakan layanan.
-
-4. **Probe mendalam**
-
-   ```bash
-   openclaw status --deep
-   ```
-
-   Menjalankan probe kesehatan gateway langsung, termasuk probe channel bila didukung
-   (memerlukan gateway yang dapat dijangkau). Lihat [Kesehatan](/id/gateway/health).
-
-5. **Ikuti log terbaru**
-
-   ```bash
-   openclaw logs --follow
-   ```
-
-   Jika RPC tidak aktif, gunakan fallback ke:
-
-   ```bash
-   tail -f "$(ls -t /tmp/openclaw/openclaw-*.log | head -1)"
-   ```
-
-   Log file terpisah dari log layanan; lihat [Logging](/id/logging) dan [Pemecahan Masalah](/id/gateway/troubleshooting).
-
-6. **Jalankan doctor (perbaikan)**
-
-   ```bash
-   openclaw doctor
-   ```
-
-   Memperbaiki/memigrasikan konfigurasi/status + menjalankan pemeriksaan kesehatan. Lihat [Doctor](/id/gateway/doctor).
-
-7. **Snapshot Gateway**
-
-   ```bash
-   openclaw health --json
-   openclaw health --verbose   # shows the target URL + config path on errors
-   ```
-
-   Meminta snapshot lengkap dari gateway yang sedang berjalan (hanya WS). Lihat [Kesehatan](/id/gateway/health).
+<Steps>
+  <Step title="Status cepat">
+    ```bash
+    openclaw status
+    ```
+    Ringkasan lokal cepat: OS + pembaruan, keterjangkauan gateway/layanan, agen/sesi, konfigurasi penyedia + masalah runtime (saat gateway dapat dijangkau).
+  </Step>
+  <Step title="Laporan yang dapat ditempel (aman dibagikan)">
+    ```bash
+    openclaw status --all
+    ```
+    Diagnosis hanya-baca dengan bagian akhir log (token disamarkan).
+  </Step>
+  <Step title="Status daemon + port">
+    ```bash
+    openclaw gateway status
+    ```
+    Menampilkan runtime supervisor dibandingkan dengan keterjangkauan RPC, URL target pemeriksaan, dan konfigurasi yang kemungkinan digunakan layanan.
+  </Step>
+  <Step title="Pemeriksaan mendalam">
+    ```bash
+    openclaw status --deep
+    ```
+    Pemeriksaan langsung kesehatan gateway, termasuk pemeriksaan kanal jika didukung (memerlukan gateway yang dapat dijangkau). Lihat [Kesehatan](/id/gateway/health).
+  </Step>
+  <Step title="Pantau log terbaru">
+    ```bash
+    openclaw logs --follow
+    ```
+    Jika RPC tidak aktif, gunakan sebagai alternatif:
+    ```bash
+    tail -f "$(ls -t /tmp/openclaw/openclaw-*.log | head -1)"
+    ```
+    Log berkas terpisah dari log layanan; lihat [Pencatatan Log](/id/logging) dan [Pemecahan Masalah](/id/gateway/troubleshooting).
+  </Step>
+  <Step title="Jalankan doctor (perbaikan)">
+    ```bash
+    openclaw doctor
+    ```
+    Memperbaiki/memigrasikan konfigurasi dan status, lalu menjalankan pemeriksaan kesehatan. Lihat [Doctor](/id/gateway/doctor).
+  </Step>
+  <Step title="Snapshot Gateway (khusus WS)">
+    ```bash
+    openclaw health --json
+    openclaw health --verbose   # menampilkan URL target + jalur konfigurasi saat terjadi kesalahan
+    ```
+    Meminta snapshot lengkap dari gateway yang sedang berjalan. Lihat [Kesehatan](/id/gateway/health).
+  </Step>
+</Steps>
 
 ## Mulai cepat dan penyiapan pertama kali
 
-Tanya jawab pertama kali — instalasi, onboarding, rute auth, langganan, kegagalan awal —
-tersedia di [FAQ Pertama Kali](/id/help/faq-first-run).
+Tanya jawab penggunaan pertama—instalasi, orientasi, rute autentikasi, langganan, kegagalan awal—tersedia di [FAQ Penggunaan Pertama](/id/help/faq-first-run).
 
 ## Apa itu OpenClaw?
 
 <AccordionGroup>
   <Accordion title="Apa itu OpenClaw, dalam satu paragraf?">
-    OpenClaw adalah asisten AI pribadi yang Anda jalankan di perangkat Anda sendiri. Ia membalas di permukaan pesan yang sudah Anda gunakan (WhatsApp, Telegram, Slack, Mattermost, Discord, Google Chat, Signal, iMessage, WebChat, dan plugin channel bawaan seperti QQ Bot) dan juga dapat melakukan suara + Canvas langsung di platform yang didukung. **Gateway** adalah bidang kontrol yang selalu aktif; asistennya adalah produknya.
+    OpenClaw adalah asisten AI pribadi yang Anda jalankan pada perangkat Anda sendiri. OpenClaw merespons di layanan perpesanan yang telah Anda gunakan (Discord, Google Chat, iMessage, Mattermost, Signal, Slack, Telegram, WebChat, WhatsApp, dan Plugin kanal bawaan seperti QQ Bot) serta dapat menyediakan suara dan Canvas langsung pada platform yang didukung. **Gateway** adalah bidang kendali yang selalu aktif; asistennya adalah produk.
   </Accordion>
 
   <Accordion title="Proposisi nilai">
-    OpenClaw bukan "sekadar wrapper Claude." Ini adalah **bidang kontrol yang mengutamakan lokal** yang memungkinkan Anda menjalankan
-    asisten yang kapabel di **perangkat keras Anda sendiri**, dapat dijangkau dari aplikasi chat yang sudah Anda gunakan, dengan
-    sesi berstatus, memori, dan alat - tanpa menyerahkan kontrol alur kerja Anda ke SaaS
-    ter-hosting.
+    OpenClaw bukan "sekadar pembungkus Claude". OpenClaw adalah **bidang kendali yang mengutamakan penggunaan lokal** dan menjalankan asisten berkemampuan tinggi di **perangkat keras Anda sendiri**, dapat diakses dari aplikasi obrolan yang telah Anda gunakan, dengan sesi berstatus, memori, dan alat—tanpa menyerahkan alur kerja Anda kepada SaaS terkelola.
 
-    Sorotan:
+    - **Perangkat Anda, data Anda**: jalankan Gateway di mana pun Anda inginkan (Mac, Linux, VPS) dan simpan ruang kerja serta riwayat sesi secara lokal.
+    - **Kanal nyata, bukan sandbox web**: Discord/iMessage/Signal/Slack/Telegram/WhatsApp/dll., ditambah suara seluler dan Canvas pada platform yang didukung.
+    - **Tidak bergantung pada model tertentu**: gunakan Anthropic, MiniMax, OpenAI, OpenRouter, dll., dengan perutean per agen dan failover.
+    - **Opsi khusus lokal**: jalankan model lokal agar semua data dapat tetap berada di perangkat Anda.
+    - **Perutean multiagen**: pisahkan agen berdasarkan kanal, akun, atau tugas, masing-masing dengan ruang kerja dan default tersendiri.
+    - **Sumber terbuka dan dapat dimodifikasi**: periksa, perluas, dan kelola sendiri tanpa ketergantungan pada vendor.
 
-    - **Perangkat Anda, data Anda:** jalankan Gateway di mana pun Anda mau (Mac, Linux, VPS) dan simpan
-      workspace + riwayat sesi secara lokal.
-    - **Channel nyata, bukan sandbox web:** WhatsApp/Telegram/Slack/Discord/Signal/iMessage/dll,
-      plus suara seluler dan Canvas di platform yang didukung.
-    - **Agnostik model:** gunakan Anthropic, OpenAI, MiniMax, OpenRouter, dll., dengan routing
-      per-agen dan failover.
-    - **Opsi hanya lokal:** jalankan model lokal sehingga **semua data dapat tetap berada di perangkat Anda** jika Anda mau.
-    - **Routing multi-agen:** pisahkan agen per channel, akun, atau tugas, masing-masing dengan
-      workspace dan default sendiri.
-    - **Sumber terbuka dan mudah dioprek:** inspeksi, perluas, dan host sendiri tanpa vendor lock-in.
-
-    Dokumentasi: [Gateway](/id/gateway), [Channel](/id/channels), [Multi-agen](/id/concepts/multi-agent),
-    [Memori](/id/concepts/memory).
+    Dokumentasi: [Gateway](/id/gateway), [Kanal](/id/channels), [Multiagen](/id/concepts/multi-agent), [Memori](/id/concepts/memory).
 
   </Accordion>
 
-  <Accordion title="Saya baru menyiapkannya - apa yang harus saya lakukan pertama?">
-    Proyek awal yang baik:
+  <Accordion title="Saya baru saja menyiapkannya—apa yang harus saya lakukan terlebih dahulu?">
+    Proyek awal yang bagus: buat situs web (WordPress, Shopify, atau situs statis); buat purwarupa aplikasi seluler (kerangka, layar, rencana API); atur berkas dan folder; hubungkan Gmail dan otomatiskan ringkasan atau tindak lanjut.
 
-    - Bangun situs web (WordPress, Shopify, atau situs statis sederhana).
-    - Buat prototipe aplikasi seluler (outline, layar, rencana API).
-    - Atur file dan folder (pembersihan, penamaan, penandaan).
-    - Hubungkan Gmail dan otomatiskan ringkasan atau tindak lanjut.
-
-    Ini dapat menangani tugas besar, tetapi bekerja paling baik saat Anda membaginya menjadi fase dan
-    menggunakan sub-agen untuk pekerjaan paralel.
+    OpenClaw dapat menangani tugas besar, tetapi bekerja paling baik jika dibagi menjadi beberapa fase dengan subagen untuk pekerjaan paralel.
 
   </Accordion>
 
-  <Accordion title="Apa lima use case harian teratas untuk OpenClaw?">
-    Kemenangan sehari-hari biasanya seperti:
-
-    - **Briefing pribadi:** ringkasan inbox, kalender, dan berita yang Anda pedulikan.
-    - **Riset dan penyusunan:** riset cepat, ringkasan, dan draf awal untuk email atau dokumen.
-    - **Pengingat dan tindak lanjut:** dorongan dan checklist berbasis Cron atau Heartbeat.
-    - **Otomatisasi browser:** mengisi formulir, mengumpulkan data, dan mengulangi tugas web.
-    - **Koordinasi lintas perangkat:** kirim tugas dari ponsel Anda, biarkan Gateway menjalankannya di server, dan dapatkan hasilnya kembali di chat.
+  <Accordion title="Apa lima kasus penggunaan sehari-hari utama untuk OpenClaw?">
+    - **Pengarahan pribadi**: ringkasan kotak masuk, kalender, dan berita yang Anda pedulikan.
+    - **Riset dan penyusunan draf**: riset cepat, ringkasan, dan draf pertama untuk surel atau dokumen.
+    - **Pengingat dan tindak lanjut**: dorongan dan daftar periksa yang dipicu oleh Cron atau Heartbeat.
+    - **Otomatisasi peramban**: mengisi formulir, mengumpulkan data, dan mengulang tugas web.
+    - **Koordinasi lintas perangkat**: kirim tugas dari ponsel Anda, biarkan Gateway menjalankannya di server, lalu terima kembali hasilnya dalam obrolan.
 
   </Accordion>
 
-  <Accordion title="Bisakah OpenClaw membantu lead gen, outreach, iklan, dan blog untuk SaaS?">
-    Ya untuk **riset, kualifikasi, dan penyusunan draf**. Ini dapat memindai situs, membuat shortlist,
-    merangkum prospek, dan menulis draf outreach atau copy iklan.
+  <Accordion title="Dapatkah OpenClaw membantu perolehan prospek, penjangkauan, iklan, dan blog untuk SaaS?">
+    Ya, untuk **riset, kualifikasi, dan penyusunan draf**: memindai situs, membuat daftar pendek, meringkas prospek, serta menulis draf penjangkauan atau naskah iklan.
 
-    Untuk **outreach atau kampanye iklan**, tetap libatkan manusia. Hindari spam, ikuti hukum lokal dan
-    kebijakan platform, dan tinjau apa pun sebelum dikirim. Pola paling aman adalah membiarkan
-    OpenClaw membuat draf dan Anda menyetujuinya.
+    Untuk **pelaksanaan penjangkauan atau iklan**, tetap libatkan manusia. Hindari spam, patuhi hukum setempat dan kebijakan platform, serta tinjau semuanya sebelum dikirim. Biarkan OpenClaw membuat draf; Anda yang menyetujuinya.
 
     Dokumentasi: [Keamanan](/id/gateway/security).
 
   </Accordion>
 
-  <Accordion title="Apa kelebihannya dibanding Claude Code untuk pengembangan web?">
-    OpenClaw adalah **asisten pribadi** dan lapisan koordinasi, bukan pengganti IDE. Gunakan
-    Claude Code atau Codex untuk loop coding langsung tercepat di dalam repo. Gunakan OpenClaw saat Anda
-    menginginkan memori tahan lama, akses lintas perangkat, dan orkestrasi alat.
+  <Accordion title="Apa keunggulannya dibandingkan Claude Code untuk pengembangan web?">
+    OpenClaw adalah **asisten pribadi** dan lapisan koordinasi, bukan pengganti IDE. Gunakan Claude Code atau Codex untuk siklus pengodean langsung tercepat di dalam repositori. Gunakan OpenClaw untuk memori persisten, akses lintas perangkat, dan orkestrasi alat.
 
-    Keunggulan:
+    - Memori dan ruang kerja persisten antarsesi.
+    - Akses multiplatform (Telegram, WhatsApp, TUI, WebChat).
+    - Orkestrasi alat (peramban, berkas, penjadwalan, hook).
+    - Gateway yang selalu aktif (jalankan pada VPS, berinteraksi dari mana saja).
+    - Node untuk peramban/layar/kamera/eksekusi lokal.
 
-    - **Memori persisten + workspace** lintas sesi
-    - **Akses multi-platform** (WhatsApp, Telegram, TUI, WebChat)
-    - **Orkestrasi alat** (browser, file, penjadwalan, hook)
-    - **Gateway selalu aktif** (jalankan di VPS, berinteraksi dari mana saja)
-    - **Node** untuk browser/layar/kamera/exec lokal
-
-    Showcase: [https://openclaw.ai/showcase](https://openclaw.ai/showcase)
+    Galeri: [https://openclaw.ai/showcase](https://openclaw.ai/showcase).
 
   </Accordion>
 </AccordionGroup>
@@ -175,22 +136,22 @@ tersedia di [FAQ Pertama Kali](/id/help/faq-first-run).
 ## Skills dan otomatisasi
 
 <AccordionGroup>
-  <Accordion title="Bagaimana cara menyesuaikan skills tanpa membuat repo kotor?">
-    Gunakan override terkelola alih-alih mengedit salinan repo. Letakkan perubahan Anda di `~/.openclaw/skills/<name>/SKILL.md` (atau tambahkan folder melalui `skills.load.extraDirs` di `~/.openclaw/openclaw.json`). Prioritasnya adalah `<workspace>/skills` → `<workspace>/.agents/skills` → `~/.agents/skills` → `~/.openclaw/skills` → bawaan → `skills.load.extraDirs`, jadi override terkelola tetap menang atas skills bawaan tanpa menyentuh git. Jika Anda membutuhkan skill terinstal secara global tetapi hanya terlihat oleh beberapa agen, simpan salinan bersama di `~/.openclaw/skills` dan kontrol visibilitas dengan `agents.defaults.skills` dan `agents.list[].skills`. Hanya edit yang layak upstream yang seharusnya berada di repo dan dikirim sebagai PR.
+  <Accordion title="Bagaimana cara menyesuaikan Skills tanpa membuat repositori tetap memiliki perubahan?">
+    Gunakan penggantian terkelola alih-alih mengedit salinan repositori. Tempatkan perubahan di `~/.openclaw/skills/<name>/SKILL.md` (atau tambahkan folder melalui `skills.load.extraDirs` di `~/.openclaw/openclaw.json`). Prioritas: `<workspace>/skills` -> `<workspace>/.agents/skills` -> `~/.agents/skills` -> `~/.openclaw/skills` -> bawaan -> `skills.load.extraDirs`, sehingga penggantian terkelola mengungguli Skills bawaan tanpa menyentuh git. Untuk menginstal secara global tetapi membatasi visibilitas hanya pada beberapa agen, simpan salinan bersama di `~/.openclaw/skills` dan kendalikan visibilitas dengan `agents.defaults.skills` / `agents.list[].skills`. Hanya perubahan yang layak dimasukkan ke upstream yang sebaiknya diajukan sebagai PR terhadap salinan repositori.
   </Accordion>
 
-  <Accordion title="Bisakah saya memuat skills dari folder kustom?">
-    Ya. Tambahkan direktori ekstra melalui `skills.load.extraDirs` di `~/.openclaw/openclaw.json` (prioritas terendah). Prioritas default adalah `<workspace>/skills` → `<workspace>/.agents/skills` → `~/.agents/skills` → `~/.openclaw/skills` → bawaan → `skills.load.extraDirs`. `clawhub` menginstal ke `./skills` secara default, yang diperlakukan OpenClaw sebagai `<workspace>/skills` pada sesi berikutnya. Jika skill hanya boleh terlihat oleh agen tertentu, pasangkan dengan `agents.defaults.skills` atau `agents.list[].skills`.
+  <Accordion title="Dapatkah saya memuat Skills dari folder khusus?">
+    Ya: tambahkan direktori melalui `skills.load.extraDirs` di `~/.openclaw/openclaw.json` (prioritas terendah dalam urutan di atas). `clawhub` secara default menginstal ke `./skills`, yang diperlakukan OpenClaw sebagai `<workspace>/skills` pada sesi berikutnya. Untuk membatasi visibilitas pada agen tertentu, pasangkan dengan `agents.defaults.skills` atau `agents.list[].skills`.
   </Accordion>
 
-  <Accordion title="Bagaimana saya dapat menggunakan model atau pengaturan berbeda untuk tugas berbeda?">
-    Saat ini pola yang didukung adalah:
+  <Accordion title="Bagaimana cara menggunakan model atau pengaturan berbeda untuk tugas yang berbeda?">
+    Pola yang didukung:
 
-    - **Cron jobs**: job terisolasi dapat menetapkan override `model` per job.
-    - **Agen**: rutekan tugas ke agen terpisah dengan model default, tingkat berpikir, dan parameter stream yang berbeda.
-    - **Peralihan sesuai permintaan**: gunakan `/model` untuk mengganti model sesi saat ini kapan saja.
+    - **Pekerjaan Cron**: pekerjaan terisolasi dapat menetapkan penggantian `model` per pekerjaan.
+    - **Agen**: rutekan tugas ke agen terpisah dengan model default, tingkat pemikiran, dan parameter streaming yang berbeda.
+    - **Peralihan sesuai permintaan**: `/model` mengalihkan model sesi saat ini kapan saja.
 
-    Contohnya, gunakan model yang sama dengan pengaturan per-agen berbeda:
+    Contoh—model yang sama, pengaturan per agen yang berbeda:
 
     ```json5
     {
@@ -213,143 +174,106 @@ tersedia di [FAQ Pertama Kali](/id/help/faq-first-run).
     }
     ```
 
-    Letakkan default per-model bersama di `agents.defaults.models["provider/model"].params`, lalu letakkan override khusus agen di `agents.list[].params` datar. Jangan definisikan entri `agents.list[].models["provider/model"].params` bersarang terpisah untuk model yang sama; `agents.list[].models` adalah untuk katalog model per-agen dan override runtime.
+    Tempatkan default per model bersama di `agents.defaults.models["provider/model"].params`, kemudian penggantian khusus agen di `agents.list[].params` yang datar. Jangan menduplikasi model yang sama di bawah `agents.list[].models["provider/model"].params` bertingkat; jalur tersebut ditujukan untuk katalog model per agen dan penggantian runtime.
 
-    Lihat [Cron jobs](/id/automation/cron-jobs), [Routing Multi-Agen](/id/concepts/multi-agent), [Konfigurasi](/id/gateway/config-agents), dan [Perintah slash](/id/tools/slash-commands).
-
-  </Accordion>
-
-  <Accordion title="Bot membeku saat mengerjakan pekerjaan berat. Bagaimana cara memindahkannya?">
-    Gunakan **sub-agen** untuk tugas panjang atau paralel. Sub-agen berjalan di sesinya sendiri,
-    mengembalikan ringkasan, dan menjaga chat utama Anda tetap responsif.
-
-    Minta bot Anda untuk "spawn a sub-agent for this task" atau gunakan `/subagents`.
-    Gunakan `/status` di chat untuk melihat apa yang sedang dilakukan Gateway sekarang (dan apakah sedang sibuk).
-
-    Tip token: tugas panjang dan sub-agen sama-sama mengonsumsi token. Jika biaya menjadi perhatian, tetapkan
-    model yang lebih murah untuk sub-agen melalui `agents.defaults.subagents.model`.
-
-    Dokumentasi: [Sub-agen](/id/tools/subagents), [Tugas Latar Belakang](/id/automation/tasks).
+    Lihat [Pekerjaan Cron](/id/automation/cron-jobs), [Perutean Multiagen](/id/concepts/multi-agent), [Konfigurasi](/id/gateway/config-agents), [Perintah garis miring](/id/tools/slash-commands).
 
   </Accordion>
 
-  <Accordion title="Bagaimana cara kerja sesi subagent yang terikat thread di Discord?">
-    Gunakan binding thread. Anda dapat mengikat thread Discord ke target subagent atau sesi sehingga pesan tindak lanjut di thread itu tetap berada pada sesi terikat tersebut.
+  <Accordion title="Bot terhenti saat mengerjakan pekerjaan berat. Bagaimana cara mengalihkannya?">
+    Gunakan **subagen** untuk tugas panjang atau paralel: subagen berjalan dalam sesinya sendiri, mengembalikan ringkasan, dan menjaga obrolan utama Anda tetap responsif. Minta bot untuk "membuat subagen untuk tugas ini", atau gunakan `/subagents`. Gunakan `/status` untuk melihat apakah Gateway sedang sibuk.
 
-    Alur dasar:
+    Tugas panjang dan subagen sama-sama menggunakan token; tetapkan model yang lebih murah untuk subagen melalui `agents.defaults.subagents.model` jika biaya menjadi pertimbangan.
 
-    - Spawn dengan `sessions_spawn` menggunakan `thread: true` (dan opsional `mode: "session"` untuk tindak lanjut persisten).
-    - Atau bind secara manual dengan `/focus <target>`.
-    - Gunakan `/agents` untuk memeriksa status binding.
-    - Gunakan `/session idle <duration|off>` dan `/session max-age <duration|off>` untuk mengontrol auto-unfocus.
-    - Gunakan `/unfocus` untuk melepas thread.
-
-    Konfigurasi wajib:
-
-    - Default global: `session.threadBindings.enabled`, `session.threadBindings.idleHours`, `session.threadBindings.maxAgeHours`.
-    - Override Discord: `channels.discord.threadBindings.enabled`, `channels.discord.threadBindings.idleHours`, `channels.discord.threadBindings.maxAgeHours`.
-    - Auto-bind saat spawn: `channels.discord.threadBindings.spawnSessions` default ke `true`; setel ke `false` untuk menonaktifkan spawn sesi terikat thread.
-
-    Dokumentasi: [Sub-agen](/id/tools/subagents), [Discord](/id/channels/discord), [Referensi Konfigurasi](/id/gateway/configuration-reference), [Perintah slash](/id/tools/slash-commands).
+    Dokumentasi: [Subagen](/id/tools/subagents), [Tugas Latar Belakang](/id/automation/tasks).
 
   </Accordion>
 
-  <Accordion title="Subagent selesai, tetapi pembaruan penyelesaian masuk ke tempat yang salah atau tidak pernah diposting. Apa yang harus saya periksa?">
-    Periksa rute peminta yang diselesaikan terlebih dahulu:
+  <Accordion title="Bagaimana cara kerja sesi subagen yang terikat utas di Discord?">
+    Ikat utas Discord ke subagen atau target sesi agar pesan tindak lanjut di sana tetap berada pada sesi yang terikat tersebut.
 
-    - Pengiriman subagent mode penyelesaian memprioritaskan thread terikat atau rute percakapan mana pun saat ada.
-    - Jika origin penyelesaian hanya membawa channel, OpenClaw fallback ke rute tersimpan sesi peminta (`lastChannel` / `lastTo` / `lastAccountId`) sehingga pengiriman langsung masih dapat berhasil.
-    - Jika tidak ada rute terikat maupun rute tersimpan yang dapat digunakan, pengiriman langsung dapat gagal dan hasil fallback ke pengiriman sesi antrean alih-alih langsung diposting ke chat.
-    - Target tidak valid atau basi masih dapat memaksa fallback antrean atau kegagalan pengiriman akhir.
-    - Jika balasan asisten terakhir yang terlihat dari child adalah token senyap persis `NO_REPLY` / `no_reply`, atau persis `ANNOUNCE_SKIP`, OpenClaw sengaja menekan pengumuman alih-alih memposting progres sebelumnya yang basi.
-    - Output tool/toolResult tidak dipromosikan menjadi teks hasil child; hasilnya adalah balasan asisten terlihat terbaru dari child.
+    - Buat dengan `sessions_spawn` menggunakan `thread: true` (opsional `mode: "session"` untuk tindak lanjut persisten).
+    - Atau ikat secara manual dengan `/focus <target>`.
+    - `/agents` memeriksa status pengikatan.
+    - `/session idle <duration|off>` dan `/session max-age <duration|off>` mengendalikan pelepasan fokus otomatis.
+    - `/unfocus` melepaskan utas.
 
-    Debug:
+    Konfigurasi: `session.threadBindings.enabled` (sakelar global), `session.threadBindings.idleHours` (default `24`, `0` menonaktifkan), `session.threadBindings.maxAgeHours` (default `0` = tanpa batas tegas), dan penggantian per kanal `channels.discord.threadBindings.{enabled,idleHours,maxAgeHours}`. `channels.discord.threadBindings.spawnSessions` membatasi pengikatan otomatis saat pembuatan (default `true`).
 
-    ```bash
-    openclaw tasks show <runId-or-sessionKey>
-    ```
+    Dokumentasi: [Subagen](/id/tools/subagents), [Discord](/id/channels/discord), [Referensi Konfigurasi](/id/gateway/configuration-reference), [Perintah garis miring](/id/tools/slash-commands).
 
-    Dok: [Sub-agent](/id/tools/subagents), [Tugas Latar Belakang](/id/automation/tasks), [Alat Sesi](/id/concepts/session-tool).
+  </Accordion>
+
+  <Accordion title="Subagen telah selesai, tetapi pembaruan penyelesaiannya dikirim ke tempat yang salah atau tidak pernah diposting. Apa yang harus saya periksa?">
+    Periksa rute pemohon yang telah ditentukan:
+
+    - Pengiriman subagen dalam mode penyelesaian mengutamakan utas atau rute percakapan terikat jika tersedia.
+    - Jika asal penyelesaian hanya memuat kanal, OpenClaw beralih ke rute tersimpan sesi pemohon (`lastChannel` / `lastTo` / `lastAccountId`) agar pengiriman langsung tetap dapat berhasil.
+    - Jika tidak ada rute terikat dan tidak ada rute tersimpan yang dapat digunakan, pengiriman langsung dapat gagal dan hasil akan beralih ke pengiriman sesi dalam antrean alih-alih langsung diposting.
+    - Target yang tidak valid atau kedaluwarsa juga dapat memaksa penggunaan antrean sebagai alternatif atau menyebabkan kegagalan pengiriman akhir.
+    - Jika balasan asisten terakhir yang terlihat dari turunan sama persis dengan `NO_REPLY` / `no_reply` atau `ANNOUNCE_SKIP`, OpenClaw sengaja tidak mengirim pengumuman agar tidak memposting progres lama sebelumnya.
+
+    Debug: `openclaw tasks show <lookup>` dengan `<lookup>` berupa ID tugas, ID proses, atau kunci sesi.
+
+    Dokumentasi: [Subagen](/id/tools/subagents), [Tugas Latar Belakang](/id/automation/tasks), [Alat Sesi](/id/concepts/session-tool).
 
   </Accordion>
 
   <Accordion title="Cron atau pengingat tidak berjalan. Apa yang harus saya periksa?">
-    Cron berjalan di dalam proses Gateway. Jika Gateway tidak berjalan terus-menerus,
-    pekerjaan terjadwal tidak akan berjalan.
+    Cron berjalan di dalam proses Gateway; Cron tidak akan berjalan jika Gateway tidak beroperasi secara terus-menerus.
 
-    Daftar periksa:
-
-    - Pastikan cron diaktifkan (`cron.enabled`) dan `OPENCLAW_SKIP_CRON` tidak disetel.
-    - Periksa bahwa Gateway berjalan 24/7 (tidak tidur/mulai ulang).
-    - Verifikasi pengaturan zona waktu untuk pekerjaan (`--tz` vs zona waktu host).
+    - Pastikan Cron diaktifkan (`cron.enabled`) dan `OPENCLAW_SKIP_CRON` tidak ditetapkan.
+    - Pastikan Gateway berjalan 24/7 (tanpa tidur/mulai ulang).
+    - Verifikasi zona waktu pekerjaan (`--tz` dibandingkan dengan zona waktu host).
 
     Debug:
-
     ```bash
     openclaw cron run <jobId>
     openclaw cron runs --id <jobId> --limit 50
     ```
 
-    Dok: [Pekerjaan Cron](/id/automation/cron-jobs), [Automasi](/id/automation).
+    Dokumentasi: [Pekerjaan Cron](/id/automation/cron-jobs), [Otomatisasi](/id/automation).
 
   </Accordion>
 
-  <Accordion title="Cron berjalan, tetapi tidak ada yang dikirim ke kanal. Mengapa?">
-    Periksa mode pengiriman terlebih dahulu:
+  <Accordion title="Cron dipicu, tetapi tidak ada yang dikirim ke kanal. Mengapa?">
+    Periksa mode pengiriman:
 
-    - `--no-deliver` / `delivery.mode: "none"` berarti tidak diharapkan ada pengiriman fallback runner.
-    - Target pengumuman yang hilang atau tidak valid (`channel` / `to`) berarti runner melewati pengiriman keluar.
-    - Kegagalan autentikasi kanal (`unauthorized`, `Forbidden`) berarti runner mencoba mengirim tetapi kredensial memblokirnya.
-    - Hasil terisolasi yang senyap (`NO_REPLY` / `no_reply` saja) diperlakukan sebagai sengaja tidak dapat dikirim, sehingga runner juga menekan pengiriman fallback dalam antrean.
+    - `--no-deliver` / `delivery.mode: "none"`: tidak ada pengiriman fallback dari runner yang diharapkan.
+    - Target pengumuman tidak ada atau tidak valid (`channel` / `to`): runner melewati pengiriman keluar.
+    - Kegagalan autentikasi kanal (`unauthorized`, `Forbidden`): runner mencoba mengirim, tetapi kredensial menghalanginya.
+    - Hasil terisolasi yang senyap (hanya `NO_REPLY` / `no_reply`) dianggap sengaja tidak dapat dikirim, sehingga pengiriman fallback yang diantrekan juga tidak dilakukan.
 
-    Untuk pekerjaan cron terisolasi, agent masih dapat mengirim langsung dengan alat `message`
-    saat rute chat tersedia. `--announce` hanya mengontrol jalur fallback runner
-    untuk teks akhir yang belum dikirim oleh agent.
+    Untuk pekerjaan Cron terisolasi, agen masih dapat mengirim secara langsung dengan alat `message` ketika rute percakapan tersedia. `--announce` hanya mengontrol pengiriman fallback runner untuk teks akhir yang belum dikirim sendiri oleh agen.
 
     Debug:
-
     ```bash
     openclaw cron runs --id <jobId> --limit 50
-    openclaw tasks show <runId-or-sessionKey>
+    openclaw tasks show <lookup>
     ```
 
-    Dok: [Pekerjaan Cron](/id/automation/cron-jobs), [Tugas Latar Belakang](/id/automation/tasks).
+    Dokumentasi: [Pekerjaan Cron](/id/automation/cron-jobs), [Tugas Latar Belakang](/id/automation/tasks).
 
   </Accordion>
 
-  <Accordion title="Mengapa eksekusi cron terisolasi beralih model atau mencoba ulang sekali?">
-    Itu biasanya jalur pergantian model langsung, bukan penjadwalan duplikat.
+  <Accordion title="Mengapa proses Cron terisolasi beralih model atau mencoba ulang satu kali?">
+    Itu adalah jalur pengalihan model langsung, bukan penjadwalan duplikat. Cron terisolasi mempertahankan serah terima model runtime dan mencoba ulang ketika proses aktif melempar `LiveSessionModelSwitchError`, dengan tetap menggunakan penyedia/model yang telah dialihkan (serta penggantian profil autentikasi yang dialihkan, jika ada) sebelum mencoba ulang.
 
-    Cron terisolasi dapat mempertahankan handoff model runtime dan mencoba ulang saat run
-    aktif melempar `LiveSessionModelSwitchError`. Percobaan ulang mempertahankan
-    provider/model yang sudah dialihkan, dan jika pergantian membawa override profil autentikasi baru, cron
-    juga mempertahankannya sebelum mencoba ulang.
+    Prioritas pemilihan model: penggantian model hook Gmail (`hooks.gmail.model`) terlebih dahulu, lalu `model` per pekerjaan, kemudian penggantian model sesi Cron yang tersimpan, lalu pemilihan model agen/default secara normal.
 
-    Aturan pemilihan terkait:
-
-    - Override model hook Gmail menang lebih dulu saat berlaku.
-    - Lalu `model` per pekerjaan.
-    - Lalu override model sesi cron yang tersimpan.
-    - Lalu pemilihan model agent/default normal.
-
-    Loop percobaan ulang dibatasi. Setelah upaya awal ditambah 2 percobaan ulang pergantian,
-    cron berhenti alih-alih berulang selamanya.
+    Perulangan percobaan ulang dibatasi pada percobaan awal ditambah 2 percobaan ulang pengalihan; setelah itu Cron dibatalkan alih-alih berulang selamanya.
 
     Debug:
-
     ```bash
     openclaw cron runs --id <jobId> --limit 50
-    openclaw tasks show <runId-or-sessionKey>
     ```
 
-    Dok: [Pekerjaan Cron](/id/automation/cron-jobs), [CLI cron](/id/cli/cron).
+    Dokumentasi: [Pekerjaan Cron](/id/automation/cron-jobs), [CLI cron](/id/cli/cron).
 
   </Accordion>
 
-  <Accordion title="Bagaimana cara memasang Skills di Linux?">
-    Gunakan perintah native `openclaw skills` atau letakkan skills ke ruang kerja Anda. UI Skills macOS tidak tersedia di Linux.
-    Jelajahi skills di [https://clawhub.ai](https://clawhub.ai).
+  <Accordion title="Bagaimana cara menginstal Skills di Linux?">
+    Gunakan perintah `openclaw skills` bawaan atau letakkan Skills di ruang kerja Anda; UI Skills macOS tidak tersedia di Linux. Jelajahi Skills di [https://clawhub.ai](https://clawhub.ai).
 
     ```bash
     openclaw skills search "calendar"
@@ -364,88 +288,69 @@ tersedia di [FAQ Pertama Kali](/id/help/faq-first-run).
     openclaw skills check
     ```
 
-    `openclaw skills install` native menulis ke direktori `skills/`
-    ruang kerja aktif secara default. Tambahkan `--global` untuk memasang ke direktori skills
-    terkelola bersama untuk semua agent lokal. Pasang CLI `clawhub` terpisah
-    hanya jika Anda ingin menerbitkan atau menyinkronkan skills sendiri. Gunakan
-    `agents.defaults.skills` atau `agents.list[].skills` jika Anda ingin membatasi
-    agent mana yang dapat melihat skills bersama.
+    `openclaw skills install` bawaan secara default menulis ke direktori `skills/` ruang kerja aktif. Tambahkan `--global` untuk menginstal ke direktori Skills terkelola bersama bagi semua agen lokal. Instal CLI `clawhub` terpisah hanya untuk menerbitkan atau menyinkronkan Skills Anda sendiri. Gunakan `agents.defaults.skills` atau `agents.list[].skills` untuk membatasi agen mana yang dapat melihat Skills bersama.
 
   </Accordion>
 
-  <Accordion title="Bisakah OpenClaw menjalankan tugas sesuai jadwal atau terus-menerus di latar belakang?">
-    Ya. Gunakan penjadwal Gateway:
+  <Accordion title="Dapatkah OpenClaw menjalankan tugas sesuai jadwal atau terus-menerus di latar belakang?">
+    Ya, melalui penjadwal Gateway:
 
-    - **Pekerjaan Cron** untuk tugas terjadwal atau berulang (bertahan setelah mulai ulang).
-    - **Heartbeat** untuk pemeriksaan berkala "sesi utama".
-    - **Pekerjaan terisolasi** untuk agent otonom yang memposting ringkasan atau mengirim ke chat.
+    - **Pekerjaan Cron** untuk tugas terjadwal atau berulang (tetap ada setelah dimulai ulang).
+    - **Heartbeat** untuk pemeriksaan berkala sesi utama.
+    - **Pekerjaan terisolasi** untuk agen otonom yang memposting ringkasan atau mengirim ke percakapan.
 
-    Dok: [Pekerjaan Cron](/id/automation/cron-jobs), [Automasi](/id/automation),
-    [Heartbeat](/id/gateway/heartbeat).
+    Dokumentasi: [Pekerjaan Cron](/id/automation/cron-jobs), [Otomatisasi](/id/automation), [Heartbeat](/id/gateway/heartbeat).
 
   </Accordion>
 
-  <Accordion title="Bisakah saya menjalankan skills khusus Apple macOS dari Linux?">
-    Tidak secara langsung. Skills macOS dibatasi oleh `metadata.openclaw.os` ditambah biner yang diperlukan, dan skills hanya muncul di prompt sistem saat memenuhi syarat di **host Gateway**. Di Linux, skills khusus `darwin` (seperti `apple-notes`, `apple-reminders`, `things-mac`) tidak akan dimuat kecuali Anda menimpa gating tersebut.
+  <Accordion title="Dapatkah saya menjalankan Skills khusus Apple macOS dari Linux?">
+    Tidak secara langsung. Skills macOS dibatasi oleh `metadata.openclaw.os` serta biner yang diperlukan, dan hanya dimuat jika memenuhi syarat pada **host Gateway**. Di Linux, Skills khusus `darwin` (`apple-notes`, `apple-reminders`, `things-mac`) tidak akan dimuat kecuali Anda mengganti pembatasannya.
 
-    Anda memiliki tiga pola yang didukung:
+    Tiga pola yang didukung:
 
-    **Opsi A - jalankan Gateway di Mac (paling sederhana).**
-    Jalankan Gateway di tempat biner macOS tersedia, lalu hubungkan dari Linux dalam [mode jarak jauh](#gateway-ports-already-running-and-remote-mode) atau melalui Tailscale. Skills dimuat normal karena host Gateway adalah macOS.
+    **Opsi A - jalankan Gateway di Mac (paling sederhana)**. Jalankan Gateway di tempat biner macOS tersedia, lalu hubungkan dari Linux dalam [mode jarak jauh](#gateway-ports-already-running-and-remote-mode) atau melalui Tailscale. Skills dimuat secara normal karena host Gateway menggunakan macOS.
 
-    **Opsi B - gunakan node macOS (tanpa SSH).**
-    Jalankan Gateway di Linux, pasangkan node macOS (aplikasi bilah menu), dan atur **Node Run Commands** ke "Selalu Tanyakan" atau "Selalu Izinkan" di Mac. OpenClaw dapat memperlakukan skills khusus macOS sebagai memenuhi syarat saat biner yang diperlukan tersedia di node. Agent menjalankan skills tersebut melalui alat `nodes`. Jika Anda memilih "Selalu Tanyakan", menyetujui "Selalu Izinkan" di prompt akan menambahkan perintah itu ke daftar izin.
+    **Opsi B - gunakan Node macOS (tanpa SSH)**. Jalankan Gateway di Linux, pasangkan Node macOS (aplikasi bilah menu), dan atur **Node Run Commands** ke "Always Ask" atau "Always Allow" di Mac. OpenClaw menganggap Skills khusus macOS memenuhi syarat ketika biner yang diperlukan tersedia di Node; agen menjalankannya melalui alat `nodes`. Dengan "Always Ask," menyetujui "Always Allow" dalam perintah akan menambahkan perintah tersebut ke daftar izin.
 
-    **Opsi C - proksi biner macOS melalui SSH (lanjutan).**
-    Pertahankan Gateway di Linux, tetapi buat biner CLI yang diperlukan meresolusi ke wrapper SSH yang berjalan di Mac. Lalu override skill agar mengizinkan Linux sehingga tetap memenuhi syarat.
+    **Opsi C - proksikan biner macOS melalui SSH (lanjutan)**. Pertahankan Gateway di Linux, tetapi buat biner CLI yang diperlukan mengarah ke pembungkus SSH yang berjalan di Mac, lalu ganti pengaturan Skills agar mengizinkan Linux sehingga tetap memenuhi syarat.
 
-    1. Buat wrapper SSH untuk biner (contoh: `memo` untuk Apple Notes):
-
+    1. Buat pembungkus SSH untuk biner (contoh: `memo` untuk Apple Notes):
        ```bash
        #!/usr/bin/env bash
        set -euo pipefail
        exec ssh -T user@mac-host /opt/homebrew/bin/memo "$@"
        ```
-
-    2. Letakkan wrapper di `PATH` pada host Linux (misalnya `~/bin/memo`).
-    3. Override metadata skill (ruang kerja atau `~/.openclaw/skills`) untuk mengizinkan Linux:
-
+    2. Tempatkan pembungkus di `PATH` pada host Linux (misalnya `~/bin/memo`).
+    3. Ganti metadata Skills (ruang kerja atau `~/.openclaw/skills`) agar mengizinkan Linux:
        ```markdown
        ---
        name: apple-notes
-       description: Manage Apple Notes via the memo CLI on macOS.
+       description: Kelola Apple Notes melalui CLI memo di macOS.
        metadata: { "openclaw": { "os": ["darwin", "linux"], "requires": { "bins": ["memo"] } } }
        ---
        ```
-
-    4. Mulai sesi baru agar snapshot skills disegarkan.
+    4. Mulai sesi baru agar snapshot Skills diperbarui.
 
   </Accordion>
 
-  <Accordion title="Apakah Anda memiliki integrasi Notion atau HeyGen?">
-    Belum bawaan saat ini.
+  <Accordion title="Apakah tersedia integrasi Notion atau HeyGen?">
+    Saat ini belum tersedia secara bawaan. Opsi:
 
-    Opsi:
+    - **Skills / Plugin khusus**: paling cocok untuk akses API yang andal (keduanya memiliki API).
+    - **Otomatisasi browser**: berfungsi tanpa kode, tetapi lebih lambat dan lebih rentan.
 
-    - **Skill / plugin kustom:** terbaik untuk akses API yang andal (Notion/HeyGen keduanya memiliki API).
-    - **Automasi browser:** berfungsi tanpa kode tetapi lebih lambat dan lebih rapuh.
+    Untuk konteks per klien ala agensi: gunakan satu halaman Notion per klien (konteks + preferensi + pekerjaan aktif) dan minta agen mengambil halaman tersebut pada awal sesi.
 
-    Jika Anda ingin mempertahankan konteks per klien (alur kerja agensi), pola sederhana adalah:
-
-    - Satu halaman Notion per klien (konteks + preferensi + pekerjaan aktif).
-    - Minta agent mengambil halaman tersebut di awal sesi.
-
-    Jika Anda menginginkan integrasi native, buka permintaan fitur atau buat skill
-    yang menargetkan API tersebut.
-
-    Pasang skills:
+    Untuk integrasi bawaan, ajukan permintaan fitur atau buat Skills berdasarkan API tersebut.
 
     ```bash
     openclaw skills install @owner/<skill-slug>
     openclaw skills update --all
     ```
 
-    Pemasangan native masuk ke direktori `skills/` ruang kerja aktif. Untuk skills bersama di semua agent lokal, gunakan `openclaw skills install @owner/<skill-slug> --global` (atau tempatkan secara manual di `~/.openclaw/skills/<name>/SKILL.md`). Jika hanya beberapa agent yang harus melihat pemasangan bersama, konfigurasikan `agents.defaults.skills` atau `agents.list[].skills`. Beberapa skills mengharapkan biner yang dipasang melalui Homebrew; di Linux itu berarti Linuxbrew (lihat entri FAQ Homebrew Linux di atas). Lihat [Skills](/id/tools/skills), [Konfigurasi Skills](/id/tools/skills-config), dan [ClawHub](/id/clawhub).
+    Instalasi bawaan ditempatkan di direktori `skills/` ruang kerja aktif; gunakan `--global` untuk semua agen lokal, atau konfigurasikan `agents.defaults.skills` / `agents.list[].skills` untuk membatasi visibilitas. Beberapa Skills mengharapkan biner yang diinstal melalui Homebrew; di Linux, ini berarti Linuxbrew.
+
+    Lihat [Skills](/id/tools/skills), [Konfigurasi Skills](/id/tools/skills-config), [ClawHub](/id/clawhub).
 
   </Accordion>
 
@@ -457,20 +362,22 @@ tersedia di [FAQ Pertama Kali](/id/help/faq-first-run).
     openclaw browser --browser-profile user snapshot
     ```
 
-    Jika Anda menginginkan nama kustom, buat profil MCP eksplisit:
+    Untuk nama khusus, buat profil MCP eksplisit:
 
     ```bash
     openclaw browser create-profile --name chrome-live --driver existing-session
     openclaw browser --browser-profile chrome-live tabs
     ```
 
-    Jalur ini dapat menggunakan browser host lokal atau node browser yang terhubung. Jika Gateway berjalan di tempat lain, jalankan host node di mesin browser atau gunakan CDP jarak jauh sebagai gantinya.
+    Ini dapat menggunakan browser host lokal atau Node browser yang terhubung. Jika Gateway berjalan di tempat lain, jalankan host Node pada mesin browser, atau gunakan CDP jarak jauh.
 
-    Batas saat ini pada `existing-session` / `user`:
+    Batasan saat ini pada profil `existing-session` / `user` dibandingkan dengan profil `openclaw` terkelola:
 
-    - tindakan berbasis ref, bukan berbasis pemilih CSS
-    - unggahan memerlukan `ref` / `inputRef` dan saat ini mendukung satu file sekaligus
-    - `responsebody`, ekspor PDF, intersepsi unduhan, dan tindakan batch masih memerlukan browser terkelola atau profil CDP mentah
+    - `click`, `type`, `hover`, `scrollIntoView`, `drag`, dan `select` memerlukan referensi snapshot, bukan selektor CSS.
+    - Hook unggahan memerlukan `ref` atau `inputRef`, satu file setiap kali, tanpa `element` CSS.
+    - `responsebody`, ekspor PDF, intersepsi unduhan, dan tindakan batch masih memerlukan jalur browser terkelola.
+
+    Lihat [Browser](/id/tools/browser#existing-session-via-chrome-devtools-mcp) untuk perbandingan lengkap.
 
   </Accordion>
 </AccordionGroup>
@@ -478,149 +385,109 @@ tersedia di [FAQ Pertama Kali](/id/help/faq-first-run).
 ## Sandboxing dan memori
 
 <AccordionGroup>
-  <Accordion title="Apakah ada dokumen sandboxing khusus?">
-    Ya. Lihat [Sandboxing](/id/gateway/sandboxing). Untuk penyiapan khusus Docker (Gateway penuh di Docker atau image sandbox), lihat [Docker](/id/install/docker).
+  <Accordion title="Apakah ada dokumentasi khusus untuk sandboxing?">
+    Ya: [Sandboxing](/id/gateway/sandboxing). Untuk penyiapan khusus Docker (Gateway lengkap di Docker atau citra sandbox), lihat [Docker](/id/install/docker).
   </Accordion>
 
   <Accordion title="Docker terasa terbatas - bagaimana cara mengaktifkan fitur lengkap?">
-    Image default mengutamakan keamanan dan berjalan sebagai pengguna `node`, jadi tidak
-    menyertakan paket sistem, Homebrew, atau browser bawaan. Untuk penyiapan yang lebih lengkap:
+    Citra default mengutamakan keamanan dan berjalan sebagai pengguna `node`, sehingga tidak menyertakan paket sistem, Homebrew, dan browser bawaan. Untuk penyiapan yang lebih lengkap:
 
-    - Pertahankan `/home/node` dengan `OPENCLAW_HOME_VOLUME` agar cache tetap ada.
-    - Panggang dependensi sistem ke dalam image dengan `OPENCLAW_IMAGE_APT_PACKAGES`.
-    - Pasang browser Playwright melalui CLI bawaan:
-      `node /app/node_modules/playwright-core/cli.js install chromium`
-    - Setel `PLAYWRIGHT_BROWSERS_PATH` dan pastikan path tersebut dipertahankan.
+    - Pertahankan `/home/node` dengan `OPENCLAW_HOME_VOLUME` agar cache tetap tersedia.
+    - Sertakan dependensi sistem ke dalam citra dengan `OPENCLAW_IMAGE_APT_PACKAGES`.
+    - Instal browser Playwright melalui CLI bawaan: `node /app/node_modules/playwright-core/cli.js install chromium`.
+    - Atur `PLAYWRIGHT_BROWSERS_PATH` dan pertahankan jalur tersebut.
 
-    Dok: [Docker](/id/install/docker), [Browser](/id/tools/browser).
+    Dokumentasi: [Docker](/id/install/docker), [Browser](/id/tools/browser).
 
   </Accordion>
 
-  <Accordion title="Bisakah saya menjaga DM tetap pribadi tetapi membuat grup publik/tersandbox dengan satu agent?">
-    Ya - jika lalu lintas privat Anda adalah **DM** dan lalu lintas publik Anda adalah **grup**.
+  <Accordion title="Dapatkah saya menjaga DM tetap pribadi, tetapi membuat grup publik/terisolasi dengan satu agen?">
+    Ya, jika lalu lintas pribadi berupa **DM** dan lalu lintas publik berupa **grup**. Atur `agents.defaults.sandbox.mode: "non-main"` agar sesi grup/kanal (kunci non-utama) berjalan di backend sandbox yang dikonfigurasi, sedangkan sesi DM utama tetap berjalan di host. Docker adalah backend default setelah sandboxing diaktifkan. Batasi alat yang tersedia dalam sesi terisolasi melalui `tools.sandbox.tools`.
 
-    Gunakan `agents.defaults.sandbox.mode: "non-main"` sehingga sesi grup/kanal (kunci non-utama) berjalan di backend sandbox yang dikonfigurasi, sementara sesi DM utama tetap di host. Docker adalah backend default jika Anda tidak memilihnya. Lalu batasi alat yang tersedia di sesi tersandbox melalui `tools.sandbox.tools`.
-
-    Panduan penyiapan + contoh konfigurasi: [Grup: DM pribadi + grup publik](/id/channels/groups#pattern-personal-dms-public-groups-single-agent)
-
-    Referensi konfigurasi utama: [Konfigurasi Gateway](/id/gateway/config-agents#agentsdefaultssandbox)
+    Panduan penyiapan: [Grup: DM pribadi + grup publik](/id/channels/groups#pattern-personal-dms-public-groups-single-agent). Referensi utama: [Konfigurasi Gateway](/id/gateway/config-agents#agentsdefaultssandbox).
 
   </Accordion>
 
   <Accordion title="Bagaimana cara mengikat folder host ke sandbox?">
-    Setel `agents.defaults.sandbox.docker.binds` ke `["host:path:mode"]` (misalnya, `"/home/user/src:/src:ro"`). Bind global + per-agent digabung; bind per-agent diabaikan saat `scope: "shared"`. Gunakan `:ro` untuk apa pun yang sensitif dan ingat bahwa bind melewati dinding filesystem sandbox.
+    Atur `agents.defaults.sandbox.docker.binds` ke `["host:container:mode"]` (misalnya `"/home/user/src:/src:ro"`). Bind global dan per agen digabungkan; bind per agen diabaikan ketika `scope: "shared"`. Gunakan `:ro` untuk apa pun yang sensitif; bind melewati batas sistem berkas sandbox.
 
-    OpenClaw memvalidasi sumber bind terhadap path yang dinormalisasi dan path kanonis yang diresolusi melalui ancestor terdalam yang sudah ada. Itu berarti escape parent symlink tetap gagal tertutup bahkan saat segmen path terakhir belum ada, dan pemeriksaan root yang diizinkan tetap berlaku setelah resolusi symlink.
+    OpenClaw memvalidasi sumber bind terhadap jalur yang dinormalisasi dan jalur kanonis yang diurai melalui induk terdalam yang ada, sehingga pelolosan melalui induk symlink gagal secara tertutup bahkan ketika segmen jalur terakhir belum tersedia.
 
-    Lihat [Sandboxing](/id/gateway/sandboxing#custom-bind-mounts) dan [Sandbox vs Kebijakan Alat vs Elevated](/id/gateway/sandbox-vs-tool-policy-vs-elevated#bind-mounts-security-quick-check) untuk contoh dan catatan keselamatan.
+    Lihat [Sandboxing](/id/gateway/sandboxing#custom-bind-mounts) dan [Sandbox vs Kebijakan Alat vs Elevated](/id/gateway/sandbox-vs-tool-policy-vs-elevated#bind-mounts-security-quick-check).
 
   </Accordion>
 
   <Accordion title="Bagaimana cara kerja memori?">
-    Memori OpenClaw hanyalah file Markdown di ruang kerja agent:
+    Memori OpenClaw berupa file Markdown di ruang kerja agen: catatan harian di `memory/YYYY-MM-DD.md`, catatan jangka panjang yang dikurasi di `MEMORY.md` (hanya sesi utama/pribadi).
 
-    - Catatan harian di `memory/YYYY-MM-DD.md`
-    - Catatan jangka panjang terkurasi di `MEMORY.md` (hanya sesi utama/pribadi)
-
-    OpenClaw juga menjalankan **flush memori pra-Compaction senyap** untuk mengingatkan model
-    agar menulis catatan tahan lama sebelum auto-compaction. Ini hanya berjalan saat ruang kerja
-    dapat ditulis (sandbox baca-saja melewatinya). Lihat [Memori](/id/concepts/memory).
+    OpenClaw juga menjalankan **pembuangan memori sebelum Compaction** secara senyap sebelum Compaction merangkum percakapan, untuk mengingatkan model agar menulis catatan permanen terlebih dahulu. Proses ini hanya berjalan ketika ruang kerja dapat ditulisi (sandbox hanya-baca akan melewatinya); nonaktifkan dengan `agents.defaults.compaction.memoryFlush.enabled: false`. Lihat [Memori](/id/concepts/memory).
 
   </Accordion>
 
-  <Accordion title="Memory terus melupakan hal. Bagaimana cara membuatnya melekat?">
-    Minta bot untuk **menulis fakta ke memory**. Catatan jangka panjang berada di `MEMORY.md`,
-    konteks jangka pendek masuk ke `memory/YYYY-MM-DD.md`.
+  <Accordion title="Memori terus melupakan berbagai hal. Bagaimana cara membuatnya tersimpan?">
+    Minta bot untuk **menulis fakta tersebut ke memori**: catatan jangka panjang disimpan di `MEMORY.md`, konteks jangka pendek di `memory/YYYY-MM-DD.md`. Mengingatkan model untuk menyimpan memori biasanya menyelesaikan masalah. Jika masih terus lupa, pastikan Gateway menggunakan ruang kerja yang sama pada setiap proses.
 
-    Ini masih area yang sedang kami tingkatkan. Mengingatkan model untuk menyimpan memory akan membantu;
-    model akan tahu apa yang harus dilakukan. Jika model terus lupa, pastikan Gateway menggunakan
-    workspace yang sama pada setiap run.
-
-    Docs: [Memory](/id/concepts/memory), [Agent workspace](/id/concepts/agent-workspace).
+    Dokumentasi: [Memori](/id/concepts/memory), [Ruang kerja agen](/id/concepts/agent-workspace).
 
   </Accordion>
 
-  <Accordion title="Apakah memory bertahan selamanya? Apa batasannya?">
-    File memory berada di disk dan bertahan sampai Anda menghapusnya. Batasannya adalah
-    penyimpanan Anda, bukan model. **Konteks sesi** tetap dibatasi oleh jendela konteks
-    model, sehingga percakapan panjang dapat dipadatkan atau dipotong. Karena itulah
-    pencarian memory ada - pencarian ini hanya menarik kembali bagian yang relevan ke dalam konteks.
+  <Accordion title="Apakah memori bertahan selamanya? Apa batasannya?">
+    File memori berada di disk dan bertahan hingga dihapus; batasnya adalah penyimpanan Anda, bukan model. **Konteks sesi** tetap dibatasi oleh jendela konteks model, sehingga percakapan panjang dapat dipadatkan atau dipangkas - karena itulah pencarian memori tersedia, yang hanya menarik kembali bagian relevan ke dalam konteks.
 
-    Docs: [Memory](/id/concepts/memory), [Context](/id/concepts/context).
+    Dokumentasi: [Memori](/id/concepts/memory), [Konteks](/id/concepts/context).
 
   </Accordion>
 
-  <Accordion title="Apakah pencarian memory semantik memerlukan kunci OpenAI API?">
-    Hanya jika Anda menggunakan **embedding OpenAI**. OAuth Codex mencakup chat/completions dan
-    **tidak** memberikan akses embedding, jadi **masuk dengan Codex (OAuth atau login
-    Codex CLI)** tidak membantu untuk pencarian memory semantik. Embedding OpenAI
-    tetap memerlukan kunci API sungguhan (`OPENAI_API_KEY` atau `models.providers.openai.apiKey`).
+  <Accordion title="Apakah pencarian memori semantik memerlukan kunci API OpenAI?">
+    Hanya jika Anda menggunakan **embedding OpenAI**, yang merupakan penyedia default. OAuth Codex mencakup obrolan/penyelesaian dan **tidak** memberikan akses embedding, sehingga masuk dengan Codex (OAuth atau login CLI Codex) tidak mengaktifkan pencarian memori semantik. Embedding OpenAI tetap memerlukan kunci API yang sebenarnya (`OPENAI_API_KEY` atau `models.providers.openai.apiKey`).
 
-    Jika Anda tidak menetapkan provider secara eksplisit, OpenClaw menggunakan embedding OpenAI. Config
-    legacy yang masih menyebut `memorySearch.provider = "auto"` juga diselesaikan ke OpenAI.
-    Jika tidak ada kunci OpenAI API yang tersedia, pencarian memory semantik tetap tidak tersedia
-    sampai Anda mengonfigurasi kunci atau memilih provider lain secara eksplisit.
-
-    Jika Anda lebih suka tetap lokal, atur `memorySearch.provider = "local"` (dan opsional
-    `memorySearch.fallback = "none"`). Jika Anda menginginkan embedding Gemini, atur
-    `memorySearch.provider = "gemini"` dan sediakan `GEMINI_API_KEY` (atau
-    `memorySearch.remote.apiKey`). Kami mendukung model embedding **OpenAI, kompatibel OpenAI, Gemini,
-    Voyage, Mistral, Bedrock, Ollama, LM Studio, GitHub Copilot, DeepInfra, atau lokal**
-    - lihat [Memory](/id/concepts/memory) untuk detail penyiapan.
+    Agar tetap lokal, atur `agents.defaults.memorySearch.provider: "local"` (GGUF/llama.cpp). Penyedia lain yang didukung: Bedrock, DeepInfra, Gemini (`GEMINI_API_KEY` atau `memorySearch.remote.apiKey`), GitHub Copilot, LM Studio, Mistral, Ollama, kompatibel dengan OpenAI, dan Voyage. Lihat [Memori](/id/concepts/memory) dan [Pencarian memori](/id/concepts/memory-search) untuk detail penyiapan.
 
   </Accordion>
 </AccordionGroup>
 
-## Tempat berbagai hal berada di disk
+## Lokasi berbagai hal di disk
 
 <AccordionGroup>
   <Accordion title="Apakah semua data yang digunakan dengan OpenClaw disimpan secara lokal?">
-    Tidak - **state OpenClaw bersifat lokal**, tetapi **layanan eksternal tetap melihat apa yang Anda kirim kepada mereka**.
+    Tidak: **status milik OpenClaw sendiri bersifat lokal**, tetapi **layanan eksternal tetap melihat apa yang Anda kirimkan kepada mereka**.
 
-    - **Lokal secara default:** sesi, file memory, config, dan workspace berada di host Gateway
-      (`~/.openclaw` + direktori workspace Anda).
-    - **Remote karena kebutuhan:** pesan yang Anda kirim ke provider model (Anthropic/OpenAI/dll.) masuk ke
-      API mereka, dan platform chat (WhatsApp/Telegram/Slack/dll.) menyimpan data pesan di
-      server mereka.
-    - **Anda mengontrol jejaknya:** menggunakan model lokal menjaga prompt tetap di mesin Anda, tetapi traffic channel
-      tetap melewati server channel tersebut.
+    - **Lokal secara default**: sesi, file memori, konfigurasi, dan ruang kerja berada di host Gateway (`~/.openclaw` serta direktori ruang kerja Anda).
+    - **Jarak jauh karena diperlukan**: pesan yang dikirim ke penyedia model (Anthropic/OpenAI/dll.) diteruskan ke API mereka, dan platform obrolan (Slack/Telegram/WhatsApp/dll.) menyimpan data pesan di server mereka.
+    - **Anda mengendalikan jejak data**: model lokal menyimpan prompt di mesin Anda, tetapi lalu lintas saluran tetap melewati server saluran tersebut.
 
-    Terkait: [Agent workspace](/id/concepts/agent-workspace), [Memory](/id/concepts/memory).
+    Terkait: [Ruang kerja agen](/id/concepts/agent-workspace), [Memori](/id/concepts/memory).
 
   </Accordion>
 
   <Accordion title="Di mana OpenClaw menyimpan datanya?">
     Semuanya berada di bawah `$OPENCLAW_STATE_DIR` (default: `~/.openclaw`):
 
-    | Path                                                            | Tujuan                                                             |
-    | --------------------------------------------------------------- | ------------------------------------------------------------------ |
-    | `$OPENCLAW_STATE_DIR/openclaw.json`                             | Config utama (JSON5)                                               |
-    | `$OPENCLAW_STATE_DIR/credentials/oauth.json`                    | Impor OAuth legacy (disalin ke profil auth saat pertama digunakan) |
-    | `$OPENCLAW_STATE_DIR/agents/<agentId>/agent/auth-profiles.json` | Profil auth (OAuth, kunci API, dan `keyRef`/`tokenRef` opsional)   |
-    | `$OPENCLAW_STATE_DIR/secrets.json`                              | Payload secret berbasis file opsional untuk provider SecretRef `file` |
-    | `$OPENCLAW_STATE_DIR/agents/<agentId>/agent/auth.json`          | File kompatibilitas legacy (entri `api_key` statis dibersihkan)    |
-    | `$OPENCLAW_STATE_DIR/credentials/`                              | State provider (mis. `whatsapp/<accountId>/creds.json`)            |
-    | `$OPENCLAW_STATE_DIR/agents/`                                   | State per agent (agentDir + sesi)                                  |
-    | `$OPENCLAW_STATE_DIR/agents/<agentId>/sessions/`                | Riwayat & state percakapan (per agent)                             |
-    | `$OPENCLAW_STATE_DIR/agents/<agentId>/sessions/sessions.json`   | Metadata sesi (per agent)                                          |
+    | Jalur                                                              | Tujuan                                                             |
+    | ------------------------------------------------------------------ | ------------------------------------------------------------------ |
+    | `$OPENCLAW_STATE_DIR/openclaw.json`                                 | Konfigurasi utama (JSON5)                                           |
+    | `$OPENCLAW_STATE_DIR/credentials/oauth.json`                        | Impor OAuth lama (disalin ke profil autentikasi saat pertama digunakan) |
+    | `$OPENCLAW_STATE_DIR/agents/<agentId>/agent/auth-profiles.json`     | Profil autentikasi (OAuth, kunci API, `keyRef`/`tokenRef` opsional) |
+    | `$OPENCLAW_STATE_DIR/secrets.json`                                  | Payload rahasia berbasis file opsional untuk penyedia SecretRef `file` |
+    | `$OPENCLAW_STATE_DIR/agents/<agentId>/agent/auth.json`              | File kompatibilitas lama (entri `api_key` statis dibersihkan) |
+    | `$OPENCLAW_STATE_DIR/credentials/`                                  | Status penyedia (misalnya `whatsapp/<accountId>/creds.json`)        |
+    | `$OPENCLAW_STATE_DIR/agents/`                                       | Status per agen (agentDir + artefak sesi lama/arsip)                 |
+    | `$OPENCLAW_STATE_DIR/agents/<agentId>/agent/openclaw-agent.sqlite`  | Status SQLite per agen, termasuk baris sesi dan transkrip           |
+    | `$OPENCLAW_STATE_DIR/agents/<agentId>/sessions/`                    | Sumber migrasi sesi lama dan artefak arsip/dukungan                  |
 
-    Path single-agent legacy: `~/.openclaw/agent/*` (dimigrasikan oleh `openclaw doctor`).
+    Jalur agen tunggal lama `~/.openclaw/agent/*` dimigrasikan oleh `openclaw doctor`.
 
-    **Workspace** Anda (AGENTS.md, file memory, skills, dll.) terpisah dan dikonfigurasi melalui `agents.defaults.workspace` (default: `~/.openclaw/workspace`).
+    **Ruang kerja** Anda (AGENTS.md, file memori, Skills, dll.) terpisah, dikonfigurasi melalui `agents.defaults.workspace` (default: `~/.openclaw/workspace`).
 
   </Accordion>
 
-  <Accordion title="Di mana AGENTS.md / SOUL.md / USER.md / MEMORY.md seharusnya berada?">
-    File-file ini berada di **workspace agent**, bukan `~/.openclaw`.
+  <Accordion title="Di mana AGENTS.md / SOUL.md / USER.md / MEMORY.md harus berada?">
+    File-file ini berada di **ruang kerja agen**, bukan `~/.openclaw`.
 
-    - **Workspace (per agent)**: `AGENTS.md`, `SOUL.md`, `IDENTITY.md`, `USER.md`,
-      `MEMORY.md`, `memory/YYYY-MM-DD.md`, `HEARTBEAT.md` opsional.
-      Root `memory.md` huruf kecil hanya input perbaikan legacy; `openclaw doctor --fix`
-      dapat menggabungkannya ke `MEMORY.md` saat kedua file ada.
-    - **Direktori state (`~/.openclaw`)**: config, state channel/provider, profil auth, sesi, log,
-      dan Skills bersama (`~/.openclaw/skills`).
+    - **Ruang kerja (per agen)**: `AGENTS.md`, `SOUL.md`, `IDENTITY.md`, `USER.md`, `MEMORY.md`, `memory/YYYY-MM-DD.md`, `HEARTBEAT.md` opsional. Root berhuruf kecil `memory.md` hanya merupakan input perbaikan lama; `openclaw doctor --fix` dapat menggabungkannya ke dalam `MEMORY.md` jika keduanya ada.
+    - **Direktori status (`~/.openclaw`)**: konfigurasi, status saluran/penyedia, profil autentikasi, sesi, log, Skills bersama (`~/.openclaw/skills`).
 
-    Workspace default adalah `~/.openclaw/workspace`, dapat dikonfigurasi melalui:
+    Ruang kerja default adalah `~/.openclaw/workspace`, dapat dikonfigurasi:
 
     ```json5
     {
@@ -628,23 +495,18 @@ tersedia di [FAQ Pertama Kali](/id/help/faq-first-run).
     }
     ```
 
-    Jika bot "lupa" setelah restart, pastikan Gateway menggunakan workspace yang sama
-    pada setiap peluncuran (dan ingat: mode remote menggunakan workspace **host gateway**,
-    bukan laptop lokal Anda).
+    Jika bot "lupa" setelah dimulai ulang, pastikan Gateway menggunakan ruang kerja yang sama pada setiap peluncuran (mode jarak jauh menggunakan ruang kerja milik **host gateway**, bukan laptop lokal Anda).
 
-    Tips: jika Anda menginginkan perilaku atau preferensi yang tahan lama, minta bot untuk **menuliskannya ke
-    AGENTS.md atau MEMORY.md** alih-alih mengandalkan riwayat chat.
+    Kiat: untuk perilaku atau preferensi yang bertahan lama, minta bot untuk **menuliskannya ke AGENTS.md atau MEMORY.md** alih-alih mengandalkan riwayat obrolan.
 
-    Lihat [Agent workspace](/id/concepts/agent-workspace) dan [Memory](/id/concepts/memory).
+    Lihat [Ruang kerja agen](/id/concepts/agent-workspace) dan [Memori](/id/concepts/memory).
 
   </Accordion>
 
-  <Accordion title="Bisakah saya membuat SOUL.md lebih besar?">
-    Ya. `SOUL.md` adalah salah satu file bootstrap workspace yang disuntikkan ke dalam
-    konteks agent. Batas injeksi per file default adalah `20000` karakter,
-    dan total anggaran bootstrap lintas file adalah `60000` karakter.
+  <Accordion title="Dapatkah saya memperbesar SOUL.md?">
+    Ya. `SOUL.md` adalah salah satu file bootstrap ruang kerja yang disuntikkan ke konteks agen. Batas penyuntikan default per file adalah `20000` karakter; total anggaran bootstrap untuk seluruh file adalah `60000` karakter.
 
-    Ubah default bersama di config OpenClaw Anda:
+    Ubah default bersama:
 
     ```json5
     {
@@ -657,57 +519,29 @@ tersedia di [FAQ Pertama Kali](/id/help/faq-first-run).
     }
     ```
 
-    Atau timpa satu agent:
+    Atau timpa satu agen di bawah `agents.list[].bootstrapMaxChars` / `bootstrapTotalMaxChars`.
 
-    ```json5
-    {
-      agents: {
-        list: [
-          {
-            id: "main",
-            bootstrapMaxChars: 50000,
-            bootstrapTotalMaxChars: 300000,
-          },
-        ],
-      },
-    }
-    ```
+    Gunakan `/context` untuk memeriksa ukuran mentah dibandingkan ukuran yang disuntikkan dan apakah pemangkasan terjadi. Jaga agar `SOUL.md` tetap berfokus pada suara, sikap, dan kepribadian; masukkan aturan operasional ke `AGENTS.md` dan fakta yang bertahan lama ke memori.
 
-    Gunakan `/context` untuk memeriksa ukuran mentah vs yang disuntikkan dan apakah pemotongan terjadi.
-    Jaga `SOUL.md` tetap berfokus pada suara, sikap, dan kepribadian; letakkan aturan operasional
-    di `AGENTS.md` dan fakta tahan lama di memory.
-
-    Lihat [Context](/id/concepts/context) dan [Agent config](/id/gateway/config-agents).
+    Lihat [Konteks](/id/concepts/context) dan [Konfigurasi agen](/id/gateway/config-agents).
 
   </Accordion>
 
-  <Accordion title="Strategi backup yang direkomendasikan">
-    Taruh **workspace agent** Anda di repo git **private** dan backup ke tempat
-    private (misalnya GitHub private). Ini mencakup memory + file AGENTS/SOUL/USER,
-    dan memungkinkan Anda memulihkan "pikiran" asisten nanti.
+  <Accordion title="Strategi pencadangan yang disarankan">
+    Masukkan **ruang kerja agen** Anda ke repositori git **privat** dan cadangkan di lokasi privat (misalnya GitHub privat). Ini menyimpan memori beserta file AGENTS/SOUL/USER dan memungkinkan Anda memulihkan "pikiran" asisten nanti.
 
-    **Jangan** commit apa pun di bawah `~/.openclaw` (kredensial, sesi, token, atau payload secret terenkripsi).
-    Jika Anda perlu pemulihan penuh, backup workspace dan direktori state
-    secara terpisah (lihat pertanyaan migrasi di atas).
+    **Jangan** commit apa pun di bawah `~/.openclaw` (kredensial, sesi, token, payload rahasia terenkripsi). Untuk pemulihan penuh, cadangkan ruang kerja dan direktori status secara terpisah.
 
-    Docs: [Agent workspace](/id/concepts/agent-workspace).
+    Dokumentasi: [Ruang kerja agen](/id/concepts/agent-workspace).
 
   </Accordion>
 
-  <Accordion title="Bagaimana cara menghapus OpenClaw sepenuhnya?">
-    Lihat panduan khusus: [Uninstall](/id/install/uninstall).
+  <Accordion title="Bagaimana cara menghapus instalasi OpenClaw sepenuhnya?">
+    Lihat [Menghapus instalasi](/id/install/uninstall).
   </Accordion>
 
-  <Accordion title="Bisakah agent bekerja di luar workspace?">
-    Ya. Workspace adalah **cwd default** dan jangkar memory, bukan sandbox ketat.
-    Path relatif diselesaikan di dalam workspace, tetapi path absolut dapat mengakses lokasi
-    host lain kecuali sandboxing diaktifkan. Jika Anda memerlukan isolasi, gunakan
-    [`agents.defaults.sandbox`](/id/gateway/sandboxing) atau pengaturan sandbox per agent. Jika Anda
-    ingin sebuah repo menjadi direktori kerja default, arahkan `workspace` agent tersebut
-    ke root repo. Repo OpenClaw hanyalah kode sumber; jaga workspace tetap terpisah kecuali
-    Anda sengaja ingin agent bekerja di dalamnya.
-
-    Contoh (repo sebagai cwd default):
+  <Accordion title="Dapatkah agen bekerja di luar ruang kerja?">
+    Ya. Ruang kerja adalah **cwd default** dan jangkar memori, bukan sandbox yang ketat. Jalur relatif diuraikan di dalam ruang kerja; jalur absolut dapat mengakses lokasi host lain kecuali sandbox diaktifkan. Untuk isolasi, gunakan [`agents.defaults.sandbox`](/id/gateway/sandboxing) atau pengaturan sandbox per agen. Untuk menjadikan repositori sebagai direktori kerja default, arahkan `workspace` milik agen tersebut ke root repositori - repositori OpenClaw sendiri hanyalah kode sumber, jadi pertahankan ruang kerja secara terpisah kecuali Anda memang ingin agen bekerja di dalamnya.
 
     ```json5
     {
@@ -721,30 +555,20 @@ tersedia di [FAQ Pertama Kali](/id/help/faq-first-run).
 
   </Accordion>
 
-  <Accordion title="Mode remote: di mana session store?">
-    State sesi dimiliki oleh **host gateway**. Jika Anda berada dalam mode remote, session store yang Anda pedulikan berada di mesin remote, bukan laptop lokal Anda. Lihat [Session management](/id/concepts/session).
+  <Accordion title="Mode jarak jauh: di mana penyimpanan sesi berada?">
+    Status sesi dimiliki oleh **host gateway**. Dalam mode jarak jauh, penyimpanan sesi yang relevan berada di mesin jarak jauh, bukan laptop lokal Anda. Lihat [Pengelolaan sesi](/id/concepts/session).
   </Accordion>
 </AccordionGroup>
 
-## Dasar-dasar config
+## Dasar-dasar konfigurasi
 
 <AccordionGroup>
-  <Accordion title="Apa format config-nya? Di mana lokasinya?">
-    OpenClaw membaca config **JSON5** opsional dari `$OPENCLAW_CONFIG_PATH` (default: `~/.openclaw/openclaw.json`):
-
-    ```
-    $OPENCLAW_CONFIG_PATH
-    ```
-
-    Jika file tidak ada, OpenClaw menggunakan default yang cukup aman (termasuk workspace default `~/.openclaw/workspace`).
-
+  <Accordion title="Apa format konfigurasinya? Di mana lokasinya?">
+    OpenClaw membaca konfigurasi **JSON5** opsional dari `$OPENCLAW_CONFIG_PATH` (default: `~/.openclaw/openclaw.json`). Jika file tersebut tidak ada, OpenClaw menggunakan default yang relatif aman, termasuk ruang kerja default `~/.openclaw/workspace`.
   </Accordion>
 
-  <Accordion title='Saya mengatur gateway.bind: "lan" (atau "tailnet") dan sekarang tidak ada yang listen / UI mengatakan tidak terotorisasi'>
-    Bind non-loopback **memerlukan path auth gateway yang valid**. Dalam praktiknya, ini berarti:
-
-    - auth shared-secret: token atau password
-    - `gateway.auth.mode: "trusted-proxy"` di belakang reverse proxy sadar-identitas yang dikonfigurasi dengan benar
+  <Accordion title='Saya mengatur gateway.bind: "lan" (atau "tailnet") dan sekarang tidak ada yang mendengarkan / UI menyatakan tidak diotorisasi'>
+    Bind non-loopback **memerlukan jalur autentikasi gateway yang valid**: autentikasi rahasia bersama (token atau kata sandi), atau `gateway.auth.mode: "trusted-proxy"` di belakang proksi balik berbasis identitas yang dikonfigurasi dengan benar.
 
     ```json5
     {
@@ -758,34 +582,27 @@ tersedia di [FAQ Pertama Kali](/id/help/faq-first-run).
     }
     ```
 
-    Catatan:
-
-    - `gateway.remote.token` / `.password` **tidak** mengaktifkan auth gateway lokal dengan sendirinya.
-    - Path panggilan lokal dapat menggunakan `gateway.remote.*` sebagai fallback hanya saat `gateway.auth.*` tidak disetel.
-    - Untuk auth password, setel `gateway.auth.mode: "password"` plus `gateway.auth.password` (atau `OPENCLAW_GATEWAY_PASSWORD`) sebagai gantinya.
-    - Jika `gateway.auth.token` / `gateway.auth.password` dikonfigurasi secara eksplisit melalui SecretRef dan tidak terselesaikan, resolusi gagal tertutup (tanpa masking fallback remote).
-    - Setup Control UI shared-secret melakukan autentikasi melalui `connect.params.auth.token` atau `connect.params.auth.password` (disimpan di pengaturan app/UI). Mode pembawa identitas seperti Tailscale Serve atau `trusted-proxy` menggunakan header request sebagai gantinya. Hindari menaruh shared secret di URL.
-    - Dengan `gateway.auth.mode: "trusted-proxy"`, reverse proxy loopback host yang sama memerlukan `gateway.auth.trustedProxy.allowLoopback = true` eksplisit dan entri loopback di `gateway.trustedProxies`.
+    - `gateway.remote.token` / `.password` **tidak** mengaktifkan autentikasi gateway lokal dengan sendirinya; jalur panggilan lokal dapat menggunakan `gateway.remote.*` sebagai fallback hanya jika `gateway.auth.*` belum diatur.
+    - Untuk autentikasi kata sandi, atur `gateway.auth.mode: "password"` beserta `gateway.auth.password` (atau `OPENCLAW_GATEWAY_PASSWORD`).
+    - Jika `gateway.auth.token` / `.password` dikonfigurasi secara eksplisit melalui SecretRef dan tidak dapat diuraikan, penguraian gagal secara tertutup (tanpa fallback jarak jauh yang menyamarkan kegagalan).
+    - Penyiapan Control UI dengan rahasia bersama melakukan autentikasi melalui `connect.params.auth.token` atau `connect.params.auth.password` (disimpan dalam pengaturan aplikasi/UI). Mode berbasis identitas seperti Tailscale Serve atau `trusted-proxy` menggunakan header permintaan sebagai gantinya - hindari menempatkan rahasia bersama dalam URL.
+    - Dengan `gateway.auth.mode: "trusted-proxy"`, proksi balik loopback pada host yang sama memerlukan `gateway.auth.trustedProxy.allowLoopback = true` eksplisit dan entri loopback dalam `gateway.trustedProxies`.
 
   </Accordion>
 
-  <Accordion title="Mengapa saya sekarang memerlukan token di localhost?">
-    OpenClaw memberlakukan auth gateway secara default, termasuk loopback. Dalam path default normal, ini berarti auth token: jika tidak ada path auth eksplisit yang dikonfigurasi, startup gateway diselesaikan ke mode token dan menghasilkan token khusus runtime untuk startup tersebut, sehingga **klien WS lokal harus melakukan autentikasi**. Konfigurasikan `gateway.auth.token`, `gateway.auth.password`, `OPENCLAW_GATEWAY_TOKEN`, atau `OPENCLAW_GATEWAY_PASSWORD` secara eksplisit saat klien memerlukan secret stabil di antara restart. Ini memblokir proses lokal lain agar tidak memanggil Gateway.
+  <Accordion title="Mengapa sekarang saya memerlukan token di localhost?">
+    OpenClaw memberlakukan autentikasi gateway secara default, termasuk loopback. Jika tidak ada jalur autentikasi eksplisit yang dikonfigurasi, saat dimulai mode token akan digunakan dan token khusus runtime dibuat untuk peluncuran tersebut, sehingga klien WS lokal harus melakukan autentikasi. Ini mencegah proses lokal lain memanggil Gateway.
 
-    Jika Anda lebih memilih jalur autentikasi yang berbeda, Anda dapat secara eksplisit memilih mode kata sandi (atau, untuk proksi balik yang sadar identitas, `trusted-proxy`). Jika Anda **benar-benar** menginginkan loopback terbuka, tetapkan `gateway.auth.mode: "none"` secara eksplisit di konfigurasi Anda. Doctor dapat membuat token untuk Anda kapan saja: `openclaw doctor --generate-gateway-token`.
+    Konfigurasikan `gateway.auth.token`, `gateway.auth.password`, `OPENCLAW_GATEWAY_TOKEN`, atau `OPENCLAW_GATEWAY_PASSWORD` secara eksplisit jika klien memerlukan rahasia yang stabil setelah dimulai ulang. Anda juga dapat memilih mode kata sandi, atau `trusted-proxy` untuk proksi balik berbasis identitas. Untuk loopback terbuka, atur `gateway.auth.mode: "none"` secara eksplisit. `openclaw doctor --generate-gateway-token` menghasilkan token kapan saja.
 
   </Accordion>
 
   <Accordion title="Apakah saya harus memulai ulang setelah mengubah konfigurasi?">
-    Gateway memantau konfigurasi dan mendukung hot-reload:
-
-    - `gateway.reload.mode: "hybrid"` (default): menerapkan perubahan aman secara langsung, memulai ulang untuk perubahan kritis
-    - `hot`, `restart`, `off` juga didukung
-
+    Gateway memantau konfigurasi dan mendukung pemuatan ulang langsung: `gateway.reload.mode: "hybrid"` (default) menerapkan perubahan yang aman secara langsung dan memulai ulang untuk perubahan kritis. `hot`, `restart`, dan `off` juga didukung. Sebagian besar perubahan `tools.*`, kebijakan `agents.*`, `session.*`, dan `messages.*` langsung diterapkan tanpa tindakan pemuatan ulang sama sekali; perubahan bind/port `gateway.*` memerlukan mulai ulang.
   </Accordion>
 
-  <Accordion title="Bagaimana cara menonaktifkan tagline CLI yang lucu?">
-    Tetapkan `cli.banner.taglineMode` di konfigurasi:
+  <Accordion title="Bagaimana cara menonaktifkan slogan CLI yang lucu?">
+    Atur `cli.banner.taglineMode`:
 
     ```json5
     {
@@ -797,35 +614,34 @@ tersedia di [FAQ Pertama Kali](/id/help/faq-first-run).
     }
     ```
 
-    - `off`: menyembunyikan teks tagline tetapi tetap menampilkan baris judul/versi banner.
-    - `default`: menggunakan `All your chats, one OpenClaw.` setiap kali.
-    - `random`: tagline lucu/musiman yang berganti-ganti (perilaku default).
-    - Jika Anda tidak menginginkan banner sama sekali, tetapkan env `OPENCLAW_HIDE_BANNER=1`.
+    - `off`: menyembunyikan teks slogan tetapi mempertahankan baris judul/versi banner.
+    - `default`: selalu menggunakan `All your chats, one OpenClaw.`.
+    - `random`: slogan lucu/musiman yang berganti-ganti (perilaku default).
+    - Agar tidak ada banner sama sekali, atur env `OPENCLAW_HIDE_BANNER=1`.
 
   </Accordion>
 
   <Accordion title="Bagaimana cara mengaktifkan pencarian web (dan pengambilan web)?">
-    `web_fetch` berfungsi tanpa kunci API. `web_search` bergantung pada provider yang Anda pilih:
+    `web_fetch` berfungsi tanpa kunci API. `web_search` bergantung pada penyedia yang Anda pilih:
 
-    - Provider berbasis API seperti Brave, Exa, Firecrawl, Gemini, Kimi, MiniMax Search, Perplexity, dan Tavily memerlukan penyiapan kunci API normalnya.
-    - Grok dapat menggunakan ulang OAuth xAI dari autentikasi model, atau fallback ke `XAI_API_KEY` / konfigurasi pencarian web plugin.
-    - Ollama Web Search bebas kunci, tetapi menggunakan host Ollama yang Anda konfigurasi dan memerlukan `ollama signin`.
-    - DuckDuckGo bebas kunci, tetapi merupakan integrasi tidak resmi berbasis HTML.
-    - SearXNG bebas kunci/dihosting sendiri; konfigurasikan `SEARXNG_BASE_URL` atau `plugins.entries.searxng.config.webSearch.baseUrl`.
+    | Penyedia | Tanpa kunci | Variabel lingkungan |
+    | --- | --- | --- |
+    | Brave | Tidak | `BRAVE_API_KEY` |
+    | DuckDuckGo | Ya (berbasis HTML tidak resmi) | - |
+    | Exa | Tidak | `EXA_API_KEY` |
+    | Firecrawl | Tidak | `FIRECRAWL_API_KEY` |
+    | Gemini | Tidak | `GEMINI_API_KEY` |
+    | Grok | Tidak (OAuth xAI atau kunci) | `XAI_API_KEY` |
+    | Kimi | Tidak | `KIMI_API_KEY` atau `MOONSHOT_API_KEY` |
+    | MiniMax Search | Tidak | `MINIMAX_CODE_PLAN_KEY`, `MINIMAX_CODING_API_KEY`, atau `MINIMAX_API_KEY` |
+    | Ollama Web Search | Ya (memerlukan `ollama signin`) | - |
+    | Perplexity | Tidak | `PERPLEXITY_API_KEY` atau `OPENROUTER_API_KEY` |
+    | SearXNG | Ya (dihosting sendiri) | `SEARXNG_BASE_URL` |
+    | Tavily | Tidak | `TAVILY_API_KEY` |
 
-    **Direkomendasikan:** jalankan `openclaw configure --section web` dan pilih provider.
-    Alternatif lingkungan:
+    Grok juga dapat menggunakan kembali OAuth xAI dari autentikasi model (`openclaw onboard --auth-choice xai-oauth`).
 
-    - Brave: `BRAVE_API_KEY`
-    - Exa: `EXA_API_KEY`
-    - Firecrawl: `FIRECRAWL_API_KEY`
-    - Gemini: `GEMINI_API_KEY`
-    - Grok: OAuth xAI, `XAI_API_KEY`
-    - Kimi: `KIMI_API_KEY` atau `MOONSHOT_API_KEY`
-    - MiniMax Search: `MINIMAX_CODE_PLAN_KEY`, `MINIMAX_CODING_API_KEY`, atau `MINIMAX_API_KEY`
-    - Perplexity: `PERPLEXITY_API_KEY` atau `OPENROUTER_API_KEY`
-    - SearXNG: `SEARXNG_BASE_URL`
-    - Tavily: `TAVILY_API_KEY`
+    **Direkomendasikan**: `openclaw configure --section web` dan pilih penyedia.
 
     ```json5
     {
@@ -839,85 +655,74 @@ tersedia di [FAQ Pertama Kali](/id/help/faq-first-run).
             },
           },
         },
-        },
-        tools: {
-          web: {
-            search: {
-              enabled: true,
-              provider: "brave",
-              maxResults: 5,
-            },
-            fetch: {
-              enabled: true,
-              provider: "firecrawl", // optional; omit for auto-detect
-            },
+      },
+      tools: {
+        web: {
+          search: {
+            enabled: true,
+            provider: "brave",
+            maxResults: 5,
+          },
+          fetch: {
+            enabled: true,
+            provider: "firecrawl", // opsional; hilangkan untuk deteksi otomatis
           },
         },
+      },
     }
     ```
 
-    Konfigurasi pencarian web khusus provider kini berada di bawah `plugins.entries.<plugin>.config.webSearch.*`.
-    Path provider lama `tools.web.search.*` masih dimuat sementara untuk kompatibilitas, tetapi tidak boleh digunakan untuk konfigurasi baru.
-    Konfigurasi fallback pengambilan web Firecrawl berada di bawah `plugins.entries.firecrawl.config.webFetch.*`.
+    Konfigurasi pencarian web khusus penyedia berada di bawah `plugins.entries.<plugin>.config.webSearch.*`. Jalur penyedia `tools.web.search.*` lama masih dimuat untuk kompatibilitas, tetapi tidak boleh digunakan dalam konfigurasi baru. Konfigurasi fallback pengambilan web Firecrawl berada di bawah `plugins.entries.firecrawl.config.webFetch.*`.
 
-    Catatan:
+    - Daftar izin: tambahkan `web_search`/`web_fetch`/`x_search`, atau `group:web` untuk ketiganya.
+    - `web_fetch` diaktifkan secara default.
+    - Jika `tools.web.fetch.provider` dihilangkan, OpenClaw secara otomatis mendeteksi penyedia fallback pengambilan pertama yang siap dari kredensial yang tersedia; Plugin Firecrawl resmi menyediakan fallback tersebut.
+    - Daemon membaca variabel lingkungan dari `~/.openclaw/.env` (atau lingkungan layanan).
 
-    - Jika Anda menggunakan allowlist, tambahkan `web_search`/`web_fetch`/`x_search` atau `group:web`.
-    - `web_fetch` diaktifkan secara default (kecuali dinonaktifkan secara eksplisit).
-    - Jika `tools.web.fetch.provider` dihilangkan, OpenClaw mendeteksi otomatis provider fallback pengambilan pertama yang siap dari kredensial yang tersedia. Plugin resmi Firecrawl menyediakan fallback tersebut.
-    - Daemon membaca env var dari `~/.openclaw/.env` (atau lingkungan layanan).
-
-    Docs: [Alat web](/id/tools/web).
+    Dokumentasi: [Alat web](/id/tools/web).
 
   </Accordion>
 
   <Accordion title="config.apply menghapus konfigurasi saya. Bagaimana cara memulihkan dan menghindarinya?">
-    `config.apply` mengganti **seluruh konfigurasi**. Jika Anda mengirim objek parsial, semua yang lain dihapus.
+    `config.apply` menggantikan **seluruh konfigurasi**; objek parsial menghapus semua yang lain.
 
-    OpenClaw saat ini melindungi banyak penimpaan tidak sengaja:
+    OpenClaw saat ini melindungi dari sebagian besar penimpaan yang tidak disengaja:
 
-    - Penulisan konfigurasi milik OpenClaw memvalidasi konfigurasi penuh setelah perubahan sebelum menulis.
-    - Penulisan milik OpenClaw yang tidak valid atau destruktif ditolak dan disimpan sebagai `openclaw.json.rejected.*`.
-    - Jika edit langsung merusak startup atau hot reload, Gateway gagal tertutup atau melewati reload; ia tidak menulis ulang `openclaw.json`.
-    - `openclaw doctor --fix` memiliki perbaikan dan dapat memulihkan last-known-good sambil menyimpan file yang ditolak sebagai `openclaw.json.clobbered.*`.
+    - Penulisan konfigurasi milik OpenClaw memvalidasi konfigurasi lengkap setelah perubahan sebelum menulis.
+    - Penulisan milik OpenClaw yang tidak valid atau merusak ditolak dan disimpan sebagai `openclaw.json.rejected.*`.
+    - Pengeditan langsung yang merusak proses mulai atau pemuatan ulang langsung membuat Gateway gagal secara tertutup atau melewati pemuatan ulang; tindakan tersebut tidak menulis ulang `openclaw.json`.
+    - `openclaw doctor --fix` menangani perbaikan, dapat memulihkan kondisi baik terakhir yang diketahui, dan menyimpan berkas yang ditolak sebagai `openclaw.json.clobbered.*`.
 
-    Pulihkan:
+    Pemulihan:
 
     - Periksa `openclaw logs --follow` untuk `Invalid config at`, `Config write rejected:`, atau `config reload skipped (invalid config)`.
     - Periksa `openclaw.json.clobbered.*` atau `openclaw.json.rejected.*` terbaru di sebelah konfigurasi aktif.
     - Jalankan `openclaw config validate` dan `openclaw doctor --fix`.
     - Salin kembali hanya kunci yang dimaksud dengan `openclaw config set` atau `config.patch`.
-    - Jika Anda tidak memiliki last-known-good atau payload yang ditolak, pulihkan dari cadangan, atau jalankan ulang `openclaw doctor` dan konfigurasi ulang channel/model.
-    - Jika ini tidak terduga, ajukan bug dan sertakan konfigurasi terakhir yang Anda ketahui atau cadangan apa pun.
-    - Agen coding lokal sering dapat merekonstruksi konfigurasi yang berfungsi dari log atau riwayat.
+    - Tidak ada kondisi baik terakhir yang diketahui atau payload yang ditolak: pulihkan dari cadangan, atau jalankan kembali `openclaw doctor` dan konfigurasi ulang saluran/model.
+    - Kehilangan tidak terduga: laporkan bug dengan konfigurasi terakhir yang diketahui atau cadangan. Agen pengodean lokal sering kali dapat merekonstruksi konfigurasi yang berfungsi dari log atau riwayat.
 
-    Hindari:
+    Untuk menghindarinya: gunakan `openclaw config set` untuk perubahan kecil, `openclaw configure` untuk pengeditan interaktif, `config.schema.lookup` untuk memeriksa jalur yang belum dikenal (mengembalikan simpul skema dangkal beserta ringkasan anak langsung), dan `config.patch` untuk pengeditan RPC parsial—gunakan `config.apply` hanya untuk penggantian konfigurasi penuh. Alat runtime `gateway` yang ditujukan bagi agen menolak menulis ulang `tools.exec.ask` / `tools.exec.security` bahkan melalui alias lama `tools.bash.*`.
 
-    - Gunakan `openclaw config set` untuk perubahan kecil.
-    - Gunakan `openclaw configure` untuk edit interaktif.
-    - Gunakan `config.schema.lookup` terlebih dahulu saat Anda tidak yakin tentang path atau bentuk field yang tepat; ini mengembalikan node skema dangkal plus ringkasan anak langsung untuk penelusuran.
-    - Gunakan `config.patch` untuk edit RPC parsial; simpan `config.apply` hanya untuk penggantian konfigurasi penuh.
-    - Jika Anda menggunakan alat `gateway` yang menghadap agen dari agent run, alat itu tetap akan menolak penulisan ke `tools.exec.ask` / `tools.exec.security` (termasuk alias lama `tools.bash.*` yang dinormalisasi ke path exec terlindungi yang sama).
-
-    Docs: [Konfigurasi](/id/cli/config), [Konfigurasikan](/id/cli/configure), [Pemecahan masalah Gateway](/id/gateway/troubleshooting#gateway-rejected-invalid-config), [Doctor](/id/gateway/doctor).
+    Dokumentasi: [Konfigurasi](/id/cli/config), [Mengonfigurasi](/id/cli/configure), [Pemecahan masalah Gateway](/id/gateway/troubleshooting#gateway-rejected-invalid-config), [Doctor](/id/gateway/doctor).
 
   </Accordion>
 
-  <Accordion title="Bagaimana cara menjalankan Gateway pusat dengan worker khusus lintas perangkat?">
-    Pola umum adalah **satu Gateway** (misalnya Raspberry Pi) plus **node** dan **agen**:
+  <Accordion title="Bagaimana cara menjalankan Gateway pusat dengan pekerja khusus di berbagai perangkat?">
+    Pola umum: **satu Gateway** (misalnya Raspberry Pi) ditambah **node** dan **agen**.
 
-    - **Gateway (pusat):** memiliki channel (Signal/WhatsApp), routing, dan sesi.
-    - **Node (perangkat):** Mac/iOS/Android tersambung sebagai periferal dan mengekspos alat lokal (`system.run`, `canvas`, `camera`).
-    - **Agen (worker):** brain/workspace terpisah untuk peran khusus (misalnya "operasi Hetzner", "Data pribadi").
-    - **Sub-agen:** memunculkan pekerjaan latar belakang dari agen utama saat Anda menginginkan paralelisme.
-    - **TUI:** tersambung ke Gateway dan berpindah agen/sesi.
+    - **Gateway (pusat)**: menangani saluran (Signal/WhatsApp), perutean, dan sesi.
+    - **Node (perangkat)**: Mac/iOS/Android terhubung sebagai periferal dan menyediakan alat lokal (`system.run`, `canvas`, `camera`).
+    - **Agen (pekerja)**: otak/ruang kerja terpisah untuk peran khusus (misalnya operasi dan data pribadi).
+    - **Subagen**: memulai pekerjaan latar belakang dari agen utama untuk paralelisme.
+    - **TUI**: terhubung ke Gateway dan beralih antara agen/sesi.
 
-    Docs: [Node](/id/nodes), [Akses jarak jauh](/id/gateway/remote), [Routing Multi-Agen](/id/concepts/multi-agent), [Sub-agen](/id/tools/subagents), [TUI](/id/web/tui).
+    Dokumentasi: [Node](/id/nodes), [Akses jarak jauh](/id/gateway/remote), [Perutean Multi-Agen](/id/concepts/multi-agent), [Subagen](/id/tools/subagents), [TUI](/id/web/tui).
 
   </Accordion>
 
-  <Accordion title="Bisakah browser OpenClaw berjalan headless?">
-    Ya. Ini adalah opsi konfigurasi:
+  <Accordion title="Dapatkah peramban OpenClaw berjalan tanpa antarmuka grafis?">
+    Ya:
 
     ```json5
     {
@@ -930,150 +735,117 @@ tersedia di [FAQ Pertama Kali](/id/help/faq-first-run).
     }
     ```
 
-    Default-nya adalah `false` (headful). Headless lebih mungkin memicu pemeriksaan anti-bot di beberapa situs. Lihat [Browser](/id/tools/browser).
-
-    Headless menggunakan **mesin Chromium yang sama** dan berfungsi untuk sebagian besar automasi (formulir, klik, scraping, login). Perbedaan utamanya:
-
-    - Tidak ada jendela browser yang terlihat (gunakan tangkapan layar jika Anda membutuhkan visual).
-    - Beberapa situs lebih ketat terhadap automasi dalam mode headless (CAPTCHA, anti-bot).
-      Misalnya, X/Twitter sering memblokir sesi headless.
+    Nilai default adalah `false` (dengan antarmuka grafis). Mode tanpa antarmuka grafis lebih mungkin memicu pemeriksaan antibot di beberapa situs (X/Twitter sering memblokir sesi tanpa antarmuka grafis). Mode ini menggunakan mesin Chromium yang sama dan berfungsi untuk sebagian besar otomatisasi; perbedaan utamanya adalah tidak ada jendela peramban yang terlihat (gunakan tangkapan layar untuk visual). Lihat [Peramban](/id/tools/browser).
 
   </Accordion>
 
-  <Accordion title="Bagaimana cara menggunakan Brave untuk kontrol browser?">
-    Tetapkan `browser.executablePath` ke binary Brave Anda (atau browser berbasis Chromium apa pun) dan mulai ulang Gateway.
-    Lihat contoh konfigurasi lengkap di [Browser](/id/tools/browser#use-brave-or-another-chromium-based-browser).
+  <Accordion title="Bagaimana cara menggunakan Brave untuk mengontrol peramban?">
+    Atur `browser.executablePath` ke berkas biner Brave Anda (atau peramban berbasis Chromium lainnya), lalu mulai ulang Gateway. Lihat [Peramban](/id/tools/browser#use-brave-or-another-chromium-based-browser).
   </Accordion>
 </AccordionGroup>
 
 ## Gateway dan node jarak jauh
 
 <AccordionGroup>
-  <Accordion title="Bagaimana perintah dipropagasikan antara Telegram, gateway, dan node?">
-    Pesan Telegram ditangani oleh **gateway**. Gateway menjalankan agen dan baru kemudian memanggil node melalui **Gateway WebSocket** saat alat node diperlukan:
+  <Accordion title="Bagaimana perintah diteruskan antara Telegram, Gateway, dan node?">
+    Pesan Telegram ditangani oleh **Gateway**, yang menjalankan agen dan baru kemudian memanggil node melalui **WebSocket Gateway** ketika alat node diperlukan:
 
-    Telegram → Gateway → Agen → `node.*` → Node → Gateway → Telegram
+    Telegram -> Gateway -> Agen -> `node.*` -> Node -> Gateway -> Telegram
 
-    Node tidak melihat traffic provider masuk; mereka hanya menerima panggilan RPC node.
+    Node tidak melihat lalu lintas masuk dari penyedia; node hanya menerima panggilan RPC node.
 
   </Accordion>
 
-  <Accordion title="Bagaimana agen saya dapat mengakses komputer saya jika Gateway dihosting secara jarak jauh?">
-    Jawaban singkat: **pasangkan komputer Anda sebagai node**. Gateway berjalan di tempat lain, tetapi dapat memanggil alat `node.*` (layar, kamera, sistem) di mesin lokal Anda melalui Gateway WebSocket.
+  <Accordion title="Bagaimana agen dapat mengakses komputer saya jika Gateway dihosting dari jarak jauh?">
+    Pasangkan komputer Anda sebagai **node**. Gateway berjalan di tempat lain, tetapi dapat memanggil alat `node.*` (layar, kamera, sistem) pada mesin lokal Anda melalui WebSocket Gateway.
 
-    Penyiapan umum:
-
-    1. Jalankan Gateway di host yang selalu menyala (VPS/server rumah).
-    2. Tempatkan host Gateway + komputer Anda di tailnet yang sama.
-    3. Pastikan Gateway WS dapat dijangkau (bind tailnet atau tunnel SSH).
-    4. Buka app macOS secara lokal dan sambungkan dalam mode **Remote over SSH** (atau tailnet langsung)
-       agar dapat terdaftar sebagai node.
-    5. Setujui node di Gateway:
-
+    1. Jalankan Gateway pada host yang selalu aktif (VPS/server rumah).
+    2. Tempatkan host Gateway dan komputer Anda pada tailnet yang sama.
+    3. Pastikan WS Gateway dapat dijangkau (pengikatan tailnet atau terowongan SSH).
+    4. Buka aplikasi macOS secara lokal dan hubungkan dalam mode **Remote over SSH** (atau tailnet langsung) agar terdaftar sebagai node.
+    5. Setujui node:
        ```bash
        openclaw devices list
        openclaw devices approve <requestId>
        ```
 
-    Tidak diperlukan bridge TCP terpisah; node tersambung melalui Gateway WebSocket.
+    Tidak diperlukan jembatan TCP terpisah; node terhubung melalui WebSocket Gateway.
 
-    Pengingat keamanan: memasangkan node macOS mengizinkan `system.run` di mesin tersebut. Hanya
-    pasangkan perangkat yang Anda percaya, dan tinjau [Keamanan](/id/gateway/security).
+    Pengingat keamanan: memasangkan node macOS mengizinkan `system.run` pada mesin tersebut. Hanya pasangkan perangkat yang Anda percayai; tinjau [Keamanan](/id/gateway/security).
 
-    Docs: [Node](/id/nodes), [Protokol Gateway](/id/gateway/protocol), [Mode jarak jauh macOS](/id/platforms/mac/remote), [Keamanan](/id/gateway/security).
-
-  </Accordion>
-
-  <Accordion title="Tailscale tersambung tetapi saya tidak mendapat balasan. Apa sekarang?">
-    Periksa dasar-dasarnya:
-
-    - Gateway berjalan: `openclaw gateway status`
-    - Kesehatan Gateway: `openclaw status`
-    - Kesehatan channel: `openclaw channels status`
-
-    Lalu verifikasi autentikasi dan routing:
-
-    - Jika Anda menggunakan Tailscale Serve, pastikan `gateway.auth.allowTailscale` ditetapkan dengan benar.
-    - Jika Anda tersambung melalui tunnel SSH, konfirmasi tunnel lokal aktif dan mengarah ke port yang benar.
-    - Konfirmasi allowlist Anda (DM atau grup) menyertakan akun Anda.
-
-    Docs: [Tailscale](/id/gateway/tailscale), [Akses jarak jauh](/id/gateway/remote), [Channel](/id/channels).
+    Dokumentasi: [Node](/id/nodes), [Protokol Gateway](/id/gateway/protocol), [Mode jarak jauh macOS](/id/platforms/mac/remote), [Keamanan](/id/gateway/security).
 
   </Accordion>
 
-  <Accordion title="Bisakah dua instance OpenClaw saling berbicara (lokal + VPS)?">
-    Ya. Tidak ada bridge "bot-ke-bot" bawaan, tetapi Anda dapat merangkainya dengan beberapa cara yang andal:
-
-    **Paling sederhana:** gunakan channel chat normal yang dapat diakses kedua bot (Telegram/Slack/WhatsApp).
-    Minta Bot A mengirim pesan ke Bot B, lalu biarkan Bot B membalas seperti biasa.
-
-    **Bridge CLI (generik):** jalankan skrip yang memanggil Gateway lain dengan
-    `openclaw agent --message ... --deliver`, menargetkan chat tempat bot lain
-    mendengarkan. Jika satu bot berada di VPS jarak jauh, arahkan CLI Anda ke Gateway jarak jauh tersebut
-    melalui SSH/Tailscale (lihat [Akses jarak jauh](/id/gateway/remote)).
-
-    Contoh pola (jalankan dari mesin yang dapat menjangkau Gateway target):
+  <Accordion title="Tailscale terhubung, tetapi saya tidak menerima balasan. Apa yang harus dilakukan?">
+    Periksa hal-hal dasar:
 
     ```bash
-    openclaw agent --message "Hello from local bot" --deliver --channel telegram --reply-to <chat-id>
+    openclaw gateway status
+    openclaw status
+    openclaw channels status
     ```
 
-    Tip: tambahkan guardrail agar kedua bot tidak berputar tanpa akhir (hanya-mention, allowlist channel, atau aturan "jangan balas pesan bot").
+    Kemudian verifikasi autentikasi dan perutean: jika Anda menggunakan Tailscale Serve, pastikan `gateway.auth.allowTailscale` diatur dengan benar; jika Anda terhubung melalui terowongan SSH, pastikan terowongan aktif dan mengarah ke port yang tepat; pastikan daftar izin DM/grup menyertakan akun Anda.
 
-    Docs: [Akses jarak jauh](/id/gateway/remote), [CLI Agen](/id/cli/agent), [Pengiriman agen](/id/tools/agent-send).
+    Dokumentasi: [Tailscale](/id/gateway/tailscale), [Akses jarak jauh](/id/gateway/remote), [Saluran](/id/channels).
+
+  </Accordion>
+
+  <Accordion title="Dapatkah dua instans OpenClaw berkomunikasi satu sama lain (lokal + VPS)?">
+    Ya, meskipun tidak ada jembatan bot-ke-bot bawaan.
+
+    **Paling sederhana**: gunakan saluran obrolan biasa yang dapat diakses oleh kedua bot (Slack/Telegram/WhatsApp). Minta Bot A mengirim pesan kepada Bot B, lalu biarkan Bot B membalas seperti biasa.
+
+    **Jembatan CLI (generik)**: jalankan skrip yang memanggil Gateway lain dengan `openclaw agent --message ... --deliver`, dengan sasaran obrolan tempat bot lain mendengarkan. Jika salah satu bot berada pada VPS jarak jauh, arahkan CLI Anda ke Gateway jarak jauh tersebut melalui SSH/Tailscale (lihat [Akses jarak jauh](/id/gateway/remote)):
+
+    ```bash
+    openclaw agent --message "Halo dari bot lokal" --deliver --channel telegram --reply-to <chat-id>
+    ```
+
+    Tambahkan pembatas agar kedua bot tidak berulang tanpa henti (hanya sebutan, daftar izin saluran, atau aturan "jangan membalas pesan bot").
+
+    Dokumentasi: [Akses jarak jauh](/id/gateway/remote), [CLI Agen](/id/cli/agent), [Pengiriman agen](/id/tools/agent-send).
 
   </Accordion>
 
   <Accordion title="Apakah saya memerlukan VPS terpisah untuk beberapa agen?">
-    Tidak. Satu Gateway dapat menghosting beberapa agen, masing-masing dengan workspace, default model,
-    dan routing sendiri. Itu adalah penyiapan normal dan jauh lebih murah serta sederhana daripada menjalankan
-    satu VPS per agen.
+    Tidak. Satu Gateway menghosting beberapa agen, masing-masing dengan ruang kerja, nilai default model, dan peruteannya sendiri—ini adalah penyiapan normal dan jauh lebih murah/sederhana daripada satu VPS per agen. Gunakan VPS terpisah hanya untuk isolasi ketat (batas keamanan) atau konfigurasi yang sangat berbeda dan tidak ingin Anda bagikan.
+  </Accordion>
 
-    Gunakan VPS terpisah hanya saat Anda memerlukan isolasi keras (batas keamanan) atau konfigurasi yang sangat
-    berbeda yang tidak ingin Anda bagikan. Jika tidak, pertahankan satu Gateway dan
-    gunakan beberapa agen atau sub-agen.
+  <Accordion title="Apakah ada manfaat menggunakan node pada laptop pribadi daripada SSH dari VPS?">
+    Ya: node adalah cara utama untuk menjangkau laptop Anda dari Gateway jarak jauh dan menyediakan lebih dari sekadar akses shell. Gateway berjalan pada macOS/Linux (Windows melalui WSL2) dan ringan (VPS kecil atau perangkat sekelas Raspberry Pi sudah memadai; RAM 4 GB sudah cukup), sehingga penyiapan umum adalah host yang selalu aktif ditambah laptop Anda sebagai node.
+
+    - **Tidak memerlukan SSH masuk**—node membuat koneksi keluar ke WebSocket Gateway melalui pemasangan perangkat.
+    - **Kontrol eksekusi yang lebih aman**—`system.run` dibatasi oleh daftar izin/persetujuan node pada laptop tersebut.
+    - **Lebih banyak alat perangkat**—node menyediakan `canvas`, `camera`, dan `screen` selain `system.run`.
+    - **Otomatisasi peramban lokal**—pertahankan Gateway pada VPS, tetapi jalankan Chrome secara lokal melalui host node, atau lampirkan ke Chrome lokal melalui Chrome MCP.
+
+    SSH cocok untuk akses shell ad hoc; node lebih sederhana untuk alur kerja agen dan otomatisasi perangkat yang berkelanjutan.
+
+    Dokumentasi: [Node](/id/nodes), [CLI Node](/id/cli/nodes), [Peramban](/id/tools/browser).
 
   </Accordion>
 
-  <Accordion title="Apakah ada manfaat menggunakan node di laptop pribadi saya alih-alih SSH dari VPS?">
-    Ya - node adalah cara utama untuk menjangkau laptop Anda dari Gateway jarak jauh, dan node
-    membuka lebih dari sekadar akses shell. Gateway berjalan di macOS/Linux (Windows melalui WSL2) dan
-    ringan (VPS kecil atau perangkat setara Raspberry Pi sudah cukup; RAM 4 GB lebih dari cukup), jadi penyiapan yang umum
-    adalah host yang selalu aktif plus laptop Anda sebagai node.
+  <Accordion title="Apakah node menjalankan layanan Gateway?">
+    Tidak. Hanya **satu Gateway** yang boleh berjalan per host kecuali Anda sengaja menjalankan profil terisolasi (lihat [Beberapa Gateway](/id/gateway/multiple-gateways)). Node adalah periferal yang terhubung ke Gateway (node iOS/Android, atau "mode node" macOS pada aplikasi bilah menu). Untuk host node tanpa antarmuka grafis dan kontrol CLI, lihat [CLI host Node](/id/cli/node).
 
-    - **Tidak memerlukan SSH masuk.** Node terhubung keluar ke WebSocket Gateway dan menggunakan pemasangan perangkat.
-    - **Kontrol eksekusi lebih aman.** `system.run` dibatasi oleh allowlist/persetujuan node di laptop tersebut.
-    - **Lebih banyak alat perangkat.** Node mengekspos `canvas`, `camera`, dan `screen` selain `system.run`.
-    - **Otomasi browser lokal.** Pertahankan Gateway di VPS, tetapi jalankan Chrome secara lokal melalui host node di laptop, atau lampirkan ke Chrome lokal di host melalui Chrome MCP.
-
-    SSH baik untuk akses shell ad-hoc, tetapi node lebih sederhana untuk alur kerja agen berkelanjutan dan
-    otomasi perangkat.
-
-    Dokumentasi: [Node](/id/nodes), [CLI Node](/id/cli/nodes), [Browser](/id/tools/browser).
-
-  </Accordion>
-
-  <Accordion title="Apakah node menjalankan layanan gateway?">
-    Tidak. Hanya **satu gateway** yang sebaiknya berjalan per host kecuali Anda sengaja menjalankan profil terisolasi (lihat [Beberapa gateway](/id/gateway/multiple-gateways)). Node adalah periferal yang terhubung
-    ke gateway (node iOS/Android, atau "mode node" macOS di aplikasi menubar). Untuk host node headless
-    dan kontrol CLI, lihat [CLI host Node](/id/cli/node).
-
-    Restart penuh diperlukan untuk perubahan permukaan `gateway`, `discovery`, dan plugin yang di-host.
+    Mulai ulang penuh diperlukan untuk perubahan `gateway`, `discovery`, dan permukaan Plugin yang dihosting.
 
   </Accordion>
 
   <Accordion title="Apakah ada cara API / RPC untuk menerapkan konfigurasi?">
-    Ya.
+    Ya:
 
-    - `config.schema.lookup`: periksa satu subtree konfigurasi dengan node skema dangkalnya, petunjuk UI yang cocok, dan ringkasan child langsung sebelum menulis
-    - `config.get`: ambil snapshot + hash saat ini
-    - `config.patch`: pembaruan parsial aman (lebih disukai untuk sebagian besar edit RPC); hot-reload jika memungkinkan dan restart jika diperlukan
-    - `config.apply`: validasi + ganti konfigurasi penuh; hot-reload jika memungkinkan dan restart jika diperlukan
-    - Alat runtime `gateway` yang menghadap agen tetap menolak menulis ulang `tools.exec.ask` / `tools.exec.security`; alias legacy `tools.bash.*` dinormalisasi ke jalur exec terlindungi yang sama
+    - `config.schema.lookup`: periksa satu subpohon konfigurasi beserta node skema dangkal, petunjuk UI yang cocok, dan ringkasan turunan langsungnya sebelum menulis.
+    - `config.get`: ambil snapshot saat ini beserta hash.
+    - `config.patch`: pembaruan parsial yang aman (disarankan untuk sebagian besar pengeditan RPC); memuat ulang secara langsung jika memungkinkan, memulai ulang jika diperlukan.
+    - `config.apply`: validasi dan ganti seluruh konfigurasi; memuat ulang secara langsung jika memungkinkan, memulai ulang jika diperlukan.
+    - Alat runtime `gateway` yang digunakan agen tetap menolak menulis ulang `tools.exec.ask` / `tools.exec.security`; alias lama `tools.bash.*` dinormalisasi ke jalur terlindungi yang sama.
 
   </Accordion>
 
-  <Accordion title="Konfigurasi minimal yang masuk akal untuk instalasi pertama">
+  <Accordion title="Konfigurasi minimal yang wajar untuk instalasi pertama">
     ```json5
     {
       agents: { defaults: { workspace: "~/.openclaw/workspace" } },
@@ -1081,29 +853,21 @@ tersedia di [FAQ Pertama Kali](/id/help/faq-first-run).
     }
     ```
 
-    Ini menetapkan workspace Anda dan membatasi siapa yang dapat memicu bot.
+    Menetapkan ruang kerja Anda dan membatasi siapa yang dapat memicu bot.
 
   </Accordion>
 
-  <Accordion title="Bagaimana cara menyiapkan Tailscale di VPS dan terhubung dari Mac saya?">
-    Langkah minimal:
-
-    1. **Instal + login di VPS**
-
+  <Accordion title="Bagaimana cara menyiapkan Tailscale di VPS dan menghubungkannya dari Mac saya?">
+    1. **Instal + masuk di VPS**:
        ```bash
        curl -fsSL https://tailscale.com/install.sh | sh
        sudo tailscale up
        ```
+    2. **Instal + masuk di Mac Anda** menggunakan aplikasi Tailscale, pada tailnet yang sama.
+    3. **Aktifkan MagicDNS** di konsol admin Tailscale agar VPS memiliki nama yang stabil.
+    4. **Gunakan nama host tailnet**: SSH `ssh user@your-vps.tailnet-xxxx.ts.net`; WS Gateway `ws://your-vps.tailnet-xxxx.ts.net:18789`.
 
-    2. **Instal + login di Mac Anda**
-       - Gunakan aplikasi Tailscale dan masuk ke tailnet yang sama.
-    3. **Aktifkan MagicDNS (direkomendasikan)**
-       - Di konsol admin Tailscale, aktifkan MagicDNS agar VPS memiliki nama stabil.
-    4. **Gunakan hostname tailnet**
-       - SSH: `ssh user@your-vps.tailnet-xxxx.ts.net`
-       - Gateway WS: `ws://your-vps.tailnet-xxxx.ts.net:18789`
-
-    Jika Anda menginginkan UI Kontrol tanpa SSH, gunakan Tailscale Serve di VPS:
+    Untuk UI Kontrol tanpa SSH, gunakan Tailscale Serve di VPS:
 
     ```bash
     openclaw gateway --tailscale serve
@@ -1114,51 +878,40 @@ tersedia di [FAQ Pertama Kali](/id/help/faq-first-run).
   </Accordion>
 
   <Accordion title="Bagaimana cara menghubungkan node Mac ke Gateway jarak jauh (Tailscale Serve)?">
-    Serve mengekspos **UI Kontrol Gateway + WS**. Node terhubung melalui endpoint Gateway WS yang sama.
+    Serve mengekspos **UI Kontrol Gateway + WS**; node terhubung melalui endpoint WS Gateway yang sama.
 
-    Penyiapan yang direkomendasikan:
-
-    1. **Pastikan VPS + Mac berada di tailnet yang sama**.
-    2. **Gunakan aplikasi macOS dalam mode Remote** (target SSH dapat berupa hostname tailnet).
-       Aplikasi akan membuat tunnel port Gateway dan terhubung sebagai node.
-    3. **Setujui node** di gateway:
-
+    1. Pastikan VPS dan Mac berada di tailnet yang sama.
+    2. Gunakan aplikasi macOS dalam mode Jarak Jauh (target SSH dapat berupa nama host tailnet) - aplikasi tersebut membuat terowongan ke port Gateway dan terhubung sebagai node.
+    3. Setujui node:
        ```bash
        openclaw devices list
        openclaw devices approve <requestId>
        ```
 
-    Dokumentasi: [Protokol Gateway](/id/gateway/protocol), [Discovery](/id/gateway/discovery), [mode remote macOS](/id/platforms/mac/remote).
+    Dokumentasi: [Protokol Gateway](/id/gateway/protocol), [Penemuan](/id/gateway/discovery), [mode jarak jauh macOS](/id/platforms/mac/remote).
 
   </Accordion>
 
-  <Accordion title="Haruskah saya menginstal di laptop kedua atau cukup menambahkan node?">
-    Jika Anda hanya memerlukan **alat lokal** (screen/camera/exec) di laptop kedua, tambahkan sebagai
-    **node**. Itu mempertahankan satu Gateway dan menghindari konfigurasi duplikat. Alat node lokal
-    saat ini hanya tersedia untuk macOS, tetapi kami berencana memperluasnya ke OS lain.
-
-    Instal Gateway kedua hanya jika Anda memerlukan **isolasi keras** atau dua bot yang sepenuhnya terpisah.
+  <Accordion title="Haruskah saya menginstalnya di laptop kedua atau cukup menambahkan node?">
+    Untuk **alat lokal saja** (layar/kamera/eksekusi) di laptop kedua, tambahkan sebagai **node** - satu Gateway, tanpa konfigurasi duplikat. Alat node lokal saat ini hanya tersedia di macOS. Instal Gateway kedua hanya untuk **isolasi ketat** atau dua bot yang sepenuhnya terpisah.
 
     Dokumentasi: [Node](/id/nodes), [CLI Node](/id/cli/nodes), [Beberapa gateway](/id/gateway/multiple-gateways).
 
   </Accordion>
 </AccordionGroup>
 
-## Env vars dan pemuatan .env
+## Variabel lingkungan dan pemuatan .env
 
 <AccordionGroup>
   <Accordion title="Bagaimana OpenClaw memuat variabel lingkungan?">
-    OpenClaw membaca env vars dari proses induk (shell, launchd/systemd, CI, dll.) dan juga memuat:
+    OpenClaw membaca variabel lingkungan dari proses induk (shell, launchd/systemd, CI, dll.) dan juga memuat:
 
-    - `.env` dari direktori kerja saat ini
-    - fallback global `.env` dari `~/.openclaw/.env` (alias `$OPENCLAW_STATE_DIR/.env`)
+    - `.env` dari direktori kerja saat ini.
+    - fallback global `.env` dari `~/.openclaw/.env` (`$OPENCLAW_STATE_DIR/.env`).
 
-    Tidak ada file `.env` yang menimpa env vars yang sudah ada.
-    Variabel kredensial provider adalah pengecualian untuk workspace `.env`: kunci seperti
-    `GEMINI_API_KEY`, `XAI_API_KEY`, atau `MISTRAL_API_KEY` diabaikan dari workspace
-    `.env` dan sebaiknya berada di lingkungan proses, `~/.openclaw/.env`, atau konfigurasi `env`.
+    Tidak satu pun berkas `.env` menimpa variabel lingkungan yang sudah ada. Kunci kredensial penyedia dan perutean endpoint merupakan pengecualian untuk `.env` ruang kerja: kunci seperti `GEMINI_API_KEY`, `XAI_API_KEY`, `MISTRAL_API_KEY`, atau kunci apa pun yang berakhiran `_ENDPOINT` (serta variabel lingkungan autentikasi atau endpoint penyedia bawaan lainnya) diabaikan dari `.env` ruang kerja dan seharusnya berada di lingkungan proses, `~/.openclaw/.env`, atau konfigurasi `env`.
 
-    Anda juga dapat menentukan env vars inline dalam konfigurasi (diterapkan hanya jika tidak ada dari env proses):
+    Variabel lingkungan sebaris dalam konfigurasi hanya diterapkan jika tidak ada dalam lingkungan proses:
 
     ```json5
     {
@@ -1169,203 +922,157 @@ tersedia di [FAQ Pertama Kali](/id/help/faq-first-run).
     }
     ```
 
-    Lihat [/environment](/id/help/environment) untuk prioritas dan sumber lengkap.
+    Lihat [/environment](/id/help/environment) untuk urutan prioritas dan sumber selengkapnya.
 
   </Accordion>
 
-  <Accordion title="Saya memulai Gateway melalui layanan dan env vars saya hilang. Sekarang bagaimana?">
-    Dua perbaikan umum:
+  <Accordion title="Saya memulai Gateway melalui layanan dan variabel lingkungan saya menghilang. Apa yang harus dilakukan?">
+    Dua solusi:
 
-    1. Letakkan kunci yang hilang di `~/.openclaw/.env` agar tetap diambil meskipun layanan tidak mewarisi env shell Anda.
-    2. Aktifkan impor shell (kemudahan opt-in):
-
-    ```json5
-    {
-      env: {
-        shellEnv: {
-          enabled: true,
-          timeoutMs: 15000,
-        },
-      },
-    }
-    ```
-
-    Ini menjalankan shell login Anda dan hanya mengimpor kunci yang diharapkan yang hilang (tidak pernah menimpa). Padanan env var:
-    `OPENCLAW_LOAD_SHELL_ENV=1`, `OPENCLAW_SHELL_ENV_TIMEOUT_MS=15000`.
+    1. Letakkan kunci yang hilang di `~/.openclaw/.env` agar tetap dimuat meskipun layanan tidak mewarisi lingkungan shell Anda.
+    2. Aktifkan impor shell (kemudahan opsional):
+       ```json5
+       {
+         env: {
+           shellEnv: {
+             enabled: true,
+             timeoutMs: 15000,
+           },
+         },
+       }
+       ```
+       Ini menjalankan shell masuk Anda dan hanya mengimpor kunci yang diharapkan tetapi belum ada (tidak pernah menimpa). Padanan variabel lingkungan: `OPENCLAW_LOAD_SHELL_ENV=1`, `OPENCLAW_SHELL_ENV_TIMEOUT_MS=15000`.
 
   </Accordion>
 
-  <Accordion title='Saya mengatur COPILOT_GITHUB_TOKEN, tetapi status model menampilkan "Shell env: off." Mengapa?'>
-    `openclaw models status` melaporkan apakah **impor env shell** diaktifkan. "Shell env: off"
-    **tidak** berarti env vars Anda hilang - itu hanya berarti OpenClaw tidak akan memuat
-    shell login Anda secara otomatis.
+  <Accordion title='Saya menetapkan COPILOT_GITHUB_TOKEN, tetapi status model menampilkan "Shell env: off." Mengapa?'>
+    `openclaw models status` melaporkan apakah **impor lingkungan shell** diaktifkan. "Shell env: off" **tidak** berarti variabel lingkungan Anda hilang - ini hanya berarti OpenClaw tidak akan memuat shell masuk Anda secara otomatis.
 
-    Jika Gateway berjalan sebagai layanan (launchd/systemd), ia tidak akan mewarisi
-    lingkungan shell Anda. Perbaiki dengan salah satu cara berikut:
-
-    1. Letakkan token di `~/.openclaw/.env`:
-
-       ```
-       COPILOT_GITHUB_TOKEN=...
-       ```
-
-    2. Atau aktifkan impor shell (`env.shellEnv.enabled: true`).
-    3. Atau tambahkan ke blok `env` konfigurasi Anda (diterapkan hanya jika belum ada).
-
-    Lalu restart gateway dan periksa ulang:
+    Jika Gateway berjalan sebagai layanan (launchd/systemd), Gateway tidak akan mewarisi lingkungan shell Anda. Perbaiki dengan meletakkan token di `~/.openclaw/.env`, mengaktifkan `env.shellEnv.enabled: true`, atau menambahkannya ke konfigurasi `env` (hanya diterapkan jika belum ada), lalu mulai ulang gateway dan periksa kembali:
 
     ```bash
     openclaw models status
     ```
 
-    Token Copilot dibaca dari `COPILOT_GITHUB_TOKEN` (juga `GH_TOKEN` / `GITHUB_TOKEN`).
+    Token Copilot diuraikan dalam urutan ini: `OPENCLAW_GITHUB_TOKEN`, lalu `COPILOT_GITHUB_TOKEN`, lalu `GH_TOKEN`, lalu `GITHUB_TOKEN`.
+
     Lihat [/concepts/model-providers](/id/concepts/model-providers) dan [/environment](/id/help/environment).
 
   </Accordion>
 </AccordionGroup>
 
-## Sesi dan beberapa chat
+## Sesi dan beberapa percakapan
 
 <AccordionGroup>
   <Accordion title="Bagaimana cara memulai percakapan baru?">
-    Kirim `/new` atau `/reset` sebagai pesan mandiri. Lihat [Manajemen sesi](/id/concepts/session).
+    Kirim `/new` atau `/reset` sebagai pesan tersendiri. Lihat [Pengelolaan sesi](/id/concepts/session).
   </Accordion>
 
-  <Accordion title="Apakah sesi direset otomatis jika saya tidak pernah mengirim /new?">
-    Sesi dapat kedaluwarsa setelah `session.idleMinutes`, tetapi ini **dinonaktifkan secara default** (default **0**).
-    Atur ke nilai positif untuk mengaktifkan kedaluwarsa idle. Jika diaktifkan, pesan **berikutnya**
-    setelah periode idle memulai id sesi baru untuk kunci chat tersebut.
-    Ini tidak menghapus transkrip - hanya memulai sesi baru.
+  <Accordion title="Apakah sesi direset secara otomatis jika saya tidak pernah mengirim /new?">
+    Ya. Kebijakan reset default adalah **harian**: sesi berganti pada jam lokal yang dikonfigurasi di host gateway (`session.reset.atHour`, default `4`, 0-23), berdasarkan waktu dimulainya sesi saat ini. Beralihlah ke reset berbasis waktu menganggur dengan `mode: "idle"` dan `session.reset.idleMinutes`, yang mengakhiri sesi setelah periode tanpa aktivitas (berdasarkan interaksi nyata terakhir, bukan peristiwa sistem heartbeat/cron/exec).
 
     ```json5
     {
       session: {
-        idleMinutes: 240,
+        reset: { mode: "daily", atHour: 4 },
+        resetByType: {
+          group: { mode: "idle", idleMinutes: 120 },
+          thread: { mode: "daily", atHour: 6 },
+        },
+        resetByChannel: {
+          discord: { mode: "idle", idleMinutes: 10080 },
+        },
       },
     }
     ```
 
+    `resetByType` mendukung `direct` (alias lama `dm`), `group`, dan `thread`. `session.idleMinutes` tingkat atas yang lama tetap berfungsi sebagai alias kompatibilitas untuk default mode menganggur jika tidak ada blok `session.reset`/`resetByType` yang ditetapkan. Sesi dengan sesi CLI aktif milik penyedia tidak dihentikan oleh default harian implisit. Lihat [Pengelolaan sesi](/id/concepts/session) untuk siklus hidup selengkapnya.
+
   </Accordion>
 
-  <Accordion title="Apakah ada cara membuat tim instance OpenClaw (satu CEO dan banyak agen)?">
-    Ya, melalui **routing multi-agen** dan **sub-agen**. Anda dapat membuat satu agen koordinator
-    dan beberapa agen pekerja dengan workspace dan model masing-masing.
+  <Accordion title="Adakah cara membuat tim instans OpenClaw (satu CEO dan banyak agen)?">
+    Ya, melalui **perutean multiagen** dan **subagen**: satu agen koordinator ditambah beberapa agen pekerja dengan ruang kerja dan model masing-masing.
 
-    Meski demikian, ini paling tepat dilihat sebagai **eksperimen menyenangkan**. Ini boros token dan sering
-    kurang efisien dibanding menggunakan satu bot dengan sesi terpisah. Model umum yang kami
-    bayangkan adalah satu bot yang Anda ajak bicara, dengan sesi berbeda untuk pekerjaan paralel. Bot tersebut
-    juga dapat menelurkan sub-agen saat diperlukan.
+    Ini paling tepat dipandang sebagai eksperimen yang menarik - penggunaan tokennya tinggi dan sering kali kurang efisien dibandingkan satu bot dengan sesi terpisah. Model umumnya adalah satu bot yang Anda ajak bicara, dengan sesi berbeda untuk pekerjaan paralel, yang membuat subagen bila diperlukan.
 
-    Dokumentasi: [Routing multi-agen](/id/concepts/multi-agent), [Sub-agen](/id/tools/subagents), [CLI Agen](/id/cli/agents).
+    Dokumentasi: [Perutean multiagen](/id/concepts/multi-agent), [Subagen](/id/tools/subagents), [CLI Agen](/id/cli/agents).
 
   </Accordion>
 
   <Accordion title="Mengapa konteks terpotong di tengah tugas? Bagaimana cara mencegahnya?">
-    Konteks sesi dibatasi oleh jendela model. Chat panjang, output alat besar, atau banyak
-    file dapat memicu Compaction atau pemotongan.
+    Konteks sesi dibatasi oleh jendela model. Percakapan panjang, keluaran alat yang besar, atau banyak berkas dapat memicu Compaction atau pemotongan.
 
-    Yang membantu:
-
-    - Minta bot merangkum status saat ini dan menulisnya ke file.
-    - Gunakan `/compact` sebelum tugas panjang, dan `/new` saat berganti topik.
-    - Simpan konteks penting di workspace dan minta bot membacanya kembali.
-    - Gunakan sub-agen untuk pekerjaan panjang atau paralel agar chat utama tetap lebih kecil.
-    - Pilih model dengan jendela konteks lebih besar jika ini sering terjadi.
+    - Minta bot merangkum keadaan saat ini dan menuliskannya ke sebuah berkas.
+    - Gunakan `/compact` sebelum tugas panjang, `/new` saat beralih topik.
+    - Simpan konteks penting di ruang kerja dan minta bot membacanya kembali.
+    - Gunakan subagen untuk pekerjaan panjang atau paralel agar percakapan utama tetap lebih ringkas.
+    - Pilih model dengan jendela konteks yang lebih besar jika hal ini sering terjadi.
 
   </Accordion>
 
   <Accordion title="Bagaimana cara mereset OpenClaw sepenuhnya tetapi tetap mempertahankan instalasinya?">
-    Gunakan perintah reset:
-
     ```bash
     openclaw reset
     ```
 
-    Reset penuh non-interaktif:
+    Reset penuh noninteraktif:
 
     ```bash
     openclaw reset --scope full --yes --non-interactive
     ```
 
-    Lalu jalankan ulang penyiapan:
+    Kemudian jalankan kembali penyiapan:
 
     ```bash
     openclaw onboard --install-daemon
     ```
 
-    Catatan:
-
-    - Onboarding juga menawarkan **Reset** jika melihat konfigurasi yang sudah ada. Lihat [Onboarding (CLI)](/id/start/wizard).
-    - Jika Anda menggunakan profil (`--profile` / `OPENCLAW_PROFILE`), reset setiap dir status (default adalah `~/.openclaw-<profile>`).
-    - Reset dev: `openclaw gateway --dev --reset` (hanya dev; menghapus konfigurasi dev + kredensial + sesi + workspace).
+    Orientasi awal juga menawarkan **Reset** jika mendeteksi konfigurasi yang sudah ada; lihat [Orientasi awal (CLI)](/id/start/wizard). Jika Anda menggunakan profil (`--profile` / `OPENCLAW_PROFILE`), reset setiap direktori status (default `~/.openclaw-<profile>`). Reset khusus pengembangan: `openclaw gateway --dev --reset` menghapus konfigurasi pengembangan, kredensial, sesi, dan ruang kerja.
 
   </Accordion>
 
-  <Accordion title='Saya mendapatkan galat "context too large" - bagaimana cara mereset atau melakukan compact?'>
-    Gunakan salah satu ini:
+  <Accordion title='Saya mendapatkan kesalahan "context too large" - bagaimana cara mereset atau melakukan Compaction?'>
+    - **Compaction** (mempertahankan percakapan, merangkum giliran lama): `/compact` atau `/compact <instructions>` untuk memandu ringkasan.
+    - **Reset** (ID sesi baru untuk kunci percakapan yang sama): `/new` atau `/reset`.
 
-    - **Compact** (mempertahankan percakapan tetapi merangkum giliran lama):
+    Jika terus terjadi, sesuaikan **pemangkasan sesi** (`agents.defaults.contextPruning`) untuk memangkas keluaran alat lama, atau gunakan model dengan jendela konteks yang lebih besar.
 
-      ```
-      /compact
-      ```
-
-      atau `/compact <instructions>` untuk memandu ringkasan.
-
-    - **Reset** (ID sesi baru untuk kunci chat yang sama):
-
-      ```
-      /new
-      /reset
-      ```
-
-    Jika terus terjadi:
-
-    - Aktifkan atau sesuaikan **pemangkasan sesi** (`agents.defaults.contextPruning`) untuk memangkas output alat lama.
-    - Gunakan model dengan jendela konteks lebih besar.
-
-    Dokumentasi: [Compaction](/id/concepts/compaction), [Pemangkasan sesi](/id/concepts/session-pruning), [Manajemen sesi](/id/concepts/session).
+    Dokumentasi: [Compaction](/id/concepts/compaction), [Pemangkasan sesi](/id/concepts/session-pruning), [Pengelolaan sesi](/id/concepts/session).
 
   </Accordion>
 
   <Accordion title='Mengapa saya melihat "LLM request rejected: messages.content.tool_use.input field required"?'>
-    Ini adalah galat validasi provider: model mengeluarkan blok `tool_use` tanpa
-    `input` yang diperlukan. Ini biasanya berarti riwayat sesi sudah basi atau rusak (sering setelah thread panjang
-    atau perubahan alat/skema).
+    Kesalahan validasi penyedia: model menghasilkan blok `tool_use` tanpa `input` yang diwajibkan. Biasanya ini berarti riwayat sesi sudah usang atau rusak (sering kali setelah utas panjang atau perubahan alat/skema).
 
-    Perbaikan: mulai sesi baru dengan `/new` (pesan mandiri).
+    Solusi: mulai sesi baru dengan `/new` (pesan tersendiri).
 
   </Accordion>
 
-  <Accordion title="Mengapa saya mendapatkan pesan heartbeat setiap 30 menit?">
-    Heartbeat berjalan setiap **30m** secara default (**1h** saat menggunakan auth OAuth). Sesuaikan atau nonaktifkan:
+  <Accordion title="Mengapa saya menerima pesan heartbeat setiap 30 menit?">
+    Heartbeat berjalan setiap **30m** secara default, atau **1h** saat mode autentikasi yang ditentukan adalah autentikasi OAuth/token Anthropic (termasuk penggunaan ulang CLI Claude) dan `heartbeat.every` belum ditetapkan. Sesuaikan atau nonaktifkan:
 
     ```json5
     {
       agents: {
         defaults: {
           heartbeat: {
-            every: "2h", // or "0m" to disable
+            every: "2h", // atau "0m" untuk menonaktifkan
           },
         },
       },
     }
-```
+    ```
 
-    Jika `HEARTBEAT.md` ada tetapi secara efektif kosong (hanya baris kosong,
-    komentar Markdown/HTML, heading Markdown seperti `# Heading`, penanda fence,
-    atau stub checklist kosong), OpenClaw melewati proses heartbeat untuk menghemat panggilan API.
-    Jika file tidak ada, heartbeat tetap berjalan dan model memutuskan apa yang harus dilakukan.
+    Jika `HEARTBEAT.md` ada tetapi secara efektif kosong (hanya baris kosong, komentar Markdown/HTML, judul ATX, penanda fence, atau stub butir daftar kosong), OpenClaw melewati proses heartbeat untuk menghemat panggilan API. Jika berkas tidak ada, heartbeat tetap berjalan dan model menentukan tindakan yang harus dilakukan.
 
-    Override per agen menggunakan `agents.list[].heartbeat`. Dokumentasi: [Heartbeat](/id/gateway/heartbeat).
+    Penggantian per agen menggunakan `agents.list[].heartbeat`. Dokumentasi: [Heartbeat](/id/gateway/heartbeat).
 
   </Accordion>
 
   <Accordion title='Apakah saya perlu menambahkan "akun bot" ke grup WhatsApp?'>
-    Tidak. OpenClaw berjalan di **akun Anda sendiri**, jadi jika Anda ada di grup, OpenClaw dapat melihatnya.
-    Secara default, balasan grup diblokir sampai Anda mengizinkan pengirim (`groupPolicy: "allowlist"`).
+    Tidak. OpenClaw berjalan pada **akun Anda sendiri** - jika Anda berada dalam grup, OpenClaw dapat melihatnya. Secara default, balasan grup diblokir hingga Anda mengizinkan pengirim (`groupPolicy: "allowlist"`).
 
-    Jika Anda hanya ingin **Anda** yang dapat memicu balasan grup:
+    Untuk membatasi balasan grup hanya kepada Anda:
 
     ```json5
     {
@@ -1381,16 +1088,15 @@ tersedia di [FAQ Pertama Kali](/id/help/faq-first-run).
   </Accordion>
 
   <Accordion title="Bagaimana cara mendapatkan JID grup WhatsApp?">
-    Opsi 1 (paling cepat): ikuti log dan kirim pesan uji di grup:
+    Cara tercepat: pantau log dan kirim pesan uji di grup.
 
     ```bash
     openclaw logs --follow --json
     ```
 
-    Cari `chatId` (atau `from`) yang berakhiran `@g.us`, seperti:
-    `1234567890-1234567890@g.us`.
+    Cari `chatId` (atau `from`) yang berakhiran `@g.us`, seperti `1234567890-1234567890@g.us`.
 
-    Opsi 2 (jika sudah dikonfigurasi/di-allowlist): tampilkan grup dari konfigurasi:
+    Jika sudah dikonfigurasi/diizinkan, tampilkan daftar grup dari konfigurasi:
 
     ```bash
     openclaw directory groups list --channel whatsapp
@@ -1400,108 +1106,80 @@ tersedia di [FAQ Pertama Kali](/id/help/faq-first-run).
 
   </Accordion>
 
-  <Accordion title="Mengapa OpenClaw tidak membalas di grup?">
-    Dua penyebab umum:
-
-    - Gating mention aktif (default). Anda harus @mention bot (atau cocok dengan `mentionPatterns`).
-    - Anda mengonfigurasi `channels.whatsapp.groups` tanpa `"*"` dan grup tersebut tidak ada di allowlist.
+  <Accordion title="Mengapa OpenClaw tidak membalas dalam grup?">
+    Dua penyebab umum: pembatasan berdasarkan sebutan aktif secara default (Anda harus @menyebut bot, atau cocok dengan `mentionPatterns`), atau Anda mengonfigurasi `channels.whatsapp.groups` tanpa `"*"` dan grup tersebut tidak masuk daftar izin.
 
     Lihat [Grup](/id/channels/groups) dan [Pesan grup](/id/channels/group-messages).
 
   </Accordion>
 
-  <Accordion title="Apakah grup/thread berbagi konteks dengan DM?">
-    Chat langsung diciutkan ke sesi utama secara default. Grup/channel memiliki kunci sesi sendiri, dan topik Telegram / thread Discord adalah sesi terpisah. Lihat [Grup](/id/channels/groups) dan [Pesan grup](/id/channels/group-messages).
+  <Accordion title="Apakah grup/utas berbagi konteks dengan DM?">
+    Secara default, obrolan langsung digabungkan ke sesi utama. Grup/saluran memiliki kunci sesinya sendiri, dan topik Telegram / utas Discord merupakan sesi terpisah. Lihat [Grup](/id/channels/groups) dan [Pesan grup](/id/channels/group-messages).
   </Accordion>
 
-  <Accordion title="Berapa banyak workspace dan agen yang dapat saya buat?">
-    Tidak ada batas keras. Puluhan (bahkan ratusan) tidak masalah, tetapi perhatikan:
+  <Accordion title="Berapa banyak ruang kerja dan agen yang dapat saya buat?">
+    Tidak ada batas tegas—puluhan atau bahkan ratusan tidak masalah, tetapi perhatikan:
 
-    - **Pertumbuhan disk:** sesi + transkrip berada di bawah `~/.openclaw/agents/<agentId>/sessions/`.
-    - **Biaya token:** lebih banyak agen berarti lebih banyak penggunaan model secara bersamaan.
-    - **Overhead operasional:** profil auth per agen, workspace, dan routing channel.
+    - **Pertumbuhan disk**: sesi aktif dan transkrip berada di basis data SQLite per agen; artefak lama/arsip masih dapat menumpuk di bawah `~/.openclaw/agents/<agentId>/sessions/`.
+    - **Biaya token**: lebih banyak agen berarti lebih banyak penggunaan model secara bersamaan.
+    - **Beban operasional**: profil autentikasi, ruang kerja, dan perutean saluran per agen.
 
-    Tips:
-
-    - Pertahankan satu workspace **aktif** per agen (`agents.defaults.workspace`).
-    - Pangkas sesi lama (hapus JSONL atau entri store) jika disk bertambah.
-    - Gunakan `openclaw doctor` untuk menemukan workspace tersisa dan ketidakcocokan profil.
+    Pertahankan satu ruang kerja **aktif** per agen (`agents.defaults.workspace`), pangkas sesi lama dengan `openclaw sessions cleanup` jika penggunaan disk bertambah (jangan mengedit status SQLite aktif secara manual), dan gunakan `openclaw doctor` untuk menemukan ruang kerja yang tidak semestinya dan ketidakcocokan profil.
 
   </Accordion>
 
-  <Accordion title="Bisakah saya menjalankan beberapa bot atau chat pada saat yang sama (Slack), dan bagaimana cara mengaturnya?">
-    Ya. Gunakan **Routing Multi-Agen** untuk menjalankan beberapa agen terisolasi dan merutekan pesan masuk berdasarkan
-    channel/akun/peer. Slack didukung sebagai channel dan dapat diikat ke agen tertentu.
+  <Accordion title="Dapatkah saya menjalankan beberapa bot atau obrolan secara bersamaan (Slack), dan bagaimana cara menyiapkannya?">
+    Ya, melalui **Perutean Multi-Agen**: jalankan beberapa agen terisolasi dan rutekan pesan masuk berdasarkan saluran/akun/rekan. Slack didukung sebagai saluran dan dapat diikat ke agen tertentu.
 
-    Akses browser sangat kuat tetapi bukan berarti "dapat melakukan apa pun yang bisa dilakukan manusia" - anti-bot, CAPTCHA, dan MFA
-    tetap dapat memblokir otomatisasi. Untuk kontrol browser yang paling andal, gunakan Chrome MCP lokal di host,
-    atau gunakan CDP pada mesin yang benar-benar menjalankan browser.
+    Akses peramban sangat andal, tetapi tidak berarti "dapat melakukan apa pun yang dapat dilakukan manusia"—sistem anti-bot, CAPTCHA, dan MFA masih dapat menghalangi otomatisasi. Untuk kontrol yang paling andal, gunakan Chrome MCP lokal pada host, atau CDP pada mesin yang benar-benar menjalankan peramban.
 
-    Pengaturan praktik terbaik:
+    Penyiapan praktik terbaik: host Gateway yang selalu aktif (VPS/Mac mini), satu agen per peran (pengikatan), saluran Slack yang diikat ke agen tersebut, dan peramban lokal melalui Chrome MCP atau sebuah Node bila diperlukan.
 
-    - Host Gateway yang selalu aktif (VPS/Mac mini).
-    - Satu agen per peran (binding).
-    - Channel Slack diikat ke agen tersebut.
-    - Browser lokal melalui Chrome MCP atau node bila diperlukan.
-
-    Dokumentasi: [Routing Multi-Agen](/id/concepts/multi-agent), [Slack](/id/channels/slack),
-    [Browser](/id/tools/browser), [Node](/id/nodes).
+    Dokumentasi: [Perutean Multi-Agen](/id/concepts/multi-agent), [Slack](/id/channels/slack), [Peramban](/id/tools/browser), [Node](/id/nodes).
 
   </Accordion>
 </AccordionGroup>
 
-## Model, failover, dan profil auth
+## Model, failover, dan profil autentikasi
 
-Tanya jawab model — default, pemilihan, alias, peralihan, failover, profil auth —
-ada di [FAQ Model](/id/help/faq-models).
+Tanya jawab model—nilai default, pemilihan, alias, peralihan, failover, profil autentikasi—tersedia di [Tanya Jawab Umum Model](/id/help/faq-models).
 
-## Gateway: port, "sudah berjalan", dan mode remote
+## Gateway: porta, "sudah berjalan", dan mode jarak jauh
 
 <AccordionGroup>
-  <Accordion title="Port apa yang digunakan Gateway?">
-    `gateway.port` mengontrol satu port multiplexed untuk WebSocket + HTTP (Control UI, hook, dll.).
+  <Accordion title="Porta apa yang digunakan Gateway?">
+    `gateway.port` mengontrol satu porta multipleks untuk WebSocket + HTTP (UI Kontrol, hook, dan sebagainya). Urutan prioritas:
 
-    Prioritas:
-
-    ```
+    ```text
     --port > OPENCLAW_GATEWAY_PORT > gateway.port > default 18789
     ```
 
   </Accordion>
 
-  <Accordion title='Mengapa openclaw gateway status mengatakan "Runtime: running" tetapi "Connectivity probe: failed"?'>
-    Karena "running" adalah tampilan **supervisor** (launchd/systemd/schtasks). Probe konektivitas adalah CLI yang benar-benar terhubung ke WebSocket gateway.
-
-    Gunakan `openclaw gateway status` dan percayai baris ini:
-
-    - `Probe target:` (URL yang benar-benar digunakan probe)
-    - `Listening:` (apa yang benar-benar terikat pada port)
-    - `Last gateway error:` (akar penyebab umum ketika proses hidup tetapi port tidak mendengarkan)
-
+  <Accordion title='Mengapa openclaw gateway status menyatakan "Runtime: running", tetapi "Connectivity probe: failed"?'>
+    "Running" adalah tampilan dari **supervisor** (launchd/systemd/schtasks); probe konektivitas adalah CLI yang benar-benar terhubung ke WebSocket Gateway. Percayai baris berikut dari `openclaw gateway status`: `Probe target:` (URL yang digunakan probe), `Listening:` (apa yang benar-benar terikat pada porta), `Last gateway error:` (penyebab utama yang umum ketika proses aktif tetapi porta tidak mendengarkan).
   </Accordion>
 
   <Accordion title='Mengapa openclaw gateway status menampilkan "Config (cli)" dan "Config (service)" yang berbeda?'>
-    Anda sedang mengedit satu file konfigurasi sementara layanan berjalan dengan file lain (sering kali ketidakcocokan `--profile` / `OPENCLAW_STATE_DIR`).
+    Anda mengedit satu berkas konfigurasi sementara layanan menjalankan berkas lain (sering kali karena ketidakcocokan `--profile` / `OPENCLAW_STATE_DIR`).
 
-    Perbaikan:
+    Untuk memperbaikinya, jalankan dari `--profile` / lingkungan yang sama dengan yang ingin digunakan oleh layanan:
 
     ```bash
     openclaw gateway install --force
     ```
 
-    Jalankan itu dari `--profile` / lingkungan yang sama yang ingin Anda gunakan untuk layanan.
-
   </Accordion>
 
   <Accordion title='Apa arti "another gateway instance is already listening"?'>
-    OpenClaw memberlakukan kunci runtime dengan mengikat listener WebSocket segera saat startup (default `ws://127.0.0.1:18789`). Jika bind gagal dengan `EADDRINUSE`, OpenClaw melempar `GatewayLockError` yang menunjukkan instance lain sudah mendengarkan.
+    OpenClaw memberlakukan kunci runtime dengan langsung mengikat listener WebSocket saat dimulai (default `ws://127.0.0.1:18789`). Jika pengikatan gagal dengan `EADDRINUSE`, OpenClaw memunculkan `GatewayLockError` ("another gateway instance is already listening").
 
-    Perbaikan: hentikan instance lain, bebaskan port, atau jalankan dengan `openclaw gateway --port <port>`.
+    Perbaikan: hentikan instans lain, bebaskan porta, atau jalankan dengan `openclaw gateway --port <port>`.
 
   </Accordion>
 
-  <Accordion title="Bagaimana cara menjalankan OpenClaw dalam mode remote (klien terhubung ke Gateway di tempat lain)?">
-    Atur `gateway.mode: "remote"` dan arahkan ke URL WebSocket remote, opsional dengan kredensial remote shared-secret:
+  <Accordion title="Bagaimana cara menjalankan OpenClaw dalam mode jarak jauh (klien terhubung ke Gateway di tempat lain)?">
+    Atur `gateway.mode: "remote"` dan arahkan ke URL WebSocket jarak jauh, secara opsional dengan kredensial rahasia bersama jarak jauh:
 
     ```json5
     {
@@ -1516,96 +1194,69 @@ ada di [FAQ Model](/id/help/faq-models).
     }
     ```
 
-    Catatan:
-
-    - `openclaw gateway` hanya dimulai ketika `gateway.mode` adalah `local` (atau Anda meneruskan flag override).
-    - Aplikasi macOS memantau file konfigurasi dan beralih mode secara live ketika nilai ini berubah.
-    - `gateway.remote.token` / `.password` hanya kredensial remote sisi klien; keduanya tidak mengaktifkan auth gateway lokal dengan sendirinya.
+    - `openclaw gateway` hanya dimulai ketika `gateway.mode` adalah `local` (atau Anda meneruskan flag penggantian).
+    - Aplikasi macOS memantau berkas konfigurasi dan beralih mode secara langsung ketika nilai-nilai ini berubah.
+    - `gateway.remote.token` / `.password` hanya merupakan kredensial jarak jauh sisi klien; keduanya tidak mengaktifkan autentikasi gateway lokal dengan sendirinya.
 
   </Accordion>
 
-  <Accordion title='Control UI mengatakan "unauthorized" (atau terus menyambung ulang). Apa sekarang?'>
-    Jalur auth gateway Anda dan metode auth UI tidak cocok.
+  <Accordion title='UI Kontrol menyatakan "unauthorized" (atau terus menyambungkan ulang). Apa yang harus dilakukan?'>
+    Jalur autentikasi gateway dan metode autentikasi UI tidak cocok.
 
     Fakta (dari kode):
 
-    - Control UI menyimpan token di `sessionStorage` untuk sesi tab browser saat ini dan URL gateway yang dipilih, sehingga refresh tab yang sama tetap berfungsi tanpa memulihkan persistensi token localStorage yang berumur panjang.
-    - Pada `AUTH_TOKEN_MISMATCH`, klien tepercaya dapat mencoba satu retry terbatas dengan token perangkat yang di-cache ketika gateway mengembalikan petunjuk retry (`canRetryWithDeviceToken=true`, `recommendedNextStep=retry_with_device_token`).
-    - Retry token yang di-cache tersebut sekarang menggunakan kembali scope yang disetujui dan di-cache yang disimpan bersama token perangkat. Pemanggil `deviceToken` eksplisit / `scopes` eksplisit tetap mempertahankan set scope yang diminta, alih-alih mewarisi scope yang di-cache.
-    - Di luar jalur retry tersebut, prioritas auth koneksi adalah token/password bersama eksplisit terlebih dahulu, lalu `deviceToken` eksplisit, lalu token perangkat tersimpan, lalu token bootstrap.
-    - Bootstrap kode setup bawaan mengembalikan token perangkat node dengan `scopes: []` ditambah token handoff operator terbatas untuk onboarding seluler tepercaya. Handoff operator dapat membaca konfigurasi native waktu setup tetapi tidak memberikan scope mutasi pairing atau `operator.admin`.
+    - UI Kontrol menyimpan token di `sessionStorage`, dengan cakupan terbatas pada tab peramban saat ini dan URL gateway yang dipilih, sehingga penyegaran di tab yang sama tetap berfungsi tanpa persistensi token localStorage jangka panjang.
+    - Pada `AUTH_TOKEN_MISMATCH`, klien tepercaya dapat mencoba satu kali percobaan ulang terbatas dengan token perangkat yang tersimpan dalam cache ketika gateway mengembalikan petunjuk percobaan ulang (`canRetryWithDeviceToken=true`, `recommendedNextStep=retry_with_device_token`).
+    - Percobaan ulang token cache tersebut menggunakan kembali cakupan yang telah disetujui dan tersimpan bersama token perangkat; pemanggil dengan `deviceToken` eksplisit / `scopes` eksplisit mempertahankan kumpulan cakupan yang diminta alih-alih mewarisi cakupan cache.
+    - Di luar jalur percobaan ulang tersebut, urutan prioritas autentikasi koneksi adalah token/kata sandi bersama eksplisit terlebih dahulu, kemudian `deviceToken` eksplisit, lalu token perangkat tersimpan, kemudian token bootstrap.
+    - Bootstrap kode penyiapan bawaan mengembalikan token perangkat node dengan `scopes: []` beserta token serah-terima operator terbatas untuk orientasi awal perangkat seluler tepercaya. Serah-terima operator dapat membaca konfigurasi native pada waktu penyiapan, tetapi tidak memberikan cakupan mutasi pemasangan atau `operator.admin`.
 
     Perbaikan:
 
-    - Paling cepat: `openclaw dashboard` (mencetak + menyalin URL dashboard, mencoba membuka; menampilkan petunjuk SSH jika headless).
-    - Jika Anda belum memiliki token: `openclaw doctor --generate-gateway-token`.
-    - Jika remote, buat tunnel terlebih dahulu: `ssh -N -L 18789:127.0.0.1:18789 user@host` lalu buka `http://127.0.0.1:18789/`.
-    - Mode shared-secret: atur `gateway.auth.token` / `OPENCLAW_GATEWAY_TOKEN` atau `gateway.auth.password` / `OPENCLAW_GATEWAY_PASSWORD`, lalu tempel secret yang cocok di pengaturan Control UI.
+    - Paling cepat: `openclaw dashboard` (mencetak + menyalin URL dasbor, lalu mencoba membukanya; menampilkan petunjuk SSH jika tanpa antarmuka grafis).
+    - Belum ada token: `openclaw doctor --generate-gateway-token`.
+    - Jarak jauh: buat tunnel terlebih dahulu dengan `ssh -N -L 18789:127.0.0.1:18789 user@host`, lalu buka `http://127.0.0.1:18789/`.
+    - Mode rahasia bersama: atur `gateway.auth.token` / `OPENCLAW_GATEWAY_TOKEN` atau `gateway.auth.password` / `OPENCLAW_GATEWAY_PASSWORD`, lalu tempelkan rahasia yang sesuai di pengaturan UI Kontrol.
     - Mode Tailscale Serve: pastikan `gateway.auth.allowTailscale` diaktifkan dan Anda membuka URL Serve, bukan URL loopback/tailnet mentah yang melewati header identitas Tailscale.
-    - Mode trusted-proxy: pastikan Anda datang melalui proxy sadar identitas yang dikonfigurasi, bukan URL gateway mentah. Proxy loopback host yang sama juga memerlukan `gateway.auth.trustedProxy.allowLoopback = true`.
-    - Jika ketidakcocokan tetap ada setelah satu retry, rotasi/setujui ulang token perangkat yang dipasangkan:
-      - `openclaw devices list`
-      - `openclaw devices rotate --device <id> --role operator`
-    - Jika panggilan rotasi itu mengatakan ditolak, periksa dua hal:
-      - sesi perangkat berpasangan hanya dapat merotasi perangkat **miliknya sendiri** kecuali juga memiliki `operator.admin`
-      - nilai `--scope` eksplisit tidak boleh melebihi scope operator pemanggil saat ini
-    - Masih macet? Jalankan `openclaw status --all` dan ikuti [Pemecahan masalah](/id/gateway/troubleshooting). Lihat [Dashboard](/id/web/dashboard) untuk detail auth.
+    - Mode proksi tepercaya: pastikan Anda mengakses melalui proksi sadar-identitas yang dikonfigurasi. Proksi loopback pada host yang sama juga memerlukan `gateway.auth.trustedProxy.allowLoopback = true`.
+    - Ketidakcocokan tetap terjadi setelah satu percobaan ulang: rotasi/setujui ulang token perangkat yang dipasangkan:
+      ```bash
+      openclaw devices list
+      openclaw devices rotate --device <id> --role operator
+      ```
+    - Rotasi ditolak: sesi perangkat yang dipasangkan hanya dapat merotasi perangkatnya **sendiri**, kecuali sesi tersebut juga memiliki `operator.admin`, dan nilai `--scope` eksplisit tidak dapat melampaui cakupan operator pemanggil saat ini.
+    - Masih tidak berhasil: `openclaw status --all` serta [Pemecahan Masalah](/id/gateway/troubleshooting). Lihat [Dasbor](/id/web/dashboard) untuk detail autentikasi.
 
   </Accordion>
 
-  <Accordion title="Saya mengatur gateway.bind tailnet tetapi tidak dapat bind dan tidak ada yang mendengarkan">
-    Bind `tailnet` memilih IP Tailscale dari antarmuka jaringan Anda (100.64.0.0/10). Jika mesin tidak berada di Tailscale (atau antarmuka sedang down), tidak ada yang bisa diikat.
+  <Accordion title="Saya mengatur gateway.bind tailnet, tetapi hanya mendengarkan pada loopback">
+    Pengikatan `tailnet` memilih IP Tailscale dari antarmuka jaringan Anda (100.64.0.0/10). Jika mesin tidak berada di Tailscale (atau antarmukanya tidak aktif), Gateway kembali menggunakan loopback alih-alih mengekspos antarmuka jaringan lain.
 
-    Perbaikan:
+    Perbaikan: mulai Tailscale pada host tersebut dan mulai ulang Gateway, atau beralih secara eksplisit ke `gateway.bind: "loopback"` / `"lan"`.
 
-    - Mulai Tailscale di host tersebut (agar memiliki alamat 100.x), atau
-    - Beralih ke `gateway.bind: "loopback"` / `"lan"`.
-
-    Catatan: `tailnet` bersifat eksplisit. `auto` lebih memilih loopback; gunakan `gateway.bind: "tailnet"` ketika Anda menginginkan bind khusus tailnet.
+    `tailnet` bersifat eksplisit; `auto` mengutamakan loopback. Gunakan `gateway.bind: "tailnet"` untuk membatasi paparan non-loopback ke Tailnet sambil mempertahankan listener `127.0.0.1` pada host yang sama sebagaimana diwajibkan.
 
   </Accordion>
 
-  <Accordion title="Bisakah saya menjalankan beberapa Gateway pada host yang sama?">
-    Biasanya tidak - satu Gateway dapat menjalankan beberapa channel pesan dan agen. Gunakan beberapa Gateway hanya ketika Anda memerlukan redundansi (contoh: bot penyelamat) atau isolasi keras.
+  <Accordion title="Dapatkah saya menjalankan beberapa Gateway pada host yang sama?">
+    Biasanya tidak—satu Gateway dapat menjalankan beberapa saluran pesan dan agen. Gunakan beberapa Gateway hanya untuk redundansi (misalnya bot penyelamat) atau isolasi ketat, dan isolasi masing-masing dengan `OPENCLAW_CONFIG_PATH`, `OPENCLAW_STATE_DIR`, `agents.defaults.workspace`, dan `gateway.port` yang unik.
 
-    Ya, tetapi Anda harus mengisolasi:
+    Direkomendasikan: `openclaw --profile <name> ...` per instans (secara otomatis membuat `~/.openclaw-<name>`), `gateway.port` yang unik per konfigurasi profil (atau `--port` untuk proses manual), dan layanan per profil dengan `openclaw --profile <name> gateway install`.
 
-    - `OPENCLAW_CONFIG_PATH` (konfigurasi per instance)
-    - `OPENCLAW_STATE_DIR` (state per instance)
-    - `agents.defaults.workspace` (isolasi workspace)
-    - `gateway.port` (port unik)
+    Profil juga menambahkan sufiks pada nama layanan: launchd `ai.openclaw.<profile>`, systemd `openclaw-gateway-<profile>.service`, Windows `OpenClaw Gateway (<profile>)`. Unit systemd `openclaw-gateway` tanpa kualifikasi hanya tersedia untuk profil default; nama unit systemd lama sebelum penggantian nama, `clawdbot-gateway`, dimigrasikan secara otomatis.
 
-    Pengaturan cepat (direkomendasikan):
-
-    - Gunakan `openclaw --profile <name> ...` per instance (otomatis membuat `~/.openclaw-<name>`).
-    - Atur `gateway.port` unik di setiap konfigurasi profil (atau teruskan `--port` untuk proses manual).
-    - Instal layanan per profil: `openclaw --profile <name> gateway install`.
-
-    Profil juga menambahkan sufiks pada nama layanan (`ai.openclaw.<profile>`; legacy `com.openclaw.*`, `openclaw-gateway-<profile>.service`, `OpenClaw Gateway (<profile>)`).
     Panduan lengkap: [Beberapa gateway](/id/gateway/multiple-gateways).
 
   </Accordion>
 
   <Accordion title='Apa arti "invalid handshake" / kode 1008?'>
-    Gateway adalah **server WebSocket**, dan ia mengharapkan pesan pertama
-    berupa frame `connect`. Jika menerima apa pun selain itu, ia menutup koneksi
-    dengan **kode 1008** (pelanggaran kebijakan).
+    Gateway adalah **server WebSocket** dan mengharapkan pesan pertama berupa frame `connect`. Pesan selain itu akan menutup koneksi dengan **kode 1008** (pelanggaran kebijakan).
 
-    Penyebab umum:
+    Penyebab umum: Anda membuka URL **HTTP** di peramban alih-alih menggunakan klien WS, menggunakan porta/jalur yang salah, atau proksi/tunnel menghapus header autentikasi atau mengirim permintaan non-Gateway.
 
-    - Anda membuka URL **HTTP** di browser (`http://...`) alih-alih klien WS.
-    - Anda menggunakan port atau path yang salah.
-    - Proxy atau tunnel menghapus header auth atau mengirim permintaan non-Gateway.
+    Perbaikan: gunakan URL WS (`ws://<host>:18789`, atau `wss://...` melalui HTTPS), jangan membuka porta WS di tab peramban biasa, dan sertakan token/kata sandi dalam frame `connect` ketika autentikasi aktif. Contoh CLI/TUI:
 
-    Perbaikan cepat:
-
-    1. Gunakan URL WS: `ws://<host>:18789` (atau `wss://...` jika HTTPS).
-    2. Jangan buka port WS di tab browser biasa.
-    3. Jika auth aktif, sertakan token/password dalam frame `connect`.
-
-    Jika Anda menggunakan CLI atau TUI, URL akan terlihat seperti:
-
-    ```
+    ```bash
     openclaw tui --url ws://<host>:18789 --token <token>
     ```
 
@@ -1614,19 +1265,13 @@ ada di [FAQ Model](/id/help/faq-models).
   </Accordion>
 </AccordionGroup>
 
-## Logging dan debugging
+## Pencatatan log dan pengawakutuan
 
 <AccordionGroup>
-  <Accordion title="Di mana log berada?">
-    Log file (terstruktur):
+  <Accordion title="Di mana lokasi log?">
+    Log berkas (terstruktur): `/tmp/openclaw/openclaw-YYYY-MM-DD.log`. Atur jalur stabil melalui `logging.file`; tingkat log berkas melalui `logging.level`; tingkat verbositas konsol melalui `--verbose` dan `logging.consoleLevel`.
 
-    ```
-    /tmp/openclaw/openclaw-YYYY-MM-DD.log
-    ```
-
-    Anda dapat menetapkan path stabil melalui `logging.file`. Level log file dikendalikan oleh `logging.level`. Verbositas konsol dikendalikan oleh `--verbose` dan `logging.consoleLevel`.
-
-    Tail log tercepat:
+    Cara tercepat untuk memantau:
 
     ```bash
     openclaw logs --follow
@@ -1634,71 +1279,50 @@ ada di [FAQ Model](/id/help/faq-models).
 
     Log layanan/supervisor (ketika gateway berjalan melalui launchd/systemd):
 
-    - stdout launchd macOS: `~/Library/Logs/openclaw/gateway.log` (profil menggunakan `gateway-<profile>.log`; stderr disembunyikan)
-    - Linux: `journalctl --user -u openclaw-gateway[-<profile>].service -n 200 --no-pager`
-    - Windows: `schtasks /Query /TN "OpenClaw Gateway (<profile>)" /V /FO LIST`
+    - stdout launchd macOS: `~/Library/Logs/openclaw/gateway.log` (profil menggunakan `gateway-<profile>.log`; stderr disembunyikan).
+    - Linux: `journalctl --user -u openclaw-gateway[-<profile>].service -n 200 --no-pager`.
+    - Windows: `schtasks /Query /TN "OpenClaw Gateway (<profile>)" /V /FO LIST`.
 
-    Lihat [Pemecahan masalah](/id/gateway/troubleshooting) untuk detail lainnya.
+    Lihat [Pemecahan Masalah](/id/gateway/troubleshooting) untuk informasi lebih lanjut.
 
   </Accordion>
 
   <Accordion title="Bagaimana cara memulai/menghentikan/memulai ulang layanan Gateway?">
-    Gunakan helper gateway:
-
     ```bash
     openclaw gateway status
     openclaw gateway restart
     ```
 
-    Jika Anda menjalankan gateway secara manual, `openclaw gateway --force` dapat mengambil kembali port. Lihat [Gateway](/id/gateway).
+    Jika Anda menjalankan gateway secara manual, `openclaw gateway --force` dapat mengambil alih kembali porta. Lihat [Gateway](/id/gateway).
 
   </Accordion>
 
-  <Accordion title="Saya menutup terminal saya di Windows - bagaimana cara memulai ulang OpenClaw?">
-    Ada **tiga mode instalasi Windows**:
+  <Accordion title="Saya menutup terminal di Windows—bagaimana cara memulai ulang OpenClaw?">
+    Tiga mode instalasi Windows:
 
-    **1) Penyiapan lokal Windows Hub:** aplikasi native mengelola Gateway WSL lokal milik aplikasi.
+    **1) Penyiapan lokal Windows Hub**: aplikasi native mengelola Gateway WSL lokal milik aplikasi. Buka **OpenClaw Companion** dari menu Start atau baki sistem, lalu gunakan **Gateway Setup** atau tab Connections.
 
-    Buka **OpenClaw Companion** dari menu Start atau tray, lalu gunakan
-    **Gateway Setup** atau tab Connections.
-
-    **2) Gateway WSL2 manual:** Gateway berjalan di dalam Linux.
-
-    Buka PowerShell, masuk ke WSL, lalu mulai ulang:
-
+    **2) Gateway WSL2 manual**: Gateway berjalan di dalam Linux.
     ```powershell
     wsl
     openclaw gateway status
     openclaw gateway restart
     ```
+    Jika Anda belum pernah menginstal layanan, mulai di latar depan: `openclaw gateway run`.
 
-    Jika Anda belum pernah menginstal layanan, jalankan di foreground:
-
-    ```bash
-    openclaw gateway run
-    ```
-
-    **3) CLI/Gateway Windows native:** Gateway berjalan langsung di Windows.
-
-    Buka PowerShell dan jalankan:
-
+    **3) CLI/Gateway Windows native**: berjalan langsung di Windows.
     ```powershell
     openclaw gateway status
     openclaw gateway restart
     ```
+    Jika Anda menjalankannya secara manual (tanpa layanan): `openclaw gateway run`.
 
-    Jika Anda menjalankannya secara manual (tanpa layanan), gunakan:
-
-    ```powershell
-    openclaw gateway run
-    ```
-
-    Dokumentasi: [Windows](/id/platforms/windows), [runbook layanan Gateway](/id/gateway).
+    Dokumentasi: [Windows](/id/platforms/windows), [Panduan operasional layanan Gateway](/id/gateway).
 
   </Accordion>
 
-  <Accordion title="Gateway aktif tetapi balasan tidak pernah datang. Apa yang harus saya periksa?">
-    Mulai dengan pemeriksaan kesehatan cepat:
+  <Accordion title="Gateway aktif tetapi balasan tidak pernah diterima. Apa yang harus diperiksa?">
+    Pemeriksaan kondisi cepat:
 
     ```bash
     openclaw status
@@ -1707,28 +1331,16 @@ ada di [FAQ Model](/id/help/faq-models).
     openclaw logs --follow
     ```
 
-    Penyebab umum:
+    Penyebab umum: autentikasi model tidak dimuat pada **host gateway** (periksa `models status`), pemasangan/daftar izin saluran memblokir balasan (periksa konfigurasi dan log saluran), atau WebChat/Dashboard dibuka tanpa token yang tepat. Jika diakses dari jarak jauh, pastikan koneksi terowongan/Tailscale aktif dan WebSocket Gateway dapat dijangkau.
 
-    - Autentikasi model tidak dimuat di **host gateway** (periksa `models status`).
-    - Pairing channel/daftar izin memblokir balasan (periksa konfigurasi channel + log).
-    - WebChat/Dashboard terbuka tanpa token yang tepat.
-
-    Jika Anda jarak jauh, pastikan koneksi tunnel/Tailscale aktif dan bahwa
-    WebSocket Gateway dapat dijangkau.
-
-    Dokumentasi: [Channel](/id/channels), [Pemecahan masalah](/id/gateway/troubleshooting), [Akses jarak jauh](/id/gateway/remote).
+    Dokumentasi: [Saluran](/id/channels), [Pemecahan masalah](/id/gateway/troubleshooting), [Akses jarak jauh](/id/gateway/remote).
 
   </Accordion>
 
-  <Accordion title='"Terputus dari gateway: tanpa alasan" - sekarang bagaimana?'>
-    Ini biasanya berarti UI kehilangan koneksi WebSocket. Periksa:
+  <Accordion title='"Terputus dari gateway: tanpa alasan" - apa yang harus dilakukan?'>
+    Biasanya berarti UI kehilangan koneksi WebSocket. Periksa: apakah Gateway berjalan (`openclaw gateway status`)? Apakah kondisinya baik (`openclaw status`)? Apakah UI memiliki token yang tepat (`openclaw dashboard`)? Jika diakses dari jarak jauh, apakah tautan terowongan/Tailscale aktif?
 
-    1. Apakah Gateway berjalan? `openclaw gateway status`
-    2. Apakah Gateway sehat? `openclaw status`
-    3. Apakah UI memiliki token yang tepat? `openclaw dashboard`
-    4. Jika jarak jauh, apakah tautan tunnel/Tailscale aktif?
-
-    Lalu ikuti log:
+    Kemudian pantau log:
 
     ```bash
     openclaw logs --follow
@@ -1738,73 +1350,56 @@ ada di [FAQ Model](/id/help/faq-models).
 
   </Accordion>
 
-  <Accordion title="Telegram setMyCommands gagal. Apa yang harus saya periksa?">
-    Mulai dengan log dan status channel:
-
+  <Accordion title="setMyCommands Telegram gagal. Apa yang harus diperiksa?">
     ```bash
     openclaw channels status
     openclaw channels logs --channel telegram
     ```
 
-    Lalu cocokkan error:
+    Kemudian cocokkan kesalahannya:
 
-    - `BOT_COMMANDS_TOO_MUCH`: menu Telegram memiliki terlalu banyak entri. OpenClaw sudah memangkas hingga batas Telegram dan mencoba lagi dengan lebih sedikit perintah, tetapi beberapa entri menu masih perlu dihapus. Kurangi perintah plugin/skill/kustom, atau nonaktifkan `channels.telegram.commands.native` jika Anda tidak memerlukan menu.
-    - `TypeError: fetch failed`, `Network request for 'setMyCommands' failed!`, atau error jaringan serupa: jika Anda berada di VPS atau di balik proxy, pastikan HTTPS keluar diizinkan dan DNS berfungsi untuk `api.telegram.org`.
+    - `BOT_COMMANDS_TOO_MUCH`: menu Telegram memiliki terlalu banyak entri. OpenClaw sudah memangkasnya hingga batas Telegram dan mencoba lagi dengan lebih sedikit perintah, tetapi beberapa entri menu mungkin tetap dihapus. Kurangi perintah plugin/skill/kustom, atau nonaktifkan `channels.telegram.commands.native` jika Anda tidak memerlukan menu.
+    - `TypeError: fetch failed`, `Network request for 'setMyCommands' failed!`, atau kesalahan jaringan serupa: pada VPS atau di balik proksi, pastikan HTTPS keluar diizinkan dan DNS berfungsi untuk `api.telegram.org`.
 
-    Jika Gateway berada jauh, pastikan Anda melihat log di host Gateway.
+    Jika Gateway berada di host jarak jauh, periksa log pada host Gateway.
 
-    Dokumentasi: [Telegram](/id/channels/telegram), [Pemecahan masalah channel](/id/channels/troubleshooting).
+    Dokumentasi: [Telegram](/id/channels/telegram), [Pemecahan masalah saluran](/id/channels/troubleshooting).
 
   </Accordion>
 
-  <Accordion title="TUI tidak menampilkan output. Apa yang harus saya periksa?">
-    Pertama pastikan Gateway dapat dijangkau dan agent dapat berjalan:
-
+  <Accordion title="TUI tidak menampilkan keluaran. Apa yang harus diperiksa?">
     ```bash
     openclaw status
     openclaw models status
     openclaw logs --follow
     ```
 
-    Di TUI, gunakan `/status` untuk melihat keadaan saat ini. Jika Anda mengharapkan balasan di sebuah
-    channel chat, pastikan pengiriman diaktifkan (`/deliver on`).
+    Di TUI, gunakan `/status` untuk melihat status saat ini. Jika Anda mengharapkan balasan di saluran obrolan, pastikan pengiriman diaktifkan (`/deliver on`).
 
-    Dokumentasi: [TUI](/id/web/tui), [Perintah slash](/id/tools/slash-commands).
+    Dokumentasi: [TUI](/id/web/tui), [Perintah garis miring](/id/tools/slash-commands).
 
   </Accordion>
 
   <Accordion title="Bagaimana cara menghentikan sepenuhnya lalu memulai Gateway?">
-    Jika Anda menginstal layanan:
+    Jika Anda memasang layanan (launchd di macOS, systemd di Linux):
 
     ```bash
     openclaw gateway stop
     openclaw gateway start
     ```
 
-    Ini menghentikan/memulai **layanan yang diawasi** (launchd di macOS, systemd di Linux).
-    Gunakan ini ketika Gateway berjalan di latar belakang sebagai daemon.
+    Di latar depan, hentikan dengan Ctrl-C, lalu `openclaw gateway run`.
 
-    Jika Anda menjalankan di foreground, hentikan dengan Ctrl-C, lalu:
-
-    ```bash
-    openclaw gateway run
-    ```
-
-    Dokumentasi: [runbook layanan Gateway](/id/gateway).
+    Dokumentasi: [Panduan operasional layanan Gateway](/id/gateway).
 
   </Accordion>
 
-  <Accordion title="ELI5: openclaw gateway restart vs openclaw gateway">
-    - `openclaw gateway restart`: memulai ulang **layanan latar belakang** (launchd/systemd).
-    - `openclaw gateway`: menjalankan gateway **di foreground** untuk sesi terminal ini.
-
-    Jika Anda menginstal layanan, gunakan perintah gateway. Gunakan `openclaw gateway` ketika
-    Anda menginginkan sekali jalan di foreground.
-
+  <Accordion title="Penjelasan sederhana: openclaw gateway restart dibandingkan dengan openclaw gateway">
+    `openclaw gateway restart` memulai ulang **layanan latar belakang** (launchd/systemd). `openclaw gateway` menjalankan gateway **di latar depan** untuk sesi terminal ini. Gunakan subperintah gateway jika Anda memasang layanan; gunakan eksekusi latar depan tanpa subperintah untuk penggunaan satu kali.
   </Accordion>
 
-  <Accordion title="Cara tercepat mendapatkan detail lebih banyak saat sesuatu gagal">
-    Mulai Gateway dengan `--verbose` untuk mendapatkan detail konsol lebih banyak. Lalu periksa file log untuk autentikasi channel, routing model, dan error RPC.
+  <Accordion title="Cara tercepat mendapatkan detail selengkapnya saat terjadi kegagalan">
+    Mulai Gateway dengan `--verbose` untuk mendapatkan detail konsol lebih lengkap, lalu periksa berkas log untuk kesalahan autentikasi saluran, perutean model, dan RPC.
   </Accordion>
 </AccordionGroup>
 
@@ -1812,20 +1407,13 @@ ada di [FAQ Model](/id/help/faq-models).
 
 <AccordionGroup>
   <Accordion title="Skill saya menghasilkan gambar/PDF, tetapi tidak ada yang dikirim">
-    Lampiran keluar dari agent harus menggunakan kolom media terstruktur seperti `media`, `mediaUrl`, `path`, atau `filePath`. Lihat [penyiapan asisten OpenClaw](/id/start/openclaw) dan [Pengiriman agent](/id/tools/agent-send).
-
-    Pengiriman CLI:
+    Lampiran keluar dari agen harus menggunakan bidang media terstruktur seperti `media`, `mediaUrl`, `path`, atau `filePath`. Lihat [Penyiapan asisten OpenClaw](/id/start/openclaw) dan [Pengiriman agen](/id/tools/agent-send).
 
     ```bash
-    openclaw message send --target +15555550123 --message "Here you go" --media /path/to/file.png
+    openclaw message send --target +15555550123 --message "Ini dia" --media /path/to/file.png
     ```
 
-    Periksa juga:
-
-    - Channel target mendukung media keluar dan tidak diblokir oleh daftar izin.
-    - File berada dalam batas ukuran penyedia (gambar diubah ukurannya hingga maksimum 2048px).
-    - `tools.fs.workspaceOnly=true` membuat pengiriman path lokal dibatasi ke workspace, temp/media-store, dan file yang divalidasi sandbox.
-    - `tools.fs.workspaceOnly=false` memungkinkan pengiriman media lokal terstruktur menggunakan file lokal host yang sudah dapat dibaca agent, tetapi hanya untuk media plus jenis dokumen aman (gambar, audio, video, PDF, dokumen Office, dan dokumen teks tervalidasi seperti Markdown/MD, TXT, JSON, YAML, dan YML). Ini bukan pemindai rahasia: `secret.txt` atau `config.json` yang dapat dibaca agent dapat dilampirkan ketika ekstensi dan validasi konten cocok. Simpan file sensitif di luar path yang dapat dibaca agent, atau pertahankan `tools.fs.workspaceOnly=true` untuk pengiriman path lokal yang lebih ketat.
+    Periksa juga: saluran tujuan mendukung media keluar dan tidak diblokir oleh daftar izin; berkas berada dalam batas ukuran penyedia (ukuran gambar diubah hingga sisi maksimum 2048px); `tools.fs.workspaceOnly=true` membatasi pengiriman jalur lokal pada ruang kerja, penyimpanan sementara/media, dan berkas yang divalidasi sandbox; `tools.fs.workspaceOnly=false` (bawaan) memungkinkan pengiriman media lokal terstruktur menggunakan berkas lokal host yang sudah dapat dibaca agen, untuk media serta jenis dokumen aman (gambar, audio, video, PDF, dokumen Office, dan dokumen teks tervalidasi seperti Markdown/MD, TXT, JSON, YAML/YML). Ini bukan pemindai rahasia—`secret.txt` atau `config.json` yang dapat dibaca agen dapat dilampirkan jika ekstensi dan validasi kontennya cocok. Simpan berkas sensitif di luar jalur yang dapat dibaca agen, atau pertahankan `tools.fs.workspaceOnly=true` untuk pengiriman jalur lokal yang lebih ketat.
 
     Lihat [Gambar](/id/nodes/images).
 
@@ -1835,139 +1423,82 @@ ada di [FAQ Model](/id/help/faq-models).
 ## Keamanan dan kontrol akses
 
 <AccordionGroup>
-  <Accordion title="Apakah aman mengekspos OpenClaw ke DM masuk?">
-    Perlakukan DM masuk sebagai input tidak tepercaya. Default dirancang untuk mengurangi risiko:
+  <Accordion title="Apakah aman membuka OpenClaw untuk DM masuk?">
+    Perlakukan DM masuk sebagai masukan yang tidak tepercaya. Pengaturan bawaan mengurangi risiko:
 
-    - Perilaku default pada channel yang mendukung DM adalah **pairing**:
-      - Pengirim tidak dikenal menerima kode pairing; bot tidak memproses pesan mereka.
-      - Setujui dengan: `openclaw pairing approve --channel <channel> [--account <id>] <code>`
-      - Permintaan tertunda dibatasi hingga **3 per channel**; periksa `openclaw pairing list --channel <channel> [--account <id>]` jika kode tidak tiba.
-    - Membuka DM secara publik memerlukan opt-in eksplisit (`dmPolicy: "open"` dan daftar izin `"*"`).
+    - Perilaku bawaan pada saluran yang mendukung DM adalah **pemasangan**: pengirim tidak dikenal menerima kode pemasangan dan pesan mereka tidak diproses. Setujui dengan `openclaw pairing approve --channel <channel> [--account <id>] <code>`. Permintaan tertunda dibatasi hingga **3 per saluran**; periksa `openclaw pairing list --channel <channel> [--account <id>]` jika kode tidak diterima.
+    - Membuka DM untuk publik memerlukan persetujuan eksplisit (`dmPolicy: "open"` dan daftar izin `"*"`).
 
-    Jalankan `openclaw doctor` untuk menampilkan kebijakan DM yang berisiko.
+    Jalankan `openclaw doctor` untuk menemukan kebijakan DM yang berisiko.
 
   </Accordion>
 
-  <Accordion title="Apakah prompt injection hanya menjadi masalah untuk bot publik?">
-    Tidak. Prompt injection berkaitan dengan **konten tidak tepercaya**, bukan hanya siapa yang dapat mengirim DM ke bot.
-    Jika asisten Anda membaca konten eksternal (pencarian/pengambilan web, halaman browser, email,
-    dokumen, lampiran, log yang ditempel), konten tersebut dapat menyertakan instruksi yang mencoba
-    membajak model. Ini dapat terjadi bahkan jika **Anda adalah satu-satunya pengirim**.
+  <Accordion title="Apakah injeksi prompt hanya menjadi masalah bagi bot publik?">
+    Tidak. Injeksi prompt berkaitan dengan **konten yang tidak tepercaya**, bukan hanya siapa yang dapat mengirim DM kepada bot. Jika asisten Anda membaca konten eksternal (pencarian/pengambilan web, halaman peramban, email, dokumen, lampiran, log yang ditempelkan), konten tersebut dapat membawa instruksi yang mencoba mengambil alih model—meskipun Anda adalah satu-satunya pengirim.
 
-    Risiko terbesar adalah ketika tools diaktifkan: model dapat ditipu untuk
-    mengekstrak konteks atau memanggil tools atas nama Anda. Kurangi radius dampak dengan:
+    Risiko terbesar muncul saat alat diaktifkan: model dapat diperdaya untuk mengekstraksi konteks atau memanggil alat atas nama Anda. Kurangi cakupan dampaknya:
 
-    - menggunakan agent "reader" hanya-baca atau tanpa tools untuk meringkas konten tidak tepercaya
-    - menonaktifkan `web_search` / `web_fetch` / `browser` untuk agent yang mengaktifkan tools
-    - memperlakukan teks file/dokumen yang didekode sebagai tidak tepercaya juga: OpenResponses
-      `input_file` dan ekstraksi lampiran media sama-sama membungkus teks yang diekstrak dalam
-      penanda batas konten eksternal eksplisit alih-alih meneruskan teks file mentah
-    - sandboxing dan daftar izin tools yang ketat
+    - gunakan agen "pembaca" hanya-baca atau tanpa alat untuk meringkas konten yang tidak tepercaya
+    - tetap nonaktifkan `web_search` / `web_fetch` / `browser` untuk agen yang mendukung alat
+    - perlakukan teks berkas/dokumen yang telah didekode sebagai tidak tepercaya juga: OpenResponses `input_file` dan ekstraksi lampiran media sama-sama membungkus teks yang diekstrak dalam penanda batas konten eksternal yang eksplisit, bukan meneruskan teks mentah berkas
+    - gunakan sandbox dan daftar izin alat yang ketat
 
     Detail: [Keamanan](/id/gateway/security).
 
   </Accordion>
 
   <Accordion title="Apakah OpenClaw kurang aman karena menggunakan TypeScript/Node alih-alih Rust/WASM?">
-    Bahasa dan runtime memang penting, tetapi itu bukan risiko utama untuk agent pribadi.
-    Risiko praktis OpenClaw adalah paparan gateway, siapa yang dapat mengirim pesan ke
-    bot, prompt injection, cakupan tools, penanganan kredensial, akses browser, akses exec,
-    dan kepercayaan terhadap skill atau plugin pihak ketiga.
+    Bahasa dan runtime memang berpengaruh, tetapi bukan risiko utama bagi agen pribadi. Risiko praktisnya adalah eksposur gateway, siapa yang dapat mengirim pesan kepada bot, injeksi prompt, cakupan alat, penanganan kredensial, akses peramban, akses eksekusi, serta kepercayaan terhadap skill/plugin pihak ketiga.
 
-    Rust dan WASM dapat menyediakan isolasi yang lebih kuat untuk beberapa kelas kode, tetapi
-    keduanya tidak menyelesaikan prompt injection, daftar izin yang buruk, paparan gateway publik,
-    tools yang terlalu luas, atau profil browser yang sudah login ke akun
-    sensitif. Perlakukan hal-hal tersebut sebagai kontrol utama:
-
-    - jaga Gateway tetap privat atau terautentikasi
-    - gunakan pairing dan daftar izin untuk DM dan grup
-    - tolak atau sandbox tools berisiko untuk input tidak tepercaya
-    - instal hanya plugin dan skill tepercaya
-    - jalankan `openclaw security audit --deep` setelah perubahan konfigurasi
+    Rust dan WASM dapat memberikan isolasi lebih kuat untuk beberapa kelas kode, tetapi tidak menyelesaikan injeksi prompt, daftar izin yang buruk, eksposur gateway publik, alat yang terlalu luas, atau profil peramban yang sudah masuk ke akun sensitif. Perlakukan hal berikut sebagai kontrol utama: jaga Gateway tetap privat atau terautentikasi, gunakan pemasangan dan daftar izin untuk DM/grup, tolak atau gunakan sandbox untuk alat berisiko pada masukan yang tidak tepercaya, pasang hanya plugin dan skill tepercaya, serta jalankan `openclaw security audit --deep` setelah perubahan konfigurasi.
 
     Detail: [Keamanan](/id/gateway/security), [Sandboxing](/id/gateway/sandboxing).
 
   </Accordion>
 
-  <Accordion title="Saya melihat laporan tentang instans OpenClaw yang terekspos. Apa yang harus saya periksa?">
-    Pertama periksa deployment aktual Anda:
-
+  <Accordion title="Saya melihat laporan tentang instans OpenClaw yang terekspos. Apa yang harus diperiksa?">
     ```bash
     openclaw security audit --deep
     openclaw gateway status
     ```
 
-    Baseline yang lebih aman adalah:
+    Acuan dasar yang lebih aman: Gateway diikat ke `loopback`, atau hanya diekspos melalui akses privat terautentikasi (tailnet, terowongan SSH, autentikasi token/kata sandi, atau proksi tepercaya yang dikonfigurasi dengan benar); DM dalam mode `pairing` atau `allowlist`; grup dimasukkan ke daftar izin dan memerlukan penyebutan kecuali setiap anggotanya tepercaya; alat berisiko tinggi (`exec`, `browser`, `gateway`, `cron`) ditolak atau dibatasi secara ketat untuk agen yang membaca konten tidak tepercaya; sandboxing diaktifkan ketika eksekusi alat memerlukan cakupan dampak yang lebih kecil.
 
-    - Gateway terikat ke `loopback`, atau diekspos hanya melalui akses privat
-      terautentikasi seperti tailnet, tunnel SSH, autentikasi token/kata sandi, atau proxy tepercaya yang
-      dikonfigurasi dengan benar
-    - DM dalam mode `pairing` atau `allowlist`
-    - grup berada dalam daftar izin dan dibatasi mention kecuali setiap anggota tepercaya
-    - tools berisiko tinggi (`exec`, `browser`, `gateway`, `cron`) ditolak atau dibatasi ketat
-      untuk agent yang membaca konten tidak tepercaya
-    - sandboxing diaktifkan saat eksekusi tools memerlukan radius dampak yang lebih kecil
-
-    Binding publik tanpa autentikasi, DM/grup terbuka dengan tools, dan kontrol browser
-    yang terekspos adalah temuan yang harus diperbaiki terlebih dahulu. Detail:
-    [Daftar periksa audit keamanan](/id/gateway/security#security-audit-checklist).
+    Ikatan publik tanpa autentikasi, DM/grup terbuka dengan alat, dan kontrol peramban yang terekspos adalah temuan yang harus diperbaiki terlebih dahulu. Detail: [openclaw security audit](/id/gateway/security#openclaw-security-audit).
 
   </Accordion>
 
-  <Accordion title="Apakah skill ClawHub dan plugin pihak ketiga aman untuk diinstal?">
-    Perlakukan skill dan plugin pihak ketiga sebagai kode yang Anda pilih untuk percayai.
-    Halaman skill ClawHub menampilkan status pemindaian sebelum instalasi, tetapi pemindaian bukan
-    batas keamanan yang lengkap. OpenClaw tidak menjalankan pemblokiran kode
-    berbahaya lokal bawaan selama alur instalasi/pembaruan plugin atau skill; gunakan
-    `security.installPolicy` milik operator untuk keputusan izinkan/blokir lokal.
+  <Accordion title="Apakah skill ClawHub dan plugin pihak ketiga aman dipasang?">
+    Perlakukan skill dan plugin pihak ketiga sebagai kode yang Anda pilih untuk dipercaya. Halaman skill ClawHub menampilkan status pemindaian sebelum pemasangan, tetapi pemindaian bukan batas keamanan yang lengkap. OpenClaw tidak menjalankan pemblokiran kode berbahaya lokal bawaan selama pemasangan atau pembaruan plugin/skill; gunakan `security.installPolicy` yang dikelola operator untuk keputusan mengizinkan/memblokir secara lokal.
 
-    Pola yang lebih aman:
+    Pola yang lebih aman: utamakan pembuat tepercaya dan versi yang disematkan, baca skill/plugin sebelum mengaktifkannya, pertahankan daftar izin plugin/skill yang sempit, jalankan alur kerja dengan masukan tidak tepercaya dalam sandbox dengan alat minimal, dan hindari memberikan akses luas ke sistem berkas, eksekusi, peramban, atau rahasia kepada kode pihak ketiga.
 
-    - utamakan penulis tepercaya dan versi yang dipatok
-    - baca skill atau plugin sebelum mengaktifkannya
-    - jaga daftar izin plugin dan skill tetap sempit
-    - jalankan workflow input tidak tepercaya di sandbox dengan tools minimal
-    - hindari memberi kode pihak ketiga akses filesystem, exec, browser, atau rahasia yang luas
-
-    Detail: [Skills](/id/tools/skills), [Plugin](/id/tools/plugin),
-    [Keamanan](/id/gateway/security).
+    Detail: [Skills](/id/tools/skills), [Plugin](/id/tools/plugin), [Keamanan](/id/gateway/security).
 
   </Accordion>
 
   <Accordion title="Haruskah bot saya memiliki email, akun GitHub, atau nomor telepon sendiri?">
-    Ya, untuk sebagian besar penyiapan. Mengisolasi bot dengan akun dan nomor telepon terpisah
-    mengurangi radius dampak jika terjadi masalah. Ini juga memudahkan rotasi
-    kredensial atau pencabutan akses tanpa memengaruhi akun pribadi Anda.
+    Ya, untuk sebagian besar penyiapan. Mengisolasi bot dengan akun dan nomor telepon terpisah mengurangi cakupan dampak jika terjadi masalah, serta mempermudah rotasi kredensial atau pencabutan akses tanpa memengaruhi akun pribadi Anda.
 
-    Mulai dari kecil. Berikan akses hanya ke alat dan akun yang benar-benar Anda perlukan, dan perluas
-    nanti jika diperlukan.
+    Mulailah dari lingkup kecil: berikan akses hanya ke alat dan akun yang benar-benar diperlukan, lalu perluas nanti jika dibutuhkan.
 
-    Dokumentasi: [Keamanan](/id/gateway/security), [Penyandingan](/id/channels/pairing).
+    Dokumentasi: [Keamanan](/id/gateway/security), [Pemasangan](/id/channels/pairing).
 
   </Accordion>
 
   <Accordion title="Dapatkah saya memberinya otonomi atas pesan teks saya dan apakah itu aman?">
-    Kami **tidak** merekomendasikan otonomi penuh atas pesan pribadi Anda. Pola paling aman adalah:
+    Kami **tidak** menyarankan otonomi penuh atas pesan pribadi Anda. Pola teraman: pertahankan DM dalam **mode pemasangan** atau daftar izin yang ketat, gunakan **nomor atau akun terpisah** jika bot perlu mengirim pesan atas nama Anda, dan biarkan bot membuat draf sementara Anda **menyetujuinya sebelum dikirim**.
 
-    - Pertahankan DM dalam **mode penyandingan** atau allowlist yang ketat.
-    - Gunakan **nomor atau akun terpisah** jika Anda ingin bot mengirim pesan atas nama Anda.
-    - Biarkan bot membuat draf, lalu **setujui sebelum mengirim**.
-
-    Jika Anda ingin bereksperimen, lakukan pada akun khusus dan tetap isolasikan. Lihat
-    [Keamanan](/id/gateway/security).
+    Untuk bereksperimen, lakukan pada akun khusus yang terisolasi. Lihat [Keamanan](/id/gateway/security).
 
   </Accordion>
 
   <Accordion title="Dapatkah saya menggunakan model yang lebih murah untuk tugas asisten pribadi?">
-    Ya, **jika** agen hanya untuk chat dan inputnya tepercaya. Tingkat yang lebih kecil
-    lebih rentan terhadap pembajakan instruksi, jadi hindari untuk agen yang mengaktifkan alat
-    atau saat membaca konten yang tidak tepercaya. Jika Anda harus menggunakan model yang lebih kecil, kunci
-    alat dan jalankan di dalam sandbox. Lihat [Keamanan](/id/gateway/security).
+    Ya, **jika** agen hanya digunakan untuk obrolan dan masukannya tepercaya. Tingkat model yang lebih kecil lebih rentan terhadap pengambilalihan instruksi, jadi hindari penggunaannya untuk agen yang mendukung alat atau saat membaca konten tidak tepercaya. Jika Anda harus menggunakan model yang lebih kecil, batasi alat secara ketat dan jalankan di dalam sandbox. Lihat [Keamanan](/id/gateway/security).
   </Accordion>
 
-  <Accordion title="Saya menjalankan /start di Telegram tetapi tidak mendapat kode penyandingan">
-    Kode penyandingan dikirim **hanya** ketika pengirim yang tidak dikenal mengirim pesan ke bot dan
-    `dmPolicy: "pairing"` diaktifkan. `/start` sendiri tidak menghasilkan kode.
+  <Accordion title="Saya menjalankan /start di Telegram tetapi tidak mendapatkan kode pemasangan">
+    Kode pemasangan dikirim **hanya** ketika pengirim tidak dikenal mengirim pesan kepada bot dan `dmPolicy: "pairing"` diaktifkan; `/start` saja tidak menghasilkan kode.
 
     Periksa permintaan tertunda:
 
@@ -1975,98 +1506,58 @@ ada di [FAQ Model](/id/help/faq-models).
     openclaw pairing list telegram
     ```
 
-    Jika Anda menginginkan akses segera, allowlist id pengirim Anda atau atur `dmPolicy: "open"`
-    untuk akun tersebut.
+    Untuk akses langsung, masukkan ID pengirim Anda ke daftar izin atau atur `dmPolicy: "open"` untuk akun tersebut.
 
   </Accordion>
 
-  <Accordion title="WhatsApp: apakah bot akan mengirim pesan ke kontak saya? Bagaimana cara kerja penyandingan?">
-    Tidak. Kebijakan DM WhatsApp default adalah **penyandingan**. Pengirim tidak dikenal hanya mendapatkan kode penyandingan dan pesannya **tidak diproses**. OpenClaw hanya membalas chat yang diterimanya atau pengiriman eksplisit yang Anda picu.
-
-    Setujui penyandingan dengan:
+  <Accordion title="WhatsApp: apakah bot akan mengirim pesan kepada kontak saya? Bagaimana cara kerja pemasangan?">
+    Tidak. Kebijakan DM bawaan WhatsApp adalah **pemasangan**. Pengirim tidak dikenal hanya menerima kode pemasangan; pesan mereka **tidak diproses**. OpenClaw hanya membalas obrolan yang diterimanya atau pengiriman eksplisit yang Anda picu.
 
     ```bash
     openclaw pairing approve whatsapp <code>
-    ```
-
-    Cantumkan permintaan tertunda:
-
-    ```bash
     openclaw pairing list whatsapp
     ```
 
-    Prompt nomor telepon wizard: ini digunakan untuk mengatur **allowlist/pemilik** Anda sehingga DM Anda sendiri diizinkan. Ini tidak digunakan untuk pengiriman otomatis. Jika Anda menjalankan pada nomor WhatsApp pribadi Anda, gunakan nomor tersebut dan aktifkan `channels.whatsapp.selfChatMode`.
+    Prompt nomor telepon wizard menetapkan **daftar izin/pemilik** Anda agar DM Anda sendiri diizinkan—nomor tersebut tidak digunakan untuk pengiriman otomatis. Untuk nomor WhatsApp pribadi Anda, gunakan nomor tersebut dan aktifkan `channels.whatsapp.selfChatMode`.
 
   </Accordion>
 </AccordionGroup>
 
-## Perintah chat, membatalkan tugas, dan "tidak akan berhenti"
+## Perintah chat, membatalkan tugas, dan "tidak mau berhenti"
 
 <AccordionGroup>
-  <Accordion title="Bagaimana cara menghentikan pesan sistem internal agar tidak muncul di chat?">
-    Sebagian besar pesan internal atau alat hanya muncul ketika **verbose**, **trace**, atau **reasoning** diaktifkan
-    untuk sesi tersebut.
+  <Accordion title="Bagaimana cara menghentikan pesan sistem internal agar tidak muncul dalam chat?">
+    Sebagian besar pesan internal/alat hanya muncul ketika **verbose**, **trace**, atau **reasoning** diaktifkan untuk sesi tersebut.
 
-    Perbaiki di chat tempat Anda melihatnya:
+    Perbaiki dalam chat tempat pesan tersebut terlihat:
 
-    ```
+    ```text
     /verbose off
     /trace off
     /reasoning off
     ```
 
-    Jika masih berisik, periksa pengaturan sesi di Control UI dan atur verbose
-    ke **inherit**. Pastikan juga Anda tidak menggunakan profil bot dengan `verboseDefault` yang disetel
-    ke `on` dalam konfigurasi.
+    Jika masih berisik: periksa pengaturan sesi di UI Kontrol dan atur verbose ke **inherit**; pastikan Anda tidak menggunakan profil bot dengan `verboseDefault: "on"` dalam konfigurasi.
 
-    Dokumentasi: [Berpikir dan verbose](/id/tools/thinking), [Keamanan](/id/gateway/security/index#reasoning-and-verbose-output-in-groups).
+    Dokumentasi: [Pemikiran dan verbose](/id/tools/thinking), [Keamanan](/id/gateway/security/index#reasoning-and-verbose-output-in-groups).
 
   </Accordion>
 
   <Accordion title="Bagaimana cara menghentikan/membatalkan tugas yang sedang berjalan?">
-    Kirim salah satu dari ini **sebagai pesan mandiri** (tanpa slash):
+    Kirim salah satu dari berikut **sebagai pesan tersendiri** (tanpa garis miring) untuk memicu pembatalan: `stop`, `stop action`, `stop current action`, `stop run`, `stop current run`, `stop agent`, `stop the agent`, `stop openclaw`, `openclaw stop`, `stop don't do anything`, `stop do not do anything`, `stop doing anything`, `do not do that`, `please stop`, `stop please`, `abort`, `esc`, `exit`, `interrupt`, `halt`. Pemicu umum dalam bahasa selain Inggris (Prancis, Jerman, Spanyol, Tionghoa, Jepang, Hindi, Arab, Rusia) juga berfungsi.
 
-    ```
-    stop
-    stop action
-    stop current action
-    stop run
-    stop current run
-    stop agent
-    stop the agent
-    stop openclaw
-    openclaw stop
-    stop don't do anything
-    stop do not do anything
-    stop doing anything
-    please stop
-    stop please
-    abort
-    esc
-    wait
-    exit
-    interrupt
-    ```
+    Untuk proses latar belakang yang dimulai oleh alat exec, minta agen menjalankan:
 
-    Ini adalah pemicu pembatalan (bukan perintah slash).
-
-    Untuk proses latar belakang (dari alat exec), Anda dapat meminta agen menjalankan:
-
-    ```
+    ```text
     process action:kill sessionId:XXX
     ```
 
-    Ringkasan perintah slash: lihat [Perintah slash](/id/tools/slash-commands).
-
-    Sebagian besar perintah harus dikirim sebagai pesan **mandiri** yang dimulai dengan `/`, tetapi beberapa pintasan (seperti `/status`) juga berfungsi inline untuk pengirim yang ada di allowlist.
+    Sebagian besar perintah garis miring harus dikirim sebagai pesan **tersendiri** yang diawali dengan `/`, tetapi beberapa pintasan (seperti `/status`) juga dapat digunakan secara inline oleh pengirim dalam daftar izin. Lihat [Perintah garis miring](/id/tools/slash-commands).
 
   </Accordion>
 
-  <Accordion title='Bagaimana cara mengirim pesan Discord dari Telegram? ("Perpesanan lintas-konteks ditolak")'>
-    OpenClaw memblokir perpesanan **lintas-penyedia** secara default. Jika panggilan alat terikat
-    ke Telegram, panggilan itu tidak akan mengirim ke Discord kecuali Anda mengizinkannya secara eksplisit.
-
-    Aktifkan perpesanan lintas-penyedia untuk agen:
+  <Accordion title='Bagaimana cara mengirim pesan Discord dari Telegram? ("Pesan lintas konteks ditolak")'>
+    OpenClaw memblokir pesan **lintas penyedia** secara default. Jika panggilan alat terikat ke Telegram, alat tersebut tidak akan mengirim ke Discord kecuali Anda mengizinkannya secara eksplisit—dan pengaturan ini langsung berlaku, tanpa perlu memulai ulang Gateway:
 
     ```json5
     {
@@ -2081,19 +1572,17 @@ ada di [FAQ Model](/id/help/faq-models).
     }
     ```
 
-    Mulai ulang gateway setelah mengedit konfigurasi.
-
   </Accordion>
 
-  <Accordion title='Mengapa terasa seperti bot "mengabaikan" pesan bertubi-tubi?'>
-    Prompt di tengah proses secara default diarahkan ke proses aktif. Gunakan `/queue` untuk memilih perilaku proses aktif:
+  <Accordion title='Mengapa bot terasa seperti "mengabaikan" pesan yang dikirim secara bertubi-tubi?'>
+    Secara default, prompt yang diterima saat proses berjalan diarahkan ke proses aktif. Gunakan `/queue` untuk memilih perilaku proses aktif:
 
-    - `steer` - memandu proses aktif pada batas model berikutnya
-    - `followup` - mengantrekan pesan dan menjalankannya satu per satu setelah proses saat ini berakhir
-    - `collect` - mengantrekan pesan yang kompatibel dan membalas sekali setelah proses saat ini berakhir
-    - `interrupt` - membatalkan proses saat ini dan memulai dari awal
+    - `steer` (default) - arahkan proses aktif pada batas model berikutnya.
+    - `followup` - antrekan pesan dan jalankan satu per satu setelah proses saat ini berakhir.
+    - `collect` - antrekan pesan yang kompatibel dan balas satu kali setelah proses saat ini berakhir.
+    - `interrupt` - batalkan proses saat ini dan mulai dari awal.
 
-    Mode default adalah `steer`. Anda dapat menambahkan opsi seperti `debounce:0.5s cap:25 drop:summarize` untuk mode antrean. Lihat [Antrean perintah](/id/concepts/queue) dan [Antrean pengarah](/id/concepts/queue-steering).
+    Tambahkan opsi ke mode antrean seperti `debounce:0.5s cap:25 drop:summarize`. Lihat [Antrean perintah](/id/concepts/queue) dan [Antrean pengarahan](/id/concepts/queue-steering).
 
   </Accordion>
 </AccordionGroup>
@@ -2101,17 +1590,17 @@ ada di [FAQ Model](/id/help/faq-models).
 ## Lain-lain
 
 <AccordionGroup>
-  <Accordion title='Apa model default untuk Anthropic dengan API key?'>
-    Di OpenClaw, kredensial dan pemilihan model terpisah. Menyetel `ANTHROPIC_API_KEY` (atau menyimpan API key Anthropic di profil autentikasi) mengaktifkan autentikasi, tetapi model default sebenarnya adalah apa pun yang Anda konfigurasi di `agents.defaults.model.primary` (misalnya, `anthropic/claude-sonnet-4-6` atau `anthropic/claude-opus-4-6`). Jika Anda melihat `No credentials found for profile "anthropic:default"`, itu berarti Gateway tidak dapat menemukan kredensial Anthropic dalam `auth-profiles.json` yang diharapkan untuk agen yang sedang berjalan.
+  <Accordion title='Apa model default untuk Anthropic dengan kunci API?'>
+    Kredensial dan pemilihan model merupakan hal yang terpisah. Menetapkan `ANTHROPIC_API_KEY` (atau menyimpan kunci API Anthropic dalam profil autentikasi) mengaktifkan autentikasi, tetapi model default sebenarnya adalah model yang Anda konfigurasikan dalam `agents.defaults.model.primary` (misalnya `anthropic/claude-sonnet-4-6` atau `anthropic/claude-opus-4-6`). `No credentials found for profile "anthropic:default"` berarti Gateway tidak dapat menemukan kredensial Anthropic dalam `auth-profiles.json` yang diharapkan untuk agen yang sedang berjalan.
   </Accordion>
 </AccordionGroup>
 
 ---
 
-Masih buntu? Tanyakan di [Discord](https://discord.com/invite/clawd) atau buka [diskusi GitHub](https://github.com/openclaw/openclaw/discussions).
+Masih mengalami kendala? Tanyakan di [Discord](https://discord.com/invite/clawd) atau buka [diskusi GitHub](https://github.com/openclaw/openclaw/discussions).
 
 ## Terkait
 
-- [FAQ first-run](/id/help/faq-first-run) — instalasi, onboarding, autentikasi, langganan, kegagalan awal
-- [FAQ model](/id/help/faq-models) — pemilihan model, failover, profil autentikasi
-- [Pemecahan masalah](/id/help/troubleshooting) — triase berdasarkan gejala
+- [Tanya jawab umum penggunaan pertama](/id/help/faq-first-run) - instalasi, orientasi awal, autentikasi, langganan, kegagalan awal
+- [Tanya jawab umum model](/id/help/faq-models) - pemilihan model, failover, profil autentikasi
+- [Pemecahan masalah](/id/help/troubleshooting) - triase berdasarkan gejala

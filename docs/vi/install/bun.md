@@ -1,24 +1,25 @@
 ---
 read_when:
-    - Bạn muốn vòng lặp phát triển cục bộ nhanh nhất (bun + watch)
-    - Bạn gặp sự cố với các tập lệnh cài đặt/vá/vòng đời của Bun
-summary: 'Quy trình làm việc với Bun (thử nghiệm): cài đặt và những điểm cần lưu ý so với pnpm'
-title: Bun (thử nghiệm)
+    - Bạn muốn cài đặt các phần phụ thuộc hoặc chạy các tập lệnh gói bằng Bun
+    - Bạn gặp sự cố với tập lệnh cài đặt/bản vá/vòng đời của Bun
+summary: Quy trình làm việc với Bun để cài đặt và chạy các tập lệnh gói; Node là bắt buộc khi chạy thực tế
+title: Bun
 x-i18n:
-    generated_at: "2026-07-12T08:02:55Z"
+    generated_at: "2026-07-16T15:23:42Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: b836be354166ceb073d170e472e8b69c3f517e754fe71417df1d85d27a18ae94
+    source_hash: b822f700123b91c785eb881ebf28a63e77915b46dfd44beb9dbf63fb71aaa0d2
     source_path: install/bun.md
     workflow: 16
 ---
 
 <Warning>
-Không khuyến nghị dùng Bun cho môi trường chạy Gateway (do các vấn đề đã biết với WhatsApp và Telegram). Hãy dùng Node cho môi trường production.
+Bun không thể chạy OpenClaw CLI hoặc Gateway vì không cung cấp API `node:sqlite` bắt buộc. Hãy cài đặt một phiên bản Node được hỗ trợ cho mọi lệnh thời gian chạy OpenClaw.
 </Warning>
 
-Bun là môi trường chạy cục bộ tùy chọn để chạy trực tiếp TypeScript (`bun run ...`, `bun --watch ...`). Trình quản lý gói mặc định vẫn là `pnpm`, được hỗ trợ đầy đủ và được bộ công cụ tài liệu sử dụng. Bun không thể sử dụng `pnpm-lock.yaml` và sẽ bỏ qua tệp này.
+Bun vẫn có thể được dùng làm trình cài đặt phần phụ thuộc và trình chạy tập lệnh gói tùy chọn. Trình quản lý gói mặc định vẫn là `pnpm`, được hỗ trợ đầy đủ và được công cụ tài liệu sử dụng. Bun không thể sử dụng `pnpm-lock.yaml` và sẽ bỏ qua tệp này.
 
 ## Cài đặt
 
@@ -28,7 +29,7 @@ Bun là môi trường chạy cục bộ tùy chọn để chạy trực tiếp 
     bun install
     ```
 
-    `bun.lock` / `bun.lockb` bị git bỏ qua, nên kho mã nguồn không phát sinh thay đổi. Để hoàn toàn không ghi tệp khóa:
+    `bun.lock` / `bun.lockb` được git bỏ qua, nên kho lưu trữ không phát sinh thay đổi. Để bỏ qua hoàn toàn việc ghi tệp khóa:
 
     ```sh
     bun install --no-save
@@ -40,17 +41,20 @@ Bun là môi trường chạy cục bộ tùy chọn để chạy trực tiếp 
     bun run build
     bun run vitest run
     ```
+
+    Các lệnh khởi chạy chính OpenClaw vẫn phải chạy qua Node.
+
   </Step>
 </Steps>
 
-## Các tập lệnh vòng đời
+## Tập lệnh vòng đời
 
-Bun chặn các tập lệnh vòng đời của phần phụ thuộc trừ khi chúng được tin cậy rõ ràng. Đối với kho mã nguồn này, các tập lệnh thường bị chặn sau đây không bắt buộc:
+Bun chặn các tập lệnh vòng đời của phần phụ thuộc trừ khi chúng được tin cậy rõ ràng. Đối với kho lưu trữ này, các tập lệnh thường bị chặn sau đây không bắt buộc:
 
-- `baileys` `preinstall`: kiểm tra phiên bản chính của Node >= 20 (OpenClaw yêu cầu Node 22.19+ hoặc 23.11+, khuyến nghị dùng Node 24)
-- `protobufjs` `postinstall`: đưa ra cảnh báo về các quy ước phiên bản không tương thích (không có sản phẩm tạo tác của quá trình xây dựng)
+- `baileys` `preinstall`: kiểm tra phiên bản chính của Node >= 20 (OpenClaw yêu cầu Node 22.22.3+, 24.15+ hoặc 25.9+, khuyến nghị Node 24)
+- `protobufjs` `postinstall`: đưa ra cảnh báo về các lược đồ phiên bản không tương thích (không có sản phẩm tạo tác xây dựng)
 
-Nếu gặp sự cố trong môi trường chạy cần các tập lệnh này, hãy tin cậy chúng một cách rõ ràng:
+Nếu gặp sự cố thời gian chạy cần các tập lệnh này, hãy tin cậy chúng một cách rõ ràng:
 
 ```sh
 bun pm trust baileys protobufjs
@@ -58,7 +62,7 @@ bun pm trust baileys protobufjs
 
 ## Lưu ý
 
-Một số tập lệnh gói mã hóa cứng `pnpm` ở bên trong (ví dụ: `check:docs`, `ui:*`, `protocol:check`). Khi chạy chúng qua `bun run`, hệ thống vẫn gọi `pnpm` bằng shell, vì vậy hãy chạy trực tiếp các tập lệnh đó bằng `pnpm`.
+Một số tập lệnh gói mã hóa cứng `pnpm` ở bên trong (ví dụ: `check:docs`, `ui:*`, `protocol:check`). Việc chạy chúng qua `bun run` vẫn gọi shell để chạy `pnpm`, vì vậy chỉ cần chạy trực tiếp các tập lệnh đó qua `pnpm`.
 
 ## Liên quan
 

@@ -1,23 +1,24 @@
 ---
 read_when:
     - Korzystasz z wiadomości prywatnych w trybie parowania i musisz zatwierdzać nadawców
-summary: Dokumentacja CLI dla `openclaw pairing` (zatwierdzanie/wyświetlanie listy żądań parowania)
+summary: Dokumentacja CLI dla `openclaw pairing` (zatwierdzanie/wyświetlanie żądań parowania)
 title: Parowanie
 x-i18n:
-    generated_at: "2026-07-12T14:55:18Z"
+    generated_at: "2026-07-16T18:10:33Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: ca83ad9d9e55cfffd49301cb529b28df370c2dcff03484880f7cfc85ec2d6440
+    source_hash: 740459efe4d0fa2e9fa04a20b944592fed3dc9a22211658e1418c1e49a736997
     source_path: cli/pairing.md
     workflow: 16
 ---
 
 # `openclaw pairing`
 
-Zatwierdzaj lub sprawdzaj żądania parowania wiadomości prywatnych dla kanałów obsługujących parowanie (dotyczy tylko wiadomości prywatnych na czacie — do parowania węzłów/urządzeń służy `openclaw devices`).
+Zatwierdzanie lub sprawdzanie żądań parowania w wiadomościach prywatnych dla kanałów obsługujących parowanie (dotyczy tylko wiadomości prywatnych na czacie — parowanie Node/urządzeń korzysta z `openclaw devices`).
 
-Powiązane: [Przebieg parowania](/pl/channels/pairing)
+Powiązane: [Proces parowania](/pl/channels/pairing)
 
 ## Polecenia
 
@@ -35,18 +36,18 @@ openclaw pairing approve --channel telegram --account work <code> --notify
 
 Wyświetla oczekujące żądania parowania dla jednego kanału.
 
-| Opcja                   | Opis                                      |
-| ----------------------- | ----------------------------------------- |
-| `[channel]`             | pozycyjny identyfikator kanału            |
-| `--channel <channel>`   | jawny identyfikator kanału                |
-| `--account <accountId>` | identyfikator konta dla kanałów wielokontowych |
-| `--json`                | dane wyjściowe do odczytu maszynowego     |
+| Opcja                  | Opis                                  |
+| ----------------------- | ------------------------------------- |
+| `[channel]`             | pozycyjny identyfikator kanału        |
+| `--channel <channel>`   | jawny identyfikator kanału            |
+| `--account <accountId>` | identyfikator konta dla kanałów obsługujących wiele kont |
+| `--json`                | dane wyjściowe przeznaczone do przetwarzania maszynowego |
 
-Jeśli skonfigurowano wiele kanałów obsługujących parowanie, przekaż kanał jako argument pozycyjny lub za pomocą opcji `--channel`. Kanały rozszerzeń działają, o ile identyfikator kanału jest prawidłowy.
+Jeśli skonfigurowano wiele kanałów obsługujących parowanie, należy przekazać kanał pozycyjnie lub za pomocą `--channel`. Kanały rozszerzeń działają, o ile identyfikator kanału jest prawidłowy.
 
 ## `pairing approve`
 
-Zatwierdza oczekujący kod parowania i zezwala danemu nadawcy na dostęp.
+Zatwierdza oczekujący kod parowania i zezwala temu nadawcy na dostęp.
 
 Użycie:
 
@@ -54,17 +55,17 @@ Użycie:
 - `openclaw pairing approve --channel <channel> <code>`
 - `openclaw pairing approve <code>`, gdy skonfigurowano dokładnie jeden kanał obsługujący parowanie
 
-Opcje: `--channel <channel>`, `--account <accountId>`, `--notify` (wysyła potwierdzenie do osoby zgłaszającej w tym samym kanale).
+Opcje: `--channel <channel>`, `--account <accountId>`, `--notify` (wysyła potwierdzenie do osoby zgłaszającej za pośrednictwem tego samego kanału).
 
-### Początkowa konfiguracja właściciela
+### Inicjalizacja właściciela
 
-Jeśli podczas zatwierdzania kodu parowania wartość `commands.ownerAllowFrom` jest pusta, OpenClaw zapisuje również zatwierdzonego nadawcę jako właściciela poleceń, używając wpisu ograniczonego do kanału, takiego jak `telegram:123456789`. W ten sposób konfigurowany jest wyłącznie pierwszy właściciel — późniejsze zatwierdzenia parowania nigdy nie zastępują ani nie rozszerzają wartości `commands.ownerAllowFrom`.
+Jeśli `commands.ownerAllowFrom` jest puste podczas zatwierdzania kodu parowania, OpenClaw zapisuje również zatwierdzonego nadawcę jako właściciela poleceń, używając wpisu ograniczonego do kanału, takiego jak `telegram:123456789`. Powoduje to jedynie inicjalizację pierwszego właściciela — późniejsze zatwierdzenia parowania nigdy nie zastępują ani nie rozszerzają `commands.ownerAllowFrom`.
 
-Właściciel poleceń to konto operatora będącego człowiekiem, które może uruchamiać polecenia dostępne wyłącznie dla właściciela oraz zatwierdzać niebezpieczne działania, takie jak `/diagnostics`, `/export-trajectory`, `/config` i zatwierdzenia wykonania poleceń. Parowanie jedynie pozwala nadawcy rozmawiać z agentem; samo w sobie nie nadaje uprawnień właściciela poza tą jednorazową początkową konfiguracją.
+Właściciel poleceń to konto operatora będącego człowiekiem, które może uruchamiać polecenia przeznaczone wyłącznie dla właściciela oraz zatwierdzać niebezpieczne działania, takie jak `/diagnostics`, `/export-session`, `/export-trajectory`, `/config` i zatwierdzenia wykonywania poleceń. Parowanie jedynie umożliwia nadawcy komunikowanie się z agentem; samo w sobie nie przyznaje uprawnień właściciela poza tą jednorazową inicjalizacją.
 
-Jeśli zatwierdzono nadawcę, zanim wprowadzono tę początkową konfigurację, uruchom `openclaw doctor`; polecenie wyświetli ostrzeżenie, gdy nie skonfigurowano właściciela poleceń, oraz dokładne polecenie `openclaw config set commands.ownerAllowFrom ...`, które rozwiąże ten problem.
+Jeśli nadawca został zatwierdzony przed wprowadzeniem tej inicjalizacji, należy uruchomić `openclaw doctor`; polecenie ostrzega, gdy nie skonfigurowano właściciela poleceń, i wyświetla dokładne polecenie `openclaw config set commands.ownerAllowFrom ...` służące do naprawienia konfiguracji.
 
 ## Powiązane
 
 - [Dokumentacja CLI](/pl/cli)
-- [Parowanie kanałów](/pl/channels/pairing)
+- [Parowanie kanału](/pl/channels/pairing)

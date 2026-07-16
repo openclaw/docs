@@ -1,113 +1,97 @@
 ---
 read_when:
-    - Thay đổi chế độ xác thực hoặc chế độ mở truy cập của bảng điều khiển
-summary: Truy cập và xác thực bảng điều khiển Gateway (Giao diện điều khiển)
+    - Thay đổi chế độ xác thực hoặc khả năng truy cập của bảng điều khiển
+summary: Quyền truy cập và xác thực bảng điều khiển Gateway (giao diện điều khiển)
 title: Bảng điều khiển
 x-i18n:
-    generated_at: "2026-05-11T20:39:01Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T15:55:47Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 07e11c1f71e6691ee053192e238a3b48568f81c3180e6b5f8e21b6874417e57e
+    source_hash: 34d7ab6c5f503f2dd3ab212a1fc6b47c84fcd47c5ad88aa9cdbbbbc73b7ef90e
     source_path: web/dashboard.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-Bảng điều khiển Gateway là giao diện điều khiển trên trình duyệt được phục vụ tại `/` theo mặc định
-(ghi đè bằng `gateway.controlUi.basePath`).
+Gateway dashboard là Giao diện điều khiển trên trình duyệt được phục vụ tại `/` theo mặc định (ghi đè bằng `gateway.controlUi.basePath`).
 
 Mở nhanh (Gateway cục bộ):
 
 - [http://127.0.0.1:18789/](http://127.0.0.1:18789/) (hoặc [http://localhost:18789/](http://localhost:18789/))
-- Với `gateway.tls.enabled: true`, dùng `https://127.0.0.1:18789/` và
-  `wss://127.0.0.1:18789` cho điểm cuối WebSocket.
+- Với `gateway.tls.enabled: true`, hãy dùng `https://127.0.0.1:18789/` và `wss://127.0.0.1:18789` cho điểm cuối WebSocket.
 
 Tài liệu tham khảo chính:
 
-- [Giao diện điều khiển](/vi/web/control-ui) để xem cách sử dụng và các khả năng của giao diện.
-- [Tailscale](/vi/gateway/tailscale) cho tự động hóa Serve/Funnel.
-- [Bề mặt web](/vi/web) cho các chế độ bind và ghi chú bảo mật.
+- [Giao diện điều khiển](/vi/web/control-ui) để biết cách sử dụng và các khả năng của giao diện.
+- [Tailscale](/vi/gateway/tailscale) để tự động hóa Serve/Funnel.
+- [Các bề mặt web](/vi/web) để biết các chế độ liên kết và lưu ý bảo mật.
 
-Xác thực được thực thi tại bước bắt tay WebSocket thông qua đường dẫn xác thực
-gateway đã cấu hình:
+Xác thực được thực thi trong quá trình bắt tay WebSocket thông qua đường dẫn xác thực Gateway đã cấu hình:
 
 - `connect.params.auth.token`
 - `connect.params.auth.password`
-- header danh tính Tailscale Serve khi `gateway.auth.allowTailscale: true`
-- header danh tính trusted-proxy khi `gateway.auth.mode: "trusted-proxy"`
+- Các tiêu đề danh tính Tailscale Serve khi `gateway.auth.allowTailscale: true`
+- Các tiêu đề danh tính của proxy đáng tin cậy khi `gateway.auth.mode: "trusted-proxy"`
 
 Xem `gateway.auth` trong [Cấu hình Gateway](/vi/gateway/configuration).
 
-Ghi chú bảo mật: giao diện điều khiển là một **bề mặt quản trị** (chat, cấu hình, phê duyệt exec).
-Không để lộ công khai. Giao diện lưu token URL bảng điều khiển trong sessionStorage
-cho phiên tab trình duyệt hiện tại và URL gateway đã chọn, rồi loại bỏ chúng khỏi URL sau khi tải.
-Ưu tiên localhost, Tailscale Serve hoặc đường hầm SSH.
+<Warning>
+Giao diện điều khiển là một **bề mặt quản trị** (trò chuyện, cấu hình, phê duyệt thực thi). Không công khai giao diện này. Giao diện lưu token URL của dashboard trong sessionStorage cho tab trình duyệt hiện tại và URL Gateway đã chọn, đồng thời xóa chúng khỏi URL sau khi tải. Ưu tiên localhost, Tailscale Serve hoặc đường hầm SSH.
+</Warning>
 
-## Đường nhanh (khuyến nghị)
+## Cách nhanh nhất (khuyến nghị)
 
-- Sau khi onboarding, CLI tự động mở bảng điều khiển và in một liên kết sạch (không chứa token).
-- Mở lại bất cứ lúc nào: `openclaw dashboard` (sao chép liên kết, mở trình duyệt nếu có thể, hiển thị gợi ý SSH nếu headless).
-- Nếu không thể gửi qua clipboard và trình duyệt, `openclaw dashboard` vẫn in
-  URL sạch và hướng dẫn bạn dùng token từ `OPENCLAW_GATEWAY_TOKEN` hoặc
-  `gateway.auth.token` làm khóa fragment URL `token`; lệnh này không in giá trị
-  token trong log.
-- Nếu giao diện yêu cầu xác thực shared-secret, hãy dán token hoặc
-  mật khẩu đã cấu hình vào phần cài đặt giao diện điều khiển.
+- Sau khi hoàn tất quy trình thiết lập ban đầu, CLI tự động mở dashboard và in một liên kết sạch (không chứa token).
+- Mở lại bất cứ lúc nào: `openclaw dashboard` (sao chép liên kết, mở trình duyệt nếu có thể và in gợi ý SSH nếu chạy không có giao diện).
+- Nếu cả việc chuyển qua bảng nhớ tạm lẫn trình duyệt đều thất bại, `openclaw dashboard` vẫn in URL sạch và hướng dẫn bạn nối token của mình (từ `OPENCLAW_GATEWAY_TOKEN` hoặc `gateway.auth.token`) dưới dạng khóa phân mảnh URL `token`; lệnh không bao giờ in giá trị token trong nhật ký.
+- Nếu giao diện yêu cầu xác thực bằng bí mật dùng chung, hãy dán token hoặc mật khẩu đã cấu hình vào phần cài đặt của Giao diện điều khiển.
 
-## Cơ bản về xác thực (cục bộ so với từ xa)
+## Kiến thức cơ bản về xác thực (cục bộ và từ xa)
 
 - **Localhost**: mở `http://127.0.0.1:18789/`.
-- **Gateway TLS**: khi `gateway.tls.enabled: true`, liên kết bảng điều khiển/trạng thái dùng
-  `https://` và liên kết WebSocket của giao diện điều khiển dùng `wss://`.
-- **Nguồn token shared-secret**: `gateway.auth.token` (hoặc
-  `OPENCLAW_GATEWAY_TOKEN`); `openclaw dashboard` có thể truyền nó qua fragment URL
-  để bootstrap một lần, và giao diện điều khiển giữ nó trong sessionStorage cho
-  phiên tab trình duyệt hiện tại và URL gateway đã chọn thay vì localStorage.
-- Nếu `gateway.auth.token` được quản lý bằng SecretRef, `openclaw dashboard`
-  chủ ý in/sao chép/mở một URL không chứa token. Điều này tránh để lộ
-  token do bên ngoài quản lý trong log shell, lịch sử clipboard hoặc đối số
-  khởi chạy trình duyệt.
-- Nếu `gateway.auth.token` được cấu hình là SecretRef và chưa được phân giải trong
-  shell hiện tại của bạn, `openclaw dashboard` vẫn in một URL không chứa token cùng
-  hướng dẫn thiết lập xác thực có thể thực hiện.
-- **Mật khẩu shared-secret**: dùng `gateway.auth.password` đã cấu hình (hoặc
-  `OPENCLAW_GATEWAY_PASSWORD`). Bảng điều khiển không lưu mật khẩu qua các lần
-  tải lại.
-- **Chế độ mang danh tính**: Tailscale Serve có thể đáp ứng xác thực giao diện điều khiển/WebSocket
-  thông qua header danh tính khi `gateway.auth.allowTailscale: true`, và một
-  reverse proxy không phải loopback có nhận biết danh tính có thể đáp ứng
-  `gateway.auth.mode: "trusted-proxy"`. Trong các chế độ đó, bảng điều khiển không
-  cần dán shared secret cho WebSocket.
-- **Không phải localhost**: dùng Tailscale Serve, một bind shared-secret không phải loopback, một
-  reverse proxy không phải loopback có nhận biết danh tính với
-  `gateway.auth.mode: "trusted-proxy"`, hoặc đường hầm SSH. API HTTP vẫn dùng
-  xác thực shared-secret trừ khi bạn cố ý chạy private-ingress
-  `gateway.auth.mode: "none"` hoặc xác thực HTTP trusted-proxy. Xem
-  [Bề mặt web](/vi/web).
+- **TLS của Gateway**: khi `gateway.tls.enabled: true`, các liên kết dashboard/trạng thái sử dụng `https://` và các liên kết WebSocket của Giao diện điều khiển sử dụng `wss://`.
+- **Nguồn token bí mật dùng chung**: `gateway.auth.token` (hoặc `OPENCLAW_GATEWAY_TOKEN`). `openclaw dashboard` có thể truyền token qua phân mảnh URL để khởi tạo một lần; Giao diện điều khiển lưu token trong sessionStorage cho tab hiện tại và URL Gateway đã chọn, không phải localStorage.
+- Nếu `gateway.auth.token` được SecretRef quản lý, theo thiết kế, `openclaw dashboard` sẽ in/sao chép/mở một URL không chứa token để tránh làm lộ token được quản lý bên ngoài trong nhật ký shell, lịch sử bảng nhớ tạm hoặc đối số khởi chạy trình duyệt. Nếu tham chiếu không được phân giải trong shell hiện tại, lệnh vẫn in URL không chứa token cùng hướng dẫn thiết lập xác thực có thể thực hiện được.
+- **Mật khẩu bí mật dùng chung**: sử dụng `gateway.auth.password` đã cấu hình (hoặc `OPENCLAW_GATEWAY_PASSWORD`). Dashboard không lưu mật khẩu qua các lần tải lại.
+- **Các chế độ mang danh tính**: Tailscale Serve đáp ứng xác thực Giao diện điều khiển/WebSocket thông qua các tiêu đề danh tính khi `gateway.auth.allowTailscale: true`; một reverse proxy nhận biết danh tính không phải loopback đáp ứng `gateway.auth.mode: "trusted-proxy"`. Cả hai đều không cần dán bí mật dùng chung cho WebSocket.
+- **Không phải localhost**: sử dụng Tailscale Serve, một liên kết bí mật dùng chung không phải loopback, một reverse proxy nhận biết danh tính không phải loopback với `gateway.auth.mode: "trusted-proxy"`, hoặc một đường hầm SSH. Các API HTTP vẫn sử dụng xác thực bằng bí mật dùng chung, trừ khi bạn chủ động chạy `gateway.auth.mode: "none"` với đầu vào riêng tư hoặc xác thực HTTP bằng proxy đáng tin cậy. Xem [Các bề mặt web](/vi/web).
+
+## Mở trong Telegram
+
+Bot Telegram có thể mở dashboard dưới dạng Telegram Mini App bằng `/dashboard`.
+
+Yêu cầu:
+
+- `gateway.tailscale.mode: "serve"` hoặc `"funnel"` để Telegram nhận được URL Mini App dùng HTTPS.
+- Người gửi trên Telegram phải là chủ sở hữu bot: một ID người dùng Telegram dạng số trong `commands.ownerAllowFrom` hoặc `channels.telegram.allowFrom` có hiệu lực của tài khoản đã chọn.
+- Chạy `/dashboard` trong tin nhắn trực tiếp với bot. Khi gọi trong nhóm, hệ thống chỉ yêu cầu bạn mở lệnh trong tin nhắn trực tiếp và không kèm nút.
+- Bản cài đặt Docker: các chế độ Serve/Funnel yêu cầu Gateway liên kết với loopback bên cạnh `tailscaled`, điều mà mạng cầu nối với các cổng được công bố không thể đáp ứng. Chạy container Gateway với `network_mode: host` và gắn socket `tailscaled` của máy chủ (`/var/run/tailscale`) cùng CLI `tailscale` vào container.
+
+Mini App thực hiện một lần chuyển giao chủ sở hữu và chuyển hướng đến Giao diện điều khiển bằng token khởi tạo có thời hạn ngắn. Mini App không để lộ token Gateway dùng chung trong URL.
+
+Các mục tiêu không hỗ trợ trong v1:
+
+- Không hỗ trợ iframe Telegram Web.
+- Tailscale Serve/Funnel là đường dẫn URL được công bố duy nhất được hỗ trợ.
 
 <a id="if-you-see-unauthorized-1008"></a>
 
 ## Nếu bạn thấy "unauthorized" / 1008
 
-- Đảm bảo gateway có thể truy cập được (cục bộ: `openclaw status`; từ xa: đường hầm SSH `ssh -N -L 18789:127.0.0.1:18789 user@host` rồi mở `http://127.0.0.1:18789/`).
-- Với `AUTH_TOKEN_MISMATCH`, client có thể thực hiện một lần thử lại tin cậy bằng token thiết bị đã lưu trong bộ nhớ đệm khi gateway trả về gợi ý thử lại. Lần thử lại bằng token đã lưu đó tái sử dụng các phạm vi đã phê duyệt được lưu trong bộ nhớ đệm của token; các bên gọi `deviceToken` tường minh / `scopes` tường minh vẫn giữ tập phạm vi đã yêu cầu. Nếu xác thực vẫn thất bại sau lần thử lại đó, hãy xử lý lệch token thủ công.
-- Với `AUTH_SCOPE_MISMATCH`, token thiết bị đã được nhận diện nhưng không mang các phạm vi mà bảng điều khiển yêu cầu; hãy ghép cặp lại hoặc phê duyệt hợp đồng phạm vi đã yêu cầu thay vì xoay vòng token gateway dùng chung.
-- Ngoài đường dẫn thử lại đó, thứ tự ưu tiên xác thực kết nối là token/mật khẩu dùng chung tường minh trước, rồi `deviceToken` tường minh, rồi token thiết bị đã lưu, rồi token bootstrap.
-- Trên đường dẫn bất đồng bộ Tailscale Serve của giao diện điều khiển, các lần thử thất bại cho cùng
-  `{scope, ip}` được tuần tự hóa trước khi bộ giới hạn xác thực thất bại ghi nhận chúng, vì vậy
-  lần thử lại lỗi đồng thời thứ hai có thể đã hiển thị `retry later`.
-- Để xem các bước sửa lệch token, hãy làm theo [Danh sách kiểm tra khôi phục lệch token](/vi/cli/devices#token-drift-recovery-checklist).
-- Truy xuất hoặc cung cấp shared secret từ máy chủ gateway:
+- Xác nhận có thể truy cập Gateway: với cục bộ, dùng `openclaw status`; với từ xa, tạo đường hầm SSH bằng `ssh -N -L 18789:127.0.0.1:18789 user@gateway-host`, sau đó mở `http://127.0.0.1:18789/`.
+- Đối với `AUTH_TOKEN_MISMATCH`, ứng dụng khách có thể thực hiện một lần thử lại đáng tin cậy bằng token thiết bị được lưu vào bộ nhớ đệm khi Gateway trả về gợi ý thử lại; lần thử lại đó tái sử dụng các phạm vi đã phê duyệt được lưu trong bộ nhớ đệm của token (các bên gọi `deviceToken`/`scopes` tường minh vẫn giữ tập hợp phạm vi được yêu cầu). Nếu xác thực vẫn thất bại sau lần thử lại đó, hãy xử lý thủ công tình trạng sai lệch token.
+- Đối với `AUTH_SCOPE_MISMATCH`, token thiết bị đã được nhận dạng nhưng không có các phạm vi được yêu cầu; hãy ghép nối lại hoặc phê duyệt tập hợp phạm vi mới thay vì xoay vòng token Gateway dùng chung.
+- Ngoài đường dẫn thử lại đó, thứ tự ưu tiên xác thực khi kết nối là: token/mật khẩu dùng chung được chỉ định tường minh, sau đó là `deviceToken` được chỉ định tường minh, tiếp theo là token thiết bị đã lưu trữ và cuối cùng là token khởi tạo.
+- Trên đường dẫn Tailscale Serve bất đồng bộ, các lần thử thất bại cho cùng một `{scope, ip}` được tuần tự hóa trước khi bộ giới hạn xác thực thất bại ghi nhận chúng, vì vậy lần thử lại sai thứ hai diễn ra đồng thời có thể đã hiển thị `retry later`.
+- Để biết các bước khắc phục sai lệch token, xem [Danh sách kiểm tra khôi phục sai lệch token](/vi/cli/devices#token-drift-recovery-checklist).
+- Truy xuất hoặc cung cấp bí mật dùng chung từ máy chủ Gateway:
   - Token: `openclaw config get gateway.auth.token`
-  - Mật khẩu: phân giải `gateway.auth.password` đã cấu hình hoặc
-    `OPENCLAW_GATEWAY_PASSWORD`
-  - Token do SecretRef quản lý: phân giải nhà cung cấp bí mật bên ngoài hoặc export
-    `OPENCLAW_GATEWAY_TOKEN` trong shell này, rồi chạy lại `openclaw dashboard`
-  - Chưa cấu hình shared secret: `openclaw doctor --generate-gateway-token`
-- Trong phần cài đặt bảng điều khiển, dán token hoặc mật khẩu vào trường xác thực,
-  rồi kết nối.
-- Bộ chọn ngôn ngữ giao diện nằm trong **Tổng quan -> Truy cập Gateway -> Ngôn ngữ**.
-  Nó là một phần của thẻ truy cập, không phải mục Giao diện.
+  - Mật khẩu: phân giải `gateway.auth.password` hoặc `OPENCLAW_GATEWAY_PASSWORD` đã cấu hình
+  - Token do SecretRef quản lý: phân giải nhà cung cấp bí mật bên ngoài hoặc xuất `OPENCLAW_GATEWAY_TOKEN` trong shell này rồi chạy lại `openclaw dashboard`
+  - Chưa cấu hình bí mật dùng chung: `openclaw doctor --generate-gateway-token`
+- Trong phần cài đặt dashboard, dán token hoặc mật khẩu vào trường xác thực, sau đó kết nối.
+- Trình chọn ngôn ngữ của giao diện nằm trong **Settings -> General -> Language**, không nằm trong Appearance.
 
 ## Liên quan
 

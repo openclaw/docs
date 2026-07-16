@@ -4,12 +4,12 @@ read_when:
 summary: 为 OpenClaw 添加 xAI 模型提供商支持。
 title: xAI 插件
 x-i18n:
-    generated_at: "2026-07-14T13:49:43Z"
+    generated_at: "2026-07-16T11:52:48Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
-    prompt_version: 25
+    prompt_version: 32
     provider: openai
-    source_hash: 363bd3d732138647bdbbdfdcb0c104aa43ca2b9fe92104fe42090d34d5afef33
+    source_hash: 7fc08d7c11ca70704b65f6cf2f81d9183e629b9404128aa0ac1c9e0a65e0a339
     source_path: plugins/reference/xai.md
     workflow: 16
 ---
@@ -21,12 +21,12 @@ x-i18n:
 ## 分发
 
 - 软件包：`@openclaw/xai-plugin`
-- 安装方式：OpenClaw 已内置
+- 安装途径：内置于 OpenClaw
 
-## 接口面
+## 接口
 
-提供商：xai；契约：imageGenerationProviders、mediaUnderstandingProviders、realtimeTranscriptionProviders、realtimeVoiceProviders、speechProviders、tools、videoGenerationProviders、webSearchProviders
+提供商：`xai`；契约：`imageGenerationProviders`、`mediaUnderstandingProviders`、`realtimeTranscriptionProviders`、`realtimeVoiceProviders`、`speechProviders`、`tools`、`videoGenerationProviders`、`webSearchProviders`
 
 ## 相关文档
 
-- [xai](/zh-CN/providers/xai)
+- [xAI](/zh-CN/providers/xai)

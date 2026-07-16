@@ -1,107 +1,111 @@
 ---
 read_when:
     - बैकग्राउंड exec व्यवहार जोड़ना या संशोधित करना
-    - लंबे समय तक चलने वाले exec कार्यों की डिबगिंग
-summary: पृष्ठभूमि exec निष्पादन और प्रक्रिया प्रबंधन
-title: पृष्ठभूमि निष्पादन और प्रक्रिया उपकरण
+    - लंबे समय तक चलने वाले exec कार्यों की डीबगिंग
+summary: पृष्ठभूमि में exec निष्पादन और प्रक्रिया प्रबंधन
+title: पृष्ठभूमि निष्पादन और प्रक्रिया टूल
 x-i18n:
-    generated_at: "2026-06-28T23:05:13Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T14:41:44Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 5822c1e26b0144c5216ae6e59e279ccc506cf4c0a42b8cd6c386f535fe458bd3
+    source_hash: b540455797df71dcdb18b0caa5f5088e81ef8823e0ec79364bebad8e6f060f12
     source_path: gateway/background-process.md
     workflow: 16
 ---
 
-OpenClaw `exec` टूल के माध्यम से शेल कमांड चलाता है और लंबे समय तक चलने वाले कार्यों को मेमरी में रखता है। `process` टूल उन पृष्ठभूमि सत्रों को प्रबंधित करता है।
+OpenClaw, `exec` टूल के माध्यम से शेल कमांड चलाता है और लंबे समय तक चलने वाले कार्यों को मेमोरी में रखता है। `process` टूल उन बैकग्राउंड सेशन को प्रबंधित करता है।
 
 ## exec टूल
 
-मुख्य पैरामीटर:
+पैरामीटर:
 
-- `command` (आवश्यक)
-- `yieldMs` (डिफ़ॉल्ट 10000): इस विलंब के बाद अपने-आप पृष्ठभूमि में चला जाता है
-- `background` (bool): तुरंत पृष्ठभूमि में चलाएं
-- `timeout` (सेकंड, डिफ़ॉल्ट `tools.exec.timeoutSec`): इस टाइमआउट के बाद प्रक्रिया को समाप्त करें; केवल उस कॉल के लिए exec प्रक्रिया टाइमआउट अक्षम करने हेतु `timeout: 0` सेट करें
-- `elevated` (bool): यदि elevated मोड सक्षम/अनुमत है, तो sandbox के बाहर चलाएं (डिफ़ॉल्ट रूप से `gateway`, या जब exec लक्ष्य `node` हो तो `node`)
-- वास्तविक TTY चाहिए? `pty: true` सेट करें।
-- `workdir`, `env`
+| पैरामीटर    | विवरण                                                                                                                                            |
+| ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `command`    | आवश्यक। चलाने के लिए शेल कमांड।                                                                                                                        |
+| `workdir`    | कार्यशील डायरेक्टरी; डिफ़ॉल्ट cwd का उपयोग करने के लिए इसे छोड़ दें।                                                                                                        |
+| `env`        | कमांड के लिए अतिरिक्त एनवायरनमेंट वेरिएबल।                                                                                                           |
+| `yieldMs`    | बैकग्राउंड में भेजने से पहले प्रतीक्षा के मिलीसेकंड (डिफ़ॉल्ट 10000)।                                                                                             |
+| `background` | तुरंत बैकग्राउंड में चलाएँ।                                                                                                                         |
+| `timeout`    | सेकंड में टाइमआउट (डिफ़ॉल्ट `tools.exec.timeoutSec`); अवधि समाप्त होने पर प्रोसेस को समाप्त कर देता है। उस कॉल के लिए exec प्रोसेस टाइमआउट अक्षम करने हेतु `timeout: 0` सेट करें। |
+| `pty`        | उपलब्ध होने पर स्यूडो-टर्मिनल में चलाएँ (TTY-आवश्यक CLI, कोडिंग एजेंट)।                                                                            |
+| `elevated`   | यदि एलिवेटेड मोड सक्षम/अनुमत है, तो सैंडबॉक्स के बाहर चलाएँ (डिफ़ॉल्ट रूप से `gateway`, या जब exec लक्ष्य `node` हो तब `node`)।                          |
+| `host`       | Exec लक्ष्य: `auto`, `sandbox`, `gateway`, या `node`।                                                                                                  |
+| `node`       | Node आईडी/नाम, `host: "node"` के साथ उपयोग किया जाता है।                                                                                                                |
 
 व्यवहार:
 
-- अग्रभूमि में चलने वाली प्रक्रियाएं सीधे आउटपुट लौटाती हैं।
-- पृष्ठभूमि में जाने पर (स्पष्ट रूप से या टाइमआउट से), टूल `status: "running"` + `sessionId` और एक छोटा tail लौटाता है।
-- पृष्ठभूमि और `yieldMs` रन `tools.exec.timeoutSec` विरासत में लेते हैं, जब तक कॉल स्पष्ट `timeout` प्रदान नहीं करती।
-- आउटपुट सत्र के पोल या साफ़ किए जाने तक मेमरी में रखा जाता है।
-- यदि `process` टूल अनुमत नहीं है, तो `exec` समकालिक रूप से चलता है और `yieldMs`/`background` को अनदेखा करता है।
-- Spawn किए गए exec कमांड context-aware शेल/profile नियमों के लिए `OPENCLAW_SHELL=exec` प्राप्त करते हैं।
-- लंबे समय तक चलने वाले ऐसे काम के लिए जो अभी शुरू होता है, उसे एक बार शुरू करें और सक्षम होने पर automatic
-  completion wake पर भरोसा करें, जब कमांड आउटपुट देता है या विफल होता है।
-- यदि automatic completion wake उपलब्ध नहीं है, या आपको ऐसे कमांड के लिए quiet-success
-  पुष्टि चाहिए जो बिना आउटपुट के साफ़ तौर पर समाप्त हुआ, तो पूर्णता की पुष्टि के लिए `process`
-  का उपयोग करें।
-- reminders या विलंबित follow-ups को `sleep` loops या बार-बार
-  polling से emulate न करें; भविष्य के काम के लिए cron का उपयोग करें।
+- फ़ोरग्राउंड रन सीधे आउटपुट लौटाते हैं।
+- बैकग्राउंड में भेजे जाने पर (स्पष्ट रूप से या `yieldMs` टाइमआउट के माध्यम से), टूल `status: "running"` + `sessionId` और आउटपुट का एक छोटा अंतिम भाग लौटाता है।
+- बैकग्राउंड और `yieldMs` रन `tools.exec.timeoutSec` इनहेरिट करते हैं, जब तक कॉल स्पष्ट `timeout` पास न करे।
+- आउटपुट तब तक मेमोरी में रहता है, जब तक सेशन को पोल या साफ़ नहीं किया जाता।
+- यदि `process` टूल की अनुमति नहीं है, तो `exec` रन सिंक्रोनस रूप से चलता है और `yieldMs`/`background` को अनदेखा करता है।
+- स्पॉन किए गए exec कमांड को संदर्भ-सचेत शेल/प्रोफ़ाइल नियमों के लिए `OPENCLAW_SHELL=exec` मिलता है।
+- अब शुरू होने वाले लंबे कार्य के लिए: इसे एक बार शुरू करें और कमांड के आउटपुट देने या विफल होने पर स्वचालित पूर्णता वेक (सक्षम होने पर) पर निर्भर रहें।
+- यदि स्वचालित पूर्णता वेक उपलब्ध नहीं है, या बिना आउटपुट के सफलतापूर्वक समाप्त होने वाले कमांड के लिए मौन-सफलता की पुष्टि चाहिए, तो `process` से पोल करें।
+- रिमाइंडर या विलंबित फ़ॉलो-अप को `sleep` लूप या बार-बार पोलिंग से अनुकरण न करें — भविष्य के कार्य के लिए Cron का उपयोग करें।
+
+### एनवायरनमेंट ओवरराइड
+
+| वेरिएबल                                 | प्रभाव                                                                                                           |
+| ---------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| `OPENCLAW_BASH_YIELD_MS`                 | बैकग्राउंड में भेजने से पहले डिफ़ॉल्ट यील्ड (ms)। डिफ़ॉल्ट 10000, सीमा 10-120000।                                       |
+| `OPENCLAW_BASH_MAX_OUTPUT_CHARS`         | इन-मेमोरी आउटपुट सीमा (वर्ण)।                                                                                    |
+| `OPENCLAW_BASH_PENDING_MAX_OUTPUT_CHARS` | प्रत्येक स्ट्रीम के लिए लंबित stdout/stderr सीमा (वर्ण)।                                                                    |
+| `OPENCLAW_BASH_JOB_TTL_MS`               | समाप्त सेशन के लिए TTL (ms), सीमा 1m-3h।                                                                |
+| `OPENCLAW_PROCESS_INPUT_WAIT_IDLE_MS`    | लिखने योग्य बैकग्राउंड सेशन को इनपुट की प्रतीक्षा में संभावित रूप से चिह्नित करने से पहले निष्क्रिय-आउटपुट सीमा। डिफ़ॉल्ट 15000। |
+
+### कॉन्फ़िगरेशन (एनवायरनमेंट ओवरराइड से बेहतर)
+
+| कुंजी                                   | डिफ़ॉल्ट | प्रभाव                                                                          |
+| ------------------------------------- | ------- | ------------------------------------------------------------------------------- |
+| `tools.exec.backgroundMs`             | 10000   | `OPENCLAW_BASH_YIELD_MS` के समान।                                               |
+| `tools.exec.timeoutSec`               | 1800    | प्रत्येक कॉल का डिफ़ॉल्ट टाइमआउट।                                                       |
+| `tools.exec.cleanupMs`                | 1800000 | `OPENCLAW_BASH_JOB_TTL_MS` के समान।                                             |
+| `tools.exec.notifyOnExit`             | true    | बैकग्राउंड exec के समाप्त होने पर सिस्टम इवेंट कतारबद्ध करें + Heartbeat का अनुरोध करें।      |
+| `tools.exec.notifyOnExitEmptySuccess` | false   | बिना आउटपुट वाले सफल बैकग्राउंड रन के लिए भी पूर्णता इवेंट कतारबद्ध करें। |
 
 ## चाइल्ड प्रोसेस ब्रिजिंग
 
-exec/process टूल्स के बाहर लंबे समय तक चलने वाली child processes spawn करते समय (उदाहरण के लिए, CLI respawns या gateway helpers), child-process bridge helper जोड़ें ताकि termination signals forward किए जाएं और exit/error पर listeners अलग किए जाएं। इससे systemd पर orphaned processes से बचाव होता है और shutdown व्यवहार platforms में सुसंगत रहता है।
-
-Environment overrides:
-
-- `OPENCLAW_BASH_YIELD_MS`: डिफ़ॉल्ट yield (ms)
-- `OPENCLAW_BASH_MAX_OUTPUT_CHARS`: in-memory output cap (chars)
-- `OPENCLAW_BASH_PENDING_MAX_OUTPUT_CHARS`: प्रति stream pending stdout/stderr cap (chars)
-- `OPENCLAW_BASH_JOB_TTL_MS`: finished sessions के लिए TTL (ms, 1m–3h तक bounded)
-- `OPENCLAW_PROCESS_INPUT_WAIT_IDLE_MS`: writable background sessions को संभवतः input की प्रतीक्षा में चिह्नित करने से पहले idle-output threshold (डिफ़ॉल्ट 15000 ms)
-
-Config (preferred):
-
-- `tools.exec.backgroundMs` (डिफ़ॉल्ट 10000)
-- `tools.exec.timeoutSec` (डिफ़ॉल्ट 1800)
-- `tools.exec.cleanupMs` (डिफ़ॉल्ट 1800000)
-- `tools.exec.notifyOnExit` (डिफ़ॉल्ट true): जब backgrounded exec exit करता है, तो system event enqueue करें + Heartbeat request करें।
-- `tools.exec.notifyOnExitEmptySuccess` (डिफ़ॉल्ट false): true होने पर, उन successful backgrounded runs के लिए भी completion events enqueue करें जिन्होंने कोई output नहीं बनाया।
+exec/process टूल के बाहर लंबे समय तक चलने वाले चाइल्ड प्रोसेस स्पॉन करते समय (CLI री-स्पॉन, Gateway सहायक), चाइल्ड-प्रोसेस ब्रिज सहायक संलग्न करें, ताकि टर्मिनेशन सिग्नल फ़ॉरवर्ड हों और एग्ज़िट/त्रुटि पर लिसनर अलग हो जाएँ। इससे systemd पर अनाथ प्रोसेस बनने से बचते हैं और सभी प्लेटफ़ॉर्म पर शटडाउन सुसंगत रहता है।
 
 ## process टूल
 
-क्रियाएं:
+क्रियाएँ:
 
-- `list`: running + finished sessions
-- `poll`: किसी session के लिए नया output drain करें (exit status भी report करता है)
-- `log`: aggregated output पढ़ें और input recovery hints दिखाएं (`offset` + `limit` समर्थित)
-- `write`: stdin भेजें (`data`, वैकल्पिक `eof`)
-- `send-keys`: PTY-backed session को explicit key tokens या bytes भेजें
-- `submit`: PTY-backed session को Enter / carriage return भेजें
-- `paste`: literal text भेजें, वैकल्पिक रूप से bracketed paste mode में wrapped
-- `kill`: background session समाप्त करें
-- `clear`: finished session को मेमरी से हटाएं
-- `remove`: running हो तो kill करें, अन्यथा finished हो तो clear करें
+| क्रिया      | प्रभाव                                                                        |
+| ----------- | ----------------------------------------------------------------------------- |
+| `list`      | चल रहे + समाप्त सेशन।                                                  |
+| `poll`      | किसी सेशन का नया आउटपुट निकालें (एग्ज़िट स्थिति भी रिपोर्ट करता है)।                    |
+| `log`       | समेकित आउटपुट और इनपुट-रिकवरी संकेत पढ़ें। `offset` + `limit` का समर्थन करता है। |
+| `write`     | stdin भेजें (`data`, वैकल्पिक `eof`)।                                          |
+| `send-keys` | PTY-समर्थित सेशन को स्पष्ट कुंजी टोकन या बाइट भेजें।                    |
+| `submit`    | PTY-समर्थित सेशन को Enter/कैरिज रिटर्न भेजें।                           |
+| `paste`     | शाब्दिक टेक्स्ट भेजें, वैकल्पिक रूप से ब्रैकेटेड पेस्ट मोड में लपेटकर।                |
+| `kill`      | बैकग्राउंड सेशन समाप्त करें।                                               |
+| `clear`     | समाप्त सेशन को मेमोरी से हटाएँ।                                        |
+| `remove`    | चल रहा हो तो समाप्त करें, अन्यथा समाप्त हो चुका हो तो साफ़ करें।                                 |
 
-नोट्स:
+नोट:
 
-- केवल backgrounded sessions मेमरी में listed/persisted होते हैं।
-- process restart पर sessions खो जाते हैं (disk persistence नहीं)।
-- Session logs केवल तब chat history में save होते हैं जब आप `process poll/log` चलाते हैं और tool result record होता है।
-- `process` प्रति agent scoped है; यह केवल उस agent द्वारा शुरू किए गए sessions देखता है।
-- automatic completion wake अनुपलब्ध होने पर status, logs, quiet-success confirmation, या
-  completion confirmation के लिए `poll` / `log` का उपयोग करें।
-- interactive CLI recover करने से पहले `log` का उपयोग करें ताकि वर्तमान transcript,
-  stdin state, और input-wait hint साथ में दिखाई दें।
-- जब आपको input या intervention की आवश्यकता हो, तो `write` / `send-keys` / `submit` / `paste` / `kill` का उपयोग करें।
-- `process list` quick scans के लिए derived `name` (command verb + target) शामिल करता है।
-- `process list`, `poll`, और `log` `waitingForInput` केवल तब report करते हैं
-  जब session में अभी भी writable stdin हो और वह input-wait threshold से अधिक समय तक idle रहा हो।
-- `process log` line-based `offset`/`limit` का उपयोग करता है।
-- जब `offset` और `limit` दोनों छोड़े जाते हैं, तो यह अंतिम 200 lines लौटाता है और paging hint शामिल करता है।
-- जब `offset` दिया जाता है और `limit` छोड़ा जाता है, तो यह `offset` से अंत तक लौटाता है (200 तक capped नहीं)।
-- Polling on-demand status के लिए है, wait-loop scheduling के लिए नहीं। यदि काम बाद में होना चाहिए,
-  तो इसके बजाय cron का उपयोग करें।
+- केवल बैकग्राउंड सेशन सूचीबद्ध/स्थायी रखे जाते हैं — केवल मेमोरी में, डिस्क पर नहीं। प्रोसेस पुनः आरंभ होने पर सेशन खो जाते हैं।
+- जब तक प्रोसेस स्वामी उसके वास्तविक रूप से समाप्त होने की पुष्टि नहीं करता, एक सक्रिय बैकग्राउंड सेशन सहकारी होस्ट सस्पेंशन और सुरक्षित Gateway पुनः आरंभ को रोकता है।
+- `process remove` टर्मिनेशन का अनुरोध करने के तुरंत बाद चल रहे सेशन को छिपा सकता है; एग्ज़िट की पुष्टि होने तक सस्पेंशन और पुनः आरंभ अवरुद्ध रहते हैं।
+- सेशन लॉग केवल तभी चैट इतिहास में सहेजे जाते हैं, जब आप `process poll`/`log` चलाते हैं और टूल परिणाम रिकॉर्ड किया जाता है।
+- `process` का दायरा प्रत्येक एजेंट तक सीमित है; यह केवल उस एजेंट द्वारा शुरू किए गए सेशन देखता है।
+- जब स्वचालित पूर्णता वेक उपलब्ध न हो, तब स्थिति, लॉग या पूर्णता की पुष्टि के लिए `poll`/`log` का उपयोग करें।
+- किसी इंटरैक्टिव CLI को पुनर्प्राप्त करने से पहले `log` का उपयोग करें, ताकि वर्तमान ट्रांसक्रिप्ट, stdin स्थिति और इनपुट-प्रतीक्षा संकेत एक साथ दिखाई दें।
+- जब आपको इनपुट या हस्तक्षेप की आवश्यकता हो, तब `write`/`send-keys`/`submit`/`paste`/`kill` का उपयोग करें।
+- `process list` में त्वरित स्कैन के लिए व्युत्पन्न `name` (कमांड क्रिया + लक्ष्य) शामिल है।
+- `process list`, `poll`, और `log` केवल तभी `waitingForInput` रिपोर्ट करते हैं, जब सेशन में अभी भी लिखने योग्य stdin हो और वह इनपुट-प्रतीक्षा सीमा से अधिक समय तक निष्क्रिय रहा हो (डिफ़ॉल्ट 15000 ms, `OPENCLAW_PROCESS_INPUT_WAIT_IDLE_MS`)।
+- `process log` पंक्ति-आधारित `offset`/`limit` का उपयोग करता है। जब दोनों छोड़े जाते हैं, तो यह पेजिंग संकेत के साथ अंतिम 200 पंक्तियाँ लौटाता है। जब `offset` सेट हो और `limit` न हो, तो यह `offset` से अंत तक लौटाता है (200 तक सीमित नहीं)।
+- `poll` का `timeout` लौटने से पहले उतने मिलीसेकंड तक प्रतीक्षा करता है; 30000 से अधिक मानों को 30000 तक सीमित किया जाता है।
+- पोलिंग माँग पर स्थिति जानने के लिए है, प्रतीक्षा-लूप शेड्यूलिंग के लिए नहीं। यदि कार्य बाद में होना चाहिए, तो Cron का उपयोग करें।
 
 ## उदाहरण
 
-लंबा task चलाएं और बाद में poll करें:
+लंबा कार्य चलाएँ और बाद में पोल करें:
 
 ```json
 { "tool": "exec", "command": "sleep 5 && echo done", "yieldMs": 1000 }
@@ -111,13 +115,13 @@ Config (preferred):
 { "tool": "process", "action": "poll", "sessionId": "<id>" }
 ```
 
-input भेजने से पहले interactive session inspect करें:
+इनपुट भेजने से पहले इंटरैक्टिव सेशन का निरीक्षण करें:
 
 ```json
 { "tool": "process", "action": "log", "sessionId": "<id>" }
 ```
 
-तुरंत पृष्ठभूमि में शुरू करें:
+तुरंत बैकग्राउंड में शुरू करें:
 
 ```json
 { "tool": "exec", "command": "npm run build", "background": true }
@@ -129,19 +133,19 @@ stdin भेजें:
 { "tool": "process", "action": "write", "sessionId": "<id>", "data": "y\n" }
 ```
 
-PTY keys भेजें:
+PTY कुंजियाँ भेजें:
 
 ```json
 { "tool": "process", "action": "send-keys", "sessionId": "<id>", "keys": ["C-c"] }
 ```
 
-वर्तमान line submit करें:
+वर्तमान पंक्ति सबमिट करें:
 
 ```json
 { "tool": "process", "action": "submit", "sessionId": "<id>" }
 ```
 
-literal text paste करें:
+शाब्दिक टेक्स्ट पेस्ट करें:
 
 ```json
 { "tool": "process", "action": "paste", "sessionId": "<id>", "text": "line1\nline2\n" }
@@ -150,4 +154,4 @@ literal text paste करें:
 ## संबंधित
 
 - [Exec टूल](/hi/tools/exec)
-- [Exec approvals](/hi/tools/exec-approvals)
+- [Exec अनुमोदन](/hi/tools/exec-approvals)

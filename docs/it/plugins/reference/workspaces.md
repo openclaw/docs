@@ -1,14 +1,15 @@
 ---
 read_when:
-    - Stai installando, configurando o verificando il plugin degli spazi di lavoro
-summary: Documento sugli spazi di lavoro componibili dagli agenti e backend del piano di controllo.
-title: Plugin per gli spazi di lavoro
+    - Si sta installando, configurando o verificando il plugin degli spazi di lavoro
+summary: Documento degli spazi di lavoro componibili dagli agenti e backend del piano di controllo.
+title: Plugin Workspaces
 x-i18n:
-    generated_at: "2026-07-12T07:20:36Z"
+    generated_at: "2026-07-16T14:47:09Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 0c10502340b459c26606ebb7ef97ef17c0dce11295ea7854e06158c89c79a7c3
+    source_hash: b9bcef98bf9352b6a8f37af59f7c02add4080e9c600950fc8e7a7f5339df7626
     source_path: plugins/reference/workspaces.md
     workflow: 16
 ---
@@ -20,8 +21,8 @@ Backend del piano di controllo e dei documenti Workspaces componibile dagli agen
 ## Distribuzione
 
 - Pacchetto: `@openclaw/workspaces-plugin`
-- Modalità di installazione: incluso in OpenClaw
+- Percorso di installazione: incluso in OpenClaw
 
 ## Superficie
 
-contratti: strumenti
+contratti: `tools`

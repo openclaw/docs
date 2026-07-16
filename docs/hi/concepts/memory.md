@@ -2,198 +2,161 @@
 read_when:
     - आप समझना चाहते हैं कि मेमोरी कैसे काम करती है
     - आप जानना चाहते हैं कि कौन-सी मेमोरी फ़ाइलें लिखनी हैं
-summary: OpenClaw सत्रों के बीच चीज़ों को कैसे याद रखता है
+summary: OpenClaw अलग-अलग सत्रों में चीज़ों को कैसे याद रखता है
 title: मेमोरी का अवलोकन
 x-i18n:
-    generated_at: "2026-06-28T22:59:06Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T14:15:47Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 9ddcecfa3d902181583ab076f94a69ca323686c3544399dea2572863726dad2c
+    source_hash: 22542c5df22f1602c89bae05760a5418224d8ee1f1a73679203dec9b2f091f2a
     source_path: concepts/memory.md
     workflow: 16
 ---
 
-OpenClaw आपके एजेंट के workspace में **साधारण Markdown फ़ाइलें** लिखकर चीज़ें याद रखता है। मॉडल केवल वही "याद रखता" है जो डिस्क पर सहेजा जाता है — कोई छिपी हुई स्थिति नहीं होती।
+OpenClaw आपके एजेंट के कार्यस्थान (डिफ़ॉल्ट `~/.openclaw/workspace`) में सादी Markdown फ़ाइलें लिखकर चीज़ें याद रखता है। मॉडल केवल वही याद रखता है जो डिस्क पर सहेजा जाता है; कोई छिपी हुई स्थिति नहीं होती।
 
 ## यह कैसे काम करता है
 
-आपके एजेंट के पास memory से संबंधित तीन फ़ाइलें होती हैं:
+आपके एजेंट के पास स्मृति से संबंधित तीन फ़ाइलें होती हैं:
 
-- **`MEMORY.md`** — दीर्घकालिक memory। टिकाऊ तथ्य, प्राथमिकताएँ, और
-  निर्णय। हर DM session की शुरुआत में लोड की जाती है।
-- **`memory/YYYY-MM-DD.md`** (या **`memory/YYYY-MM-DD-<slug>.md`**) — दैनिक नोट्स।
-  चल रहा context और अवलोकन। आज और कल के नोट्स अपने-आप लोड होते हैं,
-  और `/new` या `/reset` पर bundled session-memory hook द्वारा लिखे गए slugged variants
-  अब date-only फ़ाइल के साथ चुने जाते हैं।
-- **`DREAMS.md`** (वैकल्पिक) — मानव समीक्षा के लिए Dream Diary और dreaming sweep
-  सारांश, जिनमें grounded historical backfill entries शामिल हैं।
+- **`MEMORY.md`** — दीर्घकालिक स्मृति। टिकाऊ तथ्य, प्राथमिकताएँ और निर्णय। सत्र के आरंभ में लोड होती है।
+- **`memory/YYYY-MM-DD.md`** (या `memory/YYYY-MM-DD-<slug>.md`) — दैनिक नोट्स।
+  चल रहा संदर्भ और अवलोकन। केवल `/new` या `/reset` होने पर आज और कल के दिनांकित नोट्स अपने-आप लोड होते हैं; स्लग वाले रूप, जैसे बंडल किए गए सत्र-स्मृति हुक द्वारा लिखे गए रूप, केवल दिनांक वाली फ़ाइल के साथ लिए जाते हैं।
+- **`DREAMS.md`** (वैकल्पिक) — मानवीय समीक्षा के लिए Dream Diary और Dreaming स्वीप के सारांश, जिनमें प्रमाण-आधारित ऐतिहासिक बैकफ़िल प्रविष्टियाँ भी शामिल हैं।
 
-ये फ़ाइलें एजेंट workspace में रहती हैं (default `~/.openclaw/workspace`)।
+<Tip>
+यदि आप चाहते हैं कि आपका एजेंट कुछ याद रखे, तो बस उससे कहें: "याद रखें कि मुझे TypeScript पसंद है।" वह नोट को उपयुक्त फ़ाइल में लिख देता है।
+</Tip>
 
 ## क्या कहाँ जाता है
 
-`MEMORY.md` संक्षिप्त, curated layer है। इसे टिकाऊ तथ्यों,
-प्राथमिकताओं, स्थायी निर्णयों, और छोटे सारांशों के लिए उपयोग करें जिन्हें
-मुख्य private session की शुरुआत में उपलब्ध होना चाहिए। यह raw transcript,
-daily log, या exhaustive archive के लिए नहीं है।
+`MEMORY.md` संक्षिप्त, सुव्यवस्थित परत है: टिकाऊ तथ्य, प्राथमिकताएँ, स्थायी निर्णय और छोटे सारांश, जो सत्र के आरंभ में उपलब्ध होने चाहिए। यह अपरिष्कृत प्रतिलिपि, दैनिक लॉग या संपूर्ण संग्रह नहीं है।
 
-`memory/YYYY-MM-DD.md` फ़ाइलें working layer हैं। इन्हें विस्तृत दैनिक
-नोट्स, अवलोकन, session summaries, और raw context के लिए उपयोग करें जो बाद में
-भी उपयोगी हो सकता है। ये फ़ाइलें `memory_search` और `memory_get` के लिए indexed होती हैं,
-लेकिन हर turn पर normal bootstrap prompt में inject नहीं की जातीं।
+`memory/YYYY-MM-DD.md` फ़ाइलें कार्यशील परत हैं: विस्तृत दैनिक नोट्स, अवलोकन, सत्र सारांश और अपरिष्कृत संदर्भ, जो बाद में भी उपयोगी हो सकते हैं। इन्हें `memory_search` और `memory_get` के लिए अनुक्रमित किया जाता है, लेकिन प्रत्येक टर्न पर बूटस्ट्रैप प्रॉम्प्ट में शामिल नहीं किया जाता।
 
-समय के साथ, एजेंट से अपेक्षा है कि वह daily notes से उपयोगी सामग्री को
-`MEMORY.md` में distill करे और stale long-term entries हटाए। generated workspace
-instructions और Heartbeat flow इसे समय-समय पर कर सकते हैं; आपको हर remembered detail के लिए
-`MEMORY.md` को manually edit करने की आवश्यकता नहीं है।
+समय के साथ, एजेंट दैनिक नोट्स से उपयोगी सामग्री को संक्षिप्त करके `MEMORY.md` में डालता है और पुरानी दीर्घकालिक प्रविष्टियाँ हटा देता है। जनरेट किए गए कार्यस्थान निर्देश और Heartbeat प्रवाह समय-समय पर यह करते हैं; आपको प्रत्येक विवरण के लिए `MEMORY.md` को मैन्युअल रूप से संपादित करने की आवश्यकता नहीं है।
 
-यदि `MEMORY.md` bootstrap file budget से आगे बढ़ जाता है, तो OpenClaw फ़ाइल को
-डिस्क पर intact रखता है लेकिन model context में injected copy को truncate कर देता है। इसे
-एक संकेत मानें कि detailed material को वापस `memory/*.md` में ले जाएँ, केवल
-durable summary को `MEMORY.md` में रखें, या यदि आप स्पष्ट रूप से अधिक prompt budget खर्च करना
-चाहते हैं तो bootstrap limits बढ़ाएँ। raw बनाम injected sizes और truncation status देखने के लिए
-`/context list`, `/context detail`, या `openclaw doctor` का उपयोग करें।
+यदि `MEMORY.md` बूटस्ट्रैप फ़ाइल बजट से बड़ा हो जाता है, तो OpenClaw डिस्क पर फ़ाइल को अक्षुण्ण रखता है, लेकिन संदर्भ में शामिल की गई प्रति को काट देता है। इसे इस संकेत के रूप में लें कि विस्तृत सामग्री को `memory/*.md` में ले जाना चाहिए, `MEMORY.md` में केवल एक टिकाऊ सारांश रखना चाहिए, या यदि आप अधिक प्रॉम्प्ट बजट खर्च करना चाहते हैं तो बूटस्ट्रैप सीमाएँ बढ़ानी चाहिए। अपरिष्कृत और शामिल किए गए आकार तथा काटे जाने की स्थिति देखने के लिए `/context list`, `/context detail`, या `openclaw doctor` का उपयोग करें।
 
-<Tip>
-यदि आप चाहते हैं कि आपका एजेंट कुछ याद रखे, तो बस उससे कहें: "Remember that I
-prefer TypeScript." वह इसे उपयुक्त फ़ाइल में लिख देगा।
-</Tip>
+## कोडिंग सहायकों से आयात
 
-## Action-sensitive memories
+Control UI, Codex और Claude Code से मौजूदा स्थानीय स्मृति आयात कर सकता है। **Settings** → **Import Memory** खोलें, गंतव्य एजेंट चुनें, पहचानी गई फ़ाइलों की समीक्षा करें और आयात की पुष्टि करें। OpenClaw केवल Markdown स्मृति की प्रतिलिपि बनाता है:
 
-अधिकांश memories को सामान्य Markdown notes के रूप में लिखा जा सकता है। लेकिन कुछ memories यह प्रभावित करती हैं कि एजेंट को बाद में क्या करना चाहिए। उनके लिए, केवल तथ्य ही नहीं, बल्कि यह भी capture करें कि note पर act करना कब सुरक्षित है।
+- Codex: `~/.codex/memories` (या `CODEX_HOME/memories`) के अंतर्गत समेकित `MEMORY.md` और `memory_summary.md` फ़ाइलें। अपरिष्कृत रोलआउट और प्रतिलिपि फ़ाइलें आयात नहीं की जातीं।
+- Claude Code: प्रत्येक प्रोजेक्ट की `~/.claude/projects/*/memory` के अंतर्गत स्वतः-स्मृति निर्देशिका से Markdown फ़ाइलें, साथ ही मौजूद होने पर उपयोगकर्ता द्वारा कॉन्फ़िगर की गई `autoMemoryDirectory`। प्रोजेक्ट निर्देश, सत्र, सेटिंग और क्रेडेंशियल केवल-स्मृति वाली इस कार्रवाई का हिस्सा नहीं हैं।
 
-जब कोई note इनसे संबंधित हो, तो उस action boundary को capture करें:
+आयातित फ़ाइलें चयनित एजेंट कार्यस्थान में `memory/imports/codex/` और `memory/imports/claude-code/` के अंतर्गत अलग रहती हैं। उन्हें `memory_search` के लिए अनुक्रमित किया जाता है और वे `memory_get` के माध्यम से उपलब्ध होती हैं; उन्हें एजेंट की बूटस्ट्रैप `MEMORY.md` में मर्ज नहीं किया जाता। स्रोत फ़ाइलें अपरिवर्तित रहती हैं।
 
-- approval या permission requirements,
-- temporary constraints,
-- किसी अन्य session, thread, या व्यक्ति को handoffs,
-- expiry conditions,
-- safe-to-act timing,
-- source या owner authority,
-- किसी आकर्षक action से बचने के निर्देश।
+पूर्वावलोकन गंतव्य टकरावों को चिह्नित करता है। उन फ़ाइलों को बदलने के लिए **Replace existing imports** सक्षम करें; लागू करने पर एक सत्यापित पूर्व-आयात बैकअप बनता है और माइग्रेशन रिपोर्ट में अधिलेखित फ़ाइलों की आइटम-स्तरीय प्रतियाँ सुरक्षित रहती हैं।
 
-एक उपयोगी action-sensitive memory स्पष्ट करती है:
+## कार्रवाई-संवेदी स्मृतियाँ
 
-- भविष्य के behavior को क्या बदलता है,
-- यह कब या किस condition में लागू होती है,
-- यह कब expire होती है, या action को क्या unlock करता है,
+अधिकांश स्मृतियाँ सामान्य Markdown नोट्स होती हैं। कुछ इस बात को प्रभावित करती हैं कि एजेंट को बाद में क्या करना चाहिए; उनके लिए केवल तथ्य ही नहीं, बल्कि यह भी दर्ज करें कि नोट के आधार पर कार्रवाई करना कब सुरक्षित है।
+
+जब कोई नोट इनमें से किसी विषय से संबंधित हो, तो कार्रवाई की वह सीमा दर्ज करें:
+
+- अनुमोदन या अनुमति की आवश्यकताएँ,
+- अस्थायी बाधाएँ,
+- किसी अन्य सत्र, थ्रेड या व्यक्ति को कार्य-सौंपना,
+- समाप्ति की शर्तें,
+- कार्रवाई करने का सुरक्षित समय,
+- स्रोत या स्वामी का प्राधिकार,
+- किसी लुभावनी कार्रवाई से बचने के निर्देश।
+
+एक उपयोगी कार्रवाई-संवेदी स्मृति यह स्पष्ट करती है:
+
+- भविष्य का कौन-सा व्यवहार बदलता है,
+- यह कब या किस शर्त के अंतर्गत लागू होता है,
+- यह कब समाप्त होता है, या कौन-सी बात कार्रवाई को संभव बनाती है,
 - एजेंट को क्या करने से बचना चाहिए,
-- source या owner कौन है, यदि वह trust या authority को प्रभावित करता है।
+- स्रोत या स्वामी कौन है, यदि इससे भरोसा या प्राधिकार प्रभावित होता है।
 
-Memory approval context को preserve कर सकती है, लेकिन यह policy enforce नहीं करती। कठोर operational controls के लिए OpenClaw approval settings, sandboxing, और scheduled tasks का उपयोग करें।
+स्मृति अनुमोदन संदर्भ को सुरक्षित रख सकती है, लेकिन यह नीति लागू नहीं करती। कठोर परिचालन नियंत्रणों के लिए OpenClaw की अनुमोदन सेटिंग, सैंडबॉक्सिंग और निर्धारित कार्यों का उपयोग करें।
 
 उदाहरण:
 
 ```md
-The API migration is being designed in another session. Future turns should not edit the API implementation from this thread; use findings here only as design input until the migration plan lands.
+API माइग्रेशन किसी अन्य सत्र में डिज़ाइन किया जा रहा है। भविष्य के टर्न को
+इस थ्रेड से API कार्यान्वयन संपादित नहीं करना चाहिए; माइग्रेशन योजना लागू
+होने तक यहाँ के निष्कर्षों का उपयोग केवल डिज़ाइन इनपुट के रूप में करें।
 ```
 
-दूसरा उदाहरण:
+एक और उदाहरण:
 
 ```md
-A report from an untrusted source needs review before promotion. Future turns should treat it as evidence only; do not store it as durable memory until a trusted reviewer confirms the contents.
+किसी अविश्वसनीय स्रोत की रिपोर्ट को आगे बढ़ाने से पहले समीक्षा आवश्यक है।
+भविष्य के टर्न को इसे केवल साक्ष्य मानना चाहिए; जब तक कोई विश्वसनीय समीक्षक
+इसकी सामग्री की पुष्टि न करे, इसे टिकाऊ स्मृति के रूप में संग्रहीत न करें।
 ```
 
-inferred, short-lived follow-ups के लिए [commitments](/hi/concepts/commitments) का उपयोग करें। exact reminders, timed checks, और recurring work के लिए [scheduled tasks](/hi/automation/cron-jobs) का उपयोग करें। Memory किसी भी path के आसपास durable context को फिर भी summarize कर सकती है।
+यह प्रत्येक स्मृति के लिए आवश्यक स्कीमा नहीं है; सरल तथ्य संक्षिप्त रह सकते हैं। जब समय, प्राधिकार, समाप्ति या कार्रवाई-सुरक्षा का संदर्भ खोने से एजेंट बाद में गलत काम कर सकता हो, तब कार्रवाई-संवेदी सीमाओं का उपयोग करें।
 
-यह हर memory के लिए required schema नहीं है। Simple facts concise रह सकते हैं। action-sensitive boundaries का उपयोग तब करें जब timing, authority, expiry, या safe-to-act context खोने से एजेंट बाद में गलत काम कर सकता हो।
+अनुमानित, अल्पकालिक अनुवर्ती कार्रवाइयों के लिए [प्रतिबद्धताओं](/hi/concepts/commitments) का उपयोग करें। सटीक अनुस्मारकों, समयबद्ध जाँचों और आवर्ती कार्यों के लिए [निर्धारित कार्यों](/hi/automation/cron-jobs) का उपयोग करें। स्मृति फिर भी इनमें से किसी भी पथ के आसपास के टिकाऊ संदर्भ का सारांश रख सकती है।
 
-## Inferred commitments
+## अनुमानित प्रतिबद्धताएँ
 
-कुछ भविष्य के follow-ups durable facts नहीं होते। यदि आप कल होने वाले interview का उल्लेख करते हैं,
-तो उपयोगी memory "interview के बाद check in करें" हो सकती है, न कि "इसे
-`MEMORY.md` में हमेशा के लिए store करें।"
+भविष्य की कुछ अनुवर्ती कार्रवाइयाँ टिकाऊ तथ्य नहीं होतीं। यदि आप कल किसी साक्षात्कार का उल्लेख करते हैं, तो उपयोगी स्मृति "साक्षात्कार के बाद हालचाल पूछें" हो सकती है, न कि "इसे `MEMORY.md` में हमेशा के लिए संग्रहीत करें।"
 
-[Commitments](/hi/concepts/commitments) इस case के लिए opt-in, short-lived follow-up memories
-हैं। OpenClaw उन्हें hidden background pass में infer करता है, उन्हें
-उसी agent और channel तक scope करता है, और due check-ins Heartbeat के माध्यम से deliver करता है।
-Explicit reminders अब भी [scheduled tasks](/hi/automation/cron-jobs) का उपयोग करते हैं।
+[प्रतिबद्धताएँ](/hi/concepts/commitments) ऐसे मामलों के लिए वैकल्पिक, अल्पकालिक अनुवर्ती स्मृतियाँ हैं। OpenClaw एक छिपे हुए पृष्ठभूमि पास में उनका अनुमान लगाता है, उन्हें उसी एजेंट और चैनल तक सीमित रखता है और Heartbeat के माध्यम से नियत हालचाल संदेश देता है। स्पष्ट अनुस्मारक अब भी [निर्धारित कार्यों](/hi/automation/cron-jobs) का उपयोग करते हैं।
 
-## Memory tools
+## स्मृति उपकरण
 
-एजेंट के पास memory के साथ काम करने के लिए दो tools हैं:
+एजेंट के पास स्मृति के साथ काम करने के लिए दो उपकरण हैं:
 
-- **`memory_search`** — semantic search का उपयोग करके relevant notes ढूँढता है, तब भी जब
-  wording original से अलग हो।
-- **`memory_get`** — किसी specific memory file या line range को पढ़ता है।
+- **`memory_search`** — सिमेंटिक खोज का उपयोग करके प्रासंगिक नोट्स ढूँढता है, भले ही शब्दावली मूल से अलग हो।
+- **`memory_get`** — किसी विशिष्ट स्मृति फ़ाइल या पंक्ति-सीमा को पढ़ता है।
 
-दोनों tools active memory Plugin द्वारा दिए जाते हैं (default: `memory-core`)।
+दोनों उपकरण सक्रिय स्मृति Plugin द्वारा प्रदान किए जाते हैं (डिफ़ॉल्ट: `memory-core`)।
 
-## Memory Wiki companion Plugin
+## स्मृति खोज
 
-यदि आप चाहते हैं कि durable memory केवल raw notes के बजाय
-maintained knowledge base की तरह behave करे, तो bundled `memory-wiki` Plugin का उपयोग करें।
-
-`memory-wiki` durable knowledge को wiki vault में compile करता है, जिसमें शामिल हैं:
-
-- deterministic page structure
-- structured claims और evidence
-- contradiction और freshness tracking
-- generated dashboards
-- agent/runtime consumers के लिए compiled digests
-- `wiki_search`, `wiki_get`, `wiki_apply`, और `wiki_lint` जैसे wiki-native tools
-
-यह active memory Plugin को replace नहीं करता। active memory Plugin अब भी
-recall, promotion, और Dreaming का owner है। `memory-wiki` उसके साथ एक provenance-rich
-knowledge layer जोड़ता है।
-
-[Memory Wiki](/hi/plugins/memory-wiki) देखें।
-
-## Memory search
-
-जब embedding provider configured होता है, तो `memory_search` **hybrid
-search** का उपयोग करता है — vector similarity (semantic meaning) को keyword matching
-(IDs और code symbols जैसे exact terms) के साथ जोड़कर। supported provider में से किसी के लिए
-API key होने पर यह out of the box काम करता है।
+जब कोई एम्बेडिंग प्रदाता कॉन्फ़िगर हो, तो `memory_search` हाइब्रिड खोज का उपयोग करता है: वेक्टर समानता (अर्थगत आशय) को कीवर्ड मिलान (ID और कोड प्रतीकों जैसे सटीक शब्द) के साथ संयोजित किया जाता है। यह किसी भी समर्थित प्रदाता की API कुंजी के साथ तुरंत काम करता है।
 
 <Info>
-OpenClaw default रूप से OpenAI embeddings का उपयोग करता है। Gemini, Voyage,
-Mistral, local, Ollama, Bedrock, GitHub Copilot, या OpenAI-compatible
-embeddings उपयोग करने के लिए `agents.defaults.memorySearch.provider` को explicitly set करें।
+OpenClaw डिफ़ॉल्ट रूप से OpenAI एम्बेडिंग का उपयोग करता है। Gemini, Voyage,
+Mistral, Bedrock, DeepInfra, स्थानीय GGUF, Ollama, LM Studio, GitHub Copilot या
+किसी सामान्य OpenAI-संगत एंडपॉइंट का उपयोग करने के लिए `agents.defaults.memorySearch.provider`
+स्पष्ट रूप से सेट करें।
 </Info>
 
-search कैसे काम करता है, tuning options, और provider setup के details के लिए
-[Memory Search](/hi/concepts/memory-search) देखें।
+खोज कैसे काम करती है, समायोजन विकल्पों और प्रदाता सेटअप के लिए [स्मृति खोज](/hi/concepts/memory-search) देखें।
 
-## Memory backends
+## स्मृति बैकएंड
 
 <CardGroup cols={3}>
-<Card title="Builtin (default)" icon="database" href="/hi/concepts/memory-builtin">
-SQLite-based। keyword search, vector similarity, और
-hybrid search के साथ out of the box काम करता है। कोई extra dependencies नहीं।
+<Card title="अंतर्निहित (डिफ़ॉल्ट)" icon="database" href="/hi/concepts/memory-builtin">
+SQLite-आधारित। कीवर्ड खोज, वेक्टर समानता और हाइब्रिड खोज के साथ तुरंत काम करता है। कोई अतिरिक्त निर्भरता नहीं।
 </Card>
 <Card title="QMD" icon="search" href="/hi/concepts/memory-qmd">
-reranking, query expansion, और workspace के बाहर directories को index करने की क्षमता वाला
-local-first sidecar।
+पुनः-रैंकिंग, क्वेरी विस्तार और कार्यस्थान से बाहर की निर्देशिकाओं को अनुक्रमित करने की क्षमता वाला स्थानीय-प्रथम साइडकार।
 </Card>
 <Card title="Honcho" icon="brain" href="/hi/concepts/memory-honcho">
-user modeling, semantic search, और
-multi-agent awareness वाली AI-native cross-session memory। Plugin install।
+उपयोगकर्ता मॉडलिंग, सिमेंटिक खोज और बहु-एजेंट जागरूकता वाली AI-मूल अंतर-सत्र स्मृति। Plugin स्थापना।
 </Card>
 <Card title="LanceDB" icon="layers" href="/hi/plugins/memory-lancedb">
-OpenAI-compatible embeddings, auto-recall,
-auto-capture, और local Ollama embedding support के साथ bundled LanceDB-backed memory।
+OpenAI-संगत एम्बेडिंग, स्वतः-पुनःस्मरण, स्वतः-कैप्चर और स्थानीय Ollama एम्बेडिंग समर्थन वाली LanceDB-समर्थित स्मृति। Plugin स्थापना।
 </Card>
 </CardGroup>
 
-## Knowledge wiki layer
+## ज्ञान विकी परत
+
+यदि आप चाहते हैं कि टिकाऊ स्मृति अपरिष्कृत नोट्स के बजाय एक सुव्यवस्थित ज्ञान-आधार की तरह काम करे, तो बंडल किए गए `memory-wiki` Plugin का उपयोग करें। यह टिकाऊ ज्ञान को निर्धारक पृष्ठ संरचना, संरचित दावों और साक्ष्यों, विरोधाभास व ताज़गी ट्रैकिंग, जनरेट किए गए डैशबोर्ड, संकलित सारांश और विकी-मूल उपकरणों (`wiki_status`, `wiki_search`, `wiki_get`, `wiki_apply`, `wiki_lint`) वाले विकी वॉल्ट में संकलित करता है।
+
+`memory-wiki` सक्रिय स्मृति Plugin को प्रतिस्थापित नहीं करता; सक्रिय स्मृति Plugin अब भी पुनःस्मरण, उन्नयन और Dreaming का स्वामी होता है। `memory-wiki` उसके साथ स्रोत-समृद्ध ज्ञान परत जोड़ता है।
 
 <CardGroup cols={1}>
-<Card title="Memory Wiki" icon="book" href="/hi/plugins/memory-wiki">
-claims, dashboards, bridge mode, और Obsidian-friendly workflows के साथ durable memory को provenance-rich wiki vault में compile करता है।
+<Card title="स्मृति विकी" icon="book" href="/hi/plugins/memory-wiki">
+टिकाऊ स्मृति को दावों, डैशबोर्ड, ब्रिज मोड और Obsidian-अनुकूल कार्यप्रवाहों वाले स्रोत-समृद्ध विकी वॉल्ट में संकलित करता है।
 </Card>
 </CardGroup>
 
-## Automatic memory flush
+## स्वचालित स्मृति फ़्लश
 
-[Compaction](/hi/concepts/compaction) आपकी conversation को summarize करने से पहले, OpenClaw
-एक silent turn चलाता है जो एजेंट को important context को memory
-files में save करने की याद दिलाता है। यह default रूप से on है — आपको कुछ भी configure करने की आवश्यकता नहीं है।
+[Compaction](/hi/concepts/compaction) द्वारा आपकी बातचीत का सारांश बनाए जाने से पहले, OpenClaw एक मौन टर्न चलाता है जो एजेंट को महत्वपूर्ण संदर्भ स्मृति फ़ाइलों में सहेजने की याद दिलाता है। यह डिफ़ॉल्ट रूप से चालू है; इसे बंद करने के लिए `agents.defaults.compaction.memoryFlush.enabled: false` सेट करें।
 
-उस housekeeping turn को local model पर रखने के लिए, exact memory-flush model
-override set करें:
+उस रखरखाव टर्न को स्थानीय मॉडल पर रखने के लिए, ऐसा सटीक ओवरराइड सेट करें जो केवल स्मृति-फ़्लश टर्न पर लागू हो (यह सक्रिय सत्र की मॉडल फ़ॉलबैक शृंखला को इनहेरिट नहीं करता):
 
 ```json
 {
@@ -209,63 +172,41 @@ override set करें:
 }
 ```
 
-override केवल memory-flush turn पर लागू होता है और
-active session fallback chain को inherit नहीं करता।
-
 <Tip>
-memory flush Compaction के दौरान context loss रोकता है। यदि आपके एजेंट के पास
-conversation में important facts हैं जो अभी तक किसी file में नहीं लिखे गए हैं, तो
-summary होने से पहले वे automatically saved हो जाएँगे।
+स्मृति फ़्लश Compaction के दौरान संदर्भ की हानि रोकता है। यदि बातचीत में आपके एजेंट के पास ऐसे महत्वपूर्ण तथ्य हैं जो अभी तक किसी फ़ाइल में नहीं लिखे गए हैं, तो सारांश बनने से पहले वे अपने-आप सहेज दिए जाते हैं।
 </Tip>
 
 ## Dreaming
 
-Dreaming memory के लिए optional background consolidation pass है। यह
-short-term signals collect करता है, candidates को score करता है, और केवल qualified items को
-long-term memory (`MEMORY.md`) में promote करता है।
+Dreaming स्मृति के लिए एक वैकल्पिक पृष्ठभूमि समेकन पास है। यह अल्पकालिक पुनःस्मरण संकेत एकत्र करता है, उम्मीदवारों का स्कोर निर्धारित करता है और केवल योग्य आइटम को दीर्घकालिक स्मृति (`MEMORY.md`) में उन्नत करता है:
 
-इसे long-term memory को high signal रखने के लिए design किया गया है:
+- **वैकल्पिक**: डिफ़ॉल्ट रूप से अक्षम।
+- **निर्धारित**: सक्षम होने पर, `memory-core` पूर्ण Dreaming स्वीप के लिए एक आवर्ती Cron कार्य का स्वतः-प्रबंधन करता है।
+- **सीमाबद्ध**: उन्नयनों को स्कोर, पुनःस्मरण-आवृत्ति और क्वेरी-विविधता की सीमाएँ पार करनी होंगी।
+- **समीक्षायोग्य**: चरण सारांश और डायरी प्रविष्टियाँ मानवीय समीक्षा के लिए `DREAMS.md` में लिखी जाती हैं।
 
-- **Opt-in**: default रूप से disabled।
-- **Scheduled**: enabled होने पर, `memory-core` full dreaming sweep के लिए एक recurring Cron job
-  auto-manage करता है।
-- **Thresholded**: promotions को score, recall frequency, और query
-  diversity gates pass करने होते हैं।
-- **Reviewable**: phase summaries और diary entries मानव समीक्षा के लिए `DREAMS.md`
-  में लिखी जाती हैं।
+चरण व्यवहार, स्कोरिंग संकेत और Dream Diary के विवरण के लिए [Dreaming](/hi/concepts/dreaming) देखें।
 
-phase behavior, scoring signals, और Dream Diary details के लिए
-[Dreaming](/hi/concepts/dreaming) देखें।
+## प्रमाण-आधारित बैकफ़िल और लाइव उन्नयन
 
-## Grounded backfill and live promotion
+Dreaming प्रणाली में दो संबंधित समीक्षा पथ हैं:
 
-dreaming system में अब दो closely related review lanes हैं:
+- **लाइव Dreaming** `memory/.dreams/` के अंतर्गत अल्पकालिक Dreaming स्टोर से काम करता है और सामान्य गहन चरण इसी के आधार पर तय करता है कि क्या `MEMORY.md` में उन्नत होगा।
+- **प्रमाण-आधारित बैकफ़िल** ऐतिहासिक `memory/YYYY-MM-DD.md` नोट्स को स्वतंत्र दैनिक फ़ाइलों के रूप में पढ़ता है और संरचित समीक्षा आउटपुट `DREAMS.md` में लिखता है।
 
-- **Live dreaming** `memory/.dreams/` के अंतर्गत short-term dreaming store से काम करता है
-  और यही normal deep phase उपयोग करता है जब तय करता है कि क्या
-  `MEMORY.md` में graduate हो सकता है।
-- **Grounded backfill** historical `memory/YYYY-MM-DD.md` notes को
-  standalone day files के रूप में पढ़ता है और structured review output को `DREAMS.md` में लिखता है।
-
-Grounded backfill तब उपयोगी है जब आप older notes को replay करना और inspect करना चाहते हैं कि
-system किसे durable मानता है, बिना `MEMORY.md` को manually edit किए।
-
-जब आप उपयोग करते हैं:
+प्रमाण-आधारित बैकफ़िल पुराने नोट्स को दोबारा चलाने और यह जाँचने के लिए उपयोगी है कि प्रणाली किसे टिकाऊ मानती है, और इसके लिए `MEMORY.md` को मैन्युअल रूप से संपादित करने की आवश्यकता नहीं होती।
 
 ```bash
 openclaw memory rem-backfill --path ./memory --stage-short-term
 ```
 
-तो grounded durable candidates सीधे promote नहीं किए जाते। उन्हें उसी
-short-term dreaming store में stage किया जाता है जिसका normal deep phase पहले से उपयोग करता है। इसका
-अर्थ है:
+`--stage-short-term` फ़्लैग प्रमाण-आधारित टिकाऊ उम्मीदवारों को उसी अल्पकालिक Dreaming स्टोर में रखता है जिसका उपयोग सामान्य गहन चरण पहले से करता है; यह उन्हें सीधे उन्नत नहीं करता। इसलिए:
 
-- `DREAMS.md` human review surface बना रहता है।
-- short-term store machine-facing ranking surface बना रहता है।
-- `MEMORY.md` अब भी केवल deep promotion द्वारा लिखा जाता है।
+- `DREAMS.md` मानवीय समीक्षा सतह बनी रहती है।
+- अल्पकालिक स्टोर मशीन-संबंधी रैंकिंग सतह बना रहता है।
+- `MEMORY.md` अब भी केवल गहन उन्नयन द्वारा लिखा जाता है।
 
-यदि आप तय करते हैं कि replay उपयोगी नहीं था, तो आप ordinary diary entries या normal recall state को छुए बिना
-staged artifacts हटा सकते हैं:
+सामान्य डायरी प्रविष्टियों या सामान्य पुनःस्मरण स्थिति को प्रभावित किए बिना दोबारा चलाने की प्रक्रिया पूर्ववत करने के लिए:
 
 ```bash
 openclaw memory rem-backfill --rollback
@@ -275,28 +216,20 @@ openclaw memory rem-backfill --rollback-short-term
 ## CLI
 
 ```bash
-openclaw memory status          # Check index status and provider
-openclaw memory search "query"  # Search from the command line
-openclaw memory index --force   # Rebuild the index
+openclaw memory status          # सूचकांक की स्थिति और प्रदाता जाँचें
+openclaw memory search "query"  # कमांड लाइन से खोजें
+openclaw memory index --force   # सूचकांक फिर से बनाएँ
 ```
 
 ## आगे पढ़ें
 
-- [Builtin memory engine](/hi/concepts/memory-builtin): default SQLite backend।
-- [QMD memory engine](/hi/concepts/memory-qmd): advanced local-first sidecar।
-- [Honcho memory](/hi/concepts/memory-honcho): AI-native cross-session memory।
-- [Memory LanceDB](/hi/plugins/memory-lancedb): OpenAI-compatible embeddings वाला LanceDB-backed Plugin।
-- [Memory Wiki](/hi/plugins/memory-wiki): compiled knowledge vault और wiki-native tools।
-- [Memory search](/hi/concepts/memory-search): search pipeline, providers, और tuning।
-- [Dreaming](/hi/concepts/dreaming): short-term recall से long-term memory में background promotion।
-- [Memory configuration reference](/hi/reference/memory-config): सभी config knobs।
-- [Compaction](/hi/concepts/compaction): Compaction memory के साथ कैसे interact करता है।
-
-## संबंधित
-
-- [Active memory](/hi/concepts/active-memory)
-- [Memory search](/hi/concepts/memory-search)
-- [Builtin memory engine](/hi/concepts/memory-builtin)
-- [Honcho memory](/hi/concepts/memory-honcho)
-- [Memory LanceDB](/hi/plugins/memory-lancedb)
-- [Commitments](/hi/concepts/commitments)
+- [मेमोरी खोज](/hi/concepts/memory-search): खोज पाइपलाइन, प्रदाता और ट्यूनिंग।
+- [अंतर्निहित मेमोरी इंजन](/hi/concepts/memory-builtin): डिफ़ॉल्ट SQLite बैकएंड।
+- [QMD मेमोरी इंजन](/hi/concepts/memory-qmd): उन्नत लोकल-फ़र्स्ट साइडकार।
+- [Honcho मेमोरी](/hi/concepts/memory-honcho): AI-नेटिव क्रॉस-सेशन मेमोरी।
+- [Memory LanceDB](/hi/plugins/memory-lancedb): OpenAI-संगत एम्बेडिंग वाला LanceDB-समर्थित Plugin।
+- [मेमोरी विकी](/hi/plugins/memory-wiki): संकलित ज्ञान वॉल्ट और विकी-नेटिव टूल।
+- [Dreaming](/hi/concepts/dreaming): अल्पकालिक पुनर्स्मरण से दीर्घकालिक मेमोरी में पृष्ठभूमि उन्नयन।
+- [मेमोरी कॉन्फ़िगरेशन संदर्भ](/hi/reference/memory-config): सभी कॉन्फ़िगरेशन नियंत्रण।
+- [Compaction](/hi/concepts/compaction): Compaction मेमोरी के साथ कैसे अंतःक्रिया करता है।
+- [Active Memory](/hi/concepts/active-memory): इंटरैक्टिव चैट सेशन के लिए सब-एजेंट मेमोरी।

@@ -1,31 +1,32 @@
 ---
 read_when:
-    - आप discord plugin को इंस्टॉल, कॉन्फ़िगर, या ऑडिट कर रहे हैं
-summary: OpenClaw Discord चैनल Plugin चैनलों, डायरेक्ट मैसेज, कमांड और ऐप ईवेंट के लिए।
+    - आप Discord Plugin इंस्टॉल, कॉन्फ़िगर या ऑडिट कर रहे हैं
+summary: चैनलों, DMs, कमांड और ऐप इवेंट के लिए OpenClaw Discord चैनल Plugin।
 title: Discord Plugin
 x-i18n:
-    generated_at: "2026-06-28T23:43:44Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T16:14:23Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 9e3305f8ad8eb84fd350bdfa0983b4fd8f848e0697ecf3e779e31cd6cb44dbf5
+    source_hash: 1ea967057cff724152c080ea4629197d939688d1e9d009f5fc784357d3d5c75f
     source_path: plugins/reference/discord.md
     workflow: 16
 ---
 
 # Discord Plugin
 
-चैनल, DMs, कमांड और ऐप इवेंट्स के लिए OpenClaw Discord चैनल Plugin।
+चैनलों, DMs, कमांड और ऐप इवेंट के लिए OpenClaw Discord चैनल Plugin।
 
 ## वितरण
 
 - पैकेज: `@openclaw/discord`
-- इंस्टॉल रूट: npm; ClawHub
+- इंस्टॉल मार्ग: npm; ClawHub
 
 ## सतह
 
-चैनल: discord; कॉन्ट्रैक्ट: transcriptSourceProviders; Skills
+चैनल: `discord`; अनुबंध: `tools`, `transcriptSourceProviders`; कौशल
 
 ## संबंधित दस्तावेज़
 
-- [discord](/hi/channels/discord)
+- [Discord](/hi/channels/discord)

@@ -1,31 +1,32 @@
 ---
 read_when:
-    - आप slack plugin को इंस्टॉल, कॉन्फ़िगर या ऑडिट कर रहे हैं
-summary: चैनलों, DMs, कमांड, और ऐप इवेंट्स के लिए OpenClaw Slack चैनल Plugin.
+    - आप Slack Plugin को इंस्टॉल, कॉन्फ़िगर या ऑडिट कर रहे हैं
+summary: चैनलों, DMs, कमांड और ऐप इवेंट के लिए OpenClaw Slack चैनल Plugin।
 title: Slack Plugin
 x-i18n:
-    generated_at: "2026-06-28T23:49:03Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T16:33:52Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 602ccb21ce084219d922860d186664bbb098fd034117893dc7359d79495bedd6
+    source_hash: bc5b593ef4361a52024f068febd8982fefdf3af1957373b1e5d7d1b9ef8b0a77
     source_path: plugins/reference/slack.md
     workflow: 16
 ---
 
 # Slack Plugin
 
-चैनलों, DMs, कमांड्स, और ऐप इवेंट्स के लिए OpenClaw Slack चैनल Plugin।
+चैनलों, DMs, कमांड और ऐप इवेंट के लिए OpenClaw Slack चैनल Plugin।
 
 ## वितरण
 
 - पैकेज: `@openclaw/slack`
-- इंस्टॉल मार्ग: npm; ClawHub
+- इंस्टॉल करने का माध्यम: npm; ClawHub
 
-## सतह
+## उपलब्ध क्षेत्र
 
-चैनल: slack; Skills
+चैनल: `slack`; Skills
 
 ## संबंधित दस्तावेज़
 
-- [slack](/hi/channels/slack)
+- [Slack](/hi/channels/slack)

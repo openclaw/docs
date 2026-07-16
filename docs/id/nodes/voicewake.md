@@ -1,58 +1,47 @@
 ---
 read_when:
-    - Mengubah perilaku atau default kata bangun suara
-    - Menambahkan platform Node baru yang memerlukan sinkronisasi kata pemicu
-summary: Kata pemicu suara global (milik Gateway) dan cara sinkronisasinya di seluruh node
-title: Bangun suara
+    - Mengubah perilaku atau nilai default kata pemicu suara
+    - Menambahkan platform node baru yang memerlukan sinkronisasi kata pemicu
+summary: Kata pemicu suara global (dikelola oleh Gateway) dan cara penyinkronannya di seluruh node
+title: Aktivasi suara
 x-i18n:
-    generated_at: "2026-06-27T17:40:53Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T18:20:09Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 3c57955e8061eca2f9fec83500e829f183cd3ef9f794bf385823a28f9c89b0a4
+    source_hash: aef2a5bba664ce10fb6ab457bb6d202639dcc6c0a9df61567e7cb402c290bbec
     source_path: nodes/voicewake.md
     workflow: 16
 ---
 
-OpenClaw memperlakukan **kata bangun sebagai satu daftar global** yang dimiliki oleh **Gateway**.
+Kata pemicu adalah **satu daftar global yang dimiliki oleh Gateway** — tidak ada daftar khusus per Node. Setiap Node atau UI aplikasi dapat mengedit daftar tersebut; Gateway menyimpan perubahan dan menyiarkannya ke setiap klien yang terhubung.
 
-- **Tidak ada kata bangun kustom per node**.
-- **UI node/aplikasi mana pun dapat mengedit** daftar tersebut; perubahan dipersistenkan oleh Gateway dan disiarkan ke semua orang.
-- macOS dan iOS mempertahankan toggle lokal **Bangun Suara aktif/nonaktif** (UX lokal + izin berbeda).
-- Android saat ini membiarkan Bangun Suara nonaktif dan menggunakan alur mikrofon manual di tab Suara.
+- **macOS**: tombol aktif/nonaktif Voice Wake lokal. Memerlukan macOS 26+; lihat [Pemicu suara (macOS)](/id/platforms/mac/voicewake) untuk detail runtime/PTT.
+- **iOS**: tombol aktif/nonaktif Voice Wake lokal di Settings.
+- **Android**: tombol aktif/nonaktif Voice Wake lokal dan editor kata pemicu di Settings → Voice. Memerlukan pengenalan ucapan pada perangkat Android.
 
-## Penyimpanan (host Gateway)
+## Penyimpanan
 
-Kata bangun dan aturan perutean disimpan di database status gateway:
-
-- `~/.openclaw/state/openclaw.sqlite`
-
-Tabel yang aktif adalah:
-
-- `voicewake_triggers`
-- `voicewake_routing_config`
-- `voicewake_routing_routes`
-
-File legacy `settings/voicewake.json` dan `settings/voicewake-routing.json` hanya merupakan input migrasi doctor; runtime membaca dan menulis tabel SQLite.
+Kata pemicu dan aturan perutean berada di basis data status Gateway, `~/.openclaw/state/openclaw.sqlite` secara default (ganti dengan `OPENCLAW_STATE_DIR`), dalam tabel `voicewake_triggers`, `voicewake_routing_config`, `voicewake_routing_routes`. `settings/voicewake.json` dan `settings/voicewake-routing.json` versi lama hanya merupakan masukan migrasi `openclaw doctor --fix` — runtime tidak pernah membacanya.
 
 ## Protokol
 
-### Metode
+### Daftar pemicu
 
-- `voicewake.get` → `{ triggers: string[] }`
-- `voicewake.set` dengan parameter `{ triggers: string[] }` → `{ triggers: string[] }`
+| Metode          | Parameter                | Hasil                    |
+| --------------- | ------------------------ | ------------------------ |
+| `voicewake.get` | tidak ada                | `{ triggers: string[] }` |
+| `voicewake.set` | `{ triggers: string[] }` | `{ triggers: string[] }` |
 
-Catatan:
+`voicewake.set` menormalisasi masukan: memangkas spasi kosong, menghapus entri kosong, mempertahankan paling banyak 32 pemicu, dan memotong masing-masing menjadi 64 unit kode UTF-16 tanpa memisahkan pasangan pengganti. Hasil kosong akan kembali menggunakan nilai default bawaan (`openclaw`, `claude`, `computer`).
 
-- Pemicu dinormalisasi (dipangkas, nilai kosong dibuang). Daftar kosong kembali ke default.
-- Batas diterapkan demi keamanan (batas jumlah/panjang).
+### Perutean (pemicu ke target)
 
-### Metode perutean (pemicu → target)
-
-- `voicewake.routing.get` → `{ config: VoiceWakeRoutingConfig }`
-- `voicewake.routing.set` dengan parameter `{ config: VoiceWakeRoutingConfig }` → `{ config: VoiceWakeRoutingConfig }`
-
-Bentuk `VoiceWakeRoutingConfig`:
+| Metode                  | Parameter                            | Hasil                                |
+| ----------------------- | ------------------------------------ | ------------------------------------ |
+| `voicewake.routing.get` | tidak ada                            | `{ config: VoiceWakeRoutingConfig }` |
+| `voicewake.routing.set` | `{ config: VoiceWakeRoutingConfig }` | `{ config: VoiceWakeRoutingConfig }` |
 
 ```json
 {
@@ -63,41 +52,31 @@ Bentuk `VoiceWakeRoutingConfig`:
 }
 ```
 
-Target rute mendukung tepat salah satu dari:
+Setiap `target` rute mendukung tepat salah satu dari:
 
 - `{ "mode": "current" }`
 - `{ "agentId": "main" }`
 - `{ "sessionKey": "agent:main:main" }`
 
+Batas: paling banyak 32 rute, teks pemicu paling banyak 64 karakter. Pemicu rute dinormalisasi untuk pencocokan dan pendeteksian duplikat dengan mengubahnya menjadi huruf kecil, menghapus tanda baca di awal/akhir setiap kata, dan menyatukan spasi kosong (`"Hey, Bot!!"` dan `"hey bot"` cocok dan dihitung sebagai duplikat) — normalisasi ini lebih ketat daripada pemangkasan biasa yang digunakan untuk daftar pemicu global di atas.
+
 ### Peristiwa
 
-- payload `voicewake.changed` `{ triggers: string[] }`
-- payload `voicewake.routing.changed` `{ config: VoiceWakeRoutingConfig }`
+| Peristiwa                   | Payload                              |
+| --------------------------- | ------------------------------------ |
+| `voicewake.changed`         | `{ triggers: string[] }`             |
+| `voicewake.routing.changed` | `{ config: VoiceWakeRoutingConfig }` |
 
-Yang menerimanya:
-
-- Semua klien WebSocket (aplikasi macOS, WebChat, dll.)
-- Semua node yang terhubung (iOS/Android), dan juga saat node terhubung sebagai push awal "status saat ini".
+Keduanya disiarkan ke setiap klien WebSocket dengan cakupan baca (aplikasi macOS, WebChat, dan sejenisnya) serta ke setiap Node yang terhubung. Node juga menerima keduanya sebagai pengiriman snapshot awal segera setelah terhubung.
 
 ## Perilaku klien
 
-### Aplikasi macOS
-
-- Menggunakan daftar global untuk membatasi pemicu `VoiceWakeRuntime`.
-- Mengedit "Kata pemicu" di pengaturan Bangun Suara memanggil `voicewake.set`, lalu mengandalkan siaran agar klien lain tetap sinkron.
-
-### Node iOS
-
-- Menggunakan daftar global untuk deteksi pemicu `VoiceWakeManager`.
-- Mengedit Kata Bangun di Pengaturan memanggil `voicewake.set` (melalui Gateway WS) dan juga menjaga deteksi kata bangun lokal tetap responsif.
-
-### Node Android
-
-- Bangun Suara saat ini dinonaktifkan di runtime/Pengaturan Android.
-- Suara Android menggunakan penangkapan mikrofon manual di tab Suara, bukan pemicu kata bangun.
+- **macOS**: memanggil `voicewake.set`/`voicewake.get` dan memantau `voicewake.changed` agar tetap sinkron dengan klien lain.
+- **iOS**: memanggil `voicewake.set`/`voicewake.get` dan memantau `voicewake.changed` agar pendeteksian kata pemicu lokal tetap responsif.
+- **Android**: memanggil `voicewake.set`/`voicewake.get`, memantau `voicewake.changed`, dan mengiklankan `voiceWake` saat diaktifkan. Pengenalan tetap berlangsung pada perangkat dan hanya di latar depan; proses ini dijeda saat audio sedang digunakan oleh Talk, dikte manual, perekaman catatan suara, atau ucapan pesan.
 
 ## Terkait
 
-- [Mode bicara](/id/nodes/talk)
+- [Mode Talk](/id/nodes/talk)
 - [Audio dan catatan suara](/id/nodes/audio)
 - [Pemahaman media](/id/nodes/media-understanding)

@@ -1,30 +1,31 @@
 ---
 read_when:
-    - Sie suchen Informationen zu unterstützten Betriebssystemen oder Installationspfaden
-    - Festlegen, wo der Gateway ausgeführt werden soll
+    - Informationen zu Betriebssystemunterstützung oder Installationspfaden gesucht
+    - Entscheidung, wo das Gateway ausgeführt werden soll
 summary: Übersicht der Plattformunterstützung (Gateway + Begleit-Apps)
 title: Plattformen
 x-i18n:
-    generated_at: "2026-07-12T01:50:47Z"
+    generated_at: "2026-07-16T12:56:15Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 6c91bf7fd41bf5433b9f1efb768a44dcf5fa55917cfc45f463688d00f23e725d
+    source_hash: 40494f8567c0159d9b6024c174cf0f316a45b46c633a578efaf2388f679a88f2
     source_path: platforms/index.md
     workflow: 16
 ---
 
-Der OpenClaw-Kern ist in TypeScript geschrieben. **Node ist die empfohlene Laufzeitumgebung**.
-Bun wird für den Gateway nicht empfohlen – es gibt bekannte Probleme mit WhatsApp- und
-Telegram-Kanälen; Einzelheiten finden Sie unter [Bun (experimentell)](/de/install/bun).
+OpenClaw Core ist in TypeScript geschrieben. **Node ist die erforderliche Laufzeitumgebung**, da
+der kanonische Zustandsspeicher `node:sqlite` verwendet. Bun steht weiterhin für die
+Installation von Abhängigkeiten und Paketskripte zur Verfügung; siehe [Bun](/de/install/bun).
 
 Begleit-Apps sind für Windows Hub, macOS (Menüleisten-App) und mobile Nodes
-(iOS/Android) verfügbar. Begleit-Apps für Linux sind geplant, der Gateway wird jedoch bereits
-vollständig unterstützt. Unter Windows können Sie Windows Hub als Desktop-App, die native
-PowerShell-Installation für die primäre Nutzung im Terminal oder WSL2 für eine möglichst
-Linux-kompatible Gateway-Laufzeitumgebung verwenden.
+(iOS/Android) verfügbar. Begleit-Apps für Linux sind geplant, aber der Gateway wird bereits
+vollständig unterstützt. Wählen Sie unter Windows Windows Hub als Desktop-App, die native
+PowerShell-Installation für die primäre Verwendung im Terminal oder WSL2 für die
+Linux-kompatibelste Gateway-Laufzeitumgebung.
 
-## Wählen Sie Ihr Betriebssystem
+## Betriebssystem auswählen
 
 - macOS: [macOS](/de/platforms/macos)
 - iOS: [iOS](/de/platforms/ios)
@@ -52,18 +53,18 @@ Linux-kompatible Gateway-Laufzeitumgebung verwenden.
 
 ## Installation des Gateway-Dienstes (CLI)
 
-Verwenden Sie eine der folgenden Methoden (alle werden unterstützt):
+Verwenden Sie eine der folgenden Optionen (alle werden unterstützt):
 
 - Assistent (empfohlen): `openclaw onboard --install-daemon`
 - Direkt: `openclaw gateway install`
 - Konfigurationsablauf: `openclaw configure` → wählen Sie **Gateway-Dienst**
-- Reparatur/Migration: `openclaw doctor` (bietet an, den Dienst zu installieren oder zu reparieren)
+- Reparieren/migrieren: `openclaw doctor` (bietet die Installation oder Reparatur des Dienstes an)
 
 Das Dienstziel hängt vom Betriebssystem ab:
 
 - macOS: LaunchAgent (`ai.openclaw.gateway` oder `ai.openclaw.<profile>` für ein benanntes Profil)
 - Linux/WSL2: systemd-Benutzerdienst (`openclaw-gateway[-<profile>].service`)
-- Natives Windows: geplante Aufgabe (`OpenClaw Gateway` oder `OpenClaw Gateway (<profile>)`), mit einem benutzerspezifischen Anmeldeelement im Autostartordner als Ausweichlösung, wenn das Erstellen der Aufgabe verweigert wird
+- Natives Windows: Geplante Aufgabe (`OpenClaw Gateway` oder `OpenClaw Gateway (<profile>)`), mit einem benutzerspezifischen Anmeldeelement im Autostartordner als Fallback, wenn das Erstellen der Aufgabe verweigert wird
 
 ## Verwandte Themen
 

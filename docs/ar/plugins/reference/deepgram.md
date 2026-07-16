@@ -4,18 +4,19 @@ read_when:
 summary: يضيف دعم موفّري فهم الوسائط. يضيف دعم موفّري النسخ النصي في الوقت الفعلي.
 title: Plugin ‏Deepgram
 x-i18n:
-    generated_at: "2026-07-12T06:20:11Z"
+    generated_at: "2026-07-16T14:39:11Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 93383c01d5a5e1e1d412d396ec1def12f388fc7c5da102573373dbc8180497a3
+    source_hash: ababdaeda58a97236e3dd96bdf51a0ce560278bbeb20a731d05f51d28bfb4155
     source_path: plugins/reference/deepgram.md
     workflow: 16
 ---
 
 # Plugin Deepgram
 
-يضيف دعم موفّر لفهم الوسائط. ويضيف دعم موفّر للنسخ الفوري.
+يضيف دعم موفّر فهم الوسائط. ويضيف دعم موفّر النسخ الفوري.
 
 ## التوزيع
 
@@ -24,7 +25,7 @@ x-i18n:
 
 ## الواجهات
 
-العقود: mediaUnderstandingProviders، realtimeTranscriptionProviders
+العقود: `mediaUnderstandingProviders`، `realtimeTranscriptionProviders`
 
 ## الوثائق ذات الصلة
 

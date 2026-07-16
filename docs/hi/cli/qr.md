@@ -1,66 +1,98 @@
 ---
 read_when:
-    - आप एक मोबाइल Node ऐप को Gateway के साथ जल्दी पेयर करना चाहते हैं
-    - आपको दूरस्थ/मैनुअल साझा करने के लिए setup-code आउटपुट चाहिए
+    - आप किसी मोबाइल Node ऐप को Gateway के साथ शीघ्रता से पेयर करना चाहते हैं
+    - आपको रिमोट/मैन्युअल साझाकरण के लिए सेटअप-कोड आउटपुट चाहिए
 summary: '`openclaw qr` के लिए CLI संदर्भ (मोबाइल पेयरिंग QR + सेटअप कोड जनरेट करें)'
 title: QR
 x-i18n:
-    generated_at: "2026-07-04T17:59:56Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T14:15:22Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 81d15c9d551960c6f5677649b481e447ecda55a395957746959b4ecf81712bdb
+    source_hash: f9d60a58126eae7eec5979f28bb511a09fa52b68cdd73727fca0b2de74efa84a
     source_path: cli/qr.md
     workflow: 16
 ---
 
 # `openclaw qr`
 
-अपने मौजूदा Gateway कॉन्फ़िगरेशन से मोबाइल पेयरिंग QR और सेटअप कोड जनरेट करें।
-
-## उपयोग
+अपने वर्तमान Gateway कॉन्फ़िगरेशन से मोबाइल पेयरिंग QR और सेटअप कोड जनरेट करें।
 
 ```bash
 openclaw qr
 openclaw qr --setup-code-only
 openclaw qr --json
 openclaw qr --remote
+openclaw qr --limited
 openclaw qr --url wss://gateway.example/ws
+```
+
+आधिकारिक OpenClaw iOS और Android ऐप तब अपने-आप कनेक्ट हो जाते हैं, जब उनका
+सेटअप-कोड मेटाडेटा मेल खाता है। यदि कोई अनुरोध लंबित रहता है (उदाहरण के लिए,
+किसी गैर-आधिकारिक क्लाइंट या मेल न खाने वाले मेटाडेटा के कारण), तो उसकी समीक्षा करके उसे स्वीकृत करें:
+
+```bash
+openclaw devices list
+openclaw devices approve <requestId>
 ```
 
 ## विकल्प
 
-- `--remote`: `gateway.remote.url` को प्राथमिकता दें; अगर यह सेट नहीं है, तो `gateway.tailscale.mode=serve|funnel` फिर भी रिमोट सार्वजनिक URL प्रदान कर सकता है
+- `--remote`: `gateway.remote.url` को प्राथमिकता दें; यदि वह URL सेट नहीं है, तो `gateway.tailscale.mode=serve|funnel` पर वापस जाता है। `device-pair` plugin `publicUrl` को अनदेखा करता है।
 - `--url <url>`: पेलोड में उपयोग किए गए Gateway URL को ओवरराइड करें
 - `--public-url <url>`: पेलोड में उपयोग किए गए सार्वजनिक URL को ओवरराइड करें
-- `--token <token>`: बूटस्ट्रैप फ़्लो किस Gateway टोकन के विरुद्ध प्रमाणित होता है, इसे ओवरराइड करें
-- `--password <password>`: बूटस्ट्रैप फ़्लो किस Gateway पासवर्ड के विरुद्ध प्रमाणित होता है, इसे ओवरराइड करें
+- `--token <token>`: उस Gateway टोकन को ओवरराइड करें जिसके विरुद्ध बूटस्ट्रैप प्रवाह प्रमाणीकरण करता है
+- `--password <password>`: उस Gateway पासवर्ड को ओवरराइड करें जिसके विरुद्ध बूटस्ट्रैप प्रवाह प्रमाणीकरण करता है
+- `--limited`: सौंपे गए ऑपरेटर टोकन से प्रशासनिक Gateway पहुँच हटाएँ
 - `--setup-code-only`: केवल सेटअप कोड प्रिंट करें
 - `--no-ascii`: ASCII QR रेंडरिंग छोड़ें
-- `--json`: JSON उत्सर्जित करें (`setupCode`, `gatewayUrl`, `auth`, `urlSource`)
+- `--json`: JSON उत्सर्जित करें (`setupCode`, `gatewayUrl`, वैकल्पिक `gatewayUrls`, `auth`, `access`, वैकल्पिक `accessDowngraded`, `urlSource`)
 
-## नोट्स
+`--token` और `--password` परस्पर अनन्य हैं।
 
-- `--token` और `--password` परस्पर अनन्य हैं।
-- सेटअप कोड अब साझा Gateway टोकन/पासवर्ड नहीं, बल्कि एक अपारदर्शी अल्पकालिक `bootstrapToken` रखता है।
-- बिल्ट-इन सेटअप-कोड बूटस्ट्रैप `scopes: []` के साथ एक प्राथमिक `node` टोकन और भरोसेमंद मोबाइल ऑनबोर्डिंग के लिए एक सीमित `operator` हैंडऑफ़ टोकन लौटाता है।
-- हैंड-ऑफ़ किया गया ऑपरेटर टोकन `operator.approvals`, `operator.read`, `operator.talk.secrets`, और `operator.write` तक सीमित है; पेयरिंग म्यूटेशन स्कोप और `operator.admin` के लिए अब भी अलग स्वीकृत ऑपरेटर पेयरिंग या टोकन फ़्लो चाहिए।
-- मोबाइल पेयरिंग Tailscale/सार्वजनिक `ws://` Gateway URL के लिए सुरक्षित रूप से विफल हो जाती है। निजी LAN पते और `.local` Bonjour होस्ट `ws://` पर समर्थित रहते हैं, लेकिन Tailscale/सार्वजनिक मोबाइल रूटों को Tailscale Serve/Funnel या `wss://` Gateway URL का उपयोग करना चाहिए।
-- `--remote` के साथ, OpenClaw को या तो `gateway.remote.url` या
-  `gateway.tailscale.mode=serve|funnel` चाहिए।
-- `--remote` के साथ, अगर प्रभावी रूप से सक्रिय रिमोट क्रेडेंशियल SecretRefs के रूप में कॉन्फ़िगर किए गए हैं और आप `--token` या `--password` पास नहीं करते, तो कमांड उन्हें सक्रिय Gateway स्नैपशॉट से हल करता है। अगर Gateway उपलब्ध नहीं है, तो कमांड तुरंत विफल हो जाता है।
-- `--remote` के बिना, जब कोई CLI ऑथ ओवरराइड पास नहीं किया जाता, तो स्थानीय Gateway ऑथ SecretRefs हल किए जाते हैं:
-  - `gateway.auth.token` तब हल होता है जब टोकन ऑथ जीत सकता है (स्पष्ट `gateway.auth.mode="token"` या अनुमानित मोड जहां कोई पासवर्ड स्रोत नहीं जीतता)।
-  - `gateway.auth.password` तब हल होता है जब पासवर्ड ऑथ जीत सकता है (स्पष्ट `gateway.auth.mode="password"` या अनुमानित मोड जिसमें auth/env से कोई विजयी टोकन नहीं है)।
-- अगर `gateway.auth.token` और `gateway.auth.password` दोनों कॉन्फ़िगर किए गए हैं (SecretRefs सहित) और `gateway.auth.mode` सेट नहीं है, तो सेटअप-कोड रिज़ॉल्यूशन तब तक विफल होता है जब तक मोड स्पष्ट रूप से सेट न हो।
-- Gateway संस्करण अंतर नोट: इस कमांड पथ के लिए ऐसा Gateway चाहिए जो `secrets.resolve` का समर्थन करता हो; पुराने Gateway अज्ञात-विधि त्रुटि लौटाते हैं।
-- आधिकारिक OpenClaw iOS और Android ऐप्स तब अपने-आप कनेक्ट होते हैं जब उनका
-  सेटअप-कोड मेटाडेटा मेल खाता है। अगर कोई अनुरोध लंबित रहता है (उदाहरण के लिए,
-  किसी गैर-आधिकारिक क्लाइंट या बेमेल मेटाडेटा के लिए), तो इसकी समीक्षा करें और इसे इनके साथ स्वीकृत करें:
-  - `openclaw devices list`
-  - `openclaw devices approve <requestId>`
+## सेटअप कोड की सामग्री
+
+सेटअप कोड में साझा Gateway टोकन/पासवर्ड के बजाय एक अपारदर्शी, अल्पकालिक `bootstrapToken` होता है। किसी `wss://` एंडपॉइंट (या समान-होस्ट लूपबैक) के लिए, डिफ़ॉल्ट बूटस्ट्रैप प्रवाह जारी करता है:
+
+- `scopes: []` वाला एक प्राथमिक `node` टोकन
+- `operator.admin`, `operator.approvals`, `operator.read`, `operator.talk.secrets`, और `operator.write` वाला एक पूर्ण नेटिव-मोबाइल `operator` हैंडऑफ़ टोकन
+
+ऑपरेटर हैंडऑफ़ से `operator.admin` हटाते हुए उसी Node टोकन को बनाए रखने के लिए `--limited` का उपयोग करें। पेयरिंग-म्यूटेशन स्कोप कभी भी सेटअप कोड द्वारा नहीं सौंपा जाता।
+
+प्लेनटेक्स्ट LAN `ws://` सेटअप उपलब्ध रहता है, लेकिन OpenClaw अपने-आप
+सीमित प्रोफ़ाइल का उपयोग करता है, क्योंकि कोई नेटवर्क पर्यवेक्षक बेयरर
+बूटस्ट्रैप टोकन को कैप्चर करके उससे पहले उपयोग कर सकता है। पूर्ण पहुँच पाने के लिए `wss://` या Tailscale Serve कॉन्फ़िगर करें, फिर नया कोड
+जनरेट करें।
+
+## Gateway URL रिज़ॉल्यूशन
+
+Tailscale/सार्वजनिक `ws://` Gateway URL के लिए मोबाइल पेयरिंग सुरक्षित रूप से विफल होती है: इनके लिए Tailscale Serve/Funnel या किसी `wss://` Gateway URL का उपयोग करें। निजी LAN पते और `.local` Bonjour होस्ट प्लेन `ws://` पर समर्थित रहते हैं, लेकिन ऑपरेटर पहुँच ऊपर बताए अनुसार सीमित रहती है।
+
+जब चयनित Gateway URL `gateway.bind=lan` से आता है, तो OpenClaw स्थायी `tailscale serve status --json` रूट की भी जाँच करता है। सक्रिय Gateway के लूपबैक पोर्ट को प्रॉक्सी करने वाला कोई भी HTTPS Serve रूट फ़ॉलबैक के रूप में शामिल किया जाता है। QR कमांड यह फ़ॉलबैक केवल `lan` के लिए जोड़ता है; `custom` और `tailnet` अपने स्पष्ट रूप से विज्ञापित रूट बनाए रखते हैं। वर्तमान iOS क्लाइंट विज्ञापित रूट को क्रम से जाँचते हैं और पहुँच योग्य पहले रूट को सहेजते हैं; पुराने क्लाइंट के लिए लेगेसी `url` फ़ील्ड अपरिवर्तित रहता है।
+
+`--remote` के साथ, `gateway.remote.url` या `gateway.tailscale.mode=serve|funnel` में से एक आवश्यक है।
+
+## प्रमाणीकरण रिज़ॉल्यूशन (`--remote` के बिना)
+
+जब कोई CLI प्रमाणीकरण ओवरराइड पास नहीं किया जाता, तो स्थानीय Gateway प्रमाणीकरण SecretRefs निम्नानुसार रिज़ॉल्व होते हैं:
+
+| शर्त                                                                                                                    | रिज़ॉल्व होता है                                  |
+| ---------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------- |
+| `gateway.auth.mode="token"`, या किसी प्रभावी पासवर्ड स्रोत के बिना अनुमानित मोड                                                | `gateway.auth.token`                      |
+| `gateway.auth.mode="password"`, या प्रमाणीकरण/एनवायरनमेंट से किसी प्रभावी टोकन के बिना अनुमानित मोड                                         | `gateway.auth.password`                   |
+| `gateway.auth.token` और `gateway.auth.password` दोनों कॉन्फ़िगर हैं (SecretRefs सहित) और `gateway.auth.mode` सेट नहीं है | विफल होता है; `gateway.auth.mode` को स्पष्ट रूप से सेट करें |
+
+## प्रमाणीकरण रिज़ॉल्यूशन (`--remote`)
+
+यदि प्रभावी रूप से सक्रिय रिमोट क्रेडेंशियल SecretRefs के रूप में कॉन्फ़िगर हैं और न तो `--token` न ही `--password` पास किया गया है, तो कमांड उन्हें सक्रिय Gateway स्नैपशॉट से रिज़ॉल्व करता है। यदि Gateway अनुपलब्ध है, तो कमांड तुरंत विफल हो जाता है।
+
+<Note>
+इस कमांड पथ के लिए ऐसा Gateway आवश्यक है जो `secrets.resolve` RPC विधि का समर्थन करता हो। पुराने Gateway अज्ञात-विधि त्रुटि लौटाते हैं।
+</Note>
 
 ## संबंधित
 
 - [CLI संदर्भ](/hi/cli)
+- [डिवाइस](/hi/cli/devices)
 - [पेयरिंग](/hi/cli/pairing)

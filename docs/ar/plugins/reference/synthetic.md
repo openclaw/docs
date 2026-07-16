@@ -1,30 +1,31 @@
 ---
 read_when:
-    - أنت تثبّت الـ Plugin الاصطناعي أو تهيّئه أو تدقّق فيه
+    - أنت تثبّت Plugin Synthetic أو تهيئه أو تدقّق فيه
 summary: يضيف دعم موفّر نماذج Synthetic إلى OpenClaw.
-title: Plugin اصطناعي
+title: Plugin Synthetic
 x-i18n:
-    generated_at: "2026-07-12T06:22:16Z"
+    generated_at: "2026-07-16T14:34:31Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 4d899363b3dac4128f3e2a1e30ad11cd5ae0c11cc5229d3f03e15429e2741f8d
+    source_hash: 755ddf08e8ec91654c81f64a6c3e566281be320d8f5e54b64fbbc993c8919df2
     source_path: plugins/reference/synthetic.md
     workflow: 16
 ---
 
-# Plugin ‏Synthetic
+# Plugin Synthetic
 
 يضيف دعم موفّر نماذج Synthetic إلى OpenClaw.
 
 ## التوزيع
 
 - الحزمة: `@openclaw/synthetic-provider`
-- مسار التثبيت: مضمّن في OpenClaw
+- مسار التثبيت: مضمن في OpenClaw
 
-## الواجهة
+## السطح
 
-موفّرو النماذج: synthetic
+الموفّرون: `synthetic`
 
 ## الوثائق ذات الصلة
 

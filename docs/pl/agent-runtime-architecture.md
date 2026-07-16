@@ -1,37 +1,41 @@
 ---
-summary: Jak OpenClaw uruchamia wbudowane środowisko wykonawcze agenta, dostawców, sesje, narzędzia i rozszerzenia.
-title: Architektura środowiska uruchomieniowego agentów
+summary: 'Jak OpenClaw organizuje wbudowane środowisko uruchomieniowe agenta: układ kodu, granice, manifesty zasobów i wybór środowiska uruchomieniowego.'
+title: Architektura środowiska uruchomieniowego agenta
 x-i18n:
-    generated_at: "2026-06-27T17:08:49Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T17:57:35Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: cd0ca61b10a4f7029590da8566b22cc44cf801af162e5f2c00c9561fe46e39e3
+    source_hash: 071a0cb076230ce02f2c2c1c21971379cf617f24faa8a9733570aae30a062019
     source_path: agent-runtime-architecture.md
     workflow: 16
 ---
 
-OpenClaw bezpośrednio posiada wbudowane środowisko uruchomieniowe agenta. Kod środowiska uruchomieniowego znajduje się w `src/agents/`, pomocnicze elementy modelu/dostawcy znajdują się w `src/llm/`, a kontrakty przeznaczone dla Pluginów są udostępniane przez beczki `openclaw/plugin-sdk/*`.
+OpenClaw jest właścicielem wbudowanego środowiska uruchomieniowego agenta. Kod środowiska uruchomieniowego znajduje się w `src/agents/`, transport modeli/dostawców znajduje się w `src/llm/`, a kontrakty przeznaczone dla pluginów są udostępniane przez moduły zbiorcze `openclaw/plugin-sdk/*`.
 
-## Układ Środowiska Uruchomieniowego
+## Układ środowiska uruchomieniowego
 
-- `src/agents/embedded-agent-runner/`: wbudowana pętla prób agenta, adaptery strumieni dostawców, Compaction, wybór modelu i okablowanie sesji.
-- `src/agents/sessions/`: utrwalanie sesji, ładowanie rozszerzeń, odkrywanie zasobów, Skills, prompty, motywy i renderery narzędzi oparte na TUI.
-- `packages/agent-core/`: wielokrotnego użytku rdzeń agenta, niższopoziomowe typy uprzęży, wiadomości, pomocniki Compaction, szablony promptów oraz kontrakty narzędzi/sesji.
-- `src/agents/runtime/`: fasada OpenClaw dla `@openclaw/agent-core` oraz lokalne narzędzia proxy.
-- `src/agents/agent-tools*.ts`: definicje narzędzi, schematy, polityka, adaptery haków przed/po oraz obsługa edycji hosta należące do OpenClaw.
-- `src/agents/agent-hooks/`: wbudowane haki środowiska uruchomieniowego, takie jak zabezpieczenia Compaction i przycinanie kontekstu.
-- `src/llm/`: rejestr modeli/dostawców, pomocniki transportu oraz implementacje strumieni specyficzne dla dostawców.
+| Ścieżka                             | Odpowiada za                                                                                                                                                                                                              |
+| ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/agents/embedded-agent-runner/` | Wbudowaną pętlę prób (`run.ts`, `run/`), wybór modelu i normalizację dostawcy (`model*.ts`), parametry żądań dla poszczególnych dostawców (`extra-params.*`), Compaction oraz integrację transkrypcji i sesji.                            |
+| `src/agents/sessions/`              | Trwałość sesji (`session-manager.ts`), wykrywanie zasobów (`package-manager.ts`, `resource-loader.ts`), ładowanie `extensions` w ramach sesji, szablony promptów, Skills, motywy oraz renderery narzędzi oparte na TUI (`tools/`). |
+| `packages/agent-core/`              | Rdzeń agenta wielokrotnego użytku (`@openclaw/agent-core`): pętlę agenta, typy infrastruktury wykonawczej, wiadomości, funkcje pomocnicze Compaction, szablony promptów, Skills oraz kontrakty przechowywania sesji.                                                           |
+| `src/agents/runtime/`               | Fasadę OpenClaw, która łączy `@openclaw/agent-core` ze środowiskiem uruchomieniowym LLM zestawu SDK pluginów oraz ponownie eksportuje je wraz z lokalnymi narzędziami serwera proxy.                                                                                             |
+| `src/agents/agent-tools*.ts`        | Definicje narzędzi należące do OpenClaw, schematy parametrów, zasady narzędzi, adaptery wywołań narzędzi przed wykonaniem i po nim oraz narzędzia edycji hosta/piaskownicy.                                                                                            |
+| `src/agents/agent-hooks/`           | Wbudowane punkty zaczepienia środowiska uruchomieniowego: zabezpieczenie Compaction, instrukcje Compaction, przycinanie kontekstu.                                                                                                                                   |
+| `src/agents/harness/`               | Rejestr infrastruktury wykonawczej, zasady wyboru i cykl życia wbudowanych oraz zarejestrowanych przez pluginy infrastruktur wykonawczych.                                                                                                                       |
+| `src/llm/`                          | Rejestr modeli/dostawców, funkcje pomocnicze transportu oraz implementacje strumieni specyficzne dla dostawców (`src/llm/providers/`).                                                                                                          |
 
 ## Granice
 
-Kod rdzenia wywołuje wbudowane środowisko uruchomieniowe przez moduły OpenClaw i beczki SDK, a nie przez stare zewnętrzne pakiety agentów. Pluginy używają udokumentowanych punktów wejścia `openclaw/plugin-sdk/*` i nie importują wewnętrznych elementów `src/**`.
+Rdzeń wywołuje wbudowane środowisko uruchomieniowe za pośrednictwem modułów OpenClaw i modułów zbiorczych SDK; nie pozostały żadne zewnętrzne pakiety struktur programistycznych agentów. Pluginy używają udokumentowanych punktów wejścia `openclaw/plugin-sdk/*` i nie importują wewnętrznych elementów `src/**`.
 
-`@earendil-works/pi-tui` pozostaje zewnętrzną zależnością TUI. Jest używany jako zestaw komponentów terminalowych przez lokalne TUI i renderery sesji; jego internalizacja byłaby osobnym wysiłkiem vendoringu.
+`@earendil-works/pi-tui` pozostaje zależnością zewnętrzną: zestawem komponentów terminalowych używanym przez lokalne TUI i renderery narzędzi sesji. Włączenie go do projektu byłoby osobnym przedsięwzięciem związanym z kopiowaniem kodu zależności.
 
 ## Manifesty
 
-Pakiety zasobów deklarują zasoby OpenClaw w metadanych pakietu:
+Pakiety zasobów deklarują zasoby OpenClaw w metadanych `package.json`. Wpisy są ścieżkami plików lub wzorcami glob względem katalogu głównego pakietu:
 
 ```json
 {
@@ -44,11 +48,15 @@ Pakiety zasobów deklarują zasoby OpenClaw w metadanych pakietu:
 }
 ```
 
-Menedżer pakietów odkrywa również konwencjonalne katalogi `extensions/`, `skills/`, `prompts/` i `themes/`.
+Typy zasobów niewymienione w manifeście korzystają awaryjnie z wykrywania standardowych katalogów `extensions/`, `skills/`, `prompts/` i `themes/`.
 
-## Wybór Środowiska Uruchomieniowego
+## Wybór środowiska uruchomieniowego
 
-Domyślny identyfikator wbudowanego środowiska uruchomieniowego to `openclaw`. Uprzęże Pluginów mogą rejestrować dodatkowe identyfikatory środowisk uruchomieniowych. `auto` wybiera obsługującą uprząż Pluginu, gdy taka istnieje, a w przeciwnym razie używa wbudowanego środowiska uruchomieniowego OpenClaw.
+- Identyfikator wbudowanego środowiska uruchomieniowego to `openclaw`. Starszy alias `pi` jest normalizowany do `openclaw`; `codex-app-server` jest normalizowany do `codex`.
+- Infrastruktury wykonawcze pluginów rejestrują dodatkowe identyfikatory środowisk uruchomieniowych (na przykład `codex`).
+- Zasady środowiska uruchomieniowego określa konfiguracja `agentRuntime.id` ograniczona do modelu/dostawcy (wpis modelu ma pierwszeństwo przed wpisem dostawcy). Wartość nieustawiona lub `default` jest rozstrzygana jako `auto`.
+- `auto` wybiera zarejestrowaną infrastrukturę wykonawczą pluginu, która obsługuje efektywną trasę dostawcy, a w przeciwnym razie wbudowane środowisko uruchomieniowe OpenClaw. Sam prefiks dostawcy lub modelu nigdy nie powoduje wyboru infrastruktury wykonawczej.
+- OpenAI może niejawnie wybrać `codex` wyłącznie dla dokładnie pasującej oficjalnej trasy HTTPS Platform Responses lub ChatGPT Responses, bez jawnego nadpisania żądania. Adaptery Completions, niestandardowe punkty końcowe i trasy z jawnym zachowaniem żądań pozostają w `openclaw`; oficjalne punkty końcowe korzystające z nieszyfrowanego protokołu HTTP są odrzucane. Zobacz [niejawne środowisko uruchomieniowe agenta OpenAI](/pl/providers/openai#implicit-agent-runtime).
 
 ## Powiązane
 

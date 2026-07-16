@@ -1,14 +1,15 @@
 ---
 read_when:
-    - Instalujesz, konfigurujesz lub przeprowadzasz audyt pluginu Tavily
-summary: Dodaje narzędzia wywoływane przez agenta. Dodaje obsługę dostawcy wyszukiwania internetowego.
+    - Instalowanie, konfigurowanie lub audytowanie pluginu tavily
+summary: Dodaje narzędzia wywoływane przez agenta. Dodaje obsługę dostawców wyszukiwania internetowego.
 title: Plugin Tavily
 x-i18n:
-    generated_at: "2026-07-12T15:30:43Z"
+    generated_at: "2026-07-16T18:49:38Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 409da2bdfca9c2dd5a2c64565787175b57f2d43f09b1fa484ac54dd1f528c9fb
+    source_hash: c7bbeb8a0580d9248fdc1ffa08a556e8d2d91cb263f859b1d26a519ec2014f38
     source_path: plugins/reference/tavily.md
     workflow: 16
 ---
@@ -22,10 +23,10 @@ Dodaje narzędzia dostępne dla agenta. Dodaje obsługę dostawcy wyszukiwania i
 - Pakiet: `@openclaw/tavily-plugin`
 - Sposób instalacji: npm; ClawHub: `clawhub:@openclaw/tavily-plugin`
 
-## Interfejs
+## Powierzchnia
 
-kontrakty: narzędzia, dostawcy wyszukiwania internetowego; Skills
+kontrakty: `tools`, `webSearchProviders`; umiejętności
 
 ## Powiązana dokumentacja
 
-- [Tavily](/pl/tools/tavily)
+- [tavily](/pl/tools/tavily)

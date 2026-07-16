@@ -1,113 +1,104 @@
 ---
 read_when:
-    - Gỡ lỗi lý do một agent đã trả lời, thất bại hoặc gọi công cụ theo một cách nhất định
+    - Gỡ lỗi lý do tác nhân đã trả lời, gặp lỗi hoặc gọi công cụ theo một cách nhất định
     - Xuất gói hỗ trợ cho một phiên OpenClaw
-    - Điều tra ngữ cảnh prompt, lệnh gọi công cụ, lỗi runtime hoặc siêu dữ liệu sử dụng
-    - Tắt hoặc di chuyển tính năng ghi lại quỹ đạo
-summary: Xuất các gói quỹ đạo đã biên tập lại để gỡ lỗi phiên agent OpenClaw
-title: Gói quỹ đạo
+    - Điều tra ngữ cảnh lời nhắc, lệnh gọi công cụ, lỗi thời gian chạy hoặc siêu dữ liệu sử dụng
+    - Tắt tính năng thu thập quỹ đạo
+summary: Xuất các gói quỹ đạo đã được ẩn thông tin nhạy cảm để gỡ lỗi một phiên tác tử OpenClaw
+title: Các gói quỹ đạo
 x-i18n:
-    generated_at: "2026-06-27T18:19:41Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T15:55:45Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: bf48616c29a1055f26d39a88869c025db7e6261b13dcaa0cd35be438c6a86a88
+    source_hash: 7fc494732b6239ad4ea58dca3920a47cb7433c680e7566855dd265c986b55e74
     source_path: tools/trajectory.md
     workflow: 16
 ---
 
-Ghi lại quỹ đạo là hộp đen theo từng phiên của OpenClaw. Nó ghi lại một
-dòng thời gian có cấu trúc cho mỗi lần chạy tác tử, sau đó `/export-trajectory` đóng gói
-phiên hiện tại thành một gói hỗ trợ đã được biên tập lại.
+Ghi lại quỹ đạo là hộp đen theo từng phiên của OpenClaw. Tính năng này ghi lại
+dòng thời gian có cấu trúc cho mỗi lần chạy tác nhân, sau đó `/export-trajectory` đóng gói
+phiên hiện tại thành một gói hỗ trợ đã được biên tập, bao gồm:
 
-Dùng tính năng này khi bạn cần trả lời các câu hỏi như:
+- Lời nhắc, lời nhắc hệ thống và các công cụ được gửi đến mô hình
+- Những thông báo bản ghi và lệnh gọi công cụ nào đã dẫn đến câu trả lời
+- Lần chạy có hết thời gian chờ, bị hủy, được Compaction hay gặp lỗi nhà cung cấp hay không
+- Mô hình, các plugin, Skills và cài đặt thời gian chạy nào đang hoạt động
+- Siêu dữ liệu về mức sử dụng và bộ nhớ đệm lời nhắc do nhà cung cấp trả về
 
-- Prompt, system prompt và công cụ nào đã được gửi tới mô hình?
-- Những thông điệp transcript và lệnh gọi công cụ nào đã dẫn tới câu trả lời này?
-- Lần chạy có hết thời gian, hủy bỏ, compact, hay gặp lỗi nhà cung cấp không?
-- Mô hình, plugin, skills và cài đặt runtime nào đang hoạt động?
-- Nhà cung cấp đã trả về metadata về usage và prompt-cache nào?
-
-Nếu bạn đang gửi một báo cáo hỗ trợ rộng cho một sự cố Gateway trực tiếp, hãy bắt đầu với
-[`/diagnostics`](/vi/gateway/diagnostics#chat-command). Diagnostics thu thập gói Gateway
-đã được làm sạch và, với các phiên harness OpenAI Codex, cũng có thể gửi
-phản hồi Codex tới máy chủ OpenAI sau khi được phê duyệt. Dùng `/export-trajectory` khi
-bạn cần cụ thể dòng thời gian chi tiết theo từng phiên về prompt, công cụ và transcript.
+Để có báo cáo hỗ trợ Gateway tổng quát, trước tiên hãy bắt đầu bằng
+[`/diagnostics`](/vi/gateway/diagnostics#chat-command); lệnh này thu thập
+gói Gateway đã được làm sạch và, đối với các phiên dùng bộ khung OpenAI Codex, có thể gửi phản hồi về Codex
+đến OpenAI sau khi được phê duyệt. Hãy dùng `/export-trajectory` khi bạn cần
+dòng thời gian chi tiết theo từng phiên về lời nhắc, công cụ và bản ghi.
 
 ## Bắt đầu nhanh
 
-Gửi nội dung này trong phiên đang hoạt động:
+Gửi trong phiên đang hoạt động (bí danh `/trajectory`):
 
 ```text
 /export-trajectory
 ```
 
-Bí danh:
-
-```text
-/trajectory
-```
-
-OpenClaw ghi gói dưới workspace:
+OpenClaw ghi gói này vào không gian làm việc:
 
 ```text
 .openclaw/trajectory-exports/openclaw-trajectory-<session>-<timestamp>/
 ```
 
-Bạn có thể chọn tên thư mục đầu ra tương đối:
+Truyền tên thư mục đầu ra tương đối để ghi đè vị trí đó:
 
 ```text
 /export-trajectory bug-1234
 ```
 
-Đường dẫn tùy chỉnh được phân giải bên trong `.openclaw/trajectory-exports/`. Đường dẫn tuyệt đối
-và đường dẫn `~` bị từ chối.
+Tên này được phân giải bên trong `.openclaw/trajectory-exports/`. Đường dẫn tuyệt đối và
+đường dẫn `~` bị từ chối.
 
-Các gói quỹ đạo có thể chứa prompt, thông điệp mô hình, schema công cụ, kết quả công cụ,
-sự kiện runtime và đường dẫn cục bộ. Vì vậy, lệnh slash trong chat luôn chạy
-qua phê duyệt exec mỗi lần. Hãy phê duyệt bản xuất một lần khi bạn có ý định
-tạo gói; không dùng allow-all. Trong chat nhóm, OpenClaw gửi
-prompt phê duyệt và kết quả xuất riêng cho chủ sở hữu thay vì đăng chi tiết
-quỹ đạo trở lại phòng chung.
+Các gói quỹ đạo có thể chứa lời nhắc, thông báo mô hình, lược đồ công cụ, kết quả công cụ,
+sự kiện thời gian chạy và đường dẫn cục bộ, vì vậy lệnh trò chuyện luôn phải
+qua bước phê duyệt thực thi. Chỉ phê duyệt việc xuất một lần khi bạn có ý định tạo
+gói; không sử dụng chế độ cho phép tất cả. Trong các cuộc trò chuyện nhóm, OpenClaw gửi riêng
+lời nhắc phê duyệt và kết quả xuất cho chủ sở hữu thay vì đăng thông tin chi tiết về quỹ đạo
+trở lại phòng dùng chung.
 
-Để kiểm tra cục bộ hoặc dùng trong quy trình hỗ trợ, bạn cũng có thể chạy trực tiếp đường dẫn
-lệnh đã được phê duyệt:
+Để kiểm tra cục bộ hoặc dùng trong quy trình hỗ trợ, hãy chạy trực tiếp lệnh CLI
+nền tảng:
 
 ```bash
 openclaw sessions export-trajectory --session-key "agent:main:telegram:direct:123" --workspace .
 ```
 
+Các cờ khác: `--output <path>` (tên thư mục bên trong
+`.openclaw/trajectory-exports`), `--store <path>` (ghi đè kho lưu trữ phiên),
+`--agent <id>` (ID tác nhân để phân giải kho lưu trữ), `--json` (đầu ra có cấu trúc).
+
 ## Quyền truy cập
 
-Xuất quỹ đạo là lệnh của chủ sở hữu. Người gửi phải vượt qua các kiểm tra
-ủy quyền lệnh thông thường và kiểm tra chủ sở hữu cho kênh.
+Xuất quỹ đạo là lệnh dành cho chủ sở hữu. Người gửi phải vượt qua các bước kiểm tra
+ủy quyền lệnh thông thường cùng với bước kiểm tra chủ sở hữu của kênh.
 
 ## Nội dung được ghi lại
 
-Ghi lại quỹ đạo được bật mặc định cho các lần chạy tác tử OpenClaw.
+Ghi lại quỹ đạo được bật mặc định cho các lần chạy tác nhân OpenClaw.
 
-Sự kiện runtime bao gồm:
+Các sự kiện thời gian chạy bao gồm:
 
 - `session.started`
 - `trace.metadata`
 - `context.compiled`
 - `prompt.submitted`
-- `model.fallback_step`, bao gồm mô hình nguồn, mô hình tiếp theo, lý do/chi tiết lỗi, vị trí trong chuỗi, và fallback đã tiến lên, thành công hay dùng hết chuỗi
+- `model.fallback_step`, bao gồm mô hình nguồn, mô hình tiếp theo, lý do/chi tiết lỗi, vị trí trong chuỗi và việc chuỗi đã tiến tiếp, thành công hay cạn kiệt
 - `model.completed`
 - `trace.artifacts`
 - `session.ended`
 
-Sự kiện transcript cũng được tái dựng từ nhánh phiên đang hoạt động:
+Các sự kiện bản ghi được tái dựng từ nhánh phiên đang hoạt động: thông báo của người dùng,
+thông báo của trợ lý, lệnh gọi công cụ, kết quả công cụ, các lần Compaction, thay đổi mô hình,
+nhãn và mục nhập phiên tùy chỉnh.
 
-- thông điệp của người dùng
-- thông điệp của trợ lý
-- lệnh gọi công cụ
-- kết quả công cụ
-- compactions
-- thay đổi mô hình
-- nhãn và mục phiên tùy chỉnh
-
-Sự kiện được ghi dưới dạng JSON Lines với marker schema này:
+Các sự kiện được ghi dưới dạng JSON Lines với dấu chỉ lược đồ sau:
 
 ```json
 {
@@ -116,121 +107,100 @@ Sự kiện được ghi dưới dạng JSON Lines với marker schema này:
 }
 ```
 
-## Tệp trong gói
+## Các tệp trong gói
 
-Một gói đã xuất có thể chứa:
+| Tệp                   | Nội dung                                                                                                  |
+| --------------------- | --------------------------------------------------------------------------------------------------------- |
+| `manifest.json`       | Lược đồ gói, tệp nguồn, số lượng sự kiện và danh sách tệp được tạo                                        |
+| `events.jsonl`        | Dòng thời gian có thứ tự của thời gian chạy và bản ghi                                                    |
+| `session-branch.json` | Nhánh bản ghi đang hoạt động đã được biên tập và tiêu đề phiên                                             |
+| `metadata.json`       | Phiên bản OpenClaw, hệ điều hành/thời gian chạy, mô hình, ảnh chụp cấu hình, plugin, Skills và siêu dữ liệu lời nhắc |
+| `artifacts.json`      | Trạng thái cuối, lỗi, mức sử dụng, bộ nhớ đệm lời nhắc, số lần Compaction, văn bản trợ lý và siêu dữ liệu công cụ |
+| `prompts.json`        | Các lời nhắc đã gửi và chi tiết chọn lọc về quá trình tạo lời nhắc                                        |
+| `system-prompt.txt`   | Lời nhắc hệ thống đã biên dịch mới nhất, khi được ghi lại                                                  |
+| `tools.json`          | Các định nghĩa công cụ được gửi đến mô hình, khi được ghi lại                                             |
 
-| Tệp                   | Nội dung                                                                                       |
-| --------------------- | ---------------------------------------------------------------------------------------------- |
-| `manifest.json`       | Schema gói, tệp nguồn, số lượng sự kiện và danh sách tệp được tạo                              |
-| `events.jsonl`        | Dòng thời gian runtime và transcript theo thứ tự                                                |
-| `session-branch.json` | Nhánh transcript đang hoạt động đã được biên tập lại và header phiên                            |
-| `metadata.json`       | Phiên bản OpenClaw, OS/runtime, mô hình, snapshot cấu hình, plugin, skills và metadata prompt   |
-| `artifacts.json`      | Trạng thái cuối, lỗi, usage, prompt cache, số lần compaction, văn bản trợ lý và metadata công cụ |
-| `prompts.json`        | Prompt đã gửi và các chi tiết xây dựng prompt được chọn                                         |
-| `system-prompt.txt`   | System prompt đã biên dịch mới nhất, khi được ghi lại                                           |
-| `tools.json`          | Định nghĩa công cụ đã gửi tới mô hình, khi được ghi lại                                         |
+`manifest.json` liệt kê các tệp có trong một gói nhất định; một số tệp bị
+bỏ qua khi phiên không ghi lại dữ liệu thời gian chạy tương ứng.
 
-`manifest.json` liệt kê các tệp có trong gói đó. Một số tệp bị bỏ qua
-khi phiên không ghi lại dữ liệu runtime tương ứng.
+## Lưu trữ dữ liệu ghi lại
 
-## Vị trí ghi lại
+Các sự kiện quỹ đạo thời gian chạy được lưu cùng với phiên trong cơ sở dữ liệu SQLite
+riêng cho từng tác nhân. Việc xuất quỹ đạo tạo ra một gói hỗ trợ JSONL đã được biên tập;
+dữ liệu ghi lại trực tiếp trong thời gian chạy không phải là tệp JSONL phụ nằm cạnh phiên.
 
-Theo mặc định, sự kiện quỹ đạo runtime được ghi bên cạnh tệp phiên:
-
-```text
-<session>.trajectory.jsonl
-```
-
-OpenClaw cũng ghi một tệp con trỏ best-effort bên cạnh phiên:
-
-```text
-<session>.trajectory-path.json
-```
-
-Đặt `OPENCLAW_TRAJECTORY_DIR` để lưu sidecar quỹ đạo runtime trong một
-thư mục riêng:
-
-```bash
-export OPENCLAW_TRAJECTORY_DIR=/var/lib/openclaw/trajectories
-```
-
-Khi biến này được đặt, OpenClaw ghi một tệp JSONL cho mỗi id phiên trong
-thư mục đó.
-
-Bảo trì phiên xóa các sidecar quỹ đạo khi mục phiên sở hữu chúng
-bị lược bớt, giới hạn hoặc loại bỏ theo ngân sách đĩa của phiên. Tệp runtime bên ngoài
-thư mục phiên chỉ bị xóa khi đích con trỏ vẫn chứng minh rằng nó
-thuộc về phiên đó.
+Các tệp `.trajectory.jsonl` và `.trajectory-path.json` cũ vẫn có thể xuất hiện
+từ các bản phát hành trước hoặc các lần xuất tệp cũ được yêu cầu rõ ràng. Hoạt động bảo trì phiên coi
+những tệp này là mục tiêu dọn dẹp; quá trình ghi đang hoạt động sẽ ghi các hàng vào cơ sở dữ liệu.
 
 ## Tắt ghi lại
-
-Đặt `OPENCLAW_TRAJECTORY=0` trước khi khởi động OpenClaw:
 
 ```bash
 export OPENCLAW_TRAJECTORY=0
 ```
 
-Thao tác này tắt ghi lại quỹ đạo runtime. `/export-trajectory` vẫn có thể xuất
-nhánh transcript, nhưng các tệp chỉ có ở runtime như ngữ cảnh đã biên dịch,
-artifact nhà cung cấp và metadata prompt có thể bị thiếu.
+Lệnh này tắt việc ghi lại quỹ đạo thời gian chạy trước khi khởi động OpenClaw.
+`/export-trajectory` vẫn có thể xuất nhánh bản ghi, nhưng dữ liệu chỉ có trong thời gian chạy
+như ngữ cảnh đã biên dịch, hiện vật của nhà cung cấp và siêu dữ liệu lời nhắc có thể
+bị thiếu.
 
-## Điều chỉnh thời gian chờ flush
+## Điều chỉnh thời gian chờ xả dữ liệu
 
-OpenClaw flush các sidecar quỹ đạo runtime trong quá trình dọn dẹp tác tử. Thời gian chờ
-dọn dẹp mặc định là 10.000 ms. Trên đĩa chậm hoặc kho lớn, hãy đặt
+OpenClaw xả các hàng quỹ đạo thời gian chạy trong quá trình dọn dẹp tác nhân. Thời gian chờ
+dọn dẹp mặc định là 10,000 ms. Trên ổ đĩa chậm hoặc kho lưu trữ lớn, hãy đặt
 `OPENCLAW_TRAJECTORY_FLUSH_TIMEOUT_MS` trước khi khởi động OpenClaw:
 
 ```bash
 export OPENCLAW_TRAJECTORY_FLUSH_TIMEOUT_MS=30000
 ```
 
-Thiết lập này kiểm soát thời điểm OpenClaw ghi log timeout `openclaw-trajectory-flush` và tiếp tục.
-Nó không thay đổi các giới hạn kích thước quỹ đạo. Để điều chỉnh tất cả bước dọn dẹp tác tử
-không truyền timeout rõ ràng, hãy đặt `OPENCLAW_AGENT_CLEANUP_TIMEOUT_MS`.
+Thiết lập này kiểm soát thời điểm OpenClaw ghi nhật ký lỗi hết thời gian chờ `openclaw-trajectory-flush` rồi
+tiếp tục; nó không thay đổi giới hạn kích thước quỹ đạo. Để điều chỉnh tất cả các bước
+dọn dẹp tác nhân không truyền thời gian chờ rõ ràng, hãy đặt
+`OPENCLAW_AGENT_CLEANUP_TIMEOUT_MS`.
 
 ## Quyền riêng tư và giới hạn
 
-Các gói quỹ đạo được thiết kế cho hỗ trợ và gỡ lỗi, không phải để đăng công khai.
-OpenClaw biên tập lại các giá trị nhạy cảm trước khi ghi tệp xuất:
+Các gói quỹ đạo dành cho hỗ trợ và gỡ lỗi, không phải để đăng công khai. OpenClaw
+biên tập các giá trị nhạy cảm trước khi ghi tệp xuất:
 
-- thông tin xác thực và các trường payload giống bí mật đã biết
+- thông tin xác thực và các trường tải trọng đã biết có dạng bí mật
 - dữ liệu hình ảnh
 - đường dẫn trạng thái cục bộ
-- đường dẫn workspace, được thay bằng `$WORKSPACE_DIR`
-- đường dẫn thư mục home, khi phát hiện được
+- đường dẫn không gian làm việc, được thay bằng `$WORKSPACE_DIR`
+- đường dẫn thư mục chính, khi phát hiện được
 
 Trình xuất cũng giới hạn kích thước đầu vào:
 
-- tệp sidecar runtime: ghi trực tiếp dừng ở 10 MiB và ghi lại sự kiện cắt bớt khi còn dung lượng; xuất chấp nhận sidecar runtime hiện có tối đa 50 MiB
+- ghi lại thời gian chạy: dữ liệu ghi trực tiếp là một cửa sổ cuộn có giới hạn 10 MiB, loại bỏ các sự kiện cũ nhất để dành chỗ cho sự kiện mới; quá trình xuất chấp nhận các tệp phụ thời gian chạy cũ hiện có có kích thước tối đa 50 MiB
 - tệp phiên: 50 MiB
-- sự kiện runtime: 200.000
-- tổng sự kiện đã xuất: 250.000
-- từng dòng sự kiện runtime bị cắt bớt khi vượt quá 256 KiB
+- sự kiện thời gian chạy mỗi lần xuất: 200,000
+- tổng số sự kiện được xuất: 250,000
+- các dòng sự kiện thời gian chạy riêng lẻ bị cắt bớt khi vượt quá 256 KiB
 
-Hãy xem lại các gói trước khi chia sẻ chúng bên ngoài nhóm của bạn. Việc biên tập lại là best-effort
+Hãy xem xét các gói trước khi chia sẻ chúng ra ngoài nhóm của bạn. Việc biên tập được thực hiện theo khả năng tốt nhất
 và không thể biết mọi bí mật riêng của từng ứng dụng.
 
 ## Khắc phục sự cố
 
-Nếu bản xuất không có sự kiện runtime:
+Nếu bản xuất không có sự kiện thời gian chạy:
 
 - xác nhận OpenClaw đã được khởi động mà không có `OPENCLAW_TRAJECTORY=0`
-- kiểm tra xem `OPENCLAW_TRAJECTORY_DIR` có trỏ tới một thư mục có thể ghi không
-- chạy thêm một thông điệp trong phiên, rồi xuất lại
-- kiểm tra `manifest.json` để xem `runtimeEventCount`
+- chạy thêm một thông báo trong phiên, rồi xuất lại
+- kiểm tra `manifest.json` để tìm `runtimeEventCount`
 
 Nếu lệnh từ chối đường dẫn đầu ra:
 
-- dùng tên tương đối như `bug-1234`
+- sử dụng tên tương đối như `bug-1234`
 - không truyền `/tmp/...` hoặc `~/...`
 - giữ bản xuất bên trong `.openclaw/trajectory-exports/`
 
-Nếu bản xuất thất bại với lỗi kích thước, phiên hoặc sidecar đã vượt quá
-giới hạn an toàn xuất. Hãy bắt đầu một phiên mới hoặc xuất một bản tái hiện nhỏ hơn.
+Nếu quá trình xuất thất bại do lỗi kích thước, phiên hoặc tệp phụ đã vượt quá
+các giới hạn an toàn xuất ở trên. Hãy bắt đầu phiên mới hoặc xuất một trường hợp
+tái hiện nhỏ hơn.
 
 ## Liên quan
 
-- [Diffs](/vi/tools/diffs)
+- [Diff](/vi/tools/diffs)
 - [Quản lý phiên](/vi/concepts/session)
-- [Công cụ exec](/vi/tools/exec)
+- [Công cụ thực thi](/vi/tools/exec)

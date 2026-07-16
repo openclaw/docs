@@ -4,17 +4,17 @@ read_when:
 summary: Intermediario seleccionado de secretos de 1Password con política de aprobación e historial de auditoría en SQLite.
 title: Plugin de OnePassword
 x-i18n:
-    generated_at: "2026-07-14T13:59:12Z"
+    generated_at: "2026-07-16T11:49:21Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
-    prompt_version: 25
+    prompt_version: 32
     provider: openai
-    source_hash: c257d2ae8b09822153516c08d50db38b9107cef7eda1de2b6f2d485331c3ab7a
+    source_hash: 66ec7d6df81de3aeaff36453c3caba10f6822c5bcc6345fba62f2f2609a3bb70
     source_path: plugins/reference/onepassword.md
     workflow: 16
 ---
 
-# Plugin de Onepassword
+# Plugin Onepassword
 
 Intermediario seleccionado de secretos de 1Password con política de aprobación e historial de auditoría en SQLite.
 
@@ -25,8 +25,8 @@ Intermediario seleccionado de secretos de 1Password con política de aprobación
 
 ## Superficie
 
-contratos: herramientas
+contratos: `tools`
 
 ## Documentación relacionada
 
-- [onepassword](/plugins/onepassword)
+- [onepassword](/es/plugins/onepassword)

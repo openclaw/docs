@@ -1,14 +1,15 @@
 ---
 read_when:
-    - Ви встановлюєте, налаштовуєте або перевіряєте Plugin runway
-summary: Додає підтримку постачальника генерації відео.
+    - Ви встановлюєте, налаштовуєте або перевіряєте Plugin Runway на відповідність вимогам
+summary: Додає підтримку провайдера генерації відео.
 title: Plugin Runway
 x-i18n:
-    generated_at: "2026-07-12T13:35:53Z"
+    generated_at: "2026-07-16T18:21:53Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 52a36a1257fa59b6d159816496158940bdc2c84b1764cc822506b74f22b08465
+    source_hash: 48cff38962414711cf75563073a527f73ed7d824ad1d96c2ba9591f782de0ad3
     source_path: plugins/reference/runway.md
     workflow: 16
 ---
@@ -19,13 +20,13 @@ x-i18n:
 
 ## Розповсюдження
 
-- Пакунок: `@openclaw/runway-provider`
+- Пакет: `@openclaw/runway-provider`
 - Спосіб установлення: входить до складу OpenClaw
 
 ## Інтерфейс
 
-контракти: videoGenerationProviders
+контракти: `videoGenerationProviders`
 
 ## Пов’язана документація
 
-- [runway](/uk/providers/runway)
+- [Runway](/uk/providers/runway)

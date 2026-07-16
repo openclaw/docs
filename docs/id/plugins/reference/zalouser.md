@@ -1,30 +1,31 @@
 ---
 read_when:
-    - Anda sedang memasang, mengonfigurasi, atau mengaudit plugin zalouser
+    - Anda sedang menginstal, mengonfigurasi, atau mengaudit plugin zalouser
 summary: Plugin Akun Pribadi Zalo OpenClaw melalui integrasi native zca-js.
 title: Plugin Zalo Personal
 x-i18n:
-    generated_at: "2026-07-12T14:31:15Z"
+    generated_at: "2026-07-16T18:34:27Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: c03db694c940cb1fb20f4a2f73512c9d3cf3c79e910cc6a0dd4aa38bd4465ed5
+    source_hash: 5c6617fe9868c56c0ecd4065109f58f8483e2fcef7730456826366c24dceee8b
     source_path: plugins/reference/zalouser.md
     workflow: 16
 ---
 
 # Plugin Zalo Personal
 
-Plugin Akun Pribadi Zalo OpenClaw melalui integrasi zca-js native.
+Plugin Akun Pribadi Zalo OpenClaw melalui integrasi native zca-js.
 
 ## Distribusi
 
 - Paket: `@openclaw/zalouser`
-- Jalur instalasi: npm; ClawHub
+- Rute instalasi: npm; ClawHub
 
 ## Permukaan
 
-kanal: zalouser; kontrak: alat
+saluran: `zalouser`; kontrak: `tools`
 
 ## Dokumentasi terkait
 

@@ -1,26 +1,28 @@
 ---
 read_when:
-    - Je wilt een bron-checkout veilig bijwerken
-    - Je debugt de uitvoer of opties van `openclaw update`
-    - Je moet het gedrag van de verkorte notatie `--update` begrijpen
-summary: CLI-referentie voor `openclaw update` (redelijk veilige bronupdate + automatische Gateway-herstart)
+    - Je wilt een broncodecheckout veilig bijwerken
+    - Je debugt `openclaw update`-uitvoer of -opties
+    - Je moet het gedrag van de afkorting `--update` begrijpen
+summary: CLI-referentie voor `openclaw update` (redelijk veilige bronupdate + automatische herstart van de Gateway)
 title: Bijwerken
 x-i18n:
-    generated_at: "2026-06-27T17:24:21Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T15:27:00Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: a3503e1cd15baa4d4f6c26734b37556831c612f1da0da5ccfe7bcde35b9be64b
+    source_hash: b46696f6b9cba5c318f870bcb6c5ea8e0652940968da2ad85e86709fe4c11146
     source_path: cli/update.md
     workflow: 16
 ---
 
 # `openclaw update`
 
-Werk OpenClaw veilig bij en wissel tussen de kanalen stable/beta/dev.
+Werk OpenClaw bij en schakel tussen de kanalen stable/extended-stable/beta/dev.
 
-Als je hebt geïnstalleerd via **npm/pnpm/bun** (globale installatie, geen git-metadata),
-verlopen updates via de package-manager-flow in [Bijwerken](/nl/install/updating).
+Als je via **npm/pnpm/bun** hebt geïnstalleerd (globale installatie, geen git-metadata),
+verlopen updates via de pakketbeheerderprocedure die wordt beschreven in
+[Bijwerken](/nl/install/updating).
 
 ## Gebruik
 
@@ -29,6 +31,7 @@ openclaw update
 openclaw update status
 openclaw update repair
 openclaw update wizard
+openclaw update --channel extended-stable
 openclaw update --channel beta
 openclaw update --channel dev
 openclaw update --tag beta
@@ -41,44 +44,43 @@ openclaw update --json
 openclaw --update
 ```
 
+`openclaw --update` wordt herschreven naar `openclaw update` (nuttig voor shells en
+startscripts).
+
 ## Opties
 
-- `--no-restart`: sla het herstarten van de Gateway-service over na een geslaagde update. Package-manager-updates die de Gateway wel herstarten, controleren of de herstarte service de verwachte bijgewerkte versie rapporteert voordat de opdracht slaagt.
-- `--channel <stable|beta|dev>`: stel het updatekanaal in (git + npm; opgeslagen in de configuratie).
-- `--tag <dist-tag|version|spec>`: overschrijf het packagedoel alleen voor deze update. Voor package-installaties verwijst `main` naar `github:openclaw/openclaw#main`; GitHub/git-bronspecificaties worden verpakt in een tijdelijke tarball vóór de gefaseerde globale npm-installatie.
-- `--dry-run`: toon een voorbeeld van geplande updateacties (channel/tag/target/restart-flow) zonder configuratie te schrijven, te installeren, plugins te synchroniseren of te herstarten.
-- `--json`: druk machineleesbare `UpdateRunResult`-JSON af, inclusief
-  `postUpdate.plugins.warnings` wanneer corrupte of niet-laadbare beheerde plugins
-  reparatie nodig hebben nadat de core-update is geslaagd, details over beta-channel-pluginfallback
-  wanneer een plugin geen beta-release heeft, en `postUpdate.plugins.integrityDrifts`
-  wanneer drift in npm-pluginartefacten wordt gedetecteerd tijdens pluginsynchronisatie na de update.
-- `--timeout <seconds>`: timeout per stap (standaard 1800s).
-- `--yes`: sla bevestigingsprompts over (bijvoorbeeld bevestiging voor downgrades).
-- `--acknowledge-clawhub-risk`: sta na het bekijken van community ClawHub-vertrouwenswaarschuwingen
-  toe dat pluginsynchronisatie na de update doorgaat zonder interactieve
-  prompt. Zonder dit worden risicovolle community ClawHub-pluginreleases overgeslagen en
-  ongewijzigd gelaten wanneer OpenClaw niet kan prompten. Officiële ClawHub-packages en
-  gebundelde OpenClaw-pluginbronnen omzeilen deze releasevertrouwensprompt.
+| Vlag                                             | Beschrijving                                                                                                                                                                                                                                                                                                                                  |
+| ------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `--no-restart`                                   | Sla het opnieuw starten van de Gateway-service na een geslaagde update over. Bij pakketbeheerderupdates die de service wel opnieuw starten, wordt gecontroleerd of de opnieuw gestarte service de verwachte versie meldt voordat de opdracht slaagt.                                                                                             |
+| `--channel <stable\|extended-stable\|beta\|dev>` | Stel het updatekanaal in en sla het op nadat de kernupdate is geslaagd. Extended-stable is alleen beschikbaar voor pakketten.                                                                                                                                                                                                                  |
+| `--tag <dist-tag\|version\|spec>`                | Overschrijf het pakketdoel alleen voor deze update. Dit kan niet worden gecombineerd met een actief `extended-stable`-kanaal, waarvoor het geverifieerde exacte doel verplicht is. Voor andere pakketinstallaties wordt `main` omgezet naar `github:openclaw/openclaw#main`; GitHub-/git-bronspecificaties worden in een tijdelijk tarball verpakt vóór de gefaseerde globale npm-installatie. |
+| `--dry-run`                                      | Bekijk een voorbeeld van de geplande acties (kanaal/tag/doel/herstartprocedure) zonder configuratie te schrijven, te installeren, plugins te synchroniseren of opnieuw te starten.                                                                                                                                                             |
+| `--json`                                         | Druk machineleesbare `UpdateRunResult`-JSON af. Bevat `postUpdate.plugins.warnings` wanneer een beheerde plugin moet worden gerepareerd, details over de terugvaloptie voor plugins in het bètakanaal en `postUpdate.plugins.integrityDrifts` wanneer tijdens de synchronisatie na de update afwijkingen in npm-pluginartefacten worden gedetecteerd.                         |
+| `--timeout <seconds>`                            | Time-out per stap. Standaard `1800`.                                                                                                                                                                                                                                                                                                          |
+| `--yes`                                          | Sla bevestigingsvragen over (bijvoorbeeld de bevestiging van een downgrade).                                                                                                                                                                                                                                                                  |
+| `--acknowledge-clawhub-risk`                     | Sta toe dat de pluginsynchronisatie na de update zonder interactieve bevestiging doorgaat na vertrouwenswaarschuwingen van de ClawHub-community. Zonder deze optie worden riskante communityreleases overgeslagen en ongewijzigd gelaten wanneer OpenClaw geen bevestiging kan vragen. Officiële ClawHub-pakketten en gebundelde pluginbronnen omzeilen deze vraag. |
 
-`openclaw update` heeft geen `--verbose`-vlag. Gebruik `--dry-run` om een voorbeeld te bekijken
-van de geplande channel/tag/install/restart-acties, `--json` voor machineleesbare
-resultaten, en `openclaw update status --json` wanneer je alleen kanaal- en
-beschikbaarheidsdetails nodig hebt. Als je Gateway-logs rond een update debugt,
-zijn console-uitgebreidheid en bestandslogniveau gescheiden: Gateway `--verbose` beïnvloedt
-terminal-/WebSocket-uitvoer, terwijl bestandslogs `logging.level: "debug"` of
-`"trace"` in de configuratie vereisen. Zie [Gateway-logregistratie](/nl/gateway/logging).
+Er is geen vlag `--verbose`. Gebruik `--dry-run` om een voorbeeld van geplande acties te bekijken,
+`--json` voor machineleesbare resultaten en `openclaw update status --json`
+alleen voor kanaal/beschikbaarheid. De uitvoerigheid van de Gateway-console (`--verbose`) en
+het logniveau van bestanden (`logging.level: "debug"`/`"trace"`) zijn onafhankelijke instellingen; zie
+[Gateway-logboekregistratie](/nl/gateway/logging).
 
 <Note>
-In Nix-modus (`OPENCLAW_NIX_MODE=1`) zijn muterende `openclaw update`-runs uitgeschakeld. Werk in plaats daarvan de Nix-bron of flake-input voor deze installatie bij; gebruik voor nix-openclaw de agent-first [Snelstart](https://github.com/openclaw/nix-openclaw#quick-start). `openclaw update status` en `openclaw update --dry-run` blijven alleen-lezen.
+In de Nix-modus (`OPENCLAW_NIX_MODE=1`) zijn wijzigende uitvoeringen van `openclaw update` uitgeschakeld. Werk in plaats daarvan de Nix-bron of flake-invoer voor deze installatie bij; gebruik voor nix-openclaw de agent-first [Snelstart](https://github.com/openclaw/nix-openclaw#quick-start). `openclaw update status` en `openclaw update --dry-run` blijven alleen-lezen.
 </Note>
 
 <Warning>
-Downgrades vereisen bevestiging omdat oudere versies configuratie kunnen breken.
+Downgrades vereisen bevestiging, omdat oudere versies de configuratie kunnen beschadigen.
+Als de installatie sessies al naar SQLite heeft gemigreerd, herstel dan de gearchiveerde verouderde
+transcriptartefacten voordat je een oudere bestandsgebaseerde versie start. Zie
+[Doctor: downgraden na de SQLite-migratie van sessies](/nl/cli/doctor#downgrading-after-session-sqlite-migration).
 </Warning>
 
 ## `update status`
 
-Toon het actieve updatekanaal + git-tag/branch/SHA (voor source checkouts), plus updatebeschikbaarheid.
+Toon het actieve updatekanaal, de git-tag/branch/SHA (alleen broncheck-outs)
+en de beschikbaarheid van updates.
 
 ```bash
 openclaw update status
@@ -86,18 +88,24 @@ openclaw update status --json
 openclaw update status --timeout 10
 ```
 
-Opties:
+| Vlag                  | Standaard | Beschrijving                         |
+| --------------------- | --------- | ------------------------------------ |
+| `--json`              | `false` | Druk machineleesbare status-JSON af. |
+| `--timeout <seconds>` | `3`     | Time-out voor controles.             |
 
-- `--json`: druk machineleesbare status-JSON af.
-- `--timeout <seconds>`: timeout voor controles (standaard 3s).
+Voor extended-stable-pakketinstallaties voert status dezelfde openbare selectie
+en exacte pakketverificatie uit als een update op de voorgrond. Er kan
+`ahead of extended-stable` worden gemeld wanneer de geïnstalleerde versie nieuwer is. JSON-fouten
+bevatten `registry.reason` (`selector_missing`, `selector_query_failed`,
+`exact_package_mismatch` of `unsupported_git_channel`).
 
 ## `update repair`
 
-Voer de afronding van de update opnieuw uit nadat het core-package al is gewijzigd, maar later
-reparatiewerk niet netjes is afgerond. Dit is het ondersteunde herstelpad wanneer
-`openclaw update` het nieuwe core-package heeft geïnstalleerd, maar post-core pluginsynchronisatie,
-beheerde npm-pluginmetadata, registry-verversing of doctor-reparatie nog moet
-convergeren.
+Voer de afronding van de update opnieuw uit nadat het kernpakket al is gewijzigd, maar later
+reparatiewerk niet correct is voltooid. Dit is het ondersteunde herstelpad wanneer
+`openclaw update` het nieuwe kernpakket heeft geïnstalleerd, maar de pluginsynchronisatie na de kernupdate,
+metadata van beheerde npm-plugins, de registervernieuwing of de Doctor-reparatie niet
+tot een consistente toestand is gekomen.
 
 ```bash
 openclaw update repair
@@ -106,187 +114,220 @@ openclaw update repair --acknowledge-clawhub-risk
 openclaw update repair --json
 ```
 
-Opties:
+| Vlag                                             | Beschrijving                                                                                                                                                                                                                                                         |
+| ------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `--channel <stable\|extended-stable\|beta\|dev>` | Sla het updatekanaal van de kern vóór de reparatie op. Voor extended-stable richten geschikte officiële npm-plugins die kale/standaard- of `latest`-intentie volgen zich op de exacte geïnstalleerde kernversie. Extended-stable-reparatie wordt voor Git-check-outs geweigerd zonder de configuratie te wijzigen. |
+| `--json`                                         | Druk machineleesbare JSON over de afronding af.                                                                                                                                                                                                                      |
+| `--timeout <seconds>`                            | Time-out voor reparatiestappen. Standaard `1800`.                                                                                                                                                                                                                  |
+| `--yes`                                          | Sla bevestigingsvragen over.                                                                                                                                                                                                                                         |
+| `--acknowledge-clawhub-risk`                     | Hetzelfde gedrag als bij `openclaw update`.                                                                                                                                                                                                                         |
+| `--no-restart`                                   | Geaccepteerd voor consistentie; reparatie start de Gateway nooit opnieuw.                                                                                                                                                                                            |
 
-- `--channel <stable|beta|dev>`: sla het updatekanaal op vóór reparatie en
-  voer pluginconvergentie uit tegen dat kanaal.
-- `--json`: druk machineleesbare afrondings-JSON af.
-- `--timeout <seconds>`: timeout voor reparatiestappen (standaard `1800`).
-- `--yes`: sla bevestigingsprompts over.
-- `--acknowledge-clawhub-risk`: sta na het bekijken van community ClawHub-vertrouwenswaarschuwingen
-  toe dat pluginconvergentie tijdens reparatie doorgaat zonder interactieve
-  prompt. Officiële ClawHub-packages en gebundelde OpenClaw-pluginbronnen
-  omzeilen deze releasevertrouwensprompt.
-- `--no-restart`: geaccepteerd voor pariteit met de updateopdracht; reparatie herstart de
-  Gateway nooit.
-
-`openclaw update repair` voert `openclaw doctor --fix` uit, herlaadt de gerepareerde
-configuratie en installatierecords, synchroniseert gevolgde plugins voor het actieve updatekanaal,
-werkt beheerde npm-plugininstallaties bij, repareert ontbrekende geconfigureerde pluginpayloads,
-ververst de pluginregistry en schrijft de geconvergeerde install-recordmetadata.
-Het installeert geen nieuw core-package en herstart de Gateway niet.
+`update repair` voert `openclaw doctor --fix` uit, laadt de gerepareerde configuratie en
+installatierecords opnieuw, synchroniseert bijgehouden plugins voor het actieve updatekanaal, werkt
+installaties van beheerde npm-plugins bij, repareert ontbrekende geconfigureerde plugininhoud,
+vernieuwt het pluginregister en schrijft consistente metadata voor installatierecords.
+Er wordt geen nieuw kernpakket geïnstalleerd en de Gateway wordt niet opnieuw gestart.
 
 ## `update wizard`
 
-Interactieve flow om een updatekanaal te kiezen en te bevestigen of de Gateway na het bijwerken
-moet worden herstart (standaard is herstarten). Als je `dev` selecteert zonder git checkout, biedt het
-aan er een te maken.
+Interactieve procedure om een updatekanaal te kiezen en te bevestigen of de
+Gateway daarna opnieuw moet worden gestart (standaard: opnieuw starten). Als je `dev` selecteert zonder een git-
+check-out, wordt aangeboden er een te maken.
 
-Opties:
-
-- `--timeout <seconds>`: timeout voor elke updatestap (standaard `1800`)
+| Vlag                  | Standaard | Beschrijving                       |
+| --------------------- | --------- | ---------------------------------- |
+| `--timeout <seconds>` | `1800`  | Time-out voor elke updatestap.     |
 
 ## Wat het doet
 
-Wanneer je expliciet van kanaal wisselt (`--channel ...`), houdt OpenClaw ook de
-installatiemethode afgestemd:
+Door expliciet van kanaal te wisselen (`--channel ...`) blijft ook de installatiemethode
+afgestemd:
 
-- `dev` → zorgt voor een git checkout (standaard: `~/openclaw`, of `$OPENCLAW_HOME/openclaw` wanneer
-  `OPENCLAW_HOME` is ingesteld; overschrijf met `OPENCLAW_GIT_DIR`),
-  werkt die bij en installeert de globale CLI vanuit die checkout.
-- `stable` → installeert vanuit npm met `latest`.
-- `beta` → geeft de voorkeur aan npm dist-tag `beta`, maar valt terug op `latest` wanneer beta
-  ontbreekt of ouder is dan de huidige stable-release.
+- `dev` -> zorgt voor een git-check-out (standaard `~/openclaw`, of
+  `$OPENCLAW_HOME/openclaw` wanneer `OPENCLAW_HOME` is ingesteld; overschrijf met
+  `OPENCLAW_GIT_DIR`), werkt deze bij en installeert de globale CLI vanuit die
+  check-out.
+- `stable` -> installeert vanuit npm met `latest`.
+- `extended-stable` -> verwerkt de openbare npm-selector `extended-stable`,
+  verifieert het exact geselecteerde pakket en installeert die exacte versie. Er
+  wordt niet teruggevallen op een andere selector en deze optie wordt geweigerd voor Git-check-outs.
+- `beta` -> geeft de voorkeur aan npm-dist-tag `beta` en valt terug op `latest` wanneer bèta
+  ontbreekt of ouder is dan de huidige stabiele release.
 
-De automatische updater van de Gateway-core (wanneer ingeschakeld via configuratie) start het CLI-updatepad
-buiten de live Gateway-requesthandler. Control-plane `update.run`
-package-manager-updates en supervised git-checkout-updates gebruiken ook een
-managed-service-overdracht in plaats van de package tree te vervangen of
-`dist/` opnieuw te bouwen binnen het live Gateway-proces. De Gateway start een losgekoppelde helper,
-sluit af, en de helper voert het normale `openclaw update --yes --json` CLI-pad uit
-van buiten de Gateway-procesboom. Als die overdracht niet beschikbaar is,
-retourneert `update.run` een gestructureerd antwoord met de veilige shellopdracht om
-handmatig uit te voeren.
+### Overdracht voor opnieuw starten
 
-Voor package-manager-installaties bepaalt `openclaw update` de doelpackageversie
-voordat de package manager wordt aangeroepen. Globale npm-installaties gebruiken een gefaseerde
-installatie: OpenClaw installeert het nieuwe package in een tijdelijke npm-prefix, verifieert
-daar de verpakte `dist`-inventory en wisselt vervolgens die schone package tree om naar de
-echte globale prefix. Als verificatie mislukt, worden post-update doctor, pluginsynchronisatie en
-herstartwerk niet uitgevoerd vanuit de verdachte tree. Zelfs wanneer de geïnstalleerde versie
-al overeenkomt met het doel, ververst de opdracht de globale package-installatie,
-en voert daarna pluginsynchronisatie, een core-command-completionverversing en herstartwerk uit. Dit
-houdt verpakte sidecars en kanaalbeheerde pluginrecords afgestemd op de
-geïnstalleerde OpenClaw-build, terwijl volledige plugin-command-completion-rebuilds worden overgelaten aan
-expliciete `openclaw completion --write-state`-runs.
+De automatische kernupdater van de Gateway (wanneer ingeschakeld via de configuratie) start het CLI-
+updatepad buiten de actieve aanvraaghandler van de Gateway. Control-plane-
+pakketbeheerderupdates via `update.run` en bewaakte updates van git-check-outs gebruiken
+dezelfde overdracht aan de beheerde service, in plaats van de pakketstructuur te vervangen of
+`dist/` opnieuw te bouwen binnen het actieve Gateway-proces: de Gateway start een
+losgekoppeld hulpproces en sluit af, waarna dat hulpproces `openclaw update --yes --json`
+buiten de processtructuur van de Gateway uitvoert. Als de overdracht niet beschikbaar is,
+retourneert `update.run` een gestructureerd antwoord met de veilige shellopdracht die
+handmatig moet worden uitgevoerd.
+
+Opgeslagen extended-stable-selecties ontvangen alleen-lezen opstart- en 24-uurs
+updatehints wanneer `update.checkOnStart` is ingeschakeld. Deze controles passen nooit een update toe,
+starten geen overdracht, herstarten de Gateway niet, gebruiken geen stabiele vertraging/jitter en gebruiken
+niet het pollinginterval van bèta. Expliciete updates op de voorgrond, kale updates op de voorgrond met
+opgeslagen `update.channel: "extended-stable"`, status op aanvraag en de bijbehorende beheerde
+Gateway-overdracht blijven ondersteund.
 
 Wanneer een lokale beheerde Gateway-service is geïnstalleerd en herstarten is ingeschakeld,
-stoppen package-manager- en git-checkout-updates de draaiende service voordat
-de package tree wordt vervangen of de checkout/build-uitvoer wordt gewijzigd. De updater
-ververst daarna de servicemetadata vanuit de bijgewerkte installatie, herstart de
-service en verifieert de herstarte Gateway voordat
-`Gateway: restarted and verified.` wordt gerapporteerd. Package-manager-updates verifiëren daarnaast
-dat de herstarte Gateway de verwachte packageversie rapporteert; git-checkout-updates
-verifiëren gatewaygezondheid en servicegereedheid na de rebuild. Op macOS controleert de
-post-update-controle ook of de LaunchAgent is geladen/draait voor het actieve
-profiel en of de geconfigureerde loopbackpoort gezond is. Als de plist is geïnstalleerd
-maar launchd er geen toezicht op houdt, bootstrapt OpenClaw de LaunchAgent
-automatisch opnieuw, en voert daarna de health/version/channel-gereedheidscontroles opnieuw uit. Een verse
-bootstrap laadt de RunAtLoad-job direct, waardoor updateherstel niet
-onmiddellijk `kickstart -k` uitvoert op de nieuw gestarte Gateway. Als de Gateway nog steeds
-niet gezond wordt, eindigt de opdracht met een niet-nulwaarde en drukt het herstartlogpad
-plus expliciete instructies voor herstart, herinstallatie en package-rollback af. Als herstarten
-niet kan worden uitgevoerd, drukt de opdracht `Gateway: restart skipped (...)` of
-`Gateway: restart failed: ...` af met een handmatige `openclaw gateway restart`-hint.
-Met `--no-restart` wordt packagevervanging of git-rebuild nog steeds uitgevoerd, maar wordt de
-beheerde service niet gestopt of herstart, waardoor de draaiende Gateway oude
-code kan blijven gebruiken totdat je die handmatig herstart.
+stoppen updates via de pakketbeheerder en een Git-checkout de actieve service voordat
+de pakketstructuur wordt vervangen of de checkout/builduitvoer wordt gewijzigd. Het updateprogramma
+vernieuwt vervolgens de servicemetadata, herstart de service en verifieert de
+herstartte Gateway voordat `Gateway: restarted and verified.` wordt gemeld.
+Updates via de pakketbeheerder verifiëren daarnaast dat de herstartte Gateway de
+verwachte pakketversie meldt; updates via een Git-checkout verifiëren na de rebuild
+de status van de Gateway en de gereedheid van de service.
 
-### Vorm van control-plane-respons
+Updates via de pakketbeheerder blijven normaal gesproken het Node-binaire bestand gebruiken dat in de
+beheerde service is vastgelegd. Als die Node de doelrelease niet kan uitvoeren, maar de huidige
+CLI-Node dat wel kan en is aangetoond dat de service bij het bijgewerkte pakket hoort,
+gebruikt een update met ingeschakelde herstart de huidige Node voor de voltooiing en herschrijft
+de servicemetadata naar die runtime. `--no-restart` kan servicemetadata niet
+herstellen, dus dezelfde runtime-mismatch stopt vóór pakketwijziging.
 
-Wanneer `update.run` wordt aangeroepen via de Gateway-control plane op een
-package-manager-installatie of supervised git checkout, rapporteert de handler de
-start van de overdracht los van de CLI-update die doorgaat nadat de
-Gateway afsluit:
+Op macOS verifieert de controle na de update ook dat de LaunchAgent voor
+het actieve profiel is geladen/actief is en dat de geconfigureerde loopbackpoort
+gezond is. Als de plist is geïnstalleerd maar launchd er geen toezicht op houdt, initialiseert OpenClaw
+de LaunchAgent automatisch opnieuw en voert het de controles voor status/versie/
+kanaalgereedheid opnieuw uit (een nieuwe initialisatie laadt de `RunAtLoad`-taak rechtstreeks,
+zodat het herstel de nieuw gestarte Gateway niet onmiddellijk `kickstart -k`). Als
+de Gateway nog steeds niet gezond wordt, sluit de opdracht af met een niet-nulstatus en
+toont deze het pad naar het herstartlogboek plus instructies voor herstarten, opnieuw installeren en
+het terugdraaien van het pakket.
+
+Als herstarten niet kan worden uitgevoerd, toont de opdracht `Gateway: restart skipped (...)` of
+`Gateway: restart failed: ...` met een handmatige `openclaw gateway restart`-hint.
+Met `--no-restart` wordt de pakketvervanging of Git-rebuild nog steeds uitgevoerd, maar de
+beheerde service wordt niet gestopt of herstart, zodat de actieve Gateway oude
+code blijft gebruiken totdat je deze handmatig herstart.
+
+### Structuur van het antwoord van het besturingsvlak
+
+Wanneer `update.run` via het Gateway-besturingsvlak wordt uitgevoerd voor een installatie
+via de pakketbeheerder of een bewaakte Git-checkout, meldt de handler het starten van de overdracht
+afzonderlijk van de CLI-update die doorgaat nadat de Gateway is afgesloten:
 
 - `ok: true`, `result.status: "skipped"`,
-  `result.reason: "managed-service-handoff-started"`, en
-  `handoff.status: "started"` betekenen dat de Gateway de managed-service
-  overdracht heeft aangemaakt en zijn eigen herstart heeft gepland zodat de losgekoppelde helper
-  `openclaw update --yes --json` buiten het live serviceproces kan uitvoeren.
-- `ok: false`, `result.reason: "managed-service-handoff-unavailable"`, en
-  `handoff.status: "unavailable"` betekenen dat OpenClaw geen toezicht houdende
-  servicegrens en duurzame service-identiteit kon vinden voor een veilige overdracht. Bijvoorbeeld:
-  systemd-overdracht vereist de OpenClaw-unitidentiteit
-  (`OPENCLAW_SYSTEMD_UNIT`), niet alleen omgevingsmarkers van systemd-processen. De
-  respons bevat `handoff.command`, de shellopdracht om uit te voeren van buiten de
-  Gateway.
-- `ok: false`, `result.reason: "managed-service-handoff-failed"` betekent dat de
-  Gateway probeerde de overdracht aan te maken, maar de losgekoppelde helper niet kon starten.
+  `result.reason: "managed-service-handoff-started"` en
+  `handoff.status: "started"`: de Gateway heeft de overdracht naar de beheerde service gemaakt
+  en zijn eigen herstart gepland, zodat de losgekoppelde helper
+  `openclaw update --yes --json` buiten het actieve serviceproces kan uitvoeren.
+- `ok: false`, `result.reason: "managed-service-handoff-unavailable"` en
+  `handoff.status: "unavailable"`: OpenClaw kon geen bewakende
+  servicegrens en duurzame service-identiteit vinden voor een veilige overdracht (voor
+  een systemd-overdracht is bijvoorbeeld de identiteit van de `OPENCLAW_SYSTEMD_UNIT`-unit vereist,
+  niet alleen omgevingsmarkeringen voor systemd-processen). Het antwoord bevat
+  `handoff.command`, de shellopdracht die buiten de Gateway moet worden uitgevoerd.
+- `ok: false`, `result.reason: "managed-service-handoff-failed"`: de Gateway
+  probeerde de overdracht te maken, maar kon de losgekoppelde helper niet starten.
 
-De `sentinel`-payload wordt nog steeds geschreven voordat de Gateway afsluit, en de CLI-
-overdracht werkt dezelfde herstart-sentinel bij nadat de health checks voor de managed-service-herstart
-zijn voltooid. Tijdens de overdracht kan de sentinel
-`stats.reason: "restart-health-pending"` bevatten zonder success-continuation; de
-herstarte Gateway blijft die pollen en voert de continuation pas uit nadat de CLI
-servicegezondheid heeft geverifieerd en de sentinel heeft herschreven met het definitieve `ok`-
-resultaat. `openclaw status` en `openclaw status --all` tonen een `Update restart`-
-rij terwijl die sentinel pending of mislukt is, en `update.status` ververst en
+De `sentinel`-payload wordt geschreven voordat de Gateway wordt afgesloten en de CLI-
+overdracht werkt dezelfde herstartsentinel bij nadat de statuscontroles na de herstart van de
+beheerde service zijn voltooid. Tijdens de overdracht kan de sentinel
+`stats.reason: "restart-health-pending"` bevatten zonder vervolgactie bij succes; de
+herstartte Gateway controleert deze periodiek en activeert de vervolgactie pas nadat de CLI
+de servicestatus heeft geverifieerd en de sentinel heeft herschreven met het uiteindelijke `ok`-resultaat.
+`openclaw status` en `openclaw status --all` tonen een `Update restart`-rij
+zolang die sentinel in behandeling of mislukt is, en `update.status` vernieuwt en
 retourneert de nieuwste sentinel.
 
-## Git-checkout-flow
+## Proces voor een Git-checkout
 
 ### Kanaalselectie
 
-- `stable`: checkout de nieuwste niet-beta-tag en voer daarna build en doctor uit.
-- `beta`: geef de voorkeur aan de nieuwste `-beta`-tag, maar val terug op de nieuwste stable-tag wanneer beta ontbreekt of ouder is.
-- `dev`: checkout `main`, en voer daarna fetch en rebase uit.
+- `stable`: check de nieuwste niet-bèta-tag uit en voer vervolgens de build en doctor uit.
+- `beta`: geef de voorkeur aan de nieuwste `-beta`-tag en val terug op de nieuwste stabiele tag
+  wanneer bèta ontbreekt of ouder is.
+- `dev`: check `main` uit en voer vervolgens fetch en rebase uit.
+- `extended-stable`: niet ondersteund voor Git-checkouts; de checkout wordt
+  niet gewijzigd.
 
 ### Updatestappen
 
 <Steps>
   <Step title="Schone worktree verifiëren">
-    Vereist geen niet-gecommitte wijzigingen.
+    Vereist dat er geen niet-vastgelegde wijzigingen zijn.
   </Step>
-  <Step title="Kanaal wisselen">
+  <Step title="Van kanaal wisselen">
     Schakelt over naar het geselecteerde kanaal (tag of branch).
   </Step>
   <Step title="Upstream ophalen">
-    Alleen dev.
+    Alleen voor ontwikkeling.
   </Step>
-  <Step title="Preflight-build (alleen dev)">
-    Voert de TypeScript-build uit in een tijdelijke worktree. Als de tip faalt, loopt dit tot 10 commits terug om de nieuwste buildbare commit te vinden. Stel `OPENCLAW_UPDATE_PREFLIGHT_LINT=1` in om tijdens deze preflight ook lint uit te voeren; lint draait in beperkte seriële modus omdat hosts voor gebruikersupdates vaak kleiner zijn dan CI-runners.
+  <Step title="Voorafgaande buildcontrole (alleen ontwikkeling)">
+    Voert de TypeScript-build uit in een tijdelijke worktree. Als de tip mislukt, wordt tot 10 commits teruggegaan om de nieuwste buildbare commit te vinden. Stel `OPENCLAW_UPDATE_PREFLIGHT_LINT=1` in om tijdens deze voorafgaande controle ook lint uit te voeren; lint wordt in een beperkte seriële modus uitgevoerd, omdat hosts voor gebruikersupdates vaak kleiner zijn dan CI-runners.
   </Step>
-  <Step title="Rebasen">
-    Rebaset op de geselecteerde commit (alleen dev).
+  <Step title="Rebase uitvoeren">
+    Voert een rebase uit op de geselecteerde commit (alleen ontwikkeling).
   </Step>
   <Step title="Afhankelijkheden installeren">
-    Gebruikt de pakketmanager van de repo. Voor pnpm-checkouts bootstrappt de updater `pnpm` op aanvraag (eerst via `corepack`, daarna met een tijdelijke fallback `npm install pnpm@11`) in plaats van `npm run build` uit te voeren binnen een pnpm-workspace.
+    Gebruikt de pakketbeheerder van de repository. Voor pnpm-checkouts initialiseert het updateprogramma `pnpm` op aanvraag (eerst via `corepack` en vervolgens met een tijdelijke `npm install pnpm@11`-terugvaloptie) in plaats van `npm run build` binnen een pnpm-workspace uit te voeren. Als het initialiseren van pnpm nog steeds mislukt, stopt het updateprogramma vroegtijdig met een pakketbeheerderspecifieke fout in plaats van `npm run build` in de checkout te proberen.
   </Step>
   <Step title="Control UI bouwen">
-    Bouwt de gateway en de Control UI.
+    Bouwt de Gateway en de Control UI.
   </Step>
   <Step title="Doctor uitvoeren">
-    `openclaw doctor` wordt uitgevoerd als de laatste controle voor veilige updates.
+    `openclaw doctor` wordt uitgevoerd als laatste controle voor een veilige update.
   </Step>
   <Step title="Plugins synchroniseren">
-    Synchroniseert plugins naar het actieve kanaal. Dev gebruikt gebundelde plugins; stable en beta gebruiken npm. Werkt bijgehouden Plugin-installaties bij.
+    Synchroniseert plugins met het actieve kanaal. Ontwikkeling gebruikt gebundelde plugins; stabiel en bèta gebruiken npm. Werkt bijgehouden plugininstallaties bij.
   </Step>
 </Steps>
 
-Op het bèta-updatekanaal proberen bijgehouden npm- en ClawHub-Plugin-installaties die de standaard-/nieuwste lijn volgen eerst een Plugin-release `@beta`. Als de Plugin geen bètarelease heeft, valt OpenClaw terug op de vastgelegde standaard-/nieuwste specificatie en meldt dat als waarschuwing. Voor npm-plugins valt OpenClaw ook terug wanneer het bètapakket bestaat maar de installatievalidatie niet haalt. Deze Plugin-fallbackwaarschuwingen zorgen er niet voor dat de kernupdate faalt. Exacte versies en expliciete tags worden niet herschreven.
+### Details van pluginsynchronisatie
+
+Op het bètakanaal proberen bijgehouden npm- en ClawHub-plugininstallaties die de
+standaard/nieuwste lijn volgen eerst een `@beta`-release van de plugin. Als de plugin geen
+bètarelease heeft, valt OpenClaw terug op de vastgelegde standaard/nieuwste specificatie en
+meldt het een waarschuwing. Voor npm-plugins valt OpenClaw ook terug wanneer het bètapakket
+bestaat maar de installatievalidatie mislukt. Deze terugvalwaarschuwingen laten
+de kernupdate niet mislukken. Exacte versies en expliciete tags worden nooit herschreven.
 
 <Warning>
-Als een exact vastgepinde npm-Plugin-update resolveert naar een artefact waarvan de integriteit afwijkt van het opgeslagen installatierecord, breekt `openclaw update` die update van het Plugin-artefact af in plaats van het te installeren. Installeer of update de Plugin alleen expliciet opnieuw nadat je hebt geverifieerd dat je het nieuwe artefact vertrouwt.
+Als een exact vastgezette npm-pluginupdate wordt omgezet naar een artefact waarvan de integriteit afwijkt van de opgeslagen installatievermelding, breekt `openclaw update` die update van het pluginartefact af in plaats van het te installeren. Installeer de plugin alleen opnieuw of werk deze alleen expliciet bij nadat je hebt geverifieerd dat je het nieuwe artefact vertrouwt.
 </Warning>
 
 <Note>
-Synchronisatiefouten van Plugins na de update die beperkt zijn tot een beheerde Plugin en waar het synchronisatiepad omheen kan routeren (bijv. een onbereikbaar npm-register voor een niet-essentiële Plugin), worden als waarschuwingen gemeld nadat de kernupdate is geslaagd. Het JSON-resultaat behoudt de update-`status: "ok"` op topniveau en meldt `postUpdate.plugins.status: "warning"` met begeleiding voor `openclaw update repair` en `openclaw plugins inspect <id> --runtime --json`. Onverwachte updater- of synchronisatie-excepties laten het updateresultaat nog steeds falen. Los de installatiefout of updatefout van de Plugin op en voer daarna `openclaw update repair` opnieuw uit.
+Mislukkingen bij pluginsynchronisatie na de update die beperkt zijn tot een beheerde plugin en die het synchronisatiepad kan omzeilen (bijvoorbeeld een onbereikbaar npm-register voor een niet-essentiële plugin), worden als waarschuwingen gemeld nadat de kernupdate is geslaagd. Het JSON-resultaat behoudt de update-`status: "ok"` op het hoogste niveau en meldt `postUpdate.plugins.status: "warning"` met richtlijnen voor `openclaw update repair` en `openclaw plugins inspect <id> --runtime --json`. Onverwachte uitzonderingen in het updateprogramma of de synchronisatie laten het updateresultaat nog steeds mislukken. Los de installatie- of updatefout van de plugin op en voer vervolgens `openclaw update repair` opnieuw uit. Wanneer een mislukte update een beheerde plugin onbruikbaar achterlaat, schakelt OpenClaw de runtimevermelding ervan uit en stelt het actieve slots opnieuw in zonder het door de beheerder opgestelde `plugins.allow`- of `plugins.deny`-beleid te wijzigen.
 
-Na de synchronisatiestap per Plugin voert `openclaw update` een verplichte **post-core-convergentie**-pass uit voordat de gateway opnieuw wordt gestart: ontbrekende geconfigureerde Plugin-payloads worden gerepareerd, elk _actief_ bijgehouden installatierecord op schijf wordt gevalideerd en statisch wordt geverifieerd dat de `package.json` parsebaar is (en dat eventuele expliciet gedeclareerde `main` bestaat). Fouten uit deze pass — en een ongeldig OpenClaw-configsnapshot — retourneren `postUpdate.plugins.status: "error"` en zetten de update-`status` op topniveau op `"error"`, zodat `openclaw update` met een niet-nulstatus afsluit en de gateway _niet_ opnieuw wordt gestart met een niet-geverifieerde Plugin-set. De fout bevat gestructureerde regels `postUpdate.plugins.warnings[].guidance` die voor opvolging verwijzen naar `openclaw update repair` en `openclaw plugins inspect <id> --runtime --json`. Uitgeschakelde Plugin-items en records die geen aan een vertrouwde bron gekoppelde officiële synchronisatiedoelen zijn, worden hier overgeslagen, in lijn met het beleid `skipDisabledPlugins` dat door de ontbrekende-payloadcontrole wordt gebruikt, zodat een verouderd uitgeschakeld Plugin-record een verder geldige update niet kan blokkeren.
+Na de synchronisatiestap per plugin voert `openclaw update` een verplichte **convergentie na de kernupdate** uit voordat de Gateway wordt herstart: ontbrekende geconfigureerde pluginpayloads worden hersteld, elke _actieve_ bijgehouden installatievermelding op schijf wordt gevalideerd en er wordt statisch geverifieerd dat de bijbehorende `package.json` kan worden geparseerd (en dat elke expliciet gedeclareerde `main` bestaat). Mislukkingen tijdens deze controle en een ongeldige configuratiesnapshot retourneren `postUpdate.plugins.status: "error"` en wijzigen de update-`status` op het hoogste niveau in `"error"`, zodat `openclaw update` afsluit met een niet-nulstatus en de Gateway _niet_ wordt herstart met een niet-geverifieerde verzameling plugins. De fout bevat gestructureerde `postUpdate.plugins.warnings[].guidance`-regels die verwijzen naar `openclaw update repair` en `openclaw plugins inspect <id> --runtime --json`. Uitgeschakelde pluginvermeldingen en vermeldingen die geen aan een vertrouwde bron gekoppelde officiële synchronisatiedoelen zijn, worden hier overgeslagen (overeenkomstig het `skipDisabledPlugins`-beleid dat door de controle op ontbrekende payloads wordt gebruikt), zodat een verouderde vermelding van een uitgeschakelde plugin een verder geldige update niet kan blokkeren.
 
-Wanneer de bijgewerkte Gateway start, is het laden van Plugins alleen ter verificatie: opstarten voert geen pakketmanagers uit en muteert geen afhankelijkheidsstructuren. Herstarts van pakketmanager-`update.run` worden overgedragen aan het door de CLI beheerde servicepad, zodat de pakketwissel buiten het oude Gateway-proces plaatsvindt en de service-healthchecks bepalen of de update als voltooid kan worden gerapporteerd.
-
-Als pnpm-bootstrap nog steeds faalt, stopt de updater vroegtijdig met een pakketmanager-specifieke fout in plaats van `npm run build` binnen de checkout te proberen.
+Wanneer de bijgewerkte Gateway start, is het laden van plugins uitsluitend ter verificatie: tijdens het opstarten worden geen pakketbeheerders uitgevoerd en worden afhankelijkheidsstructuren niet gewijzigd. Herstarts van `update.run` via de pakketbeheerder worden overgedragen aan het CLI-pad voor beheerde services, zodat de pakketwissel buiten het oude Gateway-proces plaatsvindt en de servicestatuscontroles bepalen of de update als voltooid kan worden gemeld.
 </Note>
 
-## `--update`-shorthand
+Nadat een extended-stable-kernupdate is geslaagd, richten de integriteits- en
+convergentiecontroles voor plugins na de kernupdate zich op in aanmerking komende officiële npm-plugins met exact de
+geïnstalleerde kernversie. Voor standaard/`latest`-intentie vraagt OpenClaw geen plugin-
+`@extended-stable` op en valt het niet terug op npm-`latest`; de pakketversie wordt
+afgeleid van de geïnstalleerde kern. Expliciete versie-pins, expliciete niet-`latest`-tags,
+pakketten van derden en niet-npm-bronnen behouden hun bestaande intentie.
 
-`openclaw --update` wordt herschreven naar `openclaw update` (handig voor shells en launcher-scripts).
+Voor installaties via de pakketbeheerder zet `openclaw update` de doelpakketversie om
+voordat de pakketbeheerder wordt aangeroepen. Globale npm-installaties gebruiken een gefaseerde
+installatie: OpenClaw installeert het nieuwe pakket in een tijdelijk npm-prefix,
+laat het kandidaatpakket tijdens `preinstall` de Node-versie van de host valideren
+en verifieert daar de verpakte `dist`-inventaris. Een verpakte voltooiingsbeveiliging
+blijft buiten die inventaris totdat `preinstall` slaagt, zodat pakketbeheerders
+die levenscyclusscripts overslaan ook vóór activering stoppen. Op npm 12 en nieuwer
+keurt het updateprogramma alleen de levenscyclus van de kandidaat-OpenClaw goed; scripts van
+transitieve afhankelijkheden blijven geblokkeerd. OpenClaw wisselt vervolgens de schone pakketstructuur
+naar het werkelijke globale prefix. Als de verificatie mislukt, worden doctor na de update, plugin-
+synchronisatie en herstartwerkzaamheden niet vanuit de verdachte structuur uitgevoerd. Zelfs wanneer de
+geïnstalleerde versie al overeenkomt met het doel, vernieuwt de opdracht de
+globale pakketinstallatie en voert vervolgens pluginsynchronisatie, het vernieuwen van voltooiingen voor kernopdrachten
+en herstartwerkzaamheden uit. Hierdoor blijven verpakte sidecars en kanaalgebonden
+pluginvermeldingen afgestemd op de geïnstalleerde OpenClaw-build, terwijl volledige
+herbouwacties voor voltooiingen van pluginopdrachten worden overgelaten aan expliciete
+uitvoeringen van `openclaw completion --write-state`.
 
 ## Gerelateerd
 
-- `openclaw doctor` (biedt aan om eerst update uit te voeren op git-checkouts)
+- `openclaw doctor` (biedt aan om bij Git-checkouts eerst de update uit te voeren)
 - [Ontwikkelingskanalen](/nl/install/development-channels)
 - [Bijwerken](/nl/install/updating)
 - [CLI-referentie](/nl/cli)

@@ -1,14 +1,15 @@
 ---
 read_when:
     - 你正在安装、配置或审计浏览器插件
-summary: 添加可由智能体调用的工具。
+summary: 添加智能体可调用的工具。
 title: 浏览器插件
 x-i18n:
-    generated_at: "2026-07-11T20:47:31Z"
+    generated_at: "2026-07-16T11:44:14Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 2dcf562660fa3d05d22856335a7d2e6e467a432ee6dda5650efd94edde661ba4
+    source_hash: fa1ca51dce3992d718cdb6e6fec1656c224c021419852e2a2c467a334f251289
     source_path: plugins/reference/browser.md
     workflow: 16
 ---
@@ -20,11 +21,11 @@ x-i18n:
 ## 分发
 
 - 软件包：`@openclaw/browser-plugin`
-- 安装方式：已包含在 OpenClaw 中
+- 安装方式：OpenClaw 内置
 
-## 功能范围
+## 功能接口
 
-契约：工具；Skills
+契约：`tools`；Skills
 
 ## 相关文档
 

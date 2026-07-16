@@ -4,12 +4,12 @@ read_when:
 summary: Fügt OpenClaw Unterstützung für den DeepSeek-Modell-Provider hinzu.
 title: DeepSeek-Plugin
 x-i18n:
-    generated_at: "2026-07-12T15:37:19Z"
+    generated_at: "2026-07-16T13:09:05Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
-    prompt_version: 15
+    prompt_version: 32
     provider: openai
-    source_hash: e2e7de36581db36818f63f754da829d91163c0ae3eaab9a087da087d3c681538
+    source_hash: 9fba8a1a64bc216923b4ea893cf89f7c13874afaa54fed024ccd281c26cb3d02
     source_path: plugins/reference/deepseek.md
     workflow: 16
 ---
@@ -25,8 +25,8 @@ Fügt OpenClaw Unterstützung für den DeepSeek-Modell-Provider hinzu.
 
 ## Oberfläche
 
-Provider: deepseek; Verträge: usageProviders
+Provider: `deepseek`; Verträge: `usageProviders`
 
 ## Zugehörige Dokumentation
 
-- [deepseek](/de/providers/deepseek)
+- [DeepSeek](/de/providers/deepseek)

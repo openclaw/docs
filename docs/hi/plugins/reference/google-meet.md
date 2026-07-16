@@ -1,14 +1,15 @@
 ---
 read_when:
-    - आप google-meet Plugin को इंस्टॉल, कॉन्फ़िगर, या ऑडिट कर रहे हैं
-summary: OpenClaw Google Meet प्रतिभागी Plugin, Chrome या Twilio ट्रांसपोर्ट के माध्यम से कॉल में शामिल होने के लिए।
+    - आप google-meet Plugin को इंस्टॉल, कॉन्फ़िगर या ऑडिट कर रहे हैं
+summary: Chrome या Twilio ट्रांसपोर्ट के माध्यम से कॉल में शामिल होने के लिए OpenClaw Google Meet प्रतिभागी Plugin।
 title: Google Meet Plugin
 x-i18n:
-    generated_at: "2026-06-28T23:44:45Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T16:29:57Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 2f0086a8b48f6e120ad391a99d60a14d7682910ca3ad176e41a51b341e9bdb49
+    source_hash: fc104cbff8e36ec1eb7288beaf249b321a638cd32ef09d3809266a5344b29959
     source_path: plugins/reference/google-meet.md
     workflow: 16
 ---
@@ -24,7 +25,7 @@ Chrome या Twilio ट्रांसपोर्ट के माध्यम
 
 ## सतह
 
-अनुबंध: टूल
+अनुबंध: `tools`
 
 ## संबंधित दस्तावेज़
 

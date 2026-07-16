@@ -1,14 +1,15 @@
 ---
 read_when:
     - Sie installieren, konfigurieren oder prüfen das kilocode-Plugin
-summary: Fügt OpenClaw Unterstützung für den Kilocode-Modell-Provider hinzu.
+summary: Fügt Unterstützung für den Kilocode-Modell-Provider zu OpenClaw hinzu.
 title: Kilocode-Plugin
 x-i18n:
-    generated_at: "2026-06-27T17:54:29Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T13:10:02Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 83843bd0e8a3e9944a60540a0329630f7660f8e9440c157b790ddca8655052f9
+    source_hash: 03b104e1737e98bc9ad037b808e9c40ea400b382eb21ac0ddd48c50e917f9dd2
     source_path: plugins/reference/kilocode.md
     workflow: 16
 ---
@@ -24,8 +25,8 @@ Fügt OpenClaw Unterstützung für den Kilocode-Modell-Provider hinzu.
 
 ## Oberfläche
 
-Provider: kilocode
+Provider: `kilocode`
 
-## Verwandte Dokumentation
+## Zugehörige Dokumentation
 
-- [kilocode](/de/providers/kilocode)
+- [Kilocode](/de/providers/kilocode)

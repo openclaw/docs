@@ -1,21 +1,22 @@
 ---
 read_when:
-    - Stai installando, configurando o sottoponendo ad audit il plugin migrate-claude
+    - Si sta installando, configurando o verificando il plugin migrate-claude
 summary: Importa in OpenClaw le istruzioni di Claude Code e Claude Desktop, i server MCP, le Skills e la configurazione sicura.
 title: Migrare il plugin Claude
 x-i18n:
-    generated_at: "2026-07-12T07:18:59Z"
+    generated_at: "2026-07-16T14:45:36Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 3b2fea7449af0ce19d7310eb6cd9f9ee3728db1582d5d4b769aa33393d092383
+    source_hash: 316b9330c7604de1a94c9490ec6882b99bd88915cb369e84ccab44eea1cfcf42
     source_path: plugins/reference/migrate-claude.md
     workflow: 16
 ---
 
-# Migrare il plugin Claude
+# Migrazione del plugin Claude
 
-Importa in OpenClaw le istruzioni di Claude Code e Claude Desktop, i server MCP, le Skills e la configurazione sicura.
+Importa in OpenClaw istruzioni, server MCP, Skills e configurazioni sicure di Claude Code e Claude Desktop.
 
 ## Distribuzione
 
@@ -24,4 +25,4 @@ Importa in OpenClaw le istruzioni di Claude Code e Claude Desktop, i server MCP,
 
 ## Superficie
 
-contratti: migrationProviders
+contratti: `migrationProviders`

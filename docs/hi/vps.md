@@ -1,92 +1,96 @@
 ---
 read_when:
-    - आप Gateway को Linux सर्वर या क्लाउड VPS पर चलाना चाहते हैं
+    - आप Gateway को किसी Linux सर्वर या क्लाउड VPS पर चलाना चाहते हैं
     - आपको होस्टिंग गाइड का एक त्वरित मानचित्र चाहिए
     - आप OpenClaw के लिए सामान्य Linux सर्वर ट्यूनिंग चाहते हैं
 sidebarTitle: Linux Server
-summary: Linux सर्वर या क्लाउड VPS पर OpenClaw चलाएं — प्रदाता चयनकर्ता, आर्किटेक्चर, और ट्यूनिंग
+summary: Linux सर्वर या क्लाउड VPS पर OpenClaw चलाएँ — प्रदाता चयनकर्ता, आर्किटेक्चर और अनुकूलन
 title: Linux सर्वर
 x-i18n:
-    generated_at: "2026-06-29T00:26:32Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T17:40:10Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: d32ca9cd62e99b340827f086602922eae3731d9b6cb42b1fd629917d604c549b
+    source_hash: 634a246850ab8b854c2c799688fd368ebed3a02124baa85bf38d5ff6ef8cec64
     source_path: vps.md
     workflow: 16
 ---
 
-OpenClaw Gateway को किसी भी Linux सर्वर या क्लाउड VPS पर चलाएँ। यह पेज आपको
-प्रदाता चुनने में मदद करता है, बताता है कि क्लाउड डिप्लॉयमेंट कैसे काम करते हैं, और हर जगह लागू होने वाली सामान्य Linux
-ट्यूनिंग को कवर करता है।
+किसी भी Linux सर्वर या क्लाउड VPS पर OpenClaw Gateway चलाएँ। यह पृष्ठ आपको
+प्रदाता चुनने में मदद करता है, बताता है कि क्लाउड परिनियोजन कैसे काम करते हैं, और सभी जगह लागू होने वाली सामान्य Linux
+ट्यूनिंग को शामिल करता है।
 
 ## प्रदाता चुनें
 
 <CardGroup cols={2}>
-  <Card title="Railway" href="/hi/install/railway">एक-क्लिक, ब्राउज़र सेटअप</Card>
-  <Card title="Northflank" href="/hi/install/northflank">एक-क्लिक, ब्राउज़र सेटअप</Card>
-  <Card title="DigitalOcean" href="/hi/install/digitalocean">सरल भुगतान वाला VPS</Card>
-  <Card title="Oracle Cloud" href="/hi/install/oracle">हमेशा मुफ़्त ARM टियर</Card>
-  <Card title="Fly.io" href="/hi/install/fly">Fly Machines</Card>
+  <Card title="Azure" href="/hi/install/azure">Linux VM</Card>
+  <Card title="DigitalOcean" href="/hi/install/digitalocean">सरल सशुल्क VPS</Card>
+  <Card title="exe.dev" href="/hi/install/exe-dev">HTTPS प्रॉक्सी वाला VM</Card>
+  <Card title="Fly.io" href="/hi/install/fly">Fly मशीनें</Card>
+  <Card title="GCP" href="/hi/install/gcp">Compute Engine</Card>
   <Card title="Hetzner" href="/hi/install/hetzner">Hetzner VPS पर Docker</Card>
   <Card title="Hostinger" href="/hi/install/hostinger">एक-क्लिक सेटअप वाला VPS</Card>
-  <Card title="GCP" href="/hi/install/gcp">Compute Engine</Card>
-  <Card title="Azure" href="/hi/install/azure">Linux VM</Card>
-  <Card title="exe.dev" href="/hi/install/exe-dev">HTTPS प्रॉक्सी वाला VM</Card>
-  <Card title="Raspberry Pi" href="/hi/install/raspberry-pi">ARM स्व-होस्टेड</Card>
+  <Card title="Northflank" href="/hi/install/northflank">एक-क्लिक ब्राउज़र सेटअप</Card>
+  <Card title="Oracle Cloud" href="/hi/install/oracle">हमेशा निःशुल्क ARM टियर</Card>
+  <Card title="Railway" href="/hi/install/railway">एक-क्लिक ब्राउज़र सेटअप</Card>
+  <Card title="Raspberry Pi" href="/hi/install/raspberry-pi">ARM पर स्वयं होस्ट किया गया</Card>
 </CardGroup>
 
-**AWS (EC2 / Lightsail / फ़्री टियर)** भी अच्छी तरह काम करता है।
-एक समुदाय वीडियो वॉकथ्रू यहाँ उपलब्ध है
+**AWS (EC2 / Lightsail / निःशुल्क टियर)** भी अच्छी तरह काम करता है।
+समुदाय द्वारा बनाया गया वीडियो मार्गदर्शन यहाँ उपलब्ध है:
 [x.com/techfrenAJ/status/2014934471095812547](https://x.com/techfrenAJ/status/2014934471095812547)
-(समुदाय संसाधन -- अनुपलब्ध हो सकता है)।
+(सामुदायिक संसाधन -- अनुपलब्ध हो सकता है)।
 
 ## क्लाउड सेटअप कैसे काम करते हैं
 
-- **Gateway VPS पर चलता है** और state + workspace का स्वामी होता है।
-- आप अपने लैपटॉप या फ़ोन से **Control UI** या **Tailscale/SSH** के ज़रिए कनेक्ट करते हैं।
-- VPS को सत्य का स्रोत मानें और state + workspace का नियमित रूप से **बैकअप** लें।
-- सुरक्षित डिफ़ॉल्ट: Gateway को loopback पर रखें और SSH टनल या Tailscale Serve के ज़रिए उसे एक्सेस करें।
-  अगर आप `lan` या `tailnet` से बाइंड करते हैं, तो `gateway.auth.token` या `gateway.auth.password` आवश्यक करें।
+- __**Gateway VPS पर चलता है** और स्थिति + कार्यस्थान का स्वामी होता है।
+- आप अपने लैपटॉप या फ़ोन से **नियंत्रण UI** या **Tailscale/SSH** के माध्यम से कनेक्ट करते हैं।
+- VPS को प्रामाणिक स्रोत मानें और स्थिति + कार्यस्थान का नियमित रूप से **बैकअप लें**।
+- सुरक्षित डिफ़ॉल्ट: Gateway को लूपबैक पर रखें और SSH टनल या Tailscale Serve के माध्यम से उस तक पहुँचें।
+  यदि आप `lan` या `tailnet` से बाइंड करते हैं, तो Gateway को साझा सीक्रेट
+  (`gateway.auth.token` या `gateway.auth.password`) की आवश्यकता होती है, जब तक कि प्रमाणीकरण किसी
+  विश्वसनीय प्रॉक्सी को प्रत्यायोजित न किया गया हो।
 
-संबंधित पेज: [Gateway रिमोट एक्सेस](/hi/gateway/remote), [प्लेटफ़ॉर्म हब](/hi/platforms)।
+संबंधित पृष्ठ: [Gateway की दूरस्थ पहुँच](/hi/gateway/remote), [प्लेटफ़ॉर्म केंद्र](/hi/platforms)।
 
-## पहले admin access को मजबूत करें
+## पहले व्यवस्थापक पहुँच को सुदृढ़ करें
 
-किसी सार्वजनिक VPS पर OpenClaw इंस्टॉल करने से पहले, तय करें कि आप
-बॉक्स को स्वयं कैसे प्रशासित करना चाहते हैं।
+किसी सार्वजनिक VPS पर OpenClaw स्थापित करने से पहले तय करें कि आप
+उस मशीन का प्रशासन कैसे करना चाहते हैं।
 
-- अगर आप केवल Tailnet वाला admin access चाहते हैं, तो पहले Tailscale इंस्टॉल करें, VPS को
-  अपने tailnet से जोड़ें, Tailscale IP या MagicDNS नाम पर दूसरी SSH session सत्यापित करें,
+- केवल Tailnet के माध्यम से व्यवस्थापक पहुँच के लिए: पहले Tailscale स्थापित करें, VPS को अपने
+  टेलनेट से जोड़ें, Tailscale IP या MagicDNS नाम के माध्यम से दूसरा SSH सत्र सत्यापित करें,
   फिर सार्वजनिक SSH को प्रतिबंधित करें।
-- अगर आप Tailscale का उपयोग नहीं कर रहे हैं, तो अधिक सेवाएँ उजागर करने से पहले अपने SSH
-  पथ के लिए समकक्ष hardening लागू करें।
-- यह Gateway access से अलग है। आप अभी भी OpenClaw को loopback से बंधा रख सकते हैं
-  और dashboard के लिए SSH टनल या Tailscale Serve का उपयोग कर सकते हैं।
+- Tailscale के बिना: अधिक सेवाएँ उपलब्ध कराने से पहले
+  अपने SSH पथ पर समकक्ष सुरक्षा सुदृढ़ीकरण लागू करें।
+- यह Gateway पहुँच से अलग है। आप OpenClaw को फिर भी
+  लूपबैक से बाइंड रख सकते हैं और डैशबोर्ड के लिए SSH टनल या Tailscale Serve का उपयोग कर सकते हैं।
 
-Tailscale-विशिष्ट Gateway विकल्प [Tailscale](/hi/gateway/tailscale) में हैं।
+Tailscale-विशिष्ट Gateway विकल्प [Tailscale](/hi/gateway/tailscale) में उपलब्ध हैं।
 
-## VPS पर साझा company agent
+## VPS पर कंपनी का साझा एजेंट
 
-किसी टीम के लिए एकल agent चलाना तब वैध सेटअप है जब हर उपयोगकर्ता समान trust boundary में हो और agent केवल business के लिए हो।
+किसी टीम के लिए एक एजेंट चलाना तब एक मान्य सेटअप है, जब प्रत्येक उपयोगकर्ता
+एक ही विश्वास-सीमा में हो और एजेंट केवल व्यावसायिक उपयोग के लिए हो।
 
-- इसे dedicated runtime पर रखें (VPS/VM/container + dedicated OS user/accounts)।
-- उस runtime को personal Apple/Google accounts या personal browser/password-manager profiles में sign in न करें।
-- अगर उपयोगकर्ता एक-दूसरे के प्रति adversarial हैं, तो gateway/host/OS user के आधार पर अलग करें।
+- इसे समर्पित रनटाइम पर रखें (VPS/VM/कंटेनर + समर्पित OS उपयोगकर्ता/खाते)।
+- उस रनटाइम को व्यक्तिगत Apple/Google खातों या व्यक्तिगत ब्राउज़र/पासवर्ड-मैनेजर प्रोफ़ाइल में साइन इन न करें।
+- यदि उपयोगकर्ता एक-दूसरे के प्रति प्रतिकूल हों, तो उन्हें Gateway/होस्ट/OS उपयोगकर्ता के आधार पर अलग करें।
 
-Security model विवरण: [Security](/hi/gateway/security)।
+सुरक्षा मॉडल का विवरण: [सुरक्षा](/hi/gateway/security)।
 
-## VPS के साथ nodes का उपयोग
+## VPS के साथ Node का उपयोग
 
-आप Gateway को cloud में रख सकते हैं और अपने local devices
-(Mac/iOS/Android/headless) पर **nodes** के साथ pair कर सकते हैं। Nodes local screen/camera/canvas और `system.run`
-क्षमताएँ प्रदान करते हैं, जबकि Gateway cloud में रहता है।
+आप Gateway को क्लाउड में रख सकते हैं और अपने स्थानीय डिवाइसों
+(Mac/iOS/Android/हेडलेस) पर **Node** जोड़ सकते हैं। Gateway के क्लाउड में बने रहने के दौरान Node स्थानीय स्क्रीन/कैमरा/कैनवास और `system.run`
+क्षमताएँ प्रदान करते हैं।
 
-Docs: [Nodes](/hi/nodes), [Nodes CLI](/hi/cli/nodes)।
+दस्तावेज़: [Node](/hi/nodes), [Node CLI](/hi/cli/nodes)।
 
-## छोटे VMs और ARM hosts के लिए startup tuning
+## छोटे VM और ARM होस्ट के लिए स्टार्टअप ट्यूनिंग
 
-अगर कम-शक्ति वाले VMs (या ARM hosts) पर CLI commands धीमे लगते हैं, तो Node का module compile cache enable करें:
+यदि कम क्षमता वाले VM (या ARM होस्ट) पर CLI कमांड धीमे लगते हैं, तो Node का मॉड्यूल कंपाइल कैश सक्षम करें:
 
 ```bash
 grep -q 'NODE_COMPILE_CACHE=/var/tmp/openclaw-compile-cache' ~/.bashrc || cat >> ~/.bashrc <<'EOF'
@@ -97,25 +101,21 @@ EOF
 source ~/.bashrc
 ```
 
-- `NODE_COMPILE_CACHE` बार-बार command startup times को बेहतर बनाता है।
-- `OPENCLAW_NO_RESPAWN=1` routine Gateway restarts को in-process रखता है, जिससे extra process handoffs बचते हैं और छोटे hosts पर PID tracking सरल रहती है।
-- पहला command run cache को warm करता है; बाद के runs तेज़ होते हैं।
-- Raspberry Pi की विशेष जानकारी के लिए, [Raspberry Pi](/hi/install/raspberry-pi) देखें।
+- `NODE_COMPILE_CACHE` बार-बार चलाए जाने वाले कमांड के स्टार्टअप समय में सुधार करता है; पहली बार चलाने पर कैश तैयार होता है।
+- `OPENCLAW_NO_RESPAWN=1` नियमित Gateway पुनरारंभों को उसी प्रक्रिया में रखता है, जिससे अतिरिक्त प्रक्रिया हस्तांतरण से बचा जाता है और छोटे होस्ट पर PID ट्रैकिंग सरल रहती है।
+- Raspberry Pi से संबंधित विवरण के लिए, [Raspberry Pi](/hi/install/raspberry-pi) देखें।
 
-### systemd tuning checklist (वैकल्पिक)
+### systemd ट्यूनिंग जाँच-सूची (वैकल्पिक)
 
-`systemd` उपयोग करने वाले VM hosts के लिए, विचार करें:
+`systemd` का उपयोग करने वाले VM होस्ट के लिए, इन पर विचार करें:
 
-- स्थिर startup path के लिए service env जोड़ें:
-  - `OPENCLAW_NO_RESPAWN=1`
-  - `NODE_COMPILE_CACHE=/var/tmp/openclaw-compile-cache`
-- restart behavior को स्पष्ट रखें:
-  - `Restart=always`
-  - `RestartSec=2`
-  - `TimeoutStartSec=90`
-- state/cache paths के लिए SSD-backed disks को प्राथमिकता दें, ताकि random-I/O cold-start penalties कम हों।
+- स्थिर स्टार्टअप पथ के लिए सेवा परिवेश: `OPENCLAW_NO_RESPAWN=1` और
+  `NODE_COMPILE_CACHE=/var/tmp/openclaw-compile-cache`
+- स्पष्ट पुनरारंभ व्यवहार: `Restart=always`, `RestartSec=2`, `TimeoutStartSec=90`
+- अनियमित I/O के कारण कोल्ड स्टार्ट पर पड़ने वाले प्रभाव को कम करने के लिए स्थिति/कैश पथों हेतु SSD-समर्थित डिस्क।
 
-मानक `openclaw onboard --install-daemon` path के लिए, user unit edit करें:
+मानक `openclaw onboard --install-daemon` पथ एक systemd उपयोगकर्ता
+यूनिट स्थापित करता है; इसे इसके माध्यम से संपादित करें:
 
 ```bash
 systemctl --user edit openclaw-gateway.service
@@ -130,18 +130,18 @@ RestartSec=2
 TimeoutStartSec=90
 ```
 
-अगर आपने जानबूझकर system unit इंस्टॉल किया है, तो इसके बजाय
-`sudo systemctl edit openclaw-gateway.service` के ज़रिए `openclaw-gateway.service` edit करें।
+यदि आपने जानबूझकर इसके बजाय सिस्टम यूनिट स्थापित की है, तो उसे
+`sudo systemctl edit openclaw-gateway.service` के माध्यम से संपादित करें।
 
-`Restart=` policies automated recovery में कैसे मदद करती हैं:
-[systemd service recovery को automate कर सकता है](https://www.redhat.com/en/blog/systemd-automate-recovery)।
+`Restart=` नीतियाँ स्वचालित पुनर्प्राप्ति में कैसे सहायता करती हैं:
+[systemd सेवा पुनर्प्राप्ति को स्वचालित कर सकता है](https://www.redhat.com/en/blog/systemd-automate-recovery)।
 
-Linux OOM behavior, child process victim selection, और `exit 137`
-diagnostics के लिए, [Linux memory pressure and OOM kills](/hi/platforms/linux#memory-pressure-and-oom-kills) देखें।
+Linux के OOM व्यवहार, चाइल्ड प्रक्रिया में पीड़ित चयन और `exit 137`
+निदान के लिए, [Linux मेमोरी दबाव और OOM किल](/hi/platforms/linux#memory-pressure-and-oom-kills) देखें।
 
 ## संबंधित
 
-- [Install overview](/hi/install)
+- [स्थापना का अवलोकन](/hi/install)
 - [DigitalOcean](/hi/install/digitalocean)
 - [Fly.io](/hi/install/fly)
 - [Hetzner](/hi/install/hetzner)

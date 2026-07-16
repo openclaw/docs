@@ -1,96 +1,83 @@
 ---
 read_when:
     - नई कोर क्षमता और Plugin पंजीकरण सतह जोड़ना
-    - निर्णय करना कि कोड core, किसी vendor Plugin, या किसी feature Plugin में होना चाहिए
-    - चैनलों या टूल्स के लिए नया runtime helper वायर करना
+    - यह तय करना कि कोड कोर, किसी वेंडर Plugin या किसी फ़ीचर Plugin में होना चाहिए
+    - चैनलों या टूल्स के लिए नया रनटाइम सहायक जोड़ना
 sidebarTitle: Adding capabilities
 summary: OpenClaw Plugin सिस्टम में नई साझा क्षमता जोड़ने के लिए योगदानकर्ता मार्गदर्शिका
 title: क्षमताएँ जोड़ना (योगदानकर्ता मार्गदर्शिका)
 x-i18n:
-    generated_at: "2026-06-28T23:30:58Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T15:58:33Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: b8a25122a7b76ff5bbb7616748d5fad2397502f9accb5428134a75d65e872034
+    source_hash: 3534b7521ab8183d91399cded8a3b397be46bf9bd18f2fdb88a8947bad67ffaa
     source_path: plugins/adding-capabilities.md
     workflow: 16
 ---
 
 <Info>
-  यह OpenClaw कोर डेवलपरों के लिए **योगदानकर्ता गाइड** है। यदि आप
-  कोई बाहरी Plugin बना रहे हैं, तो इसके बजाय [Plugin बनाना](/hi/plugins/building-plugins)
-  देखें। गहरे आर्किटेक्चर संदर्भ (क्षमता मॉडल, स्वामित्व,
-  लोड पाइपलाइन, रनटाइम हेल्पर) के लिए, [Plugin internals](/hi/plugins/architecture) देखें।
+  यह OpenClaw के मुख्य डेवलपरों के लिए एक **योगदानकर्ता मार्गदर्शिका** है। यदि आप
+  कोई बाहरी plugin बना रहे हैं, तो इसके बजाय [plugin बनाना](/hi/plugins/building-plugins)
+  देखें। विस्तृत आर्किटेक्चर संदर्भ (क्षमता मॉडल, स्वामित्व,
+  लोड पाइपलाइन, रनटाइम सहायक) के लिए [Plugin की आंतरिक संरचना](/hi/plugins/architecture) देखें।
 </Info>
 
-इसका उपयोग तब करें जब OpenClaw को embeddings, इमेज
-जनरेशन, वीडियो जनरेशन, या भविष्य के किसी विक्रेता-समर्थित फीचर क्षेत्र जैसे नए साझा डोमेन की आवश्यकता हो।
+इसका उपयोग तब करें, जब OpenClaw को एम्बेडिंग, इमेज
+जनरेशन, वीडियो जनरेशन या भविष्य के किसी विक्रेता-समर्थित सुविधा क्षेत्र जैसे नए साझा डोमेन की आवश्यकता हो।
 
 नियम:
 
-- **Plugin** = स्वामित्व सीमा
-- **क्षमता** = साझा कोर अनुबंध
+- **plugin** = स्वामित्व सीमा
+- **क्षमता** = साझा मुख्य अनुबंध
 
-किसी विक्रेता को सीधे किसी चैनल या टूल में वायर करके शुरू न करें। क्षमता को परिभाषित करके शुरू करें।
+किसी विक्रेता को सीधे चैनल या टूल से न जोड़ें। पहले क्षमता निर्धारित करें।
 
-## क्षमता कब बनाएं
+## क्षमता कब बनाएँ
 
-नई क्षमता तब बनाएं जब इनमें से **सभी** सही हों:
+नई क्षमता केवल तभी बनाएँ, जब ये **सभी** बातें सत्य हों:
 
-1. एक से अधिक विक्रेता इसे संभवतः लागू कर सकते हों।
-2. चैनल, टूल, या फीचर Plugin को विक्रेता की परवाह किए बिना इसका उपयोग करना चाहिए।
-3. कोर को fallback, नीति, कॉन्फिग, या डिलीवरी व्यवहार का स्वामित्व चाहिए।
+1. एक से अधिक विक्रेता इसे व्यवहार्य रूप से लागू कर सकते हों।
+2. चैनल, टूल या सुविधा plugin को विक्रेता की परवाह किए बिना इसका उपयोग करना चाहिए।
+3. मुख्य भाग को फ़ॉलबैक, नीति, कॉन्फ़िगरेशन या डिलीवरी व्यवहार का स्वामित्व लेना आवश्यक हो।
 
-यदि काम केवल विक्रेता-विशिष्ट है और अभी तक कोई साझा अनुबंध मौजूद नहीं है, तो रुकें और पहले अनुबंध परिभाषित करें।
+यदि कार्य केवल किसी विक्रेता के लिए है और अभी कोई साझा अनुबंध मौजूद नहीं है, तो पहले अनुबंध निर्धारित करें।
 
 ## मानक क्रम
 
-1. टाइप किया हुआ कोर अनुबंध परिभाषित करें।
-2. उस अनुबंध के लिए Plugin पंजीकरण जोड़ें।
-3. साझा रनटाइम हेल्पर जोड़ें।
-4. प्रमाण के रूप में एक वास्तविक विक्रेता Plugin वायर करें।
-5. फीचर/चैनल उपभोक्ताओं को रनटाइम हेल्पर पर ले जाएं।
-6. अनुबंध टेस्ट जोड़ें।
-7. ऑपरेटर-फेसिंग कॉन्फिग और स्वामित्व मॉडल का दस्तावेजीकरण करें।
+1. टाइप किया हुआ मुख्य अनुबंध निर्धारित करें।
+2. उस अनुबंध के लिए plugin पंजीकरण जोड़ें।
+3. एक साझा रनटाइम सहायक जोड़ें।
+4. प्रमाण के रूप में एक वास्तविक विक्रेता plugin जोड़ें।
+5. सुविधा/चैनल उपभोक्ताओं को रनटाइम सहायक पर स्थानांतरित करें।
+6. अनुबंध परीक्षण जोड़ें।
+7. ऑपरेटर-केंद्रित कॉन्फ़िगरेशन और स्वामित्व मॉडल का दस्तावेज़ीकरण करें।
 
-## क्या कहां जाता है
+## क्या कहाँ होता है
 
-**कोर:**
+| परत                       | स्वामित्व                                                                                                                                                                                                                              |
+| -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **मुख्य भाग**                   | अनुरोध/प्रतिक्रिया प्रकार; प्रदाता रजिस्ट्री और समाधान; फ़ॉलबैक व्यवहार; नेस्टेड ऑब्जेक्ट, वाइल्डकार्ड, ऐरे-आइटम और संयोजन नोड पर प्रसारित `title`/`description` दस्तावेज़ मेटाडेटा वाली कॉन्फ़िगरेशन स्कीमा; रनटाइम सहायक सतह। |
+| **विक्रेता plugin**          | विक्रेता API कॉल, विक्रेता प्रमाणीकरण प्रबंधन, विक्रेता-विशिष्ट अनुरोध सामान्यीकरण और क्षमता कार्यान्वयन का पंजीकरण।                                                                                                     |
+| **सुविधा/चैनल plugin** | `api.runtime.*` या संबंधित `plugin-sdk/*-runtime` सहायक को कॉल करता है। कभी भी विक्रेता कार्यान्वयन को सीधे कॉल नहीं करता।                                                                                                                    |
 
-- अनुरोध/प्रतिक्रिया प्रकार।
-- Provider रजिस्ट्री + रिज़ॉल्यूशन।
-- Fallback व्यवहार।
-- nested object, wildcard, array-item, और composition nodes पर प्रसारित `title` / `description` docs metadata के साथ कॉन्फिग schema।
-- रनटाइम हेल्पर सतह।
+## प्रदाता और हार्नेस सीमाएँ
 
-**विक्रेता Plugin:**
+जब व्यवहार सामान्य एजेंट लूप के बजाय मॉडल प्रदाता अनुबंध से संबंधित हो, तो **प्रदाता हुक** का उपयोग करें। उदाहरणों में ट्रांसपोर्ट चयन के बाद प्रदाता-विशिष्ट अनुरोध पैरामीटर, प्रमाणीकरण-प्रोफ़ाइल प्राथमिकता, प्रॉम्प्ट ओवरले और मॉडल/प्रोफ़ाइल फ़ेलओवर के बाद अनुवर्ती फ़ॉलबैक रूटिंग शामिल हैं।
 
-- विक्रेता API कॉल।
-- विक्रेता auth हैंडलिंग।
-- विक्रेता-विशिष्ट अनुरोध normalization।
-- क्षमता implementation का पंजीकरण।
+जब व्यवहार किसी टर्न को निष्पादित करने वाले रनटाइम से संबंधित हो, तो **एजेंट हार्नेस हुक** का उपयोग करें। हार्नेस स्पष्ट प्रोटोकॉल परिणामों को वर्गीकृत कर सकते हैं, जैसे रिक्त आउटपुट, दृश्यमान आउटपुट के बिना तर्क या अंतिम उत्तर के बिना संरचित योजना, ताकि बाहरी मॉडल फ़ॉलबैक नीति पुनः प्रयास का निर्णय ले सके।
 
-**फीचर/चैनल Plugin:**
+दोनों सीमाओं को संकीर्ण रखें:
 
-- `api.runtime.*` या मेल खाते `plugin-sdk/*-runtime` हेल्पर को कॉल करता है।
-- किसी विक्रेता implementation को सीधे कभी कॉल नहीं करता।
+- मुख्य भाग पुनः प्रयास/फ़ॉलबैक नीति का स्वामित्व रखता है।
+- प्रदाता plugin प्रदाता-विशिष्ट अनुरोध/प्रमाणीकरण/रूटिंग संकेतों का स्वामित्व रखते हैं।
+- हार्नेस plugin रनटाइम-विशिष्ट प्रयास वर्गीकरण का स्वामित्व रखते हैं।
+- तृतीय-पक्ष plugin मुख्य स्थिति में सीधे परिवर्तन नहीं, बल्कि संकेत लौटाते हैं।
 
-## Provider और harness seams
+## फ़ाइल जाँच-सूची
 
-जब व्यवहार generic agent loop के बजाय model provider contract से संबंधित हो, तो **provider hooks** का उपयोग करें। उदाहरणों में transport selection के बाद provider-specific request params, auth-profile preference, prompt overlays, और model/profile failover के बाद follow-up fallback routing शामिल हैं।
-
-जब व्यवहार उस runtime से संबंधित हो जो turn execute कर रहा है, तो **agent harness hooks** का उपयोग करें। Harnesses खाली output, visible output के बिना reasoning, या final answer के बिना structured plan जैसे explicit protocol outcomes को classify कर सकते हैं, ताकि outer model fallback policy retry decision ले सके।
-
-दोनों seams को संकीर्ण रखें:
-
-- कोर retry/fallback policy का स्वामी है।
-- Provider plugins provider-specific request/auth/routing hints के स्वामी हैं।
-- Harness plugins runtime-specific attempt classification के स्वामी हैं।
-- Third-party plugins hints लौटाते हैं, core state के direct mutations नहीं।
-
-## फ़ाइल checklist
-
-नई क्षमता के लिए, इन क्षेत्रों को छूने की अपेक्षा करें:
+नई क्षमता के लिए इन क्षेत्रों में बदलाव की अपेक्षा करें:
 
 - `src/<capability>/types.ts`
 - `src/<capability>/...registry/runtime.ts`
@@ -102,53 +89,53 @@ x-i18n:
 - `src/plugins/runtime/index.ts`
 - `src/plugin-sdk/<capability>.ts`
 - `src/plugin-sdk/<capability>-runtime.ts`
-- एक या अधिक bundled Plugin packages।
-- कॉन्फिग, docs, tests।
+- एक या अधिक बंडल किए गए plugin पैकेज।
+- कॉन्फ़िगरेशन, दस्तावेज़, परीक्षण।
 
-## काम किया हुआ उदाहरण: image generation
+## व्यावहारिक उदाहरण: इमेज जनरेशन
 
-Image generation मानक आकार का पालन करता है:
+इमेज जनरेशन मानक संरचना का पालन करता है:
 
-1. कोर `ImageGenerationProvider` परिभाषित करता है।
-2. कोर `registerImageGenerationProvider(...)` expose करता है।
-3. कोर `runtime.imageGeneration.generate(...)` expose करता है।
-4. `openai`, `google`, `fal`, और `minimax` plugins vendor-backed implementations register करते हैं।
-5. भविष्य के vendors channels/tools बदले बिना वही contract register करते हैं।
+1. मुख्य भाग `ImageGenerationProvider` निर्धारित करता है।
+2. मुख्य भाग `registerImageGenerationProvider(...)` उपलब्ध कराता है।
+3. मुख्य भाग `api.runtime.imageGeneration.generate(...)` और `.listProviders(...)` उपलब्ध कराता है।
+4. विक्रेता plugin (`comfy`, `deepinfra`, `fal`, `google`, `litellm`, `microsoft-foundry`, `minimax`, `openai`, `openrouter`, `vydra`, `xai`) विक्रेता-समर्थित कार्यान्वयन पंजीकृत करते हैं।
+5. भविष्य के विक्रेता चैनल/टूल बदले बिना उसी अनुबंध को पंजीकृत करेंगे।
 
-कॉन्फिग key को vision-analysis routing से जानबूझकर अलग रखा गया है:
+कॉन्फ़िगरेशन कुंजी को जानबूझकर विज़न-विश्लेषण रूटिंग से अलग रखा गया है:
 
-- `agents.defaults.imageModel` images का analysis करता है।
-- `agents.defaults.imageGenerationModel` images generate करता है।
+- `agents.defaults.imageModel` इमेज का विश्लेषण करता है।
+- `agents.defaults.imageGenerationModel` इमेज जनरेट करता है।
 
-इन्हें अलग रखें ताकि fallback और policy explicit रहें।
+इन्हें अलग रखें, ताकि फ़ॉलबैक और नीति स्पष्ट रहें।
 
-## Embedding providers
+## एम्बेडिंग प्रदाता
 
-Reusable vector embedding providers के लिए `embeddingProviders` का उपयोग करें। यह contract
-जानबूझकर memory से व्यापक है: tools, search, retrieval, importers, या
-future feature plugins memory
-engine पर निर्भर हुए बिना embeddings consume कर सकते हैं।
+पुनः उपयोग योग्य वेक्टर एम्बेडिंग प्रदाताओं के लिए `registerEmbeddingProvider(...)` / अनुबंध `embeddingProviders` का
+उपयोग करें। यह अनुबंध जानबूझकर मेमोरी से अधिक व्यापक है:
+टूल, खोज, पुनर्प्राप्ति, इंपोर्टर या भविष्य के सुविधा plugin
+मेमोरी इंजन पर निर्भर हुए बिना एम्बेडिंग का उपयोग कर सकते हैं। मेमोरी खोज
+सामान्य `embeddingProviders` का भी उपयोग करती है।
 
-Memory search generic `embeddingProviders` consume कर सकता है। पुराना
-`memoryEmbeddingProviders` contract deprecated compatibility है जबकि मौजूदा
-memory-specific providers migrate होते हैं; नए reusable embedding providers को
-`embeddingProviders` का उपयोग करना चाहिए।
+पुराना मेमोरी-विशिष्ट पंजीकरण API और `memoryEmbeddingProviders`
+अनुबंध बहिष्कृत हैं। सभी नए एम्बेडिंग प्रदाताओं के लिए `registerEmbeddingProvider` और
+`embeddingProviders` का उपयोग करें।
 
-## Review checklist
+## समीक्षा जाँच-सूची
 
-नई क्षमता ship करने से पहले, सत्यापित करें:
+नई क्षमता जारी करने से पहले सत्यापित करें:
 
-- कोई channel/tool vendor code को सीधे import नहीं करता।
-- runtime helper shared path है।
-- कम से कम एक contract test bundled ownership assert करता है।
-- Config docs नए model/config key का नाम देते हैं।
-- Plugin docs ownership boundary समझाते हैं।
+- कोई भी चैनल/टूल विक्रेता कोड सीधे आयात नहीं करता।
+- रनटाइम सहायक साझा पथ है।
+- कम-से-कम एक अनुबंध परीक्षण बंडल किए गए स्वामित्व की पुष्टि करता है।
+- कॉन्फ़िगरेशन दस्तावेज़ नए मॉडल/कॉन्फ़िगरेशन कुंजी का नाम बताते हैं।
+- Plugin दस्तावेज़ स्वामित्व सीमा समझाते हैं।
 
-यदि कोई PR capability layer को छोड़कर vendor behavior को channel/tool में hardcode करता है, तो उसे वापस भेजें और पहले contract define करें।
+यदि कोई PR क्षमता परत को छोड़कर विक्रेता व्यवहार को सीधे चैनल/टूल में हार्डकोड करता है, तो उसे वापस भेजें और पहले अनुबंध निर्धारित करें।
 
 ## संबंधित
 
-- [Plugin internals](/hi/plugins/architecture) — capability model, ownership, load pipeline, runtime helpers।
-- [Plugin बनाना](/hi/plugins/building-plugins) — first-plugin tutorial।
-- [SDK overview](/hi/plugins/sdk-overview) — import map और registration API reference।
-- [Skills बनाना](/hi/tools/creating-skills) — companion contributor surface।
+- [Plugin की आंतरिक संरचना](/hi/plugins/architecture) — क्षमता मॉडल, स्वामित्व, लोड पाइपलाइन, रनटाइम सहायक।
+- [Plugin बनाना](/hi/plugins/building-plugins) — पहला plugin बनाने का ट्यूटोरियल।
+- [SDK का अवलोकन](/hi/plugins/sdk-overview) — आयात मानचित्र और पंजीकरण API संदर्भ।
+- [Skills बनाना](/hi/tools/creating-skills) — संबद्ध योगदानकर्ता सतह।

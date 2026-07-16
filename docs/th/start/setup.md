@@ -1,64 +1,65 @@
 ---
 read_when:
     - การตั้งค่าเครื่องใหม่
-    - คุณต้องการ “ล่าสุด + ดีที่สุด” โดยไม่ทำให้การตั้งค่าส่วนตัวของคุณเสียหาย
-summary: เวิร์กโฟลว์การตั้งค่าขั้นสูงและการพัฒนาสำหรับ OpenClaw
+    - คุณต้องการ "เวอร์ชันล่าสุด + ดีที่สุด" โดยไม่ทำให้การตั้งค่าส่วนตัวของคุณเสียหาย
+summary: การตั้งค่าขั้นสูงและเวิร์กโฟลว์การพัฒนาสำหรับ OpenClaw
 title: การตั้งค่า
 x-i18n:
-    generated_at: "2026-06-27T18:24:22Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T19:45:35Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 81cad59d4eab731ba548452211bfc578d6f79e38431057c52cc3580d3b9d9944
+    source_hash: c40d6d2bf2814465f3cc49c65d4c1498671420af728ce8012d13af3fba67025a
     source_path: start/setup.md
     workflow: 16
 ---
 
 <Note>
-หากคุณกำลังตั้งค่าเป็นครั้งแรก ให้เริ่มจาก [เริ่มต้นใช้งาน](/th/start/getting-started)
+หากกำลังตั้งค่าเป็นครั้งแรก ให้เริ่มจาก [เริ่มต้นใช้งาน](/th/start/getting-started)
 สำหรับรายละเอียดการเริ่มต้นใช้งาน โปรดดู [การเริ่มต้นใช้งาน (CLI)](/th/start/wizard)
 </Note>
 
-## สรุปสั้น ๆ
+## สรุปย่อ
 
-เลือกเวิร์กโฟลว์การตั้งค่าตามความถี่ที่คุณต้องการอัปเดต และว่าคุณต้องการรัน Gateway ด้วยตัวเองหรือไม่:
+เลือกเวิร์กโฟลว์การตั้งค่าตามความถี่ที่ต้องการอัปเดตและว่าต้องการเรียกใช้ Gateway ด้วยตนเองหรือไม่:
 
-- **การปรับแต่งอยู่ภายนอก repo:** เก็บ config และ workspace ของคุณไว้ใน `~/.openclaw/openclaw.json` และ `~/.openclaw/workspace/` เพื่อให้อัปเดต repo แล้วไม่กระทบสิ่งเหล่านี้
-- **เวิร์กโฟลว์เสถียร (แนะนำสำหรับผู้ใช้ส่วนใหญ่):** ติดตั้งแอป macOS และให้แอปรัน Gateway ที่บันเดิลมาให้
-- **เวิร์กโฟลว์ล้ำหน้า (dev):** รัน Gateway เองผ่าน `pnpm gateway:watch` จากนั้นให้แอป macOS เชื่อมต่อในโหมดภายในเครื่อง
+- **การปรับแต่งอยู่นอกรีโพ:** เก็บการกำหนดค่าและเวิร์กสเปซไว้ใน `~/.openclaw/openclaw.json` และ `~/.openclaw/workspace/` เพื่อไม่ให้การอัปเดตรีโพแตะต้องรายการเหล่านั้น
+- **เวิร์กโฟลว์เสถียร (แนะนำสำหรับผู้ใช้ส่วนใหญ่):** ติดตั้งแอป macOS และให้แอปเรียกใช้ Gateway ที่รวมมาให้
+- **เวิร์กโฟลว์รุ่นล่าสุดสำหรับนักพัฒนา:** เรียกใช้ Gateway ด้วยตนเองผ่าน `pnpm gateway:watch` แล้วให้แอป macOS เชื่อมต่อในโหมด Local
 
 ## ข้อกำหนดเบื้องต้น (จากซอร์ส)
 
-- แนะนำ Node 24 (Node 22 LTS, ปัจจุบันคือ `22.19+`, ยังรองรับอยู่)
-- ต้องใช้ `pnpm` สำหรับ source checkout OpenClaw โหลด Plugin ที่บันเดิลมาจากแพ็กเกจ pnpm workspace
-  `extensions/*` ในโหมด dev ดังนั้น `npm install` ที่ root
-  จึงไม่ได้เตรียม source tree ทั้งหมดให้พร้อม
-- Docker (ไม่บังคับ; ใช้เฉพาะสำหรับการตั้งค่า/e2e แบบคอนเทนเนอร์ - ดู [Docker](/th/install/docker))
+- แนะนำ Node 24.15+ (ยังรองรับ Node 22 LTS ซึ่งขณะนี้คือ `22.22.3+`)
+- จำเป็นต้องมี `pnpm` สำหรับการเช็กเอาต์ซอร์ส OpenClaw โหลด Plugin ที่รวมมาให้จากแพ็กเกจ pnpm workspace
+  `extensions/*` ในโหมดพัฒนา ดังนั้น `npm install` ที่รูทจึง
+  ไม่ได้เตรียมซอร์สทรีทั้งหมด
+- Docker (ไม่บังคับ ใช้เฉพาะการตั้งค่าแบบคอนเทนเนอร์/e2e โปรดดู [Docker](/th/install/docker))
 
-## กลยุทธ์การปรับแต่ง (เพื่อให้อัปเดตแล้วไม่เจ็บตัว)
+## กลยุทธ์การปรับแต่ง (เพื่อไม่ให้การอัปเดตสร้างปัญหา)
 
-หากคุณต้องการให้ "ปรับแต่งให้ตรงกับฉัน 100%" _และ_ อัปเดตง่าย ให้เก็บการปรับแต่งไว้ใน:
+หากต้องการให้ "ปรับแต่งตามความต้องการของฉัน 100%" _และ_ อัปเดตได้ง่าย ให้เก็บการปรับแต่งไว้ใน:
 
-- **Config:** `~/.openclaw/openclaw.json` (JSON/JSON5-ish)
-- **Workspace:** `~/.openclaw/workspace` (Skills, prompts, memories; ทำให้เป็น git repo ส่วนตัว)
+- **การกำหนดค่า:** `~/.openclaw/openclaw.json` (คล้าย JSON/JSON5)
+- **เวิร์กสเปซ:** `~/.openclaw/workspace` (Skills, พรอมต์, ความทรงจำ แนะนำให้สร้างเป็นรีโพ git ส่วนตัว)
 
-Bootstrap หนึ่งครั้ง:
-
-```bash
-openclaw setup
-```
-
-จากภายใน repo นี้ ให้ใช้ entry ของ CLI ภายในเครื่อง:
+บูตสแตรปโฟลเดอร์การกำหนดค่า/เวิร์กสเปซหนึ่งครั้ง โดยไม่เรียกใช้วิซาร์ดเริ่มต้นใช้งานแบบเต็ม:
 
 ```bash
-openclaw setup
+openclaw setup --baseline
 ```
 
-หากคุณยังไม่มีการติดตั้งแบบ global ให้รันผ่าน `pnpm openclaw setup`
+หากยังไม่ได้ติดตั้งแบบส่วนกลาง ให้เรียกใช้จากรีโพนี้แทน:
 
-## รัน Gateway จาก repo นี้
+```bash
+pnpm openclaw setup --baseline
+```
 
-หลังจาก `pnpm build` คุณสามารถรัน CLI ที่แพ็กเกจแล้วได้โดยตรง:
+(`openclaw setup` ที่ไม่มี `--baseline` เป็นนามแฝงของ `openclaw onboard` และจะเรียกใช้วิซาร์ดแบบโต้ตอบเต็มรูปแบบ)
+
+## เรียกใช้ Gateway จากรีโพนี้
+
+หลังจาก `pnpm build` สามารถเรียกใช้ CLI ที่แพ็กเกจไว้ได้โดยตรง:
 
 ```bash
 node openclaw.mjs gateway --port 18789 --verbose
@@ -66,121 +67,127 @@ node openclaw.mjs gateway --port 18789 --verbose
 
 ## เวิร์กโฟลว์เสถียร (เริ่มจากแอป macOS)
 
-1. ติดตั้ง + เปิด **OpenClaw.app** (แถบเมนู)
-2. ทำ checklist สำหรับ onboarding/permissions ให้ครบ (พรอมป์ TCC)
-3. ตรวจสอบว่า Gateway เป็น **ภายในเครื่อง** และกำลังทำงานอยู่ (แอปเป็นผู้จัดการ)
-4. เชื่อม surfaces (ตัวอย่าง: WhatsApp):
+1. ติดตั้งและเปิด **OpenClaw.app** (แถบเมนู)
+2. ดำเนินการตามรายการตรวจสอบการเริ่มต้นใช้งาน/สิทธิ์ให้ครบถ้วน (พรอมต์ TCC)
+3. ตรวจสอบว่า Gateway เป็น **Local** และกำลังทำงานอยู่ (แอปเป็นผู้จัดการ)
+4. เชื่อมโยงช่องทางต่างๆ (ตัวอย่าง: WhatsApp):
 
 ```bash
 openclaw channels login
 ```
 
-5. ตรวจสอบความเรียบร้อย:
+5. ตรวจสอบความพร้อมเบื้องต้น:
 
 ```bash
 openclaw health
 ```
 
-หาก onboarding ไม่มีใน build ของคุณ:
+หากบิลด์ไม่มีการเริ่มต้นใช้งาน:
 
-- รัน `openclaw setup` จากนั้น `openclaw channels login` แล้วเริ่ม Gateway ด้วยตนเอง (`openclaw gateway`)
+- เรียกใช้ `openclaw setup` ตามด้วย `openclaw channels login` แล้วเริ่ม Gateway ด้วยตนเอง (`openclaw gateway`)
 
-## เวิร์กโฟลว์ล้ำหน้า (Gateway ในเทอร์มินัล)
+## เวิร์กโฟลว์รุ่นล่าสุดสำหรับนักพัฒนา (Gateway ในเทอร์มินัล)
 
-เป้าหมาย: ทำงานกับ TypeScript Gateway, ได้ hot reload, และให้ UI ของแอป macOS เชื่อมต่ออยู่
+เป้าหมาย: ทำงานกับ Gateway ที่เขียนด้วย TypeScript ใช้การรีโหลดอัตโนมัติ และคงการเชื่อมต่อ UI ของแอป macOS ไว้
 
-### 0) (ไม่บังคับ) รันแอป macOS จากซอร์สด้วย
+### 0) (ไม่บังคับ) เรียกใช้แอป macOS จากซอร์สด้วย
 
-หากคุณต้องการให้แอป macOS อยู่บนรุ่นล้ำหน้าด้วย:
+หากต้องการใช้แอป macOS รุ่นล่าสุดสำหรับนักพัฒนาด้วย:
 
 ```bash
 ./scripts/restart-mac.sh
 ```
 
-### 1) เริ่ม dev Gateway
+### 1) เริ่ม Gateway สำหรับการพัฒนา
 
 ```bash
 pnpm install
-# First run only (or after resetting local OpenClaw config/workspace)
+# เฉพาะการเรียกใช้ครั้งแรก (หรือหลังรีเซ็ตการกำหนดค่า/เวิร์กสเปซ OpenClaw ภายในเครื่อง)
 pnpm openclaw setup
 pnpm gateway:watch
 ```
 
-`gateway:watch` เริ่มหรือรีสตาร์ทกระบวนการ watch ของ Gateway ใน tmux
-session ที่มีชื่อ และ auto-attach จากเทอร์มินัลแบบ interactive ส่วน shell ที่ไม่ใช่ interactive จะยังคง
-detached และพิมพ์ `tmux attach -t openclaw-gateway-watch-main`; ใช้
-`OPENCLAW_GATEWAY_WATCH_ATTACH=0 pnpm gateway:watch` เพื่อให้การรันแบบ interactive
-ยังคง detached หรือใช้ `pnpm gateway:watch:raw` สำหรับโหมด watch แบบ foreground ตัว watcher
-จะ reload เมื่อมีการเปลี่ยนแปลงซอร์ส config และ metadata ของ Plugin ที่บันเดิลมาที่เกี่ยวข้อง หาก
-Gateway ที่ถูก watch ออกระหว่าง startup, `gateway:watch` จะรัน
-`openclaw doctor --fix --non-interactive` หนึ่งครั้งแล้วลองใหม่; ตั้งค่า
-`OPENCLAW_GATEWAY_WATCH_AUTO_DOCTOR=0` เพื่อปิด repair pass สำหรับ dev เท่านั้นนี้
-`pnpm openclaw setup` คือขั้นตอนเริ่มต้น config/workspace ภายในเครื่องแบบครั้งเดียวสำหรับ checkout ใหม่
-`pnpm gateway:watch` จะไม่ rebuild `dist/control-ui` ดังนั้นให้รัน `pnpm ui:build` อีกครั้งหลังมีการเปลี่ยนแปลงใน `ui/` หรือใช้ `pnpm ui:dev` ระหว่างพัฒนา Control UI
+`gateway:watch` เริ่มหรือรีสตาร์ตกระบวนการเฝ้าดู Gateway ในเซสชัน tmux
+ที่มีชื่อ (`openclaw-gateway-watch-main`) และเชื่อมต่อโดยอัตโนมัติจาก
+เทอร์มินัลแบบโต้ตอบ เชลล์ที่ไม่โต้ตอบจะยังคงแยกการทำงานและแสดง
+`tmux attach -t openclaw-gateway-watch-main`; ใช้
+`OPENCLAW_GATEWAY_WATCH_ATTACH=0 pnpm gateway:watch` เพื่อให้การเรียกใช้แบบโต้ตอบ
+ยังคงแยกการทำงาน หรือใช้ `pnpm gateway:watch:raw` สำหรับโหมดเฝ้าดูเบื้องหน้า ตัวเฝ้าดู
+จะหยุดบริการ Gateway ที่ติดตั้งไว้ของโปรไฟล์ที่ใช้งานอยู่ก่อนเข้าควบคุม
+พอร์ตที่กำหนดค่าไว้/พอร์ตเริ่มต้น เพื่อป้องกันไม่ให้ตัวควบคุมบริการแทนที่
+กระบวนการจากซอร์ส บริการจะยังคงติดตั้งอยู่ ให้เรียกใช้ `pnpm openclaw gateway start`
+เมื่อเลิกใช้งานโหมดเฝ้าดู พาเนล tmux จะยังคงเปิดอยู่หลังการเริ่มต้นล้มเหลว
+เพื่อให้เทอร์มินัลหรือเอเจนต์อื่นเชื่อมต่อหรือบันทึกล็อกได้ ตัวเฝ้าดู
+จะรีโหลดเมื่อซอร์ส การกำหนดค่า และข้อมูลเมตาของ Plugin ที่รวมมาให้มีการเปลี่ยนแปลงที่เกี่ยวข้อง หาก
+Gateway ที่กำลังเฝ้าดูหยุดทำงานระหว่างการเริ่มต้น `gateway:watch` จะเรียกใช้
+`openclaw doctor --fix --non-interactive` หนึ่งครั้งแล้วลองใหม่ ตั้งค่า
+`OPENCLAW_GATEWAY_WATCH_AUTO_DOCTOR=0` เพื่อปิดการซ่อมแซมรอบนี้ซึ่งใช้เฉพาะการพัฒนา
+`pnpm gateway:watch` จะไม่สร้าง `dist/control-ui` ใหม่ ดังนั้นให้เรียกใช้ `pnpm ui:build` อีกครั้งหลังจาก `ui/` เปลี่ยนแปลง หรือใช้ `pnpm ui:dev` ขณะพัฒนา Control UI
 
-### 2) ชี้แอป macOS ไปยัง Gateway ที่คุณรันอยู่
+### 2) กำหนดให้แอป macOS เชื่อมต่อกับ Gateway ที่กำลังทำงาน
 
 ใน **OpenClaw.app**:
 
-- โหมดการเชื่อมต่อ: **ภายในเครื่อง**
-  แอปจะเชื่อมต่อกับ gateway ที่กำลังรันอยู่บนพอร์ตที่กำหนดค่าไว้
+- Connection Mode: **Local**
+  แอปจะเชื่อมต่อกับ Gateway ที่กำลังทำงานบนพอร์ตที่กำหนดค่าไว้
 
 ### 3) ตรวจสอบ
 
-- สถานะ Gateway ในแอปควรแสดงว่า **"กำลังใช้ gateway ที่มีอยู่ …"**
-- หรือผ่าน CLI:
+- สถานะ Gateway ในแอปควรแสดง **"Using existing gateway …"**
+- หรือตรวจสอบผ่าน CLI:
 
 ```bash
 openclaw health
 ```
 
-### จุดพลาดที่พบบ่อย
+### จุดที่มักทำให้เกิดข้อผิดพลาด
 
-- **พอร์ตผิด:** ค่าเริ่มต้นของ Gateway WS คือ `ws://127.0.0.1:18789`; ให้แอป + CLI ใช้พอร์ตเดียวกัน
-- **ตำแหน่งที่เก็บ state:**
-  - State ของ channel/provider: `~/.openclaw/credentials/`
-  - โปรไฟล์ auth ของโมเดล: `~/.openclaw/agents/<agentId>/agent/auth-profiles.json`
-  - Sessions: `~/.openclaw/agents/<agentId>/sessions/`
-  - Logs: `/tmp/openclaw/`
+- **พอร์ตไม่ถูกต้อง:** Gateway WS ใช้ `ws://127.0.0.1:18789` เป็นค่าเริ่มต้น ให้แอปและ CLI ใช้พอร์ตเดียวกัน
+- **ตำแหน่งจัดเก็บสถานะ:**
+  - สถานะช่องทาง/ผู้ให้บริการ: `~/.openclaw/credentials/`
+  - โปรไฟล์การยืนยันตัวตนของโมเดล: `~/.openclaw/agents/<agentId>/agent/auth-profiles.json`
+  - เซสชันและบทถอดเสียง: `~/.openclaw/agents/<agentId>/agent/openclaw-agent.sqlite`
+  - อาร์ติแฟกต์เซสชันแบบเดิม/ที่เก็บถาวร: `~/.openclaw/agents/<agentId>/sessions/`
+  - ล็อก: `/tmp/openclaw/`
 
-## แผนที่การจัดเก็บ credential
+## แผนผังการจัดเก็บข้อมูลประจำตัว
 
-ใช้ส่วนนี้เมื่อตรวจสอบปัญหา auth หรือตัดสินใจว่าจะสำรองข้อมูลอะไร:
+ใช้ข้อมูลนี้เมื่อแก้ไขข้อบกพร่องของการยืนยันตัวตนหรือตัดสินใจว่าจะสำรองข้อมูลใด:
 
 - **WhatsApp**: `~/.openclaw/credentials/whatsapp/<accountId>/creds.json`
-- **Telegram bot token**: config/env หรือ `channels.telegram.tokenFile` (เฉพาะไฟล์ปกติเท่านั้น; symlink จะถูกปฏิเสธ)
-- **Discord bot token**: config/env หรือ SecretRef (ผู้ให้บริการ env/file/exec)
-- **Slack tokens**: config/env (`channels.slack.*`)
-- **Pairing allowlists**:
+- **โทเค็นบอต Telegram**: การกำหนดค่า/ตัวแปรสภาพแวดล้อม หรือ `channels.telegram.tokenFile` (ต้องเป็นไฟล์ปกติเท่านั้น ไม่ยอมรับลิงก์สัญลักษณ์)
+- **โทเค็นบอต Discord**: การกำหนดค่า/ตัวแปรสภาพแวดล้อม หรือ SecretRef (ผู้ให้บริการ env/file/exec)
+- **โทเค็น Slack**: การกำหนดค่า/ตัวแปรสภาพแวดล้อม (`channels.slack.*`)
+- **รายการอนุญาตการจับคู่**:
   - `~/.openclaw/credentials/<channel>-allowFrom.json` (บัญชีเริ่มต้น)
   - `~/.openclaw/credentials/<channel>-<accountId>-allowFrom.json` (บัญชีที่ไม่ใช่ค่าเริ่มต้น)
-- **โปรไฟล์ auth ของโมเดล**: `~/.openclaw/agents/<agentId>/agent/auth-profiles.json`
-- **Secrets payload ที่ backed by file (ไม่บังคับ)**: `~/.openclaw/secrets.json`
-- **การนำเข้า OAuth แบบ legacy**: `~/.openclaw/credentials/oauth.json`
+- **โปรไฟล์การยืนยันตัวตนของโมเดล**: `~/.openclaw/agents/<agentId>/agent/auth-profiles.json`
+- **เพย์โหลดข้อมูลลับที่จัดเก็บในไฟล์ (ไม่บังคับ)**: `~/.openclaw/secrets.json`
+- **การนำเข้า OAuth แบบเดิม**: `~/.openclaw/credentials/oauth.json`
   รายละเอียดเพิ่มเติม: [ความปลอดภัย](/th/gateway/security#credential-storage-map)
 
-## การอัปเดต (โดยไม่ทำให้การตั้งค่าของคุณพัง)
+## การอัปเดต (โดยไม่ทำลายการตั้งค่า)
 
-- เก็บ `~/.openclaw/workspace` และ `~/.openclaw/` เป็น "ของของคุณ"; อย่าใส่ prompts/config ส่วนตัวลงใน repo `openclaw`
+- เก็บ `~/.openclaw/workspace` และ `~/.openclaw/` เป็น "ข้อมูลของคุณ" อย่าใส่พรอมต์/การกำหนดค่าส่วนตัวไว้ในรีโพ `openclaw`
 - การอัปเดตซอร์ส: `git pull` + `pnpm install` + ใช้ `pnpm gateway:watch` ต่อไป
 
-## Linux (systemd user service)
+## Linux (บริการผู้ใช้ systemd)
 
-การติดตั้งบน Linux ใช้ systemd service แบบ **user** โดยค่าเริ่มต้น systemd จะหยุด user
-services เมื่อ logout/idle ซึ่งจะฆ่า Gateway onboarding จะพยายามเปิดใช้
-lingering ให้คุณ (อาจถาม sudo) หากยังปิดอยู่ ให้รัน:
+การติดตั้งบน Linux ใช้บริการ **ผู้ใช้** ของ systemd โดยค่าเริ่มต้น systemd จะหยุด
+บริการของผู้ใช้เมื่อออกจากระบบ/ไม่มีการใช้งาน ซึ่งทำให้ Gateway หยุดทำงาน การเริ่มต้นใช้งานจะพยายามเปิดใช้
+การคงบริการหลังออกจากระบบให้ (อาจขอให้ใช้ sudo) หากยังปิดอยู่ ให้เรียกใช้:
 
 ```bash
 sudo loginctl enable-linger $USER
 ```
 
-สำหรับเซิร์ฟเวอร์แบบ always-on หรือ multi-user ให้พิจารณาใช้ service แบบ **system** แทน
-user service (ไม่ต้องใช้ lingering) ดูหมายเหตุ systemd ใน [รันบุ๊ก Gateway](/th/gateway)
+สำหรับเซิร์ฟเวอร์ที่ทำงานตลอดเวลาหรือมีผู้ใช้หลายคน ให้พิจารณาใช้บริการระดับ **ระบบ** แทน
+บริการผู้ใช้ (ไม่จำเป็นต้องเปิดการคงบริการหลังออกจากระบบ) โปรดดูหมายเหตุเกี่ยวกับ systemd ใน [คู่มือการใช้งาน Gateway](/th/gateway)
 
 ## เอกสารที่เกี่ยวข้อง
 
-- [รันบุ๊ก Gateway](/th/gateway) (flags, supervision, ports)
-- [การกำหนดค่า Gateway](/th/gateway/configuration) (config schema + examples)
-- [Discord](/th/channels/discord) และ [Telegram](/th/channels/telegram) (reply tags + การตั้งค่า replyToMode)
+- [คู่มือการใช้งาน Gateway](/th/gateway) (แฟล็ก การควบคุมดูแล พอร์ต)
+- [การกำหนดค่า Gateway](/th/gateway/configuration) (สคีมาการกำหนดค่าและตัวอย่าง)
+- [Discord](/th/channels/discord) และ [Telegram](/th/channels/telegram) (แท็กตอบกลับและการตั้งค่า replyToMode)
 - [การตั้งค่าผู้ช่วย OpenClaw](/th/start/openclaw)
-- [แอป macOS](/th/platforms/macos) (วงจรชีวิตของ gateway)
+- [แอป macOS](/th/platforms/macos) (วงจรชีวิตของ Gateway)

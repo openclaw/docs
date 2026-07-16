@@ -1,30 +1,31 @@
 ---
 read_when:
-    - 驗證 SecretRef 憑證涵蓋範圍
-    - 稽核憑證是否符合 `secrets configure` 或 `secrets apply` 的使用資格
-    - 驗證憑證為何不在支援範圍內
-summary: SecretRef 憑證介面的標準支援與不支援範圍
-title: SecretRef 憑證介面
+    - 驗證 SecretRef 認證資訊涵蓋範圍
+    - 稽核認證資訊是否符合 `secrets configure` 或 `secrets apply` 的資格
+    - 驗證認證資訊為何不在支援範圍內
+summary: 支援與不支援的 SecretRef 認證資訊標準介面
+title: SecretRef 認證資訊介面
 x-i18n:
-    generated_at: "2026-07-11T21:46:35Z"
+    generated_at: "2026-07-16T12:03:29Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 435fc25ea9268be40abc367d96def70e8d367cb0ab640a4f2d271a0e9db19147
+    source_hash: a4c7d8d5baf082f5524b93608584600856e48f9076df915c4db301a4ecd814c9
     source_path: reference/secretref-credential-surface.md
     workflow: 16
 ---
 
-本頁定義標準的 SecretRef 憑證介面：哪些憑證欄位可接受 `SecretRef`（由環境變數／檔案／執行命令支援的參照），而非原始祕密值。
+此頁面定義標準的 SecretRef 認證資訊介面：哪些認證資訊欄位可接受 `SecretRef`（由環境變數／檔案／執行命令支援的參照），而非原始密鑰值。
 
 範圍：
 
-- 範圍內：嚴格限於由使用者提供，且 OpenClaw 不會產生或輪替的憑證。
-- 範圍外：執行階段產生或輪替的憑證、OAuth 重新整理資料，以及類似工作階段的成品。
+- 範圍內：僅限由使用者提供，且 OpenClaw 不會建立或輪替的認證資訊。
+- 範圍外：執行階段建立或輪替的認證資訊、OAuth 更新權杖資料，以及類似工作階段的成品。
 
-以下清單由來源目標登錄檔產生，並在 CI 中與 `docs/reference/secretref-user-supplied-credentials-matrix.json` 核對；請勿手動編輯項目。
+以下清單由來源目標登錄檔產生，並在 CI 中對照 `docs/reference/secretref-user-supplied-credentials-matrix.json` 檢查；請勿手動編輯項目。
 
-## 支援的憑證
+## 支援的認證資訊
 
 ### `openclaw.json` 目標（`secrets configure` + `secrets apply` + `secrets audit`）
 
@@ -92,6 +93,8 @@ x-i18n:
 - `channels.slack.accounts.*.signingSecret`
 - `channels.sms.authToken`
 - `channels.sms.accounts.*.authToken`
+- `channels.clickclack.token`
+- `channels.clickclack.accounts.*.token`
 - `channels.discord.token`
 - `channels.discord.pluralkit.token`
 - `channels.discord.voice.tts.providers.*.apiKey`
@@ -125,8 +128,8 @@ x-i18n:
 - `channels.zalo.webhookSecret`
 - `channels.zalo.accounts.*.botToken`
 - `channels.zalo.accounts.*.webhookSecret`
-- `channels.googlechat.serviceAccount` 透過同層的 `serviceAccountRef`（相容性例外）
-- `channels.googlechat.accounts.*.serviceAccount` 透過同層的 `serviceAccountRef`（相容性例外）
+- `channels.googlechat.serviceAccount`，透過同層的 `serviceAccountRef`（相容性例外）
+- `channels.googlechat.accounts.*.serviceAccount`，透過同層的 `serviceAccountRef`（相容性例外）
 
 ### `auth-profiles.json` 目標（`secrets configure` + `secrets apply` + `secrets audit`）
 
@@ -137,15 +140,15 @@ x-i18n:
 
 注意事項：
 
-- 驗證設定檔的方案目標需要 `agentId`；方案項目以 `profiles.*.key`／`profiles.*.token` 為目標，並寫入同層參照（`keyRef`／`tokenRef`）。驗證設定檔參照包含在執行階段解析與稽核涵蓋範圍內。
-- 在 `openclaw.json` 中，SecretRef 必須使用結構化物件，例如 `{"source":"env","provider":"default","id":"DISCORD_BOT_TOKEN"}`。SecretRef 憑證路徑會拒絕舊版 `secretref-env:<ENV_VAR>` 標記字串；請執行 `openclaw doctor --fix` 以遷移有效標記。
-- OAuth 原則防護：`auth.profiles.<id>.mode = "oauth"` 不得與該設定檔的 SecretRef 輸入結合使用。違反此原則時，啟動／重新載入及驗證設定檔解析會立即失敗。
-- 對於由 SecretRef 管理的模型供應商，產生的 `agents/*/agent/models.json` 項目會為 `apiKey`／標頭介面保存非祕密標記，而非已解析的祕密值。標記保存以來源為準：OpenClaw 從使用中的來源設定快照（解析前）寫入標記，而非從已解析的執行階段祕密值寫入。
-- 對於網頁搜尋：在明確供應商模式（已設定 `tools.web.search.provider`）中，只有所選供應商的金鑰有效。在自動模式（未設定 `tools.web.search.provider`）中，只有依優先順序第一個成功解析的供應商金鑰有效，未選取供應商的參照在被選取前會視為非作用中。舊版 `tools.web.search.*` 供應商路徑在相容期內仍會解析，但標準 SecretRef 介面為 `plugins.entries.<plugin>.config.webSearch.*`。
+- 認證設定檔方案目標需要 `agentId`；方案項目以 `profiles.*.key` / `profiles.*.token` 為目標，並寫入同層參照（`keyRef` / `tokenRef`）。認證設定檔參照包含在執行階段解析及稽核涵蓋範圍內。
+- 在 `openclaw.json` 中，SecretRef 必須使用如 `{"source":"env","provider":"default","id":"DISCORD_BOT_TOKEN"}` 的結構化物件。SecretRef 認證資訊路徑會拒絕舊版 `secretref-env:<ENV_VAR>` 標記字串；請執行 `openclaw doctor --fix` 以遷移有效標記。
+- OAuth 原則防護：該設定檔的 `auth.profiles.<id>.mode = "oauth"` 不得與 SecretRef 輸入搭配使用。違反此原則時，啟動／重新載入及認證設定檔解析會立即失敗。
+- 對於由 SecretRef 管理的模型提供者，產生的 `agents/*/agent/models.json` 項目會為 `apiKey`／標頭介面保存非密鑰標記（而非已解析的密鑰值）。標記持久化以來源為權威：OpenClaw 從有效的來源設定快照（解析前）寫入標記，而非從已解析的執行階段密鑰值寫入。
+- 針對網頁搜尋：在明確提供者模式下（已設定 `tools.web.search.provider`），只有所選提供者的金鑰有效。在自動模式下（未設定 `tools.web.search.provider`），只有依優先順序第一個解析成功的提供者金鑰有效，未選取的提供者參照在被選取前會視為非作用中。在相容性期間，舊版 `tools.web.search.*` 提供者路徑仍可解析，但標準 SecretRef 介面為 `plugins.entries.<plugin>.config.webSearch.*`。
 
-## 不支援的憑證
+## 不支援的認證資訊
 
-這些憑證屬於產生、輪替、帶有工作階段，或可長期保存的 OAuth 類別，不適用於唯讀的外部 SecretRef 解析：
+這些認證資訊屬於建立、輪替、帶有工作階段，或可長期用於 OAuth 的類別，不適用於唯讀的外部 SecretRef 解析：
 
 [//]: # "secretref-unsupported-list-start"
 
@@ -163,5 +166,5 @@ x-i18n:
 
 ## 相關內容
 
-- [祕密管理](/zh-TW/gateway/secrets)
-- [驗證憑證語意](/zh-TW/auth-credential-semantics)
+- [密鑰管理](/zh-TW/gateway/secrets)
+- [認證資訊語意](/zh-TW/auth-credential-semantics)

@@ -1,14 +1,15 @@
 ---
 read_when:
     - Vous installez, configurez ou auditez le plugin WhatsApp
-summary: Plugin de canal WhatsApp OpenClaw pour les conversations WhatsApp Web.
+summary: Plugin de canal WhatsApp OpenClaw pour les discussions WhatsApp Web.
 title: Plugin WhatsApp
 x-i18n:
-    generated_at: "2026-07-12T02:59:02Z"
+    generated_at: "2026-07-16T13:37:49Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 2fed1a21b859b7d3bd2798d013faaf7460cd6984c4b06b70e59e3ac85c5327fb
+    source_hash: b7513294a9dd00f117d2c26d27fa54fb95955ad1ba7424b32cb73dcde3dc4f20
     source_path: plugins/reference/whatsapp.md
     workflow: 16
 ---
@@ -20,11 +21,11 @@ Plugin de canal WhatsApp d’OpenClaw pour les discussions WhatsApp Web.
 ## Distribution
 
 - Paquet : `@openclaw/whatsapp`
-- Méthode d’installation : ClawHub : `clawhub:@openclaw/whatsapp` ; npm
+- Mode d’installation : ClawHub : `clawhub:@openclaw/whatsapp`; npm
 
 ## Surface
 
-canaux : whatsapp ; contrats : outils ; Skills
+canaux : `whatsapp`; contrats : `tools`; Skills
 
 ## Documentation associée
 

@@ -1,14 +1,15 @@
 ---
 read_when:
-    - 你正在安装、配置或审核 minimax 插件
+    - 你正在安装、配置或审计 minimax 插件
 summary: 为 OpenClaw 添加 MiniMax 和 MiniMax Portal 模型提供商支持。
 title: MiniMax 插件
 x-i18n:
-    generated_at: "2026-07-11T20:48:46Z"
+    generated_at: "2026-07-16T11:51:08Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: a3c5d999505a27b9ffbe2927c5ae7e67bfe3a53be7477490fee79e2a420f72da
+    source_hash: c9bff5e2346298479b15d60af5b94e6b7f535ace078e4a43e7c0ba2526cf4c3a
     source_path: plugins/reference/minimax.md
     workflow: 16
 ---
@@ -20,11 +21,11 @@ x-i18n:
 ## 分发
 
 - 软件包：`@openclaw/minimax-provider`
-- 安装方式：内置于 OpenClaw
+- 安装方式：OpenClaw 已内置
 
-## 接口范围
+## 接口
 
-提供商：minimax、minimax-portal；契约：imageGenerationProviders、mediaUnderstandingProviders、musicGenerationProviders、speechProviders、usageProviders、videoGenerationProviders、webSearchProviders
+提供商：`minimax`、`minimax-portal`；契约：`imageGenerationProviders`、`mediaUnderstandingProviders`、`musicGenerationProviders`、`speechProviders`、`usageProviders`、`videoGenerationProviders`、`webSearchProviders`
 
 ## 相关文档
 

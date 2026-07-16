@@ -1,14 +1,15 @@
 ---
 read_when:
     - در حال نصب، پیکربندی یا ممیزی Plugin ‏clawrouter هستید
-summary: پشتیبانی از ارائه‌دهندهٔ مدل ClawRouter را به OpenClaw اضافه می‌کند.
+summary: پشتیبانی از ارائه‌دهنده مدل ClawRouter را به OpenClaw اضافه می‌کند.
 title: Plugin ‏ClawRouter
 x-i18n:
-    generated_at: "2026-07-12T10:29:47Z"
+    generated_at: "2026-07-16T17:26:25Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 9e9b6bb73e00ead4df682d7c5873b1fd97f84c7c9fe29d4f511403c598651f82
+    source_hash: 86cb1c6ea40d38f916642ba922daeef19115e667ff4069a63fa5b40f5f48e344
     source_path: plugins/reference/clawrouter.md
     workflow: 16
 ---
@@ -20,11 +21,11 @@ x-i18n:
 ## توزیع
 
 - بسته: `@openclaw/clawrouter`
-- روش نصب: در OpenClaw گنجانده شده است
+- مسیر نصب: همراه OpenClaw ارائه می‌شود
 
 ## سطح
 
-ارائه‌دهندگان: clawrouter؛ قراردادها: usageProviders
+ارائه‌دهندگان: `clawrouter`؛ قراردادها: `usageProviders`
 
 ## مستندات مرتبط
 

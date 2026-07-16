@@ -1,14 +1,15 @@
 ---
 read_when:
-    - Instalujesz, konfigurujesz lub przeprowadzasz audyt pluginu clickclack
+    - Instalowanie, konfigurowanie lub audytowanie pluginu clickclack
 summary: Dodaje obsługę kanału Clickclack do wysyłania i odbierania wiadomości OpenClaw.
 title: Plugin Clickclack
 x-i18n:
-    generated_at: "2026-07-12T15:28:24Z"
+    generated_at: "2026-07-16T18:53:57Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: d939f5291de0510eaac361732f93fb79cac94656ac56a653f3c9e97394c6a9ae
+    source_hash: 7dcb6958564f9a26d8e8ef43d1810805417c69bf05632e7d64bd2acedea5c82f
     source_path: plugins/reference/clickclack.md
     workflow: 16
 ---
@@ -22,10 +23,10 @@ Dodaje kanał Clickclack do wysyłania i odbierania wiadomości OpenClaw.
 - Pakiet: `@openclaw/clickclack`
 - Sposób instalacji: npm; ClawHub: `clawhub:@openclaw/clickclack`
 
-## Interfejs
+## Powierzchnia
 
-kanały: clickclack
+kanały: `clickclack`
 
 ## Powiązana dokumentacja
 
-- [clickclack](/pl/channels/clickclack)
+- [Clickclack](/pl/channels/clickclack)

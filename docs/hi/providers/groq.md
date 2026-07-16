@@ -1,53 +1,54 @@
 ---
 read_when:
     - आप OpenClaw के साथ Groq का उपयोग करना चाहते हैं
-    - आपको API कुंजी के env var या CLI प्रमाणीकरण विकल्प की आवश्यकता है
+    - आपको API कुंजी के पर्यावरण चर या CLI प्रमाणीकरण विकल्प की आवश्यकता है
     - आप Groq पर Whisper ऑडियो ट्रांसक्रिप्शन कॉन्फ़िगर कर रहे हैं
-summary: Groq सेटअप (प्रमाणीकरण + मॉडल चयन + Whisper प्रतिलेखन)
+summary: Groq सेटअप (प्रमाणीकरण + मॉडल चयन + Whisper ट्रांसक्रिप्शन)
 title: Groq
 x-i18n:
-    generated_at: "2026-06-28T23:59:38Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T16:43:28Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: f1133f2b1fa09e2e854b5762e189233597e86e8ccb2df8d619e891b4dc9c8d82
+    source_hash: f04f9365127c72aa2f976f453e5d11657b19d6b4a57de1179b88924744db1dc1
     source_path: providers/groq.md
     workflow: 16
 ---
 
-[Groq](https://groq.com) कस्टम LPU हार्डवेयर का उपयोग करके open-weight मॉडल (Llama, Gemma, Kimi, Qwen, GPT OSS, और अधिक) पर अति-तेज़ inference प्रदान करता है। Groq plugin OpenAI-संगत chat provider और audio media-understanding provider, दोनों को register करता है।
+[Groq](https://groq.com) कस्टम LPU हार्डवेयर का उपयोग करके ओपन-वेट मॉडल (Llama, Gemma, Kimi, Qwen, GPT OSS और अन्य) पर अत्यंत तेज़ इन्फ़रेंस प्रदान करता है। Groq Plugin, OpenAI-संगत चैट प्रदाता और ऑडियो मीडिया-समझ प्रदाता—दोनों को पंजीकृत करता है।
 
 | गुण                    | मान                                      |
 | ---------------------- | ---------------------------------------- |
-| Provider id            | `groq`                                   |
-| Plugin                 | आधिकारिक बाहरी package                  |
-| Auth env var           | `GROQ_API_KEY`                           |
-| API                    | OpenAI-संगत (`openai-completions`)       |
-| Base URL               | `https://api.groq.com/openai/v1`         |
-| Audio transcription    | `whisper-large-v3-turbo` (default)       |
-| Suggested chat default | `groq/llama-3.3-70b-versatile`           |
+| प्रदाता आईडी           | `groq`                       |
+| Plugin                 | आधिकारिक बाहरी पैकेज                     |
+| प्रमाणीकरण एनवायरनमेंट वेरिएबल | `GROQ_API_KEY`             |
+| API                    | OpenAI-संगत (`openai-completions`)         |
+| आधार URL               | `https://api.groq.com/openai/v1`                       |
+| ऑडियो ट्रांसक्रिप्शन   | `whisper-large-v3-turbo` (डिफ़ॉल्ट)            |
+| सुझाया गया डिफ़ॉल्ट चैट मॉडल | `groq/llama-3.3-70b-versatile`                 |
 
-## Plugin install करें
+## Plugin इंस्टॉल करें
 
-आधिकारिक plugin install करें, फिर Gateway restart करें:
+आधिकारिक Plugin इंस्टॉल करें, फिर Gateway पुनः आरंभ करें:
 
 ```bash
 openclaw plugins install @openclaw/groq-provider
 openclaw gateway restart
 ```
 
-## शुरू करना
+## शुरुआत करना
 
 <Steps>
-  <Step title="API key प्राप्त करें">
-    [console.groq.com/keys](https://console.groq.com/keys) पर API key बनाएँ।
+  <Step title="API कुंजी प्राप्त करें">
+    [console.groq.com/keys](https://console.groq.com/keys) पर एक API कुंजी बनाएँ।
   </Step>
-  <Step title="API key सेट करें">
+  <Step title="API कुंजी सेट करें">
     ```bash
 export GROQ_API_KEY=gsk_...
 ```
   </Step>
-  <Step title="default model सेट करें">
+  <Step title="डिफ़ॉल्ट मॉडल सेट करें">
     ```json5
     {
       agents: {
@@ -58,14 +59,14 @@ export GROQ_API_KEY=gsk_...
     }
     ```
   </Step>
-  <Step title="catalog पहुँच योग्य है, सत्यापित करें">
+  <Step title="पुष्टि करें कि कैटलॉग उपलब्ध है">
     ```bash
     openclaw models list --provider groq
     ```
   </Step>
 </Steps>
 
-### Config file उदाहरण
+### कॉन्फ़िगरेशन फ़ाइल का उदाहरण
 
 ```json5
 {
@@ -78,49 +79,45 @@ export GROQ_API_KEY=gsk_...
 }
 ```
 
-## Built-in catalog
+## अंतर्निहित कैटलॉग
 
-OpenClaw reasoning और non-reasoning entries, दोनों के साथ manifest-backed Groq catalog ship करता है। अपने installed version के static rows देखने के लिए `openclaw models list --provider groq` चलाएँ, या Groq की authoritative list के लिए [console.groq.com/docs/models](https://console.groq.com/docs/models) देखें।
+OpenClaw में मैनिफ़ेस्ट-समर्थित Groq कैटलॉग शामिल है, जिसमें रीजनिंग और गैर-रीजनिंग दोनों प्रविष्टियाँ हैं। अपने इंस्टॉल किए गए संस्करण की स्थिर पंक्तियाँ देखने के लिए `openclaw models list --provider groq` चलाएँ या Groq की आधिकारिक सूची के लिए [console.groq.com/docs/models](https://console.groq.com/docs/models) देखें।
 
-| Model ref                                        | नाम                     | Reasoning | Input        | Context |
-| ------------------------------------------------ | ----------------------- | --------- | ------------ | ------- |
-| `groq/llama-3.3-70b-versatile`                   | Llama 3.3 70B Versatile | नहीं      | text         | 131,072 |
-| `groq/llama-3.1-8b-instant`                      | Llama 3.1 8B Instant    | नहीं      | text         | 131,072 |
-| `groq/meta-llama/llama-4-scout-17b-16e-instruct` | Llama 4 Scout 17B       | नहीं      | text + image | 131,072 |
-| `groq/openai/gpt-oss-120b`                       | GPT OSS 120B            | हाँ       | text         | 131,072 |
-| `groq/openai/gpt-oss-20b`                        | GPT OSS 20B             | हाँ       | text         | 131,072 |
-| `groq/openai/gpt-oss-safeguard-20b`              | Safety GPT OSS 20B      | हाँ       | text         | 131,072 |
-| `groq/qwen/qwen3-32b`                            | Qwen3 32B               | हाँ       | text         | 131,072 |
-| `groq/groq/compound`                             | Compound                | हाँ       | text         | 131,072 |
-| `groq/groq/compound-mini`                        | Compound Mini           | हाँ       | text         | 131,072 |
+| मॉडल संदर्भ                                      | नाम                     | रीजनिंग  | इनपुट       | कॉन्टेक्स्ट |
+| ------------------------------------------------ | ----------------------- | -------- | ------------ | ----------- |
+| `groq/llama-3.3-70b-versatile`                               | Llama 3.3 70B Versatile | नहीं     | टेक्स्ट      | 131,072     |
+| `groq/llama-3.1-8b-instant`                               | Llama 3.1 8B Instant    | नहीं     | टेक्स्ट      | 131,072     |
+| `groq/meta-llama/llama-4-scout-17b-16e-instruct`                               | Llama 4 Scout 17B       | नहीं     | टेक्स्ट + इमेज | 131,072   |
+| `groq/openai/gpt-oss-120b`                               | GPT OSS 120B            | हाँ      | टेक्स्ट      | 131,072     |
+| `groq/openai/gpt-oss-20b`                               | GPT OSS 20B             | हाँ      | टेक्स्ट      | 131,072     |
+| `groq/openai/gpt-oss-safeguard-20b`                               | Safety GPT OSS 20B      | हाँ      | टेक्स्ट      | 131,072     |
+| `groq/qwen/qwen3-32b`                               | Qwen3 32B               | हाँ      | टेक्स्ट      | 131,072     |
+| `groq/groq/compound`                               | Compound                | हाँ      | टेक्स्ट      | 131,072     |
+| `groq/groq/compound-mini`                               | Compound Mini           | हाँ      | टेक्स्ट      | 131,072     |
 
 <Tip>
-  catalog हर OpenClaw release के साथ विकसित होता है। `openclaw models list --provider groq` आपके installed version को ज्ञात rows दिखाता है; नए जोड़े गए या deprecated models के लिए [console.groq.com/docs/models](https://console.groq.com/docs/models) से cross-check करें।
+  प्रत्येक OpenClaw रिलीज़ के साथ कैटलॉग विकसित होता है। `openclaw models list --provider groq` आपके इंस्टॉल किए गए संस्करण को ज्ञात पंक्तियाँ दिखाता है; नए जोड़े गए या बहिष्कृत मॉडल के लिए [console.groq.com/docs/models](https://console.groq.com/docs/models) से मिलान करें।
 </Tip>
 
-## Reasoning models
+## रीजनिंग मॉडल
 
-OpenClaw अपने साझा `/think` levels को Groq के model-specific `reasoning_effort` values से map करता है:
+Groq रीजनिंग मॉडल (ऊपर दी गई तालिका में `reasoning: true`) OpenClaw के साझा `/think` स्तरों को `low`, `medium` या `high` के `reasoning_effort` मानों पर मैप करते हैं। `/think off` या `/think none`, निष्क्रिय मान भेजने के बजाय अनुरोध से `reasoning_effort` को हटा देता है।
 
-- `qwen/qwen3-32b` के लिए, disabled thinking `none` भेजता है और enabled thinking `default` भेजता है।
-- Groq GPT OSS reasoning models (`openai/gpt-oss-*`) के लिए, OpenClaw `/think` level के आधार पर `low`, `medium`, या `high` भेजता है। Disabled thinking `reasoning_effort` को omit करता है क्योंकि ये models disabled value support नहीं करते।
-- DeepSeek R1 Distill, Qwen QwQ, और Compound Groq की native reasoning surface का उपयोग करते हैं; `/think` visibility control करता है लेकिन model हमेशा reason करता है।
+साझा `/think` स्तरों और OpenClaw द्वारा प्रत्येक प्रदाता के लिए उनके अनुवाद की जानकारी के लिए [थिंकिंग मोड](/hi/tools/thinking) देखें।
 
-साझा `/think` levels और OpenClaw उन्हें प्रत्येक provider के लिए कैसे translate करता है, इसके लिए [Thinking modes](/hi/tools/thinking) देखें।
+## ऑडियो ट्रांसक्रिप्शन
 
-## Audio transcription
-
-Groq का plugin एक **audio media-understanding provider** भी register करता है ताकि voice messages को साझा `tools.media.audio` surface के माध्यम से transcribe किया जा सके।
+Groq का Plugin एक **ऑडियो मीडिया-समझ प्रदाता** भी पंजीकृत करता है, ताकि साझा `tools.media.audio` सतह के माध्यम से वॉइस संदेशों को ट्रांसक्राइब किया जा सके।
 
 | गुण                | मान                                       |
 | ------------------ | ----------------------------------------- |
-| Shared config path | `tools.media.audio`                       |
-| Default base URL   | `https://api.groq.com/openai/v1`          |
-| Default model      | `whisper-large-v3-turbo`                  |
-| Auto priority      | 20                                        |
-| API endpoint       | OpenAI-संगत `/audio/transcriptions`       |
+| साझा कॉन्फ़िगरेशन पथ | `tools.media.audio`                     |
+| डिफ़ॉल्ट आधार URL  | `https://api.groq.com/openai/v1`                        |
+| डिफ़ॉल्ट मॉडल      | `whisper-large-v3-turbo`                        |
+| स्वचालित प्राथमिकता | 20                                      |
+| API एंडपॉइंट       | OpenAI-संगत `/audio/transcriptions`            |
 
-Groq को default audio backend बनाने के लिए:
+Groq को डिफ़ॉल्ट ऑडियो बैकएंड बनाने के लिए:
 
 ```json5
 {
@@ -135,17 +132,17 @@ Groq को default audio backend बनाने के लिए:
 ```
 
 <AccordionGroup>
-  <Accordion title="daemon के लिए environment availability">
-    यदि Gateway managed service (launchd, systemd, Docker) के रूप में चलता है, तो `GROQ_API_KEY` उस process को visible होना चाहिए — केवल आपके interactive shell को नहीं।
+  <Accordion title="डेमन के लिए एनवायरनमेंट की उपलब्धता">
+    यदि Gateway एक प्रबंधित सेवा (launchd, systemd, Docker) के रूप में चलता है, तो `GROQ_API_KEY` उस प्रोसेस को दिखाई देना चाहिए—केवल आपके इंटरैक्टिव शेल को नहीं।
 
     <Warning>
-      केवल interactive shell में export की गई key launchd या systemd daemon की मदद नहीं करेगी, जब तक कि वह environment वहाँ भी import न किया गया हो। key को gateway process से readable बनाने के लिए `~/.openclaw/.env` में या `env.shellEnv` के माध्यम से सेट करें।
+      केवल इंटरैक्टिव शेल में एक्सपोर्ट की गई कुंजी launchd या systemd डेमन के लिए उपयोगी नहीं होगी, जब तक उस एनवायरनमेंट को वहाँ भी इंपोर्ट न किया जाए। कुंजी को Gateway प्रोसेस से पठनीय बनाने के लिए इसे `~/.openclaw/.env` में या `env.shellEnv` के माध्यम से सेट करें।
     </Warning>
 
   </Accordion>
 
-  <Accordion title="Custom Groq model ids">
-    OpenClaw runtime पर कोई भी Groq model id स्वीकार करता है। Groq द्वारा दिखाए गए exact id का उपयोग करें और उसके आगे `groq/` prefix लगाएँ। static catalog common cases को cover करता है; uncatalogued ids default OpenAI-संगत template पर fall through करते हैं।
+  <Accordion title="कस्टम Groq मॉडल आईडी">
+    OpenClaw रनटाइम पर किसी भी Groq मॉडल आईडी को स्वीकार करता है। Groq द्वारा दिखाई गई सटीक आईडी का उपयोग करें और उसके आगे `groq/` लगाएँ। स्थिर कैटलॉग सामान्य मामलों को समाहित करता है; कैटलॉग में शामिल न की गई आईडी डिफ़ॉल्ट OpenAI-संगत टेम्पलेट पर चली जाती हैं।
 
     ```json5
     {
@@ -163,16 +160,16 @@ Groq को default audio backend बनाने के लिए:
 ## संबंधित
 
 <CardGroup cols={2}>
-  <Card title="Model providers" href="/hi/concepts/model-providers" icon="layers">
-    providers, model refs, और failover behavior चुनना।
+  <Card title="मॉडल प्रदाता" href="/hi/concepts/model-providers" icon="layers">
+    प्रदाताओं, मॉडल संदर्भों और फ़ेलओवर व्यवहार का चयन।
   </Card>
-  <Card title="Thinking modes" href="/hi/tools/thinking" icon="brain">
-    Reasoning effort levels और provider-policy interaction।
+  <Card title="थिंकिंग मोड" href="/hi/tools/thinking" icon="brain">
+    रीजनिंग प्रयास के स्तर और प्रदाता-नीति की परस्पर क्रिया।
   </Card>
-  <Card title="Configuration reference" href="/hi/gateway/configuration-reference" icon="gear">
-    provider और audio settings सहित पूरा config schema।
+  <Card title="कॉन्फ़िगरेशन संदर्भ" href="/hi/gateway/configuration-reference" icon="gear">
+    प्रदाता और ऑडियो सेटिंग सहित संपूर्ण कॉन्फ़िगरेशन स्कीमा।
   </Card>
   <Card title="Groq Console" href="https://console.groq.com" icon="arrow-up-right-from-square">
-    Groq dashboard, API docs, और pricing।
+    Groq डैशबोर्ड, API दस्तावेज़ और मूल्य निर्धारण।
   </Card>
 </CardGroup>

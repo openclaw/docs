@@ -4,11 +4,12 @@ read_when:
 summary: 用于 WhatsApp Web 聊天的 OpenClaw WhatsApp 渠道插件。
 title: WhatsApp 插件
 x-i18n:
-    generated_at: "2026-07-11T20:49:57Z"
+    generated_at: "2026-07-16T11:52:39Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 2fed1a21b859b7d3bd2798d013faaf7460cd6984c4b06b70e59e3ac85c5327fb
+    source_hash: b7513294a9dd00f117d2c26d27fa54fb95955ad1ba7424b32cb73dcde3dc4f20
     source_path: plugins/reference/whatsapp.md
     workflow: 16
 ---
@@ -20,11 +21,11 @@ x-i18n:
 ## 分发
 
 - 软件包：`@openclaw/whatsapp`
-- 安装方式：ClawHub：`clawhub:@openclaw/whatsapp`；npm
+- 安装途径：ClawHub：`clawhub:@openclaw/whatsapp`；npm
 
-## 功能范围
+## 接口范围
 
-渠道：whatsapp；契约：工具；技能
+渠道：`whatsapp`；契约：`tools`；Skills
 
 ## 相关文档
 

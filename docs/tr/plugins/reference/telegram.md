@@ -1,21 +1,22 @@
 ---
 read_when:
-    - telegram Pluginini kuruyor, yapılandırıyor veya denetliyorsunuz
-summary: OpenClaw mesajlarını gönderip almak için Telegram kanal yüzeyini ekler.
-title: Telegram eklentisi
+    - Telegram pluginini kuruyor, yapılandırıyor veya denetliyorsunuz
+summary: OpenClaw mesajlarını göndermek ve almak için Telegram kanal yüzeyini ekler.
+title: Telegram plugin’i
 x-i18n:
-    generated_at: "2026-07-12T12:35:10Z"
+    generated_at: "2026-07-16T17:46:47Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: cada3e82983630e71fa5cc32aa2ef0801eff1cab620f1e7f5c2dfdd3a565924e
+    source_hash: dbd5996e8c937820ef1280eaadcbdede3f52c2f2fc435025bb9707229d8822cb
     source_path: plugins/reference/telegram.md
     workflow: 16
 ---
 
-# Telegram Plugin
+# Telegram plugin
 
-OpenClaw mesajlarını göndermek ve almak için Telegram kanal yüzeyini ekler.
+OpenClaw mesajlarını gönderip almak için Telegram kanal yüzeyini ekler.
 
 ## Dağıtım
 
@@ -24,8 +25,8 @@ OpenClaw mesajlarını göndermek ve almak için Telegram kanal yüzeyini ekler.
 
 ## Yüzey
 
-kanallar: telegram
+kanallar: `telegram`
 
 ## İlgili belgeler
 
-- [telegram](/tr/channels/telegram)
+- [Telegram](/tr/channels/telegram)

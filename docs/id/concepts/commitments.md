@@ -2,45 +2,46 @@
 read_when:
     - Anda ingin OpenClaw mengingat tindak lanjut yang alami
     - Anda ingin memahami perbedaan antara check-in yang disimpulkan dan pengingat
-    - Anda ingin meninjau atau mengabaikan komitmen tindak lanjut
+    - Anda ingin meninjau atau membatalkan komitmen tindak lanjut
 sidebarTitle: Commitments
 summary: Memori tindak lanjut yang disimpulkan untuk check-in yang bukan pengingat persis
 title: Komitmen yang disimpulkan
 x-i18n:
-    generated_at: "2026-07-12T14:08:07Z"
+    generated_at: "2026-07-16T17:58:56Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: f4708cd337c7755a4f16e14154050dc43b6033e71bfda9de5e8fdaa9c6ce0277
+    source_hash: 4fa3a3654b628b63c5319144d63f122db53fff7170a0c8339e2c5a1147961e35
     source_path: concepts/commitments.md
     workflow: 16
 ---
 
-Komitmen adalah ingatan tindak lanjut berjangka pendek. Saat diaktifkan, OpenClaw dapat
-mengenali bahwa suatu percakapan menciptakan peluang untuk menghubungi kembali di masa mendatang dan mengingat
-untuk membahasnya lagi nanti.
+Commitment adalah memori tindak lanjut berjangka pendek. Saat diaktifkan, OpenClaw dapat
+mengenali bahwa suatu percakapan menciptakan kesempatan untuk menindaklanjuti di masa mendatang dan mengingat
+untuk membahasnya kembali nanti.
 
 Contoh:
 
-- Anda menyebutkan wawancara besok. OpenClaw mungkin menghubungi Anda setelahnya.
-- Anda mengatakan bahwa Anda kelelahan. OpenClaw mungkin bertanya nanti apakah Anda sudah tidur.
-- Agen mengatakan akan menindaklanjuti setelah sesuatu berubah. OpenClaw mungkin melacak
-  hal yang belum dituntaskan tersebut.
+- Anda menyebutkan wawancara besok. OpenClaw dapat menanyakannya setelah itu.
+- Anda mengatakan bahwa Anda kelelahan. OpenClaw dapat bertanya nanti apakah Anda sudah tidur.
+- Agen mengatakan akan menindaklanjuti setelah sesuatu berubah. OpenClaw dapat melacak
+  hal yang masih terbuka tersebut.
 
-Komitmen bukanlah fakta tahan lama seperti `MEMORY.md`, dan bukan pula pengingat
-yang presisi. Komitmen berada di antara ingatan dan otomatisasi: OpenClaw mengingat
-kewajiban yang terikat pada percakapan, lalu Heartbeat menyampaikannya saat waktunya tiba.
+Commitment bukan fakta permanen seperti `MEMORY.md`, dan bukan pengingat
+yang pasti. Commitment berada di antara memori dan otomatisasi: OpenClaw mengingat kewajiban
+yang terikat pada percakapan, lalu Heartbeat menyampaikannya saat waktunya tiba.
 
-## Mengaktifkan komitmen
+## Mengaktifkan commitment
 
-Komitmen dinonaktifkan secara default (`commitments.enabled: false`). Aktifkan dalam konfigurasi:
+Commitment dinonaktifkan secara default (`commitments.enabled: false`). Aktifkan dalam konfigurasi:
 
 ```bash
 openclaw config set commitments.enabled true
 openclaw config set commitments.maxPerDay 3
 ```
 
-Padanan dalam `openclaw.json`:
+`openclaw.json` yang setara:
 
 ```json
 {
@@ -51,67 +52,67 @@ Padanan dalam `openclaw.json`:
 }
 ```
 
-`commitments.maxPerDay` membatasi jumlah tindak lanjut tersimpul yang dapat disampaikan
-per sesi agen dalam periode satu hari berjalan. Nilai defaultnya adalah `3`.
+`commitments.maxPerDay` membatasi jumlah tindak lanjut yang disimpulkan yang dapat disampaikan
+per sesi agen dalam periode satu hari bergulir. Nilai defaultnya adalah `3`.
 
 ## Cara kerjanya
 
-Setelah agen membalas, OpenClaw dapat menjalankan tahap ekstraksi latar belakang tersembunyi dalam
-konteks terpisah, dengan alat dinonaktifkan. Tahap tersebut hanya mencari komitmen tindak lanjut tersimpul. Tahap ini
+Setelah agen membalas, OpenClaw dapat menjalankan proses ekstraksi latar belakang tersembunyi dalam
+konteks terpisah, dengan alat dinonaktifkan. Proses tersebut hanya mencari commitment tindak lanjut yang disimpulkan. Proses ini
 tidak menulis ke percakapan yang terlihat dan tidak meminta agen utama
-untuk menalar proses ekstraksi.
+untuk melakukan penalaran tentang ekstraksi tersebut.
 
-Saat menemukan kandidat dengan tingkat keyakinan tinggi, OpenClaw menyimpan komitmen yang berisi:
+Saat menemukan kandidat dengan tingkat keyakinan tinggi, OpenClaw menyimpan commitment yang berisi:
 
 - ID agen
 - kunci sesi
-- kanal asli dan target pengiriman
+- saluran asli dan target pengiriman
 - rentang waktu jatuh tempo
-- saran singkat untuk menghubungi kembali
+- saran singkat untuk menindaklanjuti
 - metadata noninstruksional agar Heartbeat dapat memutuskan apakah akan mengirimkannya
 
-Pengiriman berlangsung melalui Heartbeat. Saat komitmen jatuh tempo, Heartbeat
-menambahkan komitmen tersebut ke giliran Heartbeat untuk cakupan agen dan kanal yang sama.
-Prompt secara eksplisit memperingatkan bahwa metadata komitmen tidak tepercaya dan menginstruksikan
-model agar tidak mengikuti instruksi di dalamnya atau menggunakan alat karenanya. Model
-dapat mengirim satu pesan tindak lanjut yang wajar atau membalas `HEARTBEAT_OK` untuk mengabaikannya.
-Jika Heartbeat dikonfigurasi dengan `target: "none"`, komitmen yang jatuh tempo tetap
-bersifat internal dan tidak mengirim pesan tindak lanjut eksternal. Prompt pengiriman komitmen tidak
-memutar ulang teks percakapan asli, melainkan hanya saran pesan tindak lanjut dan
-metadata, dan giliran Heartbeat untuk komitmen yang jatuh tempo dijalankan tanpa alat OpenClaw.
+Pengiriman dilakukan melalui Heartbeat. Saat commitment jatuh tempo, Heartbeat
+menambahkan commitment tersebut ke giliran Heartbeat untuk agen dan cakupan saluran yang sama.
+Prompt memperingatkan secara eksplisit bahwa metadata commitment tidak tepercaya dan menginstruksikan
+model agar tidak mengikuti instruksi di dalamnya atau menggunakan alat karena metadata tersebut.
+Model dapat mengirim satu tindak lanjut yang alami atau membalas `HEARTBEAT_OK` untuk mengabaikannya.
+Jika Heartbeat dikonfigurasi dengan `target: "none"`, commitment yang jatuh tempo tetap
+bersifat internal dan tidak mengirim tindak lanjut eksternal. Prompt pengiriman commitment tidak
+memutar ulang teks percakapan asli, melainkan hanya saran tindak lanjut dan
+metadata, dan giliran Heartbeat untuk commitment yang jatuh tempo dijalankan tanpa alat OpenClaw.
 
-OpenClaw tidak pernah menyampaikan komitmen tersimpul segera setelah menyimpannya.
-Waktu jatuh tempo dibatasi agar setidaknya satu interval Heartbeat setelah komitmen
-dibuat, sehingga tindak lanjut tidak dapat langsung bergema kembali pada saat yang sama ketika
-komitmen tersebut disimpulkan.
+OpenClaw tidak pernah menyampaikan commitment yang disimpulkan segera setelah menyimpannya.
+Waktu jatuh tempo dibatasi agar setidaknya satu interval Heartbeat setelah commitment
+dibuat, sehingga tindak lanjut tidak dapat langsung menggema kembali pada saat yang sama ketika
+disimpulkan.
 
 ## Cakupan
 
-Komitmen dibatasi pada konteks agen dan kanal yang persis sama dengan tempat komitmen tersebut
+Commitment dibatasi pada konteks agen dan saluran yang sama persis dengan tempat commitment tersebut
 dibuat. Tindak lanjut yang disimpulkan saat berbicara dengan satu agen di Discord tidak
-disampaikan oleh agen lain, kanal lain, atau sesi yang tidak terkait.
+disampaikan oleh agen lain, saluran lain, atau sesi yang tidak terkait.
 
-Cakupan ini merupakan bagian dari fitur. Pesan tindak lanjut yang alami seharusnya terasa seperti kelanjutan
-percakapan yang sama, bukan seperti sistem pengingat global.
+Cakupan ini merupakan bagian dari fitur tersebut. Tindak lanjut yang alami harus terasa seperti
+kelanjutan percakapan yang sama, bukan seperti sistem pengingat global.
 
-## Komitmen dibandingkan dengan pengingat
+## Commitment dibandingkan dengan pengingat
 
-| Kebutuhan                                             | Gunakan                                  |
-| ----------------------------------------------------- | ---------------------------------------- |
-| "Ingatkan saya pukul 15.00"                           | [Tugas terjadwal](/id/automation/cron-jobs) |
-| "Hubungi saya dalam 20 menit"                         | [Tugas terjadwal](/id/automation/cron-jobs) |
-| "Jalankan laporan ini setiap hari kerja"              | [Tugas terjadwal](/id/automation/cron-jobs) |
-| "Saya ada wawancara besok"                            | Komitmen                                 |
-| "Saya terjaga sepanjang malam"                        | Komitmen                                 |
-| "Tindak lanjuti jika saya tidak menjawab utas terbuka ini" | Komitmen                            |
+| Kebutuhan                                       | Gunakan                                  |
+| ----------------------------------------------- | ---------------------------------------- |
+| "Ingatkan saya pukul 3 sore"                    | [Tugas terjadwal](/id/automation/cron-jobs) |
+| "Hubungi saya dalam 20 menit"                   | [Tugas terjadwal](/id/automation/cron-jobs) |
+| "Jalankan laporan ini setiap hari kerja"        | [Tugas terjadwal](/id/automation/cron-jobs) |
+| "Saya punya wawancara besok"                    | Commitment                               |
+| "Saya terjaga sepanjang malam"                  | Commitment                               |
+| "Tindak lanjuti jika saya tidak menjawab utas terbuka ini" | Commitment                     |
 
-Permintaan pengguna yang presisi sudah termasuk dalam jalur penjadwal. Komitmen hanya
-digunakan untuk tindak lanjut tersimpul: momen ketika pengguna tidak meminta pengingat,
-tetapi percakapan tersebut jelas menciptakan peluang tindak lanjut yang berguna di masa mendatang.
+Permintaan pengguna yang pasti sudah termasuk dalam jalur penjadwal. Commitment hanya
+ditujukan untuk tindak lanjut yang disimpulkan: momen ketika pengguna tidak meminta pengingat,
+tetapi percakapan tersebut jelas menciptakan tindak lanjut mendatang yang bermanfaat.
 
-## Mengelola komitmen
+## Mengelola commitment
 
-Gunakan CLI untuk memeriksa dan menghapus komitmen yang tersimpan:
+Gunakan CLI untuk memeriksa dan menghapus commitment yang tersimpan:
 
 ```bash
 openclaw commitments
@@ -125,13 +126,13 @@ Lihat [`openclaw commitments`](/id/cli/commitments) untuk referensi perintah len
 
 ## Privasi dan biaya
 
-Ekstraksi komitmen menggunakan tahap LLM, sehingga mengaktifkannya menambah penggunaan model
-di latar belakang setelah giliran yang memenuhi syarat. Tahap ini disembunyikan dari percakapan
+Ekstraksi commitment menggunakan proses LLM, sehingga mengaktifkannya menambah penggunaan model
+di latar belakang setelah giliran yang memenuhi syarat. Proses tersebut disembunyikan dari percakapan
 yang terlihat oleh pengguna, tetapi dapat membaca percakapan terbaru yang diperlukan untuk menentukan apakah
 terdapat tindak lanjut.
 
-Komitmen yang tersimpan adalah status lokal OpenClaw. Komitmen merupakan ingatan operasional, bukan
-ingatan jangka panjang. Nonaktifkan fitur dengan:
+Commitment yang tersimpan adalah memori operasional OpenClaw lokal dalam basis data status SQLite
+bersama, bukan memori jangka panjang. Nonaktifkan fitur tersebut dengan:
 
 ```bash
 openclaw config set commitments.enabled false
@@ -142,16 +143,16 @@ openclaw config set commitments.enabled false
 Jika tindak lanjut yang diharapkan tidak muncul:
 
 - Pastikan `commitments.enabled` bernilai `true`.
-- Periksa `openclaw commitments --all` untuk catatan yang tertunda, diabaikan, ditunda, atau kedaluwarsa.
+- Periksa `openclaw commitments --all` untuk menemukan catatan yang tertunda, diabaikan, ditunda, atau kedaluwarsa.
 - Pastikan Heartbeat berjalan untuk agen tersebut.
 - Periksa apakah `commitments.maxPerDay` sudah tercapai untuk
   sesi agen tersebut.
-- Ingat bahwa pengingat yang presisi dilewati oleh ekstraksi komitmen dan seharusnya
+- Ingat bahwa pengingat yang pasti dilewati oleh ekstraksi commitment dan seharusnya
   muncul di bawah [tugas terjadwal](/id/automation/cron-jobs).
 
 ## Terkait
 
-- [Ikhtisar ingatan](/id/concepts/memory)
+- [Ikhtisar memori](/id/concepts/memory)
 - [Active Memory](/id/concepts/active-memory)
 - [Heartbeat](/id/gateway/heartbeat)
 - [Tugas terjadwal](/id/automation/cron-jobs)

@@ -2,29 +2,30 @@
 read_when:
     - lmstudio pluginini kuruyor, yapılandırıyor veya denetliyorsunuz
 summary: OpenClaw'a LM Studio model sağlayıcısı desteği ekler.
-title: LM Studio plugini
+title: LM Studio plugin'i
 x-i18n:
-    generated_at: "2026-07-12T12:33:34Z"
+    generated_at: "2026-07-16T17:44:56Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: ec6c84ec422c0795d00f744239fcad96a5a01ef4fddd4823ba0b6ed93444a75b
+    source_hash: 8fc13cb8579875fab911aaf456f1b632426761b173cc06a8a7f60698e96cfb16
     source_path: plugins/reference/lmstudio.md
     workflow: 16
 ---
 
-# LM Studio Plugin'i
+# LM Studio plugin’i
 
-OpenClaw'a LM Studio model sağlayıcısı desteği ekler.
+OpenClaw’a LM Studio model sağlayıcısı desteği ekler.
 
 ## Dağıtım
 
 - Paket: `@openclaw/lmstudio-provider`
-- Kurulum yolu: OpenClaw'a dahildir
+- Kurulum yolu: OpenClaw’a dahildir
 
 ## Yüzey
 
-sağlayıcılar: lmstudio; sözleşmeler: memoryEmbeddingProviders
+sağlayıcılar: `lmstudio`; sözleşmeler: `memoryEmbeddingProviders`
 
 ## İlgili belgeler
 

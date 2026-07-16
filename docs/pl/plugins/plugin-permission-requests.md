@@ -1,42 +1,44 @@
 ---
 read_when:
-    - Potrzebujesz hooka Plugin lub narzędzia, aby zapytać przed wykonaniem efektu ubocznego
-    - Musisz skonfigurować miejsce dostarczania monitów o zatwierdzenie Plugin
-    - Decydujesz między opcjonalnymi narzędziami, zatwierdzeniami exec i zatwierdzeniami pluginów
+    - Potrzebny jest hak pluginu lub narzędzie, aby zapytać przed wykonaniem operacji wywołującej efekt uboczny
+    - Musisz skonfigurować miejsce dostarczania monitów o zatwierdzenie pluginów
+    - Podejmujesz decyzję między opcjonalnymi narzędziami, zatwierdzaniem wykonywania poleceń a zatwierdzaniem pluginów
 sidebarTitle: Permission requests
-summary: Proś użytkowników o zatwierdzanie wywołań narzędzi Plugin i promptów uprawnień należących do Plugin
-title: Żądania uprawnień Plugin
+summary: Proś użytkowników o zatwierdzanie wywołań narzędzi Pluginu i należących do Pluginu monitów o uprawnienia
+title: Żądania uprawnień Pluginu
 x-i18n:
-    generated_at: "2026-06-27T17:56:52Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T18:45:28Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 72b860e9f8ddef80c70e943ec05353cbc0a917577382289649432a58c3ce6bd0
+    source_hash: 675534212e70cc7b2e7bdc801955929c6a8156b08d620483edf0133afc3bfdaa
     source_path: plugins/plugin-permission-requests.md
     workflow: 16
 ---
 
-Żądania uprawnień Plugin pozwalają kodowi Plugin wstrzymać wywołanie narzędzia lub operację należącą do Plugin do czasu, aż użytkownik ją zatwierdzi albo odrzuci. Używają przepływu Gateway `plugin.approval.*` oraz tych samych powierzchni UI zatwierdzania, które obsługują przyciski zatwierdzania w czacie i polecenia `/approve`.
+Żądania uprawnień Pluginu umożliwiają kodowi Pluginu wstrzymanie wywołania narzędzia lub operacji należącej do Pluginu do czasu jej zatwierdzenia albo odrzucenia przez użytkownika. Korzystają z przepływu Gateway
+`plugin.approval.*` oraz tych samych interfejsów zatwierdzania, które obsługują przyciski zatwierdzania na czacie i polecenia `/approve`.
 
-Używaj żądań uprawnień Plugin do uprawnień Plugin/aplikacji. Nie zastępują one zatwierdzeń wykonywania poleceń hosta, opcjonalnych list dozwolonych narzędzi ani natywnego przeglądu uprawnień Codex.
+Żądań uprawnień Pluginu należy używać do uprawnień Pluginu/aplikacji. Nie zastępują one zatwierdzeń wykonywania poleceń na hoście, opcjonalnych list dozwolonych narzędzi ani natywnej weryfikacji uprawnień przez Codex.
 
-## Wybierz właściwą bramkę
+## Wybór właściwej bramy
 
-Wybierz bramkę pasującą do punktu decyzyjnego, którego potrzebujesz:
+Należy wybrać bramę odpowiadającą wymaganemu punktowi decyzyjnemu:
 
-| Bramka                            | Użyj jej, gdy                                                               | Co kontroluje                                                                                                              |
-| --------------------------------- | --------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
-| Opcjonalne narzędzia              | Narzędzie nie powinno być widoczne dla modelu, dopóki użytkownik go nie włączy. | Ekspozycję narzędzi przez `tools.allow`.                                                                                    |
-| Żądania uprawnień Plugin          | Hook Plugin lub operacja należąca do Plugin musi zapytać przed wykonaniem jednej akcji. | Zatwierdzanie w czasie działania przez `plugin.approval.*`.                                                                 |
-| Zatwierdzenia exec                | Polecenie hosta lub narzędzie podobne do powłoki wymaga zatwierdzenia operatora. | Politykę exec hosta i trwałe listy dozwolonych exec.                                                                        |
-| Natywne żądania uprawnień Codex   | Codex pyta przed natywnymi akcjami powłoki, plików, MCP lub serwera aplikacji. | Obsługę zatwierdzania serwera aplikacji Codex lub natywnego hooka, kierowaną przez zatwierdzenia Plugin, gdy OpenClaw jest właścicielem promptu. |
-| Wywołania zatwierdzeń MCP         | Serwer MCP Codex żąda zatwierdzenia wywołania narzędzia.                    | Odpowiedzi zatwierdzeń MCP przekazywane przez zatwierdzenia Plugin OpenClaw.                                                |
+| Brama                            | Kiedy jej używać                                                         | Co kontroluje                                                                                                            |
+| -------------------------------- | ------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------- |
+| Opcjonalne narzędzia             | Narzędzie nie powinno być widoczne dla modelu, dopóki użytkownik go nie włączy. | Udostępnianie narzędzi przez `tools.allow`.                                                                   |
+| Żądania uprawnień Pluginu        | Hook Pluginu lub operacja należąca do Pluginu musi poprosić o zgodę przed wykonaniem działania. | Zatwierdzanie w czasie wykonywania przez `plugin.approval.*`.                                                |
+| Zatwierdzenia wykonywania        | Polecenie hosta lub narzędzie przypominające powłokę wymaga zatwierdzenia przez operatora. | Zasady wykonywania na hoście i trwałe listy dozwolonych poleceń.                                            |
+| Natywne żądania uprawnień Codex  | Codex pyta przed natywnymi działaniami powłoki, plikowymi, MCP lub serwera aplikacji. | Obsługa zatwierdzeń serwera aplikacji Codex lub natywnych hooków, kierowana przez zatwierdzenia Pluginu, gdy OpenClaw jest właścicielem monitu. |
+| Żądania zatwierdzenia MCP        | Serwer MCP Codex żąda zatwierdzenia wywołania narzędzia.                 | Odpowiedzi zatwierdzające MCP przekazywane przez zatwierdzenia Pluginu OpenClaw.                                         |
 
-Opcjonalne narzędzia są bramką czasu wykrywania. Żądania uprawnień Plugin są bramką dla pojedynczego wywołania. Używaj obu, gdy wrażliwe narzędzie powinno wymagać wyraźnego włączenia, zanim model będzie mógł je zobaczyć, oraz zatwierdzenia przed wykonaniem akcji.
+Opcjonalne narzędzia stanowią bramę na etapie wykrywania. Żądania uprawnień Pluginu stanowią bramę dla każdego wywołania. Należy użyć obu, gdy wrażliwe narzędzie powinno wymagać jawnego włączenia, zanim model będzie mógł je zobaczyć, oraz zatwierdzenia przed wykonaniem działania.
 
-## Żądaj zatwierdzenia przed wywołaniem narzędzia
+## Żądanie zatwierdzenia przed wywołaniem narzędzia
 
-Większość promptów tworzonych przez Plugin powinna zaczynać się w hooku `before_tool_call`. Hook działa po tym, jak model wybierze narzędzie, a przed tym, jak OpenClaw je wykona:
+Większość monitów tworzonych przez Plugin powinna rozpoczynać się w hooku `before_tool_call`. Hook jest uruchamiany po wybraniu narzędzia przez model, ale przed jego wykonaniem przez OpenClaw:
 
 ```typescript
 import { definePluginEntry } from "openclaw/plugin-sdk/plugin-entry";
@@ -63,7 +65,6 @@ export default definePluginEntry({
               ? ["allow-once", "deny"]
               : ["allow-once", "allow-always", "deny"],
           timeoutMs: 120_000,
-          timeoutBehavior: "deny",
           onResolution(decision) {
             console.log(`deploy approval resolved: ${decision}`);
           },
@@ -74,36 +75,59 @@ export default definePluginEntry({
 });
 ```
 
-Pisz tekst promptu dla osoby, która będzie zatwierdzać akcję:
+Tekst monitu należy napisać z myślą o osobie, która będzie zatwierdzać działanie:
 
-- `title` powinien być krótki i skupiony na akcji. Gateway akceptuje do 80 znaków.
-- `description` powinien być konkretny i ograniczony zakresem. Gateway akceptuje do 256 znaków.
-- Uwzględnij akcję, cel i ryzyko. Nie uwzględniaj sekretów, tokenów ani prywatnych danych, które nie powinny pojawić się na powierzchniach zatwierdzania w czacie.
-- Używaj `severity: "critical"` tylko dla akcji, przy których błędna decyzja może spowodować szkody produkcyjne lub utratę danych.
-- Używaj `allowedDecisions: ["allow-once", "deny"]`, gdy trwałe zaufanie jest niebezpieczne dla tej akcji.
+- Pole `title` powinno być krótkie i skoncentrowane na działaniu; Gateway ogranicza je do 80 znaków.
+- Pole `description` powinno być konkretne i precyzyjnie ograniczone; Gateway ogranicza je do 512
+  znaków.
+- Należy uwzględnić działanie, cel i ryzyko. Nie należy podawać sekretów, tokenów ani
+  prywatnych ładunków, które nie powinny pojawiać się w interfejsach zatwierdzania na czacie.
+- Jeśli pominięto `severity`, domyślnie przyjmuje ono wartość `"warning"`. Wartości `"critical"` należy używać wyłącznie w przypadku
+  działań, przy których błędna decyzja może spowodować szkody w środowisku produkcyjnym lub utratę danych.
+- Jeśli pominięto `allowedDecisions`, domyślnie przyjmuje ono wartość `["allow-once", "allow-always", "deny"]`.
+  Wartość `["allow-once", "deny"]` należy przekazać, gdy trwałe zaufanie jest niebezpieczne dla
+  danego działania.
+- Domyślna wartość `timeoutMs` wynosi 120000 (2 minuty), a maksymalna 600000 (10
+  minut), niezależnie od żądanej wartości.
 
-## Zachowanie decyzji
+## Sposób obsługi decyzji
 
-OpenClaw tworzy oczekujące zatwierdzenie z ID `plugin:`, dostarcza je do dostępnych powierzchni zatwierdzania i czeka na decyzję.
+OpenClaw tworzy oczekujące zatwierdzenie z identyfikatorem `plugin:`, przekazuje je do
+dostępnych interfejsów zatwierdzania i oczekuje na decyzję.
 
 | Decyzja           | Wynik                                                                     |
 | ----------------- | ------------------------------------------------------------------------- |
 | `allow-once`      | Bieżące wywołanie jest kontynuowane.                                      |
-| `allow-always`    | Bieżące wywołanie jest kontynuowane, a decyzja jest przekazywana do Plugin. |
-| `deny`            | Wywołanie jest blokowane z wynikiem narzędzia oznaczającym odmowę.        |
-| Przekroczenie czasu | Wywołanie jest blokowane, chyba że `timeoutBehavior` ma wartość `"allow"`. |
-| Anulowanie        | Wywołanie jest blokowane, gdy przebieg zostanie przerwany.                |
-| Brak ścieżki zatwierdzenia | Wywołanie jest blokowane, ponieważ żadna połączona powierzchnia zatwierdzania nie może go rozstrzygnąć. |
+| `allow-always`    | Bieżące wywołanie jest kontynuowane, a decyzja zostaje przekazana do Pluginu. |
+| `deny`            | Wywołanie zostaje zablokowane z wynikiem odmowy wykonania narzędzia.       |
+| Przekroczenie limitu czasu | Wywołanie zostaje zablokowane.                                       |
+| Anulowanie        | Wywołanie zostaje zablokowane po przerwaniu przebiegu.                    |
+| Brak trasy zatwierdzania | Wywołanie zostaje zablokowane, ponieważ żaden połączony interfejs zatwierdzania nie może go rozstrzygnąć. |
 
-`allow-always` jest trwałe tylko wtedy, gdy żądający Plugin lub runtime implementuje tę trwałość. Dla zwykłych hooków `before_tool_call.requireApproval` OpenClaw traktuje `allow-once` i `allow-always` jako decyzje zatwierdzające dla bieżącego wywołania i przekazuje rozstrzygniętą wartość do `onResolution`. Jeśli Twój Plugin oferuje `allow-always`, udokumentuj i zaimplementuj dokładnie, którym przyszłym wywołaniom ufa.
+Na wykonanie zezwalają wyłącznie dokładne decyzje `allow-once` i `allow-always` dozwolone przez
+żądanie. Decyzje nieznane, nieprawidłowe, niedopasowane, brakujące oraz otrzymane po przekroczeniu limitu czasu
+powodują bezpieczną odmowę. Starsze pole `timeoutBehavior` pozostaje akceptowane ze względu na
+zgodność Pluginów, ale jest przestarzałe i ignorowane; nie należy go ustawiać w nowych hookach.
 
-Jeśli hook zwraca także `params`, OpenClaw stosuje te zmiany parametrów dopiero po pomyślnym zatwierdzeniu. Hook o niższym priorytecie nadal może zablokować wywołanie po tym, jak hook o wyższym priorytecie zażądał zatwierdzenia.
+Wartość `allow-always` jest trwała tylko wtedy, gdy żądający Plugin lub środowisko wykonawcze implementuje
+taką trwałość. W przypadku zwykłych hooków `before_tool_call.requireApproval`
+OpenClaw traktuje `allow-once` i `allow-always` jako decyzje zatwierdzające dla
+bieżącego wywołania i przekazuje rozstrzygniętą wartość do `onResolution`. Jeśli Plugin
+oferuje `allow-always`, należy udokumentować i zaimplementować dokładny zakres przyszłych wywołań, którym
+ufa.
 
-`allowedDecisions` ogranicza przyciski i polecenia pokazywane użytkownikowi. Gateway odrzuca próbę rozstrzygnięcia dla każdej decyzji, której żądanie nie oferowało.
+Jeśli hook zwraca również `params`, OpenClaw stosuje te zmiany parametrów dopiero
+po pomyślnym zatwierdzeniu. Hook o niższym priorytecie może nadal zablokować działanie po tym, jak
+hook o wyższym priorytecie zażądał zatwierdzenia.
 
-## Kieruj prompty zatwierdzania
+`allowedDecisions` ogranicza przyciski i polecenia wyświetlane użytkownikowi.
+Gateway odrzuca próbę rozstrzygnięcia przy użyciu decyzji, której nie oferowało żądanie.
 
-Prompty zatwierdzania mogą być rozstrzygane w lokalnych powierzchniach UI albo w kanałach czatu obsługujących zatwierdzanie. Aby przekazywać prompty zatwierdzania Plugin do jawnych celów czatu, skonfiguruj `approvals.plugin`:
+## Kierowanie monitów zatwierdzania
+
+Monity zatwierdzania mogą być rozstrzygane w lokalnych interfejsach użytkownika lub w kanałach czatu
+obsługujących zatwierdzanie. Aby przekazywać monity zatwierdzania Pluginu do określonych
+celów czatu, należy skonfigurować `approvals.plugin`:
 
 ```json5
 {
@@ -118,9 +142,12 @@ Prompty zatwierdzania mogą być rozstrzygane w lokalnych powierzchniach UI albo
 }
 ```
 
-`approvals.plugin` jest niezależne od `approvals.exec`. Włączenie przekazywania zatwierdzeń exec nie kieruje promptów zatwierdzania Plugin, a włączenie przekazywania zatwierdzeń Plugin nie zmienia polityki exec hosta.
+`approvals.plugin` jest niezależne od `approvals.exec`. Włączenie przekazywania zatwierdzeń
+wykonywania nie kieruje monitów zatwierdzania Pluginu, a włączenie przekazywania zatwierdzeń Pluginu
+nie zmienia zasad wykonywania na hoście.
 
-Gdy prompt zawiera ręczny tekst zatwierdzania, rozstrzygnij go jedną z oferowanych decyzji:
+Gdy monit zawiera tekst do ręcznego zatwierdzenia, należy rozstrzygnąć go przy użyciu jednej z oferowanych
+decyzji:
 
 ```text
 /approve <id> allow-once
@@ -128,32 +155,45 @@ Gdy prompt zawiera ręczny tekst zatwierdzania, rozstrzygnij go jedną z oferowa
 /approve <id> deny
 ```
 
-Zobacz [Zaawansowane zatwierdzenia exec](/pl/tools/exec-approvals-advanced#plugin-approval-forwarding), aby poznać pełny model przekazywania, zachowanie zatwierdzania w tym samym czacie, natywne dostarczanie kanałami oraz reguły zatwierdzających specyficzne dla kanału.
+Pełny model przekazywania, zatwierdzanie na tym samym czacie, natywne dostarczanie do kanałów
+oraz reguły osób zatwierdzających specyficzne dla kanałów opisano w sekcji [Zaawansowane zatwierdzenia wykonywania](/pl/tools/exec-approvals-advanced#plugin-approval-forwarding).
 
 ## Natywne uprawnienia Codex
 
-Natywne prompty uprawnień Codex mogą również przechodzić przez zatwierdzenia Plugin, ale mają inną własność niż hooki tworzone przez Plugin.
+Natywne monity o uprawnienia Codex mogą być również przekazywane przez zatwierdzenia Pluginu, ale
+mają innego właściciela niż hooki tworzone przez Plugin.
 
-- Żądania zatwierdzenia serwera aplikacji Codex są kierowane przez OpenClaw po przeglądzie Codex.
-- Natywny przekaźnik hooka `permission_request` może pytać przez `plugin.approval.request`, gdy ten przekaźnik jest włączony.
-- Wywołania zatwierdzeń narzędzi MCP są kierowane przez zatwierdzenia Plugin, gdy Codex oznaczy `_meta.codex_approval_kind` jako `"mcp_tool_call"`.
+- Żądania zatwierdzenia serwera aplikacji Codex są kierowane przez OpenClaw po weryfikacji przez Codex.
+- Przekaźnik natywnego hooka `permission_request` może wysyłać żądania przez
+  `plugin.approval.request`, gdy ten przekaźnik jest włączony.
+- Żądania zatwierdzenia narzędzi MCP są kierowane przez zatwierdzenia Pluginu, gdy Codex oznaczy
+  `_meta.codex_approval_kind` jako `"mcp_tool_call"`.
 
-Zobacz [Runtime uprzęży Codex](/pl/plugins/codex-harness-runtime#native-permissions-and-mcp-elicitations), aby poznać zachowanie specyficzne dla Codex i reguły awaryjne.
+Zachowanie specyficzne dla Codex i reguły awaryjne opisano w sekcji [Środowisko wykonawcze uprzęży Codex](/pl/plugins/codex-harness-runtime#native-permissions-and-mcp-elicitations).
 
 ## Rozwiązywanie problemów
 
-**Narzędzie informuje, że zatwierdzenia Plugin są niedostępne.** Żaden UI zatwierdzania ani skonfigurowana ścieżka zatwierdzenia nie zaakceptowała żądania. Podłącz klienta obsługującego zatwierdzanie, użyj kanału obsługującego `/approve` w tym samym czacie albo skonfiguruj `approvals.plugin`.
+**Narzędzie informuje, że zatwierdzenia Pluginu są niedostępne.** Żaden interfejs zatwierdzania ani skonfigurowana
+trasa zatwierdzania nie przyjęły żądania. Należy podłączyć klienta obsługującego zatwierdzanie, użyć
+kanału obsługującego `/approve` na tym samym czacie albo skonfigurować `approvals.plugin`.
 
-**Pojawia się `allow-always`, ale następne wywołanie ponownie pokazuje prompt.** Ogólny przepływ zatwierdzania Plugin nie utrwala automatycznie zaufania dla dowolnych hooków. Utrwal zaufanie należące do Plugin w swoim Plugin po `onResolution("allow-always")` albo oferuj tylko `allow-once` i `deny`.
+**Pojawia się `allow-always`, ale kolejne wywołanie ponownie wyświetla monit.** Ogólny przepływ
+zatwierdzania Pluginu nie utrwala automatycznie zaufania dla dowolnych hooków. Zaufanie należące
+do Pluginu należy utrwalić w Pluginie po `onResolution("allow-always")` albo
+oferować wyłącznie `allow-once` i `deny`.
 
-**`/approve` odrzuca decyzję.** Żądanie ograniczyło `allowedDecisions`. Użyj jednej z decyzji wypisanych w prompcie.
+**`/approve` odrzuca decyzję.** Żądanie ograniczyło
+`allowedDecisions`. Należy użyć jednej z decyzji wyświetlonych w monicie.
 
-**Prompt Slack, Discord, Telegram lub Matrix jest kierowany inaczej niż zatwierdzenia exec.** Zatwierdzenia Plugin i zatwierdzenia exec używają oddzielnej konfiguracji i mogą używać różnych kontroli autoryzacji. Zweryfikuj `approvals.plugin` oraz obsługę zatwierdzeń Plugin w kanale zamiast sprawdzać tylko `approvals.exec`.
+**Monit Discord, Matrix, Slack lub Telegram jest kierowany inaczej niż zatwierdzenia
+wykonywania.** Zatwierdzenia Pluginu i zatwierdzenia wykonywania korzystają z oddzielnych konfiguracji i mogą stosować
+różne mechanizmy autoryzacji. Zamiast sprawdzać wyłącznie `approvals.exec`, należy zweryfikować `approvals.plugin` oraz obsługę
+zatwierdzeń Pluginu przez dany kanał.
 
 ## Powiązane
 
-- [Hooki Plugin](/pl/plugins/hooks#tool-call-policy)
-- [Tworzenie Plugin](/pl/plugins/building-plugins#registering-agent-tools)
-- [Zaawansowane zatwierdzenia exec](/pl/tools/exec-approvals-advanced#plugin-approval-forwarding)
+- [Hooki Pluginu](/pl/plugins/hooks#tool-call-policy)
+- [Tworzenie Pluginów](/pl/plugins/building-plugins#registering-tools)
+- [Zaawansowane zatwierdzenia wykonywania](/pl/tools/exec-approvals-advanced#plugin-approval-forwarding)
 - [Protokół Gateway](/pl/gateway/protocol)
-- [Runtime uprzęży Codex](/pl/plugins/codex-harness-runtime#native-permissions-and-mcp-elicitations)
+- [Środowisko wykonawcze uprzęży Codex](/pl/plugins/codex-harness-runtime#native-permissions-and-mcp-elicitations)

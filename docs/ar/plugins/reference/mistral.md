@@ -2,30 +2,31 @@
 read_when:
     - أنت تثبّت Plugin ‏mistral أو تهيّئه أو تدقّق فيه
 summary: يضيف دعم موفّر نماذج Mistral إلى OpenClaw.
-title: Plugin ‏Mistral
+title: Plugin Mistral
 x-i18n:
-    generated_at: "2026-07-12T06:15:50Z"
+    generated_at: "2026-07-16T14:41:08Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 8d9fc0fb6fd98f8f0157e82c8f75b14e1289c802dc97bb2cdaee1956d6507ebd
+    source_hash: daddcf64de064b9994348f34271e44e80259a69d193860f5e056224e75669ab0
     source_path: plugins/reference/mistral.md
     workflow: 16
 ---
 
-# Plugin ‏Mistral
+# Plugin Mistral
 
 يضيف دعم موفّر نماذج Mistral إلى OpenClaw.
 
 ## التوزيع
 
 - الحزمة: `@openclaw/mistral-provider`
-- مسار التثبيت: مضمن في OpenClaw
+- مسار التثبيت: مضمّن في OpenClaw
 
-## الواجهة
+## الواجهات
 
-الموفّرون: mistral؛ العقود: mediaUnderstandingProviders، memoryEmbeddingProviders، realtimeTranscriptionProviders
+موفّرو النماذج: `mistral`؛ العقود: `mediaUnderstandingProviders`، `memoryEmbeddingProviders`، `realtimeTranscriptionProviders`
 
 ## الوثائق ذات الصلة
 
-- [mistral](/ar/providers/mistral)
+- [Mistral](/ar/providers/mistral)

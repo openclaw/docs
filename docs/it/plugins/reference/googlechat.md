@@ -1,14 +1,15 @@
 ---
 read_when:
-    - Stai installando, configurando o verificando il plugin googlechat
+    - Si sta installando, configurando o verificando il plugin googlechat
 summary: Plugin del canale Google Chat di OpenClaw per spazi e messaggi diretti.
-title: Plugin di Google Chat
+title: Plugin Google Chat
 x-i18n:
-    generated_at: "2026-07-12T07:22:17Z"
+    generated_at: "2026-07-16T14:44:56Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 04febb1ead7d63e9ef79ecc52ce69f38a7c4eb404c90019717363f57477cd37d
+    source_hash: d800ec6b317e15fd14e3990d84a9ca2f29026607921629198f5032be2b0a3281
     source_path: plugins/reference/googlechat.md
     workflow: 16
 ---
@@ -24,8 +25,8 @@ Plugin del canale Google Chat di OpenClaw per spazi e messaggi diretti.
 
 ## Superficie
 
-canali: googlechat
+canali: `googlechat`
 
 ## Documentazione correlata
 
-- [googlechat](/it/channels/googlechat)
+- [Google Chat](/it/channels/googlechat)

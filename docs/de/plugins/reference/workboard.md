@@ -1,14 +1,15 @@
 ---
 read_when:
-    - Sie installieren, konfigurieren oder prüfen das Workboard-Plugin
-summary: Dashboard-Arbeitsboard für agentengeführte Issues und Sitzungen.
+    - Sie installieren, konfigurieren oder prüfen das Workboard-Plugin.
+summary: Dashboard-Arbeitsübersicht für agenteneigene Issues und Sitzungen.
 title: Workboard-Plugin
 x-i18n:
-    generated_at: "2026-06-27T17:57:32Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T13:12:46Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 1e5a48a52d45dbe87b73020103c2bc3f0bd46305b4c0d26b3010864af65fa99c
+    source_hash: 7011f95388aafcc6bd2d4af0fc71296976b05f57d9314bbb4fa341b8de717fa2
     source_path: plugins/reference/workboard.md
     workflow: 16
 ---
@@ -24,7 +25,7 @@ Dashboard-Workboard für agenteneigene Issues und Sitzungen.
 
 ## Oberfläche
 
-contracts: tools
+Verträge: `tools`
 
 ## Zugehörige Dokumentation
 

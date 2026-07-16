@@ -1,21 +1,22 @@
 ---
 read_when:
-    - Je installeert, configureert of controleert de anthropic Plugin
-summary: Voegt ondersteuning voor de Anthropic-modelprovider toe aan OpenClaw.
+    - Je installeert, configureert of controleert de anthropic-plugin
+summary: Anthropic-modellen, Claude CLI en de systeemeigen Claude-sessiecatalogus.
 title: Anthropic-Plugin
 x-i18n:
-    generated_at: "2026-05-02T20:47:58Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T16:13:02Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 7aa23ae2712061fc3f8e1fbb642d2cbfa2c40675fc5e41633d33619f41182499
+    source_hash: 11d3c7879a9dc6de35e67f9812b878918d908d41555c181920deb4f1f9cba22e
     source_path: plugins/reference/anthropic.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
 # Anthropic-Plugin
 
-Voegt ondersteuning voor de Anthropic-modelprovider toe aan OpenClaw.
+Anthropic-modellen, Claude CLI en systeemeigen Claude-sessiecatalogus.
 
 ## Distributie
 
@@ -24,8 +25,16 @@ Voegt ondersteuning voor de Anthropic-modelprovider toe aan OpenClaw.
 
 ## Oppervlak
 
-providers: anthropic; contracten: mediaUnderstandingProviders
+providers: `anthropic`; contracten: `mediaUnderstandingProviders`, `usageProviders`
 
-## Gerelateerde docs
+<!-- openclaw-plugin-reference:manual-start -->
+
+Node-opdrachten: anthropic.claude.sessions.list.v1,
+anthropic.claude.sessions.read.v1; contracten: mediaUnderstandingProviders,
+usageProviders
+
+<!-- openclaw-plugin-reference:manual-end -->
+
+## Gerelateerde documentatie
 
 - [anthropic](/nl/providers/anthropic)

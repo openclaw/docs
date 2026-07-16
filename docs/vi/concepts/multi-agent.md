@@ -1,86 +1,89 @@
 ---
-read_when: You want multiple isolated agents (workspaces + auth) in one gateway process.
+read_when: You want multiple agents with separate workspaces, auth, and sessions in one Gateway process.
 sidebarTitle: Multi-agent routing
 status: active
-summary: 'Định tuyến đa tác nhân: tác nhân tách biệt, tài khoản kênh và liên kết'
-title: Định tuyến đa tác tử
+summary: 'Định tuyến đa tác tử: ranh giới tác tử, tài khoản kênh và liên kết'
+title: Định tuyến đa tác nhân
 x-i18n:
-    generated_at: "2026-06-27T17:24:28Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T14:21:21Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 4c1c55188cd27ea786cf65dcabd356a602e1e6da5f842532b189df59195274db
+    source_hash: 265a1f3d9d9b4957c99c71f391ce4f5abba6b70561570f8bbe8cb9964ece1cfc
     source_path: concepts/multi-agent.md
     workflow: 16
 ---
 
-Chạy nhiều tác tử _cô lập_ — mỗi tác tử có workspace, thư mục trạng thái (`agentDir`) và lịch sử phiên riêng — cộng với nhiều tài khoản kênh (ví dụ: hai WhatsApp) trong một Gateway đang chạy. Tin nhắn đến được định tuyến đến đúng tác tử thông qua các liên kết.
+Chạy nhiều tác nhân _cô lập_ trong một tiến trình Gateway, mỗi tác nhân có không gian làm việc, thư mục trạng thái (`agentDir`) và lịch sử phiên dựa trên SQLite riêng, cùng với nhiều tài khoản kênh (ví dụ: hai số WhatsApp). Tin nhắn đến được định tuyến đến đúng tác nhân thông qua **liên kết**.
 
-Một **tác tử** ở đây là phạm vi đầy đủ theo từng persona: tệp workspace, hồ sơ xác thực, registry mô hình và kho phiên. `agentDir` là thư mục trạng thái trên đĩa chứa cấu hình theo từng tác tử này tại `~/.openclaw/agents/<agentId>/`. Một **liên kết** ánh xạ một tài khoản kênh (ví dụ: một workspace Slack hoặc một số WhatsApp) tới một trong các tác tử đó.
+Một **tác nhân** là toàn bộ phạm vi của từng persona: các tệp trong không gian làm việc, hồ sơ xác thực, sổ đăng ký mô hình và kho phiên. Một **liên kết** ánh xạ một tài khoản kênh (một không gian làm việc Slack, một số WhatsApp, v.v.) tới một trong các tác nhân đó.
 
-## "Một tác tử" là gì?
+## Một tác nhân là gì
 
-Một **tác tử** là một bộ não có phạm vi đầy đủ với riêng:
+Mỗi tác nhân có riêng:
 
-- **Workspace** (tệp, AGENTS.md/SOUL.md/USER.md, ghi chú cục bộ, quy tắc persona).
-- **Thư mục trạng thái** (`agentDir`) cho hồ sơ xác thực, registry mô hình và cấu hình theo từng tác tử.
-- **Kho phiên** (lịch sử trò chuyện + trạng thái định tuyến) dưới `~/.openclaw/agents/<agentId>/sessions`.
+- **Không gian làm việc**: các tệp, `AGENTS.md`/`SOUL.md`/`USER.md`, ghi chú cục bộ, quy tắc persona.
+- **Thư mục trạng thái** (`agentDir`): hồ sơ xác thực, sổ đăng ký mô hình, cấu hình theo tác nhân.
+- **Kho phiên**: lịch sử trò chuyện và trạng thái định tuyến trong `~/.openclaw/agents/<agentId>/agent/openclaw-agent.sqlite`.
 
-Hồ sơ xác thực là **theo từng tác tử**. Mỗi tác tử đọc từ tệp riêng của nó:
+Hồ sơ xác thực được lưu riêng theo tác nhân và được đọc từ:
 
 ```text
 ~/.openclaw/agents/<agentId>/agent/auth-profiles.json
 ```
 
 <Note>
-`sessions_history` cũng là đường dẫn nhớ lại xuyên phiên an toàn hơn ở đây: nó trả về một dạng xem có giới hạn và đã được làm sạch, không phải bản dump transcript thô. Việc nhớ lại của assistant loại bỏ thẻ suy nghĩ, khung `<relevant-memories>`, payload XML tool-call dạng văn bản thuần (bao gồm `<tool_call>...</tool_call>`, `<function_call>...</function_call>`, `<tool_calls>...</tool_calls>`, `<function_calls>...</function_calls>` và các khối tool-call bị cắt ngắn), khung tool-call đã hạ cấp, token điều khiển mô hình ASCII/toàn chiều bị rò rỉ và XML tool-call MiniMax sai định dạng trước khi biên tập/cắt ngắn.
+`sessions_history` là đường dẫn truy hồi giữa các phiên an toàn hơn: nó trả về một chế độ xem có giới hạn và đã biên tập, thay vì kết xuất bản ghi thô. Nó loại bỏ chữ ký khối suy luận, chi tiết tải trọng kết quả công cụ, cấu trúc `<relevant-memories>`, các thẻ XML gọi công cụ (`<tool_call>`, `<function_call>` và các dạng số nhiều/hạ cấp của chúng), cùng XML gọi công cụ MiniMax, sau đó cắt ngắn và giới hạn đầu ra theo kích thước byte.
 </Note>
 
 <Warning>
-Không bao giờ dùng lại `agentDir` giữa các tác tử (việc này gây xung đột xác thực/phiên). Tác tử
-có thể đọc xuyên tới hồ sơ xác thực của tác tử mặc định/chính khi chúng không có
-hồ sơ cục bộ, nhưng OpenClaw không sao chép token làm mới OAuth vào
-kho tác tử phụ. Nếu bạn muốn một tài khoản OAuth độc lập, hãy đăng nhập từ
-tác tử đó; nếu bạn sao chép thông tin xác thực thủ công, chỉ sao chép các hồ sơ
-`api_key` hoặc `token` tĩnh có thể di chuyển.
+Không bao giờ dùng lại `agentDir` giữa các tác nhân — điều này gây xung đột trạng thái xác thực/phiên. Khi thông tin xác thực OAuth cục bộ của một tác nhân phụ hết hạn hoặc việc làm mới thất bại, OpenClaw đọc xuyên sang thông tin xác thực của tác nhân mặc định/chính cho cùng một mã hồ sơ và sử dụng token mới nhất, nhưng không sao chép refresh token vào kho của tác nhân phụ. Nếu muốn có một tài khoản OAuth hoàn toàn độc lập, hãy đăng nhập từ tác nhân đó. Nếu sao chép thông tin xác thực theo cách thủ công, chỉ sao chép các hồ sơ `api_key` hoặc `token` tĩnh có thể di chuyển — dữ liệu làm mới OAuth mặc định không thể di chuyển (`copyToAgents` có thể cho phép rõ ràng một hồ sơ tham gia).
 </Warning>
 
-Skills được tải từ workspace của từng tác tử cộng với các gốc dùng chung như `~/.openclaw/skills`, rồi được lọc theo allowlist Skills hiệu lực của tác tử khi được cấu hình. Dùng `agents.defaults.skills` làm baseline dùng chung và `agents.list[].skills` để thay thế theo từng tác tử. Xem [Skills: theo từng tác tử so với dùng chung](/vi/tools/skills#per-agent-vs-shared-skills) và [Skills: allowlist Skills của tác tử](/vi/tools/skills#agent-allowlists).
+Skills được tải từ không gian làm việc của từng tác nhân cùng các gốc dùng chung như `~/.openclaw/skills`, sau đó được lọc theo danh sách cho phép Skills có hiệu lực của tác nhân. Dùng `agents.defaults.skills` làm đường cơ sở dùng chung và `agents.list[].skills` làm phần thay thế theo tác nhân (các mục được chỉ định rõ sẽ thay thế mặc định, không hợp nhất). Xem [Skills: theo tác nhân so với dùng chung](/vi/tools/skills#per-agent-vs-shared-skills) và [Skills: danh sách cho phép của tác nhân](/vi/tools/skills#agent-allowlists).
 
-Gateway có thể lưu trữ **một tác tử** (mặc định) hoặc **nhiều tác tử** song song.
+Bộ nhớ do Plugin sở hữu tuân theo cấu hình của Plugin đó; việc thêm tác nhân thứ hai
+không tự động chia tách mọi kho Plugin toàn cục. Ví dụ, hãy cấu hình
+[kho Memory Wiki theo tác nhân](/vi/concepts/multi-agent#per-agent-memory-wiki-vaults)
+khi các persona không được dùng chung kiến thức wiki đã biên soạn.
 
 <Note>
-**Ghi chú workspace:** workspace của mỗi tác tử là **cwd mặc định**, không phải sandbox cứng. Đường dẫn tương đối phân giải bên trong workspace, nhưng đường dẫn tuyệt đối có thể truy cập các vị trí host khác trừ khi bật sandboxing. Xem [Sandboxing](/vi/gateway/sandboxing).
+**Lưu ý về không gian làm việc:** không gian làm việc của mỗi tác nhân là **cwd mặc định**, không phải sandbox nghiêm ngặt. Đường dẫn tương đối được phân giải trong không gian làm việc, nhưng đường dẫn tuyệt đối có thể truy cập các vị trí khác trên máy chủ trừ khi bật sandbox. Xem [Sandbox](/vi/gateway/sandboxing).
 </Note>
 
-## Đường dẫn (bản đồ nhanh)
+## Đường dẫn
 
-- Cấu hình: `~/.openclaw/openclaw.json` (hoặc `OPENCLAW_CONFIG_PATH`)
-- Thư mục trạng thái: `~/.openclaw` (hoặc `OPENCLAW_STATE_DIR`)
-- Workspace: `~/.openclaw/workspace` (hoặc `~/.openclaw/workspace-<agentId>`)
-- Thư mục tác tử: `~/.openclaw/agents/<agentId>/agent` (hoặc `agents.list[].agentDir`)
-- Phiên: `~/.openclaw/agents/<agentId>/sessions`
+| Nội dung                         | Mặc định                                                                               | Ghi đè                                                                                  |
+| -------------------------------- | -------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| Cấu hình                         | `~/.openclaw/openclaw.json`                                                            | `OPENCLAW_CONFIG_PATH`                                                                   |
+| Thư mục trạng thái               | `~/.openclaw`                                                                          | `OPENCLAW_STATE_DIR`                                                                     |
+| Không gian làm việc của tác nhân mặc định | `~/.openclaw/workspace` (hoặc `workspace-<profile>` khi đặt `OPENCLAW_PROFILE`)      | `agents.list[].workspace`, sau đó `agents.defaults.workspace`, hoặc `OPENCLAW_WORKSPACE_DIR` |
+| Không gian làm việc của các tác nhân khác | `<stateDir>/workspace-<agentId>` (hoặc `<agents.defaults.workspace>/<agentId>` khi được đặt) | `agents.list[].workspace`                                                                |
+| Thư mục tác nhân                 | `~/.openclaw/agents/<agentId>/agent`                                                   | `agents.list[].agentDir`                                                                 |
+| Phiên và bản ghi                 | `~/.openclaw/agents/<agentId>/agent/openclaw-agent.sqlite`                             | —                                                                                        |
+| Hiện vật phiên cũ/lưu trữ        | `~/.openclaw/agents/<agentId>/sessions`                                                | —                                                                                        |
 
-### Chế độ một tác tử (mặc định)
+### Chế độ một tác nhân (mặc định)
 
-Nếu bạn không làm gì, OpenClaw chạy một tác tử duy nhất:
+Nếu không cấu hình gì, OpenClaw chạy một tác nhân:
 
-- `agentId` mặc định là **`main`**.
-- Phiên được khóa theo dạng `agent:main:<mainKey>`.
-- Workspace mặc định là `~/.openclaw/workspace` (hoặc `~/.openclaw/workspace-<profile>` khi đặt `OPENCLAW_PROFILE`).
+- `agentId` mặc định là `main`.
+- Khóa phiên là `agent:main:<mainKey>` (`mainKey` mặc định là `main`).
+- Không gian làm việc mặc định là `~/.openclaw/workspace` (hoặc `workspace-<profile>` khi `OPENCLAW_PROFILE` được đặt thành giá trị khác `default`).
 - Trạng thái mặc định là `~/.openclaw/agents/main/agent`.
 
-## Trình hỗ trợ tác tử
+## Trình trợ giúp tác nhân
 
-Dùng wizard tác tử để thêm một tác tử cô lập mới:
+Thêm một tác nhân cô lập mới:
 
 ```bash
 openclaw agents add work
 ```
 
-Sau đó thêm `bindings` (hoặc để wizard làm việc đó) để định tuyến tin nhắn đến.
+Cờ: `--workspace <dir>`, `--model <id>`, `--agent-dir <dir>`, `--bind <channel[:accountId]>` (có thể lặp lại), `--non-interactive` (yêu cầu `--workspace`).
 
-Xác minh bằng:
+Thêm `bindings` để định tuyến tin nhắn đến (trình hướng dẫn sẽ đề nghị thực hiện việc này), sau đó xác minh:
 
 ```bash
 openclaw agents list --bindings
@@ -89,33 +92,31 @@ openclaw agents list --bindings
 ## Bắt đầu nhanh
 
 <Steps>
-  <Step title="Tạo workspace cho từng tác tử">
-    Dùng wizard hoặc tạo workspace thủ công:
-
+  <Step title="Tạo không gian làm việc cho từng tác nhân">
     ```bash
     openclaw agents add coding
     openclaw agents add social
     ```
 
-    Mỗi tác tử có workspace riêng với `SOUL.md`, `AGENTS.md` và `USER.md` tùy chọn, cùng một `agentDir` chuyên dụng và kho phiên dưới `~/.openclaw/agents/<agentId>`.
+    Mỗi tác nhân có không gian làm việc riêng với `SOUL.md`, `AGENTS.md` và `USER.md` tùy chọn, cùng một `agentDir` chuyên biệt và kho phiên trong `~/.openclaw/agents/<agentId>`.
 
   </Step>
   <Step title="Tạo tài khoản kênh">
-    Tạo một tài khoản cho mỗi tác tử trên các kênh bạn ưu tiên:
+    Tạo một tài khoản cho mỗi tác nhân trên các kênh bạn muốn:
 
-    - Discord: một bot cho mỗi tác tử, bật Message Content Intent, sao chép từng token.
-    - Telegram: một bot cho mỗi tác tử qua BotFather, sao chép từng token.
-    - WhatsApp: liên kết từng số điện thoại theo mỗi tài khoản.
+    - Discord: một bot cho mỗi tác nhân, bật Message Content Intent, sao chép từng token.
+    - Telegram: một bot cho mỗi tác nhân thông qua BotFather, sao chép từng token.
+    - WhatsApp: liên kết từng số điện thoại cho mỗi tài khoản.
 
     ```bash
     openclaw channels login --channel whatsapp --account work
     ```
 
-    Xem hướng dẫn kênh: [Discord](/vi/channels/discord), [Telegram](/vi/channels/telegram), [WhatsApp](/vi/channels/whatsapp).
+    Xem hướng dẫn về kênh: [Discord](/vi/channels/discord), [Telegram](/vi/channels/telegram), [WhatsApp](/vi/channels/whatsapp).
 
   </Step>
-  <Step title="Thêm tác tử, tài khoản và liên kết">
-    Thêm tác tử dưới `agents.list`, tài khoản kênh dưới `channels.<channel>.accounts`, và kết nối chúng bằng `bindings` (ví dụ bên dưới).
+  <Step title="Thêm tác nhân, tài khoản và liên kết">
+    Thêm tác nhân trong `agents.list`, tài khoản kênh trong `channels.<channel>.accounts` và kết nối chúng bằng `bindings` (các ví dụ bên dưới).
   </Step>
   <Step title="Khởi động lại và xác minh">
     ```bash
@@ -126,19 +127,50 @@ openclaw agents list --bindings
   </Step>
 </Steps>
 
-## Nhiều tác tử = nhiều người, nhiều tính cách
+## Nhiều tác nhân, nhiều persona
 
-Với **nhiều tác tử**, mỗi `agentId` trở thành một **persona được cô lập hoàn toàn**:
+Mỗi `agentId` được cấu hình là một ranh giới persona riêng biệt cho trạng thái cốt lõi của tác nhân:
 
-- **Số điện thoại/tài khoản khác nhau** (theo `accountId` của từng kênh).
-- **Tính cách khác nhau** (các tệp workspace theo từng tác tử như `AGENTS.md` và `SOUL.md`).
-- **Xác thực + phiên riêng biệt** (không lẫn chéo trừ khi được bật rõ ràng).
+- Các tài khoản khác nhau cho mỗi kênh (theo `accountId`).
+- Các tính cách khác nhau (`AGENTS.md`/`SOUL.md` theo tác nhân).
+- Xác thực và phiên riêng biệt; quyền truy cập giữa các tác nhân chỉ được bật thông qua các tính năng hoặc cấu hình Plugin rõ ràng.
 
-Điều này cho phép **nhiều người** chia sẻ một máy chủ Gateway trong khi vẫn giữ "bộ não" AI và dữ liệu của họ được cô lập.
+Điều này cho phép nhiều người dùng chung một Gateway trong khi vẫn tách biệt trạng thái cốt lõi của tác nhân.
 
-## Tìm kiếm bộ nhớ QMD xuyên tác tử
+## Kho Memory Wiki theo tác nhân
 
-Nếu một tác tử cần tìm kiếm transcript phiên QMD của tác tử khác, hãy thêm các collection bổ sung dưới `agents.list[].memorySearch.qmd.extraCollections`. Chỉ dùng `agents.defaults.memorySearch.qmd.extraCollections` khi mọi tác tử đều nên kế thừa cùng các collection transcript dùng chung.
+Theo mặc định, Memory Wiki dùng một kho toàn cục. Để giữ kiến thức đã biên soạn
+của tác nhân hỗ trợ tách biệt với kiến thức của tác nhân tiếp thị, hãy đặt
+`plugins.entries.memory-wiki.config.vault.scope` thành `agent`:
+
+```json5
+{
+  plugins: {
+    entries: {
+      "memory-wiki": {
+        enabled: true,
+        config: {
+          vault: {
+            scope: "agent",
+            path: "~/.openclaw/wiki",
+          },
+        },
+      },
+    },
+  },
+}
+```
+
+Đường dẫn được cấu hình là thư mục cha. OpenClaw nối thêm mã tác nhân đã chuẩn hóa,
+tạo ra các đường dẫn như `~/.openclaw/wiki/support` và
+`~/.openclaw/wiki/marketing`. Các thao tác CLI và Gateway theo phạm vi tác nhân yêu cầu
+chỉ định rõ tác nhân khi cấu hình nhiều tác nhân. Xem
+[kho Memory Wiki theo tác nhân](/vi/plugins/memory-wiki#per-agent-vaults) để biết chi tiết về
+lọc cầu nối, di chuyển và ranh giới tin cậy.
+
+## Tìm kiếm bộ nhớ QMD giữa các tác nhân
+
+Để cho phép một tác nhân tìm kiếm bản ghi phiên QMD của tác nhân khác, hãy thêm các bộ sưu tập bổ sung trong `agents.list[].memorySearch.qmd.extraCollections`. Dùng `agents.defaults.memorySearch.qmd.extraCollections` khi mọi tác nhân cần dùng chung các bộ sưu tập giống nhau.
 
 ```json5
 {
@@ -157,7 +189,7 @@ Nếu một tác tử cần tìm kiếm transcript phiên QMD của tác tử kh
         workspace: "~/workspaces/main",
         memorySearch: {
           qmd: {
-            extraCollections: [{ path: "notes" }], // resolves inside workspace -> collection named "notes-main"
+            extraCollections: [{ path: "notes" }], // được phân giải trong không gian làm việc -> bộ sưu tập có tên "notes-main"
           },
         },
       },
@@ -171,17 +203,15 @@ Nếu một tác tử cần tìm kiếm transcript phiên QMD của tác tử kh
 }
 ```
 
-Đường dẫn collection bổ sung có thể được dùng chung giữa các tác tử, nhưng tên collection vẫn là tường minh khi đường dẫn nằm ngoài workspace của tác tử. Đường dẫn bên trong workspace vẫn được giới hạn theo tác tử để mỗi tác tử giữ bộ tìm kiếm transcript riêng.
+Đường dẫn của bộ sưu tập bổ sung có thể được dùng chung giữa các tác nhân, nhưng `name` của nó vẫn phải được chỉ định rõ khi đường dẫn nằm ngoài không gian làm việc của tác nhân. Các đường dẫn bên trong không gian làm việc vẫn thuộc phạm vi tác nhân, để mỗi tác nhân giữ bộ tìm kiếm bản ghi riêng.
 
 ## Một số WhatsApp, nhiều người (tách DM)
 
-Bạn có thể định tuyến **các DM WhatsApp khác nhau** tới các tác tử khác nhau trong khi vẫn dùng **một tài khoản WhatsApp**. Khớp theo người gửi E.164 (như `+15551234567`) với `peer.kind: "direct"`. Phản hồi vẫn đến từ cùng số WhatsApp (không có danh tính người gửi theo từng tác tử).
+Định tuyến các DM WhatsApp khác nhau đến các tác nhân khác nhau trên **một** tài khoản WhatsApp bằng cách khớp E.164 của người gửi (`+15551234567`) với `peer.kind: "direct"`. Phản hồi vẫn được gửi từ cùng một số WhatsApp — không có danh tính người gửi riêng theo tác nhân.
 
 <Note>
-Trò chuyện trực tiếp gộp về **khóa phiên chính** của tác tử, vì vậy cách ly thực sự cần **một tác tử cho mỗi người**.
+Theo mặc định, các cuộc trò chuyện trực tiếp được hợp nhất vào khóa phiên chính của tác nhân, vì vậy để cô lập thực sự, mỗi người cần một tác nhân riêng.
 </Note>
-
-Ví dụ:
 
 ```json5
 {
@@ -210,81 +240,36 @@ Ví dụ:
 }
 ```
 
-Ghi chú:
+Kiểm soát truy cập DM (ghép nối/danh sách cho phép) là toàn cục theo tài khoản WhatsApp, không phải theo tác nhân. Đối với các nhóm dùng chung, hãy liên kết nhóm với một tác nhân hoặc dùng [Nhóm phát sóng](/vi/channels/broadcast-groups).
 
-- Kiểm soát truy cập DM là **toàn cục theo tài khoản WhatsApp** (ghép nối/allowlist), không phải theo tác tử.
-- Với nhóm dùng chung, liên kết nhóm với một tác tử hoặc dùng [nhóm phát sóng](/vi/channels/broadcast-groups).
+## Quy tắc định tuyến
 
-## Quy tắc định tuyến (cách tin nhắn chọn tác tử)
+Các liên kết có tính xác định và liên kết cụ thể nhất sẽ thắng. Xem [Định tuyến kênh](/vi/channels/channel-routing#routing-rules-how-an-agent-is-chosen) để biết thứ tự tầng đầy đủ (đối tượng ngang hàng chính xác, đối tượng ngang hàng cha, ký tự đại diện đối tượng ngang hàng, guild+vai trò, guild, nhóm, tài khoản, kênh, tác nhân mặc định). Một số quy tắc đáng lưu ý tại đây:
 
-Liên kết là **xác định** và **cụ thể nhất thắng**:
+- Nếu nhiều liên kết khớp trong cùng một tầng, liên kết xuất hiện đầu tiên theo thứ tự cấu hình sẽ thắng.
+- Nếu một liên kết đặt nhiều trường khớp (ví dụ: `peer` + `guildId`), tất cả các trường được chỉ định phải khớp (ngữ nghĩa `AND`).
+- Một liên kết bỏ qua `accountId` chỉ khớp tài khoản mặc định, không phải mọi tài khoản. Dùng `accountId: "*"` làm phương án dự phòng trên toàn kênh hoặc `accountId: "<name>"` cho một tài khoản. Việc thêm lại cùng một liên kết với mã tài khoản rõ ràng sẽ nâng cấp liên kết chỉ theo kênh hiện có thay vì tạo bản sao.
 
-<Steps>
-  <Step title="khớp peer">
-    ID DM/nhóm/kênh chính xác.
-  </Step>
-  <Step title="khớp parentPeer">
-    Kế thừa luồng.
-  </Step>
-  <Step title="guildId + vai trò">
-    Định tuyến vai trò Discord.
-  </Step>
-  <Step title="guildId">
-    Discord.
-  </Step>
-  <Step title="teamId">
-    Slack.
-  </Step>
-  <Step title="khớp accountId cho một kênh">
-    Fallback theo từng tài khoản.
-  </Step>
-  <Step title="Khớp cấp kênh">
-    `accountId: "*"`.
-  </Step>
-  <Step title="Tác tử mặc định">
-    Fallback về `agents.list[].default`, nếu không thì mục đầu tiên trong danh sách, mặc định: `main`.
-  </Step>
-</Steps>
+## Nhiều tài khoản/số điện thoại
 
-<AccordionGroup>
-  <Accordion title="Phân xử hòa và ngữ nghĩa AND">
-    - Nếu nhiều liên kết khớp trong cùng một tầng, liên kết đầu tiên theo thứ tự cấu hình sẽ thắng.
-    - Nếu một liên kết đặt nhiều trường khớp (ví dụ `peer` + `guildId`), tất cả các trường đã chỉ định đều bắt buộc (ngữ nghĩa `AND`).
+Các kênh hỗ trợ nhiều tài khoản (ví dụ: WhatsApp) dùng `accountId` để xác định từng lần đăng nhập. Mỗi `accountId` định tuyến đến tác nhân riêng, vì vậy một máy chủ có thể lưu trữ nhiều số điện thoại mà không trộn lẫn các phiên.
 
-  </Accordion>
-  <Accordion title="Chi tiết phạm vi tài khoản">
-    - Một liên kết bỏ qua `accountId` chỉ khớp tài khoản mặc định. Nó không khớp tất cả tài khoản.
-    - Dùng `accountId: "*"` làm fallback toàn kênh trên mọi tài khoản.
-    - Dùng `accountId: "<name>"` để khớp một tài khoản.
-    - Nếu sau này bạn thêm cùng liên kết cho cùng tác tử với ID tài khoản tường minh, OpenClaw nâng cấp liên kết chỉ theo kênh hiện có thành liên kết có phạm vi tài khoản thay vì nhân đôi nó.
+Đặt `channels.<channel>.defaultAccount` để chọn tài khoản được sử dụng khi `accountId` bị bỏ qua. Khi chưa đặt, OpenClaw sẽ dùng `default` nếu có; nếu không, sẽ dùng id tài khoản đầu tiên đã cấu hình (sau khi sắp xếp).
 
-  </Accordion>
-</AccordionGroup>
-
-## Nhiều tài khoản / số điện thoại
-
-Các kênh hỗ trợ **nhiều tài khoản** (ví dụ: WhatsApp) dùng `accountId` để nhận diện từng lần đăng nhập. Mỗi `accountId` có thể được định tuyến tới một tác tử khác nhau, vì vậy một máy chủ có thể lưu trữ nhiều số điện thoại mà không trộn lẫn phiên.
-
-Nếu bạn muốn một tài khoản mặc định toàn kênh khi bỏ qua `accountId`, hãy đặt `channels.<channel>.defaultAccount` (tùy chọn). Khi không đặt, OpenClaw fallback về `default` nếu có, nếu không thì ID tài khoản được cấu hình đầu tiên (đã sắp xếp).
-
-Các kênh phổ biến hỗ trợ mẫu này gồm:
-
-- `whatsapp`, `telegram`, `discord`, `slack`, `signal`, `imessage`
-- `irc`, `line`, `googlechat`, `mattermost`, `matrix`, `nextcloud-talk`
-- `zalo`, `zalouser`, `nostr`, `feishu`
+Các kênh hỗ trợ nhiều tài khoản: `discord`, `feishu`, `googlechat`, `imessage`, `irc`, `line`, `mattermost`, `matrix`, `nextcloud-talk`, `nostr`, `signal`, `slack`, `telegram`, `whatsapp`, `zalo`, `zalouser`.
 
 ## Khái niệm
 
-- `agentId`: một "bộ não" (workspace, xác thực theo từng tác tử, kho phiên theo từng tác tử).
-- `accountId`: một thực thể tài khoản kênh (ví dụ tài khoản WhatsApp `"personal"` so với `"biz"`).
-- `binding`: định tuyến tin nhắn đến tới một `agentId` theo `(channel, accountId, peer)` và tùy chọn ID guild/team.
-- Trò chuyện trực tiếp gộp về `agent:<agentId>:<mainKey>` ("main" theo từng tác tử; `session.mainKey`).
+- `agentId`: một "bộ não" (không gian làm việc, xác thực riêng cho từng tác tử, kho phiên riêng cho từng tác tử).
+- `accountId`: một phiên bản tài khoản kênh (ví dụ: tài khoản WhatsApp `personal` so với `biz`).
+- `binding`: định tuyến tin nhắn đến tới một `agentId` theo `(channel, accountId, peer)` và, nếu cần, theo id bang hội/nhóm.
+- Các cuộc trò chuyện trực tiếp được quy về `agent:<agentId>:<mainKey>` ("main" của từng tác tử; xem `session.mainKey`).
 
-## Ví dụ nền tảng
+## Ví dụ theo nền tảng
 
 <AccordionGroup>
-  <Accordion title="Bot Discord theo từng tác tử">
-    Mỗi tài khoản bot Discord ánh xạ tới một `accountId` duy nhất. Liên kết từng tài khoản với một tác tử và giữ allowlist theo từng bot.
+  <Accordion title="Bot Discord cho từng tác tử">
+    Mỗi tài khoản bot Discord ánh xạ tới một `accountId` duy nhất. Liên kết từng tài khoản với một tác tử và duy trì danh sách cho phép riêng cho từng bot.
 
     ```json5
     {
@@ -328,11 +313,11 @@ Các kênh phổ biến hỗ trợ mẫu này gồm:
     }
     ```
 
-    - Mời từng bot vào guild và bật Message Content Intent.
-    - Token nằm trong `channels.discord.accounts.<id>.token` (tài khoản mặc định có thể dùng `DISCORD_BOT_TOKEN`).
+    - Mời từng bot vào bang hội và bật Message Content Intent.
+    - Các token nằm trong `channels.discord.accounts.<id>.token` (tài khoản mặc định có thể sử dụng `DISCORD_BOT_TOKEN`).
 
   </Accordion>
-  <Accordion title="Bot Telegram cho từng tác nhân">
+  <Accordion title="Bot Telegram cho từng tác tử">
     ```json5
     {
       agents: {
@@ -363,17 +348,17 @@ Các kênh phổ biến hỗ trợ mẫu này gồm:
     }
     ```
 
-    - Tạo một bot cho mỗi tác nhân bằng BotFather và sao chép từng token.
-    - Token nằm trong `channels.telegram.accounts.<id>.botToken` (tài khoản mặc định có thể dùng `TELEGRAM_BOT_TOKEN`).
-    - Với nhiều bot trong cùng một nhóm Telegram, hãy mời từng bot và nhắc đến bot cần trả lời.
-    - Tắt BotFather Privacy Mode cho từng bot nhóm, rồi thêm lại bot để Telegram áp dụng cài đặt.
-    - Cho phép nhóm bằng `channels.telegram.groups`, hoặc chỉ dùng `groupPolicy: "open"` cho các triển khai nhóm đáng tin cậy.
-    - Đặt ID người dùng của người gửi trong `groupAllowFrom`. ID nhóm và siêu nhóm thuộc về `channels.telegram.groups`, không phải `groupAllowFrom`.
-    - Liên kết bằng `accountId` để mỗi bot định tuyến đến tác nhân riêng của nó.
+    - Tạo một bot cho mỗi tác tử bằng BotFather và sao chép từng token.
+    - Các token nằm trong `channels.telegram.accounts.<id>.botToken` (tài khoản mặc định có thể sử dụng `TELEGRAM_BOT_TOKEN`).
+    - Đối với nhiều bot trong cùng một nhóm Telegram, hãy mời từng bot và nhắc đến bot cần trả lời.
+    - Tắt Privacy Mode của BotFather cho từng bot nhóm (`/setprivacy` -> Disable), sau đó xóa và thêm lại bot để Telegram áp dụng cài đặt.
+    - Cho phép các nhóm bằng `channels.telegram.groups`, hoặc chỉ sử dụng `groupPolicy: "open"` cho các hoạt động triển khai nhóm đáng tin cậy.
+    - Đặt ID người dùng của người gửi vào `groupAllowFrom`. ID nhóm và siêu nhóm phải nằm trong `channels.telegram.groups`, không phải `groupAllowFrom`.
+    - Liên kết theo `accountId` để mỗi bot định tuyến tới tác tử riêng.
 
   </Accordion>
-  <Accordion title="Số WhatsApp cho từng tác nhân">
-    Liên kết từng tài khoản trước khi khởi động gateway:
+  <Accordion title="Số WhatsApp cho từng tác tử">
+    Liên kết từng tài khoản trước khi khởi động Gateway:
 
     ```bash
     openclaw channels login --channel whatsapp --account personal
@@ -402,12 +387,12 @@ Các kênh phổ biến hỗ trợ mẫu này gồm:
         ],
       },
 
-      // Deterministic routing: first match wins (most-specific first).
+      // Định tuyến xác định: kết quả khớp đầu tiên được dùng (cụ thể nhất trước).
       bindings: [
         { agentId: "home", match: { channel: "whatsapp", accountId: "personal" } },
         { agentId: "work", match: { channel: "whatsapp", accountId: "biz" } },
 
-        // Optional per-peer override (example: send a specific group to work agent).
+        // Ghi đè tùy chọn theo từng bên ngang hàng (ví dụ: gửi một nhóm cụ thể tới tác tử công việc).
         {
           agentId: "work",
           match: {
@@ -418,7 +403,7 @@ Các kênh phổ biến hỗ trợ mẫu này gồm:
         },
       ],
 
-      // Off by default: agent-to-agent messaging must be explicitly enabled + allowlisted.
+      // Mặc định tắt: phải bật rõ ràng và đưa vào danh sách cho phép để nhắn tin giữa các tác tử.
       tools: {
         agentToAgent: {
           enabled: false,
@@ -430,11 +415,11 @@ Các kênh phổ biến hỗ trợ mẫu này gồm:
         whatsapp: {
           accounts: {
             personal: {
-              // Optional override. Default: ~/.openclaw/credentials/whatsapp/personal
+              // Ghi đè tùy chọn. Mặc định: ~/.openclaw/credentials/whatsapp/personal
               // authDir: "~/.openclaw/credentials/whatsapp/personal",
             },
             biz: {
-              // Optional override. Default: ~/.openclaw/credentials/whatsapp/biz
+              // Ghi đè tùy chọn. Mặc định: ~/.openclaw/credentials/whatsapp/biz
               // authDir: "~/.openclaw/credentials/whatsapp/biz",
             },
           },
@@ -446,11 +431,11 @@ Các kênh phổ biến hỗ trợ mẫu này gồm:
   </Accordion>
 </AccordionGroup>
 
-## Mẫu phổ biến
+## Các mẫu phổ biến
 
 <Tabs>
-  <Tab title="WhatsApp hằng ngày + Telegram cho công việc chuyên sâu">
-    Chia theo kênh: định tuyến WhatsApp đến một tác nhân nhanh cho hằng ngày và Telegram đến một tác nhân Opus.
+  <Tab title="WhatsApp hằng ngày + làm việc chuyên sâu trên Telegram">
+    Chia theo kênh: định tuyến WhatsApp tới một tác tử nhanh dùng hằng ngày và Telegram tới một tác tử Opus.
 
     ```json5
     {
@@ -477,14 +462,11 @@ Các kênh phổ biến hỗ trợ mẫu này gồm:
     }
     ```
 
-    Ghi chú:
-
-    - Các ví dụ này dùng `accountId: "*"` để các liên kết tiếp tục hoạt động nếu bạn thêm tài khoản sau này.
-    - Để định tuyến một DM/nhóm duy nhất đến Opus trong khi giữ phần còn lại ở chat, hãy thêm liên kết `match.peer` cho peer đó; khớp peer luôn thắng các quy tắc toàn kênh.
+    Các ví dụ này sử dụng `accountId: "*"` để các liên kết tiếp tục hoạt động nếu bạn thêm tài khoản sau này. Để định tuyến một DM/nhóm riêng lẻ tới Opus trong khi vẫn giữ phần còn lại trên chat, hãy thêm một liên kết `match.peer` cho bên ngang hàng đó — kết quả khớp bên ngang hàng luôn được ưu tiên hơn các quy tắc áp dụng cho toàn kênh.
 
   </Tab>
-  <Tab title="Cùng kênh, một peer đến Opus">
-    Giữ WhatsApp trên tác nhân nhanh, nhưng định tuyến một DM đến Opus:
+  <Tab title="Cùng một kênh, định tuyến một bên ngang hàng tới Opus">
+    Giữ WhatsApp trên tác tử nhanh nhưng định tuyến một DM tới Opus:
 
     ```json5
     {
@@ -514,11 +496,11 @@ Các kênh phổ biến hỗ trợ mẫu này gồm:
     }
     ```
 
-    Liên kết peer luôn thắng, vì vậy hãy giữ chúng phía trên quy tắc toàn kênh.
+    Các liên kết bên ngang hàng luôn được ưu tiên, vì vậy hãy đặt chúng phía trên quy tắc áp dụng cho toàn kênh.
 
   </Tab>
-  <Tab title="Tác nhân gia đình được liên kết với một nhóm WhatsApp">
-    Liên kết một tác nhân gia đình chuyên dụng với một nhóm WhatsApp duy nhất, có kiểm soát bằng nhắc đến và chính sách công cụ chặt chẽ hơn:
+  <Tab title="Tác tử gia đình liên kết với một nhóm WhatsApp">
+    Liên kết một tác tử chuyên biệt cho gia đình với một nhóm WhatsApp duy nhất, kèm điều kiện nhắc tên và chính sách công cụ chặt chẽ hơn:
 
     ```json5
     {
@@ -563,17 +545,14 @@ Các kênh phổ biến hỗ trợ mẫu này gồm:
     }
     ```
 
-    Ghi chú:
-
-    - Danh sách cho phép/từ chối công cụ là **công cụ**, không phải Skills. Nếu một Skill cần chạy binary, hãy đảm bảo `exec` được cho phép và binary tồn tại trong sandbox.
-    - Để kiểm soát chặt chẽ hơn, đặt `agents.list[].groupChat.mentionPatterns` và giữ danh sách cho phép nhóm được bật cho kênh.
+    Danh sách cho phép/từ chối công cụ là **công cụ**, không phải kỹ năng. Nếu một kỹ năng cần chạy tệp nhị phân, hãy bảo đảm `exec` được cho phép và tệp nhị phân tồn tại trong sandbox. Để kiểm soát chặt chẽ hơn, hãy đặt `agents.list[].groupChat.mentionPatterns` và duy trì danh sách cho phép nhóm cho kênh.
 
   </Tab>
 </Tabs>
 
-## Cấu hình sandbox và công cụ cho từng tác nhân
+## Cấu hình sandbox và công cụ theo từng tác tử
 
-Mỗi tác nhân có thể có sandbox và hạn chế công cụ riêng:
+Mỗi tác tử có thể có các hạn chế riêng về sandbox và công cụ:
 
 ```js
 {
@@ -583,24 +562,24 @@ Mỗi tác nhân có thể có sandbox và hạn chế công cụ riêng:
         id: "personal",
         workspace: "~/.openclaw/workspace-personal",
         sandbox: {
-          mode: "off",  // No sandbox for personal agent
+          mode: "off",  // Không dùng sandbox cho tác tử cá nhân
         },
-        // No tool restrictions - all tools available
+        // Không hạn chế công cụ - tất cả công cụ đều khả dụng
       },
       {
         id: "family",
         workspace: "~/.openclaw/workspace-family",
         sandbox: {
-          mode: "all",     // Always sandboxed
-          scope: "agent",  // One container per agent
+          mode: "all",     // Luôn chạy trong sandbox
+          scope: "agent",  // Một container cho mỗi tác tử
           docker: {
-            // Optional one-time setup after container creation
+            // Thiết lập một lần tùy chọn sau khi tạo container
             setupCommand: "apt-get update && apt-get install -y git curl",
           },
         },
         tools: {
-          allow: ["read"],                    // Only read tool
-          deny: ["exec", "write", "edit", "apply_patch"],    // Deny others
+          allow: ["read"],                    // Chỉ công cụ đọc
+          deny: ["exec", "write", "edit", "apply_patch"],    // Từ chối các công cụ khác
         },
       },
     ],
@@ -609,25 +588,25 @@ Mỗi tác nhân có thể có sandbox và hạn chế công cụ riêng:
 ```
 
 <Note>
-`setupCommand` nằm dưới `sandbox.docker` và chạy một lần khi tạo container. Các ghi đè `sandbox.docker.*` cho từng tác nhân bị bỏ qua khi phạm vi đã phân giải là `"shared"`.
+`setupCommand` nằm trong `sandbox.docker` và chạy một lần khi tạo container. Các giá trị ghi đè `sandbox.docker.*` theo từng tác tử sẽ bị bỏ qua khi phạm vi đã phân giải là `"shared"`.
 </Note>
 
-**Lợi ích:**
+Cấu hình này mang lại:
 
-- **Cách ly bảo mật**: hạn chế công cụ cho các tác nhân không đáng tin cậy.
-- **Kiểm soát tài nguyên**: đặt sandbox cho các tác nhân cụ thể trong khi giữ những tác nhân khác trên máy chủ.
-- **Chính sách linh hoạt**: quyền khác nhau cho từng tác nhân.
+- **Cách ly bảo mật**: hạn chế công cụ cho các tác tử không đáng tin cậy.
+- **Kiểm soát tài nguyên**: chạy các tác tử cụ thể trong sandbox trong khi giữ các tác tử khác trên máy chủ.
+- **Chính sách linh hoạt**: quyền khác nhau cho từng tác tử.
 
 <Note>
-`tools.elevated` là **toàn cục** và dựa trên người gửi; nó không thể cấu hình theo từng tác nhân. Nếu bạn cần ranh giới theo từng tác nhân, hãy dùng `agents.list[].tools` để từ chối `exec`. Để nhắm mục tiêu nhóm, hãy dùng `agents.list[].groupChat.mentionPatterns` để @mention ánh xạ rõ ràng đến tác nhân dự định.
+`tools.elevated` có cả cổng kiểm soát toàn cục (`tools.elevated.enabled`/`allowFrom`) và cổng kiểm soát theo từng tác tử (`agents.list[].tools.elevated.enabled`/`allowFrom`). Cổng kiểm soát theo từng tác tử chỉ có thể hạn chế thêm so với cổng toàn cục — cả hai đều phải cho phép một người gửi thì các lệnh nâng cao mới chạy được. Để nhắm mục tiêu trong nhóm, hãy sử dụng `agents.list[].groupChat.mentionPatterns` để các lượt @nhắc tên ánh xạ chính xác tới tác tử dự kiến.
 </Note>
 
-Xem [Sandbox và công cụ đa tác nhân](/vi/tools/multi-agent-sandbox-tools) để biết ví dụ chi tiết.
+Xem [Sandbox và công cụ cho nhiều tác tử](/vi/tools/multi-agent-sandbox-tools) để biết các ví dụ chi tiết.
 
 ## Liên quan
 
-- [Tác nhân ACP](/vi/tools/acp-agents) — chạy các harness lập trình bên ngoài
-- [Định tuyến kênh](/vi/channels/channel-routing) — cách tin nhắn định tuyến đến tác nhân
-- [Hiện diện](/vi/concepts/presence) — trạng thái hiện diện và khả dụng của tác nhân
-- [Phiên](/vi/concepts/session) — cách ly và định tuyến phiên
-- [Tác nhân con](/vi/tools/subagents) — sinh các lượt chạy tác nhân nền
+- [Tác tử ACP](/vi/tools/acp-agents) — chạy các bộ điều phối lập trình bên ngoài
+- [Định tuyến kênh](/vi/channels/channel-routing) — cách thông điệp được định tuyến đến các tác tử
+- [Trạng thái hiện diện](/vi/concepts/presence) — trạng thái hiện diện và khả năng sẵn sàng của tác tử
+- [Phiên](/vi/concepts/session) — cô lập và định tuyến phiên
+- [Tác tử con](/vi/tools/subagents) — khởi tạo các lượt chạy tác tử trong nền

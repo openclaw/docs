@@ -1,87 +1,82 @@
 ---
 read_when:
-    - OpenClaw बग के लिए लाइव दृश्य QA बनाना या चलाना
+    - OpenClaw बग के लिए लाइव विज़ुअल QA बनाना या चलाना
     - किसी पुल अनुरोध के लिए पहले और बाद का सत्यापन जोड़ना
     - Discord, Slack, WhatsApp या अन्य लाइव ट्रांसपोर्ट परिदृश्य जोड़ना
-    - स्क्रीनशॉट, ब्राउज़र ऑटोमेशन, या VNC एक्सेस की ज़रूरत वाले QA रन को डीबग करना
-summary: 'Mantis OpenClaw बग्स को लाइव ट्रांसपोर्ट्स पर पुन: उत्पन्न करने, पहले और बाद के प्रमाण कैप्चर करने, और आर्टिफैक्ट्स को PRs से संलग्न करने के लिए दृश्य एंड-टू-एंड सत्यापन प्रणाली है।'
-title: मैंटिस
+    - किसी कैंडिडेट रेफ़ के लिए केंद्रित Control UI ब्राउज़र सत्यापन चलाना
+    - स्क्रीनशॉट, ब्राउज़र ऑटोमेशन या VNC एक्सेस की आवश्यकता वाले QA रन की डीबगिंग
+summary: Mantis लाइव ट्रांसपोर्ट तुलनाओं और केवल चयनित उम्मीदवार पर केंद्रित ब्राउज़र प्रमाणों के लिए विज़ुअल एंड-टू-एंड साक्ष्य कैप्चर करता है, फिर आर्टिफ़ैक्ट को PR से संलग्न करता है।
+title: Mantis
 x-i18n:
-    generated_at: "2026-06-28T22:58:43Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T14:15:36Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: b9de83fac9bfa64b4828dab96fcbf5fac33466c7ede9406472801dc7322bf3ae
+    source_hash: 48a1b306e37aba7e8c67139df61f3680a9aec066361aa196d88c81270337bc1b
     source_path: concepts/mantis.md
     workflow: 16
 ---
 
-Mantis उन बगों के लिए OpenClaw एंड-टू-एंड सत्यापन सिस्टम है जिन्हें वास्तविक
-रनटाइम, वास्तविक परिवहन, और दृश्य प्रमाण की जरूरत होती है। यह किसी ज्ञात खराब
-ref के विरुद्ध एक scenario चलाता है, evidence कैप्चर करता है, वही scenario
-candidate ref के विरुद्ध चलाता है, और तुलना को artifacts के रूप में प्रकाशित
-करता है जिन्हें maintainer किसी PR या स्थानीय command से जांच सकता है।
-
-Mantis Discord से शुरू होता है क्योंकि Discord हमें एक उच्च-मूल्य वाली पहली lane
-देता है: वास्तविक bot auth, वास्तविक guild channels, reactions, threads, native
-commands, और browser UI जहां इंसान दृश्य रूप से पुष्टि कर सकते हैं कि transport
-ने क्या दिखाया।
-
-## लक्ष्य
-
-- किसी GitHub issue या PR से बग को उसी transport shape के साथ पुनरुत्पादित करना
-  जिसे users देखते हैं।
-- fix लागू करने से पहले baseline ref पर **before** artifact कैप्चर करना।
-- fix लागू करने के बाद candidate ref पर **after** artifact कैप्चर करना।
-- जब भी संभव हो deterministic oracle का उपयोग करना, जैसे Discord REST reaction
-  read या channel transcript check।
-- जब बग की कोई दृश्य UI surface हो तो screenshots कैप्चर करना।
-- agent-controlled CLI से locally और GitHub से remotely चलना।
-- login, browser automation, या provider auth अटकने पर VNC rescue के लिए पर्याप्त
-  machine state सुरक्षित रखना।
-- run blocked होने, manual VNC help की जरूरत होने, या finish होने पर operator
-  Discord channel में संक्षिप्त status पोस्ट करना।
-
-## गैर-लक्ष्य
-
-- Mantis unit tests का replacement नहीं है। fix समझ आने के बाद Mantis run को
-  सामान्यतः एक छोटे regression test में बदलना चाहिए।
-- Mantis सामान्य तेज CI gate नहीं है। यह धीमा है, live credentials का उपयोग करता
-  है, और उन बगों के लिए आरक्षित है जहां live environment मायने रखता है।
-- सामान्य operation के लिए Mantis को किसी इंसान की जरूरत नहीं होनी चाहिए। Manual
-  VNC rescue path है, happy path नहीं।
-- Mantis artifacts, logs, screenshots, Markdown reports, या PR comments में raw
-  secrets store नहीं करता।
+Mantis, OpenClaw के व्यवहार के लिए विज़ुअल CI साक्ष्य और एक PR टिप्पणी प्रकाशित करता है।
+लाइव ट्रांसपोर्ट परिदृश्य किसी ज्ञात-खराब बेसलाइन की तुलना कैंडिडेट रेफ़रेंस से करते हैं;
+इसके बजाय, केंद्रित ब्राउज़र लेन नियतात्मक
+मॉक किए गए ट्रांसपोर्ट के विरुद्ध किसी एक कैंडिडेट को प्रमाणित कर सकती हैं। Discord सबसे पहले वास्तविक बॉट प्रमाणीकरण, गिल्ड चैनलों,
+प्रतिक्रियाओं, थ्रेड और ब्राउज़र साक्षी के साथ जारी हुआ। Slack, Telegram और केंद्रित Control
+UI चैट लेन भी मौजूद हैं; WhatsApp और Matrix कार्यान्वित नहीं हैं।
 
 ## स्वामित्व
 
-Mantis OpenClaw QA stack में रहता है।
+- OpenClaw (`extensions/qa-lab/src/mantis/*`): परिदृश्य रनटाइम, `pnpm openclaw qa mantis <command>` CLI, साक्ष्य स्कीमा।
+- QA Lab (`extensions/qa-lab/src/live-transports/*`): लाइव ट्रांसपोर्ट हार्नेस, ड्राइवर/SUT बॉट, रिपोर्ट/साक्ष्य राइटर।
+- Crabbox (`openclaw/crabbox`): पहले से तैयार Linux मशीनें, लीज़, VNC, `crabbox media preview`।
+- GitHub Actions (`.github/workflows/mantis-*.yml`): रिमोट एंट्रीपॉइंट, आर्टिफ़ैक्ट प्रतिधारण।
+- ClawSweeper: मेंटेनर PR कमांड पार्स करता है, वर्कफ़्लो डिस्पैच करता है और अंतिम PR टिप्पणी पोस्ट करता है।
 
-- OpenClaw scenario runtime, transport adapters, evidence schema, और
-  `pnpm openclaw qa mantis` के अंतर्गत local CLI का मालिक है।
-- QA Lab live transport harness pieces, browser capture helpers, और artifact
-  writers का मालिक है।
-- जब remote VM की जरूरत होती है, Crabbox warmed Linux machines का मालिक है।
-- GitHub Actions remote workflow entrypoint और artifact retention का मालिक है।
-- ClawSweeper GitHub comment routing का मालिक है: maintainer commands parse करना,
-  workflow dispatch करना, और अंतिम PR comment पोस्ट करना।
-- जब किसी scenario को agentic setup, debugging, या stuck-state reporting की जरूरत
-  होती है, OpenClaw agents Codex के जरिए Mantis चलाते हैं।
+## CLI कमांड
 
-यह boundary transport knowledge को OpenClaw में, machine scheduling को
-Crabbox में, और maintainer workflow glue को ClawSweeper में रखती है।
+सभी कमांड `pnpm openclaw qa mantis <command>` हैं, जिन्हें
+`extensions/qa-lab/src/mantis/cli.ts` में परिभाषित किया गया है। बिल्ड/रन के समय `OPENCLAW_ENABLE_PRIVATE_QA_CLI=1`
+की आवश्यकता होती है (बंडल किए गए वर्कफ़्लो बिल्ड करने से पहले `OPENCLAW_BUILD_PRIVATE_QA=1` और
+`OPENCLAW_ENABLE_PRIVATE_QA_CLI=1` सेट करते हैं)।
 
-## Command shape
+| कमांड                         | उद्देश्य                                                                                                                                                   |
+| ------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `discord-smoke`                 | सत्यापित करें कि Mantis Discord बॉट गिल्ड/चैनल देख सकता है, पोस्ट कर सकता है और प्रतिक्रिया दे सकता है।                                                                                 |
+| `run`                           | बेसलाइन और कैंडिडेट रेफ़रेंस के विरुद्ध पहले/बाद का परिदृश्य चलाएँ (केवल Discord)।                                                                           |
+| `desktop-browser-smoke`         | Crabbox डेस्कटॉप लीज़ पर लें/पुनः उपयोग करें, दृश्यमान ब्राउज़र खोलें और स्क्रीनशॉट + वीडियो कैप्चर करें।                                                                        |
+| `slack-desktop-smoke`           | Crabbox डेस्कटॉप लीज़ पर लें/पुनः उपयोग करें, उसके अंदर Slack QA चलाएँ, Slack Web खोलें और साक्ष्य कैप्चर करें।                                                                  |
+| `telegram-desktop-builder`      | Crabbox डेस्कटॉप लीज़ पर लें/पुनः उपयोग करें, Telegram Desktop इंस्टॉल करें और वैकल्पिक रूप से OpenClaw Gateway कॉन्फ़िगर करें।                                                        |
+| `visual-task` / `visual-driver` | वैकल्पिक इमेज-अंडरस्टैंडिंग अभिकथनों के साथ सामान्य Crabbox डेस्कटॉप कैप्चर; `visual-driver`, `crabbox record --while` के अंतर्गत लॉन्च किया गया ड्राइवर भाग है। |
 
-पहला local command Discord bot, guild, channel, message send, reaction send, और
-artifact path को verify करता है:
+हर कमांड `--repo-root <path>` और `--output-dir <path>` स्वीकार करता है; Crabbox
+कमांड `--crabbox-bin`, `--provider`, `--machine-class`/`--class`,
+`--lease-id`, `--idle-timeout`, `--ttl` और `--keep-lease` भी स्वीकार करते हैं। प्रदाता/क्लास के लिए स्थानीय CLI डिफ़ॉल्ट
+`hetzner`/`beast` हैं, जब तक अन्यथा उल्लेख न हो; CI वर्कफ़्लो
+आमतौर पर दोनों को ओवरराइड करते हैं।
+
+### `discord-smoke`
 
 ```bash
 pnpm openclaw qa mantis discord-smoke \
   --output-dir .artifacts/qa-e2e/mantis/discord-smoke
 ```
 
-local before और after runner यह shape स्वीकार करता है:
+बॉट
+उपयोगकर्ता, गिल्ड, गिल्ड के चैनल और लक्ष्य चैनल प्राप्त करने के लिए Discord REST API (`https://discord.com/api/v10`) को कॉल करता है, अभिकथित करता है कि
+चैनल गिल्ड से संबंधित है, फिर (`--skip-post` को छोड़कर) एक संदेश पोस्ट करता है और
+`👀` प्रतिक्रिया जोड़ता है। `mantis-discord-smoke-summary.json` और
+`mantis-discord-smoke-report.md` लिखता है।
+
+टोकन समाधान क्रम: `--token-file` मान, फिर `OPENCLAW_QA_DISCORD_MANTIS_BOT_TOKEN`
+(`--token-env` से ओवरराइड करें), फिर `OPENCLAW_QA_DISCORD_MANTIS_BOT_TOKEN_FILE` द्वारा नामित फ़ाइल
+(`--token-file-env` से ओवरराइड करें)। गिल्ड/चैनल आईडी
+`OPENCLAW_QA_DISCORD_GUILD_ID` / `OPENCLAW_QA_DISCORD_CHANNEL_ID` से आते हैं (`--guild-id` /
+`--channel-id` से ओवरराइड करें) और 17-20 अंकों वाले Discord स्नोफ़्लेक होने चाहिए। प्रकाशित सारांश और रिपोर्ट में
+बॉट/गिल्ड/चैनल/संदेश आईडी और नामों को `<redacted>` से बदलने के लिए
+`OPENCLAW_QA_REDACT_PUBLIC_METADATA=1` सेट करें।
+
+### `run`
 
 ```bash
 pnpm openclaw qa mantis run \
@@ -92,76 +87,72 @@ pnpm openclaw qa mantis run \
   --output-dir .artifacts/qa-e2e/mantis/local-discord-status-reactions
 ```
 
-runner output directory के अंतर्गत detached baseline और candidate worktrees बनाता
-है, dependencies install करता है, प्रत्येक ref build करता है, scenario को
-`--allow-failures` के साथ चलाता है, फिर `baseline/`, `candidate/`,
-`comparison.json`, और `mantis-report.md` लिखता है। पहले Discord scenario के लिए,
-सफल verification का अर्थ है कि baseline status `fail` है और candidate status
-`pass` है।
+`--transport` फ़िलहाल केवल `discord` स्वीकार करता है। `--scenario`, दो
+अंतर्निहित आईडी में से एक है, जिनमें से प्रत्येक का अपना डिफ़ॉल्ट बेसलाइन रेफ़रेंस और अपेक्षित पहले/बाद के
+लेबल (`extensions/qa-lab/src/mantis/run.runtime.ts`) हैं:
 
-दूसरा Discord before/after probe thread attachments को target करता है:
+| परिदृश्य                                   | डिफ़ॉल्ट बेसलाइन                           | बेसलाइन की अपेक्षा                         | कैंडिडेट की अपेक्षा            |
+| ------------------------------------------ | ------------------------------------------ | ---------------------------------------- | ---------------------------- |
+| `discord-status-reactions-tool-only`       | `0bf06e953fdda290799fc9fb9244a8f67fdae593` | `queued-only`                            | `queued -> thinking -> done` |
+| `discord-thread-reply-filepath-attachment` | `81349cdc2a9d5143fd0991ed858b739e7d96e05c` | थ्रेड उत्तर में `filePath` अटैचमेंट अनुपस्थित है | थ्रेड उत्तर में यह शामिल है     |
 
-```bash
-pnpm openclaw qa mantis run \
-  --transport discord \
-  --scenario discord-thread-reply-filepath-attachment \
-  --baseline <bug-ref> \
-  --candidate <fix-ref> \
-  --output-dir .artifacts/qa-e2e/mantis/local-discord-thread-attachment
-```
+`--candidate` का डिफ़ॉल्ट `HEAD` है। अन्य फ़्लैग: `--credential-source`
+(डिफ़ॉल्ट `convex`), `--credential-role` (डिफ़ॉल्ट `ci`), `--provider-mode`
+(डिफ़ॉल्ट `live-frontier`), `--fast` (डिफ़ॉल्ट रूप से चालू), `--skip-install`, `--skip-build`।
 
-वह scenario driver bot से parent message पोस्ट करता है, वास्तविक Discord thread
-बनाता है, repo-local `filePath` के साथ OpenClaw की `message.thread-reply` action
-call करता है, फिर SUT reply और attachment filename के लिए thread poll करता है।
-baseline screenshot reply को बिना attachment के दिखाता है; candidate screenshot
-अपेक्षित `mantis-thread-report.md` attachment दिखाता है।
+रनर बेसलाइन और
+कैंडिडेट के लिए `<output-dir>/worktrees/` के अंतर्गत डिटैच किए गए `git worktree` चेकआउट बनाता है, प्रत्येक में
+`pnpm install`/`pnpm build` चलाता है (जब तक छोड़ा न गया हो), फिर प्रत्येक वर्कट्री के विरुद्ध
+`pnpm openclaw qa discord --scenario <id> --model openai/gpt-5.4 --alt-model openai/gpt-5.4 --allow-failures`
+चलाता है। प्रत्येक लेन `discord-qa-reaction-timelines.json`
+और एक `<scenario-id>-timeline.html`/`.png` युग्म लिखती है; रनर इस
+साक्ष्य को `baseline/`/`candidate/` के अंतर्गत वापस कॉपी करता है, आउटपुट डायरेक्टरी में `comparison.json`,
+`mantis-report.md` और `mantis-evidence.json` लिखता है, और
+यदि तुलना पास नहीं हुई (बेसलाइन `fail` और कैंडिडेट
+`pass`) तो गैर-शून्य कोड के साथ बाहर निकलता है।
 
-पहला VM/browser primitive desktop smoke है:
+दूसरा Discord परिदृश्य (`discord-thread-reply-filepath-attachment`) ड्राइवर बॉट के साथ
+एक पैरेंट संदेश पोस्ट करता है, वास्तविक थ्रेड बनाता है, रेपो-स्थानीय `filePath` के साथ SUT की
+`message.thread-reply` क्रिया को कॉल करता है, फिर उत्तर और अटैचमेंट फ़ाइलनाम के लिए
+थ्रेड को पोल करता है। यह `mantis-thread-report.md` नामक अटैचमेंट की
+अपेक्षा करता है।
+
+### `desktop-browser-smoke`
 
 ```bash
 pnpm openclaw qa mantis desktop-browser-smoke \
   --output-dir .artifacts/qa-e2e/mantis/desktop-browser
 ```
 
-यह Crabbox desktop machine lease करता है या reuse करता है, VNC session के भीतर
-visible browser शुरू करता है, desktop कैप्चर करता है, artifacts को local output
-directory में वापस pull करता है, और reconnect command को report में लिखता है।
-command default रूप से Hetzner provider का उपयोग करता है क्योंकि यह Mantis lane
-में working desktop/VNC coverage वाला पहला provider है। किसी अन्य Crabbox fleet
-के विरुद्ध चलाते समय इसे `--provider`, `--crabbox-bin`, या
-`OPENCLAW_MANTIS_CRABBOX_PROVIDER` से override करें।
+Crabbox डेस्कटॉप को लीज़ पर लेता या पुनः उपयोग करता है, VNC सत्र के अंदर
+`--browser-url` (डिफ़ॉल्ट `https://openclaw.ai`) या रेंडर किए गए
+`--html-file` की ओर इंगित करता ब्राउज़र लॉन्च करता है, प्रतीक्षा करता है, `scrot` से स्क्रीनशॉट लेता है, वैकल्पिक रूप से
+`ffmpeg` से MP4 रिकॉर्ड करता है और `desktop-browser-smoke.png` / `.mp4` / `remote-metadata.json`
+को rsync करके वापस `--output-dir` में लाता है।
 
-उपयोगी desktop smoke flags:
+फ़्लैग:
 
-- `--lease-id <cbx_...>` या `OPENCLAW_MANTIS_CRABBOX_LEASE_ID` warmed desktop को reuse करता है।
-- `--browser-url <url>` visible browser में खोले गए page को बदलता है।
-- `--html-file <path>` repo-local HTML artifact को visible browser में render करता है। Mantis इसका उपयोग generated Discord status-reaction timeline को वास्तविक Crabbox desktop के जरिए capture करने के लिए करता है।
-- `--browser-profile-dir <remote-path>` remote Chrome user-data-dir को reuse करता है ताकि persistent Mantis desktop runs के बीच logged in रह सके। इसे long-lived Discord Web viewer profile के लिए उपयोग करें।
-- `--browser-profile-archive-env <name>` browser launch करने से पहले named environment variable से base64 `.tgz` Chrome user-data-dir archive restore करता है। इसे Discord Web जैसे logged-in witnesses के लिए उपयोग करें। default env var `OPENCLAW_MANTIS_BROWSER_PROFILE_TGZ_B64` है।
-- `--video-duration <seconds>` MP4 capture length नियंत्रित करता है। slow logged-in web apps के लिए लंबी duration उपयोग करें जिन्हें settle होने में समय चाहिए।
-- `--keep-lease` या `OPENCLAW_MANTIS_KEEP_VM=1` newly created passing lease को VNC inspection के लिए open रखता है। failed runs default रूप से lease keep करते हैं जब कोई lease बनाया गया था ताकि operator reconnect कर सके।
-- `--class`, `--idle-timeout`, और `--ttl` machine size और lease lifetime tune करते हैं।
+- `--lease-id <cbx_...>` नया डेस्कटॉप बनाने के बजाय पहले से तैयार डेस्कटॉप का पुनः उपयोग करता है।
+- `--browser-profile-dir <remote-path>` रिमोट Chrome user-data-dir का पुनः उपयोग करता है, ताकि स्थायी डेस्कटॉप रन के बीच लॉग-इन रहे (लंबे समय तक चलने वाली Discord Web व्यूअर प्रोफ़ाइल के लिए उपयोग किया जाता है)।
+- `--browser-profile-archive-env <name>` लॉन्च से पहले उस एनवायरनमेंट वेरिएबल से base64 `.tgz` Chrome प्रोफ़ाइल आर्काइव पुनर्स्थापित करता है (डिफ़ॉल्ट `OPENCLAW_MANTIS_BROWSER_PROFILE_TGZ_B64`); Discord Web जैसे लॉग-इन साक्षियों के लिए उपयोग किया जाता है।
+- `--video-duration <seconds>` MP4 कैप्चर अवधि नियंत्रित करता है (डिफ़ॉल्ट 10s)।
+- `--keep-lease` (या `OPENCLAW_MANTIS_KEEP_VM=1`) इस रन द्वारा बनाई गई लीज़ को VNC निरीक्षण के लिए खुला रखता है; लीज़ बनाने वाले विफल रन भी डिफ़ॉल्ट रूप से इसे खुला रखते हैं।
 
-Discord Web evidence के लिए, Mantis bot token के बजाय dedicated viewer account का
-उपयोग करता है। live Discord API scenario oracle रहता है: यह वास्तविक thread
-बनाता है, SUT `thread-reply` भेजता है, और Discord REST के जरिए attachment check
-करता है। जब `OPENCLAW_QA_DISCORD_CAPTURE_UI_METADATA=1` set होता है, scenario
-Discord Web URL artifact भी लिखता है। जब `OPENCLAW_QA_DISCORD_KEEP_THREADS=1` set
-होता है, यह उस thread को इतने समय तक उपलब्ध छोड़ता है कि logged-in browser उसे
-open और record कर सके।
+Discord Web साक्ष्य के लिए, Mantis बॉट
+टोकन के बजाय समर्पित व्यूअर खाते का उपयोग करता है। Discord REST ओरेकल (`qa discord` के माध्यम से) प्रामाणिक बना रहता है; जब
+`OPENCLAW_QA_DISCORD_CAPTURE_UI_METADATA=1` सेट होता है, तो परिदृश्य एक
+Discord Web URL आर्टिफ़ैक्ट भी लिखता है और `OPENCLAW_QA_DISCORD_KEEP_THREADS=1`
+थ्रेड को इतनी देर तक खुला रखता है कि ब्राउज़र उसे खोल सके।
 
-GitHub workflow candidate thread URL को Discord Web में खोलता है, screenshot
-capture करता है, MP4 record करता है, और जब Crabbox media tooling उपलब्ध हो तो
-trimmed GIF preview generate करता है। `MANTIS_DISCORD_VIEWER_CHROME_PROFILE_DIR`
-के जरिए configured persistent viewer profile path को प्राथमिकता दें, क्योंकि
-full Chrome profile archives GitHub की secret-size limit से बड़े हो सकते हैं।
-small/bootstrap profiles के लिए, workflow
-`MANTIS_DISCORD_VIEWER_CHROME_PROFILE_TGZ_B64` से base64 `.tgz` archive भी restore
-कर सकता है। यदि कोई profile source configured नहीं है, workflow फिर भी
-deterministic baseline/candidate attachment screenshots publish करता है और notice
-log करता है कि logged-in Discord Web witness skip किया गया।
+GitHub वर्कफ़्लो
+`MANTIS_DISCORD_VIEWER_CHROME_PROFILE_DIR` के माध्यम से स्थायी व्यूअर प्रोफ़ाइल को प्राथमिकता देता है (पूर्ण प्रोफ़ाइल आर्काइव
+GitHub की सीक्रेट आकार सीमा से बड़े हो सकते हैं); छोटी/बूटस्ट्रैप प्रोफ़ाइल के लिए, इसके बजाय यह
+`MANTIS_DISCORD_VIEWER_CHROME_PROFILE_TGZ_B64` से base64 `.tgz` पुनर्स्थापित कर सकता है। इनमें से
+कोई स्रोत कॉन्फ़िगर न होने पर भी, वर्कफ़्लो नियतात्मक
+बेसलाइन/कैंडिडेट स्क्रीनशॉट प्रकाशित करता है और लॉग करता है कि लॉग-इन साक्षी
+छोड़ दिया गया था।
 
-पहला full desktop transport primitive Slack desktop smoke है:
+### `slack-desktop-smoke`
 
 ```bash
 pnpm openclaw qa mantis slack-desktop-smoke \
@@ -171,113 +162,51 @@ pnpm openclaw qa mantis slack-desktop-smoke \
   --keep-lease
 ```
 
-यह Crabbox desktop machine lease करता है या reuse करता है, current checkout को
-VM में sync करता है, उस VM के भीतर `pnpm openclaw qa slack` चलाता है, VNC browser
-में Slack Web खोलता है, visible desktop capture करता है, और Slack QA artifacts
-तथा VNC screenshot दोनों को local output directory में वापस copy करता है। यह
-पहला Mantis shape है जहां SUT OpenClaw gateway और browser दोनों समान Linux
-desktop VM के भीतर रहते हैं।
+Crabbox डेस्कटॉप को लीज़ पर लेता या पुनः उपयोग करता है, चेकआउट को VM में सिंक करता है, उसके अंदर
+`pnpm openclaw qa slack` चलाता है, VNC ब्राउज़र में Slack Web खोलता है,
+डेस्कटॉप कैप्चर करता है और Slack QA आर्टिफ़ैक्ट (`slack-qa/`) तथा
+VNC स्क्रीनशॉट/वीडियो दोनों को वापस स्थानीय रूप से कॉपी करता है। यह एकमात्र Mantis आकार है जिसमें
+SUT Gateway और ब्राउज़र, दोनों एक ही VM के अंदर चलते हैं।
 
-`--gateway-setup` के साथ, command `$HOME/.openclaw-mantis/slack-openclaw` पर
-persistent disposable OpenClaw home तैयार करता है, selected channel के लिए Slack
-Socket Mode configuration patch करता है, port `38973` पर `openclaw gateway run`
-शुरू करता है, और VNC session में Chrome running रखता है। यह "मुझे Slack और
-running claw वाला Linux desktop छोड़ दें" mode है; जब `--gateway-setup` omitted
-होता है, bot-to-bot Slack QA lane default रहती है।
+`--gateway-setup` के साथ, कमांड VM में `$HOME/.openclaw-mantis/slack-openclaw` पर
+स्थायी डिस्पोज़ेबल OpenClaw होम बनाता है, लक्ष्य चैनल के लिए Slack
+Socket Mode कॉन्फ़िगरेशन पैच करता है,
+`openclaw gateway run --dev --allow-unconfigured --port 38973` शुरू करता है और
+Chrome को VNC सत्र में चलता छोड़ देता है; `--gateway-setup` छोड़ने पर इसके बजाय सामान्य
+बॉट-से-बॉट Slack QA लेन चलती है।
 
-`--credential-source env` के लिए आवश्यक inputs:
+`--credential-source env` के लिए आवश्यक एनवायरनमेंट (स्थानीय डिफ़ॉल्ट `env` है; भूमिका का
+डिफ़ॉल्ट `maintainer` है):
 
 - `OPENCLAW_QA_SLACK_CHANNEL_ID`
 - `OPENCLAW_QA_SLACK_DRIVER_BOT_TOKEN`
 - `OPENCLAW_QA_SLACK_SUT_BOT_TOKEN`
 - `OPENCLAW_QA_SLACK_SUT_APP_TOKEN`
-- remote model lane के लिए `OPENCLAW_LIVE_OPENAI_KEY`। यदि locally केवल
-  `OPENAI_API_KEY` set है, तो Mantis Crabbox invoke करने से पहले उसे
-  `OPENCLAW_LIVE_OPENAI_KEY` पर map करता है ताकि Crabbox का `OPENCLAW_*` env forwarding
-  उसे VM में ले जा सके।
+- `OPENCLAW_LIVE_OPENAI_KEY` रिमोट मॉडल लेन के लिए (यदि स्थानीय रूप से केवल `OPENAI_API_KEY`
+  सेट है, तो Mantis Crabbox को
+  इनवोक करने से पहले इसे `OPENCLAW_LIVE_OPENAI_KEY` में कॉपी करता है)
 
-`--gateway-setup --credential-source convex` के साथ, Mantis VM बनाने से पहले
-shared pool से Slack SUT credential lease करता है और leased channel id, Socket
-Mode app token, और bot token को desktop के भीतर `OPENCLAW_MANTIS_SLACK_*`
-runtime env के रूप में forward करता है। इससे GitHub workflows thin रहते हैं: उन्हें
-केवल Convex broker secret चाहिए, raw Slack bot या app tokens नहीं।
+`--credential-source convex` के साथ, Mantis VM बनाने से पहले
+साझा पूल से Slack SUT क्रेडेंशियल लीज़ पर लेता है और चैनल आईडी, ऐप टोकन तथा
+बॉट टोकन को `OPENCLAW_MANTIS_SLACK_*` एनवायरनमेंट वेरिएबल के रूप में VM में फ़ॉरवर्ड करता है, ताकि GitHub
+वर्कफ़्लो को कच्चे Slack टोकन के बजाय केवल Convex ब्रोकर सीक्रेट की आवश्यकता हो।
 
-उपयोगी Slack desktop flags:
+अन्य फ़्लैग: `--slack-url <url>` कोई विशिष्ट URL खोलता है (अन्यथा Mantis
+`auth.test` से `https://app.slack.com/client/<team>/<channel>` व्युत्पन्न करता है);
+`--slack-channel-id <id>` Gateway की अनुमति-सूची वाला चैनल सेट करता है;
+`OPENCLAW_MANTIS_SLACK_BROWSER_PROFILE_DIR` VM के अंदर स्थायी Chrome
+प्रोफ़ाइल नियंत्रित करता है (डिफ़ॉल्ट `$HOME/.config/openclaw-mantis/slack-chrome-profile`);
+`--approval-checkpoints` मूल Slack अनुमोदन परिदृश्य
+(`slack-approval-exec-native`, `slack-approval-plugin-native`) चलाता है और
+Gateway सेटअप के बजाय लंबित/समाधित चेकपॉइंट स्क्रीनशॉट रेंडर करता है (`--gateway-setup` के साथ परस्पर
+अनन्य); `--hydrate-mode source|prehydrated`,
+`--provider-mode`, `--model`, `--alt-model` और `--fast`, Slack लाइव लेन को पास-थ्रू होते हैं।
 
-- `--lease-id <cbx_...>` उस machine के विरुद्ध rerun करता है जहां operator पहले ही VNC के जरिए Slack Web में logged in है।
-- `--gateway-setup` केवल bot-to-bot QA lane चलाने के बजाय VM में persistent OpenClaw Slack gateway शुरू करता है।
-- `--keep-lease` success के बाद gateway VM को VNC inspection के लिए open रखता है; `--no-keep-lease` artifacts collect करने के बाद इसे stop करता है।
-- `--slack-url <url>` specific Slack Web URL खोलता है। इसके बिना, जब SUT bot token उपलब्ध हो, Mantis Slack `auth.test` से `https://app.slack.com/client/<team>/<channel>` derive करता है।
-- `--slack-channel-id <id>` gateway setup द्वारा उपयोग की गई Slack channel allowlist नियंत्रित करता है।
-- `OPENCLAW_MANTIS_SLACK_BROWSER_PROFILE_DIR` VM के भीतर persistent Chrome profile नियंत्रित करता है। default `$HOME/.config/openclaw-mantis/slack-chrome-profile` है, ताकि manual Slack Web login समान lease पर reruns में बचा रहे।
-- `--credential-source convex --credential-role ci` direct Slack env tokens के बजाय shared credential pool का उपयोग करता है।
-- `--provider-mode`, `--model`, `--alt-model`, और `--fast` Slack live lane को pass through करते हैं।
+अनुमोदन चेकपॉइंट स्क्रीनशॉट, परिदृश्य द्वारा देखे गए Slack API संदेश से
+रेंडर किए जाते हैं, लाइव Slack UI से नहीं; `slack-desktop-smoke.png` केवल तभी
+Slack Web का प्रमाण है, जब लीज़ की ब्राउज़र प्रोफ़ाइल पहले से लॉग-इन थी।
 
-Approval checkpoint runs CI-safe visual proof के लिए Slack API message snapshots
-को checkpoint PNGs में render करते हैं। `slack-desktop-smoke.png` Slack Web का
-proof केवल तब है जब lease ऐसे warm browser profile का उपयोग करता है जो पहले से
-logged in है।
-
-GitHub smoke workflow `Mantis Discord Smoke` है। पहले real scenario के लिए before
-और after GitHub workflow `Mantis Discord Status Reactions` है। यह स्वीकार करता
-है:
-
-- `baseline_ref`: वह ref जिससे queued-only behavior reproduce होने की अपेक्षा है।
-- `candidate_ref`: वह ref जिससे `queued -> thinking -> done` दिखने की अपेक्षा है।
-
-यह workflow harness ref checkout करता है, अलग baseline और candidate worktrees
-build करता है, प्रत्येक worktree के विरुद्ध `discord-status-reactions-tool-only`
-चलाता है, और `baseline/`, `candidate/`, `comparison.json`, तथा
-`mantis-report.md` को Actions artifacts के रूप में upload करता है। यह प्रत्येक
-lane की timeline HTML को Crabbox desktop browser में भी render करता है और PR
-comment में deterministic timeline PNGs के साथ वे VNC screenshots publish करता
-है। वही PR comment `crabbox media preview` द्वारा generated lightweight
-motion-trimmed GIF previews embed करता है, matching motion-trimmed MP4 clips से
-link करता है, और deep inspection के लिए full desktop MP4 files रखता है। त्वरित
-review के लिए screenshots inline रहते हैं। workflow `openclaw/crabbox` main से
-Crabbox CLI build करता है ताकि अगले Crabbox binary release cut होने से पहले यह
-current desktop/browser lease flags का उपयोग कर सके।
-
-`Mantis Scenario` जेनेरिक मैनुअल एंट्रीपॉइंट है। यह `scenario_id`,
-`candidate_ref`, वैकल्पिक `baseline_ref`, और वैकल्पिक `pr_number` लेता है, फिर
-scenario-स्वामित्व वाला वर्कफ़्लो डिस्पैच करता है। रैपर जानबूझकर पतला है:
-scenario वर्कफ़्लो अभी भी अपना transport सेटअप, क्रेडेंशियल, VM क्लास,
-अपेक्षित oracle, और आर्टिफैक्ट मैनिफ़ेस्ट स्वामित्व में रखते हैं।
-
-`Mantis Slack Desktop Smoke` पहला Slack VM वर्कफ़्लो है। यह trusted candidate
-ref को अलग वर्कट्री में चेक आउट करता है, Crabbox Linux डेस्कटॉप lease करता है,
-उस candidate के विरुद्ध `pnpm openclaw qa mantis slack-desktop-smoke --gateway-setup` चलाता है,
-VNC ब्राउज़र में Slack Web खोलता है, डेस्कटॉप रिकॉर्ड करता है,
-`crabbox media preview` से motion-trimmed प्रीव्यू जनरेट करता है, पूरा आर्टिफैक्ट
-डायरेक्टरी अपलोड करता है, और वैकल्पिक रूप से target PR पर inline evidence
-comment पोस्ट करता है। डेस्कटॉप lease के लिए इसका डिफ़ॉल्ट AWS है और यह manual
-provider input उपलब्ध कराता है ताकि operator AWS capacity धीमी या अनुपलब्ध होने पर
-Hetzner पर स्विच कर सकें। इस lane का उपयोग तब करें जब आप केवल bot-to-bot Slack
-transcript के बजाय "Slack और चल रहे claw वाला Linux desktop" चाहते हों।
-
-`Mantis Telegram Live` मौजूदा Telegram live QA lane को उसी PR evidence pipeline
-में लपेटता है। यह trusted candidate ref को अलग वर्कट्री में चेक आउट करता है,
-`pnpm openclaw qa telegram --credential-source convex
---credential-role ci` चलाता है, Telegram QA summary, `qa-evidence.json`, और report
-artifacts से `mantis-evidence.json` manifest लिखता है, redacted evidence HTML को
-Crabbox desktop browser के माध्यम से render करता है, `crabbox media preview` से
-motion-trimmed GIF जनरेट करता है, और PR number उपलब्ध होने पर inline PR evidence
-comment पोस्ट करता है। यह lane logged-in Telegram Web proof के बजाय QA-evidence
-visual है: Telegram Bot API स्थिर live message evidence देता है, लेकिन सामान्य
-Mantis automation के लिए Telegram Web login state आवश्यक नहीं है।
-
-`Mantis Telegram Desktop Proof` agentic native Telegram Desktop before/after
-wrapper है। कोई maintainer इसे PR comment से
-`@openclaw-mantis telegram desktop proof`, Actions UI से freeform instructions,
-या generic `Mantis Scenario` dispatcher के माध्यम से trigger कर सकता है। Workflow
-PR, baseline ref, candidate ref, और maintainer instructions Codex को देता है।
-Agent PR पढ़ता है, तय करता है कि कौन-सा Telegram-visible behavior change को prove
-करता है, baseline और candidate के लिए real-user Crabbox Telegram Desktop proof
-lane चलाता है, native GIFs उपयोगी होने तक iterate करता है, paired `motionPreview`
-artifacts को `mantis-evidence.json` में लिखता है, bundle अपलोड करता है, और PR
-number उपलब्ध होने पर 2-column PR evidence table पोस्ट करता है।
-
-Human-in-the-loop Telegram desktop setup के लिए, scenario builder का उपयोग करें:
+### `telegram-desktop-builder`
 
 ```bash
 pnpm openclaw qa mantis telegram-desktop-builder \
@@ -286,425 +215,215 @@ pnpm openclaw qa mantis telegram-desktop-builder \
   --keep-lease
 ```
 
-Builder Crabbox desktop lease या reuse करता है, native Linux Telegram Desktop
-binary install करता है, वैकल्पिक रूप से user-session archive restore करता है,
-leased Telegram SUT bot token के साथ OpenClaw configure करता है, port `38974` पर
-`openclaw gateway run` start करता है, leased private group में driver-bot readiness
-message पोस्ट करता है, फिर visible VNC desktop से screenshot और MP4 capture करता
-है। Bot token कभी Telegram Desktop में log in नहीं करता; यह केवल OpenClaw को
-configure करता है। Desktop viewer एक अलग Telegram user session है, जिसे
-`--telegram-profile-archive-env <name>` से restore किया जाता है या VNC के माध्यम से
-manually बनाया जाता है और `--keep-lease` के साथ alive रखा जाता है।
+Crabbox डेस्कटॉप को लीज़ पर लेता या पुनः उपयोग करता है, नेटिव Linux Telegram Desktop इंस्टॉल करता है,
+वैकल्पिक रूप से उपयोगकर्ता-सत्र आर्काइव पुनर्स्थापित करता है, लीज़ पर लिए गए Telegram SUT बॉट टोकन से OpenClaw
+कॉन्फ़िगर करता है,
+`openclaw gateway run --dev --allow-unconfigured --port 38974` शुरू करता है, लीज़ पर लिए गए निजी समूह में
+ड्राइवर-बॉट तैयारी संदेश पोस्ट करता है, फिर
+स्क्रीनशॉट और MP4 कैप्चर करता है। बॉट टोकन केवल OpenClaw को कॉन्फ़िगर करता है; यह कभी भी
+Telegram Desktop में लॉग-इन नहीं करता। डेस्कटॉप व्यूअर एक अलग Telegram उपयोगकर्ता सत्र है,
+जिसे `--telegram-profile-archive-env <name>` से पुनर्स्थापित किया जाता है या VNC
+के माध्यम से मैन्युअल रूप से लॉग-इन किया जाता है और `--keep-lease` से सक्रिय रखा जाता है।
 
-उपयोगी Telegram desktop builder flags:
+फ़्लैग: `--lease-id <cbx_...>`, Telegram Desktop में पहले से लॉग-इन VM के विरुद्ध पुनः चलाता है;
+`--telegram-profile-archive-env <name>`, लॉन्च से पहले base64
+`.tgz` प्रोफ़ाइल आर्काइव पुनर्स्थापित करता है; `--telegram-profile-dir <remote-path>`
+रिमोट प्रोफ़ाइल डायरेक्टरी सेट करता है (डिफ़ॉल्ट `$HOME/.local/share/TelegramDesktop`);
+`--no-gateway-setup` केवल Telegram Desktop इंस्टॉल करके खोलता है;
+`--credential-source`/`--credential-role` का डिफ़ॉल्ट `convex`/`maintainer` है।
 
-- `--lease-id <cbx_...>` उस VM के विरुद्ध rerun करता है जहां operator ने पहले से Telegram Desktop में log in किया है।
-- `--telegram-profile-archive-env <name>` उस env var से base64 `.tgz` Telegram Desktop profile archive पढ़ता है और launch से पहले restore करता है।
-- `--telegram-profile-dir <remote-path>` remote Telegram Desktop profile directory नियंत्रित करता है। डिफ़ॉल्ट `$HOME/.local/share/TelegramDesktop` है।
-- `--no-gateway-setup` OpenClaw configure किए बिना Telegram Desktop install और open करता है।
-- `--credential-source convex --credential-role ci` direct Telegram env tokens के बजाय shared credential broker का उपयोग करता है।
+## साक्ष्य मैनिफ़ेस्ट
 
-हर PR-publishing scenario अपनी report के पास `mantis-evidence.json` लिखता है।
-यह schema scenario code और GitHub comments के बीच handoff है:
+PR पर प्रकाशित होने वाला प्रत्येक परिदृश्य अपनी रिपोर्ट के पास `mantis-evidence.json` लिखता है:
 
 ```json
 {
   "schemaVersion": 1,
   "id": "discord-status-reactions",
-  "title": "Mantis Discord Status Reactions QA",
-  "summary": "Human-readable top summary for the PR comment.",
+  "title": "Mantis Discord स्थिति प्रतिक्रियाएँ QA",
+  "summary": "PR टिप्पणी के लिए मानव-पठनीय शीर्ष सारांश।",
   "scenario": "discord-status-reactions-tool-only",
   "comparison": {
-    "baseline": { "sha": "...", "status": "fail", "expected": "queued-only" },
-    "candidate": { "sha": "...", "status": "pass", "expected": "queued -> thinking -> done" },
+    "baseline": { "sha": "...", "status": "fail", "expected": "केवल कतारबद्ध" },
+    "candidate": { "sha": "...", "status": "pass", "expected": "कतारबद्ध -> विचाररत -> पूर्ण" },
     "pass": true
   },
   "artifacts": [
     {
       "kind": "timeline",
       "lane": "baseline",
-      "label": "Baseline queued-only",
+      "label": "बेसलाइन केवल कतारबद्ध",
       "path": "baseline/timeline.png",
       "targetPath": "baseline.png",
-      "alt": "Baseline Discord timeline",
+      "alt": "बेसलाइन Discord टाइमलाइन",
       "width": 420
     }
   ]
 }
 ```
 
-Artifact `path` values manifest directory के सापेक्ष होते हैं। `targetPath`
-values configured Mantis R2/S3 artifact prefix के अंतर्गत relative paths होते हैं।
-Publisher path traversal reject करता है और optional previews या videos अनुपलब्ध
-होने पर `"required": false` चिह्नित entries skip करता है।
+आर्टिफ़ैक्ट `path` मैनिफ़ेस्ट की डायरेक्टरी के सापेक्ष है; `targetPath` कॉन्फ़िगर किए गए R2/S3 आर्टिफ़ैक्ट प्रीफ़िक्स के सापेक्ष है। फ़ाइल न मिलने पर `scripts/mantis/publish-pr-evidence.mjs` पाथ ट्रैवर्सल को अस्वीकार करता है और `"required": false` वाली प्रविष्टियों को छोड़ देता है।
 
-समर्थित artifact kinds:
+आर्टिफ़ैक्ट प्रकार: `timeline` (निर्धारक पहले/बाद का स्क्रीनशॉट), `desktopScreenshot` (VNC/ब्राउज़र स्क्रीनशॉट), `motionPreview` (रिकॉर्डिंग से इनलाइन एनिमेटेड GIF), `motionClip` (गतिविधि के अनुसार ट्रिम किया गया MP4), `fullVideo` (पूरी रिकॉर्डिंग), `metadata` (JSON/लॉग साइडकार), `report` (Markdown रिपोर्ट)।
 
-- `timeline`: deterministic scenario screenshot, आमतौर पर before/after।
-- `desktopScreenshot`: VNC/browser desktop screenshot।
-- `motionPreview`: desktop recording से जनरेट किया गया inline animated GIF।
-- `motionClip`: static lead-in और tail हटाने वाला motion-trimmed MP4।
-- `fullVideo`: गहरी inspection के लिए full MP4 recording।
-- `metadata`: JSON/log sidecar।
-- `report`: Markdown report।
-
-Reusable publisher `scripts/mantis/publish-pr-evidence.mjs` है। Workflows इसे
-manifest, target PR, artifact target root, comment marker, Actions artifact URL,
-run URL, और request source के साथ call करते हैं। यह declared artifacts को
-configured Mantis R2/S3 bucket में upload करता है, inline images/previews और
-linked videos के साथ summary-first PR comment बनाता है, फिर मौजूदा marker comment
-update करता है या नया बनाता है। Workflows public URLs के साथ
-`https://artifacts.openclaw.ai` के अंतर्गत `openclaw-crabbox-artifacts` पर publish
-करते हैं। वे bucket, region, और public URL values सीधे provide करते हैं। Reusable
-publisher को इनकी आवश्यकता होती है:
-
-- `MANTIS_ARTIFACT_R2_ACCESS_KEY_ID`
-- `MANTIS_ARTIFACT_R2_SECRET_ACCESS_KEY`
-- `MANTIS_ARTIFACT_R2_BUCKET`
-- `MANTIS_ARTIFACT_R2_ENDPOINT`
-- `MANTIS_ARTIFACT_R2_REGION`
-- `MANTIS_ARTIFACT_R2_PUBLIC_BASE_URL`
-
-आप status-reactions run को सीधे PR comment से भी trigger कर सकते हैं:
-
-```text
-@openclaw-mantis discord status reactions
-```
-
-Comment trigger जानबूझकर narrow है। यह केवल write, maintain, या admin access वाले
-users के pull request comments पर चलता है, और यह केवल Discord status-reaction
-requests पहचानता है। डिफ़ॉल्ट रूप से यह known bad baseline ref और current PR head
-SHA को candidate के रूप में उपयोग करता है। Maintainers किसी भी ref को override कर
-सकते हैं:
-
-```text
-@openclaw-mantis discord status reactions baseline=origin/main candidate=HEAD
-```
-
-Telegram live QA को PR comment से भी trigger किया जा सकता है:
-
-```text
-@openclaw-mantis telegram
-@openclaw-mantis telegram scenario=telegram-status-command
-@openclaw-mantis telegram scenarios=telegram-status-command,telegram-mentioned-message-reply
-```
-
-डिफ़ॉल्ट रूप से यह current PR head SHA को candidate के रूप में उपयोग करता है और
-`telegram-status-command` चलाता है। Maintainers किसी specific ref या pre-warmed
-Crabbox desktop की आवश्यकता होने पर `candidate=...`, `provider=aws|hetzner`, और
-`lease=<cbx_...>` override कर सकते हैं।
-
-ClawSweeper command examples:
-
-```text
-@clawsweeper mantis discord discord-status-reactions-tool-only
-@clawsweeper verify e2e discord
-```
-
-पहला command explicit और scenario-focused है। दूसरा बाद में labels, changed files,
-और ClawSweeper review findings से किसी PR या issue को recommended Mantis scenarios
-पर map कर सकता है।
-
-## Run lifecycle
-
-1. Credentials acquire करें।
-2. VM allocate या reuse करें।
-3. जब scenario को UI evidence चाहिए हो, desktop/browser profile prepare करें।
-4. Baseline ref के लिए clean checkout prepare करें।
-5. Dependencies install करें और केवल वही build करें जिसकी scenario को आवश्यकता है।
-6. Isolated state directory के साथ child OpenClaw Gateway start करें।
-7. Live transport, provider, model, और browser profile configure करें।
-8. Scenario run करें और baseline evidence capture करें।
-9. Gateway stop करें और logs preserve करें।
-10. उसी VM में candidate ref prepare करें।
-11. वही scenario run करें और candidate evidence capture करें।
-12. Oracle results और visual evidence compare करें।
-13. Markdown, JSON, logs, screenshots, और optional trace artifacts लिखें।
-14. GitHub Actions artifacts upload करें।
-15. संक्षिप्त PR या Discord status message पोस्ट करें।
-
-Scenario दो अलग तरीकों से fail हो सकना चाहिए:
-
-- **Bug reproduced**: baseline expected तरीके से fail हुआ।
-- **Harness failure**: bug oracle meaningful होने से पहले environment setup, credentials, Discord API, browser, या
-  provider fail हुआ।
-
-Final report को इन cases को अलग रखना चाहिए ताकि maintainers flaky environment को
-product behavior के साथ confuse न करें।
-
-## Discord MVP
-
-पहले scenario को guild channels में Discord status reactions target करना चाहिए,
-जहां source reply delivery mode `message_tool_only` है।
-
-यह अच्छा Mantis seed क्यों है:
-
-- यह Discord में triggering message पर reactions के रूप में visible है।
-- इसके पास Discord message reaction state के माध्यम से strong REST oracle है।
-- यह real OpenClaw Gateway, Discord bot auth, message dispatch,
-  source reply delivery mode, status reaction state, और model turn lifecycle को exercise करता है।
-- यह इतना narrow है कि first implementation honest बनी रहती है।
-
-Expected scenario shape:
-
-```yaml
-id: discord-status-reactions-tool-only
-transport: discord
-baseline:
-  expect:
-    reproduced: true
-candidate:
-  expect:
-    fixed: true
-config:
-  messages:
-    ackReaction: "👀"
-    ackReactionScope: "group-mentions"
-    groupChat:
-      visibleReplies: "message_tool"
-    statusReactions:
-      enabled: true
-      timing:
-        debounceMs: 0
-discord:
-  requireMention: true
-  notifyChannel: operator-notify
-evidence:
-  rest:
-    messageReactions: true
-  browser:
-    screenshotMessageRow: true
-```
-
-Baseline evidence में queued acknowledgement reaction दिखना चाहिए लेकिन tool-only
-mode में lifecycle transition नहीं। Candidate evidence में lifecycle status
-reactions चलते दिखने चाहिए जब `messages.statusReactions.enabled` explicit रूप से
-true हो।
-
-Executable first slice opt-in Discord live QA scenario है:
-
-```bash
-pnpm openclaw qa discord \
-  --scenario discord-status-reactions-tool-only \
-  --provider-mode live-frontier \
-  --model openai/gpt-5.4 \
-  --alt-model openai/gpt-5.4 \
-  --fast \
-  --output-dir .artifacts/qa-e2e/mantis/discord-status-reactions-candidate
-```
-
-यह SUT को always-on guild handling, `visibleReplies:
-"message_tool"`, `ackReaction: "👀"`, और explicit status reactions के साथ configure
-करता है। Oracle real Discord triggering message poll करता है और observed sequence
-`👀 -> 🤔 -> 👍` की अपेक्षा करता है। Artifacts में
-`discord-qa-reaction-timelines.json`,
-`discord-status-reactions-tool-only-timeline.html`, और
-`discord-status-reactions-tool-only-timeline.png` शामिल हैं।
-
-## मौजूदा QA pieces
-
-Mantis को zero से start करने के बजाय मौजूदा private QA stack पर build करना चाहिए:
-
-- `pnpm openclaw qa discord` पहले से driver और SUT bots के साथ live Discord lane चलाता है।
-- Live transport runner पहले से `.artifacts/qa-e2e/` के अंतर्गत reports, QA evidence, और
-  transport-specific artifacts लिखता है।
-- Convex credential leases पहले से shared live transport credentials तक exclusive access देते हैं।
-- Browser control service पहले से screenshots, snapshots,
-  headless managed profiles, और remote CDP profiles support करता है।
-- QA Lab के पास पहले से transport-shaped testing के लिए debugger UI और bus है।
-
-पहला Mantis implementation इन pieces के ऊपर एक thin before/after runner, और एक
-visual evidence layer हो सकता है।
-
-## Evidence model
-
-हर run एक stable artifact directory लिखता है:
+किसी रन का डिस्क पर आर्टिफ़ैक्ट लेआउट:
 
 ```text
 .artifacts/qa-e2e/mantis/<run-id>/
   mantis-report.md
-  mantis-summary.json
+  mantis-evidence.json
   baseline/
-    summary.json
-    discord-message.json
-    screenshot-message-row.png
-    gateway-debug/
   candidate/
-    summary.json
-    discord-message.json
-    screenshot-message-row.png
-    gateway-debug/
   comparison.json
-  run.log
 ```
 
-`mantis-summary.json` मशीन-पठनीय सत्य का स्रोत होना चाहिए। Markdown रिपोर्ट PR टिप्पणियों और मानवीय समीक्षा के लिए है।
+स्क्रीनशॉट साक्ष्य हैं, रहस्य नहीं, लेकिन फिर भी उनमें संपादन अनुशासन आवश्यक है:
+निजी चैनल नाम, उपयोगकर्ता नाम या संदेश सामग्री दिखाई दे सकती है। सार्वजनिक आर्टिफ़ैक्ट अपलोड के लिए
+`OPENCLAW_QA_REDACT_PUBLIC_METADATA=1` सेट करें; यह
+Discord/Slack/Telegram GitHub वर्कफ़्लो में डिफ़ॉल्ट रूप से सक्षम है।
 
-सारांश में ये शामिल होने चाहिए:
+## GitHub स्वचालन
 
-- परीक्षण किए गए refs और SHAs
-- ट्रांसपोर्ट और परिदृश्य id
-- मशीन प्रदाता और मशीन id या lease id
-- गुप्त मानों के बिना क्रेडेंशियल स्रोत
-- बेसलाइन परिणाम
-- कैंडिडेट परिणाम
-- क्या बग बेसलाइन पर पुनरुत्पादित हुआ
-- क्या कैंडिडेट ने उसे ठीक किया
-- आर्टिफैक्ट पथ
-- सैनिटाइज की गई सेटअप या क्लीनअप समस्याएं
+`scripts/mantis/publish-pr-evidence.mjs` पुनः उपयोग योग्य प्रकाशक है। वर्कफ़्लो
+इसे मैनिफ़ेस्ट, लक्षित PR, आर्टिफ़ैक्ट लक्ष्य रूट, टिप्पणी मार्कर,
+आर्टिफ़ैक्ट URL, रन URL और अनुरोध स्रोत के साथ कॉल करते हैं। यह घोषित आर्टिफ़ैक्ट को
+Mantis R2 बकेट में अपलोड करता है, इनलाइन
+चित्रों/पूर्वावलोकनों और लिंक किए गए वीडियो के साथ सारांश-प्रथम PR टिप्पणी बनाता है, फिर मौजूदा मार्कर टिप्पणी को अपडेट करता है या
+नई टिप्पणी बनाता है। आवश्यक परिवेश:
 
-स्क्रीनशॉट प्रमाण हैं, secrets नहीं। फिर भी उन्हें redaction अनुशासन चाहिए: निजी चैनल नाम, उपयोगकर्ता नाम, या संदेश सामग्री दिखाई दे सकती है। सार्वजनिक PRs के लिए, जब तक redaction कहानी मजबूत न हो, inline images के बजाय GitHub Actions artifact links को प्राथमिकता दें।
+- `MANTIS_ARTIFACT_R2_ACCESS_KEY_ID`
+- `MANTIS_ARTIFACT_R2_SECRET_ACCESS_KEY`
+- `MANTIS_ARTIFACT_R2_BUCKET` (वर्कफ़्लो `openclaw-crabbox-artifacts` सेट करते हैं)
+- `MANTIS_ARTIFACT_R2_ENDPOINT`
+- `MANTIS_ARTIFACT_R2_REGION` (वर्कफ़्लो `auto` सेट करते हैं)
+- `MANTIS_ARTIFACT_R2_PUBLIC_BASE_URL` (वर्कफ़्लो `https://artifacts.openclaw.ai` सेट करते हैं)
 
-## ब्राउज़र और VNC
+टिप्पणियाँ `github-actions[bot]` के बजाय Mantis GitHub App (`MANTIS_GITHUB_APP_ID` /
+`MANTIS_GITHUB_APP_PRIVATE_KEY`) के माध्यम से पोस्ट होती हैं और छिपी हुई
+मार्कर टिप्पणी को अपसर्ट कुंजी के रूप में उपयोग करती हैं।
 
-ब्राउज़र lane के दो मोड हैं:
+| वर्कफ़्लो                          | ट्रिगर                                                                                    | यह क्या करता है                                                                                                                                                                                                                                                                                                     |
+| --------------------------------- | ------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Mantis Discord Smoke`            | मैन्युअल डिस्पैच                                                                            | चुने गए रेफ़ के विरुद्ध `discord-smoke` चलाता है।                                                                                                                                                                                                                                                                       |
+| `Mantis Discord Status Reactions` | PR टिप्पणी या मैन्युअल डिस्पैच                                                              | अलग-अलग बेसलाइन/कैंडिडेट वर्कट्री बनाता है, प्रत्येक पर `discord-status-reactions-tool-only` चलाता है, Crabbox डेस्कटॉप ब्राउज़र में प्रत्येक लेन की टाइमलाइन रेंडर करता है, `crabbox media preview` से गतिविधि के अनुसार ट्रिम किए गए GIF/MP4 पूर्वावलोकन बनाता है, आर्टिफ़ैक्ट अपलोड करता है और इनलाइन PR साक्ष्य पोस्ट करता है।                                 |
+| `Mantis Scenario`                 | मैन्युअल डिस्पैच                                                                            | सामान्य डिस्पैचर: `scenario_id` (`discord-status-reactions-tool-only`, `discord-thread-reply-filepath-attachment`, `slack-desktop-smoke`, `telegram-live`, `telegram-desktop-proof`, `web-ui-chat-proof`), `baseline_ref`, `candidate_ref`, `pr_number` लेता है और मेल खाने वाले परिदृश्य वर्कफ़्लो को अग्रेषित करता है। |
+| `Mantis Slack Desktop Smoke`      | मैन्युअल डिस्पैच                                                                            | Crabbox Linux डेस्कटॉप लीज़ पर लेता है (डिफ़ॉल्ट `aws`, `hetzner` का विकल्प), कैंडिडेट के विरुद्ध `slack-desktop-smoke --gateway-setup` चलाता है, डेस्कटॉप रिकॉर्ड करता है, गतिविधि पूर्वावलोकन बनाता है, आर्टिफ़ैक्ट अपलोड करता है और PR संख्या दिए जाने पर PR साक्ष्य पोस्ट करता है।                                                      |
+| `Mantis Telegram Live`            | PR टिप्पणी या मैन्युअल डिस्पैच                                                              | बॉट-API Telegram लाइव QA लेन (`openclaw qa telegram`) चलाता है, QA सारांश से `mantis-evidence.json` लिखता है, Crabbox डेस्कटॉप ब्राउज़र के माध्यम से संपादित साक्ष्य HTML रेंडर करता है, गतिविधि GIF बनाता है और PR साक्ष्य पोस्ट करता है। इस लेन के लिए Telegram Web लॉगिन आवश्यक नहीं है।                               |
+| `Mantis Telegram Desktop Proof`   | अनुरक्षक PR लेबल (`mantis: telegram-visible-proof`) और PR टिप्पणी, या मैन्युअल डिस्पैच | एजेंट-संचालित मूल Telegram Desktop पहले/बाद का प्रमाण। PR, बेसलाइन/कैंडिडेट रेफ़ और अनुरक्षक निर्देश Codex को सौंपता है, जो दोनों रेफ़ के लिए वास्तविक-उपयोगकर्ता Crabbox Telegram Desktop प्रमाण लेन चलाता है और 2-कॉलम वाली PR साक्ष्य तालिका पोस्ट करता है।                                                              |
+| `Mantis Web UI Chat Proof`        | PR टिप्पणी या मैन्युअल डिस्पैच                                                              | कैंडिडेट के विरुद्ध केंद्रित OpenClaw Control UI चैट Playwright प्रमाण चलाता है, सत्यापित करता है कि ब्राउज़र नकली Gateway के माध्यम से भेजता है, स्क्रीनशॉट/वीडियो आर्टिफ़ैक्ट कैप्चर करता है और PR साक्ष्य पोस्ट करता है। यह लेन केवल वेब चैट प्रमाण के लिए है, WinUI/मूल-ऐप या मनमाने दृश्य प्रमाण के लिए नहीं।                           |
 
-- **Headless automation**: CI के लिए डिफॉल्ट। Chrome CDP सक्षम करके चलता है, और Playwright या OpenClaw browser control स्क्रीनशॉट कैप्चर करता है।
-- **VNC rescue**: उसी VM पर सक्षम, जब login, MFA, Discord anti-automation, या दृश्य debugging के लिए इंसान की जरूरत हो।
+`Mantis Discord Status Reactions` और `Mantis Telegram Live` दोनों
+`baseline_ref`/`candidate_ref` (या PR टिप्पणी में `baseline=`/`candidate=`) स्वीकार करते हैं
+और रहस्य युक्त क्रेडेंशियल के साथ चलने से पहले सत्यापित करते हैं कि समाधान किया गया SHA या तो `origin/main` का पूर्वज है, कोई
+रिलीज़ टैग (`v*`) है, या किसी खुले PR का हेड है।
 
-Discord observer browser profile इतना persistent होना चाहिए कि हर run में login न करना पड़े, लेकिन personal browser state से isolated होना चाहिए। कोई profile Mantis machine pool से संबंधित होता है, developer laptop से नहीं।
+लेखन/रखरखाव/प्रशासन पहुँच वाले PR से टिप्पणी ट्रिगर:
 
-जब Mantis अटकता है, तो वह इन चीजों के साथ Discord status message पोस्ट करता है:
+```text
+@openclaw-mantis discord status reactions
+@openclaw-mantis discord status reactions baseline=origin/main candidate=HEAD
+@openclaw-mantis telegram
+@openclaw-mantis telegram scenario=telegram-status-command
+@openclaw-mantis telegram scenarios=telegram-status-command,channel-canary
+@openclaw-mantis web ui chat
+@openclaw-mantis web-ui-chat candidate=HEAD
+```
 
-- run id
-- scenario id
-- machine provider
-- artifact directory
-- उपलब्ध होने पर VNC या noVNC connection instructions
-- छोटा blocker text
+Telegram टिप्पणी ट्रिगर डिफ़ॉल्ट रूप से PR हेड SHA को कैंडिडेट और
+`telegram-status-command` को परिदृश्य मानते हैं; वे किसी विशिष्ट Crabbox प्रदाता या पहले से वार्म किए गए
+डेस्कटॉप को लक्षित करने के लिए `provider=aws|hetzner` और
+`lease=<cbx_...>` स्वीकार करते हैं। `Mantis Telegram Desktop Proof` केवल तभी PR टिप्पणी का उत्तर देता है जब
+PR पर पहले से `mantis: telegram-visible-proof` लेबल मौजूद हो।
 
-पहला private deployment ये messages मौजूदा operator channel पर पोस्ट कर सकता है और बाद में dedicated Mantis channel पर जा सकता है।
+वेब UI चैट टिप्पणी ट्रिगर डिफ़ॉल्ट रूप से PR हेड SHA को कैंडिडेट मानते हैं। वे
+Control UI नकली-Gateway चैट प्रमाण चलाते हैं और ब्राउज़र आर्टिफ़ैक्ट प्रकाशित करते हैं; अन्य वेब पृष्ठों और मूल ऐप सतहों के लिए
+सामान्य Playwright/ब्राउज़र प्रमाण, अनुरक्षक स्क्रीनशॉट, Crabbox या स्थानीय
+आर्टिफ़ैक्ट का उपयोग करें।
 
-## मशीनें
+ClawSweeper किसी परिदृश्य को सीधे भी डिस्पैच कर सकता है:
 
-पहले remote implementation के लिए Mantis को Crabbox के माध्यम से AWS को प्राथमिकता देनी चाहिए। Crabbox हमें warmed machines, lease tracking, hydration, logs, results, और cleanup देता है। अगर AWS capacity बहुत धीमी या अनुपलब्ध हो, तो उसी machine interface के पीछे Hetzner provider जोड़ें।
+```text
+@clawsweeper mantis discord discord-status-reactions-tool-only
+```
 
-न्यूनतम VM आवश्यकताएं:
+## मशीनें और रहस्य
 
-- desktop-capable Chrome या Chromium install वाला Linux
-- browser automation के लिए CDP access
-- rescue के लिए VNC या noVNC
-- Node 22 और pnpm
-- OpenClaw checkout और dependency cache
-- Playwright इस्तेमाल होने पर Playwright Chromium browser cache
-- एक OpenClaw Gateway, एक browser, और एक model run के लिए पर्याप्त CPU और memory
-- Discord, GitHub, model providers, और credential broker तक outbound access
+स्थानीय CLI Crabbox डिफ़ॉल्ट `--provider hetzner --class beast` हैं; इन्हें
+`--provider`, `--class`/`--machine-class`, या
+`OPENCLAW_MANTIS_CRABBOX_PROVIDER` / `OPENCLAW_MANTIS_CRABBOX_CLASS` से ओवरराइड करें। GitHub
+वर्कफ़्लो सामान्यतः दोनों को ओवरराइड करते हैं (उदाहरण के लिए `--class standard`, और
+Slack वर्कफ़्लो का `aws`/`hetzner` प्रदाता चयन इनपुट)। यदि कोई प्रदाता बहुत
+धीमा या अनुपलब्ध है, तो फ़ॉलबैक को हार्डकोड करने के बजाय उसे उसी Crabbox इंटरफ़ेस के पीछे जोड़ें।
 
-VM को expected credential या browser profile stores के बाहर long-lived raw secrets नहीं रखने चाहिए।
+VM बेसलाइन: डेस्कटॉप-सक्षम Chrome/Chromium, CDP पहुँच, VNC/
+noVNC, Node 22.22.3+, 24.15+, या 25.9+ और pnpm वाला Linux, एक OpenClaw चेकआउट, और
+लक्षित ट्रांसपोर्ट, GitHub, मॉडल प्रदाताओं तथा
+क्रेडेंशियल ब्रोकर तक आउटबाउंड पहुँच।
 
-## Secrets
-
-Secrets remote runs के लिए GitHub organization या repository secrets में, और local runs के लिए local operator-controlled secret file में रहते हैं।
-
-अनुशंसित secret names:
+Mantis कमांड और वर्कफ़्लो में उपयोग किए जाने वाले क्रेडेंशियल और परिवेश नाम:
 
 - `OPENCLAW_QA_DISCORD_MANTIS_BOT_TOKEN`
-- `OPENCLAW_QA_DISCORD_DRIVER_BOT_TOKEN`
-- `OPENCLAW_QA_DISCORD_SUT_BOT_TOKEN`
 - `OPENCLAW_QA_DISCORD_GUILD_ID`
 - `OPENCLAW_QA_DISCORD_CHANNEL_ID`
-- `OPENCLAW_QA_DISCORD_NOTIFY_CHANNEL_ID`
-- public GitHub artifact uploads के लिए `OPENCLAW_QA_REDACT_PUBLIC_METADATA=1`
-- `OPENCLAW_QA_CONVEX_SITE_URL`
-- `OPENCLAW_QA_CONVEX_SECRET_CI`
-- `OPENCLAW_QA_MANTIS_CRABBOX_COORDINATOR`
-- `OPENCLAW_QA_MANTIS_CRABBOX_COORDINATOR_TOKEN`
+- स्थानीय `qa mantis run --credential-source env` को
+  `OPENCLAW_QA_DISCORD_DRIVER_BOT_TOKEN`, `OPENCLAW_QA_DISCORD_SUT_BOT_TOKEN`,
+  और `OPENCLAW_QA_DISCORD_SUT_APPLICATION_ID` भी आवश्यक हैं। GitHub वर्कफ़्लो सामान्यतः कच्चे
+  Discord बॉट टोकन के बजाय `--credential-source convex` और नीचे दिए गए ब्रोकर क्रेडेंशियल का उपयोग करते हैं।
+- सार्वजनिक आर्टिफ़ैक्ट अपलोड के लिए `OPENCLAW_QA_REDACT_PUBLIC_METADATA=1`
+- `OPENCLAW_QA_CONVEX_SITE_URL`, `OPENCLAW_QA_CONVEX_SECRET_CI`
+- `OPENAI_API_KEY` (या Telegram Desktop प्रमाण-विशिष्ट
+  `OPENCLAW_MANTIS_AGENT_OPENAI_API_KEY`)
+- `CRABBOX_COORDINATOR` / `CRABBOX_COORDINATOR_TOKEN` (वर्कफ़्लो फ़ॉलबैक के रूप में
+  `OPENCLAW_QA_MANTIS_CRABBOX_COORDINATOR` / `_TOKEN` भी स्वीकार करते हैं और Crabbox को कॉल करने से पहले
+  उन्हें सामान्य नामों पर मैप करते हैं)
+- `CRABBOX_ACCESS_CLIENT_ID`, `CRABBOX_ACCESS_CLIENT_SECRET`
+- `MANTIS_GITHUB_APP_ID`, `MANTIS_GITHUB_APP_PRIVATE_KEY`
 
-दीर्घकाल में, Convex credential pool live transport credentials के लिए सामान्य स्रोत बना रहना चाहिए। GitHub secrets broker और fallback lanes को bootstrap करते हैं। Discord status-reactions workflow Mantis Crabbox secrets को वापस उन `CRABBOX_COORDINATOR` और `CRABBOX_COORDINATOR_TOKEN` environment variables से map करता है जिनकी Crabbox CLI अपेक्षा करती है। सादे `CRABBOX_*` GitHub secret names compatibility fallback के रूप में स्वीकार बने रहते हैं।
+Mantis रनर को कभी भी Discord/Slack/Telegram बॉट टोकन,
+प्रदाता API कुंजियाँ, ब्राउज़र कुकीज़, प्रमाणीकरण प्रोफ़ाइल सामग्री, VNC पासवर्ड या
+कच्चे क्रेडेंशियल पेलोड प्रिंट नहीं करने चाहिए। यदि कोई टोकन किसी समस्या, PR, चैट या लॉग में लीक हो जाए,
+तो प्रतिस्थापन रहस्य संग्रहीत होने के बाद उसे बदल दें।
 
-Mantis runner को कभी ये print नहीं करना चाहिए:
+## रन परिणाम
 
-- Discord bot tokens
-- provider API keys
-- browser cookies
-- auth profile contents
-- VNC passwords
-- raw credential payloads
+पहले/बाद के ट्रांसपोर्ट परिदृश्य इन परिणामों को अलग करते हैं, ताकि अस्थिर
+परिवेश को उत्पाद प्रतिगमन न माना जाए:
 
-Public artifact uploads को bot, guild, channel, और message ids जैसे Discord target metadata को भी redact करना चाहिए। GitHub smoke workflow इसी कारण `OPENCLAW_QA_REDACT_PUBLIC_METADATA=1` सक्षम करता है।
+- **बग पुनरुत्पादित हुआ**: बेसलाइन परिदृश्य की अपेक्षा के अनुसार विफल हुई।
+- **हार्नेस विफलता**: ऑरेकल के सार्थक होने से पहले परिवेश सेटअप, क्रेडेंशियल, ट्रांसपोर्ट API, ब्राउज़र
+  या प्रदाता विफल हो गया।
 
-अगर कोई token गलती से issue, PR, chat, या log में paste हो जाए, तो नया secret store होने के बाद उसे rotate करें।
-
-## GitHub artifacts और PR comments
-
-Mantis workflows को पूरे evidence bundle को short-lived Actions artifact के रूप में upload करना चाहिए। जब workflow bug report या fix PR के लिए चलाया जाए, तो उसे configured Mantis R2/S3 bucket में redacted inline media भी publish करना चाहिए और उस bug या fix PR पर inline before/after screenshots के साथ comment upsert करना चाहिए। primary proof को केवल generic QA automation PR पर पोस्ट न करें। Raw logs, observed messages, और अन्य bulky evidence Actions artifact में रहते हैं।
-
-Production workflows को वे comments Mantis GitHub App से पोस्ट करने चाहिए, `github-actions[bot]` से नहीं। app id और private key को `MANTIS_GITHUB_APP_ID` और `MANTIS_GITHUB_APP_PRIVATE_KEY` GitHub Actions secrets के रूप में store करें। workflow upsert key के रूप में hidden marker इस्तेमाल करता है, token उसे edit कर सके तो उस comment को update करता है, और जब पुराने bot-owned marker को edit नहीं किया जा सकता, तो नया Mantis-owned comment बनाता है।
-
-PR comment छोटा और दृश्य होना चाहिए:
-
-```md
-Mantis Discord Status Reactions QA
-
-Summary: Mantis reran the reported Discord status-reaction bug against the known
-bad baseline and the candidate fix. The baseline reproduced the bug, while the
-candidate showed the expected queued -> thinking -> done sequence.
-
-- Scenario: `discord-status-reactions-tool-only`
-- Run: <workflow run link>
-- Artifact: <artifact link>
-- Baseline: `<status>` at `<sha>`
-- Candidate: `<status>` at `<sha>`
-
-| Baseline            | Candidate           |
-| ------------------- | ------------------- |
-| <inline screenshot> | <inline screenshot> |
-```
-
-जब run इसलिए fail हो कि harness fail हुआ, तो comment में candidate fail होने का संकेत देने के बजाय यही कहना चाहिए।
-
-## Private deployment notes
-
-Private deployment में पहले से Mantis Discord application हो सकती है। जब उसके पास सही bot permissions हों और उसे सुरक्षित रूप से rotate किया जा सकता हो, तो दूसरी app बनाने के बजाय उसी application का reuse करें।
-
-शुरुआती operator notification channel को secrets या deployment configuration के माध्यम से set करें। पहले यह किसी मौजूदा maintainer या operations channel की ओर point कर सकता है, फिर dedicated Mantis channel बनने के बाद वहां move कर सकता है।
-
-इस document में guild ids, channel ids, bot tokens, browser cookies, या VNC passwords न डालें। उन्हें GitHub secrets, credential broker, या operator के local secret store में store करें।
+केवल-कैंडिडेट ब्राउज़र प्रमाण बताता है कि कैंडिडेट ने नकली
+Gateway और दृश्यमान UI अभिकथनों को पास किया या नहीं; यह बेसलाइन पुनरुत्पादन का दावा नहीं करता।
 
 ## परिदृश्य जोड़ना
 
-Mantis scenario में ये declare होने चाहिए:
+लाइव ट्रांसपोर्ट परिदृश्य प्रत्येक ट्रांसपोर्ट के लिए TypeScript में परिभाषित होते हैं (Discord के पहले/बाद के आकार के लिए
+`extensions/qa-lab/src/mantis/run.runtime.ts` में `MANTIS_SCENARIO_CONFIGS` देखें),
+ये कोई स्वतंत्र घोषणात्मक फ़ाइल प्रारूप नहीं हैं।
+प्रत्येक परिदृश्य को चाहिए: id और शीर्षक, ट्रांसपोर्ट, आवश्यक क्रेडेंशियल, बेसलाइन
+रेफ़ नीति, कैंडिडेट रेफ़ नीति, OpenClaw कॉन्फ़िगरेशन पैच, सेटअप/उद्दीपन चरण,
+अपेक्षित बेसलाइन और कैंडिडेट ऑरेकल, दृश्य कैप्चर लक्ष्य, टाइमआउट
+बजट और क्लीनअप चरण।
 
-- id और title
-- transport
-- required credentials
-- baseline ref policy
-- candidate ref policy
-- OpenClaw config patch
-- setup steps
-- stimulus
-- expected baseline oracle
-- expected candidate oracle
-- visual capture targets
-- timeout budget
-- cleanup steps
+केंद्रित केवल-कैंडिडेट ब्राउज़र प्रमाण एक समर्पित निर्धारक E2E परीक्षण
+और वर्कफ़्लो का उपयोग कर सकता है। इसका दायरा स्पष्ट रखें, निष्पादन से पहले कैंडिडेट रेफ़ सत्यापित करें,
+रहस्य-समर्थित प्रकाशन को अलग रखें और वही साक्ष्य
+मैनिफ़ेस्ट अनुबंध उत्सर्जित करें।
 
-Scenarios को छोटे, typed oracles को प्राथमिकता देनी चाहिए:
+दृष्टि जाँचों के बजाय छोटे, टाइपयुक्त ऑरेकल को प्राथमिकता दें: Discord प्रतिक्रिया स्थिति या
+संदेश संदर्भ, Slack थ्रेड `ts`/प्रतिक्रिया API स्थिति, ईमेल संदेश id
+और हेडर। जब UI ही एकमात्र विश्वसनीय प्रेक्षणीय माध्यम हो, तब ब्राउज़र स्क्रीनशॉट का उपयोग करें,
+और जहाँ प्लेटफ़ॉर्म-API ऑरेकल मौजूद हो वहाँ दृष्टि जाँचों को उसके पूरक के रूप में रखें।
 
-- reaction bugs के लिए Discord reaction state
-- threading bugs के लिए Discord message references
-- Slack bugs के लिए Slack thread ts और reaction API state
-- email bugs के लिए email message ids और headers
-- जब UI ही एकमात्र भरोसेमंद observable हो, तब browser screenshots
-
-Vision checks additive होने चाहिए। अगर platform API bug साबित कर सकता है, तो API को pass/fail oracle के रूप में इस्तेमाल करें और screenshots को human confidence के लिए रखें।
-
-## Provider expansion
-
-Discord के बाद, वही runner ये जोड़ सकता है:
-
-- Slack: reactions, threads, app mentions, modals, file uploads.
-- Email: जहां connectors पर्याप्त नहीं हैं, वहां `gog` का उपयोग करके Gmail auth और message threading.
-- WhatsApp: QR login, re-identification, message delivery, media, reactions.
-- Telegram: उपलब्ध होने पर group mention gating, commands, reactions.
-- Matrix: encrypted rooms, thread या reply relations, restart resume.
-
-हर transport में एक सस्ता smoke scenario और एक या अधिक bug-class scenarios होने चाहिए। महंगे visual scenarios opt-in रहने चाहिए।
+Discord, Slack और Telegram के बाद, वही रनर आकार WhatsApp
+(QR लॉगिन, पुनः पहचान, डिलीवरी, मीडिया, प्रतिक्रियाएँ) और Matrix
+(एन्क्रिप्टेड रूम, थ्रेड/उत्तर संबंध, पुनः आरंभ पर जारी रखना) तक विस्तारित होता है; इनमें से कोई भी
+अभी कार्यान्वित नहीं है।
 
 ## खुले प्रश्न
 
-- मौजूदा Mantis bot reuse होने पर कौन सा Discord bot driver होना चाहिए, और कौन सा SUT?
-- observer browser login को पहले phase के लिए human Discord account, test account, या केवल bot-readable REST evidence इस्तेमाल करना चाहिए?
-- GitHub को PRs के लिए Mantis artifacts कितने समय तक retain करने चाहिए?
-- ClawSweeper को maintainer command की प्रतीक्षा करने के बजाय Mantis की automatic recommendation कब करनी चाहिए?
-- public PRs के लिए upload से पहले screenshots redact या crop किए जाने चाहिए?
+- मौजूदा Mantis बॉट का दोबारा उपयोग किए जाने पर कौन-सा Discord बॉट ड्राइवर होना चाहिए और कौन-सा SUT?
+- GitHub को PR के लिए Mantis आर्टिफ़ैक्ट कितने समय तक बनाए रखने चाहिए?
+- ClawSweeper को मेंटेनर कमांड की प्रतीक्षा करने के बजाय कब स्वचालित रूप से Mantis परिदृश्य की अनुशंसा करनी चाहिए?
+- सार्वजनिक PR के लिए अपलोड करने से पहले क्या स्क्रीनशॉट में संवेदनशील जानकारी छिपाई जानी चाहिए या उन्हें क्रॉप किया जाना चाहिए?

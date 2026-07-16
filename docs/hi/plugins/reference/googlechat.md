@@ -4,18 +4,19 @@ read_when:
 summary: स्पेस और डायरेक्ट मैसेज के लिए OpenClaw Google Chat चैनल Plugin।
 title: Google Chat Plugin
 x-i18n:
-    generated_at: "2026-06-28T23:44:59Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T16:15:21Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 04febb1ead7d63e9ef79ecc52ce69f38a7c4eb404c90019717363f57477cd37d
+    source_hash: d800ec6b317e15fd14e3990d84a9ca2f29026607921629198f5032be2b0a3281
     source_path: plugins/reference/googlechat.md
     workflow: 16
 ---
 
 # Google Chat Plugin
 
-स्पेस और प्रत्यक्ष संदेशों के लिए OpenClaw Google Chat चैनल Plugin।
+स्पेस और डायरेक्ट मैसेज के लिए OpenClaw Google Chat चैनल Plugin।
 
 ## वितरण
 
@@ -24,8 +25,8 @@ x-i18n:
 
 ## सतह
 
-channels: googlechat
+चैनल: `googlechat`
 
 ## संबंधित दस्तावेज़
 
-- [googlechat](/hi/channels/googlechat)
+- [Google Chat](/hi/channels/googlechat)

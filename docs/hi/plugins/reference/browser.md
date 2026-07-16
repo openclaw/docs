@@ -1,14 +1,15 @@
 ---
 read_when:
-    - आप ब्राउज़र Plugin स्थापित, कॉन्फ़िगर या ऑडिट कर रहे हैं
+    - आप ब्राउज़र Plugin को इंस्टॉल, कॉन्फ़िगर या ऑडिट कर रहे हैं
 summary: एजेंट द्वारा कॉल किए जा सकने वाले टूल जोड़ता है।
-title: Browser Plugin
+title: ब्राउज़र Plugin
 x-i18n:
-    generated_at: "2026-06-28T23:41:44Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T16:27:30Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 2dcf562660fa3d05d22856335a7d2e6e467a432ee6dda5650efd94edde661ba4
+    source_hash: fa1ca51dce3992d718cdb6e6fec1656c224c021419852e2a2c467a334f251289
     source_path: plugins/reference/browser.md
     workflow: 16
 ---
@@ -24,7 +25,7 @@ x-i18n:
 
 ## सतह
 
-अनुबंध: टूल; Skills
+अनुबंध: `tools`; कौशल
 
 ## संबंधित दस्तावेज़
 

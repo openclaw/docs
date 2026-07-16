@@ -1,21 +1,22 @@
 ---
 read_when:
     - Sentetik QA aktarımını yerel veya CI test çalıştırmasına bağlıyorsunuz
-    - Paketle birlikte gelen qa-channel yapılandırma yüzeyine ihtiyacınız var.
-    - Uçtan uca QA otomasyonunu yinelemeli olarak geliştiriyorsunuz
-summary: Belirlenimci OpenClaw kalite güvence senaryoları için sentetik Slack sınıfı kanal Plugin'i
+    - Paketle birlikte gelen qa-channel yapılandırma yüzeyine ihtiyacınız var
+    - Uçtan uca kalite güvence otomasyonunu yinelemeli olarak geliştiriyorsunuz
+summary: Deterministik OpenClaw kalite güvence senaryoları için sentetik Slack sınıfı kanal plugini
 title: QA kanalı
 x-i18n:
-    generated_at: "2026-07-12T11:29:59Z"
+    generated_at: "2026-07-16T17:04:16Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: f33af6ef31515e0cab0ee2540f48f3ffea8aba3d13915dc8cf66111599354187
+    source_hash: a43c35e197116a6bd44b238010eb508aed23dea99ab872d10e6fc853b5f4d4a7
     source_path: channels/qa-channel.md
     workflow: 16
 ---
 
-`qa-channel`, otomatik OpenClaw kalite güvencesi için depo içinde kullanılan sentetik bir mesaj aktarımıdır (`extensions/qa-channel`, özel paket, paketlenmiş kurulumlara dahil edilmez). Bir üretim kanalı değildir; durumu belirlenimci ve tamamen incelenebilir tutarken gerçek aktarımların kullandığı kanal Plugin sınırını sınamak için vardır.
+`qa-channel`, otomatik OpenClaw QA için depo içi sentetik bir mesaj aktarımıdır (`extensions/qa-channel`, özel paket, paketlenmiş kurulumlara dahil değildir). Bir üretim kanalı değildir; durumu belirlenimci ve tamamen incelenebilir tutarken gerçek aktarımların kullandığı aynı kanal plugin sınırını çalıştırmak için vardır.
 
 ## Ne yapar?
 
@@ -24,8 +25,8 @@ x-i18n:
   - `channel:<room>`
   - `group:<room>`
   - `thread:<room>/<thread>`
-- Paylaşılan `channel:` ve `group:` konuşmaları, ajanlara grup/kanal odası etkileşimleri olarak sunulur; böylece Discord, Slack, Telegram ve benzer aktarımlarda kullanılan görünür yanıt ve mesaj aracı yönlendirme ilkeleri aynı şekilde sınanır.
-- Gelen mesaj ekleme, giden konuşma dökümü yakalama, ileti dizisi oluşturma, tepki verme, düzenleme, silme ve arama/okuma eylemleri için HTTP destekli sentetik veri yolu.
+- Paylaşılan `channel:` ve `group:` konuşmaları, aracılara grup/kanal odası etkileşimleri olarak sunulur; böylece Discord, Slack, Telegram ve benzeri aktarımların kullandığı aynı görünür yanıt ve mesaj aracı yönlendirme politikasını çalıştırırlar.
+- Gelen mesaj ekleme, giden transkript yakalama, ileti dizisi oluşturma, tepkiler, düzenlemeler, silmeler ve arama/okuma eylemleri için HTTP destekli sentetik veri yolu.
 - `.artifacts/qa-e2e/` konumuna Markdown raporu yazan ana makine tarafı öz denetim çalıştırıcısı.
 
 ## Yapılandırma
@@ -46,28 +47,28 @@ x-i18n:
 
 Hesap anahtarları:
 
-- `enabled` - bu hesap için ana açma/kapatma ayarı.
+- `enabled` - bu hesap için ana etkinleştirme anahtarı.
 - `name` - isteğe bağlı görünen etiket.
-- `baseUrl` - sentetik veri yolu URL'si. Bu değer ayarlandığında hesap yapılandırılmış sayılır.
+- `baseUrl` - sentetik veri yolu URL'si. Bu ayar yapıldığında hesap yapılandırılmış sayılır.
 - `botUserId` - hedef dil bilgisinde kullanılan sentetik bot kullanıcı kimliği (varsayılan: `openclaw`).
 - `botDisplayName` - giden mesajların görünen adı (varsayılan: `OpenClaw QA`).
-- `pollTimeoutMs` - uzun yoklama bekleme aralığı. 100 ile 30000 arasında bir tam sayı (varsayılan: 1000).
-- `allowFrom` - gönderen izin listesi (kullanıcı kimlikleri veya `"*"`; varsayılan: `["*"]`). Özel mesajlar
-  her zaman `open` ilkesini kullanır; izin listeli grup ilkesi de bu sentetik
+- `pollTimeoutMs` - uzun yoklama bekleme penceresi. 100 ile 30000 arasında bir tam sayı (varsayılan: 1000).
+- `allowFrom` - gönderen izin listesi (kullanıcı kimlikleri veya `"*"`; varsayılan: `["*"]`). DM'ler
+  her zaman `open` politikasını kullanır; izin listeli grup politikası da bu sentetik
   gönderen kimliklerini kullanır.
-- `groupPolicy` - paylaşılan oda ilkesi: `"open"` (varsayılan), `"allowlist"` veya
+- `groupPolicy` - paylaşılan oda politikası: `"open"` (varsayılan), `"allowlist"` veya
   `"disabled"`.
-- `groupAllowFrom` - isteğe bağlı paylaşılan oda gönderen izin listesi. `"allowlist"`
-  altında belirtilmediğinde QA Channel, `allowFrom` değerini kullanır.
-- `groups.<room>.requireMention` - belirli bir grup/kanal odasında yanıt vermeden
-  önce bottan bahsedilmesini zorunlu kılar (varsayılan: false). `groups."*"` varsayılanı ayarlar;
-  oda bazındaki `tools` / `toolsBySender`, araç ilkesi geçersiz kılmalarını ayarlar.
+- `groupAllowFrom` - isteğe bağlı paylaşılan oda gönderen izin listesi.
+  `"allowlist"` altında belirtilmediğinde QA Channel, `allowFrom` ayarına geri döner.
+- `groups.<room>.requireMention` - belirli bir grup/kanal odasında yanıt vermeden önce
+  bottan bahsedilmesini zorunlu tutar (varsayılan: false). `groups."*"` varsayılanı belirler;
+  oda başına `tools` / `toolsBySender`, araç politikası geçersiz kılmalarını belirler.
 - `defaultTo` - hedef sağlanmadığında kullanılacak yedek hedef.
-- `actions.messages` / `actions.reactions` / `actions.search` / `actions.threads` - eylem bazında araç erişim denetimi.
+- `actions.messages` / `actions.reactions` / `actions.search` / `actions.threads` - eylem başına araç geçitleri.
 
-Üst düzey çoklu hesap anahtarları:
+Üst düzeydeki çoklu hesap anahtarları:
 
-- `accounts` - hesap kimliğine göre anahtarlanmış, adlandırılmış hesap bazındaki geçersiz kılmaların kaydı.
+- `accounts` - hesap kimliğine göre anahtarlanmış, adlandırılmış hesap başına geçersiz kılmaların kaydı.
 - `defaultAccount` - birden fazla hesap yapılandırıldığında tercih edilen hesap kimliği.
 
 ## Çalıştırıcılar
@@ -78,7 +79,7 @@ Ana makine tarafı öz denetim (`.artifacts/qa-e2e/` altında bir Markdown rapor
 pnpm qa:e2e
 ```
 
-Bu komut `qa-lab` üzerinden yönlendirilir, depo içindeki kalite güvencesi veri yolunu başlatır, `qa-channel` çalışma zamanı dilimini başlatır ve belirlenimci bir öz denetim çalıştırır.
+Bu işlem `qa-lab` üzerinden yönlendirilir, depo içi QA veri yolunu başlatır, `qa-channel` çalışma zamanı dilimini önyükler ve belirlenimci bir öz denetim çalıştırır.
 
 Depo destekli tam senaryo paketi:
 
@@ -86,20 +87,19 @@ Depo destekli tam senaryo paketi:
 pnpm openclaw qa suite
 ```
 
-Senaryoları kalite güvencesi Gateway hattına karşı paralel olarak çalıştırır. Senaryolar, profiller ve sağlayıcı modları için [Kalite güvencesine genel bakış](/tr/concepts/qa-e2e-automation) bölümüne bakın.
+Senaryoları QA gateway hattında paralel olarak çalıştırır. Senaryolar, profiller ve sağlayıcı modları için [QA genel bakışı](/tr/concepts/qa-e2e-automation) bölümüne bakın.
 
-Docker destekli kalite güvencesi sitesi (Gateway + QA Lab hata ayıklayıcı kullanıcı arayüzü tek bir yığında):
+Docker destekli QA sitesi (tek bir yığında gateway + QA Lab hata ayıklayıcı kullanıcı arayüzü):
 
 ```bash
 pnpm qa:lab:up
 ```
 
-Kalite güvencesi sitesini derler, Docker destekli Gateway + QA Lab yığınını başlatır ve QA Lab URL'sini yazdırır. Buradan senaryoları seçebilir, model hattını belirleyebilir, ayrı çalıştırmaları başlatabilir ve sonuçları canlı olarak izleyebilirsiniz. QA Lab hata ayıklayıcısı, dağıtılan Denetim kullanıcı arayüzü paketinden ayrıdır.
+QA sitesini derler, Docker destekli gateway + QA Lab yığınını başlatır ve QA Lab URL'sini yazdırır. Buradan senaryoları seçebilir, model hattını belirleyebilir, ayrı çalıştırmaları başlatabilir ve sonuçları canlı olarak izleyebilirsiniz. QA Lab hata ayıklayıcısı, dağıtılan Control UI paketinden ayrıdır.
 
 ## İlgili
 
-- [Kalite güvencesine genel bakış](/tr/concepts/qa-e2e-automation) - genel yığın, aktarım bağdaştırıcıları, senaryo yazımı
-- [Matris kalite güvencesi](/tr/concepts/qa-matrix) - gerçek bir kanalı kullanan örnek canlı aktarım çalıştırıcısı
+- [QA genel bakışı](/tr/concepts/qa-e2e-automation) - genel yığın, aktarım bağdaştırıcıları, Matrix profilleri ve senaryo yazımı
 - [Eşleştirme](/tr/channels/pairing)
 - [Gruplar](/tr/channels/groups)
 - [Kanallara genel bakış](/tr/channels)

@@ -1,27 +1,28 @@
 ---
 read_when:
-    - आप कई पृथक एजेंट चाहते हैं (कार्यक्षेत्र + रूटिंग + प्रमाणीकरण)
-summary: '`openclaw agents` के लिए CLI संदर्भ (list/add/delete/bindings/bind/unbind/set identity)'
+    - आप कई पृथक एजेंट चाहते हैं (वर्कस्पेस + रूटिंग + प्रमाणीकरण)
+summary: '`openclaw agents` के लिए CLI संदर्भ (सूची/जोड़ना/हटाना/बाइंडिंग/बाइंड करना/अनबाइंड करना/पहचान सेट करना)'
 title: एजेंट्स
 x-i18n:
-    generated_at: "2026-06-28T22:46:28Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T13:49:37Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 7905bc2465c48b5bfee4ce90fdf96dcd92b304a9fb29de93f8f49afdff0e6672
+    source_hash: 89b6c59a9ce0fd0514343cc3fa66ae5e6d963cdfa5c6f58ffe6b9a6b5e943f09
     source_path: cli/agents.md
     workflow: 16
 ---
 
 # `openclaw agents`
 
-अलग-थलग agents प्रबंधित करें (workspaces + auth + routing).
+पृथक एजेंटों (वर्कस्पेस + प्रमाणीकरण + रूटिंग) का प्रबंधन करें। बिना किसी उपकमांड के `openclaw agents` चलाना `openclaw agents list` के समान है।
 
 संबंधित:
 
-- [Multi-agent routing](/hi/concepts/multi-agent)
-- [Agent workspace](/hi/concepts/agent-workspace)
-- [Skills config](/hi/tools/skills-config): skill दृश्यता कॉन्फ़िगरेशन।
+- [मल्टी-एजेंट रूटिंग](/hi/concepts/multi-agent)
+- [एजेंट वर्कस्पेस](/hi/concepts/agent-workspace)
+- [Skills कॉन्फ़िगरेशन](/hi/tools/skills-config): skill दृश्यता कॉन्फ़िगरेशन।
 
 ## उदाहरण
 
@@ -39,13 +40,54 @@ openclaw agents set-identity --agent main --avatar avatars/openclaw.png
 openclaw agents delete work
 ```
 
-## Routing bindings
+## कमांड सतह
 
-इनबाउंड channel traffic को किसी खास agent से पिन करने के लिए routing bindings का उपयोग करें।
+### `agents list`
 
-यदि आप प्रति agent अलग-अलग दिखने वाली skills भी चाहते हैं, तो `openclaw.json` में `agents.defaults.skills` और `agents.list[].skills` कॉन्फ़िगर करें। [Skills config](/hi/tools/skills-config) और [Configuration reference](/hi/gateway/config-agents#agents-defaults-skills) देखें।
+विकल्प: `--json`, `--bindings` (केवल प्रति-एजेंट गणना/सारांश ही नहीं, बल्कि पूर्ण रूटिंग नियम शामिल करें)।
 
-bindings सूचीबद्ध करें:
+### `agents add [name]`
+
+विकल्प: `--workspace <dir>`, `--model <id>`, `--agent-dir <dir>`, `--bind <channel[:accountId]>` (दोहराया जा सकता है), `--non-interactive`, `--json`।
+
+- कोई भी स्पष्ट जोड़ने वाला फ़्लैग देने पर कमांड गैर-इंटरैक्टिव पथ पर चला जाता है।
+- गैर-इंटरैक्टिव मोड के लिए एजेंट का नाम और `--workspace` दोनों आवश्यक हैं।
+- `main` आरक्षित है और इसे नए एजेंट आईडी के रूप में उपयोग नहीं किया जा सकता।
+- इंटरैक्टिव मोड केवल पोर्टेबल स्थिर क्रेडेंशियल (`api_key` और स्थिर `token` प्रोफ़ाइल) कॉपी करके प्रमाणीकरण को आरंभिक डेटा देता है, जब तक कि कोई क्रेडेंशियल `copyToAgents: false` के साथ इससे बाहर न हो जाए; OAuth रीफ़्रेश-टोकन प्रोफ़ाइल तब तक कॉपी नहीं की जातीं, जब तक कोई प्रदाता `copyToAgents: true` के साथ इसमें शामिल न हो। कॉपी न होने पर OAuth केवल वास्तविक `main` एजेंट स्टोर से रीड-थ्रू इनहेरिटेंस के माध्यम से उपलब्ध रहता है। यदि कॉन्फ़िगर किया गया डिफ़ॉल्ट एजेंट `main` नहीं है, तो नए एजेंट पर OAuth प्रोफ़ाइल के लिए अलग से साइन इन करें।
+
+### `agents bindings`
+
+विकल्प: `--agent <id>`, `--json`।
+
+### `agents bind`
+
+विकल्प: `--agent <id>` (डिफ़ॉल्ट रूप से वर्तमान डिफ़ॉल्ट एजेंट), `--bind <channel[:accountId]>` (दोहराया जा सकता है), `--json`।
+
+### `agents unbind`
+
+विकल्प: `--agent <id>` (डिफ़ॉल्ट रूप से वर्तमान डिफ़ॉल्ट एजेंट), `--bind <channel[:accountId]>` (दोहराया जा सकता है), `--all`, `--json`। यह या तो `--all` या एक अथवा अधिक `--bind` मान स्वीकार करता है, दोनों नहीं।
+
+### `agents set-identity`
+
+विकल्प: `--agent <id>`, `--workspace <dir>`, `--identity-file <path>`, `--from-identity`, `--name <name>`, `--theme <theme>`, `--emoji <emoji>`, `--avatar <value>`, `--json`। नीचे [पहचान सेट करें](#set-identity) देखें।
+
+### `agents delete <id>`
+
+विकल्प: `--force`, `--json`।
+
+- `main` को हटाया नहीं जा सकता।
+- `--force` के बिना इंटरैक्टिव पुष्टि आवश्यक है (गैर-TTY सत्र में विफल होता है; `--force` के साथ फिर से चलाएँ)।
+- वर्कस्पेस, एजेंट स्थिति और सत्र ट्रांसक्रिप्ट निर्देशिकाएँ स्थायी रूप से हटाने के बजाय ट्रैश में भेजी जाती हैं।
+- जब Gateway तक पहुँचा जा सकता है, तो हटाने की प्रक्रिया Gateway के माध्यम से रूट होती है, ताकि कॉन्फ़िगरेशन और सत्र-स्टोर की सफ़ाई रनटाइम ट्रैफ़िक वाले ही राइटर का उपयोग करे। यदि Gateway तक नहीं पहुँचा जा सकता, तो CLI ऑफ़लाइन स्थानीय पथ का उपयोग करता है।
+- यदि किसी अन्य एजेंट का वर्कस्पेस समान पथ पर है, इस वर्कस्पेस के भीतर है या इस वर्कस्पेस को समाहित करता है, तो वर्कस्पेस बनाए रखा जाता है और `--json`, `workspaceRetained`, `workspaceRetainedReason` तथा `workspaceSharedWith` की रिपोर्ट करता है।
+
+## रूटिंग बाइंडिंग
+
+इनबाउंड चैनल ट्रैफ़िक को किसी विशिष्ट एजेंट से बाँधने के लिए रूटिंग बाइंडिंग का उपयोग करें।
+
+यदि आप प्रत्येक एजेंट के लिए अलग-अलग दिखाई देने वाली skills भी चाहते हैं, तो `openclaw.json` में `agents.defaults.skills` और `agents.list[].skills` कॉन्फ़िगर करें। [Skills कॉन्फ़िगरेशन](/hi/tools/skills-config) और [कॉन्फ़िगरेशन संदर्भ](/hi/gateway/config-agents#agentsdefaultsskills) देखें।
+
+बाइंडिंग की सूची दिखाएँ:
 
 ```bash
 openclaw agents bindings
@@ -53,189 +95,91 @@ openclaw agents bindings --agent work
 openclaw agents bindings --json
 ```
 
-bindings जोड़ें:
+बाइंडिंग जोड़ें:
 
 ```bash
 openclaw agents bind --agent work --bind telegram:ops --bind discord:guild-a
 ```
 
-agent बनाते समय भी आप bindings जोड़ सकते हैं:
+एजेंट बनाते समय भी बाइंडिंग जोड़ी जा सकती हैं:
 
 ```bash
 openclaw agents add work --workspace ~/.openclaw/workspace-work --bind telegram:* --bind discord:*
 ```
 
-यदि आप `accountId` (`--bind <channel>`) छोड़ देते हैं, तो OpenClaw इसे plugin setup hooks, forced account binding, या channel के कॉन्फ़िगर किए गए account count से हल करता है।
+यदि आप `accountId` (`--bind <channel>`) छोड़ देते हैं, तो OpenClaw इसे Plugin सेटअप हुक, बाध्य खाता बाइंडिंग या चैनल की कॉन्फ़िगर की गई खाता संख्या से निर्धारित करता है।
 
-यदि आप `bind` या `unbind` के लिए `--agent` छोड़ देते हैं, तो OpenClaw मौजूदा default agent को target करता है।
+यदि आप `bind` या `unbind` के लिए `--agent` छोड़ देते हैं, तो OpenClaw वर्तमान डिफ़ॉल्ट एजेंट को लक्षित करता है।
 
-### `--bind` format
+### `--bind` प्रारूप
 
-| Format                       | अर्थ                                                                                              |
-| ---------------------------- | ------------------------------------------------------------------------------------------------- |
-| `--bind <channel>:*`         | channel पर सभी accounts से मिलान करें।                                                           |
-| `--bind <channel>:<account>` | एक account से मिलान करें।                                                                         |
-| `--bind <channel>`           | केवल default account से मिलान करें, जब तक CLI सुरक्षित रूप से plugin-specific account scope हल न कर सके। |
+| प्रारूप                       | अर्थ                                                                                            |
+| ---------------------------- | -------------------------------------------------------------------------------------------------- |
+| `--bind <channel>:*`         | चैनल के सभी खातों से मिलान करें।                                                                 |
+| `--bind <channel>:<account>` | एक खाते से मिलान करें।                                                                                 |
+| `--bind <channel>`           | केवल डिफ़ॉल्ट खाते से मिलान करें, जब तक कि CLI किसी Plugin-विशिष्ट खाता-स्कोप को सुरक्षित रूप से निर्धारित न कर सके। |
 
-### Binding scope behavior
+### बाइंडिंग स्कोप का व्यवहार
 
-- `accountId` के बिना stored binding केवल channel default account से मिलान करती है।
-- `accountId: "*"` channel-wide fallback (सभी accounts) है और explicit account binding से कम specific है।
-- यदि उसी agent के पास पहले से `accountId` के बिना matching channel binding है, और आप बाद में explicit या resolved `accountId` के साथ bind करते हैं, तो OpenClaw duplicate जोड़ने के बजाय उसी existing binding को inplace upgrade करता है।
+- `accountId` के बिना संग्रहीत बाइंडिंग केवल चैनल के डिफ़ॉल्ट खाते से मिलान करती है।
+- `accountId: "*"` पूरे चैनल का फ़ॉलबैक (सभी खाते) है और किसी स्पष्ट खाता बाइंडिंग से कम विशिष्ट है।
+- यदि उसी एजेंट के पास पहले से `accountId` के बिना मेल खाने वाली चैनल बाइंडिंग है और बाद में आप किसी स्पष्ट या निर्धारित `accountId` के साथ बाइंड करते हैं, तो OpenClaw डुप्लिकेट जोड़ने के बजाय उसी मौजूदा बाइंडिंग को वहीं अपग्रेड कर देता है।
 
 उदाहरण:
 
 ```bash
-# match all accounts on the channel
+# चैनल के सभी खातों से मिलान करें
 openclaw agents bind --agent work --bind telegram:*
 
-# match a specific account
+# किसी विशिष्ट खाते से मिलान करें
 openclaw agents bind --agent work --bind telegram:ops
 
-# initial channel-only binding
+# प्रारंभिक केवल-चैनल बाइंडिंग
 openclaw agents bind --agent work --bind telegram
 
-# later upgrade to account-scoped binding
+# बाद में खाता-स्कोप वाली बाइंडिंग में अपग्रेड करें
 openclaw agents bind --agent work --bind telegram:alerts
 ```
 
-upgrade के बाद, उस binding के लिए routing `telegram:alerts` तक scoped होती है। यदि आप default-account routing भी चाहते हैं, तो उसे स्पष्ट रूप से जोड़ें (उदाहरण के लिए `--bind telegram:default`)।
+अपग्रेड के बाद उस बाइंडिंग की रूटिंग `telegram:alerts` तक सीमित होती है। यदि आप डिफ़ॉल्ट-खाता रूटिंग भी चाहते हैं, तो उसे स्पष्ट रूप से जोड़ें (उदाहरण के लिए `--bind telegram:default`)।
 
-bindings हटाएँ:
+बाइंडिंग हटाएँ:
 
 ```bash
 openclaw agents unbind --agent work --bind telegram:ops
 openclaw agents unbind --agent work --all
 ```
 
-`unbind` या तो `--all` स्वीकार करता है या एक या अधिक `--bind` values, दोनों नहीं।
+## पहचान फ़ाइलें
 
-## Command surface
+प्रत्येक एजेंट वर्कस्पेस में वर्कस्पेस रूट पर एक `IDENTITY.md` शामिल हो सकता है:
 
-### `agents`
+- उदाहरण पथ: `~/.openclaw/workspace/IDENTITY.md`
+- `set-identity --from-identity` वर्कस्पेस रूट (या किसी स्पष्ट `--identity-file`) से पढ़ता है।
 
-बिना subcommand के `openclaw agents` चलाना `openclaw agents list` के बराबर है।
+अवतार पथ वर्कस्पेस रूट के सापेक्ष निर्धारित होते हैं और सिमलिंक के माध्यम से भी उससे बाहर नहीं जा सकते।
 
-### `agents list`
+## पहचान सेट करें
 
-Options:
+`set-identity`, `agents.list[].identity` में ये फ़ील्ड लिखता है: `name`, `theme`, `emoji`, `avatar` (वर्कस्पेस-सापेक्ष पथ, http(s) URL या डेटा URI)।
 
-- `--json`
-- `--bindings`: केवल per-agent counts/summaries नहीं, बल्कि पूरी routing rules शामिल करें
+- `--agent` या `--workspace` लक्ष्य एजेंट चुनता है। यदि `--workspace` एक से अधिक एजेंट से मेल खाता है, तो कमांड विफल हो जाता है और आपसे `--agent` देने को कहता है।
+- स्थानीय वर्कस्पेस-सापेक्ष अवतार छवि फ़ाइलें 2 MB तक सीमित हैं। HTTP(S) URL और `data:` URI की जाँच स्थानीय फ़ाइल-आकार सीमा के विरुद्ध नहीं की जाती।
+- जब कोई स्पष्ट पहचान फ़ील्ड नहीं दिया जाता, तो कमांड `IDENTITY.md` से पहचान डेटा पढ़ता है।
 
-### `agents add [name]`
-
-Options:
-
-- `--workspace <dir>`
-- `--model <id>`
-- `--agent-dir <dir>`
-- `--bind <channel[:accountId]>` (दोहराने योग्य)
-- `--non-interactive`
-- `--json`
-
-नोट्स:
-
-- कोई भी explicit add flags पास करने से command non-interactive path में चला जाता है।
-- Non-interactive mode के लिए agent name और `--workspace` दोनों आवश्यक हैं।
-- `main` reserved है और नए agent id के रूप में उपयोग नहीं किया जा सकता।
-- interactive mode में, auth seeding केवल portable static profiles
-  (`api_key` और default रूप से static `token`) कॉपी करती है। OAuth refresh-token profiles
-  real `main` agent store से read-through inheritance के जरिए ही उपलब्ध रहती हैं।
-  यदि configured default agent `main` नहीं है, तो नए agent पर OAuth
-  profiles के लिए अलग से sign in करें।
-
-### `agents bindings`
-
-Options:
-
-- `--agent <id>`
-- `--json`
-
-### `agents bind`
-
-Options:
-
-- `--agent <id>` (मौजूदा default agent पर default होता है)
-- `--bind <channel[:accountId]>` (दोहराने योग्य)
-- `--json`
-
-### `agents unbind`
-
-Options:
-
-- `--agent <id>` (मौजूदा default agent पर default होता है)
-- `--bind <channel[:accountId]>` (दोहराने योग्य)
-- `--all`
-- `--json`
-
-### `agents delete <id>`
-
-Options:
-
-- `--force`
-- `--json`
-
-नोट्स:
-
-- `main` delete नहीं किया जा सकता।
-- `--force` के बिना, interactive confirmation आवश्यक है।
-- Workspace, agent state, और session transcript directories को Trash में move किया जाता है, hard-delete नहीं किया जाता।
-- जब Gateway reachable होता है, deletion Gateway के जरिए भेजा जाता है ताकि config और session-store cleanup runtime traffic वाले writer को ही साझा करें। यदि Gateway तक नहीं पहुँचा जा सकता, तो CLI offline local path पर fallback करता है।
-- यदि किसी अन्य agent का workspace वही path है, इस workspace के अंदर है, या इस workspace को contain करता है,
-  तो workspace retain किया जाता है और `--json` `workspaceRetained`,
-  `workspaceRetainedReason`, और `workspaceSharedWith` report करता है।
-
-## Identity files
-
-हर agent workspace में workspace root पर एक `IDENTITY.md` शामिल हो सकता है:
-
-- Example path: `~/.openclaw/workspace/IDENTITY.md`
-- `set-identity --from-identity` workspace root (या explicit `--identity-file`) से पढ़ता है
-
-Avatar paths workspace root के relative resolve होते हैं।
-
-## Set identity
-
-`set-identity` fields को `agents.list[].identity` में लिखता है:
-
-- `name`
-- `theme`
-- `emoji`
-- `avatar` (workspace-relative path, http(s) URL, या data URI)
-
-Options:
-
-- `--agent <id>`
-- `--workspace <dir>`
-- `--identity-file <path>`
-- `--from-identity`
-- `--name <name>`
-- `--theme <theme>`
-- `--emoji <emoji>`
-- `--avatar <value>`
-- `--json`
-
-नोट्स:
-
-- target agent चुनने के लिए `--agent` या `--workspace` का उपयोग किया जा सकता है।
-- यदि आप `--workspace` पर निर्भर करते हैं और कई agents वह workspace साझा करते हैं, तो command fail होती है और आपसे `--agent` पास करने को कहती है।
-- Local workspace-relative avatar image files 2 MB तक सीमित हैं। HTTP(S) URLs और `data:` URIs को local file-size limit से check नहीं किया जाता।
-- जब कोई explicit identity fields प्रदान नहीं किए जाते, तो command `IDENTITY.md` से identity data पढ़ती है।
-
-`IDENTITY.md` से load करें:
+`IDENTITY.md` से लोड करें:
 
 ```bash
 openclaw agents set-identity --workspace ~/.openclaw/workspace --from-identity
 ```
 
-fields को explicit रूप से override करें:
+फ़ील्ड को स्पष्ट रूप से ओवरराइड करें:
 
 ```bash
 openclaw agents set-identity --agent main --name "OpenClaw" --emoji "🦞" --avatar avatars/openclaw.png
 ```
 
-Config sample:
+कॉन्फ़िगरेशन नमूना:
 
 ```json5
 {
@@ -257,6 +201,6 @@ Config sample:
 
 ## संबंधित
 
-- [CLI reference](/hi/cli)
-- [Multi-agent routing](/hi/concepts/multi-agent)
-- [Agent workspace](/hi/concepts/agent-workspace)
+- [CLI संदर्भ](/hi/cli)
+- [मल्टी-एजेंट रूटिंग](/hi/concepts/multi-agent)
+- [एजेंट वर्कस्पेस](/hi/concepts/agent-workspace)

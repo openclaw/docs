@@ -1,15 +1,15 @@
 ---
 read_when:
     - Вы устанавливаете, настраиваете или проверяете плагин fal
-summary: Добавляет в OpenClaw поддержку провайдера моделей fal.
+summary: Добавляет поддержку провайдера моделей fal в OpenClaw.
 title: плагин fal
 x-i18n:
-    generated_at: "2026-07-13T18:33:41Z"
+    generated_at: "2026-07-16T16:42:35Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
-    prompt_version: 24
+    prompt_version: 32
     provider: openai
-    source_hash: f62d6a642a6edaa581fb23fa27dade77486c827d460f19aa23750959f5aa6f1c
+    source_hash: 5341c85c74911d5d49849cfbee4d31a7a8bdf38a24ca68566118f4a0ced81d2e
     source_path: plugins/reference/fal.md
     workflow: 16
 ---
@@ -21,11 +21,11 @@ x-i18n:
 ## Распространение
 
 - Пакет: `@openclaw/fal-provider`
-- Способ установки: включён в OpenClaw
+- Способ установки: входит в состав OpenClaw
 
-## Поверхность API
+## Поверхность
 
-провайдеры: fal; контракты: imageGenerationProviders, musicGenerationProviders, videoGenerationProviders
+провайдеры: `fal`; контракты: `imageGenerationProviders`, `musicGenerationProviders`, `videoGenerationProviders`
 
 ## Связанная документация
 

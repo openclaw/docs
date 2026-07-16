@@ -1,31 +1,32 @@
 ---
 read_when:
-    - Vous installez, configurez ou auditez le Plugin kilocode
+    - Vous installez, configurez ou auditez le plugin kilocode
 summary: Ajoute la prise en charge du fournisseur de modèles Kilocode à OpenClaw.
 title: Plugin Kilocode
 x-i18n:
-    generated_at: "2026-07-12T03:08:29Z"
+    generated_at: "2026-07-16T13:33:01Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 83843bd0e8a3e9944a60540a0329630f7660f8e9440c157b790ddca8655052f9
+    source_hash: 03b104e1737e98bc9ad037b808e9c40ea400b382eb21ac0ddd48c50e917f9dd2
     source_path: plugins/reference/kilocode.md
     workflow: 16
 ---
 
 # Plugin Kilocode
 
-Ajoute à OpenClaw la prise en charge du fournisseur de modèles Kilocode.
+Ajoute la prise en charge du fournisseur de modèles Kilocode à OpenClaw.
 
 ## Distribution
 
-- Paquet : `@openclaw/kilocode-provider`
-- Méthode d’installation : npm ; ClawHub : `clawhub:@openclaw/kilocode-provider`
+- Paquet : `@openclaw/kilocode-provider`
+- Mode d’installation : npm ; ClawHub : `clawhub:@openclaw/kilocode-provider`
 
-## Interface
+## Surface
 
-fournisseurs : kilocode
+fournisseurs : `kilocode`
 
-## Documentation connexe
+## Documentation associée
 
-- [kilocode](/fr/providers/kilocode)
+- [Kilocode](/fr/providers/kilocode)

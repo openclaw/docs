@@ -1,14 +1,15 @@
 ---
 read_when:
-    - Anda sedang menginstal, mengonfigurasi, atau mengaudit plugin kembang api
+    - Anda sedang menginstal, mengonfigurasi, atau mengaudit plugin Fireworks
 summary: Menambahkan dukungan penyedia model Fireworks ke OpenClaw.
 title: Plugin Fireworks
 x-i18n:
-    generated_at: "2026-07-12T14:28:17Z"
+    generated_at: "2026-07-16T18:31:44Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 1750e345f485fa7d8735a16278422188ad761b0c682cd5f09227f4407d502203
+    source_hash: f50d32c05d94cd14dbbc3dc25659884dbe3c23c2d613bceaaae573e942a545d5
     source_path: plugins/reference/fireworks.md
     workflow: 16
 ---
@@ -20,12 +21,12 @@ Menambahkan dukungan penyedia model Fireworks ke OpenClaw.
 ## Distribusi
 
 - Paket: `@openclaw/fireworks-provider`
-- Jalur instalasi: npm; ClawHub: `clawhub:@openclaw/fireworks-provider`
+- Rute instalasi: npm; ClawHub: `clawhub:@openclaw/fireworks-provider`
 
 ## Permukaan
 
-penyedia: fireworks
+penyedia: `fireworks`
 
 ## Dokumentasi terkait
 
-- [fireworks](/id/providers/fireworks)
+- [Fireworks](/id/providers/fireworks)

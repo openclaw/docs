@@ -1,31 +1,40 @@
 ---
 read_when:
-    - Anda sedang menginstal, mengonfigurasi, atau mengaudit Plugin anthropic
-summary: Menambahkan dukungan penyedia model Anthropic ke OpenClaw.
+    - Anda sedang menginstal, mengonfigurasi, atau mengaudit plugin anthropic
+summary: Model Anthropic, Claude CLI, dan katalog sesi Claude native.
 title: Plugin Anthropic
 x-i18n:
-    generated_at: "2026-05-02T20:49:42Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T18:25:03Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 7aa23ae2712061fc3f8e1fbb642d2cbfa2c40675fc5e41633d33619f41182499
+    source_hash: 11d3c7879a9dc6de35e67f9812b878918d908d41555c181920deb4f1f9cba22e
     source_path: plugins/reference/anthropic.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
 # Plugin Anthropic
 
-Menambahkan dukungan penyedia model Anthropic ke OpenClaw.
+Model Anthropic, CLI Claude, dan katalog sesi Claude native.
 
 ## Distribusi
 
 - Paket: `@openclaw/anthropic-provider`
-- Jalur instalasi: disertakan dalam OpenClaw
+- Rute instalasi: disertakan dalam OpenClaw
 
 ## Permukaan
 
-providers: anthropic; contracts: mediaUnderstandingProviders
+penyedia: `anthropic`; kontrak: `mediaUnderstandingProviders`, `usageProviders`
 
-## Dokumen terkait
+<!-- openclaw-plugin-reference:manual-start -->
+
+perintah node: anthropic.claude.sessions.list.v1,
+anthropic.claude.sessions.read.v1; kontrak: mediaUnderstandingProviders,
+usageProviders
+
+<!-- openclaw-plugin-reference:manual-end -->
+
+## Dokumentasi terkait
 
 - [anthropic](/id/providers/anthropic)

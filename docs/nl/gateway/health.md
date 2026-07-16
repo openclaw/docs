@@ -1,96 +1,99 @@
 ---
 read_when:
-    - Kanaalconnectiviteit of Gateway-status diagnosticeren
-    - Inzicht in CLI-opdrachten en opties voor health checks
-summary: Opdrachten voor gezondheidscontrole en bewaking van de Gateway-gezondheid
-title: Gezondheidscontroles
+    - Problemen met kanaalconnectiviteit of de status van de Gateway vaststellen
+    - Inzicht in CLI-opdrachten en -opties voor statuscontroles
+summary: Healthcheckopdrachten en bewaking van de Gateway-status
+title: Statuscontroles
 x-i18n:
-    generated_at: "2026-06-27T17:33:52Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T15:37:40Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 8d6475bef9fead191c11a801151d4fab76c47034d3f30f90a18c15d6e32b5d26
+    source_hash: 6cc015fcd8dc002eafac95fb3e7aa0b6f3be5b9995e94438e2fed539a561931d
     source_path: gateway/health.md
     workflow: 16
 ---
 
-Korte handleiding om kanaalconnectiviteit te verifiëren zonder te gokken.
+Korte handleiding om kanaalconnectiviteit te controleren zonder te gokken.
 
 ## Snelle controles
 
-- `openclaw status` — lokale samenvatting: bereikbaarheid/modus van Gateway, updatehint, leeftijd van gekoppelde kanaalauthenticatie, sessies + recente activiteit.
-- `openclaw status --all` — volledige lokale diagnose (alleen-lezen, kleur, veilig om te plakken voor debugging).
-- `openclaw status --deep` — vraagt de draaiende Gateway om een live gezondheidsprobe (`health` met `probe:true`), inclusief kanaalprobes per account wanneer ondersteund.
-- `openclaw health` — vraagt de draaiende Gateway om zijn gezondheidssnapshot (alleen WS; geen directe kanaalsockets vanuit de CLI).
-- `openclaw health --verbose` — forceert een live gezondheidsprobe en toont Gateway-verbindingsdetails.
-- `openclaw health --json` — machineleesbare uitvoer van de gezondheidssnapshot.
-- Stuur `/status` als zelfstandig bericht in WhatsApp/WebChat om een statusantwoord te krijgen zonder de agent aan te roepen.
-- Logs: volg `/tmp/openclaw/openclaw-*.log` en filter op `web-heartbeat`, `web-reconnect`, `web-auto-reply`, `web-inbound`.
+- `openclaw status` - lokaal overzicht: bereikbaarheid/modus van de Gateway, updatehint, ouderdom van gekoppelde kanaalauthenticatie, sessies + recente activiteit.
+- `openclaw status --all` - volledige lokale diagnose (alleen-lezen, met kleur, veilig om te plakken voor foutopsporing).
+- `openclaw status --deep` - vraagt de actieve Gateway om een live controle (`health` met `probe:true`), inclusief kanaalcontroles per account wanneer ondersteund.
+- `openclaw status --usage` - toont momentopnamen van gebruik/quota van modelproviders.
+- `openclaw health` - vraagt de actieve Gateway om de statusmomentopname (alleen WS; geen rechtstreekse kanaalsockets vanuit de CLI).
+- `openclaw health --verbose` (alias `--debug`) - dwingt een live statuscontrole af en toont verbindingsdetails van de Gateway.
+- `openclaw health --json` - machineleesbare uitvoer van de statusmomentopname.
+- Verstuur `/status` als zelfstandige chatopdracht in een willekeurig kanaal om een statusantwoord te krijgen zonder de agent aan te roepen.
+- Logboeken: volg `/tmp/openclaw/openclaw-*.log` en filter op `web-heartbeat`, `web-reconnect`, `web-auto-reply`, `web-inbound`.
 
-Voor Discord en andere chatproviders zijn sessierijen geen socket-liveness.
+Voor Discord en andere chatproviders geven sessierijen niet aan of de socket actief is.
 `openclaw sessions`, Gateway `sessions.list` en de agenttool `sessions_list`
-lezen opgeslagen gespreksstatus. Een provider kan opnieuw verbinden en een gezonde
-kanaalstatus tonen voordat er een nieuwe sessierij is gematerialiseerd. Gebruik de
-kanaalstatus- en gezondheidscommando's hierboven voor live connectiviteitscontroles.
+lezen opgeslagen gespreksstatus. Een provider kan opnieuw verbinding maken en een gezonde
+kanaalstatus tonen voordat een nieuwe sessierij is aangemaakt. Gebruik de bovenstaande
+opdrachten voor kanaalstatus en gezondheid voor live connectiviteitscontroles.
 
-## Diepe diagnostiek
+## Uitgebreide diagnostiek
 
 - Referenties op schijf: `ls -l ~/.openclaw/credentials/whatsapp/<accountId>/creds.json` (mtime moet recent zijn).
-- Sessiestore: `ls -l ~/.openclaw/agents/<agentId>/sessions/sessions.json` (pad kan in config worden overschreven). Aantal en recente ontvangers worden via `status` getoond.
-- Opnieuw koppelen: `openclaw channels logout && openclaw channels login --verbose` wanneer statuscodes 409-515 of `loggedOut` in logs verschijnen. (Opmerking: de QR-loginflow herstart eenmaal automatisch bij status 515 na koppeling.)
-- Diagnostiek is standaard ingeschakeld. De Gateway registreert operationele feiten tenzij `diagnostics.enabled: false` is ingesteld. Geheugenevents registreren RSS-/heap-byteaantallen, drempeldruk en groeidruk. Kritieke geheugendruk wordt via de Gateway-logger gelogd. Wanneer `diagnostics.memoryPressureSnapshot: true` is ingesteld, schrijft kritieke geheugendruk ook een pre-OOM-stabiliteitsbundel met V8-heapstatistieken, Linux-cgrouptellers indien beschikbaar, aantallen actieve resources en de grootste sessie-/transcriptbestanden per geredigeerd relatief pad. Liveness-waarschuwingen registreren event-loopvertraging, event-loopgebruik, CPU-coreverhouding en aantallen actieve/wachtende/gequeueëde sessies wanneer het proces draait maar verzadigd is. Events voor te grote payloads registreren wat is geweigerd, afgekapt of in chunks verdeeld, plus groottes en limieten indien beschikbaar. Ze registreren niet de berichttekst, inhoud van bijlagen, Webhook-body, ruwe request- of responsebody, tokens, cookies of geheime waarden. Dezelfde Heartbeat start de begrensde stabiliteitsrecorder, die beschikbaar is via `openclaw gateway stability` of de `diagnostics.stability` Gateway RPC. Fatale Gateway-afsluitingen, shutdowntime-outs en opstartfouten na herstart bewaren de nieuwste recordersnapshot onder `~/.openclaw/logs/stability/` wanneer er events bestaan; kritieke geheugendruk doet dat ook, maar alleen wanneer `diagnostics.memoryPressureSnapshot: true` is ingesteld. Inspecteer de nieuwste opgeslagen bundel met `openclaw gateway stability --bundle latest`.
-- Voer voor bugrapporten `openclaw gateway diagnostics export` uit en voeg het gegenereerde zipbestand toe. De export combineert een Markdown-samenvatting, de nieuwste stabiliteitsbundel, opgeschoonde logmetadata, opgeschoonde Gateway-status-/gezondheidssnapshots en configvorm. Deze is bedoeld om te delen: chattekst, Webhook-bodies, tooluitvoer, referenties, cookies, account-/berichtidentifiers en geheime waarden worden weggelaten of geredigeerd. Zie [Diagnostiekexport](/nl/gateway/diagnostics).
+- Sessieopslag: `ls -l ~/.openclaw/agents/<agentId>/agent/openclaw-agent.sqlite`. Het aantal en recente ontvangers worden weergegeven via `status`.
+- Opnieuw koppelen: `openclaw channels logout && openclaw channels login --verbose` wanneer statuscodes 409-515 of `loggedOut` in de logboeken verschijnen. De QR-aanmeldingsprocedure wordt na het koppelen eenmaal automatisch opnieuw gestart bij status 515.
+- Diagnostiek is standaard ingeschakeld (`diagnostics.enabled: false` schakelt deze uit). Geheugengebeurtenissen registreren RSS-/heap-aantallen in bytes en druk door drempelwaarden/groei; kritieke geheugendruk wordt vastgelegd via de Gateway-logger en schrijft, wanneer `diagnostics.memoryPressureSnapshot: true` is ingesteld, ook een stabiliteitsbundel van vóór een OOM (V8-heapstatistieken, Linux-cgroup-tellers indien beschikbaar, aantallen actieve resources en de grootste sessie-/transcriptiebestanden via een geredigeerd relatief pad). Waarschuwingen over beschikbaarheid registreren event-loopvertraging/-benutting, de verhouding tot het aantal CPU-kernen en aantallen actieve/wachtende/in de wachtrij geplaatste sessies wanneer het proces actief maar verzadigd is. Gebeurtenissen voor te grote payloads registreren wat is geweigerd/afgekapt/opgesplitst, plus groottes en limieten, maar nooit berichttekst, inhoud van bijlagen, Webhook-bodies, onbewerkte request-/response-bodies, tokens, cookies of geheime waarden.
+- Dezelfde Heartbeat stuurt de begrensde stabiliteitsrecorder aan: `openclaw gateway stability` (of de `diagnostics.stability` Gateway-RPC). Fatale afsluitingen van de Gateway, time-outs bij afsluiten, opstartfouten na opnieuw starten en (wanneer `diagnostics.memoryPressureSnapshot: true`) kritieke geheugendruk slaan de nieuwste momentopname op onder `~/.openclaw/logs/stability/`. Bekijk de nieuwste bundel met `openclaw gateway stability --bundle latest`.
+- Voer voor foutrapporten `openclaw gateway diagnostics export` uit en voeg het gegenereerde zipbestand toe: een Markdown-overzicht, de nieuwste stabiliteitsbundel, opgeschoonde logboekmetadata, opgeschoonde momentopnamen van Gateway-status/-gezondheid en de configuratiestructuur. Chattekst, Webhook-bodies, tooluitvoer, referenties, cookies, account-/bericht-ID's en geheime waarden worden weggelaten of geredigeerd. Zie [Diagnostische export](/nl/gateway/diagnostics).
 
-## Configuratie van gezondheidsmonitor
+## Configuratie van de gezondheidsmonitor
 
-- `gateway.channelHealthCheckMinutes`: hoe vaak de Gateway kanaalgezondheid controleert. Standaard: `5`. Stel `0` in om herstarts door de gezondheidsmonitor globaal uit te schakelen.
-- `gateway.channelStaleEventThresholdMinutes`: hoe lang een verbonden kanaal inactief mag blijven voordat de gezondheidsmonitor het als verouderd behandelt en herstart. Standaard: `30`. Houd dit groter dan of gelijk aan `gateway.channelHealthCheckMinutes`.
+- `gateway.channelHealthCheckMinutes`: hoe vaak de Gateway de kanaalgezondheid controleert. Standaard: `5`. Stel `0` in om herstarts door de gezondheidsmonitor globaal uit te schakelen.
+- `gateway.channelStaleEventThresholdMinutes`: hoelang een verbonden kanaal inactief kan blijven voordat de gezondheidsmonitor het als verouderd beschouwt en opnieuw start. Standaard: `30`. Houd dit groter dan of gelijk aan `gateway.channelHealthCheckMinutes`.
 - `gateway.channelMaxRestartsPerHour`: voortschrijdende limiet per uur voor herstarts door de gezondheidsmonitor per kanaal/account. Standaard: `10`.
-- `channels.<provider>.healthMonitor.enabled`: schakel herstarts door de gezondheidsmonitor uit voor een specifiek kanaal terwijl globale monitoring ingeschakeld blijft.
-- `channels.<provider>.accounts.<accountId>.healthMonitor.enabled`: override voor meerdere accounts die voorrang heeft op de instelling op kanaalniveau.
-- Deze overrides per kanaal gelden voor de ingebouwde kanaalmonitors die ze vandaag aanbieden: Discord, Google Chat, iMessage, Microsoft Teams, Signal, Slack, Telegram en WhatsApp.
+- `channels.<provider>.healthMonitor.enabled`: schakelt herstarts door de gezondheidsmonitor uit voor een specifiek kanaal terwijl globale bewaking ingeschakeld blijft.
+- `channels.<provider>.accounts.<accountId>.healthMonitor.enabled`: overschrijving voor meerdere accounts die voorrang heeft op de instelling op kanaalniveau.
+- Deze overschrijvingen per kanaal zijn van toepassing op de ingebouwde kanalen die ze momenteel beschikbaar stellen: Discord, Google Chat, iMessage, IRC, Microsoft Teams, Signal, Slack, Telegram en WhatsApp.
 
-## Uptimemonitoring
+## Beschikbaarheidsbewaking
 
-Externe uptimemonitoringservices moeten het specifieke `/health`-endpoint gebruiken, niet `/v1/chat/completions`.
+Externe services voor beschikbaarheidsbewaking moeten het speciale `/health`-eindpunt gebruiken, niet `/v1/chat/completions`.
 
-- **WEL gebruiken:** `GET /health` — directe respons, geen sessie aangemaakt, geen LLM-aanroep, retourneert `{"ok":true,"status":"live"}`
-- **NIET gebruiken:** `/v1/chat/completions` voor gezondheidscontroles — elke request maakt een volledige agentsessie aan met Skills-snapshot, contextassemblage en LLM-aanroepen
+- **WEL gebruiken:** `GET /health` - direct antwoord, geen sessie aangemaakt, geen LLM-aanroep, retourneert `{"ok":true,"status":"live"}`
+- **NIET gebruiken:** `/v1/chat/completions` voor statuscontroles - elk verzoek maakt een volledige agentsessie aan met een momentopname van Skills, contextopbouw en LLM-aanroepen
 
-Wanneer er geen `x-openclaw-session-key`-header of `user`-veld wordt opgegeven, genereert `/v1/chat/completions` voor elke request een nieuwe willekeurige sessie. Monitoringservices die elke 15 minuten pingen maken ongeveer 96 sessies/dag aan, elk met 4-22 KB verbruik. Na verloop van tijd veroorzaakt dit opgeblazen sessiestores en kan het leiden tot overloop van het contextvenster.
+Wanneer geen `x-openclaw-session-key`-header of `user`-veld is opgegeven, genereert `/v1/chat/completions` voor elk verzoek een nieuwe willekeurige sessie. Bewakingsservices die elke 15 minuten pingen, maken ongeveer 96 sessies/dag aan, die elk 4-22KB verbruiken. Na verloop van tijd zwelt hierdoor de sessieopslag op en kan het contextvenster overlopen.
 
-### Voorbeelden voor installatie van monitoringservices
+### Configuratievoorbeelden voor bewakingsservices
 
-- **BetterStack:** Stel de URL voor gezondheidscontrole in op `https://<your-gateway-host>:<port>/health`
+- **BetterStack:** Stel de URL voor de statuscontrole in op `https://<your-gateway-host>:<port>/health`
 - **UptimeRobot:** Voeg een nieuwe HTTP-monitor toe met URL `https://<your-gateway-host>:<port>/health`
-- **Generiek:** Elke HTTP GET naar `/health` retourneert 200 met `{"ok":true}` wanneer de Gateway gezond is
+- **Algemeen:** Elke HTTP GET naar `/health` retourneert 200 met `{"ok":true}` wanneer de Gateway gezond is
 
-## Wanneer iets faalt
+## Wanneer iets mislukt
 
-- `logged out` of status 409-515 → koppel opnieuw met `openclaw channels logout` en daarna `openclaw channels login`.
-- Gateway onbereikbaar → start hem: `openclaw gateway --port 18789` (gebruik `--force` als de poort bezet is).
-- Geen inkomende berichten → bevestig dat de gekoppelde telefoon online is en dat de afzender is toegestaan (`channels.whatsapp.allowFrom`); zorg er bij groepschats voor dat allowlist + vermeldingsregels overeenkomen (`channels.whatsapp.groups`, `agents.list[].groupChat.mentionPatterns`).
+- `logged out` of status 409-515 -> koppel opnieuw met `openclaw channels logout` en vervolgens `openclaw channels login`.
+- Gateway onbereikbaar -> start deze: `openclaw gateway --port 18789` (gebruik `--force` als de poort bezet is).
+- Geen inkomende berichten -> controleer of de gekoppelde telefoon online is en de afzender is toegestaan (`channels.whatsapp.allowFrom`); zorg er bij groepschats voor dat de toelatingslijst + vermeldingsregels overeenkomen (`channels.whatsapp.groups`, `agents.list[].groupChat.mentionPatterns`).
 
-## Specifiek "health"-commando
+## Speciale opdracht "health"
 
-`openclaw health` vraagt de draaiende Gateway om zijn gezondheidssnapshot (geen directe kanaal
-sockets vanuit de CLI). Standaard kan het een verse gecachete Gateway-snapshot retourneren; de
-Gateway ververst die cache vervolgens op de achtergrond. `openclaw health --verbose` forceert
-in plaats daarvan een live probe. Het commando rapporteert gekoppelde referenties/authenticatieleeftijd wanneer beschikbaar,
-samenvattingen van probes per kanaal, een sessiestore-samenvatting en een probeduur. Het sluit
-niet-nul af als de Gateway onbereikbaar is of de probe faalt/time-out.
+`openclaw health` vraagt de actieve Gateway om de statusmomentopname (geen rechtstreekse
+kanaalsockets vanuit de CLI). Standaard retourneert deze een recente, gecachte Gateway-momentopname en
+ververst de Gateway die cache op de achtergrond; `--verbose` dwingt in plaats daarvan een live controle af.
+De opdracht rapporteert gekoppelde referenties/ouderdom van authenticatie wanneer beschikbaar, controleoverzichten per kanaal,
+een overzicht van de sessieopslag en de duur van de controle. De opdracht wordt met een niet-nulstatus afgesloten als de Gateway
+onbereikbaar is of de controle mislukt/een time-out bereikt.
 
 Opties:
 
 - `--json`: machineleesbare JSON-uitvoer
-- `--timeout <ms>`: overschrijf de standaard probetime-out van 10s
-- `--verbose`: forceer een live probe en toon Gateway-verbindingsdetails
+- `--timeout <ms>`: overschrijft de standaardtime-out van 10s voor controles
+- `--verbose`: dwingt een live controle af en toont verbindingsdetails van de Gateway
 - `--debug`: alias voor `--verbose`
 
-De gezondheidssnapshot bevat: `ok` (boolean), `ts` (timestamp), `durationMs` (probetijd), status per kanaal, beschikbaarheid van agent en sessiestore-samenvatting.
+De statusmomentopname bevat: `ok` (booleaans), `ts` (tijdstempel), `durationMs` (controletijd), status per kanaal, beschikbaarheid van de agent en een overzicht van de sessieopslag.
 
 ## Gerelateerd
 
-- [Gateway-runbook](/nl/gateway)
-- [Diagnostiekexport](/nl/gateway/diagnostics)
-- [Gateway-probleemoplossing](/nl/gateway/troubleshooting)
+- [Gateway-draaiboek](/nl/gateway)
+- [Diagnostische export](/nl/gateway/diagnostics)
+- [Problemen met de Gateway oplossen](/nl/gateway/troubleshooting)

@@ -1,26 +1,23 @@
 ---
 read_when:
-    - आप वर्कफ़्लो के अंदर केवल-JSON LLM चरण चाहते हैं
-    - स्वचालन के लिए आपको स्कीमा-मान्यीकृत LLM आउटपुट चाहिए
+    - आप workflows के भीतर केवल-JSON वाला LLM चरण चाहते हैं
+    - स्वचालन के लिए आपको स्कीमा-सत्यापित LLM आउटपुट चाहिए
 summary: वर्कफ़्लो के लिए केवल-JSON LLM कार्य (वैकल्पिक Plugin टूल)
 title: LLM कार्य
 x-i18n:
-    generated_at: "2026-06-29T00:20:57Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T17:46:54Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: ab83202bd0954a948c933c80de17385eb385573b8e3974dba41ff876f91c3ddb
+    source_hash: 78ea533f43546fbdd66c7f7138b8dea0b12b02d38925689324b390a12d0c4c5a
     source_path: tools/llm-task.md
     workflow: 16
 ---
 
-`llm-task` एक **वैकल्पिक plugin टूल** है जो JSON-only LLM कार्य चलाता है और
-संरचित आउटपुट लौटाता है (वैकल्पिक रूप से JSON Schema के विरुद्ध सत्यापित)।
+`llm-task` एक बंडल किया गया **वैकल्पिक Plugin टूल** है, जो केवल JSON वाला एक LLM कॉल चलाता है और संरचित आउटपुट लौटाता है, जिसे वैकल्पिक रूप से JSON Schema के विरुद्ध सत्यापित किया जाता है। यह Lobster जैसे वर्कफ़्लो इंजनों को प्रत्येक वर्कफ़्लो के लिए कस्टम OpenClaw कोड के बिना एक LLM चरण प्रदान करता है।
 
-यह Lobster जैसे वर्कफ़्लो इंजन के लिए आदर्श है: आप हर वर्कफ़्लो के लिए कस्टम OpenClaw कोड लिखे बिना
-एक LLM चरण जोड़ सकते हैं।
-
-## Plugin सक्षम करें
+## सक्षम करें
 
 1. Plugin सक्षम करें:
 
@@ -34,7 +31,7 @@ x-i18n:
 }
 ```
 
-2. वैकल्पिक टूल की अनुमति दें:
+2. टूल को अनुमति दें:
 
 ```json
 {
@@ -44,9 +41,9 @@ x-i18n:
 }
 ```
 
-`tools.allow` का उपयोग केवल तब करें जब आप प्रतिबंधात्मक allowlist मोड चाहते हों।
+`alsoAllow`, अन्य मुख्य टूल को प्रतिबंधित किए बिना सक्रिय टूल प्रोफ़ाइल में `llm-task` जोड़ता है। इसके बजाय `tools.allow` का उपयोग केवल तभी करें, जब आप प्रतिबंधात्मक अनुमति-सूची मोड चाहते हों।
 
-## कॉन्फ़िग (वैकल्पिक)
+## कॉन्फ़िगरेशन (वैकल्पिक)
 
 ```json
 {
@@ -56,9 +53,9 @@ x-i18n:
         "enabled": true,
         "config": {
           "defaultProvider": "openai",
-          "defaultModel": "gpt-5.5",
+          "defaultModel": "gpt-5.6-sol",
           "defaultAuthProfileId": "main",
-          "allowedModels": ["openai/gpt-5.5"],
+          "allowedModels": ["openai/gpt-5.6-sol"],
           "maxTokens": 800,
           "timeoutMs": 30000
         }
@@ -68,55 +65,53 @@ x-i18n:
 }
 ```
 
-`allowedModels`, `provider/model` स्ट्रिंग्स की allowlist है। यदि सेट हो, तो सूची के
-बाहर का कोई भी अनुरोध अस्वीकार कर दिया जाता है।
+`allowedModels`, `provider/model` स्ट्रिंग की एक अनुमति-सूची है; किसी अन्य मॉडल का अनुरोध अस्वीकार कर दिया जाता है। अन्य सभी कुंजियाँ प्रति-कॉल फ़ॉलबैक हैं, जिनका उपयोग तब होता है जब टूल कॉल उस पैरामीटर को छोड़ देता है।
 
 ## टूल पैरामीटर
 
-- `prompt` (string, आवश्यक)
-- `input` (any, वैकल्पिक)
-- `schema` (object, वैकल्पिक JSON Schema)
-- `provider` (string, वैकल्पिक)
-- `model` (string, वैकल्पिक)
-- `thinking` (string, वैकल्पिक)
-- `authProfileId` (string, वैकल्पिक)
-- `temperature` (number, वैकल्पिक)
-- `maxTokens` (number, वैकल्पिक)
-- `timeoutMs` (number, वैकल्पिक)
-
-`thinking` मानक OpenClaw reasoning presets स्वीकार करता है, जैसे `low` या `medium`।
+| पैरामीटर       | प्रकार   | टिप्पणियाँ                                                                                                                                         |
+| --------------- | ------ | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| `prompt`        | स्ट्रिंग | आवश्यक। LLM के लिए कार्य निर्देश।                                                                                                       |
+| `input`         | कोई भी    | वैकल्पिक पेलोड; JSON में क्रमबद्ध करके प्रॉम्प्ट के अंत में जोड़ा जाता है।                                                                              |
+| `schema`        | ऑब्जेक्ट | वैकल्पिक JSON Schema, जिसके विरुद्ध पार्स किए गए आउटपुट का सत्यापन होना आवश्यक है।                                                                                 |
+| `provider`      | स्ट्रिंग | `defaultProvider` / एजेंट के डिफ़ॉल्ट प्रदाता को ओवरराइड करता है।                                                                                   |
+| `model`         | स्ट्रिंग | `defaultModel` को ओवरराइड करता है; केवल मॉडल आईडी, उपनाम या `provider/model` संदर्भ स्वीकार करता है (प्रदाता का डुप्लिकेट उपसर्ग स्वचालित रूप से हटा दिया जाता है)। |
+| `thinking`      | स्ट्रिंग | रीजनिंग स्तर (जैसे `low`, `medium`); यह समाधान किए गए मॉडल द्वारा समर्थित स्तरों में से एक होना आवश्यक है।                                                          |
+| `authProfileId` | स्ट्रिंग | `defaultAuthProfileId` को ओवरराइड करता है।                                                                                                             |
+| `temperature`   | संख्या | सर्वोत्तम प्रयास; सभी प्रदाता इसका पालन नहीं करते।                                                                                                      |
+| `maxTokens`     | संख्या | आउटपुट टोकन की सर्वोत्तम-प्रयास सीमा।                                                                                                             |
+| `timeoutMs`     | संख्या | चलने की समय-सीमा; डिफ़ॉल्ट `30000`।                                                                                                                 |
 
 ## आउटपुट
 
-`details.json` लौटाता है, जिसमें पार्स किया गया JSON होता है (और प्रदान किए जाने पर
-`schema` के विरुद्ध सत्यापित करता है)।
+`details.json` (पार्स किया गया, स्कीमा-सत्यापित JSON), साथ ही वास्तव में क्या चला इसका नाम बताने वाले `details.provider` और `details.model` लौटाता है।
 
 ## उदाहरण: Lobster वर्कफ़्लो चरण
 
 ### महत्वपूर्ण सीमा
 
-नीचे दिया गया उदाहरण मानता है कि **standalone Lobster CLI** ऐसे वातावरण में चल रहा है जहाँ `openclaw.invoke` के पास पहले से सही gateway URL/auth context है।
+नीचे दिया गया उदाहरण मानता है कि **स्टैंडअलोन Lobster CLI** वहाँ चल रहा है, जहाँ `openclaw.invoke` में पहले से सही Gateway URL/प्रमाणीकरण संदर्भ मौजूद है।
 
-OpenClaw के अंदर बंडल किए गए **embedded** Lobster runner के लिए, यह nested CLI पैटर्न **वर्तमान में विश्वसनीय नहीं है**:
+OpenClaw के अंदर बंडल किए गए **एम्बेडेड** Lobster रनर के लिए, यह नेस्टेड CLI पैटर्न **फ़िलहाल विश्वसनीय नहीं है**:
 
 ```lobster
 openclaw.invoke --tool llm-task --action json --args-json '{ ... }'
 ```
 
-जब तक embedded Lobster में इस प्रवाह के लिए समर्थित bridge नहीं होता, इनमें से किसी एक को प्राथमिकता दें:
+जब तक एम्बेडेड Lobster में इस प्रवाह के लिए समर्थित ब्रिज उपलब्ध नहीं होता, इनमें से किसी एक को प्राथमिकता दें:
 
 - Lobster के बाहर सीधे `llm-task` टूल कॉल, या
-- ऐसे Lobster चरण जो nested `openclaw.invoke` कॉल पर निर्भर नहीं होते।
+- ऐसे Lobster चरण जो नेस्टेड `openclaw.invoke` कॉल पर निर्भर न हों।
 
-Standalone Lobster CLI उदाहरण:
+स्टैंडअलोन Lobster CLI उदाहरण:
 
 ```lobster
 openclaw.invoke --tool llm-task --action json --args-json '{
-  "prompt": "Given the input email, return intent and draft.",
+  "prompt": "इनपुट ईमेल के आधार पर, आशय और मसौदा लौटाएँ।",
   "thinking": "low",
   "input": {
-    "subject": "Hello",
-    "body": "Can you help?"
+    "subject": "नमस्ते",
+    "body": "क्या आप सहायता कर सकते हैं?"
   },
   "schema": {
     "type": "object",
@@ -130,16 +125,15 @@ openclaw.invoke --tool llm-task --action json --args-json '{
 }'
 ```
 
-## सुरक्षा नोट्स
+## सुरक्षा टिप्पणियाँ
 
-- यह टूल **JSON-only** है और मॉडल को केवल JSON आउटपुट करने का निर्देश देता है (कोई
-  कोड fence नहीं, कोई commentary नहीं)।
-- इस run के लिए मॉडल को कोई टूल उजागर नहीं किया जाता।
-- जब तक आप `schema` से सत्यापित न करें, आउटपुट को अविश्वसनीय मानें।
-- किसी भी side-effecting चरण (send, post, exec) से पहले approvals रखें।
+- **केवल JSON**: मॉडल को केवल JSON मान लौटाने का निर्देश दिया जाता है—कोई कोड फ़ेंस या टिप्पणी नहीं।
+- **कोई टूल नहीं**: अंतर्निहित रन में टूल अक्षम होते हैं, इसलिए मॉडल कार्य के बीच बाहरी कॉल नहीं कर सकता।
+- जब तक आप `schema` से आउटपुट का सत्यापन न करें, तब तक उसे अविश्वसनीय मानें।
+- इस आउटपुट का उपयोग करने वाले किसी भी दुष्प्रभावकारी चरण (भेजना, पोस्ट करना, निष्पादित करना) से पहले अनुमोदन रखें।
 
 ## संबंधित
 
-- [Thinking स्तर](/hi/tools/thinking)
-- [Sub-agents](/hi/tools/subagents)
-- [Slash commands](/hi/tools/slash-commands)
+- [रीजनिंग स्तर](/hi/tools/thinking)
+- [उप-एजेंट](/hi/tools/subagents)
+- [स्लैश कमांड](/hi/tools/slash-commands)

@@ -1,68 +1,66 @@
 ---
 read_when:
-    - تكوين Plugin قناة (المصادقة، التحكم في الوصول، تعدد الحسابات)
-    - استكشاف أخطاء مفاتيح إعدادات كل قناة وإصلاحها
-    - تدقيق سياسة الرسائل المباشرة، أو سياسة المجموعات، أو تقييد الإشارات
-summary: 'تكوين القنوات: التحكم في الوصول، والاقتران، والمفاتيح لكل قناة عبر Slack وDiscord وTelegram وWhatsApp وMatrix وiMessage والمزيد'
-title: Configuration — القنوات
+    - إعداد Plugin قناة (المصادقة، والتحكم في الوصول، وتعدد الحسابات)
+    - استكشاف أخطاء مفاتيح الإعدادات الخاصة بكل قناة وإصلاحها
+    - تدقيق سياسة الرسائل المباشرة أو سياسة المجموعات أو تقييد الإشارات
+summary: 'تهيئة القنوات: التحكم في الوصول، والاقتران، والمفاتيح الخاصة بكل قناة عبر Slack وDiscord وTelegram وWhatsApp وMatrix وiMessage وغيرها'
+title: الإعداد — القنوات
 x-i18n:
-    generated_at: "2026-07-01T13:06:07Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T14:03:13Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: ba84406a296db7a37ce44381b5a1ebccd7f4d3c32375b116f6da3da5def9340b
+    source_hash: 8d2363844e203e0c44ad9fe5d7a6a994fc654517e0488cffb836ddc9d1cdcb29
     source_path: gateway/config-channels.md
     workflow: 16
 ---
 
-مفاتيح تهيئة كل قناة ضمن `channels.*`. تغطي الوصول إلى الرسائل المباشرة والمجموعات،
-وإعدادات الحسابات المتعددة، وبوابة الإشارات، ومفاتيح كل قناة لـ Slack وDiscord
-وTelegram وWhatsApp وMatrix وiMessage وبقية Plugins القنوات المضمّنة.
+مفاتيح إعداد كل قناة ضمن `channels.*`: الوصول إلى الرسائل المباشرة والمجموعات، وإعدادات الحسابات المتعددة، واشتراط الإشارة، والمفاتيح الخاصة بكل قناة في Slack وDiscord وTelegram وWhatsApp وMatrix وiMessage وغيرها من Plugins القنوات.
 
-بالنسبة إلى الوكلاء والأدوات ووقت تشغيل Gateway والمفاتيح العليا الأخرى، راجع
-[مرجع التهيئة](/ar/gateway/configuration-reference).
+بالنسبة إلى الوكلاء والأدوات ووقت تشغيل Gateway وغيرها من مفاتيح المستوى الأعلى، راجع [مرجع الإعدادات](/ar/gateway/configuration-reference).
 
 ## القنوات
 
-تبدأ كل قناة تلقائياً عند وجود قسم التهيئة الخاص بها (ما لم تكن `enabled: false`).
+تبدأ كل قناة تلقائيًا عند وجود قسم إعدادها (ما لم يكن `enabled: false`). يأتي Telegram وiMessage ضمن حزمة `openclaw` الأساسية. تُثبَّت القنوات الرسمية الأخرى (Discord وSlack وWhatsApp وMatrix وMicrosoft Teams وIRC وGoogle Chat وSignal وMattermost وغيرها) بوصفها Plugins منفصلة باستخدام `openclaw plugins install <spec>`؛ راجع [القنوات](/ar/channels) للاطلاع على القائمة الكاملة ومواصفات التثبيت.
 
 ### الوصول إلى الرسائل المباشرة والمجموعات
 
-تدعم كل القنوات سياسات الرسائل المباشرة وسياسات المجموعات:
+تدعم جميع القنوات سياسات الرسائل المباشرة وسياسات المجموعات:
 
-| سياسة الرسائل المباشرة | السلوك                                                        |
+| سياسة الرسائل المباشرة           | السلوك                                                        |
 | ------------------- | --------------------------------------------------------------- |
-| `pairing` (الافتراضي) | يحصل المرسلون غير المعروفين على رمز اقتران لمرة واحدة؛ ويجب أن يوافق المالك |
-| `allowlist`         | المرسلون الموجودون في `allowFrom` فقط (أو في مخزن السماح المقترن)             |
-| `open`              | السماح بكل الرسائل المباشرة الواردة (يتطلب `allowFrom: ["*"]`)             |
-| `disabled`          | تجاهل كل الرسائل المباشرة الواردة                                          |
+| `pairing` (الافتراضي) | يحصل المرسلون غير المعروفين على رمز إقران يُستخدم مرة واحدة؛ ويجب أن يوافق المالك |
+| `allowlist`         | المرسلون الموجودون في `allowFrom` فقط (أو مخزن السماح المقترن)             |
+| `open`              | السماح بجميع الرسائل المباشرة الواردة (يتطلب `allowFrom: ["*"]`)             |
+| `disabled`          | تجاهل جميع الرسائل المباشرة الواردة                                          |
 
 | سياسة المجموعة          | السلوك                                               |
 | --------------------- | ------------------------------------------------------ |
-| `allowlist` (الافتراضي) | المجموعات المطابقة لقائمة السماح المهيأة فقط          |
-| `open`                | تجاوز قوائم السماح للمجموعات (مع استمرار تطبيق بوابة الإشارات) |
-| `disabled`            | حظر كل رسائل المجموعات/الغرف                          |
+| `allowlist` (الافتراضي) | المجموعات المطابقة لقائمة السماح المُعدّة فقط          |
+| `open`                | تجاوز قوائم سماح المجموعات (يظل اشتراط الإشارة مطبقًا) |
+| `disabled`            | حظر جميع رسائل المجموعات/الغرف                          |
 
 <Note>
-يضبط `channels.defaults.groupPolicy` القيمة الافتراضية عندما تكون `groupPolicy` الخاصة بالمزوّد غير مضبوطة.
-تنتهي صلاحية رموز الاقتران بعد ساعة واحدة. وتُحد طلبات اقتران الرسائل المباشرة المعلقة عند **3 لكل قناة**.
-إذا كانت كتلة مزوّد مفقودة بالكامل (`channels.<provider>` غير موجودة)، تعود سياسة مجموعات وقت التشغيل إلى `allowlist` (إغلاق آمن عند الفشل) مع تحذير عند بدء التشغيل.
+يحدد `channels.defaults.groupPolicy` القيمة الافتراضية عندما لا تكون قيمة `groupPolicy` الخاصة بموفّر معيّن مضبوطة.
+تنتهي صلاحية رموز الإقران بعد 1 ساعة. يقتصر عدد طلبات الإقران المعلّقة على **3 لكل حساب** (ضمن نطاق القناة ومعرّف الحساب).
+إذا كانت كتلة موفّر مفقودة بالكامل (`channels.<provider>` غير موجود)، فستعود سياسة المجموعات في وقت التشغيل إلى `allowlist` (إغلاق عند الفشل) مع تحذير عند بدء التشغيل.
 </Note>
 
 ### تجاوزات نموذج القناة
 
-استخدم `channels.modelByChannel` لتثبيت معرّفات قنوات محددة أو أقران رسائل مباشرة على نموذج. تقبل القيم `provider/model` أو الأسماء البديلة للنماذج المهيأة. يُطبّق تعيين القناة عندما لا تملك الجلسة تجاوزاً للنموذج مسبقاً (مثلاً، مضبوطاً عبر `/model`).
+استخدم `channels.modelByChannel` لتثبيت معرّفات قنوات محددة أو نظراء الرسائل المباشرة على نموذج معيّن. تقبل القيم `provider/model` أو الأسماء البديلة للنماذج المُعدّة. لا ينطبق تعيين القنوات إلا عندما لا تحتوي الجلسة بالفعل على تجاوز نشط للنموذج (على سبيل المثال، تجاوز ضُبط عبر `/model`).
 
-بالنسبة إلى محادثات المجموعات/السلاسل، تكون المفاتيح معرّفات مجموعات خاصة بالقناة أو معرّفات موضوعات أو أسماء قنوات. وبالنسبة إلى محادثات الرسائل المباشرة، تكون المفاتيح معرّفات أقران مشتقة من هوية مرسل القناة (`nativeDirectUserId` أو `origin.from` أو `origin.to` أو `OriginatingTo` أو `From` أو `SenderId`). يعتمد شكل المفتاح الدقيق على القناة:
+بالنسبة إلى محادثات المجموعات/السلاسل، تكون المفاتيح معرّفات مجموعات أو معرّفات موضوعات أو أسماء قنوات خاصة بالقناة. وبالنسبة إلى محادثات الرسائل المباشرة (DM)، تكون المفاتيح معرّفات النظراء المشتقة من هوية مرسل القناة (`nativeDirectUserId` أو `origin.from` أو `origin.to` أو `OriginatingTo` أو `From` أو `SenderId`). يعتمد الشكل الدقيق للمفتاح على القناة:
 
-| القناة  | شكل مفتاح الرسالة المباشرة         | مثال                                      |
+| القناة  | شكل مفتاح الرسائل المباشرة         | مثال                                      |
 | -------- | ------------------- | -------------------------------------------- |
+| Discord  | معرّف المستخدم الخام         | `987654321`                                  |
+| Feishu   | `feishu:ou_...`     | `feishu:ou_a8b6cab7e945387de5f253775d9b4d85` |
+| Matrix   | معرّف مستخدم Matrix      | `@user:matrix.org`                           |
 | Slack    | `user:U...`         | `user:U12345`                                |
 | Telegram | معرّف المستخدم الخام         | `123456789`                                  |
-| Discord  | معرّف المستخدم الخام         | `987654321`                                  |
 | WhatsApp | رقم الهاتف أو JID | `15551234567`                                |
-| Matrix   | معرّف مستخدم Matrix      | `@user:matrix.org`                           |
-| Feishu   | `feishu:ou_...`     | `feishu:ou_a8b6cab7e945387de5f253775d9b4d85` |
 
 ```json5
 {
@@ -72,7 +70,7 @@ x-i18n:
         "123456789012345678": "anthropic/claude-opus-4-6",
       },
       slack: {
-        C1234567890: "openai/gpt-5.5",
+        C1234567890: "openai/gpt-5.6-sol",
         "user:U12345": "openai/gpt-5.4-mini",
       },
       telegram: {
@@ -87,9 +85,9 @@ x-i18n:
 
 لا تتطابق المفاتيح الخاصة بالرسائل المباشرة إلا في محادثات الرسائل المباشرة؛ ولا تؤثر في توجيه المجموعات/السلاسل.
 
-### افتراضيات القناة وHeartbeat
+### الإعدادات الافتراضية للقنوات وHeartbeat
 
-استخدم `channels.defaults` لسلوك سياسة المجموعات وHeartbeat المشترك عبر المزوّدين:
+استخدم `channels.defaults` لسلوك سياسة المجموعات وHeartbeat المشترك بين الموفّرين:
 
 ```json5
 {
@@ -107,15 +105,15 @@ x-i18n:
 }
 ```
 
-- `channels.defaults.groupPolicy`: سياسة المجموعة الاحتياطية عندما تكون `groupPolicy` على مستوى المزوّد غير مضبوطة.
-- `channels.defaults.contextVisibility`: وضع رؤية السياق التكميلي الافتراضي لكل القنوات. القيم: `all` (الافتراضي، تضمين كل سياق الاقتباس/السلسلة/السجل)، و`allowlist` (تضمين السياق من المرسلين الموجودين في قائمة السماح فقط)، و`allowlist_quote` (مثل قائمة السماح لكن مع إبقاء سياق الاقتباس/الرد الصريح). التجاوز لكل قناة: `channels.<channel>.contextVisibility`.
-- `channels.defaults.heartbeat.showOk`: تضمين حالات القنوات السليمة في مخرجات Heartbeat.
-- `channels.defaults.heartbeat.showAlerts`: تضمين حالات التدهور/الأخطاء في مخرجات Heartbeat.
-- `channels.defaults.heartbeat.useIndicator`: عرض مخرجات Heartbeat بأسلوب مؤشرات مضغوط.
+- `channels.defaults.groupPolicy`: سياسة المجموعات الاحتياطية عندما لا تكون قيمة `groupPolicy` على مستوى الموفّر مضبوطة.
+- `channels.defaults.contextVisibility`: وضع رؤية السياق التكميلي الافتراضي لجميع القنوات. القيم: `all` (الافتراضي، يتضمن جميع سياقات الاقتباس/السلسلة/السجل)، و`allowlist` (يتضمن فقط السياق من المرسلين المدرجين في قائمة السماح)، و`allowlist_quote` (مثل قائمة السماح، لكن مع الاحتفاظ بسياق الاقتباس/الرد الصريح). التجاوز الخاص بكل قناة: `channels.<channel>.contextVisibility`.
+- `channels.defaults.heartbeat.showOk`: تضمين حالات القنوات السليمة في مخرجات Heartbeat (القيمة الافتراضية `false`).
+- `channels.defaults.heartbeat.showAlerts`: تضمين حالات التدهور/الخطأ في مخرجات Heartbeat (القيمة الافتراضية `true`).
+- `channels.defaults.heartbeat.useIndicator`: عرض مخرجات Heartbeat مضغوطة بنمط المؤشر (القيمة الافتراضية `true`).
 
 ### WhatsApp
 
-يعمل WhatsApp عبر قناة الويب الخاصة بـ Gateway (Baileys Web). يبدأ تلقائياً عند وجود جلسة مرتبطة.
+يعمل WhatsApp عبر قناة الويب في Gateway (Baileys Web). ويبدأ تلقائيًا عند وجود جلسة مرتبطة.
 
 ```json5
 {
@@ -129,10 +127,10 @@ x-i18n:
     },
     reconnect: {
       initialMs: 2000,
-      maxMs: 120000,
-      factor: 1.4,
-      jitter: 0.2,
-      maxAttempts: 0,
+      maxMs: 30000,
+      factor: 1.8,
+      jitter: 0.25,
+      maxAttempts: 12, // 0 = retry forever
     },
   },
   channels: {
@@ -140,7 +138,7 @@ x-i18n:
       dmPolicy: "pairing", // pairing | allowlist | open | disabled
       allowFrom: ["+15555550123", "+447700900123"],
       textChunkLimit: 4000,
-      chunkMode: "length", // length | newline
+      streaming: { chunkMode: "length" }, // length | newline
       mediaMaxMb: 50,
       sendReadReceipts: true, // blue ticks (false in self-chat mode)
       groups: {
@@ -153,9 +151,11 @@ x-i18n:
 }
 ```
 
-- تهيئ إدخالات `bindings[]` العليا ذات `type: "acp"` روابط ACP دائمة لرسائل ومجموعات WhatsApp المباشرة. استخدم رقماً مباشراً بصيغة E.164 أو JID لمجموعة WhatsApp في `match.peer.id`. دلالات الحقول مشتركة في [وكلاء ACP](/ar/tools/acp-agents#persistent-channel-bindings).
+- `web.whatsapp.keepAliveIntervalMs` (القيمة الافتراضية `25000`) و`connectTimeoutMs` (القيمة الافتراضية `60000`) و`defaultQueryTimeoutMs` (القيمة الافتراضية `60000`) تضبط مقبس Baileys.
+- القيم الافتراضية لـ `web.reconnect`: `initialMs: 2000` و`maxMs: 30000` و`factor: 1.8` و`jitter: 0.25` و`maxAttempts: 12`. تجعل `maxAttempts: 0` إعادة المحاولة تستمر إلى الأبد بدلًا من الاستسلام.
+- تُعدّ إدخالات `bindings[]` في المستوى الأعلى التي تحتوي على `type: "acp"` ارتباطات ACP دائمة لرسائل WhatsApp المباشرة ومجموعاته. استخدم رقمًا مباشرًا بتنسيق E.164 أو JID لمجموعة WhatsApp في `match.peer.id`. دلالات الحقول مشتركة في [وكلاء ACP](/ar/tools/acp-agents#persistent-channel-bindings).
 
-<Accordion title="WhatsApp متعدد الحسابات">
+<Accordion title="حسابات WhatsApp المتعددة">
 
 ```json5
 {
@@ -173,10 +173,10 @@ x-i18n:
 }
 ```
 
-- تستخدم الأوامر الصادرة الحساب `default` افتراضياً إذا كان موجوداً؛ وإلا تستخدم أول معرّف حساب مهيأ (بعد الفرز).
-- يتجاوز `channels.whatsapp.defaultAccount` الاختياري اختيار الحساب الافتراضي الاحتياطي هذا عندما يطابق معرّف حساب مهيأ.
-- يُرحّل دليل مصادقة Baileys القديم أحادي الحساب بواسطة `openclaw doctor` إلى `whatsapp/default`.
-- تجاوزات كل حساب: `channels.whatsapp.accounts.<id>.sendReadReceipts` و`channels.whatsapp.accounts.<id>.dmPolicy` و`channels.whatsapp.accounts.<id>.allowFrom`.
+- تستخدم الأوامر الصادرة الحساب `default` افتراضيًا إذا كان موجودًا؛ وإلا فتستخدم أول معرّف حساب مُعدّ (بعد الفرز).
+- تتجاوز قيمة `channels.whatsapp.defaultAccount` الاختيار الاحتياطي للحساب الافتراضي اختياريًا عندما تطابق معرّف حساب مُعدًّا.
+- يرحّل `openclaw doctor` دليل مصادقة Baileys القديم ذي الحساب الواحد إلى `whatsapp/default`.
+- التجاوزات الخاصة بكل حساب: `channels.whatsapp.accounts.<id>.sendReadReceipts` و`channels.whatsapp.accounts.<id>.dmPolicy` و`channels.whatsapp.accounts.<id>.allowFrom`.
 
 </Accordion>
 
@@ -211,7 +211,7 @@ x-i18n:
       historyLimit: 50,
       replyToMode: "first", // off | first | all | batched
       linkPreview: true,
-      streaming: "partial", // off | partial | block | progress (default: partial)
+      streaming: { mode: "partial" }, // off | partial | block | progress (default: partial)
       actions: { reactions: true, sendMessage: true },
       reactionNotifications: "own", // off | own | all
       mediaMaxMb: 100,
@@ -226,6 +226,7 @@ x-i18n:
         dnsResultOrder: "ipv4first",
       },
       apiRoot: "https://api.telegram.org",
+      trustedLocalFileRoots: ["/srv/telegram-bot-api-data"],
       proxy: "socks5://localhost:9050",
       webhookUrl: "https://example.com/telegram-webhook",
       webhookSecret: "secret",
@@ -235,13 +236,15 @@ x-i18n:
 }
 ```
 
-- رمز البوت: `channels.telegram.botToken` أو `channels.telegram.tokenFile` (ملف عادي فقط؛ تُرفض الروابط الرمزية)، مع `TELEGRAM_BOT_TOKEN` كاحتياطي للحساب الافتراضي.
-- `apiRoot` هو جذر Telegram Bot API فقط. استخدم `https://api.telegram.org` أو جذر الاستضافة الذاتية/الوكيل لديك، وليس `https://api.telegram.org/bot<TOKEN>`؛ يزيل `openclaw doctor --fix` لاحقة `/bot<TOKEN>` الزائدة بالخطأ.
-- يتجاوز `channels.telegram.defaultAccount` الاختياري اختيار الحساب الافتراضي عندما يطابق معرّف حساب مهيأ.
-- في إعدادات الحسابات المتعددة (معرّفا حساب أو أكثر)، اضبط افتراضياً صريحاً (`channels.telegram.defaultAccount` أو `channels.telegram.accounts.default`) لتجنب التوجيه الاحتياطي؛ يحذر `openclaw doctor` عندما يكون هذا مفقوداً أو غير صالح.
-- يحظر `configWrites: false` عمليات كتابة التهيئة التي يبدأها Telegram (ترحيلات معرّفات المجموعات الفائقة، و`/config set|unset`).
-- تهيئ إدخالات `bindings[]` العليا ذات `type: "acp"` روابط ACP دائمة لموضوعات المنتدى (استخدم `chatId:topic:topicId` القياسي في `match.peer.id`). دلالات الحقول مشتركة في [وكلاء ACP](/ar/tools/acp-agents#persistent-channel-bindings).
-- تستخدم معاينات بث Telegram `sendMessage` + `editMessageText` (تعمل في المحادثات المباشرة والجماعية).
+- رمز البوت: `channels.telegram.botToken` أو `channels.telegram.tokenFile` (ملف عادي فقط؛ تُرفض الروابط الرمزية)، مع استخدام `TELEGRAM_BOT_TOKEN` كخيار احتياطي للحساب الافتراضي.
+- يمثل `apiRoot` جذر Telegram Bot API فقط. استخدم `https://api.telegram.org` أو الجذر المستضاف ذاتيًا/الوسيط، وليس `https://api.telegram.org/bot<TOKEN>`؛ وتزيل `openclaw doctor --fix` لاحقة `/bot<TOKEN>` المضافة عرضًا.
+- بالنسبة إلى خادم Bot API مستضاف ذاتيًا في وضع `--local`، تسرد `trustedLocalFileRoots` مسارات المضيف التي يجوز لـ OpenClaw قراءتها. اركب وحدة تخزين بيانات الخادم على مضيف OpenClaw وأعِدّ إما جذر بياناتها أو دليلًا لكل رمز؛ وتُعيَّن مسارات الحاوية ضمن `/var/lib/telegram-bot-api` إلى هذه الجذور. تظل المسارات المطلقة الأخرى مرفوضة.
+- تتجاوز قيمة `channels.telegram.defaultAccount` الاختيار الافتراضي للحساب اختياريًا عندما تطابق معرّف حساب مُعدًّا.
+- في إعدادات الحسابات المتعددة (معرّفا حساب أو أكثر)، اضبط حسابًا افتراضيًا صريحًا (`channels.telegram.defaultAccount` أو `channels.telegram.accounts.default`) لتجنب التوجيه الاحتياطي؛ وتحذر `openclaw doctor` عندما تكون هذه القيمة مفقودة أو غير صالحة.
+- تحظر `configWrites: false` عمليات كتابة الإعدادات التي يبدأها Telegram (ترحيلات معرّفات المجموعات الفائقة، `/config set|unset`).
+- تُعدّ إدخالات `bindings[]` في المستوى الأعلى التي تحتوي على `type: "acp"` ارتباطات ACP دائمة لموضوعات المنتدى (استخدم `chatId:topic:topicId` القياسي في `match.peer.id`). دلالات الحقول مشتركة في [وكلاء ACP](/ar/tools/acp-agents#persistent-channel-bindings).
+- تستخدم معاينات البث في Telegram ‏`sendMessage` + `editMessageText` (تعمل في المحادثات المباشرة والجماعية).
+- القيمة الافتراضية لـ `network.dnsResultOrder` هي `"ipv4first"` لتجنب حالات فشل الجلب الشائعة عبر IPv6.
 - سياسة إعادة المحاولة: راجع [سياسة إعادة المحاولة](/ar/concepts/retry).
 
 ### Discord
@@ -289,7 +292,7 @@ x-i18n:
               requireMention: true,
               users: ["987654321098765432"],
               skills: ["docs"],
-              systemPrompt: "Short answers only.",
+              systemPrompt: "إجابات قصيرة فقط.",
             },
           },
         },
@@ -297,9 +300,9 @@ x-i18n:
       historyLimit: 20,
       textChunkLimit: 2000,
       suppressEmbeds: true,
-      chunkMode: "length", // length | newline
       streaming: {
-        mode: "progress", // off | partial | block | progress (Discord default: progress)
+        mode: "progress", // off | partial | block | progress (الوضع الافتراضي في Discord: progress)
+        chunkMode: "length", // length | newline
         progress: {
           label: "auto",
           maxLines: 8,
@@ -356,45 +359,46 @@ x-i18n:
 }
 ```
 
-- الرمز المميز: `channels.discord.token`، مع `DISCORD_BOT_TOKEN` كخيار احتياطي للحساب الافتراضي.
-- تستخدم الاستدعاءات الصادرة المباشرة التي توفر `token` صريحا لـ Discord ذلك الرمز المميز للاستدعاء؛ وتظل إعدادات إعادة المحاولة/السياسة الخاصة بالحساب مأخوذة من الحساب المحدد في لقطة وقت التشغيل النشطة.
-- يتجاوز `channels.discord.defaultAccount` الاختياري اختيار الحساب الافتراضي عندما يطابق معرف حساب مكوّنا.
-- استخدم `user:<id>` (رسالة مباشرة) أو `channel:<id>` (قناة خادم) لأهداف التسليم؛ تُرفض المعرفات الرقمية المجردة.
-- تكون أسماء الخوادم المختصرة بأحرف صغيرة مع استبدال المسافات بـ `-`؛ وتستخدم مفاتيح القنوات الاسم المختصر (من دون `#`). يُفضّل استخدام معرفات الخوادم.
-- تُتجاهل الرسائل التي كتبها الروبوت افتراضيا. يفعّلها `allowBots: true`؛ استخدم `allowBots: "mentions"` لقبول رسائل الروبوت التي تذكر الروبوت فقط (مع استمرار تصفية رسائله الذاتية).
-- يمكن للقنوات التي تدعم الرسائل الواردة المكتوبة بواسطة الروبوت استخدام [حماية حلقة الروبوت](/ar/channels/bot-loop-protection) المشتركة. اضبط `channels.defaults.botLoopProtection` لميزانيات الأزواج الأساسية، ثم تجاوز القناة أو الحساب فقط عندما يحتاج سطح واحد إلى حدود مختلفة.
-- يُسقط `channels.discord.guilds.<id>.ignoreOtherMentions` (وتجاوزات القنوات) الرسائل التي تذكر مستخدما آخر أو دورا آخر ولكن لا تذكر الروبوت (باستثناء @everyone/@here).
-- يربط `channels.discord.mentionAliases` نص `@handle` الصادر المستقر بمعرفات مستخدمي Discord قبل الإرسال، بحيث يمكن ذكر الزملاء المعروفين بصورة حتمية حتى عندما تكون ذاكرة التخزين المؤقت العابرة للدليل فارغة. توجد تجاوزات كل حساب ضمن `channels.discord.accounts.<accountId>.mentionAliases`.
-- يقسّم `maxLinesPerMessage` (الافتراضي 17) الرسائل الطويلة حتى عندما تكون أقل من 2000 حرف.
-- يكون `channels.discord.suppressEmbeds` افتراضيا `true`، لذلك لا تتوسع عناوين URL الصادرة إلى معاينات روابط Discord ما لم يُعطّل ذلك. تظل حمولات `embeds` الصريحة تُرسل بشكل طبيعي؛ ويمكن لاستدعاءات الأدوات لكل رسالة التجاوز باستخدام `suppressEmbeds`.
-- يتحكم `channels.discord.threadBindings` في توجيه Discord المرتبط بالخيوط:
-  - `enabled`: تجاوز Discord لميزات الجلسات المرتبطة بالخيوط (`/focus` و`/unfocus` و`/agents` و`/session idle` و`/session max-age` والتسليم/التوجيه المرتبط)
-  - `idleHours`: تجاوز Discord لإلغاء التركيز التلقائي بسبب عدم النشاط بالساعات (`0` يعطّل)
-  - `maxAgeHours`: تجاوز Discord للحد الأقصى الصارم للعمر بالساعات (`0` يعطّل)
-  - `spawnSessions`: مفتاح لـ `sessions_spawn({ thread: true })` وإنشاء/ربط الخيط التلقائي عند إنشاء خيط ACP (الافتراضي: `true`)
-  - `defaultSpawnContext`: سياق الوكيل الفرعي الأصلي لعمليات الإنشاء المرتبطة بالخيوط (`"fork"` افتراضيا)
-- تُكوّن إدخالات `bindings[]` ذات المستوى الأعلى مع `type: "acp"` ارتباطات ACP دائمة للقنوات والخيوط (استخدم معرف القناة/الخيط في `match.peer.id`). تشترك دلالات الحقول في [وكلاء ACP](/ar/tools/acp-agents#persistent-channel-bindings).
-- يضبط `channels.discord.ui.components.accentColor` لون التمييز لحاويات مكونات Discord v2.
-- يتحكم `channels.discord.agentComponents.ttlMs` في مدة بقاء استدعاءات مكونات Discord المرسلة مسجلة. القيمة الافتراضية هي `1800000` (30 دقيقة)، والحد الأقصى هو `86400000` (24 ساعة)، وتوجد تجاوزات كل حساب ضمن `channels.discord.accounts.<accountId>.agentComponents.ttlMs`. تُبقي القيم الأطول الأزرار/القوائم/النماذج القديمة قابلة للاستخدام لمدة أطول، لذلك فضّل أقصر مدة TTL تناسب سير العمل.
-- يفعّل `channels.discord.voice` محادثات قنوات الصوت في Discord وتجاوزات اختيارية للانضمام التلقائي + LLM + TTS. تترك إعدادات Discord النصية فقط الصوت متوقفا افتراضيا؛ اضبط `channels.discord.voice.enabled=true` للاشتراك.
-- يتجاوز `channels.discord.voice.model` اختياريا نموذج LLM المستخدم لاستجابات قنوات الصوت في Discord.
-- يمرر `channels.discord.voice.daveEncryption` و`channels.discord.voice.decryptionFailureTolerance` إلى خيارات DAVE في `@discordjs/voice` (`true` و`24` افتراضيا).
-- يتحكم `channels.discord.voice.connectTimeoutMs` في انتظار Ready الأولي لـ `@discordjs/voice` لمحاولات `/vc join` والانضمام التلقائي (`30000` افتراضيا).
-- يتحكم `channels.discord.voice.reconnectGraceMs` في المدة التي يمكن أن تستغرقها جلسة صوت منفصلة للدخول في إشارات إعادة الاتصال قبل أن يدمرها OpenClaw (`15000` افتراضيا).
-- لا تتم مقاطعة تشغيل صوت Discord بحدث بدء تحدث مستخدم آخر. لتجنب حلقات التغذية الراجعة، يتجاهل OpenClaw التقاط الصوت الجديد أثناء تشغيل TTS.
-- يحاول OpenClaw أيضا استعادة استقبال الصوت بمغادرة جلسة صوت وإعادة الانضمام إليها بعد تكرار فشل فك التشفير.
-- `channels.discord.streaming` هو مفتاح وضع البث المعياري. يستخدم Discord افتراضيا `streaming.mode: "progress"` بحيث يظهر تقدم الأدوات/العمل في رسالة معاينة واحدة محررة؛ اضبط `streaming.mode: "off"` لتعطيله. تظل قيم `streamMode` القديمة وقيم `streaming` المنطقية أسماء مستعارة وقت التشغيل؛ شغّل `openclaw doctor --fix` لإعادة كتابة الإعدادات المحفوظة.
-- يربط `channels.discord.autoPresence` إتاحة وقت التشغيل بحالة حضور الروبوت (سليم => متصل، متدهور => خامل، مستنفد => عدم الإزعاج) ويسمح بتجاوزات اختيارية لنص الحالة.
-- يعيد `channels.discord.dangerouslyAllowNameMatching` تفعيل مطابقة الاسم/الوسم القابلة للتغيير (وضع توافق لكسر الزجاج).
-- `channels.discord.execApprovals`: تسليم موافقات التنفيذ الأصلية في Discord وتفويض الموافقين.
-  - `enabled`: `true` أو `false` أو `"auto"` (الافتراضي). في الوضع التلقائي، تنشط موافقات التنفيذ عندما يمكن حل الموافقين من `approvers` أو `commands.ownerAllowFrom`.
-  - `approvers`: معرفات مستخدمي Discord المسموح لهم بالموافقة على طلبات التنفيذ. يعود إلى `commands.ownerAllowFrom` عند حذفه.
-  - `agentFilter`: قائمة سماح اختيارية لمعرفات الوكلاء. احذفها لتمرير الموافقات لجميع الوكلاء.
+- الرمز المميز: `channels.discord.token`، مع استخدام `DISCORD_BOT_TOKEN` كخيار احتياطي للحساب الافتراضي.
+- تستخدم الاستدعاءات الصادرة المباشرة التي توفر `token` صريحًا لـ Discord ذلك الرمز المميز للاستدعاء؛ وتظل إعدادات إعادة المحاولة/السياسة للحساب مأخوذة من الحساب المحدد في لقطة بيئة التشغيل النشطة.
+- يتجاوز `channels.discord.defaultAccount` الاختياري تحديد الحساب الافتراضي عندما يطابق معرّف حساب مهيأ.
+- استخدم `user:<id>` (رسالة مباشرة) أو `channel:<id>` (قناة خادم) لأهداف التسليم؛ تُرفض المعرّفات الرقمية المجردة.
+- تكون الأسماء المختصرة للخوادم بأحرف صغيرة مع استبدال المسافات بـ `-`؛ وتستخدم مفاتيح القنوات الاسم المحوّل إلى اسم مختصر (من دون `#`). يُفضّل استخدام معرّفات الخوادم.
+- تُتجاهل الرسائل التي تنشئها البوتات افتراضيًا. يفعّلها `allowBots: true`؛ استخدم `allowBots: "mentions"` لقبول رسائل البوتات التي تذكر البوت فقط (تظل رسائله الخاصة مستبعدة).
+- يمكن للقنوات التي تدعم الرسائل الواردة المنشأة بواسطة البوتات استخدام [الحماية المشتركة من حلقات البوتات](/ar/channels/bot-loop-protection). اضبط `channels.defaults.botLoopProtection` لميزانيات الأزواج الأساسية، ثم تجاوز إعداد القناة أو الحساب فقط عندما يحتاج أحد السطحين إلى حدود مختلفة.
+- يسقط `channels.discord.guilds.<id>.ignoreOtherMentions` (وتجاوزات القنوات) الرسائل التي تذكر مستخدمًا أو دورًا آخر دون ذكر البوت (باستثناء @everyone/@here).
+- يربط `channels.discord.mentionAliases` نص `@handle` الصادر والثابت بمعرّفات مستخدمي Discord قبل الإرسال، بحيث يمكن ذكر زملاء الفريق المعروفين بصورة حتمية حتى عندما تكون ذاكرة التخزين المؤقت المؤقتة للدليل فارغة. توجد تجاوزات كل حساب ضمن `channels.discord.accounts.<accountId>.mentionAliases`.
+- يقسم `maxLinesPerMessage` (القيمة الافتراضية `17`) الرسائل الطويلة رأسيًا حتى عندما يقل طولها عن 2000 حرف.
+- تكون القيمة الافتراضية لـ `channels.discord.suppressEmbeds` هي `true`، لذلك لا تتوسع عناوين URL الصادرة إلى معاينات روابط Discord ما لم يُعطّل ذلك. تظل حمولات `embeds` الصريحة تُرسل بصورة طبيعية؛ ويمكن لاستدعاءات الأدوات الخاصة بكل رسالة التجاوز باستخدام `suppressEmbeds`.
+- يتحكم `channels.discord.threadBindings` في التوجيه المرتبط بسلاسل محادثات Discord:
+  - `enabled`: تجاوز Discord لميزات الجلسات المرتبطة بسلاسل المحادثات (`/focus`، و`/unfocus`، و`/agents`، و`/session idle`، و`/session max-age`، والتسليم/التوجيه المرتبط)
+  - `idleHours`: تجاوز Discord لإلغاء التركيز التلقائي بسبب عدم النشاط بالساعات (`0` يعطّله)
+  - `maxAgeHours`: تجاوز Discord للحد الأقصى الصارم للعمر بالساعات (`0` يعطّله)
+  - `spawnSessions`: مفتاح تبديل لإنشاء/ربط سلاسل المحادثات تلقائيًا بواسطة `sessions_spawn({ thread: true })` وإنشاء سلاسل ACP (القيمة الافتراضية: `true`)
+  - `defaultSpawnContext`: سياق الوكيل الفرعي الأصلي لعمليات الإنشاء المرتبطة بسلاسل المحادثات (`"fork"` افتراضيًا)
+- تهيئ إدخالات `bindings[]` ذات المستوى الأعلى التي تحتوي على `type: "acp"` ارتباطات ACP دائمة للقنوات وسلاسل المحادثات (استخدم معرّف القناة/سلسلة المحادثات في `match.peer.id`). دلالات الحقول مشتركة في [وكلاء ACP](/ar/tools/acp-agents#persistent-channel-bindings).
+- يضبط `channels.discord.ui.components.accentColor` لون التمييز لحاويات مكونات Discord بالإصدار v2.
+- يتحكم `channels.discord.agentComponents.ttlMs` في مدة بقاء استدعاءات مكونات Discord المُرسلة مسجلة. القيمة الافتراضية `1800000` (30 دقيقة)، والحد الأقصى `86400000` (24 ساعة). توجد تجاوزات كل حساب ضمن `channels.discord.accounts.<accountId>.agentComponents.ttlMs`. يُفضّل أقصر مدة صلاحية TTL تلائم سير العمل.
+- يفعّل `channels.discord.voice` محادثات قنوات Discord الصوتية والانضمام التلقائي الاختياري وتجاوزات LLM وTTS. تترك إعدادات Discord النصية فقط الصوت معطّلًا افتراضيًا؛ اضبط `channels.discord.voice.enabled=true` للاشتراك.
+- يتجاوز `channels.discord.voice.model` اختياريًا نموذج LLM المستخدم لاستجابات قنوات Discord الصوتية.
+- يُمرَّر `channels.discord.voice.daveEncryption` (القيمة الافتراضية `true`) و`channels.discord.voice.decryptionFailureTolerance` (القيمة الافتراضية `24`) إلى خيارات DAVE في `@discordjs/voice`.
+- يتحكم `channels.discord.voice.connectTimeoutMs` في انتظار جاهزية `@discordjs/voice` الأولي لـ `/vc join` ومحاولات الانضمام التلقائي (القيمة الافتراضية `30000`).
+- يتحكم `channels.discord.voice.reconnectGraceMs` في المدة التي يمكن أن تستغرقها جلسة صوتية منقطعة للدخول في إشارات إعادة الاتصال قبل أن يدمرها OpenClaw (القيمة الافتراضية `15000`).
+- لا يتوقف تشغيل الصوت في Discord بسبب حدث بدء تحدث مستخدم آخر. ولتجنب حلقات التغذية الراجعة، يتجاهل OpenClaw التقاط الصوت الجديد أثناء تشغيل TTS.
+- يحاول OpenClaw أيضًا استعادة استقبال الصوت عبر مغادرة جلسة صوتية وإعادة الانضمام إليها بعد إخفاقات متكررة في فك التشفير.
+- يمثل `channels.discord.streaming` مفتاح وضع البث الأساسي. يستخدم Discord القيمة الافتراضية `streaming.mode: "progress"` لتظهر أداة/تقدم العمل في رسالة معاينة واحدة معدّلة؛ اضبط `streaming.mode: "off"` لتعطيله. لم تعد المفاتيح القديمة المسطحة (`streamMode`، و`chunkMode`، و`blockStreaming`، و`draftChunk`، و`blockStreamingCoalesce`) تُقرأ في وقت التشغيل؛ شغّل `openclaw doctor --fix` لترحيل الإعدادات المحفوظة.
+- يربط `channels.discord.autoPresence` توفر بيئة التشغيل بحضور البوت (سليم => متصل، متدهور => خامل، مستنفد => عدم الإزعاج) ويسمح بتجاوزات اختيارية لنص الحالة.
+- يوجّه `channels.discord.guilds.<id>.presenceEvents` حالات وصول التوفر البشري إلى قناة Discord مهيأة واحدة على هيئة أحداث نظام للوكيل. يجب أن يتمكن الأعضاء المؤهلون من عرض `channelId`؛ ترث سلاسل المحادثات العامة رؤية القناة الأصل، بينما تتطلب سلاسل المحادثات الخاصة بالإضافة إلى ذلك العضوية أو صلاحية Manage Threads. يمكن لـ `users` تضييق هذا الجمهور أكثر. يبذر الأعضاء المتصلين حاليًا من لقطات `GUILD_CREATE` المكتملة، ويوجّه انتقالات الأعضاء المرصودة من غير متصل إلى متصل، ويعامل أول إشارة اتصال لاحقة لعضو غير مرئي على أنه أصبح متاحًا حديثًا دون الجزم بما إذا كان قد اتصل أو انضم بعد اللقطة. تتطلب الخوادم التي تتجاوز حد لقطات Discord البالغ 75,000 عضو تحديثًا صريحًا لحالة عدم الاتصال أولًا. عناصر التحكم في التقييد: `reconnectSuppressSeconds` (نافذة هدوء بعد جلسة Gateway جديدة بينما يُعاد بناء حالة حضور الخادم، القيمة الافتراضية 300، ويعطّلها `0`) و`burstLimit`/`burstWindowSeconds` (حد معدل الأحداث الموضوعة بنجاح في الطابور لكل خادم، القيمة الافتراضية 8 أحداث لكل نافذة منزلقة مدتها 60s). لا تبدأ الجلسات المستأنفة نافذة منع إعادة الاتصال. تظل فترة التهدئة الحالية لإعادة الترحيب بكل مستخدم ثماني ساعات. يتطلب ذلك `channels.discord.intents.presence=true`، وPresence Intent ذي الامتيازات في Developer Portal الخاص بـ Discord، وHeartbeat مفعّلًا للوكيل.
+- يعيد `channels.discord.dangerouslyAllowNameMatching` تفعيل مطابقة الاسم/الوسم القابلة للتغيير (وضع توافق للاستخدام عند الضرورة القصوى).
+- `channels.discord.execApprovals`: تسليم موافقات التنفيذ الأصلي في Discord وتخويل الموافقين.
+  - `enabled`: `true` أو `false` أو `"auto"` (القيمة الافتراضية). في الوضع التلقائي، تُفعّل موافقات التنفيذ عندما يمكن تحديد الموافقين من `approvers` أو `commands.ownerAllowFrom`.
+  - `approvers`: معرّفات مستخدمي Discord المسموح لهم بالموافقة على طلبات التنفيذ. يعود إلى `commands.ownerAllowFrom` عند حذفه.
+  - `agentFilter`: قائمة سماح اختيارية لمعرّفات الوكلاء. احذفها لإعادة توجيه الموافقات لجميع الوكلاء.
   - `sessionFilter`: أنماط اختيارية لمفاتيح الجلسات (سلسلة فرعية أو تعبير نمطي).
-  - `target`: مكان إرسال مطالبات الموافقة. يرسل `"dm"` (الافتراضي) إلى الرسائل المباشرة للموافق، ويرسل `"channel"` إلى القناة الأصلية، ويرسل `"both"` إلى الاثنين معا. عندما يتضمن الهدف `"channel"`، لا تكون الأزرار قابلة للاستخدام إلا من قِبل الموافقين المحلولين.
-  - `cleanupAfterResolve`: عندما تكون `true`، تحذف رسائل الموافقة المباشرة بعد الموافقة أو الرفض أو انتهاء المهلة.
+  - `target`: موضع إرسال مطالبات الموافقة. يرسل `"dm"` (القيمة الافتراضية) إلى الرسائل المباشرة للموافقين، ويرسل `"channel"` إلى القناة الأصلية، ويرسل `"both"` إلى كليهما. عندما يتضمن الهدف `"channel"`، لا يمكن استخدام الأزرار إلا بواسطة الموافقين الذين جرى تحديدهم.
+  - `cleanupAfterResolve`: عندما تكون القيمة `true`، يحذف رسائل الموافقة المباشرة بعد الموافقة أو الرفض أو انتهاء المهلة.
 
-**أوضاع إشعارات التفاعل:** `off` (لا شيء)، `own` (رسائل الروبوت، الافتراضي)، `all` (كل الرسائل)، `allowlist` (من `guilds.<id>.users` على كل الرسائل).
+**أوضاع إشعارات التفاعلات:** `off` (لا شيء)، و`own` (رسائل البوت، القيمة الافتراضية)، و`all` (جميع الرسائل)، و`allowlist` (من `guilds.<id>.users` في جميع الرسائل).
 
 ### Google Chat
 
@@ -425,11 +429,11 @@ x-i18n:
 }
 ```
 
-- JSON حساب الخدمة: مضمّن (`serviceAccount`) أو قائم على ملف (`serviceAccountFile`).
-- SecretRef لحساب الخدمة مدعوم أيضا (`serviceAccountRef`).
-- بدائل البيئة: `GOOGLE_CHAT_SERVICE_ACCOUNT` أو `GOOGLE_CHAT_SERVICE_ACCOUNT_FILE`.
+- ملف JSON لحساب الخدمة: مضمّن (`serviceAccount`) أو مستند إلى ملف (`serviceAccountFile`).
+- يُدعم أيضًا SecretRef لحساب الخدمة (`serviceAccountRef`).
+- الخيارات الاحتياطية لمتغيرات البيئة: `GOOGLE_CHAT_SERVICE_ACCOUNT` أو `GOOGLE_CHAT_SERVICE_ACCOUNT_FILE` (للحساب الافتراضي فقط).
 - استخدم `spaces/<spaceId>` أو `users/<userId>` لأهداف التسليم.
-- يعيد `channels.googlechat.dangerouslyAllowNameMatching` تفعيل مطابقة كيان البريد الإلكتروني القابلة للتغيير (وضع توافق لكسر الزجاج).
+- يعيد `channels.googlechat.dangerouslyAllowNameMatching` تفعيل مطابقة هوية البريد الإلكتروني القابلة للتغيير (وضع توافق للاستخدام عند الضرورة القصوى).
 
 ### Slack
 
@@ -449,9 +453,9 @@ x-i18n:
       allowFrom: ["U123", "U456", "*"],
       dm: { enabled: true, groupEnabled: false, groupChannels: ["G123"] },
       channels: {
-        C123: { allow: true, requireMention: true, allowBots: false },
+        C123: { enabled: true, requireMention: true, allowBots: false },
         "#general": {
-          allow: true,
+          enabled: true,
           requireMention: true,
           allowBots: false,
           users: ["U123"],
@@ -467,6 +471,7 @@ x-i18n:
       thread: {
         historyScope: "thread", // thread | channel
         inheritParent: false,
+        initialHistoryLimit: 20,
       },
       actions: {
         reactions: true,
@@ -485,9 +490,9 @@ x-i18n:
       unfurlLinks: false,
       unfurlMedia: false,
       textChunkLimit: 4000,
-      chunkMode: "length",
       streaming: {
         mode: "partial", // off | partial | block | progress
+        chunkMode: "length", // length | newline
         nativeTransport: true, // use Slack native streaming API when mode=partial
       },
       mediaMaxMb: 20,
@@ -503,45 +508,61 @@ x-i18n:
 }
 ```
 
-- يتطلب **وضع Socket** كلًا من `botToken` و`appToken` (`SLACK_BOT_TOKEN` + `SLACK_APP_TOKEN` لاستخدام حساب fallback الافتراضي من env).
-- يتطلب **وضع HTTP** وجود `botToken` بالإضافة إلى `signingSecret` (في الجذر أو لكل حساب).
-- يمرر `socketMode` ضبط نقل Slack SDK Socket Mode إلى واجهة Bolt receiver API العامة. استخدمه فقط عند التحقيق في مهلة ping/pong أو سلوك websocket القديم. القيمة الافتراضية لـ `clientPingTimeout` هي `15000`؛ ولا يتم تمرير `serverPingTimeout` و`pingPongLoggingEnabled` إلا عند ضبطهما.
-- تقبل `botToken` و`appToken` و`signingSecret` و`userToken` سلاسل نصية
-  عادية أو كائنات SecretRef.
-- تعرض لقطات حساب Slack حقول المصدر/الحالة لكل اعتماد، مثل
+- يتطلب **وضع Socket** كلاً من `botToken` و`appToken` ‏(`SLACK_BOT_TOKEN` + `SLACK_APP_TOKEN` للرجوع الاحتياطي إلى متغيرات بيئة الحساب الافتراضي).
+- يتطلب **وضع HTTP** ‏`botToken` بالإضافة إلى `signingSecret` (على المستوى الجذري أو لكل حساب).
+- يُدخل `enterpriseOrgInstall: true` حسابًا في مسار الأحداث على مستوى مؤسسة Slack Enterprise Grid
+  بأكملها. يتحقق بدء التشغيل من رمز البوت باستخدام `auth.test`،
+  ويفشل عندما لا يتطابق الوضع المُعدّ مع هوية تثبيت Slack.
+  يجب تعطيل الرسائل المباشرة للمؤسسة أو استخدام `dmPolicy: "open"` مع
+  `allowFrom: ["*"]` فعّال. يجب أن تستخدم سياسات القنوات والمستخدمين معرّفات Slack ثابتة؛
+  وتتسبب الأسماء القابلة للتغيير وبادئات القنوات غير المدعومة في فشل بدء التشغيل. يتعامل الإصدار V1 فقط
+  مع أحداث Socket Mode المباشرة أو أحداث HTTP ‏`message` و`app_mention` مع ردود
+  فورية؛ ولا تتوفر عمليات الترحيل والأوامر والتفاعلات وApp Home ومستمعو أحداث التفاعلات
+  والتثبيتات وأدوات الإجراءات والموافقات الأصلية والارتباطات والتسليم المؤجل وعمليات
+  الإرسال الاستباقية. تظل إقرارات الاستلام والكتابة وتفاعلات الحالة التي يملكها المستمع
+  متاحة باستخدام `reactions:write`؛ ولا تتوفر إشعارات التفاعلات الواردة ولا أدوات
+  إجراءات التفاعل. راجع
+  [عمليات التثبيت على مستوى مؤسسة Enterprise Grid بأكملها](/ar/channels/slack#enterprise-grid-org-wide-installs)
+  للاطلاع على ملف البيان ذي أقل الصلاحيات وسير عمل الإعداد والقيود الكاملة.
+- يمرر `socketMode` إعدادات ضبط نقل Socket Mode في Slack SDK إلى واجهة Bolt العامة للمستقبِل. استخدمه فقط عند التحقيق في مهلة ping/pong أو سلوك اتصال websocket المتقادم. القيمة الافتراضية لـ `clientPingTimeout` هي `15000`؛ ولا يُمرر `serverPingTimeout` و`pingPongLoggingEnabled` إلا عند إعدادهما.
+- تقبل `botToken` و`appToken` و`signingSecret` و`userToken`
+  سلاسل نصية عادية أو كائنات SecretRef.
+- تعرض لقطات حساب Slack حقول المصدر/الحالة لكل بيانات اعتماد، مثل
   `botTokenSource` و`botTokenStatus` و`appTokenStatus`، وفي وضع HTTP،
   `signingSecretStatus`. تعني `configured_unavailable` أن الحساب
-  مضبوط عبر SecretRef لكن مسار الأمر/التشغيل الحالي لم يتمكن من
+  مُعدّ من خلال SecretRef، لكن مسار الأمر/وقت التشغيل الحالي لم يتمكن من
   حل قيمة السر.
 - يمنع `configWrites: false` عمليات كتابة الإعدادات التي يبدأها Slack.
-- يتجاوز `channels.slack.defaultAccount` الاختياري اختيار الحساب الافتراضي عندما يطابق معرف حساب مضبوطًا.
-- `channels.slack.streaming.mode` هو مفتاح وضع بث Slack القياسي. يتحكم `channels.slack.streaming.nativeTransport` في نقل البث الأصلي في Slack. تبقى قيم `streamMode` القديمة، و`streaming` المنطقية، و`nativeStreaming` أسماء بديلة في وقت التشغيل؛ شغّل `openclaw doctor --fix` لإعادة كتابة الإعدادات المحفوظة.
-- يمرر `unfurlLinks` و`unfurlMedia` القيم المنطقية الخاصة بفك روابط ووسائط `chat.postMessage` في Slack لردود البوت. القيمة الافتراضية لـ `unfurlLinks` هي `false` حتى لا تتوسع روابط البوت الصادرة داخل السطر ما لم يتم تفعيل ذلك؛ ويتم حذف `unfurlMedia` ما لم يُضبط. عيّن أيًا من القيمتين في `channels.slack.accounts.<accountId>` لتجاوز قيمة المستوى الأعلى لحساب واحد.
-- استخدم `user:<id>` (DM) أو `channel:<id>` لأهداف التسليم.
+- يتجاوز `channels.slack.defaultAccount` الاختياري اختيار الحساب الافتراضي عندما يطابق معرّف حساب مُعدّ.
+- يمثل `channels.slack.streaming.mode` مفتاح وضع البث الأساسي في Slack (القيمة الافتراضية `"partial"`). يتحكم `channels.slack.streaming.nativeTransport` في نقل البث الأصلي في Slack (القيمة الافتراضية `true`). لم تعد قيم `streamMode` القديمة، وقيمة `streaming` المنطقية، و`chunkMode`، و`blockStreaming`، و`blockStreamingCoalesce`، و`nativeStreaming` تُقرأ في وقت التشغيل؛ شغّل `openclaw doctor --fix` لترحيل الإعدادات المحفوظة إلى `streaming.{mode,chunkMode,block.enabled,block.coalesce,nativeTransport}`.
+- يمرر `unfurlLinks` و`unfurlMedia` قيمتي Slack المنطقيتين `chat.postMessage` لإظهار معاينات الروابط والوسائط ضمن ردود البوت. القيمة الافتراضية لـ `unfurlLinks` هي `false`، لذا لا تتوسع روابط البوت الصادرة داخل النص ما لم يُفعّل ذلك؛ ويُحذف `unfurlMedia` ما لم يُعدّ. اضبط أيًا من القيمتين في `channels.slack.accounts.<accountId>` لتجاوز القيمة ذات المستوى الأعلى لحساب واحد.
+- استخدم `user:<id>` (رسالة مباشرة) أو `channel:<id>` لأهداف التسليم.
 
-**أوضاع إشعارات التفاعل:** `off`، `own` (الافتراضي)، `all`، `allowlist` (من `reactionAllowlist`).
+**أوضاع إشعارات التفاعل:** `off`، و`own` (الافتراضي)، و`all`، و`allowlist` (من `reactionAllowlist`).
 
-**عزل جلسة الخيط:** يكون `thread.historyScope` لكل خيط (الافتراضي) أو مشتركًا عبر القناة. ينسخ `thread.inheritParent` نص قناة الأصل إلى الخيوط الجديدة.
+**عزل جلسات سلاسل المحادثات:** يكون `thread.historyScope` خاصًا بكل سلسلة محادثات (الافتراضي) أو مشتركًا على مستوى القناة. ينسخ `thread.inheritParent` نص محادثة القناة الأم إلى سلاسل المحادثات الجديدة. يضع `thread.initialHistoryLimit` (القيمة الافتراضية `20`) حدًا لعدد رسائل سلسلة المحادثات الحالية التي تُجلب عند بدء جلسة سلسلة محادثات جديدة؛ ويعطّل `0` جلب سجل سلسلة المحادثات.
 
-- يتطلب البث الأصلي في Slack مع حالة الخيط بأسلوب مساعد Slack "is typing..." هدف خيط للرد. تبقى رسائل DM في المستوى الأعلى خارج الخيط افتراضيًا، لذلك لا يزال بإمكانها البث عبر معاينات منشور مسودة Slack وتحريرها بدلًا من إظهار معاينة البث/الحالة الأصلية بأسلوب الخيط.
-- يضيف `typingReaction` تفاعلًا مؤقتًا إلى رسالة Slack الواردة أثناء تشغيل الرد، ثم يزيله عند الاكتمال. استخدم اختصار رمز تعبيري في Slack مثل `"hourglass_flowing_sand"`.
-- `channels.slack.execApprovals`: تسليم عميل الموافقات الأصلي في Slack وتخويل موافق التنفيذ. المخطط نفسه كما في Discord: `enabled` (`true`/`false`/`"auto"`)، و`approvers` (معرفات مستخدمي Slack)، و`agentFilter`، و`sessionFilter`، و`target` (`"dm"` أو `"channel"` أو `"both"`). يمكن لموافقات Plugin استخدام مسار العميل الأصلي هذا للطلبات الصادرة من Slack عندما يتم حل موافقي Slack plugin؛ كما يمكن تفعيل تسليم موافقات Plugin الأصلية في Slack عبر `approvals.plugin` لجلسات منشؤها Slack أو أهداف Slack. تستخدم موافقات Plugin موافقي Slack plugin من `allowFrom` والتوجيه الافتراضي، وليس موافقي التنفيذ.
+- يتطلب البث الأصلي في Slack وحالة سلسلة المحادثات "is typing..." بأسلوب مساعد Slack هدف رد ضمن سلسلة محادثات. تظل الرسائل المباشرة ذات المستوى الأعلى خارج سلاسل المحادثات افتراضيًا، ولذلك لا يزال بإمكانها البث عبر معاينات مسودات Slack القائمة على النشر والتحرير بدلاً من إظهار معاينة البث/الحالة الأصلية بأسلوب سلاسل المحادثات.
+- يضيف `typingReaction` تفاعلاً مؤقتًا إلى رسالة Slack الواردة أثناء إنشاء الرد، ثم يزيله عند الاكتمال. استخدم رمزًا مختصرًا لرمز تعبيري في Slack مثل `"hourglass_flowing_sand"`.
+- `channels.slack.execApprovals`: تسليم عميل الموافقات الأصلي في Slack وتفويض معتمدي التنفيذ. المخطط نفسه المستخدم في Discord: ‏`enabled` ‏(`true`/`false`/`"auto"`) و`approvers` (معرّفات مستخدمي Slack) و`agentFilter` و`sessionFilter` و`target` ‏(`"dm"` أو `"channel"` أو `"both"`). يمكن لموافقات Plugin استخدام مسار العميل الأصلي هذا للطلبات الواردة من Slack عند حل معتمدي Plugin في Slack؛ ويمكن أيضًا تمكين تسليم موافقات Plugin الأصلي في Slack من خلال `approvals.plugin` للجلسات الواردة من Slack أو أهداف Slack. تستخدم موافقات Plugin معتمدي Plugin في Slack من `allowFrom` والتوجيه الافتراضي، وليس معتمدي التنفيذ.
 
-| مجموعة الإجراء | الافتراضي | الملاحظات                  |
+| مجموعة الإجراءات | الافتراضي | ملاحظات                  |
 | ------------ | ------- | ---------------------- |
-| reactions    | مفعّل | التفاعل + سرد التفاعلات |
-| messages     | مفعّل | قراءة/إرسال/تحرير/حذف  |
-| pins         | مفعّل | تثبيت/إلغاء تثبيت/سرد         |
+| reactions    | مفعّل | إضافة التفاعلات + سردها |
+| messages     | مفعّل | القراءة/الإرسال/التحرير/الحذف  |
+| pins         | مفعّل | التثبيت/إلغاء التثبيت/السرد         |
 | memberInfo   | مفعّل | معلومات العضو            |
 | emojiList    | مفعّل | قائمة الرموز التعبيرية المخصصة      |
 
 ### Mattermost
 
-يُشحن Mattermost بوصفه Plugin مضمّنًا في إصدارات OpenClaw الحالية. يمكن للإصدارات الأقدم أو
-البنى المخصصة تثبيت حزمة npm حالية باستخدام
-`openclaw plugins install @openclaw/mattermost`. تحقق من
-[npmjs.com/package/@openclaw/mattermost](https://www.npmjs.com/package/@openclaw/mattermost)
-لوسوم التوزيع الحالية قبل تثبيت إصدار محدد.
+يُثبّت Mattermost بوصفه Plugin منفصلاً، بالطريقة نفسها التي تُثبّت بها Discord وSlack وWhatsApp:
+
+```bash
+openclaw plugins install @openclaw/mattermost
+```
+
+تحقق من [npmjs.com/package/@openclaw/mattermost](https://www.npmjs.com/package/@openclaw/mattermost) لمعرفة علامات التوزيع الحالية قبل تثبيت إصدار محدد.
 
 ```json5
 {
@@ -565,29 +586,29 @@ x-i18n:
         callbackUrl: "https://gateway.example.com/api/channels/mattermost/command",
       },
       textChunkLimit: 4000,
-      chunkMode: "length",
+      streaming: { chunkMode: "length" },
     },
   },
 }
 ```
 
-أوضاع الدردشة: `oncall` (الرد عند @-mention، الافتراضي)، `onmessage` (كل رسالة)، `onchar` (الرسائل التي تبدأ ببادئة تشغيل).
+أوضاع الدردشة: `oncall` (الرد عند الإشارة باستخدام @، وهو الافتراضي)، و`onmessage` (كل رسالة)، و`onchar` (الرسائل التي تبدأ ببادئة تشغيل).
 
-عند تفعيل أوامر Mattermost الأصلية:
+عند تمكين أوامر Mattermost الأصلية:
 
-- يجب أن يكون `commands.callbackPath` مسارًا (على سبيل المثال `/api/channels/mattermost/command`)، وليس URL كاملًا.
-- يجب أن يحل `commands.callbackUrl` إلى نقطة نهاية OpenClaw Gateway وأن يكون قابلًا للوصول من خادم Mattermost.
-- تتم مصادقة استدعاءات الشرطة المائلة الأصلية باستخدام الرموز المميزة لكل أمر التي يعيدها
-  Mattermost أثناء تسجيل أمر الشرطة المائلة. إذا فشل التسجيل أو لم يتم
-  تفعيل أي أوامر، يرفض OpenClaw الاستدعاءات باستخدام
+- يجب أن يكون `commands.callbackPath` مسارًا (على سبيل المثال `/api/channels/mattermost/command`)، وليس عنوان URL كاملاً.
+- يجب أن يؤدي `commands.callbackUrl` إلى نقطة نهاية Gateway في OpenClaw وأن يكون قابلاً للوصول من خادم Mattermost.
+- تُصادق استدعاءات أوامر الشرطة المائلة الأصلية باستخدام الرموز الخاصة بكل أمر التي يعيدها
+  Mattermost أثناء تسجيل أمر الشرطة المائلة. إذا فشل التسجيل أو لم تُفعّل أي
+  أوامر، يرفض OpenClaw الاستدعاءات باستخدام
   `Unauthorized: invalid command token.`
-- بالنسبة لمضيفي الاستدعاء الخاصين/داخل tailnet/الداخليين، قد يتطلب Mattermost
+- بالنسبة إلى مضيفي الاستدعاء الخاصين أو الداخليين أو الموجودين ضمن tailnet، قد يتطلب Mattermost
   أن يتضمن `ServiceSettings.AllowedUntrustedInternalConnections` مضيف/نطاق الاستدعاء.
   استخدم قيم المضيف/النطاق، وليس عناوين URL كاملة.
 - `channels.mattermost.configWrites`: السماح بعمليات كتابة الإعدادات التي يبدأها Mattermost أو رفضها.
-- `channels.mattermost.requireMention`: يتطلب `@mention` قبل الرد في القنوات.
-- `channels.mattermost.groups.<channelId>.requireMention`: تجاوز بوابة الإشارة لكل قناة (`"*"` للافتراضي).
-- يتجاوز `channels.mattermost.defaultAccount` الاختياري اختيار الحساب الافتراضي عندما يطابق معرف حساب مضبوطًا.
+- `channels.mattermost.requireMention`: اشتراط `@mention` قبل الرد في القنوات.
+- `channels.mattermost.groups.<channelId>.requireMention`: تجاوز شرط الإشارة لكل قناة (`"*"` للقيمة الافتراضية).
+- يتجاوز `channels.mattermost.defaultAccount` الاختياري اختيار الحساب الافتراضي عندما يطابق معرّف حساب مُعدّ.
 
 ### Signal
 
@@ -608,21 +629,21 @@ x-i18n:
 }
 ```
 
-**أوضاع إشعارات التفاعل:** `off`، `own` (الافتراضي)، `all`، `allowlist` (من `reactionAllowlist`).
+**أوضاع إشعارات التفاعل:** `off`، و`own` (الافتراضي)، و`all`، و`allowlist` (من `reactionAllowlist`).
 
-- `channels.signal.account`: تثبيت بدء تشغيل القناة على هوية حساب Signal محددة.
+- `channels.signal.account`: تقييد بدء تشغيل القناة بهوية حساب Signal محددة.
 - `channels.signal.configWrites`: السماح بعمليات كتابة الإعدادات التي يبدأها Signal أو رفضها.
-- يتجاوز `channels.signal.defaultAccount` الاختياري اختيار الحساب الافتراضي عندما يطابق معرف حساب مضبوطًا.
+- يتجاوز `channels.signal.defaultAccount` الاختياري اختيار الحساب الافتراضي عندما يطابق معرّف حساب مُعدّ.
 
 ### iMessage
 
-يشغّل OpenClaw الأمر `imsg rpc` (JSON-RPC عبر stdio). لا يلزم daemon أو منفذ. هذا هو المسار المفضل لإعدادات OpenClaw iMessage الجديدة عندما يستطيع المضيف منح أذونات قاعدة بيانات Messages وAutomation.
+يشغّل OpenClaw ‏`imsg rpc` ‏(JSON-RPC عبر stdio). لا يلزم برنامج خفي أو منفذ. هذا هو المسار المفضّل لعمليات إعداد iMessage الجديدة في OpenClaw عندما يمكن للمضيف منح أذونات قاعدة بيانات Messages والأتمتة.
 
-تمت إزالة دعم BlueBubbles. `channels.bluebubbles` ليس سطح إعدادات وقت تشغيل مدعومًا في OpenClaw الحالي. انقل الإعدادات القديمة إلى `channels.imessage`؛ استخدم [إزالة BlueBubbles ومسار imsg iMessage](/ar/announcements/bluebubbles-imessage) للنسخة المختصرة و[القادمون من BlueBubbles](/ar/channels/imessage-from-bluebubbles) لجدول الترجمة الكامل.
+أُزيل دعم BlueBubbles. لا يمثل `channels.bluebubbles` سطح إعداد وقت تشغيل مدعومًا في OpenClaw الحالي. رحّل الإعدادات القديمة إلى `channels.imessage`؛ واستخدم [إزالة BlueBubbles ومسار imsg في iMessage](/ar/announcements/bluebubbles-imessage) للاطلاع على النسخة المختصرة و[الانتقال من BlueBubbles](/ar/channels/imessage-from-bluebubbles) للاطلاع على جدول التحويل الكامل.
 
-إذا لم يكن Gateway يعمل على جهاز Mac المسجل دخوله إلى Messages، فأبقِ `channels.imessage.enabled=true` وعيّن `channels.imessage.cliPath` إلى مغلف SSH يشغّل `imsg "$@"` على ذلك Mac. مسار `imsg` المحلي الافتراضي خاص بـ macOS فقط.
+إذا لم يكن Gateway يعمل على جهاز Mac المسجّل دخوله إلى Messages، فأبقِ `channels.imessage.enabled=true` واضبط `channels.imessage.cliPath` على غلاف SSH يشغّل `imsg "$@"` على جهاز Mac ذلك. مسار `imsg` المحلي الافتراضي مخصص لنظام macOS فقط.
 
-قبل الاعتماد على مغلف SSH لإرسالات الإنتاج، تحقق من إرسال صادر عبر `imsg send` باستخدام ذلك المغلف نفسه. بعض حالات macOS TCC تسند Automation الخاصة بـ Messages إلى `/usr/libexec/sshd-keygen-wrapper`، ما قد يجعل القراءات والفحوصات تعمل بينما تفشل الإرسالات مع AppleEvents `-1743`؛ راجع [فشل إرسال مغلف SSH مع AppleEvents -1743](/ar/channels/imessage#ssh-wrapper-sends-fail-with-appleevents-1743).
+قبل الاعتماد على غلاف SSH لعمليات الإرسال في بيئة الإنتاج، تحقق من عملية `imsg send` صادرة عبر ذلك الغلاف نفسه. تُسند بعض حالات TCC في macOS أتمتة Messages إلى `/usr/libexec/sshd-keygen-wrapper`، ما قد يسمح بنجاح القراءات وعمليات الفحص بينما تفشل عمليات الإرسال مع `-1743` في AppleEvents؛ راجع قسم استكشاف أخطاء غلاف SSH وإصلاحها في [iMessage](/ar/channels/imessage).
 
 ```json5
 {
@@ -655,22 +676,21 @@ x-i18n:
 }
 ```
 
-- يتجاوز `channels.imessage.defaultAccount` الاختياري اختيار الحساب الافتراضي عندما يطابق معرف حساب مضبوطًا.
-
-- يتطلب Full Disk Access إلى قاعدة بيانات Messages.
-- فضّل أهداف `chat_id:<id>`. استخدم `imsg chats --limit 20` لسرد الدردشات.
-- يمكن أن يشير `cliPath` إلى مغلف SSH؛ عيّن `remoteHost` (`host` أو `user@host`) لجلب المرفقات عبر SCP.
+- يستبدل `channels.imessage.defaultAccount` الاختياري اختيار الحساب الافتراضي عندما يطابق معرّف حساب مُهيّأ.
+- يتطلب الوصول الكامل إلى القرص لقاعدة بيانات Messages.
+- يُفضّل استخدام أهداف `chat_id:<id>`. استخدم `imsg chats --limit 20` لعرض المحادثات.
+- يمكن أن يشير `cliPath` إلى مغلّف SSH؛ اضبط `remoteHost` ‏(`host` أو `user@host`) لجلب المرفقات عبر SCP.
 - يقيّد `attachmentRoots` و`remoteAttachmentRoots` مسارات المرفقات الواردة (الافتراضي: `/Users/*/Library/Messages/Attachments`).
 - يستخدم SCP تحققًا صارمًا من مفتاح المضيف، لذا تأكد من أن مفتاح مضيف الترحيل موجود مسبقًا في `~/.ssh/known_hosts`.
 - `channels.imessage.configWrites`: السماح بعمليات كتابة الإعدادات التي يبدأها iMessage أو رفضها.
-- `channels.imessage.sendTransport`: نقل إرسال `imsg` RPC المفضل للردود الصادرة العادية. يستخدم `auto` (الافتراضي) جسر IMCore للدردشات الموجودة عندما يكون قيد التشغيل، ثم يعود إلى AppleScript؛ يتطلب `bridge` تسليمًا عبر API خاص؛ ويفرض `applescript` مسار Automation العام في Messages.
-- `channels.imessage.actions.*`: تفعيل إجراءات API الخاصة المحكومة أيضًا بواسطة `imsg status` / `openclaw channels status --probe`.
-- `channels.imessage.includeAttachments` معطل افتراضيًا؛ عيّنه إلى `true` قبل توقع وسائط واردة في دورات الوكيل.
-- الاسترداد الوارد بعد إعادة تشغيل الجسر/gateway تلقائي (إزالة تكرار GUID بالإضافة إلى حد عمر لسجل متأخر قديم). لا تزال إعدادات `channels.imessage.catchup.enabled: true` الحالية محترمة كملف توافق مهجور.
-- `channels.imessage.groups`: سجل المجموعات وإعدادات كل مجموعة. مع `groupPolicy: "allowlist"`، اضبط إما مفاتيح `chat_id` صريحة أو إدخال بدل `"*"` حتى تتمكن رسائل المجموعة من اجتياز بوابة السجل.
-- يمكن لإدخالات `bindings[]` في المستوى الأعلى ذات `type: "acp"` ربط محادثات iMessage بجلسات ACP مستمرة. استخدم مقبضًا موحدًا أو هدف دردشة صريحًا (`chat_id:*`، `chat_guid:*`، `chat_identifier:*`) في `match.peer.id`. دلالات الحقول المشتركة: [وكلاء ACP](/ar/tools/acp-agents#persistent-channel-bindings).
+- `channels.imessage.sendTransport`: وسيلة إرسال RPC المفضلة في `imsg` للردود الصادرة العادية. يستخدم `auto` (الافتراضي) جسر IMCore للمحادثات الحالية عندما يكون قيد التشغيل، ثم يعود إلى AppleScript؛ ويتطلب `bridge` التسليم عبر واجهة API خاصة؛ بينما يفرض `applescript` مسار الأتمتة العام في Messages.
+- `channels.imessage.actions.*`: تمكين إجراءات واجهة API الخاصة التي تخضع أيضًا لقيود `imsg status` / `openclaw channels status --probe`.
+- يكون `channels.imessage.includeAttachments` معطّلًا افتراضيًا؛ اضبطه على `true` قبل توقّع ورود الوسائط ضمن دورات الوكيل.
+- تتم استعادة الرسائل الواردة تلقائيًا بعد إعادة تشغيل الجسر/Gateway (إزالة التكرار باستخدام GUID بالإضافة إلى حد زمني لتقادم التراكم). ما تزال إعدادات `channels.imessage.catchup.enabled: true` الحالية مدعومة بوصفها ملف توافق مهمَلًا؛ ويكون `catchup` معطّلًا افتراضيًا.
+- `channels.imessage.groups`: سجل المجموعات وإعدادات كل مجموعة. عند استخدام `groupPolicy: "allowlist"`، هيّئ إما مفاتيح `chat_id` صريحة أو إدخال حرف بدل `"*"` كي تتمكن رسائل المجموعة من اجتياز بوابة السجل.
+- يمكن لإدخالات `bindings[]` في المستوى الأعلى التي تتضمن `type: "acp"` ربط محادثات iMessage بجلسات ACP دائمة. استخدم معرّفًا مُطبّعًا أو هدف محادثة صريحًا (`chat_id:*`، `chat_guid:*`، `chat_identifier:*`) في `match.peer.id`. دلالات الحقول المشتركة: [وكلاء ACP](/ar/tools/acp-agents#persistent-channel-bindings).
 
-<Accordion title="مثال مغلف SSH لـ iMessage">
+<Accordion title="مثال على مغلّف SSH لـ iMessage">
 
 ```bash
 #!/usr/bin/env bash
@@ -681,7 +701,7 @@ exec ssh -T gateway-host imsg "$@"
 
 ### Matrix
 
-Matrix مدعوم بواسطة Plugin ويُضبط ضمن `channels.matrix`.
+تدعم Plugin قناة Matrix وتُهيّأ ضمن `channels.matrix`.
 
 ```json5
 {
@@ -711,25 +731,25 @@ Matrix مدعوم بواسطة Plugin ويُضبط ضمن `channels.matrix`.
 }
 ```
 
-- تستخدم مصادقة الرمز `accessToken`؛ وتستخدم مصادقة كلمة المرور `userId` + `password`.
-- يوجّه `channels.matrix.proxy` حركة مرور Matrix HTTP عبر وكيل HTTP(S) صريح. يمكن للحسابات المسماة تجاوزه باستخدام `channels.matrix.accounts.<id>.proxy`.
-- يسمح `channels.matrix.network.dangerouslyAllowPrivateNetwork` بخوادم homeserver الخاصة/الداخلية. يُعد `proxy` وهذا الاشتراك الشبكي عنصرَي تحكم مستقلين.
-- يحدد `channels.matrix.defaultAccount` الحساب المفضل في إعدادات الحسابات المتعددة.
-- تكون القيمة الافتراضية لـ `channels.matrix.autoJoin` هي `off`، لذلك تُتجاهل الغرف المدعو إليها والدعوات الجديدة ذات نمط الرسائل المباشرة حتى تضبط `autoJoin: "allowlist"` مع `autoJoinAllowlist` أو `autoJoin: "always"`.
+- تستخدم مصادقة الرمز المميز `accessToken`؛ وتستخدم مصادقة كلمة المرور `userId` + `password`.
+- يوجّه `channels.matrix.proxy` حركة مرور HTTP الخاصة بـ Matrix عبر وكيل HTTP(S) صريح. ويمكن للحسابات المسماة استبداله باستخدام `channels.matrix.accounts.<id>.proxy`.
+- يسمح `channels.matrix.network.dangerouslyAllowPrivateNetwork` بخوادم المنازل الخاصة/الداخلية. ويُعد `proxy` وهذا الاشتراك الشبكي عنصرَي تحكم مستقلين.
+- يحدد `channels.matrix.defaultAccount` الحساب المفضل في الإعدادات متعددة الحسابات.
+- تكون قيمة `channels.matrix.autoJoin` الافتراضية هي `"off"`، لذلك تُتجاهل الغرف المدعو إليها ودعوات الرسائل المباشرة الجديدة حتى تضبط `autoJoin: "allowlist"` باستخدام `autoJoinAllowlist` أو `autoJoin: "always"`.
 - `channels.matrix.execApprovals`: تسليم موافقات التنفيذ الأصلية في Matrix وتخويل الموافقين.
-  - `enabled`: `true` أو `false` أو `"auto"` (افتراضي). في الوضع التلقائي، تُفعّل موافقات التنفيذ عندما يمكن حل الموافقين من `approvers` أو `commands.ownerAllowFrom`.
-  - `approvers`: معرّفات مستخدمي Matrix (مثل `@owner:example.org`) المسموح لهم بالموافقة على طلبات التنفيذ.
-  - `agentFilter`: قائمة سماح اختيارية لمعرّفات الوكلاء. احذفها لتمرير الموافقات لجميع الوكلاء.
-  - `sessionFilter`: أنماط مفاتيح جلسات اختيارية (سلسلة فرعية أو تعبير نمطي).
-  - `target`: مكان إرسال مطالبات الموافقة. `"dm"` (افتراضي)، أو `"channel"` (الغرفة الأصلية)، أو `"both"`.
-  - تجاوزات لكل حساب: `channels.matrix.accounts.<id>.execApprovals`.
-- يتحكم `channels.matrix.dm.sessionScope` في كيفية تجميع رسائل Matrix المباشرة ضمن الجلسات: يشارك `per-user` (افتراضي) حسب النظير الموجّه، بينما يعزل `per-room` كل غرفة رسائل مباشرة.
-- تستخدم فحوصات حالة Matrix وعمليات البحث المباشر في الدليل سياسة الوكيل نفسها مثل حركة مرور وقت التشغيل.
-- وُثّقت تهيئة Matrix الكاملة وقواعد الاستهداف وأمثلة الإعداد في [Matrix](/ar/channels/matrix).
+  - `enabled`: ‏`true` أو `false` أو `"auto"` (الافتراضي). في الوضع التلقائي، تُفعّل موافقات التنفيذ عندما يمكن تحديد الموافقين من `approvers` أو `commands.ownerAllowFrom`.
+  - `approvers`: معرّفات مستخدمي Matrix (مثل `@owner:example.org`) المسموح لها بالموافقة على طلبات التنفيذ.
+  - `agentFilter`: قائمة سماح اختيارية لمعرّفات الوكلاء. احذفها لإعادة توجيه الموافقات لجميع الوكلاء.
+  - `sessionFilter`: أنماط اختيارية لمفاتيح الجلسات (سلسلة فرعية أو تعبير نمطي).
+  - `target`: وجهة إرسال مطالبات الموافقة. `"dm"` (الافتراضي) أو `"channel"` (الغرفة الأصلية) أو `"both"`.
+  - تجاوزات كل حساب: `channels.matrix.accounts.<id>.execApprovals`.
+- يتحكم `channels.matrix.dm.sessionScope` في كيفية تجميع رسائل Matrix المباشرة ضمن جلسات: يشارك `per-user` (الافتراضي) الجلسة حسب النظير الموجّه، بينما يعزل `per-room` كل غرفة رسائل مباشرة.
+- تستخدم فحوصات حالة Matrix وعمليات البحث المباشر في الدليل سياسة الوكيل نفسها المستخدمة لحركة مرور وقت التشغيل.
+- يُوثّق إعداد Matrix الكامل وقواعد الاستهداف وأمثلة الإعداد في [Matrix](/ar/channels/matrix).
 
 ### Microsoft Teams
 
-Microsoft Teams مدعوم بـ Plugin ومهيأ ضمن `channels.msteams`.
+تدعم Plugin قناة Microsoft Teams وتُهيّأ ضمن `channels.msteams`.
 
 ```json5
 {
@@ -737,19 +757,19 @@ Microsoft Teams مدعوم بـ Plugin ومهيأ ضمن `channels.msteams`.
     msteams: {
       enabled: true,
       configWrites: true,
-      // appId, appPassword, tenantId, webhook, team/channel policies:
-      // see /channels/msteams
+      // سياسات appId وappPassword وtenantId وwebhook والفريق/القناة:
+      // راجع /channels/msteams
     },
   },
 }
 ```
 
-- مسارات المفاتيح الأساسية المغطاة هنا: `channels.msteams`، `channels.msteams.configWrites`.
-- وُثّقت تهيئة Teams الكاملة (بيانات الاعتماد، Webhook، سياسة الرسائل المباشرة/المجموعات، وتجاوزات كل فريق/كل قناة) في [Microsoft Teams](/ar/channels/msteams).
+- مسارات المفاتيح الأساسية المشمولة هنا: `channels.msteams`، `channels.msteams.configWrites`.
+- يُوثّق إعداد Teams الكامل (بيانات الاعتماد وWebhook وسياسة الرسائل المباشرة/المجموعات والتجاوزات الخاصة بكل فريق/قناة) في [Microsoft Teams](/ar/channels/msteams).
 
 ### IRC
 
-IRC مدعوم بـ Plugin ومهيأ ضمن `channels.irc`.
+تدعم Plugin قناة IRC وتُهيّأ ضمن `channels.irc`.
 
 ```json5
 {
@@ -770,13 +790,13 @@ IRC مدعوم بـ Plugin ومهيأ ضمن `channels.irc`.
 }
 ```
 
-- مسارات المفاتيح الأساسية المغطاة هنا: `channels.irc`، `channels.irc.dmPolicy`، `channels.irc.configWrites`، `channels.irc.nickserv.*`.
-- يتجاوز `channels.irc.defaultAccount` الاختياري اختيار الحساب الافتراضي عندما يطابق معرّف حساب مهيأ.
-- وُثّقت تهيئة قناة IRC الكاملة (المضيف/المنفذ/TLS/القنوات/قوائم السماح/بوابة الإشارات) في [IRC](/ar/channels/irc).
+- مسارات المفاتيح الأساسية المشمولة هنا: `channels.irc`، `channels.irc.dmPolicy`، `channels.irc.configWrites`، `channels.irc.nickserv.*`.
+- يستبدل `channels.irc.defaultAccount` الاختياري اختيار الحساب الافتراضي عندما يطابق معرّف حساب مُهيّأ.
+- يُوثّق إعداد قناة IRC الكامل (المضيف/المنفذ/TLS/القنوات/قوائم السماح/اشتراط الإشارة) في [IRC](/ar/channels/irc).
 
-### الحسابات المتعددة (كل القنوات)
+### حسابات متعددة (جميع القنوات)
 
-شغّل عدة حسابات لكل قناة (لكل منها `accountId` خاص به):
+شغّل حسابات متعددة لكل قناة (لكل منها `accountId` خاص بها):
 
 ```json5
 {
@@ -797,53 +817,53 @@ IRC مدعوم بـ Plugin ومهيأ ضمن `channels.irc`.
 }
 ```
 
-- يُستخدم `default` عند حذف `accountId` (CLI + التوجيه).
-- تنطبق رموز البيئة فقط على الحساب **الافتراضي**.
-- تنطبق إعدادات القناة الأساسية على جميع الحسابات ما لم تُتجاوز لكل حساب.
+- يُستخدم `default` عند حذف `accountId` ‏(CLI + التوجيه).
+- لا تنطبق رموز البيئة المميزة إلا على الحساب **الافتراضي**.
+- تنطبق إعدادات القناة الأساسية على جميع الحسابات ما لم تُستبدل لكل حساب.
 - استخدم `bindings[].match.accountId` لتوجيه كل حساب إلى وكيل مختلف.
-- إذا أضفت حسابًا غير افتراضي عبر `openclaw channels add` (أو إعداد القناة) بينما لا تزال تستخدم تهيئة قناة علوية لحساب واحد، فإن OpenClaw يرقّي أولًا قيم الحساب الواحد العلوية ذات نطاق الحساب إلى خريطة حسابات القناة حتى يستمر الحساب الأصلي في العمل. تنقلها معظم القنوات إلى `channels.<channel>.accounts.default`؛ ويمكن لـ Matrix بدلًا من ذلك الحفاظ على هدف مسمى/افتراضي مطابق موجود.
-- تستمر ارتباطات القناة فقط الموجودة (بدون `accountId`) في مطابقة الحساب الافتراضي؛ وتبقى الارتباطات ذات نطاق الحساب اختيارية.
-- يصلح `openclaw doctor --fix` أيضًا الأشكال المختلطة عبر نقل قيم الحساب الواحد العلوية ذات نطاق الحساب إلى الحساب المرَقّى المختار لتلك القناة. تستخدم معظم القنوات `accounts.default`؛ ويمكن لـ Matrix بدلًا من ذلك الحفاظ على هدف مسمى/افتراضي مطابق موجود.
+- إذا أضفت حسابًا غير افتراضي عبر `openclaw channels add` (أو إعداد القناة) مع استمرار استخدام إعداد قناة أحادية الحساب في المستوى الأعلى، فإن OpenClaw ينقل أولًا قيم الحساب الواحد الموجودة في المستوى الأعلى والمحددة النطاق للحساب إلى خريطة حسابات القناة، كي يستمر الحساب الأصلي في العمل. تنقلها معظم القنوات إلى `channels.<channel>.accounts.default`؛ بينما يمكن لـ Matrix الاحتفاظ بهدف مسمى/افتراضي حالي مطابق بدلًا من ذلك.
+- تستمر الارتباطات الحالية الخاصة بالقناة فقط (من دون `accountId`) في مطابقة الحساب الافتراضي؛ وتبقى الارتباطات محددة النطاق للحساب اختيارية.
+- يصلح `openclaw doctor --fix` أيضًا الأشكال المختلطة من خلال نقل قيم الحساب الواحد الموجودة في المستوى الأعلى والمحددة النطاق للحساب إلى الحساب المنقول المختار لتلك القناة. تستخدم معظم القنوات `accounts.default`؛ بينما يمكن لـ Matrix الاحتفاظ بهدف مسمى/افتراضي حالي مطابق بدلًا من ذلك.
 
 ### قنوات Plugin الأخرى
 
-تُهيأ قنوات Plugin كثيرة بصيغة `channels.<id>` وتُوثّق في صفحات القنوات المخصصة لها (مثل Feishu وMatrix وLINE وNostr وZalo وNextcloud Talk وSynology Chat وTwitch).
+تُهيّأ العديد من قنوات Plugin بصيغة `channels.<id>` وتُوثّق في صفحات القنوات المخصصة لها (مثل Feishu وLINE وNextcloud Talk وNostr وQQ Bot وSynology Chat وTwitch وZalo).
 راجع فهرس القنوات الكامل: [القنوات](/ar/channels).
 
-### بوابة الإشارات في دردشة المجموعات
+### اشتراط الإشارة في المحادثات الجماعية
 
-تتطلب رسائل المجموعات افتراضيًا **إشارة إلزامية** (إشارة بيانات وصفية أو أنماط تعبيرات نمطية آمنة). ينطبق ذلك على دردشات مجموعات WhatsApp وTelegram وDiscord وGoogle Chat وiMessage.
+تتطلب رسائل المجموعات **الإشارة افتراضيًا** (إشارة ضمن البيانات الوصفية أو أنماط تعبيرات نمطية آمنة). ينطبق ذلك على محادثات مجموعات WhatsApp وTelegram وDiscord وGoogle Chat وiMessage.
 
-تُتحكم الردود المرئية بشكل منفصل. تكون طلبات المجموعات والقنوات وWebChat الداخلية المباشرة الافتراضية مهيأة للتسليم النهائي التلقائي: يُنشر نص المساعد النهائي عبر مسار الرد المرئي القديم. اشترك في `messages.visibleReplies: "message_tool"` أو `messages.groupChat.visibleReplies: "message_tool"` عندما يجب ألا يُنشر الإخراج المرئي إلا بعد أن يستدعي الوكيل `message(action=send)`. إذا أعاد النموذج نصًا نهائيًا دون استدعاء أداة الرسائل في وضع أداة فقط مشترك فيه، يبقى ذلك النص النهائي خاصًا ويسجل سجل Gateway التفصيلي بيانات وصفية للحمولة المكبوتة.
+يُتحكم في الردود المرئية بشكل منفصل. تستخدم الطلبات المباشرة العادية في المجموعات والقنوات وWebChat الداخلي التسليم النهائي التلقائي افتراضيًا: يُنشر نص المساعد النهائي عبر مسار الرد المرئي القديم. اشترك في `messages.visibleReplies: "message_tool"` أو `messages.groupChat.visibleReplies: "message_tool"` عندما يجب ألا يُنشر الإخراج المرئي إلا بعد استدعاء الوكيل `message(action=send)`. إذا أعاد النموذج إجابة نهائية ذات مضمون من دون استدعاء أداة الرسائل في وضع مقتصر على الأدوات تم الاشتراك فيه، فسيظل ذلك النص النهائي خاصًا، ويسجّل السجل التفصيلي لـ Gateway البيانات الوصفية للحمولة المحجوبة، ويضع OpenClaw محاولة استرداد واحدة في قائمة الانتظار، طالبًا من النموذج تسليم الرد نفسه عبر `message(action=send)`.
 
-تتطلب الردود المرئية ذات الأداة فقط نموذجًا/وقت تشغيل يستدعي الأدوات بشكل موثوق، ويُوصى بها للغرف المحيطة المشتركة على نماذج الجيل الأحدث مثل GPT 5.5. يمكن لبعض النماذج الأضعف أن تجيب بنص نهائي لكنها تفشل في فهم أن الإخراج المرئي للمصدر يجب أن يُرسل باستخدام `message(action=send)`. لهذه النماذج، استخدم `"automatic"` بحيث تكون دورة المساعد النهائية هي مسار الرد المرئي. إذا أظهر سجل الجلسة نص مساعد مع `didSendViaMessagingTool: false`، فقد أنتج النموذج نصًا نهائيًا خاصًا بدلًا من استدعاء أداة الرسائل. انتقل إلى نموذج أقوى في استدعاء الأدوات لتلك القناة، أو افحص سجل Gateway التفصيلي لملخص الحمولة المكبوتة، أو اضبط `messages.groupChat.visibleReplies: "automatic"` لاستخدام الردود النهائية المرئية لكل طلب مجموعة/قناة.
+تتطلب الردود المرئية المقتصرة على الأدوات نموذجًا/بيئة تشغيل تستدعي الأدوات بموثوقية، ويُوصى بها للغرف المحيطة المشتركة مع نماذج الجيل الأحدث مثل GPT-5.6 Sol. يمكن لبعض النماذج الأضعف تقديم نص نهائي، لكنها تفشل في فهم أن الإخراج المرئي في المصدر يجب إرساله باستخدام `message(action=send)`. يستعيد OpenClaw افتراضيًا حالة الرد النهائي العالق الشائعة فقط عندما يكون الرد النهائي ذا مضمون، ولم تكن دورة المصدر حدث غرفة، ولم تمنع سياسة الإرسال التسليم، ولم يُرسل أي رد إلى المصدر مسبقًا. يقتصر الاسترداد على محاولة واحدة؛ إذ يمنع حفظ مطالبة إعادة المحاولة الاصطناعية ويستبعد تلك المحاولة من تجميع التحصيل كي لا تندمج مع مطالبات أخرى غير مرتبطة في قائمة الانتظار. إذا علقت محاولة إعادة المحاولة أيضًا أو تعذر وضعها في قائمة الانتظار، فلا يسلّم OpenClaw سوى تشخيص منقّى مثل "أنشأت ردًا، لكن تعذر عليّ تسليمه إلى هذه المحادثة. يُرجى المحاولة مجددًا." ولا يُعلّم النص النهائي الخاص الأصلي مطلقًا للتسليم التلقائي إلى المصدر. بالنسبة إلى النماذج التي تُبقي الردود عالقة مرارًا، استخدم `"automatic"` كي تكون دورة المساعد النهائية هي مسار الرد المرئي، أو انتقل إلى نموذج أقوى في استدعاء الأدوات، أو افحص السجل التفصيلي لـ Gateway للاطلاع على ملخص الحمولة المحجوبة، أو اضبط `messages.groupChat.visibleReplies: "automatic"` لاستخدام الردود النهائية المرئية لكل طلب مجموعة/قناة.
 
-إذا كانت أداة الرسائل غير متاحة ضمن سياسة الأدوات النشطة، يعود OpenClaw إلى الردود المرئية التلقائية بدلًا من كبت الاستجابة بصمت. يحذر `openclaw doctor` من عدم التطابق هذا.
+إذا لم تكن أداة الرسائل متاحة بموجب سياسة الأدوات النشطة، يعود OpenClaw إلى الردود المرئية التلقائية بدلًا من حجب الاستجابة بصمت. يحذّر `openclaw doctor` من عدم التطابق هذا.
 
-تنطبق هذه القاعدة على النص النهائي العادي للوكيل. تستخدم ارتباطات المحادثة المملوكة لـ Plugin الرد الذي يعيده Plugin المالك كاستجابة مرئية لدورات السلاسل المرتبطة المطالب بها؛ ولا يحتاج Plugin إلى استدعاء `message(action=send)` لتلك الردود الخاصة بالارتباطات.
+تنطبق هذه القاعدة على النص النهائي العادي للوكيل. تستخدم ارتباطات المحادثات التي تملكها Plugin الرد الذي تعيده Plugin المالكة بوصفه الاستجابة المرئية لدورات سلسلة المحادثة المرتبطة التي تمت المطالبة بها؛ ولا تحتاج Plugin إلى استدعاء `message(action=send)` لردود الارتباط تلك.
 
-**استكشاف الأخطاء وإصلاحها: تؤدي إشارة @mention في المجموعة إلى الكتابة ثم الصمت (بلا خطأ)**
+**استكشاف الأخطاء وإصلاحها: تؤدي الإشارة إلى @ في المجموعة إلى ظهور مؤشر الكتابة ثم الصمت (من دون خطأ)**
 
-العَرَض: تُظهر إشارة @mention في مجموعة/قناة مؤشر الكتابة ويُبلغ سجل Gateway عن `dispatch complete (queuedFinal=false, replies=0)`، لكن لا تصل أي رسالة إلى الغرفة. ترد الرسائل المباشرة إلى الوكيل نفسه بشكل طبيعي.
+العَرَض: تُظهر الإشارة إلى @ في مجموعة/قناة مؤشر الكتابة، ويبلغ سجل Gateway عن `dispatch complete (queuedFinal=false, replies=0)`، لكن لا تصل أي رسالة إلى الغرفة. ترد الرسائل المباشرة إلى الوكيل نفسه بصورة طبيعية.
 
-السبب: يُحل وضع الرد المرئي للمجموعة/القناة إلى `"message_tool"`، لذلك يشغّل OpenClaw الدورة لكنه يكبت نص المساعد النهائي ما لم يستدعِ الوكيل `message(action=send)`. لا يوجد عقد `NO_REPLY` في هذا الوضع؛ وعدم وجود استدعاء لأداة الرسائل يعني عدم وجود رد للمصدر. لا يوجد خطأ لأن الكبت هو السلوك المهيأ. تكون دورات المجموعات والقنوات العادية افتراضيًا `"automatic"`، لذلك لا يظهر هذا العرض إلا عندما يكون `messages.groupChat.visibleReplies` (أو `messages.visibleReplies` العام) مضبوطًا صراحة على `"message_tool"`. لا ينطبق `defaultVisibleReplies` الخاص بالحزمة هنا — إذ يتجاهله محلل المجموعة/القناة؛ فهو يؤثر فقط في الدردشات المباشرة/المصدرية (تكبت حزمة Codex النهائيات في الدردشة المباشرة بهذه الطريقة).
+السبب: يُحسم وضع الرد المرئي للمجموعة/القناة إلى `"message_tool"`، لذا يشغّل OpenClaw الدورة لكنه يحجب النص النهائي للمساعد ما لم يستدعِ الوكيل `message(action=send)`. لا يوجد عقد `NO_REPLY` في هذا الوضع؛ وعدم استدعاء أداة الرسائل يعني أن النص النهائي الأصلي خاص. بالنسبة إلى دورات المصدر ذات المحتوى الجوهري، يحاول OpenClaw الآن إعادة محاولة استرداد واحدة محمية؛ ولا تُعاد محاولة الملاحظات القصيرة، والصمت الصريح، وأحداث الغرفة، والدورات المرفوضة بسبب سياسة الإرسال، والدورات التي سُلّمت بالفعل. تكون القيمة الافتراضية لدورات المجموعات والقنوات العادية هي `"automatic"`، لذا لا يظهر هذا العَرَض إلا عند تعيين `messages.groupChat.visibleReplies` (أو `messages.visibleReplies` العام) صراحةً إلى `"message_tool"`. لا ينطبق `defaultVisibleReplies` الخاص بحاضنة الاختبار هنا — إذ يتجاهله محلّل المجموعة/القناة؛ ولا يؤثر إلا في محادثات المصدر/المحادثات المباشرة (تحجب حاضنة Codex النهايات في المحادثات المباشرة بهذه الطريقة).
 
-الإصلاح: إما اختر نموذجًا أقوى في استدعاء الأدوات، أو أزل تجاوز `"message_tool"` الصريح للرجوع إلى الافتراضي `"automatic"`، أو اضبط `messages.groupChat.visibleReplies: "automatic"` لفرض الردود المرئية لكل طلب مجموعة/قناة. يعيد Gateway تحميل تهيئة `messages` مباشرة بعد حفظ الملف؛ ولا تُعد تشغيل Gateway إلا عندما تكون مراقبة الملفات أو إعادة تحميل التهيئة معطلة في النشر.
+الإصلاح: إما اختيار نموذج أقوى في استدعاء الأدوات، أو إزالة تجاوز `"message_tool"` الصريح للرجوع إلى القيمة الافتراضية `"automatic"`، أو تعيين `messages.groupChat.visibleReplies: "automatic"` لفرض الردود المرئية لكل طلب مجموعة/قناة. ينبغي ألّا تنتهي بعد الآن نتيجة نهائية جوهرية عالقة على أنها نجاح صامت؛ بل ينبغي إما استردادها عبر إعادة محاولة `message(action=send)` واحدة أو عرض تشخيص منقّح لفشل التسليم. يعيد Gateway تحميل إعدادات `messages` آنيًا بعد حفظ الملف؛ ولا تُعِد تشغيل Gateway إلا عندما تكون مراقبة الملفات أو إعادة تحميل الإعدادات معطّلة في النشر.
 
 **أنواع الإشارات:**
 
-- **إشارات البيانات الوصفية**: إشارات @ الأصلية للمنصة. تُتجاهل في وضع الدردشة الذاتية في WhatsApp.
+- **إشارات البيانات الوصفية**: إشارات @ أصلية للمنصة. تُتجاهل في وضع المحادثة الذاتية في WhatsApp.
 - **أنماط النص**: أنماط تعبيرات نمطية آمنة في `agents.list[].groupChat.mentionPatterns`. تُتجاهل الأنماط غير الصالحة والتكرارات المتداخلة غير الآمنة.
-- تُفرض بوابة الإشارات فقط عندما يكون الاكتشاف ممكنًا (إشارات أصلية أو نمط واحد على الأقل).
+- لا يُفرض اشتراط الإشارة إلا عندما يكون اكتشافها ممكنًا (إشارات أصلية أو نمط واحد على الأقل).
 
 ```json5
 {
   messages: {
-    visibleReplies: "automatic", // force old automatic final replies for direct/source chats
+    visibleReplies: "automatic", // فرض الردود النهائية التلقائية القديمة لمحادثات المصدر/المحادثات المباشرة
     groupChat: {
       historyLimit: 50,
-      unmentionedInbound: "room_event", // always-on unmentioned room chatter becomes quiet context
-      visibleReplies: "message_tool", // opt-in; require message(action=send) for visible room replies
+      unmentionedInbound: "room_event", // تتحول أحاديث الغرفة المستمرة بلا إشارة إلى سياق هادئ
+      visibleReplies: "message_tool", // اشتراك اختياري؛ يتطلب message(action=send) لردود الغرفة المرئية
     },
   },
   agents: {
@@ -852,11 +872,11 @@ IRC مدعوم بـ Plugin ومهيأ ضمن `channels.irc`.
 }
 ```
 
-يضبط `messages.groupChat.historyLimit` الافتراضي العام. يمكن للقنوات التجاوز باستخدام `channels.<channel>.historyLimit` (أو لكل حساب). اضبطه على `0` للتعطيل.
+يعيّن `messages.groupChat.historyLimit` القيمة الافتراضية العامة. يمكن للقنوات تجاوزها باستخدام `channels.<channel>.historyLimit` (أو لكل حساب). عيّن `0` للتعطيل.
 
-يرسل `messages.groupChat.unmentionedInbound: "room_event"` رسائل المجموعات/القنوات غير المشار إليها والدائمة التشغيل كسياق غرفة هادئ على القنوات المدعومة. تبقى الرسائل المشار إليها والأوامر والرسائل المباشرة طلبات مستخدم. راجع [أحداث الغرف المحيطة](/ar/channels/ambient-room-events) للحصول على أمثلة كاملة لـ Discord وSlack وTelegram.
+يرسل `messages.groupChat.unmentionedInbound: "room_event"` رسائل المجموعات/القنوات المستمرة بلا إشارة كسياق غرفة هادئ على القنوات المدعومة. تظل الرسائل المشار فيها، والأوامر، والرسائل المباشرة طلبات مستخدم. راجع [أحداث الغرفة المحيطة](/ar/channels/ambient-room-events) للاطلاع على أمثلة كاملة لـ Discord وSlack وTelegram.
 
-`messages.visibleReplies` هو الافتراضي العام لحدث المصدر؛ ويتجاوزه `messages.groupChat.visibleReplies` لأحداث مصدر المجموعة/القناة. عندما لا يكون `messages.visibleReplies` مضبوطًا، تستخدم دردشات المصدر/المباشرة الافتراضي المختار لوقت التشغيل أو الحزمة، لكن دورات WebChat الداخلية المباشرة تستخدم التسليم النهائي التلقائي لتكافؤ مطالبات Pi/Codex. اضبط `messages.visibleReplies: "message_tool"` لطلب `message(action=send)` عمدًا للإخراج المرئي. لا تزال قوائم سماح القنوات وبوابة الإشارات تقرر ما إذا كان الحدث سيُعالَج.
+يمثل `messages.visibleReplies` القيمة الافتراضية العامة لأحداث المصدر؛ ويتجاوزها `messages.groupChat.visibleReplies` لأحداث مصدر المجموعة/القناة. عندما لا يكون `messages.visibleReplies` معيّنًا، تستخدم محادثات المصدر/المحادثات المباشرة القيمة الافتراضية لبيئة التشغيل أو حاضنة الاختبار المحددة، لكن الدورات المباشرة الداخلية في WebChat تستخدم التسليم النهائي التلقائي لتحقيق تكافؤ الموجّهات بين Pi وCodex. عيّن `messages.visibleReplies: "message_tool"` لفرض طلب `message(action=send)` عمدًا للحصول على مخرجات مرئية. تظل قوائم السماح للقنوات واشتراط الإشارة هي التي تحدد ما إذا كان الحدث سيُعالَج.
 
 #### حدود سجل الرسائل المباشرة
 
@@ -873,13 +893,13 @@ IRC مدعوم بـ Plugin ومهيأ ضمن `channels.irc`.
 }
 ```
 
-التحليل: تجاوز لكل رسالة مباشرة → افتراضي المزوّد → بلا حد (كل شيء محفوظ).
+ترتيب الحسم: تجاوز لكل رسالة مباشرة ← القيمة الافتراضية للموفّر ← بلا حد (يُحتفظ بالجميع).
 
-مدعوم: `telegram`، `whatsapp`، `discord`، `slack`، `signal`، `imessage`، `msteams`.
+يقرأ هذا المحلّل `channels.<provider>.dmHistoryLimit` و`channels.<provider>.dms.<id>.historyLimit` لأي قناة يتبع مفتاح جلستها صيغة `provider:direct:<id>` القياسية (أو صيغة `provider:dm:<id>` القديمة)، لذا فهو يعمل عبر القنوات المضمّنة وقنوات Plugin على حد سواء، وليس لقائمة ثابتة فقط.
 
-#### وضع الدردشة الذاتية
+#### وضع المحادثة الذاتية
 
-ضمّن رقمك الخاص في `allowFrom` لتفعيل وضع الدردشة الذاتية (يتجاهل إشارات @ الأصلية، ولا يستجيب إلا لأنماط النص):
+أدرج رقمك في `allowFrom` لتمكين وضع المحادثة الذاتية (يتجاهل إشارات @ الأصلية، ولا يستجيب إلا لأنماط النص):
 
 ```json5
 {
@@ -900,21 +920,21 @@ IRC مدعوم بـ Plugin ومهيأ ضمن `channels.irc`.
 }
 ```
 
-### الأوامر (معالجة أوامر الدردشة)
+### الأوامر (معالجة أوامر المحادثة)
 
 ```json5
 {
   commands: {
-    native: "auto", // register native commands when supported
-    nativeSkills: "auto", // register native skill commands when supported
-    text: true, // parse /commands in chat messages
-    bash: false, // allow ! (alias: /bash)
+    native: "auto", // تسجيل الأوامر الأصلية عند دعمها
+    nativeSkills: "auto", // تسجيل أوامر Skills الأصلية عند دعمها
+    text: true, // تحليل /commands في رسائل المحادثة
+    bash: false, // السماح بـ ! (اسم بديل: /bash)
     bashForegroundMs: 2000,
-    config: false, // allow /config
-    mcp: false, // allow /mcp
-    plugins: false, // allow /plugins
-    debug: false, // allow /debug
-    restart: true, // allow /restart + gateway restart tool
+    config: false, // السماح بـ /config
+    mcp: false, // السماح بـ /mcp
+    plugins: false, // السماح بـ /plugins
+    debug: false, // السماح بـ /debug
+    restart: true, // السماح بـ /restart + طلبات إعادة التشغيل الخارجية SIGUSR1
     ownerAllowFrom: ["discord:123456789012345678"],
     ownerDisplay: "raw", // raw | hash
     ownerDisplaySecret: "${OWNER_ID_HASH_SECRET}",
@@ -927,34 +947,34 @@ IRC مدعوم بـ Plugin ومهيأ ضمن `channels.irc`.
 }
 ```
 
-<Accordion title="Command details">
+<Accordion title="تفاصيل الأوامر">
 
-- تُهيئ هذه الكتلة أسطح الأوامر. للاطلاع على كتالوج الأوامر المضمّنة + المرفقة الحالي، راجع [أوامر Slash](/ar/tools/slash-commands).
-- هذه الصفحة هي **مرجع لمفاتيح الإعدادات**، وليست كتالوج الأوامر الكامل. الأوامر المملوكة للقنوات/Plugin مثل أوامر QQ Bot `/bot-ping` و`/bot-help` و`/bot-logs`، وLINE `/card`، وإقران الأجهزة `/pair`، والذاكرة `/dreaming`، والتحكم بالهاتف `/phone`، وTalk `/voice` موثقة في صفحات القنوات/Plugin الخاصة بها، إضافة إلى [أوامر Slash](/ar/tools/slash-commands).
+- تضبط هذه الكتلة واجهات الأوامر. للاطلاع على الفهرس الحالي للأوامر المضمنة + المرفقة، راجع [أوامر الشرطة المائلة](/ar/tools/slash-commands).
+- هذه الصفحة **مرجع لمفاتيح الإعدادات**، وليست فهرس الأوامر الكامل. تُوثَّق الأوامر المملوكة للقنوات/Plugin، مثل QQ Bot ‏`/bot-ping` و`/bot-help` و`/bot-logs`، وLINE ‏`/card`، وإقران الأجهزة `/pair`، والذاكرة `/dreaming`، والتحكم في الهاتف `/phone`، وTalk ‏`/voice`، في صفحات القنوات/Plugin الخاصة بها، بالإضافة إلى [أوامر الشرطة المائلة](/ar/tools/slash-commands).
 - يجب أن تكون الأوامر النصية رسائل **مستقلة** تبدأ بـ `/`.
-- يفعّل `native: "auto"` الأوامر الأصلية لـ Discord/Telegram، ويترك Slack معطلاً.
-- يفعّل `nativeSkills: "auto"` أوامر Skills الأصلية لـ Discord/Telegram، ويترك Slack معطلاً.
-- التجاوز لكل قناة: `channels.discord.commands.native` (قيمة منطقية أو `"auto"`). بالنسبة إلى Discord، تتخطى `false` تسجيل الأوامر الأصلية وتنظيفها أثناء بدء التشغيل.
-- تجاوز تسجيل Skills الأصلية لكل قناة باستخدام `channels.<provider>.commands.nativeSkills`.
+- يفعّل `native: "auto"` الأوامر الأصلية لـ Discord وTelegram، ويُبقيها معطّلة في Slack.
+- يفعّل `nativeSkills: "auto"` أوامر Skills الأصلية لـ Discord وTelegram، ويُبقيها معطّلة في Slack.
+- التجاوز لكل قناة: `channels.discord.commands.native` (قيمة منطقية أو `"auto"`). بالنسبة إلى Discord، يتخطى `false` تسجيل الأوامر الأصلية وتنظيفها أثناء بدء التشغيل.
+- تجاوز تسجيل أوامر Skills الأصلية لكل قناة باستخدام `channels.<provider>.commands.nativeSkills`.
 - يضيف `channels.telegram.customCommands` إدخالات إضافية إلى قائمة بوت Telegram.
-- يفعّل `bash: true` الصيغة `! <cmd>` لصدفة المضيف. يتطلب ذلك `tools.elevated.enabled` وأن يكون المرسل ضمن `tools.elevated.allowFrom.<channel>`.
-- يفعّل `config: true` الأمر `/config` (لقراءة/كتابة `openclaw.json`). بالنسبة إلى عملاء Gateway `chat.send`، تتطلب عمليات الكتابة الدائمة عبر `/config set|unset` أيضًا `operator.admin`؛ يظل `/config show` للقراءة فقط متاحًا لعملاء المشغّل العاديين ذوي نطاق الكتابة.
-- يفعّل `mcp: true` الأمر `/mcp` لإعداد خادم MCP المُدار بواسطة OpenClaw ضمن `mcp.servers`.
-- يفعّل `plugins: true` الأمر `/plugins` لاكتشاف Plugin وتثبيتها وعناصر التحكم في تفعيلها/تعطيلها.
-- يتحكم `channels.<provider>.configWrites` في طفرات الإعدادات لكل قناة (الافتراضي: true).
-- بالنسبة إلى القنوات متعددة الحسابات، يتحكم `channels.<provider>.accounts.<id>.configWrites` أيضًا في عمليات الكتابة التي تستهدف ذلك الحساب (مثل `/allowlist --config --account <id>` أو `/config set channels.<provider>.accounts.<id>...`).
-- يعطّل `restart: false` الأمر `/restart` وإجراءات أداة إعادة تشغيل Gateway. الافتراضي: `true`.
-- `ownerAllowFrom` هي قائمة السماح الصريحة للمالك للأوامر الخاصة بالمالك فقط وإجراءات القناة المحكومة بالمالك. وهي منفصلة عن `allowFrom`.
-- يجزّئ `ownerDisplay: "hash"` معرّفات المالك في مطالبة النظام. اضبط `ownerDisplaySecret` للتحكم في التجزئة.
-- `allowFrom` مخصص لكل موفّر. عند ضبطه، يكون هو مصدر التفويض **الوحيد** (يتم تجاهل قوائم سماح القنوات/الإقران و`useAccessGroups`).
-- يسمح `useAccessGroups: false` للأوامر بتجاوز سياسات مجموعات الوصول عندما لا يكون `allowFrom` مضبوطًا.
+- يفعّل `bash: true` الأمر `! <cmd>` لصدفة المضيف. يتطلب `tools.elevated.enabled` وأن يكون المرسل ضمن `tools.elevated.allowFrom.<channel>`.
+- يفعّل `config: true` الأمر `/config` (يقرأ/يكتب `openclaw.json`). بالنسبة إلى عملاء Gateway من نوع `chat.send`، تتطلب عمليات الكتابة الدائمة عبر `/config set|unset` أيضًا `operator.admin`؛ ويظل `/config show` للقراءة فقط متاحًا لعملاء المشغّل العاديين ذوي نطاق الكتابة.
+- يفعّل `mcp: true` الأمر `/mcp` لإعداد خادم MCP الذي يديره OpenClaw ضمن `mcp.servers`.
+- يفعّل `plugins: true` الأمر `/plugins` لاكتشاف Plugin وتثبيتها وعناصر التحكم في تمكينها/تعطيلها.
+- يتحكم `channels.<provider>.configWrites` في تعديلات الإعدادات لكل قناة (القيمة الافتراضية: true).
+- بالنسبة إلى القنوات متعددة الحسابات، يتحكم `channels.<provider>.accounts.<id>.configWrites` أيضًا في عمليات الكتابة التي تستهدف ذلك الحساب (على سبيل المثال `/allowlist --config --account <id>` أو `/config set channels.<provider>.accounts.<id>...`).
+- يعطّل `restart: false` الأمر `/restart` وطلبات إعادة التشغيل الخارجية `SIGUSR1`. القيمة الافتراضية: `true`.
+- يمثل `ownerAllowFrom` قائمة السماح الصريحة للمالك للأوامر المخصصة للمالك وإجراءات القنوات المقيّدة بالمالك. وهو منفصل عن `allowFrom`.
+- يُجزّئ `ownerDisplay: "hash"` معرّفات المالك في موجّه النظام. عيّن `ownerDisplaySecret` للتحكم في التجزئة.
+- يكون `allowFrom` خاصًا بكل موفّر. عند تعيينه، يصبح مصدر التفويض **الوحيد** (وتُتجاهل قوائم السماح/الإقران الخاصة بالقناة و`useAccessGroups`).
+- يسمح `useAccessGroups: false` للأوامر بتجاوز سياسات مجموعات الوصول عندما لا يكون `allowFrom` معيّنًا.
 - خريطة وثائق الأوامر:
-  - الكتالوج المضمّن + المرفق: [أوامر Slash](/ar/tools/slash-commands)
-  - أسطح الأوامر الخاصة بالقنوات: [القنوات](/ar/channels)
-  - أوامر QQ Bot: [QQ Bot](/ar/channels/qqbot)
+  - فهرس الأوامر المضمنة + المرفقة: [أوامر الشرطة المائلة](/ar/tools/slash-commands)
+  - واجهات الأوامر الخاصة بالقنوات: [القنوات](/ar/channels)
+  - أوامر QQ Bot: ‏[QQ Bot](/ar/channels/qqbot)
   - أوامر الإقران: [الإقران](/ar/channels/pairing)
-  - أمر بطاقة LINE: [LINE](/ar/channels/line)
-  - Dreaming الذاكرة: [Dreaming](/ar/concepts/dreaming)
+  - أمر بطاقة LINE: ‏[LINE](/ar/channels/line)
+  - Dreaming للذاكرة: [Dreaming](/ar/concepts/dreaming)
 
 </Accordion>
 

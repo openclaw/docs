@@ -1,39 +1,40 @@
 ---
 read_when:
     - تريد إنشاء Plugin بسيط لـ OpenClaw لا يضيف سوى أدوات للوكيل
-    - تريد استخدام defineToolPlugin بدلًا من كتابة البيانات الوصفية لبيان Plugin يدويًا
-    - تحتاج إلى إنشاء الهيكل الأولي لـ plugin مخصّص للأدوات فقط، أو توليده، أو التحقق من صلاحيته، أو اختباره، أو نشره
+    - تريد استخدام defineToolPlugin بدلًا من كتابة بيانات تعريف بيان Plugin يدويًا
+    - تحتاج إلى إنشاء هيكل أولي أو توليد أو التحقق من صحة أو اختبار أو نشر Plugin مخصّص للأدوات فقط
 sidebarTitle: Tool Plugins
 summary: أنشئ أدوات وكيل بسيطة ومحددة الأنواع باستخدام defineToolPlugin وopenclaw plugins init/build/validate
-title: إضافات الأدوات
+title: Plugins الأدوات
 x-i18n:
-    generated_at: "2026-07-12T06:24:56Z"
+    generated_at: "2026-07-16T14:57:23Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 231eba96d4927b7411cb17d79b96e6df09ed111fc8a54eac0ca7717e58803d26
+    source_hash: fb9187e1d8aed88eee5c99dcdce89f70cd0d4f930b97aaac2ff868037d63adc1
     source_path: plugins/tool-plugins.md
     workflow: 16
 ---
 
-يبني `defineToolPlugin` مكوّنًا إضافيًا لا يضيف سوى أدوات يمكن للوكيل استدعاؤها: بلا
-قناة أو موفّر نماذج أو خطاف أو خدمة أو واجهة إعداد خلفية. وهو يولّد
-بيانات البيان الوصفية التي يحتاجها OpenClaw لاكتشاف الأدوات دون تحميل
-شفرة وقت تشغيل المكوّن الإضافي.
+`defineToolPlugin` ينشئ plugin لا يضيف سوى أدوات قابلة للاستدعاء من الوكيل: من دون
+قناة، أو موفّر نماذج، أو خطاف، أو خدمة، أو واجهة خلفية للإعداد. ويولّد
+بيانات manifest الوصفية التي يحتاج إليها OpenClaw لاكتشاف الأدوات من دون تحميل شيفرة
+وقت تشغيل plugin.
 
-بالنسبة إلى المكوّنات الإضافية الخاصة بالموفّرين أو القنوات أو الخطافات أو الخدمات أو ذات القدرات المختلطة، ابدأ بدلًا من ذلك بـ
-[بناء المكوّنات الإضافية](/ar/plugins/building-plugins) أو [مكوّنات القنوات الإضافية](/ar/plugins/sdk-channel-plugins)،
-أو [مكوّنات الموفّرين الإضافية](/ar/plugins/sdk-provider-plugins).
+بالنسبة إلى plugins الخاصة بالموفّرين أو القنوات أو الخطافات أو الخدمات أو ذات الإمكانات المختلطة، ابدأ بدلًا من ذلك بـ
+[إنشاء plugins](/ar/plugins/building-plugins)، أو [Plugins القنوات](/ar/plugins/sdk-channel-plugins)،
+أو [Plugins الموفّرين](/ar/plugins/sdk-provider-plugins).
 
 ## المتطلبات
 
-- Node 22.19+ أو Node 23.11+ أو Node 24+.
+- Node 22.22.3+، أو Node 24.15+، أو Node 25.9+.
 - مخرجات حزمة TypeScript ESM.
-- وجود `typebox` في `dependencies` (وليس في `devDependencies` فقط، إذ يستورده
-  المكوّن الإضافي المولّد في وقت التشغيل).
-- الإصدار `openclaw >=2026.5.17`، وهو أول إصدار يصدّر
+- `typebox` في `dependencies` (وليس فقط `devDependencies` - إذ يستورده
+  plugin المولّد في وقت التشغيل).
+- `openclaw >=2026.5.17`، وهو أول إصدار يصدّر
   `openclaw/plugin-sdk/tool-plugin`.
-- جذر حزمة يوزّع `dist/` و`openclaw.plugin.json` و
+- جذر حزمة يشحن `dist/`، و`openclaw.plugin.json`، و
   `package.json`.
 
 ## البدء السريع
@@ -47,40 +48,40 @@ npm run plugin:validate
 npm test
 ```
 
-ينشئ `plugins init` البنية الأولية التالية:
+ينشئ `plugins init` الهيكل التالي:
 
-| الملف                  | الغرض                                                                    |
-| ---------------------- | ------------------------------------------------------------------------ |
-| `src/index.ts`         | نقطة دخول `defineToolPlugin` تتضمن أداة `echo` واحدة                     |
-| `src/index.test.ts`    | اختبار للبيانات الوصفية يتحقق من قائمة الأدوات                           |
-| `tsconfig.json`        | مخرجات TypeScript بنمط NodeNext إلى `dist/`                              |
-| `vitest.config.ts`     | إعداد Vitest للملفات `src/**/*.test.ts`                                  |
-| `package.json`         | البرامج النصية وتبعيات وقت التشغيل و`openclaw.extensions: ["./dist/index.js"]` |
-| `openclaw.plugin.json` | بيانات بيان وصفية مولّدة للأداة الأولية                                  |
+| الملف                   | الغرض                                                           |
+| ---------------------- | ----------------------------------------------------------------- |
+| `src/index.ts`         | نقطة دخول `defineToolPlugin` بأداة `echo` واحدة                     |
+| `src/index.test.ts`    | اختبار بيانات وصفية يتحقق من قائمة الأدوات                             |
+| `tsconfig.json`        | مخرجات TypeScript بنمط NodeNext إلى `dist/`                             |
+| `vitest.config.ts`     | إعداد Vitest لـ `src/**/*.test.ts`                              |
+| `package.json`         | البرامج النصية، وتبعيات وقت التشغيل، و`openclaw.extensions: ["./dist/index.js"]` |
+| `openclaw.plugin.json` | بيانات manifest الوصفية المولّدة للأداة الأولية                  |
 
-يشغّل `npm run plugin:build` الأمر `npm run build` ‏(tsc)، ثم
+يشغّل `npm run plugin:build` الأمر `npm run build` (tsc) ثم
 `openclaw plugins build --entry ./dist/index.js`. ويعيد `npm run plugin:validate`
-البناء ثم يشغّل `openclaw plugins validate --entry ./dist/index.js`.
+البناء ويشغّل `openclaw plugins validate --entry ./dist/index.js`.
 تطبع عملية التحقق الناجحة:
 
 ```text
-Plugin stock-quotes is valid.
+Plugin stock-quotes صالح.
 ```
 
 خيارات `openclaw plugins init <id>`:
 
-| العلامة              | القيمة الافتراضية        | التأثير                                      |
-| -------------------- | ------------------------ | -------------------------------------------- |
-| `--directory <path>` | `<id>`                   | دليل المخرجات                                |
-| `--name <name>`      | `<id>` بصيغة عنوان       | اسم العرض                                    |
-| `--type <type>`      | `tool`                   | نوع البنية الأولية: `tool` أو `provider`     |
-| `--force`            | معطّل                    | الكتابة فوق دليل مخرجات موجود                |
+| العلامة                 | القيمة الافتراضية            | التأثير                                 |
+| -------------------- | ------------------ | -------------------------------------- |
+| `--directory <path>` | `<id>`             | دليل المخرجات                       |
+| `--name <name>`      | `<id>` بحالة أحرف العنوان | اسم العرض                           |
+| `--type <type>`      | `tool`             | نوع الهيكل: `tool` أو `provider`    |
+| `--force`            | معطّل                | استبدال دليل مخرجات موجود |
 
 ## كتابة أداة
 
-تأخذ `defineToolPlugin` هوية المكوّن الإضافي ومخطط إعداد اختياريًا وقائمة
-ثابتة من الأدوات. وتُستنتج أنواع المعاملات والإعداد من مخططات
-TypeBox.
+تأخذ `defineToolPlugin` هوية plugin، ومخطط إعداد اختياريًا، وقائمة
+ثابتة من الأدوات. ويُستدل على أنواع المعاملات والإعداد من
+مخططات TypeBox.
 
 ```typescript
 import { Type } from "typebox";
@@ -115,15 +116,15 @@ export default defineToolPlugin({
 });
 ```
 
-أسماء الأدوات هي واجهة API المستقرة. اختر أسماء فريدة وبأحرف صغيرة
-ومحددة بما يكفي لتجنب التعارض مع الأدوات الأساسية أو المكوّنات الإضافية الأخرى.
+أسماء الأدوات هي واجهة API المستقرة. اختر أسماء فريدة، وبأحرف صغيرة، و
+محددة بما يكفي لتجنّب التعارض مع الأدوات الأساسية أو plugins الأخرى.
 
-## الأدوات الاختيارية وأدوات المصنع
+## الأدوات الاختيارية وأدوات المصانع
 
 عيّن `optional: true` عندما ينبغي للمستخدمين إضافة الأداة صراحةً إلى قائمة السماح قبل
-إرسالها إلى نموذج. يكتب `openclaw plugins build` إدخال البيان المطابق
+إرسالها إلى نموذج. تكتب `openclaw plugins build` إدخال manifest المطابق
 `toolMetadata.<tool>.optional`، بحيث يستطيع OpenClaw معرفة أن
-الأداة اختيارية دون تحميل شفرة وقت تشغيل المكوّن الإضافي.
+الأداة اختيارية من دون تحميل شيفرة وقت تشغيل plugin.
 
 ```typescript
 tool({
@@ -136,8 +137,8 @@ tool({
 ```
 
 استخدم `factory` عندما تحتاج الأداة إلى سياق أداة وقت التشغيل قبل إمكان
-إنشائها، سواءً لاستبعادها من تشغيل محدد أو فحص حالة صندوق العزل أو ربط
-مساعدات وقت التشغيل. تبقى البيانات الوصفية ثابتة رغم أن الأداة الفعلية تُبنى
+إنشائها - لتعطيلها لتشغيل محدد، أو فحص حالة صندوق العزل، أو ربط
+مساعدات وقت التشغيل. تظل البيانات الوصفية ثابتة رغم إنشاء الأداة الفعلية
 في وقت التشغيل.
 
 ```typescript
@@ -155,17 +156,16 @@ tool({
 });
 ```
 
-تظل المصانع تصرّح باسم أداة ثابت مقدمًا. استخدم `definePluginEntry`
-مباشرةً عندما يحسب المكوّن الإضافي أسماء الأدوات ديناميكيًا أو يجمع الأدوات
+تظل المصانع تعلن اسم أداة ثابتًا مسبقًا. استخدم `definePluginEntry`
+مباشرةً عندما يحسب plugin أسماء الأدوات ديناميكيًا أو يدمج الأدوات
 مع الخطافات أو الخدمات أو الموفّرين أو الأوامر.
 
-## القيم المرجعة
+## قيم الإرجاع
 
-تغلّف `defineToolPlugin` القيم المرجعة العادية بتنسيق نتيجة أداة
-OpenClaw:
+تغلّف `defineToolPlugin` قيم الإرجاع العادية بتنسيق نتيجة أداة OpenClaw:
 
-- أرجع سلسلة نصية عندما ينبغي للنموذج رؤية ذلك النص نفسه.
-- أرجع قيمة متوافقة مع JSON عندما تريد أن يرى النموذج JSON منسقًا
+- أعِد سلسلة نصية عندما ينبغي أن يرى النموذج ذلك النص نفسه تمامًا.
+- أعِد قيمة متوافقة مع JSON عندما تريد أن يرى النموذج JSON منسقًا
   وأن يحتفظ OpenClaw بالقيمة الأصلية في `details`.
 
 ```typescript
@@ -191,12 +191,12 @@ tool({
 ```
 
 استخدم أداة مصنع عندما تحتاج إلى `AgentToolResult` مخصص أو تريد إعادة استخدام
-تنفيذ موجود لـ`api.registerTool`.
+تنفيذ `api.registerTool` موجود.
 
 ## الإعداد
 
-`configSchema` اختياري. احذفه وسيطبّق OpenClaw مخطط كائن فارغًا صارمًا؛
-ويظل البيان المولّد يتضمن `configSchema`.
+`configSchema` اختياري. إذا حذفته، يطبّق OpenClaw مخطط كائن فارغًا صارمًا؛
+ويظل manifest المولّد يتضمن `configSchema`.
 
 ```typescript
 export default defineToolPlugin({
@@ -230,24 +230,24 @@ export default defineToolPlugin({
 });
 ```
 
-يقرأ OpenClaw إعداد المكوّن الإضافي من إدخال المكوّن الإضافي في إعداد Gateway. لا
-تضمّن الأسرار مباشرةً في المصدر أو أمثلة التوثيق؛ استخدم الإعداد أو متغيرات
-البيئة أو SecretRefs وفقًا لنموذج أمان المكوّن الإضافي.
+يقرأ OpenClaw إعداد plugin من إدخال plugin في إعداد Gateway. لا
+تضمّن الأسرار مباشرةً في المصدر أو أمثلة التوثيق؛ استخدم الإعداد، أو متغيرات
+البيئة، أو SecretRefs وفقًا لنموذج أمان plugin.
 
 ## البيانات الوصفية المولّدة
 
-يجب أن يقرأ OpenClaw بيان المكوّن الإضافي قبل استيراد شفرة وقت تشغيل المكوّن الإضافي.
-تكشف `defineToolPlugin` بيانات وصفية ثابتة لهذا الغرض، ويكتبها
-`openclaw plugins build` في الحزمة. أعد تشغيل المولّد بعد
-تغيير معرّف المكوّن الإضافي أو اسمه أو وصفه أو مخطط إعداده أو تفعيله أو أسماء
-أدواته:
+يجب أن يقرأ OpenClaw manifest الخاص بـ plugin قبل استيراد شيفرة وقت تشغيل plugin.
+تكشف `defineToolPlugin` بيانات وصفية ثابتة لهذا الغرض، و
+تكتبها `openclaw plugins build` في الحزمة. أعد تشغيل المولّد بعد
+تغيير معرّف plugin أو اسمه أو وصفه أو مخطط إعداده أو تفعيله أو أسماء
+الأدوات:
 
 ```bash
 npm run build
 openclaw plugins build --entry ./dist/index.js
 ```
 
-بيان مولّد لمكوّن إضافي ذي أداة واحدة:
+manifest مولّد لـ plugin ذي أداة واحدة:
 
 ```json
 {
@@ -269,14 +269,14 @@ openclaw plugins build --entry ./dist/index.js
 }
 ```
 
-يمثل `contracts.tools` عقد الاكتشاف المهم: فهو يخبر OpenClaw بأي
-مكوّن إضافي يملك كل أداة دون تحميل وقت تشغيل كل مكوّن إضافي مثبّت. وقد
-يتسبب البيان القديم في غياب أداة عن الاكتشاف، أو في إسناد خطأ
-التسجيل إلى المكوّن الإضافي الخطأ.
+يمثّل `contracts.tools` عقد الاكتشاف المهم: فهو يخبر OpenClaw بأي
+plugin يملك كل أداة من دون تحميل وقت تشغيل كل plugin مثبّت. يعني
+manifest القديم أن أداة قد تختفي من الاكتشاف، أو أن خطأ تسجيل
+يُنسب إلى plugin غير الصحيح.
 
 ## بيانات الحزمة الوصفية
 
-يوائم `openclaw plugins build` أيضًا ملف `package.json` مع نقطة دخول وقت التشغيل
+تحاذي `openclaw plugins build` أيضًا `package.json` مع نقطة دخول وقت التشغيل
 المحددة:
 
 ```json
@@ -295,13 +295,13 @@ openclaw plugins build --entry ./dist/index.js
 }
 ```
 
-وزّع JavaScript المبني (`./dist/index.js`)، لا نقطة دخول مصدر TypeScript.
+اشحن JavaScript المبني (`./dist/index.js`)، لا نقطة دخول مصدر TypeScript.
 لا تعمل نقاط دخول المصدر إلا للتطوير المحلي داخل مساحة العمل.
 
 ## التحقق في CI
 
-يفشل `plugins build --check` دون إعادة كتابة الملفات عندما تكون البيانات الوصفية
-المولّدة قديمة:
+يفشل `plugins build --check` من دون إعادة كتابة الملفات عندما تكون البيانات الوصفية المولّدة
+قديمة:
 
 ```bash
 npm run build
@@ -312,22 +312,22 @@ npm test
 
 يتحقق `plugins validate` مما يلي:
 
-- وجود `openclaw.plugin.json` واجتيازه لمحمّل البيان المعتاد.
-- تصدير نقطة الدخول الحالية للبيانات الوصفية الخاصة بـ`defineToolPlugin`.
-- تطابق حقول البيان المولّد مع البيانات الوصفية لنقطة الدخول.
-- تطابق `contracts.tools` مع أسماء الأدوات المصرّح بها.
-- إشارة `openclaw.extensions` في `package.json` إلى نقطة دخول وقت التشغيل المحددة.
+- وجود `openclaw.plugin.json` واجتيازه محمّل manifest المعتاد.
+- تصدير نقطة الدخول الحالية بيانات `defineToolPlugin` الوصفية.
+- تطابق حقول manifest المولّد مع بيانات نقطة الدخول الوصفية.
+- تطابق `contracts.tools` مع أسماء الأدوات المعلنة.
+- توجيه `package.json` للعنصر `openclaw.extensions` إلى نقطة دخول وقت التشغيل المحددة.
 
 ## التثبيت والفحص محليًا
 
-من نسخة مستقلة من OpenClaw أو CLI مثبّت، ثبّت مسار الحزمة:
+من نسخة OpenClaw منفصلة أو CLI مثبّت، ثبّت مسار الحزمة:
 
 ```bash
 openclaw plugins install ./stock-quotes
 openclaw plugins inspect stock-quotes --runtime
 ```
 
-لإجراء اختبار دخاني على الحزمة، أنشئ الحزمة أولًا ثم ثبّت ملف tarball:
+لاختبار دخان لحزمة، أنشئ الحزمة أولًا ثم ثبّت ملف tarball:
 
 ```bash
 npm pack
@@ -336,14 +336,14 @@ openclaw plugins inspect stock-quotes --runtime --json
 ```
 
 بعد التثبيت، أعد تشغيل Gateway أو أعد تحميله واطلب من الوكيل استخدام
-الأداة. إذا لم تكن الأداة ظاهرة، فافحص وقت تشغيل المكوّن الإضافي وفهرس
-الأدوات الفعلي قبل تغيير الشفرة (راجع [استكشاف الأخطاء وإصلاحها](#troubleshooting)).
+الأداة. إذا لم تكن الأداة ظاهرة، فافحص وقت تشغيل plugin وكتالوج
+الأدوات الفعّال قبل تغيير الشيفرة (راجع [استكشاف الأخطاء وإصلاحها](#troubleshooting)).
 
 ## النشر
 
-انشر عبر ClawHub بعد أن تصبح الحزمة جاهزة. يأخذ `clawhub package publish`
-مصدرًا: مجلدًا محليًا أو مستودع GitHub ‏(`owner/repo[@ref]`) أو عنوان URL
-لملف tarball.
+انشر عبر ClawHub بمجرد أن تصبح الحزمة جاهزة. تأخذ `clawhub package publish`
+مصدرًا: مجلدًا محليًا، أو مستودع GitHub (`owner/repo[@ref]`)، أو
+عنوان URL لملف tarball.
 
 ```bash
 clawhub package publish ./stock-quotes --dry-run
@@ -356,10 +356,10 @@ clawhub package publish ./stock-quotes
 openclaw plugins install clawhub:your-org/stock-quotes
 ```
 
-تظل مواصفات حزم npm المجرّدة قابلة للتثبيت من npm أثناء الانتقال عند الإطلاق، لكن
-ClawHub هو السطح المفضل لاكتشاف مكوّنات OpenClaw الإضافية وتوزيعها.
-راجع [النشر عبر ClawHub](/ar/clawhub/publishing) لمعرفة نطاق المالك
-ومراجعة الإصدار.
+تظل مواصفات حزم npm المجردة تُثبّت من npm أثناء الانتقال عند الإطلاق، لكن
+ClawHub هو سطح الاكتشاف والتوزيع المفضّل لـ plugins الخاصة بـ OpenClaw.
+راجع [النشر على ClawHub](/ar/clawhub/publishing) لمعرفة نطاق المالك و
+مراجعة الإصدار.
 
 ## استكشاف الأخطاء وإصلاحها
 
@@ -377,41 +377,41 @@ ClawHub هو السطح المفضل لاكتشاف مكوّنات OpenClaw ال
 
 ### `openclaw.plugin.json generated metadata is stale`
 
-لم يعد البيان يطابق البيانات الوصفية لنقطة الدخول. شغّل:
+لم يعد manifest يطابق بيانات نقطة الدخول الوصفية. شغّل:
 
 ```bash
 npm run build
 openclaw plugins build --entry ./dist/index.js
 ```
 
-أودع تغييرات `openclaw.plugin.json` و`package.json` كليهما.
+ثبّت تغييرات كل من `openclaw.plugin.json` و`package.json` في commit.
 
 ### `package.json openclaw.extensions must include ./dist/index.js`
 
 تشير بيانات الحزمة الوصفية إلى نقطة دخول وقت تشغيل مختلفة. شغّل
-`openclaw plugins build --entry ./dist/index.js` لكي يوائم المولّد
-بيانات الحزمة الوصفية مع نقطة الدخول التي تنوي توزيعها.
+`openclaw plugins build --entry ./dist/index.js` كي يحاذي المولّد
+بيانات الحزمة الوصفية مع نقطة الدخول التي تنوي شحنها.
 
 ### `Cannot find package 'typebox'`
 
-يستورد المكوّن الإضافي المبني `typebox` في وقت التشغيل. أبقه في `dependencies`،
+يستورد plugin المبني `typebox` في وقت التشغيل. أبقه في `dependencies`،
 ثم أعد التثبيت والبناء والتحقق.
 
 ### لا تظهر الأداة بعد التثبيت
 
-تحقق من الآتي بالترتيب:
+تحقق مما يلي بالترتيب:
 
 1. `openclaw plugins inspect <plugin-id> --runtime`
 2. `openclaw plugins validate --root <plugin-root> --entry ./dist/index.js`
-3. يحتوي `openclaw.plugin.json` على `contracts.tools` بأسماء الأدوات المتوقعة.
-4. يحتوي `package.json` على `openclaw.extensions: ["./dist/index.js"]`.
-5. أُعيد تشغيل Gateway أو أُعيد تحميله بعد تثبيت الـ Plugin.
+3. `openclaw.plugin.json` يحتوي على `contracts.tools` بأسماء الأدوات المتوقعة.
+4. `package.json` يحتوي على `openclaw.extensions: ["./dist/index.js"]`.
+5. أُعيد تشغيل Gateway أو تحميله بعد تثبيت Plugin.
 
 ## انظر أيضًا
 
 - [إنشاء Plugins](/ar/plugins/building-plugins)
-- [نقاط دخول الـ Plugin](/ar/plugins/sdk-entrypoints)
-- [المسارات الفرعية لحزمة تطوير الـ Plugin](/ar/plugins/sdk-subpaths)
-- [بيان الـ Plugin](/ar/plugins/manifest)
-- [CLI الخاص بـ Plugins](/ar/cli/plugins)
+- [نقاط دخول Plugin](/ar/plugins/sdk-entrypoints)
+- [المسارات الفرعية لـ Plugin SDK](/ar/plugins/sdk-subpaths)
+- [بيان Plugin](/ar/plugins/manifest)
+- [CLI لـ Plugins](/ar/cli/plugins)
 - [النشر على ClawHub](/ar/clawhub/publishing)

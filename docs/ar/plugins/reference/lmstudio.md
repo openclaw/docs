@@ -1,19 +1,20 @@
 ---
 read_when:
-    - أنت تثبّت Plugin ‏lmstudio أو تهيّئه أو تدقّقه
+    - أنت تثبّت أو تهيّئ أو تدقّق Plugin ‏lmstudio
 summary: يضيف دعم موفّر نماذج LM Studio إلى OpenClaw.
 title: Plugin ‏LM Studio
 x-i18n:
-    generated_at: "2026-07-12T06:15:19Z"
+    generated_at: "2026-07-16T14:50:52Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: ec6c84ec422c0795d00f744239fcad96a5a01ef4fddd4823ba0b6ed93444a75b
+    source_hash: 8fc13cb8579875fab911aaf456f1b632426761b173cc06a8a7f60698e96cfb16
     source_path: plugins/reference/lmstudio.md
     workflow: 16
 ---
 
-# Plugin ‏LM Studio
+# Plugin LM Studio
 
 يضيف دعم موفّر نماذج LM Studio إلى OpenClaw.
 
@@ -22,9 +23,9 @@ x-i18n:
 - الحزمة: `@openclaw/lmstudio-provider`
 - مسار التثبيت: مضمّن في OpenClaw
 
-## الواجهات
+## السطح
 
-الموفّرون: lmstudio؛ العقود: memoryEmbeddingProviders
+الموفّرون: `lmstudio`؛ العقود: `memoryEmbeddingProviders`
 
 ## الوثائق ذات الصلة
 

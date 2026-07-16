@@ -1,15 +1,16 @@
 ---
 read_when:
-    - आप TUI का शुरुआती-अनुकूल walkthrough चाहते हैं
-    - आपको TUI सुविधाओं, कमांड और शॉर्टकट की पूरी सूची चाहिए
+    - आप TUI का शुरुआती उपयोगकर्ताओं के लिए आसान चरण-दर-चरण मार्गदर्शन चाहते हैं
+    - आपको TUI की सुविधाओं, कमांड और शॉर्टकट की पूरी सूची चाहिए
 summary: 'टर्मिनल UI (TUI): Gateway से कनेक्ट करें या एम्बेडेड मोड में स्थानीय रूप से चलाएँ'
 title: TUI
 x-i18n:
-    generated_at: "2026-06-29T00:27:15Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T18:05:28Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: ed02875ea5dcb8cef987d16fe11701eba11160525caf9791f74c610b1b6bec6e
+    source_hash: 1e171520c24d95ac1d6df28227efea0a1258a0b9e59b61fe02c09a2d87b24391
     source_path: web/tui.md
     workflow: 16
 ---
@@ -38,7 +39,7 @@ openclaw tui
 openclaw tui --url ws://<host>:<port> --token <gateway-token>
 ```
 
-यदि आपका Gateway पासवर्ड auth का उपयोग करता है, तो `--password` का उपयोग करें।
+यदि आपका Gateway पासवर्ड प्रमाणीकरण का उपयोग करता है, तो `--password` का उपयोग करें।
 
 ### स्थानीय मोड
 
@@ -46,146 +47,153 @@ Gateway के बिना TUI चलाएँ:
 
 ```bash
 openclaw chat
-# or
+# या
 openclaw tui --local
 ```
 
-नोट:
+- `openclaw chat` और `openclaw terminal`, `openclaw tui --local` के उपनाम हैं।
+- `--local` को `--url`, `--token`, या `--password` के साथ संयोजित नहीं किया जा सकता।
+- स्थानीय मोड सीधे अंतर्निहित एजेंट रनटाइम का उपयोग करता है। अधिकांश स्थानीय टूल काम करते हैं, लेकिन केवल-Gateway सुविधाएँ उपलब्ध नहीं होतीं।
+- अकेला `openclaw` (बिना उपकमांड के) स्वचालित रूप से लक्ष्य चुनता है: कॉन्फ़िगर न किया गया इंस्टॉलेशन अनुमान ऑनबोर्डिंग चलाता है; अमान्य कॉन्फ़िगरेशन पारंपरिक Doctor मार्गदर्शन खोलता है; पहुँच योग्य कॉन्फ़िगर किया गया Gateway इस TUI शेल को Gateway मोड में खोलता है; अन्यथा कॉन्फ़िगर किया गया स्थानीय मॉडल इसे स्थानीय मोड में खोलता है।
 
-- `openclaw chat` और `openclaw terminal`, `openclaw tui --local` के alias हैं।
-- `--local` को `--url`, `--token`, या `--password` के साथ जोड़ा नहीं जा सकता।
-- स्थानीय मोड embedded agent runtime का सीधे उपयोग करता है। अधिकांश स्थानीय tools काम करते हैं, लेकिन केवल-Gateway सुविधाएँ उपलब्ध नहीं होतीं।
-- config file में authored settings होने के बाद, `openclaw` और `openclaw crestodian` भी इसी TUI shell का उपयोग करते हैं, जहाँ Crestodian स्थानीय setup और repair chat backend होता है।
+## आपको क्या दिखाई देता है
 
-## आपको क्या दिखता है
+- हेडर: कनेक्शन URL, वर्तमान एजेंट, वर्तमान सत्र।
+- चैट लॉग: उपयोगकर्ता संदेश, सहायक के उत्तर, सिस्टम सूचनाएँ, टूल कार्ड।
+- स्थिति पंक्ति: कनेक्शन/रन स्थिति (कनेक्ट हो रहा है, चल रहा है, स्ट्रीम हो रहा है, निष्क्रिय, त्रुटि)।
+- फुटर: एजेंट + सत्र + मॉडल + लक्ष्य स्थिति + चिंतन/तेज़/विस्तृत/ट्रेस/तर्क + टोकन संख्या + डिलीवरी। जब `tui.footer.showRemoteHost` सक्षम हो, तो रिमोट Gateway कनेक्शन में कनेक्शन होस्ट भी दिखाई देता है।
+- इनपुट: स्वतः-पूर्णता वाला टेक्स्ट एडिटर।
 
-- Header: connection URL, मौजूदा agent, मौजूदा session।
-- Chat log: user messages, assistant replies, system notices, tool cards।
-- Status line: connection/run state (connecting, running, streaming, idle, error)।
-- Footer: agent + session + model + goal state + think/fast/verbose/trace/reasoning + token counts + deliver। जब `tui.footer.showRemoteHost` सक्षम होता है, तो रिमोट Gateway connections connection host भी दिखाते हैं।
-- Input: autocomplete वाला text editor।
+## मानसिक मॉडल: एजेंट + सत्र
 
-## मानसिक मॉडल: agents + sessions
-
-- Agents unique slugs होते हैं (जैसे `main`, `research`)। Gateway सूची expose करता है।
-- Sessions मौजूदा agent से संबंधित होते हैं।
-- Session keys `agent:<agentId>:<sessionKey>` के रूप में संग्रहीत होते हैं।
-  - यदि आप `/session main` टाइप करते हैं, तो TUI इसे `agent:<currentAgent>:main` में expand करता है।
-  - यदि आप `/session agent:other:main` टाइप करते हैं, तो आप स्पष्ट रूप से उस agent session पर switch करते हैं।
-- Session scope:
-  - `per-sender` (default): हर agent के पास कई sessions होते हैं।
-  - `global`: TUI हमेशा `global` session का उपयोग करता है (picker खाली हो सकता है)।
-- मौजूदा agent + session हमेशा footer में दिखाई देते हैं।
-- non-local URL-backed connections के लिए Gateway host दिखाने के लिए, इससे opt in करें:
+- एजेंट अद्वितीय स्लग होते हैं (उदा. `main`, `research`)। Gateway उनकी सूची उपलब्ध कराता है।
+- सत्र वर्तमान एजेंट से संबंधित होते हैं।
+- सत्र कुंजियाँ `agent:<agentId>:<sessionKey>` के रूप में संग्रहीत होती हैं।
+  - यदि आप `/session main` टाइप करते हैं, तो TUI इसे `agent:<currentAgent>:main` में विस्तृत करता है।
+  - यदि आप `/session agent:other:main` टाइप करते हैं, तो आप स्पष्ट रूप से उस एजेंट सत्र पर स्विच करते हैं।
+- सत्र का दायरा:
+  - `per-sender` (डिफ़ॉल्ट): प्रत्येक एजेंट के कई सत्र होते हैं।
+  - `global`: TUI हमेशा `global` सत्र का उपयोग करता है (चयनकर्ता खाली हो सकता है)।
+- वर्तमान एजेंट + सत्र हमेशा फुटर में दिखाई देते हैं।
+- गैर-स्थानीय URL-समर्थित कनेक्शनों के लिए Gateway होस्ट दिखाने हेतु, इसे सक्षम करें:
 
   ```bash
   openclaw config set tui.footer.showRemoteHost true
   ```
 
-  Loopback और embedded local connections कभी host label नहीं दिखाते।
+  डिफ़ॉल्ट `false` है। लूपबैक और अंतर्निहित स्थानीय कनेक्शन कभी भी होस्ट लेबल नहीं दिखाते।
 
-- यदि session में [goal](/hi/tools/goal) है, तो footer उसकी compact state दिखाता है,
-  जैसे `Pursuing goal`, `Goal paused (/goal resume)`, या
-  `Goal achieved`।
-- `--session` के बिना शुरू करने पर, gateway-mode TUI उसी gateway, agent, और session scope के लिए last selected session resume करता है, यदि वह session अभी भी मौजूद है। `--session`, `/session`, `/new`, या `/reset` पास करना स्पष्ट ही रहता है।
+- यदि सत्र में कोई [लक्ष्य](/hi/tools/goal) है, तो फुटर उसकी संक्षिप्त स्थिति दिखाता है:
+  `Pursuing goal`, `Goal paused (/goal resume)`, `Goal blocked (/goal resume)`, या `Goal achieved`।
+- जब `--session` के बिना शुरू किया जाता है, तो Gateway-मोड TUI उसी Gateway, एजेंट और सत्र-दायरे के लिए पिछला चयनित सत्र फिर से शुरू करता है, यदि वह सत्र अभी भी मौजूद हो। `--session`, `/session`, `/new`, या `/reset` देना स्पष्ट चयन बना रहता है।
 
-## भेजना + delivery
+## भेजना + डिलीवरी
 
-- Messages Gateway को भेजे जाते हैं; providers को delivery default रूप से off होती है।
-- TUI, WebChat की तरह एक internal source surface है, generic outbound channel नहीं। visible replies के लिए `tools.message` की आवश्यकता रखने वाले harnesses active TUI turn को targetless `message.send` से satisfy कर सकते हैं; explicit provider delivery अभी भी सामान्य configured channels का उपयोग करती है और कभी `lastChannel` पर fallback नहीं करती।
-- Turn delivery on करें:
-  - `/deliver on`
-  - या Settings panel
-  - या `openclaw tui --deliver` के साथ शुरू करें
+- संदेश हमेशा Gateway (या स्थानीय मोड में अंतर्निहित रनटाइम) को भेजे जाते हैं; सहायक का उत्तर वापस किसी चैट प्रदाता तक पहुँचाना एक अलग चरण है, जो डिफ़ॉल्ट रूप से बंद रहता है।
+- TUI, WebChat की तरह एक आंतरिक स्रोत सतह है, कोई सामान्य आउटबाउंड चैनल नहीं। दृश्यमान उत्तरों के लिए `tools.message` आवश्यक करने वाले हार्नेस, लक्ष्य-रहित `message.send` से सक्रिय TUI टर्न को पूरा कर सकते हैं; स्पष्ट प्रदाता डिलीवरी फिर भी सामान्य कॉन्फ़िगर किए गए चैनलों का उपयोग करती है और कभी भी `lastChannel` पर वापस नहीं जाती।
+- डिलीवरी लॉन्च के समय पूरे TUI सत्र के लिए निर्धारित होती है: इसे चालू करने के लिए `openclaw tui --deliver` के साथ शुरू करें। सत्र के बीच में इसे बदलने के लिए कोई `/deliver` स्लैश कमांड या Settings टॉगल नहीं है; इसे बदलने के लिए TUI पुनः शुरू करें।
 
-## Pickers + overlays
+## चयनकर्ता + ओवरले
 
-- Model picker: उपलब्ध models की सूची दिखाएँ और session override set करें।
-- Agent picker: कोई अलग agent चुनें।
-- Session picker: मौजूदा agent के लिए पिछले 7 दिनों में updated अधिकतम 50 sessions दिखाता है। पुराने known session पर जाने के लिए `/session <key>` का उपयोग करें।
-- Settings: deliver, tool output expansion, और thinking visibility toggle करें।
+- मॉडल चयनकर्ता: उपलब्ध मॉडलों की सूची दिखाता है और सत्र ओवरराइड निर्धारित करता है।
+- एजेंट चयनकर्ता: कोई अन्य एजेंट चुनें।
+- सत्र चयनकर्ता: वर्तमान एजेंट के पिछले 7 दिनों में अपडेट किए गए अधिकतम 50 सत्र दिखाता है। किसी पुराने ज्ञात सत्र पर जाने के लिए `/session <key>` का उपयोग करें।
+- सेटिंग्स (`/settings`): टूल आउटपुट विस्तार और चिंतन की दृश्यता टॉगल करें। यह पैनल डिलीवरी को नियंत्रित नहीं करता।
 
-## Keyboard shortcuts
+## कीबोर्ड शॉर्टकट
 
-- Enter: message भेजें
-- Esc: active run abort करें
-- Ctrl+C: input clear करें (exit करने के लिए दो बार दबाएँ)
-- Ctrl+D: exit
-- Ctrl+L: model picker
-- Ctrl+G: agent picker
-- Ctrl+P: session picker
-- Ctrl+O: tool output expansion toggle करें
-- Ctrl+T: thinking visibility toggle करें (history reload करता है)
+- Enter: संदेश भेजें
+- Esc: सक्रिय रन निरस्त करें
+- Ctrl+C: इनपुट साफ़ करें (बाहर निकलने के लिए दो बार दबाएँ)
+- Ctrl+D: बाहर निकलें
+- Ctrl+L: मॉडल चयनकर्ता
+- Ctrl+G: एजेंट चयनकर्ता
+- Ctrl+P: सत्र चयनकर्ता
+- Ctrl+O: टूल आउटपुट विस्तार टॉगल करें
+- Ctrl+T: चिंतन की दृश्यता टॉगल करें (इतिहास पुनः लोड करता है)
 
-## Slash commands
+## स्लैश कमांड
 
-Core:
+मुख्य:
 
 - `/help`
-- `/status`
+- `/status` (Gateway को अग्रेषित; सत्र/मॉडल सारांश दिखाता है)
+- `/gateway-status` (उपनाम `/gwstatus`; सीधे Gateway कनेक्शन स्थिति दिखाता है)
 - `/agent <id>` (या `/agents`)
 - `/session <key>` (या `/sessions`)
 - `/model <provider/model>` (या `/models`)
 
-Session controls:
+सत्र नियंत्रण:
 
-- `/think <off|minimal|low|medium|high>`
-- `/fast <status|on|off>`
+- `/think <off|minimal|low|medium|high>` (मॉडल के आधार पर उच्चतर टियर `xhigh`/`max` जैसे स्तर जोड़ सकते हैं)
+- `/fast <status|auto|on|off>`
 - `/verbose <on|full|off>`
 - `/trace <on|off>`
 - `/reasoning <on|off|stream>`
-- `/usage <off|tokens|full|reset>` (`reset`/`inherit`/`clear`/`default` session override clear करता है)
-- `/goal [status] | /goal start <objective> | /goal pause|resume|complete|block|clear`
-- `/elevated <on|off|ask|full>` (alias: `/elev`)
+- `/usage <off|tokens|full|reset>` (`reset`/`inherit`/`clear`/`default` सत्र ओवरराइड साफ़ करता है)
+- `/goal [status] | /goal start <objective> | /goal edit <objective> | /goal pause|resume|complete|block|clear`
+- `/elevated <on|off|ask|full>` (उपनाम: `/elev`)
 - `/activation <mention|always>`
-- `/deliver <on|off>`
 
-Session lifecycle:
+सत्र जीवनचक्र:
 
-- `/new` या `/reset` (session reset करें)
-- `/abort` (active run abort करें)
+- `/new` (नई कुंजी के अंतर्गत एक नया, पृथक सत्र बनाएँ; पुराने सत्र पर मौजूद अन्य TUI क्लाइंट प्रभावित नहीं होते)
+- `/reset` (वर्तमान सत्र कुंजी को उसी स्थान पर रीसेट करें)
+- `/abort` (सक्रिय रन निरस्त करें)
 - `/settings`
-- `/exit`
+- `/exit` (या `/quit`)
 
-केवल local mode:
+केवल स्थानीय मोड:
 
-- `/auth [provider]` TUI के अंदर provider auth/login flow खोलता है।
+- `/auth [provider]` TUI के भीतर प्रदाता प्रमाणीकरण/लॉगिन प्रवाह खोलता है।
 
-अन्य Gateway slash commands (उदाहरण के लिए, `/context`) Gateway को forward किए जाते हैं और system output के रूप में दिखाए जाते हैं। [Slash commands](/hi/tools/slash-commands) देखें।
+OpenClaw:
 
-## Local shell commands
+- `/openclaw [request]` सामान्य एजेंट TUI से [OpenClaw](#openclaw-setup-and-repair-helper) सेटअप/मरम्मत चैट पर लौटाता है और वैकल्पिक रूप से एक अनुरोध अग्रेषित करता है।
 
-- TUI host पर local shell command चलाने के लिए किसी line के आगे `!` लगाएँ।
-- TUI local execution allow करने के लिए प्रति session एक बार prompt करता है; decline करने पर session के लिए `!` disabled रहता है।
-- Commands TUI working directory में fresh, non-interactive shell में चलते हैं (कोई persistent `cd`/env नहीं)।
-- Local shell commands अपने environment में `OPENCLAW_SHELL=tui-local` प्राप्त करते हैं।
-- अकेला `!` सामान्य message के रूप में भेजा जाता है; leading spaces local exec trigger नहीं करते।
+अन्य Gateway स्लैश कमांड (उदाहरण के लिए, `/context`) Gateway को अग्रेषित किए जाते हैं और सिस्टम आउटपुट के रूप में दिखाए जाते हैं। [स्लैश कमांड](/hi/tools/slash-commands) देखें।
 
-## local TUI से configs repair करें
+## स्थानीय शेल कमांड
 
-जब मौजूदा config पहले से validate होता है और आप चाहते हैं कि
-embedded agent उसी machine पर इसे inspect करे, docs से compare करे,
-और running Gateway पर निर्भर हुए बिना drift repair करने में मदद करे, तब local mode का उपयोग करें।
+- TUI होस्ट पर स्थानीय शेल कमांड चलाने के लिए किसी पंक्ति के आगे `!` लगाएँ।
+- स्थानीय निष्पादन की अनुमति के लिए TUI प्रति सत्र एक बार पूछता है; अस्वीकार करने पर उस सत्र के लिए `!` अक्षम रहता है।
+- कमांड TUI की कार्यशील डायरेक्टरी में एक नए, गैर-इंटरैक्टिव शेल में चलते हैं (कोई स्थायी `cd`/परिवेश नहीं)।
+- स्थानीय शेल कमांड को उनके परिवेश में `OPENCLAW_SHELL=tui-local` मिलता है।
+- अकेला `!` सामान्य संदेश के रूप में भेजा जाता है; आरंभिक रिक्त स्थान स्थानीय निष्पादन को ट्रिगर नहीं करते।
 
-यदि `openclaw config validate` पहले से fail हो रहा है, तो पहले `openclaw configure`
-या `openclaw doctor --fix` से शुरू करें। `openclaw chat` invalid-
-config guard को bypass नहीं करता।
+## OpenClaw सेटअप और मरम्मत सहायक
 
-Typical loop:
+OpenClaw रिंग-ज़ीरो सेटअप/मरम्मत सहायक है, जो कॉन्फ़िगर किया गया डिफ़ॉल्ट मॉडल लाइव अनुमान जाँच पास करने के बाद `openclaw setup` के रूप में उपलब्ध होता है। यदि अनुमान उपलब्ध नहीं है, तो इंटरैक्टिव आह्वान अनुमान ऑनबोर्डिंग पर लौटता है और स्वचालन मरम्मत मार्गदर्शन के साथ विफल हो जाता है। यह `openclaw tui --local` वाले उसी स्थानीय TUI शेल के भीतर चलता है और ऐसे AI एजेंट द्वारा समर्थित है जो OpenClaw के टाइप किए गए, अनुमोदन-नियंत्रित संचालनों तक सीमित है:
 
-1. local mode शुरू करें:
+```bash
+openclaw setup                       # इंटरैक्टिव रूप से शुरू करें
+openclaw setup -m "status"           # एक अनुरोध चलाएँ और बाहर निकलें
+openclaw setup -m "set default model openai/gpt-5.2" --yes   # कॉन्फ़िगरेशन लेखन लागू करें
+```
+
+- स्थायी कॉन्फ़िगरेशन लेखन के लिए अनुमोदन आवश्यक है: या तो इंटरैक्टिव रूप से पुष्टि करें या `--yes` दें।
+- `--json` चैट शुरू करने के बजाय स्टार्टअप अवलोकन को JSON के रूप में प्रिंट करता है।
+- OpenClaw के भीतर से, कोई `open-tui` अनुरोध (उदाहरण के लिए, सामान्य एजेंट से बात करने के लिए कहना) OpenClaw से बाहर निकलता है और नियमित एजेंट TUI खोलता है; वापस आने के लिए वहाँ `/openclaw` का उपयोग करें।
+
+स्थानीय मोड का उपयोग तब करें जब वर्तमान कॉन्फ़िगरेशन पहले से मान्य हो और आप चाहते हों कि अंतर्निहित एजेंट उसी मशीन पर उसका निरीक्षण करे, दस्तावेज़ों से उसकी तुलना करे और चालू Gateway पर निर्भर हुए बिना विचलन सुधारने में सहायता करे।
+
+यदि `openclaw config validate` पहले से विफल हो रहा है, तो पहले `openclaw configure` या `openclaw doctor --fix` से शुरू करें; `openclaw chat` को शुरू होने के लिए अभी भी लोड करने योग्य कॉन्फ़िगरेशन चाहिए।
+
+सामान्य क्रम:
+
+1. स्थानीय मोड शुरू करें:
 
 ```bash
 openclaw chat
 ```
 
-2. agent से पूछें कि आप क्या check कराना चाहते हैं, उदाहरण के लिए:
+2. एजेंट से बताएँ कि आप क्या जाँचना चाहते हैं, उदाहरण के लिए:
 
 ```text
-Compare my gateway auth config with the docs and suggest the smallest fix.
+मेरे Gateway प्रमाणीकरण कॉन्फ़िगरेशन की दस्तावेज़ों से तुलना करें और सबसे छोटा सुधार सुझाएँ।
 ```
 
-3. exact evidence और validation के लिए local shell commands का उपयोग करें:
+3. सटीक प्रमाण और सत्यापन के लिए स्थानीय शेल कमांड का उपयोग करें:
 
 ```text
 !openclaw config file
@@ -194,73 +202,74 @@ Compare my gateway auth config with the docs and suggest the smallest fix.
 !openclaw doctor
 ```
 
-4. `openclaw config set` या `openclaw configure` से narrow changes apply करें, फिर `!openclaw config validate` फिर से चलाएँ।
-5. यदि Doctor automatic migration या repair recommend करता है, तो उसे review करें और `!openclaw doctor --fix` चलाएँ।
+4. `openclaw config set` या `openclaw configure` से सीमित परिवर्तन लागू करें, फिर `!openclaw config validate` दोबारा चलाएँ।
+5. यदि Doctor स्वचालित माइग्रेशन या मरम्मत की अनुशंसा करता है, तो उसकी समीक्षा करें और `!openclaw doctor --fix` चलाएँ।
 
-Tips:
+सुझाव:
 
-- `openclaw.json` को हाथ से edit करने के बजाय `openclaw config set` या `openclaw configure` को प्राथमिकता दें।
-- `openclaw docs "<query>"` उसी machine से live docs index search करता है।
-- जब आपको structured schema और SecretRef/resolvability errors चाहिए हों, तो `openclaw config validate --json` उपयोगी है।
+- `openclaw.json` को हाथ से संपादित करने के बजाय `openclaw config set` या `openclaw configure` को प्राथमिकता दें।
+- `openclaw docs "<query>"` उसी मशीन से लाइव दस्तावेज़ अनुक्रमणिका खोजता है।
+- जब आपको संरचित स्कीमा और SecretRef/समाधेयता त्रुटियाँ चाहिए हों, तब `openclaw config validate --json` उपयोगी है।
 
-## Tool output
+## टूल आउटपुट
 
-- Tool calls args + results वाले cards के रूप में दिखते हैं।
-- Ctrl+O collapsed/expanded views के बीच toggle करता है।
-- Tools चलने के दौरान, partial updates उसी card में stream होते हैं।
+- टूल कॉल तर्कों + परिणामों वाले कार्ड के रूप में दिखाई देते हैं।
+- Ctrl+O संक्षिप्त/विस्तृत दृश्यों के बीच टॉगल करता है।
+- टूल चलते समय आंशिक अपडेट उसी कार्ड में स्ट्रीम होते हैं।
 
-## Terminal colors
+## टर्मिनल रंग
 
-- TUI assistant body text को आपके terminal के default foreground में रखता है ताकि dark और light terminals दोनों readable रहें।
-- यदि आपका terminal light background उपयोग करता है और auto-detection गलत है, तो `openclaw tui` launch करने से पहले `OPENCLAW_THEME=light` set करें।
-- इसके बजाय original dark palette force करने के लिए, `OPENCLAW_THEME=dark` set करें।
+- TUI सहायक के मुख्य टेक्स्ट को आपके टर्मिनल के डिफ़ॉल्ट अग्रभूमि रंग में रखता है, ताकि गहरे और हल्के दोनों टर्मिनल पठनीय रहें।
+- यदि आपका टर्मिनल हल्की पृष्ठभूमि का उपयोग करता है और स्वचालित पहचान गलत है, तो `openclaw tui` शुरू करने से पहले `OPENCLAW_THEME=light` निर्धारित करें।
+- इसके बजाय मूल गहरा पैलेट बाध्य करने के लिए `OPENCLAW_THEME=dark` निर्धारित करें।
 
-## History + streaming
+## इतिहास + स्ट्रीमिंग
 
-- Connect होने पर, TUI latest history load करता है (default 200 messages)।
-- Streaming responses finalized होने तक in place update होते हैं।
-- TUI richer tool cards के लिए agent tool events भी listen करता है।
+- कनेक्ट होने पर, TUI नवीनतम इतिहास लोड करता है (डिफ़ॉल्ट 200 संदेश)।
+- स्ट्रीमिंग उत्तर अंतिम रूप मिलने तक उसी स्थान पर अपडेट होते रहते हैं।
+- अधिक समृद्ध टूल कार्ड के लिए TUI एजेंट टूल इवेंट भी सुनता है।
 
-## Connection details
+## कनेक्शन विवरण
 
-- TUI Gateway के साथ `mode: "tui"` के रूप में register करता है।
-- Reconnects system message दिखाते हैं; event gaps log में surfaced होते हैं।
+- TUI मोटे `ui` क्लाइंट मोड के अंतर्गत क्लाइंट ID `openclaw-tui` से कनेक्ट होता है (वही मोड जिसका उपयोग Control UI और WebChat, Gateway नीति के लिए करते हैं)।
+- दोबारा कनेक्ट होने पर सिस्टम संदेश दिखाई देता है; इवेंट के अंतराल लॉग में दिखाए जाते हैं।
 
-## Options
+## विकल्प
 
-- `--local`: local embedded agent runtime के विरुद्ध चलाएँ
-- `--url <url>`: Gateway WebSocket URL (config या `ws://127.0.0.1:<port>` default होता है)
-- `--token <token>`: Gateway token (यदि required हो)
-- `--password <password>`: Gateway password (यदि required हो)
-- `--session <key>`: Session key (default: `main`, या scope global होने पर `global`)
-- `--deliver`: assistant replies provider तक deliver करें (default off)
-- `--thinking <level>`: sends के लिए thinking level override करें
-- `--message <text>`: connect होने के बाद initial message भेजें
-- `--timeout-ms <ms>`: Agent timeout ms में (default `agents.defaults.timeoutSeconds`)
-- `--history-limit <n>`: load करने के लिए history entries (default `200`)
+- `--local`: स्थानीय एम्बेडेड एजेंट रनटाइम पर चलाएँ
+- `--url <url>`: Gateway WebSocket URL (डिफ़ॉल्ट रूप से कॉन्फ़िगरेशन से `gateway.remote.url`, या लूपबैक पर `ws://127.0.0.1:<port>`)
+- `--token <token>`: Gateway टोकन (यदि आवश्यक हो)
+- `--password <password>`: Gateway पासवर्ड (यदि आवश्यक हो)
+- `--tls-fingerprint <sha256>`: पिन किए गए `wss://` Gateway के लिए अपेक्षित TLS प्रमाणपत्र फ़िंगरप्रिंट
+- `--session <key>`: सत्र कुंजी (डिफ़ॉल्ट: `main`, या स्कोप ग्लोबल होने पर `global`)
+- `--deliver`: सहायक के उत्तर प्रदाता को डिलीवर करें (डिफ़ॉल्ट रूप से बंद)
+- `--thinking <level>`: भेजते समय थिंकिंग स्तर को ओवरराइड करें
+- `--message <text>`: कनेक्ट होने के बाद एक प्रारंभिक संदेश भेजें
+- `--timeout-ms <ms>`: एजेंट टाइमआउट मिलीसेकंड में (डिफ़ॉल्ट रूप से `agents.defaults.timeoutSeconds`)
+- `--history-limit <n>`: लोड की जाने वाली इतिहास प्रविष्टियाँ (डिफ़ॉल्ट `200`)
 
 <Warning>
-जब आप `--url` set करते हैं, तो TUI config या environment credentials पर fallback नहीं करता। `--token` या `--password` स्पष्ट रूप से pass करें। Missing explicit credentials error है। local mode में, `--url`, `--token`, या `--password` pass न करें।
+जब आप `--url` सेट करते हैं, तो TUI कॉन्फ़िगरेशन या परिवेश क्रेडेंशियल पर फ़ॉलबैक नहीं करता। `--token` या `--password` स्पष्ट रूप से पास करें, और जब लक्ष्य पिन किए गए प्रमाणपत्र का उपयोग करता हो, तो `--tls-fingerprint` भी पास करें। स्पष्ट क्रेडेंशियल का न होना एक त्रुटि है। स्थानीय मोड में, `--url`, `--token`, `--password`, या `--tls-fingerprint` पास न करें।
 </Warning>
 
-## Troubleshooting
+## समस्या निवारण
 
-message भेजने के बाद कोई output नहीं:
+संदेश भेजने के बाद कोई आउटपुट नहीं:
 
-- Gateway connected और idle/busy है, यह confirm करने के लिए TUI में `/status` चलाएँ।
-- Gateway logs check करें: `openclaw logs --follow`।
-- confirm करें कि agent run कर सकता है: `openclaw status` और `openclaw models status`।
-- यदि आप chat channel में messages expect करते हैं, तो delivery enable करें (`/deliver on` या `--deliver`)।
+- Gateway के कनेक्ट होने और निष्क्रिय/व्यस्त होने की पुष्टि करने के लिए TUI में `/status` चलाएँ।
+- Gateway लॉग जाँचें: `openclaw logs --follow`।
+- पुष्टि करें कि एजेंट चल सकता है: `openclaw status` और `openclaw models status`।
+- यदि आप किसी चैट चैनल में संदेशों की अपेक्षा करते हैं, तो पुष्टि करें कि TUI को `--deliver` के साथ शुरू किया गया था (पुनः आरंभ किए बिना इसे बाद में चालू नहीं किया जा सकता)।
 
-## Connection troubleshooting
+## कनेक्शन समस्या निवारण
 
-- `disconnected`: सुनिश्चित करें कि Gateway चल रहा है और आपके `--url/--token/--password` correct हैं।
-- picker में कोई agents नहीं: `openclaw agents list` और अपना routing config check करें।
-- Empty session picker: आप global scope में हो सकते हैं या अभी कोई sessions नहीं हो सकते।
+- `disconnected`: सुनिश्चित करें कि Gateway चल रहा है और आपके `--url/--token/--password` सही हैं।
+- पिकर में कोई एजेंट नहीं: `openclaw agents list` और अपना रूटिंग कॉन्फ़िगरेशन जाँचें।
+- खाली सत्र पिकर: हो सकता है कि आप ग्लोबल स्कोप में हों या अभी तक कोई सत्र न हो।
 
-## Related
+## संबंधित
 
-- [Control UI](/hi/web/control-ui) — web-based control interface
-- [Config](/hi/cli/config) — `openclaw.json` inspect, validate, और edit करें
-- [Doctor](/hi/cli/doctor) — guided repair और migration checks
-- [CLI Reference](/hi/cli) — पूरा CLI command reference
+- [कंट्रोल UI](/hi/web/control-ui) — वेब-आधारित नियंत्रण इंटरफ़ेस
+- [कॉन्फ़िगरेशन](/hi/cli/config) — `openclaw.json` का निरीक्षण, सत्यापन और संपादन करें
+- [डॉक्टर](/hi/cli/doctor) — निर्देशित सुधार और माइग्रेशन जाँच
+- [CLI संदर्भ](/hi/cli) — संपूर्ण CLI कमांड संदर्भ

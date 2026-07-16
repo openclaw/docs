@@ -4,11 +4,12 @@ read_when:
 summary: Menambahkan dukungan penyedia model Kimi dan Kimi Coding ke OpenClaw.
 title: Plugin Kimi
 x-i18n:
-    generated_at: "2026-07-12T14:27:01Z"
+    generated_at: "2026-07-16T18:27:38Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 6f609f6e21b493ea83e5cc34a28921be2fed3334b531194050257857a06ef259
+    source_hash: 531172e318c99f8debace71e32e01980efb4205fe3afb0d1185493382bbe9712
     source_path: plugins/reference/kimi.md
     workflow: 16
 ---
@@ -20,11 +21,11 @@ Menambahkan dukungan penyedia model Kimi dan Kimi Coding ke OpenClaw.
 ## Distribusi
 
 - Paket: `@openclaw/kimi-provider`
-- Jalur instalasi: npm; ClawHub: `clawhub:@openclaw/kimi-provider`
+- Rute instalasi: npm; ClawHub: `clawhub:@openclaw/kimi-provider`
 
-## Cakupan
+## Permukaan
 
-penyedia: kimi, kimi-coding
+penyedia: `kimi`, `kimi-coding`
 
 ## Dokumentasi terkait
 

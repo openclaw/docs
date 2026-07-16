@@ -1,44 +1,48 @@
 ---
 read_when:
     - Está instalando, configurando o auditando el plugin opencode
-summary: Añade a OpenClaw compatibilidad con el proveedor de modelos OpenCode y con el catálogo nativo de sesiones.
+summary: Añade compatibilidad con el proveedor de modelos OpenCode a OpenClaw.
 title: Plugin de OpenCode
 x-i18n:
-    generated_at: "2026-07-14T13:52:00Z"
+    generated_at: "2026-07-16T11:49:21Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
-    prompt_version: 25
+    prompt_version: 32
     provider: openai
-    source_hash: 0a9a0b180b42ba26be21a95967a96d0012e7529076f38206c1442f77acb96647
+    source_hash: aecf396cfc645e4a036b8130ed7f33db9081dffda120c6d06ebe863dd3be3730
     source_path: plugins/reference/opencode.md
     workflow: 16
 ---
 
-# Plugin de OpenCode
+# Plugin OpenCode
 
-Añade compatibilidad con el proveedor de modelos OpenCode y el catálogo de sesiones nativo a OpenClaw.
+Añade compatibilidad con el proveedor de modelos OpenCode a OpenClaw.
 
 ## Distribución
 
 - Paquete: `@openclaw/opencode-provider`
-- Método de instalación: incluido en OpenClaw
+- Ruta de instalación: incluido en OpenClaw
 
 ## Superficie
 
-proveedores: opencode; contratos: mediaUnderstandingProviders; catálogo de sesiones: opencode
+proveedores: `opencode`; contratos: `mediaUnderstandingProviders`
+
+<!-- openclaw-plugin-reference:manual-start -->
 
 ## Sesiones nativas
 
-OpenClaw detecta automáticamente la CLI `opencode` en el Gateway y los nodos emparejados. Las sesiones
-almacenadas aparecen entonces en el grupo de la barra lateral de sesiones **OpenCode**, con exploración de
-transcripciones en modo de solo lectura mediante los comandos oficiales `opencode --pure db ... --format json`
+OpenClaw detecta automáticamente la CLI `opencode` en el Gateway y en los nodos emparejados. Las sesiones
+almacenadas aparecen en el grupo **OpenCode** de la barra lateral de sesiones, con exploración
+de transcripciones de solo lectura mediante los comandos oficiales `opencode --pure db ... --format json`
 y `opencode --pure export`. El entorno restringido y el modo `--pure`
 impiden que la exploración del catálogo cargue plugins del proyecto o herede credenciales
-no relacionadas del Gateway.
+del Gateway no relacionadas.
 
-Desactive **Catálogo de sesiones de OpenCode** en **Configuración > Plugins > OpenCode** para
+Desactive **OpenCode Session Catalog** en **Config > Plugins > OpenCode** para
 deshabilitar la detección. Está habilitada de forma predeterminada.
+
+<!-- openclaw-plugin-reference:manual-end -->
 
 ## Documentación relacionada
 
-- [opencode](/es/providers/opencode)
+- [OpenCode](/es/providers/opencode)

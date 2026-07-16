@@ -1,30 +1,31 @@
 ---
 read_when:
-    - شما در حال نصب، پیکربندی یا ممیزی Plugin ‏zalouser هستید
-summary: Plugin حساب شخصی Zalo برای OpenClaw از طریق یکپارچه‌سازی بومی zca-js.
+    - در حال نصب، پیکربندی یا ممیزی افزونه zalouser هستید
+summary: Plugin حساب شخصی Zalo در OpenClaw از طریق یکپارچه‌سازی بومی zca-js.
 title: Plugin شخصی Zalo
 x-i18n:
-    generated_at: "2026-07-12T10:32:30Z"
+    generated_at: "2026-07-16T17:05:00Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: c03db694c940cb1fb20f4a2f73512c9d3cf3c79e910cc6a0dd4aa38bd4465ed5
+    source_hash: 5c6617fe9868c56c0ecd4065109f58f8483e2fcef7730456826366c24dceee8b
     source_path: plugins/reference/zalouser.md
     workflow: 16
 ---
 
-# Plugin شخصی Zalo
+# Plugin حساب شخصی Zalo
 
-Plugin حساب شخصی Zalo در OpenClaw با یکپارچه‌سازی بومی zca-js.
+Plugin حساب شخصی Zalo برای OpenClaw از طریق یکپارچه‌سازی بومی zca-js.
 
 ## توزیع
 
 - بسته: `@openclaw/zalouser`
-- مسیر نصب: npm؛ ClawHub
+- روش نصب: npm؛ ClawHub
 
 ## سطح
 
-کانال‌ها: zalouser؛ قراردادها: ابزارها
+کانال‌ها: `zalouser`؛ قراردادها: `tools`
 
 ## مستندات مرتبط
 

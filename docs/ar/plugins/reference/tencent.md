@@ -1,19 +1,20 @@
 ---
 read_when:
-    - أنت تثبّت Plugin ‏tencent أو تهيّئه أو تدقّق فيه
+    - أنت تثبّت Plugin ‏tencent أو تهيئه أو تدقّق فيه
 summary: يضيف دعم موفّري النماذج Tencent TokenHub وTencent Tokenplan إلى OpenClaw.
 title: Plugin Tencent
 x-i18n:
-    generated_at: "2026-07-12T06:22:21Z"
+    generated_at: "2026-07-16T14:34:39Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 7f7925d89feaded27708e3f31d08ed4e29650cb8ce1152011fd920ed4fb864ef
+    source_hash: c053ff4f5e142ac9414c03388352474da68e86715ff4f7f00781c3dfced185c4
     source_path: plugins/reference/tencent.md
     workflow: 16
 ---
 
-# Plugin ‏Tencent
+# Plugin Tencent
 
 يضيف دعم موفّري النماذج Tencent TokenHub وTencent Tokenplan إلى OpenClaw.
 
@@ -24,7 +25,7 @@ x-i18n:
 
 ## الواجهات
 
-موفّرو النماذج: tencent-tokenhub، tencent-tokenplan
+موفّرو النماذج: `tencent-tokenhub`، `tencent-tokenplan`
 
 ## الوثائق ذات الصلة
 

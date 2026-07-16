@@ -4,11 +4,12 @@ read_when:
 summary: يضيف دعم موفّر نماذج GitHub Copilot إلى OpenClaw.
 title: Plugin GitHub Copilot
 x-i18n:
-    generated_at: "2026-07-12T06:20:36Z"
+    generated_at: "2026-07-16T14:40:05Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 01b8a15fe2da9848cef18e0e24b1fdb1493e8f17046a7f82f1331f29c80f0660
+    source_hash: 3ed5a9098ac15afb0ecb77a0c723e178819a4f83e7da9728342d985e0f51f4c8
     source_path: plugins/reference/github-copilot.md
     workflow: 16
 ---
@@ -20,11 +21,11 @@ x-i18n:
 ## التوزيع
 
 - الحزمة: `@openclaw/github-copilot-provider`
-- مسار التثبيت: مضمّن في OpenClaw
+- مسار التثبيت: مضمن في OpenClaw
 
-## الواجهات
+## الواجهة
 
-الموفّرون: github-copilot؛ العقود: memoryEmbeddingProviders، usageProviders
+الموفّرون: `github-copilot`؛ العقود: `memoryEmbeddingProviders`، `usageProviders`
 
 ## الوثائق ذات الصلة
 

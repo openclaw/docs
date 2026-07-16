@@ -1,32 +1,33 @@
 ---
 read_when:
     - Je hebt een andere installatiemethode nodig dan de snelstartgids Aan de slag
-    - U wilt implementeren op een cloudplatform
-    - U moet bijwerken, migreren of verwijderen
+    - Je wilt implementeren op een cloudplatform
+    - Je moet bijwerken, migreren of verwijderen
 summary: OpenClaw installeren - installatiescript, npm/pnpm/bun, vanuit de broncode, Docker en meer
 title: Installeren
 x-i18n:
-    generated_at: "2026-07-12T09:03:48Z"
+    generated_at: "2026-07-16T15:58:57Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: cc819cc6c1d57af0739a7d11f0f2834479ddabbca0571b105b8cb9325e87b145
+    source_hash: dc6c6c33294852c90d2d2904b78ff8b0483b8e72a380d5835c5bdda67547de0c
     source_path: install/index.md
     workflow: 16
 ---
 
 ## Systeemvereisten
 
-- **Node 22.19+, 23.11+ of 24+** - Node 24 is het standaarddoel; het installatiescript regelt dit automatisch.
-- **macOS, Linux of Windows** - Windows-gebruikers kunnen beginnen met de systeemeigen Windows Hub-app, het PowerShell-installatieprogramma voor de CLI of een WSL2-Gateway. Zie [Windows](/nl/platforms/windows).
+- **Node 22.22.3+, 24.15+ of 25.9+** - Node 24 is het standaarddoel; het installatiescript regelt dit automatisch.
+- **macOS, Linux of Windows** - Windows-gebruikers kunnen beginnen met de systeemeigen Windows Hub-app, het PowerShell CLI-installatieprogramma of een WSL2 Gateway. Zie [Windows](/nl/platforms/windows).
 - `pnpm` is alleen nodig als je vanuit de broncode bouwt.
 
 ## Aanbevolen: installatiescript
 
-De snelste installatiemethode. Het detecteert je besturingssysteem, installeert indien nodig Node, installeert OpenClaw en start de configuratie.
+De snelste installatiemethode. Het detecteert je besturingssysteem, installeert indien nodig Node, installeert OpenClaw en start de onboarding.
 
 <Note>
-Gebruikers van Windows-desktops kunnen ook de systeemeigen aanvullende app [Windows Hub](/nl/platforms/windows#recommended-windows-hub) installeren, die configuratie, systeemvakstatus, chat, Node-modus en lokale MCP-modus bevat.
+Gebruikers van Windows-desktops kunnen ook de systeemeigen begeleidende app [Windows Hub](/nl/platforms/windows#recommended-windows-hub) installeren, die configuratie, status in het systeemvak, chat, Node-modus en lokale MCP-modus bevat.
 </Note>
 
 <Tabs>
@@ -42,7 +43,7 @@ Gebruikers van Windows-desktops kunnen ook de systeemeigen aanvullende app [Wind
   </Tab>
 </Tabs>
 
-Installeren zonder de configuratie uit te voeren:
+Installeren zonder de onboarding uit te voeren:
 
 <Tabs>
   <Tab title="macOS / Linux / WSL2">
@@ -63,17 +64,17 @@ Zie [Interne werking van het installatieprogramma](/nl/install/installer) voor a
 
 ### Installatieprogramma met lokaal voorvoegsel (`install-cli.sh`)
 
-Gebruik dit als je OpenClaw en Node onder een lokaal voorvoegsel zoals
-`~/.openclaw` wilt bewaren, zonder afhankelijk te zijn van een systeembrede Node-installatie:
+Gebruik dit wanneer je OpenClaw en Node onder een lokaal voorvoegsel wilt bewaren, zoals
+`~/.openclaw`, zonder afhankelijk te zijn van een systeembrede Node-installatie:
 
 ```bash
 curl -fsSL https://openclaw.ai/install-cli.sh | bash
 ```
 
-Het ondersteunt standaard installaties via npm, plus installaties vanuit een git-checkout binnen dezelfde
+Het ondersteunt standaard npm-installaties en daarnaast installaties vanuit een git-checkout binnen dezelfde
 voorvoegselstroom. Volledige referentie: [Interne werking van het installatieprogramma](/nl/install/installer#install-clish).
 
-Al geïnstalleerd? Schakel tussen pakket- en git-installaties met
+Al geïnstalleerd? Wissel tussen pakket- en git-installaties met
 `openclaw update --channel dev` en `openclaw update --channel stable`. Zie
 [Bijwerken](/nl/install/updating#switch-between-npm-and-git-installs).
 
@@ -90,7 +91,7 @@ Als je Node al zelf beheert:
 
     <Note>
     Het gehoste installatieprogramma wist npm-filters voor actualiteit, zoals `min-release-age`,
-    voor de installatie van het OpenClaw-pakket. Als je handmatig met npm installeert, blijft je eigen
+    voor de installatie van het OpenClaw-pakket. Als je handmatig installeert met npm, blijft je eigen
     npm-beleid van toepassing.
     </Note>
 
@@ -103,7 +104,7 @@ Als je Node al zelf beheert:
     ```
 
     <Note>
-    pnpm vereist expliciete goedkeuring voor pakketten met bouwscripts. Voer `pnpm approve-builds -g` uit na de eerste installatie.
+    pnpm vereist expliciete goedkeuring voor pakketten met buildscripts. Voer `pnpm approve-builds -g` uit na de eerste installatie.
     </Note>
 
   </Tab>
@@ -114,7 +115,7 @@ Als je Node al zelf beheert:
     ```
 
     <Note>
-    Bun wordt ondersteund voor het globale installatiepad van de CLI. Voor de Gateway-runtime blijft Node de aanbevolen runtime voor de daemon.
+    Bun kan het globale pakket installeren, maar het resulterende uitvoerbare bestand `openclaw` vereist een ondersteunde Node-runtime, omdat de OpenClaw-status `node:sqlite` gebruikt.
     </Note>
 
   </Tab>
@@ -132,9 +133,9 @@ pnpm link --global
 openclaw onboard --install-daemon
 ```
 
-Je kunt de koppeling ook overslaan en `pnpm openclaw ...` vanuit de repository gebruiken. Zie [Configuratie](/nl/start/setup) voor volledige ontwikkelwerkstromen.
+Je kunt de koppeling ook overslaan en `pnpm openclaw ...` vanuit de repository gebruiken. Zie [Configuratie](/nl/start/setup) voor de volledige ontwikkelworkflows.
 
-### Installeren vanuit de hoofdcheckout op GitHub
+### Installeren vanuit de GitHub-checkout van main
 
 ```bash
 curl -fsSL --proto '=https' --tlsv1.2 https://openclaw.ai/install.sh | bash -s -- --install-method git --version main
@@ -144,7 +145,7 @@ curl -fsSL --proto '=https' --tlsv1.2 https://openclaw.ai/install.sh | bash -s -
 
 <CardGroup cols={2}>
   <Card title="Docker" href="/nl/install/docker" icon="container">
-    Implementaties in containers of zonder grafische omgeving.
+    Implementaties in containers of zonder grafische interface.
   </Card>
   <Card title="Podman" href="/nl/install/podman" icon="container">
     Rootless containeralternatief voor Docker.
@@ -156,7 +157,7 @@ curl -fsSL --proto '=https' --tlsv1.2 https://openclaw.ai/install.sh | bash -s -
     Geautomatiseerde inrichting van een machinepark.
   </Card>
   <Card title="Bun" href="/nl/install/bun" icon="zap">
-    Gebruik van alleen de CLI via de Bun-runtime.
+    Optioneel installatieprogramma voor afhankelijkheden en uitvoerder van pakketscripts.
   </Card>
 </CardGroup>
 
@@ -177,7 +178,7 @@ Als je na de installatie beheerd opstarten wilt:
 ## Hosting en implementatie
 
 Implementeer OpenClaw op een cloudserver of VPS. Zie [Linux-server](/nl/vps) voor de volledige
-providerkeuze (DigitalOcean, Hetzner, Hostinger, Fly.io, GCP, Azure, Railway,
+providerkiezer (DigitalOcean, Hetzner, Hostinger, Fly.io, GCP, Azure, Railway,
 Northflank, Oracle Cloud, Raspberry Pi en meer), of implementeer declaratief op
 [Render](/nl/install/render).
 

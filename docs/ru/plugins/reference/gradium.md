@@ -1,15 +1,15 @@
 ---
 read_when:
-    - Вы устанавливаете, настраиваете или проверяете плагин gradium
-summary: Добавляет поддержку провайдера преобразования текста в речь.
+    - Вы устанавливаете, настраиваете или проверяете плагин gradium.
+summary: Добавляет поддержку провайдеров преобразования текста в речь.
 title: Плагин Gradium
 x-i18n:
-    generated_at: "2026-07-13T18:23:49Z"
+    generated_at: "2026-07-16T17:14:09Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
-    prompt_version: 24
+    prompt_version: 32
     provider: openai
-    source_hash: 4ae70f3e901d44c238d6e1abcec13f67c0d19df6f82d92e365c3ddf0355ea23d
+    source_hash: 745da84ab0ca6af245437febb4edb23a24ad3e302724c18ec477899f011d20c0
     source_path: plugins/reference/gradium.md
     workflow: 16
 ---
@@ -25,7 +25,7 @@ x-i18n:
 
 ## Интерфейс
 
-контракты: speechProviders
+контракты: `speechProviders`
 
 ## Связанная документация
 

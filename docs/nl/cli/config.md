@@ -2,28 +2,29 @@
 read_when:
     - Je wilt de configuratie niet-interactief lezen of bewerken
 sidebarTitle: Config
-summary: CLI-referentie voor `openclaw config` (ophalen/instellen/wijzigen/verwijderen/bestand/schema/valideren)
+summary: CLI-referentie voor `openclaw config` (get/set/patch/unset/file/schema/validate)
 title: Configuratie
 x-i18n:
-    generated_at: "2026-07-12T08:42:03Z"
+    generated_at: "2026-07-16T15:33:38Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 1a9531407b2314d1a6bc05a87eb7efb6c37a847378b150125693f4d59733a2e9
+    source_hash: 63be5cbac6c7db9c6b93ad690e5decab9f4ce7904e8b10f26a3b1e39e4729450
     source_path: cli/config.md
     workflow: 16
 ---
 
-Niet-interactieve hulpfuncties voor `openclaw.json`: een waarde op basis van een pad ophalen/instellen/patchen/verwijderen, het schema weergeven, valideren of het actieve bestandspad weergeven. Voer `openclaw config` zonder subopdracht uit om dezelfde begeleide wizard te openen als met `openclaw configure`.
+Niet-interactieve hulpprogramma's voor `openclaw.json`: een waarde op basis van een pad ophalen/instellen/patchen/verwijderen, het schema afdrukken, valideren of het actieve bestandspad afdrukken. Voer `openclaw config` zonder subopdracht uit om dezelfde begeleide wizard te openen als `openclaw configure`.
 
 <Note>
-Wanneer `OPENCLAW_NIX_MODE=1` is ingesteld, behandelt OpenClaw `openclaw.json` als onveranderlijk. Alleen-lezenopdrachten (`config get`, `config file`, `config schema`, `config validate`) blijven werken; opdrachten die de configuratie wijzigen, worden geweigerd. Bewerk in plaats daarvan de Nix-bron voor de installatie; gebruik voor de officiële nix-openclaw-distributie de [snelstartgids voor nix-openclaw](https://github.com/openclaw/nix-openclaw#quick-start) en stel waarden in onder `programs.openclaw.config` of `instances.<name>.config`.
+Wanneer `OPENCLAW_NIX_MODE=1`, behandelt OpenClaw `openclaw.json` als onveranderlijk. Alleen-lezenopdrachten (`config get`, `config file`, `config schema`, `config validate`) blijven werken; configuratieschrijvers weigeren. Bewerk in plaats daarvan de Nix-bron voor de installatie; gebruik voor de officiële nix-openclaw-distributie de [snelstart voor nix-openclaw](https://github.com/openclaw/nix-openclaw#quick-start) en stel waarden in onder `programs.openclaw.config` of `instances.<name>.config`.
 </Note>
 
 ## Hoofdopties
 
 <ParamField path="--section <section>" type="string">
-  Herhaalbaar sectiefilter voor de begeleide installatie wanneer u `openclaw config` zonder subopdracht uitvoert.
+  Herhaalbaar sectiefilter voor begeleide configuratie wanneer je `openclaw config` zonder subopdracht uitvoert.
 </ParamField>
 
 Begeleide secties: `workspace`, `model`, `web`, `gateway`, `daemon`, `channels`, `plugins`, `skills`, `health`.
@@ -52,7 +53,7 @@ openclaw config validate --json
 
 ### Paden
 
-Punt- of haakjesnotatie. Zet paden met haakjes in shellvoorbeelden tussen aanhalingstekens, zodat zsh `[0]` niet als globpatroon uitbreidt:
+Punt- of haakjesnotatie. Zet paden met haakjes in shellvoorbeelden tussen aanhalingstekens, zodat zsh `[0]` niet als glob uitbreidt:
 
 ```bash
 openclaw config get agents.defaults.workspace
@@ -63,7 +64,7 @@ openclaw config set 'agents.list[1].tools.exec.node' "node-id-or-name"
 
 ### `config get`
 
-Leest een waarde uit de geredigeerde configuratiemomentopname (geheimen worden nooit weergegeven). Met `--json` wordt de onbewerkte waarde als JSON weergegeven; anders worden tekenreeksen/getallen/booleaanse waarden zonder opmaak weergegeven en objecten/matrices als opgemaakte JSON.
+Leest een waarde uit de geredigeerde configuratiesnapshot (geheimen worden nooit afgedrukt). `--json` drukt de onbewerkte waarde af als JSON; anders worden tekenreeksen/getallen/booleaanse waarden zonder opmaak afgedrukt en objecten/arrays als opgemaakte JSON.
 
 ```bash
 openclaw config get browser.executablePath
@@ -72,24 +73,24 @@ openclaw config get agents.defaults.model --json
 
 ### `config file`
 
-Geeft het actieve configuratiebestandspad weer, bepaald aan de hand van `OPENCLAW_CONFIG_PATH` of de standaardlocatie. Het pad verwijst naar een regulier bestand, niet naar een symbolische koppeling; zie [Schrijfveiligheid](#write-safety).
+Drukt het actieve configuratiebestandspad af, bepaald aan de hand van `OPENCLAW_CONFIG_PATH` of de standaardlocatie. Het pad verwijst naar een regulier bestand, niet naar een symbolische koppeling; zie [Schrijfveiligheid](#write-safety).
 
 ### `config schema`
 
-Geeft het gegenereerde JSON-schema voor `openclaw.json` weer op stdout.
+Drukt het gegenereerde JSON-schema voor `openclaw.json` af naar stdout.
 
 <AccordionGroup>
   <Accordion title="Wat het bevat">
-    - Het huidige hoofdconfiguratieschema, plus een tekenreeksveld `$schema` op hoofdniveau voor editorhulpmiddelen.
-    - Documentatiemetagegevens in de velden `title` / `description` die door de Control UI worden gebruikt.
-    - Geneste objecten, jokertekens (`*`) en matrixitemknooppunten (`[]`) nemen dezelfde metagegevens voor `title` / `description` over wanneer bijbehorende velddocumentatie bestaat.
-    - Vertakkingen met `anyOf` / `oneOf` / `allOf` nemen eveneens dezelfde documentatiemetagegevens over.
-    - Waar mogelijk actuele schemametagegevens van plugins en kanalen wanneer runtimemanifesten kunnen worden geladen.
+    - Het huidige hoofdconfiguratieschema, plus een hoofdveld `$schema` van het type tekenreeks voor editorhulpmiddelen.
+    - Documentatiemetagegevens voor velden `title` / `description` die door de Control UI worden gebruikt.
+    - Geneste object-, jokerteken- (`*`) en array-itemknooppunten (`[]`) nemen dezelfde metagegevens voor `title` / `description` over wanneer overeenkomende velddocumentatie bestaat.
+    - Vertakkingen `anyOf` / `oneOf` / `allOf` nemen eveneens dezelfde documentatiemetagegevens over.
+    - Naar beste vermogen bepaalde live schema-metagegevens van plugins en kanalen wanneer runtime-manifesten kunnen worden geladen.
     - Een schoon terugvalschema, zelfs wanneer de huidige configuratie ongeldig is.
 
   </Accordion>
   <Accordion title="Gerelateerde runtime-RPC">
-    `config.schema.lookup` retourneert één genormaliseerd configuratiepad met een oppervlakkig schemaknooppunt (`title`, `description`, `type`, `enum`, `const`, algemene grenswaarden), overeenkomende metagegevens voor UI-aanwijzingen en samenvattingen van directe onderliggende elementen. Gebruik dit om binnen een specifiek pad verder te navigeren in de Control UI of aangepaste clients.
+    `config.schema.lookup` retourneert één genormaliseerd configuratiepad met een oppervlakkig schemaknooppunt (`title`, `description`, `type`, `enum`, `const`, algemene grenzen), overeenkomende metagegevens voor UI-aanwijzingen en samenvattingen van directe onderliggende elementen. Gebruik dit voor padgerichte verdieping in de Control UI of aangepaste clients.
   </Accordion>
 </AccordionGroup>
 
@@ -108,7 +109,7 @@ openclaw config validate --json
 ```
 
 <Note>
-Als de validatie al mislukt, begint u met `openclaw configure` of `openclaw doctor --fix`. `openclaw chat` omzeilt de beveiliging tegen ongeldige configuraties niet.
+Als de validatie al mislukt, begin dan met `openclaw configure` of `openclaw doctor --fix`. `openclaw chat` omzeilt de beveiliging tegen ongeldige configuraties niet.
 </Note>
 
 ## Waarden
@@ -121,20 +122,20 @@ openclaw config set gateway.port 19001 --strict-json
 openclaw config set channels.whatsapp.groups '["*"]' --strict-json
 ```
 
-`config get <path> --json` geeft de onbewerkte waarde als JSON weer in plaats van als voor de terminal opgemaakte tekst.
+`config get <path> --json` drukt de onbewerkte waarde af als JSON in plaats van als voor de terminal opgemaakte tekst.
 
 <Note>
-Bij toewijzing van een object wordt het doelpad standaard vervangen. Beveiligde paden die vaak door gebruikers toegevoegde vermeldingen bevatten, weigeren vervangingen waardoor bestaande vermeldingen zouden worden verwijderd, tenzij u `--replace` opgeeft: `agents.defaults.models`, `agents.list`, `models.providers`, `models.providers.<id>`, `models.providers.<id>.models`, `plugins.entries` en `auth.profiles`.
+Bij toewijzing van een object wordt het doelpad standaard vervangen. Beschermde paden die vaak door gebruikers toegevoegde vermeldingen bevatten, weigeren vervangingen waarbij bestaande vermeldingen zouden worden verwijderd, tenzij je `--replace` doorgeeft: `agents.defaults.models`, `agents.list`, `models.providers`, `models.providers.<id>`, `models.providers.<id>.models`, `plugins.entries` en `auth.profiles`.
 </Note>
 
-Gebruik `--merge` wanneer u vermeldingen aan deze toewijzingen toevoegt:
+Gebruik `--merge` wanneer je vermeldingen aan die toewijzingen toevoegt:
 
 ```bash
 openclaw config set agents.defaults.models '{"openai/gpt-5.4":{}}' --strict-json --merge
 openclaw config set models.providers.ollama.models '[{"id":"llama3.2","name":"Llama 3.2"}]' --strict-json --merge
 ```
 
-Gebruik `--replace` alleen wanneer de opgegeven waarde bewust de volledige doelwaarde moet worden.
+Gebruik `--replace` alleen wanneer de opgegeven waarde opzettelijk de volledige doelwaarde moet worden.
 
 ## Modi van `config set`
 
@@ -152,8 +153,8 @@ Gebruik `--replace` alleen wanneer de opgegeven waarde bewust de volledige doelw
       --ref-id DISCORD_BOT_TOKEN
     ```
   </Tab>
-  <Tab title="Provideropbouwmodus">
-    Alleen gericht op paden van het type `secrets.providers.<alias>`:
+  <Tab title="Provider-opbouwmodus">
+    Alleen voor paden onder `secrets.providers.<alias>`:
 
     ```bash
     openclaw config set secrets.providers.vault \
@@ -187,12 +188,12 @@ Gebruik `--replace` alleen wanneer de opgegeven waarde bewust de volledige doelw
 </Tabs>
 
 <Warning>
-SecretRef-toewijzingen worden geweigerd op niet-ondersteunde oppervlakken die tijdens runtime kunnen worden gewijzigd (bijvoorbeeld `hooks.token`, `commands.ownerDisplaySecret`, Webhook-tokens voor Discord-threadkoppeling en JSON met WhatsApp-referenties). Zie [Referentieoppervlak voor SecretRef-inloggegevens](/nl/reference/secretref-credential-surface).
+SecretRef-toewijzingen worden geweigerd op niet-ondersteunde oppervlakken die tijdens runtime kunnen worden gewijzigd (bijvoorbeeld `hooks.token`, `commands.ownerDisplaySecret`, Webhook-tokens voor Discord-threadkoppelingen en JSON met WhatsApp-aanmeldgegevens). Zie [Aanmeldgegevensoppervlak voor SecretRef](/nl/reference/secretref-credential-surface).
 </Warning>
 
-Bij batchverwerking geldt de batchlading (`--batch-json`/`--batch-file`) altijd als gezaghebbende bron; `--strict-json` / `--json` wijzigen het gedrag van batchverwerking niet.
+Bij batchparsering wordt altijd de batchpayload (`--batch-json`/`--batch-file`) als bron van waarheid gebruikt; `--strict-json` / `--json` veranderen het parseergedrag voor batches niet.
 
-De JSON-pad/waardemodus werkt ook rechtstreeks voor SecretRefs en providers:
+De JSON-pad-/waardemodus werkt ook rechtstreeks voor SecretRefs en providers:
 
 ```bash
 openclaw config set channels.discord.token \
@@ -204,7 +205,7 @@ openclaw config set secrets.providers.vaultfile \
   --strict-json
 ```
 
-### Provideropbouwvlaggen
+### Vlaggen voor provideropbouw
 
 Doelen voor provideropbouw moeten `secrets.providers.<alias>` als pad gebruiken.
 
@@ -240,7 +241,7 @@ Doelen voor provideropbouw moeten `secrets.providers.<alias>` als pad gebruiken.
   </Accordion>
 </AccordionGroup>
 
-Voorbeeld van een geharde uitvoerprovider:
+Voorbeeld van een beveiligde uitvoerprovider:
 
 ```bash
 openclaw config set secrets.providers.vault \
@@ -256,14 +257,14 @@ openclaw config set secrets.providers.vault \
 
 ## `config patch`
 
-Plak of stuur via een pipe een configuratievormige JSON5-patch in plaats van veel padgebaseerde `config set`-opdrachten uit te voeren. Objecten worden recursief samengevoegd; matrices en scalaire waarden vervangen het doel; `null` verwijdert het doelpad.
+Plak of pipe een configuratievormige JSON5-patch in plaats van veel padgebaseerde `config set`-opdrachten uit te voeren. Objecten worden recursief samengevoegd; arrays en scalaire waarden vervangen het doel; `null` verwijdert het doelpad.
 
 ```bash
 openclaw config patch --file ./openclaw.patch.json5 --dry-run
 openclaw config patch --file ./openclaw.patch.json5
 ```
 
-Stuur een patch via stdin voor externe installatiescripts:
+Pipe een patch via stdin voor externe configuratiescripts:
 
 ```bash
 ssh user@gateway-host 'openclaw config patch --stdin --dry-run' < ./openclaw.patch.json5
@@ -302,13 +303,13 @@ Voorbeeldpatch:
 }
 ```
 
-Gebruik `--replace-path <path>` wanneer één object of matrix exact de opgegeven waarde moet krijgen in plaats van recursief te worden gepatcht:
+Gebruik `--replace-path <path>` wanneer één object of één array exact de opgegeven waarde moet worden in plaats van recursief te worden gepatcht:
 
 ```bash
 openclaw config patch --file ./discord.patch.json5 --replace-path 'channels.discord.guilds["123"].channels'
 ```
 
-`--dry-run` voert schema- en oplosbaarheidscontroles voor SecretRef uit zonder te schrijven. SecretRefs die door uitvoeropdrachten worden ondersteund, worden tijdens een proefuitvoering standaard overgeslagen; voeg `--allow-exec` toe wanneer u bewust wilt dat de proefuitvoering provideropdrachten uitvoert.
+`--dry-run` voert controles op het schema en de oplosbaarheid van SecretRefs uit zonder te schrijven. SecretRefs op basis van uitvoeropdrachten worden tijdens een proefuitvoering standaard overgeslagen; voeg `--allow-exec` toe wanneer je opzettelijk wilt dat de proefuitvoering provideropdrachten uitvoert.
 
 ## Proefuitvoering
 
@@ -331,20 +332,20 @@ openclaw config set channels.discord.token \
 ```
 
 <AccordionGroup>
-  <Accordion title="Gedrag bij een proefuitvoering">
+  <Accordion title="Gedrag van dry-run">
     - Builder-modus: voert controles uit op de oplosbaarheid van SecretRefs voor gewijzigde refs/providers.
     - JSON-modus (`--strict-json`, `--json` of batchmodus): voert schemavalidatie en controles op de oplosbaarheid van SecretRefs uit.
-    - Beleidsvalidatie wordt uitgevoerd op de volledige configuratie na de wijziging, zodat schrijfbewerkingen naar bovenliggende objecten (bijvoorbeeld `hooks` instellen als een object) de validatie van niet-ondersteunde oppervlakken niet kunnen omzeilen.
-    - Controles van Exec-SecretRefs worden standaard overgeslagen om neveneffecten van opdrachten te voorkomen; geef `--allow-exec` op om ze in te schakelen (hierdoor kunnen provideropdrachten worden uitgevoerd). `--allow-exec` is alleen voor proefuitvoeringen en geeft een fout zonder `--dry-run`.
+    - Beleidsvalidatie wordt uitgevoerd op de volledige configuratie na de wijziging, zodat schrijfbewerkingen naar bovenliggende objecten (bijvoorbeeld het instellen van `hooks` als een object) de validatie van niet-ondersteunde oppervlakken niet kunnen omzeilen.
+    - Controles van Exec SecretRefs worden standaard overgeslagen om bijwerkingen van opdrachten te voorkomen; geef `--allow-exec` door om ze in te schakelen (hierdoor kunnen provideropdrachten worden uitgevoerd). `--allow-exec` is uitsluitend voor dry-run en geeft een fout zonder `--dry-run`.
 
   </Accordion>
   <Accordion title="Velden van --dry-run --json">
-    - `ok`: of de proefuitvoering is geslaagd
+    - `ok`: of dry-run is geslaagd
     - `operations`: aantal geëvalueerde toewijzingen
     - `checks`: of schema-/oplosbaarheidscontroles zijn uitgevoerd
-    - `checks.resolvabilityComplete`: of de oplosbaarheidscontroles volledig zijn uitgevoerd (onwaar wanneer Exec-refs worden overgeslagen)
-    - `refsChecked`: aantal refs dat tijdens de proefuitvoering daadwerkelijk is opgelost
-    - `skippedExecRefs`: aantal overgeslagen Exec-refs omdat `--allow-exec` niet was ingesteld
+    - `checks.resolvabilityComplete`: of de oplosbaarheidscontroles volledig zijn uitgevoerd (onwaar wanneer exec-refs worden overgeslagen)
+    - `refsChecked`: aantal refs dat daadwerkelijk is opgelost tijdens dry-run
+    - `skippedExecRefs`: aantal overgeslagen exec-refs omdat `--allow-exec` niet was ingesteld
     - `errors`: gestructureerde fouten voor ontbrekende paden, schema's of oplosbaarheid wanneer `ok=false`
 
   </Accordion>
@@ -393,7 +394,7 @@ openclaw config set channels.discord.token \
     }
     ```
   </Tab>
-  <Tab title="Voorbeeld van een fout">
+  <Tab title="Voorbeeld van mislukking">
     ```json
     {
       "ok": false,
@@ -410,7 +411,7 @@ openclaw config set channels.discord.token \
       "errors": [
         {
           "kind": "resolvability",
-          "message": "Fout: Omgevingsvariabele \"MISSING_TEST_SECRET\" is niet ingesteld.",
+          "message": "Fout: omgevingsvariabele \"MISSING_TEST_SECRET\" is niet ingesteld.",
           "ref": "env:default:MISSING_TEST_SECRET"
         }
       ]
@@ -420,34 +421,36 @@ openclaw config set channels.discord.token \
 </Tabs>
 
 <AccordionGroup>
-  <Accordion title="Als de proefuitvoering mislukt">
-    - `config schema validation failed`: de structuur van de configuratie na de wijziging is ongeldig; corrigeer het pad/de waarde of de vorm van het provider-/ref-object.
+  <Accordion title="Als dry-run mislukt">
+    - `config schema validation failed`: de structuur van je configuratie na de wijziging is ongeldig; corrigeer het pad/de waarde of de structuur van het provider-/ref-object.
     - `Config policy validation failed: unsupported SecretRef usage`: zet die aanmeldgegevens terug naar invoer als platte tekst/tekenreeks; gebruik SecretRefs alleen op ondersteunde oppervlakken.
-    - `SecretRef assignment(s) could not be resolved`: de provider/ref waarnaar wordt verwezen kan momenteel niet worden opgelost (ontbrekende omgevingsvariabele, ongeldige bestandsverwijzing, fout van de Exec-provider of niet-overeenkomende provider/bron).
-    - `Dry run note: skipped <n> exec SecretRef resolvability check(s)`: voer de opdracht opnieuw uit met `--allow-exec` als u validatie van de oplosbaarheid van Exec nodig hebt.
-    - Corrigeer voor de batchmodus de mislukte vermeldingen en voer `--dry-run` opnieuw uit voordat u schrijft.
+    - `SecretRef assignment(s) could not be resolved`: de provider/ref waarnaar wordt verwezen, kan momenteel niet worden opgelost (ontbrekende omgevingsvariabele, ongeldige bestandsverwijzing, fout van de exec-provider of verschil tussen provider en bron).
+    - `Dry run note: skipped <n> exec SecretRef resolvability check(s)`: voer opnieuw uit met `--allow-exec` als je validatie van de oplosbaarheid van exec nodig hebt.
+    - Corrigeer in de batchmodus de mislukte vermeldingen en voer `--dry-run` opnieuw uit voordat je schrijft.
 
   </Accordion>
 </AccordionGroup>
 
 ## Wijzigingen toepassen
 
-Na elke geslaagde `config set` / `config patch` / `config unset` drukt de CLI een van drie aanwijzingen af, zodat u weet of de Gateway opnieuw moet worden gestart:
+Na elke geslaagde `config set` / `config patch` / `config unset` geeft de CLI een van drie hints weer, zodat je weet of de Gateway opnieuw moet worden gestart:
 
-| Aanwijzing                                         | Betekenis                                            |
-| -------------------------------------------------- | ---------------------------------------------------- |
-| `Restart the gateway to apply.`                     | Voor het gewijzigde pad is een volledige herstart nodig. |
-| `Change will apply without restarting the gateway.` | Hot reload verwerkt de wijziging automatisch.       |
+| Hint                                                | Betekenis                                      |
+| --------------------------------------------------- | ---------------------------------------------- |
+| `Restart the gateway to apply.`                     | Het gewijzigde pad vereist een volledige herstart. |
+| `Change will apply without restarting the gateway.` | Hot reload neemt de wijziging automatisch over. |
 | `No gateway restart needed.`                        | Er is niets gewijzigd dat relevant is voor de runtime. |
 
-Schrijfbewerkingen naar `plugins.entries` (of een subpad daarvan) vereisen altijd een herstart, omdat de CLI niet kan aantonen dat de metadata voor herladen van elke Plugin is geladen.
+Schrijfbewerkingen naar `plugins.entries` (of een onderliggend pad) vereisen altijd een herstart, omdat de CLI niet kan bewijzen dat de metadata voor herladen van elke Plugin is geladen.
 
-## Schrijfveiligheid
+## Veilig schrijven
 
 `openclaw config set` en andere configuratieschrijvers van OpenClaw valideren de volledige configuratie na de wijziging voordat deze naar schijf wordt geschreven. Als de nieuwe payload niet door de schemavalidatie komt of op destructief overschrijven lijkt, blijft de actieve configuratie ongewijzigd en wordt de geweigerde payload ernaast opgeslagen als `openclaw.json.rejected.*`.
 
+Schrijfbewerkingen van OpenClaw serialiseren JSON5 opnieuw als standaard-JSON. Wanneer de bron opmerkingen bevat, waarschuwt de schrijver direct voordat deze worden verwijderd; gebruik een teksteditor als het behouden van opmerkingen belangrijk is.
+
 <Warning>
-Het actieve configuratiepad moet een normaal bestand zijn. Indelingen waarbij `openclaw.json` een symbolische koppeling is, worden niet ondersteund voor schrijfbewerkingen; gebruik in plaats daarvan `OPENCLAW_CONFIG_PATH` om rechtstreeks naar het echte bestand te verwijzen.
+Het actieve configuratiepad moet een normaal bestand zijn. Indelingen met een symbolische koppeling voor `openclaw.json` worden niet ondersteund voor schrijfbewerkingen; gebruik in plaats daarvan `OPENCLAW_CONFIG_PATH` om rechtstreeks naar het echte bestand te verwijzen.
 </Warning>
 
 Geef voor kleine wijzigingen de voorkeur aan schrijfbewerkingen via de CLI:
@@ -458,7 +461,7 @@ openclaw config set gateway.reload.mode hybrid
 openclaw config validate
 ```
 
-Als een schrijfbewerking wordt geweigerd, inspecteert u de opgeslagen payload en corrigeert u de volledige configuratiestructuur:
+Als een schrijfbewerking wordt geweigerd, controleer je de opgeslagen payload en corrigeer je de volledige configuratiestructuur:
 
 ```bash
 CONFIG="$(openclaw config file)"
@@ -466,19 +469,19 @@ ls -lt "$CONFIG".rejected.* 2>/dev/null | head
 openclaw config validate
 ```
 
-Rechtstreekse schrijfbewerkingen met een editor zijn nog steeds toegestaan, maar de actieve Gateway behandelt ze als niet-vertrouwd totdat ze zijn gevalideerd. Ongeldige rechtstreekse wijzigingen verhinderen het opstarten of worden door Hot reload overgeslagen; de Gateway herschrijft `openclaw.json` niet. Voer `openclaw doctor --fix` uit om een configuratie met voorvoegsels/overschrijvingen te herstellen of de laatst bekende goede kopie terug te zetten. Zie [Probleemoplossing voor de Gateway](/nl/gateway/troubleshooting#gateway-rejected-invalid-config).
+Rechtstreekse schrijfbewerkingen via een teksteditor zijn nog steeds toegestaan, maar de actieve Gateway behandelt ze als niet-vertrouwd totdat ze zijn gevalideerd. Ongeldige rechtstreekse wijzigingen verhinderen het opstarten of worden door hot reload overgeslagen; Gateway herschrijft `openclaw.json` niet. Voer `openclaw doctor --fix` uit om een configuratie met voorvoegsels of overschreven configuratie te herstellen, of om de laatst bekende werkende kopie terug te zetten. Zie [Problemen met de Gateway oplossen](/nl/gateway/troubleshooting#gateway-rejected-invalid-config).
 
-Herstel van het volledige bestand is voorbehouden aan reparatie door Doctor. Wijzigingen in het Plugin-schema of afwijkingen in `minHostVersion` blijven duidelijke fouten geven in plaats van niet-gerelateerde gebruikersinstellingen terug te draaien, zoals de configuratie van modellen, providers, authenticatieprofielen, kanalen, Gateway-blootstelling, hulpmiddelen, geheugen, browser of Cron.
+Herstel van het volledige bestand is uitsluitend bestemd voor herstel door doctor. Wijzigingen in het schema van een Plugin of afwijkingen in `minHostVersion` blijven duidelijk zichtbaar in plaats van niet-gerelateerde gebruikersinstellingen terug te draaien, zoals configuratie voor modellen, providers, auth-profielen, kanalen, Gateway-blootstelling, tools, geheugen, browser of Cron.
 
-## Reparatiecyclus
+## Herstellus
 
-Nadat `openclaw config validate` is geslaagd, gebruikt u de lokale TUI om een ingebedde agent de actieve configuratie met de documentatie te laten vergelijken, terwijl u elke wijziging vanuit dezelfde terminal valideert:
+Nadat `openclaw config validate` is geslaagd, gebruik je de lokale TUI om een ingebedde agent de actieve configuratie met de documentatie te laten vergelijken terwijl je elke wijziging vanuit dezelfde terminal valideert:
 
 ```bash
 openclaw chat
 ```
 
-Binnen de TUI voert een `!` aan het begin een letterlijke lokale shellopdracht uit (na een eenmalige bevestigingsprompt per sessie):
+Binnen de TUI voert een voorafgaande `!` een letterlijke lokale shellopdracht uit (na een eenmalige bevestigingsvraag per sessie):
 
 ```text
 !openclaw config file
@@ -489,7 +492,7 @@ Binnen de TUI voert een `!` aan het begin een letterlijke lokale shellopdracht u
 
 <Steps>
   <Step title="Vergelijken met de documentatie">
-    Vraag de agent om uw huidige configuratie met de relevante documentatiepagina te vergelijken en de kleinst mogelijke oplossing voor te stellen.
+    Vraag de agent om je huidige configuratie met de relevante documentatiepagina te vergelijken en de kleinste correctie voor te stellen.
   </Step>
   <Step title="Gerichte wijzigingen toepassen">
     Pas gerichte wijzigingen toe met `openclaw config set` of `openclaw configure`.
@@ -497,8 +500,8 @@ Binnen de TUI voert een `!` aan het begin een letterlijke lokale shellopdracht u
   <Step title="Opnieuw valideren">
     Voer `openclaw config validate` na elke wijziging opnieuw uit.
   </Step>
-  <Step title="Doctor gebruiken voor runtimeproblemen">
-    Als de validatie slaagt maar de runtime nog steeds niet goed functioneert, voert u `openclaw doctor` of `openclaw doctor --fix` uit voor hulp bij migratie en reparatie.
+  <Step title="Doctor voor runtimeproblemen">
+    Als de validatie slaagt maar de runtime nog steeds niet goed werkt, voer je `openclaw doctor` of `openclaw doctor --fix` uit voor hulp bij migratie en herstel.
   </Step>
 </Steps>
 

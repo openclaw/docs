@@ -1,108 +1,112 @@
 ---
 read_when:
-    - auth प्रोफ़ाइल समाधान या क्रेडेंशियल रूटिंग पर काम करना
-    - मॉडल प्रमाणीकरण विफलताओं या प्रोफ़ाइल क्रम की डिबगिंग
-summary: प्रमाणीकरण प्रोफ़ाइलों के लिए कैनोनिकल क्रेडेंशियल पात्रता और रिज़ॉल्यूशन सिमैंटिक्स
-title: प्रमाणीकरण क्रेडेंशियल सेमांटिक्स
+    - प्रमाणीकरण प्रोफ़ाइल समाधान या क्रेडेंशियल रूटिंग पर कार्य करना
+    - मॉडल प्रमाणीकरण विफलताओं या प्रोफ़ाइल क्रम की डीबगिंग
+summary: प्रमाणीकरण प्रोफ़ाइलों के लिए मानक क्रेडेंशियल पात्रता और समाधान अर्थविज्ञान
+title: प्रमाणीकरण क्रेडेंशियल के अर्थ-विज्ञान
 x-i18n:
-    generated_at: "2026-06-28T22:32:15Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T13:07:38Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 591c0384e1d43512252aaa7b362141b6bc93183b30b5847168758f86127f0663
+    source_hash: 6b0516b1bb23f400d5ac5fd39a628736034440216ac22823eef061b38564dff0
     source_path: auth-credential-semantics.md
     workflow: 16
 ---
 
-यह दस्तावेज़ इन जगहों पर उपयोग किए जाने वाले मानक क्रेडेंशियल पात्रता और समाधान सेमांटिक्स परिभाषित करता है:
+ये अर्थ चयन-समय और रनटाइम प्रमाणीकरण व्यवहार को संरेखित रखते हैं। इन्हें निम्न द्वारा साझा किया जाता है:
 
-- `resolveAuthProfileOrder`
-- `resolveApiKeyForProfile`
-- `models status --probe`
-- `doctor-auth`
+- `resolveAuthProfileOrder` (प्रोफ़ाइल क्रम)
+- `resolveApiKeyForProfile` (रनटाइम क्रेडेंशियल समाधान)
+- `openclaw models status --probe`
+- `openclaw doctor` प्रमाणीकरण जाँच (`doctor-auth`)
 
-लक्ष्य selection-time और runtime व्यवहार को संरेखित रखना है।
+## स्थिर प्रोब कारण कोड
 
-## स्थिर probe reason codes
+प्रोब परिणामों में एक `status` बकेट (`ok`, `auth`, `rate_limit`, `billing`, `timeout`, `format`, `unknown`, `no_model`) और एक स्थिर `reasonCode` होता है, जब प्रोब कभी मॉडल कॉल तक नहीं पहुँचा:
 
-- `ok`
-- `excluded_by_auth_order`
-- `missing_credential`
-- `invalid_expires`
-- `expired`
-- `unresolved_ref`
-- `no_model`
+| `reasonCode`             | अर्थ                                                                         |
+| ------------------------ | ---------------------------------------------------------------------------- |
+| `excluded_by_auth_order` | प्रोफ़ाइल को उसके प्रदाता के स्पष्ट प्रमाणीकरण क्रम से बाहर रखा गया।         |
+| `missing_credential`     | कोई इनलाइन क्रेडेंशियल या SecretRef कॉन्फ़िगर नहीं किया गया है।              |
+| `expired`                | टोकन `expires` बीत चुका है।                                                  |
+| `invalid_expires`        | `expires` एक मान्य धनात्मक Unix ms टाइमस्टैम्प नहीं है।                      |
+| `unresolved_ref`         | कॉन्फ़िगर किए गए SecretRef का समाधान नहीं किया जा सका।                       |
+| `ineligible_profile`     | प्रोफ़ाइल प्रदाता कॉन्फ़िगरेशन के साथ असंगत है (इसमें विकृत कुंजी इनपुट शामिल है)। |
+| `no_model`               | क्रेडेंशियल मौजूद हैं, लेकिन प्रोब किए जा सकने वाले किसी मॉडल उम्मीदवार का समाधान नहीं हुआ। |
 
-## Token credentials
+पात्रता जाँच उपयोग योग्य क्रेडेंशियल के कारण कोड के रूप में `ok` रिपोर्ट करती है।
 
-Token credentials (`type: "token"`) inline `token` और/या `tokenRef` का समर्थन करते हैं।
+## टोकन क्रेडेंशियल
+
+टोकन क्रेडेंशियल (`type: "token"`) इनलाइन `token` और/या `tokenRef` का समर्थन करते हैं।
 
 ### पात्रता नियम
 
-1. जब `token` और `tokenRef` दोनों अनुपस्थित हों, तब token profile अपात्र होता है।
-2. `expires` वैकल्पिक है।
-3. यदि `expires` मौजूद है, तो यह `0` से बड़ा finite number होना चाहिए।
-4. यदि `expires` अमान्य है (`NaN`, `0`, negative, non-finite, या wrong type), तो profile `invalid_expires` के साथ अपात्र होता है।
-5. यदि `expires` भूतकाल में है, तो profile `expired` के साथ अपात्र होता है।
-6. `tokenRef`, `expires` validation को bypass नहीं करता।
+1. जब `token` और `tokenRef` दोनों अनुपस्थित हों, तो टोकन प्रोफ़ाइल अपात्र होती है (`missing_credential`)।
+2. `expires` वैकल्पिक है। मौजूद होने पर यह Unix epoch मिलीसेकंड की एक परिमित संख्या होनी चाहिए, जो `0` से अधिक और अधिकतम JavaScript `Date` टाइमस्टैम्प (8640000000000000) से अधिक न हो।
+3. यदि `expires` अमान्य है (गलत प्रकार, `NaN`, `0`, ऋणात्मक, अपरिमित या उस अधिकतम सीमा से परे), तो प्रोफ़ाइल `invalid_expires` के साथ अपात्र होती है।
+4. यदि `expires` बीत चुका है, तो प्रोफ़ाइल `expired` के साथ अपात्र होती है।
+5. `tokenRef`, `expires` सत्यापन को बायपास नहीं करता।
 
 ### समाधान नियम
 
-1. `expires` के लिए Resolver semantics, eligibility semantics से मेल खाते हैं।
-2. पात्र profiles के लिए, token material inline value या `tokenRef` से resolve किया जा सकता है।
-3. Unresolvable refs `models status --probe` output में `unresolved_ref` उत्पन्न करते हैं।
+1. `expires` के लिए रिज़ॉल्वर के अर्थ पात्रता के अर्थों से मेल खाते हैं।
+2. पात्र प्रोफ़ाइल के लिए, टोकन सामग्री का समाधान इनलाइन मान या `tokenRef` से किया जा सकता है।
+3. जिन संदर्भों का समाधान नहीं हो सकता, वे `models status --probe` आउटपुट में `unresolved_ref` उत्पन्न करते हैं।
 
-## Agent copy portability
+## एजेंट प्रतिलिपि की पोर्टेबिलिटी
 
-Agent auth inheritance read-through है। जब किसी agent के पास local profile नहीं होता, तो वह runtime पर default/main agent store से profiles resolve कर सकता है, बिना secret material को अपने `auth-profiles.json` में copy किए।
+एजेंट प्रमाणीकरण इनहेरिटेंस रीड-थ्रू है। जब किसी एजेंट के पास स्थानीय प्रोफ़ाइल नहीं होती, तो वह गुप्त सामग्री को अपने क्रेडेंशियल स्टोर में कॉपी किए बिना रनटाइम पर डिफ़ॉल्ट/मुख्य एजेंट स्टोर से प्रोफ़ाइल का समाधान करता है (`agents/<agentId>/agent/openclaw-agent.sqlite`)।
 
-Explicit copy flows, जैसे `openclaw agents add`, यह portability policy उपयोग करते हैं:
+`openclaw agents add` जैसे स्पष्ट प्रतिलिपि प्रवाह इस पोर्टेबिलिटी नीति का उपयोग करते हैं:
 
-- `api_key` profiles portable हैं, जब तक `copyToAgents: false` न हो।
-- `token` profiles portable हैं, जब तक `copyToAgents: false` न हो।
-- `oauth` profiles default रूप से portable नहीं हैं, क्योंकि refresh tokens single-use या rotation-sensitive हो सकते हैं।
-- Provider-owned OAuth flows केवल तब `copyToAgents: true` के साथ opt in कर सकते हैं, जब agents के बीच refresh material copy करना known safe हो।
+- `api_key` और `token` प्रोफ़ाइल पोर्टेबल हैं, जब तक कि `copyToAgents: false` न हो।
+- `oauth` प्रोफ़ाइल डिफ़ॉल्ट रूप से पोर्टेबल नहीं होतीं, क्योंकि रीफ़्रेश टोकन एकल-उपयोग या रोटेशन-संवेदी हो सकते हैं।
+- प्रदाता-स्वामित्व वाले OAuth प्रवाह केवल तभी `copyToAgents: true` के साथ ऑप्ट इन कर सकते हैं, जब एजेंटों के बीच रीफ़्रेश सामग्री की प्रतिलिपि बनाना सुरक्षित माना जाता हो; यह ऑप्ट-इन केवल तभी लागू होता है, जब प्रोफ़ाइल में इनलाइन एक्सेस/रीफ़्रेश सामग्री हो।
 
-Non-portable profiles read-through inheritance के माध्यम से उपलब्ध रहते हैं, जब तक target agent अलग से sign in करके अपना local profile नहीं बनाता।
+गैर-पोर्टेबल प्रोफ़ाइल रीड-थ्रू इनहेरिटेंस के माध्यम से उपलब्ध रहती हैं, जब तक कि लक्ष्य एजेंट अलग से साइन इन करके अपनी स्थानीय प्रोफ़ाइल न बना ले।
 
-## Config-only auth routes
+## केवल-कॉन्फ़िगरेशन प्रमाणीकरण रूट
 
-`mode: "aws-sdk"` वाली `auth.profiles` entries routing metadata हैं, stored credentials नहीं। वे तब valid होती हैं जब target provider `models.providers.<id>.auth: "aws-sdk"` या plugin-owned Amazon Bedrock setup AWS SDK route उपयोग करता है। ये profile ids `auth.order` और session overrides में दिख सकते हैं, भले ही `auth-profiles.json` में matching entry मौजूद न हो।
+`mode: "aws-sdk"` वाली `auth.profiles` प्रविष्टियाँ रूटिंग मेटाडेटा हैं, संग्रहीत क्रेडेंशियल नहीं। वे तब मान्य होती हैं, जब लक्ष्य प्रदाता `models.providers.<id>.auth: "aws-sdk"` का उपयोग करता है—वह रूट जिसे Plugin-स्वामित्व वाला Amazon Bedrock सेटअप लिखता है। ये प्रोफ़ाइल आईडी `auth.order` और सत्र ओवरराइड में तब भी दिखाई दे सकती हैं, जब क्रेडेंशियल स्टोर में उनसे मेल खाने वाली कोई प्रविष्टि मौजूद न हो।
 
-`auth-profiles.json` में `type: "aws-sdk"` न लिखें। यदि किसी legacy install में ऐसा marker है, तो `openclaw doctor --fix` उसे `auth.profiles` में move करता है और credential store से marker हटाता है।
+क्रेडेंशियल स्टोर में `type: "aws-sdk"` न लिखें; संग्रहीत क्रेडेंशियल केवल `api_key`, `token` या `oauth` होते हैं। यदि किसी लीगेसी `auth-profiles.json` में ऐसा मार्कर है, तो `openclaw doctor --fix` उसे `auth.profiles` में ले जाता है और स्टोर से मार्कर हटा देता है।
 
-## स्पष्ट auth order filtering
+## स्पष्ट प्रमाणीकरण क्रम फ़िल्टरिंग
 
-- जब किसी provider के लिए `auth.order.<provider>` या auth-store order override set हो, तो `models status --probe` केवल उन profile ids को probe करता है जो उस provider के resolved auth order में बने रहते हैं।
-- उस provider के लिए stored profile, जिसे explicit order से omit किया गया है, बाद में silently try नहीं किया जाता। Probe output उसे `reasonCode: excluded_by_auth_order` और detail `Excluded by auth.order for this provider.` के साथ report करता है।
+- जब किसी प्रदाता के लिए `auth.order.<provider>` या प्रमाणीकरण-स्टोर क्रम ओवरराइड सेट हो, तो `models status --probe` केवल उन प्रोफ़ाइल आईडी को प्रोब करता है, जो उस प्रदाता के समाधान किए गए प्रमाणीकरण क्रम में बनी रहती हैं। संग्रहीत ओवरराइड, `auth.order` कॉन्फ़िगरेशन पर प्राथमिकता प्राप्त करता है।
+- उस प्रदाता की कोई संग्रहीत प्रोफ़ाइल, जिसे स्पष्ट क्रम से बाहर रखा गया है, बाद में चुपचाप आज़माई नहीं जाती। प्रोब आउटपुट इसे `reasonCode: excluded_by_auth_order` और विवरण `Excluded by auth.order for this provider.` के साथ रिपोर्ट करता है।
 
-## Probe target resolution
+## प्रोब लक्ष्य समाधान
 
-- Probe targets auth profiles, environment credentials, या `models.json` से आ सकते हैं।
-- यदि किसी provider के पास credentials हैं लेकिन OpenClaw उसके लिए probeable model candidate resolve नहीं कर सकता, तो `models status --probe` `reasonCode: no_model` के साथ `status: no_model` report करता है।
+- प्रोब लक्ष्य प्रमाणीकरण प्रोफ़ाइल, परिवेश क्रेडेंशियल या `models.json` से आ सकते हैं (परिणाम `source`: `profile`, `env`, `models.json`)।
+- यदि किसी प्रदाता के पास क्रेडेंशियल हैं, लेकिन OpenClaw उसके लिए प्रोब किए जा सकने वाले किसी मॉडल उम्मीदवार का समाधान नहीं कर सकता, तो `models status --probe`, `reasonCode: no_model` के साथ `status: no_model` रिपोर्ट करता है।
 
-## External CLI credential discovery
+## बाहरी CLI क्रेडेंशियल खोज
 
-- External CLIs के स्वामित्व वाले Runtime-only credentials केवल तब discover किए जाते हैं जब provider, runtime, या auth profile current operation के scope में हो, या जब उस external source के लिए stored local profile पहले से मौजूद हो।
-- Auth-store callers को explicit external-CLI discovery mode चुनना चाहिए: केवल persisted/plugin auth के लिए `none`, पहले से stored external CLI profiles को refresh करने के लिए `existing`, या concrete provider/profile set के लिए `scoped`।
-- Read-only/status paths `allowKeychainPrompt: false` pass करते हैं; वे केवल file-backed external CLI credentials उपयोग करते हैं और macOS Keychain results को read या reuse नहीं करते।
+- बाहरी CLI के स्वामित्व वाले केवल-रनटाइम क्रेडेंशियल (Claude CLI के लिए `claude-cli`, Codex CLI के लिए `openai`, MiniMax CLI के लिए `minimax-portal`) केवल तभी खोजे जाते हैं, जब प्रदाता, रनटाइम या प्रमाणीकरण प्रोफ़ाइल वर्तमान ऑपरेशन के दायरे में हो, या जब उस बाहरी स्रोत के लिए कोई संग्रहीत स्थानीय प्रोफ़ाइल पहले से मौजूद हो।
+- प्रमाणीकरण-स्टोर कॉलर एक स्पष्ट बाहरी-CLI खोज मोड चुनते हैं: केवल स्थायी/Plugin प्रमाणीकरण के लिए `none`, पहले से संग्रहीत बाहरी CLI प्रोफ़ाइल रीफ़्रेश करने के लिए `existing`, या किसी ठोस प्रदाता/प्रोफ़ाइल सेट के लिए `scoped`।
+- केवल-पठन/स्थिति पथ `allowKeychainPrompt: false` पास करते हैं; वे केवल फ़ाइल-समर्थित बाहरी CLI क्रेडेंशियल का उपयोग करते हैं और macOS Keychain परिणामों को न तो पढ़ते हैं, न पुनः उपयोग करते हैं।
 
-## OAuth SecretRef Policy Guard
+## OAuth SecretRef नीति सुरक्षा
 
-- SecretRef input केवल static credentials के लिए है।
-- यदि profile credential `type: "oauth"` है, तो उस profile credential material के लिए SecretRef objects समर्थित नहीं हैं।
-- यदि `auth.profiles.<id>.mode` `"oauth"` है, तो उस profile के लिए SecretRef-backed `keyRef`/`tokenRef` input reject किया जाता है।
-- Violations startup/reload auth resolution paths में hard failures हैं।
+SecretRef इनपुट केवल स्थिर क्रेडेंशियल के लिए है। OAuth क्रेडेंशियल रनटाइम में परिवर्तनशील होते हैं (रीफ़्रेश प्रवाह रोटेट किए गए टोकन को स्थायी रूप से सहेजते हैं), इसलिए SecretRef-समर्थित OAuth सामग्री परिवर्तनशील स्थिति को कई स्टोरों में बाँट देगी।
 
-## Legacy-Compatible Messaging
+- यदि कोई प्रोफ़ाइल क्रेडेंशियल `type: "oauth"` है, तो उस प्रोफ़ाइल के किसी भी क्रेडेंशियल सामग्री फ़ील्ड के लिए SecretRef ऑब्जेक्ट अस्वीकार कर दिए जाते हैं।
+- यदि `auth.profiles.<id>.mode`, `"oauth"` है, तो उस प्रोफ़ाइल के लिए SecretRef-समर्थित `keyRef`/`tokenRef` इनपुट अस्वीकार कर दिया जाता है।
+- स्टार्टअप/रीलोड गुप्त तैयारी और प्रोफ़ाइल समाधान पथों में उल्लंघन कठोर विफलताएँ (थ्रो की गई त्रुटियाँ) हैं।
 
-Script compatibility के लिए, probe errors की यह पहली line अपरिवर्तित रहती है:
+## लीगेसी-संगत संदेश
+
+स्क्रिप्ट संगतता के लिए, प्रोब त्रुटियाँ इस पहली पंक्ति को अपरिवर्तित रखती हैं:
 
 `Auth profile credentials are missing or expired.`
 
-Human-friendly detail और stable reason codes बाद की lines में जोड़े जा सकते हैं।
+मानव-पठनीय विवरण और स्थिर कारण कोड अगली पंक्तियों में `↳ Auth reason [code]: ...` के रूप में आते हैं।
 
 ## संबंधित
 
-- [Secrets management](/hi/gateway/secrets)
-- [Auth storage](/hi/concepts/oauth)
+- [गुप्त प्रबंधन](/hi/gateway/secrets)
+- [प्रमाणीकरण संग्रहण](/hi/concepts/oauth)

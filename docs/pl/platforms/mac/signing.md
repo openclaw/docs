@@ -1,29 +1,30 @@
 ---
 read_when:
-    - Kompilowanie lub podpisywanie debugowych wersji dla macOS
-summary: Kroki podpisywania debugowych kompilacji dla macOS generowanych przez skrypty pakujące
-title: Podpisywanie w systemie macOS
+    - Tworzenie lub podpisywanie kompilacji debugowych dla macOS
+summary: Kroki podpisywania debugowych kompilacji dla systemu macOS generowanych przez skrypty pakujące
+title: Podpisywanie w macOS
 x-i18n:
-    generated_at: "2026-07-12T15:18:40Z"
+    generated_at: "2026-07-16T18:37:41Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 663c08c031417d5a9f048581421e4fe9f69480917582f74746af675bcca5cf95
+    source_hash: 406211dadc9293cf7983e75ae7dd98234f9088351234cf06c33df2f63d1b9b97
     source_path: platforms/mac/signing.md
     workflow: 16
 ---
 
-# Podpisywanie w macOS (kompilacje debugowania)
+# Podpisywanie aplikacji macOS (kompilacje debugowania)
 
-Skrypt [`scripts/package-mac-app.sh`](https://github.com/openclaw/openclaw/blob/main/scripts/package-mac-app.sh) kompiluje i pakuje aplikację do stałej ścieżki (`dist/OpenClaw.app`), a następnie wywołuje [`scripts/codesign-mac-app.sh`](https://github.com/openclaw/openclaw/blob/main/scripts/codesign-mac-app.sh), aby ją podpisać. Uprawnienia TCC są powiązane z identyfikatorem pakietu i podpisem kodu; zachowanie ich obu bez zmian (oraz aplikacji w stałej ścieżce) między kolejnymi kompilacjami zapobiega zapominaniu przez macOS przyznanych uprawnień TCC (powiadomienia, dostępność, nagrywanie ekranu, mikrofon, mowa).
+[`scripts/package-mac-app.sh`](https://github.com/openclaw/openclaw/blob/main/scripts/package-mac-app.sh) kompiluje aplikację i tworzy jej pakiet w stałej ścieżce (`dist/OpenClaw.app`), a następnie wywołuje [`scripts/codesign-mac-app.sh`](https://github.com/openclaw/openclaw/blob/main/scripts/codesign-mac-app.sh), aby ją podpisać. Uprawnienia TCC są powiązane z identyfikatorem pakietu i podpisem kodu; zachowanie ich obu bez zmian (oraz aplikacji w stałej ścieżce) między kolejnymi kompilacjami zapobiega zapominaniu przez macOS przyznanych uprawnień TCC (powiadomienia, dostępność, nagrywanie ekranu, mikrofon, rozpoznawanie mowy).
 
-- Domyślny identyfikator pakietu kompilacji debugowania to `ai.openclaw.mac.debug` (można go zastąpić za pomocą `BUNDLE_ID=...`).
-- Node: `>=22.19.0 <23` lub `>=23.11.0` (`engines` w pliku `package.json` repozytorium). Skrypt pakujący kompiluje również interfejs Control UI (`pnpm ui:build`).
-- Domyślnie wymaga rzeczywistej tożsamości podpisującej; jeśli żadna nie zostanie znaleziona, a zmienna `ALLOW_ADHOC_SIGNING` nie jest ustawiona, skrypt podpisujący kończy działanie z błędem. Podpisywanie ad hoc (`SIGN_IDENTITY="-"`) wymaga jawnego włączenia i nie zachowuje uprawnień TCC między kolejnymi kompilacjami. Zobacz [uprawnienia macOS](/pl/platforms/mac/permissions).
-- Odczytuje `SIGN_IDENTITY` ze środowiska (np. `export SIGN_IDENTITY="Apple Development: Your Name (TEAMID)"` lub certyfikat Developer ID Application). Jeśli zmienna nie jest ustawiona, skrypt `codesign-mac-app.sh` automatycznie wybiera tożsamość w następującej kolejności: Developer ID Application, Apple Distribution, Apple Development, a następnie pierwsza znaleziona prawidłowa tożsamość do podpisywania kodu.
-- `CODESIGN_TIMESTAMP=auto` (wartość domyślna) włącza zaufane znaczniki czasu tylko dla podpisów Developer ID Application. Ustaw `on` lub `off`, aby wymusić odpowiednie zachowanie.
-- Dodaje do Info.plist pola `OpenClawBuildTimestamp` (ISO8601 UTC) i `OpenClawGitCommit` (skrócony skrót, `unknown`, jeśli jest niedostępny), dzięki czemu karta informacji może wyświetlać kompilację, rewizję Git oraz kanał debugowania lub wydania.
-- Po podpisaniu przeprowadza kontrolę Team ID i kończy się niepowodzeniem, jeśli którykolwiek plik Mach-O w pakiecie ma inny Team ID. Ustaw `SKIP_TEAM_ID_CHECK=1`, aby pominąć tę kontrolę.
+- Domyślny identyfikator pakietu debugowania to `ai.openclaw.mac.debug` (można go zastąpić za pomocą `BUNDLE_ID=...`).
+- Node: `>=22.22.3 <23`, `>=24.15.0 <25` lub `>=25.9.0` (repozytorium `package.json` `engines`). Narzędzie pakujące kompiluje również interfejs Control UI (`pnpm ui:build`).
+- Domyślnie wymaga rzeczywistej tożsamości podpisującej; skrypt podpisujący kończy działanie z błędem, jeśli jej nie znaleziono i nie ustawiono `ALLOW_ADHOC_SIGNING`. Podpisywanie ad hoc (`SIGN_IDENTITY="-"`) wymaga jawnego włączenia i nie zachowuje uprawnień TCC między kolejnymi kompilacjami. Zobacz [uprawnienia macOS](/pl/platforms/mac/permissions).
+- Odczytuje `SIGN_IDENTITY` ze środowiska (np. `export SIGN_IDENTITY="Apple Development: Your Name (TEAMID)"` lub certyfikat Developer ID Application). Jeśli jej nie podano, `codesign-mac-app.sh` automatycznie wybiera tożsamość w następującej kolejności: Developer ID Application, Apple Distribution, Apple Development, a następnie pierwsza znaleziona prawidłowa tożsamość do podpisywania kodu.
+- `CODESIGN_TIMESTAMP=auto` (domyślnie) włącza zaufane znaczniki czasu tylko dla podpisów Developer ID Application. Ustaw `on`/`off`, aby wymusić odpowiednie zachowanie.
+- Dodaje do Info.plist wartości `OpenClawBuildTimestamp` (ISO8601 UTC) i `OpenClawGitCommit` (krótki skrót, `unknown`, jeśli jest niedostępny), aby karta Informacje mogła wyświetlać kompilację, dane git oraz kanał debugowania/wydania.
+- Po podpisaniu przeprowadza audyt identyfikatora Team ID i kończy się niepowodzeniem, jeśli dowolny plik Mach-O w pakiecie ma inny Team ID. Ustaw `SKIP_TEAM_ID_CHECK=1`, aby pominąć tę kontrolę.
 
 ## Użycie
 
@@ -32,19 +33,19 @@ Skrypt [`scripts/package-mac-app.sh`](https://github.com/openclaw/openclaw/blob/
 scripts/package-mac-app.sh                                                      # automatycznie wybiera tożsamość; zgłasza błąd, jeśli żadnej nie znaleziono
 SIGN_IDENTITY="Developer ID Application: Your Name" scripts/package-mac-app.sh   # rzeczywisty certyfikat
 ALLOW_ADHOC_SIGNING=1 scripts/package-mac-app.sh                                 # ad hoc (uprawnienia nie zostaną zachowane)
-SIGN_IDENTITY="-" scripts/package-mac-app.sh                                     # jawne ad hoc (to samo zastrzeżenie)
-DISABLE_LIBRARY_VALIDATION=1 scripts/package-mac-app.sh                          # obejście niezgodności Team ID Sparkle, tylko do programowania
+SIGN_IDENTITY="-" scripts/package-mac-app.sh                                     # jawne ad hoc (z tym samym zastrzeżeniem)
+DISABLE_LIBRARY_VALIDATION=1 scripts/package-mac-app.sh                          # obejście niezgodności Team ID biblioteki Sparkle, wyłącznie do programowania
 ```
 
 ### Uwaga dotycząca podpisywania ad hoc
 
-`SIGN_IDENTITY="-"` wyłącza Hardened Runtime (`--options runtime`), aby zapobiec awariom podczas ładowania przez aplikację osadzonych frameworków (takich jak Sparkle), które nie mają tego samego Team ID. Podpisy ad hoc uniemożliwiają również zachowywanie uprawnień TCC; procedurę przywracania opisano w sekcji [uprawnienia macOS](/pl/platforms/mac/permissions).
+`SIGN_IDENTITY="-"` wyłącza Hardened Runtime (`--options runtime`), aby zapobiec awariom podczas ładowania przez aplikację osadzonych platform programistycznych (takich jak Sparkle), które nie mają tego samego identyfikatora Team ID. Podpisy ad hoc uniemożliwiają również zachowywanie uprawnień TCC; procedurę odzyskiwania opisano na stronie [uprawnienia macOS](/pl/platforms/mac/permissions).
 
-## Metadane kompilacji na karcie informacji
+## Metadane kompilacji na karcie Informacje
 
-Karta informacji odczytuje pola `OpenClawBuildTimestamp` i `OpenClawGitCommit` z Info.plist, aby wyświetlić wersję, datę kompilacji, rewizję Git oraz informację, czy jest to kompilacja DEBUG (za pomocą `#if DEBUG`). Po zmianach w kodzie ponownie uruchom skrypt pakujący, aby odświeżyć te wartości.
+Karta Informacje odczytuje `OpenClawBuildTimestamp` i `OpenClawGitCommit` z Info.plist, aby wyświetlić wersję, datę kompilacji, zatwierdzenie git oraz informację, czy jest to kompilacja DEBUG (za pośrednictwem `#if DEBUG`). Po zmianach w kodzie ponownie uruchom narzędzie pakujące, aby odświeżyć te wartości.
 
 ## Powiązane
 
-- [Aplikacja macOS](/pl/platforms/macos)
-- [Uprawnienia macOS](/pl/platforms/mac/permissions)
+- [aplikacja macOS](/pl/platforms/macos)
+- [uprawnienia macOS](/pl/platforms/mac/permissions)

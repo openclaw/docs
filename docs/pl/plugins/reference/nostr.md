@@ -1,21 +1,22 @@
 ---
 read_when:
-    - Instalujesz, konfigurujesz lub przeprowadzasz audyt pluginu nostr
-summary: Plugin kanału Nostr dla OpenClaw do szyfrowanych wiadomości bezpośrednich zgodnych z NIP-04.
+    - Instalowanie, konfigurowanie lub audytowanie pluginu nostr
+summary: Plugin kanału Nostr dla OpenClaw do szyfrowanych wiadomości bezpośrednich NIP-04.
 title: Plugin Nostr
 x-i18n:
-    generated_at: "2026-07-12T15:23:52Z"
+    generated_at: "2026-07-16T18:56:29Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: e56fd9eee17c55bcbba3d7b85d783930c10d2368f36173ac478b254c2bd5ec22
+    source_hash: 9efb2014cd168e3d847a045cf82fde3ec364ca3f6a75ee3ef8e1acfb92a79efa
     source_path: plugins/reference/nostr.md
     workflow: 16
 ---
 
 # Plugin Nostr
 
-Plugin kanału Nostr dla OpenClaw, obsługujący szyfrowane wiadomości bezpośrednie zgodne z NIP-04.
+Plugin kanału Nostr dla OpenClaw, obsługujący szyfrowane wiadomości bezpośrednie NIP-04.
 
 ## Dystrybucja
 
@@ -24,8 +25,8 @@ Plugin kanału Nostr dla OpenClaw, obsługujący szyfrowane wiadomości bezpośr
 
 ## Powierzchnia
 
-kanały: nostr
+kanały: `nostr`
 
 ## Powiązana dokumentacja
 
-- [nostr](/pl/channels/nostr)
+- [Nostr](/pl/channels/nostr)

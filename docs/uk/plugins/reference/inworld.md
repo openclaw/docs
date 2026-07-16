@@ -1,31 +1,32 @@
 ---
 read_when:
-    - Ви встановлюєте, налаштовуєте або перевіряєте Plugin inworld.
+    - Ви встановлюєте, налаштовуєте або перевіряєте плагін inworld
 summary: Потокове перетворення тексту на мовлення від Inworld (MP3, OGG_OPUS, PCM для телефонії).
 title: Плагін Inworld
 x-i18n:
-    generated_at: "2026-07-12T13:34:46Z"
+    generated_at: "2026-07-16T18:20:29Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 02d912c51460e181e100bc227575cafd1ab3c49494057d2df1e26571000020a8
+    source_hash: 3682eb0f40307e258cd34b0c1f7963f710e6e8852aad7f10efb8cedb023291f1
     source_path: plugins/reference/inworld.md
     workflow: 16
 ---
 
-# Plugin Inworld
+# Плагін Inworld
 
-Потокове перетворення тексту на мовлення від Inworld (MP3, OGG_OPUS, PCM для телефонії).
+Потокове перетворення тексту на мовлення Inworld (MP3, OGG_OPUS, телефонний PCM).
 
 ## Розповсюдження
 
-- Пакет: `@openclaw/inworld-speech`
-- Спосіб установлення: npm; ClawHub: `clawhub:@openclaw/inworld-speech`
+- Пакунок: `@openclaw/inworld-speech`
+- Спосіб встановлення: npm; ClawHub: `clawhub:@openclaw/inworld-speech`
 
 ## Інтерфейс
 
-контракти: speechProviders
+контракти: `speechProviders`
 
 ## Пов’язана документація
 
-- [Inworld](/uk/providers/inworld)
+- [inworld](/uk/providers/inworld)

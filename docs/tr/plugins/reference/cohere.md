@@ -1,30 +1,31 @@
 ---
 read_when:
-    - cohere pluginini kuruyor, yapılandırıyor veya denetliyorsunuz
+    - cohere Pluginini yüklüyor, yapılandırıyor veya denetliyorsunuz
 summary: OpenClaw Cohere sağlayıcı Plugin'i.
 title: Cohere Plugin'i
 x-i18n:
-    generated_at: "2026-07-12T12:36:34Z"
+    generated_at: "2026-07-16T17:24:34Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 08bdb32e07d1b28d19a89c2eb082348b4b04ddb42d0b7f145aa3513287bb72d9
+    source_hash: 8d419e7596d93838f7f0efb1e1809d69b0f90f9a169aee9f926c88554ebbcc32
     source_path: plugins/reference/cohere.md
     workflow: 16
 ---
 
-# Cohere Plugin'i
+# Cohere plugin'i
 
-OpenClaw Cohere sağlayıcı Plugin'i.
+OpenClaw Cohere sağlayıcı plugin'i.
 
 ## Dağıtım
 
 - Paket: `@openclaw/cohere-provider`
 - Kurulum yolu: OpenClaw'a dahildir; npm; ClawHub: `clawhub:@openclaw/cohere-provider`
 
-## Kapsam
+## Yüzey
 
-sağlayıcılar: cohere
+sağlayıcılar: `cohere`
 
 ## İlgili belgeler
 

@@ -1,30 +1,31 @@
 ---
 read_when:
     - أنت تثبّت Plugin لوحة العمل أو تهيّئه أو تدقّقه
-summary: لوحة عمل لمتابعة المشكلات والجلسات التي يديرها الوكيل.
+summary: لوحة عمل للمهام والجلسات التي يديرها الوكيل.
 title: Plugin لوحة العمل
 x-i18n:
-    generated_at: "2026-07-12T06:17:15Z"
+    generated_at: "2026-07-16T14:35:04Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 1e5a48a52d45dbe87b73020103c2bc3f0bd46305b4c0d26b3010864af65fa99c
+    source_hash: 7011f95388aafcc6bd2d4af0fc71296976b05f57d9314bbb4fa341b8de717fa2
     source_path: plugins/reference/workboard.md
     workflow: 16
 ---
 
 # Plugin لوحة العمل
 
-لوحة معلومات للعمل على المشكلات والجلسات التي يملكها الوكيل.
+لوحة عمل لمتابعة المشكلات والجلسات التي يملكها الوكيل.
 
 ## التوزيع
 
 - الحزمة: `@openclaw/workboard`
-- مسار التثبيت: مضمنة في OpenClaw
+- مسار التثبيت: مضمن في OpenClaw
 
 ## الواجهة
 
-العقود: الأدوات
+العقود: `tools`
 
 ## الوثائق ذات الصلة
 

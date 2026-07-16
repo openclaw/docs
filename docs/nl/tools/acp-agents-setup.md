@@ -1,38 +1,42 @@
 ---
 read_when:
-    - De acpx-harness installeren of configureren voor Claude Code / Codex / Gemini CLI
-    - De MCP-bridge voor plugin-tools of OpenClaw-tools inschakelen
+    - De acpx-harness voor Claude Code / Codex / Gemini CLI installeren of configureren
+    - De plugin-tools- of OpenClaw-tools-MCP-bridge inschakelen
     - ACP-machtigingsmodi configureren
 summary: 'ACP-agents instellen: acpx-harnasconfiguratie, Plugin-installatie, machtigingen'
-title: ACP-agents — installatie
+title: ACP-agents — configuratie
 x-i18n:
-    generated_at: "2026-07-12T09:20:10Z"
+    generated_at: "2026-07-16T16:29:05Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 6a654c7513df0bd54dc69eecc45a408df76c852bcf1d9e932b960f4944fa4239
+    source_hash: 437c7b9ddeeb28aa68e6ef14cf64a32cd1a9d28cd1cdb1a597a5e8bd6c45c5ae
     source_path: tools/acp-agents-setup.md
     workflow: 16
 ---
 
-Zie [ACP-agents](/nl/tools/acp-agents) voor het overzicht, het operationele draaiboek en de concepten.
+Voor het overzicht, het operatorrunbook en de concepten, zie [ACP-agents](/nl/tools/acp-agents).
 
-Deze pagina behandelt de acpx-harnasconfiguratie, de Plugin-installatie voor de MCP-bruggen en de machtigingsconfiguratie.
+Deze pagina behandelt de acpx-harnessconfiguratie, Plugin-installatie voor de MCP-bridges en machtigingsconfiguratie.
 
-Gebruik deze pagina alleen wanneer u de ACP/acpx-route instelt. Gebruik voor de runtimeconfiguratie van de native Codex-appserver [Codex-harnas](/nl/plugins/codex-harness). Gebruik voor OpenAI-API-sleutels of de configuratie van Codex OAuth als modelprovider [OpenAI](/nl/providers/openai).
+Gebruik deze pagina alleen wanneer je de ACP/acpx-route instelt. Gebruik voor de runtimeconfiguratie van de native Codex
+app-server [Codex-harness](/nl/plugins/codex-harness). Gebruik voor
+OpenAI API-sleutels of de modelproviderconfiguratie voor Codex OAuth
+[OpenAI](/nl/providers/openai).
 
 Codex heeft twee OpenClaw-routes:
 
-| Route                       | Configuratie/opdracht                                 | Installatiepagina                       |
-| --------------------------- | ----------------------------------------------------- | --------------------------------------- |
-| Native Codex-appserver      | `/codex ...`, `openai/gpt-*`-agentverwijzingen       | [Codex-harnas](/nl/plugins/codex-harness)  |
-| Expliciete Codex ACP-adapter | `/acp spawn codex`, `runtime: "acp", agentId: "codex"` | Deze pagina                             |
+| Route                         | Configuratie/opdracht                                  | Installatiepagina                       |
+| ----------------------------- | ------------------------------------------------------ | --------------------------------------- |
+| Native Codex app-server       | `/codex ...`, `openai/gpt-*`-agentreferenties          | [Codex-harness](/nl/plugins/codex-harness) |
+| Expliciete Codex ACP-adapter  | `/acp spawn codex`, `runtime: "acp", agentId: "codex"` | Deze pagina                             |
 
-Geef de voorkeur aan de native route, tenzij u expliciet ACP/acpx-gedrag nodig hebt.
+Geef de voorkeur aan de native route, tenzij je expliciet ACP/acpx-gedrag nodig hebt.
 
-## Ondersteuning voor acpx-harnassen (huidig)
+## Ondersteuning voor de acpx-harness (huidig)
 
-Ingebouwde acpx-harnasaliassen (uit de vastgezette `acpx`-afhankelijkheid):
+Ingebouwde aliassen voor de acpx-harness (uit de vastgezette afhankelijkheid `acpx`):
 
 | Alias        | Omvat                                                                                                           |
 | ------------ | --------------------------------------------------------------------------------------------------------------- |
@@ -49,30 +53,33 @@ Ingebouwde acpx-harnasaliassen (uit de vastgezette `acpx`-afhankelijkheid):
 | `kiro`       | [Kiro CLI](https://kiro.dev)                                                                                    |
 | `mux`        | [Mux](https://mux.coder.com)                                                                                    |
 | `opencode`   | [OpenCode](https://opencode.ai)                                                                                 |
-| `openclaw`   | OpenClaw ACP-brug (native `openclaw acp`)                                                                       |
+| `openclaw`   | OpenClaw ACP-bridge (native `openclaw acp`)                                                                     |
 | `pi`         | [Pi Coding Agent](https://github.com/mariozechner/pi)                                                           |
 | `qoder`      | [Qoder CLI](https://docs.qoder.com/cli/acp)                                                                     |
 | `qwen`       | [Qwen Code](https://github.com/QwenLM/qwen-code)                                                                |
 | `trae`       | [Trae CLI](https://docs.trae.cn/cli)                                                                            |
 
-`factory-droid` en `factorydroid` worden eveneens omgezet naar de ingebouwde `droid`-adapter.
+`factory-droid` en `factorydroid` worden ook omgezet naar de ingebouwde adapter `droid`.
 
-Wanneer OpenClaw de acpx-backend gebruikt, geeft u de voorkeur aan deze waarden voor `agentId`, tenzij uw acpx-configuratie aangepaste agentaliasen definieert.
-Als uw lokale Cursor-installatie ACP nog steeds beschikbaar stelt als `agent acp`, overschrijft u de opdracht van de `cursor`-agent in uw acpx-configuratie in plaats van de ingebouwde standaardwaarde te wijzigen.
+Wanneer OpenClaw de acpx-backend gebruikt, geef je de voorkeur aan deze waarden voor `agentId`, tenzij je acpx-configuratie aangepaste agentaliasen definieert.
+Als je lokale Cursor-installatie ACP nog steeds beschikbaar stelt als `agent acp`, overschrijf je de agentopdracht `cursor` in je acpx-configuratie in plaats van de ingebouwde standaardwaarde te wijzigen.
 
-Bij rechtstreeks gebruik van de acpx-CLI kunnen ook willekeurige adapters worden aangestuurd via `--agent <command>`, maar deze onbewerkte uitweg is een functie van de acpx-CLI (niet het normale `agentId`-pad van OpenClaw).
+Bij direct gebruik van de acpx-CLI kun je via `--agent <command>` ook willekeurige adapters kiezen, maar die directe uitweg is een functie van de acpx-CLI (niet het normale OpenClaw-pad `agentId`).
 
-Modelbeheer is afhankelijk van de mogelijkheden van de adapter. Codex ACP-modelverwijzingen worden vóór het opstarten door OpenClaw genormaliseerd. Andere harnassen hebben ACP-ondersteuning voor `models` en `session/set_model` nodig; als een harnas noch die ACP-mogelijkheid, noch een eigen opstartvlag voor het model beschikbaar stelt, kan OpenClaw/acpx geen modelselectie afdwingen.
+Modelbeheer is afhankelijk van de mogelijkheden van de adapter. Codex ACP-modelreferenties worden
+vóór het opstarten door OpenClaw genormaliseerd. Andere harnesses vereisen ACP `models` plus
+ondersteuning voor `session/set_model`; als een harness noch die ACP-mogelijkheid
+noch een eigen opstartvlag voor het model beschikbaar stelt, kan OpenClaw/acpx geen modelselectie afdwingen.
 
 ## Vereiste configuratie
 
-ACP-basisconfiguratie van de kern:
+Basisconfiguratie voor ACP in de kern:
 
 ```json5
 {
   acp: {
     enabled: true,
-    // Optioneel. De standaardwaarde is true; stel in op false om ACP-verzending te pauzeren terwijl /acp-bediening beschikbaar blijft.
+    // Optioneel. De standaardwaarde is true; stel in op false om ACP-dispatch te pauzeren terwijl /acp-bediening beschikbaar blijft.
     dispatch: { enabled: true },
     backend: "acpx",
     defaultAgent: "codex",
@@ -93,7 +100,7 @@ ACP-basisconfiguratie van de kern:
     ],
     maxConcurrentSessions: 8,
     stream: {
-      // Standaardwaarden zijn coalesceIdleMs: 350, maxChunkChars: 1800; hier expliciet weergegeven.
+      // De standaardwaarden zijn coalesceIdleMs: 350 en maxChunkChars: 1800; ze worden hier expliciet weergegeven.
       coalesceIdleMs: 350,
       maxChunkChars: 1800,
     },
@@ -119,7 +126,7 @@ De configuratie voor threadkoppeling is specifiek voor de kanaaladapter. Voorbee
     discord: {
       threadBindings: {
         enabled: true,
-        // De standaardwaarde is al true; hier expliciet weergegeven.
+        // De standaardwaarde is al true; deze wordt hier expliciet weergegeven.
         spawnSessions: true,
       },
     },
@@ -127,7 +134,7 @@ De configuratie voor threadkoppeling is specifiek voor de kanaaladapter. Voorbee
 }
 ```
 
-Als het starten van een threadgebonden ACP-sessie niet werkt, controleert u eerst de functievlag van de adapter:
+Als het starten van aan een thread gebonden ACP niet werkt, controleer dan eerst de functievlag van de adapter:
 
 - Discord: `channels.discord.threadBindings.spawnSessions=true`
 
@@ -137,15 +144,15 @@ Zie [Configuratiereferentie](/nl/gateway/configuration-reference).
 
 ## Plugin-installatie voor de acpx-backend
 
-Installaties uit pakketten gebruiken de officiële runtime-Plugin `@openclaw/acpx` voor ACP.
-Installeer en activeer deze voordat u ACP-harnassessies gebruikt:
+Installaties uit een pakket gebruiken de officiële runtime-Plugin `@openclaw/acpx` voor ACP.
+Installeer en activeer deze voordat je ACP-harnesssessies gebruikt:
 
 ```bash
 openclaw plugins install @openclaw/acpx
 openclaw config set plugins.entries.acpx.enabled true
 ```
 
-Uitcheckingen van de broncode kunnen na `pnpm install` ook de lokale werkruimte-Plugin gebruiken.
+Bij broncodecheck-outs kun je na `pnpm install` ook de lokale werkruimte-Plugin gebruiken.
 
 Begin met:
 
@@ -153,20 +160,21 @@ Begin met:
 /acp doctor
 ```
 
-Als u `acpx` hebt uitgeschakeld, deze via `plugins.allow` / `plugins.deny` hebt geweigerd of wilt terugschakelen naar de Plugin uit het pakket, gebruikt u het expliciete pakketpad:
+Als je `acpx` hebt uitgeschakeld, deze via `plugins.allow` / `plugins.deny` hebt geweigerd of
+terug wilt schakelen naar de Plugin uit het pakket, gebruik je het expliciete pakketpad:
 
 ```bash
 openclaw plugins install @openclaw/acpx
 openclaw config set plugins.entries.acpx.enabled true
 ```
 
-Lokale werkruimte-installatie tijdens ontwikkeling:
+Installatie vanuit de lokale werkruimte tijdens de ontwikkeling:
 
 ```bash
 openclaw plugins install ./path/to/local/acpx-plugin
 ```
 
-Controleer vervolgens de status van de backend:
+Controleer daarna de status van de backend:
 
 ```text
 /acp doctor
@@ -174,9 +182,16 @@ Controleer vervolgens de status van de backend:
 
 ### Opstartcontrole van de acpx-runtime
 
-De `acpx`-Plugin bevat de ACP-runtime rechtstreeks (er is geen afzonderlijk `acpx`-binair bestand of versie om te configureren). Standaard registreert de Plugin de ingebedde backend tijdens het opstarten van de Gateway en wacht deze op een opstartcontrole voordat de Gateway het signaal `ready` afgeeft. Stel `OPENCLAW_ACPX_RUNTIME_STARTUP_PROBE=0` of `OPENCLAW_SKIP_ACPX_RUNTIME_PROBE=1` alleen in voor scripts of omgevingen waarin de opstartcontrole bewust uitgeschakeld blijft. Voer `/acp doctor` uit voor een expliciete controle op aanvraag.
+De Plugin `acpx` bevat de ACP-runtime rechtstreeks (er is geen afzonderlijk binair bestand of
+versie `acpx` om te configureren). Standaard registreert deze de ingebedde backend tijdens
+het opstarten van de Gateway en wacht deze op een opstartcontrole vóór het signaal `ready`
+van de gateway. Stel `OPENCLAW_ACPX_RUNTIME_STARTUP_PROBE=0` of
+`OPENCLAW_SKIP_ACPX_RUNTIME_PROBE=1` alleen in voor scripts of omgevingen waarin
+de opstartcontrole bewust uitgeschakeld blijft. Voer `/acp doctor` uit voor een expliciete
+controle op aanvraag.
 
-Overschrijf de opdracht van een afzonderlijke ACP-agent met gestructureerde argumenten wanneer een pad of vlagwaarde één argv-token moet blijven:
+Overschrijf de opdracht van een afzonderlijke ACP-agent met gestructureerde argumenten wanneer een pad
+of vlagwaarde één argv-token moet blijven:
 
 ```json
 {
@@ -198,20 +213,25 @@ Overschrijf de opdracht van een afzonderlijke ACP-agent met gestructureerde argu
 }
 ```
 
-- `agents.<id>.command` is het uitvoerbare bestand of de bestaande opdrachttekenreeks voor die ACP-agent.
-- `agents.<id>.args` is optioneel. Elk array-item wordt voor de shell aangehaald voordat OpenClaw het doorgeeft via het huidige acpx-register voor opdrachttekenreeksen.
+- `agents.<id>.command` is het uitvoerbare bestand of de bestaande opdrachttekst voor die ACP-agent.
+- `agents.<id>.args` is optioneel. Elk array-item wordt voor de shell geciteerd voordat OpenClaw het doorgeeft via het huidige register voor acpx-opdrachtteksten.
 
 Zie [Plugins](/nl/tools/plugin).
 
 ### Automatisch downloaden van adapters
 
-`acpx` downloadt ACP-adapters (bijvoorbeeld de ACP-bruggen voor Claude en Codex) bij het eerste gebruik automatisch via `npx`. U hoeft adapterpakketten niet handmatig te installeren en er is geen afzonderlijke stap na de installatie voor OpenClaw zelf. Als het downloaden of starten van een adapter mislukt, meldt `/acp doctor` de fout.
+`acpx` downloadt ACP-adapters (bijvoorbeeld de ACP-bridges voor Claude en Codex)
+bij het eerste gebruik automatisch via `npx`. Je hoeft adapterpakketten niet
+handmatig te installeren en er is geen afzonderlijke postinstallatiestap voor OpenClaw zelf. Als het
+downloaden of starten van een adapter mislukt, meldt `/acp doctor` de fout.
 
-### MCP-brug voor Plugin-hulpmiddelen
+### MCP-bridge voor Plugin-tools
 
-Standaard stellen ACPX-sessies door OpenClaw-Plugins geregistreerde hulpmiddelen **niet** beschikbaar aan het ACP-harnas.
+Standaard stellen ACPX-sessies door OpenClaw-Plugins geregistreerde tools **niet**
+beschikbaar aan de ACP-harness.
 
-Als u wilt dat ACP-agents zoals Codex of Claude Code geïnstalleerde hulpmiddelen van OpenClaw-Plugins kunnen aanroepen, zoals geheugen ophalen/opslaan, activeert u de speciale brug:
+Als je wilt dat ACP-agents zoals Codex of Claude Code geïnstalleerde
+OpenClaw-Plugin-tools zoals geheugen ophalen/opslaan kunnen aanroepen, activeer je de specifieke bridge:
 
 ```bash
 openclaw config set plugins.entries.acpx.config.pluginToolsMcpBridge true
@@ -219,22 +239,30 @@ openclaw config set plugins.entries.acpx.config.pluginToolsMcpBridge true
 
 Wat dit doet:
 
-- Injecteert tijdens de initialisatie van de ACPX-sessie een ingebouwde MCP-server met de naam `openclaw-plugin-tools`.
-- Stelt Plugin-hulpmiddelen beschikbaar die al zijn geregistreerd door geïnstalleerde en geactiveerde OpenClaw-Plugins.
+- Voegt tijdens de initialisatie van ACPX-sessies een ingebouwde MCP-server met de naam
+  `openclaw-plugin-tools` toe.
+- Stelt Plugin-tools beschikbaar die al zijn geregistreerd door geïnstalleerde en geactiveerde
+  OpenClaw-Plugins.
+- Geeft de identiteit van de actieve ACP-sessie door aan fabrieken voor Plugin-tools, zodat
+  tools met een agentbereik binnen de naamruimte van die agent blijven.
 - Houdt de functie expliciet en standaard uitgeschakeld.
 
 Opmerkingen over beveiliging en vertrouwen:
 
-- Dit breidt het hulpmiddelenoppervlak van het ACP-harnas uit.
-- ACP-agents krijgen alleen toegang tot Plugin-hulpmiddelen die al actief zijn in de Gateway.
-- Behandel dit als dezelfde vertrouwensgrens als wanneer u die Plugins in OpenClaw zelf laat uitvoeren.
-- Controleer geïnstalleerde Plugins voordat u dit activeert.
+- Dit breidt het tooloppervlak van de ACP-harness uit.
+- ACP-agents krijgen alleen toegang tot Plugin-tools die al actief zijn in de gateway.
+- Behandel dit als dezelfde vertrouwensgrens als wanneer je die Plugins in
+  OpenClaw zelf laat uitvoeren.
+- Controleer geïnstalleerde Plugins voordat je dit activeert.
 
-Aangepaste `mcpServers` blijven zoals voorheen werken. De ingebouwde brug voor Plugin-hulpmiddelen is een aanvullend optioneel gemak, geen vervanging voor algemene MCP-serverconfiguratie.
+Aangepaste `mcpServers` blijven werken zoals voorheen. De ingebouwde bridge voor Plugin-tools is een
+aanvullend opt-in-gemak, geen vervanging voor algemene MCP-serverconfiguratie.
 
-### MCP-brug voor OpenClaw-hulpmiddelen
+### MCP-bridge voor OpenClaw-tools
 
-Standaard stellen ACPX-sessies ingebouwde OpenClaw-hulpmiddelen ook **niet** via MCP beschikbaar. Activeer de afzonderlijke brug voor kernhulpmiddelen wanneer een ACP-agent geselecteerde ingebouwde hulpmiddelen zoals `cron` nodig heeft:
+Standaard stellen ACPX-sessies ingebouwde OpenClaw-tools ook **niet** via
+MCP beschikbaar. Activeer de afzonderlijke bridge voor kerntools wanneer een ACP-agent geselecteerde
+ingebouwde tools zoals `cron` nodig heeft:
 
 ```bash
 openclaw config set plugins.entries.acpx.config.openClawToolsMcpBridge true
@@ -242,77 +270,88 @@ openclaw config set plugins.entries.acpx.config.openClawToolsMcpBridge true
 
 Wat dit doet:
 
-- Injecteert tijdens de initialisatie van de ACPX-sessie een ingebouwde MCP-server met de naam `openclaw-tools`.
-- Stelt geselecteerde ingebouwde OpenClaw-hulpmiddelen beschikbaar. De eerste server stelt `cron` beschikbaar.
-- Houdt de beschikbaarstelling van kernhulpmiddelen expliciet en standaard uitgeschakeld.
+- Voegt tijdens de initialisatie van ACPX-sessies een ingebouwde MCP-server met de naam
+  `openclaw-tools` toe.
+- Stelt geselecteerde ingebouwde OpenClaw-tools beschikbaar. De eerste server stelt `cron` beschikbaar.
+- Houdt de beschikbaarstelling van kerntools expliciet en standaard uitgeschakeld.
 
 ### Configuratie van de time-out voor runtimebewerkingen
 
-De `acpx`-Plugin geeft het opstarten van de ingebedde runtime en besturingsbewerkingen standaard 120 seconden. Hierdoor hebben tragere harnassen zoals Gemini CLI voldoende tijd om het opstarten en initialiseren van ACP te voltooien. Overschrijf dit als uw host een andere bewerkingslimiet nodig heeft:
+De Plugin `acpx` geeft het opstarten en de besturingsbewerkingen van de ingebedde runtime standaard 120
+seconden. Hierdoor hebben tragere harnesses zoals Gemini CLI voldoende tijd
+om het opstarten en initialiseren van ACP te voltooien. Overschrijf dit als je host een
+andere bewerkingslimiet nodig heeft:
 
 ```bash
 openclaw config set plugins.entries.acpx.config.timeoutSeconds 180
 ```
 
-Runtimebeurten gebruiken de time-outs voor OpenClaw-agents/uitvoeringen, waaronder `/acp timeout`.
-`sessions_spawn` accepteert geen time-outoverschrijvingen per aanroep; het operatorpad is `agents.defaults.subagents.runTimeoutSeconds`. Start de Gateway opnieuw nadat u `timeoutSeconds` hebt gewijzigd.
+Runtimebeurten gebruiken de time-outs voor OpenClaw-agents/runs, waaronder `/acp timeout`.
+`sessions_spawn` accepteert geen time-outoverschrijvingen per aanroep; het operatorpad
+is `agents.defaults.subagents.runTimeoutSeconds`. Start de gateway opnieuw nadat je
+`timeoutSeconds` hebt gewijzigd.
 
 ### Configuratie van de agent voor statuscontroles
 
-Wanneer `/acp doctor` of de opstartcontrole de backend controleert, test de meegeleverde `acpx`-Plugin één harnasagent. Als `acp.allowedAgents` is ingesteld, wordt standaard de eerste toegestane agent gebruikt; anders is de standaardwaarde `codex`. Als uw implementatie een andere ACP-agent voor statuscontroles nodig heeft, stelt u de controleagent expliciet in:
+Wanneer `/acp doctor` of de opstartcontrole de backend controleert, test de meegeleverde Plugin `acpx`
+één harnessagent. Als `acp.allowedAgents` is ingesteld, wordt standaard
+de eerste toegestane agent gebruikt; anders is de standaardwaarde `codex`. Als je implementatie
+een andere ACP-agent voor statuscontroles nodig heeft, stel je de controleagent expliciet in:
 
 ```bash
 openclaw config set plugins.entries.acpx.config.probeAgent claude
 ```
 
-Start de Gateway opnieuw nadat u deze waarde hebt gewijzigd.
+Start de gateway opnieuw nadat je deze waarde hebt gewijzigd.
 
 ## Machtigingsconfiguratie
 
-ACP-sessies worden niet-interactief uitgevoerd — er is geen TTY om machtigingsvragen voor het schrijven van bestanden en het uitvoeren van shellopdrachten goed te keuren of te weigeren. De acpx-Plugin biedt twee configuratiesleutels waarmee wordt bepaald hoe machtigingen worden afgehandeld:
+ACP-sessies worden niet-interactief uitgevoerd — er is geen TTY om prompts voor toestemming voor het schrijven van bestanden en het uitvoeren van shellopdrachten goed te keuren of te weigeren. De acpx-plugin biedt twee configuratiesleutels waarmee wordt bepaald hoe toestemmingen worden afgehandeld:
 
-Deze ACPX-harnasmachtigingen staan los van OpenClaw-goedkeuringen voor uitvoering en van leveranciersspecifieke omzeilingsvlaggen voor CLI-backends, zoals Claude CLI `--permission-mode bypassPermissions`. ACPX `approve-all` is de noodschakelaar op harnasniveau voor ACP-sessies.
+Deze ACPX-harnastoestemmingen staan los van OpenClaw-goedkeuringen voor uitvoering en van omzeilingsvlaggen van CLI-backendleveranciers, zoals Claude CLI `--permission-mode bypassPermissions`. ACPX `approve-all` is de noodschakelaar op harnessniveau voor ACP-sessies.
 
-Zie [Machtigingsmodi](/nl/tools/permission-modes) voor de bredere vergelijking tussen OpenClaw `tools.exec.mode`, Codex Guardian-goedkeuringen en ACPX-harnasmachtigingen.
+Zie
+[Toestemmingsmodi](/nl/tools/permission-modes) voor de bredere vergelijking tussen OpenClaw `tools.exec.mode`, goedkeuringen van Codex Guardian
+en ACPX-harnastoestemmingen.
 
 ### `permissionMode`
 
-Bepaalt welke bewerkingen de harnasagent zonder bevestiging kan uitvoeren.
+Bepaalt welke bewerkingen de harnessagent zonder prompt kan uitvoeren.
 
-| Waarde          | Gedrag                                                                 |
-| --------------- | ---------------------------------------------------------------------- |
-| `approve-all`   | Keur alle schrijfbewerkingen naar bestanden en shellopdrachten automatisch goed. |
-| `approve-reads` | Keur alleen leesbewerkingen automatisch goed; voor schrijven en uitvoeren zijn prompts vereist. |
-| `deny-all`      | Weiger alle toestemmingsprompts.                                       |
+| Waarde           | Gedrag                                                  |
+| --------------- | --------------------------------------------------------- |
+| `approve-all`   | Alle schrijfbewerkingen voor bestanden en shellopdrachten automatisch goedkeuren.          |
+| `approve-reads` | Alleen leesbewerkingen automatisch goedkeuren; schrijfbewerkingen en uitvoering vereisen prompts. |
+| `deny-all`      | Alle toestemmingsprompts weigeren.                              |
 
 ### `nonInteractivePermissions`
 
 Bepaalt wat er gebeurt wanneer een toestemmingsprompt zou worden weergegeven, maar er geen interactieve TTY beschikbaar is (wat altijd het geval is voor ACP-sessies).
 
-| Waarde | Gedrag                                                                    |
-| ------ | ------------------------------------------------------------------------- |
-| `fail` | Breek de sessie af met `PermissionPromptUnavailableError`. **(standaard)** |
-| `deny` | Weiger de toestemming stilzwijgend en ga door (geleidelijke degradatie).   |
+| Waarde  | Gedrag                                                                 |
+| ------ | ------------------------------------------------------------------------ |
+| `fail` | De sessie afbreken met `PermissionPromptUnavailableError`. **(standaard)** |
+| `deny` | De toestemming stilzwijgend weigeren en doorgaan (geleidelijke degradatie).        |
 
 ### Configuratie
 
-Stel dit in via de Plugin-configuratie:
+Instellen via de pluginconfiguratie:
 
 ```bash
 openclaw config set plugins.entries.acpx.config.permissionMode approve-all
 openclaw config set plugins.entries.acpx.config.nonInteractivePermissions fail
 ```
 
-Start de Gateway opnieuw nadat u deze waarden hebt gewijzigd.
+Start de Gateway opnieuw nadat je deze waarden hebt gewijzigd.
 
 <Warning>
-OpenClaw gebruikt standaard `permissionMode=approve-reads` en `nonInteractivePermissions=fail`. In niet-interactieve ACP-sessies kan elke schrijf- of uitvoerbewerking die een toestemmingsprompt activeert, mislukken met `PermissionPromptUnavailableError: Permission prompt unavailable in non-interactive mode`.
+OpenClaw gebruikt standaard `permissionMode=approve-reads` en `nonInteractivePermissions=fail`. In niet-interactieve ACP-sessies kan elke schrijf- of uitvoeringsbewerking die een toestemmingsprompt activeert, mislukken met `PermissionPromptUnavailableError: Permission prompt unavailable in non-interactive mode`.
 
-Als u toestemmingen moet beperken, stelt u `nonInteractivePermissions` in op `deny`, zodat sessies geleidelijk degraderen in plaats van vast te lopen.
+Als je toestemmingen moet beperken, stel je `nonInteractivePermissions` in op `deny`, zodat sessies geleidelijk degraderen in plaats van vastlopen.
 </Warning>
 
 ## Gerelateerd
 
-- [ACP-agents](/nl/tools/acp-agents) — overzicht, operationeel draaiboek, concepten
-- [Subagents](/nl/tools/subagents)
-- [Routering voor meerdere agents](/nl/concepts/multi-agent)
+- [ACP-agenten](/nl/tools/acp-agents) — overzicht, operationeel draaiboek, concepten
+- [Subagenten](/nl/tools/subagents)
+- [Multi-agentrouting](/nl/concepts/multi-agent)

@@ -4,11 +4,12 @@ read_when:
 summary: Adiciona suporte ao provedor de modelos Mistral no OpenClaw.
 title: Plugin Mistral
 x-i18n:
-    generated_at: "2026-07-12T00:11:10Z"
+    generated_at: "2026-07-16T12:46:01Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 8d9fc0fb6fd98f8f0157e82c8f75b14e1289c802dc97bb2cdaee1956d6507ebd
+    source_hash: daddcf64de064b9994348f34271e44e80259a69d193860f5e056224e75669ab0
     source_path: plugins/reference/mistral.md
     workflow: 16
 ---
@@ -24,7 +25,7 @@ Adiciona suporte ao provedor de modelos Mistral no OpenClaw.
 
 ## Superfície
 
-provedores: mistral; contratos: mediaUnderstandingProviders, memoryEmbeddingProviders, realtimeTranscriptionProviders
+provedores: `mistral`; contratos: `mediaUnderstandingProviders`, `memoryEmbeddingProviders`, `realtimeTranscriptionProviders`
 
 ## Documentação relacionada
 

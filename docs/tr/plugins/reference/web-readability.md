@@ -1,21 +1,22 @@
 ---
 read_when:
-    - web-readability pluginini kuruyor, yapılandırıyor veya denetliyorsunuz
-summary: Yerel HTML web getirme yanıtlarından okunabilir makale içeriğini çıkarın.
+    - web-readability Plugin'ini kuruyor, yapılandırıyor veya denetliyorsunuz
+summary: Yerel HTML web getirme yanıtlarından okunabilir makale içeriğini ayıklayın.
 title: Web Okunabilirliği Plugin'i
 x-i18n:
-    generated_at: "2026-07-12T12:35:32Z"
+    generated_at: "2026-07-16T17:32:42Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 5909a2da50238f14feecc519809d3b1dce90a49dc98142b4797bb45ad0e48cd1
+    source_hash: a2f2144fc91eea68286f83a0d3c92ff31d45f7b0ebb4d272ebefb58e868ae932
     source_path: plugins/reference/web-readability.md
     workflow: 16
 ---
 
 # Web Okunabilirliği Plugin'i
 
-Yerel HTML web getirme yanıtlarından okunabilir makale içeriğini ayıklar.
+Yerel HTML web getirme yanıtlarından okunabilir makale içeriğini ayıklayın.
 
 ## Dağıtım
 
@@ -24,4 +25,4 @@ Yerel HTML web getirme yanıtlarından okunabilir makale içeriğini ayıklar.
 
 ## Yüzey
 
-sözleşmeler: webContentExtractors
+sözleşmeler: `webContentExtractors`

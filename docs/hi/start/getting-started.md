@@ -1,39 +1,37 @@
 ---
 read_when:
-    - पहली बार शून्य से सेटअप
-    - आप काम करने वाली चैट तक पहुँचने का सबसे तेज़ तरीका चाहते हैं
-summary: OpenClaw इंस्टॉल करें और मिनटों में अपनी पहली चैट चलाएँ।
-title: शुरुआत करें
+    - शून्य से पहली बार सेटअप करना
+    - आप एक कार्यशील चैट तक पहुँचने का सबसे तेज़ तरीका चाहते हैं
+summary: OpenClaw इंस्टॉल करें और कुछ ही मिनटों में अपनी पहली चैट शुरू करें।
+title: शुरुआत करना
 x-i18n:
-    generated_at: "2026-06-29T00:13:32Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T17:28:59Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 579ed2b4797dc851b0293b96a4177cc356641b6842fe45c4d48f4e8c224eef75
+    source_hash: 8f50073b059477636b94e128cec90b41dcc21c8bb132e34900e68409cacf70eb
     source_path: start/getting-started.md
     workflow: 16
 ---
 
-OpenClaw इंस्टॉल करें, ऑनबोर्डिंग चलाएँ, और अपने AI सहायक से चैट करें — सब कुछ
-लगभग 5 मिनट में। अंत तक आपके पास चलता हुआ Gateway, कॉन्फ़िगर किया गया प्रमाणीकरण,
-और एक काम करता हुआ चैट सत्र होगा।
+OpenClaw इंस्टॉल करें, ऑनबोर्डिंग चलाएँ और लगभग 5 मिनट में अपने AI सहायक से चैट करें। अंत तक आपके पास चलता हुआ Gateway, कॉन्फ़िगर किया गया प्रमाणीकरण और एक कार्यशील चैट सत्र होगा।
 
 ## आपको क्या चाहिए
 
-- **Node.js** — Node 24 अनुशंसित है (Node 22.19+ भी समर्थित है)
-- मॉडल प्रदाता (Anthropic, OpenAI, Google, आदि) से **एक API key** — ऑनबोर्डिंग आपसे पूछेगी
+- **Node.js 22.22.3+, 24.15+, या 25.9+** (24 अनुशंसित डिफ़ॉल्ट है)
+- किसी मॉडल प्रदाता (Anthropic, OpenAI, Google आदि) की **API कुंजी** — ऑनबोर्डिंग के दौरान आपसे इसे दर्ज करने के लिए कहा जाएगा
 
 <Tip>
-अपना Node संस्करण `node --version` से जाँचें।
-**Windows उपयोगकर्ता:** नेटिव Windows Hub ऐप सबसे आसान डेस्कटॉप मार्ग है। 
-PowerShell इंस्टॉलर और WSL2 Gateway मार्ग भी समर्थित हैं। [Windows](/hi/platforms/windows) देखें।
+`node --version` से अपना Node संस्करण जाँचें।
+**Windows उपयोगकर्ता:** नेटिव Windows Hub ऐप सबसे आसान डेस्कटॉप विकल्प है। PowerShell इंस्टॉलर और WSL2 Gateway विकल्प भी समर्थित हैं। [Windows](/hi/platforms/windows) देखें।
 Node इंस्टॉल करना है? [Node सेटअप](/hi/install/node) देखें।
 </Tip>
 
 ## त्वरित सेटअप
 
 <Steps>
-  <Step title="Install OpenClaw">
+  <Step title="OpenClaw इंस्टॉल करें">
     <Tabs>
       <Tab title="macOS / Linux">
         ```bash
@@ -41,7 +39,7 @@ Node इंस्टॉल करना है? [Node सेटअप](/hi/insta
         ```
         <img
   src="/assets/install-script.svg"
-  alt="Install Script Process"
+  alt="इंस्टॉल स्क्रिप्ट प्रक्रिया"
   className="rounded-lg"
 />
       </Tab>
@@ -53,61 +51,53 @@ Node इंस्टॉल करना है? [Node सेटअप](/hi/insta
     </Tabs>
 
     <Note>
-    अन्य इंस्टॉल तरीके (Docker, Nix, npm): [इंस्टॉल](/hi/install)।
+    इंस्टॉल करने के अन्य तरीके (Docker, Nix, npm): [इंस्टॉल करें](/hi/install)।
     </Note>
 
   </Step>
-  <Step title="Run onboarding">
+  <Step title="ऑनबोर्डिंग चलाएँ">
     ```bash
     openclaw onboard --install-daemon
     ```
 
-    विज़ार्ड आपको मॉडल प्रदाता चुनने, API key सेट करने,
-    और Gateway कॉन्फ़िगर करने की प्रक्रिया से गुज़ारता है। QuickStart में आम तौर पर केवल कुछ मिनट लगते हैं, लेकिन
-    प्रदाता साइन-इन, चैनल पेयरिंग, daemon इंस्टॉल, नेटवर्क डाउनलोड, Skills,
-    या वैकल्पिक Plugin पूरी ऑनबोर्डिंग को अधिक समय लेवा बना सकते हैं। आप वैकल्पिक
-    चरण छोड़ सकते हैं और बाद में `openclaw configure` के साथ वापस आ सकते हैं।
+    विज़ार्ड आपको मॉडल प्रदाता चुनने, API कुंजी सेट करने और Gateway कॉन्फ़िगर करने की प्रक्रिया से गुज़ारता है। QuickStart में आमतौर पर केवल कुछ मिनट लगते हैं, लेकिन प्रदाता में साइन-इन, चैनल पेयरिंग, डेमन इंस्टॉलेशन, नेटवर्क डाउनलोड, Skills या वैकल्पिक plugins के कारण पूरी ऑनबोर्डिंग में अधिक समय लग सकता है। वैकल्पिक चरण छोड़ दें और बाद में `openclaw configure` के साथ वापस आएँ।
 
-    पूर्ण संदर्भ के लिए [ऑनबोर्डिंग (CLI)](/hi/start/wizard) देखें।
+    संपूर्ण संदर्भ के लिए [ऑनबोर्डिंग (CLI)](/hi/start/wizard) देखें।
 
   </Step>
-  <Step title="Verify the Gateway is running">
+  <Step title="सत्यापित करें कि Gateway चल रहा है">
     ```bash
     openclaw gateway status
     ```
 
-    आपको Gateway को पोर्ट 18789 पर सुनते हुए दिखना चाहिए।
+    आपको Gateway को पोर्ट 18789 पर सुनते हुए देखना चाहिए।
 
   </Step>
-  <Step title="Open the dashboard">
+  <Step title="डैशबोर्ड खोलें">
     ```bash
     openclaw dashboard
     ```
 
-    यह आपके ब्राउज़र में Control UI खोलता है। यदि यह लोड हो जाता है, तो सब कुछ काम कर रहा है।
+    इससे आपके ब्राउज़र में Control UI खुलता है। यदि यह लोड हो जाता है, तो सब कुछ काम कर रहा है।
 
   </Step>
-  <Step title="Send your first message">
-    Control UI चैट में एक संदेश टाइप करें और आपको AI उत्तर मिलना चाहिए।
+  <Step title="अपना पहला संदेश भेजें">
+    Control UI चैट में कोई संदेश टाइप करें और आपको AI से उत्तर मिलना चाहिए।
 
-    इसके बजाय अपने फ़ोन से चैट करना चाहते हैं? सेट अप करने के लिए सबसे तेज़ चैनल
-    [Telegram](/hi/channels/telegram) है (बस एक bot token)। सभी विकल्पों के लिए [चैनल](/hi/channels)
-    देखें।
+    इसके बजाय अपने फ़ोन से चैट करना चाहते हैं? सेटअप करने के लिए सबसे तेज़ चैनल [Telegram](/hi/channels/telegram) है (केवल एक बॉट टोकन)। सभी विकल्पों के लिए [चैनल](/hi/channels) देखें।
 
   </Step>
 </Steps>
 
-<Accordion title="Advanced: mount a custom Control UI build">
-  यदि आप स्थानीयकृत या अनुकूलित डैशबोर्ड बिल्ड बनाए रखते हैं, तो
-  `gateway.controlUi.root` को ऐसी डायरेक्टरी पर इंगित करें जिसमें आपकी बनी हुई static
-  assets और `index.html` हो।
+<Accordion title="उन्नत: कस्टम Control UI बिल्ड माउंट करें">
+  यदि आप स्थानीयकृत या अनुकूलित डैशबोर्ड बिल्ड बनाए रखते हैं, तो `gateway.controlUi.root` को उस डायरेक्टरी की ओर इंगित करें जिसमें आपकी बिल्ड की गई स्थिर एसेट और `index.html` मौजूद हों।
 
 ```bash
 mkdir -p "$HOME/.openclaw/control-ui-custom"
-# Copy your built static files into that directory.
+# अपनी बिल्ड की गई स्थिर फ़ाइलें उस डायरेक्टरी में कॉपी करें।
 ```
 
-फिर सेट करें:
+फिर यह सेट करें:
 
 ```json
 {
@@ -120,7 +110,7 @@ mkdir -p "$HOME/.openclaw/control-ui-custom"
 }
 ```
 
-Gateway को रीस्टार्ट करें और डैशबोर्ड फिर से खोलें:
+Gateway पुनः आरंभ करें और डैशबोर्ड दोबारा खोलें:
 
 ```bash
 openclaw gateway restart
@@ -132,32 +122,32 @@ openclaw dashboard
 ## आगे क्या करें
 
 <Columns>
-  <Card title="Connect a channel" href="/hi/channels" icon="message-square">
-    Discord, Feishu, iMessage, Matrix, Microsoft Teams, Signal, Slack, Telegram, WhatsApp, Zalo, और अन्य।
+  <Card title="कोई चैनल कनेक्ट करें" href="/hi/channels" icon="message-square">
+    Discord, Feishu, iMessage, Matrix, Microsoft Teams, Signal, Slack, Telegram, WhatsApp, Zalo और अन्य।
   </Card>
-  <Card title="Pairing and safety" href="/hi/channels/pairing" icon="shield">
+  <Card title="पेयरिंग और सुरक्षा" href="/hi/channels/pairing" icon="shield">
     नियंत्रित करें कि आपके एजेंट को कौन संदेश भेज सकता है।
   </Card>
-  <Card title="Configure the Gateway" href="/hi/gateway/configuration" icon="settings">
-    मॉडल, टूल, sandbox, और उन्नत सेटिंग्स।
+  <Card title="Gateway कॉन्फ़िगर करें" href="/hi/gateway/configuration" icon="settings">
+    मॉडल, टूल, सैंडबॉक्स और उन्नत सेटिंग।
   </Card>
-  <Card title="Browse tools" href="/hi/tools" icon="wrench">
-    ब्राउज़र, exec, वेब खोज, Skills, और Plugin।
+  <Card title="टूल ब्राउज़ करें" href="/hi/tools" icon="wrench">
+    ब्राउज़र, exec, वेब खोज, Skills और plugins।
   </Card>
 </Columns>
 
-<Accordion title="Advanced: environment variables">
-  यदि आप OpenClaw को service account के रूप में चलाते हैं या कस्टम पाथ चाहते हैं:
+<Accordion title="उन्नत: पर्यावरण चर">
+  यदि आप OpenClaw को किसी सेवा खाते के रूप में चलाते हैं या कस्टम पाथ चाहते हैं:
 
 - `OPENCLAW_HOME` — आंतरिक पाथ रिज़ॉल्यूशन के लिए होम डायरेक्टरी
-- `OPENCLAW_STATE_DIR` — state डायरेक्टरी को ओवरराइड करें
-- `OPENCLAW_CONFIG_PATH` — config file पाथ को ओवरराइड करें
+- `OPENCLAW_STATE_DIR` — स्टेट डायरेक्टरी को ओवरराइड करें
+- `OPENCLAW_CONFIG_PATH` — कॉन्फ़िगरेशन फ़ाइल के पाथ को ओवरराइड करें
 
-पूर्ण संदर्भ: [Environment variables](/hi/help/environment)।
+संपूर्ण संदर्भ: [पर्यावरण चर](/hi/help/environment)।
 </Accordion>
 
 ## संबंधित
 
-- [इंस्टॉल अवलोकन](/hi/install)
-- [चैनल अवलोकन](/hi/channels)
+- [इंस्टॉलेशन का अवलोकन](/hi/install)
+- [चैनलों का अवलोकन](/hi/channels)
 - [सेटअप](/hi/start/setup)

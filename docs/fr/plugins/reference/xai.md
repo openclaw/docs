@@ -1,14 +1,15 @@
 ---
 read_when:
     - Vous installez, configurez ou auditez le plugin xai
-summary: Ajoute la prise en charge du fournisseur de modèles xAI dans OpenClaw.
+summary: Ajoute la prise en charge du fournisseur de modèles xAI à OpenClaw.
 title: Plugin xAI
 x-i18n:
-    generated_at: "2026-07-12T02:59:08Z"
+    generated_at: "2026-07-16T13:37:54Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 2ec2ac3af258ae6876b2c0957e4ffc5db2d780fc9f33458204c8089fd47238bc
+    source_hash: 7fc08d7c11ca70704b65f6cf2f81d9183e629b9404128aa0ac1c9e0a65e0a339
     source_path: plugins/reference/xai.md
     workflow: 16
 ---
@@ -19,12 +20,12 @@ Ajoute la prise en charge du fournisseur de modèles xAI à OpenClaw.
 
 ## Distribution
 
-- Paquet : `@openclaw/xai-plugin`
-- Méthode d’installation : inclus dans OpenClaw
+- Paquet : `@openclaw/xai-plugin`
+- Mode d’installation : inclus dans OpenClaw
 
 ## Surface
 
-fournisseurs : xai ; contrats : imageGenerationProviders, mediaUnderstandingProviders, realtimeTranscriptionProviders, speechProviders, tools, videoGenerationProviders, webSearchProviders
+fournisseurs : `xai` ; contrats : `imageGenerationProviders`, `mediaUnderstandingProviders`, `realtimeTranscriptionProviders`, `realtimeVoiceProviders`, `speechProviders`, `tools`, `videoGenerationProviders`, `webSearchProviders`
 
 ## Documentation associée
 

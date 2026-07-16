@@ -1,14 +1,15 @@
 ---
 read_when:
-    - Anda sedang menginstal, mengonfigurasi, atau mengaudit plugin litellm
+    - Anda sedang memasang, mengonfigurasi, atau mengaudit plugin litellm
 summary: Menambahkan dukungan penyedia model LiteLLM ke OpenClaw.
 title: Plugin LiteLLM
 x-i18n:
-    generated_at: "2026-07-12T14:28:47Z"
+    generated_at: "2026-07-16T18:26:49Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 8bbe9b35112012185719c87aa0f027422f574e995cefcfe2bc1f243d9b3b43a9
+    source_hash: 3262796d0254cb5672312fc9d8012ea1f5527a2c31798e50cfbe9391f90f3402
     source_path: plugins/reference/litellm.md
     workflow: 16
 ---
@@ -20,11 +21,11 @@ Menambahkan dukungan penyedia model LiteLLM ke OpenClaw.
 ## Distribusi
 
 - Paket: `@openclaw/litellm-provider`
-- Jalur instalasi: disertakan dalam OpenClaw
+- Rute instalasi: disertakan dalam OpenClaw
 
 ## Permukaan
 
-penyedia: litellm; kontrak: imageGenerationProviders
+penyedia: `litellm`; kontrak: `imageGenerationProviders`
 
 ## Dokumentasi terkait
 

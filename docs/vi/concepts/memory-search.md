@@ -3,121 +3,141 @@ read_when:
     - Bạn muốn hiểu cách memory_search hoạt động
     - Bạn muốn chọn một nhà cung cấp embedding
     - Bạn muốn tinh chỉnh chất lượng tìm kiếm
-summary: Cách tìm kiếm bộ nhớ tìm các ghi chú liên quan bằng embeddings và truy xuất lai
+summary: Cách tìm kiếm bộ nhớ tìm thấy các ghi chú liên quan bằng embedding và truy xuất kết hợp
 title: Tìm kiếm bộ nhớ
 x-i18n:
-    generated_at: "2026-06-28T22:33:24Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T15:09:36Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 32ffb9d996851566eb92b7812c5425f545ecbb5387a0a445686df35a6c8ae143
+    source_hash: 2ae0830843fba28c24159d85425240051fb8caf086cd0563d3091890045dcfad
     source_path: concepts/memory-search.md
     workflow: 16
 ---
 
-`memory_search` tìm các ghi chú liên quan từ tệp bộ nhớ của bạn, ngay cả khi
-cách diễn đạt khác với văn bản gốc. Công cụ này hoạt động bằng cách lập chỉ mục bộ nhớ thành các
-đoạn nhỏ và tìm kiếm chúng bằng embeddings, từ khóa hoặc cả hai.
+`memory_search` tìm các ghi chú liên quan trong tệp bộ nhớ, ngay cả khi cách
+diễn đạt khác với văn bản gốc. Tính năng này chia bộ nhớ thành các phần nhỏ và
+tìm kiếm chúng bằng embedding, từ khóa hoặc cả hai.
 
 ## Bắt đầu nhanh
 
-Tìm kiếm bộ nhớ mặc định dùng OpenAI embeddings. Để dùng một backend embedding
-khác, hãy đặt rõ provider:
+OpenClaw mặc định sử dụng embedding của OpenAI. Để sử dụng nhà cung cấp khác,
+hãy thiết lập rõ ràng:
 
 ```json5
 {
   agents: {
     defaults: {
       memorySearch: {
-        provider: "openai", // or "gemini", "local", "ollama", "openai-compatible", etc.
+        provider: "openai", // hoặc "gemini", "voyage", "mistral", "bedrock", "local", "ollama", "lmstudio", "github-copilot", "openai-compatible"
       },
     },
   },
 }
 ```
 
-Đối với các thiết lập nhiều endpoint với provider dành riêng cho bộ nhớ, `provider` cũng có thể
-là một mục `models.providers.<id>` tùy chỉnh, chẳng hạn như `ollama-5080`, khi
-provider đó đặt `api: "ollama"` hoặc một chủ sở hữu adapter embedding bộ nhớ khác.
+`provider` cũng có thể tham chiếu đến một mục `models.providers.<id>` tùy chỉnh
+(ví dụ: `ollama-5080`), miễn là mục đó đặt `api` thành `"ollama"` hoặc
+một mã định danh nhà cung cấp khác có bộ điều hợp embedding bộ nhớ.
 
-Đối với embeddings cục bộ không cần khóa API, hãy cài đặt
-`@openclaw/llama-cpp-provider` và đặt `provider: "local"`. Các source checkout
-vẫn có thể yêu cầu phê duyệt bản dựng native: `pnpm approve-builds` rồi
+Để sử dụng embedding cục bộ không cần khóa API, hãy cài đặt plugin nhà cung cấp
+llama.cpp chính thức và đặt `provider: "local"`:
+
+```bash
+openclaw plugins install @openclaw/llama-cpp-provider
+```
+
+Các bản sao mã nguồn vẫn cần phê duyệt bản dựng gốc: `pnpm approve-builds`, sau đó
 `pnpm rebuild node-llama-cpp`.
 
-Một số endpoint embedding tương thích với OpenAI yêu cầu nhãn bất đối xứng như
-`input_type: "query"` cho tìm kiếm và `input_type: "document"` hoặc `"passage"`
-cho các đoạn đã lập chỉ mục. Cấu hình các mục này bằng `memorySearch.queryInputType` và
-`memorySearch.documentInputType`; xem [Tham chiếu cấu hình bộ nhớ](/vi/reference/memory-config#provider-specific-config).
+Một số điểm cuối embedding tương thích với OpenAI yêu cầu các nhãn `input_type`
+bất đối xứng, chẳng hạn như `"query"` cho tìm kiếm và `"document"`/`"passage"` cho
+các đoạn đã lập chỉ mục. Thiết lập các nhãn này bằng `queryInputType` và `documentInputType`; xem
+[Tham chiếu cấu hình bộ nhớ](/vi/reference/memory-config#provider-specific-config).
 
-## Provider được hỗ trợ
+## Nhà cung cấp được hỗ trợ
 
-| Provider          | ID                  | Cần khóa API | Ghi chú                       |
-| ----------------- | ------------------- | ------------ | ----------------------------- |
-| Bedrock           | `bedrock`           | Không        | Dùng chuỗi thông tin xác thực AWS |
-| DeepInfra         | `deepinfra`         | Có           | Mặc định: `BAAI/bge-m3`       |
-| Gemini            | `gemini`            | Có           | Hỗ trợ lập chỉ mục hình ảnh/âm thanh |
-| GitHub Copilot    | `github-copilot`    | Không        | Dùng gói đăng ký Copilot      |
-| Local             | `local`             | Không        | Mô hình GGUF, tải xuống ~0,6 GB |
-| Mistral           | `mistral`           | Có           |                               |
-| Ollama            | `ollama`            | Không        | Cục bộ/tự lưu trữ             |
-| OpenAI            | `openai`            | Có           | Mặc định                      |
-| OpenAI-compatible | `openai-compatible` | Thường cần   | `/v1/embeddings` chung        |
-| Voyage            | `voyage`            | Có           |                               |
+| Nhà cung cấp      | ID                  | Cần khóa API | Ghi chú                                      |
+| ----------------- | ------------------- | ------------ | -------------------------------------------- |
+| Bedrock           | `bedrock`           | Không        | Sử dụng chuỗi thông tin xác thực AWS         |
+| DeepInfra         | `deepinfra`         | Có           | Mô hình mặc định `BAAI/bge-m3`                |
+| Gemini            | `gemini`            | Có           | Hỗ trợ lập chỉ mục hình ảnh/âm thanh          |
+| GitHub Copilot    | `github-copilot`    | Không        | Sử dụng gói đăng ký Copilot của bạn           |
+| Cục bộ            | `local`             | Không        | Mô hình GGUF, tự động tải xuống ~0.6 GB       |
+| LM Studio         | `lmstudio`          | Không        | Máy chủ cục bộ/tự lưu trữ                     |
+| Mistral           | `mistral`           | Có           |                                              |
+| Ollama            | `ollama`            | Không        | Máy chủ cục bộ/tự lưu trữ                     |
+| OpenAI            | `openai`            | Có           | Mặc định                                     |
+| Tương thích OpenAI | `openai-compatible` | Thường là có | Điểm cuối `/v1/embeddings` chung                 |
+| Voyage            | `voyage`            | Có           |                                              |
 
-## Cách tìm kiếm hoạt động
+## Cách hoạt động của tìm kiếm
 
-OpenClaw chạy song song hai đường truy xuất và hợp nhất kết quả:
+OpenClaw chạy song song hai luồng truy xuất và hợp nhất kết quả:
 
 ```mermaid
 flowchart LR
-    Q["Query"] --> E["Embedding"]
-    Q --> T["Tokenize"]
-    E --> VS["Vector Search"]
-    T --> BM["BM25 Search"]
-    VS --> M["Weighted Merge"]
+    Q["Truy vấn"] --> E["Embedding"]
+    Q --> T["Token hóa"]
+    E --> VS["Tìm kiếm vector"]
+    T --> BM["Tìm kiếm BM25"]
+    VS --> M["Hợp nhất có trọng số"]
     BM --> M
-    M --> R["Top Results"]
+    M --> R["Kết quả hàng đầu"]
 ```
 
-- **Tìm kiếm vector** tìm các ghi chú có ý nghĩa tương tự ("gateway host" khớp với
-  "the machine running OpenClaw").
-- **Tìm kiếm từ khóa BM25** tìm các kết quả khớp chính xác (ID, chuỗi lỗi, khóa cấu hình).
+- **Tìm kiếm vector** đối sánh ý nghĩa tương tự ("máy chủ gateway" khớp với "máy
+  chạy OpenClaw").
+- **Tìm kiếm từ khóa BM25** đối sánh chính xác các thuật ngữ (ID, chuỗi lỗi, khóa
+  cấu hình).
+- **Tìm kiếm tên tệp** lập chỉ mục đường dẫn riêng biệt với nội dung ghi chú. Đường
+  dẫn đầy đủ chính xác, tên cơ sở và phần gốc của tên tệp được xếp hạng cao hơn
+  các kết quả khớp một phần với đường dẫn, trong khi đoạn trích và điểm từ khóa
+  trong nội dung vẫn lấy từ nội dung ghi chú.
 
-Nếu chỉ có một đường khả dụng, đường còn lại sẽ chạy một mình. Chế độ chỉ FTS có chủ đích
-(`provider: "none"`) và lựa chọn provider tự động/mặc định vẫn có thể dùng
-xếp hạng từ vựng khi embeddings không khả dụng.
+Nếu chỉ có một luồng khả dụng, luồng đó sẽ chạy riêng.
 
-Các provider embedding không cục bộ được chỉ định rõ thì khác. Nếu bạn đặt
-`memorySearch.provider` thành một provider cụ thể dựa trên từ xa và provider đó
-không khả dụng lúc chạy, `memory_search` sẽ báo bộ nhớ là không khả dụng thay vì
-âm thầm dùng kết quả chỉ FTS. Điều này giúp provider ngữ nghĩa đã cấu hình bị lỗi
-luôn hiển thị. Đặt `provider: "none"` để cố ý truy hồi chỉ FTS, hoặc sửa
-cấu hình provider/auth để khôi phục xếp hạng ngữ nghĩa.
+**Chế độ chỉ FTS.** Đặt `provider: "none"` để chủ động tắt embedding
+và chỉ tìm kiếm bằng từ khóa. Nếu để `provider` chưa thiết lập hoặc đặt thành `"auto"`,
+hệ thống cũng chuyển sang xếp hạng chỉ bằng từ khóa mà không báo lỗi khi chưa
+cấu hình thông tin xác thực embedding; `provider: "local"` (nhà cung cấp
+GGUF/llama.cpp) cũng hoạt động như vậy khi gặp lỗi.
+
+**Nhà cung cấp được chỉ định không khả dụng.** Nếu bạn chỉ định rõ bất kỳ nhà
+cung cấp nào khác (ví dụ: `openai`, `ollama`, `gemini`) và nhà cung cấp đó
+không khả dụng tại thời điểm yêu cầu (thông tin xác thực không hợp lệ, lỗi mạng),
+`memory_search` sẽ báo bộ nhớ không khả dụng thay vì âm thầm hạ cấp xuống kết quả
+chỉ FTS. Điều này giúp phát hiện nhà cung cấp đã cấu hình nhưng bị lỗi. Đặt
+`provider: "none"` để chủ động truy xuất chỉ bằng FTS, hoặc sửa cấu hình nhà cung
+cấp/thông tin xác thực để khôi phục xếp hạng ngữ nghĩa.
 
 ## Cải thiện chất lượng tìm kiếm
 
-Hai tính năng tùy chọn giúp ích khi bạn có lịch sử ghi chú lớn:
+Hai tính năng tùy chọn hỗ trợ xử lý lịch sử ghi chú lớn.
 
 ### Suy giảm theo thời gian
 
-Ghi chú cũ dần mất trọng số xếp hạng để thông tin gần đây xuất hiện trước.
-Với chu kỳ bán rã mặc định là 30 ngày, một ghi chú từ tháng trước đạt 50% trọng số
-ban đầu của nó. Các tệp lâu dài như `MEMORY.md` không bao giờ bị suy giảm.
+Trọng số xếp hạng của ghi chú cũ giảm dần để thông tin gần đây xuất hiện trước.
+Với chu kỳ bán rã mặc định là 30 ngày, ghi chú từ tháng trước đạt 50% trọng số
+ban đầu. `MEMORY.md` và các tệp không có ngày khác trong `memory/` luôn
+có giá trị lâu dài và không bao giờ bị suy giảm; chỉ các tệp `memory/YYYY-MM-DD.md` có ngày
+mới bị suy giảm.
 
 <Tip>
-Bật suy giảm theo thời gian nếu agent của bạn có nhiều tháng ghi chú hằng ngày và thông tin cũ
-liên tục xếp hạng cao hơn ngữ cảnh gần đây.
+Bật tính năng này nếu tác tử có nhiều tháng ghi chú hằng ngày và thông tin cũ
+liên tục được xếp hạng cao hơn ngữ cảnh gần đây.
 </Tip>
 
-### MMR (đa dạng)
+### MMR (tính đa dạng)
 
-Giảm các kết quả dư thừa. Nếu năm ghi chú đều nhắc đến cùng một cấu hình router, MMR
-đảm bảo các kết quả đầu bao phủ các chủ đề khác nhau thay vì lặp lại.
+Giảm các kết quả trùng lặp. Nếu năm ghi chú đều đề cập đến cùng một cấu hình bộ
+định tuyến, MMR đảm bảo các kết quả hàng đầu bao quát nhiều chủ đề khác nhau
+thay vì lặp lại.
 
 <Tip>
-Bật MMR nếu `memory_search` liên tục trả về các đoạn gần trùng lặp từ
-những ghi chú hằng ngày khác nhau.
+Bật tính năng này nếu `memory_search` liên tục trả về các đoạn trích gần như trùng
+lặp từ những ghi chú hằng ngày khác nhau.
 </Tip>
 
 ### Bật cả hai
@@ -141,51 +161,52 @@ những ghi chú hằng ngày khác nhau.
 
 ## Bộ nhớ đa phương thức
 
-Với Gemini Embedding 2, bạn có thể lập chỉ mục hình ảnh và tệp âm thanh cùng với
-Markdown. Truy vấn tìm kiếm vẫn là văn bản, nhưng chúng khớp với nội dung hình ảnh và âm thanh.
-Xem [Tham chiếu cấu hình bộ nhớ](/vi/reference/memory-config) để biết cách thiết lập.
+Với `gemini-embedding-2-preview`, bạn có thể lập chỉ mục hình ảnh và âm thanh cùng với
+Markdown. Tính năng này chỉ áp dụng cho các tệp trong `memorySearch.extraPaths`; các thư
+mục gốc bộ nhớ mặc định (`MEMORY.md`, `memory/*.md`) vẫn chỉ hỗ trợ Markdown. Truy vấn
+tìm kiếm vẫn là văn bản nhưng có thể đối sánh với nội dung hình ảnh và âm thanh.
+Xem [Tham chiếu cấu hình bộ nhớ](/vi/reference/memory-config#multimodal-memory-gemini)
+để biết cách thiết lập.
 
 ## Tìm kiếm bộ nhớ phiên
 
-Bạn có thể tùy chọn lập chỉ mục transcript phiên để `memory_search` có thể nhớ lại
-các cuộc trò chuyện trước đó. Đây là tùy chọn bật qua
-`memorySearch.experimental.sessionMemory` và `sources: ["sessions"]`; danh sách source mặc định
-chỉ gồm bộ nhớ. Cờ thử nghiệm bật lập chỉ mục transcript phiên,
-trong khi `sources` kiểm soát việc các đoạn phiên có được tìm kiếm hay không.
+Để truy xuất toàn văn chính xác từ bản chép lời phiên, hãy sử dụng [`sessions_search`](/concepts/session-search)
+rồi mở một kết quả bằng `sessions_history`. Tìm kiếm bộ nhớ phiên vẫn là phần bổ trợ
+ngữ nghĩa mang tính thử nghiệm.
 
-Các kết quả từ phiên tuân theo `tools.sessions.visibility`: thiết lập mặc định `tree` chỉ
-hiển thị phiên hiện tại và các phiên do nó sinh ra. Để nhớ lại một phiên không liên quan
-cùng agent được Gateway điều phối từ một phiên DM riêng, hãy chủ động
-mở rộng khả năng hiển thị thành `agent`.
+Bạn có thể tùy chọn lập chỉ mục bản chép lời phiên để `memory_search` có thể truy
+xuất các cuộc trò chuyện trước đó. Tính năng này cần được chủ động bật: đặt
+`experimental.sessionMemory: true` và thêm `"sessions"` vào `sources` (`sources` mặc định là `["memory"]`).
 
-Khi dùng QMD, cũng đặt `memory.qmd.sessions.enabled: true` để transcript được
-xuất vào một bộ sưu tập QMD. Xem
-[tham chiếu cấu hình](/vi/reference/memory-config) để biết chi tiết.
+Kết quả phiên tuân theo `tools.sessions.visibility`: giá trị mặc định `"tree"` chỉ
+hiển thị phiên hiện tại và các phiên do phiên đó khởi tạo. Để truy xuất một
+phiên không liên quan của cùng tác tử từ một phiên khác (ví dụ: phiên do gateway
+điều phối từ tin nhắn trực tiếp), hãy mở rộng phạm vi hiển thị thành `"agent"`.
+
+Khi sử dụng phần phụ trợ QMD, hãy đặt thêm `memory.qmd.sessions.enabled: true` để
+bản chép lời được xuất vào bộ sưu tập QMD; chỉ riêng `experimental.sessionMemory`
+và `sources` sẽ không xuất bản chép lời vào QMD. Xem
+[tham chiếu cấu hình](/vi/reference/memory-config#session-memory-search-experimental).
 
 ## Khắc phục sự cố
 
-**Không có kết quả?** Chạy `openclaw memory status` để kiểm tra chỉ mục. Nếu trống, chạy
+**Không có kết quả?** Chạy `openclaw memory status` để kiểm tra chỉ mục. Nếu trống, hãy chạy
 `openclaw memory index --force`.
 
-**Chỉ có kết quả khớp từ khóa?** Provider embedding của bạn có thể chưa được cấu hình. Kiểm tra
-`openclaw memory status --deep`.
+**Chỉ có kết quả khớp từ khóa?** Nhà cung cấp embedding có thể chưa được cấu hình.
+Hãy kiểm tra `openclaw memory status --deep`.
 
-**Embeddings cục bộ hết thời gian chờ?** `ollama`, `lmstudio` và `local` mặc định dùng thời gian chờ
-batch inline dài hơn. Nếu host chỉ đơn giản là chậm, hãy đặt
+**Embedding cục bộ hết thời gian chờ?** `ollama`, `lmstudio` và `local` mặc định sử dụng
+thời gian chờ lô nội tuyến dài hơn. Nếu máy chủ chỉ hoạt động chậm, hãy đặt
 `agents.defaults.memorySearch.sync.embeddingBatchTimeoutSeconds` và chạy lại
 `openclaw memory index --force`.
 
 **Không tìm thấy văn bản CJK?** Xây dựng lại chỉ mục FTS bằng
 `openclaw memory index --force`.
 
-## Đọc thêm
-
-- [Active Memory](/vi/concepts/active-memory) -- bộ nhớ sub-agent cho các phiên trò chuyện tương tác
-- [Bộ nhớ](/vi/concepts/memory) -- bố cục tệp, backend, công cụ
-- [Tham chiếu cấu hình bộ nhớ](/vi/reference/memory-config) -- tất cả nút chỉnh cấu hình
-
 ## Liên quan
 
-- [Tổng quan bộ nhớ](/vi/concepts/memory)
+- [Tổng quan về bộ nhớ](/vi/concepts/memory)
 - [Active Memory](/vi/concepts/active-memory)
-- [Công cụ bộ nhớ tích hợp](/vi/concepts/memory-builtin)
+- [Công cụ bộ nhớ tích hợp sẵn](/vi/concepts/memory-builtin)
+- [Tham chiếu cấu hình bộ nhớ](/vi/reference/memory-config)

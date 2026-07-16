@@ -1,14 +1,15 @@
 ---
 read_when:
     - คุณกำลังติดตั้ง กำหนดค่า หรือตรวจสอบ Plugin vydra
-summary: เพิ่มการรองรับผู้ให้บริการโมเดล Vydra ให้กับ OpenClaw
+summary: เพิ่มการรองรับผู้ให้บริการโมเดล Vydra ใน OpenClaw
 title: Plugin Vydra
 x-i18n:
-    generated_at: "2026-07-12T16:35:15Z"
+    generated_at: "2026-07-16T19:35:06Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 21d6803f6ac505cc1c9e5e3e798997b05a398a06c5093a2f6b4e253523a0b892
+    source_hash: 33561ad201ed8ce3711bb960d3c62be3a5d32fd28510c50cc5270d8596b84fc6
     source_path: plugins/reference/vydra.md
     workflow: 16
 ---
@@ -22,9 +23,9 @@ x-i18n:
 - แพ็กเกจ: `@openclaw/vydra-provider`
 - ช่องทางการติดตั้ง: รวมอยู่ใน OpenClaw
 
-## ส่วนที่เปิดให้ใช้งาน
+## ส่วนติดต่อ
 
-ผู้ให้บริการ: vydra; สัญญา: imageGenerationProviders, speechProviders, videoGenerationProviders
+ผู้ให้บริการ: `vydra`; สัญญา: `imageGenerationProviders`, `speechProviders`, `videoGenerationProviders`
 
 ## เอกสารที่เกี่ยวข้อง
 

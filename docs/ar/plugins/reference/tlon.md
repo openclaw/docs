@@ -1,30 +1,31 @@
 ---
 read_when:
-    - أنت تثبّت Plugin ‏tlon أو تهيّئه أو تدقّق فيه
-summary: Plugin قناة Tlon/Urbit لـ OpenClaw لسير عمل المحادثات.
+    - أنت تثبّت المكوّن الإضافي tlon أو تهيئه أو تدقّق فيه
+summary: Plugin قناة Tlon/Urbit في OpenClaw لسير عمل الدردشة.
 title: Plugin ‏Tlon
 x-i18n:
-    generated_at: "2026-07-12T06:22:53Z"
+    generated_at: "2026-07-16T14:42:45Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 6fd1dcc934734599c0b671f0a9659dc5cc6e4ff907e3e14f9ff3ba5ec86aa0cc
+    source_hash: 151b22aee5f52dbe17bc4e938fff981e8bd2e1117cea10386ac2307e5e4993b4
     source_path: plugins/reference/tlon.md
     workflow: 16
 ---
 
-# Plugin ‏Tlon
+# Plugin Tlon
 
-Plugin قناة Tlon/Urbit في OpenClaw لسير عمل المحادثات.
+Plugin قناة Tlon/Urbit في OpenClaw لسير عمل الدردشة.
 
 ## التوزيع
 
 - الحزمة: `@openclaw/tlon`
 - مسار التثبيت: npm؛ ClawHub
 
-## الواجهات
+## السطح
 
-القنوات: tlon؛ Skills
+القنوات: `tlon`؛ Skills
 
 ## الوثائق ذات الصلة
 

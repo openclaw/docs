@@ -1,21 +1,22 @@
 ---
 read_when:
-    - U installeert, configureert of controleert de Feishu-plugin
-summary: OpenClaw Feishu/Lark-kanaalplugin voor chats en werkplektools (door de community onderhouden door @m1heng).
-title: Feishu-plugin
+    - Je installeert, configureert of controleert de Feishu-plugin
+summary: OpenClaw Feishu/Lark-kanaalplugin voor chats en werkplektools (onderhouden door de community onder leiding van @m1heng).
+title: Feishu-Plugin
 x-i18n:
-    generated_at: "2026-07-12T09:07:06Z"
+    generated_at: "2026-07-16T16:18:27Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: d55792e08be92877a8b86548b725b59aee149b352bba8a5e51ed590a59e0dbc9
+    source_hash: c9f11c931f124f5d48eb5b331ba3265dd1037ebe4f191a31a0ce917fc8dd39cd
     source_path: plugins/reference/feishu.md
     workflow: 16
 ---
 
 # Feishu-Plugin
 
-OpenClaw Feishu/Lark-kanaalplugin voor chats en werkplektools (door de community onderhouden door @m1heng).
+OpenClaw Feishu/Lark-kanaalplugin voor chats en werkplektools (onderhouden door de community via @m1heng).
 
 ## Distributie
 
@@ -24,8 +25,8 @@ OpenClaw Feishu/Lark-kanaalplugin voor chats en werkplektools (door de community
 
 ## Oppervlak
 
-kanalen: feishu; contracten: tools; Skills
+kanalen: `feishu`; contracten: `tools`; Skills
 
 ## Gerelateerde documentatie
 
-- [feishu](/nl/channels/feishu)
+- [Feishu](/nl/channels/feishu)

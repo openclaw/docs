@@ -1,14 +1,15 @@
 ---
 read_when:
-    - qianfan Plugin을 설치, 구성 또는 감사하고 있습니다.
+    - qianfan Plugin을 설치, 구성 또는 감사하고 있습니다
 summary: OpenClaw에 Qianfan 모델 제공자 지원을 추가합니다.
 title: Qianfan Plugin
 x-i18n:
-    generated_at: "2026-07-12T01:01:53Z"
+    generated_at: "2026-07-16T12:56:13Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 49d639836cefb6c96502e614e1b5d06615fbef31a50ea186e1a02c060882019a
+    source_hash: 586bf29ac08b1a682ac387a21ed8df9baebd7c923278eb4b8f5b8659580be363
     source_path: plugins/reference/qianfan.md
     workflow: 16
 ---
@@ -22,10 +23,10 @@ OpenClaw에 Qianfan 모델 제공자 지원을 추가합니다.
 - 패키지: `@openclaw/qianfan-provider`
 - 설치 경로: npm; ClawHub: `clawhub:@openclaw/qianfan-provider`
 
-## 제공 범위
+## 제공 기능
 
-제공자: qianfan
+제공자: `qianfan`
 
 ## 관련 문서
 
-- [qianfan](/ko/providers/qianfan)
+- [Qianfan](/ko/providers/qianfan)

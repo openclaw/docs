@@ -4,11 +4,12 @@ read_when:
 summary: OpenClaw è un gateway multicanale per agenti di IA che funziona su qualsiasi sistema operativo.
 title: OpenClaw
 x-i18n:
-    generated_at: "2026-07-12T07:09:29Z"
+    generated_at: "2026-07-16T14:26:51Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 2b87c2a9ce06f110bda45709fb6055ed8000f73993793ea7386db2a47a782828
+    source_hash: fe97e7299be4855fd9af21838e0626b5a5c8aafe46d982859e9033f0efec2443
     source_path: index.md
     workflow: 16
 ---
@@ -33,32 +34,32 @@ x-i18n:
 > _"ESFOLIA! ESFOLIA!"_ — Probabilmente un'aragosta spaziale
 
 <p align="center">
-  <strong>Gateway per qualsiasi sistema operativo, pensato per agenti di IA su Discord, Google Chat, iMessage, Matrix, Microsoft Teams, Signal, Slack, Telegram, WhatsApp, Zalo e altri servizi.</strong><br />
-  Invia un messaggio e ricevi la risposta di un agente direttamente sul tuo dispositivo mobile. Esegui un unico Gateway per i plugin dei canali, WebChat e i nodi mobili.
+  <strong>Gateway per qualsiasi sistema operativo che consente agli agenti IA di operare su Discord, Google Chat, iMessage, Matrix, Microsoft Teams, Signal, Slack, Telegram, WhatsApp, Zalo e altro ancora.</strong><br />
+  Invia un messaggio e ricevi in tasca la risposta di un agente. Esegui un unico Gateway per Plugin di canale, WebChat e nodi mobili.
 </p>
 
 <Columns>
-  <Card title="Inizia" href="/it/start/getting-started" icon="rocket">
+  <Card title="Per iniziare" href="/it/start/getting-started" icon="rocket">
     Installa OpenClaw e avvia il Gateway in pochi minuti.
   </Card>
   <Card title="Esegui la configurazione iniziale" href="/it/start/wizard" icon="list-checks">
     Configurazione guidata con `openclaw onboard` e procedure di associazione.
   </Card>
   <Card title="Connetti un canale" href="/it/channels" icon="message-circle">
-    Collega Discord, Signal, Telegram, WhatsApp e altri servizi per comunicare ovunque ti trovi.
+    Collega Discord, Signal, Telegram, WhatsApp e altri servizi per chattare ovunque.
   </Card>
   <Card title="Apri l'interfaccia di controllo" href="/it/web/control-ui" icon="layout-dashboard">
     Avvia il pannello di controllo nel browser per chat, configurazione e sessioni.
   </Card>
 </Columns>
 
-## Esplora la documentazione
+## Esplorazione della documentazione
 
-Nei browser mobili il menu delle sezioni potrebbe essere visualizzato senza l'intera barra delle schede della versione desktop. Usa
-questi collegamenti principali per accedere alle stesse aree di primo livello della documentazione dal corpo della pagina.
+Nei browser per dispositivi mobili, il menu delle sezioni potrebbe apparire senza la barra completa delle schede per desktop. Utilizzare
+questi collegamenti principali per accedere dal corpo della pagina alle stesse aree di primo livello della documentazione.
 
 <Columns>
-  <Card title="Inizia" href="/it" icon="rocket">
+  <Card title="Per iniziare" href="/it" icon="rocket">
     Panoramica, presentazione, primi passi e guide alla configurazione.
   </Card>
   <Card title="Installazione" href="/it/install" icon="download">
@@ -74,10 +75,10 @@ questi collegamenti principali per accedere alle stesse aree di primo livello de
     Strumenti, Skills, Cron, Webhook e funzionalità di automazione.
   </Card>
   <Card title="ClawHub" href="/it/clawhub" icon="store">
-    Marketplace dei Plugin, pubblicazione, selezione e indicazioni sull'affidabilità.
+    Marketplace di Plugin, pubblicazione, selezione e indicazioni sull'affidabilità.
   </Card>
   <Card title="Modelli" href="/it/providers" icon="brain">
-    Fornitori, configurazione dei modelli, failover e servizi per modelli locali.
+    Provider, configurazione dei modelli, failover e servizi di modelli locali.
   </Card>
   <Card title="Piattaforme" href="/it/platforms" icon="monitor-smartphone">
     macOS, Windows, iOS, Android, nodi e interfacce web.
@@ -86,41 +87,41 @@ questi collegamenti principali per accedere alle stesse aree di primo livello de
     Configurazione, sicurezza, diagnostica e gestione del Gateway.
   </Card>
   <Card title="Riferimenti" href="/it/cli" icon="terminal">
-    Riferimento della CLI, schemi, RPC, note di rilascio e modelli.
+    Riferimenti della CLI, schemi, RPC, note di rilascio e modelli.
   </Card>
   <Card title="Assistenza" href="/it/help" icon="life-buoy">
-    Risoluzione dei problemi, domande frequenti, test, diagnostica e controlli dell'ambiente.
+    Risoluzione dei problemi, domande frequenti, test, diagnostica e verifiche dell'ambiente.
   </Card>
 </Columns>
 
 ## Che cos'è OpenClaw?
 
-OpenClaw è un **gateway self-hosted** che collega le tue applicazioni di chat preferite — Discord, Google Chat, iMessage, Matrix, Microsoft Teams, Signal, Slack, Telegram, WhatsApp, Zalo e altre tramite i plugin dei canali — agli agenti di IA per la programmazione. Esegui un unico processo Gateway sul tuo computer (o su un server), che funge da ponte tra le applicazioni di messaggistica e un assistente IA sempre disponibile.
+OpenClaw è un **gateway self-hosted** che collega le applicazioni di chat preferite — Discord, Google Chat, iMessage, Matrix, Microsoft Teams, Signal, Slack, Telegram, WhatsApp, Zalo e altre tramite Plugin di canale — agli agenti IA per la programmazione. Un singolo processo Gateway viene eseguito sul proprio computer (o su un server) e funge da ponte tra le applicazioni di messaggistica e un assistente IA sempre disponibile.
 
-**A chi è destinato?** A sviluppatori e utenti esperti che desiderano un assistente IA personale con cui comunicare ovunque si trovino, senza rinunciare al controllo dei propri dati né dipendere da un servizio in hosting.
+**A chi è destinato?** A sviluppatori e utenti esperti che desiderano un assistente IA personale a cui poter inviare messaggi da qualsiasi luogo, senza rinunciare al controllo dei propri dati né dipendere da un servizio in hosting.
 
 **Che cosa lo rende diverso?**
 
-- **Self-hosted**: viene eseguito sul tuo hardware, secondo le tue regole
-- **Multicanale**: un solo Gateway gestisce simultaneamente tutti i plugin dei canali configurati
+- **Self-hosted**: viene eseguito sul proprio hardware, secondo le proprie regole
+- **Multicanale**: un unico Gateway gestisce contemporaneamente ogni Plugin di canale configurato
 - **Nativo per gli agenti**: progettato per agenti di programmazione con utilizzo di strumenti, sessioni, memoria e instradamento multi-agente
 - **Open source**: distribuito con licenza MIT e sviluppato dalla comunità
 
-**Di cosa hai bisogno?** Node 24 (consigliato), oppure Node 22 LTS (`22.19+`) per la compatibilità, una chiave API del fornitore scelto e 5 minuti. Per ottenere la massima qualità e sicurezza, usa il modello di ultima generazione più potente disponibile.
+**Che cosa serve?** Node 24.15+ (consigliato), Node 22 LTS (`22.22.3+`) per la compatibilità oppure Node 25.9+, una chiave API del provider scelto e 5 minuti. Per ottenere la massima qualità e sicurezza, utilizzare il modello di ultima generazione più potente disponibile.
 
-## Come funziona
+## Funzionamento
 
 ```mermaid
 flowchart LR
-  A["App di chat + plugin"] --> B["Gateway"]
+  A["Applicazioni di chat + Plugin"] --> B["Gateway"]
   B --> C["Agente OpenClaw"]
   B --> D["CLI"]
   B --> E["Interfaccia di controllo web"]
-  B --> F["App macOS"]
+  B --> F["Applicazione macOS"]
   B --> G["Nodi iOS e Android"]
 ```
 
-Il Gateway è l'unica fonte autorevole per sessioni, instradamento e connessioni ai canali.
+Il Gateway è l'unica fonte di verità per sessioni, instradamento e connessioni ai canali.
 
 ## Funzionalità principali
 
@@ -128,20 +129,20 @@ Il Gateway è l'unica fonte autorevole per sessioni, instradamento e connessioni
   <Card title="Gateway multicanale" icon="network" href="/it/channels">
     Discord, iMessage, Signal, Slack, Telegram, WhatsApp, WebChat e altri servizi con un unico processo Gateway.
   </Card>
-  <Card title="Canali tramite Plugin" icon="plug" href="/it/tools/plugin">
-    I plugin dei canali aggiungono Matrix, Nostr, Twitch, Zalo e altri servizi; i plugin ufficiali vengono installati su richiesta.
+  <Card title="Plugin di canale" icon="plug" href="/it/tools/plugin">
+    I Plugin di canale aggiungono Matrix, Nostr, Twitch, Zalo e altri servizi; i Plugin ufficiali vengono installati su richiesta.
   </Card>
   <Card title="Instradamento multi-agente" icon="route" href="/it/concepts/multi-agent">
-    Sessioni isolate per agente, area di lavoro o mittente.
+    Sessioni isolate per agente, spazio di lavoro o mittente.
   </Card>
   <Card title="Supporto multimediale" icon="image" href="/it/nodes/images">
-    Invia e ricevi immagini, audio e documenti.
+    Invio e ricezione di immagini, audio e documenti.
   </Card>
   <Card title="Interfaccia di controllo web" icon="monitor" href="/it/web/control-ui">
     Pannello di controllo nel browser per chat, configurazione, sessioni e nodi.
   </Card>
   <Card title="Nodi mobili" icon="smartphone" href="/it/nodes">
-    Associa nodi iOS e Android per flussi di lavoro con Canvas, fotocamera e funzionalità vocali.
+    Associazione di nodi iOS e Android per Canvas, fotocamera e flussi di lavoro vocali.
   </Card>
 </Columns>
 
@@ -158,25 +159,25 @@ Il Gateway è l'unica fonte autorevole per sessioni, instradamento e connessioni
     openclaw onboard --install-daemon
     ```
   </Step>
-  <Step title="Avvia una chat">
-    Apri l'interfaccia di controllo nel browser e invia un messaggio:
+  <Step title="Chat">
+    Aprire l'interfaccia di controllo nel browser e inviare un messaggio:
 
     ```bash
     openclaw dashboard
     ```
 
-    In alternativa, connetti un canale ([Telegram](/it/channels/telegram) è il più rapido) e avvia una chat dal telefono.
+    In alternativa, connettere un canale ([Telegram](/it/channels/telegram) è il più rapido) e chattare dal telefono.
 
   </Step>
 </Steps>
 
-Ti servono le istruzioni complete per l'installazione e la configurazione dell'ambiente di sviluppo? Consulta [Guida introduttiva](/it/start/getting-started).
+Per la configurazione completa dell'installazione e dell'ambiente di sviluppo, consultare [Per iniziare](/it/start/getting-started).
 
 ## Pannello di controllo
 
-Apri l'interfaccia di controllo nel browser dopo l'avvio del Gateway.
+Aprire l'interfaccia di controllo nel browser dopo l'avvio del Gateway.
 
-- Indirizzo locale predefinito: [http://127.0.0.1:18789/](http://127.0.0.1:18789/)
+- Impostazione locale predefinita: [http://127.0.0.1:18789/](http://127.0.0.1:18789/)
 - Accesso remoto: [Interfacce web](/it/web) e [Tailscale](/it/gateway/tailscale)
 
 <p align="center">
@@ -187,8 +188,8 @@ Apri l'interfaccia di controllo nel browser dopo l'avvio del Gateway.
 
 La configurazione si trova in `~/.openclaw/openclaw.json`.
 
-- Se **non fai nulla**, OpenClaw usa il runtime dell'agente OpenClaw incluso; i messaggi diretti condividono la sessione principale dell'agente e ogni chat di gruppo dispone di una propria sessione.
-- Se vuoi limitarne l'accesso, inizia con `channels.whatsapp.allowFrom` e, per i gruppi, con le regole relative alle menzioni.
+- Se **non si esegue alcuna operazione**, OpenClaw utilizza il runtime dell'agente OpenClaw incluso; i messaggi diretti condividono la sessione principale dell'agente e ogni chat di gruppo dispone di una sessione separata.
+- Per limitare l'accesso, iniziare con `channels.whatsapp.allowFrom` e, per i gruppi, con le regole relative alle menzioni.
 
 Esempio:
 
@@ -211,19 +212,19 @@ Esempio:
     Tutta la documentazione e le guide, organizzate per caso d'uso.
   </Card>
   <Card title="Configurazione" href="/it/gateway/configuration" icon="settings">
-    Impostazioni principali del Gateway, token e configurazione dei fornitori.
+    Impostazioni principali del Gateway, token e configurazione del provider.
   </Card>
   <Card title="Accesso remoto" href="/it/gateway/remote" icon="globe">
-    Modalità di accesso tramite SSH e tailnet.
+    Modelli di accesso tramite SSH e tailnet.
   </Card>
   <Card title="Canali" href="/it/channels/telegram" icon="message-square">
-    Configurazione specifica dei canali per Discord, Feishu, Microsoft Teams, Telegram, WhatsApp e altri servizi.
+    Configurazione specifica per canale per Discord, Feishu, Microsoft Teams, Telegram, WhatsApp e altri servizi.
   </Card>
   <Card title="Nodi" href="/it/nodes" icon="smartphone">
     Nodi iOS e Android con associazione, Canvas, fotocamera e azioni del dispositivo.
   </Card>
   <Card title="Assistenza" href="/it/help" icon="life-buoy">
-    Soluzioni comuni e punto di partenza per la risoluzione dei problemi.
+    Soluzioni comuni e punto di accesso alla risoluzione dei problemi.
   </Card>
 </Columns>
 
@@ -234,7 +235,7 @@ Esempio:
     Funzionalità complete per canali, instradamento e contenuti multimediali.
   </Card>
   <Card title="Instradamento multi-agente" href="/it/concepts/multi-agent" icon="route">
-    Isolamento delle aree di lavoro e sessioni per agente.
+    Isolamento degli spazi di lavoro e sessioni per agente.
   </Card>
   <Card title="Sicurezza" href="/it/gateway/security" icon="shield">
     Token, elenchi di elementi consentiti e controlli di sicurezza.

@@ -1,173 +1,134 @@
 ---
 read_when:
-    - Veelvoorkomende ondersteuningsvragen over configuratie, installatie, onboarding of runtime beantwoorden
-    - Problemen die door gebruikers zijn gemeld triëren vóór diepere foutopsporing
-summary: Veelgestelde vragen over installatie, configuratie en gebruik van OpenClaw
+    - Veelgestelde ondersteuningsvragen over configuratie, installatie, onboarding of runtime beantwoorden
+    - Door gebruikers gemelde problemen triëren vóór diepgaandere foutopsporing
+summary: Veelgestelde vragen over de installatie, configuratie en het gebruik van OpenClaw
 title: Veelgestelde vragen
 x-i18n:
-    generated_at: "2026-07-03T15:34:58Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T15:52:15Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 4d55385d187c20dfce05022b76fcaa054c19fc22e46da66d4a24e2538dd95708
+    source_hash: 913757fcc748a15370dc49874b54184d891c954df45b76c8a3212da5bc1da845
     source_path: help/faq.md
     workflow: 16
 ---
 
-Snelle antwoorden plus diepere probleemoplossing voor praktijksituaties (lokale ontwikkeling, VPS, multi-agent, OAuth/API-sleutels, model-failover). Zie [Probleemoplossing](/nl/gateway/troubleshooting) voor runtimediagnostiek. Zie [Configuratie](/nl/gateway/configuration) voor de volledige configuratiereferentie.
+Snelle antwoorden plus diepgaandere probleemoplossing voor praktijksituaties (lokale ontwikkeling, VPS, meerdere agents, OAuth/API-sleutels, model-failover). Zie [Probleemoplossing](/nl/gateway/troubleshooting) voor runtimediagnostiek. Zie [Configuratie](/nl/gateway/configuration) voor de volledige configuratiereferentie.
 
-## Eerste 60 seconden als er iets kapot is
+## Eerste 60 seconden als er iets niet werkt
 
-1. **Snelle status (eerste controle)**
+<Steps>
+  <Step title="Snelle status">
+    ```bash
+    openclaw status
+    ```
+    Snelle lokale samenvatting: besturingssysteem + update, bereikbaarheid van Gateway/service, agents/sessies, providerconfiguratie + runtimeproblemen (wanneer de Gateway bereikbaar is).
+  </Step>
+  <Step title="Plakbaar rapport (veilig om te delen)">
+    ```bash
+    openclaw status --all
+    ```
+    Alleen-lezen diagnose met het laatste deel van het logboek (tokens geredigeerd).
+  </Step>
+  <Step title="Daemon- en poortstatus">
+    ```bash
+    openclaw gateway status
+    ```
+    Toont de supervisorruntime tegenover de RPC-bereikbaarheid, de doel-URL van de probe en welke configuratie de service waarschijnlijk heeft gebruikt.
+  </Step>
+  <Step title="Diepgaande probes">
+    ```bash
+    openclaw status --deep
+    ```
+    Live gezondheidsprobe van de Gateway, inclusief kanaalprobes wanneer ondersteund (vereist een bereikbare Gateway). Zie [Gezondheid](/nl/gateway/health).
+  </Step>
+  <Step title="Volg het nieuwste logboek">
+    ```bash
+    openclaw logs --follow
+    ```
+    Als RPC niet beschikbaar is, val dan terug op:
+    ```bash
+    tail -f "$(ls -t /tmp/openclaw/openclaw-*.log | head -1)"
+    ```
+    Bestandslogboeken staan los van servicelogboeken; zie [Logboekregistratie](/nl/logging) en [Probleemoplossing](/nl/gateway/troubleshooting).
+  </Step>
+  <Step title="Voer de doctor uit (reparaties)">
+    ```bash
+    openclaw doctor
+    ```
+    Repareert/migreert configuratie en status en voert vervolgens gezondheidscontroles uit. Zie [Doctor](/nl/gateway/doctor).
+  </Step>
+  <Step title="Momentopname van de Gateway (alleen WS)">
+    ```bash
+    openclaw health --json
+    openclaw health --verbose   # toont bij fouten de doel-URL + het configuratiepad
+    ```
+    Vraagt de actieve Gateway om een volledige momentopname. Zie [Gezondheid](/nl/gateway/health).
+  </Step>
+</Steps>
 
-   ```bash
-   openclaw status
-   ```
+## Snel aan de slag en configuratie bij de eerste uitvoering
 
-   Snelle lokale samenvatting: OS + update, bereikbaarheid van gateway/service, agents/sessies, providerconfiguratie + runtimeproblemen (wanneer de gateway bereikbaar is).
-
-2. **Plakbaar rapport (veilig om te delen)**
-
-   ```bash
-   openclaw status --all
-   ```
-
-   Alleen-lezen diagnose met logtail (tokens geredigeerd).
-
-3. **Daemon- en poortstatus**
-
-   ```bash
-   openclaw gateway status
-   ```
-
-   Toont supervisor-runtime versus RPC-bereikbaarheid, de doel-URL van de probe en welke configuratie de service waarschijnlijk heeft gebruikt.
-
-4. **Diepe probes**
-
-   ```bash
-   openclaw status --deep
-   ```
-
-   Voert een live gezondheidsprobe van de Gateway uit, inclusief kanaalprobes wanneer ondersteund
-   (vereist een bereikbare Gateway). Zie [Gezondheid](/nl/gateway/health).
-
-5. **Tail het nieuwste log**
-
-   ```bash
-   openclaw logs --follow
-   ```
-
-   Als RPC niet beschikbaar is, val dan terug op:
-
-   ```bash
-   tail -f "$(ls -t /tmp/openclaw/openclaw-*.log | head -1)"
-   ```
-
-   Bestandslogs staan los van servicelogs; zie [Logging](/nl/logging) en [Probleemoplossing](/nl/gateway/troubleshooting).
-
-6. **Voer de doctor uit (reparaties)**
-
-   ```bash
-   openclaw doctor
-   ```
-
-   Repareert/migreert configuratie/status + voert gezondheidscontroles uit. Zie [Doctor](/nl/gateway/doctor).
-
-7. **Gateway-snapshot**
-
-   ```bash
-   openclaw health --json
-   openclaw health --verbose   # toont de doel-URL + het configuratiepad bij fouten
-   ```
-
-   Vraagt de actieve Gateway om een volledige snapshot (alleen WS). Zie [Gezondheid](/nl/gateway/health).
-
-## Snel starten en setup bij eerste gebruik
-
-Vraag en antwoord voor eerste gebruik — installatie, onboarding, authenticatieroutes, abonnementen, eerste fouten —
-staat in de [FAQ voor eerste gebruik](/nl/help/faq-first-run).
+Vragen en antwoorden over de eerste uitvoering — installatie, onboarding, authenticatieroutes, abonnementen en aanvankelijke fouten — staan in de [Veelgestelde vragen over de eerste uitvoering](/nl/help/faq-first-run).
 
 ## Wat is OpenClaw?
 
 <AccordionGroup>
   <Accordion title="Wat is OpenClaw, in één alinea?">
-    OpenClaw is een persoonlijke AI-assistent die je op je eigen apparaten draait. Hij antwoordt op de berichtendiensten die je al gebruikt (WhatsApp, Telegram, Slack, Mattermost, Discord, Google Chat, Signal, iMessage, WebChat en gebundelde kanaalplugins zoals QQ Bot) en kan op ondersteunde platforms ook spraak + een live Canvas gebruiken. De **Gateway** is de altijd actieve besturingslaag; de assistent is het product.
+    OpenClaw is een persoonlijke AI-assistent die je op je eigen apparaten uitvoert. Deze antwoordt via de berichtenplatforms die je al gebruikt (Discord, Google Chat, iMessage, Mattermost, Signal, Slack, Telegram, WebChat, WhatsApp en meegeleverde kanaalplugins zoals QQ Bot) en kan op ondersteunde platforms ook spraak plus een live Canvas bieden. De **Gateway** is het permanent actieve besturingsvlak; de assistent is het product.
   </Accordion>
 
   <Accordion title="Waardepropositie">
-    OpenClaw is niet "gewoon een Claude-wrapper." Het is een **local-first besturingslaag** waarmee je een
-    capabele assistent op **je eigen hardware** draait, bereikbaar vanuit de chat-apps die je al gebruikt, met
-    stateful sessies, geheugen en tools - zonder de controle over je workflows over te dragen aan een gehoste
-    SaaS.
+    OpenClaw is niet "slechts een wrapper voor Claude". Het is een **local-first besturingsvlak** dat een krachtige assistent uitvoert op **je eigen hardware**, bereikbaar via de chatapps die je al gebruikt, met stateful sessies, geheugen en tools — zonder je workflows over te dragen aan een gehoste SaaS.
 
-    Hoogtepunten:
+    - **Jouw apparaten, jouw gegevens**: voer de Gateway uit waar je maar wilt (Mac, Linux, VPS) en houd de werkruimte en sessiegeschiedenis lokaal.
+    - **Echte kanalen, geen web-sandbox**: Discord/iMessage/Signal/Slack/Telegram/WhatsApp/enzovoort, plus mobiele spraak en Canvas op ondersteunde platforms.
+    - **Modelonafhankelijk**: gebruik Anthropic, MiniMax, OpenAI, OpenRouter enzovoort, met routering en failover per agent.
+    - **Optie voor uitsluitend lokaal gebruik**: voer lokale modellen uit, zodat alle gegevens op je apparaat kunnen blijven.
+    - **Routering met meerdere agents**: afzonderlijke agents per kanaal, account of taak, elk met een eigen werkruimte en standaardinstellingen.
+    - **Open source en aanpasbaar**: inspecteer, breid uit en host zelf zonder afhankelijkheid van één leverancier.
 
-    - **Jouw apparaten, jouw data:** draai de Gateway waar je wilt (Mac, Linux, VPS) en houd de
-      workspace + sessiegeschiedenis lokaal.
-    - **Echte kanalen, geen web-sandbox:** WhatsApp/Telegram/Slack/Discord/Signal/iMessage/enz.,
-      plus mobiele spraak en Canvas op ondersteunde platforms.
-    - **Model-agnostisch:** gebruik Anthropic, OpenAI, MiniMax, OpenRouter, enz., met routering
-      per agent en failover.
-    - **Optie voor alleen lokaal:** draai lokale modellen zodat **alle data op je apparaat kan blijven** als je dat wilt.
-    - **Multi-agentroutering:** aparte agents per kanaal, account of taak, elk met een eigen
-      workspace en standaarden.
-    - **Open source en aanpasbaar:** inspecteer, breid uit en self-host zonder vendor lock-in.
-
-    Documentatie: [Gateway](/nl/gateway), [Kanalen](/nl/channels), [Multi-agent](/nl/concepts/multi-agent),
-    [Geheugen](/nl/concepts/memory).
+    Documentatie: [Gateway](/nl/gateway), [Kanalen](/nl/channels), [Meerdere agents](/nl/concepts/multi-agent), [Geheugen](/nl/concepts/memory).
 
   </Accordion>
 
-  <Accordion title="Ik heb het net ingesteld - wat moet ik eerst doen?">
-    Goede eerste projecten:
+  <Accordion title="Ik heb het zojuist geconfigureerd — wat moet ik als eerste doen?">
+    Goede eerste projecten: bouw een website (WordPress, Shopify of een statische site); maak een prototype van een mobiele app (opzet, schermen, API-plan); organiseer bestanden en mappen; verbind Gmail en automatiseer samenvattingen of vervolgacties.
 
-    - Bouw een website (WordPress, Shopify of een eenvoudige statische site).
-    - Maak een prototype van een mobiele app (outline, schermen, API-plan).
-    - Organiseer bestanden en mappen (opschonen, naamgeving, taggen).
-    - Verbind Gmail en automatiseer samenvattingen of follow-ups.
-
-    Het kan grote taken aan, maar werkt het best wanneer je ze in fases splitst en
-    subagents gebruikt voor parallel werk.
+    Het kan grote taken uitvoeren, maar werkt het beste als die in fasen worden opgesplitst, met subagents voor parallel werk.
 
   </Accordion>
 
-  <Accordion title="Wat zijn de vijf belangrijkste dagelijkse gebruiksscenario's voor OpenClaw?">
-    Dagelijkse winst ziet er meestal zo uit:
-
-    - **Persoonlijke briefings:** samenvattingen van inbox, agenda en nieuws dat je belangrijk vindt.
-    - **Onderzoek en conceptteksten:** snel onderzoek, samenvattingen en eerste concepten voor e-mails of documenten.
-    - **Herinneringen en follow-ups:** door Cron of Heartbeat aangestuurde duwtjes en checklists.
-    - **Browserautomatisering:** formulieren invullen, data verzamelen en webtaken herhalen.
-    - **Coördinatie tussen apparaten:** stuur een taak vanaf je telefoon, laat de Gateway die op een server uitvoeren en ontvang het resultaat terug in chat.
+  <Accordion title="Wat zijn de vijf belangrijkste dagelijkse toepassingen voor OpenClaw?">
+    - **Persoonlijke briefings**: samenvattingen van je inbox, agenda en nieuws dat je belangrijk vindt.
+    - **Onderzoek en conceptteksten**: snel onderzoek, samenvattingen en eerste concepten voor e-mails of documenten.
+    - **Herinneringen en vervolgacties**: door Cron of Heartbeat aangestuurde aansporingen en controlelijsten.
+    - **Browserautomatisering**: formulieren invullen, gegevens verzamelen en webtaken herhalen.
+    - **Coördinatie tussen apparaten**: verzend een taak vanaf je telefoon, laat de Gateway deze op een server uitvoeren en ontvang het resultaat terug in de chat.
 
   </Accordion>
 
   <Accordion title="Kan OpenClaw helpen met leadgeneratie, outreach, advertenties en blogs voor een SaaS?">
-    Ja, voor **onderzoek, kwalificatie en concepten**. Het kan sites scannen, shortlists maken,
-    prospects samenvatten en concepten schrijven voor outreach of advertentieteksten.
+    Ja, voor **onderzoek, kwalificatie en conceptteksten**: sites scannen, shortlists samenstellen, potentiële klanten samenvatten en concepten schrijven voor outreach of advertentieteksten.
 
-    Houd bij **outreach of advertentieruns** een mens in de loop. Vermijd spam, volg lokale wetten en
-    platformbeleid, en controleer alles voordat het wordt verzonden. Het veiligste patroon is om
-    OpenClaw te laten opstellen en jou te laten goedkeuren.
+    Houd voor **outreach- of advertentiecampagnes** altijd een mens betrokken. Vermijd spam, volg lokale wetgeving en platformbeleid en controleer alles voordat het wordt verzonden. Laat OpenClaw het concept opstellen; jij keurt het goed.
 
     Documentatie: [Beveiliging](/nl/gateway/security).
 
   </Accordion>
 
   <Accordion title="Wat zijn de voordelen ten opzichte van Claude Code voor webontwikkeling?">
-    OpenClaw is een **persoonlijke assistent** en coördinatielaag, geen vervanging voor een IDE. Gebruik
-    Claude Code of Codex voor de snelste directe coding-loop binnen een repo. Gebruik OpenClaw wanneer je
-    duurzaam geheugen, toegang vanaf meerdere apparaten en toolorkestratie wilt.
+    OpenClaw is een **persoonlijke assistent** en coördinatielaag, geen vervanging voor een IDE. Gebruik Claude Code of Codex voor de snelste directe programmeercyclus binnen een repository. Gebruik OpenClaw voor duurzaam geheugen, toegang vanaf verschillende apparaten en toolorkestratie.
 
-    Voordelen:
+    - Permanent geheugen en een permanente werkruimte tussen sessies.
+    - Toegang via meerdere platforms (Telegram, WhatsApp, TUI, WebChat).
+    - Toolorkestratie (browser, bestanden, planning, hooks).
+    - Permanent actieve Gateway (voer deze uit op een VPS en communiceer vanaf elke locatie).
+    - Nodes voor lokale browser-/scherm-/camera-/uitvoeringsfuncties.
 
-    - **Persistent geheugen + workspace** over sessies heen
-    - **Toegang vanaf meerdere platforms** (WhatsApp, Telegram, TUI, WebChat)
-    - **Toolorkestratie** (browser, bestanden, planning, hooks)
-    - **Altijd actieve Gateway** (draai op een VPS, werk vanaf overal)
-    - **Nodes** voor lokale browser/scherm/camera/exec
-
-    Showcase: [https://openclaw.ai/showcase](https://openclaw.ai/showcase)
+    Voorbeelden: [https://openclaw.ai/showcase](https://openclaw.ai/showcase).
 
   </Accordion>
 </AccordionGroup>
@@ -175,22 +136,22 @@ staat in de [FAQ voor eerste gebruik](/nl/help/faq-first-run).
 ## Skills en automatisering
 
 <AccordionGroup>
-  <Accordion title="Hoe pas ik Skills aan zonder de repo vuil te houden?">
-    Gebruik beheerde overrides in plaats van de repo-kopie te bewerken. Zet je wijzigingen in `~/.openclaw/skills/<name>/SKILL.md` (of voeg een map toe via `skills.load.extraDirs` in `~/.openclaw/openclaw.json`). De volgorde van prioriteit is `<workspace>/skills` → `<workspace>/.agents/skills` → `~/.agents/skills` → `~/.openclaw/skills` → gebundeld → `skills.load.extraDirs`, dus beheerde overrides winnen nog steeds van gebundelde Skills zonder git aan te raken. Als je de Skill globaal geïnstalleerd nodig hebt, maar alleen zichtbaar voor sommige agents, houd de gedeelde kopie dan in `~/.openclaw/skills` en regel zichtbaarheid met `agents.defaults.skills` en `agents.list[].skills`. Alleen wijzigingen die upstream waard zijn, horen in de repo te staan en als PRs uit te gaan.
+  <Accordion title="Hoe pas ik Skills aan zonder de repository vervuild te houden?">
+    Gebruik beheerde overschrijvingen in plaats van de kopie in de repository te bewerken. Plaats wijzigingen in `~/.openclaw/skills/<name>/SKILL.md` (of voeg een map toe via `skills.load.extraDirs` in `~/.openclaw/openclaw.json`). Prioriteit: `<workspace>/skills` -> `<workspace>/.agents/skills` -> `~/.agents/skills` -> `~/.openclaw/skills` -> meegeleverd -> `skills.load.extraDirs`, zodat beheerde overschrijvingen voorrang krijgen op meegeleverde Skills zonder git aan te raken. Om ze globaal te installeren maar de zichtbaarheid tot bepaalde agents te beperken, bewaar je de gedeelde kopie in `~/.openclaw/skills` en regel je de zichtbaarheid met `agents.defaults.skills` / `agents.list[].skills`. Alleen wijzigingen die geschikt zijn voor upstream moeten als PR's worden ingediend voor de kopie in de repository.
   </Accordion>
 
-  <Accordion title="Kan ik Skills laden vanuit een aangepaste map?">
-    Ja. Voeg extra mappen toe via `skills.load.extraDirs` in `~/.openclaw/openclaw.json` (laagste prioriteit). De standaardvolgorde van prioriteit is `<workspace>/skills` → `<workspace>/.agents/skills` → `~/.agents/skills` → `~/.openclaw/skills` → gebundeld → `skills.load.extraDirs`. `clawhub` installeert standaard in `./skills`, wat OpenClaw in de volgende sessie behandelt als `<workspace>/skills`. Als de Skill alleen zichtbaar moet zijn voor bepaalde agents, combineer dat dan met `agents.defaults.skills` of `agents.list[].skills`.
+  <Accordion title="Kan ik Skills uit een aangepaste map laden?">
+    Ja: voeg mappen toe via `skills.load.extraDirs` in `~/.openclaw/openclaw.json` (laagste prioriteit in de bovenstaande volgorde). `clawhub` installeert standaard in `./skills`, wat OpenClaw tijdens de volgende sessie behandelt als `<workspace>/skills`. Combineer dit met `agents.defaults.skills` of `agents.list[].skills` om de zichtbaarheid tot bepaalde agents te beperken.
   </Accordion>
 
-  <Accordion title="Hoe kan ik verschillende modellen of instellingen gebruiken voor verschillende taken?">
-    Vandaag zijn dit de ondersteunde patronen:
+  <Accordion title="Hoe kan ik verschillende modellen of instellingen voor verschillende taken gebruiken?">
+    Ondersteunde patronen:
 
-    - **Cron-taken**: geïsoleerde taken kunnen per taak een `model`-override instellen.
-    - **Agents**: routeer taken naar aparte agents met verschillende standaardmodellen, denkniveaus en streamparameters.
-    - **Schakelaar op aanvraag**: gebruik `/model` om op elk moment het model van de huidige sessie te wisselen.
+    - **Cron-taken**: geïsoleerde taken kunnen per taak een overschrijving voor `model` instellen.
+    - **Agents**: routeer taken naar afzonderlijke agents met verschillende standaardmodellen, denkniveaus en streamparameters.
+    - **Schakelen op aanvraag**: `/model` schakelt op elk gewenst moment het model van de huidige sessie om.
 
-    Gebruik bijvoorbeeld hetzelfde model met verschillende instellingen per agent:
+    Voorbeeld — hetzelfde model, verschillende instellingen per agent:
 
     ```json5
     {
@@ -213,79 +174,59 @@ staat in de [FAQ voor eerste gebruik](/nl/help/faq-first-run).
     }
     ```
 
-    Zet gedeelde standaarden per model in `agents.defaults.models["provider/model"].params` en zet agentspecifieke overrides daarna in platte `agents.list[].params`. Definieer geen aparte geneste `agents.list[].models["provider/model"].params`-items voor hetzelfde model; `agents.list[].models` is bedoeld voor de modelcatalogus en runtime-overrides per agent.
+    Plaats gedeelde standaardinstellingen per model in `agents.defaults.models["provider/model"].params` en vervolgens agentspecifieke overschrijvingen in het platte `agents.list[].params`. Dupliceer hetzelfde model niet onder het geneste `agents.list[].models["provider/model"].params`; dat pad is bedoeld voor de modelcatalogus en runtimeoverschrijvingen per agent.
 
-    Zie [Cron-taken](/nl/automation/cron-jobs), [Multi-agentroutering](/nl/concepts/multi-agent), [Configuratie](/nl/gateway/config-agents) en [Slash-commando's](/nl/tools/slash-commands).
+    Zie [Cron-taken](/nl/automation/cron-jobs), [Routering met meerdere agents](/nl/concepts/multi-agent), [Configuratie](/nl/gateway/config-agents), [Slash-opdrachten](/nl/tools/slash-commands).
 
   </Accordion>
 
-  <Accordion title="De bot bevriest tijdens zwaar werk. Hoe laad ik dat uit?">
-    Gebruik **subagents** voor lange of parallelle taken. Subagents draaien in hun eigen sessie,
-    geven een samenvatting terug en houden je hoofdchat responsief.
+  <Accordion title="De bot loopt vast tijdens zwaar werk. Hoe besteed ik dat uit?">
+    Gebruik **subagents** voor langdurige of parallelle taken: ze worden in hun eigen sessie uitgevoerd, retourneren een samenvatting en houden je hoofdchat responsief. Vraag de bot om "voor deze taak een subagent te starten" of gebruik `/subagents`. Gebruik `/status` om te zien of de Gateway momenteel bezet is.
 
-    Vraag je bot om "spawn a sub-agent for this task" of gebruik `/subagents`.
-    Gebruik `/status` in chat om te zien wat de Gateway op dit moment doet (en of die bezig is).
-
-    Tokentip: lange taken en subagents verbruiken allebei tokens. Als kosten een punt zijn, stel dan een
-    goedkoper model in voor subagents via `agents.defaults.subagents.model`.
+    Zowel langdurige taken als subagents verbruiken tokens; stel via `agents.defaults.subagents.model` een goedkoper model in voor subagents als de kosten belangrijk zijn.
 
     Documentatie: [Subagents](/nl/tools/subagents), [Achtergrondtaken](/nl/automation/tasks).
 
   </Accordion>
 
-  <Accordion title="Hoe werken thread-gebonden subagentsessies op Discord?">
-    Gebruik threadbindingen. Je kunt een Discord-thread binden aan een subagent- of sessiedoel, zodat vervolgberichten in die thread op die gebonden sessie blijven.
+  <Accordion title="Hoe werken aan threads gebonden subagentsessies op Discord?">
+    Bind een Discord-thread aan een subagent of sessiedoel, zodat vervolgberichten daarin gekoppeld blijven aan die sessie.
 
-    Basisflow:
-
-    - Spawn met `sessions_spawn` met `thread: true` (en optioneel `mode: "session"` voor persistente follow-up).
+    - Start met `sessions_spawn` en gebruik `thread: true` (optioneel `mode: "session"` voor permanente vervolgberichten).
     - Of bind handmatig met `/focus <target>`.
-    - Gebruik `/agents` om de bindingsstatus te bekijken.
-    - Gebruik `/session idle <duration|off>` en `/session max-age <duration|off>` om automatisch ontfocussen te beheren.
-    - Gebruik `/unfocus` om de thread los te koppelen.
+    - `/agents` inspecteert de bindingsstatus.
+    - `/session idle <duration|off>` en `/session max-age <duration|off>` regelen het automatisch opheffen van de focus.
+    - `/unfocus` ontkoppelt de thread.
 
-    Vereiste configuratie:
+    Configuratie: `session.threadBindings.enabled` (globale schakelaar), `session.threadBindings.idleHours` (standaard `24`, `0` schakelt uit), `session.threadBindings.maxAgeHours` (standaard `0` = geen harde limiet) en overschrijvingen per kanaal via `channels.discord.threadBindings.{enabled,idleHours,maxAgeHours}`. `channels.discord.threadBindings.spawnSessions` bepaalt of automatisch binden bij het starten is toegestaan (standaard `true`).
 
-    - Globale standaarden: `session.threadBindings.enabled`, `session.threadBindings.idleHours`, `session.threadBindings.maxAgeHours`.
-    - Discord-overrides: `channels.discord.threadBindings.enabled`, `channels.discord.threadBindings.idleHours`, `channels.discord.threadBindings.maxAgeHours`.
-    - Automatisch binden bij spawn: `channels.discord.threadBindings.spawnSessions` is standaard `true`; zet dit op `false` om thread-gebonden sessiespawns uit te schakelen.
-
-    Documentatie: [Subagents](/nl/tools/subagents), [Discord](/nl/channels/discord), [Configuratiereferentie](/nl/gateway/configuration-reference), [Slash-commando's](/nl/tools/slash-commands).
+    Documentatie: [Subagents](/nl/tools/subagents), [Discord](/nl/channels/discord), [Configuratiereferentie](/nl/gateway/configuration-reference), [Slash-opdrachten](/nl/tools/slash-commands).
 
   </Accordion>
 
-  <Accordion title="Een subagent is klaar, maar de voltooiingsupdate ging naar de verkeerde plek of werd nooit geplaatst. Wat moet ik controleren?">
-    Controleer eerst de opgeloste route van de aanvrager:
+  <Accordion title="Een subagent is voltooid, maar de voltooiingsupdate ging naar de verkeerde plaats of is nooit geplaatst. Wat moet ik controleren?">
+    Controleer de bepaalde route van de aanvrager:
 
-    - Levering van subagents in voltooiingsmodus geeft de voorkeur aan elke gebonden thread- of conversatieroute wanneer die bestaat.
-    - Als de voltooiingsoorsprong alleen een kanaal bevat, valt OpenClaw terug op de opgeslagen route van de aanvragersessie (`lastChannel` / `lastTo` / `lastAccountId`), zodat directe levering nog steeds kan slagen.
-    - Als er geen gebonden route en ook geen bruikbare opgeslagen route bestaat, kan directe levering mislukken en valt het resultaat terug op levering via de wachtrij van de sessie in plaats van direct in chat te plaatsen.
-    - Ongeldige of verouderde doelen kunnen nog steeds een terugval naar de wachtrij of een uiteindelijke leveringsfout afdwingen.
-    - Als het laatste zichtbare assistentantwoord van het child exact het stille token `NO_REPLY` / `no_reply` is, of exact `ANNOUNCE_SKIP`, onderdrukt OpenClaw de aankondiging bewust in plaats van eerdere verouderde voortgang te plaatsen.
-    - Tool-/toolResult-uitvoer wordt niet gepromoveerd naar resultaattekst van het child; het resultaat is het nieuwste zichtbare assistentantwoord van het child.
+    - Bij levering van een subagent in voltooiingsmodus heeft een gebonden thread- of gespreksroute voorrang wanneer die bestaat.
+    - Als de oorsprong van de voltooiing alleen een kanaal bevat, valt OpenClaw terug op de opgeslagen route van de sessie van de aanvrager (`lastChannel` / `lastTo` / `lastAccountId`), zodat directe levering alsnog kan slagen.
+    - Geen gebonden route en geen bruikbare opgeslagen route: directe levering kan mislukken, waarna het resultaat terugvalt op levering via de sessiewachtrij in plaats van onmiddellijk te worden geplaatst.
+    - Ongeldige of verouderde doelen kunnen ook een terugval op de wachtrij of een definitieve leveringsfout veroorzaken.
+    - Als het laatste zichtbare assistentantwoord van het kind exact `NO_REPLY` / `no_reply` of `ANNOUNCE_SKIP` is, onderdrukt OpenClaw de aankondiging opzettelijk in plaats van eerder verouderde voortgang te plaatsen.
 
-    Debuggen:
+    Foutopsporing: `openclaw tasks show <lookup>`, waarbij `<lookup>` een taak-ID, uitvoerings-ID of sessiesleutel is.
 
-    ```bash
-    openclaw tasks show <runId-or-sessionKey>
-    ```
-
-    Documentatie: [Subagenten](/nl/tools/subagents), [Achtergrondtaken](/nl/automation/tasks), [Sessietools](/nl/concepts/session-tool).
+    Documentatie: [Subagents](/nl/tools/subagents), [Achtergrondtaken](/nl/automation/tasks), [Sessietools](/nl/concepts/session-tool).
 
   </Accordion>
 
   <Accordion title="Cron of herinneringen worden niet uitgevoerd. Wat moet ik controleren?">
-    Cron draait binnen het Gateway-proces. Als de Gateway niet continu draait,
-    worden geplande taken niet uitgevoerd.
+    Cron wordt binnen het Gateway-proces uitgevoerd; het wordt niet geactiveerd als de Gateway niet continu actief is.
 
-    Checklist:
-
-    - Controleer of cron is ingeschakeld (`cron.enabled`) en `OPENCLAW_SKIP_CRON` niet is ingesteld.
-    - Controleer of de Gateway 24/7 draait (geen slaapstand/herstarts).
-    - Controleer de tijdzone-instellingen voor de taak (`--tz` versus de tijdzone van de host).
+    - Controleer of Cron is ingeschakeld (`cron.enabled`) en `OPENCLAW_SKIP_CRON` niet is ingesteld.
+    - Controleer of de Gateway 24/7 actief is (geen slaapstand/herstarts).
+    - Controleer de tijdzone van de taak (`--tz` tegenover de tijdzone van de host).
 
     Debuggen:
-
     ```bash
     openclaw cron run <jobId>
     openclaw cron runs --id <jobId> --limit 50
@@ -296,51 +237,35 @@ staat in de [FAQ voor eerste gebruik](/nl/help/faq-first-run).
   </Accordion>
 
   <Accordion title="Cron is uitgevoerd, maar er is niets naar het kanaal verzonden. Waarom?">
-    Controleer eerst de aflevermodus:
+    Controleer de afleveringsmodus:
 
-    - `--no-deliver` / `delivery.mode: "none"` betekent dat er geen fallback-verzending door de runner wordt verwacht.
-    - Een ontbrekend of ongeldig aankondigingsdoel (`channel` / `to`) betekent dat de runner uitgaande aflevering heeft overgeslagen.
-    - Kanaal-authenticatiefouten (`unauthorized`, `Forbidden`) betekenen dat de runner probeerde af te leveren, maar dat de referenties dit blokkeerden.
-    - Een stil geïsoleerd resultaat (alleen `NO_REPLY` / `no_reply`) wordt behandeld als bewust niet-afleverbaar, dus onderdrukt de runner ook wachtrij-fallbackaflevering.
+    - `--no-deliver` / `delivery.mode: "none"`: er wordt geen terugvalverzending door de runner verwacht.
+    - Ontbrekend of ongeldig aankondigingsdoel (`channel` / `to`): de runner heeft uitgaande aflevering overgeslagen.
+    - Authenticatiefouten van het kanaal (`unauthorized`, `Forbidden`): de runner probeerde af te leveren, maar de referenties blokkeerden dit.
+    - Een stil geïsoleerd resultaat (alleen `NO_REPLY` / `no_reply`) wordt beschouwd als bewust niet-afleverbaar, waardoor ook terugvalaflevering vanuit de wachtrij wordt onderdrukt.
 
-    Voor geïsoleerde Cron-taken kan de agent nog steeds rechtstreeks verzenden met de `message`-
-    tool wanneer er een chatroute beschikbaar is. `--announce` regelt alleen het runner-
-    fallbackpad voor definitieve tekst die de agent nog niet had verzonden.
+    Voor geïsoleerde Cron-taken kan de agent nog steeds rechtstreeks verzenden met de tool `message` wanneer een chatroute beschikbaar is. `--announce` regelt alleen de terugvalaflevering door de runner voor definitieve tekst die de agent niet al zelf heeft verzonden.
 
     Debuggen:
-
     ```bash
     openclaw cron runs --id <jobId> --limit 50
-    openclaw tasks show <runId-or-sessionKey>
+    openclaw tasks show <lookup>
     ```
 
     Documentatie: [Cron-taken](/nl/automation/cron-jobs), [Achtergrondtaken](/nl/automation/tasks).
 
   </Accordion>
 
-  <Accordion title="Waarom schakelde een geïsoleerde Cron-run van model of probeerde die het één keer opnieuw?">
-    Dat is meestal het live model-switchpad, geen dubbele planning.
+  <Accordion title="Waarom wisselde een geïsoleerde Cron-uitvoering van model of probeerde deze het eenmaal opnieuw?">
+    Dit is het live pad voor modelwisseling, geen dubbele planning. Geïsoleerde Cron bewaart een runtimeoverdracht naar een ander model en probeert het opnieuw wanneer de actieve uitvoering `LiveSessionModelSwitchError` genereert, waarbij de gewisselde provider/het gewisselde model (en een eventuele gewisselde overschrijving van het authenticatieprofiel) vóór de nieuwe poging behouden blijft.
 
-    Geïsoleerde Cron kan een runtime-modeloverdracht persistent maken en opnieuw proberen wanneer de actieve
-    run `LiveSessionModelSwitchError` werpt. De nieuwe poging behoudt de overgeschakelde
-    provider/het overgeschakelde model, en als de switch een nieuwe auth-profieloverschrijving bevatte, maakt Cron
-    die ook persistent voordat opnieuw wordt geprobeerd.
+    Prioriteit voor modelselectie: eerst de modeloverschrijving van de Gmail-hook (`hooks.gmail.model`), daarna `model` per taak, vervolgens een opgeslagen modeloverschrijving voor de Cron-sessie en ten slotte de normale modelselectie van de agent/het standaardmodel.
 
-    Gerelateerde selectieregels:
-
-    - Gmail-hookmodeloverschrijving wint als eerste wanneer van toepassing.
-    - Daarna `model` per taak.
-    - Daarna elke opgeslagen modeloverschrijving voor de Cron-sessie.
-    - Daarna de normale agent-/standaardmodelselectie.
-
-    De retry-lus is begrensd. Na de eerste poging plus 2 switch-retries
-    breekt Cron af in plaats van eindeloos te blijven lopen.
+    De herhaallus is beperkt tot de eerste poging plus 2 pogingen na een wisseling; daarna breekt Cron af in plaats van eindeloos door te gaan.
 
     Debuggen:
-
     ```bash
     openclaw cron runs --id <jobId> --limit 50
-    openclaw tasks show <runId-or-sessionKey>
     ```
 
     Documentatie: [Cron-taken](/nl/automation/cron-jobs), [Cron-CLI](/nl/cli/cron).
@@ -348,8 +273,7 @@ staat in de [FAQ voor eerste gebruik](/nl/help/faq-first-run).
   </Accordion>
 
   <Accordion title="Hoe installeer ik Skills op Linux?">
-    Gebruik native `openclaw skills`-commando's of plaats Skills in je werkruimte. De macOS Skills-UI is niet beschikbaar op Linux.
-    Bekijk Skills op [https://clawhub.ai](https://clawhub.ai).
+    Gebruik native `openclaw skills`-opdrachten of plaats Skills in je werkruimte; de macOS-interface voor Skills is niet beschikbaar op Linux. Bekijk Skills op [https://clawhub.ai](https://clawhub.ai).
 
     ```bash
     openclaw skills search "calendar"
@@ -364,113 +288,96 @@ staat in de [FAQ voor eerste gebruik](/nl/help/faq-first-run).
     openclaw skills check
     ```
 
-    Native `openclaw skills install` schrijft standaard naar de actieve werkruimte-directory `skills/`.
-    Voeg `--global` toe om te installeren in de gedeelde beheerde
-    Skills-directory voor alle lokale agents. Installeer de afzonderlijke `clawhub`-CLI
-    alleen als je je eigen Skills wilt publiceren of synchroniseren. Gebruik
-    `agents.defaults.skills` of `agents.list[].skills` als je wilt beperken
-    welke agents gedeelde Skills kunnen zien.
+    Native `openclaw skills install` schrijft standaard naar de map `skills/` van de actieve werkruimte. Voeg `--global` toe om te installeren in de gedeelde beheerde Skills-map voor alle lokale agents. Installeer de afzonderlijke `clawhub`-CLI alleen om je eigen Skills te publiceren of te synchroniseren. Gebruik `agents.defaults.skills` of `agents.list[].skills` om te beperken welke agents gedeelde Skills zien.
 
   </Accordion>
 
-  <Accordion title="Kan OpenClaw taken volgens een schema of continu op de achtergrond uitvoeren?">
-    Ja. Gebruik de Gateway-planner:
+  <Accordion title="Kan OpenClaw taken volgens een planning of continu op de achtergrond uitvoeren?">
+    Ja, via de Gateway-planner:
 
     - **Cron-taken** voor geplande of terugkerende taken (blijven behouden na herstarts).
-    - **Heartbeat** voor periodieke controles van de "hoofdsessie".
-    - **Geïsoleerde taken** voor autonome agents die samenvattingen plaatsen of naar chats afleveren.
+    - **Heartbeat** voor periodieke controles in de hoofdsessie.
+    - **Geïsoleerde taken** voor autonome agents die samenvattingen plaatsen of afleveren in chats.
 
-    Documentatie: [Cron-taken](/nl/automation/cron-jobs), [Automatisering](/nl/automation),
-    [Heartbeat](/nl/gateway/heartbeat).
+    Documentatie: [Cron-taken](/nl/automation/cron-jobs), [Automatisering](/nl/automation), [Heartbeat](/nl/gateway/heartbeat).
 
   </Accordion>
 
-  <Accordion title="Kan ik Apple macOS-only Skills vanaf Linux uitvoeren?">
-    Niet rechtstreeks. macOS-Skills worden beperkt door `metadata.openclaw.os` plus vereiste binaries, en Skills verschijnen alleen in de systeemprompt wanneer ze geschikt zijn op de **Gateway-host**. Op Linux worden `darwin`-only Skills (zoals `apple-notes`, `apple-reminders`, `things-mac`) niet geladen tenzij je de gating overschrijft.
+  <Accordion title="Kan ik uitsluitend voor Apple macOS bestemde Skills uitvoeren vanaf Linux?">
+    Niet rechtstreeks. macOS-Skills worden beperkt door `metadata.openclaw.os` plus vereiste binaire bestanden en worden alleen geladen wanneer ze geschikt zijn op de **Gateway-host**. Op Linux worden Skills die alleen voor `darwin` zijn bedoeld (`apple-notes`, `apple-reminders`, `things-mac`) niet geladen, tenzij je de beperking overschrijft.
 
-    Je hebt drie ondersteunde patronen:
+    Drie ondersteunde patronen:
 
-    **Optie A - voer de Gateway uit op een Mac (het eenvoudigst).**
-    Voer de Gateway uit waar de macOS-binaries bestaan en maak daarna vanaf Linux verbinding in [remote mode](#gateway-ports-already-running-and-remote-mode) of via Tailscale. De Skills laden normaal omdat de Gateway-host macOS is.
+    **Optie A - voer de Gateway uit op een Mac (het eenvoudigst)**. Voer de Gateway uit waar de macOS-binaire bestanden aanwezig zijn en maak vervolgens vanaf Linux verbinding in de [externe modus](#gateway-ports-already-running-and-remote-mode) of via Tailscale. Skills worden normaal geladen omdat de Gateway-host macOS gebruikt.
 
-    **Optie B - gebruik een macOS-Node (geen SSH).**
-    Voer de Gateway uit op Linux, koppel een macOS-Node (menubalk-app) en stel **Node Run Commands** op de Mac in op "Always Ask" of "Always Allow". OpenClaw kan macOS-only Skills als geschikt behandelen wanneer de vereiste binaries op de Node bestaan. De agent voert die Skills uit via de `nodes`-tool. Als je "Always Ask" kiest, voegt goedkeuring van "Always Allow" in de prompt dat commando toe aan de allowlist.
+    **Optie B - gebruik een macOS-Node (zonder SSH)**. Voer de Gateway uit op Linux, koppel een macOS-Node (menubalkapp) en stel **Node Run Commands** op de Mac in op "Always Ask" of "Always Allow". OpenClaw beschouwt Skills die alleen voor macOS zijn bedoeld als geschikt wanneer de vereiste binaire bestanden op de Node aanwezig zijn; de agent voert ze uit via de tool `nodes`. Wanneer "Always Ask" is ingesteld, wordt de opdracht aan de toelatingslijst toegevoegd als je in de prompt "Always Allow" goedkeurt.
 
-    **Optie C - proxy macOS-binaries via SSH (geavanceerd).**
-    Houd de Gateway op Linux, maar laat de vereiste CLI-binaries verwijzen naar SSH-wrappers die op een Mac draaien. Overschrijf daarna de Skill om Linux toe te staan, zodat deze geschikt blijft.
+    **Optie C - stuur macOS-binaire bestanden via een SSH-proxy (geavanceerd)**. Houd de Gateway op Linux, maar zorg dat de vereiste CLI-binaire bestanden verwijzen naar SSH-wrappers die op een Mac worden uitgevoerd. Overschrijf daarna de Skill zodat Linux wordt toegestaan en de Skill geschikt blijft.
 
-    1. Maak een SSH-wrapper voor de binary (voorbeeld: `memo` voor Apple Notes):
-
+    1. Maak een SSH-wrapper voor het binaire bestand (voorbeeld: `memo` voor Apple Notes):
        ```bash
        #!/usr/bin/env bash
        set -euo pipefail
        exec ssh -T user@mac-host /opt/homebrew/bin/memo "$@"
        ```
-
-    2. Zet de wrapper op `PATH` op de Linux-host (bijvoorbeeld `~/bin/memo`).
-    3. Overschrijf de Skill-metadata (werkruimte of `~/.openclaw/skills`) om Linux toe te staan:
-
+    2. Plaats de wrapper in `PATH` op de Linux-host (bijvoorbeeld `~/bin/memo`).
+    3. Overschrijf de metadata van de Skill (werkruimte of `~/.openclaw/skills`) om Linux toe te staan:
        ```markdown
        ---
        name: apple-notes
-       description: Manage Apple Notes via the memo CLI on macOS.
+       description: Beheer Apple Notes via de memo-CLI op macOS.
        metadata: { "openclaw": { "os": ["darwin", "linux"], "requires": { "bins": ["memo"] } } }
        ---
        ```
-
-    4. Start een nieuwe sessie zodat de Skills-snapshot wordt vernieuwd.
+    4. Start een nieuwe sessie zodat de momentopname van de Skills wordt vernieuwd.
 
   </Accordion>
 
-  <Accordion title="Hebben jullie een Notion- of HeyGen-integratie?">
-    Vandaag niet ingebouwd.
+  <Accordion title="Hebben jullie een integratie met Notion of HeyGen?">
+    Momenteel niet ingebouwd. Opties:
 
-    Opties:
+    - **Aangepaste Skill/Plugin**: het meest geschikt voor betrouwbare API-toegang (beide hebben API's).
+    - **Browserautomatisering**: werkt zonder code, maar is langzamer en kwetsbaarder.
 
-    - **Aangepaste Skill / Plugin:** het beste voor betrouwbare API-toegang (Notion/HeyGen hebben allebei API's).
-    - **Browserautomatisering:** werkt zonder code, maar is trager en kwetsbaarder.
+    Voor context per klant in de stijl van een bureau: houd één Notion-pagina per klant bij (context + voorkeuren + actief werk) en vraag de agent om die pagina aan het begin van een sessie op te halen.
 
-    Als je context per klant wilt behouden (agency-workflows), is een eenvoudig patroon:
-
-    - Eén Notion-pagina per klant (context + voorkeuren + actief werk).
-    - Vraag de agent om die pagina aan het begin van een sessie op te halen.
-
-    Als je een native integratie wilt, open dan een feature request of bouw een Skill
-    gericht op die API's.
-
-    Skills installeren:
+    Open voor een native integratie een functieverzoek of bouw een Skill voor die API's.
 
     ```bash
     openclaw skills install @owner/<skill-slug>
     openclaw skills update --all
     ```
 
-    Native installaties komen terecht in de actieve werkruimte-directory `skills/`. Gebruik `openclaw skills install @owner/<skill-slug> --global` voor gedeelde Skills voor alle lokale agents (of plaats ze handmatig in `~/.openclaw/skills/<name>/SKILL.md`). Als slechts sommige agents een gedeelde installatie mogen zien, configureer dan `agents.defaults.skills` of `agents.list[].skills`. Sommige Skills verwachten binaries die via Homebrew zijn geïnstalleerd; op Linux betekent dat Linuxbrew (zie de Homebrew Linux FAQ-vermelding hierboven). Zie [Skills](/nl/tools/skills), [Skills-configuratie](/nl/tools/skills-config) en [ClawHub](/tools/clawhub).
+    Native installaties komen terecht in de map `skills/` van de actieve werkruimte; gebruik `--global` voor alle lokale agents of configureer `agents.defaults.skills` / `agents.list[].skills` om de zichtbaarheid te beperken. Sommige Skills verwachten binaire bestanden die via Homebrew zijn geïnstalleerd; op Linux betekent dit Linuxbrew.
+
+    Zie [Skills](/nl/tools/skills), [Skills-configuratie](/nl/tools/skills-config), [ClawHub](/nl/clawhub).
 
   </Accordion>
 
   <Accordion title="Hoe gebruik ik mijn bestaande aangemelde Chrome met OpenClaw?">
-    Gebruik het ingebouwde `user`-browserprofiel, dat koppelt via Chrome DevTools MCP:
+    Gebruik het ingebouwde browserprofiel `user`, dat verbinding maakt via Chrome DevTools MCP:
 
     ```bash
     openclaw browser --browser-profile user tabs
     openclaw browser --browser-profile user snapshot
     ```
 
-    Als je een aangepaste naam wilt, maak dan een expliciet MCP-profiel:
+    Maak voor een aangepaste naam een expliciet MCP-profiel:
 
     ```bash
     openclaw browser create-profile --name chrome-live --driver existing-session
     openclaw browser --browser-profile chrome-live tabs
     ```
 
-    Dit pad kan de lokale hostbrowser of een verbonden browser-Node gebruiken. Als de Gateway ergens anders draait, voer dan een Node-host uit op de browsermachine of gebruik in plaats daarvan remote CDP.
+    Dit kan de browser op de lokale host of op een verbonden browser-Node gebruiken. Als de Gateway elders wordt uitgevoerd, voer je een Node-host uit op de browsercomputer of gebruik je in plaats daarvan externe CDP.
 
-    Huidige beperkingen voor `existing-session` / `user`:
+    Huidige beperkingen van profielen `existing-session` / `user` ten opzichte van het beheerde profiel `openclaw`:
 
-    - acties zijn ref-gestuurd, niet CSS-selector-gestuurd
-    - uploads vereisen `ref` / `inputRef` en ondersteunen momenteel één bestand tegelijk
-    - `responsebody`, PDF-export, downloadonderschepping en batchacties hebben nog steeds een beheerde browser of raw CDP-profiel nodig
+    - `click`, `type`, `hover`, `scrollIntoView`, `drag` en `select` vereisen verwijzingen naar momentopnamen, geen CSS-selectors.
+    - Uploadhooks vereisen `ref` of `inputRef`, één bestand per keer, zonder CSS-`element`.
+    - `responsebody`, PDF-export, downloadonderschepping en batchacties vereisen nog steeds het beheerde browserpad.
+
+    Zie [Browser](/nl/tools/browser#existing-session-via-chrome-devtools-mcp) voor de volledige vergelijking.
 
   </Accordion>
 </AccordionGroup>
@@ -478,149 +385,109 @@ staat in de [FAQ voor eerste gebruik](/nl/help/faq-first-run).
 ## Sandboxing en geheugen
 
 <AccordionGroup>
-  <Accordion title="Is er een specifieke documentatiepagina voor sandboxing?">
-    Ja. Zie [Sandboxing](/nl/gateway/sandboxing). Voor Docker-specifieke setup (volledige Gateway in Docker of sandbox-images), zie [Docker](/nl/install/docker).
+  <Accordion title="Is er speciale documentatie over sandboxing?">
+    Ja: [Sandboxing](/nl/gateway/sandboxing). Zie [Docker](/nl/install/docker) voor Docker-specifieke configuratie (de volledige Gateway in Docker of sandboximages).
   </Accordion>
 
-  <Accordion title="Docker voelt beperkt - hoe schakel ik volledige functies in?">
-    De standaardimage zet beveiliging voorop en draait als de `node`-gebruiker, waardoor deze geen
-    systeempakketten, Homebrew of gebundelde browsers bevat. Voor een vollere setup:
+  <Accordion title="Docker voelt beperkt aan - hoe schakel ik alle functies in?">
+    De standaardimage stelt beveiliging voorop en wordt uitgevoerd als de gebruiker `node`, waardoor systeempakketten, Homebrew en meegeleverde browsers zijn uitgesloten. Voor een completere configuratie:
 
-    - Maak `/home/node` persistent met `OPENCLAW_HOME_VOLUME` zodat caches behouden blijven.
-    - Bak systeemafhankelijkheden in de image met `OPENCLAW_IMAGE_APT_PACKAGES`.
-    - Installeer Playwright-browsers via de gebundelde CLI:
-      `node /app/node_modules/playwright-core/cli.js install chromium`
-    - Stel `PLAYWRIGHT_BROWSERS_PATH` in en zorg dat het pad persistent is.
+    - Maak `/home/node` persistent met `OPENCLAW_HOME_VOLUME`, zodat caches behouden blijven.
+    - Neem systeemafhankelijkheden op in de image met `OPENCLAW_IMAGE_APT_PACKAGES`.
+    - Installeer Playwright-browsers via de meegeleverde CLI: `node /app/node_modules/playwright-core/cli.js install chromium`.
+    - Stel `PLAYWRIGHT_BROWSERS_PATH` in en maak dat pad persistent.
 
     Documentatie: [Docker](/nl/install/docker), [Browser](/nl/tools/browser).
 
   </Accordion>
 
-  <Accordion title="Kan ik DM's persoonlijk houden maar groepen openbaar/gesandboxed maken met één agent?">
-    Ja - als je privéverkeer **DM's** is en je openbare verkeer **groepen**.
+  <Accordion title="Kan ik privéberichten persoonlijk houden, maar groepen openbaar en in een sandbox maken met één agent?">
+    Ja, als privéverkeer uit **privéberichten** bestaat en openbaar verkeer uit **groepen**. Stel `agents.defaults.sandbox.mode: "non-main"` in, zodat groeps-/kanaalsessies (niet-hoofdsleutels) in de geconfigureerde sandboxbackend worden uitgevoerd, terwijl de hoofdprivéberichtensessie op de host blijft. Docker is de standaardbackend zodra sandboxing is ingeschakeld. Beperk de tools die beschikbaar zijn in sandboxsessies via `tools.sandbox.tools`.
 
-    Gebruik `agents.defaults.sandbox.mode: "non-main"` zodat groeps-/kanaalsessies (niet-main-sleutels) in de geconfigureerde sandbox-backend draaien, terwijl de hoofd-DM-sessie op de host blijft. Docker is de standaardbackend als je er geen kiest. Beperk daarna welke tools beschikbaar zijn in gesandboxte sessies via `tools.sandbox.tools`.
-
-    Setup-walkthrough + voorbeeldconfiguratie: [Groepen: persoonlijke DM's + openbare groepen](/nl/channels/groups#pattern-personal-dms-public-groups-single-agent)
-
-    Belangrijke configuratiereferentie: [Gateway-configuratie](/nl/gateway/config-agents#agentsdefaultssandbox)
+    Configuratiehandleiding: [Groepen: persoonlijke privéberichten + openbare groepen](/nl/channels/groups#pattern-personal-dms-public-groups-single-agent). Belangrijkste naslaginformatie: [Gateway-configuratie](/nl/gateway/config-agents#agentsdefaultssandbox).
 
   </Accordion>
 
-  <Accordion title="Hoe bind ik een hostmap in de sandbox?">
-    Stel `agents.defaults.sandbox.docker.binds` in op `["host:path:mode"]` (bijv. `"/home/user/src:/src:ro"`). Globale en per-agent binds worden samengevoegd; per-agent binds worden genegeerd wanneer `scope: "shared"` is. Gebruik `:ro` voor alles wat gevoelig is en onthoud dat binds de muren van het sandbox-bestandssysteem omzeilen.
+  <Accordion title="Hoe koppel ik een hostmap aan de sandbox?">
+    Stel `agents.defaults.sandbox.docker.binds` in op `["host:container:mode"]` (bijvoorbeeld `"/home/user/src:/src:ro"`). Globale koppelingen en koppelingen per agent worden samengevoegd; koppelingen per agent worden genegeerd wanneer `scope: "shared"`. Gebruik `:ro` voor alles wat gevoelig is; koppelingen omzeilen de bestandssysteemgrenzen van de sandbox.
 
-    OpenClaw valideert bind-bronnen tegen zowel het genormaliseerde pad als het canonieke pad dat via de diepste bestaande ancestor wordt opgelost. Dat betekent dat symlink-parent-ontsnappingen nog steeds gesloten falen, zelfs wanneer het laatste padsegment nog niet bestaat, en allowed-root-controles nog steeds gelden na symlink-resolutie.
+    OpenClaw valideert koppelingsbronnen aan de hand van zowel het genormaliseerde pad als het canonieke pad dat via de diepste bestaande voorouder is bepaald. Daardoor worden ontsnappingen via een bovenliggende symbolische koppeling standaard geblokkeerd, zelfs wanneer het laatste padsegment nog niet bestaat.
 
-    Zie [Sandboxing](/nl/gateway/sandboxing#custom-bind-mounts) en [Sandbox vs Tool Policy vs Elevated](/nl/gateway/sandbox-vs-tool-policy-vs-elevated#bind-mounts-security-quick-check) voor voorbeelden en veiligheidsnotities.
-
-  </Accordion>
-
-  <Accordion title="Hoe werkt geheugen?">
-    OpenClaw-geheugen bestaat gewoon uit Markdown-bestanden in de agent-werkruimte:
-
-    - Dagelijkse notities in `memory/YYYY-MM-DD.md`
-    - Gecureerde langetermijnnotities in `MEMORY.md` (alleen main-/privésessies)
-
-    OpenClaw voert ook een **stille pre-Compaction-geheugenflush** uit om het model eraan te herinneren
-    duurzame notities te schrijven vóór automatische Compaction. Dit draait alleen wanneer de werkruimte
-    beschrijfbaar is (read-only sandboxes slaan dit over). Zie [Geheugen](/nl/concepts/memory).
+    Zie [Sandboxing](/nl/gateway/sandboxing#custom-bind-mounts) en [Sandbox versus toolbeleid versus verhoogde rechten](/nl/gateway/sandbox-vs-tool-policy-vs-elevated#bind-mounts-security-quick-check).
 
   </Accordion>
 
-  <Accordion title="Memory blijft dingen vergeten. Hoe zorg ik dat het blijft hangen?">
-    Vraag de bot om **het feit naar memory te schrijven**. Langetermijnnotities horen in `MEMORY.md`,
-    kortetermijncontext gaat naar `memory/YYYY-MM-DD.md`.
+  <Accordion title="Hoe werkt het geheugen?">
+    Het geheugen van OpenClaw bestaat uit Markdown-bestanden in de werkruimte van de agent: dagelijkse notities in `memory/YYYY-MM-DD.md`, samengestelde langetermijnnotities in `MEMORY.md` (alleen hoofd-/privésessies).
 
-    Dit is nog steeds een gebied dat we verbeteren. Het helpt om het model eraan te herinneren memories op te slaan;
-    het weet wat het moet doen. Als het dingen blijft vergeten, controleer dan of de Gateway bij elke run dezelfde
-    workspace gebruikt.
-
-    Documentatie: [Memory](/nl/concepts/memory), [Agent-workspace](/nl/concepts/agent-workspace).
+    OpenClaw voert ook een stille **geheugenopslag vóór Compaction** uit voordat Compaction het gesprek samenvat, waarbij het model eraan wordt herinnerd eerst duurzame notities te schrijven. Dit wordt alleen uitgevoerd wanneer de werkruimte beschrijfbaar is (alleen-lezen-sandboxes slaan dit over); schakel dit uit met `agents.defaults.compaction.memoryFlush.enabled: false`. Zie [Geheugen](/nl/concepts/memory).
 
   </Accordion>
 
-  <Accordion title="Blijft memory voor altijd bestaan? Wat zijn de limieten?">
-    Memory-bestanden staan op schijf en blijven bestaan totdat je ze verwijdert. De limiet is je
-    opslagruimte, niet het model. De **sessiecontext** wordt nog steeds beperkt door het contextvenster
-    van het model, dus lange gesprekken kunnen worden gecompacteerd of afgekapt. Daarom bestaat
-    memory-zoeken: het haalt alleen de relevante delen terug in de context.
+  <Accordion title="Het geheugen blijft dingen vergeten. Hoe zorg ik dat ze bewaard blijven?">
+    Vraag de bot om **het feit naar het geheugen te schrijven**: langetermijnnotities komen in `MEMORY.md`, kortetermijncontext in `memory/YYYY-MM-DD.md`. Het model eraan herinneren om herinneringen op te slaan, lost dit meestal op. Als het dingen blijft vergeten, controleer dan of de Gateway bij elke uitvoering dezelfde werkruimte gebruikt.
 
-    Documentatie: [Memory](/nl/concepts/memory), [Context](/nl/concepts/context).
+    Documentatie: [Geheugen](/nl/concepts/memory), [Werkruimte van de agent](/nl/concepts/agent-workspace).
 
   </Accordion>
 
-  <Accordion title="Vereist semantisch memory-zoeken een OpenAI API-sleutel?">
-    Alleen als je **OpenAI-embeddings** gebruikt. Codex OAuth dekt chat/completions en
-    geeft **geen** toegang tot embeddings, dus **inloggen met Codex (OAuth of de
-    Codex CLI-login)** helpt niet voor semantisch memory-zoeken. OpenAI-embeddings
-    hebben nog steeds een echte API-sleutel nodig (`OPENAI_API_KEY` of `models.providers.openai.apiKey`).
+  <Accordion title="Blijft geheugen voor altijd bewaard? Wat zijn de limieten?">
+    Geheugenbestanden staan op schijf en blijven bewaard totdat ze worden verwijderd; de limiet is je opslagruimte, niet het model. **De sessiecontext** wordt nog steeds beperkt door het contextvenster van het model, waardoor lange gesprekken kunnen worden gecompacteerd of afgekapt. Daarom bestaat geheugenzoekfunctie: deze haalt alleen de relevante delen terug naar de context.
 
-    Als je geen provider expliciet instelt, gebruikt OpenClaw OpenAI-embeddings. Verouderde
-    configuraties waarin nog `memorySearch.provider = "auto"` staat, worden ook naar OpenAI opgelost.
-    Als er geen OpenAI API-sleutel beschikbaar is, blijft semantisch memory-zoeken niet beschikbaar
-    totdat je een sleutel configureert of expliciet een andere provider kiest.
+    Documentatie: [Geheugen](/nl/concepts/memory), [Context](/nl/concepts/context).
 
-    Als je liever lokaal blijft, stel dan `memorySearch.provider = "local"` in (en eventueel
-    `memorySearch.fallback = "none"`). Als je Gemini-embeddings wilt, stel dan
-    `memorySearch.provider = "gemini"` in en geef `GEMINI_API_KEY` op (of
-    `memorySearch.remote.apiKey`). We ondersteunen **OpenAI-, OpenAI-compatibele, Gemini-,
-    Voyage-, Mistral-, Bedrock-, Ollama-, LM Studio-, GitHub Copilot-, DeepInfra- of lokale**
-    embeddingmodellen; zie [Memory](/nl/concepts/memory) voor de installatiegegevens.
+  </Accordion>
+
+  <Accordion title="Vereist semantisch zoeken in het geheugen een OpenAI-API-sleutel?">
+    Alleen als je **OpenAI-embeddings** gebruikt, wat de standaardprovider is. Codex OAuth dekt chat/aanvullingen en verleent **geen** toegang tot embeddings. Aanmelden met Codex (OAuth of de aanmelding van de Codex CLI) schakelt semantisch zoeken in het geheugen dus niet in. OpenAI-embeddings vereisen nog steeds een echte API-sleutel (`OPENAI_API_KEY` of `models.providers.openai.apiKey`).
+
+    Stel `agents.defaults.memorySearch.provider: "local"` (GGUF/llama.cpp) in om alles lokaal te houden. Andere ondersteunde providers: Bedrock, DeepInfra, Gemini (`GEMINI_API_KEY` of `memorySearch.remote.apiKey`), GitHub Copilot, LM Studio, Mistral, Ollama, OpenAI-compatibel en Voyage. Zie [Geheugen](/nl/concepts/memory) en [Zoeken in het geheugen](/nl/concepts/memory-search) voor configuratiedetails.
 
   </Accordion>
 </AccordionGroup>
 
-## Waar dingen op schijf staan
+## Waar alles op schijf staat
 
 <AccordionGroup>
   <Accordion title="Worden alle gegevens die met OpenClaw worden gebruikt lokaal opgeslagen?">
-    Nee: **de status van OpenClaw is lokaal**, maar **externe services zien nog steeds wat je naar ze stuurt**.
+    Nee: **de eigen status van OpenClaw is lokaal**, maar **externe services zien nog steeds wat je naar ze verzendt**.
 
-    - **Standaard lokaal:** sessies, memory-bestanden, configuratie en workspace staan op de Gateway-host
-      (`~/.openclaw` + je workspace-directory).
-    - **Noodzakelijk extern:** berichten die je naar modelproviders (Anthropic/OpenAI/enz.) stuurt, gaan naar
-      hun API's, en chatplatforms (WhatsApp/Telegram/Slack/enz.) slaan berichtgegevens op hun
-      servers op.
-    - **Jij beheert de footprint:** met lokale modellen blijven prompts op je machine, maar channelverkeer
-      gaat nog steeds via de servers van het channel.
+    - **Standaard lokaal**: sessies, geheugenbestanden, configuratie en werkruimte staan op de Gateway-host (`~/.openclaw` plus je werkruimtemap).
+    - **Noodzakelijkerwijs extern**: berichten die naar modelproviders (Anthropic/OpenAI/enz.) worden verzonden, gaan naar hun API's, en chatplatforms (Slack/Telegram/WhatsApp/enz.) slaan berichtgegevens op hun servers op.
+    - **Je bepaalt zelf de omvang**: lokale modellen houden prompts op je computer, maar kanaalverkeer loopt nog steeds via de servers van het kanaal.
 
-    Gerelateerd: [Agent-workspace](/nl/concepts/agent-workspace), [Memory](/nl/concepts/memory).
+    Gerelateerd: [Agentwerkruimte](/nl/concepts/agent-workspace), [Geheugen](/nl/concepts/memory).
 
   </Accordion>
 
   <Accordion title="Waar slaat OpenClaw zijn gegevens op?">
     Alles staat onder `$OPENCLAW_STATE_DIR` (standaard: `~/.openclaw`):
 
-    | Pad                                                             | Doel                                                               |
-    | --------------------------------------------------------------- | ------------------------------------------------------------------ |
-    | `$OPENCLAW_STATE_DIR/openclaw.json`                             | Hoofdconfiguratie (JSON5)                                          |
-    | `$OPENCLAW_STATE_DIR/credentials/oauth.json`                    | Verouderde OAuth-import (bij eerste gebruik gekopieerd naar auth-profielen) |
-    | `$OPENCLAW_STATE_DIR/agents/<agentId>/agent/auth-profiles.json` | Auth-profielen (OAuth, API-sleutels en optionele `keyRef`/`tokenRef`) |
-    | `$OPENCLAW_STATE_DIR/secrets.json`                              | Optionele bestandsgebaseerde geheime payload voor `file` SecretRef-providers |
-    | `$OPENCLAW_STATE_DIR/agents/<agentId>/agent/auth.json`          | Verouderd compatibiliteitsbestand (statische `api_key`-vermeldingen opgeschoond) |
-    | `$OPENCLAW_STATE_DIR/credentials/`                              | Providerstatus (bijv. `whatsapp/<accountId>/creds.json`)           |
-    | `$OPENCLAW_STATE_DIR/agents/`                                   | Status per agent (agentDir + sessies)                              |
-    | `$OPENCLAW_STATE_DIR/agents/<agentId>/sessions/`                | Gespreksgeschiedenis en status (per agent)                         |
-    | `$OPENCLAW_STATE_DIR/agents/<agentId>/sessions/sessions.json`   | Sessiemetadata (per agent)                                         |
+    | Pad                                                                | Doel                                                               |
+    | ------------------------------------------------------------------ | ------------------------------------------------------------------ |
+    | `$OPENCLAW_STATE_DIR/openclaw.json`                                 | Hoofdconfiguratie (JSON5)                                          |
+    | `$OPENCLAW_STATE_DIR/credentials/oauth.json`                        | Verouderde OAuth-import (bij eerste gebruik naar authenticatieprofielen gekopieerd) |
+    | `$OPENCLAW_STATE_DIR/agents/<agentId>/agent/auth-profiles.json`     | Authenticatieprofielen (OAuth, API-sleutels, optioneel `keyRef`/`tokenRef`) |
+    | `$OPENCLAW_STATE_DIR/secrets.json`                                  | Optionele, in een bestand opgeslagen geheime payload voor `file` SecretRef-providers |
+    | `$OPENCLAW_STATE_DIR/agents/<agentId>/agent/auth.json`              | Verouderd compatibiliteitsbestand (statische `api_key`-vermeldingen verwijderd) |
+    | `$OPENCLAW_STATE_DIR/credentials/`                                  | Providerstatus (bijvoorbeeld `whatsapp/<accountId>/creds.json`)                    |
+    | `$OPENCLAW_STATE_DIR/agents/`                                       | Status per agent (agentDir plus verouderde/gearchiveerde sessieartefacten) |
+    | `$OPENCLAW_STATE_DIR/agents/<agentId>/agent/openclaw-agent.sqlite`  | SQLite-status per agent, inclusief sessierijen en transcripties    |
+    | `$OPENCLAW_STATE_DIR/agents/<agentId>/sessions/`                    | Bronnen voor migratie van verouderde sessies en archief-/ondersteuningsartefacten |
 
-    Verouderd pad voor één agent: `~/.openclaw/agent/*` (gemigreerd door `openclaw doctor`).
+    Het verouderde pad voor één agent `~/.openclaw/agent/*` wordt gemigreerd door `openclaw doctor`.
 
-    Je **workspace** (AGENTS.md, memory-bestanden, skills, enz.) staat apart en wordt geconfigureerd via `agents.defaults.workspace` (standaard: `~/.openclaw/workspace`).
+    Je **werkruimte** (AGENTS.md, geheugenbestanden, skills enz.) staat hiervan los en wordt geconfigureerd via `agents.defaults.workspace` (standaard: `~/.openclaw/workspace`).
 
   </Accordion>
 
   <Accordion title="Waar moeten AGENTS.md / SOUL.md / USER.md / MEMORY.md staan?">
-    Deze bestanden staan in de **agent-workspace**, niet in `~/.openclaw`.
+    Deze staan in de **agentwerkruimte**, niet in `~/.openclaw`.
 
-    - **Workspace (per agent)**: `AGENTS.md`, `SOUL.md`, `IDENTITY.md`, `USER.md`,
-      `MEMORY.md`, `memory/YYYY-MM-DD.md`, optioneel `HEARTBEAT.md`.
-      De lowercase root `memory.md` is alleen verouderde reparatie-invoer; `openclaw doctor --fix`
-      kan het samenvoegen in `MEMORY.md` wanneer beide bestanden bestaan.
-    - **Statusdirectory (`~/.openclaw`)**: configuratie, channel-/providerstatus, auth-profielen, sessies, logs,
-      en gedeelde Skills (`~/.openclaw/skills`).
+    - **Werkruimte (per agent)**: `AGENTS.md`, `SOUL.md`, `IDENTITY.md`, `USER.md`, `MEMORY.md`, `memory/YYYY-MM-DD.md`, optioneel `HEARTBEAT.md`. Het hoofdbestand `memory.md` in kleine letters dient alleen als invoer voor herstel van verouderde gegevens; `openclaw doctor --fix` kan het samenvoegen met `MEMORY.md` wanneer beide bestaan.
+    - **Statusmap (`~/.openclaw`)**: configuratie, kanaal-/providerstatus, authenticatieprofielen, sessies, logboeken, gedeelde skills (`~/.openclaw/skills`).
 
-    De standaardworkspace is `~/.openclaw/workspace`, configureerbaar via:
+    De standaardwerkruimte is `~/.openclaw/workspace` en kan worden geconfigureerd:
 
     ```json5
     {
@@ -628,23 +495,18 @@ staat in de [FAQ voor eerste gebruik](/nl/help/faq-first-run).
     }
     ```
 
-    Als de bot na een herstart "vergeet", bevestig dan dat de Gateway bij elke start dezelfde
-    workspace gebruikt (en onthoud: externe modus gebruikt de **workspace van de gateway-host**,
-    niet je lokale laptop).
+    Als de bot na een herstart dingen „vergeet”, controleer dan of de Gateway bij elke start dezelfde werkruimte gebruikt (in externe modus wordt de werkruimte van de **Gateway-host** gebruikt, niet die van je lokale laptop).
 
-    Tip: als je duurzaam gedrag of een duurzame voorkeur wilt, vraag de bot dan om het **naar
-    AGENTS.md of MEMORY.md te schrijven** in plaats van te vertrouwen op chatgeschiedenis.
+    Tip: vraag de bot om duurzaam gedrag of een voorkeur **in AGENTS.md of MEMORY.md te schrijven** in plaats van op de chatgeschiedenis te vertrouwen.
 
-    Zie [Agent-workspace](/nl/concepts/agent-workspace) en [Memory](/nl/concepts/memory).
+    Zie [Agentwerkruimte](/nl/concepts/agent-workspace) en [Geheugen](/nl/concepts/memory).
 
   </Accordion>
 
   <Accordion title="Kan ik SOUL.md groter maken?">
-    Ja. `SOUL.md` is een van de workspace-bootstrapbestanden die in de
-    agentcontext worden geïnjecteerd. De standaard injectielimiet per bestand is `20000` tekens,
-    en het totale bootstrapbudget over bestanden heen is `60000` tekens.
+    Ja. `SOUL.md` is een van de bootstrapbestanden in de werkruimte die in de agentcontext worden ingevoegd. De standaardlimiet voor invoeging per bestand is `20000` tekens; het totale bootstrapbudget voor alle bestanden is `60000` tekens.
 
-    Wijzig de gedeelde standaardwaarden in je OpenClaw-configuratie:
+    Wijzig de gedeelde standaardwaarden:
 
     ```json5
     {
@@ -657,57 +519,29 @@ staat in de [FAQ voor eerste gebruik](/nl/help/faq-first-run).
     }
     ```
 
-    Of overschrijf één agent:
+    Of overschrijf één agent onder `agents.list[].bootstrapMaxChars` / `bootstrapTotalMaxChars`.
 
-    ```json5
-    {
-      agents: {
-        list: [
-          {
-            id: "main",
-            bootstrapMaxChars: 50000,
-            bootstrapTotalMaxChars: 300000,
-          },
-        ],
-      },
-    }
-    ```
-
-    Gebruik `/context` om ruwe versus geïnjecteerde groottes te controleren en of er afkapping heeft plaatsgevonden.
-    Houd `SOUL.md` gericht op stem, houding en persoonlijkheid; zet operationele regels
-    in `AGENTS.md` en duurzame feiten in memory.
+    Gebruik `/context` om de onbewerkte en ingevoegde groottes te controleren en na te gaan of afkapping heeft plaatsgevonden. Houd `SOUL.md` gericht op stem, houding en persoonlijkheid; plaats werkingsregels in `AGENTS.md` en duurzame feiten in het geheugen.
 
     Zie [Context](/nl/concepts/context) en [Agentconfiguratie](/nl/gateway/config-agents).
 
   </Accordion>
 
   <Accordion title="Aanbevolen back-upstrategie">
-    Zet je **agent-workspace** in een **private** git-repo en maak er ergens
-    privé een back-up van (bijvoorbeeld GitHub private). Dit legt memory + AGENTS/SOUL/USER-
-    bestanden vast, en laat je later de "geest" van de assistent herstellen.
+    Plaats je **agentwerkruimte** in een **privé**-git-repository en maak ergens privé een back-up (bijvoorbeeld op GitHub als privé-repository). Hiermee leg je het geheugen plus de AGENTS-/SOUL-/USER-bestanden vast en kun je de „geest” van de assistent later herstellen.
 
-    Commit **niets** onder `~/.openclaw` (referenties, sessies, tokens of versleutelde geheime payloads).
-    Als je een volledig herstel nodig hebt, maak dan afzonderlijk een back-up van zowel de workspace als de statusdirectory
-    (zie de migratievraag hierboven).
+    Commit **niets** onder `~/.openclaw` (referenties, sessies, tokens, versleutelde geheime payloads). Maak voor een volledig herstel afzonderlijke back-ups van de werkruimte en de statusmap.
 
-    Documentatie: [Agent-workspace](/nl/concepts/agent-workspace).
+    Documentatie: [Agentwerkruimte](/nl/concepts/agent-workspace).
 
   </Accordion>
 
   <Accordion title="Hoe verwijder ik OpenClaw volledig?">
-    Zie de specifieke handleiding: [Verwijderen](/nl/install/uninstall).
+    Zie [Verwijderen](/nl/install/uninstall).
   </Accordion>
 
-  <Accordion title="Kunnen agents buiten de workspace werken?">
-    Ja. De workspace is de **standaard cwd** en memory-anker, geen harde sandbox.
-    Relatieve paden worden binnen de workspace opgelost, maar absolute paden kunnen andere
-    hostlocaties openen tenzij sandboxing is ingeschakeld. Als je isolatie nodig hebt, gebruik dan
-    [`agents.defaults.sandbox`](/nl/gateway/sandboxing) of sandboxinstellingen per agent. Als je
-    wilt dat een repo de standaardwerkdirectory is, wijs de `workspace` van die agent
-    naar de repo-root. De OpenClaw-repo is alleen broncode; houd de
-    workspace apart tenzij je bewust wilt dat de agent erin werkt.
-
-    Voorbeeld (repo als standaard cwd):
+  <Accordion title="Kunnen agents buiten de werkruimte werken?">
+    Ja. De werkruimte is de **standaard-cwd** en het geheugenanker, geen harde sandbox. Relatieve paden worden binnen de werkruimte omgezet; absolute paden kunnen andere locaties op de host benaderen, tenzij sandboxing is ingeschakeld. Gebruik voor isolatie [`agents.defaults.sandbox`](/nl/gateway/sandboxing) of sandboxinstellingen per agent. Om een repository de standaardwerkmap te maken, wijs je `workspace` van die agent naar de hoofdmap van de repository. De OpenClaw-repository zelf is slechts broncode, dus houd de werkruimte apart, tenzij je bewust wilt dat de agent erin werkt.
 
     ```json5
     {
@@ -722,29 +556,19 @@ staat in de [FAQ voor eerste gebruik](/nl/help/faq-first-run).
   </Accordion>
 
   <Accordion title="Externe modus: waar staat de sessieopslag?">
-    Sessiestatus is eigendom van de **gateway-host**. Als je in externe modus werkt, staat de sessieopslag die voor jou relevant is op de externe machine, niet op je lokale laptop. Zie [Sessiebeheer](/nl/concepts/session).
+    De sessiestatus is eigendom van de **Gateway-host**. In externe modus staat de relevante sessieopslag op de externe machine, niet op je lokale laptop. Zie [Sessiebeheer](/nl/concepts/session).
   </Accordion>
 </AccordionGroup>
 
-## Basisconfiguratie
+## Basisprincipes van configuratie
 
 <AccordionGroup>
-  <Accordion title="Welk formaat heeft de configuratie? Waar staat die?">
-    OpenClaw leest een optionele **JSON5**-configuratie uit `$OPENCLAW_CONFIG_PATH` (standaard: `~/.openclaw/openclaw.json`):
-
-    ```
-    $OPENCLAW_CONFIG_PATH
-    ```
-
-    Als het bestand ontbreekt, gebruikt het redelijk veilige standaardwaarden (waaronder een standaardworkspace van `~/.openclaw/workspace`).
-
+  <Accordion title="Welke indeling gebruikt de configuratie? Waar staat deze?">
+    OpenClaw leest een optionele **JSON5**-configuratie uit `$OPENCLAW_CONFIG_PATH` (standaard: `~/.openclaw/openclaw.json`). Als het bestand ontbreekt, gebruikt het enigszins veilige standaardwaarden, waaronder een standaardwerkruimte van `~/.openclaw/workspace`.
   </Accordion>
 
-  <Accordion title='Ik heb gateway.bind ingesteld op "lan" (of "tailnet") en nu luistert er niets / de UI zegt unauthorized'>
-    Niet-loopback-binds **vereisen een geldig gateway-auth-pad**. In de praktijk betekent dat:
-
-    - shared-secret-auth: token of wachtwoord
-    - `gateway.auth.mode: "trusted-proxy"` achter een correct geconfigureerde identity-aware reverse proxy
+  <Accordion title='Ik heb gateway.bind ingesteld op "lan" (of "tailnet") en nu luistert er niets / zegt de gebruikersinterface dat ik niet geautoriseerd ben'>
+    Bindingen buiten de loopback **vereisen een geldig Gateway-authenticatiepad**: authenticatie met een gedeeld geheim (token of wachtwoord), of `gateway.auth.mode: "trusted-proxy"` achter een correct geconfigureerde identiteitsbewuste reverse proxy.
 
     ```json5
     {
@@ -758,34 +582,27 @@ staat in de [FAQ voor eerste gebruik](/nl/help/faq-first-run).
     }
     ```
 
-    Opmerkingen:
-
-    - `gateway.remote.token` / `.password` schakelen lokale gateway-auth **niet** zelfstandig in.
-    - Lokale call-paden kunnen `gateway.remote.*` alleen als fallback gebruiken wanneer `gateway.auth.*` niet is ingesteld.
-    - Stel voor wachtwoordauth in plaats daarvan `gateway.auth.mode: "password"` plus `gateway.auth.password` (of `OPENCLAW_GATEWAY_PASSWORD`) in.
-    - Als `gateway.auth.token` / `gateway.auth.password` expliciet via SecretRef is geconfigureerd en niet kan worden opgelost, faalt resolutie gesloten (geen remote fallback die dit maskeert).
-    - Shared-secret Control UI-setups authenticeren via `connect.params.auth.token` of `connect.params.auth.password` (opgeslagen in app-/UI-instellingen). Modi met identiteit, zoals Tailscale Serve of `trusted-proxy`, gebruiken in plaats daarvan requestheaders. Vermijd gedeelde geheimen in URL's.
-    - Met `gateway.auth.mode: "trusted-proxy"` vereisen same-host loopback reverse proxies expliciet `gateway.auth.trustedProxy.allowLoopback = true` en een loopback-vermelding in `gateway.trustedProxies`.
+    - `gateway.remote.token` / `.password` schakelen lokale Gateway-authenticatie **niet** zelfstandig in; lokale aanroeppaden kunnen `gateway.remote.*` alleen als terugvaloptie gebruiken wanneer `gateway.auth.*` niet is ingesteld.
+    - Stel voor wachtwoordauthenticatie `gateway.auth.mode: "password"` plus `gateway.auth.password` (of `OPENCLAW_GATEWAY_PASSWORD`) in.
+    - Als `gateway.auth.token` / `.password` expliciet via SecretRef is geconfigureerd en niet kan worden opgelost, mislukt de oplossing gesloten (zonder maskerende externe terugvaloptie).
+    - Control UI-configuraties met een gedeeld geheim authenticeren via `connect.params.auth.token` of `connect.params.auth.password` (opgeslagen in de app-/UI-instellingen). Modi met identiteit, zoals Tailscale Serve of `trusted-proxy`, gebruiken in plaats daarvan aanvraagheaders. Plaats geen gedeelde geheimen in URL's.
+    - Met `gateway.auth.mode: "trusted-proxy"` vereisen loopback-reverse-proxy's op dezelfde host expliciet `gateway.auth.trustedProxy.allowLoopback = true` en een loopbackvermelding in `gateway.trustedProxies`.
 
   </Accordion>
 
   <Accordion title="Waarom heb ik nu een token nodig op localhost?">
-    OpenClaw dwingt standaard gateway-auth af, inclusief loopback. In het normale standaardpad betekent dat tokenauth: als er geen expliciet auth-pad is geconfigureerd, wordt gateway-opstart opgelost naar tokenmodus en wordt er voor die opstart een runtime-only token gegenereerd, dus **lokale WS-clients moeten authenticeren**. Configureer `gateway.auth.token`, `gateway.auth.password`, `OPENCLAW_GATEWAY_TOKEN` of `OPENCLAW_GATEWAY_PASSWORD` expliciet wanneer clients een stabiel geheim nodig hebben over herstarts heen. Dit blokkeert andere lokale processen om de Gateway aan te roepen.
+    OpenClaw dwingt standaard Gateway-authenticatie af, ook voor loopback. Als er geen expliciet authenticatiepad is geconfigureerd, kiest het opstartproces de tokenmodus en genereert het alleen voor die opstart een runtime-token, zodat lokale WS-clients zich moeten authenticeren. Dit voorkomt dat andere lokale processen de Gateway aanroepen.
 
-    Als je een ander authenticatiepad verkiest, kun je expliciet de wachtwoordmodus kiezen (of, voor identiteitsbewuste reverse proxies, `trusted-proxy`). Als je **echt** open loopback wilt, stel dan `gateway.auth.mode: "none"` expliciet in je configuratie in. Doctor kan op elk moment een token voor je genereren: `openclaw doctor --generate-gateway-token`.
+    Configureer `gateway.auth.token`, `gateway.auth.password`, `OPENCLAW_GATEWAY_TOKEN` of `OPENCLAW_GATEWAY_PASSWORD` expliciet wanneer clients een stabiel geheim nodig hebben dat herstarts overleeft. Je kunt ook de wachtwoordmodus kiezen, of `trusted-proxy` voor identiteitsbewuste reverse proxy's. Stel voor open loopback `gateway.auth.mode: "none"` expliciet in. `openclaw doctor --generate-gateway-token` genereert op elk gewenst moment een token.
 
   </Accordion>
 
-  <Accordion title="Moet ik herstarten nadat ik de configuratie heb gewijzigd?">
-    De Gateway bewaakt de configuratie en ondersteunt hot-reload:
-
-    - `gateway.reload.mode: "hybrid"` (standaard): veilige wijzigingen direct toepassen, herstarten voor kritieke wijzigingen
-    - `hot`, `restart`, `off` worden ook ondersteund
-
+  <Accordion title="Moet ik opnieuw opstarten nadat ik de configuratie heb gewijzigd?">
+    De Gateway bewaakt de configuratie en ondersteunt hot-reload: `gateway.reload.mode: "hybrid"` (standaard) past veilige wijzigingen direct toe en start opnieuw op bij kritieke wijzigingen. `hot`, `restart` en `off` worden ook ondersteund. De meeste wijzigingen aan `tools.*`, het beleid van `agents.*`, `session.*` en `messages.*` worden onmiddellijk toegepast zonder enige herlaadactie; wijzigingen aan de binding/poort van `gateway.*` vereisen een herstart.
   </Accordion>
 
   <Accordion title="Hoe schakel ik grappige CLI-taglines uit?">
-    Stel `cli.banner.taglineMode` in de configuratie in:
+    Stel `cli.banner.taglineMode` in:
 
     ```json5
     {
@@ -797,36 +614,34 @@ staat in de [FAQ voor eerste gebruik](/nl/help/faq-first-run).
     }
     ```
 
-    - `off`: verbergt de taglinetekst maar behoudt de bannertitel/versieregel.
-    - `default`: gebruikt telkens `All your chats, one OpenClaw.`.
-    - `random`: roterende grappige/seizoensgebonden taglines (standaardgedrag).
-    - Als je helemaal geen banner wilt, stel dan env `OPENCLAW_HIDE_BANNER=1` in.
+    - `off`: verbergt de taglinetekst, maar behoudt de titel-/versieregel van de banner.
+    - `default`: gebruikt altijd `All your chats, one OpenClaw.`.
+    - `random`: wisselende grappige/seizoensgebonden taglines (standaardgedrag).
+    - Stel de omgevingsvariabele `OPENCLAW_HIDE_BANNER=1` in om helemaal geen banner weer te geven.
 
   </Accordion>
 
-  <Accordion title="Hoe schakel ik zoeken op het web (en web ophalen) in?">
-    `web_fetch` werkt zonder API-sleutel. `web_search` hangt af van je geselecteerde
-    provider:
+  <Accordion title="Hoe schakel ik zoeken op het web (en ophalen van het web) in?">
+    `web_fetch` werkt zonder API-sleutel. `web_search` is afhankelijk van je geselecteerde provider:
 
-    - API-ondersteunde providers zoals Brave, Exa, Firecrawl, Gemini, Kimi, MiniMax Search, Perplexity en Tavily vereisen hun normale API-sleutelinstelling.
-    - Grok kan xAI OAuth uit modelauthenticatie hergebruiken, of terugvallen op `XAI_API_KEY` / pluginconfiguratie voor webzoekopdrachten.
-    - Ollama Web Search vereist geen sleutel, maar gebruikt je geconfigureerde Ollama-host en vereist `ollama signin`.
-    - DuckDuckGo vereist geen sleutel, maar is een onofficiële HTML-gebaseerde integratie.
-    - SearXNG vereist geen sleutel/wordt zelf gehost; configureer `SEARXNG_BASE_URL` of `plugins.entries.searxng.config.webSearch.baseUrl`.
+    | Provider | Zonder sleutel | Omgevingsvariabele(n) |
+    | --- | --- | --- |
+    | Brave | Nee | `BRAVE_API_KEY` |
+    | DuckDuckGo | Ja (onofficieel, op HTML gebaseerd) | - |
+    | Exa | Nee | `EXA_API_KEY` |
+    | Firecrawl | Nee | `FIRECRAWL_API_KEY` |
+    | Gemini | Nee | `GEMINI_API_KEY` |
+    | Grok | Nee (xAI OAuth of sleutel) | `XAI_API_KEY` |
+    | Kimi | Nee | `KIMI_API_KEY` of `MOONSHOT_API_KEY` |
+    | MiniMax Search | Nee | `MINIMAX_CODE_PLAN_KEY`, `MINIMAX_CODING_API_KEY` of `MINIMAX_API_KEY` |
+    | Ollama Web Search | Ja (vereist `ollama signin`) | - |
+    | Perplexity | Nee | `PERPLEXITY_API_KEY` of `OPENROUTER_API_KEY` |
+    | SearXNG | Ja (zelf gehost) | `SEARXNG_BASE_URL` |
+    | Tavily | Nee | `TAVILY_API_KEY` |
 
-    **Aanbevolen:** voer `openclaw configure --section web` uit en kies een provider.
-    Omgevingsalternatieven:
+    Grok kan ook xAI OAuth van modelauthenticatie hergebruiken (`openclaw onboard --auth-choice xai-oauth`).
 
-    - Brave: `BRAVE_API_KEY`
-    - Exa: `EXA_API_KEY`
-    - Firecrawl: `FIRECRAWL_API_KEY`
-    - Gemini: `GEMINI_API_KEY`
-    - Grok: xAI OAuth, `XAI_API_KEY`
-    - Kimi: `KIMI_API_KEY` of `MOONSHOT_API_KEY`
-    - MiniMax Search: `MINIMAX_CODE_PLAN_KEY`, `MINIMAX_CODING_API_KEY` of `MINIMAX_API_KEY`
-    - Perplexity: `PERPLEXITY_API_KEY` of `OPENROUTER_API_KEY`
-    - SearXNG: `SEARXNG_BASE_URL`
-    - Tavily: `TAVILY_API_KEY`
+    **Aanbevolen**: `openclaw configure --section web` en kies een provider.
 
     ```json5
     {
@@ -840,48 +655,43 @@ staat in de [FAQ voor eerste gebruik](/nl/help/faq-first-run).
             },
           },
         },
-        },
-        tools: {
-          web: {
-            search: {
-              enabled: true,
-              provider: "brave",
-              maxResults: 5,
-            },
-            fetch: {
-              enabled: true,
-              provider: "firecrawl", // optional; omit for auto-detect
-            },
+      },
+      tools: {
+        web: {
+          search: {
+            enabled: true,
+            provider: "brave",
+            maxResults: 5,
+          },
+          fetch: {
+            enabled: true,
+            provider: "firecrawl", // optioneel; weglaten voor automatische detectie
           },
         },
+      },
     }
     ```
 
-    Providerspecifieke configuratie voor webzoekopdrachten staat nu onder `plugins.entries.<plugin>.config.webSearch.*`.
-    Verouderde providerpaden `tools.web.search.*` worden tijdelijk nog geladen voor compatibiliteit, maar mogen niet worden gebruikt voor nieuwe configuraties.
-    Firecrawl-fallbackconfiguratie voor web-fetch staat onder `plugins.entries.firecrawl.config.webFetch.*`.
+    Providerspecifieke configuratie voor zoeken op het web staat onder `plugins.entries.<plugin>.config.webSearch.*`. Verouderde providerpaden van `tools.web.search.*` worden voor compatibiliteit nog geladen, maar mogen niet in nieuwe configuraties worden gebruikt. De fallbackconfiguratie voor webophaling van Firecrawl staat onder `plugins.entries.firecrawl.config.webFetch.*`.
 
-    Opmerkingen:
+    - Toelatingslijsten: voeg `web_search`/`web_fetch`/`x_search` toe, of `group:web` voor alle drie.
+    - `web_fetch` is standaard ingeschakeld.
+    - Als `tools.web.fetch.provider` wordt weggelaten, detecteert OpenClaw automatisch de eerste beschikbare fallbackprovider voor ophalen op basis van de beschikbare inloggegevens; de officiële Firecrawl-plugin biedt die fallback.
+    - Daemons lezen omgevingsvariabelen uit `~/.openclaw/.env` (of de serviceomgeving).
 
-    - Als je allowlists gebruikt, voeg dan `web_search`/`web_fetch`/`x_search` of `group:web` toe.
-    - `web_fetch` is standaard ingeschakeld (tenzij expliciet uitgeschakeld).
-    - Als `tools.web.fetch.provider` wordt weggelaten, detecteert OpenClaw automatisch de eerste beschikbare fallbackprovider voor ophalen uit beschikbare inloggegevens. De officiële Firecrawl-plugin levert die fallback.
-    - Daemons lezen env-vars uit `~/.openclaw/.env` (of de serviceomgeving).
-
-    Docs: [Webtools](/nl/tools/web).
+    Documentatie: [Webtools](/nl/tools/web).
 
   </Accordion>
 
-  <Accordion title="config.apply heeft mijn configuratie gewist. Hoe herstel ik dit en voorkom ik het?">
-    `config.apply` vervangt de **volledige configuratie**. Als je een gedeeltelijk object verzendt, wordt al het
-    andere verwijderd.
+  <Accordion title="config.apply heeft mijn configuratie gewist. Hoe herstel en voorkom ik dit?">
+    `config.apply` vervangt de **volledige configuratie**; een gedeeltelijk object verwijdert al het overige.
 
-    De huidige OpenClaw beschermt tegen veel onbedoelde overschrijvingen:
+    De huidige versie van OpenClaw beschermt tegen de meeste onbedoelde overschrijvingen:
 
-    - Configuratieschrijfacties die eigendom zijn van OpenClaw valideren de volledige configuratie na de wijziging voordat er wordt geschreven.
-    - Ongeldige of destructieve schrijfacties die eigendom zijn van OpenClaw worden geweigerd en opgeslagen als `openclaw.json.rejected.*`.
-    - Als een directe bewerking het opstarten of hot reload verbreekt, faalt Gateway gesloten of wordt de reload overgeslagen; `openclaw.json` wordt niet herschreven.
-    - `openclaw doctor --fix` is eigenaar van herstel en kan de laatst bekende werkende configuratie herstellen terwijl het geweigerde bestand wordt opgeslagen als `openclaw.json.clobbered.*`.
+    - Door OpenClaw beheerde configuratieschrijfbewerkingen valideren vóór het schrijven de volledige configuratie na de wijziging.
+    - Ongeldige of destructieve, door OpenClaw beheerde schrijfbewerkingen worden geweigerd en opgeslagen als `openclaw.json.rejected.*`.
+    - Een directe bewerking die het opstarten of dynamisch herladen verstoort, zorgt ervoor dat de Gateway veilig wordt afgesloten of het herladen overslaat; `openclaw.json` wordt niet herschreven.
+    - `openclaw doctor --fix` beheert het herstel, kan de laatst bekende werkende versie herstellen en slaat het geweigerde bestand op als `openclaw.json.clobbered.*`.
 
     Herstellen:
 
@@ -889,37 +699,30 @@ staat in de [FAQ voor eerste gebruik](/nl/help/faq-first-run).
     - Inspecteer de nieuwste `openclaw.json.clobbered.*` of `openclaw.json.rejected.*` naast de actieve configuratie.
     - Voer `openclaw config validate` en `openclaw doctor --fix` uit.
     - Kopieer alleen de bedoelde sleutels terug met `openclaw config set` of `config.patch`.
-    - Als je geen laatst bekende werkende configuratie of geweigerde payload hebt, herstel dan vanaf een back-up, of voer `openclaw doctor` opnieuw uit en configureer kanalen/modellen opnieuw.
-    - Als dit onverwacht was, dien dan een bug in en voeg je laatst bekende configuratie of een eventuele back-up toe.
-    - Een lokale coding agent kan vaak een werkende configuratie reconstrueren uit logs of geschiedenis.
+    - Geen laatst bekende werkende versie of geweigerde payload: herstel vanuit een back-up, of voer `openclaw doctor` opnieuw uit en configureer kanalen/modellen opnieuw.
+    - Onverwacht verlies: meld een bug met je laatst bekende configuratie of een back-up. Een lokale programmeeragent kan vaak een werkende configuratie reconstrueren op basis van logboeken of geschiedenis.
 
-    Voorkomen:
+    Voorkom dit: gebruik `openclaw config set` voor kleine wijzigingen, `openclaw configure` voor interactieve bewerkingen, `config.schema.lookup` om een onbekend pad te inspecteren (retourneert een oppervlakkig schemaknooppunt plus samenvattingen van directe onderliggende elementen) en `config.patch` voor gedeeltelijke RPC-bewerkingen. Reserveer `config.apply` voor het vervangen van de volledige configuratie. De agentgerichte runtimetool `gateway` weigert `tools.exec.ask` / `tools.exec.security` te herschrijven, zelfs via verouderde aliassen van `tools.bash.*`.
 
-    - Gebruik `openclaw config set` voor kleine wijzigingen.
-    - Gebruik `openclaw configure` voor interactieve bewerkingen.
-    - Gebruik eerst `config.schema.lookup` als je niet zeker bent van een exact pad of veldvorm; het retourneert een oppervlakkig schemaknooppunt plus directe samenvattingen van onderliggende elementen om verder door te klikken.
-    - Gebruik `config.patch` voor gedeeltelijke RPC-bewerkingen; gebruik `config.apply` alleen voor volledige configuratievervanging.
-    - Als je de agentgerichte `gateway`-tool vanuit een agent-run gebruikt, blijft die schrijfacties naar `tools.exec.ask` / `tools.exec.security` weigeren (inclusief verouderde `tools.bash.*`-aliassen die naar dezelfde beschermde exec-paden normaliseren).
-
-    Docs: [Configuratie](/nl/cli/config), [Configureren](/nl/cli/configure), [Gateway-probleemoplossing](/nl/gateway/troubleshooting#gateway-rejected-invalid-config), [Doctor](/nl/gateway/doctor).
+    Documentatie: [Configuratie](/nl/cli/config), [Configureren](/nl/cli/configure), [Problemen met de Gateway oplossen](/nl/gateway/troubleshooting#gateway-rejected-invalid-config), [Doctor](/nl/gateway/doctor).
 
   </Accordion>
 
-  <Accordion title="Hoe voer ik een centrale Gateway uit met gespecialiseerde workers op meerdere apparaten?">
-    Het gebruikelijke patroon is **één Gateway** (bijv. Raspberry Pi) plus **nodes** en **agents**:
+  <Accordion title="Hoe voer ik een centrale Gateway uit met gespecialiseerde werkers op verschillende apparaten?">
+    Gebruikelijk patroon: **één Gateway** (bijvoorbeeld een Raspberry Pi) plus **nodes** en **agents**.
 
-    - **Gateway (centraal):** beheert kanalen (Signal/WhatsApp), routering en sessies.
-    - **Nodes (apparaten):** Macs/iOS/Android verbinden als randapparaten en stellen lokale tools (`system.run`, `canvas`, `camera`) beschikbaar.
-    - **Agents (workers):** afzonderlijke breinen/werkruimten voor speciale rollen (bijv. "Hetzner ops", "Persoonlijke gegevens").
-    - **Sub-agents:** starten achtergrondwerk vanuit een hoofdagent wanneer je parallellisme wilt.
-    - **TUI:** verbind met de Gateway en wissel tussen agents/sessies.
+    - **Gateway (centraal)**: beheert kanalen (Signal/WhatsApp), routering en sessies.
+    - **Nodes (apparaten)**: Macs/iOS/Android maken als randapparaten verbinding en stellen lokale tools beschikbaar (`system.run`, `canvas`, `camera`).
+    - **Agents (werkers)**: afzonderlijke breinen/werkruimten voor speciale rollen (bijvoorbeeld beheer versus persoonlijke gegevens).
+    - **Subagents**: starten achtergrondwerk vanuit een hoofdagent om parallel te werken.
+    - **TUI**: maakt verbinding met de Gateway en wisselt tussen agents/sessies.
 
-    Docs: [Nodes](/nl/nodes), [Externe toegang](/nl/gateway/remote), [Multi-agent-routering](/nl/concepts/multi-agent), [Sub-agents](/nl/tools/subagents), [TUI](/nl/web/tui).
+    Documentatie: [Nodes](/nl/nodes), [Externe toegang](/nl/gateway/remote), [Routering met meerdere agents](/nl/concepts/multi-agent), [Subagents](/nl/tools/subagents), [TUI](/nl/web/tui).
 
   </Accordion>
 
-  <Accordion title="Kan de OpenClaw-browser headless draaien?">
-    Ja. Het is een configuratieoptie:
+  <Accordion title="Kan de OpenClaw-browser headless worden uitgevoerd?">
+    Ja:
 
     ```json5
     {
@@ -932,19 +735,12 @@ staat in de [FAQ voor eerste gebruik](/nl/help/faq-first-run).
     }
     ```
 
-    Standaard is `false` (met zichtbaar venster). Headless triggert op sommige sites sneller antibotcontroles. Zie [Browser](/nl/tools/browser).
-
-    Headless gebruikt dezelfde **Chromium-engine** en werkt voor de meeste automatisering (formulieren, klikken, scraping, logins). De belangrijkste verschillen:
-
-    - Geen zichtbaar browservenster (gebruik screenshots als je visuals nodig hebt).
-    - Sommige sites zijn strenger over automatisering in headless-modus (CAPTCHA's, antibot).
-      X/Twitter blokkeert bijvoorbeeld vaak headless-sessies.
+    Standaard is `false` (met zichtbare interface). Headless activeert op sommige sites vaker antibotcontroles (X/Twitter blokkeert headless-sessies vaak). Het gebruikt dezelfde Chromium-engine en werkt voor de meeste automatisering; het belangrijkste verschil is dat er geen zichtbaar browservenster is (gebruik schermafbeeldingen voor visuele controle). Zie [Browser](/nl/tools/browser).
 
   </Accordion>
 
   <Accordion title="Hoe gebruik ik Brave voor browserbesturing?">
-    Stel `browser.executablePath` in op je Brave-binary (of een andere Chromium-gebaseerde browser) en herstart de Gateway.
-    Bekijk de volledige configuratievoorbeelden in [Browser](/nl/tools/browser#use-brave-or-another-chromium-based-browser).
+    Stel `browser.executablePath` in op je Brave-binaire bestand (of een andere op Chromium gebaseerde browser) en start de Gateway opnieuw. Zie [Browser](/nl/tools/browser#use-brave-or-another-chromium-based-browser).
   </Accordion>
 </AccordionGroup>
 
@@ -952,134 +748,104 @@ staat in de [FAQ voor eerste gebruik](/nl/help/faq-first-run).
 
 <AccordionGroup>
   <Accordion title="Hoe worden opdrachten doorgegeven tussen Telegram, de gateway en nodes?">
-    Telegram-berichten worden afgehandeld door de **gateway**. De gateway voert de agent uit en
-    roept pas daarna nodes aan via de **Gateway WebSocket** wanneer een nodetool nodig is:
+    Telegram-berichten worden verwerkt door de **gateway**, die de agent uitvoert en pas daarna nodes via de **Gateway WebSocket** aanroept wanneer een nodetool nodig is:
 
-    Telegram → Gateway → Agent → `node.*` → Node → Gateway → Telegram
+    Telegram -> Gateway -> Agent -> `node.*` -> Node -> Gateway -> Telegram
 
-    Nodes zien geen binnenkomend providerverkeer; ze ontvangen alleen node-RPC-aanroepen.
+    Nodes zien geen inkomend providerverkeer; ze ontvangen alleen RPC-aanroepen voor nodes.
 
   </Accordion>
 
-  <Accordion title="Hoe kan mijn agent toegang krijgen tot mijn computer als de Gateway extern wordt gehost?">
-    Kort antwoord: **koppel je computer als node**. De Gateway draait ergens anders, maar kan
-    `node.*`-tools (scherm, camera, systeem) op je lokale machine aanroepen via de Gateway WebSocket.
+  <Accordion title="Hoe krijgt mijn agent toegang tot mijn computer als de Gateway extern wordt gehost?">
+    Koppel je computer als een **node**. De Gateway draait elders, maar kan via de Gateway WebSocket tools van `node.*` (scherm, camera, systeem) op je lokale computer aanroepen.
 
-    Typische installatie:
-
-    1. Voer de Gateway uit op de altijd-aan host (VPS/thuisserver).
-    2. Plaats de Gateway-host + je computer op dezelfde tailnet.
-    3. Zorg dat de Gateway-WS bereikbaar is (tailnet-bind of SSH-tunnel).
-    4. Open de macOS-app lokaal en verbind in de modus **Extern via SSH** (of direct via tailnet)
-       zodat deze zich als node kan registreren.
-    5. Keur de node goed op de Gateway:
-
+    1. Voer de Gateway uit op de host die altijd aanstaat (VPS/thuisserver).
+    2. Plaats de Gateway-host en je computer op hetzelfde tailnet.
+    3. Zorg dat de Gateway-WS bereikbaar is (binding aan het tailnet of een SSH-tunnel).
+    4. Open de macOS-app lokaal en maak verbinding in de modus **Remote over SSH** (of rechtstreeks via het tailnet), zodat deze als node wordt geregistreerd.
+    5. Keur de node goed:
        ```bash
        openclaw devices list
        openclaw devices approve <requestId>
        ```
 
-    Er is geen afzonderlijke TCP-bridge vereist; nodes verbinden via de Gateway WebSocket.
+    Er is geen afzonderlijke TCP-bridge vereist; nodes maken verbinding via de Gateway WebSocket.
 
-    Beveiligingsherinnering: het koppelen van een macOS-node staat `system.run` toe op die machine. Koppel alleen
-    apparaten die je vertrouwt en bekijk [Beveiliging](/nl/gateway/security).
+    Beveiligingsherinnering: als je een macOS-node koppelt, wordt `system.run` op die computer toegestaan. Koppel alleen apparaten die je vertrouwt; bekijk [Beveiliging](/nl/gateway/security).
 
-    Docs: [Nodes](/nl/nodes), [Gateway-protocol](/nl/gateway/protocol), [macOS externe modus](/nl/platforms/mac/remote), [Beveiliging](/nl/gateway/security).
+    Documentatie: [Nodes](/nl/nodes), [Gateway-protocol](/nl/gateway/protocol), [Externe modus van macOS](/nl/platforms/mac/remote), [Beveiliging](/nl/gateway/security).
 
   </Accordion>
 
   <Accordion title="Tailscale is verbonden, maar ik krijg geen antwoorden. Wat nu?">
-    Controleer de basis:
+    Controleer de basiszaken:
 
-    - Gateway draait: `openclaw gateway status`
-    - Gateway-gezondheid: `openclaw status`
-    - Kanaalgezondheid: `openclaw channels status`
+    ```bash
+    openclaw gateway status
+    openclaw status
+    openclaw channels status
+    ```
 
-    Controleer daarna authenticatie en routering:
+    Controleer vervolgens de authenticatie en routering: als je Tailscale Serve gebruikt, controleer dan of `gateway.auth.allowTailscale` correct is ingesteld; als je verbinding maakt via een SSH-tunnel, controleer dan of de tunnel actief is en naar de juiste poort verwijst; controleer of de toelatingslijsten voor je privéberichten/groepen je account bevatten.
 
-    - Als je Tailscale Serve gebruikt, zorg dan dat `gateway.auth.allowTailscale` correct is ingesteld.
-    - Als je verbinding maakt via een SSH-tunnel, bevestig dan dat de lokale tunnel actief is en naar de juiste poort wijst.
-    - Bevestig dat je allowlists (DM of groep) je account bevatten.
-
-    Docs: [Tailscale](/nl/gateway/tailscale), [Externe toegang](/nl/gateway/remote), [Kanalen](/nl/channels).
+    Documentatie: [Tailscale](/nl/gateway/tailscale), [Externe toegang](/nl/gateway/remote), [Kanalen](/nl/channels).
 
   </Accordion>
 
-  <Accordion title="Kunnen twee OpenClaw-instanties met elkaar praten (lokaal + VPS)?">
-    Ja. Er is geen ingebouwde "bot-naar-bot"-bridge, maar je kunt dit op een paar
-    betrouwbare manieren verbinden:
+  <Accordion title="Kunnen twee OpenClaw-instanties met elkaar communiceren (lokaal + VPS)?">
+    Ja, hoewel er geen ingebouwde bot-naar-botbridge is.
 
-    **Eenvoudigst:** gebruik een normaal chatkanaal waartoe beide bots toegang hebben (Telegram/Slack/WhatsApp).
-    Laat Bot A een bericht naar Bot B sturen en laat Bot B vervolgens zoals gewoonlijk antwoorden.
+    **Eenvoudigste manier**: gebruik een normaal chatkanaal waartoe beide bots toegang hebben (Slack/Telegram/WhatsApp). Laat Bot A een bericht naar Bot B sturen en laat Bot B vervolgens zoals gebruikelijk antwoorden.
 
-    **CLI-bridge (generiek):** voer een script uit dat de andere Gateway aanroept met
-    `openclaw agent --message ... --deliver`, gericht op een chat waar de andere bot
-    luistert. Als één bot op een externe VPS staat, richt je CLI dan op die externe Gateway
-    via SSH/Tailscale (zie [Externe toegang](/nl/gateway/remote)).
-
-    Voorbeeldpatroon (uitvoeren vanaf een machine die de doel-Gateway kan bereiken):
+    **CLI-bridge (algemeen)**: voer een script uit dat de andere Gateway aanroept met `openclaw agent --message ... --deliver`, gericht op een chat waarin de andere bot luistert. Als één bot op een externe VPS staat, richt je CLI dan via SSH/Tailscale op die externe Gateway (zie [Externe toegang](/nl/gateway/remote)):
 
     ```bash
-    openclaw agent --message "Hello from local bot" --deliver --channel telegram --reply-to <chat-id>
+    openclaw agent --message "Hallo van de lokale bot" --deliver --channel telegram --reply-to <chat-id>
     ```
 
-    Tip: voeg een vangrail toe zodat de twee bots niet eindeloos blijven lussen (alleen vermeldingen, kanaal-
-    allowlists, of een regel "niet antwoorden op botberichten").
+    Voeg een beveiliging toe zodat de twee bots niet eindeloos blijven reageren (alleen bij vermeldingen, toelatingslijsten voor kanalen of een regel "niet reageren op botberichten").
 
-    Docs: [Externe toegang](/nl/gateway/remote), [Agent-CLI](/nl/cli/agent), [Agent verzenden](/nl/tools/agent-send).
+    Documentatie: [Externe toegang](/nl/gateway/remote), [Agent-CLI](/nl/cli/agent), [Verzenden door agents](/nl/tools/agent-send).
 
   </Accordion>
 
   <Accordion title="Heb ik afzonderlijke VPS'en nodig voor meerdere agents?">
-    Nee. Eén Gateway kan meerdere agents hosten, elk met een eigen werkruimte, modelstandaarden
-    en routering. Dat is de normale installatie en is veel goedkoper en eenvoudiger dan
-    één VPS per agent draaien.
-
-    Gebruik alleen afzonderlijke VPS'en wanneer je harde isolatie (beveiligingsgrenzen) of heel
-    verschillende configuraties nodig hebt die je niet wilt delen. Houd anders één Gateway aan en
-    gebruik meerdere agents of sub-agents.
-
+    Nee. Eén Gateway host meerdere agents, elk met een eigen werkruimte, standaardmodelinstellingen en routering. Dit is de normale configuratie en veel goedkoper/eenvoudiger dan één VPS per agent. Gebruik afzonderlijke VPS'en alleen voor strikte isolatie (beveiligingsgrenzen) of sterk verschillende configuraties die je niet wilt delen.
   </Accordion>
 
   <Accordion title="Heeft het voordelen om een node op mijn persoonlijke laptop te gebruiken in plaats van SSH vanaf een VPS?">
-    Ja - nodes zijn de eersteklas manier om je laptop vanaf een externe Gateway te bereiken, en ze
-    maken meer mogelijk dan shelltoegang. De Gateway draait op macOS/Linux (Windows via WSL2) en is
-    lichtgewicht (een kleine VPS of Raspberry Pi-klasse machine is prima; 4 GB RAM is ruim voldoende), dus een veelvoorkomende
-    opstelling is een altijd-aan host plus je laptop als node.
+    Ja: nodes zijn de primaire manier om je laptop vanaf een externe Gateway te bereiken en bieden meer dan alleen shelltoegang. De Gateway draait op macOS/Linux (Windows via WSL2) en is lichtgewicht (een kleine VPS of een apparaat in de klasse van Raspberry Pi volstaat; 4 GB RAM is ruim voldoende). Een gebruikelijke configuratie is daarom een host die altijd aanstaat, met je laptop als node.
 
-    - **Geen inkomende SSH vereist.** Nodes verbinden uitgaand met de Gateway WebSocket en gebruiken apparaatkoppeling.
-    - **Veiligere uitvoeringscontroles.** `system.run` wordt afgeschermd door node-allowlists/-goedkeuringen op die laptop.
-    - **Meer apparaathulpmiddelen.** Nodes bieden naast `system.run` ook `canvas`, `camera` en `screen`.
-    - **Lokale browserautomatisering.** Houd de Gateway op een VPS, maar voer Chrome lokaal uit via een node-host op de laptop, of koppel aan lokale Chrome op de host via Chrome MCP.
+    - **Geen inkomende SSH vereist** - nodes maken via apparaatkoppeling uitgaand verbinding met de Gateway WebSocket.
+    - **Veiligere uitvoeringscontroles** - `system.run` wordt op die laptop beperkt door toelatingslijsten/goedkeuringen voor nodes.
+    - **Meer apparaattools** - naast `system.run` stellen nodes ook `canvas`, `camera` en `screen` beschikbaar.
+    - **Lokale browserautomatisering** - houd de Gateway op een VPS, maar voer Chrome lokaal uit via een nodehost, of maak via Chrome MCP verbinding met lokale Chrome.
 
-    SSH is prima voor ad-hoc shelltoegang, maar nodes zijn eenvoudiger voor doorlopende agentworkflows en
-    apparaatautomatisering.
+    SSH is prima voor incidentele shelltoegang; nodes zijn eenvoudiger voor doorlopende agentworkflows en apparaatautomatisering.
 
-    Documentatie: [Nodes](/nl/nodes), [Nodes CLI](/nl/cli/nodes), [Browser](/nl/tools/browser).
+    Documentatie: [Nodes](/nl/nodes), [Nodes-CLI](/nl/cli/nodes), [Browser](/nl/tools/browser).
 
   </Accordion>
 
-  <Accordion title="Draaien nodes een gatewayservice?">
-    Nee. Er mag maar **één gateway** per host draaien, tenzij je bewust geïsoleerde profielen gebruikt (zie [Meerdere gateways](/nl/gateway/multiple-gateways)). Nodes zijn randapparaten die verbinding maken
-    met de gateway (iOS-/Android-nodes, of macOS-"nodemodus" in de menubalk-app). Zie [Node host CLI](/nl/cli/node) voor headless node-
-    hosts en CLI-besturing.
+  <Accordion title="Voeren nodes een gatewayservice uit?">
+    Nee. Er mag slechts **één gateway** per host draaien, tenzij je bewust geïsoleerde profielen uitvoert (zie [Meerdere gateways](/nl/gateway/multiple-gateways)). Nodes zijn randapparaten die verbinding maken met de gateway (iOS-/Android-nodes of de macOS-"nodemodus" in de menubalkapp). Zie [CLI voor nodehosts](/nl/cli/node) voor headless-nodehosts en CLI-besturing.
 
-    Een volledige herstart is vereist voor wijzigingen aan `gateway`, `discovery` en gehoste Plugin-oppervlakken.
+    Een volledige herstart is vereist voor `gateway`, `discovery` en wijzigingen aan door plugins gehoste oppervlakken.
 
   </Accordion>
 
-  <Accordion title="Is er een API-/RPC-manier om config toe te passen?">
-    Ja.
+  <Accordion title="Is er een API-/RPC-methode om configuratie toe te passen?">
+    Ja:
 
-    - `config.schema.lookup`: inspecteer één config-subtree met de oppervlakkige schema-node, overeenkomende UI-hint en directe onderliggende samenvattingen voordat je schrijft
-    - `config.get`: haal de huidige snapshot + hash op
-    - `config.patch`: veilige gedeeltelijke update (aanbevolen voor de meeste RPC-bewerkingen); herlaadt live wanneer mogelijk en herstart wanneer vereist
-    - `config.apply`: valideer + vervang de volledige config; herlaadt live wanneer mogelijk en herstart wanneer vereist
-    - De agentgerichte `gateway` runtime-tool weigert nog steeds `tools.exec.ask` / `tools.exec.security` te herschrijven; legacy `tools.bash.*`-aliassen normaliseren naar dezelfde beschermde exec-paden
+    - `config.schema.lookup`: inspecteer één configuratiesubstructuur met het bijbehorende oppervlakkige schemaknooppunt, de overeenkomende UI-hint en samenvattingen van directe onderliggende items voordat je schrijft.
+    - `config.get`: haal de huidige momentopname plus hash op.
+    - `config.patch`: veilige gedeeltelijke update (aanbevolen voor de meeste RPC-bewerkingen); herlaadt indien mogelijk direct en start opnieuw wanneer dat vereist is.
+    - `config.apply`: valideer en vervang de volledige configuratie; herlaadt indien mogelijk direct en start opnieuw wanneer dat vereist is.
+    - De agentgerichte runtime-tool `gateway` weigert nog steeds `tools.exec.ask` / `tools.exec.security` te herschrijven; verouderde aliassen voor `tools.bash.*` worden genormaliseerd naar dezelfde beschermde paden.
 
   </Accordion>
 
-  <Accordion title="Minimaal verstandige config voor een eerste installatie">
+  <Accordion title="Minimale, zinnige configuratie voor een eerste installatie">
     ```json5
     {
       agents: { defaults: { workspace: "~/.openclaw/workspace" } },
@@ -1087,84 +853,65 @@ staat in de [FAQ voor eerste gebruik](/nl/help/faq-first-run).
     }
     ```
 
-    Dit stelt je workspace in en beperkt wie de bot kan activeren.
+    Stelt je werkruimte in en beperkt wie de bot kan activeren.
 
   </Accordion>
 
-  <Accordion title="Hoe stel ik Tailscale in op een VPS en verbind ik vanaf mijn Mac?">
-    Minimale stappen:
-
-    1. **Installeer + log in op de VPS**
-
+  <Accordion title="Hoe stel ik Tailscale in op een VPS en maak ik verbinding vanaf mijn Mac?">
+    1. **Installeren + aanmelden op de VPS**:
        ```bash
        curl -fsSL https://tailscale.com/install.sh | sh
        sudo tailscale up
        ```
+    2. **Installeren + aanmelden op je Mac** met de Tailscale-app, op hetzelfde tailnet.
+    3. **Schakel MagicDNS in** in de Tailscale-beheerconsole, zodat de VPS een stabiele naam heeft.
+    4. **Gebruik de tailnet-hostnaam**: SSH `ssh user@your-vps.tailnet-xxxx.ts.net`; Gateway-WS `ws://your-vps.tailnet-xxxx.ts.net:18789`.
 
-    2. **Installeer + log in op je Mac**
-       - Gebruik de Tailscale-app en log in bij dezelfde tailnet.
-    3. **Schakel MagicDNS in (aanbevolen)**
-       - Schakel MagicDNS in de Tailscale-beheerconsole in zodat de VPS een stabiele naam heeft.
-    4. **Gebruik de tailnet-hostnaam**
-       - SSH: `ssh user@your-vps.tailnet-xxxx.ts.net`
-       - Gateway WS: `ws://your-vps.tailnet-xxxx.ts.net:18789`
-
-    Als je de Control UI zonder SSH wilt, gebruik dan Tailscale Serve op de VPS:
+    Gebruik Tailscale Serve op de VPS om de Control UI zonder SSH te gebruiken:
 
     ```bash
     openclaw gateway --tailscale serve
     ```
 
-    Dit houdt de gateway gebonden aan loopback en stelt HTTPS beschikbaar via Tailscale. Zie [Tailscale](/nl/gateway/tailscale).
+    Hierdoor blijft de Gateway gebonden aan loopback en wordt HTTPS via Tailscale beschikbaar gesteld. Zie [Tailscale](/nl/gateway/tailscale).
 
   </Accordion>
 
-  <Accordion title="Hoe verbind ik een Mac-node met een externe Gateway (Tailscale Serve)?">
-    Serve stelt de **Gateway Control UI + WS** beschikbaar. Nodes verbinden via hetzelfde Gateway WS-eindpunt.
+  <Accordion title="Hoe verbind ik een Mac-Node met een externe Gateway (Tailscale Serve)?">
+    Serve stelt de **Gateway Control UI + WS** beschikbaar; Nodes maken verbinding via hetzelfde Gateway-WS-eindpunt.
 
-    Aanbevolen opstelling:
-
-    1. **Zorg dat de VPS + Mac op dezelfde tailnet zitten**.
-    2. **Gebruik de macOS-app in externe modus** (SSH-doel kan de tailnet-hostnaam zijn).
-       De app tunnelt de Gateway-poort en verbindt als node.
-    3. **Keur de node goed** op de gateway:
-
+    1. Zorg ervoor dat de VPS en Mac zich op hetzelfde tailnet bevinden.
+    2. Gebruik de macOS-app in de modus Remote (het SSH-doel kan de tailnet-hostnaam zijn) - deze maakt een tunnel naar de Gateway-poort en maakt verbinding als Node.
+    3. Keur de Node goed:
        ```bash
        openclaw devices list
        openclaw devices approve <requestId>
        ```
 
-    Documentatie: [Gateway-protocol](/nl/gateway/protocol), [Discovery](/nl/gateway/discovery), [externe macOS-modus](/nl/platforms/mac/remote).
+    Documentatie: [Gateway-protocol](/nl/gateway/protocol), [Detectie](/nl/gateway/discovery), [externe modus van macOS](/nl/platforms/mac/remote).
 
   </Accordion>
 
-  <Accordion title="Moet ik op een tweede laptop installeren of gewoon een node toevoegen?">
-    Als je alleen **lokale hulpmiddelen** (screen/camera/exec) op de tweede laptop nodig hebt, voeg die dan toe als
-    **node**. Zo behoud je één Gateway en voorkom je dubbele config. Lokale node-tools zijn
-    momenteel alleen voor macOS, maar we zijn van plan ze uit te breiden naar andere besturingssystemen.
+  <Accordion title="Moet ik OpenClaw op een tweede laptop installeren of gewoon een Node toevoegen?">
+    Voeg de tweede laptop voor **uitsluitend lokale tools** (scherm/camera/uitvoering) toe als **Node** - één Gateway, zonder dubbele configuratie. Lokale Node-tools zijn momenteel alleen beschikbaar voor macOS. Installeer alleen een tweede Gateway voor **strikte isolatie** of twee volledig afzonderlijke bots.
 
-    Installeer alleen een tweede Gateway wanneer je **harde isolatie** of twee volledig aparte bots nodig hebt.
-
-    Documentatie: [Nodes](/nl/nodes), [Nodes CLI](/nl/cli/nodes), [Meerdere gateways](/nl/gateway/multiple-gateways).
+    Documentatie: [Nodes](/nl/nodes), [Nodes-CLI](/nl/cli/nodes), [Meerdere Gateways](/nl/gateway/multiple-gateways).
 
   </Accordion>
 </AccordionGroup>
 
-## Env vars en .env laden
+## Omgevingsvariabelen en het laden van .env
 
 <AccordionGroup>
   <Accordion title="Hoe laadt OpenClaw omgevingsvariabelen?">
-    OpenClaw leest env vars uit het bovenliggende proces (shell, launchd/systemd, CI, enz.) en laadt daarnaast:
+    OpenClaw leest omgevingsvariabelen uit het bovenliggende proces (shell, launchd/systemd, CI enzovoort) en laadt daarnaast:
 
-    - `.env` uit de huidige werkdirectory
-    - een globale fallback-`.env` uit `~/.openclaw/.env` (ook bekend als `$OPENCLAW_STATE_DIR/.env`)
+    - `.env` uit de huidige werkmap.
+    - een globale terugvaloptie `.env` uit `~/.openclaw/.env` (`$OPENCLAW_STATE_DIR/.env`).
 
-    Geen van beide `.env`-bestanden overschrijft bestaande env vars.
-    Provider-credentialvariabelen zijn een uitzondering voor workspace-`.env`: sleutels zoals
-    `GEMINI_API_KEY`, `XAI_API_KEY` of `MISTRAL_API_KEY` worden genegeerd uit workspace-
-    `.env` en moeten in de procesomgeving, `~/.openclaw/.env` of config `env` staan.
+    Geen van beide `.env`-bestanden overschrijft bestaande omgevingsvariabelen. Referentiegegevens van providers en sleutels voor eindpuntroutering vormen een uitzondering voor `.env` in de werkruimte: sleutels zoals `GEMINI_API_KEY`, `XAI_API_KEY`, `MISTRAL_API_KEY` of elke sleutel die eindigt op `_ENDPOINT` (en andere omgevingsvariabelen voor authenticatie of eindpunten van meegeleverde providers) worden genegeerd in `.env` van de werkruimte en horen thuis in de procesomgeving, `~/.openclaw/.env` of configuratie `env`.
 
-    Je kunt ook inline env vars in config definiëren (alleen toegepast als ze ontbreken in de proces-env):
+    In de configuratie opgenomen omgevingsvariabelen worden alleen toegepast als ze in de procesomgeving ontbreken:
 
     ```json5
     {
@@ -1175,57 +922,41 @@ staat in de [FAQ voor eerste gebruik](/nl/help/faq-first-run).
     }
     ```
 
-    Zie [/environment](/nl/help/environment) voor volledige prioriteit en bronnen.
+    Zie [/environment](/nl/help/environment) voor de volledige prioriteitsvolgorde en bronnen.
 
   </Accordion>
 
-  <Accordion title="Ik heb de Gateway via de service gestart en mijn env vars zijn verdwenen. Wat nu?">
-    Twee veelvoorkomende oplossingen:
+  <Accordion title="Ik heb de Gateway via de service gestart en mijn omgevingsvariabelen zijn verdwenen. Wat nu?">
+    Twee oplossingen:
 
-    1. Zet de ontbrekende sleutels in `~/.openclaw/.env`, zodat ze worden opgepikt zelfs wanneer de service je shell-env niet erft.
-    2. Schakel shellimport in (opt-in gemak):
-
-    ```json5
-    {
-      env: {
-        shellEnv: {
-          enabled: true,
-          timeoutMs: 15000,
-        },
-      },
-    }
-    ```
-
-    Dit voert je login-shell uit en importeert alleen ontbrekende verwachte sleutels (overschrijft nooit). Env var-equivalenten:
-    `OPENCLAW_LOAD_SHELL_ENV=1`, `OPENCLAW_SHELL_ENV_TIMEOUT_MS=15000`.
+    1. Plaats de ontbrekende sleutels in `~/.openclaw/.env`, zodat ze ook worden geladen wanneer de service je shell-omgeving niet overneemt.
+    2. Schakel shell-import in (optioneel gemak):
+       ```json5
+       {
+         env: {
+           shellEnv: {
+             enabled: true,
+             timeoutMs: 15000,
+           },
+         },
+       }
+       ```
+       Hiermee wordt je login-shell uitgevoerd en worden alleen ontbrekende verwachte sleutels geïmporteerd (bestaande waarden worden nooit overschreven). Overeenkomstige omgevingsvariabelen: `OPENCLAW_LOAD_SHELL_ENV=1`, `OPENCLAW_SHELL_ENV_TIMEOUT_MS=15000`.
 
   </Accordion>
 
-  <Accordion title='Ik heb COPILOT_GITHUB_TOKEN ingesteld, maar de modellenstatus toont "Shell env: off." Waarom?'>
-    `openclaw models status` rapporteert of **shell-env-import** is ingeschakeld. "Shell env: off"
-    betekent **niet** dat je env vars ontbreken - het betekent alleen dat OpenClaw je
-    login-shell niet automatisch laadt.
+  <Accordion title='Ik heb COPILOT_GITHUB_TOKEN ingesteld, maar de modelstatus toont "Shell env: off." Hoe komt dat?'>
+    `openclaw models status` meldt of **shell-omgevingsimport** is ingeschakeld. "Shell env: off" betekent **niet** dat je omgevingsvariabelen ontbreken - het betekent alleen dat OpenClaw je login-shell niet automatisch laadt.
 
-    Als de Gateway als service draait (launchd/systemd), erft die je shell-
-    omgeving niet. Los dit op met een van deze opties:
-
-    1. Zet de token in `~/.openclaw/.env`:
-
-       ```
-       COPILOT_GITHUB_TOKEN=...
-       ```
-
-    2. Of schakel shellimport in (`env.shellEnv.enabled: true`).
-    3. Of voeg deze toe aan je config-`env`-blok (alleen toegepast als die ontbreekt).
-
-    Herstart daarna de gateway en controleer opnieuw:
+    Als de Gateway als service wordt uitgevoerd (launchd/systemd), neemt deze je shell-omgeving niet over. Los dit op door het token in `~/.openclaw/.env` te plaatsen, `env.shellEnv.enabled: true` in te schakelen of het toe te voegen aan configuratie `env` (wordt alleen toegepast als het ontbreekt). Start daarna de Gateway opnieuw en controleer nogmaals:
 
     ```bash
     openclaw models status
     ```
 
-    Copilot-tokens worden gelezen uit `COPILOT_GITHUB_TOKEN` (ook `GH_TOKEN` / `GITHUB_TOKEN`).
-    Zie [/concepts/model-providers](/nl/concepts/model-providers) en [/environment](/nl/help/environment).
+    Copilot-tokens worden in deze volgorde opgezocht: `OPENCLAW_GITHUB_TOKEN`, daarna `COPILOT_GITHUB_TOKEN`, vervolgens `GH_TOKEN` en ten slotte `GITHUB_TOKEN`.
+
+    Zie [/concepten/modelproviders](/nl/concepts/model-providers) en [/omgeving](/nl/help/environment).
 
   </Accordion>
 </AccordionGroup>
@@ -1234,117 +965,91 @@ staat in de [FAQ voor eerste gebruik](/nl/help/faq-first-run).
 
 <AccordionGroup>
   <Accordion title="Hoe start ik een nieuw gesprek?">
-    Stuur `/new` of `/reset` als zelfstandig bericht. Zie [Sessiebeheer](/nl/concepts/session).
+    Stuur `/new` of `/reset` als afzonderlijk bericht. Zie [Sessiebeheer](/nl/concepts/session).
   </Accordion>
 
-  <Accordion title="Worden sessies automatisch gereset als ik nooit /new stuur?">
-    Sessies kunnen verlopen na `session.idleMinutes`, maar dit is **standaard uitgeschakeld** (standaard **0**).
-    Stel dit in op een positieve waarde om inactiviteitsverval in te schakelen. Wanneer ingeschakeld, start het **volgende**
-    bericht na de inactieve periode een nieuwe sessie-id voor die chatsleutel.
-    Dit verwijdert geen transcripten - het start alleen een nieuwe sessie.
+  <Accordion title="Worden sessies automatisch opnieuw ingesteld als ik nooit /new stuur?">
+    Ja. Het standaardbeleid voor opnieuw instellen is **dagelijks**: een sessie gaat over naar een nieuwe sessie op een ingesteld lokaal uur op de Gateway-host (`session.reset.atHour`, standaard `4`, 0-23), gebaseerd op het tijdstip waarop de huidige sessie is gestart. Schakel in plaats daarvan over op opnieuw instellen bij inactiviteit met `mode: "idle"` en `session.reset.idleMinutes`. Daarmee verloopt een sessie na een periode van inactiviteit (gebaseerd op de laatste echte interactie, niet op Heartbeat-/Cron-/uitvoeringssysteemgebeurtenissen).
 
     ```json5
     {
       session: {
-        idleMinutes: 240,
+        reset: { mode: "daily", atHour: 4 },
+        resetByType: {
+          group: { mode: "idle", idleMinutes: 120 },
+          thread: { mode: "daily", atHour: 6 },
+        },
+        resetByChannel: {
+          discord: { mode: "idle", idleMinutes: 10080 },
+        },
       },
     }
     ```
 
-  </Accordion>
-
-  <Accordion title="Is er een manier om een team van OpenClaw-instanties te maken (één CEO en veel agents)?">
-    Ja, via **multi-agentrouting** en **sub-agents**. Je kunt één coördinator-
-    agent en meerdere worker-agents maken met hun eigen workspaces en modellen.
-
-    Dat gezegd hebbende, dit kan het beste worden gezien als een **leuk experiment**. Het gebruikt veel tokens en is vaak
-    minder efficiënt dan één bot gebruiken met aparte sessies. Het typische model dat we
-    voor ogen hebben, is één bot waarmee je praat, met verschillende sessies voor parallel werk. Die
-    bot kan ook sub-agents starten wanneer nodig.
-
-    Documentatie: [Multi-agentrouting](/nl/concepts/multi-agent), [Sub-agents](/nl/tools/subagents), [Agents CLI](/nl/cli/agents).
+    `resetByType` ondersteunt `direct` (verouderde alias `dm`), `group` en `thread`. Het verouderde `session.idleMinutes` op het hoogste niveau werkt nog steeds als compatibiliteitsalias voor een standaardinstelling op basis van inactiviteit wanneer er geen `session.reset`-/`resetByType`-blok is ingesteld. Sessies met een actieve CLI-sessie die eigendom is van de provider worden niet beëindigd door de impliciete dagelijkse standaardinstelling. Zie [Sessiebeheer](/nl/concepts/session) voor de volledige levenscyclus.
 
   </Accordion>
 
-  <Accordion title="Waarom werd context halverwege een taak afgekapt? Hoe voorkom ik dat?">
-    Sessiecontext wordt beperkt door het modelvenster. Lange chats, grote tooluitvoer of veel
-    bestanden kunnen Compaction of afkapping veroorzaken.
+  <Accordion title="Kan ik een team van OpenClaw-instanties maken (één CEO en veel agents)?">
+    Ja, via **routering met meerdere agents** en **subagents**: één coördinerende agent plus meerdere uitvoerende agents met hun eigen werkruimten en modellen.
 
-    Wat helpt:
+    Je kunt dit het beste zien als een leuk experiment - het verbruikt veel tokens en is vaak minder efficiënt dan één bot met afzonderlijke sessies. Het gebruikelijke model is één bot waarmee je praat, met verschillende sessies voor parallel werk, die indien nodig subagents start.
+
+    Documentatie: [Routering met meerdere agents](/nl/concepts/multi-agent), [Subagents](/nl/tools/subagents), [Agents-CLI](/nl/cli/agents).
+
+  </Accordion>
+
+  <Accordion title="Waarom werd de context halverwege een taak afgekapt? Hoe voorkom ik dit?">
+    De sessiecontext wordt beperkt door het contextvenster van het model. Lange chats, grote tooluitvoer of veel bestanden kunnen Compaction of afkapping activeren.
 
     - Vraag de bot om de huidige status samen te vatten en naar een bestand te schrijven.
-    - Gebruik `/compact` vóór lange taken, en `/new` wanneer je van onderwerp wisselt.
-    - Bewaar belangrijke context in de workspace en vraag de bot die terug te lezen.
-    - Gebruik sub-agents voor lang of parallel werk, zodat de hoofdchat kleiner blijft.
+    - Gebruik `/compact` vóór lange taken en `/new` wanneer je van onderwerp wisselt.
+    - Bewaar belangrijke context in de werkruimte en vraag de bot deze opnieuw te lezen.
+    - Gebruik subagents voor lang of parallel werk, zodat de hoofdchat kleiner blijft.
     - Kies een model met een groter contextvenster als dit vaak gebeurt.
 
   </Accordion>
 
-  <Accordion title="Hoe reset ik OpenClaw volledig maar houd ik het geïnstalleerd?">
-    Gebruik de resetopdracht:
-
+  <Accordion title="Hoe stel ik OpenClaw volledig opnieuw in zonder het te verwijderen?">
     ```bash
     openclaw reset
     ```
 
-    Niet-interactieve volledige reset:
+    Volledige niet-interactieve reset:
 
     ```bash
     openclaw reset --scope full --yes --non-interactive
     ```
 
-    Voer daarna setup opnieuw uit:
+    Voer daarna de configuratie opnieuw uit:
 
     ```bash
     openclaw onboard --install-daemon
     ```
 
-    Notities:
-
-    - Onboarding biedt ook **Reset** aan als er een bestaande config wordt gevonden. Zie [Onboarding (CLI)](/nl/start/wizard).
-    - Als je profielen hebt gebruikt (`--profile` / `OPENCLAW_PROFILE`), reset dan elke state-dir (standaarden zijn `~/.openclaw-<profile>`).
-    - Dev-reset: `openclaw gateway --dev --reset` (alleen dev; wist dev-config + credentials + sessies + workspace).
+    Onboarding biedt ook **Opnieuw instellen** aan als er een bestaande configuratie wordt gevonden; zie [Onboarding (CLI)](/nl/start/wizard). Als je profielen hebt gebruikt (`--profile` / `OPENCLAW_PROFILE`), stel je elke statusmap opnieuw in (standaard `~/.openclaw-<profile>`). Reset uitsluitend voor ontwikkeling: `openclaw gateway --dev --reset` wist de ontwikkelconfiguratie, referentiegegevens, sessies en werkruimte.
 
   </Accordion>
 
-  <Accordion title='Ik krijg fouten "context too large" - hoe reset of compacteer ik?'>
-    Gebruik een van deze opties:
+  <Accordion title='Ik krijg fouten met "context too large" - hoe stel ik opnieuw in of pas ik Compaction toe?'>
+    - **Compaction** (behoudt het gesprek en vat oudere beurten samen): `/compact` of `/compact <instructions>` om de samenvatting te sturen.
+    - **Opnieuw instellen** (nieuwe sessie-ID voor dezelfde chatsleutel): `/new` of `/reset`.
 
-    - **Compacteer** (behoudt het gesprek maar vat oudere beurten samen):
+    Als dit blijft gebeuren, stel je **sessieopschoning** (`agents.defaults.contextPruning`) af om oude tooluitvoer in te korten, of gebruik je een model met een groter contextvenster.
 
-      ```
-      /compact
-      ```
-
-      of `/compact <instructions>` om de samenvatting te sturen.
-
-    - **Reset** (nieuwe sessie-ID voor dezelfde chatsleutel):
-
-      ```
-      /new
-      /reset
-      ```
-
-    Als het blijft gebeuren:
-
-    - Schakel **sessiepruning** (`agents.defaults.contextPruning`) in of stem deze af om oude tooluitvoer in te korten.
-    - Gebruik een model met een groter contextvenster.
-
-    Documentatie: [Compaction](/nl/concepts/compaction), [Sessiepruning](/nl/concepts/session-pruning), [Sessiebeheer](/nl/concepts/session).
+    Documentatie: [Compaction](/nl/concepts/compaction), [Sessieopschoning](/nl/concepts/session-pruning), [Sessiebeheer](/nl/concepts/session).
 
   </Accordion>
 
   <Accordion title='Waarom zie ik "LLM request rejected: messages.content.tool_use.input field required"?'>
-    Dit is een provider-validatiefout: het model heeft een `tool_use`-blok uitgegeven zonder de vereiste
-    `input`. Dit betekent meestal dat de sessiegeschiedenis verouderd of beschadigd is (vaak na lange threads
-    of een tool-/schemawijziging).
+    Validatiefout van de provider: het model heeft een `tool_use`-blok gegenereerd zonder de vereiste `input`. Dit betekent meestal dat de sessiegeschiedenis verouderd of beschadigd is (vaak na lange threads of een wijziging aan een tool/schema).
 
-    Oplossing: start een nieuwe sessie met `/new` (zelfstandig bericht).
+    Oplossing: start een nieuwe sessie met `/new` (als afzonderlijk bericht).
 
   </Accordion>
 
   <Accordion title="Waarom krijg ik elke 30 minuten Heartbeat-berichten?">
-    Heartbeats draaien standaard elke **30m** (**1h** bij gebruik van OAuth-auth). Pas ze aan of schakel ze uit:
+    Heartbeats worden standaard elke **30m** uitgevoerd, of elke **1h** wanneer de vastgestelde authenticatiemodus Anthropic OAuth-/tokenauthenticatie is (inclusief hergebruik van de Claude-CLI) en `heartbeat.every` niet is ingesteld. Pas dit aan of schakel het uit:
 
     ```json5
     {
@@ -1358,20 +1063,16 @@ staat in de [FAQ voor eerste gebruik](/nl/help/faq-first-run).
     }
     ```
 
-    Als `HEARTBEAT.md` bestaat maar feitelijk leeg is (alleen lege regels,
-    Markdown-/HTML-opmerkingen, Markdown-koppen zoals `# Heading`, fence-markeringen,
-    of lege checklist-stubs), slaat OpenClaw de Heartbeat-run over om API-aanroepen te besparen.
-    Als het bestand ontbreekt, wordt de Heartbeat nog steeds uitgevoerd en bepaalt het model wat het moet doen.
+    Als `HEARTBEAT.md` bestaat maar feitelijk leeg is (alleen lege regels, Markdown-/HTML-opmerkingen, ATX-koppen, fence-markeringen of lege lijstitems), slaat OpenClaw de Heartbeat-uitvoering over om API-aanroepen te besparen. Als het bestand ontbreekt, wordt de Heartbeat toch uitgevoerd en bepaalt het model wat het moet doen.
 
-    Overrides per agent gebruiken `agents.list[].heartbeat`. Docs: [Heartbeat](/nl/gateway/heartbeat).
+    Overschrijvingen per agent gebruiken `agents.list[].heartbeat`. Documentatie: [Heartbeat](/nl/gateway/heartbeat).
 
   </Accordion>
 
   <Accordion title='Moet ik een "botaccount" toevoegen aan een WhatsApp-groep?'>
-    Nee. OpenClaw draait op **je eigen account**, dus als jij in de groep zit, kan OpenClaw die zien.
-    Standaard worden groepsantwoorden geblokkeerd totdat je afzenders toestaat (`groupPolicy: "allowlist"`).
+    Nee. OpenClaw wordt uitgevoerd op **je eigen account** - als je in de groep zit, kan OpenClaw deze zien. Groepsantwoorden worden standaard geblokkeerd totdat je afzenders toestaat (`groupPolicy: "allowlist"`).
 
-    Als je wilt dat alleen **jij** groepsantwoorden kunt triggeren:
+    Groepsantwoorden beperken tot alleen jezelf:
 
     ```json5
     {
@@ -1387,127 +1088,98 @@ staat in de [FAQ voor eerste gebruik](/nl/help/faq-first-run).
   </Accordion>
 
   <Accordion title="Hoe krijg ik de JID van een WhatsApp-groep?">
-    Optie 1 (snelst): volg logs en stuur een testbericht in de groep:
+    Snelste manier: volg de logboeken en stuur een testbericht in de groep.
 
     ```bash
     openclaw logs --follow --json
     ```
 
-    Zoek naar `chatId` (of `from`) dat eindigt op `@g.us`, zoals:
-    `1234567890-1234567890@g.us`.
+    Zoek naar `chatId` (of `from`) die eindigt op `@g.us`, zoals `1234567890-1234567890@g.us`.
 
-    Optie 2 (als al geconfigureerd/op de allowlist): toon groepen uit de configuratie:
+    Als de groepen al zijn geconfigureerd/toegestaan, geef je ze weer vanuit de configuratie:
 
     ```bash
     openclaw directory groups list --channel whatsapp
     ```
 
-    Docs: [WhatsApp](/nl/channels/whatsapp), [Directory](/nl/cli/directory), [Logs](/nl/cli/logs).
+    Documentatie: [WhatsApp](/nl/channels/whatsapp), [Directory](/nl/cli/directory), [Logboeken](/nl/cli/logs).
 
   </Accordion>
 
   <Accordion title="Waarom antwoordt OpenClaw niet in een groep?">
-    Twee veelvoorkomende oorzaken:
-
-    - Mention-gating staat aan (standaard). Je moet de bot @vermelden (of overeenkomen met `mentionPatterns`).
-    - Je hebt `channels.whatsapp.groups` geconfigureerd zonder `"*"` en de groep staat niet op de allowlist.
+    Twee veelvoorkomende oorzaken: de vermeldingsbeperking is standaard ingeschakeld (je moet de bot met @ vermelden of overeenkomen met `mentionPatterns`), of je hebt `channels.whatsapp.groups` geconfigureerd zonder `"*"` en de groep staat niet op de toelatingslijst.
 
     Zie [Groepen](/nl/channels/groups) en [Groepsberichten](/nl/channels/group-messages).
 
   </Accordion>
 
-  <Accordion title="Delen groepen/threads context met DM's?">
-    Directe chats worden standaard samengevoegd met de hoofdsessie. Groepen/kanalen hebben hun eigen sessiesleutels, en Telegram-onderwerpen / Discord-threads zijn aparte sessies. Zie [Groepen](/nl/channels/groups) en [Groepsberichten](/nl/channels/group-messages).
+  <Accordion title="Delen groepen/threads context met privéberichten?">
+    Directe chats worden standaard samengevoegd in de hoofdsessie. Groepen/kanalen hebben hun eigen sessiesleutels en Telegram-onderwerpen / Discord-threads zijn afzonderlijke sessies. Zie [Groepen](/nl/channels/groups) en [Groepsberichten](/nl/channels/group-messages).
   </Accordion>
 
   <Accordion title="Hoeveel werkruimten en agents kan ik maken?">
-    Geen harde limieten. Tientallen (zelfs honderden) zijn prima, maar let op:
+    Er zijn geen harde limieten: tientallen of zelfs honderden zijn prima, maar let op:
 
-    - **Schijfgroei:** sessies + transcripties staan onder `~/.openclaw/agents/<agentId>/sessions/`.
-    - **Tokenkosten:** meer agents betekent meer gelijktijdig modelgebruik.
-    - **Operationele overhead:** auth-profielen, werkruimten en kanaalroutering per agent.
+    - **Schijfgroei**: actieve sessies en transcripties bevinden zich in de SQLite-database per agent; verouderde/gearchiveerde artefacten kunnen zich nog steeds ophopen onder `~/.openclaw/agents/<agentId>/sessions/`.
+    - **Tokenkosten**: meer agents betekent meer gelijktijdig modelgebruik.
+    - **Operationele overhead**: authenticatieprofielen, werkruimten en kanaalroutering per agent.
 
-    Tips:
-
-    - Houd één **actieve** werkruimte per agent aan (`agents.defaults.workspace`).
-    - Ruim oude sessies op (verwijder JSONL- of store-vermeldingen) als de schijf groeit.
-    - Gebruik `openclaw doctor` om losse werkruimten en profielmismatches te vinden.
+    Behoud één **actieve** werkruimte per agent (`agents.defaults.workspace`), ruim oude sessies op met `openclaw sessions cleanup` als het schijfgebruik groeit (bewerk actieve SQLite-status niet handmatig) en gebruik `openclaw doctor` om verdwaalde werkruimten en niet-overeenkomende profielen op te sporen.
 
   </Accordion>
 
-  <Accordion title="Kan ik meerdere bots of chats tegelijk draaien (Slack), en hoe stel ik dat in?">
-    Ja. Gebruik **Multi-Agent Routing** om meerdere geïsoleerde agents te draaien en inkomende berichten te routeren op
-    kanaal/account/peer. Slack wordt ondersteund als kanaal en kan aan specifieke agents worden gekoppeld.
+  <Accordion title="Kan ik meerdere bots of chats tegelijk uitvoeren (Slack), en hoe moet ik dat instellen?">
+    Ja, via **routering met meerdere agents**: voer meerdere geïsoleerde agents uit en routeer inkomende berichten op basis van kanaal/account/peer. Slack wordt ondersteund als kanaal en kan aan specifieke agents worden gekoppeld.
 
-    Browsertoegang is krachtig, maar niet "alles doen wat een mens kan" - anti-bot, CAPTCHA's en MFA kunnen
-    automatisering nog steeds blokkeren. Gebruik voor de betrouwbaarste browserbesturing lokale Chrome MCP op de host,
-    of gebruik CDP op de machine waarop de browser daadwerkelijk draait.
+    Browsertoegang is krachtig, maar kan niet „alles wat een mens kan”: ant-botmaatregelen, CAPTCHA's en MFA kunnen automatisering nog steeds blokkeren. Gebruik voor de betrouwbaarste bediening lokale Chrome MCP op de host, of CDP op de machine waarop de browser daadwerkelijk wordt uitgevoerd.
 
-    Aanbevolen configuratie:
+    Aanbevolen configuratie: een permanent actieve Gateway-host (VPS/Mac mini), één agent per rol (koppelingen), Slack-kanaal of -kanalen die aan die agents zijn gekoppeld en, indien nodig, een lokale browser via Chrome MCP of een Node.
 
-    - Altijd-aan Gateway-host (VPS/Mac mini).
-    - Eén agent per rol (koppelingen).
-    - Slack-kanaal/kanalen gekoppeld aan die agents.
-    - Lokale browser via Chrome MCP of een node wanneer nodig.
-
-    Docs: [Multi-Agent Routing](/nl/concepts/multi-agent), [Slack](/nl/channels/slack),
-    [Browser](/nl/tools/browser), [Nodes](/nl/nodes).
+    Documentatie: [Routering met meerdere agents](/nl/concepts/multi-agent), [Slack](/nl/channels/slack), [Browser](/nl/tools/browser), [Nodes](/nl/nodes).
 
   </Accordion>
 </AccordionGroup>
 
-## Modellen, failover en auth-profielen
+## Modellen, failover en authenticatieprofielen
 
-Model-V&A — standaarden, selectie, aliassen, wisselen, failover, auth-profielen —
-staat in de [Veelgestelde vragen over modellen](/nl/help/faq-models).
+Vragen en antwoorden over modellen — standaardwaarden, selectie, aliassen, wisselen, failover en authenticatieprofielen — staan in de [veelgestelde vragen over modellen](/nl/help/faq-models).
 
-## Gateway: poorten, "al actief" en remote-modus
+## Gateway: poorten, „al actief” en externe modus
 
 <AccordionGroup>
   <Accordion title="Welke poort gebruikt de Gateway?">
-    `gateway.port` beheert de enkele gemultiplexte poort voor WebSocket + HTTP (Control UI, hooks, enz.).
+    `gateway.port` beheert de ene gemultiplexte poort voor WebSocket + HTTP (Control UI, hooks enzovoort). Prioriteitsvolgorde:
 
-    Voorrang:
-
-    ```
-    --port > OPENCLAW_GATEWAY_PORT > gateway.port > default 18789
+    ```text
+    --port > OPENCLAW_GATEWAY_PORT > gateway.port > standaard 18789
     ```
 
   </Accordion>
 
-  <Accordion title='Waarom zegt openclaw gateway status "Runtime: running" maar "Connectivity probe: failed"?'>
-    Omdat "running" de weergave van de **supervisor** is (launchd/systemd/schtasks). De connectivity probe is de CLI die daadwerkelijk verbinding maakt met de gateway-WebSocket.
-
-    Gebruik `openclaw gateway status` en vertrouw op deze regels:
-
-    - `Probe target:` (de URL die de probe daadwerkelijk gebruikte)
-    - `Listening:` (wat daadwerkelijk aan de poort is gebonden)
-    - `Last gateway error:` (veelvoorkomende hoofdoorzaak wanneer het proces actief is maar de poort niet luistert)
-
+  <Accordion title='Waarom meldt openclaw gateway status "Runtime: running", maar "Connectivity probe: failed"?'>
+    „Running” is de weergave van de **supervisor** (launchd/systemd/schtasks); bij de verbindingscontrole maakt de CLI daadwerkelijk verbinding met de WebSocket van de Gateway. Vertrouw op deze regels uit `openclaw gateway status`: `Probe target:` (de URL die de controle gebruikte), `Listening:` (wat daadwerkelijk aan de poort is gekoppeld), `Last gateway error:` (veelvoorkomende hoofdoorzaak wanneer het proces actief is maar de poort niet luistert).
   </Accordion>
 
   <Accordion title='Waarom toont openclaw gateway status verschillende waarden voor "Config (cli)" en "Config (service)"?'>
-    Je bewerkt één configuratiebestand terwijl de service een ander gebruikt (vaak een mismatch met `--profile` / `OPENCLAW_STATE_DIR`).
+    Je bewerkt het ene configuratiebestand terwijl de service een ander gebruikt (vaak doordat `--profile` / `OPENCLAW_STATE_DIR` niet overeenkomen).
 
-    Oplossing:
+    Oplossing: voer het volgende uit vanuit dezelfde `--profile` / omgeving die de service moet gebruiken:
 
     ```bash
     openclaw gateway install --force
     ```
 
-    Voer dat uit vanuit hetzelfde `--profile` / dezelfde omgeving die je de service wilt laten gebruiken.
-
   </Accordion>
 
   <Accordion title='Wat betekent "another gateway instance is already listening"?'>
-    OpenClaw dwingt een runtime-lock af door de WebSocket-listener direct bij het opstarten te binden (standaard `ws://127.0.0.1:18789`). Als het binden mislukt met `EADDRINUSE`, wordt `GatewayLockError` gegooid om aan te geven dat er al een andere instantie luistert.
+    OpenClaw dwingt een runtimevergrendeling af door de WebSocket-listener onmiddellijk bij het opstarten te binden (standaard `ws://127.0.0.1:18789`). Als het binden mislukt met `EADDRINUSE`, wordt `GatewayLockError` („another gateway instance is already listening”) gegenereerd.
 
-    Oplossing: stop de andere instantie, maak de poort vrij, of start met `openclaw gateway --port <port>`.
+    Oplossing: stop het andere exemplaar, maak de poort vrij of voer het uit met `openclaw gateway --port <port>`.
 
   </Accordion>
 
-  <Accordion title="Hoe draai ik OpenClaw in remote-modus (client verbindt met een Gateway elders)?">
-    Stel `gateway.mode: "remote"` in en wijs naar een externe WebSocket-URL, optioneel met remote-referenties op basis van een gedeeld geheim:
+  <Accordion title="Hoe voer ik OpenClaw uit in externe modus (waarbij de client verbinding maakt met een Gateway elders)?">
+    Stel `gateway.mode: "remote"` in en verwijs naar een externe WebSocket-URL, eventueel met externe referenties voor een gedeeld geheim:
 
     ```json5
     {
@@ -1522,96 +1194,69 @@ staat in de [Veelgestelde vragen over modellen](/nl/help/faq-models).
     }
     ```
 
-    Opmerkingen:
-
-    - `openclaw gateway` start alleen wanneer `gateway.mode` `local` is (of wanneer je de override-vlag doorgeeft).
-    - De macOS-app houdt het configuratiebestand in de gaten en wisselt live van modus wanneer deze waarden veranderen.
-    - `gateway.remote.token` / `.password` zijn alleen client-side remote-referenties; ze schakelen op zichzelf geen lokale gateway-auth in.
+    - `openclaw gateway` start alleen wanneer `gateway.mode` `local` is (of wanneer je een overschrijvingsvlag doorgeeft).
+    - De macOS-app bewaakt het configuratiebestand en wisselt direct van modus wanneer deze waarden veranderen.
+    - `gateway.remote.token` / `.password` zijn alleen externe referenties aan de clientzijde; ze schakelen lokale Gateway-authenticatie niet zelf in.
 
   </Accordion>
 
-  <Accordion title='De Control UI zegt "unauthorized" (of blijft opnieuw verbinden). Wat nu?'>
-    Je gateway-authpad en de auth-methode van de UI komen niet overeen.
+  <Accordion title='De Control UI meldt "unauthorized" (of blijft opnieuw verbinding maken). Wat nu?'>
+    Het authenticatiepad van je Gateway en de authenticatiemethode van de UI komen niet overeen.
 
-    Feiten (uit code):
+    Feiten (uit de code):
 
-    - De Control UI bewaart het token in `sessionStorage` voor de huidige browsertabsessie en geselecteerde gateway-URL, zodat verversen in dezelfde tab blijft werken zonder langlevende localStorage-tokenpersistentie te herstellen.
-    - Bij `AUTH_TOKEN_MISMATCH` kunnen vertrouwde clients één begrensde retry proberen met een gecachet device-token wanneer de gateway retry-hints teruggeeft (`canRetryWithDeviceToken=true`, `recommendedNextStep=retry_with_device_token`).
-    - Die cached-token-retry hergebruikt nu de gecachete goedgekeurde scopes die bij het device-token zijn opgeslagen. Expliciete `deviceToken` / expliciete `scopes`-callers behouden nog steeds hun aangevraagde scopeset in plaats van gecachete scopes te erven.
-    - Buiten dat retry-pad is de connect-auth-voorrang eerst expliciet gedeeld token/wachtwoord, daarna expliciet `deviceToken`, daarna opgeslagen device-token, daarna bootstrap-token.
-    - Ingebouwde setup-code-bootstrap retourneert een node-device-token met `scopes: []` plus een begrensd operator-handoff-token voor vertrouwde mobiele onboarding. De operator-handoff kan native configuratie van tijdens setup lezen, maar verleent geen pairing-mutatiescopes of `operator.admin`.
+    - De Control UI bewaart het token in `sessionStorage`, beperkt tot het huidige browsertabblad en de geselecteerde Gateway-URL, zodat vernieuwen binnen hetzelfde tabblad blijft werken zonder langdurige tokenopslag in localStorage.
+    - Bij `AUTH_TOKEN_MISMATCH` kunnen vertrouwde clients één begrensde nieuwe poging doen met een gecachet apparaattoken wanneer de Gateway aanwijzingen voor een nieuwe poging retourneert (`canRetryWithDeviceToken=true`, `recommendedNextStep=retry_with_device_token`).
+    - Die nieuwe poging met het gecachete token hergebruikt de gecachete goedgekeurde bereiken die bij het apparaattoken zijn opgeslagen; aanroepers met expliciete `deviceToken` / expliciete `scopes` behouden hun aangevraagde bereikenset in plaats van gecachete bereiken over te nemen.
+    - Buiten dat pad voor een nieuwe poging is de prioriteitsvolgorde voor verbindingsauthenticatie: eerst een expliciet gedeeld token/wachtwoord, daarna expliciete `deviceToken`, vervolgens een opgeslagen apparaattoken en ten slotte het bootstrap-token.
+    - De ingebouwde bootstrap via installatiecode retourneert een Node-apparaattoken met `scopes: []` plus een begrensd overdrachtstoken voor operators voor vertrouwde mobiele onboarding. De operatoroverdracht kan tijdens de installatie de systeemeigen configuratie lezen, maar verleent geen wijzigingsbereiken voor koppeling of `operator.admin`.
 
     Oplossing:
 
-    - Snelst: `openclaw dashboard` (print + kopieert de dashboard-URL, probeert te openen; toont SSH-hint als headless).
-    - Als je nog geen token hebt: `openclaw doctor --generate-gateway-token`.
-    - Als remote, tunnel eerst: `ssh -N -L 18789:127.0.0.1:18789 user@host` en open daarna `http://127.0.0.1:18789/`.
-    - Shared-secret-modus: stel `gateway.auth.token` / `OPENCLAW_GATEWAY_TOKEN` of `gateway.auth.password` / `OPENCLAW_GATEWAY_PASSWORD` in, en plak daarna het overeenkomende geheim in de instellingen van de Control UI.
-    - Tailscale Serve-modus: zorg dat `gateway.auth.allowTailscale` is ingeschakeld en dat je de Serve-URL opent, niet een raw loopback-/tailnet-URL die Tailscale-identiteitsheaders omzeilt.
-    - Trusted-proxy-modus: zorg dat je via de geconfigureerde identity-aware proxy komt, niet via een raw gateway-URL. Same-host loopback-proxy's hebben ook `gateway.auth.trustedProxy.allowLoopback = true` nodig.
-    - Als de mismatch na die ene retry blijft bestaan, roteer/keur het gekoppelde device-token opnieuw goed:
-      - `openclaw devices list`
-      - `openclaw devices rotate --device <id> --role operator`
-    - Als die rotate-aanroep zegt dat deze is geweigerd, controleer twee dingen:
-      - paired-device-sessies kunnen alleen hun **eigen** device roteren, tenzij ze ook `operator.admin` hebben
-      - expliciete `--scope`-waarden mogen de huidige operator-scopes van de caller niet overschrijden
-    - Nog steeds vast? Voer `openclaw status --all` uit en volg [Probleemoplossing](/nl/gateway/troubleshooting). Zie [Dashboard](/nl/web/dashboard) voor auth-details.
+    - Snelste manier: `openclaw dashboard` (drukt de dashboard-URL af en kopieert deze, en probeert deze te openen; toont een SSH-hint indien headless).
+    - Nog geen token: `openclaw doctor --generate-gateway-token`.
+    - Extern: maak eerst een tunnel met `ssh -N -L 18789:127.0.0.1:18789 user@host` en open daarna `http://127.0.0.1:18789/`.
+    - Modus met gedeeld geheim: stel `gateway.auth.token` / `OPENCLAW_GATEWAY_TOKEN` of `gateway.auth.password` / `OPENCLAW_GATEWAY_PASSWORD` in en plak daarna het overeenkomende geheim in de instellingen van de Control UI.
+    - Tailscale Serve-modus: controleer of `gateway.auth.allowTailscale` is ingeschakeld en of je de Serve-URL opent, niet een onbewerkte loopback-/tailnet-URL die de identiteitsheaders van Tailscale omzeilt.
+    - Modus met vertrouwde proxy: controleer of je verbinding maakt via de geconfigureerde identiteitsbewuste proxy. Loopback-proxy's op dezelfde host hebben ook `gateway.auth.trustedProxy.allowLoopback = true` nodig.
+    - Blijft de discrepantie na die ene nieuwe poging bestaan, roteer dan het gekoppelde apparaattoken of keur het opnieuw goed:
+      ```bash
+      openclaw devices list
+      openclaw devices rotate --device <id> --role operator
+      ```
+    - Rotatie geweigerd: gekoppelde apparaatsessies kunnen alleen hun **eigen** apparaat roteren, tenzij ze ook `operator.admin` hebben, en expliciete waarden voor `--scope` mogen de huidige operatorbereiken van de aanroeper niet overschrijden.
+    - Nog steeds vastgelopen: `openclaw status --all` plus [Probleemoplossing](/nl/gateway/troubleshooting). Zie [Dashboard](/nl/web/dashboard) voor authenticatiedetails.
 
   </Accordion>
 
-  <Accordion title="Ik heb gateway.bind op tailnet gezet, maar binden lukt niet en niets luistert">
-    `tailnet`-binding kiest een Tailscale-IP uit je netwerkinterfaces (100.64.0.0/10). Als de machine niet op Tailscale zit (of de interface down is), is er niets om aan te binden.
+  <Accordion title="Ik heb gateway.bind ingesteld op tailnet, maar er wordt alleen op loopback geluisterd">
+    De binding `tailnet` kiest een Tailscale-IP uit je netwerkinterfaces (100.64.0.0/10). Als de machine niet met Tailscale is verbonden (of de interface niet actief is), valt de Gateway terug op loopback in plaats van een andere netwerkinterface beschikbaar te stellen.
 
-    Oplossing:
+    Oplossing: start Tailscale op die host en herstart de Gateway, of schakel expliciet over naar `gateway.bind: "loopback"` / `"lan"`.
 
-    - Start Tailscale op die host (zodat die een 100.x-adres heeft), of
-    - Schakel over naar `gateway.bind: "loopback"` / `"lan"`.
-
-    Opmerking: `tailnet` is expliciet. `auto` geeft de voorkeur aan loopback; gebruik `gateway.bind: "tailnet"` wanneer je een tailnet-only binding wilt.
+    `tailnet` is expliciet; `auto` geeft de voorkeur aan loopback. Gebruik `gateway.bind: "tailnet"` om niet-loopback-blootstelling te beperken tot het Tailnet, terwijl de vereiste `127.0.0.1`-listener op dezelfde host behouden blijft.
 
   </Accordion>
 
-  <Accordion title="Kan ik meerdere Gateways op dezelfde host draaien?">
-    Meestal niet - één Gateway kan meerdere berichtkanalen en agents draaien. Gebruik meerdere Gateways alleen wanneer je redundantie nodig hebt (bijv.: rescue-bot) of harde isolatie.
+  <Accordion title="Kan ik meerdere Gateways op dezelfde host uitvoeren?">
+    Gewoonlijk niet: één Gateway kan meerdere berichtenkanalen en agents uitvoeren. Gebruik meerdere Gateways alleen voor redundantie (bijvoorbeeld een reddingsbot) of strikte isolatie, en isoleer elk exemplaar met een eigen `OPENCLAW_CONFIG_PATH`, `OPENCLAW_STATE_DIR`, `agents.defaults.workspace` en unieke `gateway.port`.
 
-    Ja, maar je moet isoleren:
+    Aanbevolen: `openclaw --profile <name> ...` per exemplaar (maakt automatisch `~/.openclaw-<name>` aan), een unieke `gateway.port` per profielconfiguratie (of `--port` voor handmatige uitvoeringen) en een service per profiel met `openclaw --profile <name> gateway install`.
 
-    - `OPENCLAW_CONFIG_PATH` (configuratie per instantie)
-    - `OPENCLAW_STATE_DIR` (state per instantie)
-    - `agents.defaults.workspace` (werkruimte-isolatie)
-    - `gateway.port` (unieke poorten)
+    Profielen voegen ook een achtervoegsel toe aan servicenamen: launchd `ai.openclaw.<profile>`, systemd `openclaw-gateway-<profile>.service`, Windows `OpenClaw Gateway (<profile>)`. De systemd-eenheid zonder kwalificatie `openclaw-gateway` bestaat alleen voor het standaardprofiel; de verouderde systemd-eenheidsnaam van vóór de naamswijziging, `clawdbot-gateway`, wordt automatisch gemigreerd.
 
-    Snelle configuratie (aanbevolen):
-
-    - Gebruik `openclaw --profile <name> ...` per instantie (maakt automatisch `~/.openclaw-<name>`).
-    - Stel een unieke `gateway.port` in elk profielconfiguratiebestand in (of geef `--port` door voor handmatige runs).
-    - Installeer een service per profiel: `openclaw --profile <name> gateway install`.
-
-    Profielen voegen ook een suffix toe aan servicenamen (`ai.openclaw.<profile>`; legacy `com.openclaw.*`, `openclaw-gateway-<profile>.service`, `OpenClaw Gateway (<profile>)`).
-    Volledige gids: [Meerdere gateways](/nl/gateway/multiple-gateways).
+    Volledige handleiding: [Meerdere Gateways](/nl/gateway/multiple-gateways).
 
   </Accordion>
 
   <Accordion title='Wat betekent "invalid handshake" / code 1008?'>
-    De Gateway is een **WebSocket-server**, en verwacht dat het allereerste bericht
-    een `connect`-frame is. Als die iets anders ontvangt, sluit die de verbinding
-    met **code 1008** (policy violation).
+    De Gateway is een **WebSocket-server** en verwacht dat het eerste bericht een `connect`-frame is. Al het andere sluit de verbinding met **code 1008** (beleidsschending).
 
-    Veelvoorkomende oorzaken:
+    Veelvoorkomende oorzaken: je hebt de **HTTP**-URL in een browser geopend in plaats van in een WS-client, je hebt de verkeerde poort/het verkeerde pad gebruikt, of een proxy/tunnel heeft authenticatieheaders verwijderd of een verzoek verzonden dat niet voor de Gateway bestemd is.
 
-    - Je hebt de **HTTP**-URL in een browser geopend (`http://...`) in plaats van een WS-client.
-    - Je hebt de verkeerde poort of het verkeerde pad gebruikt.
-    - Een proxy of tunnel heeft auth-headers gestript of een niet-Gateway-verzoek gestuurd.
+    Oplossing: gebruik de WS-URL (`ws://<host>:18789`, of `wss://...` via HTTPS), open de WS-poort niet in een normaal browsertabblad en neem het token/wachtwoord op in het `connect`-frame wanneer authenticatie is ingeschakeld. Voorbeeld voor CLI/TUI:
 
-    Snelle oplossingen:
-
-    1. Gebruik de WS-URL: `ws://<host>:18789` (of `wss://...` bij HTTPS).
-    2. Open de WS-poort niet in een normale browsertab.
-    3. Als auth aanstaat, neem het token/wachtwoord op in het `connect`-frame.
-
-    Als je de CLI of TUI gebruikt, moet de URL er zo uitzien:
-
-    ```
+    ```bash
     openclaw tui --url ws://<host>:18789 --token <token>
     ```
 
@@ -1620,91 +1265,64 @@ staat in de [Veelgestelde vragen over modellen](/nl/help/faq-models).
   </Accordion>
 </AccordionGroup>
 
-## Logging en debugging
+## Logboekregistratie en foutopsporing
 
 <AccordionGroup>
-  <Accordion title="Waar staan logs?">
-    Bestandslogs (gestructureerd):
+  <Accordion title="Waar staan de logboeken?">
+    Bestandslogboeken (gestructureerd): `/tmp/openclaw/openclaw-YYYY-MM-DD.log`. Stel een stabiel pad in via `logging.file`; het logniveau voor bestanden via `logging.level`; de uitgebreidheid van console-uitvoer via `--verbose` en `logging.consoleLevel`.
 
-    ```
-    /tmp/openclaw/openclaw-YYYY-MM-DD.log
-    ```
-
-    Je kunt een stabiel pad instellen via `logging.file`. Het bestandslogniveau wordt beheerd door `logging.level`. Console-uitgebreidheid wordt beheerd door `--verbose` en `logging.consoleLevel`.
-
-    Snelste manier om logs te volgen:
+    Snelste manier om te volgen:
 
     ```bash
     openclaw logs --follow
     ```
 
-    Service-/supervisorlogs (wanneer de gateway via launchd/systemd draait):
+    Service-/supervisorlogboeken (wanneer de Gateway via launchd/systemd wordt uitgevoerd):
 
-    - macOS launchd stdout: `~/Library/Logs/openclaw/gateway.log` (profielen gebruiken `gateway-<profile>.log`; stderr wordt onderdrukt)
-    - Linux: `journalctl --user -u openclaw-gateway[-<profile>].service -n 200 --no-pager`
-    - Windows: `schtasks /Query /TN "OpenClaw Gateway (<profile>)" /V /FO LIST`
+    - macOS launchd-standaarduitvoer: `~/Library/Logs/openclaw/gateway.log` (profielen gebruiken `gateway-<profile>.log`; standaardfoutuitvoer wordt onderdrukt).
+    - Linux: `journalctl --user -u openclaw-gateway[-<profile>].service -n 200 --no-pager`.
+    - Windows: `schtasks /Query /TN "OpenClaw Gateway (<profile>)" /V /FO LIST`.
 
     Zie [Probleemoplossing](/nl/gateway/troubleshooting) voor meer informatie.
 
   </Accordion>
 
-  <Accordion title="Hoe start/stop/herstart ik de Gateway-service?">
-    Gebruik de gateway-helpers:
-
+  <Accordion title="Hoe start, stop of herstart ik de Gateway-service?">
     ```bash
     openclaw gateway status
     openclaw gateway restart
     ```
 
-    Als je de gateway handmatig uitvoert, kan `openclaw gateway --force` de poort opnieuw claimen. Zie [Gateway](/nl/gateway).
+    Als je de Gateway handmatig uitvoert, kan `openclaw gateway --force` de poort terugvorderen. Zie [Gateway](/nl/gateway).
 
   </Accordion>
 
-  <Accordion title="Ik heb mijn terminal op Windows gesloten - hoe herstart ik OpenClaw?">
-    Er zijn **drie Windows-installatiemodi**:
+  <Accordion title="Ik heb mijn terminal in Windows gesloten — hoe herstart ik OpenClaw?">
+    Drie installatiemodi voor Windows:
 
-    **1) Lokale Windows Hub-configuratie:** de native app beheert een lokale, app-eigen WSL Gateway.
+    **1) Lokale Windows Hub-configuratie**: de systeemeigen app beheert een lokale WSL-Gateway die eigendom is van de app. Open **OpenClaw Companion** via het Start-menu of het systeemvak en gebruik vervolgens **Gateway Setup** of het tabblad Connections.
 
-    Open **OpenClaw Companion** vanuit het Startmenu of de tray en gebruik daarna
-    **Gateway Setup** of het tabblad Verbindingen.
-
-    **2) Handmatige WSL2 Gateway:** de Gateway draait binnen Linux.
-
-    Open PowerShell, ga naar WSL en herstart daarna:
-
+    **2) Handmatige WSL2-Gateway**: de Gateway wordt binnen Linux uitgevoerd.
     ```powershell
     wsl
     openclaw gateway status
     openclaw gateway restart
     ```
+    Als je de service nooit hebt geïnstalleerd, start je deze op de voorgrond: `openclaw gateway run`.
 
-    Als je de service nooit hebt geinstalleerd, start deze dan op de voorgrond:
-
-    ```bash
-    openclaw gateway run
-    ```
-
-    **3) Native Windows CLI/Gateway:** de Gateway draait rechtstreeks in Windows.
-
-    Open PowerShell en voer uit:
-
+    **3) Native Windows-CLI/Gateway**: wordt rechtstreeks in Windows uitgevoerd.
     ```powershell
     openclaw gateway status
     openclaw gateway restart
     ```
+    Als je deze handmatig uitvoert (zonder service): `openclaw gateway run`.
 
-    Als je deze handmatig uitvoert (geen service), gebruik dan:
-
-    ```powershell
-    openclaw gateway run
-    ```
-
-    Documentatie: [Windows](/nl/platforms/windows), [Gateway-service-runbook](/nl/gateway).
+    Documentatie: [Windows](/nl/platforms/windows), [Draaiboek voor de Gateway-service](/nl/gateway).
 
   </Accordion>
 
   <Accordion title="De Gateway is actief, maar antwoorden komen nooit aan. Wat moet ik controleren?">
-    Begin met een snelle gezondheidscontrole:
+    Snelle statuscontrole:
 
     ```bash
     openclaw status
@@ -1713,125 +1331,89 @@ staat in de [Veelgestelde vragen over modellen](/nl/help/faq-models).
     openclaw logs --follow
     ```
 
-    Veelvoorkomende oorzaken:
+    Veelvoorkomende oorzaken: modelauthenticatie is niet geladen op de **Gateway-host** (controleer `models status`), kanaalkoppeling/toelatingslijst blokkeert antwoorden (controleer de kanaalconfiguratie en logboeken), of WebChat/Dashboard is geopend zonder het juiste token. Als de verbinding extern is, controleer dan of de tunnel-/Tailscale-verbinding actief is en de Gateway-WebSocket bereikbaar is.
 
-    - Model-authenticatie is niet geladen op de **gateway-host** (controleer `models status`).
-    - Kanaalkoppeling/allowlist blokkeert antwoorden (controleer kanaalconfiguratie + logs).
-    - WebChat/Dashboard is geopend zonder de juiste token.
-
-    Als je op afstand werkt, bevestig dan dat de tunnel-/Tailscale-verbinding actief is en dat de
-    Gateway-WebSocket bereikbaar is.
-
-    Documentatie: [Kanalen](/nl/channels), [Probleemoplossing](/nl/gateway/troubleshooting), [Toegang op afstand](/nl/gateway/remote).
+    Documentatie: [Kanalen](/nl/channels), [Probleemoplossing](/nl/gateway/troubleshooting), [Externe toegang](/nl/gateway/remote).
 
   </Accordion>
 
-  <Accordion title='"Verbinding met gateway verbroken: geen reden" - wat nu?'>
-    Dit betekent meestal dat de UI de WebSocket-verbinding is kwijtgeraakt. Controleer:
+  <Accordion title='"Verbinding met Gateway verbroken: geen reden" - wat nu?'>
+    Dit betekent meestal dat de UI de WebSocket-verbinding heeft verloren. Controleer: draait de Gateway (`openclaw gateway status`)? Werkt deze correct (`openclaw status`)? Heeft de UI het juiste token (`openclaw dashboard`)? Als de verbinding extern is, is de tunnel-/Tailscale-koppeling dan actief?
 
-    1. Draait de Gateway? `openclaw gateway status`
-    2. Is de Gateway gezond? `openclaw status`
-    3. Heeft de UI de juiste token? `openclaw dashboard`
-    4. Als je op afstand werkt, is de tunnel-/Tailscale-koppeling actief?
-
-    Volg daarna de logs:
+    Bekijk vervolgens doorlopend de logboeken:
 
     ```bash
     openclaw logs --follow
     ```
 
-    Documentatie: [Dashboard](/nl/web/dashboard), [Toegang op afstand](/nl/gateway/remote), [Probleemoplossing](/nl/gateway/troubleshooting).
+    Documentatie: [Dashboard](/nl/web/dashboard), [Externe toegang](/nl/gateway/remote), [Probleemoplossing](/nl/gateway/troubleshooting).
 
   </Accordion>
 
   <Accordion title="Telegram setMyCommands mislukt. Wat moet ik controleren?">
-    Begin met logs en kanaalstatus:
-
     ```bash
     openclaw channels status
     openclaw channels logs --channel telegram
     ```
 
-    Koppel daarna de fout:
+    Zoek vervolgens de bijbehorende fout:
 
-    - `BOT_COMMANDS_TOO_MUCH`: het Telegram-menu heeft te veel vermeldingen. OpenClaw beperkt al tot de Telegram-limiet en probeert het opnieuw met minder opdrachten, maar sommige menuvermeldingen moeten nog steeds worden verwijderd. Verminder plugin-/skill-/aangepaste opdrachten, of schakel `channels.telegram.commands.native` uit als je het menu niet nodig hebt.
-    - `TypeError: fetch failed`, `Network request for 'setMyCommands' failed!`, of vergelijkbare netwerkfouten: als je op een VPS zit of achter een proxy werkt, bevestig dan dat uitgaand HTTPS is toegestaan en dat DNS werkt voor `api.telegram.org`.
+    - `BOT_COMMANDS_TOO_MUCH`: het Telegram-menu bevat te veel vermeldingen. OpenClaw beperkt het al tot de Telegram-limiet en probeert het opnieuw met minder opdrachten, maar sommige menuvermeldingen kunnen nog steeds worden weggelaten. Verminder het aantal Plugin-/Skill-/aangepaste opdrachten of schakel `channels.telegram.commands.native` uit als je het menu niet nodig hebt.
+    - `TypeError: fetch failed`, `Network request for 'setMyCommands' failed!` of vergelijkbare netwerkfouten: controleer op een VPS of achter een proxy of uitgaand HTTPS-verkeer is toegestaan en DNS werkt voor `api.telegram.org`.
 
-    Als de Gateway op afstand staat, zorg er dan voor dat je naar logs op de Gateway-host kijkt.
+    Als de Gateway extern draait, controleer je de logboeken op de Gateway-host.
 
     Documentatie: [Telegram](/nl/channels/telegram), [Probleemoplossing voor kanalen](/nl/channels/troubleshooting).
 
   </Accordion>
 
   <Accordion title="TUI toont geen uitvoer. Wat moet ik controleren?">
-    Bevestig eerst dat de Gateway bereikbaar is en dat de agent kan draaien:
-
     ```bash
     openclaw status
     openclaw models status
     openclaw logs --follow
     ```
 
-    Gebruik in de TUI `/status` om de huidige status te zien. Als je antwoorden verwacht in een chatkanaal,
-    zorg er dan voor dat aflevering is ingeschakeld (`/deliver on`).
+    Gebruik in de TUI `/status` om de huidige status te bekijken. Als je antwoorden in een chatkanaal verwacht, controleer dan of bezorging is ingeschakeld (`/deliver on`).
 
     Documentatie: [TUI](/nl/web/tui), [Slash-opdrachten](/nl/tools/slash-commands).
 
   </Accordion>
 
   <Accordion title="Hoe stop ik de Gateway volledig en start ik deze daarna opnieuw?">
-    Als je de service hebt geinstalleerd:
+    Als je de service hebt geïnstalleerd (launchd op macOS, systemd op Linux):
 
     ```bash
     openclaw gateway stop
     openclaw gateway start
     ```
 
-    Dit stopt/start de **bewaakte service** (launchd op macOS, systemd op Linux).
-    Gebruik dit wanneer de Gateway op de achtergrond als daemon draait.
+    Stop het voorgrondproces met Ctrl-C en voer vervolgens `openclaw gateway run` uit.
 
-    Als je op de voorgrond draait, stop dan met Ctrl-C en daarna:
-
-    ```bash
-    openclaw gateway run
-    ```
-
-    Documentatie: [Gateway-service-runbook](/nl/gateway).
+    Documentatie: [Draaiboek voor de Gateway-service](/nl/gateway).
 
   </Accordion>
 
-  <Accordion title="ELI5: openclaw gateway restart versus openclaw gateway">
-    - `openclaw gateway restart`: herstart de **achtergrondservice** (launchd/systemd).
-    - `openclaw gateway`: voert de gateway **op de voorgrond** uit voor deze terminalsessie.
-
-    Als je de service hebt geinstalleerd, gebruik dan de gateway-opdrachten. Gebruik `openclaw gateway` wanneer
-    je een eenmalige uitvoering op de voorgrond wilt.
-
+  <Accordion title="Eenvoudig uitgelegd: openclaw gateway restart versus openclaw gateway">
+    `openclaw gateway restart` herstart de **achtergrondservice** (launchd/systemd). `openclaw gateway` voert de Gateway **op de voorgrond** uit voor deze terminalsessie. Gebruik de Gateway-subopdrachten als je de service hebt geïnstalleerd; gebruik de kale voorgronduitvoering voor een eenmalige uitvoering.
   </Accordion>
 
   <Accordion title="Snelste manier om meer details te krijgen wanneer iets mislukt">
-    Start de Gateway met `--verbose` om meer consoledetails te krijgen. Inspecteer daarna het logbestand voor kanaalauthenticatie, modelrouting en RPC-fouten.
+    Start de Gateway met `--verbose` voor meer details in de console en controleer vervolgens het logbestand op fouten met kanaalauthenticatie, modelroutering en RPC.
   </Accordion>
 </AccordionGroup>
 
 ## Media en bijlagen
 
 <AccordionGroup>
-  <Accordion title="Mijn skill heeft een afbeelding/PDF gegenereerd, maar er is niets verzonden">
-    Uitgaande bijlagen van de agent moeten gestructureerde mediavelden gebruiken, zoals `media`, `mediaUrl`, `path`, of `filePath`. Zie [OpenClaw-assistentconfiguratie](/nl/start/openclaw) en [Agent verzenden](/nl/tools/agent-send).
-
-    Verzenden via CLI:
+  <Accordion title="Mijn Skill heeft een afbeelding/PDF gegenereerd, maar er is niets verzonden">
+    Uitgaande bijlagen van de agent moeten gestructureerde mediavelden gebruiken, zoals `media`, `mediaUrl`, `path` of `filePath`. Zie [OpenClaw-assistent instellen](/nl/start/openclaw) en [Verzenden door agent](/nl/tools/agent-send).
 
     ```bash
-    openclaw message send --target +15555550123 --message "Here you go" --media /path/to/file.png
+    openclaw message send --target +15555550123 --message "Alsjeblieft" --media /path/to/file.png
     ```
 
-    Controleer ook:
-
-    - Het doelkanaal ondersteunt uitgaande media en wordt niet geblokkeerd door allowlists.
-    - Het bestand valt binnen de groottelimieten van de provider (afbeeldingen worden verkleind tot maximaal 2048px).
-    - `tools.fs.workspaceOnly=true` beperkt verzendingen met lokale paden tot de werkruimte, temp-/media-store en door sandbox gevalideerde bestanden.
-    - `tools.fs.workspaceOnly=false` laat gestructureerde lokale mediaverzendingen host-lokale bestanden gebruiken die de agent al kan lezen, maar alleen voor media plus veilige documenttypen (afbeeldingen, audio, video, PDF, Office-documenten en gevalideerde tekstdocumenten zoals Markdown/MD, TXT, JSON, YAML en YML). Dit is geen geheime-scanner: een door de agent leesbare `secret.txt` of `config.json` kan worden bijgevoegd wanneer de extensie en contentvalidatie overeenkomen. Houd gevoelige bestanden buiten door agenten leesbare paden, of houd `tools.fs.workspaceOnly=true` aan voor strengere verzendingen met lokale paden.
+    Controleer ook het volgende: het doelkanaal ondersteunt uitgaande media en wordt niet geblokkeerd door toelatingslijsten; het bestand valt binnen de groottelimieten van de provider (afbeeldingen worden verkleind tot een maximale zijde van 2048px); `tools.fs.workspaceOnly=true` beperkt verzending vanaf lokale paden tot bestanden in de werkruimte, tijdelijke bestanden/mediaopslag en door de sandbox gevalideerde bestanden; met `tools.fs.workspaceOnly=false` (standaard) kunnen gestructureerde lokale mediaverzendingen hostlokale bestanden gebruiken die de agent al kan lezen, voor media en veilige documenttypen (afbeeldingen, audio, video, PDF, Office-documenten en gevalideerde tekstdocumenten zoals Markdown/MD, TXT, JSON, YAML/YML). Dit is geen geheimenscanner: een voor de agent leesbaar bestand `secret.txt` of `config.json` kan worden bijgevoegd wanneer de extensie- en inhoudsvalidatie overeenkomen. Bewaar gevoelige bestanden buiten paden die de agent kan lezen, of behoud `tools.fs.workspaceOnly=true` voor strengere verzending vanaf lokale paden.
 
     Zie [Afbeeldingen](/nl/nodes/images).
 
@@ -1841,238 +1423,141 @@ staat in de [Veelgestelde vragen over modellen](/nl/help/faq-models).
 ## Beveiliging en toegangsbeheer
 
 <AccordionGroup>
-  <Accordion title="Is het veilig om OpenClaw bloot te stellen aan inkomende DM's?">
-    Behandel inkomende DM's als niet-vertrouwde invoer. Standaardinstellingen zijn ontworpen om risico te verminderen:
+  <Accordion title="Is het veilig om OpenClaw beschikbaar te stellen voor inkomende privéberichten?">
+    Behandel inkomende privéberichten als niet-vertrouwde invoer. De standaardinstellingen beperken het risico:
 
-    - Standaardgedrag op kanalen die DM's ondersteunen is **koppeling**:
-      - Onbekende afzenders ontvangen een koppelcode; de bot verwerkt hun bericht niet.
-      - Keur goed met: `openclaw pairing approve --channel <channel> [--account <id>] <code>`
-      - Openstaande verzoeken zijn beperkt tot **3 per kanaal**; controleer `openclaw pairing list --channel <channel> [--account <id>]` als een code niet is aangekomen.
-    - DM's publiek openen vereist expliciete opt-in (`dmPolicy: "open"` en allowlist `"*"`).
+    - Het standaardgedrag voor kanalen die privéberichten ondersteunen is **koppeling**: onbekende afzenders ontvangen een koppelingscode en hun bericht wordt niet verwerkt. Keur goed met `openclaw pairing approve --channel <channel> [--account <id>] <code>`. Er kunnen maximaal **3 per kanaal** aanvragen in behandeling zijn; controleer `openclaw pairing list --channel <channel> [--account <id>]` als er geen code is aangekomen.
+    - Het openbaar openstellen van privéberichten vereist expliciete inschakeling (`dmPolicy: "open"` en toelatingslijst `"*"`).
 
-    Voer `openclaw doctor` uit om risicovol DM-beleid zichtbaar te maken.
+    Voer `openclaw doctor` uit om riskant beleid voor privéberichten zichtbaar te maken.
 
   </Accordion>
 
-  <Accordion title="Is prompt injection alleen een zorg voor publieke bots?">
-    Nee. Prompt injection gaat over **niet-vertrouwde content**, niet alleen over wie de bot kan DM'en.
-    Als je assistent externe content leest (webzoekopdracht/-fetch, browserpagina's, e-mails,
-    documentatie, bijlagen, geplakte logs), kan die content instructies bevatten die proberen
-    het model over te nemen. Dit kan zelfs gebeuren als **jij de enige afzender bent**.
+  <Accordion title="Is promptinjectie alleen een probleem voor openbare bots?">
+    Nee. Promptinjectie gaat om **niet-vertrouwde inhoud**, niet alleen om wie de bot een privébericht kan sturen. Als je assistent externe inhoud leest (zoeken/ophalen op het web, browserpagina's, e-mails, documenten, bijlagen, geplakte logboeken), kan die inhoud instructies bevatten die proberen het model over te nemen, zelfs als jij de enige afzender bent.
 
-    Het grootste risico ontstaat wanneer tools zijn ingeschakeld: het model kan worden misleid om
-    context te exfiltreren of tools namens jou aan te roepen. Beperk de blast radius door:
+    Het grootste risico ontstaat wanneer tools zijn ingeschakeld: het model kan worden misleid om context te exfiltreren of namens jou tools aan te roepen. Beperk de mogelijke impact:
 
-    - een alleen-lezen of tool-uitgeschakelde "reader"-agent te gebruiken om niet-vertrouwde content samen te vatten
-    - `web_search` / `web_fetch` / `browser` uit te houden voor agents met ingeschakelde tools
-    - gedecodeerde bestands-/documenttekst ook als niet-vertrouwd te behandelen: OpenResponses
-      `input_file` en extractie van mediabijlagen plaatsen allebei geextraheerde tekst in
-      expliciete grensmarkeringen voor externe content in plaats van ruwe bestandstekst door te geven
-    - sandboxing en strikte tool-allowlists te gebruiken
+    - gebruik een alleen-lezenagent of een agent zonder tools om niet-vertrouwde inhoud samen te vatten
+    - houd `web_search` / `web_fetch` / `browser` uitgeschakeld voor agents met ingeschakelde tools
+    - behandel gedecodeerde bestands-/documenttekst ook als niet-vertrouwd: zowel OpenResponses `input_file` als extractie van mediabijlagen plaatsen geëxtraheerde tekst tussen expliciete grensmarkeringen voor externe inhoud, in plaats van onbewerkte bestandstekst door te geven
+    - gebruik een sandbox en strikte toelatingslijsten voor tools
 
     Details: [Beveiliging](/nl/gateway/security).
 
   </Accordion>
 
   <Accordion title="Is OpenClaw minder veilig omdat het TypeScript/Node gebruikt in plaats van Rust/WASM?">
-    Taal en runtime doen ertoe, maar ze zijn niet het grootste risico voor een persoonlijke
-    agent. De praktische OpenClaw-risico's zijn Gateway-blootstelling, wie de
-    bot kan berichten, prompt injection, toolbereik, credentialbeheer, browsertoegang, exec-
-    toegang en vertrouwen in Skills of plugins van derden.
+    Taal en runtime zijn van belang, maar vormen niet het grootste risico voor een persoonlijke agent. De praktische risico's zijn blootstelling van de Gateway, wie de bot berichten kan sturen, promptinjectie, de reikwijdte van tools, omgang met referenties, browsertoegang, uitvoeringstoegang en het vertrouwen in Skills/Plugins van derden.
 
-    Rust en WASM kunnen sterkere isolatie bieden voor sommige klassen code, maar
-    ze lossen prompt injection, slechte allowlists, publieke Gateway-blootstelling,
-    te brede tools of een browserprofiel dat al is ingelogd op gevoelige
-    accounts niet op. Behandel die als de primaire controles:
-
-    - houd de Gateway prive of geauthenticeerd
-    - gebruik koppeling en allowlists voor DM's en groepen
-    - weiger risicovolle tools of voer ze in een sandbox uit voor niet-vertrouwde invoer
-    - installeer alleen vertrouwde plugins en skills
-    - voer `openclaw security audit --deep` uit na configuratiewijzigingen
+    Rust en WASM kunnen voor bepaalde soorten code sterkere isolatie bieden, maar lossen promptinjectie, slechte toelatingslijsten, openbare blootstelling van de Gateway, te ruime tools of een browserprofiel dat al bij gevoelige accounts is aangemeld niet op. Behandel dit als de primaire beheersmaatregelen: houd de Gateway privé of beveiligd met authenticatie, gebruik koppeling en toelatingslijsten voor privéberichten/groepen, weiger riskante tools of voer ze uit in een sandbox voor niet-vertrouwde invoer, installeer alleen vertrouwde Plugins en Skills en voer `openclaw security audit --deep` uit na configuratiewijzigingen.
 
     Details: [Beveiliging](/nl/gateway/security), [Sandboxing](/nl/gateway/sandboxing).
 
   </Accordion>
 
   <Accordion title="Ik zag meldingen over blootgestelde OpenClaw-instanties. Wat moet ik controleren?">
-    Controleer eerst je daadwerkelijke deployment:
-
     ```bash
     openclaw security audit --deep
     openclaw gateway status
     ```
 
-    Een veiligere baseline is:
+    Een veiligere basisconfiguratie: de Gateway is gebonden aan `loopback`, of alleen beschikbaar via geauthenticeerde privétoegang (tailnet, SSH-tunnel, token-/wachtwoordauthenticatie of een correct geconfigureerde vertrouwde proxy); privéberichten staan in de modus `pairing` of `allowlist`; groepen staan op de toelatingslijst en vereisen een vermelding, tenzij elk lid wordt vertrouwd; risicovolle tools (`exec`, `browser`, `gateway`, `cron`) worden geweigerd of strikt beperkt voor agents die niet-vertrouwde inhoud lezen; sandboxing is ingeschakeld wanneer tooluitvoering een kleinere mogelijke impact vereist.
 
-    - Gateway gebonden aan `loopback`, of alleen blootgesteld via geauthenticeerde prive-
-      toegang zoals een tailnet, SSH-tunnel, token-/wachtwoordauthenticatie of een correct
-      geconfigureerde vertrouwde proxy
-    - DM's in `pairing`- of `allowlist`-modus
-    - groepen op een allowlist en afgeschermd met vermeldingen, tenzij elk lid vertrouwd is
-    - hoog-risicotools (`exec`, `browser`, `gateway`, `cron`) geweigerd of strak
-      afgebakend voor agents die niet-vertrouwde content lezen
-    - sandboxing ingeschakeld waar tooluitvoering een kleinere blast radius nodig heeft
-
-    Publieke binds zonder authenticatie, open DM's/groepen met tools en blootgestelde browser-
-    besturing zijn de bevindingen die je eerst moet oplossen. Details:
-    [Checklist beveiligingsaudit](/nl/gateway/security#security-audit-checklist).
+    Openbare bindingen zonder authenticatie, open privéberichten/groepen met tools en blootgesteld browserbeheer zijn de bevindingen die je als eerste moet oplossen. Details: [openclaw security audit](/nl/gateway/security#openclaw-security-audit).
 
   </Accordion>
 
-  <Accordion title="Zijn ClawHub-skills en plugins van derden veilig om te installeren?">
-    Behandel skills en plugins van derden als code die je kiest te vertrouwen.
-    ClawHub-skillpagina's tonen scanstatus voor installatie, maar scans zijn geen
-    volledige beveiligingsgrens. OpenClaw voert geen ingebouwde lokale
-    blokkering van gevaarlijke code uit tijdens installatie-/updateflows voor plugins of skills; gebruik
-    operator-beheerd `security.installPolicy` voor lokale allow-/blockbeslissingen.
+  <Accordion title="Zijn ClawHub-Skills en Plugins van derden veilig om te installeren?">
+    Behandel Skills en Plugins van derden als code die je bewust besluit te vertrouwen. ClawHub-pagina's voor Skills tonen vóór installatie de scanstatus, maar scans vormen geen volledige beveiligingsgrens. OpenClaw voert tijdens de installatie of update van Plugins/Skills geen ingebouwde lokale blokkering van gevaarlijke code uit; gebruik door de beheerder beheerde `security.installPolicy` voor lokale beslissingen over toestaan/blokkeren.
 
-    Veiliger patroon:
+    Veiliger patroon: geef de voorkeur aan vertrouwde auteurs en vastgezette versies, lees de Skill/Plugin voordat je deze inschakelt, houd toelatingslijsten voor Plugins/Skills beperkt, voer werkstromen met niet-vertrouwde invoer uit in een sandbox met minimale tools en geef code van derden geen brede toegang tot het bestandssysteem, uitvoering, de browser of geheimen.
 
-    - geef de voorkeur aan vertrouwde auteurs en vastgepinde versies
-    - lees de skill of plugin voordat je deze inschakelt
-    - houd plugin- en skill-allowlists beperkt
-    - voer workflows met niet-vertrouwde invoer uit in een sandbox met minimale tools
-    - vermijd het geven van brede bestandssysteem-, exec-, browser- of geheimentoegang aan code van derden
-
-    Details: [Skills](/nl/tools/skills), [Plugins](/nl/tools/plugin),
-    [Beveiliging](/nl/gateway/security).
+    Details: [Skills](/nl/tools/skills), [Plugins](/nl/tools/plugin), [Beveiliging](/nl/gateway/security).
 
   </Accordion>
 
   <Accordion title="Moet mijn bot een eigen e-mailadres, GitHub-account of telefoonnummer hebben?">
-    Ja, voor de meeste setups. De bot isoleren met afzonderlijke accounts en telefoonnummers
-    verkleint de impactradius als er iets misgaat. Dit maakt het ook makkelijker om
-    referenties te roteren of toegang in te trekken zonder je persoonlijke accounts te beïnvloeden.
+    Ja, voor de meeste configuraties. Door de bot te isoleren met afzonderlijke accounts en telefoonnummers beperk je de mogelijke impact als er iets misgaat en kun je referenties eenvoudiger vervangen of toegang intrekken zonder gevolgen voor je persoonlijke accounts.
 
-    Begin klein. Geef alleen toegang tot de tools en accounts die je echt nodig hebt, en breid
-    later uit als dat nodig is.
+    Begin klein: geef alleen toegang tot de tools en accounts die je daadwerkelijk nodig hebt en breid dit later uit als dat nodig is.
 
-    Documentatie: [Beveiliging](/nl/gateway/security), [Koppelen](/nl/channels/pairing).
+    Documentatie: [Beveiliging](/nl/gateway/security), [Koppeling](/nl/channels/pairing).
 
   </Accordion>
 
-  <Accordion title="Kan ik het autonomie geven over mijn sms-berichten en is dat veilig?">
-    We raden volledige autonomie over je persoonlijke berichten **niet** aan. Het veiligste patroon is:
+  <Accordion title="Kan ik de bot autonoom mijn tekstberichten laten beheren en is dat veilig?">
+    We raden volledige autonomie over je persoonlijke berichten **niet** aan. Het veiligste patroon: houd privéberichten in de **koppelingsmodus** of gebruik een strikte toelatingslijst, gebruik een **afzonderlijk nummer of account** als de bot namens jou berichten moet sturen en laat de bot concepten opstellen die je **vóór verzending goedkeurt**.
 
-    - Houd privéberichten in **koppelingsmodus** of een strikte toelatingslijst.
-    - Gebruik een **apart nummer of account** als je wilt dat het namens jou berichten stuurt.
-    - Laat het concepten maken en **keur goed voordat er wordt verzonden**.
-
-    Als je wilt experimenteren, doe dat dan op een speciaal account en houd het geïsoleerd. Zie
-    [Beveiliging](/nl/gateway/security).
+    Experimenteer hiervoor met een speciaal, geïsoleerd account. Zie [Beveiliging](/nl/gateway/security).
 
   </Accordion>
 
-  <Accordion title="Kan ik goedkopere modellen gebruiken voor persoonlijke-assistenttaken?">
-    Ja, **als** de agent alleen chat gebruikt en de invoer vertrouwd is. Kleinere tiers zijn
-    gevoeliger voor instructiekaping, dus vermijd ze voor agents met tools ingeschakeld
-    of bij het lezen van niet-vertrouwde inhoud. Als je een kleiner model moet gebruiken, vergrendel
-    tools en draai binnen een sandbox. Zie [Beveiliging](/nl/gateway/security).
+  <Accordion title="Kan ik goedkopere modellen gebruiken voor taken van een persoonlijke assistent?">
+    Ja, **als** de agent alleen chat en de invoer vertrouwd is. Kleinere modelklassen zijn gevoeliger voor het overnemen van instructies, dus vermijd ze voor agents met ingeschakelde tools of bij het lezen van niet-vertrouwde inhoud. Als je een kleiner model moet gebruiken, beperk dan de tools en voer het uit in een sandbox. Zie [Beveiliging](/nl/gateway/security).
   </Accordion>
 
-  <Accordion title="Ik heb /start uitgevoerd in Telegram maar kreeg geen koppelingscode">
-    Koppelingscodes worden **alleen** verzonden wanneer een onbekende afzender de bot een bericht stuurt en
-    `dmPolicy: "pairing"` is ingeschakeld. `/start` genereert op zichzelf geen code.
+  <Accordion title="Ik heb /start uitgevoerd in Telegram, maar kreeg geen koppelingscode">
+    Koppelingscodes worden **alleen** verzonden wanneer een onbekende afzender de bot een bericht stuurt en `dmPolicy: "pairing"` is ingeschakeld; alleen `/start` genereert geen code.
 
-    Controleer openstaande aanvragen:
+    Controleer aanvragen die in behandeling zijn:
 
     ```bash
     openclaw pairing list telegram
     ```
 
-    Als je direct toegang wilt, voeg je afzender-id toe aan de toelatingslijst of stel `dmPolicy: "open"`
-    in voor dat account.
+    Voeg voor directe toegang je afzender-ID toe aan de toelatingslijst of stel `dmPolicy: "open"` in voor dat account.
 
   </Accordion>
 
-  <Accordion title="WhatsApp: stuurt het berichten naar mijn contacten? Hoe werkt koppelen?">
-    Nee. Het standaardbeleid voor WhatsApp-privéberichten is **koppelen**. Onbekende afzenders krijgen alleen een koppelingscode en hun bericht wordt **niet verwerkt**. OpenClaw antwoordt alleen op chats die het ontvangt of op expliciete verzendacties die jij activeert.
-
-    Keur koppeling goed met:
+  <Accordion title="WhatsApp: stuurt de bot berichten naar mijn contacten? Hoe werkt koppeling?">
+    Nee. Het standaardbeleid voor WhatsApp-privéberichten is **koppeling**. Onbekende afzenders krijgen alleen een koppelingscode; hun bericht wordt **niet verwerkt**. OpenClaw antwoordt alleen op chats die het ontvangt of op expliciete verzendingen die je activeert.
 
     ```bash
     openclaw pairing approve whatsapp <code>
-    ```
-
-    Toon openstaande aanvragen:
-
-    ```bash
     openclaw pairing list whatsapp
     ```
 
-    Wizardprompt voor telefoonnummer: dit wordt gebruikt om je **toelatingslijst/eigenaar** in te stellen, zodat je eigen privéberichten zijn toegestaan. Het wordt niet gebruikt voor automatisch verzenden. Als je je persoonlijke WhatsApp-nummer gebruikt, gebruik dan dat nummer en schakel `channels.whatsapp.selfChatMode` in.
+    De prompt voor het telefoonnummer in de wizard stelt je **toelatingslijst/eigenaar** in, zodat je eigen DM's zijn toegestaan - het nummer wordt niet gebruikt voor automatisch verzenden. Gebruik voor je persoonlijke WhatsApp-nummer dat nummer en schakel `channels.whatsapp.selfChatMode` in.
 
   </Accordion>
 </AccordionGroup>
 
-## Chatcommando's, taken afbreken en "het stopt niet"
+## Chatopdrachten, taken afbreken en "het stopt niet"
 
 <AccordionGroup>
-  <Accordion title="Hoe voorkom ik dat interne systeemberichten in chat verschijnen?">
-    De meeste interne of toolberichten verschijnen alleen wanneer **verbose**, **trace** of **reasoning** is ingeschakeld
-    voor die sessie.
+  <Accordion title="Hoe voorkom ik dat interne systeemberichten in de chat worden weergegeven?">
+    De meeste interne/toolberichten verschijnen alleen wanneer **uitgebreid**, **tracering** of **redenering** voor die sessie is ingeschakeld.
 
-    Los dit op in de chat waar je het ziet:
+    Los dit op in de chat waarin je ze ziet:
 
-    ```
+    ```text
     /verbose off
     /trace off
     /reasoning off
     ```
 
-    Als het nog steeds veel ruis geeft, controleer dan de sessie-instellingen in de Control UI en stel verbose
-    in op **overnemen**. Bevestig ook dat je geen botprofiel gebruikt met `verboseDefault` ingesteld
-    op `on` in de configuratie.
+    Nog steeds te veel berichten: controleer de sessie-instellingen in de Control UI en stel uitgebreid in op **overerven**; controleer of je geen botprofiel gebruikt met `verboseDefault: "on"` in de configuratie.
 
-    Documentatie: [Denken en verbose](/nl/tools/thinking), [Beveiliging](/nl/gateway/security/index#reasoning-and-verbose-output-in-groups).
+    Documentatie: [Denken en uitgebreide uitvoer](/nl/tools/thinking), [Beveiliging](/nl/gateway/security/index#reasoning-and-verbose-output-in-groups).
 
   </Accordion>
 
-  <Accordion title="Hoe stop/annuleer ik een lopende taak?">
-    Stuur een van deze **als zelfstandig bericht** (zonder slash):
+  <Accordion title="Hoe stop/annuleer ik een actieve taak?">
+    Stuur een van deze opties **als afzonderlijk bericht** (zonder slash) om de taak af te breken: `stop`, `stop action`, `stop current action`, `stop run`, `stop current run`, `stop agent`, `stop the agent`, `stop openclaw`, `openclaw stop`, `stop don't do anything`, `stop do not do anything`, `stop doing anything`, `do not do that`, `please stop`, `stop please`, `abort`, `esc`, `exit`, `interrupt`, `halt`. Veelgebruikte niet-Engelse triggers (Frans, Duits, Spaans, Chinees, Japans, Hindi, Arabisch, Russisch) werken ook.
 
-    ```
-    stop
-    stop action
-    stop current action
-    stop run
-    stop current run
-    stop agent
-    stop the agent
-    stop openclaw
-    openclaw stop
-    stop don't do anything
-    stop do not do anything
-    stop doing anything
-    please stop
-    stop please
-    abort
-    esc
-    wait
-    exit
-    interrupt
-    ```
+    Vraag de agent voor achtergrondprocessen die door de exec-tool zijn gestart om het volgende uit te voeren:
 
-    Dit zijn afbreektriggers (geen slashcommando's).
-
-    Voor achtergrondprocessen (vanuit de exec-tool) kun je de agent vragen om uit te voeren:
-
-    ```
+    ```text
     process action:kill sessionId:XXX
     ```
 
-    Overzicht van slashcommando's: zie [Slashcommando's](/nl/tools/slash-commands).
-
-    De meeste commando's moeten worden verzonden als een **zelfstandig** bericht dat begint met `/`, maar een paar snelkoppelingen (zoals `/status`) werken ook inline voor afzenders op de toelatingslijst.
+    De meeste slash-opdrachten moeten worden verzonden als een **afzonderlijk** bericht dat begint met `/`, maar enkele snelkoppelingen (zoals `/status`) werken voor afzenders op de toelatingslijst ook in een bericht. Zie [Slash-opdrachten](/nl/tools/slash-commands).
 
   </Accordion>
 
-  <Accordion title='Hoe stuur ik een Discord-bericht vanuit Telegram? ("Cross-context messaging denied")'>
-    OpenClaw blokkeert standaard berichtenverkeer **tussen providers**. Als een toolaanroep is gebonden
-    aan Telegram, verzendt die niet naar Discord tenzij je dit expliciet toestaat.
-
-    Schakel berichtenverkeer tussen providers in voor de agent:
+  <Accordion title='Hoe stuur ik vanuit Telegram een Discord-bericht? ("Berichten tussen contexten geweigerd")'>
+    OpenClaw blokkeert standaard berichten **tussen providers**. Als een toolaanroep aan Telegram is gekoppeld, verzendt deze niets naar Discord tenzij je dit expliciet toestaat - dit wordt onmiddellijk van kracht; de Gateway hoeft niet opnieuw te worden gestart:
 
     ```json5
     {
@@ -2080,44 +1565,42 @@ staat in de [Veelgestelde vragen over modellen](/nl/help/faq-models).
         message: {
           crossContext: {
             allowAcrossProviders: true,
-            marker: { enabled: true, prefix: "[from {channel}] " },
+            marker: { enabled: true, prefix: "[van {channel}] " },
           },
         },
       },
     }
     ```
 
-    Herstart de Gateway na het bewerken van de configuratie.
-
   </Accordion>
 
-  <Accordion title='Waarom voelt het alsof de bot snelle opeenvolgende berichten "negeert"?'>
-    Prompts tijdens een run worden standaard naar de actieve run gestuurd. Gebruik `/queue` om het gedrag voor de actieve run te kiezen:
+  <Accordion title='Waarom lijkt het alsof de bot snel achter elkaar verstuurde berichten "negeert"?'>
+    Prompts die tijdens een uitvoering worden verstuurd, worden standaard naar de actieve uitvoering geleid. Gebruik `/queue` om het gedrag van de actieve uitvoering te kiezen:
 
-    - `steer` - stuur de actieve run bij op de volgende modelgrens
-    - `followup` - zet berichten in de wachtrij en voer ze een voor een uit nadat de huidige run eindigt
-    - `collect` - zet compatibele berichten in de wachtrij en antwoord eenmaal nadat de huidige run eindigt
-    - `interrupt` - breek de huidige run af en begin opnieuw
+    - `steer` (standaard) - stuur de actieve uitvoering bij bij de volgende modelgrens.
+    - `followup` - zet berichten in de wachtrij en voer ze één voor één uit nadat de huidige uitvoering is beëindigd.
+    - `collect` - zet compatibele berichten in de wachtrij en antwoord één keer nadat de huidige uitvoering is beëindigd.
+    - `interrupt` - breek de huidige uitvoering af en begin opnieuw.
 
-    De standaardmodus is `steer`. Je kunt opties toevoegen zoals `debounce:0.5s cap:25 drop:summarize` voor wachtrijmodi. Zie [Commandowachtrij](/nl/concepts/queue) en [Sturingswachtrij](/nl/concepts/queue-steering).
+    Voeg opties toe aan wachtrijmodi, zoals `debounce:0.5s cap:25 drop:summarize`. Zie [Opdrachtwachtrij](/nl/concepts/queue) en [Bijsturingswachtrij](/nl/concepts/queue-steering).
 
   </Accordion>
 </AccordionGroup>
 
-## Diversen
+## Overig
 
 <AccordionGroup>
   <Accordion title='Wat is het standaardmodel voor Anthropic met een API-sleutel?'>
-    In OpenClaw zijn referenties en modelselectie gescheiden. Het instellen van `ANTHROPIC_API_KEY` (of het opslaan van een Anthropic API-sleutel in auth-profielen) schakelt authenticatie in, maar het daadwerkelijke standaardmodel is wat je configureert in `agents.defaults.model.primary` (bijvoorbeeld `anthropic/claude-sonnet-4-6` of `anthropic/claude-opus-4-6`). Als je `No credentials found for profile "anthropic:default"` ziet, betekent dit dat de Gateway geen Anthropic-referenties kon vinden in de verwachte `auth-profiles.json` voor de agent die draait.
+    Referenties en modelselectie staan los van elkaar. Het instellen van `ANTHROPIC_API_KEY` (of het opslaan van een Anthropic-API-sleutel in authenticatieprofielen) maakt authenticatie mogelijk, maar het daadwerkelijke standaardmodel is wat je configureert in `agents.defaults.model.primary` (bijvoorbeeld `anthropic/claude-sonnet-4-6` of `anthropic/claude-opus-4-6`). `No credentials found for profile "anthropic:default"` betekent dat de Gateway geen Anthropic-referenties voor de actieve agent kon vinden in de verwachte `auth-profiles.json`.
   </Accordion>
 </AccordionGroup>
 
 ---
 
-Nog steeds vast? Vraag het in [Discord](https://discord.com/invite/clawd) of open een [GitHub-discussie](https://github.com/openclaw/openclaw/discussions).
+Kom je er nog steeds niet uit? Vraag het in [Discord](https://discord.com/invite/clawd) of open een [GitHub-discussie](https://github.com/openclaw/openclaw/discussions).
 
 ## Gerelateerd
 
-- [FAQ voor eerste gebruik](/nl/help/faq-first-run) — installeren, onboarden, auth, abonnementen, vroege fouten
-- [Modellen-FAQ](/nl/help/faq-models) — modelselectie, failover, auth-profielen
-- [Probleemoplossing](/nl/help/troubleshooting) — symptoomgerichte triage
+- [Veelgestelde vragen over de eerste uitvoering](/nl/help/faq-first-run) - installatie, onboarding, authenticatie, abonnementen, vroege fouten
+- [Veelgestelde vragen over modellen](/nl/help/faq-models) - modelselectie, failover, authenticatieprofielen
+- [Probleemoplossing](/nl/help/troubleshooting) - symptoomgerichte triage

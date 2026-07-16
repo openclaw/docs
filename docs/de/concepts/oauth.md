@@ -1,43 +1,44 @@
 ---
 read_when:
     - Sie möchten OpenClaw OAuth durchgängig verstehen
-    - Es treten Probleme mit der Token-Ungültigmachung bzw. Abmeldung auf
-    - Sie möchten Claude-CLI- oder OAuth-Authentifizierungsabläufe verwenden
-    - Sie möchten mehrere Konten oder eine profilbasierte Weiterleitung verwenden
-summary: 'OAuth in OpenClaw: Tokenaustausch, Speicherung und Muster für mehrere Konten'
+    - Es treten Probleme mit der Token-Ungültigkeitserklärung bzw. Abmeldung auf
+    - Sie möchten Claude-CLI- oder OAuth-Authentifizierungsabläufe
+    - Sie möchten mehrere Konten oder Profil-Routing verwenden
+summary: 'OAuth in OpenClaw: Token-Austausch, Speicherung und Muster für mehrere Konten'
 title: OAuth
 x-i18n:
-    generated_at: "2026-07-12T01:36:59Z"
+    generated_at: "2026-07-16T12:43:11Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 51aa98a9cb9614107ce979eca235c175a1748df2facdded852cd8899cebba22c
+    source_hash: 3ef94af0601b7d57bb7e2d53c3d8231708b401251eca7dc1bb1e7e4fc09b46da
     source_path: concepts/oauth.md
     workflow: 16
 ---
 
 OpenClaw unterstützt OAuth („Abonnementauthentifizierung“) für Provider, die dies anbieten,
 insbesondere **OpenAI Codex (ChatGPT OAuth)** und die **Wiederverwendung der Anthropic Claude CLI**.
-Für Anthropic gilt in der Praxis folgende Aufteilung:
+Für Anthropic ergibt sich praktisch folgende Aufteilung:
 
-- **Anthropic-API-Schlüssel**: normale Abrechnung über die Anthropic-API.
-- **Anthropic Claude CLI / Abonnementauthentifizierung innerhalb von OpenClaw**: Mitarbeitende von Anthropic
-  haben uns mitgeteilt, dass diese Nutzung wieder zulässig ist. Daher behandelt OpenClaw die Wiederverwendung der Claude CLI und
-  die Nutzung von `claude -p` für diese Integration als genehmigt, sofern Anthropic
-  keine neue Richtlinie veröffentlicht. Für Anthropic in Produktionsumgebungen bleibt
-  die Authentifizierung per API-Schlüssel der sicherere empfohlene Weg.
+- **Anthropic-API-Schlüssel**: normale Anthropic-API-Abrechnung.
+- **Anthropic Claude CLI/Abonnementauthentifizierung innerhalb von OpenClaw**: Anthropic-Mitarbeiter
+  haben uns mitgeteilt, dass diese Nutzung wieder zulässig ist. Daher betrachtet OpenClaw die Wiederverwendung der Claude CLI und
+  die Nutzung von `claude -p` für diese Integration als zulässig, sofern Anthropic
+  keine neue Richtlinie veröffentlicht. Für Anthropic in Produktionsumgebungen bleibt die
+  Authentifizierung per API-Schlüssel der sicherere empfohlene Weg.
 
-OpenClaw speichert sowohl die Authentifizierung per OpenAI-API-Schlüssel als auch ChatGPT/Codex OAuth unter der
+OpenClaw speichert sowohl die OpenAI-Authentifizierung per API-Schlüssel als auch ChatGPT/Codex OAuth unter der
 kanonischen Provider-ID `openai`. Ältere Profil-IDs mit `openai-codex:*` und
-Einträge unter `auth.order.openai-codex` sind Altzustände, die durch
-`openclaw doctor --fix` repariert werden. Verwenden Sie für neue Konfigurationen
-Profil-IDs mit `openai:*` und `auth.order.openai`.
+Einträge mit `auth.order.openai-codex` sind Legacy-Zustände, die durch
+`openclaw doctor --fix` repariert werden; verwenden Sie für
+neue Konfigurationen Profil-IDs mit `openai:*` und `auth.order.openai`.
 
 Diese Seite behandelt:
 
 - wie der OAuth-**Tokenaustausch** funktioniert (PKCE)
 - wo Tokens **gespeichert** werden (und warum)
-- wie Sie **mehrere Konten** verwalten (Profile und sitzungsspezifische Überschreibungen)
+- wie **mehrere Konten** gehandhabt werden (Profile und sitzungsspezifische Überschreibungen)
 
 Provider-Plugins, die einen eigenen OAuth- oder API-Schlüssel-Ablauf bereitstellen, verwenden
 denselben Einstiegspunkt:
@@ -48,95 +49,95 @@ openclaw models auth login --provider <id>
 
 ## Die Token-Senke (warum sie existiert)
 
-OAuth-Provider stellen häufig bei jeder Anmeldung oder Aktualisierung ein neues Aktualisierungs-Token aus.
-Einige Provider machen das vorherige Aktualisierungs-Token ungültig, wenn für denselben
-Benutzer und dieselbe Anwendung ein neues ausgegeben wird. Praktisches Symptom: Sie melden sich über OpenClaw _und_
-über Claude Code / Codex CLI an, woraufhin eines davon später scheinbar zufällig abgemeldet wird.
+OAuth-Provider stellen üblicherweise bei jeder Anmeldung/Aktualisierung ein neues Aktualisierungstoken aus.
+Einige Provider machen das vorherige Aktualisierungstoken ungültig, wenn für denselben
+Benutzer/dieselbe App ein neues ausgestellt wird. Praktisches Symptom: Sie melden sich über OpenClaw _und_
+über Claude Code/Codex CLI an, und eine der Anwendungen wird später zufällig abgemeldet.
 
-Um dies zu vermeiden, behandelt OpenClaw den Speicher für Authentifizierungsprofile als **Token-Senke**:
+Um dies zu reduzieren, behandelt OpenClaw den Speicher für Authentifizierungsprofile als **Token-Senke**:
 
-- Die Laufzeit liest die Zugangsdaten pro Agent aus einer einzigen Quelle.
-- Mehrere Profile können nebeneinander bestehen und deterministisch weitergeleitet werden.
-- Die Wiederverwendung externer CLIs ist Provider-spezifisch: Sobald OpenClaw ein lokales OAuth-
-  Profil für einen Provider verwaltet, ist das lokale Aktualisierungs-Token maßgeblich. Wird dieses lokale
-  Aktualisierungs-Token abgelehnt, meldet OpenClaw das Profil zur
-  erneuten Authentifizierung, statt auf Tokenmaterial einer externen CLI zurückzugreifen.
-  Die Initialisierung über die Codex CLI ist noch stärker eingeschränkt: Sie kann nur ein leeres Profil
-  im Stil von `openai:default` befüllen, bevor OpenClaw OAuth für diesen
-  Provider verwaltet. Danach bleiben die von OpenClaw verwalteten Aktualisierungen maßgeblich.
+- die Laufzeit liest die Anmeldedaten pro Agent aus einer einzigen Quelle
+- mehrere Profile können nebeneinander bestehen und deterministisch weitergeleitet werden
+- die Wiederverwendung externer CLIs ist providerspezifisch: Sobald OpenClaw ein lokales OAuth-Profil
+  für einen Provider verwaltet, ist das lokale Aktualisierungstoken kanonisch. Wird dieses lokale
+  Aktualisierungstoken abgelehnt, meldet OpenClaw das Profil zur
+  erneuten Authentifizierung, anstatt auf Tokenmaterial einer externen CLI zurückzugreifen.
+  Das Bootstrapping über die Codex CLI ist noch enger gefasst: Es kann nur ein leeres Profil
+  im Stil von `openai:default` initialisieren, bevor OpenClaw OAuth für diesen
+  Provider verwaltet; danach bleiben von OpenClaw durchgeführte Aktualisierungen kanonisch
 - Status- und Startpfade beschränken die Erkennung externer CLIs auf die bereits
-  konfigurierte Provider-Menge. Daher wird bei einer Einrichtung mit nur einem Provider
-  nicht der Anmeldespeicher einer nicht zugehörigen CLI geprüft.
+  konfigurierte Providermenge, sodass bei einer Konfiguration mit nur einem Provider nicht der
+  Anmeldespeicher einer nicht zugehörigen CLI geprüft wird
 
-## Speicherung (wo Tokens abgelegt werden)
+## Speicherung (wo Tokens gespeichert werden)
 
 Geheimnisse werden pro Agent unter dem logischen Namen `auth-profiles.json` gespeichert (der
-zugrunde liegende Speicher ist die SQLite-Datenbank des Agent; der JSON-Name bleibt aus
-Kompatibilitätsgründen und für die Anzeige in Werkzeugen erhalten):
+zugrunde liegende Speicher ist die SQLite-Datenbank des Agents; der JSON-Name wird aus
+Kompatibilitätsgründen und für die Anzeige in Werkzeugen beibehalten):
 
 - Authentifizierungsprofile (OAuth, API-Schlüssel und optionale Referenzen auf Wertebene):
   `~/.openclaw/agents/<agentId>/agent/auth-profiles.json`
-- Alte Kompatibilitätsdatei: `~/.openclaw/agents/<agentId>/agent/auth.json`
-  (statische `api_key`-Einträge werden bei der Erkennung entfernt)
+- Legacy-Kompatibilitätsdatei: `~/.openclaw/agents/<agentId>/agent/auth.json`
+  (statische Einträge mit `api_key` werden bei ihrer Erkennung bereinigt)
 
-Alte Datei ausschließlich für den Import (wird weiterhin unterstützt, ist aber nicht der primäre Speicher):
+Legacy-Datei ausschließlich für den Import (weiterhin unterstützt, aber nicht der Hauptspeicher):
 
 - `~/.openclaw/credentials/oauth.json` (wird bei der ersten Verwendung in den Speicher für Authentifizierungsprofile importiert)
 
-Alle oben genannten Pfade berücksichtigen außerdem `$OPENCLAW_STATE_DIR` (Überschreibung des Zustandsverzeichnisses). Vollständige Referenz: [/gateway/configuration-reference#auth-storage](/de/gateway/configuration-reference#auth-storage)
+Alle oben genannten Speicherorte berücksichtigen außerdem `$OPENCLAW_STATE_DIR` (Überschreibung des Zustandsverzeichnisses). Vollständige Referenz: [/gateway/configuration-reference#auth-storage](/de/gateway/configuration-reference#auth-storage)
 
 Informationen zu statischen Geheimnisreferenzen und zum Aktivierungsverhalten von Laufzeit-Snapshots finden Sie unter [Geheimnisverwaltung](/de/gateway/secrets).
 
 Wenn ein sekundärer Agent kein lokales Authentifizierungsprofil besitzt, verwendet OpenClaw eine durchgereichte
-Vererbung aus dem Speicher des Standard-/Haupt-Agent; der Speicher des Haupt-Agent
-wird beim Lesen nicht kopiert. OAuth-Aktualisierungs-Tokens sind besonders sensibel: Normale
-Kopiervorgänge lassen sie standardmäßig aus, da manche Provider Aktualisierungs-Tokens nach der
-Verwendung rotieren oder ungültig machen. Konfigurieren Sie für einen Agent eine separate OAuth-Anmeldung, wenn
+Vererbung aus dem Speicher des Standard-/Haupt-Agents; der Speicher des Haupt-Agents wird beim Lesen nicht
+geklont. OAuth-Aktualisierungstokens sind besonders sensibel: Normale
+Kopiervorgänge überspringen sie standardmäßig, da einige Provider
+Aktualisierungstokens nach der Verwendung rotieren oder ungültig machen. Konfigurieren Sie für einen Agent eine separate OAuth-Anmeldung, wenn
 er ein unabhängiges Konto benötigt.
 
 ## Wiederverwendung der Anthropic Claude CLI
 
-OpenClaw unterstützt die Wiederverwendung der Anthropic Claude CLI und `claude -p` als genehmigten
+OpenClaw unterstützt die Wiederverwendung der Anthropic Claude CLI und `claude -p` als zulässigen
 Authentifizierungsweg. Wenn auf dem Host bereits eine lokale Claude-Anmeldung vorhanden ist,
-kann sie beim Onboarding oder bei der Konfiguration direkt wiederverwendet werden. Das Anthropic-Einrichtungs-Token bleibt
-als unterstützter Weg zur Tokenauthentifizierung verfügbar, OpenClaw bevorzugt jedoch die Wiederverwendung der Claude CLI,
+kann sie beim Onboarding oder bei der Konfiguration direkt wiederverwendet werden. Das Anthropic-Einrichtungstoken bleibt
+als unterstützter Weg für die Tokenauthentifizierung verfügbar, OpenClaw bevorzugt jedoch die Wiederverwendung der Claude CLI,
 wenn sie verfügbar ist.
 
 <Warning>
-In der öffentlichen Dokumentation von Anthropic zu Claude Code steht, dass die direkte Verwendung von Claude Code innerhalb
-der Limits eines Claude-Abonnements bleibt. Mitarbeitende von Anthropic haben uns außerdem mitgeteilt, dass die Nutzung der Claude
-CLI im Stil von OpenClaw wieder zulässig ist. OpenClaw behandelt daher die Wiederverwendung der Claude CLI und
-die Nutzung von `claude -p` für diese Integration als genehmigt, sofern Anthropic
+In der öffentlichen Claude-Code-Dokumentation von Anthropic wird angegeben, dass die direkte Nutzung von Claude Code innerhalb der
+Limits des Claude-Abonnements bleibt, und Anthropic-Mitarbeiter haben uns mitgeteilt, dass die Claude-CLI-Nutzung nach Art von OpenClaw
+wieder zulässig ist. OpenClaw betrachtet daher die Wiederverwendung der Claude CLI und
+die Nutzung von `claude -p` für diese Integration als zulässig, sofern Anthropic
 keine neue Richtlinie veröffentlicht.
 
-Die aktuellen Tarifdokumentationen von Anthropic zur direkten Verwendung von Claude Code finden Sie unter [Claude Code
-mit Ihrem Pro- oder Max-
-Tarif verwenden](https://support.claude.com/en/articles/11145838-using-claude-code-with-your-pro-or-max-plan)
-und [Claude Code mit Ihrem Team- oder Enterprise-
-Tarif verwenden](https://support.anthropic.com/en/articles/11845131-using-claude-code-with-your-team-or-enterprise-plan/).
+Die aktuellen Anthropic-Dokumentationen zu Tarifen für die direkte Nutzung von Claude Code finden Sie unter [Claude Code
+mit Ihrem Pro- oder Max-Tarif
+verwenden](https://support.claude.com/en/articles/11145838-using-claude-code-with-your-pro-or-max-plan)
+und [Claude Code mit Ihrem Team- oder Enterprise-Tarif
+verwenden](https://support.anthropic.com/en/articles/11845131-using-claude-code-with-your-team-or-enterprise-plan/).
 
-Wenn Sie weitere abonnementbasierte Optionen in OpenClaw verwenden möchten, lesen Sie [OpenAI
+Weitere abonnementbasierte Optionen in OpenClaw finden Sie unter [OpenAI
 Codex](/de/providers/openai), [Qwen Cloud Coding
 Plan](/de/providers/qwen), [MiniMax Coding Plan](/de/providers/minimax)
-und [Z.AI / GLM Coding Plan](/de/providers/zai).
+und [Z.AI/GLM Coding Plan](/de/providers/zai).
 </Warning>
 
 ## OAuth-Austausch (wie die Anmeldung funktioniert)
 
-Die interaktiven Anmeldeabläufe von OpenClaw sind in `openclaw/plugin-sdk/llm.ts` implementiert und in die Assistenten und Befehle eingebunden.
+Die interaktiven Anmeldeabläufe von OpenClaw sind in `openclaw/plugin-sdk/llm.ts` implementiert und in die Assistenten/Befehle eingebunden.
 
-### Anthropic-Einrichtungs-Token
+### Anthropic-Einrichtungstoken
 
 Ablauf:
 
-1. Starten Sie das Anthropic-Einrichtungs-Token oder fügen Sie ein Token in OpenClaw ein.
-2. OpenClaw speichert die resultierenden Anthropic-Zugangsdaten in einem Authentifizierungsprofil.
-3. Die Modellauswahl bleibt bei `anthropic/...`.
-4. Vorhandene Anthropic-Authentifizierungsprofile bleiben für Rollbacks und die Steuerung der Reihenfolge verfügbar.
+1. Erstellen Sie das Token, indem Sie `claude setup-token` auf einem beliebigen Rechner mit Claude Code ausführen, und starten Sie anschließend in OpenClaw die Einrichtung per Anthropic-Einrichtungstoken oder eingefügtem Token
+2. OpenClaw speichert die resultierenden Anthropic-Anmeldedaten in einem Authentifizierungsprofil
+3. die Modellauswahl bleibt bei `anthropic/...`
+4. bestehende Anthropic-Authentifizierungsprofile bleiben für Rollbacks und die Steuerung der Reihenfolge verfügbar
 
 ### OpenAI Codex (ChatGPT OAuth)
 
-OpenAI Codex OAuth wird ausdrücklich für die Verwendung außerhalb der Codex CLI unterstützt, einschließlich OpenClaw-Arbeitsabläufen.
+OpenAI Codex OAuth wird ausdrücklich für die Verwendung außerhalb der Codex CLI unterstützt, einschließlich OpenClaw-Workflows.
 
 Der Anmeldebefehl verwendet die kanonische OpenAI-Provider-ID:
 
@@ -144,65 +145,65 @@ Der Anmeldebefehl verwendet die kanonische OpenAI-Provider-ID:
 openclaw models auth login --provider openai
 ```
 
-Verwenden Sie `--profile-id openai:<name>` für mehrere ChatGPT/Codex-OAuth-Konten innerhalb
-eines Agent. Verwenden Sie für neue Profile nicht `openai-codex:<name>`. Doctor migriert
-dieses ältere Präfix zu einer kollisionsfreien Profil-ID mit `openai:*`. Führen Sie nach der Reparatur
-`openclaw models auth list --provider openai` aus, bevor Sie Profil-IDs
-in `auth.order` oder `/model ...@<profileId>` kopieren.
+Verwenden Sie `--profile-id openai:<name>` für mehrere ChatGPT/Codex-OAuth-Konten in
+einem Agent. Verwenden Sie `openai-codex:<name>` nicht für neue Profile. Doctor migriert
+dieses ältere Präfix zu einer kollisionsfreien Profil-ID mit `openai:*`; führen Sie nach der
+Reparatur `openclaw models auth list --provider openai` aus, bevor Sie
+Profil-IDs in `auth.order` oder `/model ...@<profileId>` kopieren.
 
 Ablauf (PKCE):
 
-1. Generieren Sie einen PKCE-Verifizierer/eine PKCE-Challenge und einen zufälligen `state`.
-2. Öffnen Sie `https://auth.openai.com/oauth/authorize?...` (Geltungsbereich
-   `openid profile email offline_access`).
-3. Versuchen Sie, den Callback unter `http://localhost:1455/auth/callback` zu erfassen (der
-   Callback-Host ist standardmäßig `localhost` und akzeptiert nur local loopback-Hosts;
-   mit `OPENCLAW_OAUTH_CALLBACK_HOST` überschreibbar).
-4. Wenn Sie einen Code einfügen können, bevor der Callback eintrifft (oder Sie
-   remote bzw. ohne grafische Oberfläche arbeiten und der Callback nicht gebunden werden kann), fügen Sie stattdessen
-   die Weiterleitungs-URL oder den Code ein. Das manuelle Einfügen konkurriert mit dem Browser-Callback;
-   der zuerst abgeschlossene Vorgang gewinnt.
-5. Tauschen Sie den Code unter `https://auth.openai.com/oauth/token` aus.
-6. Extrahieren Sie `accountId` aus dem Zugriffs-Token und speichern Sie `{ access, refresh, expires, accountId }`.
+1. einen PKCE-Verifizierer/eine PKCE-Challenge und einen zufälligen Wert für `state` erzeugen
+2. `https://auth.openai.com/oauth/authorize?...` öffnen (Geltungsbereich
+   `openid profile email offline_access`)
+3. versuchen, den Callback unter `http://localhost:1455/auth/callback` zu empfangen (der
+   Callback-Host ist standardmäßig `localhost` und akzeptiert nur Loopback-Hosts;
+   Überschreibung mit `OPENCLAW_OAUTH_CALLBACK_HOST`)
+4. wenn Sie einen Code einfügen können, bevor der Callback eintrifft (oder Sie
+   remote/headless arbeiten und der Callback keine Bindung herstellen kann), fügen Sie stattdessen die Weiterleitungs-URL/den Code
+   ein – das manuelle Einfügen konkurriert mit dem Browser-Callback, und der zuerst
+   abgeschlossene Vorgang gewinnt
+5. den Code unter `https://auth.openai.com/oauth/token` austauschen
+6. `accountId` aus dem Zugriffstoken extrahieren und `{ access, refresh, expires, accountId }` speichern
 
 Der Pfad im Assistenten lautet `openclaw onboard` → Authentifizierungsauswahl `openai`.
 
 ## Aktualisierung und Ablauf
 
-Profile speichern einen `expires`-Zeitstempel. Zur Laufzeit gilt:
+Profile speichern einen Zeitstempel unter `expires`. Zur Laufzeit:
 
-- Wenn `expires` in der Zukunft liegt, wird das gespeicherte Zugriffs-Token verwendet.
-- Wenn es abgelaufen ist, wird es aktualisiert (unter einer Dateisperre), und die gespeicherten Zugangsdaten werden überschrieben.
-- Wenn ein sekundärer Agent ein geerbtes OAuth-Profil des Haupt-Agent liest,
-  schreibt die Aktualisierung in den Speicher des Haupt-Agent zurück, statt das Aktualisierungs-
-  Token in den Speicher des sekundären Agent zu kopieren.
-- Extern verwaltete CLI-Zugangsdaten (Claude CLI, eingeschränkte Initialisierung über die Codex CLI;
-  siehe [Die Token-Senke](#the-token-sink-why-it-exists)) werden erneut gelesen, statt
-  ein kopiertes Aktualisierungs-Token zu verbrauchen. Wenn eine verwaltete Aktualisierung fehlschlägt, meldet OpenClaw
-  das betroffene Profil zur erneuten Authentifizierung, statt
+- wenn `expires` in der Zukunft liegt, das gespeicherte Zugriffstoken verwenden
+- bei Ablauf aktualisieren (unter einer Dateisperre) und die gespeicherten Anmeldedaten überschreiben
+- wenn ein sekundärer Agent ein geerbtes OAuth-Profil des Haupt-Agents liest, wird die
+  Aktualisierung in den Speicher des Haupt-Agents zurückgeschrieben, anstatt das Aktualisierungstoken
+  in den Speicher des sekundären Agents zu kopieren
+- extern verwaltete CLI-Anmeldedaten (Claude CLI, eng begrenztes Bootstrapping über die Codex CLI;
+  siehe [Die Token-Senke](#the-token-sink-why-it-exists)) werden erneut eingelesen, anstatt
+  ein kopiertes Aktualisierungstoken zu verbrauchen. Wenn eine verwaltete Aktualisierung fehlschlägt, meldet OpenClaw
+  das betroffene Profil zur erneuten Authentifizierung, anstatt
   Tokenmaterial einer externen CLI zurückzugeben.
 
-Der Aktualisierungsablauf erfolgt automatisch; normalerweise müssen Sie Tokens nicht manuell verwalten.
+Der Aktualisierungsablauf erfolgt automatisch; Tokens müssen im Allgemeinen nicht manuell verwaltet werden.
 
 ## Mehrere Konten (Profile) und Weiterleitung
 
 Zwei Muster:
 
-### 1) Bevorzugt: getrennte Agents
+### 1) Bevorzugt: separate Agents
 
-Wenn „privat“ und „beruflich“ niemals miteinander interagieren sollen, verwenden Sie isolierte Agents (getrennte Sitzungen, Zugangsdaten und Arbeitsbereiche):
+Wenn „privat“ und „geschäftlich“ niemals miteinander interagieren sollen, verwenden Sie isolierte Agents (separate Sitzungen, Anmeldedaten und Arbeitsbereiche):
 
 ```bash
 openclaw agents add work
 openclaw agents add personal
 ```
 
-Konfigurieren Sie anschließend die Authentifizierung pro Agent im Assistenten und leiten Sie Chats an den richtigen Agent weiter.
+Konfigurieren Sie anschließend die Authentifizierung pro Agent (Assistent) und leiten Sie Chats an den richtigen Agent weiter.
 
 ### 2) Fortgeschritten: mehrere Profile in einem Agent
 
 Der Speicher für Authentifizierungsprofile unterstützt mehrere Profil-IDs für denselben Provider.
-Wählen Sie aus, welches Profil verwendet wird:
+Wählen Sie das zu verwendende Profil:
 
 - global über die Konfigurationsreihenfolge (`auth.order`)
 - pro Sitzung über `/model ...@<profileId>`
@@ -211,7 +212,7 @@ Beispiel (Sitzungsüberschreibung):
 
 - `/model Opus@anthropic:work`
 
-Listen Sie vorhandene Profil-IDs mit folgendem Befehl auf:
+Vorhandene Profil-IDs auflisten mit:
 
 ```bash
 openclaw models auth list --provider <id>
@@ -219,11 +220,11 @@ openclaw models auth list --provider <id>
 
 Zugehörige Dokumentation:
 
-- [Modell-Failover](/de/concepts/model-failover) (Regeln für Rotation und Abkühlzeiten)
-- [Schrägstrichbefehle](/de/tools/slash-commands) (Befehlsoberfläche)
+- [Modell-Failover](/de/concepts/model-failover) (Rotations- und Abkühlregeln)
+- [Slash-Befehle](/de/tools/slash-commands) (Befehlsoberfläche)
 
 ## Verwandte Themen
 
 - [Authentifizierung](/de/gateway/authentication) – Übersicht zur Authentifizierung bei Modell-Providern
-- [Geheimnisse](/de/gateway/secrets) – Speicherung von Zugangsdaten und SecretRef
+- [Geheimnisse](/de/gateway/secrets) – Speicherung von Anmeldedaten und SecretRef
 - [Konfigurationsreferenz](/de/gateway/configuration-reference#auth-storage) – Konfigurationsschlüssel für die Authentifizierung

@@ -4,11 +4,12 @@ read_when:
 summary: Plugin nhà cung cấp Amazon Bedrock Mantle của OpenClaw để định tuyến mô hình tương thích với OpenAI.
 title: Plugin Amazon Bedrock Mantle
 x-i18n:
-    generated_at: "2026-07-12T08:09:27Z"
+    generated_at: "2026-07-16T15:36:05Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 18725aa4678f967a5d34a2c951c11cc371e934abe62fde7616124157ebdb3799
+    source_hash: a12f8acda947e8b80053229a8b842560d087e2b7944d9092a3c3d250343cccbc
     source_path: plugins/reference/amazon-bedrock-mantle.md
     workflow: 16
 ---
@@ -24,7 +25,7 @@ Plugin nhà cung cấp Amazon Bedrock Mantle của OpenClaw để định tuyế
 
 ## Bề mặt
 
-nhà cung cấp: amazon-bedrock-mantle
+nhà cung cấp: `amazon-bedrock-mantle`
 
 ## Tài liệu liên quan
 

@@ -1,31 +1,32 @@
 ---
 read_when:
-    - Sie installieren, konfigurieren oder prüfen das fireworks-Plugin
-summary: Fügt Unterstützung für den Fireworks-Modell-Provider zu OpenClaw hinzu.
+    - Sie installieren, konfigurieren oder überprüfen das Fireworks-Plugin.
+summary: Fügt OpenClaw Unterstützung für den Modell-Provider Fireworks hinzu.
 title: Fireworks-Plugin
 x-i18n:
-    generated_at: "2026-06-27T17:53:45Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T13:09:36Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 1750e345f485fa7d8735a16278422188ad761b0c682cd5f09227f4407d502203
+    source_hash: f50d32c05d94cd14dbbc3dc25659884dbe3c23c2d613bceaaae573e942a545d5
     source_path: plugins/reference/fireworks.md
     workflow: 16
 ---
 
 # Fireworks-Plugin
 
-Fügt Unterstützung für den Fireworks-Modell-Provider zu OpenClaw hinzu.
+Fügt OpenClaw Unterstützung für den Fireworks-Modell-Provider hinzu.
 
-## Verteilung
+## Distribution
 
 - Paket: `@openclaw/fireworks-provider`
 - Installationsweg: npm; ClawHub: `clawhub:@openclaw/fireworks-provider`
 
 ## Oberfläche
 
-providers: fireworks
+Provider: `fireworks`
 
-## Verwandte Dokumentation
+## Zugehörige Dokumentation
 
-- [fireworks](/de/providers/fireworks)
+- [Fireworks](/de/providers/fireworks)

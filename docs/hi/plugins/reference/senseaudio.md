@@ -1,21 +1,22 @@
 ---
 read_when:
-    - आप senseaudio Plugin को इंस्टॉल, कॉन्फ़िगर, या ऑडिट कर रहे हैं
-summary: मीडिया समझ प्रदाता समर्थन जोड़ता है।
+    - आप senseaudio Plugin को इंस्टॉल, कॉन्फ़िगर या ऑडिट कर रहे हैं
+summary: मीडिया को समझने वाले प्रदाता के लिए समर्थन जोड़ता है।
 title: Senseaudio Plugin
 x-i18n:
-    generated_at: "2026-06-28T23:48:53Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T16:33:44Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: b1566a7e33b2f3d367c0fafc364b701aff60587204bb585af1cf15786e5ed330
+    source_hash: 5be8db39a6e5f2a2bf1e8587aaff5f82c6c3edfc0ceced59361974133482a303
     source_path: plugins/reference/senseaudio.md
     workflow: 16
 ---
 
 # Senseaudio Plugin
 
-मीडिया समझ प्रदाता समर्थन जोड़ता है।
+मीडिया को समझने वाले प्रदाता के लिए समर्थन जोड़ता है।
 
 ## वितरण
 
@@ -24,7 +25,7 @@ x-i18n:
 
 ## सतह
 
-अनुबंध: mediaUnderstandingProviders
+अनुबंध: `mediaUnderstandingProviders`
 
 ## संबंधित दस्तावेज़
 

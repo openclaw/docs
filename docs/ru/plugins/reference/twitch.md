@@ -1,22 +1,22 @@
 ---
 read_when:
     - Вы устанавливаете, настраиваете или проверяете плагин Twitch
-summary: Плагин канала Twitch для OpenClaw, предназначенный для рабочих процессов чата и модерации.
+summary: Плагин канала Twitch для OpenClaw, предназначенный для чата и рабочих процессов модерации.
 title: Плагин Twitch
 x-i18n:
-    generated_at: "2026-07-13T18:25:22Z"
+    generated_at: "2026-07-16T16:44:40Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
-    prompt_version: 24
+    prompt_version: 32
     provider: openai
-    source_hash: fc1bbe93d4d91427cf9c53abd4ed6833c9a06520f466cc31a24f94f6f0f327d7
+    source_hash: 6a931d467430d05b7a93471a1b8fd4b7b7d6cdc010ec0bcc5cb36d777888f105
     source_path: plugins/reference/twitch.md
     workflow: 16
 ---
 
 # Плагин Twitch
 
-Плагин канала Twitch для OpenClaw, предназначенный для рабочих процессов чата и модерации.
+Плагин канала Twitch для OpenClaw, предназначенный для рабочих процессов с чатом и модерацией.
 
 ## Распространение
 
@@ -25,8 +25,8 @@ x-i18n:
 
 ## Интерфейс
 
-channels: twitch
+каналы: `twitch`
 
-## Связанные документы
+## Связанная документация
 
 - [Twitch](/ru/channels/twitch)

@@ -1,81 +1,93 @@
 ---
 read_when:
-    - Belirli bir ilk kurulum adımını veya bayrağını arama
-    - Etkileşimsiz modla onboarding’i otomatikleştirme
-    - OpenClaw Docs i18n girdisini hata ayıklama davranışı
+    - Belirli bir ilk katılım adımını veya bayrağı arama
+    - Etkileşimsiz modla ilk katılımı otomatikleştirme
+    - İlk katılım davranışında hata ayıklama
 sidebarTitle: Onboarding Reference
-summary: 'CLI katılımı için tam başvuru: her adım, bayrak ve yapılandırma alanı'
-title: OpenClaw'a başlama başvurusu
+summary: 'CLI başlangıç yapılandırması için tam başvuru: her adım, bayrak ve yapılandırma alanı'
+title: İlk kurulum referansı
 x-i18n:
-    generated_at: "2026-06-28T01:18:26Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T17:37:36Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 739048d53983febc32adaeab10225a288ae66752bee70cfea500d1664fd8546b
+    source_hash: 6c345887da0102c73f72623105d052ea9262006206dd70bae8f94aad1349423d
     source_path: reference/wizard.md
     workflow: 16
 ---
 
-Bu, `openclaw onboard` için tam başvuru kaynağıdır.
-Üst düzey genel bakış için bkz. [Katılım (CLI)](/tr/start/wizard).
+Bu, `openclaw onboard` için tam başvuru belgesidir.
+Üst düzey bir genel bakış için [İlk katılım (CLI)](/tr/start/wizard) bölümüne bakın. Adım adım
+davranış ve çıktılar için [CLI kurulum başvurusu](/tr/start/wizard-cli-reference) bölümüne bakın.
 
 ## Akış ayrıntıları (yerel mod)
 
 <Steps>
-  <Step title="Mevcut yapılandırma algılama">
-    - `~/.openclaw/openclaw.json` varsa **Geçerli değerleri koru**, **Gözden geçir ve güncelle** veya **Kurulumdan önce sıfırla** seçeneklerinden birini seçin.
-    - Katılımı yeniden çalıştırmak, açıkça **Sıfırla** seçeneğini seçmediğiniz sürece hiçbir şeyi silmez
-      (veya `--reset` geçmediğiniz sürece).
-    - CLI `--reset` varsayılan olarak `config+creds+sessions` kullanır; çalışma alanını da kaldırmak için
-      `--reset-scope full` kullanın.
-    - Yapılandırma geçersizse veya eski anahtarlar içeriyorsa sihirbaz durur ve devam etmeden önce
-      `openclaw doctor` çalıştırmanızı ister.
-    - Sıfırlama `trash` kullanır (asla `rm` değil) ve şu kapsamları sunar:
-      - Yalnızca yapılandırma
-      - Yapılandırma + kimlik bilgileri + oturumlar
-      - Tam sıfırlama (çalışma alanını da kaldırır)
+  <Step title="Sıfırlama (isteğe bağlı)">
+    - `--reset`, kurulum çalışmadan önce durumu sıfırlar; bu olmadan ilk katılımı yeniden çalıştırmak,
+      mevcut yapılandırmayı korur ve varsayılanlar olarak yeniden kullanır.
+    - `--reset-scope`, `--reset` komutunun neyi kaldıracağını denetler: `config` (yalnızca yapılandırma
+      dosyası), `config+creds+sessions` (varsayılan) veya `full` (çalışma alanını da
+      kaldırır).
+    - Yapılandırma dosyası geçersizse ilk katılım durur ve önce
+      `openclaw doctor` komutunu çalıştırmanızı, ardından kurulumu yeniden çalıştırmanızı ister.
+    - Sıfırlama, durumu Çöp Kutusu'na taşır (asla doğrudan silmez).
+
+  </Step>
+  <Step title="Risk onayı">
+    - İlk çalıştırma (veya `wizard.securityAcknowledgedAt` ayarlanmadan önceki herhangi bir çalıştırma),
+      ajanların güçlü olduğunu ve tam sistem erişiminin risk taşıdığını
+      anladığınızı onaylamanızı ister.
+    - `--non-interactive`, `--accept-risk` değerinin açıkça belirtilmesini gerektirir; bu olmadan
+      ilk katılım istem göstermek yerine bir hatayla çıkar.
+    - Etkileşimli çalıştırmalarda bayrak yerine bir onay istemi gösterilir; reddedilmesi
+      kurulumu iptal eder.
 
   </Step>
   <Step title="Model/Kimlik doğrulama">
-    - **Anthropic API anahtarı**: varsa `ANTHROPIC_API_KEY` kullanır veya bir anahtar ister, sonra daemon kullanımı için kaydeder.
-    - **Anthropic API anahtarı**: katılım/yapılandırma sırasında tercih edilen Anthropic asistan seçimi.
-    - **Anthropic setup-token**: OpenClaw artık kullanılabiliyorsa Claude CLI yeniden kullanımını tercih etse de katılım/yapılandırma içinde hâlâ kullanılabilir.
+    - **Anthropic API anahtarı**: varsa `ANTHROPIC_API_KEY` kullanır veya bir anahtar ister, ardından daemon kullanımı için kaydeder.
+    - **Anthropic Claude CLI**: Claude CLI oturumu zaten açıksa tercih edilen yerel yoldur; OpenClaw alternatif olarak Anthropic kurulum belirteciyle kimlik doğrulamayı da destekler.
     - **OpenAI Code (Codex) aboneliği (OAuth)**: tarayıcı akışı; `code#state` değerini yapıştırın.
-      - Model ayarlanmamışsa veya zaten OpenAI ailesindeyse Codex çalışma zamanı üzerinden `agents.defaults.model` değerini `openai/gpt-5.5` olarak ayarlar.
+      - Birincil modeli olmayan yeni bir kurulumda, Codex çalışma zamanı üzerinden `agents.defaults.model` değerini `openai/gpt-5.6-sol` olarak ayarlar.
     - **OpenAI Code (Codex) aboneliği (cihaz eşleştirme)**: kısa ömürlü bir cihaz koduyla tarayıcı eşleştirme akışı.
-      - Model ayarlanmamışsa veya zaten OpenAI ailesindeyse Codex çalışma zamanı üzerinden `agents.defaults.model` değerini `openai/gpt-5.5` olarak ayarlar.
-    - **OpenAI API anahtarı**: varsa `OPENAI_API_KEY` kullanır veya bir anahtar ister, sonra bunu kimlik doğrulama profillerinde saklar.
-      - Model ayarlanmamışsa, `openai/*` ise veya eski Codex model başvurularıysa `agents.defaults.model` değerini `openai/gpt-5.5` olarak ayarlar.
-    - **xAI (Grok) OAuth / API anahtarı**: seçildiğinde xAI OAuth ile oturum açar veya API anahtarı yolunda `XAI_API_KEY` ister ve xAI’yi model sağlayıcısı olarak yapılandırır.
-    - **OpenCode**: `OPENCODE_API_KEY` (veya `OPENCODE_ZEN_API_KEY`, https://opencode.ai/auth adresinden alın) ister ve Zen ya da Go kataloğunu seçmenizi sağlar.
-    - **Ollama**: önce **Bulut + Yerel**, **Yalnızca bulut** veya **Yalnızca yerel** seçeneklerini sunar. `Cloud only`, `OLLAMA_API_KEY` ister ve `https://ollama.com` kullanır; ana makine destekli modlar Ollama temel URL’sini ister, kullanılabilir modelleri keşfeder ve gerektiğinde seçilen yerel modeli otomatik olarak çeker; `Cloud + Local` ayrıca bu Ollama ana makinesinin bulut erişimi için oturum açıp açmadığını denetler.
+      - Birincil modeli olmayan yeni bir kurulumda, Codex çalışma zamanı üzerinden `agents.defaults.model` değerini `openai/gpt-5.6-sol` olarak ayarlar.
+    - **OpenAI API anahtarı**: varsa `OPENAI_API_KEY` kullanır veya bir anahtar ister, ardından kimlik doğrulama profillerinde saklar.
+      - Birincil modeli olmayan yeni bir kurulumda `agents.defaults.model` değerini `openai/gpt-5.6` olarak ayarlar; yalın doğrudan API model kimliği Sol katmanına çözümlenir.
+    - OpenAI eklemek veya yeniden kimlik doğrulamak, `openai/gpt-5.5` dahil olmak üzere açıkça belirtilmiş mevcut birincil modeli korur. Hesap GPT-5.6'yı sunmuyorsa `openai/gpt-5.5` değerini açıkça seçin; OpenClaw modeli sessizce daha düşük bir sürüme geçirmez.
+    - **xAI OAuth**: localhost geri çağırması gerektirmeyen cihaz kodlu tarayıcı oturumu; bu nedenle SSH/Docker/VPS üzerinden de çalışır (`--auth-choice xai-oauth`).
+    - **xAI API anahtarı**: `XAI_API_KEY` ister (`--auth-choice xai-api-key`).
+    - `--auth-choice xai-device-code`, aynı xAI OAuth cihaz kodu akışı için yalnızca elle kullanılan bir uyumluluk diğer adı olarak hâlâ çalışır; yeni betikler için `xai-oauth` kullanın.
+    - **OpenCode**: `OPENCODE_API_KEY` (veya `OPENCODE_ZEN_API_KEY`, https://opencode.ai/auth adresinden edinin) ister ve Zen ya da Go kataloğunu seçmenize olanak tanır.
+    - **Ollama**: önce **Bulut + Yerel**, **Yalnızca bulut** veya **Yalnızca yerel** seçeneklerini sunar. `Cloud only`, `OLLAMA_API_KEY` ister ve `https://ollama.com` kullanır; ana makine destekli modlar Ollama temel URL'sini (varsayılan `http://127.0.0.1:11434`) ister, kullanılabilir modelleri keşfeder ve gerektiğinde seçilen yerel modeli otomatik olarak çeker; `Cloud + Local` ayrıca söz konusu Ollama ana makinesinde bulut erişimi için oturum açılıp açılmadığını denetler.
     - Daha fazla ayrıntı: [Ollama](/tr/providers/ollama)
     - **API anahtarı**: anahtarı sizin için saklar.
     - **Vercel AI Gateway (çok modelli proxy)**: `AI_GATEWAY_API_KEY` ister.
     - Daha fazla ayrıntı: [Vercel AI Gateway](/tr/providers/vercel-ai-gateway)
     - **Cloudflare AI Gateway**: Hesap Kimliği, Gateway Kimliği ve `CLOUDFLARE_AI_GATEWAY_API_KEY` ister.
     - Daha fazla ayrıntı: [Cloudflare AI Gateway](/tr/providers/cloudflare-ai-gateway)
-    - **MiniMax**: yapılandırma otomatik yazılır; barındırılan varsayılan `MiniMax-M3` değeridir.
+    - **MiniMax**: yapılandırma otomatik olarak yazılır; barındırılan varsayılan `MiniMax-M3` değeridir.
       API anahtarı kurulumu `minimax/...`, OAuth kurulumu ise
       `minimax-portal/...` kullanır.
     - Daha fazla ayrıntı: [MiniMax](/tr/providers/minimax)
-    - **StepFun**: yapılandırma Çin veya küresel uç noktalarda StepFun standard ya da Step Plan için otomatik yazılır.
-    - Standard şu anda `step-3.5-flash` içerir; Step Plan ayrıca `step-3.5-flash-2603` içerir.
+    - **StepFun**: yapılandırma, Çin veya küresel uç noktalardaki StepFun standard ya da Step Plan için otomatik olarak yazılır.
+    - Standard şu anda varsayılan olarak `step-3.5-flash` kullanır; Step Plan ayrıca `step-3.5-flash-2603` içerir.
     - Daha fazla ayrıntı: [StepFun](/tr/providers/stepfun)
     - **Synthetic (Anthropic uyumlu)**: `SYNTHETIC_API_KEY` ister.
     - Daha fazla ayrıntı: [Synthetic](/tr/providers/synthetic)
-    - **Moonshot (Kimi K2)**: yapılandırma otomatik yazılır.
-    - **Kimi Coding**: yapılandırma otomatik yazılır.
+    - **Moonshot (Kimi K2)**: yapılandırma otomatik olarak yazılır.
+    - **Kimi Coding**: yapılandırma otomatik olarak yazılır.
     - Daha fazla ayrıntı: [Moonshot AI (Kimi + Kimi Coding)](/tr/providers/moonshot)
+    - **Özel Sağlayıcı**: OpenAI uyumlu, OpenAI Responses uyumlu veya Anthropic uyumlu uç noktalarla çalışır. Etkileşimsiz bayraklar: `--auth-choice custom-api-key`, `--custom-base-url`, `--custom-model-id`, `--custom-api-key` (isteğe bağlı; `CUSTOM_API_KEY` değerine geri döner), `--custom-provider-id` (isteğe bağlı; temel URL'den otomatik olarak türetilir), `--custom-compatibility openai|openai-responses|anthropic` (varsayılan `openai`), `--custom-image-input` / `--custom-text-input` (çıkarılan görsel model algılamasını geçersiz kılar).
     - **Atla**: henüz kimlik doğrulama yapılandırılmaz.
-    - Algılanan seçeneklerden varsayılan bir model seçin (veya sağlayıcı/modeli elle girin). En iyi kalite ve daha düşük prompt enjeksiyonu riski için sağlayıcı yığınınızda mevcut olan en güçlü son nesil modeli seçin.
-    - Katılım bir model denetimi çalıştırır ve yapılandırılan model bilinmiyorsa veya kimlik doğrulaması eksikse uyarır.
-    - API anahtarı saklama modu varsayılan olarak düz metin kimlik doğrulama profili değerleridir. Bunun yerine ortam destekli başvuruları saklamak için `--secret-input-mode ref` kullanın (örneğin `keyRef: { source: "env", provider: "default", id: "OPENAI_API_KEY" }`).
-    - Kimlik doğrulama profilleri `~/.openclaw/agents/<agentId>/agent/auth-profiles.json` içinde bulunur (API anahtarları + OAuth). `~/.openclaw/credentials/oauth.json` yalnızca eski içe aktarma kaynağıdır.
-    - Daha fazla ayrıntı: [/concepts/oauth](/tr/concepts/oauth)
+    - Algılanan seçeneklerden bir varsayılan model seçin (veya sağlayıcı/modeli elle girin). En iyi kalite ve daha düşük istem enjeksiyonu riski için sağlayıcı yığınınızda bulunan en güçlü, en yeni nesil modeli seçin.
+    - İlk katılım bir model denetimi çalıştırır ve yapılandırılan model bilinmiyorsa veya kimlik doğrulaması eksikse uyarır.
+    - API anahtarı depolama modu varsayılan olarak düz metin kimlik doğrulama profili değerlerini kullanır. Bunun yerine ortam destekli başvuruları (örneğin `keyRef: { source: "env", provider: "default", id: "OPENAI_API_KEY" }`) saklamak için `--secret-input-mode ref` kullanın; başvurulan ortam değişkeni önceden ayarlanmış olmalıdır, aksi takdirde ilk katılım hemen başarısız olur.
+    - Kimlik doğrulama profilleri `~/.openclaw/agents/<agentId>/agent/auth-profiles.json` içinde bulunur (API anahtarları + OAuth). `~/.openclaw/credentials/oauth.json` yalnızca eski verileri içe aktarmak içindir.
+    - Daha fazla ayrıntı: [OAuth](/tr/concepts/oauth)
     <Note>
-    Başsız/sunucu ipucu: OAuth’u tarayıcısı olan bir makinede tamamlayın, ardından
-    bu ajanın `auth-profiles.json` dosyasını (örneğin
+    Başsız/sunucu ipucu: OAuth işlemini tarayıcısı olan bir makinede tamamlayın, ardından
+    söz konusu ajanın `auth-profiles.json` dosyasını (örneğin
     `~/.openclaw/agents/<agentId>/agent/auth-profiles.json` veya eşleşen
     `$OPENCLAW_STATE_DIR/...` yolunu) gateway ana makinesine kopyalayın. `credentials/oauth.json`
     yalnızca eski bir içe aktarma kaynağıdır.
@@ -83,84 +95,90 @@ Bu, `openclaw onboard` için tam başvuru kaynağıdır.
   </Step>
   <Step title="Çalışma alanı">
     - Varsayılan `~/.openclaw/workspace` (yapılandırılabilir).
-    - Ajan başlatma ritüeli için gereken çalışma alanı dosyalarını tohumlar.
+    - Ajan önyükleme yordamı için gereken çalışma alanı dosyalarını oluşturur.
     - Tam çalışma alanı düzeni + yedekleme kılavuzu: [Ajan çalışma alanı](/tr/concepts/agent-workspace)
 
   </Step>
   <Step title="Gateway">
-    - Port, bağlama, kimlik doğrulama modu, tailscale dışa açma.
-    - Kimlik doğrulama önerisi: local loopback için bile **Token** seçeneğini koruyun; böylece yerel WS istemcileri kimlik doğrulamak zorunda kalır.
-    - Token modunda etkileşimli kurulum şunları sunar:
-      - **Düz metin token üret/sakla** (varsayılan)
+    - Bağlantı noktası (varsayılan **18789**), bağlama, kimlik doğrulama modu, Tailscale erişimi.
+    - Kimlik doğrulama önerisi: yerel WS istemcilerinin kimlik doğrulaması yapması için geri döngüde bile **Belirteç** seçeneğini koruyun.
+    - Belirteç modunda etkileşimli kurulum şunları sunar:
+      - **Düz metin belirteç oluştur/sakla** (varsayılan)
       - **SecretRef kullan** (isteğe bağlı)
-      - Quickstart, katılım yoklaması/pano başlatması için `env`, `file` ve `exec` sağlayıcıları genelinde mevcut `gateway.auth.token` SecretRef’lerini yeniden kullanır.
-      - Bu SecretRef yapılandırılmış ancak çözümlenemiyorsa katılım, çalışma zamanı kimlik doğrulamasını sessizce zayıflatmak yerine açık bir düzeltme mesajıyla erken başarısız olur.
-    - Parola modunda etkileşimli kurulum düz metin veya SecretRef saklamayı da destekler.
-    - Etkileşimsiz token SecretRef yolu: `--gateway-token-ref-env <ENV_VAR>`.
-      - Katılım işlemi ortamında boş olmayan bir ortam değişkeni gerektirir.
+      - Hızlı başlangıç, ilk katılım yoklaması/pano önyüklemesi için `env`, `file` ve `exec` sağlayıcılarında mevcut `gateway.auth.token` SecretRef değerlerini yeniden kullanır.
+      - Bu SecretRef yapılandırılmış ancak çözümlenemiyorsa ilk katılım, çalışma zamanı kimlik doğrulamasını sessizce zayıflatmak yerine açık bir düzeltme mesajıyla erken başarısız olur.
+    - Parola modunda etkileşimli kurulum, düz metin veya SecretRef depolamayı da destekler.
+    - Etkileşimsiz belirteç SecretRef yolu: `--gateway-token-ref-env <ENV_VAR>`.
+      - İlk katılım işleminin ortamında boş olmayan bir ortam değişkeni gerektirir.
       - `--gateway-token` ile birlikte kullanılamaz.
-    - Kimlik doğrulamayı yalnızca her yerel sürece tamamen güveniyorsanız devre dışı bırakın.
-    - loopback dışı bağlamalar yine de kimlik doğrulama gerektirir.
+    - Kimlik doğrulamayı yalnızca tüm yerel işlemlere tamamen güveniyorsanız devre dışı bırakın.
+    - Geri döngü dışındaki bağlamalar yine de kimlik doğrulama gerektirir.
 
   </Step>
   <Step title="Kanallar">
-    - [WhatsApp](/tr/channels/whatsapp): isteğe bağlı QR oturum açma.
-    - [Telegram](/tr/channels/telegram): bot token.
-    - [Discord](/tr/channels/discord): bot token.
-    - [Google Chat](/tr/channels/googlechat): hizmet hesabı JSON + webhook hedef kitlesi.
-    - [Mattermost](/tr/channels/mattermost) (plugin): bot token + temel URL.
-    - [Signal](/tr/channels/signal): isteğe bağlı `signal-cli` kurulumu + hesap yapılandırması.
-    - [iMessage](/tr/channels/imessage): `imsg` CLI yolu + Messages DB erişimi; Gateway Mac dışında çalışırken bir SSH sarmalayıcı kullanın.
-    - DM güvenliği: varsayılan eşleştirmedir. İlk DM bir kod gönderir; `openclaw pairing approve <channel> <code>` ile onaylayın veya izin listeleri kullanın.
+    - [WhatsApp](/tr/channels/whatsapp): isteğe bağlı QR ile oturum açma.
+    - [Telegram](/tr/channels/telegram): bot belirteci.
+    - [Discord](/tr/channels/discord): bot belirteci.
+    - [Google Chat](/tr/channels/googlechat): hizmet hesabı JSON'u + Webhook hedef kitlesi.
+    - [Mattermost](/tr/channels/mattermost) (plugin): bot belirteci + temel URL.
+    - [Signal](/tr/channels/signal) (plugin): isteğe bağlı `signal-cli` kurulumu + hesap yapılandırması.
+    - [iMessage](/tr/channels/imessage): `imsg` CLI yolu + Messages DB erişimi; Gateway Mac dışında çalışıyorsa bir SSH sarmalayıcısı kullanın.
+    - Discord, Feishu, Microsoft Teams, QQ Bot, Slack ve diğer kanallar,
+      ilk katılımın sizin için kurabileceği plugin'ler olarak sunulur. Tam katalog: [Kanallar](/tr/channels).
+    - DM güvenliği: varsayılan eşleştirmedir. İlk DM bir kod gönderir; `openclaw pairing approve <channel> <code>` aracılığıyla onaylayın veya izin verilenler listelerini kullanın.
 
   </Step>
   <Step title="Web araması">
-    - Brave, DuckDuckGo, Exa, Firecrawl, Gemini, Grok, Kimi, MiniMax Search, Ollama Web Search, Perplexity, SearXNG veya Tavily gibi desteklenen bir sağlayıcı seçin (veya atlayın).
-    - API destekli sağlayıcılar hızlı kurulum için ortam değişkenlerini veya mevcut yapılandırmayı kullanabilir; anahtarsız sağlayıcılar bunun yerine sağlayıcıya özgü ön koşullarını kullanır.
+    - Brave, Codex (Barındırılan Arama), DuckDuckGo, Exa, Firecrawl, Gemini, Grok, Kimi, MiniMax Search, Ollama Web Search, Parallel, Perplexity, SearXNG veya Tavily gibi desteklenen bir sağlayıcı seçin (ya da atlayın).
+    - API destekli sağlayıcılar hızlı kurulum için ortam değişkenlerini veya mevcut yapılandırmayı kullanabilir; anahtar gerektirmeyen sağlayıcılar ise kendi sağlayıcılarına özgü ön koşulları kullanır.
     - `--skip-search` ile atlayın.
     - Daha sonra yapılandırın: `openclaw configure --section web`.
 
   </Step>
   <Step title="Daemon kurulumu">
     - macOS: LaunchAgent
-      - Oturum açmış bir kullanıcı oturumu gerektirir; başsız kullanım için özel bir LaunchDaemon kullanın (ürünle birlikte gelmez).
+      - Oturum açmış bir kullanıcı oturumu gerektirir; başsız kullanım için özel bir LaunchDaemon kullanın (birlikte sunulmaz).
     - Linux (ve WSL2 üzerinden Windows): systemd kullanıcı birimi
-      - Katılım, Gateway’in oturum kapatıldıktan sonra çalışmaya devam etmesi için `loginctl enable-linger <user>` üzerinden kalıcılığı etkinleştirmeyi dener.
+      - İlk katılım, Gateway oturum kapatıldıktan sonra da çalışmayı sürdürsün diye `loginctl enable-linger <user>` aracılığıyla kalıcı kullanıcı oturumunu etkinleştirmeye çalışır.
       - sudo isteyebilir (`/var/lib/systemd/linger` yazar); önce sudo olmadan dener.
-    - **Çalışma zamanı seçimi:** Node (önerilir; WhatsApp/Telegram için gereklidir). Bun **önerilmez**.
-    - Token kimlik doğrulaması bir token gerektiriyorsa ve `gateway.auth.token` SecretRef ile yönetiliyorsa daemon kurulumu bunu doğrular ancak çözümlenmiş düz metin token değerlerini supervisor hizmet ortamı meta verilerine kalıcı olarak yazmaz.
-    - Token kimlik doğrulaması bir token gerektiriyorsa ve yapılandırılmış token SecretRef çözümlenemiyorsa daemon kurulumu uygulanabilir yönlendirmeyle engellenir.
-    - Hem `gateway.auth.token` hem de `gateway.auth.password` yapılandırılmışsa ve `gateway.auth.mode` ayarlanmamışsa daemon kurulumu, mod açıkça ayarlanana kadar engellenir.
+    - Yerel Windows: önce Zamanlanmış Görev; görev oluşturma reddedilirse OpenClaw, kullanıcı başına Başlangıç klasörü oturum açma öğesine geri döner ve Gateway'i hemen başlatır.
+    - **Çalışma zamanı seçimi:** standart çalışma zamanı durum deposu `node:sqlite` kullandığından Node gereklidir. Eski Bun hizmetleri onarım sırasında Node'a taşınır.
+    - Belirteç kimlik doğrulaması bir belirteç gerektiriyorsa ve `gateway.auth.token` SecretRef tarafından yönetiliyorsa daemon kurulumu bunu doğrular ancak çözümlenen düz metin belirteç değerlerini gözetmen hizmet ortamı meta verilerinde kalıcı olarak saklamaz.
+    - Belirteç kimlik doğrulaması bir belirteç gerektiriyorsa ve yapılandırılan belirteç SecretRef'i çözümlenemiyorsa daemon kurulumu, uygulanabilir yönlendirmelerle engellenir.
+    - Hem `gateway.auth.token` hem de `gateway.auth.password` yapılandırılmışsa ve `gateway.auth.mode` ayarlanmamışsa mod açıkça ayarlanana kadar daemon kurulumu engellenir.
 
   </Step>
-  <Step title="Sağlık denetimi">
-    - Gateway’i başlatır (gerekirse) ve `openclaw health` çalıştırır.
-    - İpucu: `openclaw status --deep`, desteklendiğinde kanal yoklamaları dahil olmak üzere canlı gateway sağlık yoklamasını durum çıktısına ekler (erişilebilir bir gateway gerektirir).
+  <Step title="Sistem durumu denetimi">
+    - Gateway'i başlatır (gerekiyorsa) ve `openclaw health` çalıştırır.
+    - İpucu: `openclaw status --deep`, desteklendiğinde kanal yoklamaları dahil olmak üzere canlı gateway sistem durumu yoklamasını durum çıktısına ekler (erişilebilir bir gateway gerektirir).
 
   </Step>
   <Step title="Skills (önerilen)">
-    - Kullanılabilir Skills öğelerini okur ve gereksinimleri denetler.
-    - Bir node yöneticisi seçmenizi sağlar: **npm / pnpm** (bun önerilmez).
-    - İsteğe bağlı bağımlılıkları kurar (bazıları macOS’ta Homebrew kullanır).
+    - Kullanılabilir becerileri okur ve gereksinimleri denetler.
+    - Bir Node yöneticisi seçmenize olanak tanır: **npm / pnpm / bun**.
+    - Güvenilir, birlikte sunulan beceriler için isteğe bağlı bağımlılıkları otomatik olarak kurar (bazıları macOS'ta Homebrew kullanır).
+    - Homebrew, uv veya Go yükleyicisi ön koşulu bulunmayan becerileri atlar, bunları elle kurulum yönlendirmeleriyle gruplandırır ve ön koşul kurulduktan sonra sizi `openclaw doctor` komutuna yönlendirir.
 
   </Step>
-  <Step title="Bitiş">
-    - Özet + sonraki adımlar; Terminal, Tarayıcı veya daha sonrası için **Ajanınızı nasıl kuluçkadan çıkarmak istiyorsunuz?** istemi dahil.
+  <Step title="Tamamlama">
+    - Terminal, Tarayıcı veya daha sonra seçenekleri için **Ajanınızı nasıl oluşturmak istiyorsunuz?** istemi dahil özet + sonraki adımlar.
 
   </Step>
 </Steps>
 
 <Note>
-GUI algılanmazsa katılım, tarayıcı açmak yerine Control UI için SSH port yönlendirme yönergelerini yazdırır.
-Control UI varlıkları eksikse katılım bunları derlemeyi dener; yedek seçenek `pnpm ui:build` komutudur (UI bağımlılıklarını otomatik kurar).
+GUI algılanmazsa ilk katılım, tarayıcı açmak yerine Control UI için SSH bağlantı noktası yönlendirme talimatlarını yazdırır.
+Control UI varlıkları eksikse ilk katılım bunları derlemeyi dener; yedek seçenek `pnpm ui:build` şeklindedir (UI bağımlılıklarını otomatik olarak yükler).
 </Note>
 
 ## Etkileşimsiz mod
 
-Katılımı otomatikleştirmek veya betiklemek için `--non-interactive` kullanın:
+İlk katılımı otomatikleştirmek veya betiklemek için `--non-interactive --accept-risk` kullanın (
+bayrak, gerekli risk onayıdır; bu bayrak olmadan ilk katılım
+bir hatayla sonlanır):
 
 ```bash
-openclaw onboard --non-interactive \
+openclaw onboard --non-interactive --accept-risk \
   --mode local \
   --auth-choice apiKey \
   --anthropic-api-key "$ANTHROPIC_API_KEY" \
@@ -173,88 +191,91 @@ openclaw onboard --non-interactive \
 
 Makine tarafından okunabilir bir özet için `--json` ekleyin.
 
-Etkileşimsiz modda Gateway token SecretRef:
+Etkileşimsiz modda Gateway belirteci SecretRef'i:
 
 ```bash
 export OPENCLAW_GATEWAY_TOKEN="your-token"
-openclaw onboard --non-interactive \
+openclaw onboard --non-interactive --accept-risk \
   --mode local \
   --auth-choice skip \
   --gateway-auth token \
   --gateway-token-ref-env OPENCLAW_GATEWAY_TOKEN
 ```
 
-`--gateway-token` ve `--gateway-token-ref-env` karşılıklı olarak birbirini dışlar.
+`--gateway-token` ve `--gateway-token-ref-env` birbirini dışlar.
 
 <Note>
-`--json` etkileşimsiz modu **ima etmez**. Betikler için `--non-interactive` (ve `--workspace`) kullanın.
+`--json`, etkileşimsiz modu **ifade etmez**. Betikler için `--non-interactive --accept-risk` (ve `--workspace`) kullanın.
 </Note>
 
-Sağlayıcıya özgü komut örnekleri [CLI Otomasyonu](/tr/start/wizard-cli-automation#provider-specific-examples) içinde bulunur.
-Bayrak semantiği ve adım sıralaması için bu başvuru sayfasını kullanın.
+Sağlayıcıya özgü komut örnekleri [CLI Otomasyonu](/tr/start/wizard-cli-automation#provider-specific-examples) sayfasında yer alır.
+Bayrakların anlamları ve adım sıralaması için bu başvuru sayfasını kullanın.
 
-### Ajan ekle (etkileşimsiz)
+### Aracı ekleme (etkileşimsiz)
 
 ```bash
 openclaw agents add work \
   --workspace ~/.openclaw/workspace-work \
-  --model openai/gpt-5.5 \
+  --model openai/gpt-5.6-sol \
   --bind whatsapp:biz \
   --non-interactive \
   --json
 ```
 
-## Gateway sihirbaz RPC’si
+`main` ayrılmış bir aracı kimliğidir ve `openclaw agents add` için kullanılamaz.
 
-Gateway, katılım akışını RPC üzerinden sunar (`wizard.start`, `wizard.next`, `wizard.cancel`, `wizard.status`).
-İstemciler (macOS uygulaması, Control UI), katılım mantığını yeniden uygulamadan adımları işleyebilir.
+## Gateway sihirbazı RPC'si
+
+Gateway, ilk katılım akışını RPC üzerinden sunar (`wizard.start`, `wizard.next`, `wizard.cancel`, `wizard.status`).
+İstemciler (macOS uygulaması, Control UI), ilk katılım mantığını yeniden uygulamadan adımları görüntüleyebilir.
 
 ## Signal kurulumu (signal-cli)
 
-Katılım, GitHub sürümlerinden `signal-cli` kurabilir:
+İlk katılım, `signal-cli` öğesinin `PATH` üzerinde olup olmadığını algılar ve eksikse yüklemeyi önerir:
 
-- Uygun sürüm varlığını indirir.
-- Bunu `~/.openclaw/tools/signal-cli/<version>/` altında saklar.
-- Yapılandırmanıza `channels.signal.cliPath` yazar.
-
-Notlar:
-
-- JVM derlemeleri **Java 21** gerektirir.
-- Mevcut olduğunda yerel derlemeler kullanılır.
-- Windows WSL2 kullanır; signal-cli kurulumu WSL içindeki Linux akışını izler.
+- Linux x86-64: Resmî yerel GraalVM derlemesini `signal-cli` GitHub sürümlerinden indirir ve `~/.openclaw/tools/signal-cli/<version>/` altında saklar.
+- macOS ve diğer mimariler: Bunun yerine Homebrew aracılığıyla yükler.
+- Yerel Windows: Henüz desteklenmiyor; Linux yükleme yolunu kullanmak için ilk katılımı WSL2 içinde çalıştırın.
+- Her iki durumda da yapılandırmanıza `channels.signal.cliPath` yazar.
 
 ## Sihirbazın yazdıkları
 
 `~/.openclaw/openclaw.json` içindeki tipik alanlar:
 
 - `agents.defaults.workspace`
+- `--skip-bootstrap` geçirildiğinde `agents.defaults.skipBootstrap`
 - `agents.defaults.model` / `models.providers` (Minimax seçildiyse)
-- `tools.profile` (yerel ilk kurulum, ayarlanmamışsa varsayılan olarak `"coding"` kullanır; mevcut açık değerler korunur)
+- `tools.profile` (ayarlanmamışsa yerel ilk katılım varsayılan olarak `"coding"` kullanır; mevcut açık değerler korunur)
 - `gateway.*` (mod, bağlama, kimlik doğrulama, tailscale)
-- `session.dmScope` (davranış ayrıntıları: [CLI Kurulum Referansı](/tr/start/wizard-cli-reference#outputs-and-internals))
+- `session.dmScope` (ayarlanmamışsa yerel ilk katılım bunu varsayılan olarak `"per-channel-peer"` değerine ayarlar; mevcut açık değerler korunur. Ayrıntılar: [CLI Kurulum Başvurusu](/tr/start/wizard-cli-reference#outputs-and-internals))
 - `channels.telegram.botToken`, `channels.discord.token`, `channels.matrix.*`, `channels.signal.*`, `channels.imessage.*`
-- İstemler sırasında katılmayı seçtiğinizde kanal izin listeleri (Slack/Discord/Matrix/Microsoft Teams) (adlar mümkün olduğunda kimliklere çözümlenir).
+- Kanal istemleri sırasında kabul ettiğinizde kanal DM izin listeleri. Discord, Matrix, Microsoft Teams ve Slack mümkün olduğunda adları kimliklere çözümler; diğer kanallar kimlikleri doğrudan alır (örneğin sayısal Telegram gönderen kimlikleri veya WhatsApp telefon numaraları).
 - `skills.install.nodeManager`
-  - `setup --node-manager`, `npm`, `pnpm` veya `bun` kabul eder.
-  - Manuel yapılandırma, `skills.install.nodeManager` değerini doğrudan ayarlayarak yine de `yarn` kullanabilir.
+  - `setup --node-manager`; `npm`, `pnpm` veya `bun` kabul eder.
+  - Elle yapılandırmada `skills.install.nodeManager` doğrudan ayarlanarak `yarn` kullanılmaya devam edilebilir.
 - `wizard.lastRunAt`
 - `wizard.lastRunVersion`
 - `wizard.lastRunCommit`
 - `wizard.lastRunCommand`
 - `wizard.lastRunMode`
+- `wizard.securityAcknowledgedAt`
 
 `openclaw agents add`, `agents.list[]` ve isteğe bağlı `bindings` yazar.
 
-WhatsApp kimlik bilgileri `~/.openclaw/credentials/whatsapp/<accountId>/` altına gider.
-Oturumlar `~/.openclaw/agents/<agentId>/sessions/` altında saklanır.
+WhatsApp kimlik bilgileri `~/.openclaw/credentials/whatsapp/<accountId>/` altında yer alır.
+Etkin oturumlar ve dökümler
+`~/.openclaw/agents/<agentId>/agent/openclaw-agent.sqlite` içinde saklanır.
+`~/.openclaw/agents/<agentId>/sessions/` dizini, eski sistem geçişi
+girdileri ve arşiv/destek yapıtları için kullanılır.
 
-Bazı kanallar Plugin olarak teslim edilir. Kurulum sırasında birini seçtiğinizde ilk kurulum,
-yapılandırılmadan önce onu yüklemenizi (npm veya yerel bir yol) ister.
+Bazı kanallar plugin olarak sunulur. Kurulum sırasında bunlardan birini seçtiğinizde ilk katılım,
+yapılandırılabilmesi için önce onu yüklemenizi (npm veya yerel bir yol üzerinden) ister.
 
 ## İlgili belgeler
 
-- İlk kurulum genel bakışı: [İlk Kurulum (CLI)](/tr/start/wizard)
-- macOS uygulaması ilk kurulumu: [İlk Kurulum](/tr/start/onboarding)
-- Yapılandırma referansı: [Gateway yapılandırması](/tr/gateway/configuration)
+- İlk katılıma genel bakış: [İlk Katılım (CLI)](/tr/start/wizard)
+- CLI kurulum başvurusu: [CLI kurulum başvurusu](/tr/start/wizard-cli-reference)
+- macOS uygulamasında ilk katılım: [İlk Katılım](/tr/start/onboarding)
+- Yapılandırma başvurusu: [Gateway yapılandırması](/tr/gateway/configuration)
 - Sağlayıcılar: [WhatsApp](/tr/channels/whatsapp), [Telegram](/tr/channels/telegram), [Discord](/tr/channels/discord), [Google Chat](/tr/channels/googlechat), [Signal](/tr/channels/signal), [iMessage](/tr/channels/imessage)
 - Skills: [Skills](/tr/tools/skills), [Skills yapılandırması](/tr/tools/skills-config)

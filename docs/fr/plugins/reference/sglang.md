@@ -1,30 +1,31 @@
 ---
 read_when:
     - Vous installez, configurez ou auditez le plugin sglang
-summary: Ajoute la prise en charge du fournisseur de modèles SGLang dans OpenClaw.
+summary: Ajoute la prise en charge du fournisseur de modèles SGLang à OpenClaw.
 title: Plugin SGLang
 x-i18n:
-    generated_at: "2026-07-12T02:54:41Z"
+    generated_at: "2026-07-16T13:34:59Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: e69fda19cbf93e1a1a1a6160419bc7296930a58813b5b443c4018db58df0a611
+    source_hash: bfb586c08e6729c6b8a3bcf2487ef614c8d428bf6cdd9ba4aa74285ba2d2099e
     source_path: plugins/reference/sglang.md
     workflow: 16
 ---
 
 # Plugin SGLang
 
-Ajoute à OpenClaw la prise en charge du fournisseur de modèles SGLang.
+Ajoute la prise en charge du fournisseur de modèles SGLang à OpenClaw.
 
 ## Distribution
 
 - Paquet : `@openclaw/sglang-provider`
-- Méthode d’installation : inclus dans OpenClaw
+- Mode d’installation : inclus dans OpenClaw
 
 ## Surface
 
-fournisseurs : sglang
+fournisseurs : `sglang`
 
 ## Documentation associée
 

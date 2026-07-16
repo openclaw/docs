@@ -1,27 +1,28 @@
 ---
 read_when:
-    - tts-local-cli Pluginini kuruyor, yapılandırıyor veya denetliyorsunuz
-summary: Metinden sese sağlayıcı desteği ekler.
+    - tts-local-cli pluginini kuruyor, yapılandırıyor veya denetliyorsunuz
+summary: Metinden konuşmaya sağlayıcı desteği ekler.
 title: TTS Yerel CLI Plugin'i
 x-i18n:
-    generated_at: "2026-07-12T12:38:59Z"
+    generated_at: "2026-07-16T17:32:30Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 65e8fd3b34a8edd70773316e0dae1fa894cfc7cf1bb216f9b5a9b53a33760330
+    source_hash: dda79fac2b7f67c0ed1ef8e920410580e25bf9be33c28966fea04694344b24a6
     source_path: plugins/reference/tts-local-cli.md
     workflow: 16
 ---
 
-# TTS Yerel CLI Plugin'i
+# TTS Yerel CLI Plugin’i
 
-Metinden konuşmaya sağlayıcı desteği ekler.
+Metin okuma sağlayıcısı desteği ekler.
 
 ## Dağıtım
 
 - Paket: `@openclaw/tts-local-cli`
-- Kurulum yolu: OpenClaw'a dâhildir
+- Kurulum yolu: OpenClaw'a dahildir
 
 ## Yüzey
 
-sözleşmeler: speechProviders
+sözleşmeler: `speechProviders`

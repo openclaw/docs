@@ -1,37 +1,41 @@
 ---
-summary: OpenClaw چگونه زمان اجرای عامل داخلی، ارائه‌دهندگان، نشست‌ها، ابزارها و افزونه‌ها را اجرا می‌کند.
-title: معماری زمان اجرای عامل
+summary: 'OpenClaw چگونه زمان‌اجرای داخلی عامل را ساختاربندی می‌کند: چیدمان کد، مرزها، مانیفست‌های منابع و انتخاب زمان‌اجرا.'
+title: معماری محیط اجرای عامل
 x-i18n:
-    generated_at: "2026-06-27T17:08:46Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T15:19:37Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: cd0ca61b10a4f7029590da8566b22cc44cf801af162e5f2c00c9561fe46e39e3
+    source_hash: 071a0cb076230ce02f2c2c1c21971379cf617f24faa8a9733570aae30a062019
     source_path: agent-runtime-architecture.md
     workflow: 16
 ---
 
-OpenClaw مستقیماً مالک runtime داخلی agent است. کد runtime زیر `src/agents/` قرار دارد، helperهای مدل/ارائه‌دهنده زیر `src/llm/` قرار دارند، و قراردادهای رو به Plugin از طریق barrelهای `openclaw/plugin-sdk/*` در دسترس قرار می‌گیرند.
+OpenClaw مالک زمان‌اجرای داخلی عامل است. کد زمان‌اجرا در `src/agents/` قرار دارد، انتقال مدل/ارائه‌دهنده در `src/llm/` قرار دارد و قراردادهای قابل‌استفاده برای Plugin از طریق barrelهای `openclaw/plugin-sdk/*` ارائه می‌شوند.
 
-## چیدمان Runtime
+## چیدمان زمان‌اجرا
 
-- `src/agents/embedded-agent-runner/`: حلقه تلاش agent داخلی، adapterهای stream ارائه‌دهنده، compaction، انتخاب مدل، و اتصال session.
-- `src/agents/sessions/`: پایداری session، بارگذاری افزونه، کشف resource، skills، promptها، themeها، و rendererهای tool مبتنی بر TUI.
-- `packages/agent-core/`: هسته agent قابل استفاده مجدد، typeهای سطح پایین‌تر harness، messageها، helperهای compaction، templateهای prompt، و قراردادهای tool/session.
-- `src/agents/runtime/`: facade مربوط به OpenClaw برای `@openclaw/agent-core` به‌همراه ابزارهای local proxy.
-- `src/agents/agent-tools*.ts`: تعریف‌های tool، schemaها، policy، adapterهای hook قبل/بعد، و پشتیبانی از ویرایش میزبان که تحت مالکیت OpenClaw هستند.
-- `src/agents/agent-hooks/`: hookهای runtime داخلی مانند محافظ‌های compaction و هرس context.
-- `src/llm/`: registry مدل/ارائه‌دهنده، helperهای transport، و پیاده‌سازی‌های stream مخصوص ارائه‌دهنده.
+| مسیر                                | مسئولیت                                                                                                                                                                                                                      |
+| ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/agents/embedded-agent-runner/` | حلقه تلاش داخلی (`run.ts`، `run/`)، انتخاب مدل و نرمال‌سازی ارائه‌دهنده (`model*.ts`)، پارامترهای درخواست مختص هر ارائه‌دهنده (`extra-params.*`)، Compaction و اتصال رونوشت و نشست.                            |
+| `src/agents/sessions/`              | ماندگاری نشست (`session-manager.ts`)، کشف منابع (`package-manager.ts`، `resource-loader.ts`)، بارگذاری درون‌نشستی `extensions`، الگوهای پرامپت، Skills، پوسته‌ها و رندرکننده‌های ابزار مبتنی بر TUI (`tools/`). |
+| `packages/agent-core/`              | هسته قابل‌استفاده مجدد عامل (`@openclaw/agent-core`): حلقه عامل، نوع‌های مهار، پیام‌ها، ابزارهای کمکی Compaction، الگوهای پرامپت، Skills و قراردادهای ذخیره‌سازی نشست.                                                           |
+| `src/agents/runtime/`               | نمای OpenClaw که `@openclaw/agent-core` را به زمان‌اجرای LLM در SDK مربوط به Plugin متصل می‌کند و آن را همراه با ابزارهای محلی پراکسی دوباره صادر می‌کند.                                                                                             |
+| `src/agents/agent-tools*.ts`        | تعریف ابزارهای تحت مالکیت OpenClaw، شِماهای پارامتر، خط‌مشی ابزار، سازگارکننده‌های پیش/پس از فراخوانی ابزار و ابزارهای ویرایش میزبان/محیط ایزوله.                                                                                            |
+| `src/agents/agent-hooks/`           | هوک‌های داخلی زمان‌اجرا: محافظ Compaction، دستورالعمل‌های Compaction و هرس زمینه.                                                                                                                                   |
+| `src/agents/harness/`               | رجیستری مهار، خط‌مشی انتخاب و چرخه حیات مهارهای داخلی و ثبت‌شده توسط Plugin.                                                                                                                       |
+| `src/llm/`                          | رجیستری مدل/ارائه‌دهنده، ابزارهای کمکی انتقال و پیاده‌سازی‌های جریان مختص ارائه‌دهنده (`src/llm/providers/`).                                                                                                          |
 
 ## مرزها
 
-کد Core، runtime داخلی را از طریق ماژول‌های OpenClaw و barrelهای SDK فراخوانی می‌کند، نه از طریق بسته‌های agent خارجی قدیمی. Pluginها از entrypointهای مستند `openclaw/plugin-sdk/*` استفاده می‌کنند و internalهای `src/**` را import نمی‌کنند.
+هسته، زمان‌اجرای داخلی را از طریق ماژول‌های OpenClaw و barrelهای SDK فراخوانی می‌کند؛ هیچ بسته خارجی چارچوب عامل باقی نمانده است. Pluginها از نقاط ورود مستندشده `openclaw/plugin-sdk/*` استفاده می‌کنند و اجزای داخلی `src/**` را وارد نمی‌کنند.
 
-`@earendil-works/pi-tui` همچنان یک وابستگی TUI شخص ثالث است. این وابستگی توسط TUI محلی و rendererهای session به‌عنوان toolkit کامپوننت terminal استفاده می‌شود؛ درونی‌سازی آن یک تلاش جداگانه برای vendoring خواهد بود.
+`@earendil-works/pi-tui` همچنان یک وابستگی شخص ثالث است: مجموعه‌ابزار مؤلفه‌های ترمینال که TUI محلی و رندرکننده‌های ابزار نشست از آن استفاده می‌کنند. داخلی‌سازی آن نیازمند تلاشی جداگانه برای کپی و نگه‌داری وابستگی در پروژه است.
 
-## Manifestها
+## مانیفست‌ها
 
-بسته‌های resource، resourceهای OpenClaw را در metadata بسته اعلام می‌کنند:
+بسته‌های منابع، منابع OpenClaw را در فراداده `package.json` اعلام می‌کنند. ورودی‌ها مسیر فایل یا الگوهای glob نسبت به ریشه بسته هستند:
 
 ```json
 {
@@ -44,13 +48,17 @@ OpenClaw مستقیماً مالک runtime داخلی agent است. کد runtime
 }
 ```
 
-package manager همچنین directoryهای قراردادی `extensions/`، `skills/`، `prompts/`، و `themes/` را کشف می‌کند.
+نوع‌های منبعی که در مانیفست فهرست نشده‌اند، به کشف دایرکتوری‌های متعارف `extensions/`، `skills/`، `prompts/` و `themes/` بازمی‌گردند.
 
-## انتخاب Runtime
+## انتخاب زمان‌اجرا
 
-شناسه پیش‌فرض runtime داخلی `openclaw` است. harnessهای Plugin می‌توانند شناسه‌های runtime بیشتری ثبت کنند. `auto` وقتی harness یک Plugin پشتیبان وجود داشته باشد، آن را انتخاب می‌کند و در غیر این صورت از runtime داخلی OpenClaw استفاده می‌کند.
+- شناسه زمان‌اجرای داخلی `openclaw` است. نام مستعار قدیمی `pi` به `openclaw` نرمال می‌شود؛ `codex-app-server` به `codex` نرمال می‌شود.
+- مهارهای Plugin شناسه‌های زمان‌اجرای بیشتری را ثبت می‌کنند (برای مثال `codex`).
+- خط‌مشی زمان‌اجرا، پیکربندی `agentRuntime.id` در محدوده مدل/ارائه‌دهنده است (ورودی مدل بر ورودی ارائه‌دهنده اولویت دارد). مقدار تنظیم‌نشده یا `default` به `auto` تبدیل می‌شود.
+- `auto` یک مهار ثبت‌شده Plugin را انتخاب می‌کند که از مسیر مؤثر ارائه‌دهنده پشتیبانی کند؛ در غیر این صورت، زمان‌اجرای داخلی OpenClaw انتخاب می‌شود. صرفاً پیشوند ارائه‌دهنده یا مدل هرگز مهاری را انتخاب نمی‌کند.
+- OpenAI تنها برای یک مسیر دقیق و رسمی HTTPS مربوط به Platform Responses یا ChatGPT Responses و بدون بازنویسی درخواست تعریف‌شده، ممکن است `codex` را به‌طور ضمنی انتخاب کند. سازگارکننده‌های Completions، نقاط پایانی سفارشی و مسیرهایی با رفتار درخواست تعریف‌شده روی `openclaw` باقی می‌مانند؛ نقاط پایانی رسمی HTTP با متن ساده رد می‌شوند. [زمان‌اجرای ضمنی عامل OpenAI](/fa/providers/openai#implicit-agent-runtime) را ببینید.
 
 ## مرتبط
 
-- [گردش‌کار runtime عامل OpenClaw](/fa/openclaw-agent-runtime)
-- [Runtimeهای عامل](/fa/concepts/agent-runtimes)
+- [گردش کار زمان‌اجرای عامل OpenClaw](/fa/openclaw-agent-runtime)
+- [زمان‌های اجرای عامل](/fa/concepts/agent-runtimes)

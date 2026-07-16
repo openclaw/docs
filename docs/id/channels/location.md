@@ -1,59 +1,63 @@
 ---
 read_when:
-    - Menambahkan atau mengubah penguraian lokasi channel
-    - Menggunakan field konteks lokasi dalam prompt agen atau tool
-summary: Penguraian lokasi channel masuk (Telegram/WhatsApp/Matrix) dan field konteks
+    - Menambahkan atau memodifikasi penguraian lokasi channel
+    - Menggunakan bidang konteks lokasi dalam prompt atau alat agen
+summary: Penguraian lokasi channel dan payload lokasi keluar yang portabel
 title: Penguraian lokasi channel
 x-i18n:
-    generated_at: "2026-04-24T08:58:24Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 19c10a55e30c70a7af5d041f9a25c0a2783e3191403e7c0cedfbe7dd8f1a77c1
-    source_path: channels/location.md
-    workflow: 15
+    generated_at: "2026-07-16T17:45:51Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
+    provider: openai
+    source_hash: c7e5647d02643ad6d95024b362228377690d7fdff66441fae367f0f5307217fb
+    source_path: channels/location.md
+    workflow: 16
 ---
 
-OpenClaw menormalkan lokasi yang dibagikan dari channel chat menjadi:
+OpenClaw menormalkan lokasi bersama dari saluran obrolan menjadi:
 
-- teks koordinat ringkas yang ditambahkan ke body masuk, dan
-- field terstruktur dalam payload konteks balasan otomatis. Label, alamat, dan caption/komentar yang disediakan channel dirender ke dalam prompt melalui blok JSON metadata tidak tepercaya bersama, bukan inline di body pengguna.
+- teks koordinat ringkas yang ditambahkan ke isi pesan masuk, dan
+- bidang terstruktur dalam payload konteks balasan otomatis. Label, alamat, dan keterangan/komentar yang diberikan saluran dirender ke dalam prompt melalui blok JSON metadata tidak tepercaya bersama, bukan secara inline dalam isi pesan pengguna.
 
 Saat ini didukung:
 
-- **Telegram** (pin lokasi + venue + lokasi live)
-- **WhatsApp** (`locationMessage` + `liveLocationMessage`)
+- **LINE** (pesan lokasi dengan judul/alamat)
 - **Matrix** (`m.location` dengan `geo_uri`)
+- **Telegram** (pin lokasi + tempat + lokasi langsung)
+- **WhatsApp** (`locationMessage` + `liveLocationMessage`)
 
 ## Pemformatan teks
 
-Lokasi dirender sebagai baris yang mudah dibaca tanpa tanda kurung:
+Lokasi dirender sebagai baris yang mudah dibaca tanpa tanda kurung. Koordinat menggunakan enam angka desimal; akurasi dibulatkan ke meter utuh:
 
 - Pin:
   - `📍 48.858844, 2.294351 ±12m`
-- Tempat bernama:
+- Tempat bernama (baris yang sama; nama/alamat hanya masuk ke blok metadata):
   - `📍 48.858844, 2.294351 ±12m`
-- Berbagi live:
-  - `🛰 Lokasi live: 48.858844, 2.294351 ±12m`
+- Berbagi langsung:
+  - `🛰 Live location: 48.858844, 2.294351 ±12m`
 
-Jika channel menyertakan label, alamat, atau caption/komentar, informasi itu dipertahankan dalam payload konteks dan muncul dalam prompt sebagai JSON tidak tepercaya yang dipagari:
+Jika saluran menyertakan label, alamat, atau keterangan/komentar, informasi tersebut dipertahankan dalam payload konteks dan muncul dalam prompt sebagai JSON tidak tepercaya berpagar (bidang dihilangkan jika tidak ada):
 
 ````text
-Location (untrusted metadata):
+Lokasi (metadata tidak tepercaya):
 ```json
 {
   "latitude": 48.858844,
   "longitude": 2.294351,
-  "name": "Eiffel Tower",
+  "accuracy_m": 12,
+  "source": "place",
+  "name": "Menara Eiffel",
   "address": "Champ de Mars, Paris",
-  "caption": "Meet here"
+  "caption": "Bertemu di sini"
 }
 ```
 ````
 
-## Field konteks
+## Bidang konteks
 
-Saat lokasi ada, field ini ditambahkan ke `ctx`:
+Jika terdapat lokasi, bidang berikut ditambahkan ke `ctx`:
 
 - `LocationLat` (angka)
 - `LocationLon` (angka)
@@ -64,16 +68,25 @@ Saat lokasi ada, field ini ditambahkan ke `ctx`:
 - `LocationIsLive` (boolean)
 - `LocationCaption` (string; opsional)
 
-Perender prompt memperlakukan `LocationName`, `LocationAddress`, dan `LocationCaption` sebagai metadata tidak tepercaya dan menserialisasikannya melalui jalur JSON terbatas yang sama yang digunakan untuk konteks channel lainnya.
+Jika saluran tidak menetapkan sumber secara eksplisit, OpenClaw menyimpulkannya: berbagi langsung menjadi `live`, lokasi dengan nama atau alamat menjadi `place`, dan semua yang lain menjadi `pin`.
 
-## Catatan channel
+Perender prompt memperlakukan `LocationName`, `LocationAddress`, dan `LocationCaption` sebagai metadata tidak tepercaya dan menserialisasikannya melalui jalur JSON terbatas yang sama dengan yang digunakan untuk konteks saluran lainnya.
 
-- **Telegram**: venue dipetakan ke `LocationName/LocationAddress`; lokasi live menggunakan `live_period`.
+## Payload keluar
+
+Alat pesan dan SDK Plugin menggunakan bentuk `NormalizedLocation` yang sama untuk lokasi keluar portabel. Payload yang hanya berisi koordinat merepresentasikan pin. Saluran dengan dukungan bawaan untuk tempat dapat memetakan `name` beserta `address` ke kartu tempat.
+
+Telegram saat ini mengeksposnya melalui `message(action="send")`. Implementasi pertamanya sengaja dibuat mandiri: payload lokasi tidak dapat digabungkan dengan teks atau media, dan pasangan tempat yang tidak lengkap akan gagal alih-alih menghapus nama atau alamat secara diam-diam. Saluran yang tidak didukung tidak mengiklankan parameter lokasi.
+
+## Catatan saluran
+
+- **LINE**: pesan lokasi `title`/`address` dipetakan ke `LocationName`/`LocationAddress`; tidak ada lokasi langsung.
+- **Matrix**: `geo_uri` diurai sebagai lokasi pin; parameter `u` (ketidakpastian) dipetakan ke `LocationAccuracy`, isi peristiwa mengisi `LocationCaption`, ketinggian diabaikan, dan `LocationIsLive` selalu bernilai false.
+- **Telegram**: tempat dipetakan ke `LocationName`/`LocationAddress`; lokasi langsung dideteksi melalui `live_period`.
 - **WhatsApp**: `locationMessage.comment` dan `liveLocationMessage.caption` mengisi `LocationCaption`.
-- **Matrix**: `geo_uri` diurai sebagai lokasi pin; altitude diabaikan dan `LocationIsLive` selalu false.
 
 ## Terkait
 
-- [Perintah lokasi (node)](/id/nodes/location-command)
-- [Pengambilan kamera](/id/nodes/camera)
+- [Perintah lokasi (Node)](/id/nodes/location-command)
+- [Pengambilan gambar kamera](/id/nodes/camera)
 - [Pemahaman media](/id/nodes/media-understanding)

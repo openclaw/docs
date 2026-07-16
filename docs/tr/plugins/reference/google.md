@@ -1,19 +1,20 @@
 ---
 read_when:
-    - google Plugin'ini kuruyor, yapılandırıyor veya denetliyorsunuz
+    - google pluginini kuruyor, yapılandırıyor veya denetliyorsunuz
 summary: OpenClaw'a Google, Google Gemini CLI ve Google Vertex model sağlayıcısı desteği ekler.
-title: Google plugini
+title: Google plugin'i
 x-i18n:
-    generated_at: "2026-07-12T12:02:09Z"
+    generated_at: "2026-07-16T17:30:25Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 4228126f246fd09d996c9f76dd10d79ad29f578788a0284abfc7107450a8bf62
+    source_hash: 17d3ad5954ad5a993f06f6ac1623dc6d77b75ab9f56c70f9277bd2682dbcc55f
     source_path: plugins/reference/google.md
     workflow: 16
 ---
 
-# Google Plugin'i
+# Google Plugin
 
 OpenClaw'a Google, Google Gemini CLI ve Google Vertex model sağlayıcısı desteği ekler.
 
@@ -24,8 +25,8 @@ OpenClaw'a Google, Google Gemini CLI ve Google Vertex model sağlayıcısı dest
 
 ## Yüzey
 
-sağlayıcılar: google, google-gemini-cli, google-vertex; sözleşmeler: imageGenerationProviders, mediaUnderstandingProviders, memoryEmbeddingProviders, musicGenerationProviders, realtimeVoiceProviders, speechProviders, usageProviders, videoGenerationProviders, webSearchProviders
+sağlayıcılar: `google`, `google-gemini-cli`, `google-vertex`; sözleşmeler: `imageGenerationProviders`, `mediaUnderstandingProviders`, `memoryEmbeddingProviders`, `musicGenerationProviders`, `realtimeVoiceProviders`, `speechProviders`, `usageProviders`, `videoGenerationProviders`, `webSearchProviders`
 
 ## İlgili belgeler
 
-- [google](/tr/providers/google)
+- [Google](/tr/providers/google)

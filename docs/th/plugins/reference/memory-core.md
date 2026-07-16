@@ -2,26 +2,27 @@
 read_when:
     - คุณกำลังติดตั้ง กำหนดค่า หรือตรวจสอบ Plugin memory-core
 summary: เพิ่มเครื่องมือที่เอเจนต์สามารถเรียกใช้ได้
-title: Plugin แกนหลักหน่วยความจำ
+title: Plugin แกนหน่วยความจำ
 x-i18n:
-    generated_at: "2026-07-12T16:30:35Z"
+    generated_at: "2026-07-16T19:28:03Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: cda6ebb02b0e4c1616f68c3c9636b269248b4c63ca5f778d7f8c48152b27f303
+    source_hash: dfdb9a85499d0a5d6f9dc9dd01d78773120d71b17dd941765442d9887c673f2d
     source_path: plugins/reference/memory-core.md
     workflow: 16
 ---
 
-# Plugin แกนหน่วยความจำ
+# Plugin Memory Core
 
 เพิ่มเครื่องมือที่เอเจนต์สามารถเรียกใช้ได้
 
 ## การเผยแพร่
 
 - แพ็กเกจ: `@openclaw/memory-core`
-- ช่องทางการติดตั้ง: รวมอยู่ใน OpenClaw
+- เส้นทางการติดตั้ง: รวมอยู่ใน OpenClaw
 
-## ส่วนติดต่อ
+## พื้นผิว
 
-สัญญา: เครื่องมือ
+สัญญา: `tools`

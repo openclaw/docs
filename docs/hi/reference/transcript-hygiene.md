@@ -1,131 +1,122 @@
 ---
 read_when:
-    - आप ट्रांसक्रिप्ट संरचना से जुड़ी प्रदाता अनुरोध अस्वीकृतियों को डीबग कर रहे हैं
-    - आप ट्रांसक्रिप्ट सैनिटाइजेशन या टूल-कॉल मरम्मत लॉजिक बदल रहे हैं
-    - आप प्रदाताओं में टूल-कॉल आईडी की असंगतियों की जाँच कर रहे हैं
-summary: 'संदर्भ: प्रदाता-विशिष्ट ट्रांसक्रिप्ट स्वच्छीकरण और मरम्मत नियम'
-title: प्रतिलेख स्वच्छता
+    - आप ट्रांसक्रिप्ट की संरचना से जुड़ी प्रदाता अनुरोध अस्वीकृतियों को डीबग कर रहे हैं
+    - आप ट्रांसक्रिप्ट सैनिटाइज़ेशन या टूल-कॉल सुधार लॉजिक बदल रहे हैं
+    - आप विभिन्न प्रदाताओं में टूल-कॉल आईडी की असंगतियों की जाँच कर रहे हैं
+summary: 'संदर्भ: प्रदाता-विशिष्ट ट्रांस्क्रिप्ट स्वच्छता और सुधार नियम'
+title: ट्रांसक्रिप्ट स्वच्छता
 x-i18n:
-    generated_at: "2026-06-29T00:12:03Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T17:25:08Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: ca1c747b33dc0d6730281d6c91d28a0f8a85bcc5e5cb00dbdebdb55157871a7d
+    source_hash: 4c78d718106498e92c34e3ad6af452a340f230fa88fbf3da36a568e9814ec759
     source_path: reference/transcript-hygiene.md
     workflow: 16
 ---
 
-OpenClaw रन से पहले (मॉडल संदर्भ बनाते समय) ट्रांसक्रिप्ट पर **प्रदाता-विशिष्ट सुधार** लागू करता है। इनमें से अधिकतर **इन-मेमोरी** समायोजन होते हैं, जिनका उपयोग सख्त प्रदाता आवश्यकताओं को पूरा करने के लिए किया जाता है। एक अलग session-file मरम्मत पास भी सेशन लोड होने से पहले संग्रहित JSONL को फिर से लिख सकता है, लेकिन केवल malformed लाइनों या persisted turns के लिए जो अमान्य टिकाऊ रिकॉर्ड हैं। डिलीवर किए गए assistant जवाब डिस्क पर सुरक्षित रखे जाते हैं; प्रदाता-विशिष्ट assistant-prefill stripping केवल outbound payloads बनाते समय होती है। जब कोई मरम्मत होती है, तो atomic replace से पहले मूल फ़ाइल को transient `*.bak-<pid>-<ts>` sibling में लिखा जाता है और replace सफल होने पर हटा दिया जाता है; backup केवल तब रखा जाता है जब cleanup स्वयं विफल हो (ऐसी स्थिति में path वापस रिपोर्ट किया जाता है)।
+OpenClaw रन से पहले (मॉडल संदर्भ बनाते समय) ट्रांसक्रिप्ट पर **प्रदाता-विशिष्ट सुधार** लागू करता है। इनमें से अधिकतर सख्त प्रदाता आवश्यकताओं को पूरा करने के लिए उपयोग किए जाने वाले **इन-मेमोरी** समायोजन हैं। एक अलग सत्र-फ़ाइल सुधार पास सत्र लोड होने से पहले संग्रहीत JSONL को फिर से लिख सकता है, लेकिन केवल विकृत पंक्तियों या ऐसे स्थायी टर्न के लिए जो अमान्य टिकाऊ रिकॉर्ड हैं। डिलीवर किए गए सहायक उत्तर डिस्क पर सुरक्षित रखे जाते हैं; प्रदाता-विशिष्ट सहायक-प्रीफिल हटाना केवल आउटबाउंड पेलोड बनाते समय होता है।
 
-Scope में शामिल है:
+सुधार होने पर, परमाणु प्रतिस्थापन से पहले मूल फ़ाइल को एक अस्थायी
+`*.bak-<pid>-<ts>` सहोदर में लिखा जाता है, फिर प्रतिस्थापन सफल होने पर उसे हटा दिया जाता है। बैकअप केवल तभी रखा जाता है जब क्लीनअप स्वयं विफल हो जाए, और उस स्थिति में पथ वापस रिपोर्ट किया जाता है।
 
-- Runtime-only prompt context का user-visible transcript turns से बाहर रहना
-- Tool call id sanitization
-- Tool call input validation
-- Tool result pairing repair
-- Turn validation / ordering
-- Thought signature cleanup
-- Thinking signature cleanup
-- Image payload sanitization
-- provider replay से पहले blank text-block cleanup
-- provider replay से पहले incomplete reasoning-only length-turn cleanup
-- User-input provenance tagging (inter-session routed prompts के लिए)
-- Bedrock Converse replay के लिए empty assistant error-turn repair
+दायरे में शामिल हैं:
 
-अगर आपको transcript storage विवरण चाहिए, तो देखें:
+- उपयोगकर्ता-दृश्य ट्रांसक्रिप्ट टर्न से बाहर रहने वाला केवल-रनटाइम प्रॉम्प्ट संदर्भ
+- टूल कॉल आईडी स्वच्छीकरण
+- टूल कॉल इनपुट सत्यापन
+- टूल परिणाम युग्मन सुधार
+- टर्न सत्यापन / क्रम निर्धारण
+- विचार हस्ताक्षर क्लीनअप
+- थिंकिंग हस्ताक्षर क्लीनअप
+- इमेज पेलोड स्वच्छीकरण
+- प्रदाता रीप्ले से पहले रिक्त टेक्स्ट-ब्लॉक क्लीनअप
+- प्रदाता रीप्ले से पहले अपूर्ण केवल-रीज़निंग लंबाई-टर्न क्लीनअप
+- उपयोगकर्ता-इनपुट उद्गम टैगिंग (अंतर-सत्र रूट किए गए प्रॉम्प्ट के लिए)
+- Bedrock Converse रीप्ले के लिए खाली सहायक त्रुटि-टर्न सुधार
 
-- [Session management deep dive](/hi/reference/session-management-compaction)
-
----
-
-## वैश्विक नियम: runtime context user transcript नहीं है
-
-Runtime/system context को किसी turn के लिए model prompt में जोड़ा जा सकता है, लेकिन यह
-end-user-authored content नहीं है। OpenClaw Gateway replies, queued followups, ACP, CLI, और embedded OpenClaw
-runs के लिए एक अलग transcript-facing
-prompt body रखता है। संग्रहित visible user turns runtime-enriched prompt के बजाय उसी transcript body का उपयोग करते हैं।
-
-Legacy sessions के लिए जिनमें runtime wrappers पहले से persisted हैं, Gateway history
-surfaces WebChat,
-TUI, REST, या SSE clients को messages लौटाने से पहले display projection लागू करते हैं।
+यदि आपको ट्रांसक्रिप्ट संग्रहण का विवरण चाहिए, तो
+[सत्र प्रबंधन का गहन विवरण](/hi/reference/session-management-compaction) देखें।
 
 ---
 
-## यह कहां चलता है
+## वैश्विक नियम: रनटाइम संदर्भ उपयोगकर्ता ट्रांसक्रिप्ट नहीं है
 
-सारी transcript hygiene embedded runner में centralized है:
+किसी टर्न के लिए मॉडल प्रॉम्प्ट में रनटाइम/सिस्टम संदर्भ जोड़ा जा सकता है, लेकिन यह अंतिम उपयोगकर्ता द्वारा लिखी गई सामग्री नहीं है। OpenClaw Gateway उत्तरों, कतारबद्ध फ़ॉलोअप, ACP, CLI और एम्बेडेड OpenClaw रन के लिए एक अलग ट्रांसक्रिप्ट-मुखी प्रॉम्प्ट बॉडी रखता है। संग्रहीत दृश्यमान उपयोगकर्ता टर्न रनटाइम-संवर्धित प्रॉम्प्ट के बजाय उस ट्रांसक्रिप्ट बॉडी का उपयोग करते हैं।
 
-- Policy selection: `src/agents/transcript-policy.ts`
-- Sanitization/repair application: `src/agents/embedded-agent-runner/replay-history.ts` में `sanitizeSessionHistory`
+उन पुराने सत्रों के लिए जिनमें रनटाइम रैपर पहले ही स्थायी रूप से संग्रहीत किए जा चुके हैं, Gateway इतिहास सतहें WebChat, TUI, REST या SSE क्लाइंट को संदेश लौटाने से पहले एक प्रदर्शन प्रक्षेपण लागू करती हैं।
 
-Policy `provider`, `modelApi`, और `modelId` का उपयोग करके तय करती है कि क्या लागू करना है।
+---
 
-Transcript hygiene से अलग, session files को load से पहले (यदि आवश्यक हो) repair किया जाता है:
+## यह कहाँ चलता है
+
+सभी ट्रांसक्रिप्ट स्वच्छता एम्बेडेड रनर में केंद्रीकृत है:
+
+- नीति चयन: `src/agents/transcript-policy.ts`
+  (`resolveTranscriptPolicy`, `provider`, `modelApi` और `modelId` द्वारा कुंजीबद्ध)
+- स्वच्छीकरण/सुधार अनुप्रयोग: `src/agents/embedded-agent-runner/replay-history.ts` में
+  `sanitizeSessionHistory`
+
+ट्रांसक्रिप्ट स्वच्छता से अलग, सत्र फ़ाइलों को लोड करने से पहले (यदि आवश्यक हो) सुधारा जाता है:
 
 - `src/agents/session-file-repair.ts` में `repairSessionFileIfNeeded`
-- `run/attempt.ts` और `compact.ts` (embedded runner) से call किया गया
+- `src/agents/embedded-agent-runner/run/attempt.ts` और
+  `src/agents/embedded-agent-runner/compact.ts` से कॉल किया जाता है
 
 ---
 
-## वैश्विक नियम: image sanitization
+## वैश्विक नियम: इमेज स्वच्छीकरण
 
-Image payloads को हमेशा sanitize किया जाता है ताकि size
-limits (oversized base64 images को downscale/recompress करना) के कारण provider-side rejection रोका जा सके।
+आकार सीमाओं के कारण प्रदाता-पक्ष से अस्वीकृति रोकने के लिए इमेज पेलोड हमेशा स्वच्छ किए जाते हैं (बहुत बड़ी base64 इमेज को डाउनस्केल/पुनः संपीड़ित करना)। यह दृष्टि-सक्षम मॉडलों के लिए इमेज-प्रेरित टोकन दबाव नियंत्रित करने में भी सहायता करता है: कम अधिकतम आयाम टोकन उपयोग घटाते हैं, जबकि अधिक आयाम विवरण सुरक्षित रखते हैं।
 
-यह vision-capable models के लिए image-driven token pressure को नियंत्रित करने में भी मदद करता है।
-Lower max dimensions आम तौर पर token usage घटाते हैं; higher dimensions detail सुरक्षित रखते हैं।
+कार्यान्वयन:
 
-Implementation:
-
-- `src/agents/embedded-agent-helpers/images.ts` में `sanitizeSessionMessagesImages`
+- `src/agents/embedded-agent-helpers/images.ts` में
+  `sanitizeSessionMessagesImages`
 - `src/agents/tool-images.ts` में `sanitizeContentBlocksImages`
-- Max image side `agents.defaults.imageMaxDimensionPx` के जरिए configurable है (default: `1200`)।
-- इस pass के replay content पर चलते समय blank text blocks हटाए जाते हैं। Assistant
-  turns जो empty हो जाते हैं, replay copy से drop कर दिए जाते हैं; user और tool-result
-  turns जो empty हो जाते हैं, उन्हें non-empty omitted-content placeholder मिलता है।
+- इमेज की अधिकतम भुजा `agents.defaults.imageMaxDimensionPx` के माध्यम से कॉन्फ़िगर की जा सकती है
+  (डिफ़ॉल्ट: `1200`)
+- जब यह पास रीप्ले सामग्री से गुजरता है, तब रिक्त टेक्स्ट ब्लॉक हटा दिए जाते हैं।
+  खाली हो जाने वाले सहायक टर्न रीप्ले प्रति से हटा दिए जाते हैं; खाली हो जाने वाले उपयोगकर्ता
+  और टूल-परिणाम टर्न को एक गैर-खाली
+  छोड़ी-गई-सामग्री प्लेसहोल्डर मिलता है।
 
 ---
 
-## वैश्विक नियम: malformed tool calls
+## वैश्विक नियम: विकृत टूल कॉल
 
-Assistant tool-call blocks जिनमें `input` और `arguments` दोनों missing हैं, model context बनने से पहले drop कर दिए जाते हैं। यह partially
-persisted tool calls (उदाहरण के लिए, rate limit failure के बाद) से provider rejections रोकता है।
+`input` और `arguments` दोनों से रहित सहायक टूल-कॉल ब्लॉक मॉडल संदर्भ बनने से पहले हटा दिए जाते हैं। यह आंशिक रूप से स्थायी किए गए टूल कॉल के कारण प्रदाता अस्वीकृति रोकता है (उदाहरण के लिए, दर सीमा विफलता के बाद)।
 
-Implementation:
+कार्यान्वयन:
 
 - `src/agents/session-transcript-repair.ts` में `sanitizeToolCallInputs`
-- `src/agents/embedded-agent-runner/replay-history.ts` में `sanitizeSessionHistory` में लागू
+- `sanitizeSessionHistory` में लागू
+  (`src/agents/embedded-agent-runner/replay-history.ts`)
 
 ---
 
-## वैश्विक नियम: incomplete reasoning-only turns
+## वैश्विक नियम: अपूर्ण केवल-रीज़निंग टर्न
 
-Assistant turns जो केवल thinking या
-redacted-thinking content के साथ provider output limit तक पहुंचते हैं, in-memory replay copy से हटा दिए जाते हैं। ऐसे turns में incomplete provider state होती है और partial thinking signature हो सकता है।
+केवल थिंकिंग या संशोधित-थिंकिंग सामग्री के साथ प्रदाता आउटपुट सीमा तक पहुँचने वाले सहायक टर्न इन-मेमोरी रीप्ले प्रति से छोड़ दिए जाते हैं। ऐसे टर्न में अपूर्ण प्रदाता स्थिति होती है और उनमें आंशिक थिंकिंग हस्ताक्षर हो सकता है।
 
-Empty length turns unchanged रहते हैं, जैसे visible text, tool
-calls, या unknown content blocks वाले length turns। Stored transcripts दोबारा नहीं लिखे जाते।
+खाली लंबाई टर्न अपरिवर्तित रहते हैं, और दृश्यमान टेक्स्ट, टूल कॉल या अज्ञात सामग्री ब्लॉक वाले लंबाई टर्न भी अपरिवर्तित रहते हैं। संग्रहीत ट्रांसक्रिप्ट फिर से नहीं लिखे जाते।
 
-Implementation:
-
-- `src/agents/embedded-agent-runner/replay-history.ts` में `normalizeAssistantReplayContent`
+कार्यान्वयन: `src/agents/embedded-agent-runner/replay-history.ts` में
+`normalizeAssistantReplayContent`
 
 ---
 
-## वैश्विक नियम: inter-session input provenance
+## वैश्विक नियम: अंतर-सत्र इनपुट उद्गम
 
-जब कोई agent `sessions_send` के जरिए किसी दूसरे session में prompt भेजता है (agent-to-agent reply/announce steps सहित), OpenClaw created user turn को इसके साथ persist करता है:
+जब कोई एजेंट `sessions_send` के माध्यम से किसी अन्य सत्र में प्रॉम्प्ट भेजता है
+(एजेंट-से-एजेंट उत्तर/घोषणा चरणों सहित), तो OpenClaw बनाए गए उपयोगकर्ता टर्न को
+`message.provenance.kind = "inter_session"` के साथ स्थायी रूप से संग्रहीत करता है।
 
-- `message.provenance.kind = "inter_session"`
+OpenClaw रूट किए गए प्रॉम्प्ट टेक्स्ट से पहले उसी टर्न में एक `[Inter-session message] ... isUser=false`
+मार्कर भी जोड़ता है, ताकि सक्रिय मॉडल कॉल बाहरी सत्र आउटपुट को बाहरी अंतिम-उपयोगकर्ता निर्देशों से अलग पहचान सके। उपलब्ध होने पर इस मार्कर में स्रोत सत्र, चैनल और टूल शामिल होते हैं। प्रदाता संगतता के लिए ट्रांसक्रिप्ट अब भी `role: "user"` का उपयोग करता है, लेकिन दृश्यमान टेक्स्ट और उद्गम मेटाडेटा दोनों टर्न को अंतर-सत्र डेटा के रूप में चिह्नित करते हैं।
 
-OpenClaw routed prompt text से पहले same-turn `[Inter-session message ... isUser=false]`
-marker भी prepends करता है ताकि active model call foreign session output को external end-user instructions से अलग पहचान सके। उपलब्ध होने पर इस marker में
-source session, channel, और tool शामिल होते हैं। Transcript अभी भी provider compatibility के लिए
-`role: "user"` का उपयोग करता है, लेकिन visible text और provenance
-metadata दोनों turn को inter-session data के रूप में mark करते हैं।
-
-Context rebuild के दौरान, OpenClaw वही marker उन पुराने persisted
-inter-session user turns पर लागू करता है जिनमें केवल provenance metadata है।
+संदर्भ के पुनर्निर्माण के दौरान, OpenClaw केवल उद्गम मेटाडेटा वाले पुराने स्थायी अंतर-सत्र उपयोगकर्ता टर्न पर भी वही मार्कर लागू करता है।
 
 ---
 
@@ -133,110 +124,87 @@ inter-session user turns पर लागू करता है जिनमे
 
 **OpenAI / OpenAI Codex**
 
-- केवल image sanitization।
-- OpenAI Responses/Codex transcripts के लिए orphaned reasoning signatures (standalone reasoning items जिनके बाद content block नहीं है) drop करें, और model route switch के बाद replayable OpenAI reasoning drop करें।
-- Replayable OpenAI Responses reasoning item payloads को सुरक्षित रखें, encrypted empty-summary items सहित, ताकि manual/WebSocket replay required `rs_*` state को assistant output items के साथ paired रखे।
-- Native ChatGPT Codex Responses, prior item IDs के बिना prior Responses reasoning/message/function payloads replay करके Codex wire parity का पालन करता है, जबकि session `prompt_cache_key` सुरक्षित रखता है।
-- OpenAI Responses-family replay canonical `call_*|fc_*` same-model reasoning pairs को सुरक्षित रखता है, लेकिन pi-ai payload conversion से पहले malformed या overlong `call_id` / function-call item ids को deterministically normalize करता है।
-- Tool result pairing repair real matched outputs को move कर सकता है और missing tool calls के लिए Codex-style `aborted` outputs synthesize कर सकता है।
-- कोई turn validation या reordering नहीं।
-- Missing OpenAI Responses-family tool outputs को Codex replay normalization से match करने के लिए `aborted` के रूप में synthesize किया जाता है।
-- कोई thought signature stripping नहीं।
+- केवल इमेज स्वच्छीकरण।
+- OpenAI Responses/Codex ट्रांसक्रिप्ट के लिए अनाथ रीज़निंग हस्ताक्षर (बाद में सामग्री ब्लॉक के बिना स्वतंत्र रीज़निंग आइटम) हटाए जाते हैं, और मॉडल रूट बदलने के बाद रीप्ले योग्य OpenAI रीज़निंग हटाई जाती है।
+- एन्क्रिप्टेड खाली-सारांश आइटम सहित, रीप्ले योग्य OpenAI Responses रीज़निंग आइटम पेलोड सुरक्षित रखे जाते हैं, ताकि मैन्युअल/WebSocket रीप्ले आवश्यक
+  `rs_*` स्थिति को सहायक आउटपुट आइटम के साथ युग्मित रखे।
+- नेटिव ChatGPT Codex Responses, सत्र `prompt_cache_key` को सुरक्षित रखते हुए पूर्व आइटम आईडी के बिना पिछले Responses रीज़निंग/संदेश/फ़ंक्शन पेलोड को रीप्ले करके Codex वायर समानता का पालन करता है।
+- OpenAI Responses-परिवार रीप्ले कैनोनिकल `call_*|fc_*`
+  समान-मॉडल रीज़निंग युग्म सुरक्षित रखता है, लेकिन pi-ai पेलोड रूपांतरण से पहले विकृत या
+  अत्यधिक लंबे `call_id`/फ़ंक्शन-कॉल आइटम आईडी को नियतात्मक रूप से सामान्य करता है।
+- टूल परिणाम युग्मन सुधार वास्तविक मेल खाते आउटपुट को स्थानांतरित कर सकता है और अनुपलब्ध टूल कॉल के लिए Codex-शैली `aborted` आउटपुट संश्लेषित कर सकता है।
+- कोई टर्न सत्यापन या पुनःक्रम निर्धारण नहीं; विचार हस्ताक्षर नहीं हटाए जाते।
 
-**OpenAI-compatible Chat Completions**
+**OpenAI-संगत Chat Completions**
 
-- Historical assistant thinking/reasoning blocks replay से पहले stripped होते हैं ताकि
-  local और proxy-style OpenAI-compatible servers को prior-turn
-  reasoning fields जैसे `reasoning` या `reasoning_content` न मिलें।
-- Current same-turn tool-call continuations assistant reasoning block को tool call से
-  attached रखते हैं जब तक tool result replay न हो जाए।
-- `reasoning: true` वाली custom/self-hosted model entries replayed
-  reasoning metadata सुरक्षित रखती हैं।
-- Provider-owned exceptions opt out कर सकते हैं जब उनके wire protocol को
-  replayed reasoning metadata की आवश्यकता हो।
+- ऐतिहासिक सहायक थिंकिंग/रीज़निंग ब्लॉक रीप्ले से पहले हटा दिए जाते हैं, ताकि स्थानीय और प्रॉक्सी-शैली के OpenAI-संगत सर्वर को `reasoning` या `reasoning_content` जैसे पिछले-टर्न रीज़निंग फ़ील्ड न मिलें।
+- वर्तमान उसी-टर्न टूल-कॉल निरंतरताएँ, टूल परिणाम रीप्ले होने तक सहायक रीज़निंग ब्लॉक को टूल कॉल से संलग्न रखती हैं।
+- `reasoning: true` वाली कस्टम/स्वयं-होस्टेड मॉडल प्रविष्टियाँ रीप्ले किया गया रीज़निंग मेटाडेटा सुरक्षित रखती हैं।
+- जब प्रदाता-स्वामित्व वाले अपवादों के वायर प्रोटोकॉल को रीप्ले किया गया रीज़निंग मेटाडेटा चाहिए, तब वे इससे बाहर रहना चुन सकते हैं।
 
 **Google (Generative AI / Gemini CLI / Antigravity)**
 
-- Tool call id sanitization: strict alphanumeric।
-- Tool result pairing repair और synthetic tool results।
-- Turn validation (Gemini-style turn alternation)।
-- Google turn ordering fixup (यदि history assistant से शुरू होती है तो एक छोटा user bootstrap prepend करें)।
-- Antigravity Claude: thinking signatures normalize करें; unsigned thinking blocks drop करें।
+- टूल कॉल आईडी स्वच्छीकरण: सख्ती से अक्षरांकीय।
+- टूल परिणाम युग्मन सुधार और संश्लेषित टूल परिणाम।
+- टर्न सत्यापन (Gemini-शैली टर्न प्रत्यावर्तन)।
+- Google टर्न क्रम सुधार (यदि इतिहास सहायक से शुरू होता है, तो आरंभ में एक छोटा उपयोगकर्ता बूटस्ट्रैप जोड़ना)।
+- Antigravity Claude: थिंकिंग हस्ताक्षरों को सामान्य करना; अहस्ताक्षरित थिंकिंग ब्लॉक हटाना।
 
-**Anthropic / Minimax (Anthropic-compatible)**
+**Anthropic / Minimax (Anthropic-संगत)**
 
-- Tool result pairing repair और synthetic tool results।
-- Turn validation (strict alternation पूरा करने के लिए consecutive user turns merge करें)।
-- Thinking enabled होने पर outgoing Anthropic Messages
-  payloads से trailing assistant prefill turns stripped होते हैं, Cloudflare AI Gateway routes सहित।
-- Session compacted होने पर provider
-  replay से पहले pre-compaction assistant thinking signatures stripped होते हैं। Thinking signatures generation time पर conversation prefix से
-  cryptographically bound होते हैं; compaction के बाद
-  prefix बदल जाता है (summarized content को compaction
-  summary से बदल दिया जाता है), इसलिए original signatures replay करने से Anthropic
-  request को "Invalid signature in thinking block" के साथ reject करता है। Thinking text
-  unsigned block के रूप में सुरक्षित रहता है और फिर नीचे दिए गए rule से handled होता है।
-- Missing, empty, या blank replay signatures वाले thinking blocks
-  provider conversion से पहले stripped होते हैं। अगर इससे assistant turn empty हो जाता है, तो OpenClaw
-  turn shape को non-empty omitted-reasoning text के साथ रखता है।
-- पुराने thinking-only assistant turns जिन्हें stripped करना जरूरी है, उन्हें
-  non-empty omitted-reasoning text से replace किया जाता है ताकि provider adapters replay
-  turn को drop न करें।
+- टूल परिणाम युग्मन सुधार और संश्लेषित टूल परिणाम।
+- टर्न सत्यापन (सख्त प्रत्यावर्तन पूरा करने के लिए लगातार उपयोगकर्ता टर्न मर्ज करना)।
+- थिंकिंग सक्षम होने पर आउटगोइंग Anthropic Messages पेलोड से अंतिम सहायक प्रीफिल टर्न हटा दिए जाते हैं, जिसमें Cloudflare AI Gateway रूट भी शामिल हैं।
+- किसी सत्र को कॉम्पैक्ट किए जाने पर प्रदाता रीप्ले से पहले Compaction-पूर्व सहायक थिंकिंग हस्ताक्षर हटा दिए जाते हैं। थिंकिंग हस्ताक्षर जनरेशन के समय वार्तालाप उपसर्ग से क्रिप्टोग्राफ़िक रूप से बंधे होते हैं; Compaction के बाद उपसर्ग बदल जाता है (सारांशित सामग्री मूल सामग्री की जगह लेती है), इसलिए मूल हस्ताक्षरों को रीप्ले करने पर Anthropic अनुरोध को "Invalid signature in thinking block" के साथ अस्वीकार कर देता है। थिंकिंग टेक्स्ट अहस्ताक्षरित ब्लॉक के रूप में सुरक्षित रहता है और फिर नीचे दिए गए नियम द्वारा संभाला जाता है।
+- अनुपलब्ध, खाली या रिक्त रीप्ले हस्ताक्षर वाले थिंकिंग ब्लॉक प्रदाता रूपांतरण से पहले हटा दिए जाते हैं। यदि इससे सहायक टर्न खाली हो जाता है, तो OpenClaw गैर-खाली छोड़े-गए-रीज़निंग टेक्स्ट के साथ टर्न का आकार बनाए रखता है।
+- हटाए जाने आवश्यक पुराने केवल-थिंकिंग सहायक टर्न को गैर-खाली छोड़े-गए-रीज़निंग टेक्स्ट से बदल दिया जाता है, ताकि प्रदाता एडाप्टर रीप्ले टर्न को न हटाएँ।
 
 **Amazon Bedrock (Converse API)**
 
-- Empty assistant stream-error turns को replay से पहले non-empty fallback text block में repair किया जाता है।
-  Bedrock Converse `content: []` वाले assistant messages reject करता है, इसलिए
-  `stopReason: "error"` और empty content वाले persisted assistant turns को load से पहले disk पर भी
-  repair किया जाता है।
-- Assistant stream-error turns जिनमें केवल blank text blocks होते हैं, invalid blank block replay करने के बजाय
-  in-memory replay copy से drop कर दिए जाते हैं।
-- Session compacted होने पर Converse
-  replay से पहले pre-compaction assistant thinking signatures stripped होते हैं, ऊपर Anthropic जैसे ही कारण से।
-- Missing, empty, या blank replay signatures वाले Claude thinking blocks
-  Converse replay से पहले stripped होते हैं। अगर इससे assistant turn empty हो जाता है, तो OpenClaw
-  turn shape को non-empty omitted-reasoning text के साथ रखता है।
-- पुराने thinking-only assistant turns जिन्हें stripped करना जरूरी है, उन्हें
-  non-empty omitted-reasoning text से replace किया जाता है ताकि Converse replay strict turn shape रखे।
-- Replay OpenClaw delivery-mirror और gateway-injected assistant turns को filter करता है।
-- Image sanitization वैश्विक नियम के जरिए लागू होता है।
+- खाली सहायक स्ट्रीम-त्रुटि टर्न को रीप्ले से पहले गैर-खाली फ़ॉलबैक टेक्स्ट ब्लॉक में सुधारा जाता है। Bedrock Converse `content: []` वाले सहायक संदेशों को अस्वीकार करता है, इसलिए `stopReason:
+"error"` और खाली सामग्री वाले स्थायी सहायक टर्न को भी लोड करने से पहले डिस्क पर सुधारा जाता है।
+- केवल रिक्त टेक्स्ट ब्लॉक वाले सहायक स्ट्रीम-त्रुटि टर्न को अमान्य रिक्त ब्लॉक रीप्ले करने के बजाय इन-मेमोरी रीप्ले प्रति से हटा दिया जाता है।
+- किसी सत्र को कॉम्पैक्ट किए जाने पर Converse रीप्ले से पहले Compaction-पूर्व सहायक थिंकिंग हस्ताक्षर हटा दिए जाते हैं, उसी कारण से जो ऊपर Anthropic के लिए दिया गया है।
+- अनुपलब्ध, खाली या रिक्त रीप्ले हस्ताक्षर वाले Claude थिंकिंग ब्लॉक Converse रीप्ले से पहले हटा दिए जाते हैं। यदि इससे सहायक टर्न खाली हो जाता है, तो OpenClaw गैर-खाली छोड़े-गए-रीज़निंग टेक्स्ट के साथ टर्न का आकार बनाए रखता है।
+- हटाए जाने आवश्यक पुराने केवल-थिंकिंग सहायक टर्न को गैर-खाली छोड़े-गए-रीज़निंग टेक्स्ट से बदल दिया जाता है, ताकि Converse रीप्ले सख्त टर्न आकार बनाए रखे।
+- रीप्ले OpenClaw डिलीवरी-मिरर और Gateway द्वारा जोड़े गए सहायक टर्न फ़िल्टर करता है।
+- इमेज स्वच्छीकरण वैश्विक नियम के माध्यम से लागू होता है।
 
-**Mistral (model-id based detection सहित)**
+**Mistral (मॉडल-आईडी आधारित पहचान सहित)**
 
-- Tool call id sanitization: strict9 (alphanumeric length 9)।
+- टूल कॉल आईडी स्वच्छीकरण: strict9 (अक्षरांकीय, लंबाई 9)।
 
 **OpenRouter Gemini**
 
-- Thought signature cleanup: non-base64 `thought_signature` values strip करें (base64 रखें)।
+- विचार हस्ताक्षर क्लीनअप: गैर-base64 `thought_signature` मान हटाएँ
+  (base64 रखें)।
 
 **OpenRouter Anthropic**
 
-- Reasoning enabled होने पर verified OpenRouter
-  OpenAI-compatible Anthropic model payloads से trailing assistant prefill turns stripped होते हैं, direct Anthropic और Cloudflare Anthropic replay behavior से match करते हुए।
+- रीज़निंग सक्षम होने पर सत्यापित OpenRouter OpenAI-संगत Anthropic मॉडल पेलोड से अंतिम सहायक प्रीफिल टर्न हटा दिए जाते हैं, जो प्रत्यक्ष Anthropic और Cloudflare Anthropic रीप्ले व्यवहार से मेल खाता है।
 
-**बाकी सब**
+**बाकी सभी**
 
-- केवल image sanitization।
+- केवल इमेज स्वच्छीकरण।
 
 ---
 
-## ऐतिहासिक व्यवहार (pre-2026.1.22)
+## ऐतिहासिक व्यवहार (2026.1.22 से पहले)
 
-2026.1.22 release से पहले, OpenClaw ने transcript hygiene की कई layers लागू कीं:
+2026.1.22 रिलीज़ से पहले, OpenClaw ट्रांसक्रिप्ट स्वच्छता की कई परतें लागू करता था:
 
-- हर context build पर एक **transcript-sanitize extension** चलता था और यह कर सकता था:
-  - Tool use/result pairing repair करना।
-  - Tool call ids sanitize करना (`_`/`-` सुरक्षित रखने वाले non-strict mode सहित)।
-- Runner ने भी provider-specific sanitization किया, जिससे काम duplicate हुआ।
-- Provider policy के बाहर अतिरिक्त mutations हुए, जिनमें शामिल हैं:
-  - Persistence से पहले assistant text से `<final>` tags strip करना।
-  - Empty assistant error turns drop करना।
-  - Tool calls के बाद assistant content trim करना।
+- प्रत्येक संदर्भ निर्माण पर एक **ट्रांसक्रिप्ट-सैनिटाइज़ एक्सटेंशन** चलता था और यह निम्न कार्य कर सकता था:
+  - टूल उपयोग/परिणाम युग्मन सुधारना।
+  - टूल कॉल आईडी स्वच्छ करना (उस गैर-सख्त मोड सहित जो
+    `_`/`-` को सुरक्षित रखता था)।
+- रनर भी प्रदाता-विशिष्ट स्वच्छीकरण करता था, जिससे कार्य दोहराया जाता था।
+- प्रदाता नीति के बाहर अतिरिक्त परिवर्तन होते थे, जिनमें स्थायी करने से पहले सहायक टेक्स्ट से `<final>` टैग हटाना, खाली सहायक त्रुटि टर्न हटाना और टूल कॉल के बाद सहायक सामग्री ट्रिम करना शामिल था।
 
-इस complexity ने cross-provider regressions पैदा किए (खासकर `openai-responses`
-`call_id|fc_id` pairing)। 2026.1.22 cleanup ने extension हटाया, logic को runner में centralized किया, और OpenAI को image sanitization से आगे **no-touch** बनाया।
+इस जटिलता के कारण अंतर-प्रदाता प्रतिगमन हुए (विशेष रूप से
+`openai-responses` `call_id|fc_id` युग्मन)। 2026.1.22 क्लीनअप ने
+एक्सटेंशन हटा दिया, तर्क को रनर में केंद्रीकृत किया और इमेज स्वच्छीकरण से परे OpenAI को **अपरिवर्तित** रखा।
 
 ## संबंधित
 
-- [Session management](/hi/concepts/session)
-- [Session pruning](/hi/concepts/session-pruning)
+- [सत्र प्रबंधन](/hi/concepts/session)
+- [सत्र छँटाई](/hi/concepts/session-pruning)

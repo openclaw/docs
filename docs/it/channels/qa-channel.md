@@ -1,21 +1,22 @@
 ---
 read_when:
-    - Stai collegando il trasporto QA sintetico a un'esecuzione di test locale o CI
-    - Hai bisogno della superficie di configurazione qa-channel inclusa nel pacchetto
-    - Stai perfezionando l'automazione del controllo qualità end-to-end
-summary: Plugin sintetico per canali di tipo Slack per scenari QA deterministici di OpenClaw
+    - Si sta integrando il trasporto QA sintetico in un'esecuzione di test locale o CI
+    - È necessaria l'interfaccia di configurazione qa-channel inclusa nel bundle
+    - Si sta perfezionando l'automazione QA end-to-end
+summary: Plugin di canale sintetico di classe Slack per scenari QA deterministici di OpenClaw
 title: Canale QA
 x-i18n:
-    generated_at: "2026-07-12T06:49:11Z"
+    generated_at: "2026-07-16T14:02:06Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: f33af6ef31515e0cab0ee2540f48f3ffea8aba3d13915dc8cf66111599354187
+    source_hash: a43c35e197116a6bd44b238010eb508aed23dea99ab872d10e6fc853b5f4d4a7
     source_path: channels/qa-channel.md
     workflow: 16
 ---
 
-`qa-channel` è un trasporto sintetico di messaggi locale al repository per il QA automatizzato di OpenClaw (`extensions/qa-channel`, pacchetto privato, escluso dalle installazioni distribuite). Non è un canale di produzione: esiste per esercitare lo stesso confine dei Plugin di canale utilizzato dai trasporti reali, mantenendo al contempo lo stato deterministico e completamente ispezionabile.
+`qa-channel` è un trasporto sintetico di messaggi locale al repository per la QA automatizzata di OpenClaw (`extensions/qa-channel`, pacchetto privato, escluso dalle installazioni pacchettizzate). Non è un canale di produzione: esiste per esercitare lo stesso confine del plugin di canale usato dai trasporti reali, mantenendo al contempo lo stato deterministico e completamente ispezionabile.
 
 ## Funzionalità
 
@@ -24,9 +25,9 @@ x-i18n:
   - `channel:<room>`
   - `group:<room>`
   - `thread:<room>/<thread>`
-- Le conversazioni condivise `channel:` e `group:` vengono presentate agli agenti come turni di stanze di gruppo/canale, in modo da esercitare la stessa politica di instradamento delle risposte visibili e degli strumenti di messaggistica utilizzata da Discord, Slack, Telegram e trasporti simili.
-- Bus sintetico basato su HTTP per l'iniezione di messaggi in entrata, l'acquisizione delle trascrizioni in uscita, la creazione di thread, le reazioni, le modifiche, le eliminazioni e le azioni di ricerca/lettura.
-- Runner di autoverifica lato host che scrive un report Markdown in `.artifacts/qa-e2e/`.
+- Le conversazioni condivise `channel:` e `group:` vengono presentate agli agenti come turni di stanze di gruppo/canale, così da esercitare la stessa politica di instradamento delle risposte visibili e degli strumenti di messaggistica usata da Discord, Slack, Telegram e trasporti simili.
+- Bus sintetico basato su HTTP per l'inserimento di messaggi in entrata, l'acquisizione delle trascrizioni in uscita, la creazione di thread, le reazioni, le modifiche, le eliminazioni e le azioni di ricerca/lettura.
+- Esecutore di autocontrollo lato host che scrive un report Markdown in `.artifacts/qa-e2e/`.
 
 ## Configurazione
 
@@ -49,36 +50,36 @@ Chiavi dell'account:
 - `enabled` - interruttore principale per questo account.
 - `name` - etichetta di visualizzazione facoltativa.
 - `baseUrl` - URL del bus sintetico. L'account viene considerato configurato una volta impostato questo valore.
-- `botUserId` - ID utente del bot sintetico utilizzato nella grammatica delle destinazioni (valore predefinito: `openclaw`).
+- `botUserId` - ID utente del bot sintetico usato nella grammatica delle destinazioni (valore predefinito: `openclaw`).
 - `botDisplayName` - nome visualizzato per i messaggi in uscita (valore predefinito: `OpenClaw QA`).
 - `pollTimeoutMs` - intervallo di attesa del long polling. Numero intero compreso tra 100 e 30000 (valore predefinito: 1000).
-- `allowFrom` - elenco consentito dei mittenti (ID utente o `"*"`; valore predefinito: `["*"]`). I messaggi diretti applicano
-  sempre la politica `open`; anche la politica di gruppo basata sull'elenco consentito utilizza questi
-  ID sintetici dei mittenti.
+- `allowFrom` - elenco dei mittenti consentiti (ID utente o `"*"`; valore predefinito: `["*"]`). I messaggi diretti usano
+  sempre la politica `open`; anche la politica dei gruppi con elenco dei mittenti consentiti usa questi ID
+  sintetici dei mittenti.
 - `groupPolicy` - politica delle stanze condivise: `"open"` (valore predefinito), `"allowlist"` oppure
   `"disabled"`.
-- `groupAllowFrom` - elenco consentito facoltativo dei mittenti delle stanze condivise. Se omesso con
-  `"allowlist"`, QA Channel utilizza `allowFrom` come ripiego.
+- `groupAllowFrom` - elenco facoltativo dei mittenti consentiti nelle stanze condivise. Se omesso con
+  `"allowlist"`, QA Channel usa come ripiego `allowFrom`.
 - `groups.<room>.requireMention` - richiede una menzione del bot prima di rispondere in una
   specifica stanza di gruppo/canale (valore predefinito: false). `groups."*"` imposta il valore predefinito;
-  `tools` / `toolsBySender` per ciascuna stanza impostano sostituzioni della politica degli strumenti.
+  `tools` / `toolsBySender` per stanza impostano le sostituzioni della politica degli strumenti.
 - `defaultTo` - destinazione di ripiego quando non ne viene fornita alcuna.
-- `actions.messages` / `actions.reactions` / `actions.search` / `actions.threads` - controllo per azione dell'accesso agli strumenti.
+- `actions.messages` / `actions.reactions` / `actions.search` / `actions.threads` - controllo dell'accesso agli strumenti per singola azione.
 
-Chiavi multi-account al livello superiore:
+Chiavi multi-account al livello principale:
 
-- `accounts` - record delle sostituzioni denominate per ciascun account, indicizzate per ID account.
+- `accounts` - record delle sostituzioni denominate per singolo account, indicizzate per ID account.
 - `defaultAccount` - ID account preferito quando ne sono configurati più di uno.
 
-## Runner
+## Esecutori
 
-Autoverifica lato host (scrive un report Markdown in `.artifacts/qa-e2e/`):
+Autocontrollo lato host (scrive un report Markdown in `.artifacts/qa-e2e/`):
 
 ```bash
 pnpm qa:e2e
 ```
 
-Il comando instrada l'esecuzione tramite `qa-lab`, avvia il bus QA interno al repository, inizializza la porzione di runtime `qa-channel` ed esegue un'autoverifica deterministica.
+L'operazione viene instradata tramite `qa-lab`, avvia il bus QA interno al repository, inizializza la porzione di runtime `qa-channel` ed esegue un autocontrollo deterministico.
 
 Suite completa di scenari basata sul repository:
 
@@ -86,20 +87,19 @@ Suite completa di scenari basata sul repository:
 pnpm openclaw qa suite
 ```
 
-Esegue gli scenari in parallelo sulla corsia del Gateway QA. Consulta la [panoramica del QA](/it/concepts/qa-e2e-automation) per scenari, profili e modalità dei provider.
+Esegue gli scenari in parallelo sulla corsia del Gateway QA. Consultare la [panoramica della QA](/it/concepts/qa-e2e-automation) per scenari, profili e modalità dei provider.
 
-Sito QA basato su Docker (Gateway + interfaccia del debugger QA Lab in un unico stack):
+Sito QA basato su Docker (Gateway + interfaccia di debug di QA Lab in un unico stack):
 
 ```bash
 pnpm qa:lab:up
 ```
 
-Compila il sito QA, avvia lo stack Gateway + QA Lab basato su Docker e stampa l'URL di QA Lab. Da lì puoi selezionare gli scenari, scegliere la corsia del modello, avviare singole esecuzioni e seguirne i risultati in tempo reale. Il debugger QA Lab è separato dal pacchetto Control UI distribuito.
+Compila il sito QA, avvia lo stack basato su Docker con Gateway + QA Lab e mostra l'URL di QA Lab. Da lì è possibile selezionare gli scenari, scegliere la corsia del modello, avviare singole esecuzioni e osservare i risultati in tempo reale. Il debugger di QA Lab è separato dal bundle della Control UI distribuito.
 
 ## Contenuti correlati
 
-- [Panoramica del QA](/it/concepts/qa-e2e-automation) - stack complessivo, adattatori di trasporto, creazione degli scenari
-- [QA Matrix](/it/concepts/qa-matrix) - esempio di runner con trasporto reale che controlla un canale effettivo
+- [Panoramica della QA](/it/concepts/qa-e2e-automation) - stack complessivo, adattatori di trasporto, profili Matrix e creazione degli scenari
 - [Associazione](/it/channels/pairing)
 - [Gruppi](/it/channels/groups)
 - [Panoramica dei canali](/it/channels)

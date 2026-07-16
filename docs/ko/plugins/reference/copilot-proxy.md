@@ -4,11 +4,12 @@ read_when:
 summary: OpenClaw에 Copilot Proxy 모델 제공자 지원을 추가합니다.
 title: Copilot Proxy Plugin
 x-i18n:
-    generated_at: "2026-07-12T01:01:17Z"
+    generated_at: "2026-07-16T12:54:16Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 454c4a36d606ce1e07c3801a3dede590c4033e80051d5c2e5a20f0767ca2573e
+    source_hash: 4f5f18ba0291906bdce6c1a104705d7d38d59645a0b006be9bce65553aae2f44
     source_path: plugins/reference/copilot-proxy.md
     workflow: 16
 ---
@@ -22,6 +23,6 @@ OpenClaw에 Copilot Proxy 모델 제공자 지원을 추가합니다.
 - 패키지: `@openclaw/copilot-proxy`
 - 설치 경로: OpenClaw에 포함됨
 
-## 제공 기능
+## 인터페이스
 
-제공자: copilot-proxy
+제공자: `copilot-proxy`

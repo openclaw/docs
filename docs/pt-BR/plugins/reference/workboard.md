@@ -4,28 +4,29 @@ read_when:
 summary: Painel de trabalho para problemas e sessões gerenciados por agentes.
 title: Plugin Workboard
 x-i18n:
-    generated_at: "2026-07-12T00:13:11Z"
+    generated_at: "2026-07-16T12:48:54Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 1e5a48a52d45dbe87b73020103c2bc3f0bd46305b4c0d26b3010864af65fa99c
+    source_hash: 7011f95388aafcc6bd2d4af0fc71296976b05f57d9314bbb4fa341b8de717fa2
     source_path: plugins/reference/workboard.md
     workflow: 16
 ---
 
 # Plugin Workboard
 
-Painel de trabalho para problemas e sessões gerenciados por agentes.
+Painel de trabalho para issues e sessões pertencentes ao agente.
 
 ## Distribuição
 
 - Pacote: `@openclaw/workboard`
-- Forma de instalação: incluído no OpenClaw
+- Rota de instalação: incluído no OpenClaw
 
 ## Superfície
 
-contratos: ferramentas
+contratos: `tools`
 
 ## Documentação relacionada
 
-- [Workboard](/pt-BR/plugins/workboard)
+- [workboard](/pt-BR/plugins/workboard)

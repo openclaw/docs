@@ -1,14 +1,15 @@
 ---
 read_when:
-    - Ви встановлюєте, налаштовуєте або перевіряєте Plugin полотна в межах аудиту
-summary: Експериментальні засоби керування Canvas і поверхні рендерингу A2UI для спарених вузлів.
-title: Plugin Canvas
+    - Ви встановлюєте, налаштовуєте або перевіряєте Plugin canvas на відповідність вимогам
+summary: Експериментальні засоби керування Canvas і поверхні візуалізації A2UI для спарених вузлів.
+title: Плагін Canvas
 x-i18n:
-    generated_at: "2026-07-12T13:33:46Z"
+    generated_at: "2026-07-16T18:23:25Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 623f241907be5c88e7b20139f8a03e9c54e29df4bc7d3411fa90a029bfcb285f
+    source_hash: b7a59cf21ed88e49677bf47a679b9653e08468a7dc11b209fa1469f6031da737
     source_path: plugins/reference/canvas.md
     workflow: 16
 ---
@@ -20,8 +21,8 @@ x-i18n:
 ## Розповсюдження
 
 - Пакет: `@openclaw/canvas-plugin`
-- Спосіб встановлення: входить до складу OpenClaw
+- Спосіб установлення: входить до складу OpenClaw
 
 ## Поверхня
 
-контракти: інструменти; Skills
+контракти: `tools`; навички

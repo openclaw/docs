@@ -4,11 +4,12 @@ read_when:
 summary: Bổ sung hỗ trợ nhà cung cấp mô hình Hugging Face cho OpenClaw.
 title: Plugin Hugging Face
 x-i18n:
-    generated_at: "2026-07-12T08:15:40Z"
+    generated_at: "2026-07-16T15:38:14Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: d3f400aed24e630718ce5977e417ff47a8a985a0a385942e1ee6224d830b53e6
+    source_hash: 3c7b8b57d78fd817fda7f5d24dff103bb1453612667a483560213632a5b7ba85
     source_path: plugins/reference/huggingface.md
     workflow: 16
 ---
@@ -20,11 +21,11 @@ Bổ sung hỗ trợ nhà cung cấp mô hình Hugging Face cho OpenClaw.
 ## Phân phối
 
 - Gói: `@openclaw/huggingface-provider`
-- Phương thức cài đặt: được tích hợp trong OpenClaw
+- Cách cài đặt: được tích hợp trong OpenClaw
 
-## Phạm vi
+## Bề mặt
 
-nhà cung cấp: huggingface
+nhà cung cấp: `huggingface`
 
 ## Tài liệu liên quan
 

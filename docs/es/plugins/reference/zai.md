@@ -1,30 +1,31 @@
 ---
 read_when:
-    - Estás instalando, configurando o auditando el plugin zai
+    - Está instalando, configurando o auditando el plugin zai
 summary: Añade compatibilidad con el proveedor de modelos Z.AI a OpenClaw.
 title: Plugin de Z.AI
 x-i18n:
-    generated_at: "2026-07-11T23:22:14Z"
+    generated_at: "2026-07-16T11:51:03Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 47eed5f843c7659c7b4aefb06ef919b5420998609ae8d46ac5ebcd5871b0f673
+    source_hash: c722638d50bf95db7a8a95b688d53dab3a944633eeb1d7734939819a87f81278
     source_path: plugins/reference/zai.md
     workflow: 16
 ---
 
-# Plugin de Z.AI
+# Plugin Z.AI
 
 Añade compatibilidad con el proveedor de modelos Z.AI a OpenClaw.
 
 ## Distribución
 
 - Paquete: `@openclaw/zai-provider`
-- Método de instalación: npm; ClawHub: `clawhub:@openclaw/zai-provider`
+- Vía de instalación: npm; ClawHub: `clawhub:@openclaw/zai-provider`
 
 ## Superficie
 
-proveedores: zai; contratos: mediaUnderstandingProviders, usageProviders
+proveedores: `zai`; contratos: `mediaUnderstandingProviders`, `usageProviders`
 
 ## Documentación relacionada
 

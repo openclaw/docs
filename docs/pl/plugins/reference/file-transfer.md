@@ -1,27 +1,28 @@
 ---
 read_when:
-    - Instalujesz, konfigurujesz lub audytujesz Plugin do przesyłania plików
-summary: Pobieraj, wyświetlaj i zapisuj pliki na sparowanych węzłach za pomocą dedykowanych poleceń węzła. Omija obcinanie standardowego wyjścia powłoki bash, używając kodowania base64 przez node.invoke dla plików binarnych o rozmiarze do 16 MB.
+    - Instalowanie, konfigurowanie lub audytowanie pluginu do przesyłania plików
+summary: Pobieraj, wyświetlaj i zapisuj pliki na sparowanych węzłach za pomocą dedykowanych poleceń Node. Omija obcinanie standardowego wyjścia bash, używając kodowania base64 przez node.invoke dla plików binarnych o rozmiarze do 16 MB.
 title: Plugin przesyłania plików
 x-i18n:
-    generated_at: "2026-07-12T15:22:59Z"
+    generated_at: "2026-07-16T18:47:37Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 63f931b4bac0d212ae503a3816a527b94b3ca113677a6f52416293a2e381b24b
+    source_hash: f76e92a821be53e988011e2fd9dd53b107b43a8191bf4cdf41baaf918a9c5412
     source_path: plugins/reference/file-transfer.md
     workflow: 16
 ---
 
 # Plugin przesyłania plików
 
-Pobieraj, wyświetlaj listę i zapisuj pliki na sparowanych węzłach za pomocą dedykowanych poleceń węzła. Omija obcinanie standardowego wyjścia powłoki bash, używając kodowania base64 przez `node.invoke` dla plików binarnych o rozmiarze do 16 MB.
+Pobieranie, wyświetlanie listy i zapisywanie plików na sparowanych węzłach za pomocą dedykowanych poleceń węzła. Omija obcinanie danych wyjściowych stdout przez bash dzięki użyciu kodowania base64 za pośrednictwem node.invoke dla plików binarnych o rozmiarze do 16 MB.
 
 ## Dystrybucja
 
 - Pakiet: `@openclaw/file-transfer`
-- Sposób instalacji: dołączony do OpenClaw
+- Sposób instalacji: zawarty w OpenClaw
 
 ## Interfejs
 
-kontrakty: narzędzia
+kontrakty: `tools`

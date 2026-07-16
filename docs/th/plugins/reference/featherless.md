@@ -4,28 +4,29 @@ read_when:
 summary: Plugin ผู้ให้บริการ Featherless AI สำหรับ OpenClaw
 title: Plugin Featherless
 x-i18n:
-    generated_at: "2026-07-12T16:32:59Z"
+    generated_at: "2026-07-16T19:33:29Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: b5365b6d07b7828408411c7fd15e0721692bb70e15c8ba01eb3d6d44a5a308bd
+    source_hash: cc85911d6fa5ee416b1abd11bd08466d1e8d245ad3edb03e315fb555b4ed38b3
     source_path: plugins/reference/featherless.md
     workflow: 16
 ---
 
 # Plugin Featherless
 
-Plugin ผู้ให้บริการ Featherless AI สำหรับ OpenClaw
+Plugin ผู้ให้บริการ Featherless AI ของ OpenClaw
 
 ## การเผยแพร่
 
 - แพ็กเกจ: `@openclaw/featherless-provider`
 - ช่องทางการติดตั้ง: npm; ClawHub: `clawhub:@openclaw/featherless-provider`
 
-## ส่วนที่ให้บริการ
+## ส่วนเชื่อมต่อ
 
-ผู้ให้บริการ: featherless
+ผู้ให้บริการ: `featherless`
 
 ## เอกสารที่เกี่ยวข้อง
 
-- [featherless](/providers/featherless)
+- [featherless](/th/providers/featherless)

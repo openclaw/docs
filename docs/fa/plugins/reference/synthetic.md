@@ -1,31 +1,32 @@
 ---
 read_when:
-    - شما در حال نصب، پیکربندی یا ممیزی Plugin مصنوعی هستید
-summary: پشتیبانی از ارائه‌دهندهٔ مدل Synthetic را به OpenClaw اضافه می‌کند.
-title: Plugin مصنوعی
+    - در حال نصب، پیکربندی یا ممیزی Plugin ‏Synthetic هستید
+summary: پشتیبانی از ارائه‌دهنده مدل Synthetic را به OpenClaw اضافه می‌کند.
+title: Plugin Synthetic
 x-i18n:
-    generated_at: "2026-07-12T10:32:27Z"
+    generated_at: "2026-07-16T17:04:18Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 4d899363b3dac4128f3e2a1e30ad11cd5ae0c11cc5229d3f03e15429e2741f8d
+    source_hash: 755ddf08e8ec91654c81f64a6c3e566281be320d8f5e54b64fbbc993c8919df2
     source_path: plugins/reference/synthetic.md
     workflow: 16
 ---
 
-# Plugin ‏Synthetic
+# Plugin Synthetic
 
 پشتیبانی از ارائه‌دهنده مدل Synthetic را به OpenClaw اضافه می‌کند.
 
 ## توزیع
 
 - بسته: `@openclaw/synthetic-provider`
-- روش نصب: همراه OpenClaw ارائه می‌شود
+- مسیر نصب: همراه OpenClaw ارائه می‌شود
 
 ## سطح
 
-ارائه‌دهندگان: synthetic
+ارائه‌دهندگان: `synthetic`
 
 ## مستندات مرتبط
 
-- [synthetic](/fa/providers/synthetic)
+- [Synthetic](/fa/providers/synthetic)

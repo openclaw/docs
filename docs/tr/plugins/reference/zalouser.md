@@ -1,21 +1,22 @@
 ---
 read_when:
     - zalouser pluginini kuruyor, yapılandırıyor veya denetliyorsunuz
-summary: Yerel zca-js entegrasyonu aracılığıyla OpenClaw Zalo Kişisel Hesap Plugin'i.
-title: Zalo Kişisel plugin'i
+summary: Yerel zca-js entegrasyonu aracılığıyla OpenClaw Zalo Kişisel Hesap Plugin’i.
+title: Zalo Kişisel eklentisi
 x-i18n:
-    generated_at: "2026-07-12T12:35:50Z"
+    generated_at: "2026-07-16T17:27:44Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: c03db694c940cb1fb20f4a2f73512c9d3cf3c79e910cc6a0dd4aa38bd4465ed5
+    source_hash: 5c6617fe9868c56c0ecd4065109f58f8483e2fcef7730456826366c24dceee8b
     source_path: plugins/reference/zalouser.md
     workflow: 16
 ---
 
-# Zalo Kişisel Hesap Plugin'i
+# Zalo Personal plugin'i
 
-Yerel zca-js entegrasyonu aracılığıyla OpenClaw Zalo Kişisel Hesap Plugin'i.
+Yerel zca-js entegrasyonu aracılığıyla OpenClaw Zalo Kişisel Hesap plugin'i.
 
 ## Dağıtım
 
@@ -24,7 +25,7 @@ Yerel zca-js entegrasyonu aracılığıyla OpenClaw Zalo Kişisel Hesap Plugin'i
 
 ## Yüzey
 
-kanallar: zalouser; sözleşmeler: araçlar
+kanallar: `zalouser`; sözleşmeler: `tools`
 
 ## İlgili belgeler
 

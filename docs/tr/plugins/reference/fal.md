@@ -2,18 +2,19 @@
 read_when:
     - fal pluginini kuruyor, yapılandırıyor veya denetliyorsunuz
 summary: OpenClaw'a fal model sağlayıcısı desteği ekler.
-title: fal Plugin
+title: fal plugin'i
 x-i18n:
-    generated_at: "2026-07-12T12:01:55Z"
+    generated_at: "2026-07-16T17:29:56Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: f62d6a642a6edaa581fb23fa27dade77486c827d460f19aa23750959f5aa6f1c
+    source_hash: 5341c85c74911d5d49849cfbee4d31a7a8bdf38a24ca68566118f4a0ced81d2e
     source_path: plugins/reference/fal.md
     workflow: 16
 ---
 
-# fal Plugin
+# fal plugin
 
 OpenClaw'a fal model sağlayıcısı desteği ekler.
 
@@ -24,7 +25,7 @@ OpenClaw'a fal model sağlayıcısı desteği ekler.
 
 ## Yüzey
 
-sağlayıcılar: fal; sözleşmeler: imageGenerationProviders, musicGenerationProviders, videoGenerationProviders
+sağlayıcılar: `fal`; sözleşmeler: `imageGenerationProviders`, `musicGenerationProviders`, `videoGenerationProviders`
 
 ## İlgili belgeler
 

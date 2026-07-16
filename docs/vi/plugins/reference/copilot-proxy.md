@@ -2,26 +2,27 @@
 read_when:
     - Bạn đang cài đặt, cấu hình hoặc kiểm tra Plugin copilot-proxy
 summary: Bổ sung hỗ trợ nhà cung cấp mô hình Copilot Proxy cho OpenClaw.
-title: Plugin Copilot Proxy
+title: Plugin proxy Copilot
 x-i18n:
-    generated_at: "2026-07-12T08:09:34Z"
+    generated_at: "2026-07-16T15:36:57Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 454c4a36d606ce1e07c3801a3dede590c4033e80051d5c2e5a20f0767ca2573e
+    source_hash: 4f5f18ba0291906bdce6c1a104705d7d38d59645a0b006be9bce65553aae2f44
     source_path: plugins/reference/copilot-proxy.md
     workflow: 16
 ---
 
 # Plugin Copilot Proxy
 
-Thêm hỗ trợ nhà cung cấp mô hình Copilot Proxy cho OpenClaw.
+Bổ sung hỗ trợ nhà cung cấp mô hình Copilot Proxy cho OpenClaw.
 
 ## Phân phối
 
 - Gói: `@openclaw/copilot-proxy`
 - Phương thức cài đặt: được tích hợp trong OpenClaw
 
-## Giao diện
+## Bề mặt
 
-nhà cung cấp: copilot-proxy
+nhà cung cấp: `copilot-proxy`

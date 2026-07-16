@@ -1,14 +1,15 @@
 ---
 read_when:
-    - Stai installando, configurando o verificando il plugin inworld
-summary: Sintesi vocale in streaming di Inworld (MP3, OGG_OPUS, PCM per telefonia).
+    - Si sta installando, configurando o verificando il plugin inworld
+summary: Sintesi vocale in streaming di Inworld (MP3, OGG_OPUS, telefonia PCM).
 title: Plugin Inworld
 x-i18n:
-    generated_at: "2026-07-12T07:19:10Z"
+    generated_at: "2026-07-16T14:45:01Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 02d912c51460e181e100bc227575cafd1ab3c49494057d2df1e26571000020a8
+    source_hash: 3682eb0f40307e258cd34b0c1f7963f710e6e8852aad7f10efb8cedb023291f1
     source_path: plugins/reference/inworld.md
     workflow: 16
 ---
@@ -24,8 +25,8 @@ Sintesi vocale in streaming di Inworld (MP3, OGG_OPUS, PCM per telefonia).
 
 ## Superficie
 
-contratti: speechProviders
+contratti: `speechProviders`
 
 ## Documentazione correlata
 
-- [Inworld](/it/providers/inworld)
+- [inworld](/it/providers/inworld)

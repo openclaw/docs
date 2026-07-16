@@ -4,27 +4,28 @@ read_when:
 summary: Fügt Tools hinzu, die von Agenten aufgerufen werden können.
 title: Browser-Plugin
 x-i18n:
-    generated_at: "2026-07-12T01:58:18Z"
+    generated_at: "2026-07-16T13:08:34Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 2dcf562660fa3d05d22856335a7d2e6e467a432ee6dda5650efd94edde661ba4
+    source_hash: fa1ca51dce3992d718cdb6e6fec1656c224c021419852e2a2c467a334f251289
     source_path: plugins/reference/browser.md
     workflow: 16
 ---
 
 # Browser-Plugin
 
-Fügt vom Agenten aufrufbare Werkzeuge hinzu.
+Fügt vom Agenten aufrufbare Tools hinzu.
 
-## Bereitstellung
+## Distribution
 
 - Paket: `@openclaw/browser-plugin`
 - Installationsweg: in OpenClaw enthalten
 
 ## Oberfläche
 
-Verträge: Werkzeuge; Skills
+Verträge: `tools`; Skills
 
 ## Zugehörige Dokumentation
 

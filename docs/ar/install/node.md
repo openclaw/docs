@@ -1,29 +1,30 @@
 ---
 read_when:
-    - تحتاج إلى تثبيت Node.js قبل تثبيت OpenClaw
+    - يجب تثبيت Node.js قبل تثبيت OpenClaw
     - لقد ثبّتَّ OpenClaw، لكن الأمر `openclaw` غير موجود
-    - يفشل الأمر `npm install -g` بسبب مشكلات في الأذونات أو `PATH`
+    - يفشل `npm install -g` بسبب مشكلات في الأذونات أو `PATH`
 summary: تثبيت Node.js وتهيئته لـ OpenClaw - متطلبات الإصدار وخيارات التثبيت واستكشاف أخطاء PATH وإصلاحها
 title: Node.js
 x-i18n:
-    generated_at: "2026-07-12T06:00:25Z"
+    generated_at: "2026-07-16T14:31:54Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 410686b714fe2830a0c6d77a52850eab5720a97747b9579bd730808db23a9dda
+    source_hash: ef4df255c24a11a549c757b597a07b00852e60973a5e513bdcf60796037a462a
     source_path: install/node.md
     workflow: 16
 ---
 
-يتطلب OpenClaw الإصدار **Node 22.19+‎ أو Node 23.11+‎ أو Node 24+‎**. يُعد **Node 24 بيئة التشغيل الافتراضية والموصى بها** لعمليات التثبيت وCI وسير عمل الإصدارات؛ ويظل Node 22 مدعومًا عبر مسار LTS النشط. يكتشف [برنامج التثبيت النصي](/ar/install#alternative-install-methods) Node ويثبّته تلقائيًا — استخدم هذه الصفحة عندما تريد إعداد Node بنفسك (الإصدارات وPATH وعمليات التثبيت العامة).
+يتطلب OpenClaw إصدار **Node 22.22.3+، أو Node 24.15+، أو Node 25.9+**. يُعد **Node 24 بيئة التشغيل الافتراضية والموصى بها** لعمليات التثبيت وCI وسير عمل الإصدارات؛ ويظل Node 22 مدعومًا عبر خط LTS النشط. Node 23 غير مدعوم. يكتشف [برنامج التثبيت النصي](/ar/install#alternative-install-methods) Node ويثبّته تلقائيًا — استخدم هذه الصفحة عندما تريد إعداد Node بنفسك (الإصدارات، وPATH، وعمليات التثبيت العامة).
 
-## التحقق من إصدارك
+## التحقق من الإصدار
 
 ```bash
 node -v
 ```
 
-الإصدار `v24.x.x` أو أحدث هو الخيار الافتراضي الموصى به. والإصدار `v22.19.x` أو أحدث هو مسار Node 22 LTS المدعوم (رقِّ إلى Node 24 عندما يكون ذلك مناسبًا). إصدارات Node 23 السابقة للإصدار `v23.11.0` غير مدعومة. إذا لم يكن Node مثبتًا أو كان إصداره خارج النطاق المدعوم، فاختر إحدى طرق التثبيت أدناه.
+يُعد `v24.15.0` أو إصدار 24.x أحدث الخيار الافتراضي الموصى به. ويُعد `v22.22.3` أو إصدار 22.x أحدث مسار Node 22 LTS المدعوم؛ كما أن Node `v25.9.0+` مدعوم أيضًا. Node 23 غير مدعوم. إذا كان Node غير مثبت أو خارج النطاق المدعوم، فاختر إحدى طرق التثبيت أدناه.
 
 ## تثبيت Node
 
@@ -73,12 +74,12 @@ node -v
   </Tab>
 </Tabs>
 
-<Accordion title="استخدام مدير إصدارات (nvm وfnm وmise وasdf)">
-  تتيح لك أدوات إدارة الإصدارات التبديل بسهولة بين إصدارات Node. من الخيارات الشائعة:
+<Accordion title="استخدام مدير إصدارات (nvm، وfnm، وmise، وasdf)">
+  تتيح لك برامج إدارة الإصدارات التبديل بسهولة بين إصدارات Node. من الخيارات الشائعة:
 
 - [**fnm**](https://github.com/Schniz/fnm) - سريع ومتعدد المنصات
-- [**nvm**](https://github.com/nvm-sh/nvm) - شائع الاستخدام على macOS وLinux
-- [**mise**](https://mise.jdx.dev/) - متعدد اللغات (Node وPython وRuby وغيرها)
+- [**nvm**](https://github.com/nvm-sh/nvm) - واسع الاستخدام على macOS/Linux
+- [**mise**](https://mise.jdx.dev/) - متعدد اللغات (Node، وPython، وRuby، وغيرها)
 
 مثال باستخدام fnm:
 
@@ -88,7 +89,7 @@ fnm use 24
 ```
 
   <Warning>
-  هيّئ مدير الإصدارات في ملف بدء تشغيل الصدفة (`~/.zshrc` أو `~/.bashrc`). إذا تخطيت ذلك، فقد يتعذر العثور على `openclaw` في جلسات الطرفية الجديدة لأن PATH لن يتضمن دليل الملفات التنفيذية الخاص بـ Node.
+  هيّئ مدير الإصدارات في ملف بدء تشغيل الصدفة (`~/.zshrc` أو `~/.bashrc`). إذا تخطيت ذلك، فقد لا يتم العثور على `openclaw` في جلسات الطرفية الجديدة لأن PATH لن يتضمن دليل الملفات التنفيذية لـ Node.
   </Warning>
 </Accordion>
 
@@ -96,7 +97,7 @@ fnm use 24
 
 ### `openclaw: command not found`
 
-يعني هذا في الغالب أن دليل الملفات التنفيذية العامة الخاص بـ npm غير موجود في PATH.
+يعني هذا في الغالب أن دليل الملفات التنفيذية العامة لـ npm غير موجود في PATH.
 
 <Steps>
   <Step title="العثور على بادئة npm العامة">
@@ -104,34 +105,34 @@ fnm use 24
     npm prefix -g
     ```
   </Step>
-  <Step title="التحقق مما إذا كانت موجودة في PATH">
+  <Step title="التحقق من وجودها في PATH">
     ```bash
     echo "$PATH"
     ```
 
-    ابحث عن `<npm-prefix>/bin` (على macOS وLinux) أو `<npm-prefix>` (على Windows) في المخرجات.
+    ابحث عن `<npm-prefix>/bin` ‏(macOS/Linux) أو `<npm-prefix>` ‏(Windows) في المخرجات.
 
   </Step>
   <Step title="إضافتها إلى ملف بدء تشغيل الصدفة">
     <Tabs>
       <Tab title="macOS / Linux">
-        أضف ما يلي إلى `~/.zshrc` أو `~/.bashrc`:
+        أضف إلى `~/.zshrc` أو `~/.bashrc`:
 
         ```bash
         export PATH="$(npm prefix -g)/bin:$PATH"
         ```
 
-        ثم افتح طرفية جديدة (أو شغّل `rehash` في zsh أو `hash -r` في bash).
+        ثم افتح طرفية جديدة (أو شغّل `rehash` في zsh / ‏`hash -r` في bash).
       </Tab>
       <Tab title="Windows">
-        أضف ناتج `npm prefix -g` إلى PATH الخاص بالنظام عبر Settings → System → Environment Variables.
+        أضف مخرجات `npm prefix -g` إلى PATH للنظام عبر Settings → System → Environment Variables.
       </Tab>
     </Tabs>
 
   </Step>
 </Steps>
 
-### أخطاء الأذونات عند تشغيل `npm install -g` ‏(Linux)
+### أخطاء الأذونات في `npm install -g` ‏(Linux)
 
 إذا ظهرت أخطاء `EACCES`، فغيّر البادئة العامة لـ npm إلى دليل يمكن للمستخدم الكتابة فيه:
 
@@ -143,7 +144,7 @@ export PATH="$HOME/.npm-global/bin:$PATH"
 
 أضف السطر `export PATH=...` إلى `~/.bashrc` أو `~/.zshrc` لجعل التغيير دائمًا.
 
-## صفحات ذات صلة
+## مواضيع ذات صلة
 
 - [نظرة عامة على التثبيت](/ar/install) - جميع طرق التثبيت
 - [التحديث](/ar/install/updating) - إبقاء OpenClaw محدّثًا

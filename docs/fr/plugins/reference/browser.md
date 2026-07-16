@@ -1,30 +1,31 @@
 ---
 read_when:
-    - Vous installez, configurez ou auditez le Plugin de navigateur
-summary: Ajoute des outils que l’agent peut appeler.
+    - Vous installez, configurez ou auditez le plugin de navigateur
+summary: Ajoute des outils appelables par l’agent.
 title: Plugin de navigateur
 x-i18n:
-    generated_at: "2026-07-12T02:55:51Z"
+    generated_at: "2026-07-16T13:31:33Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 2dcf562660fa3d05d22856335a7d2e6e467a432ee6dda5650efd94edde661ba4
+    source_hash: fa1ca51dce3992d718cdb6e6fec1656c224c021419852e2a2c467a334f251289
     source_path: plugins/reference/browser.md
     workflow: 16
 ---
 
 # Plugin de navigateur
 
-Ajoute des outils utilisables par l’agent.
+Ajoute des outils appelables par l’agent.
 
 ## Distribution
 
 - Paquet : `@openclaw/browser-plugin`
-- Méthode d’installation : inclus dans OpenClaw
+- Mode d’installation : inclus dans OpenClaw
 
-## Interface
+## Surface
 
-contrats : outils ; Skills
+contrats : `tools` ; Skills
 
 ## Documentation associée
 

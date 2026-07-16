@@ -4,12 +4,12 @@ read_when:
 summary: Добавляет в OpenClaw поддержку провайдера моделей Qianfan.
 title: Плагин Qianfan
 x-i18n:
-    generated_at: "2026-07-13T20:07:41Z"
+    generated_at: "2026-07-16T17:16:25Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
-    prompt_version: 24
+    prompt_version: 32
     provider: openai
-    source_hash: 49d639836cefb6c96502e614e1b5d06615fbef31a50ea186e1a02c060882019a
+    source_hash: 586bf29ac08b1a682ac387a21ed8df9baebd7c923278eb4b8f5b8659580be363
     source_path: plugins/reference/qianfan.md
     workflow: 16
 ---
@@ -25,8 +25,8 @@ x-i18n:
 
 ## Интерфейс
 
-провайдеры: qianfan
+провайдеры: `qianfan`
 
-## Связанные документы
+## Связанная документация
 
 - [Qianfan](/ru/providers/qianfan)

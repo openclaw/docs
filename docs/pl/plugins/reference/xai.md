@@ -1,30 +1,31 @@
 ---
 read_when:
-    - Instalujesz, konfigurujesz lub audytujesz plugin xai
-summary: Dodaje obsługę dostawcy modeli xAI w OpenClaw.
+    - Instalowanie, konfigurowanie lub audytowanie pluginu xai
+summary: Dodaje obsługę dostawcy modeli xAI do OpenClaw.
 title: Plugin xAI
 x-i18n:
-    generated_at: "2026-07-12T15:31:15Z"
+    generated_at: "2026-07-16T19:00:13Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 2ec2ac3af258ae6876b2c0957e4ffc5db2d780fc9f33458204c8089fd47238bc
+    source_hash: 7fc08d7c11ca70704b65f6cf2f81d9183e629b9404128aa0ac1c9e0a65e0a339
     source_path: plugins/reference/xai.md
     workflow: 16
 ---
 
 # Plugin xAI
 
-Dodaje obsługę dostawcy modeli xAI do OpenClaw.
+Dodaje do OpenClaw obsługę dostawcy modeli xAI.
 
 ## Dystrybucja
 
 - Pakiet: `@openclaw/xai-plugin`
-- Sposób instalacji: dołączony do OpenClaw
+- Sposób instalacji: zawarty w OpenClaw
 
 ## Powierzchnia
 
-dostawcy: xai; kontrakty: imageGenerationProviders, mediaUnderstandingProviders, realtimeTranscriptionProviders, speechProviders, tools, videoGenerationProviders, webSearchProviders
+dostawcy: `xai`; kontrakty: `imageGenerationProviders`, `mediaUnderstandingProviders`, `realtimeTranscriptionProviders`, `realtimeVoiceProviders`, `speechProviders`, `tools`, `videoGenerationProviders`, `webSearchProviders`
 
 ## Powiązana dokumentacja
 

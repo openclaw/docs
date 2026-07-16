@@ -4,11 +4,12 @@ read_when:
 summary: เพิ่มการรองรับผู้ให้บริการโมเดล Hugging Face ให้กับ OpenClaw
 title: Plugin Hugging Face
 x-i18n:
-    generated_at: "2026-07-12T16:33:20Z"
+    generated_at: "2026-07-16T19:33:56Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: d3f400aed24e630718ce5977e417ff47a8a985a0a385942e1ee6224d830b53e6
+    source_hash: 3c7b8b57d78fd817fda7f5d24dff103bb1453612667a483560213632a5b7ba85
     source_path: plugins/reference/huggingface.md
     workflow: 16
 ---
@@ -22,9 +23,9 @@ x-i18n:
 - แพ็กเกจ: `@openclaw/huggingface-provider`
 - ช่องทางการติดตั้ง: รวมอยู่ใน OpenClaw
 
-## พื้นผิว
+## ส่วนเชื่อมต่อ
 
-ผู้ให้บริการ: huggingface
+ผู้ให้บริการ: `huggingface`
 
 ## เอกสารที่เกี่ยวข้อง
 

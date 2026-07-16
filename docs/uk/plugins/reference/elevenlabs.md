@@ -1,31 +1,32 @@
 ---
 read_when:
-    - Ви встановлюєте, налаштовуєте або перевіряєте plugin elevenlabs
-summary: Додає підтримку провайдерів розпізнавання медіа. Додає підтримку провайдерів транскрибування в реальному часі. Додає підтримку провайдерів перетворення тексту на мовлення.
-title: Plugin ElevenLabs
+    - Ви встановлюєте, налаштовуєте або перевіряєте плагін elevenlabs
+summary: Додає підтримку провайдера розпізнавання медіавмісту. Додає підтримку провайдера транскрибування в реальному часі. Додає підтримку провайдера синтезу мовлення.
+title: Плагін Elevenlabs
 x-i18n:
-    generated_at: "2026-07-12T13:36:24Z"
+    generated_at: "2026-07-16T18:24:17Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 6a1461a4e6be6145245df937d9438aaba563febe02dd44141f0d1da1ea1c409b
+    source_hash: 2a25d78114eca6ddd519a09e457c7158b6049e52ec62040009fd202fd06dba7f
     source_path: plugins/reference/elevenlabs.md
     workflow: 16
 ---
 
-# Plugin ElevenLabs
+# Plugin Elevenlabs
 
-Додає підтримку постачальника розпізнавання медіа. Додає підтримку постачальника транскрибування в реальному часі. Додає підтримку постачальника синтезу мовлення з тексту.
+Додає підтримку провайдера розпізнавання медіа. Додає підтримку провайдера транскрибування в реальному часі. Додає підтримку провайдера синтезу мовлення з тексту.
 
 ## Розповсюдження
 
 - Пакунок: `@openclaw/elevenlabs-speech`
-- Спосіб установлення: входить до складу OpenClaw
+- Спосіб установлення: включено до OpenClaw
 
 ## Інтерфейс
 
-контракти: mediaUnderstandingProviders, realtimeTranscriptionProviders, speechProviders
+контракти: `mediaUnderstandingProviders`, `realtimeTranscriptionProviders`, `speechProviders`
 
 ## Пов’язана документація
 
-- [ElevenLabs](/uk/providers/elevenlabs)
+- [elevenlabs](/uk/providers/elevenlabs)

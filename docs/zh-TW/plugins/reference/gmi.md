@@ -4,11 +4,12 @@ read_when:
 summary: OpenClaw GMI Cloud 供應商外掛。
 title: Gmi 外掛
 x-i18n:
-    generated_at: "2026-07-11T21:39:36Z"
+    generated_at: "2026-07-16T11:54:02Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 19b0adb711875e2b7a1bbded01df13b8bec6c043b04acfd634b8acd897c3fa0f
+    source_hash: 6314fe1c4ba0138e37614ca9c748d0d04d7db5c49abfa3a8fee9e74f210881d0
     source_path: plugins/reference/gmi.md
     workflow: 16
 ---
@@ -17,14 +18,14 @@ x-i18n:
 
 OpenClaw GMI Cloud 供應商外掛。
 
-## 發布方式
+## 發佈
 
 - 套件：`@openclaw/gmi-provider`
 - 安裝途徑：npm；ClawHub：`clawhub:@openclaw/gmi-provider`
 
-## 支援介面
+## 介面
 
-供應商：gmi、gmi-cloud、gmicloud
+供應商：`gmi`、`gmi-cloud`、`gmicloud`
 
 ## 相關文件
 

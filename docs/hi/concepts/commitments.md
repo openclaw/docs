@@ -1,34 +1,40 @@
 ---
 read_when:
-    - आप चाहते हैं कि OpenClaw स्वाभाविक फ़ॉलो-अप याद रखे
-    - आप समझना चाहते हैं कि अनुमानित check-ins reminders से कैसे अलग हैं
-    - आप फ़ॉलो-अप प्रतिबद्धताओं की समीक्षा करना या उन्हें खारिज करना चाहते हैं
+    - आप चाहते हैं कि OpenClaw स्वाभाविक अनुवर्ती बातों को याद रखे
+    - आप समझना चाहते हैं कि अनुमानित चेक-इन रिमाइंडर से कैसे अलग होते हैं
+    - आप अनुवर्ती प्रतिबद्धताओं की समीक्षा करना या उन्हें खारिज करना चाहते हैं
 sidebarTitle: Commitments
-summary: उन चेक-इन के लिए अनुमानित फ़ॉलो-अप मेमोरी जो सटीक रिमाइंडर नहीं हैं
+summary: ऐसे चेक-इन के लिए अनुमानित फ़ॉलो-अप मेमोरी, जो सटीक रिमाइंडर नहीं हैं
 title: अनुमानित प्रतिबद्धताएँ
 x-i18n:
-    generated_at: "2026-06-28T22:56:51Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T14:25:06Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 78841d87fe749aa5b04a967218396df1c1a7884c5767b09215c96aee34fa2014
+    source_hash: 4fa3a3654b628b63c5319144d63f122db53fff7170a0c8339e2c5a1147961e35
     source_path: concepts/commitments.md
     workflow: 16
 ---
 
-कमिटमेंट्स अल्पकालिक follow-up यादें हैं। सक्षम होने पर, OpenClaw यह देख सकता है कि किसी बातचीत ने भविष्य में check-in का अवसर बनाया है और उसे बाद में वापस लाने के लिए याद रख सकता है।
+प्रतिबद्धताएँ अल्पकालिक अनुवर्ती स्मृतियाँ हैं। इनके सक्षम होने पर, OpenClaw
+यह पहचान सकता है कि किसी बातचीत ने भविष्य में हालचाल पूछने का अवसर बनाया है और उसे
+बाद में फिर उठाने के लिए याद रख सकता है।
 
 उदाहरण:
 
-- आप कल के इंटरव्यू का उल्लेख करते हैं। OpenClaw बाद में check in कर सकता है।
-- आप कहते हैं कि आप थके हुए हैं। OpenClaw बाद में पूछ सकता है कि आपने नींद ली या नहीं।
-- एजेंट कहता है कि कुछ बदलने के बाद वह follow up करेगा। OpenClaw उस खुले loop को track कर सकता है।
+- आप कल होने वाले साक्षात्कार का उल्लेख करते हैं। OpenClaw बाद में हालचाल पूछ सकता है।
+- आप कहते हैं कि आप बहुत थके हुए हैं। OpenClaw बाद में पूछ सकता है कि क्या आप सो पाए।
+- एजेंट कहता है कि कुछ बदलने के बाद वह फिर संपर्क करेगा। OpenClaw उस
+  अधूरे क्रम पर नज़र रख सकता है।
 
-कमिटमेंट्स `MEMORY.md` जैसे टिकाऊ तथ्य नहीं हैं, और वे सटीक reminders भी नहीं हैं। वे memory और automation के बीच स्थित होते हैं: OpenClaw बातचीत-से-बंधी बाध्यता को याद रखता है, फिर Heartbeat उसे नियत समय पर deliver करता है।
+प्रतिबद्धताएँ `MEMORY.md` जैसे स्थायी तथ्य नहीं हैं, और वे सटीक
+अनुस्मारक भी नहीं हैं। वे स्मृति और स्वचालन के बीच होती हैं: OpenClaw बातचीत से जुड़ा
+दायित्व याद रखता है, फिर उसके नियत होने पर Heartbeat उसे प्रस्तुत करता है।
 
-## कमिटमेंट्स सक्षम करें
+## प्रतिबद्धताएँ सक्षम करें
 
-कमिटमेंट्स डिफ़ॉल्ट रूप से बंद होते हैं। इन्हें config में सक्षम करें:
+प्रतिबद्धताएँ डिफ़ॉल्ट रूप से बंद होती हैं (`commitments.enabled: false`)। उन्हें कॉन्फ़िगरेशन में सक्षम करें:
 
 ```bash
 openclaw config set commitments.enabled true
@@ -46,47 +52,67 @@ openclaw config set commitments.maxPerDay 3
 }
 ```
 
-`commitments.maxPerDay` सीमित करता है कि rolling day में प्रति agent session कितने inferred follow-ups deliver किए जा सकते हैं। डिफ़ॉल्ट `3` है।
+`commitments.maxPerDay` यह सीमित करता है कि किसी गतिशील दिन में प्रति एजेंट सत्र कितने अनुमानित
+अनुवर्ती संदेश भेजे जा सकते हैं। डिफ़ॉल्ट मान `3` है।
 
 ## यह कैसे काम करता है
 
-एजेंट के जवाब के बाद, OpenClaw अलग context में एक hidden background extraction pass चला सकता है। वह pass केवल inferred follow-up commitments खोजता है। यह visible conversation में नहीं लिखता और extraction पर reason करने के लिए main agent से नहीं कहता।
+एजेंट के उत्तर के बाद, OpenClaw एक अलग संदर्भ में, टूल अक्षम रखते हुए,
+पृष्ठभूमि में छिपा हुआ निष्कर्षण चरण चला सकता है। यह चरण केवल अनुमानित अनुवर्ती प्रतिबद्धताओं को खोजता है। यह
+दृश्यमान बातचीत में कुछ नहीं लिखता और मुख्य एजेंट से
+निष्कर्षण पर तर्क करने के लिए नहीं कहता।
 
-जब इसे कोई high-confidence candidate मिलता है, OpenClaw इन चीज़ों के साथ एक commitment store करता है:
+कोई अत्यधिक विश्वसनीय उम्मीदवार मिलने पर, OpenClaw इन विवरणों के साथ प्रतिबद्धता संग्रहीत करता है:
 
-- agent id
-- session key
-- original channel और delivery target
-- due window
-- एक छोटा suggested check-in
-- Heartbeat को यह तय करने के लिए non-instructional metadata कि इसे भेजना है या नहीं
+- एजेंट आईडी
+- सत्र कुंजी
+- मूल चैनल और वितरण लक्ष्य
+- नियत समयावधि
+- एक छोटा सुझाया गया हालचाल संदेश
+- Heartbeat के लिए गैर-निर्देशात्मक मेटाडेटा, ताकि वह तय कर सके कि इसे भेजना है या नहीं
 
-Delivery Heartbeat के माध्यम से होती है। जब कोई commitment due हो जाता है, Heartbeat उसी agent और channel scope के लिए commitment को Heartbeat turn में जोड़ता है। model एक स्वाभाविक check-in भेज सकता है या उसे dismiss करने के लिए `HEARTBEAT_OK` reply कर सकता है। यदि Heartbeat `target: "none"` के साथ configured है, तो due commitments internal रहते हैं और external check-ins नहीं भेजते। Commitment delivery prompts original conversation text को replay नहीं करते, और due commitment Heartbeat turns OpenClaw tools के बिना चलते हैं।
+वितरण Heartbeat के माध्यम से होता है। जब कोई प्रतिबद्धता नियत हो जाती है, तो Heartbeat
+उसे उसी एजेंट और चैनल दायरे के Heartbeat चरण में जोड़ता है।
+प्रॉम्प्ट स्पष्ट रूप से चेतावनी देता है कि प्रतिबद्धता मेटाडेटा अविश्वसनीय है और
+मॉडल को निर्देश देता है कि वह उसमें दिए निर्देशों का पालन न करे या उसके कारण टूल का उपयोग न करे।
+मॉडल एक स्वाभाविक हालचाल संदेश भेज सकता है या उसे खारिज करने के लिए `HEARTBEAT_OK` उत्तर दे सकता है।
+यदि Heartbeat को `target: "none"` के साथ कॉन्फ़िगर किया गया है, तो नियत प्रतिबद्धताएँ
+आंतरिक बनी रहती हैं और बाहरी हालचाल संदेश नहीं भेजतीं। प्रतिबद्धता वितरण प्रॉम्प्ट
+मूल बातचीत के पाठ को दोबारा प्रस्तुत नहीं करते, केवल सुझाया गया हालचाल संदेश और
+मेटाडेटा प्रस्तुत करते हैं, और नियत-प्रतिबद्धता वाले Heartbeat चरण OpenClaw टूल के बिना चलते हैं।
 
-OpenClaw किसी inferred commitment को लिखने के तुरंत बाद कभी deliver नहीं करता। due time को commitment बनने के बाद कम से कम एक Heartbeat interval तक clamp किया जाता है, ताकि follow-up उसी क्षण echo back न कर सके जब उसे infer किया गया था।
+OpenClaw किसी अनुमानित प्रतिबद्धता को लिखने के तुरंत बाद कभी वितरित नहीं करता।
+प्रतिबद्धता बनाए जाने के बाद नियत समय को कम-से-कम एक Heartbeat अंतराल तक सीमित किया जाता है,
+इसलिए अनुवर्ती संदेश उसी क्षण वापस प्रतिध्वनित नहीं हो सकता जब उसका
+अनुमान लगाया गया था।
 
-## Scope
+## दायरा
 
-कमिटमेंट्स उसी exact agent और channel context तक scoped होते हैं जहाँ वे बनाए गए थे। Discord में एक agent से बात करते समय inferred follow-up किसी दूसरे agent, दूसरे channel, या unrelated session द्वारा deliver नहीं किया जाता।
+प्रतिबद्धताएँ ठीक उसी एजेंट और चैनल संदर्भ तक सीमित होती हैं जहाँ उन्हें
+बनाया गया था। Discord में किसी एक एजेंट से बात करते समय अनुमानित अनुवर्ती संदेश
+किसी अन्य एजेंट, अन्य चैनल या असंबंधित सत्र द्वारा वितरित नहीं किया जाता।
 
-यह scope इस feature का हिस्सा है। Natural check-ins को ऐसा लगना चाहिए जैसे वही बातचीत आगे बढ़ रही है, न कि कोई global reminder system।
+यह दायरा इस सुविधा का हिस्सा है। स्वाभाविक हालचाल संदेश ऐसे लगने चाहिए जैसे वही
+बातचीत आगे बढ़ रही हो, न कि किसी वैश्विक अनुस्मारक प्रणाली की तरह।
 
-## कमिटमेंट्स बनाम reminders
+## प्रतिबद्धताएँ बनाम अनुस्मारक
 
-| आवश्यकता                                      | उपयोग                                    |
+| आवश्यकता                                            | उपयोग करें                                      |
 | ----------------------------------------------- | ---------------------------------------- |
-| "मुझे 3 PM पर याद दिलाएँ"                             | [Scheduled tasks](/hi/automation/cron-jobs) |
-| "मुझे 20 minutes में ping करें"                         | [Scheduled tasks](/hi/automation/cron-jobs) |
-| "इस report को हर weekday चलाएँ"                 | [Scheduled tasks](/hi/automation/cron-jobs) |
-| "मेरा कल interview है"                  | कमिटमेंट्स                              |
-| "मैं पूरी रात जागा रहा"                            | कमिटमेंट्स                              |
-| "यदि मैं इस open thread का उत्तर न दूँ तो follow up करें" | कमिटमेंट्स                              |
+| "मुझे दोपहर 3 बजे याद दिलाएँ"                             | [निर्धारित कार्य](/hi/automation/cron-jobs) |
+| "मुझे 20 मिनट में संदेश भेजें"                         | [निर्धारित कार्य](/hi/automation/cron-jobs) |
+| "यह रिपोर्ट हर कार्यदिवस पर चलाएँ"                 | [निर्धारित कार्य](/hi/automation/cron-jobs) |
+| "कल मेरा साक्षात्कार है"                  | प्रतिबद्धताएँ                              |
+| "मैं पूरी रात जागता रहा"                            | प्रतिबद्धताएँ                              |
+| "अगर मैं इस खुली चर्चा का उत्तर न दूँ, तो बाद में संपर्क करें" | प्रतिबद्धताएँ                              |
 
-सटीक user requests पहले से scheduler path के अंतर्गत आते हैं। कमिटमेंट्स केवल inferred follow-ups के लिए हैं: वे क्षण जहाँ user ने reminder नहीं मांगा, लेकिन बातचीत ने स्पष्ट रूप से एक उपयोगी future check-in बनाया।
+सटीक उपयोगकर्ता अनुरोध पहले से ही शेड्यूलर पथ के अंतर्गत आते हैं। प्रतिबद्धताएँ केवल
+अनुमानित अनुवर्ती संदेशों के लिए हैं: वे क्षण जब उपयोगकर्ता ने अनुस्मारक नहीं माँगा,
+लेकिन बातचीत ने स्पष्ट रूप से भविष्य में उपयोगी हालचाल पूछने का अवसर बनाया।
 
-## कमिटमेंट्स प्रबंधित करें
+## प्रतिबद्धताएँ प्रबंधित करें
 
-stored commitments को inspect और clear करने के लिए CLI का उपयोग करें:
+संग्रहीत प्रतिबद्धताओं का निरीक्षण करने और उन्हें हटाने के लिए CLI का उपयोग करें:
 
 ```bash
 openclaw commitments
@@ -96,33 +122,40 @@ openclaw commitments --status snoozed
 openclaw commitments dismiss cm_abc123
 ```
 
-command reference के लिए [`openclaw commitments`](/hi/cli/commitments) देखें।
+संपूर्ण कमांड संदर्भ के लिए [`openclaw commitments`](/hi/cli/commitments) देखें।
 
-## Privacy और cost
+## गोपनीयता और लागत
 
-Commitment extraction एक LLM pass का उपयोग करता है, इसलिए इसे सक्षम करने से eligible turns के बाद background model usage जुड़ता है। pass user-visible conversation से hidden है, लेकिन यह यह तय करने के लिए आवश्यक recent exchange पढ़ सकता है कि follow-up मौजूद है या नहीं।
+प्रतिबद्धता निष्कर्षण में एक LLM चरण का उपयोग होता है, इसलिए इसे सक्षम करने पर पात्र चरणों के बाद
+पृष्ठभूमि मॉडल उपयोग बढ़ता है। यह चरण उपयोगकर्ता को दिखाई देने वाली
+बातचीत से छिपा रहता है, लेकिन यह निर्धारित करने के लिए आवश्यक हालिया संवाद पढ़ सकता है कि
+कोई अनुवर्ती संदेश मौजूद है या नहीं।
 
-Stored commitments local OpenClaw state हैं। वे operational memory हैं, long-term memory नहीं। feature को इससे disable करें:
+संग्रहीत प्रतिबद्धताएँ साझा SQLite स्थिति डेटाबेस में स्थानीय OpenClaw परिचालन स्मृति हैं,
+दीर्घकालिक स्मृति नहीं। इस सुविधा को इसके द्वारा अक्षम करें:
 
 ```bash
 openclaw config set commitments.enabled false
 ```
 
-## Troubleshooting
+## समस्या निवारण
 
-यदि अपेक्षित follow-ups दिखाई नहीं दे रहे हैं:
+यदि अपेक्षित अनुवर्ती संदेश दिखाई नहीं दे रहे हैं:
 
-- पुष्टि करें कि `commitments.enabled` `true` है।
-- pending, dismissed, snoozed, या expired records के लिए `openclaw commitments --all` देखें।
-- सुनिश्चित करें कि agent के लिए Heartbeat चल रहा है।
-- जाँचें कि क्या उस agent session के लिए `commitments.maxPerDay` पहले ही पहुँच चुका है।
-- याद रखें कि exact reminders commitment extraction द्वारा skip किए जाते हैं और इसके बजाय [scheduled tasks](/hi/automation/cron-jobs) के अंतर्गत दिखाई देने चाहिए।
+- पुष्टि करें कि `commitments.enabled`, `true` है।
+- लंबित, खारिज, स्थगित या समाप्त हो चुके
+  रिकॉर्ड के लिए `openclaw commitments --all` जाँचें।
+- सुनिश्चित करें कि एजेंट के लिए Heartbeat चल रहा है।
+- जाँचें कि उस एजेंट सत्र के लिए `commitments.maxPerDay` पहले ही पूरा तो नहीं हो चुका
+  है।
+- याद रखें कि प्रतिबद्धता निष्कर्षण सटीक अनुस्मारकों को छोड़ देता है और इसके बजाय उन्हें
+  [निर्धारित कार्यों](/hi/automation/cron-jobs) के अंतर्गत दिखाई देना चाहिए।
 
-## Related
+## संबंधित
 
-- [Memory overview](/hi/concepts/memory)
-- [Active memory](/hi/concepts/active-memory)
+- [स्मृति का अवलोकन](/hi/concepts/memory)
+- [Active Memory](/hi/concepts/active-memory)
 - [Heartbeat](/hi/gateway/heartbeat)
-- [Scheduled tasks](/hi/automation/cron-jobs)
+- [निर्धारित कार्य](/hi/automation/cron-jobs)
 - [`openclaw commitments`](/hi/cli/commitments)
-- [Configuration reference](/hi/gateway/configuration-reference#commitments)
+- [कॉन्फ़िगरेशन संदर्भ](/hi/gateway/configuration-reference#commitments)

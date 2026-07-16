@@ -1,21 +1,22 @@
 ---
 read_when:
     - Você está instalando, configurando ou auditando o plugin da NVIDIA
-summary: Adiciona suporte ao provedor de modelos da NVIDIA ao OpenClaw.
+summary: Adiciona suporte ao provedor de modelos da NVIDIA no OpenClaw.
 title: Plugin da NVIDIA
 x-i18n:
-    generated_at: "2026-07-12T00:11:21Z"
+    generated_at: "2026-07-16T12:47:43Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 4d2ea102071e09fc60385a3f2bcbb4e1a636e7b87d9a3e541bac551bea7d9dbd
+    source_hash: c8878f544205c5d013b723a2a55136d98aed529bc146430fb23731692a914dc3
     source_path: plugins/reference/nvidia.md
     workflow: 16
 ---
 
 # Plugin da NVIDIA
 
-Adiciona ao OpenClaw suporte ao provedor de modelos da NVIDIA.
+Adiciona suporte ao provedor de modelos da NVIDIA no OpenClaw.
 
 ## Distribuição
 
@@ -24,7 +25,7 @@ Adiciona ao OpenClaw suporte ao provedor de modelos da NVIDIA.
 
 ## Superfície
 
-provedores: nvidia
+provedores: `nvidia`
 
 ## Documentação relacionada
 

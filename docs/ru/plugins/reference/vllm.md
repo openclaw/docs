@@ -1,15 +1,15 @@
 ---
 read_when:
-    - Вы устанавливаете, настраиваете или проверяете плагин vllm
+    - Вы устанавливаете, настраиваете или проверяете плагин vllm.
 summary: Добавляет в OpenClaw поддержку провайдера моделей vLLM.
-title: Плагин vLLM
+title: плагин vLLM
 x-i18n:
-    generated_at: "2026-07-13T18:35:38Z"
+    generated_at: "2026-07-16T16:44:39Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
-    prompt_version: 24
+    prompt_version: 32
     provider: openai
-    source_hash: e3220650924c7ce1f5c09127202bd96d08264df60d9e7556cf82e6379fca7dda
+    source_hash: db11bc240b7f6b280a52008a925d0a8922faf8019b6ace63e4a859b15dc25c25
     source_path: plugins/reference/vllm.md
     workflow: 16
 ---
@@ -25,8 +25,8 @@ x-i18n:
 
 ## Интерфейс
 
-провайдеры: vllm
+провайдеры: `vllm`
 
-## Связанные документы
+## Связанная документация
 
 - [vllm](/ru/providers/vllm)

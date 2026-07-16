@@ -1,33 +1,34 @@
 ---
 read_when:
     - Menerapkan OpenClaw di Fly.io
-    - Menyiapkan volume, rahasia, dan konfigurasi awal Fly
+    - Menyiapkan volume Fly, rahasia, dan konfigurasi proses pertama kali dijalankan
 summary: Penerapan OpenClaw di Fly.io langkah demi langkah dengan penyimpanan persisten dan HTTPS
 title: Fly.io
 x-i18n:
-    generated_at: "2026-07-12T14:17:14Z"
+    generated_at: "2026-07-16T18:11:48Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: e2cb4203cdea9db2fa76ed60de01da67d550a75d538895b06732446d0f70e2f4
+    source_hash: d2b5119c1df8ee077f4db4f44fa92c6ae0e2bf3c355c2117e0fd39146bb49875
     source_path: install/fly.md
     workflow: 16
 ---
 
-**Tujuan:** Gateway OpenClaw berjalan pada mesin [Fly.io](https://fly.io) dengan penyimpanan persisten, HTTPS otomatis, serta akses Discord/kanal.
+**Tujuan:** Gateway OpenClaw berjalan pada mesin [Fly.io](https://fly.io) dengan penyimpanan persisten, HTTPS otomatis, dan akses Discord/saluran.
 
 ## Yang Anda perlukan
 
 - [CLI flyctl](https://fly.io/docs/hands-on/install-flyctl/) terinstal
 - Akun Fly.io (tingkat gratis dapat digunakan)
-- Autentikasi model: kunci API untuk penyedia model pilihan Anda
-- Kredensial kanal: token bot Discord, token Telegram, dan sebagainya
+- Autentikasi model: kunci API untuk penyedia model yang Anda pilih
+- Kredensial saluran: token bot Discord, token Telegram, dan sebagainya.
 
 ## Jalur cepat untuk pemula
 
-1. Klon repositori, sesuaikan `fly.toml`
-2. Buat aplikasi + volume, tetapkan rahasia
-3. Terapkan dengan `fly deploy`
+1. Kloning repositori, sesuaikan `fly.toml`
+2. Buat aplikasi + volume, atur rahasia
+3. Deploy dengan `fly deploy`
 4. Masuk melalui SSH untuk membuat konfigurasi, atau gunakan UI Kontrol
 
 <Steps>
@@ -39,7 +40,7 @@ x-i18n:
     # pilih nama Anda sendiri
     fly apps create my-openclaw
 
-    # 1 GB biasanya cukup
+    # 1GB biasanya cukup
     fly volumes create openclaw_data --size 1 --region iad
     ```
 
@@ -48,7 +49,7 @@ x-i18n:
   </Step>
 
   <Step title="Konfigurasikan fly.toml">
-    Edit `fly.toml` agar sesuai dengan nama aplikasi dan kebutuhan Anda. `fly.toml` yang dilacak dalam repositori adalah templat publik yang ditampilkan di bawah; `deploy/fly.private.toml` adalah varian yang diperkuat tanpa IP publik (lihat [Penerapan privat](#private-deployment-hardened)).
+    Edit `fly.toml` agar sesuai dengan nama aplikasi dan kebutuhan Anda. `fly.toml` yang dilacak dalam repositori adalah templat publik yang ditampilkan di bawah; `deploy/fly.private.toml` adalah varian yang diperketat tanpa IP publik (lihat [Deployment privat](#private-deployment-hardened)).
 
     ```toml
     app = "my-openclaw"  # nama aplikasi Anda
@@ -83,21 +84,21 @@ x-i18n:
       destination = "/data"
     ```
 
-    Titik masuk citra Docker OpenClaw adalah `tini`, yang secara bawaan menjalankan `node openclaw.mjs gateway`. `[processes]` Fly menggantikan `CMD` Docker (di sini menjalankan `node dist/index.js gateway ...` secara langsung, yaitu titik masuk terkompilasi yang sama) tanpa mengubah `ENTRYPOINT`, sehingga proses tetap berjalan di bawah `tini`.
+    Titik masuk image Docker OpenClaw adalah `tini`, yang secara default menjalankan `node openclaw.mjs gateway`. `[processes]` Fly menggantikan `CMD` Docker (di sini menjalankan `node dist/index.js gateway ...` secara langsung, titik masuk terkompilasi yang sama) tanpa mengubah `ENTRYPOINT`, sehingga proses tetap berjalan sebagai `tini`.
 
     **Pengaturan utama:**
 
     | Pengaturan                     | Alasan                                                                      |
     | ------------------------------ | --------------------------------------------------------------------------- |
-    | `--bind lan`                   | Mengikat ke `0.0.0.0` agar proksi Fly dapat menjangkau Gateway              |
-    | `--allow-unconfigured`         | Memulai tanpa berkas konfigurasi (Anda membuatnya setelah itu)              |
+    | `--bind lan`                   | Mengikat ke `0.0.0.0` agar proksi Fly dapat menjangkau gateway              |
+    | `--allow-unconfigured`         | Memulai tanpa berkas konfigurasi (Anda membuatnya setelah itu)             |
     | `internal_port = 3000`         | Harus cocok dengan `--port 3000` (atau `OPENCLAW_GATEWAY_PORT`) untuk pemeriksaan kesehatan Fly |
-    | `memory = "2048mb"`            | 512 MB terlalu kecil; disarankan 2 GB                                       |
+    | `memory = "2048mb"`            | 512MB terlalu kecil; 2GB direkomendasikan                                   |
     | `OPENCLAW_STATE_DIR = "/data"` | Mempertahankan status pada volume                                           |
 
   </Step>
 
-  <Step title="Tetapkan rahasia">
+  <Step title="Atur rahasia">
     ```bash
     # wajib: token autentikasi gateway untuk pengikatan non-loopback
     fly secrets set OPENCLAW_GATEWAY_TOKEN=$(openssl rand -hex 32)
@@ -109,34 +110,34 @@ x-i18n:
     fly secrets set OPENAI_API_KEY=example-openai-key-not-real
     fly secrets set GOOGLE_API_KEY=...
 
-    # token kanal
+    # token saluran
     fly secrets set DISCORD_BOT_TOKEN=example-discord-bot-token
     ```
 
-    Pengikatan non-loopback (`--bind lan`) memerlukan jalur autentikasi Gateway yang valid. Contoh ini menggunakan `OPENCLAW_GATEWAY_TOKEN`, tetapi `gateway.auth.password` atau penerapan proksi tepercaya non-loopback yang dikonfigurasi dengan benar juga memenuhi persyaratan tersebut. Lihat [Pengelolaan rahasia](/id/gateway/secrets) untuk kontrak SecretRef.
+    Pengikatan non-loopback (`--bind lan`) memerlukan jalur autentikasi gateway yang valid. Contoh ini menggunakan `OPENCLAW_GATEWAY_TOKEN`, tetapi `gateway.auth.password` atau deployment proksi tepercaya non-loopback yang dikonfigurasi dengan benar juga memenuhi persyaratan. Lihat [Pengelolaan rahasia](/id/gateway/secrets) untuk kontrak SecretRef.
 
-    Perlakukan token ini seperti kata sandi. Utamakan variabel lingkungan/`fly secrets` daripada berkas konfigurasi untuk kunci API dan token agar rahasia tidak tersimpan dalam `openclaw.json`.
+    Perlakukan token-token ini seperti kata sandi. Utamakan variabel lingkungan/`fly secrets` daripada berkas konfigurasi untuk kunci API dan token agar rahasia tidak masuk ke `openclaw.json`.
 
   </Step>
 
-  <Step title="Terapkan">
+  <Step title="Deploy">
     ```bash
     fly deploy
     ```
 
-    Penerapan pertama membangun citra Docker. Verifikasi setelah penerapan:
+    Deployment pertama membangun image Docker. Verifikasi setelah deployment:
 
     ```bash
     fly status
     fly logs
     ```
 
-    Saat pemroses HTTP/WebSocket aktif, proses awal Gateway mencatat `gateway ready`. Pemeriksaan kesehatan Fly memantau `internal_port = 3000` sesuai `fly.toml`; direktif `HEALTHCHECK` Docker pada citra juga melakukan polling terhadap `/healthz` pada porta bawaannya, 18789, yang tidak digunakan di sini karena penerapan ini mengganti Gateway agar menggunakan `--port 3000`.
+    Log startup Gateway mencatat `gateway ready` setelah listener HTTP/WebSocket aktif. Pemeriksaan kesehatan Fly sendiri memantau `internal_port = 3000` sesuai `fly.toml`; direktif `HEALTHCHECK` Docker pada image juga melakukan polling terhadap `/healthz` di port default 18789, yang tidak digunakan di sini karena deployment ini mengganti gateway menjadi `--port 3000`.
 
   </Step>
 
   <Step title="Buat berkas konfigurasi">
-    Masuk ke mesin melalui SSH untuk membuat konfigurasi yang sesuai:
+    Masuk ke mesin melalui SSH untuk membuat konfigurasi yang tepat:
 
     ```bash
     fly ssh console
@@ -203,14 +204,14 @@ x-i18n:
 
     Dengan `OPENCLAW_STATE_DIR=/data`, jalur konfigurasi adalah `/data/openclaw.json`.
 
-    Ganti `https://my-openclaw.fly.dev` dengan origin aplikasi Fly Anda yang sebenarnya. Saat dimulai, Gateway mengisi origin lokal UI Kontrol berdasarkan nilai `--bind` dan `--port` waktu proses agar boot pertama dapat dilanjutkan sebelum konfigurasi tersedia, tetapi akses peramban melalui Fly tetap memerlukan origin HTTPS yang persis sama dalam daftar `gateway.controlUi.allowedOrigins`.
+    Ganti `https://my-openclaw.fly.dev` dengan origin aplikasi Fly Anda yang sebenarnya. Startup Gateway mengisi origin UI Kontrol lokal dari nilai runtime `--bind` dan `--port` agar boot pertama dapat dilanjutkan sebelum konfigurasi tersedia, tetapi akses browser melalui Fly tetap memerlukan origin HTTPS persis yang tercantum dalam `gateway.controlUi.allowedOrigins`.
 
     Token Discord dapat berasal dari salah satu sumber berikut:
 
-    - Variabel lingkungan `DISCORD_BOT_TOKEN` (disarankan untuk rahasia); tidak perlu menambahkannya ke konfigurasi karena Gateway membacanya secara otomatis
+    - Variabel lingkungan `DISCORD_BOT_TOKEN` (direkomendasikan untuk rahasia); tidak perlu menambahkannya ke konfigurasi, gateway membacanya secara otomatis
     - Berkas konfigurasi `channels.discord.token`
 
-    Mulai ulang untuk menerapkannya:
+    Mulai ulang untuk menerapkan:
 
     ```bash
     exit
@@ -228,7 +229,7 @@ x-i18n:
 
     Atau kunjungi `https://my-openclaw.fly.dev/`.
 
-    Lakukan autentikasi dengan rahasia bersama yang dikonfigurasi: token Gateway dari `OPENCLAW_GATEWAY_TOKEN`, atau kata sandi Anda jika beralih ke autentikasi kata sandi.
+    Lakukan autentikasi dengan rahasia bersama yang dikonfigurasi: token gateway dari `OPENCLAW_GATEWAY_TOKEN`, atau kata sandi Anda jika Anda beralih ke autentikasi kata sandi.
 
     ### Log
 
@@ -250,19 +251,19 @@ x-i18n:
 
 ### "Aplikasi tidak mendengarkan pada alamat yang diharapkan"
 
-Gateway mengikat ke `127.0.0.1`, bukan ke `0.0.0.0`.
+Gateway terikat ke `127.0.0.1`, bukan `0.0.0.0`.
 
 **Perbaikan:** tambahkan `--bind lan` ke perintah proses Anda dalam `fly.toml`.
 
 ### Pemeriksaan kesehatan gagal / koneksi ditolak
 
-Fly tidak dapat menjangkau Gateway pada porta yang dikonfigurasi.
+Fly tidak dapat menjangkau gateway pada port yang dikonfigurasi.
 
-**Perbaikan:** pastikan `internal_port` cocok dengan porta Gateway (`--port 3000` atau `OPENCLAW_GATEWAY_PORT=3000`).
+**Perbaikan:** pastikan `internal_port` cocok dengan port gateway (`--port 3000` atau `OPENCLAW_GATEWAY_PORT=3000`).
 
-### OOM / masalah memori
+### Masalah OOM / memori
 
-Kontainer terus dimulai ulang atau dihentikan secara paksa. Tandanya: `SIGABRT`, `v8::internal::Runtime_AllocateInYoungGeneration`, atau mulai ulang tanpa pesan.
+Kontainer terus dimulai ulang atau dihentikan. Tandanya: `SIGABRT`, `v8::internal::Runtime_AllocateInYoungGeneration`, atau mulai ulang tanpa pesan.
 
 **Perbaikan:** tingkatkan memori dalam `fly.toml`:
 
@@ -277,13 +278,19 @@ Atau perbarui mesin yang sudah ada:
 fly machine update <machine-id> --vm-memory 2048 -y
 ```
 
-512 MB terlalu kecil. 1 GB mungkin dapat digunakan, tetapi dapat mengalami OOM ketika beban tinggi atau pencatatan log mendetail diaktifkan. Disarankan 2 GB.
+512MB terlalu kecil. 1GB mungkin dapat digunakan, tetapi bisa mengalami OOM saat beban tinggi atau dengan pencatatan log mendetail. 2GB direkomendasikan.
 
-### Masalah penguncian Gateway
+### Masalah kunci Gateway
 
 Gateway menolak dimulai dengan galat "sudah berjalan" setelah kontainer dimulai ulang.
 
-Berkas kunci instans tunggal berada di `<tmpdir>/openclaw-<uid>/gateway.<hash>.lock` (Linux: `/tmp/openclaw-<uid>/gateway.<hash>.lock`), bukan pada volume persisten `/data`, sehingga mulai ulang kontainer sepenuhnya biasanya menghapusnya bersama seluruh sistem berkas kontainer lainnya. Jika kunci tetap bertahan (misalnya setelah `fly machine restart` yang mempertahankan sistem berkas kontainer) dan menghalangi proses awal, hapus secara manual:
+Berkas kunci runtime berada di `<tmpdir>/openclaw-<uid>/gateway.<hash>.lock`
+dan `gateway.state.<hash>.lock` (Linux:
+`/tmp/openclaw-<uid>/gateway.*.lock`), bukan pada volume persisten `/data`, sehingga
+mulai ulang kontainer secara penuh biasanya menghapusnya bersama seluruh
+sistem berkas kontainer lainnya. Jika kunci tetap ada (misalnya `fly machine restart`
+yang mempertahankan sistem berkas kontainer) dan menghalangi startup, hapus
+secara manual:
 
 ```bash
 fly ssh console --command "rm -f /tmp/openclaw-*/gateway.*.lock"
@@ -292,7 +299,7 @@ fly machine restart <machine-id>
 
 ### Konfigurasi tidak dibaca
 
-`--allow-unconfigured` hanya melewati pengaman proses awal. Opsi tersebut tidak membuat atau memperbaiki `/data/openclaw.json`, jadi pastikan konfigurasi Anda benar-benar tersedia dan menyertakan `"gateway": { "mode": "local" }` untuk memulai Gateway lokal secara normal.
+`--allow-unconfigured` hanya melewati pengaman startup. Opsi ini tidak membuat atau memperbaiki `/data/openclaw.json`, jadi pastikan konfigurasi Anda yang sebenarnya tersedia dan menyertakan `"gateway": { "mode": "local" }` untuk startup gateway lokal normal.
 
 Verifikasi bahwa konfigurasi tersedia:
 
@@ -321,9 +328,9 @@ fly ssh console --command "rm /data/openclaw.json"
 
 ### Status tidak dipertahankan
 
-Jika profil autentikasi, status kanal/penyedia, atau sesi hilang setelah mulai ulang, direktori status sedang ditulis ke sistem berkas kontainer, bukan ke volume.
+Jika profil autentikasi, status saluran/penyedia, atau sesi hilang setelah mulai ulang, direktori status ditulis ke sistem berkas kontainer, bukan ke volume.
 
-**Perbaikan:** pastikan `OPENCLAW_STATE_DIR=/data` ditetapkan dalam `fly.toml`, lalu terapkan ulang.
+**Perbaikan:** pastikan `OPENCLAW_STATE_DIR=/data` diatur dalam `fly.toml`, lalu deploy ulang.
 
 ## Memperbarui
 
@@ -334,11 +341,11 @@ fly status
 fly logs
 ```
 
-`git pull` + `fly deploy` adalah jalur yang diawasi di sini: perintah tersebut membangun ulang citra dari Dockerfile, sehingga versi CLI/Gateway, citra sistem operasi dasar, dan setiap perubahan Dockerfile diperbarui secara bersamaan. `openclaw update` di dalam kontainer yang sedang berjalan bukan operasi yang sama karena citra dikirim sebagai pohon `dist/` hasil pembangunan Docker, tanpa salinan kerja `.git` dan tanpa instalasi global yang dikelola npm untuk dideteksi; lihat [Memperbarui](/id/install/updating) untuk alur tersebut pada instalasi bergaya VM.
+`git pull` + `fly deploy` adalah jalur yang diawasi di sini: jalur ini membangun ulang image dari Dockerfile, sehingga versi CLI/gateway, image OS dasar, dan semua perubahan Dockerfile diperbarui bersama-sama. `openclaw update` di dalam kontainer yang sedang berjalan bukanlah operasi yang sama karena image dikirim sebagai struktur `dist/` yang dibangun dengan Docker tanpa checkout `.git` dan tanpa instalasi global yang dikelola npm untuk dideteksi; lihat [Memperbarui](/id/install/updating) untuk alur tersebut pada instalasi bergaya VM.
 
 ### Memperbarui perintah mesin
 
-Untuk mengubah perintah proses awal tanpa penerapan ulang penuh:
+Untuk mengubah perintah startup tanpa deployment ulang penuh:
 
 ```bash
 fly machines list
@@ -348,20 +355,20 @@ fly machine update <machine-id> --command "node dist/index.js gateway --port 300
 fly machine update <machine-id> --vm-memory 2048 --command "node dist/index.js gateway --port 3000 --bind lan" -y
 ```
 
-`fly deploy` berikutnya mengatur ulang perintah mesin ke nilai yang tercantum dalam `fly.toml`; terapkan kembali perubahan manual setelah penerapan ulang.
+`fly deploy` berikutnya mengatur ulang perintah mesin ke apa pun yang ada dalam `fly.toml`; terapkan kembali perubahan manual setelah melakukan deployment ulang.
 
-## Penerapan privat (diperkuat)
+## Deployment privat (diperketat)
 
-Secara bawaan, Fly mengalokasikan IP publik, sehingga Gateway Anda dapat dijangkau di `https://your-app.fly.dev` dan ditemukan oleh pemindai internet (Shodan, Censys, dan sebagainya).
+Secara default, Fly mengalokasikan IP publik sehingga gateway Anda dapat dijangkau di `https://your-app.fly.dev` dan ditemukan oleh pemindai internet (Shodan, Censys, dan sebagainya).
 
-Gunakan `deploy/fly.private.toml` untuk penerapan yang diperkuat dengan **tanpa IP publik**: konfigurasi ini tidak menyertakan `[http_service]`, sehingga tidak ada akses masuk publik yang dialokasikan.
+Gunakan `deploy/fly.private.toml` untuk deployment yang diperketat dengan **tanpa IP publik**: konfigurasi ini tidak menyertakan `[http_service]`, sehingga tidak ada ingress publik yang dialokasikan.
 
-### Kapan menggunakan penerapan privat
+### Kapan menggunakan deployment privat
 
-- Hanya panggilan/pesan keluar (tanpa Webhook masuk)
-- Terowongan ngrok atau Tailscale menangani semua panggilan balik Webhook
-- Akses Gateway dilakukan melalui SSH, proksi, atau WireGuard, bukan melalui peramban
-- Penerapan harus disembunyikan dari pemindai internet
+- Hanya panggilan/pesan keluar (tanpa webhook masuk)
+- Terowongan ngrok atau Tailscale menangani semua panggilan balik webhook
+- Gateway diakses melalui SSH, proksi, atau WireGuard, bukan melalui browser
+- Deployment harus disembunyikan dari pemindai internet
 
 ### Penyiapan
 
@@ -369,7 +376,7 @@ Gunakan `deploy/fly.private.toml` untuk penerapan yang diperkuat dengan **tanpa 
 fly deploy -c deploy/fly.private.toml
 ```
 
-Atau konversikan penerapan yang sudah ada:
+Atau konversikan deployment yang sudah ada:
 
 ```bash
 # tampilkan IP saat ini
@@ -379,21 +386,21 @@ fly ips list -a my-openclaw
 fly ips release <public-ipv4> -a my-openclaw
 fly ips release <public-ipv6> -a my-openclaw
 
-# beralih ke konfigurasi privat agar penerapan berikutnya tidak mengalokasikan ulang IP publik
+# beralih ke konfigurasi privat agar deployment mendatang tidak mengalokasikan ulang IP publik
 fly deploy -c deploy/fly.private.toml
 
-# alokasikan IPv6 privat saja
+# alokasikan IPv6 khusus privat
 fly ips allocate-v6 --private -a my-openclaw
 ```
 
-Setelah ini, `fly ips list` seharusnya hanya menampilkan IP berjenis `private`:
+Setelah ini, `fly ips list` seharusnya hanya menampilkan IP bertipe `private`:
 
 ```text
 VERSION  IP                   TYPE             REGION
 v6       fdaa:x:x:x:x::x      private          global
 ```
 
-### Mengakses penerapan privat
+### Mengakses deployment privat
 
 **Opsi 1: proksi lokal (paling sederhana)**
 
@@ -416,13 +423,13 @@ fly wireguard create
 fly ssh console -a my-openclaw
 ```
 
-### Webhook dengan penerapan privat
+### Webhook dengan deployment privat
 
-Untuk panggilan balik webhook (Twilio, Telnyx, dan sebagainya) tanpa mengeksposnya ke publik:
+Untuk callback Webhook (Twilio, Telnyx, dan sebagainya) tanpa paparan publik:
 
-1. **Terowongan ngrok**: jalankan ngrok di dalam kontainer atau sebagai sidecar
-2. **Tailscale Funnel**: ekspos jalur tertentu melalui Tailscale
-3. **Hanya keluar**: beberapa penyedia (Twilio) dapat digunakan untuk panggilan keluar tanpa webhook
+1. **tunnel ngrok**: jalankan ngrok di dalam kontainer, atau sebagai sidecar
+2. **Tailscale Funnel**: ekspos path tertentu melalui Tailscale
+3. **Hanya keluar**: beberapa penyedia (Twilio) berfungsi untuk panggilan keluar tanpa Webhook
 
 Contoh konfigurasi panggilan suara dengan ngrok, di bawah `plugins.entries.voice-call.config`:
 
@@ -445,33 +452,33 @@ Contoh konfigurasi panggilan suara dengan ngrok, di bawah `plugins.entries.voice
 }
 ```
 
-Terowongan ngrok berjalan di dalam kontainer dan menyediakan URL webhook publik tanpa mengekspos aplikasi Fly itu sendiri. Atur `webhookSecurity.allowedHosts` ke nama host terowongan agar header host yang diteruskan dapat diterima.
+Tunnel ngrok berjalan di dalam kontainer dan menyediakan URL Webhook publik tanpa mengekspos aplikasi Fly itu sendiri. Atur `webhookSecurity.allowedHosts` ke nama host tunnel agar header host yang diteruskan dapat diterima.
 
-### Kompromi keamanan
+### Pertimbangan keamanan
 
-| Aspek               | Publik               | Privat                  |
-| ------------------- | -------------------- | ----------------------- |
-| Pemindai internet   | Dapat ditemukan      | Tersembunyi             |
-| Serangan langsung   | Mungkin terjadi      | Diblokir                |
-| Akses UI kontrol    | Peramban             | Proksi/VPN              |
-| Pengiriman webhook  | Langsung             | Melalui terowongan      |
+| Aspek             | Publik       | Privat             |
+| ----------------- | ------------ | ------------------ |
+| Pemindai internet | Dapat ditemukan | Tersembunyi     |
+| Serangan langsung | Mungkin      | Diblokir           |
+| Akses UI kontrol  | Peramban     | Proksi/VPN          |
+| Pengiriman Webhook | Langsung    | Melalui tunnel      |
 
 ## Catatan
 
 - Fly.io menggunakan arsitektur x86; Dockerfile kompatibel dengan x86 dan ARM.
 - Untuk orientasi WhatsApp/Telegram, gunakan `fly ssh console`.
-- Data persisten berada di volume pada `/data`.
-- Signal memerlukan signal-cli (CLI berbasis Java) di dalam citra; gunakan citra khusus dan pertahankan memori sebesar 2 GB atau lebih.
+- Data persisten berada pada volume di `/data`.
+- Signal memerlukan signal-cli (CLI berbasis Java) pada image; gunakan image khusus dan pertahankan memori sebesar 2GB+.
 
 ## Biaya
 
-Dengan konfigurasi yang direkomendasikan (`shared-cpu-2x`, RAM 2 GB), perkirakan biayanya sekitar $10–15/bulan, tergantung pada penggunaan; tingkat gratis mencakup sebagian alokasi dasar. Lihat [harga Fly.io](https://fly.io/docs/about/pricing/) untuk tarif terkini.
+Dengan konfigurasi yang direkomendasikan (`shared-cpu-2x`, RAM 2GB), perkirakan biaya sekitar $10-15/bulan tergantung penggunaan; tingkat gratis mencakup sebagian alokasi dasar. Lihat [harga Fly.io](https://fly.io/docs/about/pricing/) untuk tarif saat ini.
 
-## Langkah selanjutnya
+## Langkah berikutnya
 
-- Siapkan kanal perpesanan: [Kanal](/id/channels)
+- Siapkan saluran perpesanan: [Saluran](/id/channels)
 - Konfigurasikan Gateway: [Konfigurasi Gateway](/id/gateway/configuration)
-- Pastikan OpenClaw selalu mutakhir: [Memperbarui](/id/install/updating)
+- Pastikan OpenClaw tetap mutakhir: [Memperbarui](/id/install/updating)
 
 ## Terkait
 

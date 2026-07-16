@@ -1,19 +1,20 @@
 ---
 read_when:
-    - U installeert, configureert of controleert de searxng-plugin
+    - Je installeert, configureert of controleert de searxng-plugin
 summary: Voegt ondersteuning voor webzoekproviders toe.
 title: SearXNG-plugin
 x-i18n:
-    generated_at: "2026-07-12T09:14:46Z"
+    generated_at: "2026-07-16T16:07:35Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 96d320ccd6ec69e380edfcfa33b498569058be6953257b5770cd4eea95cb401a
+    source_hash: e1d0f6de386f6372ba5e15fd7baff967079714d3c33cd445dab0b931b6a6c887
     source_path: plugins/reference/searxng.md
     workflow: 16
 ---
 
-# SearXNG-Plugin
+# SearXNG-plugin
 
 Voegt ondersteuning voor webzoekproviders toe.
 
@@ -24,4 +25,4 @@ Voegt ondersteuning voor webzoekproviders toe.
 
 ## Oppervlak
 
-contracten: webSearchProviders
+contracten: `webSearchProviders`

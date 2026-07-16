@@ -1,31 +1,32 @@
 ---
 read_when:
-    - شما در حال نصب، پیکربندی یا ممیزی Plugin ‏xai هستید
-summary: پشتیبانی از ارائه‌دهندهٔ مدل xAI را به OpenClaw اضافه می‌کند.
+    - در حال نصب، پیکربندی یا ممیزی Plugin ‏xai هستید
+summary: پشتیبانی از ارائه‌دهنده مدل xAI را به OpenClaw اضافه می‌کند.
 title: Plugin ‏xAI
 x-i18n:
-    generated_at: "2026-07-12T10:39:12Z"
+    generated_at: "2026-07-16T17:31:06Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 2ec2ac3af258ae6876b2c0957e4ffc5db2d780fc9f33458204c8089fd47238bc
+    source_hash: 7fc08d7c11ca70704b65f6cf2f81d9183e629b9404128aa0ac1c9e0a65e0a339
     source_path: plugins/reference/xai.md
     workflow: 16
 ---
 
 # Plugin xAI
 
-پشتیبانی از ارائه‌دهندهٔ مدل xAI را به OpenClaw اضافه می‌کند.
+پشتیبانی از ارائه‌دهنده مدل xAI را به OpenClaw اضافه می‌کند.
 
 ## توزیع
 
 - بسته: `@openclaw/xai-plugin`
-- روش نصب: در OpenClaw گنجانده شده است
+- مسیر نصب: همراه OpenClaw ارائه می‌شود
 
-## سطوح
+## سطح
 
-ارائه‌دهندگان: xai؛ قراردادها: imageGenerationProviders، mediaUnderstandingProviders، realtimeTranscriptionProviders، speechProviders، tools، videoGenerationProviders، webSearchProviders
+ارائه‌دهندگان: `xai`؛ قراردادها: `imageGenerationProviders`، `mediaUnderstandingProviders`، `realtimeTranscriptionProviders`، `realtimeVoiceProviders`، `speechProviders`، `tools`، `videoGenerationProviders`، `webSearchProviders`
 
 ## مستندات مرتبط
 
-- [xAI](/fa/providers/xai)
+- [xai](/fa/providers/xai)

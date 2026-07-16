@@ -1,90 +1,86 @@
 ---
 read_when:
     - کار روی کد یا آزمون‌های زمان اجرای عامل OpenClaw
-    - اجرای جریان‌های lint، typecheck و live test برای agent-runtime
-summary: 'جریان کاری توسعه‌دهنده برای زمان اجرای عامل OpenClaw: ساخت، آزمون، و اعتبارسنجی زنده'
-title: گردش‌کار زمان اجرای عامل OpenClaw
+    - اجرای فرایندهای lint، بررسی نوع و آزمون زندهٔ زمان‌اجرای عامل
+summary: 'گردش‌کار توسعه‌دهنده برای زمان اجرای عامل OpenClaw: ساخت، آزمون و اعتبارسنجی زنده'
+title: گردش کار زمان اجرای عامل OpenClaw
 x-i18n:
-    generated_at: "2026-06-27T18:05:08Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T16:37:28Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: fbe2a192ff7954577f8cbeae33676cbfd330f297d31c1917d2ab52898c2c5064
+    source_hash: 044f05779bef4ad18478081ba44d84356723c8a0be764440aa9d2b976d167324
     source_path: openclaw-agent-runtime.md
     workflow: 16
 ---
 
-یک گردش‌کار معقول برای کار روی محیط اجرای عامل OpenClaw در OpenClaw.
+گردش‌کار توسعه‌دهنده برای زمان‌اجرای عامل (`src/agents/`) در مخزن OpenClaw.
 
-## بررسی نوع و linting
+## بررسی نوع و لینت
 
-- گیت محلی پیش‌فرض: `pnpm check`
-- گیت ساخت: `pnpm build` وقتی تغییر می‌تواند روی خروجی ساخت، بسته‌بندی، یا مرزهای بارگذاری تنبل/ماژول اثر بگذارد
-- گیت کامل برای فرود تغییرات محیط اجرای عامل: `pnpm check && pnpm test`
+- دروازه پیش‌فرض محلی: `pnpm check` (بررسی نوع، لینت، محافظ‌های خط‌مشی)
+- دروازه ساخت: `pnpm build` هنگامی که تغییر می‌تواند بر خروجی ساخت، بسته‌بندی یا مرزهای بارگذاری تنبل/ماژول اثر بگذارد
+- دروازه کامل پیش از پوش‌کردن: `pnpm build && pnpm check && pnpm check:test-types && pnpm test`
 
-## اجرای تست‌های محیط اجرای عامل
+## اجرای آزمون‌های زمان‌اجرای عامل
 
-مجموعه تست محیط اجرای عامل را مستقیماً با Vitest اجرا کنید:
+مجموعه‌آزمون‌های واحد زمان‌اجرای عامل را اجرا کنید:
 
 ```bash
 pnpm test \
   "src/agents/agent-*.test.ts" \
   "src/agents/embedded-agent-*.test.ts" \
-  "src/agents/agent-tools*.test.ts" \
-  "src/agents/agent-settings.test.ts" \
-  "src/agents/agent-tool-definition-adapter*.test.ts" \
   "src/agents/agent-hooks/**/*.test.ts"
 ```
 
-برای شامل کردن تمرین ارائه‌دهنده زنده:
+الگوی glob نخست، مجموعه‌آزمون‌های `agent-tools*`، `agent-settings` و
+`agent-tool-definition-adapter*` را نیز پوشش می‌دهد.
+
+آزمون‌های زنده از پیکربندی آزمون واحد مستثنا هستند؛ آن‌ها را از طریق
+پوشش‌دهنده زنده اجرا کنید (`OPENCLAW_LIVE_TEST=1` را تنظیم می‌کند و به اعتبارنامه‌های ارائه‌دهنده نیاز دارد):
 
 ```bash
-OPENCLAW_LIVE_TEST=1 pnpm test src/agents/embedded-agent-runner-extraparams.live.test.ts
+pnpm test:live src/agents/embedded-agent-runner-extraparams.live.test.ts
 ```
 
-این مجموعه‌های اصلی تست واحد محیط اجرای عامل را پوشش می‌دهد:
+## آزمون دستی
 
-- `src/agents/agent-*.test.ts`
-- `src/agents/embedded-agent-*.test.ts`
-- `src/agents/agent-tools*.test.ts`
-- `src/agents/agent-settings.test.ts`
-- `src/agents/agent-tool-definition-adapter.test.ts`
-- `src/agents/agent-hooks/*.test.ts`
+- Gateway را در حالت توسعه اجرا کنید (اتصال‌های کانال از طریق `OPENCLAW_SKIP_CHANNELS=1` نادیده گرفته می‌شوند): `pnpm gateway:dev`
+- یک نوبت عامل را از طریق Gateway فعال کنید: `pnpm openclaw agent --message "Hello" --thinking low`
+- برای اشکال‌زدایی تعاملی از TUI استفاده کنید: `pnpm tui`
 
-## تست دستی
+برای بررسی رفتار فراخوانی ابزار، درخواست یک کنش `read` یا `exec` را مطرح کنید تا بتوانید
+جریان ابزار و مدیریت بار داده را مشاهده کنید.
 
-جریان پیشنهادی:
+## بازنشانی به وضعیت پاک
 
-- دروازه را در حالت توسعه اجرا کنید:
-  - `pnpm gateway:dev`
-- عامل را مستقیماً تحریک کنید:
-  - `pnpm openclaw agent --message "Hello" --thinking low`
-- از TUI برای اشکال‌زدایی تعاملی استفاده کنید:
-  - `pnpm tui`
+وضعیت در دایرکتوری وضعیت OpenClaw قرار دارد: به‌طور پیش‌فرض `~/.openclaw`، یا
+در صورت تنظیم، `$OPENCLAW_STATE_DIR`. مسیرهای نسبی به آن دایرکتوری:
 
-برای رفتار فراخوانی ابزار، برای یک کنش `read` یا `exec` پرامپت بدهید تا بتوانید جریان ابزار و مدیریت payload را ببینید.
+| مسیر                                           | محتوا                                                              |
+| ---------------------------------------------- | ------------------------------------------------------------------ |
+| `openclaw.json`                                | پیکربندی                                                             |
+| `state/openclaw.sqlite`                        | پایگاه داده وضعیت مشترک زمان‌اجرا                                      |
+| `agents/<agentId>/agent/openclaw-agent.sqlite` | پروفایل‌های احراز هویت مدل برای هر عامل (کلیدهای API و OAuth) و وضعیت زمان‌اجرا |
+| `credentials/`                                 | اعتبارنامه‌های ارائه‌دهنده/کانال خارج از مخزن پروفایل احراز هویت        |
+| `agents/<agentId>/sessions/`                   | تاریخچه رونوشت و منابع مهاجرت نشست قدیمی            |
+| `sessions/`                                    | مخزن نشست قدیمی تک‌عاملی (فقط نصب‌های قدیمی)              |
+| `workspace/`                                   | فضای کاری عامل پیش‌فرض (عامل‌های اضافی از `workspace-<agentId>` استفاده می‌کنند)   |
 
-## بازنشانی از ابتدا
+برای بازنشانی کامل، آن مسیرها را حذف کنید. بازنشانی‌های محدودتر:
 
-وضعیت زیر دایرکتوری وضعیت OpenClaw نگهداری می‌شود. مقدار پیش‌فرض `~/.openclaw` است. اگر `OPENCLAW_STATE_DIR` تنظیم شده باشد، به‌جای آن از همان دایرکتوری استفاده کنید.
+- فقط نشست‌ها: `agents/<agentId>/agent/openclaw-agent.sqlite` را حذف نکنید؛ ردیف‌های نشست در کنار سایر وضعیت‌های هر عامل در آنجا قرار دارند. برای آغاز نشستی تازه برای یک گفت‌وگو از `/new` یا `/reset`، و برای نگه‌داری نشست از `openclaw sessions cleanup` استفاده کنید.
+- حفظ احراز هویت: `agents/<agentId>/agent/openclaw-agent.sqlite` و `credentials/` را در جای خود نگه دارید.
 
-برای بازنشانی همه‌چیز:
-
-- `openclaw.json` برای پیکربندی
-- `agents/<agentId>/agent/auth-profiles.json` برای پروفایل‌های احراز هویت مدل (کلیدهای API + OAuth)
-- `credentials/` برای وضعیت ارائه‌دهنده/کانال که هنوز بیرون از مخزن پروفایل احراز هویت نگهداری می‌شود
-- `agents/<agentId>/sessions/` برای تاریخچه نشست عامل
-- `agents/<agentId>/sessions/sessions.json` برای نمایه نشست
-- `sessions/` اگر مسیرهای legacy وجود دارند
-- `workspace/` اگر یک workspace خالی می‌خواهید
-
-اگر فقط می‌خواهید نشست‌ها را بازنشانی کنید، `agents/<agentId>/sessions/` را برای آن عامل حذف کنید. اگر می‌خواهید احراز هویت را نگه دارید، `agents/<agentId>/agent/auth-profiles.json` و هر وضعیت ارائه‌دهنده زیر `credentials/` را در جای خود باقی بگذارید.
+فایل‌های قدیمی `auth-profiles.json` دیگر هنگام اجرا خوانده نمی‌شوند؛
+`openclaw doctor --fix` آن‌ها را به مخزن SQLite وارد می‌کند.
 
 ## منابع
 
-- [تست](/fa/help/testing)
+- [آزمون](/fa/help/testing)
 - [شروع به کار](/fa/start/getting-started)
 
 ## مرتبط
 
-- [معماری محیط اجرای عامل OpenClaw](/fa/agent-runtime-architecture)
+- [معماری زمان‌اجرای عامل OpenClaw](/fa/agent-runtime-architecture)

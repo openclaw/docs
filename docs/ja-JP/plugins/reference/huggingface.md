@@ -1,14 +1,15 @@
 ---
 read_when:
-    - huggingface Pluginをインストール、設定、または監査している場合
+    - huggingface Pluginのインストール、設定、または監査を行っています
 summary: OpenClaw に Hugging Face モデルプロバイダーのサポートを追加します。
 title: Hugging Face Plugin
 x-i18n:
-    generated_at: "2026-07-11T22:32:49Z"
+    generated_at: "2026-07-16T11:58:21Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: d3f400aed24e630718ce5977e417ff47a8a985a0a385942e1ee6224d830b53e6
+    source_hash: 3c7b8b57d78fd817fda7f5d24dff103bb1453612667a483560213632a5b7ba85
     source_path: plugins/reference/huggingface.md
     workflow: 16
 ---
@@ -24,7 +25,7 @@ OpenClaw に Hugging Face モデルプロバイダーのサポートを追加し
 
 ## 提供機能
 
-プロバイダー: huggingface
+プロバイダー: `huggingface`
 
 ## 関連ドキュメント
 

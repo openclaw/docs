@@ -1,27 +1,28 @@
 ---
 read_when:
     - workspaces Pluginをインストール、設定、または監査しています
-summary: エージェントが構成可能なワークスペースのドキュメントおよびコントロールプレーンバックエンド。
-title: ワークスペース Plugin
+summary: エージェントが構成可能なワークスペースのドキュメントおよびコントロールプレーンのバックエンド。
+title: Workspaces Plugin
 x-i18n:
-    generated_at: "2026-07-11T22:31:06Z"
+    generated_at: "2026-07-16T12:07:37Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 0c10502340b459c26606ebb7ef97ef17c0dce11295ea7854e06158c89c79a7c3
+    source_hash: b9bcef98bf9352b6a8f37af59f7c02add4080e9c600950fc8e7a7f5339df7626
     source_path: plugins/reference/workspaces.md
     workflow: 16
 ---
 
 # Workspaces Plugin
 
-エージェントが構成可能な Workspaces のドキュメントおよびコントロールプレーンのバックエンド。
+エージェントが組み合わせ可能な Workspaces ドキュメントおよびコントロールプレーンのバックエンド。
 
 ## 配布
 
 - パッケージ: `@openclaw/workspaces-plugin`
-- インストール方法: OpenClaw に同梱
+- インストール経路: OpenClaw に同梱
 
-## 提供機能
+## サーフェス
 
-コントラクト: ツール
+コントラクト: `tools`

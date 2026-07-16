@@ -2,28 +2,29 @@
 read_when:
     - Ondersteuning voor locatienodes of een machtigingeninterface toevoegen
     - Android-locatiemachtigingen of gedrag op de voorgrond ontwerpen
-summary: Locatieopdracht voor nodes (location.get), machtigingsmodi en Android-gedrag op de voorgrond
+summary: Locatieopdracht voor Nodes, platformtoestemmingsmodi en Linux GeoClue-configuratie
 title: Locatieopdracht
 x-i18n:
-    generated_at: "2026-07-12T09:05:15Z"
+    generated_at: "2026-07-16T15:51:56Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: fae9f7707620f3f743d40c07618a431a6baa7a357dda6d74021bc986cd4974b1
+    source_hash: 644229c1eafc8fc7b59bc23ba01d4ba95687ea66c4f9bd4a4cda98a87f2b6085
     source_path: nodes/location-command.md
     workflow: 16
 ---
 
-## Kort samengevat
+## TL;DR
 
 - `location.get` is een Node-opdracht die wordt aangeroepen via `node.invoke` of `openclaw nodes location get`.
 - Standaard uitgeschakeld.
-- Android-builds van derden gebruiken een keuzelijst: Uit / Tijdens gebruik / Altijd. Play-builds blijven Uit / Tijdens gebruik gebruiken.
-- Nauwkeurige locatie is een aparte schakelaar.
+- Android-builds van derden gebruiken een keuzelijst: Uit / Tijdens gebruik / Altijd. Play-builds blijven Uit / Tijdens gebruik.
+- Nauwkeurige locatie is een afzonderlijke schakelaar.
 
 ## Waarom een keuzelijst (en niet alleen een schakelaar)
 
-Locatiemachtigingen van het besturingssysteem hebben meerdere niveaus. Nauwkeurige locatie is ook een afzonderlijke machtiging van het besturingssysteem (iOS 14+ ‘Nauwkeurig’, Android ‘fijn’ versus ‘grof’). De keuzelijst in de app bepaalt de aangevraagde modus, maar het besturingssysteem beslist nog steeds welke machtiging daadwerkelijk wordt verleend.
+Locatiemachtigingen van het besturingssysteem hebben meerdere niveaus. Nauwkeurige locatie is ook een afzonderlijke toestemming van het besturingssysteem (iOS 14+ "Precise", Android "fine" versus "coarse"). De keuzelijst in de app bepaalt de aangevraagde modus, maar het besturingssysteem beslist nog steeds welke toestemming daadwerkelijk wordt verleend.
 
 ## Instellingenmodel
 
@@ -34,18 +35,18 @@ Per Node-apparaat:
 
 Gedrag van de gebruikersinterface:
 
-- Als `whileUsing` wordt geselecteerd, wordt toestemming voor gebruik op de voorgrond aangevraagd.
-- Als `always` wordt geselecteerd in de Android-build van derden, wordt eerst toestemming voor gebruik op de voorgrond aangevraagd, wordt de achtergrondtoegang toegelicht en worden vervolgens de Android-appinstellingen geopend voor de afzonderlijke machtiging **Allow all the time**.
-- Android Play-builds declareren geen machtiging voor locatiegebruik op de achtergrond en tonen `always` niet.
-- Als het besturingssysteem het aangevraagde niveau weigert, valt de app terug op het hoogste verleende niveau en toont deze de status.
+- Als je `whileUsing` selecteert, wordt toestemming voor gebruik op de voorgrond aangevraagd.
+- Als je `always` selecteert in de Android-build van derden, wordt eerst toestemming voor gebruik op de voorgrond aangevraagd, vervolgens wordt toegang op de achtergrond uitgelegd en worden ten slotte de Android-appinstellingen geopend voor de afzonderlijke toestemming **Allow all the time**.
+- Android Play-builds declareren geen machtiging voor locatie op de achtergrond en tonen `always` niet.
+- Als het besturingssysteem het aangevraagde niveau weigert, valt de app terug op het hoogste verleende niveau en toont de status.
 
 ## Toewijzing van machtigingen (node.permissions)
 
-Optioneel. De macOS-Node rapporteert `location` via de `permissions`-toewijzing in `node.list`/`node.describe`; iOS/Android kan dit weglaten.
+Optioneel. De macOS-Node rapporteert `location` via de `permissions`-toewijzing op `node.list`/`node.describe`; iOS/Android kan dit weglaten.
 
 ## Opdracht: `location.get`
 
-Aangeroepen via `node.invoke` of met het CLI-hulpprogramma:
+Aangeroepen via `node.invoke` of de CLI-helper:
 
 ```bash
 openclaw nodes location get --node <idOrNameOrIp>
@@ -82,34 +83,60 @@ Antwoordpayload:
 
 Fouten (stabiele codes):
 
-- `LOCATION_DISABLED`: de keuzelijst staat op uit.
+- `LOCATION_DISABLED`: de keuzelijst staat uit.
 - `LOCATION_PERMISSION_REQUIRED`: de machtiging voor de aangevraagde modus ontbreekt.
 - `LOCATION_BACKGROUND_UNAVAILABLE`: de app bevindt zich op de achtergrond, maar alleen Tijdens gebruik is toegestaan.
-- `LOCATION_TIMEOUT`: niet op tijd een locatiebepaling verkregen.
-- `LOCATION_UNAVAILABLE`: systeemfout of geen locatieproviders beschikbaar.
+- `LOCATION_TIMEOUT`: niet tijdig een locatiebepaling verkregen.
+- `LOCATION_UNAVAILABLE`: systeemfout of geen providers.
 
 ## Gedrag op de achtergrond
 
-- Android-builds van derden accepteren `location.get` op de achtergrond alleen wanneer de gebruiker `Always` heeft geselecteerd en Android locatietoegang op de achtergrond heeft verleend. De bestaande permanente Node-service voegt het servicetype `location` toe en toont `Location: Always` zolang deze actief is.
+- Android-builds van derden accepteren `location.get` op de achtergrond alleen wanneer de gebruiker `Always` heeft geselecteerd en Android locatie op de achtergrond heeft toegestaan. De bestaande permanente Node-service voegt het servicetype `location` toe en vermeldt `Location: Always` zolang deze actief is.
 - Android Play-builds en de modus `While Using` weigeren `location.get` wanneer de app zich op de achtergrond bevindt.
-- Andere Node-platforms kunnen zich anders gedragen.
+- Andere Node-platforms kunnen hiervan afwijken.
 
-## Integratie met modellen en hulpmiddelen
+## Linux-Node-host
 
-- Agenthulpmiddel: de actie `location_get` van het hulpmiddel `nodes` (Node vereist).
+De meegeleverde Linux Node-plugin voegt `location.get` toe aan de CLI-service `openclaw node`, inclusief headless hosts zonder de Linux-desktopapp. Locatie staat standaard uit. Schakel deze in onder de pluginvermelding en start vervolgens de Node-service opnieuw:
+
+```json5
+{
+  plugins: {
+    entries: {
+      "linux-node": {
+        config: {
+          location: { enabled: true },
+        },
+      },
+    },
+  },
+}
+```
+
+Installeer GeoClue2 en de bijbehorende `where-am-i`-demo (`geoclue-2-demo` op Debian en Ubuntu). De gebruiker van de Node-service moet toestemming hebben volgens het GeoClue-beleid en de autorisatieagent van de host.
+
+De plugin gebruikt `where-am-i` in plaats van een reeks aanroepen van `busctl`. GeoClue koppelt het maken van de client, eigenschappen, starten, updates en stoppen aan één D-Bus-clientverbinding; de demo houdt die levenscyclus bijeen, terwijl afzonderlijke `busctl`-subprocessen dat niet doen. Er wordt geen npm-afhankelijkheid toegevoegd.
+
+Linux wijst `coarse`, `balanced` en `precise` toe aan de GeoClue-nauwkeurigheidsniveaus `4`, `6` en `8`. Het valideert `maxAgeMs` aan de hand van het geretourneerde tijdstempel. De demo van GeoClue maakt de geselecteerde provider niet beschikbaar, dus `source` is `unknown`; `isPrecise` is alleen waar wanneer de gerapporteerde nauwkeurigheid 100 meter of beter is.
+
+Linux gebruikt dezelfde stabiele fouten: `LOCATION_DISABLED`, `LOCATION_TIMEOUT` en `LOCATION_UNAVAILABLE`.
+
+## Integratie met modellen en tooling
+
+- Agent-tool: de actie `location_get` van de tool `nodes` (Node vereist).
 - CLI: `openclaw nodes location get --node <id>`.
-- Richtlijnen voor agenten: alleen aanroepen wanneer de gebruiker locatie heeft ingeschakeld en de reikwijdte begrijpt.
+- Richtlijnen voor de Agent: alleen aanroepen wanneer de gebruiker locatie heeft ingeschakeld en de reikwijdte begrijpt.
 
-## UX-tekst (voorstel)
+## UX-tekst (suggestie)
 
-- Uit: ‘Locatie delen is uitgeschakeld.’
-- Tijdens gebruik: ‘Alleen wanneer OpenClaw geopend is.’
-- Altijd: ‘Sta aangevraagde locatiecontroles toe terwijl OpenClaw op de achtergrond actief is.’
-- Nauwkeurig: ‘Gebruik de nauwkeurige GPS-locatie. Schakel dit uit om een geschatte locatie te delen.’
+- Uit: "Het delen van je locatie is uitgeschakeld."
+- Tijdens gebruik: "Alleen wanneer OpenClaw geopend is."
+- Altijd: "Sta aangevraagde locatiecontroles toe terwijl OpenClaw op de achtergrond actief is."
+- Nauwkeurig: "Gebruik de nauwkeurige GPS-locatie. Schakel dit uit om je geschatte locatie te delen."
 
 ## Gerelateerd
 
 - [Overzicht van Nodes](/nl/nodes)
-- [Verwerking van kanaallocaties](/nl/channels/location)
+- [Locatieverwerking voor kanalen](/nl/channels/location)
 - [Camera-opname](/nl/nodes/camera)
 - [Gespreksmodus](/nl/nodes/talk)

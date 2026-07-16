@@ -4,16 +4,17 @@ read_when:
 summary: Voegt ondersteuning voor de Groq-modelprovider toe aan OpenClaw.
 title: Groq-Plugin
 x-i18n:
-    generated_at: "2026-07-12T09:12:36Z"
+    generated_at: "2026-07-16T16:05:54Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 41bae84645b09b5185d62530788a17be0338e93e6f29b9cca11438b69932bbc5
+    source_hash: d5da1d3152536b776034ebe46529fb58f8a4819dce63af76920fd9543c2624af
     source_path: plugins/reference/groq.md
     workflow: 16
 ---
 
-# Groq-Plugin
+# Groq-plugin
 
 Voegt ondersteuning voor de Groq-modelprovider toe aan OpenClaw.
 
@@ -24,7 +25,7 @@ Voegt ondersteuning voor de Groq-modelprovider toe aan OpenClaw.
 
 ## Oppervlak
 
-providers: groq; contracten: mediaUnderstandingProviders
+providers: `groq`; contracten: `mediaUnderstandingProviders`
 
 ## Gerelateerde documentatie
 

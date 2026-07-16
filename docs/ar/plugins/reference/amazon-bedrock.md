@@ -1,31 +1,32 @@
 ---
 read_when:
-    - أنت تقوم بتثبيت Plugin ‏amazon-bedrock أو تهيئته أو تدقيقه
-summary: Plugin موفّر Amazon Bedrock لـ OpenClaw مع دعم اكتشاف النماذج والتضمينات وحواجز الحماية.
+    - أنت تثبّت Plugin ‏amazon-bedrock أو تهيئه أو تدقّق فيه
+summary: Plugin موفّر Amazon Bedrock لـ OpenClaw مع دعم اكتشاف النماذج والتضمينات وضوابط الحماية.
 title: Plugin Amazon Bedrock
 x-i18n:
-    generated_at: "2026-07-12T06:19:36Z"
+    generated_at: "2026-07-16T14:30:04Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: bf39e0d58332cd057e8f050dc1a8742c219b62182381a7f47856e3a657b80f03
+    source_hash: 9711834eab36af35cd59039dae095064677e1ec3ad71d8405d76caa1badb9d81
     source_path: plugins/reference/amazon-bedrock.md
     workflow: 16
 ---
 
 # Plugin Amazon Bedrock
 
-Plugin موفّر Amazon Bedrock لـ OpenClaw، مع دعم اكتشاف النماذج والتضمينات وحواجز الحماية.
+Plugin موفّر Amazon Bedrock لـ OpenClaw مع اكتشاف النماذج والتضمينات ودعم حواجز الحماية.
 
 ## التوزيع
 
 - الحزمة: `@openclaw/amazon-bedrock-provider`
 - مسار التثبيت: npm؛ ClawHub
 
-## الواجهات
+## السطح
 
-الموفّرون: amazon-bedrock؛ العقود: memoryEmbeddingProviders
+الموفّرون: `amazon-bedrock`؛ العقود: `memoryEmbeddingProviders`
 
 ## الوثائق ذات الصلة
 
-- [amazon-bedrock](/ar/providers/bedrock)
+- [Amazon Bedrock](/ar/providers/bedrock)

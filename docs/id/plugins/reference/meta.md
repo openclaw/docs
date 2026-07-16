@@ -1,14 +1,15 @@
 ---
 read_when:
-    - Anda sedang menginstal, mengonfigurasi, atau mengaudit plugin meta
+    - Anda sedang memasang, mengonfigurasi, atau mengaudit plugin Meta
 summary: Menambahkan dukungan penyedia model Meta ke OpenClaw.
-title: Plugin meta
+title: Plugin Meta
 x-i18n:
-    generated_at: "2026-07-12T14:29:08Z"
+    generated_at: "2026-07-16T18:28:04Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 6ca9491d89d3e40eb07a2e1fe957923846217f7e8e8100486bd491b4a6cd2c50
+    source_hash: affe5fc770e4e66dc1e5e3e8e775d2c3a940917ebfa32f0776b1a74d6fa0da24
     source_path: plugins/reference/meta.md
     workflow: 16
 ---
@@ -20,12 +21,12 @@ Menambahkan dukungan penyedia model Meta ke OpenClaw.
 ## Distribusi
 
 - Paket: `@openclaw/meta-provider`
-- Jalur instalasi: disertakan dalam OpenClaw; npm; ClawHub: `clawhub:@openclaw/meta-provider`
+- Rute instalasi: disertakan dalam OpenClaw; npm; ClawHub: `clawhub:@openclaw/meta-provider`
 
 ## Permukaan
 
-penyedia: meta
+penyedia: `meta`
 
 ## Dokumentasi terkait
 
-- [meta](/providers/meta)
+- [Meta](/id/providers/meta)

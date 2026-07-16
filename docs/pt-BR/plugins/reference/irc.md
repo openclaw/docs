@@ -4,18 +4,19 @@ read_when:
 summary: Adiciona a interface do canal IRC para enviar e receber mensagens do OpenClaw.
 title: Plugin de IRC
 x-i18n:
-    generated_at: "2026-07-12T00:14:20Z"
+    generated_at: "2026-07-16T12:46:40Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: ef4c5df880542d4d3554320f4d183a2464ef8b31d0e86edc1b6c63e1e41f35d3
+    source_hash: 91f258b4abd854e62fff7c769a6482e5dd2da6bdfbb831fd217a1f792ba2d255
     source_path: plugins/reference/irc.md
     workflow: 16
 ---
 
 # Plugin de IRC
 
-Adiciona a interface do canal IRC para enviar e receber mensagens do OpenClaw.
+Adiciona a interface de canal IRC para enviar e receber mensagens do OpenClaw.
 
 ## Distribuição
 
@@ -24,7 +25,7 @@ Adiciona a interface do canal IRC para enviar e receber mensagens do OpenClaw.
 
 ## Interface
 
-canais: irc
+canais: `irc`
 
 ## Documentação relacionada
 

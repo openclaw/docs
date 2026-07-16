@@ -1,50 +1,54 @@
 ---
 read_when:
-    - คุณต้องมีรายละเอียดพฤติกรรมสำหรับ openclaw onboard
-    - คุณกำลังดีบักผลลัพธ์การเริ่มต้นใช้งานหรือผสานรวมไคลเอนต์การเริ่มต้นใช้งาน
+    - คุณต้องระบุลักษณะการทำงานโดยละเอียดสำหรับขั้นตอน `openclaw onboard` ที่เฉพาะเจาะจง
+    - คุณกำลังแก้ไขข้อบกพร่องของผลลัพธ์การเริ่มต้นใช้งานหรือผสานรวมไคลเอนต์สำหรับการเริ่มต้นใช้งาน
 sidebarTitle: CLI reference
-summary: ข้อมูลอ้างอิงฉบับสมบูรณ์สำหรับโฟลว์การตั้งค่า CLI, การตั้งค่าการยืนยันตัวตน/โมเดล, เอาต์พุต และรายละเอียดภายใน
+summary: 'พฤติกรรมทีละขั้นตอนของ openclaw onboard: แต่ละขั้นตอนทำอะไร เขียนการกำหนดค่าใด และการทำงานภายในเป็นอย่างไร'
 title: ข้อมูลอ้างอิงการตั้งค่า CLI
 x-i18n:
-    generated_at: "2026-07-04T06:57:02Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T19:47:55Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 016ea0c85cefd5cc70d0988e82f2cbb5898c0ae3134f68df645dddb58c2dfe9a
+    source_hash: 96c1469c6b64f08fd9105c8b737df164d39d27d051bbb9bb4f76b9e1e057785d
     source_path: start/wizard-cli-reference.md
     workflow: 16
 ---
 
-หน้านี้คือเอกสารอ้างอิงฉบับเต็มสำหรับ `openclaw onboard`
-สำหรับคู่มือฉบับย่อ โปรดดู [การเริ่มใช้งาน (CLI)](/th/start/wizard)
+หน้านี้ครอบคลุมลักษณะการทำงาน ผลลัพธ์ และการทำงานภายในของขั้นตอนเริ่มต้นใช้งานแบบทีละขั้นตอน
+สำหรับคำแนะนำทีละขั้น โปรดดู [การเริ่มต้นใช้งาน (CLI)](/th/start/wizard) สำหรับเอกสารอ้างอิงแฟล็ก CLI
+ฉบับเต็ม (`--flag` ทุกรายการ ตัวอย่างแบบไม่โต้ตอบ คำสั่งเฉพาะ
+ผู้ให้บริการ) โปรดดู [`openclaw onboard`](/th/cli/onboard)
 
-## วิซาร์ดทำอะไร
+## วิซาร์ดทำอะไรบ้าง
 
-โหมดภายในเครื่อง (ค่าเริ่มต้น) จะพาคุณตั้งค่า:
+โหมดภายในเครื่อง (ค่าเริ่มต้น) จะแนะนำคุณตลอดขั้นตอนต่อไปนี้:
 
-- การตั้งค่าโมเดลและการยืนยันตัวตน (OAuth ของการสมัครใช้งาน OpenAI Code, Anthropic Claude CLI หรือ API key รวมถึงตัวเลือก MiniMax, GLM, Ollama, Moonshot, StepFun และ AI Gateway)
-- ตำแหน่งเวิร์กสเปซและไฟล์บูตสแตรป
-- การตั้งค่า Gateway (พอร์ต, bind, auth, tailscale)
-- Channels และ providers (Telegram, WhatsApp, Discord, Google Chat, Mattermost, Signal, iMessage และ Plugin ช่องทางที่รวมมาอื่น ๆ)
-- การติดตั้ง daemon (LaunchAgent, systemd user unit หรือ Windows Scheduled Task แบบเนทีฟพร้อม fallback ไปยังโฟลเดอร์ Startup)
-- การตรวจสุขภาพ
+- การตั้งค่าโมเดลและการยืนยันตัวตน (Anthropic, OAuth สำหรับการสมัครสมาชิก OpenAI Code, xAI, OpenCode, ปลายทางแบบกำหนดเอง และโฟลว์การยืนยันตัวตนอื่นๆ ที่ผู้ให้บริการเป็นเจ้าของ)
+- ตำแหน่งเวิร์กสเปซและไฟล์เริ่มต้นระบบ
+- การตั้งค่า Gateway (พอร์ต การผูก การยืนยันตัวตน Tailscale)
+- ช่องทางและผู้ให้บริการ (Discord, Feishu, Google Chat, iMessage, Mattermost, Microsoft Teams, QQ Bot, Signal, Slack, Telegram, WhatsApp และช่องทางอื่นๆ ที่รวมมาด้วยหรือเป็น Plugin)
+- ผู้ให้บริการค้นหาเว็บ (ไม่บังคับ)
+- การติดตั้งดีมอน (LaunchAgent, ยูนิตผู้ใช้ systemd หรือ Windows Scheduled Task แบบเนทีฟพร้อมใช้โฟลเดอร์ Startup เป็นทางเลือกสำรอง)
+- การตรวจสอบสถานะการทำงาน
 - การตั้งค่า Skills
 
-โหมดระยะไกลจะกำหนดค่าเครื่องนี้ให้เชื่อมต่อกับ gateway ที่อื่น
-โหมดนี้จะไม่ติดตั้งหรือแก้ไขสิ่งใดบนโฮสต์ระยะไกล
+โหมดระยะไกลจะกำหนดค่าเครื่องนี้ให้เชื่อมต่อกับ Gateway ที่อยู่ที่อื่น โดยจะ
+ไม่ติดตั้งหรือแก้ไขสิ่งใดบนโฮสต์ระยะไกล
 
 ## รายละเอียดโฟลว์ภายในเครื่อง
 
 <Steps>
-  <Step title="การตรวจพบคอนฟิกที่มีอยู่">
-    - หาก `~/.openclaw/openclaw.json` มีอยู่ ให้เลือก Keep, Modify หรือ Reset
-    - การรันวิซาร์ดซ้ำจะไม่ลบสิ่งใด เว้นแต่คุณจะเลือก Reset อย่างชัดเจน (หรือส่ง `--reset`)
+  <Step title="การตรวจหาการกำหนดค่าที่มีอยู่">
+    - หากมี `~/.openclaw/openclaw.json` ให้เลือก **คงค่าปัจจุบันไว้**, **ตรวจสอบและอัปเดต** หรือ **รีเซ็ตก่อนตั้งค่า**
+    - การเรียกใช้วิซาร์ดซ้ำจะไม่ล้างข้อมูลใดๆ เว้นแต่คุณจะเลือกรีเซ็ตอย่างชัดเจน (หรือส่ง `--reset`)
     - CLI `--reset` มีค่าเริ่มต้นเป็น `config+creds+sessions`; ใช้ `--reset-scope full` เพื่อลบเวิร์กสเปซด้วย
-    - หากคอนฟิกไม่ถูกต้องหรือมีคีย์เก่า วิซาร์ดจะหยุดและขอให้คุณรัน `openclaw doctor` ก่อนดำเนินการต่อ
-    - Reset ใช้ `trash` และเสนอสโคป:
-      - เฉพาะคอนฟิก
-      - คอนฟิก + ข้อมูลประจำตัว + เซสชัน
-      - รีเซ็ตทั้งหมด (ลบเวิร์กสเปซด้วย)
+    - หากการกำหนดค่าไม่ถูกต้องหรือมีคีย์รุ่นเก่า วิซาร์ดจะหยุดและขอให้คุณเรียกใช้ `openclaw doctor` ก่อนดำเนินการต่อ
+    - การรีเซ็ตจะย้ายสถานะไปยังถังขยะ (ไม่ลบโดยตรงเด็ดขาด) และมีขอบเขตให้เลือกดังนี้:
+      - เฉพาะการกำหนดค่า
+      - การกำหนดค่า + ข้อมูลประจำตัว + เซสชัน
+      - รีเซ็ตทั้งหมด (รวมถึงลบเวิร์กสเปซ)
 
   </Step>
   <Step title="โมเดลและการยืนยันตัวตน">
@@ -52,61 +56,66 @@ x-i18n:
 
   </Step>
   <Step title="เวิร์กสเปซ">
-    - ค่าเริ่มต้น `~/.openclaw/workspace` (กำหนดค่าได้)
-    - เติมไฟล์เวิร์กสเปซที่จำเป็นสำหรับพิธีบูตสแตรปเมื่อรันครั้งแรก
-    - โครงร่างเวิร์กสเปซ: [เวิร์กสเปซของเอเจนต์](/th/concepts/agent-workspace)
+    - ค่าเริ่มต้นคือ `~/.openclaw/workspace` (กำหนดค่าได้)
+    - สร้างไฟล์เวิร์กสเปซเริ่มต้นที่จำเป็นสำหรับการเริ่มระบบครั้งแรก
+    - โครงสร้างเวิร์กสเปซ: [เวิร์กสเปซของเอเจนต์](/th/concepts/agent-workspace)
 
   </Step>
   <Step title="Gateway">
-    - ถามพอร์ต, bind, โหมด auth และการเปิดเผยผ่าน tailscale
-    - แนะนำ: เปิดใช้งาน token auth ไว้แม้สำหรับ loopback เพื่อให้ไคลเอนต์ WS ภายในเครื่องต้องยืนยันตัวตน
-    - ในโหมดโทเค็น การตั้งค่าแบบโต้ตอบมีตัวเลือก:
+    - แจ้งให้ระบุพอร์ต การผูก โหมดการยืนยันตัวตน และการเปิดให้เข้าถึงผ่าน Tailscale
+    - คำแนะนำ: เปิดใช้การยืนยันตัวตนด้วยโทเค็นไว้แม้ใช้ loopback เพื่อให้ไคลเอนต์ WS ภายในเครื่องต้องยืนยันตัวตน
+    - ในโหมดโทเค็น การตั้งค่าแบบโต้ตอบมีตัวเลือกดังนี้:
       - **สร้าง/จัดเก็บโทเค็นเป็นข้อความธรรมดา** (ค่าเริ่มต้น)
       - **ใช้ SecretRef** (เลือกใช้)
     - ในโหมดรหัสผ่าน การตั้งค่าแบบโต้ตอบยังรองรับการจัดเก็บเป็นข้อความธรรมดาหรือ SecretRef
-    - เส้นทาง SecretRef ของโทเค็นแบบไม่โต้ตอบ: `--gateway-token-ref-env <ENV_VAR>`
-      - ต้องมี env var ที่ไม่ว่างในสภาพแวดล้อมของกระบวนการเริ่มใช้งาน
+    - พาธ SecretRef ของโทเค็นแบบไม่โต้ตอบ: `--gateway-token-ref-env <ENV_VAR>`
+      - ต้องมีตัวแปรสภาพแวดล้อมที่ไม่ว่างในสภาพแวดล้อมของกระบวนการเริ่มต้นใช้งาน
       - ใช้ร่วมกับ `--gateway-token` ไม่ได้
-    - ปิดใช้งาน auth เฉพาะเมื่อคุณไว้วางใจทุกกระบวนการภายในเครื่องอย่างเต็มที่
-    - bind ที่ไม่ใช่ loopback ยังคงต้องใช้ auth
+    - ปิดใช้การยืนยันตัวตนเฉพาะเมื่อคุณเชื่อถือทุกกระบวนการภายในเครื่องอย่างเต็มที่
+    - การผูกที่ไม่ใช่ loopback ยังคงต้องใช้การยืนยันตัวตน
 
   </Step>
-  <Step title="Channels">
-    - [WhatsApp](/th/channels/whatsapp): เข้าสู่ระบบด้วย QR ที่เลือกได้
+  <Step title="ช่องทาง">
+    - [WhatsApp](/th/channels/whatsapp): การเข้าสู่ระบบด้วย QR ที่เลือกใช้ได้
     - [Telegram](/th/channels/telegram): โทเค็นบอต
     - [Discord](/th/channels/discord): โทเค็นบอต
-    - [Google Chat](/th/channels/googlechat): JSON ของ service account + webhook audience
+    - [Google Chat](/th/channels/googlechat): JSON ของบัญชีบริการ + กลุ่มเป้าหมาย Webhook
     - [Mattermost](/th/channels/mattermost): โทเค็นบอต + URL ฐาน
-    - [Signal](/th/channels/signal): ติดตั้ง `signal-cli` ที่เลือกได้ + คอนฟิกบัญชี
-    - [iMessage](/th/channels/imessage): เส้นทาง CLI `imsg` + การเข้าถึง Messages DB; ใช้ SSH wrapper เมื่อ Gateway รันนอก Mac
-    - ความปลอดภัยของ DM: ค่าเริ่มต้นคือการจับคู่ DM แรกจะส่งรหัส อนุมัติผ่าน
-      `openclaw pairing approve <channel> <code>` หรือใช้ allowlists
+    - [Signal](/th/channels/signal): การติดตั้ง `signal-cli` ที่เลือกทำได้ + การกำหนดค่าบัญชี
+    - [iMessage](/th/channels/imessage): พาธ CLI ของ `imsg` + สิทธิ์เข้าถึงฐานข้อมูล Messages; ใช้ตัวครอบ SSH เมื่อ Gateway ทำงานนอกเครื่อง Mac
+    - ความปลอดภัยของ DM: ค่าเริ่มต้นคือการจับคู่ DM แรกจะส่งรหัส; อนุมัติผ่าน
+      `openclaw pairing approve <channel> <code>` หรือใช้รายการที่อนุญาต
   </Step>
-  <Step title="การติดตั้ง daemon">
-    - macOS: LaunchAgent
-      - ต้องมีเซสชันผู้ใช้ที่ล็อกอินอยู่; สำหรับแบบ headless ให้ใช้ LaunchDaemon แบบกำหนดเอง (ไม่ได้จัดส่งมา)
-    - Linux และ Windows ผ่าน WSL2: systemd user unit
-      - วิซาร์ดพยายาม `loginctl enable-linger <user>` เพื่อให้ gateway ยังคงทำงานหลังออกจากระบบ
-      - อาจถาม sudo (เขียน `/var/lib/systemd/linger`); จะลองโดยไม่มี sudo ก่อน
-    - Windows แบบเนทีฟ: Scheduled Task ก่อน
-      - หากการสร้าง task ถูกปฏิเสธ OpenClaw จะ fallback ไปยังรายการล็อกอินในโฟลเดอร์ Startup ต่อผู้ใช้และเริ่ม gateway ทันที
-      - Scheduled Tasks ยังคงเป็นตัวเลือกที่แนะนำเพราะให้สถานะ supervisor ที่ดีกว่า
-    - การเลือกรันไทม์: Node (แนะนำ; จำเป็นสำหรับ WhatsApp และ Telegram) ไม่แนะนำให้ใช้ Bun
+  <Step title="การค้นหาเว็บ">
+    - เลือกผู้ให้บริการ (Brave, DuckDuckGo, Exa, Firecrawl, Gemini, Grok, Kimi, MiniMax Search, Ollama Web Search, Perplexity, SearXNG, Tavily) หรือข้าม
+    - ข้ามขั้นตอนนี้ด้วย `--skip-search`; กำหนดค่าใหม่ภายหลังด้วย `openclaw configure --section web`
 
   </Step>
-  <Step title="การตรวจสุขภาพ">
-    - เริ่ม gateway (หากจำเป็น) และรัน `openclaw health`
-    - `openclaw status --deep` เพิ่มการตรวจสอบสุขภาพ gateway แบบสดลงในเอาต์พุตสถานะ รวมถึงการตรวจสอบช่องทางเมื่อรองรับ
+  <Step title="การติดตั้งดีมอน">
+    - macOS: LaunchAgent
+      - ต้องมีเซสชันผู้ใช้ที่เข้าสู่ระบบอยู่; สำหรับระบบไร้ส่วนหัว ให้ใช้ LaunchDaemon แบบกำหนดเอง (ไม่มีมาให้)
+    - Linux และ Windows ผ่าน WSL2: ยูนิตผู้ใช้ systemd
+      - วิซาร์ดพยายามเรียกใช้ `loginctl enable-linger <user>` เพื่อให้ Gateway ทำงานต่อหลังออกจากระบบ
+      - อาจขอสิทธิ์ sudo (เขียน `/var/lib/systemd/linger`); โดยจะลองโดยไม่ใช้ sudo ก่อน
+    - Windows แบบเนทีฟ: ใช้ Scheduled Task ก่อน
+      - หากไม่ได้รับอนุญาตให้สร้างงาน OpenClaw จะใช้รายการเข้าสู่ระบบในโฟลเดอร์ Startup ของผู้ใช้เป็นทางเลือกสำรอง และเริ่ม Gateway ทันที
+      - ยังคงแนะนำให้ใช้ Scheduled Tasks เนื่องจากให้สถานะของตัวควบคุมดูแลที่ดีกว่า
+    - การเลือกรันไทม์: ต้องใช้ Node เนื่องจากที่เก็บสถานะรันไทม์มาตรฐานของ OpenClaw ใช้ `node:sqlite`
+
+  </Step>
+  <Step title="การตรวจสอบสถานะการทำงาน">
+    - เริ่ม Gateway (หากจำเป็น) และเรียกใช้ `openclaw health`
+    - `openclaw status --deep` เพิ่มการตรวจสอบสถานะ Gateway แบบสดลงในผลลัพธ์สถานะ รวมถึงการตรวจสอบช่องทางเมื่อรองรับ
 
   </Step>
   <Step title="Skills">
-    - อ่าน skills ที่พร้อมใช้งานและตรวจสอบข้อกำหนด
-    - ให้คุณเลือกตัวจัดการ node: npm, pnpm หรือ bun
-    - ติดตั้ง dependency ที่เลือกได้สำหรับ skills แบบ bundled ที่เชื่อถือได้เมื่อมี
+    - อ่าน Skills ที่พร้อมใช้งานและตรวจสอบข้อกำหนด
+    - ให้คุณเลือกตัวจัดการ Node: npm, pnpm หรือ bun
+    - ติดตั้งการพึ่งพาแบบไม่บังคับสำหรับ Skills ที่เชื่อถือได้ซึ่งรวมมาด้วย เมื่อมี
       ตัวติดตั้งที่จำเป็น
-    - ข้ามตัวติดตั้ง Homebrew, uv และ Go ที่ไม่พร้อมใช้งาน แล้วจัดกลุ่ม skills ที่ได้รับผลกระทบ
-      พร้อมคำแนะนำการตั้งค่าด้วยตนเอง รัน `openclaw doctor` หลังติดตั้ง
-      ข้อกำหนดเบื้องต้นที่ขาดหาย
+    - ข้ามตัวติดตั้ง Homebrew, uv และ Go ที่ไม่พร้อมใช้งาน จากนั้นจัดกลุ่ม
+      Skills ที่ได้รับผลกระทบพร้อมคำแนะนำการตั้งค่าด้วยตนเอง เรียกใช้ `openclaw doctor` หลังติดตั้ง
+      ข้อกำหนดเบื้องต้นที่ขาดหายไป
 
   </Step>
   <Step title="เสร็จสิ้น">
@@ -116,192 +125,221 @@ x-i18n:
 </Steps>
 
 <Note>
-หากตรวจไม่พบ GUI วิซาร์ดจะพิมพ์คำแนะนำการทำ SSH port-forward สำหรับ Control UI แทนการเปิดเบราว์เซอร์
-หาก asset ของ Control UI หายไป วิซาร์ดจะพยายาม build; fallback คือ `pnpm ui:build` (ติดตั้ง UI deps อัตโนมัติ)
+หากตรวจไม่พบ GUI วิซาร์ดจะแสดงคำแนะนำการส่งต่อพอร์ต SSH สำหรับ Control UI แทนการเปิดเบราว์เซอร์
+หากแอสเซ็ต Control UI ขาดหายไป วิซาร์ดจะพยายามสร้างแอสเซ็ตเหล่านั้น; ทางเลือกสำรองคือ `pnpm ui:build` (ติดตั้งการพึ่งพา UI โดยอัตโนมัติ)
 </Note>
 
 ## รายละเอียดโหมดระยะไกล
 
-โหมดระยะไกลจะกำหนดค่าเครื่องนี้ให้เชื่อมต่อกับ gateway ที่อื่น
+โหมดระยะไกลจะกำหนดค่าเครื่องนี้ให้เชื่อมต่อกับ Gateway ที่อยู่ที่อื่น โดยจะ
+ไม่ติดตั้งหรือแก้ไขสิ่งใดบนโฮสต์ระยะไกล
 
-<Info>
-โหมดระยะไกลจะไม่ติดตั้งหรือแก้ไขสิ่งใดบนโฮสต์ระยะไกล
-</Info>
+สิ่งที่คุณกำหนด:
 
-สิ่งที่คุณตั้งค่า:
+- URL ของ Gateway ระยะไกล (`ws://...` หรือ `wss://...`)
+- โทเค็น รหัสผ่าน หรือไม่ใช้การยืนยันตัวตน โดยให้ตรงกับการกำหนดค่าของ Gateway ระยะไกล
 
-- URL ของ gateway ระยะไกล (`ws://...`)
-- โทเค็นหาก gateway ระยะไกลต้องใช้ auth (แนะนำ)
+<Steps>
+  <Step title="การค้นหา (ไม่บังคับ)">
+    หากมี `dns-sd` (macOS) หรือ `avahi-browse` (Linux) ขั้นตอนเริ่มต้นใช้งาน
+    จะเสนอให้ค้นหาบีคอน Gateway ผ่าน Bonjour/mDNS ก่อนเปลี่ยนไปใช้
+    การป้อน URL ด้วยตนเอง นอกจากนี้ยังพยายามค้นหาผ่าน DNS-SD แบบเครือข่ายบริเวณกว้างเมื่อ
+    กำหนดค่าไว้ เอกสาร: [การค้นหา Gateway](/th/gateway/discovery), [Bonjour](/th/gateway/bonjour)
+  </Step>
+  <Step title="วิธีการเชื่อมต่อ">
+    เมื่อเลือกบีคอนแล้ว ให้เลือก WebSocket โดยตรงหรืออุโมงค์ SSH:
+    - **โดยตรง**: เชื่อมต่อผ่าน `wss://` และแจ้งให้เชื่อถือ
+      ลายนิ้วมือ TLS ที่ค้นพบ (การตรึงแบบเชื่อถือเมื่อใช้ครั้งแรก; จะตรึงเฉพาะเมื่อคุณยอมรับ)
+    - **อุโมงค์ SSH**: แสดงคำสั่ง `ssh -N -L 18789:127.0.0.1:18789 <user>@<host>`
+      ที่ต้องเรียกใช้ก่อน แล้วจึงเชื่อมต่อกับปลายทางอุโมงค์ภายในเครื่อง
+  </Step>
+  <Step title="การยืนยันตัวตน">
+    เลือกโทเค็น (แนะนำ) รหัสผ่าน หรือไม่ใช้การยืนยันตัวตน จากนั้นเลือกได้ว่าจะจัดเก็บ
+    เป็น SecretRef แทนข้อความธรรมดาหรือไม่
+  </Step>
+</Steps>
 
 <Note>
-- หาก gateway เป็นแบบ loopback-only ให้ใช้ SSH tunneling หรือ tailnet
-- คำใบ้การค้นพบ:
-  - macOS: Bonjour (`dns-sd`)
-  - Linux: Avahi (`avahi-browse`)
-
+หาก Gateway ใช้เฉพาะ loopback และค้นหาไม่พบ ให้ใช้อุโมงค์ SSH หรือ tailnet ด้วยตนเอง
+ยอมรับ `ws://` แบบข้อความธรรมดาสำหรับ loopback, ลิเทอรัล IP ส่วนตัว, `.local` และ URL ของ Tailnet `*.ts.net`; ชื่อ DNS ส่วนตัวอื่นๆ ต้องใช้ `OPENCLAW_ALLOW_INSECURE_PRIVATE_WS=1`
 </Note>
 
 ## ตัวเลือกการยืนยันตัวตนและโมเดล
 
+หากขั้นตอนตั้งค่าผู้ให้บริการล้มเหลวระหว่างการเริ่มต้นใช้งานแบบโต้ตอบ (เช่น ตัวเลือกใช้ CLI ซ้ำ
+โดยไม่มีการเข้าสู่ระบบภายในเครื่อง) วิซาร์ดจะแสดงข้อผิดพลาดและย้อนกลับไปยังตัวเลือกผู้ให้บริการ
+แทนที่จะออก การเรียกใช้ `--auth-choice` อย่างชัดเจนยังคงล้มเหลวทันทีสำหรับระบบอัตโนมัติ
+
 <AccordionGroup>
-  <Accordion title="Anthropic API key">
-    ใช้ `ANTHROPIC_API_KEY` หากมีอยู่ หรือถามคีย์ จากนั้นบันทึกไว้ให้ daemon ใช้
+  <Accordion title="คีย์ API ของ Anthropic">
+    ใช้ `ANTHROPIC_API_KEY` หากมีอยู่ หรือแจ้งให้ป้อนคีย์ แล้วบันทึกไว้สำหรับการใช้งานของดีมอน
   </Accordion>
-  <Accordion title="การสมัครใช้งาน OpenAI Code (OAuth)">
-    โฟลว์เบราว์เซอร์; วาง `code#state`
-
-    ตั้งค่า `agents.defaults.model` เป็น `openai/gpt-5.5` ผ่านรันไทม์ Codex เมื่อยังไม่ได้ตั้งค่าโมเดลหรือเป็นตระกูล OpenAI อยู่แล้ว
-
+  <Accordion title="Anthropic Claude CLI">
+    พาธภายในเครื่องที่แนะนำสำหรับการเริ่มต้นใช้งาน/กำหนดค่าแบบโต้ตอบ; ใช้การเข้าสู่ระบบ Claude CLI ที่มีอยู่ซ้ำเมื่อพร้อมใช้งาน
   </Accordion>
-  <Accordion title="การสมัครใช้งาน OpenAI Code (การจับคู่อุปกรณ์)">
-    โฟลว์จับคู่ผ่านเบราว์เซอร์ด้วยรหัสอุปกรณ์อายุสั้น
+  <Accordion title="การสมัครสมาชิก OpenAI Code (OAuth)">
+    โฟลว์ผ่านเบราว์เซอร์; วาง `code#state`
 
-    ตั้งค่า `agents.defaults.model` เป็น `openai/gpt-5.5` ผ่านรันไทม์ Codex เมื่อยังไม่ได้ตั้งค่าโมเดลหรือเป็นตระกูล OpenAI อยู่แล้ว
+    ในการตั้งค่าใหม่ที่ยังไม่มีโมเดลหลัก จะตั้งค่า `agents.defaults.model` เป็น
+    `openai/gpt-5.6-sol` ผ่านรันไทม์ Codex
 
   </Accordion>
-  <Accordion title="OpenAI API key">
-    ใช้ `OPENAI_API_KEY` หากมีอยู่ หรือถามคีย์ จากนั้นจัดเก็บข้อมูลประจำตัวไว้ในโปรไฟล์ auth
+  <Accordion title="การสมัครสมาชิก OpenAI Code (การจับคู่อุปกรณ์)">
+    โฟลว์การจับคู่ผ่านเบราว์เซอร์ด้วยรหัสอุปกรณ์ที่มีอายุสั้น
 
-    ตั้งค่า `agents.defaults.model` เป็น `openai/gpt-5.5` เมื่อยังไม่ได้ตั้งค่าโมเดล, `openai/*` หรือ refs โมเดล Codex รุ่นเก่า
+    ในการตั้งค่าใหม่ที่ยังไม่มีโมเดลหลัก จะตั้งค่า `agents.defaults.model` เป็น
+    `openai/gpt-5.6-sol` ผ่านรันไทม์ Codex
+
+  </Accordion>
+  <Accordion title="คีย์ API ของ OpenAI">
+    ใช้ `OPENAI_API_KEY` หากมีอยู่ หรือแจ้งให้ป้อนคีย์ แล้วจัดเก็บข้อมูลประจำตัวไว้ในโปรไฟล์การยืนยันตัวตน
+
+    ในการตั้งค่าใหม่ที่ยังไม่มีโมเดลหลัก จะตั้งค่า `agents.defaults.model` เป็น
+    `openai/gpt-5.6`; ID โมเดล direct-API แบบไม่มีคำนำหน้าจะถูกแก้ไปยังระดับ Sol
+
+    การเพิ่มหรือยืนยันตัวตน OpenAI ใหม่จะคงโมเดลหลักที่ระบุไว้อย่างชัดเจน
+    รวมถึง `openai/gpt-5.5` หากบัญชีไม่เปิดให้ใช้ GPT-5.6
+    ให้เลือก `openai/gpt-5.5` อย่างชัดเจน; OpenClaw จะไม่ลดรุ่นให้โดยเงียบๆ
 
   </Accordion>
   <Accordion title="xAI (Grok) OAuth">
     การลงชื่อเข้าใช้ผ่านเบราว์เซอร์สำหรับบัญชี SuperGrok หรือ X Premium ที่มีสิทธิ์ นี่คือ
-    เส้นทาง xAI ที่แนะนำสำหรับผู้ใช้ส่วนใหญ่ OpenClaw จัดเก็บโปรไฟล์ auth
+    วิธีใช้ xAI ที่แนะนำสำหรับผู้ใช้ส่วนใหญ่ OpenClaw จะจัดเก็บโปรไฟล์การยืนยันตัวตน
     ที่ได้สำหรับโมเดล Grok, Grok `web_search`, `x_search` และ `code_execution`
   </Accordion>
-  <Accordion title="xAI (Grok) device code">
-    การลงชื่อเข้าใช้ผ่านเบราว์เซอร์ที่เหมาะกับระยะไกลด้วยรหัสสั้นแทน callback ของ localhost
-    ใช้สิ่งนี้จากโฮสต์ SSH, Docker หรือ VPS
+  <Accordion title="รหัสอุปกรณ์ xAI (Grok)">
+    การลงชื่อเข้าใช้ผ่านเบราว์เซอร์ที่เหมาะสำหรับการใช้งานระยะไกล โดยใช้รหัสสั้นแทน
+    callback ของ localhost ใช้วิธีนี้จากโฮสต์ SSH, Docker หรือ VPS
   </Accordion>
-  <Accordion title="xAI (Grok) API key">
-    ถาม `XAI_API_KEY` และกำหนดค่า xAI เป็น model provider ใช้สิ่งนี้
-    เมื่อต้องการ API key ของ xAI Console แทน OAuth แบบสมัครใช้งาน
+  <Accordion title="คีย์ API ของ xAI (Grok)">
+    ระบบจะแจ้งให้กรอก `XAI_API_KEY` และกำหนดค่า xAI เป็นผู้ให้บริการโมเดล ใช้วิธีนี้
+    เมื่อต้องการใช้คีย์ API จาก xAI Console แทน OAuth ของการสมัครสมาชิก
   </Accordion>
   <Accordion title="OpenCode">
-    ถาม `OPENCODE_API_KEY` (หรือ `OPENCODE_ZEN_API_KEY`) และให้คุณเลือกแคตตาล็อก Zen หรือ Go
-    URL การตั้งค่า: [opencode.ai/auth](https://opencode.ai/auth)
+    ระบบจะแจ้งให้กรอก `OPENCODE_API_KEY` (หรือ `OPENCODE_ZEN_API_KEY`) และให้เลือกแค็ตตาล็อก Zen หรือ Go (คีย์ API หนึ่งคีย์ใช้ได้กับทั้งสองรายการ)
+    URL สำหรับตั้งค่า: [opencode.ai/auth](https://opencode.ai/auth)
   </Accordion>
-  <Accordion title="API key (ทั่วไป)">
-    จัดเก็บคีย์ให้คุณ
+  <Accordion title="คีย์ API (ทั่วไป)">
+    จัดเก็บคีย์ให้
   </Accordion>
   <Accordion title="Vercel AI Gateway">
-    ถาม `AI_GATEWAY_API_KEY`
+    ระบบจะแจ้งให้กรอก `AI_GATEWAY_API_KEY`
     รายละเอียดเพิ่มเติม: [Vercel AI Gateway](/th/providers/vercel-ai-gateway)
   </Accordion>
   <Accordion title="Cloudflare AI Gateway">
-    ถาม ID บัญชี, ID gateway และ `CLOUDFLARE_AI_GATEWAY_API_KEY`
+    ระบบจะแจ้งให้กรอก ID บัญชี, ID เกตเวย์ และ `CLOUDFLARE_AI_GATEWAY_API_KEY`
     รายละเอียดเพิ่มเติม: [Cloudflare AI Gateway](/th/providers/cloudflare-ai-gateway)
   </Accordion>
   <Accordion title="MiniMax">
-    คอนฟิกจะถูกเขียนอัตโนมัติ ค่าเริ่มต้นแบบโฮสต์คือ `MiniMax-M3`; การตั้งค่า API-key ใช้
-    `minimax/...` และการตั้งค่า OAuth ใช้ `minimax-portal/...`
+    ระบบจะเขียนการกำหนดค่าให้อัตโนมัติ ค่าเริ่มต้นของบริการโฮสต์คือ `MiniMax-M3`; การตั้งค่าด้วยคีย์ API ใช้
+    `minimax/...` และการตั้งค่าด้วย OAuth ใช้ `minimax-portal/...`
     รายละเอียดเพิ่มเติม: [MiniMax](/th/providers/minimax)
   </Accordion>
   <Accordion title="StepFun">
-    คอนฟิกจะถูกเขียนอัตโนมัติสำหรับ StepFun standard หรือ Step Plan บน endpoint จีนหรือทั่วโลก
-    ปัจจุบัน Standard มี `step-3.5-flash` และ Step Plan มี `step-3.5-flash-2603` ด้วย
+    ระบบจะเขียนการกำหนดค่าให้อัตโนมัติสำหรับ StepFun แบบมาตรฐานหรือ Step Plan บน endpoint ในจีนหรือทั่วโลก
+    ปัจจุบันแบบมาตรฐานมี `step-3.5-flash` และ Step Plan ยังมี `step-3.5-flash-2603` ด้วย
     รายละเอียดเพิ่มเติม: [StepFun](/th/providers/stepfun)
   </Accordion>
   <Accordion title="Synthetic (เข้ากันได้กับ Anthropic)">
-    ถาม `SYNTHETIC_API_KEY`
+    ระบบจะแจ้งให้กรอก `SYNTHETIC_API_KEY`
     รายละเอียดเพิ่มเติม: [Synthetic](/th/providers/synthetic)
   </Accordion>
-  <Accordion title="Ollama (Cloud และโมเดลเปิดภายในเครื่อง)">
-    ถาม `Cloud + Local`, `Cloud only` หรือ `Local only` ก่อน
-    `Cloud only` ใช้ `OLLAMA_API_KEY` กับ `https://ollama.com`
-    โหมดที่มี host-backed จะถาม URL ฐาน (ค่าเริ่มต้น `http://127.0.0.1:11434`) ค้นหาโมเดลที่พร้อมใช้งาน และแนะนำค่าเริ่มต้น
-    `Cloud + Local` ยังตรวจสอบด้วยว่าโฮสต์ Ollama นั้นลงชื่อเข้าใช้สำหรับการเข้าถึง cloud หรือไม่
+  <Accordion title="Ollama (โมเดลเปิดบนคลาวด์และภายในเครื่อง)">
+    ระบบจะแจ้งให้เลือก `Cloud + Local`, `Cloud only` หรือ `Local only` ก่อน
+    `Cloud only` ใช้ `OLLAMA_API_KEY` ร่วมกับ `https://ollama.com`
+    โหมดที่ใช้โฮสต์รองรับจะแจ้งให้กรอก URL ฐาน (ค่าเริ่มต้น `http://127.0.0.1:11434`) ค้นหาโมเดลที่พร้อมใช้งาน และแนะนำค่าเริ่มต้น
+    `Cloud + Local` ยังตรวจสอบด้วยว่าโฮสต์ Ollama นั้นลงชื่อเข้าใช้เพื่อเข้าถึงคลาวด์แล้วหรือไม่
     รายละเอียดเพิ่มเติม: [Ollama](/th/providers/ollama)
   </Accordion>
   <Accordion title="Moonshot และ Kimi Coding">
-    คอนฟิก Moonshot (Kimi K2) และ Kimi Coding จะถูกเขียนอัตโนมัติ
+    ระบบจะเขียนการกำหนดค่า Moonshot (Kimi K2) และ Kimi Coding ให้อัตโนมัติ
     รายละเอียดเพิ่มเติม: [Moonshot AI (Kimi + Kimi Coding)](/th/providers/moonshot)
   </Accordion>
-  <Accordion title="Custom provider">
-    ทำงานกับ endpoint ที่เข้ากันได้กับ OpenAI และเข้ากันได้กับ Anthropic
+  <Accordion title="ผู้ให้บริการแบบกำหนดเอง">
+    ใช้งานได้กับ endpoint ที่เข้ากันได้กับ OpenAI, OpenAI Responses และ Anthropic
 
-    การเริ่มใช้งานแบบโต้ตอบรองรับตัวเลือกการจัดเก็บ API key แบบเดียวกับโฟลว์ API key ของ provider อื่น:
-    - **วาง API key ตอนนี้** (ข้อความธรรมดา)
-    - **ใช้ secret reference** (env ref หรือ provider ref ที่กำหนดค่าไว้ พร้อมการตรวจสอบ preflight)
+    การเริ่มต้นใช้งานแบบโต้ตอบรองรับตัวเลือกการจัดเก็บคีย์ API เช่นเดียวกับขั้นตอนคีย์ API ของผู้ให้บริการรายอื่น:
+    - **วางคีย์ API ตอนนี้** (ข้อความธรรมดา)
+    - **ใช้การอ้างอิง Secret** (การอ้างอิงตัวแปรสภาพแวดล้อมหรือการอ้างอิงผู้ให้บริการที่กำหนดค่าไว้ พร้อมการตรวจสอบล่วงหน้า)
+
+    การเริ่มต้นใช้งานจะอนุมานการรองรับรูปภาพสำหรับ ID โมเดลวิชันที่ใช้กันทั่วไป (GPT-4o/4.1/5.x, Claude 3/4, Gemini, Qwen-VL, LLaVA, Pixtral และอื่นๆ ที่คล้ายกัน) และจะถามเฉพาะเมื่อไม่รู้จักชื่อโมเดล
 
     แฟล็กแบบไม่โต้ตอบ:
     - `--auth-choice custom-api-key`
     - `--custom-base-url`
     - `--custom-model-id`
-    - `--custom-api-key` (เลือกได้; fallback ไปที่ `CUSTOM_API_KEY`)
-    - `--custom-provider-id` (เลือกได้)
-    - `--custom-compatibility <openai|openai-responses|anthropic>` (เลือกได้; ค่าเริ่มต้น `openai`)
-    - `--custom-image-input` / `--custom-text-input` (เลือกได้; override ความสามารถอินพุตของโมเดลที่อนุมานได้)
+    - `--custom-api-key` (ไม่บังคับ; หากไม่มีจะใช้ `CUSTOM_API_KEY`)
+    - `--custom-provider-id` (ไม่บังคับ)
+    - `--custom-compatibility <openai|openai-responses|anthropic>` (ไม่บังคับ; ค่าเริ่มต้น `openai`)
+    - `--custom-image-input` / `--custom-text-input` (ไม่บังคับ; เขียนทับความสามารถด้านอินพุตของโมเดลที่อนุมานไว้)
 
   </Accordion>
   <Accordion title="ข้าม">
-    ปล่อยให้ auth ยังไม่ได้กำหนดค่า
+    ไม่กำหนดค่าการยืนยันตัวตน
   </Accordion>
 </AccordionGroup>
 
-พฤติกรรมของโมเดล:
+ลักษณะการทำงานของโมเดล:
 
-- เลือกโมเดลเริ่มต้นจากตัวเลือกที่ตรวจพบ หรือป้อน provider และโมเดลด้วยตนเอง
-- การเริ่มใช้งาน custom-provider จะอนุมานการรองรับรูปภาพสำหรับ ID โมเดลทั่วไป และถามเฉพาะเมื่อไม่รู้จักชื่อโมเดล
-- เมื่อการเริ่มใช้งานเริ่มจากตัวเลือก auth ของ provider ตัวเลือกโมเดลจะชอบ
-  provider นั้นโดยอัตโนมัติ สำหรับ Volcengine และ BytePlus ค่าชอบเดียวกัน
-  ยังจับคู่กับ variant coding-plan ของพวกเขาด้วย (`volcengine-plan/*`,
+- เลือกโมเดลเริ่มต้นจากตัวเลือกที่ตรวจพบ หรือป้อนผู้ให้บริการและโมเดลด้วยตนเอง
+- เมื่อการเริ่มต้นใช้งานเริ่มจากตัวเลือกการยืนยันตัวตนของผู้ให้บริการ ตัวเลือกโมเดลจะให้ความสำคัญกับ
+  ผู้ให้บริการนั้นโดยอัตโนมัติ สำหรับ Volcengine และ BytePlus การตั้งค่านี้
+  จะตรงกับตัวเลือกแพ็กเกจสำหรับเขียนโค้ดด้วยเช่นกัน (`volcengine-plan/*`,
   `byteplus-plan/*`)
-- หากตัวกรอง provider ที่ชอบนั้นว่างเปล่า ตัวเลือกจะ fallback ไปยัง
-  แคตตาล็อกเต็มแทนการไม่แสดงโมเดลใด ๆ
-- วิซาร์ดรันการตรวจโมเดลและเตือนหากโมเดลที่กำหนดค่าไว้ไม่รู้จักหรือไม่มี auth
+- หากตัวกรองผู้ให้บริการที่ต้องการนั้นทำให้ไม่มีผลลัพธ์ ตัวเลือกจะย้อนกลับไปใช้
+  แค็ตตาล็อกทั้งหมดแทนการไม่แสดงโมเดลใดๆ
+- วิซาร์ดจะตรวจสอบโมเดลและแสดงคำเตือนหากไม่รู้จักโมเดลที่กำหนดค่าไว้หรือไม่มีการยืนยันตัวตน
 
-เส้นทางข้อมูลประจำตัวและโปรไฟล์:
+พาธของข้อมูลประจำตัวและโปรไฟล์:
 
-- โปรไฟล์ Auth (API keys + OAuth): `~/.openclaw/agents/<agentId>/agent/auth-profiles.json`
-- การนำเข้า OAuth รุ่นเก่า: `~/.openclaw/credentials/oauth.json`
+- โปรไฟล์การยืนยันตัวตน (คีย์ API + OAuth): `~/.openclaw/agents/<agentId>/agent/auth-profiles.json`
+- การนำเข้า OAuth แบบเดิม: `~/.openclaw/credentials/oauth.json`
 
 โหมดการจัดเก็บข้อมูลประจำตัว:
 
-- พฤติกรรมการเริ่มต้นใช้งานเริ่มต้นจะบันทึก API keys เป็นค่าข้อความธรรมดาในโปรไฟล์การยืนยันตัวตน
-- `--secret-input-mode ref` เปิดใช้โหมดอ้างอิงแทนการจัดเก็บคีย์แบบข้อความธรรมดา
-  ในการตั้งค่าแบบโต้ตอบ คุณสามารถเลือกอย่างใดอย่างหนึ่ง:
+- ลักษณะการทำงานเริ่มต้นของการเริ่มต้นใช้งานจะบันทึกคีย์ API เป็นค่าข้อความธรรมดาในโปรไฟล์การยืนยันตัวตน
+- `--secret-input-mode ref` เปิดใช้งานโหมดการอ้างอิงแทนการจัดเก็บคีย์เป็นข้อความธรรมดา
+  ในการตั้งค่าแบบโต้ตอบ สามารถเลือกได้ระหว่าง:
   - การอ้างอิงตัวแปรสภาพแวดล้อม (เช่น `keyRef: { source: "env", provider: "default", id: "OPENAI_API_KEY" }`)
-  - การอ้างอิง provider ที่กำหนดค่าไว้ (`file` หรือ `exec`) พร้อมนามแฝง provider + id
-- โหมดอ้างอิงแบบโต้ตอบจะรันการตรวจสอบ preflight อย่างรวดเร็วก่อนบันทึก
-  - การอ้างอิง Env: ตรวจสอบชื่อตัวแปร + ค่าที่ไม่ว่างในสภาพแวดล้อมการเริ่มต้นใช้งานปัจจุบัน
-  - การอ้างอิง Provider: ตรวจสอบการกำหนดค่า provider และแก้ไข id ที่ร้องขอ
-  - หาก preflight ล้มเหลว การเริ่มต้นใช้งานจะแสดงข้อผิดพลาดและให้คุณลองใหม่
-- ในโหมดไม่โต้ตอบ `--secret-input-mode ref` จะรองรับด้วย env เท่านั้น
-  - ตั้งค่า env var ของ provider ในสภาพแวดล้อมของกระบวนการเริ่มต้นใช้งาน
-  - แฟล็กคีย์แบบอินไลน์ (เช่น `--openai-api-key`) ต้องมี env var นั้นตั้งค่าไว้ มิฉะนั้นการเริ่มต้นใช้งานจะล้มเหลวทันที
-  - สำหรับ provider แบบกำหนดเอง โหมด `ref` แบบไม่โต้ตอบจะจัดเก็บ `models.providers.<id>.apiKey` เป็น `{ source: "env", provider: "default", id: "CUSTOM_API_KEY" }`
-  - ในกรณี provider แบบกำหนดเองนั้น `--custom-api-key` ต้องมี `CUSTOM_API_KEY` ตั้งค่าไว้ มิฉะนั้นการเริ่มต้นใช้งานจะล้มเหลวทันที
-- ข้อมูลรับรองการยืนยันตัวตนของ Gateway รองรับตัวเลือกข้อความธรรมดาและ SecretRef ในการตั้งค่าแบบโต้ตอบ:
-  - โหมดโทเค็น: **สร้าง/จัดเก็บโทเค็นข้อความธรรมดา** (ค่าเริ่มต้น) หรือ **ใช้ SecretRef**
+  - การอ้างอิงผู้ให้บริการที่กำหนดค่าไว้ (`file` หรือ `exec`) พร้อมนามแฝงผู้ให้บริการ + ID
+- โหมดการอ้างอิงแบบโต้ตอบจะดำเนินการตรวจสอบล่วงหน้าอย่างรวดเร็วก่อนบันทึก
+  - การอ้างอิงตัวแปรสภาพแวดล้อม: ตรวจสอบชื่อตัวแปร + ค่าที่ไม่ว่างในสภาพแวดล้อมการเริ่มต้นใช้งานปัจจุบัน
+  - การอ้างอิงผู้ให้บริการ: ตรวจสอบการกำหนดค่าผู้ให้บริการและแก้ไข ID ที่ร้องขอ
+  - หากการตรวจสอบล่วงหน้าล้มเหลว การเริ่มต้นใช้งานจะแสดงข้อผิดพลาดและให้ลองอีกครั้ง
+- ในโหมดไม่โต้ตอบ `--secret-input-mode ref` รองรับเฉพาะตัวแปรสภาพแวดล้อม
+  - ตั้งค่าตัวแปรสภาพแวดล้อมของผู้ให้บริการในสภาพแวดล้อมของกระบวนการเริ่มต้นใช้งาน
+  - แฟล็กคีย์แบบอินไลน์ (เช่น `--openai-api-key`) กำหนดให้ต้องตั้งค่าตัวแปรสภาพแวดล้อมนั้น มิฉะนั้นการเริ่มต้นใช้งานจะล้มเหลวทันที
+  - สำหรับผู้ให้บริการแบบกำหนดเอง โหมด `ref` แบบไม่โต้ตอบจะจัดเก็บ `models.providers.<id>.apiKey` เป็น `{ source: "env", provider: "default", id: "CUSTOM_API_KEY" }`
+  - ในกรณีผู้ให้บริการแบบกำหนดเองดังกล่าว `--custom-api-key` กำหนดให้ต้องตั้งค่า `CUSTOM_API_KEY` มิฉะนั้นการเริ่มต้นใช้งานจะล้มเหลวทันที
+- ข้อมูลประจำตัวสำหรับการยืนยันตัวตนของ Gateway รองรับตัวเลือกข้อความธรรมดาและ SecretRef ในการตั้งค่าแบบโต้ตอบ:
+  - โหมดโทเค็น: **สร้าง/จัดเก็บโทเค็นแบบข้อความธรรมดา** (ค่าเริ่มต้น) หรือ **ใช้ SecretRef**
   - โหมดรหัสผ่าน: ข้อความธรรมดาหรือ SecretRef
-- เส้นทาง Token SecretRef แบบไม่โต้ตอบ: `--gateway-token-ref-env <ENV_VAR>`
-- การตั้งค่าแบบข้อความธรรมดาที่มีอยู่ยังคงทำงานต่อไปโดยไม่เปลี่ยนแปลง
+- พาธ SecretRef ของโทเค็นแบบไม่โต้ตอบ: `--gateway-token-ref-env <ENV_VAR>`
+- การตั้งค่าแบบข้อความธรรมดาที่มีอยู่จะยังคงใช้งานได้โดยไม่มีการเปลี่ยนแปลง
 
 <Note>
-เคล็ดลับสำหรับ headless และเซิร์ฟเวอร์: ทำ OAuth ให้เสร็จบนเครื่องที่มีเบราว์เซอร์ จากนั้นคัดลอก
-`auth-profiles.json` ของ agent นั้น (เช่น
-`~/.openclaw/agents/<agentId>/agent/auth-profiles.json` หรือเส้นทาง
-`$OPENCLAW_STATE_DIR/...` ที่ตรงกัน) ไปยังโฮสต์ Gateway `credentials/oauth.json`
-เป็นเพียงแหล่งนำเข้าแบบเก่าเท่านั้น
+เคล็ดลับสำหรับระบบที่ไม่มีส่วนติดต่อผู้ใช้และเซิร์ฟเวอร์: ดำเนินการ OAuth ให้เสร็จบนเครื่องที่มีเบราว์เซอร์ จากนั้นคัดลอก
+`auth-profiles.json` ของเอเจนต์นั้น (เช่น
+`~/.openclaw/agents/<agentId>/agent/auth-profiles.json` หรือพาธ
+`$OPENCLAW_STATE_DIR/...` ที่ตรงกัน) ไปยังโฮสต์ Gateway โดย `credentials/oauth.json`
+เป็นเพียงแหล่งนำเข้าแบบเดิมเท่านั้น
 </Note>
 
-## เอาต์พุตและส่วนภายใน
+## เอาต์พุตและการทำงานภายใน
 
 ฟิลด์ทั่วไปใน `~/.openclaw/openclaw.json`:
 
 - `agents.defaults.workspace`
 - `agents.defaults.skipBootstrap` เมื่อส่ง `--skip-bootstrap`
 - `agents.defaults.model` / `models.providers` (หากเลือก Minimax)
-- `tools.profile` (การเริ่มต้นใช้งานในเครื่องมีค่าเริ่มต้นเป็น `"coding"` เมื่อไม่ได้ตั้งค่าไว้ ค่าที่ระบุชัดเจนที่มีอยู่จะถูกคงไว้)
-- `gateway.*` (โหมด, bind, auth, tailscale)
-- `session.dmScope` (การเริ่มต้นใช้งานในเครื่องตั้งค่านี้เป็นค่าเริ่มต้น `per-channel-peer` เมื่อไม่ได้ตั้งค่าไว้ ค่าที่ระบุชัดเจนที่มีอยู่จะถูกคงไว้)
+- `tools.profile` (การเริ่มต้นใช้งานภายในเครื่องจะตั้งค่าเริ่มต้นเป็น `"coding"` เมื่อยังไม่ได้ตั้งค่า; ค่าที่ระบุไว้อย่างชัดเจนซึ่งมีอยู่แล้วจะถูกเก็บรักษาไว้)
+- `gateway.*` (โหมด, การผูก, การยืนยันตัวตน, tailscale)
+- `session.dmScope` (การเริ่มต้นใช้งานภายในเครื่องจะตั้งค่านี้เป็น `per-channel-peer` โดยค่าเริ่มต้นเมื่อยังไม่ได้ตั้งค่า; ค่าที่ระบุไว้อย่างชัดเจนซึ่งมีอยู่แล้วจะถูกเก็บรักษาไว้)
 - `channels.telegram.botToken`, `channels.discord.token`, `channels.matrix.*`, `channels.signal.*`, `channels.imessage.*`
-- รายการอนุญาตของช่องทาง (Slack, Discord, Matrix, Microsoft Teams) เมื่อคุณเลือกใช้ระหว่างพรอมป์ (ชื่อจะถูกแปลงเป็น IDs เมื่อเป็นไปได้)
+- รายการอนุญาตของช่องทาง (Discord, iMessage, Signal, Slack, Telegram, WhatsApp) เมื่อเลือกเข้าร่วมระหว่างขั้นตอนการกรอกข้อมูล; Discord และ Slack ยังจะแปลงชื่อที่ป้อนเป็น ID ด้วย
 - `skills.install.nodeManager`
-  - แฟล็ก `setup --node-manager` รับค่า `npm`, `pnpm` หรือ `bun`
-  - การกำหนดค่าด้วยตนเองยังสามารถตั้งค่า `skills.install.nodeManager: "yarn"` ภายหลังได้
+  - แฟล็ก `setup --node-manager` ยอมรับ `npm`, `pnpm` หรือ `bun`
+  - การกำหนดค่าด้วยตนเองยังสามารถตั้งค่า `skills.install.nodeManager: "yarn"` ในภายหลังได้
 - `wizard.lastRunAt`
 - `wizard.lastRunVersion`
 - `wizard.lastRunCommit`
@@ -309,36 +347,51 @@ x-i18n:
 - `wizard.lastRunMode`
 - `wizard.securityAcknowledgedAt`
 
-`openclaw agents add` เขียน `agents.list[]` และ `bindings` ที่เป็นตัวเลือก
+`openclaw agents add` จะเขียน `agents.list[]` และ `bindings` ที่ไม่บังคับ
 
-ข้อมูลรับรอง WhatsApp จะอยู่ใต้ `~/.openclaw/credentials/whatsapp/<accountId>/`
-เซสชันจะถูกจัดเก็บใต้ `~/.openclaw/agents/<agentId>/sessions/`
+ข้อมูลประจำตัวของ WhatsApp จะอยู่ภายใต้ `~/.openclaw/credentials/whatsapp/<accountId>/`
+เซสชันที่ใช้งานอยู่และทรานสคริปต์จะถูกจัดเก็บไว้ใน
+`~/.openclaw/agents/<agentId>/agent/openclaw-agent.sqlite` ส่วนไดเรกทอรี
+`~/.openclaw/agents/<agentId>/sessions/` ใช้สำหรับอินพุตการย้ายข้อมูลแบบเดิม
+และอาร์ติแฟกต์สำหรับการเก็บถาวร/การสนับสนุน
 
 <Note>
-บางช่องทางถูกส่งมอบเป็น plugins เมื่อเลือกในระหว่างการตั้งค่า wizard
-จะแจ้งให้ติดตั้ง plugin (npm หรือเส้นทางในเครื่อง) ก่อนการกำหนดค่าช่องทาง
+บางช่องทางให้บริการในรูปแบบ plugins เมื่อเลือกระหว่างการตั้งค่า วิซาร์ด
+จะแจ้งให้ติดตั้ง plugin (npm หรือพาธภายในเครื่อง) ก่อนกำหนดค่าช่องทาง
 </Note>
 
-RPC ของ Gateway wizard:
+## การตั้งค่าแบบไม่โต้ตอบ
+
+`--non-interactive` ต้องใช้ `--accept-risk` (เพื่อรับทราบว่าเอเจนต์
+มีความสามารถสูงและการเข้าถึงระบบทั้งหมดมีความเสี่ยง):
+
+```bash
+openclaw onboard --non-interactive --accept-risk \
+  --auth-choice apiKey \
+  --anthropic-api-key "$ANTHROPIC_API_KEY"
+```
+
+ข้อมูลอ้างอิงแฟล็กฉบับเต็มและตัวอย่างเฉพาะผู้ให้บริการ: [`openclaw onboard`](/th/cli/onboard), [การทำงานอัตโนมัติด้วย CLI](/th/start/wizard-cli-automation)
+
+## RPC ของวิซาร์ด Gateway
 
 - `wizard.start`
 - `wizard.next`
 - `wizard.cancel`
 - `wizard.status`
 
-ไคลเอนต์ (แอป macOS และ Control UI) สามารถแสดงขั้นตอนได้โดยไม่ต้องนำตรรกะการเริ่มต้นใช้งานไปพัฒนาใหม่
+ไคลเอนต์ (แอป macOS และ Control UI) สามารถแสดงผลแต่ละขั้นตอนได้โดยไม่ต้องนำตรรกะการเริ่มต้นใช้งานไปสร้างใหม่
 
-พฤติกรรมการตั้งค่า Signal:
+## ลักษณะการทำงานของการตั้งค่า Signal
 
-- ดาวน์โหลด release asset ที่เหมาะสม
-- จัดเก็บไว้ใต้ `~/.openclaw/tools/signal-cli/<version>/`
-- เขียน `channels.signal.cliPath` ในการกำหนดค่า
-- บิลด์ JVM ต้องใช้ Java 21
-- ใช้บิลด์ native เมื่อมีให้ใช้งาน
-- Windows ใช้ WSL2 และทำตามขั้นตอนของ signal-cli แบบ Linux ภายใน WSL
+- ดาวน์โหลดอาร์ติแฟกต์รุ่นที่เหมาะสมจาก GitHub releases อย่างเป็นทางการของ `signal-cli` (บิลด์แบบเนทีฟ เฉพาะ Linux x86-64)
+- บนแพลตฟอร์มอื่น (macOS, Linux ที่ไม่ใช่ x64) จะติดตั้งผ่าน Homebrew แทน
+- จัดเก็บการติดตั้งจากอาร์ติแฟกต์รุ่นไว้ภายใต้ `~/.openclaw/tools/signal-cli/<version>/`
+- เขียน `channels.signal.cliPath` ลงในการกำหนดค่า
+- ยังไม่รองรับ Windows แบบเนทีฟ ให้เรียกใช้การเริ่มต้นใช้งานภายใน WSL2 เพื่อใช้พาธการติดตั้งของ Linux
 
 ## เอกสารที่เกี่ยวข้อง
 
-- ศูนย์กลางการเริ่มต้นใช้งาน: [การเริ่มต้นใช้งาน (CLI)](/th/start/wizard)
-- การทำงานอัตโนมัติและสคริปต์: [การทำงานอัตโนมัติของ CLI](/th/start/wizard-cli-automation)
-- อ้างอิงคำสั่ง: [`openclaw onboard`](/th/cli/onboard)
+- ศูนย์รวมการเริ่มต้นใช้งาน: [การเริ่มต้นใช้งาน (CLI)](/th/start/wizard)
+- การทำงานอัตโนมัติและสคริปต์: [การทำงานอัตโนมัติด้วย CLI](/th/start/wizard-cli-automation)
+- ข้อมูลอ้างอิงคำสั่ง: [`openclaw onboard`](/th/cli/onboard)

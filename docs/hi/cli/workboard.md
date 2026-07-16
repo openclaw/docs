@@ -1,26 +1,24 @@
 ---
 read_when:
     - आप टर्मिनल से Workboard कार्ड देखना या बनाना चाहते हैं
-    - आप CLI से कार्यबोर्ड वर्कर रन प्रेषित करना चाहते हैं
-    - आप Workboard CLI या स्लैश कमांड व्यवहार को डीबग कर रहे हैं
-summary: '`openclaw workboard` कार्ड, डिस्पैच, और worker रन के लिए CLI संदर्भ'
+    - आप CLI से Workboard वर्कर रन डिस्पैच करना चाहते हैं
+    - आप Workboard CLI या स्लैश कमांड के व्यवहार को डीबग कर रहे हैं
+summary: '`openclaw workboard` कार्ड, डिस्पैच और वर्कर रन के लिए CLI संदर्भ'
 title: वर्कबोर्ड CLI
 x-i18n:
-    generated_at: "2026-06-28T22:55:02Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T14:21:24Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: bb6f5ab36b3f1f4d0eb06e5dfa9adbbe9bb14bf2ac389630da7725811ac6f47f
+    source_hash: c109402dad26a44a277febf895e4f4305060e3b6c8ecc024aca5f255de8b5717
     source_path: cli/workboard.md
     workflow: 16
 ---
 
-`openclaw workboard` bundled
-[Workboard Plugin](/hi/plugins/workboard) के लिए terminal surface है। यह किसी संचालक को cards सूचीबद्ध करने, एक
-card बनाने, एक card निरीक्षण करने, और चल रहे Gateway से ready work को
-सबएजेंट वर्कर runs में dispatch करवाने देता है।
+`openclaw workboard` बंडल किए गए [Workboard Plugin](/hi/plugins/workboard) के लिए टर्मिनल इंटरफ़ेस है। यह ऑपरेटर को कार्ड सूचीबद्ध करने, कार्ड बनाने, किसी एक कार्ड का निरीक्षण करने और चल रहे Gateway से तैयार कार्य को उप-एजेंट वर्कर रन में डिस्पैच करने का अनुरोध करने देता है।
 
-command इस्तेमाल करने से पहले Plugin सक्षम करें:
+कमांड का उपयोग करने से पहले Plugin सक्षम करें:
 
 ```bash
 openclaw plugins enable workboard
@@ -33,12 +31,13 @@ openclaw gateway restart
 openclaw workboard list [--board <id>] [--status <status>] [--include-archived] [--json]
 openclaw workboard create <title...> [--notes <text>] [--status <status>] [--priority <priority>] [--agent <id>] [--board <id>] [--labels <items>] [--json]
 openclaw workboard show <id> [--json]
-openclaw workboard dispatch [--url <url>] [--token <token>] [--timeout <ms>] [--json]
+openclaw workboard move <id> --status <status> [--json]
+openclaw workboard dispatch [--board <id>] [--max-starts <count>] [--admin] [--url <url>] [--token <token>] [--timeout <ms>] [--json]
 ```
 
-command वही Plugin-स्वामित्व वाला SQLite database पढ़ता और लिखता है जिसका उपयोग
-dashboard और Workboard agent tools करते हैं। Card ids को पूरा id देकर या
-जब command card id स्वीकार करता है तब अस्पष्टता-रहित prefix देकर पास किया जा सकता है।
+यह कमांड डैशबोर्ड और Workboard एजेंट टूल द्वारा उपयोग किए जाने वाले उसी Plugin-स्वामित्व वाले SQLite डेटाबेस से पढ़ता और उसमें लिखता है। कार्ड आईडी UUID होते हैं; कार्ड आईडी स्वीकार करने वाले कमांड असंदिग्ध आईडी उपसर्ग भी स्वीकार करते हैं (संक्षिप्त टेक्स्ट आउटपुट पहले 8 वर्ण दिखाता है)।
+
+मान्य `status` मान: `triage`, `backlog`, `todo`, `scheduled`, `ready`, `running`, `review`, `blocked`, `done`। मान्य `priority` मान: `low`, `normal`, `high`, `urgent`।
 
 ## `list`
 
@@ -48,48 +47,41 @@ openclaw workboard list --board default --status ready
 openclaw workboard list --json
 ```
 
-Text output संक्षिप्त होता है:
+टेक्स्ट आउटपुट संक्षिप्त होता है:
 
 ```text
-7f4a2c10  ready     high    default agent-a  Fix stale worker heartbeat
+7f4a2c10  ready     high    default agent-a  पुराने वर्कर Heartbeat को ठीक करें
 ```
 
-Columns हैं id prefix, status, priority, board id, वैकल्पिक agent id, और title।
+कॉलम क्रमशः आईडी उपसर्ग, स्थिति, प्राथमिकता, बोर्ड आईडी, वैकल्पिक एजेंट आईडी और शीर्षक हैं।
 
-Flags:
-
-| Flag                 | उद्देश्य                                      |
+| फ़्लैग                 | उद्देश्य                                       |
 | -------------------- | --------------------------------------------- |
-| `--board <id>`       | परिणामों को एक board namespace तक सीमित करें          |
-| `--status <status>`  | परिणामों को एक Workboard status तक सीमित करें         |
-| `--include-archived` | संक्षिप्त text output में archived cards शामिल करें |
-| `--json`             | पूरी card list को machine JSON के रूप में print करें      |
+| `--board <id>`       | परिणामों को एक बोर्ड नेमस्पेस तक सीमित करें          |
+| `--status <status>`  | परिणामों को Workboard की एक स्थिति तक सीमित करें         |
+| `--include-archived` | संक्षिप्त टेक्स्ट आउटपुट में संग्रहीत कार्ड शामिल करें |
+| `--json`             | पूरी कार्ड सूची को मशीन JSON के रूप में प्रिंट करें      |
 
-संक्षिप्त text output default रूप से archived cards छिपाता है ताकि CLI
-`/workboard list` command से मेल खाए। उन्हें दिखाने के लिए `--include-archived` पास करें। JSON output
-मौजूदा automation के लिए archived cards सहित पूरी card list रखता है।
+संक्षिप्त टेक्स्ट आउटपुट संग्रहीत कार्ड को डिफ़ॉल्ट रूप से छिपाता है, ताकि CLI `/workboard list` के अनुरूप रहे। उन्हें दिखाने के लिए `--include-archived` दें। मौजूदा स्वचालन के लिए JSON आउटपुट संग्रहीत कार्ड सहित पूरी कार्ड सूची हमेशा बनाए रखता है।
 
 ## `create`
 
 ```bash
-openclaw workboard create "Fix stale worker heartbeat" --priority high --labels bug,workboard
-openclaw workboard create "Write Workboard docs" --status ready --agent docs-agent --board docs --notes "Cover CLI, slash command, dispatch, and SQLite state."
+openclaw workboard create "पुराने वर्कर Heartbeat को ठीक करें" --priority high --labels bug,workboard
+openclaw workboard create "Workboard दस्तावेज़ लिखें" --status ready --agent docs-agent --board docs --notes "CLI, स्लैश कमांड, डिस्पैच और SQLite स्थिति का वर्णन करें।"
 ```
 
-Flags:
-
-| Flag                    | उद्देश्य                                 |
+| फ़्लैग                    | उद्देश्य                                 |
 | ----------------------- | --------------------------------------- |
-| `--notes <text>`        | शुरुआती card notes                      |
-| `--status <status>`     | शुरुआती status, default `todo`          |
-| `--priority <priority>` | Priority, default `normal`              |
-| `--agent <id>`          | card को किसी agent या owner id को assign करें |
-| `--board <id>`          | card को किसी board namespace पर store करें     |
-| `--labels <items>`      | comma-separated labels                  |
-| `--json`                | बनाए गए card को machine JSON के रूप में print करें  |
+| `--notes <text>`        | कार्ड के आरंभिक नोट्स                      |
+| `--status <status>`     | आरंभिक स्थिति, डिफ़ॉल्ट `todo`          |
+| `--priority <priority>` | प्राथमिकता, डिफ़ॉल्ट `normal`              |
+| `--agent <id>`          | कार्ड को किसी एजेंट या स्वामी आईडी को असाइन करें |
+| `--board <id>`          | कार्ड को बोर्ड नेमस्पेस में संग्रहीत करें     |
+| `--labels <items>`      | अल्पविराम से अलग किए गए लेबल                  |
+| `--json`                | बनाए गए कार्ड को मशीन JSON के रूप में प्रिंट करें  |
 
-`create` सीधे Workboard SQLite state में लिखता है। card तुरंत
-Control UI Workboard tab और Workboard tools में दिखाई देता है।
+`create` सीधे Workboard की SQLite स्थिति में लिखता है। कार्ड Control UI के Workboard टैब और Workboard टूल में तुरंत दिखाई देता है।
 
 ## `show`
 
@@ -98,141 +90,119 @@ openclaw workboard show 7f4a2c10
 openclaw workboard show 7f4a2c10 --json
 ```
 
-Text output संक्षिप्त card line और notes print करता है। JSON output पूरा
-card record लौटाता है, जिसमें execution metadata, attempts, comments, links, proof,
-artifacts, worker logs, protocol state, diagnostics, और automation metadata शामिल हैं।
+टेक्स्ट आउटपुट संक्षिप्त कार्ड पंक्ति और नोट्स प्रिंट करता है। JSON आउटपुट निष्पादन मेटाडेटा, प्रयासों, टिप्पणियों, लिंक, प्रमाण, आर्टिफ़ैक्ट, वर्कर लॉग, प्रोटोकॉल स्थिति, निदान और स्वचालन मेटाडेटा सहित पूरा कार्ड रिकॉर्ड लौटाता है।
+
+## `move`
+
+```bash
+openclaw workboard move 7f4a2c10 --status review
+openclaw workboard move 7f4a2c10 --status done --json
+```
+
+`move` डैशबोर्ड में कार्ड को खींचने वाले उसी मैन्युअल-ऑपरेटर पथ का उपयोग करके कार्ड की स्थिति बदलता है। यह पूरी कार्ड आईडी या असंदिग्ध उपसर्ग स्वीकार करता है। सक्रिय निर्भरता और शेड्यूल रोक अब भी लागू होती हैं। ऑपरेटर दावा किए गए कार्ड को उसके एजेंट दावा टोकन के बिना स्थानांतरित कर सकते हैं; दावा टोकन एजेंट-टूल परिवर्तनों तक सीमित रहते हैं और JSON आउटपुट से हटा दिए जाते हैं।
 
 ## `dispatch`
 
 ```bash
 openclaw workboard dispatch
 openclaw workboard dispatch --json
+openclaw workboard dispatch --max-starts 10
+openclaw workboard dispatch --admin
 openclaw workboard dispatch --url http://127.0.0.1:18789 --token "$OPENCLAW_GATEWAY_TOKEN"
 ```
 
-`dispatch` पहले चल रहे Gateway RPC method
-`workboard.cards.dispatch` को call करता है। यह path dashboard dispatch action जैसा ही
-सबएजेंट runtime इस्तेमाल करता है, इसलिए ready cards linked session keys वाले
-task-tracked worker runs बन जाते हैं। assigned agent वाले cards agent-scoped subagent
-session keys इस्तेमाल करते हैं; unassigned cards unscoped subagent key रखते हैं ताकि Gateway का
-configured default agent सुरक्षित रहे।
+`dispatch` पहले चल रहे Gateway की RPC विधि `workboard.cards.dispatch` को कॉल करता है, जो डैशबोर्ड डिस्पैच कार्रवाई वाले उसी उप-एजेंट रनटाइम का उपयोग करती है, इसलिए तैयार कार्ड लिंक की गई सत्र कुंजियों वाले कार्य-ट्रैक किए गए वर्कर रन बन जाते हैं। `--max-starts` योगात्मक `workboard.cards.dispatchWithOptions` विधि का उपयोग करता है, ताकि पुराना Gateway कोई भी वर्कर शुरू करने से पहले विकल्प को अस्वीकार कर दे; फ़्लैग का उपयोग करने से पहले अपग्रेड के बाद Gateway पुनः आरंभ करें। असाइन किए गए एजेंट वाले कार्ड एजेंट-स्कोप वाली उप-एजेंट सत्र कुंजियों का उपयोग करते हैं; बिना असाइन किए गए कार्ड बिना स्कोप वाली उप-एजेंट कुंजी बनाए रखते हैं, ताकि Gateway का कॉन्फ़िगर किया गया डिफ़ॉल्ट एजेंट सुरक्षित रहे।
 
-dispatch loop:
+डिस्पैच लूप:
 
-1. dependency-ready children को `ready` में promote करता है।
-2. expired claims या timed-out worker runs को block करता है।
-3. ready cards पर dispatch metadata record करता है।
-4. unclaimed ready cards का छोटा batch select करता है।
-5. हर selected card को dispatcher या assigned agent के लिए claim करता है।
-6. bounded card context और card claim token के साथ subagent worker run शुरू करता है।
-7. worker run id, session key, Gateway task ledger के report करने पर task linkage,
-   execution status, और worker log को card पर store करता है।
+1. निर्भरता की दृष्टि से तैयार चाइल्ड कार्ड को `ready` में पदोन्नत करता है।
+2. समय-सीमा समाप्त दावों या टाइमआउट हो चुके वर्कर रन को अवरुद्ध करता है।
+3. तैयार कार्ड पर डिस्पैच मेटाडेटा दर्ज करता है।
+4. दावा-रहित तैयार कार्ड का एक छोटा बैच चुनता है।
+5. हर चयनित कार्ड पर डिस्पैचर या असाइन किए गए एजेंट के लिए दावा करता है।
+6. सीमित कार्ड संदर्भ और कार्ड दावा टोकन के साथ उप-एजेंट वर्कर रन शुरू करता है।
+7. Gateway कार्य लेज़र द्वारा रिपोर्ट किए जाने पर वर्कर रन आईडी, सत्र कुंजी, कार्य लिंकेज, निष्पादन स्थिति और वर्कर लॉग को कार्ड पर संग्रहीत करता है।
 
-Selection जानबूझकर conservative है। एक dispatch default रूप से अधिकतम तीन
-workers शुरू करता है, archived या already-claimed cards skip करता है, और एक single pass में प्रति
-owner या agent केवल एक card शुरू करता है। active running
-या review work के ownership में पहले से मौजूद cards को बाद के dispatch के लिए छोड़ दिया जाता है।
+चयन सतर्क है: एक डिस्पैच डिफ़ॉल्ट रूप से अधिकतम तीन वर्कर शुरू करता है, संग्रहीत या पहले से दावा किए गए कार्ड छोड़ देता है और एक पास में प्रति स्वामी या एजेंट केवल एक कार्ड शुरू करता है। जिन कार्ड के स्वामी का कार्य पहले से सक्रिय रूप से चल रहा है या समीक्षा में है, उन्हें बाद के डिस्पैच के लिए छोड़ दिया जाता है। प्रति-पास सीमा बदलने के लिए धनात्मक पूर्णांक के साथ `--max-starts <count>` दें; प्रति-स्वामी-एक-कार्ड नियम फिर भी लागू होता है, इसलिए शुरू होने वाले वर्कर की वास्तविक संख्या कम हो सकती है।
 
-अगर card claim होने के बाद worker start fail होता है, तो Workboard उस card को block करता है,
-claim clear करता है, और failure को card execution और worker-log
-metadata में record करता है। इससे failed starts चुपचाप card को queue में लौटाने के बजाय visible रहते हैं।
+कार्ड पर दावा होने के बाद वर्कर शुरू करने में विफलता होने पर Workboard उस कार्ड को अवरुद्ध करता है, दावा हटाता है और कार्ड निष्पादन एवं वर्कर-लॉग मेटाडेटा में विफलता दर्ज करता है, जिससे विफल शुरुआत कार्ड को चुपचाप कतार में लौटाने के बजाय दिखाई देती रहती है।
 
-अगर कोई explicit Gateway target नहीं दिया गया है और local Gateway unavailable है
-या अभी Workboard dispatch method expose नहीं करता है, तो CLI local Workboard state के विरुद्ध
-data-only dispatch पर fallback करता है। Data-only dispatch फिर भी dependencies promote कर सकता है,
-stale claims clean कर सकता है, और timed-out runs block कर सकता है, लेकिन यह
-workers शुरू नहीं करता। Auth, permission, validation failures, और explicit `--url` या `--token`
-target के failures सीधे report किए जाते हैं।
+यदि कोई स्पष्ट Gateway लक्ष्य नहीं दिया गया है और स्थानीय Gateway अनुपलब्ध है या अभी Workboard डिस्पैच विधि उपलब्ध नहीं कराता, तो CLI स्थानीय Workboard स्थिति पर केवल-डेटा डिस्पैच का उपयोग करता है। केवल-डेटा डिस्पैच फिर भी निर्भरताओं को पदोन्नत कर सकता है, पुराने दावों को साफ़ कर सकता है और टाइमआउट हो चुके रन को अवरुद्ध कर सकता है, लेकिन यह वर्कर शुरू नहीं करता। प्रमाणीकरण, अनुमति और सत्यापन की विफलताएँ तथा स्पष्ट `--url` या `--token` लक्ष्य की विफलताएँ फ़ॉलबैक सक्रिय करने के बजाय सीधे रिपोर्ट की जाती हैं।
 
-Text output worker starts report करता है:
+टेक्स्ट आउटपुट वर्कर की शुरुआत रिपोर्ट करता है:
 
 ```text
-dispatch complete: started=2 failures=0
+डिस्पैच पूर्ण: शुरू=2 विफलताएँ=0
 ```
 
-Fallback output explicit होता है:
+फ़ॉलबैक आउटपुट स्पष्ट होता है:
 
 ```text
-gateway unavailable; data dispatch only: promoted=1 blocked=0
+Gateway अनुपलब्ध; केवल डेटा डिस्पैच: पदोन्नत=1 अवरुद्ध=0
 ```
 
-JSON output में dispatch result शामिल होता है। Gateway-backed dispatch में
-`started` और `startFailures` शामिल हो सकते हैं; data-only fallback में
-`gatewayUnavailable: true` शामिल होता है। Claim tokens card JSON output से redact किए जाते हैं।
+JSON आउटपुट में डिस्पैच परिणाम शामिल होता है। Gateway-समर्थित डिस्पैच में `started` और `startFailures` शामिल हो सकते हैं; केवल-डेटा फ़ॉलबैक में `gatewayUnavailable: true` शामिल होता है। दावा टोकन कार्ड के JSON आउटपुट से हटा दिए जाते हैं।
 
-dashboard में वही dispatch result short summary के रूप में दिखाया जाता है ताकि
-संचालक card details खोले बिना देख सके कि कितने cards started, promoted, blocked, reclaimed, या
-failed हुए।
+डैशबोर्ड में वही डिस्पैच परिणाम संक्षिप्त सारांश के रूप में दिखाया जाता है, ताकि ऑपरेटर कार्ड विवरण खोले बिना देख सके कि कितने कार्ड शुरू, पदोन्नत, अवरुद्ध, पुनः प्राप्त या विफल हुए।
 
-## Slash Command समानता
+## स्लैश कमांड की समानता
 
-Command-capable channels matching slash command इस्तेमाल कर सकते हैं:
+कमांड-सक्षम चैनल संबंधित स्लैश कमांड का उपयोग कर सकते हैं:
 
 ```text
 /workboard list
 /workboard show 7f4a2c10
-/workboard create Fix stale worker heartbeat
+/workboard create पुराने वर्कर Heartbeat को ठीक करें
+/workboard move 7f4a2c10 --status review
 /workboard dispatch
 ```
 
-Slash command dispatch भी Gateway subagent runtime इस्तेमाल करता है, इसलिए यह
-dashboard और CLI Gateway path जैसा ही claim, worker-start, और failure behavior follow करता है।
+स्लैश कमांड डिस्पैच भी Gateway उप-एजेंट रनटाइम का उपयोग करता है, इसलिए यह डैशबोर्ड और CLI Gateway पथ के समान दावा, वर्कर-शुरुआत और विफलता व्यवहार का पालन करता है।
 
-`/workboard list` और `/workboard show` authorized command
-senders के लिए read commands हैं। `/workboard create` और `/workboard dispatch` board state mutate करते हैं और
-chat surfaces पर owner status या `operator.write`
-या `operator.admin` वाला Gateway client require करते हैं।
+`/workboard list` और `/workboard show` अधिकृत कमांड प्रेषकों के लिए रीड कमांड हैं। `/workboard create`, `/workboard move` और `/workboard dispatch` बोर्ड स्थिति में परिवर्तन करते हैं और चैट इंटरफ़ेस पर स्वामी की स्थिति या `operator.write` अथवा `operator.admin` वाले Gateway क्लाइंट की आवश्यकता होती है।
 
-## Permissions
+## अनुमतियाँ
 
-CLI dispatch path Gateway RPC को `operator.read` और
-`operator.write` scopes के साथ call करता है। read-only Gateway token read methods के जरिए Workboard data
-inspect कर सकता है, लेकिन cards create या workers dispatch नहीं कर सकता।
+CLI डिस्पैच पथ सामान्यतः Gateway के `operator.write` और `operator.read` स्कोप का अनुरोध करता है। वर्कस्पेस से बंधे कार्ड सटीक कॉन्फ़िगर किए गए एजेंट वर्कस्पेस में सीधे चलते हैं; वर्कट्री अनुरोध को उसी डायरेक्टरी तक सीमित किया जाता है, ताकि होस्ट रिपॉज़िटरी-नियंत्रित कोड को साकार न कर सके। चयनित वर्कर के पास ठीक उसी वर्कस्पेस के लिए लिखने योग्य, गैर-साझा Docker सैंडबॉक्स पहुँच, अनुरोधित माउंट और नीति से मेल खाता सक्रिय कंटेनर हैश तथा होस्ट से बाहर निकलने की कोई क्षमता नहीं होनी चाहिए। स्पष्ट रूप से `operator.admin` का अनुरोध करने, अन्य होस्ट चेकआउट की अनुमति देने और सामान्य प्रबंधित-वर्कट्री सेटअप का उपयोग करने के लिए `--admin` दें; यदि क्लाइंट के लिए वह स्कोप अनुमोदित नहीं है, तो कनेक्शन विफल हो जाता है। केवल-पढ़ने वाला Gateway टोकन रीड विधियों के माध्यम से Workboard डेटा का निरीक्षण कर सकता है, लेकिन कार्ड बना या वर्कर डिस्पैच नहीं कर सकता। Workboard परिवर्तन की अनुमति वाले कॉलर के लिए वर्कस्पेस सीमाएँ अन्यथा मैन्युअल कार्ड स्थानांतरण को नहीं बदलतीं।
 
-Local `list`, `create`, और `show` commands current profile द्वारा इस्तेमाल की जाने वाली local OpenClaw state
-directory पर operate करते हैं। जब आपको अलग state root चाहिए हो तब top-level
-`openclaw` command पर `--dev` या `--profile <name>` इस्तेमाल करें।
+स्थानीय `list`, `create`, `show` और `move` कमांड वर्तमान प्रोफ़ाइल द्वारा उपयोग की जाने वाली स्थानीय OpenClaw स्थिति डायरेक्टरी पर काम करते हैं। अलग स्थिति रूट की आवश्यकता होने पर शीर्ष-स्तरीय `openclaw` कमांड पर `--dev` या `--profile <name>` का उपयोग करें।
 
-## Troubleshooting
+## समस्या निवारण
 
-### कोई Cards दिखाई नहीं देते
+### कोई कार्ड दिखाई नहीं देता
 
-Confirm करें कि Plugin उसी profile और state root के लिए enabled है:
+पुष्टि करें कि उसी प्रोफ़ाइल और स्थिति रूट के लिए Plugin सक्षम है:
 
 ```bash
 openclaw plugins inspect workboard --runtime --json
 ```
 
-अगर dashboard cards दिखाता है लेकिन CLI नहीं, तो check करें कि दोनों commands वही
-`--dev` या `--profile` setting इस्तेमाल करते हैं।
+यदि डैशबोर्ड कार्ड दिखाता है, लेकिन CLI नहीं, तो जाँचें कि दोनों कमांड समान `--dev` या `--profile` सेटिंग का उपयोग करते हैं।
 
-### Dispatch Data-Only कहता है
+### डिस्पैच केवल-डेटा बताता है
 
-Gateway start या restart करें:
+Gateway शुरू या पुनः आरंभ करें:
 
 ```bash
 openclaw gateway restart
 openclaw gateway status --deep
 ```
 
-फिर `openclaw workboard dispatch` retry करें। Data-only fallback local
-state cleanup के लिए उपयोगी है, लेकिन worker runs को live Gateway चाहिए।
+फिर `openclaw workboard dispatch` का पुनः प्रयास करें। केवल-डेटा फ़ॉलबैक स्थानीय स्थिति की सफ़ाई के लिए उपयोगी है, लेकिन वर्कर रन के लिए सक्रिय Gateway आवश्यक है।
 
-### Dispatch कुछ शुरू नहीं करता
+### डिस्पैच कुछ भी शुरू नहीं करता
 
-बिना active claim वाले कम से कम एक `ready` card के लिए check करें:
+बिना सक्रिय दावे वाला कम-से-कम एक `ready` कार्ड जाँचें:
 
 ```bash
 openclaw workboard list --status ready
 ```
 
-Cards तब भी skip हो सकते हैं जब same owner के पास पहले से running या review
-work हो। completed work को `done` में move करें, Workboard
-tools के जरिए stale claims release करें, या active worker finish होने के बाद dispatch फिर चलाएं।
+जब उसी स्वामी का कार्य पहले से चल रहा हो या समीक्षा में हो, तब भी कार्ड छोड़े जा सकते हैं। पूर्ण कार्य को `done` में ले जाएँ, Workboard टूल के माध्यम से पुराने दावे हटाएँ या सक्रिय वर्कर के समाप्त होने के बाद फिर से डिस्पैच चलाएँ।
 
 ## संबंधित
 
 - [Workboard Plugin](/hi/plugins/workboard)
-- [CLI reference](/hi/cli)
-- [Slash commands](/hi/tools/slash-commands)
+- [CLI संदर्भ](/hi/cli)
+- [स्लैश कमांड](/hi/tools/slash-commands)
 - [Control UI](/hi/web/control-ui)

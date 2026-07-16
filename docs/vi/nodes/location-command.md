@@ -1,29 +1,30 @@
 ---
 read_when:
-    - Thêm hỗ trợ Node vị trí hoặc giao diện người dùng quản lý quyền hạn
+    - Thêm hỗ trợ Node vị trí hoặc giao diện người dùng về quyền truy cập
     - Thiết kế quyền truy cập vị trí hoặc hành vi chạy ở nền trước trên Android
-summary: Lệnh vị trí cho các Node (location.get), các chế độ quyền và hành vi chạy nền trước trên Android
+summary: Lệnh định vị cho các Node, chế độ quyền của nền tảng và thiết lập GeoClue trên Linux
 title: Lệnh vị trí
 x-i18n:
-    generated_at: "2026-07-12T08:04:13Z"
+    generated_at: "2026-07-16T14:37:53Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: fae9f7707620f3f743d40c07618a431a6baa7a357dda6d74021bc986cd4974b1
+    source_hash: 644229c1eafc8fc7b59bc23ba01d4ba95687ea66c4f9bd4a4cda98a87f2b6085
     source_path: nodes/location-command.md
     workflow: 16
 ---
 
 ## Tóm tắt
 
-- `location.get` là một lệnh của Node, được gọi qua `node.invoke` hoặc `openclaw nodes location get`.
+- `location.get` là một lệnh Node, được gọi qua `node.invoke` hoặc `openclaw nodes location get`.
 - Mặc định tắt.
 - Các bản dựng Android của bên thứ ba sử dụng bộ chọn: Tắt / Khi đang sử dụng / Luôn luôn. Các bản dựng Play vẫn chỉ có Tắt / Khi đang sử dụng.
-- Vị trí chính xác là một nút bật/tắt riêng.
+- Vị trí chính xác là một nút bật/tắt riêng biệt.
 
-## Tại sao dùng bộ chọn (thay vì chỉ dùng công tắc)
+## Tại sao dùng bộ chọn (thay vì chỉ một công tắc)
 
-Quyền truy cập vị trí của hệ điều hành có nhiều cấp độ. Vị trí chính xác cũng là một quyền cấp riêng của hệ điều hành (iOS 14+ là "Chính xác", Android là "fine" so với "coarse"). Bộ chọn trong ứng dụng xác định chế độ được yêu cầu, nhưng hệ điều hành vẫn quyết định quyền thực tế được cấp.
+Quyền vị trí của hệ điều hành có nhiều cấp độ. Vị trí chính xác cũng là một quyền cấp riêng của hệ điều hành (iOS 14+ dùng "Chính xác", Android dùng "chính xác" so với "gần đúng"). Bộ chọn trong ứng dụng quyết định chế độ được yêu cầu, nhưng hệ điều hành vẫn quyết định quyền thực tế được cấp.
 
 ## Mô hình cài đặt
 
@@ -34,18 +35,18 @@ Theo từng thiết bị Node:
 
 Hành vi giao diện người dùng:
 
-- Chọn `whileUsing` sẽ yêu cầu quyền truy cập khi ứng dụng ở nền trước.
-- Khi chọn `always`, bản dựng Android của bên thứ ba trước tiên yêu cầu quyền truy cập khi ứng dụng ở nền trước, giải thích về quyền truy cập trong nền, rồi mở phần cài đặt ứng dụng Android để cấp riêng quyền **Allow all the time**.
+- Việc chọn `whileUsing` sẽ yêu cầu quyền truy cập khi ứng dụng ở tiền cảnh.
+- Việc chọn `always` trong bản dựng Android của bên thứ ba trước tiên sẽ yêu cầu quyền truy cập khi ứng dụng ở tiền cảnh, giải thích về quyền truy cập trong nền, sau đó mở phần cài đặt ứng dụng Android để cấp riêng quyền **Allow all the time**.
 - Các bản dựng Android Play không khai báo quyền truy cập vị trí trong nền hoặc hiển thị `always`.
 - Nếu hệ điều hành từ chối cấp độ được yêu cầu, ứng dụng sẽ quay về cấp độ cao nhất đã được cấp và hiển thị trạng thái.
 
-## Ánh xạ quyền (`node.permissions`)
+## Ánh xạ quyền (node.permissions)
 
 Không bắt buộc. Node macOS báo cáo `location` qua ánh xạ `permissions` trên `node.list`/`node.describe`; iOS/Android có thể bỏ qua thông tin này.
 
 ## Lệnh: `location.get`
 
-Được gọi qua `node.invoke` hoặc trình hỗ trợ CLI:
+Được gọi qua `node.invoke` hoặc trình trợ giúp CLI:
 
 ```bash
 openclaw nodes location get --node <idOrNameOrIp>
@@ -62,9 +63,9 @@ Tham số:
 }
 ```
 
-Các cờ CLI ánh xạ trực tiếp như sau: `--location-timeout` -> `timeoutMs`, `--max-age` -> `maxAgeMs`, `--accuracy` -> `desiredAccuracy`.
+Các cờ CLI được ánh xạ trực tiếp: `--location-timeout` -> `timeoutMs`, `--max-age` -> `maxAgeMs`, `--accuracy` -> `desiredAccuracy`.
 
-Dữ liệu phản hồi:
+Tải trọng phản hồi:
 
 ```json
 {
@@ -86,25 +87,51 @@ Lỗi (mã ổn định):
 - `LOCATION_PERMISSION_REQUIRED`: thiếu quyền cho chế độ được yêu cầu.
 - `LOCATION_BACKGROUND_UNAVAILABLE`: ứng dụng đang chạy trong nền nhưng chỉ được cấp quyền Khi đang sử dụng.
 - `LOCATION_TIMEOUT`: không xác định được vị trí kịp thời.
-- `LOCATION_UNAVAILABLE`: lỗi hệ thống hoặc không có nhà cung cấp vị trí.
+- `LOCATION_UNAVAILABLE`: lỗi hệ thống hoặc không có nhà cung cấp.
 
 ## Hành vi trong nền
 
-- Các bản dựng Android của bên thứ ba chỉ chấp nhận `location.get` trong nền khi người dùng chọn `Always` và Android đã cấp quyền truy cập vị trí trong nền. Dịch vụ Node liên tục hiện có sẽ thêm loại dịch vụ `location` và hiển thị `Location: Always` khi đang hoạt động.
-- Các bản dựng Android Play và chế độ `While Using` từ chối `location.get` khi ứng dụng chạy trong nền.
+- Các bản dựng Android của bên thứ ba chỉ chấp nhận `location.get` trong nền khi người dùng đã chọn `Always` và Android đã cấp quyền truy cập vị trí trong nền. Dịch vụ Node thường trực hiện có bổ sung loại dịch vụ `location` và hiển thị `Location: Always` khi đang hoạt động.
+- Các bản dựng Android Play và chế độ `While Using` từ chối `location.get` khi ứng dụng đang chạy trong nền.
 - Các nền tảng Node khác có thể hoạt động khác.
+
+## Máy chủ Node Linux
+
+Plugin Node Linux đi kèm bổ sung `location.get` vào dịch vụ CLI `openclaw node`, bao gồm cả các máy chủ không có giao diện không chạy ứng dụng máy tính Linux. Vị trí mặc định bị tắt. Bật tính năng này trong mục nhập Plugin, sau đó khởi động lại dịch vụ Node:
+
+```json5
+{
+  plugins: {
+    entries: {
+      "linux-node": {
+        config: {
+          location: { enabled: true },
+        },
+      },
+    },
+  },
+}
+```
+
+Cài đặt GeoClue2 và bản demo `where-am-i` của nó (`geoclue-2-demo` trên Debian và Ubuntu). Người dùng chạy dịch vụ Node phải được chính sách GeoClue và tác nhân ủy quyền của máy chủ cho phép.
+
+Plugin sử dụng `where-am-i` thay vì một chuỗi lệnh gọi `busctl`. GeoClue liên kết việc tạo máy khách, thuộc tính, khởi động, cập nhật và dừng với một kết nối máy khách D-Bus duy nhất; bản demo duy trì toàn bộ vòng đời này cùng nhau, trong khi các tiến trình con `busctl` riêng biệt thì không. Không có phần phụ thuộc npm nào được thêm vào.
+
+Linux ánh xạ `coarse`, `balanced` và `precise` sang các cấp độ chính xác GeoClue `4`, `6` và `8`. Hệ thống xác thực `maxAgeMs` dựa trên dấu thời gian được trả về. Bản demo của GeoClue không cung cấp nhà cung cấp đã chọn, vì vậy `source` là `unknown`; `isPrecise` chỉ là true khi độ chính xác được báo cáo là 100 mét trở xuống.
+
+Linux sử dụng cùng các lỗi ổn định: `LOCATION_DISABLED`, `LOCATION_TIMEOUT` và `LOCATION_UNAVAILABLE`.
 
 ## Tích hợp mô hình/công cụ
 
-- Công cụ của tác tử: hành động `location_get` của công cụ `nodes` (bắt buộc có Node).
+- Công cụ của tác nhân: hành động `location_get` của công cụ `nodes` (yêu cầu Node).
 - CLI: `openclaw nodes location get --node <id>`.
-- Hướng dẫn dành cho tác tử: chỉ gọi khi người dùng đã bật vị trí và hiểu phạm vi chia sẻ.
+- Hướng dẫn dành cho tác nhân: chỉ gọi khi người dùng đã bật vị trí và hiểu phạm vi.
 
 ## Nội dung UX (đề xuất)
 
-- Tắt: "Tính năng chia sẻ vị trí đã bị tắt."
+- Tắt: "Chia sẻ vị trí đã bị tắt."
 - Khi đang sử dụng: "Chỉ khi OpenClaw đang mở."
-- Luôn luôn: "Cho phép kiểm tra vị trí theo yêu cầu khi OpenClaw đang chạy trong nền."
+- Luôn luôn: "Cho phép các yêu cầu kiểm tra vị trí khi OpenClaw đang chạy trong nền."
 - Chính xác: "Sử dụng vị trí GPS chính xác. Tắt tùy chọn này để chia sẻ vị trí gần đúng."
 
 ## Liên quan

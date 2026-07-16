@@ -4,27 +4,28 @@ read_when:
 summary: Plugin de canal Matrix d’OpenClaw pour les salons et les messages directs.
 title: Plugin Matrix
 x-i18n:
-    generated_at: "2026-07-12T02:53:40Z"
+    generated_at: "2026-07-16T13:35:51Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 10497c79a626ea4c49dac80f2b87a3f8756880ed3ec8b8c4566a4bfe2a011a0c
+    source_hash: 49b224c9d0e5d4b0b74c12c9467cacd2dbd9077ec46d7ea708b323c5d93c801f
     source_path: plugins/reference/matrix.md
     workflow: 16
 ---
 
 # Plugin Matrix
 
-Plugin de canal Matrix pour OpenClaw, destiné aux salons et aux messages directs.
+Plugin de canal Matrix d’OpenClaw pour les salons et les messages directs.
 
 ## Distribution
 
 - Paquet : `@openclaw/matrix`
-- Méthode d’installation : ClawHub : `clawhub:@openclaw/matrix` ; npm
+- Méthode d’installation : ClawHub : `clawhub:@openclaw/matrix`; npm
 
 ## Surface
 
-canaux : matrix
+canaux : `matrix`
 
 ## Documentation associée
 

@@ -1,68 +1,66 @@
 ---
 read_when:
-    - Mengonfigurasi plugin saluran (auth, kontrol akses, multi-akun)
-    - Memecahkan masalah kunci konfigurasi per saluran
-    - Mengaudit kebijakan DM, kebijakan grup, atau pembatasan penyebutan
-summary: 'Konfigurasi kanal: kontrol akses, pemasangan, kunci per kanal di Slack, Discord, Telegram, WhatsApp, Matrix, iMessage, dan lainnya'
+    - Mengonfigurasi Plugin saluran (autentikasi, kontrol akses, multiakun)
+    - Pemecahan masalah kunci konfigurasi per kanal
+    - Mengaudit kebijakan DM, kebijakan grup, atau pembatasan sebutan
+summary: 'Konfigurasi channel: kontrol akses, pemasangan, kunci per channel di Slack, Discord, Telegram, WhatsApp, Matrix, iMessage, dan lainnya'
 title: Konfigurasi — saluran
 x-i18n:
-    generated_at: "2026-07-01T13:23:34Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T18:03:22Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: ba84406a296db7a37ce44381b5a1ebccd7f4d3c32375b116f6da3da5def9340b
+    source_hash: 8d2363844e203e0c44ad9fe5d7a6a994fc654517e0488cffb836ddc9d1cdcb29
     source_path: gateway/config-channels.md
     workflow: 16
 ---
 
-Kunci konfigurasi per channel di bawah `channels.*`. Mencakup akses DM dan grup,
-penyiapan multi-akun, gating mention, dan kunci per channel untuk Slack, Discord,
-Telegram, WhatsApp, Matrix, iMessage, serta Plugin channel bawaan lainnya.
+Kunci konfigurasi per kanal di bawah `channels.*`: akses DM dan grup, penyiapan multiakun, pembatasan berdasarkan penyebutan, serta kunci per kanal untuk Slack, Discord, Telegram, WhatsApp, Matrix, iMessage, dan Plugin kanal lainnya.
 
-Untuk agent, alat, runtime gateway, dan kunci tingkat atas lainnya, lihat
-[Referensi konfigurasi](/id/gateway/configuration-reference).
+Untuk agen, alat, runtime Gateway, dan kunci tingkat teratas lainnya, lihat [Referensi konfigurasi](/id/gateway/configuration-reference).
 
-## Channel
+## Kanal
 
-Setiap channel dimulai secara otomatis saat bagian konfigurasinya ada (kecuali `enabled: false`).
+Setiap kanal dimulai secara otomatis ketika bagian konfigurasinya tersedia (kecuali `enabled: false`). Telegram dan iMessage disertakan dalam paket inti `openclaw`. Kanal resmi lainnya (Discord, Slack, WhatsApp, Matrix, Microsoft Teams, IRC, Google Chat, Signal, Mattermost, dan lainnya) dipasang sebagai Plugin terpisah dengan `openclaw plugins install <spec>`; lihat [Kanal](/id/channels) untuk daftar lengkap dan spesifikasi pemasangan.
 
 ### Akses DM dan grup
 
-Semua channel mendukung kebijakan DM dan kebijakan grup:
+Semua kanal mendukung kebijakan DM dan kebijakan grup:
 
-| Kebijakan DM        | Perilaku                                                        |
+| Kebijakan DM           | Perilaku                                                        |
 | ------------------- | --------------------------------------------------------------- |
-| `pairing` (default) | Pengirim tidak dikenal mendapat kode pairing satu kali; pemilik harus menyetujui |
-| `allowlist`         | Hanya pengirim dalam `allowFrom` (atau penyimpanan allow pasangan) |
-| `open`              | Izinkan semua DM masuk (memerlukan `allowFrom: ["*"]`)          |
+| `pairing` (bawaan) | Pengirim yang tidak dikenal mendapat kode pemasangan satu kali; pemilik harus menyetujuinya |
+| `allowlist`         | Hanya pengirim dalam `allowFrom` (atau penyimpanan izin yang telah dipasangkan)             |
+| `open`              | Izinkan semua DM masuk (memerlukan `allowFrom: ["*"]`)             |
 | `disabled`          | Abaikan semua DM masuk                                          |
 
-| Kebijakan grup        | Perilaku                                               |
+| Kebijakan grup          | Perilaku                                               |
 | --------------------- | ------------------------------------------------------ |
-| `allowlist` (default) | Hanya grup yang cocok dengan allowlist yang dikonfigurasi |
-| `open`                | Lewati allowlist grup (gating mention tetap berlaku)   |
-| `disabled`            | Blokir semua pesan grup/room                           |
+| `allowlist` (bawaan) | Hanya grup yang cocok dengan daftar izin yang dikonfigurasi          |
+| `open`                | Abaikan daftar izin grup (pembatasan berdasarkan penyebutan tetap berlaku) |
+| `disabled`            | Blokir semua pesan grup/ruang                          |
 
 <Note>
-`channels.defaults.groupPolicy` menetapkan default saat `groupPolicy` milik provider belum diatur.
-Kode pairing kedaluwarsa setelah 1 jam. Permintaan pairing DM tertunda dibatasi hingga **3 per channel**.
-Jika blok provider tidak ada sama sekali (`channels.<provider>` tidak ada), kebijakan grup runtime kembali ke `allowlist` (fail-closed) dengan peringatan startup.
+`channels.defaults.groupPolicy` menetapkan nilai bawaan ketika `groupPolicy` milik penyedia tidak ditetapkan.
+Kode pemasangan kedaluwarsa setelah 1 jam. Permintaan pemasangan yang tertunda dibatasi hingga **3 per akun** (dicakup berdasarkan kanal dan ID akun).
+Jika blok penyedia sama sekali tidak ada (`channels.<provider>` tidak ada), kebijakan grup runtime kembali ke `allowlist` (gagal tertutup) dengan peringatan saat mulai.
 </Note>
 
-### Override model channel
+### Penggantian model kanal
 
-Gunakan `channels.modelByChannel` untuk menyematkan ID channel tertentu atau peer pesan langsung ke sebuah model. Nilai menerima `provider/model` atau alias model yang dikonfigurasi. Pemetaan channel berlaku saat sesi belum memiliki override model (misalnya, diatur melalui `/model`).
+Gunakan `channels.modelByChannel` untuk menyematkan ID kanal tertentu atau rekan pesan langsung ke suatu model. Nilai menerima `provider/model` atau alias model yang dikonfigurasi. Pemetaan kanal hanya berlaku jika suatu sesi belum memiliki penggantian model aktif (misalnya, yang ditetapkan melalui `/model`).
 
-Untuk percakapan grup/thread, kunci adalah ID grup khusus channel, ID topik, atau nama channel. Untuk percakapan pesan langsung (DM), kunci adalah pengidentifikasi peer yang berasal dari identitas pengirim channel (`nativeDirectUserId`, `origin.from`, `origin.to`, `OriginatingTo`, `From`, atau `SenderId`). Bentuk kunci yang tepat bergantung pada channel:
+Untuk percakapan grup/utas, kuncinya berupa ID grup, ID topik, atau nama kanal yang spesifik untuk kanal tersebut. Untuk percakapan pesan langsung (DM), kuncinya berupa pengidentifikasi rekan yang berasal dari identitas pengirim kanal (`nativeDirectUserId`, `origin.from`, `origin.to`, `OriginatingTo`, `From`, atau `SenderId`). Bentuk kunci yang tepat bergantung pada kanal:
 
-| Channel  | Bentuk kunci DM    | Contoh                                       |
-| -------- | ------------------ | -------------------------------------------- |
-| Slack    | `user:U...`        | `user:U12345`                                |
-| Telegram | ID pengguna mentah | `123456789`                                  |
-| Discord  | ID pengguna mentah | `987654321`                                  |
-| WhatsApp | nomor telepon atau JID | `15551234567`                            |
-| Matrix   | ID pengguna Matrix | `@user:matrix.org`                           |
-| Feishu   | `feishu:ou_...`    | `feishu:ou_a8b6cab7e945387de5f253775d9b4d85` |
+| Kanal  | Bentuk kunci DM         | Contoh                                      |
+| -------- | ------------------- | -------------------------------------------- |
+| Discord  | ID pengguna mentah         | `987654321`                                  |
+| Feishu   | `feishu:ou_...`     | `feishu:ou_a8b6cab7e945387de5f253775d9b4d85` |
+| Matrix   | ID pengguna Matrix      | `@user:matrix.org`                           |
+| Slack    | `user:U...`         | `user:U12345`                                |
+| Telegram | ID pengguna mentah         | `123456789`                                  |
+| WhatsApp | nomor telepon atau JID | `15551234567`                                |
 
 ```json5
 {
@@ -72,7 +70,7 @@ Untuk percakapan grup/thread, kunci adalah ID grup khusus channel, ID topik, ata
         "123456789012345678": "anthropic/claude-opus-4-6",
       },
       slack: {
-        C1234567890: "openai/gpt-5.5",
+        C1234567890: "openai/gpt-5.6-sol",
         "user:U12345": "openai/gpt-5.4-mini",
       },
       telegram: {
@@ -85,11 +83,11 @@ Untuk percakapan grup/thread, kunci adalah ID grup khusus channel, ID topik, ata
 }
 ```
 
-Kunci khusus DM hanya cocok dalam percakapan pesan langsung; kunci tersebut tidak memengaruhi routing grup/thread.
+Kunci khusus DM hanya cocok dalam percakapan pesan langsung; kunci tersebut tidak memengaruhi perutean grup/utas.
 
-### Default channel dan heartbeat
+### Nilai bawaan kanal dan Heartbeat
 
-Gunakan `channels.defaults` untuk perilaku kebijakan grup dan Heartbeat bersama di seluruh provider:
+Gunakan `channels.defaults` untuk perilaku kebijakan grup dan Heartbeat bersama di seluruh penyedia:
 
 ```json5
 {
@@ -107,15 +105,15 @@ Gunakan `channels.defaults` untuk perilaku kebijakan grup dan Heartbeat bersama 
 }
 ```
 
-- `channels.defaults.groupPolicy`: kebijakan grup fallback saat `groupPolicy` tingkat provider belum diatur.
-- `channels.defaults.contextVisibility`: mode visibilitas konteks tambahan default untuk semua channel. Nilai: `all` (default, sertakan semua konteks kutipan/thread/riwayat), `allowlist` (hanya sertakan konteks dari pengirim yang ada di allowlist), `allowlist_quote` (sama seperti allowlist tetapi pertahankan konteks kutipan/balasan eksplisit). Override per channel: `channels.<channel>.contextVisibility`.
-- `channels.defaults.heartbeat.showOk`: sertakan status channel yang sehat dalam keluaran heartbeat.
-- `channels.defaults.heartbeat.showAlerts`: sertakan status terdegradasi/error dalam keluaran heartbeat.
-- `channels.defaults.heartbeat.useIndicator`: render keluaran heartbeat bergaya indikator ringkas.
+- `channels.defaults.groupPolicy`: kebijakan grup cadangan ketika `groupPolicy` tingkat penyedia tidak ditetapkan.
+- `channels.defaults.contextVisibility`: mode visibilitas konteks tambahan bawaan untuk semua kanal. Nilai: `all` (bawaan, sertakan semua konteks kutipan/utas/riwayat), `allowlist` (hanya sertakan konteks dari pengirim dalam daftar izin), `allowlist_quote` (sama seperti daftar izin, tetapi pertahankan konteks kutipan/balasan eksplisit). Penggantian per kanal: `channels.<channel>.contextVisibility`.
+- `channels.defaults.heartbeat.showOk`: sertakan status kanal yang sehat dalam keluaran Heartbeat (bawaan `false`).
+- `channels.defaults.heartbeat.showAlerts`: sertakan status terdegradasi/kesalahan dalam keluaran Heartbeat (bawaan `true`).
+- `channels.defaults.heartbeat.useIndicator`: render keluaran Heartbeat bergaya indikator yang ringkas (bawaan `true`).
 
 ### WhatsApp
 
-WhatsApp berjalan melalui channel web milik Gateway (Baileys Web). Ini dimulai otomatis saat sesi tertaut ada.
+WhatsApp berjalan melalui kanal web Gateway (Baileys Web). Kanal ini dimulai secara otomatis ketika tersedia sesi yang tertaut.
 
 ```json5
 {
@@ -129,10 +127,10 @@ WhatsApp berjalan melalui channel web milik Gateway (Baileys Web). Ini dimulai o
     },
     reconnect: {
       initialMs: 2000,
-      maxMs: 120000,
-      factor: 1.4,
-      jitter: 0.2,
-      maxAttempts: 0,
+      maxMs: 30000,
+      factor: 1.8,
+      jitter: 0.25,
+      maxAttempts: 12, // 0 = coba lagi selamanya
     },
   },
   channels: {
@@ -140,9 +138,9 @@ WhatsApp berjalan melalui channel web milik Gateway (Baileys Web). Ini dimulai o
       dmPolicy: "pairing", // pairing | allowlist | open | disabled
       allowFrom: ["+15555550123", "+447700900123"],
       textChunkLimit: 4000,
-      chunkMode: "length", // length | newline
+      streaming: { chunkMode: "length" }, // length | newline
       mediaMaxMb: 50,
-      sendReadReceipts: true, // blue ticks (false in self-chat mode)
+      sendReadReceipts: true, // centang biru (false dalam mode obrolan mandiri)
       groups: {
         "*": { requireMention: true },
       },
@@ -153,9 +151,11 @@ WhatsApp berjalan melalui channel web milik Gateway (Baileys Web). Ini dimulai o
 }
 ```
 
-- Entri `bindings[]` tingkat atas dengan `type: "acp"` mengonfigurasi binding ACP persisten untuk DM dan grup WhatsApp. Gunakan nomor langsung E.164 atau JID grup WhatsApp di `match.peer.id`. Semantik field dibagikan di [Agent ACP](/id/tools/acp-agents#persistent-channel-bindings).
+- `web.whatsapp.keepAliveIntervalMs` (bawaan `25000`), `connectTimeoutMs` (bawaan `60000`), dan `defaultQueryTimeoutMs` (bawaan `60000`) menyetel soket Baileys.
+- Nilai bawaan `web.reconnect`: `initialMs: 2000`, `maxMs: 30000`, `factor: 1.8`, `jitter: 0.25`, `maxAttempts: 12`. `maxAttempts: 0` mencoba lagi selamanya alih-alih menyerah.
+- Entri `bindings[]` tingkat teratas dengan `type: "acp"` mengonfigurasi pengikatan ACP persisten untuk DM dan grup WhatsApp. Gunakan nomor langsung E.164 atau JID grup WhatsApp dalam `match.peer.id`. Semantik kolom dijelaskan bersama di [Agen ACP](/id/tools/acp-agents#persistent-channel-bindings).
 
-<Accordion title="WhatsApp multi-akun">
+<Accordion title="WhatsApp multiakun">
 
 ```json5
 {
@@ -173,10 +173,10 @@ WhatsApp berjalan melalui channel web milik Gateway (Baileys Web). Ini dimulai o
 }
 ```
 
-- Perintah keluar menggunakan akun `default` secara default jika ada; jika tidak, ID akun pertama yang dikonfigurasi (diurutkan).
-- Opsional `channels.whatsapp.defaultAccount` mengesampingkan pilihan akun default fallback tersebut saat cocok dengan ID akun yang dikonfigurasi.
-- Direktori auth Baileys akun tunggal lama dimigrasikan oleh `openclaw doctor` ke `whatsapp/default`.
-- Override per akun: `channels.whatsapp.accounts.<id>.sendReadReceipts`, `channels.whatsapp.accounts.<id>.dmPolicy`, `channels.whatsapp.accounts.<id>.allowFrom`.
+- Perintah keluar menggunakan akun `default` secara bawaan jika tersedia; jika tidak, ID akun pertama yang dikonfigurasi (diurutkan).
+- `channels.whatsapp.defaultAccount` opsional menggantikan pemilihan akun bawaan cadangan tersebut ketika cocok dengan ID akun yang dikonfigurasi.
+- Direktori autentikasi Baileys satu akun lama dimigrasikan oleh `openclaw doctor` ke `whatsapp/default`.
+- Penggantian per akun: `channels.whatsapp.accounts.<id>.sendReadReceipts`, `channels.whatsapp.accounts.<id>.dmPolicy`, `channels.whatsapp.accounts.<id>.allowFrom`.
 
 </Accordion>
 
@@ -194,24 +194,24 @@ WhatsApp berjalan melalui channel web milik Gateway (Baileys Web). Ini dimulai o
         "*": { requireMention: true },
         "-1001234567890": {
           allowFrom: ["@admin"],
-          systemPrompt: "Keep answers brief.",
+          systemPrompt: "Buat jawaban tetap singkat.",
           topics: {
             "99": {
               requireMention: false,
               skills: ["search"],
-              systemPrompt: "Stay on topic.",
+              systemPrompt: "Tetap fokus pada topik.",
             },
           },
         },
       },
       customCommands: [
-        { command: "backup", description: "Git backup" },
-        { command: "generate", description: "Create an image" },
+        { command: "backup", description: "Cadangan Git" },
+        { command: "generate", description: "Buat gambar" },
       ],
       historyLimit: 50,
       replyToMode: "first", // off | first | all | batched
       linkPreview: true,
-      streaming: "partial", // off | partial | block | progress (default: partial)
+      streaming: { mode: "partial" }, // off | partial | block | progress (bawaan: partial)
       actions: { reactions: true, sendMessage: true },
       reactionNotifications: "own", // off | own | all
       mediaMaxMb: 100,
@@ -226,6 +226,7 @@ WhatsApp berjalan melalui channel web milik Gateway (Baileys Web). Ini dimulai o
         dnsResultOrder: "ipv4first",
       },
       apiRoot: "https://api.telegram.org",
+      trustedLocalFileRoots: ["/srv/telegram-bot-api-data"],
       proxy: "socks5://localhost:9050",
       webhookUrl: "https://example.com/telegram-webhook",
       webhookSecret: "secret",
@@ -235,14 +236,16 @@ WhatsApp berjalan melalui channel web milik Gateway (Baileys Web). Ini dimulai o
 }
 ```
 
-- Token bot: `channels.telegram.botToken` atau `channels.telegram.tokenFile` (hanya file biasa; symlink ditolak), dengan `TELEGRAM_BOT_TOKEN` sebagai fallback untuk akun default.
-- `apiRoot` hanya root Telegram Bot API. Gunakan `https://api.telegram.org` atau root self-hosted/proxy Anda, bukan `https://api.telegram.org/bot<TOKEN>`; `openclaw doctor --fix` menghapus akhiran `/bot<TOKEN>` yang tidak sengaja tertinggal.
-- Opsional `channels.telegram.defaultAccount` mengesampingkan pilihan akun default saat cocok dengan ID akun yang dikonfigurasi.
-- Dalam penyiapan multi-akun (2+ ID akun), tetapkan default eksplisit (`channels.telegram.defaultAccount` atau `channels.telegram.accounts.default`) untuk menghindari routing fallback; `openclaw doctor` memperingatkan saat ini hilang atau tidak valid.
-- `configWrites: false` memblokir penulisan konfigurasi yang dipicu Telegram (migrasi ID supergroup, `/config set|unset`).
-- Entri `bindings[]` tingkat atas dengan `type: "acp"` mengonfigurasi binding ACP persisten untuk topik forum (gunakan `chatId:topic:topicId` kanonis di `match.peer.id`). Semantik field dibagikan di [Agent ACP](/id/tools/acp-agents#persistent-channel-bindings).
-- Pratinjau stream Telegram menggunakan `sendMessage` + `editMessageText` (berfungsi dalam chat langsung dan grup).
-- Kebijakan retry: lihat [Kebijakan retry](/id/concepts/retry).
+- Token bot: `channels.telegram.botToken` atau `channels.telegram.tokenFile` (hanya berkas biasa; symlink ditolak), dengan `TELEGRAM_BOT_TOKEN` sebagai cadangan untuk akun bawaan.
+- `apiRoot` hanya merupakan root Telegram Bot API. Gunakan `https://api.telegram.org` atau root yang dihosting sendiri/proksi Anda, bukan `https://api.telegram.org/bot<TOKEN>`; `openclaw doctor --fix` menghapus akhiran `/bot<TOKEN>` yang tidak sengaja.
+- Untuk server Bot API yang dihosting sendiri dalam mode `--local`, `trustedLocalFileRoots` mencantumkan path host yang dapat dibaca OpenClaw. Pasang volume data server pada host OpenClaw dan konfigurasikan root datanya atau direktori per token; path kontainer di bawah `/var/lib/telegram-bot-api` dipetakan ke root tersebut. Path absolut lainnya tetap ditolak.
+- `channels.telegram.defaultAccount` opsional menggantikan pemilihan akun bawaan ketika cocok dengan ID akun yang dikonfigurasi.
+- Dalam penyiapan multiakun (2+ ID akun), tetapkan nilai bawaan eksplisit (`channels.telegram.defaultAccount` atau `channels.telegram.accounts.default`) untuk menghindari perutean cadangan; `openclaw doctor` memperingatkan ketika nilai ini tidak ada atau tidak valid.
+- `configWrites: false` memblokir penulisan konfigurasi yang dimulai oleh Telegram (migrasi ID supergrup, `/config set|unset`).
+- Entri `bindings[]` tingkat teratas dengan `type: "acp"` mengonfigurasi pengikatan ACP persisten untuk topik forum (gunakan `chatId:topic:topicId` kanonis dalam `match.peer.id`). Semantik kolom dijelaskan bersama di [Agen ACP](/id/tools/acp-agents#persistent-channel-bindings).
+- Pratinjau streaming Telegram menggunakan `sendMessage` + `editMessageText` (berfungsi dalam obrolan langsung dan grup).
+- `network.dnsResultOrder` secara bawaan ditetapkan ke `"ipv4first"` untuk menghindari kegagalan pengambilan IPv6 yang umum.
+- Kebijakan percobaan ulang: lihat [Kebijakan percobaan ulang](/id/concepts/retry).
 
 ### Discord
 
@@ -297,9 +300,9 @@ WhatsApp berjalan melalui channel web milik Gateway (Baileys Web). Ini dimulai o
       historyLimit: 20,
       textChunkLimit: 2000,
       suppressEmbeds: true,
-      chunkMode: "length", // length | newline
       streaming: {
         mode: "progress", // off | partial | block | progress (Discord default: progress)
+        chunkMode: "length", // length | newline
         progress: {
           label: "auto",
           maxLines: 8,
@@ -356,43 +359,44 @@ WhatsApp berjalan melalui channel web milik Gateway (Baileys Web). Ini dimulai o
 }
 ```
 
-- Token: `channels.discord.token`, dengan `DISCORD_BOT_TOKEN` sebagai fallback untuk akun default.
-- Panggilan keluar langsung yang menyediakan Discord `token` eksplisit menggunakan token tersebut untuk panggilan; pengaturan percobaan ulang/kebijakan akun tetap berasal dari akun yang dipilih dalam snapshot runtime aktif.
-- `channels.discord.defaultAccount` opsional menimpa pemilihan akun default saat cocok dengan id akun yang dikonfigurasi.
-- Gunakan `user:<id>` (DM) atau `channel:<id>` (kanal guild) untuk target pengiriman; ID numerik polos ditolak.
-- Slug guild menggunakan huruf kecil dengan spasi diganti `-`; kunci kanal menggunakan nama yang sudah dijadikan slug (tanpa `#`). Utamakan ID guild.
-- Pesan yang dibuat bot diabaikan secara default. `allowBots: true` mengaktifkannya; gunakan `allowBots: "mentions"` untuk hanya menerima pesan bot yang menyebut bot (pesan sendiri tetap difilter).
-- Kanal yang mendukung pesan masuk yang dibuat bot dapat menggunakan [perlindungan loop bot](/id/channels/bot-loop-protection) bersama. Atur `channels.defaults.botLoopProtection` untuk anggaran pasangan dasar, lalu timpa kanal atau akun hanya ketika satu permukaan memerlukan batas berbeda.
-- `channels.discord.guilds.<id>.ignoreOtherMentions` (dan penimpaan kanal) membuang pesan yang menyebut pengguna atau peran lain tetapi bukan bot (mengecualikan @everyone/@here).
-- `channels.discord.mentionAliases` memetakan teks `@handle` keluar yang stabil ke ID pengguna Discord sebelum mengirim, sehingga rekan tim yang dikenal dapat disebut secara deterministik bahkan saat cache direktori sementara kosong. Penimpaan per akun berada di bawah `channels.discord.accounts.<accountId>.mentionAliases`.
-- `maxLinesPerMessage` (default 17) membagi pesan tinggi meskipun kurang dari 2000 karakter.
-- `channels.discord.suppressEmbeds` default ke `true`, sehingga URL keluar tidak diperluas menjadi pratinjau tautan Discord kecuali dinonaktifkan. Payload `embeds` eksplisit tetap dikirim secara normal; panggilan alat per pesan dapat menimpa dengan `suppressEmbeds`.
-- `channels.discord.threadBindings` mengontrol perutean terikat thread Discord:
-  - `enabled`: penimpaan Discord untuk fitur sesi terikat thread (`/focus`, `/unfocus`, `/agents`, `/session idle`, `/session max-age`, dan pengiriman/perutean terikat)
-  - `idleHours`: penimpaan Discord untuk auto-unfocus ketidakaktifan dalam jam (`0` menonaktifkan)
-  - `maxAgeHours`: penimpaan Discord untuk usia maksimum keras dalam jam (`0` menonaktifkan)
-  - `spawnSessions`: sakelar untuk `sessions_spawn({ thread: true })` dan pembuatan/pengikatan thread otomatis ACP thread-spawn (default: `true`)
-  - `defaultSpawnContext`: konteks subagen native untuk spawn terikat thread (`"fork"` secara default)
-- Entri `bindings[]` tingkat atas dengan `type: "acp"` mengonfigurasi binding ACP persisten untuk kanal dan thread (gunakan id kanal/thread di `match.peer.id`). Semantik bidang dibagikan di [Agen ACP](/id/tools/acp-agents#persistent-channel-bindings).
-- `channels.discord.ui.components.accentColor` mengatur warna aksen untuk kontainer komponen Discord v2.
-- `channels.discord.agentComponents.ttlMs` mengontrol berapa lama callback komponen Discord yang dikirim tetap terdaftar. Defaultnya adalah `1800000` (30 menit), maksimumnya `86400000` (24 jam), dan penimpaan per akun berada di bawah `channels.discord.accounts.<accountId>.agentComponents.ttlMs`. Nilai yang lebih panjang membuat tombol/select/form lama dapat digunakan lebih lama, jadi pilih TTL tersingkat yang sesuai dengan alur kerja.
-- `channels.discord.voice` mengaktifkan percakapan kanal suara Discord dan penimpaan auto-join + LLM + TTS opsional. Konfigurasi Discord khusus teks membiarkan suara nonaktif secara default; atur `channels.discord.voice.enabled=true` untuk ikut serta.
-- `channels.discord.voice.model` secara opsional menimpa model LLM yang digunakan untuk respons kanal suara Discord.
-- `channels.discord.voice.daveEncryption` dan `channels.discord.voice.decryptionFailureTolerance` diteruskan ke opsi DAVE `@discordjs/voice` (`true` dan `24` secara default).
-- `channels.discord.voice.connectTimeoutMs` mengontrol penantian Ready awal `@discordjs/voice` untuk `/vc join` dan percobaan auto-join (`30000` secara default).
-- `channels.discord.voice.reconnectGraceMs` mengontrol berapa lama sesi suara yang terputus boleh membutuhkan waktu untuk masuk ke pensinyalan reconnect sebelum OpenClaw menghancurkannya (`15000` secara default).
-- Pemutaran suara Discord tidak diinterupsi oleh peristiwa speaking-start pengguna lain. Untuk menghindari loop umpan balik, OpenClaw mengabaikan tangkapan suara baru saat TTS sedang diputar.
-- OpenClaw juga mencoba pemulihan penerimaan suara dengan keluar/bergabung kembali ke sesi suara setelah kegagalan dekripsi berulang.
-- `channels.discord.streaming` adalah kunci mode stream kanonis. Discord default ke `streaming.mode: "progress"` sehingga progres alat/kerja muncul dalam satu pesan pratinjau yang diedit; atur `streaming.mode: "off"` untuk menonaktifkannya. Nilai lama `streamMode` dan boolean `streaming` tetap menjadi alias runtime; jalankan `openclaw doctor --fix` untuk menulis ulang konfigurasi tersimpan.
-- `channels.discord.autoPresence` memetakan ketersediaan runtime ke presence bot (healthy => online, degraded => idle, exhausted => dnd) dan mengizinkan penimpaan teks status opsional.
+- Token: `channels.discord.token`, dengan `DISCORD_BOT_TOKEN` sebagai cadangan untuk akun default.
+- Panggilan keluar langsung yang menyediakan `token` Discord secara eksplisit menggunakan token tersebut untuk panggilan itu; pengaturan percobaan ulang/kebijakan akun tetap berasal dari akun yang dipilih dalam snapshot runtime aktif.
+- `channels.discord.defaultAccount` opsional mengganti pemilihan akun default jika cocok dengan id akun yang dikonfigurasi.
+- Gunakan `user:<id>` (DM) atau `channel:<id>` (kanal guild) untuk target pengiriman; ID numerik tanpa prefiks ditolak.
+- Slug guild menggunakan huruf kecil dengan spasi diganti oleh `-`; kunci kanal menggunakan nama yang dijadikan slug (tanpa `#`). Utamakan ID guild.
+- Pesan yang dibuat bot diabaikan secara default. `allowBots: true` mengaktifkannya; gunakan `allowBots: "mentions"` untuk hanya menerima pesan bot yang menyebut bot tersebut (pesan sendiri tetap difilter).
+- Kanal yang mendukung pesan masuk buatan bot dapat menggunakan [perlindungan perulangan bot](/id/channels/bot-loop-protection) bersama. Tetapkan `channels.defaults.botLoopProtection` untuk anggaran pasangan dasar, lalu ganti pada kanal atau akun hanya ketika salah satu permukaan memerlukan batas yang berbeda.
+- `channels.discord.guilds.<id>.ignoreOtherMentions` (dan penggantian tingkat kanal) membuang pesan yang menyebut pengguna atau peran lain tetapi tidak menyebut bot (tidak termasuk @everyone/@here).
+- `channels.discord.mentionAliases` memetakan teks `@handle` keluar yang stabil ke ID pengguna Discord sebelum pengiriman, sehingga rekan tim yang dikenal dapat disebut secara deterministik bahkan ketika cache direktori sementara kosong. Penggantian per akun berada di bawah `channels.discord.accounts.<accountId>.mentionAliases`.
+- `maxLinesPerMessage` (default `17`) membagi pesan yang tinggi meskipun panjangnya di bawah 2000 karakter.
+- `channels.discord.suppressEmbeds` secara default bernilai `true`, sehingga URL keluar tidak diperluas menjadi pratinjau tautan Discord kecuali dinonaktifkan. Payload `embeds` eksplisit tetap dikirim secara normal; panggilan alat per pesan dapat menggantinya dengan `suppressEmbeds`.
+- `channels.discord.threadBindings` mengendalikan perutean Discord yang terikat utas:
+  - `enabled`: penggantian Discord untuk fitur sesi yang terikat utas (`/focus`, `/unfocus`, `/agents`, `/session idle`, `/session max-age`, serta pengiriman/perutean terikat)
+  - `idleHours`: penggantian Discord untuk pelepasan fokus otomatis akibat ketidakaktifan dalam jam (`0` menonaktifkan)
+  - `maxAgeHours`: penggantian Discord untuk usia maksimum mutlak dalam jam (`0` menonaktifkan)
+  - `spawnSessions`: sakelar untuk pembuatan/pengikatan utas otomatis oleh `sessions_spawn({ thread: true })` dan pemunculan utas ACP (default: `true`)
+  - `defaultSpawnContext`: konteks subagen native untuk pemunculan yang terikat utas (secara default `"fork"`)
+- Entri `bindings[]` tingkat atas dengan `type: "acp"` mengonfigurasi pengikatan ACP persisten untuk kanal dan utas (gunakan id kanal/utas di `match.peer.id`). Semantik bidang digunakan bersama dalam [Agen ACP](/id/tools/acp-agents#persistent-channel-bindings).
+- `channels.discord.ui.components.accentColor` menetapkan warna aksen untuk kontainer komponen Discord v2.
+- `channels.discord.agentComponents.ttlMs` mengendalikan berapa lama callback komponen Discord yang dikirim tetap terdaftar. Default `1800000` (30 menit), maksimum `86400000` (24 jam). Penggantian per akun berada di bawah `channels.discord.accounts.<accountId>.agentComponents.ttlMs`. Utamakan TTL terpendek yang sesuai dengan alur kerja.
+- `channels.discord.voice` mengaktifkan percakapan kanal suara Discord serta penggantian gabung otomatis + LLM + TTS opsional. Konfigurasi Discord khusus teks menonaktifkan suara secara default; tetapkan `channels.discord.voice.enabled=true` untuk mengaktifkannya.
+- `channels.discord.voice.model` secara opsional mengganti model LLM yang digunakan untuk respons kanal suara Discord.
+- `channels.discord.voice.daveEncryption` (default `true`) dan `channels.discord.voice.decryptionFailureTolerance` (default `24`) diteruskan ke opsi DAVE `@discordjs/voice`.
+- `channels.discord.voice.connectTimeoutMs` mengendalikan waktu tunggu Ready `@discordjs/voice` awal untuk `/vc join` dan percobaan gabung otomatis (default `30000`).
+- `channels.discord.voice.reconnectGraceMs` mengendalikan berapa lama sesi suara yang terputus dapat memerlukan waktu untuk memasuki pensinyalan penyambungan ulang sebelum OpenClaw memusnahkannya (default `15000`).
+- Pemutaran suara Discord tidak dihentikan oleh peristiwa pengguna lain mulai berbicara. Untuk menghindari perulangan umpan balik, OpenClaw mengabaikan penangkapan suara baru saat TTS sedang diputar.
+- OpenClaw juga mencoba memulihkan penerimaan suara dengan meninggalkan dan bergabung kembali ke sesi suara setelah kegagalan dekripsi berulang.
+- `channels.discord.streaming` adalah kunci mode streaming kanonis. Discord secara default menggunakan `streaming.mode: "progress"` agar progres alat/pekerjaan muncul dalam satu pesan pratinjau yang diedit; tetapkan `streaming.mode: "off"` untuk menonaktifkannya. Kunci datar lama (`streamMode`, `chunkMode`, `blockStreaming`, `draftChunk`, `blockStreamingCoalesce`) tidak lagi dibaca saat runtime; jalankan `openclaw doctor --fix` untuk memigrasikan konfigurasi yang tersimpan.
+- `channels.discord.autoPresence` memetakan ketersediaan runtime ke kehadiran bot (sehat => online, menurun => idle, habis => dnd) dan memungkinkan penggantian teks status opsional.
+- `channels.discord.guilds.<id>.presenceEvents` merutekan kedatangan ketersediaan manusia ke satu kanal Discord yang dikonfigurasi sebagai peristiwa sistem agen. Anggota yang memenuhi syarat harus dapat melihat `channelId`; utas publik mewarisi visibilitas induk, sedangkan utas privat juga memerlukan keanggotaan atau Manage Threads. `users` dapat mempersempit audiens tersebut lebih lanjut. Ini menginisialisasi anggota yang sedang online dari snapshot `GUILD_CREATE` lengkap, merutekan transisi offline-ke-online yang teramati, dan memperlakukan sinyal online pertama berikutnya untuk anggota yang belum terlihat sebagai baru tersedia tanpa menyatakan apakah mereka menjadi online atau bergabung setelah snapshot. Guild yang melebihi batas snapshot 75.000 anggota Discord memerlukan pembaruan offline eksplisit terlebih dahulu. Kenop pembatasan: `reconnectSuppressSeconds` (jendela hening setelah sesi Gateway baru saat status kehadiran guild dibangun ulang, default 300, `0` menonaktifkan) dan `burstLimit`/`burstWindowSeconds` (batas laju per guild untuk peristiwa yang berhasil dimasukkan ke antrean, default 8 peristiwa per jendela bergulir 60 detik). Sesi yang dilanjutkan tidak memulai jendela penekanan penyambungan ulang. Masa tunggu penyambutan ulang per pengguna yang sudah ada tetap delapan jam. Fitur ini memerlukan `channels.discord.intents.presence=true`, Presence Intent istimewa di Developer Portal Discord, dan Heartbeat agen yang diaktifkan.
 - `channels.discord.dangerouslyAllowNameMatching` mengaktifkan kembali pencocokan nama/tag yang dapat berubah (mode kompatibilitas darurat).
-- `channels.discord.execApprovals`: pengiriman persetujuan exec native Discord dan otorisasi pemberi persetujuan.
-  - `enabled`: `true`, `false`, atau `"auto"` (default). Dalam mode otomatis, persetujuan exec aktif saat pemberi persetujuan dapat diresolusikan dari `approvers` atau `commands.ownerAllowFrom`.
-  - `approvers`: ID pengguna Discord yang diizinkan menyetujui permintaan exec. Fallback ke `commands.ownerAllowFrom` saat dihilangkan.
-  - `agentFilter`: allowlist ID agen opsional. Hilangkan untuk meneruskan persetujuan bagi semua agen.
-  - `sessionFilter`: pola kunci sesi opsional (substring atau regex).
-  - `target`: tempat mengirim prompt persetujuan. `"dm"` (default) mengirim ke DM pemberi persetujuan, `"channel"` mengirim ke kanal asal, `"both"` mengirim ke keduanya. Saat target menyertakan `"channel"`, tombol hanya dapat digunakan oleh pemberi persetujuan yang teresolusi.
-  - `cleanupAfterResolve`: saat `true`, menghapus DM persetujuan setelah persetujuan, penolakan, atau timeout.
+- `channels.discord.execApprovals`: pengiriman persetujuan eksekusi native Discord dan otorisasi pemberi persetujuan.
+  - `enabled`: `true`, `false`, atau `"auto"` (default). Dalam mode otomatis, persetujuan eksekusi aktif ketika pemberi persetujuan dapat ditentukan dari `approvers` atau `commands.ownerAllowFrom`.
+  - `approvers`: ID pengguna Discord yang diizinkan menyetujui permintaan eksekusi. Menggunakan `commands.ownerAllowFrom` sebagai cadangan jika dihilangkan.
+  - `agentFilter`: daftar izin ID agen opsional. Hilangkan untuk meneruskan persetujuan bagi semua agen.
+  - `sessionFilter`: pola kunci sesi opsional (substring atau ekspresi reguler).
+  - `target`: lokasi pengiriman permintaan persetujuan. `"dm"` (default) mengirim ke DM pemberi persetujuan, `"channel"` mengirim ke kanal asal, `"both"` mengirim ke keduanya. Ketika target menyertakan `"channel"`, tombol hanya dapat digunakan oleh pemberi persetujuan yang telah ditentukan.
+  - `cleanupAfterResolve`: ketika `true`, menghapus DM persetujuan setelah disetujui, ditolak, atau waktu habis.
 
 **Mode notifikasi reaksi:** `off` (tidak ada), `own` (pesan bot, default), `all` (semua pesan), `allowlist` (dari `guilds.<id>.users` pada semua pesan).
 
@@ -425,11 +429,11 @@ WhatsApp berjalan melalui channel web milik Gateway (Baileys Web). Ini dimulai o
 }
 ```
 
-- JSON akun layanan: inline (`serviceAccount`) atau berbasis file (`serviceAccountFile`).
+- JSON akun layanan: inline (`serviceAccount`) atau berbasis berkas (`serviceAccountFile`).
 - SecretRef akun layanan juga didukung (`serviceAccountRef`).
-- Fallback env: `GOOGLE_CHAT_SERVICE_ACCOUNT` atau `GOOGLE_CHAT_SERVICE_ACCOUNT_FILE`.
+- Cadangan env: `GOOGLE_CHAT_SERVICE_ACCOUNT` atau `GOOGLE_CHAT_SERVICE_ACCOUNT_FILE` (hanya akun default).
 - Gunakan `spaces/<spaceId>` atau `users/<userId>` untuk target pengiriman.
-- `channels.googlechat.dangerouslyAllowNameMatching` mengaktifkan kembali pencocokan principal email yang dapat berubah (mode kompatibilitas darurat).
+- `channels.googlechat.dangerouslyAllowNameMatching` mengaktifkan kembali pencocokan prinsipal email yang dapat berubah (mode kompatibilitas darurat).
 
 ### Slack
 
@@ -449,24 +453,25 @@ WhatsApp berjalan melalui channel web milik Gateway (Baileys Web). Ini dimulai o
       allowFrom: ["U123", "U456", "*"],
       dm: { enabled: true, groupEnabled: false, groupChannels: ["G123"] },
       channels: {
-        C123: { allow: true, requireMention: true, allowBots: false },
+        C123: { enabled: true, requireMention: true, allowBots: false },
         "#general": {
-          allow: true,
+          enabled: true,
           requireMention: true,
           allowBots: false,
           users: ["U123"],
           skills: ["docs"],
-          systemPrompt: "Short answers only.",
+          systemPrompt: "Jawaban singkat saja.",
         },
       },
       historyLimit: 50,
       allowBots: false,
       reactionNotifications: "own",
       reactionAllowlist: ["U123"],
-      replyToMode: "off", // off | first | all | batched
+      replyToMode: "off", // nonaktif | pertama | semua | dikelompokkan
       thread: {
-        historyScope: "thread", // thread | channel
+        historyScope: "thread", // utas | kanal
         inheritParent: false,
+        initialHistoryLimit: 20,
       },
       actions: {
         reactions: true,
@@ -485,10 +490,10 @@ WhatsApp berjalan melalui channel web milik Gateway (Baileys Web). Ini dimulai o
       unfurlLinks: false,
       unfurlMedia: false,
       textChunkLimit: 4000,
-      chunkMode: "length",
       streaming: {
-        mode: "partial", // off | partial | block | progress
-        nativeTransport: true, // use Slack native streaming API when mode=partial
+        mode: "partial", // nonaktif | parsial | blok | progres
+        chunkMode: "length", // panjang | baris baru
+        nativeTransport: true, // gunakan API streaming native Slack ketika mode=partial
       },
       mediaMaxMb: 20,
       execApprovals: {
@@ -496,52 +501,67 @@ WhatsApp berjalan melalui channel web milik Gateway (Baileys Web). Ini dimulai o
         approvers: ["U123"],
         agentFilter: ["default"],
         sessionFilter: ["slack:"],
-        target: "dm", // dm | channel | both
+        target: "dm", // dm | kanal | keduanya
       },
     },
   },
 }
 ```
 
-- **Mode Soket** memerlukan `botToken` dan `appToken` (`SLACK_BOT_TOKEN` + `SLACK_APP_TOKEN` untuk fallback env akun default).
-- **Mode HTTP** memerlukan `botToken` plus `signingSecret` (di root atau per akun).
-- `socketMode` meneruskan penyetelan transport Slack SDK Socket Mode ke API penerima Bolt publik. Gunakan hanya saat menyelidiki timeout ping/pong atau perilaku websocket usang. `clientPingTimeout` default ke `15000`; `serverPingTimeout` dan `pingPongLoggingEnabled` hanya diteruskan saat dikonfigurasi.
+- **Mode soket** memerlukan `botToken` dan `appToken` (`SLACK_BOT_TOKEN` + `SLACK_APP_TOKEN` untuk fallback lingkungan akun default).
+- **Mode HTTP** memerlukan `botToken` ditambah `signingSecret` (di root atau per akun).
+- `enterpriseOrgInstall: true` mengikutsertakan akun ke jalur peristiwa seluruh organisasi Slack Enterprise Grid. Saat mulai, token bot diverifikasi dengan `auth.test` dan
+  proses gagal ketika mode yang dikonfigurasi tidak cocok dengan identitas instalasi Slack.
+  DM Enterprise harus dinonaktifkan atau menggunakan `dmPolicy: "open"` dengan
+  `allowFrom: ["*"]` yang efektif. Kebijakan kanal dan pengguna harus menggunakan ID Slack yang stabil;
+  nama yang dapat berubah dan prefiks kanal yang tidak didukung menyebabkan kegagalan saat mulai. V1 hanya menangani
+  peristiwa Socket Mode langsung atau HTTP `message` dan `app_mention` dengan balasan
+  segera; relai, perintah, interaksi, App Home, pemroses peristiwa reaksi,
+  sematan, alat tindakan, persetujuan native, pengikatan, pengiriman tertunda, dan
+  pengiriman proaktif tidak tersedia. Pengakuan, indikator pengetikan, dan reaksi
+  status yang dimiliki pemroses tetap tersedia dengan `reactions:write`; notifikasi
+  reaksi masuk dan alat tindakan reaksi tidak tersedia. Lihat
+  [Instalasi seluruh organisasi Enterprise Grid](/id/channels/slack#enterprise-grid-org-wide-installs)
+  untuk manifes hak akses minimum, alur kerja penyiapan, dan pembatasan lengkap.
+- `socketMode` meneruskan penyetelan transportasi Socket Mode Slack SDK ke API penerima Bolt publik. Gunakan hanya saat menyelidiki batas waktu ping/pong atau perilaku websocket yang usang. `clientPingTimeout` secara default bernilai `15000`; `serverPingTimeout` dan `pingPongLoggingEnabled` hanya diteruskan ketika dikonfigurasi.
 - `botToken`, `appToken`, `signingSecret`, dan `userToken` menerima string
-  plaintext atau objek SecretRef.
-- Snapshot akun Slack mengekspos field sumber/status per kredensial seperti
+  teks biasa atau objek SecretRef.
+- Snapshot akun Slack menampilkan bidang sumber/status per kredensial seperti
   `botTokenSource`, `botTokenStatus`, `appTokenStatus`, dan, dalam mode HTTP,
   `signingSecretStatus`. `configured_unavailable` berarti akun
-  dikonfigurasi melalui SecretRef tetapi jalur perintah/runtime saat ini tidak dapat
-  menyelesaikan nilai rahasia.
-- `configWrites: false` memblokir penulisan config yang dimulai Slack.
-- `channels.slack.defaultAccount` opsional mengganti pemilihan akun default saat cocok dengan id akun yang dikonfigurasi.
-- `channels.slack.streaming.mode` adalah kunci mode stream Slack kanonis. `channels.slack.streaming.nativeTransport` mengontrol transport streaming native Slack. Nilai legacy `streamMode`, boolean `streaming`, dan `nativeStreaming` tetap menjadi alias runtime; jalankan `openclaw doctor --fix` untuk menulis ulang config yang dipersistenkan.
-- `unfurlLinks` dan `unfurlMedia` meneruskan boolean unfurl tautan dan media `chat.postMessage` Slack untuk balasan bot. `unfurlLinks` default ke `false` agar tautan bot outbound tidak melebar inline kecuali diaktifkan; `unfurlMedia` dihilangkan kecuali dikonfigurasi. Tetapkan salah satu nilai di `channels.slack.accounts.<accountId>` untuk mengganti nilai tingkat atas bagi satu akun.
+  dikonfigurasi melalui SecretRef, tetapi jalur perintah/runtime saat ini tidak dapat
+  me-resolve nilai rahasia.
+- `configWrites: false` memblokir penulisan konfigurasi yang dimulai oleh Slack.
+- `channels.slack.defaultAccount` opsional mengganti pemilihan akun default ketika cocok dengan ID akun yang dikonfigurasi.
+- `channels.slack.streaming.mode` adalah kunci mode streaming Slack kanonis (default `"partial"`). `channels.slack.streaming.nativeTransport` mengontrol transportasi streaming native Slack (default `true`). Nilai lama `streamMode`, boolean `streaming`, `chunkMode`, `blockStreaming`, `blockStreamingCoalesce`, dan `nativeStreaming` tidak lagi dibaca saat runtime; jalankan `openclaw doctor --fix` untuk memigrasikan konfigurasi tersimpan ke `streaming.{mode,chunkMode,block.enabled,block.coalesce,nativeTransport}`.
+- `unfurlLinks` dan `unfurlMedia` meneruskan boolean penguraian tautan dan media `chat.postMessage` milik Slack untuk balasan bot. `unfurlLinks` secara default bernilai `false` sehingga tautan bot keluar tidak diperluas secara inline kecuali diaktifkan; `unfurlMedia` dihilangkan kecuali dikonfigurasi. Tetapkan salah satu nilai di `channels.slack.accounts.<accountId>` untuk mengganti nilai tingkat atas bagi satu akun.
 - Gunakan `user:<id>` (DM) atau `channel:<id>` untuk target pengiriman.
 
 **Mode notifikasi reaksi:** `off`, `own` (default), `all`, `allowlist` (dari `reactionAllowlist`).
 
-**Isolasi sesi thread:** `thread.historyScope` bersifat per thread (default) atau dibagikan di seluruh channel. `thread.inheritParent` menyalin transkrip channel induk ke thread baru.
+**Isolasi sesi utas:** `thread.historyScope` berlaku per utas (default) atau dibagikan di seluruh kanal. `thread.inheritParent` menyalin transkrip kanal induk ke utas baru. `thread.initialHistoryLimit` (default `20`) membatasi jumlah pesan utas yang sudah ada yang diambil ketika sesi utas baru dimulai; `0` menonaktifkan pengambilan riwayat utas.
 
-- Streaming native Slack plus status thread "sedang mengetik..." bergaya asisten Slack memerlukan target thread balasan. DM tingkat atas tetap di luar thread secara default, sehingga masih dapat melakukan stream melalui pratinjau draft post-and-edit Slack alih-alih menampilkan pratinjau stream/status native bergaya thread.
-- `typingReaction` menambahkan reaksi sementara ke pesan Slack inbound saat balasan sedang berjalan, lalu menghapusnya saat selesai. Gunakan shortcode emoji Slack seperti `"hourglass_flowing_sand"`.
-- `channels.slack.execApprovals`: pengiriman klien persetujuan native Slack dan otorisasi pemberi persetujuan exec. Skema yang sama seperti Discord: `enabled` (`true`/`false`/`"auto"`), `approvers` (ID pengguna Slack), `agentFilter`, `sessionFilter`, dan `target` (`"dm"`, `"channel"`, atau `"both"`). Persetujuan Plugin dapat menggunakan jalur native-client ini untuk permintaan asal Slack saat pemberi persetujuan Plugin Slack berhasil diselesaikan; pengiriman persetujuan Plugin native Slack juga dapat diaktifkan melalui `approvals.plugin` untuk sesi asal Slack atau target Slack. Persetujuan Plugin menggunakan pemberi persetujuan Plugin Slack dari `allowFrom` dan routing default, bukan pemberi persetujuan exec.
+- Streaming native Slack ditambah status utas bergaya asisten Slack "sedang mengetik..." memerlukan target utas balasan. DM tingkat atas tetap berada di luar utas secara default, sehingga masih dapat melakukan streaming melalui pratinjau draf Slack dengan pola kirim-dan-edit, alih-alih menampilkan pratinjau streaming/status native bergaya utas.
+- `typingReaction` menambahkan reaksi sementara ke pesan Slack masuk selama balasan berjalan, lalu menghapusnya setelah selesai. Gunakan shortcode emoji Slack seperti `"hourglass_flowing_sand"`.
+- `channels.slack.execApprovals`: pengiriman klien persetujuan native Slack dan otorisasi pemberi persetujuan eksekusi. Skemanya sama seperti Discord: `enabled` (`true`/`false`/`"auto"`), `approvers` (ID pengguna Slack), `agentFilter`, `sessionFilter`, dan `target` (`"dm"`, `"channel"`, atau `"both"`). Persetujuan Plugin dapat menggunakan jalur klien native ini untuk permintaan yang berasal dari Slack ketika pemberi persetujuan Plugin Slack berhasil di-resolve; pengiriman persetujuan Plugin native Slack juga dapat diaktifkan melalui `approvals.plugin` untuk sesi yang berasal dari Slack atau target Slack. Persetujuan Plugin menggunakan pemberi persetujuan Plugin Slack dari `allowFrom` dan perutean default, bukan pemberi persetujuan eksekusi.
 
-| Grup tindakan | Default | Catatan                |
+| Grup tindakan | Default | Catatan                  |
 | ------------ | ------- | ---------------------- |
-| reactions    | diaktifkan | Reaksi + daftar reaksi |
-| messages     | diaktifkan | Baca/kirim/edit/hapus  |
-| pins         | diaktifkan | Pin/lepas pin/daftar   |
-| memberInfo   | diaktifkan | Info anggota           |
-| emojiList    | diaktifkan | Daftar emoji kustom    |
+| reactions    | diaktifkan | Bereaksi + mencantumkan reaksi |
+| messages     | diaktifkan | Membaca/mengirim/mengedit/menghapus  |
+| pins         | diaktifkan | Menyematkan/melepas sematan/mencantumkan         |
+| memberInfo   | diaktifkan | Info anggota            |
+| emojiList    | diaktifkan | Daftar emoji khusus      |
 
 ### Mattermost
 
-Mattermost dikirim sebagai Plugin bundled dalam rilis OpenClaw saat ini. Build lama atau
-kustom dapat memasang paket npm saat ini dengan
-`openclaw plugins install @openclaw/mattermost`. Periksa
-[npmjs.com/package/@openclaw/mattermost](https://www.npmjs.com/package/@openclaw/mattermost)
-untuk dist-tag saat ini sebelum menyematkan versi.
+Mattermost dipasang sebagai Plugin terpisah, sama seperti Discord, Slack, dan WhatsApp:
+
+```bash
+openclaw plugins install @openclaw/mattermost
+```
+
+Periksa [npmjs.com/package/@openclaw/mattermost](https://www.npmjs.com/package/@openclaw/mattermost) untuk dist-tag saat ini sebelum menyematkan versi.
 
 ```json5
 {
@@ -558,36 +578,36 @@ untuk dist-tag saat ini sebelum menyematkan versi.
         "team-channel-id": { requireMention: false },
       },
       commands: {
-        native: true, // opt-in
+        native: true, // harus diaktifkan secara eksplisit
         nativeSkills: true,
         callbackPath: "/api/channels/mattermost/command",
-        // Optional explicit URL for reverse-proxy/public deployments
+        // URL eksplisit opsional untuk penerapan reverse-proxy/publik
         callbackUrl: "https://gateway.example.com/api/channels/mattermost/command",
       },
       textChunkLimit: 4000,
-      chunkMode: "length",
+      streaming: { chunkMode: "length" },
     },
   },
 }
 ```
 
-Mode chat: `oncall` (merespons pada @-mention, default), `onmessage` (setiap pesan), `onchar` (pesan yang dimulai dengan prefiks pemicu).
+Mode obrolan: `oncall` (merespons saat disebut dengan @, default), `onmessage` (setiap pesan), `onchar` (pesan yang diawali prefiks pemicu).
 
-Saat perintah native Mattermost diaktifkan:
+Ketika perintah native Mattermost diaktifkan:
 
 - `commands.callbackPath` harus berupa path (misalnya `/api/channels/mattermost/command`), bukan URL lengkap.
-- `commands.callbackUrl` harus mengarah ke endpoint gateway OpenClaw dan dapat dijangkau dari server Mattermost.
+- `commands.callbackUrl` harus di-resolve ke endpoint Gateway OpenClaw dan dapat dijangkau dari server Mattermost.
 - Callback slash native diautentikasi dengan token per perintah yang dikembalikan
   oleh Mattermost selama pendaftaran perintah slash. Jika pendaftaran gagal atau tidak ada
   perintah yang diaktifkan, OpenClaw menolak callback dengan
   `Unauthorized: invalid command token.`
-- Untuk host callback privat/tailnet/internal, Mattermost mungkin memerlukan
-  `ServiceSettings.AllowedUntrustedInternalConnections` agar menyertakan host/domain callback.
+- Untuk host callback privat/tailnet/internal, Mattermost mungkin mengharuskan
+  `ServiceSettings.AllowedUntrustedInternalConnections` menyertakan host/domain callback.
   Gunakan nilai host/domain, bukan URL lengkap.
-- `channels.mattermost.configWrites`: izinkan atau tolak penulisan config yang dimulai Mattermost.
-- `channels.mattermost.requireMention`: wajibkan `@mention` sebelum membalas di channel.
-- `channels.mattermost.groups.<channelId>.requireMention`: override gating mention per channel (`"*"` untuk default).
-- `channels.mattermost.defaultAccount` opsional mengganti pemilihan akun default saat cocok dengan id akun yang dikonfigurasi.
+- `channels.mattermost.configWrites`: mengizinkan atau menolak penulisan konfigurasi yang dimulai oleh Mattermost.
+- `channels.mattermost.requireMention`: mengharuskan `@mention` sebelum membalas di kanal.
+- `channels.mattermost.groups.<channelId>.requireMention`: penggantian pembatasan berdasarkan penyebutan per kanal (`"*"` untuk default).
+- `channels.mattermost.defaultAccount` opsional mengganti pemilihan akun default ketika cocok dengan ID akun yang dikonfigurasi.
 
 ### Signal
 
@@ -596,7 +616,7 @@ Saat perintah native Mattermost diaktifkan:
   channels: {
     signal: {
       enabled: true,
-      account: "+15555550123", // optional account binding
+      account: "+15555550123", // pengikatan akun opsional
       dmPolicy: "pairing",
       allowFrom: ["+15551234567", "uuid:123e4567-e89b-12d3-a456-426614174000"],
       configWrites: true,
@@ -610,19 +630,19 @@ Saat perintah native Mattermost diaktifkan:
 
 **Mode notifikasi reaksi:** `off`, `own` (default), `all`, `allowlist` (dari `reactionAllowlist`).
 
-- `channels.signal.account`: sematkan startup channel ke identitas akun Signal tertentu.
-- `channels.signal.configWrites`: izinkan atau tolak penulisan config yang dimulai Signal.
-- `channels.signal.defaultAccount` opsional mengganti pemilihan akun default saat cocok dengan id akun yang dikonfigurasi.
+- `channels.signal.account`: mengikat proses mulai kanal ke identitas akun Signal tertentu.
+- `channels.signal.configWrites`: mengizinkan atau menolak penulisan konfigurasi yang dimulai oleh Signal.
+- `channels.signal.defaultAccount` opsional mengganti pemilihan akun default ketika cocok dengan ID akun yang dikonfigurasi.
 
 ### iMessage
 
-OpenClaw menjalankan `imsg rpc` (JSON-RPC melalui stdio). Tidak diperlukan daemon atau port. Ini adalah jalur yang disukai untuk setup iMessage OpenClaw baru saat host dapat memberi izin database Messages dan Automation.
+OpenClaw menjalankan `imsg rpc` (JSON-RPC melalui stdio). Tidak memerlukan daemon atau port. Ini adalah jalur yang disarankan untuk penyiapan iMessage OpenClaw baru ketika host dapat memberikan izin basis data Messages dan Automation.
 
-Dukungan BlueBubbles telah dihapus. `channels.bluebubbles` bukan surface config runtime yang didukung pada OpenClaw saat ini. Migrasikan config lama ke `channels.imessage`; gunakan [Penghapusan BlueBubbles dan jalur iMessage imsg](/id/announcements/bluebubbles-imessage) untuk versi singkat dan [Beralih dari BlueBubbles](/id/channels/imessage-from-bluebubbles) untuk tabel terjemahan lengkap.
+Dukungan BlueBubbles telah dihapus. `channels.bluebubbles` bukan permukaan konfigurasi runtime yang didukung pada OpenClaw saat ini. Migrasikan konfigurasi lama ke `channels.imessage`; gunakan [Penghapusan BlueBubbles dan jalur iMessage imsg](/id/announcements/bluebubbles-imessage) untuk versi singkat dan [Bermigrasi dari BlueBubbles](/id/channels/imessage-from-bluebubbles) untuk tabel terjemahan lengkap.
 
-Jika Gateway tidak berjalan di Mac Messages yang sudah masuk, pertahankan `channels.imessage.enabled=true` dan tetapkan `channels.imessage.cliPath` ke wrapper SSH yang menjalankan `imsg "$@"` di Mac tersebut. Path `imsg` lokal default hanya untuk macOS.
+Jika Gateway tidak berjalan pada Mac yang masuk ke Messages, pertahankan `channels.imessage.enabled=true` dan tetapkan `channels.imessage.cliPath` ke wrapper SSH yang menjalankan `imsg "$@"` di Mac tersebut. Path lokal default `imsg` hanya untuk macOS.
 
-Sebelum mengandalkan wrapper SSH untuk pengiriman produksi, verifikasi `imsg send` outbound melalui wrapper persis tersebut. Sebagian status TCC macOS menetapkan Messages Automation ke `/usr/libexec/sshd-keygen-wrapper`, yang dapat membuat pembacaan dan probe berfungsi sementara pengiriman gagal dengan AppleEvents `-1743`; lihat [Pengiriman wrapper SSH gagal dengan AppleEvents -1743](/id/channels/imessage#ssh-wrapper-sends-fail-with-appleevents-1743).
+Sebelum mengandalkan wrapper SSH untuk pengiriman produksi, verifikasi `imsg send` keluar melalui wrapper tersebut. Beberapa status TCC macOS menetapkan Automation Messages kepada `/usr/libexec/sshd-keygen-wrapper`, yang dapat membuat pembacaan dan pemeriksaan berfungsi sementara pengiriman gagal dengan AppleEvents `-1743`; lihat bagian pemecahan masalah wrapper SSH di [iMessage](/id/channels/imessage).
 
 ```json5
 {
@@ -655,22 +675,21 @@ Sebelum mengandalkan wrapper SSH untuk pengiriman produksi, verifikasi `imsg sen
 }
 ```
 
-- `channels.imessage.defaultAccount` opsional mengganti pemilihan akun default saat cocok dengan id akun yang dikonfigurasi.
+- `channels.imessage.defaultAccount` opsional menggantikan pemilihan akun default jika cocok dengan id akun yang dikonfigurasi.
+- Memerlukan Full Disk Access ke basis data Messages.
+- Utamakan target `chat_id:<id>`. Gunakan `imsg chats --limit 20` untuk mencantumkan percakapan.
+- `cliPath` dapat mengarah ke pembungkus SSH; atur `remoteHost` (`host` atau `user@host`) untuk mengambil lampiran melalui SCP.
+- `attachmentRoots` dan `remoteAttachmentRoots` membatasi jalur lampiran masuk (default: `/Users/*/Library/Messages/Attachments`).
+- SCP menggunakan pemeriksaan kunci host yang ketat, jadi pastikan kunci host relai sudah ada di `~/.ssh/known_hosts`.
+- `channels.imessage.configWrites`: izinkan atau tolak penulisan konfigurasi yang dimulai dari iMessage.
+- `channels.imessage.sendTransport`: transportasi pengiriman RPC `imsg` yang diutamakan untuk balasan keluar normal. `auto` (default) menggunakan jembatan IMCore untuk percakapan yang sudah ada saat jembatan berjalan, lalu beralih ke AppleScript sebagai cadangan; `bridge` mengharuskan pengiriman melalui API privat; `applescript` memaksa jalur otomatisasi Messages publik.
+- `channels.imessage.actions.*`: aktifkan tindakan API privat yang juga dibatasi oleh `imsg status` / `openclaw channels status --probe`.
+- `channels.imessage.includeAttachments` dinonaktifkan secara default; atur ke `true` sebelum mengharapkan media masuk dalam giliran agen.
+- Pemulihan pesan masuk setelah jembatan/gateway dimulai ulang berlangsung otomatis (deduplikasi GUID serta batas usia backlog usang). Konfigurasi `channels.imessage.catchup.enabled: true` yang sudah ada masih dipatuhi sebagai profil kompatibilitas yang tidak digunakan lagi; `catchup` dinonaktifkan secara default.
+- `channels.imessage.groups`: registri grup dan pengaturan per grup. Dengan `groupPolicy: "allowlist"`, konfigurasikan kunci `chat_id` eksplisit atau entri wildcard `"*"` agar pesan grup dapat melewati gerbang registri.
+- Entri `bindings[]` tingkat atas dengan `type: "acp"` dapat mengikat percakapan iMessage ke sesi ACP persisten. Gunakan handle yang dinormalisasi atau target percakapan eksplisit (`chat_id:*`, `chat_guid:*`, `chat_identifier:*`) di `match.peer.id`. Semantik bidang bersama: [Agen ACP](/id/tools/acp-agents#persistent-channel-bindings).
 
-- Memerlukan Full Disk Access ke DB Messages.
-- Utamakan target `chat_id:<id>`. Gunakan `imsg chats --limit 20` untuk menampilkan daftar chat.
-- `cliPath` dapat mengarah ke wrapper SSH; tetapkan `remoteHost` (`host` atau `user@host`) untuk mengambil attachment melalui SCP.
-- `attachmentRoots` dan `remoteAttachmentRoots` membatasi path attachment inbound (default: `/Users/*/Library/Messages/Attachments`).
-- SCP menggunakan pemeriksaan host-key ketat, jadi pastikan kunci host relay sudah ada di `~/.ssh/known_hosts`.
-- `channels.imessage.configWrites`: izinkan atau tolak penulisan config yang dimulai iMessage.
-- `channels.imessage.sendTransport`: transport pengiriman RPC `imsg` pilihan untuk balasan outbound normal. `auto` (default) menggunakan bridge IMCore untuk chat yang ada saat sedang berjalan, lalu fallback ke AppleScript; `bridge` memerlukan pengiriman private-API; `applescript` memaksa jalur automation Messages publik.
-- `channels.imessage.actions.*`: aktifkan tindakan API privat yang juga digating oleh `imsg status` / `openclaw channels status --probe`.
-- `channels.imessage.includeAttachments` mati secara default; tetapkan ke `true` sebelum mengharapkan media inbound dalam giliran agen.
-- Pemulihan inbound setelah restart bridge/gateway bersifat otomatis (dedupe GUID plus pagar usia backlog usang). Config `channels.imessage.catchup.enabled: true` yang ada masih dihormati sebagai profil kompatibilitas yang deprecated.
-- `channels.imessage.groups`: registry grup dan pengaturan per grup. Dengan `groupPolicy: "allowlist"`, konfigurasikan kunci `chat_id` eksplisit atau entri wildcard `"*"` agar pesan grup dapat melewati gate registry.
-- Entri `bindings[]` tingkat atas dengan `type: "acp"` dapat mengikat percakapan iMessage ke sesi ACP persisten. Gunakan handle yang dinormalisasi atau target chat eksplisit (`chat_id:*`, `chat_guid:*`, `chat_identifier:*`) di `match.peer.id`. Semantik field bersama: [Agen ACP](/id/tools/acp-agents#persistent-channel-bindings).
-
-<Accordion title="Contoh wrapper SSH iMessage">
+<Accordion title="Contoh pembungkus SSH iMessage">
 
 ```bash
 #!/usr/bin/env bash
@@ -681,7 +700,7 @@ exec ssh -T gateway-host imsg "$@"
 
 ### Matrix
 
-Matrix didukung Plugin dan dikonfigurasi di bawah `channels.matrix`.
+Matrix didukung oleh Plugin dan dikonfigurasi di bawah `channels.matrix`.
 
 ```json5
 {
@@ -711,25 +730,25 @@ Matrix didukung Plugin dan dikonfigurasi di bawah `channels.matrix`.
 }
 ```
 
-- Auth token menggunakan `accessToken`; auth kata sandi menggunakan `userId` + `password`.
-- `channels.matrix.proxy` merutekan lalu lintas HTTP Matrix melalui proxy HTTP(S) eksplisit. Akun bernama dapat menimpanya dengan `channels.matrix.accounts.<id>.proxy`.
-- `channels.matrix.network.dangerouslyAllowPrivateNetwork` mengizinkan homeserver privat/internal. `proxy` dan opt-in jaringan ini adalah kontrol yang independen.
-- `channels.matrix.defaultAccount` memilih akun pilihan dalam penyiapan multi-akun.
-- `channels.matrix.autoJoin` default-nya `off`, sehingga room undangan dan undangan baru bergaya DM diabaikan sampai Anda menetapkan `autoJoin: "allowlist"` dengan `autoJoinAllowlist` atau `autoJoin: "always"`.
-- `channels.matrix.execApprovals`: pengiriman persetujuan eksekusi native Matrix dan otorisasi pemberi persetujuan.
-  - `enabled`: `true`, `false`, atau `"auto"` (default). Dalam mode otomatis, persetujuan eksekusi aktif saat pemberi persetujuan dapat diselesaikan dari `approvers` atau `commands.ownerAllowFrom`.
-  - `approvers`: ID pengguna Matrix (mis. `@owner:example.org`) yang diizinkan menyetujui permintaan eksekusi.
-  - `agentFilter`: allowlist ID agent opsional. Hilangkan untuk meneruskan persetujuan bagi semua agent.
+- Autentikasi token menggunakan `accessToken`; autentikasi kata sandi menggunakan `userId` + `password`.
+- `channels.matrix.proxy` merutekan lalu lintas HTTP Matrix melalui proksi HTTP(S) eksplisit. Akun bernama dapat menggantikannya dengan `channels.matrix.accounts.<id>.proxy`.
+- `channels.matrix.network.dangerouslyAllowPrivateNetwork` mengizinkan homeserver privat/internal. `proxy` dan persetujuan jaringan ini merupakan kontrol yang independen.
+- `channels.matrix.defaultAccount` memilih akun yang diutamakan dalam penyiapan multi-akun.
+- `channels.matrix.autoJoin` secara default bernilai `"off"`, sehingga ruang yang mengundang dan undangan baru bergaya DM diabaikan sampai Anda mengatur `autoJoin: "allowlist"` dengan `autoJoinAllowlist` atau `autoJoin: "always"`.
+- `channels.matrix.execApprovals`: pengiriman persetujuan eksekusi asli Matrix dan otorisasi pemberi persetujuan.
+  - `enabled`: `true`, `false`, atau `"auto"` (default). Dalam mode otomatis, persetujuan eksekusi diaktifkan ketika pemberi persetujuan dapat ditentukan dari `approvers` atau `commands.ownerAllowFrom`.
+  - `approvers`: ID pengguna Matrix (misalnya `@owner:example.org`) yang diizinkan menyetujui permintaan eksekusi.
+  - `agentFilter`: daftar izin ID agen opsional. Hilangkan untuk meneruskan persetujuan bagi semua agen.
   - `sessionFilter`: pola kunci sesi opsional (substring atau regex).
-  - `target`: tempat mengirim prompt persetujuan. `"dm"` (default), `"channel"` (room asal), atau `"both"`.
-  - Penimpaan per akun: `channels.matrix.accounts.<id>.execApprovals`.
-- `channels.matrix.dm.sessionScope` mengontrol bagaimana DM Matrix dikelompokkan ke dalam sesi: `per-user` (default) berbagi berdasarkan peer yang dirutekan, sedangkan `per-room` mengisolasi setiap room DM.
-- Probe status Matrix dan lookup direktori live menggunakan kebijakan proxy yang sama dengan lalu lintas runtime.
-- Konfigurasi Matrix lengkap, aturan penargetan, dan contoh penyiapan didokumentasikan di [Matrix](/id/channels/matrix).
+  - `target`: lokasi tujuan prompt persetujuan. `"dm"` (default), `"channel"` (ruang asal), atau `"both"`.
+  - Penggantian per akun: `channels.matrix.accounts.<id>.execApprovals`.
+- `channels.matrix.dm.sessionScope` mengontrol cara DM Matrix dikelompokkan menjadi sesi: `per-user` (default) berbagi berdasarkan rekan yang dirutekan, sedangkan `per-room` mengisolasi setiap ruang DM.
+- Probe status Matrix dan pencarian direktori langsung menggunakan kebijakan proksi yang sama dengan lalu lintas runtime.
+- Konfigurasi lengkap Matrix, aturan penargetan, dan contoh penyiapan didokumentasikan di [Matrix](/id/channels/matrix).
 
 ### Microsoft Teams
 
-Microsoft Teams didukung Plugin dan dikonfigurasi di bawah `channels.msteams`.
+Microsoft Teams didukung oleh Plugin dan dikonfigurasi di bawah `channels.msteams`.
 
 ```json5
 {
@@ -737,19 +756,19 @@ Microsoft Teams didukung Plugin dan dikonfigurasi di bawah `channels.msteams`.
     msteams: {
       enabled: true,
       configWrites: true,
-      // appId, appPassword, tenantId, webhook, team/channel policies:
-      // see /channels/msteams
+      // appId, appPassword, tenantId, webhook, kebijakan tim/saluran:
+      // lihat /channels/msteams
     },
   },
 }
 ```
 
 - Jalur kunci inti yang dibahas di sini: `channels.msteams`, `channels.msteams.configWrites`.
-- Konfigurasi Teams lengkap (kredensial, Webhook, kebijakan DM/grup, penimpaan per tim/per channel) didokumentasikan di [Microsoft Teams](/id/channels/msteams).
+- Konfigurasi lengkap Teams (kredensial, webhook, kebijakan DM/grup, penggantian per tim/per saluran) didokumentasikan di [Microsoft Teams](/id/channels/msteams).
 
 ### IRC
 
-IRC didukung Plugin dan dikonfigurasi di bawah `channels.irc`.
+IRC didukung oleh Plugin dan dikonfigurasi di bawah `channels.irc`.
 
 ```json5
 {
@@ -771,12 +790,12 @@ IRC didukung Plugin dan dikonfigurasi di bawah `channels.irc`.
 ```
 
 - Jalur kunci inti yang dibahas di sini: `channels.irc`, `channels.irc.dmPolicy`, `channels.irc.configWrites`, `channels.irc.nickserv.*`.
-- `channels.irc.defaultAccount` opsional menimpa pemilihan akun default saat cocok dengan id akun yang dikonfigurasi.
-- Konfigurasi channel IRC lengkap (host/port/TLS/channel/allowlist/gating mention) didokumentasikan di [IRC](/id/channels/irc).
+- `channels.irc.defaultAccount` opsional menggantikan pemilihan akun default jika cocok dengan id akun yang dikonfigurasi.
+- Konfigurasi lengkap saluran IRC (host/port/TLS/saluran/daftar izin/pembatasan sebutan) didokumentasikan di [IRC](/id/channels/irc).
 
-### Multi-akun (semua channel)
+### Multi-akun (semua saluran)
 
-Jalankan beberapa akun per channel (masing-masing dengan `accountId` sendiri):
+Jalankan beberapa akun per saluran (masing-masing dengan `accountId` sendiri):
 
 ```json5
 {
@@ -784,11 +803,11 @@ Jalankan beberapa akun per channel (masing-masing dengan `accountId` sendiri):
     telegram: {
       accounts: {
         default: {
-          name: "Primary bot",
+          name: "Bot utama",
           botToken: "123456:ABC...",
         },
         alerts: {
-          name: "Alerts bot",
+          name: "Bot peringatan",
           botToken: "987654:XYZ...",
         },
       },
@@ -797,53 +816,53 @@ Jalankan beberapa akun per channel (masing-masing dengan `accountId` sendiri):
 }
 ```
 
-- `default` digunakan saat `accountId` dihilangkan (CLI + perutean).
-- Token env hanya berlaku untuk akun **default**.
-- Pengaturan channel dasar berlaku untuk semua akun kecuali ditimpa per akun.
-- Gunakan `bindings[].match.accountId` untuk merutekan setiap akun ke agent yang berbeda.
-- Jika Anda menambahkan akun non-default melalui `openclaw channels add` (atau onboarding channel) saat masih menggunakan konfigurasi channel tingkat atas akun tunggal, OpenClaw terlebih dahulu mempromosikan nilai akun tunggal tingkat atas yang berskala akun ke dalam peta akun channel agar akun asli tetap berfungsi. Sebagian besar channel memindahkannya ke `channels.<channel>.accounts.default`; Matrix dapat mempertahankan target bernama/default yang cocok yang sudah ada sebagai gantinya.
-- Binding khusus channel yang sudah ada (tanpa `accountId`) tetap cocok dengan akun default; binding berskala akun tetap opsional.
-- `openclaw doctor --fix` juga memperbaiki bentuk campuran dengan memindahkan nilai akun tunggal tingkat atas yang berskala akun ke akun yang dipromosikan yang dipilih untuk channel tersebut. Sebagian besar channel menggunakan `accounts.default`; Matrix dapat mempertahankan target bernama/default yang cocok yang sudah ada sebagai gantinya.
+- `default` digunakan ketika `accountId` dihilangkan (CLI + perutean).
+- Token lingkungan hanya berlaku untuk akun **default**.
+- Pengaturan saluran dasar berlaku untuk semua akun kecuali diganti per akun.
+- Gunakan `bindings[].match.accountId` untuk merutekan setiap akun ke agen yang berbeda.
+- Jika Anda menambahkan akun non-default melalui `openclaw channels add` (atau orientasi saluran) saat masih menggunakan konfigurasi saluran akun tunggal tingkat atas, OpenClaw terlebih dahulu mempromosikan nilai akun tunggal tingkat atas yang cakupannya per akun ke dalam peta akun saluran agar akun asli tetap berfungsi. Sebagian besar saluran memindahkannya ke `channels.<channel>.accounts.default`; sebagai gantinya, Matrix dapat mempertahankan target bernama/default yang sudah ada dan cocok.
+- Pengikatan khusus saluran yang sudah ada (tanpa `accountId`) tetap cocok dengan akun default; pengikatan dengan cakupan akun tetap opsional.
+- `openclaw doctor --fix` juga memperbaiki bentuk campuran dengan memindahkan nilai akun tunggal tingkat atas yang cakupannya per akun ke akun hasil promosi yang dipilih untuk saluran tersebut. Sebagian besar saluran menggunakan `accounts.default`; sebagai gantinya, Matrix dapat mempertahankan target bernama/default yang sudah ada dan cocok.
 
-### Channel Plugin lainnya
+### Saluran Plugin lainnya
 
-Banyak channel Plugin dikonfigurasi sebagai `channels.<id>` dan didokumentasikan di halaman channel khususnya (misalnya Feishu, Matrix, LINE, Nostr, Zalo, Nextcloud Talk, Synology Chat, dan Twitch).
-Lihat indeks channel lengkap: [Channel](/id/channels).
+Banyak saluran Plugin dikonfigurasi sebagai `channels.<id>` dan didokumentasikan di halaman saluran khusus masing-masing (misalnya Feishu, LINE, Nextcloud Talk, Nostr, QQ Bot, Synology Chat, Twitch, dan Zalo).
+Lihat indeks saluran lengkap: [Saluran](/id/channels).
 
-### Gating mention chat grup
+### Pembatasan sebutan dalam percakapan grup
 
-Pesan grup default ke **wajib mention** (mention metadata atau pola regex aman). Berlaku untuk chat grup WhatsApp, Telegram, Discord, Google Chat, dan iMessage.
+Pesan grup secara default **memerlukan sebutan** (metadata sebutan atau pola regex yang aman). Berlaku untuk percakapan grup WhatsApp, Telegram, Discord, Google Chat, dan iMessage.
 
-Balasan yang terlihat dikontrol secara terpisah. Permintaan langsung grup, channel, dan WebChat internal normal default ke pengiriman final otomatis: teks asisten final diposting melalui jalur balasan terlihat legacy. Pilih `messages.visibleReplies: "message_tool"` atau `messages.groupChat.visibleReplies: "message_tool"` saat output terlihat hanya boleh diposting setelah agent memanggil `message(action=send)`. Jika model mengembalikan teks final tanpa memanggil alat pesan dalam mode khusus alat yang diaktifkan, teks final tersebut tetap privat dan log verbose gateway mencatat metadata payload yang ditekan.
+Balasan yang terlihat dikontrol secara terpisah. Permintaan langsung normal dari grup, saluran, dan WebChat internal secara default menggunakan pengiriman akhir otomatis: teks akhir asisten dikirim melalui jalur balasan terlihat lama. Aktifkan `messages.visibleReplies: "message_tool"` atau `messages.groupChat.visibleReplies: "message_tool"` jika keluaran terlihat hanya boleh dikirim setelah agen memanggil `message(action=send)`. Jika model mengembalikan jawaban akhir substantif tanpa memanggil alat pesan dalam mode khusus alat yang telah diaktifkan, teks akhir tersebut tetap privat, log verbose gateway mencatat metadata muatan yang ditekan, dan OpenClaw mengantrekan satu percobaan ulang pemulihan yang meminta model mengirimkan balasan yang sama melalui `message(action=send)`.
 
-Balasan terlihat khusus alat memerlukan model/runtime yang andal memanggil alat, dan direkomendasikan untuk room ambient bersama pada model generasi terbaru seperti GPT 5.5. Beberapa model yang lebih lemah dapat menjawab teks final tetapi gagal memahami bahwa output yang terlihat oleh sumber harus dikirim dengan `message(action=send)`. Untuk model tersebut, gunakan `"automatic"` agar giliran asisten final menjadi jalur balasan terlihat. Jika log sesi menampilkan teks asisten dengan `didSendViaMessagingTool: false`, model menghasilkan teks final privat alih-alih memanggil alat pesan. Beralihlah ke model pemanggil alat yang lebih kuat untuk channel tersebut, periksa log verbose gateway untuk ringkasan payload yang ditekan, atau tetapkan `messages.groupChat.visibleReplies: "automatic"` untuk menggunakan balasan final terlihat bagi setiap permintaan grup/channel.
+Balasan terlihat khusus alat memerlukan model/runtime yang dapat memanggil alat secara andal, dan direkomendasikan untuk ruang bersama ambien pada model generasi terbaru seperti GPT-5.6 Sol. Beberapa model yang lebih lemah dapat menghasilkan teks jawaban akhir, tetapi gagal memahami bahwa keluaran yang terlihat oleh sumber harus dikirim dengan `message(action=send)`. Secara default, OpenClaw memulihkan kasus umum jawaban akhir yang tertahan hanya jika jawaban akhir tersebut substantif, giliran sumber bukan peristiwa ruang, kebijakan pengiriman tidak menolak pengiriman, dan belum ada balasan sumber yang dikirim. Pemulihan dibatasi hingga satu percobaan ulang; pemulihan menekan persistensi untuk prompt percobaan ulang sintetis dan mengecualikan percobaan ulang tersebut dari pengelompokan pengumpulan sehingga tidak dapat digabungkan dengan prompt antrean yang tidak terkait. Jika percobaan ulang juga tertahan atau tidak dapat diantrekan, OpenClaw hanya mengirimkan diagnostik yang telah disanitasi seperti "Saya menghasilkan balasan tetapi tidak dapat mengirimkannya ke percakapan ini. Silakan coba lagi." Teks akhir privat yang asli tidak pernah ditandai untuk pengiriman otomatis ke sumber. Untuk model yang berulang kali menahan balasan, gunakan `"automatic"` agar giliran akhir asisten menjadi jalur balasan terlihat, beralihlah ke model pemanggil alat yang lebih kuat, periksa log verbose gateway untuk melihat ringkasan muatan yang ditekan, atau atur `messages.groupChat.visibleReplies: "automatic"` agar menggunakan balasan akhir terlihat untuk setiap permintaan grup/saluran.
 
-Jika alat pesan tidak tersedia di bawah kebijakan alat aktif, OpenClaw beralih kembali ke balasan terlihat otomatis alih-alih menekan respons secara diam-diam. `openclaw doctor` memperingatkan tentang ketidakcocokan ini.
+Jika alat pesan tidak tersedia berdasarkan kebijakan alat aktif, OpenClaw beralih ke balasan terlihat otomatis sebagai cadangan alih-alih menekan respons secara diam-diam. `openclaw doctor` memperingatkan tentang ketidakcocokan ini.
 
-Aturan ini berlaku untuk teks final agent normal. Binding percakapan milik Plugin menggunakan balasan yang dikembalikan Plugin pemilik sebagai respons terlihat untuk giliran bound-thread yang diklaim; Plugin tidak perlu memanggil `message(action=send)` untuk balasan binding tersebut.
+Aturan ini berlaku untuk teks akhir agen normal. Pengikatan percakapan milik Plugin menggunakan balasan yang dikembalikan oleh Plugin pemilik sebagai respons terlihat untuk giliran utas terikat yang diklaim; Plugin tidak perlu memanggil `message(action=send)` untuk balasan pengikatan tersebut.
 
-**Pemecahan masalah: @mention grup memicu mengetik lalu diam (tanpa error)**
+**Pemecahan masalah: @sebutan grup memicu indikator pengetikan lalu hening (tanpa galat)**
 
-Gejala: @mention grup/channel menampilkan indikator mengetik dan log gateway melaporkan `dispatch complete (queuedFinal=false, replies=0)`, tetapi tidak ada pesan yang masuk ke room. DM ke agent yang sama membalas secara normal.
+Gejala: @sebutan dalam grup/saluran menampilkan indikator pengetikan dan log gateway melaporkan `dispatch complete (queuedFinal=false, replies=0)`, tetapi tidak ada pesan yang masuk ke ruang. DM ke agen yang sama dibalas secara normal.
 
-Penyebab: mode balasan terlihat grup/channel diselesaikan ke `"message_tool"`, sehingga OpenClaw menjalankan giliran tetapi menekan teks asisten final kecuali agent memanggil `message(action=send)`. Tidak ada kontrak `NO_REPLY` dalam mode ini; tanpa panggilan alat pesan berarti tidak ada balasan sumber. Tidak ada error karena penekanan adalah perilaku yang dikonfigurasi. Giliran grup dan channel normal default ke `"automatic"`, sehingga gejala ini hanya muncul saat `messages.groupChat.visibleReplies` (atau `messages.visibleReplies` global) secara eksplisit ditetapkan ke `"message_tool"`. Harness `defaultVisibleReplies` tidak berlaku di sini — resolver grup/channel mengabaikannya; itu hanya memengaruhi chat langsung/sumber (harness Codex menekan final chat langsung dengan cara itu).
+Penyebab: mode balasan terlihat grup/channel di-resolve menjadi `"message_tool"`, sehingga OpenClaw menjalankan giliran tetapi menyembunyikan teks akhir asisten kecuali agen memanggil `message(action=send)`. Tidak ada kontrak `NO_REPLY` dalam mode ini; tanpa pemanggilan alat pesan, teks akhir asli bersifat privat. Untuk giliran sumber yang substantif, OpenClaw kini mencoba satu percobaan ulang pemulihan yang terlindungi; catatan singkat, sikap diam eksplisit, peristiwa ruang, giliran yang ditolak oleh kebijakan pengiriman, dan giliran yang sudah terkirim tidak dicoba ulang. Giliran grup dan channel normal menggunakan `"automatic"` secara default, sehingga gejala ini hanya muncul ketika `messages.groupChat.visibleReplies` (atau `messages.visibleReplies` global) secara eksplisit diatur ke `"message_tool"`. `defaultVisibleReplies` harness tidak berlaku di sini — resolver grup/channel mengabaikannya; pengaturan itu hanya memengaruhi chat langsung/sumber (harness Codex menyembunyikan hasil akhir chat langsung dengan cara tersebut).
 
-Perbaikan: pilih model pemanggil alat yang lebih kuat, hapus penimpaan eksplisit `"message_tool"` untuk kembali ke default `"automatic"`, atau tetapkan `messages.groupChat.visibleReplies: "automatic"` untuk memaksa balasan terlihat bagi setiap permintaan grup/channel. Gateway melakukan hot-reload konfigurasi `messages` setelah file disimpan; hanya mulai ulang gateway saat pemantauan file atau reload konfigurasi dinonaktifkan dalam deployment.
+Perbaikan: pilih model yang lebih andal dalam memanggil alat, hapus penggantian eksplisit `"message_tool"` agar kembali ke default `"automatic"`, atau atur `messages.groupChat.visibleReplies: "automatic"` untuk memaksa balasan terlihat bagi setiap permintaan grup/channel. Hasil akhir substantif yang terlantar seharusnya tidak lagi berakhir sebagai keberhasilan tanpa keluaran; hasil tersebut akan dipulihkan melalui satu percobaan ulang `message(action=send)` atau menampilkan diagnostik kegagalan pengiriman yang telah disanitasi. Gateway memuat ulang secara langsung konfigurasi `messages` setelah file disimpan; mulai ulang gateway hanya jika pemantauan file atau pemuatan ulang konfigurasi dinonaktifkan dalam deployment.
 
-**Jenis mention:**
+**Jenis penyebutan:**
 
-- **Mention metadata**: @-mention platform native. Diabaikan dalam mode self-chat WhatsApp.
-- **Pola teks**: Pola regex aman di `agents.list[].groupChat.mentionPatterns`. Pola tidak valid dan repetisi bertingkat yang tidak aman diabaikan.
-- Gating mention hanya ditegakkan saat deteksi memungkinkan (mention native atau setidaknya satu pola).
+- **Penyebutan metadata**: @-mention native platform. Diabaikan dalam mode chat mandiri WhatsApp.
+- **Pola teks**: Pola regex aman dalam `agents.list[].groupChat.mentionPatterns`. Pola yang tidak valid dan pengulangan bertingkat yang tidak aman diabaikan.
+- Pembatasan penyebutan hanya diberlakukan ketika deteksi dapat dilakukan (penyebutan native atau setidaknya satu pola).
 
 ```json5
 {
   messages: {
-    visibleReplies: "automatic", // force old automatic final replies for direct/source chats
+    visibleReplies: "automatic", // paksa balasan akhir otomatis lama untuk chat langsung/sumber
     groupChat: {
       historyLimit: 50,
-      unmentionedInbound: "room_event", // always-on unmentioned room chatter becomes quiet context
-      visibleReplies: "message_tool", // opt-in; require message(action=send) for visible room replies
+      unmentionedInbound: "room_event", // percakapan ruang tanpa penyebutan yang selalu aktif menjadi konteks senyap
+      visibleReplies: "message_tool", // ikut serta; wajibkan message(action=send) untuk balasan ruang yang terlihat
     },
   },
   agents: {
@@ -852,11 +871,11 @@ Perbaikan: pilih model pemanggil alat yang lebih kuat, hapus penimpaan eksplisit
 }
 ```
 
-`messages.groupChat.historyLimit` menetapkan default global. Channel dapat menimpa dengan `channels.<channel>.historyLimit` (atau per akun). Tetapkan `0` untuk menonaktifkan.
+`messages.groupChat.historyLimit` menetapkan default global. Channel dapat menggantinya dengan `channels.<channel>.historyLimit` (atau per akun). Atur `0` untuk menonaktifkannya.
 
-`messages.groupChat.unmentionedInbound: "room_event"` mengirim pesan grup/channel yang selalu aktif dan tidak di-mention sebagai konteks room diam pada channel yang didukung. Pesan yang di-mention, perintah, dan pesan langsung tetap menjadi permintaan pengguna. Lihat [Peristiwa room ambient](/id/channels/ambient-room-events) untuk contoh Discord, Slack, dan Telegram lengkap.
+`messages.groupChat.unmentionedInbound: "room_event"` mengirim pesan grup/channel tanpa penyebutan yang selalu aktif sebagai konteks ruang senyap pada channel yang didukung. Pesan dengan penyebutan, perintah, dan pesan langsung tetap menjadi permintaan pengguna. Lihat [Peristiwa ruang ambien](/id/channels/ambient-room-events) untuk contoh lengkap Discord, Slack, dan Telegram.
 
-`messages.visibleReplies` adalah default peristiwa sumber global; `messages.groupChat.visibleReplies` menimpanya untuk peristiwa sumber grup/channel. Saat `messages.visibleReplies` tidak diatur, chat langsung/sumber menggunakan default runtime atau harness yang dipilih, tetapi giliran langsung WebChat internal menggunakan pengiriman final otomatis untuk paritas prompt Pi/Codex. Tetapkan `messages.visibleReplies: "message_tool"` untuk sengaja mewajibkan `message(action=send)` bagi output terlihat. Allowlist channel dan gating mention tetap menentukan apakah suatu peristiwa diproses.
+`messages.visibleReplies` adalah default peristiwa sumber global; `messages.groupChat.visibleReplies` menggantikannya untuk peristiwa sumber grup/channel. Ketika `messages.visibleReplies` tidak ditetapkan, chat langsung/sumber menggunakan default runtime atau harness yang dipilih, tetapi giliran langsung WebChat internal menggunakan pengiriman akhir otomatis untuk kesetaraan prompt Pi/Codex. Atur `messages.visibleReplies: "message_tool"` untuk secara sengaja mewajibkan `message(action=send)` bagi keluaran yang terlihat. Daftar izin channel dan pembatasan penyebutan tetap menentukan apakah suatu peristiwa diproses.
 
 #### Batas riwayat DM
 
@@ -873,13 +892,13 @@ Perbaikan: pilih model pemanggil alat yang lebih kuat, hapus penimpaan eksplisit
 }
 ```
 
-Resolusi: penimpaan per-DM → default penyedia → tanpa batas (semua dipertahankan).
+Resolusi: penggantian per DM → default penyedia → tanpa batas (semua dipertahankan).
 
-Didukung: `telegram`, `whatsapp`, `discord`, `slack`, `signal`, `imessage`, `msteams`.
+Resolver ini membaca `channels.<provider>.dmHistoryLimit` dan `channels.<provider>.dms.<id>.historyLimit` untuk setiap channel yang kunci sesinya mengikuti bentuk standar `provider:direct:<id>` (atau bentuk lama `provider:dm:<id>`), sehingga resolver ini berfungsi pada channel bawaan maupun Plugin, bukan hanya pada daftar tetap.
 
-#### Mode self-chat
+#### Mode chat mandiri
 
-Sertakan nomor Anda sendiri di `allowFrom` untuk mengaktifkan mode self-chat (mengabaikan @-mention native, hanya merespons pola teks):
+Sertakan nomor Anda sendiri dalam `allowFrom` untuk mengaktifkan mode chat mandiri (mengabaikan @-mention native dan hanya merespons pola teks):
 
 ```json5
 {
@@ -905,16 +924,16 @@ Sertakan nomor Anda sendiri di `allowFrom` untuk mengaktifkan mode self-chat (me
 ```json5
 {
   commands: {
-    native: "auto", // register native commands when supported
-    nativeSkills: "auto", // register native skill commands when supported
-    text: true, // parse /commands in chat messages
-    bash: false, // allow ! (alias: /bash)
+    native: "auto", // daftarkan perintah native ketika didukung
+    nativeSkills: "auto", // daftarkan perintah Skills native ketika didukung
+    text: true, // uraikan /commands dalam pesan chat
+    bash: false, // izinkan ! (alias: /bash)
     bashForegroundMs: 2000,
-    config: false, // allow /config
-    mcp: false, // allow /mcp
-    plugins: false, // allow /plugins
-    debug: false, // allow /debug
-    restart: true, // allow /restart + gateway restart tool
+    config: false, // izinkan /config
+    mcp: false, // izinkan /mcp
+    plugins: false, // izinkan /plugins
+    debug: false, // izinkan /debug
+    restart: true, // izinkan /restart + permintaan mulai ulang SIGUSR1 eksternal
     ownerAllowFrom: ["discord:123456789012345678"],
     ownerDisplay: "raw", // raw | hash
     ownerDisplaySecret: "${OWNER_ID_HASH_SECRET}",
@@ -930,31 +949,31 @@ Sertakan nomor Anda sendiri di `allowFrom` untuk mengaktifkan mode self-chat (me
 <Accordion title="Detail perintah">
 
 - Blok ini mengonfigurasi permukaan perintah. Untuk katalog perintah bawaan + terbundel saat ini, lihat [Perintah Slash](/id/tools/slash-commands).
-- Halaman ini adalah **referensi kunci konfigurasi**, bukan katalog perintah lengkap. Perintah milik channel/Plugin seperti QQ Bot `/bot-ping` `/bot-help` `/bot-logs`, LINE `/card`, pemasangan-perangkat `/pair`, memori `/dreaming`, kontrol-ponsel `/phone`, dan Talk `/voice` didokumentasikan di halaman channel/Plugin masing-masing serta [Perintah Slash](/id/tools/slash-commands).
-- Perintah teks harus berupa pesan **mandiri** dengan awalan `/`.
-- `native: "auto"` mengaktifkan perintah native untuk Discord/Telegram, membiarkan Slack nonaktif.
-- `nativeSkills: "auto"` mengaktifkan perintah skill native untuk Discord/Telegram, membiarkan Slack nonaktif.
-- Timpa per channel: `channels.discord.commands.native` (bool atau `"auto"`). Untuk Discord, `false` melewati pendaftaran dan pembersihan perintah native saat startup.
-- Timpa pendaftaran skill native per channel dengan `channels.<provider>.commands.nativeSkills`.
-- `channels.telegram.customCommands` menambahkan entri menu bot Telegram tambahan.
-- `bash: true` mengaktifkan `! <cmd>` untuk shell host. Memerlukan `tools.elevated.enabled` dan pengirim di `tools.elevated.allowFrom.<channel>`.
-- `config: true` mengaktifkan `/config` (membaca/menulis `openclaw.json`). Untuk klien gateway `chat.send`, penulisan persisten `/config set|unset` juga memerlukan `operator.admin`; `/config show` yang hanya-baca tetap tersedia untuk klien operator biasa dengan cakupan tulis.
+- Halaman ini adalah **referensi kunci konfigurasi**, bukan katalog perintah lengkap. Perintah milik channel/Plugin seperti QQ Bot `/bot-ping` `/bot-help` `/bot-logs`, LINE `/card`, pemasangan perangkat `/pair`, memori `/dreaming`, kontrol telepon `/phone`, dan Talk `/voice` didokumentasikan pada halaman channel/Plugin masing-masing serta [Perintah Slash](/id/tools/slash-commands).
+- Perintah teks harus berupa pesan **mandiri** yang diawali `/`.
+- `native: "auto"` mengaktifkan perintah native untuk Discord/Telegram dan tetap menonaktifkannya untuk Slack.
+- `nativeSkills: "auto"` mengaktifkan perintah Skills native untuk Discord/Telegram dan tetap menonaktifkannya untuk Slack.
+- Ganti per channel: `channels.discord.commands.native` (boolean atau `"auto"`). Untuk Discord, `false` melewati pendaftaran dan pembersihan perintah native saat startup.
+- Ganti pendaftaran Skills native per channel dengan `channels.<provider>.commands.nativeSkills`.
+- `channels.telegram.customCommands` menambahkan entri tambahan pada menu bot Telegram.
+- `bash: true` mengaktifkan `! <cmd>` untuk shell host. Memerlukan `tools.elevated.enabled` dan pengirim dalam `tools.elevated.allowFrom.<channel>`.
+- `config: true` mengaktifkan `/config` (membaca/menulis `openclaw.json`). Untuk klien `chat.send` gateway, penulisan persisten `/config set|unset` juga memerlukan `operator.admin`; `/config show` hanya-baca tetap tersedia bagi klien operator normal dengan cakupan tulis.
 - `mcp: true` mengaktifkan `/mcp` untuk konfigurasi server MCP yang dikelola OpenClaw di bawah `mcp.servers`.
-- `plugins: true` mengaktifkan `/plugins` untuk penemuan Plugin, instalasi, dan kontrol aktif/nonaktif.
+- `plugins: true` mengaktifkan `/plugins` untuk penemuan, instalasi, serta kontrol pengaktifan/penonaktifan Plugin.
 - `channels.<provider>.configWrites` membatasi mutasi konfigurasi per channel (default: true).
-- Untuk channel multi-akun, `channels.<provider>.accounts.<id>.configWrites` juga membatasi penulisan yang menargetkan akun tersebut (misalnya `/allowlist --config --account <id>` atau `/config set channels.<provider>.accounts.<id>...`).
-- `restart: false` menonaktifkan `/restart` dan aksi alat restart gateway. Default: `true`.
-- `ownerAllowFrom` adalah daftar izin owner eksplisit untuk perintah khusus owner dan aksi channel yang dibatasi owner. Ini terpisah dari `allowFrom`.
-- `ownerDisplay: "hash"` melakukan hash pada id owner di prompt sistem. Atur `ownerDisplaySecret` untuk mengontrol hashing.
-- `allowFrom` berlaku per penyedia. Saat disetel, ini adalah **satu-satunya** sumber otorisasi (daftar izin/pemasangan channel dan `useAccessGroups` diabaikan).
-- `useAccessGroups: false` memungkinkan perintah melewati kebijakan grup akses saat `allowFrom` tidak disetel.
-- Peta dokumen perintah:
+- Untuk channel multiakun, `channels.<provider>.accounts.<id>.configWrites` juga membatasi penulisan yang menargetkan akun tersebut (misalnya `/allowlist --config --account <id>` atau `/config set channels.<provider>.accounts.<id>...`).
+- `restart: false` menonaktifkan `/restart` dan permintaan mulai ulang `SIGUSR1` eksternal. Default: `true`.
+- `ownerAllowFrom` adalah daftar izin pemilik eksplisit untuk perintah khusus pemilik dan tindakan channel yang dibatasi untuk pemilik. Daftar ini terpisah dari `allowFrom`.
+- `ownerDisplay: "hash"` melakukan hash pada id pemilik dalam prompt sistem. Atur `ownerDisplaySecret` untuk mengendalikan hashing.
+- `allowFrom` berlaku per penyedia. Ketika ditetapkan, ini menjadi **satu-satunya** sumber otorisasi (daftar izin/pemasangan channel dan `useAccessGroups` diabaikan).
+- `useAccessGroups: false` memungkinkan perintah melewati kebijakan grup akses ketika `allowFrom` tidak ditetapkan.
+- Peta dokumentasi perintah:
   - katalog bawaan + terbundel: [Perintah Slash](/id/tools/slash-commands)
   - permukaan perintah khusus channel: [Channel](/id/channels)
   - perintah QQ Bot: [QQ Bot](/id/channels/qqbot)
   - perintah pemasangan: [Pemasangan](/id/channels/pairing)
   - perintah kartu LINE: [LINE](/id/channels/line)
-  - dreaming memori: [Dreaming](/id/concepts/dreaming)
+  - Dreaming memori: [Dreaming](/id/concepts/dreaming)
 
 </Accordion>
 
@@ -964,4 +983,4 @@ Sertakan nomor Anda sendiri di `allowFrom` untuk mengaktifkan mode self-chat (me
 
 - [Referensi konfigurasi](/id/gateway/configuration-reference) — kunci tingkat atas
 - [Konfigurasi — agen](/id/gateway/config-agents)
-- [Ringkasan channel](/id/channels)
+- [Ikhtisar channel](/id/channels)

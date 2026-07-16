@@ -1,21 +1,22 @@
 ---
 read_when:
-    - شما در حال نصب، پیکربندی یا ممیزی Plugin نوستر هستید
-summary: Plugin کانال Nostr برای OpenClaw جهت پیام‌های مستقیم رمزنگاری‌شده با NIP-04.
+    - در حال نصب، پیکربندی یا ممیزی Plugin nostr هستید
+summary: Plugin کانال Nostr برای OpenClaw جهت پیام‌های مستقیم رمزگذاری‌شده با NIP-04.
 title: Plugin نوستر
 x-i18n:
-    generated_at: "2026-07-12T10:31:41Z"
+    generated_at: "2026-07-16T17:03:13Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: e56fd9eee17c55bcbba3d7b85d783930c10d2368f36173ac478b254c2bd5ec22
+    source_hash: 9efb2014cd168e3d847a045cf82fde3ec364ca3f6a75ee3ef8e1acfb92a79efa
     source_path: plugins/reference/nostr.md
     workflow: 16
 ---
 
-# Plugin ‏Nostr
+# Plugin‏ Nostr
 
-Plugin کانال Nostr در OpenClaw برای پیام‌های مستقیم رمزنگاری‌شده با NIP-04.
+Plugin کانال Nostr در OpenClaw برای پیام‌های مستقیم رمزگذاری‌شده با NIP-04.
 
 ## توزیع
 
@@ -24,8 +25,8 @@ Plugin کانال Nostr در OpenClaw برای پیام‌های مستقیم ر
 
 ## سطح
 
-کانال‌ها: nostr
+کانال‌ها: `nostr`
 
 ## مستندات مرتبط
 
-- [nostr](/fa/channels/nostr)
+- [Nostr](/fa/channels/nostr)

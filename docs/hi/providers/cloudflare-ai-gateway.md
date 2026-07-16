@@ -1,60 +1,63 @@
 ---
 read_when:
     - आप OpenClaw के साथ Cloudflare AI Gateway का उपयोग करना चाहते हैं
-    - आपको खाता ID, Gateway ID, या API कुंजी पर्यावरण चर की आवश्यकता है
+    - आपको खाता ID, Gateway ID या API कुंजी के पर्यावरण चर की आवश्यकता है
 summary: Cloudflare AI Gateway सेटअप (प्रमाणीकरण + मॉडल चयन)
 title: Cloudflare AI Gateway
 x-i18n:
-    generated_at: "2026-06-28T23:57:26Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T16:38:46Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 05678faa049349c610a9c7ea9d23958bf51927453cf6987fef397cd273f6556b
+    source_hash: 02c7785616e7aee645bb3fc41ef6a3585e1f2f9d886fab1a06231e497effd045
     source_path: providers/cloudflare-ai-gateway.md
     workflow: 16
 ---
 
-Cloudflare AI Gateway प्रदाता APIs के सामने बैठता है और आपको एनालिटिक्स, कैशिंग और नियंत्रण जोड़ने देता है। Anthropic के लिए, OpenClaw आपके Gateway endpoint के माध्यम से Anthropic Messages API का उपयोग करता है।
+[Cloudflare AI Gateway](https://developers.cloudflare.com/ai-gateway/) प्रदाता API के आगे स्थित होता है और विश्लेषिकी, कैशिंग तथा नियंत्रण जोड़ता है। Anthropic के लिए, OpenClaw आपके Gateway एंडपॉइंट के माध्यम से Anthropic Messages API का उपयोग करता है।
 
 | गुण           | मान                                                                                      |
 | ------------- | ---------------------------------------------------------------------------------------- |
 | प्रदाता       | `cloudflare-ai-gateway`                                                                  |
-| बेस URL       | `https://gateway.ai.cloudflare.com/v1/<account_id>/<gateway_id>/anthropic`               |
+| Plugin        | आधिकारिक बाहरी पैकेज (`@openclaw/cloudflare-ai-gateway-provider`)                   |
+| आधार URL      | `https://gateway.ai.cloudflare.com/v1/<account_id>/<gateway_id>/anthropic`               |
 | डिफ़ॉल्ट मॉडल | `cloudflare-ai-gateway/claude-sonnet-4-6`                                                |
 | API कुंजी     | `CLOUDFLARE_AI_GATEWAY_API_KEY` (Gateway के माध्यम से अनुरोधों के लिए आपकी प्रदाता API कुंजी) |
 
 <Note>
-Cloudflare AI Gateway के माध्यम से रूट किए गए Anthropic मॉडलों के लिए, प्रदाता कुंजी के रूप में अपनी **Anthropic API कुंजी** का उपयोग करें।
+Cloudflare AI Gateway के माध्यम से रूट किए गए Anthropic मॉडल के लिए, प्रदाता कुंजी के रूप में अपनी **Anthropic API कुंजी** का उपयोग करें।
 </Note>
 
-जब Anthropic Messages मॉडलों के लिए सोच सक्षम होती है, तो OpenClaw Cloudflare AI Gateway के माध्यम से payload भेजने से पहले अंत में आने वाले assistant पूर्व-भरण turns को हटा देता है।
-Anthropic विस्तारित सोच के साथ response prefilling को अस्वीकार करता है, जबकि साधारण
-बिना-सोच वाला पूर्व-भरण उपलब्ध रहता है।
+Anthropic Messages मॉडल के लिए थिंकिंग सक्षम होने पर, OpenClaw पेलोड को Cloudflare AI Gateway के माध्यम से भेजने से पहले अंत में आने वाले
+असिस्टेंट प्रीफ़िल टर्न हटा देता है।
+Anthropic विस्तारित थिंकिंग के साथ प्रतिक्रिया प्रीफ़िलिंग को अस्वीकार करता है, जबकि सामान्य
+गैर-थिंकिंग प्रीफ़िल उपलब्ध रहता है।
 
 ## Plugin इंस्टॉल करें
 
-आधिकारिक Plugin इंस्टॉल करें, फिर Gateway पुनः शुरू करें:
+आधिकारिक Plugin इंस्टॉल करें, फिर Gateway को पुनः आरंभ करें:
 
 ```bash
 openclaw plugins install @openclaw/cloudflare-ai-gateway-provider
 openclaw gateway restart
 ```
 
-## शुरू करना
+## आरंभ करना
 
 <Steps>
   <Step title="प्रदाता API कुंजी और Gateway विवरण सेट करें">
-    onboarding चलाएँ और Cloudflare AI Gateway auth विकल्प चुनें:
+    ऑनबोर्डिंग चलाएँ और Cloudflare AI Gateway प्रमाणीकरण विकल्प चुनें:
 
     ```bash
     openclaw onboard --auth-choice cloudflare-ai-gateway-api-key
     ```
 
-    यह आपके account ID, gateway ID, और API कुंजी के लिए पूछता है।
+    यह आपके खाता ID, Gateway ID और API कुंजी के लिए संकेत देता है।
 
   </Step>
   <Step title="डिफ़ॉल्ट मॉडल सेट करें">
-    मॉडल को अपने OpenClaw config में जोड़ें:
+    मॉडल को अपने OpenClaw कॉन्फ़िगरेशन में जोड़ें:
 
     ```json5
     {
@@ -76,7 +79,7 @@ openclaw gateway restart
 
 ## गैर-इंटरैक्टिव उदाहरण
 
-स्क्रिप्टेड या CI setups के लिए, command line पर सभी मान पास करें:
+स्क्रिप्टेड या CI सेटअप के लिए, सभी मान कमांड लाइन पर दें:
 
 ```bash
 openclaw onboard --non-interactive \
@@ -87,11 +90,11 @@ openclaw onboard --non-interactive \
   --cloudflare-ai-gateway-api-key "$CLOUDFLARE_AI_GATEWAY_API_KEY"
 ```
 
-## उन्नत configuration
+## उन्नत कॉन्फ़िगरेशन
 
 <AccordionGroup>
-  <Accordion title="प्रमाणित gateways">
-    यदि आपने Cloudflare में Gateway authentication सक्षम किया है, तो `cf-aig-authorization` header जोड़ें। यह आपकी प्रदाता API कुंजी के **अतिरिक्त** है।
+  <Accordion title="प्रमाणीकृत Gateway">
+    यदि आपने Cloudflare में Gateway प्रमाणीकरण सक्षम किया है, तो `cf-aig-authorization` हेडर जोड़ें। यह आपकी प्रदाता API कुंजी के **अतिरिक्त** है।
 
     ```json5
     {
@@ -108,16 +111,16 @@ openclaw onboard --non-interactive \
     ```
 
     <Tip>
-    `cf-aig-authorization` header Cloudflare Gateway के साथ ही authenticate करता है, जबकि प्रदाता API कुंजी (उदाहरण के लिए, आपकी Anthropic कुंजी) upstream प्रदाता के साथ authenticate करती है।
+    `cf-aig-authorization` हेडर स्वयं Cloudflare Gateway के साथ प्रमाणीकरण करता है, जबकि प्रदाता API कुंजी (उदाहरण के लिए, आपकी Anthropic कुंजी) अपस्ट्रीम प्रदाता के साथ प्रमाणीकरण करती है।
     </Tip>
 
   </Accordion>
 
-  <Accordion title="Environment नोट">
-    यदि Gateway daemon (launchd/systemd) के रूप में चलता है, तो सुनिश्चित करें कि `CLOUDFLARE_AI_GATEWAY_API_KEY` उस process के लिए उपलब्ध है।
+  <Accordion title="परिवेश संबंधी टिप्पणी">
+    यदि Gateway डेमन (launchd/systemd) के रूप में चलता है, तो सुनिश्चित करें कि `CLOUDFLARE_AI_GATEWAY_API_KEY` उस प्रक्रिया के लिए उपलब्ध हो।
 
     <Warning>
-    केवल interactive shell में export की गई कुंजी launchd/systemd daemon की मदद नहीं करेगी, जब तक कि वह environment वहाँ भी import न किया गया हो। यह सुनिश्चित करने के लिए कि gateway process इसे पढ़ सके, कुंजी को `~/.openclaw/.env` में या `env.shellEnv` के माध्यम से सेट करें।
+    केवल इंटरैक्टिव शेल में निर्यात की गई कुंजी launchd/systemd डेमन के लिए तब तक उपयोगी नहीं होगी, जब तक उस परिवेश को वहाँ भी आयात न किया जाए। यह सुनिश्चित करने के लिए कि Gateway प्रक्रिया कुंजी पढ़ सके, कुंजी को `~/.openclaw/.env` में या `env.shellEnv` के माध्यम से सेट करें।
     </Warning>
 
   </Accordion>
@@ -127,9 +130,9 @@ openclaw onboard --non-interactive \
 
 <CardGroup cols={2}>
   <Card title="मॉडल चयन" href="/hi/concepts/model-providers" icon="layers">
-    प्रदाताओं, मॉडल refs, और failover व्यवहार को चुनना।
+    प्रदाताओं, मॉडल संदर्भों और फ़ेलओवर व्यवहार का चयन।
   </Card>
   <Card title="समस्या निवारण" href="/hi/help/troubleshooting" icon="wrench">
-    सामान्य समस्या निवारण और FAQ।
+    सामान्य समस्या निवारण और अक्सर पूछे जाने वाले प्रश्न।
   </Card>
 </CardGroup>

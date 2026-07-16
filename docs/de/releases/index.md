@@ -1,32 +1,35 @@
 ---
 description: Browse polished OpenClaw release notes with highlights, reader-facing context, source links, and contributor credits.
-summary: Kuratierten OpenClaw-Versionshinweise für Personen, die die Produktgeschichte lesen möchten, nicht das rohe Changelog.
+summary: Kuratierte OpenClaw-Versionshinweise für alle, die an der Produktentwicklung interessiert sind, nicht am unbearbeiteten Änderungsprotokoll.
 title: Versionshinweise
 x-i18n:
-    generated_at: "2026-07-01T05:36:19Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T13:28:02Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: f0528fd717dbd98f1191e24b640866735f4b32d3c1421deac9324115e6059903
+    source_hash: 396035d613b6a3ea9832c10860840d2fa1abfc87e8810d0c569c24b4598baa25
     source_path: releases/index.md
     workflow: 16
 ---
 
 # Versionshinweise
 
-Diese Seiten sind die leserorientierte Version der OpenClaw-Releases. Sie halten
-die zentrale Geschichte, die praktischen Auswirkungen, Quelllinks und den Dank an Beitragende zusammen,
-ohne dass Sie zuerst das rohe Changelog durchsuchen müssen.
+Diese Seiten bilden die leserorientierte Version der OpenClaw-Versionen. Sie führen
+die wichtigsten Neuerungen, praktischen Auswirkungen, Quelllinks und Würdigungen der Mitwirkenden zusammen,
+ohne dass Sie zuerst das unaufbereitete Änderungsprotokoll durchsuchen müssen.
 
-## Releases
+## Versionen
 
-- [v2026.6.11](/releases/2026.6.11) - Zuverlässigkeitskorrekturen für Antworten, Senden,
-  Wiederverbindungen, Modelleinrichtung, Sessions und sicherere Admin-Standardwerte.
+- [v2026.7.1](/releases/2026.7.1) - Überarbeitungen der Control UI und des Onboardings,
+  umfangreiche iOS- und Android-Updates, erweiterte Modellunterstützung und Gateway-Wiederherstellung.
+- [v2026.6.11](/de/releases/2026.6.11) - Zuverlässigkeitsverbesserungen für Antworten, Sendevorgänge,
+  erneute Verbindungen, die Modelleinrichtung, Sitzungen und sicherere Administratorstandards.
 
-## Rohe Release-Historie
+## Unaufbereiteter Versionsverlauf
 
-Verwenden Sie die kuratierten Hinweise, wenn Sie die Produktgeschichte möchten. Verwenden Sie die rohe Historie, wenn
-Sie eine kompakte Maintainer-Abrechnung benötigen:
+Verwenden Sie die kuratierten Hinweise, wenn Sie einen Überblick über die Produktentwicklung wünschen. Verwenden Sie den unaufbereiteten Verlauf, wenn
+Sie eine kompakte Übersicht für Maintainer benötigen:
 
-- [GitHub-Releases](https://github.com/openclaw/openclaw/releases)
+- [GitHub-Versionen](https://github.com/openclaw/openclaw/releases)
 - [CHANGELOG.md](https://github.com/openclaw/openclaw/blob/main/CHANGELOG.md)

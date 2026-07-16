@@ -1,26 +1,27 @@
 ---
 read_when:
-    - Je wilt de snelste lokale ontwikkelcyclus (bun + watch)
-    - Je ondervindt problemen met installatie-, patch- of levenscyclusscripts van Bun
-summary: 'Bun-workflow (experimenteel): installatie en aandachtspunten ten opzichte van pnpm'
-title: Bun (experimenteel)
+    - Je wilt afhankelijkheden installeren of pakketscripts uitvoeren met Bun
+    - Je ondervindt problemen met Bun-installatie-, patch- of levenscyclusscripts
+summary: Bun-workflow voor installaties en pakketscripts; Node is vereist tijdens runtime
+title: Bun
 x-i18n:
-    generated_at: "2026-07-12T08:59:33Z"
+    generated_at: "2026-07-16T15:58:27Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: b836be354166ceb073d170e472e8b69c3f517e754fe71417df1d85d27a18ae94
+    source_hash: b822f700123b91c785eb881ebf28a63e77915b46dfd44beb9dbf63fb71aaa0d2
     source_path: install/bun.md
     workflow: 16
 ---
 
 <Warning>
-Bun wordt niet aanbevolen voor de Gateway-runtime (bekende problemen met WhatsApp en Telegram). Gebruik Node voor productie.
+Bun kan de OpenClaw CLI of Gateway niet uitvoeren omdat het niet de vereiste `node:sqlite`-API biedt. Installeer een ondersteunde Node-versie voor alle OpenClaw-runtimeopdrachten.
 </Warning>
 
-Bun is een optionele lokale runtime om TypeScript rechtstreeks uit te voeren (`bun run ...`, `bun --watch ...`). De standaardpakketbeheerder blijft `pnpm`, die volledig wordt ondersteund en door de documentatiehulpmiddelen wordt gebruikt. Bun kan `pnpm-lock.yaml` niet gebruiken en negeert dit bestand.
+Bun blijft bruikbaar als optioneel installatieprogramma voor afhankelijkheden en als uitvoerder van pakketscripts. De standaardpakketbeheerder blijft `pnpm`, die volledig wordt ondersteund en door de documentatietools wordt gebruikt. Bun kan `pnpm-lock.yaml` niet gebruiken en negeert dit.
 
-## Installatie
+## Installeren
 
 <Steps>
   <Step title="Afhankelijkheden installeren">
@@ -28,7 +29,7 @@ Bun is een optionele lokale runtime om TypeScript rechtstreeks uit te voeren (`b
     bun install
     ```
 
-    `bun.lock` / `bun.lockb` worden door Git genegeerd, zodat er geen onnodige wijzigingen in de repository ontstaan. Om het schrijven van lockbestanden volledig over te slaan:
+    `bun.lock` / `bun.lockb` worden door git genegeerd, zodat er geen wijzigingen in de repository ontstaan. Om het schrijven van lockfiles volledig over te slaan:
 
     ```sh
     bun install --no-save
@@ -40,17 +41,20 @@ Bun is een optionele lokale runtime om TypeScript rechtstreeks uit te voeren (`b
     bun run build
     bun run vitest run
     ```
+
+    Opdrachten die OpenClaw zelf starten, moeten nog steeds via Node worden uitgevoerd.
+
   </Step>
 </Steps>
 
 ## Levenscyclusscripts
 
-Bun blokkeert levenscyclusscripts van afhankelijkheden, tenzij ze expliciet worden vertrouwd. Voor deze repository zijn de scripts die doorgaans worden geblokkeerd niet vereist:
+Bun blokkeert levenscyclusscripts van afhankelijkheden tenzij ze expliciet worden vertrouwd. Voor deze repository zijn de scripts die doorgaans worden geblokkeerd niet vereist:
 
-- `baileys` `preinstall`: controleert of de hoofdversie van Node >= 20 is (OpenClaw vereist Node 22.19+ of 23.11+, waarbij Node 24 wordt aanbevolen)
-- `protobufjs` `postinstall`: geeft waarschuwingen weer over incompatibele versieschema's (geen buildartefacten)
+- `baileys` `preinstall`: controleert of de hoofdversie van Node >= 20 is (OpenClaw vereist Node 22.22.3+, 24.15+ of 25.9+, waarbij Node 24 wordt aanbevolen)
+- `protobufjs` `postinstall`: geeft waarschuwingen over incompatibele versieschema's (geen buildartefacten)
 
-Als u een runtimeprobleem tegenkomt waarvoor deze scripts nodig zijn, vertrouw ze dan expliciet:
+Als je een runtimeprobleem tegenkomt waarvoor deze scripts nodig zijn, vertrouw ze dan expliciet:
 
 ```sh
 bun pm trust baileys protobufjs
@@ -58,10 +62,10 @@ bun pm trust baileys protobufjs
 
 ## Aandachtspunten
 
-Sommige pakketscripts bevatten intern een hardgecodeerde verwijzing naar `pnpm` (bijvoorbeeld `check:docs`, `ui:*`, `protocol:check`). Als u deze via `bun run` uitvoert, wordt alsnog `pnpm` aangeroepen. Voer deze scripts daarom rechtstreeks via `pnpm` uit.
+Sommige pakketscripts bevatten intern een hardgecodeerde `pnpm` (bijvoorbeeld `check:docs`, `ui:*`, `protocol:check`). Als je ze via `bun run` uitvoert, starten ze nog steeds `pnpm` via de shell, dus voer die gewoon rechtstreeks via `pnpm` uit.
 
 ## Gerelateerd
 
-- [Overzicht van de installatie](/nl/install)
+- [Installatieoverzicht](/nl/install)
 - [Node.js](/nl/install/node)
 - [Bijwerken](/nl/install/updating)

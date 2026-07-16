@@ -2,41 +2,39 @@
 doc-schema-version: 1
 read_when:
     - Plugins installeren of configureren
-    - Inzicht in de detectie- en laadregels voor plugins
+    - Inzicht in regels voor het detecteren en laden van plugins
     - Werken met Codex-/Claude-compatibele pluginbundels
 sidebarTitle: Getting Started
 summary: OpenClaw-plugins installeren, configureren en beheren
 title: Plugins
 x-i18n:
-    generated_at: "2026-07-12T09:24:37Z"
+    generated_at: "2026-07-16T16:30:28Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 9de5b54c1c7b8ecf789816aa909ee1538de4295f0503a1ea9eecd535077a7cbc
+    source_hash: cd6b19616c14fbbfcec47beca02f206d7a8ca9500c530d06958a30a9e5488bde
     source_path: tools/plugin.md
     workflow: 16
 ---
 
 Plugins breiden OpenClaw uit met kanalen, modelproviders, agentharnassen, tools,
 Skills, spraak, realtime transcriptie, stem, mediabegrip, generatie,
-webophaling, webzoeken en andere runtimefunctionaliteiten.
+webophaling, zoeken op het web en andere runtimemogelijkheden.
 
-Gebruik deze pagina om een Plugin te installeren, de Gateway opnieuw te starten,
-te verifiëren dat de runtime deze heeft geladen en veelvoorkomende
-configuratiefouten op te lossen. Zie [Plugins beheren](/nl/plugins/manage-plugins)
-voor voorbeelden die alleen opdrachten bevatten. Zie
-[Plugin-inventaris](/nl/plugins/plugin-inventory) voor de gegenereerde inventaris
-van gebundelde, officiële externe en uitsluitend vanuit broncode beschikbare
-Plugins.
+Gebruik deze pagina om een Plugin te installeren, de Gateway opnieuw te starten, te controleren
+of deze door de runtime is geladen en veelvoorkomende installatiefouten op te lossen. Zie voor voorbeelden met alleen opdrachten
+[Plugins beheren](/nl/plugins/manage-plugins). Zie voor de gegenereerde inventaris van
+meegeleverde, officiële externe en uitsluitend als bron beschikbare Plugins
+[Plugininventaris](/nl/plugins/plugin-inventory).
 
 ## Vereisten
 
-- een checkout of installatie van OpenClaw waarin de `openclaw`-CLI beschikbaar is
+- een checkout of installatie van OpenClaw waarin de `openclaw` CLI beschikbaar is
 - netwerktoegang tot de geselecteerde bron (ClawHub, npm of een git-host)
-- alle Pluginspecifieke referenties, configuratiesleutels of
-  besturingssysteemtools die in de configuratiedocumentatie van die Plugin
-  worden genoemd
-- toestemming om de Gateway die uw kanalen bedient opnieuw te laden of te starten
+- alle Pluginspecifieke referenties, configuratiesleutels of besturingssysteemtools die in de
+  installatiedocumentatie van die Plugin worden genoemd
+- toestemming om de Gateway die je kanalen bedient opnieuw te laden of te starten
 
 ## Snel aan de slag
 
@@ -48,12 +46,11 @@ Plugins.
     openclaw plugins search "calendar"
     ```
 
-    ClawHub is het primaire ontdekkingsplatform voor community-Plugins. Tijdens
-    de overgang bij de lancering worden gewone kale pakketspecificaties nog
-    steeds vanuit npm geïnstalleerd, tenzij ze overeenkomen met een officiële
-    Plugin-id. Onbewerkte `@openclaw/*`-specificaties die overeenkomen met een
-    gebundelde Plugin worden naar die gebundelde kopie omgezet. Gebruik een
-    expliciet bronvoorvoegsel wanneer u specifiek één bron nodig hebt.
+    ClawHub is het primaire ontdekkingsplatform voor communityplugins. Tijdens de
+    overgang bij de lancering worden gewone kale pakketspecificaties nog steeds vanaf npm geïnstalleerd, tenzij
+    ze overeenkomen met een officiële Plugin-id. Onbewerkte `@openclaw/*`-specificaties die overeenkomen met een
+    meegeleverde Plugin worden naar die meegeleverde kopie omgezet. Gebruik een expliciet bronvoorvoegsel
+    wanneer je specifiek één bron nodig hebt.
 
   </Step>
 
@@ -73,8 +70,12 @@ Plugins.
     openclaw plugins install --link ./my-plugin
     ```
 
-    Behandel Plugininstallaties alsof u code uitvoert. Geef voor
-    reproduceerbare productie-installaties de voorkeur aan vastgezette versies.
+    Behandel Plugininstallaties alsof je code uitvoert. Geef voor
+    reproduceerbare productie-installaties de voorkeur aan vastgezette versies. ClawHub-pakketten en de
+    meegeleverde/officiële catalogus van OpenClaw zijn vertrouwde bronnen. Nieuwe willekeurige npm-, git-,
+    lokale pad-/archief-, `npm-pack:`- of marketplacebronnen vereisen
+    `--force` bij niet-interactieve installaties nadat je
+    de bron hebt beoordeeld en vertrouwt.
 
   </Step>
 
@@ -86,28 +87,25 @@ Plugins.
     openclaw plugins enable <plugin-id>
     ```
 
-    Als `plugins.allow` is ingesteld, moet de geïnstalleerde Plugin-id in die
-    lijst staan voordat de Plugin kan worden geladen. `openclaw plugins install`
-    voegt de geïnstalleerde id toe aan een bestaande `plugins.allow`-lijst en
-    verwijdert dezelfde id uit `plugins.deny`, zodat de expliciete installatie
-    na een herstart kan worden geladen.
+    Als `plugins.allow` is ingesteld, moet de geïnstalleerde Plugin-id in die lijst staan
+    voordat de Plugin kan worden geladen. `openclaw plugins install` voegt de geïnstalleerde
+    id toe aan een bestaande `plugins.allow`-lijst en verwijdert dezelfde id uit
+    `plugins.deny`, zodat de expliciete installatie na opnieuw starten kan worden geladen.
 
   </Step>
 
   <Step title="De Gateway opnieuw laten laden">
-    Voor het installeren, bijwerken of verwijderen van Plugincode moet de
-    Gateway opnieuw worden gestart. Een beheerde Gateway waarvoor het opnieuw
-    laden van configuratie is ingeschakeld, detecteert de gewijzigde
-    Plugininstallatierecord en start automatisch opnieuw. Start deze anders
+    Voor het installeren, bijwerken of verwijderen van Plugincode moet de Gateway
+    opnieuw worden gestart. Een beheerde Gateway waarvoor het opnieuw laden van configuratie is ingeschakeld, detecteert de gewijzigde
+    Plugininstallatieregistratie en start automatisch opnieuw. Start deze anders
     zelf opnieuw:
 
     ```bash
     openclaw gateway restart
     ```
 
-    Bij het in- of uitschakelen worden de configuratie en het koude register
-    bijgewerkt. Een runtime-inspectie blijft het duidelijkste bewijs van actieve
-    runtime-oppervlakken.
+    In-/uitschakelen werkt de configuratie en het koude register bij. Een runtime-inspectie is
+    nog steeds het duidelijkste bewijs van actieve runtime-oppervlakken.
 
   </Step>
 
@@ -116,9 +114,9 @@ Plugins.
     openclaw plugins inspect <plugin-id> --runtime --json
     ```
 
-    Gebruik `--runtime` om geregistreerde tools, hooks, services,
-    Gateway-methoden of CLI-opdrachten van de Plugin aan te tonen. Een gewone
-    `inspect` controleert alleen het koude manifest en register.
+    Gebruik `--runtime` om geregistreerde tools, hooks, services, Gateway-
+    methoden of CLI-opdrachten van de Plugin aan te tonen. Gewoon `inspect` is uitsluitend een koude manifest-
+    en registercontrole.
 
   </Step>
 </Steps>
@@ -127,56 +125,51 @@ Plugins.
 
 ### Een installatiebron kiezen
 
-| Bron        | Gebruiken wanneer                                                                                     | Voorbeeld                                                       |
-| ----------- | ----------------------------------------------------------------------------------------------------- | --------------------------------------------------------------- |
-| ClawHub     | U OpenClaw-eigen ontdekking, scans, versiemetadata en installatiehints wilt                           | `openclaw plugins install clawhub:<package>`                    |
-| npm         | U rechtstreekse workflows met het npm-register of dist-tags nodig hebt                               | `openclaw plugins install npm:<package>`                        |
-| git         | U een branch, tag of commit uit een repository nodig hebt                                             | `openclaw plugins install git:github.com/<owner>/<repo>@<ref>`  |
-| lokaal pad  | U op dezelfde machine een Plugin ontwikkelt of test                                                   | `openclaw plugins install --link ./my-plugin`                   |
-| marktplaats | U een Claude-compatibele marktplaats-Plugin installeert                                               | `openclaw plugins install <plugin> --marketplace <source>`      |
+| Bron        | Gebruiken wanneer                                                                | Voorbeeld                                                       |
+| ----------- | ------------------------------------------------------------------------------- | --------------------------------------------------------------- |
+| ClawHub     | Je OpenClaw-eigen ontdekking, scans, versiemetadata en installatietips wilt     | `openclaw plugins install clawhub:<package>`                   |
+| npm         | Je rechtstreekse npm-register- of dist-tagworkflows nodig hebt                  | `openclaw plugins install npm:<package>`                       |
+| git         | Je een branch, tag of commit uit een repository nodig hebt                      | `openclaw plugins install git:github.com/<owner>/<repo>@<ref>` |
+| lokaal pad  | Je op dezelfde machine een Plugin ontwikkelt of test                            | `openclaw plugins install --link ./my-plugin`                  |
+| marketplace | Je een Claude-compatibele marketplace-Plugin installeert                        | `openclaw plugins install <plugin> --marketplace <source>`     |
 
-Kale pakketspecificaties hebben speciaal compatibiliteitsgedrag: een kale naam
-die overeenkomt met een gebundelde Plugin-id gebruikt die gebundelde bron; een
-kale naam die overeenkomt met een officiële externe Plugin-id gebruikt de
-officiële pakketcatalogus; elke andere kale specificatie wordt tijdens de
-overgang bij de lancering via npm geïnstalleerd. Onbewerkte
-`@openclaw/*`-specificaties die overeenkomen met gebundelde Plugins worden
-eveneens vóór de terugval naar npm naar de gebundelde kopie omgezet. Gebruik
-`npm:@openclaw/<plugin>@<version>` om doelbewust het externe npm-pakket te
-installeren in plaats van de gebundelde kopie. Gebruik `clawhub:`, `npm:`,
+Kale pakketspecificaties vertonen bijzonder compatibiliteitsgedrag: een kale naam die
+overeenkomt met een meegeleverde Plugin-id gebruikt die meegeleverde bron; een kale naam die overeenkomt
+met een officiële externe Plugin-id gebruikt de officiële pakketcatalogus; elke andere
+kale specificatie wordt tijdens de overgang bij de lancering via npm geïnstalleerd. Onbewerkte `@openclaw/*`-
+specificaties die overeenkomen met meegeleverde Plugins worden vóór de npm-
+terugval ook naar de meegeleverde kopie omgezet. Gebruik `npm:@openclaw/<plugin>@<version>` om bewust het
+externe npm-pakket te installeren in plaats van de meegeleverde kopie. Gebruik `clawhub:`, `npm:`,
 `git:` of `npm-pack:` voor deterministische bronselectie. Zie
 [`openclaw plugins`](/nl/cli/plugins#install) voor het volledige opdrachtcontract.
 
-Voor npm-installaties selecteren niet-vastgezette specificaties en `@latest`
-het nieuwste stabiele pakket dat compatibiliteit met deze OpenClaw-build
-aangeeft. Als de huidige nieuwste npm-release een nieuwere
-`openclaw.compat.pluginApi` of `openclaw.install.minHostVersion` declareert dan
-deze build ondersteunt, doorzoekt OpenClaw oudere stabiele versies en
-installeert het de nieuwste passende versie. Exacte versies en expliciete
-kanaaltags zoals `@beta` blijven aan het geselecteerde pakket vastgezet en
-mislukken wanneer ze incompatibel zijn.
+Bij npm-installaties kiezen niet-vastgezette specificaties en `@latest` het nieuwste stabiele
+pakket dat compatibiliteit met deze OpenClaw-build aangeeft. Als de
+huidige nieuwste release van npm een nieuwere `openclaw.compat.pluginApi` of
+`openclaw.install.minHostVersion` declareert dan door deze build wordt ondersteund, scant OpenClaw
+oudere stabiele versies en installeert het de nieuwste passende versie. Exacte versies
+en expliciete kanaaltags zoals `@beta` blijven vastgezet op het geselecteerde pakket
+en mislukken bij incompatibiliteit.
 
-### Installatiebeleid voor operators
+### Installatiebeleid voor beheerders
 
-Configureer `security.installPolicy` om een vertrouwde lokale beleidsopdracht
-uit te voeren voordat een Plugininstallatie of -update doorgaat. Het beleid
-ontvangt metadata plus het pad naar de voorbereide bron en kan de installatie
-toestaan of blokkeren. Het geldt zowel voor installatie- en updatepaden via de
-CLI als voor die via de Gateway. Pluginhooks van het type `before_install`
-worden later uitgevoerd, en alleen in OpenClaw-processen waarin Pluginhooks
-zijn geladen. Gebruik daarom in plaats daarvan `security.installPolicy` voor
-installatiebeslissingen van de operator. De verouderde vlag
-`--dangerously-force-unsafe-install` wordt om compatibiliteitsredenen
-geaccepteerd, maar doet niets: deze omzeilt noch het installatiebeleid, noch de
-ingebouwde blokkeerlijst voor Pluginafhankelijkheden van OpenClaw.
+Configureer `security.installPolicy` om een vertrouwde lokale beleidsopdracht uit te voeren
+voordat een Plugininstallatie of -update doorgaat. Het beleid ontvangt metadata plus
+het voorbereide bronpad en kan de installatie toestaan of blokkeren. Het geldt voor zowel CLI-
+als door de Gateway ondersteunde installatie-/updatepaden. Pluginhooks van het type `before_install` worden
+later uitgevoerd, en alleen in OpenClaw-processen waarin Pluginhooks zijn geladen; gebruik daarom
+in plaats daarvan `security.installPolicy` voor installatiebeslissingen van de beheerder. De
+afgeschreven vlag `--dangerously-force-unsafe-install` wordt voor
+compatibiliteit geaccepteerd, maar doet niets: deze omzeilt noch het installatiebeleid, noch de
+ingebouwde weigerlijst van OpenClaw voor Pluginafhankelijkheden.
 
 Zie [Skills-configuratie](/nl/tools/skills-config#operator-install-policy-securityinstallpolicy)
-voor het gedeelde uitvoeringsschema van `security.installPolicy` dat door zowel
-Skills als Plugins wordt gebruikt.
+voor het gedeelde `security.installPolicy`-uitvoerschema dat door zowel Skills als
+Plugins wordt gebruikt.
 
 ### Pluginbeleid configureren
 
-De algemene vorm van de Pluginconfiguratie is:
+De gebruikelijke vorm van Pluginconfiguratie is:
 
 ```json5
 {
@@ -195,105 +188,90 @@ De algemene vorm van de Pluginconfiguratie is:
 
 Belangrijkste beleidsregels:
 
-- `plugins.enabled: false` schakelt alle Plugins uit en slaat
-  ontdekkings- en laadwerk over. Verouderde Pluginverwijzingen blijven
-  inactief zolang dit actief is; schakel Plugins opnieuw in voordat u
-  opschoning met doctor uitvoert als u verouderde id's wilt verwijderen.
-- `plugins.deny` heeft voorrang op de toestemmingslijst en inschakeling per
-  Plugin.
-- `plugins.allow` is een exclusieve toestemmingslijst. Tools van Plugins die
-  niet op de toestemmingslijst staan, blijven onbeschikbaar, zelfs wanneer
-  `tools.allow` `"*"` bevat.
-- `plugins.entries.<id>.enabled: false` schakelt één Plugin uit en behoudt de
+- `plugins.enabled: false` schakelt alle Plugins uit en slaat ontdekking/laadwerk
+  over. Verouderde Pluginverwijzingen blijven inert zolang dit actief is; schakel
+  Plugins opnieuw in voordat je opschoning met doctor uitvoert als je verouderde id's wilt verwijderen.
+- `plugins.deny` heeft voorrang op toestaan en inschakeling per Plugin.
+- `plugins.allow` is een exclusieve toelatingslijst. Tools van Plugins buiten de
+  toelatingslijst blijven onbeschikbaar, zelfs wanneer `tools.allow` `"*"` bevat.
+- `plugins.entries.<id>.enabled: false` schakelt één Plugin uit maar behoudt de
   configuratie ervan.
 - `plugins.load.paths` voegt expliciete lokale Pluginbestanden of -mappen toe.
-  Lokale paden die worden beheerd met `plugins install` moeten Pluginmappen of
-  archieven zijn; gebruik `plugins.load.paths` voor zelfstandige
-  Pluginbestanden.
-- Plugins die uit de werkruimte afkomstig zijn, zijn standaard uitgeschakeld;
-  schakel ze expliciet in of voeg ze toe aan de toestemmingslijst voordat u
-  lokale werkruimtecode gebruikt.
-- Gebundelde Plugins volgen hun ingebouwde metadata voor standaard
-  ingeschakeld of standaard uitgeschakeld, tenzij de configuratie dit
-  expliciet overschrijft.
-- `plugins.slots.<slot>` (`memory` of `contextEngine`) selecteert één Plugin
-  voor een exclusieve categorie. Slotsselectie geldt als expliciete activering
-  en schakelt de geselecteerde Plugin voor die slot geforceerd in, zelfs als
-  deze anders opt-in zou zijn. `plugins.deny` en
-  `plugins.entries.<id>.enabled: false` blokkeren deze nog steeds.
-- Gebundelde opt-in-Plugins kunnen automatisch worden geactiveerd wanneer de
-  configuratie een van hun eigen oppervlakken benoemt, zoals een
-  provider-/modelverwijzing, kanaalconfiguratie, CLI-backend of runtime van een
-  agentharnas.
-- Codex-routering binnen de OpenAI-familie houdt de grenzen tussen
-  provider- en runtime-Plugins gescheiden: verouderde Codex-modelverwijzingen
-  zijn verouderde configuratie die door doctor wordt hersteld, terwijl de
-  gebundelde `codex`-Plugin eigenaar is van de Codex-app-serverruntime voor
-  canonieke `openai/*`-agentverwijzingen, expliciete
-  `agentRuntime.id: "codex"` en verouderde `codex/*`-verwijzingen.
+  Beheerde lokale paden van `plugins install` moeten Pluginmappen of
+  archieven zijn; gebruik `plugins.load.paths` voor zelfstandige Pluginbestanden.
+- Plugins die uit de werkruimte afkomstig zijn, zijn standaard uitgeschakeld; schakel ze expliciet in of
+  voeg ze aan de toelatingslijst toe voordat je lokale werkruimtecode gebruikt.
+- Meegeleverde Plugins volgen hun ingebouwde metadata voor standaard aan/uit,
+  tenzij dit expliciet door de configuratie wordt overschreven.
+- `plugins.slots.<slot>` (`memory` of `contextEngine`) kiest één Plugin voor een
+  exclusieve categorie. Sleufselectie geldt als expliciete activering en
+  schakelt de geselecteerde Plugin gedwongen in voor die sleuf, zelfs als deze anders
+  expliciet ingeschakeld zou moeten worden. `plugins.deny` en `plugins.entries.<id>.enabled: false` blokkeren
+  deze nog steeds.
+- Meegeleverde opt-in-Plugins kunnen automatisch worden geactiveerd wanneer de configuratie een van hun
+  eigen oppervlakken noemt, zoals een provider-/modelreferentie, kanaalconfiguratie, CLI-backend
+  of runtime van een agentharnas.
+- Codex-routering binnen de OpenAI-familie houdt de grenzen tussen provider- en runtime-Plugins
+  gescheiden: verouderde Codex-modelreferenties zijn verouderde configuratie die doctor herstelt,
+  terwijl de meegeleverde `codex`-Plugin eigenaar is van de Codex-appserverruntime voor
+  canonieke `openai/*`-agentreferenties, expliciete `agentRuntime.id: "codex"` en
+  verouderde `codex/*`-referenties.
 
-Wanneer `plugins.allow` niet is ingesteld en niet-gebundelde Plugins
-automatisch vanuit de werkruimte of globale Pluginhoofdmappen worden ontdekt,
-wordt bij het opstarten
+Wanneer `plugins.allow` niet is ingesteld en niet-meegeleverde Plugins automatisch worden ontdekt vanuit
+de werkruimte of algemene Pluginhoofdmappen, registreert het opstartproces
 `plugins.allow is empty; discovered non-bundled plugins may auto-load: ...`
-gelogd, met de ontdekte Plugin-id's en, voor korte lijsten, een minimale
-`plugins.allow`-snippet. Voer
-[`openclaw plugins list --enabled --verbose`](/nl/cli/plugins#list) of
-[`openclaw plugins inspect <id>`](/nl/cli/plugins#inspect) uit voor de vermelde
-Plugin-id voordat u vertrouwde Plugins naar `openclaw.json` kopieert. Dezelfde
-vertrouwensvastlegging geldt wanneer diagnostiek meldt dat een Plugin is
-geladen `without install/load-path provenance`: inspecteer die Plugin-id en
-leg deze vervolgens vast in `plugins.allow`, of installeer deze opnieuw vanuit
-een vertrouwde bron zodat OpenClaw de installatieherkomst registreert.
+met de ontdekte Plugin-id's en, voor korte lijsten, een minimale `plugins.allow`-
+snippet. Voer [`openclaw plugins list --enabled --verbose`](/nl/cli/plugins#list)
+of [`openclaw plugins inspect <id>`](/nl/cli/plugins#inspect) uit voor de vermelde
+Plugin-id voordat je vertrouwde Plugins naar `openclaw.json` kopieert. Dezelfde
+vertrouwensvastzetting geldt wanneer diagnostiek meldt dat een Plugin is geladen
+`without install/load-path provenance`: inspecteer die Plugin-id en zet deze vervolgens vast in
+`plugins.allow`, of installeer opnieuw vanuit een vertrouwde bron zodat OpenClaw de herkomst van de
+installatie registreert.
 
-Voer `openclaw doctor` of `openclaw doctor --fix` uit wanneer
-configuratievalidatie verouderde Plugin-id's, verschillen tussen
-toestemmingslijsten en tools of verouderde paden van gebundelde Plugins meldt.
+Voer `openclaw doctor` of `openclaw doctor --fix` uit wanneer configuratievalidatie
+verouderde Plugin-id's, mismatches tussen toelatingslijst en tools, of verouderde paden van meegeleverde Plugins
+meldt.
 
 ## Pluginindelingen begrijpen
 
 OpenClaw herkent twee Pluginindelingen:
 
-| Indeling                  | Hoe deze wordt geladen                                                          | Gebruiken wanneer                                                                      |
-| ------------------------- | ------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
-| Native OpenClaw-Plugin    | `openclaw.plugin.json` plus een runtimemodule die in het proces wordt geladen   | U OpenClaw-specifieke runtimefunctionaliteiten installeert of bouwt                    |
-| Compatibele bundel        | Codex-, Claude- of Cursor-Pluginindeling die aan de OpenClaw-Plugininventaris wordt gekoppeld | U compatibele Skills, opdrachten, hooks of bundelmetadata hergebruikt         |
+| Indeling                 | Hoe deze wordt geladen                                                        | Gebruiken wanneer                                                        |
+| ------------------------ | ----------------------------------------------------------------------------- | ------------------------------------------------------------------------ |
+| Systeemeigen OpenClaw-Plugin | `openclaw.plugin.json` plus een runtimemodule die in het proces wordt geladen | Je OpenClaw-specifieke runtimemogelijkheden installeert of bouwt         |
+| Compatibele bundel       | Codex-, Claude- of Cursor-Pluginindeling toegewezen aan de OpenClaw-Plugininventaris | Je compatibele Skills, opdrachten, hooks of bundelmetadata hergebruikt |
 
-Beide indelingen verschijnen in `openclaw plugins list`,
-`openclaw plugins inspect`, `openclaw plugins enable` en
-`openclaw plugins disable`. Zie
+Beide indelingen verschijnen in `openclaw plugins list`, `openclaw plugins inspect`,
+`openclaw plugins enable` en `openclaw plugins disable`. Zie
 [Pluginbundels](/nl/plugins/bundles) voor de compatibiliteitsgrens van bundels en
-[Plugins bouwen](/nl/plugins/building-plugins) voor het maken van native Plugins.
+[Plugins bouwen](/nl/plugins/building-plugins) voor het ontwikkelen van systeemeigen Plugins.
 
 ## Pluginhooks
 
 Plugins kunnen tijdens runtime hooks registreren via twee verschillende API's:
 
-- Getypeerde hooks met `api.on(...)` voor gebeurtenissen in de
-  runtimelevenscyclus. Dit is het voorkeursoppervlak voor middleware, beleid,
-  het herschrijven van berichten, promptvormgeving en toolbeheer.
+- `api.on(...)` getypeerde hooks voor gebeurtenissen in de runtimelevenscyclus. Dit is het
+  voorkeursoppervlak voor middleware, beleid, het herschrijven van berichten, het
+  vormgeven van prompts en toolbeheer.
 - `api.registerHook(...)` voor het interne hooksysteem dat wordt beschreven in
-  [Hooks](/nl/automation/hooks). Dit is voornamelijk bedoeld voor grove
-  neveneffecten van opdrachten of de levenscyclus en compatibiliteit met
-  bestaande automatisering in HOOK-stijl.
+  [Hooks](/nl/automation/hooks). Dit is voornamelijk bedoeld voor globale neveneffecten van opdrachten/de levenscyclus
+  en compatibiliteit met bestaande automatisering in HOOK-stijl.
 
-Vuistregel: gebruik getypeerde hooks als de handler prioriteit,
-samenvoegsemantiek of blokkeer-/annuleergedrag nodig heeft. Als deze alleen
-reageert op `command:new`, `command:reset`, `message:sent` of vergelijkbare
-grove gebeurtenissen, volstaat `api.registerHook`.
+Vuistregel: als de handler prioriteit, samenvoegingssemantiek of
+blokkeer-/annuleergedrag nodig heeft, gebruik je getypeerde hooks. Als deze alleen reageert op `command:new`,
+`command:reset`, `message:sent` of vergelijkbare globale gebeurtenissen, is `api.registerHook`
+geschikt.
 
-Interne hooks die door Plugins worden beheerd, verschijnen in
-`openclaw hooks list` met `plugin:<id>`. U kunt deze niet in- of uitschakelen
-via `openclaw hooks`; schakel in plaats daarvan de Plugin in of uit.
+Door Plugins beheerde interne hooks verschijnen in `openclaw hooks list` met
+`plugin:<id>`. Je kunt ze niet inschakelen of uitschakelen via `openclaw hooks`;
+schakel in plaats daarvan de Plugin in of uit.
 
 ## De actieve Gateway verifiëren
 
-`openclaw plugins list` en een gewone `openclaw plugins inspect` lezen de
-koude configuratie-, manifest- en registerstatus. Ze bewijzen niet dat een al
-actieve Gateway dezelfde Plugincode heeft geïmporteerd.
+`openclaw plugins list` en gewone `openclaw plugins inspect` lezen koude configuratie-, manifest- en registerstatus. Ze bewijzen niet dat een reeds actieve Gateway dezelfde plugincode heeft geïmporteerd.
 
-Wanneer een Plugin als geïnstalleerd wordt weergegeven, maar actief
-chatverkeer deze niet gebruikt:
+Wanneer een plugin geïnstalleerd lijkt, maar live chatverkeer deze niet gebruikt:
 
 ```bash
 openclaw gateway status --deep --require-rpc
@@ -301,79 +279,48 @@ openclaw plugins inspect <plugin-id> --runtime --json
 openclaw gateway restart
 ```
 
-Beheerde Gateways worden automatisch opnieuw gestart na installatie-, update- en
-verwijderingswijzigingen van plugins die de pluginbron wijzigen. Zorg er bij
-VPS- of containerinstallaties voor dat een handmatige herstart gericht is op het
-daadwerkelijke onderliggende proces `openclaw gateway run` dat je kanalen bedient,
-en niet alleen op een wrapper of supervisor.
+Beheerde Gateways worden automatisch opnieuw gestart na installatie-, update- en verwijderingswijzigingen van plugins die de pluginbron wijzigen. Zorg er bij VPS- of containerinstallaties voor dat een handmatige herstart gericht is op het daadwerkelijke onderliggende proces `openclaw gateway run` dat je kanalen bedient, en niet alleen op een wrapper of supervisor.
 
-## Problemen oplossen
+## Probleemoplossing
 
-| Symptoom                                                       | Controle                                                                                                                                   | Oplossing                                                                                               |
+| Symptoom                                                        | Controle                                                                                                                                      | Oplossing                                                                                                     |
 | -------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------- |
-| Plugin verschijnt in `plugins list`, maar runtimehooks worden niet uitgevoerd | Gebruik `openclaw plugins inspect <id> --runtime --json` en controleer de actieve Gateway met `gateway status --deep --require-rpc`         | Start de actieve Gateway opnieuw na wijzigingen aan installatie, update, configuratie of bron           |
-| Diagnostiek over dubbel eigenaarschap van kanalen of tools verschijnt | Voer `openclaw plugins list --enabled --verbose` uit, inspecteer elke verdachte plugin met `--runtime --json` en vergelijk het eigenaarschap van kanalen/tools | Schakel één eigenaar uit, verwijder verouderde installaties of gebruik `preferOver` in het manifest voor doelbewuste vervanging |
-| Configuratie meldt dat een plugin ontbreekt                    | Controleer in [Pluginoverzicht](/nl/plugins/plugin-inventory) of deze gebundeld, officieel extern of alleen als bron beschikbaar is            | Installeer het externe pakket, schakel de gebundelde plugin in of verwijder verouderde configuratie      |
-| Configuratie is ongeldig tijdens de installatie                | Lees de validatiemelding en voer `openclaw doctor --fix` uit als deze naar verouderde pluginstatus verwijst                                | Doctor kan ongeldige pluginconfiguratie isoleren door de vermelding uit te schakelen en de ongeldige inhoud te verwijderen |
-| Pluginpad wordt geblokkeerd vanwege verdacht eigenaarschap of verdachte machtigingen | Bekijk de diagnose vóór de configuratiefout                                                                                      | Herstel het eigenaarschap/de machtigingen van het bestandssysteem en voer daarna `openclaw plugins registry --refresh` uit |
-| `OPENCLAW_NIX_MODE=1` blokkeert levenscyclusopdrachten         | Controleer of de installatie door Nix wordt beheerd                                                                                        | Wijzig de pluginselectie in de Nix-bron in plaats van opdrachten te gebruiken die plugins wijzigen      |
-| Importeren van afhankelijkheid mislukt tijdens runtime         | Controleer of de plugin via npm/git/ClawHub is geïnstalleerd of vanuit een lokaal pad is geladen                                           | Voer `openclaw plugins update <id>` uit, installeer de bron opnieuw of installeer lokale pluginafhankelijkheden zelf |
+| Plugin verschijnt in `plugins list`, maar runtime-hooks worden niet uitgevoerd  | Gebruik `openclaw plugins inspect <id> --runtime --json` en bevestig de actieve Gateway met `gateway status --deep --require-rpc`             | Start de live Gateway opnieuw na wijzigingen aan installatie, update, configuratie of bron                               |
+| Diagnostiek over dubbel eigenaarschap van kanalen of tools verschijnt         | Voer `openclaw plugins list --enabled --verbose` uit, inspecteer elke verdachte plugin met `--runtime --json` en vergelijk het eigenaarschap van kanalen/tools | Schakel één eigenaar uit, verwijder verouderde installaties of gebruik manifest-`preferOver` voor opzettelijke vervanging      |
+| Configuratie meldt dat een plugin ontbreekt                                | Controleer in [Plugininventaris](/nl/plugins/plugin-inventory) of deze gebundeld, officieel extern of alleen als bron beschikbaar is                           | Installeer het externe pakket, schakel de gebundelde plugin in of verwijder verouderde configuratie                         |
+| Configuratie is ongeldig tijdens de installatie                               | Lees het validatiebericht en voer `openclaw doctor --fix` uit als het naar verouderde pluginstatus verwijst                                             | Doctor kan ongeldige pluginconfiguratie in quarantaine plaatsen door de vermelding uit te schakelen en de ongeldige payload te verwijderen     |
+| Pluginpad wordt geblokkeerd vanwege verdacht eigenaarschap of verdachte machtigingen | Inspecteer de diagnostiek vóór de configuratiefout                                                                                             | Herstel het eigenaarschap/de machtigingen van het bestandssysteem en voer daarna `openclaw plugins registry --refresh` uit                    |
+| `OPENCLAW_NIX_MODE=1` blokkeert levenscyclusopdrachten                | Bevestig dat de installatie door Nix wordt beheerd                                                                                                      | Wijzig de pluginselectie in de Nix-bron in plaats van pluginmutatieopdrachten te gebruiken                      |
+| Importeren van afhankelijkheid mislukt tijdens runtime                             | Controleer of de plugin via npm/git/ClawHub is geïnstalleerd of vanuit een lokaal pad is geladen                                                 | Voer `openclaw plugins update <id>` uit, installeer de bron opnieuw of installeer zelf de lokale pluginafhankelijkheden |
 
-Wanneer verouderde pluginconfiguratie nog steeds een kanaalplugin vermeldt die
-niet langer kan worden gevonden, verlaagt configuratievalidatie die kanaalsleutel
-van een harde fout naar een waarschuwing, zodat de Gateway bij het opstarten alle
-andere kanalen nog kan bedienen. Voer `openclaw doctor --fix` uit om verouderde
-plugin- en kanaalvermeldingen te verwijderen. Onbekende kanaalsleutels zonder
-bewijs van een verouderde plugin leiden nog steeds tot mislukte validatie, zodat
-typefouten zichtbaar blijven.
+Wanneer verouderde pluginconfiguratie nog steeds een niet langer vindbare kanaalplugin vermeldt, verlaagt configuratievalidatie die kanaalsleutel van een harde fout naar een waarschuwing, zodat het opstarten van de Gateway alle andere kanalen nog steeds kan bedienen. Voer `openclaw doctor --fix` uit om verouderde plugin- en kanaalvermeldingen te verwijderen. Onbekende kanaalsleutels zonder bewijs van een verouderde plugin blijven validatie afkeuren, zodat typefouten zichtbaar blijven.
 
-Voor doelbewuste vervanging van een kanaal moet de voorkeursplugin
-`channelConfigs.<channel-id>.preferOver` declareren met de id van de verouderde
-plugin of de plugin met lagere prioriteit. Als beide plugins expliciet zijn
-ingeschakeld, respecteert OpenClaw dat verzoek en meldt het diagnostiek over
-dubbel eigenaarschap van kanalen/tools in plaats van stilzwijgend één eigenaar
-te kiezen.
+Voor opzettelijke kanaalvervanging moet de voorkeursplugin `channelConfigs.<channel-id>.preferOver` declareren met de oude plugin-id of de plugin-id met lagere prioriteit. Als beide plugins expliciet zijn ingeschakeld, respecteert OpenClaw dat verzoek en meldt het diagnostiek over dubbel eigenaarschap van kanalen/tools in plaats van stilzwijgend één eigenaar te kiezen.
 
 Als een geïnstalleerd pakket meldt dat het `requires compiled runtime output for
-TypeScript entry ...`, is het pakket gepubliceerd zonder de JavaScript-bestanden
-die OpenClaw tijdens runtime nodig heeft. Werk het pakket bij of installeer het
-opnieuw nadat de uitgever gecompileerd JavaScript heeft uitgebracht, of schakel
-de plugin tot die tijd uit of verwijder deze.
+TypeScript entry ...`, is het pakket gepubliceerd zonder de JavaScript-bestanden die OpenClaw tijdens runtime nodig heeft. Werk het pakket bij of installeer het opnieuw nadat de uitgever gecompileerd JavaScript beschikbaar heeft gesteld, of schakel de plugin tot die tijd uit of verwijder deze.
 
-### Geblokkeerd eigenaarschap van pluginpaden
+### Geblokkeerd eigenaarschap van pluginpad
 
-Als de diagnostiek
-`blocked plugin candidate: suspicious ownership (... uid=1000, expected uid=0 or root)`
-meldt en de validatie daarna `plugin present but blocked` weergeeft, heeft
-OpenClaw pluginbestanden gevonden die eigendom zijn van een andere Unix-gebruiker
-dan het proces dat ze laadt. Laat de pluginconfiguratie intact; herstel het
-eigenaarschap van het bestandssysteem of voer OpenClaw uit als dezelfde gebruiker
-die eigenaar is van de statusmap.
+Als de diagnostiek `blocked plugin candidate: suspicious ownership (... uid=1000, expected uid=0 or root)` meldt en validatie wordt gevolgd door `plugin present but blocked`, heeft OpenClaw pluginbestanden gevonden die eigendom zijn van een andere Unix-gebruiker dan het proces dat ze laadt. Laat de pluginconfiguratie staan; herstel het eigenaarschap van het bestandssysteem of voer OpenClaw uit als dezelfde gebruiker die eigenaar is van de statusmap.
 
-Bij Docker-installaties wordt de officiële image uitgevoerd als `node` (uid
-`1000`), waardoor de vanaf de host gekoppelde OpenClaw-configuratie- en
-werkruimtemappen normaal gesproken eigendom moeten zijn van uid `1000`:
+Voor Docker-installaties wordt de officiële image uitgevoerd als `node` (uid `1000`), dus de vanaf de host gekoppelde OpenClaw-configuratie- en werkruimtemappen moeten normaal gesproken eigendom zijn van uid `1000`:
 
 ```bash
 sudo chown -R 1000:1000 /path/to/openclaw-config /path/to/openclaw-workspace
 ```
 
-Als je OpenClaw doelbewust als root uitvoert, stel je in plaats daarvan root in
-als eigenaar van de beheerde pluginhoofdmap:
+Als je OpenClaw opzettelijk als root uitvoert, herstel je in plaats daarvan het eigenaarschap van de beheerde pluginroot naar root:
 
 ```bash
 sudo chown -R root:root /path/to/openclaw-config/npm
 ```
 
-Voer na het herstellen van het eigenaarschap opnieuw `openclaw doctor --fix` of
-`openclaw plugins registry --refresh` uit, zodat het opgeslagen pluginregister
-overeenkomt met de herstelde bestanden.
+Voer na het herstellen van het eigenaarschap `openclaw doctor --fix` of `openclaw plugins registry --refresh` opnieuw uit, zodat het opgeslagen pluginregister overeenkomt met de herstelde bestanden.
 
-### Trage configuratie van plugintools
+### Trage instelling van plugintools
 
-Als agentbeurten lijken vast te lopen tijdens het voorbereiden van tools, schakel
-dan tracelogboekregistratie in en controleer op timingregels van
-plugintoolfabrieken:
+Als agentbeurten lijken vast te lopen tijdens het voorbereiden van tools, schakel dan trace-logging in en controleer op timingregels van plugintoolfabrieken:
 
 ```bash
 openclaw config set logging.level trace
@@ -386,20 +333,9 @@ Zoek naar:
 [trace:plugin-tools] factory timings ...
 ```
 
-Het overzicht vermeldt de totale fabriekstijd en de traagste
-plugintoolfabrieken, inclusief plugin-id, gedeclareerde toolnamen, resultaatvorm
-en of de tool optioneel is. Trage regels worden als waarschuwingen weergegeven
-wanneer één fabriek minstens 1 seconde nodig heeft of de totale voorbereiding
-van plugintoolfabrieken minstens 5 seconden duurt.
+Het overzicht vermeldt de totale fabriekstijd en de traagste plugintoolfabrieken, inclusief plugin-id, gedeclareerde toolnamen, resultaatvorm en of de tool optioneel is. Trage regels worden waarschuwingen wanneer één fabriek ten minste 1s nodig heeft of de totale voorbereiding van plugintoolfabrieken ten minste 5s duurt.
 
-OpenClaw slaat succesvolle resultaten van plugintoolfabrieken in de cache op
-voor herhaalde oplossingen met dezelfde effectieve aanvraagcontext. De
-cachesleutel omvat de effectieve runtimeconfiguratie, werkruimte- en agent-id,
-sandboxbeleid, browserinstellingen, afleveringscontext, identiteit van de
-aanvrager en eigendomsstatus, zodat fabrieken die van deze vertrouwde velden
-afhankelijk zijn opnieuw worden uitgevoerd wanneer de context verandert. Als de
-timings hoog blijven, voert de plugin mogelijk kostbaar werk uit voordat deze de
-tooldefinities retourneert.
+OpenClaw bewaart succesvolle resultaten van plugintoolfabrieken in de cache voor herhaalde resoluties met dezelfde effectieve aanvraagcontext. De cachesleutel omvat de effectieve runtimeconfiguratie, werkruimte- en agent-id, sandboxbeleid, browserinstellingen, leveringscontext, identiteit van de aanvrager en eigendomsstatus, zodat fabrieken die afhankelijk zijn van deze vertrouwde velden opnieuw worden uitgevoerd wanneer de context verandert. Als de timings hoog blijven, voert de plugin mogelijk kostbaar werk uit voordat de tooldefinities worden geretourneerd.
 
 Als één plugin de timing domineert, inspecteer dan de runtimeregistraties:
 
@@ -407,25 +343,18 @@ Als één plugin de timing domineert, inspecteer dan de runtimeregistraties:
 openclaw plugins inspect <plugin-id> --runtime --json
 ```
 
-Werk die plugin vervolgens bij, installeer deze opnieuw of schakel deze uit.
-Pluginauteurs moeten het kostbare laden van afhankelijkheden naar het
-uitvoeringspad van de tool verplaatsen in plaats van dit binnen de toolfabriek
-uit te voeren.
+Werk die plugin vervolgens bij, installeer deze opnieuw of schakel deze uit. Pluginauteurs moeten het kostbare laden van afhankelijkheden verplaatsen naar het uitvoeringspad van de tool in plaats van dit binnen de toolfabriek uit te voeren.
 
-Zie
-[Oplossing van pluginafhankelijkheden](/nl/plugins/dependency-resolution) voor
-hoofdmaplocaties van afhankelijkheden, validatie van pakketmetadata,
-registervermeldingen, herlaadgedrag bij het opstarten en opschoning van
-verouderde gegevens.
+Zie [Resolutie van pluginafhankelijkheden](/nl/plugins/dependency-resolution) voor afhankelijkheidsroots, validatie van pakketmetadata, registervermeldingen, herlaadgedrag bij het opstarten en opschoning van verouderde gegevens.
 
 ## Gerelateerd
 
 - [Plugins beheren](/nl/plugins/manage-plugins) - opdrachtvoorbeelden voor weergeven, installeren, bijwerken, verwijderen en publiceren
 - [`openclaw plugins`](/nl/cli/plugins) - volledige CLI-referentie
-- [Pluginoverzicht](/nl/plugins/plugin-inventory) - gegenereerde lijst met gebundelde en externe plugins
+- [Plugininventaris](/nl/plugins/plugin-inventory) - gegenereerde lijst met gebundelde en externe plugins
 - [Pluginreferentie](/nl/plugins/reference) - gegenereerde referentiepagina's per plugin
-- [Communityplugins](/nl/plugins/community) - ontdekking via ClawHub en beleid voor documentatie-PR's
-- [Oplossing van pluginafhankelijkheden](/nl/plugins/dependency-resolution) - installatiehoofdmaplocaties, registervermeldingen en runtimegrenzen
+- [Communityplugins](/nl/plugins/community) - ClawHub-ontdekking en beleid voor documentatie-PR's
+- [Resolutie van pluginafhankelijkheden](/nl/plugins/dependency-resolution) - installatieroots, registervermeldingen en runtimegrenzen
 - [Plugins bouwen](/nl/plugins/building-plugins) - handleiding voor het ontwikkelen van native plugins
 - [Overzicht van de Plugin-SDK](/nl/plugins/sdk-overview) - runtimeregistratie, hooks en API-velden
 - [Pluginmanifest](/nl/plugins/manifest) - manifest- en pakketmetadata

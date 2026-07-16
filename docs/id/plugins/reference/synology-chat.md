@@ -1,14 +1,15 @@
 ---
 read_when:
-    - Anda sedang memasang, mengonfigurasi, atau mengaudit plugin synology-chat
-summary: Plugin saluran Synology Chat untuk saluran dan pesan langsung OpenClaw.
+    - Anda sedang menginstal, mengonfigurasi, atau mengaudit plugin synology-chat
+summary: Plugin saluran Synology Chat untuk kanal dan pesan langsung OpenClaw.
 title: Plugin Synology Chat
 x-i18n:
-    generated_at: "2026-07-12T14:30:30Z"
+    generated_at: "2026-07-16T18:28:14Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 13caa3939ae9abbf11f95a0578e9fcf79f280c54953bcde76a28383afa43c404
+    source_hash: 2c8da9bfb2905928dd4f7920aa9030301965788c1741424cf60c77a4891fc626
     source_path: plugins/reference/synology-chat.md
     workflow: 16
 ---
@@ -20,11 +21,11 @@ Plugin saluran Synology Chat untuk saluran dan pesan langsung OpenClaw.
 ## Distribusi
 
 - Paket: `@openclaw/synology-chat`
-- Jalur instalasi: npm; ClawHub
+- Rute instalasi: npm; ClawHub
 
 ## Permukaan
 
-saluran: synology-chat
+saluran: `synology-chat`
 
 ## Dokumentasi terkait
 

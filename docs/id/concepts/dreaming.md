@@ -1,160 +1,125 @@
 ---
 read_when:
     - Anda ingin promosi memori berjalan secara otomatis
-    - Anda ingin memahami apa yang dilakukan setiap fase dreaming
-    - Anda ingin menyesuaikan konsolidasi tanpa mengotori MEMORY.md
+    - Anda ingin memahami fungsi setiap fase dreaming
+    - Anda ingin menyetel konsolidasi tanpa mencemari MEMORY.md
 sidebarTitle: Dreaming
-summary: Konsolidasi memori latar belakang dengan fase ringan, mendalam, dan REM plus Dream Diary
+summary: Konsolidasi memori latar belakang dengan fase ringan, dalam, dan REM serta sebuah Dream Diary
 title: Dreaming
 x-i18n:
-    generated_at: "2026-06-30T14:27:30Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T17:59:43Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 1b636df63cdc5b60758f9600af695b3b6453122a03b0cc6fdc69d3c9259d1e61
+    source_hash: 501ab42cfdfa0216c308896aa8c1719b06b49d64a62afdb004e097102a376eac
     source_path: concepts/dreaming.md
     workflow: 16
 ---
 
-Dreaming adalah sistem konsolidasi memori latar belakang di `memory-core`. Sistem ini membantu OpenClaw memindahkan sinyal jangka pendek yang kuat ke memori tahan lama sambil menjaga prosesnya tetap dapat dijelaskan dan ditinjau.
+Dreaming adalah sistem konsolidasi memori latar belakang di `memory-core`. Sistem ini memindahkan sinyal jangka pendek yang kuat ke memori tahan lama sekaligus menjaga prosesnya tetap dapat dijelaskan dan ditinjau.
 
 <Note>
-Dreaming bersifat **opt-in** dan dinonaktifkan secara default.
+Dreaming bersifat **opsional** dan dinonaktifkan secara default.
 </Note>
 
-## Apa yang ditulis Dreaming
+## Yang ditulis oleh Dreaming
 
-Dreaming menyimpan dua jenis keluaran:
-
-- **Status mesin** di `memory/.dreams/` (penyimpanan recall, sinyal fase, checkpoint ingest, lock).
+- **Status mesin** di `memory/.dreams/` (penyimpanan pemanggilan kembali, sinyal fase, titik pemeriksaan penyerapan, kunci).
 - **Keluaran yang dapat dibaca manusia** di `DREAMS.md` (atau `dreams.md` yang sudah ada) dan file laporan fase opsional di bawah `memory/dreaming/<phase>/YYYY-MM-DD.md`.
 
 Promosi jangka panjang tetap hanya menulis ke `MEMORY.md`.
 
 ## Model fase
 
-Dreaming menggunakan tiga fase kooperatif:
+Dreaming menjalankan tiga fase kooperatif per penyapuan, secara berurutan: ringan -> REM -> mendalam. Ini adalah fase implementasi internal, bukan mode terpisah yang dikonfigurasi pengguna.
 
-| Fase  | Tujuan                                      | Penulisan tahan lama |
-| ----- | ------------------------------------------- | -------------------- |
-| Light | Menyortir dan menyiapkan materi jangka pendek terbaru | Tidak                |
-| Deep  | Menilai dan mempromosikan kandidat tahan lama | Ya (`MEMORY.md`)     |
-| REM   | Merefleksikan tema dan ide berulang         | Tidak                |
-
-Fase-fase ini adalah detail implementasi internal, bukan "mode" terpisah yang dikonfigurasi pengguna.
+| Fase     | Tujuan                                           | Penulisan tahan lama |
+| -------- | ------------------------------------------------ | -------------------- |
+| Ringan   | Mengurutkan dan menyiapkan materi jangka pendek terbaru | Tidak           |
+| REM      | Merefleksikan tema dan gagasan yang berulang     | Tidak                |
+| Mendalam | Menilai dan mempromosikan kandidat tahan lama    | Ya (`MEMORY.md`) |
 
 <AccordionGroup>
-  <Accordion title="Fase Light">
-    Fase Light mengingest sinyal memori harian terbaru dan jejak recall, menghapus duplikatnya, dan menyiapkan baris kandidat.
-
-    - Membaca dari status recall jangka pendek, file memori harian terbaru, dan transkrip sesi yang telah disunting jika tersedia.
-    - Menulis blok `## Light Sleep` terkelola saat penyimpanan menyertakan keluaran inline.
-    - Mencatat sinyal penguatan untuk pemeringkatan Deep berikutnya.
+  <Accordion title="Fase ringan">
+    - Membaca status pemanggilan kembali jangka pendek terbaru, file memori harian, dan transkrip sesi yang telah disunting jika tersedia.
+    - Menghapus duplikasi sinyal dan menyiapkan baris kandidat.
+    - Menulis blok `## Light Sleep` terkelola jika penyimpanan mencakup keluaran sebaris.
+    - Mencatat sinyal penguatan untuk pemeringkatan mendalam berikutnya.
     - Tidak pernah menulis ke `MEMORY.md`.
-
-  </Accordion>
-  <Accordion title="Fase Deep">
-    Fase Deep memutuskan apa yang menjadi memori jangka panjang.
-
-    - Memeringkat kandidat menggunakan penilaian berbobot dan gerbang ambang batas.
-    - Mengharuskan `minScore`, `minRecallCount`, dan `minUniqueQueries` lolos.
-    - Merehidrasi cuplikan dari file harian live sebelum menulis, sehingga cuplikan basi/terhapus dilewati.
-    - Menambahkan entri yang dipromosikan ke `MEMORY.md`.
-    - Menulis ringkasan `## Deep Sleep` ke `DREAMS.md` dan secara opsional menulis `memory/dreaming/deep/YYYY-MM-DD.md`.
 
   </Accordion>
   <Accordion title="Fase REM">
-    Fase REM mengekstrak pola dan sinyal reflektif.
-
-    - Membuat ringkasan tema dan refleksi dari jejak jangka pendek terbaru.
-    - Menulis blok `## REM Sleep` terkelola saat penyimpanan menyertakan keluaran inline.
-    - Mencatat sinyal penguatan REM yang digunakan oleh pemeringkatan Deep.
+    - Menyusun ringkasan tema dan refleksi dari jejak jangka pendek terbaru.
+    - Menulis blok `## REM Sleep` terkelola jika penyimpanan mencakup keluaran sebaris.
+    - Mencatat sinyal penguatan REM yang digunakan oleh pemeringkatan mendalam.
     - Tidak pernah menulis ke `MEMORY.md`.
 
   </Accordion>
-</AccordionGroup>
-
-## Ingest transkrip sesi
-
-Dreaming dapat mengingest transkrip sesi yang telah disunting ke korpus Dreaming. Saat transkrip tersedia, transkrip dimasukkan ke fase Light bersama sinyal memori harian dan jejak recall. Konten pribadi dan sensitif disunting sebelum ingest.
-
-## Buku Harian Mimpi
-
-Dreaming juga menyimpan **Buku Harian Mimpi** naratif di `DREAMS.md`. Setelah setiap fase memiliki materi yang cukup, `memory-core` menjalankan giliran subagen latar belakang best-effort dan menambahkan entri buku harian singkat. Ini menggunakan model runtime default kecuali `dreaming.model` dikonfigurasi. Jika model yang dikonfigurasi tidak tersedia, Buku Harian Mimpi mencoba sekali lagi dengan model default sesi.
-
-<Note>
-Buku harian ini untuk dibaca manusia di UI Dreams, bukan sumber promosi. Artefak buku harian/laporan yang dihasilkan Dreaming dikecualikan dari promosi jangka pendek. Hanya cuplikan memori berdasar bukti yang memenuhi syarat untuk dipromosikan ke `MEMORY.md`.
-</Note>
-
-Ada juga jalur backfill historis berdasar bukti untuk pekerjaan peninjauan dan pemulihan:
-
-<AccordionGroup>
-  <Accordion title="Perintah backfill">
-    - `memory rem-harness --path ... --grounded` mempratinjau keluaran buku harian berdasar bukti dari catatan historis `YYYY-MM-DD.md`.
-    - `memory rem-backfill --path ...` menulis entri buku harian berdasar bukti yang dapat dibalik ke `DREAMS.md`.
-    - `memory rem-backfill --path ... --stage-short-term` menyiapkan kandidat tahan lama berdasar bukti ke penyimpanan bukti jangka pendek yang sama yang sudah digunakan fase Deep normal.
-    - `memory rem-backfill --rollback` dan `--rollback-short-term` menghapus artefak backfill yang disiapkan tersebut tanpa menyentuh entri buku harian biasa atau recall jangka pendek live.
+  <Accordion title="Fase mendalam">
+    - Memeringkat kandidat dengan penilaian berbobot dan gerbang ambang batas (`minScore`, `minRecallCount`, `minUniqueQueries` semuanya harus lolos).
+    - Memuat ulang cuplikan dari file harian aktif sebelum menulis, sehingga cuplikan usang/dihapus akan dilewati.
+    - Menambahkan entri yang dipromosikan ke `MEMORY.md`.
+    - Menulis ringkasan `## Deep Sleep` ke dalam `DREAMS.md` dan, secara opsional, `memory/dreaming/deep/YYYY-MM-DD.md`.
 
   </Accordion>
 </AccordionGroup>
 
-Control UI mengekspos alur backfill/reset buku harian yang sama sehingga Anda dapat memeriksa hasil di scene Dreams sebelum memutuskan apakah kandidat berdasar bukti layak dipromosikan. Scene juga menampilkan jalur berdasar bukti yang berbeda sehingga Anda dapat melihat entri jangka pendek yang disiapkan mana yang berasal dari pemutaran ulang historis, item yang dipromosikan mana yang dipimpin oleh bukti, dan hanya menghapus entri yang disiapkan khusus berdasar bukti tanpa menyentuh status jangka pendek live biasa.
+## Penyerapan transkrip sesi
 
-## Sinyal pemeringkatan Deep
+Dreaming dapat menyerap transkrip sesi yang telah disunting ke dalam korpus Dreaming. Jika tersedia, transkrip memasok data ke fase ringan bersama sinyal memori harian dan jejak pemanggilan kembali. Konten pribadi dan sensitif disunting sebelum diserap.
 
-Pemeringkatan Deep menggunakan enam sinyal dasar berbobot ditambah penguatan fase:
+## Buku Harian Mimpi
 
-| Sinyal              | Bobot | Deskripsi                                         |
-| ------------------- | ----- | ------------------------------------------------- |
-| Frekuensi           | 0.24  | Berapa banyak sinyal jangka pendek yang dikumpulkan entri |
-| Relevansi           | 0.30  | Kualitas pengambilan rata-rata untuk entri        |
-| Keragaman kueri     | 0.15  | Konteks kueri/hari berbeda yang memunculkannya    |
-| Kebaruan            | 0.15  | Skor kesegaran yang meluruh seiring waktu         |
-| Konsolidasi         | 0.10  | Kekuatan kemunculan ulang lintas hari             |
-| Kekayaan konseptual | 0.06  | Kepadatan tag konsep dari cuplikan/path           |
+Dreaming menyimpan **Buku Harian Mimpi** naratif di `DREAMS.md`. Setelah setiap fase memiliki cukup materi, `memory-core` menjalankan giliran subagen latar belakang dengan upaya terbaik dan menambahkan entri harian singkat, menggunakan model runtime default kecuali `dreaming.model` dikonfigurasi. Jika model yang dikonfigurasi tidak tersedia, proses buku harian mencoba kembali satu kali dengan model default sesi; kegagalan kepercayaan atau daftar izin tidak dicoba kembali dan tetap terlihat dalam log, alih-alih beralih secara diam-diam ke entri buku harian generik.
 
-Hit fase Light dan REM menambahkan sedikit boost yang meluruh menurut kebaruan dari `memory/.dreams/phase-signals.json`.
+<Note>
+Buku harian ditujukan untuk dibaca manusia di UI Mimpi, bukan sebagai sumber promosi. Artefak buku harian/laporan dikecualikan dari promosi jangka pendek; hanya cuplikan memori yang memiliki landasan yang memenuhi syarat untuk dipromosikan ke `MEMORY.md`.
+</Note>
 
-Hasil shadow trial dapat dilapiskan di atas skor dasar tersebut sebagai sinyal
-peninjauan sebelum penulisan tahan lama apa pun. Trial yang membantu memberi
-kandidat boost kecil yang dibatasi, trial netral membuatnya tetap ditunda, dan
-trial berbahaya menandainya sebagai ditolak untuk pass penilaian tersebut.
-Sinyal ini masih hanya-laporan: sinyal ini dapat mengubah urutan kandidat atau
-metadata peninjauan, tetapi tidak menulis ke `MEMORY.md` atau mempromosikan
-kandidat dengan sendirinya.
+Tersedia juga jalur pengisian ulang historis berlandasan untuk pekerjaan peninjauan dan pemulihan:
 
-## Cakupan laporan shadow trial QA
+<AccordionGroup>
+  <Accordion title="Perintah pengisian ulang">
+    - `memory rem-harness --path ... --grounded` menampilkan pratinjau keluaran buku harian berlandasan dari catatan historis `YYYY-MM-DD.md`.
+    - `memory rem-backfill --path ...` menulis entri buku harian berlandasan yang dapat dibatalkan ke dalam `DREAMS.md`.
+    - `memory rem-backfill --path ... --stage-short-term` menyiapkan kandidat tahan lama berlandasan ke penyimpanan bukti jangka pendek yang sama dengan yang digunakan fase mendalam normal.
+    - `memory rem-backfill --rollback` dan `--rollback-short-term` menghapus artefak pengisian ulang yang telah disiapkan tersebut tanpa menyentuh entri buku harian biasa atau pemanggilan kembali jangka pendek aktif.
 
-QA Lab menyertakan skenario hanya-laporan untuk mengeksplorasi bagaimana shadow
-trial Dreaming di masa depan dapat meninjau memori kandidat sebelum promosi.
-Skenario meminta agen membandingkan jawaban dasar dengan jawaban yang dapat
-menggunakan memori kandidat, lalu menulis laporan lokal dengan verdict, alasan,
-dan flag risiko.
+  </Accordion>
+</AccordionGroup>
 
-Cakupan ini sengaja dibatasi untuk QA. Ini memverifikasi bahwa artefak laporan
-tetap terpisah dari `MEMORY.md` dan bahwa agen tidak mengklaim kandidat telah
-dipromosikan. Ini tidak menambahkan perilaku shadow trial produksi atau mengubah
-mesin promosi fase Deep.
+UI Kontrol menyediakan alur pengisian ulang/pengaturan ulang buku harian yang sama pada tab Memori agen (halaman Agen), sehingga Anda dapat memeriksa hasil dalam adegan mimpi sebelum memutuskan apakah kandidat berlandasan layak dipromosikan. Jalur Adegan berlandasan yang terpisah menunjukkan entri jangka pendek yang disiapkan dari pemutaran ulang historis, item yang dipromosikan dengan landasan sebagai faktor utama, dan memungkinkan Anda menghapus hanya entri berlandasan yang telah disiapkan tanpa menyentuh status jangka pendek aktif.
 
-Runner shadow trial `memory-core` mempertahankan kontrak hanya-laporan yang sama
-untuk jalur kode yang membutuhkan artefak stabil. Runner ini menerima kandidat,
-prompt trial, hasil dasar, hasil kandidat, verdict, alasan, flag risiko, dan
-referensi bukti, lalu menulis laporan dengan `promotion action: report-only`.
-Verdict yang membantu dipetakan ke rekomendasi `promote`, verdict netral
-dipetakan ke `defer`, dan verdict berbahaya dipetakan ke `reject`; tidak satu
-pun dari rekomendasi tersebut menulis ke `MEMORY.md` atau menerapkan promosi
-fase Deep.
+## Sinyal pemeringkatan mendalam
+
+Pemeringkatan mendalam menggunakan enam sinyal dasar berbobot ditambah penguatan fase:
+
+| Sinyal               | Bobot | Deskripsi                                               |
+| -------------------- | ----- | ------------------------------------------------------- |
+| Relevansi            | 0.30  | Rata-rata kualitas pengambilan untuk entri              |
+| Frekuensi            | 0.24  | Jumlah sinyal jangka pendek yang dikumpulkan entri      |
+| Keragaman kueri      | 0.15  | Konteks kueri/hari berbeda yang memunculkannya          |
+| Kebaruan             | 0.15  | Skor kesegaran yang berkurang seiring waktu             |
+| Konsolidasi          | 0.10  | Kekuatan pengulangan selama beberapa hari               |
+| Kekayaan konseptual  | 0.06  | Kepadatan tag konsep dari cuplikan/jalur                |
+
+Kemunculan pada fase ringan dan REM menambahkan peningkatan kecil yang berkurang seiring waktu dari `memory/.dreams/phase-signals.json`.
+
+Hasil uji bayangan dapat diterapkan di atas skor dasar sebagai sinyal peninjauan sebelum penulisan tahan lama apa pun: uji yang membantu memberi kandidat peningkatan kecil dan terbatas, uji netral membuatnya tetap ditangguhkan, dan uji yang merugikan menandainya sebagai ditolak untuk proses penilaian tersebut. Sinyal ini hanya untuk laporan - sinyal dapat mengubah urutan kandidat atau metadata peninjauan, tetapi tidak pernah menulis ke `MEMORY.md` atau mempromosikan kandidat dengan sendirinya.
+
+### Cakupan laporan uji bayangan QA
+
+Lab QA mencakup skenario khusus laporan untuk mengeksplorasi bagaimana uji bayangan Dreaming mendatang dapat meninjau memori kandidat sebelum promosi: agen membandingkan jawaban dasar dengan jawaban yang dapat menggunakan memori kandidat, lalu menulis laporan lokal yang berisi putusan, alasan, dan penanda risiko. Cakupan ini dibatasi untuk QA - cakupan ini memverifikasi bahwa artefak laporan tetap terpisah dari `MEMORY.md` dan bahwa agen tidak pernah mengklaim kandidat telah dipromosikan. Cakupan ini tidak menambahkan perilaku uji bayangan produksi atau mengubah mesin promosi fase mendalam.
+
+Pelaksana uji bayangan `memory-core` mempertahankan kontrak khusus laporan yang sama untuk jalur kode yang memerlukan artefak stabil. Pelaksana ini menerima kandidat, prompt uji, hasil dasar, hasil kandidat, putusan, alasan, penanda risiko, dan referensi bukti, lalu menulis laporan dengan `promotion action: report-only`. Putusan membantu dipetakan ke rekomendasi `promote`, putusan netral dipetakan ke `defer`, dan putusan merugikan dipetakan ke `reject` - tidak satu pun menulis ke `MEMORY.md` atau menerapkan promosi fase mendalam.
 
 ## Penjadwalan
 
-Saat diaktifkan, `memory-core` mengelola otomatis satu tugas cron untuk sweep Dreaming penuh. Setiap sweep menjalankan fase secara berurutan: Light → REM → Deep.
+Jika diaktifkan, `memory-core` mengelola secara otomatis satu tugas Cron untuk penyapuan Dreaming penuh, dengan duplikasi dihapus di seluruh ruang kerja runtime utama dan ruang kerja agen yang dikonfigurasi, sehingga penyebaran ruang kerja subagen tidak mengecualikan `DREAMS.md` dan status memori milik agen utama.
 
-Sweep menyertakan workspace runtime utama dan workspace agen apa pun yang dikonfigurasi, dengan deduplikasi berdasarkan path, sehingga fan-out workspace subagen tidak mengecualikan `DREAMS.md` dan status memori agen utama.
-
-Perilaku cadence default:
-
-| Pengaturan           | Default       |
-| -------------------- | ------------- |
+| Pengaturan             | Default       |
+| ---------------------- | ------------- |
 | `dreaming.frequency` | `0 3 * * *`   |
 | `dreaming.model`     | model default |
 
@@ -178,7 +143,7 @@ Perilaku cadence default:
     }
     ```
   </Tab>
-  <Tab title="Cadence sweep kustom">
+  <Tab title="Jadwal penyapuan khusus">
     ```json
     {
       "plugins": {
@@ -199,23 +164,21 @@ Perilaku cadence default:
   </Tab>
 </Tabs>
 
-## Perintah slash
+## Perintah garis miring
 
-```
+```text
 /dreaming status
 /dreaming on
 /dreaming off
 /dreaming help
 ```
 
-`/dreaming on` dan `/dreaming off` mengubah konfigurasi seluruh Gateway.
-Pemanggil channel harus menjadi owner, dan klien Gateway harus memiliki
-`operator.admin`. `/dreaming status` dan `/dreaming help` tetap hanya-baca.
+`/dreaming on` dan `/dreaming off` memerlukan status pemilik bagi pemanggil saluran atau `operator.admin` bagi klien Gateway. `/dreaming status` dan `/dreaming help` bersifat hanya baca.
 
 ## Alur kerja CLI
 
 <Tabs>
-  <Tab title="Pratinjau promosi / terapkan">
+  <Tab title="Pratinjau / penerapan promosi">
     ```bash
     openclaw memory promote
     openclaw memory promote --apply
@@ -223,7 +186,7 @@ Pemanggil channel harus menjadi owner, dan klien Gateway harus memiliki
     openclaw memory status --deep
     ```
 
-    `memory promote` manual menggunakan ambang batas fase Deep secara default kecuali ditimpa dengan flag CLI.
+    `memory promote` manual menggunakan ambang batas fase mendalam secara default, kecuali ditimpa dengan flag CLI.
 
   </Tab>
   <Tab title="Jelaskan promosi">
@@ -236,7 +199,7 @@ Pemanggil channel harus menjadi owner, dan klien Gateway harus memiliki
 
   </Tab>
   <Tab title="Pratinjau harness REM">
-    Pratinjau refleksi REM, kebenaran kandidat, dan keluaran promosi Deep tanpa menulis apa pun:
+    Pratinjau refleksi REM, kebenaran kandidat, dan keluaran promosi mendalam tanpa menulis apa pun:
 
     ```bash
     openclaw memory rem-harness
@@ -251,44 +214,40 @@ Pemanggil channel harus menjadi owner, dan klien Gateway harus memiliki
 Semua pengaturan berada di bawah `plugins.entries.memory-core.config.dreaming`.
 
 <ParamField path="enabled" type="boolean" default="false">
-  Aktifkan atau nonaktifkan sweep Dreaming.
+  Aktifkan atau nonaktifkan penyapuan Dreaming.
 </ParamField>
 <ParamField path="frequency" type="string" default="0 3 * * *">
-  Cadence Cron untuk sweep Dreaming penuh.
+  Jadwal Cron untuk penyapuan Dreaming penuh.
 </ParamField>
 <ParamField path="model" type="string">
-  Override model subagen Buku Harian Mimpi opsional. Gunakan nilai `provider/model` kanonis saat juga menetapkan allowlist subagen `allowedModels`.
+  Penimpaan model subagen Buku Harian Mimpi opsional. Gunakan nilai `provider/model` kanonis jika juga menetapkan daftar izin `allowedModels` subagen.
 </ParamField>
 <ParamField path="phases.deep.maxPromotedSnippetTokens" type="number" default="160">
-  Jumlah token estimasi maksimum yang dipertahankan dari setiap cuplikan recall jangka pendek yang dipromosikan ke `MEMORY.md`. Provenans pemeringkatan tetap terlihat.
+  Perkiraan jumlah token maksimum yang dipertahankan dari setiap cuplikan pemanggilan kembali jangka pendek yang dipromosikan ke `MEMORY.md`. Asal-usul pemeringkatan tetap terlihat.
 </ParamField>
 
 <Warning>
-`dreaming.model` memerlukan `plugins.entries.memory-core.subagent.allowModelOverride: true`. Untuk membatasinya, tetapkan juga `plugins.entries.memory-core.subagent.allowedModels`. Kegagalan trust atau allowlist tetap terlihat, bukan fallback diam-diam; percobaan ulang hanya mencakup error model-tidak-tersedia.
+`dreaming.model` memerlukan `plugins.entries.memory-core.subagent.allowModelOverride: true`. Untuk membatasinya, tetapkan juga `plugins.entries.memory-core.subagent.allowedModels`. Percobaan ulang otomatis hanya mencakup kesalahan model tidak tersedia; kegagalan kepercayaan atau daftar izin tetap terlihat dalam log, alih-alih beralih secara diam-diam.
 </Warning>
 
 <Note>
-Sebagian besar kebijakan fase, ambang batas, dan perilaku penyimpanan adalah detail implementasi internal. Lihat [Referensi konfigurasi memori](/id/reference/memory-config#dreaming) untuk daftar key lengkap.
+Sebagian besar kebijakan fase, ambang batas, dan perilaku penyimpanan merupakan detail implementasi internal. Lihat [referensi konfigurasi Memori](/id/reference/memory-config#dreaming) untuk daftar kunci lengkap.
 </Note>
 
-## UI Dreams
+## UI Mimpi
 
-Saat diaktifkan, tab Gateway **Dreams** menampilkan:
+Jika diaktifkan, tab **Mimpi** Gateway menampilkan:
 
-- status Dreaming aktif saat ini
-- status tingkat fase dan keberadaan sweep terkelola
-- jumlah jangka pendek, berdasar bukti, sinyal, dan dipromosikan-hari-ini
-- waktu jalan terjadwal berikutnya
-- jalur Scene berdasar bukti yang berbeda untuk entri pemutaran ulang historis yang disiapkan
-- pembaca Buku Harian Mimpi yang dapat diperluas, didukung oleh `doctor.memory.dreamDiary`
-
-## Dreaming tidak pernah berjalan: status menampilkan diblokir
-
-Jika `openclaw memory status` melaporkan `Dreaming status: blocked`, cron terkelola ada tetapi heartbeat agen default tidak berjalan. Periksa bahwa heartbeat diaktifkan untuk agen default dan targetnya bukan `none`, lalu jalankan `openclaw memory status --deep` lagi setelah interval heartbeat berikutnya.
+- status aktif Dreaming saat ini
+- status tingkat fase dan keberadaan penyapuan terkelola
+- jumlah jangka pendek, berlandasan, sinyal, dan yang dipromosikan hari ini
+- waktu proses terjadwal berikutnya
+- jalur Adegan berlandasan yang terpisah untuk entri pemutaran ulang historis yang telah disiapkan
+- pembaca Buku Harian Mimpi yang dapat diperluas dan didukung oleh `doctor.memory.dreamDiary`
 
 ## Terkait
 
 - [Memori](/id/concepts/memory)
 - [CLI Memori](/id/cli/memory)
-- [Referensi konfigurasi memori](/id/reference/memory-config)
+- [Referensi konfigurasi Memori](/id/reference/memory-config)
 - [Pencarian memori](/id/concepts/memory-search)

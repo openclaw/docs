@@ -1,21 +1,22 @@
 ---
 read_when:
-    - Instalujesz, konfigurujesz lub audytujesz plugin tlon
+    - Instalowanie, konfigurowanie lub audytowanie pluginu tlon
 summary: Plugin kanału Tlon/Urbit dla OpenClaw do przepływów pracy czatu.
 title: Plugin Tlon
 x-i18n:
-    generated_at: "2026-07-12T15:30:50Z"
+    generated_at: "2026-07-16T18:49:43Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 6fd1dcc934734599c0b671f0a9659dc5cc6e4ff907e3e14f9ff3ba5ec86aa0cc
+    source_hash: 151b22aee5f52dbe17bc4e938fff981e8bd2e1117cea10386ac2307e5e4993b4
     source_path: plugins/reference/tlon.md
     workflow: 16
 ---
 
 # Plugin Tlon
 
-Plugin kanału OpenClaw Tlon/Urbit do przepływów pracy czatu.
+Plugin kanału Tlon/Urbit dla OpenClaw, przeznaczony do przepływów pracy czatu.
 
 ## Dystrybucja
 
@@ -24,8 +25,8 @@ Plugin kanału OpenClaw Tlon/Urbit do przepływów pracy czatu.
 
 ## Zakres
 
-kanały: tlon; Skills
+kanały: `tlon`; Skills
 
 ## Powiązana dokumentacja
 
-- [tlon](/pl/channels/tlon)
+- [Tlon](/pl/channels/tlon)

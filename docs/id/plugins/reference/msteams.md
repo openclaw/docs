@@ -4,28 +4,29 @@ read_when:
 summary: Plugin saluran Microsoft Teams OpenClaw untuk percakapan bot.
 title: Plugin Microsoft Teams
 x-i18n:
-    generated_at: "2026-07-12T14:32:12Z"
+    generated_at: "2026-07-16T18:32:58Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 32353faf19a94c9df5ffc57fbf0ef91391500e0ae317c9626edcbbcf295c697b
+    source_hash: 6220668c4f527a5c56f925f6854766e7eef717fa6a2d217a73756a7a91a6d1bf
     source_path: plugins/reference/msteams.md
     workflow: 16
 ---
 
 # Plugin Microsoft Teams
 
-Plugin kanal Microsoft Teams OpenClaw untuk percakapan bot.
+Plugin channel Microsoft Teams OpenClaw untuk percakapan bot.
 
 ## Distribusi
 
 - Paket: `@openclaw/msteams`
-- Jalur instalasi: npm; ClawHub
+- Rute instalasi: npm; ClawHub
 
 ## Permukaan
 
-kanal: msteams
+channel: `msteams`
 
 ## Dokumentasi terkait
 
-- [msteams](/id/channels/msteams)
+- [Microsoft Teams](/id/channels/msteams)

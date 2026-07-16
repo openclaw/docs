@@ -1,31 +1,32 @@
 ---
 read_when:
-    - أنت تثبّت Plugin ‏raft أو تهيّئه أو تدقّق فيه
-summary: Plugin قناة Raft في OpenClaw لجسور إيقاظ CLI الآمنة.
-title: Plugin ‏Raft
+    - أنت تثبّت Plugin ‏Raft أو تهيّئه أو تدقّق فيه
+summary: Plugin قناة Raft لـ OpenClaw لجسور تنبيه CLI الآمنة.
+title: Plugin Raft
 x-i18n:
-    generated_at: "2026-07-12T06:16:37Z"
+    generated_at: "2026-07-16T14:42:08Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: fea04ec6a2f3e08d69fd95c8a8e368fdbc8e179b243b8f6b41b5f8ef70039efc
+    source_hash: 80af90cdf83fedcba8082db15376049f485c4e4cfb82cd9eefb911b15f1c72c3
     source_path: plugins/reference/raft.md
     workflow: 16
 ---
 
-# Plugin ‏Raft
+# Plugin Raft
 
-Plugin قناة Raft في OpenClaw لجسور تنبيه CLI الآمنة.
+Plugin قناة Raft من OpenClaw لجسور تنبيه CLI الآمنة.
 
 ## التوزيع
 
 - الحزمة: `@openclaw/raft`
 - مسار التثبيت: npm؛ ClawHub
 
-## الواجهة
+## السطح
 
-القنوات: raft
+القنوات: `raft`
 
 ## الوثائق ذات الصلة
 
-- [raft](/ar/channels/raft)
+- [Raft](/ar/channels/raft)

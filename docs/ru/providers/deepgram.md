@@ -1,27 +1,34 @@
 ---
 read_when:
-    - Вам нужен Deepgram для преобразования речи в текст для аудиовложений
-    - Вы хотите потоковую транскрипцию Deepgram для Voice Call
+    - Вам требуется преобразование речи в текст с помощью Deepgram для аудиовложений
+    - Вам нужна потоковая транскрипция Deepgram для голосовых вызовов
     - Вам нужен краткий пример конфигурации Deepgram
-summary: Транскрибация Deepgram для входящих голосовых заметок
+summary: Транскрибирование входящих голосовых сообщений с помощью Deepgram
 title: Deepgram
 x-i18n:
-    generated_at: "2026-06-28T23:36:02Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T16:41:40Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 9d591aa24a5477fd9fe69b7a0dc44b204d28ea0c2f89e6dfef66f9ceb76da34d
+    source_hash: 74652e089899423d117dae6267e7c9af09e52ec91ee15e3532fcb2d705f43099
     source_path: providers/deepgram.md
     workflow: 16
 ---
 
-Deepgram — это API преобразования речи в текст. В OpenClaw он используется для транскрибации входящих аудио/голосовых заметок через `tools.media.audio` и для потокового STT голосовых вызовов через `plugins.entries.voice-call.config.streaming`.
+Deepgram — это API преобразования речи в текст. OpenClaw использует его для транскрибирования входящих аудиосообщений и голосовых заметок
+через `tools.media.audio`, а также для потокового преобразования речи в текст при голосовых вызовах
+через `plugins.entries.voice-call.config.streaming`.
 
-Для пакетной транскрибации OpenClaw загружает полный аудиофайл в Deepgram и внедряет транскрипт в конвейер ответа (блок `{{Transcript}}` + `[Audio]`). Для потоковой передачи голосового вызова OpenClaw пересылает live-кадры G.711 u-law через WebSocket-эндпоинт Deepgram `listen` и выдает частичные или финальные транскрипты по мере их возврата Deepgram.
+При пакетном транскрибировании полный аудиофайл загружается в Deepgram, а
+транскрипция добавляется в конвейер ответов (блок `{{Transcript}}` + `[Audio]`).
+При потоковом преобразовании речи в текст для голосовых вызовов кадры G.711 u-law в реальном времени передаются через
+конечную точку WebSocket `listen` Deepgram, а по мере получения от Deepgram
+создаются промежуточные и окончательные транскрипции.
 
 | Сведения      | Значение                                                   |
 | ------------- | ---------------------------------------------------------- |
-| Сайт          | [deepgram.com](https://deepgram.com)                       |
+| Веб-сайт      | [deepgram.com](https://deepgram.com)                       |
 | Документация  | [developers.deepgram.com](https://developers.deepgram.com) |
 | Аутентификация | `DEEPGRAM_API_KEY`                                         |
 | Модель по умолчанию | `nova-3`                                                   |
@@ -30,14 +37,11 @@ Deepgram — это API преобразования речи в текст. В 
 
 <Steps>
   <Step title="Задайте ключ API">
-    Добавьте ключ API Deepgram в окружение:
-
-    ```
+    ```bash
     DEEPGRAM_API_KEY=dg_...
     ```
-
   </Step>
-  <Step title="Включите аудиопровайдера">
+  <Step title="Включите провайдер аудио">
     ```json5
     {
       tools: {
@@ -52,20 +56,21 @@ Deepgram — это API преобразования речи в текст. В 
     ```
   </Step>
   <Step title="Отправьте голосовую заметку">
-    Отправьте аудиосообщение через любой подключенный канал. OpenClaw транскрибирует его
-    через Deepgram и внедрит транскрипт в конвейер ответа.
+    Отправьте аудиосообщение через любой подключённый канал. OpenClaw транскрибирует его
+    с помощью Deepgram и добавит транскрипцию в конвейер ответов.
   </Step>
 </Steps>
 
 ## Параметры конфигурации
 
-| Параметр          | Путь                                                         | Описание                                      |
-| ----------------- | ------------------------------------------------------------ | --------------------------------------------- |
-| `model`           | `tools.media.audio.models[].model`                           | Идентификатор модели Deepgram (по умолчанию: `nova-3`) |
-| `language`        | `tools.media.audio.models[].language`                        | Подсказка языка (необязательно)               |
-| `detect_language` | `tools.media.audio.providerOptions.deepgram.detect_language` | Включить определение языка (необязательно)    |
-| `punctuate`       | `tools.media.audio.providerOptions.deepgram.punctuate`       | Включить пунктуацию (необязательно)           |
-| `smart_format`    | `tools.media.audio.providerOptions.deepgram.smart_format`    | Включить интеллектуальное форматирование (необязательно) |
+| Параметр  | Путь                                  | Описание                              |
+| ---------- | ------------------------------------- | ------------------------------------- |
+| `model`    | `tools.media.audio.models[].model`    | Идентификатор модели Deepgram (по умолчанию: `nova-3`) |
+| `language` | `tools.media.audio.models[].language` | Подсказка языка (необязательно)       |
+
+`providerOptions.deepgram` добавляет дополнительные параметры запроса непосредственно в
+запрос Deepgram `/listen`, поэтому можно использовать любое имя параметра,
+поддерживаемое Deepgram (например, `detect_language`, `punctuate`, `smart_format`):
 
 <Tabs>
   <Tab title="С подсказкой языка">
@@ -105,20 +110,21 @@ Deepgram — это API преобразования речи в текст. В 
   </Tab>
 </Tabs>
 
-## Потоковое STT для Voice Call
+## Потоковое преобразование речи в текст для голосовых вызовов
 
-Встроенный Plugin `deepgram` также регистрирует поставщика транскрибации в реальном времени
-для Plugin Voice Call.
+Встроенный плагин `deepgram` также регистрирует провайдер транскрибирования в реальном времени
+для плагина голосовых вызовов.
 
-| Настройка              | Путь конфигурации                                                       | По умолчанию                         |
-| ---------------------- | ----------------------------------------------------------------------- | ------------------------------------ |
-| Ключ API               | `plugins.entries.voice-call.config.streaming.providers.deepgram.apiKey` | Использует `DEEPGRAM_API_KEY`        |
-| Модель                 | `...deepgram.model`                                                     | `nova-3`                             |
-| Язык                   | `...deepgram.language`                                                  | (не задано)                          |
-| Кодирование            | `...deepgram.encoding`                                                  | `mulaw`                              |
-| Частота дискретизации  | `...deepgram.sampleRate`                                                | `8000`                               |
-| Endpointing            | `...deepgram.endpointingMs`                                             | `800`                                |
-| Промежуточные результаты | `...deepgram.interimResults`                                          | `true`                               |
+| Настройка       | Путь конфигурации                                                        | Значение по умолчанию                        |
+| --------------- | ----------------------------------------------------------------------- | -------------------------------------------- |
+| Ключ API        | `plugins.entries.voice-call.config.streaming.providers.deepgram.apiKey` | Если не задан, используется `DEEPGRAM_API_KEY` |
+| Базовый URL     | `...deepgram.baseUrl`                                                   | `DEEPGRAM_BASE_URL` или общедоступный API Deepgram |
+| Модель          | `...deepgram.model`                                                     | `nova-3`                                     |
+| Язык            | `...deepgram.language`                                                  | (не задан)                                   |
+| Кодировка       | `...deepgram.encoding`                                                  | `mulaw`                                      |
+| Частота дискретизации | `...deepgram.sampleRate`                                                | `8000`                                       |
+| Определение конца реплики | `...deepgram.endpointingMs`                                             | `800`                                        |
+| Промежуточные результаты | `...deepgram.interimResults`                                            | `true`                                       |
 
 ```json5
 {
@@ -145,40 +151,46 @@ Deepgram — это API преобразования речи в текст. В 
 }
 ```
 
+Чтобы использовать [пользовательскую конечную точку Deepgram](https://developers.deepgram.com/reference/custom-endpoints),
+задайте для `baseUrl` корневой адрес конечной точки, включая базовый путь, но без `/listen`.
+Конечные точки реального времени принимают `http://`, `https://`, `ws://` и `wss://`. HTTP
+преобразуется в WS, HTTPS — в WSS, а явно указанные схемы WebSocket остаются без изменений.
+Некорректные URL-адреса и другие схемы приводят к ошибке при настройке сеанса.
+
 <Note>
-Voice Call получает телефонный звук как 8 kHz G.711 u-law. Поставщик потоковой передачи Deepgram
-по умолчанию использует `encoding: "mulaw"` и `sampleRate: 8000`, поэтому
-медиакадры Twilio можно пересылать напрямую.
+Voice Call получает телефонный звук в формате G.711 u-law с частотой 8 кГц. Провайдер потоковой передачи
+Deepgram по умолчанию использует `encoding: "mulaw"` и `sampleRate: 8000`, поэтому
+медиакадры Twilio можно передавать напрямую.
 </Note>
 
 ## Примечания
 
 <AccordionGroup>
   <Accordion title="Аутентификация">
-    Аутентификация следует стандартному порядку авторизации поставщиков. `DEEPGRAM_API_KEY` —
-    самый простой путь.
+    Аутентификация выполняется в стандартном для провайдеров порядке. `DEEPGRAM_API_KEY` —
+    самый простой вариант.
   </Accordion>
   <Accordion title="Прокси и пользовательские конечные точки">
-    Переопределяйте конечные точки или заголовки с помощью `tools.media.audio.baseUrl` и
-    `tools.media.audio.headers` при использовании прокси.
+    При использовании прокси переопределите конечные точки или заголовки с помощью `tools.media.audio.baseUrl` и
+    `tools.media.audio.headers`.
   </Accordion>
-  <Accordion title="Поведение вывода">
-    Вывод следует тем же правилам для аудио, что и у других поставщиков (ограничения размера, тайм-ауты,
-    внедрение транскрипта).
+  <Accordion title="Формирование результата">
+    Результат подчиняется тем же правилам обработки аудио, что и у других провайдеров (ограничения размера, тайм-ауты,
+    добавление транскрипции).
   </Accordion>
 </AccordionGroup>
 
-## Связанные материалы
+## См. также
 
 <CardGroup cols={2}>
-  <Card title="Медиаинструменты" href="/ru/tools/media-overview" icon="photo-film">
+  <Card title="Инструменты обработки медиа" href="/ru/tools/media-overview" icon="photo-film">
     Обзор конвейера обработки аудио, изображений и видео.
   </Card>
   <Card title="Конфигурация" href="/ru/gateway/configuration" icon="gear">
-    Полный справочник конфигурации, включая настройки медиаинструментов.
+    Полный справочник по конфигурации, включая настройки инструментов обработки медиа.
   </Card>
   <Card title="Устранение неполадок" href="/ru/help/troubleshooting" icon="wrench">
-    Распространенные проблемы и шаги отладки.
+    Распространённые проблемы и действия по отладке.
   </Card>
   <Card title="Часто задаваемые вопросы" href="/ru/help/faq" icon="circle-question">
     Часто задаваемые вопросы о настройке OpenClaw.

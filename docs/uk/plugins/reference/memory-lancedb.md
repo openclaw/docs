@@ -2,29 +2,30 @@
 read_when:
     - Ви встановлюєте, налаштовуєте або перевіряєте Plugin memory-lancedb.
 summary: Plugin довготривалої пам’яті OpenClaw на базі LanceDB з автоматичним пригадуванням, автоматичним збереженням і векторним пошуком.
-title: Plugin пам’яті LanceDB
+title: Плагін пам’яті LanceDB
 x-i18n:
-    generated_at: "2026-07-12T13:35:09Z"
+    generated_at: "2026-07-16T18:25:34Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: db3843c421abdf738723f87f5bf12ed7acc2e6638e5869c2ad10b4b5722d402d
+    source_hash: b3fc4d560d4f38a17eca034f44dc890e144d97610b9660a5674b6a6fd2a341d7
     source_path: plugins/reference/memory-lancedb.md
     workflow: 16
 ---
 
-# Plugin пам’яті LanceDB
+# Плагін Memory Lancedb
 
-Plugin довготривалої пам’яті OpenClaw на основі LanceDB з автоматичним пригадуванням, автоматичним збереженням і векторним пошуком.
+Плагін довготривалої пам’яті OpenClaw на основі LanceDB з автоматичним пригадуванням, автоматичним збереженням і векторним пошуком.
 
 ## Розповсюдження
 
 - Пакунок: `@openclaw/memory-lancedb`
-- Спосіб установлення: npm; ClawHub
+- Спосіб встановлення: npm; ClawHub
 
 ## Інтерфейс
 
-контракти: інструменти
+контракти: `tools`
 
 ## Пов’язана документація
 

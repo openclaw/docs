@@ -1,21 +1,22 @@
 ---
 read_when:
-    - Ви встановлюєте, налаштовуєте або перевіряєте Plugin featherless.
-summary: Plugin постачальника ШІ Featherless для OpenClaw.
-title: Plugin Featherless
+    - Ви встановлюєте, налаштовуєте або перевіряєте plugin featherless
+summary: Plugin постачальника Featherless AI для OpenClaw.
+title: Плагін Featherless
 x-i18n:
-    generated_at: "2026-07-12T13:36:24Z"
+    generated_at: "2026-07-16T18:24:21Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: b5365b6d07b7828408411c7fd15e0721692bb70e15c8ba01eb3d6d44a5a308bd
+    source_hash: cc85911d6fa5ee416b1abd11bd08466d1e8d245ad3edb03e315fb555b4ed38b3
     source_path: plugins/reference/featherless.md
     workflow: 16
 ---
 
 # Plugin Featherless
 
-Plugin постачальника ШІ Featherless для OpenClaw.
+Plugin постачальника Featherless AI для OpenClaw.
 
 ## Розповсюдження
 
@@ -24,8 +25,8 @@ Plugin постачальника ШІ Featherless для OpenClaw.
 
 ## Інтерфейс
 
-постачальники: featherless
+постачальники: `featherless`
 
 ## Пов’язана документація
 
-- [featherless](/providers/featherless)
+- [featherless](/uk/providers/featherless)

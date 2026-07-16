@@ -1,22 +1,22 @@
 ---
 read_when:
     - Вы устанавливаете, настраиваете или проверяете плагин senseaudio
-summary: Добавляет поддержку провайдера для распознавания медиаконтента.
+summary: Добавляет поддержку провайдера для анализа медиаконтента.
 title: Плагин Senseaudio
 x-i18n:
-    generated_at: "2026-07-13T18:25:07Z"
+    generated_at: "2026-07-16T16:44:12Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
-    prompt_version: 24
+    prompt_version: 32
     provider: openai
-    source_hash: b1566a7e33b2f3d367c0fafc364b701aff60587204bb585af1cf15786e5ed330
+    source_hash: 5be8db39a6e5f2a2bf1e8587aaff5f82c6c3edfc0ceced59361974133482a303
     source_path: plugins/reference/senseaudio.md
     workflow: 16
 ---
 
 # Плагин Senseaudio
 
-Добавляет поддержку провайдера анализа медиаконтента.
+Добавляет поддержку провайдера для распознавания медиаконтента.
 
 ## Распространение
 
@@ -25,8 +25,8 @@ x-i18n:
 
 ## Интерфейс
 
-контракты: mediaUnderstandingProviders
+контракты: `mediaUnderstandingProviders`
 
-## Связанные документы
+## Связанная документация
 
 - [senseaudio](/ru/providers/senseaudio)

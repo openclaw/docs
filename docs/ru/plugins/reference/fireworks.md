@@ -4,19 +4,19 @@ read_when:
 summary: Добавляет в OpenClaw поддержку провайдера моделей Fireworks.
 title: Плагин Fireworks
 x-i18n:
-    generated_at: "2026-07-13T18:23:38Z"
+    generated_at: "2026-07-16T17:13:46Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
-    prompt_version: 24
+    prompt_version: 32
     provider: openai
-    source_hash: 1750e345f485fa7d8735a16278422188ad761b0c682cd5f09227f4407d502203
+    source_hash: f50d32c05d94cd14dbbc3dc25659884dbe3c23c2d613bceaaae573e942a545d5
     source_path: plugins/reference/fireworks.md
     workflow: 16
 ---
 
 # Плагин Fireworks
 
-Добавляет в OpenClaw поддержку провайдера моделей Fireworks.
+Добавляет в OpenClaw поддержку поставщика моделей Fireworks.
 
 ## Распространение
 
@@ -25,7 +25,7 @@ x-i18n:
 
 ## Интерфейс
 
-providers: fireworks
+поставщики: `fireworks`
 
 ## Связанная документация
 

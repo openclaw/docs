@@ -1,30 +1,31 @@
 ---
 read_when:
     - Bạn đang cài đặt, cấu hình hoặc kiểm tra Plugin qqbot
-summary: Plugin kênh Bot QQ của OpenClaw dành cho quy trình làm việc trong nhóm và tin nhắn trực tiếp.
+summary: Plugin kênh QQ Bot của OpenClaw dành cho quy trình làm việc trong nhóm và tin nhắn trực tiếp.
 title: Plugin bot QQ
 x-i18n:
-    generated_at: "2026-07-12T08:11:00Z"
+    generated_at: "2026-07-16T15:40:11Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 10e67c8c8bd01a2fcd3ca55c32f6941cd52551ad241cb16a2ea38c62d80cfeb9
+    source_hash: afc0633399e0fe6d37bf233fabbac0806e32a5e8151b5b841a3d9f51d1cde455
     source_path: plugins/reference/qqbot.md
     workflow: 16
 ---
 
 # Plugin QQ Bot
 
-Plugin kênh QQ Bot của OpenClaw dành cho quy trình làm việc trong nhóm và tin nhắn trực tiếp.
+Plugin kênh QQ Bot của OpenClaw dành cho quy trình làm việc theo nhóm và tin nhắn trực tiếp.
 
 ## Phân phối
 
 - Gói: `@openclaw/qqbot`
-- Phương thức cài đặt: npm; ClawHub
+- Cách cài đặt: npm; ClawHub
 
-## Phạm vi
+## Bề mặt
 
-kênh: qqbot; hợp đồng: công cụ; Skills
+kênh: `qqbot`; hợp đồng: `tools`; kỹ năng
 
 ## Tài liệu liên quan
 

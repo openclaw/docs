@@ -1,14 +1,15 @@
 ---
 read_when:
-    - Estás instalando, configurando o auditando el plugin chutes
-summary: Añade compatibilidad con el proveedor de modelos Chutes a OpenClaw.
+    - Está instalando, configurando o auditando el plugin Chutes
+summary: Añade compatibilidad con el proveedor de modelos Chutes en OpenClaw.
 title: Plugin de Chutes
 x-i18n:
-    generated_at: "2026-07-11T23:19:44Z"
+    generated_at: "2026-07-16T11:50:12Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 63f5196b0202e47ea95c3dd226546ff3e09083632e58ca780c608f53c2ba85af
+    source_hash: 5093b123b191765ca52544e810f9618a5644a27c20394ef3deb5ba488cf80da3
     source_path: plugins/reference/chutes.md
     workflow: 16
 ---
@@ -20,12 +21,12 @@ Añade compatibilidad con el proveedor de modelos Chutes a OpenClaw.
 ## Distribución
 
 - Paquete: `@openclaw/chutes-provider`
-- Método de instalación: npm; ClawHub: `clawhub:@openclaw/chutes-provider`
+- Ruta de instalación: npm; ClawHub: `clawhub:@openclaw/chutes-provider`
 
 ## Superficie
 
-proveedores: chutes
+proveedores: `chutes`
 
 ## Documentación relacionada
 
-- [chutes](/es/providers/chutes)
+- [Chutes](/es/providers/chutes)

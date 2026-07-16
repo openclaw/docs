@@ -1,15 +1,15 @@
 ---
 read_when:
-    - Вы устанавливаете, настраиваете или проводите аудит плагина copilot-proxy
+    - Вы устанавливаете, настраиваете или проверяете плагин copilot-proxy
 summary: Добавляет в OpenClaw поддержку провайдера моделей Copilot Proxy.
 title: Плагин Copilot Proxy
 x-i18n:
-    generated_at: "2026-07-13T18:33:20Z"
+    generated_at: "2026-07-16T16:34:05Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
-    prompt_version: 24
+    prompt_version: 32
     provider: openai
-    source_hash: 454c4a36d606ce1e07c3801a3dede590c4033e80051d5c2e5a20f0767ca2573e
+    source_hash: 4f5f18ba0291906bdce6c1a104705d7d38d59645a0b006be9bce65553aae2f44
     source_path: plugins/reference/copilot-proxy.md
     workflow: 16
 ---
@@ -25,4 +25,4 @@ x-i18n:
 
 ## Интерфейс
 
-поставщики: copilot-proxy
+поставщики: `copilot-proxy`

@@ -1,45 +1,37 @@
 ---
 read_when:
-    - می‌خواهید عامل‌ها ویرایش‌های کد یا Markdown را به‌صورت diff نشان دهند
-    - یک URL آماده برای نمایش در canvas یا یک فایل diff رندرشده می‌خواهید
-    - به آرتیفکت‌های diff موقت و کنترل‌شده با پیش‌فرض‌های امن نیاز دارید
+    - می‌خواهید عامل‌ها ویرایش‌های کد یا Markdown را به‌صورت تفاوت‌ها نمایش دهند
+    - یک URL نمایشگر آماده برای canvas یا یک فایل diff رندرشده می‌خواهید
+    - به مصنوعات موقت و کنترل‌شدهٔ تفاوت‌ها با پیش‌فرض‌های امن نیاز دارید
 sidebarTitle: Diffs
-summary: نمایشگر تفاوت و رندرکننده فایل فقط‌خواندنی برای عامل‌ها (ابزار Plugin اختیاری)
+summary: نمایشگر تفاوت‌ها و رندرکنندهٔ فایل فقط‌خواندنی برای عامل‌ها (ابزار اختیاری Plugin)
 title: تفاوت‌ها
 x-i18n:
-    generated_at: "2026-06-27T18:56:42Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T17:32:32Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: ea3d8e9e026e10b2f3658b795c07ea21062896ab0d45a8cb2dc7e0e9ed9aa658
+    source_hash: f28a8ac4191f72376ba5c8823337bd337e3fac236ea4ecc2204e6dcf2930e607
     source_path: tools/diffs.md
     workflow: 16
 ---
 
-`diffs` یک ابزار اختیاری Plugin با راهنمای سیستم داخلی کوتاه و یک Skill همراه است که محتوای تغییرات را به یک مصنوع diff فقط‌خواندنی برای عامل‌ها تبدیل می‌کند.
+`diffs` یک ابزار اختیاریِ همراهِ Plugin است که متن پیش/پس یا یک وصلهٔ یکپارچه را به یک مصنوع diff فقط‌خواندنی تبدیل می‌کند. همچنین راهنمایی کوتاهی برای عامل به ابتدای اعلان سیستم می‌افزاید و برای دستورالعمل‌های کامل‌تر، یک Skill همراه ارائه می‌دهد.
 
-یا این‌ها را می‌پذیرد:
+ورودی: متن `before` + `after`، یا یک `patch` یکپارچه (ناهم‌زمان و انحصاری).
 
-- متن `before` و `after`
-- یک `patch` یکپارچه
-
-می‌تواند این‌ها را برگرداند:
-
-- یک URL نمایشگر Gateway برای ارائه روی canvas
-- یک مسیر فایل رندرشده (PNG یا PDF) برای تحویل پیام
-- هر دو خروجی در یک فراخوانی
-
-وقتی فعال باشد، Plugin راهنمای کاربردی مختصر را به فضای system-prompt اضافه می‌کند و همچنین برای مواردی که عامل به دستورالعمل‌های کامل‌تر نیاز دارد، یک Skill تفصیلی ارائه می‌دهد.
+خروجی: یک URL نمایشگر Gateway برای ارائه در بوم، مسیر فایل PNG/PDF رندرشده برای تحویل پیام، یا هر دو.
 
 ## شروع سریع
 
 <Steps>
-  <Step title="Install the plugin">
+  <Step title="نصب Plugin">
     ```bash
     openclaw plugins install diffs
     ```
   </Step>
-  <Step title="Enable the plugin">
+  <Step title="فعال‌کردن Plugin">
     ```json5
     {
       plugins: {
@@ -52,24 +44,24 @@ x-i18n:
     }
     ```
   </Step>
-  <Step title="Pick a mode">
+  <Step title="انتخاب یک حالت">
     <Tabs>
       <Tab title="view">
-        جریان‌های canvas-محور: عامل‌ها `diffs` را با `mode: "view"` فراخوانی می‌کنند و `details.viewerUrl` را با `canvas present` باز می‌کنند.
+        جریان‌های بوم‌محور: عامل‌ها `diffs` را با `mode: "view"` فراخوانی می‌کنند و `details.viewerUrl` را با `canvas present` باز می‌کنند.
       </Tab>
       <Tab title="file">
-        تحویل فایل در چت: عامل‌ها `diffs` را با `mode: "file"` فراخوانی می‌کنند و `details.filePath` را با `message` با استفاده از `path` یا `filePath` ارسال می‌کنند.
+        تحویل فایل در گپ: عامل‌ها `diffs` را با `mode: "file"` فراخوانی می‌کنند و `details.filePath` را با `message`، با استفاده از `path` یا `filePath` ارسال می‌کنند.
       </Tab>
       <Tab title="both">
-        ترکیبی: عامل‌ها `diffs` را با `mode: "both"` فراخوانی می‌کنند تا هر دو مصنوع را در یک فراخوانی دریافت کنند.
+        ترکیبی (پیش‌فرض): عامل‌ها `diffs` را با `mode: "both"` فراخوانی می‌کنند تا هر دو مصنوع را در یک فراخوانی دریافت کنند.
       </Tab>
     </Tabs>
   </Step>
 </Steps>
 
-## غیرفعال‌کردن راهنمای سیستم داخلی
+## غیرفعال‌کردن راهنمای داخلی سیستم
 
-اگر می‌خواهید ابزار `diffs` فعال بماند اما راهنمای system-prompt داخلی آن را غیرفعال کنید، `plugins.entries.diffs.hooks.allowPromptInjection` را روی `false` تنظیم کنید:
+برای نگه‌داشتن ابزار و حذف راهنمای افزوده‌شده به اعلان سیستم، `plugins.entries.diffs.hooks.allowPromptInjection` را روی `false` تنظیم کنید:
 
 ```json5
 {
@@ -86,88 +78,47 @@ x-i18n:
 }
 ```
 
-این کار hookِ `before_prompt_build` مربوط به Plugin `diffs` را مسدود می‌کند، در حالی که خود Plugin، ابزار و Skill همراه همچنان در دسترس می‌مانند.
-
-اگر می‌خواهید هم راهنما و هم ابزار را غیرفعال کنید، به‌جای آن Plugin را غیرفعال کنید.
-
-## گردش‌کار معمول عامل
-
-<Steps>
-  <Step title="Call diffs">
-    عامل ابزار `diffs` را با ورودی فراخوانی می‌کند.
-  </Step>
-  <Step title="Read details">
-    عامل فیلدهای `details` را از پاسخ می‌خواند.
-  </Step>
-  <Step title="Present">
-    عامل یا `details.viewerUrl` را با `canvas present` باز می‌کند، یا `details.filePath` را با `message` با استفاده از `path` یا `filePath` ارسال می‌کند، یا هر دو کار را انجام می‌دهد.
-  </Step>
-</Steps>
-
-## نمونه‌های ورودی
-
-<Tabs>
-  <Tab title="Before and after">
-    ```json
-    {
-      "before": "# Hello\n\nOne",
-      "after": "# Hello\n\nTwo",
-      "path": "docs/example.md",
-      "mode": "view"
-    }
-    ```
-  </Tab>
-  <Tab title="Patch">
-    ```json
-    {
-      "patch": "diff --git a/src/example.ts b/src/example.ts\n--- a/src/example.ts\n+++ b/src/example.ts\n@@ -1 +1 @@\n-const x = 1;\n+const x = 2;\n",
-      "mode": "both"
-    }
-    ```
-  </Tab>
-</Tabs>
+این کار قلاب `before_prompt_build` متعلق به Plugin را مسدود می‌کند، درحالی‌که ابزار و Skill همچنان در دسترس می‌مانند. برای غیرفعال‌کردن هم راهنما و هم ابزار، خود Plugin را غیرفعال کنید.
 
 ## مرجع ورودی ابزار
 
-همه فیلدها اختیاری‌اند، مگر خلاف آن ذکر شده باشد.
+همهٔ فیلدها اختیاری‌اند، مگر آنکه خلافش ذکر شده باشد.
 
 <ParamField path="before" type="string">
-  متن اصلی. وقتی `patch` حذف شده باشد، همراه با `after` الزامی است.
+  متن اصلی. وقتی `patch` حذف شده است، همراه با `after` الزامی است.
 </ParamField>
 <ParamField path="after" type="string">
-  متن به‌روزشده. وقتی `patch` حذف شده باشد، همراه با `before` الزامی است.
+  متن به‌روزشده. وقتی `patch` حذف شده است، همراه با `before` الزامی است.
 </ParamField>
 <ParamField path="patch" type="string">
-  متن diff یکپارچه. با `before` و `after` ناسازگار است.
+  متن diff یکپارچه. با `before` و `after` ناهم‌زمان و انحصاری است.
 </ParamField>
 <ParamField path="path" type="string">
-  نام فایل نمایشی برای حالت قبل و بعد.
+  نام فایل نمایشی برای حالت پیش/پس.
 </ParamField>
 <ParamField path="lang" type="string">
-  راهنمای بازنویسی زبان برای حالت قبل و بعد. مقدارهای ناشناخته و زبان‌های خارج از مجموعه پیش‌فرض نمایشگر، به متن ساده برمی‌گردند مگر اینکه
-  Plugin Diff Viewer Language Pack نصب شده باشد.
+  راهنمای بازنویسی زبان برای حالت پیش/پس. مقادیر ناشناخته و زبان‌های خارج از مجموعهٔ پیش‌فرض نمایشگر، مگر آنکه Plugin بستهٔ زبان نمایشگر Diff نصب شده باشد، به متن ساده برمی‌گردند.
 </ParamField>
-
 <ParamField path="title" type="string">
   بازنویسی عنوان نمایشگر.
 </ParamField>
 <ParamField path="mode" type='"view" | "file" | "both"'>
-  حالت خروجی. مقدار پیش‌فرض آن پیش‌فرض Plugin یعنی `defaults.mode` است. نام مستعار منسوخ: `"image"` مانند `"file"` رفتار می‌کند و هنوز برای سازگاری عقب‌رو پذیرفته می‌شود.
+  حالت خروجی. پیش‌فرض آن مقدار پیش‌فرض Plugin یعنی `defaults.mode` (`both`) است. نام مستعار منسوخ‌شده: `"image"` دقیقاً مانند `"file"` رفتار می‌کند.
 </ParamField>
 <ParamField path="theme" type='"light" | "dark"'>
-  تم نمایشگر. مقدار پیش‌فرض آن پیش‌فرض Plugin یعنی `defaults.theme` است.
+  پوستهٔ نمایشگر. پیش‌فرض آن مقدار پیش‌فرض Plugin یعنی `defaults.theme` است.
 </ParamField>
 <ParamField path="layout" type='"unified" | "split"'>
-  چیدمان diff. مقدار پیش‌فرض آن پیش‌فرض Plugin یعنی `defaults.layout` است.
+  چیدمان diff. پیش‌فرض آن مقدار پیش‌فرض Plugin یعنی `defaults.layout` است.
 </ParamField>
 <ParamField path="expandUnchanged" type="boolean">
-  وقتی زمینه کامل در دسترس باشد، بخش‌های بدون تغییر را گسترش می‌دهد. فقط گزینه هر فراخوانی است (کلید پیش‌فرض Plugin نیست).
+  وقتی زمینهٔ کامل در دسترس است، بخش‌های بدون تغییر را گسترش می‌دهد. فقط گزینهٔ هر فراخوانی است (کلید پیش‌فرض Plugin نیست).
 </ParamField>
 <ParamField path="fileFormat" type='"png" | "pdf"'>
-  قالب فایل رندرشده. مقدار پیش‌فرض آن پیش‌فرض Plugin یعنی `defaults.fileFormat` است.
+  قالب فایل رندرشده. پیش‌فرض آن مقدار پیش‌فرض Plugin یعنی `defaults.fileFormat` است.
 </ParamField>
 <ParamField path="fileQuality" type='"standard" | "hq" | "print"'>
-  پیش‌تنظیم کیفیت برای رندر PNG یا PDF.
+  پیش‌تنظیم کیفیت برای رندر PNG/PDF.
 </ParamField>
 <ParamField path="fileScale" type="number">
   بازنویسی مقیاس دستگاه (`1`-`4`).
@@ -176,66 +127,53 @@ x-i18n:
   حداکثر عرض رندر بر حسب پیکسل CSS (`640`-`2400`).
 </ParamField>
 <ParamField path="ttlSeconds" type="number" default="1800">
-  TTL مصنوع بر حسب ثانیه برای خروجی‌های نمایشگر و فایل مستقل. حداکثر 21600.
+  TTL مصنوع بر حسب ثانیه برای خروجی‌های نمایشگر و فایل مستقل. حداکثر `21600`.
 </ParamField>
 <ParamField path="baseUrl" type="string">
-  بازنویسی مبدا URL نمایشگر. `viewerBaseUrl` مربوط به Plugin را بازنویسی می‌کند. باید `http` یا `https` باشد، بدون query/hash.
+  بازنویسی مبدأ URL نمایشگر. `viewerBaseUrl` متعلق به Plugin را بازنویسی می‌کند. باید `http` یا `https` و بدون پرس‌وجو/هش باشد.
 </ParamField>
 
 <AccordionGroup>
-  <Accordion title="Legacy input aliases">
-    همچنان برای سازگاری عقب‌رو پذیرفته می‌شوند:
-
-    - `format` -> `fileFormat`
-    - `imageFormat` -> `fileFormat`
-    - `imageQuality` -> `fileQuality`
-    - `imageScale` -> `fileScale`
-    - `imageMaxWidth` -> `fileMaxWidth`
-
-  </Accordion>
-  <Accordion title="Validation and limits">
-    - `before` و `after` هرکدام حداکثر 512 KiB.
-    - `patch` حداکثر 2 MiB.
-    - `path` حداکثر 2048 بایت.
-    - `lang` حداکثر 128 بایت.
-    - `title` حداکثر 1024 بایت.
-    - سقف پیچیدگی patch: حداکثر 128 فایل و 120000 خط در مجموع.
-    - ترکیب `patch` با `before` یا `after` رد می‌شود.
-    - محدودیت‌های ایمنی فایل رندرشده (برای PNG و PDF اعمال می‌شود):
-      - `fileQuality: "standard"`: حداکثر 8 MP (8,000,000 پیکسل رندرشده).
-      - `fileQuality: "hq"`: حداکثر 14 MP (14,000,000 پیکسل رندرشده).
-      - `fileQuality: "print"`: حداکثر 24 MP (24,000,000 پیکسل رندرشده).
-      - PDF همچنین حداکثر 50 صفحه دارد.
+  <Accordion title="اعتبارسنجی و محدودیت‌ها">
+    - `before`/`after`: هرکدام حداکثر 512 KiB.
+    - `patch`: حداکثر 2 MiB.
+    - `path`: حداکثر 2048 بایت.
+    - `lang`: حداکثر 128 بایت.
+    - `title`: حداکثر 1024 بایت.
+    - سقف پیچیدگی وصله: حداکثر 128 فایل و در مجموع 120000 خط.
+    - استفادهٔ هم‌زمان از `patch` با `before`/`after` رد می‌شود.
+    - محدودیت‌های ایمنی فایل رندرشده (PNG و PDF):
+      - `fileQuality: "standard"`: حداکثر 8 MP ‏(8,000,000 پیکسل رندرشده).
+      - `fileQuality: "hq"`: حداکثر 14 MP.
+      - `fileQuality: "print"`: حداکثر 24 MP.
+      - PDF نیز به 50 صفحه محدود می‌شود.
 
   </Accordion>
 </AccordionGroup>
 
 ## برجسته‌سازی نحو
 
-OpenClaw شامل برجسته‌سازی نحو برای زبان‌های رایج سورس، پیکربندی و مستندات است:
+زبان‌های داخلی:
 
-`javascript`, `typescript`, `tsx`, `jsx`, `json`, `markdown`, `yaml`, `css`, `html`, `sh`, `python`, `go`, `rust`, `java`, `c`, `cpp`, `csharp`, `php`, `sql`, `docker`, `ruby`, `swift`, `kotlin`, `r`, `dart`, `lua`, `powershell`, `xml`, و `toml`.
+`javascript`، `typescript`، `tsx`، `jsx`، `json`، `markdown`، `yaml`، `css`، `html`، `sh`، `python`، `go`، `rust`، `java`، `c`، `cpp`، `csharp`، `php`، `sql`، `docker`، `ruby`، `swift`، `kotlin`، `r`، `dart`، `lua`، `powershell`، `xml` و `toml`.
 
-نام‌های مستعار رایجی مانند `js`, `ts`, `bash`, `md`, `yml`, `c++`, `dockerfile`, `rb`, `kt`, و `ps1` به آن زبان‌های پیش‌فرض نرمال‌سازی می‌شوند.
+نام‌های مستعار رایج (`js`، `ts`، `bash`، `md`، `yml`، `c++`، `dockerfile`، `rb`، `kt`، `ps1` و غیره) به آن زبان‌ها نرمال‌سازی می‌شوند.
 
-Plugin بسته زبانی Diff Viewer را نصب کنید تا زبان‌های دیگر برجسته‌سازی شوند:
+برای زبان‌های بیشتر (Astro، Vue، Svelte، MDX، GraphQL، Terraform/HCL، Nix، Clojure، Elixir، Haskell، OCaml، Scala، Zig، Solidity، Verilog/VHDL، Fortran، MATLAB، LaTeX، Mermaid، Sass/Less/SCSS، Nginx، Apache، CSV، dotenv، INI، diff و موارد بیشتر)، Plugin بستهٔ زبان نمایشگر Diff را نصب کنید:
 
 ```bash
 openclaw plugins install clawhub:@openclaw/diffs-language-pack
 ```
 
-با در دسترس بودن بسته زبانی، OpenClaw می‌تواند زبان‌های بسیار بیشتری را برجسته‌سازی کند. اگر بسته نصب نشده باشد، فایل‌های خارج از فهرست پیش‌فرض همچنان به‌صورت متن ساده و خوانا رندر می‌شوند. نمونه‌ها شامل Astro، Vue، Svelte، MDX، GraphQL، Terraform/HCL، Nix، Clojure، Elixir، Haskell، OCaml، Scala، Zig، Solidity، Verilog/VHDL، Fortran، MATLAB، LaTeX، Mermaid، Sass/Less/SCSS، Nginx، Apache، CSV، dotenv، INI و فایل‌های diff هستند.
-
-برای جزئیات، [Plugin بسته زبانی Diffs](/fa/plugins/reference/diffs-language-pack) و برای کاتالوگ زبان‌ها و نام‌های مستعار بالادستی Shiki، [زبان‌های Shiki](https://shiki.style/languages) را ببینید.
+بدون این بسته، زبان‌های پشتیبانی‌نشده همچنان به‌شکل متن سادهٔ خوانا رندر می‌شوند. برای فهرست بالادستی، به [Plugin بستهٔ زبان Diffs](/fa/plugins/reference/diffs-language-pack) و [زبان‌های Shiki](https://shiki.style/languages) مراجعه کنید.
 
 ## قرارداد جزئیات خروجی
 
-این ابزار فراداده ساختاریافته را زیر `details` برمی‌گرداند.
+همهٔ نتایج موفق شامل `changed` هستند: ورودی پیش/پس یکسان، بدون ایجاد مصنوع، `false` را برمی‌گرداند؛ نتایج رندرشده `true` را برمی‌گردانند.
 
 <AccordionGroup>
-  <Accordion title="Viewer fields">
-    فیلدهای مشترک برای حالت‌هایی که یک نمایشگر ایجاد می‌کنند:
-
+  <Accordion title="فیلدهای نمایشگر (حالت‌های view و both)">
+    - `changed`
     - `artifactId`
     - `viewerUrl`
     - `viewerPath`
@@ -244,12 +182,11 @@ openclaw plugins install clawhub:@openclaw/diffs-language-pack
     - `inputKind`
     - `fileCount`
     - `mode`
-    - `context` (`agentId`، `sessionId`، `messageChannel`، `agentAccountId` در صورت در دسترس بودن)
+    - `context` (`agentId`، `sessionId`، `messageChannel`، `agentAccountId` در صورت وجود)
 
   </Accordion>
-  <Accordion title="File fields">
-    فیلدهای فایل هنگامی که PNG یا PDF رندر می‌شود:
-
+  <Accordion title="فیلدهای فایل (حالت‌های file و both)">
+    - `changed`
     - `artifactId`
     - `expiresAt`
     - `filePath`
@@ -261,34 +198,21 @@ openclaw plugins install clawhub:@openclaw/diffs-language-pack
     - `fileMaxWidth`
 
   </Accordion>
-  <Accordion title="Compatibility aliases">
-    همچنین برای فراخواننده‌های موجود برگردانده می‌شود:
-
-    - `format` (همان مقدار `fileFormat`)
-    - `imagePath` (همان مقدار `filePath`)
-    - `imageBytes` (همان مقدار `fileBytes`)
-    - `imageQuality` (همان مقدار `fileQuality`)
-    - `imageScale` (همان مقدار `fileScale`)
-    - `imageMaxWidth` (همان مقدار `fileMaxWidth`)
-
-  </Accordion>
 </AccordionGroup>
 
-خلاصه رفتار حالت‌ها:
+| حالت     | خروجی                                                                                         |
+| -------- | ----------------------------------------------------------------------------------------------- |
+| `"view"` | فقط فیلدهای نمایشگر.                                                                             |
+| `"file"` | فقط فیلدهای فایل، بدون مصنوع نمایشگر.                                                           |
+| `"both"` | فیلدهای نمایشگر به‌علاوهٔ فیلدهای فایل. اگر رندر فایل ناموفق باشد، نمایشگر همچنان با `fileError` برگردانده می‌شود. |
 
-| حالت     | آنچه برگردانده می‌شود                                                                                                       |
-| -------- | ---------------------------------------------------------------------------------------------------------------------- |
-| `"view"` | فقط فیلدهای نمایشگر.                                                                                                    |
-| `"file"` | فقط فیلدهای فایل، بدون آرتیفکت نمایشگر.                                                                                  |
-| `"both"` | فیلدهای نمایشگر به‌همراه فیلدهای فایل. اگر رندر فایل ناموفق باشد، نمایشگر همچنان با `fileError` و نام مستعار `imageError` برمی‌گردد. |
+### بخش‌های بدون تغییرِ جمع‌شده
 
-## بخش‌های بدون تغییر جمع‌شده
+نمایشگر ردیف‌هایی مانند `N unmodified lines` نشان می‌دهد. کنترل‌های گسترش فقط زمانی ظاهر می‌شوند که diff رندرشده دادهٔ زمینهٔ قابل‌گسترش داشته باشد (که برای ورودی پیش/پس معمول است). بسیاری از وصله‌های یکپارچه بدنهٔ زمینه را در قطعه‌های خود حذف می‌کنند؛ بنابراین ممکن است ردیف بدون کنترل گسترش ظاهر شود—این رفتار مورد انتظار است، نه اشکال. `expandUnchanged` فقط زمانی اعمال می‌شود که زمینهٔ قابل‌گسترش وجود داشته باشد.
 
-- نمایشگر می‌تواند ردیف‌هایی مانند `N unmodified lines` را نشان دهد.
-- کنترل‌های باز کردن روی آن ردیف‌ها شرطی هستند و برای هر نوع ورودی تضمین نمی‌شوند.
-- کنترل‌های باز کردن زمانی ظاهر می‌شوند که diff رندرشده داده زمینه قابل گسترش داشته باشد؛ این حالت برای ورودی‌های قبل و بعد معمول است.
-- برای بسیاری از ورودی‌های وصله یکپارچه، بدنه‌های زمینه حذف‌شده در hunkهای وصله تجزیه‌شده در دسترس نیستند، بنابراین ردیف می‌تواند بدون کنترل‌های باز کردن ظاهر شود. این رفتار مورد انتظار است.
-- `expandUnchanged` فقط زمانی اعمال می‌شود که زمینه قابل گسترش وجود داشته باشد.
+### پیمایش چندفایلی
+
+وصله‌هایی که بیش از یک فایل را تغییر می‌دهند، با یک کارت خلاصهٔ فایل‌های تغییریافته آغاز می‌شوند: تعداد کل `+N` / `-N`، تعدادهای هر فایل، نشان‌های افزوده/حذف‌شده/تغییرنام‌یافته و پیوندهای لنگری که به هر فایل می‌پرند. فایل‌های PNG/PDF رندرشده تعدادهای سربرگ هر فایل را نگه می‌دارند، اما کلیدهای تعاملی نما را حذف می‌کنند، زیرا این کنترل‌ها در یک فایل ایستا کارایی ندارند.
 
 ## پیش‌فرض‌های Plugin
 
@@ -325,30 +249,12 @@ openclaw plugins install clawhub:@openclaw/diffs-language-pack
 }
 ```
 
-پیش‌فرض‌های پشتیبانی‌شده:
+کلیدهای پشتیبانی‌شدهٔ `defaults`:‏ `fontFamily`، `fontSize`، `lineSpacing`، `layout`، `showLineNumbers`، `diffIndicators`، `wordWrap`، `background`، `theme`، `fileFormat`، `fileQuality`، `fileScale`، `fileMaxWidth`، `mode`، `ttlSeconds`. پارامترهای صریح فراخوانی ابزار این موارد را بازنویسی می‌کنند.
 
-- `fontFamily`
-- `fontSize`
-- `lineSpacing`
-- `layout`
-- `showLineNumbers`
-- `diffIndicators`
-- `wordWrap`
-- `background`
-- `theme`
-- `fileFormat`
-- `fileQuality`
-- `fileScale`
-- `fileMaxWidth`
-- `mode`
-- `ttlSeconds`
-
-پارامترهای صریح ابزار این پیش‌فرض‌ها را بازنویسی می‌کنند.
-
-### پیکربندی URL پایدار نمایشگر
+### پیکربندی پایدار URL نمایشگر
 
 <ParamField path="viewerBaseUrl" type="string">
-  fallback تحت مالکیت Plugin برای لینک‌های نمایشگر برگشتی، زمانی که فراخوانی ابزار `baseUrl` را ارسال نمی‌کند. باید `http` یا `https` باشد، بدون query/hash.
+  جایگزین تحت مالکیت Plugin برای پیوندهای نمایشگر برگشتی، هنگامی که فراخوانی ابزار `baseUrl` را ارسال نمی‌کند. باید `http` یا `https` و بدون پرس‌وجو/هش باشد.
 </ParamField>
 
 ```json5
@@ -369,7 +275,7 @@ openclaw plugins install clawhub:@openclaw/diffs-language-pack
 ## پیکربندی امنیتی
 
 <ParamField path="security.allowRemoteViewer" type="boolean" default="false">
-  `false`: درخواست‌های غیر-loopback به مسیرهای نمایشگر رد می‌شوند. `true`: اگر مسیر توکن‌دار معتبر باشد، نمایشگرهای راه‌دور مجاز هستند.
+  `false`: درخواست‌های غیرحلقه‌بازگشتی به مسیرهای نمایشگر رد می‌شوند. `true`: اگر مسیر توکن‌دار معتبر باشد، نمایشگرهای راه‌دور مجازند.
 </ParamField>
 
 ```json5
@@ -389,126 +295,95 @@ openclaw plugins install clawhub:@openclaw/diffs-language-pack
 }
 ```
 
-## چرخه عمر و ذخیره‌سازی آرتیفکت
+## چرخهٔ عمر و ذخیره‌سازی مصنوع
 
-- آرتیفکت‌ها در زیرپوشه موقت ذخیره می‌شوند: `$TMPDIR/openclaw-diffs`.
-- فراداده آرتیفکت نمایشگر شامل موارد زیر است:
-  - شناسه تصادفی آرتیفکت (۲۰ نویسه hex)
-  - توکن تصادفی (۴۸ نویسه hex)
-  - `createdAt` و `expiresAt`
-  - مسیر ذخیره‌شده `viewer.html`
-- TTL پیش‌فرض آرتیفکت، وقتی مشخص نشده باشد، ۳۰ دقیقه است.
-- بیشترین TTL پذیرفته‌شده برای نمایشگر ۶ ساعت است.
-- پاک‌سازی پس از ایجاد آرتیفکت به‌صورت فرصت‌طلبانه اجرا می‌شود.
-- آرتیفکت‌های منقضی‌شده حذف می‌شوند.
-- پاک‌سازی جایگزین، وقتی فراداده وجود ندارد، پوشه‌های کهنه‌تر از ۲۴ ساعت را حذف می‌کند.
+- مصنوع‌ها در `$TMPDIR/openclaw-diffs` قرار دارند.
+- فرادادهٔ نمایشگر یک شناسهٔ مصنوع تصادفی 20 نویسه‌ای هگزادسیمال، یک توکن تصادفی 48 نویسه‌ای هگزادسیمال، `createdAt`/`expiresAt` و مسیر ذخیره‌شدهٔ `viewer.html` را نگه می‌دارد.
+- TTL پیش‌فرض مصنوع: 30 دقیقه. حداکثر TTL پذیرفته‌شده: 6 ساعت.
+- پاک‌سازی پس از هر فراخوانی ایجاد مصنوع و در صورت فراهم‌شدن فرصت اجرا می‌شود؛ مصنوع‌های منقضی‌شده حذف می‌شوند.
+- پویش جایگزین، وقتی فراداده موجود نیست، پوشه‌های کهنه‌تر از 24 ساعت را حذف می‌کند.
 
-## URL نمایشگر و رفتار شبکه
+## رفتار شبکه و URL نمایشگر
 
-مسیر نمایشگر:
-
-- `/plugins/diffs/view/{artifactId}/{token}`
+مسیر نمایشگر: `/plugins/diffs/view/{artifactId}/{token}`
 
 دارایی‌های نمایشگر:
 
 - `/plugins/diffs/assets/viewer.js`
 - `/plugins/diffs/assets/viewer-runtime.js`
-- `/plugins/diffs-language-pack/assets/viewer.js` وقتی diff از زبانی در Diff Viewer Language Pack استفاده می‌کند
+- `/plugins/diffs-language-pack/assets/viewer.js` (فقط زمانی که تفاوت از زبانِ یک بستهٔ زبانی استفاده می‌کند)
 
-سند نمایشگر این دارایی‌ها را نسبت به URL نمایشگر resolve می‌کند، بنابراین پیشوند مسیر اختیاری `baseUrl` برای هر دو درخواست دارایی نیز حفظ می‌شود.
+سند نمایشگر این دارایی‌ها را نسبت به نشانی اینترنتی نمایشگر تفکیک می‌کند، بنابراین پیشوند مسیر اختیاری `baseUrl` به درخواست‌های دارایی نیز منتقل می‌شود.
 
-رفتار ساخت URL:
+ترتیب تفکیک نشانی اینترنتی: `baseUrl` فراخوانی ابزار (پس از اعتبارسنجی سخت‌گیرانه) -> `viewerBaseUrl` مربوط به Plugin -> پیش‌فرض حلقهٔ بازگشتی `127.0.0.1`. اگر حالت اتصال Gateway برابر با `custom` باشد و `gateway.customBindHost` تنظیم شده باشد، به‌جای حلقهٔ بازگشتی از آن میزبان استفاده می‌شود.
 
-- اگر `baseUrl` فراخوانی ابزار ارائه شده باشد، پس از اعتبارسنجی سخت‌گیرانه استفاده می‌شود.
-- در غیر این صورت، اگر `viewerBaseUrl` مربوط به Plugin پیکربندی شده باشد، استفاده می‌شود.
-- بدون هیچ‌کدام از این overrideها، URL نمایشگر به‌صورت پیش‌فرض روی loopback یعنی `127.0.0.1` قرار می‌گیرد.
-- اگر حالت bind مربوط به Gateway برابر `custom` باشد و `gateway.customBindHost` تنظیم شده باشد، از همان host استفاده می‌شود.
-
-قواعد `baseUrl`:
-
-- باید `http://` یا `https://` باشد.
-- query و hash رد می‌شوند.
-- origin به‌همراه مسیر پایه اختیاری مجاز است.
+قواعد `baseUrl`: باید `http://` یا `https://` باشد؛ کوئری و هش رد می‌شوند؛ مبدأ به‌همراه مسیر پایهٔ اختیاری مجاز است.
 
 ## مدل امنیتی
 
 <AccordionGroup>
-  <Accordion title="Viewer hardening">
-    - به‌صورت پیش‌فرض فقط loopback.
-    - مسیرهای نمایشگر توکن‌دار با اعتبارسنجی سخت‌گیرانه شناسه و توکن.
-    - CSP پاسخ نمایشگر:
-      - `default-src 'none'`
-      - اسکریپت‌ها و دارایی‌ها فقط از self
-      - بدون `connect-src` خروجی
-    - محدودسازی miss راه دور وقتی دسترسی راه دور فعال است:
-      - ۴۰ شکست در هر ۶۰ ثانیه
-      - قفل ۶۰ ثانیه‌ای (`429 Too Many Requests`)
+  <Accordion title="سخت‌سازی نمایشگر">
+    - به‌طور پیش‌فرض فقط حلقهٔ بازگشتی.
+    - مسیرهای توکن‌دار نمایشگر با اعتبارسنجی سخت‌گیرانهٔ الگوی شناسه و توکن.
+    - سیاست CSP پاسخ نمایشگر: `default-src 'none'`؛ اسکریپت‌ها/دارایی‌ها فقط از خود مبدأ؛ بدون `connect-src` خروجی.
+    - محدودسازی خطاهای دسترسی از راه دور در صورت فعال‌بودن دسترسی راه دور: 40 خطا در هر 60 ثانیه، قفل‌شدن 60 ثانیه‌ای را فعال می‌کند (`429 Too Many Requests`).
 
   </Accordion>
-  <Accordion title="File rendering hardening">
-    - مسیریابی درخواست مرورگر اسکرین‌شات به‌صورت پیش‌فرض deny است.
+  <Accordion title="سخت‌سازی رندر فایل">
+    - مسیریابی درخواست مرورگر برای نماگرفت به‌طور پیش‌فرض همه‌چیز را رد می‌کند.
     - فقط دارایی‌های محلی نمایشگر از `http://127.0.0.1/plugins/diffs/assets/*` مجاز هستند.
-    - درخواست‌های شبکه خارجی مسدود می‌شوند.
+    - درخواست‌های شبکهٔ خارجی مسدود می‌شوند.
 
   </Accordion>
 </AccordionGroup>
 
 ## نیازمندی‌های مرورگر برای حالت فایل
 
-`mode: "file"` و `mode: "both"` به مرورگر سازگار با Chromium نیاز دارند.
+`mode: "file"` و `mode: "both"` به مرورگری سازگار با Chromium نیاز دارند.
 
-ترتیب resolve:
+ترتیب تفکیک:
 
 <Steps>
-  <Step title="Config">
+  <Step title="پیکربندی">
     `browser.executablePath` در پیکربندی OpenClaw.
   </Step>
-  <Step title="Environment variables">
+  <Step title="متغیرهای محیطی">
     - `OPENCLAW_BROWSER_EXECUTABLE_PATH`
     - `BROWSER_EXECUTABLE_PATH`
     - `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH`
 
   </Step>
-  <Step title="Platform fallback">
-    fallback کشف فرمان/مسیر پلتفرم.
+  <Step title="گزینهٔ جایگزین پلتفرم">
+    مسیرهای نصب رایج و جست‌وجوهای `PATH` برای Chrome، Chromium، Edge و Brave.
   </Step>
 </Steps>
 
-متن رایج خطا:
-
-- `Diff PNG/PDF rendering requires a Chromium-compatible browser...`
-
-برای رفع، Chrome، Chromium، Edge یا Brave را نصب کنید، یا یکی از گزینه‌های مسیر executable بالا را تنظیم کنید.
+متن رایج خطا: `Diff PNG/PDF rendering requires a Chromium-compatible browser...`. برای رفع آن، Chrome، Chromium، Edge یا Brave را نصب کنید، یا یکی از گزینه‌های مسیر فایل اجرایی بالا را تنظیم کنید.
 
 ## عیب‌یابی
 
 <AccordionGroup>
-  <Accordion title="Input validation errors">
-    - `Provide patch or both before and after text.` — هر دو `before` و `after` را وارد کنید، یا `patch` ارائه دهید.
-    - `Provide either patch or before/after input, not both.` — حالت‌های ورودی را ترکیب نکنید.
-    - `Invalid baseUrl: ...` — از origin نوع `http(s)` با مسیر اختیاری استفاده کنید، بدون query/hash.
-    - `{field} exceeds maximum size (...)` — اندازه payload را کاهش دهید.
-    - رد patch بزرگ — تعداد فایل‌های patch یا مجموع خطوط را کاهش دهید.
+  <Accordion title="خطاهای اعتبارسنجی ورودی">
+    - `Provide patch or both before and after text.` -- هر دو مورد `before` و `after` را وارد کنید، یا `patch` را ارائه دهید.
+    - `Provide either patch or before/after input, not both.` -- حالت‌های ورودی را با هم ترکیب نکنید.
+    - `Invalid baseUrl: ...` -- از مبدأ `http(s)` با مسیر اختیاری و بدون کوئری/هش استفاده کنید.
+    - `{field} exceeds maximum size (...)` -- اندازهٔ محموله را کاهش دهید.
+    - رد وصلهٔ بزرگ -- تعداد فایل‌های وصله یا مجموع خطوط را کاهش دهید.
 
   </Accordion>
-  <Accordion title="Viewer accessibility">
-    - URL نمایشگر به‌صورت پیش‌فرض به `127.0.0.1` resolve می‌شود.
-    - برای سناریوهای دسترسی راه دور، یکی از این کارها را انجام دهید:
-      - `viewerBaseUrl` مربوط به Plugin را تنظیم کنید، یا
-      - در هر فراخوانی ابزار `baseUrl` پاس دهید، یا
-      - از `gateway.bind=custom` و `gateway.customBindHost` استفاده کنید
-    - اگر `gateway.trustedProxies` برای یک پروکسی هم‌میزبان شامل loopback باشد (برای مثال Tailscale Serve)، درخواست‌های خام نمایشگر روی loopback بدون هدرهای client-IP فورواردشده طبق طراحی fail closed می‌شوند.
-    - برای آن توپولوژی پروکسی:
-      - وقتی فقط به یک پیوست نیاز دارید، `mode: "file"` یا `mode: "both"` را ترجیح دهید، یا
-      - وقتی به URL نمایشگر قابل اشتراک‌گذاری نیاز دارید، عمداً `security.allowRemoteViewer` را فعال کنید و `viewerBaseUrl` مربوط به Plugin را تنظیم کنید یا یک `baseUrl` پروکسی/عمومی پاس دهید
-    - `security.allowRemoteViewer` را فقط زمانی فعال کنید که قصد دسترسی خارجی به نمایشگر را دارید.
+  <Accordion title="دسترس‌پذیری نمایشگر">
+    - نشانی اینترنتی نمایشگر به‌طور پیش‌فرض به `127.0.0.1` تفکیک می‌شود.
+    - برای دسترسی از راه دور، یا `viewerBaseUrl` مربوط به Plugin را تنظیم کنید، یا در هر فراخوانی `baseUrl` را ارسال کنید، یا از `gateway.bind=custom` همراه با `gateway.customBindHost` استفاده کنید.
+    - اگر `gateway.trustedProxies` شامل حلقهٔ بازگشتی برای پراکسیِ همان میزبان باشد (برای مثال Tailscale Serve)، درخواست‌های خام نمایشگر از حلقهٔ بازگشتی که فاقد سرآیندهای ارسال‌شدهٔ IP کارخواه هستند، طبق طراحی با حالت بسته شکست می‌خورند.
+    - برای آن توپولوژی پراکسی، برای پیوست `mode: "file"`/`"both"` را ترجیح دهید، یا برای پیوند قابل‌اشتراک نمایشگر، `security.allowRemoteViewer` را به‌عمد همراه با `viewerBaseUrl` مربوط به Plugin/یک `baseUrl` پراکسی فعال کنید.
+    - فقط زمانی `security.allowRemoteViewer` را فعال کنید که دسترسی خارجی به نمایشگر موردنظر باشد.
 
   </Accordion>
-  <Accordion title="Unmodified-lines row has no expand button">
-    این حالت برای ورودی patch می‌تواند زمانی رخ دهد که patch زمینه قابل گسترش همراه نداشته باشد. این مورد مورد انتظار است و نشان‌دهنده خرابی نمایشگر نیست.
+  <Accordion title="ردیف خطوط تغییریافته دکمهٔ بازکردن ندارد">
+    این رفتار برای ورودی وصله‌ای که فاقد بافت قابل‌گسترش است مورد انتظار است؛ خطای نمایشگر نیست.
   </Accordion>
-  <Accordion title="Artifact not found">
-    - آرتیفکت به‌دلیل TTL منقضی شده است.
+  <Accordion title="مصنوع یافت نشد">
+    - مصنوع به‌دلیل TTL منقضی شده است.
     - توکن یا مسیر تغییر کرده است.
     - پاک‌سازی داده‌های کهنه را حذف کرده است.
 
@@ -517,18 +392,18 @@ openclaw plugins install clawhub:@openclaw/diffs-language-pack
 
 ## راهنمای عملیاتی
 
-- برای بازبینی‌های تعاملی محلی در canvas، `mode: "view"` را ترجیح دهید.
-- برای کانال‌های چت خروجی که به پیوست نیاز دارند، `mode: "file"` را ترجیح دهید.
-- `allowRemoteViewer` را غیرفعال نگه دارید، مگر اینکه استقرار شما به URLهای نمایشگر راه دور نیاز داشته باشد.
-- برای diffهای حساس، `ttlSeconds` کوتاه و صریح تنظیم کنید.
-- وقتی لازم نیست، از ارسال secrets در ورودی diff خودداری کنید.
+- برای بازبینی‌های تعاملی محلی در بوم، `mode: "view"` را ترجیح دهید.
+- برای کانال‌های گفت‌وگوی خروجی که به پیوست نیاز دارند، `mode: "file"` را ترجیح دهید.
+- مگر اینکه استقرار شما به نشانی‌های اینترنتی نمایشگر راه دور نیاز داشته باشد، `allowRemoteViewer` را غیرفعال نگه دارید.
+- برای تفاوت‌های حساس، یک `ttlSeconds` کوتاه و صریح تنظیم کنید.
+- اگر لازم نیست، از ارسال اسرار در ورودی تفاوت خودداری کنید.
 - اگر کانال شما تصاویر را به‌شدت فشرده می‌کند (برای مثال Telegram یا WhatsApp)، خروجی PDF را ترجیح دهید (`fileFormat: "pdf"`).
 
 <Note>
-موتور رندر diff با [Diffs](https://diffs.com) کار می‌کند.
+موتور رندر تفاوت‌ها با پشتیبانی [Diffs](https://diffs.com).
 </Note>
 
-## مرتبط
+## مطالب مرتبط
 
 - [مرورگر](/fa/tools/browser)
 - [Pluginها](/fa/tools/plugin)

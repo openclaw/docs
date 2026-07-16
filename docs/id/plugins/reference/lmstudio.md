@@ -4,11 +4,12 @@ read_when:
 summary: Menambahkan dukungan penyedia model LM Studio ke OpenClaw.
 title: Plugin LM Studio
 x-i18n:
-    generated_at: "2026-07-12T14:28:55Z"
+    generated_at: "2026-07-16T18:26:46Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: ec6c84ec422c0795d00f744239fcad96a5a01ef4fddd4823ba0b6ed93444a75b
+    source_hash: 8fc13cb8579875fab911aaf456f1b632426761b173cc06a8a7f60698e96cfb16
     source_path: plugins/reference/lmstudio.md
     workflow: 16
 ---
@@ -20,11 +21,11 @@ Menambahkan dukungan penyedia model LM Studio ke OpenClaw.
 ## Distribusi
 
 - Paket: `@openclaw/lmstudio-provider`
-- Jalur instalasi: disertakan dalam OpenClaw
+- Rute instalasi: disertakan dalam OpenClaw
 
-## Antarmuka
+## Permukaan
 
-penyedia: lmstudio; kontrak: memoryEmbeddingProviders
+penyedia: `lmstudio`; kontrak: `memoryEmbeddingProviders`
 
 ## Dokumentasi terkait
 

@@ -1,87 +1,60 @@
 ---
 read_when:
-    - आप OpenClaw को LiteLLM प्रॉक्सी के ज़रिए रूट करना चाहते हैं
+    - आप OpenClaw को LiteLLM प्रॉक्सी के माध्यम से रूट करना चाहते हैं
     - आपको LiteLLM के माध्यम से लागत ट्रैकिंग, लॉगिंग या मॉडल रूटिंग की आवश्यकता है
-summary: एकीकृत मॉडल एक्सेस और लागत ट्रैकिंग के लिए OpenClaw को LiteLLM Proxy के माध्यम से चलाएँ
+summary: एकीकृत मॉडल एक्सेस और लागत ट्रैकिंग के लिए LiteLLM Proxy के माध्यम से OpenClaw चलाएँ
 title: LiteLLM
 x-i18n:
-    generated_at: "2026-06-29T00:00:09Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T16:44:35Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 26b5150cfca92c9cd425c864c711efb3ab62ef94377b9d1e5d6476b07bf4c800
+    source_hash: 797b7d02a80a4cd37b92553665e260532af49e011398202d3504a28c511cee2f
     source_path: providers/litellm.md
     workflow: 16
 ---
 
-[LiteLLM](https://litellm.ai) एक ओपन-सोर्स LLM Gateway है जो 100+ मॉडल प्रदाताओं के लिए एक एकीकृत API प्रदान करता है। केंद्रीकृत लागत ट्रैकिंग, लॉगिंग, और अपनी OpenClaw config बदले बिना बैकएंड स्विच करने की लचीलापन पाने के लिए OpenClaw को LiteLLM के माध्यम से रूट करें।
-
-<Tip>
-**OpenClaw के साथ LiteLLM क्यों उपयोग करें?**
-
-- **लागत ट्रैकिंग** — देखें कि OpenClaw सभी मॉडलों पर ठीक कितना खर्च करता है
-- **मॉडल रूटिंग** — config बदलावों के बिना Claude, GPT-4, Gemini, Bedrock के बीच स्विच करें
-- **वर्चुअल कुंजियां** — OpenClaw के लिए खर्च सीमाओं वाली कुंजियां बनाएं
-- **लॉगिंग** — डीबगिंग के लिए पूरे अनुरोध/प्रतिक्रिया लॉग
-- **फॉलबैक** — आपका प्राथमिक प्रदाता बंद होने पर स्वचालित फेलओवर
-
-</Tip>
+[LiteLLM](https://litellm.ai) एक ओपन-सोर्स LLM Gateway है, जो 100+ मॉडल
+प्रदाताओं के लिए एक एकीकृत API प्रदान करता है। OpenClaw कॉन्फ़िगरेशन बदले बिना केंद्रीकृत लागत ट्रैकिंग, लॉगिंग, खर्च
+सीमाओं वाली वर्चुअल कुंजियों और बैकएंड फ़ेलओवर के लिए OpenClaw को LiteLLM के माध्यम से रूट करें।
 
 ## त्वरित शुरुआत
 
 <Tabs>
-  <Tab title="Onboarding (recommended)">
-    **इसके लिए सर्वोत्तम:** काम करने वाले LiteLLM सेटअप तक सबसे तेज रास्ता।
+  <Tab title="ऑनबोर्डिंग (अनुशंसित)">
+    ```bash
+    openclaw onboard --auth-choice litellm-api-key
+    ```
 
-    <Steps>
-      <Step title="Run onboarding">
-        ```bash
-        openclaw onboard --auth-choice litellm-api-key
-        ```
+    किसी रिमोट प्रॉक्सी के साथ गैर-इंटरैक्टिव सेटअप के लिए, प्रॉक्सी URL स्पष्ट रूप से दें:
 
-        किसी रिमोट प्रॉक्सी के साथ गैर-इंटरैक्टिव सेटअप के लिए, प्रॉक्सी URL स्पष्ट रूप से पास करें:
-
-        ```bash
-        openclaw onboard --non-interactive --auth-choice litellm-api-key --litellm-api-key "$LITELLM_API_KEY" --custom-base-url "https://litellm.example/v1"
-        ```
-      </Step>
-    </Steps>
+    ```bash
+    openclaw onboard --non-interactive --accept-risk --auth-choice litellm-api-key \
+      --litellm-api-key "$LITELLM_API_KEY" --custom-base-url "https://litellm.example/v1"
+    ```
 
   </Tab>
 
-  <Tab title="Manual setup">
-    **इसके लिए सर्वोत्तम:** इंस्टॉलेशन और config पर पूरा नियंत्रण।
-
+  <Tab title="मैन्युअल सेटअप">
     <Steps>
-      <Step title="Start LiteLLM Proxy">
+      <Step title="LiteLLM प्रॉक्सी शुरू करें">
         ```bash
         pip install 'litellm[proxy]'
         litellm --model claude-opus-4-6
         ```
       </Step>
-      <Step title="Point OpenClaw to LiteLLM">
+      <Step title="OpenClaw को LiteLLM से कनेक्ट करें">
         ```bash
         export LITELLM_API_KEY="your-litellm-key"
-
         openclaw
         ```
-
-        बस इतना ही। OpenClaw अब LiteLLM के माध्यम से रूट करता है।
       </Step>
     </Steps>
-
   </Tab>
 </Tabs>
 
 ## कॉन्फ़िगरेशन
-
-### एनवायरनमेंट वेरिएबल
-
-```bash
-export LITELLM_API_KEY="sk-litellm-key"
-```
-
-### Config फ़ाइल
 
 ```json5
 {
@@ -120,13 +93,13 @@ export LITELLM_API_KEY="sk-litellm-key"
 }
 ```
 
-## उन्नत कॉन्फ़िगरेशन
+ऑनबोर्डिंग द्वारा लिखा जाने वाला डिफ़ॉल्ट मॉडल `litellm/claude-opus-4-6` है।
 
-### इमेज जनरेशन
+## इमेज जनरेशन
 
-LiteLLM OpenAI-संगत
-`/images/generations` और `/images/edits` रूट के माध्यम से `image_generate` टूल का भी समर्थन कर सकता है। `agents.defaults.imageGenerationModel` के तहत LiteLLM इमेज
-मॉडल कॉन्फ़िगर करें:
+LiteLLM, OpenAI-संगत `/images/generations` और
+`/images/edits` रूट के माध्यम से `image_generate` टूल का बैकएंड बन सकता है। डिफ़ॉल्ट इमेज मॉडल `gpt-image-2` है; किसी अन्य मॉडल को
+`agents.defaults.imageGenerationModel` के अंतर्गत कॉन्फ़िगर करें:
 
 ```json5
 {
@@ -149,14 +122,15 @@ LiteLLM OpenAI-संगत
 }
 ```
 
-`http://localhost:4000` जैसे Loopback LiteLLM URL किसी वैश्विक
-प्राइवेट-नेटवर्क ओवरराइड के बिना काम करते हैं। LAN पर होस्ट किए गए प्रॉक्सी के लिए,
-`models.providers.litellm.request.allowPrivateNetwork: true` सेट करें क्योंकि API कुंजी
-कॉन्फ़िगर किए गए प्रॉक्सी होस्ट को भेजी जाएगी।
+लूपबैक LiteLLM URL (`http://localhost:4000`, `127.0.0.1`, `::1`, `host.docker.internal`) किसी वैश्विक
+निजी-नेटवर्क ओवरराइड के बिना काम करते हैं। LAN पर होस्ट किए गए प्रॉक्सी के लिए,
+`models.providers.litellm.request.allowPrivateNetwork: true` सेट करें, क्योंकि API कुंजी उस होस्ट को भेजी जाती है।
+
+## उन्नत
 
 <AccordionGroup>
-  <Accordion title="Virtual keys">
-    OpenClaw के लिए खर्च सीमाओं वाली एक समर्पित कुंजी बनाएं:
+  <Accordion title="वर्चुअल कुंजियाँ">
+    खर्च सीमाओं के साथ OpenClaw के लिए एक समर्पित कुंजी बनाएँ:
 
     ```bash
     curl -X POST "http://localhost:4000/key/generate" \
@@ -173,8 +147,8 @@ LiteLLM OpenAI-संगत
 
   </Accordion>
 
-  <Accordion title="Model routing">
-    LiteLLM मॉडल अनुरोधों को अलग-अलग बैकएंड पर रूट कर सकता है। इसे अपनी LiteLLM `config.yaml` में कॉन्फ़िगर करें:
+  <Accordion title="मॉडल रूटिंग">
+    LiteLLM मॉडल अनुरोधों को अलग-अलग बैकएंड पर रूट कर सकता है। अपने LiteLLM `config.yaml` में कॉन्फ़िगर करें:
 
     ```yaml
     model_list:
@@ -189,54 +163,51 @@ LiteLLM OpenAI-संगत
           api_key: os.environ/OPENAI_API_KEY
     ```
 
-    OpenClaw `claude-opus-4-6` का अनुरोध करता रहता है — LiteLLM रूटिंग संभालता है।
+    OpenClaw, `claude-opus-4-6` का अनुरोध करना जारी रखता है; LiteLLM रूटिंग संभालता है।
 
   </Accordion>
 
-  <Accordion title="Viewing usage">
-    LiteLLM का डैशबोर्ड या API जांचें:
-
+  <Accordion title="उपयोग देखना">
     ```bash
-    # Key info
+    # कुंजी की जानकारी
     curl "http://localhost:4000/key/info" \
       -H "Authorization: Bearer sk-litellm-key"
 
-    # Spend logs
+    # खर्च लॉग
     curl "http://localhost:4000/spend/logs" \
       -H "Authorization: Bearer $LITELLM_MASTER_KEY"
     ```
 
   </Accordion>
 
-  <Accordion title="Proxy behavior notes">
-    - LiteLLM डिफ़ॉल्ट रूप से `http://localhost:4000` पर चलता है
-    - OpenClaw LiteLLM के प्रॉक्सी-शैली OpenAI-संगत `/v1`
-      endpoint के माध्यम से कनेक्ट करता है
-    - नेटिव केवल-OpenAI अनुरोध शेपिंग LiteLLM के माध्यम से लागू नहीं होती:
-      कोई `service_tier` नहीं, कोई Responses `store` नहीं, कोई prompt-cache संकेत नहीं, और कोई
-      OpenAI reasoning-compat payload शेपिंग नहीं
-    - छिपे हुए OpenClaw attribution headers (`originator`, `version`, `User-Agent`)
-      कस्टम LiteLLM base URLs पर inject नहीं किए जाते
+  <Accordion title="प्रॉक्सी व्यवहार संबंधी टिप्पणियाँ">
+    - LiteLLM डिफ़ॉल्ट रूप से `http://localhost:4000` पर चलता है।
+    - OpenClaw, LiteLLM के प्रॉक्सी-शैली वाले OpenAI-संगत `/v1` एंडपॉइंट के माध्यम से कनेक्ट होता है।
+    - केवल नेटिव OpenAI के लिए अनुरोध संरचना, कॉन्फ़िगर किए गए LiteLLM बेस URL के माध्यम से लागू नहीं होती:
+      न `service_tier`, न Responses `store`, न प्रॉम्प्ट-कैश संकेत, न OpenAI रीजनिंग-एफ़र्ट
+      पेलोड संरचना।
+    - छिपे हुए OpenClaw एट्रिब्यूशन हेडर (`originator`, `version`, `User-Agent`) केवल
+      सत्यापित नेटिव OpenAI एंडपॉइंट को भेजे जाते हैं, इसलिए उन्हें किसी कस्टम LiteLLM बेस URL पर इंजेक्ट नहीं किया जाता।
   </Accordion>
 </AccordionGroup>
 
 <Note>
-सामान्य प्रदाता कॉन्फ़िगरेशन और फेलओवर व्यवहार के लिए, [मॉडल प्रदाता](/hi/concepts/model-providers) देखें।
+सामान्य प्रदाता कॉन्फ़िगरेशन और फ़ेलओवर व्यवहार के लिए, [मॉडल प्रदाता](/hi/concepts/model-providers) देखें।
 </Note>
 
 ## संबंधित
 
 <CardGroup cols={2}>
-  <Card title="LiteLLM Docs" href="https://docs.litellm.ai" icon="book">
+  <Card title="LiteLLM दस्तावेज़" href="https://docs.litellm.ai" icon="book">
     आधिकारिक LiteLLM दस्तावेज़ और API संदर्भ।
   </Card>
-  <Card title="Model selection" href="/hi/concepts/model-providers" icon="layers">
-    सभी प्रदाताओं, मॉडल refs, और फेलओवर व्यवहार का अवलोकन।
+  <Card title="मॉडल चयन" href="/hi/concepts/model-providers" icon="layers">
+    सभी प्रदाताओं, मॉडल संदर्भों और फ़ेलओवर व्यवहार का अवलोकन।
   </Card>
-  <Card title="Configuration" href="/hi/gateway/configuration" icon="gear">
-    पूरा config संदर्भ।
+  <Card title="कॉन्फ़िगरेशन" href="/hi/gateway/configuration" icon="gear">
+    संपूर्ण कॉन्फ़िगरेशन संदर्भ।
   </Card>
-  <Card title="Model selection" href="/hi/concepts/models" icon="brain">
+  <Card title="मॉडल" href="/hi/concepts/models" icon="brain">
     मॉडल चुनने और कॉन्फ़िगर करने का तरीका।
   </Card>
 </CardGroup>

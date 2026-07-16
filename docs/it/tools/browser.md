@@ -1,43 +1,43 @@
 ---
 read_when:
     - Aggiunta dell'automazione del browser controllata dall'agente
-    - Debug del motivo per cui openclaw interferisce con il tuo Chrome
-    - Implementazione delle impostazioni del browser e del ciclo di vita nell'app macOS
-summary: Servizio di controllo browser integrato + comandi di azione
+    - Debug del motivo per cui OpenClaw interferisce con la propria istanza di Chrome
+    - Implementazione delle impostazioni e del ciclo di vita del browser nell'app macOS
+summary: Servizio integrato di controllo del browser + comandi di azione
 title: Browser (gestito da OpenClaw)
 x-i18n:
-    generated_at: "2026-06-27T18:18:16Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T15:05:02Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 2d24586c4ac1e271c24511be98e30725f4f589e9f5e703294190058bc3e6a123
+    source_hash: cf43bd54994d29d48cfc1e16889ec34af83e885c1dd1b63c287f0df116c7f0bf
     source_path: tools/browser.md
     workflow: 16
 ---
 
-OpenClaw può eseguire un **profilo Chrome/Brave/Edge/Chromium dedicato** controllato dall'agente.
-È isolato dal tuo browser personale ed è gestito tramite un piccolo servizio di
-controllo locale dentro il Gateway (solo loopback).
+OpenClaw può eseguire un **profilo Chrome/Brave/Edge/Chromium dedicato** controllato dall'agente. Funziona tramite un piccolo servizio di controllo locale all'interno del Gateway (solo loopback) ed è isolato dal browser personale.
 
-Visione per principianti:
+- È come un **browser separato, riservato all'agente**. Il profilo `openclaw` non interagisce mai con il profilo del browser personale.
+- L'agente apre schede, legge pagine, fa clic e digita in questo ambiente isolato.
+- Il profilo integrato `user` si collega invece alla sessione Chrome reale autenticata, tramite Chrome DevTools MCP.
 
-- Consideralo un **browser separato, solo per l'agente**.
-- Il profilo `openclaw` **non** tocca il tuo profilo browser personale.
-- L'agente può **aprire schede, leggere pagine, fare clic e digitare** in una corsia sicura.
-- Il profilo integrato `user` si collega alla tua sessione Chrome reale già autenticata tramite Chrome MCP.
+## Funzionalità disponibili
 
-## Cosa ottieni
+- Un profilo browser separato denominato **openclaw** (con colore principale arancione per impostazione predefinita).
+- Controllo deterministico delle schede (elenco/apertura/attivazione/chiusura).
+- Azioni dell'agente (clic/digitazione/trascinamento/selezione), snapshot, screenshot e PDF.
+- I profili basati su Playwright salvano le navigazioni dirette agli allegati nella directory dei download gestiti e restituiscono i metadati `{ url, suggestedFilename, path }` dopo la convalida dei criteri dell'URL finale.
+- Le azioni dell'agente basate su Playwright restituiscono un array `downloads` con gli stessi metadati gestiti quando l'azione avvia immediatamente uno o più download.
+- Una skill `browser-automation` inclusa che insegna agli agenti il ciclo di recupero per snapshot,
+  schede stabili, riferimenti obsoleti e blocchi che richiedono intervento manuale quando il Plugin del browser
+  è abilitato.
+- Supporto multiprofilo facoltativo (`openclaw`, `work`, `remote`, ...).
 
-- Un profilo browser separato chiamato **openclaw** (accento arancione per impostazione predefinita).
-- Controllo deterministico delle schede (elenca/apri/metti a fuoco/chiudi).
-- Azioni dell'agente (clic/digitazione/trascinamento/selezione), snapshot, screenshot, PDF.
-- Una skill `browser-automation` in bundle che insegna agli agenti il ciclo di recupero
-  snapshot, scheda stabile, riferimento obsoleto e blocco manuale quando il Plugin
-  browser è abilitato.
-- Supporto multi-profilo opzionale (`openclaw`, `work`, `remote`, ...).
-
-Questo browser **non** è il tuo browser quotidiano. È una superficie sicura e isolata per
+Questo browser **non** è destinato all'uso quotidiano. È un ambiente sicuro e isolato per
 l'automazione e la verifica da parte dell'agente.
+
+Su macOS è possibile copiare esplicitamente i cookie da un profilo di sistema della famiglia Chrome a un profilo gestito separato. Il browser gestito continua a utilizzare la propria directory dei dati utente; vengono copiati soltanto i cookie selezionati, mentre l'archiviazione locale e IndexedDB non vengono trasferiti. Consultare [Profili](#profiles-multi-browser) o il [riferimento della CLI `openclaw browser`](/it/cli/browser) per i comandi di importazione e le limitazioni.
 
 ## Avvio rapido
 
@@ -50,15 +50,15 @@ openclaw browser --browser-profile openclaw open https://example.com
 openclaw browser --browser-profile openclaw snapshot
 ```
 
-Se ricevi "Browser disabled", abilitalo nella configurazione (vedi sotto) e riavvia il
-Gateway.
+"Browser disabled" indica che il Plugin o `browser.enabled` è disattivato; consultare
+[Configurazione](#configuration) e [Controllo del Plugin](#plugin-control).
 
-Se `openclaw browser` manca del tutto, o l'agente dice che lo strumento browser
-non è disponibile, vai a [Comando o strumento browser mancante](/it/tools/browser#missing-browser-command-or-tool).
+Se `openclaw browser` è completamente assente o l'agente segnala che lo strumento browser
+non è disponibile, passare a [Comando o strumento browser mancante](#missing-browser-command-or-tool).
 
 ## Controllo del Plugin
 
-Lo strumento `browser` predefinito è un Plugin in bundle. Disabilitalo per sostituirlo con un altro Plugin che registra lo stesso nome di strumento `browser`:
+Lo strumento predefinito `browser` è un Plugin incluso. Disabilitarlo per sostituirlo con un altro Plugin che registri lo stesso nome di strumento `browser`:
 
 ```json5
 {
@@ -72,15 +72,15 @@ Lo strumento `browser` predefinito è un Plugin in bundle. Disabilitalo per sost
 }
 ```
 
-Le impostazioni predefinite richiedono sia `plugins.entries.browser.enabled` **sia** `browser.enabled=true`. Disabilitare solo il Plugin rimuove la CLI `openclaw browser`, il metodo Gateway `browser.request`, lo strumento agente e il servizio di controllo come un'unica unità; la tua configurazione `browser.*` resta intatta per un sostituto.
+Le impostazioni predefinite richiedono sia `plugins.entries.browser.enabled` **sia** `browser.enabled=true`. Disabilitando soltanto il Plugin vengono rimossi come singola unità la CLI `openclaw browser`, il metodo del Gateway `browser.request`, lo strumento dell'agente e il servizio di controllo; la configurazione `browser.*` rimane intatta per un sostituto.
 
-Le modifiche alla configurazione del browser richiedono un riavvio del Gateway, così il Plugin può registrare di nuovo il proprio servizio.
+Le modifiche alla configurazione del browser richiedono il riavvio del Gateway affinché il Plugin possa registrare nuovamente il proprio servizio.
 
-## Guida per l'agente
+## Indicazioni per l'agente
 
-Nota sul profilo strumenti: `tools.profile: "coding"` include `web_search` e
-`web_fetch`, ma non include lo strumento `browser` completo. Se l'agente o un
-sotto-agente avviato deve usare l'automazione del browser, aggiungi browser nella fase
+Nota sul profilo degli strumenti: `tools.profile: "coding"` include `web_search` e
+`web_fetch`, ma non lo strumento completo `browser`. Per consentire all'agente o a un
+sottoagente generato di utilizzare l'automazione del browser, aggiungere browser nella fase
 del profilo:
 
 ```json5
@@ -92,27 +92,27 @@ del profilo:
 }
 ```
 
-Per un singolo agente, usa `agents.list[].tools.alsoAllow: ["browser"]`.
-`tools.subagents.tools.allow: ["browser"]` da solo non basta perché la policy del sotto-agente
-viene applicata dopo il filtraggio del profilo.
+Per un singolo agente, utilizzare `agents.list[].tools.alsoAllow: ["browser"]`.
+`tools.subagents.tools.allow: ["browser"]` da solo non è sufficiente, perché i criteri dei sottoagenti
+vengono applicati dopo il filtraggio del profilo.
 
-Il Plugin browser distribuisce due livelli di guida per l'agente:
+Il Plugin del browser include due livelli di indicazioni per l'agente:
 
-- La descrizione dello strumento `browser` contiene il contratto compatto sempre attivo: scegli
-  il profilo giusto, mantieni i riferimenti sulla stessa scheda, usa `tabId`/etichette per il
-  targeting delle schede e carica la skill browser per il lavoro in più passaggi.
-- La skill `browser-automation` in bundle contiene il ciclo operativo più lungo:
-  controlla prima stato/schede, etichetta le schede dell'attività, acquisisci uno snapshot prima di agire,
-  riacquisisci uno snapshot dopo modifiche dell'interfaccia, recupera una volta i riferimenti obsoleti e segnala accesso/2FA/captcha o
-  blocchi di fotocamera/microfono come azione manuale invece di tirare a indovinare.
+- La descrizione dello strumento `browser` contiene il contratto compatto sempre attivo: scegliere
+  il profilo corretto, mantenere i riferimenti nella stessa scheda, utilizzare `tabId`/etichette per individuare le schede
+  e caricare la skill del browser per le operazioni in più passaggi.
+- La skill inclusa `browser-automation` contiene il ciclo operativo più dettagliato:
+  controllare prima lo stato e le schede, assegnare etichette alle schede dell'attività, acquisire uno snapshot prima di agire, acquisirne uno nuovo
+  dopo le modifiche all'interfaccia, tentare una sola volta il recupero dei riferimenti obsoleti e segnalare accesso/2FA/captcha o
+  blocchi relativi a fotocamera/microfono come azioni manuali anziché procedere per tentativi.
 
-Le Skills in bundle con i Plugin sono elencate tra le Skills disponibili dell'agente quando il
-Plugin è abilitato. Le istruzioni complete della skill vengono caricate su richiesta, quindi i turni
-di routine non pagano l'intero costo in token.
+Le skill incluse nel Plugin sono elencate tra le Skills disponibili per l'agente quando il
+Plugin è abilitato. Le istruzioni complete della skill vengono caricate su richiesta, evitando così
+il costo completo in token per le interazioni ordinarie.
 
 ## Comando o strumento browser mancante
 
-Se `openclaw browser` è sconosciuto dopo un aggiornamento, `browser.request` manca, o l'agente segnala lo strumento browser come non disponibile, la causa abituale è un elenco `plugins.allow` che omette `browser` e non esiste alcun blocco di configurazione root `browser`. Aggiungilo:
+Se `openclaw browser` non è riconosciuto dopo un aggiornamento, `browser.request` è assente o l'agente segnala che lo strumento browser non è disponibile, la causa abituale è un elenco `plugins.allow` che omette `browser` e l'assenza di un blocco di configurazione radice `browser`. Aggiungerlo:
 
 ```json5
 {
@@ -122,21 +122,34 @@ Se `openclaw browser` è sconosciuto dopo un aggiornamento, `browser.request` ma
 }
 ```
 
-Un blocco root `browser` esplicito, per esempio `browser.enabled=true` o `browser.profiles.<name>`, attiva il Plugin browser in bundle anche con un `plugins.allow` restrittivo, allineandosi al comportamento della configurazione dei canali. `plugins.entries.browser.enabled=true` e `tools.alsoAllow: ["browser"]` non sostituiscono da soli l'appartenenza alla allowlist. Rimuovere del tutto `plugins.allow` ripristina anche il valore predefinito.
+Un blocco radice `browser` esplicito (qualsiasi chiave sotto `browser`, come
+`browser.enabled=true` o `browser.profiles.<name>`) attiva il Plugin
+browser incluso anche in presenza di un `plugins.allow` restrittivo, in linea con il comportamento
+della configurazione dei canali inclusi. `plugins.entries.browser.enabled=true` e
+`tools.alsoAllow: ["browser"]` non sostituiscono autonomamente l'appartenenza all'elenco
+di elementi consentiti. Anche la rimozione completa di `plugins.allow` ripristina l'impostazione predefinita.
 
-## Profili: `openclaw` rispetto a `user`
+## Profili: `openclaw`, `user`, `chrome`
 
-- `openclaw`: browser gestito e isolato (nessuna estensione richiesta).
-- `user`: profilo integrato di collegamento Chrome MCP per la tua sessione **Chrome reale già autenticata**.
+- `openclaw`: browser gestito e isolato (non richiede estensioni).
+- `user`: profilo integrato di collegamento Chrome DevTools MCP per la sessione **Chrome reale
+  autenticata**. Chrome mostra la richiesta bloccante "Allow remote debugging?"
+  al primo collegamento di OpenClaw, quindi è necessaria la presenza di qualcuno al computer.
+- `chrome`: profilo integrato dell'[estensione Chrome](/it/tools/chrome-extension) per
+  la sessione **Chrome reale autenticata**. Funziona da un telefono senza che nessuno sia
+  alla postazione, perché controlla le schede tramite l'estensione browser di OpenClaw anziché
+  tramite la porta di debug remoto, quindi non viene visualizzata la richiesta "Allow remote debugging?".
 
 Per le chiamate allo strumento browser dell'agente:
 
-- Predefinito: usa il browser isolato `openclaw`.
-- Preferisci `profile="user"` quando le sessioni già autenticate esistenti sono importanti e l'utente
-  è al computer per fare clic/approvare qualsiasi richiesta di collegamento.
-- `profile` è l'override esplicito quando vuoi una modalità browser specifica.
+- Impostazione predefinita: utilizzare il browser isolato `openclaw`.
+- Preferire `profile="chrome"` (estensione) quando sono importanti le sessioni autenticate esistenti
+  e l'utente è **lontano dal computer** (Telegram, WhatsApp e così via).
+- Preferire `profile="user"` (Chrome MCP) quando sono importanti le sessioni autenticate esistenti
+  e l'utente è **al computer** per approvare la richiesta di collegamento.
+- `profile` è la sostituzione esplicita da utilizzare quando si desidera una modalità browser specifica.
 
-Imposta `browser.defaultProfile: "openclaw"` se vuoi la modalità gestita per impostazione predefinita.
+Impostare `browser.defaultProfile: "openclaw"` per utilizzare per impostazione predefinita la modalità gestita.
 
 ## Configurazione
 
@@ -145,25 +158,26 @@ Le impostazioni del browser si trovano in `~/.openclaw/openclaw.json`.
 ```json5
 {
   browser: {
-    enabled: true, // default: true
+    enabled: true, // valore predefinito: true
+    evaluateEnabled: true, // valore predefinito: true; false disabilita act:evaluate (JS arbitrario)
     ssrfPolicy: {
-      // dangerouslyAllowPrivateNetwork: true, // opt in only for trusted private-network access
-      // allowPrivateNetwork: true, // legacy alias
+      // dangerouslyAllowPrivateNetwork: true, // aderire solo per l'accesso attendibile alla rete privata
       // hostnameAllowlist: ["*.example.com", "example.com"],
       // allowedHostnames: ["localhost"],
     },
-    // cdpUrl: "http://127.0.0.1:18792", // legacy single-profile override
-    remoteCdpTimeoutMs: 1500, // remote CDP HTTP timeout (ms)
-    remoteCdpHandshakeTimeoutMs: 3000, // remote CDP WebSocket handshake timeout (ms)
-    localLaunchTimeoutMs: 15000, // local managed Chrome discovery timeout (ms)
-    localCdpReadyTimeoutMs: 8000, // local managed post-launch CDP readiness timeout (ms)
-    actionTimeoutMs: 60000, // default browser act timeout (ms)
+    // cdpUrl: "http://127.0.0.1:18792", // sostituzione precedente per un singolo profilo
+    remoteCdpTimeoutMs: 1500, // timeout HTTP CDP remoto (ms)
+    remoteCdpHandshakeTimeoutMs: 3000, // timeout dell'handshake WebSocket CDP remoto (ms)
+    localLaunchTimeoutMs: 15000, // timeout di rilevamento del Chrome gestito locale (ms)
+    localCdpReadyTimeoutMs: 8000, // timeout di disponibilità CDP locale dopo l'avvio gestito (ms)
+    actionTimeoutMs: 60000, // timeout predefinito delle azioni del browser (ms)
     tabCleanup: {
-      enabled: true, // default: true
-      idleMinutes: 120, // set 0 to disable idle cleanup
-      maxTabsPerSession: 8, // set 0 to disable the per-session cap
+      enabled: true, // valore predefinito: true
+      idleMinutes: 120, // impostare 0 per disabilitare la pulizia delle schede inattive
+      maxTabsPerSession: 8, // impostare 0 per disabilitare il limite per sessione
       sweepMinutes: 5,
     },
+    // snapshotDefaults: { mode: "efficient" }, // modalità snapshot predefinita quando il chiamante non ne specifica una
     defaultProfile: "openclaw",
     color: "#FF4500",
     headless: false,
@@ -195,12 +209,17 @@ Le impostazioni del browser si trovano in `~/.openclaw/openclaw.json`.
 }
 ```
 
-### Visione per screenshot (supporto per modelli solo testo)
+`browser.snapshotDefaults.mode: "efficient"` modifica la modalità di estrazione predefinita `snapshot`
+quando un chiamante non passa un valore esplicito `snapshotFormat` o
+`mode`; consultare [API di controllo del browser](/it/tools/browser-control) per le opzioni
+di snapshot per singola chiamata.
 
-Quando il modello principale è solo testo (senza supporto vision/multimodale), gli
+### Visione degli screenshot (supporto per modelli solo testuali)
+
+Quando il modello principale è solo testuale (senza supporto visivo/multimodale), gli
 screenshot del browser restituiscono blocchi immagine che il modello non può leggere. Gli screenshot del browser
-riutilizzano la configurazione esistente di comprensione delle immagini, quindi un modello immagine
-configurato per la comprensione dei media può descrivere gli screenshot come testo senza alcuna
+riutilizzano la configurazione esistente per la comprensione delle immagini, pertanto un modello di immagini
+configurato per la comprensione dei contenuti multimediali può descrivere gli screenshot come testo senza alcuna
 impostazione del modello specifica per il browser.
 
 ```json5
@@ -210,105 +229,129 @@ impostazione del modello specifica per il browser.
       image: {
         models: [
           { provider: "bytedance", model: "doubao-seed-2.0-pro" },
-          // Add fallback candidates; first success wins
+          // Aggiungere candidati di riserva; viene usato il primo che ha esito positivo
           { provider: "openai", model: "gpt-4o" },
         ],
       },
-      // Shared media models also work when tagged for image support.
+      // Anche i modelli multimediali condivisi funzionano quando sono contrassegnati per il supporto delle immagini.
       // models: [{ provider: "openai", model: "gpt-4o", capabilities: ["image"] }],
     },
   },
   agents: {
     defaults: {
-      // Existing image-model defaults are also honored.
+      // Vengono rispettate anche le impostazioni predefinite esistenti del modello di immagini.
       // imageModel: { primary: "openai/gpt-4o" },
     },
   },
 }
 ```
 
-**Come funziona:**
+**Funzionamento:**
 
-1. L'agente chiama `browser screenshot` → immagine acquisita su disco come al solito.
-2. Lo strumento browser chiede al runtime esistente di comprensione delle immagini se
-   può descrivere lo screenshot usando modelli immagine media configurati, modelli media
-   condivisi, impostazioni predefinite di modelli immagine o un provider immagini basato su autenticazione.
-3. Il modello vision restituisce una descrizione testuale, che viene racchiusa con
-   `wrapExternalContent` (protezione contro prompt injection) e restituita all'agente
-   come blocco di testo invece che come blocco immagine.
-4. Se la comprensione delle immagini non è disponibile, viene saltata o fallisce, il browser ripiega
-   sulla restituzione del blocco immagine originale.
+1. L'agente chiama `browser screenshot` e un'immagine viene acquisita su disco come di consueto.
+2. Lo strumento browser chiede al runtime esistente per la comprensione delle immagini se
+   può descrivere lo screenshot utilizzando i modelli di immagini multimediali configurati, i modelli multimediali
+   condivisi, le impostazioni predefinite dei modelli di immagini o un provider di immagini supportato dall'autenticazione.
+3. Il modello visivo restituisce una descrizione testuale, che viene racchiusa con
+   `wrapExternalContent` (protezione dall'iniezione di prompt) e restituita all'agente
+   come blocco di testo anziché come blocco immagine.
+4. Se la comprensione delle immagini non è disponibile, viene ignorata o non riesce, il browser
+   torna a restituire il blocco immagine originale.
 
-Usa i campi esistenti `tools.media.image` / `tools.media.models` per fallback dei modelli,
-timeout, limiti in byte, profili e impostazioni delle richieste ai provider.
+I blocchi immagine degli screenshot sono risultati privati dello strumento: l'agente può esaminarli,
+ma OpenClaw non li allega automaticamente alle risposte nei canali. Per condividere uno
+screenshot, chiedere all'agente di inviarlo esplicitamente con lo strumento dei messaggi.
 
-Se il modello principale attivo supporta già la vision e non è configurato alcun modello esplicito
-di comprensione delle immagini, OpenClaw mantiene il normale risultato immagine così il
-modello principale può leggere direttamente lo screenshot.
+Utilizzare i campi esistenti `tools.media.image` / `tools.media.models` per i modelli
+di riserva, i timeout, i limiti in byte, i profili e le impostazioni delle richieste al provider.
+
+Se il modello principale attivo supporta già la visione e non è configurato alcun modello esplicito
+per la comprensione delle immagini, OpenClaw mantiene il normale risultato immagine affinché il
+modello principale possa leggere direttamente lo screenshot.
 
 <AccordionGroup>
 
-<Accordion title="Ports and reachability">
+<Accordion title="Porte e raggiungibilità">
 
-- Il servizio di controllo si associa a loopback su una porta derivata da `gateway.port` (predefinito `18791` = gateway + 2). Sovrascrivere `gateway.port` o `OPENCLAW_GATEWAY_PORT` sposta le porte derivate nella stessa famiglia.
-- I profili `openclaw` locali assegnano automaticamente `cdpPort`/`cdpUrl`; impostali solo per
-  profili CDP remoti o collegamento a endpoint di sessioni esistenti. `cdpUrl` usa per impostazione predefinita
-  la porta CDP locale gestita quando non impostato.
+- Il servizio di controllo si associa all'interfaccia di loopback su una porta derivata da `gateway.port` (valore predefinito `18791` = Gateway + 2). `OPENCLAW_GATEWAY_PORT` ha la precedenza su `gateway.port`; entrambi spostano le porte derivate della stessa famiglia.
+- I profili `openclaw` locali assegnano automaticamente `cdpPort`/`cdpUrl` da un intervallo che inizia 9 porte dopo la porta di controllo (valore predefinito `18800`-`18899`); impostarli solo per
+  profili CDP remoti o per il collegamento all'endpoint di una sessione esistente. Se non impostato, `cdpUrl` usa per impostazione predefinita
+  la porta CDP locale gestita.
 - `remoteCdpTimeoutMs` si applica ai controlli di raggiungibilità HTTP CDP remoti e `attachOnly`
-  e alle richieste HTTP di apertura schede; `remoteCdpHandshakeTimeoutMs` si applica ai
-  relativi handshake WebSocket CDP.
-- `localLaunchTimeoutMs` è il budget per un processo Chrome gestito avviato localmente
+  e alle richieste HTTP di apertura delle schede; `remoteCdpHandshakeTimeoutMs` si applica
+  ai relativi handshake WebSocket CDP. L'enumerazione persistente delle schede remote di Playwright
+  usa il valore maggiore dei due come scadenza dell'operazione.
+- `localLaunchTimeoutMs` è il tempo massimo concesso a un processo Chrome gestito avviato localmente
   per esporre il proprio endpoint HTTP CDP. `localCdpReadyTimeoutMs` è il
-  budget successivo per la prontezza del websocket CDP dopo che il processo è stato individuato.
-  Aumenta questi valori su Raspberry Pi, VPS di fascia bassa o hardware più vecchio dove Chromium
-  si avvia lentamente. I valori devono essere interi positivi fino a `120000` ms; i valori di
-  configurazione non validi vengono rifiutati.
-- Gli errori ripetuti di avvio/prontezza di Chrome gestito vengono interrotti tramite circuit breaker per
-  profilo. Dopo diversi errori consecutivi, OpenClaw sospende brevemente i nuovi tentativi di avvio
-  invece di generare Chromium a ogni chiamata allo strumento browser. Risolvi
-  il problema di avvio, disabilita il browser se non serve, oppure riavvia il
-  Gateway dopo la riparazione.
-- `actionTimeoutMs` è il budget predefinito per le richieste `act` del browser quando il chiamante non passa `timeoutMs`. Il trasporto client aggiunge una piccola finestra di margine affinché le attese lunghe possano terminare invece di andare in timeout al confine HTTP.
-- `tabCleanup` è una pulizia best-effort per le schede aperte dalle sessioni browser dell'agente primario. La pulizia del ciclo di vita di sotto-agenti, cron e ACP chiude comunque le rispettive schede esplicitamente tracciate alla fine della sessione; le sessioni primarie mantengono riutilizzabili le schede attive, poi chiudono in background le schede tracciate inattive o in eccesso.
+  tempo massimo successivo per la disponibilità del WebSocket CDP dopo il rilevamento del processo.
+  Aumentare questi valori su Raspberry Pi, VPS di fascia bassa o hardware meno recente in cui Chromium
+  si avvia lentamente. I valori devono essere numeri interi positivi fino a `120000` ms; i valori
+  di configurazione non validi vengono rifiutati.
+- Gli errori ripetuti di avvio o disponibilità di Chrome gestito attivano un circuit breaker per
+  ogni profilo. Dopo diversi errori consecutivi, OpenClaw sospende brevemente i nuovi tentativi
+  di avvio anziché generare Chromium a ogni chiamata dello strumento browser. Correggere
+  il problema di avvio, disabilitare il browser se non è necessario oppure riavviare il
+  Gateway dopo la correzione.
+- `actionTimeoutMs` è il tempo massimo predefinito per le richieste `act` del browser quando il chiamante non passa `timeoutMs`. Il trasporto client aggiunge un piccolo margine temporale affinché le attese prolungate possano terminare anziché scadere al limite HTTP.
+- `tabCleanup` esegue una pulizia best effort delle schede aperte dalle sessioni browser dell'agente primario. La pulizia del ciclo di vita di sottoagenti, Cron e ACP continua a chiudere le rispettive schede monitorate esplicitamente al termine della sessione; le sessioni primarie mantengono riutilizzabili le schede attive, quindi chiudono in background quelle monitorate inattive o in eccesso.
 
 </Accordion>
 
-<Accordion title="SSRF policy">
+<Accordion title="Criteri SSRF">
 
-- La navigazione del browser e l'apertura di schede sono protette da SSRF prima della navigazione e ricontrollate al meglio sull'URL `http(s)` finale dopo la navigazione.
-- In modalità SSRF rigorosa, vengono controllati anche il rilevamento degli endpoint CDP remoti e i probe `/json/version` (`cdpUrl`).
-- Le variabili d'ambiente Gateway/provider `HTTP_PROXY`, `HTTPS_PROXY`, `ALL_PROXY` e `NO_PROXY` non instradano automaticamente tramite proxy il browser gestito da OpenClaw. Chrome gestito viene avviato direttamente per impostazione predefinita, così le impostazioni proxy del provider non indeboliscono i controlli SSRF del browser.
-- I probe di disponibilità CDP local gestiti da OpenClaw e le connessioni WebSocket DevTools bypassano il proxy di rete gestito per l'esatto endpoint loopback avviato, quindi `openclaw browser start` funziona comunque quando un proxy operatore blocca l'egress loopback.
-- Per instradare tramite proxy il browser gestito stesso, passa flag proxy Chrome espliciti tramite `browser.extraArgs`, come `--proxy-server=...` o `--proxy-pac-url=...`. La modalità SSRF rigorosa blocca il routing proxy esplicito del browser, a meno che l'accesso del browser alla rete privata non sia abilitato intenzionalmente.
-- `browser.ssrfPolicy.dangerouslyAllowPrivateNetwork` è disattivato per impostazione predefinita; abilitalo solo quando l'accesso del browser alla rete privata è ritenuto affidabile intenzionalmente.
-- `browser.ssrfPolicy.allowPrivateNetwork` resta supportato come alias legacy.
+- Le richieste di navigazione del browser e di apertura delle schede vengono sottoposte a un controllo preliminare. Durante l'azione e per un periodo di tolleranza limitato successivo, le interazioni Playwright protette (clic, clic su coordinate, passaggio del puntatore, trascinamento, scorrimento, selezione, pressione, digitazione, compilazione di moduli e valutazione) intercettano i caricamenti di documenti di primo livello e dei sottoframe negati dai criteri prima dell'invio dei byte della richiesta HTTP, quindi ricontrollano in modalità best effort l'URL `http(s)` finale.
+- Prima di ogni nuovo avvio di Chrome gestito da OpenClaw, OpenClaw disabilita in modalità best effort la previsione di rete, sopprimendo le preconnessioni speculative osservate di Chromium per i caricamenti negati. Si tratta di una difesa aggiuntiva, non di un limite di applicazione dei criteri: un browser riutilizzato dopo il riavvio del servizio di controllo e altri backend browser potrebbero non condividere questa protezione. Il routing di Playwright non è comunque un firewall di rete e non intercetta i passaggi di reindirizzamento, la prima richiesta di un popup, il traffico dei Service Worker, il codice della pagina eseguito dopo l'intervallo di protezione limitato o ogni percorso in background o delle sottorisorse. L'isolamento completo del traffico in uscita richiede l'isolamento da parte del proprietario o un proxy che applichi i criteri.
+- In modalità SSRF rigorosa, vengono controllati anche il rilevamento degli endpoint CDP remoti e le verifiche `/json/version` (`cdpUrl`).
+- Le variabili di ambiente `HTTP_PROXY`, `HTTPS_PROXY`, `ALL_PROXY` e `NO_PROXY` del Gateway/provider non configurano automaticamente il proxy per il browser gestito da OpenClaw. Per impostazione predefinita, Chrome gestito viene avviato con una connessione diretta, affinché le impostazioni proxy del provider non indeboliscano i controlli SSRF del browser.
+- Le verifiche locali di disponibilità CDP e le connessioni WebSocket DevTools gestite da OpenClaw ignorano il proxy di rete gestito per l'esatto endpoint di loopback avviato, pertanto `openclaw browser start` continua a funzionare quando un proxy dell'operatore blocca il traffico di loopback in uscita.
+- Per configurare il proxy del browser gestito stesso, passare esplicitamente i flag proxy di Chrome tramite `browser.extraArgs`, ad esempio `--proxy-server=...` o `--proxy-pac-url=...`. La modalità SSRF rigorosa blocca il routing esplicito del proxy del browser, a meno che l'accesso del browser alla rete privata non sia intenzionalmente abilitato.
+- `browser.ssrfPolicy.dangerouslyAllowPrivateNetwork` è disattivato per impostazione predefinita; abilitarlo solo quando l'accesso del browser alla rete privata è considerato intenzionalmente attendibile.
+- `browser.ssrfPolicy.allowPrivateNetwork` rimane supportato come alias legacy.
 
 </Accordion>
 
 <Accordion title="Comportamento dei profili">
 
-- `attachOnly: true` significa non avviare mai un browser locale; collegarsi solo se uno è già in esecuzione.
-- `headless` può essere impostato globalmente o per singolo profilo locale gestito. I valori per profilo sovrascrivono `browser.headless`, quindi un profilo avviato localmente può restare senza interfaccia mentre un altro rimane visibile.
-- `POST /start?headless=true` e `openclaw browser start --headless` richiedono un avvio
-  senza interfaccia una tantum per i profili locali gestiti senza riscrivere
-  `browser.headless` o la configurazione del profilo. I profili con sessione esistente, solo collegamento e
-  CDP remoto rifiutano l'override perché OpenClaw non avvia quei
+- `attachOnly: true` indica di non avviare mai un browser locale e di collegarsi solo se ne è già in esecuzione uno.
+- `headless` può essere impostato globalmente o per ogni profilo gestito locale. I valori specifici del profilo hanno la precedenza su `browser.headless`, quindi un profilo avviato localmente può rimanere headless mentre un altro resta visibile.
+- `POST /start?headless=true` e `openclaw browser start --headless` richiedono un
+  singolo avvio headless per i profili gestiti locali senza riscrivere
+  `browser.headless` o la configurazione del profilo. I profili di sessione esistente, di solo collegamento e
+  CDP remoti rifiutano la sostituzione perché OpenClaw non avvia i relativi
   processi browser.
-- Sugli host Linux senza `DISPLAY` o `WAYLAND_DISPLAY`, i profili locali gestiti
-  passano automaticamente alla modalità senza interfaccia quando né l'ambiente né la configurazione
-  del profilo/globale scelgono esplicitamente la modalità con interfaccia. `openclaw browser status --json`
-  segnala `headlessSource` come `env`, `profile`, `config`,
+- Sugli host Linux privi di `DISPLAY` o `WAYLAND_DISPLAY`, i profili gestiti locali
+  usano automaticamente la modalità headless per impostazione predefinita quando né l'ambiente né la configurazione
+  del profilo o globale selezionano esplicitamente la modalità con interfaccia. Usare la forma non ambigua a livello di browser
+  `openclaw browser --json status`; anche `openclaw browser status --json` in coda
+  funziona perché `status` non definisce un proprio `--json`. Il comando indica
+  `headlessSource` come `env`, `profile`, `config`,
   `request`, `linux-display-fallback` o `default`.
-- `OPENCLAW_BROWSER_HEADLESS=1` forza gli avvii locali gestiti senza interfaccia per il
-  processo corrente. `OPENCLAW_BROWSER_HEADLESS=0` forza la modalità con interfaccia per gli avvii
-  ordinari e restituisce un errore operativo sugli host Linux senza un display server;
-  una richiesta esplicita `start --headless` prevale comunque per quel singolo avvio.
-- `executablePath` può essere impostato globalmente o per singolo profilo locale gestito. I valori per profilo sovrascrivono `browser.executablePath`, quindi profili gestiti diversi possono avviare browser diversi basati su Chromium. Entrambe le forme accettano `~` per la directory home del tuo sistema operativo.
-- `color` (di primo livello e per profilo) colora l'interfaccia del browser così puoi vedere quale profilo è attivo.
-- Il profilo predefinito è `openclaw` (autonomo gestito). Usa `defaultProfile: "user"` per scegliere il browser dell'utente con accesso effettuato.
-- Ordine di rilevamento automatico: browser predefinito di sistema se basato su Chromium; altrimenti Chrome → Brave → Edge → Chromium → Chrome Canary.
-- `driver: "existing-session"` usa Chrome DevTools MCP invece di CDP non elaborato. Può collegarsi tramite connessione automatica Chrome MCP, oppure tramite `cdpUrl` quando hai già un endpoint DevTools per il browser in esecuzione.
-- Imposta `browser.profiles.<name>.userDataDir` quando un profilo existing-session deve collegarsi a un profilo utente Chromium non predefinito (Brave, Edge, ecc.). Questo percorso accetta anche `~` per la directory home del tuo sistema operativo.
+- `OPENCLAW_BROWSER_HEADLESS=1` forza la modalità headless per gli avvii gestiti locali del
+  processo corrente. `OPENCLAW_BROWSER_HEADLESS=0` forza la modalità con interfaccia per gli
+  avvii ordinari e restituisce un errore utilizzabile sugli host Linux privi di un display server;
+  una richiesta esplicita `start --headless` mantiene comunque la precedenza per quel singolo avvio.
+- La route di controllo del browser e il client programmatico mantengono il
+  `error` leggibile dell'errore di assenza del display ed espongono il motivo stabile
+  `no_display_for_headed_profile`. I relativi `details` contengono solo `profile`,
+  `requestedHeadless`, `headlessSource` e `displayPresent`, in modo che i client API possano
+  scegliere la correzione appropriata senza confrontare il testo del messaggio.
+- Per un profilo gestito locale in esecuzione, lo stato e doctor interrogano l'endpoint
+  CDP a livello di browser di Chrome per ottenere informazioni su renderer, backend, dispositivo/driver, stato
+  delle funzionalità, soluzioni alternative per i driver e capacità video accelerate. Il risultato viene
+  memorizzato nella cache per quel processo browser ed esposto integralmente da
+  `openclaw browser --json status`. Una chiamata di stato passiva non avvia Chrome.
+  I browser di sessione esistente, estensione, CDP remoto e sandbox restano separati
+  e non vengono esaminati tramite questo percorso dell'host gestito.
+- Chrome gestito in modalità headless continua a usare il valore predefinito prudente `--disable-gpu`.
+  La diagnostica non abilita l'accelerazione, non aggiunge un'impostazione globale di accelerazione
+  e non concede al browser sandbox l'accesso ai dispositivi.
+- `executablePath` può essere impostato globalmente o per ogni profilo gestito locale. I valori specifici del profilo hanno la precedenza su `browser.executablePath`, quindi profili gestiti diversi possono avviare browser diversi basati su Chromium. Entrambe le forme accettano `~` per la directory home del sistema operativo.
+- `color` (a livello principale e per profilo) colora l'interfaccia del browser per rendere visibile quale profilo è attivo.
+- Il profilo predefinito è `openclaw` (istanza autonoma gestita). Usare `defaultProfile: "user"` per scegliere esplicitamente il browser dell'utente autenticato.
+- Ordine di rilevamento automatico: browser predefinito del sistema se basato su Chromium; altrimenti Chrome, Brave, Edge, Chromium, Chrome Canary.
+- `driver: "existing-session"` usa Chrome DevTools MCP anziché CDP non elaborato. Può collegarsi tramite la connessione automatica di Chrome MCP oppure tramite `cdpUrl` quando è già disponibile un endpoint DevTools per il browser in esecuzione.
+- `driver: "extension"` controlla il Chrome autenticato tramite l'[estensione Chrome di OpenClaw](/it/tools/chrome-extension). Il relay gestisce il proprio endpoint di loopback, quindi questi profili non accettano `cdpUrl`. Questa è l'unica modalità di browser autenticato che funziona senza nessuno al computer.
+- Impostare `browser.profiles.<name>.userDataDir` quando un profilo di sessione esistente deve collegarsi a un profilo utente Chromium non predefinito (Brave, Edge e così via). Questo percorso accetta anche `~` per la directory home del sistema operativo.
 
 </Accordion>
 
@@ -316,17 +359,17 @@ modello principale può leggere direttamente lo screenshot.
 
 ## Usare Brave o un altro browser basato su Chromium
 
-Se il tuo browser **predefinito di sistema** è basato su Chromium (Chrome/Brave/Edge/ecc.),
-OpenClaw lo usa automaticamente. Imposta `browser.executablePath` per sovrascrivere
-il rilevamento automatico. I valori `executablePath` di primo livello e per profilo accettano `~`
-per la directory home del tuo sistema operativo:
+Se il browser **predefinito del sistema** è basato su Chromium (Chrome/Brave/Edge/ecc.),
+OpenClaw lo usa automaticamente. Impostare `browser.executablePath` per sostituire
+il rilevamento automatico. I valori `executablePath` a livello principale e per profilo accettano `~`
+per la directory home del sistema operativo:
 
 ```bash
 openclaw config set browser.executablePath "/usr/bin/google-chrome"
 openclaw config set browser.profiles.work.executablePath "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
 ```
 
-Oppure impostalo nella configurazione, per piattaforma:
+In alternativa, impostarlo nella configurazione per ciascuna piattaforma:
 
 <Tabs>
   <Tab title="macOS">
@@ -358,64 +401,65 @@ Oppure impostalo nella configurazione, per piattaforma:
   </Tab>
 </Tabs>
 
-`executablePath` per profilo influisce solo sui profili locali gestiti che OpenClaw
-avvia. I profili `existing-session` si collegano invece a un browser già in esecuzione,
-e i profili CDP remoti usano il browser dietro `cdpUrl`.
+Il valore `executablePath` specifico del profilo interessa solo i profili gestiti locali avviati da OpenClaw.
+I profili `existing-session` si collegano invece a un browser già in esecuzione,
+mentre i profili CDP remoti usano il browser associato a `cdpUrl`.
 
 ## Controllo locale e remoto
 
-- **Controllo locale (predefinito):** il Gateway avvia il servizio di controllo loopback e può avviare un browser locale.
-- **Controllo remoto (host nodo):** esegui un host nodo sulla macchina che ha il browser; il Gateway inoltra tramite proxy le azioni del browser verso di esso.
-- **CDP remoto:** imposta `browser.profiles.<name>.cdpUrl` (o `browser.cdpUrl`) per
-  collegarti a un browser remoto basato su Chromium. In questo caso, OpenClaw non avvierà un browser locale.
-- Per servizi CDP gestiti esternamente su loopback (per esempio Browserless in
-  Docker pubblicato su `127.0.0.1`), imposta anche `attachOnly: true`. CDP loopback
-  senza `attachOnly` viene trattato come un profilo browser locale gestito da OpenClaw.
-- `headless` influisce solo sui profili locali gestiti che OpenClaw avvia. Non riavvia né modifica browser existing-session o CDP remoti.
-- `executablePath` segue la stessa regola dei profili locali gestiti. Modificarlo su un
-  profilo locale gestito in esecuzione contrassegna quel profilo per riavvio/riconciliazione, così il
-  prossimo avvio usa il nuovo binario.
+- **Controllo locale (predefinito):** il Gateway avvia il servizio di controllo sul loopback e può avviare un browser locale.
+- **Controllo remoto (host Node):** eseguire un host Node sulla macchina che dispone del browser; il Gateway inoltra tramite proxy le azioni del browser.
+- **CDP remoto:** impostare `browser.profiles.<name>.cdpUrl` (o `browser.cdpUrl`) per
+  collegarsi a un browser remoto basato su Chromium. In questo caso, OpenClaw non avvia un browser locale.
+- Per i servizi CDP gestiti esternamente sul loopback (ad esempio Browserless in
+  Docker pubblicato su `127.0.0.1`), impostare anche `attachOnly: true`. Un CDP di loopback
+  privo di `attachOnly` viene trattato come profilo browser locale gestito da OpenClaw.
+- `headless` interessa solo i profili gestiti locali avviati da OpenClaw. Non riavvia né modifica i browser di sessione esistente o CDP remoti.
+- `executablePath` segue la stessa regola dei profili gestiti locali. La modifica su un
+  profilo gestito locale in esecuzione contrassegna il profilo per il riavvio o la riconciliazione, in modo che
+  l'avvio successivo usi il nuovo binario.
 
 Il comportamento di arresto varia in base alla modalità del profilo:
 
-- profili locali gestiti: `openclaw browser stop` arresta il processo browser che
-  OpenClaw ha avviato
-- profili solo collegamento e CDP remoti: `openclaw browser stop` chiude la sessione di
-  controllo attiva e rilascia gli override di emulazione Playwright/CDP (viewport,
-  schema colori, locale, fuso orario, modalità offline e stato simile), anche
-  se nessun processo browser è stato avviato da OpenClaw
+- profili gestiti locali: `openclaw browser stop` arresta il processo browser avviato da
+  OpenClaw
+- profili di solo collegamento e CDP remoti: `openclaw browser stop` chiude la sessione
+  di controllo attiva e rilascia le sostituzioni di emulazione Playwright/CDP (viewport,
+  schema dei colori, impostazioni locali, fuso orario, modalità offline e stati simili), anche
+  se OpenClaw non ha avviato alcun processo browser
 
-Gli URL CDP remoti possono includere autenticazione:
+Gli URL CDP remoti possono includere l'autenticazione:
 
-- Token di query (ad es. `https://provider.example?token=<token>`)
-- Autenticazione HTTP Basic (ad es. `https://user:pass@provider.example`)
+- Token di query (ad esempio `https://provider.example?token=<token>`)
+- Autenticazione HTTP Basic (ad esempio `https://user:pass@provider.example`)
 
-OpenClaw preserva l'autenticazione quando chiama gli endpoint `/json/*` e quando si connette
-al WebSocket CDP. Preferisci variabili d'ambiente o gestori di segreti per i
-token invece di committarli nei file di configurazione.
+OpenClaw conserva l'autenticazione quando chiama gli endpoint `/json/*` e quando si connette
+al WebSocket CDP. Per i token, preferire variabili di ambiente o gestori di segreti
+anziché salvarli nei file di configurazione.
 
-## Proxy browser del Node (predefinito senza configurazione)
+## Proxy browser del Node (impostazione predefinita senza configurazione)
 
-Se esegui un **host nodo** sulla macchina che ha il tuo browser, OpenClaw può
-instradare automaticamente le chiamate degli strumenti browser a quel nodo senza configurazione browser aggiuntiva.
+Se si esegue un **host del nodo** sulla macchina in cui si trova il browser, OpenClaw può
+instradare automaticamente le chiamate agli strumenti del browser verso quel nodo senza alcuna configurazione aggiuntiva del browser.
 Questo è il percorso predefinito per i Gateway remoti.
 
 Note:
 
-- L'host nodo espone il proprio server locale di controllo browser tramite un **comando proxy**.
+- L'host del nodo espone il proprio server locale di controllo del browser tramite un **comando proxy**.
 - I profili provengono dalla configurazione `browser.profiles` del nodo stesso (come in locale).
-- `nodeHost.browserProxy.allowProfiles` è opzionale. Lascialo vuoto per il comportamento legacy/predefinito: tutti i profili configurati restano raggiungibili tramite il proxy, incluse le rotte di creazione/eliminazione profili.
-- Se imposti `nodeHost.browserProxy.allowProfiles`, OpenClaw lo tratta come un limite di privilegio minimo: possono essere presi di mira solo i profili nella allowlist, e le rotte persistenti di creazione/eliminazione profili vengono bloccate sulla superficie proxy.
-- Disabilitalo se non lo vuoi:
+- Il comando proxy non consente mai modifiche persistenti ai profili (`create-profile`, `delete-profile`, `reset-profile`), indipendentemente da `allowProfiles`; apportare tali modifiche direttamente sul nodo.
+- `nodeHost.browserProxy.allowProfiles` è facoltativo. Lasciarlo vuoto per il comportamento precedente/predefinito: tutti i profili configurati rimangono raggiungibili tramite il proxy.
+- Se si imposta `nodeHost.browserProxy.allowProfiles`, OpenClaw lo considera un limite basato sul privilegio minimo, che restringe i nomi dei profili a cui il proxy può accedere.
+- Disabilitare questa funzione se non la si desidera:
   - Sul nodo: `nodeHost.browserProxy.enabled=false`
-  - Sul gateway: `gateway.nodes.browser.mode="off"`
+  - Sul Gateway: `gateway.nodes.browser.mode="off"` (accetta anche `"auto"` per scegliere un singolo nodo browser connesso oppure `"manual"` per richiedere un parametro del nodo esplicito)
 
 ## Browserless (CDP remoto ospitato)
 
 [Browserless](https://browserless.io) è un servizio Chromium ospitato che espone
-URL di connessione CDP su HTTPS e WebSocket. OpenClaw può usare entrambe le forme, ma
+URL di connessione CDP tramite HTTPS e WebSocket. OpenClaw può utilizzare entrambi i formati, ma
 per un profilo browser remoto l'opzione più semplice è l'URL WebSocket diretto
-dalla documentazione di connessione di Browserless.
+indicato nella documentazione di connessione di Browserless.
 
 Esempio:
 
@@ -438,16 +482,16 @@ Esempio:
 
 Note:
 
-- Sostituisci `<BROWSERLESS_API_KEY>` con il tuo token Browserless reale.
-- Scegli l'endpoint di regione che corrisponde al tuo account Browserless (vedi la loro documentazione).
-- Se Browserless ti fornisce un URL base HTTPS, puoi convertirlo in
-  `wss://` per una connessione CDP diretta oppure mantenere l'URL HTTPS e lasciare che OpenClaw
-  rilevi `/json/version`.
+- Sostituire `<BROWSERLESS_API_KEY>` con il token Browserless effettivo.
+- Scegliere l'endpoint della regione corrispondente all'account Browserless (consultare la relativa documentazione).
+- Se Browserless fornisce un URL di base HTTPS, è possibile convertirlo in
+  `wss://` per una connessione CDP diretta oppure mantenere l'URL HTTPS e consentire a OpenClaw
+  di rilevare `/json/version`.
 
 ### Browserless Docker sullo stesso host
 
-Quando Browserless è self-hosted in Docker e OpenClaw viene eseguito sull'host, tratta
-Browserless come un servizio CDP gestito esternamente:
+Quando Browserless è self-hosted in Docker e OpenClaw viene eseguito sull'host, considerare
+Browserless un servizio CDP gestito esternamente:
 
 ```json5
 {
@@ -466,52 +510,52 @@ Browserless come un servizio CDP gestito esternamente:
 ```
 
 L'indirizzo in `browser.profiles.browserless.cdpUrl` deve essere raggiungibile dal
-processo OpenClaw. Browserless deve anche pubblicizzare un endpoint raggiungibile corrispondente;
-imposta `EXTERNAL` di Browserless sulla stessa base WebSocket pubblica-verso-OpenClaw, come
-`ws://127.0.0.1:3000`, `ws://browserless:3000` o un indirizzo stabile di rete Docker
-privata. Se `/json/version` restituisce `webSocketDebuggerUrl` che punta a
-un indirizzo non raggiungibile da OpenClaw, l'HTTP CDP può sembrare sano mentre il collegamento
-WebSocket continua a fallire.
+processo OpenClaw. Browserless deve inoltre annunciare un endpoint raggiungibile corrispondente;
+impostare `EXTERNAL` di Browserless sulla stessa base WebSocket pubblica e raggiungibile da OpenClaw, ad esempio
+`ws://127.0.0.1:3000`, `ws://browserless:3000` oppure un indirizzo di rete Docker privato
+stabile. Se `/json/version` restituisce `webSocketDebuggerUrl` che punta a
+un indirizzo non raggiungibile da OpenClaw, il CDP HTTP può sembrare operativo mentre il collegamento
+WebSocket continua a non riuscire.
 
-Non lasciare `attachOnly` non impostato per un profilo Browserless loopback. Senza
-`attachOnly`, OpenClaw tratta la porta loopback come un profilo browser locale gestito
-e può segnalare che la porta è in uso ma non di proprietà di OpenClaw.
+Non lasciare `attachOnly` non impostato per un profilo Browserless in loopback. Senza
+`attachOnly`, OpenClaw considera la porta di loopback come un profilo browser locale
+gestito e può segnalare che la porta è in uso ma non appartiene a OpenClaw.
 
 ## Provider CDP WebSocket diretti
 
-Alcuni servizi browser ospitati espongono un endpoint **WebSocket diretto** invece del
-rilevamento CDP standard basato su HTTP (`/json/version`). OpenClaw accetta tre
-forme di URL CDP e sceglie automaticamente la strategia di connessione corretta:
+Alcuni servizi browser ospitati espongono un endpoint **WebSocket diretto** anziché
+il rilevamento CDP standard basato su HTTP (`/json/version`). OpenClaw accetta tre
+formati di URL CDP e seleziona automaticamente la strategia di connessione appropriata:
 
 - **Rilevamento HTTP(S)** - `http://host[:port]` o `https://host[:port]`.
-  OpenClaw chiama `/json/version` per rilevare l'URL del debugger WebSocket, poi
+  OpenClaw chiama `/json/version` per rilevare l'URL del debugger WebSocket, quindi
   si connette. Nessun fallback WebSocket.
 - **Endpoint WebSocket diretti** - `ws://host[:port]/devtools/<kind>/<id>` o
   `wss://...` con un percorso `/devtools/browser|page|worker|shared_worker|service_worker/<id>`.
-  OpenClaw si connette direttamente tramite handshake WebSocket e salta
-  completamente `/json/version`.
-- **Radici WebSocket nude** - `ws://host[:port]` o `wss://host[:port]` senza
-  percorso `/devtools/...` (ad es. [Browserless](https://browserless.io),
-  [Browserbase](https://www.browserbase.com)). OpenClaw prova prima il rilevamento HTTP
-  `/json/version` (normalizzando lo schema a `http`/`https`);
-  se il rilevamento restituisce un `webSocketDebuggerUrl`, viene usato, altrimenti OpenClaw
-  ripiega su un handshake WebSocket diretto alla radice nuda. Se l'endpoint
-  WebSocket pubblicizzato rifiuta l'handshake CDP ma la radice nuda configurata
-  lo accetta, OpenClaw ripiega anche su quella radice. Questo consente a un `ws://` nudo
-  puntato a un Chrome locale di connettersi comunque, poiché Chrome accetta upgrade WebSocket
-  solo sul percorso specifico per target da `/json/version`, mentre i provider
-  ospitati possono continuare a usare il proprio endpoint WebSocket radice quando il loro endpoint
-  di rilevamento pubblicizza un URL di breve durata non adatto a Playwright CDP.
+  OpenClaw si connette direttamente tramite un handshake WebSocket e ignora completamente
+  `/json/version`.
+- **Radici WebSocket semplici** - `ws://host[:port]` o `wss://host[:port]` senza
+  percorso `/devtools/...` (ad esempio [Browserless](https://browserless.io),
+  [Browserbase](https://www.browserbase.com)). OpenClaw tenta prima il rilevamento HTTP
+  `/json/version` (normalizzando lo schema in `http`/`https`);
+  se il rilevamento restituisce un `webSocketDebuggerUrl`, questo viene utilizzato, altrimenti OpenClaw
+  esegue il fallback a un handshake WebSocket diretto sulla radice semplice. Se l'endpoint
+  WebSocket annunciato rifiuta l'handshake CDP ma la radice semplice configurata
+  lo accetta, OpenClaw esegue il fallback anche a tale radice. Ciò consente a un `ws://`
+  semplice che punta a un Chrome locale di connettersi comunque, poiché Chrome accetta gli upgrade
+  WebSocket solo sul percorso specifico per destinazione fornito da `/json/version`, mentre i provider
+  ospitati possono continuare a utilizzare il proprio endpoint WebSocket radice quando il relativo endpoint di rilevamento
+  annuncia un URL di breve durata non adatto a Playwright CDP.
 
-`openclaw browser doctor` usa la stessa logica rilevamento-prima, fallback-WebSocket
-del collegamento runtime, quindi un URL radice nuda che si connette correttamente non viene
+`openclaw browser doctor` utilizza la stessa logica di rilevamento iniziale con fallback
+WebSocket usata per il collegamento in fase di esecuzione, pertanto un URL con radice semplice che si connette correttamente non viene
 segnalato come irraggiungibile dalla diagnostica.
 
 ### Browserbase
 
-[Browserbase](https://www.browserbase.com) è una piattaforma cloud per eseguire
-browser senza interfaccia con risoluzione CAPTCHA integrata, modalità stealth e proxy
-residenziali.
+[Browserbase](https://www.browserbase.com) è una piattaforma cloud per l'esecuzione di
+browser headless con risoluzione CAPTCHA, modalità invisibile e proxy
+residenziali integrati.
 
 ```json5
 {
@@ -532,21 +576,20 @@ residenziali.
 
 Note:
 
-- [Registrati](https://www.browserbase.com/sign-up) e copia la tua **API Key**
+- [Registrarsi](https://www.browserbase.com/sign-up) e copiare la propria **API Key**
   dalla [dashboard Overview](https://www.browserbase.com/overview).
-- Sostituisci `<BROWSERBASE_API_KEY>` con la tua vera chiave API Browserbase.
-- Browserbase crea automaticamente una sessione browser alla connessione WebSocket, quindi non
-  è necessario alcun passaggio manuale di creazione della sessione.
-- Il piano gratuito consente una sessione concorrente e un'ora browser al mese.
-  Consulta i [prezzi](https://www.browserbase.com/pricing) per i limiti dei piani a pagamento.
-- Consulta la [documentazione Browserbase](https://docs.browserbase.com) per il riferimento API
+- Sostituire `<BROWSERBASE_API_KEY>` con la chiave API Browserbase effettiva.
+- Browserbase crea automaticamente una sessione del browser alla connessione WebSocket, pertanto non è
+  necessario alcun passaggio manuale per la creazione della sessione.
+- Consultare i [prezzi](https://www.browserbase.com/pricing) per i limiti attuali del piano gratuito e i piani a pagamento.
+- Consultare la [documentazione di Browserbase](https://docs.browserbase.com) per il riferimento API
   completo, le guide SDK e gli esempi di integrazione.
 
 ### Notte
 
-[Notte](https://www.notte.cc) è una piattaforma cloud per eseguire browser
-headless con stealth integrato, proxy residenziali e un Gateway WebSocket
-nativo CDP.
+[Notte](https://www.notte.cc) è una piattaforma cloud per l'esecuzione di browser
+headless con modalità invisibile, proxy residenziali e un Gateway WebSocket
+nativo per CDP integrati.
 
 ```json5
 {
@@ -567,85 +610,80 @@ nativo CDP.
 
 Note:
 
-- [Registrati](https://console.notte.cc) e copia la tua **API Key** dalla
+- [Registrarsi](https://console.notte.cc) e copiare la propria **API Key** dalla
   pagina delle impostazioni della console.
-- Sostituisci `<NOTTE_API_KEY>` con la tua vera chiave API Notte.
-- Notte crea automaticamente una sessione browser alla connessione WebSocket, quindi non è necessario
-  alcun passaggio manuale di creazione della sessione. La sessione viene distrutta quando il
+- Sostituire `<NOTTE_API_KEY>` con la chiave API Notte effettiva.
+- Notte crea automaticamente una sessione del browser alla connessione WebSocket, pertanto non è necessario alcun passaggio
+  manuale per la creazione della sessione. La sessione viene eliminata quando
   WebSocket si disconnette.
-- Il piano gratuito consente cinque sessioni concorrenti e 100 ore browser
-  totali. Consulta i [prezzi](https://www.notte.cc/#pricing) per i limiti dei piani a pagamento.
-- Consulta la [documentazione Notte](https://docs.notte.cc) per il riferimento API completo, le guide SDK
-  e gli esempi di integrazione.
+- Consultare i [prezzi](https://www.notte.cc/#pricing) per i limiti attuali del piano gratuito e i piani a pagamento.
+- Consultare la [documentazione di Notte](https://docs.notte.cc) per il riferimento API completo, le guide
+  SDK e gli esempi di integrazione.
 
 ## Sicurezza
 
 Concetti chiave:
 
-- Il controllo del browser è solo su loopback; l'accesso passa attraverso l'autenticazione del Gateway o l'abbinamento del nodo.
-- L'API HTTP browser local loopback autonoma usa **solo autenticazione a segreto condiviso**:
-  autenticazione bearer con token del Gateway, `x-openclaw-password` oppure autenticazione HTTP Basic con la
-  password Gateway configurata.
-- Gli header di identità Tailscale Serve e `gateway.auth.mode: "trusted-proxy"` **non**
-  autenticano questa API browser local loopback autonoma.
-- Se il controllo del browser è abilitato e non è configurata alcuna autenticazione a segreto condiviso, OpenClaw
-  genera un token Gateway valido solo a runtime per quell'avvio. Configura
-  `gateway.auth.token`, `gateway.auth.password`, `OPENCLAW_GATEWAY_TOKEN` oppure
-  `OPENCLAW_GATEWAY_PASSWORD` esplicitamente se i client hanno bisogno di un segreto stabile tra
-  riavvii.
-- OpenClaw **non** genera automaticamente quel token quando `gateway.auth.mode` è
-  già `password`, `none` o `trusted-proxy`.
-- Mantieni il Gateway e qualsiasi host nodo su una rete privata (Tailscale); evita l'esposizione pubblica.
-- Tratta URL/token CDP remoti come segreti; preferisci variabili d'ambiente o un gestore di segreti.
+- Il controllo del browser è limitato al loopback; l'accesso passa attraverso l'autenticazione del Gateway o l'associazione del nodo.
+- L'API HTTP autonoma del browser in loopback utilizza **esclusivamente l'autenticazione con segreto condiviso**:
+  l'autenticazione bearer con token del Gateway, `x-openclaw-password` oppure l'autenticazione HTTP Basic con la
+  password del Gateway configurata.
+- Le intestazioni di identità Tailscale Serve e `gateway.auth.mode: "trusted-proxy"`
+  **non** autenticano questa API autonoma del browser in loopback.
+- Se il controllo del browser è abilitato e non è configurata alcuna autenticazione con segreto condiviso, OpenClaw
+  genera automaticamente e rende persistente una credenziale di controllo del browser all'avvio:
+  un token quando `gateway.auth.mode` è `none` oppure una password quando è
+  `trusted-proxy` (resa persistente tramite `gateway.auth.password` affinché i client
+  loopback esterni al processo possano risolverla). La generazione automatica viene ignorata quando è già
+  configurata una credenziale stringa esplicita per tale modalità oppure quando
+  `gateway.auth.mode` è `password`.
+- Configurare esplicitamente `gateway.auth.token`, `gateway.auth.password`, `OPENCLAW_GATEWAY_TOKEN` o
+  `OPENCLAW_GATEWAY_PASSWORD` se si desidera un segreto stabile sotto il proprio controllo
+  anziché quello generato.
 
 Suggerimenti per CDP remoto:
 
-- Preferisci endpoint cifrati (HTTPS o WSS) e token a breve durata quando possibile.
-- Evita di incorporare token a lunga durata direttamente nei file di configurazione.
+- Preferire endpoint crittografati (HTTPS o WSS) e token di breve durata ove possibile.
+- Evitare di incorporare token di lunga durata direttamente nei file di configurazione.
+- Mantenere il Gateway e tutti gli host dei nodi su una rete privata (Tailscale); evitare l'esposizione pubblica.
+- Trattare gli URL/token CDP remoti come segreti; preferire variabili d'ambiente o un gestore di segreti.
 
-## Profili (multi-browser)
+## Profili (browser multipli)
 
-OpenClaw supporta più profili denominati (configurazioni di routing). I profili possono essere:
+OpenClaw supporta più profili denominati (configurazioni di instradamento). I profili possono essere:
 
-- **gestiti da openclaw**: un'istanza browser dedicata basata su Chromium con la propria directory dati utente + porta CDP
+- **gestiti da OpenClaw**: un'istanza dedicata di browser basato su Chromium con la propria directory dei dati utente e porta CDP
 - **remoti**: un URL CDP esplicito (browser basato su Chromium in esecuzione altrove)
-- **sessione esistente**: il tuo profilo Chrome esistente tramite connessione automatica Chrome DevTools MCP
+- **sessione esistente**: il profilo Chrome esistente tramite la connessione automatica di Chrome DevTools MCP
 
 Valori predefiniti:
 
-- Il profilo `openclaw` viene creato automaticamente se manca.
-- Il profilo `user` è integrato per l'attach a sessione esistente di Chrome MCP.
-- I profili di sessione esistente sono opt-in oltre `user`; creali con `--driver existing-session`.
-- Le porte CDP locali vengono allocate da **18800-18899** per impostazione predefinita.
-- L'eliminazione di un profilo sposta la sua directory dati locale nel Cestino.
+- Il profilo `openclaw` viene creato automaticamente se mancante.
+- Il profilo `user` è integrato per il collegamento a una sessione esistente tramite Chrome MCP.
+- I profili con sessione esistente sono facoltativi oltre a `user`; crearli con `--driver existing-session`.
+- Le porte CDP locali vengono allocate nell'intervallo **18800-18899** per impostazione predefinita.
+- L'eliminazione di un profilo sposta la relativa directory dei dati locali nel Cestino.
 
-Tutti gli endpoint di controllo accettano `?profile=<name>`; la CLI usa `--browser-profile`.
+Tutti gli endpoint di controllo accettano `?profile=<name>`; la CLI utilizza `--browser-profile`.
 
 ## Sessione esistente tramite Chrome DevTools MCP
 
 OpenClaw può anche collegarsi a un profilo browser basato su Chromium in esecuzione tramite il
-server Chrome DevTools MCP ufficiale. Questo riutilizza le schede e lo stato di accesso
-già aperti in quel profilo browser.
+server ufficiale Chrome DevTools MCP. In questo modo vengono riutilizzate le schede e lo stato di accesso
+già aperti nel profilo browser.
 
-Riferimenti ufficiali di contesto e configurazione:
+Riferimenti ufficiali per il contesto e la configurazione:
 
-- [Chrome for Developers: Use Chrome DevTools MCP with your browser session](https://developer.chrome.com/blog/chrome-devtools-mcp-debug-your-browser-session)
-- [Chrome DevTools MCP README](https://github.com/ChromeDevTools/chrome-devtools-mcp)
+- [Chrome for Developers: utilizzare Chrome DevTools MCP con la sessione del browser](https://developer.chrome.com/blog/chrome-devtools-mcp-debug-your-browser-session)
+- [README di Chrome DevTools MCP](https://github.com/ChromeDevTools/chrome-devtools-mcp)
 
-Profilo integrato:
+Profilo integrato: `user`. Creare un profilo personalizzato con sessione esistente se
+si desidera un nome, un colore o una directory dei dati del browser diversi.
 
-- `user`
-
-Opzionale: crea un tuo profilo personalizzato di sessione esistente se vuoi un
-nome, colore o directory dati browser diversi.
-
-Comportamento predefinito:
-
-- Il profilo integrato `user` usa la connessione automatica Chrome MCP, che punta al
-  profilo locale predefinito di Google Chrome.
-
-Usa `userDataDir` per Brave, Edge, Chromium o un profilo Chrome non predefinito.
-`~` si espande alla directory home del tuo sistema operativo:
+Per impostazione predefinita, il profilo integrato `user` utilizza la connessione automatica di Chrome MCP, che
+punta al profilo Google Chrome locale predefinito. Utilizzare `userDataDir` per Brave,
+Edge, Chromium o un profilo Chrome non predefinito. `~` si espande nella directory home
+del sistema operativo:
 
 ```json5
 {
@@ -662,19 +700,19 @@ Usa `userDataDir` per Brave, Edge, Chromium o un profilo Chrome non predefinito.
 }
 ```
 
-Poi nel browser corrispondente:
+Quindi, nel browser corrispondente:
 
-1. Apri la pagina inspect di quel browser per il debug remoto.
-2. Abilita il debug remoto.
-3. Mantieni il browser in esecuzione e approva la richiesta di connessione quando OpenClaw si collega.
+1. Aprire la pagina di ispezione del browser per il debug remoto.
+2. Abilitare il debug remoto.
+3. Mantenere il browser in esecuzione e approvare la richiesta di connessione quando OpenClaw si collega.
 
-Pagine inspect comuni:
+Pagine di ispezione comuni:
 
 - Chrome: `chrome://inspect/#remote-debugging`
 - Brave: `brave://inspect/#remote-debugging`
 - Edge: `edge://inspect/#remote-debugging`
 
-Smoke test di attach live:
+Test rapido di collegamento in tempo reale:
 
 ```bash
 openclaw browser --browser-profile user start
@@ -688,86 +726,96 @@ Aspetto di un esito positivo:
 - `status` mostra `driver: existing-session`
 - `status` mostra `transport: chrome-mcp`
 - `status` mostra `running: true`
-- `tabs` elenca le tue schede browser già aperte
-- `snapshot` restituisce riferimenti dalla scheda live selezionata
+- `tabs` elenca le schede del browser già aperte
+- `snapshot` restituisce i riferimenti dalla scheda attiva selezionata
 
-Cosa controllare se l'attach non funziona:
+Cosa verificare se il collegamento non funziona:
 
-- il browser di destinazione basato su Chromium è in versione `144+`
-- il debug remoto è abilitato nella pagina inspect di quel browser
-- il browser ha mostrato la richiesta di consenso all'attach e l'hai accettata
-- se Chrome è stato avviato con una `--remote-debugging-port` esplicita, imposta
-  `browser.profiles.<name>.cdpUrl` su quell'endpoint DevTools invece di affidarti
-  alla connessione automatica Chrome MCP
-- `openclaw doctor` migra la vecchia configurazione browser basata su estensione e controlla che
-  Chrome sia installato localmente per i profili predefiniti a connessione automatica, ma non può
-  abilitare per te il debug remoto lato browser
+- il browser di destinazione basato su Chromium è alla versione `144+`
+- il debug remoto è abilitato nella pagina di ispezione del browser
+- il browser ha mostrato la richiesta di consenso al collegamento ed è stata accettata
+- se Chrome è stato avviato con un `--remote-debugging-port` esplicito, impostare
+  `browser.profiles.<name>.cdpUrl` su tale endpoint DevTools anziché affidarsi
+  alla connessione automatica di Chrome MCP
+- `openclaw doctor` migra la vecchia configurazione del browser basata sull'estensione e verifica che
+  Chrome sia installato localmente per i profili predefiniti con connessione automatica, ma non può
+  abilitare automaticamente il debug remoto nel browser
 
 Uso da parte dell'agente:
 
-- Usa `profile="user"` quando ti serve lo stato browser autenticato dell'utente.
-- Se usi un profilo personalizzato di sessione esistente, passa quel nome profilo esplicito.
-- Scegli questa modalità solo quando l'utente è al computer per approvare la richiesta di
-  attach.
-- il Gateway o l'host nodo può avviare `npx chrome-devtools-mcp@latest --autoConnect`
+- Usare `profile="user"` quando è necessario lo stato autenticato del browser dell'utente.
+- Se si usa un profilo personalizzato di sessione esistente, passare esplicitamente il nome del profilo.
+- Scegliere questa modalità solo quando l'utente è al computer per approvare la richiesta
+  di collegamento.
+- L'host del Gateway o del Node può avviare `npx chrome-devtools-mcp@latest --autoConnect`.
 
 Note:
 
-- Questo percorso è più rischioso del profilo isolato `openclaw` perché può
-  agire all'interno della tua sessione browser autenticata.
+- Questo percorso presenta un rischio maggiore rispetto al profilo isolato `openclaw`, perché può
+  operare all'interno della sessione autenticata del browser.
 - OpenClaw non avvia il browser per questo driver; si limita a collegarsi.
-- OpenClaw usa qui il flusso ufficiale Chrome DevTools MCP `--autoConnect`. Se
-  `userDataDir` è impostato, viene passato per puntare a quella directory dati utente.
-- La sessione esistente può collegarsi sull'host selezionato o attraverso un
-  nodo browser connesso. Se Chrome è altrove e nessun nodo browser è connesso, usa
-  CDP remoto o un host nodo.
+- OpenClaw usa qui il flusso ufficiale `--autoConnect` di Chrome DevTools MCP. Se
+  `userDataDir` è impostato, viene trasmesso per usare come destinazione tale directory dei dati utente.
+- La sessione esistente può collegarsi sull'host selezionato o tramite un
+  Node browser connesso. Se Chrome si trova altrove e non è connesso alcun Node browser, usare
+  CDP remoto o un host Node.
+- Le destinazioni Chrome MCP e i riferimenti delle istantanee sono circoscritti a un singolo sottoprocesso MCP. Dopo
+  il riavvio del processo, eseguire nuovamente `browser tabs`, selezionare esplicitamente una nuova
+  destinazione prima delle operazioni specifiche per la destinazione e acquisire una nuova istantanea prima di usare i riferimenti.
+  Ogni riferimento è valido soltanto per la propria destinazione e per l'istantanea più recente. I vecchi alias non vengono
+  trasferiti a una scheda sostitutiva, anche quando il relativo URL coincide.
+- Chrome DevTools MCP attualmente instrada gli strumenti della pagina tramite un ID pagina numerico
+  locale al processo. Gli handle circoscritti al processo impediscono il riutilizzo dopo la sostituzione del sottoprocesso, ma la
+  sostituzione del contesto del browser all'interno del processo tra due chiamate consecutive dello strumento può comunque
+  cambiare la destinazione di un'azione. Un instradamento completamente atomico richiede il supporto upstream degli strumenti della pagina
+  per ID di destinazione stabili.
 
-### Avvio Chrome MCP personalizzato
+### Avvio personalizzato di Chrome MCP
 
-Sovrascrivi il server Chrome DevTools MCP avviato per profilo quando il flusso predefinito
-`npx chrome-devtools-mcp@latest` non è quello che vuoi (host offline,
-versioni fissate, binari vendorizzati):
+Sostituire per ogni profilo il server Chrome DevTools MCP avviato quando il flusso predefinito
+`npx chrome-devtools-mcp@latest` non è quello desiderato (host offline,
+versioni fissate, binari forniti localmente):
 
-| Campo        | Cosa fa                                                                                                                    |
+| Campo        | Funzione                                                                                                               |
 | ------------ | -------------------------------------------------------------------------------------------------------------------------- |
-| `mcpCommand` | Eseguibile da avviare invece di `npx`. Risolto così com'è; i percorsi assoluti vengono rispettati.                         |
-| `mcpArgs`    | Array di argomenti passato testualmente a `mcpCommand`. Sostituisce gli argomenti predefiniti `chrome-devtools-mcp@latest --autoConnect`. |
+| `mcpCommand` | Eseguibile da avviare al posto di `npx`. Viene risolto così com'è; i percorsi assoluti vengono rispettati.                                          |
+| `mcpArgs`    | Array di argomenti passato senza modifiche a `mcpCommand`. Sostituisce gli argomenti predefiniti `chrome-devtools-mcp@latest --autoConnect`. |
 
-Quando `cdpUrl` è impostato su un profilo di sessione esistente, OpenClaw salta
+Quando `cdpUrl` è impostato su un profilo di sessione esistente, OpenClaw ignora
 `--autoConnect` e inoltra automaticamente l'endpoint a Chrome MCP:
 
-- `http(s)://...` → `--browserUrl <url>` (endpoint di discovery HTTP DevTools).
+- `http(s)://...` → `--browserUrl <url>` (endpoint di rilevamento HTTP di DevTools).
 - `ws(s)://...` → `--wsEndpoint <url>` (WebSocket CDP diretto).
 
-I flag endpoint e `userDataDir` non possono essere combinati: quando `cdpUrl` è impostato,
-`userDataDir` viene ignorato per l'avvio Chrome MCP, poiché Chrome MCP si collega al
-browser in esecuzione dietro l'endpoint invece di aprire una directory
-profilo.
+I flag dell'endpoint e `userDataDir` non possono essere combinati: quando `cdpUrl` è impostato,
+`userDataDir` viene ignorato per l'avvio di Chrome MCP, poiché Chrome MCP si collega al
+browser in esecuzione dietro l'endpoint anziché aprire una directory
+del profilo.
 
-<Accordion title="Limitazioni della funzionalità sessione esistente">
+<Accordion title="Limitazioni della funzionalità di sessione esistente">
 
-Rispetto al profilo gestito `openclaw`, i driver di sessione esistente sono più vincolati:
+Rispetto al profilo gestito `openclaw`, i driver di sessione esistente presentano maggiori limitazioni:
 
-- **Screenshot** - le acquisizioni pagina e le acquisizioni elemento `--ref` funzionano; i selettori CSS `--element` no. `--full-page` non può essere combinato con `--ref` o `--element`. Playwright non è richiesto per screenshot di pagina o di elementi basati su ref.
-- **Azioni** - `click`, `type`, `hover`, `scrollIntoView`, `drag` e `select` richiedono ref di snapshot (nessun selettore CSS). `click-coords` fa clic sulle coordinate visibili del viewport e non richiede un ref di snapshot. `click` usa solo il pulsante sinistro. `type` non supporta `slowly=true`; usa `fill` o `press`. `press` non supporta `delayMs`. `type`, `hover`, `scrollIntoView`, `drag`, `select`, `fill` ed `evaluate` non supportano timeout per chiamata. `select` accetta un singolo valore.
-- **Attesa / upload / dialogo** - `wait --url` supporta pattern esatti, sottostringhe e glob; `wait --load networkidle` non è supportato sui profili di sessione esistente (funziona sui profili gestiti e CDP raw/remoti). Gli hook di upload richiedono `ref` o `inputRef`, un file alla volta, nessun `element` CSS. Gli hook di dialogo non supportano override del timeout o `dialogId`.
-- **Visibilità dialogo** - Le risposte delle azioni del browser gestito includono `blockedByDialog` e `browserState.dialogs.pending` quando un'azione apre una finestra di dialogo modale; anche gli snapshot includono lo stato dei dialoghi in sospeso. Rispondi con `browser dialog --accept/--dismiss --dialog-id <id>` mentre un dialogo è in sospeso. I dialoghi gestiti fuori da OpenClaw compaiono in `browserState.dialogs.recent`.
-- **Funzionalità solo gestite** - azioni batch, esportazione PDF, intercettazione download e `responsebody` richiedono ancora il percorso browser gestito.
+- **Screenshot** - le acquisizioni della pagina e le acquisizioni degli elementi `--ref` funzionano; i selettori CSS `--element` no. Playwright non è necessario per gli screenshot della pagina o degli elementi basati su riferimenti. (`--full-page` non può essere combinato con `--ref` o `--element` in alcun profilo, non soltanto nelle sessioni esistenti.)
+- **Azioni** - `click`, `type`, `hover`, `scrollIntoView`, `drag` e `select` richiedono riferimenti dell'istantanea (senza selettori CSS). `click-coords` fa clic sulle coordinate visibili della finestra e non richiede un riferimento dell'istantanea. `click` supporta soltanto il pulsante sinistro (senza sostituzioni del pulsante o modificatori). `type` non supporta `slowly=true`; usare `fill` o `press`. `press` non supporta `delayMs`. `type`, `hover`, `scrollIntoView`, `drag`, `select` e `fill` non supportano sostituzioni di `timeoutMs` per singola chiamata; `evaluate` le supporta. `select` accetta un singolo valore. `batch` non è supportato; inviare le azioni singolarmente.
+- **Attesa / caricamento / finestra di dialogo** - `wait --url` supporta corrispondenze esatte, sottostringhe e modelli glob (come nella modalità gestita); `wait --load networkidle` non è supportato nei profili di sessione esistente (funziona nei profili gestiti e CDP grezzi/remoti). Gli hook di caricamento richiedono `ref` o `inputRef`, un file alla volta, senza `element` CSS. Gli hook delle finestre di dialogo non supportano sostituzioni del timeout o `dialogId`.
+- **Visibilità delle finestre di dialogo** - le risposte alle azioni del browser gestito includono `blockedByDialog` e `browserState.dialogs.pending` quando un'azione apre una finestra di dialogo modale; le istantanee includono anche lo stato della finestra di dialogo in sospeso. Rispondere con `browser dialog --accept/--dismiss --dialog-id <id>` mentre è presente una finestra di dialogo in sospeso. Le finestre di dialogo gestite esternamente a OpenClaw compaiono in `browserState.dialogs.recent`.
+- **Funzionalità riservate alla modalità gestita** - l'esportazione in PDF, l'intercettazione dei download e `responsebody` richiedono ancora il percorso del browser gestito.
 
 </Accordion>
 
 ## Garanzie di isolamento
 
-- **Directory dati utente dedicata**: non tocca mai il tuo profilo browser personale.
-- **Porte dedicate**: evita `9222` per prevenire collisioni con i flussi di lavoro di sviluppo.
-- **Controllo deterministico delle schede**: `tabs` restituisce prima `suggestedTargetId`, poi
-  handle `tabId` stabili come `t1`, etichette opzionali e il `targetId` raw.
-  Gli agenti dovrebbero riutilizzare `suggestedTargetId`; gli ID raw restano disponibili per
-  debug e compatibilità.
+- **Directory dedicata dei dati utente**: non accede mai al profilo personale del browser.
+- **Porte dedicate**: evita `9222` per prevenire conflitti con i flussi di lavoro di sviluppo.
+- **Controllo deterministico delle schede**: `tabs` restituisce prima `suggestedTargetId`, quindi
+  handle `tabId` stabili come `t1`, etichette facoltative e il valore `targetId` non elaborato.
+  Gli agenti devono riutilizzare `suggestedTargetId`; gli ID non elaborati restano disponibili per
+  il debug e la compatibilità.
 
 ## Selezione del browser
 
-Quando viene avviato localmente, OpenClaw sceglie il primo disponibile:
+All'avvio locale, OpenClaw seleziona il primo disponibile:
 
 1. Chrome
 2. Brave
@@ -775,50 +823,50 @@ Quando viene avviato localmente, OpenClaw sceglie il primo disponibile:
 4. Chromium
 5. Chrome Canary
 
-Puoi sovrascrivere con `browser.executablePath`.
+È possibile sostituirlo con `browser.executablePath`.
 
 Piattaforme:
 
 - macOS: controlla `/Applications` e `~/Applications`.
-- Linux: controlla le posizioni comuni di Chrome/Brave/Edge/Chromium sotto `/usr/bin`,
+- Linux: controlla le posizioni comuni di Chrome/Brave/Edge/Chromium in `/usr/bin`,
   `/snap/bin`, `/opt/google`, `/opt/brave.com`, `/usr/lib/chromium` e
-  `/usr/lib/chromium-browser`, oltre al Chromium gestito da Playwright sotto
+  `/usr/lib/chromium-browser`, oltre a Chromium gestito da Playwright in
   `PLAYWRIGHT_BROWSERS_PATH` o `~/.cache/ms-playwright`.
 - Windows: controlla le posizioni di installazione comuni.
 
-## API di controllo (opzionale)
+## API di controllo (facoltativa)
 
-Per scripting e debug, il Gateway espone una piccola **API HTTP di controllo
-solo local loopback** più una CLI `openclaw browser` corrispondente (snapshot, ref, potenziamenti
-di attesa, output JSON, flussi di lavoro di debug). Consulta
-[API di controllo browser](/it/tools/browser-control) per il riferimento completo.
+Per lo scripting e il debug, il Gateway espone una piccola **API di controllo HTTP
+accessibile solo tramite loopback**, oltre a una CLI `openclaw browser` corrispondente (istantanee, riferimenti, funzionalità avanzate
+di attesa, output JSON, flussi di lavoro di debug). Consultare
+[API di controllo del browser](/it/tools/browser-control) per il riferimento completo.
 
 ## Risoluzione dei problemi
 
-Per problemi specifici di Linux (in particolare snap Chromium), consulta
+Per problemi specifici di Linux (in particolare Chromium installato tramite snap), consultare
 [Risoluzione dei problemi del browser](/it/tools/browser-linux-troubleshooting).
 
-Per configurazioni split-host con Gateway WSL2 + Chrome Windows, consulta
+Per configurazioni con Gateway WSL2 e Chrome per Windows su host separati, consultare
 [Risoluzione dei problemi di WSL2 + Windows + CDP remoto di Chrome](/it/tools/browser-wsl2-windows-remote-cdp-troubleshooting).
 
-### Errore di avvio CDP rispetto a blocco SSRF di navigazione
+### Errore di avvio CDP ed errore di navigazione bloccata dalla protezione SSRF
 
-Queste sono classi di errore diverse e indicano percorsi di codice diversi.
+Si tratta di classi di errore diverse, che rimandano a percorsi del codice differenti.
 
-- **Errore di avvio o di prontezza CDP** significa che OpenClaw non riesce a confermare che il piano di controllo del browser sia integro.
-- **Blocco SSRF di navigazione** significa che il piano di controllo del browser è integro, ma una destinazione di navigazione della pagina viene rifiutata dalla policy.
+- **Errore di avvio o disponibilità di CDP** significa che OpenClaw non può confermare il corretto funzionamento del piano di controllo del browser.
+- **Blocco SSRF della navigazione** significa che il piano di controllo del browser funziona correttamente, ma una destinazione di navigazione della pagina viene rifiutata dai criteri.
 
 Esempi comuni:
 
-- Errore di avvio o di prontezza CDP:
+- Errore di avvio o disponibilità di CDP:
   - `Chrome CDP websocket for profile "openclaw" is not reachable after start`
   - `Remote CDP for profile "<name>" is not reachable at <cdpUrl>`
   - `Port <port> is in use for profile "<name>" but not by openclaw` quando un
-    servizio CDP esterno di local loopback è configurato senza `attachOnly: true`
-- Blocco SSRF di navigazione:
-  - i flussi `open`, `navigate`, snapshot o apertura di schede non riescono con un errore di policy del browser/rete mentre `start` e `tabs` funzionano ancora
+    servizio CDP esterno su loopback è configurato senza `attachOnly: true`
+- Blocco SSRF della navigazione:
+  - I flussi `open`, `navigate`, di istantanea o di apertura delle schede non riescono a causa di un errore dei criteri del browser o di rete, mentre `start` e `tabs` continuano a funzionare
 
-Usa questa sequenza minima per distinguere i due casi:
+Usare questa sequenza minima per distinguere i due casi:
 
 ```bash
 openclaw browser --browser-profile openclaw start
@@ -826,48 +874,48 @@ openclaw browser --browser-profile openclaw tabs
 openclaw browser --browser-profile openclaw open https://example.com
 ```
 
-Come leggere i risultati:
+Come interpretare i risultati:
 
-- Se `start` non riesce con `not reachable after start`, risolvi prima i problemi di prontezza CDP.
-- Se `start` riesce ma `tabs` non riesce, il piano di controllo è ancora non integro. Trattalo come un problema di raggiungibilità CDP, non come un problema di navigazione della pagina.
-- Se `start` e `tabs` riescono ma `open` o `navigate` non riesce, il piano di controllo del browser è attivo e l'errore è nella policy di navigazione o nella pagina di destinazione.
-- Se `start`, `tabs` e `open` riescono tutti, il percorso di controllo di base del browser gestito è integro.
+- Se `start` non riesce con `not reachable after start`, risolvere prima i problemi di disponibilità di CDP.
+- Se `start` riesce ma `tabs` non riesce, il piano di controllo non funziona ancora correttamente. Considerarlo un problema di raggiungibilità di CDP, non un problema di navigazione della pagina.
+- Se `start` e `tabs` riescono, ma `open` o `navigate` non riesce, il piano di controllo del browser è attivo e l'errore riguarda i criteri di navigazione o la pagina di destinazione.
+- Se `start`, `tabs` e `open` riescono tutti, il percorso di controllo di base del browser gestito funziona correttamente.
 
 Dettagli importanti sul comportamento:
 
-- La configurazione del browser usa come valore predefinito un oggetto di policy SSRF fail-closed anche quando non configuri `browser.ssrfPolicy`.
-- Per il profilo gestito `openclaw` in local loopback, i controlli di integrità CDP ignorano intenzionalmente l'applicazione della raggiungibilità SSRF del browser per il piano di controllo locale di OpenClaw.
-- La protezione della navigazione è separata. Un risultato riuscito di `start` o `tabs` non significa che una destinazione successiva di `open` o `navigate` sia consentita.
+- Per impostazione predefinita, la configurazione del browser usa un oggetto di criteri SSRF che blocca in caso di errore, anche quando `browser.ssrfPolicy` non è configurato.
+- Per il profilo gestito locale su loopback `openclaw`, i controlli di integrità di CDP ignorano intenzionalmente l'applicazione della raggiungibilità SSRF del browser per il piano di controllo locale di OpenClaw.
+- La protezione della navigazione è separata. Il risultato positivo di `start` o `tabs` non implica che una successiva destinazione `open` o `navigate` sia consentita.
 
 Indicazioni di sicurezza:
 
-- **Non** allentare la policy SSRF del browser per impostazione predefinita.
-- Preferisci eccezioni ristrette per host come `hostnameAllowlist` o `allowedHostnames` rispetto all'accesso ampio alla rete privata.
-- Usa `dangerouslyAllowPrivateNetwork: true` solo in ambienti intenzionalmente attendibili in cui l'accesso del browser alla rete privata è richiesto e revisionato.
+- **Non** rendere meno restrittivi i criteri SSRF del browser per impostazione predefinita.
+- Preferire eccezioni limitate agli host, come `hostnameAllowlist` o `allowedHostnames`, rispetto a un accesso esteso alla rete privata.
+- Usare `dangerouslyAllowPrivateNetwork: true` soltanto in ambienti intenzionalmente attendibili in cui l'accesso del browser alla rete privata è necessario ed è stato sottoposto a revisione.
 
-## Strumenti dell'agente + funzionamento del controllo
+## Strumenti dell'agente e funzionamento del controllo
 
-L'agente riceve **uno strumento** per l'automazione del browser:
+L'agente dispone di **un solo strumento** per l'automazione del browser:
 
-- `browser` - doctor/status/start/stop/tabs/open/focus/close/snapshot/screenshot/navigate/act
+- `browser` - diagnosi/stato/avvio/arresto/schede/apertura/messa a fuoco/chiusura/istantanea/screenshot/navigazione/azione
 
-Come viene mappato:
+Corrispondenza:
 
-- `browser snapshot` restituisce un albero UI stabile (AI o ARIA).
-- `browser act` usa gli ID `ref` dello snapshot per fare clic/digitare/trascinare/selezionare.
-- `browser screenshot` acquisisce pixel (pagina completa, elemento o ref etichettati).
-- `browser doctor` controlla la prontezza di Gateway, Plugin, profilo, browser e scheda.
+- `browser snapshot` restituisce un albero dell'interfaccia utente stabile (AI o ARIA).
+- `browser act` utilizza gli ID `ref` dello snapshot per fare clic, digitare, trascinare o selezionare.
+- `browser screenshot` acquisisce i pixel (pagina intera, elemento o riferimenti con etichetta).
+- `browser doctor` verifica che Gateway, plugin, profilo, browser e scheda siano pronti.
 - `browser` accetta:
   - `profile` per scegliere un profilo browser denominato (openclaw, chrome o CDP remoto).
   - `target` (`sandbox` | `host` | `node`) per selezionare dove risiede il browser.
   - Nelle sessioni in sandbox, `target: "host"` richiede `agents.defaults.sandbox.browser.allowHostControl=true`.
-  - Se `target` è omesso: le sessioni in sandbox usano per impostazione predefinita `sandbox`, le sessioni non in sandbox usano per impostazione predefinita `host`.
-  - Se è connesso un nodo con capacità browser, lo strumento può instradarsi automaticamente a esso a meno che non blocchi `target="host"` o `target="node"`.
+  - Se `target` viene omesso: per impostazione predefinita, le sessioni in sandbox utilizzano `sandbox`, mentre le sessioni non in sandbox utilizzano `host`.
+  - Se è connesso un nodo compatibile con il browser, lo strumento può instradarsi automaticamente verso di esso, a meno che non venga impostato esplicitamente `target="host"` o `target="node"`.
 
-Questo mantiene l'agente deterministico ed evita selettori fragili.
+Ciò mantiene deterministico l'agente ed evita selettori fragili.
 
 ## Correlati
 
-- [Panoramica degli strumenti](/it/tools) - tutti gli strumenti agente disponibili
-- [Sandboxing](/it/gateway/sandboxing) - controllo del browser in ambienti in sandbox
-- [Sicurezza](/it/gateway/security) - rischi e rafforzamento del controllo del browser
+- [Panoramica degli strumenti](/it/tools) - tutti gli strumenti disponibili per l'agente
+- [Sandboxing](/it/gateway/sandboxing) - controllo del browser negli ambienti in sandbox
+- [Sicurezza](/it/gateway/security) - rischi e misure di protezione per il controllo del browser

@@ -4,11 +4,12 @@ read_when:
 summary: เพิ่มช่องทาง Clickclack สำหรับส่งและรับข้อความ OpenClaw
 title: Plugin Clickclack
 x-i18n:
-    generated_at: "2026-07-12T16:32:25Z"
+    generated_at: "2026-07-16T19:32:14Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: d939f5291de0510eaac361732f93fb79cac94656ac56a653f3c9e97394c6a9ae
+    source_hash: 7dcb6958564f9a26d8e8ef43d1810805417c69bf05632e7d64bd2acedea5c82f
     source_path: plugins/reference/clickclack.md
     workflow: 16
 ---
@@ -22,9 +23,9 @@ x-i18n:
 - แพ็กเกจ: `@openclaw/clickclack`
 - ช่องทางการติดตั้ง: npm; ClawHub: `clawhub:@openclaw/clickclack`
 
-## ส่วนเชื่อมต่อ
+## พื้นผิว
 
-ช่องทาง: clickclack
+ช่องทาง: `clickclack`
 
 ## เอกสารที่เกี่ยวข้อง
 

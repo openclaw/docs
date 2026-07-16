@@ -1,27 +1,28 @@
 ---
 read_when:
-    - أنت تثبّت Plugin ‏lobster أو تهيّئه أو تدقّق فيه
-summary: Plugin لأداة سير عمل Lobster لخطوط أنابيب محددة الأنواع وموافقات قابلة للاستئناف.
-title: Plugin لوبستر
+    - أنت تثبّت Plugin ‏Lobster أو تهيّئه أو تدقّق فيه
+summary: Plugin أداة سير عمل Lobster لخطوط أنابيب محددة الأنواع وموافقات قابلة للاستئناف.
+title: Plugin Lobster
 x-i18n:
-    generated_at: "2026-07-12T06:21:02Z"
+    generated_at: "2026-07-16T14:33:03Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: b91ea189fe8339380e2a7ef8a8761ea1591e1f1d8459b4a554211128c33f338b
+    source_hash: 7e3a1dce5531ba71bfe56f06b61e05612d6d155a63e61e1d496a0e1e25338926
     source_path: plugins/reference/lobster.md
     workflow: 16
 ---
 
 # Plugin Lobster
 
-Plugin لأداة سير عمل Lobster، مخصص لمسارات المعالجة محددة الأنواع والموافقات القابلة للاستئناف.
+Plugin أداة سير عمل Lobster لخطوط الأنابيب ذات الأنواع المحددة والموافقات القابلة للاستئناف.
 
 ## التوزيع
 
 - الحزمة: `@openclaw/lobster`
 - مسار التثبيت: npm؛ ClawHub
 
-## الواجهة
+## السطح
 
-العقود: الأدوات
+العقود: `tools`

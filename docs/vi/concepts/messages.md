@@ -1,49 +1,47 @@
 ---
 read_when:
-    - Giải thích cách tin nhắn đến trở thành phản hồi
-    - Làm rõ các phiên, chế độ xếp hàng, hoặc hành vi truyền phát
-    - Ghi lại khả năng hiển thị reasoning và các tác động về cách sử dụng
-summary: Luồng tin nhắn, phiên, xếp hàng và khả năng hiển thị quá trình suy luận
+    - Giải thích cách tin nhắn đến được chuyển thành phản hồi
+    - Làm rõ các phiên, chế độ xếp hàng hoặc hành vi truyền trực tuyến
+    - Ghi lại khả năng hiển thị quá trình suy luận và các tác động đối với việc sử dụng
+summary: Luồng tin nhắn, phiên, hàng đợi và khả năng hiển thị quá trình suy luận
 title: Tin nhắn
 x-i18n:
-    generated_at: "2026-06-27T17:24:15Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T14:20:57Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: d5585ae95fc65cb64240e4bf5d0bbe2eb54f55461b9fa4ee331d4d703d62e76f
+    source_hash: e2982ebb1b82b90368263826ef8f42babab9c8a559cc1409a381893a011a0ad7
     source_path: concepts/messages.md
     workflow: 16
 ---
 
-OpenClaw xử lý tin nhắn gửi đến thông qua một pipeline gồm phân giải phiên, xếp hàng, truyền trực tuyến, thực thi công cụ và hiển thị quá trình reasoning. Trang này mô tả đường đi từ tin nhắn gửi đến đến phản hồi.
+Các tin nhắn đến đi qua quá trình định tuyến, loại bỏ trùng lặp/trì hoãn, một lượt chạy của tác tử và chuyển phát đi:
 
-## Luồng tin nhắn (cấp cao)
-
+```text
+Tin nhắn đến
+  -> định tuyến/liên kết -> khóa phiên
+  -> loại bỏ trùng lặp + trì hoãn
+  -> hàng đợi (nếu một lượt chạy đã hoạt động)
+  -> lượt chạy của tác tử (truyền phát + công cụ)
+  -> phản hồi gửi đi (giới hạn kênh + chia đoạn)
 ```
-Inbound message
-  -> routing/bindings -> session key
-  -> queue (if a run is active)
-  -> agent run (streaming + tools)
-  -> outbound replies (channel limits + chunking)
-```
 
-Các nút cấu hình chính nằm trong cấu hình:
+Các bề mặt cấu hình chính:
 
-- `messages.*` cho tiền tố, xếp hàng và hành vi nhóm.
-- `agents.defaults.*` cho mặc định truyền trực tuyến theo khối và chia đoạn.
-- Ghi đè theo kênh (`channels.whatsapp.*`, `channels.telegram.*`, v.v.) cho giới hạn và công tắc truyền trực tuyến.
+- `messages.*` cho tiền tố, xếp hàng đợi, trì hoãn tin nhắn đến và hành vi nhóm.
+- `agents.defaults.*` cho truyền phát theo khối, chia đoạn và giá trị mặc định của phản hồi im lặng.
+- Các ghi đè theo kênh (`channels.telegram.*`, `channels.whatsapp.*`, v.v.) cho giới hạn và công tắc truyền phát của từng kênh.
 
-Xem [Cấu hình](/vi/gateway/configuration) để biết schema đầy đủ.
+Xem [Cấu hình](/vi/gateway/configuration) để biết lược đồ đầy đủ.
 
-## Chống trùng lặp tin nhắn gửi đến
+## Loại bỏ trùng lặp tin nhắn đến
 
-Các kênh có thể gửi lại cùng một tin nhắn sau khi kết nối lại. OpenClaw giữ một bộ nhớ đệm ngắn hạn được định khóa theo kênh/tài khoản/đối tượng ngang hàng/phiên/id tin nhắn để các lần gửi trùng lặp không kích hoạt một lượt chạy agent khác.
+Các kênh có thể chuyển phát lại cùng một tin nhắn sau khi kết nối lại. OpenClaw duy trì một bộ nhớ đệm trong bộ nhớ, được định khóa theo phạm vi tác tử, tuyến kênh (kênh + đối tác + tài khoản + luồng) và id tin nhắn, để tin nhắn được chuyển phát lại không kích hoạt lượt chạy tác tử thứ hai. Mục nhập bộ nhớ đệm hết hạn sau 20 phút hoặc khi đã theo dõi 5000 mục nhập, tùy điều kiện nào đến trước.
 
-## Gom trễ tin nhắn gửi đến
+## Trì hoãn tin nhắn đến
 
-Các tin nhắn liên tiếp nhanh từ **cùng một người gửi** có thể được gom thành một lượt agent duy nhất thông qua `messages.inbound`. Việc gom trễ được giới hạn theo từng kênh + cuộc hội thoại và dùng tin nhắn mới nhất cho chuỗi phản hồi/ID.
-
-Cấu hình (mặc định toàn cục + ghi đè theo kênh):
+Các tin nhắn văn bản liên tiếp nhanh chóng từ cùng một người gửi có thể được gom thành một lượt tác tử thông qua `messages.inbound`. Việc trì hoãn có phạm vi theo từng kênh + cuộc trò chuyện và sử dụng tin nhắn gần nhất cho luồng/id phản hồi.
 
 ```json5
 {
@@ -51,132 +49,130 @@ Cấu hình (mặc định toàn cục + ghi đè theo kênh):
     inbound: {
       debounceMs: 2000,
       byChannel: {
-        whatsapp: 5000,
-        slack: 1500,
         discord: 1500,
+        slack: 1500,
+        whatsapp: 5000,
       },
     },
   },
 }
 ```
 
-Ghi chú:
-
-- Gom trễ áp dụng cho tin nhắn **chỉ có văn bản**; phương tiện/tệp đính kèm sẽ xả ngay lập tức.
-- Lệnh điều khiển bỏ qua gom trễ để chúng vẫn độc lập. Các kênh chủ động chọn gom DM từ cùng người gửi có thể giữ lệnh DM trong cửa sổ gom trễ để một payload gửi tách đoạn có thể tham gia cùng một lượt agent.
+- Việc trì hoãn áp dụng cho tin nhắn chỉ có văn bản; phương tiện/tệp đính kèm được đẩy ngay lập tức.
+- Các lệnh điều khiển (dừng/hủy/trạng thái, v.v.) bỏ qua việc trì hoãn để được gửi đi ngay lập tức.
+- Bị tắt theo mặc định: `messages.inbound.debounceMs` không có giá trị mặc định tích hợp, vì vậy việc trì hoãn chỉ kích hoạt sau khi bạn thiết lập nó (toàn cục hoặc theo từng kênh).
+- Tùy chọn tham gia `coalesceSameSenderDms` của iMessage là ngoại lệ duy nhất: nó giữ tất cả văn bản DM từ cùng người gửi (bao gồm cả lệnh) đủ lâu để phần lệnh+URL do Apple gửi tách biệt đến trong cùng một lượt. Trò chuyện nhóm luôn được gửi đi ngay lập tức bất kể cài đặt này.
 
 ## Phiên và thiết bị
 
-Phiên thuộc sở hữu của Gateway, không thuộc về client.
+Các phiên thuộc quyền sở hữu của Gateway, không phải của máy khách.
 
-- Trò chuyện trực tiếp được gộp vào khóa phiên chính của agent.
-- Nhóm/kênh có khóa phiên riêng.
-- Kho phiên và bản ghi hội thoại nằm trên máy chủ Gateway.
+- Các cuộc trò chuyện trực tiếp được gộp vào khóa phiên chính của tác tử.
+- Các nhóm/kênh có khóa phiên riêng.
+- Kho phiên và bản chép lời nằm trên máy chủ Gateway.
 
-Nhiều thiết bị/kênh có thể ánh xạ tới cùng một phiên, nhưng lịch sử không được đồng bộ đầy đủ ngược về mọi client. Khuyến nghị: dùng một thiết bị chính cho các cuộc hội thoại dài để tránh ngữ cảnh phân kỳ. Control UI và TUI luôn hiển thị bản ghi phiên dựa trên Gateway, vì vậy chúng là nguồn sự thật.
+Nhiều thiết bị/kênh có thể ánh xạ đến cùng một phiên, nhưng lịch sử không được đồng bộ đầy đủ trở lại mọi máy khách. Hãy sử dụng một thiết bị chính cho các cuộc trò chuyện dài để tránh ngữ cảnh phân kỳ. Giao diện điều khiển và TUI luôn hiển thị bản chép lời phiên do Gateway hỗ trợ, vì vậy đây là nguồn dữ liệu chuẩn.
 
 Chi tiết: [Quản lý phiên](/vi/concepts/session).
 
-## Siêu dữ liệu kết quả công cụ
+## Nội dung lời nhắc và ngữ cảnh lịch sử
 
-`content` của kết quả công cụ là kết quả mà mô hình thấy được. `details` của kết quả công cụ là siêu dữ liệu runtime để kết xuất UI, chẩn đoán, gửi phương tiện và Plugin.
+Các Plugin kênh điền một số trường văn bản vào ngữ cảnh tin nhắn đến, theo thứ tự ưu tiên từ cao đến thấp:
 
-OpenClaw giữ ranh giới đó rõ ràng:
+| Trường             | Mục đích                                                                                                     |
+| ----------------- | ----------------------------------------------------------------------------------------------------------- |
+| `BodyForAgent`    | Văn bản dành cho mô hình trong lượt hiện tại. Dự phòng về `CommandBody` / `RawBody` / `Body` khi chưa được đặt.        |
+| `BodyForCommands` | Văn bản sạch dùng để phân tích chỉ thị/lệnh. Dự phòng về `CommandBody` / `RawBody` / `Body` khi chưa được đặt. |
+| `CommandBody`     | Nội dung trung gian cũ; ưu tiên `BodyForCommands`.                                                         |
+| `RawBody`         | Bí danh không còn được khuyến nghị của `CommandBody`.                                                                         |
+| `Body`            | Nội dung lời nhắc cũ; có thể bao gồm phong bì kênh và trình bao lịch sử.                                     |
 
-- `toolResult.details` bị loại bỏ trước đầu vào phát lại provider và Compaction.
-- Bản ghi phiên được lưu trữ chỉ giữ `details` có giới hạn; siêu dữ liệu quá lớn được thay bằng bản tóm tắt gọn có đánh dấu `persistedDetailsTruncated: true`.
-- Plugin và công cụ nên đặt văn bản mà mô hình phải đọc vào `content`, không chỉ trong `details`.
-
-## Nội dung gửi đến và ngữ cảnh lịch sử
-
-OpenClaw tách **nội dung prompt** khỏi **nội dung lệnh**:
-
-- `BodyForAgent`: văn bản chính hướng đến mô hình cho tin nhắn hiện tại. Plugin kênh nên giữ phần này tập trung vào văn bản hiện tại của người gửi có chứa prompt.
-- `Body`: phương án dự phòng prompt kế thừa. Phần này có thể bao gồm phong bì kênh và các wrapper lịch sử tùy chọn, nhưng các kênh hiện tại không nên dựa vào nó làm đầu vào mô hình chính khi có `BodyForAgent`.
-- `CommandBody`: văn bản người dùng thô để phân tích chỉ thị/lệnh.
-- `RawBody`: bí danh kế thừa cho `CommandBody` (được giữ để tương thích).
-
-Khi kênh cung cấp lịch sử, nó dùng một wrapper dùng chung:
+Khi một kênh cung cấp lịch sử, nó bao bọc lịch sử bằng:
 
 - `[Chat messages since your last reply - for context]`
 - `[Current message - respond to this]`
 
-Đối với **trò chuyện không trực tiếp** (nhóm/kênh/phòng), **nội dung tin nhắn hiện tại** được thêm tiền tố bằng nhãn người gửi (cùng kiểu dùng cho các mục lịch sử). Điều này giữ cho tin nhắn thời gian thực và tin nhắn được xếp hàng/lịch sử nhất quán trong prompt của agent.
+Đối với các cuộc trò chuyện không trực tiếp (nhóm/kênh/phòng), nội dung tin nhắn hiện tại được thêm tiền tố là nhãn người gửi, khớp với kiểu dùng cho các mục lịch sử. Việc loại bỏ chỉ thị chỉ áp dụng cho phần tin nhắn hiện tại, vì vậy lịch sử vẫn nguyên vẹn. Các kênh bao bọc lịch sử nên đặt `BodyForCommands` (hoặc `CommandBody` / `RawBody` cũ) thành văn bản tin nhắn gốc và giữ `Body` làm lời nhắc kết hợp.
 
-Bộ đệm lịch sử **chỉ chứa tin đang chờ**: chúng bao gồm tin nhắn nhóm _không_ kích hoạt lượt chạy (ví dụ: tin nhắn bị chặn bởi yêu cầu nhắc đến) và **loại trừ** tin nhắn đã có trong bản ghi phiên.
+Bộ đệm lịch sử chỉ chứa nội dung đang chờ xử lý: chúng bao gồm các tin nhắn nhóm không kích hoạt lượt chạy (ví dụ: tin nhắn bị kiểm soát bằng lượt đề cập) và loại trừ các tin nhắn đã có trong bản chép lời phiên. Lịch sử có cấu trúc, nội dung trả lời, chuyển tiếp và siêu dữ liệu kênh được kết xuất dưới dạng các khối ngữ cảnh vai trò người dùng không đáng tin cậy trong quá trình tập hợp lời nhắc.
 
-Việc loại bỏ chỉ thị chỉ áp dụng cho phần **tin nhắn hiện tại** để lịch sử vẫn nguyên vẹn. Các kênh bọc lịch sử nên đặt `CommandBody` (hoặc `RawBody`) thành văn bản tin nhắn gốc và giữ `Body` là prompt kết hợp. Lịch sử có cấu trúc, phản hồi, tin được chuyển tiếp và siêu dữ liệu kênh được kết xuất thành các khối ngữ cảnh không tin cậy với vai trò người dùng trong quá trình lắp ráp prompt.
-Bộ đệm lịch sử có thể cấu hình qua `messages.groupChat.historyLimit` (mặc định toàn cục) và các ghi đè theo kênh như `channels.slack.historyLimit` hoặc `channels.telegram.accounts.<id>.historyLimit` (đặt `0` để tắt).
+Cấu hình kích thước lịch sử bằng `messages.groupChat.historyLimit` (mặc định toàn cục) hoặc các ghi đè theo kênh như `channels.slack.historyLimit` và `channels.telegram.accounts.<id>.historyLimit` (đặt `0` để tắt).
 
-## Xếp hàng và followup
+## Siêu dữ liệu kết quả công cụ
 
-Nếu một lượt chạy đã hoạt động, tin nhắn gửi đến mặc định được điều hướng vào lượt chạy hiện tại. `messages.queue` chọn liệu tin nhắn khi đang có lượt chạy hoạt động sẽ điều hướng, xếp hàng để xử lý sau, gom vào một lượt sau, hay ngắt lượt chạy đang hoạt động.
+`content` của kết quả công cụ là kết quả hiển thị cho mô hình; `details` là siêu dữ liệu thời gian chạy dùng cho kết xuất giao diện người dùng, chẩn đoán, chuyển phát phương tiện và Plugin.
 
-- Cấu hình qua `messages.queue` (và `messages.queue.byChannel`).
-- Chế độ mặc định là `steer`, với gom trễ 500ms cho các lô điều hướng Codex và hàng đợi followup/collect.
-- Chế độ: `steer`, `followup`, `collect` và `interrupt`.
+- `toolResult.details` bị loại bỏ trước khi phát lại cho nhà cung cấp và trước đầu vào Compaction.
+- Bản chép lời phiên được lưu trữ chỉ giữ lại `details` có giới hạn; siêu dữ liệu quá lớn được thay thế bằng bản tóm tắt nhỏ gọn có đánh dấu `persistedDetailsTruncated: true`.
+- Plugin và công cụ nên đặt văn bản mà mô hình phải đọc trong `content`, không chỉ trong `details`.
 
-Chi tiết: [Hàng đợi lệnh](/vi/concepts/queue) và [Hàng đợi điều hướng](/vi/concepts/queue-steering).
+## Xếp hàng đợi và lượt theo sau
+
+Khi một lượt chạy đã hoạt động, theo mặc định các tin nhắn đến sẽ được chuyển hướng vào lượt đó. `messages.queue` kiểm soát chế độ:
+
+| Chế độ              | Hành vi                                            |
+| ----------------- | --------------------------------------------------- |
+| `steer` (mặc định) | Chèn lời nhắc mới vào lượt chạy đang hoạt động.          |
+| `followup`        | Chạy tin nhắn sau khi lượt chạy đang hoạt động kết thúc.      |
+| `collect`         | Gom các tin nhắn tương thích vào một lượt sau đó.      |
+| `interrupt`       | Hủy lượt chạy đang hoạt động, sau đó bắt đầu lời nhắc mới nhất. |
+
+Giá trị mặc định: `messages.queue.debounceMs` là 500ms (áp dụng như nhau cho việc chuyển hướng, theo sau và gom nhóm thu thập), `messages.queue.cap` là 20 tin nhắn trong hàng đợi và `messages.queue.drop` là `summarize` (`old` và `new` cũng khả dụng). Cấu hình ghi đè theo kênh thông qua `messages.queue.byChannel` và `messages.queue.debounceMsByChannel`.
+
+Chi tiết: [Hàng đợi lệnh](/vi/concepts/queue) và [Hàng đợi chuyển hướng](/vi/concepts/queue-steering).
 
 ## Quyền sở hữu lượt chạy của kênh
 
-Plugin kênh có thể giữ thứ tự, gom trễ đầu vào và áp dụng backpressure truyền tải trước khi một tin nhắn đi vào hàng đợi phiên. Chúng không nên áp đặt timeout riêng quanh chính lượt agent. Sau khi một tin nhắn được định tuyến đến một phiên, công việc chạy lâu được quản lý bởi vòng đời phiên, công cụ và runtime để mọi kênh báo cáo và phục hồi nhất quán trước các lượt chậm.
+Các Plugin kênh có thể duy trì thứ tự, trì hoãn đầu vào và áp dụng áp lực ngược của phương thức truyền tải trước khi tin nhắn đi vào hàng đợi phiên. Chúng không nên áp đặt thời gian chờ riêng quanh chính lượt tác tử. Sau khi tin nhắn được định tuyến đến một phiên, vòng đời phiên, công cụ và thời gian chạy sẽ chi phối công việc chạy lâu để tất cả các kênh báo cáo và khôi phục sau lượt xử lý chậm một cách nhất quán.
 
-## Truyền trực tuyến, chia đoạn và gom lô
+## Truyền phát, chia đoạn và gom nhóm
 
-Truyền trực tuyến theo khối gửi các phản hồi từng phần khi mô hình tạo ra các khối văn bản. Chia đoạn tôn trọng giới hạn văn bản của kênh và tránh tách các khối mã có rào.
+Truyền phát theo khối gửi các phản hồi từng phần khi mô hình tạo ra các khối văn bản; việc chia đoạn tuân thủ giới hạn văn bản của kênh và tránh tách mã có hàng rào.
 
-Thiết lập chính:
-
-- `agents.defaults.blockStreamingDefault` (`on|off`, mặc định tắt)
+- `agents.defaults.blockStreamingDefault` (`on|off`, mặc định `off`)
 - `agents.defaults.blockStreamingBreak` (`text_end|message_end`)
 - `agents.defaults.blockStreamingChunk` (`minChars|maxChars|breakPreference`)
-- `agents.defaults.blockStreamingCoalesce` (gom lô dựa trên thời gian rỗi)
-- `agents.defaults.humanDelay` (tạm dừng giống con người giữa các phản hồi theo khối)
-- Ghi đè theo kênh: `*.blockStreaming` và `*.blockStreamingCoalesce` (các kênh không phải Telegram yêu cầu đặt rõ `*.blockStreaming: true`)
+- `agents.defaults.blockStreamingCoalesce` (gom nhóm dựa trên trạng thái nhàn rỗi)
+- `agents.defaults.humanDelay` (khoảng dừng giống con người giữa các phản hồi theo khối)
+- Ghi đè theo kênh: `*.streaming.block.enabled` và `*.streaming.block.coalesce` trên các kênh được đóng gói; các khóa phẳng cũ được di chuyển bởi `openclaw doctor --fix`. Truyền phát theo khối bị tắt trừ khi được bật rõ ràng, trên mọi kênh bao gồm Telegram. QQ Bot là ngoại lệ: nó không có khóa `streaming.block` và truyền phát phản hồi theo khối trừ khi `channels.qqbot.streaming.mode` là `"off"`.
 
-Chi tiết: [Truyền trực tuyến + chia đoạn](/vi/concepts/streaming).
+Chi tiết: [Truyền phát + chia đoạn](/vi/concepts/streaming).
 
-## Hiển thị reasoning và token
+## Khả năng hiển thị lập luận và token
 
-OpenClaw có thể hiển thị hoặc ẩn reasoning của mô hình:
+- `/reasoning on|off|stream` kiểm soát khả năng hiển thị.
+- Nội dung lập luận vẫn được tính vào mức sử dụng token khi mô hình tạo ra nội dung đó.
+- Telegram hỗ trợ truyền phát lập luận vào một bong bóng bản nháp tạm thời sẽ bị xóa sau lần chuyển phát cuối cùng; dùng `/reasoning on` để xuất lập luận liên tục.
 
-- `/reasoning on|off|stream` điều khiển mức hiển thị.
-- Nội dung reasoning vẫn được tính vào mức sử dụng token khi được mô hình tạo ra.
-- Telegram hỗ trợ luồng reasoning vào một bong bóng bản nháp tạm thời, bong bóng này bị xóa sau khi gửi cuối cùng; dùng `/reasoning on` để có đầu ra reasoning được giữ lại.
+Chi tiết: [Chỉ thị suy nghĩ + lập luận](/vi/tools/thinking) và [Mức sử dụng token](/vi/reference/token-use).
 
-Chi tiết: [Chỉ thị thinking + reasoning](/vi/tools/thinking) và [Sử dụng token](/vi/reference/token-use).
+## Tiền tố, luồng và phản hồi
 
-## Tiền tố, chuỗi và phản hồi
-
-Định dạng tin nhắn gửi đi được tập trung trong `messages`:
-
-- `messages.responsePrefix`, `channels.<channel>.responsePrefix` và `channels.<channel>.accounts.<id>.responsePrefix` (chuỗi ưu tiên tiền tố gửi đi), cộng với `channels.whatsapp.messagePrefix` (tiền tố gửi đến của WhatsApp)
-- Chuỗi phản hồi qua `replyToMode` và mặc định theo kênh
+- Chuỗi phân cấp tiền tố gửi đi: `messages.responsePrefix`, `channels.<channel>.responsePrefix`, `channels.<channel>.accounts.<id>.responsePrefix`. WhatsApp cũng có `channels.whatsapp.messagePrefix` cho tiền tố tin nhắn đến.
+- Phân luồng phản hồi thông qua `replyToMode` và các giá trị mặc định theo kênh.
 
 Chi tiết: [Cấu hình](/vi/gateway/config-agents#messages) và tài liệu kênh.
 
 ## Phản hồi im lặng
 
-Token im lặng chính xác `NO_REPLY` / `no_reply` có nghĩa là "không gửi phản hồi mà người dùng thấy được".
-Khi một lượt cũng có phương tiện công cụ đang chờ, chẳng hạn âm thanh TTS được tạo, OpenClaw loại bỏ văn bản im lặng nhưng vẫn gửi tệp đính kèm phương tiện.
-OpenClaw phân giải hành vi đó theo loại cuộc hội thoại:
+Token im lặng `NO_REPLY` (không phân biệt chữ hoa chữ thường, vì vậy `no_reply` cũng khớp) có nghĩa là "không chuyển phát phản hồi hiển thị cho người dùng." Khi một lượt cũng có phương tiện công cụ đang chờ xử lý, chẳng hạn như âm thanh TTS được tạo, OpenClaw loại bỏ văn bản im lặng nhưng vẫn chuyển phát tệp phương tiện đính kèm.
 
-- Cuộc hội thoại trực tiếp không bao giờ nhận hướng dẫn prompt `NO_REPLY`. Nếu một lượt chạy trực tiếp vô tình trả về một token im lặng trần, OpenClaw chặn nó thay vì viết lại hoặc gửi nó.
-- Nhóm/kênh mặc định chỉ cho phép im lặng đối với phản hồi nhóm tự động. Trong chế độ phản hồi hiển thị `message_tool`, im lặng nghĩa là mô hình không gọi `message(action=send)`.
-- Điều phối nội bộ mặc định cho phép im lặng.
+Chính sách im lặng được xác định theo loại cuộc trò chuyện:
 
-OpenClaw cũng dùng phản hồi im lặng cho lỗi runner nội bộ chung trong trò chuyện không trực tiếp, để nhóm/kênh không thấy văn bản lỗi Gateway rập khuôn.
-Các lỗi đã phân loại có nội dung phục hồi hướng đến người dùng, chẳng hạn thiếu xác thực, giới hạn tốc độ hoặc thông báo quá tải, vẫn có thể được gửi. Trò chuyện trực tiếp mặc định hiển thị nội dung lỗi gọn; chi tiết runner thô chỉ hiển thị khi bật `/verbose full`.
+- Các cuộc trò chuyện trực tiếp không bao giờ nhận hướng dẫn lời nhắc `NO_REPLY`. Nếu một lượt chạy trực tiếp vô tình trả về một token im lặng đơn lẻ, OpenClaw sẽ chặn token đó thay vì viết lại hoặc chuyển phát.
+- Nhóm/kênh mặc định cho phép im lặng. Trong chế độ phản hồi hiển thị `message_tool`, im lặng có nghĩa là mô hình không gọi `message(action=send)`.
+- Hoạt động điều phối nội bộ mặc định cho phép im lặng.
 
-Mặc định nằm dưới `agents.defaults.silentReply`; `surfaces.<id>.silentReply` có thể ghi đè chính sách nhóm/nội bộ theo từng bề mặt.
+Các giá trị mặc định nằm dưới `agents.defaults.silentReply`; `surfaces.<id>.silentReply` có thể ghi đè chính sách nhóm/nội bộ theo từng bề mặt.
 
-Phản hồi im lặng trần bị loại bỏ trên mọi bề mặt, vì vậy các phiên cha vẫn im lặng thay vì viết lại văn bản sentinel thành lời trò chuyện dự phòng.
+OpenClaw cũng sử dụng phản hồi im lặng cho các lỗi trình chạy nội bộ chung trong những cuộc trò chuyện không trực tiếp, để nhóm/kênh không thấy văn bản lỗi mẫu của Gateway. Các lỗi đã phân loại có nội dung khôi phục dành cho người dùng, chẳng hạn như thông báo thiếu xác thực, giới hạn tốc độ hoặc quá tải, vẫn có thể được chuyển phát. Theo mặc định, trò chuyện trực tiếp hiển thị nội dung lỗi ngắn gọn; chi tiết thô của trình chạy chỉ hiển thị khi `/verbose full` được bật.
+
+Phản hồi im lặng đơn lẻ bị loại bỏ trên mọi bề mặt, vì vậy các phiên cha vẫn giữ im lặng thay vì viết lại văn bản dấu hiệu thành nội dung trò chuyện dự phòng.
 
 ## Liên quan
 
-- [Tái cấu trúc vòng đời tin nhắn](/vi/concepts/message-lifecycle-refactor) - thiết kế gửi và nhận bền vững mục tiêu
-- [Truyền trực tuyến](/vi/concepts/streaming) — gửi tin nhắn thời gian thực
-- [Thử lại](/vi/concepts/retry) — hành vi thử lại gửi tin nhắn
-- [Hàng đợi](/vi/concepts/queue) — hàng đợi xử lý tin nhắn
-- [Kênh](/vi/channels) — tích hợp nền tảng nhắn tin
+- [Tái cấu trúc vòng đời tin nhắn](/vi/concepts/message-lifecycle-refactor) - thiết kế đích bền vững cho việc gửi và nhận
+- [Truyền phát](/vi/concepts/streaming) - chuyển phát tin nhắn theo thời gian thực
+- [Thử lại](/vi/concepts/retry) - hành vi thử lại khi chuyển phát tin nhắn
+- [Hàng đợi](/vi/concepts/queue) - hàng đợi xử lý tin nhắn
+- [Kênh](/vi/channels) - tích hợp nền tảng nhắn tin

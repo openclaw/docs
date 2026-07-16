@@ -1,14 +1,15 @@
 ---
 read_when:
-    - Anda sedang memasang, mengonfigurasi, atau mengaudit plugin raft
-summary: Plugin saluran Raft OpenClaw untuk jembatan aktivasi CLI yang aman.
+    - Anda sedang menginstal, mengonfigurasi, atau mengaudit plugin Raft
+summary: Plugin saluran OpenClaw Raft untuk jembatan pengaktifan CLI yang aman.
 title: Plugin Raft
 x-i18n:
-    generated_at: "2026-07-12T14:30:05Z"
+    generated_at: "2026-07-16T18:28:51Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: fea04ec6a2f3e08d69fd95c8a8e368fdbc8e179b243b8f6b41b5f8ef70039efc
+    source_hash: 80af90cdf83fedcba8082db15376049f485c4e4cfb82cd9eefb911b15f1c72c3
     source_path: plugins/reference/raft.md
     workflow: 16
 ---
@@ -20,12 +21,12 @@ Plugin saluran Raft OpenClaw untuk jembatan pengaktifan CLI yang aman.
 ## Distribusi
 
 - Paket: `@openclaw/raft`
-- Jalur instalasi: npm; ClawHub
+- Rute instalasi: npm; ClawHub
 
 ## Permukaan
 
-saluran: raft
+saluran: `raft`
 
 ## Dokumentasi terkait
 
-- [raft](/id/channels/raft)
+- [Raft](/id/channels/raft)

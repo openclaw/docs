@@ -1,30 +1,31 @@
 ---
 read_when:
-    - Stai installando, configurando o verificando il plugin amazon-bedrock-mantle
-summary: Plugin provider Mantle di Amazon Bedrock per OpenClaw per l'instradamento di modelli compatibile con OpenAI.
+    - Si sta installando, configurando o verificando il plugin amazon-bedrock-mantle
+summary: Plugin provider Amazon Bedrock Mantle di OpenClaw per l'instradamento di modelli compatibili con OpenAI.
 title: Plugin Amazon Bedrock Mantle
 x-i18n:
-    generated_at: "2026-07-12T07:16:51Z"
+    generated_at: "2026-07-16T14:43:26Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 18725aa4678f967a5d34a2c951c11cc371e934abe62fde7616124157ebdb3799
+    source_hash: a12f8acda947e8b80053229a8b842560d087e2b7944d9092a3c3d250343cccbc
     source_path: plugins/reference/amazon-bedrock-mantle.md
     workflow: 16
 ---
 
 # Plugin Amazon Bedrock Mantle
 
-Plugin provider Amazon Bedrock Mantle di OpenClaw per l'instradamento di modelli compatibili con OpenAI.
+Plugin del provider Amazon Bedrock Mantle di OpenClaw per l'instradamento di modelli compatibili con OpenAI.
 
 ## Distribuzione
 
 - Pacchetto: `@openclaw/amazon-bedrock-mantle-provider`
-- Metodo di installazione: npm; ClawHub
+- Modalità di installazione: npm; ClawHub
 
 ## Superficie
 
-provider: amazon-bedrock-mantle
+provider: `amazon-bedrock-mantle`
 
 ## Documentazione correlata
 

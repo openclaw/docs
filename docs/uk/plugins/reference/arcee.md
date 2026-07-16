@@ -1,30 +1,31 @@
 ---
 read_when:
-    - Ви встановлюєте, налаштовуєте або перевіряєте Plugin arcee на відповідність вимогам
+    - Ви встановлюєте, налаштовуєте або перевіряєте plugin arcee.
 summary: Додає підтримку постачальника моделей Arcee до OpenClaw.
 title: Плагін Arcee
 x-i18n:
-    generated_at: "2026-07-12T13:33:34Z"
+    generated_at: "2026-07-16T18:17:24Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 9d4880c859c2498ce3708834cdc62a8ff6babb0571672b99d62cc5c2c7299f8e
+    source_hash: 63d974b78bbe3cdd8dffc7336301575d7eee976e80ee83642c03df0cd1e2683f
     source_path: plugins/reference/arcee.md
     workflow: 16
 ---
 
-# Plugin Arcee
+# Плагін Arcee
 
 Додає підтримку постачальника моделей Arcee до OpenClaw.
 
 ## Розповсюдження
 
-- Пакет: `@openclaw/arcee-provider`
-- Спосіб встановлення: npm; ClawHub: `clawhub:@openclaw/arcee-provider`
+- Пакунок: `@openclaw/arcee-provider`
+- Спосіб установлення: npm; ClawHub: `clawhub:@openclaw/arcee-provider`
 
 ## Інтерфейс
 
-постачальники: arcee
+постачальники: `arcee`
 
 ## Пов’язана документація
 

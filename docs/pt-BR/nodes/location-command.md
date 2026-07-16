@@ -1,29 +1,30 @@
 ---
 read_when:
-    - Adição de suporte a Node de localização ou interface de permissões
+    - Adição de suporte a nós de localização ou interface de permissões
     - Projetando permissões de localização ou comportamento em primeiro plano no Android
-summary: Comando de localização para Nodes (location.get), modos de permissão e comportamento em primeiro plano no Android
+summary: Comando de localização para Nodes, modos de permissão da plataforma e configuração do GeoClue no Linux
 title: Comando de localização
 x-i18n:
-    generated_at: "2026-07-12T00:06:33Z"
+    generated_at: "2026-07-16T12:36:03Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: fae9f7707620f3f743d40c07618a431a6baa7a357dda6d74021bc986cd4974b1
+    source_hash: 644229c1eafc8fc7b59bc23ba01d4ba95687ea66c4f9bd4a4cda98a87f2b6085
     source_path: nodes/location-command.md
     workflow: 16
 ---
 
-## Resumo
+## TL;DR
 
 - `location.get` é um comando de Node, invocado por meio de `node.invoke` ou `openclaw nodes location get`.
 - Desativado por padrão.
-- Compilações Android de terceiros usam um seletor: Desativado / Durante o uso / Sempre. As compilações da Play permanecem com Desativado / Durante o uso.
-- Localização precisa é uma opção separada.
+- Compilações Android de terceiros usam um seletor: Desativado / Durante o Uso / Sempre. As compilações da Play permanecem com Desativado / Durante o Uso.
+- Localização Precisa é uma opção separada.
 
-## Por que um seletor (e não apenas um botão)
+## Por que um seletor (e não apenas uma opção)
 
-As permissões de localização do sistema operacional têm vários níveis. A localização precisa também é uma concessão separada do sistema operacional ("Precisa" no iOS 14+, "fine" em comparação com "coarse" no Android). O seletor no aplicativo determina o modo solicitado, mas o sistema operacional ainda decide a concessão efetiva.
+As permissões de localização do SO têm vários níveis. A localização precisa também é uma concessão separada do SO ("Precise" no iOS 14+, "fine" versus "coarse" no Android). O seletor no aplicativo determina o modo solicitado, mas o SO ainda decide a concessão efetiva.
 
 ## Modelo de configurações
 
@@ -34,10 +35,10 @@ Por dispositivo Node:
 
 Comportamento da interface:
 
-- Selecionar `whileUsing` solicita permissão em primeiro plano.
-- Selecionar `always` na compilação Android de terceiros primeiro solicita permissão em primeiro plano, explica o acesso em segundo plano e, em seguida, abre as configurações do aplicativo no Android para a concessão separada **Allow all the time**.
-- As compilações Android da Play não declaram a permissão de localização em segundo plano nem exibem `always`.
-- Se o sistema operacional negar o nível solicitado, o aplicativo reverte para o nível concedido mais alto e exibe o status.
+- Selecionar `whileUsing` solicita permissão de primeiro plano.
+- Selecionar `always` na compilação Android de terceiros primeiro solicita permissão de primeiro plano, explica o acesso em segundo plano e, em seguida, abre as configurações do aplicativo no Android para a concessão separada **Allow all the time**.
+- As compilações Android da Play não declaram permissão de localização em segundo plano nem exibem `always`.
+- Se o SO negar o nível solicitado, o aplicativo reverte para o nível mais alto concedido e exibe o status.
 
 ## Mapeamento de permissões (node.permissions)
 
@@ -64,7 +65,7 @@ Parâmetros:
 
 As opções da CLI são mapeadas diretamente: `--location-timeout` -> `timeoutMs`, `--max-age` -> `maxAgeMs`, `--accuracy` -> `desiredAccuracy`.
 
-Carga útil da resposta:
+Payload da resposta:
 
 ```json
 {
@@ -84,17 +85,43 @@ Erros (códigos estáveis):
 
 - `LOCATION_DISABLED`: o seletor está desativado.
 - `LOCATION_PERMISSION_REQUIRED`: falta a permissão para o modo solicitado.
-- `LOCATION_BACKGROUND_UNAVAILABLE`: o aplicativo está em segundo plano, mas apenas Durante o uso foi concedido.
+- `LOCATION_BACKGROUND_UNAVAILABLE`: o aplicativo está em segundo plano, mas apenas Durante o Uso foi concedido.
 - `LOCATION_TIMEOUT`: nenhuma localização foi obtida a tempo.
-- `LOCATION_UNAVAILABLE`: falha do sistema ou nenhum provedor disponível.
+- `LOCATION_UNAVAILABLE`: falha do sistema ou nenhum provedor.
 
 ## Comportamento em segundo plano
 
-- As compilações Android de terceiros aceitam `location.get` em segundo plano somente quando o usuário selecionou `Always` e o Android concedeu a localização em segundo plano. O serviço persistente de Node existente adiciona o tipo de serviço `location` e informa `Location: Always` enquanto está ativo.
-- As compilações Android da Play e o modo `While Using` negam `location.get` enquanto o aplicativo está em segundo plano.
-- Outras plataformas de Node podem apresentar comportamentos diferentes.
+- As compilações Android de terceiros aceitam `location.get` em segundo plano somente quando o usuário selecionou `Always` e o Android concedeu acesso à localização em segundo plano. O serviço persistente existente do Node adiciona o tipo de serviço `location` e informa `Location: Always` enquanto está ativo.
+- As compilações Android da Play e o modo `While Using` negam `location.get` enquanto estão em segundo plano.
+- Outras plataformas de Node podem apresentar diferenças.
 
-## Integração com modelos e ferramentas
+## Host de Node no Linux
+
+O Plugin Linux Node incluído adiciona `location.get` ao serviço `openclaw node` da CLI, incluindo hosts sem interface gráfica que não tenham o aplicativo Linux para desktop. A localização é desativada por padrão. Ative-a na entrada do Plugin e reinicie o serviço do Node:
+
+```json5
+{
+  plugins: {
+    entries: {
+      "linux-node": {
+        config: {
+          location: { enabled: true },
+        },
+      },
+    },
+  },
+}
+```
+
+Instale o GeoClue2 e sua demonstração `where-am-i` (`geoclue-2-demo` no Debian e Ubuntu). O usuário do serviço do Node deve ter permissão concedida pela política do GeoClue e pelo agente de autorização do host.
+
+O Plugin usa `where-am-i` em vez de uma sequência de chamadas `busctl`. O GeoClue vincula a criação do cliente, as propriedades, a inicialização, as atualizações e a interrupção a uma única conexão de cliente D-Bus; a demonstração mantém esse ciclo de vida unificado, enquanto subprocessos `busctl` separados não o fazem. Nenhuma dependência npm é adicionada.
+
+O Linux mapeia `coarse`, `balanced` e `precise` para os níveis de precisão do GeoClue `4`, `6` e `8`. Ele valida `maxAgeMs` em relação ao carimbo de data e hora retornado. A demonstração do GeoClue não expõe o provedor selecionado, portanto `source` é `unknown`; `isPrecise` é verdadeiro somente quando a precisão informada é de 100 metros ou melhor.
+
+O Linux usa os mesmos erros estáveis: `LOCATION_DISABLED`, `LOCATION_TIMEOUT` e `LOCATION_UNAVAILABLE`.
+
+## Integração com modelo e ferramentas
 
 - Ferramenta do agente: a ação `location_get` da ferramenta `nodes` (Node obrigatório).
 - CLI: `openclaw nodes location get --node <id>`.
@@ -103,13 +130,13 @@ Erros (códigos estáveis):
 ## Texto da experiência do usuário (sugerido)
 
 - Desativado: "O compartilhamento de localização está desativado."
-- Durante o uso: "Somente quando o OpenClaw estiver aberto."
-- Sempre: "Permitir verificações de localização solicitadas enquanto o OpenClaw estiver em segundo plano."
-- Precisa: "Usar a localização GPS precisa. Desative para compartilhar a localização aproximada."
+- Durante o Uso: "Somente quando o OpenClaw estiver aberto."
+- Sempre: "Permita as verificações de localização solicitadas enquanto o OpenClaw estiver em segundo plano."
+- Precisa: "Use a localização precisa por GPS. Desative esta opção para compartilhar a localização aproximada."
 
 ## Relacionados
 
 - [Visão geral dos Nodes](/pt-BR/nodes)
-- [Análise de localização dos canais](/pt-BR/channels/location)
+- [Análise de localização do canal](/pt-BR/channels/location)
 - [Captura da câmera](/pt-BR/nodes/camera)
 - [Modo de conversa](/pt-BR/nodes/talk)

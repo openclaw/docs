@@ -1,35 +1,36 @@
 ---
 read_when:
-    - Anda ingin membuat Plugin OpenClaw sederhana yang hanya menambahkan alat agen
-    - Anda ingin menggunakan defineToolPlugin alih-alih menulis metadata manifes Plugin secara manual
-    - Anda perlu membuat kerangka, menghasilkan, memvalidasi, menguji, atau menerbitkan Plugin yang hanya berisi alat
+    - Anda ingin membuat plugin OpenClaw sederhana yang hanya menambahkan alat agen
+    - Anda ingin menggunakan defineToolPlugin alih-alih menulis metadata manifes plugin secara manual
+    - Anda perlu membuat kerangka, menghasilkan, memvalidasi, menguji, atau menerbitkan plugin khusus alat
 sidebarTitle: Tool Plugins
 summary: Bangun alat agen bertipe sederhana dengan defineToolPlugin dan openclaw plugins init/build/validate
 title: Plugin alat
 x-i18n:
-    generated_at: "2026-07-12T14:34:36Z"
+    generated_at: "2026-07-16T18:30:47Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 231eba96d4927b7411cb17d79b96e6df09ed111fc8a54eac0ca7717e58803d26
+    source_hash: fb9187e1d8aed88eee5c99dcdce89f70cd0d4f930b97aaac2ff868037d63adc1
     source_path: plugins/tool-plugins.md
     workflow: 16
 ---
 
-`defineToolPlugin` membangun plugin yang hanya menambahkan alat yang dapat dipanggil agen: tanpa
-saluran, penyedia model, hook, layanan, atau backend penyiapan. Fungsi ini menghasilkan
+`defineToolPlugin` membuat plugin yang hanya menambahkan alat yang dapat dipanggil agen: tanpa
+saluran, penyedia model, hook, layanan, atau backend penyiapan. Ini menghasilkan
 metadata manifes yang diperlukan OpenClaw untuk menemukan alat tanpa memuat kode
 runtime plugin.
 
-Untuk plugin penyedia, saluran, hook, layanan, atau plugin dengan kemampuan campuran, mulailah dengan
-[Membangun plugin](/id/plugins/building-plugins), [Plugin Saluran](/id/plugins/sdk-channel-plugins),
+Untuk plugin penyedia, saluran, hook, layanan, atau berkemampuan campuran, mulailah dengan
+[Membuat plugin](/id/plugins/building-plugins), [Plugin Saluran](/id/plugins/sdk-channel-plugins),
 atau [Plugin Penyedia](/id/plugins/sdk-provider-plugins).
 
 ## Persyaratan
 
-- Node 22.19+, Node 23.11+, atau Node 24+.
-- Keluaran paket TypeScript ESM.
-- `typebox` di `dependencies` (bukan hanya `devDependencies` - plugin yang dihasilkan
+- Node 22.22.3+, Node 24.15+, atau Node 25.9+.
+- Keluaran paket ESM TypeScript.
+- `typebox` dalam `dependencies` (bukan hanya `devDependencies` - plugin yang dihasilkan
   mengimpornya saat runtime).
 - `openclaw >=2026.5.17`, versi pertama yang mengekspor
   `openclaw/plugin-sdk/tool-plugin`.
@@ -49,14 +50,14 @@ npm test
 
 `plugins init` membuat kerangka:
 
-| Berkas                 | Tujuan                                                            |
+| File                   | Tujuan                                                            |
 | ---------------------- | ----------------------------------------------------------------- |
 | `src/index.ts`         | Entri `defineToolPlugin` dengan satu alat `echo`                  |
-| `src/index.test.ts`    | Pengujian metadata yang memeriksa daftar alat                     |
+| `src/index.test.ts`    | Pengujian metadata yang memverifikasi daftar alat                 |
 | `tsconfig.json`        | Keluaran TypeScript NodeNext ke `dist/`                           |
 | `vitest.config.ts`     | Konfigurasi Vitest untuk `src/**/*.test.ts`                       |
 | `package.json`         | Skrip, dependensi runtime, `openclaw.extensions: ["./dist/index.js"]` |
-| `openclaw.plugin.json` | Metadata manifes yang dihasilkan untuk alat awal                  |
+| `openclaw.plugin.json` | Metadata manifes yang dihasilkan untuk alat awal                   |
 
 `npm run plugin:build` menjalankan `npm run build` (tsc), lalu
 `openclaw plugins build --entry ./dist/index.js`. `npm run plugin:validate`
@@ -64,17 +65,17 @@ membangun ulang dan menjalankan `openclaw plugins validate --entry ./dist/index.
 Validasi yang berhasil menampilkan:
 
 ```text
-Plugin stock-quotes is valid.
+Plugin stock-quotes valid.
 ```
 
 Opsi `openclaw plugins init <id>`:
 
-| Flag                 | Bawaan             | Efek                                   |
+| Flag                 | Default            | Efek                                   |
 | -------------------- | ------------------ | -------------------------------------- |
 | `--directory <path>` | `<id>`             | Direktori keluaran                     |
-| `--name <name>`      | `<id>` dalam format judul | Nama tampilan                    |
+| `--name <name>`      | `<id>` dalam Format Judul | Nama tampilan                          |
 | `--type <type>`      | `tool`             | Jenis kerangka: `tool` atau `provider` |
-| `--force`            | nonaktif           | Timpa direktori keluaran yang sudah ada |
+| `--force`            | nonaktif           | Menimpa direktori keluaran yang ada    |
 
 ## Menulis alat
 
@@ -115,12 +116,12 @@ export default defineToolPlugin({
 });
 ```
 
-Nama alat adalah API yang stabil. Pilih nama yang unik, menggunakan huruf kecil, dan
+Nama alat adalah API yang stabil. Pilih nama yang unik, berhuruf kecil, dan
 cukup spesifik untuk menghindari benturan dengan alat inti atau plugin lain.
 
 ## Alat opsional dan alat pabrik
 
-Tetapkan `optional: true` ketika pengguna harus secara eksplisit memasukkan alat ke daftar izin sebelum
+Tetapkan `optional: true` ketika pengguna harus secara eksplisit memasukkan alat ke daftar yang diizinkan sebelum
 alat dikirim ke model. `openclaw plugins build` menulis entri manifes
 `toolMetadata.<tool>.optional` yang sesuai, sehingga OpenClaw dapat mengetahui bahwa
 alat tersebut opsional tanpa memuat kode runtime plugin.
@@ -136,8 +137,8 @@ tool({
 ```
 
 Gunakan `factory` ketika alat memerlukan konteks alat runtime sebelum dapat
-dibuat—untuk tidak mengikutsertakannya dalam proses tertentu, memeriksa status sandbox, atau mengikat
-pembantu runtime. Metadata tetap statis meskipun alat konkretnya dibuat
+dibuat—untuk menonaktifkannya pada proses tertentu, memeriksa status sandbox, atau mengikat
+pembantu runtime. Metadata tetap statis meskipun alat konkret dibuat
 saat runtime.
 
 ```typescript
@@ -155,7 +156,7 @@ tool({
 });
 ```
 
-Pabrik tetap mendeklarasikan nama alat tetap di awal. Gunakan `definePluginEntry`
+Pabrik tetap mendeklarasikan nama alat tetap sejak awal. Gunakan `definePluginEntry`
 secara langsung ketika plugin menghitung nama alat secara dinamis atau menggabungkan alat
 dengan hook, layanan, penyedia, atau perintah.
 
@@ -164,9 +165,9 @@ dengan hook, layanan, penyedia, atau perintah.
 `defineToolPlugin` membungkus nilai kembalian biasa ke dalam format hasil alat
 OpenClaw:
 
-- Kembalikan string ketika model harus melihat teks persis tersebut.
-- Kembalikan nilai yang kompatibel dengan JSON ketika Anda ingin model melihat JSON yang diformat
-  dan OpenClaw menyimpan nilai aslinya di `details`.
+- Kembalikan string ketika model harus melihat teks tersebut secara persis.
+- Kembalikan nilai yang kompatibel dengan JSON ketika Anda ingin model melihat JSON terformat
+  dan OpenClaw mempertahankan nilai asli dalam `details`.
 
 ```typescript
 tool({
@@ -195,7 +196,7 @@ implementasi `api.registerTool` yang sudah ada.
 
 ## Konfigurasi
 
-`configSchema` bersifat opsional. Hilangkan properti ini dan OpenClaw akan menerapkan skema objek kosong
+`configSchema` bersifat opsional. Hilangkan dan OpenClaw akan menerapkan skema objek kosong
 yang ketat; manifes yang dihasilkan tetap menyertakan `configSchema`.
 
 ```typescript
@@ -207,7 +208,7 @@ export default defineToolPlugin({
 });
 ```
 
-Dengan `configSchema`, argumen kedua `execute` diberi tipe berdasarkan skema tersebut:
+Dengan `configSchema`, argumen `execute` kedua diberi tipe berdasarkan skema tersebut:
 
 ```typescript
 const configSchema = Type.Object({
@@ -230,15 +231,15 @@ export default defineToolPlugin({
 });
 ```
 
-OpenClaw membaca konfigurasi plugin dari entri plugin dalam konfigurasi Gateway. Jangan
-menanamkan rahasia langsung dalam contoh kode sumber atau dokumentasi; gunakan konfigurasi, variabel
+OpenClaw membaca konfigurasi plugin dari entri plugin tersebut dalam konfigurasi Gateway. Jangan
+menanamkan rahasia langsung dalam sumber atau contoh dokumentasi; gunakan konfigurasi, variabel
 lingkungan, atau SecretRefs sesuai model keamanan plugin.
 
 ## Metadata yang dihasilkan
 
 OpenClaw harus membaca manifes plugin sebelum mengimpor kode runtime plugin.
-`defineToolPlugin` menyediakan metadata statis untuk keperluan ini, dan
-`openclaw plugins build` menuliskannya ke dalam paket. Jalankan ulang generator setelah
+`defineToolPlugin` mengekspos metadata statis untuk tujuan ini, dan
+`openclaw plugins build` menuliskannya ke dalam paket. Jalankan kembali generator setelah
 mengubah id, nama, deskripsi, skema konfigurasi, aktivasi, atau nama alat
 plugin:
 
@@ -269,10 +270,10 @@ Manifes yang dihasilkan untuk plugin dengan satu alat:
 }
 ```
 
-`contracts.tools` adalah kontrak penemuan yang penting: kontrak ini memberi tahu OpenClaw
-plugin mana yang memiliki setiap alat tanpa memuat runtime setiap plugin yang terpasang. Manifes
-yang usang dapat menyebabkan alat tidak ditemukan, atau kesalahan pendaftaran
-dikaitkan dengan plugin yang salah.
+`contracts.tools` adalah kontrak penemuan yang penting: kontrak ini memberi tahu OpenClaw plugin mana yang
+memiliki setiap alat tanpa memuat runtime setiap plugin yang terinstal. Manifes
+yang usang berarti alat dapat hilang dari penemuan, atau kesalahan pendaftaran
+disalahkan kepada plugin yang keliru.
 
 ## Metadata paket
 
@@ -295,12 +296,12 @@ yang dipilih:
 }
 ```
 
-Sertakan JavaScript hasil pembangunan (`./dist/index.js`), bukan entri sumber TypeScript.
-Entri sumber hanya berfungsi untuk pengembangan lokal dalam ruang kerja.
+Sertakan JavaScript hasil build (`./dist/index.js`), bukan entri sumber TypeScript.
+Entri sumber hanya berfungsi untuk pengembangan lokal ruang kerja.
 
 ## Memvalidasi di CI
 
-`plugins build --check` gagal tanpa menulis ulang berkas ketika metadata yang dihasilkan
+`plugins build --check` gagal tanpa menulis ulang file ketika metadata yang dihasilkan
 sudah usang:
 
 ```bash
@@ -312,22 +313,22 @@ npm test
 
 `plugins validate` memeriksa bahwa:
 
-- `openclaw.plugin.json` tersedia dan lolos pemuat manifes normal.
+- `openclaw.plugin.json` ada dan lolos pemuat manifes normal.
 - Entri saat ini mengekspor metadata `defineToolPlugin`.
-- Bidang manifes yang dihasilkan cocok dengan metadata entri.
+- Kolom manifes yang dihasilkan cocok dengan metadata entri.
 - `contracts.tools` cocok dengan nama alat yang dideklarasikan.
 - `package.json` mengarahkan `openclaw.extensions` ke entri runtime yang dipilih.
 
-## Memasang dan memeriksa secara lokal
+## Menginstal dan memeriksa secara lokal
 
-Dari checkout OpenClaw terpisah atau CLI yang sudah terpasang, pasang jalur paket:
+Dari checkout OpenClaw terpisah atau CLI yang terinstal, instal jalur paket:
 
 ```bash
 openclaw plugins install ./stock-quotes
 openclaw plugins inspect stock-quotes --runtime
 ```
 
-Untuk pengujian asap paket, kemas terlebih dahulu lalu pasang tarball:
+Untuk uji singkat paket, kemas terlebih dahulu lalu instal tarball:
 
 ```bash
 npm pack
@@ -335,7 +336,7 @@ openclaw plugins install npm-pack:./openclaw-plugin-stock-quotes-0.1.0.tgz
 openclaw plugins inspect stock-quotes --runtime --json
 ```
 
-Setelah memasang, mulai ulang atau muat ulang Gateway dan minta agen menggunakan
+Setelah menginstal, mulai ulang atau muat ulang Gateway dan minta agen menggunakan
 alat tersebut. Jika alat tidak terlihat, periksa runtime plugin dan katalog
 alat efektif sebelum mengubah kode (lihat [Pemecahan masalah](#troubleshooting)).
 
@@ -350,29 +351,29 @@ clawhub package publish ./stock-quotes --dry-run
 clawhub package publish ./stock-quotes
 ```
 
-Pasang dengan pelacak ClawHub eksplisit:
+Instal dengan pencari lokasi ClawHub eksplisit:
 
 ```bash
 openclaw plugins install clawhub:your-org/stock-quotes
 ```
 
-Spesifikasi paket npm tanpa awalan tetap dipasang dari npm selama transisi peluncuran, tetapi
-ClawHub adalah sarana penemuan dan distribusi yang diutamakan untuk plugin
+Spesifikasi paket npm polos masih diinstal dari npm selama transisi peluncuran, tetapi
+ClawHub adalah sarana penemuan dan distribusi yang disarankan untuk plugin
 OpenClaw. Lihat [Penerbitan ClawHub](/id/clawhub/publishing) untuk cakupan pemilik dan
-tinjauan rilis.
+peninjauan rilis.
 
 ## Pemecahan masalah
 
 ### `plugin entry not found: ./dist/index.js`
 
-Berkas entri yang dipilih tidak tersedia. Jalankan `npm run build`, lalu jalankan kembali
+File entri yang dipilih tidak ada. Jalankan `npm run build`, lalu jalankan kembali
 `openclaw plugins build --entry ./dist/index.js` atau
 `openclaw plugins validate --entry ./dist/index.js`.
 
 ### `plugin entry does not expose defineToolPlugin metadata`
 
 Entri tidak mengekspor nilai yang dibuat oleh `defineToolPlugin`. Pastikan
-ekspor bawaan modul adalah hasil `defineToolPlugin(...)`, atau berikan
+ekspor default modul merupakan hasil `defineToolPlugin(...)`, atau berikan
 entri yang benar dengan `--entry`.
 
 ### `openclaw.plugin.json generated metadata is stale`
@@ -384,22 +385,22 @@ npm run build
 openclaw plugins build --entry ./dist/index.js
 ```
 
-Commit perubahan `openclaw.plugin.json` dan `package.json`.
+Commit perubahan pada `openclaw.plugin.json` dan `package.json`.
 
 ### `package.json openclaw.extensions must include ./dist/index.js`
 
-Metadata paket mengarah ke entri runtime lain. Jalankan
+Metadata paket mengarah ke entri runtime yang berbeda. Jalankan
 `openclaw plugins build --entry ./dist/index.js` agar generator menyelaraskan
 metadata paket dengan entri yang ingin Anda sertakan.
 
 ### `Cannot find package 'typebox'`
 
-Plugin hasil pembangunan mengimpor `typebox` saat runtime. Pertahankan paket tersebut di `dependencies`,
-pasang ulang, bangun ulang, dan jalankan kembali validasi.
+Plugin hasil build mengimpor `typebox` saat runtime. Pertahankan dalam `dependencies`,
+instal ulang, bangun ulang, dan jalankan kembali validasi.
 
-### Alat tidak muncul setelah pemasangan
+### Alat tidak muncul setelah instalasi
 
-Periksa hal berikut secara berurutan:
+Periksa hal-hal berikut secara berurutan:
 
 1. `openclaw plugins inspect <plugin-id> --runtime`
 2. `openclaw plugins validate --root <plugin-root> --entry ./dist/index.js`

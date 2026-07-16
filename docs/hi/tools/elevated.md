@@ -1,45 +1,46 @@
 ---
 read_when:
-    - उन्नत मोड के डिफ़ॉल्ट, अनुमति-सूचियाँ, या स्लैश कमांड व्यवहार समायोजित करना
-    - यह समझना कि सैंडबॉक्स किए गए एजेंट host तक कैसे पहुंच सकते हैं
-summary: 'उन्नत exec मोड: sandboxed agent से sandbox के बाहर commands चलाएँ'
+    - एलीवेटेड मोड के डिफ़ॉल्ट, अनुमति-सूचियाँ या स्लैश कमांड का व्यवहार समायोजित करना
+    - यह समझना कि सैंडबॉक्स किए गए एजेंट होस्ट तक कैसे पहुँच सकते हैं
+summary: 'उन्नत निष्पादन मोड: सैंडबॉक्स किए गए एजेंट से सैंडबॉक्स के बाहर कमांड चलाएँ'
 title: उन्नत मोड
 x-i18n:
-    generated_at: "2026-06-29T00:18:07Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T17:42:12Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 91aab7c105643d8e5d07d89cd5ab176f0a40cd3d23e2b20b3986cbf76f575d64
+    source_hash: ab035f2f0d0074da4e7661d9d690d89aa5eea25b7920ce48a2a03dffccded85b
     source_path: tools/elevated.md
     workflow: 16
 ---
 
-जब कोई agent sandbox के अंदर चलता है, तो उसके `exec` commands sandbox environment तक सीमित रहते हैं। **एलिवेटेड मोड** agent को इससे बाहर निकलकर sandbox के बाहर commands चलाने देता है, configurable approval gates के साथ।
+जब कोई एजेंट सैंडबॉक्स के भीतर चलता है, तो उसकी `exec` कमांड सैंडबॉक्स परिवेश तक सीमित रहती हैं। **उन्नत मोड** एजेंट को इससे बाहर निकलकर सैंडबॉक्स के बाहर कमांड चलाने देता है, जिसमें अनुमोदन गेट कॉन्फ़िगर किए जा सकते हैं।
 
 <Info>
-  एलिवेटेड मोड behavior केवल तब बदलता है जब agent **sandboxed** हो। Unsandboxed agents के लिए, exec पहले से ही host पर चलता है।
+  उन्नत मोड व्यवहार केवल तब बदलता है, जब एजेंट **सैंडबॉक्स में** हो। सैंडबॉक्स से बाहर चलने वाले एजेंट के लिए exec पहले से ही होस्ट पर चलता है।
 </Info>
 
-## Directives
+## निर्देश
 
-Slash commands से प्रति-session एलिवेटेड मोड नियंत्रित करें:
+स्लैश कमांड से प्रत्येक सत्र के लिए उन्नत मोड नियंत्रित करें:
 
-| Directive        | यह क्या करता है |
-| ---------------- | ---------------------------------------------------------------------- |
-| `/elevated on`   | configured host path पर sandbox के बाहर चलाएं, approvals बनाए रखें |
-| `/elevated ask`  | `on` जैसा ही (alias) |
-| `/elevated full` | configured host path पर sandbox के बाहर चलाएं और approvals छोड़ दें |
-| `/elevated off`  | sandbox-confined execution पर वापस जाएं |
+| निर्देश        | इसका कार्य                                                                                                                    |
+| ---------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| `/elevated on`   | कॉन्फ़िगर किए गए होस्ट पथ पर सैंडबॉक्स के बाहर चलाएँ, अनुमोदन जारी रखें                                                             |
+| `/elevated ask`  | `on` के समान (उपनाम)                                                                                                            |
+| `/elevated full` | कॉन्फ़िगर किए गए होस्ट पथ पर सैंडबॉक्स के बाहर चलाएँ और मोड/होस्ट अनुमोदन नीति पहले से अनुमतिशील होने पर अनुमोदन छोड़ दें |
+| `/elevated off`  | सैंडबॉक्स तक सीमित निष्पादन पर वापस जाएँ                                                                                            |
 
 यह `/elev on|off|ask|full` के रूप में भी उपलब्ध है।
 
-वर्तमान level देखने के लिए बिना argument के `/elevated` भेजें।
+वर्तमान स्तर देखने के लिए बिना किसी आर्ग्युमेंट के `/elevated` भेजें।
 
 ## यह कैसे काम करता है
 
 <Steps>
-  <Step title="उपलब्धता जांचें">
-    Elevated को config में enabled होना चाहिए और sender allowlist पर होना चाहिए:
+  <Step title="उपलब्धता जाँचें">
+    कॉन्फ़िगरेशन में उन्नत मोड सक्षम होना चाहिए और प्रेषक अनुमति-सूची में होना चाहिए:
 
     ```json5
     {
@@ -57,74 +58,79 @@ Slash commands से प्रति-session एलिवेटेड मोड
 
   </Step>
 
-  <Step title="Level सेट करें">
-    session default सेट करने के लिए directive-only message भेजें:
+  <Step title="स्तर सेट करें">
+    सत्र का डिफ़ॉल्ट सेट करने के लिए केवल निर्देश वाला संदेश भेजें:
 
     ```
     /elevated full
     ```
 
-    या इसे inline उपयोग करें (केवल उस message पर लागू होता है):
+    या इसे इनलाइन उपयोग करें (केवल उस संदेश पर लागू होता है):
 
     ```
-    /elevated on run the deployment script
+    /elevated on परिनियोजन स्क्रिप्ट चलाएँ
     ```
 
   </Step>
 
-  <Step title="Commands sandbox के बाहर चलते हैं">
-    Elevated active होने पर, `exec` calls sandbox छोड़ देती हैं। Effective host default रूप से `gateway` होता है, या `node` जब configured/session exec target `node` हो। `full` mode में, exec approvals छोड़ दिए जाते हैं। `on`/`ask` mode में, configured approval rules फिर भी लागू होते हैं।
+  <Step title="कमांड सैंडबॉक्स के बाहर चलती हैं">
+    उन्नत मोड सक्रिय होने पर, `exec` कॉल सैंडबॉक्स से बाहर निकलती हैं। प्रभावी होस्ट डिफ़ॉल्ट रूप से
+    `gateway` होता है, या जब कॉन्फ़िगर किया गया/सत्र का exec लक्ष्य
+    `node` हो, तब `node` होता है। `full` मोड में, जब हल की गई exec
+    मोड/होस्ट अनुमोदन नीति पहले से पूर्णतः अनुमतिशील हो (सुरक्षा `full`,
+    पूछें `off`), तब exec अनुमोदन छोड़ दिए जाते हैं; अन्यथा सामान्य अनुमोदन नीति लागू रहती है।
+    `on`/`ask` मोड में, कॉन्फ़िगर किए गए अनुमोदन नियम हमेशा लागू होते हैं।
   </Step>
 </Steps>
 
-## Resolution order
+## समाधान क्रम
 
-1. message पर **Inline directive** (केवल उस message पर लागू होता है)
-2. **Session override** (directive-only message भेजकर सेट किया गया)
-3. **Global default** (config में `agents.defaults.elevatedDefault`)
+1. संदेश पर **इनलाइन निर्देश** (केवल उस संदेश पर लागू होता है)
+2. **सत्र ओवरराइड** (केवल निर्देश वाला संदेश भेजकर सेट किया जाता है)
+3. **वैश्विक डिफ़ॉल्ट** (कॉन्फ़िगरेशन में `agents.defaults.elevatedDefault`)
 
-## उपलब्धता और allowlists
+## उपलब्धता और अनुमति-सूचियाँ
 
-- **Global gate**: `tools.elevated.enabled` (`true` होना चाहिए)
-- **Sender allowlist**: per-channel lists के साथ `tools.elevated.allowFrom`
-- **Per-agent gate**: `agents.list[].tools.elevated.enabled` (केवल और restrict कर सकता है)
-- **Per-agent allowlist**: `agents.list[].tools.elevated.allowFrom` (sender को global + per-agent दोनों से match करना होगा)
-- **Discord fallback**: यदि `tools.elevated.allowFrom.discord` omit किया गया है, तो `channels.discord.allowFrom` fallback के रूप में उपयोग होता है
-- **सभी gates pass होने चाहिए**; अन्यथा elevated को unavailable माना जाता है
+- **वैश्विक गेट**: `tools.elevated.enabled` (`true` होना आवश्यक है)
+- **प्रेषक अनुमति-सूची**: प्रत्येक चैनल की सूचियों के साथ `tools.elevated.allowFrom`
+- **प्रत्येक एजेंट का गेट**: `agents.list[].tools.elevated.enabled` (केवल अतिरिक्त प्रतिबंध लगा सकता है; वैश्विक और प्रत्येक एजेंट का गेट, दोनों `true` होने चाहिए)
+- **प्रत्येक एजेंट की अनुमति-सूची**: `agents.list[].tools.elevated.allowFrom` (प्रेषक का वैश्विक और प्रत्येक एजेंट की सूची, दोनों से मिलान होना चाहिए)
+- **चैनल द्वारा प्रदान की गई फ़ॉलबैक अनुमति-सूची**: जब `tools.elevated.allowFrom.<provider>` कॉन्फ़िगर न हो, तब चैनल Plugin वैकल्पिक रूप से SDK अडैप्टर हुक के माध्यम से फ़ॉलबैक अनुमति-सूची प्रदान कर सकते हैं। वर्तमान में कोई बंडल किया गया चैनल इस हुक को लागू नहीं करता, इसलिए व्यवहार में आज प्रत्येक प्रदाता के लिए स्पष्ट `tools.elevated.allowFrom.<provider>` प्रविष्टि आवश्यक है।
+- **सभी गेट पास होने चाहिए**; अन्यथा उन्नत मोड अनुपलब्ध माना जाता है
 
-Allowlist entry formats:
+अनुमति-सूची प्रविष्टि के प्रारूप:
 
-| Prefix                  | Matches                         |
+| उपसर्ग                  | इससे मिलान होता है                         |
 | ----------------------- | ------------------------------- |
-| (none)                  | Sender ID, E.164, या From field |
-| `name:`                 | Sender display name             |
-| `username:`             | Sender username                 |
-| `tag:`                  | Sender tag                      |
-| `id:`, `from:`, `e164:` | Explicit identity targeting     |
+| (कोई नहीं)                  | प्रेषक ID, E.164 या From फ़ील्ड |
+| `name:`                 | प्रेषक का प्रदर्शन नाम             |
+| `username:`             | प्रेषक का उपयोगकर्ता नाम                 |
+| `tag:`                  | प्रेषक टैग                      |
+| `id:`, `from:`, `e164:` | स्पष्ट पहचान लक्ष्यीकरण     |
 
-## Elevated क्या नियंत्रित नहीं करता
+## उन्नत मोड क्या नियंत्रित नहीं करता
 
-- **Tool policy**: यदि `exec` tool policy द्वारा denied है, तो elevated इसे override नहीं कर सकता।
-- **Host selection policy**: elevated `auto` को free cross-host override में नहीं बदलता। यह configured/session exec target rules का उपयोग करता है, और `node` केवल तब चुनता है जब target पहले से ही `node` हो।
-- **`/exec` से अलग**: `/exec` directive authorized senders के लिए per-session exec defaults adjust करता है और इसके लिए elevated mode की आवश्यकता नहीं होती।
+- **टूल नीति**: यदि टूल नीति द्वारा `exec` अस्वीकृत है, तो उन्नत मोड इसे ओवरराइड नहीं कर सकता।
+- **होस्ट चयन नीति**: उन्नत मोड `auto` को स्वतंत्र क्रॉस-होस्ट ओवरराइड में नहीं बदलता। यह कॉन्फ़िगर किए गए/सत्र के exec लक्ष्य नियमों का उपयोग करता है और लक्ष्य पहले से `node` होने पर ही `node` चुनता है।
+- **`/exec` से अलग**: `/exec` निर्देश अधिकृत प्रेषकों के लिए प्रत्येक सत्र के exec डिफ़ॉल्ट (होस्ट, सुरक्षा, पूछें, Node) समायोजित करता है और इसके लिए उन्नत मोड आवश्यक नहीं है।
 
 <Note>
-  bash chat command (`!` prefix; `/bash` alias) एक अलग gate है जिसके लिए अपने `tools.bash.enabled` flag के अलावा `tools.elevated` enabled होना आवश्यक है। elevated disable करने से `!` shell commands भी lock out हो जाते हैं।
+  bash चैट कमांड (`!` उपसर्ग; `/bash` उपनाम) एक अलग गेट है, जिसके लिए अपने `tools.bash.enabled` फ़्लैग के साथ-साथ `tools.elevated` का सक्षम होना आवश्यक है। उन्नत मोड अक्षम करने पर `!` शेल कमांड भी अवरुद्ध हो जाती हैं।
 </Note>
 
 ## संबंधित
 
 <CardGroup cols={2}>
-  <Card title="Exec tool" href="/hi/tools/exec" icon="terminal">
-    agent से shell command execution।
+  <Card title="Exec टूल" href="/hi/tools/exec" icon="terminal">
+    एजेंट से शेल कमांड का निष्पादन।
   </Card>
-  <Card title="Exec approvals" href="/hi/tools/exec-approvals" icon="shield">
-    `exec` के लिए approval और allowlist system।
+  <Card title="Exec अनुमोदन" href="/hi/tools/exec-approvals" icon="shield">
+    `exec` के लिए अनुमोदन और अनुमति-सूची प्रणाली।
   </Card>
-  <Card title="Sandboxing" href="/hi/gateway/sandboxing" icon="box">
-    Gateway-level sandbox configuration।
+  <Card title="सैंडबॉक्सिंग" href="/hi/gateway/sandboxing" icon="box">
+    Gateway-स्तरीय सैंडबॉक्स कॉन्फ़िगरेशन।
   </Card>
-  <Card title="Sandbox vs Tool Policy vs Elevated" href="/hi/gateway/sandbox-vs-tool-policy-vs-elevated" icon="scale-balanced">
-    tool call के दौरान तीनों gates कैसे compose होते हैं।
+  <Card title="सैंडबॉक्स बनाम टूल नीति बनाम उन्नत मोड" href="/hi/gateway/sandbox-vs-tool-policy-vs-elevated" icon="scale-balanced">
+    किसी टूल कॉल के दौरान तीनों गेट किस प्रकार संयोजित होते हैं।
   </Card>
 </CardGroup>

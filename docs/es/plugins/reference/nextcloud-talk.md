@@ -1,30 +1,31 @@
 ---
 read_when:
     - Está instalando, configurando o auditando el plugin nextcloud-talk
-summary: Plugin del canal de Nextcloud Talk para conversaciones en OpenClaw.
+summary: Plugin de canal de Nextcloud Talk para conversaciones en OpenClaw.
 title: Plugin de Nextcloud Talk
 x-i18n:
-    generated_at: "2026-07-11T23:21:29Z"
+    generated_at: "2026-07-16T11:53:19Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: ce8dd648fcc2226e6b365f092eb3dc54062d2c9d8d5c613cb0c2d5e9f237c720
+    source_hash: 2f819fda3e7eb6d8037ec5c7801ef8289e2e574670631a61e489717bc0b72e5b
     source_path: plugins/reference/nextcloud-talk.md
     workflow: 16
 ---
 
 # Plugin de Nextcloud Talk
 
-Plugin de canal de Nextcloud Talk para conversaciones en OpenClaw.
+Plugin del canal Nextcloud Talk de OpenClaw para conversaciones.
 
 ## Distribución
 
 - Paquete: `@openclaw/nextcloud-talk`
-- Vía de instalación: npm; ClawHub
+- Método de instalación: npm; ClawHub
 
 ## Superficie
 
-canales: nextcloud-talk
+canales: `nextcloud-talk`
 
 ## Documentación relacionada
 

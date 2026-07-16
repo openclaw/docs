@@ -4,11 +4,12 @@ read_when:
 summary: Thêm hỗ trợ nhà cung cấp mô hình fal cho OpenClaw.
 title: Plugin fal
 x-i18n:
-    generated_at: "2026-07-12T08:09:49Z"
+    generated_at: "2026-07-16T14:47:15Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: f62d6a642a6edaa581fb23fa27dade77486c827d460f19aa23750959f5aa6f1c
+    source_hash: 5341c85c74911d5d49849cfbee4d31a7a8bdf38a24ca68566118f4a0ced81d2e
     source_path: plugins/reference/fal.md
     workflow: 16
 ---
@@ -22,9 +23,9 @@ Bổ sung hỗ trợ nhà cung cấp mô hình fal cho OpenClaw.
 - Gói: `@openclaw/fal-provider`
 - Cách cài đặt: được tích hợp trong OpenClaw
 
-## Phạm vi
+## Bề mặt
 
-nhà cung cấp: fal; hợp đồng: imageGenerationProviders, musicGenerationProviders, videoGenerationProviders
+nhà cung cấp: `fal`; hợp đồng: `imageGenerationProviders`, `musicGenerationProviders`, `videoGenerationProviders`
 
 ## Tài liệu liên quan
 

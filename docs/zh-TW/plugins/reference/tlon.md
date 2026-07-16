@@ -1,14 +1,15 @@
 ---
 read_when:
-    - 您正在安裝、設定或稽核 Tlon 外掛
-summary: 適用於聊天工作流程的 OpenClaw Tlon/Urbit 頻道外掛。
+    - 你正在安裝、設定或稽核 Tlon 外掛
+summary: 用於聊天工作流程的 OpenClaw Tlon/Urbit 頻道外掛。
 title: Tlon 外掛
 x-i18n:
-    generated_at: "2026-07-11T21:41:17Z"
+    generated_at: "2026-07-16T11:50:59Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 6fd1dcc934734599c0b671f0a9659dc5cc6e4ff907e3e14f9ff3ba5ec86aa0cc
+    source_hash: 151b22aee5f52dbe17bc4e938fff981e8bd2e1117cea10386ac2307e5e4993b4
     source_path: plugins/reference/tlon.md
     workflow: 16
 ---
@@ -17,15 +18,15 @@ x-i18n:
 
 用於聊天工作流程的 OpenClaw Tlon/Urbit 頻道外掛。
 
-## 發行方式
+## 發布
 
 - 套件：`@openclaw/tlon`
-- 安裝來源：npm；ClawHub
+- 安裝途徑：npm；ClawHub
 
-## 涵蓋範圍
+## 介面
 
-頻道：tlon；Skills
+頻道：`tlon`；Skills
 
 ## 相關文件
 
-- [tlon](/zh-TW/channels/tlon)
+- [Tlon](/zh-TW/channels/tlon)

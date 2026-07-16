@@ -4,12 +4,12 @@ read_when:
 summary: Добавляет в OpenClaw поддержку провайдеров моделей Tencent TokenHub и Tencent Tokenplan.
 title: Плагин Tencent
 x-i18n:
-    generated_at: "2026-07-13T18:35:26Z"
+    generated_at: "2026-07-16T16:36:51Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
-    prompt_version: 24
+    prompt_version: 32
     provider: openai
-    source_hash: 7f7925d89feaded27708e3f31d08ed4e29650cb8ce1152011fd920ed4fb864ef
+    source_hash: c053ff4f5e142ac9414c03388352474da68e86715ff4f7f00781c3dfced185c4
     source_path: plugins/reference/tencent.md
     workflow: 16
 ---
@@ -25,7 +25,7 @@ x-i18n:
 
 ## Интерфейс
 
-провайдеры: tencent-tokenhub, tencent-tokenplan
+провайдеры: `tencent-tokenhub`, `tencent-tokenplan`
 
 ## Связанная документация
 

@@ -1,37 +1,38 @@
 ---
 read_when:
-    - Lên lịch tác vụ nền hoặc đánh thức
-    - Kết nối các trình kích hoạt bên ngoài (webhook, Gmail) vào OpenClaw
-    - Quyết định giữa heartbeat và cron cho các tác vụ đã lên lịch
+    - Lên lịch các tác vụ nền hoặc hoạt động đánh thức
+    - Kết nối các trình kích hoạt bên ngoài (Webhook, Gmail) vào OpenClaw
+    - Lựa chọn giữa Heartbeat và Cron cho các tác vụ theo lịch trình
 sidebarTitle: Scheduled tasks
-summary: Công việc đã lên lịch, webhook và trình kích hoạt Gmail PubSub cho bộ lập lịch Gateway
+summary: Các tác vụ theo lịch, webhook và trình kích hoạt Gmail PubSub cho bộ lập lịch Gateway
 title: Tác vụ đã lên lịch
 x-i18n:
-    generated_at: "2026-07-02T08:27:10Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T14:04:45Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 2f75b8d1e5ac558a02b895e1cd1b92b05af549a2bd63d4ce3ddafcaf9e94b88e
+    source_hash: 9a419d4376fa08df1c429c167ead6918262cc34b986a85ffec024023f6da1eef
     source_path: automation/cron-jobs.md
     workflow: 16
 ---
 
-Cron là bộ lập lịch tích hợp sẵn của Gateway. Nó duy trì các job, đánh thức agent vào đúng thời điểm và có thể chuyển đầu ra trở lại kênh chat hoặc điểm cuối webhook.
+Cron là bộ lập lịch tích hợp sẵn của Gateway. Nó lưu bền vững các tác vụ, đánh thức tác nhân vào đúng thời điểm và có thể gửi đầu ra đến một kênh trò chuyện, một Webhook hoặc không gửi đi đâu cả.
 
 ## Bắt đầu nhanh
 
 <Steps>
-  <Step title="Thêm lời nhắc chạy một lần">
+  <Step title="Thêm lời nhắc một lần">
     ```bash
-    openclaw cron create "2026-02-01T16:00:00Z" \
-      --name "Reminder" \
+    openclaw cron create "2027-02-01T16:00:00Z" \
+      --name "Lời nhắc" \
       --session main \
-      --system-event "Reminder: check the cron docs draft" \
+      --system-event "Lời nhắc: kiểm tra bản nháp tài liệu cron" \
       --wake now \
       --delete-after-run
     ```
   </Step>
-  <Step title="Kiểm tra các job của bạn">
+  <Step title="Kiểm tra các tác vụ">
     ```bash
     openclaw cron list
     openclaw cron get <job-id>
@@ -47,100 +48,151 @@ Cron là bộ lập lịch tích hợp sẵn của Gateway. Nó duy trì các jo
 
 ## Cách cron hoạt động
 
-- Cron chạy **bên trong tiến trình Gateway** (không chạy bên trong model).
-- Định nghĩa job, trạng thái runtime và lịch sử chạy được duy trì trong cơ sở dữ liệu trạng thái SQLite dùng chung của OpenClaw, nên việc khởi động lại không làm mất lịch.
-- Khi nâng cấp, hãy chạy `openclaw doctor --fix` để nhập các tệp cũ `~/.openclaw/cron/jobs.json`, `jobs-state.json` và `runs/*.jsonl` vào SQLite, rồi đổi tên chúng với hậu tố `.migrated`. Các hàng job sai định dạng sẽ bị bỏ qua khỏi runtime và được sao chép vào `jobs-quarantine.json` để sửa hoặc xem xét sau.
-- `cron.store` vẫn đặt tên khóa kho cron logic và đường dẫn nhập của doctor. Sau khi nhập, việc chỉnh sửa tệp JSON đó không còn thay đổi các cron job đang hoạt động; thay vào đó hãy dùng `openclaw cron add|edit|remove` hoặc các phương thức Gateway cron RPC.
-- Mọi lần thực thi cron đều tạo bản ghi [tác vụ nền](/vi/automation/tasks).
-- Khi Gateway khởi động, các job lượt agent cô lập quá hạn sẽ được lên lịch lại ngoài cửa sổ kết nối kênh thay vì phát lại ngay lập tức, nhờ đó quá trình khởi động Discord/Telegram và thiết lập lệnh native vẫn phản hồi tốt sau khi khởi động lại.
-- Các job chạy một lần (`--at`) mặc định tự động xóa sau khi thành công.
-- Các lần chạy cron cô lập sẽ cố gắng đóng các tab/tiến trình trình duyệt được theo dõi cho phiên `cron:<jobId>` của chúng khi lần chạy hoàn tất, để tự động hóa trình duyệt tách rời không để lại các tiến trình mồ côi.
-- Các lần chạy cron cô lập nhận được quyền tự dọn dẹp cron phạm vi hẹp vẫn có thể đọc trạng thái bộ lập lịch, danh sách tự lọc của job hiện tại của chúng và lịch sử chạy của job đó, để các kiểm tra trạng thái/Heartbeat có thể kiểm tra lịch của chính mình mà không có quyền rộng hơn để thay đổi cron.
-- Các lần chạy cron cô lập cũng bảo vệ khỏi các phản hồi xác nhận đã lỗi thời. Nếu kết quả đầu tiên chỉ là cập nhật trạng thái tạm thời (`on it`, `pulling everything together` và các gợi ý tương tự) và không còn lần chạy subagent hậu duệ nào chịu trách nhiệm cho câu trả lời cuối cùng, OpenClaw sẽ nhắc lại một lần để lấy kết quả thực tế trước khi phân phối.
-- Các lần chạy cron cô lập dùng metadata từ chối thực thi có cấu trúc từ lần chạy nhúng, bao gồm các wrapper node-host `UNAVAILABLE` có thông báo lỗi lồng bên trong bắt đầu bằng `SYSTEM_RUN_DENIED` hoặc `INVALID_REQUEST`, để một lệnh bị chặn không bị báo cáo là lần chạy xanh, trong khi văn bản trợ lý thông thường không bị xem là từ chối.
-- Các lần chạy cron cô lập cũng xem lỗi agent ở cấp lần chạy là lỗi job ngay cả khi không tạo ra payload phản hồi, để lỗi model/provider tăng bộ đếm lỗi và kích hoạt thông báo lỗi thay vì xóa job như thể đã thành công.
-- Khi một job lượt agent cô lập đạt `timeoutSeconds`, cron hủy lần chạy agent bên dưới và cấp cho nó một cửa sổ dọn dẹp ngắn. Nếu lần chạy không thoát hết, quá trình dọn dẹp do Gateway sở hữu sẽ buộc xóa quyền sở hữu phiên của lần chạy đó trước khi cron ghi nhận timeout, để công việc chat trong hàng đợi không bị kẹt sau một phiên xử lý đã lỗi thời.
-- Nếu một lượt agent cô lập bị treo trước khi runner bắt đầu hoặc trước lần gọi model đầu tiên, cron ghi nhận một timeout theo pha cụ thể như `setup timed out before runner start` hoặc `stalled before first model call (last phase: context-engine)`. Các watchdog này bao phủ provider nhúng và provider dựa trên CLI trước khi tiến trình CLI bên ngoài của chúng thực sự được khởi động, và được giới hạn độc lập với các giá trị `timeoutSeconds` dài để lỗi khởi động lạnh/xác thực/ngữ cảnh xuất hiện nhanh thay vì chờ toàn bộ ngân sách job.
-- Nếu bạn dùng cron hệ thống hoặc một bộ lập lịch bên ngoài khác để chạy `openclaw agent`, hãy bọc nó bằng cơ chế nâng cấp hard-kill dù CLI xử lý `SIGTERM`/`SIGINT`. Các lần chạy được Gateway hậu thuẫn yêu cầu Gateway hủy các lần chạy đã được chấp nhận; các lần chạy dự phòng local và nhúng nhận cùng tín hiệu hủy. Với GNU `timeout`, hãy ưu tiên `timeout -k 60 600 openclaw agent ...` hơn `timeout 600 ...` thuần túy; giá trị `-k` là chốt chặn của trình giám sát nếu tiến trình không thể thoát hết. Với các unit systemd, giữ cùng hình dạng bằng cách dùng tín hiệu dừng `SIGTERM` cùng một cửa sổ gia hạn như `TimeoutStopSec` trước bất kỳ lần kill cuối nào. Nếu một lần thử lại tái sử dụng `--run-id` trong khi lần chạy Gateway gốc vẫn đang hoạt động, bản trùng lặp sẽ được báo cáo là đang chạy thay vì bắt đầu lần chạy thứ hai.
-
-<a id="maintenance"></a>
-
-<Note>
-Đối soát tác vụ cho cron trước hết do runtime sở hữu, sau đó được lịch sử bền vững hậu thuẫn: một tác vụ cron đang hoạt động vẫn sống khi cron runtime vẫn theo dõi job đó là đang chạy, ngay cả khi một hàng phiên con cũ vẫn tồn tại. Khi runtime ngừng sở hữu job và cửa sổ gia hạn 5 phút hết hạn, kiểm tra bảo trì sẽ xem nhật ký chạy được duy trì và trạng thái job cho lần chạy `cron:<jobId>:<startedAt>` khớp. Nếu lịch sử bền vững đó cho thấy kết quả kết thúc, sổ cái tác vụ sẽ được hoàn tất từ đó; nếu không, bảo trì do Gateway sở hữu có thể đánh dấu tác vụ là `lost`. Kiểm toán CLI ngoại tuyến có thể khôi phục từ lịch sử bền vững, nhưng nó không xem tập job đang hoạt động trong tiến trình của chính nó là bằng chứng rằng một lần chạy cron do Gateway sở hữu đã biến mất.
-</Note>
-
-## Loại lịch
-
-| Loại    | Cờ CLI    | Mô tả                                                   |
-| ------- | --------- | ------------------------------------------------------- |
-| `at`    | `--at`    | Dấu thời gian chạy một lần (ISO 8601 hoặc tương đối như `20m`) |
-| `every` | `--every` | Khoảng thời gian cố định                                |
-| `cron`  | `--cron`  | Biểu thức cron 5 trường hoặc 6 trường với `--tz` tùy chọn |
-
-Dấu thời gian không có múi giờ được xem là UTC. Thêm `--tz America/New_York` để lập lịch theo giờ tường địa phương.
-
-Các biểu thức lặp lại đúng đầu giờ được tự động rải lệch tối đa 5 phút để giảm đỉnh tải. Dùng `--exact` để buộc thời điểm chính xác hoặc `--stagger 30s` để đặt một cửa sổ rõ ràng.
-
-### Ngày trong tháng và ngày trong tuần dùng logic OR
-
-Biểu thức cron được phân tích bởi [croner](https://github.com/Hexagon/croner). Khi cả trường ngày trong tháng và ngày trong tuần đều không phải ký tự đại diện, croner khớp khi **một trong hai** trường khớp — không phải cả hai. Đây là hành vi cron Vixie tiêu chuẩn.
-
-```
-# Intended: "9 AM on the 15th, only if it's a Monday"
-# Actual:   "9 AM on every 15th, AND 9 AM on every Monday"
-0 9 15 * 1
-```
-
-Điều này kích hoạt khoảng 5–6 lần mỗi tháng thay vì 0–1 lần mỗi tháng. OpenClaw dùng hành vi OR mặc định của Croner ở đây. Để yêu cầu cả hai điều kiện, hãy dùng modifier ngày trong tuần `+` của Croner (`0 9 15 * +1`) hoặc lập lịch theo một trường và kiểm tra trường còn lại trong prompt hoặc lệnh của job.
-
-## Kiểu thực thi
-
-| Kiểu            | Giá trị `--session` | Chạy trong                | Phù hợp nhất cho               |
-| --------------- | ------------------- | ------------------------- | ------------------------------ |
-| Phiên chính     | `main`              | Lane đánh thức cron riêng | Lời nhắc, sự kiện hệ thống     |
-| Cô lập          | `isolated`          | `cron:<jobId>` riêng      | Báo cáo, việc nền định kỳ      |
-| Phiên hiện tại  | `current`           | Gắn tại thời điểm tạo     | Công việc lặp lại cần ngữ cảnh |
-| Phiên tùy chỉnh | `session:custom-id` | Phiên được đặt tên bền vững | Quy trình làm việc xây trên lịch sử |
+- Cron chạy **bên trong tiến trình Gateway**, không phải bên trong mô hình. Gateway phải đang chạy thì lịch mới được kích hoạt.
+- Định nghĩa tác vụ, trạng thái thời gian chạy và lịch sử chạy được lưu bền vững trong cơ sở dữ liệu trạng thái SQLite dùng chung của OpenClaw, vì vậy lịch không bị mất khi khởi động lại.
+- Mỗi lần thực thi cron đều tạo một bản ghi [tác vụ nền](/vi/automation/tasks).
+- Theo mặc định, các tác vụ một lần (`--at`) sẽ tự động bị xóa sau khi thành công; truyền `--keep-after-run` để giữ lại.
+- Ngân sách thời gian thực tế cho mỗi lần chạy: `--timeout-seconds` khi được đặt. Nếu không, các tác vụ lượt tác nhân cô lập/tách rời bị giới hạn bởi bộ giám sát 60 phút riêng của cron trước khi thời gian chờ của lượt tác nhân bên dưới (`agents.defaults.timeoutSeconds`, mặc định 48 giờ) có thể được áp dụng; tác vụ lệnh mặc định là 10 phút.
+- Khi Gateway khởi động, các tác vụ lượt tác nhân cô lập đã quá hạn được lên lịch lại thay vì phát lại ngay lập tức, nhờ đó công việc khởi tạo mô hình/công cụ không diễn ra trong khoảng thời gian kết nối kênh.
+- Nếu bạn điều khiển `openclaw agent` từ cron hệ thống hoặc một bộ lập lịch bên ngoài khác, hãy bọc nó bằng cơ chế nâng cấp buộc dừng dù CLI đã xử lý `SIGTERM`/`SIGINT`. Các lần chạy do Gateway hỗ trợ yêu cầu Gateway hủy những lần chạy đã được chấp nhận; các lần chạy dự phòng cục bộ và nhúng nhận cùng tín hiệu hủy. Đối với GNU `timeout`, nên dùng `timeout -k 60 600 openclaw agent ...` thay vì chỉ dùng `timeout 600 ...` — giá trị `-k` là phương án dự phòng cuối cùng nếu tiến trình không thể kết thúc kịp thời. Đối với các đơn vị systemd, hãy dùng tín hiệu dừng `SIGTERM` với một khoảng thời gian chờ (`TimeoutStopSec`) trước khi buộc dừng cuối cùng. Việc sử dụng lại một `--run-id` khi lần chạy Gateway ban đầu vẫn đang hoạt động sẽ báo lần trùng lặp là đang chạy thay vì bắt đầu lần chạy thứ hai.
 
 <AccordionGroup>
-  <Accordion title="Phiên chính so với cô lập so với tùy chỉnh">
-    Các job **phiên chính** đưa một sự kiện hệ thống vào lane chạy do cron sở hữu và tùy chọn đánh thức Heartbeat (`--wake now` hoặc `--wake next-heartbeat`). Chúng có thể dùng ngữ cảnh phân phối cuối cùng của phiên chính đích cho phản hồi, nhưng chúng không thêm các lượt cron định kỳ vào lane chat của con người và không kéo dài độ mới của reset hằng ngày/nhàn rỗi cho phiên đích. Các job **cô lập** chạy một lượt agent riêng với phiên mới. **Phiên tùy chỉnh** (`session:xxx`) duy trì ngữ cảnh qua các lần chạy, cho phép các quy trình như standup hằng ngày xây trên các bản tóm tắt trước đó.
-
-    Các sự kiện cron phiên chính là lời nhắc sự kiện hệ thống độc lập. Chúng
-    không tự động bao gồm chỉ dẫn "Read
-    HEARTBEAT.md" của prompt Heartbeat mặc định. Nếu một lời nhắc lặp lại cần tham khảo
-    `HEARTBEAT.md`, hãy nói rõ điều đó trong văn bản sự kiện cron hoặc trong
-    chỉ dẫn riêng của agent.
-
-  </Accordion>
-  <Accordion title="'Phiên mới' nghĩa là gì đối với job cô lập">
-    Với các job cô lập, "phiên mới" nghĩa là một transcript/session id mới cho mỗi lần chạy. OpenClaw có thể mang theo các tùy chọn an toàn như thiết lập thinking/fast/verbose, nhãn và các ghi đè model/auth do người dùng chọn rõ ràng, nhưng nó không kế thừa ngữ cảnh hội thoại xung quanh từ một hàng cron cũ hơn: định tuyến kênh/nhóm, chính sách gửi hoặc xếp hàng, elevation, origin hoặc ràng buộc runtime ACP. Dùng `current` hoặc `session:<id>` khi một job lặp lại cần chủ ý xây trên cùng ngữ cảnh hội thoại.
-  </Accordion>
-  <Accordion title="Dọn dẹp runtime">
-    Với các job cô lập, quá trình teardown runtime hiện bao gồm dọn dẹp trình duyệt theo best-effort cho phiên cron đó. Lỗi dọn dẹp bị bỏ qua để kết quả cron thực tế vẫn thắng.
-
-    Các lần chạy cron cô lập cũng dispose mọi phiên bản MCP runtime đi kèm được tạo cho job thông qua đường dẫn dọn dẹp runtime dùng chung. Điều này khớp với cách client MCP của phiên chính và phiên tùy chỉnh được teardown, nên các job cron cô lập không rò rỉ tiến trình con stdio hoặc kết nối MCP sống lâu qua các lần chạy.
+  <Accordion title="Tăng cường an toàn cho lần chạy cô lập">
+    - Khi hoàn tất, các lần chạy cô lập sẽ cố gắng hết mức để đóng các thẻ/tiến trình trình duyệt được theo dõi cho phiên `cron:<jobId>` của chúng, đồng thời giải phóng mọi phiên bản thời gian chạy MCP đi kèm được tạo cho tác vụ thông qua cùng đường dẫn tháo dỡ dùng chung với các lần chạy phiên chính và phiên tùy chỉnh. Lỗi dọn dẹp được bỏ qua để kết quả cron vẫn được ưu tiên.
+    - Các lần chạy cô lập có quyền tự dọn dẹp cron giới hạn có thể đọc trạng thái bộ lập lịch, danh sách tự lọc chỉ chứa tác vụ của chính chúng và lịch sử chạy của tác vụ đó, đồng thời chỉ có thể xóa tác vụ của chính chúng.
+    - Các lần chạy cô lập được bảo vệ khỏi phản hồi xác nhận lỗi thời: nếu kết quả đầu tiên chỉ là cập nhật trạng thái tạm thời (`on it`, `pulling everything together` và các gợi ý tương tự) và không còn tác nhân con hậu duệ nào chịu trách nhiệm cho câu trả lời cuối cùng, OpenClaw sẽ nhắc lại một lần để lấy kết quả thực tế trước khi gửi.
+    - Siêu dữ liệu từ chối thực thi có cấu trúc (bao gồm các trình bao bọc `UNAVAILABLE` trên máy chủ Node có lỗi lồng nhau bắt đầu bằng `SYSTEM_RUN_DENIED` hoặc `INVALID_REQUEST`) được nhận diện để lệnh bị chặn không được báo cáo là lần chạy thành công, trong khi văn bản thông thường của trợ lý không bị nhầm là lời từ chối.
+    - Lỗi tác nhân ở cấp lần chạy được tính là lỗi tác vụ ngay cả khi không có nội dung phản hồi, vì vậy lỗi mô hình/nhà cung cấp làm tăng bộ đếm lỗi và kích hoạt thông báo lỗi thay vì đánh dấu tác vụ là thành công.
+    - Khi một tác vụ đạt `timeoutSeconds`, cron hủy lần chạy và dành cho nó một khoảng thời gian ngắn để dọn dẹp. Nếu nó không kết thúc, cơ chế dọn dẹp do Gateway sở hữu sẽ buộc xóa quyền sở hữu phiên của lần chạy đó trước khi cron ghi nhận hết thời gian, để công việc trò chuyện trong hàng đợi không bị kẹt sau một phiên xử lý lỗi thời.
+    - Các tình trạng đình trệ khi thiết lập/khởi động có thời gian chờ riêng theo từng giai đoạn (ví dụ `cron: isolated agent setup timed out before runner start` hoặc `cron: isolated agent run stalled before execution start (last phase: context-engine)`). Các bộ giám sát này bao phủ cả nhà cung cấp nhúng và nhà cung cấp do CLI hỗ trợ, ngay cả trước khi tiến trình CLI bên ngoài của chúng bắt đầu, đồng thời được giới hạn độc lập với các giá trị `timeoutSeconds` dài để lỗi khởi động nguội/xác thực/ngữ cảnh nhanh chóng xuất hiện.
 
   </Accordion>
-  <Accordion title="Phân phối subagent và Discord">
-    Khi các lần chạy cron cô lập điều phối subagent, việc phân phối cũng ưu tiên đầu ra cuối cùng của hậu duệ hơn văn bản tạm thời đã lỗi thời của parent. Nếu các hậu duệ vẫn đang chạy, OpenClaw sẽ chặn cập nhật parent một phần đó thay vì thông báo nó.
-
-    Với các mục tiêu thông báo Discord chỉ có văn bản, OpenClaw gửi văn bản trợ lý cuối cùng chuẩn một lần thay vì phát lại cả các payload văn bản được stream/trung gian và câu trả lời cuối cùng. Media và payload Discord có cấu trúc vẫn được phân phối dưới dạng các payload riêng để attachment và component không bị bỏ sót.
-
+  <Accordion title="Đối soát tác vụ">
+    Việc đối soát tác vụ cron trước hết do thời gian chạy sở hữu, sau đó mới dựa trên lịch sử bền vững: một tác vụ cron đang hoạt động vẫn tiếp tục hoạt động khi thời gian chạy cron còn theo dõi tác vụ đó là đang chạy, ngay cả khi một hàng phiên con cũ vẫn tồn tại. Khi thời gian chạy không còn sở hữu tác vụ và khoảng thời gian chờ 5 phút kết thúc, các bước kiểm tra bảo trì sẽ xem xét nhật ký chạy được lưu bền vững và trạng thái tác vụ cho lần chạy `cron:<jobId>:<startedAt>` tương ứng. Kết quả cuối cùng tại đó sẽ hoàn tất sổ cái tác vụ; nếu không, cơ chế bảo trì do Gateway sở hữu có thể đánh dấu tác vụ là `lost`. Hoạt động kiểm tra CLI ngoại tuyến có thể khôi phục từ lịch sử bền vững, nhưng tập hợp tác vụ đang hoạt động trống trong chính tiến trình của nó không chứng minh được rằng một lần chạy do Gateway sở hữu đã biến mất.
   </Accordion>
 </AccordionGroup>
 
-### Payload lệnh
+## Các loại lịch
 
-Dùng payload lệnh cho các script xác định cần chạy bên trong bộ lập lịch Gateway mà không bắt đầu một lượt agent cô lập được model hậu thuẫn. Job lệnh thực thi trên host Gateway, thu stdout/stderr, ghi lại lần chạy trong lịch sử cron và tái sử dụng cùng các chế độ phân phối `announce`, `webhook` và `none` như job cô lập.
+| Loại      | Cờ CLI    | Mô tả                                                                                              |
+| --------- | ----------- | -------------------------------------------------------------------------------------------------------- |
+| `at`      | `--at`      | Dấu thời gian một lần (ISO 8601 hoặc tương đối như `20m`)                                                     |
+| `every`   | `--every`   | Khoảng thời gian cố định (`10m`, `1h`, `1d`)                                                                       |
+| `cron`    | `--cron`    | Biểu thức cron 5 trường hoặc 6 trường với `--tz` tùy chọn                                                  |
+| `on-exit` | `--on-exit` | Kích hoạt một lần khi lệnh được theo dõi thoát (trình kích hoạt sự kiện; vẫn tồn tại sau khi tháo dỡ lượt; `--on-exit-cwd` tùy chọn) |
+
+Các dấu thời gian không có múi giờ được coi là UTC. Thêm `--tz America/New_York` để diễn giải một thời gian ngày tháng `--at` không có độ lệch, hoặc để đánh giá một biểu thức cron, trong múi giờ IANA đó. Các biểu thức cron không có `--tz` sử dụng múi giờ của máy chủ Gateway. `--tz` không hợp lệ khi dùng với `--every` hoặc `--on-exit`.
+
+Các biểu thức lặp lại vào đầu giờ (phút `0` với trường giờ là ký tự đại diện) được tự động giãn cách tối đa 5 phút để giảm đột biến tải. Dùng `--exact` để buộc thời gian chính xác hoặc `--stagger 30s` để chỉ định rõ một khoảng thời gian (chỉ dành cho lịch cron).
+
+### Ngày trong tháng và ngày trong tuần sử dụng logic OR
+
+Các biểu thức cron được phân tích bởi [croner](https://github.com/Hexagon/croner). Khi cả trường ngày trong tháng và ngày trong tuần đều không phải ký tự đại diện, croner khớp khi **một trong hai** trường khớp, không phải cả hai. Đây là hành vi cron Vixie tiêu chuẩn.
+
+```bash
+# Dự định: "9 giờ sáng ngày 15, chỉ khi đó là thứ Hai"
+# Thực tế: "9 giờ sáng vào mọi ngày 15 VÀ 9 giờ sáng vào mọi thứ Hai"
+0 9 15 * 1
+```
+
+Lịch này kích hoạt khoảng 5-6 lần mỗi tháng thay vì 0-1 lần mỗi tháng. Để yêu cầu cả hai điều kiện, hãy dùng bộ sửa đổi ngày trong tuần `+` của croner (`0 9 15 * +1`), hoặc lên lịch theo một trường và kiểm tra trường còn lại trong lời nhắc hoặc lệnh của tác vụ.
+
+## Trình kích hoạt sự kiện (bộ theo dõi điều kiện)
+
+Trình kích hoạt sự kiện thêm một tập lệnh điều kiện không giao diện vào lịch `every` hoặc `cron`. Cron đánh giá tập lệnh khi tác vụ đến hạn và chỉ chạy nội dung thông thường khi tập lệnh trả về `fire: true`:
+
+```json5
+{
+  schedule: { kind: "every", everyMs: 30000 },
+  trigger: {
+    // Chỉ kích hoạt khi trạng thái quan sát được khác với lần đánh giá trước.
+    script: "const res = await tools.call('exec', { command: 'gh pr checks 123 --json state -q \\'.[].state\\' | sort -u' }); const status = String(res?.result?.details?.aggregated ?? '').trim(); json({ fire: status !== trigger.state?.status, message: `CI của PR 123: ${trigger.state?.status ?? 'không xác định'} -> ${status}`, state: { status } });",
+    once: false,
+  },
+  payload: { kind: "agentTurn", message: "Điều tra thay đổi trạng thái CI." },
+}
+```
+
+Tập lệnh phải trả về `{ fire, message?, state? }`. Trạng thái JSON trước đó có sẵn dưới dạng `trigger.state` được đóng băng sâu; trả về một giá trị `state` mới để lưu bền vững trạng thái đó. Trạng thái bị giới hạn ở 16 KB. Khi kết quả kích hoạt bao gồm `message`, cron sẽ nối nó vào văn bản sự kiện hệ thống hoặc thông điệp lượt tác nhân trước khi thực thi. `once: true` vô hiệu hóa tác vụ sau khi nội dung được kích hoạt thành công lần đầu.
+
+`fire: false` lưu bền vững trạng thái đánh giá và các bộ đếm, sau đó lên lịch lại mà không tạo lịch sử chạy. Nếu lần chạy nội dung được kích hoạt thất bại, `state` trả về sẽ **không** được lưu bền vững — lần đánh giá tiếp theo nhìn thấy trạng thái trước đó và có thể kích hoạt lại, vì vậy hãy viết tập lệnh dưới dạng phép kiểm tra chỉ đọc và đặt các hành động trong nội dung. Lịch trình kích hoạt có khoảng thời gian tối thiểu có thể cấu hình (mặc định là 30 giây). Mỗi lần đánh giá có ngân sách thời gian thực tế 30 giây và tối đa 5 lệnh gọi công cụ.
+
+<Warning>
+Việc bật `cron.triggers.enabled` cho phép các tập lệnh do tác nhân tạo chạy không giao diện với **toàn bộ chính sách công cụ của tác nhân sở hữu, bao gồm `exec`**. Hãy coi đây là hoạt động thực thi mã không có người giám sát với các quyền của tác nhân đó; không bật trừ khi mọi tác nhân được phép tạo tác vụ cron đều đáng tin cậy tương ứng.
+</Warning>
+
+Tạo một bộ theo dõi từ tệp tập lệnh cục bộ (`-` đọc tập lệnh từ stdin):
+
+```bash
+openclaw cron add \
+  --name "Bộ theo dõi CI của PR" \
+  --every 30s \
+  --trigger-script ./watch-pr-ci.js \
+  --message "Phản hồi thay đổi trạng thái CI" \
+  --session isolated
+```
+
+## Nội dung
+
+Mỗi tác vụ chứa chính xác một loại nội dung, được chọn bằng cờ:
+
+| Nội dung       | Cờ                                           | Cách chạy                                                    |
+| ------------- | ---------------------------------------------- | ------------------------------------------------------- |
+| Sự kiện hệ thống  | `--system-event <text>`                        | Được đưa vào hàng đợi của phiên chính, bản thân nó không gọi mô hình |
+| Thông điệp tác nhân | `--message <text>`                             | Một lượt tác nhân được mô hình hỗ trợ                               |
+| Lệnh       | `--command <shell>` hoặc `--command-argv <json>` | Một shell/tiến trình trên máy chủ Gateway, không gọi mô hình      |
+
+### Tùy chọn lượt tác nhân
+
+<ParamField path="--message" type="string" required>
+  Văn bản lời nhắc (bắt buộc đối với tác vụ phiên cô lập/hiện tại/tùy chỉnh).
+</ParamField>
+<ParamField path="--model" type="string">
+  Ghi đè mô hình; phải phân giải thành một mô hình được phép, nếu không lượt chạy sẽ thất bại với lỗi xác thực.
+</ParamField>
+<ParamField path="--fallbacks" type="string">
+  Danh sách mô hình dự phòng theo từng tác vụ, ví dụ `--fallbacks openai/gpt-5.6-sol,openrouter/meta-llama/llama-3.3-70b-instruct:free`. Truyền `--fallbacks ""` để thực hiện lượt chạy nghiêm ngặt không có mô hình dự phòng.
+</ParamField>
+<ParamField path="--clear-fallbacks" type="boolean">
+  Khi `cron edit`, xóa ghi đè dự phòng theo từng tác vụ để tác vụ tuân theo thứ tự ưu tiên dự phòng đã cấu hình. Không thể kết hợp với `--fallbacks`.
+</ParamField>
+<ParamField path="--clear-model" type="boolean">
+  Khi `cron edit`, xóa ghi đè mô hình theo từng tác vụ để tác vụ tuân theo thứ tự ưu tiên mô hình cron thông thường (ghi đè phiên cron đã lưu, nếu không thì mô hình của agent/mặc định). Không thể kết hợp với `--model`.
+</ParamField>
+<ParamField path="--thinking" type="string">
+  Ghi đè mức độ suy luận (`off|minimal|low|medium|high|xhigh|adaptive|max|ultra`). Các mức khả dụng vẫn phụ thuộc vào mô hình và môi trường chạy agent đã chọn.
+</ParamField>
+<ParamField path="--clear-thinking" type="boolean">
+  Khi `cron edit`, xóa ghi đè mức độ suy luận theo từng tác vụ. Không thể kết hợp với `--thinking`.
+</ParamField>
+<ParamField path="--light-context" type="boolean">
+  Bỏ qua việc chèn tệp khởi tạo không gian làm việc.
+</ParamField>
+<ParamField path="--tools" type="string">
+  Giới hạn các công cụ mà tác vụ có thể sử dụng, ví dụ `--tools exec,read`.
+</ParamField>
+
+`--model` đặt mô hình chính của tác vụ; tùy chọn này không thay thế ghi đè `/model` của phiên, vì vậy các chuỗi dự phòng đã cấu hình vẫn được áp dụng trên đó. Mô hình không thể phân giải hoặc không được phép sẽ khiến lượt chạy thất bại với lỗi xác thực rõ ràng thay vì âm thầm chuyển về mô hình mặc định. Nếu một tác vụ có `--model` nhưng không có danh sách dự phòng rõ ràng hoặc đã cấu hình, OpenClaw sẽ truyền một ghi đè dự phòng rỗng thay vì âm thầm thêm mô hình chính của agent làm đích thử lại ẩn.
+
+Thứ tự ưu tiên chọn mô hình cho tác vụ cô lập, từ cao xuống thấp:
+
+1. Tải trọng theo từng tác vụ `model` (cấu hình rõ ràng; mô hình không được phép sẽ khiến lượt chạy thất bại)
+2. Ghi đè mô hình của hook Gmail (chỉ khi lượt chạy bắt nguồn từ Gmail và ghi đè đó được phép)
+3. Ghi đè mô hình phiên cron đã lưu do người dùng chọn
+4. Lựa chọn mô hình của agent/mặc định
+
+Chế độ nhanh tuân theo lựa chọn trực tiếp đã phân giải. Nếu cấu hình mô hình đã chọn có `params.fastMode`, cron cô lập sẽ mặc định sử dụng cấu hình đó; ghi đè `fastMode` của phiên đã lưu (sau đó là `fastModeDefault` của agent) vẫn được ưu tiên hơn cấu hình mô hình theo cả hai hướng. Chế độ tự động sử dụng ngưỡng `params.fastAutoOnSeconds` của mô hình, mặc định là 60 giây.
+
+Nếu một lượt chạy gặp thao tác chuyển giao đổi mô hình trực tiếp, cron sẽ thử lại với nhà cung cấp/mô hình đã chuyển và duy trì lựa chọn đó (cùng mọi hồ sơ xác thực mới) cho lượt chạy đang hoạt động. Số lần thử lại có giới hạn: sau lần thử ban đầu cộng thêm 2 lần thử lại do chuyển đổi, cron sẽ hủy thay vì lặp vô hạn.
+
+Trước khi một lượt chạy cô lập bắt đầu, OpenClaw kiểm tra các điểm cuối cục bộ có thể truy cập đối với các nhà cung cấp `api: "ollama"` và `api: "openai-completions"` đã cấu hình có `baseUrl` là loopback, mạng riêng hoặc `.local`. Bước kiểm tra trước này duyệt chuỗi dự phòng đã cấu hình của tác vụ và chỉ đánh dấu lượt chạy là `skipped` sau khi mọi ứng viên đều không thể truy cập; `--fallbacks ""` giữ cho quá trình duyệt này chỉ giới hạn nghiêm ngặt ở mô hình chính. Điểm cuối không hoạt động sẽ ghi nhận lượt chạy là `skipped` với lỗi rõ ràng thay vì bắt đầu lệnh gọi mô hình. Kết quả được lưu vào bộ nhớ đệm trong 5 phút cho mỗi điểm cuối (không phải mỗi tác vụ hoặc mô hình), vì vậy nhiều tác vụ đến hạn cùng dùng chung một máy chủ Ollama/vLLM/SGLang/LM Studio cục bộ không hoạt động chỉ tốn một lần thăm dò thay vì gây ra một cơn bão yêu cầu. Các lượt chạy bị bỏ qua ở bước kiểm tra trước không làm tăng thời gian chờ lùi do lỗi thực thi; đặt `failureAlert.includeSkipped` để bật cảnh báo lặp lại khi bỏ qua.
+
+### Tải trọng lệnh
+
+Tải trọng lệnh chạy các tập lệnh tất định bên trong bộ lập lịch Gateway mà không bắt đầu lượt chạy dựa trên mô hình. Chúng thực thi trên máy chủ Gateway, ghi lại stdout/stderr, ghi nhận lượt chạy trong lịch sử cron và sử dụng lại các chế độ phân phối `announce`, `webhook` và `none` giống như tác vụ lượt chạy agent.
 
 <Note>
-Command cron là một bề mặt tự động hóa Gateway dành cho operator-admin, không phải một lệnh gọi
-`tools.exec` của agent. Tạo, cập nhật, xóa hoặc chạy thủ công các cron job
-yêu cầu `operator.admin`; các lần chạy lệnh theo lịch sau đó thực thi bên trong
-tiến trình Gateway dưới dạng tự động hóa do admin đó tạo. Chính sách exec của agent như
-`tools.exec.mode`, prompt phê duyệt và allowlist công cụ theo từng agent điều chỉnh
-các công cụ exec hiển thị với model, không phải payload command cron.
+Cron lệnh là một bề mặt tự động hóa Gateway dành cho quản trị viên vận hành, không phải lệnh gọi `tools.exec` của agent. Việc tạo, cập nhật, xóa hoặc chạy thủ công tác vụ cron yêu cầu `operator.admin`; các lượt chạy lệnh theo lịch sau đó thực thi bên trong tiến trình Gateway dưới dạng tác vụ tự động hóa do quản trị viên tạo. Chính sách thực thi của agent (`tools.exec.mode`, lời nhắc phê duyệt, danh sách công cụ được phép theo từng agent) chi phối các công cụ thực thi mà mô hình có thể thấy, không chi phối tải trọng cron lệnh.
 </Note>
 
 ```bash
@@ -153,118 +205,95 @@ openclaw cron create "*/15 * * * *" \
   --to "-1001234567890"
 ```
 
-`--command <shell>` lưu `argv: ["sh", "-lc", <shell>]`. Dùng `--command-argv '["node","scripts/report.mjs"]'` khi bạn muốn thực thi argv chính xác mà không phân tích shell. Các trường tùy chọn `--command-env KEY=VALUE`, `--command-input`, `--timeout-seconds`, `--no-output-timeout-seconds` và `--output-max-bytes` kiểm soát môi trường tiến trình, stdin và giới hạn đầu ra.
+`--command <shell>` lưu trữ `argv: ["sh", "-lc", <shell>]`. Sử dụng `--command-argv '["node","scripts/report.mjs"]'` để thực thi argv chính xác mà không phân tích cú pháp shell. Các tùy chọn `--command-env KEY=VALUE` (có thể lặp lại), `--command-input`, `--timeout-seconds` (mặc định 10 phút), `--no-output-timeout-seconds` và `--output-max-bytes` kiểm soát môi trường tiến trình, stdin và giới hạn đầu ra.
 
-Nếu stdout không rỗng, văn bản đó là kết quả được gửi. Nếu stdout rỗng và stderr không rỗng, stderr được gửi. Nếu cả hai luồng đều có nội dung, cron gửi một khối `stdout:` / `stderr:` nhỏ. Mã thoát bằng không ghi nhận lượt chạy là `ok`; mã thoát khác không, tín hiệu, hết thời gian chờ, hoặc hết thời gian chờ không có đầu ra ghi nhận `error` và có thể kích hoạt cảnh báo lỗi. Lệnh chỉ in `NO_REPLY` dùng cơ chế chặn token im lặng bình thường của cron và không đăng gì trở lại cuộc trò chuyện.
+Văn bản được phân phối được lấy từ đầu ra tiến trình: stdout không rỗng được ưu tiên; nếu stdout rỗng và stderr không rỗng, stderr sẽ được phân phối; nếu cả hai đều có nội dung, cron gửi một khối `stdout:` / `stderr:` nhỏ. Mã thoát `0` ghi nhận lượt chạy là `ok`; mã thoát khác 0, tín hiệu, hết thời gian chờ hoặc hết thời gian chờ do không có đầu ra sẽ ghi nhận `error` và có thể kích hoạt cảnh báo lỗi. Một lệnh chỉ in `NO_REPLY` sử dụng cơ chế chặn token im lặng thông thường của cron và không đăng nội dung nào trở lại cuộc trò chuyện.
 
-### Tùy chọn payload cho tác vụ cô lập
+## Kiểu thực thi
 
-<ParamField path="--message" type="string" required>
-  Văn bản prompt (bắt buộc cho chế độ cô lập).
-</ParamField>
-<ParamField path="--model" type="string">
-  Ghi đè mô hình; dùng mô hình được phép đã chọn cho tác vụ.
-</ParamField>
-<ParamField path="--fallbacks" type="string">
-  Danh sách mô hình dự phòng theo từng tác vụ, ví dụ `--fallbacks openrouter/gpt-4.1-mini,openai/gpt-5`. Truyền `--fallbacks ""` để chạy nghiêm ngặt không có dự phòng.
-</ParamField>
-<ParamField path="--clear-fallbacks" type="boolean">
-  Trên `cron edit`, xóa ghi đè dự phòng theo tác vụ để tác vụ tuân theo thứ tự ưu tiên dự phòng đã cấu hình. Không thể kết hợp với `--fallbacks`.
-</ParamField>
-<ParamField path="--clear-model" type="boolean">
-  Trên `cron edit`, xóa ghi đè mô hình theo tác vụ để tác vụ tuân theo thứ tự ưu tiên chọn mô hình cron bình thường (ghi đè phiên cron đã lưu nếu có, nếu không thì mô hình agent/mặc định). Không thể kết hợp với `--model`.
-</ParamField>
-<ParamField path="--thinking" type="string">
-  Ghi đè mức suy nghĩ.
-</ParamField>
-<ParamField path="--clear-thinking" type="boolean">
-  Trên `cron edit`, xóa ghi đè suy nghĩ theo tác vụ để tác vụ tuân theo thứ tự ưu tiên suy nghĩ cron bình thường. Không thể kết hợp với `--thinking`.
-</ParamField>
-<ParamField path="--light-context" type="boolean">
-  Bỏ qua việc chèn tệp bootstrap workspace.
-</ParamField>
-<ParamField path="--tools" type="string">
-  Giới hạn các công cụ mà tác vụ có thể dùng, ví dụ `--tools exec,read`.
-</ParamField>
+| Kiểu            | Giá trị `--session` | Chạy trong                | Phù hợp nhất cho                 |
+| --------------- | ------------------- | ------------------------ | ------------------------------- |
+| Phiên chính     | `main`              | Làn đánh thức cron chuyên dụng | Lời nhắc, sự kiện hệ thống      |
+| Cô lập          | `isolated`          | `cron:<jobId>` chuyên dụng | Báo cáo, tác vụ nền             |
+| Phiên hiện tại  | `current`           | Được liên kết khi tạo    | Công việc định kỳ theo ngữ cảnh |
+| Phiên tùy chỉnh | `session:custom-id` | Phiên có tên được duy trì | Quy trình công việc dựa trên lịch sử |
 
-`--model` dùng mô hình được phép đã chọn làm mô hình chính của tác vụ đó. Nó không giống ghi đè `/model` của phiên trò chuyện: các chuỗi dự phòng đã cấu hình vẫn được áp dụng khi mô hình chính của tác vụ thất bại. Nếu mô hình được yêu cầu không được phép hoặc không thể phân giải, cron làm lượt chạy thất bại với lỗi xác thực rõ ràng thay vì âm thầm quay về lựa chọn mô hình agent/mặc định của tác vụ.
+<AccordionGroup>
+  <Accordion title="Phiên chính so với cô lập và tùy chỉnh">
+    Các tác vụ **phiên chính** đưa một sự kiện hệ thống vào làn chạy do cron sở hữu và tùy chọn đánh thức Heartbeat (`--wake now` hoặc `--wake next-heartbeat`). Chúng có thể sử dụng ngữ cảnh phân phối gần nhất của phiên chính đích để trả lời, nhưng không thêm các lượt cron thông thường vào làn trò chuyện của con người và không kéo dài độ mới cho việc đặt lại hằng ngày/khi không hoạt động của phiên đích. Các tác vụ **cô lập** chạy một lượt agent chuyên dụng với phiên mới. **Phiên tùy chỉnh** (`session:xxx`) duy trì ngữ cảnh qua các lượt chạy, cho phép các quy trình công việc như họp cập nhật hằng ngày dựa trên những bản tóm tắt trước đó.
 
-Tác vụ Cron cũng có thể mang `fallbacks` ở cấp payload. Khi có, danh sách đó thay thế chuỗi dự phòng đã cấu hình cho tác vụ. Dùng `fallbacks: []` trong payload/API của tác vụ khi bạn muốn một lượt chạy cron nghiêm ngặt chỉ thử mô hình đã chọn. Nếu tác vụ có `--model` nhưng không có dự phòng trong payload lẫn cấu hình, OpenClaw truyền một ghi đè dự phòng rỗng rõ ràng để mô hình chính của agent không được thêm vào như một mục tiêu thử lại ẩn.
+    Các sự kiện cron của phiên chính là lời nhắc sự kiện hệ thống độc lập. Chúng không tự động bao gồm chỉ dẫn "Read HEARTBEAT.md" của lời nhắc Heartbeat mặc định; hãy nêu rõ điều đó trong văn bản sự kiện cron nếu lời nhắc cần tham khảo `HEARTBEAT.md`.
 
-Các bước kiểm tra trước nhà cung cấp cục bộ duyệt qua các dự phòng đã cấu hình trước khi đánh dấu lượt chạy cron là `skipped`; `fallbacks: []` giữ đường kiểm tra trước đó ở chế độ nghiêm ngặt.
+  </Accordion>
+  <Accordion title="Ý nghĩa của 'phiên mới' đối với tác vụ cô lập">
+    Mỗi lượt chạy có một bản ghi hội thoại/ID phiên mới. OpenClaw mang theo các tùy chọn an toàn (cài đặt suy luận/nhanh/chi tiết, nhãn, ghi đè mô hình/xác thực rõ ràng do người dùng chọn), nhưng không kế thừa ngữ cảnh hội thoại xung quanh từ một hàng cron cũ: định tuyến kênh/nhóm, chính sách gửi hoặc xếp hàng, nâng quyền, nguồn gốc hoặc liên kết môi trường chạy ACP. Sử dụng `current` hoặc `session:<id>` khi một tác vụ định kỳ cần chủ ý dựa trên cùng một ngữ cảnh hội thoại.
+  </Accordion>
+  <Accordion title="Phân phối subagent và Discord">
+    Khi các lượt cron cô lập điều phối các subagent, việc phân phối ưu tiên đầu ra cuối cùng của hậu duệ hơn văn bản tạm thời đã cũ của tiến trình cha. Nếu các hậu duệ vẫn đang chạy, OpenClaw sẽ chặn bản cập nhật một phần của tiến trình cha thay vì thông báo nó.
 
-Thứ tự ưu tiên chọn mô hình cho tác vụ cô lập là:
+    Đối với các đích thông báo Discord chỉ có văn bản, OpenClaw gửi văn bản cuối cùng chuẩn của trợ lý một lần thay vì phát lại cả văn bản được truyền phát/trung gian và câu trả lời cuối cùng. Nội dung đa phương tiện và tải trọng Discord có cấu trúc vẫn được phân phối riêng để không làm mất tệp đính kèm và thành phần.
 
-1. Ghi đè mô hình hook Gmail (khi lượt chạy đến từ Gmail và ghi đè đó được phép)
-2. `model` trong payload theo tác vụ
-3. Ghi đè mô hình phiên cron đã lưu do người dùng chọn
-4. Lựa chọn mô hình agent/mặc định
+  </Accordion>
+</AccordionGroup>
 
-Chế độ nhanh cũng đi theo lựa chọn live đã phân giải. Nếu cấu hình mô hình đã chọn có `params.fastMode`, cron cô lập dùng giá trị đó theo mặc định. Ghi đè `fastMode` của phiên đã lưu vẫn thắng cấu hình theo cả hai hướng. Chế độ tự động dùng ngưỡng `params.fastAutoOnSeconds` của mô hình đã chọn khi có, mặc định là 60 giây.
+## Phân phối và đầu ra
 
-Nếu một lượt chạy cô lập gặp bàn giao chuyển mô hình live, cron thử lại với nhà cung cấp/mô hình đã chuyển và lưu lựa chọn live đó cho lượt chạy đang hoạt động trước khi thử lại. Khi chuyển đổi cũng mang theo hồ sơ xác thực mới, cron cũng lưu ghi đè hồ sơ xác thực đó cho lượt chạy đang hoạt động. Số lần thử lại có giới hạn: sau lần thử ban đầu cộng 2 lần thử lại chuyển đổi, cron hủy thay vì lặp vô hạn.
+| Chế độ     | Điều xảy ra                                                         |
+| ---------- | ------------------------------------------------------------------- |
+| `announce` | Phân phối dự phòng văn bản cuối cùng đến đích nếu agent chưa gửi |
+| `webhook`  | POST tải trọng sự kiện hoàn tất đến một URL                      |
+| `none`     | Không phân phối dự phòng từ trình chạy                          |
 
-Trước khi một lượt chạy cron cô lập đi vào trình chạy agent, OpenClaw kiểm tra các endpoint nhà cung cấp cục bộ có thể truy cập cho các nhà cung cấp `api: "ollama"` và `api: "openai-completions"` đã cấu hình có `baseUrl` là local loopback, mạng riêng hoặc `.local`. Nếu endpoint đó ngừng hoạt động, lượt chạy được ghi nhận là `skipped` với lỗi nhà cung cấp/mô hình rõ ràng thay vì bắt đầu một lệnh gọi mô hình. Kết quả endpoint được lưu cache trong 5 phút, nên nhiều tác vụ đến hạn dùng cùng máy chủ Ollama, vLLM, SGLang hoặc LM Studio cục bộ đã chết sẽ chia sẻ một probe nhỏ thay vì tạo một cơn bão yêu cầu. Các lượt chạy bị bỏ qua do kiểm tra trước nhà cung cấp không làm tăng backoff lỗi thực thi; bật `failureAlert.includeSkipped` khi bạn muốn nhận thông báo bỏ qua lặp lại.
+Sử dụng `--announce --channel telegram --to "-1001234567890"` để phân phối qua kênh. Đối với chủ đề diễn đàn Telegram, sử dụng `-1001234567890:topic:123`; OpenClaw cũng chấp nhận dạng viết tắt `-1001234567890:123` do Telegram sở hữu. Các bên gọi RPC/cấu hình trực tiếp có thể truyền `delivery.threadId` dưới dạng chuỗi hoặc số. Đích Slack/Discord/Mattermost sử dụng tiền tố rõ ràng (`channel:<id>`, `user:<id>`). ID phòng Matrix phân biệt chữ hoa chữ thường; sử dụng ID phòng chính xác hoặc dạng `room:!room:server` từ Matrix.
 
-## Gửi và đầu ra
+Khi phân phối thông báo sử dụng `channel: "last"` hoặc bỏ qua `channel`, một đích có tiền tố nhà cung cấp như `telegram:123` có thể chọn kênh trước khi cron chuyển sang lịch sử phiên hoặc một kênh duy nhất đã cấu hình. Chỉ các tiền tố do Plugin đã tải công bố mới là bộ chọn nhà cung cấp. Nếu `delivery.channel` được chỉ định rõ ràng, tiền tố đích phải nêu cùng một nhà cung cấp; `channel: "whatsapp"` với `to: "telegram:123"` sẽ bị từ chối thay vì cho phép WhatsApp diễn giải ID Telegram thành số điện thoại. Tiền tố loại đích và dịch vụ (`channel:<id>`, `user:<id>`, `imessage:<handle>`, `sms:<number>`) vẫn là cú pháp đích do kênh sở hữu, không phải bộ chọn nhà cung cấp.
 
-| Chế độ     | Điều xảy ra                                                        |
-| ---------- | ------------------------------------------------------------------ |
-| `announce` | Gửi văn bản cuối cùng dự phòng tới đích nếu agent chưa gửi         |
-| `webhook`  | POST payload sự kiện hoàn tất tới một URL                          |
-| `none`     | Không gửi dự phòng từ trình chạy                                   |
+Đối với tác vụ cô lập, việc phân phối trò chuyện được dùng chung: nếu có tuyến trò chuyện, agent có thể sử dụng công cụ `message` ngay cả với `--no-deliver`. Nếu agent gửi đến đích đã cấu hình/hiện tại, OpenClaw sẽ bỏ qua thông báo dự phòng. Nếu không, `announce`, `webhook` và `none` chỉ kiểm soát cách trình chạy xử lý câu trả lời cuối cùng sau lượt agent.
 
-Dùng `--announce --channel telegram --to "-1001234567890"` để gửi tới kênh. Với chủ đề diễn đàn Telegram, dùng `-1001234567890:topic:123`; OpenClaw cũng chấp nhận dạng viết tắt thuộc Telegram là `-1001234567890:123`. Các bên gọi RPC/cấu hình trực tiếp có thể truyền `delivery.threadId` dưới dạng chuỗi hoặc số. Đích Slack/Discord/Mattermost nên dùng tiền tố rõ ràng (`channel:<id>`, `user:<id>`). ID phòng Matrix phân biệt chữ hoa chữ thường; dùng đúng ID phòng hoặc dạng `room:!room:server` từ Matrix.
+Khi một agent tạo lời nhắc cô lập từ cuộc trò chuyện đang hoạt động, OpenClaw lưu đích phân phối trực tiếp đã bảo toàn cho tuyến thông báo dự phòng. Khóa phiên nội bộ có thể viết thường; đích phân phối của nhà cung cấp không được tái tạo từ các khóa đó khi có ngữ cảnh trò chuyện hiện tại.
 
-Khi gửi announce dùng `channel: "last"` hoặc bỏ qua `channel`, một đích có tiền tố nhà cung cấp như `telegram:123` có thể chọn kênh trước khi cron quay về lịch sử phiên hoặc một kênh đã cấu hình duy nhất. Chỉ các tiền tố được Plugin đã tải quảng bá mới là bộ chọn nhà cung cấp. Nếu `delivery.channel` được khai báo rõ, tiền tố đích phải nêu cùng nhà cung cấp; ví dụ, `channel: "whatsapp"` với `to: "telegram:123"` sẽ bị từ chối thay vì để WhatsApp diễn giải ID Telegram là số điện thoại. Các tiền tố loại đích và dịch vụ như `channel:<id>`, `user:<id>`, `imessage:<handle>`, và `sms:<number>` vẫn là cú pháp đích do kênh sở hữu, không phải bộ chọn nhà cung cấp.
+Phân phối thông báo ngầm định sử dụng danh sách kênh được phép đã cấu hình để xác thực và định tuyến lại các đích cũ. Các phê duyệt trong kho ghép cặp DM không phải là người nhận tự động hóa dự phòng; đặt `delivery.to` hoặc cấu hình mục `allowFrom` của kênh khi một tác vụ theo lịch cần chủ động gửi đến DM.
 
-Với tác vụ cô lập, việc gửi trò chuyện được chia sẻ. Nếu có tuyến trò chuyện khả dụng, agent có thể dùng công cụ `message` ngay cả khi tác vụ dùng `--no-deliver`. Nếu agent gửi tới đích đã cấu hình/hiện tại, OpenClaw bỏ qua announce dự phòng. Nếu không, `announce`, `webhook`, và `none` chỉ kiểm soát việc trình chạy xử lý phản hồi cuối cùng sau lượt agent.
+### Thông báo lỗi
 
-Khi agent tạo nhắc nhở cô lập từ một cuộc trò chuyện đang hoạt động, OpenClaw lưu đích gửi live được giữ lại cho tuyến announce dự phòng. Khóa phiên nội bộ có thể là chữ thường; đích gửi của nhà cung cấp không được tái tạo từ các khóa đó khi có ngữ cảnh trò chuyện hiện tại.
+Thông báo lỗi tuân theo một đường dẫn đích riêng:
 
-Gửi announce ngầm định dùng allowlist kênh đã cấu hình để xác thực và định tuyến lại các đích cũ. Phê duyệt từ kho ghép cặp DM không phải là người nhận tự động hóa dự phòng; đặt `delivery.to` hoặc cấu hình mục `allowFrom` của kênh khi một tác vụ đã lên lịch cần chủ động gửi tới DM.
+- `cron.failureDestination` đặt giá trị mặc định toàn cục cho thông báo lỗi.
+- `job.delivery.failureDestination` ghi đè giá trị đó theo từng tác vụ.
+- Nếu không giá trị nào được đặt và tác vụ đã gửi qua `announce`, thông báo lỗi sẽ dùng mục tiêu thông báo chính đó làm phương án dự phòng.
+- `delivery.failureDestination` chỉ được hỗ trợ trên các tác vụ `sessionTarget="isolated"`, trừ khi chế độ gửi chính là `webhook`.
+- `failureAlert.includeSkipped: true` cho phép chính sách cảnh báo cron của tác vụ hoặc toàn cục gửi cảnh báo lặp lại về các lượt chạy bị bỏ qua. Các lượt chạy bị bỏ qua duy trì bộ đếm số lần bỏ qua liên tiếp riêng, nên không ảnh hưởng đến cơ chế lùi thời gian khi có lỗi thực thi.
+- `openclaw cron edit` cung cấp khả năng tinh chỉnh cảnh báo theo từng tác vụ: `--failure-alert`/`--no-failure-alert`, `--failure-alert-after <n>`, `--failure-alert-channel`, `--failure-alert-to`, `--failure-alert-cooldown`, `--failure-alert-include-skipped`/`--failure-alert-exclude-skipped`, `--failure-alert-mode` và `--failure-alert-account-id`.
 
-## Ngôn ngữ đầu ra
+### Ngôn ngữ đầu ra
 
-Tác vụ Cron không suy luận ngôn ngữ phản hồi từ kênh, locale, hoặc tin nhắn
-trước đó. Đặt quy tắc ngôn ngữ trong tin nhắn hoặc mẫu đã lên lịch:
+Các tác vụ Cron không suy ra ngôn ngữ trả lời từ kênh, ngôn ngữ bản địa hoặc tin nhắn trước đó. Hãy đưa quy tắc ngôn ngữ vào tin nhắn hoặc mẫu đã lên lịch:
 
 ```bash
 openclaw cron edit <jobId> \
-  --message "Summarize the updates. Respond in Chinese; keep URLs, code, and product names unchanged."
+  --message "Tóm tắt các cập nhật. Trả lời bằng tiếng Trung; giữ nguyên URL, mã và tên sản phẩm."
 ```
 
-Với tệp mẫu, giữ hướng dẫn ngôn ngữ trong prompt đã render và
-xác minh các placeholder như `{{language}}` đã được điền trước khi tác vụ chạy. Nếu
-đầu ra trộn nhiều ngôn ngữ, hãy đặt quy tắc rõ ràng, ví dụ: "Use Chinese
-for narrative text and keep technical terms in English."
-
-Thông báo lỗi đi theo một đường đích riêng:
-
-- `cron.failureDestination` đặt mặc định toàn cục cho thông báo lỗi.
-- `job.delivery.failureDestination` ghi đè giá trị đó theo từng tác vụ.
-- Nếu cả hai đều không được đặt và tác vụ đã gửi qua `announce`, thông báo lỗi giờ sẽ quay về đích announce chính đó.
-- `delivery.failureDestination` chỉ được hỗ trợ trên tác vụ `sessionTarget="isolated"` trừ khi chế độ gửi chính là `webhook`.
-- `failureAlert.includeSkipped: true` đưa một tác vụ hoặc chính sách cảnh báo cron toàn cục vào cảnh báo lượt chạy bị bỏ qua lặp lại. Lượt chạy bị bỏ qua giữ một bộ đếm bỏ qua liên tiếp riêng, nên chúng không ảnh hưởng đến backoff lỗi thực thi.
+Đối với tệp mẫu, hãy giữ chỉ dẫn ngôn ngữ trong lời nhắc đã kết xuất và xác minh rằng các phần giữ chỗ như `{{language}}` đã được điền trước khi tác vụ chạy. Nếu đầu ra trộn lẫn nhiều ngôn ngữ, hãy nêu rõ quy tắc, ví dụ: "Sử dụng tiếng Trung cho văn bản diễn giải và giữ các thuật ngữ kỹ thuật bằng tiếng Anh."
 
 ## Ví dụ CLI
 
 <Tabs>
-  <Tab title="Nhắc nhở một lần">
+  <Tab title="Lời nhắc chạy một lần">
     ```bash
     openclaw cron add \
-      --name "Calendar check" \
+      --name "Kiểm tra lịch" \
       --at "20m" \
       --session main \
-      --system-event "Next heartbeat: check calendar." \
+      --system-event "Heartbeat tiếp theo: kiểm tra lịch." \
       --wake now
     ```
   </Tab>
-  <Tab title="Tác vụ cô lập lặp lại">
+  <Tab title="Tác vụ cô lập định kỳ">
     ```bash
     openclaw cron create "0 7 * * *" \
-      "Summarize overnight updates." \
-      --name "Morning brief" \
+      "Tóm tắt các cập nhật qua đêm." \
+      --name "Bản tin buổi sáng" \
       --tz "America/Los_Angeles" \
       --session isolated \
       --announce \
@@ -272,14 +301,14 @@ Thông báo lỗi đi theo một đường đích riêng:
       --to "channel:C1234567890"
     ```
   </Tab>
-  <Tab title="Ghi đè mô hình và suy nghĩ">
+  <Tab title="Ghi đè mô hình và chế độ suy luận">
     ```bash
     openclaw cron add \
-      --name "Deep analysis" \
+      --name "Phân tích chuyên sâu" \
       --cron "0 6 * * 1" \
       --tz "America/Los_Angeles" \
       --session isolated \
-      --message "Weekly deep analysis of project progress." \
+      --message "Phân tích chuyên sâu hằng tuần về tiến độ dự án." \
       --model "opus" \
       --thinking high \
       --announce
@@ -288,15 +317,15 @@ Thông báo lỗi đi theo một đường đích riêng:
   <Tab title="Đầu ra Webhook">
     ```bash
     openclaw cron create "0 18 * * 1-5" \
-      "Summarize today's deploys as JSON." \
-      --name "Deploy digest" \
+      "Tóm tắt các lần triển khai hôm nay dưới dạng JSON." \
+      --name "Bản tổng hợp triển khai" \
       --webhook "https://example.invalid/openclaw/cron"
     ```
   </Tab>
   <Tab title="Đầu ra lệnh">
     ```bash
     openclaw cron create "*/15 * * * *" \
-      --name "Queue depth probe" \
+      --name "Kiểm tra độ sâu hàng đợi" \
       --command "scripts/check-queue.sh" \
       --command-cwd "/srv/app" \
       --announce \
@@ -306,9 +335,73 @@ Thông báo lỗi đi theo một đường đích riêng:
   </Tab>
 </Tabs>
 
+## Quản lý tác vụ
+
+```bash
+# Liệt kê tất cả tác vụ
+openclaw cron list
+
+# Lấy một tác vụ đã lưu dưới dạng JSON
+openclaw cron get <jobId>
+
+# Hiển thị một tác vụ, bao gồm tuyến gửi đã phân giải
+openclaw cron show <jobId>
+
+# Bật/tắt mà không xóa
+openclaw cron enable <jobId>
+openclaw cron disable <jobId>
+
+# Chỉnh sửa tác vụ
+openclaw cron edit <jobId> --message "Lời nhắc đã cập nhật" --model "opus"
+
+# Buộc chạy tác vụ ngay
+openclaw cron run <jobId>
+
+# Buộc chạy tác vụ ngay và chờ trạng thái kết thúc
+openclaw cron run <jobId> --wait --wait-timeout 10m --poll-interval 2s
+
+# Chỉ chạy nếu đến hạn
+openclaw cron run <jobId> --due
+
+# Xem lịch sử chạy
+openclaw cron runs --id <jobId> --limit 50
+
+# Xem chính xác một lượt chạy
+openclaw cron runs --id <jobId> --run-id <runId>
+
+# Xóa tác vụ
+openclaw cron remove <jobId>
+
+# Chọn tác nhân (thiết lập đa tác nhân)
+openclaw cron create "0 6 * * *" "Kiểm tra hàng đợi vận hành" --name "Rà soát vận hành" --session isolated --agent ops
+openclaw cron edit <jobId> --clear-agent
+```
+
+Việc lưu trữ một phiên (trong Control UI hoặc qua `sessions.patch { archived: true }` từ bên gọi có quyền quản trị vận hành) sẽ vô hiệu hóa mọi tác vụ cron đang bật được liên kết với phiên đó: phiên `cron:<jobId>` cô lập của tác vụ, mục tiêu `session:<key>` hoặc luồng gửi/đánh thức `sessionKey`. Khôi phục phiên không bật lại các tác vụ đó; hãy sử dụng `openclaw cron enable <jobId>`. Các phiên có tác vụ liên kết đang bật sẽ hiển thị huy hiệu đồng hồ trong thanh bên của Control UI.
+
+`openclaw cron run <jobId>` trả về sau khi đưa lượt chạy thủ công vào hàng đợi. Hãy dùng `--wait` cho hook tắt hệ thống, tập lệnh bảo trì hoặc quy trình tự động hóa khác phải chặn cho đến khi lượt chạy trong hàng đợi hoàn tất; lệnh này thăm dò `runId` được trả về (thời gian chờ mặc định `10m`, khoảng thời gian thăm dò `2s`) và thoát với mã `0` khi trạng thái là `ok`, hoặc mã khác 0 khi trạng thái là `error`, `skipped` hay khi hết thời gian chờ.
+
+Công cụ `cron` của tác nhân trả về bản tóm tắt tác vụ ngắn gọn (`id`, `name`, `enabled`, `nextRunAtMs`, `scheduleKind`, `lastRunStatus`) từ `cron(action: "list")`; hãy dùng `cron(action: "get", jobId: "...")` để lấy định nghĩa đầy đủ của một tác vụ. Bên gọi Gateway trực tiếp có thể truyền `compact: true` vào `cron.list`; nếu bỏ qua, phản hồi đầy đủ kèm bản xem trước việc gửi sẽ được giữ nguyên.
+
+`openclaw cron create` là bí danh của `openclaw cron add`. Tác vụ mới có thể sử dụng lịch biểu theo vị trí (`"0 9 * * 1"`, `"every 1h"`, `"20m"` hoặc dấu thời gian ISO), theo sau là lời nhắc tác nhân theo vị trí. Hãy dùng `--webhook <url>` trên `cron add|create` hoặc `cron edit` để POST tải trọng của lượt chạy đã hoàn tất đến một điểm cuối HTTP; gửi qua webhook không thể kết hợp với các cờ gửi qua trò chuyện (`--announce`, `--channel`, `--to`, `--thread-id`, `--account`). Trên `cron edit`, `--clear-channel`, `--clear-to`, `--clear-thread-id` và `--clear-account`, hãy bỏ đặt riêng từng trường định tuyến đó (mỗi trường sẽ bị từ chối nếu đi cùng cờ đặt tương ứng) — khác với `--no-deliver`, vốn chỉ vô hiệu hóa phương án gửi dự phòng của trình chạy.
+
+<Note>
+Lưu ý về ghi đè mô hình:
+
+- `openclaw cron add|edit --model ...` thay đổi mô hình được chọn cho tác vụ.
+- Nếu mô hình được phép, chính xác nhà cung cấp/mô hình đó sẽ được chuyển đến lượt chạy tác nhân cô lập.
+- Nếu mô hình không được phép hoặc không thể phân giải, cron sẽ làm lượt chạy thất bại với lỗi xác thực rõ ràng.
+- Các bản vá tải trọng `cron.update` của API có thể đặt `model: null` để xóa giá trị ghi đè mô hình đã lưu của tác vụ.
+- `openclaw cron edit <job-id> --clear-model` xóa giá trị ghi đè đó khỏi CLI (có cùng tác dụng với bản vá `model: null`) và không thể kết hợp với `--model`.
+- Các chuỗi dự phòng đã cấu hình vẫn được áp dụng vì `--model` của cron là mô hình chính của tác vụ, không phải giá trị ghi đè `/model` của phiên.
+- `openclaw cron add|edit --fallbacks ...` đặt tải trọng `fallbacks`, thay thế các phương án dự phòng đã cấu hình cho tác vụ đó; `--fallbacks ""` vô hiệu hóa phương án dự phòng và buộc lượt chạy tuân thủ nghiêm ngặt. `openclaw cron edit <job-id> --clear-fallbacks` xóa giá trị ghi đè theo từng tác vụ.
+- Một `--model` thuần túy không có danh sách dự phòng rõ ràng hoặc đã cấu hình sẽ không âm thầm chuyển sang mô hình chính của tác nhân như một mục tiêu thử lại bổ sung.
+
+</Note>
+
 ## Webhook
 
-Gateway có thể mở endpoint Webhook HTTP cho trình kích hoạt bên ngoài. Bật trong cấu hình:
+Gateway có thể cung cấp các điểm cuối webhook HTTP cho tác nhân kích hoạt bên ngoài. Bật trong cấu hình:
 
 ```json5
 {
@@ -322,12 +415,12 @@ Gateway có thể mở endpoint Webhook HTTP cho trình kích hoạt bên ngoài
 
 ### Xác thực
 
-Mỗi yêu cầu phải bao gồm token hook qua header:
+Mọi yêu cầu phải bao gồm token của hook qua tiêu đề:
 
 - `Authorization: Bearer <token>` (khuyến nghị)
 - `x-openclaw-token: <token>`
 
-Token trong chuỗi truy vấn bị từ chối.
+Token trong chuỗi truy vấn sẽ bị từ chối.
 
 <AccordionGroup>
   <Accordion title="POST /hooks/wake">
@@ -337,7 +430,7 @@ Token trong chuỗi truy vấn bị từ chối.
     curl -X POST http://127.0.0.1:18789/hooks/wake \
       -H 'Authorization: Bearer SECRET' \
       -H 'Content-Type: application/json' \
-      -d '{"text":"New email received","mode":"now"}'
+      -d '{"text":"Đã nhận email mới","mode":"now"}'
     ```
 
     <ParamField path="text" type="string" required>
@@ -349,60 +442,66 @@ Token trong chuỗi truy vấn bị từ chối.
 
   </Accordion>
   <Accordion title="POST /hooks/agent">
-    Chạy một lượt agent cô lập:
+    Chạy một lượt tác nhân cô lập:
 
     ```bash
     curl -X POST http://127.0.0.1:18789/hooks/agent \
       -H 'Authorization: Bearer SECRET' \
       -H 'Content-Type: application/json' \
-      -d '{"message":"Summarize inbox","name":"Email","model":"openai/gpt-5.4"}'
+      -d '{"message":"Tóm tắt hộp thư đến","name":"Email","model":"openai/gpt-5.6-sol"}'
     ```
 
-    Trường: `message` (bắt buộc), `name`, `agentId`, `wakeMode`, `deliver`, `channel`, `to`, `model`, `fallbacks`, `thinking`, `timeoutSeconds`.
+    Các trường: `message` (bắt buộc), `name`, `agentId`, `sessionKey` (yêu cầu `hooks.allowRequestSessionKey=true`), `idempotencyKey`, `wakeMode`, `deliver`, `channel`, `to`, `model`, `thinking`, `timeoutSeconds`.
 
   </Accordion>
-  <Accordion title="Hook đã ánh xạ (POST /hooks/<name>)">
-    Tên hook tùy chỉnh được phân giải qua `hooks.mappings` trong cấu hình. Ánh xạ có thể chuyển đổi payload tùy ý thành hành động `wake` hoặc `agent` bằng mẫu hoặc biến đổi mã.
+  <Accordion title="Hook được ánh xạ (POST /hooks/<name>)">
+    Tên hook tùy chỉnh được phân giải qua `hooks.mappings` trong cấu hình. Các ánh xạ có thể chuyển đổi tải trọng tùy ý thành hành động `wake` hoặc `agent` bằng mẫu hoặc phép chuyển đổi mã.
   </Accordion>
 </AccordionGroup>
 
 <Warning>
-Giữ các endpoint hook phía sau loopback, tailnet hoặc reverse proxy tin cậy.
+Giữ các điểm cuối hook phía sau giao diện loopback, tailnet hoặc proxy ngược đáng tin cậy.
 
-- Dùng token hook chuyên dụng; không dùng lại token xác thực Gateway.
-- Giữ `hooks.path` trên một đường dẫn con chuyên dụng; `/` bị từ chối.
-- Đặt `hooks.allowedAgentIds` để giới hạn effective agent mà hook có thể nhắm tới, bao gồm agent mặc định khi bỏ qua `agentId`.
-- Giữ `hooks.allowRequestSessionKey=false` trừ khi bạn cần phiên do caller chọn.
-- Nếu bật `hooks.allowRequestSessionKey`, hãy đặt thêm `hooks.allowedSessionKeyPrefixes` để ràng buộc dạng session key được phép.
-- Payload hook mặc định được bọc bằng các ranh giới an toàn.
+- Sử dụng token riêng cho hook; không tái sử dụng token xác thực của gateway.
+- Giữ `hooks.path` trên một đường dẫn con riêng; `/` sẽ bị từ chối.
+- Đặt `hooks.allowedAgentIds` để giới hạn tác nhân hiệu lực mà hook có thể nhắm đến, bao gồm cả tác nhân mặc định khi `agentId` bị bỏ qua.
+- Giữ `hooks.allowRequestSessionKey=false` trừ khi cần các phiên do bên gọi lựa chọn.
+- Nếu bật `hooks.allowRequestSessionKey`, hãy đặt cả `hooks.allowedSessionKeyPrefixes` để giới hạn các dạng khóa phiên được phép.
+- Theo mặc định, tải trọng hook được bao bọc bằng các ranh giới an toàn.
 
 </Warning>
 
 ## Tích hợp Gmail PubSub
 
-Kết nối trigger hộp thư đến Gmail với OpenClaw qua Google PubSub.
+Kết nối tác nhân kích hoạt hộp thư đến Gmail với OpenClaw qua Google PubSub.
 
 <Note>
-**Điều kiện tiên quyết:** CLI `gcloud`, `gog` (gogcli), hook OpenClaw đã bật, Tailscale cho endpoint HTTPS công khai.
+**Điều kiện tiên quyết:** CLI `gcloud`, `gog` (gogcli), hook OpenClaw đã bật, Tailscale cho điểm cuối HTTPS công khai.
 </Note>
 
-### Thiết lập bằng wizard (khuyến nghị)
+### Thiết lập bằng trình hướng dẫn (khuyến nghị)
 
 ```bash
 openclaw webhooks gmail setup --account openclaw@gmail.com
 ```
 
-Lệnh này ghi cấu hình `hooks.gmail`, bật preset Gmail, và dùng Tailscale Funnel cho endpoint push.
+Lệnh này ghi cấu hình `hooks.gmail`, bật cấu hình đặt sẵn của Gmail và mặc định sử dụng Tailscale Funnel cho điểm cuối đẩy (`--tailscale funnel|serve|off`).
+
+<Warning>
+Phiên theo từng tin nhắn của cấu hình đặt sẵn Gmail tách biệt ngữ cảnh hội thoại; phiên này không hạn chế công cụ hoặc không gian làm việc của tác nhân đích. Nếu không có ánh xạ tùy chỉnh đặt `agentId`, hook Gmail sẽ chạy dưới tác nhân mặc định.
+
+Đối với hộp thư đến không đáng tin cậy, hãy định tuyến hook đến một tác nhân đọc chuyên dụng, chỉ cấp cho tác nhân đó quyền truy cập chỉ đọc hoặc không cấp quyền truy cập không gian làm việc, đồng thời từ chối quyền ghi hệ thống tệp, shell, trình duyệt và các công cụ không cần thiết khác. Nếu tác nhân cần thông báo cho tác nhân chính, chỉ cho phép hoạt động bàn giao giữa các tác nhân cần thiết. Xem [Chèn lời nhắc](/vi/gateway/security#prompt-injection), [Hộp cát và công cụ đa tác nhân](/vi/tools/multi-agent-sandbox-tools) và [`tools.agentToAgent`](/vi/gateway/config-tools#toolsagenttoagent).
+</Warning>
 
 ### Tự động khởi động Gateway
 
-Khi `hooks.enabled=true` và `hooks.gmail.account` đã được đặt, Gateway khởi động `gog gmail watch serve` khi boot và tự động gia hạn watch. Đặt `OPENCLAW_SKIP_GMAIL_WATCHER=1` để không dùng.
+Khi `hooks.enabled=true` được bật và `hooks.gmail.account` được đặt, Gateway sẽ khởi động `gog gmail watch serve` khi khởi động và tự động gia hạn hoạt động theo dõi. Đặt `OPENCLAW_SKIP_GMAIL_WATCHER=1` để không sử dụng tính năng này.
 
 ### Thiết lập thủ công một lần
 
 <Steps>
   <Step title="Chọn dự án GCP">
-    Chọn dự án GCP sở hữu OAuth client được `gog` sử dụng:
+    Chọn dự án GCP sở hữu ứng dụng OAuth do `gog` sử dụng:
 
     ```bash
     gcloud auth login
@@ -411,7 +510,7 @@ Khi `hooks.enabled=true` và `hooks.gmail.account` đã được đặt, Gateway
     ```
 
   </Step>
-  <Step title="Tạo topic và cấp quyền truy cập push cho Gmail">
+  <Step title="Tạo chủ đề và cấp quyền truy cập push cho Gmail">
     ```bash
     gcloud pubsub topics create gog-gmail-watch
     gcloud pubsub topics add-iam-policy-binding gog-gmail-watch \
@@ -419,7 +518,7 @@ Khi `hooks.enabled=true` và `hooks.gmail.account` đã được đặt, Gateway
       --role=roles/pubsub.publisher
     ```
   </Step>
-  <Step title="Bắt đầu watch">
+  <Step title="Bắt đầu theo dõi">
     ```bash
     gog gmail watch start \
       --account openclaw@gmail.com \
@@ -429,76 +528,20 @@ Khi `hooks.enabled=true` và `hooks.gmail.account` đã được đặt, Gateway
   </Step>
 </Steps>
 
-### Ghi đè model cho Gmail
+### Ghi đè mô hình Gmail
 
 ```json5
 {
   hooks: {
     gmail: {
-      model: "openrouter/meta-llama/llama-3.3-70b-instruct:free",
-      thinking: "off",
+      model: "openai/gpt-5.6-sol",
+      thinking: "high",
     },
   },
 }
 ```
 
-## Quản lý job
-
-```bash
-# List all jobs
-openclaw cron list
-
-# Get one stored job as JSON
-openclaw cron get <jobId>
-
-# Show one job, including resolved delivery route
-openclaw cron show <jobId>
-
-# Edit a job
-openclaw cron edit <jobId> --message "Updated prompt" --model "opus"
-
-# Force run a job now
-openclaw cron run <jobId>
-
-# Force run a job now and wait for its terminal status
-openclaw cron run <jobId> --wait --wait-timeout 10m --poll-interval 2s
-
-# Run only if due
-openclaw cron run <jobId> --due
-
-# View run history
-openclaw cron runs --id <jobId> --limit 50
-
-# View one exact run
-openclaw cron runs --id <jobId> --run-id <runId>
-
-# Delete a job
-openclaw cron remove <jobId>
-
-# Agent selection (multi-agent setups)
-openclaw cron create "0 6 * * *" "Check ops queue" --name "Ops sweep" --session isolated --agent ops
-openclaw cron edit <jobId> --clear-agent
-```
-
-`openclaw cron run <jobId>` trả về sau khi đưa lượt chạy thủ công vào hàng đợi. Dùng `--wait` cho shutdown hook, script bảo trì, hoặc tự động hóa khác cần chặn cho đến khi lượt chạy trong hàng đợi hoàn tất. Chế độ chờ thăm dò đúng `runId` được trả về; chế độ này thoát `0` với trạng thái `ok` và khác không với `error`, `skipped`, hoặc hết thời gian chờ.
-
-Công cụ `cron` của agent trả về tóm tắt job gọn (`id`, `name`, `enabled`, `nextRunAtMs`, `scheduleKind`, `lastRunStatus`) từ `cron(action: "list")`; dùng `cron(action: "get", jobId: "...")` để lấy một định nghĩa job đầy đủ. Caller Gateway trực tiếp có thể truyền `compact: true` vào `cron.list`; nếu bỏ qua, phản hồi đầy đủ hiện có kèm bản xem trước phân phối sẽ được giữ nguyên.
-
-`openclaw cron create` là alias của `openclaw cron add`, và job mới có thể dùng lịch dạng đối số vị trí (`"0 9 * * 1"`, `"every 1h"`, `"20m"`, hoặc timestamp ISO) theo sau là prompt agent dạng đối số vị trí. Dùng `--webhook <url>` trên `cron add|create` hoặc `cron edit` để POST payload lượt chạy đã hoàn tất tới một endpoint HTTP. Phân phối Webhook không thể kết hợp với các cờ phân phối chat như `--announce`, `--channel`, `--to`, `--thread-id`, hoặc `--account`. Trên `cron edit`, `--clear-channel`, `--clear-to`, `--clear-thread-id`, và `--clear-account` bỏ đặt riêng từng trường định tuyến đó (mỗi cờ bị từ chối khi đi cùng cờ đặt tương ứng), khác với việc `--no-deliver` tắt phân phối dự phòng của runner.
-
-<Note>
-Ghi chú ghi đè model:
-
-- `openclaw cron add|edit --model ...` thay đổi model được chọn của job.
-- Nếu model được phép, đúng provider/model đó sẽ tới lượt chạy agent cô lập.
-- Nếu không được phép hoặc không thể phân giải, cron làm lượt chạy thất bại với lỗi xác thực rõ ràng.
-- Bản vá payload API `cron.update` có thể đặt `model: null` để xóa ghi đè model đã lưu của job.
-- `openclaw cron edit <job-id> --clear-model` xóa ghi đè đó khỏi CLI (cùng hiệu lực với bản vá `model: null`) và không thể kết hợp với `--model`.
-- Các chuỗi fallback đã cấu hình vẫn áp dụng vì `--model` của cron là primary của job, không phải ghi đè `/model` của phiên.
-- `openclaw cron add|edit --fallbacks ...` đặt payload `fallbacks`, thay thế fallback đã cấu hình cho job đó; `--fallbacks ""` tắt fallback và làm lượt chạy nghiêm ngặt. `openclaw cron edit <job-id> --clear-fallbacks` xóa ghi đè theo job.
-- Một `--model` đơn thuần không có danh sách fallback tường minh hoặc đã cấu hình sẽ không rơi tiếp sang primary của agent như một mục tiêu thử lại bổ sung âm thầm.
-
-</Note>
+Đối với hộp thư đến không đáng tin cậy, hãy sử dụng mô hình thế hệ mới nhất, thuộc phân hạng tốt nhất hiện có từ nhà cung cấp của bạn. Giá trị trên chỉ là ví dụ; mô hình phải tồn tại trong danh mục và danh sách cho phép đã cấu hình.
 
 ## Cấu hình
 
@@ -508,39 +551,47 @@ Ghi chú ghi đè model:
     enabled: true,
     store: "~/.openclaw/cron/jobs.json",
     maxConcurrentRuns: 8,
+    triggers: {
+      enabled: false,
+      minIntervalMs: 30000,
+    },
     retry: {
       maxAttempts: 3,
-      backoffMs: [60000, 120000, 300000],
-      retryOn: ["rate_limit", "overloaded", "network", "server_error"],
+      backoffMs: [30000, 60000, 300000],
+      retryOn: ["rate_limit", "overloaded", "network", "timeout", "server_error"],
     },
     webhookToken: "replace-with-dedicated-webhook-token",
     sessionRetention: "24h",
-    runLog: { maxBytes: "2mb", keepLines: 2000 },
   },
 }
 ```
 
-`maxConcurrentRuns` giới hạn cả việc dispatch cron đã lập lịch và thực thi lượt agent cô lập, mặc định là 8. Các lượt agent cron cô lập dùng nội bộ làn thực thi `cron-nested` chuyên dụng của hàng đợi, nên tăng giá trị này cho phép các lượt chạy LLM cron độc lập tiến triển song song thay vì chỉ khởi động wrapper cron bên ngoài của chúng. Làn `nested` không phải cron dùng chung không được mở rộng bởi thiết lập này.
+Các giá trị `retry` ở trên là giá trị mặc định: thử lại tối đa 3 lần với khoảng lùi `30s/60s/5m`, áp dụng cho cả năm loại lỗi tạm thời. `webhookToken` được gửi dưới dạng `Authorization: Bearer <token>` trong các yêu cầu POST Webhook của Cron.
 
-`cron.store` là khóa kho logic và đường dẫn nhập doctor legacy. Chạy `openclaw doctor --fix` để nhập các kho JSON hiện có vào SQLite và lưu trữ chúng; các thay đổi cron trong tương lai nên đi qua CLI hoặc Gateway API.
+`maxConcurrentRuns` giới hạn cả việc điều phối Cron theo lịch và thực thi lượt tác nhân cô lập, với giá trị mặc định là 8. Các lượt tác nhân Cron cô lập sử dụng nội bộ làn thực thi `cron-nested` chuyên dụng của hàng đợi, vì vậy việc tăng giá trị này cho phép các lần chạy LLM Cron độc lập tiến hành song song thay vì chỉ khởi động các trình bao Cron bên ngoài. Thiết lập này không mở rộng làn `nested` dùng chung không thuộc Cron.
 
-Tắt cron: `cron.enabled: false` hoặc `OPENCLAW_SKIP_CRON=1`.
+`cron.store` là khóa kho lưu trữ logic và đường dẫn di chuyển của doctor, không phải tệp JSON đang hoạt động để chỉnh sửa thủ công. Dữ liệu tác vụ nằm trong SQLite; hãy dùng CLI hoặc API Gateway để thay đổi.
+
+Tắt Cron: `cron.enabled: false` hoặc `OPENCLAW_SKIP_CRON=1`.
 
 <AccordionGroup>
   <Accordion title="Hành vi thử lại">
-    **Thử lại một lần**: lỗi tạm thời (rate limit, quá tải, mạng, lỗi server) thử lại tối đa 3 lần với backoff lũy thừa. Lỗi vĩnh viễn tắt ngay lập tức.
+    **Thử lại một lần chạy**: các lỗi tạm thời (giới hạn tốc độ, quá tải, mạng, hết thời gian chờ, lỗi máy chủ) được thử lại tối đa `retry.maxAttempts` lần (mặc định 3) bằng `retry.backoffMs` (mặc định 30s, 60s, 5m). Lỗi vĩnh viễn sẽ vô hiệu hóa tác vụ ngay lập tức.
 
-    **Thử lại định kỳ**: backoff lũy thừa (30 giây đến 60 phút) giữa các lần thử lại. Backoff đặt lại sau lượt chạy thành công tiếp theo.
+    **Thử lại định kỳ**: các lỗi thực thi liên tiếp sẽ lùi theo lịch mở rộng (30s, 60s, 5m, 15m, 60m). Khoảng lùi được đặt lại sau lần chạy thành công tiếp theo.
 
   </Accordion>
   <Accordion title="Bảo trì">
-    `cron.sessionRetention` (mặc định `24h`) dọn các mục phiên chạy cô lập. `cron.runLog.keepLines` giới hạn số hàng lịch sử chạy SQLite được giữ lại trên mỗi job; `maxBytes` được giữ lại để tương thích cấu hình với run log cũ dựa trên tệp.
+    `cron.sessionRetention` (mặc định `24h`, `false` sẽ vô hiệu hóa) dọn bỏ các mục phiên chạy cô lập. Lịch sử chạy giữ lại 2000 hàng trạng thái kết thúc mới nhất cho mỗi tác vụ; các hàng bị thất lạc vẫn giữ khoảng thời gian dọn dẹp 24 giờ.
+  </Accordion>
+  <Accordion title="Di chuyển kho lưu trữ cũ">
+    Khi nâng cấp, hãy chạy `openclaw doctor --fix` để nhập các tệp `~/.openclaw/cron/jobs.json`, `jobs-state.json` và `runs/*.jsonl` cũ vào SQLite rồi đổi tên chúng với hậu tố `.migrated`. Các hàng tác vụ sai định dạng bị bỏ qua khi chạy và được sao chép vào `jobs-quarantine.json` để sửa chữa hoặc xem xét sau.
   </Accordion>
 </AccordionGroup>
 
 ## Khắc phục sự cố
 
-### Thang lệnh
+### Trình tự lệnh
 
 ```bash
 openclaw status
@@ -555,38 +606,38 @@ openclaw doctor
 
 <AccordionGroup>
   <Accordion title="Cron không kích hoạt">
-    - Kiểm tra biến môi trường `cron.enabled` và `OPENCLAW_SKIP_CRON`.
+    - Kiểm tra `cron.enabled` và biến môi trường `OPENCLAW_SKIP_CRON`.
     - Xác nhận Gateway đang chạy liên tục.
-    - Với lịch `cron`, xác minh múi giờ (`--tz`) so với múi giờ của host.
-    - `reason: not-due` trong đầu ra lượt chạy nghĩa là lượt chạy thủ công đã được kiểm tra bằng `openclaw cron run <jobId> --due` và job chưa đến hạn.
+    - Đối với lịch `cron`, hãy xác minh múi giờ (`--tz`) so với múi giờ của máy chủ.
+    - `reason: not-due` trong đầu ra chạy có nghĩa là lần chạy thủ công được kiểm tra bằng `openclaw cron run <jobId> --due` và tác vụ chưa đến hạn.
 
   </Accordion>
-  <Accordion title="Cron đã kích hoạt nhưng không có phân phối">
-    - Chế độ phân phối `none` nghĩa là không mong đợi gửi dự phòng từ runner. Agent vẫn có thể gửi trực tiếp bằng công cụ `message` khi có tuyến chat.
-    - Thiếu hoặc không hợp lệ mục tiêu phân phối (`channel`/`to`) nghĩa là outbound đã bị bỏ qua.
-    - Với Matrix, job được sao chép hoặc legacy có ID phòng `delivery.to` viết thường có thể thất bại vì ID phòng Matrix phân biệt chữ hoa chữ thường. Chỉnh job thành đúng giá trị `!room:server` hoặc `room:!room:server` từ Matrix.
-    - Lỗi xác thực kênh (`unauthorized`, `Forbidden`) nghĩa là phân phối đã bị chặn bởi thông tin xác thực.
-    - Nếu lượt chạy cô lập chỉ trả về token im lặng (`NO_REPLY` / `no_reply`), OpenClaw sẽ chặn phân phối outbound trực tiếp và cũng chặn đường dẫn tóm tắt dự phòng trong hàng đợi, nên không có gì được đăng lại vào chat.
-    - Nếu agent cần tự nhắn cho người dùng, hãy kiểm tra job có tuyến dùng được (`channel: "last"` với một cuộc chat trước đó, hoặc kênh/mục tiêu tường minh).
+  <Accordion title="Cron đã kích hoạt nhưng không chuyển gửi">
+    - Chế độ chuyển gửi `none` có nghĩa là không dự kiến gửi dự phòng từ trình chạy. Tác nhân vẫn có thể gửi trực tiếp bằng công cụ `message` khi có tuyến trò chuyện.
+    - Đích chuyển gửi bị thiếu/không hợp lệ (`channel`/`to`) có nghĩa là lượt gửi ra ngoài đã bị bỏ qua.
+    - Đối với Matrix, các tác vụ được sao chép hoặc tác vụ cũ có ID phòng `delivery.to` viết thường có thể thất bại vì ID phòng Matrix phân biệt chữ hoa chữ thường. Hãy sửa tác vụ thành đúng giá trị `!room:server` hoặc `room:!room:server` từ Matrix.
+    - Lỗi xác thực kênh (`unauthorized`, `Forbidden`) có nghĩa là thông tin xác thực đã chặn việc chuyển gửi.
+    - Nếu lần chạy cô lập chỉ trả về mã thông báo im lặng (`NO_REPLY` / `no_reply`), OpenClaw sẽ chặn cả việc chuyển gửi trực tiếp ra ngoài lẫn đường dẫn tóm tắt dự phòng trong hàng đợi, nên không có nội dung nào được đăng lại vào cuộc trò chuyện.
+    - Nếu tác nhân cần tự gửi tin nhắn cho người dùng, hãy kiểm tra rằng tác vụ có tuyến khả dụng (`channel: "last"` với một cuộc trò chuyện trước đó hoặc một kênh/đích rõ ràng).
 
   </Accordion>
-  <Accordion title="Cron hoặc Heartbeat có vẻ ngăn rollover kiểu /new">
-    - Độ mới của đặt lại hằng ngày và khi nhàn rỗi không dựa trên `updatedAt`; xem [Quản lý phiên](/vi/concepts/session#session-lifecycle).
-    - Các lần đánh thức cron, lượt chạy Heartbeat, thông báo exec, và bookkeeping của gateway có thể cập nhật hàng phiên cho định tuyến/trạng thái, nhưng chúng không kéo dài `sessionStartedAt` hoặc `lastInteractionAt`.
-    - Với các hàng legacy được tạo trước khi những trường đó tồn tại, OpenClaw có thể khôi phục `sessionStartedAt` từ header phiên transcript JSONL khi tệp vẫn còn sẵn có. Hàng nhàn rỗi legacy không có `lastInteractionAt` dùng thời điểm bắt đầu đã khôi phục đó làm baseline nhàn rỗi.
+  <Accordion title="Cron hoặc Heartbeat có vẻ ngăn việc chuyển phiên kiểu /new">
+    - Độ mới của việc đặt lại hằng ngày và khi không hoạt động không dựa trên `updatedAt`; xem [Quản lý phiên](/vi/concepts/session#session-lifecycle).
+    - Các lần đánh thức Cron, lần chạy Heartbeat, thông báo exec và thao tác ghi sổ của Gateway có thể cập nhật hàng phiên phục vụ định tuyến/trạng thái, nhưng không kéo dài `sessionStartedAt` hoặc `lastInteractionAt`.
+    - Đối với các hàng cũ được tạo trước khi những trường này tồn tại, OpenClaw có thể khôi phục `sessionStartedAt` từ tiêu đề phiên trong bản chép lời JSONL khi tệp vẫn còn. Các hàng cũ không hoạt động không có `lastInteractionAt` sẽ sử dụng thời gian bắt đầu đã khôi phục đó làm mốc không hoạt động.
 
   </Accordion>
-  <Accordion title="Lưu ý về múi giờ">
-    - Cron không có `--tz` dùng múi giờ của host gateway.
-    - Lịch `at` không có múi giờ được xử lý là UTC.
-    - `activeHours` của Heartbeat dùng phân giải múi giờ đã cấu hình.
+  <Accordion title="Các điểm dễ nhầm về múi giờ">
+    - Cron không có `--tz` sẽ sử dụng múi giờ của máy chủ Gateway.
+    - Lịch `at` không có múi giờ được xem là UTC.
+    - `activeHours` của Heartbeat sử dụng cơ chế phân giải múi giờ đã cấu hình.
 
   </Accordion>
 </AccordionGroup>
 
 ## Liên quan
 
-- [Tự động hóa](/vi/automation) — tất cả cơ chế tự động hóa trong một cái nhìn tổng quan
-- [Tác vụ nền](/vi/automation/tasks) — sổ cái tác vụ cho các lần thực thi cron
+- [Tự động hóa](/vi/automation) — tổng quan nhanh về tất cả cơ chế tự động hóa
+- [Tác vụ nền](/vi/automation/tasks) — sổ cái tác vụ cho các lần thực thi Cron
 - [Heartbeat](/vi/gateway/heartbeat) — các lượt phiên chính định kỳ
 - [Múi giờ](/vi/concepts/timezone) — cấu hình múi giờ

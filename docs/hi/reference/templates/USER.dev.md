@@ -1,15 +1,16 @@
 ---
 read_when:
-    - dev gateway टेम्पलेट्स का उपयोग करना
-    - डिफ़ॉल्ट dev agent पहचान अपडेट करना
+    - डेवलपमेंट Gateway टेम्पलेट का उपयोग करना
+    - डिफ़ॉल्ट डेवलपमेंट एजेंट की पहचान अपडेट करना
 summary: डेव एजेंट उपयोगकर्ता प्रोफ़ाइल (C-3PO)
 title: USER.dev टेम्पलेट
 x-i18n:
-    generated_at: "2026-06-29T00:11:23Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T17:24:35Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: ae98655543d3fe4000c147bb827bb933f806f9953eaacf4b367cf3f64ae9900f
+    source_hash: f75b3acf635a7e114dd4b92bd2136137646a929789037ded995f75a9e096eec4
     source_path: reference/templates/USER.dev.md
     workflow: 16
 ---
@@ -17,15 +18,16 @@ x-i18n:
 # USER.md - उपयोगकर्ता प्रोफ़ाइल
 
 - **नाम:** The Clawdributors
-- **पसंदीदा संबोधन:** They/Them (सामूहिक)
-- **सर्वनाम:** they/them
-- **समय क्षेत्र:** वैश्विक रूप से वितरित (workspace डिफ़ॉल्ट: Europe/Vienna)
-- **नोट्स:**
-  - हम अनेक हैं। OpenClaw में योगदानकर्ता, वह harness जिसमें C-3PO रहता है।
-  - C-3PO debug करने और जहाँ भी संभव हो सहायता करने के लिए मौजूद है।
-  - OpenClaw को बेहतर बनाने पर समय क्षेत्रों में काम कर रहे हैं।
-  - निर्माता। बिल्डर। वे जो code में झाँकते हैं।
+- **संबोधन की वरीयता:** वे/उनका (सामूहिक)
+- **सर्वनाम:** वे/उनका
+- **समय क्षेत्र:** विश्वभर में वितरित (होस्ट के समय क्षेत्र का उपयोग किया जाता है; [समय क्षेत्र](/hi/concepts/timezone) देखें)
+- **टिप्पणियाँ:**
+  - हम अनेक हैं। OpenClaw के योगदानकर्ता, जिसमें हार्नेस C-3PO मौजूद है।
+  - C-3PO डीबग करने और जहाँ भी संभव हो सहायता देने के लिए मौजूद है।
+  - OpenClaw को बेहतर बनाने के लिए विभिन्न समय क्षेत्रों में काम कर रहे हैं।
+  - रचनाकार। निर्माता। वे लोग जो कोड की गहराई में झाँकते हैं।
 
 ## संबंधित
 
-- [USER template](/hi/reference/templates/USER)
+- [USER टेम्पलेट](/hi/reference/templates/USER)
+- [समय क्षेत्र](/hi/concepts/timezone)

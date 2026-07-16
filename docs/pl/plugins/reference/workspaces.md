@@ -1,27 +1,28 @@
 ---
 read_when:
-    - Instalujesz, konfigurujesz lub przeprowadzasz audyt pluginu przestrzeni roboczych
-summary: Dokument przestrzeni roboczych komponowalnych przez agentów oraz zaplecze płaszczyzny sterowania.
+    - Instalowanie, konfigurowanie lub audytowanie pluginu obszarów roboczych
+summary: Dokument obszarów roboczych komponowalnych przez agentów i backend płaszczyzny sterowania.
 title: Plugin obszarów roboczych
 x-i18n:
-    generated_at: "2026-07-12T15:24:59Z"
+    generated_at: "2026-07-16T18:50:14Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 0c10502340b459c26606ebb7ef97ef17c0dce11295ea7854e06158c89c79a7c3
+    source_hash: b9bcef98bf9352b6a8f37af59f7c02add4080e9c600950fc8e7a7f5339df7626
     source_path: plugins/reference/workspaces.md
     workflow: 16
 ---
 
 # Plugin Workspaces
 
-Zaplecze dokumentów Workspaces komponowanych przez agenta oraz płaszczyzny sterowania.
+Zaplecze dokumentów Workspaces i płaszczyzny sterowania, komponowalne przez agenta.
 
 ## Dystrybucja
 
 - Pakiet: `@openclaw/workspaces-plugin`
-- Sposób instalacji: dołączony do OpenClaw
+- Ścieżka instalacji: dołączony do OpenClaw
 
-## Interfejs
+## Powierzchnia
 
-kontrakty: narzędzia
+kontrakty: `tools`

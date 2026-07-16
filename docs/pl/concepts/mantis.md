@@ -1,57 +1,57 @@
 ---
 read_when:
-    - Tworzenie lub przeprowadzanie wizualnej kontroli jakości na żywo dla błędów OpenClaw
-    - Dodawanie weryfikacji stanu przed i po zmianach w pull requeście
-    - Dodawanie scenariuszy transportu na żywo dla Discorda, Slacka, WhatsAppa lub innych platform
-    - Uruchamianie ukierunkowanej weryfikacji w przeglądarce interfejsu Control UI dla kandydującego odwołania
+    - Tworzenie lub przeprowadzanie wizualnej kontroli jakości na żywo pod kątem błędów OpenClaw
+    - Dodawanie weryfikacji przed i po zmianach w pull requeście
+    - Dodawanie scenariuszy transportu na żywo dla Discord, Slack, WhatsApp lub innych platform
+    - Uruchamianie ukierunkowanej weryfikacji Control UI w przeglądarce dla kandydującej referencji
     - Debugowanie przebiegów kontroli jakości wymagających zrzutów ekranu, automatyzacji przeglądarki lub dostępu przez VNC
-summary: Mantis rejestruje wizualne dowody kompleksowych testów na potrzeby porównań aktywnych transportów oraz ukierunkowanych testów przeglądarkowych dotyczących wyłącznie kandydata, a następnie dołącza artefakty do PR-ów.
-title: Modliszka
+summary: Mantis rejestruje wizualne dowody kompleksowego działania na potrzeby porównań transportu na żywo i ukierunkowanych testów przeglądarkowych dotyczących wyłącznie kandydata, a następnie dołącza artefakty do PR-ów.
+title: Mantis
 x-i18n:
-    generated_at: "2026-07-12T14:58:23Z"
+    generated_at: "2026-07-16T18:13:36Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 86b65ae8503b23407b600aa08f16940f9fcaa9a4e598963f7f878a3b336784f0
+    source_hash: 48a1b306e37aba7e8c67139df61f3680a9aec066361aa196d88c81270337bc1b
     source_path: concepts/mantis.md
     workflow: 16
 ---
 
-Mantis publikuje wizualne dowody z CI oraz komentarz w PR dotyczący zachowania OpenClaw.
-Scenariusze transportu na żywo porównują znany błędny stan bazowy z kandydującą
-referencją; ukierunkowane ścieżki przeglądarkowe mogą zamiast tego weryfikować jednego kandydata
-względem deterministycznego, pozorowanego transportu. Discord został wdrożony jako pierwszy
-z rzeczywistym uwierzytelnianiem bota, kanałami serwera, reakcjami, wątkami i obserwatorem
-w przeglądarce. Istnieją również ścieżki Slack, Telegram oraz ukierunkowane ścieżki czatu
-Control UI; WhatsApp i Matrix nie są zaimplementowane.
+Mantis publikuje wizualne dowody CI oraz komentarz do PR dotyczący działania OpenClaw.
+Scenariusze transportu na żywo porównują znany wadliwy punkt odniesienia z refem kandydującym;
+ukierunkowane ścieżki przeglądarkowe mogą zamiast tego weryfikować jednego kandydata względem deterministycznego,
+symulowanego transportu. Discord został wdrożony jako pierwszy z rzeczywistym uwierzytelnianiem bota, kanałami serwera,
+reakcjami, wątkami i obserwatorem przeglądarkowym. Istnieją również ścieżki dla Slack, Telegram oraz ukierunkowane ścieżki
+czatu interfejsu Control UI; WhatsApp i Matrix nie są zaimplementowane.
 
 ## Odpowiedzialność
 
-- OpenClaw (`extensions/qa-lab/src/mantis/*`): środowisko uruchomieniowe scenariuszy, CLI `pnpm openclaw qa mantis <command>`, schemat dowodów.
-- QA Lab (`extensions/qa-lab/src/live-transports/*`): mechanizm transportu na żywo, boty sterujące/SUT, generatory raportów i dowodów.
+- OpenClaw (`extensions/qa-lab/src/mantis/*`): środowisko uruchomieniowe scenariuszy, `pnpm openclaw qa mantis <command>` CLI, schemat dowodów.
+- Laboratorium QA (`extensions/qa-lab/src/live-transports/*`): infrastruktura testowa transportu na żywo, boty sterownika/SUT, generatory raportów/dowodów.
 - Crabbox (`openclaw/crabbox`): przygotowane maszyny z systemem Linux, dzierżawy, VNC, `crabbox media preview`.
 - GitHub Actions (`.github/workflows/mantis-*.yml`): zdalne punkty wejścia, przechowywanie artefaktów.
-- ClawSweeper: analizuje polecenia opiekunów w PR, uruchamia przepływy pracy i publikuje końcowy komentarz w PR.
+- ClawSweeper: analizuje polecenia opiekuna w PR, uruchamia przepływy pracy, publikuje końcowy komentarz do PR.
 
 ## Polecenia CLI
 
-Wszystkie polecenia mają postać `pnpm openclaw qa mantis <command>` i są zdefiniowane w
+Wszystkie polecenia są `pnpm openclaw qa mantis <command>`, zdefiniowane w
 `extensions/qa-lab/src/mantis/cli.ts`. Wymagają `OPENCLAW_ENABLE_PRIVATE_QA_CLI=1`
-podczas kompilacji/uruchamiania (dołączone przepływy pracy ustawiają
-`OPENCLAW_BUILD_PRIVATE_QA=1` oraz `OPENCLAW_ENABLE_PRIVATE_QA_CLI=1` przed kompilacją).
+podczas kompilacji/uruchamiania (dołączone przepływy pracy ustawiają `OPENCLAW_BUILD_PRIVATE_QA=1` i
+`OPENCLAW_ENABLE_PRIVATE_QA_CLI=1` przed kompilacją).
 
-| Polecenie                       | Przeznaczenie                                                                                                                                                    |
-| ------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `discord-smoke`                 | Sprawdza, czy bot Mantis dla Discorda widzi serwer/kanał, może opublikować wiadomość i dodać reakcję.                                                            |
-| `run`                           | Uruchamia scenariusz przed/po względem referencji bazowej i kandydującej (tylko Discord).                                                                         |
-| `desktop-browser-smoke`         | Dzierżawi/ponownie wykorzystuje pulpit Crabbox, otwiera widoczną przeglądarkę oraz rejestruje zrzut ekranu i nagranie.                                            |
-| `slack-desktop-smoke`           | Dzierżawi/ponownie wykorzystuje pulpit Crabbox, uruchamia w nim QA Slack, otwiera Slack Web i rejestruje dowody.                                                  |
-| `telegram-desktop-builder`      | Dzierżawi/ponownie wykorzystuje pulpit Crabbox, instaluje Telegram Desktop i opcjonalnie konfiguruje Gateway OpenClaw.                                            |
-| `visual-task` / `visual-driver` | Ogólne przechwytywanie pulpitu Crabbox z opcjonalnymi asercjami rozpoznawania obrazu; `visual-driver` to część sterująca uruchamiana przez `crabbox record --while`. |
+| Polecenie                       | Przeznaczenie                                                                                                                                             |
+| ------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `discord-smoke`                 | Sprawdza, czy bot Mantis na Discordzie widzi serwer/kanał oraz może publikować wiadomości i reakcje.                                                      |
+| `run`                           | Uruchamia scenariusz „przed/po” względem refów punktu odniesienia i kandydata (tylko Discord).                                                            |
+| `desktop-browser-smoke`         | Dzierżawi/ponownie wykorzystuje pulpit Crabbox, otwiera widoczną przeglądarkę, rejestruje zrzut ekranu i film.                                             |
+| `slack-desktop-smoke`           | Dzierżawi/ponownie wykorzystuje pulpit Crabbox, uruchamia w nim QA Slack, otwiera Slack Web i rejestruje dowody.                                         |
+| `telegram-desktop-builder`      | Dzierżawi/ponownie wykorzystuje pulpit Crabbox, instaluje Telegram Desktop i opcjonalnie konfiguruje Gateway OpenClaw.                                    |
+| `visual-task` / `visual-driver` | Ogólne przechwytywanie pulpitu Crabbox z opcjonalnymi asercjami rozumienia obrazu; `visual-driver` to część sterownika uruchamiana w ramach `crabbox record --while`. |
 
 Każde polecenie przyjmuje `--repo-root <path>` i `--output-dir <path>`; polecenia
 Crabbox przyjmują również `--crabbox-bin`, `--provider`, `--machine-class`/`--class`,
-`--lease-id`, `--idle-timeout`, `--ttl` oraz `--keep-lease`. Domyślne lokalne wartości CLI
+`--lease-id`, `--idle-timeout`, `--ttl` i `--keep-lease`. Lokalne wartości domyślne CLI
 dla dostawcy/klasy to `hetzner`/`beast`, o ile nie zaznaczono inaczej; przepływy pracy CI
 zwykle zastępują obie wartości.
 
@@ -63,20 +63,18 @@ pnpm openclaw qa mantis discord-smoke \
 ```
 
 Wywołuje interfejs REST API Discorda (`https://discord.com/api/v10`), aby pobrać użytkownika
-bota, serwer, kanały serwera oraz kanał docelowy, sprawdza, czy kanał należy do serwera,
-a następnie (o ile nie podano `--skip-post`) publikuje wiadomość i dodaje reakcję `👀`.
-Zapisuje pliki `mantis-discord-smoke-summary.json` oraz
+bota, serwer, kanały serwera i kanał docelowy, sprawdza, czy
+kanał należy do serwera, a następnie (o ile nie ustawiono `--skip-post`) publikuje wiadomość i
+dodaje reakcję `👀`. Zapisuje `mantis-discord-smoke-summary.json` i
 `mantis-discord-smoke-report.md`.
 
-Kolejność rozwiązywania tokenu: wartość `--token-file`, następnie `OPENCLAW_QA_DISCORD_MANTIS_BOT_TOKEN`
-(można zastąpić przez `--token-env`), a następnie plik wskazany przez
-`OPENCLAW_QA_DISCORD_MANTIS_BOT_TOKEN_FILE` (można zastąpić przez `--token-file-env`).
-Identyfikatory serwera/kanału pochodzą z `OPENCLAW_QA_DISCORD_GUILD_ID` /
-`OPENCLAW_QA_DISCORD_CHANNEL_ID` (można zastąpić przez `--guild-id` / `--channel-id`)
-i muszą być 17–20-cyfrowymi identyfikatorami snowflake Discorda. Ustaw
-`OPENCLAW_QA_REDACT_PUBLIC_METADATA=1`, aby zastąpić identyfikatory i nazwy
-bota/serwera/kanału/wiadomości wartością `<redacted>` w opublikowanym podsumowaniu
-i raporcie.
+Kolejność rozpoznawania tokenu: wartość `--token-file`, następnie `OPENCLAW_QA_DISCORD_MANTIS_BOT_TOKEN`
+(zastępowana przez `--token-env`), a potem plik wskazany przez `OPENCLAW_QA_DISCORD_MANTIS_BOT_TOKEN_FILE`
+(zastępowany przez `--token-file-env`). Identyfikatory serwera/kanału pochodzą z
+`OPENCLAW_QA_DISCORD_GUILD_ID` / `OPENCLAW_QA_DISCORD_CHANNEL_ID` (zastępowanych przez
+`--guild-id` / `--channel-id`) i muszą być 17–20-cyfrowymi identyfikatorami snowflake Discorda. Ustaw
+`OPENCLAW_QA_REDACT_PUBLIC_METADATA=1`, aby zastąpić identyfikatory i nazwy bota, serwera, kanału oraz wiadomości
+wartością `<redacted>` w opublikowanym podsumowaniu i raporcie.
 
 ### `run`
 
@@ -90,35 +88,34 @@ pnpm openclaw qa mantis run \
 ```
 
 `--transport` obecnie przyjmuje wyłącznie `discord`. `--scenario` jest jednym z dwóch
-wbudowanych identyfikatorów, z których każdy ma własną domyślną referencję bazową oraz
-oczekiwane etykiety przed/po (`extensions/qa-lab/src/mantis/run.runtime.ts`):
+wbudowanych identyfikatorów, z których każdy ma własny domyślny ref punktu odniesienia i oczekiwane etykiety
+„przed/po” (`extensions/qa-lab/src/mantis/run.runtime.ts`):
 
-| Scenariusz                                 | Domyślny stan bazowy                       | Oczekiwanie dla stanu bazowego                 | Oczekiwanie dla kandydata |
-| ------------------------------------------ | ------------------------------------------ | ---------------------------------------------- | ------------------------- |
-| `discord-status-reactions-tool-only`       | `0bf06e953fdda290799fc9fb9244a8f67fdae593` | `queued-only`                                  | `queued -> thinking -> done` |
+| Scenariusz                                 | Domyślny punkt odniesienia                  | Oczekiwania dla punktu odniesienia       | Oczekiwania dla kandydata   |
+| ------------------------------------------ | ------------------------------------------ | ---------------------------------------- | ---------------------------- |
+| `discord-status-reactions-tool-only`       | `0bf06e953fdda290799fc9fb9244a8f67fdae593` | `queued-only`                            | `queued -> thinking -> done` |
 | `discord-thread-reply-filepath-attachment` | `81349cdc2a9d5143fd0991ed858b739e7d96e05c` | odpowiedź w wątku pomija załącznik `filePath` | odpowiedź w wątku go zawiera |
 
-Domyślną wartością `--candidate` jest `HEAD`. Pozostałe flagi: `--credential-source`
+Domyślna wartość `--candidate` to `HEAD`. Pozostałe flagi: `--credential-source`
 (domyślnie `convex`), `--credential-role` (domyślnie `ci`), `--provider-mode`
-(domyślnie `live-frontier`), `--fast` (domyślnie włączone), `--skip-install`, `--skip-build`.
+(domyślnie `live-frontier`), `--fast` (domyślnie włączona), `--skip-install`, `--skip-build`.
 
-Program uruchamiający tworzy odłączone katalogi robocze `git worktree` dla stanu bazowego
-i kandydata w `<output-dir>/worktrees/`, uruchamia w każdym z nich
-`pnpm install`/`pnpm build` (o ile nie pominięto), a następnie uruchamia
+Program uruchamiający tworzy odłączone kopie robocze `git worktree` dla punktu odniesienia i
+kandydata w katalogu `<output-dir>/worktrees/`, uruchamia `pnpm install`/`pnpm build` w
+każdej z nich (o ile nie pominięto), a następnie uruchamia
 `pnpm openclaw qa discord --scenario <id> --model openai/gpt-5.4 --alt-model openai/gpt-5.4 --allow-failures`
-względem każdego katalogu roboczego. Każda ścieżka zapisuje
-`discord-qa-reaction-timelines.json` oraz parę
-`<scenario-id>-timeline.html`/`.png`; program uruchamiający kopiuje te dowody
-z powrotem do `baseline/`/`candidate/`, zapisuje `comparison.json`,
-`mantis-report.md` oraz `mantis-evidence.json` w katalogu wyjściowym
-i kończy działanie z kodem różnym od zera, jeśli porównanie nie zakończyło się powodzeniem
-(stan bazowy `fail`, a kandydat `pass`).
+względem każdej kopii roboczej. Każda ścieżka zapisuje `discord-qa-reaction-timelines.json`
+oraz parę `<scenario-id>-timeline.html`/`.png`; program uruchamiający kopiuje te
+dowody z powrotem do `baseline/`/`candidate/`, zapisuje `comparison.json`,
+`mantis-report.md` i `mantis-evidence.json` w katalogu wyjściowym oraz
+kończy działanie z kodem różnym od zera, jeśli porównanie nie zakończyło się powodzeniem (punkt odniesienia `fail` i kandydat
+`pass`).
 
 Drugi scenariusz Discorda (`discord-thread-reply-filepath-attachment`) publikuje
-wiadomość nadrzędną przy użyciu bota sterującego, tworzy rzeczywisty wątek, wywołuje akcję
-`message.thread-reply` systemu SUT z lokalną dla repozytorium ścieżką `filePath`,
-a następnie cyklicznie sprawdza wątek w poszukiwaniu odpowiedzi i nazwy pliku załącznika.
-Oczekuje załącznika o nazwie `mantis-thread-report.md`.
+wiadomość nadrzędną za pomocą bota sterownika, tworzy rzeczywisty wątek, wywołuje akcję SUT
+`message.thread-reply` z lokalnym dla repozytorium plikiem `filePath`, a następnie odpytuje
+wątek w poszukiwaniu odpowiedzi i nazwy pliku załącznika. Oczekuje załącznika
+o nazwie `mantis-thread-report.md`.
 
 ### `desktop-browser-smoke`
 
@@ -129,33 +126,31 @@ pnpm openclaw qa mantis desktop-browser-smoke \
 
 Dzierżawi lub ponownie wykorzystuje pulpit Crabbox, uruchamia przeglądarkę w sesji VNC
 skierowaną na `--browser-url` (domyślnie `https://openclaw.ai`) albo wyrenderowany
-`--html-file`, czeka, wykonuje zrzut ekranu za pomocą `scrot`, opcjonalnie nagrywa plik MP4
-za pomocą `ffmpeg`, a następnie synchronizuje przez rsync pliki
-`desktop-browser-smoke.png` / `.mp4` / `remote-metadata.json`
+`--html-file`, czeka, wykonuje zrzut ekranu za pomocą `scrot`, opcjonalnie nagrywa plik MP4 za pomocą
+`ffmpeg`, a następnie synchronizuje przez rsync `desktop-browser-smoke.png` / `.mp4` / `remote-metadata.json`
 z powrotem do `--output-dir`.
 
 Flagi:
 
 - `--lease-id <cbx_...>` ponownie wykorzystuje przygotowany pulpit zamiast tworzyć nowy.
-- `--browser-profile-dir <remote-path>` ponownie wykorzystuje zdalny katalog danych użytkownika Chrome, dzięki czemu trwały pulpit pozostaje zalogowany między uruchomieniami (używane dla długotrwałego profilu obserwatora Discord Web).
-- `--browser-profile-archive-env <name>` przed uruchomieniem odtwarza archiwum profilu Chrome `.tgz` zakodowane w base64 ze wskazanej zmiennej środowiskowej (domyślnie `OPENCLAW_MANTIS_BROWSER_PROFILE_TGZ_B64`); używane dla zalogowanych obserwatorów, takich jak Discord Web.
+- `--browser-profile-dir <remote-path>` ponownie wykorzystuje zdalny katalog danych użytkownika Chrome, dzięki czemu trwały pulpit zachowuje zalogowanie między uruchomieniami (używane dla długotrwałego profilu obserwatora Discord Web).
+- `--browser-profile-archive-env <name>` przed uruchomieniem odtwarza z tej zmiennej środowiskowej zakodowane w base64 archiwum profilu Chrome `.tgz` (domyślnie `OPENCLAW_MANTIS_BROWSER_PROFILE_TGZ_B64`); używane dla zalogowanych obserwatorów, takich jak Discord Web.
 - `--video-duration <seconds>` określa długość przechwytywania MP4 (domyślnie 10 s).
-- `--keep-lease` (lub `OPENCLAW_MANTIS_KEEP_VM=1`) pozostawia otwartą dzierżawę utworzoną podczas tego uruchomienia, aby umożliwić inspekcję przez VNC; nieudane uruchomienia, które utworzyły dzierżawę, również domyślnie ją zachowują.
+- `--keep-lease` (lub `OPENCLAW_MANTIS_KEEP_VM=1`) pozostawia dzierżawę utworzoną w tym uruchomieniu otwartą do inspekcji przez VNC; nieudane uruchomienia, które utworzyły dzierżawę, również domyślnie ją zachowują.
 
-Do rejestrowania dowodów z Discord Web Mantis używa dedykowanego konta obserwatora,
-a nie tokenu bota. Wyrocznia REST Discorda (przez `qa discord`) pozostaje źródłem
-rozstrzygającym; gdy ustawiono `OPENCLAW_QA_DISCORD_CAPTURE_UI_METADATA=1`, scenariusz
-zapisuje również artefakt z adresem URL Discord Web, a
-`OPENCLAW_QA_DISCORD_KEEP_THREADS=1` pozostawia wątek otwarty wystarczająco długo,
-aby przeglądarka mogła go otworzyć.
+Do rejestrowania dowodów z Discord Web Mantis używa dedykowanego konta obserwatora, a nie tokenu
+bota. Źródło prawdy REST Discorda (za pośrednictwem `qa discord`) pozostaje nadrzędne; gdy
+ustawiono `OPENCLAW_QA_DISCORD_CAPTURE_UI_METADATA=1`, scenariusz zapisuje również
+artefakt adresu URL Discord Web, a `OPENCLAW_QA_DISCORD_KEEP_THREADS=1` pozostawia
+wątek otwarty wystarczająco długo, aby przeglądarka mogła go otworzyć.
 
-Przepływ pracy GitHub preferuje trwały profil obserwatora określony przez
-`MANTIS_DISCORD_VIEWER_CHROME_PROFILE_DIR` (pełne archiwa profili mogą przekraczać
-limit rozmiaru sekretów GitHub); w przypadku małych/początkowych profili może zamiast tego
-odtworzyć archiwum `.tgz` zakodowane w base64 z
-`MANTIS_DISCORD_VIEWER_CHROME_PROFILE_TGZ_B64`. Jeśli nie skonfigurowano żadnego
-z tych źródeł, przepływ pracy nadal publikuje deterministyczne zrzuty ekranu stanu
-bazowego i kandydata oraz odnotowuje w dzienniku, że pominięto zalogowanego obserwatora.
+Przepływ pracy GitHub preferuje trwały profil obserwatora za pośrednictwem
+`MANTIS_DISCORD_VIEWER_CHROME_PROFILE_DIR` (pełne archiwa profili mogą przekroczyć
+limit rozmiaru sekretów GitHub); w przypadku małych/profilów inicjalizacyjnych może zamiast tego odtworzyć
+zakodowany w base64 profil `.tgz` z `MANTIS_DISCORD_VIEWER_CHROME_PROFILE_TGZ_B64`. Jeśli
+nie skonfigurowano żadnego ze źródeł, przepływ pracy nadal publikuje deterministyczne
+zrzuty ekranu i dzienniki punktu odniesienia/kandydata, informując, że zalogowany obserwator został
+pominięty.
 
 ### `slack-desktop-smoke`
 
@@ -167,52 +162,50 @@ pnpm openclaw qa mantis slack-desktop-smoke \
   --keep-lease
 ```
 
-Dzierżawi lub ponownie wykorzystuje pulpit Crabbox, synchronizuje kopię roboczą z maszyną
-wirtualną, uruchamia w niej `pnpm openclaw qa slack`, otwiera Slack Web w przeglądarce VNC,
-przechwytuje pulpit oraz kopiuje lokalnie zarówno artefakty QA Slack (`slack-qa/`),
-jak i zrzut ekranu/nagranie VNC. Jest to jedyny wariant Mantis, w którym Gateway SUT
-i przeglądarka działają wewnątrz tej samej maszyny wirtualnej.
+Dzierżawi lub ponownie wykorzystuje pulpit Crabbox, synchronizuje kopię roboczą z maszyną wirtualną, uruchamia
+w niej `pnpm openclaw qa slack`, otwiera Slack Web w przeglądarce VNC,
+przechwytuje pulpit i kopiuje lokalnie zarówno artefakty QA Slack (`slack-qa/`), jak i
+zrzut ekranu/film VNC. Jest to jedyny wariant Mantis, w którym
+Gateway SUT i przeglądarka działają wewnątrz tej samej maszyny wirtualnej.
 
-Z opcją `--gateway-setup` polecenie tworzy trwały, jednorazowy katalog domowy OpenClaw
-w `$HOME/.openclaw-mantis/slack-openclaw` na maszynie wirtualnej, modyfikuje konfigurację
-Slack Socket Mode dla kanału docelowego, uruchamia
-`openclaw gateway run --dev --allow-unconfigured --port 38973` i pozostawia Chrome
-uruchomiony w sesji VNC; pominięcie `--gateway-setup` uruchamia zamiast tego standardową
-ścieżkę QA Slack między botami.
+Z `--gateway-setup` polecenie tworzy trwały, jednorazowy katalog domowy OpenClaw
+w `$HOME/.openclaw-mantis/slack-openclaw` na maszynie wirtualnej, modyfikuje konfigurację Slack
+Socket Mode dla kanału docelowego, uruchamia
+`openclaw gateway run --dev --allow-unconfigured --port 38973` i pozostawia
+Chrome uruchomionego w sesji VNC; pominięcie `--gateway-setup` powoduje zamiast tego uruchomienie zwykłej
+ścieżki QA Slack między botami.
 
-Wymagane zmienne środowiskowe dla `--credential-source env` (lokalna wartość domyślna
-to `env`; domyślna rola to `maintainer`):
+Wymagane zmienne środowiskowe dla `--credential-source env` (lokalna wartość domyślna to `env`; domyślna
+rola to `maintainer`):
 
 - `OPENCLAW_QA_SLACK_CHANNEL_ID`
 - `OPENCLAW_QA_SLACK_DRIVER_BOT_TOKEN`
 - `OPENCLAW_QA_SLACK_SUT_BOT_TOKEN`
 - `OPENCLAW_QA_SLACK_SUT_APP_TOKEN`
-- `OPENCLAW_LIVE_OPENAI_KEY` dla zdalnej ścieżki modelu (jeśli lokalnie ustawiono wyłącznie
-  `OPENAI_API_KEY`, Mantis kopiuje ją do `OPENCLAW_LIVE_OPENAI_KEY` przed
+- `OPENCLAW_LIVE_OPENAI_KEY` dla zdalnej ścieżki modelu (jeśli lokalnie ustawiono tylko `OPENAI_API_KEY`,
+  Mantis kopiuje ją do `OPENCLAW_LIVE_OPENAI_KEY` przed
   wywołaniem Crabbox)
 
-Z opcją `--credential-source convex` Mantis dzierżawi dane uwierzytelniające SUT Slack
-ze współdzielonej puli przed utworzeniem maszyny wirtualnej i przekazuje identyfikator
-kanału, token aplikacji oraz token bota do maszyny wirtualnej jako zmienne środowiskowe
-`OPENCLAW_MANTIS_SLACK_*`, dzięki czemu przepływy pracy GitHub potrzebują wyłącznie
-sekretu brokera Convex, a nie nieprzetworzonych tokenów Slack.
+Z `--credential-source convex` Mantis dzierżawi dane uwierzytelniające SUT Slack ze
+wspólnej puli przed utworzeniem maszyny wirtualnej i przekazuje identyfikator kanału, token aplikacji oraz
+token bota do maszyny wirtualnej jako zmienne środowiskowe `OPENCLAW_MANTIS_SLACK_*`, dzięki czemu przepływy pracy
+GitHub wymagają wyłącznie sekretu brokera Convex, a nie nieprzetworzonych tokenów Slack.
 
-Pozostałe flagi: `--slack-url <url>` otwiera konkretny adres URL (w przeciwnym razie
-Mantis wyznacza `https://app.slack.com/client/<team>/<channel>` na podstawie `auth.test`);
-`--slack-channel-id <id>` ustawia kanał listy dozwolonych Gateway;
-`OPENCLAW_MANTIS_SLACK_BROWSER_PROFILE_DIR` steruje trwałym profilem Chrome
+Pozostałe flagi: `--slack-url <url>` otwiera określony adres URL (w przeciwnym razie Mantis wyprowadza
+`https://app.slack.com/client/<team>/<channel>` z `auth.test`);
+`--slack-channel-id <id>` ustawia kanał na liście dozwolonych Gateway;
+`OPENCLAW_MANTIS_SLACK_BROWSER_PROFILE_DIR` określa trwały profil Chrome
 wewnątrz maszyny wirtualnej (domyślnie `$HOME/.config/openclaw-mantis/slack-chrome-profile`);
 `--approval-checkpoints` uruchamia natywne scenariusze zatwierdzania Slack
-(`slack-approval-exec-native`, `slack-approval-plugin-native`) i renderuje zrzuty ekranu
-oczekujących/rozstrzygniętych punktów kontrolnych zamiast konfiguracji Gateway
-(wzajemnie wyklucza się z `--gateway-setup`); `--hydrate-mode source|prehydrated`,
-`--provider-mode`, `--model`, `--alt-model` oraz `--fast` są przekazywane do ścieżki
-Slack na żywo.
+(`slack-approval-exec-native`, `slack-approval-plugin-native`) i renderuje
+zrzuty ekranu punktów kontrolnych oczekujących/rozstrzygniętych zamiast konfiguracji Gateway (wzajemnie
+wyklucza się z `--gateway-setup`); `--hydrate-mode source|prehydrated`,
+`--provider-mode`, `--model`, `--alt-model` i `--fast` są przekazywane do
+ścieżki Slack na żywo.
 
-Zrzuty ekranu punktów kontrolnych zatwierdzania są renderowane na podstawie wiadomości
-z API Slack zaobserwowanej przez scenariusz, a nie z interfejsu Slack na żywo;
-`slack-desktop-smoke.png` jest dowodem działania samego Slack Web tylko wtedy,
-gdy profil przeglądarki dzierżawy był już zalogowany.
+Zrzuty ekranu punktów kontrolnych zatwierdzania są renderowane z wiadomości API Slack zaobserwowanej przez
+scenariusz, a nie z działającego interfejsu Slack; `slack-desktop-smoke.png` stanowi wyłącznie
+dowód działania Slack Web, jeśli profil przeglądarki dzierżawy był już zalogowany.
 
 ### `telegram-desktop-builder`
 
@@ -224,62 +217,62 @@ pnpm openclaw qa mantis telegram-desktop-builder \
 ```
 
 Dzierżawi lub ponownie wykorzystuje pulpit Crabbox, instaluje natywną aplikację Telegram Desktop dla systemu Linux,
-opcjonalnie przywraca archiwum sesji użytkownika, konfiguruje OpenClaw przy użyciu
-tokena bota SUT Telegram z dzierżawy, uruchamia
+opcjonalnie odtwarza archiwum sesji użytkownika, konfiguruje OpenClaw przy użyciu
+dzierżawionego tokenu bota SUT Telegram, uruchamia
 `openclaw gateway run --dev --allow-unconfigured --port 38974`, publikuje
-wiadomość o gotowości bota sterującego w prywatnej grupie z dzierżawy, a następnie wykonuje
-zrzut ekranu i nagranie MP4. Token bota służy wyłącznie do konfiguracji OpenClaw; nigdy nie
-loguje aplikacji Telegram Desktop. Przeglądarka pulpitu korzysta z oddzielnej sesji użytkownika Telegram,
-przywróconej za pomocą `--telegram-profile-archive-env <name>` lub zalogowanej ręcznie
-przez VNC i utrzymywanej przy życiu za pomocą `--keep-lease`.
+wiadomość gotowości bota sterownika w dzierżawionej grupie prywatnej, a następnie wykonuje
+zrzut ekranu i nagranie MP4. Token bota jedynie konfiguruje OpenClaw; nigdy nie loguje
+do Telegram Desktop. Obserwator na pulpicie jest oddzielną sesją użytkownika Telegram,
+odtwarzaną z `--telegram-profile-archive-env <name>` lub logowaną ręcznie
+przez VNC i utrzymywaną aktywną za pomocą `--keep-lease`.
 
-Flagi: `--lease-id <cbx_...>` ponownie uruchamia scenariusz na maszynie wirtualnej, na której użytkownik jest już zalogowany do
-Telegram Desktop; `--telegram-profile-archive-env <name>` przywraca zakodowane w base64
-archiwum profilu `.tgz` przed uruchomieniem; `--telegram-profile-dir <remote-path>`
+Flagi: `--lease-id <cbx_...>` ponownie uruchamia scenariusz na maszynie wirtualnej już zalogowanej do
+Telegram Desktop; `--telegram-profile-archive-env <name>` przed uruchomieniem odtwarza zakodowane w base64
+archiwum profilu `.tgz`; `--telegram-profile-dir <remote-path>`
 ustawia zdalny katalog profilu (domyślnie `$HOME/.local/share/TelegramDesktop`);
-`--no-gateway-setup` tylko instaluje i otwiera Telegram Desktop;
+`--no-gateway-setup` jedynie instaluje i otwiera Telegram Desktop;
 domyślne wartości `--credential-source`/`--credential-role` to `convex`/`maintainer`.
 
-## Manifest materiałów dowodowych
+## Manifest dowodów
 
-Każdy scenariusz publikujący wyniki w PR zapisuje plik `mantis-evidence.json` obok
+Każdy scenariusz publikujący w PR zapisuje `mantis-evidence.json` obok
 swojego raportu:
 
 ```json
 {
   "schemaVersion": 1,
   "id": "discord-status-reactions",
-  "title": "Mantis Discord Status Reactions QA",
-  "summary": "Human-readable top summary for the PR comment.",
+  "title": "Kontrola jakości reakcji statusu Discord w Mantis",
+  "summary": "Czytelne dla człowieka podsumowanie główne do komentarza w PR.",
   "scenario": "discord-status-reactions-tool-only",
   "comparison": {
-    "baseline": { "sha": "...", "status": "fail", "expected": "queued-only" },
-    "candidate": { "sha": "...", "status": "pass", "expected": "queued -> thinking -> done" },
+    "baseline": { "sha": "...", "status": "fail", "expected": "tylko w kolejce" },
+    "candidate": { "sha": "...", "status": "pass", "expected": "w kolejce -> myślenie -> gotowe" },
     "pass": true
   },
   "artifacts": [
     {
       "kind": "timeline",
       "lane": "baseline",
-      "label": "Baseline queued-only",
+      "label": "Wartość bazowa tylko w kolejce",
       "path": "baseline/timeline.png",
       "targetPath": "baseline.png",
-      "alt": "Baseline Discord timeline",
+      "alt": "Bazowa oś czasu Discord",
       "width": 420
     }
   ]
 }
 ```
 
-Pole `path` artefaktu jest ścieżką względną wobec katalogu manifestu; `targetPath` jest
-ścieżką względną wobec skonfigurowanego prefiksu artefaktów R2/S3. Skrypt `scripts/mantis/publish-pr-evidence.mjs`
-odrzuca próby przechodzenia poza katalog i pomija wpisy z `"required": false`, gdy
+Artefakt `path` jest względny względem katalogu manifestu; `targetPath` jest
+względny względem skonfigurowanego prefiksu artefaktów R2/S3. `scripts/mantis/publish-pr-evidence.mjs`
+odrzuca przechodzenie między katalogami i pomija wpisy z `"required": false`, gdy
 brakuje pliku.
 
-Rodzaje artefaktów: `timeline` (deterministyczny zrzut ekranu przed zmianą i po niej),
+Rodzaje artefaktów: `timeline` (deterministyczny zrzut ekranu przed/po),
 `desktopScreenshot` (zrzut ekranu VNC/przeglądarki), `motionPreview` (osadzony animowany
-GIF z nagrania), `motionClip` (przycięte do ruchu nagranie MP4), `fullVideo` (pełne
-nagranie), `metadata` (towarzyszący plik JSON/dziennika), `report` (raport Markdown).
+GIF z nagrania), `motionClip` (MP4 przycięty do ruchu), `fullVideo` (pełne
+nagranie), `metadata` (plik towarzyszący JSON/dziennika), `report` (raport Markdown).
 
 Układ artefaktów przebiegu na dysku:
 
@@ -292,18 +285,19 @@ Układ artefaktów przebiegu na dysku:
   comparison.json
 ```
 
-Zrzuty ekranu są materiałami dowodowymi, a nie sekretami, ale nadal wymagają starannej redakcji:
-mogą zawierać nazwy prywatnych kanałów, nazwy użytkowników lub treść wiadomości. Ustaw
-`OPENCLAW_QA_REDACT_PUBLIC_METADATA=1` dla publicznego przesyłania artefaktów; ta opcja jest
-domyślnie włączona w przepływach pracy GitHub dla Discord/Slack/Telegram.
+Zrzuty ekranu są materiałem dowodowym, a nie sekretami, ale nadal wymagają
+dyscypliny anonimizacji: mogą pojawić się nazwy prywatnych kanałów, nazwy
+użytkowników lub treść wiadomości. Ustaw `OPENCLAW_QA_REDACT_PUBLIC_METADATA=1` dla publicznego
+przesyłania artefaktów; jest to domyślnie włączone w przepływach pracy GitHub
+dla Discord/Slack/Telegram.
 
 ## Automatyzacja GitHub
 
-`scripts/mantis/publish-pr-evidence.mjs` jest współdzielonym narzędziem publikującym. Przepływy pracy
-wywołują go z manifestem, docelowym PR, katalogiem głównym docelowych artefaktów, znacznikiem komentarza,
-adresem URL artefaktów, adresem URL przebiegu i źródłem żądania. Przesyła zadeklarowane artefakty do
-zasobnika Mantis R2, tworzy komentarz PR rozpoczynający się od podsumowania, z osadzonymi
-obrazami/podglądami i odnośnikami do nagrań, a następnie aktualizuje istniejący komentarz ze znacznikiem lub
+`scripts/mantis/publish-pr-evidence.mjs` jest wydawcą wielokrotnego użytku. Przepływy pracy
+wywołują go z manifestem, docelowym PR, głównym katalogiem docelowym artefaktów,
+znacznikiem komentarza, adresem URL artefaktów, adresem URL przebiegu i źródłem żądania. Przesyła
+zadeklarowane artefakty do zasobnika R2 Mantis, tworzy komentarz w PR zaczynający się od
+podsumowania, z osadzonymi obrazami/podglądami i filmami dostępnymi przez odnośniki, a następnie aktualizuje istniejący komentarz ze znacznikiem lub
 tworzy nowy. Wymagane zmienne środowiskowe:
 
 - `MANTIS_ARTIFACT_R2_ACCESS_KEY_ID`
@@ -313,47 +307,48 @@ tworzy nowy. Wymagane zmienne środowiskowe:
 - `MANTIS_ARTIFACT_R2_REGION` (przepływy pracy ustawiają `auto`)
 - `MANTIS_ARTIFACT_R2_PUBLIC_BASE_URL` (przepływy pracy ustawiają `https://artifacts.openclaw.ai`)
 
-Komentarze są publikowane przez aplikację Mantis GitHub (`MANTIS_GITHUB_APP_ID` /
-`MANTIS_GITHUB_APP_PRIVATE_KEY`), a nie przez `github-actions[bot]`; ukryty
-komentarz ze znacznikiem służy jako klucz operacji aktualizacji lub wstawienia.
+Komentarze są publikowane za pośrednictwem aplikacji GitHub Mantis (`MANTIS_GITHUB_APP_ID` /
+`MANTIS_GITHUB_APP_PRIVATE_KEY`), a nie `github-actions[bot]`, przy użyciu ukrytego
+znacznika komentarza jako klucza operacji upsert.
 
-| Przepływ pracy                    | Wyzwalacz                                                                                  | Działanie                                                                                                                                                                                                                                                                                                         |
+| Przepływ pracy                          | Wyzwalacz                                                                                    | Działanie                                                                                                                                                                                                                                                                                                     |
 | --------------------------------- | ------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `Mantis Discord Smoke`            | ręczne uruchomienie                                                                        | Uruchamia `discord-smoke` dla wybranego odwołania.                                                                                                                                                                                                                                                               |
-| `Mantis Discord Status Reactions` | komentarz w PR lub ręczne uruchomienie                                                     | Tworzy oddzielne drzewa robocze wersji bazowej i kandydującej, uruchamia `discord-status-reactions-tool-only` dla każdej z nich, renderuje oś czasu każdej ścieżki w przeglądarce pulpitu Crabbox, generuje przycięte do ruchu podglądy GIF/MP4 za pomocą `crabbox media preview`, przesyła artefakty i publikuje osadzone materiały dowodowe w PR. |
-| `Mantis Scenario`                 | ręczne uruchomienie                                                                        | Ogólny dyspozytor: przyjmuje `scenario_id` (`discord-status-reactions-tool-only`, `discord-thread-reply-filepath-attachment`, `slack-desktop-smoke`, `telegram-live`, `telegram-desktop-proof`, `web-ui-chat-proof`), `baseline_ref`, `candidate_ref`, `pr_number` i przekazuje je do przepływu pracy odpowiedniego scenariusza. |
-| `Mantis Slack Desktop Smoke`      | ręczne uruchomienie                                                                        | Dzierżawi pulpit Crabbox z systemem Linux (domyślnie `aws`, opcjonalnie `hetzner`), uruchamia `slack-desktop-smoke --gateway-setup` dla kandydata, nagrywa pulpit, generuje podgląd ruchu, przesyła artefakty i publikuje materiały dowodowe w PR, jeśli podano numer PR. |
-| `Mantis Telegram Live`            | komentarz w PR lub ręczne uruchomienie                                                     | Uruchamia ścieżkę kontroli jakości Telegram na żywo korzystającą z API bota (`openclaw qa telegram`), zapisuje `mantis-evidence.json` na podstawie podsumowania kontroli jakości, renderuje zredagowany kod HTML materiałów dowodowych w przeglądarce pulpitu Crabbox, generuje animację GIF i publikuje materiały dowodowe w PR. Ta ścieżka nie wymaga logowania w Telegram Web. |
-| `Mantis Telegram Desktop Proof`   | etykieta PR opiekuna (`mantis: telegram-visible-proof`) wraz z komentarzem w PR albo ręczne uruchomienie | Agentowy dowód działania natywnej aplikacji Telegram Desktop przed zmianą i po niej. Przekazuje PR, odwołania wersji bazowej i kandydującej oraz instrukcje opiekuna do Codex, który uruchamia dla obu odwołań rzeczywistą ścieżkę dowodową Telegram Desktop użytkownika w Crabbox i publikuje dwukolumnową tabelę materiałów dowodowych w PR. |
-| `Mantis Web UI Chat Proof`        | komentarz w PR lub ręczne uruchomienie                                                     | Uruchamia ukierunkowany dowód czatu OpenClaw Control UI w Playwright dla kandydata, sprawdza, czy przeglądarka wysyła dane przez pozorowany Gateway, przechwytuje artefakty w postaci zrzutów ekranu i nagrań oraz publikuje materiały dowodowe w PR. Ta ścieżka stanowi wyłącznie dowód działania czatu internetowego, a nie WinUI/aplikacji natywnej ani dowolnego interfejsu wizualnego. |
+| `Mantis Discord Smoke`            | ręczne uruchomienie                                                                            | Uruchamia `discord-smoke` względem wybranego odwołania.                                                                                                                                                                                                                                                                       |
+| `Mantis Discord Status Reactions` | komentarz w PR lub ręczne uruchomienie                                                              | Tworzy osobne drzewa robocze wartości bazowej/kandydata, uruchamia `discord-status-reactions-tool-only` w każdym z nich, renderuje oś czasu każdej ścieżki w przeglądarce pulpitu Crabbox, generuje podglądy GIF/MP4 przycięte do ruchu za pomocą `crabbox media preview`, przesyła artefakty i publikuje osadzony materiał dowodowy w PR.                                 |
+| `Mantis Scenario`                 | ręczne uruchomienie                                                                            | Ogólny dyspozytor: przyjmuje `scenario_id` (`discord-status-reactions-tool-only`, `discord-thread-reply-filepath-attachment`, `slack-desktop-smoke`, `telegram-live`, `telegram-desktop-proof`, `web-ui-chat-proof`), `baseline_ref`, `candidate_ref`, `pr_number` i przekazuje je do odpowiedniego przepływu pracy scenariusza. |
+| `Mantis Slack Desktop Smoke`      | ręczne uruchomienie                                                                            | Dzierżawi pulpit Linux Crabbox (domyślnie `aws`, z możliwością wyboru `hetzner`), uruchamia `slack-desktop-smoke --gateway-setup` względem kandydata, nagrywa pulpit, generuje podgląd ruchu, przesyła artefakty i publikuje materiał dowodowy w PR, gdy podano numer PR.                                                      |
+| `Mantis Telegram Live`            | komentarz w PR lub ręczne uruchomienie                                                              | Uruchamia aktywną ścieżkę kontroli jakości Telegram przez API bota (`openclaw qa telegram`), zapisuje `mantis-evidence.json` z podsumowania kontroli jakości, renderuje zanonimizowany kod HTML materiału dowodowego w przeglądarce pulpitu Crabbox, generuje GIF z ruchem i publikuje materiał dowodowy w PR. Ta ścieżka nie wymaga logowania w Telegram Web.                               |
+| `Mantis Telegram Desktop Proof`   | etykieta PR opiekuna (`mantis: telegram-visible-proof`) oraz komentarz w PR lub ręczne uruchomienie | Agentowy, natywny materiał dowodowy przed/po z Telegram Desktop. Przekazuje PR, odwołania wartości bazowej/kandydata i instrukcje opiekuna do Codex, który uruchamia ścieżkę rzeczywistego użytkownika Crabbox Telegram Desktop dla obu odwołań i publikuje dwukolumnową tabelę materiału dowodowego w PR.                                                              |
+| `Mantis Web UI Chat Proof`        | komentarz w PR lub ręczne uruchomienie                                                              | Uruchamia ukierunkowany test Playwright czatu w interfejsie Control UI OpenClaw względem kandydata, sprawdza, czy przeglądarka wysyła dane przez atrapę Gateway, przechwytuje artefakty zrzutów ekranu/filmów i publikuje materiał dowodowy w PR. Ta ścieżka stanowi wyłącznie materiał dowodowy czatu internetowego, a nie WinUI/aplikacji natywnej ani dowolny wizualny materiał dowodowy.                           |
 
 Zarówno `Mantis Discord Status Reactions`, jak i `Mantis Telegram Live` akceptują
-`baseline_ref`/`candidate_ref` (lub `baseline=`/`candidate=` w komentarzu PR)
-i przed uruchomieniem z poświadczeniami zawierającymi sekrety sprawdzają, czy rozwiązany SHA jest przodkiem `origin/main`,
-tagiem wydania (`v*`) lub stanowi wierzchołek otwartego PR.
+`baseline_ref`/`candidate_ref` (lub `baseline=`/`candidate=` w komentarzu do PR)
+i sprawdzają przed uruchomieniem z poświadczeniami zawierającymi sekrety, czy rozwiązany SHA jest przodkiem `origin/main`, znacznikiem
+wydania (`v*`) lub nagłówkiem otwartego PR.
 
-Wyzwalacze w komentarzach z PR, których autor ma uprawnienia do zapisu/utrzymania/administrowania:
+Wyzwalacze w komentarzach z PR z uprawnieniami write/maintain/admin:
 
 ```text
 @openclaw-mantis discord status reactions
 @openclaw-mantis discord status reactions baseline=origin/main candidate=HEAD
 @openclaw-mantis telegram
 @openclaw-mantis telegram scenario=telegram-status-command
-@openclaw-mantis telegram scenarios=telegram-status-command,telegram-mentioned-message-reply
+@openclaw-mantis telegram scenarios=telegram-status-command,channel-canary
 @openclaw-mantis web ui chat
 @openclaw-mantis web-ui-chat candidate=HEAD
 ```
 
-Wyzwalacze Telegram w komentarzach domyślnie używają SHA wierzchołka PR jako kandydata i
-`telegram-status-command` jako scenariusza; akceptują `provider=aws|hetzner` oraz
+Wyzwalacze Telegram w komentarzach domyślnie używają SHA nagłówka PR jako kandydata oraz
+`telegram-status-command` jako scenariusza; akceptują `provider=aws|hetzner` i
 `lease=<cbx_...>`, aby wskazać konkretnego dostawcę Crabbox lub wstępnie rozgrzany
-pulpit. `Mantis Telegram Desktop Proof` reaguje na komentarz w PR wyłącznie wtedy, gdy
+pulpit. `Mantis Telegram Desktop Proof` odpowiada na komentarz w PR tylko wtedy, gdy
 PR ma już etykietę `mantis: telegram-visible-proof`.
 
-Wyzwalacze czatu Web UI w komentarzach domyślnie używają SHA wierzchołka PR jako kandydata. Uruchamiają
-dowód czatu Control UI z pozorowanym Gateway i publikują artefakty przeglądarki; w przypadku
-innych stron internetowych i interfejsów aplikacji natywnych użyj standardowego dowodu Playwright/przeglądarki, zrzutów ekranu
-opiekuna, Crabbox lub artefaktów lokalnych.
+Wyzwalacze czatu Web UI w komentarzach domyślnie używają SHA nagłówka PR jako kandydata. Uruchamiają
+test czatu Control UI z atrapą Gateway i publikują artefakty przeglądarki; dla
+innych stron internetowych i powierzchni aplikacji natywnych należy używać
+zwykłych testów Playwright/przeglądarkowych, zrzutów ekranu opiekuna, Crabbox lub lokalnych
+artefaktów.
 
 ClawSweeper może również uruchomić scenariusz bezpośrednio:
 
@@ -363,79 +358,86 @@ ClawSweeper może również uruchomić scenariusz bezpośrednio:
 
 ## Maszyny i sekrety
 
-Domyślne wartości lokalnego CLI Crabbox to `--provider hetzner --class beast`; można je zastąpić
-za pomocą `--provider`, `--class`/`--machine-class` albo
+Domyślne ustawienia lokalnego CLI Crabbox to `--provider hetzner --class beast`; można je zastąpić
+za pomocą `--provider`, `--class`/`--machine-class` lub
 `OPENCLAW_MANTIS_CRABBOX_PROVIDER` / `OPENCLAW_MANTIS_CRABBOX_CLASS`. Przepływy pracy GitHub
-często zastępują obie wartości (na przykład `--class standard` oraz pole wyboru dostawcy
-`aws`/`hetzner` w przepływie pracy Slack). Jeśli dostawca jest zbyt wolny
-lub niedostępny, dodaj go za tym samym interfejsem Crabbox zamiast
-kodować na stałe rozwiązanie zapasowe.
+często zastępują oba ustawienia (na przykład `--class standard` oraz dane wejściowe wyboru dostawcy
+`aws`/`hetzner` w przepływie pracy Slack). Jeśli dostawca jest zbyt
+wolny lub niedostępny, należy dodać go za tym samym interfejsem Crabbox zamiast
+kodować na stałe mechanizm awaryjny.
 
-Konfiguracja bazowa maszyny wirtualnej: Linux z obsługującą pulpit przeglądarką Chrome/Chromium, dostępem CDP, VNC/
-noVNC, Node 22+ i pnpm, kopią roboczą OpenClaw oraz dostępem wychodzącym do
-docelowego transportu, GitHub, dostawców modeli i brokera poświadczeń.
+Konfiguracja bazowa maszyny wirtualnej: Linux z Chrome/Chromium obsługującym pulpit, dostępem CDP, VNC/
+noVNC, Node 22.22.3+, 24.15+ lub 25.9+ i pnpm, kopią roboczą OpenClaw oraz
+dostępem wychodzącym do docelowego transportu, GitHub, dostawców modeli i
+brokera poświadczeń.
 
-Nazwy sekretów używane w przepływach pracy Mantis:
+Nazwy poświadczeń i zmiennych środowiskowych używane w poleceniach i przepływach pracy Mantis:
 
 - `OPENCLAW_QA_DISCORD_MANTIS_BOT_TOKEN`
-- `OPENCLAW_QA_DISCORD_DRIVER_BOT_TOKEN`
-- `OPENCLAW_QA_DISCORD_SUT_BOT_TOKEN`
 - `OPENCLAW_QA_DISCORD_GUILD_ID`
 - `OPENCLAW_QA_DISCORD_CHANNEL_ID`
-- `OPENCLAW_QA_REDACT_PUBLIC_METADATA=1` dla publicznego przesyłania artefaktów
+- Lokalne `qa mantis run --credential-source env` wymaga również
+  `OPENCLAW_QA_DISCORD_DRIVER_BOT_TOKEN`, `OPENCLAW_QA_DISCORD_SUT_BOT_TOKEN`
+  oraz `OPENCLAW_QA_DISCORD_SUT_APPLICATION_ID`. Przepływy pracy GitHub zwykle używają
+  `--credential-source convex` oraz poniższych poświadczeń brokera zamiast nieprzetworzonych
+  tokenów bota Discord.
+- `OPENCLAW_QA_REDACT_PUBLIC_METADATA=1` do publicznego przesyłania artefaktów
 - `OPENCLAW_QA_CONVEX_SITE_URL`, `OPENCLAW_QA_CONVEX_SECRET_CI`
+- `OPENAI_API_KEY` (lub właściwego dla testu Telegram Desktop
+  `OPENCLAW_MANTIS_AGENT_OPENAI_API_KEY`)
 - `CRABBOX_COORDINATOR` / `CRABBOX_COORDINATOR_TOKEN` (przepływy pracy akceptują również
-  `OPENCLAW_QA_MANTIS_CRABBOX_COORDINATOR` / `_TOKEN` jako wartości zapasowe i mapują
-  je na nazwy bez prefiksu przed wywołaniem Crabbox)
+  `OPENCLAW_QA_MANTIS_CRABBOX_COORDINATOR` / `_TOKEN` jako mechanizm awaryjny i mapują
+  je na zwykłe nazwy przed wywołaniem Crabbox)
+- `CRABBOX_ACCESS_CLIENT_ID`, `CRABBOX_ACCESS_CLIENT_SECRET`
 - `MANTIS_GITHUB_APP_ID`, `MANTIS_GITHUB_APP_PRIVATE_KEY`
 
-Program uruchamiający Mantis nigdy nie może wypisywać tokenów botów Discord/Slack/Telegram,
+Program uruchamiający Mantis nigdy nie może wyświetlać tokenów botów Discord/Slack/Telegram,
 kluczy API dostawców, plików cookie przeglądarki, zawartości profili uwierzytelniania, haseł VNC ani
 nieprzetworzonych ładunków poświadczeń. Jeśli token wycieknie do zgłoszenia, PR, czatu lub dziennika,
-należy go unieważnić po zapisaniu sekretu zastępczego.
+należy go obrócić po zapisaniu zastępczego sekretu.
 
-## Wyniki uruchomienia
+## Wyniki przebiegu
 
-Scenariusze transportowe przed zmianą i po niej rozróżniają następujące wyniki, aby niestabilne
-środowisko nie zostało zinterpretowane jako regresja produktu:
+Scenariusze transportu przed/po rozróżniają poniższe wyniki, aby niestabilne
+środowisko nie wyglądało jak regresja produktu:
 
-- **Błąd odtworzony**: wersja bazowa nie przeszła testu w sposób oczekiwany przez scenariusz.
-- **Awaria infrastruktury testowej**: konfiguracja środowiska, poświadczenia, API transportu, przeglądarka
-  lub dostawca zawiodły, zanim mechanizm oceny mógł dostarczyć miarodajny wynik.
+- **Błąd odtworzony**: wartość bazowa nie powiodła się w sposób oczekiwany przez scenariusz.
+- **Awaria środowiska testowego**: konfiguracja środowiska, poświadczenia, API transportu, przeglądarka
+  lub dostawca zawiodły, zanim wynik mechanizmu weryfikacji stał się miarodajny.
 
-Dowód przeglądarkowy tylko dla kandydata informuje, czy kandydat przeszedł asercje pozorowanego
-Gateway i widocznego interfejsu użytkownika; nie stwierdza odtworzenia problemu w wersji bazowej.
+Test przeglądarkowy tylko dla kandydata informuje, czy kandydat przeszedł asercje atrapy
+Gateway i widocznego interfejsu użytkownika; nie twierdzi, że odtworzono zachowanie bazowe.
 
 ## Dodawanie scenariusza
 
-Scenariusze transportu na żywo są definiowane w TypeScript osobno dla każdego transportu (zobacz
+Aktywne scenariusze transportu są definiowane w TypeScript osobno dla każdego transportu (zobacz
 `MANTIS_SCENARIO_CONFIGS` w `extensions/qa-lab/src/mantis/run.runtime.ts`, aby poznać
-strukturę Discord przed zmianą i po niej), a nie w niezależnym deklaratywnym formacie pliku.
+strukturę przed/po dla Discord), a nie w samodzielnym deklaratywnym formacie pliku.
 Każdy scenariusz wymaga: identyfikatora i tytułu, transportu, wymaganych poświadczeń, zasad
-odwołania wersji bazowej, zasad odwołania wersji kandydującej, poprawki konfiguracji OpenClaw, kroków konfiguracji/bodźca,
-oczekiwanego mechanizmu oceny wersji bazowej i kandydującej, celów przechwytywania wizualnego, limitu czasu
-oraz kroków czyszczenia.
+odwołania bazowego, zasad odwołania kandydata, poprawki konfiguracji OpenClaw, kroków
+konfiguracji/bodźca, oczekiwanego mechanizmu weryfikacji wartości bazowej i kandydata, celów przechwytywania
+wizualnego, budżetu limitu czasu oraz kroków czyszczenia.
 
-Skoncentrowany dowód przeglądarkowy obejmujący wyłącznie kandydata może wykorzystywać dedykowany, deterministyczny test E2E
-i przepływ pracy. Należy wyraźnie określić jego zakres, zweryfikować referencję kandydata przed
-wykonaniem, odizolować publikowanie oparte na sekretach i wygenerować ten sam kontrakt
-manifestu dowodów.
+Ukierunkowany test przeglądarkowy tylko dla kandydata może korzystać z dedykowanego deterministycznego testu E2E
+i przepływu pracy. Należy jasno określić jego zakres, sprawdzić odwołanie kandydata przed
+wykonaniem, odizolować publikowanie wspierane sekretami i wygenerować manifest materiału dowodowego
+zgodny z tym samym kontraktem.
 
-Preferuj małe, typowane kryteria weryfikacji zamiast kontroli wizyjnych: stan reakcji w Discordzie lub
-odwołania do wiadomości, `ts` wątku w Slacku/stan reakcji w API, identyfikatory
-i nagłówki wiadomości e-mail. Używaj zrzutów ekranu z przeglądarki, gdy interfejs użytkownika jest jedynym wiarygodnym źródłem obserwacji,
-a kontrole wizyjne traktuj jako uzupełnienie kryterium weryfikacji opartego na API platformy, jeśli takie istnieje.
+Preferowane są małe, typowane mechanizmy weryfikacji zamiast kontroli wizyjnych: stan reakcji Discord lub
+odwołania do wiadomości, stan API `ts`/reakcji w wątku Slack, identyfikatory
+i nagłówki wiadomości e-mail. Zrzutów ekranu przeglądarki należy używać, gdy interfejs użytkownika jest jedyną wiarygodną obserwacją,
+a kontrole wizyjne powinny być dodatkiem do mechanizmu weryfikacji opartego na API platformy, jeśli taki istnieje.
 
-Po Discordzie, Slacku i Telegramie ten sam schemat modułu uruchamiającego można rozszerzyć na WhatsApp
-(logowanie za pomocą kodu QR, ponowna identyfikacja, dostarczanie, multimedia, reakcje) oraz Matrix
-(szyfrowane pokoje, relacje wątków/odpowiedzi, wznawianie po ponownym uruchomieniu); żadne z nich nie jest
-jeszcze zaimplementowane.
+Po Discord, Slack i Telegram ten sam model programu uruchamiającego można rozszerzyć na WhatsApp
+(logowanie kodem QR, ponowna identyfikacja, dostarczanie, multimedia, reakcje) oraz Matrix
+(szyfrowane pokoje, relacje wątków/odpowiedzi, wznowienie po restarcie); żaden z nich nie jest
+jeszcze zaimplementowany.
 
 ## Otwarte pytania
 
-- Który bot Discorda powinien pełnić rolę sterownika, a który testowanego systemu, gdy istniejący bot Mantis
+- Który bot Discord powinien pełnić rolę sterownika, a który SUT, gdy istniejący bot Mantis
   jest używany ponownie?
-- Jak długo GitHub powinien przechowywać artefakty Mantis dotyczące PR-ów?
+- Jak długo GitHub powinien przechowywać artefakty Mantis dla PR-ów?
 - Kiedy ClawSweeper powinien automatycznie zalecać scenariusz Mantis zamiast
   czekać na polecenie opiekuna?
-- Czy przed przesłaniem zrzutów ekranu do publicznych PR-ów należy zamazywać lub przycinać ich zawartość?
+- Czy przed przesłaniem do publicznych PR-ów zrzuty ekranu powinny zostać zanonimizowane lub przycięte?

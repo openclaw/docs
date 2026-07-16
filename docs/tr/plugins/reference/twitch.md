@@ -1,21 +1,22 @@
 ---
 read_when:
-    - twitch Pluginini kuruyor, yapılandırıyor veya denetliyorsunuz
-summary: Sohbet ve moderasyon iş akışları için OpenClaw Twitch kanal plugini.
+    - twitch pluginini kuruyor, yapılandırıyor veya denetliyorsunuz
+summary: Sohbet ve moderasyon iş akışları için OpenClaw Twitch kanal Plugin'i.
 title: Twitch Plugin'i
 x-i18n:
-    generated_at: "2026-07-12T12:35:20Z"
+    generated_at: "2026-07-16T17:47:00Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: fc1bbe93d4d91427cf9c53abd4ed6833c9a06520f466cc31a24f94f6f0f327d7
+    source_hash: 6a931d467430d05b7a93471a1b8fd4b7b7d6cdc010ec0bcc5cb36d777888f105
     source_path: plugins/reference/twitch.md
     workflow: 16
 ---
 
-# Twitch Plugin
+# Twitch plugin
 
-Sohbet ve moderasyon iş akışları için OpenClaw Twitch kanal Plugin'i.
+Sohbet ve moderasyon iş akışları için OpenClaw Twitch kanal plugini.
 
 ## Dağıtım
 
@@ -24,7 +25,7 @@ Sohbet ve moderasyon iş akışları için OpenClaw Twitch kanal Plugin'i.
 
 ## Yüzey
 
-kanallar: twitch
+kanallar: `twitch`
 
 ## İlgili belgeler
 

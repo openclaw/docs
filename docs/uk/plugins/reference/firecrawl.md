@@ -1,30 +1,31 @@
 ---
 read_when:
     - Ви встановлюєте, налаштовуєте або перевіряєте Plugin firecrawl
-summary: Додає інструменти, які може викликати агент. Додає підтримку постачальника веб-завантаження. Додає підтримку постачальника вебпошуку.
+summary: Додає інструменти, доступні для виклику агентом. Додає підтримку провайдера отримання вебвмісту. Додає підтримку провайдера вебпошуку.
 title: Plugin Firecrawl
 x-i18n:
-    generated_at: "2026-07-12T13:36:35Z"
+    generated_at: "2026-07-16T18:24:33Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: ca5577e6e850d947a3714e3dc62c7756faae8471e150d3cdb320a85efe3fe4f5
+    source_hash: 058bd8b3fabe5646f198789c0454a61d459efcdc9f9bb47f9b07d3eaf7396097
     source_path: plugins/reference/firecrawl.md
     workflow: 16
 ---
 
-# Plugin Firecrawl
+# Плагін Firecrawl
 
-Додає інструменти, які може викликати агент. Додає підтримку провайдера отримання вебвмісту. Додає підтримку провайдера вебпошуку.
+Додає інструменти, доступні для виклику агентом. Додає підтримку постачальника отримання вебвмісту. Додає підтримку постачальника вебпошуку.
 
 ## Розповсюдження
 
-- Пакет: `@openclaw/firecrawl-plugin`
+- Пакунок: `@openclaw/firecrawl-plugin`
 - Спосіб установлення: npm; ClawHub: `clawhub:@openclaw/firecrawl-plugin`
 
-## Поверхня
+## Інтерфейс
 
-контракти: tools, webFetchProviders, webSearchProviders
+контракти: `tools`, `webFetchProviders`, `webSearchProviders`
 
 ## Пов’язана документація
 

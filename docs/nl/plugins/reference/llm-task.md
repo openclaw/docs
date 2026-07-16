@@ -1,14 +1,15 @@
 ---
 read_when:
-    - U installeert, configureert of controleert de llm-task-Plugin
-summary: Generieke LLM-tool die uitsluitend JSON gebruikt voor gestructureerde taken en vanuit workflows kan worden aangeroepen.
+    - Je installeert, configureert of controleert de llm-task-plugin
+summary: Generieke LLM-tool met uitsluitend JSON voor gestructureerde taken, aanroepbaar vanuit workflows.
 title: LLM-taakplugin
 x-i18n:
-    generated_at: "2026-07-12T09:13:49Z"
+    generated_at: "2026-07-16T16:06:19Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 527b0c04ff3d4b5342f7505da3a37ee108bf1536dde5469a1948b8dd35fed9ac
+    source_hash: f8fc174bfe90291cd834aeae37acc80cd4026ec563a3e39c14248a6f392922a4
     source_path: plugins/reference/llm-task.md
     workflow: 16
 ---
@@ -20,8 +21,8 @@ Generieke LLM-tool die uitsluitend JSON gebruikt voor gestructureerde taken die 
 ## Distributie
 
 - Pakket: `@openclaw/llm-task`
-- Installatieroute: opgenomen in OpenClaw
+- Installatieroute: inbegrepen in OpenClaw
 
 ## Oppervlak
 
-contracten: tools
+contracten: `tools`

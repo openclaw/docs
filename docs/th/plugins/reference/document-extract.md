@@ -1,30 +1,31 @@
 ---
 read_when:
-    - คุณกำลังติดตั้ง กำหนดค่า หรือตรวจสอบ Plugin สำหรับการแยกข้อมูลจากเอกสาร
-summary: แยกข้อความและรูปภาพหน้าสำรองจากเอกสารแนบภายในเครื่อง
-title: Plugin แยกข้อมูลจากเอกสาร
+    - คุณกำลังติดตั้ง กำหนดค่า หรือตรวจสอบ Plugin document-extract
+summary: แยกข้อความและภาพหน้าสำรองจากไฟล์เอกสารแนบในเครื่อง
+title: Plugin แยกข้อมูลเอกสาร
 x-i18n:
-    generated_at: "2026-07-12T16:29:28Z"
+    generated_at: "2026-07-16T19:32:39Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 3745783e57c15e75caf28491c6693c64fea018593662a43268e299ed42c3d574
+    source_hash: 173a860c28f293b52ed4a155dfb308713f0c0f5ef22c988c26b2440e1d63cf23
     source_path: plugins/reference/document-extract.md
     workflow: 16
 ---
 
 # Plugin การแยกเอกสาร
 
-แยกข้อความและใช้รูปภาพของหน้าเป็นทางเลือกสำรองจากไฟล์แนบเอกสารในเครื่อง
+แยกข้อความและรูปภาพหน้าสำรองจากไฟล์แนบเอกสารภายในเครื่อง
 
 ## การเผยแพร่
 
 - แพ็กเกจ: `@openclaw/document-extract-plugin`
 - ช่องทางการติดตั้ง: รวมอยู่ใน OpenClaw
 
-## ส่วนเชื่อมต่อ
+## ส่วนติดต่อ
 
-สัญญา: documentExtractors
+สัญญา: `documentExtractors`
 
 ## เอกสารที่เกี่ยวข้อง
 

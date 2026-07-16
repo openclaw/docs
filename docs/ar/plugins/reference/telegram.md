@@ -1,21 +1,22 @@
 ---
 read_when:
-    - أنت تثبّت Plugin ‏Telegram أو تهيّئه أو تدقّق فيه
+    - أنت تثبّت Plugin الخاص بـ Telegram أو تهيّئه أو تدقّق فيه
 summary: يضيف واجهة قناة Telegram لإرسال رسائل OpenClaw واستقبالها.
-title: Plugin ‏Telegram
+title: Plugin Telegram
 x-i18n:
-    generated_at: "2026-07-12T06:16:48Z"
+    generated_at: "2026-07-16T14:53:20Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: cada3e82983630e71fa5cc32aa2ef0801eff1cab620f1e7f5c2dfdd3a565924e
+    source_hash: dbd5996e8c937820ef1280eaadcbdede3f52c2f2fc435025bb9707229d8822cb
     source_path: plugins/reference/telegram.md
     workflow: 16
 ---
 
 # Plugin Telegram
 
-يضيف واجهة قناة Telegram لإرسال رسائل OpenClaw واستقبالها.
+يضيف واجهة قناة Telegram لإرسال رسائل OpenClaw واستلامها.
 
 ## التوزيع
 
@@ -24,7 +25,7 @@ x-i18n:
 
 ## الواجهة
 
-القنوات: telegram
+القنوات: `telegram`
 
 ## الوثائق ذات الصلة
 

@@ -1,24 +1,25 @@
 ---
 read_when:
-    - Vous souhaitez la boucle de développement locale la plus rapide (bun + surveillance)
-    - Vous rencontrez des problèmes avec les scripts d’installation, de correctifs ou de cycle de vie de Bun
-summary: 'Flux de travail Bun (expérimental) : installation et pièges par rapport à pnpm'
-title: Bun (expérimental)
+    - Vous souhaitez installer des dépendances ou exécuter des scripts de paquet avec Bun
+    - Vous rencontrez des problèmes avec les scripts d’installation, de correctif ou de cycle de vie de Bun
+summary: Flux de travail Bun pour les installations et les scripts de paquet ; Node est requis à l’exécution
+title: Bun
 x-i18n:
-    generated_at: "2026-07-12T02:43:57Z"
+    generated_at: "2026-07-16T13:20:57Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: b836be354166ceb073d170e472e8b69c3f517e754fe71417df1d85d27a18ae94
+    source_hash: b822f700123b91c785eb881ebf28a63e77915b46dfd44beb9dbf63fb71aaa0d2
     source_path: install/bun.md
     workflow: 16
 ---
 
 <Warning>
-Bun n’est pas recommandé pour l’exécution du Gateway (problèmes connus avec WhatsApp et Telegram). Utilisez Node en production.
+Bun ne peut pas exécuter la CLI ni le Gateway OpenClaw, car il ne fournit pas l’API `node:sqlite` requise. Installez une version de Node prise en charge pour toutes les commandes d’exécution d’OpenClaw.
 </Warning>
 
-Bun est un environnement d’exécution local facultatif permettant d’exécuter directement TypeScript (`bun run ...`, `bun --watch ...`). Le gestionnaire de paquets par défaut reste `pnpm`, qui est entièrement pris en charge et utilisé par les outils de documentation. Bun ne peut pas utiliser `pnpm-lock.yaml` et l’ignore.
+Bun reste utilisable comme programme facultatif d’installation des dépendances et d’exécution des scripts de paquet. Le gestionnaire de paquets par défaut reste `pnpm`, qui est entièrement pris en charge et utilisé par les outils de documentation. Bun ne peut pas utiliser `pnpm-lock.yaml` et l’ignore.
 
 ## Installation
 
@@ -28,7 +29,7 @@ Bun est un environnement d’exécution local facultatif permettant d’exécute
     bun install
     ```
 
-    `bun.lock` / `bun.lockb` sont ignorés par Git, ce qui évite toute modification parasite du dépôt. Pour empêcher complètement l’écriture du fichier de verrouillage :
+    `bun.lock` / `bun.lockb` sont ignorés par Git, donc le dépôt ne subit aucune modification parasite. Pour éviter totalement l’écriture des fichiers de verrouillage :
 
     ```sh
     bun install --no-save
@@ -40,15 +41,18 @@ Bun est un environnement d’exécution local facultatif permettant d’exécute
     bun run build
     bun run vitest run
     ```
+
+    Les commandes qui lancent OpenClaw lui-même doivent toujours être exécutées avec Node.
+
   </Step>
 </Steps>
 
 ## Scripts de cycle de vie
 
-Bun bloque les scripts de cycle de vie des dépendances sauf s’ils sont explicitement approuvés. Pour ce dépôt, les scripts couramment bloqués ne sont pas nécessaires :
+Bun bloque les scripts de cycle de vie des dépendances, sauf s’ils sont explicitement approuvés. Pour ce dépôt, les scripts couramment bloqués ne sont pas nécessaires :
 
-- `baileys` `preinstall` : vérifie que la version majeure de Node est supérieure ou égale à 20 (OpenClaw nécessite Node 22.19+ ou 23.11+, Node 24 étant recommandé)
-- `protobufjs` `postinstall` : émet des avertissements concernant des systèmes de gestion des versions incompatibles (aucun artefact de compilation)
+- `baileys` `preinstall` : vérifie que la version majeure de Node est >= 20 (OpenClaw nécessite Node 22.22.3+, 24.15+ ou 25.9+, Node 24 étant recommandé)
+- `protobufjs` `postinstall` : émet des avertissements concernant des schémas de version incompatibles (aucun artefact de compilation)
 
 Si vous rencontrez un problème d’exécution nécessitant ces scripts, approuvez-les explicitement :
 
@@ -56,12 +60,12 @@ Si vous rencontrez un problème d’exécution nécessitant ces scripts, approuv
 bun pm trust baileys protobufjs
 ```
 
-## Points à prendre en compte
+## Points d’attention
 
-Certains scripts de paquets utilisent explicitement `pnpm` en interne (par exemple `check:docs`, `ui:*`, `protocol:check`). Leur exécution avec `bun run` lance tout de même `pnpm` dans un interpréteur de commandes ; exécutez-les donc directement avec `pnpm`.
+Certains scripts de paquet utilisent explicitement `pnpm` en interne (par exemple `check:docs`, `ui:*`, `protocol:check`). Leur exécution via `bun run` lance tout de même `pnpm` dans un shell ; exécutez-les donc directement via `pnpm`.
 
-## Pages connexes
+## Voir aussi
 
-- [Présentation de l’installation](/fr/install)
+- [Vue d’ensemble de l’installation](/fr/install)
 - [Node.js](/fr/install/node)
 - [Mise à jour](/fr/install/updating)

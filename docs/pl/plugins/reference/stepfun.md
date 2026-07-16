@@ -1,31 +1,32 @@
 ---
 read_when:
-    - Instalujesz, konfigurujesz lub przeprowadzasz audyt pluginu stepfun
+    - Instalowanie, konfigurowanie lub audytowanie pluginu stepfun
 summary: Dodaje do OpenClaw obsługę dostawcy modeli StepFun i StepFun Plan.
 title: Plugin StepFun
 x-i18n:
-    generated_at: "2026-07-12T15:30:39Z"
+    generated_at: "2026-07-16T18:49:39Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 02e2b7fbfb03a348a8a5d368e6fd039cf834ab7d2a9bf82f79729f360660b5de
+    source_hash: f7eec327cc70524383af493c7f2c7a988877dca0108edd9061a8b5a38c6f4c7e
     source_path: plugins/reference/stepfun.md
     workflow: 16
 ---
 
 # Plugin StepFun
 
-Dodaje do OpenClaw obsługę dostawców modeli StepFun i StepFun Plan.
+Dodaje do OpenClaw obsługę dostawcy modeli StepFun i StepFun Plan.
 
 ## Dystrybucja
 
 - Pakiet: `@openclaw/stepfun-provider`
 - Sposób instalacji: npm; ClawHub: `clawhub:@openclaw/stepfun-provider`
 
-## Zakres
+## Powierzchnia
 
-dostawcy: stepfun, stepfun-plan
+dostawcy: `stepfun`, `stepfun-plan`
 
 ## Powiązana dokumentacja
 
-- [stepfun](/pl/providers/stepfun)
+- [StepFun](/pl/providers/stepfun)

@@ -1,41 +1,42 @@
 ---
 read_when:
     - Vous souhaitez automatiser le déploiement du serveur avec un renforcement de la sécurité
-    - Vous avez besoin d’une configuration isolée par pare-feu avec un accès VPN
+    - Vous avez besoin d’une configuration isolée par un pare-feu avec un accès VPN
     - Vous effectuez un déploiement sur des serveurs Debian/Ubuntu distants
 summary: Installation automatisée et renforcée d’OpenClaw avec Ansible, le VPN Tailscale et l’isolation par pare-feu
 title: Ansible
 x-i18n:
-    generated_at: "2026-07-12T02:55:21Z"
+    generated_at: "2026-07-16T13:26:53Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 8d3626ab364169609f92f636cb6b86cb980dca2b235500e748296128765444ae
+    source_hash: 2f6b473cd5a8b80389b5ed746c4e2f2729d95bb15a2daaaa183fbdfbe144e647
     source_path: install/ansible.md
     workflow: 16
 ---
 
-Déployez OpenClaw sur des serveurs de production avec **[openclaw-ansible](https://github.com/openclaw/openclaw-ansible)**, un programme d’installation automatisé doté d’une architecture axée sur la sécurité.
+Déployez OpenClaw sur des serveurs de production avec **[openclaw-ansible](https://github.com/openclaw/openclaw-ansible)**, un programme d’installation automatisé doté d’une architecture privilégiant la sécurité.
 
 <Info>
-Le dépôt [openclaw-ansible](https://github.com/openclaw/openclaw-ansible) constitue la source de référence pour le déploiement avec Ansible. Cette page en présente un aperçu rapide.
+Le dépôt [openclaw-ansible](https://github.com/openclaw/openclaw-ansible) constitue la source de référence pour le déploiement Ansible. Cette page en donne un aperçu rapide.
 </Info>
 
 ## Prérequis
 
-| Exigence    | Détails                                                              |
-| ----------- | -------------------------------------------------------------------- |
-| Système     | Debian 11+ ou Ubuntu 20.04+                                          |
-| Accès       | Privilèges root ou sudo                                              |
-| Réseau      | Connexion Internet pour l’installation des paquets                   |
-| Ansible     | 2.14+ (installé automatiquement par le script de démarrage rapide)   |
+| Exigence | Détails                                                    |
+| -------- | ---------------------------------------------------------- |
+| Système d’exploitation | Debian 11+ ou Ubuntu 20.04+                    |
+| Accès    | Privilèges root ou sudo                                    |
+| Réseau   | Connexion Internet pour l’installation des paquets         |
+| Ansible  | 2.14+ (installé automatiquement par le script de démarrage rapide) |
 
 ## Ce que vous obtenez
 
-- Sécurité donnant la priorité au pare-feu : isolation UFW + Docker (seuls SSH + Tailscale sont accessibles)
+- Sécurité privilégiant le pare-feu : UFW + isolation Docker (seuls SSH + Tailscale sont accessibles)
 - VPN Tailscale pour l’accès à distance sans exposer publiquement les services
-- Docker pour des conteneurs de bac à sable isolés avec des liaisons limitées à l’hôte local
-- Intégration à systemd avec renforcement de la sécurité et démarrage automatique au lancement du système
+- Docker pour des conteneurs sandbox isolés avec des liaisons limitées à localhost
+- Intégration à systemd avec renforcement de la sécurité et démarrage automatique au démarrage du système
 - Configuration en une seule commande
 
 ## Démarrage rapide
@@ -48,13 +49,15 @@ curl -fsSL https://raw.githubusercontent.com/openclaw/openclaw-ansible/main/inst
 
 1. Tailscale (VPN maillé pour un accès à distance sécurisé)
 2. Pare-feu UFW (ports SSH + Tailscale uniquement)
-3. Docker CE + Compose V2 (moteur de bac à sable par défaut des agents)
-4. Node.js et pnpm (OpenClaw nécessite Node 22.19+ ou 23.11+ ; Node 24 est recommandé)
+3. Docker CE + Compose V2 (backend sandbox par défaut des agents)
+4. Node.js et pnpm (OpenClaw nécessite Node 22.22.3+, 24.15+ ou 25.9+ ; Node 24 est recommandé)
 5. OpenClaw, installé directement sur l’hôte et non conteneurisé
 6. Un service systemd avec renforcement de la sécurité
 
 <Note>
-Le Gateway s’exécute directement sur l’hôte, et non dans Docker. La mise en bac à sable des agents est facultative ; ce playbook installe Docker, car il s’agit du moteur de bac à sable par défaut. Consultez [Mise en bac à sable](/fr/gateway/sandboxing) pour découvrir les autres moteurs.
+Le Gateway s’exécute directement sur l’hôte, et non dans Docker. La mise en sandbox des agents est
+facultative ; ce playbook installe Docker, car il s’agit du backend sandbox
+par défaut. Consultez [Mise en sandbox](/fr/gateway/sandboxing) pour découvrir les autres backends.
 </Note>
 
 ## Configuration après l’installation
@@ -119,7 +122,7 @@ nmap -p- YOUR_SERVER_IP
 
 Seul le port 22 (SSH) doit être ouvert. Le Gateway et Docker restent verrouillés.
 
-Docker est installé pour les bacs à sable des agents (exécution isolée des outils), et non pour exécuter le Gateway. Consultez [Bac à sable multi-agents et outils](/fr/tools/multi-agent-sandbox-tools) pour configurer le bac à sable.
+Docker est installé pour les sandbox d’agents (exécution isolée des outils), et non pour exécuter le Gateway. Consultez [Sandbox multi-agent et outils](/fr/tools/multi-agent-sandbox-tools) pour configurer la sandbox.
 
 ## Installation manuelle
 
@@ -158,7 +161,7 @@ Docker est installé pour les bacs à sable des agents (exécution isolée des o
 
 Le programme d’installation Ansible configure OpenClaw pour les mises à jour manuelles ; consultez [Mise à jour](/fr/install/updating) pour connaître la procédure standard.
 
-Pour réexécuter le playbook (par exemple, après des modifications de la configuration) :
+Pour réexécuter le playbook (par exemple, après des modifications de configuration) :
 
 ```bash
 cd openclaw-ansible
@@ -171,13 +174,13 @@ Cette opération est idempotente et peut être exécutée plusieurs fois en tout
 
 <AccordionGroup>
   <Accordion title="Le pare-feu bloque ma connexion">
-    - Connectez-vous d’abord via le VPN Tailscale ; le Gateway est conçu pour n’être accessible que de cette manière.
+    - Connectez-vous d’abord via le VPN Tailscale ; par conception, le Gateway n’est accessible que de cette manière.
     - SSH (port 22) est toujours autorisé.
 
   </Accordion>
   <Accordion title="Le service ne démarre pas">
     ```bash
-    # Consulter les journaux
+    # Vérifier les journaux
     sudo journalctl -u openclaw -n 100
 
     # Vérifier les autorisations
@@ -190,24 +193,24 @@ Cette opération est idempotente et peut être exécutée plusieurs fois en tout
     ```
 
   </Accordion>
-  <Accordion title="Problèmes liés au bac à sable Docker">
+  <Accordion title="Problèmes liés à la sandbox Docker">
     ```bash
     # Vérifier que Docker est en cours d’exécution
     sudo systemctl status docker
 
-    # Vérifier l’image du bac à sable
+    # Vérifier l’image de la sandbox
     sudo docker images | grep openclaw-sandbox
 
-    # Construire l’image du bac à sable si elle est absente (nécessite une copie de travail des sources)
+    # Construire l’image de la sandbox si elle est absente (nécessite un checkout des sources)
     cd /opt/openclaw/openclaw
     sudo -u openclaw ./scripts/sandbox-setup.sh
-    # Pour les installations npm sans copie de travail des sources, consultez
+    # Pour les installations npm sans checkout des sources, consultez
     # https://docs.openclaw.ai/gateway/sandboxing#images-and-setup
     ```
 
   </Accordion>
   <Accordion title="Échec de la connexion au canal">
-    Assurez-vous d’exécuter les commandes en tant qu’utilisateur `openclaw` :
+    Vérifiez que vous exécutez les commandes en tant qu’utilisateur `openclaw` :
     ```bash
     sudo -i -u openclaw
     openclaw channels login --channel <name>
@@ -223,9 +226,9 @@ Pour obtenir des informations détaillées sur l’architecture de sécurité et
 - [Détails techniques](https://github.com/openclaw/openclaw-ansible/blob/main/docs/architecture.md)
 - [Guide de dépannage](https://github.com/openclaw/openclaw-ansible/blob/main/docs/troubleshooting.md)
 
-## Contenu associé
+## Ressources associées
 
-- [openclaw-ansible](https://github.com/openclaw/openclaw-ansible) : guide complet de déploiement
-- [Docker](/fr/install/docker) : configuration conteneurisée du Gateway
-- [Mise en bac à sable](/fr/gateway/sandboxing) : configuration du bac à sable des agents
-- [Bac à sable multi-agents et outils](/fr/tools/multi-agent-sandbox-tools) : isolation par agent
+- [openclaw-ansible](https://github.com/openclaw/openclaw-ansible) : guide de déploiement complet
+- [Docker](/fr/install/docker) : configuration d’un Gateway conteneurisé
+- [Mise en sandbox](/fr/gateway/sandboxing) : configuration de la sandbox des agents
+- [Sandbox multi-agent et outils](/fr/tools/multi-agent-sandbox-tools) : isolation par agent

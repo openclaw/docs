@@ -1,31 +1,32 @@
 ---
 read_when:
     - Anda sedang menginstal, mengonfigurasi, atau mengaudit plugin google-meet
-summary: Plugin peserta Google Meet OpenClaw untuk bergabung ke panggilan melalui transport Chrome atau Twilio.
+summary: Plugin peserta Google Meet OpenClaw untuk bergabung dalam panggilan melalui transport Chrome atau Twilio.
 title: Plugin Google Meet
 x-i18n:
-    generated_at: "2026-07-12T14:28:25Z"
+    generated_at: "2026-07-16T18:31:57Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 2f0086a8b48f6e120ad391a99d60a14d7682910ca3ad176e41a51b341e9bdb49
+    source_hash: fc104cbff8e36ec1eb7288beaf249b321a638cd32ef09d3809266a5344b29959
     source_path: plugins/reference/google-meet.md
     workflow: 16
 ---
 
 # Plugin Google Meet
 
-Plugin peserta Google Meet OpenClaw untuk bergabung ke panggilan melalui transport Chrome atau Twilio.
+Plugin peserta Google Meet OpenClaw untuk bergabung dalam panggilan melalui transport Chrome atau Twilio.
 
 ## Distribusi
 
 - Paket: `@openclaw/google-meet`
-- Jalur instalasi: npm; ClawHub
+- Rute instalasi: npm; ClawHub
 
-## Antarmuka
+## Permukaan
 
-kontrak: alat
+kontrak: `tools`
 
 ## Dokumentasi terkait
 
-- [google-meet](/id/plugins/google-meet)
+- [Google Meet](/id/plugins/google-meet)

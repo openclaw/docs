@@ -1,19 +1,20 @@
 ---
 read_when:
-    - شما در حال نصب، پیکربندی یا ممیزی Plugin گرادیوم هستید
+    - در حال نصب، پیکربندی یا ممیزی Plugin ‏gradium هستید
 summary: پشتیبانی از ارائه‌دهندهٔ تبدیل متن به گفتار را اضافه می‌کند.
 title: Plugin گرادیوم
 x-i18n:
-    generated_at: "2026-07-12T10:29:50Z"
+    generated_at: "2026-07-16T17:02:02Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 4ae70f3e901d44c238d6e1abcec13f67c0d19df6f82d92e365c3ddf0355ea23d
+    source_hash: 745da84ab0ca6af245437febb4edb23a24ad3e302724c18ec477899f011d20c0
     source_path: plugins/reference/gradium.md
     workflow: 16
 ---
 
-# Plugin گرادیوم
+# Plugin Gradium
 
 پشتیبانی از ارائه‌دهندهٔ تبدیل متن به گفتار را اضافه می‌کند.
 
@@ -24,8 +25,8 @@ x-i18n:
 
 ## سطح
 
-قراردادها: speechProviders
+قراردادها: `speechProviders`
 
 ## مستندات مرتبط
 
-- [گرادیوم](/fa/providers/gradium)
+- [gradium](/fa/providers/gradium)

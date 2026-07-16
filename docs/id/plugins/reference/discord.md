@@ -1,14 +1,15 @@
 ---
 read_when:
-    - Anda sedang memasang, mengonfigurasi, atau mengaudit plugin Discord
-summary: Plugin saluran Discord OpenClaw untuk saluran, DM, perintah, dan peristiwa aplikasi.
+    - Anda sedang menginstal, mengonfigurasi, atau mengaudit plugin Discord
+summary: Plugin saluran Discord OpenClaw untuk saluran, pesan langsung, perintah, dan peristiwa aplikasi.
 title: Plugin Discord
 x-i18n:
-    generated_at: "2026-07-12T14:31:12Z"
+    generated_at: "2026-07-16T18:25:42Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 9e3305f8ad8eb84fd350bdfa0983b4fd8f848e0697ecf3e779e31cd6cb44dbf5
+    source_hash: 1ea967057cff724152c080ea4629197d939688d1e9d009f5fc784357d3d5c75f
     source_path: plugins/reference/discord.md
     workflow: 16
 ---
@@ -20,12 +21,12 @@ Plugin saluran Discord OpenClaw untuk saluran, DM, perintah, dan peristiwa aplik
 ## Distribusi
 
 - Paket: `@openclaw/discord`
-- Jalur instalasi: npm; ClawHub
+- Rute instalasi: npm; ClawHub
 
-## Cakupan
+## Permukaan
 
-saluran: discord; kontrak: transcriptSourceProviders; Skills
+saluran: `discord`; kontrak: `tools`, `transcriptSourceProviders`; Skills
 
 ## Dokumentasi terkait
 
-- [discord](/id/channels/discord)
+- [Discord](/id/channels/discord)

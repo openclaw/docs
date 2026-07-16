@@ -1,100 +1,84 @@
 ---
 read_when:
-    - OpenClaw को Railway पर तैनात करना
-    - आप ब्राउज़र-आधारित नियंत्रण UI के साथ एक-क्लिक क्लाउड परिनियोजन चाहते हैं
-summary: एक-क्लिक टेम्पलेट के साथ Railway पर OpenClaw तैनात करें
-title: रेलवे
+    - Railway पर OpenClaw डिप्लॉय करना
+    - आप ब्राउज़र-आधारित Control UI के साथ एक-क्लिक क्लाउड डिप्लॉयमेंट चाहते हैं
+summary: एक-क्लिक टेम्पलेट से Railway पर OpenClaw डिप्लॉय करें
+title: Railway
 x-i18n:
-    generated_at: "2026-06-28T23:23:43Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T15:41:20Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 989c8467ead04b8aa7c94101abd99c936ecd3e451fe728afe8c2f2bd5a78df48
+    source_hash: cbef00b8de61545e9971b18164472c2f47fe607f69ec36f83a27a11b65ea863f
     source_path: install/railway.mdx
     workflow: 16
 ---
 
-# Railway
+एक-क्लिक टेम्पलेट से Railway पर OpenClaw तैनात करें और वेब Control UI के माध्यम से इसे एक्सेस करें। यह सबसे आसान "सर्वर पर टर्मिनल की आवश्यकता नहीं" वाला तरीका है: Railway आपके लिए Gateway चलाता है।
 
-एक-क्लिक टेम्पलेट के साथ Railway पर OpenClaw डिप्लॉय करें और इसे वेब Control UI के माध्यम से एक्सेस करें।
-यह सबसे आसान "सर्वर पर कोई टर्मिनल नहीं" रास्ता है: Railway आपके लिए Gateway चलाता है।
-
-## त्वरित चेकलिस्ट (नए उपयोगकर्ता)
-
-1. **Deploy on Railway** (नीचे) पर क्लिक करें।
-2. `/data` पर माउंट किया गया एक **Volume** जोड़ें।
-3. आवश्यक **Variables** सेट करें (कम से कम `OPENCLAW_GATEWAY_PORT` और `OPENCLAW_GATEWAY_TOKEN`)।
-4. पोर्ट `8080` पर **HTTP Proxy** सक्षम करें।
-5. `https://<your-railway-domain>/openclaw` खोलें और कॉन्फ़िगर किए गए साझा सीक्रेट का उपयोग करके कनेक्ट करें। यह टेम्पलेट डिफ़ॉल्ट रूप से `OPENCLAW_GATEWAY_TOKEN` का उपयोग करता है; यदि आप इसे पासवर्ड प्रमाणीकरण से बदलते हैं, तो इसके बजाय उस पासवर्ड का उपयोग करें।
-
-## एक-क्लिक डिप्लॉय
+## एक-क्लिक परिनियोजन
 
 <a href="https://railway.com/deploy/clawdbot-railway-template" target="_blank" rel="noreferrer">
-  Railway पर डिप्लॉय करें
+  Railway पर तैनात करें
 </a>
 
-डिप्लॉय के बाद, अपना सार्वजनिक URL **Railway → your service → Settings → Domains** में खोजें।
+<Steps>
+  <Step title="टेम्पलेट तैनात करें">
+    ऊपर **Deploy on Railway** पर क्लिक करें।
+  </Step>
 
-Railway या तो:
+<Step title="वॉल्यूम जोड़ें">
+  `/data` पर माउंट किया गया वॉल्यूम संलग्न करें (स्थायी स्थिति के लिए आवश्यक)।
+</Step>
 
-- आपको एक जनरेट किया गया डोमेन देगा (अक्सर `https://<something>.up.railway.app`), या
-- यदि आपने कोई कस्टम डोमेन जोड़ा है, तो उसका उपयोग करेगा।
+  <Step title="वेरिएबल सेट करें">
+    सेवा पर आवश्यक **Variables** सेट करें:
 
-फिर खोलें:
+    - `OPENCLAW_GATEWAY_PORT=8080` (आवश्यक -- Public Networking में पोर्ट से मेल खाना चाहिए)
+    - `OPENCLAW_GATEWAY_TOKEN` (आवश्यक; इसे एडमिन सीक्रेट मानें)
+    - `OPENCLAW_STATE_DIR=/data/.openclaw` (अनुशंसित)
+    - `OPENCLAW_WORKSPACE_DIR=/data/workspace` (अनुशंसित)
 
-- `https://<your-railway-domain>/openclaw` — Control UI
+  </Step>
+
+<Step title="सार्वजनिक नेटवर्किंग सक्षम करें">
+  **Public Networking** के अंतर्गत, पोर्ट `8080` पर सेवा के लिए **HTTP Proxy** सक्षम करें।
+</Step>
+
+  <Step title="कनेक्ट करें">
+    अपना सार्वजनिक URL **Railway -> your service -> Settings -> Domains** में खोजें -- यह या तो जनरेट किया गया डोमेन (अक्सर `https://<something>.up.railway.app`) होगा या आपका संलग्न कस्टम डोमेन।
+
+    `https://<your-railway-domain>/openclaw` खोलें और कॉन्फ़िगर किए गए साझा सीक्रेट का उपयोग करके कनेक्ट करें। टेम्पलेट डिफ़ॉल्ट रूप से `OPENCLAW_GATEWAY_TOKEN` का उपयोग करता है; यदि आप इसे पासवर्ड प्रमाणीकरण से बदलते हैं, तो इसके बजाय उस पासवर्ड का उपयोग करें।
+
+  </Step>
+</Steps>
 
 ## आपको क्या मिलता है
 
-- होस्टेड OpenClaw Gateway + Control UI
-- Railway Volume (`/data`) के माध्यम से स्थायी स्टोरेज, ताकि `openclaw.json`,
-  प्रति-एजेंट `auth-profiles.json`, चैनल/प्रोवाइडर स्थिति, सत्र, और
-  वर्कस्पेस पुनः डिप्लॉयमेंट के बाद भी बने रहें
-
-## आवश्यक Railway सेटिंग्स
-
-### सार्वजनिक नेटवर्किंग
-
-सेवा के लिए **HTTP Proxy** सक्षम करें।
-
-- पोर्ट: `8080`
-
-### Volume (आवश्यक)
-
-यहां माउंट किया गया Volume अटैच करें:
-
-- `/data`
-
-### Variables
-
-सेवा पर ये Variables सेट करें:
-
-- `OPENCLAW_GATEWAY_PORT=8080` (आवश्यक — Public Networking में पोर्ट से मेल खाना चाहिए)
-- `OPENCLAW_GATEWAY_TOKEN` (आवश्यक; इसे एडमिन सीक्रेट मानें)
-- `OPENCLAW_STATE_DIR=/data/.openclaw` (अनुशंसित)
-- `OPENCLAW_WORKSPACE_DIR=/data/workspace` (अनुशंसित)
+- होस्ट किया गया OpenClaw Gateway + Control UI
+- Railway Volume (`/data`) के माध्यम से स्थायी स्टोरेज, ताकि `openclaw.json`, प्रति-एजेंट `auth-profiles.json`, चैनल/प्रदाता की स्थिति, सत्र और कार्यक्षेत्र पुनः परिनियोजन के बाद भी बने रहें
 
 ## चैनल कनेक्ट करें
 
-चैनल सेटअप निर्देशों के लिए `/openclaw` पर Control UI का उपयोग करें या Railway के शेल के माध्यम से `openclaw onboard` चलाएं:
+चैनल सेटअप निर्देशों के लिए `/openclaw` पर Control UI का उपयोग करें या Railway के शेल के माध्यम से `openclaw onboard` चलाएँ:
 
-- [Telegram](/hi/channels/telegram) (सबसे तेज़ — बस एक बॉट टोकन)
 - [Discord](/hi/channels/discord)
+- [Telegram](/hi/channels/telegram) (सबसे तेज़ -- केवल एक बॉट टोकन)
 - [सभी चैनल](/hi/channels)
 
 ## बैकअप और माइग्रेशन
 
-अपनी स्थिति, कॉन्फ़िग, प्रमाणीकरण प्रोफ़ाइल, और वर्कस्पेस निर्यात करें:
+अपनी स्थिति, कॉन्फ़िगरेशन, प्रमाणीकरण प्रोफ़ाइल और कार्यक्षेत्र निर्यात करें:
 
 ```bash
 openclaw backup create
 ```
 
-यह OpenClaw स्थिति और किसी भी कॉन्फ़िगर किए गए
-वर्कस्पेस के साथ एक पोर्टेबल बैकअप आर्काइव बनाता है। विवरण के लिए [बैकअप](/hi/cli/backup) देखें।
+यह OpenClaw की स्थिति और किसी भी कॉन्फ़िगर किए गए कार्यक्षेत्र के साथ एक पोर्टेबल बैकअप आर्काइव बनाता है। विवरण के लिए [बैकअप](/hi/cli/backup) देखें।
 
 ## अगले चरण
 
-- मैसेजिंग चैनल सेट करें: [चैनल](/hi/channels)
+- मैसेजिंग चैनल सेट अप करें: [चैनल](/hi/channels)
 - Gateway कॉन्फ़िगर करें: [Gateway कॉन्फ़िगरेशन](/hi/gateway/configuration)
-- OpenClaw को अद्यतित रखें: [अपडेट करना](/hi/install/updating)
+- OpenClaw को नवीनतम रखें: [अपडेट करना](/hi/install/updating)

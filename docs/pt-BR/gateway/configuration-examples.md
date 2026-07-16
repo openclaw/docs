@@ -3,14 +3,15 @@ read_when:
     - Aprendendo a configurar o OpenClaw
     - Procurando exemplos de configuração
     - Configurando o OpenClaw pela primeira vez
-summary: Exemplos de configuração compatíveis com o esquema para configurações comuns do OpenClaw
+summary: Exemplos de configuração em conformidade com o esquema para configurações comuns do OpenClaw
 title: Exemplos de configuração
 x-i18n:
-    generated_at: "2026-07-11T23:55:40Z"
+    generated_at: "2026-07-16T12:26:49Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: c3ad82ccce62e0c8dbb72f81b0de62d60d8a6282f0a327ed1cbda7ffa3e47969
+    source_hash: 67a669f3da2392aa8d2953fa124c43447afe3da971d5f5e497d6c2ec3bf88c6a
     source_path: gateway/configuration-examples.md
     workflow: 16
 ---
@@ -28,7 +29,7 @@ Os exemplos abaixo estão alinhados ao esquema de configuração atual. Para con
 }
 ```
 
-Salve em `~/.openclaw/openclaw.json` e você poderá enviar uma mensagem direta ao bot a partir desse número.
+Salve em `~/.openclaw/openclaw.json` e será possível enviar uma mensagem direta ao bot a partir desse número.
 
 ### Configuração inicial recomendada
 
@@ -44,7 +45,7 @@ Salve em `~/.openclaw/openclaw.json` e você poderá enviar uma mensagem direta 
         id: "main",
         identity: {
           name: "Clawd",
-          theme: "helpful assistant",
+          theme: "assistente prestativo",
           emoji: "🦞",
         },
       },
@@ -59,7 +60,7 @@ Salve em `~/.openclaw/openclaw.json` e você poderá enviar uma mensagem direta 
   messages: {
     visibleReplies: "automatic",
     groupChat: {
-      visibleReplies: "message_tool", // adesão opcional; a saída visível requer message(action=send)
+      visibleReplies: "message_tool", // adesão opcional; a saída visível exige message(action=send)
       unmentionedInbound: "room_event",
     },
   },
@@ -68,11 +69,11 @@ Salve em `~/.openclaw/openclaw.json` e você poderá enviar uma mensagem direta 
 
 ## Exemplo expandido (principais opções)
 
-> O JSON5 permite usar comentários e vírgulas finais. O JSON convencional também funciona.
+> O JSON5 permite usar comentários e vírgulas finais. O JSON comum também funciona.
 
 ```json5
 {
-  // Environment + shell
+  // Ambiente + shell
   env: {
     OPENROUTER_API_KEY: "sk-or-...",
     vars: {
@@ -84,7 +85,7 @@ Salve em `~/.openclaw/openclaw.json` e você poderá enviar uma mensagem direta 
     },
   },
 
-  // Auth profile metadata (secrets live in auth-profiles.json)
+  // Metadados dos perfis de autenticação (os segredos ficam em auth-profiles.json)
   auth: {
     profiles: {
       "anthropic:default": { provider: "anthropic", mode: "api_key" },
@@ -98,9 +99,9 @@ Salve em `~/.openclaw/openclaw.json` e você poderá enviar uma mensagem direta 
     },
   },
 
-  // Identity is per agent — set it on agents.list[].identity below.
+  // A identidade é definida por agente — configure-a em agents.list[].identity abaixo.
 
-  // Logging
+  // Registro de logs
   logging: {
     level: "info",
     file: "/tmp/openclaw/openclaw.log",
@@ -109,7 +110,7 @@ Salve em `~/.openclaw/openclaw.json` e você poderá enviar uma mensagem direta 
     redactSensitive: "tools",
   },
 
-  // Message formatting
+  // Formatação de mensagens
   messages: {
     messagePrefix: "[openclaw]",
     visibleReplies: "automatic",
@@ -118,7 +119,7 @@ Salve em `~/.openclaw/openclaw.json` e você poderá enviar uma mensagem direta 
     ackReactionScope: "group-mentions",
     groupChat: {
       historyLimit: 50,
-      visibleReplies: "message_tool", // opt in for shared rooms with tool-reliable models
+      visibleReplies: "message_tool", // habilite para salas compartilhadas com modelos que usam ferramentas de forma confiável
       unmentionedInbound: "room_event",
     },
     queue: {
@@ -138,7 +139,7 @@ Salve em `~/.openclaw/openclaw.json` e você poderá enviar uma mensagem direta 
     },
   },
 
-  // Tooling
+  // Ferramentas
   tools: {
     media: {
       audio: {
@@ -146,7 +147,7 @@ Salve em `~/.openclaw/openclaw.json` e você poderá enviar uma mensagem direta 
         maxBytes: 20971520,
         models: [
           { provider: "openai", model: "gpt-4o-transcribe" },
-          // Optional CLI fallback (Whisper binary):
+          // Alternativa opcional via CLI (binário Whisper):
           // { type: "cli", command: "whisper", args: ["--model", "base", "{{MediaPath}}"] }
         ],
         timeoutSeconds: 120,
@@ -159,10 +160,10 @@ Salve em `~/.openclaw/openclaw.json` e você poderá enviar uma mensagem direta 
     },
   },
 
-  // Session behavior
+  // Comportamento da sessão
   session: {
     scope: "per-sender",
-    dmScope: "per-channel-peer", // recommended for multi-user inboxes
+    dmScope: "per-channel-peer", // recomendado para caixas de entrada com vários usuários
     reset: {
       mode: "daily",
       atHour: 4,
@@ -177,9 +178,9 @@ Salve em `~/.openclaw/openclaw.json` e você poderá enviar uma mensagem direta 
       mode: "warn",
       pruneAfter: "30d",
       maxEntries: 500,
-      resetArchiveRetention: "30d", // duration or false
-      maxDiskBytes: "500mb", // optional
-      highWaterBytes: "400mb", // optional (defaults to 80% of maxDiskBytes)
+      resetArchiveRetention: "30d", // duração ou false
+      maxDiskBytes: "500mb", // opcional
+      highWaterBytes: "400mb", // opcional (o padrão é 80% de maxDiskBytes)
     },
     typingIntervalSeconds: 5,
     sendPolicy: {
@@ -188,7 +189,7 @@ Salve em `~/.openclaw/openclaw.json` e você poderá enviar uma mensagem direta 
     },
   },
 
-  // Channels
+  // Canais
   channels: {
     whatsapp: {
       dmPolicy: "pairing",
@@ -240,7 +241,7 @@ Salve em `~/.openclaw/openclaw.json` e você poderá enviar uma mensagem direta 
     },
   },
 
-  // Agent runtime
+  // Ambiente de execução do agente
   agents: {
     defaults: {
       workspace: "~/.openclaw/workspace",
@@ -257,7 +258,7 @@ Salve em `~/.openclaw/openclaw.json` e você poderá enviar uma mensagem direta 
         "anthropic/claude-sonnet-4-6": { alias: "sonnet" },
         "openai/gpt-5.4": { alias: "gpt" },
       },
-      skills: ["github", "weather"], // inherited by agents that omit list[].skills
+      skills: ["github", "weather"], // herdado por agentes que omitem list[].skills
       thinkingDefault: "low",
       verboseDefault: "off",
       toolProgressDetail: "explain",
@@ -284,7 +285,7 @@ Salve em `~/.openclaw/openclaw.json` e você poderá enviar uma mensagem direta 
         every: "30m",
         model: "anthropic/claude-sonnet-4-6",
         target: "last",
-        directPolicy: "allow", // allow (default) | block
+        directPolicy: "allow", // allow (padrão) | block
         to: "+15555550123",
         prompt: "HEARTBEAT",
         ackMaxChars: 300,
@@ -299,7 +300,7 @@ Salve em `~/.openclaw/openclaw.json` e você poderá enviar uma mensagem direta 
       },
       sandbox: {
         mode: "non-main",
-        scope: "session", // preferred over legacy perSession: true
+        scope: "session", // preferível ao perSession: true legado
         workspaceRoot: "~/.openclaw/sandboxes",
         docker: {
           image: "openclaw-sandbox:bookworm-slim",
@@ -320,21 +321,21 @@ Salve em `~/.openclaw/openclaw.json` e você poderá enviar uma mensagem direta 
         default: true,
         identity: {
           name: "Samantha",
-          theme: "helpful sloth",
+          theme: "bicho-preguiça prestativo",
           emoji: "🦥",
         },
-        // inherits defaults.skills -> github, weather
+        // herda defaults.skills -> github, weather
         groupChat: {
           mentionPatterns: ["@openclaw", "openclaw"],
         },
-        thinkingDefault: "high", // per-agent thinking override
-        reasoningDefault: "on", // per-agent reasoning visibility
-        fastModeDefault: false, // per-agent fast mode
+        thinkingDefault: "high", // substituição da reflexão por agente
+        reasoningDefault: "on", // visibilidade do raciocínio por agente
+        fastModeDefault: false, // modo rápido por agente
       },
       {
         id: "quick",
-        skills: [], // no skills for this agent
-        fastModeDefault: true, // this agent always runs fast
+        skills: [], // nenhuma skill para este agente
+        fastModeDefault: true, // este agente sempre executa rapidamente
         thinkingDefault: "off",
       },
     ],
@@ -362,7 +363,7 @@ Salve em `~/.openclaw/openclaw.json` e você poderá enviar uma mensagem direta 
     },
   },
 
-  // Custom model providers
+  // Provedores de modelos personalizados
   models: {
     mode: "merge",
     providers: {
@@ -388,16 +389,12 @@ Salve em `~/.openclaw/openclaw.json` e você poderá enviar uma mensagem direta 
     },
   },
 
-  // Cron jobs
+  // Tarefas Cron
   cron: {
     enabled: true,
     store: "~/.openclaw/cron/jobs.json",
-    maxConcurrentRuns: 8, // default; cron dispatch + isolated cron agent-turn execution
+    maxConcurrentRuns: 8, // padrão; despacho Cron + execução isolada de turno do agente Cron
     sessionRetention: "24h",
-    runLog: {
-      maxBytes: "2mb",
-      keepLines: 2000,
-    },
   },
 
   // Webhooks
@@ -415,7 +412,7 @@ Salve em `~/.openclaw/openclaw.json` e você poderá enviar uma mensagem direta 
         wakeMode: "now",
         name: "Gmail",
         sessionKey: "hook:gmail:{{messages[0].id}}",
-        messageTemplate: "From: {{messages[0].from}}\nSubject: {{messages[0].subject}}",
+        messageTemplate: "De: {{messages[0].from}}\nAssunto: {{messages[0].subject}}",
         textTemplate: "{{messages[0].snippet}}",
         deliver: true,
         channel: "last",
@@ -443,7 +440,7 @@ Salve em `~/.openclaw/openclaw.json` e você poderá enviar uma mensagem direta 
     },
   },
 
-  // Gateway + networking
+  // Gateway + rede
   gateway: {
     mode: "local",
     port: 18789,
@@ -482,9 +479,10 @@ Salve em `~/.openclaw/openclaw.json` e você poderá enviar uma mensagem direta 
 }
 ```
 
-### Repositório irmão de Skills vinculado simbolicamente
+### Repositório irmão de skills vinculado simbolicamente
 
-Use esta opção quando a raiz de uma Skill integrada contiver um link simbólico para um repositório irmão, por exemplo, `~/.agents/skills/manager -> ~/Projects/manager/skills`.
+Use isto quando uma raiz de skill integrada contiver um link simbólico para um repositório irmão, por
+exemplo `~/.agents/skills/manager -> ~/Projects/manager/skills`.
 
 ```json5
 {
@@ -497,13 +495,15 @@ Use esta opção quando a raiz de uma Skill integrada contiver um link simbólic
 }
 ```
 
-- `extraDirs` verifica o repositório irmão como uma raiz de Skills explícita.
-- `allowSymlinkTargets` permite que pastas de Skills vinculadas simbolicamente sejam resolvidas para essa raiz de destino real confiável sem permitir escapes arbitrários por links simbólicos.
-- Para permitir que o Skill Workshop faça gravações por meio do mesmo destino confiável do link simbólico, defina `skills.workshop.allowSymlinkTargetWrites: true`.
+- `extraDirs` verifica o repositório irmão como uma raiz de skill explícita.
+- `allowSymlinkTargets` permite que pastas de skills vinculadas simbolicamente sejam resolvidas nessa raiz
+  de destino real confiável sem permitir escapes arbitrários por links simbólicos.
+- Para permitir que o Skill Workshop aplique gravações por meio do mesmo destino confiável do link simbólico,
+  configure `skills.workshop.allowSymlinkTargetWrites: true`.
 
 ## Padrões comuns
 
-### Base compartilhada de Skills com uma substituição
+### Base de skills compartilhada com uma substituição
 
 ```json5
 {
@@ -522,7 +522,7 @@ Use esta opção quando a raiz de uma Skill integrada contiver um link simbólic
 
 - `agents.defaults.skills` é a base compartilhada.
 - `agents.list[].skills` substitui essa base para um agente.
-- Use `skills: []` quando um agente não deva ver nenhuma Skills.
+- Use `skills: []` quando um agente não deve ver nenhuma skill.
 
 ### Configuração multiplataforma
 
@@ -545,11 +545,11 @@ Use esta opção quando a raiz de uma Skill integrada contiver um link simbólic
 }
 ```
 
-### Aprovação automática em rede confiável de Nodes
+### Aprovação automática em uma rede de nodes confiável
 
 Mantenha o pareamento de dispositivos manual, a menos que você controle o caminho da rede. Para uma
-sub-rede dedicada de laboratório ou da tailnet, você pode habilitar a aprovação automática
-de dispositivos Node no primeiro acesso usando CIDRs ou IPs exatos:
+sub-rede dedicada de laboratório ou da tailnet, é possível optar pela aprovação automática
+de dispositivos de node no primeiro uso com CIDRs ou IPs exatos:
 
 ```json5
 {
@@ -563,17 +563,17 @@ de dispositivos Node no primeiro acesso usando CIDRs ou IPs exatos:
 }
 ```
 
-Esse recurso permanece desativado quando não está configurado. Ele se aplica apenas a novos pareamentos com `role: node`
-sem escopos solicitados. Clientes de operador/navegador e alterações de função, escopo, metadados ou
+Essa opção permanece desativada quando não está definida. Ela se aplica somente ao pareamento novo de `role: node`
+sem escopos solicitados. Clientes de operador/navegador e atualizações de função, escopo, metadados ou
 chave pública ainda exigem aprovação manual.
 
-### Modo seguro de mensagens diretas (caixa de entrada compartilhada/mensagens diretas multiusuário)
+### Modo seguro de MD (caixa de entrada compartilhada / MDs com vários usuários)
 
-Se mais de uma pessoa puder enviar mensagens diretas ao seu bot (várias entradas em `allowFrom`, aprovações de pareamento para várias pessoas ou `dmPolicy: "open"`), habilite o **modo seguro de mensagens diretas** para que mensagens diretas de remetentes diferentes não compartilhem um único contexto por padrão:
+Se mais de uma pessoa puder enviar uma MD ao seu bot (várias entradas em `allowFrom`, aprovações de pareamento para várias pessoas ou `dmPolicy: "open"`), ative o **modo seguro de MD** para que, por padrão, as MDs de diferentes remetentes não compartilhem o mesmo contexto:
 
 ```json5
 {
-  // Modo seguro de mensagens diretas (recomendado para agentes de mensagens diretas multiusuário ou confidenciais)
+  // Modo seguro de MD (recomendado para agentes de MD com vários usuários ou conteúdo confidencial)
   session: { dmScope: "per-channel-peer" },
 
   channels: {
@@ -593,8 +593,8 @@ Se mais de uma pessoa puder enviar mensagens diretas ao seu bot (várias entrada
 }
 ```
 
-Para Discord/Google Chat/IRC/Mattermost/Microsoft Teams/Slack, a autorização do remetente é baseada primeiro no ID por padrão.
-Habilite a correspondência direta por nome/e-mail/apelido mutável com `dangerouslyAllowNameMatching: true` em cada canal somente se você aceitar explicitamente esse risco.
+Para Discord/Google Chat/IRC/Mattermost/Microsoft Teams/Slack, por padrão, a autorização do remetente prioriza o ID.
+Ative a correspondência direta por nome/e-mail/apelido mutável com o `dangerouslyAllowNameMatching: true` de cada canal somente se você aceitar explicitamente esse risco.
 
 ### Chave de API da Anthropic + fallback para MiniMax
 
@@ -701,7 +701,7 @@ Habilite a correspondência direta por nome/e-mail/apelido mutável com `dangero
 ## Dicas
 
 - Se você definir `dmPolicy: "open"`, a lista `allowFrom` correspondente deverá incluir `"*"`.
-- Os IDs dos provedores são diferentes (números de telefone, IDs de usuário, IDs de canal). Consulte a documentação do provedor para confirmar o formato.
+- Os IDs dos provedores variam (números de telefone, IDs de usuário, IDs de canal). Consulte a documentação do provedor para confirmar o formato.
 - Seções opcionais para adicionar posteriormente: `web`, `browser`, `ui`, `discovery`, `plugins`, `talk`, `signal`, `imessage`.
 - Consulte [Provedores](/pt-BR/providers) e [Solução de problemas](/pt-BR/gateway/troubleshooting) para obter observações mais detalhadas sobre a configuração.
 

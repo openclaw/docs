@@ -6,16 +6,17 @@ read_when:
 summary: Cài đặt và cấu hình Node.js cho OpenClaw - yêu cầu về phiên bản, các tùy chọn cài đặt và khắc phục sự cố PATH
 title: Node.js
 x-i18n:
-    generated_at: "2026-07-12T08:01:06Z"
+    generated_at: "2026-07-16T15:24:38Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 410686b714fe2830a0c6d77a52850eab5720a97747b9579bd730808db23a9dda
+    source_hash: ef4df255c24a11a549c757b597a07b00852e60973a5e513bdcf60796037a462a
     source_path: install/node.md
     workflow: 16
 ---
 
-OpenClaw yêu cầu **Node 22.19+, Node 23.11+ hoặc Node 24+**. **Node 24 là môi trường chạy mặc định và được khuyến nghị** cho quá trình cài đặt, CI và quy trình phát hành; Node 22 vẫn được hỗ trợ thông qua nhánh LTS đang hoạt động. [Tập lệnh cài đặt](/vi/install#alternative-install-methods) tự động phát hiện và cài đặt Node — hãy sử dụng trang này khi bạn muốn tự thiết lập Node (phiên bản, PATH, cài đặt toàn cục).
+OpenClaw yêu cầu **Node 22.22.3+, Node 24.15+ hoặc Node 25.9+**. **Node 24 là runtime mặc định và được khuyến nghị** cho quy trình cài đặt, CI và phát hành; Node 22 vẫn được hỗ trợ thông qua nhánh LTS đang hoạt động. Node 23 không được hỗ trợ. [Tập lệnh cài đặt](/vi/install#alternative-install-methods) tự động phát hiện và cài đặt Node — hãy sử dụng trang này khi bạn muốn tự thiết lập Node (phiên bản, PATH, cài đặt toàn cục).
 
 ## Kiểm tra phiên bản
 
@@ -23,7 +24,7 @@ OpenClaw yêu cầu **Node 22.19+, Node 23.11+ hoặc Node 24+**. **Node 24 là 
 node -v
 ```
 
-`v24.x.x` trở lên là phiên bản mặc định được khuyến nghị. `v22.19.x` trở lên là nhánh Node 22 LTS được hỗ trợ (hãy nâng cấp lên Node 24 khi thuận tiện). Các bản dựng Node 23 trước `v23.11.0` không được hỗ trợ. Nếu chưa cài đặt Node hoặc phiên bản nằm ngoài phạm vi được hỗ trợ, hãy chọn một phương thức cài đặt bên dưới.
+Khuyến nghị mặc định là `v24.15.0` hoặc phiên bản 24.x mới hơn. `v22.22.3` hoặc phiên bản 22.x mới hơn là lộ trình Node 22 LTS được hỗ trợ; Node `v25.9.0+` cũng được hỗ trợ. Node 23 không được hỗ trợ. Nếu chưa có Node hoặc phiên bản nằm ngoài phạm vi được hỗ trợ, hãy chọn một phương thức cài đặt bên dưới.
 
 ## Cài đặt Node
 
@@ -88,7 +89,7 @@ fnm use 24
 ```
 
   <Warning>
-  Khởi tạo trình quản lý phiên bản trong tệp khởi động shell (`~/.zshrc` hoặc `~/.bashrc`). Nếu bỏ qua bước này, hệ thống có thể không tìm thấy `openclaw` trong các phiên terminal mới vì PATH sẽ không bao gồm thư mục bin của Node.
+  Khởi tạo trình quản lý phiên bản trong tệp khởi động shell (`~/.zshrc` hoặc `~/.bashrc`). Nếu bỏ qua bước này, hệ thống có thể không tìm thấy `openclaw` trong các phiên terminal mới vì PATH không chứa thư mục bin của Node.
   </Warning>
 </Accordion>
 
@@ -96,7 +97,7 @@ fnm use 24
 
 ### `openclaw: command not found`
 
-Điều này hầu như luôn có nghĩa là thư mục bin toàn cục của npm không có trong PATH.
+Điều này hầu như luôn có nghĩa là thư mục bin toàn cục của npm không nằm trong PATH.
 
 <Steps>
   <Step title="Tìm tiền tố npm toàn cục">
@@ -104,12 +105,12 @@ fnm use 24
     npm prefix -g
     ```
   </Step>
-  <Step title="Kiểm tra xem tiền tố có trong PATH hay không">
+  <Step title="Kiểm tra xem tiền tố có nằm trong PATH hay không">
     ```bash
     echo "$PATH"
     ```
 
-    Tìm `<npm-prefix>/bin` (macOS/Linux) hoặc `<npm-prefix>` (Windows) trong kết quả đầu ra.
+    Tìm `<npm-prefix>/bin` (macOS/Linux) hoặc `<npm-prefix>` (Windows) trong đầu ra.
 
   </Step>
   <Step title="Thêm tiền tố vào tệp khởi động shell">
@@ -124,16 +125,16 @@ fnm use 24
         Sau đó mở một terminal mới (hoặc chạy `rehash` trong zsh / `hash -r` trong bash).
       </Tab>
       <Tab title="Windows">
-        Thêm kết quả của `npm prefix -g` vào PATH hệ thống thông qua Settings → System → Environment Variables.
+        Thêm đầu ra của `npm prefix -g` vào PATH hệ thống qua Settings → System → Environment Variables.
       </Tab>
     </Tabs>
 
   </Step>
 </Steps>
 
-### Lỗi quyền khi chạy `npm install -g` (Linux)
+### Lỗi quyền đối với `npm install -g` (Linux)
 
-Nếu gặp lỗi `EACCES`, hãy chuyển tiền tố toàn cục của npm sang một thư mục mà người dùng có quyền ghi:
+Nếu bạn thấy lỗi `EACCES`, hãy chuyển tiền tố toàn cục của npm sang một thư mục mà người dùng có quyền ghi:
 
 ```bash
 mkdir -p "$HOME/.npm-global"
@@ -141,10 +142,10 @@ npm config set prefix "$HOME/.npm-global"
 export PATH="$HOME/.npm-global/bin:$PATH"
 ```
 
-Thêm dòng `export PATH=...` vào `~/.bashrc` hoặc `~/.zshrc` để duy trì thiết lập này lâu dài.
+Thêm dòng `export PATH=...` vào `~/.bashrc` hoặc `~/.zshrc` để áp dụng vĩnh viễn.
 
-## Nội dung liên quan
+## Liên quan
 
 - [Tổng quan về cài đặt](/vi/install) - tất cả phương thức cài đặt
 - [Cập nhật](/vi/install/updating) - duy trì OpenClaw ở phiên bản mới nhất
-- [Bắt đầu sử dụng](/vi/start/getting-started) - các bước đầu tiên sau khi cài đặt
+- [Bắt đầu](/vi/start/getting-started) - các bước đầu tiên sau khi cài đặt

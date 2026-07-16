@@ -1,49 +1,47 @@
 ---
 read_when:
     - Wyjaśnienie, jak wiadomości przychodzące stają się odpowiedziami
-    - Wyjaśnianie sesji, trybów kolejkowania lub zachowania strumieniowania
-    - Dokumentowanie widoczności rozumowania i implikacji dotyczących użycia
-summary: Przepływ wiadomości, sesje, kolejkowanie i widoczność rozumowania
+    - Wyjaśnianie sesji, trybów kolejkowania lub działania przesyłania strumieniowego
+    - Dokumentowanie widoczności rozumowania i konsekwencji dotyczących użycia
+summary: Przepływ wiadomości, sesje, kolejkowanie i widoczność toku rozumowania
 title: Wiadomości
 x-i18n:
-    generated_at: "2026-06-27T17:27:30Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T18:20:05Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: d5585ae95fc65cb64240e4bf5d0bbe2eb54f55461b9fa4ee331d4d703d62e76f
+    source_hash: e2982ebb1b82b90368263826ef8f42babab9c8a559cc1409a381893a011a0ad7
     source_path: concepts/messages.md
     workflow: 16
 ---
 
-OpenClaw obsługuje wiadomości przychodzące przez potok obejmujący rozpoznawanie sesji, kolejkowanie, streaming, wykonywanie narzędzi i widoczność rozumowania. Ta strona pokazuje ścieżkę od wiadomości przychodzącej do odpowiedzi.
+Wiadomości przychodzące przechodzą przez routing, deduplikację/debounce, uruchomienie agenta i dostarczenie wychodzące:
 
-## Przepływ wiadomości (ogólnie)
-
+```text
+Wiadomość przychodząca
+  -> routing/powiązania -> klucz sesji
+  -> deduplikacja + debounce
+  -> kolejka (jeśli uruchomienie jest już aktywne)
+  -> uruchomienie agenta (strumieniowanie + narzędzia)
+  -> odpowiedzi wychodzące (limity kanału + dzielenie na fragmenty)
 ```
-Inbound message
-  -> routing/bindings -> session key
-  -> queue (if a run is active)
-  -> agent run (streaming + tools)
-  -> outbound replies (channel limits + chunking)
-```
 
-Kluczowe ustawienia znajdują się w konfiguracji:
+Kluczowe obszary konfiguracji:
 
-- `messages.*` dla prefiksów, kolejkowania i zachowania grup.
-- `agents.defaults.*` dla domyślnych ustawień streamingu bloków i dzielenia na fragmenty.
-- Nadpisania kanałów (`channels.whatsapp.*`, `channels.telegram.*` itd.) dla limitów i przełączników streamingu.
+- `messages.*` dla prefiksów, kolejkowania, debounce wiadomości przychodzących i zachowania grup.
+- `agents.defaults.*` dla strumieniowania blokowego, dzielenia na fragmenty i domyślnych ustawień cichych odpowiedzi.
+- Nadpisania kanałów (`channels.telegram.*`, `channels.whatsapp.*` itd.) dla limitów poszczególnych kanałów i przełączników strumieniowania.
 
-Pełny schemat znajdziesz w [Konfiguracji](/pl/gateway/configuration).
+Pełny schemat opisano w sekcji [Konfiguracja](/pl/gateway/configuration).
 
 ## Deduplikacja wiadomości przychodzących
 
-Kanały mogą ponownie dostarczyć tę samą wiadomość po ponownym połączeniu. OpenClaw utrzymuje krótkotrwałą pamięć podręczną kluczowaną według kanału/konta/uczestnika/sesji/identyfikatora wiadomości, aby zduplikowane dostarczenia nie uruchamiały kolejnego przebiegu agenta.
+Kanały mogą ponownie dostarczyć tę samą wiadomość po ponownym połączeniu. OpenClaw przechowuje pamięci podręczną w pamięci operacyjnej, indeksowaną według zakresu agenta, trasy kanału (kanał + rozmówca + konto + wątek) oraz identyfikatora wiadomości, dzięki czemu ponownie dostarczona wiadomość nie uruchamia agenta po raz drugi. Wpis pamięci podręcznej wygasa po 20 minutach lub po osiągnięciu 5000 śledzonych wpisów, zależnie od tego, co nastąpi wcześniej.
 
-## Debouncing wiadomości przychodzących
+## Debounce wiadomości przychodzących
 
-Szybkie kolejne wiadomości od **tego samego nadawcy** mogą zostać zebrane w jedną turę agenta przez `messages.inbound`. Debouncing jest zakresowany per kanał + konwersacja i używa najnowszej wiadomości do wątkowania odpowiedzi/identyfikatorów.
-
-Konfiguracja (domyślna globalna + nadpisania per kanał):
+Szybko następujące po sobie wiadomości tekstowe od tego samego nadawcy można połączyć w jedną turę agenta za pomocą `messages.inbound`. Debounce działa w zakresie kanału + konwersacji i używa najnowszej wiadomości do tworzenia wątku odpowiedzi i identyfikatorów.
 
 ```json5
 {
@@ -51,133 +49,130 @@ Konfiguracja (domyślna globalna + nadpisania per kanał):
     inbound: {
       debounceMs: 2000,
       byChannel: {
-        whatsapp: 5000,
-        slack: 1500,
         discord: 1500,
+        slack: 1500,
+        whatsapp: 5000,
       },
     },
   },
 }
 ```
 
-Uwagi:
-
-- Debounce dotyczy wiadomości **wyłącznie tekstowych**; multimedia/załączniki są opróżniane natychmiast.
-- Polecenia sterujące omijają debouncing, aby pozostały samodzielne. Kanały, które jawnie włączają scalanie wiadomości DM od tego samego nadawcy, mogą zachować polecenia DM w oknie debounce, aby ładunek wysłany w częściach mógł dołączyć do tej samej tury agenta.
+- Debounce dotyczy wyłącznie wiadomości tekstowych; multimedia i załączniki powodują natychmiastowe opróżnienie bufora.
+- Polecenia sterujące (stop/abort/status itd.) omijają debounce, dzięki czemu są przekazywane natychmiast.
+- Domyślnie wyłączone: `messages.inbound.debounceMs` nie ma wbudowanej wartości domyślnej, więc debounce jest aktywowany dopiero po jego ustawieniu (globalnie lub dla kanału).
+- Opcjonalne ustawienie `coalesceSameSenderDms` w iMessage jest jedynym wyjątkiem: wstrzymuje wszystkie wiadomości tekstowe DM od tego samego nadawcy (w tym polecenia) wystarczająco długo, aby rozdzielone przez Apple wysłanie polecenia i adresu URL dotarło jako jedna tura. Czaty grupowe są zawsze przekazywane natychmiast, niezależnie od tego ustawienia.
 
 ## Sesje i urządzenia
 
 Sesje należą do Gateway, a nie do klientów.
 
-- Czaty bezpośrednie zwijają się do głównego klucza sesji agenta.
+- Czaty bezpośrednie są łączone w główny klucz sesji agenta.
 - Grupy/kanały otrzymują własne klucze sesji.
 - Magazyn sesji i transkrypcje znajdują się na hoście Gateway.
 
-Wiele urządzeń/kanałów może mapować się na tę samą sesję, ale historia nie jest w pełni synchronizowana z powrotem do każdego klienta. Zalecenie: używaj jednego głównego urządzenia do długich konwersacji, aby uniknąć rozbieżnego kontekstu. Control UI i TUI zawsze pokazują transkrypcję sesji opartą na Gateway, więc są źródłem prawdy.
+Wiele urządzeń/kanałów może być mapowanych na tę samą sesję, ale historia nie jest w pełni synchronizowana z każdym klientem. W przypadku długich rozmów należy używać jednego głównego urządzenia, aby uniknąć rozbieżnego kontekstu. Interfejs Control UI i TUI zawsze pokazują transkrypcję sesji opartą na Gateway, dlatego stanowią źródło prawdy.
 
 Szczegóły: [Zarządzanie sesjami](/pl/concepts/session).
 
-## Metadane wyników narzędzi
+## Treść promptów i kontekst historii
 
-`content` wyniku narzędzia to wynik widoczny dla modelu. `details` wyniku narzędzia to metadane środowiska wykonawczego używane do renderowania interfejsu, diagnostyki, dostarczania multimediów i Pluginów.
+Pluginy kanałów wypełniają kilka pól tekstowych w kontekście wiadomości przychodzącej, od najbardziej do najmniej preferowanego:
 
-OpenClaw zachowuje tę granicę jako jawną:
+| Pole             | Przeznaczenie                                                                                                     |
+| ----------------- | ----------------------------------------------------------------------------------------------------------- |
+| `BodyForAgent`    | Tekst bieżącej tury przeznaczony dla modelu. Gdy nie ustawiono, używane jest `CommandBody` / `RawBody` / `Body`.        |
+| `BodyForCommands` | Czysty tekst używany do analizowania dyrektyw/poleceń. Gdy nie ustawiono, używane jest `CommandBody` / `RawBody` / `Body`. |
+| `CommandBody`     | Starsza pośrednia treść; preferowane jest `BodyForCommands`.                                                         |
+| `RawBody`         | Przestarzały alias dla `CommandBody`.                                                                         |
+| `Body`            | Starsza treść promptu; może zawierać koperty kanału i opakowania historii.                                     |
 
-- `toolResult.details` jest usuwane przed odtworzeniem dla dostawcy i wejściem do Compaction.
-- Utrwalone transkrypcje sesji zachowują tylko ograniczone `details`; zbyt duże metadane są zastępowane zwartym podsumowaniem oznaczonym `persistedDetailsTruncated: true`.
-- Pluginy i narzędzia powinny umieszczać tekst, który model musi przeczytać, w `content`, a nie tylko w `details`.
-
-## Treści wejściowe i kontekst historii
-
-OpenClaw oddziela **treść promptu** od **treści polecenia**:
-
-- `BodyForAgent`: główny tekst bieżącej wiadomości przeznaczony dla modelu. Pluginy kanałów powinny utrzymywać go skupionym na aktualnym tekście nadawcy niosącym prompt.
-- `Body`: starszy zapasowy prompt. Może zawierać koperty kanału i opcjonalne opakowania historii, ale obecne kanały nie powinny polegać na nim jako głównym wejściu modelu, gdy dostępne jest `BodyForAgent`.
-- `CommandBody`: surowy tekst użytkownika do parsowania dyrektyw/poleceń.
-- `RawBody`: starszy alias dla `CommandBody` (zachowany dla zgodności).
-
-Gdy kanał dostarcza historię, używa wspólnego opakowania:
+Gdy kanał dostarcza historię, otacza ją następującymi elementami:
 
 - `[Chat messages since your last reply - for context]`
 - `[Current message - respond to this]`
 
-Dla **czatów niebezpośrednich** (grup/kanałów/pokoi) **treść bieżącej wiadomości** jest poprzedzana etykietą nadawcy (w tym samym stylu, którego używają wpisy historii). Dzięki temu wiadomości czasu rzeczywistego oraz wiadomości z kolejki/historii są spójne w prompcie agenta.
+W przypadku czatów innych niż bezpośrednie (grup/kanałów/pokoi) treść bieżącej wiadomości jest poprzedzana etykietą nadawcy, zgodnie ze stylem wpisów historii. Usuwanie dyrektyw dotyczy wyłącznie sekcji bieżącej wiadomości, więc historia pozostaje nienaruszona. Kanały opakowujące historię powinny ustawiać `BodyForCommands` (lub starsze `CommandBody` / `RawBody`) na oryginalny tekst wiadomości i zachować połączony prompt w `Body`.
 
-Bufory historii są **wyłącznie oczekujące**: obejmują wiadomości grupowe, które _nie_ wyzwoliły przebiegu (na przykład wiadomości wymagające wzmianki), i **wykluczają** wiadomości już obecne w transkrypcji sesji.
+Bufory historii obejmują wyłącznie oczekujące wiadomości: zawierają wiadomości grupowe, które nie wywołały uruchomienia (na przykład wiadomości wymagające wzmianki), i wykluczają wiadomości znajdujące się już w transkrypcji sesji. Ustrukturyzowana historia, odpowiedzi, przekazane wiadomości i metadane kanałów są podczas składania promptu renderowane jako niezaufane bloki kontekstu roli użytkownika.
 
-Usuwanie dyrektyw dotyczy tylko sekcji **bieżącej wiadomości**, więc historia pozostaje nienaruszona. Kanały opakowujące historię powinny ustawiać `CommandBody` (lub `RawBody`) na oryginalny tekst wiadomości i zachowywać `Body` jako połączony prompt. Ustrukturyzowana historia, odpowiedzi, przekazane wiadomości i metadane kanału są renderowane podczas składania promptu jako niezaufane bloki kontekstu w roli użytkownika.
-Bufory historii można konfigurować przez `messages.groupChat.historyLimit` (domyślne ustawienie globalne) oraz nadpisania per kanał, takie jak `channels.slack.historyLimit` lub `channels.telegram.accounts.<id>.historyLimit` (ustaw `0`, aby wyłączyć).
+Rozmiar historii konfiguruje się za pomocą `messages.groupChat.historyLimit` (globalna wartość domyślna) lub nadpisań dla poszczególnych kanałów, takich jak `channels.slack.historyLimit` i `channels.telegram.accounts.<id>.historyLimit` (ustaw `0`, aby wyłączyć).
+
+## Metadane wyników narzędzi
+
+`content` wyniku narzędzia jest wynikiem widocznym dla modelu; `details` to metadane środowiska wykonawczego używane do renderowania interfejsu, diagnostyki, dostarczania multimediów i obsługi pluginów.
+
+- `toolResult.details` jest usuwane przed ponownym odtworzeniem u dostawcy i przed przekazaniem danych wejściowych do Compaction.
+- Utrwalone transkrypcje sesji zachowują tylko ograniczone `details`; zbyt duże metadane są zastępowane zwięzłym podsumowaniem oznaczonym `persistedDetailsTruncated: true`.
+- Pluginy i narzędzia powinny umieszczać tekst, który model musi odczytać, w `content`, a nie wyłącznie w `details`.
 
 ## Kolejkowanie i wiadomości uzupełniające
 
-Jeśli przebieg jest już aktywny, wiadomości przychodzące są domyślnie kierowane do bieżącego przebiegu. `messages.queue` wybiera, czy wiadomości podczas aktywnego przebiegu mają sterować nim, trafiać do kolejki na później, zbierać się w jedną późniejszą turę albo przerywać aktywny przebieg.
+Gdy uruchomienie jest już aktywne, wiadomości przychodzące są domyślnie kierowane do niego. `messages.queue` steruje trybem:
 
-- Skonfiguruj przez `messages.queue` (oraz `messages.queue.byChannel`).
-- Domyślny tryb to `steer`, z debounce 500 ms dla partii sterowania Codex oraz kolejek followup/collect.
-- Tryby: `steer`, `followup`, `collect` i `interrupt`.
+| Tryb              | Zachowanie                                            |
+| ----------------- | --------------------------------------------------- |
+| `steer` (domyślnie) | Wstrzykuje nowy prompt do aktywnego uruchomienia.          |
+| `followup`        | Uruchamia wiadomość po zakończeniu aktywnego uruchomienia.      |
+| `collect`         | Łączy zgodne wiadomości w jedną późniejszą turę.      |
+| `interrupt`       | Przerywa aktywne uruchomienie, a następnie rozpoczyna najnowszy prompt. |
+
+Wartości domyślne: `messages.queue.debounceMs` wynosi 500ms (dotyczy jednakowo kierowania, wiadomości uzupełniających i grupowania), `messages.queue.cap` wynosi 20 wiadomości w kolejce, a `messages.queue.drop` to `summarize` (dostępne są również `old` i `new`). Nadpisania dla poszczególnych kanałów konfiguruje się za pomocą `messages.queue.byChannel` i `messages.queue.debounceMsByChannel`.
 
 Szczegóły: [Kolejka poleceń](/pl/concepts/queue) i [Kolejka sterowania](/pl/concepts/queue-steering).
 
-## Własność przebiegu kanału
+## Własność uruchomienia kanału
 
-Pluginy kanałów mogą zachowywać kolejność, stosować debounce wejścia i nakładać backpressure transportu, zanim wiadomość trafi do kolejki sesji. Nie powinny narzucać osobnego limitu czasu wokół samej tury agenta. Gdy wiadomość zostanie skierowana do sesji, długotrwała praca jest regulowana przez cykl życia sesji, narzędzia i środowiska wykonawczego, aby wszystkie kanały spójnie raportowały wolne tury i odzyskiwały po nich działanie.
+Pluginy kanałów mogą zachowywać kolejność, stosować debounce danych wejściowych i wymuszać przeciwciśnienie transportu, zanim wiadomość trafi do kolejki sesji. Nie powinny nakładać osobnego limitu czasu na samą turę agenta. Po skierowaniu wiadomości do sesji cykle życia sesji, narzędzi i środowiska wykonawczego zarządzają długotrwałą pracą, dzięki czemu wszystkie kanały spójnie raportują powolne tury i odzyskują po nich sprawność.
 
-## Streaming, dzielenie na fragmenty i grupowanie
+## Strumieniowanie, dzielenie na fragmenty i grupowanie
 
-Streaming bloków wysyła częściowe odpowiedzi, gdy model tworzy bloki tekstu.
-Dzielenie na fragmenty respektuje limity tekstu kanału i unika rozdzielania bloków kodu w ogrodzeniach.
+Strumieniowanie blokowe wysyła częściowe odpowiedzi w miarę generowania bloków tekstu przez model; dzielenie na fragmenty respektuje limity tekstu kanału i unika rozdzielania bloków kodu ograniczonych znacznikami.
 
-Kluczowe ustawienia:
-
-- `agents.defaults.blockStreamingDefault` (`on|off`, domyślnie wyłączone)
+- `agents.defaults.blockStreamingDefault` (`on|off`, domyślnie `off`)
 - `agents.defaults.blockStreamingBreak` (`text_end|message_end`)
 - `agents.defaults.blockStreamingChunk` (`minChars|maxChars|breakPreference`)
-- `agents.defaults.blockStreamingCoalesce` (grupowanie oparte na bezczynności)
-- `agents.defaults.humanDelay` (pauza podobna do ludzkiej między odpowiedziami blokowymi)
-- Nadpisania kanałów: `*.blockStreaming` i `*.blockStreamingCoalesce` (kanały inne niż Telegram wymagają jawnego `*.blockStreaming: true`)
+- `agents.defaults.blockStreamingCoalesce` (grupowanie na podstawie bezczynności)
+- `agents.defaults.humanDelay` (przerwa przypominająca ludzką między odpowiedziami blokowymi)
+- Nadpisania kanałów: `*.streaming.block.enabled` i `*.streaming.block.coalesce` w dołączonych kanałach; nieaktualne płaskie klucze są migrowane przez `openclaw doctor --fix`. Strumieniowanie blokowe jest wyłączone, chyba że zostanie jawnie włączone — na każdym kanale, w tym Telegram. QQ Bot stanowi wyjątek: nie ma kluczy `streaming.block` i strumieniuje odpowiedzi blokowe, chyba że `channels.qqbot.streaming.mode` ma wartość `"off"`.
 
-Szczegóły: [Streaming + dzielenie na fragmenty](/pl/concepts/streaming).
+Szczegóły: [Strumieniowanie i dzielenie na fragmenty](/pl/concepts/streaming).
 
 ## Widoczność rozumowania i tokeny
 
-OpenClaw może ujawniać albo ukrywać rozumowanie modelu:
+- `/reasoning on|off|stream` steruje widocznością.
+- Treść rozumowania nadal wlicza się do użycia tokenów, gdy model ją generuje.
+- Telegram obsługuje strumieniowanie rozumowania do tymczasowego dymka wersji roboczej, który jest usuwany po ostatecznym dostarczeniu; aby uzyskać trwałe dane wyjściowe rozumowania, należy użyć `/reasoning on`.
 
-- `/reasoning on|off|stream` kontroluje widoczność.
-- Treść rozumowania nadal wlicza się do użycia tokenów, gdy jest tworzona przez model.
-- Telegram obsługuje strumień rozumowania w przejściowym dymku wersji roboczej, który jest usuwany po ostatecznym dostarczeniu; użyj `/reasoning on`, aby uzyskać trwałe wyjście rozumowania.
+Szczegóły: [Dyrektywy myślenia i rozumowania](/pl/tools/thinking) oraz [Użycie tokenów](/pl/reference/token-use).
 
-Szczegóły: [Dyrektywy myślenia + rozumowania](/pl/tools/thinking) i [Użycie tokenów](/pl/reference/token-use).
+## Prefiksy, wątki i odpowiedzi
 
-## Prefiksy, wątkowanie i odpowiedzi
-
-Formatowanie wiadomości wychodzących jest scentralizowane w `messages`:
-
-- `messages.responsePrefix`, `channels.<channel>.responsePrefix` i `channels.<channel>.accounts.<id>.responsePrefix` (kaskada prefiksów wychodzących), plus `channels.whatsapp.messagePrefix` (prefiks przychodzący WhatsApp)
-- Wątkowanie odpowiedzi przez `replyToMode` i domyślne ustawienia per kanał
+- Kaskada prefiksów wychodzących: `messages.responsePrefix`, `channels.<channel>.responsePrefix`, `channels.<channel>.accounts.<id>.responsePrefix`. WhatsApp ma również `channels.whatsapp.messagePrefix` dla prefiksu wiadomości przychodzących.
+- Tworzenie wątków odpowiedzi za pomocą `replyToMode` i wartości domyślnych dla poszczególnych kanałów.
 
 Szczegóły: [Konfiguracja](/pl/gateway/config-agents#messages) i dokumentacja kanałów.
 
 ## Ciche odpowiedzi
 
-Dokładny cichy token `NO_REPLY` / `no_reply` oznacza „nie dostarczaj odpowiedzi widocznej dla użytkownika”.
-Gdy tura ma również oczekujące multimedia narzędzia, takie jak wygenerowany dźwięk TTS, OpenClaw usuwa cichy tekst, ale nadal dostarcza załącznik multimedialny.
-OpenClaw rozstrzyga to zachowanie według typu konwersacji:
+Cichy token `NO_REPLY` (wielkość liter nie ma znaczenia, więc pasuje również `no_reply`) oznacza „nie dostarczaj odpowiedzi widocznej dla użytkownika”. Gdy tura zawiera również oczekujące multimedia narzędzia, takie jak wygenerowany dźwięk TTS, OpenClaw usuwa cichy tekst, ale nadal dostarcza załącznik multimedialny.
 
-- Konwersacje bezpośrednie nigdy nie otrzymują wskazówek promptu `NO_REPLY`. Jeśli bezpośredni przebieg przypadkowo zwróci sam cichy token, OpenClaw go tłumi zamiast przepisywać lub dostarczać.
-- Grupy/kanały domyślnie zezwalają na ciszę tylko dla automatycznych odpowiedzi grupowych. W trybie widocznej odpowiedzi `message_tool` cisza oznacza, że model nie wywołuje `message(action=send)`.
+Zasady ciszy są ustalane według typu konwersacji:
+
+- Konwersacje bezpośrednie nigdy nie otrzymują wskazówek promptu `NO_REPLY`. Jeśli bezpośrednie uruchomienie przypadkowo zwróci sam cichy token, OpenClaw go pomija, zamiast przepisywać lub dostarczać.
+- Grupy/kanały domyślnie zezwalają na ciszę. W trybie widocznych odpowiedzi `message_tool` cisza oznacza, że model nie wywołuje `message(action=send)`.
 - Wewnętrzna orkiestracja domyślnie zezwala na ciszę.
 
-OpenClaw używa też cichych odpowiedzi dla ogólnych wewnętrznych awarii uruchamiacza w czatach niebezpośrednich, więc grupy/kanały nie widzą standardowego tekstu błędu Gateway.
-Sklasyfikowane awarie z tekstem odzyskiwania widocznym dla użytkownika, takie jak brak autoryzacji, limit szybkości lub powiadomienia o przeciążeniu, nadal mogą zostać dostarczone. Czaty bezpośrednie domyślnie pokazują zwięzły tekst awarii; surowe szczegóły uruchamiacza są pokazywane tylko wtedy, gdy włączone jest `/verbose full`.
+Wartości domyślne znajdują się w `agents.defaults.silentReply`; `surfaces.<id>.silentReply` może nadpisać zasady grupowe/wewnętrzne dla poszczególnych obszarów.
 
-Ustawienia domyślne znajdują się pod `agents.defaults.silentReply`; `surfaces.<id>.silentReply` może nadpisać politykę grupową/wewnętrzną per powierzchnia.
+OpenClaw używa również cichych odpowiedzi w przypadku ogólnych wewnętrznych awarii modułu uruchamiającego w czatach innych niż bezpośrednie, dzięki czemu grupy/kanały nie widzą standardowego komunikatu o błędzie Gateway. Sklasyfikowane awarie z przeznaczonym dla użytkownika opisem sposobu odzyskania, takie jak powiadomienia o braku uwierzytelnienia, limicie szybkości lub przeciążeniu, nadal mogą być dostarczane. Czaty bezpośrednie domyślnie pokazują zwięzły opis awarii; nieprzetworzone szczegóły modułu uruchamiającego są wyświetlane tylko wtedy, gdy włączone jest `/verbose full`.
 
-Same ciche odpowiedzi są odrzucane na wszystkich powierzchniach, więc sesje nadrzędne pozostają ciche zamiast przepisywać tekst znacznika na zapasową pogawędkę.
+Same ciche odpowiedzi są odrzucane we wszystkich obszarach, więc sesje nadrzędne pozostają ciche, zamiast przepisywać tekst znacznika na zastępczą wypowiedź.
 
 ## Powiązane
 
 - [Refaktoryzacja cyklu życia wiadomości](/pl/concepts/message-lifecycle-refactor) - docelowy trwały projekt wysyłania i odbierania
-- [Streaming](/pl/concepts/streaming) — dostarczanie wiadomości w czasie rzeczywistym
-- [Ponawianie](/pl/concepts/retry) — zachowanie ponawiania dostarczania wiadomości
-- [Kolejka](/pl/concepts/queue) — kolejka przetwarzania wiadomości
-- [Kanały](/pl/channels) — integracje platform wiadomości
+- [Strumieniowanie](/pl/concepts/streaming) - dostarczanie wiadomości w czasie rzeczywistym
+- [Ponawianie](/pl/concepts/retry) - zachowanie ponawiania dostarczania wiadomości
+- [Kolejka](/pl/concepts/queue) - kolejka przetwarzania wiadomości
+- [Kanały](/pl/channels) - integracje z platformami komunikacyjnymi

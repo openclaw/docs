@@ -4,18 +4,19 @@ read_when:
 summary: OpenAI uyumlu model yönlendirmesi için OpenClaw Amazon Bedrock Mantle sağlayıcı plugini.
 title: Amazon Bedrock Mantle Plugin'i
 x-i18n:
-    generated_at: "2026-07-12T12:31:52Z"
+    generated_at: "2026-07-16T17:42:35Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 18725aa4678f967a5d34a2c951c11cc371e934abe62fde7616124157ebdb3799
+    source_hash: a12f8acda947e8b80053229a8b842560d087e2b7944d9092a3c3d250343cccbc
     source_path: plugins/reference/amazon-bedrock-mantle.md
     workflow: 16
 ---
 
-# Amazon Bedrock Mantle Plugin’i
+# Amazon Bedrock Mantle plugin'i
 
-OpenAI uyumlu model yönlendirmesi için OpenClaw Amazon Bedrock Mantle sağlayıcı Plugin’i.
+OpenAI uyumlu model yönlendirmesi için OpenClaw Amazon Bedrock Mantle sağlayıcı plugin'i.
 
 ## Dağıtım
 
@@ -24,7 +25,7 @@ OpenAI uyumlu model yönlendirmesi için OpenClaw Amazon Bedrock Mantle sağlay�
 
 ## Yüzey
 
-sağlayıcılar: amazon-bedrock-mantle
+sağlayıcılar: `amazon-bedrock-mantle`
 
 ## İlgili belgeler
 

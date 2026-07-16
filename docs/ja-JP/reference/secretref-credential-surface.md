@@ -1,28 +1,29 @@
 ---
 read_when:
-    - SecretRef 認証情報の対応範囲を検証する
-    - 認証情報が `secrets configure` または `secrets apply` の対象となるかを監査する
-    - 認証情報がサポート対象外である理由の確認
-summary: 正規にサポートされる SecretRef 認証情報サーフェスとサポートされないサーフェス
+    - SecretRef 認証情報の網羅性を検証する
+    - 資格情報が `secrets configure` または `secrets apply` の対象となるかを監査する
+    - 認証情報がサポート対象範囲外である理由を確認する
+summary: SecretRef 認証情報サーフェスの正規サポート対象と非サポート対象
 title: SecretRef 認証情報サーフェス
 x-i18n:
-    generated_at: "2026-07-11T22:40:50Z"
+    generated_at: "2026-07-16T12:06:53Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 435fc25ea9268be40abc367d96def70e8d367cb0ab640a4f2d271a0e9db19147
+    source_hash: a4c7d8d5baf082f5524b93608584600856e48f9076df915c4db301a4ecd814c9
     source_path: reference/secretref-credential-surface.md
     workflow: 16
 ---
 
-このページでは、正規の SecretRef 認証情報サーフェス、つまり生のシークレット値の代わりに `SecretRef`（環境変数／ファイル／exec を基盤とする参照）を受け入れる認証情報フィールドを定義します。
+このページでは、標準の SecretRef 認証情報サーフェスを定義します。つまり、どの認証情報フィールドが生のシークレット値の代わりに `SecretRef`（env/file/exec による参照）を受け付けるかを示します。
 
-対象範囲：
+対象範囲:
 
-- 対象：OpenClaw が発行もローテーションもしない、厳密にユーザー指定の認証情報。
-- 対象外：実行時に発行される認証情報またはローテーションされる認証情報、OAuth 更新用データ、セッションに類するアーティファクト。
+- 対象: OpenClaw が発行またはローテーションしない、ユーザーが明示的に指定する認証情報のみ。
+- 対象外: ランタイムが発行する、またはローテーションされる認証情報、OAuth 更新用データ、およびセッションに類するアーティファクト。
 
-以下のリストはソースのターゲットレジストリから生成され、CI で `docs/reference/secretref-user-supplied-credentials-matrix.json` と照合されます。エントリを手動で編集しないでください。
+以下のリストはソースのターゲットレジストリから生成され、CI で `docs/reference/secretref-user-supplied-credentials-matrix.json` と照合されます。項目を手動で編集しないでください。
 
 ## サポートされる認証情報
 
@@ -92,6 +93,8 @@ x-i18n:
 - `channels.slack.accounts.*.signingSecret`
 - `channels.sms.authToken`
 - `channels.sms.accounts.*.authToken`
+- `channels.clickclack.token`
+- `channels.clickclack.accounts.*.token`
 - `channels.discord.token`
 - `channels.discord.pluralkit.token`
 - `channels.discord.voice.tts.providers.*.apiKey`
@@ -125,27 +128,27 @@ x-i18n:
 - `channels.zalo.webhookSecret`
 - `channels.zalo.accounts.*.botToken`
 - `channels.zalo.accounts.*.webhookSecret`
-- `channels.googlechat.serviceAccount`（同階層の `serviceAccountRef` を使用、互換性の例外）
-- `channels.googlechat.accounts.*.serviceAccount`（同階層の `serviceAccountRef` を使用、互換性の例外）
+- `channels.googlechat.serviceAccount`（互換性の例外として、同階層の `serviceAccountRef` を使用）
+- `channels.googlechat.accounts.*.serviceAccount`（互換性の例外として、同階層の `serviceAccountRef` を使用）
 
 ### `auth-profiles.json` ターゲット（`secrets configure` + `secrets apply` + `secrets audit`）
 
-- `profiles.*.keyRef`（`type: "api_key"`。`auth.profiles.<id>.mode = "oauth"` の場合は未サポート）
-- `profiles.*.tokenRef`（`type: "token"`。`auth.profiles.<id>.mode = "oauth"` の場合は未サポート）
+- `profiles.*.keyRef`（`type: "api_key"`。`auth.profiles.<id>.mode = "oauth"` の場合はサポートされません）
+- `profiles.*.tokenRef`（`type: "token"`。`auth.profiles.<id>.mode = "oauth"` の場合はサポートされません）
 
 [//]: # "secretref-supported-list-end"
 
-注記：
+注:
 
-- 認証プロファイルのプランターゲットには `agentId` が必要です。プランエントリは `profiles.*.key` / `profiles.*.token` を対象とし、同階層の参照（`keyRef` / `tokenRef`）を書き込みます。認証プロファイルの参照は、実行時の解決と監査の対象範囲に含まれます。
-- `openclaw.json` では、SecretRef に `{"source":"env","provider":"default","id":"DISCORD_BOT_TOKEN"}` のような構造化オブジェクトを使用する必要があります。従来の `secretref-env:<ENV_VAR>` マーカー文字列は、SecretRef 認証情報パスでは拒否されます。有効なマーカーを移行するには、`openclaw doctor --fix` を実行してください。
-- OAuth ポリシーガード：`auth.profiles.<id>.mode = "oauth"` と、そのプロファイルに対する SecretRef 入力を組み合わせることはできません。このポリシーに違反すると、起動／再読み込みおよび認証プロファイルの解決は即座に失敗します。
-- SecretRef で管理されるモデルプロバイダーでは、生成された `agents/*/agent/models.json` エントリの `apiKey`／ヘッダーサーフェスに、シークレットではないマーカー（解決済みのシークレット値ではないもの）が永続化されます。マーカーの永続化ではソースを正とします。OpenClaw は解決済みの実行時シークレット値ではなく、アクティブなソース設定のスナップショット（解決前）からマーカーを書き込みます。
-- Web 検索では、明示的なプロバイダーモード（`tools.web.search.provider` が設定済み）では、選択したプロバイダーのキーだけがアクティブになります。自動モード（`tools.web.search.provider` が未設定）では、優先順位に従って最初に解決されたプロバイダーのキーだけがアクティブになり、選択されていないプロバイダーの参照は、選択されるまで非アクティブとして扱われます。従来の `tools.web.search.*` プロバイダーパスも互換期間中は引き続き解決されますが、正規の SecretRef サーフェスは `plugins.entries.<plugin>.config.webSearch.*` です。
+- 認証プロファイルのプランターゲットには `agentId` が必要です。プラン項目は `profiles.*.key` / `profiles.*.token` を対象とし、同階層の参照（`keyRef` / `tokenRef`）を書き込みます。認証プロファイル参照は、ランタイム解決と監査の対象範囲に含まれます。
+- `openclaw.json` では、SecretRef は `{"source":"env","provider":"default","id":"DISCORD_BOT_TOKEN"}` のような構造化オブジェクトを使用する必要があります。従来の `secretref-env:<ENV_VAR>` マーカー文字列は SecretRef 認証情報パスでは拒否されます。有効なマーカーを移行するには `openclaw doctor --fix` を実行してください。
+- OAuth ポリシーガード: `auth.profiles.<id>.mode = "oauth"` を、そのプロファイルの SecretRef 入力と組み合わせることはできません。このポリシーに違反すると、起動時、再読み込み時、および認証プロファイルの解決時に即座に失敗します。
+- SecretRef で管理されるモデルプロバイダーでは、生成される `agents/*/agent/models.json` 項目に、`apiKey`/ヘッダーのサーフェス用として、シークレットではないマーカー（解決済みのシークレット値ではないもの）が永続化されます。マーカーの永続化ではソースが正となります。OpenClaw は、解決済みランタイムシークレット値ではなく、アクティブなソース設定のスナップショット（解決前）からマーカーを書き込みます。
+- Web 検索の場合: 明示的プロバイダーモード（`tools.web.search.provider` が設定済み）では、選択されたプロバイダーキーのみが有効です。自動モード（`tools.web.search.provider` が未設定）では、優先順位に従って最初に解決されたプロバイダーキーのみが有効となり、選択されていないプロバイダー参照は選択されるまで無効として扱われます。従来の `tools.web.search.*` プロバイダーパスも互換期間中は引き続き解決されますが、標準の SecretRef サーフェスは `plugins.entries.<plugin>.config.webSearch.*` です。
 
 ## サポートされない認証情報
 
-これらの認証情報は、発行、ローテーション、セッション保持、または OAuth の永続データに該当し、読み取り専用の外部 SecretRef 解決には適合しません。
+これらの認証情報は、発行、ローテーション、セッション保持、または OAuth で永続化される種類であり、読み取り専用の外部 SecretRef 解決には適合しません。
 
 [//]: # "secretref-unsupported-list-start"
 

@@ -1,30 +1,31 @@
 ---
 read_when:
-    - qa-channel Pluginini kuruyor, yapılandırıyor veya denetliyorsunuz
+    - qa-channel pluginini kuruyor, yapılandırıyor veya denetliyorsunuz
 summary: OpenClaw mesajlarını göndermek ve almak için QA Kanalı yüzeyini ekler.
-title: QA Kanalı Plugin'i
+title: QA Kanalı plugin'i
 x-i18n:
-    generated_at: "2026-07-12T12:34:38Z"
+    generated_at: "2026-07-16T17:46:09Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 3c6f0aec62fb014895d11fa46b75626d929c326eb2ded463188e4338f0fdae5d
+    source_hash: 09d9255a5f9783bd3153b7e790428ccbae9d9383cacda36b796494b5651fe91a
     source_path: plugins/reference/qa-channel.md
     workflow: 16
 ---
 
-# QA Kanalı Plugin’i
+# QA Channel plugin'i
 
-OpenClaw mesajlarını göndermek ve almak için QA Kanalı arayüzünü ekler.
+OpenClaw mesajlarını göndermek ve almak için QA Channel yüzeyini ekler.
 
 ## Dağıtım
 
 - Paket: `@openclaw/qa-channel`
-- Kurulum yolu: yalnızca kaynak kod deposu
+- Kurulum yolu: yalnızca kaynak kod deposundan
 
-## Arayüz
+## Yüzey
 
-kanallar: qa-channel
+kanallar: `qa-channel`
 
 ## İlgili belgeler
 

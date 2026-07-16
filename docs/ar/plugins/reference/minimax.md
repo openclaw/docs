@@ -1,19 +1,20 @@
 ---
 read_when:
-    - أنت تُثبّت Plugin ‏minimax أو تهيئه أو تُدقّق فيه
-summary: يضيف دعم موفّري نماذج MiniMax وMiniMax Portal إلى OpenClaw.
+    - أنت تثبّت Plugin ‏minimax أو تهيّئه أو تدقّق فيه
+summary: يضيف دعم موفّري النماذج MiniMax وMiniMax Portal إلى OpenClaw.
 title: Plugin ‏MiniMax
 x-i18n:
-    generated_at: "2026-07-12T06:21:48Z"
+    generated_at: "2026-07-16T14:33:17Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: a3c5d999505a27b9ffbe2927c5ae7e67bfe3a53be7477490fee79e2a420f72da
+    source_hash: c9bff5e2346298479b15d60af5b94e6b7f535ace078e4a43e7c0ba2526cf4c3a
     source_path: plugins/reference/minimax.md
     workflow: 16
 ---
 
-# Plugin ‏MiniMax
+# Plugin MiniMax
 
 يضيف دعم موفّر نماذج MiniMax وMiniMax Portal إلى OpenClaw.
 
@@ -24,7 +25,7 @@ x-i18n:
 
 ## الواجهات
 
-الموفّرون: minimax وminimax-portal؛ العقود: imageGenerationProviders وmediaUnderstandingProviders وmusicGenerationProviders وspeechProviders وusageProviders وvideoGenerationProviders وwebSearchProviders
+الموفّرون: `minimax`، `minimax-portal`؛ العقود: `imageGenerationProviders`، `mediaUnderstandingProviders`، `musicGenerationProviders`، `speechProviders`، `usageProviders`، `videoGenerationProviders`، `webSearchProviders`
 
 ## الوثائق ذات الصلة
 

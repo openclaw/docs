@@ -1,27 +1,28 @@
 ---
 read_when:
     - Chcesz zmienić domyślne modele lub wyświetlić stan uwierzytelniania dostawcy
-    - Chcesz przeskanować dostępne modele/dostawców i debugować profile uwierzytelniania
-summary: Odwołanie CLI dla `openclaw models` (status/list/set/scan, aliasy, rozwiązania awaryjne, uwierzytelnianie)
+    - Chcesz przeglądać dostępne modele/dostawców i debugować profile uwierzytelniania
+summary: Dokumentacja CLI dla `openclaw models` (status/list/set/scan, aliasy, mechanizmy zastępcze, uwierzytelnianie)
 title: Modele
 x-i18n:
-    generated_at: "2026-06-27T17:21:48Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T18:13:12Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 15d0a01e0f8f971996359413306a1c694e5a787eaef69b13eb8ac63c2a7c8990
+    source_hash: 330598225664ff961ab41bf6358226ad64eb43e941be7f422cfde0fe9d93cea8
     source_path: cli/models.md
     workflow: 16
 ---
 
 # `openclaw models`
 
-Wykrywanie, skanowanie i konfiguracja modeli (model domyślny, mechanizmy awaryjne, profile uwierzytelniania).
+Wykrywanie, skanowanie i konfiguracja modeli (model domyślny, modele rezerwowe, profile uwierzytelniania).
 
 Powiązane:
 
-- Dostawcy + modele: [Modele](/pl/providers/models)
-- Koncepcje wyboru modelu + polecenie ukośnikowe `/models`: [Koncepcja modeli](/pl/concepts/models)
+- Dostawcy i modele: [Modele](/pl/providers/models)
+- Pojęcia dotyczące wyboru modelu i polecenie z ukośnikiem `/models`: [Pojęcie modeli](/pl/concepts/models)
 - Konfiguracja uwierzytelniania dostawcy: [Pierwsze kroki](/pl/start/getting-started)
 
 ## Typowe polecenia
@@ -30,91 +31,86 @@ Powiązane:
 openclaw models status
 openclaw models list
 openclaw models set <model-or-alias>
+openclaw models set-image <model-or-alias>
 openclaw models scan
 ```
 
-`openclaw models status` pokazuje rozwiązany model domyślny/mechanizmy awaryjne oraz przegląd uwierzytelniania.
-Gdy dostępne są migawki użycia dostawców, sekcja statusu OAuth/klucza API obejmuje
-okna użycia dostawców i migawki limitów.
-Obecni dostawcy okien użycia: Anthropic, GitHub Copilot, Gemini CLI, OpenAI,
-MiniMax, Xiaomi i z.ai. Uwierzytelnianie użycia pochodzi z haków specyficznych
-dla dostawcy, gdy są dostępne; w przeciwnym razie OpenClaw wraca do pasujących
-poświadczeń OAuth/klucza API z profili uwierzytelniania, zmiennych środowiskowych lub konfiguracji.
-W wyjściu `--json` `auth.providers` jest przeglądem dostawców świadomym
-środowiska/konfiguracji/magazynu, a `auth.oauth` dotyczy tylko kondycji profili
-w magazynie uwierzytelniania.
-Dodaj `--probe`, aby uruchomić aktywne sondy uwierzytelniania względem każdego skonfigurowanego profilu dostawcy.
-Sondy są rzeczywistymi żądaniami (mogą zużywać tokeny i wyzwalać limity szybkości).
-Użyj `--agent <id>`, aby sprawdzić stan modelu/uwierzytelniania skonfigurowanego agenta. Gdy opcja jest pominięta,
-polecenie używa `OPENCLAW_AGENT_DIR`, jeśli jest ustawione, w przeciwnym razie
-skonfigurowanego agenta domyślnego.
-Wiersze sond mogą pochodzić z profili uwierzytelniania, poświadczeń środowiskowych lub `models.json`.
-Do rozwiązywania problemów z OAuth OpenAI ChatGPT/Codex `openclaw models status`,
-`openclaw models auth list --provider openai` oraz
-`openclaw config get agents.defaults.model --json` to najszybszy sposób, aby
-potwierdzić, czy agent ma używalny profil OAuth `openai` dla
-`openai/*` przez natywne środowisko uruchomieniowe Codex. Zobacz [konfigurację dostawcy OpenAI](/pl/providers/openai#check-and-recover-codex-oauth-routing).
+Podpolecenia `status` i `auth` przyjmują `--agent <id>`, aby wskazać skonfigurowanego agenta; `list`, `scan`, `aliases` oraz `fallbacks`/`image-fallbacks` zawsze używają skonfigurowanego agenta domyślnego, a `set`/`set-image` bezwarunkowo odrzucają `--agent`. Jeśli parametr zostanie pominięty, polecenia obsługujące `--agent` używają `OPENCLAW_AGENT_DIR`, jeśli jest ustawione, a w przeciwnym razie skonfigurowanego agenta domyślnego.
 
-Uwagi:
+### Stan
 
-- `models set <model-or-alias>` akceptuje `provider/model` albo alias.
-- `models list` jest tylko do odczytu: odczytuje konfigurację, profile uwierzytelniania, istniejący stan katalogu
-  oraz wiersze katalogu należące do dostawcy, ale nie przepisuje
-  `models.json`.
-- Kolumna `Auth` jest na poziomie dostawcy i tylko do odczytu. Jest obliczana z lokalnych
-  metadanych profili uwierzytelniania, znaczników środowiskowych, skonfigurowanych kluczy dostawców, znaczników
-  dostawców lokalnych, znaczników środowiska/profilu AWS Bedrock oraz syntetycznych metadanych uwierzytelniania Plugin;
-  nie ładuje środowiska uruchomieniowego dostawcy, nie odczytuje sekretów z pęku kluczy, nie wywołuje
-  API dostawców ani nie potwierdza dokładnej gotowości wykonania dla poszczególnych modeli.
-- `models list --all --provider <id>` może zawierać należące do dostawcy statyczne wiersze katalogu
-  z manifestów Plugin lub metadanych katalogu wbudowanego dostawcy nawet wtedy, gdy
-  nie uwierzytelniono się jeszcze u tego dostawcy. Te wiersze nadal są pokazywane jako
-  niedostępne, dopóki nie zostanie skonfigurowane pasujące uwierzytelnianie.
-- `models list` utrzymuje responsywność płaszczyzny sterowania, gdy wykrywanie katalogu dostawcy
-  jest wolne. Widoki domyślne i skonfigurowane po krótkim oczekiwaniu wracają do skonfigurowanych lub
-  syntetycznych wierszy modeli i pozwalają wykrywaniu dokończyć się w
-  tle. Użyj `--all`, gdy potrzebujesz dokładnego pełnego wykrytego katalogu i
-  możesz poczekać na wykrywanie dostawcy.
-- Szerokie `models list --all` scala wiersze katalogu z manifestu nad wierszami rejestru
-  bez ładowania haków uzupełniających środowiska uruchomieniowego dostawcy. Szybkie ścieżki manifestu filtrowane
-  według dostawcy używają tylko dostawców oznaczonych jako `static`; dostawcy oznaczeni jako `refreshable`
-  pozostają oparte na rejestrze/pamięci podręcznej i dodają wiersze manifestu jako uzupełnienia, a
-  dostawcy oznaczeni jako `runtime` pozostają przy wykrywaniu rejestru/środowiska uruchomieniowego.
-- `models list` rozdziela natywne metadane modelu i limity środowiska uruchomieniowego. W wyjściu tabelarycznym
-  `Ctx` pokazuje `contextTokens/contextWindow`, gdy efektywny limit środowiska uruchomieniowego
-  różni się od natywnego okna kontekstu; wiersze JSON zawierają `contextTokens`,
-  gdy dostawca udostępnia ten limit.
-- `models list --provider <id>` filtruje według identyfikatora dostawcy, takiego jak `moonshot` lub
-  `openai`. Nie akceptuje etykiet wyświetlanych z interaktywnych
-  selektorów dostawców, takich jak `Moonshot AI`.
-- Odwołania do modeli są parsowane przez podział po **pierwszym** `/`. Jeśli identyfikator modelu zawiera `/` (w stylu OpenRouter), dołącz prefiks dostawcy (przykład: `openrouter/moonshotai/kimi-k2`).
-- Jeśli pominiesz dostawcę, OpenClaw najpierw rozwiązuje dane wejściowe jako alias, potem
-  jako unikatowe dopasowanie skonfigurowanego dostawcy dla tego dokładnego identyfikatora modelu, a dopiero potem
-  wraca do skonfigurowanego dostawcy domyślnego z ostrzeżeniem o przestarzałości.
-  Jeśli ten dostawca nie udostępnia już skonfigurowanego modelu domyślnego, OpenClaw
-  wraca do pierwszego skonfigurowanego dostawcy/modelu zamiast pokazywać
-  nieaktualną wartość domyślną usuniętego dostawcy.
-- `models status` może pokazywać `marker(<value>)` w wyjściu uwierzytelniania dla niesekretnych symboli zastępczych (na przykład `OPENAI_API_KEY`, `secretref-managed`, `minimax-oauth`, `oauth:chutes`, `ollama-local`) zamiast maskować je jako sekrety.
+`openclaw models status` wyświetla rozpoznany model domyślny i modele rezerwowe oraz przegląd uwierzytelniania. Gdy dostępne są migawki wykorzystania dostawcy, sekcja stanu OAuth/klucza API zawiera okna wykorzystania dostawcy i migawki limitów. Dostawcy obecnie obsługujący okna wykorzystania: Anthropic, GitHub Copilot, Gemini CLI, OpenAI, MiniMax, Xiaomi i z.ai. Dane uwierzytelniające do sprawdzania wykorzystania pochodzą z haków właściwych dla dostawcy, jeśli są dostępne; w przeciwnym razie OpenClaw używa pasujących poświadczeń OAuth/klucza API z profili uwierzytelniania, środowiska lub konfiguracji.
 
-### Skanowanie modeli
-
-`models scan` odczytuje publiczny katalog `:free` OpenRouter i szereguje kandydatów do
-użycia jako mechanizmy awaryjne. Sam katalog jest publiczny, więc skanowania samych metadanych nie wymagają
-klucza OpenRouter.
-
-Domyślnie OpenClaw próbuje sondować obsługę narzędzi i obrazów za pomocą aktywnych wywołań modeli.
-Jeśli nie skonfigurowano klucza OpenRouter, polecenie wraca do wyjścia
-opartego tylko na metadanych i wyjaśnia, że modele `:free` nadal wymagają `OPENROUTER_API_KEY` do
-sond i inferencji.
+W danych wyjściowych `--json` element `auth.providers` jest przeglądem dostawcy uwzględniającym środowisko, konfigurację i magazyn, natomiast `auth.oauth` przedstawia wyłącznie stan profili w magazynie uwierzytelniania.
 
 Opcje:
 
-- `--no-probe` (tylko metadane; bez wyszukiwania konfiguracji/sekretów)
+| Flaga                     | Działanie                                                                                                     |
+| ------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| `--json`                  | Dane wyjściowe JSON; diagnostyka profili uwierzytelniania, dostawcy i uruchamiania trafia do stderr, dzięki czemu stdout można przekazać potokiem do `jq`. |
+| `--plain`                 | Dane wyjściowe w postaci zwykłego tekstu.                                                                     |
+| `--check`                 | Zakończenie z kodem różnym od zera, jeśli uwierzytelnianie wygasa lub wygasło: `1` = wygasłe/brakujące, `2` = wygasające. |
+| `--probe`                 | Aktywne sprawdzenie skonfigurowanych profili uwierzytelniania. Wykonuje rzeczywiste żądania; może zużywać tokeny i powodować ograniczenie szybkości. |
+| `--probe-provider <name>` | Sprawdzenie tylko jednego dostawcy.                                                                           |
+| `--probe-profile <id>`    | Sprawdzenie określonych identyfikatorów profili uwierzytelniania (powtórzonych lub rozdzielonych przecinkami). |
+| `--probe-timeout <ms>`    | Limit czasu pojedynczego sprawdzenia.                                                                         |
+| `--probe-concurrency <n>` | Równoczesne sprawdzenia.                                                                                      |
+| `--probe-max-tokens <n>`  | Maksymalna liczba tokenów sprawdzenia (w miarę możliwości).                                                    |
+| `--agent <id>`            | Identyfikator skonfigurowanego agenta; zastępuje `OPENCLAW_AGENT_DIR`.                                         |
+
+Wiersze sprawdzeń mogą pochodzić z profili uwierzytelniania, poświadczeń środowiskowych lub `models.json`. Kategorie stanów sprawdzenia: `ok`, `auth`, `rate_limit`, `billing`, `timeout`, `format`, `unknown`, `no_model`.
+
+Kody szczegółów/przyczyn, których można oczekiwać, gdy sprawdzenie nigdy nie dociera do wywołania modelu:
+
+- `excluded_by_auth_order`: zapisany profil istnieje, ale jawne `auth.order.<provider>` go pominęło, dlatego sprawdzenie zgłasza wykluczenie zamiast podejmować próbę jego użycia.
+- `missing_credential`, `invalid_expires`, `expired`, `unresolved_ref`: profil istnieje, ale nie kwalifikuje się do użycia lub nie można go rozpoznać.
+- `ineligible_profile`: profil jest niezgodny z konfiguracją dostawcy z innego powodu.
+- `no_model`: uwierzytelnianie dostawcy istnieje, ale OpenClaw nie mógł rozpoznać kandydata na model, którego można sprawdzić dla tego dostawcy.
+
+Podczas rozwiązywania problemów z OAuth OpenAI ChatGPT/Codex `openclaw models status`, `openclaw models auth list --provider openai` i `openclaw config get agents.defaults.model --json` pozwalają najszybciej potwierdzić, czy agent ma użyteczny profil OAuth `openai` dla `openai/*` za pośrednictwem natywnego środowiska uruchomieniowego Codex. Zobacz [Konfiguracja dostawcy OpenAI](/pl/providers/openai#check-and-recover-codex-oauth-routing).
+
+### Lista
+
+`openclaw models list` działa tylko do odczytu: odczytuje konfigurację, profile uwierzytelniania, istniejący stan katalogu i należące do dostawcy wiersze katalogu, ale nigdy nie nadpisuje `models.json`.
+
+Opcje: `--all` (pełny katalog), `--local` (filtrowanie do modeli lokalnych), `--provider <id>`, `--json`, `--plain`.
+
+Uwagi:
+
+- Kolumna `Auth` jest tylko do odczytu. W przypadku tras modeli należących do dostawcy, takich jak OpenAI, dopasowuje trasę API/bazowego adresu URL każdego wiersza do kwalifikujących się profili w efektywnym `auth.order`, poświadczeń środowiskowych/konfiguracyjnych oraz rozpoznanych obiektów SecretRef o zakresie polecenia. Konkretny wiersz OpenAI zachowuje nieznany stan, gdy jego zasady trasowania są niedostępne, zamiast przejmować uwierzytelnianie na poziomie dostawcy; starsze kontrole dotyczące wyłącznie dostawcy oraz inni dostawcy zachowują działanie na poziomie dostawcy. Metadane syntetycznego uwierzytelniania Pluginu są jedynie wskazówką dotyczącą możliwości środowiska uruchomieniowego, a nie dowodem natywnego uwierzytelnienia konta, dlatego trasy zależne od konta zachowują nieznany stan bez pozytywnego potwierdzenia w rejestrze. Polecenie nie ładuje środowiska uruchomieniowego dostawcy, nie odczytuje sekretów z pęku kluczy, nie wywołuje interfejsów API dostawcy ani nie potwierdza dokładnej gotowości do wykonania.
+- `models list --all --provider <id>` może zawierać należące do dostawcy statyczne wiersze katalogu z manifestów Pluginów lub dołączonych metadanych katalogu dostawcy, nawet jeśli uwierzytelnianie u tego dostawcy nie zostało jeszcze przeprowadzone. Te wiersze nadal są wyświetlane jako niedostępne, dopóki nie zostanie skonfigurowane pasujące uwierzytelnianie.
+- `models list` zapewnia responsywność płaszczyzny sterowania, gdy wykrywanie katalogu dostawcy przebiega wolno. Widoki domyślny i skonfigurowany po krótkim oczekiwaniu przełączają się na skonfigurowane lub syntetyczne wiersze modeli i pozwalają na dokończenie wykrywania w tle. Użyj `--all`, gdy potrzebny jest dokładny, pełny wykryty katalog i można zaczekać na wykrywanie po stronie dostawcy.
+- Ogólne `models list --all` scala wiersze katalogu manifestu z wierszami rejestru, nadając pierwszeństwo manifestowi, bez ładowania uzupełniających haków środowiska uruchomieniowego dostawcy. Szybkie ścieżki manifestu filtrowane według dostawcy używają tylko dostawców oznaczonych jako `static`; dostawcy oznaczeni jako `refreshable` nadal korzystają z rejestru/pamięci podręcznej i dołączają wiersze manifestu jako uzupełnienie, natomiast dostawcy oznaczeni jako `runtime` nadal korzystają z wykrywania przez rejestr/środowisko uruchomieniowe.
+- `models list` rozdziela natywne metadane modelu od limitów środowiska uruchomieniowego. W danych tabelarycznych `Ctx` wyświetla `contextTokens/contextWindow`, gdy efektywny limit środowiska uruchomieniowego różni się od natywnego okna kontekstu; wiersze JSON zawierają `contextTokens`, gdy dostawca udostępnia taki limit.
+- W przypadku tras należących do dostawcy `models list` odwzorowuje jeden logiczny wiersz dostawcy/modelu na wybraną trasę. `Input` i `Ctx` pochodzą wyłącznie z dokładnego wiersza katalogu trasy fizycznej, a jawnie skonfigurowane logiczne nadpisania są stosowane na końcu; nierozpoznany wybór trasy wyświetla nieznane pola możliwości zamiast przejmować metadane z trasy równorzędnej.
+- `models list --provider <id>` filtruje według identyfikatora dostawcy, takiego jak `moonshot` lub `openai`. Nie przyjmuje etykiet wyświetlanych przez interaktywne selektory dostawców, takich jak `Moonshot AI`.
+- Odwołania do modeli są analizowane przez podział przy **pierwszym** `/`. Jeśli identyfikator modelu zawiera `/` (w stylu OpenRouter), należy podać prefiks dostawcy (przykład: `openrouter/moonshotai/kimi-k2`).
+- Jeśli dostawca zostanie pominięty, OpenClaw najpierw rozpoznaje dane wejściowe jako alias, następnie jako unikatowe dopasowanie skonfigurowanego dostawcy dla tego dokładnego identyfikatora modelu, a dopiero potem przechodzi do skonfigurowanego dostawcy domyślnego z ostrzeżeniem o wycofaniu. Jeśli ten dostawca nie udostępnia już skonfigurowanego modelu domyślnego, OpenClaw przechodzi do pierwszej skonfigurowanej pary dostawca/model zamiast zgłaszać nieaktualny domyślny model usuniętego dostawcy.
+- `models status` może wyświetlać `marker(<value>)` w danych uwierzytelniania dla symboli zastępczych niebędących sekretami (na przykład `OPENAI_API_KEY`, `secretref-managed`, `minimax-oauth`, `oauth:chutes`, `ollama-local`) zamiast maskować je jako sekrety.
+
+### Ustawianie modelu domyślnego / modelu obrazów
+
+```bash
+openclaw models set <model-or-alias>
+openclaw models set-image <model-or-alias>
+```
+
+`set` zapisuje `agents.defaults.model.primary`; `set-image` zapisuje `agents.defaults.imageModel.primary`. Oba przyjmują `provider/model` lub skonfigurowany alias. `set` naprawia również instalacje Pluginów środowiska uruchomieniowego Codex/Copilot, gdy nowo wybrany model ich wymaga; `set-image` tego nie robi. Żadne z tych poleceń nie przyjmuje `--agent`; zawsze zapisują ustawienia domyślne agenta.
+
+### Skanowanie
+
+`models scan` odczytuje publiczny katalog `:free` usługi OpenRouter i klasyfikuje kandydatów do użycia jako modele rezerwowe. Sam katalog jest publiczny, dlatego skanowanie wyłącznie metadanych nie wymaga klucza OpenRouter.
+
+Domyślnie OpenClaw próbuje sprawdzać obsługę narzędzi i obrazów za pomocą aktywnych wywołań modeli. Jeśli nie skonfigurowano klucza OpenRouter, polecenie przechodzi do danych wyjściowych zawierających wyłącznie metadane i wyjaśnia, że modele `:free` nadal wymagają `OPENROUTER_API_KEY` do sprawdzania i wnioskowania.
+
+Opcje:
+
+- `--no-probe` (tylko metadane; bez odczytu konfiguracji/sekretów)
 - `--min-params <b>`
 - `--max-age-days <days>`
 - `--provider <name>`
 - `--max-candidates <n>`
-- `--timeout <ms>` (żądanie katalogu i limit czasu na sondę)
+- `--timeout <ms>` (limit czasu żądania katalogu i każdego sprawdzenia)
 - `--concurrency <n>`
 - `--yes`
 - `--no-input`
@@ -122,55 +118,28 @@ Opcje:
 - `--set-image`
 - `--json`
 
-`--set-default` i `--set-image` wymagają aktywnych sond; wyniki skanowania
-oparte tylko na metadanych mają charakter informacyjny i nie są stosowane do konfiguracji.
+`--set-default` i `--set-image` wymagają aktywnych sprawdzeń; wyniki skanowania wyłącznie metadanych mają charakter informacyjny i nie są stosowane do konfiguracji.
 
-### Status modeli
-
-Opcje:
-
-- `--json`
-- `--plain`
-- `--check` (kod wyjścia 1=wygasłe/brakujące, 2=wygasające)
-- `--probe` (aktywna sonda skonfigurowanych profili uwierzytelniania)
-- `--probe-provider <name>` (sonduj jednego dostawcę)
-- `--probe-profile <id>` (powtarzane lub rozdzielone przecinkami identyfikatory profili)
-- `--probe-timeout <ms>`
-- `--probe-concurrency <n>`
-- `--probe-max-tokens <n>`
-- `--agent <id>` (identyfikator skonfigurowanego agenta; zastępuje `OPENCLAW_AGENT_DIR`)
-
-`--json` rezerwuje stdout dla ładunku JSON. Diagnostyka profili uwierzytelniania, dostawców
-i uruchamiania jest kierowana do stderr, aby skrypty mogły przekazywać stdout bezpośrednio
-do narzędzi takich jak `jq`.
-
-Koszyki statusu sond:
-
-- `ok`
-- `auth`
-- `rate_limit`
-- `billing`
-- `timeout`
-- `format`
-- `unknown`
-- `no_model`
-
-Przypadki szczegółów/kodów przyczyn sond, których można oczekiwać:
-
-- `excluded_by_auth_order`: zapisany profil istnieje, ale jawne
-  `auth.order.<provider>` go pominęło, więc sonda zgłasza wykluczenie zamiast
-  próbować go użyć.
-- `missing_credential`, `invalid_expires`, `expired`, `unresolved_ref`:
-  profil jest obecny, ale nie kwalifikuje się albo nie można go rozwiązać.
-- `no_model`: uwierzytelnianie dostawcy istnieje, ale OpenClaw nie mógł rozwiązać
-  kandydata modelu możliwego do sondowania dla tego dostawcy.
-
-## Aliasy + mechanizmy awaryjne
+## Aliasy
 
 ```bash
-openclaw models aliases list
-openclaw models fallbacks list
+openclaw models aliases list [--json] [--plain]
+openclaw models aliases add <alias> <model-or-alias>
+openclaw models aliases remove <alias>
 ```
+
+Aliasy są przechowywane dla poszczególnych wpisów modeli jako `agents.defaults.models.<key>.alias`. `add` najpierw rozpoznaje `<model-or-alias>` do kanonicznego klucza dostawcy/modelu, dlatego przypisanie aliasu do aliasu przekierowuje go, zamiast tworzyć łańcuch.
+
+## Modele rezerwowe
+
+```bash
+openclaw models fallbacks list [--json] [--plain]
+openclaw models fallbacks add <model-or-alias>
+openclaw models fallbacks remove <model-or-alias>
+openclaw models fallbacks clear
+```
+
+Zarządza `agents.defaults.model.fallbacks`. `openclaw models image-fallbacks list|add|remove|clear` zarządza równoległą listą `agents.defaults.imageModel.fallbacks` przy użyciu takiej samej struktury podpoleceń.
 
 ## Profile uwierzytelniania
 
@@ -179,30 +148,26 @@ openclaw models auth add
 openclaw models auth list [--provider <id>] [--json]
 openclaw models auth login --provider <id>
 openclaw models auth login --provider openai --profile-id openai:work
+openclaw models auth login-github-copilot
 openclaw models auth paste-api-key --provider <id>
 openclaw models auth setup-token --provider <id>
-openclaw models auth paste-token
+openclaw models auth paste-token --provider <id>
+openclaw models auth order get --provider <id>
+openclaw models auth order set --provider <id> <profileIds...>
+openclaw models auth order clear --provider <id>
 ```
 
-`models auth add` to interaktywny pomocnik uwierzytelniania. Może uruchomić przepływ
-uwierzytelniania dostawcy (OAuth/klucz API) albo poprowadzić do ręcznego wklejenia tokenu,
-zależnie od wybranego dostawcy.
+`models auth add` jest interaktywnym narzędziem pomocniczym uwierzytelniania. Może uruchomić proces uwierzytelniania dostawcy (OAuth/klucz API) lub przeprowadzić przez ręczne wklejanie tokenu, zależnie od wybranego dostawcy.
 
-`models auth list` wyświetla zapisane profile uwierzytelniania dla wybranego agenta bez
-drukowania tokenu, klucza API ani sekretnego materiału OAuth. Użyj `--provider <id>`, aby
-odfiltrować do jednego dostawcy, takiego jak `openai`, oraz `--json` do skryptów.
+`models auth list` wyświetla zapisane profile uwierzytelniania dla wybranego agenta bez ujawniania tokenów, kluczy API ani tajnych danych OAuth. Użyj `--provider <id>`, aby ograniczyć wyniki do jednego dostawcy, na przykład `openai`, oraz `--json` w skryptach.
 
-`models auth login` uruchamia przepływ uwierzytelniania Plugin dostawcy (OAuth/klucz API). Użyj
-`openclaw plugins list`, aby zobaczyć, którzy dostawcy są zainstalowani.
-Użyj `openclaw models auth --agent <id> <subcommand>`, aby zapisać wyniki uwierzytelniania w
-konkretnym magazynie skonfigurowanego agenta. Nadrzędna flaga `--agent` jest respektowana przez
-`add`, `list`, `login`, `paste-api-key`, `setup-token`, `paste-token` oraz
-`login-github-copilot`.
+`models auth login` uruchamia przepływ uwierzytelniania Pluginu dostawcy (OAuth/klucz API). Użyj `openclaw plugins list`, aby sprawdzić, którzy dostawcy są zainstalowani. `login` przyjmuje `--profile-id <id>` w przypadku dostawców obsługujących nazwane profile podczas logowania (pozwala to rozdzielić wiele loginów tego samego dostawcy), `--method <id>` do wyboru konkretnej metody uwierzytelniania, `--device-code` jako skrót dla `--method device-code`, `--set-default` do zastosowania zalecanego przez dostawcę modelu domyślnego oraz `--force` do uprzedniego usunięcia istniejących profili tego dostawcy (należy użyć, gdy profil OAuth w pamięci podręcznej się zablokował lub wymagane jest przełączenie konta).
 
-Dla modeli OpenAI `--provider openai` domyślnie używa logowania konta ChatGPT/Codex.
-Użyj `--method api-key` tylko wtedy, gdy chcesz dodać profil klucza API OpenAI,
-zwykle jako kopię zapasową na limity subskrypcji Codex. Uruchom `openclaw doctor --fix`,
-aby zmigrować starszy stan uwierzytelniania/profili ze starym prefiksem OpenAI Codex do `openai`.
+`models auth login-github-copilot` jest skrótem dla `models auth login --provider github-copilot --method device` (przepływ urządzenia GitHub); przyjmuje `--yes`, aby zastąpić istniejący profil bez wyświetlania monitu.
+
+Użyj `openclaw models auth --agent <id> <subcommand>`, aby zapisać wyniki uwierzytelniania w magazynie konkretnego skonfigurowanego agenta. Nadrzędna flaga `--agent` jest uwzględniana przez `add`, `list`, `login`, `paste-api-key`, `setup-token`, `paste-token`, `login-github-copilot` oraz `order get`/`set`/`clear`.
+
+W przypadku modeli OpenAI `--provider openai` domyślnie korzysta z logowania na konto ChatGPT/Codex. Użyj `--method api-key` tylko wtedy, gdy wymagane jest dodanie profilu klucza API OpenAI, zwykle jako rozwiązania zapasowego na wypadek limitów subskrypcji Codex. Uruchom `openclaw doctor --fix`, aby przenieść starszy, przestarzały stan uwierzytelniania/profilu z prefiksem OpenAI Codex do `openai`.
 
 Przykłady:
 
@@ -215,33 +180,17 @@ openclaw models auth list --provider openai
 
 Uwagi:
 
-- `login` akceptuje `--profile-id <id>` dla dostawców, którzy obsługują nazwane
-  profile podczas logowania. Użyj tego, aby rozdzielić wiele logowań dla tego samego
-  dostawcy.
-- `paste-api-key` akceptuje klucze API wygenerowane gdzie indziej, pyta o wartość klucza
-  i zapisuje ją pod domyślnym identyfikatorem profilu `<provider>:manual`, chyba że
-  przekażesz `--profile-id`. W automatyzacji przekaż klucz na stdin, na przykład
-  `printf "%s\n" "$OPENAI_API_KEY" | openclaw models auth paste-api-key --provider openai`.
-- `setup-token` i `paste-token` pozostają ogólnymi poleceniami tokenów dla dostawców,
-  którzy udostępniają metody uwierzytelniania tokenem.
-- `setup-token` wymaga interaktywnego TTY i uruchamia metodę uwierzytelniania tokenem
-  dostawcy (domyślnie metodę `setup-token` tego dostawcy, gdy ją udostępnia).
-- `paste-token` akceptuje ciąg tokenu wygenerowany gdzie indziej lub z automatyzacji.
-- `paste-token` wymaga `--provider`, domyślnie pyta o wartość tokenu
-  i zapisuje ją pod domyślnym identyfikatorem profilu `<provider>:manual`, chyba że przekażesz
-  `--profile-id`.
-- W automatyzacji przekaż token na stdin zamiast podawać go jako argument, aby
-  poświadczenia dostawcy nie pojawiały się w historii powłoki ani na listach procesów.
-- `paste-token --expires-in <duration>` zapisuje bezwzględny czas wygaśnięcia tokenu z
-  względnego czasu trwania, takiego jak `365d` albo `12h`.
-- Dla `openai` klucze API OpenAI i materiał tokenów ChatGPT/OAuth są
-  różnymi kształtami uwierzytelniania. Użyj `paste-api-key` dla kluczy API OpenAI `sk-...` oraz
-  `paste-token` tylko dla materiału uwierzytelniania tokenem.
-- Uwaga Anthropic: pracownicy Anthropic poinformowali nas, że użycie Claude CLI w stylu OpenClaw jest ponownie dozwolone, więc OpenClaw traktuje ponowne użycie Claude CLI i użycie `claude -p` jako zatwierdzone dla tej integracji, chyba że Anthropic opublikuje nową politykę.
-- Anthropic `setup-token` / `paste-token` pozostają dostępne jako obsługiwana ścieżka tokenów OpenClaw, ale OpenClaw obecnie preferuje ponowne użycie Claude CLI i `claude -p`, gdy są dostępne.
+- `paste-api-key` przyjmuje klucze API wygenerowane w innym miejscu, wyświetla monit o wartość klucza i zapisuje ją pod domyślnym identyfikatorem profilu `<provider>:manual`, chyba że przekazano `--profile-id`. W automatyzacji należy przekazać klucz potokiem na standardowe wejście, na przykład `printf "%s\n" "$OPENAI_API_KEY" | openclaw models auth paste-api-key --provider openai`.
+- `setup-token` i `paste-token` pozostają ogólnymi poleceniami tokenów dla dostawców udostępniających metody uwierzytelniania za pomocą tokena.
+- `setup-token` wymaga interaktywnego terminala TTY i uruchamia metodę uwierzytelniania tokenem dostawcy (domyślnie metodę `setup-token` tego dostawcy, jeśli jest udostępniana).
+- `paste-token` wymaga `--provider`, domyślnie wyświetla monit o wartość tokena i zapisuje ją pod domyślnym identyfikatorem profilu `<provider>:manual`, chyba że przekazano `--profile-id`. W automatyzacji należy przekazać token potokiem na standardowe wejście zamiast podawać go jako argument, aby dane uwierzytelniające dostawcy nie pojawiały się w historii powłoki ani na listach procesów.
+- `paste-token --expires-in <duration>` zapisuje bezwzględny czas wygaśnięcia tokena na podstawie względnego okresu, takiego jak `365d` lub `12h`.
+- W przypadku `openai` klucze API OpenAI oraz dane tokenów ChatGPT/OAuth mają różne struktury uwierzytelniania. Użyj `paste-api-key` dla kluczy API OpenAI `sk-...`, a `paste-token` tylko dla danych uwierzytelniania tokenem.
+- Anthropic: `setup-token`/`paste-token` są obsługiwanymi przez OpenClaw ścieżkami uwierzytelniania dla `anthropic`, ale OpenClaw preferuje ponowne wykorzystanie CLI Claude (`claude -p`) na hoście, gdy jest ono dostępne.
+- `auth order get/set/clear` zarządza nadpisaniem kolejności profili uwierzytelniania dla jednego dostawcy na poziomie agenta, zapisanym w `auth-state.json` (niezależnie od klucza konfiguracji `auth.order.<provider>`). `set` przyjmuje co najmniej jeden identyfikator profilu w kolejności priorytetów; `clear` korzysta awaryjnie z kolejności określonej w konfiguracji lub cyklicznej.
 
 ## Powiązane
 
 - [Dokumentacja CLI](/pl/cli)
 - [Wybór modelu](/pl/concepts/model-providers)
-- [Przełączanie awaryjne modelu](/pl/concepts/model-failover)
+- [Awaryjne przełączanie modeli](/pl/concepts/model-failover)

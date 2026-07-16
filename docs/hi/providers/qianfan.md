@@ -1,51 +1,58 @@
 ---
 read_when:
-    - आप कई LLMs के लिए एक ही API कुंजी चाहते हैं
-    - आपको Baidu Qianfan सेटअप मार्गदर्शन चाहिए
-summary: OpenClaw में कई मॉडलों तक पहुंचने के लिए Qianfan के एकीकृत API का उपयोग करें
+    - आप कई LLM के लिए एक ही API कुंजी चाहते हैं
+    - आपको Baidu Qianfan सेटअप संबंधी मार्गदर्शन चाहिए
+summary: OpenClaw में कई मॉडल एक्सेस करने के लिए Qianfan के एकीकृत API का उपयोग करें
 title: Qianfan
 x-i18n:
-    generated_at: "2026-06-29T00:02:07Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T16:49:26Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: a8bc31970dc7fbc43819ec6d51f4bd0047b1acc5a03b23b656e617e3abd97475
+    source_hash: 31387a53ee4472e2d20ae939ea75cea0d6f6367501becd56a8654fd97fdf0804
     source_path: providers/qianfan.md
     workflow: 16
 ---
 
-Qianfan Baidu का MaaS प्लेटफ़ॉर्म है, जो एक **एकीकृत API** प्रदान करता है जो अनुरोधों को एक ही
-endpoint और API key के पीछे कई मॉडलों तक रूट करता है। यह OpenAI-संगत है, इसलिए अधिकांश OpenAI SDKs केवल base URL बदलकर काम करते हैं।
+Qianfan Baidu का MaaS प्लेटफ़ॉर्म है: एक एकीकृत, OpenAI-संगत API, जो एक ही एंडपॉइंट और API कुंजी के पीछे कई मॉडल को अनुरोध भेजता है। OpenClaw इसे आधिकारिक बाहरी Plugin `@openclaw/qianfan-provider` के रूप में उपलब्ध कराता है।
 
-| गुण | मान                             |
-| -------- | --------------------------------- |
-| प्रदाता | `qianfan`                         |
-| प्रमाणीकरण     | `QIANFAN_API_KEY`                 |
-| API      | OpenAI-संगत                 |
-| Base URL | `https://qianfan.baidubce.com/v2` |
+| गुण            | मान                                      |
+| -------------- | ---------------------------------------- |
+| प्रदाता         | `qianfan`                       |
+| प्रमाणीकरण      | `QIANFAN_API_KEY`                       |
+| API            | OpenAI-संगत (`openai-completions`)        |
+| आधार URL       | `https://qianfan.baidubce.com/v2`                       |
+| डिफ़ॉल्ट मॉडल   | `qianfan/deepseek-v3.2`                       |
 
 ## Plugin इंस्टॉल करें
 
-आधिकारिक Plugin इंस्टॉल करें, फिर Gateway रीस्टार्ट करें:
+आधिकारिक Plugin इंस्टॉल करें, फिर Gateway पुनः आरंभ करें:
 
 ```bash
 openclaw plugins install @openclaw/qianfan-provider
 openclaw gateway restart
 ```
 
-## शुरुआत करना
+## आरंभ करना
 
 <Steps>
-  <Step title="Baidu Cloud खाता बनाएं">
-    [Qianfan Console](https://console.bce.baidu.com/qianfan/ais/console/apiKey) पर साइन अप या लॉग इन करें और सुनिश्चित करें कि आपके लिए Qianfan API access सक्षम है।
+  <Step title="Baidu Cloud खाता बनाएँ">
+    [Qianfan Console](https://console.bce.baidu.com/qianfan/ais/console/apiKey) पर साइन अप करें या लॉग इन करें और सुनिश्चित करें कि आपके लिए Qianfan API की पहुँच सक्षम है।
   </Step>
-  <Step title="API key जनरेट करें">
-    एक नया application बनाएं या मौजूदा चुनें, फिर API key जनरेट करें। key का format `bce-v3/ALTAK-...` है।
+  <Step title="API कुंजी जनरेट करें">
+    नया एप्लिकेशन बनाएँ या मौजूदा एप्लिकेशन चुनें, फिर API कुंजी जनरेट करें। Baidu Cloud कुंजियाँ `bce-v3/ALTAK-...` प्रारूप का उपयोग करती हैं।
   </Step>
-  <Step title="Onboarding चलाएं">
+  <Step title="ऑनबोर्डिंग चलाएँ">
     ```bash
     openclaw onboard --auth-choice qianfan-api-key
     ```
+
+    गैर-इंटरैक्टिव रन कुंजी को `--qianfan-api-key <key>` या
+    `QIANFAN_API_KEY` से पढ़ते हैं। ऑनबोर्डिंग प्रदाता कॉन्फ़िगरेशन लिखती है, डिफ़ॉल्ट मॉडल के लिए
+    `QIANFAN` उपनाम जोड़ती है और कोई मॉडल कॉन्फ़िगर न होने पर `qianfan/deepseek-v3.2`
+    को डिफ़ॉल्ट मॉडल के रूप में सेट करती है।
+
   </Step>
   <Step title="सत्यापित करें कि मॉडल उपलब्ध है">
     ```bash
@@ -54,18 +61,20 @@ openclaw gateway restart
   </Step>
 </Steps>
 
-## अंतर्निहित catalog
+## अंतर्निहित कैटलॉग
 
-| Model ref                            | Input       | Context | अधिकतम output | Reasoning | नोट्स         |
-| ------------------------------------ | ----------- | ------- | ---------- | --------- | ------------- |
-| `qianfan/deepseek-v3.2`              | text        | 98,304  | 32,768     | हां       | डिफ़ॉल्ट मॉडल |
-| `qianfan/ernie-5.0-thinking-preview` | text, image | 119,000 | 64,000     | हां       | Multimodal    |
+| मॉडल संदर्भ                          | इनपुट      | कॉन्टेक्स्ट | अधिकतम आउटपुट | रीजनिंग | टिप्पणियाँ       |
+| ------------------------------------ | ----------- | ----------- | --------------- | -------- | ---------------- |
+| `qianfan/deepseek-v3.2`                   | टेक्स्ट     | 98,304      | 32,768          | हाँ      | डिफ़ॉल्ट मॉडल     |
+| `qianfan/ernie-5.0-thinking-preview`                   | टेक्स्ट, इमेज | 119,000   | 64,000          | हाँ      | मल्टीमॉडल         |
+
+कैटलॉग स्थिर है; मॉडल की कोई लाइव खोज नहीं होती।
 
 <Tip>
-डिफ़ॉल्ट model ref `qianfan/deepseek-v3.2` है। आपको `models.providers.qianfan` को केवल तब override करना होगा जब आपको custom base URL या model metadata चाहिए।
+कस्टम आधार URL या मॉडल मेटाडेटा की आवश्यकता होने पर ही आपको `models.providers.qianfan` को ओवरराइड करना होगा।
 </Tip>
 
-## Config उदाहरण
+## कॉन्फ़िगरेशन उदाहरण
 
 ```json5
 {
@@ -109,24 +118,19 @@ openclaw gateway restart
 }
 ```
 
+<Note>
+मॉडल संदर्भ `qianfan/` प्रीफ़िक्स का उपयोग करते हैं (उदाहरण के लिए `qianfan/deepseek-v3.2`)।
+</Note>
+
 <AccordionGroup>
-  <Accordion title="Transport और संगतता">
-    Qianfan OpenAI-संगत transport path के माध्यम से चलता है, native OpenAI request shaping के माध्यम से नहीं। इसका मतलब है कि standard OpenAI SDK सुविधाएं काम करती हैं, लेकिन provider-specific parameters forward नहीं किए जा सकते हैं।
-  </Accordion>
-
-  <Accordion title="Catalog और overrides">
-    static catalog में वर्तमान में `deepseek-v3.2` और `ernie-5.0-thinking-preview` शामिल हैं। `models.providers.qianfan` जोड़ें या override करें केवल जब आपको custom base URL या model metadata चाहिए।
-
-    <Note>
-    Model refs `qianfan/` prefix का उपयोग करते हैं (उदाहरण के लिए `qianfan/deepseek-v3.2`)।
-    </Note>
-
+  <Accordion title="ट्रांसपोर्ट और संगतता">
+    Qianfan मूल OpenAI अनुरोध संरचना के बजाय OpenAI-संगत ट्रांसपोर्ट पथ के माध्यम से चलता है। OpenAI SDK की मानक सुविधाएँ काम करती हैं, लेकिन प्रदाता-विशिष्ट पैरामीटर अग्रेषित नहीं किए जा सकते।
   </Accordion>
 
   <Accordion title="समस्या निवारण">
-    - सुनिश्चित करें कि आपकी API key `bce-v3/ALTAK-` से शुरू होती है और Baidu Cloud console में Qianfan API access सक्षम है।
-    - यदि models सूचीबद्ध नहीं हैं, तो पुष्टि करें कि आपके account में Qianfan service सक्रिय है।
-    - डिफ़ॉल्ट base URL `https://qianfan.baidubce.com/v2` है। इसे केवल तब बदलें जब आप custom endpoint या proxy का उपयोग करें।
+    - सुनिश्चित करें कि आपकी API कुंजी `bce-v3/ALTAK-` से शुरू होती है और Baidu Cloud कंसोल में उसके लिए Qianfan API की पहुँच सक्षम है।
+    - यदि मॉडल सूचीबद्ध नहीं हैं, तो पुष्टि करें कि आपके खाते के लिए Qianfan सेवा सक्रिय है।
+    - आधार URL केवल तभी बदलें, जब आप कस्टम एंडपॉइंट या प्रॉक्सी का उपयोग करते हों।
 
   </Accordion>
 </AccordionGroup>
@@ -135,15 +139,15 @@ openclaw gateway restart
 
 <CardGroup cols={2}>
   <Card title="मॉडल चयन" href="/hi/concepts/model-providers" icon="layers">
-    providers, model refs, और failover behavior चुनना।
+    प्रदाता, मॉडल संदर्भ और फ़ेलओवर व्यवहार चुनना।
   </Card>
-  <Card title="Configuration संदर्भ" href="/hi/gateway/configuration-reference" icon="gear">
-    पूरा OpenClaw configuration संदर्भ।
+  <Card title="कॉन्फ़िगरेशन संदर्भ" href="/hi/gateway/configuration-reference" icon="gear">
+    OpenClaw का संपूर्ण कॉन्फ़िगरेशन संदर्भ।
   </Card>
-  <Card title="Agent setup" href="/hi/concepts/agent" icon="robot">
-    agent defaults और model assignments configure करना।
+  <Card title="एजेंट सेटअप" href="/hi/concepts/agent" icon="robot">
+    एजेंट के डिफ़ॉल्ट और मॉडल असाइनमेंट कॉन्फ़िगर करना।
   </Card>
-  <Card title="Qianfan API docs" href="https://cloud.baidu.com/doc/qianfan-api/s/3m7of64lb" icon="arrow-up-right-from-square">
-    आधिकारिक Qianfan API documentation।
+  <Card title="Qianfan API दस्तावेज़" href="https://cloud.baidu.com/doc/qianfan-api/s/3m7of64lb" icon="arrow-up-right-from-square">
+    आधिकारिक Qianfan API दस्तावेज़।
   </Card>
 </CardGroup>

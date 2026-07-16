@@ -1,21 +1,22 @@
 ---
 read_when:
-    - Estás instalando, configurando o auditando el plugin kimi
-summary: Añade compatibilidad con Kimi y con el proveedor de modelos Kimi Coding en OpenClaw.
+    - Se está instalando, configurando o auditando el plugin kimi
+summary: Añade compatibilidad con Kimi y con el proveedor de modelos Kimi Coding a OpenClaw.
 title: Plugin de Kimi
 x-i18n:
-    generated_at: "2026-07-11T23:20:31Z"
+    generated_at: "2026-07-16T11:52:15Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 6f609f6e21b493ea83e5cc34a28921be2fed3334b531194050257857a06ef259
+    source_hash: 531172e318c99f8debace71e32e01980efb4205fe3afb0d1185493382bbe9712
     source_path: plugins/reference/kimi.md
     workflow: 16
 ---
 
-# Plugin de Kimi
+# Plugin Kimi
 
-Añade compatibilidad con Kimi y con el proveedor de modelos Kimi Coding en OpenClaw.
+Añade compatibilidad con Kimi y con el proveedor de modelos Kimi Coding a OpenClaw.
 
 ## Distribución
 
@@ -24,8 +25,8 @@ Añade compatibilidad con Kimi y con el proveedor de modelos Kimi Coding en Open
 
 ## Superficie
 
-proveedores: kimi, kimi-coding
+Proveedores: `kimi`, `kimi-coding`
 
 ## Documentación relacionada
 
-- [kimi](/es/providers/moonshot)
+- [Kimi](/es/providers/moonshot)

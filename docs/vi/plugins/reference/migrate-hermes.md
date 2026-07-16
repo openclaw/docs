@@ -4,24 +4,25 @@ read_when:
 summary: Nhập cấu hình, bộ nhớ, Skills và thông tin xác thực được hỗ trợ của Hermes vào OpenClaw.
 title: Di chuyển Plugin Hermes
 x-i18n:
-    generated_at: "2026-07-12T08:10:28Z"
+    generated_at: "2026-07-16T15:39:31Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 231102d87795a43c45d8fb5dc12cda4faf8f4b9c4f85254e7d44676fead7f00c
+    source_hash: 9356a826ec15776dafb71f46c112a802ba52be1c16a585c9a554f686c9622add
     source_path: plugins/reference/migrate-hermes.md
     workflow: 16
 ---
 
 # Di chuyển Plugin Hermes
 
-Nhập cấu hình, bộ nhớ, Skills và thông tin xác thực được hỗ trợ của Hermes vào OpenClaw.
+Nhập cấu hình, bộ nhớ, kỹ năng và thông tin xác thực được hỗ trợ của Hermes vào OpenClaw.
 
 ## Phân phối
 
 - Gói: `@openclaw/migrate-hermes`
-- Phương thức cài đặt: được tích hợp trong OpenClaw
+- Đường dẫn cài đặt: được tích hợp trong OpenClaw
 
-## Giao diện
+## Bề mặt
 
-hợp đồng: migrationProviders
+hợp đồng: `migrationProviders`

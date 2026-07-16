@@ -1,232 +1,357 @@
 ---
 read_when:
-    - Giải thích cách hoạt động của truyền phát trực tiếp hoặc chia khối trên các kênh
-    - Thay đổi hành vi truyền phát theo khối hoặc chia đoạn kênh
-    - Gỡ lỗi phản hồi chặn bị trùng lặp/quá sớm hoặc phát trực tuyến bản xem trước kênh
-summary: Hành vi streaming + chia khúc (phản hồi dạng khối, streaming bản xem trước kênh, ánh xạ chế độ)
-title: Phát trực tuyến và chia khối
+    - Giải thích cách hoạt động của tính năng truyền phát hoặc phân đoạn trên các kênh
+    - Thay đổi hành vi truyền phát theo khối hoặc phân đoạn kênh
+    - Gỡ lỗi phản hồi khối bị trùng lặp/quá sớm hoặc luồng xem trước trên kênh
+summary: Hành vi phát trực tiếp + phân đoạn (phản hồi theo khối, phát trực tiếp bản xem trước trên kênh, ánh xạ chế độ)
+title: Truyền phát và phân đoạn
 x-i18n:
-    generated_at: "2026-07-01T08:11:18Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T14:23:31Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 2724c21414dd470780f0c7f634380bef3feeb54a08bd0da3e944173340df1c80
+    source_hash: b91d2143e59d9eb0271732adf8bc87482ef0d18fe664bfa46ed375c20fdc3d93
     source_path: concepts/streaming.md
     workflow: 16
 ---
 
-OpenClaw có hai lớp streaming riêng biệt:
+OpenClaw có hai lớp phát trực tuyến độc lập, và hiện nay **không có cơ chế phát trực tuyến
+delta token thực sự** đến tin nhắn kênh:
 
-- **Streaming theo khối (kênh):** phát ra các **khối** hoàn chỉnh khi assistant viết. Đây là các tin nhắn kênh bình thường (không phải delta token).
-- **Streaming bản xem trước (Telegram/Discord/Slack):** cập nhật một **tin nhắn xem trước** tạm thời trong khi tạo nội dung.
+- **Phát trực tuyến theo khối (kênh):** phát ra các **khối** đã hoàn tất khi trợ lý
+  viết. Đây là các tin nhắn kênh thông thường, không phải delta token.
+- **Phát trực tuyến bản xem trước (Telegram/Discord/Slack/Matrix/Mattermost/MS Teams):**
+  cập nhật một **tin nhắn xem trước** tạm thời trong khi tạo (gửi + chỉnh sửa/nối thêm).
 
-Hiện nay **không có streaming delta token thực sự** tới tin nhắn kênh. Streaming bản xem trước dựa trên tin nhắn (gửi + chỉnh sửa/nối thêm).
+## Phát trực tuyến theo khối (tin nhắn kênh)
 
-## Streaming theo khối (tin nhắn kênh)
+Phát trực tuyến theo khối gửi đầu ra của trợ lý thành các đoạn lớn khi chúng sẵn sàng.
 
-Streaming theo khối gửi đầu ra của assistant theo các đoạn thô khi chúng sẵn sàng.
-
-```
-Model output
-  └─ text_delta/events
+```text
+Đầu ra mô hình
+  └─ text_delta/sự kiện
        ├─ (blockStreamingBreak=text_end)
-       │    └─ chunker emits blocks as buffer grows
+       │    └─ trình chia đoạn phát ra các khối khi bộ đệm tăng
        └─ (blockStreamingBreak=message_end)
-            └─ chunker flushes at message_end
-                   └─ channel send (block replies)
+            └─ trình chia đoạn xả tại message_end
+                   └─ gửi đến kênh (phản hồi theo khối)
 ```
 
-Chú giải:
+- `text_delta/events`: các sự kiện luồng mô hình (có thể thưa đối với các mô hình không phát trực tuyến).
+- `chunker`: `EmbeddedBlockChunker` áp dụng giới hạn tối thiểu/tối đa + tùy chọn điểm ngắt.
+- `channel send`: các tin nhắn gửi đi thực tế (phản hồi theo khối).
 
-- `text_delta/events`: sự kiện stream của mô hình (có thể thưa thớt với các mô hình không streaming).
-- `chunker`: `EmbeddedBlockChunker` áp dụng giới hạn tối thiểu/tối đa + ưu tiên điểm ngắt.
-- `channel send`: các tin nhắn gửi ra thực tế (phản hồi theo khối).
+**Các tùy chọn điều khiển** (tất cả nằm dưới `agents.defaults` trừ khi có ghi chú):
 
-**Điều khiển:**
+| Khóa                                                          | Giá trị / cấu trúc                                                          | Mặc định    |
+| ------------------------------------------------------------ | ----------------------------------------------------------------------- | ---------- |
+| `blockStreamingDefault`                                      | `"on"` / `"off"`                                                        | `"off"`    |
+| `blockStreamingBreak`                                        | `"text_end"` / `"message_end"`                                          | -          |
+| `blockStreamingChunk`                                        | `{ minChars, maxChars, breakPreference? }`                              | -          |
+| `blockStreamingCoalesce`                                     | `{ minChars?, maxChars?, idleMs? }` (hợp nhất các khối đã phát trực tuyến trước khi gửi) | -          |
+| `*.streaming.block.enabled` (ghi đè theo kênh)               | `true` / `false`, buộc phát trực tuyến theo khối cho từng kênh (và từng tài khoản)  | -          |
+| `*.textChunkLimit` (ví dụ: `channels.whatsapp.textChunkLimit`) | số, giới hạn cứng                                                        | 4000       |
+| `*.streaming.chunkMode`                                      | `"length"` / `"newline"`                                                | `"length"` |
+| `channels.discord.maxLinesPerMessage`                        | số, giới hạn mềm theo dòng để chia các phản hồi dài theo chiều dọc nhằm tránh bị cắt trên giao diện người dùng     | 17         |
 
-- `agents.defaults.blockStreamingDefault`: `"on"`/`"off"` (mặc định tắt).
-- Ghi đè theo kênh: `*.blockStreaming` (và các biến thể theo tài khoản) để buộc `"on"`/`"off"` cho từng kênh.
-- `agents.defaults.blockStreamingBreak`: `"text_end"` hoặc `"message_end"`.
-- `agents.defaults.blockStreamingChunk`: `{ minChars, maxChars, breakPreference? }`.
-- `agents.defaults.blockStreamingCoalesce`: `{ minChars?, maxChars?, idleMs? }` (gộp các khối được stream trước khi gửi).
-- Giới hạn cứng của kênh: `*.textChunkLimit` (ví dụ: `channels.whatsapp.textChunkLimit`).
-- Chế độ chia đoạn của kênh: `*.chunkMode` (`length` mặc định, `newline` tách theo dòng trống (ranh giới đoạn văn) trước khi chia theo độ dài).
-- Giới hạn mềm của Discord: `channels.discord.maxLinesPerMessage` (mặc định 17) tách các phản hồi cao để tránh bị cắt trong UI.
+`streaming.chunkMode: "newline"` chia tại các dòng trống (ranh giới đoạn văn),
+không phải tại mọi ký tự xuống dòng, trước khi chuyển sang chia theo độ dài khi văn bản
+vượt quá giới hạn.
 
-**Ngữ nghĩa ranh giới:**
+Các kênh đi kèm biểu diễn những tùy chọn ghi đè này dưới dạng
+`channels.<id>.streaming.{chunkMode,block.enabled,block.coalesce}`. Các dạng phẳng
+`*.chunkMode` / `*.blockStreaming` / `*.blockStreamingCoalesce` là
+dạng cũ trên mọi kênh đi kèm: `openclaw doctor --fix` di chuyển chúng sang
+cấu trúc lồng nhau và các lược đồ kênh sẽ từ chối chúng. Cấu hình Plugin SDK bên ngoài
+vẫn sử dụng các dạng phẳng tiếp tục hoạt động thông qua một cơ chế dự phòng đã lỗi thời
+(kèm cảnh báo lúc chạy) cho đến đợt phát hành tiếp theo.
 
-- `text_end`: stream các khối ngay khi chunker phát ra; xả sau mỗi `text_end`.
-- `message_end`: đợi đến khi tin nhắn assistant hoàn tất, rồi xả đầu ra đã đệm.
+**Ngữ nghĩa ranh giới** cho `blockStreamingBreak`:
 
-`message_end` vẫn dùng chunker nếu văn bản đã đệm vượt quá `maxChars`, vì vậy nó có thể phát ra nhiều đoạn ở cuối.
+- `text_end`: phát trực tuyến các khối ngay khi trình chia đoạn phát ra; xả tại mỗi `text_end`.
+- `message_end`: chờ đến khi tin nhắn của trợ lý hoàn tất, sau đó xả đầu ra
+  đã đệm. Vẫn sử dụng trình chia đoạn nếu văn bản đã đệm vượt quá `maxChars`, vì vậy có thể
+  phát ra nhiều đoạn ở cuối.
 
-### Phân phối phương tiện với streaming theo khối
+### Phân phối nội dung đa phương tiện với phát trực tuyến theo khối
 
-Phương tiện streaming phải dùng các trường payload có cấu trúc như `mediaUrl` hoặc
-`mediaUrls`; văn bản được stream không được phân tích như một lệnh đính kèm. Khi streaming theo khối
-gửi phương tiện sớm, OpenClaw ghi nhớ lần phân phối đó cho lượt này. Nếu
-payload cuối cùng của assistant lặp lại cùng URL phương tiện, lần phân phối cuối
-sẽ loại bỏ phương tiện trùng lặp thay vì gửi lại tệp đính kèm.
+Nội dung đa phương tiện phát trực tuyến phải sử dụng các trường tải trọng có cấu trúc như `mediaUrl` hoặc
+`mediaUrls`; văn bản phát trực tuyến không được phân tích cú pháp như một lệnh đính kèm. Khi phát trực tuyến theo khối
+gửi nội dung đa phương tiện sớm, OpenClaw ghi nhớ lần phân phối đó trong lượt này. Nếu
+tải trọng cuối cùng của trợ lý lặp lại cùng URL nội dung đa phương tiện, lần phân phối cuối
+sẽ loại bỏ nội dung đa phương tiện trùng lặp thay vì gửi lại tệp đính kèm.
 
-Các payload cuối cùng trùng lặp chính xác sẽ bị chặn. Nếu payload cuối cùng thêm
-văn bản riêng biệt xung quanh phương tiện đã được stream, OpenClaw vẫn gửi
-văn bản mới trong khi giữ phương tiện chỉ được phân phối một lần. Điều này ngăn trùng lặp ghi chú thoại
-hoặc tệp trên các kênh như Telegram.
+Các tải trọng cuối cùng trùng khớp hoàn toàn sẽ bị loại bỏ. Nếu tải trọng cuối cùng thêm
+văn bản riêng biệt xung quanh nội dung đa phương tiện đã được phát trực tuyến, OpenClaw vẫn gửi
+văn bản mới trong khi chỉ phân phối nội dung đa phương tiện một lần. Điều này ngăn các ghi chú thoại
+hoặc tệp bị trùng lặp trên các kênh như Telegram.
 
 ## Thuật toán chia đoạn (giới hạn thấp/cao)
 
-Chia đoạn theo khối được triển khai bởi `EmbeddedBlockChunker`:
+Việc chia đoạn theo khối được triển khai bởi `EmbeddedBlockChunker`:
 
 - **Giới hạn thấp:** không phát ra cho đến khi bộ đệm >= `minChars` (trừ khi bị buộc).
-- **Giới hạn cao:** ưu tiên tách trước `maxChars`; nếu bị buộc, tách tại `maxChars`.
-- **Ưu tiên điểm ngắt:** `paragraph` → `newline` → `sentence` → `whitespace` → ngắt cứng.
-- **Khối mã:** không bao giờ tách bên trong khối mã; khi bị buộc tại `maxChars`, đóng + mở lại khối mã để giữ Markdown hợp lệ.
+- **Giới hạn cao:** ưu tiên chia trước `maxChars`; nếu bị buộc, chia tại `maxChars`.
+- **Chuỗi ưu tiên điểm ngắt:** `paragraph` -> `newline` -> `sentence` ->
+  khoảng trắng -> ngắt cứng.
+- **Hàng rào mã:** không bao giờ chia bên trong hàng rào; khi buộc tại `maxChars`, hãy đóng
+  rồi mở lại hàng rào để giữ Markdown hợp lệ.
 
-`maxChars` được giới hạn theo `textChunkLimit` của kênh, nên bạn không thể vượt quá giới hạn từng kênh.
+`maxChars` được giới hạn theo `textChunkLimit` của kênh, vì vậy không thể vượt quá
+giới hạn của từng kênh.
 
-## Gộp (hợp nhất các khối được stream)
+## Hợp nhất (gộp các khối được phát trực tuyến)
 
-Khi streaming theo khối được bật, OpenClaw có thể **hợp nhất các đoạn khối liên tiếp**
-trước khi gửi chúng ra ngoài. Điều này giảm "spam một dòng" trong khi vẫn cung cấp
-đầu ra tăng dần.
+Khi phát trực tuyến theo khối được bật, OpenClaw có thể **hợp nhất các đoạn khối
+liên tiếp** trước khi gửi, giảm tình trạng tràn ngập tin nhắn một dòng trong khi vẫn cung cấp
+đầu ra tuần tự.
 
-- Gộp chờ các **khoảng nghỉ không hoạt động** (`idleMs`) trước khi xả.
-- Bộ đệm bị giới hạn bởi `maxChars` và sẽ xả nếu vượt quá giới hạn đó.
-- `minChars` ngăn các mảnh quá nhỏ được gửi cho đến khi tích lũy đủ văn bản
+- Việc hợp nhất chờ **khoảng thời gian rảnh** (`idleMs`) trước khi xả.
+- Bộ đệm bị giới hạn bởi `maxChars` và được xả nếu vượt quá giới hạn đó.
+- `minChars` ngăn gửi các mảnh quá nhỏ cho đến khi tích lũy đủ văn bản
   (lần xả cuối luôn gửi phần văn bản còn lại).
-- Dấu nối được suy ra từ `blockStreamingChunk.breakPreference`
-  (`paragraph` → `\n\n`, `newline` → `\n`, `sentence` → dấu cách).
-- Có thể ghi đè theo kênh qua `*.blockStreamingCoalesce` (bao gồm cấu hình theo tài khoản).
-- `minChars` gộp mặc định được tăng lên 1500 cho Signal/Slack/Discord trừ khi được ghi đè.
+- Ký tự nối được suy ra từ `blockStreamingChunk.breakPreference`: `paragraph` ->
+  `\n\n`, `newline` -> `\n`, `sentence` -> khoảng trắng.
+- Có thể ghi đè theo kênh qua `*.streaming.block.coalesce` (bao gồm
+  cấu hình theo từng tài khoản).
+- Discord, Signal và Slack mặc định hợp nhất theo `{ minChars: 1500, idleMs: 1000 }`
+  trừ khi được ghi đè.
 
-## Nhịp tự nhiên giữa các khối
+## Nhịp nghỉ giống con người giữa các khối
 
-Khi streaming theo khối được bật, bạn có thể thêm một **khoảng tạm dừng ngẫu nhiên** giữa
-các phản hồi theo khối (sau khối đầu tiên). Điều này khiến phản hồi nhiều bong bóng trông
-tự nhiên hơn.
+Khi phát trực tuyến theo khối được bật, thêm một **khoảng nghỉ ngẫu nhiên** giữa các phản hồi
+theo khối, sau khối đầu tiên, để phản hồi nhiều bong bóng có cảm giác tự nhiên hơn.
 
-- Cấu hình: `agents.defaults.humanDelay` (ghi đè theo từng agent qua `agents.list[].humanDelay`).
-- Chế độ: `off` (mặc định), `natural` (800-2500ms), `custom` (`minMs`/`maxMs`).
-- Chỉ áp dụng cho **phản hồi theo khối**, không áp dụng cho phản hồi cuối cùng hoặc tóm tắt công cụ.
+| `agents.defaults.humanDelay.mode` | Hành vi                |
+| --------------------------------- | ----------------------- |
+| `off` (mặc định)                   | Không tạm dừng                |
+| `natural`                         | Tạm dừng ngẫu nhiên 800-2500ms |
+| `custom`                          | `minMs`/`maxMs`         |
 
-## "Stream các đoạn hay toàn bộ"
+Ghi đè theo từng tác tử qua `agents.list[].humanDelay`. Chỉ áp dụng cho **phản hồi theo
+khối**, không áp dụng cho phản hồi cuối cùng hoặc bản tóm tắt công cụ.
 
-Điều này ánh xạ tới:
+## "Phát trực tuyến các đoạn hoặc toàn bộ"
 
-- **Truyền phát từng đoạn:** `blockStreamingDefault: "on"` + `blockStreamingBreak: "text_end"` (phát ra khi có nội dung). Các kênh không phải Telegram cũng cần `*.blockStreaming: true`.
-- **Truyền phát mọi thứ ở cuối:** `blockStreamingBreak: "message_end"` (xả một lần, có thể thành nhiều đoạn nếu rất dài).
-- **Không truyền phát block:** `blockStreamingDefault: "off"` (chỉ trả lời cuối cùng).
+- **Phát trực tuyến các đoạn:** `blockStreamingDefault: "on"` + `blockStreamingBreak: "text_end"`
+  (phát ra trong quá trình tạo). Các kênh không phải Telegram cũng cần
+  `*.streaming.block.enabled: true`.
+- **Phát trực tuyến toàn bộ ở cuối:** `blockStreamingBreak: "message_end"` (xả
+  một lần, có thể thành nhiều đoạn nếu rất dài).
+- **Không phát trực tuyến theo khối:** `blockStreamingDefault: "off"` (chỉ phản hồi cuối cùng).
 
-**Ghi chú về kênh:** Truyền phát block **tắt trừ khi**
-`*.blockStreaming` được đặt rõ ràng thành `true`. Các kênh có thể truyền phát bản xem trước trực tiếp
-(`channels.<channel>.streaming`) mà không có trả lời block.
+Phát trực tuyến theo khối **tắt trừ khi** `*.streaming.block.enabled` được đặt rõ ràng
+thành `true` (ngoại lệ: QQ Bot không có các khóa `streaming.block` và phát trực tuyến
+các phản hồi theo khối trừ khi `channels.qqbot.streaming.mode` là `"off"`). Các kênh có thể
+phát trực tuyến bản xem trước trực tiếp (`channels.<channel>.streaming.mode`) mà không cần phản hồi
+theo khối. Các giá trị mặc định `blockStreaming*` nằm dưới `agents.defaults`, không phải tại
+gốc cấu hình.
 
-Nhắc lại vị trí cấu hình: các mặc định `blockStreaming*` nằm trong
-`agents.defaults`, không phải cấu hình gốc.
+## Các chế độ phát trực tuyến bản xem trước
 
-## Chế độ truyền phát bản xem trước
+Khóa chuẩn: `channels.<channel>.streaming` (`{ mode, ... }` lồng nhau; các dạng
+boolean/chuỗi cấp cao nhất cũ được `openclaw doctor --fix` viết lại).
 
-Khóa chuẩn: `channels.<channel>.streaming`
+| Chế độ       | Hành vi                                                              |
+| ---------- | --------------------------------------------------------------------- |
+| `off`      | Tắt phát trực tuyến bản xem trước                                             |
+| `partial`  | Một bản xem trước duy nhất được thay thế bằng văn bản mới nhất                              |
+| `block`    | Bản xem trước được cập nhật theo các bước chia đoạn/nối thêm                             |
+| `progress` | Bản xem trước tiến trình/trạng thái trong khi tạo, câu trả lời cuối cùng khi hoàn tất |
 
-Chế độ:
-
-- `off`: tắt truyền phát bản xem trước.
-- `partial`: một bản xem trước duy nhất được thay thế bằng văn bản mới nhất.
-- `block`: bản xem trước cập nhật theo các bước chia đoạn/nối thêm.
-- `progress`: bản xem trước tiến độ/trạng thái trong khi tạo, câu trả lời cuối cùng khi hoàn tất.
-
-`streaming.mode: "block"` là chế độ truyền phát bản xem trước cho các kênh có thể chỉnh sửa
-như Discord và Telegram. Nó không bật phân phối block của kênh tại đó.
-Dùng `streaming.block.enabled` hoặc khóa kênh cũ `blockStreaming` khi
-bạn muốn trả lời block thông thường. Microsoft Teams là ngoại lệ: kênh này không có
-cơ chế truyền tải block bản xem trước nháp, nên `streaming.mode: "block"` ánh xạ sang phân phối block của Teams
-thay vì truyền phát một phần/tiến độ gốc.
+`streaming.mode: "block"` là chế độ phát trực tuyến bản xem trước dành cho các
+kênh hỗ trợ chỉnh sửa như Discord và Telegram; bản thân nó không bật cơ chế phân phối
+theo khối của kênh tại đó. Sử dụng `streaming.block.enabled` cho phản hồi theo khối thông thường.
+Microsoft Teams là
+ngoại lệ: không có cơ chế vận chuyển khối bản xem trước nháp, vì vậy `streaming.mode:
+"block"` tắt hoàn toàn cơ chế phát trực tuyến gốc và phản hồi được gửi dưới dạng
+phân phối theo khối thông thường thay vì phát trực tuyến từng phần/tiến trình gốc. Mattermost cũng
+khác biệt: trong chế độ `block`, nó luân phiên bản xem trước giữa văn bản đã hoàn tất và
+các khối hoạt động công cụ, vì vậy các khối trước đó vẫn hiển thị dưới dạng bài đăng riêng biệt
+thay vì bị ghi đè trong một bản nháp có thể chỉnh sửa.
 
 ### Ánh xạ kênh
 
-| Kênh       | `off` | `partial` | `block` | `progress`                    |
-| ---------- | ----- | --------- | ------- | ----------------------------- |
-| Telegram   | ✅    | ✅        | ✅      | bản nháp tiến độ có thể sửa   |
-| Discord    | ✅    | ✅        | ✅      | bản nháp tiến độ có thể sửa   |
-| Slack      | ✅    | ✅        | ✅      | ✅                            |
-| Mattermost | ✅    | ✅        | ✅      | ✅                            |
-| MS Teams   | ✅    | ✅        | ✅      | luồng tiến độ gốc             |
+| Kênh    | `off` | `partial` | `block` | `progress`              |
+| ---------- | ----- | --------- | ------- | ----------------------- |
+| Telegram   | Có   | Có       | Có     | bản nháp tiến trình có thể chỉnh sửa |
+| Discord    | Có   | Có       | Có     | bản nháp tiến trình có thể chỉnh sửa |
+| Slack      | Có   | Có       | Có     | Có                     |
+| Mattermost | Có   | Có       | Có     | Có                     |
+| MS Teams   | Có   | Có       | Có     | luồng tiến trình gốc  |
 
-Chỉ Slack:
+Cấu hình đoạn xem trước (`streaming.preview.chunk.*`, ví dụ: dưới
+`channels.discord.streaming` hoặc `channels.telegram.streaming`) mặc định là
+`minChars: 200`, `maxChars: 800` (được giới hạn theo `textChunkLimit` của kênh) và
+`breakPreference: "paragraph"`.
 
-- `channels.slack.streaming.nativeTransport` bật/tắt các lệnh gọi API truyền phát gốc của Slack khi `channels.slack.streaming.mode="partial"` (mặc định: `true`).
-- Truyền phát gốc của Slack và trạng thái chuỗi trợ lý Slack yêu cầu mục tiêu chuỗi trả lời. DM cấp cao nhất không hiển thị bản xem trước kiểu chuỗi đó, nhưng vẫn có thể dùng bài đăng bản xem trước nháp và chỉnh sửa của Slack.
+Chỉ dành cho Slack:
 
-Di chuyển khóa cũ:
+- `channels.slack.streaming.nativeTransport` bật/tắt các lệnh gọi API phát trực tuyến gốc của Slack
+  (`chat.startStream`/`chat.appendStream`/`chat.stopStream`) khi
+  `channels.slack.streaming.mode="partial"` (mặc định: `true`).
+- Phát trực tuyến gốc của Slack và trạng thái luồng trợ lý Slack yêu cầu một đích
+  luồng phản hồi. Tin nhắn trực tiếp cấp cao nhất không hiển thị bản xem trước kiểu luồng đó, nhưng vẫn có thể
+  sử dụng các bài đăng bản xem trước nháp và thao tác chỉnh sửa của Slack.
 
-- Telegram: các giá trị cũ `streamMode` và `streaming` dạng vô hướng/boolean được phát hiện và di chuyển bởi các đường dẫn tương thích doctor/config sang `streaming.mode`.
-- Discord: `streamMode` + `streaming` boolean vẫn là alias runtime cho enum `streaming`; chạy `openclaw doctor --fix` để ghi lại cấu hình đã lưu.
-- Slack: `streamMode` vẫn là alias runtime cho `streaming.mode`; `streaming` boolean vẫn là alias runtime cho `streaming.mode` cộng với `streaming.nativeTransport`; `nativeStreaming` cũ vẫn là alias runtime cho `streaming.nativeTransport`. Chạy `openclaw doctor --fix` để ghi lại cấu hình đã lưu.
+### Di chuyển khóa cũ
 
-### Hành vi runtime
+| Kênh  | Khóa cũ                                                 | Trạng thái                                                                                                                                               |
+| -------- | ----------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Telegram | `streamMode`, `streaming` dạng vô hướng/boolean                    | Được `openclaw doctor --fix` viết lại thành `streaming.mode`; không được đọc lúc chạy                                                                        |
+| Discord  | `streamMode`, `streaming` dạng boolean                           | Được `openclaw doctor --fix` viết lại thành `streaming.mode`; không được đọc lúc chạy                                                                        |
+| Slack    | `streamMode`; `streaming` dạng boolean; `nativeStreaming` cũ | Được `openclaw doctor --fix` viết lại thành `streaming.mode` (và `streaming.nativeTransport` cho các dạng boolean/cũ); không được đọc lúc chạy         |
+| Matrix   | `streaming` dạng vô hướng/boolean                                  | Được `openclaw doctor --fix` viết lại thành `streaming.mode` (bao gồm chế độ `"quiet"` của Matrix); không được đọc lúc chạy                                    |
+| Feishu   | `streaming` dạng boolean                                         | Được `openclaw doctor --fix` viết lại thành `streaming.mode`; không được đọc lúc chạy                                                                        |
+| QQ Bot   | `streaming` dạng boolean; `streaming.c2cStreamApi`               | Được `openclaw doctor --fix` viết lại thành `streaming.mode` (và `streaming.nativeTransport` cho các dạng boolean/`c2cStreamApi`); không được đọc lúc chạy |
 
-Telegram:
+## Hành vi lúc chạy
 
-- Dùng `sendMessage` + các bản cập nhật xem trước `editMessageText` trên DM và nhóm/chủ đề.
-- Các bản xem trước ban đầu ngắn vẫn được debounce cho UX thông báo đẩy, nhưng Telegram hiện hiện thực hóa chúng sau một độ trễ có giới hạn để các lượt chạy đang hoạt động không bị im lặng về mặt hiển thị.
-- Văn bản cuối cùng chỉnh sửa bản xem trước đang hoạt động tại chỗ; các kết quả cuối dài tái sử dụng tin nhắn đó cho đoạn đầu tiên và chỉ gửi các đoạn còn lại.
-- Chế độ `block` xoay bản xem trước thành một tin nhắn mới tại `streaming.preview.chunk.maxChars` (mặc định 800, bị giới hạn bởi giới hạn chỉnh sửa 4096 của Telegram); các chế độ khác mở rộng một bản xem trước lên tối đa 4096 ký tự.
-- Chế độ `progress` giữ tiến độ công cụ trong một bản nháp trạng thái có thể chỉnh sửa, hiện thực hóa nhãn trạng thái khi truyền phát câu trả lời đang hoạt động nhưng chưa có dòng công cụ, xóa bản nháp đó khi hoàn tất, và gửi câu trả lời cuối cùng qua cơ chế phân phối thông thường.
-- Nếu chỉnh sửa cuối cùng thất bại trước khi văn bản hoàn tất được xác nhận, OpenClaw dùng phân phối cuối thông thường và dọn bản xem trước cũ.
-- Truyền phát bản xem trước bị bỏ qua khi truyền phát block Telegram được bật rõ ràng (để tránh truyền phát hai lần).
-- `/reasoning stream` có thể ghi phần suy luận vào một bản xem trước tạm thời sẽ bị xóa sau khi phân phối cuối cùng.
+### Telegram
 
-Discord:
+- Sử dụng các bản cập nhật bản xem trước `sendMessage` + `editMessageText` trên các DM và
+  nhóm/chủ đề; văn bản cuối cùng chỉnh sửa trực tiếp bản xem trước đang hoạt động. Các bản nháp
+  "đang nhập" tạm thời trong 30 giây của Telegram (`sendMessageDraft`) không được dùng để
+  truyền phát câu trả lời.
+- Các bản xem trước ban đầu ngắn vẫn được chống dội để tối ưu trải nghiệm thông báo đẩy, nhưng
+  sẽ xuất hiện sau một khoảng trễ có giới hạn để các lượt chạy đang hoạt động không im lặng về mặt hiển thị.
+- Các kết quả cuối dài tái sử dụng thông báo xem trước cho đoạn đầu tiên và chỉ gửi
+  các đoạn còn lại.
+- Chế độ `block` luân chuyển bản xem trước sang một thông báo mới tại
+  `streaming.preview.chunk.maxChars` (mặc định 800, giới hạn ở mức chỉnh sửa 4096 của
+  Telegram); các chế độ khác mở rộng một bản xem trước lên đến 4096 ký tự.
+- Chế độ `progress` giữ tiến trình công cụ trong một bản nháp trạng thái có thể chỉnh sửa, hiển thị
+  nhãn trạng thái khi truyền phát câu trả lời đang hoạt động nhưng chưa có dòng công cụ,
+  xóa bản nháp khi hoàn tất và gửi câu trả lời cuối cùng
+  qua cơ chế phân phối thông thường.
+- Nếu lần chỉnh sửa cuối không thành công trước khi văn bản hoàn chỉnh được xác nhận, OpenClaw sử dụng
+  cơ chế phân phối kết quả cuối thông thường và dọn dẹp bản xem trước cũ.
+- Truyền phát bản xem trước bị bỏ qua khi truyền phát khối của Telegram được bật rõ ràng,
+  để tránh truyền phát kép.
+- `/reasoning stream` có thể ghi nội dung suy luận vào một bản xem trước tạm thời
+  sẽ bị xóa sau khi phân phối kết quả cuối.
+- Các phản hồi trích dẫn được chọn trên Telegram là một ngoại lệ: khi `replyToMode` không phải là
+  `"off"` và có văn bản trích dẫn được chọn, OpenClaw bỏ qua luồng bản xem trước câu trả lời
+  cho lượt đó (câu trả lời cuối cùng phải đi qua đường dẫn phản hồi trích dẫn gốc)
+  nên các dòng xem trước tiến trình công cụ không thể hiển thị. Các phản hồi cho thông báo hiện tại
+  không có văn bản trích dẫn được chọn vẫn giữ truyền phát bản xem trước. Xem
+  [tài liệu kênh Telegram](/vi/channels/telegram) để biết chi tiết.
 
-- Dùng gửi + chỉnh sửa tin nhắn xem trước.
-- Chế độ `block` dùng chia đoạn nháp (`draftChunk`).
-- Truyền phát bản xem trước bị bỏ qua khi truyền phát block Discord được bật rõ ràng.
-- Phương tiện cuối, lỗi, và payload trả lời rõ ràng hủy các bản xem trước đang chờ mà không xả bản nháp mới, rồi dùng phân phối thông thường.
+### Discord
 
-Slack:
+- Sử dụng thao tác gửi + chỉnh sửa thông báo xem trước.
+- Chế độ `block` sử dụng chia đoạn bản nháp (`draftChunk`).
+- Truyền phát bản xem trước bị bỏ qua khi truyền phát khối của Discord được bật rõ ràng.
+- Chế độ `progress` nối thêm một biên nhận hoạt động `-#` nhỏ (số lượt suy nghĩ/gọi công cụ
+  và thời gian đã trôi qua) vào câu trả lời cuối cùng và xóa bản nháp trạng thái
+  sau khi câu trả lời đó được phân phối, để các kênh bận rộn không giữ nhật ký công cụ mồ côi
+  phía trên câu trả lời. Kết quả cuối có lỗi giữ lại bản nháp làm bản ghi của lượt
+  thất bại.
+- Các payload phương tiện, lỗi và phản hồi rõ ràng ở kết quả cuối sẽ hủy các bản xem trước đang chờ
+  mà không đẩy ra bản nháp mới, sau đó sử dụng cơ chế phân phối thông thường.
 
-- `partial` có thể dùng truyền phát gốc của Slack (`chat.startStream`/`append`/`stop`) khi khả dụng.
-- `block` dùng bản xem trước nháp kiểu nối thêm.
-- `progress` dùng văn bản xem trước trạng thái, rồi câu trả lời cuối cùng.
-- DM cấp cao nhất không có chuỗi trả lời dùng bài đăng bản xem trước nháp và chỉnh sửa thay vì truyền phát gốc của Slack.
-- Truyền phát bản xem trước gốc và nháp chặn trả lời block cho lượt đó, nên một trả lời Slack chỉ được truyền phát bởi một đường dẫn phân phối.
-- Payload phương tiện/lỗi cuối và kết quả cuối tiến độ không tạo tin nhắn nháp dùng một lần; chỉ các kết quả cuối dạng văn bản/block có thể chỉnh sửa bản xem trước mới xả văn bản nháp đang chờ.
+### Slack
 
-Mattermost:
+- `partial` có thể sử dụng truyền phát gốc của Slack (`chat.startStream`/`append`/`stop`)
+  khi khả dụng.
+- `block` sử dụng các bản xem trước bản nháp theo kiểu nối thêm.
+- `progress` sử dụng văn bản xem trước trạng thái, sau đó là câu trả lời cuối cùng.
+- Các DM cấp cao nhất không có luồng phản hồi sử dụng bài đăng bản nháp xem trước và thao tác chỉnh sửa
+  thay vì truyền phát gốc của Slack.
+- Truyền phát bản xem trước gốc và bản nháp ngăn phản hồi khối cho lượt đó, để một
+  phản hồi Slack chỉ được truyền phát qua một đường dẫn phân phối.
+- Các payload phương tiện/lỗi cuối cùng và kết quả cuối tiến trình không tạo thông báo bản nháp
+  dùng một lần; chỉ các kết quả cuối dạng văn bản/khối có thể chỉnh sửa bản xem trước mới đẩy
+  văn bản bản nháp đang chờ.
 
-- Truyền phát suy nghĩ, hoạt động công cụ, và văn bản trả lời một phần vào một bài đăng bản xem trước nháp duy nhất, rồi hoàn tất tại chỗ khi câu trả lời cuối cùng an toàn để gửi.
-- Rơi về gửi một bài đăng cuối mới nếu bài đăng xem trước đã bị xóa hoặc không còn khả dụng tại thời điểm hoàn tất.
-- Payload phương tiện/lỗi cuối hủy các bản cập nhật xem trước đang chờ trước khi phân phối thông thường thay vì xả một bài đăng xem trước tạm thời.
+### Mattermost
 
-Matrix:
+- Ở chế độ `partial`, truyền phát nội dung suy nghĩ và văn bản phản hồi từng phần vào một bài đăng
+  bản nháp xem trước duy nhất, được hoàn tất tại chỗ khi câu trả lời cuối cùng có thể được gửi an toàn.
+- Ở chế độ `progress`, truyền phát nội dung suy nghĩ và hoạt động công cụ vào một bản xem trước trạng thái
+  duy nhất, được hoàn tất tại chỗ khi câu trả lời cuối cùng có thể được gửi an toàn.
+- Ở chế độ `block`, luân chuyển giữa các bài đăng văn bản đã hoàn tất và hoạt động công cụ;
+  các bản cập nhật công cụ song song và liên tiếp dùng chung bài đăng hoạt động công cụ hiện tại.
+- Chuyển sang gửi một bài đăng cuối mới nếu bài đăng xem trước đã bị xóa hoặc
+  không khả dụng vì lý do khác tại thời điểm hoàn tất.
+- Các payload phương tiện/lỗi cuối cùng hủy các bản cập nhật bản xem trước đang chờ trước khi
+  phân phối thông thường thay vì đẩy ra một bài đăng xem trước tạm thời.
 
-- Bản xem trước nháp hoàn tất tại chỗ khi văn bản cuối cùng có thể tái sử dụng sự kiện xem trước.
-- Kết quả cuối chỉ có phương tiện, lỗi, và không khớp mục tiêu trả lời hủy các bản cập nhật xem trước đang chờ trước khi phân phối thông thường; một bản xem trước cũ đã hiển thị sẽ bị biên tập lại.
+### Matrix
 
-### Cập nhật bản xem trước tiến độ công cụ
+- Các bản xem trước bản nháp được hoàn tất tại chỗ khi văn bản cuối có thể tái sử dụng sự kiện
+  xem trước.
+- Các kết quả cuối chỉ có phương tiện, có lỗi và không khớp đích phản hồi sẽ hủy các bản cập nhật bản xem trước
+  đang chờ trước khi phân phối thông thường; bản xem trước cũ đã hiển thị sẽ bị che đi.
 
-Truyền phát bản xem trước cũng có thể bao gồm các cập nhật **tiến độ công cụ** - các dòng trạng thái ngắn như "đang tìm kiếm trên web", "đang đọc tệp", hoặc "đang gọi công cụ" - xuất hiện trong cùng tin nhắn xem trước khi công cụ đang chạy, trước câu trả lời cuối cùng. Trong chế độ máy chủ ứng dụng Codex, các tin nhắn mở đầu/bình luận của Codex dùng cùng đường dẫn xem trước này, nên các ghi chú tiến độ ngắn như "Tôi đang kiểm tra..." có thể truyền phát vào bản nháp có thể chỉnh sửa mà không trở thành một phần của câu trả lời cuối cùng. Điều này giúp các lượt công cụ nhiều bước luôn có phản hồi hiển thị thay vì im lặng giữa bản xem trước suy nghĩ đầu tiên và câu trả lời cuối cùng.
+## Các bản cập nhật xem trước tiến trình công cụ
 
-Các công cụ chạy lâu có thể phát tiến độ có kiểu trước khi trả về. Ví dụ,
-`web_fetch` đặt một bộ hẹn giờ năm giây khi bắt đầu: nếu thao tác fetch vẫn
-đang chờ, bản xem trước có thể hiển thị `Fetching page content...`; nếu fetch hoàn tất
-hoặc bị hủy trước đó, không có dòng tiến độ nào được phát. Kết quả công cụ cuối cùng sau đó
+Truyền phát bản xem trước cũng có thể bao gồm các bản cập nhật **tiến trình công cụ**: những dòng trạng thái
+ngắn như "đang tìm kiếm trên web", "đang đọc tệp" hoặc "đang gọi công cụ" xuất hiện
+trong cùng thông báo xem trước khi các công cụ đang chạy, trước phản hồi cuối cùng.
+Trong chế độ máy chủ ứng dụng Codex, các thông báo phần mở đầu/bình luận của Codex sử dụng cùng
+đường dẫn xem trước này, vì vậy các ghi chú tiến trình ngắn "Tôi đang kiểm tra..." có thể được truyền phát vào
+bản nháp có thể chỉnh sửa mà không trở thành một phần của câu trả lời cuối cùng. Điều này giúp
+các lượt công cụ nhiều bước duy trì hiển thị hoạt động thay vì im lặng giữa bản xem trước
+suy nghĩ đầu tiên và câu trả lời cuối cùng.
+
+Các công cụ chạy lâu có thể phát tiến trình được định kiểu trước khi trả về. Ví dụ,
+`web_fetch` kích hoạt bộ hẹn giờ năm giây khi bắt đầu: nếu thao tác tìm nạp vẫn
+đang chờ, bản xem trước hiển thị `Fetching page content...`; nếu thao tác tìm nạp hoàn tất hoặc
+bị hủy trước thời điểm đó, không có dòng tiến trình nào được phát. Kết quả công cụ cuối cùng sau đó
 vẫn được phân phối bình thường cho mô hình.
 
-Bề mặt được hỗ trợ:
+Các bề mặt được hỗ trợ:
 
-- **Discord**, **Slack**, **Telegram** và **Matrix** mặc định truyền phát tiến trình công cụ và các cập nhật phần mở đầu của Codex vào bản chỉnh sửa xem trước trực tiếp khi tính năng truyền phát bản xem trước đang hoạt động. Microsoft Teams dùng luồng tiến trình gốc của nó trong các cuộc trò chuyện cá nhân.
-- Telegram đã phát hành với các cập nhật xem trước tiến trình công cụ được bật kể từ `v2026.4.22`; giữ chúng bật sẽ duy trì hành vi đã phát hành đó.
-- **Mattermost** đã gộp hoạt động công cụ vào một bài đăng xem trước bản nháp duy nhất của nó (xem ở trên).
-- Các chỉnh sửa tiến trình công cụ tuân theo chế độ truyền phát bản xem trước đang hoạt động; chúng bị bỏ qua khi truyền phát bản xem trước là `off` hoặc khi truyền phát khối đã tiếp quản tin nhắn. Trên Telegram, `streaming.mode: "off"` là chỉ-kết-quả-cuối: phần trò chuyện tiến trình chung cũng bị chặn thay vì được gửi dưới dạng tin nhắn trạng thái độc lập, trong khi lời nhắc phê duyệt, tải trọng phương tiện và lỗi vẫn được định tuyến bình thường.
-- Để giữ truyền phát bản xem trước nhưng ẩn các dòng tiến trình công cụ, đặt `streaming.preview.toolProgress` thành `false` cho kênh đó. Để giữ các dòng tiến trình công cụ hiển thị trong khi ẩn văn bản lệnh/thực thi, đặt `streaming.preview.commandText` thành `"status"` hoặc `streaming.progress.commandText` thành `"status"`; mặc định là `"raw"` để duy trì hành vi đã phát hành. Chính sách này được chia sẻ bởi các kênh nháp/tiến trình dùng trình kết xuất tiến trình gọn của OpenClaw, bao gồm Discord, Matrix, Microsoft Teams, Mattermost, bản xem trước nháp Slack và Telegram. Để tắt hoàn toàn các chỉnh sửa xem trước, đặt `streaming.mode` thành `off`.
-- Các phản hồi trích dẫn đã chọn của Telegram là một ngoại lệ: khi `replyToMode` không phải là `"off"` và có văn bản trích dẫn đã chọn, OpenClaw bỏ qua luồng xem trước câu trả lời cho lượt đó để các dòng xem trước tiến trình công cụ không thể hiển thị. Các phản hồi tin nhắn hiện tại không có văn bản trích dẫn đã chọn vẫn giữ truyền phát bản xem trước. Xem [tài liệu kênh Telegram](/vi/channels/telegram) để biết chi tiết.
+- **Discord**, **Slack**, **Telegram** và **Matrix** truyền phát tiến trình công cụ và
+  các bản cập nhật phần mở đầu Codex vào thao tác chỉnh sửa bản xem trước trực tiếp theo mặc định khi truyền phát
+  bản xem trước đang hoạt động. Microsoft Teams sử dụng luồng tiến trình gốc trong
+  các cuộc trò chuyện cá nhân.
+- Telegram đã phát hành với các bản cập nhật xem trước tiến trình công cụ được bật kể từ
+  `v2026.4.22`; việc tiếp tục bật chúng duy trì hành vi đã phát hành đó.
+- **Mattermost** gộp hoạt động công cụ vào một bài đăng xem trước trong các chế độ `partial` và
+  `progress`, hoặc một bài đăng hoạt động công cụ giữa các khối văn bản trong chế độ `block`
+  (xem phía trên).
+- Các chỉnh sửa tiến trình công cụ tuân theo chế độ truyền phát bản xem trước đang hoạt động; chúng bị
+  bỏ qua khi truyền phát bản xem trước là `off` hoặc khi truyền phát khối đã tiếp quản
+  thông báo. Trên Telegram, `streaming.mode: "off"` chỉ dành cho kết quả cuối: lời dẫn tiến trình
+  chung cũng bị ngăn thay vì được phân phối dưới dạng các thông báo trạng thái độc lập,
+  trong khi các lời nhắc phê duyệt, payload phương tiện và lỗi vẫn được định tuyến
+  bình thường.
+- Để giữ truyền phát bản xem trước nhưng ẩn các dòng tiến trình công cụ, hãy đặt
+  `streaming.preview.toolProgress` thành `false` cho kênh đó (mặc định
+  `true`). Để giữ các dòng tiến trình công cụ hiển thị trong khi ẩn văn bản lệnh/thực thi,
+  hãy đặt `streaming.preview.commandText` thành `"status"` hoặc
+  `streaming.progress.commandText` thành `"status"`; mặc định là `"raw"` để
+  duy trì hành vi đã phát hành. Chính sách này được dùng chung bởi các kênh bản nháp/tiến trình
+  sử dụng trình kết xuất tiến trình thu gọn của OpenClaw, bao gồm Discord, Matrix,
+  Microsoft Teams, Mattermost, các bản xem trước bản nháp Slack và Telegram. Để tắt
+  hoàn toàn thao tác chỉnh sửa bản xem trước, hãy đặt `streaming.mode` thành `off`.
 
-### Làn tiến trình bình luận
+## Kết xuất bản nháp tiến trình
 
-Ngoài tiến trình công cụ, trình kết xuất tiến trình gọn có thể hiển thị thêm một làn nữa trong bản nháp:
+Các bản nháp chế độ tiến trình (`streaming.progress.*`) có giới hạn và có thể cấu hình theo từng
+kênh:
 
-- **`streaming.progress.commentary`** — kết xuất **bình luận** trước công cụ của mô hình (💬) — phần tường thuật ngắn "Tôi sẽ kiểm tra… rồi…" — xen kẽ với các dòng công cụ trong bản nháp tiến trình.
+| Khóa                              | Mặc định      | Hành vi                                                        |
+| --------------------------------- | ------------- | -------------------------------------------------------------- |
+| `streaming.progress.maxLines`     | `8`           | Số dòng tiến trình thu gọn tối đa được giữ bên dưới nhãn bản nháp |
+| `streaming.progress.maxLineChars` | `120`         | Số ký tự tối đa trên mỗi dòng thu gọn trước khi cắt bớt (có nhận biết từ) |
+| `streaming.progress.label`        | `"auto"`      | Tiêu đề bản nháp; một chuỗi tùy chỉnh hoặc `false` để ẩn tiêu đề |
+| `streaming.progress.labels`       | nhóm tích hợp sẵn | Các nhãn ứng viên được sử dụng khi `label: "auto"`                     |
+
+### Luồng tiến trình bình luận
+
+Ngoài tiến trình công cụ, trình kết xuất tiến trình thu gọn có thể hiển thị thêm một luồng
+trong bản nháp:
+
+- **`streaming.progress.commentary`** - kết xuất phần **bình luận** trước công cụ
+  của mô hình (một lời dẫn ngắn "Tôi sẽ kiểm tra... rồi...") xen kẽ với
+  các dòng công cụ trong bản nháp tiến trình. Trên Discord và Telegram ở chế độ tiến trình,
+  cùng phần mở đầu đó cung cấp tiêu đề trạng thái ngay cả khi luồng tùy chọn này
+  bị tắt; các kênh khác giữ nguyên hành vi tiến trình hiện có. Xem
+  [Bản nháp tiến trình](/vi/concepts/progress-drafts#status-headline).
 
 ```json
 {
@@ -256,7 +381,10 @@ Giữ các dòng tiến trình hiển thị nhưng ẩn văn bản lệnh/thực
 }
 ```
 
-Dùng cùng dạng dưới khóa kênh tiến trình gọn khác, ví dụ `channels.discord`, `channels.matrix`, `channels.msteams`, `channels.mattermost`, hoặc bản xem trước nháp Slack. Với chế độ bản nháp tiến trình, đặt cùng chính sách dưới `streaming.progress`:
+Sử dụng cùng cấu trúc dưới một khóa kênh tiến trình thu gọn khác, ví dụ
+`channels.discord`, `channels.matrix`, `channels.msteams`,
+`channels.mattermost` hoặc các bản xem trước bản nháp Slack. Đối với chế độ bản nháp tiến trình, hãy đặt
+cùng chính sách trong `streaming.progress`:
 
 ```json
 {
@@ -276,8 +404,8 @@ Dùng cùng dạng dưới khóa kênh tiến trình gọn khác, ví dụ `chan
 
 ## Liên quan
 
-- [Tái cấu trúc vòng đời tin nhắn](/vi/concepts/message-lifecycle-refactor) - thiết kế chung mục tiêu cho xem trước, chỉnh sửa, truyền phát và hoàn tất
-- [Bản nháp tiến trình](/vi/concepts/progress-drafts) - các tin nhắn công việc đang diễn ra hiển thị và cập nhật trong các lượt dài
-- [Tin nhắn](/vi/concepts/messages) - vòng đời và phân phối tin nhắn
+- [Tái cấu trúc vòng đời thông báo](/vi/concepts/message-lifecycle-refactor) - thiết kế dùng chung mục tiêu cho bản xem trước, chỉnh sửa, truyền phát và hoàn tất
+- [Bản nháp tiến trình](/vi/concepts/progress-drafts) - các thông báo công việc đang tiến hành hiển thị và cập nhật trong các lượt dài
+- [Thông báo](/vi/concepts/messages) - vòng đời và phân phối thông báo
 - [Thử lại](/vi/concepts/retry) - hành vi thử lại khi phân phối thất bại
 - [Kênh](/vi/channels) - hỗ trợ truyền phát theo từng kênh

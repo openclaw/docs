@@ -1,14 +1,15 @@
 ---
 read_when:
-    - Instalujesz, konfigurujesz lub audytujesz syntetyczny plugin
+    - Instalowanie, konfigurowanie lub audytowanie pluginu Synthetic
 summary: Dodaje obsługę dostawcy modeli Synthetic do OpenClaw.
-title: Syntetyczny plugin
+title: Plugin Synthetic
 x-i18n:
-    generated_at: "2026-07-12T15:24:31Z"
+    generated_at: "2026-07-16T18:57:31Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 4d899363b3dac4128f3e2a1e30ad11cd5ae0c11cc5229d3f03e15429e2741f8d
+    source_hash: 755ddf08e8ec91654c81f64a6c3e566281be320d8f5e54b64fbbc993c8919df2
     source_path: plugins/reference/synthetic.md
     workflow: 16
 ---
@@ -24,8 +25,8 @@ Dodaje obsługę dostawcy modeli Synthetic do OpenClaw.
 
 ## Interfejs
 
-dostawcy: synthetic
+dostawcy: `synthetic`
 
 ## Powiązana dokumentacja
 
-- [synthetic](/pl/providers/synthetic)
+- [Synthetic](/pl/providers/synthetic)

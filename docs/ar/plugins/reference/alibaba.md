@@ -1,14 +1,15 @@
 ---
 read_when:
     - أنت تثبّت Plugin alibaba أو تهيّئه أو تدقّق فيه
-summary: يضيف دعمًا لمزوّد إنشاء مقاطع الفيديو.
+summary: يضيف دعم موفّر إنشاء مقاطع الفيديو.
 title: Plugin Alibaba
 x-i18n:
-    generated_at: "2026-07-12T06:19:11Z"
+    generated_at: "2026-07-16T14:38:07Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: b144916d5e06c87ccc80eb293e41245cf089dad3e2d3f89d9a73e6f67e0906b4
+    source_hash: 5d59173c76eba3feb3b94087dff48068696665e749fb9f1a6e1f83a7cf61147e
     source_path: plugins/reference/alibaba.md
     workflow: 16
 ---
@@ -24,7 +25,7 @@ x-i18n:
 
 ## السطح
 
-العقود: videoGenerationProviders
+العقود: `videoGenerationProviders`
 
 ## الوثائق ذات الصلة
 

@@ -1,42 +1,44 @@
 ---
 read_when:
-    - Ti serve un hook o uno strumento del Plugin per richiedere conferma prima che venga eseguito un effetto collaterale
-    - Devi configurare dove vengono recapitate le richieste di approvazione dei plugin
-    - Stai scegliendo tra strumenti opzionali, approvazioni per exec e approvazioni per Plugin
+    - Serve un hook o uno strumento del plugin per chiedere conferma prima che venga eseguito un effetto collaterale
+    - È necessario configurare dove vengono inviate le richieste di approvazione dei plugin
+    - Si sta decidendo tra strumenti opzionali, approvazioni per l'esecuzione e approvazioni per i plugin
 sidebarTitle: Permission requests
-summary: Chiedi agli utenti di approvare le chiamate agli strumenti dei Plugin e le richieste di autorizzazione di proprietà dei Plugin
+summary: Chiedere agli utenti di approvare le chiamate agli strumenti dei plugin e le richieste di autorizzazione gestite dai plugin
 title: Richieste di autorizzazione dei Plugin
 x-i18n:
-    generated_at: "2026-06-27T17:53:28Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T14:42:50Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 72b860e9f8ddef80c70e943ec05353cbc0a917577382289649432a58c3ce6bd0
+    source_hash: 675534212e70cc7b2e7bdc801955929c6a8156b08d620483edf0133afc3bfdaa
     source_path: plugins/plugin-permission-requests.md
     workflow: 16
 ---
 
-Le richieste di autorizzazione del Plugin consentono al codice del Plugin di mettere in pausa una chiamata a uno strumento o un'operazione di proprietà del Plugin finché un utente non la approva o la nega. Usano il flusso Gateway `plugin.approval.*` e le stesse superfici dell'interfaccia di approvazione che gestiscono i pulsanti di approvazione in chat e i comandi `/approve`.
+Le richieste di autorizzazione dei Plugin consentono al codice dei Plugin di sospendere una chiamata a uno strumento o un'operazione di proprietà del Plugin finché un utente non la approva o la nega. Usano il flusso del Gateway
+`plugin.approval.*` e le stesse interfacce di approvazione che gestiscono i pulsanti di approvazione nelle chat e i comandi `/approve`.
 
-Usa le richieste di autorizzazione del Plugin per le autorizzazioni di Plugin/app. Non sostituiscono le approvazioni exec dell'host, le allowlist facoltative degli strumenti o la revisione nativa delle autorizzazioni di Codex.
+Usare le richieste di autorizzazione dei Plugin per le autorizzazioni di Plugin/app. Non sostituiscono le approvazioni di esecuzione dell'host, gli elenchi facoltativi degli strumenti consentiti o la revisione nativa delle autorizzazioni di Codex.
 
-## Scegli il gate corretto
+## Scegliere il controllo appropriato
 
-Scegli il gate che corrisponde al punto decisionale di cui hai bisogno:
+Scegliere il controllo corrispondente al punto decisionale necessario:
 
-| Gate                             | Usalo quando                                                              | Cosa controlla                                                                                                  |
+| Controllo                             | Quando usarlo                                                              | Cosa controlla                                                                                                  |
 | -------------------------------- | ------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------- |
-| Strumenti facoltativi                   | Uno strumento non deve essere visibile al modello finché l'utente non acconsente.        | Esposizione degli strumenti tramite `tools.allow`.                                                                              |
-| Richieste di autorizzazione del Plugin       | Un hook del Plugin o un'operazione di proprietà del Plugin deve chiedere prima che venga eseguita un'azione. | Approvazione runtime tramite `plugin.approval.*`.                                                                     |
-| Approvazioni exec                   | Un comando host o uno strumento simile a una shell richiede l'approvazione dell'operatore.               | Criteri exec dell'host e allowlist exec durevoli.                                                                     |
-| Richieste di autorizzazione native di Codex | Codex chiede prima di azioni native di shell, file, MCP o app-server.        | Gestione dell'approvazione app-server o hook nativa di Codex, instradata tramite approvazioni del Plugin quando OpenClaw possiede il prompt. |
-| Elicitazioni di approvazione MCP        | Un server MCP di Codex richiede l'approvazione per una chiamata a uno strumento.                    | Risposte di approvazione MCP collegate tramite approvazioni del Plugin OpenClaw.                                                 |
+| Strumenti facoltativi                   | Uno strumento non deve essere visibile al modello finché l'utente non acconsente esplicitamente.        | Esposizione degli strumenti tramite `tools.allow`.                                                                              |
+| Richieste di autorizzazione dei Plugin       | Un hook di un Plugin o un'operazione di proprietà del Plugin deve chiedere conferma prima di eseguire un'azione. | Approvazione in fase di esecuzione tramite `plugin.approval.*`.                                                                     |
+| Approvazioni di esecuzione                   | Un comando dell'host o uno strumento simile a una shell richiede l'approvazione dell'operatore.               | Criteri di esecuzione dell'host ed elenchi permanenti dei comandi consentiti.                                                                     |
+| Richieste di autorizzazione native di Codex | Codex chiede conferma prima di azioni native di shell, file, MCP o app-server.        | Gestione delle approvazioni dell'app-server o degli hook nativi di Codex, instradata tramite le approvazioni dei Plugin quando OpenClaw gestisce la richiesta. |
+| Richieste di approvazione MCP        | Un server MCP di Codex richiede l'approvazione per una chiamata a uno strumento.                    | Risposte di approvazione MCP veicolate tramite le approvazioni dei Plugin di OpenClaw.                                                 |
 
-Gli strumenti facoltativi sono un gate in fase di discovery. Le richieste di autorizzazione del Plugin sono un gate per singola chiamata. Usa entrambi quando uno strumento sensibile deve richiedere un consenso esplicito prima che il modello possa vederlo e un'approvazione prima che l'azione venga eseguita.
+Gli strumenti facoltativi costituiscono un controllo nella fase di individuazione. Le richieste di autorizzazione dei Plugin costituiscono un controllo per singola chiamata. Usarli entrambi quando uno strumento sensibile deve richiedere un consenso esplicito prima di essere visibile al modello e un'approvazione prima dell'esecuzione dell'azione.
 
-## Richiedi l'approvazione prima di una chiamata a uno strumento
+## Richiedere l'approvazione prima di una chiamata a uno strumento
 
-La maggior parte dei prompt creati dai Plugin dovrebbe iniziare in un hook `before_tool_call`. L'hook viene eseguito dopo che il modello seleziona uno strumento e prima che OpenClaw lo esegua:
+La maggior parte delle richieste create dai Plugin dovrebbe iniziare in un hook `before_tool_call`. L'hook viene eseguito dopo che il modello seleziona uno strumento e prima che OpenClaw lo esegua:
 
 ```typescript
 import { definePluginEntry } from "openclaw/plugin-sdk/plugin-entry";
@@ -63,7 +65,6 @@ export default definePluginEntry({
               ? ["allow-once", "deny"]
               : ["allow-once", "allow-always", "deny"],
           timeoutMs: 120_000,
-          timeoutBehavior: "deny",
           onResolution(decision) {
             console.log(`deploy approval resolved: ${decision}`);
           },
@@ -74,52 +75,59 @@ export default definePluginEntry({
 });
 ```
 
-Scrivi il testo del prompt per la persona che approverà l'azione:
+Scrivere il testo della richiesta per la persona che approverà l'azione:
 
-- Mantieni `title` breve e focalizzato sull'azione. Il Gateway accetta fino a 80
+- Mantenere `title` breve e incentrato sull'azione; il Gateway lo limita a 80 caratteri.
+- Mantenere `description` specifico e circoscritto; il Gateway lo limita a 512
   caratteri.
-- Mantieni `description` specifica e delimitata. Il Gateway accetta fino a 256
-  caratteri.
-- Includi azione, destinazione e rischio. Non includere segreti, token o
-  payload privati che non dovrebbero apparire nelle superfici di approvazione in chat.
-- Usa `severity: "critical"` solo per azioni in cui la decisione sbagliata potrebbe
-  causare danni alla produzione o perdita di dati.
-- Usa `allowedDecisions: ["allow-once", "deny"]` quando la fiducia persistente è
-  non sicura per quell'azione.
+- Includere l'azione, la destinazione e il rischio. Non includere segreti, token o
+  payload privati che non devono apparire nelle interfacce di approvazione delle chat.
+- `severity` usa per impostazione predefinita `"warning"` se omesso. Usare `"critical"` solo per
+  le azioni in cui una decisione errata potrebbe causare danni alla produzione o perdita di dati.
+- `allowedDecisions` usa per impostazione predefinita `["allow-once", "allow-always", "deny"]` se
+  omesso. Passare `["allow-once", "deny"]` quando la fiducia persistente non è sicura per
+  quell'azione.
+- `timeoutMs` usa per impostazione predefinita 120000 (2 minuti) ed è limitato a 600000 (10
+  minuti), indipendentemente dal valore richiesto.
 
 ## Comportamento delle decisioni
 
-OpenClaw crea un'approvazione in sospeso con un ID `plugin:`, la consegna alle
-superfici di approvazione disponibili e attende una decisione.
+OpenClaw crea un'approvazione in sospeso con un ID `plugin:`, la invia alle
+interfacce di approvazione disponibili e attende una decisione.
 
 | Decisione          | Risultato                                                                    |
 | ----------------- | ------------------------------------------------------------------------- |
-| `allow-once`      | La chiamata corrente continua.                                               |
-| `allow-always`    | La chiamata corrente continua e la decisione viene passata al Plugin.      |
+| `allow-once`      | La chiamata corrente prosegue.                                               |
+| `allow-always`    | La chiamata corrente prosegue e la decisione viene trasmessa al Plugin.      |
 | `deny`            | La chiamata viene bloccata con un risultato di strumento negato.                            |
-| Timeout           | La chiamata viene bloccata a meno che `timeoutBehavior` non sia `"allow"`.                |
+| Timeout           | La chiamata viene bloccata.                                                      |
 | Annullamento      | La chiamata viene bloccata quando l'esecuzione viene interrotta.                              |
-| Nessuna route di approvazione | La chiamata viene bloccata perché nessuna superficie di approvazione connessa può risolverla. |
+| Nessun percorso di approvazione | La chiamata viene bloccata perché nessuna interfaccia di approvazione connessa può gestirla. |
 
-`allow-always` è durevole solo quando il Plugin o il runtime richiedente implementa
-quella persistenza. Per gli hook ordinari `before_tool_call.requireApproval`,
-OpenClaw tratta `allow-once` e `allow-always` come decisioni di approvazione per la
-chiamata corrente e passa il valore risolto a `onResolution`. Se il tuo Plugin
-offre `allow-always`, documenta e implementa esattamente quali chiamate future
-considera attendibili.
+Solo le decisioni esatte `allow-once` e `allow-always` consentite dalla
+richiesta permettono l'esecuzione. Le decisioni sconosciute, non valide, non corrispondenti, mancanti o scadute
+determinano un blocco per impostazione predefinita. Il campo legacy `timeoutBehavior` continua a essere accettato per
+la compatibilità dei Plugin, ma è deprecato e ignorato; non impostarlo nei nuovi hook.
 
-Se l'hook restituisce anche `params`, OpenClaw applica quelle modifiche ai parametri solo
-dopo che l'approvazione riesce. Un hook con priorità inferiore può comunque bloccare dopo che un
+`allow-always` è permanente solo quando il Plugin o il runtime richiedente implementa
+tale persistenza. Per i normali hook `before_tool_call.requireApproval`,
+OpenClaw considera `allow-once` e `allow-always` decisioni di approvazione per la
+chiamata corrente e passa il valore risolto a `onResolution`. Se il Plugin
+offre `allow-always`, documentare e implementare esattamente quali chiamate future considera
+attendibili.
+
+Se l'hook restituisce anche `params`, OpenClaw applica tali modifiche ai parametri solo
+dopo l'approvazione. Un hook con priorità inferiore può comunque bloccare dopo che un
 hook con priorità superiore ha richiesto l'approvazione.
 
 `allowedDecisions` limita i pulsanti e i comandi mostrati all'utente. Il
-Gateway rifiuta un tentativo di risoluzione per qualsiasi decisione che la richiesta non offriva.
+Gateway rifiuta qualsiasi tentativo di risoluzione con una decisione non proposta dalla richiesta.
 
-## Instrada i prompt di approvazione
+## Instradare le richieste di approvazione
 
-I prompt di approvazione possono risolversi nelle superfici dell'interfaccia locale o nei canali di chat che
-supportano la gestione delle approvazioni. Per inoltrare i prompt di approvazione del Plugin a destinazioni di chat
-esplicite, configura `approvals.plugin`:
+Le richieste di approvazione possono essere risolte nelle interfacce utente locali o nei canali di chat che
+supportano la gestione delle approvazioni. Per inoltrare le richieste di approvazione dei Plugin a destinazioni
+di chat esplicite, configurare `approvals.plugin`:
 
 ```json5
 {
@@ -134,11 +142,12 @@ esplicite, configura `approvals.plugin`:
 }
 ```
 
-`approvals.plugin` è indipendente da `approvals.exec`. Abilitare l'inoltro delle approvazioni exec
-non instrada i prompt di approvazione del Plugin, e abilitare l'inoltro delle approvazioni del Plugin
-non modifica i criteri exec dell'host.
+`approvals.plugin` è indipendente da `approvals.exec`. L'abilitazione dell'inoltro delle approvazioni di esecuzione
+non instrada le richieste di approvazione dei Plugin e l'abilitazione dell'inoltro delle approvazioni dei Plugin
+non modifica i criteri di esecuzione dell'host.
 
-Quando un prompt include testo di approvazione manuale, risolvilo con una delle decisioni offerte:
+Quando una richiesta include testo per l'approvazione manuale, risolverla con una delle decisioni
+proposte:
 
 ```text
 /approve <id> allow-once
@@ -146,45 +155,47 @@ Quando un prompt include testo di approvazione manuale, risolvilo con una delle 
 /approve <id> deny
 ```
 
-Consulta [Approvazioni exec avanzate](/it/tools/exec-approvals-advanced#plugin-approval-forwarding)
-per il modello completo di inoltro, il comportamento di approvazione nella stessa chat, la consegna nativa del canale
-e le regole specifiche del canale per gli approvatori.
+Consultare [Approvazioni di esecuzione avanzate](/it/tools/exec-approvals-advanced#plugin-approval-forwarding)
+per il modello completo di inoltro, il comportamento di approvazione nella stessa chat, la consegna nativa
+del canale e le regole specifiche del canale per gli approvatori.
 
 ## Autorizzazioni native di Codex
 
-Anche i prompt di autorizzazione nativi di Codex possono passare tramite approvazioni del Plugin, ma
-hanno una proprietà diversa dagli hook creati dai Plugin.
+Anche le richieste di autorizzazione native di Codex possono transitare tramite le approvazioni dei Plugin, ma
+hanno una titolarità diversa dagli hook creati dai Plugin.
 
-- Le richieste di approvazione app-server di Codex vengono instradate tramite OpenClaw dopo la revisione di Codex.
-- Il relay dell'hook nativa `permission_request` può chiedere tramite
-  `plugin.approval.request` quando quel relay è abilitato.
-- Le elicitazioni di approvazione degli strumenti MCP vengono instradate tramite approvazioni del Plugin quando Codex imposta
-  `_meta.codex_approval_kind` su `"mcp_tool_call"`.
+- Le richieste di approvazione dell'app-server di Codex vengono instradate tramite OpenClaw dopo la revisione di Codex.
+- Il relay dell'hook nativo `permission_request` può effettuare la richiesta tramite
+  `plugin.approval.request` quando tale relay è abilitato.
+- Le richieste di approvazione degli strumenti MCP vengono instradate tramite le approvazioni dei Plugin quando Codex contrassegna
+  `_meta.codex_approval_kind` come `"mcp_tool_call"`.
 
-Consulta [Runtime dell'harness Codex](/it/plugins/codex-harness-runtime#native-permissions-and-mcp-elicitations)
-per il comportamento specifico di Codex e le regole di fallback.
+Consultare [Runtime dell'harness di Codex](/it/plugins/codex-harness-runtime#native-permissions-and-mcp-elicitations)
+per il comportamento specifico di Codex e le regole di ripiego.
 
 ## Risoluzione dei problemi
 
-**Lo strumento dice che le approvazioni del Plugin non sono disponibili.** Nessuna interfaccia di approvazione o route di
-approvazione configurata ha accettato la richiesta. Connetti un client capace di approvazione, usa un
-canale che supporti `/approve` nella stessa chat, oppure configura `approvals.plugin`.
+**Lo strumento indica che le approvazioni dei Plugin non sono disponibili.** Nessuna interfaccia di approvazione o percorso di approvazione configurato
+ha accettato la richiesta. Connettere un client in grado di gestire le approvazioni, usare un
+canale che supporti `/approve` nella stessa chat oppure configurare `approvals.plugin`.
 
-**`allow-always` appare ma la chiamata successiva mostra di nuovo il prompt.** Il flusso generico di
-approvazione del Plugin non persiste automaticamente la fiducia per hook arbitrari. Persiste
-la fiducia di proprietà del Plugin nel tuo Plugin dopo `onResolution("allow-always")`, oppure
-offri solo `allow-once` e `deny`.
+**Viene visualizzato `allow-always`, ma la chiamata successiva richiede nuovamente l'approvazione.** Il flusso generico di
+approvazione dei Plugin non rende automaticamente permanente la fiducia per hook arbitrari. Rendere permanente
+la fiducia di proprietà del Plugin nel Plugin dopo `onResolution("allow-always")`, oppure
+offrire solo `allow-once` e `deny`.
 
 **`/approve` rifiuta la decisione.** La richiesta ha limitato
-`allowedDecisions`. Usa una delle decisioni stampate nel prompt.
+`allowedDecisions`. Usare una delle decisioni mostrate nella richiesta.
 
-**Un prompt Slack, Discord, Telegram o Matrix viene instradato diversamente dalle approvazioni exec.** Le approvazioni del Plugin e le approvazioni exec usano configurazioni separate e possono usare
-controlli di autorizzazione diversi. Verifica `approvals.plugin` e il supporto delle approvazioni del Plugin del canale invece di controllare solo `approvals.exec`.
+**Una richiesta di Discord, Matrix, Slack o Telegram viene instradata diversamente dalle
+approvazioni di esecuzione.** Le approvazioni dei Plugin e le approvazioni di esecuzione usano configurazioni separate e possono usare
+controlli di autorizzazione diversi. Verificare `approvals.plugin` e il supporto del canale
+per l'approvazione dei Plugin, anziché controllare soltanto `approvals.exec`.
 
-## Correlati
+## Argomenti correlati
 
-- [Hook del Plugin](/it/plugins/hooks#tool-call-policy)
-- [Creare Plugin](/it/plugins/building-plugins#registering-agent-tools)
-- [Approvazioni exec avanzate](/it/tools/exec-approvals-advanced#plugin-approval-forwarding)
-- [Protocollo Gateway](/it/gateway/protocol)
-- [Runtime dell'harness Codex](/it/plugins/codex-harness-runtime#native-permissions-and-mcp-elicitations)
+- [Hook dei Plugin](/it/plugins/hooks#tool-call-policy)
+- [Creazione di Plugin](/it/plugins/building-plugins#registering-tools)
+- [Approvazioni di esecuzione avanzate](/it/tools/exec-approvals-advanced#plugin-approval-forwarding)
+- [Protocollo del Gateway](/it/gateway/protocol)
+- [Runtime dell'harness di Codex](/it/plugins/codex-harness-runtime#native-permissions-and-mcp-elicitations)

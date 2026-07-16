@@ -1,14 +1,15 @@
 ---
 read_when:
-    - Anda sedang memasang, mengonfigurasi, atau mengaudit Plugin Cerebras
+    - Anda sedang menginstal, mengonfigurasi, atau mengaudit plugin cerebras
 summary: Menambahkan dukungan penyedia model Cerebras ke OpenClaw.
 title: Plugin Cerebras
 x-i18n:
-    generated_at: "2026-07-12T14:30:48Z"
+    generated_at: "2026-07-16T18:30:41Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 272a592b6099b7dc30c48e40e004ca01c1113a1fcf65917ac6266987a63ec01f
+    source_hash: 4a393776e3fdb0d7a26e5f01bab84b3b8cd451c077019d9ac725d1079c1bb86f
     source_path: plugins/reference/cerebras.md
     workflow: 16
 ---
@@ -22,9 +23,9 @@ Menambahkan dukungan penyedia model Cerebras ke OpenClaw.
 - Paket: `@openclaw/cerebras-provider`
 - Jalur instalasi: npm; ClawHub: `clawhub:@openclaw/cerebras-provider`
 
-## Cakupan
+## Permukaan
 
-penyedia: cerebras
+penyedia: `cerebras`
 
 ## Dokumentasi terkait
 

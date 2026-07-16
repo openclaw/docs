@@ -1,89 +1,94 @@
 ---
 read_when:
-    - تغليف OpenClaw.app
-    - تصحيح أخطاء خدمة Gateway launchd على macOS
+    - حزم OpenClaw.app
+    - تصحيح أخطاء خدمة Gateway ‏launchd على macOS
     - تثبيت CLI الخاص بـ Gateway لنظام macOS
 summary: وقت تشغيل Gateway على macOS (خدمة launchd خارجية)
 title: Gateway على macOS
 x-i18n:
-    generated_at: "2026-07-04T06:36:01Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T14:35:21Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 7a8b646f4cae43cb66acbf3527ef2af9ccaf4b6f2678a464586a110e5e9b3662
+    source_hash: 30c1ae14d8f8eaab73d0e2b725292d7411c2c8b5e0e0c32ad13989c01340d054
     source_path: platforms/mac/bundled-gateway.md
     workflow: 16
 ---
 
-لم يعد OpenClaw.app يضم Node/Bun أو وقت تشغيل Gateway. يتوقع تطبيق macOS
-تثبيتًا **خارجيًا** لـ CLI باسم `openclaw`، ولا يشغّل Gateway كعملية فرعية،
-ويدير خدمة launchd لكل مستخدم لإبقاء Gateway قيد التشغيل (أو يتصل بـ Gateway
-محلي موجود إذا كان يعمل بالفعل).
+لا تتضمن OpenClaw.app حزمة Node أو بيئة تشغيل Gateway. يتوقع تطبيق macOS
+تثبيتًا **خارجيًا** لـ CLI ‏`openclaw`، ولا يشغّل Gateway كعملية
+فرعية، ويدير خدمة launchd لكل مستخدم لإبقاء Gateway
+قيد التشغيل (أو يتصل بـ Gateway محلي قيد التشغيل بالفعل).
 
 ## الإعداد التلقائي
 
-على Mac جديد، اختر **هذا الـ Mac** أثناء التهيئة. يشغّل التطبيق المثبّت الموقّع
-المضمّن قبل معالج Gateway، ويثبّت وقت تشغيل Node في مساحة المستخدم
-وحزمة CLI المطابقة `openclaw` ضمن `~/.openclaw`، ثم يثبّت خدمة launchd لكل
-مستخدم ويبدأها. لا يتطلب هذا المسار Terminal أو Homebrew أو صلاحيات مسؤول.
+على جهاز Mac جديد، اختر **This Mac** أثناء الإعداد الأولي. يشغّل التطبيق
+برنامج التثبيت النصي الموقّع والمضمّن قبل معالج Gateway: إذ يثبّت
+بيئة تشغيل Node ضمن مساحة المستخدم وCLI ‏`openclaw` المطابق ضمن `~/.openclaw`،
+ثم يثبّت خدمة launchd لكل مستخدم ويشغّلها. لا يتطلب هذا المسار
+Terminal أو Homebrew أو صلاحيات المسؤول.
 
-يضم التطبيق سكربت المثبّت، وليس حمولة Node أو Gateway. لذلك يحتاج الإعداد
-إلى اتصال بالإنترنت لتنزيل وقت التشغيل وحزمة OpenClaw المطابقة.
+لا يتضمن التطبيق سوى برنامج التثبيت النصي، وليس حزمة Node أو Gateway؛
+يتطلب الإعداد اتصالًا بالإنترنت لتنزيل بيئة التشغيل وحزمة
+OpenClaw المطابقة.
 
 ## الاسترداد اليدوي
 
-يوصى باستخدام Node 24 للتثبيت اليدوي. يعمل أيضًا Node 22 LTS، حاليًا `22.19+`.
-ثم ثبّت `openclaw` عالميًا:
+يوصى باستخدام Node 24.15+ للتثبيت اليدوي؛ ويعمل Node 22.22.3+ أيضًا. ثبّت
+`openclaw` عموميًا:
 
 ```bash
 npm install -g openclaw@<version>
 ```
 
-استخدم **إعادة محاولة الإعداد** بعد فشل الإعداد التلقائي. إذا استمر الفشل، ثبّت
-CLI يدويًا باستخدام الأمر أعلاه، ثم اختر **التحقق مرة أخرى** في التهيئة.
-يبقى Node وقت تشغيل Gateway الموصى به.
+استخدم **Retry setup** بعد فشل الإعداد التلقائي. إذا استمر الفشل،
+فثبّت CLI يدويًا باستخدام الأمر أعلاه، ثم اختر **Check again**
+أثناء الإعداد الأولي.
 
-## Launchd (Gateway كـ LaunchAgent)
+## Launchd ‏(Gateway بصفته LaunchAgent)
 
-التسمية:
+التسمية: `ai.openclaw.gateway` (الملف الشخصي الافتراضي)، أو `ai.openclaw.<profile>`
+لملف شخصي مسمّى.
 
-- `ai.openclaw.gateway` (أو `ai.openclaw.<profile>`؛ قد تبقى `com.openclaw.*` القديمة)
+موقع ملف Plist (لكل مستخدم): `~/Library/LaunchAgents/ai.openclaw.gateway.plist`
+(أو `ai.openclaw.<profile>.plist`).
 
-موقع Plist (لكل مستخدم):
-
-- `~/Library/LaunchAgents/ai.openclaw.gateway.plist`
-  (أو `~/Library/LaunchAgents/ai.openclaw.<profile>.plist`)
-
-المدير:
-
-- يملك تطبيق macOS تثبيت/تحديث LaunchAgent في الوضع المحلي.
-- يمكن لـ CLI تثبيته أيضًا: `openclaw gateway install`.
+يتولى تطبيق macOS تثبيت LaunchAgent وتحديثه للملف الشخصي الافتراضي في
+الوضع المحلي. ويمكن لـ CLI أيضًا تثبيته مباشرةً: `openclaw gateway install`
+(تُحدَّد الملفات الشخصية المسمّاة عبر متغير البيئة `OPENCLAW_PROFILE`).
 
 السلوك:
 
-- يفعّل/يعطّل "OpenClaw نشط" الـ LaunchAgent.
-- لا يؤدي إنهاء التطبيق إلى إيقاف Gateway (يبقيه launchd حيًا).
-- إذا كان Gateway يعمل بالفعل على المنفذ المضبوط، يتصل التطبيق به بدلًا من
-  بدء Gateway جديد.
+- يؤدي "OpenClaw Active" إلى تمكين LaunchAgent أو تعطيله.
+- لا يؤدي إنهاء التطبيق إلى إيقاف Gateway (يبقيه launchd قيد التشغيل).
+- إذا كان Gateway قيد التشغيل بالفعل على المنفذ المُهيّأ، يتصل التطبيق
+  به بدلًا من تشغيل واحد جديد.
 
 التسجيل:
 
-- launchd stdout: `~/Library/Logs/openclaw/gateway.log` (تستخدم الملفات الشخصية `gateway-<profile>.log`)
-- launchd stderr: مكبوت
+- المخرجات القياسية لـ launchd: ‏`~/Library/Logs/openclaw/gateway.log` (تستخدم الملفات الشخصية
+  `gateway-<profile>.log`)
+- الأخطاء القياسية لـ launchd: معطّلة
+- إذا دخل المضيف في حلقة تتكرر فيها `EADDRINUSE` أو عمليات إعادة تشغيل سريعة، فتحقق من
+  وجود LaunchAgents مكررة من `ai.openclaw.gateway` / `ai.openclaw.node` ومن
+  الحل البديل الخاص بعلامة launchd في
+  [استكشاف أخطاء Gateway وإصلاحها](/ar/gateway/troubleshooting#macos-launchd-supervisor-loop-with-duplicate-gatewaynode-launchagents).
 
 ## توافق الإصدارات
 
-يتحقق تطبيق macOS من إصدار Gateway مقارنة بإصداره. تشغّل التهيئة الإعداد
-المُدار تلقائيًا عندما يكون CLI موجودًا مفقودًا أو غير متوافق. استخدم
-**إعادة محاولة الإعداد** لتكرار التثبيت أو **التحقق مرة أخرى** بعد إصلاح CLI خارجي.
+يتحقق تطبيق macOS من إصدار Gateway مقارنةً بإصداره. يشغّل الإعداد الأولي
+الإعداد المُدار تلقائيًا عندما يكون CLI الحالي مفقودًا أو
+غير متوافق. استخدم **Retry setup** لتكرار التثبيت، أو **Check again**
+بعد إصلاح CLI خارجي.
 
 ## دليل الحالة على macOS
 
-احتفظ بحالة OpenClaw على قرص محلي غير متزامن. تجنّب iCloud Drive والمجلدات
-الأخرى المتزامنة سحابيًا لأن زمن تأخر المزامنة وأقفال الملفات يمكن أن تؤثر في
-الجلسات، وبيانات الاعتماد، وحالة Gateway.
+احتفظ بحالة OpenClaw على قرص محلي غير متزامن. تجنّب iCloud Drive وغيره من
+المجلدات المتزامنة سحابيًا؛ فقد يؤثر تأخر المزامنة وأقفال الملفات في الجلسات
+وبيانات الاعتماد وحالة Gateway.
 
-اضبط `OPENCLAW_STATE_DIR` إلى مسار محلي فقط عندما تحتاج إلى تجاوز.
+اضبط `OPENCLAW_STATE_DIR` على مسار محلي فقط عند الحاجة إلى تجاوز.
 يحذّر `openclaw doctor` من مسارات الحالة الشائعة المتزامنة سحابيًا ويوصي
 بالعودة إلى التخزين المحلي. راجع
 [متغيرات البيئة](/ar/help/environment#path-related-env-vars) و
@@ -91,8 +96,8 @@ CLI يدويًا باستخدام الأمر أعلاه، ثم اختر **الت
 
 ## تصحيح اتصال التطبيق
 
-استخدم CLI التصحيح الخاص بـ macOS من نسخة مصدرية لاختبار مصافحة WebSocket
-الخاصة بـ Gateway ومنطق الاكتشاف نفسه الذي يستخدمه التطبيق:
+استخدم CLI الخاص بتصحيح أخطاء macOS من نسخة مصدرية لاختبار مصافحة
+WebSocket نفسها ومنطق الاكتشاف في Gateway اللذين يستخدمهما التطبيق:
 
 ```bash
 cd apps/macos
@@ -100,12 +105,13 @@ swift run openclaw-mac connect --json
 swift run openclaw-mac discover --timeout 3000 --json
 ```
 
-يقبل `connect` الخيارات `--url` و`--token` و`--timeout` و`--json`. ويقبل
-`discover` الخيارات `--timeout` و`--json` و`--include-local`. قارِن مخرجات
-الاكتشاف مع `openclaw gateway discover --json` عندما تحتاج إلى فصل اكتشاف CLI
-عن مشكلات الاتصال من جانب التطبيق.
+يقبل `connect` الخيارات `--url` و`--token` و`--timeout` و`--probe` و`--json`
+(بالإضافة إلى تجاوزات هوية العميل؛ شغّله باستخدام `--help` لعرض القائمة الكاملة).
+يقبل `discover` الخيارات `--timeout` و`--json` و`--include-local`. قارن
+مخرجات الاكتشاف مع `openclaw gateway discover --json` عندما تحتاج إلى
+فصل مشكلات اكتشاف CLI عن مشكلات الاتصال من جانب التطبيق.
 
-## فحص سريع
+## فحص تمهيدي
 
 ```bash
 openclaw --version
@@ -121,7 +127,7 @@ openclaw gateway --port 18999 --bind loopback
 openclaw gateway call health --url ws://127.0.0.1:18999 --timeout 3000
 ```
 
-## ذات صلة
+## ذو صلة
 
 - [تطبيق macOS](/ar/platforms/macos)
 - [دليل تشغيل Gateway](/ar/gateway)

@@ -2,175 +2,117 @@
 read_when:
     - Chcesz zadać krótkie pytanie poboczne dotyczące bieżącej sesji
     - Implementujesz lub debugujesz zachowanie BTW w różnych klientach
-summary: Tymczasowe pytania poboczne z /btw
-title: 'Przy okazji: pytania poboczne'
+summary: Ulotne pytania poboczne z /btw
+title: A przy okazji, dodatkowe pytania
 x-i18n:
-    generated_at: "2026-06-27T18:24:51Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T19:10:10Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: cf97c17fb02c2464b1d1b31cfec652d52c60be6ce0cad25eaf32a9c080843ef2
+    source_hash: 338a54d0e15ec90aebaeeaee551559a26f1437f7b6dcdde4a4b1e63347ad0759
     source_path: tools/btw.md
     workflow: 16
 ---
 
-`/btw` pozwala zadać szybkie pytanie poboczne dotyczące **bieżącej sesji** bez
-zamieniania tego pytania w zwykłą historię rozmowy. `/side` jest aliasem.
-
-Jest wzorowane na zachowaniu `/btw` w Claude Code, ale dostosowane do architektury
-Gateway i wielokanałowej architektury OpenClaw.
-
-## Co robi
-
-Gdy wyślesz:
+`/btw` (alias `/side`) zadaje szybkie pytanie poboczne dotyczące **bieżącej
+sesji** bez dodawania go do historii konwersacji. Funkcja jest wzorowana na
+`/btw` z Claude Code i dostosowana do architektury Gateway oraz
+wielokanałowej architektury OpenClaw.
 
 ```text
-/btw what changed?
+/btw co się zmieniło?
+/side co oznacza ten błąd?
 ```
 
-OpenClaw:
+## Działanie
 
-1. tworzy migawkę bieżącego kontekstu sesji,
-2. uruchamia osobne efemeryczne zapytanie poboczne,
-3. odpowiada tylko na pytanie poboczne,
-4. pozostawia główne uruchomienie bez zmian,
-5. **nie** zapisuje pytania ani odpowiedzi BTW w historii sesji,
-6. emituje odpowiedź jako **wynik poboczny na żywo**, a nie zwykłą wiadomość asystenta.
+1. Tworzy migawkę bieżącej sesji jako kontekst tła (w tym oczekujący
+   prompt głównego przebiegu).
+2. Uruchamia osobne, jednorazowe zapytanie poboczne, instruując model, aby odpowiedział wyłącznie na
+   pytanie poboczne i nie wznawiał ani nie ukierunkowywał głównego zadania.
+3. Dostarcza odpowiedź jako wynik poboczny na żywo, a nie zwykłą wiadomość asystenta.
+4. Nigdy nie zapisuje pytania ani odpowiedzi w historii sesji ani w `chat.history`.
 
-Ważny model mentalny to:
+Główny przebieg, jeśli jest aktywny, pozostaje niezmieniony.
 
-- ten sam kontekst sesji
-- osobne jednorazowe zapytanie poboczne
-- ten sam natywny transport harness, gdy sesja używa natywnego harness
-- brak zanieczyszczenia przyszłego kontekstu
-- brak utrwalania transkrypcji
+W sesjach uprzęży Codex funkcja BTW rozwidla aktywny wątek serwera aplikacji Codex,
+tworząc efemeryczny wątek podrzędny, zamiast wykonywać osobne wywołanie dostawcy. Pozwala to
+zachować OAuth Codex oraz natywne działanie narzędzi i wątków, a rozwidlony
+wątek zachowuje bieżące zasady zatwierdzania, piaskownicę i natywny
+zestaw narzędzi wątku nadrzędnego. Rozwidlony wątek otrzymuje prompt graniczny informujący model, że
+wszystko przed nim stanowi odziedziczony kontekst referencyjny, a nie aktywne instrukcje,
+oraz że aktywne są wyłącznie wiadomości po tej granicy. `/btw` wymaga
+istniejącego wątku Codex; najpierw należy wysłać zwykłą wiadomość.
 
-W sesjach Codex harness BTW pozostaje wewnątrz Codex przez rozwidlenie aktywnego
-wątku app-server jako efemerycznego wątku pobocznego. Dzięki temu OAuth Codex i
-natywne zachowanie wątku pozostają nienaruszone, a odpowiedź poboczna nadal jest
-izolowana od transkrypcji nadrzędnej. Podobnie jak Codex `/side`, wątek poboczny
-zachowuje bieżące uprawnienia Codex i natywną powierzchnię narzędzi, z zabezpieczeniami,
-które mówią modelowi, aby nie traktował odziedziczonej pracy z wątku nadrzędnego
-jako aktywnych instrukcji.
+W przypadku aliasów środowiska uruchomieniowego CLI funkcja BTW wywołuje odpowiedni backend CLI w jednorazowym
+trybie pytania pobocznego: przekazuje oczyszczony kontekst konwersacji do nowego wywołania CLI
+z wyłączonym pakietowaniem narzędzi i stanem sesji wielokrotnego użytku oraz dodaje
+obsługiwane przez backend flagi wyłączające wznawianie i narzędzia. Bezpośrednie środowiska uruchomieniowe
+(inne niż CLI) używają zamiast tego bezpośredniego, jednorazowego wywołania dostawcy.
 
-W przypadku aliasów środowiska uruchomieniowego CLI BTW używa właścicielskiego
-backendu CLI w trybie pytania pobocznego zamiast przechodzić awaryjnie do
-bezpośredniego wywołania dostawcy. OpenClaw zasila świeże jednorazowe wywołanie
-CLI oczyszczonym kontekstem rozmowy, wyłącza pakietowanie narzędzi OpenClaw MCP
-i stan wielokrotnego użytku sesji CLI dla tego wywołania oraz pozwala backendowi
-dodać wszelkie natywne dla CLI flagi no-resume lub no-tools, które obsługuje.
-Bezpośrednie środowiska uruchomieniowe inne niż CLI zachowują bezpośrednią
-ścieżkę jednorazową.
+## Czego ta funkcja nie robi
 
-## Czego nie robi
-
-`/btw` **nie**:
-
-- tworzy nowej trwałej sesji,
-- kontynuuje niedokończonego głównego zadania,
-- zapisuje danych pytania/odpowiedzi BTW w historii transkrypcji,
-- pojawia się w `chat.history`,
-- przetrwa ponownego wczytania.
-
-Jest celowo **efemeryczne**.
-
-## Jak działa kontekst
-
-BTW używa bieżącej sesji wyłącznie jako **kontekstu tła**.
-
-Jeśli główne uruchomienie jest obecnie aktywne, OpenClaw tworzy migawkę bieżącego
-stanu wiadomości i dołącza trwający główny prompt jako kontekst tła, jednocześnie
-wyraźnie mówiąc modelowi:
-
-- odpowiedz tylko na pytanie poboczne,
-- nie wznawiaj ani nie kończ niedokończonego głównego zadania,
-- nie kieruj rozmową nadrzędną.
-
-Dzięki temu BTW pozostaje odizolowane od głównego uruchomienia, a jednocześnie
-wie, czego dotyczy sesja.
+`/btw` nie tworzy trwałej sesji, nie kontynuuje niedokończonego głównego zadania,
+nie utrwala danych pytania ani odpowiedzi w historii transkrypcji i nie zachowuje ich po ponownym wczytaniu.
 
 ## Model dostarczania
 
-BTW **nie** jest dostarczane jako zwykła wiadomość asystenta w transkrypcji.
+Zwykły czat z asystentem używa zdarzenia Gateway `chat`. Funkcja BTW używa osobnego
+zdarzenia `chat.side_result`, dzięki czemu klienty nie mogą pomylić go ze zwykłą
+historią konwersacji. Ponieważ zdarzenie nie jest odtwarzane z `chat.history`,
+znika po ponownym wczytaniu.
 
-Na poziomie protokołu Gateway:
+## Zachowanie w interfejsach
 
-- zwykły czat asystenta używa zdarzenia `chat`
-- BTW używa zdarzenia `chat.side_result`
+| Interfejs         | Zachowanie                                                                                                                                                                                                                                                                            |
+| ----------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| TUI               | Wyświetlany w wierszu dziennika czatu, wyraźnie odróżniony od zwykłej odpowiedzi; można go zamknąć za pomocą `Enter` lub `Esc`.                                                                                                                                                                           |
+| Kanały zewnętrzne | Dostarczany jako wyraźnie oznaczona, jednorazowa odpowiedź (Telegram, WhatsApp i Discord nie mają lokalnej efemerycznej nakładki).                                                                                                                                                                         |
+| Control UI / web  | Wyświetlany jako pływający panel „Czat poboczny” przypięty do wątku. Odpowiedzi gromadzą się jako kolejne wypowiedzi, a pole „Kontynuuj” służy do zadania następnego pytania pobocznego. Zamknięcie (`Esc` lub X) zachowuje konwersację, a panel otwiera się ponownie po otrzymaniu następnej odpowiedzi; przycisk kosza odrzuca ją i zatrzymuje oczekujący przebieg. |
 
-Ten rozdział jest celowy. Gdyby BTW ponownie używało zwykłej ścieżki zdarzenia
-`chat`, klienci traktowaliby je jak zwykłą historię rozmowy.
+## Wyskakujące menu zaznaczenia (Control UI)
 
-Ponieważ BTW używa osobnego zdarzenia na żywo i nie jest odtwarzane z
-`chat.history`, znika po ponownym wczytaniu.
+Zaznaczenie tekstu w wiadomości czatu w Control UI otwiera małe
+wyskakujące menu zaznaczenia z dwiema akcjami:
 
-## Zachowanie powierzchni
+- **Więcej szczegółów** natychmiast wysyła niejawne pytanie `/btw` z prośbą, aby
+  model wyjaśnił zaznaczony tekst w kontekście bieżącej
+  sesji. Odpowiedź pojawia się w pływającym panelu czatu pobocznego.
+- **Zapytaj na czacie pobocznym** wstępnie wypełnia edytor wersją roboczą `/btw` cytującą
+  zaznaczony tekst, aby umożliwić wpisanie własnego pytania na jego temat.
 
-### TUI
+Obie akcje działają zgodnie ze zwykłą semantyką `/btw`: pytanie i odpowiedź nie trafiają
+do historii sesji, a główny przebieg pozostaje niezmieniony.
 
-W TUI BTW jest renderowane inline w widoku bieżącej sesji, ale pozostaje
-efemeryczne:
+## Kiedy używać
 
-- wyraźnie odróżnialne od zwykłej odpowiedzi asystenta
-- możliwe do odrzucenia za pomocą `Enter` lub `Esc`
-- nieodtwarzane po ponownym wczytaniu
-
-### Kanały zewnętrzne
-
-W kanałach takich jak Telegram, WhatsApp i Discord BTW jest dostarczane jako
-wyraźnie oznaczona jednorazowa odpowiedź, ponieważ te powierzchnie nie mają
-lokalnej koncepcji efemerycznej nakładki.
-
-Odpowiedź nadal jest traktowana jako wynik poboczny, a nie zwykła historia sesji.
-
-### Control UI / web
-
-Gateway poprawnie emituje BTW jako `chat.side_result`, a BTW nie jest uwzględniane
-w `chat.history`, więc kontrakt trwałości jest już poprawny dla web.
-
-Obecny Control UI nadal potrzebuje dedykowanego konsumenta `chat.side_result`,
-aby renderować BTW na żywo w przeglądarce. Dopóki ta obsługa po stronie klienta
-nie zostanie wdrożona, BTW jest funkcją na poziomie Gateway z pełnym zachowaniem
-w TUI i kanałach zewnętrznych, ale nie ma jeszcze kompletnego UX w przeglądarce.
-
-## Kiedy używać BTW
-
-Użyj `/btw`, gdy chcesz uzyskać:
-
-- szybkie wyjaśnienie dotyczące bieżącej pracy,
-- rzeczową odpowiedź poboczną, gdy długie uruchomienie nadal trwa,
-- tymczasową odpowiedź, która nie powinna stać się częścią przyszłego kontekstu sesji.
-
-Przykłady:
+Funkcja `/btw` służy do szybkiego uzyskania wyjaśnienia, otrzymania pobocznej odpowiedzi rzeczowej podczas trwania długiego przebiegu
+lub uzyskania tymczasowej odpowiedzi, która nie powinna wejść do przyszłego
+kontekstu sesji.
 
 ```text
-/btw what file are we editing?
-/side what changed while the main run continued?
-/btw what does this error mean?
-/btw summarize the current task in one sentence
-/btw what is 17 * 19?
+/btw który plik edytujemy?
+/btw podsumuj bieżące zadanie w jednym zdaniu
+/btw ile wynosi 17 * 19?
 ```
 
-## Kiedy nie używać BTW
-
-Nie używaj `/btw`, gdy chcesz, aby odpowiedź stała się częścią przyszłego
-kontekstu roboczego sesji.
-
-W takim przypadku zapytaj normalnie w głównej sesji zamiast używać BTW.
+Jeśli informacja ma stać się częścią przyszłego kontekstu roboczego
+sesji, należy zamiast tego zadać pytanie w zwykły sposób w sesji głównej.
 
 ## Powiązane
 
 <CardGroup cols={2}>
-  <Card title="Slash commands" href="/pl/tools/slash-commands" icon="terminal">
-    Natywny katalog poleceń i dyrektywy czatu.
+  <Card title="Polecenia z ukośnikiem" href="/pl/tools/slash-commands" icon="terminal">
+    Katalog natywnych poleceń i dyrektywy czatu.
   </Card>
-  <Card title="Thinking levels" href="/pl/tools/thinking" icon="brain">
-    Poziomy wysiłku rozumowania dla wywołania modelu pytania pobocznego.
+  <Card title="Poziomy rozumowania" href="/pl/tools/thinking" icon="brain">
+    Poziomy nakładu rozumowania dla wywołania modelu obsługującego pytanie poboczne.
   </Card>
-  <Card title="Session" href="/pl/concepts/session" icon="comments">
+  <Card title="Sesja" href="/pl/concepts/session" icon="comments">
     Klucze sesji, historia i semantyka trwałości.
   </Card>
-  <Card title="Steer command" href="/pl/tools/steer" icon="arrow-right">
-    Wstrzyknij wiadomość sterującą do aktywnego uruchomienia bez jego kończenia.
+  <Card title="Polecenie sterujące" href="/pl/tools/steer" icon="arrow-right">
+    Wstrzykiwanie wiadomości sterującej do aktywnego przebiegu bez jego kończenia.
   </Card>
 </CardGroup>

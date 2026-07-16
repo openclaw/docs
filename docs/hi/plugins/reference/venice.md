@@ -1,21 +1,22 @@
 ---
 read_when:
     - आप venice Plugin को इंस्टॉल, कॉन्फ़िगर या ऑडिट कर रहे हैं
-summary: OpenClaw में Venice मॉडल प्रदाता समर्थन जोड़ता है।
+summary: OpenClaw में Venice मॉडल प्रदाता का समर्थन जोड़ता है।
 title: Venice Plugin
 x-i18n:
-    generated_at: "2026-06-28T23:49:59Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T16:18:18Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 585efb336f3c3f5a9ca7da8a7dfc7bf2e5cb70bcd91fa2c05feea208bd93692e
+    source_hash: b3c239945f079f119dafef21fb2eb30bd5f96cc8ad6dd163aa60d21f990a0f2f
     source_path: plugins/reference/venice.md
     workflow: 16
 ---
 
 # Venice Plugin
 
-OpenClaw में Venice मॉडल प्रदाता समर्थन जोड़ता है।
+OpenClaw में Venice मॉडल प्रदाता का समर्थन जोड़ता है।
 
 ## वितरण
 
@@ -24,8 +25,8 @@ OpenClaw में Venice मॉडल प्रदाता समर्थन 
 
 ## सतह
 
-प्रदाता: venice
+प्रदाता: `venice`; अनुबंध: `usageProviders`
 
 ## संबंधित दस्तावेज़
 
-- [venice](/hi/providers/venice)
+- [Venice](/hi/providers/venice)

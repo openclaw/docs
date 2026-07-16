@@ -1,14 +1,15 @@
 ---
 read_when:
-    - Ви встановлюєте, налаштовуєте або перевіряєте Plugin together
-summary: Додає підтримку постачальника моделей Together до OpenClaw.
+    - Ви встановлюєте, налаштовуєте або перевіряєте Plugin together.
+summary: Додає до OpenClaw підтримку постачальника моделей Together.
 title: Plugin Together
 x-i18n:
-    generated_at: "2026-07-12T13:31:54Z"
+    generated_at: "2026-07-16T18:27:11Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: c6d9c45bb128e18cbb931c6e6f429a3f60b25a1f1faeb83676989da2a12b5866
+    source_hash: 96d2a19fb8a9ab445d826b0b238f565d606fc9150e5dd45a9d2323e6b3048396
     source_path: plugins/reference/together.md
     workflow: 16
 ---
@@ -19,13 +20,13 @@ x-i18n:
 
 ## Розповсюдження
 
-- Пакунок: `@openclaw/together-provider`
-- Спосіб установлення: входить до складу OpenClaw
+- Пакет: `@openclaw/together-provider`
+- Спосіб установлення: включено до OpenClaw
 
-## Інтерфейс
+## Поверхня
 
-постачальники: together; контракти: videoGenerationProviders
+постачальники: `together`; контракти: `videoGenerationProviders`
 
 ## Пов’язана документація
 
-- [together](/uk/providers/together)
+- [Together](/uk/providers/together)

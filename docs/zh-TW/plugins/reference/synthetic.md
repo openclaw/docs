@@ -1,31 +1,32 @@
 ---
 read_when:
-    - 您正在安裝、設定或稽核 synthetic 外掛
-summary: 為 OpenClaw 新增 Synthetic 模型供應商支援。
-title: 合成外掛
+    - 你正在安裝、設定或稽核 Synthetic 外掛
+summary: 新增 OpenClaw 對 Synthetic 模型提供者的支援。
+title: Synthetic 外掛
 x-i18n:
-    generated_at: "2026-07-11T21:37:30Z"
+    generated_at: "2026-07-16T11:55:46Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 4d899363b3dac4128f3e2a1e30ad11cd5ae0c11cc5229d3f03e15429e2741f8d
+    source_hash: 755ddf08e8ec91654c81f64a6c3e566281be320d8f5e54b64fbbc993c8919df2
     source_path: plugins/reference/synthetic.md
     workflow: 16
 ---
 
 # Synthetic 外掛
 
-為 OpenClaw 新增 Synthetic 模型提供者支援。
+為 OpenClaw 新增 Synthetic 模型供應商支援。
 
-## 發行方式
+## 發佈
 
 - 套件：`@openclaw/synthetic-provider`
-- 安裝方式：隨 OpenClaw 內附
+- 安裝途徑：隨附於 OpenClaw
 
 ## 介面
 
-提供者：synthetic
+供應商：`synthetic`
 
 ## 相關文件
 
-- [synthetic](/zh-TW/providers/synthetic)
+- [Synthetic](/zh-TW/providers/synthetic)

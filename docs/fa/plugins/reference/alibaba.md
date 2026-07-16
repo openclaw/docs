@@ -1,31 +1,32 @@
 ---
 read_when:
-    - در حال نصب، پیکربندی یا ممیزی Plugin علی‌بابا هستید
-summary: پشتیبانی از ارائه‌دهندهٔ تولید ویدئو را اضافه می‌کند.
+    - در حال نصب، پیکربندی یا ممیزی Plugin alibaba هستید
+summary: پشتیبانی از ارائه‌دهنده تولید ویدئو را اضافه می‌کند.
 title: Plugin علی‌بابا
 x-i18n:
-    generated_at: "2026-07-12T10:34:13Z"
+    generated_at: "2026-07-16T16:53:33Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: b144916d5e06c87ccc80eb293e41245cf089dad3e2d3f89d9a73e6f67e0906b4
+    source_hash: 5d59173c76eba3feb3b94087dff48068696665e749fb9f1a6e1f83a7cf61147e
     source_path: plugins/reference/alibaba.md
     workflow: 16
 ---
 
-# Plugin علی‌بابا
+# Plugin Alibaba
 
-پشتیبانی از ارائه‌دهندهٔ تولید ویدئو را اضافه می‌کند.
+پشتیبانی از ارائه‌دهنده تولید ویدئو را اضافه می‌کند.
 
 ## توزیع
 
 - بسته: `@openclaw/alibaba-provider`
-- روش نصب: در OpenClaw گنجانده شده است
+- مسیر نصب: در OpenClaw گنجانده شده است
 
 ## سطح
 
-قراردادها: videoGenerationProviders
+قراردادها: `videoGenerationProviders`
 
 ## مستندات مرتبط
 
-- [علی‌بابا](/fa/providers/alibaba)
+- [Alibaba](/fa/providers/alibaba)

@@ -1,96 +1,99 @@
 ---
 read_when:
-    - चैनल कनेक्टिविटी या Gateway स्वास्थ्य का निदान
-    - स्वास्थ्य जांच CLI कमांड और विकल्पों को समझना
-summary: Health check कमांड और Gateway स्वास्थ्य निगरानी
-title: स्वास्थ्य जांच
+    - चैनल कनेक्टिविटी या Gateway की स्थिति का निदान करना
+    - हेल्थ चेक CLI कमांड और विकल्पों को समझना
+summary: स्वास्थ्य जाँच कमांड और Gateway स्वास्थ्य निगरानी
+title: स्वास्थ्य जाँचें
 x-i18n:
-    generated_at: "2026-06-28T23:08:58Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T14:50:24Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 8d6475bef9fead191c11a801151d4fab76c47034d3f30f90a18c15d6e32b5d26
+    source_hash: 6cc015fcd8dc002eafac95fb3e7aa0b6f3be5b9995e94438e2fed539a561931d
     source_path: gateway/health.md
     workflow: 16
 ---
 
-अनुमान लगाए बिना चैनल कनेक्टिविटी सत्यापित करने की संक्षिप्त मार्गदर्शिका।
+बिना अनुमान लगाए चैनल कनेक्टिविटी सत्यापित करने के लिए संक्षिप्त मार्गदर्शिका।
 
-## त्वरित जांचें
+## त्वरित जाँच
 
-- `openclaw status` — स्थानीय सारांश: gateway पहुंच/मोड, अपडेट संकेत, लिंक किए गए चैनल auth की उम्र, सत्र + हाल की गतिविधि।
-- `openclaw status --all` — पूर्ण स्थानीय निदान (केवल-पठन, रंगीन, डिबगिंग के लिए पेस्ट करना सुरक्षित)।
-- `openclaw status --deep` — चल रहे gateway से लाइव स्वास्थ्य जांच मांगता है (`health` with `probe:true`), समर्थित होने पर प्रति-अकाउंट चैनल जांच सहित।
-- `openclaw health` — चल रहे gateway से उसका स्वास्थ्य स्नैपशॉट मांगता है (केवल WS; CLI से कोई सीधा चैनल socket नहीं)।
-- `openclaw health --verbose` — लाइव स्वास्थ्य जांच बाध्य करता है और gateway कनेक्शन विवरण प्रिंट करता है।
-- `openclaw health --json` — मशीन-पठनीय स्वास्थ्य स्नैपशॉट आउटपुट।
-- agent को invoke किए बिना स्थिति उत्तर पाने के लिए WhatsApp/WebChat में `/status` को स्वतंत्र संदेश के रूप में भेजें।
-- लॉग: `/tmp/openclaw/openclaw-*.log` को tail करें और `web-heartbeat`, `web-reconnect`, `web-auto-reply`, `web-inbound` के लिए filter करें।
+- `openclaw status` - स्थानीय सारांश: Gateway की पहुँच/मोड, अपडेट संकेत, लिंक किए गए चैनल प्रमाणीकरण की आयु, सत्र + हाल की गतिविधि।
+- `openclaw status --all` - संपूर्ण स्थानीय निदान (केवल-पढ़ने योग्य, रंगीन, डीबगिंग के लिए सुरक्षित रूप से चिपकाने योग्य)।
+- `openclaw status --deep` - चल रहे Gateway से लाइव जाँच का अनुरोध करता है (`health`, `probe:true` के साथ), जिसमें समर्थित होने पर प्रत्येक खाते की चैनल जाँच शामिल होती है।
+- `openclaw status --usage` - मॉडल प्रदाता के उपयोग/कोटा स्नैपशॉट दिखाता है।
+- `openclaw health` - चल रहे Gateway से उसका स्वास्थ्य स्नैपशॉट माँगता है (केवल WS; CLI से कोई प्रत्यक्ष चैनल सॉकेट नहीं)।
+- `openclaw health --verbose` (उपनाम `--debug`) - लाइव स्वास्थ्य जाँच को बाध्य करता है और Gateway कनेक्शन का विवरण प्रिंट करता है।
+- `openclaw health --json` - मशीन-पठनीय स्वास्थ्य स्नैपशॉट आउटपुट।
+- एजेंट को सक्रिय किए बिना स्थिति का उत्तर पाने के लिए किसी भी चैनल में `/status` को एक स्वतंत्र चैट कमांड के रूप में भेजें।
+- लॉग: `/tmp/openclaw/openclaw-*.log` को टेल करें और `web-heartbeat`, `web-reconnect`, `web-auto-reply`, `web-inbound` के लिए फ़िल्टर करें।
 
-Discord और अन्य chat providers के लिए, session rows socket liveness नहीं हैं।
-`openclaw sessions`, Gateway `sessions.list`, और agent `sessions_list` tool
-संग्रहीत conversation state पढ़ते हैं। कोई provider reconnect कर सकता है और किसी नए session row के materialize होने से पहले स्वस्थ channel
-status दिखा सकता है। लाइव connectivity checks के लिए ऊपर दिए गए channel status और
-health commands का उपयोग करें।
+Discord और अन्य चैट प्रदाताओं के लिए, सत्र पंक्तियाँ सॉकेट के सक्रिय होने का संकेत नहीं हैं।
+`openclaw sessions`, Gateway `sessions.list`, और एजेंट का `sessions_list` टूल
+संग्रहीत वार्तालाप स्थिति पढ़ते हैं। कोई प्रदाता दोबारा कनेक्ट होकर स्वस्थ चैनल
+स्थिति दिखा सकता है, इससे पहले कि कोई नई सत्र पंक्ति साकार हो। लाइव कनेक्टिविटी
+जाँच के लिए ऊपर दिए गए चैनल स्थिति और स्वास्थ्य कमांड का उपयोग करें।
 
 ## गहन निदान
 
-- Disk पर creds: `ls -l ~/.openclaw/credentials/whatsapp/<accountId>/creds.json` (mtime हाल का होना चाहिए)।
-- Session store: `ls -l ~/.openclaw/agents/<agentId>/sessions/sessions.json` (path को config में override किया जा सकता है)। Count और हाल के recipients `status` के जरिए दिखाए जाते हैं।
-- Relink flow: जब status codes 409–515 या logs में `loggedOut` दिखाई दें, तब `openclaw channels logout && openclaw channels login --verbose`। (नोट: QR login flow pairing के बाद status 515 के लिए एक बार auto-restart करता है।)
-- Diagnostics default रूप से enabled हैं। Gateway operational facts record करता है जब तक `diagnostics.enabled: false` set न हो। Memory events RSS/heap byte counts, threshold pressure, और growth pressure record करते हैं। Critical memory pressure gateway logger के जरिए log होता है। जब `diagnostics.memoryPressureSnapshot: true` set हो, critical memory pressure V8 heap stats, उपलब्ध होने पर Linux cgroup counters, active resource counts, और redacted relative path द्वारा सबसे बड़ी session/transcript files के साथ pre-OOM stability bundle भी लिखता है। Liveness warnings event-loop delay, event-loop utilization, CPU-core ratio, और active/waiting/queued session counts record करती हैं जब process चल रहा हो लेकिन saturated हो। Oversized-payload events record करते हैं कि क्या reject, truncate, या chunk किया गया, साथ ही उपलब्ध होने पर sizes और limits भी। वे message text, attachment contents, webhook body, raw request या response body, tokens, cookies, या secret values record नहीं करते। वही Heartbeat bounded stability recorder शुरू करता है, जो `openclaw gateway stability` या `diagnostics.stability` Gateway RPC के जरिए उपलब्ध है। Fatal Gateway exits, shutdown timeouts, और restart startup failures latest recorder snapshot को `~/.openclaw/logs/stability/` के अंतर्गत persist करते हैं जब events मौजूद हों; critical memory pressure भी ऐसा केवल तब करता है जब `diagnostics.memoryPressureSnapshot: true` set हो। नए saved bundle को `openclaw gateway stability --bundle latest` से inspect करें।
-- Bug reports के लिए, `openclaw gateway diagnostics export` चलाएं और generated zip attach करें। Export एक Markdown summary, newest stability bundle, sanitized log metadata, sanitized Gateway status/health snapshots, और config shape को combine करता है। इसे share करने के लिए बनाया गया है: chat text, webhook bodies, tool outputs, credentials, cookies, account/message identifiers, और secret values omit या redact किए जाते हैं। [Diagnostics Export](/hi/gateway/diagnostics) देखें।
+- डिस्क पर क्रेडेंशियल: `ls -l ~/.openclaw/credentials/whatsapp/<accountId>/creds.json` (mtime हाल का होना चाहिए)।
+- सत्र भंडार: `ls -l ~/.openclaw/agents/<agentId>/agent/openclaw-agent.sqlite`। संख्या और हाल के प्राप्तकर्ता `status` के माध्यम से दिखाए जाते हैं।
+- दोबारा लिंक करने की प्रक्रिया: जब लॉग में स्थिति कोड 409-515 या `loggedOut` दिखाई दें, तब `openclaw channels logout && openclaw channels login --verbose`। पेयरिंग के बाद स्थिति 515 आने पर QR लॉगिन प्रक्रिया अपने-आप एक बार फिर शुरू होती है।
+- निदान डिफ़ॉल्ट रूप से सक्षम होते हैं (`diagnostics.enabled: false` उन्हें अक्षम करता है)। मेमोरी इवेंट RSS/हीप बाइट संख्या और सीमा/वृद्धि दबाव दर्ज करते हैं; गंभीर मेमोरी दबाव Gateway लॉगर के माध्यम से लॉग होता है और `diagnostics.memoryPressureSnapshot: true` सेट होने पर प्री-OOM स्थिरता बंडल भी लिखता है (V8 हीप आँकड़े, उपलब्ध होने पर Linux cgroup काउंटर, सक्रिय संसाधनों की संख्या, और संपादित सापेक्ष पथ के अनुसार सबसे बड़ी सत्र/ट्रांसक्रिप्ट फ़ाइलें)। प्रक्रिया के चलने लेकिन संतृप्त होने पर सक्रियता चेतावनियाँ इवेंट-लूप विलंब/उपयोग, CPU-कोर अनुपात और सक्रिय/प्रतीक्षारत/कतारबद्ध सत्रों की संख्या दर्ज करती हैं। अत्यधिक बड़े पेलोड के इवेंट अस्वीकृत/काटे/खंडित किए गए तत्व के साथ आकार और सीमाएँ दर्ज करते हैं; संदेश का टेक्स्ट, अटैचमेंट की सामग्री, Webhook बॉडी, अपरिष्कृत अनुरोध/प्रतिक्रिया बॉडी, टोकन, कुकी या गुप्त मान कभी दर्ज नहीं होते।
+- वही Heartbeat सीमित स्थिरता रिकॉर्डर चलाता है: `openclaw gateway stability` (या `diagnostics.stability` Gateway RPC)। घातक Gateway निकास, शटडाउन टाइमआउट, पुनः आरंभ की स्टार्टअप विफलताएँ और (`diagnostics.memoryPressureSnapshot: true` होने पर) गंभीर मेमोरी दबाव नवीनतम स्नैपशॉट को `~/.openclaw/logs/stability/` के अंतर्गत स्थायी रखते हैं। नवीनतम बंडल का निरीक्षण `openclaw gateway stability --bundle latest` से करें।
+- बग रिपोर्ट के लिए `openclaw gateway diagnostics export` चलाएँ और जनरेट की गई zip संलग्न करें: एक Markdown सारांश, नवीनतम स्थिरता बंडल, स्वच्छ किए गए लॉग मेटाडेटा, स्वच्छ किए गए Gateway स्थिति/स्वास्थ्य स्नैपशॉट और कॉन्फ़िगरेशन संरचना। चैट टेक्स्ट, Webhook बॉडी, टूल आउटपुट, क्रेडेंशियल, कुकी, खाता/संदेश पहचानकर्ता और गुप्त मान हटा दिए जाते हैं या संपादित किए जाते हैं। [निदान निर्यात](/hi/gateway/diagnostics) देखें।
 
-## Health monitor config
+## स्वास्थ्य मॉनिटर कॉन्फ़िगरेशन
 
-- `gateway.channelHealthCheckMinutes`: gateway कितनी बार channel health check करता है। Default: `5`। Health-monitor restarts को globally disable करने के लिए `0` set करें।
-- `gateway.channelStaleEventThresholdMinutes`: health monitor द्वारा connected channel को stale मानकर restart करने से पहले वह कितनी देर idle रह सकता है। Default: `30`। इसे `gateway.channelHealthCheckMinutes` से greater than or equal रखें।
-- `gateway.channelMaxRestartsPerHour`: प्रति channel/account health-monitor restarts के लिए rolling one-hour cap। Default: `10`।
-- `channels.<provider>.healthMonitor.enabled`: global monitoring enabled रखते हुए किसी specific channel के लिए health-monitor restarts disable करें।
-- `channels.<provider>.accounts.<accountId>.healthMonitor.enabled`: multi-account override जो channel-level setting पर वरीयता पाता है।
-- ये per-channel overrides उन built-in channel monitors पर लागू होते हैं जो आज इन्हें expose करते हैं: Discord, Google Chat, iMessage, Microsoft Teams, Signal, Slack, Telegram, और WhatsApp।
+- `gateway.channelHealthCheckMinutes`: Gateway कितनी बार चैनल स्वास्थ्य की जाँच करता है। डिफ़ॉल्ट: `5`। स्वास्थ्य-मॉनिटर के पुनः आरंभ को वैश्विक रूप से अक्षम करने के लिए `0` सेट करें।
+- `gateway.channelStaleEventThresholdMinutes`: स्वास्थ्य मॉनिटर द्वारा किसी कनेक्टेड चैनल को पुराना मानकर पुनः आरंभ करने से पहले वह कितनी देर निष्क्रिय रह सकता है। डिफ़ॉल्ट: `30`। इसे `gateway.channelHealthCheckMinutes` से अधिक या उसके बराबर रखें।
+- `gateway.channelMaxRestartsPerHour`: प्रत्येक चैनल/खाते के लिए स्वास्थ्य-मॉनिटर पुनः आरंभ की क्रमिक एक-घंटे की सीमा। डिफ़ॉल्ट: `10`।
+- `channels.<provider>.healthMonitor.enabled`: वैश्विक निगरानी सक्षम रखते हुए किसी विशिष्ट चैनल के लिए स्वास्थ्य-मॉनिटर पुनः आरंभ अक्षम करता है।
+- `channels.<provider>.accounts.<accountId>.healthMonitor.enabled`: बहु-खाता ओवरराइड, जिसे चैनल-स्तरीय सेटिंग पर प्राथमिकता मिलती है।
+- प्रत्येक चैनल के ये ओवरराइड उन अंतर्निर्मित चैनलों पर लागू होते हैं जो वर्तमान में इन्हें उपलब्ध कराते हैं: Discord, Google Chat, iMessage, IRC, Microsoft Teams, Signal, Slack, Telegram और WhatsApp।
 
-## Uptime monitoring
+## अपटाइम निगरानी
 
-External uptime monitoring services को dedicated `/health` endpoint का उपयोग करना चाहिए, `/v1/chat/completions` का नहीं।
+बाहरी अपटाइम निगरानी सेवाओं को `/v1/chat/completions` नहीं, बल्कि समर्पित `/health` एंडपॉइंट का उपयोग करना चाहिए।
 
-- **उपयोग करें:** `GET /health` — तुरंत response, कोई session create नहीं, कोई LLM call नहीं, `{"ok":true,"status":"live"}` return करता है
-- **उपयोग न करें:** health checks के लिए `/v1/chat/completions` — हर request skill snapshot, context assembly, और LLM calls के साथ full agent session create करती है
+- **इसका उपयोग करें:** `GET /health` - तत्काल प्रतिक्रिया, कोई सत्र नहीं बनता, कोई LLM कॉल नहीं, `{"ok":true,"status":"live"}` लौटाता है
+- **इसका उपयोग न करें:** स्वास्थ्य जाँच के लिए `/v1/chat/completions` - प्रत्येक अनुरोध Skills स्नैपशॉट, संदर्भ संयोजन और LLM कॉल वाला एक पूर्ण एजेंट सत्र बनाता है
 
-जब कोई `x-openclaw-session-key` header या `user` field provide नहीं किया जाता, `/v1/chat/completions` हर request के लिए नया random session generate करता है। हर 15 मिनट ping करने वाली monitoring services ~96 sessions/day create करती हैं, जिनमें से हर एक 4–22KB consume करता है। समय के साथ इससे session store bloat होता है और context window overflow हो सकता है।
+जब कोई `x-openclaw-session-key` हेडर या `user` फ़ील्ड प्रदान नहीं किया जाता, तो `/v1/chat/completions` प्रत्येक अनुरोध के लिए एक नया यादृच्छिक सत्र जनरेट करता है। हर 15 मिनट में पिंग करने वाली निगरानी सेवाएँ प्रतिदिन लगभग 96 सत्र बनाती हैं, जिनमें से प्रत्येक 4-22KB उपयोग करता है। समय के साथ इससे सत्र भंडार अत्यधिक बढ़ता है और संदर्भ विंडो ओवरफ़्लो हो सकती है।
 
-### Monitoring service setup examples
+### निगरानी सेवा सेटअप के उदाहरण
 
-- **BetterStack:** Health check URL को `https://<your-gateway-host>:<port>/health` पर set करें
-- **UptimeRobot:** URL `https://<your-gateway-host>:<port>/health` के साथ नया HTTP monitor add करें
-- **Generic:** Gateway स्वस्थ होने पर `/health` पर कोई भी HTTP GET `{"ok":true}` के साथ 200 return करता है
+- **BetterStack:** स्वास्थ्य जाँच URL को `https://<your-gateway-host>:<port>/health` पर सेट करें
+- **UptimeRobot:** URL `https://<your-gateway-host>:<port>/health` वाला नया HTTP मॉनिटर जोड़ें
+- **सामान्य:** Gateway के स्वस्थ होने पर `/health` को किया गया कोई भी HTTP GET, `{"ok":true}` के साथ 200 लौटाता है
 
-## जब कुछ fail हो
+## कुछ विफल होने पर
 
-- `logged out` या status 409–515 → `openclaw channels logout` फिर `openclaw channels login` से relink करें।
-- Gateway unreachable → इसे start करें: `openclaw gateway --port 18789` (port busy हो तो `--force` use करें)।
-- कोई inbound messages नहीं → confirm करें कि linked phone online है और sender allowed है (`channels.whatsapp.allowFrom`); group chats के लिए, सुनिश्चित करें कि allowlist + mention rules match करते हैं (`channels.whatsapp.groups`, `agents.list[].groupChat.mentionPatterns`)।
+- `logged out` या स्थिति 409-515 -> पहले `openclaw channels logout`, फिर `openclaw channels login` से दोबारा लिंक करें।
+- Gateway तक नहीं पहुँचा जा सकता -> इसे शुरू करें: `openclaw gateway --port 18789` (पोर्ट व्यस्त होने पर `--force` का उपयोग करें)।
+- कोई इनबाउंड संदेश नहीं -> पुष्टि करें कि लिंक किया गया फ़ोन ऑनलाइन है और प्रेषक को अनुमति है (`channels.whatsapp.allowFrom`); समूह चैट के लिए सुनिश्चित करें कि अनुमति-सूची + उल्लेख नियम मेल खाते हैं (`channels.whatsapp.groups`, `agents.list[].groupChat.mentionPatterns`)।
 
-## Dedicated "health" command
+## समर्पित "health" कमांड
 
-`openclaw health` चल रहे gateway से उसका health snapshot मांगता है (CLI से कोई direct channel
-sockets नहीं)। Default रूप से यह fresh cached gateway snapshot return कर सकता है; फिर
-gateway background में उस cache को refresh करता है। `openclaw health --verbose` इसके बजाय
-live probe बाध्य करता है। Command उपलब्ध होने पर linked creds/auth age,
-per-channel probe summaries, session-store summary, और probe duration report करता है। Gateway unreachable होने या probe fail/timeout होने पर यह
-non-zero exit करता है।
+`openclaw health` चल रहे Gateway से उसका स्वास्थ्य स्नैपशॉट माँगता है (CLI से कोई प्रत्यक्ष चैनल
+सॉकेट नहीं)। डिफ़ॉल्ट रूप से यह हाल का कैश किया हुआ Gateway स्नैपशॉट लौटाता है और
+Gateway उस कैश को पृष्ठभूमि में रीफ़्रेश करता है; इसके बजाय `--verbose` लाइव जाँच को बाध्य करता है।
+उपलब्ध होने पर कमांड लिंक किए गए क्रेडेंशियल/प्रमाणीकरण की आयु, प्रत्येक चैनल की जाँच का सारांश,
+सत्र-भंडार सारांश और जाँच की अवधि रिपोर्ट करता है। Gateway तक नहीं पहुँचा जा सकने या
+जाँच विफल होने/समय समाप्त होने पर यह गैर-शून्य कोड के साथ बाहर निकलता है।
 
-Options:
+विकल्प:
 
-- `--json`: machine-readable JSON output
-- `--timeout <ms>`: default 10s probe timeout override करें
-- `--verbose`: live probe बाध्य करें और gateway connection details print करें
-- `--debug`: `--verbose` का alias
+- `--json`: मशीन-पठनीय JSON आउटपुट
+- `--timeout <ms>`: डिफ़ॉल्ट 10s जाँच टाइमआउट को ओवरराइड करता है
+- `--verbose`: लाइव जाँच को बाध्य करता है और Gateway कनेक्शन का विवरण प्रिंट करता है
+- `--debug`: `--verbose` का उपनाम
 
-Health snapshot में शामिल हैं: `ok` (boolean), `ts` (timestamp), `durationMs` (probe time), per-channel status, agent availability, और session-store summary।
+स्वास्थ्य स्नैपशॉट में शामिल हैं: `ok` (बूलियन), `ts` (टाइमस्टैम्प), `durationMs` (जाँच समय), प्रत्येक चैनल की स्थिति, एजेंट की उपलब्धता और सत्र-भंडार सारांश।
 
 ## संबंधित
 
-- [Gateway runbook](/hi/gateway)
-- [Diagnostics export](/hi/gateway/diagnostics)
-- [Gateway troubleshooting](/hi/gateway/troubleshooting)
+- [Gateway रनबुक](/hi/gateway)
+- [निदान निर्यात](/hi/gateway/diagnostics)
+- [Gateway समस्या निवारण](/hi/gateway/troubleshooting)

@@ -1,160 +1,183 @@
 ---
 read_when:
     - Bonjour खोज/विज्ञापन को लागू करना या बदलना
-    - रिमोट कनेक्शन मोड समायोजित करना (डायरेक्ट बनाम SSH)
-    - दूरस्थ नोड्स के लिए नोड खोज + पेयरिंग डिज़ाइन करना
+    - दूरस्थ कनेक्शन मोड समायोजित करना (प्रत्यक्ष बनाम SSH)
+    - रिमोट Node के लिए Node खोज + पेयरिंग की रूपरेखा बनाना
 summary: Gateway खोजने के लिए Node खोज और ट्रांसपोर्ट (Bonjour, Tailscale, SSH)
 title: खोज और ट्रांसपोर्ट्स
 x-i18n:
-    generated_at: "2026-06-28T23:08:01Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T14:50:33Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 7f53e1292d9e5b402186c48c777e7e665c790981a64679c783ae8d8a1f170ee1
+    source_hash: 3a3f1a6a1212ab0bc7021e77c88de059edcb8e09eff90d3e1e59451b9b20876b
     source_path: gateway/discovery.md
     workflow: 16
 ---
 
-OpenClaw में दो अलग समस्याएं हैं जो सतह पर समान दिखती हैं:
+OpenClaw में खोज से जुड़ी दो परस्पर संबंधित, लेकिन अलग समस्याएँ हैं:
 
-1. **ऑपरेटर रिमोट कंट्रोल**: macOS मेनू बार ऐप कहीं और चल रहे Gateway को नियंत्रित करता है।
-2. **Node पेयरिंग**: iOS/Android (और भविष्य के Node) Gateway खोजते हैं और सुरक्षित रूप से पेयर होते हैं।
+1. **ऑपरेटर रिमोट कंट्रोल**: macOS मेनू बार ऐप द्वारा किसी अन्य स्थान पर चल रहे Gateway को नियंत्रित करना।
+2. **Node पेयरिंग**: iOS/Android (और भविष्य के Node) द्वारा Gateway खोजना और सुरक्षित रूप से पेयर करना।
 
-डिजाइन लक्ष्य सभी नेटवर्क खोज/विज्ञापन को **Node Gateway** (`openclaw gateway`) में रखना और क्लाइंट (mac ऐप, iOS) को उपभोक्ता बनाए रखना है।
+सभी नेटवर्क खोज/विज्ञापन **Node Gateway** में होते हैं
+(`openclaw gateway`); क्लाइंट (Mac ऐप, iOS) केवल उपभोक्ता हैं।
 
-## शब्द
+## शब्दावली
 
-- **Gateway**: एक अकेली लंबे समय तक चलने वाली Gateway प्रक्रिया जो स्टेट (सेशन, पेयरिंग, Node रजिस्ट्री) की मालिक होती है और चैनल चलाती है। अधिकांश सेटअप प्रति होस्ट एक का उपयोग करते हैं; पृथक मल्टी-Gateway सेटअप संभव हैं।
-- **Gateway WS (कंट्रोल प्लेन)**: डिफॉल्ट रूप से `127.0.0.1:18789` पर WebSocket endpoint; इसे `gateway.bind` के जरिए LAN/tailnet से बांधा जा सकता है।
-- **प्रत्यक्ष WS ट्रांसपोर्ट**: LAN/tailnet-सामने वाला Gateway WS endpoint (SSH नहीं)।
-- **SSH ट्रांसपोर्ट (fallback)**: SSH पर `127.0.0.1:18789` forward करके रिमोट कंट्रोल।
-- **लीगेसी TCP ब्रिज (हटाया गया)**: पुराना Node ट्रांसपोर्ट (देखें
+- **Gateway**: लंबे समय तक चलने वाली एकल प्रक्रिया, जो स्थिति (सेशन,
+  पेयरिंग, Node रजिस्ट्री) की स्वामी होती है और चैनल चलाती है। अधिकांश सेटअप प्रत्येक होस्ट पर एक का उपयोग करते हैं;
+  अलग-अलग रखे गए मल्टी-Gateway सेटअप भी संभव हैं।
+- **Gateway WS (कंट्रोल प्लेन)**: डिफ़ॉल्ट रूप से `127.0.0.1:18789` पर WebSocket एंडपॉइंट;
+  इसे `gateway.bind` के माध्यम से LAN/tailnet से बाइंड करें।
+- **डायरेक्ट WS ट्रांसपोर्ट**: LAN/tailnet की ओर खुला Gateway WS एंडपॉइंट (SSH के बिना)।
+- **SSH ट्रांसपोर्ट (फ़ॉलबैक)**: SSH के माध्यम से
+  `127.0.0.1:18789` को फ़ॉरवर्ड करके रिमोट कंट्रोल।
+- **लेगेसी TCP ब्रिज (हटाया गया)**: पुराना Node ट्रांसपोर्ट (देखें
   [ब्रिज प्रोटोकॉल](/hi/gateway/bridge-protocol)); अब खोज के लिए विज्ञापित नहीं किया जाता
-  और अब वर्तमान builds का हिस्सा नहीं है।
+  और वर्तमान बिल्ड का हिस्सा भी नहीं है।
 
-प्रोटोकॉल विवरण:
+प्रोटोकॉल का विवरण: [Gateway प्रोटोकॉल](/hi/gateway/protocol),
+[ब्रिज प्रोटोकॉल (लेगेसी)](/hi/gateway/bridge-protocol)।
 
-- [Gateway प्रोटोकॉल](/hi/gateway/protocol)
-- [ब्रिज प्रोटोकॉल (लीगेसी)](/hi/gateway/bridge-protocol)
+## डायरेक्ट और SSH दोनों क्यों मौजूद हैं
 
-## हम प्रत्यक्ष और SSH दोनों क्यों रखते हैं
+- **डायरेक्ट WS** समान नेटवर्क और tailnet के भीतर सर्वोत्तम उपयोगकर्ता अनुभव देता है: Bonjour के माध्यम से LAN
+  पर स्वतः खोज, Gateway के स्वामित्व वाले पेयरिंग टोकन और ACL,
+  तथा शेल एक्सेस की कोई आवश्यकता नहीं।
+- **SSH** सार्वभौमिक फ़ॉलबैक है: जहाँ भी SSH एक्सेस उपलब्ध हो वहाँ काम करता है, यहाँ तक कि
+  असंबंधित नेटवर्कों के बीच भी, मल्टीकास्ट/mDNS समस्याओं के बावजूद काम करता है, और SSH के अतिरिक्त किसी नए
+  इनबाउंड पोर्ट की आवश्यकता नहीं होती।
 
-- **प्रत्यक्ष WS** उसी नेटवर्क और tailnet के भीतर सबसे अच्छा UX है:
-  - Bonjour के जरिए LAN पर स्वतः-खोज
-  - पेयरिंग टोकन + ACLs Gateway के स्वामित्व में
-  - shell access आवश्यक नहीं; प्रोटोकॉल सतह सख्त और ऑडिट योग्य रह सकती है
-- **SSH** सार्वभौमिक fallback बना रहता है:
-  - जहां भी आपके पास SSH access है वहां काम करता है (असंबंधित नेटवर्कों के पार भी)
-  - multicast/mDNS समस्याओं में भी काम करता है
-  - SSH के अलावा कोई नया inbound port आवश्यक नहीं
+## खोज इनपुट
 
-## खोज इनपुट (क्लाइंट कैसे सीखते हैं कि Gateway कहां है)
+### 1) Bonjour / DNS-SD
 
-### 1) Bonjour / DNS-SD खोज
+मल्टीकास्ट Bonjour सर्वोत्तम-प्रयास पर आधारित है और नेटवर्कों के पार नहीं जाता। OpenClaw
+कॉन्फ़िगर किए गए वाइड-एरिया DNS-SD डोमेन के माध्यम से भी उसी Gateway बीकन को ब्राउज़
+करने का समर्थन करता है, इसलिए खोज समान LAN पर `local.` और क्रॉस-नेटवर्क खोज के लिए कॉन्फ़िगर किए गए
+यूनिकास्ट DNS-SD डोमेन, दोनों को कवर कर सकती है।
 
-Multicast Bonjour best-effort है और नेटवर्कों के पार नहीं जाता। OpenClaw एक configured wide-area DNS-SD domain के जरिए भी उसी Gateway beacon को browse कर सकता है, इसलिए खोज कवर कर सकती है:
+बंडल किया गया
+`bonjour` Plugin सक्षम होने पर **Gateway** Bonjour के माध्यम से अपने WS एंडपॉइंट का विज्ञापन करता है; क्लाइंट ब्राउज़ करके "Gateway चुनें" सूची दिखाते हैं,
+फिर चुने गए एंडपॉइंट को संग्रहीत करते हैं।
 
-- उसी LAN पर `local.`
-- cross-network खोज के लिए एक configured unicast DNS-SD domain
+समस्या निवारण और बीकन का विवरण: [Bonjour](/hi/gateway/bonjour)।
 
-लक्ष्य दिशा:
+#### सर्विस बीकन का विवरण
 
-- जब bundled
-  `bonjour` plugin enabled हो, तो **Gateway** अपना WS endpoint Bonjour के जरिए advertise करता है। Plugin macOS hosts पर auto-start होता है और
-  बाकी जगह opt-in है।
-- क्लाइंट browse करते हैं और "Gateway चुनें" सूची दिखाते हैं, फिर चुना हुआ endpoint store करते हैं।
+- सर्विस प्रकार: `_openclaw-gw._tcp` (Gateway ट्रांसपोर्ट बीकन)।
+- TXT कुंजियाँ (गैर-गोपनीय):
 
-Troubleshooting और beacon विवरण: [Bonjour](/hi/gateway/bonjour).
+  | कुंजी                       | टिप्पणियाँ                                                                                                                                                        |
+  | --------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+  | `role=gateway`              | हमेशा मौजूद।                                                                                                                                                     |
+  | `transport=gateway`         | हमेशा मौजूद।                                                                                                                                                     |
+  | `displayName=<name>`        | ऑपरेटर द्वारा कॉन्फ़िगर किया गया प्रदर्शन नाम।                                                                                                                   |
+  | `lanHost=<hostname>.local`  | केवल LAN mDNS विज्ञापनकर्ता; वाइड-एरिया DNS-SD द्वारा नहीं लिखा जाता।                                                                                            |
+  | `gatewayPort=18789`         | Gateway WS + HTTP पोर्ट।                                                                                                                                          |
+  | `gatewayTls=1`              | केवल TLS सक्षम होने पर।                                                                                                                                           |
+  | `gatewayTlsSha256=<sha256>` | केवल TLS सक्षम होने और फ़िंगरप्रिंट उपलब्ध होने पर।                                                                                                               |
+  | `tailnetDns=<magicdns>`     | वैकल्पिक संकेत; Tailscale उपलब्ध होने पर स्वतः पता लगाया जाता है।                                                                                                |
+  | `sshPort=<port>`            | केवल `discovery.mdns.mode="full"` होने पर मौजूद; डिफ़ॉल्ट `"minimal"` मोड में छोड़ा जाता है (SSH का डिफ़ॉल्ट `22` है), LAN विज्ञापनकर्ता और वाइड-एरिया DNS-SD दोनों पर। |
+  | `cliPath=<path>`            | `sshPort` के समान `discovery.mdns.mode="full"` गेट; CLI पथ के लिए रिमोट इंस्टॉलेशन संकेत।                                                                         |
 
-#### Service beacon विवरण
+  भविष्य के कैनवस होस्ट पोर्ट के लिए Plugin खोज अनुबंध में `canvasPort` TXT कुंजी परिभाषित है,
+  लेकिन कोई वर्तमान कोड पथ इसका मान सेट नहीं करता, इसलिए आज इसे
+  कभी उत्सर्जित नहीं किया जाता।
 
-- Service types:
-  - `_openclaw-gw._tcp` (Gateway ट्रांसपोर्ट beacon)
-- TXT keys (non-secret):
-  - `role=gateway`
-  - `transport=gateway`
-  - `displayName=<friendly name>` (ऑपरेटर-configured display name)
-  - `lanHost=<hostname>.local`
-  - `gatewayPort=18789` (Gateway WS + HTTP)
-  - `gatewayTls=1` (केवल जब TLS enabled हो)
-  - `gatewayTlsSha256=<sha256>` (केवल जब TLS enabled हो और fingerprint उपलब्ध हो)
-  - `canvasPort=<port>` (canvas host port; वर्तमान में canvas host enabled होने पर `gatewayPort` के समान)
-  - `tailnetDns=<magicdns>` (वैकल्पिक hint; Tailscale उपलब्ध होने पर auto-detected)
-  - `sshPort=<port>` (केवल mDNS full mode; wide-area DNS-SD इसे छोड़ सकता है, ऐसी स्थिति में SSH defaults `22` पर रहते हैं)
-  - `cliPath=<path>` (केवल mDNS full mode; wide-area DNS-SD फिर भी इसे remote-install hint के रूप में लिखता है)
+सुरक्षा संबंधी टिप्पणियाँ:
 
-सुरक्षा नोट्स:
+- Bonjour/mDNS TXT रिकॉर्ड **अप्रमाणित** होते हैं। क्लाइंट को TXT
+  मानों को केवल उपयोगकर्ता-अनुभव संकेत मानना चाहिए।
+- रूटिंग (होस्ट/पोर्ट) में TXT से दिए गए `lanHost`, `tailnetDns`, या `gatewayPort` के बजाय
+  **रिज़ॉल्व किए गए सर्विस एंडपॉइंट** (SRV + A/AAAA) को प्राथमिकता दी जानी चाहिए।
+- TLS पिनिंग में विज्ञापित `gatewayTlsSha256` को पहले से संग्रहीत पिन को ओवरराइड करने की अनुमति कभी नहीं दी जानी चाहिए।
+- जब भी चुना गया रूट सुरक्षित/TLS-आधारित हो, iOS/Android Node को पहली बार पिन संग्रहीत करने से पहले
+  स्पष्ट "इस फ़िंगरप्रिंट पर भरोसा करें" पुष्टि (आउट-ऑफ़-बैंड सत्यापन)
+  की आवश्यकता होनी चाहिए।
 
-- Bonjour/mDNS TXT records **unauthenticated** होते हैं। क्लाइंट को TXT values को केवल UX hints मानना चाहिए।
-- Routing (host/port) को TXT द्वारा दिए गए `lanHost`, `tailnetDns`, या `gatewayPort` के बजाय **resolved service endpoint** (SRV + A/AAAA) को प्राथमिकता देनी चाहिए।
-- TLS pinning को कभी भी advertised `gatewayTlsSha256` को पहले से stored pin override करने की अनुमति नहीं देनी चाहिए।
-- iOS/Android Node को first-time pin store करने से पहले explicit "इस fingerprint पर trust करें" confirmation (out-of-band verification) मांगनी चाहिए, जब भी चुना गया route secure/TLS-based हो।
+सक्षम करना, अक्षम करना और ओवरराइड करना:
 
-Enable/disable/override:
+- `openclaw plugins enable bonjour` LAN मल्टीकास्ट विज्ञापन सक्षम करता है।
+- `openclaw.json` में `discovery.mdns.mode` mDNS प्रसारण को नियंत्रित करता है:
+  `"minimal"` (डिफ़ॉल्ट), `"full"` (LAN
+  बीकन और किसी भी वाइड-एरिया DNS-SD ज़ोन, दोनों में `cliPath`/`sshPort` जोड़ता है), या `"off"` (mDNS अक्षम करता है)।
+- `OPENCLAW_DISABLE_BONJOUR=1` विज्ञापन को बलपूर्वक अक्षम करता है; `discovery.mdns.mode="off"`
+  इसे स्वतंत्र रूप से अक्षम करता है। `OPENCLAW_DISABLE_BONJOUR=0` एक स्पष्ट
+  ऑप्ट-इन है, जो पहचाने गए कंटेनर
+  (Docker, containerd, Kubernetes, LXC) के भीतर Plugin के स्वतः-अक्षमीकरण को ओवरराइड करता है; यह
+  `discovery.mdns.mode="off"` को ओवरराइड नहीं करता। बंडल किया गया `bonjour` Plugin
+  macOS होस्ट (`enabledByDefaultOnPlatforms: ["darwin"]`) पर स्वतः प्रारंभ होता है और पहचाने गए कंटेनरों के
+  भीतर स्वतः अक्षम हो जाता है; Linux, Windows और अन्य कंटेनरयुक्त
+  डिप्लॉयमेंट के लिए स्पष्ट `plugins enable bonjour` आवश्यक है।
+- `~/.openclaw/openclaw.json` में `gateway.bind` Gateway बाइंड मोड को नियंत्रित करता है।
+- `OPENCLAW_SSH_PORT` विज्ञापित SSH पोर्ट को ओवरराइड करता है (केवल
+  `discovery.mdns.mode="full"` होने पर प्रभावी होता है)।
+- `OPENCLAW_TAILNET_DNS` एक `tailnetDns` संकेत (MagicDNS) प्रकाशित करता है।
+- `OPENCLAW_CLI_PATH` विज्ञापित CLI पथ को ओवरराइड करता है।
 
-- `openclaw plugins enable bonjour` LAN multicast advertising enabled करता है।
-- `OPENCLAW_DISABLE_BONJOUR=1` advertising disabled करता है।
-- जब Bonjour plugin enabled हो और `OPENCLAW_DISABLE_BONJOUR` unset हो,
-  Bonjour सामान्य hosts पर advertise करता है और detected containers के अंदर auto-disable हो जाता है।
-  Empty-config macOS Gateway startup plugin को automatically enable करता है; Linux,
-  Windows, और containerized deployments को explicit enablement चाहिए।
-  `0` केवल host, macvlan, या किसी अन्य mDNS-capable network पर उपयोग करें; force-disable करने के लिए `1` उपयोग करें।
-- `~/.openclaw/openclaw.json` में `gateway.bind` Gateway bind mode नियंत्रित करता है।
-- `OPENCLAW_SSH_PORT`, `sshPort` emit होने पर advertised SSH port override करता है।
-- `OPENCLAW_TAILNET_DNS` एक `tailnetDns` hint (MagicDNS) publish करता है।
-- `OPENCLAW_CLI_PATH` advertised CLI path override करता है।
+### 2) Tailnet (क्रॉस-नेटवर्क)
 
-### 2) Tailnet (cross-network)
+अलग-अलग भौतिक नेटवर्क पर मौजूद Gateway के लिए Bonjour सहायक नहीं होगा।
+अनुशंसित डायरेक्ट लक्ष्य Tailscale MagicDNS नाम (प्राथमिकता प्राप्त) या
+स्थिर tailnet IP है।
 
-London/Vienna शैली के setup के लिए, Bonjour मदद नहीं करेगा। अनुशंसित "direct" target है:
+यदि Gateway को पता चलता है कि वह Tailscale के अंतर्गत चल रहा है, तो वह क्लाइंट के लिए वैकल्पिक संकेत के रूप में
+`tailnetDns` प्रकाशित करता है (वाइड-एरिया बीकन सहित)।
+macOS ऐप Gateway खोज के लिए कच्चे Tailscale IP के बजाय MagicDNS नामों को प्राथमिकता देता है,
+जो tailnet IP बदलने पर भी विश्वसनीय रहता है (Node पुनः प्रारंभ,
+CGNAT पुनः आवंटन), क्योंकि MagicDNS स्वतः वर्तमान IP पर रिज़ॉल्व होता है।
 
-- Tailscale MagicDNS नाम (preferred) या stable tailnet IP।
+मोबाइल Node पेयरिंग के लिए, खोज संकेत tailnet/सार्वजनिक रूट पर
+ट्रांसपोर्ट सुरक्षा को कभी शिथिल नहीं करते:
 
-यदि Gateway detect कर सकता है कि वह Tailscale के अंतर्गत चल रहा है, तो वह क्लाइंट के लिए वैकल्पिक hint के रूप में `tailnetDns` publish करता है (wide-area beacons सहित)।
+- iOS/Android के लिए अब भी पहली बार का सुरक्षित tailnet/सार्वजनिक कनेक्ट पथ
+  (`wss://` या Tailscale Serve/Funnel) आवश्यक है।
+- खोजा गया कच्चा tailnet IP एक रूटिंग संकेत है, प्लेनटेक्स्ट रिमोट
+  `ws://` उपयोग करने की अनुमति नहीं।
+- निजी LAN डायरेक्ट-कनेक्ट `ws://` समर्थित रहता है।
+- मोबाइल Node पर सबसे सरल Tailscale पथ के लिए Tailscale Serve का उपयोग करें, ताकि
+  खोज और सेटअप दोनों समान सुरक्षित MagicDNS एंडपॉइंट पर रिज़ॉल्व हों।
 
-macOS ऐप अब Gateway खोज के लिए raw Tailscale IPs के बजाय MagicDNS names को प्राथमिकता देता है। इससे tailnet IPs बदलने पर reliability बेहतर होती है (उदाहरण के लिए Node restart या CGNAT reassignment के बाद), क्योंकि MagicDNS names automatically current IP पर resolve होते हैं।
+### 3) मैन्युअल / SSH लक्ष्य
 
-mobile Node pairing के लिए, discovery hints tailnet/public routes पर transport security को relax नहीं करते:
-
-- iOS/Android को अब भी secure first-time tailnet/public connect path (`wss://` या Tailscale Serve/Funnel) चाहिए।
-- discovered raw tailnet IP routing hint है, plaintext remote `ws://` उपयोग करने की अनुमति नहीं।
-- Private LAN direct-connect `ws://` supported रहता है।
-- यदि आप mobile nodes के लिए सबसे सरल Tailscale path चाहते हैं, तो Tailscale Serve उपयोग करें ताकि discovery और setup code दोनों उसी secure MagicDNS endpoint पर resolve हों।
-
-### 3) Manual / SSH target
-
-जब कोई direct route नहीं होता (या direct disabled होता है), तो क्लाइंट loopback Gateway port forward करके हमेशा SSH के जरिए connect कर सकते हैं।
-
-देखें [Remote access](/hi/gateway/remote).
+जब कोई डायरेक्ट रूट उपलब्ध न हो (या डायरेक्ट अक्षम हो), तब क्लाइंट लूपबैक Gateway पोर्ट को फ़ॉरवर्ड करके
+हमेशा SSH के माध्यम से कनेक्ट कर सकते हैं। देखें
+[रिमोट एक्सेस](/hi/gateway/remote)।
 
 ## ट्रांसपोर्ट चयन (क्लाइंट नीति)
 
-अनुशंसित क्लाइंट व्यवहार:
+1. यदि पेयर किया गया डायरेक्ट एंडपॉइंट कॉन्फ़िगर और पहुँच योग्य है, तो उसका उपयोग करें।
+2. अन्यथा, यदि खोज को `local.` या कॉन्फ़िगर किए गए वाइड-एरिया
+   डोमेन पर Gateway मिलता है, तो एक टैप में "इस Gateway का उपयोग करें" विकल्प दें और उसे
+   डायरेक्ट एंडपॉइंट के रूप में सहेजें।
+3. अन्यथा, यदि tailnet DNS/IP कॉन्फ़िगर है, तो डायरेक्ट का प्रयास करें। tailnet/सार्वजनिक रूट पर मोबाइल Node के लिए
+   डायरेक्ट का अर्थ सुरक्षित एंडपॉइंट है, प्लेनटेक्स्ट
+   रिमोट `ws://` नहीं।
+4. अन्यथा, SSH पर फ़ॉलबैक करें।
 
-1. यदि paired direct endpoint configured और reachable है, तो उसका उपयोग करें।
-2. अन्यथा, यदि discovery को `local.` या configured wide-area domain पर Gateway मिलता है, तो one-tap "इस Gateway का उपयोग करें" विकल्प दें और इसे direct endpoint के रूप में save करें।
-3. अन्यथा, यदि tailnet DNS/IP configured है, तो direct try करें।
-   tailnet/public routes पर mobile nodes के लिए, direct का अर्थ secure endpoint है, plaintext remote `ws://` नहीं।
-4. अन्यथा, SSH पर fall back करें।
+## पेयरिंग और प्रमाणीकरण (डायरेक्ट ट्रांसपोर्ट)
 
-## Pairing + auth (direct transport)
+Node/क्लाइंट प्रवेश के लिए Gateway सत्य का स्रोत है:
 
-Gateway Node/client admission के लिए source of truth है।
+- पेयरिंग अनुरोध Gateway में बनाए/स्वीकृत/अस्वीकृत किए जाते हैं (देखें
+  [Gateway पेयरिंग](/hi/gateway/pairing))।
+- Gateway प्रमाणीकरण (टोकन/की-पेयर), स्कोप/ACL (यह प्रत्येक विधि के लिए कच्चा
+  प्रॉक्सी नहीं है), और दर सीमाएँ लागू करता है।
 
-- Pairing requests Gateway में create/approve/reject होती हैं (देखें [Gateway pairing](/hi/gateway/pairing)).
-- Gateway enforce करता है:
-  - auth (token / keypair)
-  - scopes/ACLs (Gateway हर method के लिए raw proxy नहीं है)
-  - rate limits
+## घटक के अनुसार उत्तरदायित्व
 
-## component के अनुसार जिम्मेदारियां
-
-- **Gateway**: discovery beacons advertise करता है, pairing decisions का मालिक होता है, और WS endpoint host करता है।
-- **macOS ऐप**: Gateway चुनने में मदद करता है, pairing prompts दिखाता है, और SSH का उपयोग केवल fallback के रूप में करता है।
-- **iOS/Android Node**: सुविधा के रूप में Bonjour browse करते हैं और paired Gateway WS से connect करते हैं।
+- **Gateway**: खोज बीकन का विज्ञापन करता है, पेयरिंग निर्णयों का स्वामी है और
+  WS एंडपॉइंट होस्ट करता है।
+- **macOS ऐप**: Gateway चुनने में आपकी सहायता करता है, पेयरिंग प्रॉम्प्ट दिखाता है और SSH का उपयोग
+  केवल फ़ॉलबैक के रूप में करता है।
+- **iOS/Android Node**: सुविधा के लिए Bonjour ब्राउज़ करते हैं और
+  पेयर किए गए Gateway WS से कनेक्ट होते हैं।
 
 ## संबंधित
 
-- [Remote access](/hi/gateway/remote)
+- [रिमोट एक्सेस](/hi/gateway/remote)
 - [Tailscale](/hi/gateway/tailscale)
-- [Bonjour discovery](/hi/gateway/bonjour)
+- [Bonjour खोज](/hi/gateway/bonjour)

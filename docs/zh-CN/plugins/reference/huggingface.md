@@ -4,11 +4,12 @@ read_when:
 summary: 为 OpenClaw 添加 Hugging Face 模型提供商支持。
 title: Hugging Face 插件
 x-i18n:
-    generated_at: "2026-07-11T20:48:15Z"
+    generated_at: "2026-07-16T11:50:22Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: d3f400aed24e630718ce5977e417ff47a8a985a0a385942e1ee6224d830b53e6
+    source_hash: 3c7b8b57d78fd817fda7f5d24dff103bb1453612667a483560213632a5b7ba85
     source_path: plugins/reference/huggingface.md
     workflow: 16
 ---
@@ -19,12 +20,12 @@ x-i18n:
 
 ## 分发
 
-- 软件包：`@openclaw/huggingface-provider`
-- 安装方式：已包含在 OpenClaw 中
+- 包：`@openclaw/huggingface-provider`
+- 安装方式：OpenClaw 已内置
 
 ## 接口
 
-提供商：huggingface
+提供商：`huggingface`
 
 ## 相关文档
 

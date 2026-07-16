@@ -4,11 +4,12 @@ read_when:
 summary: 채팅 워크플로를 위한 OpenClaw Tlon/Urbit 채널 Plugin입니다.
 title: Tlon Plugin
 x-i18n:
-    generated_at: "2026-07-12T01:07:44Z"
+    generated_at: "2026-07-16T12:56:39Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 6fd1dcc934734599c0b671f0a9659dc5cc6e4ff907e3e14f9ff3ba5ec86aa0cc
+    source_hash: 151b22aee5f52dbe17bc4e938fff981e8bd2e1117cea10386ac2307e5e4993b4
     source_path: plugins/reference/tlon.md
     workflow: 16
 ---
@@ -24,7 +25,7 @@ x-i18n:
 
 ## 제공 기능
 
-채널: tlon; Skills
+채널: `tlon`; Skills
 
 ## 관련 문서
 

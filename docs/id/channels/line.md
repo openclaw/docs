@@ -1,25 +1,26 @@
 ---
 read_when:
     - Anda ingin menghubungkan OpenClaw ke LINE
-    - Anda perlu menyiapkan Webhook LINE dan kredensial
+    - Anda perlu menyiapkan webhook LINE + kredensial
     - Anda menginginkan opsi pesan khusus LINE
 summary: Penyiapan, konfigurasi, dan penggunaan Plugin LINE Messaging API
 title: LINE
 x-i18n:
-    generated_at: "2026-07-12T13:59:20Z"
+    generated_at: "2026-07-16T17:49:53Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: ee5931c2bfca4a67a8b390f300907cd31a074988b10c6c0540444cff0bfde334
+    source_hash: 31004467bc227b3a4e18168d1aa8b7f60d59e58994aeb890ac257beb2dbe8449
     source_path: channels/line.md
     workflow: 16
 ---
 
-LINE terhubung ke OpenClaw melalui LINE Messaging API. Plugin ini berjalan sebagai penerima Webhook
-pada Gateway dan menggunakan token akses saluran + rahasia saluran Anda untuk
+LINE terhubung ke OpenClaw melalui LINE Messaging API. Plugin berjalan sebagai penerima webhook
+di Gateway dan menggunakan token akses saluran + rahasia saluran Anda untuk
 autentikasi.
 
-Status: Plugin resmi, diinstal secara terpisah. Pesan langsung, obrolan grup, media,
+Status: plugin resmi, diinstal secara terpisah. Pesan langsung, obrolan grup, media,
 lokasi, pesan Flex, pesan templat, dan balasan cepat didukung.
 Reaksi dan utas tidak didukung.
 
@@ -31,7 +32,7 @@ Instal LINE sebelum mengonfigurasi saluran:
 openclaw plugins install @openclaw/line
 ```
 
-Checkout lokal (saat menjalankan dari repositori git):
+Checkout lokal (saat menjalankan dari repo git):
 
 ```bash
 openclaw plugins install ./path/to/local/line-plugin
@@ -44,22 +45,22 @@ openclaw plugins install ./path/to/local/line-plugin
 2. Buat (atau pilih) Provider dan tambahkan saluran **Messaging API**.
 3. Salin **Channel access token** dan **Channel secret** dari pengaturan saluran.
 4. Aktifkan **Use webhook** di pengaturan Messaging API.
-5. Atur URL Webhook ke endpoint Gateway Anda (HTTPS wajib):
+5. Tetapkan URL webhook ke titik akhir gateway Anda (HTTPS wajib):
 
 ```text
 https://gateway-host/line/webhook
 ```
 
-Gateway menjawab verifikasi Webhook LINE (GET) dan langsung mengakui peristiwa
+Gateway menjawab verifikasi webhook LINE (GET) dan langsung mengakui peristiwa
 masuk yang ditandatangani (POST) setelah validasi tanda tangan dan payload; pemrosesan
 agen berlanjut secara asinkron.
-Jika memerlukan jalur khusus, atur `channels.line.webhookPath` atau
-`channels.line.accounts.<id>.webhookPath`, lalu perbarui URL sebagaimana mestinya.
+Jika memerlukan jalur khusus, tetapkan `channels.line.webhookPath` atau
+`channels.line.accounts.<id>.webhookPath` dan perbarui URL sebagaimana mestinya.
 
 Catatan keamanan:
 
 - Verifikasi tanda tangan LINE bergantung pada isi body (HMAC atas body mentah), sehingga OpenClaw menerapkan batas body praautentikasi yang ketat (64 KB) dan batas waktu pembacaan sebelum verifikasi.
-- OpenClaw memproses peristiwa Webhook dari byte permintaan mentah yang telah diverifikasi. Nilai `req.body` yang diubah oleh middleware hulu diabaikan demi menjaga integritas tanda tangan.
+- OpenClaw memproses peristiwa webhook dari byte permintaan mentah yang telah diverifikasi. Nilai `req.body` yang diubah oleh middleware upstream diabaikan demi menjaga integritas tanda tangan.
 
 ## Konfigurasi
 
@@ -94,12 +95,12 @@ Konfigurasi pesan langsung publik:
 }
 ```
 
-Variabel lingkungan (hanya akun default):
+Variabel lingkungan (khusus akun default):
 
 - `LINE_CHANNEL_ACCESS_TOKEN`
 - `LINE_CHANNEL_SECRET`
 
-Berkas token/rahasia:
+File token/rahasia:
 
 ```json5
 {
@@ -112,8 +113,8 @@ Berkas token/rahasia:
 }
 ```
 
-`tokenFile` dan `secretFile` harus menunjuk ke berkas biasa. Tautan simbolis ditolak.
-Nilai konfigurasi sebaris lebih diprioritaskan daripada berkas; variabel lingkungan menjadi pilihan terakhir untuk akun default.
+`tokenFile` dan `secretFile` harus mengarah ke file biasa. Symlink ditolak.
+Nilai konfigurasi inline lebih diutamakan daripada file; variabel lingkungan menjadi pilihan terakhir untuk akun default.
 
 Beberapa akun:
 
@@ -136,7 +137,7 @@ Beberapa akun:
 ## Kontrol akses
 
 Pesan langsung secara default menggunakan pemasangan. Pengirim yang tidak dikenal menerima kode pemasangan dan
-pesan mereka diabaikan sampai disetujui:
+pesan mereka diabaikan hingga disetujui:
 
 ```bash
 openclaw pairing list line
@@ -146,14 +147,15 @@ openclaw pairing approve line <CODE>
 Daftar izin dan kebijakan:
 
 - `channels.line.dmPolicy`: `pairing | allowlist | open | disabled` (default `pairing`)
-- `channels.line.allowFrom`: ID pengguna LINE yang masuk daftar izin untuk pesan langsung; `dmPolicy: "open"` memerlukan `["*"]`
+- `channels.line.allowFrom`: ID pengguna LINE yang diizinkan untuk pesan langsung; `dmPolicy: "open"` memerlukan `["*"]`
 - `channels.line.groupPolicy`: `allowlist | open | disabled` (default `allowlist`)
-- `channels.line.groupAllowFrom`: ID pengguna LINE yang masuk daftar izin untuk grup
-- Penggantian per grup: `channels.line.groups.<groupId>.allowFrom` (beserta `enabled`, `requireMention`, `systemPrompt`, `skills`)
-- Grup akses pengirim statis dapat dirujuk dari `allowFrom`, `groupAllowFrom`, dan `allowFrom` per grup menggunakan `accessGroup:<name>`; lihat [Grup akses](/id/channels/access-groups).
-- Catatan waktu proses: jika `channels.line` sama sekali tidak ada, waktu proses menggunakan `groupPolicy="allowlist"` sebagai nilai cadangan untuk pemeriksaan grup (meskipun `channels.defaults.groupPolicy` telah diatur).
+- `channels.line.groupAllowFrom`: ID pengguna LINE yang diizinkan untuk grup; entri pesan langsung `allowFrom` tidak mengizinkan pengirim grup
+- Penggantian per grup: `channels.line.groups.<groupId>.allowFrom` (ditambah `enabled`, `requireMention`, `systemPrompt`, `skills`). Dengan
+  `groupPolicy: "allowlist"`, tetapkan `groupAllowFrom` atau `allowFrom` per grup; daftar izin grup yang kosong memblokir pesan grup meskipun pesan langsung terbuka.
+- Grup akses pengirim statis dapat dirujuk dari `allowFrom`, `groupAllowFrom`, dan `allowFrom` per grup dengan `accessGroup:<name>`; lihat [Grup akses](/id/channels/access-groups).
+- Catatan runtime: jika `channels.line` sama sekali tidak ada, runtime kembali menggunakan `groupPolicy="allowlist"` untuk pemeriksaan grup (meskipun `channels.defaults.groupPolicy` ditetapkan).
 
-ID LINE peka huruf besar-kecil. ID yang valid berbentuk:
+ID LINE peka huruf besar-kecil. ID yang valid tampak seperti:
 
 - Pengguna: `U` + 32 karakter heksadesimal
 - Grup: `C` + 32 karakter heksadesimal
@@ -161,14 +163,14 @@ ID LINE peka huruf besar-kecil. ID yang valid berbentuk:
 
 ## Perilaku pesan
 
-- Teks dibagi menjadi potongan sepanjang 5.000 karakter.
+- Teks dipecah menjadi bagian-bagian berukuran 5000 karakter.
 - Pemformatan Markdown dihapus; blok kode dan tabel dikonversi menjadi kartu Flex
   jika memungkinkan.
-- Respons streaming ditampung; LINE menerima potongan lengkap dengan animasi
-  pemuatan selama agen bekerja.
+- Respons streaming ditampung; LINE menerima bagian lengkap dengan animasi
+  pemuatan saat agen bekerja.
 - Unduhan media dibatasi oleh `channels.line.mediaMaxMb` (default 10).
-- Media masuk disimpan di `~/.openclaw/media/inbound/` sebelum diteruskan
-  kepada agen, sesuai dengan penyimpanan media bersama yang digunakan Plugin saluran lain.
+- Media masuk disimpan di bawah `~/.openclaw/media/inbound/` sebelum diteruskan
+  ke agen, sesuai dengan penyimpanan media bersama yang digunakan oleh plugin saluran lainnya.
 
 ## Data saluran (pesan kaya)
 
@@ -177,26 +179,26 @@ templat.
 
 ```json5
 {
-  text: "Here you go",
+  text: "Ini dia",
   channelData: {
     line: {
-      quickReplies: ["Status", "Help"],
+      quickReplies: ["Status", "Bantuan"],
       location: {
-        title: "Office",
+        title: "Kantor",
         address: "123 Main St",
         latitude: 35.681236,
         longitude: 139.767125,
       },
       flexMessage: {
-        altText: "Status card",
-        contents: {/* Flex payload */},
+        altText: "Kartu status",
+        contents: {/* Payload Flex */},
       },
       templateMessage: {
         type: "confirm",
-        text: "Proceed?",
-        confirmLabel: "Yes",
+        text: "Lanjutkan?",
+        confirmLabel: "Ya",
         confirmData: "yes",
-        cancelLabel: "No",
+        cancelLabel: "Tidak",
         cancelData: "no",
       },
     },
@@ -207,42 +209,42 @@ templat.
 Plugin LINE juga menyertakan perintah `/card` untuk preset pesan Flex:
 
 ```text
-/card info "Welcome" "Thanks for joining!"
+/card info "Selamat datang" "Terima kasih telah bergabung!"
 ```
 
 ## Dukungan ACP
 
-LINE mendukung pengikatan percakapan ACP (Protokol Komunikasi Agen):
+LINE mendukung pengikatan percakapan ACP (Agent Communication Protocol):
 
-- `/acp spawn <agent> --bind here` mengikat obrolan LINE saat ini ke sesi ACP tanpa membuat utas anak.
-- Pengikatan ACP yang dikonfigurasi dan sesi ACP aktif yang terikat pada percakapan berfungsi di LINE seperti pada saluran percakapan lainnya.
+- `/acp spawn <agent> --bind here` mengikat obrolan LINE saat ini ke sesi ACP tanpa membuat utas turunan.
+- Pengikatan ACP yang dikonfigurasi dan sesi ACP aktif yang terikat ke percakapan berfungsi di LINE seperti pada saluran percakapan lainnya.
 
-Lihat [Agen ACP](/id/tools/acp-agents) untuk detail.
+Lihat [Agen ACP](/id/tools/acp-agents) untuk detailnya.
 
 ## Media keluar
 
 Plugin LINE mengirim gambar, video, dan audio melalui alat pesan agen:
 
 - **Gambar**: dikirim sebagai pesan gambar LINE; gambar pratinjau secara default menggunakan URL media.
-- **Video**: memerlukan gambar pratinjau; atur `channelData.line.previewImageUrl` ke URL gambar.
-- **Audio**: dikirim sebagai pesan audio LINE; durasi secara default adalah 60 detik kecuali `channelData.line.durationMs` diatur.
+- **Video**: memerlukan gambar pratinjau; tetapkan `channelData.line.previewImageUrl` ke URL gambar.
+- **Audio**: dikirim sebagai pesan audio LINE; durasi secara default adalah 60 detik kecuali `channelData.line.durationMs` ditetapkan.
 
-Jenis media diambil dari `channelData.line.mediaKind` jika diatur; jika tidak, jenis tersebut disimpulkan
-dari opsi LINE lainnya atau akhiran berkas URL, dengan gambar sebagai pilihan cadangan.
+Jenis media diambil dari `channelData.line.mediaKind` jika ditetapkan; jika tidak, jenis tersebut disimpulkan
+dari opsi LINE lainnya atau sufiks file URL, dengan gambar sebagai pilihan cadangan.
 
-URL media keluar harus berupa URL HTTPS publik dengan panjang maksimal 2.000 karakter. OpenClaw
-memvalidasi nama host tujuan sebelum menyerahkan URL kepada LINE dan menolak tujuan
-local loopback, link-local, dan jaringan privat.
+URL media keluar harus berupa URL HTTPS publik dengan panjang maksimum 2000 karakter. OpenClaw
+memvalidasi nama host tujuan sebelum menyerahkan URL ke LINE dan menolak tujuan loopback,
+link-local, serta jaringan privat.
 
 Pengiriman media generik tanpa opsi khusus LINE menggunakan rute gambar.
 
 ## Pemecahan masalah
 
-- **Verifikasi Webhook gagal:** pastikan URL Webhook menggunakan HTTPS dan
-  `channelSecret` cocok dengan Console LINE.
-- **Tidak ada peristiwa masuk:** pastikan jalur Webhook cocok dengan `channels.line.webhookPath`
-  dan Gateway dapat dijangkau dari LINE.
-- **Kesalahan pengunduhan media:** naikkan `channels.line.mediaMaxMb` jika ukuran media melebihi
+- **Verifikasi webhook gagal:** pastikan URL webhook menggunakan HTTPS dan
+  `channelSecret` cocok dengan LINE Console.
+- **Tidak ada peristiwa masuk:** pastikan jalur webhook cocok dengan `channels.line.webhookPath`
+  dan gateway dapat dijangkau dari LINE.
+- **Kesalahan pengunduhan media:** naikkan `channels.line.mediaMaxMb` jika media melampaui
   batas default.
 
 ## Terkait

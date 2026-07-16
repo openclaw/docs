@@ -1,21 +1,22 @@
 ---
 read_when:
-    - Instalujesz, konfigurujesz lub audytujesz plugin inworld
+    - Instalowanie, konfigurowanie lub audytowanie pluginu inworld
 summary: Strumieniowa zamiana tekstu na mowę Inworld (MP3, OGG_OPUS, PCM dla telefonii).
 title: Plugin Inworld
 x-i18n:
-    generated_at: "2026-07-12T15:23:15Z"
+    generated_at: "2026-07-16T18:47:55Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 02d912c51460e181e100bc227575cafd1ab3c49494057d2df1e26571000020a8
+    source_hash: 3682eb0f40307e258cd34b0c1f7963f710e6e8852aad7f10efb8cedb023291f1
     source_path: plugins/reference/inworld.md
     workflow: 16
 ---
 
 # Plugin Inworld
 
-Strumieniowa synteza mowy Inworld (MP3, OGG_OPUS, PCM dla telefonii).
+Strumieniowe przekształcanie tekstu na mowę Inworld (MP3, OGG_OPUS, telefoniczny PCM).
 
 ## Dystrybucja
 
@@ -24,7 +25,7 @@ Strumieniowa synteza mowy Inworld (MP3, OGG_OPUS, PCM dla telefonii).
 
 ## Interfejs
 
-kontrakty: speechProviders
+kontrakty: `speechProviders`
 
 ## Powiązana dokumentacja
 

@@ -1,22 +1,22 @@
 ---
 read_when:
     - Vous installez, configurez ou auditez le plugin codex
-summary: Infrastructure du serveur d’application Codex, fournisseur de modèles et catalogue de sessions natives.
+summary: Infrastructure de test du serveur d’application Codex et catalogue natif des sessions.
 title: Plugin Codex
 x-i18n:
-    generated_at: "2026-07-12T15:40:48Z"
+    generated_at: "2026-07-16T13:33:49Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
-    prompt_version: 15
+    prompt_version: 32
     provider: openai
-    source_hash: cd187f48c5448e026d89eea4b37c9809940afa4bf6187776b7b121138840256f
+    source_hash: 792786efc87586a9aee8193d2023cbd8bab7e8a64c8e5f849456ad23be7e8616
     source_path: plugins/reference/codex.md
     workflow: 16
 ---
 
 # Plugin Codex
 
-Infrastructure du serveur d’application Codex, fournisseur de modèles et catalogue de sessions natives.
+Environnement d’exécution du serveur d’application Codex et catalogue de sessions natives.
 
 ## Distribution
 
@@ -25,8 +25,8 @@ Infrastructure du serveur d’application Codex, fournisseur de modèles et cata
 
 ## Surface
 
-fournisseurs : codex ; contrats : mediaUnderstandingProviders, migrationProviders, tools, webSearchProviders
+contrats : `mediaUnderstandingProviders`, `migrationProviders`, `tools`, `webSearchProviders`
 
-## Documentation connexe
+## Documentation associée
 
 - [codex](/fr/plugins/codex-harness)

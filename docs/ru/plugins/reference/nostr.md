@@ -1,15 +1,15 @@
 ---
 read_when:
     - Вы устанавливаете, настраиваете или проверяете плагин nostr
-summary: Плагин канала Nostr для OpenClaw, поддерживающий зашифрованные личные сообщения по NIP-04.
+summary: Плагин канала Nostr для OpenClaw, поддерживающий зашифрованные личные сообщения NIP-04.
 title: Плагин Nostr
 x-i18n:
-    generated_at: "2026-07-13T20:07:00Z"
+    generated_at: "2026-07-16T16:35:58Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
-    prompt_version: 24
+    prompt_version: 32
     provider: openai
-    source_hash: e56fd9eee17c55bcbba3d7b85d783930c10d2368f36173ac478b254c2bd5ec22
+    source_hash: 9efb2014cd168e3d847a045cf82fde3ec364ca3f6a75ee3ef8e1acfb92a79efa
     source_path: plugins/reference/nostr.md
     workflow: 16
 ---
@@ -25,8 +25,8 @@ x-i18n:
 
 ## Интерфейс
 
-channels: nostr
+каналы: `nostr`
 
 ## Связанная документация
 
-- [nostr](/ru/channels/nostr)
+- [Nostr](/ru/channels/nostr)

@@ -1,14 +1,15 @@
 ---
 read_when:
     - Bạn đang cài đặt, cấu hình hoặc kiểm tra Plugin Signal
-summary: Bổ sung giao diện kênh Signal để gửi và nhận tin nhắn OpenClaw.
+summary: Thêm giao diện kênh Signal để gửi và nhận tin nhắn OpenClaw.
 title: Plugin Signal
 x-i18n:
-    generated_at: "2026-07-12T08:16:55Z"
+    generated_at: "2026-07-16T14:49:05Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 7136222af25d73d50b9a973d287b863176c58d634da4c9d7726d5cc6942135bb
+    source_hash: ee7cbe1d05ed3e3f487b14a5f07cc6e998da7191e485e464bb9f9c42e1c6fba6
     source_path: plugins/reference/signal.md
     workflow: 16
 ---
@@ -24,8 +25,8 @@ Thêm bề mặt kênh Signal để gửi và nhận tin nhắn OpenClaw.
 
 ## Bề mặt
 
-kênh: signal
+kênh: `signal`
 
 ## Tài liệu liên quan
 
-- [signal](/vi/channels/signal)
+- [Signal](/vi/channels/signal)

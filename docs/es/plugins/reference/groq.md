@@ -1,14 +1,15 @@
 ---
 read_when:
-    - Estás instalando, configurando o auditando el plugin groq
+    - Está instalando, configurando o auditando el plugin groq
 summary: Añade compatibilidad con el proveedor de modelos Groq a OpenClaw.
 title: Plugin de Groq
 x-i18n:
-    generated_at: "2026-07-11T23:20:24Z"
+    generated_at: "2026-07-16T11:51:59Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 41bae84645b09b5185d62530788a17be0338e93e6f29b9cca11438b69932bbc5
+    source_hash: d5da1d3152536b776034ebe46529fb58f8a4819dce63af76920fd9543c2624af
     source_path: plugins/reference/groq.md
     workflow: 16
 ---
@@ -24,7 +25,7 @@ Añade compatibilidad con el proveedor de modelos Groq a OpenClaw.
 
 ## Superficie
 
-proveedores: groq; contratos: mediaUnderstandingProviders
+proveedores: `groq`; contratos: `mediaUnderstandingProviders`
 
 ## Documentación relacionada
 

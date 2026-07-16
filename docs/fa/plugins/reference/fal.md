@@ -1,30 +1,31 @@
 ---
 read_when:
-    - شما در حال نصب، پیکربندی یا ممیزی Plugin ‏fal هستید
-summary: پشتیبانی از ارائه‌دهندهٔ مدل fal را به OpenClaw اضافه می‌کند.
-title: Plugin فال
+    - در حال نصب، پیکربندی یا ممیزی Plugin ‏fal هستید
+summary: پشتیبانی از ارائه‌دهنده مدل fal را به OpenClaw اضافه می‌کند.
+title: Plugin fal
 x-i18n:
-    generated_at: "2026-07-12T10:30:38Z"
+    generated_at: "2026-07-16T16:55:12Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: f62d6a642a6edaa581fb23fa27dade77486c827d460f19aa23750959f5aa6f1c
+    source_hash: 5341c85c74911d5d49849cfbee4d31a7a8bdf38a24ca68566118f4a0ced81d2e
     source_path: plugins/reference/fal.md
     workflow: 16
 ---
 
-# Plugin ‏fal
+# Plugin fal
 
 پشتیبانی از ارائه‌دهنده مدل fal را به OpenClaw اضافه می‌کند.
 
 ## توزیع
 
 - بسته: `@openclaw/fal-provider`
-- روش نصب: همراه OpenClaw ارائه می‌شود
+- مسیر نصب: در OpenClaw گنجانده شده است
 
 ## سطح
 
-ارائه‌دهندگان: fal؛ قراردادها: imageGenerationProviders، musicGenerationProviders، videoGenerationProviders
+ارائه‌دهندگان: `fal`؛ قراردادها: `imageGenerationProviders`، `musicGenerationProviders`، `videoGenerationProviders`
 
 ## مستندات مرتبط
 

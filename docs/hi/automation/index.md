@@ -2,142 +2,138 @@
 doc-schema-version: 1
 read_when:
     - OpenClaw के साथ काम को स्वचालित करने का तरीका तय करना
-    - Heartbeat, Cron, प्रतिबद्धताओं, हुक्स और स्थायी आदेशों के बीच चयन करना
-    - सही ऑटोमेशन प्रवेश बिंदु खोज रहे हैं
-summary: 'स्वचालन तंत्रों का अवलोकन: कार्य, Cron, हुक, स्थायी निर्देश, और कार्य प्रवाह'
+    - Heartbeat, Cron, प्रतिबद्धताओं, हुक्स और स्थायी आदेशों में से चयन करना
+    - सही ऑटोमेशन प्रवेश बिंदु की तलाश करना
+summary: 'ऑटोमेशन तंत्रों का अवलोकन: टास्क, Cron, हुक, स्थायी आदेश और TaskFlow'
 title: स्वचालन
 x-i18n:
-    generated_at: "2026-06-28T22:32:52Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T13:12:31Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 311ebbd557e40e38cd25b2f11b887baa4576657095d5a0841d4cb7f71898927d
+    source_hash: 210f2a33012e854e48aa145c665e16e7ffe861c91a2566507e81d809bb2b955c
     source_path: automation/index.md
     workflow: 16
 ---
 
-OpenClaw कार्यों को पृष्ठभूमि में tasks, शेड्यूल किए गए jobs, अनुमित
-प्रतिबद्धताओं, event hooks, और स्थायी निर्देशों के माध्यम से चलाता है। यह पृष्ठ आपको
-सही तंत्र चुनने और यह समझने में मदद करता है कि वे साथ मिलकर कैसे काम करते हैं।
+OpenClaw, कार्यों, निर्धारित जॉब, अनुमानित प्रतिबद्धताओं, इवेंट हुक और स्थायी निर्देशों के माध्यम से पृष्ठभूमि में काम चलाता है। सही तंत्र चुनने के लिए इस पृष्ठ का उपयोग करें।
 
-## त्वरित निर्णय गाइड
+## त्वरित निर्णय मार्गदर्शिका
 
 ```mermaid
 flowchart TD
-    START([What do you need?]) --> Q1{Schedule work?}
-    START --> Q2{Track detached work?}
-    START --> Q3{Orchestrate multi-step flows?}
-    START --> Q4{React to lifecycle events?}
-    START --> Q5{Give the agent persistent instructions?}
-    START --> Q6{Remember a natural follow-up?}
+    START([आपको क्या चाहिए?]) --> Q1{कार्य निर्धारित करना है?}
+    START --> Q2{अलग किए गए कार्य को ट्रैक करना है?}
+    START --> Q3{बहु-चरणीय प्रवाहों का संयोजन करना है?}
+    START --> Q4{लाइफ़साइकल इवेंट पर प्रतिक्रिया देनी है?}
+    START --> Q5{एजेंट को स्थायी निर्देश देने हैं?}
+    START --> Q6{स्वाभाविक फ़ॉलो-अप याद रखना है?}
 
-    Q1 -->|Yes| Q1a{Exact timing or flexible?}
-    Q1a -->|Exact| CRON["Scheduled Tasks (Cron)"]
-    Q1a -->|Flexible| HEARTBEAT[Heartbeat]
+    Q1 -->|हाँ| Q1a{सटीक समय या लचीला?}
+    Q1a -->|सटीक| CRON["निर्धारित कार्य (Cron)"]
+    Q1a -->|लचीला| HEARTBEAT[Heartbeat]
 
-    Q2 -->|Yes| TASKS[Background Tasks]
-    Q3 -->|Yes| FLOW[Task Flow]
-    Q4 -->|Yes| HOOKS[Hooks]
-    Q5 -->|Yes| SO[Standing Orders]
-    Q6 -->|Yes| COMMITMENTS[Inferred Commitments]
+    Q2 -->|हाँ| TASKS[पृष्ठभूमि कार्य]
+    Q3 -->|हाँ| FLOW[कार्य प्रवाह]
+    Q4 -->|हाँ| HOOKS[हुक]
+    Q5 -->|हाँ| SO[स्थायी आदेश]
+    Q6 -->|हाँ| COMMITMENTS[अनुमानित प्रतिबद्धताएँ]
 ```
 
-| उपयोग मामला                                | अनुशंसित            | क्यों                                              |
+| उपयोग का मामला                                | अनुशंसित            | कारण                                              |
 | --------------------------------------- | ---------------------- | ------------------------------------------------ |
-| रोज़ाना रिपोर्ट ठीक सुबह 9 बजे भेजें         | शेड्यूल किए गए Tasks (Cron) | सटीक समय, पृथक निष्पादन                 |
-| मुझे 20 मिनट में याद दिलाएँ                 | शेड्यूल किए गए Tasks (Cron) | सटीक समय वाला एकबारगी काम (`--at`)            |
-| साप्ताहिक गहन विश्लेषण चलाएँ                | शेड्यूल किए गए Tasks (Cron) | स्वतंत्र task, अलग model उपयोग कर सकता है         |
-| हर 30 मिनट में inbox जाँचें                | Heartbeat              | अन्य जाँचों के साथ batches, context-aware         |
-| आने वाले events के लिए calendar मॉनिटर करें    | Heartbeat              | आवधिक जागरूकता के लिए स्वाभाविक रूप से उपयुक्त               |
-| उल्लेखित interview के बाद check in करें    | अनुमित प्रतिबद्धताएँ   | memory-जैसा follow-up, कोई सटीक reminder अनुरोध नहीं |
-| user context के बाद सौम्य care check-in | अनुमित प्रतिबद्धताएँ   | उसी agent और channel तक सीमित             |
-| किसी subagent या ACP run की स्थिति जाँचें | पृष्ठभूमि Tasks       | tasks ledger सभी detached work को track करता है            |
-| क्या और कब चला, इसका audit करें                 | पृष्ठभूमि Tasks       | `openclaw tasks list` और `openclaw tasks audit` |
-| कई चरणों वाली research फिर summarize करें      | Task Flow              | revision tracking के साथ durable orchestration     |
-| session reset पर script चलाएँ           | Hooks                  | event-driven, lifecycle events पर fires          |
-| हर tool call पर code execute करें         | Plugin hooks           | in-process hooks tool calls को intercept कर सकते हैं        |
-| reply करने से पहले हमेशा compliance जाँचें | स्थायी आदेश        | हर session में स्वतः injected        |
+| रोज़ाना ठीक सुबह 9 बजे रिपोर्ट भेजना         | निर्धारित कार्य (Cron) | सटीक समय, पृथक निष्पादन                 |
+| मुझे 20 मिनट में याद दिलाना                 | निर्धारित कार्य (Cron) | सटीक समय वाला एकबारगी कार्य (`--at`)            |
+| साप्ताहिक गहन विश्लेषण चलाना                | निर्धारित कार्य (Cron) | स्वतंत्र कार्य, अलग मॉडल का उपयोग कर सकता है         |
+| हर 30 मिनट में इनबॉक्स जाँचना                | Heartbeat              | अन्य जाँचों के साथ बैच में, संदर्भ-सचेत         |
+| आगामी इवेंट के लिए कैलेंडर की निगरानी करना    | Heartbeat              | आवधिक जागरूकता के लिए स्वाभाविक रूप से उपयुक्त               |
+| उल्लिखित साक्षात्कार के बाद संपर्क करना    | अनुमानित प्रतिबद्धताएँ   | स्मृति जैसा फ़ॉलो-अप, सटीक रिमाइंडर अनुरोध नहीं |
+| उपयोगकर्ता के संदर्भ के बाद विनम्र देखभाल-संबंधी संपर्क | अनुमानित प्रतिबद्धताएँ   | उसी एजेंट और चैनल तक सीमित             |
+| किसी सबएजेंट या ACP रन की स्थिति जाँचना | पृष्ठभूमि कार्य       | कार्य लेजर सभी अलग किए गए कार्य को ट्रैक करता है            |
+| क्या और कब चला, इसका ऑडिट करना                 | पृष्ठभूमि कार्य       | `openclaw tasks list` और `openclaw tasks audit` |
+| बहु-चरणीय शोध करके फिर सारांश बनाना      | कार्य प्रवाह              | संशोधन ट्रैकिंग वाला टिकाऊ संयोजन     |
+| सत्र रीसेट पर स्क्रिप्ट चलाना           | हुक                  | इवेंट-संचालित, लाइफ़साइकल इवेंट पर सक्रिय होता है          |
+| प्रत्येक टूल कॉल पर कोड निष्पादित करना         | Plugin हुक           | इन-प्रोसेस हुक टूल कॉल को इंटरसेप्ट कर सकते हैं        |
+| उत्तर देने से पहले हमेशा अनुपालन जाँचना | स्थायी आदेश        | प्रत्येक सत्र में स्वचालित रूप से प्रविष्ट किए जाते हैं        |
 
-### शेड्यूल किए गए Tasks (Cron) बनाम Heartbeat
+### निर्धारित कार्य (Cron) बनाम Heartbeat
 
-| आयाम       | शेड्यूल किए गए Tasks (Cron)              | Heartbeat                             |
+| आयाम       | निर्धारित कार्य (Cron)              | Heartbeat                             |
 | --------------- | ----------------------------------- | ------------------------------------- |
-| समय          | सटीक (cron expressions, one-shot)  | अनुमानित (default हर 30 मिनट)    |
-| Session context | नया (पृथक) या shared          | पूरा main-session context             |
-| Task records    | हमेशा बनाए जाते हैं                      | कभी नहीं बनाए जाते                         |
-| Delivery        | Channel, webhook, या silent         | main session में inline                |
-| सबसे उपयुक्त        | Reports, reminders, background jobs | Inbox checks, calendar, notifications |
+| समय          | सटीक (cron एक्सप्रेशन, एकबारगी)  | अनुमानित (डिफ़ॉल्ट रूप से हर 30 मिनट)    |
+| सत्र संदर्भ | नया (पृथक) या साझा          | मुख्य सत्र का पूरा संदर्भ             |
+| कार्य रिकॉर्ड    | हमेशा बनाए जाते हैं                      | कभी नहीं बनाए जाते                         |
+| वितरण        | चैनल, webhook या मौन         | मुख्य सत्र में इनलाइन                |
+| इनके लिए सर्वोत्तम        | रिपोर्ट, रिमाइंडर, पृष्ठभूमि जॉब | इनबॉक्स जाँच, कैलेंडर, सूचनाएँ |
 
-जब आपको सटीक समय या पृथक निष्पादन चाहिए, तब शेड्यूल किए गए Tasks (Cron) का उपयोग करें। जब काम को पूरे session context से लाभ मिलता हो और अनुमानित समय पर्याप्त हो, तब Heartbeat का उपयोग करें।
+जब सटीक समय या पृथक निष्पादन चाहिए, तब निर्धारित कार्य (Cron) का उपयोग करें। जब कार्य को सत्र के पूरे संदर्भ से लाभ हो और अनुमानित समय स्वीकार्य हो, तब Heartbeat का उपयोग करें।
 
-## मुख्य concepts
+## मुख्य अवधारणाएँ
 
-### शेड्यूल किए गए tasks (cron)
+### निर्धारित कार्य (cron)
 
-Cron सटीक समय के लिए Gateway का built-in scheduler है। यह jobs को persist करता है, सही समय पर agent को जगाता है, और output को chat channel या webhook endpoint पर deliver कर सकता है। यह one-shot reminders, recurring expressions, और inbound webhook triggers को support करता है।
+Cron सटीक समय के लिए Gateway का अंतर्निहित शेड्यूलर है। यह जॉब को स्थायी रूप से संग्रहीत करता है, सही समय पर एजेंट को सक्रिय करता है और आउटपुट को चैट चैनल या webhook एंडपॉइंट पर पहुँचा सकता है। यह एकबारगी रिमाइंडर, आवर्ती एक्सप्रेशन और इनबाउंड webhook ट्रिगर का समर्थन करता है।
 
-देखें [शेड्यूल किए गए Tasks](/hi/automation/cron-jobs)।
+[निर्धारित कार्य](/hi/automation/cron-jobs) देखें।
 
-### Tasks
+### कार्य
 
-पृष्ठभूमि task ledger सभी detached work को track करता है: ACP runs, subagent spawns, isolated cron executions, और CLI operations। Tasks records हैं, schedulers नहीं। उन्हें inspect करने के लिए `openclaw tasks list` और `openclaw tasks audit` का उपयोग करें।
+पृष्ठभूमि कार्य लेजर सभी अलग किए गए कार्य को ट्रैक करता है: ACP रन, सबएजेंट निर्माण, पृथक cron निष्पादन और CLI संचालन। कार्य रिकॉर्ड होते हैं, शेड्यूलर नहीं। उनका निरीक्षण करने के लिए `openclaw tasks list` और `openclaw tasks audit` का उपयोग करें।
 
-देखें [पृष्ठभूमि Tasks](/hi/automation/tasks)।
+[पृष्ठभूमि कार्य](/hi/automation/tasks) देखें।
 
-### अनुमित प्रतिबद्धताएँ
+### अनुमानित प्रतिबद्धताएँ
 
-प्रतिबद्धताएँ opt-in, short-lived follow-up memories हैं। OpenClaw उन्हें
-सामान्य conversations से infer करता है, उन्हें उसी agent और channel तक scope करता है, और
-due check-ins को heartbeat के माध्यम से deliver करता है। user द्वारा माँगे गए सटीक reminders अभी भी
-cron के अंतर्गत आते हैं।
+प्रतिबद्धताएँ ऑप्ट-इन, अल्पकालिक फ़ॉलो-अप स्मृतियाँ हैं। OpenClaw सामान्य वार्तालापों से उनका अनुमान लगाता है, उन्हें उसी एजेंट और चैनल तक सीमित रखता है और नियत संपर्कों को Heartbeat के माध्यम से पहुँचाता है। उपयोगकर्ता द्वारा स्पष्ट रूप से अनुरोधित रिमाइंडर अब भी cron के अंतर्गत आते हैं।
 
-देखें [अनुमित प्रतिबद्धताएँ](/hi/concepts/commitments)।
+[अनुमानित प्रतिबद्धताएँ](/hi/concepts/commitments) देखें।
 
-### Task Flow
+### कार्य प्रवाह
 
-Task Flow पृष्ठभूमि tasks के ऊपर flow orchestration substrate है। यह managed और mirrored sync modes, revision tracking, और inspection के लिए `openclaw tasks flow list|show|cancel` के साथ durable multi-step flows को manage करता है।
+कार्य प्रवाह, पृष्ठभूमि कार्यों के ऊपर स्थित प्रवाह-संयोजन आधार है। यह प्रबंधित और मिरर किए गए सिंक मोड, संशोधन ट्रैकिंग और निरीक्षण के लिए `openclaw tasks flow list|show|cancel` के साथ टिकाऊ बहु-चरणीय प्रवाहों को प्रबंधित करता है।
 
-देखें [Task Flow](/hi/automation/taskflow)।
+[कार्य प्रवाह](/hi/automation/taskflow) देखें।
 
 ### स्थायी आदेश
 
-स्थायी आदेश agent को निर्धारित programs के लिए स्थायी operating authority देते हैं। वे workspace files (आमतौर पर `AGENTS.md`) में रहते हैं और हर session में injected होते हैं। time-based enforcement के लिए cron के साथ combine करें।
+स्थायी आदेश एजेंट को निर्धारित प्रोग्राम के लिए स्थायी संचालन अधिकार देते हैं। वे कार्यक्षेत्र फ़ाइलों (आमतौर पर `AGENTS.md`) में रहते हैं और प्रत्येक सत्र में प्रविष्ट किए जाते हैं। समय-आधारित प्रवर्तन के लिए इन्हें cron के साथ संयोजित करें।
 
-देखें [स्थायी आदेश](/hi/automation/standing-orders)।
+[स्थायी आदेश](/hi/automation/standing-orders) देखें।
 
-### Hooks
+### हुक
 
-Internal hooks event-driven scripts हैं जो agent lifecycle events
-(`/new`, `/reset`, `/stop`), session compaction, gateway startup, और message
-flow से trigger होते हैं। वे directories से automatically discovered होते हैं और
-`openclaw hooks` से manage किए जा सकते हैं। in-process tool-call interception के लिए,
-[Plugin hooks](/hi/plugins/hooks) का उपयोग करें।
+आंतरिक हुक, एजेंट लाइफ़साइकल इवेंट
+(`/new`, `/reset`, `/stop`), सत्र Compaction, Gateway स्टार्टअप और संदेश
+प्रवाह द्वारा ट्रिगर होने वाली इवेंट-संचालित स्क्रिप्ट हैं। उन्हें हुक डायरेक्टरी से खोजा जाता है और
+`openclaw hooks` से प्रबंधित किया जाता है। इन-प्रोसेस टूल-कॉल इंटरसेप्शन के लिए
+[Plugin हुक](/hi/plugins/hooks) का उपयोग करें।
 
-देखें [Hooks](/hi/automation/hooks)।
+[हुक](/hi/automation/hooks) देखें।
 
 ### Heartbeat
 
-Heartbeat एक आवधिक main-session turn है (default हर 30 मिनट)। यह पूरे session context के साथ एक agent turn में कई checks (inbox, calendar, notifications) को batch करता है। Heartbeat turns task records नहीं बनाते और daily/idle session reset freshness को extend नहीं करते। छोटी checklist के लिए `HEARTBEAT.md` का उपयोग करें, या जब आप heartbeat के अंदर ही due-only periodic checks चाहते हों तब `tasks:` block का उपयोग करें। खाली heartbeat files `empty-heartbeat-file` के रूप में skip होती हैं; due-only task mode `no-tasks-due` के रूप में skip होता है। जब cron work active या queued हो, तब Heartbeats defer होते हैं, और `heartbeat.skipWhenBusy` उसी agent के session-keyed subagent या nested lanes के busy होने पर भी उस agent को defer कर सकता है।
+Heartbeat मुख्य सत्र का एक आवधिक टर्न है (डिफ़ॉल्ट रूप से हर 30 मिनट)। यह सत्र के पूरे संदर्भ के साथ एजेंट के एक टर्न में कई जाँचों (इनबॉक्स, कैलेंडर, सूचनाएँ) को बैच करता है। Heartbeat टर्न कार्य रिकॉर्ड नहीं बनाते और दैनिक/निष्क्रिय सत्र रीसेट की ताज़गी को नहीं बढ़ाते। छोटी चेकलिस्ट के लिए `HEARTBEAT.md` या केवल नियत आवधिक जाँचों को Heartbeat के भीतर ही चलाने के लिए `tasks:` ब्लॉक का उपयोग करें। खाली Heartbeat फ़ाइलें `empty-heartbeat-file` के रूप में छोड़ी जाती हैं; केवल नियत कार्य मोड `no-tasks-due` के रूप में छोड़ा जाता है। cron कार्य सक्रिय या कतारबद्ध होने पर Heartbeat स्थगित हो जाते हैं और `heartbeat.skipWhenBusy` किसी एजेंट को तब भी स्थगित कर सकता है, जब उसी एजेंट के सत्र-कुंजी वाले सबएजेंट या नेस्टेड लेन व्यस्त हों।
 
-देखें [Heartbeat](/hi/gateway/heartbeat)।
+[Heartbeat](/hi/gateway/heartbeat) देखें।
 
-## वे साथ मिलकर कैसे काम करते हैं
+## ये एक साथ कैसे काम करते हैं
 
-- **Cron** सटीक schedules (daily reports, weekly reviews) और one-shot reminders संभालता है। सभी cron executions task records बनाते हैं।
-- **Heartbeat** routine monitoring (inbox, calendar, notifications) को हर 30 मिनट में एक batched turn में संभालता है।
-- **Hooks** specific events (session resets, compaction, message flow) पर custom scripts के साथ react करते हैं। Plugin hooks tool calls को cover करते हैं।
-- **स्थायी आदेश** agent को persistent context और authority boundaries देते हैं।
-- **Task Flow** individual tasks के ऊपर multi-step flows को coordinate करता है।
-- **Tasks** सभी detached work को automatically track करते हैं ताकि आप उसे inspect और audit कर सकें।
+- **Cron** सटीक शेड्यूल (दैनिक रिपोर्ट, साप्ताहिक समीक्षाएँ) और एकबारगी रिमाइंडर संभालता है। सभी cron निष्पादन कार्य रिकॉर्ड बनाते हैं।
+- **Heartbeat** हर 30 मिनट में एक बैच किए गए टर्न में नियमित निगरानी (इनबॉक्स, कैलेंडर, सूचनाएँ) संभालता है।
+- **हुक** कस्टम स्क्रिप्ट के साथ विशिष्ट इवेंट (सत्र रीसेट, Compaction, संदेश प्रवाह) पर प्रतिक्रिया देते हैं। Plugin हुक टूल कॉल को कवर करते हैं।
+- **स्थायी आदेश** एजेंट को स्थायी संदर्भ और अधिकार-सीमाएँ देते हैं।
+- **कार्य प्रवाह** अलग-अलग कार्यों के ऊपर बहु-चरणीय प्रवाहों का समन्वय करता है।
+- **कार्य** सभी अलग किए गए कार्य को स्वचालित रूप से ट्रैक करते हैं, ताकि आप उसका निरीक्षण और ऑडिट कर सकें।
 
 ## संबंधित
 
-- [शेड्यूल किए गए Tasks](/hi/automation/cron-jobs) — सटीक scheduling और one-shot reminders
-- [अनुमित प्रतिबद्धताएँ](/hi/concepts/commitments) — memory-जैसे follow-up check-ins
-- [पृष्ठभूमि Tasks](/hi/automation/tasks) — सभी detached work के लिए task ledger
-- [Task Flow](/hi/automation/taskflow) — durable multi-step flow orchestration
-- [Hooks](/hi/automation/hooks) — event-driven lifecycle scripts
-- [Plugin hooks](/hi/plugins/hooks) — in-process tool, prompt, message, और lifecycle hooks
-- [स्थायी आदेश](/hi/automation/standing-orders) — persistent agent instructions
-- [Heartbeat](/hi/gateway/heartbeat) — आवधिक main-session turns
-- [Configuration Reference](/hi/gateway/configuration-reference) — सभी config keys
+- [निर्धारित कार्य](/hi/automation/cron-jobs) — सटीक शेड्यूलिंग और एकबारगी रिमाइंडर
+- [अनुमानित प्रतिबद्धताएँ](/hi/concepts/commitments) — स्मृति जैसे फ़ॉलो-अप संपर्क
+- [पृष्ठभूमि कार्य](/hi/automation/tasks) — सभी अलग किए गए कार्य के लिए कार्य लेजर
+- [कार्य प्रवाह](/hi/automation/taskflow) — टिकाऊ बहु-चरणीय प्रवाह संयोजन
+- [हुक](/hi/automation/hooks) — इवेंट-संचालित लाइफ़साइकल स्क्रिप्ट
+- [Plugin हुक](/hi/plugins/hooks) — इन-प्रोसेस टूल, प्रॉम्प्ट, संदेश और लाइफ़साइकल हुक
+- [स्थायी आदेश](/hi/automation/standing-orders) — एजेंट के स्थायी निर्देश
+- [Heartbeat](/hi/gateway/heartbeat) — मुख्य सत्र के आवधिक टर्न
+- [कॉन्फ़िगरेशन संदर्भ](/hi/gateway/configuration-reference) — सभी कॉन्फ़िगरेशन कुंजियाँ

@@ -1,21 +1,22 @@
 ---
 read_when:
-    - Sie installieren, konfigurieren oder prüfen das Telegram-Plugin
-summary: Fügt die Telegram-Kanaloberfläche zum Senden und Empfangen von OpenClaw-Nachrichten hinzu.
+    - Sie installieren, konfigurieren oder prüfen das Telegram-Plugin.
+summary: Fügt die Telegram-Kanalschnittstelle zum Senden und Empfangen von OpenClaw-Nachrichten hinzu.
 title: Telegram-Plugin
 x-i18n:
-    generated_at: "2026-05-02T20:59:28Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T13:24:35Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: cada3e82983630e71fa5cc32aa2ef0801eff1cab620f1e7f5c2dfdd3a565924e
+    source_hash: dbd5996e8c937820ef1280eaadcbdede3f52c2f2fc435025bb9707229d8822cb
     source_path: plugins/reference/telegram.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
 # Telegram-Plugin
 
-Fügt die Telegram-Channel-Oberfläche zum Senden und Empfangen von OpenClaw-Nachrichten hinzu.
+Fügt die Telegram-Kanaloberfläche zum Senden und Empfangen von OpenClaw-Nachrichten hinzu.
 
 ## Distribution
 
@@ -24,8 +25,8 @@ Fügt die Telegram-Channel-Oberfläche zum Senden und Empfangen von OpenClaw-Nac
 
 ## Oberfläche
 
-channels: telegram
+Kanäle: `telegram`
 
-## Verwandte Dokumentation
+## Zugehörige Dokumentation
 
-- [telegram](/de/channels/telegram)
+- [Telegram](/de/channels/telegram)

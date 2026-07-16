@@ -4,11 +4,12 @@ read_when:
 summary: 添加文本转语音提供商支持。
 title: TTS 本地 CLI 插件
 x-i18n:
-    generated_at: "2026-07-11T20:49:37Z"
+    generated_at: "2026-07-16T11:48:01Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 65e8fd3b34a8edd70773316e0dae1fa894cfc7cf1bb216f9b5a9b53a33760330
+    source_hash: dda79fac2b7f67c0ed1ef8e920410580e25bf9be33c28966fea04694344b24a6
     source_path: plugins/reference/tts-local-cli.md
     workflow: 16
 ---
@@ -20,8 +21,8 @@ x-i18n:
 ## 分发
 
 - 软件包：`@openclaw/tts-local-cli`
-- 安装方式：已包含在 OpenClaw 中
+- 安装方式：内置于 OpenClaw
 
 ## 接口
 
-契约：speechProviders
+契约：`speechProviders`

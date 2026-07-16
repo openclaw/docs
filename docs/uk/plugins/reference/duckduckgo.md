@@ -1,30 +1,31 @@
 ---
 read_when:
-    - Ви встановлюєте, налаштовуєте або перевіряєте Plugin duckduckgo
+    - Ви встановлюєте, налаштовуєте або перевіряєте плагін duckduckgo.
 summary: Додає підтримку постачальника вебпошуку.
-title: Plugin DuckDuckGo
+title: Плагін DuckDuckGo
 x-i18n:
-    generated_at: "2026-07-12T13:34:24Z"
+    generated_at: "2026-07-16T18:19:47Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 3b7960979d5dae6c64eb740dcd6f82f3f1fc466aa93cc9b64bdd08293881529c
+    source_hash: fb12e8fecf07142dec329318d78cd43286e0b0056fb1860fb46ee1c95ab63e41
     source_path: plugins/reference/duckduckgo.md
     workflow: 16
 ---
 
-# Плагін DuckDuckGo
+# Plugin DuckDuckGo
 
 Додає підтримку постачальника вебпошуку.
 
 ## Розповсюдження
 
-- Пакет: `@openclaw/duckduckgo-plugin`
-- Спосіб встановлення: входить до складу OpenClaw
+- Пакунок: `@openclaw/duckduckgo-plugin`
+- Спосіб установлення: включено до OpenClaw
 
 ## Інтерфейс
 
-контракти: webSearchProviders
+контракти: `webSearchProviders`
 
 ## Пов’язана документація
 

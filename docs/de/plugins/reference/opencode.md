@@ -1,31 +1,48 @@
 ---
 read_when:
-    - Sie installieren, konfigurieren oder prüfen das opencode-Plugin
+    - Sie installieren, konfigurieren oder prüfen das opencode-Plugin.
 summary: Fügt OpenClaw Unterstützung für den OpenCode-Modell-Provider hinzu.
 title: OpenCode-Plugin
 x-i18n:
-    generated_at: "2026-05-02T20:57:47Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T13:07:11Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 8c1c1264da52e8f362e83b2733390ccc3b2fc1dd62f14f8e5211bbb8fa47e95f
+    source_hash: aecf396cfc645e4a036b8130ed7f33db9081dffda120c6d06ebe863dd3be3730
     source_path: plugins/reference/opencode.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
 # OpenCode-Plugin
 
-Fügt OpenClaw Unterstützung für OpenCode als Modell-Provider hinzu.
+Fügt OpenClaw Unterstützung für den OpenCode-Modell-Provider hinzu.
 
-## Bereitstellung
+## Distribution
 
 - Paket: `@openclaw/opencode-provider`
 - Installationsweg: in OpenClaw enthalten
 
-## Schnittstelle
+## Oberfläche
 
-providers: opencode; contracts: mediaUnderstandingProviders
+Provider: `opencode`; Verträge: `mediaUnderstandingProviders`
+
+<!-- openclaw-plugin-reference:manual-start -->
+
+## Native Sitzungen
+
+OpenClaw erkennt die `opencode`-CLI auf dem Gateway und gekoppelten Nodes automatisch. Gespeicherte
+Sitzungen werden anschließend in der Sitzungs-Seitenleistengruppe **OpenCode** angezeigt, mit schreibgeschütztem
+Durchsuchen der Transkripte über die offiziellen Befehle `opencode --pure db ... --format json`
+und `opencode --pure export`. Die eingeschränkte Umgebung und der Modus `--pure`
+verhindern, dass beim Durchsuchen des Katalogs Projekt-Plugins geladen oder nicht zugehörige
+Gateway-Anmeldedaten übernommen werden.
+
+Schalten Sie **OpenCode Session Catalog** unter **Config > Plugins > OpenCode** aus, um
+die Erkennung zu deaktivieren. Sie ist standardmäßig aktiviert.
+
+<!-- openclaw-plugin-reference:manual-end -->
 
 ## Verwandte Dokumentation
 
-- [opencode](/de/providers/opencode)
+- [OpenCode](/de/providers/opencode)

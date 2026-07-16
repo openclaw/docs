@@ -1,14 +1,15 @@
 ---
 read_when:
-    - nextcloud-talk Plugin のインストール、設定、または監査を行っている
+    - nextcloud-talk Pluginをインストール、設定、または監査しています
 summary: 会話用の OpenClaw Nextcloud Talk チャンネル Plugin。
 title: Nextcloud Talk Plugin
 x-i18n:
-    generated_at: "2026-07-11T22:31:12Z"
+    generated_at: "2026-07-16T11:56:20Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: ce8dd648fcc2226e6b365f092eb3dc54062d2c9d8d5c613cb0c2d5e9f237c720
+    source_hash: 2f819fda3e7eb6d8037ec5c7801ef8289e2e574670631a61e489717bc0b72e5b
     source_path: plugins/reference/nextcloud-talk.md
     workflow: 16
 ---
@@ -20,11 +21,11 @@ x-i18n:
 ## 配布
 
 - パッケージ: `@openclaw/nextcloud-talk`
-- インストール経路: npm、ClawHub
+- インストール方法: npm、ClawHub
 
-## 対象範囲
+## 対応範囲
 
-チャンネル: nextcloud-talk
+チャンネル: `nextcloud-talk`
 
 ## 関連ドキュメント
 

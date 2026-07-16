@@ -1,43 +1,34 @@
 ---
 read_when:
-    - OpenClaw को Render पर डिप्लॉय करना
-    - आप Render Blueprints के साथ एक घोषणात्मक क्लाउड डिप्लॉय चाहते हैं
+    - Render पर OpenClaw परिनियोजित करना
+    - आप Render Blueprints के साथ एक घोषणात्मक क्लाउड परिनियोजन चाहते हैं
 summary: Infrastructure-as-Code के साथ Render पर OpenClaw डिप्लॉय करें
-title: रेंडर
+title: Render
 x-i18n:
-    generated_at: "2026-06-28T23:23:22Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T15:34:45Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 95ffe98a60e9919826a7c7fdb9cbafd63d20ce3de111ac305f43907b1ae442dc
+    source_hash: a5fbb3c6df04e186df958a62a6130da4e3e485acfeecc7e85fee0d5b69a0438f
     source_path: install/render.mdx
     workflow: 16
 ---
 
-# Render
-
-Infrastructure as Code का उपयोग करके OpenClaw को Render पर डिप्लॉय करें। शामिल `render.yaml` Blueprint आपकी पूरी stack को declaratively परिभाषित करता है, service, disk, environment variables, ताकि आप एक क्लिक में डिप्लॉय कर सकें और अपने infrastructure को अपने code के साथ version कर सकें।
+रेपो के `render.yaml` Blueprint का उपयोग करके [Render](https://render.com) पर OpenClaw परिनियोजित करें। यह सेवा, डिस्क और एनवायरनमेंट वेरिएबल्स को एक ही फ़ाइल में घोषित करता है।
 
 ## पूर्वापेक्षाएँ
 
-- एक [Render खाता](https://render.com) (free tier उपलब्ध)
-- आपके पसंदीदा [model provider](/hi/providers) से एक API key
+- एक [Render खाता](https://render.com) (निःशुल्क टियर उपलब्ध है)
+- आपके पसंदीदा [मॉडल प्रोवाइडर](/hi/providers) की API कुंजी
 
-## Render Blueprint के साथ डिप्लॉय करें
+## परिनियोजन
 
-[Render पर डिप्लॉय करें](https://render.com/deploy?repo=https://github.com/openclaw/openclaw)
+[Render पर परिनियोजित करें](https://render.com/deploy?repo=https://github.com/openclaw/openclaw)
 
-इस लिंक पर क्लिक करने से:
+यह `render.yaml` से एक Render सेवा बनाता है, Docker इमेज बिल्ड करता है और उसे परिनियोजित करता है। आपकी सेवा का URL `https://<service-name>.onrender.com` पैटर्न का अनुसरण करता है।
 
-1. इस repo के root में मौजूद `render.yaml` Blueprint से एक नई Render service बनेगी।
-2. Docker image build होगी और डिप्लॉय होगी
-
-डिप्लॉय होने के बाद, आपके service URL का pattern `https://<service-name>.onrender.com` होता है।
-
-## Blueprint को समझना
-
-Render Blueprints YAML files हैं जो आपके infrastructure को परिभाषित करती हैं। इस
-repository में मौजूद `render.yaml` OpenClaw चलाने के लिए आवश्यक सब कुछ configure करता है:
+## Blueprint
 
 ```yaml
 services:
@@ -54,119 +45,100 @@ services:
       - key: OPENCLAW_WORKSPACE_DIR
         value: /data/workspace
       - key: OPENCLAW_GATEWAY_TOKEN
-        generateValue: true # auto-generates a secure token
+        generateValue: true # एक सुरक्षित टोकन अपने आप जनरेट करता है
     disk:
       name: openclaw-data
       mountPath: /data
       sizeGB: 1
 ```
 
-उपयोग की गई मुख्य Blueprint विशेषताएँ:
+| सुविधा               | उद्देश्य                                                    |
+| --------------------- | ---------------------------------------------------------- |
+| `runtime: docker`     | रेपो की Dockerfile से बिल्ड करता है                          |
+| `healthCheckPath`     | Render `/health` की निगरानी करता है और अस्वस्थ इंस्टेंस को रीस्टार्ट करता है |
+| `generateValue: true` | क्रिप्टोग्राफ़िक रूप से सुरक्षित मान अपने आप जनरेट करता है            |
+| `disk`                | स्थायी स्टोरेज, जो पुनः परिनियोजन के बाद भी बना रहता है                 |
 
-| विशेषता              | उद्देश्य                                                   |
-| -------------------- | ---------------------------------------------------------- |
-| `runtime: docker`    | repo के Dockerfile से build करता है                        |
-| `healthCheckPath`    | Render `/health` को monitor करता है और अस्वस्थ instances को restart करता है |
-| `generateValue: true` | Cryptographically secure value अपने-आप generate करता है   |
-| `disk`               | Persistent storage जो redeploys के बाद भी बना रहता है      |
+## प्लान चुनना
 
-## Plan चुनना
+| प्लान      | बंद होना         | डिस्क          | इसके लिए सर्वोत्तम                      |
+| --------- | ----------------- | ------------- | ----------------------------- |
+| निःशुल्क      | 15 मिनट निष्क्रिय रहने के बाद | उपलब्ध नहीं | परीक्षण, डेमो                |
+| Starter   | कभी नहीं             | 1GB+          | व्यक्तिगत उपयोग, छोटी टीमें     |
+| Standard+ | कभी नहीं             | 1GB+          | प्रोडक्शन, कई चैनल |
 
-| Plan      | Spin-down         | Disk          | किसके लिए सबसे अच्छा           |
-| --------- | ----------------- | ------------- | ------------------------------- |
-| Free      | 15 min idle के बाद | उपलब्ध नहीं   | Testing, demos                  |
-| Starter   | कभी नहीं          | 1GB+          | Personal use, छोटी teams        |
-| Standard+ | कभी नहीं          | 1GB+          | Production, कई channels         |
+Blueprint में डिफ़ॉल्ट रूप से `starter` होता है। निःशुल्क टियर का उपयोग करने के लिए, अपने फ़ोर्क की `render.yaml` में `plan: free` बदलें — ध्यान दें कि स्थायी डिस्क न होने पर OpenClaw की स्थिति प्रत्येक परिनियोजन के साथ रीसेट हो जाती है।
 
-Blueprint default रूप से `starter` का उपयोग करता है। Free tier का उपयोग करने के लिए,
-अपने fork के `render.yaml` में `plan: free` बदलें (लेकिन ध्यान दें: persistent disk न होने का मतलब है कि OpenClaw state
-हर deploy पर reset हो जाती है)।
+## परिनियोजन के बाद
 
-## Deployment के बाद
+### Control UI खोलें
 
-### Control UI तक पहुँचें
+वेब डैशबोर्ड `https://<your-service>.onrender.com/` पर उपलब्ध है। साझा सीक्रेट का उपयोग करके कनेक्ट करें: अपने आप जनरेट हुआ `OPENCLAW_GATEWAY_TOKEN` (इसे **Dashboard → your service → Environment** में खोजें), या यदि आपने पासवर्ड प्रमाणीकरण अपनाया है तो अपने पासवर्ड का उपयोग करें।
 
-Web dashboard `https://<your-service>.onrender.com/` पर उपलब्ध है।
+### लॉग
 
-Configured shared secret का उपयोग करके connect करें। यह deploy template
-`OPENCLAW_GATEWAY_TOKEN` अपने-आप generate करता है (इसे **Dashboard → your service →
-Environment** में ढूँढें); अगर आप इसे password auth से replace करते हैं, तो उसके बजाय वही password उपयोग करें।
+**Dashboard → your service → Logs** बिल्ड लॉग (Docker इमेज बनाना), परिनियोजन लॉग (सेवा शुरू होना) और रनटाइम लॉग (एप्लिकेशन आउटपुट) दिखाता है।
 
-## Render Dashboard की विशेषताएँ
+### शेल एक्सेस
 
-### Logs
+**Dashboard → your service → Shell** एक शेल सेशन खोलता है। स्थायी डिस्क `/data` पर माउंट होती है।
 
-**Dashboard → your service → Logs** में real-time logs देखें। इनके अनुसार filter करें:
+### एनवायरनमेंट वेरिएबल्स
 
-- Build logs (Docker image creation)
-- Deploy logs (service startup)
-- Runtime logs (application output)
+वेरिएबल्स को **Dashboard → your service → Environment** में संपादित करें। बदलाव अपने आप पुनः परिनियोजन ट्रिगर करते हैं।
 
-### Shell access
+### अपने आप परिनियोजन
 
-Debugging के लिए, **Dashboard → your service → Shell** के माध्यम से shell session खोलें। Persistent disk `/data` पर mounted है।
+कनेक्ट किए गए रेपो की ब्रांच में नया कमिट आने पर Render अपने आप पुनः परिनियोजन करता है। यदि आपने अपने फ़ोर्क के बजाय सीधे `openclaw/openclaw` से परिनियोजित किया है, तो इसे ट्रिगर करने के लिए आपके पास पुश एक्सेस नहीं होगा। इसलिए Dashboard से मैन्युअल Blueprint सिंक चलाकर अपडेट करें या सेवा को अपने फ़ोर्क की ओर इंगित करें।
 
-### Environment variables
+## कस्टम डोमेन
 
-**Dashboard → your service → Environment** में variables modify करें। Changes automatic redeploy trigger करते हैं।
+1. **Dashboard → your service → Settings → Custom Domains**
+2. अपना डोमेन जोड़ें
+3. निर्देशानुसार DNS कॉन्फ़िगर करें (`*.onrender.com` के लिए CNAME)
+4. Render अपने आप TLS प्रमाणपत्र जारी करता है
 
-### Auto-deploy
+## स्केलिंग
 
-अगर आप मूल OpenClaw repository का उपयोग करते हैं, तो Render आपके OpenClaw को auto-deploy नहीं करेगा। इसे update करने के लिए, dashboard से manual Blueprint sync चलाएँ।
+- **वर्टिकल**: अधिक CPU/RAM के लिए प्लान बदलें। आमतौर पर OpenClaw के लिए यह पर्याप्त होता है।
+- **हॉरिज़ॉन्टल**: इंस्टेंस की संख्या बढ़ाएँ (Standard प्लान और उससे ऊपर)। चूँकि OpenClaw रनटाइम स्थिति को स्थानीय डिस्क पर रखता है, इसलिए इसके लिए स्टिकी सेशन या बाहरी स्थिति प्रबंधन आवश्यक है।
 
-## Custom domain
+## बैकअप और माइग्रेशन
 
-1. **Dashboard → your service → Settings → Custom Domains** पर जाएँ
-2. अपना domain add करें
-3. निर्देशों के अनुसार DNS configure करें (`*.onrender.com` पर CNAME)
-4. Render अपने-आप TLS certificate provision करता है
-
-## Scaling
-
-Render horizontal और vertical scaling support करता है:
-
-- **Vertical**: अधिक CPU/RAM पाने के लिए plan बदलें
-- **Horizontal**: Instance count बढ़ाएँ (Standard plan और उससे ऊपर)
-
-OpenClaw के लिए, vertical scaling आमतौर पर पर्याप्त होती है। Horizontal scaling के लिए sticky sessions या external state management की आवश्यकता होती है।
-
-## Backups और migration
-
-Render Dashboard में shell access का उपयोग करके किसी भी समय अपनी state, config, auth profiles, और workspace export करें:
+Render Dashboard के शेल से किसी भी समय स्थिति, कॉन्फ़िगरेशन, प्रमाणीकरण प्रोफ़ाइल और वर्कस्पेस एक्सपोर्ट करें:
 
 ```bash
 openclaw backup create
 ```
 
-यह OpenClaw state और किसी भी configured workspace के साथ एक portable backup archive बनाता है। विवरण के लिए [Backup](/hi/cli/backup) देखें।
+यह एक पोर्टेबल बैकअप आर्काइव बनाता है। [बैकअप](/hi/cli/backup) देखें।
 
-## Troubleshooting
+## समस्या निवारण
 
-### Service start नहीं होगी
+### सेवा शुरू नहीं होती
 
-Render Dashboard में deploy logs देखें। सामान्य issues:
+Render Dashboard में परिनियोजन लॉग जाँचें। सामान्य समस्याएँ:
 
-- `OPENCLAW_GATEWAY_TOKEN` missing — verify करें कि यह **Dashboard → Environment** में set है
-- Port mismatch — सुनिश्चित करें कि `OPENCLAW_GATEWAY_PORT=8080` set है ताकि gateway उस port से bind हो जिसकी Render अपेक्षा करता है
+- `OPENCLAW_GATEWAY_TOKEN` मौजूद नहीं है — सत्यापित करें कि इसे **Dashboard → Environment** में सेट किया गया है
+- पोर्ट मेल नहीं खाता — सुनिश्चित करें कि `OPENCLAW_GATEWAY_PORT=8080`, ताकि Gateway उस पोर्ट से बाइंड हो जिसकी Render अपेक्षा करता है
 
-### Slow cold starts (free tier)
+### धीमे कोल्ड स्टार्ट (निःशुल्क टियर)
 
-Free tier services 15 minutes की inactivity के बाद spin down हो जाती हैं। Spin-down के बाद पहली request में container start होने के दौरान कुछ seconds लगते हैं। Always-on के लिए Starter plan में upgrade करें।
+निःशुल्क टियर की सेवाएँ 15 मिनट तक निष्क्रिय रहने के बाद बंद हो जाती हैं; बंद होने के बाद पहले अनुरोध पर कंटेनर शुरू होने में कुछ सेकंड लगते हैं। हमेशा चालू रखने के लिए Starter में अपग्रेड करें।
 
-### Redeploy के बाद data loss
+### पुनः परिनियोजन के बाद डेटा हानि
 
-यह free tier पर होता है (persistent disk नहीं)। Paid plan में upgrade करें, या
-Render shell में `openclaw backup create` के माध्यम से नियमित रूप से full backup export करें।
+यह निःशुल्क टियर पर होता है (स्थायी डिस्क नहीं होती)। सशुल्क प्लान में अपग्रेड करें या Render शेल से `openclaw backup create` का उपयोग करके नियमित रूप से बैकअप एक्सपोर्ट करें।
 
-### Health check failures
+### हेल्थ चेक विफलताएँ
 
-Render `/health` से 30 seconds के भीतर 200 response की अपेक्षा करता है। अगर builds सफल होते हैं लेकिन deploys fail होते हैं, तो service start होने में बहुत अधिक समय ले रही हो सकती है। जाँचें:
+यदि बिल्ड सफल होते हैं, लेकिन परिनियोजन विफल होते हैं, तो संभव है कि सेवा शुरू होने में बहुत अधिक समय ले रही हो या `/health` तक पहुँचा न जा सके। जाँचें:
 
-- Errors के लिए build logs
-- क्या container `docker build && docker run` के साथ locally चलता है
+- त्रुटियों के लिए बिल्ड लॉग
+- क्या कंटेनर स्थानीय रूप से `docker build && docker run` के साथ चलता है
 
-## अगले steps
+## अगले चरण
 
-- Messaging channels set up करें: [Channels](/hi/channels)
-- Gateway configure करें: [Gateway configuration](/hi/gateway/configuration)
-- OpenClaw को up to date रखें: [Updating](/hi/install/updating)
+- मैसेजिंग चैनल सेट अप करें: [चैनल](/hi/channels)
+- Gateway कॉन्फ़िगर करें: [Gateway कॉन्फ़िगरेशन](/hi/gateway/configuration)
+- OpenClaw को नवीनतम बनाए रखें: [अपडेट करना](/hi/install/updating)

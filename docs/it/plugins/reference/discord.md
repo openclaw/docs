@@ -1,14 +1,15 @@
 ---
 read_when:
-    - Stai installando, configurando o verificando il plugin Discord
+    - Si sta installando, configurando o verificando il plugin Discord
 summary: Plugin del canale Discord di OpenClaw per canali, messaggi diretti, comandi ed eventi dell'app.
 title: Plugin Discord
 x-i18n:
-    generated_at: "2026-07-12T07:21:55Z"
+    generated_at: "2026-07-16T14:44:22Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 9e3305f8ad8eb84fd350bdfa0983b4fd8f848e0697ecf3e779e31cd6cb44dbf5
+    source_hash: 1ea967057cff724152c080ea4629197d939688d1e9d009f5fc784357d3d5c75f
     source_path: plugins/reference/discord.md
     workflow: 16
 ---
@@ -24,8 +25,8 @@ Plugin del canale Discord di OpenClaw per canali, messaggi diretti, comandi ed e
 
 ## Superficie
 
-canali: discord; contratti: transcriptSourceProviders; Skills
+canali: `discord`; contratti: `tools`, `transcriptSourceProviders`; Skills
 
 ## Documentazione correlata
 
-- [discord](/it/channels/discord)
+- [Discord](/it/channels/discord)

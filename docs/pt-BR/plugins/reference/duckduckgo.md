@@ -4,27 +4,28 @@ read_when:
 summary: Adiciona suporte a provedores de pesquisa na web.
 title: Plugin do DuckDuckGo
 x-i18n:
-    generated_at: "2026-07-12T00:12:05Z"
+    generated_at: "2026-07-16T12:44:49Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 3b7960979d5dae6c64eb740dcd6f82f3f1fc466aa93cc9b64bdd08293881529c
+    source_hash: fb12e8fecf07142dec329318d78cd43286e0b0056fb1860fb46ee1c95ab63e41
     source_path: plugins/reference/duckduckgo.md
     workflow: 16
 ---
 
-# Plugin do DuckDuckGo
+# Plugin DuckDuckGo
 
-Adiciona suporte a provedor de pesquisa na web.
+Adiciona suporte ao provedor de pesquisa na web.
 
 ## Distribuição
 
 - Pacote: `@openclaw/duckduckgo-plugin`
-- Forma de instalação: incluído no OpenClaw
+- Rota de instalação: incluído no OpenClaw
 
-## Interface
+## Superfície
 
-contratos: webSearchProviders
+contratos: `webSearchProviders`
 
 ## Documentação relacionada
 

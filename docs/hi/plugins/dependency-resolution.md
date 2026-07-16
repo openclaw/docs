@@ -1,106 +1,112 @@
 ---
 read_when:
-    - आप Plugin पैकेज इंस्टॉल को डीबग कर रहे हैं
-    - आप Plugin स्टार्टअप, डॉक्टर, या पैकेज-मैनेजर इंस्टॉल व्यवहार बदल रहे हैं
-    - आप पैकेज किए गए OpenClaw इंस्टॉल या बंडल किए गए Plugin मैनिफेस्ट का रखरखाव कर रहे हैं
+    - आप Plugin पैकेज इंस्टॉलेशन को डीबग कर रहे हैं
+    - आप Plugin के स्टार्टअप, doctor या पैकेज-मैनेजर के इंस्टॉल व्यवहार को बदल रहे हैं
+    - आप पैकेज किए गए OpenClaw इंस्टॉलेशन या बंडल किए गए Plugin मैनिफ़ेस्ट का रखरखाव कर रहे हैं
 sidebarTitle: Dependencies
-summary: OpenClaw Plugin पैकेज कैसे इंस्टॉल करता है और Plugin निर्भरताएँ कैसे हल करता है
+summary: OpenClaw, Plugin पैकेज कैसे इंस्टॉल करता है और Plugin निर्भरताओं का समाधान कैसे करता है
 title: Plugin निर्भरता समाधान
 x-i18n:
-    generated_at: "2026-07-04T15:19:11Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T15:59:46Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: adc6cc80bfe4e4c06ca0e99877c0d4148861ff88366ae233c254aac56c7cdf6d
+    source_hash: ae24a82568e275399cb7b68729d2805956792852612f84d6918850305f0eb243
     source_path: plugins/dependency-resolution.md
     workflow: 16
 ---
 
-OpenClaw Plugin निर्भरता कार्य को install/update समय पर रखता है। Runtime loading
-package managers नहीं चलाता, dependency trees की मरम्मत नहीं करता, या OpenClaw
-package directory को mutate नहीं करता।
+OpenClaw Plugin निर्भरताओं को केवल इंस्टॉल/अपडेट के समय संभालता है। रनटाइम
+लोडिंग कभी भी पैकेज मैनेजर नहीं चलाती, निर्भरता ट्री की मरम्मत नहीं करती, या
+OpenClaw पैकेज डायरेक्टरी में बदलाव नहीं करती।
 
-## जिम्मेदारी विभाजन
+## उत्तरदायित्व विभाजन
 
-Plugin packages अपने dependency graph के मालिक होते हैं:
+Plugin पैकेज अपने निर्भरता ग्राफ़ के स्वामी होते हैं:
 
-- runtime dependencies Plugin package `dependencies` या
-  `optionalDependencies` में रहती हैं
-- SDK/core imports peer या supplied OpenClaw imports होते हैं
-- local development Plugins अपनी पहले से install की हुई dependencies लाते हैं
-- npm और git Plugins OpenClaw-owned package roots में install किए जाते हैं
+- रनटाइम निर्भरताएँ Plugin पैकेज के `dependencies` या
+  `optionalDependencies` में रहती हैं।
+- SDK/कोर इम्पोर्ट, पीयर या उपलब्ध कराए गए OpenClaw इम्पोर्ट होते हैं।
+- स्थानीय डेवलपमेंट Plugin अपनी पहले से इंस्टॉल की गई निर्भरताएँ स्वयं लाते हैं।
+- npm और git Plugin, OpenClaw के स्वामित्व वाले पैकेज रूट में इंस्टॉल होते हैं।
 
-OpenClaw केवल Plugin lifecycle का मालिक है:
+OpenClaw केवल Plugin जीवनचक्र का स्वामी है:
 
-- Plugin source खोजें
-- स्पष्ट रूप से अनुरोध होने पर package install या update करें
-- install metadata रिकॉर्ड करें
-- Plugin entrypoint load करें
-- dependencies missing होने पर actionable error के साथ fail करें
+- Plugin स्रोत खोजें।
+- स्पष्ट रूप से अनुरोध किए जाने पर पैकेज इंस्टॉल या अपडेट करें।
+- इंस्टॉल मेटाडेटा दर्ज करें।
+- Plugin एंट्रीपॉइंट लोड करें।
+- निर्भरताएँ अनुपलब्ध होने पर कार्रवाई योग्य त्रुटि के साथ विफल हों।
 
-## Install roots
+## इंस्टॉल रूट
 
-OpenClaw स्थिर per-source roots का उपयोग करता है:
+OpenClaw प्रत्येक स्रोत के लिए स्थिर रूट का उपयोग करता है:
 
-- npm packages per-plugin projects में install होते हैं
-  `~/.openclaw/npm/projects/<encoded-package>` के अंतर्गत
-- git packages `~/.openclaw/git` के अंतर्गत clone होते हैं
-- local/path/archive installs dependency repair के बिना copy या reference किए जाते हैं
+- npm पैकेज, प्रत्येक Plugin के लिए अलग प्रोजेक्ट में
+  `~/.openclaw/npm/projects/<encoded-package>` के अंतर्गत इंस्टॉल होते हैं।
+- git पैकेज `~/.openclaw/git` के अंतर्गत क्लोन होते हैं।
+- स्थानीय/पाथ/आर्काइव इंस्टॉल को निर्भरता मरम्मत के बिना कॉपी या संदर्भित किया जाता है।
 
-npm installs उस per-plugin project root में इनके साथ चलते हैं:
+npm इंस्टॉल उस प्रत्येक-Plugin प्रोजेक्ट रूट में इसके साथ चलते हैं:
 
 ```bash
 cd ~/.openclaw/npm/projects/<encoded-package>
 npm install --omit=dev --omit=peer --legacy-peer-deps --ignore-scripts --no-audit --no-fund
 ```
 
-`openclaw plugins install npm-pack:<path.tgz>` local npm-pack tarball के लिए उसी per-plugin npm
-project root का उपयोग करता है। OpenClaw tarball का npm
-metadata पढ़ता है, उसे managed project में copied `file:` dependency के रूप में जोड़ता है, normal npm install चलाता है,
-और फिर Plugin पर भरोसा करने से पहले installed lockfile metadata verify करता है।
-यह package-acceptance और release-candidate proof के लिए है, जहाँ
-local pack artifact को उस registry artifact की तरह व्यवहार करना चाहिए जिसका वह simulation करता है।
+`openclaw plugins install npm-pack:<path.tgz>` स्थानीय npm-pack टारबॉल के लिए उसी प्रत्येक-Plugin npm
+प्रोजेक्ट रूट का उपयोग करता है: OpenClaw टारबॉल का npm मेटाडेटा पढ़ता है,
+उसे प्रबंधित प्रोजेक्ट में कॉपी की गई `file:` निर्भरता के रूप में जोड़ता है, ऊपर
+दिया गया सामान्य npm इंस्टॉल चलाता है, फिर Plugin पर भरोसा करने से पहले इंस्टॉल किए गए
+लॉकफ़ाइल मेटाडेटा का सत्यापन करता है। यह पाथ पैकेज-स्वीकृति और
+रिलीज़-कैंडिडेट प्रमाण के लिए मौजूद है, जहाँ स्थानीय पैक आर्टिफ़ैक्ट को उस
+रजिस्ट्री आर्टिफ़ैक्ट जैसा व्यवहार करना चाहिए जिसका वह अनुकरण करता है।
 
-publish से पहले official या external Plugin packages को test करते समय `npm-pack:` का उपयोग करें।
-Raw archive या path install local debugging के लिए उपयोगी है, लेकिन यह
-installed npm या ClawHub package जैसा वही dependency path prove नहीं करता।
-`npm-pack:` managed package install shape prove करता है; यह अपने आप में
-इस बात का proof नहीं है कि Plugin catalog-linked official content है।
+प्रकाशित करने से पहले आधिकारिक या बाहरी Plugin पैकेजों का परीक्षण करते समय
+`npm-pack:` का उपयोग करें। कच्चा आर्काइव या पाथ इंस्टॉल स्थानीय डीबगिंग के लिए उपयोगी है, लेकिन यह
+इंस्टॉल किए गए npm या ClawHub पैकेज के समान निर्भरता पाथ को प्रमाणित नहीं करता।
+`npm-pack:` प्रबंधित पैकेज इंस्टॉल संरचना को प्रमाणित करता है; यह अपने आप में
+इस बात का प्रमाण नहीं है कि Plugin कैटलॉग से जुड़ी आधिकारिक सामग्री है।
 
-जब behavior bundled-plugin या trusted official Plugin status पर निर्भर हो, तो
-local package proof को catalog-backed official install या published
-package path के साथ pair करें जो official trust रिकॉर्ड करता है। Privileged helper access और
-trusted-official scope handling को उस trusted install
-path पर validate किया जाना चाहिए, local tarball install से inferred नहीं।
+जब व्यवहार बंडल किए गए Plugin या विश्वसनीय आधिकारिक Plugin की स्थिति पर निर्भर हो,
+तो स्थानीय पैकेज प्रमाण को कैटलॉग-समर्थित आधिकारिक इंस्टॉल या
+प्रकाशित पैकेज पाथ के साथ जोड़ें जो आधिकारिक विश्वास दर्ज करता हो। विशेषाधिकार प्राप्त सहायक पहुँच
+और विश्वसनीय-आधिकारिक स्कोप प्रबंधन को उसी विश्वसनीय इंस्टॉल पाथ पर
+सत्यापित किया जाना चाहिए, न कि स्थानीय टारबॉल इंस्टॉल से अनुमानित किया जाना चाहिए।
 
-यदि कोई Plugin runtime पर missing import के साथ fail होता है, तो managed project को हाथ से repair करने के बजाय package manifest
-ठीक करें। Runtime imports Plugin package `dependencies` या `optionalDependencies` में होने चाहिए; `devDependencies`
-managed runtime projects के लिए install नहीं की जातीं। `~/.openclaw/npm/projects/<encoded-package>` के अंदर local `npm install`
-temporary diagnostic unblock कर सकता है,
-लेकिन यह package-acceptance proof नहीं है क्योंकि अगला install या update
-package metadata से project को फिर से बनाएगा।
+यदि कोई Plugin अनुपलब्ध इम्पोर्ट के कारण रनटाइम पर विफल होता है, तो प्रबंधित प्रोजेक्ट
+की हाथ से मरम्मत करने के बजाय पैकेज मैनिफ़ेस्ट ठीक करें। रनटाइम इम्पोर्ट
+Plugin पैकेज के `dependencies` या `optionalDependencies` में होने चाहिए; `devDependencies`
+प्रबंधित रनटाइम प्रोजेक्टों के लिए इंस्टॉल नहीं किए जाते। `~/.openclaw/npm/projects/<encoded-package>` के भीतर स्थानीय
+`npm install` अस्थायी निदान में सहायता कर सकता है,
+लेकिन यह पैकेज-स्वीकृति प्रमाण नहीं है क्योंकि अगला इंस्टॉल या
+अपडेट पैकेज मेटाडेटा से प्रोजेक्ट को फिर से बनाता है।
 
-npm transitive dependencies को per-plugin project के
-`node_modules` में Plugin package के पास hoist कर सकता है। OpenClaw install पर भरोसा करने से पहले managed project
-root scan करता है और uninstall के दौरान उस project को हटाता है, इसलिए
-hoisted runtime dependencies उस Plugin की cleanup boundary के अंदर रहती हैं।
+npm सकर्मक निर्भरताओं को Plugin पैकेज के पास, प्रत्येक-Plugin प्रोजेक्ट के
+`node_modules` में होइस्ट कर सकता है। OpenClaw इंस्टॉल पर भरोसा करने से पहले प्रबंधित प्रोजेक्ट
+रूट को स्कैन करता है और अनइंस्टॉल करते समय उस प्रोजेक्ट को हटा देता है, इसलिए
+होइस्ट की गई रनटाइम निर्भरताएँ उस Plugin की सफ़ाई सीमा के भीतर रहती हैं।
 
-Published npm Plugin packages `npm-shrinkwrap.json` ship कर सकते हैं। npm install के दौरान उस
-publishable lockfile का उपयोग करता है, और OpenClaw का managed npm project root
-normal npm install path के माध्यम से उसे support करता है। OpenClaw-owned publishable
-Plugin packages में उस Plugin package के published dependency graph से generate किया गया package-local shrinkwrap शामिल होना चाहिए:
+प्रकाशित npm Plugin पैकेज `npm-shrinkwrap.json` भेज सकते हैं; npm इंस्टॉल के दौरान उस
+प्रकाशन योग्य लॉकफ़ाइल का उपयोग करता है, और OpenClaw का प्रबंधित npm प्रोजेक्ट रूट
+सामान्य इंस्टॉल पाथ के माध्यम से इसका समर्थन करता है। OpenClaw के स्वामित्व वाले प्रकाशन योग्य
+Plugin पैकेजों में उस पैकेज के प्रकाशित निर्भरता ग्राफ़ से जनरेट किया गया पैकेज-स्थानीय श्रिंकरैप
+शामिल होना चाहिए:
 
 ```bash
 pnpm deps:shrinkwrap:generate
 pnpm deps:shrinkwrap:check
 ```
 
-Generator Plugin `devDependencies` हटाता है, workspace override
-policy लागू करता है, और हर `publishToNpm` Plugin के लिए `extensions/<id>/npm-shrinkwrap.json` लिखता है।
-Third-party Plugin packages भी shrinkwrap ship कर सकते हैं;
-OpenClaw community packages के लिए इसे require नहीं करता, लेकिन मौजूद होने पर npm उसका सम्मान करेगा।
+जनरेटर Plugin `devDependencies` हटाता है, वर्कस्पेस ओवरराइड
+नीति लागू करता है, और `openclaw.release.publishToNpm: true` वाले प्रत्येक Plugin के लिए
+`extensions/<id>/npm-shrinkwrap.json` लिखता है। तृतीय-पक्ष Plugin पैकेज भी
+श्रिंकरैप भेज सकते हैं; OpenClaw सामुदायिक पैकेजों के लिए इसे आवश्यक नहीं बनाता, लेकिन
+मौजूद होने पर npm इसका पालन करता है।
 
-Local package को release-candidate proof मानने से पहले, install किए जाने वाले tarball को inspect करें:
+किसी स्थानीय पैकेज को रिलीज़-कैंडिडेट प्रमाण मानने से पहले, इंस्टॉल किए जाने वाले
+टारबॉल की जाँच करें:
 
 ```bash
 npm pack --pack-destination /tmp
@@ -108,8 +114,8 @@ tar -xOf /tmp/<plugin-package>.tgz package/package.json
 tar -tf /tmp/<plugin-package>.tgz | grep '^package/dist/'
 ```
 
-Dependency changes के लिए, यह भी verify करें कि production install dev dependencies के बिना
-runtime packages resolve कर सकता है:
+निर्भरता परिवर्तनों के लिए यह भी सत्यापित करें कि प्रोडक्शन इंस्टॉल, dev निर्भरताओं
+के बिना रनटाइम पैकेजों को रिज़ॉल्व कर सकता है:
 
 ```bash
 tmpdir=$(mktemp -d)
@@ -121,51 +127,53 @@ tmpdir=$(mktemp -d)
 rm -rf "$tmpdir"
 ```
 
-OpenClaw-owned npm Plugin packages explicit
-`bundledDependencies` के साथ भी publish कर सकते हैं। npm publish path runtime dependency
-name list overlay करता है, published package
-manifest से dev-only workspace metadata हटाता है, package-local runtime
-dependencies के लिए script-free npm install चलाता है, फिर उन dependency
-files सहित Plugin tarball pack या publish करता है। Codex और ACP runtimes सहित native-heavy packages
-`openclaw.release.bundleRuntimeDependencies: false` के साथ opt out करते हैं; वे packages फिर भी
-अपना shrinkwrap ship करते हैं, लेकिन npm install के दौरान runtime dependencies resolve करता है
-बजाय हर platform binary को Plugin tarball में embed करने के। Root
-`openclaw` package अपनी पूरी dependency tree bundle नहीं करता।
+OpenClaw के स्वामित्व वाले npm Plugin पैकेज स्पष्ट
+`bundledDependencies` के साथ भी प्रकाशित हो सकते हैं। npm प्रकाशन पाथ रनटाइम निर्भरता
+नाम सूची को ओवरले करता है, प्रकाशित मैनिफ़ेस्ट से केवल-dev वर्कस्पेस मेटाडेटा हटाता है,
+पैकेज-स्थानीय रनटाइम निर्भरताओं के लिए स्क्रिप्ट-रहित npm इंस्टॉल चलाता है,
+फिर उन निर्भरता फ़ाइलों को शामिल करके Plugin टारबॉल पैक या प्रकाशित करता है।
+मूल-भारी पैकेज (Codex, ACPX, Copilot, llama.cpp,
+memory-lancedb, Tlon)
+`openclaw.release.bundleRuntimeDependencies: false` के साथ इससे बाहर रहते हैं; वे फिर भी
+श्रिंकरैप भेजते हैं, लेकिन Plugin टारबॉल में प्रत्येक प्लेटफ़ॉर्म बाइनरी एम्बेड करने के बजाय
+npm इंस्टॉल के दौरान रनटाइम निर्भरताएँ रिज़ॉल्व करता है। रूट `openclaw`
+पैकेज अपने पूरे निर्भरता ट्री को बंडल नहीं करता।
 
-जो Plugins `openclaw/plugin-sdk/*` import करते हैं, वे `openclaw` को peer
-dependency declare करते हैं। OpenClaw npm को managed project में host package की अलग registry copy install नहीं करने देता,
-क्योंकि stale host packages उस Plugin के अंदर npm
-peer resolution को affect कर सकते हैं। Managed npm installs npm peer
-resolution/materialization skip करते हैं और OpenClaw install या update के बाद host peer declare करने वाले installed packages के लिए plugin-local
-`node_modules/openclaw` links फिर से assert करता है।
+`openclaw/plugin-sdk/*` इम्पोर्ट करने वाले Plugin, `openclaw` को पीयर
+निर्भरता के रूप में घोषित करते हैं। OpenClaw npm को होस्ट पैकेज की अलग रजिस्ट्री कॉपी
+प्रबंधित प्रोजेक्ट में इंस्टॉल नहीं करने देता, क्योंकि पुराना होस्ट पैकेज उस Plugin के भीतर
+npm के पीयर रिज़ॉल्यूशन को प्रभावित कर सकता है। प्रबंधित npm इंस्टॉल, npm पीयर
+रिज़ॉल्यूशन/मैटेरियलाइज़ेशन छोड़ देते हैं, और इंस्टॉल या अपडेट के बाद OpenClaw
+होस्ट पीयर घोषित करने वाले इंस्टॉल किए गए पैकेजों के लिए Plugin-स्थानीय
+`node_modules/openclaw` लिंक दोबारा सुनिश्चित करता है।
 
-git installs repository को clone या refresh करते हैं, फिर चलाते हैं:
+git इंस्टॉल रिपॉज़िटरी को क्लोन या रीफ़्रेश करते हैं, फिर चलाते हैं:
 
 ```bash
 npm install --omit=dev --ignore-scripts --no-audit --no-fund
 ```
 
-Installed Plugin फिर उस package directory से load होता है, इसलिए package-local
-और parent `node_modules` resolution उसी तरह काम करता है जैसे normal
-Node package के लिए करता है।
+इसके बाद इंस्टॉल किया गया Plugin उस पैकेज डायरेक्टरी से लोड होता है, इसलिए
+पैकेज-स्थानीय और पैरेंट `node_modules` रिज़ॉल्यूशन उसी तरह काम करते हैं जैसे
+सामान्य Node पैकेज के लिए करते हैं।
 
-## Local Plugins
+## स्थानीय Plugin
 
-Local Plugins को developer-controlled directories माना जाता है। OpenClaw उनके लिए
-`npm install`, `pnpm install`, या dependency repair नहीं चलाता। यदि किसी local
-Plugin की dependencies हैं, तो उसे load करने से पहले उन्हें उस Plugin में install करें।
+स्थानीय Plugin डेवलपर-नियंत्रित डायरेक्टरी हैं। OpenClaw उनके लिए कभी भी
+`npm install`, `pnpm install`, या निर्भरता मरम्मत नहीं चलाता; यदि किसी स्थानीय
+Plugin की निर्भरताएँ हैं, तो उसे लोड करने से पहले उन्हें उसी Plugin में इंस्टॉल करें।
 
-Third-party TypeScript local Plugins emergency Jiti path का उपयोग कर सकते हैं। Packaged
-JavaScript Plugins और bundled internal Plugins Jiti के बजाय native
-import/require के माध्यम से load होते हैं।
+तृतीय-पक्ष TypeScript स्थानीय Plugin आपातकालीन पाथ के रूप में Jiti के माध्यम से लोड होते हैं।
+पैकेज किए गए JavaScript Plugin और बंडल किए गए आंतरिक Plugin इसके बजाय नेटिव
+import/require के माध्यम से लोड होते हैं।
 
-## Startup और reload
+## स्टार्टअप और रीलोड
 
-Gateway startup और config reload कभी Plugin dependencies install नहीं करते। वे
-Plugin install records पढ़ते हैं, entrypoint compute करते हैं, और उसे load करते हैं।
+Gateway स्टार्टअप और कॉन्फ़िग रीलोड कभी भी Plugin निर्भरताएँ इंस्टॉल नहीं करते। वे
+Plugin इंस्टॉल रिकॉर्ड पढ़ते हैं, एंट्रीपॉइंट की गणना करते हैं और उसे लोड करते हैं।
 
-यदि runtime पर कोई dependency missing है, तो Plugin load होने में fail होता है और error
-operator को explicit fix की ओर point करना चाहिए:
+रनटाइम पर अनुपलब्ध निर्भरता, Plugin लोड को ऐसी त्रुटि के साथ विफल करती है जो
+ऑपरेटर को स्पष्ट समाधान बताती है:
 
 ```bash
 openclaw plugins update <id>
@@ -173,44 +181,50 @@ openclaw plugins install <source>
 openclaw doctor --fix
 ```
 
-`doctor --fix` legacy OpenClaw-generated dependency state clean कर सकता है और
-downloadable Plugins recover कर सकता है जो config में reference होने पर local install records से missing हैं।
-Doctor पहले से installed local Plugin के लिए dependencies repair नहीं करता।
+`doctor --fix` OpenClaw द्वारा जनरेट की गई पुरानी निर्भरता स्थिति साफ़ करता है और
+स्थानीय इंस्टॉल रिकॉर्ड में अनुपलब्ध डाउनलोड योग्य Plugin पुनर्प्राप्त कर सकता है, जब
+कॉन्फ़िग अभी भी उनका संदर्भ देता हो। Doctor पहले से इंस्टॉल स्थानीय Plugin की
+निर्भरताओं की मरम्मत नहीं करता।
 
-## Bundled Plugins
+## बंडल किए गए Plugin
 
-Lightweight और core-critical bundled Plugins OpenClaw के हिस्से के रूप में ship किए जाते हैं।
-उनमें या तो heavy runtime dependency tree नहीं होनी चाहिए या उन्हें ClawHub/npm पर downloadable package में move किया जाना चाहिए।
+हल्के और कोर-महत्वपूर्ण बंडल किए गए Plugin, OpenClaw के हिस्से के रूप में भेजे जाते हैं। उनमें
+या तो कोई भारी रनटाइम निर्भरता ट्री नहीं होना चाहिए, या उन्हें
+ClawHub/npm पर डाउनलोड योग्य पैकेज में स्थानांतरित कर देना चाहिए।
 
-Core package में ship होने वाले, externally install होने वाले, या source-only रहने वाले Plugins की current generated list के लिए [Plugin inventory](/hi/plugins/plugin-inventory) देखें।
+कोर पैकेज में भेजे जाने वाले, बाहरी रूप से इंस्टॉल होने वाले, या केवल स्रोत में रहने वाले
+Plugin की वर्तमान जनरेट की गई सूची के लिए
+[Plugin सूची](/hi/plugins/plugin-inventory) देखें।
 
-Bundled Plugin manifests को dependency staging request नहीं करना चाहिए। Large या optional
-Plugin functionality को normal Plugin के रूप में package किया जाना चाहिए और
-third-party Plugins जैसे ही npm/git/ClawHub path के माध्यम से install किया जाना चाहिए।
+बंडल किए गए Plugin मैनिफ़ेस्ट को निर्भरता स्टेजिंग का अनुरोध नहीं करना चाहिए। बड़ी या
+वैकल्पिक Plugin कार्यक्षमता को सामान्य Plugin के रूप में पैकेज किया जाना चाहिए और
+तृतीय-पक्ष Plugin के समान npm/git/ClawHub पाथ के माध्यम से इंस्टॉल किया जाना चाहिए।
 
-Source checkouts में, OpenClaw repository को pnpm monorepo मानता है। `pnpm install` के बाद, bundled Plugins `extensions/<id>` से load होते हैं ताकि package-local
-workspace dependencies उपलब्ध रहें और edits सीधे pick up हों। Source
-checkout development केवल pnpm-only है; repository root पर plain `npm install`
-bundled Plugin dependencies तैयार करने का supported तरीका नहीं है।
+स्रोत चेकआउट में OpenClaw रिपॉज़िटरी को pnpm मोनोरेपो मानता है।
+`pnpm install` के बाद, बंडल किए गए Plugin `extensions/<id>` से लोड होते हैं ताकि
+पैकेज-स्थानीय वर्कस्पेस निर्भरताएँ उपलब्ध हों और संपादन सीधे लागू हों।
+स्रोत चेकआउट डेवलपमेंट केवल pnpm के लिए है; रिपॉज़िटरी रूट पर साधारण
+`npm install` बंडल किए गए Plugin की निर्भरताएँ तैयार नहीं करता।
 
-| Install shape                    | Bundled Plugin location               | Dependency owner                                                     |
+| इंस्टॉल संरचना                    | बंडल किए गए Plugin का स्थान               | निर्भरता स्वामी                                                     |
 | -------------------------------- | ------------------------------------- | -------------------------------------------------------------------- |
-| `npm install -g openclaw`        | Package के अंदर built runtime tree | OpenClaw package और explicit Plugin install/update/doctor flows     |
-| Git checkout plus `pnpm install` | `extensions/<id>` workspace packages  | pnpm workspace, जिसमें हर Plugin package की अपनी dependencies शामिल हैं |
-| `openclaw plugins install ...`   | Managed npm project/git/ClawHub root  | Plugin install/update flow                                       |
+| `npm install -g openclaw`        | पैकेज के भीतर निर्मित रनटाइम ट्री | OpenClaw पैकेज और स्पष्ट Plugin इंस्टॉल/अपडेट/Doctor प्रवाह     |
+| Git चेकआउट और `pnpm install` | `extensions/<id>` वर्कस्पेस पैकेज  | pnpm वर्कस्पेस, जिसमें प्रत्येक Plugin पैकेज की अपनी निर्भरताएँ शामिल हैं |
+| `openclaw plugins install ...`   | प्रबंधित npm प्रोजेक्ट/git/ClawHub रूट  | Plugin इंस्टॉल/अपडेट प्रवाह                                       |
 
-## Legacy cleanup
+## पुरानी स्थिति की सफ़ाई
 
-पुराने OpenClaw versions startup पर या doctor repair के दौरान bundled-plugin dependency roots generate करते थे।
-Current doctor cleanup `--fix` उपयोग होने पर उन stale directories और
-symlinks को हटाता है, जिसमें old `plugin-runtime-deps` roots, pruned `plugin-runtime-deps` targets की ओर point करने वाले global
-Node-prefix package symlinks,
-`.openclaw-runtime-deps*` manifests, generated Plugin `node_modules`, install
-stage directories, और package-local pnpm stores शामिल हैं। Packaged postinstall भी
-legacy target roots prune करने से पहले उन global symlinks को हटाता है ताकि upgrades
-dangling ESM package imports न छोड़ें।
+OpenClaw के पुराने संस्करण स्टार्टअप पर या Doctor मरम्मत के दौरान बंडल किए गए Plugin के
+निर्भरता रूट जनरेट करते थे। वर्तमान Doctor सफ़ाई, `--fix` के साथ उन पुराने
+डायरेक्टरी और सिमलिंक को हटाती है, जिनमें पुराने `plugin-runtime-deps`
+रूट, हटाए गए `plugin-runtime-deps` लक्ष्यों की ओर इंगित करने वाले वैश्विक Node-प्रीफ़िक्स
+पैकेज सिमलिंक, `.openclaw-runtime-deps*` मैनिफ़ेस्ट, जनरेट किए गए
+Plugin `node_modules`, इंस्टॉल स्टेज डायरेक्टरी और पैकेज-स्थानीय pnpm
+स्टोर शामिल हैं। पैकेज किया गया postinstall भी पुराने लक्ष्य रूट हटाने से पहले
+उन वैश्विक सिमलिंक को हटाता है, ताकि अपग्रेड लटकते हुए ESM
+पैकेज इम्पोर्ट न छोड़ें।
 
-पुराने npm installs ने shared `~/.openclaw/npm/node_modules` root भी उपयोग किया था।
-Current install, update, uninstall, और doctor flows अभी भी उस legacy
-flat root को केवल recovery और cleanup के लिए recognize करते हैं। New npm installs को
-इसके बजाय per-plugin project roots create करने चाहिए।
+पुराने npm इंस्टॉल साझा `~/.openclaw/npm/node_modules` रूट का भी उपयोग करते थे।
+वर्तमान इंस्टॉल, अपडेट, अनइंस्टॉल और Doctor प्रवाह उस पुराने फ़्लैट रूट को
+केवल पुनर्प्राप्ति और सफ़ाई के लिए पहचानते हैं। नए npm इंस्टॉल इसके बजाय
+प्रत्येक-Plugin प्रोजेक्ट रूट बनाते हैं।

@@ -1,46 +1,42 @@
 ---
 read_when:
-    - आपको कनेक्टिविटी/प्रमाणीकरण संबंधी समस्याएँ हैं और निर्देशित सुधार चाहते हैं
-    - आपने अपडेट किया है और एक त्वरित जांच चाहते हैं
-summary: '`openclaw doctor` के लिए CLI संदर्भ (स्वास्थ्य जांच + निर्देशित सुधार)'
+    - आपको कनेक्टिविटी/प्रमाणीकरण संबंधी समस्याएँ हैं और आप निर्देशित समाधान चाहते हैं
+    - आपने अपडेट किया है और इसकी सामान्य जाँच चाहते हैं
+summary: '`openclaw doctor` के लिए CLI संदर्भ (स्वास्थ्य जाँच + निर्देशित सुधार)'
 title: डॉक्टर
 x-i18n:
-    generated_at: "2026-06-28T22:49:17Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T13:58:41Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: cf7c07cd39053fce7efa81d968ef0f2666f6f5331581e72d2684843519c63b43
+    source_hash: 322af63f52a3d864e46da332353ca921a4462e13fa849986d936524759f80ccc
     source_path: cli/doctor.md
     workflow: 16
 ---
 
 # `openclaw doctor`
 
-Gateway और चैनलों के लिए स्वास्थ्य जांचें + त्वरित सुधार।
+Gateway, चैनलों, plugins, skills, मॉडल रूटिंग, स्थानीय स्थिति और कॉन्फ़िगरेशन माइग्रेशन के लिए स्वास्थ्य जाँच और त्वरित सुधार। जब भी कोई चीज़ अपेक्षा के अनुसार व्यवहार न कर रही हो और आप चाहते हों कि एक कमांड बताए कि क्या ग़लत है, इसका उपयोग करें।
 
 संबंधित:
 
 - समस्या निवारण: [समस्या निवारण](/hi/gateway/troubleshooting)
 - सुरक्षा ऑडिट: [सुरक्षा](/hi/gateway/security)
 
-## इसका उपयोग क्यों करें
+## कार्य-विधियाँ
 
-`openclaw doctor` OpenClaw की स्वास्थ्य सतह है। इसका उपयोग तब करें जब Gateway,
-चैनल, Plugin, Skills, मॉडल रूटिंग, स्थानीय स्थिति, या कॉन्फ़िग माइग्रेशन
-अपेक्षा के अनुसार व्यवहार नहीं कर रहे हों और आप ऐसा एक कमांड चाहते हों जो
-समझा सके कि क्या गलत है।
+Doctor की पाँच कार्य-विधियाँ हैं:
 
-Doctor की तीन स्थितियां हैं:
+| कार्य-विधि                | कमांड                                     | व्यवहार                                                                                  |
+| ------------------------- | ----------------------------------------- | ---------------------------------------------------------------------------------------- |
+| निरीक्षण                  | `openclaw doctor`                         | मानव-केंद्रित जाँच और निर्देशित प्रॉम्प्ट।                                               |
+| सुधार                    | `openclaw doctor --fix`                   | समर्थित सुधार लागू करता है; गैर-इंटरैक्टिव सुधार सुरक्षित न होने पर प्रॉम्प्ट का उपयोग करता है। |
+| लिंट                      | `openclaw doctor --lint`                  | CI, प्रीफ़्लाइट और समीक्षा गेट के लिए केवल-पठन संरचित निष्कर्ष।                          |
+| साझा SQLite रखरखाव       | `openclaw doctor --state-sqlite compact`  | कैनोनिकल साझा स्थिति DB को स्पष्ट रूप से चेकपॉइंट, कॉम्पैक्ट और सत्यापित करता है।        |
+| सत्र SQLite माइग्रेशन    | `openclaw doctor --session-sqlite <mode>` | सत्र स्थिति का निरीक्षण, आयात, सत्यापन, कॉम्पैक्शन, पुनर्प्राप्ति या पुनर्स्थापन करता है। |
 
-| स्थिति | कमांड                   | व्यवहार                                                                         |
-| ------- | ------------------------ | ------------------------------------------------------------------------------- |
-| निरीक्षण | `openclaw doctor`        | मानव-केंद्रित जांचें और निर्देशित प्रॉम्प्ट।                                    |
-| मरम्मत  | `openclaw doctor --fix`  | समर्थित मरम्मतें लागू करता है, जब तक गैर-इंटरैक्टिव मरम्मत सुरक्षित न हो, प्रॉम्प्ट का उपयोग करता है। |
-| Lint    | `openclaw doctor --lint` | CI, प्रीफ्लाइट, और समीक्षा गेट के लिए केवल-पढ़ने योग्य संरचित निष्कर्ष।          |
-
-जब ऑटोमेशन को स्थिर परिणाम चाहिए हो, तो `--lint` को प्राथमिकता दें। जब कोई
-मानव ऑपरेटर जानबूझकर doctor से कॉन्फ़िग या स्थिति संपादित करवाना चाहता हो, तो
-`--fix` को प्राथमिकता दें।
+जब स्वचालन को स्थिर परिणाम चाहिए, तब `--lint` को प्राथमिकता दें। जब कोई मानव ऑपरेटर चाहता हो कि doctor कॉन्फ़िगरेशन या स्थिति संपादित करे, तब `--fix` को प्राथमिकता दें।
 
 ## उदाहरण
 
@@ -57,45 +53,57 @@ openclaw doctor --fix --non-interactive
 openclaw doctor --generate-gateway-token
 openclaw doctor --post-upgrade
 openclaw doctor --post-upgrade --json
+openclaw doctor --state-sqlite compact
+openclaw doctor --state-sqlite compact --json
+openclaw doctor --session-sqlite inspect --session-sqlite-all-agents
+openclaw doctor --session-sqlite dry-run --session-sqlite-agent main --json
+openclaw doctor --session-sqlite import --session-sqlite-all-agents
+openclaw doctor --session-sqlite validate --session-sqlite-all-agents --json
+openclaw doctor --session-sqlite compact --session-sqlite-all-agents
+openclaw doctor --session-sqlite recover --github-issue
+openclaw doctor --session-sqlite restore --session-sqlite-all-agents
 ```
 
-चैनल-विशिष्ट अनुमतियों के लिए, `doctor` के बजाय चैनल probes का उपयोग करें:
+चैनल-विशिष्ट अनुमतियों के लिए, `doctor` के बजाय चैनल प्रोब का उपयोग करें:
 
 ```bash
 openclaw channels capabilities --channel discord --target channel:<channel-id>
 openclaw channels status --probe
 ```
 
-लक्षित Discord क्षमताएं probe bot की प्रभावी चैनल अनुमतियां रिपोर्ट करता है; status probe कॉन्फ़िगर किए गए Discord चैनलों और voice auto-join लक्ष्यों का ऑडिट करता है।
+`channels capabilities` किसी विशिष्ट चैनल लक्ष्य के लिए बॉट की प्रभावी अनुमतियाँ रिपोर्ट करता है। `channels status --probe` सभी कॉन्फ़िगर किए गए चैनलों और वॉइस ऑटो-जॉइन लक्ष्यों का ऑडिट करता है।
 
 ## विकल्प
 
-- `--no-workspace-suggestions`: workspace memory/search सुझाव अक्षम करें
-- `--yes`: बिना प्रॉम्प्ट किए डिफ़ॉल्ट स्वीकार करें
-- `--repair`: बिना प्रॉम्प्ट किए अनुशंसित गैर-service मरम्मतें लागू करें; Gateway service इंस्टॉल और rewrite के लिए अभी भी इंटरैक्टिव पुष्टि या स्पष्ट Gateway कमांड चाहिए
-- `--fix`: `--repair` का alias
-- `--force`: जरूरत पड़ने पर custom service config overwrite करने सहित आक्रामक मरम्मतें लागू करें
-- `--non-interactive`: बिना प्रॉम्प्ट चलाएं; केवल सुरक्षित माइग्रेशन और गैर-service मरम्मतें
-- `--generate-gateway-token`: Gateway token जनरेट और कॉन्फ़िगर करें
-- `--allow-exec`: secrets सत्यापित करते समय doctor को configured exec SecretRefs चलाने की अनुमति दें
-- `--deep`: अतिरिक्त Gateway installs के लिए system services scan करें और हालिया Gateway supervisor restart handoffs रिपोर्ट करें
-- `--lint`: read-only mode में आधुनिक health checks चलाएं और diagnostic findings emit करें
-- `--post-upgrade`: post-upgrade Plugin compatibility probes चलाएं; findings को stdout पर emit करता है; यदि कोई error-level findings मौजूद हों तो code 1 के साथ exit करता है
-- `--json`: `--lint` के साथ, human output के बजाय JSON findings emit करें; `--post-upgrade` के साथ, machine-readable JSON envelope (`{ probesRun, findings }`) emit करें
-- `--severity-min <level>`: `--lint` के साथ, `info`, `warning`, या `error` से नीचे की findings हटाएं
-- `--all`: `--lint` के साथ, default automation set से बाहर रखी गई opt-in checks सहित सभी registered checks चलाएं
-- `--skip <id>`: `--lint` के साथ, check id छोड़ें; एक से अधिक छोड़ने के लिए repeat करें
-- `--only <id>`: `--lint` के साथ, केवल एक check id चलाएं; छोटा selected set चलाने के लिए repeat करें
+| विकल्प                          | प्रभाव                                                                                                                                                                                  |
+| ------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `--no-workspace-suggestions`    | वर्कस्पेस मेमोरी/खोज सुझाव अक्षम करें।                                                                                                                                                  |
+| `--yes`                         | प्रॉम्प्ट किए बिना डिफ़ॉल्ट स्वीकार करें।                                                                                                                                               |
+| `--repair` / `--fix`            | प्रॉम्प्ट किए बिना अनुशंसित गैर-सेवा सुधार लागू करें (`--fix` एक उपनाम है)। Gateway सेवा इंस्टॉल/पुनर्लेखन के लिए अब भी इंटरैक्टिव पुष्टि या स्पष्ट `gateway` कमांड आवश्यक हैं। |
+| `--force`                       | कस्टम सेवा कॉन्फ़िगरेशन को अधिलेखित करने सहित आक्रामक सुधार लागू करें।                                                                                                                  |
+| `--non-interactive`             | प्रॉम्प्ट के बिना चलाएँ; केवल सुरक्षित माइग्रेशन और गैर-सेवा सुधार।                                                                                                                     |
+| `--generate-gateway-token`      | Gateway टोकन जनरेट और कॉन्फ़िगर करें।                                                                                                                                                  |
+| `--allow-exec`                  | रहस्यों को सत्यापित करते समय doctor को कॉन्फ़िगर किए गए `exec` SecretRefs निष्पादित करने दें।                                                                                         |
+| `--deep`                        | अतिरिक्त Gateway इंस्टॉल के लिए सिस्टम सेवाएँ स्कैन करें; हाल के Gateway सुपरवाइज़र पुनरारंभ हैंडऑफ़ रिपोर्ट करें।                                                                       |
+| `--lint`                        | आधुनिकीकृत स्वास्थ्य जाँच केवल-पठन मोड में चलाएँ और नैदानिक निष्कर्ष उत्सर्जित करें।                                                                                                    |
+| `--post-upgrade`                | अपग्रेड के बाद Plugin संगतता प्रोब चलाएँ; निष्कर्ष stdout में जाते हैं; कोई त्रुटि-स्तरीय निष्कर्ष उपस्थित होने पर निकास कोड 1 होता है।                                                  |
+| `--state-sqlite <mode>`         | स्पष्ट साझा स्थिति SQLite रखरखाव चलाएँ। एकमात्र मोड `compact` है।                                                                                                                       |
+| `--session-sqlite <mode>`       | लक्षित सत्र SQLite माइग्रेशन मोड चलाएँ: `inspect`, `dry-run`, `import`, `validate`, `compact`, `recover`, या `restore`।                                                         |
+| `--session-sqlite-store <path>` | `--session-sqlite` के साथ: एक विरासती `sessions.json` स्टोर पथ चुनें।                                                                                                                  |
+| `--session-sqlite-agent <id>`   | `--session-sqlite` के साथ: एक कॉन्फ़िगर किया गया एजेंट चुनें।                                                                                                                           |
+| `--session-sqlite-all-agents`   | `--session-sqlite` के साथ: कॉन्फ़िगर किए गए और खोजे गए एजेंट स्टोर चुनें।                                                                                                               |
+| `--github-issue`                | `--session-sqlite recover` के साथ: स्वच्छ किया गया openclaw/openclaw समस्या रिपोर्ट तैयार करें; `--yes` या इंटरैक्टिव पुष्टि के बाद doctor इसे `gh` से बनाता है।                       |
+| `--json`                        | `--lint` के साथ: JSON निष्कर्ष। `--post-upgrade` के साथ: `{ probesRun, findings }`। `--state-sqlite` या `--session-sqlite` के साथ: रखरखाव रिपोर्ट JSON के रूप में।                            |
+| `--severity-min <level>`        | `--lint` के साथ: `info`, `warning`, या `error` से नीचे के निष्कर्ष हटाएँ।                                                                                                                       |
+| `--all`                         | `--lint` के साथ: डिफ़ॉल्ट सेट से बाहर रखी गई ऑप्ट-इन जाँच सहित सभी पंजीकृत जाँच चलाएँ।                                                                                                  |
+| `--skip <id>`                   | `--lint` के साथ: किसी जाँच ID को छोड़ें। दोहराया जा सकता है।                                                                                                                           |
+| `--only <id>`                   | `--lint` के साथ: केवल दी गई जाँच ID चलाएँ। दोहराया जा सकता है।                                                                                                                        |
 
-## Lint मोड
+`--severity-min`, `--all`, `--only`, और `--skip` केवल `--lint` के साथ स्वीकार किए जाते हैं; `--json` को `--lint`, `--post-upgrade`, `--state-sqlite`, और `--session-sqlite` के साथ स्वीकार किया जाता है।
 
-`openclaw doctor --lint` doctor checks के लिए read-only automation posture है।
-यह structured health-check path का उपयोग करता है, प्रॉम्प्ट नहीं करता, और
-config/state की मरम्मत या rewrite नहीं करता। इसे CI, preflight scripts, और
-review workflows में उपयोग करें जब आपको guided repair prompts के बजाय
-machine-readable findings चाहिए हों।
-`--json`, `--severity-min`, `--all`, `--only`, और `--skip` जैसे Lint-output विकल्प
-केवल `--lint` के साथ स्वीकार किए जाते हैं।
+## लिंट मोड
+
+`openclaw doctor --lint` केवल-पठन है: कोई प्रॉम्प्ट नहीं, कोई सुधार नहीं, कॉन्फ़िगरेशन/स्थिति का कोई पुनर्लेखन नहीं।
 
 ```bash
 openclaw doctor --lint
@@ -104,17 +112,18 @@ openclaw doctor --lint --json
 openclaw doctor --lint --all
 openclaw doctor --lint --allow-exec
 openclaw doctor --lint --only core/doctor/gateway-config --json
+openclaw doctor --lint --only core/doctor/local-audio-acceleration --severity-min info
 ```
 
-Human output compact है:
+मानव-पठनीय आउटपुट संक्षिप्त होता है:
 
 ```text
-doctor --lint: ran 6 check(s), 1 finding(s)
-  [warning] core/doctor/gateway-config gateway.mode - gateway.mode is unset; gateway start will be blocked.
-    fix: Run `openclaw configure` and set Gateway mode (local/remote), or `openclaw config set gateway.mode local`.
+doctor --lint: 6 जाँच चलाई गईं, 1 निष्कर्ष मिला
+  [warning] core/doctor/gateway-config gateway.mode - gateway.mode सेट नहीं है; Gateway प्रारंभ अवरुद्ध होगा।
+    सुधार: `openclaw configure` चलाएँ और Gateway मोड (local/remote) सेट करें, या `openclaw config set gateway.mode local` चलाएँ।
 ```
 
-JSON output lint runs के लिए scripting surface है:
+JSON आउटपुट स्क्रिप्टिंग सतह है:
 
 ```json
 {
@@ -125,87 +134,58 @@ JSON output lint runs के लिए scripting surface है:
     {
       "checkId": "core/doctor/gateway-config",
       "severity": "warning",
-      "message": "gateway.mode is unset; gateway start will be blocked.",
+      "message": "gateway.mode सेट नहीं है; Gateway प्रारंभ अवरुद्ध होगा।",
       "path": "gateway.mode",
-      "fixHint": "Run `openclaw configure` and set Gateway mode (local/remote), or `openclaw config set gateway.mode local`."
+      "fixHint": "`openclaw configure` चलाएँ और Gateway मोड (local/remote) सेट करें, या `openclaw config set gateway.mode local` चलाएँ।"
     }
   ]
 }
 ```
 
-Exit व्यवहार:
+निकास कोड:
 
-- `0`: चुनी गई severity threshold पर या उससे ऊपर कोई findings नहीं
-- `1`: कम से कम एक finding चुनी गई threshold को पूरा करती है
-- `2`: lint findings बन पाने से पहले command/runtime failure
+| कोड | अर्थ                                                          |
+| ---- | ------------------------------------------------------------- |
+| `0`  | चुनी गई गंभीरता सीमा पर या उससे ऊपर कोई निष्कर्ष नहीं।        |
+| `1`  | कम-से-कम एक निष्कर्ष चुनी गई सीमा को पूरा करता है।           |
+| `2`  | लिंट निष्कर्ष उत्पन्न होने से पहले कमांड/रनटाइम विफलता।       |
 
-`--severity-min` visible findings और exit threshold दोनों को नियंत्रित करता है।
-उदाहरण के लिए, `openclaw doctor --lint --severity-min error` कोई findings print
-नहीं कर सकता और `0` exit कर सकता है, भले ही lower-severity `info` या `warning`
-findings मौजूद हों।
+`--severity-min` यह नियंत्रित करता है कि कौन-से निष्कर्ष प्रिंट हों और निकास सीमा क्या हो: कम गंभीरता वाले `info`/`warning` निष्कर्ष मौजूद होने पर भी `openclaw doctor --lint --severity-min error` कुछ भी प्रिंट किए बिना `0` के साथ बाहर निकल सकता है।
 
-`--all` severity filtering से पहले चुनी जाने वाली checks को नियंत्रित करता है।
-default lint run stable automation gate है और ऐसी checks को बाहर रखता है जिन्हें
-जानबूझकर opt-in बनाया गया है क्योंकि वे deep, historical, या repairable legacy
-residue surface करने की अधिक संभावना वाली हैं। जब आप हर check id सूचीबद्ध किए
-बिना पूरा lint inventory चाहते हों, तो `--all` का उपयोग करें। `--only <id>` सबसे
-सटीक selector बना रहता है और id द्वारा कोई भी registered check चला सकता है।
+`--all` गंभीरता फ़िल्टरिंग से पहले यह नियंत्रित करता है कि कौन-सी जाँच चुनी जाएँ। डिफ़ॉल्ट लिंट रन उन जाँचों को बाहर रखता है जो गहरी, ऐतिहासिक या सुधार योग्य विरासती अवशेष दिखाने की अधिक संभावना वाली हैं; पूरी सूची के लिए `--all` का उपयोग करें। `--only <id>` सबसे सटीक चयनकर्ता है और ID द्वारा कोई भी पंजीकृत जाँच चला सकता है।
 
-## संरचित स्वास्थ्य जांचें
+`core/doctor/local-audio-acceleration` स्पीच मॉडल लोड किए बिना स्वतः चयनित स्थानीय STT कमांड, सक्षम/अनुरोधित/प्रेक्षित बैकएंड के अलग-अलग साक्ष्य और फ़ॉलबैक क्रम रिपोर्ट करता है। यह सूचनात्मक निष्कर्ष उत्सर्जित करता है, इसलिए इसे प्रदर्शित करने के लिए `--severity-min info` शामिल करें।
 
-आधुनिक doctor checks एक छोटे structured contract का उपयोग करती हैं:
+## संरचित स्वास्थ्य जाँच
+
+आधुनिक doctor जाँच एक छोटे विभाजित अनुबंध का उपयोग करती हैं:
 
 ```ts
 detect(ctx, scope?) -> HealthFinding[]
 repair?(ctx, findings) -> HealthRepairResult
 ```
 
-`detect()` `doctor --lint` को power करता है। `repair()` वैकल्पिक है और केवल
-`doctor --fix` / `doctor --repair` द्वारा विचार किया जाता है। जो checks अभी इस
-shape में migrate नहीं हुई हैं, वे legacy doctor contribution flow का उपयोग
-जारी रखती हैं।
+`detect()`, `doctor --lint` को संचालित करता है। `repair()` वैकल्पिक है और केवल `doctor --fix` / `doctor --repair` के अंतर्गत चलता है। जो जाँच अभी इस संरचना में माइग्रेट नहीं हुई हैं, वे अब भी विरासती doctor योगदान प्रवाह का उपयोग करती हैं।
 
-विभाजन जानबूझकर है: `detect()` diagnosis का मालिक है, जबकि `repair()` यह report
-करने का मालिक है कि उसने क्या बदला या बदलेगा। Repair contexts `dryRun`/`diff`
-requests carry कर सकते हैं, और repair results config/file edits के लिए structured
-`diffs` और service, process, package, state, या अन्य side effects के लिए `effects`
-return कर सकते हैं। इससे converted checks mutation planning को `detect()` में
-लाए बिना `doctor --fix --dry-run` और diff reporting की दिशा में बढ़ सकती हैं।
+सुधार संदर्भों में `dryRun`/`diff` अनुरोध हो सकते हैं; सुधार परिणाम संरचित `diffs` (कॉन्फ़िगरेशन/फ़ाइल संपादन) और `effects` (सेवा, प्रक्रिया, पैकेज, स्थिति या अन्य पार्श्व प्रभाव) लौटा सकते हैं, ताकि रूपांतरित जाँच म्यूटेशन योजना को `detect()` में स्थानांतरित किए बिना `doctor --fix --dry-run` की ओर बढ़ सकें।
 
-`repair()` report करता है कि उसने requested repair को `status:
-"repaired" | "skipped" | "failed"` के साथ attempt किया या नहीं। Omitted status
-का अर्थ `repaired` है, इसलिए simple repair checks को केवल changes return करने
-की जरूरत होती है। जब repair `skipped` या `failed` return करता है, doctor कारण
-report करता है और उस check के लिए validation नहीं चलाता।
+`repair()` `status: "repaired" | "skipped" | "failed"` की रिपोर्ट करता है (स्थिति न होने का अर्थ `repaired` है)। जब मरम्मत `skipped` या `failed` लौटाती है, तो doctor कारण की रिपोर्ट करता है और उस जाँच का सत्यापन छोड़ देता है। सफल मरम्मत के बाद, doctor मरम्मत किए गए निष्कर्षों तक सीमित `detect()` को फिर से चलाता है; यदि निष्कर्ष अब भी मौजूद है, तो doctor परिवर्तन को पूर्ण मानने के बजाय मरम्मत चेतावनी की रिपोर्ट करता है।
 
-Successful structured repair के बाद, doctor repaired findings को scope बनाकर
-`detect()` फिर से चलाता है। Checks focused validation के लिए selected findings,
-paths, या `ocPath` values का उपयोग कर सकती हैं। यदि finding अभी भी मौजूद है,
-तो doctor change को silently complete मानने के बजाय repair warning report करता
-है।
+किसी निष्कर्ष में ये शामिल होते हैं:
 
-Finding में शामिल है:
-
-| Field             | उद्देश्य                                                |
+| फ़ील्ड             | उद्देश्य                                                |
 | ----------------- | ------------------------------------------------------ |
-| `checkId`         | skip/only filters और CI allowlists के लिए stable id।    |
+| `checkId`         | छोड़ने/केवल फ़िल्टर और CI अनुमत-सूचियों के लिए स्थिर आईडी।     |
 | `severity`        | `info`, `warning`, या `error`।                         |
-| `message`         | मानव-पठनीय problem statement।                          |
-| `path`            | उपलब्ध होने पर config, file, या logical path।           |
-| `line` / `column` | उपलब्ध होने पर source location।                        |
-| `ocPath`          | जब check किसी एक पर point कर सके तो precise `oc://` address। |
-| `fixHint`         | सुझाई गई operator action या repair summary।             |
+| `message`         | मानव-पठनीय समस्या विवरण।                      |
+| `path`            | उपलब्ध होने पर कॉन्फ़िगरेशन, फ़ाइल या तार्किक पथ।          |
+| `line` / `column` | उपलब्ध होने पर स्रोत स्थान।                        |
+| `ocPath`          | जब कोई जाँच किसी एक को इंगित कर सके, तब सटीक `oc://` पता। |
+| `fixHint`         | सुझाई गई ऑपरेटर कार्रवाई या मरम्मत सारांश।           |
 
-Modernized core doctor checks उस ordered doctor contribution से जुड़ी रहती हैं
-जो उनके human `doctor` / `doctor --fix` behavior का मालिक है। shared structured
-health registry extension point है: bundled और plugin-backed checks core doctor
-checks के बाद चलती हैं, जब उनका owning package उन्हें active command path में
-register करता है। `openclaw/plugin-sdk/health` subpath उन extension consumers के
-लिए वही contract expose करता है।
+आधुनिकीकृत कोर doctor जाँचें उस क्रमबद्ध doctor योगदान से जुड़ी रहती हैं जो उनके मानवीय `doctor` / `doctor --fix` व्यवहार का स्वामी है। साझा संरचित स्वास्थ्य रजिस्ट्री विस्तार बिंदु है: बंडल की गई और Plugin-समर्थित जाँचें, सक्रिय कमांड पथ में उनके स्वामी पैकेज द्वारा पंजीकृत किए जाने के बाद, कोर doctor जाँचों के पश्चात चलती हैं। `openclaw/plugin-sdk/health` Plugin लेखकों के लिए वही अनुबंध उपलब्ध कराता है।
 
-## Check चयन
-
-जब workflow focused gate चाहता हो, तो `--only` और `--skip` का उपयोग करें:
+## जाँच चयन
 
 ```bash
 openclaw doctor --lint --only core/doctor/gateway-config --json
@@ -213,60 +193,221 @@ openclaw doctor --lint --skip core/doctor/skills-readiness
 openclaw doctor --lint --all --skip core/doctor/session-locks
 ```
 
-`--only` और `--skip` full check ids स्वीकार करते हैं और repeat किए जा सकते हैं।
-यदि कोई `--only` id registered नहीं है, तो उस id के लिए कोई check नहीं चलती;
-focused gate आपकी अपेक्षित checks चुन रहा है या नहीं, यह verify करने के लिए
-command के `checksRun` और `checksSkipped` fields का उपयोग करें।
+`--only` और `--skip` पूर्ण जाँच आईडी स्वीकार करते हैं और इन्हें दोहराया जा सकता है। यदि कोई `--only` आईडी पंजीकृत नहीं है, तो उस आईडी के लिए कोई जाँच नहीं चलती; यह पुष्टि करने के लिए कि केंद्रित गेट आपकी अपेक्षित जाँचों को चुनता है, आउटपुट में `checksRun`/`checksSkipped` का उपयोग करें।
 
-## Post-upgrade मोड
+## अपग्रेड-पश्चात मोड
 
-`openclaw doctor --post-upgrade` build या upgrade के बाद chain किए जाने के लिए
-बनाए गए Plugin compatibility probes चलाता है। Findings stdout पर emit होती हैं;
-यदि किसी finding में `level: "error"` है तो command code 1 के साथ exit करता है।
-CI, community `fork-upgrade` skill, और अन्य post-upgrade smoke tooling के लिए
-उपयुक्त machine-readable envelope (`{ probesRun, findings }`) पाने के लिए
-`--json` जोड़ें। यदि installed Plugin index missing या malformed है, तो JSON mode
-फिर भी उस envelope को `plugin.index_unavailable` error finding के साथ emit करता
-है।
+`openclaw doctor --post-upgrade` बिल्ड या अपग्रेड के बाद श्रृंखलाबद्ध रूप से चलाने के लिए Plugin संगतता परीक्षण चलाता है। निष्कर्ष stdout पर जाते हैं; यदि किसी भी निष्कर्ष में `level: "error"` हो, तो निकास कोड 1 होता है। मशीन-पठनीय आवरण (`{ probesRun, findings }`) के लिए `--json` जोड़ें, जो CI, सामुदायिक `fork-upgrade` skill और अन्य अपग्रेड-पश्चात स्मोक उपकरणों के लिए उपयुक्त है। यदि स्थापित Plugin अनुक्रमणिका अनुपलब्ध या विकृत है, तब भी JSON मोड `plugin.index_unavailable` त्रुटि निष्कर्ष वाला आवरण उत्सर्जित करता है।
 
-नोट्स:
+कंटेनर इमेज स्टार्टअप सामान्य "अपडेट करने के बाद doctor चलाएँ"
+प्रवाह का अपवाद है। जब `openclaw gateway run` किसी नए OpenClaw संस्करण पर शुरू होता है, तो यह
+तैयार होने की रिपोर्ट करने से पहले सुरक्षित स्थिति और Plugin मरम्मत चलाता है। यदि मरम्मत
+सुरक्षित रूप से पूर्ण नहीं हो सकती, तो स्टार्टअप बंद हो जाता है और आपको कंटेनर को सामान्य रूप से
+पुनः आरंभ करने से पहले उसी माउंट की गई स्थिति/कॉन्फ़िगरेशन पर उसी इमेज को
+`openclaw doctor --fix` के साथ एक बार चलाने के लिए कहता है।
 
-- Nix मोड (`OPENCLAW_NIX_MODE=1`) में, read-only doctor जांचें अभी भी काम करती हैं, लेकिन `doctor --fix`, `doctor --repair`, `doctor --yes`, और `doctor --generate-gateway-token` अक्षम हैं क्योंकि `openclaw.json` अपरिवर्तनीय है। इसके बजाय इस इंस्टॉल के लिए Nix स्रोत संपादित करें; nix-openclaw के लिए, agent-first [Quick Start](https://github.com/openclaw/nix-openclaw#quick-start) का उपयोग करें।
-- इंटरैक्टिव प्रॉम्प्ट (जैसे keychain/OAuth सुधार) केवल तब चलते हैं जब stdin एक TTY हो और `--non-interactive` **सेट न** हो। हेडलेस रन (cron, Telegram, कोई टर्मिनल नहीं) प्रॉम्प्ट छोड़ देंगे।
-- प्रदर्शन: non-interactive `doctor` रन eager plugin loading छोड़ देते हैं ताकि हेडलेस स्वास्थ्य जांचें तेज रहें। इंटरैक्टिव doctor सत्र अभी भी legacy health और repair flow के लिए आवश्यक Plugin सतहें लोड करते हैं।
-- `--lint`, `--non-interactive` से अधिक सख्त है: यह हमेशा read-only रहता है, कभी प्रॉम्प्ट नहीं करता, और कभी safe migrations लागू नहीं करता। जब आप चाहते हैं कि doctor बदलाव करे, तो `doctor --fix` या `doctor --repair` चलाएं।
-- डिफ़ॉल्ट रूप से, doctor secrets जांचते समय `exec` SecretRefs निष्पादित नहीं करता। `openclaw doctor --allow-exec` या `openclaw doctor --lint --allow-exec` का उपयोग केवल तब करें जब आप जानबूझकर चाहते हों कि doctor वे configured secret resolvers चलाए।
-- `--fix` (`--repair` का alias) `~/.openclaw/openclaw.json.bak` में backup लिखता है और अज्ञात config keys हटाता है, हर हटाने को सूचीबद्ध करते हुए।
-- आधुनिकीकृत स्वास्थ्य जांचें `doctor --fix` के लिए `repair()` path उजागर कर सकती हैं; जो जांचें ऐसा नहीं करतीं, वे मौजूदा doctor repair flow से जारी रहती हैं।
-- `doctor --fix --non-interactive` गायब या stale gateway service definitions रिपोर्ट करता है, लेकिन update repair mode के बाहर उन्हें install या rewrite नहीं करता। गायब service के लिए `openclaw gateway install` चलाएं, या जब आप जानबूझकर launcher बदलना चाहते हों तो `openclaw gateway install --force` चलाएं।
-- State integrity checks अब sessions directory में orphan transcript files पहचानती हैं। उन्हें `.deleted.<timestamp>` के रूप में archive करने के लिए interactive confirmation चाहिए; `--fix`, `--yes`, और headless runs उन्हें वहीं छोड़ देते हैं।
-- Doctor legacy cron job shapes के लिए `~/.openclaw/cron/jobs.json` (या `cron.store`) भी scan करता है और canonical rows को SQLite में import करने से पहले उन्हें rewrite करता है।
-- Doctor explicit `payload.model` overrides वाले cron jobs रिपोर्ट करता है, जिनमें provider namespace counts और `agents.defaults.model` के विरुद्ध mismatches शामिल हैं, ताकि default model inherit न करने वाले scheduled jobs auth या billing investigations के दौरान दिख सकें।
-- Linux पर, doctor चेतावनी देता है जब user का crontab अभी भी legacy `~/.openclaw/bin/ensure-whatsapp.sh` चलाता है; वह script अब maintained नहीं है और जब cron के पास systemd user-bus environment नहीं होता तो false WhatsApp gateway outages log कर सकता है।
-- जब WhatsApp enabled होता है, doctor local `openclaw-tui` clients अभी भी चल रहे होने पर degraded Gateway event loop की जांच करता है। `doctor --fix` केवल verified local TUI clients रोकता है ताकि WhatsApp replies stale TUI refresh loops के पीछे queue न हों।
-- Doctor primary models, fallbacks, image/video generation models, heartbeat/subagent/compaction overrides, hooks, channel model overrides, और stale session route pins में legacy `openai-codex/*` model refs को canonical `openai/*` refs में rewrite करता है। `--fix` legacy `openai-codex:*` auth profiles और `auth.order.openai-codex` entries को `openai:*` में migrate भी करता है, Codex intent को provider/model-scoped `agentRuntime.id: "codex"` entries पर ले जाता है, stale whole-agent/session runtime pins हटाता है, और repaired OpenAI agent refs को direct OpenAI API-key auth के बजाय Codex auth routing पर रखता है।
-- Doctor पुराने OpenClaw versions द्वारा बनाई गई legacy Plugin dependency staging state साफ करता है और managed npm plugins के लिए host `openclaw` package relink करता है जो इसे peer dependency के रूप में declare करते हैं। यह config द्वारा referenced missing downloadable plugins की भी repair करता है, जैसे `plugins.entries`, configured channels, configured provider/search settings, या configured agent runtimes। Package updates के दौरान, doctor package-manager Plugin repair को तब तक छोड़ देता है जब तक package swap पूरा न हो; यदि configured Plugin को अभी भी recovery चाहिए, तो बाद में `openclaw doctor --fix` दोबारा चलाएं। यदि download fail होता है, तो doctor install error रिपोर्ट करता है और अगले repair attempt के लिए configured Plugin entry सुरक्षित रखता है।
-- Doctor stale Plugin config को repair करता है, `plugins.allow`/`plugins.deny`/`plugins.entries` से missing Plugin ids हटाकर, साथ में matching dangling channel config, Heartbeat targets, और channel model overrides भी हटाता है जब Plugin discovery स्वस्थ हो।
-- Doctor affected `plugins.entries.<id>` entry को disable करके और उसका invalid `config` payload हटाकर invalid Plugin config को quarantine करता है। Gateway startup पहले से ही केवल उस खराब Plugin को skip करता है ताकि अन्य plugins और channels चलते रह सकें।
-- जब कोई दूसरा supervisor gateway lifecycle own करता हो, तो `OPENCLAW_SERVICE_REPAIR_POLICY=external` सेट करें। Doctor अभी भी gateway/service health रिपोर्ट करता है और non-service repairs लागू करता है, लेकिन service install/start/restart/bootstrap और legacy service cleanup skip करता है।
-- Linux पर, doctor inactive extra gateway-like systemd units को ignore करता है और repair के दौरान running systemd gateway service के लिए command/entrypoint metadata rewrite नहीं करता। जब आप जानबूझकर active launcher बदलना चाहते हों, तो पहले service रोकें या `openclaw gateway install --force` का उपयोग करें।
-- Doctor legacy flat Talk config (`talk.voiceId`, `talk.modelId`, और संबंधित entries) को `talk.provider` + `talk.providers.<provider>` में auto-migrate करता है।
-- Repeat `doctor --fix` runs अब Talk normalization को report/apply नहीं करते जब केवल object key order का अंतर हो।
-- Doctor में memory-search readiness check शामिल है और embedding credentials गायब होने पर `openclaw configure --section model` recommend कर सकता है।
-- Doctor चेतावनी देता है जब कोई command owner configured नहीं होता। Command owner वह human operator account है जिसे owner-only commands चलाने और dangerous actions approve करने की अनुमति है। DM pairing केवल किसी को bot से बात करने देती है; यदि आपने first-owner bootstrap मौजूद होने से पहले किसी sender को approve किया था, तो `commands.ownerAllowFrom` स्पष्ट रूप से सेट करें।
-- जब Codex-mode agents configured हों और operator के Codex home में personal Codex CLI assets मौजूद हों, तो Doctor एक info note रिपोर्ट करता है। Local Codex app-server launches isolated per-agent homes का उपयोग करते हैं, इसलिए जरूरत हो तो पहले Codex Plugin install करें, फिर जानबूझकर promote किए जाने वाले assets inventory करने के लिए `openclaw migrate plan codex` का उपयोग करें।
-- Doctor retired `plugins.entries.codex.config.codexDynamicToolsProfile` हटाता है; Codex app-server हमेशा Codex-native workspace tools को native रखता है।
-- Doctor चेतावनी देता है जब default agent के लिए allowed Skills current runtime environment में unavailable हों क्योंकि bins, env vars, config, या OS requirements गायब हैं। `doctor --fix` उन unavailable Skills को `skills.entries.<skill>.enabled=false` के साथ disable कर सकता है; जब आप skill active रखना चाहते हों, तो missing requirement install/configure करें।
-- यदि sandbox mode enabled है लेकिन Docker unavailable है, तो doctor remediation (`install Docker` या `openclaw config set agents.defaults.sandbox.mode off`) के साथ high-signal warning रिपोर्ट करता है।
-- यदि legacy sandbox registry files या shard directories मौजूद हैं (`~/.openclaw/sandbox/containers.json`, `~/.openclaw/sandbox/browsers.json`, `~/.openclaw/sandbox/containers/`, या `~/.openclaw/sandbox/browsers/`), तो doctor उन्हें रिपोर्ट करता है; `openclaw doctor --fix` valid entries को SQLite में migrate करता है और invalid legacy files को quarantine करता है।
-- यदि `gateway.auth.token`/`gateway.auth.password` SecretRef-managed हैं और current command path में unavailable हैं, तो doctor read-only warning रिपोर्ट करता है और plaintext fallback credentials नहीं लिखता। exec-backed SecretRefs के लिए, doctor `--allow-exec` मौजूद न होने तक execution skip करता है।
-- यदि fix path में channel SecretRef inspection fail होता है, तो doctor जल्दी exit करने के बजाय जारी रहता है और warning रिपोर्ट करता है।
-- State-directory migrations के बाद, doctor चेतावनी देता है जब enabled default Telegram या Discord accounts env fallback पर निर्भर हों और `TELEGRAM_BOT_TOKEN` या `DISCORD_BOT_TOKEN` doctor process के लिए unavailable हो।
-- Telegram `allowFrom` username auto-resolution (`doctor --fix`) के लिए current command path में resolvable Telegram token चाहिए। यदि token inspection unavailable है, तो doctor warning रिपोर्ट करता है और उस pass के लिए auto-resolution skip करता है।
+## साझा स्थिति SQLite Compaction
 
-## macOS: `launchctl` env overrides
+`openclaw doctor --state-sqlite compact`
+`<state-dir>/state/openclaw.sqlite` पर स्थित प्रामाणिक साझा स्थिति डेटाबेस के लिए स्पष्ट ऑफ़लाइन रखरखाव है।
+यह कोई मनमाना डेटाबेस पथ स्वीकार नहीं करता,
+सामान्य Gateway संचालन द्वारा कभी लागू नहीं किया जाता और
+`openclaw doctor --fix` का भाग नहीं है। कमांड Gateway स्टार्टअप वाला ही स्थिति स्वामित्व लॉक प्राप्त करता है
+और सत्यापन, चेकपॉइंटिंग, `VACUUM` तथा
+अंतिम अखंडता जाँचों के दौरान उसे बनाए रखता है। जब कोई Gateway या अन्य
+SQLite रखरखाव कमांड उस लॉक का स्वामी हो, तो यह चलने से इनकार करता है। जब
+`OPENCLAW_ALLOW_MULTI_GATEWAY=1` प्रति-कॉन्फ़िगरेशन Gateway सिंगलटन को छोड़ देता है, तब भी स्थिति लॉक सक्रिय रहता है,
+इसलिए रखरखाव द्वारा उसका पता लगाने के लिए
+ऑपरेटर शेल को Gateway सेवा का परिवेश इनहेरिट करने की आवश्यकता नहीं होती।
 
-यदि आपने पहले `launchctl setenv OPENCLAW_GATEWAY_TOKEN ...` (या `...PASSWORD`) चलाया था, तो वह value आपकी config file को override करती है और persistent "unauthorized" errors पैदा कर सकती है।
+पहले Gateway रोकें और सत्यापित बैकअप बनाएँ:
+
+```bash
+openclaw gateway stop
+openclaw backup create --verify
+openclaw doctor --state-sqlite compact --json
+openclaw gateway start
+```
+
+कमांड:
+
+1. प्रामाणिक साझा-स्थिति पथ पर एक सामान्य फ़ाइल आवश्यक है। अनुपलब्ध
+   डेटाबेस को `skipped` के रूप में रिपोर्ट किया जाता है और कमांड सफलतापूर्वक समाप्त होता है।
+2. चेकपॉइंट बनाने या फ़ाइल बदलने से पहले वर्तमान समर्थित स्कीमा संस्करण और
+   `schema_meta.role = "global"` का सत्यापन करता है।
+3. गैर-व्यस्त `wal_checkpoint(TRUNCATE)` आवश्यक है। यदि चेकपॉइंट व्यस्त हो, तो शेष सभी OpenClaw
+   प्रक्रियाएँ रोकें और पुनः प्रयास करें।
+4. `auto_vacuum` को `INCREMENTAL` पर सेट करता है, पूर्ण `VACUUM` चलाता है और
+   फिर से चेकपॉइंट बनाता है।
+5. `quick_check`, `integrity_check` और `foreign_key_check` चलाता है, फिर
+   डेटाबेस और SQLite साइडकार फ़ाइलों पर केवल-स्वामी अनुमतियाँ दोबारा लागू करता है।
+
+JSON आउटपुट Compaction से पहले और बाद के डेटाबेस तथा WAL आकार, फ़्रीलिस्ट पृष्ठ, पृष्ठ आकार और
+`auto_vacuum` मान के साथ पुनः प्राप्त बाइट तथा
+`quick_check` और `integrity_check` परिणामों की रिपोर्ट करता है। `foreign_key_check` को
+विफलता-बंद ढंग से लागू किया जाता है और इसका कोई अलग सफलता फ़ील्ड नहीं है। SQLite, `auto_vacuum` को
+none के लिए `0`, full के लिए `1` और incremental के लिए `2` के रूप में रिपोर्ट करता है।
+
+जब स्कीमा पुराना हो, चल रहे OpenClaw बिल्ड से नया हो या किसी एजेंट डेटाबेस से संबंधित हो,
+तब Compaction बिना परिवर्तन किए विफल हो जाता है। पुराने साझा-स्थिति स्कीमा के लिए पहले
+`openclaw doctor --fix` चलाएँ। नए स्कीमा के लिए
+संगत बैकअप पुनर्स्थापित करें या OpenClaw अपग्रेड करें।
+
+## सत्र SQLite माइग्रेशन
+
+OpenClaw, Gateway स्टार्टअप के दौरान और
+`openclaw doctor --fix` के दौरान प्रत्येक एजेंट के SQLite डेटाबेस में
+पुरानी सत्र पंक्तियाँ और ट्रांसक्रिप्ट इतिहास स्वचालित रूप से आयात करता है। `openclaw doctor --session-sqlite <mode>`
+उस माइग्रेशन के लिए लक्षित निरीक्षण और सत्यापन उपकरण है। वर्तमान रनटाइम
+सत्र पंक्तियाँ
+`~/.openclaw/agents/<agentId>/agent/openclaw-agent.sqlite` में रहती हैं। पुरानी
+`sessions.json` फ़ाइलें माइग्रेशन स्रोत हैं। सक्रिय ट्रांसक्रिप्ट JSONL फ़ाइलें
+आयात की जाती हैं और सफल आयात के बाद सक्रिय सत्र निर्देशिका से बाहर संग्रहित कर दी जाती हैं;
+संग्रह-स्तरीय JSONL फ़ाइलें सहायता कलाकृतियाँ बनी रहती हैं, रनटाइम
+फ़ॉलबैक नहीं।
+
+मोड:
+
+| मोड       | व्यवहार                                                                                                               |
+| ---------- | ---------------------------------------------------------------------------------------------------------------------- |
+| `inspect`  | आयात किए बिना पुरानी और SQLite गणनाएँ तथा असंदर्भित JSONL फ़ाइलें पढ़ता है।                                       |
+| `dry-run`  | पुरानी प्रविष्टियों और ट्रांसक्रिप्ट JSONL फ़ाइलों को पार्स करता है, आयात योग्य पंक्तियाँ गिनता है और SQLite पंक्तियाँ लिखे बिना समस्याएँ रिपोर्ट करता है। |
+| `import`   | चयनित लक्ष्यों के लिए पुरानी प्रविष्टियों और ट्रांसक्रिप्ट घटनाओं को SQLite में आयात करता है।                                      |
+| `validate` | चयनित पुराने स्रोतों की तुलना SQLite पंक्तियों और ट्रांसक्रिप्ट घटना गणनाओं से करता है।                                   |
+| `compact`  | बड़े विलोपन या संग्रह सफ़ाई के बाद मुक्त पृष्ठ पुनः प्राप्त करने के लिए चयनित एजेंट SQLite डेटाबेस को चेकपॉइंट और VACUUM करता है।    |
+| `recover`  | नवीनतम विफल माइग्रेशन रन को पुनर्प्राप्त करता है, उसके लक्ष्यों का सत्यापन करता है और स्वच्छ किया हुआ GitHub समस्या प्रतिवेदन तैयार करता है।            |
+| `restore`  | SQLite डेटा हटाए बिना दर्ज माइग्रेशन मैनिफ़ेस्ट से संग्रहित ट्रांसक्रिप्ट कलाकृतियाँ पुनर्स्थापित करता है।                  |
+
+चयनकर्ता:
+
+- डिफ़ॉल्ट: कॉन्फ़िगर किया गया डिफ़ॉल्ट एजेंट स्टोर, जब वह पुरानी स्टोर फ़ाइल मौजूद हो।
+- `--session-sqlite-agent <id>`: एक कॉन्फ़िगर किया गया एजेंट।
+- `--session-sqlite-all-agents`: कॉन्फ़िगर किए गए एजेंट स्टोर और खोजे गए एजेंट स्टोर।
+- `--session-sqlite-store <path>`: एक स्पष्ट पुराना `sessions.json` पथ।
+
+मैन्युअल निरीक्षण क्रम:
+
+```bash
+openclaw doctor --session-sqlite inspect --session-sqlite-all-agents
+openclaw doctor --session-sqlite dry-run --session-sqlite-all-agents --json
+openclaw doctor --session-sqlite import --session-sqlite-all-agents
+openclaw doctor --session-sqlite validate --session-sqlite-all-agents --json
+openclaw doctor --session-sqlite compact --session-sqlite-all-agents
+openclaw doctor --session-sqlite recover --github-issue
+```
+
+महत्वपूर्ण इतिहास वाली स्थापना पर `import` चलाने से पहले OpenClaw स्थिति निर्देशिका का बैकअप लें।
+जब कोई चयनित पुरानी प्रविष्टि SQLite में अनुपलब्ध हो, सत्र आईडी अलग हो या ट्रांसक्रिप्ट घटना गणना अलग हो,
+तब `validate` गैर-शून्य निकास करता है।
+`--session-sqlite-store <path>` का उपयोग करते समय जाँचें कि रिपोर्ट में
+अपेक्षित लक्ष्य गणना है; कोई अस्तित्वहीन स्पष्ट स्टोर पथ किसी लक्ष्य का चयन नहीं करता।
+
+SQLite विलोपन पहले डेटाबेस के भीतर पृष्ठ पुनः प्राप्त करते हैं; वे आवश्यक रूप से
+डेटाबेस फ़ाइल को तुरंत छोटा नहीं करते। बड़े ट्रांसक्रिप्ट हटाने या संग्रहित करने के बाद,
+WAL फ़ाइलों को चेकपॉइंट करने, `VACUUM` चलाने और डेटाबेस तथा WAL के
+पहले/बाद के आकार रिपोर्ट करने के लिए `openclaw doctor --session-sqlite compact --session-sqlite-all-agents`
+चलाएँ। Compaction के लिए वर्तमान एजेंट स्कीमा वाली सामान्य फ़ाइल,
+चयनित एजेंट का स्थायी स्वामी मेटाडेटा और doctor
+प्रक्रिया में कोई खुला हैंडल न होना आवश्यक है। विनाशकारी `import`, `compact`, `recover` और `restore` मोड
+अपने पूरे संचालन के दौरान Gateway स्टार्टअप वाला ही स्थिति स्वामित्व लॉक बनाए रखते हैं;
+`inspect`, `dry-run` और `validate` केवल-पठन रहते हैं और उसे प्राप्त नहीं करते। पहले
+Gateway रोकें। विनाशकारी मोड सक्रिय लेखन या किसी अन्य रखरखाव कमांड से होड़ करने के बजाय विफल हो जाते हैं।
+विनाशकारी `--session-sqlite-store`
+लक्ष्य सक्रिय स्थिति निर्देशिका के भीतर होना चाहिए; किसी अन्य स्थापना का रखरखाव करने से पहले
+`OPENCLAW_STATE_DIR` को स्टोर की स्वामी स्थिति निर्देशिका पर सेट करें।
+मौजूदा हार्ड-लिंक किए गए लक्ष्य अस्वीकार किए जाते हैं क्योंकि लॉक की गई स्थिति निर्देशिका के बाहर
+कोई अन्य पथ वही डेटाबेस inode साझा कर सकता है। यही स्वामित्व जाँचें
+SQLite WAL, साझा-मेमोरी और रोलबैक-जर्नल साइडकार को भी कवर करती हैं।
+
+प्रत्येक आयात ट्रांसक्रिप्ट कलाकृतियों को संग्रह में ले जाने से पहले
+`~/.openclaw/session-sqlite-migration-runs/` के अंतर्गत एक मैनिफ़ेस्ट लिखता है।
+यदि कलाकृतियाँ स्थानांतरित होने के बाद स्टार्टअप विफल सत्र SQLite माइग्रेशन की रिपोर्ट करता है,
+तो पुनर्प्राप्ति चलाएँ:
+
+```bash
+openclaw doctor --session-sqlite recover --github-issue
+```
+
+पुनर्प्राप्ति नवीनतम विफल माइग्रेशन मैनिफ़ेस्ट चुनती है, केवल
+मैनिफ़ेस्ट की संग्रहित कलाकृतियाँ पुनर्स्थापित करती है, प्रभावित लक्ष्यों का सत्यापन करती है,
+स्वच्छ किए गए `.failure.md` और `.failure.json` प्रतिवेदनों को ताज़ा करती है और ऐसा GitHub समस्या
+विवरण तैयार करती है जिसमें ट्रांसक्रिप्ट सामग्री, अपरिष्कृत परिवेश, गोपनीय जानकारी और असीमित
+कॉन्फ़िगरेशन शामिल नहीं होते। जब कोई विफल माइग्रेशन मैनिफ़ेस्ट मौजूद नहीं हो, लेकिन चयनित एजेंट SQLite
+डेटाबेस दूषित हो, डेटाबेस न हो या मुख्य
+डेटाबेस के बिना जर्नल साइडकार हों, तो पुनर्प्राप्ति पूर्ण फ़ाइल सेट को अस्थायी निरीक्षण
+निर्देशिका में कॉपी करती है। SQLite उस अस्थायी प्रति में वैध हॉट जर्नल को
+`quick_check`, `integrity_check` और `foreign_key_check` चलने से पहले वापस कर सकता है, जबकि
+मूल फ़ॉरेंसिक फ़ाइलें अपरिवर्तित रहती हैं। विफल अखंडता जाँचें या अनाथ
+साइडकार पूरे खोजे गए सेट का नाम एक `.corrupt-<timestamp>` प्रत्यय के साथ बदलकर DB, WAL, SHM और रोलबैक-जर्नल फ़ाइलों को सुरक्षित रखते हैं।
+नाम बदलने में पकड़ी गई विफलता, विफलता की रिपोर्ट करने से पहले पहले से स्थानांतरित फ़ाइलों को वापस कर देती है,
+जिससे पुनर्प्राप्त करने योग्य फ़ाइल सेट अनजाने में विभाजित नहीं होता। पुनर्प्राप्ति से पहले Gateway रोकें;
+सक्रिय रूप से बदल रहे SQLite फ़ाइल सेट को कॉपी करना या उसका नाम बदलना असुरक्षित है और
+ऑपरेटिंग सिस्टम के अनुसार अलग व्यवहार करता है। `--github-issue --yes` के साथ, doctor
+`openclaw/openclaw` में समस्या बनाने के लिए GitHub CLI का उपयोग करता है; पुष्टि के बिना
+यह स्थानीय सहायता प्रतिवेदन लिखता है और पहले से भरा समस्या URL प्रिंट करता है।
+
+`restore` निम्न-स्तरीय पूर्ववत कार्रवाई बनी रहती है। यह मैनिफ़ेस्ट
+`sourcePath -> archivePath` रिकॉर्ड का उपयोग करती है, संग्रहित कलाकृतियों को केवल तभी वापस ले जाती है जब
+मूल पथ अनुपलब्ध हो, दोनों पथ मौजूद होने पर विरोधों की रिपोर्ट करती है और
+SQLite डेटाबेस को यथास्थान छोड़ देती है।
+
+### सत्र SQLite माइग्रेशन के बाद डाउनग्रेड करना
+
+पुराना फ़ाइल-समर्थित OpenClaw संस्करण शुरू करने से पहले, संग्रहित
+पुरानी ट्रांसक्रिप्ट कलाकृतियाँ पुनर्स्थापित करें:
+
+```bash
+openclaw doctor --session-sqlite restore --session-sqlite-all-agents
+```
+
+पुराने संस्करण `sessions.json` प्रविष्टियों और उन प्रविष्टियों में दर्ज `sessionFile` पथों को पढ़ते हैं। SQLite माइग्रेशन के बाद, सफल आयात सक्रिय JSONL
+ट्रांसक्रिप्ट को `session-sqlite-import-archive/` में ले जाते हैं, इसलिए पुराना रनटाइम उस इतिहास को तब तक
+नहीं देख सकता, जब तक पुनर्स्थापना उन मैनिफ़ेस्ट में दर्ज आर्टिफ़ैक्ट को वापस उनके
+मूल पथों पर नहीं ले जाती।
+
+पुनर्स्थापना SQLite डेटा को नहीं मिटाती। SQLite पर स्विच करने के बाद बनाए गए सत्र
+केवल SQLite में मौजूद होते हैं और पुराने रनटाइम में दिखाई नहीं देंगे। यदि बाद में
+फिर से अपग्रेड किया जाता है, तो ऊपर दिया गया सामान्य माइग्रेशन सत्यापन क्रम चलाएँ, ताकि OpenClaw
+आयात करने से पहले पुनर्स्थापित लेगेसी आर्टिफ़ैक्ट की SQLite पंक्तियों से तुलना कर सके।
+
+## टिप्पणियाँ
+
+- Nix मोड (`OPENCLAW_NIX_MODE=1`) में, केवल-पठन doctor जाँच अब भी काम करती हैं, लेकिन `doctor --fix`, `doctor --repair`, `doctor --yes`, और `doctor --generate-gateway-token` अक्षम हैं क्योंकि `openclaw.json` अपरिवर्तनीय है। इसके बजाय इस इंस्टॉलेशन के Nix स्रोत को संपादित करें; nix-openclaw के लिए, एजेंट-प्रथम [त्वरित शुरुआत](https://github.com/openclaw/nix-openclaw#quick-start) का उपयोग करें।
+- इंटरैक्टिव प्रॉम्प्ट (कीचेन/OAuth सुधार आदि) केवल तभी चलते हैं, जब stdin एक TTY हो और `--non-interactive` सेट **नहीं** हो। हेडलेस रन (cron, Telegram, टर्मिनल नहीं) प्रॉम्प्ट छोड़ देते हैं।
+- गैर-इंटरैक्टिव `doctor` रन अग्रिम Plugin लोडिंग छोड़ देते हैं, ताकि हेडलेस स्वास्थ्य जाँच तेज़ बनी रहें। इंटरैक्टिव सत्र अब भी लेगेसी स्वास्थ्य/मरम्मत प्रवाह के लिए आवश्यक Plugin सतहों को लोड करते हैं।
+- `--lint`, `--non-interactive` से अधिक सख्त है: यह हमेशा केवल-पठन होता है, कभी प्रॉम्प्ट नहीं दिखाता और सुरक्षित माइग्रेशन कभी लागू नहीं करता। जब doctor से बदलाव करवाने हों, तो `doctor --fix` या `doctor --repair` का उपयोग करें।
+- डिफ़ॉल्ट रूप से रहस्यों की जाँच करते समय doctor `exec` SecretRefs को निष्पादित नहीं करता। केवल तभी `--allow-exec` का उपयोग करें (`--lint` के साथ या उसके बिना), जब जानबूझकर doctor से उन कॉन्फ़िगर किए गए सीक्रेट रिज़ॉल्वर को चलवाना हो।
+- कोई भी कॉन्फ़िग लेखन (`--fix` मरम्मत सहित) बैकअप को `~/.openclaw/openclaw.json.bak` पर घुमाता है (क्रमांकित `.bak.1`..`.bak.4` रिंग के साथ)। `--fix` स्कीमा सत्यापन द्वारा रिपोर्ट की गई अज्ञात कॉन्फ़िग कुंजियों को भी हटाता है और प्रत्येक निष्कासन सूचीबद्ध करता है; अपडेट जारी होने पर यह ऐसा नहीं करता, ताकि आंशिक रूप से लिखी गई अपग्रेड स्थिति को उसका माइग्रेशन पूरा होने से पहले न हटाया जाए।
+- जब कोई अन्य सुपरवाइज़र Gateway जीवनचक्र का स्वामी हो, तो `OPENCLAW_SERVICE_REPAIR_POLICY=external` सेट करें। Doctor फिर भी Gateway/सेवा की स्थिति रिपोर्ट करता है और गैर-सेवा मरम्मत लागू करता है, लेकिन सेवा इंस्टॉल/प्रारंभ/पुनःप्रारंभ/बूटस्ट्रैप और लेगेसी सेवा सफ़ाई छोड़ देता है।
+- Linux पर, doctor निष्क्रिय अतिरिक्त Gateway-जैसी systemd इकाइयों को अनदेखा करता है और मरम्मत के दौरान चल रही systemd Gateway सेवा के लिए कमांड/एंट्रीपॉइंट मेटाडेटा दोबारा नहीं लिखता। पहले सेवा रोकें या सक्रिय लॉन्चर बदलने के लिए `openclaw gateway install --force` का उपयोग करें।
+- `doctor --fix --non-interactive` अनुपलब्ध या पुराने Gateway सेवा-निर्धारणों की रिपोर्ट करता है, लेकिन अपडेट मरम्मत मोड के बाहर उन्हें इंस्टॉल या दोबारा नहीं लिखता। अनुपलब्ध सेवा के लिए `openclaw gateway install` चलाएँ या लॉन्चर बदलने के लिए `openclaw gateway install --force` चलाएँ।
+- स्थिति अखंडता जाँच सत्र निर्देशिका में अनाथ ट्रांसक्रिप्ट फ़ाइलों का पता लगाती है। उन्हें `.deleted.<timestamp>` के रूप में संग्रहित करने के लिए इंटरैक्टिव पुष्टि आवश्यक है; `--fix`, `--yes`, और हेडलेस रन उन्हें वहीं छोड़ देते हैं।
+- Doctor लेगेसी cron जॉब संरचनाओं के लिए `~/.openclaw/cron/jobs.json` (या `cron.store`) को स्कैन करता है और कैनोनिकल पंक्तियाँ SQLite में आयात करने से पहले उन्हें दोबारा लिखता है।
+- Doctor स्पष्ट `payload.model` ओवरराइड वाली cron जॉब की रिपोर्ट करता है, जिसमें प्रदाता-नेमस्पेस की संख्याएँ और `agents.defaults.model` से असंगतियाँ शामिल हैं, ताकि डिफ़ॉल्ट मॉडल इनहेरिट न करने वाली निर्धारित जॉब प्रमाणीकरण या बिलिंग जाँच के दौरान दिखाई दें।
+- Doctor उन cron जॉब की रिपोर्ट करता है जो अब भी प्रगति पर (`state.runningAtMs`) चिह्नित हैं, जिसके कारण `openclaw cron list` उन्हें `running` के रूप में दिखा सकता है। यह जाँच केवल-पठन है: यदि कोई Gateway वर्तमान में चिह्नित जॉब निष्पादित नहीं कर रहा है, तो cron सेवा का अगला प्रारंभ बाधित रन दर्ज करके चिह्न हटा देता है।
+- Linux पर, जब उपयोगकर्ता का crontab अब भी अरक्षित लेगेसी `~/.openclaw/bin/ensure-whatsapp.sh` चलाता है, तो doctor चेतावनी देता है; cron में systemd उपयोगकर्ता-बस परिवेश न होने पर यह `Gateway inactive` की गलत रिपोर्ट कर सकता है।
+- WhatsApp सक्षम होने पर, doctor अब भी चल रहे स्थानीय `openclaw-tui` क्लाइंट के साथ खराब Gateway इवेंट लूप की जाँच करता है। `doctor --fix` केवल सत्यापित स्थानीय TUI क्लाइंट को रोकता है, ताकि WhatsApp उत्तर पुराने TUI रीफ़्रेश लूप के पीछे कतारबद्ध न हों।
+- Doctor प्राथमिक मॉडल, फ़ॉलबैक, मॉडल अनुमत-सूचियों, चित्र/वीडियो जनरेशन मॉडल, Heartbeat/उप-एजेंट/Compaction ओवरराइड, हुक, चैनल मॉडल ओवरराइड, cron पेलोड और पुराने सत्र/ट्रांसक्रिप्ट रूट पिन में लेगेसी `codex/*` और `openai-codex/*` मॉडल रेफ़ को कैनोनिकल `openai/*` रेफ़ के रूप में दोबारा लिखता है। सुरक्षित होने पर `--fix` लेगेसी `models.providers.codex` और `models.providers.openai-codex` कॉन्फ़िग को भी मर्ज करता है, लेगेसी `openai-codex:*` प्रमाणीकरण प्रोफ़ाइल और `auth.order.openai-codex` प्रविष्टियों को `openai:*` में माइग्रेट करता है, Codex आशय को प्रदाता/मॉडल-स्कोप वाली `agentRuntime.id: "codex"` प्रविष्टियों पर ले जाता है, पुराने संपूर्ण-एजेंट/सत्र रनटाइम पिन हटाता है और सुधारे गए OpenAI एजेंट रेफ़ को प्रत्यक्ष OpenAI API-कुंजी प्रमाणीकरण के बजाय Codex प्रमाणीकरण रूटिंग पर रखता है।
+- Doctor उन गैर-रिक्त `auth.order.<provider>` सूचियों की रिपोर्ट करता है जिनकी संदर्भित सभी प्रोफ़ाइल हट चुकी हैं, जबकि संगत संग्रहीत क्रेडेंशियल मौजूद हैं। `doctor --fix` केवल उन्हीं पुराने ओवरराइड को हटाता है और स्वचालित प्रति-एजेंट क्रेडेंशियल चयन पुनर्स्थापित करता है; स्पष्ट रिक्त क्रम, आंशिक रूप से सक्रिय सूचियाँ और संगत संग्रहीत क्रेडेंशियल के बिना क्रम अपरिवर्तित रहते हैं। यदि सक्रिय SQLite प्रमाणीकरण स्टोर अपठनीय या विकृत है, तो doctor बताता है कि उसने यह मरम्मत क्यों छोड़ी। यदि चल रहे Gateway का कॉन्फ़िग रीलोड मोड लेखन को स्वचालित रूप से लागू नहीं करता, तो प्रमाणीकरण स्थिति दोबारा जाँचने से पहले उसे पुनःप्रारंभ करें।
+- Doctor पुराने OpenClaw संस्करणों से लेगेसी Plugin निर्भरता स्टेजिंग स्थिति साफ़ करता है और उन प्रबंधित npm Plugin के लिए होस्ट `openclaw` पैकेज को दोबारा लिंक करता है, जो इसे पीयर निर्भरता के रूप में घोषित करते हैं। यह कॉन्फ़िग द्वारा संदर्भित अनुपलब्ध डाउनलोड-योग्य Plugin (`plugins.entries`, कॉन्फ़िगर किए गए चैनल, कॉन्फ़िगर की गई प्रदाता/खोज सेटिंग और कॉन्फ़िगर किए गए एजेंट रनटाइम) की भी मरम्मत करता है। पैकेज अपडेट के दौरान, पैकेज की अदला-बदली पूरी होने तक doctor पैकेज-मैनेजर Plugin मरम्मत छोड़ देता है; यदि किसी कॉन्फ़िगर किए गए Plugin को अब भी पुनर्प्राप्ति चाहिए, तो बाद में `openclaw doctor --fix` दोबारा चलाएँ। डाउनलोड विफल होने पर doctor इंस्टॉल त्रुटि रिपोर्ट करता है और अगले मरम्मत प्रयास के लिए कॉन्फ़िगर की गई Plugin प्रविष्टि सुरक्षित रखता है।
+- Plugin खोज ठीक होने पर, doctor `plugins.allow`/`plugins.deny`/`plugins.entries` से अनुपलब्ध Plugin आईडी और उनसे मेल खाने वाले लटकते चैनल कॉन्फ़िग, Heartbeat लक्ष्य तथा चैनल मॉडल ओवरराइड हटाकर पुराने Plugin कॉन्फ़िग की मरम्मत करता है।
+- Doctor प्रभावित `plugins.entries.<id>` प्रविष्टि को अक्षम करके और उसका अमान्य `config` पेलोड हटाकर अमान्य Plugin कॉन्फ़िग को क्वारंटीन करता है। Gateway स्टार्टअप पहले से केवल उस खराब Plugin को छोड़ता है, इसलिए अन्य Plugin और चैनल चलते रहते हैं।
+- Doctor सेवानिवृत्त `plugins.entries.codex.config.codexDynamicToolsProfile` को हटाता है; Codex ऐप-सर्वर हमेशा Codex-मूल कार्यक्षेत्र टूल को मूल रूप में रखता है।
+- Doctor लेगेसी फ़्लैट Talk कॉन्फ़िग (`talk.voiceId`, `talk.modelId`, और संबंधित कॉन्फ़िग) को स्वचालित रूप से `talk.provider` + `talk.providers.<provider>` में माइग्रेट करता है। जब एकमात्र अंतर ऑब्जेक्ट कुंजियों का क्रम हो, तो `doctor --fix` के दोहराए गए रन अब Talk सामान्यीकरण की रिपोर्ट नहीं करते या उसे लागू नहीं करते।
+- Doctor में मेमोरी-खोज तत्परता जाँच शामिल है और एम्बेडिंग क्रेडेंशियल अनुपलब्ध होने पर यह `openclaw configure --section model` की अनुशंसा कर सकता है।
+- कोई कमांड स्वामी कॉन्फ़िगर न होने पर doctor चेतावनी देता है। कमांड स्वामी वह मानव ऑपरेटर खाता है जिसे केवल-स्वामी कमांड चलाने और खतरनाक कार्रवाइयों को स्वीकृति देने की अनुमति होती है। DM पेयरिंग केवल किसी व्यक्ति को बॉट से बात करने देती है; यदि प्रथम-स्वामी बूटस्ट्रैप उपलब्ध होने से पहले किसी प्रेषक को स्वीकृत किया गया था, तो `commands.ownerAllowFrom` को स्पष्ट रूप से सेट करें।
+- Codex-मोड एजेंट कॉन्फ़िगर होने और ऑपरेटर के Codex होम में व्यक्तिगत Codex CLI आस्तियाँ मौजूद होने पर doctor एक सूचनात्मक टिप्पणी रिपोर्ट करता है। स्थानीय Codex ऐप-सर्वर लॉन्च पृथक प्रति-एजेंट होम का उपयोग करते हैं; आवश्यकता हो तो पहले Codex Plugin इंस्टॉल करें, फिर उन आस्तियों की सूची बनाने के लिए `openclaw migrate plan codex` का उपयोग करें जिन्हें जानबूझकर पदोन्नत किया जाना चाहिए।
+- डिफ़ॉल्ट एजेंट के लिए अनुमत Skills वर्तमान रनटाइम परिवेश में अनुपलब्ध होने पर doctor चेतावनी देता है (अनुपलब्ध बाइनरी, परिवेश चर, कॉन्फ़िग या OS आवश्यकताएँ)। `doctor --fix`, `skills.entries.<skill>.enabled=false` के साथ उन अनुपलब्ध Skills को अक्षम कर सकता है; Skill को सक्रिय रखना हो, तो इसके बजाय अनुपलब्ध आवश्यकता इंस्टॉल/कॉन्फ़िगर करें।
+- यदि सैंडबॉक्स मोड सक्षम है, लेकिन Docker अनुपलब्ध है, तो doctor सुधार उपाय (`install Docker` या `openclaw config set agents.defaults.sandbox.mode off`) के साथ स्पष्ट चेतावनी रिपोर्ट करता है।
+- यदि लेगेसी सैंडबॉक्स रजिस्ट्री फ़ाइलें या शार्ड निर्देशिकाएँ मौजूद हैं (`~/.openclaw/sandbox/containers.json`, `~/.openclaw/sandbox/browsers.json`, `~/.openclaw/sandbox/containers/`, या `~/.openclaw/sandbox/browsers/`), तो doctor उनकी रिपोर्ट करता है; `--fix` मान्य प्रविष्टियों को SQLite में माइग्रेट करता है और अमान्य लेगेसी फ़ाइलों को क्वारंटीन करता है।
+- यदि `gateway.auth.token`/`gateway.auth.password` को SecretRef द्वारा प्रबंधित किया जाता है और वे वर्तमान कमांड पथ में अनुपलब्ध हैं, तो doctor केवल-पठन चेतावनी रिपोर्ट करता है और सादे-पाठ फ़ॉलबैक क्रेडेंशियल नहीं लिखता। exec-समर्थित SecretRefs के लिए, `--allow-exec` मौजूद न होने पर doctor निष्पादन छोड़ देता है।
+- यदि सुधार पथ में चैनल SecretRef निरीक्षण विफल होता है, तो doctor जल्दी बाहर निकलने के बजाय काम जारी रखता है और चेतावनी रिपोर्ट करता है।
+- स्थिति-निर्देशिका माइग्रेशन के बाद, जब सक्षम डिफ़ॉल्ट Telegram या Discord खाते परिवेश फ़ॉलबैक पर निर्भर हों और `TELEGRAM_BOT_TOKEN` या `DISCORD_BOT_TOKEN` doctor प्रक्रिया के लिए अनुपलब्ध हो, तो doctor चेतावनी देता है।
+- Telegram `allowFrom` उपयोगकर्ता नाम के स्वचालित रिज़ॉल्यूशन (`doctor --fix`) के लिए वर्तमान कमांड पथ में रिज़ॉल्व किया जा सकने वाला Telegram टोकन आवश्यक है। यदि टोकन निरीक्षण अनुपलब्ध है, तो doctor चेतावनी रिपोर्ट करता है और उस चरण के लिए स्वचालित रिज़ॉल्यूशन छोड़ देता है।
+
+## macOS: `launchctl` परिवेश ओवरराइड
+
+यदि पहले `launchctl setenv OPENCLAW_GATEWAY_TOKEN ...` (या `...PASSWORD`) चलाया गया था, तो वह मान आपकी कॉन्फ़िग फ़ाइल को ओवरराइड करता है और लगातार "अनधिकृत" त्रुटियाँ उत्पन्न कर सकता है।
 
 ```bash
 launchctl getenv OPENCLAW_GATEWAY_TOKEN

@@ -1,157 +1,133 @@
 ---
 read_when:
-    - Menambahkan atau memodifikasi CLI model (models list/set/scan/aliases/fallbacks)
-    - Mengubah perilaku cadangan model atau pengalaman pengguna pemilihan
-    - Memperbarui probe pemindaian model (alat/gambar)
+    - Mengubah perilaku fallback model atau UX pemilihan
+    - Men-debug "model is not allowed" atau fallback penyedia default yang usang
+    - Menangani perilaku penggabungan/rahasia models.json
 sidebarTitle: Models CLI
-summary: 'CLI model: daftar, atur, alias, fallback, pindai, status'
+summary: Cara OpenClaw menyelesaikan referensi penyedia/model, kunci konfigurasi, dan perintah chat `/model`
 title: CLI Model
 x-i18n:
-    generated_at: "2026-06-27T17:25:14Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T17:59:39Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 8c7d4cbe1e0854a281f57f39dac9ac5f54c65f50da08cf37dfd298f8f1dd5536
+    source_hash: 20a5e4861bdafa1f5ff549fc54968051b653611f1ef05e836df855638a7aa967
     source_path: concepts/models.md
     workflow: 16
 ---
 
 <CardGroup cols={2}>
   <Card title="Failover model" href="/id/concepts/model-failover">
-    Rotasi profil autentikasi, masa tunggu, dan bagaimana itu berinteraksi dengan cadangan.
+    Rotasi profil autentikasi, masa jeda, dan interaksinya dengan fallback.
   </Card>
   <Card title="Penyedia model" href="/id/concepts/model-providers">
-    Ringkasan singkat penyedia dan contoh.
+    Ikhtisar singkat penyedia dan contoh.
   </Card>
-  <Card title="Runtime agen" href="/id/concepts/agent-runtimes">
-    OpenClaw, Codex, dan runtime loop agen lainnya.
+  <Card title="Referensi CLI model" href="/id/cli/models">
+    Referensi lengkap perintah dan flag `openclaw models`.
   </Card>
   <Card title="Referensi konfigurasi" href="/id/gateway/config-agents#agent-defaults">
-    Kunci konfigurasi model.
+    Kunci konfigurasi model, nilai default, dan contoh.
   </Card>
 </CardGroup>
 
-Ref model memilih penyedia dan model. Biasanya ref tersebut tidak memilih runtime agen tingkat rendah. Ref agen OpenAI adalah pengecualian utama: `openai/gpt-5.5` berjalan melalui runtime app-server Codex secara default pada penyedia OpenAI resmi. Ref Copilot langganan (`github-copilot/*`) juga dapat diikutkan ke Plugin runtime agen GitHub Copilot eksternal — jalur itu tetap eksplisit (tanpa cadangan `auto`). Penggantian runtime eksplisit berada pada kebijakan penyedia/model, bukan pada seluruh agen atau sesi. Dalam mode runtime Codex, ref `openai/gpt-*` tidak menyiratkan penagihan kunci API; autentikasi dapat berasal dari akun Codex atau profil OAuth `openai`. Lihat [Runtime agen](/id/concepts/agent-runtimes) dan [Runtime agen GitHub Copilot](/id/plugins/copilot).
+Referensi model (`provider/model`) memilih penyedia dan model, bukan runtime agen tingkat rendah.
+Jika kebijakan runtime tidak ditetapkan atau `auto`, kebijakan rute milik penyedia OpenAI
+dapat memilih Codex hanya untuk rute resmi HTTPS Platform Responses atau ChatGPT Responses
+yang sama persis tanpa penggantian permintaan yang ditentukan pengguna; prefiks
+`openai/*` saja tidak pernah memilih Codex. Adaptor Completions, endpoint khusus,
+dan perilaku permintaan yang ditentukan pengguna tetap menggunakan OpenClaw. Endpoint HTTP
+teks biasa resmi ditolak. Lihat [runtime agen implisit OpenAI](/id/providers/openai#implicit-agent-runtime).
 
-## Cara kerja pemilihan model
+Referensi Copilot langganan (`github-copilot/*`) dapat diikutsertakan dalam Plugin runtime agen
+GitHub Copilot eksternal, tetapi jalur tersebut selalu eksplisit (tidak pernah
+dipilih oleh `auto`). Penggantian runtime ditempatkan pada kebijakan penyedia/model, bukan pada
+seluruh agen atau sesi. Pemilihan runtime tidak menentukan penagihan:
+kredensial kunci API OpenAI dan langganan ChatGPT/Codex tetap terpisah. Lihat
+[Runtime agen](/id/concepts/agent-runtimes) dan
+[runtime agen GitHub Copilot](/id/plugins/copilot).
 
-OpenClaw memilih model dalam urutan ini:
+## Urutan pemilihan
 
 <Steps>
   <Step title="Model utama">
-    `agents.defaults.model.primary` (atau `agents.defaults.model`).
+    `agents.defaults.model.primary` (atau `agents.defaults.model` sebagai string biasa).
   </Step>
-  <Step title="Cadangan">
-    `agents.defaults.model.fallbacks` (berurutan).
+  <Step title="Fallback">
+    `agents.defaults.model.fallbacks`, dicoba secara berurutan.
   </Step>
-  <Step title="Failover autentikasi penyedia">
-    Failover autentikasi terjadi di dalam penyedia sebelum berpindah ke model berikutnya.
+  <Step title="Failover autentikasi">
+    Rotasi profil autentikasi berlangsung di dalam penyedia sebelum OpenClaw beralih ke model fallback berikutnya.
   </Step>
 </Steps>
 
-<AccordionGroup>
-  <Accordion title="Permukaan model terkait">
-    - `agents.defaults.models` adalah daftar izin/katalog model yang dapat digunakan OpenClaw (ditambah alias). Gunakan entri `provider/*` untuk membatasi penyedia yang terlihat sambil mempertahankan penemuan penyedia tetap dinamis.
-    - `agents.defaults.imageModel` digunakan **hanya ketika** model utama tidak dapat menerima gambar.
-    - `agents.defaults.pdfModel` digunakan oleh alat `pdf`. Jika dihilangkan, alat kembali ke `agents.defaults.imageModel`, lalu model sesi/default yang di-resolve.
-    - `agents.defaults.imageGenerationModel` digunakan oleh kapabilitas pembuatan gambar bersama. Jika dihilangkan, `image_generate` tetap dapat menyimpulkan default penyedia yang didukung autentikasi. Ia mencoba penyedia default saat ini terlebih dahulu, lalu sisa penyedia pembuatan gambar terdaftar dalam urutan ID penyedia. Jika Anda menetapkan penyedia/model tertentu, konfigurasikan juga autentikasi/kunci API penyedia tersebut.
-    - `agents.defaults.musicGenerationModel` digunakan oleh kapabilitas pembuatan musik bersama. Jika dihilangkan, `music_generate` tetap dapat menyimpulkan default penyedia yang didukung autentikasi. Ia mencoba penyedia default saat ini terlebih dahulu, lalu sisa penyedia pembuatan musik terdaftar dalam urutan ID penyedia. Jika Anda menetapkan penyedia/model tertentu, konfigurasikan juga autentikasi/kunci API penyedia tersebut.
-    - `agents.defaults.videoGenerationModel` digunakan oleh kapabilitas pembuatan video bersama. Jika dihilangkan, `video_generate` tetap dapat menyimpulkan default penyedia yang didukung autentikasi. Ia mencoba penyedia default saat ini terlebih dahulu, lalu sisa penyedia pembuatan video terdaftar dalam urutan ID penyedia. Jika Anda menetapkan penyedia/model tertentu, konfigurasikan juga autentikasi/kunci API penyedia tersebut.
-    - Default per agen dapat mengganti `agents.defaults.model` melalui `agents.list[].model` plus binding (lihat [Perutean multi-agen](/id/concepts/multi-agent)).
+Permukaan konfigurasi model terkait:
 
-  </Accordion>
-</AccordionGroup>
+- `agents.defaults.models` adalah daftar izin/katalog model yang dapat digunakan OpenClaw, beserta aliasnya. Gunakan entri `provider/*` untuk mengizinkan setiap model yang ditemukan dari suatu penyedia tanpa mencantumkannya satu per satu.
+- `agents.defaults.utilityModel` adalah model opsional berbiaya lebih rendah untuk tugas internal singkat seperti judul sesi dasbor yang dihasilkan, judul utas/topik saluran yang didukung, dan narasi progres. `agents.list[].utilityModel` per agen menggantikannya. Jika tidak ditetapkan, OpenClaw menggunakan model kecil default yang dideklarasikan oleh penyedia utama jika tersedia (OpenAI → `gpt-5.6-luna`, Anthropic → `claude-haiku-4-5`); jika tidak, model utama agen digunakan. Tetapkan ke string kosong untuk menonaktifkan perutean utilitas. Tugas utilitas merupakan panggilan model terpisah dan dapat mengirim konten tugas terbatas kepada penyedia model yang dipilih.
+- `agents.defaults.imageModel` hanya digunakan ketika model utama tidak dapat menerima gambar.
+- `agents.defaults.pdfModel` digunakan oleh alat `pdf`. Jika tidak ditetapkan, alat tersebut menggunakan fallback `imageModel`, lalu model sesi/default yang telah ditentukan.
+- `agents.defaults.imageGenerationModel`, `musicGenerationModel`, dan `videoGenerationModel` mendukung alat pembuatan media bersama. Jika tidak ditetapkan, setiap alat menyimpulkan default penyedia yang didukung autentikasi: penyedia default saat ini terlebih dahulu, lalu penyedia terdaftar lainnya untuk kapabilitas tersebut menurut urutan ID penyedia. Tetapkan `agents.defaults.mediaGenerationAutoProviderFallback: false` untuk menonaktifkan inferensi lintas penyedia tersebut sambil mempertahankan fallback eksplisit.
+- `agents.list[].model` per agen (beserta binding) menggantikan `agents.defaults.model` — lihat [Perutean multiagen](/id/concepts/multi-agent).
 
-## Sumber pemilihan dan perilaku cadangan
+Referensi lengkap kunci, nilai default, dan contoh JSON5: [Referensi konfigurasi](/id/gateway/config-agents#agent-defaults).
 
-`provider/model` yang sama dapat berarti hal berbeda tergantung dari mana asalnya:
+## Sumber pemilihan dan keketatan fallback
 
-- Default yang dikonfigurasi (`agents.defaults.model.primary` dan utama khusus agen) adalah titik awal normal dan menggunakan `agents.defaults.model.fallbacks`.
-- Pilihan cadangan otomatis adalah status pemulihan sementara. Pilihan tersebut disimpan dengan `modelOverrideSource: "auto"` sehingga giliran berikutnya dapat terus menggunakan rantai cadangan tanpa menguji utama yang diketahui bermasalah setiap kali; OpenClaw secara berkala menguji ulang utama asli, menghapus pilihan otomatis ketika pulih, dan mengumumkan transisi cadangan/pemulihan satu kali per perubahan status.
-- Pilihan sesi pengguna bersifat eksak. `/model`, pemilih model, `session_status(model=...)`, dan `sessions.patch` menyimpan `modelOverrideSource: "user"`; jika penyedia/model yang dipilih itu tidak dapat dijangkau, OpenClaw gagal secara terlihat alih-alih jatuh ke model lain yang dikonfigurasi.
-- Mengubah `agents.defaults.model.primary` tidak menulis ulang pilihan sesi yang ada. Jika status mengatakan `This session is pinned to X; config primary Y will apply to new/unpinned sessions.`, hapus pilihan sesi saat ini dengan `/model default` agar sesi mewarisi utama yang dikonfigurasi lagi.
-- Cron `--model` / payload `model` adalah utama per pekerjaan. Ia tetap menggunakan cadangan yang dikonfigurasi kecuali pekerjaan menyediakan payload `fallbacks` eksplisit (gunakan `fallbacks: []` untuk run cron yang ketat).
-- Pemilih model default CLI dan daftar izin menghormati `models.mode: "replace"` dengan mencantumkan `models.providers.*.models` eksplisit alih-alih memuat katalog bawaan lengkap.
-- Pemilih model Control UI meminta tampilan model terkonfigurasi kepada Gateway: `agents.defaults.models` saat ada, termasuk entri seluruh penyedia `provider/*`, jika tidak maka `models.providers.*.models` eksplisit plus penyedia dengan autentikasi yang dapat digunakan. Katalog bawaan lengkap dicadangkan untuk tampilan jelajah eksplisit seperti `models.list` dengan `view: "all"` atau `openclaw models list --all`.
+`provider/model` yang sama berperilaku berbeda bergantung pada asalnya:
+
+| Sumber                                                                  | Perilaku                                                                                                                                                                                                                                                       |
+| ----------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Default yang dikonfigurasi (`agents.defaults.model.primary`, utama per agen) | Titik awal normal; menggunakan `agents.defaults.model.fallbacks`.                                                                                                                                                                                                 |
+| Fallback otomatis                                                       | Status pemulihan sementara, disimpan sebagai `modelOverrideSource: "auto"`. OpenClaw secara berkala menguji ulang model utama asli, menghapus pilihan otomatis setelah pulih, dan mengumumkan transisi fallback/pemulihan satu kali untuk setiap perubahan status.                              |
+| Pemilihan sesi pengguna                                                 | Eksak dan ketat. `/model`, pemilih model, `session_status(model=...)`, dan `sessions.patch` menyimpan `modelOverrideSource: "user"`. Jika penyedia/model tersebut tidak dapat dijangkau, proses gagal secara jelas alih-alih beralih ke model lain yang dikonfigurasi. |
+| Cron `--model` / payload `model`                                        | Model utama per tugas. Tetap menggunakan fallback yang dikonfigurasi kecuali tugas menyediakan payload `fallbacks` sendiri (`fallbacks: []` memaksakan proses yang ketat).                                                                                                                    |
+
+Aturan pemilihan lainnya:
+
+- Mengubah `agents.defaults.model.primary` tidak menulis ulang penyematan sesi yang sudah ada. Jika status melaporkan `This session is pinned to X; config primary Y will apply to new/unpinned sessions.`, jalankan `/model default` untuk menghapus penyematan.
+- Pemilih model default CLI dan daftar izin mematuhi `models.mode: "replace"` dengan hanya mencantumkan `models.providers.*.models`, bukan seluruh katalog bawaan.
+- Pemilih model Control UI meminta tampilan model yang dikonfigurasi dari Gateway: `agents.defaults.models` jika ditetapkan (termasuk entri wildcard `provider/*`); jika tidak, `models.providers.*.models` beserta penyedia yang memiliki autentikasi yang dapat digunakan. Seluruh katalog bawaan hanya digunakan untuk tampilan penelusuran eksplisit (`models.list` dengan `view: "all"`, atau `openclaw models list --all`).
+- UI inventaris penyedia menggunakan `models.list` dengan `view: "provider-config"` untuk menampilkan baris `models.providers.*.models` yang ditentukan sumber tanpa menerapkan daftar izin pemilih.
+
+Mekanisme lengkap: [Failover model](/id/concepts/model-failover).
 
 ## Kebijakan model singkat
 
-- Tetapkan utama Anda ke model generasi terbaru terkuat yang tersedia untuk Anda.
-- Gunakan cadangan untuk tugas yang sensitif terhadap biaya/latensi dan chat berisiko lebih rendah.
-- Untuk agen dengan alat aktif atau input tidak tepercaya, hindari tingkat model yang lebih lama/lebih lemah.
+- Tetapkan model utama ke model generasi terbaru terkuat yang tersedia bagi Anda.
+- Gunakan fallback untuk tugas yang sensitif terhadap biaya/latensi dan percakapan berisiko lebih rendah.
+- Untuk agen yang mendukung alat atau input yang tidak tepercaya, hindari tingkatan model yang lebih lama/lemah.
 
-## Onboarding (direkomendasikan)
-
-Jika Anda tidak ingin mengedit konfigurasi secara manual, jalankan onboarding:
+## Orientasi awal
 
 ```bash
 openclaw onboard
 ```
 
-Ini dapat menyiapkan model + autentikasi untuk penyedia umum, termasuk **langganan OpenAI Code (Codex)** (OAuth) dan **Anthropic** (kunci API atau Claude CLI).
+Menyiapkan model dan autentikasi untuk penyedia umum tanpa mengedit konfigurasi secara manual, termasuk OAuth langganan OpenAI Codex dan Anthropic (kunci API atau penggunaan kembali Claude CLI).
 
-## Kunci konfigurasi (ringkasan)
+Jika tidak ada model utama yang dikonfigurasi, penyiapan kunci API OpenAI baru memilih
+`openai/gpt-5.6`; ID API langsung tanpa kualifikasi ditentukan ke tingkatan Sol. Penyiapan
+OAuth ChatGPT/Codex baru memilih referensi katalog `openai/gpt-5.6-sol` yang eksak.
+Autentikasi ulang mempertahankan model utama eksplisit yang sudah ada, termasuk
+`openai/gpt-5.5`. Jika GPT-5.6 tidak tersedia untuk akun tersebut, pilih
+`openai/gpt-5.5` secara eksplisit; OpenClaw tidak menurunkan tingkatannya secara diam-diam.
 
-- `agents.defaults.model.primary` dan `agents.defaults.model.fallbacks`
-- `agents.defaults.imageModel.primary` dan `agents.defaults.imageModel.fallbacks`
-- `agents.defaults.pdfModel.primary` dan `agents.defaults.pdfModel.fallbacks`
-- `agents.defaults.imageGenerationModel.primary` dan `agents.defaults.imageGenerationModel.fallbacks`
-- `agents.defaults.videoGenerationModel.primary` dan `agents.defaults.videoGenerationModel.fallbacks`
-- `agents.defaults.models` (daftar izin + alias + parameter penyedia + entri penyedia dinamis `provider/*`)
-- `models.providers` (penyedia kustom yang ditulis ke `models.json`)
+## "Model tidak diizinkan" (dan alasan balasan berhenti)
 
-<Note>
-Ref model dinormalisasi ke huruf kecil. ID penyedia selain itu bersifat eksak; gunakan
-ID penyedia yang diiklankan oleh Plugin.
+Jika `agents.defaults.models` ditetapkan, nilai tersebut menjadi daftar izin untuk `/model` dan penggantian sesi. Memilih model di luar daftar izin tersebut menghasilkan pesan berikut sebelum balasan normal dibuat:
 
-Contoh konfigurasi penyedia (termasuk OpenCode) ada di [OpenCode](/id/providers/opencode).
-</Note>
-
-### Edit daftar izin yang aman
-
-Gunakan penulisan aditif saat memperbarui `agents.defaults.models` secara manual:
-
-```bash
-openclaw config set agents.defaults.models '{"openai/gpt-5.4":{}}' --strict-json --merge
+```text
+Model "provider/model" tidak diizinkan. Gunakan /models untuk mencantumkan penyedia, atau /models <provider> untuk mencantumkan model.
+Tambahkan dengan: openclaw config set agents.defaults.models '{"provider/model":{}}' --strict-json --merge
 ```
 
-<AccordionGroup>
-  <Accordion title="Aturan perlindungan penimpaan">
-    `openclaw config set` melindungi peta model/penyedia dari penimpaan tidak sengaja. Penetapan objek biasa ke `agents.defaults.models`, `models.providers`, atau `models.providers.<id>.models` ditolak ketika itu akan menghapus entri yang ada. Gunakan `--merge` untuk perubahan aditif; gunakan `--replace` hanya ketika nilai yang diberikan harus menjadi nilai target lengkap.
+Perbaiki dengan menambahkan model ke `agents.defaults.models`, menghapus seluruh daftar izin (hapus kuncinya), atau memilih model dari `/model list`. Jika perintah yang ditolak menyertakan penggantian runtime seperti `/model openai/gpt-5.5 --runtime codex`, perbaiki daftar izin terlebih dahulu, lalu coba kembali perintah `/model ... --runtime ...` yang sama.
 
-    Penyiapan penyedia interaktif dan `openclaw configure --section model` juga menggabungkan pilihan dengan cakupan penyedia ke daftar izin yang ada, sehingga menambahkan Codex, Ollama, atau penyedia lain tidak menghapus entri model yang tidak terkait. Configure mempertahankan `agents.defaults.model.primary` yang ada ketika autentikasi penyedia diterapkan ulang. Perintah penetapan default eksplisit seperti `openclaw models auth login --provider <id> --set-default` dan `openclaw models set <model>` tetap mengganti `agents.defaults.model.primary`.
+Untuk model lokal/GGUF, daftar izin memerlukan referensi lengkap berprefiks penyedia, misalnya `ollama/gemma4:26b` atau `lmstudio/Gemma4-26b-a4-it-gguf` — periksa `openclaw models list --provider <provider>` untuk string yang eksak. Nama file tanpa kualifikasi atau nama tampilan tidak cukup setelah daftar izin aktif.
 
-  </Accordion>
-</AccordionGroup>
-
-## "Model tidak diizinkan" (dan mengapa balasan berhenti)
-
-Jika `agents.defaults.models` ditetapkan, itu menjadi **daftar izin** untuk `/model` dan penggantian sesi. Saat pengguna memilih model yang tidak ada dalam daftar izin itu, OpenClaw mengembalikan:
-
-```
-Model "provider/model" is not allowed. Use /models to list providers, or /models <provider> to list models.
-Add it with: openclaw config set agents.defaults.models '{"provider/model":{}}' --strict-json --merge
-```
-
-<Warning>
-Ini terjadi **sebelum** balasan normal dibuat, sehingga pesan dapat terasa seperti "tidak merespons." Perbaikannya adalah salah satu dari:
-
-- Tambahkan model ke `agents.defaults.models`, atau
-- Hapus daftar izin (hapus `agents.defaults.models`), atau
-- Pilih model dari `/model list`.
-
-</Warning>
-
-Ketika perintah yang ditolak menyertakan penggantian runtime seperti `/model openai/gpt-5.5 --runtime codex`, perbaiki daftar izin terlebih dahulu, lalu coba ulangi perintah `/model ... --runtime ...` yang sama. Untuk eksekusi Codex native, model yang dipilih tetap `openai/gpt-5.5`; runtime `codex` memilih harness dan menggunakan autentikasi Codex secara terpisah.
-
-Untuk model lokal/GGUF, simpan ref lengkap dengan prefiks penyedia di daftar izin,
-misalnya `ollama/gemma4:26b`, `lmstudio/Gemma4-26b-a4-it-gguf`, atau
-penyedia/model eksak yang ditampilkan oleh `openclaw models list --provider <provider>`.
-Nama file lokal polos atau nama tampilan tidak cukup saat daftar izin
-aktif.
-
-Jika Anda ingin membatasi penyedia tanpa mencantumkan setiap model secara manual, tambahkan
-entri `provider/*` ke `agents.defaults.models`:
+Untuk membatasi penyedia tanpa mencantumkan setiap model, gunakan entri wildcard `provider/*`:
 
 ```json5
 {
@@ -166,12 +142,9 @@ entri `provider/*` ke `agents.defaults.models`:
 }
 ```
 
-Dengan kebijakan itu, `/model`, `/models`, dan pemilih model menampilkan
-katalog yang ditemukan hanya untuk penyedia tersebut. Model baru dari penyedia yang dipilih dapat
-muncul tanpa mengedit daftar izin. Entri `provider/model` eksak dapat dicampur
-dengan entri `provider/*` saat Anda membutuhkan satu model tertentu dari penyedia lain.
+`/model`, `/models`, dan pemilih model kemudian hanya menampilkan katalog yang ditemukan untuk penyedia tersebut, dan model baru dapat muncul tanpa mengedit daftar izin. Gabungkan entri `provider/model` eksak dengan entri `provider/*` untuk menyertakan satu model tertentu dari penyedia lain.
 
-Contoh konfigurasi daftar izin:
+Contoh daftar izin dengan alias:
 
 ```json5
 {
@@ -187,11 +160,19 @@ Contoh konfigurasi daftar izin:
 }
 ```
 
-## Beralih model di chat (`/model`)
+<Accordion title="Pengeditan daftar izin yang aman dari CLI">
+Gunakan `--merge` untuk perubahan aditif:
 
-Anda dapat beralih model untuk sesi saat ini tanpa memulai ulang:
-
+```bash
+openclaw config set agents.defaults.models '{"openai/gpt-5.4":{}}' --strict-json --merge
 ```
+
+`openclaw config set` menolak penetapan objek biasa ke `agents.defaults.models`, `models.providers`, atau `models.providers.<id>.models` jika tindakan tersebut akan menghapus entri yang ada; gunakan `--replace` hanya jika nilai baru harus menjadi nilai target yang lengkap. Penyiapan penyedia interaktif dan `openclaw configure --section model` sudah menggabungkan pilihan dalam cakupan penyedia ke daftar izin, sehingga menambahkan penyedia tidak menghapus entri yang tidak terkait; configure mempertahankan `agents.defaults.model.primary` yang sudah ada. Perintah eksplisit seperti `openclaw models auth login --provider <id> --set-default` dan `openclaw models set <model>` tetap mengganti model utama.
+</Accordion>
+
+## `/model` dalam percakapan
+
+```text
 /model
 /model list
 /model 3
@@ -200,175 +181,60 @@ Anda dapat beralih model untuk sesi saat ini tanpa memulai ulang:
 /model status
 ```
 
-<AccordionGroup>
-  <Accordion title="Perilaku pemilih">
-    - `/model` (dan `/model list`) adalah pemilih ringkas bernomor (keluarga model + penyedia yang tersedia).
-    - Di Discord, `/model` dan `/models` membuka pemilih interaktif dengan dropdown penyedia dan model plus langkah Submit.
-    - Di Telegram, pilihan pemilih `/models` bercakupan sesi; pilihan tersebut tidak mengubah default persisten agen di `openclaw.json`.
-    - `/models add` sudah tidak digunakan dan sekarang mengembalikan pesan deprekasi alih-alih mendaftarkan model dari chat.
-    - `/model <#>` memilih dari pemilih tersebut.
+- `/model` dan `/model list` menampilkan pemilih bernomor yang ringkas (keluarga model + penyedia yang tersedia); `/model <#>` memilih darinya. Di Discord, tindakan ini membuka menu tarik-turun penyedia/model dengan langkah Submit; di Telegram, pilihan pemilih dibatasi pada sesi dan tidak pernah menulis ulang default persisten agen di `openclaw.json`. `/models add` telah dihentikan dan mengembalikan pesan alih-alih mendaftarkan model dari obrolan.
+- `/model` langsung menyimpan pilihan sesi baru. Jika agen sedang tidak aktif, eksekusi berikutnya langsung menggunakannya; jika eksekusi sudah aktif, peralihan diantrekan hingga titik percobaan ulang bersih berikutnya (atau titik berikutnya lagi, jika aktivitas alat atau keluaran balasan sudah dimulai).
+- `/model default` menghapus pilihan sesi sehingga kembali mewarisi model utama yang dikonfigurasi.
+- Referensi `/model` yang dipilih pengguna berlaku ketat untuk sesi tersebut: jika referensi itu tidak dapat dijangkau, balasan akan gagal secara jelas alih-alih diam-diam beralih melalui `agents.defaults.model.fallbacks`. Default yang dikonfigurasi dan model utama tugas cron tetap menggunakan rantai fallback.
+- `/model status` adalah tampilan terperinci: kandidat autentikasi per penyedia, serta (jika dikonfigurasi) endpoint penyedia `baseUrl` beserta mode `api`.
+- Referensi model diurai dengan memisahkannya pada `/` pertama; ketik `provider/model`. Jika ID model itu sendiri memuat `/` (gaya OpenRouter), sertakan prefiks penyedia, misalnya `/model openrouter/moonshotai/kimi-k2`. Jika penyedia dihilangkan, OpenClaw mencoba: (1) kecocokan alias, (2) kecocokan unik penyedia yang dikonfigurasi untuk ID model persis tanpa prefiks tersebut, (3) penyedia default yang dikonfigurasi (fallback yang telah dihentikan) — dan jika penyedia tersebut tidak lagi menyediakan model default yang dikonfigurasi, gunakan penyedia/model pertama yang dikonfigurasi sebagai gantinya, agar default penyedia yang telah dihapus dan kedaluwarsa tidak ditampilkan.
+- Referensi model dinormalisasi menjadi huruf kecil; selain itu, ID penyedia harus persis, jadi gunakan ID yang diumumkan oleh plugin.
 
-  </Accordion>
-  <Accordion title="Persistensi dan peralihan langsung">
-    - `/model` segera menyimpan pilihan sesi baru.
-    - Jika agen sedang menganggur, proses berikutnya langsung menggunakan model baru.
-    - Jika proses sudah aktif, OpenClaw menandai peralihan langsung sebagai tertunda dan hanya memulai ulang ke model baru pada titik percobaan ulang yang bersih.
-    - Jika aktivitas alat atau keluaran balasan sudah dimulai, peralihan yang tertunda dapat tetap mengantre sampai kesempatan percobaan ulang berikutnya atau giliran pengguna berikutnya.
-    - `/model default` menghapus pilihan sesi dan mengembalikan sesi ke model default yang dikonfigurasi.
-    - Ref `/model` yang dipilih pengguna bersifat ketat untuk sesi tersebut: jika penyedia/model yang dipilih tidak dapat dijangkau, balasan gagal secara terlihat alih-alih diam-diam menjawab dari `agents.defaults.model.fallbacks`. Ini berbeda dari default yang dikonfigurasi dan primer tugas cron, yang masih dapat menggunakan rantai fallback.
-    - `/model status` adalah tampilan terperinci (kandidat auth dan, bila dikonfigurasi, endpoint penyedia `baseUrl` + mode `api`).
+Perilaku dan konfigurasi perintah lengkap: [Perintah garis miring](/id/tools/slash-commands).
 
-  </Accordion>
-  <Accordion title="Penguraian ref">
-    - Ref model diuraikan dengan memisahkan pada `/` **pertama**. Gunakan `provider/model` saat mengetik `/model <ref>`.
-    - Jika ID model itu sendiri berisi `/` (gaya OpenRouter), Anda harus menyertakan prefiks penyedia (contoh: `/model openrouter/moonshotai/kimi-k2`).
-    - Jika Anda menghilangkan penyedia, OpenClaw menyelesaikan input dalam urutan ini:
-      1. kecocokan alias
-      2. kecocokan penyedia terkonfigurasi yang unik untuk id model tanpa prefiks yang persis sama
-      3. fallback usang ke penyedia default yang dikonfigurasi — jika penyedia itu tidak lagi mengekspos model default yang dikonfigurasi, OpenClaw sebagai gantinya fallback ke penyedia/model terkonfigurasi pertama untuk menghindari memunculkan default penyedia yang dihapus dan basi.
-  </Accordion>
-</AccordionGroup>
-
-Perilaku/konfigurasi perintah lengkap: [Perintah slash](/id/tools/slash-commands).
-
-## Perintah CLI
+## CLI
 
 ```bash
-openclaw models list
 openclaw models status
+openclaw models list
 openclaw models set <provider/model>
 openclaw models set-image <provider/model>
-
-openclaw models aliases list
-openclaw models aliases add <alias> <provider/model>
-openclaw models aliases remove <alias>
-
-openclaw models fallbacks list
-openclaw models fallbacks add <provider/model>
-openclaw models fallbacks remove <provider/model>
-openclaw models fallbacks clear
-
-openclaw models image-fallbacks list
-openclaw models image-fallbacks add <provider/model>
-openclaw models image-fallbacks remove <provider/model>
-openclaw models image-fallbacks clear
+openclaw models scan
+openclaw models aliases list|add|remove
+openclaw models fallbacks list|add|remove|clear
+openclaw models image-fallbacks list|add|remove|clear
+openclaw models auth list|add|login|paste-api-key|paste-token|setup-token|order
 ```
 
-`openclaw models` (tanpa subperintah) adalah pintasan untuk `models status`.
-
-### `models list`
-
-Menampilkan model yang dikonfigurasi/tersedia-auth secara default. Flag yang berguna:
-
-<ParamField path="--all" type="boolean">
-  Katalog lengkap. Menyertakan baris katalog statis bawaan milik penyedia sebelum auth dikonfigurasi, sehingga tampilan khusus penemuan dapat menampilkan model yang tidak tersedia sampai Anda menambahkan kredensial penyedia yang cocok.
-</ParamField>
-<ParamField path="--local" type="boolean">
-  Hanya penyedia lokal.
-</ParamField>
-<ParamField path="--provider <id>" type="string">
-  Filter berdasarkan id penyedia, misalnya `moonshot`. Label tampilan dari pemilih interaktif tidak diterima.
-</ParamField>
-<ParamField path="--plain" type="boolean">
-  Satu model per baris.
-</ParamField>
-<ParamField path="--json" type="boolean">
-  Keluaran yang dapat dibaca mesin.
-</ParamField>
-
-### `models status`
-
-Menampilkan model primer yang diselesaikan, fallback, model gambar, dan ringkasan auth dari penyedia yang dikonfigurasi. Ini juga memunculkan status kedaluwarsa OAuth untuk profil yang ditemukan di penyimpanan auth (memperingatkan dalam 24 jam secara default). `--plain` hanya mencetak model primer yang diselesaikan.
+`openclaw models` tanpa subperintah merupakan pintasan untuk `models status`, yang juga menampilkan masa kedaluwarsa OAuth untuk profil penyimpanan autentikasi (secara default memperingatkan dalam 24 jam). Flag lengkap, struktur JSON, dan subperintah profil autentikasi: [Referensi CLI model](/id/cli/models).
 
 <AccordionGroup>
-  <Accordion title="Perilaku auth dan probe">
-    - Status OAuth selalu ditampilkan (dan disertakan dalam keluaran `--json`). Jika penyedia yang dikonfigurasi tidak memiliki kredensial, `models status` mencetak bagian **Auth hilang**.
-    - JSON menyertakan `auth.oauth` (jendela peringatan + profil) dan `auth.providers` (auth efektif per penyedia, termasuk kredensial berbasis env). `auth.oauth` hanya kesehatan profil penyimpanan-auth; penyedia yang hanya env tidak muncul di sana.
-    - Gunakan `--check` untuk otomatisasi (keluar `1` saat hilang/kedaluwarsa, `2` saat hampir kedaluwarsa).
-    - Gunakan `--probe` untuk pemeriksaan auth langsung; baris probe dapat berasal dari profil auth, kredensial env, atau `models.json`.
-    - Jika `auth.order.<provider>` eksplisit menghilangkan profil tersimpan, probe melaporkan `excluded_by_auth_order` alih-alih mencobanya. Jika auth ada tetapi tidak ada model yang dapat diprobe yang dapat diselesaikan untuk penyedia itu, probe melaporkan `status: no_model`.
+  <Accordion title="Pemindaian (model gratis OpenRouter)">
+    `openclaw models scan` memeriksa katalog model gratis publik OpenRouter dan dapat menguji kandidat secara langsung untuk dukungan alat dan gambar. Katalog itu sendiri bersifat publik, sehingga pemindaian khusus metadata (`--no-probe`) tidak memerlukan kunci; pengujian langsung dan `--set-default`/`--set-image` memerlukan kunci API OpenRouter (profil autentikasi atau `OPENROUTER_API_KEY`) dan tanpa kunci akan gagal secara tertutup dengan hanya menghasilkan keluaran metadata.
+
+    Hasil diurutkan berdasarkan: dukungan gambar, lalu latensi alat, lalu ukuran konteks, lalu jumlah parameter. Di TTY, hasil yang diuji akan meminta pemilihan fallback secara interaktif; mode noninteraktif memerlukan `--yes` untuk menerima default.
 
   </Accordion>
 </AccordionGroup>
-
-<Note>
-Pilihan auth bergantung pada penyedia/akun. Untuk host Gateway yang selalu aktif, kunci API biasanya paling dapat diprediksi; penggunaan ulang Claude CLI dan profil OAuth/token Anthropic yang sudah ada juga didukung.
-</Note>
-
-Contoh (Claude CLI):
-
-```bash
-claude auth login
-openclaw models status
-```
-
-## Pemindaian (model gratis OpenRouter)
-
-`openclaw models scan` memeriksa **katalog model gratis** OpenRouter dan secara opsional dapat memprobe model untuk dukungan alat dan gambar.
-
-<ParamField path="--no-probe" type="boolean">
-  Lewati probe langsung (hanya metadata).
-</ParamField>
-<ParamField path="--min-params <b>" type="number">
-  Ukuran parameter minimum (miliar).
-</ParamField>
-<ParamField path="--max-age-days <days>" type="number">
-  Lewati model yang lebih lama.
-</ParamField>
-<ParamField path="--provider <name>" type="string">
-  Filter prefiks penyedia.
-</ParamField>
-<ParamField path="--max-candidates <n>" type="number">
-  Ukuran daftar fallback.
-</ParamField>
-<ParamField path="--set-default" type="boolean">
-  Atur `agents.defaults.model.primary` ke pilihan pertama.
-</ParamField>
-<ParamField path="--set-image" type="boolean">
-  Atur `agents.defaults.imageModel.primary` ke pilihan gambar pertama.
-</ParamField>
-
-<Note>
-Katalog `/models` OpenRouter bersifat publik, sehingga pemindaian hanya metadata dapat mencantumkan kandidat gratis tanpa kunci. Probe dan inferensi tetap memerlukan kunci API OpenRouter (dari profil auth atau `OPENROUTER_API_KEY`). Jika tidak ada kunci yang tersedia, `openclaw models scan` fallback ke keluaran hanya metadata dan membiarkan konfigurasi tidak berubah. Gunakan `--no-probe` untuk meminta mode hanya metadata secara eksplisit.
-</Note>
-
-Hasil pemindaian diberi peringkat berdasarkan:
-
-1. Dukungan gambar
-2. Latensi alat
-3. Ukuran konteks
-4. Jumlah parameter
-
-Input:
-
-- Daftar `/models` OpenRouter (filter `:free`)
-- Probe langsung memerlukan kunci API OpenRouter dari profil auth atau `OPENROUTER_API_KEY` (lihat [Variabel lingkungan](/id/help/environment))
-- Filter opsional: `--max-age-days`, `--min-params`, `--provider`, `--max-candidates`
-- Kontrol permintaan/probe: `--timeout`, `--concurrency`
-
-Saat probe langsung berjalan di TUI, Anda dapat memilih fallback secara interaktif. Dalam mode non-interaktif, berikan `--yes` untuk menerima default. Hasil hanya metadata bersifat informatif; `--set-default` dan `--set-image` memerlukan probe langsung agar OpenClaw tidak mengonfigurasi model OpenRouter tanpa kunci yang tidak dapat digunakan.
 
 ## Registri model (`models.json`)
 
-Penyedia kustom di `models.providers` ditulis ke `models.json` di bawah direktori agen (default `~/.openclaw/agents/<agentId>/agent/models.json`). Katalog Plugin penyedia disimpan sebagai shard katalog yang dihasilkan dan dimiliki plugin di bawah state plugin agen dan dimuat otomatis. File ini digabungkan secara default kecuali `models.mode` diatur ke `replace`.
+Penyedia khusus yang dikonfigurasi di bawah `models.providers` ditulis ke `models.json` di dalam direktori agen (default `~/.openclaw/agents/<agentId>/agent/models.json`). Katalog plugin penyedia disimpan secara terpisah sebagai fragmen katalog buatan yang dimiliki plugin dan dimuat secara otomatis. Secara default, file ini digabungkan dengan konfigurasi; tetapkan `models.mode: "replace"` agar hanya menggunakan penyedia yang Anda konfigurasi.
 
 <AccordionGroup>
-  <Accordion title="Prioritas mode gabung">
-    Prioritas mode gabung untuk ID penyedia yang cocok:
+  <Accordion title="Prioritas mode penggabungan">
+    Untuk ID penyedia yang cocok:
 
-    - `baseUrl` tidak kosong yang sudah ada di `models.json` agen menang.
-    - `apiKey` tidak kosong di `models.json` agen hanya menang ketika penyedia itu tidak dikelola SecretRef dalam konteks konfigurasi/profil-auth saat ini.
-    - Nilai `apiKey` penyedia yang dikelola SecretRef disegarkan dari marker sumber (`ENV_VAR_NAME` untuk ref env, `secretref-managed` untuk ref file/exec) alih-alih mempertahankan rahasia yang telah diselesaikan.
-    - Nilai header penyedia yang dikelola SecretRef disegarkan dari marker sumber (`secretref-env:ENV_VAR_NAME` untuk ref env, `secretref-managed` untuk ref file/exec).
-    - `apiKey`/`baseUrl` agen yang kosong atau hilang fallback ke `models.providers` konfigurasi.
-    - Field penyedia lainnya disegarkan dari konfigurasi dan data katalog yang dinormalisasi.
+    - `baseUrl` yang tidak kosong dan sudah ada di `models.json` agen akan diprioritaskan.
+    - `apiKey` yang tidak kosong di `models.json` hanya diprioritaskan jika penyedia tersebut tidak dikelola oleh SecretRef dalam konteks konfigurasi/profil autentikasi saat ini.
+    - Nilai `apiKey` yang dikelola oleh SecretRef diperbarui dari penanda sumber alih-alih menyimpan rahasia yang telah diuraikan: nama variabel lingkungan untuk referensi lingkungan, `secretref-managed` untuk referensi file/exec.
+    - Nilai header yang dikelola oleh SecretRef diperbarui dengan cara yang sama, menggunakan `secretref-env:ENV_VAR_NAME` untuk referensi lingkungan.
+    - `apiKey`/`baseUrl` yang kosong atau tidak ada di `models.json` kembali menggunakan `models.providers` dari konfigurasi.
+    - Kolom penyedia lainnya diperbarui dari konfigurasi dan data katalog yang telah dinormalisasi.
 
   </Accordion>
 </AccordionGroup>
 
-<Note>
-Persistensi marker bersifat otoritatif-sumber: OpenClaw menulis marker dari snapshot konfigurasi sumber aktif (pra-resolusi), bukan dari nilai rahasia runtime yang telah diselesaikan. Ini berlaku setiap kali OpenClaw membuat ulang `models.json`, termasuk jalur yang digerakkan perintah seperti `openclaw agent`.
-</Note>
+Persistensi penanda menjadikan sumber sebagai acuan utama: OpenClaw menulis penanda dari snapshot konfigurasi sumber yang aktif (sebelum resolusi), bukan dari nilai rahasia runtime yang telah diuraikan, setiap kali meregenerasi `models.json` — termasuk melalui jalur yang digerakkan oleh perintah seperti `openclaw agent`.
 
 ## Terkait
 
@@ -376,6 +242,7 @@ Persistensi marker bersifat otoritatif-sumber: OpenClaw menulis marker dari snap
 - [Referensi konfigurasi](/id/gateway/config-agents#agent-defaults) — kunci konfigurasi model
 - [Pembuatan gambar](/id/tools/image-generation) — konfigurasi model gambar
 - [Failover model](/id/concepts/model-failover) — rantai fallback
-- [Penyedia model](/id/concepts/model-providers) — routing penyedia dan auth
+- [Penyedia model](/id/concepts/model-providers) — perutean penyedia dan autentikasi
+- [Referensi CLI model](/id/cli/models) — referensi lengkap perintah dan flag
 - [Pembuatan musik](/id/tools/music-generation) — konfigurasi model musik
 - [Pembuatan video](/id/tools/video-generation) — konfigurasi model video

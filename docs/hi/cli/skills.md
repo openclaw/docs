@@ -1,34 +1,35 @@
 ---
 read_when:
-    - आप देखना चाहते हैं कि कौन-सी Skills उपलब्ध हैं और चलाने के लिए तैयार हैं
-    - आप ClawHub में खोज करना या ClawHub, Git, या स्थानीय निर्देशिकाओं से Skills इंस्टॉल करना चाहते हैं
-    - आप ClawHub से एक ClawHub कौशल सत्यापित करना चाहते हैं
-    - आप Skills के लिए अनुपस्थित बाइनरी/env/config डीबग करना चाहते हैं
-summary: '`openclaw skills` के लिए CLI संदर्भ (search/install/update/verify/list/info/check/workshop)'
+    - आप देखना चाहते हैं कि कौन-से Skills उपलब्ध हैं और चलाने के लिए तैयार हैं
+    - आप ClawHub में खोज करना चाहते हैं या ClawHub, Git अथवा स्थानीय डायरेक्टरियों से Skills इंस्टॉल करना चाहते हैं
+    - आप ClawHub के साथ किसी ClawHub Skill को सत्यापित करना चाहते हैं
+    - आप Skills के लिए अनुपलब्ध बाइनरी/env/config को डीबग करना चाहते हैं
+summary: '`openclaw skills` के लिए CLI संदर्भ (खोजें/इंस्टॉल करें/अपडेट करें/सत्यापित करें/सूची देखें/जानकारी देखें/जाँचें/कार्यशाला)'
 title: Skills
 x-i18n:
-    generated_at: "2026-06-28T22:53:41Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T14:05:47Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 8f76c49e04559362cac9c0d12ce86cd422b46653242212c7611cc1033941ac43
+    source_hash: 3eafd40704b666e6be185aa8148b60613c861a2899fb9b0cc3353212e8e4d678
     source_path: cli/skills.md
     workflow: 16
 ---
 
 # `openclaw skills`
 
-स्थानीय Skills का निरीक्षण करें, ClawHub खोजें, ClawHub/Git/स्थानीय
-डायरेक्टरी से Skills इंस्टॉल करें, ClawHub Skills सत्यापित करें, और ClawHub-ट्रैक किए गए इंस्टॉल अपडेट करें।
+स्थानीय Skills का निरीक्षण करें, ClawHub में खोजें, ClawHub/Git/स्थानीय
+डायरेक्टरी से Skills इंस्टॉल करें, ClawHub Skills सत्यापित करें और ClawHub द्वारा ट्रैक किए गए इंस्टॉलेशन अपडेट करें।
 
 संबंधित:
 
-- Skills सिस्टम: [Skills](/hi/tools/skills)
+- Skills प्रणाली: [Skills](/hi/tools/skills)
 - Skill कार्यशाला: [Skill कार्यशाला](/hi/tools/skill-workshop)
-- Skills कॉन्फ़िग: [Skills कॉन्फ़िग](/hi/tools/skills-config)
-- ClawHub इंस्टॉल: [ClawHub](/hi/clawhub/cli)
+- Skills कॉन्फ़िगरेशन: [Skills कॉन्फ़िगरेशन](/hi/tools/skills-config)
+- ClawHub इंस्टॉलेशन: [ClawHub](/hi/clawhub/cli)
 
-## आदेश
+## कमांड
 
 ```bash
 openclaw skills search "calendar"
@@ -39,10 +40,12 @@ openclaw skills install git:owner/repo
 openclaw skills install git:owner/repo@main
 openclaw skills install ./path/to/skill --as custom-name
 openclaw skills install @owner/<slug> --force
+openclaw skills install @owner/<slug> --force-install
 openclaw skills install @owner/<slug> --acknowledge-clawhub-risk
 openclaw skills install @owner/<slug> --agent <id>
 openclaw skills install @owner/<slug> --global
 openclaw skills update @owner/<slug>
+openclaw skills update @owner/<slug> --force-install
 openclaw skills update @owner/<slug> --acknowledge-clawhub-risk
 openclaw skills update @owner/<slug> --global
 openclaw skills update --all
@@ -74,104 +77,89 @@ openclaw skills workshop reject <proposal-id> --reason "Not reusable"
 openclaw skills workshop quarantine <proposal-id> --reason "Needs security review"
 ```
 
-`search`, `update`, और `verify` सीधे ClawHub का उपयोग करते हैं। `install @owner/<slug>`
-ClawHub Skill इंस्टॉल करता है, `install git:owner/repo[@ref]` Git Skill क्लोन करता है, और
-`install ./path` स्थानीय Skill डायरेक्टरी कॉपी करता है। डिफ़ॉल्ट रूप से, `install`, `update`,
-और `verify` सक्रिय वर्कस्पेस की `skills/` डायरेक्टरी को लक्षित करते हैं; `--global` के साथ,
-वे साझा मैनेज्ड Skills डायरेक्टरी को लक्षित करते हैं। `list`/`info`/`check` फिर भी
-वर्तमान वर्कस्पेस और कॉन्फ़िग को दिखाई देने वाले स्थानीय Skills का निरीक्षण करते हैं।
-वर्कस्पेस-समर्थित आदेश लक्ष्य वर्कस्पेस को `--agent <id>` से हल करते हैं, फिर
-वर्तमान कार्यशील डायरेक्टरी से जब वह किसी कॉन्फ़िगर किए गए एजेंट वर्कस्पेस के अंदर हो,
-फिर डिफ़ॉल्ट एजेंट से।
+`search`, `update` और `verify` सीधे ClawHub का उपयोग करते हैं। `install @owner/<slug>`
+एक ClawHub Skill इंस्टॉल करता है, `install git:owner/repo[@ref]` एक Git Skill क्लोन करता है
+और `install ./path` एक स्थानीय Skill डायरेक्टरी कॉपी करता है। डिफ़ॉल्ट रूप से, `install`,
+`update` और `verify` सक्रिय वर्कस्पेस की `skills/` डायरेक्टरी को लक्षित करते हैं; 
+`--global` के साथ वे साझा प्रबंधित Skills डायरेक्टरी को लक्षित करते हैं। `list`/`info`/`check`
+फिर भी वर्तमान वर्कस्पेस और कॉन्फ़िगरेशन को दिखाई देने वाले स्थानीय Skills का निरीक्षण करते हैं।
+वर्कस्पेस-आधारित कमांड लक्ष्य वर्कस्पेस को पहले `--agent <id>` से,
+फिर वर्तमान कार्यशील डायरेक्टरी से—यदि वह कॉन्फ़िगर किए गए एजेंट
+वर्कस्पेस में हो—और उसके बाद डिफ़ॉल्ट एजेंट से निर्धारित करते हैं।
 
-Git और स्थानीय डायरेक्टरी इंस्टॉल स्रोत रूट पर `SKILL.md` की अपेक्षा करते हैं। इंस्टॉल slug
-`SKILL.md` frontmatter `name` से आता है जब वह मान्य हो, फिर स्रोत डायरेक्टरी या रिपॉज़िटरी नाम से; इसे ओवरराइड करने के लिए `--as <slug>` उपयोग करें। `--version`
-केवल ClawHub के लिए है। Skill इंस्टॉल npm पैकेज specs या zip/archive
-पाथ का समर्थन नहीं करते, और `openclaw skills update` केवल ClawHub-ट्रैक किए गए इंस्टॉल अपडेट करता है।
+Git और स्थानीय डायरेक्टरी इंस्टॉलेशन के लिए स्रोत रूट पर `SKILL.md` अपेक्षित है। इंस्टॉल
+स्लग पहले `SKILL.md` फ्रंटमैटर के `name` से लिया जाता है, यदि वह मान्य हो, फिर
+स्रोत डायरेक्टरी या रिपॉज़िटरी के नाम से; इसे ओवरराइड करने के लिए `--as <slug>` का उपयोग करें।
+`--version` केवल ClawHub के लिए है। Skill इंस्टॉलेशन npm पैकेज विनिर्देशों
+या zip/आर्काइव पथों का समर्थन नहीं करते और `openclaw skills update` केवल ClawHub द्वारा ट्रैक किए गए
+इंस्टॉलेशन अपडेट करता है।
 
-ऑनबोर्डिंग या Skills सेटिंग से ट्रिगर किए गए Gateway-समर्थित Skill dependency इंस्टॉल
-इसके बजाय अलग `skills.install` अनुरोध पाथ का उपयोग करते हैं।
+ऑनबोर्डिंग या Skills सेटिंग से ट्रिगर किए गए Gateway-आधारित Skill निर्भरता इंस्टॉलेशन
+इसके बजाय अलग `skills.install` अनुरोध पथ का उपयोग करते हैं।
 
 नोट्स:
 
-- `search [query...]` वैकल्पिक क्वेरी स्वीकार करता है; डिफ़ॉल्ट
-  ClawHub खोज फ़ीड ब्राउज़ करने के लिए इसे छोड़ दें।
-- `search --limit <n>` लौटाए गए परिणामों की सीमा तय करता है।
-- `install git:owner/repo[@ref]` Git Skill इंस्टॉल करता है। Branch refs में
-  स्लैश हो सकते हैं, जैसे `git:owner/repo@feature/foo`।
-- `install ./path/to/skill` ऐसी स्थानीय डायरेक्टरी इंस्टॉल करता है जिसके रूट में
-  `SKILL.md` होता है।
-- `install --as <slug>` Git और स्थानीय डायरेक्टरी
-  इंस्टॉल के लिए अनुमानित slug को ओवरराइड करता है।
-- `install --version <version>` केवल ClawHub Skill refs पर लागू होता है।
-- `install --force` उसी slug के लिए मौजूदा वर्कस्पेस Skill फ़ोल्डर को ओवरराइट करता है।
-- कम्युनिटी ClawHub Skill इंस्टॉल और अपडेट डाउनलोड करने से पहले trust जांचते हैं।
-  Versioned community archive releases exact-release trust metadata का उपयोग करते हैं।
-  Resolver-backed GitHub Skills ClawHub के install resolver पर निर्भर करते हैं ताकि
-  pinned commit लौटाने से पहले scan और force-install policy लागू हो।
-  दुर्भावनापूर्ण या ब्लॉक किए गए community releases अस्वीकार किए जाते हैं। Risky community releases को
-  समीक्षा और `--acknowledge-clawhub-risk` की आवश्यकता होती है जब कोई non-interactive command
-  उस समीक्षा के बाद जारी रहना चाहिए। आधिकारिक ClawHub Skill publishers और bundled
-  OpenClaw Skill sources इस release-trust prompt को बायपास करते हैं।
-- `--global` साझा मैनेज्ड Skills डायरेक्टरी को लक्षित करता है और इसे
-  `--agent <id>` के साथ जोड़ा नहीं जा सकता।
-- `--agent <id>` एक कॉन्फ़िगर किए गए एजेंट वर्कस्पेस को लक्षित करता है और वर्तमान
-  कार्यशील डायरेक्टरी inference को ओवरराइड करता है।
-- `update @owner/<slug>` एक tracked Skill अपडेट करता है। वर्कस्पेस के बजाय
-  साझा मैनेज्ड Skills डायरेक्टरी को लक्षित करने के लिए `--global` जोड़ें।
-- `update --all` चुने गए वर्कस्पेस में tracked ClawHub installs अपडेट करता है, या
-  `--global` के साथ जोड़े जाने पर साझा मैनेज्ड Skills डायरेक्टरी में।
-- `verify @owner/<slug>` डिफ़ॉल्ट रूप से ClawHub का `clawhub.skill.verify.v1` JSON
-  envelope प्रिंट करता है। कोई `--json` flag नहीं है क्योंकि JSON पहले से ही
-  डिफ़ॉल्ट है। Bare slugs compatibility के लिए तब भी स्वीकार किए जाते हैं जब Skill
-  पहले से इंस्टॉल हो या ambiguous न हो, लेकिन owner-qualified refs publisher
-  ambiguity से बचाते हैं।
-- जब ClawHub server-resolved source provenance लौटाता है, verify JSON में
-  commit-pinned `openclaw.verifiedSourceUrl` भी शामिल होता है। अनुपलब्ध या
-  self-declared source URLs केवल raw provenance envelope में रहते हैं और
-  promote नहीं किए जाते।
-- `verify` इंस्टॉल किए गए ClawHub Skills के लिए `.clawhub/origin.json` उपयोग करता है, इसलिए यह
-  इंस्टॉल किए गए version को उसी registry के विरुद्ध सत्यापित करता है जहां से वह आया था। `--version`
-  और `--tag` version selector को ओवरराइड करते हैं लेकिन origin metadata मौजूद होने पर
-  उस इंस्टॉल registry को बनाए रखते हैं।
-- `verify --card` JSON के बजाय generated Skill Card Markdown प्रिंट करता है। आदेश
-  non-zero के साथ exit करता है जब ClawHub `ok: false` या `decision: "fail"` लौटाता है;
-  unsigned signatures informational हैं जब तक ClawHub policy न बदले।
-- इंस्टॉल किए गए ClawHub bundles में generated `skill-card.md` शामिल हो सकता है। OpenClaw
-  verification को ClawHub server decision मानता है और किसी इंस्टॉल किए गए
-  Skill को केवल इसलिए reject नहीं करता कि वह generated card bundle
-  fingerprint बदलता है।
-- `check --agent <id>` चुने गए एजेंट के वर्कस्पेस को जांचता है और रिपोर्ट करता है कि कौन से
-  ready Skills वास्तव में उस एजेंट के prompt या command surface को दिखाई देते हैं।
-- कोई subcommand नहीं दिए जाने पर `list` डिफ़ॉल्ट action है।
-- `list`, `info`, और `check` अपना rendered output stdout पर लिखते हैं। `--json` के साथ,
-  इसका मतलब है कि machine-readable payload pipes
-  और scripts के लिए stdout पर रहता है।
+| फ़्लैग/व्यवहार                    | विवरण                                                                                                                                                                                                                                                                       |
+| -------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `search [query...]`              | वैकल्पिक क्वेरी; डिफ़ॉल्ट ClawHub खोज फ़ीड ब्राउज़ करने के लिए इसे छोड़ दें।                                                                                                                                                                                                                |
+| `search --limit <n>`             | लौटाए गए परिणामों की अधिकतम संख्या निर्धारित करता है।                                                                                                                                                                                                                                                            |
+| `install git:owner/repo[@ref]`   | एक Git Skill इंस्टॉल करता है। ब्रांच रेफ़रेंस में स्लैश हो सकते हैं, जैसे `git:owner/repo@feature/foo`।                                                                                                                                                                                      |
+| `install ./path/to/skill`        | ऐसी स्थानीय डायरेक्टरी इंस्टॉल करता है जिसके रूट में `SKILL.md` मौजूद हो।                                                                                                                                                                                                                        |
+| `install --as <slug>`            | Git और स्थानीय डायरेक्टरी इंस्टॉलेशन के लिए अनुमानित स्लग को ओवरराइड करता है।                                                                                                                                                                                                                 |
+| `install --version <version>`    | केवल ClawHub Skill रेफ़रेंस पर लागू होता है।                                                                                                                                                                                                                                               |
+| `install --force`                | समान स्लग के मौजूदा वर्कस्पेस Skill फ़ोल्डर को अधिलेखित करता है।                                                                                                                                                                                                                  |
+| `install/update --force-install` | ClawHub का स्कैन पूरा होने से पहले लंबित GitHub-आधारित ClawHub Skill इंस्टॉल करता है।                                                                                                                                                                                                   |
+| `--global`                       | साझा प्रबंधित Skills डायरेक्टरी को लक्षित करता है; `--agent <id>` के साथ संयोजित नहीं किया जा सकता।                                                                                                                                                                                                  |
+| `--agent <id>`                   | एक कॉन्फ़िगर किए गए एजेंट वर्कस्पेस को लक्षित करता है; वर्तमान कार्यशील डायरेक्टरी के अनुमान को ओवरराइड करता है।                                                                                                                                                                                            |
+| `update @owner/<slug>`           | एक ट्रैक किए गए Skill को अपडेट करता है। वर्कस्पेस के बजाय साझा प्रबंधित Skills डायरेक्टरी को लक्षित करने के लिए `--global` जोड़ें।                                                                                                                                                            |
+| `update --all`                   | चयनित वर्कस्पेस में ट्रैक किए गए ClawHub इंस्टॉलेशन अपडेट करता है, या `--global` के साथ साझा प्रबंधित Skills डायरेक्टरी में।                                                                                                                                                               |
+| `verify @owner/<slug>`           | डिफ़ॉल्ट रूप से ClawHub का `clawhub.skill.verify.v1` JSON एनवलप प्रिंट करता है। कोई `--json` फ़्लैग नहीं है क्योंकि JSON पहले से ही डिफ़ॉल्ट है। संगतता के लिए बिना ओनर वाले स्लग स्वीकार किए जाते हैं, जब Skill पहले से इंस्टॉल हो या असंदिग्ध हो; ओनर-योग्य रेफ़रेंस प्रकाशक की अस्पष्टता से बचाते हैं। |
+| `verify` उद्गम              | जब ClawHub सर्वर द्वारा निर्धारित स्रोत उद्गम लौटाता है, तब सत्यापन JSON में कमिट-पिन किया गया `openclaw.verifiedSourceUrl` भी शामिल होता है। अनुपलब्ध या स्वयं घोषित स्रोत URL केवल कच्चे उद्गम एनवलप में रहते हैं और उन्हें पदोन्नत नहीं किया जाता।                                           |
+| `verify` संस्करण चयनकर्ता        | `verify` इंस्टॉल किए गए ClawHub Skills के लिए `.clawhub/origin.json` का उपयोग करता है, इसलिए यह इंस्टॉल किए गए संस्करण को उसी रजिस्ट्री के विरुद्ध सत्यापित करता है जहाँ से वह आया था। `--version` और `--tag` संस्करण चयनकर्ता को ओवरराइड करते हैं, लेकिन मूल मेटाडेटा मौजूद होने पर उसी इंस्टॉल की गई रजिस्ट्री को बनाए रखते हैं।                    |
+| `verify --card`                  | JSON के बजाय जनरेट किया गया Skill Card Markdown प्रिंट करता है। ClawHub द्वारा `ok: false` या `decision: "fail"` लौटाए जाने पर गैर-शून्य स्थिति के साथ समाप्त होता है; अहस्ताक्षरित हस्ताक्षर केवल सूचनात्मक होते हैं, जब तक ClawHub नीति न बदले।                                                                             |
+| Skill Card फ़िंगरप्रिंट           | इंस्टॉल किए गए ClawHub बंडल में जनरेट किया गया `skill-card.md` शामिल हो सकता है। OpenClaw सत्यापन को ClawHub सर्वर का निर्णय मानता है और किसी इंस्टॉल किए गए Skill को केवल इसलिए अस्वीकार नहीं करता कि जनरेट किया गया कार्ड बंडल फ़िंगरप्रिंट बदल देता है।                                              |
+| `check --agent <id>`             | चयनित एजेंट के वर्कस्पेस की जाँच करता है और बताता है कि कौन-से तैयार Skills वास्तव में उस एजेंट के प्रॉम्प्ट या कमांड सतह पर दिखाई देते हैं।                                                                                                                                              |
+| `list`                           | कोई उपकमांड न दिए जाने पर डिफ़ॉल्ट क्रिया।                                                                                                                                                                                                                                    |
+| `list`/`info`/`check` आउटपुट     | रेंडर किया गया आउटपुट stdout पर जाता है। `--json` के साथ मशीन-पठनीय पेलोड पाइप और स्क्रिप्ट के लिए stdout पर ही रहता है।                                                                                                                                                                |
+
+सामुदायिक ClawHub Skill इंस्टॉलेशन और अपडेट डाउनलोड करने से पहले विश्वसनीयता की जाँच करते हैं।
+संस्करणयुक्त सामुदायिक आर्काइव रिलीज़ सटीक-रिलीज़ विश्वसनीयता मेटाडेटा का उपयोग करते हैं।
+रिज़ॉल्वर-आधारित GitHub Skills, पिन किया गया कमिट लौटाने से पहले
+स्कैन और बलपूर्वक इंस्टॉल नीति लागू करने के लिए ClawHub के इंस्टॉल रिज़ॉल्वर पर निर्भर करते हैं; उस स्कैन के
+पूरा होने से पहले लंबित GitHub-आधारित Skill इंस्टॉल करने के लिए
+`--force-install` का उपयोग करें। दुर्भावनापूर्ण या अवरुद्ध सामुदायिक रिलीज़ अस्वीकार कर दी जाती हैं। जोखिमपूर्ण
+सामुदायिक रिलीज़ के लिए समीक्षा और `--acknowledge-clawhub-risk` आवश्यक हैं, जब कोई
+गैर-इंटरैक्टिव कमांड उस समीक्षा के बाद जारी रहना चाहिए। आधिकारिक ClawHub
+Skill प्रकाशक और बंडल किए गए OpenClaw Skill स्रोत इस रिलीज़-विश्वसनीयता
+प्रॉम्प्ट को बायपास करते हैं।
 
 ## Skill कार्यशाला
 
-`openclaw skills workshop` चुने गए वर्कस्पेस में लंबित Skill proposals प्रबंधित करता है।
-Proposals लागू होने तक सक्रिय Skills नहीं होते। proposal storage,
-support-file safeguards, Gateway methods, और approval policy के लिए
+`openclaw skills workshop` चयनित कार्यस्थान में लंबित skill प्रस्तावों को प्रबंधित करता है। प्रस्ताव लागू किए जाने तक सक्रिय skills नहीं होते। प्रस्ताव
+संग्रहण, सहायक-फ़ाइल सुरक्षा उपायों, Gateway विधियों और अनुमोदन नीति के लिए,
 [Skill कार्यशाला](/hi/tools/skill-workshop) देखें।
 
 ```bash
 openclaw skills workshop propose-create \
   --name "qa-check" \
-  --description "Repeatable QA checklist" \
+  --description "दोहराई जा सकने वाली QA जाँच-सूची" \
   --proposal ./PROPOSAL.md
 openclaw skills workshop propose-create \
   --name "qa-check" \
-  --description "Repeatable QA checklist" \
+  --description "दोहराई जा सकने वाली QA जाँच-सूची" \
   --proposal-dir ./qa-check-proposal
 openclaw skills workshop propose-update qa-check --proposal ./PROPOSAL.md
 openclaw skills workshop list
 openclaw skills workshop inspect <proposal-id>
 openclaw skills workshop revise <proposal-id> --proposal ./PROPOSAL.md
 openclaw skills workshop apply <proposal-id>
-openclaw skills workshop reject <proposal-id> --reason "Duplicate"
-openclaw skills workshop quarantine <proposal-id> --reason "Needs security review"
+openclaw skills workshop reject <proposal-id> --reason "डुप्लिकेट"
+openclaw skills workshop quarantine <proposal-id> --reason "सुरक्षा समीक्षा आवश्यक है"
 ```
+
+`propose-create`, `propose-update`, और `revise`, प्रस्ताव की प्रेरणा और सहायक
+टिप्पणियों को `--proposal`/`--proposal-dir` सामग्री के साथ दर्ज करने के लिए `--goal <text>`
+और `--evidence <text>` को भी स्वीकार करते हैं।
 
 ## संबंधित
 

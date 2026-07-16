@@ -1,31 +1,32 @@
 ---
 read_when:
-    - Stai installando, configurando o verificando il plugin deepgram
+    - Si sta installando, configurando o verificando il plugin deepgram
 summary: Aggiunge il supporto per i provider di comprensione dei contenuti multimediali. Aggiunge il supporto per i provider di trascrizione in tempo reale.
 title: Plugin Deepgram
 x-i18n:
-    generated_at: "2026-07-12T07:18:40Z"
+    generated_at: "2026-07-16T14:44:06Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 93383c01d5a5e1e1d412d396ec1def12f388fc7c5da102573373dbc8180497a3
+    source_hash: ababdaeda58a97236e3dd96bdf51a0ce560278bbeb20a731d05f51d28bfb4155
     source_path: plugins/reference/deepgram.md
     workflow: 16
 ---
 
 # Plugin Deepgram
 
-Aggiunge il supporto per i provider di comprensione dei contenuti multimediali. Aggiunge il supporto per i provider di trascrizione in tempo reale.
+Aggiunge il supporto per il provider di comprensione dei contenuti multimediali. Aggiunge il supporto per il provider di trascrizione in tempo reale.
 
 ## Distribuzione
 
 - Pacchetto: `@openclaw/deepgram-provider`
 - Modalità di installazione: incluso in OpenClaw
 
-## Superficie
+## Interfaccia
 
-contratti: mediaUnderstandingProviders, realtimeTranscriptionProviders
+contratti: `mediaUnderstandingProviders`, `realtimeTranscriptionProviders`
 
 ## Documentazione correlata
 
-- [deepgram](/it/providers/deepgram)
+- [Deepgram](/it/providers/deepgram)

@@ -4,28 +4,28 @@ read_when:
 summary: Добавляет инструменты, доступные для вызова агентом.
 title: Браузерный плагин
 x-i18n:
-    generated_at: "2026-07-13T20:04:51Z"
+    generated_at: "2026-07-16T17:11:31Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
-    prompt_version: 24
+    prompt_version: 32
     provider: openai
-    source_hash: 2dcf562660fa3d05d22856335a7d2e6e467a432ee6dda5650efd94edde661ba4
+    source_hash: fa1ca51dce3992d718cdb6e6fec1656c224c021419852e2a2c467a334f251289
     source_path: plugins/reference/browser.md
     workflow: 16
 ---
 
 # Браузерный плагин
 
-Добавляет инструменты, которые может вызывать агент.
+Добавляет инструменты, вызываемые агентом.
 
 ## Распространение
 
 - Пакет: `@openclaw/browser-plugin`
-- Способ установки: включён в OpenClaw
+- Способ установки: входит в состав OpenClaw
 
 ## Интерфейс
 
-контракты: инструменты; навыки
+контракты: `tools`; навыки
 
 ## Связанная документация
 

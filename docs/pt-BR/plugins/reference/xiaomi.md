@@ -4,16 +4,17 @@ read_when:
 summary: Adiciona ao OpenClaw suporte aos provedores de modelos Xiaomi e Xiaomi Token Plan.
 title: Plugin da Xiaomi
 x-i18n:
-    generated_at: "2026-07-12T00:13:19Z"
+    generated_at: "2026-07-16T12:49:00Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 5999659d0a5abf287b8ce44f573f7f9d2e46b23b5ee21edb613e38a91489a7c7
+    source_hash: 507ffdb421606fa952ad8f996ee49602fa38c9d9b254c677a102bde3823f60cd
     source_path: plugins/reference/xiaomi.md
     workflow: 16
 ---
 
-# Plugin da Xiaomi
+# Plugin Xiaomi
 
 Adiciona ao OpenClaw suporte aos provedores de modelos Xiaomi e Xiaomi Token Plan.
 
@@ -24,8 +25,8 @@ Adiciona ao OpenClaw suporte aos provedores de modelos Xiaomi e Xiaomi Token Pla
 
 ## Superfície
 
-provedores: xiaomi, xiaomi-token-plan; contratos: speechProviders, usageProviders
+provedores: `xiaomi`, `xiaomi-token-plan`; contratos: `speechProviders`, `usageProviders`
 
 ## Documentação relacionada
 
-- [xiaomi](/pt-BR/providers/xiaomi)
+- [Xiaomi](/pt-BR/providers/xiaomi)

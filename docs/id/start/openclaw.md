@@ -1,53 +1,48 @@
 ---
 read_when:
-    - Memulai onboarding instans asisten baru
-    - Meninjau implikasi keamanan/izin
-summary: Panduan end-to-end untuk menjalankan OpenClaw sebagai asisten pribadi dengan peringatan keselamatan
-title: Pengaturan asisten pribadi
+    - Orientasi awal instans asisten baru
+    - Meninjau implikasi keselamatan/perizinan
+summary: Panduan menyeluruh untuk menjalankan OpenClaw sebagai asisten pribadi dengan peringatan keselamatan
+title: Penyiapan asisten pribadi
 x-i18n:
-    generated_at: "2026-06-27T18:14:57Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T18:42:43Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: b0cd640872a2a60fd88d2dc3df6d038ef8574163430d8683ef9b67921b0c87f4
+    source_hash: e8c34e31314f55647059fd600935330110add27b338a675bc0ce1529bebb207d
     source_path: start/openclaw.md
     workflow: 16
 ---
 
-OpenClaw adalah gateway yang di-host sendiri yang menghubungkan Discord, Google Chat, iMessage, Matrix, Microsoft Teams, Signal, Slack, Telegram, WhatsApp, Zalo, dan lainnya ke agen AI. Panduan ini mencakup penyiapan "asisten pribadi": nomor WhatsApp khusus yang berperilaku seperti asisten AI Anda yang selalu aktif.
+OpenClaw adalah Gateway yang dihosting sendiri yang menghubungkan Discord, Google Chat, iMessage, Matrix, Microsoft Teams, Signal, Slack, Telegram, WhatsApp, Zalo, dan lainnya ke agen AI. Panduan ini mencakup penyiapan "asisten pribadi": nomor WhatsApp khusus yang berfungsi seperti asisten AI Anda yang selalu aktif.
 
-## ⚠️ Keselamatan terlebih dahulu
+## Utamakan keamanan
 
-Anda menempatkan agen pada posisi untuk:
+Memberikan kanal kepada agen menempatkannya dalam posisi untuk menjalankan perintah di mesin Anda (bergantung pada kebijakan alat Anda), membaca/menulis file di ruang kerja Anda, dan mengirim pesan keluar melalui kanal mana pun yang terhubung. Mulailah secara konservatif:
 
-- menjalankan perintah di mesin Anda (tergantung kebijakan tool Anda)
-- membaca/menulis file di workspace Anda
-- mengirim pesan kembali melalui WhatsApp/Telegram/Discord/Mattermost dan channel bundel lainnya
-
-Mulailah secara konservatif:
-
-- Selalu tetapkan `channels.whatsapp.allowFrom` (jangan pernah menjalankan terbuka-untuk-dunia di Mac pribadi Anda).
+- Selalu tetapkan `channels.whatsapp.allowFrom` (jangan pernah menjalankannya secara terbuka untuk seluruh dunia di Mac pribadi Anda).
 - Gunakan nomor WhatsApp khusus untuk asisten.
-- Heartbeat sekarang secara default berjalan setiap 30 menit. Nonaktifkan sampai Anda memercayai penyiapan ini dengan menetapkan `agents.defaults.heartbeat.every: "0m"`.
+- Secara default, Heartbeat dijalankan setiap 30 menit. Nonaktifkan sampai Anda memercayai penyiapan ini dengan menetapkan `agents.defaults.heartbeat.every: "0m"`.
 
 ## Prasyarat
 
-- OpenClaw sudah diinstal dan di-onboarding - lihat [Memulai](/id/start/getting-started) jika Anda belum melakukannya
+- OpenClaw telah diinstal dan melalui orientasi awal - lihat [Memulai](/id/start/getting-started) jika Anda belum melakukannya
 - Nomor telepon kedua (SIM/eSIM/prabayar) untuk asisten
 
 ## Penyiapan dua ponsel (direkomendasikan)
 
-Anda menginginkan ini:
+Hasil yang diinginkan:
 
 ```mermaid
 flowchart TB
-    A["<b>Ponsel Anda (pribadi)<br></b><br>WhatsApp Anda<br>+1-555-YOU"] -- message --> B["<b>Ponsel Kedua (asisten)<br></b><br>Asisten WA<br>+1-555-ASSIST"]
-    B -- linked via QR --> C["<b>Mac Anda (openclaw)<br></b><br>Agen AI"]
+    A["<b>Ponsel Anda (pribadi)<br></b><br>WhatsApp Anda<br>+1-555-YOU"] -- pesan --> B["<b>Ponsel Kedua (asisten)<br></b><br>WA Asisten<br>+1-555-ASSIST"]
+    B -- ditautkan melalui QR --> C["<b>Mac Anda (openclaw)<br></b><br>Agen AI"]
 ```
 
-Jika Anda menautkan WhatsApp pribadi Anda ke OpenClaw, setiap pesan kepada Anda menjadi "input agen". Itu jarang yang Anda inginkan.
+Jika Anda menautkan WhatsApp pribadi ke OpenClaw, setiap pesan yang ditujukan kepada Anda menjadi "masukan agen". Biasanya bukan itu yang Anda inginkan.
 
-## Mulai cepat 5 menit
+## Mulai cepat dalam 5 menit
 
 1. Pasangkan WhatsApp Web (menampilkan QR; pindai dengan ponsel asisten):
 
@@ -55,13 +50,13 @@ Jika Anda menautkan WhatsApp pribadi Anda ke OpenClaw, setiap pesan kepada Anda 
 openclaw channels login
 ```
 
-2. Mulai Gateway (biarkan tetap berjalan):
+2. Jalankan Gateway (biarkan tetap berjalan):
 
 ```bash
 openclaw gateway --port 18789
 ```
 
-3. Letakkan konfigurasi minimal di `~/.openclaw/openclaw.json`:
+3. Masukkan konfigurasi minimal ke `~/.openclaw/openclaw.json`:
 
 ```json5
 {
@@ -70,28 +65,32 @@ openclaw gateway --port 18789
 }
 ```
 
-Sekarang kirim pesan ke nomor asisten dari ponsel Anda yang masuk allowlist.
+Sekarang kirim pesan ke nomor asisten dari ponsel yang ada dalam daftar yang diizinkan.
 
-Saat onboarding selesai, OpenClaw otomatis membuka dashboard dan mencetak tautan bersih (tanpa token). Jika dashboard meminta autentikasi, tempelkan shared secret yang dikonfigurasi ke pengaturan Control UI. Onboarding menggunakan token secara default (`gateway.auth.token`), tetapi autentikasi kata sandi juga berfungsi jika Anda mengganti `gateway.auth.mode` ke `password`. Untuk membuka kembali nanti: `openclaw dashboard`.
+Saat orientasi awal selesai, OpenClaw otomatis membuka dasbor dan mencetak tautan bersih (tanpa token). Jika dasbor meminta autentikasi, tempel rahasia bersama yang dikonfigurasi ke pengaturan Control UI. Orientasi awal menggunakan token secara default (`gateway.auth.token`), tetapi autentikasi kata sandi juga berfungsi jika Anda mengubah `gateway.auth.mode` menjadi `password`. Untuk membukanya kembali nanti: `openclaw dashboard`.
 
-## Beri agen workspace (AGENTS)
+## Berikan ruang kerja kepada agen (AGENTS)
 
-OpenClaw membaca instruksi operasi dan "memori" dari direktori workspace-nya.
+OpenClaw membaca petunjuk pengoperasian dan "memori" dari direktori ruang kerjanya.
 
-Secara default, OpenClaw menggunakan `~/.openclaw/workspace` sebagai workspace agen, dan akan membuatnya (ditambah starter `AGENTS.md`, `SOUL.md`, `TOOLS.md`, `IDENTITY.md`, `USER.md`, `HEARTBEAT.md`) secara otomatis saat penyiapan/agent run pertama. `BOOTSTRAP.md` hanya dibuat saat workspace benar-benar baru (seharusnya tidak muncul kembali setelah Anda menghapusnya). `MEMORY.md` bersifat opsional (tidak dibuat otomatis); saat ada, file ini dimuat untuk sesi normal. Sesi subagen hanya menyuntikkan `AGENTS.md` dan `TOOLS.md`.
+Secara default, OpenClaw menggunakan `~/.openclaw/workspace` sebagai ruang kerja agen dan membuatnya (beserta file awal `AGENTS.md`, `SOUL.md`, `TOOLS.md`, `IDENTITY.md`, `USER.md`, `HEARTBEAT.md`) secara otomatis saat orientasi awal atau saat agen pertama kali dijalankan. `BOOTSTRAP.md` hanya dibuat untuk ruang kerja yang benar-benar baru dan tidak akan muncul kembali setelah Anda menghapusnya. `MEMORY.md` bersifat opsional dan tidak pernah dibuat secara otomatis; jika tersedia, file tersebut dimuat untuk sesi normal. Sesi subagen hanya memasukkan `AGENTS.md` dan `TOOLS.md`.
 
 <Tip>
-Perlakukan folder ini seperti memori OpenClaw dan jadikan repo git (idealnya privat) agar `AGENTS.md` dan file memori Anda dicadangkan. Jika git terinstal, workspace yang benar-benar baru akan diinisialisasi otomatis.
+Perlakukan folder ini seperti memori OpenClaw dan jadikan sebagai repositori git (idealnya privat) agar `AGENTS.md` dan file memori Anda dicadangkan. Jika git terinstal, ruang kerja yang benar-benar baru otomatis diinisialisasi dengan `git init`.
 </Tip>
 
+Untuk membuat folder ruang kerja dan konfigurasi tanpa menjalankan seluruh wizard orientasi awal:
+
 ```bash
-openclaw setup
+openclaw setup --baseline
 ```
 
-Tata letak workspace lengkap + panduan pencadangan: [Workspace agen](/id/concepts/agent-workspace)
+(`openclaw setup` tanpa opsi adalah alias untuk `openclaw onboard` dan menjalankan seluruh wizard interaktif.)
+
+Tata letak lengkap ruang kerja + panduan pencadangan: [Ruang kerja agen](/id/concepts/agent-workspace)
 Alur kerja memori: [Memori](/id/concepts/memory)
 
-Opsional: pilih workspace yang berbeda dengan `agents.defaults.workspace` (mendukung `~`).
+Opsional: pilih ruang kerja lain dengan `agents.defaults.workspace` (mendukung `~`).
 
 ```json5
 {
@@ -103,7 +102,7 @@ Opsional: pilih workspace yang berbeda dengan `agents.defaults.workspace` (mendu
 }
 ```
 
-Jika Anda sudah mengirim file workspace sendiri dari repo, Anda dapat menonaktifkan pembuatan file bootstrap sepenuhnya:
+Jika Anda sudah menyediakan file ruang kerja sendiri dari repositori, Anda dapat menonaktifkan pembuatan file bootstrap sepenuhnya:
 
 ```json5
 {
@@ -117,11 +116,11 @@ Jika Anda sudah mengirim file workspace sendiri dari repo, Anda dapat menonaktif
 
 ## Konfigurasi yang mengubahnya menjadi "asisten"
 
-OpenClaw secara default memakai penyiapan asisten yang baik, tetapi biasanya Anda ingin menyesuaikan:
+Secara default, OpenClaw menggunakan penyiapan asisten yang baik, tetapi biasanya Anda perlu menyesuaikan:
 
-- persona/instruksi di [`SOUL.md`](/id/concepts/soul)
-- default berpikir (jika diinginkan)
-- heartbeat (setelah Anda memercayainya)
+- persona/petunjuk di [`SOUL.md`](/id/concepts/soul)
+- default penalaran (jika diinginkan)
+- Heartbeat (setelah Anda memercayainya)
 
 Contoh:
 
@@ -130,11 +129,11 @@ Contoh:
   logging: { level: "info" },
   agents: {
     defaults: {
-      model: { primary: "anthropic/claude-opus-4-6" },
+      model: { primary: "anthropic/claude-opus-4-8" },
       workspace: "~/.openclaw/workspace",
       thinkingDefault: "high",
       timeoutSeconds: 1800,
-      // Start with 0; enable later.
+      // Mulai dengan 0; aktifkan nanti.
       heartbeat: { every: "0m" },
     },
     list: [
@@ -169,22 +168,23 @@ Contoh:
 
 ## Sesi dan memori
 
-- File sesi: `~/.openclaw/agents/<agentId>/sessions/{{SessionId}}.jsonl`
-- Metadata sesi (penggunaan token, route terakhir, dll): `~/.openclaw/agents/<agentId>/sessions/sessions.json` (legacy: `~/.openclaw/sessions/sessions.json`)
-- `/new` atau `/reset` memulai sesi baru untuk chat tersebut (dapat dikonfigurasi melalui `resetTriggers`). Jika dikirim sendiri, OpenClaw mengakui reset tanpa memanggil model.
+- Baris sesi, baris transkrip, dan metadata (penggunaan token, rute terakhir, dan sebagainya): `~/.openclaw/agents/<agentId>/agent/openclaw-agent.sqlite`
+- Artefak transkrip lama/arsip: `~/.openclaw/agents/<agentId>/sessions/`
+- Sumber migrasi baris lama: `~/.openclaw/agents/<agentId>/sessions/sessions.json`
+- `/new` atau `/reset` memulai sesi baru untuk percakapan tersebut (dapat dikonfigurasi melalui `session.resetTriggers`). Jika dikirim sendiri, OpenClaw mengonfirmasi pengaturan ulang tanpa memanggil model.
 - `/compact [instructions]` memadatkan konteks sesi dan melaporkan sisa anggaran konteks.
 
 ## Heartbeat (mode proaktif)
 
-Secara default, OpenClaw menjalankan heartbeat setiap 30 menit dengan prompt:
+Secara default, OpenClaw menjalankan Heartbeat setiap 30 menit dengan prompt:
 `Read HEARTBEAT.md if it exists (workspace context). Follow it strictly. Do not infer or repeat old tasks from prior chats. If nothing needs attention, reply HEARTBEAT_OK.`
-Tetapkan `agents.defaults.heartbeat.every: "0m"` untuk menonaktifkan.
+Tetapkan `agents.defaults.heartbeat.every: "0m"` untuk menonaktifkannya.
 
-- Jika `HEARTBEAT.md` ada tetapi secara efektif kosong (hanya baris kosong, komentar Markdown/HTML, heading Markdown seperti `# Heading`, penanda fence, atau stub checklist kosong), OpenClaw melewati heartbeat run untuk menghemat panggilan API.
-- Jika file tidak ada, heartbeat tetap berjalan dan model memutuskan apa yang harus dilakukan.
-- Jika agen membalas dengan `HEARTBEAT_OK` (opsional dengan padding singkat; lihat `agents.defaults.heartbeat.ackMaxChars`), OpenClaw menekan pengiriman keluar untuk heartbeat tersebut.
-- Secara default, pengiriman heartbeat ke target bergaya DM `user:<id>` diizinkan. Tetapkan `agents.defaults.heartbeat.directPolicy: "block"` untuk menekan pengiriman target langsung sambil menjaga heartbeat run tetap aktif.
-- Heartbeat menjalankan agent turn penuh - interval lebih pendek menghabiskan lebih banyak token.
+- Jika `HEARTBEAT.md` tersedia tetapi pada dasarnya kosong (hanya baris kosong, komentar Markdown/HTML, judul Markdown seperti `# Heading`, penanda pagar, atau stub daftar periksa kosong), OpenClaw melewati pelaksanaan Heartbeat untuk menghemat panggilan API.
+- Jika file tersebut tidak ada, Heartbeat tetap berjalan dan model menentukan tindakan yang perlu dilakukan.
+- Jika agen membalas dengan `HEARTBEAT_OK` (opsional dengan isian singkat; lihat `agents.defaults.heartbeat.ackMaxChars`), OpenClaw mencegah pengiriman keluar untuk Heartbeat tersebut.
+- Secara default, pengiriman Heartbeat ke target `user:<id>` bergaya DM diizinkan. Tetapkan `agents.defaults.heartbeat.directPolicy: "block"` untuk mencegah pengiriman ke target langsung sambil mempertahankan pelaksanaan Heartbeat.
+- Heartbeat menjalankan giliran agen secara penuh - interval yang lebih pendek menghabiskan lebih banyak token.
 
 ```json5
 {
@@ -198,39 +198,39 @@ Tetapkan `agents.defaults.heartbeat.every: "0m"` untuk menonaktifkan.
 
 ## Media masuk dan keluar
 
-Lampiran masuk (gambar/audio/dokumen) dapat disajikan ke perintah Anda melalui template:
+Lampiran masuk (gambar/audio/dokumen) dapat disediakan untuk perintah Anda melalui templat:
 
-- `{{MediaPath}}` (path file sementara lokal)
-- `{{MediaUrl}}` (pseudo-URL)
+- `{{MediaPath}}` (jalur file sementara lokal)
+- `{{MediaUrl}}` (URL semu)
 - `{{Transcript}}` (jika transkripsi audio diaktifkan)
 
-Lampiran keluar dari agen menggunakan field media terstruktur pada tool pesan atau payload balasan, seperti `media`, `mediaUrl`, `mediaUrls`, `path`, atau `filePath`. Contoh argumen tool pesan:
+Lampiran keluar dari agen menggunakan bidang media terstruktur pada alat pesan atau payload balasan, seperti `media`, `mediaUrl`, `mediaUrls`, `path`, atau `filePath`. Contoh argumen alat pesan:
 
 ```json
 {
-  "message": "Here's the screenshot.",
+  "message": "Berikut tangkapan layarnya.",
   "mediaUrl": "https://example.com/screenshot.png"
 }
 ```
 
-OpenClaw mengirim media terstruktur bersama teks. Balasan asisten final legacy mungkin masih dinormalisasi untuk kompatibilitas, tetapi output tool, output browser, blok streaming, dan tindakan pesan tidak mem-parse teks sebagai perintah lampiran.
+OpenClaw mengirim media terstruktur bersama teks. Balasan akhir asisten versi lama mungkin masih dinormalisasi untuk kompatibilitas, tetapi keluaran alat, keluaran peramban, blok streaming, dan tindakan pesan tidak menguraikan teks sebagai perintah lampiran.
 
-Perilaku path lokal mengikuti model kepercayaan baca-file yang sama dengan agen:
+Perilaku jalur lokal mengikuti model kepercayaan pembacaan file yang sama seperti agen:
 
-- Jika `tools.fs.workspaceOnly` adalah `true`, path media lokal keluar tetap dibatasi ke root temp OpenClaw, cache media, path workspace agen, dan file yang dihasilkan sandbox.
-- Jika `tools.fs.workspaceOnly` adalah `false`, media lokal keluar dapat menggunakan file host-lokal yang sudah diizinkan untuk dibaca oleh agen.
-- Path lokal dapat berupa absolut, relatif-workspace, atau relatif-home dengan `~/`.
-- Pengiriman host-lokal tetap hanya mengizinkan media dan jenis dokumen aman (gambar, audio, video, PDF, dokumen Office, dan dokumen teks tervalidasi seperti Markdown/MD, TXT, JSON, YAML, dan YML). Ini adalah perluasan dari batas kepercayaan host-read yang ada, bukan pemindai rahasia: jika agen dapat membaca `secret.txt` atau `config.json` host-lokal, agen dapat melampirkan file tersebut saat ekstensi dan validasi kontennya cocok.
+- Jika `tools.fs.workspaceOnly` adalah `true`, jalur media lokal keluar tetap dibatasi ke root sementara OpenClaw, cache media, jalur ruang kerja agen, dan file yang dihasilkan sandbox.
+- Jika `tools.fs.workspaceOnly` adalah `false`, media lokal keluar dapat menggunakan file lokal host yang sudah diizinkan untuk dibaca oleh agen.
+- Jalur lokal dapat berupa jalur absolut, relatif terhadap ruang kerja, atau relatif terhadap direktori home dengan `~/`.
+- Pengiriman dari lokal host tetap hanya mengizinkan media dan jenis dokumen yang aman (gambar, audio, video, PDF, dokumen Office, serta dokumen teks tervalidasi seperti Markdown/MD, TXT, JSON, YAML, dan YML). Ini merupakan perluasan batas kepercayaan pembacaan host yang sudah ada, bukan pemindai rahasia: jika agen dapat membaca `secret.txt` atau `config.json` lokal host, agen dapat melampirkan file tersebut ketika ekstensi dan validasi kontennya sesuai.
 
-Itu berarti gambar/file yang dihasilkan di luar workspace sekarang dapat dikirim saat kebijakan fs Anda sudah mengizinkan pembacaan tersebut, sementara ekstensi teks host-lokal arbitrer tetap diblokir. Simpan file sensitif di luar sistem file yang dapat dibaca agen, atau pertahankan `tools.fs.workspaceOnly=true` untuk pengiriman path lokal yang lebih ketat.
+Simpan file sensitif di luar sistem file yang dapat dibaca agen, atau pertahankan `tools.fs.workspaceOnly: true` untuk pengiriman jalur lokal yang lebih ketat.
 
-## Checklist operasi
+## Daftar periksa operasional
 
 ```bash
-openclaw status          # local status (creds, sessions, queued events)
-openclaw status --all    # full diagnosis (read-only, pasteable)
-openclaw status --deep   # asks the gateway for a live health probe with channel probes when supported
-openclaw health --json   # gateway health snapshot (WS; default can return a fresh cached snapshot)
+openclaw status          # status lokal (kredensial, sesi, peristiwa dalam antrean)
+openclaw status --all    # diagnosis lengkap (hanya baca, dapat ditempel)
+openclaw status --deep   # periksa kanal (WhatsApp Web + Telegram + Discord + Slack + Signal)
+openclaw health --json   # cuplikan kesehatan Gateway melalui koneksi WS
 ```
 
 Log berada di bawah `/tmp/openclaw/` (default: `openclaw-YYYY-MM-DD.log`).
@@ -238,12 +238,12 @@ Log berada di bawah `/tmp/openclaw/` (default: `openclaw-YYYY-MM-DD.log`).
 ## Langkah berikutnya
 
 - WebChat: [WebChat](/id/web/webchat)
-- Operasi Gateway: [Runbook Gateway](/id/gateway)
-- Cron + wakeup: [Pekerjaan Cron](/id/automation/cron-jobs)
+- Operasional Gateway: [Panduan operasional Gateway](/id/gateway)
+- Cron + pengaktifan: [Tugas Cron](/id/automation/cron-jobs)
 - Pendamping bilah menu macOS: [Aplikasi OpenClaw macOS](/id/platforms/macos)
 - Aplikasi node iOS: [Aplikasi iOS](/id/platforms/ios)
 - Aplikasi node Android: [Aplikasi Android](/id/platforms/android)
-- Windows Hub: [Windows](/id/platforms/windows)
+- Hub Windows: [Windows](/id/platforms/windows)
 - Status Linux: [Aplikasi Linux](/id/platforms/linux)
 - Keamanan: [Keamanan](/id/gateway/security)
 
@@ -251,4 +251,4 @@ Log berada di bawah `/tmp/openclaw/` (default: `openclaw-YYYY-MM-DD.log`).
 
 - [Memulai](/id/start/getting-started)
 - [Penyiapan](/id/start/setup)
-- [Ikhtisar channel](/id/channels)
+- [Ikhtisar kanal](/id/channels)

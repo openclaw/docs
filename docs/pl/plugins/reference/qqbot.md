@@ -1,30 +1,31 @@
 ---
 read_when:
-    - Instalujesz, konfigurujesz lub przeprowadzasz audyt pluginu qqbot
-summary: Plugin kanału OpenClaw QQ Bot do obsługi grupowych i bezpośrednich przepływów wiadomości.
+    - Instalowanie, konfigurowanie lub audytowanie pluginu qqbot
+summary: Plugin kanału bota QQ dla OpenClaw, przeznaczony do obsługi grup i wiadomości bezpośrednich.
 title: Plugin bota QQ
 x-i18n:
-    generated_at: "2026-07-12T15:24:15Z"
+    generated_at: "2026-07-16T18:58:52Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 10e67c8c8bd01a2fcd3ca55c32f6941cd52551ad241cb16a2ea38c62d80cfeb9
+    source_hash: afc0633399e0fe6d37bf233fabbac0806e32a5e8151b5b841a3d9f51d1cde455
     source_path: plugins/reference/qqbot.md
     workflow: 16
 ---
 
 # Plugin QQ Bot
 
-Plugin kanału QQ Bot dla OpenClaw, przeznaczony do obsługi przepływów pracy w grupach i wiadomościach bezpośrednich.
+Plugin kanału QQ Bot dla OpenClaw, przeznaczony do przepływów pracy w grupach i wiadomościach bezpośrednich.
 
 ## Dystrybucja
 
 - Pakiet: `@openclaw/qqbot`
 - Sposób instalacji: npm; ClawHub
 
-## Zakres
+## Powierzchnia
 
-kanały: qqbot; kontrakty: narzędzia; Skills
+kanały: `qqbot`; kontrakty: `tools`; Skills
 
 ## Powiązana dokumentacja
 

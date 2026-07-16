@@ -1,14 +1,15 @@
 ---
 read_when:
-    - Instalujesz, konfigurujesz lub audytujesz plugin qwen
+    - Instalowanie, konfigurowanie lub audytowanie pluginu qwen
 summary: Dodaje do OpenClaw obsługę dostawców modeli Qwen, Qwen Cloud, Model Studio, DashScope, Qwen Oauth, Qwen Portal, Qwen CLI, Qwen Token Plan i Bailian Token Plan.
 title: Plugin Qwen
 x-i18n:
-    generated_at: "2026-07-12T15:30:28Z"
+    generated_at: "2026-07-16T18:57:07Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 3d3c529b0b98f0c7b2137754264e9acfddd90a245418ee105b9efc9541b1911b
+    source_hash: 0704c1c8b54d092da412800e636bba594362e41e837872d41f5a492cc597230d
     source_path: plugins/reference/qwen.md
     workflow: 16
 ---
@@ -24,9 +25,9 @@ Dodaje do OpenClaw obsługę dostawców modeli Qwen, Qwen Cloud, Model Studio, D
 
 ## Interfejs
 
-dostawcy: qwen, qwencloud, modelstudio, dashscope, qwen-oauth, qwen-portal, qwen-cli, qwen-token-plan, bailian-token-plan; kontrakty: mediaUnderstandingProviders, videoGenerationProviders
+dostawcy: `qwen`, `qwencloud`, `modelstudio`, `dashscope`, `qwen-oauth`, `qwen-portal`, `qwen-cli`, `qwen-token-plan`, `bailian-token-plan`; kontrakty: `mediaUnderstandingProviders`, `videoGenerationProviders`
 
 ## Powiązana dokumentacja
 
-- [qwen](/pl/providers/qwen)
-- [qwen-oauth](/pl/providers/qwen-oauth)
+- [Qwen](/pl/providers/qwen)
+- [Qwen OAuth](/pl/providers/qwen-oauth)

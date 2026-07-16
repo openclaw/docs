@@ -1,30 +1,31 @@
 ---
 read_when:
-    - Ви встановлюєте, налаштовуєте або перевіряєте Plugin tavily
-summary: Додає інструменти, доступні для виклику агентом. Додає підтримку постачальника вебпошуку.
-title: Plugin Tavily
+    - Ви встановлюєте, налаштовуєте або перевіряєте plugin tavily
+summary: Додає інструменти, які може викликати агент. Додає підтримку постачальника вебпошуку.
+title: Плагін Tavily
 x-i18n:
-    generated_at: "2026-07-12T13:38:09Z"
+    generated_at: "2026-07-16T18:22:10Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 409da2bdfca9c2dd5a2c64565787175b57f2d43f09b1fa484ac54dd1f528c9fb
+    source_hash: c7bbeb8a0580d9248fdc1ffa08a556e8d2d91cb263f859b1d26a519ec2014f38
     source_path: plugins/reference/tavily.md
     workflow: 16
 ---
 
 # Плагін Tavily
 
-Додає інструменти, які може викликати агент. Додає підтримку постачальника вебпошуку.
+Додає інструменти, доступні для виклику агентом. Додає підтримку провайдера вебпошуку.
 
 ## Розповсюдження
 
-- Пакет: `@openclaw/tavily-plugin`
-- Спосіб встановлення: npm; ClawHub: `clawhub:@openclaw/tavily-plugin`
+- Пакунок: `@openclaw/tavily-plugin`
+- Спосіб установлення: npm; ClawHub: `clawhub:@openclaw/tavily-plugin`
 
-## Інтерфейс
+## Поверхня
 
-контракти: інструменти, постачальники вебпошуку; Skills
+контракти: `tools`, `webSearchProviders`; навички
 
 ## Пов’язана документація
 

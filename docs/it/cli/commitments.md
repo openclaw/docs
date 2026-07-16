@@ -1,23 +1,26 @@
 ---
 read_when:
-    - Vuoi esaminare gli impegni di follow-up dedotti
-    - Vuoi ignorare i check-in in sospeso
-    - Stai verificando ciò che Heartbeat può recapitare
+    - Si desidera esaminare gli impegni di follow-up dedotti
+    - Si desidera ignorare i check-in in sospeso
+    - Si sta verificando cosa potrebbe inviare l’Heartbeat
 summary: Riferimento CLI per `openclaw commitments` (ispezionare e ignorare i follow-up dedotti)
 title: '`openclaw commitments`'
 x-i18n:
-    generated_at: "2026-07-12T06:55:34Z"
+    generated_at: "2026-07-16T14:06:04Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 4323273a5d73975532f4728dc5e40c5d59e0c6d2e31a538f96bf3451e3fdf4d9
+    source_hash: db8a7d8f5756ccb18ed0990fcedf50d1072bb67e775c29eefdbd1a7dd795b7b0
     source_path: cli/commitments.md
     workflow: 16
 ---
 
 Elenca e gestisce gli impegni di follow-up dedotti.
 
-Gli impegni sono facoltativi (`commitments.enabled`) e consistono in memorie di follow-up di breve durata create dal contesto della conversazione e recapitate tramite Heartbeat. Consulta [Impegni dedotti](/it/concepts/commitments) per la guida concettuale e la configurazione.
+Gli impegni sono facoltativi (`commitments.enabled`), memorie di follow-up di breve durata
+create dal contesto della conversazione e recapitate tramite Heartbeat. Consultare
+[Impegni dedotti](/it/concepts/commitments) per la guida concettuale e la configurazione.
 
 Senza sottocomandi, `openclaw commitments` elenca gli impegni in sospeso.
 
@@ -31,12 +34,14 @@ openclaw commitments dismiss <id...> [--json]
 
 ## Opzioni
 
-- `--all`: mostra tutti gli stati anziché soltanto gli impegni in sospeso.
-- `--agent <id>`: filtra in base all'id di un singolo agente.
-- `--status <status>`: filtra per stato. Valori: `pending`, `sent`, `dismissed`, `snoozed` o `expired`. I valori sconosciuti causano la terminazione con un errore.
-- `--json`: produce JSON leggibile dalla macchina.
+- `--all`: mostra tutti gli stati anziché solo gli impegni in sospeso.
+- `--agent <id>`: filtra in base all'ID di un agente.
+- `--status <status>`: filtra per stato. Valori: `pending`, `sent`,
+  `dismissed`, `snoozed` o `expired`. I valori sconosciuti causano la chiusura con un errore.
+- `--json`: produce JSON leggibile dalle macchine.
 
-`dismiss` contrassegna gli id degli impegni specificati come `dismissed`, affinché Heartbeat non li recapiti.
+`dismiss` contrassegna gli ID degli impegni specificati come `dismissed`, affinché Heartbeat non
+li recapiti.
 
 ## Esempi
 
@@ -46,13 +51,13 @@ Elencare gli impegni in sospeso:
 openclaw commitments
 ```
 
-Elencare tutti gli impegni memorizzati:
+Elencare tutti gli impegni archiviati:
 
 ```bash
 openclaw commitments --all
 ```
 
-Filtrare in base a un singolo agente:
+Filtrare in base a un agente:
 
 ```bash
 openclaw commitments --agent main
@@ -78,16 +83,18 @@ openclaw commitments --all --json
 
 ## Output
 
-L'output testuale mostra il numero di impegni, il percorso dell'archivio, gli eventuali filtri attivi e una riga per ciascun impegno:
+L'output testuale mostra il numero di impegni, il percorso del database SQLite condiviso, gli eventuali filtri attivi
+e una riga per ciascun impegno:
 
-- id dell'impegno
+- ID dell'impegno
 - stato
 - tipo (`event_check_in`, `deadline_check`, `care_check_in` o `open_loop`)
 - prima scadenza possibile
 - ambito (agente/canale/destinazione)
 - testo suggerito per la verifica
 
-L'output JSON include il conteggio, i filtri attivi per stato e agente, il percorso dell'archivio degli impegni e i record memorizzati completi.
+L'output JSON include il numero, i filtri attivi per stato e agente, il
+percorso del database SQLite condiviso e tutti i record archiviati.
 
 ## Argomenti correlati
 

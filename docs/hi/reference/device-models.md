@@ -1,38 +1,40 @@
 ---
 read_when:
-    - डिवाइस मॉडल पहचानकर्ता मैपिंग या NOTICE/license फ़ाइलें अपडेट करना
-    - इंस्टैंस यूआई डिवाइस नाम कैसे दिखाता है, इसे बदलना
-summary: macOS ऐप में उपयोगकर्ता-अनुकूल नामों के लिए OpenClaw Apple डिवाइस मॉडल पहचानकर्ताओं को कैसे शामिल करता है।
+    - डिवाइस मॉडल आइडेंटिफ़ायर मैपिंग या NOTICE/लाइसेंस फ़ाइलें अपडेट करना
+    - Instances UI में डिवाइस के नाम प्रदर्शित होने का तरीका बदलना
+summary: OpenClaw, macOS ऐप में उपयोगकर्ता-अनुकूल नामों के लिए Apple डिवाइस मॉडल पहचानकर्ताओं को किस प्रकार विक्रेता के रूप में शामिल करता है।
 title: डिवाइस मॉडल डेटाबेस
 x-i18n:
-    generated_at: "2026-06-29T00:07:01Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T17:05:09Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: f20e035f787ba7d9bb48d2a18263679d20b295e12ffb263a63c3a0ef72312d34
+    source_hash: 930cd330594072d9c986b8c85c5a68e02dd096e5f0c015e3ee86b767073b93e6
     source_path: reference/device-models.md
     workflow: 16
 ---
 
-macOS साथी ऐप **इंस्टेंसेस** UI में Apple मॉडल पहचानकर्ताओं (जैसे `iPad16,6`, `Mac16,6`) को मनुष्यों द्वारा पढ़े जा सकने वाले नामों से मैप करके अनुकूल Apple डिवाइस मॉडल नाम दिखाता है।
+macOS सहयोगी ऐप का **इंस्टेंस** UI Apple मॉडल पहचानकर्ताओं को सरल नामों से मैप करता है (`iPad16,6` -> "iPad Pro 13-inch (M4)", `Mac16,6` -> "MacBook Pro (14-inch, 2024)")। `DeviceModelCatalog` प्रत्येक डिवाइस के लिए SF Symbol चुनने हेतु पहचानकर्ता के प्रीफ़िक्स (और उपलब्ध न होने पर डिवाइस फ़ैमिली) का भी उपयोग करता है।
 
-मैपिंग JSON के रूप में यहां वेंडर की गई है:
+`apps/macos/Sources/OpenClaw/Resources/DeviceModels/` में फ़ाइलें:
 
-- `apps/macos/Sources/OpenClaw/Resources/DeviceModels/`
+| फ़ाइल                                   | उद्देश्य                               |
+| -------------------------------------- | ------------------------------------- |
+| `ios-device-identifiers.json`          | iOS/iPadOS पहचानकर्ता -> नाम मैपिंग |
+| `mac-device-identifiers.json`          | Mac पहचानकर्ता -> नाम मैपिंग        |
+| `NOTICE.md`                            | पिन किए गए अपस्ट्रीम कमिट SHA           |
+| `LICENSE.apple-device-identifiers.txt` | अपस्ट्रीम MIT लाइसेंस                  |
 
 ## डेटा स्रोत
 
-हम वर्तमान में MIT-लाइसेंस वाले रिपॉज़िटरी से मैपिंग वेंडर करते हैं:
-
-- `kyle-seongwoo-jun/apple-device-identifiers`
-
-बिल्ड को निर्धारक बनाए रखने के लिए, JSON फ़ाइलों को विशिष्ट upstream कमिट्स पर पिन किया गया है (जो `apps/macos/Sources/OpenClaw/Resources/DeviceModels/NOTICE.md` में दर्ज हैं)।
+MIT-लाइसेंस प्राप्त `kyle-seongwoo-jun/apple-device-identifiers` GitHub रिपॉज़िटरी से वेंडर किया गया है। बिल्ड को निर्धारक बनाए रखने के लिए JSON फ़ाइलों को `NOTICE.md` में दर्ज कमिट SHA पर पिन किया गया है।
 
 ## डेटाबेस अपडेट करना
 
-1. वे upstream कमिट्स चुनें जिन्हें आप पिन करना चाहते हैं (एक iOS के लिए, एक macOS के लिए)।
-2. `apps/macos/Sources/OpenClaw/Resources/DeviceModels/NOTICE.md` में कमिट हैश अपडेट करें।
-3. उन कमिट्स पर पिन की गई JSON फ़ाइलें फिर से डाउनलोड करें:
+1. पिन करने के लिए अपस्ट्रीम कमिट SHA चुनें (एक iOS के लिए, एक macOS के लिए)।
+2. नए SHA के साथ `apps/macos/Sources/OpenClaw/Resources/DeviceModels/NOTICE.md` को अपडेट करें।
+3. उन कमिट पर पिन की गई JSON फ़ाइलें दोबारा डाउनलोड करें:
 
 ```bash
 IOS_COMMIT="<commit sha for ios-device-identifiers.json>"
@@ -45,8 +47,8 @@ curl -fsSL "https://raw.githubusercontent.com/kyle-seongwoo-jun/apple-device-ide
   -o apps/macos/Sources/OpenClaw/Resources/DeviceModels/mac-device-identifiers.json
 ```
 
-4. सुनिश्चित करें कि `apps/macos/Sources/OpenClaw/Resources/DeviceModels/LICENSE.apple-device-identifiers.txt` अब भी upstream से मेल खाता है (यदि upstream लाइसेंस बदलता है तो इसे बदल दें)।
-5. सत्यापित करें कि macOS ऐप साफ़ तौर पर बिल्ड होता है (कोई चेतावनी नहीं):
+4. पुष्टि करें कि `LICENSE.apple-device-identifiers.txt` अब भी अपस्ट्रीम से मेल खाता है; यदि अपस्ट्रीम लाइसेंस बदल गया है, तो इसे बदलें।
+5. सत्यापित करें कि macOS ऐप बिना किसी त्रुटि के बिल्ड होता है:
 
 ```bash
 swift build --package-path apps/macos
@@ -54,5 +56,5 @@ swift build --package-path apps/macos
 
 ## संबंधित
 
-- [Node](/hi/nodes)
+- [Nodes](/hi/nodes)
 - [Node समस्या निवारण](/hi/nodes/troubleshooting)

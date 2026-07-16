@@ -1,27 +1,28 @@
 ---
 read_when:
-    - Vous installez, configurez ou auditez le Plugin voyage
-summary: Ajoute la prise en charge des fournisseurs d’intégration vectorielle pour la mémoire.
+    - Vous installez, configurez ou auditez le plugin voyage
+summary: Ajoute la prise en charge des fournisseurs d’embeddings de mémoire.
 title: Plugin Voyage
 x-i18n:
-    generated_at: "2026-07-12T02:55:14Z"
+    generated_at: "2026-07-16T13:37:46Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: ba1dcf8d6f7c45c01f855797333e9d510bc822b2f7442c5a0727ac2a208ffe36
+    source_hash: 30470935000d501180467314647efe876dc956ae57e53e13279e7670aea554e3
     source_path: plugins/reference/voyage.md
     workflow: 16
 ---
 
 # Plugin Voyage
 
-Ajoute la prise en charge du fournisseur de plongements pour la mémoire.
+Ajoute la prise en charge d’un fournisseur d’embeddings de mémoire.
 
 ## Distribution
 
-- Paquet : `@openclaw/voyage-provider`
-- Mode d’installation : inclus dans OpenClaw
+- Paquet : `@openclaw/voyage-provider`
+- Mode d’installation : inclus dans OpenClaw
 
 ## Surface
 
-contrats : memoryEmbeddingProviders
+contrats : `memoryEmbeddingProviders`

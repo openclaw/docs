@@ -1,31 +1,32 @@
 ---
 read_when:
-    - Instalujesz, konfigurujesz lub audytujesz plugin together
+    - Instalowanie, konfigurowanie lub audytowanie pluginu together
 summary: Dodaje obsługę dostawcy modeli Together do OpenClaw.
 title: Plugin Together
 x-i18n:
-    generated_at: "2026-07-12T15:27:35Z"
+    generated_at: "2026-07-16T18:59:31Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: c6d9c45bb128e18cbb931c6e6f429a3f60b25a1f1faeb83676989da2a12b5866
+    source_hash: 96d2a19fb8a9ab445d826b0b238f565d606fc9150e5dd45a9d2323e6b3048396
     source_path: plugins/reference/together.md
     workflow: 16
 ---
 
 # Plugin Together
 
-Dodaje do OpenClaw obsługę dostawcy modeli Together.
+Dodaje obsługę dostawcy modeli Together do OpenClaw.
 
 ## Dystrybucja
 
 - Pakiet: `@openclaw/together-provider`
 - Sposób instalacji: dołączony do OpenClaw
 
-## Zakres
+## Powierzchnia
 
-dostawcy: together; kontrakty: videoGenerationProviders
+dostawcy: `together`; kontrakty: `videoGenerationProviders`
 
 ## Powiązana dokumentacja
 
-- [together](/pl/providers/together)
+- [Together](/pl/providers/together)

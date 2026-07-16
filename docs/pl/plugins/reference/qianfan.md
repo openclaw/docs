@@ -1,31 +1,32 @@
 ---
 read_when:
-    - Instalujesz, konfigurujesz lub audytujesz plugin qianfan
-summary: Dodaje do OpenClaw obsługę dostawcy modeli Qianfan.
+    - Instalowanie, konfigurowanie lub audytowanie pluginu qianfan
+summary: Dodaje obsługę dostawcy modeli Qianfan do OpenClaw.
 title: Plugin Qianfan
 x-i18n:
-    generated_at: "2026-07-12T15:27:04Z"
+    generated_at: "2026-07-16T18:49:13Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 49d639836cefb6c96502e614e1b5d06615fbef31a50ea186e1a02c060882019a
+    source_hash: 586bf29ac08b1a682ac387a21ed8df9baebd7c923278eb4b8f5b8659580be363
     source_path: plugins/reference/qianfan.md
     workflow: 16
 ---
 
 # Plugin Qianfan
 
-Dodaje do OpenClaw obsługę dostawcy modeli Qianfan.
+Dodaje obsługę dostawcy modeli Qianfan w OpenClaw.
 
 ## Dystrybucja
 
 - Pakiet: `@openclaw/qianfan-provider`
 - Sposób instalacji: npm; ClawHub: `clawhub:@openclaw/qianfan-provider`
 
-## Zakres
+## Powierzchnia
 
-dostawcy: qianfan
+dostawcy: `qianfan`
 
 ## Powiązana dokumentacja
 
-- [qianfan](/pl/providers/qianfan)
+- [Qianfan](/pl/providers/qianfan)

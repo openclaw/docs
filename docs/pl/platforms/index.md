@@ -1,30 +1,31 @@
 ---
 read_when:
-    - Szukasz obsługi systemów operacyjnych lub ścieżek instalacji
+    - Informacje o obsłudze systemów operacyjnych i ścieżkach instalacji
     - Wybór miejsca uruchomienia Gateway
 summary: Przegląd obsługiwanych platform (Gateway + aplikacje towarzyszące)
 title: Platformy
 x-i18n:
-    generated_at: "2026-07-12T15:16:56Z"
+    generated_at: "2026-07-16T18:36:43Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 6c91bf7fd41bf5433b9f1efb768a44dcf5fa55917cfc45f463688d00f23e725d
+    source_hash: 40494f8567c0159d9b6024c174cf0f316a45b46c633a578efaf2388f679a88f2
     source_path: platforms/index.md
     workflow: 16
 ---
 
-Rdzeń OpenClaw jest napisany w TypeScript. **Node jest zalecanym środowiskiem uruchomieniowym**.
-Bun nie jest zalecany dla Gateway — występują znane problemy z kanałami WhatsApp i
-Telegram; szczegółowe informacje zawiera strona [Bun (eksperymentalny)](/pl/install/bun).
+Rdzeń OpenClaw jest napisany w TypeScript. **Node jest wymaganym środowiskiem uruchomieniowym**, ponieważ
+kanoniczny magazyn stanu korzysta z `node:sqlite`. Bun pozostaje dostępny do
+instalowania zależności i uruchamiania skryptów pakietów; zobacz [Bun](/pl/install/bun).
 
-Dostępne są aplikacje towarzyszące dla Windows Hub, macOS (aplikacja na pasku menu) oraz węzłów mobilnych
+Aplikacje towarzyszące są dostępne dla Windows Hub, systemu macOS (aplikacja na pasku menu) oraz mobilnych węzłów
 (iOS/Android). Aplikacje towarzyszące dla systemu Linux są planowane, ale Gateway jest już
-w pełni obsługiwany. W systemie Windows wybierz Windows Hub jako aplikację komputerową, natywną
-instalację PowerShell, jeśli korzystasz głównie z terminala, albo WSL2, aby uzyskać środowisko uruchomieniowe Gateway
+w pełni obsługiwany. W systemie Windows należy wybrać Windows Hub jako aplikację komputerową, natywną
+instalację w PowerShell do pracy głównie w terminalu albo WSL2, aby uzyskać środowisko uruchomieniowe Gateway
 najbardziej zgodne z systemem Linux.
 
-## Wybierz system operacyjny
+## Wybór systemu operacyjnego
 
 - macOS: [macOS](/pl/platforms/macos)
 - iOS: [iOS](/pl/platforms/ios)
@@ -34,7 +35,7 @@ najbardziej zgodne z systemem Linux.
 
 ## VPS i hosting
 
-- Węzeł VPS: [Hosting VPS](/pl/vps)
+- Węzeł centralny VPS: [Hosting VPS](/pl/vps)
 - Fly.io: [Fly.io](/pl/install/fly)
 - Hetzner (Docker): [Hetzner](/pl/install/hetzner)
 - GCP (Compute Engine): [GCP](/pl/install/gcp)
@@ -42,32 +43,32 @@ najbardziej zgodne z systemem Linux.
 - exe.dev (maszyna wirtualna + serwer proxy HTTPS): [exe.dev](/pl/install/exe-dev)
 - EasyRunner (Podman + Caddy): [EasyRunner](/pl/platforms/easyrunner)
 
-## Popularne odnośniki
+## Typowe odnośniki
 
 - Przewodnik instalacji: [Pierwsze kroki](/pl/start/getting-started)
 - Windows Hub: [Windows](/pl/platforms/windows)
-- Instrukcja obsługi Gateway: [Gateway](/pl/gateway)
+- Podręcznik operacyjny Gateway: [Gateway](/pl/gateway)
 - Konfiguracja Gateway: [Konfiguracja](/pl/gateway/configuration)
 - Stan usługi: `openclaw gateway status`
 
 ## Instalacja usługi Gateway (CLI)
 
-Użyj jednej z poniższych metod (wszystkie są obsługiwane):
+Należy użyć jednej z tych metod (wszystkie są obsługiwane):
 
 - Kreator (zalecany): `openclaw onboard --install-daemon`
 - Bezpośrednio: `openclaw gateway install`
-- Proces konfiguracji: `openclaw configure` → wybierz **Usługa Gateway**
-- Naprawa/migracja: `openclaw doctor` (oferuje zainstalowanie lub naprawienie usługi)
+- Proces konfiguracji: `openclaw configure` → wybierz **usługę Gateway**
+- Naprawa/migracja: `openclaw doctor` (oferuje instalację lub naprawę usługi)
 
 Docelowy typ usługi zależy od systemu operacyjnego:
 
-- macOS: LaunchAgent (`ai.openclaw.gateway` lub `ai.openclaw.<profile>` dla nazwanego profilu)
+- macOS: LaunchAgent (`ai.openclaw.gateway` lub `ai.openclaw.<profile>` w przypadku profilu nazwanego)
 - Linux/WSL2: usługa użytkownika systemd (`openclaw-gateway[-<profile>].service`)
-- Natywny Windows: zaplanowane zadanie (`OpenClaw Gateway` lub `OpenClaw Gateway (<profile>)`), z awaryjnym elementem logowania w folderze Autostart użytkownika, jeśli utworzenie zadania zostanie odrzucone
+- Natywny system Windows: zaplanowane zadanie (`OpenClaw Gateway` lub `OpenClaw Gateway (<profile>)`), z awaryjnym elementem logowania w folderze Autostart danego użytkownika, jeśli odmówiono utworzenia zadania
 
 ## Powiązane
 
 - [Omówienie instalacji](/pl/install)
 - [Windows Hub](/pl/platforms/windows)
-- [Aplikacja dla macOS](/pl/platforms/macos)
-- [Aplikacja dla iOS](/pl/platforms/ios)
+- [Aplikacja macOS](/pl/platforms/macos)
+- [Aplikacja iOS](/pl/platforms/ios)

@@ -1,21 +1,22 @@
 ---
 read_when:
-    - Instalujesz, konfigurujesz lub audytujesz plugin Slack.
-summary: Plugin kanału Slack dla kanałów, wiadomości prywatnych, poleceń i zdarzeń aplikacji OpenClaw.
+    - Instalowanie, konfigurowanie lub audytowanie pluginu Slack
+summary: Plugin kanału Slack dla kanałów, wiadomości bezpośrednich, poleceń i zdarzeń aplikacji.
 title: Plugin Slacka
 x-i18n:
-    generated_at: "2026-07-12T15:27:19Z"
+    generated_at: "2026-07-16T18:59:18Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 602ccb21ce084219d922860d186664bbb098fd034117893dc7359d79495bedd6
+    source_hash: bc5b593ef4361a52024f068febd8982fefdf3af1957373b1e5d7d1b9ef8b0a77
     source_path: plugins/reference/slack.md
     workflow: 16
 ---
 
 # Plugin Slack
 
-Plugin kanału Slack dla OpenClaw, obsługujący kanały, wiadomości prywatne, polecenia i zdarzenia aplikacji.
+Plugin kanału Slack dla kanałów, wiadomości prywatnych, poleceń i zdarzeń aplikacji.
 
 ## Dystrybucja
 
@@ -24,8 +25,8 @@ Plugin kanału Slack dla OpenClaw, obsługujący kanały, wiadomości prywatne, 
 
 ## Zakres
 
-kanały: slack; Skills
+kanały: `slack`; Skills
 
 ## Powiązana dokumentacja
 
-- [slack](/pl/channels/slack)
+- [Slack](/pl/channels/slack)

@@ -1,83 +1,196 @@
 ---
 read_when:
     - आप एक OpenClaw Plugin का रखरखाव करते हैं
-    - आपको Plugin संगतता चेतावनी दिखाई देती है
-    - आप Plugin SDK या मैनिफेस्ट माइग्रेशन की योजना बना रहे हैं
-summary: Plugin संगतता अनुबंध, अवमूल्यन मेटाडेटा, और माइग्रेशन अपेक्षाएँ
+    - आपको Plugin संगतता की चेतावनी दिखाई देती है
+    - आप Plugin SDK या मैनिफ़ेस्ट माइग्रेशन की योजना बना रहे हैं
+summary: Plugin संगतता अनुबंध, अप्रचलन मेटाडेटा और माइग्रेशन अपेक्षाएँ
 title: Plugin संगतता
 x-i18n:
-    generated_at: "2026-06-28T23:35:20Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T16:09:02Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 2e17881c393e3649cb6accb13996d83a855f434735da2e84738f823ac4eba0f5
+    source_hash: 26f737e40175652cb24327c91d2af9dbf72b1b254011115f5b512a309707711c
     source_path: plugins/compatibility.md
     workflow: 16
 ---
 
 OpenClaw पुराने Plugin अनुबंधों को हटाने से पहले नामित संगतता
-अडैप्टरों के माध्यम से जोड़े रखता है। SDK, manifest, setup, config, और agent runtime अनुबंध
-विकसित होने के दौरान यह मौजूदा bundled और external
-Plugin की सुरक्षा करता है।
+एडाप्टरों के माध्यम से जोड़े रखता है। इससे SDK, मैनिफ़ेस्ट, सेटअप, कॉन्फ़िगरेशन और एजेंट रनटाइम अनुबंधों के
+विकसित होने के दौरान मौजूदा बंडल किए गए और बाहरी
+Plugin सुरक्षित रहते हैं।
 
 ## संगतता रजिस्ट्री
 
-Plugin संगतता अनुबंध core registry में ट्रैक किए जाते हैं:
-`src/plugins/compat/registry.ts`.
-
-हर रिकॉर्ड में होता है:
+Plugin संगतता अनुबंधों को मुख्य रजिस्ट्री में
+`src/plugins/compat/registry.ts` पर ट्रैक किया जाता है। प्रत्येक रिकॉर्ड में ये होते हैं:
 
 - एक स्थिर संगतता कोड
 - स्थिति: `active`, `deprecated`, `removal-pending`, या `removed`
-- स्वामी: SDK, config, setup, channel, provider, plugin execution, agent runtime,
-  या core
-- लागू होने पर introduction और deprecation तिथियां
-- replacement guidance
-- docs, diagnostics, और tests जो पुराने और नए व्यवहार को कवर करते हैं
+- स्वामी: `sdk`, `config`, `setup`, `channel`, `provider`, `plugin-execution`,
+  `agent-runtime`, या `core`
+- लागू होने पर प्रस्तुतिकरण और अप्रचलन की तिथियाँ
+- प्रतिस्थापन मार्गदर्शन
+- पुराने और नए व्यवहार को कवर करने वाले दस्तावेज़, निदान और परीक्षण
 
-रजिस्ट्री maintainer planning और भविष्य के plugin inspector
-checks का स्रोत है। यदि कोई plugin-facing व्यवहार बदलता है, तो उसी बदलाव में संगतता
-रिकॉर्ड जोड़ें या अपडेट करें जिसमें अडैप्टर जोड़ा जाता है।
+यह रजिस्ट्री अनुरक्षक योजना और भावी Plugin
+निरीक्षक जाँचों का स्रोत है। यदि Plugin-संबंधी व्यवहार बदलता है, तो एडाप्टर जोड़ने वाले उसी परिवर्तन में
+संगतता रिकॉर्ड जोड़ें या अपडेट करें।
 
-Doctor repair और migration compatibility अलग से
-`src/commands/doctor/shared/deprecation-compat.ts` पर ट्रैक की जाती है। वे रिकॉर्ड पुराने
-config shapes, install-ledger layouts, और repair shims को कवर करते हैं जिन्हें runtime compatibility path हटने के बाद भी
-उपलब्ध रहना पड़ सकता है।
+Doctor सुधार और माइग्रेशन संगतता को अलग से
+`src/commands/doctor/shared/deprecation-compat.ts` पर ट्रैक किया जाता है। ये रिकॉर्ड पुराने
+कॉन्फ़िगरेशन आकारों, इंस्टॉल-लेजर लेआउट और उन सुधार शिम को कवर करते हैं जिन्हें
+रनटाइम संगतता पथ हटाए जाने के बाद भी उपलब्ध रखने की आवश्यकता हो सकती है।
 
-Release sweeps को दोनों registries जांचनी चाहिए। केवल इसलिए doctor migration न हटाएं
-क्योंकि matching runtime या config compatibility record expire हो गया है; पहले
-सत्यापित करें कि कोई supported upgrade path अभी भी repair की जरूरत नहीं रखता। साथ ही
-release planning के दौरान हर replacement annotation को फिर से validate करें क्योंकि provider और channel core से बाहर जाते समय plugin
-ownership और config footprint बदल सकते हैं।
+रिलीज़ स्वीप में दोनों रजिस्ट्रियों की जाँच होनी चाहिए। किसी Doctor
+माइग्रेशन को केवल इसलिए न हटाएँ कि उसका संबंधित रनटाइम या कॉन्फ़िगरेशन संगतता रिकॉर्ड
+समाप्त हो गया है; पहले सत्यापित करें कि ऐसा कोई समर्थित अपग्रेड पथ नहीं है जिसे अब भी
+सुधार की आवश्यकता हो। रिलीज़ योजना के दौरान प्रत्येक प्रतिस्थापन एनोटेशन को भी दोबारा सत्यापित करें,
+क्योंकि प्रदाताओं और चैनलों के कोर से बाहर जाने पर Plugin स्वामित्व और कॉन्फ़िगरेशन का दायरा
+बदल सकता है।
 
-## Plugin inspector package
+## अप्रचलन नीति
 
-Plugin inspector को core OpenClaw repo के बाहर, versioned compatibility और manifest
-contracts द्वारा समर्थित अलग package/repository के रूप में रहना चाहिए।
+OpenClaw को किसी दस्तावेजीकृत Plugin अनुबंध को उसी रिलीज़ में नहीं हटाना चाहिए
+जिसमें उसका प्रतिस्थापन प्रस्तुत किया गया हो। माइग्रेशन क्रम:
 
-Day-one CLI होना चाहिए:
+1. नया अनुबंध जोड़ें।
+2. पुराने व्यवहार को नामित संगतता एडाप्टर के माध्यम से जोड़े रखें।
+3. जब Plugin लेखक कार्रवाई कर सकें, तब निदान या चेतावनियाँ जारी करें।
+4. प्रतिस्थापन और समयसीमा का दस्तावेजीकरण करें।
+5. पुराने और नए दोनों पथों का परीक्षण करें।
+6. घोषित माइग्रेशन अवधि पूरी होने तक प्रतीक्षा करें।
+7. केवल स्पष्ट ब्रेकिंग-रिलीज़ अनुमोदन के साथ हटाएँ।
+
+अप्रचलित रिकॉर्ड में चेतावनी आरंभ तिथि, प्रतिस्थापन, दस्तावेज़
+लिंक और चेतावनी आरंभ होने के अधिकतम तीन महीने बाद की अंतिम निष्कासन तिथि शामिल होनी चाहिए।
+खुली-अवधि वाले निष्कासन समय के साथ अप्रचलित संगतता पथ न जोड़ें,
+जब तक अनुरक्षक स्पष्ट रूप से यह निर्णय न लें कि यह स्थायी
+संगतता है और इसके बजाय इसे `active` चिह्नित न करें।
+
+## वर्तमान संगतता क्षेत्र
+
+रजिस्ट्री वर्तमान में इन क्षेत्रों में लगभग 70 संगतता कोड ट्रैक करती है।
+नए Plugin कोड को प्रत्येक क्षेत्र और विशिष्ट माइग्रेशन मार्गदर्शिका में दिए गए प्रतिस्थापन का उपयोग करना चाहिए;
+मौजूदा Plugin तब तक संगतता पथ का उपयोग जारी रख सकते हैं, जब तक दस्तावेज़, निदान और रिलीज़ नोट
+निष्कासन अवधि की घोषणा न करें।
+
+- `openclaw/plugin-sdk/compat` जैसे पुराने व्यापक SDK आयात
+- पुराने केवल-हुक Plugin आकार और `before_agent_start`
+- पुराने `api.on("deactivate", ...)` क्लीनअप हुक नाम, जब तक Plugin
+  `gateway_stop` पर माइग्रेट होते हैं
+- पुराने `activate(api)` Plugin एंट्रीपॉइंट, जब तक Plugin
+  `register(api)` पर माइग्रेट होते हैं
+- `openclaw/extension-api`,
+  `openclaw/plugin-sdk/channel-runtime`, `openclaw/plugin-sdk/command-auth`
+  स्थिति बिल्डर, `openclaw/plugin-sdk/test-utils` (केंद्रित
+  `openclaw/plugin-sdk/*` परीक्षण उपपथों द्वारा प्रतिस्थापित), और `ClawdbotConfig` /
+  `OpenClawSchemaType` प्रकार उपनाम जैसे पुराने SDK उपनाम
+- बंडल किए गए Plugin की अनुमतिसूची और सक्षमकरण व्यवहार
+- पुराने प्रदाता/चैनल एन्वायरनमेंट-वेरिएबल मैनिफ़ेस्ट मेटाडेटा
+- पुराने प्रदाता Plugin हुक और प्रकार उपनाम, जब तक प्रदाता स्पष्ट
+  कैटलॉग, प्रमाणीकरण, चिंतन, रीप्ले और ट्रांसपोर्ट हुक पर जाते हैं
+- `api.runtime.taskFlow`,
+  `api.runtime.subagent.getSession`, `api.runtime.stt` जैसे पुराने रनटाइम उपनाम और अप्रचलित
+  `api.runtime.config.loadConfig()` / `api.runtime.config.writeConfigFile(...)`
+- WhatsApp `WebInboundMessage` समतल कॉलबैक फ़ील्ड (नीचे देखें)
+- WhatsApp `WebInboundMessage` शीर्ष-स्तरीय प्रवेश फ़ील्ड (नीचे देखें)
+- पुराना मेमोरी-Plugin विभाजित पंजीकरण, जब तक मेमोरी Plugin
+  `registerMemoryCapability` पर जाते हैं
+- पुराना मेमोरी-विशिष्ट एम्बेडिंग प्रदाता पंजीकरण, जब तक एम्बेडिंग
+  प्रदाता `api.registerEmbeddingProvider(...)` और
+  `contracts.embeddingProviders` पर जाते हैं
+- नेटिव संदेश स्कीमा, उल्लेख गेटिंग,
+  इनबाउंड एनवेलप फ़ॉर्मेटिंग और अनुमोदन क्षमता नेस्टिंग के लिए पुराने चैनल SDK सहायक
+- पुराने चैनल रूट कुंजी और तुलनीय-लक्ष्य सहायक उपनाम, जब तक
+  Plugin `openclaw/plugin-sdk/channel-route` पर जाते हैं
+- मैनिफ़ेस्ट योगदान स्वामित्व द्वारा प्रतिस्थापित किए जा रहे सक्रियण संकेत
+- `setup-api` रनटाइम फ़ॉलबैक, जब तक सेटअप डिस्क्रिप्टर कोल्ड
+  `setup.requiresRuntime: false` मेटाडेटा पर जाते हैं
+- प्रदाता `discovery` हुक, जब तक प्रदाता कैटलॉग हुक
+  `catalog.run(...)` पर जाते हैं
+- चैनल `showConfigured` / `showInSetup` मेटाडेटा, जब तक चैनल पैकेज
+  `openclaw.channel.exposure` पर जाते हैं
+- पुरानी रनटाइम-नीति कॉन्फ़िगरेशन कुंजियाँ, जब तक Doctor ऑपरेटरों को
+  `agentRuntime` पर माइग्रेट करता है
+- जनरेट किया गया बंडल चैनल कॉन्फ़िगरेशन मेटाडेटा फ़ॉलबैक, जब तक रजिस्ट्री-प्रथम
+  `channelConfigs` मेटाडेटा उपलब्ध होता है
+- स्थायी Plugin रजिस्ट्री निष्क्रियकरण और इंस्टॉल-माइग्रेशन एन्वायरनमेंट फ़्लैग, जब तक
+  सुधार प्रवाह ऑपरेटरों को `openclaw plugins registry --refresh`
+  और `openclaw doctor --fix` पर माइग्रेट करते हैं
+- पुराने Plugin-स्वामित्व वाले वेब खोज, वेब फ़ेच और x_search कॉन्फ़िगरेशन पथ,
+  जब तक Doctor उन्हें `plugins.entries.<plugin>.config` पर माइग्रेट करता है
+- पुराने `plugins.installs` द्वारा लिखे गए कॉन्फ़िगरेशन और बंडल Plugin लोड-पथ
+  उपनाम, जब तक इंस्टॉल मेटाडेटा स्थिति-प्रबंधित Plugin लेजर में जाता है
+
+### WhatsApp इनबाउंड कॉलबैक समतल उपनाम
+
+WhatsApp रनटाइम कॉलबैक `WebInboundMessage` प्रदान करते हैं: प्रामाणिक
+नेस्टेड `event`, `payload`, `quote`, `group` और `platform` संदर्भों के साथ
+जारी किए गए कॉलबैक फ़ील्ड के अप्रचलित समतल उपनाम। नए कॉलबैक कोड को
+नेस्टेड संदर्भ पढ़ने चाहिए। साफ़ नेस्टेड कॉलबैक
+संदेश बनाने वाला कोड `WebInboundCallbackMessage` का उपयोग कर सकता है; वे संगतता लिसनर जो
+अब भी पुराने समतल परीक्षण या Plugin संदेश इंजेक्ट करते हैं, उन्हें
+`LegacyFlatWebInboundMessage` या `WebInboundMessageInput` का उपयोग करना चाहिए।
+
+समतल उपनाम **2026-08-30** तक उपलब्ध रहेंगे; यह अवधि
+केवल समतल उपनाम अभिगम पर लागू होती है, नेस्टेड आकार पर नहीं, जो प्रामाणिक
+रनटाइम अनुबंध है। प्रत्येक समतल उपनाम का TypeScript `@deprecated` एनोटेशन
+उसके सटीक नेस्टेड प्रतिस्थापन का नाम बताता है। सामान्य उदाहरण:
+
+- `id`, `timestamp` और `isBatched`, `event` के अंतर्गत जाते हैं।
+- `body`, `mediaPath`, `mediaType`, `mediaFileName`, `mediaUrl`, `location`
+  और `untrustedStructuredContext`, `payload` के अंतर्गत जाते हैं।
+- `to`, `chatId`, प्रेषक/स्वयं फ़ील्ड, `sendComposing`, `reply(...)` और
+  `sendMedia(...)`, `platform` के अंतर्गत जाते हैं।
+- `replyTo*` फ़ील्ड `quote` के अंतर्गत जाते हैं; समूह विषय/प्रतिभागी/उल्लेख
+  फ़ील्ड `group` के अंतर्गत जाते हैं।
+
+`payload.untrustedStructuredContext` को इनबाउंड प्रदाता
+पेलोड से निकाला जाता है। Plugin को इसके `payload` को प्रामाणिक मानने से पहले
+`label`, `source` और `type` का निरीक्षण करना चाहिए।
+
+### WhatsApp इनबाउंड प्रवेश फ़ील्ड
+
+स्वीकृत WhatsApp कॉलबैक संदेशों में `admission` होता है, जो संदेश को प्रवेश देने वाले
+अभिगम-नियंत्रण निर्णय का सार्वजनिक-सुरक्षित एनवेलप है। नए
+कॉलबैक कोड को पुराने शीर्ष-स्तरीय प्रवेश फ़ील्ड के बजाय `msg.admission` से
+प्रवेश तथ्य पढ़ने चाहिए।
+
+शीर्ष-स्तरीय फ़ील्ड **2026-08-30** तक उपलब्ध रहेंगे। प्रत्येक फ़ील्ड का
+TypeScript `@deprecated` एनोटेशन उसके प्रतिस्थापन का नाम बताता है:
+
+- `from` और `conversationId`, `admission.conversation.id` पर जाते हैं।
+- `accountId`, `admission.accountId` पर जाता है।
+- `accessControlPassed`,
+  `admission.ingress.decision === "allow"` का व्युत्पन्न संगतता दृश्य है; उन संदेशों पर जिनमें पहले से
+  `admission` है, पुराना बूलियन लिखने से इनग्रेस
+  ग्राफ़ दोबारा नहीं लिखा जाता।
+- `chatType`, `admission.conversation.kind` पर जाता है।
+
+## Plugin निरीक्षक पैकेज
+
+Plugin निरीक्षक को मुख्य OpenClaw रेपो के बाहर,
+संस्करणित संगतता और मैनिफ़ेस्ट अनुबंधों द्वारा समर्थित अलग पैकेज/रिपॉज़िटरी के रूप में रहना चाहिए।
+पहले दिन की CLI यह होनी चाहिए:
 
 ```sh
 openclaw-plugin-inspector ./my-plugin
 ```
 
-इसे emit करना चाहिए:
+इसे मैनिफ़ेस्ट/स्कीमा सत्यापन, जाँचा जा रहा अनुबंध संगतता
+संस्करण, इंस्टॉल/स्रोत मेटाडेटा जाँच, कोल्ड-पथ आयात
+जाँच और अप्रचलन/संगतता चेतावनियाँ उत्सर्जित करनी चाहिए। CI एनोटेशन में स्थिर
+मशीन-पठनीय आउटपुट के लिए `--json` का उपयोग करें। OpenClaw कोर को वे
+अनुबंध और फ़िक्सचर उपलब्ध कराने चाहिए जिनका निरीक्षक उपयोग कर सके, लेकिन मुख्य `openclaw`
+पैकेज से निरीक्षक बाइनरी प्रकाशित नहीं करनी चाहिए।
 
-- manifest/schema validation
-- जांचा जा रहा contract compatibility version
-- install/source metadata checks
-- cold-path import checks
-- deprecation और compatibility warnings
+### अनुरक्षक स्वीकृति लेन
 
-CI annotations में stable machine-readable output के लिए `--json` का उपयोग करें। OpenClaw
-core को ऐसे contracts और fixtures expose करने चाहिए जिन्हें inspector consume कर सके, लेकिन उसे
-main `openclaw` package से inspector binary publish नहीं करनी चाहिए।
-
-### Maintainer acceptance lane
-
-External inspector को OpenClaw plugin packages के विरुद्ध validate करते समय installable-package acceptance
-lane के लिए Crabbox-backed Blacksmith Testbox का उपयोग करें।
-Package build होने के बाद इसे clean OpenClaw checkout से चलाएं:
+बाहरी निरीक्षक को OpenClaw Plugin
+पैकेजों के विरुद्ध सत्यापित करते समय इंस्टॉल-योग्य-पैकेज स्वीकृति
+लेन के लिए Crabbox-समर्थित Blacksmith Testbox का उपयोग करें। पैकेज बनने के बाद इसे साफ़ OpenClaw चेकआउट से चलाएँ:
 
 ```sh
 pnpm crabbox:run -- --provider blacksmith-testbox --timing-json --shell -- "pnpm install && pnpm build && npm exec --yes @openclaw/plugin-inspector@0.1.0 -- ./extensions/telegram --json"
@@ -85,137 +198,14 @@ pnpm crabbox:run -- --provider blacksmith-testbox --timing-json --shell -- "npm 
 pnpm crabbox:run -- --provider blacksmith-testbox --timing-json --shell -- "npm exec --yes @openclaw/plugin-inspector@0.1.0 -- <clawhub-plugin-dir> --json"
 ```
 
-इस lane को maintainers के लिए opt-in रखें क्योंकि यह external npm
-package install करता है और repo के बाहर cloned plugin packages inspect कर सकता है। Local repo
-guards SDK export map, compatibility registry metadata, deprecated
-SDK-import burn-down, और bundled extension import boundaries को कवर करते हैं; Testbox inspector
-proof उस package को वैसे कवर करता है जैसे external plugin authors उसे consume करते हैं।
+इस लेन को अनुरक्षकों के लिए वैकल्पिक रखें, क्योंकि यह बाहरी npm
+पैकेज इंस्टॉल करती है और रेपो के बाहर क्लोन किए गए Plugin पैकेजों का निरीक्षण कर सकती है। स्थानीय
+रेपो गार्ड SDK निर्यात मैप, संगतता रजिस्ट्री मेटाडेटा,
+अप्रचलित SDK-आयात कमी और बंडल एक्सटेंशन आयात सीमाओं को कवर करते हैं;
+Testbox निरीक्षक प्रमाण पैकेज को उसी तरह कवर करता है जैसे बाहरी Plugin लेखक
+इसका उपयोग करते हैं।
 
-## Deprecation policy
+## रिलीज़ नोट
 
-OpenClaw को documented plugin contract को उसी release में नहीं हटाना चाहिए
-जिसमें उसका replacement introduce किया गया हो।
-
-Migration sequence है:
-
-1. नया contract जोड़ें।
-2. पुराने behavior को named compatibility adapter के माध्यम से wired रखें।
-3. जब plugin authors action ले सकते हों तो diagnostics या warnings emit करें।
-4. replacement और timeline document करें।
-5. पुराने और नए दोनों paths test करें।
-6. घोषित migration window के दौरान प्रतीक्षा करें।
-7. केवल explicit breaking-release approval के साथ हटाएं।
-
-Deprecated records में warning start date, replacement, docs link,
-और warning शुरू होने के तीन महीनों से अधिक नहीं होने वाली final removal date शामिल होनी चाहिए। Open-ended removal window के साथ
-deprecated compatibility path न जोड़ें, जब तक maintainers स्पष्ट रूप से यह तय न करें कि यह permanent compatibility है और इसके बजाय इसे `active`
-mark न करें।
-
-## मौजूदा संगतता क्षेत्र
-
-मौजूदा compatibility records में शामिल हैं:
-
-- legacy broad SDK imports जैसे `openclaw/plugin-sdk/compat`
-- legacy hook-only plugin shapes और `before_agent_start`
-- legacy `api.on("deactivate", ...)` cleanup hook names जबकि plugins
-  `gateway_stop` पर migrate करते हैं
-- legacy `activate(api)` plugin entrypoints जबकि plugins
-  `register(api)` पर migrate करते हैं
-- legacy SDK aliases जैसे `openclaw/extension-api`,
-  `openclaw/plugin-sdk/channel-runtime`, `openclaw/plugin-sdk/command-auth`
-  status builders, `openclaw/plugin-sdk/test-utils` (focused
-  `openclaw/plugin-sdk/*` test subpaths से replaced), और `ClawdbotConfig` /
-  `OpenClawSchemaType` type aliases
-- bundled plugin allowlist और enablement behavior
-- legacy provider/channel env-var manifest metadata
-- legacy provider plugin hooks और type aliases जबकि providers
-  explicit catalog, auth, thinking, replay, और transport hooks पर move करते हैं
-- legacy runtime aliases जैसे `api.runtime.taskFlow`,
-  `api.runtime.subagent.getSession`, `api.runtime.stt`, और deprecated
-  `api.runtime.config.loadConfig()` / `api.runtime.config.writeConfigFile(...)`
-- WhatsApp `WebInboundMessage` flat callback fields जैसे `body`, `chatId`,
-  `reply(...)`, और `mediaPath` जबकि callback consumers nested
-  `WebInboundCallbackMessage` `event`, `payload`, `quote`, `group`, और
-  `platform` contexts पर migrate करते हैं
-- WhatsApp `WebInboundMessage` top-level admission fields जैसे `from`,
-  `conversationId`, `accountId`, `accessControlPassed`, और `chatType` जबकि
-  callback consumers `admission` envelope पर migrate करते हैं
-- legacy memory-plugin split registration जबकि memory plugins
-  `registerMemoryCapability` पर move करते हैं
-- legacy memory-specific embedding provider registration जबकि embedding
-  providers `api.registerEmbeddingProvider(...)` और
-  `contracts.embeddingProviders` पर move करते हैं
-- native message schemas, mention gating,
-  inbound envelope formatting, और approval capability nesting के लिए legacy channel SDK helpers
-- legacy channel route key और comparable-target helper aliases जबकि plugins
-  `openclaw/plugin-sdk/channel-route` पर move करते हैं
-- activation hints जिन्हें manifest contribution ownership से replace किया जा रहा है
-- `setup-api` runtime fallback जबकि setup descriptors cold
-  `setup.requiresRuntime: false` metadata पर move करते हैं
-- provider `discovery` hooks जबकि provider catalog hooks
-  `catalog.run(...)` पर move करते हैं
-- channel `showConfigured` / `showInSetup` metadata जबकि channel packages
-  `openclaw.channel.exposure` पर move करते हैं
-- legacy runtime-policy config keys जबकि doctor operators को
-  `agentRuntime` पर migrate करता है
-- generated bundled channel config metadata fallback जबकि registry-first
-  `channelConfigs` metadata land होता है
-- persisted plugin registry disable और install-migration env flags जबकि
-  repair flows operators को `openclaw plugins registry --refresh` और
-  `openclaw doctor --fix` पर migrate करते हैं
-- legacy plugin-owned web search, web fetch, और x_search config paths जबकि
-  doctor उन्हें `plugins.entries.<plugin>.config` पर migrate करता है
-- legacy `plugins.installs` authored config और bundled plugin load-path
-  aliases जबकि install metadata state-managed plugin ledger में move करता है
-
-नए plugin code को registry और specific migration guide में सूचीबद्ध replacement को प्राथमिकता देनी चाहिए।
-Existing plugins तब तक compatibility path का उपयोग जारी रख सकते हैं
-जब तक docs, diagnostics, और release notes removal window announce नहीं करते।
-
-### WhatsApp Inbound Callback Flat Aliases
-
-WhatsApp runtime callbacks `WebInboundMessage` deliver करते हैं: canonical nested
-`event`, `payload`, `quote`, `group`, और `platform` contexts के साथ shipped callback fields के लिए deprecated
-flat aliases। नए callback code को nested contexts पढ़ने चाहिए। Clean nested callback messages construct करने वाला code
-`WebInboundCallbackMessage` का उपयोग कर सकता है; compatibility listeners जो अभी भी old flat
-test या plugin messages inject करते हैं, उन्हें `LegacyFlatWebInboundMessage` या
-`WebInboundMessageInput` का उपयोग करना चाहिए।
-
-Flat aliases **2026-08-30** तक उपलब्ध रहेंगे। वह removal window
-केवल flat alias access पर लागू होती है; nested callback shape canonical
-runtime contract है। हर flat alias पर TypeScript `@deprecated` annotations उसका exact nested replacement बताते हैं।
-सामान्य उदाहरण:
-
-- `id`, `timestamp`, और `isBatched` `event` के अंतर्गत move होते हैं।
-- `body`, `mediaPath`, `mediaType`, `mediaFileName`, `mediaUrl`, `location`, और
-  `untrustedStructuredContext` `payload` के अंतर्गत move होते हैं।
-- `to`, `chatId`, sender/self fields, `sendComposing`, `reply(...)`, और
-  `sendMedia(...)` `platform` के अंतर्गत move होते हैं।
-- `replyTo*` fields `quote` के अंतर्गत move होते हैं, और group subject/participant/mention
-  fields `group` के अंतर्गत move होते हैं।
-
-`payload.untrustedStructuredContext` inbound provider payloads से extracted होता है।
-Plugins को इसके `payload` को authoritative मानने से पहले `label`, `source`, और `type`
-inspect करना चाहिए।
-
-### WhatsApp Inbound Admission Fields
-
-Accepted WhatsApp callback messages अब `admission` carry करते हैं, जो message admit करने वाले access-control decision के लिए public-safe
-envelope है। नए callback
-code को पुराने top-level admission fields के बजाय `msg.admission` से admission facts पढ़ने चाहिए।
-
-Top-level fields **2026-08-30** तक उपलब्ध रहेंगे। TypeScript
-`@deprecated` annotations हर replacement का नाम बताते हैं:
-
-- `from` और `conversationId` `admission.conversation.id` पर move होते हैं।
-- `accountId` `admission.accountId` पर move होता है।
-- `accessControlPassed`
-  `admission.ingress.decision === "allow"` का derived compatibility view है; उन messages पर जो पहले से
-  `admission` carry करते हैं, legacy boolean लिखने से ingress graph rewrite नहीं होता।
-- `chatType` `admission.conversation.kind` पर move होता है।
-
-## Release notes
-
-Release notes में target dates और
-migration docs के links के साथ upcoming plugin deprecations शामिल होने चाहिए। यह warning compatibility
-path के `removal-pending` या `removed` पर move होने से पहले होनी चाहिए।
+किसी संगतता पथ के `removal-pending` या `removed` पर जाने से पहले,
+रिलीज़ नोट में लक्ष्य तिथियों और माइग्रेशन दस्तावेज़ों के लिंक सहित आगामी Plugin अप्रचलन शामिल होने चाहिए।

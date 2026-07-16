@@ -1,19 +1,20 @@
 ---
 read_when:
-    - أنت تثبّت Plugin ‏nostr أو تضبط إعداده أو تدقّق فيه
+    - أنت تثبّت أو تهيّئ أو تدقّق Plugin nostr
 summary: Plugin قناة Nostr لـ OpenClaw للرسائل المباشرة المشفّرة وفق NIP-04.
 title: Plugin ‏Nostr
 x-i18n:
-    generated_at: "2026-07-12T06:21:35Z"
+    generated_at: "2026-07-16T14:33:35Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: e56fd9eee17c55bcbba3d7b85d783930c10d2368f36173ac478b254c2bd5ec22
+    source_hash: 9efb2014cd168e3d847a045cf82fde3ec364ca3f6a75ee3ef8e1acfb92a79efa
     source_path: plugins/reference/nostr.md
     workflow: 16
 ---
 
-# Plugin ‏Nostr
+# Plugin Nostr
 
 Plugin قناة Nostr في OpenClaw للرسائل المباشرة المشفرة وفق NIP-04.
 
@@ -24,8 +25,8 @@ Plugin قناة Nostr في OpenClaw للرسائل المباشرة المشفر
 
 ## الواجهة
 
-القنوات: nostr
+القنوات: `nostr`
 
 ## الوثائق ذات الصلة
 
-- [nostr](/ar/channels/nostr)
+- [Nostr](/ar/channels/nostr)

@@ -1,30 +1,31 @@
 ---
 read_when:
-    - comfy Plugin'ini kuruyor, yapılandırıyor veya denetliyorsunuz
+    - comfy pluginini kuruyor, yapılandırıyor veya denetliyorsunuz
 summary: OpenClaw'a ComfyUI model sağlayıcısı desteği ekler.
 title: ComfyUI Plugin'i
 x-i18n:
-    generated_at: "2026-07-12T12:32:26Z"
+    generated_at: "2026-07-16T17:29:29Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: cf099e744fc11e302995d0df9f0cbc543702b92c54424aab11502ac2552f642e
+    source_hash: 83d9455f2aabd9cb26b7d2a65a3b57957d46c17681c6b6ff515b904aa72093c8
     source_path: plugins/reference/comfy.md
     workflow: 16
 ---
 
-# ComfyUI Plugin'i
+# ComfyUI Plugin
 
 OpenClaw'a ComfyUI model sağlayıcısı desteği ekler.
 
 ## Dağıtım
 
 - Paket: `@openclaw/comfy-provider`
-- Kurulum yöntemi: OpenClaw'a dahildir
+- Kurulum yolu: OpenClaw'a dahildir
 
-## Kapsam
+## Yüzey
 
-sağlayıcılar: comfy; sözleşmeler: imageGenerationProviders, musicGenerationProviders, videoGenerationProviders
+sağlayıcılar: `comfy`; sözleşmeler: `imageGenerationProviders`, `musicGenerationProviders`, `videoGenerationProviders`
 
 ## İlgili belgeler
 

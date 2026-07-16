@@ -1,27 +1,28 @@
 ---
 read_when:
-    - Ви встановлюєте, налаштовуєте або перевіряєте Plugin diffs
-summary: Plugin OpenClaw для перегляду різниць лише для читання та відтворення файлів для агентів.
+    - Ви встановлюєте, налаштовуєте або перевіряєте Plugin diffs.
+summary: Plugin OpenClaw для перегляду різниць у режимі лише для читання та засіб відтворення файлів для агентів.
 title: Plugin відмінностей
 x-i18n:
-    generated_at: "2026-07-12T13:34:19Z"
+    generated_at: "2026-07-16T18:19:34Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 836ed7a32a0868ee24eacf8f72e8c7888ebbd5d07ca62b2b6170d6a1919f7382
+    source_hash: c8e55537310879d09b50472db7a80a73402477faf5b09da463b6306275e90121
     source_path: plugins/reference/diffs.md
     workflow: 16
 ---
 
-# Plugin для різниць
+# Plugin для відмінностей
 
-Plugin OpenClaw для перегляду різниць у режимі лише читання та відтворення файлів для агентів.
+Plugin OpenClaw для перегляду відмінностей лише для читання та відтворення файлів для агентів.
 
 ## Розповсюдження
 
-- Пакет: `@openclaw/diffs`
+- Пакунок: `@openclaw/diffs`
 - Спосіб установлення: npm; ClawHub
 
 ## Інтерфейс
 
-контракти: інструменти; Skills
+контракти: `tools`; Skills

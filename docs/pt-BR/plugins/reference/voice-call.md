@@ -4,11 +4,12 @@ read_when:
 summary: Plugin de chamadas de voz do OpenClaw para chamadas telefônicas via Twilio, Telnyx e Plivo.
 title: Plugin de chamadas de voz
 x-i18n:
-    generated_at: "2026-07-12T00:16:06Z"
+    generated_at: "2026-07-16T12:48:41Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: b0e298a2d8701d6fd531b761f8c14477b8c37a376af43127aa67c2fa6ff1b02d
+    source_hash: d99726d6581f0aa6ebd248a12bc223c01ae072d1f4c3f3d87ca82d2a6b594514
     source_path: plugins/reference/voice-call.md
     workflow: 16
 ---
@@ -20,12 +21,12 @@ Plugin de chamadas de voz do OpenClaw para chamadas telefônicas via Twilio, Tel
 ## Distribuição
 
 - Pacote: `@openclaw/voice-call`
-- Forma de instalação: npm; ClawHub
+- Rota de instalação: npm; ClawHub
 
 ## Superfície
 
-contratos: ferramentas; Skills
+contratos: `tools`; Skills
 
 ## Documentação relacionada
 
-- [chamadas de voz](/pt-BR/plugins/voice-call)
+- [chamada de voz](/pt-BR/plugins/voice-call)

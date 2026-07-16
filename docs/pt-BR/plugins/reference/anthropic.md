@@ -4,28 +4,28 @@ read_when:
 summary: Modelos da Anthropic, CLI do Claude e catálogo nativo de sessões do Claude.
 title: Plugin da Anthropic
 x-i18n:
-    generated_at: "2026-07-12T15:32:21Z"
+    generated_at: "2026-07-16T12:45:27Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
-    prompt_version: 15
+    prompt_version: 32
     provider: openai
-    source_hash: a482afe12e9e5b17d1ee88bf1d5515c436e0a8dab56418cfb631e35f5cf0279d
+    source_hash: 11d3c7879a9dc6de35e67f9812b878918d908d41555c181920deb4f1f9cba22e
     source_path: plugins/reference/anthropic.md
     workflow: 16
 ---
 
-# Plugin da Anthropic
+# Plugin Anthropic
 
 Modelos da Anthropic, CLI do Claude e catálogo nativo de sessões do Claude.
 
 ## Distribuição
 
 - Pacote: `@openclaw/anthropic-provider`
-- Forma de instalação: incluído no OpenClaw
+- Rota de instalação: incluído no OpenClaw
 
 ## Superfície
 
-provedores: anthropic; contratos: mediaUnderstandingProviders, usageProviders
+provedores: `anthropic`; contratos: `mediaUnderstandingProviders`, `usageProviders`
 
 <!-- openclaw-plugin-reference:manual-start -->
 

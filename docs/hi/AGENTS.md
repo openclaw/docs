@@ -1,55 +1,57 @@
 ---
 x-i18n:
-    generated_at: "2026-06-28T22:31:45Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T13:07:21Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: a0c67d049eb1d0f1d4e675a71e69b2d34d3ce5c733ca9582bf08ac717c233644
+    source_hash: a8712b1aeb2e605055c22cf308049e5e74fdf33061870026be20bd55cb0c3d1d
     source_path: AGENTS.md
     workflow: 16
 ---
 
 # दस्तावेज़ मार्गदर्शिका
 
-यह निर्देशिका दस्तावेज़ लेखन, Mintlify लिंक नियमों, और दस्तावेज़ i18n नीति की मालिक है।
+यह डायरेक्टरी दस्तावेज़ लेखन, Mintlify लिंक नियमों और दस्तावेज़ i18n नीति की स्वामी है।
 
 ## Mintlify नियम
 
 - दस्तावेज़ Mintlify (`https://docs.openclaw.ai`) पर होस्ट किए जाते हैं।
-- `docs/**/*.md` में आंतरिक दस्तावेज़ लिंक root-relative रहने चाहिए, बिना `.md` या `.mdx` प्रत्यय के (उदाहरण: `[कॉन्फ़िगरेशन](/gateway/configuration)`)।
-- सेक्शन क्रॉस-रेफ़रेंस में root-relative पाथ पर anchors का उपयोग होना चाहिए (उदाहरण: `[Hooks](/gateway/configuration-reference#hooks)`)।
-- दस्तावेज़ शीर्षकों में em dashes और apostrophes से बचना चाहिए क्योंकि वहाँ Mintlify anchor जनरेशन नाज़ुक है।
-- README और अन्य GitHub-रेंडर किए गए दस्तावेज़ों में पूर्ण दस्तावेज़ URL रखने चाहिए ताकि लिंक Mintlify के बाहर भी काम करें।
-- दस्तावेज़ सामग्री सामान्य रहनी चाहिए: कोई निजी डिवाइस नाम, होस्टनाम, या लोकल पाथ नहीं; `user@gateway-host` जैसे placeholders का उपयोग करें।
+- `docs/**/*.md` में आंतरिक दस्तावेज़ लिंक रूट-सापेक्ष रहने चाहिए और उनमें `.md` या `.mdx` प्रत्यय नहीं होना चाहिए (उदाहरण: `[Config](/gateway/configuration)`)।
+- अनुभागों के बीच संदर्भों में रूट-सापेक्ष पथों पर एंकर का उपयोग होना चाहिए (उदाहरण: `[Hooks](/gateway/configuration-reference#hooks)`)।
+- दस्तावेज़ शीर्षकों में एम डैश और एपॉस्ट्रॉफ़ी से बचना चाहिए, क्योंकि इनके साथ Mintlify का एंकर निर्माण भरोसेमंद नहीं है।
+- README और GitHub पर रेंडर किए जाने वाले अन्य दस्तावेज़ों में निरपेक्ष दस्तावेज़ URL रखे जाने चाहिए, ताकि लिंक Mintlify के बाहर भी काम करें।
+- दस्तावेज़ सामग्री सामान्य होनी चाहिए: व्यक्तिगत डिवाइस नाम, होस्टनाम या स्थानीय पथ नहीं; `user@gateway-host` जैसे प्लेसहोल्डर का उपयोग करें।
 
-## दस्तावेज़ सामग्री नियम
+## दस्तावेज़ सामग्री के नियम
 
-- दस्तावेज़ों, UI कॉपी, और picker सूचियों के लिए, सेवाओं/providers को वर्णमाला क्रम में रखें, जब तक कि सेक्शन स्पष्ट रूप से runtime क्रम या auto-detection क्रम का वर्णन न कर रहा हो।
-- bundled plugin नामकरण को root `AGENTS.md` में repo-wide plugin शब्दावली नियमों के अनुरूप रखें।
+- दस्तावेज़ों, UI पाठ और चयनकर्ता सूचियों में सेवाओं/प्रदाताओं को वर्णक्रमानुसार व्यवस्थित करें, जब तक अनुभाग स्पष्ट रूप से रनटाइम क्रम या स्वतः-पहचान क्रम का वर्णन न कर रहा हो।
+- बंडल किए गए Plugin के नामकरण को रूट `AGENTS.md` में दिए गए पूरे रिपॉज़िटरी के Plugin शब्दावली नियमों के अनुरूप रखें।
+- जनरेट किए गए दस्तावेज़ों को कभी भी हाथ से संपादित न करें: `docs/plugins/reference/**`, `docs/plugins/reference.md` और `docs/plugins/plugin-inventory.md`, `pnpm plugins:inventory:gen` से आते हैं; `docs/docs_map.md`, `pnpm docs:map:gen` से; और `docs/maturity/**`, `pnpm maturity:render` से आता है।
 
 ## आंतरिक दस्तावेज़
 
-- लंबे समय तक रहने वाले निजी ऑपरेटर दस्तावेज़ `~/Projects/manager/docs/` में होने चाहिए।
-- repo-local आंतरिक scratch/mirror दस्तावेज़ ignored `docs/internal/` के अंतर्गत रह सकते हैं।
-- कभी भी `docs/internal/**` पेजों को `docs/docs.json` navigation में न जोड़ें या उन्हें सार्वजनिक दस्तावेज़ों से लिंक न करें।
-- यदि कोई पेज बाद में force-add किया जाता है, तो `scripts/docs-sync-publish.mjs` सार्वजनिक `openclaw/docs` publish repo से `docs/internal/**` को exclude और prune करता है।
-- आंतरिक दस्तावेज़ repo paths, निजी app names, 1Password item names, और runbooks का उल्लेख कर सकते हैं, लेकिन कभी भी secret values शामिल न करें।
+- लंबे समय तक उपयोग होने वाले निजी ऑपरेटर दस्तावेज़ `~/Projects/manager/docs/` में होने चाहिए।
+- रिपॉज़िटरी-स्थानीय आंतरिक अस्थायी/मिरर दस्तावेज़ अनदेखे किए गए `docs/internal/` के अंतर्गत रखे जा सकते हैं।
+- `docs/internal/**` पृष्ठों को कभी भी `docs/docs.json` नेविगेशन में न जोड़ें और सार्वजनिक दस्तावेज़ों से उन्हें लिंक न करें।
+- यदि बाद में किसी पृष्ठ को बलपूर्वक जोड़ा जाता है, तो `scripts/docs-sync-publish.mjs` सार्वजनिक `openclaw/docs` प्रकाशन रिपॉज़िटरी से `docs/internal/**` को बाहर रखता और हटाता है।
+- आंतरिक दस्तावेज़ों में रिपॉज़िटरी पथों, निजी ऐप नामों, 1Password आइटम नामों और रनबुक का उल्लेख किया जा सकता है, लेकिन उनमें कभी भी गुप्त मान शामिल न करें।
 
-## Maturity Scorecard संपादन
+## परिपक्वता स्कोरकार्ड संपादन
 
-`taxonomy.yaml` और `qa/maturity-scores.yaml` स्रोत inputs हैं; `docs/maturity/` के अंतर्गत generated maturity docs projections हैं और score, LTS, taxonomy, QA profile, या evidence tables के लिए हाथ से संपादित नहीं किए जाने चाहिए।
-`scripts/qa/render-maturity-docs.ts` generation का मालिक है; committed docs को refresh करने के लिए `pnpm maturity:render` और उन्हें verify करने के लिए `pnpm maturity:check` का उपयोग करें।
-`.github/workflows/maturity-scorecard.yml` artifact previews render करता है और generated-doc PRs खोल सकता है; `.github/workflows/openclaw-release-checks.yml` release QA के लिए इसे dispatch करता है।
-deterministic `qa-evidence.json.scorecard` data को GitHub Actions artifacts में रखें, जब तक कोई maintainer स्पष्ट रूप से sanitized committed projection न मांगे।
-मानवीय overrides को PR में source state बदलनी होगी और कारण के साथ सार्वजनिक या redacted evidence समझाना होगा।
+`taxonomy.yaml` और `qa/maturity-scores.yaml` स्रोत इनपुट हैं; `docs/maturity/` के अंतर्गत जनरेट किए गए परिपक्वता दस्तावेज़ प्रक्षेपण हैं और स्कोर, LTS, वर्गीकरण, QA प्रोफ़ाइल या साक्ष्य तालिकाओं के लिए उन्हें हाथ से संपादित नहीं किया जाना चाहिए।
+`scripts/qa/render-maturity-docs.ts` जनरेशन का स्वामी है; कमिट किए गए दस्तावेज़ों को रीफ़्रेश करने के लिए `pnpm maturity:render` और उन्हें सत्यापित करने के लिए `pnpm maturity:check` का उपयोग करें।
+`.github/workflows/maturity-scorecard.yml` आर्टिफ़ैक्ट पूर्वावलोकन रेंडर करता है और जनरेट किए गए दस्तावेज़ों के PR खोल सकता है; रिलीज़ QA के लिए `.github/workflows/openclaw-release-checks.yml` इसे डिस्पैच करता है।
+निर्धारक `qa-evidence.json.scorecard` डेटा को GitHub Actions आर्टिफ़ैक्ट में रखें, जब तक कोई मेंटेनर स्पष्ट रूप से स्वच्छ किए गए कमिटेड प्रक्षेपण की माँग न करे।
+मानवीय ओवरराइड को PR में स्रोत स्थिति बदलनी होगी और कारण के साथ सार्वजनिक या संशोधित साक्ष्य की व्याख्या करनी होगी।
 
 ## दस्तावेज़ i18n
 
-- विदेशी-भाषा दस्तावेज़ इस repo में maintained नहीं हैं। generated publish output अलग `openclaw/docs` repo में रहता है (अक्सर locally `../openclaw-docs` के रूप में cloned)।
-- यहाँ `docs/<locale>/**` के अंतर्गत localized docs न जोड़ें या संपादित न करें।
-- इस repo के English docs और glossary files को source of truth मानें।
-- Pipeline: यहाँ English docs update करें, ज़रूरत के अनुसार `docs/.i18n/glossary.<locale>.json` update करें, फिर publish-repo sync और `scripts/docs-i18n` को `openclaw/docs` में run होने दें।
-- `scripts/docs-i18n` फिर से run करने से पहले, किसी भी नए technical terms, page titles, या short nav labels के लिए glossary entries जोड़ें जिन्हें English में रहना है या fixed translation का उपयोग करना है।
-- `pnpm docs:check-i18n-glossary` बदले हुए English doc titles और short internal doc labels के लिए guard है।
-- Translation memory publish repo में generated `docs/.i18n/*.tm.jsonl` files में रहती है।
+- इस रिपॉज़िटरी में विदेशी-भाषा दस्तावेज़ों का रखरखाव नहीं किया जाता। जनरेट किया गया प्रकाशन आउटपुट अलग `openclaw/docs` रिपॉज़िटरी में रहता है (जिसे अक्सर स्थानीय रूप से `../openclaw-docs` के रूप में क्लोन किया जाता है)।
+- यहाँ `docs/<locale>/**` के अंतर्गत स्थानीयकृत दस्तावेज़ न जोड़ें और न संपादित करें।
+- इस रिपॉज़िटरी के अंग्रेज़ी दस्तावेज़ों और शब्दावली फ़ाइलों को सत्य का स्रोत मानें।
+- पाइपलाइन: यहाँ अंग्रेज़ी दस्तावेज़ अपडेट करें, आवश्यकतानुसार `docs/.i18n/glossary.<locale>.json` अपडेट करें, फिर प्रकाशन-रिपॉज़िटरी सिंक और `scripts/docs-i18n` को `openclaw/docs` में चलने दें।
+- `scripts/docs-i18n` को दोबारा चलाने से पहले, ऐसे किसी भी नए तकनीकी शब्द, पृष्ठ शीर्षक या छोटे नेविगेशन लेबल के लिए शब्दावली प्रविष्टियाँ जोड़ें जिन्हें अंग्रेज़ी में ही रहना है या जिनका निश्चित अनुवाद उपयोग होना है।
+- `pnpm docs:check-i18n-glossary` बदले हुए अंग्रेज़ी दस्तावेज़ शीर्षकों और छोटे आंतरिक दस्तावेज़ लेबलों के लिए सुरक्षा-जाँच है।
+- अनुवाद स्मृति प्रकाशन रिपॉज़िटरी में जनरेट की गई `docs/.i18n/*.tm.jsonl` फ़ाइलों में रहती है।
 - `docs/.i18n/README.md` देखें।

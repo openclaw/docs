@@ -1,27 +1,28 @@
 ---
 read_when:
     - Bạn đang cài đặt, cấu hình hoặc kiểm tra Plugin không gian làm việc
-summary: Tài liệu Workspaces có thể kết hợp bởi tác tử và phần phụ trợ mặt phẳng điều khiển.
+summary: Tài liệu về không gian làm việc có thể kết hợp bởi tác tử và backend của mặt phẳng điều khiển.
 title: Plugin không gian làm việc
 x-i18n:
-    generated_at: "2026-07-12T08:11:38Z"
+    generated_at: "2026-07-16T14:49:51Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 0c10502340b459c26606ebb7ef97ef17c0dce11295ea7854e06158c89c79a7c3
+    source_hash: b9bcef98bf9352b6a8f37af59f7c02add4080e9c600950fc8e7a7f5339df7626
     source_path: plugins/reference/workspaces.md
     workflow: 16
 ---
 
 # Plugin Workspaces
 
-Phần phụ trợ mặt phẳng điều khiển và tài liệu Workspaces có thể kết hợp bởi tác tử.
+Phần phụ trợ tài liệu và mặt phẳng điều khiển Workspaces có thể kết hợp bởi tác tử.
 
 ## Phân phối
 
 - Gói: `@openclaw/workspaces-plugin`
-- Phương thức cài đặt: được tích hợp trong OpenClaw
+- Đường dẫn cài đặt: được tích hợp trong OpenClaw
 
 ## Bề mặt
 
-hợp đồng: công cụ
+hợp đồng: `tools`

@@ -1,21 +1,22 @@
 ---
 read_when:
     - Je installeert, configureert of controleert de Slack-plugin
-summary: OpenClaw Slack-kanaalplugin voor kanalen, privéberichten, opdrachten en appgebeurtenissen.
+summary: OpenClaw Slack-kanaalplugin voor kanalen, DM's, opdrachten en appgebeurtenissen.
 title: Slack-plugin
 x-i18n:
-    generated_at: "2026-07-12T09:08:43Z"
+    generated_at: "2026-07-16T16:17:19Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 602ccb21ce084219d922860d186664bbb098fd034117893dc7359d79495bedd6
+    source_hash: bc5b593ef4361a52024f068febd8982fefdf3af1957373b1e5d7d1b9ef8b0a77
     source_path: plugins/reference/slack.md
     workflow: 16
 ---
 
-# Slack-plugin
+# Slack-Plugin
 
-OpenClaw Slack-kanaalplugin voor kanalen, privéberichten, opdrachten en app-gebeurtenissen.
+OpenClaw Slack-kanaalplugin voor kanalen, DM's, opdrachten en appgebeurtenissen.
 
 ## Distributie
 
@@ -24,8 +25,8 @@ OpenClaw Slack-kanaalplugin voor kanalen, privéberichten, opdrachten en app-geb
 
 ## Oppervlak
 
-kanalen: slack; Skills
+kanalen: `slack`; Skills
 
 ## Gerelateerde documentatie
 
-- [slack](/nl/channels/slack)
+- [Slack](/nl/channels/slack)

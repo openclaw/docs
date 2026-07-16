@@ -1,30 +1,31 @@
 ---
 read_when:
-    - Vous installez, configurez ou auditez le plugin d’extraction de documents.
-summary: Extraire le texte et les images de page de secours à partir des documents joints locaux.
+    - Vous installez, configurez ou auditez le plugin document-extract
+summary: Extraire le texte et les images de page de secours à partir des pièces jointes de documents locaux.
 title: Plugin d’extraction de documents
 x-i18n:
-    generated_at: "2026-07-12T03:07:42Z"
+    generated_at: "2026-07-16T13:32:11Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 3745783e57c15e75caf28491c6693c64fea018593662a43268e299ed42c3d574
+    source_hash: 173a860c28f293b52ed4a155dfb308713f0c0f5ef22c988c26b2440e1d63cf23
     source_path: plugins/reference/document-extract.md
     workflow: 16
 ---
 
 # Plugin d’extraction de documents
 
-Extrayez le texte et, en solution de repli, les images des pages à partir de pièces jointes de documents locaux.
+Extrayez le texte et, en solution de repli, les images de pages à partir de pièces jointes de documents locaux.
 
 ## Distribution
 
-- Paquet : `@openclaw/document-extract-plugin`
-- Mode d’installation : inclus dans OpenClaw
+- Paquet : `@openclaw/document-extract-plugin`
+- Mode d’installation : inclus dans OpenClaw
 
-## Interface
+## Surface
 
-contrats : documentExtractors
+contrats : `documentExtractors`
 
 ## Documentation associée
 

@@ -1,31 +1,32 @@
 ---
 read_when:
     - คุณกำลังติดตั้ง กำหนดค่า หรือตรวจสอบ Plugin memory-wiki
-summary: คอมไพเลอร์วิกิแบบถาวรและคลังความรู้ที่ใช้งานร่วมกับ Obsidian ได้อย่างสะดวกสำหรับ OpenClaw
+summary: คอมไพเลอร์วิกิแบบถาวรและคลังความรู้ที่ใช้งานร่วมกับ Obsidian ได้อย่างสะดวกสำหรับ OpenClaw.
 title: Plugin วิกิหน่วยความจำ
 x-i18n:
-    generated_at: "2026-07-12T16:33:54Z"
+    generated_at: "2026-07-16T19:33:39Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 461c9e3e52db968fc98b058c70070585f272ad27024392a6af0ce3d2f0237635
+    source_hash: b36b0638011658857d9cccccb0d5db678f8d13b347afcb0fc2c8bbc3c5eeff04
     source_path: plugins/reference/memory-wiki.md
     workflow: 16
 ---
 
-# Plugin วิกิหน่วยความจำ
+# Plugin Memory Wiki
 
-คอมไพเลอร์วิกิแบบถาวรและคลังความรู้ที่ใช้งานร่วมกับ Obsidian ได้อย่างสะดวกสำหรับ OpenClaw
+คอมไพเลอร์วิกิแบบถาวรและคลังความรู้ที่ใช้งานร่วมกับ Obsidian ได้สำหรับ OpenClaw
 
 ## การเผยแพร่
 
 - แพ็กเกจ: `@openclaw/memory-wiki`
 - ช่องทางการติดตั้ง: รวมอยู่ใน OpenClaw
 
-## ส่วนติดต่อ
+## ส่วนเชื่อมต่อ
 
-สัญญา: เครื่องมือ; Skills
+สัญญา: `tools`; Skills
 
 ## เอกสารที่เกี่ยวข้อง
 
-- [วิกิหน่วยความจำ](/th/plugins/memory-wiki)
+- [memory-wiki](/th/plugins/memory-wiki)

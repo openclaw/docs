@@ -4,12 +4,12 @@ read_when:
 summary: Плагин провайдера Brave Search для веб-поиска в OpenClaw.
 title: Плагин Brave
 x-i18n:
-    generated_at: "2026-07-13T18:32:51Z"
+    generated_at: "2026-07-16T16:33:01Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
-    prompt_version: 24
+    prompt_version: 32
     provider: openai
-    source_hash: 265b0efa840eb3ebc7bfc1cc47b703737bbd76050ac95e79825728030a166d37
+    source_hash: de92722ae6d104db350455fd075c8a0d29dcc7bb92753cc0503fbbef00ed532c
     source_path: plugins/reference/brave.md
     workflow: 16
 ---
@@ -25,7 +25,7 @@ x-i18n:
 
 ## Интерфейс
 
-контракты: webSearchProviders
+контракты: `webSearchProviders`
 
 ## Связанная документация
 

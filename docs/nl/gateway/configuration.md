@@ -1,41 +1,40 @@
 ---
 read_when:
     - OpenClaw voor het eerst instellen
-    - Zoeken naar veelvoorkomende configuratiepatronen
+    - Op zoek naar veelgebruikte configuratiepatronen
     - Navigeren naar specifieke configuratiesecties
-summary: 'Configuratieoverzicht: veelvoorkomende taken, snelle configuratie en links naar de volledige referentie'
+summary: 'Configuratieoverzicht: veelvoorkomende taken, snelle installatie en links naar de volledige referentie'
 title: Configuratie
 x-i18n:
-    generated_at: "2026-07-02T08:33:43Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T15:37:19Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: a0044dd771effee8e11d5dfd99e6f14f105089328dcca23f5794ddff4995bca7
+    source_hash: 77f45ec71032ad6f651fcb68f9fb37f6677de90ec5ccca33ee84794056c58f89
     source_path: gateway/configuration.md
     workflow: 16
 ---
 
-OpenClaw leest een optionele <Tooltip tip="JSON5 ondersteunt opmerkingen en afsluitende komma's">**JSON5**</Tooltip>-configuratie uit `~/.openclaw/openclaw.json`.
-Het actieve configuratiepad moet een normaal bestand zijn. Gesymlinkte `openclaw.json`-
-indelingen worden niet ondersteund voor schrijfacties die eigendom zijn van OpenClaw; een atomische schrijfaanroep kan
-het pad vervangen in plaats van de symlink te behouden. Als je configuratie buiten de
-standaard statusmap bewaart, laat `OPENCLAW_CONFIG_PATH` dan rechtstreeks naar het echte bestand wijzen.
+OpenClaw leest een optionele <Tooltip tip="JSON5 ondersteunt opmerkingen en afsluitende komma's">**JSON5**</Tooltip>-configuratie uit `~/.openclaw/openclaw.json`. Als het bestand ontbreekt, gebruikt OpenClaw veilige standaardwaarden.
 
-Als het bestand ontbreekt, gebruikt OpenClaw veilige standaardwaarden. Veelvoorkomende redenen om een configuratie toe te voegen:
+Het actieve configuratiepad moet een regulier bestand zijn. Schrijfbewerkingen door OpenClaw vervangen het atomair (door hernoemen naar het pad), zodat bij een via een symbolische koppeling gekoppeld `openclaw.json` het doel wordt vervangen in plaats van er via de koppeling naar te schrijven. Vermijd daarom configuratie-indelingen met symbolische koppelingen. Als je de configuratie buiten de standaardstatusmap bewaart, laat `OPENCLAW_CONFIG_PATH` dan rechtstreeks naar het werkelijke bestand verwijzen.
 
-- Kanalen verbinden en bepalen wie de bot berichten mag sturen
+Veelvoorkomende redenen om een configuratie toe te voegen:
+
+- Kanalen verbinden en bepalen wie de bot berichten kan sturen
 - Modellen, tools, sandboxing of automatisering instellen (cron, hooks)
-- Sessies, media, netwerken of UI afstemmen
+- Sessies, media, netwerken of de gebruikersinterface afstemmen
 
 Zie de [volledige referentie](/nl/gateway/configuration-reference) voor elk beschikbaar veld.
 
-Agents en automatisering moeten `config.schema.lookup` gebruiken voor exacte docs
-op veldniveau voordat ze configuratie bewerken. Gebruik deze pagina voor taakgerichte richtlijnen en
-[Configuratiereferentie](/nl/gateway/configuration-reference) voor de bredere
-veldenkaart en standaardwaarden.
+Agents en automatisering moeten vóór het bewerken van de configuratie
+`config.schema.lookup` gebruiken voor exacte documentatie op veldniveau. Gebruik deze pagina voor taakgerichte richtlijnen en
+de [configuratiereferentie](/nl/gateway/configuration-reference) voor het bredere
+veldenoverzicht en de standaardwaarden.
 
 <Tip>
-**Nieuw met configuratie?** Begin met `openclaw onboard` voor interactieve installatie, of bekijk de gids [Configuratievoorbeelden](/nl/gateway/configuration-examples) voor complete configuraties die je kunt kopiëren en plakken.
+**Nieuw met configuratie?** Begin met `openclaw onboard` voor een interactieve installatie of bekijk de handleiding [Configuratievoorbeelden](/nl/gateway/configuration-examples) voor volledige configuraties die je kunt kopiëren en plakken.
 </Tip>
 
 ## Minimale configuratie
@@ -53,76 +52,78 @@ veldenkaart en standaardwaarden.
 <Tabs>
   <Tab title="Interactieve wizard">
     ```bash
-    openclaw onboard       # volledige onboarding-flow
+    openclaw onboard       # volledige onboardingprocedure
     openclaw configure     # configuratiewizard
     ```
   </Tab>
-  <Tab title="CLI (one-liners)">
+  <Tab title="CLI (eenregelige opdrachten)">
     ```bash
     openclaw config get agents.defaults.workspace
     openclaw config set agents.defaults.heartbeat.every "2h"
     openclaw config unset plugins.entries.brave.config.webSearch.apiKey
     ```
   </Tab>
-  <Tab title="Control UI">
-    Open [http://127.0.0.1:18789](http://127.0.0.1:18789) en gebruik het tabblad **Config**.
-    De Control UI rendert een formulier uit het live configuratieschema, inclusief veldmetadata voor docs
-    `title` / `description`, plus plugin- en kanaalschema's wanneer
-    beschikbaar, met een **Raw JSON**-editor als uitwijkmogelijkheid. Voor drill-down
-    UI's en andere tooling biedt de gateway ook `config.schema.lookup` om
-    één padgescope schema-node plus samenvattingen van directe kinderen op te halen.
+  <Tab title="Bedieningsinterface">
+    Open [http://127.0.0.1:18789](http://127.0.0.1:18789) en gebruik het tabblad **Configuratie**.
+    De bedieningsinterface genereert een formulier op basis van het actieve configuratieschema, inclusief documentatiemetagegevens voor de velden
+    `title` / `description` en, indien beschikbaar, schema's voor plugins en kanalen,
+    met een **Raw JSON**-editor als uitwijkmogelijkheid. Voor interfaces
+    voor detailnavigatie en andere tools stelt de Gateway ook `config.schema.lookup` beschikbaar om
+    één schemaknooppunt binnen een specifiek pad plus samenvattingen van directe onderliggende knooppunten op te halen.
   </Tab>
-  <Tab title="Direct bewerken">
-    Bewerk `~/.openclaw/openclaw.json` rechtstreeks. De Gateway bewaakt het bestand en past wijzigingen automatisch toe (zie [hot reload](#config-hot-reload)).
+  <Tab title="Rechtstreeks bewerken">
+    Bewerk `~/.openclaw/openclaw.json` rechtstreeks. De Gateway bewaakt het bestand en past wijzigingen automatisch toe (zie [direct herladen](#config-hot-reload)).
   </Tab>
 </Tabs>
 
 ## Strikte validatie
 
 <Warning>
-OpenClaw accepteert alleen configuraties die volledig overeenkomen met het schema. Onbekende sleutels, misvormde typen of ongeldige waarden zorgen ervoor dat de Gateway **weigert te starten**. De enige uitzondering op rootniveau is `$schema` (string), zodat editors JSON Schema-metadata kunnen koppelen.
+OpenClaw accepteert alleen configuraties die volledig overeenkomen met het schema. Onbekende sleutels, onjuist gevormde typen of ongeldige waarden zorgen ervoor dat de Gateway **weigert te starten**. De enige uitzondering op hoofdniveau is `$schema` (tekenreeks), zodat editors metagegevens van JSON Schema kunnen toevoegen.
 </Warning>
 
-`openclaw config schema` print het canonieke JSON Schema dat door Control UI
-en validatie wordt gebruikt. `config.schema.lookup` haalt één padgescope node plus
-samenvattingen van kinderen op voor drill-down tooling. Docs-metadata voor velden `title`/`description`
-wordt doorgegeven via geneste objecten, wildcard- (`*`), array-item- (`[]`) en `anyOf`/
-`oneOf`/`allOf`-takken. Runtime plugin- en kanaalschema's worden samengevoegd wanneer het
+`openclaw config schema` toont het canonieke JSON Schema dat wordt gebruikt door de bedieningsinterface
+en voor validatie. `config.schema.lookup` haalt één knooppunt binnen een specifiek pad plus
+samenvattingen van onderliggende knooppunten op voor tools voor detailnavigatie. Documentatiemetagegevens van de velden `title`/`description`
+worden doorgegeven via geneste objecten, jokertekens (`*`), array-items (`[]`) en vertakkingen van `anyOf`/
+`oneOf`/`allOf`. Runtimeschema's voor plugins en kanalen worden samengevoegd wanneer het
 manifestregister is geladen.
 
-Wanneer validatie mislukt:
+Wanneer de validatie mislukt:
 
 - De Gateway start niet op
 - Alleen diagnostische opdrachten werken (`openclaw doctor`, `openclaw logs`, `openclaw health`, `openclaw status`)
-- Voer `openclaw doctor` uit om exacte problemen te zien
-- Voer `openclaw doctor --fix` (of `--yes`) uit om reparaties toe te passen
+- Voer `openclaw doctor` uit om de exacte problemen te bekijken
+- Voer `openclaw doctor --fix` uit (`--repair` is dezelfde vlag; `--yes` slaat vragen over) om reparaties toe te passen
 
-De Gateway bewaart na elke succesvolle start een vertrouwde laatst-bekende-goede kopie,
-maar startup en hot reload herstellen die niet automatisch. Als `openclaw.json`
-validatie niet doorstaat (inclusief plugin-lokale validatie), mislukt het starten van de Gateway of
-wordt het herladen overgeslagen en behoudt de huidige runtime de laatst geaccepteerde configuratie.
-Voer `openclaw doctor --fix` (of `--yes`) uit om geprefixte/overschreven configuratie te repareren of
-de laatst-bekende-goede kopie te herstellen. Promotie naar laatst-bekende-goed wordt overgeslagen wanneer een
-kandidaat geredigeerde geheime placeholders bevat, zoals `***`.
+Na elke geslaagde opstart bewaart de Gateway een vertrouwde kopie van de laatst bekende werkende configuratie,
+maar bij het opstarten en direct herladen wordt deze niet automatisch hersteld; alleen `openclaw doctor --fix`
+doet dat. Als `openclaw.json` niet door de validatie komt (inclusief lokale validatie van plugins), mislukt het
+opstarten van de Gateway of wordt het herladen overgeslagen en blijft de huidige runtime de laatst geaccepteerde
+configuratie gebruiken. Een geweigerde schrijfbewerking wordt voor inspectie ook opgeslagen als `<path>.rejected.<timestamp>`.
+De Gateway blokkeert schrijfbewerkingen die op onbedoeld overschrijven lijken: het verwijderen van `gateway.mode`,
+het verliezen van het blok `meta` of het met meer dan de helft verkleinen van het bestand, tenzij de schrijfbewerking
+destructieve wijzigingen expliciet toestaat. Promotie tot de laatst bekende werkende configuratie wordt overgeslagen wanneer een
+kandidaat een tijdelijke aanduiding voor een geredigeerd geheim bevat, zoals `***` of `[redacted]`.
 
 ## Veelvoorkomende taken
 
 <AccordionGroup>
-  <Accordion title="Een kanaal instellen (WhatsApp, Telegram, Discord, enz.)">
-    Elk kanaal heeft zijn eigen configuratiesectie onder `channels.<provider>`. Zie de specifieke kanaalpagina voor installatiestappen:
+  <Accordion title="Een kanaal instellen (WhatsApp, Telegram, Discord enzovoort)">
+    Elk kanaal heeft een eigen configuratiesectie onder `channels.<provider>`. Zie de specifieke kanaalpagina voor de installatiestappen:
 
-    - [WhatsApp](/nl/channels/whatsapp) - `channels.whatsapp`
-    - [Telegram](/nl/channels/telegram) - `channels.telegram`
     - [Discord](/nl/channels/discord) - `channels.discord`
     - [Feishu](/nl/channels/feishu) - `channels.feishu`
     - [Google Chat](/nl/channels/googlechat) - `channels.googlechat`
-    - [Microsoft Teams](/nl/channels/msteams) - `channels.msteams`
-    - [Slack](/nl/channels/slack) - `channels.slack`
-    - [Signal](/nl/channels/signal) - `channels.signal`
     - [iMessage](/nl/channels/imessage) - `channels.imessage`
     - [Mattermost](/nl/channels/mattermost) - `channels.mattermost`
+    - [Microsoft Teams](/nl/channels/msteams) - `channels.msteams`
+    - [Signal](/nl/channels/signal) - `channels.signal`
+    - [Slack](/nl/channels/slack) - `channels.slack`
+    - [Telegram](/nl/channels/telegram) - `channels.telegram`
+    - [WhatsApp](/nl/channels/whatsapp) - `channels.whatsapp`
 
-    Alle kanalen delen hetzelfde DM-beleidspatroon:
+    Alle kanalen gebruiken hetzelfde patroon voor DM-beleid:
 
     ```json5
     {
@@ -131,7 +132,7 @@ kandidaat geredigeerde geheime placeholders bevat, zoals `***`.
           enabled: true,
           botToken: "123:abc",
           dmPolicy: "pairing",   // pairing | allowlist | open | disabled
-          allowFrom: ["tg:123"], // only for allowlist/open
+          allowFrom: ["tg:123"], // alleen voor allowlist/open
         },
       },
     }
@@ -140,7 +141,7 @@ kandidaat geredigeerde geheime placeholders bevat, zoals `***`.
   </Accordion>
 
   <Accordion title="Modellen kiezen en configureren">
-    Stel het primaire model en optionele fallbacks in:
+    Stel het primaire model en optionele terugvalmodellen in:
 
     ```json5
     {
@@ -159,39 +160,39 @@ kandidaat geredigeerde geheime placeholders bevat, zoals `***`.
     }
     ```
 
-    - `agents.defaults.models` definieert de modelcatalogus en fungeert als allowlist voor `/model`; `provider/*`-vermeldingen filteren `/model`, `/models` en modelkiezers naar geselecteerde providers, terwijl ze nog steeds dynamische modelontdekking gebruiken.
-    - Gebruik `openclaw config set agents.defaults.models '<json>' --strict-json --merge` om allowlist-vermeldingen toe te voegen zonder bestaande modellen te verwijderen. Gewone vervangingen die vermeldingen zouden verwijderen, worden geweigerd tenzij je `--replace` doorgeeft.
-    - Modelrefs gebruiken de indeling `provider/model` (bijv. `anthropic/claude-opus-4-6`).
-    - `agents.defaults.imageMaxDimensionPx` bepaalt het verkleinen van transcript-/toolafbeeldingen (standaard `1200`); lagere waarden verminderen meestal het gebruik van vision-tokens bij runs met veel screenshots.
-    - Zie [Models CLI](/nl/concepts/models) voor het wisselen van modellen in chat en [Model Failover](/nl/concepts/model-failover) voor auth-rotatie en fallbackgedrag.
-    - Zie [Custom providers](/nl/gateway/config-tools#custom-providers-and-base-urls) in de referentie voor aangepaste/zelfgehoste providers.
+    - `agents.defaults.models` definieert de modelcatalogus en fungeert als toelatingslijst voor `/model`; vermeldingen in `provider/*` filteren `/model`, `/models` en modelkiezers tot de geselecteerde providers, terwijl dynamische modeldetectie actief blijft.
+    - Gebruik `openclaw config set agents.defaults.models '<json>' --strict-json --merge` om vermeldingen aan de toelatingslijst toe te voegen zonder bestaande modellen te verwijderen. Gewone vervangingen die vermeldingen zouden verwijderen, worden geweigerd tenzij je `--replace` meegeeft.
+    - Modelverwijzingen gebruiken de indeling `provider/model` (bijvoorbeeld `anthropic/claude-opus-4-6`).
+    - `agents.defaults.imageMaxDimensionPx` bepaalt het verkleinen van afbeeldingen in transcripties en tools (standaard `1200`); lagere waarden verminderen doorgaans het gebruik van vision-tokens bij uitvoeringen met veel schermafbeeldingen.
+    - Zie [CLI voor modellen](/nl/concepts/models) voor het wisselen van modellen in chats en [Model-failover](/nl/concepts/model-failover) voor authenticatierotatie en terugvalgedrag.
+    - Zie voor aangepaste of zelfgehoste providers [Aangepaste providers](/nl/gateway/config-tools#custom-providers-and-base-urls) in de referentie.
 
   </Accordion>
 
-  <Accordion title="Bepalen wie de bot berichten mag sturen">
-    DM-toegang wordt per kanaal beheerd via `dmPolicy`:
+  <Accordion title="Bepalen wie de bot berichten kan sturen">
+    DM-toegang wordt per kanaal geregeld via `dmPolicy` (standaard `"pairing"`):
 
-    - `"pairing"` (standaard): onbekende afzenders krijgen een eenmalige koppelcode om goed te keuren
-    - `"allowlist"`: alleen afzenders in `allowFrom` (of de gekoppelde allow-opslag)
-    - `"open"`: alle binnenkomende DM's toestaan (vereist `allowFrom: ["*"]`)
+    - `"pairing"`: onbekende afzenders krijgen een eenmalige koppelingscode ter goedkeuring
+    - `"allowlist"`: alleen afzenders in `allowFrom` (of de gekoppelde toelatingsopslag)
+    - `"open"`: alle inkomende DM's toestaan (vereist `allowFrom: ["*"]`)
     - `"disabled"`: alle DM's negeren
 
-    Gebruik voor groepen `groupPolicy` + `groupAllowFrom` of kanaalspecifieke allowlists.
+    Gebruik voor groepen `groupPolicy` (`"allowlist" | "open" | "disabled"`) plus `groupAllowFrom` of kanaalspecifieke toelatingslijsten.
 
     Zie de [volledige referentie](/nl/gateway/config-channels#dm-and-group-access) voor details per kanaal.
 
   </Accordion>
 
-  <Accordion title="Vermeldingsgating voor groepschats instellen">
-    Groepsberichten vereisen standaard **een vermelding**. Configureer triggerpatronen per agent. Normale groeps-/kanaalantwoorden worden automatisch geplaatst; kies het message-tool-pad voor gedeelde rooms waar de agent moet beslissen wanneer hij spreekt:
+  <Accordion title="Vermeldingscontrole voor groepschats instellen">
+    Voor groepsberichten is standaard een **vermelding vereist**. Configureer activeringspatronen per agent. Normale antwoorden in groepen en kanalen worden automatisch geplaatst; kies voor gedeelde ruimten waarin de agent moet bepalen wanneer deze spreekt expliciet voor het pad via de berichtentool:
 
     ```json5
     {
       messages: {
-        visibleReplies: "automatic", // set "message_tool" to require message-tool sends everywhere
+        visibleReplies: "automatic", // stel "message_tool" in om overal verzending via de berichtentool te vereisen
         groupChat: {
-          visibleReplies: "message_tool", // opt-in; visible output requires message(action=send)
-          unmentionedInbound: "room_event", // unmentioned always-on group chatter is quiet context
+          visibleReplies: "message_tool", // expliciete keuze; zichtbare uitvoer vereist message(action=send)
+          unmentionedInbound: "room_event", // niet-vermelde, voortdurend actieve groepsgesprekken vormen stille context
         },
       },
       agents: {
@@ -212,15 +213,15 @@ kandidaat geredigeerde geheime placeholders bevat, zoals `***`.
     }
     ```
 
-    - **Metadatavermeldingen**: native @-vermeldingen (WhatsApp tik-om-te-vermelden, Telegram @bot, enz.)
+    - **Vermeldingen in metagegevens**: native @-vermeldingen (tikken om iemand te vermelden in WhatsApp, @bot in Telegram enzovoort)
     - **Tekstpatronen**: veilige regex-patronen in `mentionPatterns`
-    - **Zichtbare antwoorden**: `messages.visibleReplies` kan message-tool-verzendingen globaal verplicht maken; `messages.groupChat.visibleReplies` overschrijft dat voor groepen/kanalen.
-    - Zie [volledige referentie](/nl/gateway/config-channels#group-chat-mention-gating) voor zichtbare-antwoordmodi, overschrijvingen per kanaal en self-chat-modus.
+    - **Zichtbare antwoorden**: `messages.visibleReplies` kan verzending via de berichtentool globaal vereisen; `messages.groupChat.visibleReplies` overschrijft dit voor groepen en kanalen.
+    - Zie de [volledige referentie](/nl/gateway/config-channels#group-chat-mention-gating) voor modi voor zichtbare antwoorden, kanaalspecifieke overschrijvingen en de modus voor chats met jezelf.
 
   </Accordion>
 
   <Accordion title="Skills per agent beperken">
-    Gebruik `agents.defaults.skills` voor een gedeelde basislijn en overschrijf daarna specifieke
+    Gebruik `agents.defaults.skills` voor een gedeelde basislijn en overschrijf vervolgens specifieke
     agents met `agents.list[].skills`:
 
     ```json5
@@ -230,24 +231,24 @@ kandidaat geredigeerde geheime placeholders bevat, zoals `***`.
           skills: ["github", "weather"],
         },
         list: [
-          { id: "writer" }, // inherits github, weather
-          { id: "docs", skills: ["docs-search"] }, // replaces defaults
-          { id: "locked-down", skills: [] }, // no skills
+          { id: "writer" }, // neemt github en weather over
+          { id: "docs", skills: ["docs-search"] }, // vervangt de standaardwaarden
+          { id: "locked-down", skills: [] }, // geen skills
         ],
       },
     }
     ```
 
-    - Laat `agents.defaults.skills` weg voor standaard onbeperkte skills.
-    - Laat `agents.list[].skills` weg om de standaardwaarden te erven.
-    - Stel `agents.list[].skills: []` in voor geen skills.
+    - Laat `agents.defaults.skills` weg om standaard onbeperkte Skills toe te staan.
+    - Laat `agents.list[].skills` weg om de standaardwaarden over te nemen.
+    - Stel `agents.list[].skills: []` in voor geen Skills.
     - Zie [Skills](/nl/tools/skills), [Skills-configuratie](/nl/tools/skills-config) en
-      de [Configuratiereferentie](/nl/gateway/config-agents#agents-defaults-skills).
+      de [configuratiereferentie](/nl/gateway/config-agents#agents-defaults-skills).
 
   </Accordion>
 
-  <Accordion title="Gateway-kanaalgezondheidsbewaking afstemmen">
-    Bepaal hoe agressief de gateway kanalen herstart die verouderd lijken:
+  <Accordion title="Statusbewaking van Gateway-kanalen afstemmen">
+    Bepaal hoe agressief de Gateway kanalen opnieuw start die verouderd lijken:
 
     ```json5
     {
@@ -269,16 +270,16 @@ kandidaat geredigeerde geheime placeholders bevat, zoals `***`.
     }
     ```
 
-    - Stel `gateway.channelHealthCheckMinutes: 0` in om health-monitor-herstarts globaal uit te schakelen.
-    - `channelStaleEventThresholdMinutes` moet groter zijn dan of gelijk zijn aan het controle-interval.
+    - De weergegeven waarden zijn de standaardwaarden. Stel `gateway.channelHealthCheckMinutes: 0` in om herstarts door de statusmonitor globaal uit te schakelen.
+    - `channelStaleEventThresholdMinutes` moet groter dan of gelijk aan het controle-interval zijn.
     - Gebruik `channels.<provider>.healthMonitor.enabled` of `channels.<provider>.accounts.<id>.healthMonitor.enabled` om automatische herstarts voor één kanaal of account uit te schakelen zonder de globale monitor uit te schakelen.
-    - Zie [Health Checks](/nl/gateway/health) voor operationeel debuggen en de [volledige referentie](/nl/gateway/configuration-reference#gateway) voor alle velden.
+    - Zie [Statuscontroles](/nl/gateway/health) voor operationele foutopsporing en de [volledige referentie](/nl/gateway/configuration-reference#gateway) voor alle velden.
 
   </Accordion>
 
-  <Accordion title="Gateway WebSocket-handshaketime-out afstemmen">
-    Geef lokale clients meer tijd om de pre-auth WebSocket-handshake te voltooien op
-    belaste hosts of hosts met weinig vermogen:
+  <Accordion title="Time-out voor de WebSocket-handshake van de Gateway afstemmen">
+    Geef lokale clients meer tijd om de WebSocket-handshake vóór authenticatie te voltooien op
+    zwaarbelaste hosts of hosts met weinig rekenkracht:
 
     ```json5
     {
@@ -288,19 +289,19 @@ kandidaat geredigeerde geheime placeholders bevat, zoals `***`.
     }
     ```
 
-    - Standaard is `15000` milliseconden.
-    - `OPENCLAW_HANDSHAKE_TIMEOUT_MS` blijft voorrang hebben voor eenmalige service- of shell-overschrijvingen.
-    - Los bij voorkeur eerst startup-/event-loop-haperingen op; deze knop is voor hosts die gezond zijn maar traag tijdens het opwarmen.
+    - De standaardwaarde is `15000` milliseconden.
+    - `OPENCLAW_HANDSHAKE_TIMEOUT_MS` heeft nog steeds voorrang voor eenmalige service- of shelloverschrijvingen.
+    - Los eerst vastlopers tijdens het opstarten of in de eventloop op; deze instelling is bedoeld voor hosts die gezond zijn, maar traag tijdens het opwarmen.
 
   </Accordion>
 
   <Accordion title="Sessies en resets configureren">
-    Sessies beheren gesprekscontinuïteit en isolatie:
+    Sessies bepalen de continuïteit en isolatie van gesprekken:
 
     ```json5
     {
       session: {
-        dmScope: "per-channel-peer",  // recommended for multi-user
+        dmScope: "per-channel-peer",  // aanbevolen voor meerdere gebruikers
         threadBindings: {
           enabled: true,
           idleHours: 24,
@@ -316,14 +317,14 @@ kandidaat geredigeerde geheime placeholders bevat, zoals `***`.
     ```
 
     - `dmScope`: `main` (gedeeld) | `per-peer` | `per-channel-peer` | `per-account-channel-peer`
-    - `threadBindings`: globale standaardinstellingen voor sessierouting die aan threads is gebonden (Discord ondersteunt `/focus`, `/unfocus`, `/agents`, `/session idle` en `/session max-age`).
-    - Zie [Sessiebeheer](/nl/concepts/session) voor scoping, identiteitskoppelingen en verzendbeleid.
-    - Zie [volledige referentie](/nl/gateway/config-agents#session) voor alle velden.
+    - `threadBindings`: algemene standaardwaarden voor sessieroutering die aan threads is gekoppeld. `/focus`, `/unfocus`, `/agents`, `/session idle` en `/session max-age` koppelen, ontkoppelen, tonen en configureren dit per sessie (Discord koppelt threads, Telegram koppelt onderwerpen/gesprekken).
+    - Zie [Sessiebeheer](/nl/concepts/session) voor bereik, identiteitskoppelingen en verzendbeleid.
+    - Zie de [volledige referentie](/nl/gateway/config-agents#session) voor alle velden.
 
   </Accordion>
 
   <Accordion title="Sandboxing inschakelen">
-    Voer agentsessies uit in geisoleerde sandbox-runtimes:
+    Voer agentsessies uit in geïsoleerde sandboxruntimes:
 
     ```json5
     {
@@ -338,16 +339,16 @@ kandidaat geredigeerde geheime placeholders bevat, zoals `***`.
     }
     ```
 
-    Bouw eerst de image: voer vanuit een broncheckout `scripts/sandbox-setup.sh` uit, of zie vanuit een npm-installatie de inline `docker build`-opdracht in [Sandboxing § Images en installatie](/nl/gateway/sandboxing#images-and-setup).
+    Bouw eerst de image: voer vanuit een broncheckout `scripts/sandbox-setup.sh` uit, of raadpleeg bij een npm-installatie de inlineopdracht `docker build` in [Sandboxing § Images en installatie](/nl/gateway/sandboxing#images-and-setup).
 
-    Zie [Sandboxing](/nl/gateway/sandboxing) voor de volledige gids en [volledige referentie](/nl/gateway/config-agents#agentsdefaultssandbox) voor alle opties.
+    Zie [Sandboxing](/nl/gateway/sandboxing) voor de volledige handleiding en de [volledige referentie](/nl/gateway/config-agents#agentsdefaultssandbox) voor alle opties.
 
   </Accordion>
 
-  <Accordion title="Relay-ondersteunde push inschakelen voor officiele iOS-builds">
-    Relay-ondersteunde push voor openbare App Store-builds gebruikt de gehoste OpenClaw-relay: `https://ios-push-relay.openclaw.ai`.
+  <Accordion title="Push via een relay inschakelen voor officiële iOS-builds">
+    Push via een relay voor openbare App Store-builds gebruikt de gehoste OpenClaw-relay: `https://ios-push-relay.openclaw.ai`.
 
-    Aangepaste relay-implementaties vereisen een bewust gescheiden iOS-build-/implementatiepad waarvan de relay-URL overeenkomt met de Gateway-relay-URL. Als je een aangepaste relay-build gebruikt, stel dit dan in de Gateway-configuratie in:
+    Aangepaste relayimplementaties vereisen een bewust afzonderlijk iOS-build- en implementatietraject waarvan de relay-URL overeenkomt met de relay-URL van de Gateway. Stel bij gebruik van een aangepaste relaybuild dit in de Gateway-configuratie in:
 
     ```json5
     {
@@ -356,7 +357,7 @@ kandidaat geredigeerde geheime placeholders bevat, zoals `***`.
           apns: {
             relay: {
               baseUrl: "https://relay.example.com",
-              // Optional. Default: 10000
+              // Optioneel. Standaard: 10000
               timeoutMs: 10000,
             },
           },
@@ -373,32 +374,32 @@ kandidaat geredigeerde geheime placeholders bevat, zoals `***`.
 
     Wat dit doet:
 
-    - Laat de Gateway `push.test`, wake nudges en reconnect wakes verzenden via de externe relay.
-    - Gebruikt een registratiegebonden verzendmachtiging die wordt doorgestuurd door de gekoppelde iOS-app. De Gateway heeft geen implementatiebrede relay-token nodig.
-    - Bindt elke relay-ondersteunde registratie aan de Gateway-identiteit waarmee de iOS-app is gekoppeld, zodat een andere Gateway de opgeslagen registratie niet opnieuw kan gebruiken.
-    - Houdt lokale/handmatige iOS-builds op directe APNs. Relay-ondersteunde verzendingen gelden alleen voor officieel gedistribueerde builds die via de relay zijn geregistreerd.
-    - Moet overeenkomen met de relay-basis-URL die in de iOS-build is ingebakken, zodat registratie- en verzendverkeer dezelfde relay-implementatie bereiken.
+    - Hiermee kan de Gateway `push.test`, activeringssignalen en activeringssignalen voor opnieuw verbinden via de externe relay verzenden.
+    - Gebruikt een aan de registratie gekoppelde verzendmachtiging die door de gekoppelde iOS-app wordt doorgestuurd. De Gateway heeft geen relaytoken voor de volledige implementatie nodig.
+    - Koppelt elke registratie via de relay aan de Gateway-identiteit waarmee de iOS-app is gekoppeld, zodat een andere Gateway de opgeslagen registratie niet opnieuw kan gebruiken.
+    - Laat lokale/handmatige iOS-builds rechtstreeks APNs gebruiken. Verzending via de relay geldt alleen voor officieel gedistribueerde builds die zich via de relay hebben geregistreerd.
+    - Moet overeenkomen met de relaybasis-URL die in de iOS-build is ingebakken, zodat registratie- en verzendverkeer dezelfde relayimplementatie bereiken.
 
-    End-to-end-flow:
+    End-to-endproces:
 
-    1. Installeer de officiele iOS-app.
-    2. Optioneel: configureer `gateway.push.apns.relay.baseUrl` op de Gateway alleen wanneer je een bewust gescheiden aangepaste relay-build gebruikt.
-    3. Koppel de iOS-app aan de Gateway en laat zowel node- als operatorsessies verbinding maken.
-    4. De iOS-app haalt de Gateway-identiteit op, registreert zich bij de relay met App Attest plus de app-bon, en publiceert daarna de relay-ondersteunde `push.apns.register`-payload naar de gekoppelde Gateway.
-    5. De Gateway slaat de relay-handle en verzendmachtiging op en gebruikt deze daarna voor `push.test`, wake nudges en reconnect wakes.
+    1. Installeer de officiële iOS-app.
+    2. Optioneel: configureer `gateway.push.apns.relay.baseUrl` alleen op de Gateway wanneer je een bewust afzonderlijke aangepaste relaybuild gebruikt.
+    3. Koppel de iOS-app aan de Gateway en laat zowel Node- als operatorsessies verbinding maken.
+    4. De iOS-app haalt de Gateway-identiteit op, registreert zich bij de relay met App Attest en het app-ontvangstbewijs en publiceert vervolgens de via de relay ondersteunde `push.apns.register`-payload naar de gekoppelde Gateway.
+    5. De Gateway slaat de relayhandle en verzendmachtiging op en gebruikt deze vervolgens voor `push.test`, activeringssignalen en activeringssignalen voor opnieuw verbinden.
 
     Operationele opmerkingen:
 
-    - Als je de iOS-app naar een andere Gateway overschakelt, verbind de app dan opnieuw zodat deze een nieuwe relay-registratie kan publiceren die aan die Gateway is gebonden.
-    - Als je een nieuwe iOS-build uitbrengt die naar een andere relay-implementatie wijst, vernieuwt de app de gecachte relay-registratie in plaats van de oude relay-origin opnieuw te gebruiken.
+    - Als je de iOS-app naar een andere Gateway overschakelt, verbind je de app opnieuw zodat deze een nieuwe, aan die Gateway gekoppelde relayregistratie kan publiceren.
+    - Als je een nieuwe iOS-build uitbrengt die naar een andere relayimplementatie verwijst, vernieuwt de app de gecachete relayregistratie in plaats van de oude relayoorsprong opnieuw te gebruiken.
 
     Compatibiliteitsopmerking:
 
-    - `OPENCLAW_APNS_RELAY_BASE_URL` en `OPENCLAW_APNS_RELAY_TIMEOUT_MS` blijven werken als tijdelijke env-overrides.
-    - Aangepaste Gateway-relay-URL's moeten overeenkomen met de relay-basis-URL die in de iOS-build is ingebakken. De openbare App Store-release-lane weigert aangepaste iOS-relay-URL-overrides.
-    - `OPENCLAW_APNS_RELAY_ALLOW_HTTP=true` blijft een ontwikkelingsuitweg alleen voor local loopback; sla geen HTTP-relay-URL's permanent op in configuratie.
+    - `OPENCLAW_APNS_RELAY_BASE_URL` en `OPENCLAW_APNS_RELAY_TIMEOUT_MS` werken nog steeds als tijdelijke omgevingsoverschrijvingen.
+    - Aangepaste Gateway-relay-URL's moeten overeenkomen met de relaybasis-URL die in de iOS-build is ingebakken; het openbare App Store-releasetraject weigert aangepaste overschrijvingen van de iOS-relay-URL.
+    - `OPENCLAW_APNS_RELAY_ALLOW_HTTP=true` blijft een uitsluitend voor loopback bestemde ontsnappingsroute voor ontwikkeling; sla HTTP-relay-URL's niet blijvend op in de configuratie.
 
-    Zie [iOS-app](/nl/platforms/ios#relay-backed-push-for-official-builds) voor de end-to-end-flow en [Authenticatie- en vertrouwensflow](/nl/platforms/ios#authentication-and-trust-flow) voor het relay-beveiligingsmodel.
+    Zie [iOS-app](/nl/platforms/ios#relay-backed-push-for-official-builds) voor het end-to-endproces en [Authenticatie- en vertrouwensproces](/nl/platforms/ios#authentication-and-trust-flow) voor het beveiligingsmodel van de relay.
 
   </Accordion>
 
@@ -416,36 +417,32 @@ kandidaat geredigeerde geheime placeholders bevat, zoals `***`.
     }
     ```
 
-    - `every`: duurtekenreeks (`30m`, `2h`). Stel `0m` in om uit te schakelen.
+    - `every`: duurtekenreeks (`30m`, `2h`). Stel `0m` in om uit te schakelen. Standaard: `30m`.
     - `target`: `last` | `none` | `<channel-id>` (bijvoorbeeld `discord`, `matrix`, `telegram` of `whatsapp`)
-    - `directPolicy`: `allow` (standaard) of `block` voor DM-achtige Heartbeat-doelen
-    - Zie [Heartbeat](/nl/gateway/heartbeat) voor de volledige gids.
+    - `directPolicy`: `allow` (standaard) of `block` voor Heartbeat-doelen in DM-stijl
+    - Zie [Heartbeat](/nl/gateway/heartbeat) voor de volledige handleiding.
 
   </Accordion>
 
-  <Accordion title="Cron-jobs configureren">
+  <Accordion title="Cron-taken configureren">
     ```json5
     {
       cron: {
         enabled: true,
-        maxConcurrentRuns: 8, // default; cron dispatch + isolated cron agent-turn execution
+        maxConcurrentRuns: 8, // standaard; Cron-dispatch + geïsoleerde uitvoering van Cron-agentbeurten
         sessionRetention: "24h",
-        runLog: {
-          maxBytes: "2mb",
-          keepLines: 2000,
-        },
       },
     }
     ```
 
-    - `sessionRetention`: ruim voltooide geisoleerde runsessies op uit `sessions.json` (standaard `24h`; stel `false` in om uit te schakelen).
-    - `runLog`: ruim bewaarde Cron-runhistorierijen per taak op. `maxBytes` blijft geaccepteerd voor oudere bestandsgebaseerde runlogs.
-    - Zie [Cron-jobs](/nl/automation/cron-jobs) voor een functieoverzicht en CLI-voorbeelden.
+    - `sessionRetention`: verwijder voltooide geïsoleerde uitvoeringssessies uit SQLite-sessierijen (standaard `24h`; stel `false` in om uit te schakelen).
+    - De uitvoeringsgeschiedenis bewaart automatisch de nieuwste 2000 terminalrijen per taak; verloren rijen behouden hun opschoningsperiode van 24 uur.
+    - Zie [Cron-taken](/nl/automation/cron-jobs) voor een functieoverzicht en CLI-voorbeelden.
 
   </Accordion>
 
   <Accordion title="Webhooks (hooks) instellen">
-    Schakel HTTP-Webhook-eindpunten in op de Gateway:
+    Schakel HTTP-webhookeindpunten op de Gateway in:
 
     ```json5
     {
@@ -469,20 +466,20 @@ kandidaat geredigeerde geheime placeholders bevat, zoals `***`.
     ```
 
     Beveiligingsopmerking:
-    - Behandel alle hook-/Webhook-payloadinhoud als niet-vertrouwde invoer.
-    - Gebruik een specifieke `hooks.token`; hergebruik geen actieve Gateway-authgeheimen (`gateway.auth.token` / `OPENCLAW_GATEWAY_TOKEN` of `gateway.auth.password` / `OPENCLAW_GATEWAY_PASSWORD`).
-    - Hook-authenticatie werkt alleen via headers (`Authorization: Bearer ...` of `x-openclaw-token`); querystring-tokens worden geweigerd.
-    - `hooks.path` mag niet `/` zijn; houd Webhook-ingress op een specifiek subpad zoals `/hooks`.
-    - Houd bypass-vlaggen voor onveilige inhoud uitgeschakeld (`hooks.gmail.allowUnsafeExternalContent`, `hooks.mappings[].allowUnsafeExternalContent`), behalve bij strak afgebakende debugging.
-    - Als je `hooks.allowRequestSessionKey` inschakelt, stel dan ook `hooks.allowedSessionKeyPrefixes` in om door callers gekozen sessiesleutels te begrenzen.
-    - Geef voor hook-gestuurde agents de voorkeur aan sterke moderne modeltiers en strikt toolbeleid (bijvoorbeeld alleen berichten plus sandboxing waar mogelijk).
+    - Behandel alle inhoud van hook-/webhookpayloads als niet-vertrouwde invoer.
+    - Gebruik een afzonderlijke `hooks.token`; gebruik actieve Gateway-authenticatiegeheimen (`gateway.auth.token` / `OPENCLAW_GATEWAY_TOKEN` of `gateway.auth.password` / `OPENCLAW_GATEWAY_PASSWORD`) niet opnieuw.
+    - Hookauthenticatie werkt uitsluitend via headers (`Authorization: Bearer ...` of `x-openclaw-token`); tokens in queryreeksen worden geweigerd.
+    - `hooks.path` mag niet `/` zijn; houd webhookinvoer op een afzonderlijk subpad, zoals `/hooks`.
+    - Houd omzeilingsvlaggen voor onveilige inhoud uitgeschakeld (`hooks.gmail.allowUnsafeExternalContent`, `hooks.mappings[].allowUnsafeExternalContent`), tenzij je zeer gericht fouten opspoort.
+    - Als je `hooks.allowRequestSessionKey` inschakelt, stel dan ook `hooks.allowedSessionKeyPrefixes` in om door de aanroeper gekozen sessiesleutels te begrenzen.
+    - Geef voor door hooks aangestuurde agents de voorkeur aan sterke moderne modellagen en een strikt toolbeleid (bijvoorbeeld alleen berichten plus waar mogelijk sandboxing).
 
-    Zie [volledige referentie](/nl/gateway/configuration-reference#hooks) voor alle mappingopties en Gmail-integratie.
+    Zie de [volledige referentie](/nl/gateway/configuration-reference#hooks) voor alle toewijzingsopties en Gmail-integratie.
 
   </Accordion>
 
-  <Accordion title="Multi-agent-routing configureren">
-    Voer meerdere geisoleerde agents uit met gescheiden workspaces en sessies:
+  <Accordion title="Routering voor meerdere agents configureren">
+    Voer meerdere geïsoleerde agents uit met afzonderlijke werkruimten en sessies:
 
     ```json5
     {
@@ -499,12 +496,12 @@ kandidaat geredigeerde geheime placeholders bevat, zoals `***`.
     }
     ```
 
-    Zie [Multi-Agent](/nl/concepts/multi-agent) en [volledige referentie](/nl/gateway/config-agents#multi-agent-routing) voor bindingsregels en toegangsprofielen per agent.
+    Zie [Meerdere agents](/nl/concepts/multi-agent) en de [volledige referentie](/nl/gateway/config-agents#multi-agent-routing) voor koppelingsregels en toegangsprofielen per agent.
 
   </Accordion>
 
-  <Accordion title="Configuratie opsplitsen in meerdere bestanden ($include)">
-    Gebruik `$include` om grote configuraties te organiseren:
+  <Accordion title="Configuratie over meerdere bestanden verdelen ($include)">
+    Gebruik `$include` om grote configuraties te ordenen:
 
     ```json5
     // ~/.openclaw/openclaw.json
@@ -517,53 +514,51 @@ kandidaat geredigeerde geheime placeholders bevat, zoals `***`.
     }
     ```
 
-    - **Enkel bestand**: vervangt het bevattende object
-    - **Array van bestanden**: diep samengevoegd in volgorde (latere wint)
-    - **Zusterkeys**: samengevoegd na includes (overschrijven opgenomen waarden)
-    - **Geneste includes**: ondersteund tot 10 niveaus diep
-    - **Relatieve paden**: opgelost relatief aan het include-bestand
-    - **Padindeling**: include-paden mogen geen null-bytes bevatten en moeten strikt korter zijn dan 4096 tekens voor en na resolutie
-    - **OpenClaw-beheerde writes**: wanneer een write slechts een top-levelsectie wijzigt
-      die wordt ondersteund door een enkelbestand-include zoals `plugins: { $include: "./plugins.json5" }`,
-      werkt OpenClaw dat opgenomen bestand bij en laat het `openclaw.json` intact
-    - **Niet-ondersteunde write-through**: root-includes, include-arrays en includes
-      met zuster-overschrijvingen falen gesloten voor OpenClaw-beheerde writes in plaats van
+    - **Eén bestand**: vervangt het bevattende object
+    - **Bestandsarray**: wordt op volgorde diep samengevoegd (latere waarden winnen), tot 10 geneste niveaus diep
+    - **Nevensleutels**: worden na de invoegingen samengevoegd (overschrijven ingevoegde waarden)
+    - **Relatieve paden**: worden opgelost ten opzichte van het invoegende bestand
+    - **Padindeling**: invoegpaden mogen geen nullbytes bevatten en moeten voor en na het oplossen strikt korter dan 4096 tekens zijn
+    - **Door OpenClaw beheerde schrijfbewerkingen**: wanneer een schrijfbewerking slechts één sectie op het hoogste niveau wijzigt
+      die wordt ondersteund door een invoeging van één bestand, zoals `plugins: { $include: "./plugins.json5" }`,
+      werkt OpenClaw dat ingevoegde bestand bij en laat het `openclaw.json` intact
+    - **Niet-ondersteund doorschrijven**: invoegingen op hoofdniveau, invoegarrays en invoegingen
+      met nevenoverschrijvingen worden voor door OpenClaw beheerde schrijfbewerkingen standaard geweigerd in plaats van
       de configuratie af te vlakken
-    - **Insluiting**: `$include`-paden moeten oplossen onder de directory die
-      `openclaw.json` bevat. Om een boom tussen machines of gebruikers te delen, stel je
-      `OPENCLAW_INCLUDE_ROOTS` in op een padenlijst (`:` op POSIX, `;` op Windows) van
-      extra directories waarnaar includes mogen verwijzen. Symlinks worden opgelost
-      en opnieuw gecontroleerd, dus een pad dat lexicaal in een configuratiedirectory staat maar waarvan
-      het echte doel buiten elke toegestane root valt, wordt nog steeds geweigerd.
-    - **Foutafhandeling**: duidelijke fouten voor ontbrekende bestanden, parsefouten, circulaire includes, ongeldige padindeling en overmatige lengte
+    - **Begrenzing**: paden van `$include` moeten worden opgelost binnen de map die
+      `openclaw.json` bevat. Als je een boomstructuur tussen machines of gebruikers wilt delen, stel je
+      `OPENCLAW_INCLUDE_ROOTS` in op een padenlijst (`:` op POSIX, `;` op Windows) met
+      aanvullende mappen waarnaar invoegingen mogen verwijzen. Symbolische koppelingen worden opgelost
+      en opnieuw gecontroleerd. Daardoor wordt een pad dat tekstueel in een configuratiemap staat, maar waarvan
+      het werkelijke doel buiten elke toegestane hoofdmap valt, nog steeds geweigerd.
+    - **Foutafhandeling**: duidelijke fouten voor ontbrekende bestanden, parseerfouten, circulaire invoegingen, ongeldige padindeling en overmatige lengte
 
   </Accordion>
 </AccordionGroup>
 
-## Configuratie hot reload
+## Configuratie dynamisch herladen
 
-De Gateway bewaakt `~/.openclaw/openclaw.json` en past wijzigingen automatisch toe: voor de meeste instellingen is geen handmatige herstart nodig.
+De Gateway bewaakt `~/.openclaw/openclaw.json` en past wijzigingen automatisch toe. Voor de meeste instellingen is geen handmatige herstart nodig.
 
-Directe bestandsbewerkingen worden als niet-vertrouwd behandeld totdat ze valideren. De watcher wacht
-tot editor-temp-write-/rename-ruis is gestabiliseerd, leest het definitieve bestand en weigert
-ongeldige externe bewerkingen zonder `openclaw.json` te herschrijven. OpenClaw-beheerde configuratie-
-writes gebruiken dezelfde schemagate voordat ze schrijven; destructieve overschrijvingen zoals
-het verwijderen van `gateway.mode` of het met meer dan de helft verkleinen van het bestand worden geweigerd en
-opgeslagen als `.rejected.*` voor inspectie.
+Rechtstreekse bestandsbewerkingen worden als niet-vertrouwd behandeld totdat ze zijn gevalideerd. De watcher wacht
+tot tijdelijke schrijf- en hernoemactiviteiten van de editor zijn gestabiliseerd, leest het definitieve bestand en weigert
+ongeldige externe bewerkingen zonder `openclaw.json` te herschrijven. Door OpenClaw beheerde schrijfbewerkingen van de configuratie
+gebruiken vóór het schrijven dezelfde schemavalidatie (zie [Strikte validatie](#strict-validation)
+voor de regels voor overschrijven en terugdraaien die op elke schrijfbewerking van toepassing zijn).
 
-Als je `config reload skipped (invalid config)` ziet of het opstarten `Invalid
-config` meldt, inspecteer dan de configuratie, voer `openclaw config validate` uit en voer daarna `openclaw
-doctor --fix` uit voor reparatie. Zie [Gateway-probleemoplossing](/nl/gateway/troubleshooting#gateway-rejected-invalid-config)
-voor de checklist.
+Als je `config reload skipped (invalid config)` ziet of bij het opstarten `Invalid
+config` wordt gemeld, controleer dan de configuratie, voer `openclaw config validate` uit en voer vervolgens `openclaw
+doctor --fix` uit om deze te herstellen. Zie [Problemen met de Gateway oplossen](/nl/gateway/troubleshooting#gateway-rejected-invalid-config)
+voor de controlelijst.
 
-### Reload-modi
+### Herlaadmodi
 
 | Modus                  | Gedrag                                                                                  |
 | ---------------------- | --------------------------------------------------------------------------------------- |
-| **`hybrid`** (standaard) | Past veilige wijzigingen direct hot toe. Herstart automatisch voor kritieke wijzigingen. |
-| **`hot`**              | Past alleen veilige wijzigingen hot toe. Logt een waarschuwing wanneer een herstart nodig is: jij handelt dit af. |
-| **`restart`**          | Herstart de Gateway bij elke configuratiewijziging, veilig of niet.                     |
-| **`off`**              | Schakelt bestandsbewaking uit. Wijzigingen worden actief bij de volgende handmatige herstart. |
+| **`hybrid`** (standaard) | Past veilige wijzigingen direct dynamisch toe. Start automatisch opnieuw bij kritieke wijzigingen. |
+| **`hot`**              | Past alleen veilige wijzigingen dynamisch toe. Logt een waarschuwing wanneer opnieuw starten nodig is — je handelt dit zelf af. |
+| **`restart`**          | Start de Gateway opnieuw bij elke configuratiewijziging, veilig of niet.                |
+| **`off`**              | Schakelt bestandsbewaking uit. Wijzigingen worden van kracht bij de volgende handmatige herstart. |
 
 ```json5
 {
@@ -573,64 +568,67 @@ voor de checklist.
 }
 ```
 
-### Wat hot wordt toegepast versus wat een herstart nodig heeft
+### Wat dynamisch wordt toegepast en waarvoor een herstart nodig is
 
-De meeste velden worden zonder downtime hot toegepast. In `hybrid`-modus worden wijzigingen waarvoor een herstart nodig is automatisch afgehandeld.
+De meeste velden worden zonder uitvaltijd dynamisch toegepast; sommige dynamisch toegepaste secties starten alleen dat
+subsysteem opnieuw (kanaal, cron, heartbeat, statusmonitor) in plaats van de volledige Gateway. In de modus
+`hybrid` worden wijzigingen waarvoor de Gateway opnieuw moet worden gestart automatisch afgehandeld.
 
-| Categorie           | Velden                                                            | Herstart nodig? |
-| ------------------- | ----------------------------------------------------------------- | --------------- |
-| Kanalen             | `channels.*`, `web` (WhatsApp) - alle ingebouwde en Plugin-kanalen | Nee             |
-| Agent en modellen   | `agent`, `agents`, `models`, `routing`                            | Nee             |
-| Automatisering      | `hooks`, `cron`, `agent.heartbeat`                                | Nee             |
-| Sessies en berichten | `session`, `messages`                                             | Nee             |
-| Tools en media      | `tools`, `browser`, `skills`, `mcp`, `audio`, `talk`              | Nee             |
-| UI en overig        | `ui`, `logging`, `identity`, `bindings`                           | Nee             |
-| Gateway-server      | `gateway.*` (port, bind, auth, tailscale, TLS, HTTP)              | **Ja**          |
-| Infrastructuur      | `discovery`, `plugins`                                            | **Ja**          |
+| Categorie           | Velden                                                                  | Herstart van Gateway nodig? |
+| ------------------- | ----------------------------------------------------------------------- | ---------------------------- |
+| Kanalen             | `channels.*`, `web` (WhatsApp) — alle ingebouwde kanalen en pluginkanalen | Nee (start dat kanaal opnieuw) |
+| Agent en modellen   | `agent`, `agents`, `models`, `routing`                                  | Nee                          |
+| Automatisering      | `hooks`, `cron`, `agent.heartbeat`                                      | Nee (start dat subsysteem opnieuw) |
+| Sessies en berichten | `session`, `messages`                                                  | Nee                          |
+| Tools en media      | `tools`, `skills`, `mcp`, `audio`, `talk`                               | Nee                          |
+| Pluginconfiguratie  | `plugins.entries.*`, `plugins.allow`, `plugins.deny`, `plugins.enabled` | Nee (herlaadt de pluginruntime) |
+| UI en overig        | `ui`, `logging`, `identity`, `bindings`                                 | Nee                          |
+| Gateway-server      | `gateway.*` (poort, binding, authenticatie, Tailscale, TLS, HTTP, push) | **Ja**                       |
+| Infrastructuur      | `discovery`, `browser`, `plugins.load`, `plugins.installs`              | **Ja**                       |
 
 <Note>
-`gateway.reload` en `gateway.remote` zijn uitzonderingen - als je ze wijzigt, wordt er **geen** herstart geactiveerd.
+`gateway.reload` en `gateway.remote` zijn uitzonderingen onder `gateway.*` — wijzigingen daaraan veroorzaken **geen** herstart. Afzonderlijke plugins kunnen deze tabel ook overschrijven: een geladen plugin kan eigen configuratievoorvoegsels declareren die een herstart veroorzaken (de meegeleverde Canvas-plugin start de Gateway bijvoorbeeld opnieuw voor `plugins.enabled`, `plugins.allow` en `plugins.deny`, en niet alleen voor zijn eigen `plugins.entries.canvas`), waardoor het daadwerkelijke gedrag afhangt van welke plugins actief zijn.
 </Note>
 
 ### Herlaadplanning
 
 Wanneer je een bronbestand bewerkt waarnaar via `$include` wordt verwezen, plant OpenClaw
-het herladen op basis van de door de bron gedefinieerde indeling, niet op basis van de afgevlakte weergave in het geheugen.
-Daardoor blijven hot-reload-beslissingen (direct toepassen versus herstarten) voorspelbaar, zelfs wanneer een
-enkele sectie op het hoogste niveau in een eigen opgenomen bestand staat, zoals
-`plugins: { $include: "./plugins.json5" }`. Herlaadplanning faalt gesloten als de
+het herladen op basis van de indeling zoals die in de bron is vastgelegd, niet op basis van de afgevlakte weergave in het geheugen.
+Daardoor blijven beslissingen over dynamisch herladen (dynamisch toepassen of opnieuw starten) voorspelbaar, zelfs wanneer één
+sectie op het hoogste niveau in een afzonderlijk opgenomen bestand staat, zoals
+`plugins: { $include: "./plugins.json5" }`. Herlaadplanning wordt uit veiligheid geweigerd als de
 bronindeling dubbelzinnig is.
 
-## Config-RPC (programmatische updates)
+## Configuratie-RPC (programmatische updates)
 
-Voor tooling die configuratie via de Gateway-API schrijft, heeft deze flow de voorkeur:
+Gebruik voor tools die configuratie via de Gateway-API schrijven bij voorkeur deze procedure:
 
-- `config.schema.lookup` om één subtree te inspecteren (ondiepe schemanode + samenvattingen van children)
-- `config.get` om de huidige snapshot plus `hash` op te halen
-- `config.patch` voor gedeeltelijke updates (JSON merge patch: objecten worden samengevoegd, `null`
-  verwijdert, arrays worden vervangen wanneer dit expliciet is bevestigd met `replacePaths` als
-  entries zouden worden verwijderd)
+- `config.schema.lookup` om één substructuur te inspecteren (oppervlakkig schemaknooppunt en samenvattingen van onderliggende knooppunten)
+- `config.get` om de huidige momentopname plus `hash` op te halen
+- `config.patch` voor gedeeltelijke updates (JSON-samenvoegpatch: objecten worden samengevoegd, `null`
+  verwijdert, arrays worden vervangen wanneer dit expliciet wordt bevestigd met `replacePaths` als
+  vermeldingen zouden worden verwijderd)
 - `config.apply` alleen wanneer je de volledige configuratie wilt vervangen
-- `update.run` voor expliciete zelfupdate plus herstart; voeg `continuationMessage` toe wanneer de sessie na de herstart nog één vervolgronde moet uitvoeren
-- `update.status` om de nieuwste update-herstartsentinel te inspecteren en de draaiende versie na een herstart te verifiëren
+- `update.run` voor een expliciete zelfupdate plus herstart; neem `continuationMessage` op wanneer de sessie na de herstart nog één vervolgronde moet uitvoeren
+- `update.status` om de nieuwste herstartmarkering voor updates te inspecteren en na een herstart de actieve versie te verifiëren
 
-Agents moeten `config.schema.lookup` behandelen als het eerste startpunt voor exacte
+Agents moeten `config.schema.lookup` als eerste informatiebron gebruiken voor exacte
 documentatie en beperkingen op veldniveau. Gebruik [Configuratiereferentie](/nl/gateway/configuration-reference)
-wanneer ze de bredere configuratiekaart, standaardwaarden of links naar specifieke
-subsystem-referenties nodig hebben.
+wanneer ze het bredere configuratieoverzicht, standaardwaarden of links naar specifieke
+subsysteemreferenties nodig hebben.
 
 <Note>
-Control-plane-schrijfacties (`config.apply`, `config.patch`, `update.run`) zijn
-beperkt tot 3 requests per 60 seconden per `deviceId+clientIp`. Herstartrequests
-worden samengevoegd en dwingen daarna een cooldown van 30 seconden af tussen herstartcycli.
-`update.status` is alleen-lezen, maar admin-scoped omdat de herstartsentinel
-samenvattingen van updatestappen en staarten van commandoutput kan bevatten.
+Schrijfbewerkingen op het besturingsvlak (`config.apply`, `config.patch`, `update.run`) zijn
+beperkt tot 3 verzoeken per 60 seconden per `deviceId+clientIp`. Herstartverzoeken
+worden samengevoegd, waarna tussen herstartcycli een afkoelperiode van 30 seconden geldt.
+`update.status` is alleen-lezen, maar beperkt tot beheerders, omdat de herstartmarkering
+samenvattingen van updatestappen en de laatste regels van opdrachtuitvoer kan bevatten.
 </Note>
 
 Voorbeeld van een gedeeltelijke patch:
 
 ```bash
-openclaw gateway call config.get --params '{}'  # capture payload.hash
+openclaw gateway call config.get --params '{}'  # leg payload.hash vast
 openclaw gateway call config.patch --params '{
   "raw": "{ channels: { telegram: { groups: { \"*\": { requireMention: false } } } } }",
   "baseHash": "<hash>"
@@ -638,25 +636,25 @@ openclaw gateway call config.patch --params '{
 ```
 
 Zowel `config.apply` als `config.patch` accepteert `raw`, `baseHash`, `sessionKey`,
-`note` en `restartDelayMs`. `baseHash` is vereist voor beide methoden wanneer er al een
-configuratie bestaat.
+`note` en `restartDelayMs`. `baseHash` is voor beide methoden vereist zodra er al een
+configuratiebestand bestaat (bij een eerste schrijfbewerking zonder bestaande configuratie wordt de controle overgeslagen).
 
-`config.patch` accepteert ook `replacePaths`, een array met configuratiepaden waarvan arrayvervanging
-bedoeld is. Als een patch een bestaande array zou vervangen of verwijderen
-met minder entries, wijst de Gateway de schrijfactie af tenzij dat exacte pad voorkomt
-in `replacePaths`; geneste arrays onder array-entries gebruiken `[]`, zoals
-`agents.list[].skills`. Dit voorkomt dat afgekorte `config.get`-snapshots
-routing- of allowlist-arrays stilzwijgend overschrijven. Gebruik `config.apply` wanneer je
+`config.patch` accepteert ook `replacePaths`, een array met configuratiepaden waarvan de vervanging
+van de array opzettelijk is. Als een patch een bestaande array zou vervangen door of verwijderen ten gunste van
+een array met minder vermeldingen, weigert de Gateway de schrijfbewerking tenzij dat exacte pad voorkomt
+in `replacePaths`; geneste arrays binnen arrayvermeldingen gebruiken `[]`, zoals
+`agents.list[].skills`. Dit voorkomt dat afgekorte momentopnamen van `config.get`
+routerings- of toelatingslijstarrays ongemerkt overschrijven. Gebruik `config.apply` wanneer je
 de volledige configuratie wilt vervangen.
 
 ## Omgevingsvariabelen
 
-OpenClaw leest env-vars uit het bovenliggende proces plus:
+OpenClaw leest omgevingsvariabelen uit het bovenliggende proces en daarnaast uit:
 
-- `.env` uit de huidige werkdirectory (indien aanwezig)
-- `~/.openclaw/.env` (globale fallback)
+- `.env` uit de huidige werkmap (indien aanwezig)
+- `~/.openclaw/.env` (globale terugvaloptie)
 
-Geen van beide bestanden overschrijft bestaande env-vars. Je kunt ook inline env-vars in configuratie instellen:
+Geen van beide bestanden overschrijft bestaande omgevingsvariabelen. Je kunt omgevingsvariabelen ook rechtstreeks in de configuratie instellen:
 
 ```json5
 {
@@ -667,8 +665,8 @@ Geen van beide bestanden overschrijft bestaande env-vars. Je kunt ook inline env
 }
 ```
 
-<Accordion title="Shell-env importeren (optioneel)">
-  Indien ingeschakeld en verwachte sleutels niet zijn ingesteld, voert OpenClaw je login-shell uit en importeert alleen de ontbrekende sleutels:
+<Accordion title="Shell-omgevingsvariabelen importeren (optioneel)">
+  Als dit is ingeschakeld en verwachte sleutels niet zijn ingesteld, voert OpenClaw je loginshell uit en importeert het alleen de ontbrekende sleutels:
 
 ```json5
 {
@@ -678,11 +676,11 @@ Geen van beide bestanden overschrijft bestaande env-vars. Je kunt ook inline env
 }
 ```
 
-Equivalent als env-var: `OPENCLAW_LOAD_SHELL_ENV=1`
+Equivalent als omgevingsvariabele: `OPENCLAW_LOAD_SHELL_ENV=1`. Standaardwaarde voor `timeoutMs`: `15000`.
 </Accordion>
 
-<Accordion title="Env-var-substitutie in configuratiewaarden">
-  Verwijs naar env-vars in elke stringwaarde in de configuratie met `${VAR_NAME}`:
+<Accordion title="Vervanging door omgevingsvariabelen in configuratiewaarden">
+  Verwijs in elke tekenreekswaarde van de configuratie naar omgevingsvariabelen met `${VAR_NAME}`:
 
 ```json5
 {
@@ -693,16 +691,16 @@ Equivalent als env-var: `OPENCLAW_LOAD_SHELL_ENV=1`
 
 Regels:
 
-- Alleen namen in hoofdletters matchen: `[A-Z_][A-Z0-9_]*`
-- Ontbrekende/lege vars veroorzaken een fout tijdens het laden
-- Escape met `$${VAR}` voor letterlijke output
+- Alleen namen in hoofdletters komen overeen: `[A-Z_][A-Z0-9_]*`
+- Ontbrekende of lege variabelen veroorzaken tijdens het laden een fout
+- Escape met `$${VAR}` voor letterlijke uitvoer
 - Werkt binnen `$include`-bestanden
-- Inline-substitutie: `"${BASE}/v1"` → `"https://api.example.com/v1"`
+- Inlinevervanging: `"${BASE}/v1"` → `"https://api.example.com/v1"`
 
 </Accordion>
 
-<Accordion title="Secret refs (env, bestand, exec)">
-  Voor velden die SecretRef-objecten ondersteunen, kun je gebruiken:
+<Accordion title="Geheime verwijzingen (omgeving, bestand, uitvoering)">
+  Voor velden die SecretRef-objecten ondersteunen, kun je het volgende gebruiken:
 
 ```json5
 {
@@ -734,11 +732,11 @@ Regels:
 }
 ```
 
-SecretRef-details (inclusief `secrets.providers` voor `env`/`file`/`exec`) staan in [Secrets Management](/nl/gateway/secrets).
-Ondersteunde credentialpaden staan vermeld in [SecretRef Credential Surface](/nl/reference/secretref-credential-surface).
+Details over SecretRef (waaronder `secrets.providers` voor `env`/`file`/`exec`) staan in [Beheer van geheimen](/nl/gateway/secrets).
+Ondersteunde referentiepaden voor aanmeldgegevens staan vermeld in [SecretRef-aanmeldgegevensoppervlak](/nl/reference/secretref-credential-surface).
 </Accordion>
 
-Zie [Omgeving](/nl/help/environment) voor volledige prioriteit en bronnen.
+Zie [Omgeving](/nl/help/environment) voor de volledige prioriteitsvolgorde en bronnen.
 
 ## Volledige referentie
 
@@ -752,4 +750,4 @@ _Gerelateerd: [Configuratievoorbeelden](/nl/gateway/configuration-examples) · [
 
 - [Configuratiereferentie](/nl/gateway/configuration-reference)
 - [Configuratievoorbeelden](/nl/gateway/configuration-examples)
-- [Gateway-runbook](/nl/gateway)
+- [Gateway-draaiboek](/nl/gateway)

@@ -1,21 +1,22 @@
 ---
 read_when:
-    - chutes Pluginini kuruyor, yapılandırıyor veya denetliyorsunuz
+    - Chutes pluginini kuruyor, yapılandırıyor veya denetliyorsunuz
 summary: OpenClaw'a Chutes model sağlayıcısı desteği ekler.
-title: Chutes Plugin'i
+title: Chutes plugin'i
 x-i18n:
-    generated_at: "2026-07-12T12:32:16Z"
+    generated_at: "2026-07-16T17:29:17Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 63f5196b0202e47ea95c3dd226546ff3e09083632e58ca780c608f53c2ba85af
+    source_hash: 5093b123b191765ca52544e810f9618a5644a27c20394ef3deb5ba488cf80da3
     source_path: plugins/reference/chutes.md
     workflow: 16
 ---
 
-# Chutes plugin’i
+# Chutes plugin'i
 
-OpenClaw’a Chutes model sağlayıcısı desteği ekler.
+OpenClaw'a Chutes model sağlayıcısı desteği ekler.
 
 ## Dağıtım
 
@@ -24,8 +25,8 @@ OpenClaw’a Chutes model sağlayıcısı desteği ekler.
 
 ## Yüzey
 
-sağlayıcılar: chutes
+sağlayıcılar: `chutes`
 
 ## İlgili belgeler
 
-- [chutes](/tr/providers/chutes)
+- [Chutes](/tr/providers/chutes)

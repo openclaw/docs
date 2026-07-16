@@ -1,101 +1,101 @@
 ---
 read_when:
-    - Mac मेनू UI या स्थिति लॉजिक में बदलाव
-summary: मेनू बार स्थिति लॉजिक और उपयोगकर्ताओं को क्या दिखाया जाता है
+    - Mac मेनू UI या स्थिति लॉजिक में बदलाव करना
+summary: मेनू बार स्थिति का तर्क और उपयोगकर्ताओं को दिखाई जाने वाली जानकारी
 title: मेनू बार
 x-i18n:
-    generated_at: "2026-06-28T23:28:59Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T15:53:37Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: c569ced20b2f6a639d52d373cc8b55a42d7c015a0b234d5154ce67ac03c2eaf6
+    source_hash: 480a85f383a6495c0e45850a322c0c67c4cc35e21d2d29b4bd86f42fdbf9430a
     source_path: platforms/mac/menu-bar.md
     workflow: 16
 ---
 
 ## क्या दिखाया जाता है
 
-- हम मौजूदा agent कार्य स्थिति को menu bar icon में और menu की पहली status row में दिखाते हैं।
-- काम सक्रिय होने पर health status छिपा रहता है; सभी sessions idle होने पर यह वापस आ जाता है।
-- root "Context" submenu में recent sessions होते हैं, उन्हें सीधे root menu में expand नहीं किया जाता।
-- root menu में "Nodes" block केवल **devices** सूचीबद्ध करता है (`node.list` के ज़रिए paired nodes), client/presence entries नहीं।
-- provider usage snapshots उपलब्ध होने पर Context के नीचे root "Usage" section दिखाई देता है, और उपलब्ध होने पर उसके बाद usage-cost details आती हैं।
+- वर्तमान एजेंट कार्य स्थिति मेनू बार आइकन और मेनू की पहली स्थिति पंक्ति में दिखाई देती है।
+- कार्य सक्रिय रहने के दौरान स्वास्थ्य स्थिति छिपी रहती है; सभी सत्र निष्क्रिय होने पर यह फिर दिखाई देती है।
+- मूल "संदर्भ" आइटम हाल के सत्रों को मूल मेनू में विस्तृत करने के बजाय उनके उपमेनू को खोलता है।
+- मूल मेनू में "Nodes" ब्लॉक केवल युग्मित **डिवाइस** (`node.list` से) सूचीबद्ध करता है, क्लाइंट/उपस्थिति प्रविष्टियाँ नहीं।
+- प्रदाता उपयोग स्नैपशॉट उपलब्ध होने पर संदर्भ के नीचे मूल "उपयोग" अनुभाग दिखाई देता है, जिसके बाद उपलब्ध होने पर लागत विवरण दिखते हैं।
 
-## State model
+## स्थिति मॉडल
 
-- Sessions: events `runId` (per-run) और payload में `sessionKey` के साथ आते हैं। "main" session की key `main` है; अगर वह मौजूद न हो, तो हम सबसे हाल में updated session पर fall back करते हैं।
-- Priority: main हमेशा जीतता है। अगर main active है, तो उसकी state तुरंत दिखाई जाती है। अगर main idle है, तो सबसे हाल में active रहा non-main session दिखाया जाता है। हम mid-activity में flip-flop नहीं करते; हम केवल तब switch करते हैं जब current session idle हो जाता है या main active हो जाता है।
-- Activity kinds:
-  - `job`: high-level command execution (`state: started|streaming|done|error`)।
-  - `tool`: `toolName` और `meta/args` के साथ `phase: start|result`।
+- स्रोत: `WorkActivityStore` (`apps/macos/Sources/OpenClaw/WorkActivityStore.swift`)।
+- ईवेंट `runId` वाले `ControlAgentEvent` के रूप में आते हैं; हैंडलर (`ControlChannel.routeWorkActivity`) ईवेंट पेलोड से `sessionKey` पढ़ता है और उसके अनुपस्थित होने पर डिफ़ॉल्ट रूप से `"main"` का उपयोग करता है।
+- प्राथमिकता: मुख्य सत्र (डिफ़ॉल्ट रूप से `sessionKey == "main"`) हमेशा प्राथमिक रहता है। मुख्य सत्र सक्रिय होने पर उसकी स्थिति तुरंत दिखाई देती है। मुख्य सत्र निष्क्रिय होने पर इसके बजाय सबसे हाल में सक्रिय गैर-मुख्य सत्र दिखाई देता है। गतिविधि के बीच स्टोर नहीं बदलता; यह केवल वर्तमान सत्र के निष्क्रिय होने या मुख्य सत्र के सक्रिय होने पर बदलता है।
+- गतिविधि के प्रकार:
+  - `job`: उच्च-स्तरीय कमांड निष्पादन (`state: started|streaming|done|error|...`)।
+  - `tool`: `name` वाला `phase: start|result`, वैकल्पिक `meta`/`args`।
 
-## IconState enum (Swift)
+## IconState एनम (Swift)
 
 - `idle`
 - `workingMain(ActivityKind)`
 - `workingOther(ActivityKind)`
-- `overridden(ActivityKind)` (debug override)
+- `overridden(ActivityKind)` (डीबग ओवरराइड)
 
-### ActivityKind → glyph
+### ActivityKind -> बैज प्रतीक
 
-- `exec` → 💻
-- `read` → 📄
-- `write` → ✍️
-- `edit` → 📝
-- `attach` → 📎
-- default → 🛠️
+`ActivityKind` किसी `ToolKind` (`bash`, `read`, `write`, `edit`, `attach`, `other`) या स्वतंत्र `job` को रैप करता है। प्रत्येक को क्रिटर आइकन (`IconState.badgeSymbolName`) के ऊपर बनाए गए SF Symbol बैज से मैप किया जाता है:
 
-### Visual mapping
+| प्रकार            | प्रतीक                             |
+| --------------- | ---------------------------------- |
+| `bash`          | `chevron.left.slash.chevron.right` |
+| `read`          | `doc`                              |
+| `write`         | `pencil`                           |
+| `edit`          | `pencil.tip`                       |
+| `attach`        | `paperclip`                        |
+| `other` / `job` | `gearshape.fill`                   |
 
-- `idle`: सामान्य critter।
-- `workingMain`: glyph वाला badge, full tint, leg "working" animation।
-- `workingOther`: glyph वाला badge, muted tint, कोई scurry नहीं।
-- `overridden`: activity की परवाह किए बिना चुना गया glyph/tint इस्तेमाल करता है।
+### दृश्य मैपिंग
 
-## Context submenu
+- `idle`: सामान्य क्रिटर, कोई बैज नहीं।
+- `workingMain`: प्रतीक वाला बैज, पूर्ण टिंट (`.primary` प्रमुखता), पैरों का "कार्यरत" एनीमेशन।
+- `workingOther`: प्रतीक वाला बैज, मद्धिम टिंट (`.secondary` प्रमुखता), कोई दौड़ने का एनीमेशन नहीं।
+- `overridden`: वास्तविक गतिविधि की परवाह किए बिना चुने गए प्रतीक/टिंट का उपयोग करता है।
 
-- root menu एक session count/status के साथ एक "Context" row दिखाता है और submenu खोलता है।
-- Context submenu header पिछले 24 hours के लिए active session count दिखाता है।
-- हर session row अपना token bar, age, preview, thinking/verbose, reset, compact, और delete actions रखती है।
-- Loading, disconnected, और session-load error messages Context submenu के अंदर दिखाई देते हैं।
-- Provider usage और usage-cost details Context के नीचे root-level पर रहते हैं ताकि submenu खोले बिना वे एक नज़र में दिख सकें।
+## संदर्भ उपमेनू
 
-## Status row text (menu)
+- मूल मेनू सत्र संख्या/स्थिति वाली एक "संदर्भ" पंक्ति दिखाता है; यह एक उपमेनू (`MenuSessionsInjector`) खोलता है।
+- उपमेनू हेडर पिछले 24 घंटों के सक्रिय सत्रों की संख्या दिखाता है।
+- प्रत्येक सत्र पंक्ति अपनी टोकन पट्टी, आयु, पूर्वावलोकन, चिंतन/विस्तृत टॉगल और रीसेट, कॉम्पैक्ट तथा हटाने की क्रियाएँ बनाए रखती है।
+- लोडिंग, डिस्कनेक्ट और सत्र-लोड त्रुटि संदेश संदर्भ उपमेनू के भीतर दिखाई देते हैं।
+- उपयोग और लागत अनुभाग संदर्भ के नीचे मूल स्तर पर रहते हैं, ताकि उपमेनू खोले बिना उन पर एक नज़र डाली जा सके।
 
-- काम सक्रिय होने पर: `<Session role> · <activity label>`
-  - Examples: `Main · exec: pnpm test`, `Other · read: apps/macos/Sources/OpenClaw/AppState.swift`.
-- idle होने पर: health summary पर fall back करता है।
+## स्थिति पंक्ति का टेक्स्ट (मेनू)
 
-## Event ingestion
+- कार्य सक्रिय रहने के दौरान: `<Session role> · <activity label>` (`MenuContentView` में `"\(roleLabel) · \(activity.label)"`), जहाँ भूमिका लेबल `Main` या `Other` है।
+- निष्क्रिय होने पर: स्वास्थ्य सारांश पर वापस चला जाता है।
 
-- Source: control-channel `agent` events (`ControlChannel.handleAgentEvent`)।
-- Parsed fields:
-  - start/stop के लिए `data.state` के साथ `stream: "job"`।
-  - `data.phase`, `name`, optional `meta`/`args` के साथ `stream: "tool"`।
-- Labels:
-  - `exec`: `args.command` की पहली line।
-  - `read`/`write`: छोटा किया गया path।
-  - `edit`: path और `meta`/diff counts से inferred change kind।
-  - fallback: tool name।
+## ईवेंट अंतर्ग्रहण
 
-## Debug override
+- स्रोत: नियंत्रण-चैनल के `agent` ईवेंट, जिन्हें `ControlChannel.routeWorkActivity(from:)` द्वारा रूट किया जाता है।
+- पार्स किए गए फ़ील्ड:
+  - प्रारंभ/समाप्ति के लिए `data.state` वाला `stream: "job"`।
+  - `data.phase`, `data.name` और वैकल्पिक `data.meta`/`data.args` वाला `stream: "tool"`।
+- टूल लेबल `ToolDisplayRegistry.resolve(name:args:meta:)` से आते हैं; अनसुलझे नाम कच्चे टूल नाम का उपयोग करते हैं।
 
-- Settings ▸ Debug ▸ "Icon override" picker:
-  - `System (auto)` (default)
-  - `Working: main` (per tool kind)
-  - `Working: other` (per tool kind)
+## डीबग ओवरराइड
+
+- Settings > Debug > "Icon override" पिकर:
+  - `System (auto)` (डिफ़ॉल्ट)
+  - `Working: main` / `Working: other` (प्रत्येक टूल प्रकार के लिए: bash, read, write, edit, other)
   - `Idle`
-- `@AppStorage("iconOverride")` के ज़रिए stored; `IconState.overridden` पर mapped।
+- `UserDefaults` कुंजी `openclaw.iconOverride` के अंतर्गत संग्रहीत; `IconState.overridden` से मैप किया गया।
 
-## Testing checklist
+## परीक्षण चेकलिस्ट
 
-- main session job trigger करें: verify करें कि icon तुरंत switch होता है और status row main label दिखाती है।
-- main idle रहते हुए non-main session job trigger करें: icon/status non-main दिखाता है; खत्म होने तक stable रहता है।
-- other active रहते हुए main start करें: icon तुरंत main पर flip होता है।
-- Rapid tool bursts: सुनिश्चित करें कि badge flicker नहीं करता (tool results पर TTL grace)।
-- सभी sessions idle होने पर health row फिर से दिखाई देती है।
+- मुख्य सत्र जॉब ट्रिगर करें: आइकन तुरंत बदलता है और स्थिति पंक्ति मुख्य लेबल दिखाती है।
+- मुख्य सत्र के निष्क्रिय रहने के दौरान गैर-मुख्य सत्र जॉब ट्रिगर करें: आइकन/स्थिति गैर-मुख्य सत्र दिखाते हैं; इसके पूर्ण होने तक स्थिर रहते हैं।
+- किसी अन्य सत्र के सक्रिय रहने के दौरान मुख्य सत्र शुरू करें: आइकन तुरंत मुख्य सत्र पर बदल जाता है।
+- टूल की तीव्र गतिविधियाँ: बैज झिलमिलाता नहीं है (पूर्ण हुए टूल को हटाने से पहले 2s की छूट अवधि, `WorkActivityStore.toolResultGrace`)।
+- सभी सत्रों के निष्क्रिय होने पर स्वास्थ्य पंक्ति फिर दिखाई देती है।
 
-## Related
+## संबंधित
 
-- [macOS app](/hi/platforms/macos)
-- [Menu bar icon](/hi/platforms/mac/icon)
+- [macOS ऐप](/hi/platforms/macos)
+- [मेनू बार आइकन](/hi/platforms/mac/icon)

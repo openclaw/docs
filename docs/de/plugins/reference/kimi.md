@@ -1,21 +1,22 @@
 ---
 read_when:
     - Sie installieren, konfigurieren oder prüfen das kimi-Plugin.
-summary: Fügt OpenClaw Unterstützung für die Modell-Provider Kimi und Kimi Coding hinzu.
+summary: Fügt Unterstützung für die Modell-Provider Kimi und Kimi Coding zu OpenClaw hinzu.
 title: Kimi-Plugin
 x-i18n:
-    generated_at: "2026-07-12T01:57:10Z"
+    generated_at: "2026-07-16T13:06:15Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 6f609f6e21b493ea83e5cc34a28921be2fed3334b531194050257857a06ef259
+    source_hash: 531172e318c99f8debace71e32e01980efb4205fe3afb0d1185493382bbe9712
     source_path: plugins/reference/kimi.md
     workflow: 16
 ---
 
 # Kimi-Plugin
 
-Fügt OpenClaw Unterstützung für die Modell-Provider Kimi und Kimi Coding hinzu.
+Fügt Unterstützung für Kimi und den Modell-Provider Kimi Coding zu OpenClaw hinzu.
 
 ## Distribution
 
@@ -24,7 +25,7 @@ Fügt OpenClaw Unterstützung für die Modell-Provider Kimi und Kimi Coding hinz
 
 ## Oberfläche
 
-Provider: kimi, kimi-coding
+Provider: `kimi`, `kimi-coding`
 
 ## Zugehörige Dokumentation
 

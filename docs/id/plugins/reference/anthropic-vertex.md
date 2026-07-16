@@ -4,11 +4,12 @@ read_when:
 summary: Plugin penyedia Anthropic Vertex OpenClaw untuk model Claude di Google Vertex AI.
 title: Plugin Anthropic Vertex
 x-i18n:
-    generated_at: "2026-07-12T14:30:24Z"
+    generated_at: "2026-07-16T18:26:01Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: fe5500ca56df49c0ef6ccbf39ced71e3fd0b18776ad23716de8575bc6ba64cb8
+    source_hash: bd73b80b4e49a85cd6b1d8e47df6bf8d2d791c36a677124112f299027bfd9af5
     source_path: plugins/reference/anthropic-vertex.md
     workflow: 16
 ---
@@ -20,30 +21,30 @@ Plugin penyedia Anthropic Vertex OpenClaw untuk model Claude di Google Vertex AI
 ## Distribusi
 
 - Paket: `@openclaw/anthropic-vertex-provider`
-- Jalur instalasi: npm; ClawHub
+- Rute instalasi: npm; ClawHub
 
 ## Permukaan
 
-penyedia: anthropic-vertex
+penyedia: `anthropic-vertex`
 
 <!-- openclaw-plugin-reference:manual-start -->
 
 ## Claude Fable 5
 
-Gunakan `anthropic-vertex/claude-fable-5` jika model tersebut tersedia di wilayah Google Cloud Anda.
-Fable 5 selalu menggunakan pemikiran adaptif dan secara bawaan memakai upaya `high`. `/think off` dan
-`/think minimal` menggunakan upaya `low` karena model tersebut tidak mendukung penonaktifan pemikiran.
+Gunakan `anthropic-vertex/claude-fable-5` jika model tersedia di region Google Cloud Anda.
+Fable 5 selalu menggunakan pemikiran adaptif dan secara default memakai upaya `high`. `/think off` dan
+`/think minimal` menggunakan upaya `low` karena model tidak mendukung penonaktifan pemikiran.
 
 ## Claude Sonnet 5
 
 Gunakan `anthropic-vertex/claude-sonnet-5` dengan endpoint `global`, `us`, atau `eu`
-milik Vertex. Sonnet 5 secara bawaan menggunakan pemikiran adaptif dengan upaya `high` dan mendukung
-`/think off` atau tingkat native `/think xhigh|max`. OpenClaw secara otomatis memublikasikan
-jendela konteks 1.000.000 token dan batas keluaran 128.000 tokennya.
+milik Vertex. Sonnet 5 secara default menggunakan pemikiran adaptif dengan upaya `high` dan mendukung
+`/think off` atau tingkat bawaan `/think xhigh|max`. OpenClaw memublikasikan
+jendela konteks 1.000.000 token dan batas keluaran 128.000 token secara otomatis.
 
 Harga katalog mengikuti tarif global perkenalan Vertex sebesar `$2/$10` per
 juta token masukan/keluaran hingga 31 Agustus 2026, lalu `$3/$15` mulai
-1 September. Endpoint multiwilayah `us` dan `eu` menggunakan
-premi 10% yang didokumentasikan oleh Vertex.
+1 September. Endpoint multi-region `us` dan `eu` menggunakan
+premi 10% yang didokumentasikan Vertex.
 
 <!-- openclaw-plugin-reference:manual-end -->

@@ -1,14 +1,15 @@
 ---
 read_when:
-    - คุณกำลังติดตั้ง กำหนดค่า หรือตรวจสอบ Plugin raft
+    - คุณกำลังติดตั้ง กำหนดค่า หรือตรวจสอบ Plugin Raft
 summary: Plugin ช่องทาง Raft ของ OpenClaw สำหรับบริดจ์ปลุก CLI ที่ปลอดภัย
 title: Plugin Raft
 x-i18n:
-    generated_at: "2026-07-12T16:31:41Z"
+    generated_at: "2026-07-16T19:28:49Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: fea04ec6a2f3e08d69fd95c8a8e368fdbc8e179b243b8f6b41b5f8ef70039efc
+    source_hash: 80af90cdf83fedcba8082db15376049f485c4e4cfb82cd9eefb911b15f1c72c3
     source_path: plugins/reference/raft.md
     workflow: 16
 ---
@@ -22,10 +23,10 @@ Plugin ช่องทาง Raft ของ OpenClaw สำหรับบริ
 - แพ็กเกจ: `@openclaw/raft`
 - ช่องทางการติดตั้ง: npm; ClawHub
 
-## ส่วนที่เปิดให้ใช้งาน
+## พื้นผิว
 
-ช่องทาง: raft
+ช่องทาง: `raft`
 
 ## เอกสารที่เกี่ยวข้อง
 
-- [raft](/th/channels/raft)
+- [Raft](/th/channels/raft)

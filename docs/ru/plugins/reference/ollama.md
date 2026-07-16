@@ -4,12 +4,12 @@ read_when:
 summary: Добавляет в OpenClaw поддержку провайдеров моделей Ollama и Ollama Cloud.
 title: Плагин Ollama
 x-i18n:
-    generated_at: "2026-07-13T18:24:36Z"
+    generated_at: "2026-07-16T16:36:06Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
-    prompt_version: 24
+    prompt_version: 32
     provider: openai
-    source_hash: 2d37136b5bcc8e6f9efb2cfcae52836546e62a5526215118490598e2c4152810
+    source_hash: 53410854f05d88fda0e6c7d4fe06d9288fc9cd55e3cbbeffd0fae9347f2c787d
     source_path: plugins/reference/ollama.md
     workflow: 16
 ---
@@ -25,7 +25,7 @@ x-i18n:
 
 ## Интерфейс
 
-провайдеры: ollama, ollama-cloud; контракты: memoryEmbeddingProviders, tools, webSearchProviders
+провайдеры: `ollama`, `ollama-cloud`; контракты: `memoryEmbeddingProviders`, `tools`, `webSearchProviders`
 
 ## Связанная документация
 

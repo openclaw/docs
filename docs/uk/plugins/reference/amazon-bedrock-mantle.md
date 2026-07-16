@@ -1,30 +1,31 @@
 ---
 read_when:
     - Ви встановлюєте, налаштовуєте або перевіряєте плагін amazon-bedrock-mantle
-summary: Plugin постачальника OpenClaw Amazon Bedrock Mantle для маршрутизації моделей, сумісних з OpenAI.
-title: Plugin Amazon Bedrock Mantle
+summary: Плагін провайдера Amazon Bedrock Mantle для OpenClaw, призначений для маршрутизації моделей, сумісних з OpenAI.
+title: Плагін Amazon Bedrock Mantle
 x-i18n:
-    generated_at: "2026-07-12T13:28:39Z"
+    generated_at: "2026-07-16T18:22:50Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 18725aa4678f967a5d34a2c951c11cc371e934abe62fde7616124157ebdb3799
+    source_hash: a12f8acda947e8b80053229a8b842560d087e2b7944d9092a3c3d250343cccbc
     source_path: plugins/reference/amazon-bedrock-mantle.md
     workflow: 16
 ---
 
 # Plugin Amazon Bedrock Mantle
 
-Plugin постачальника Amazon Bedrock Mantle для OpenClaw, призначений для маршрутизації моделей, сумісних з OpenAI.
+Plugin провайдера Amazon Bedrock Mantle для OpenClaw, призначений для маршрутизації моделей, сумісних з OpenAI.
 
 ## Розповсюдження
 
-- Пакет: `@openclaw/amazon-bedrock-mantle-provider`
-- Спосіб встановлення: npm; ClawHub
+- Пакунок: `@openclaw/amazon-bedrock-mantle-provider`
+- Спосіб установлення: npm; ClawHub
 
 ## Інтерфейс
 
-providers: amazon-bedrock-mantle
+провайдери: `amazon-bedrock-mantle`
 
 ## Пов’язана документація
 

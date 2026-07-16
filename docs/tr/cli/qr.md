@@ -1,15 +1,16 @@
 ---
 read_when:
     - Bir mobil Node uygulamasını bir Gateway ile hızlıca eşleştirmek istiyorsunuz
-    - Uzaktan/elle paylaşım için kurulum kodu çıktısına ihtiyacınız var
-summary: '`openclaw qr` için CLI başvurusu (mobil eşleştirme QR kodu + kurulum kodu oluşturma)'
+    - Uzaktan/manuel paylaşım için kurulum kodu çıktısına ihtiyacınız var
+summary: '`openclaw qr` için CLI referansı (mobil eşleştirme QR kodu + kurulum kodu oluşturma)'
 title: QR
 x-i18n:
-    generated_at: "2026-07-12T11:35:57Z"
+    generated_at: "2026-07-16T17:17:18Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 32641ff4e8035f6ca2eda849a59146125763af21c4105ae6cfa584da31ac070f
+    source_hash: f9d60a58126eae7eec5979f28bb511a09fa52b68cdd73727fca0b2de74efa84a
     source_path: cli/qr.md
     workflow: 16
 ---
@@ -23,6 +24,7 @@ openclaw qr
 openclaw qr --setup-code-only
 openclaw qr --json
 openclaw qr --remote
+openclaw qr --limited
 openclaw qr --url wss://gateway.example/ws
 ```
 
@@ -35,54 +37,57 @@ openclaw devices approve <requestId>
 
 ## Seçenekler
 
-- `--remote`: `gateway.remote.url` değerini tercih eder; bu URL ayarlanmamışsa `gateway.tailscale.mode=serve|funnel` değerine geri döner. `device-pair` Plugin `publicUrl` değerini yok sayar.
+- `--remote`: `gateway.remote.url` tercih edilir; bu URL ayarlanmamışsa `gateway.tailscale.mode=serve|funnel` değerine geri döner. `device-pair` Plugin `publicUrl` yok sayılır.
 - `--url <url>`: yükte kullanılan Gateway URL'sini geçersiz kılar
 - `--public-url <url>`: yükte kullanılan genel URL'yi geçersiz kılar
-- `--token <token>`: önyükleme akışının kimlik doğrulaması yaptığı Gateway belirtecini geçersiz kılar
-- `--password <password>`: önyükleme akışının kimlik doğrulaması yaptığı Gateway parolasını geçersiz kılar
+- `--token <token>`: önyükleme akışının kimlik doğrulaması için kullandığı Gateway belirtecini geçersiz kılar
+- `--password <password>`: önyükleme akışının kimlik doğrulaması için kullandığı Gateway parolasını geçersiz kılar
+- `--limited`: devredilen operatör belirtecinden yönetimsel Gateway erişimini çıkarır
 - `--setup-code-only`: yalnızca kurulum kodunu yazdırır
 - `--no-ascii`: ASCII QR oluşturmayı atlar
-- `--json`: JSON çıktısı üretir (`setupCode`, `gatewayUrl`, isteğe bağlı `gatewayUrls`, `auth`, `urlSource`)
+- `--json`: JSON çıktısı verir (`setupCode`, `gatewayUrl`, isteğe bağlı `gatewayUrls`, `auth`, `access`, isteğe bağlı `accessDowngraded`, `urlSource`)
 
-`--token` ve `--password` seçenekleri birlikte kullanılamaz.
+`--token` ve `--password` birlikte kullanılamaz.
 
 ## Kurulum kodunun içeriği
 
-Kurulum kodu, paylaşılan Gateway belirteci/parolası yerine kısa ömürlü, opak bir `bootstrapToken` taşır. Yerleşik önyükleme akışı şunları verir:
+Kurulum kodu, paylaşılan Gateway belirteci/parolası yerine kısa ömürlü ve belirsiz bir `bootstrapToken` taşır. Bir `wss://` uç noktası (veya aynı ana makinedeki geri döngü) için varsayılan önyükleme akışı şunları verir:
 
 - `scopes: []` içeren birincil `node` belirteci
-- `operator.approvals`, `operator.read`, `operator.talk.secrets` ve `operator.write` ile sınırlı, kapsamı belirlenmiş bir `operator` aktarım belirteci
+- `operator.admin`, `operator.approvals`, `operator.read`, `operator.talk.secrets` ve `operator.write` içeren tam yerel mobil `operator` devir belirteci
 
-Eşleştirme değişikliği kapsamları ve `operator.admin` için hâlâ ayrı olarak onaylanmış bir operatör eşleştirmesi veya belirteç akışı gerekir.
+Operatör devrinden `operator.admin` çıkarılırken aynı Node belirtecini korumak için `--limited` kullanın. Eşleştirme değişikliği kapsamı hiçbir zaman kurulum koduyla devredilmez.
 
-## Gateway URL çözümleme
+Düz metin LAN `ws://` kurulumu kullanılabilir olmaya devam eder ancak ağdaki bir gözlemci, taşıyıcı önyükleme belirtecini yakalayıp ondan önce davranabileceğinden OpenClaw sınırlı profili otomatik olarak kullanır. Tam erişim elde etmek için `wss://` veya Tailscale Serve yapılandırın, ardından yeni bir kod oluşturun.
 
-Mobil eşleştirme, Tailscale/genel `ws://` Gateway URL'leri için güvenli biçimde başarısız olur: bunlar için Tailscale Serve/Funnel veya bir `wss://` Gateway URL'si kullanın. Özel LAN adresleri ve `.local` Bonjour ana makineleri düz `ws://` üzerinden desteklenmeye devam eder.
+## Gateway URL çözümlemesi
 
-Seçilen Gateway URL'si `gateway.bind=lan` değerinden geldiğinde OpenClaw, kalıcı `tailscale serve status --json` rotalarını da denetler. Etkin Gateway'in local loopback bağlantı noktasına vekâlet eden tüm HTTPS Serve kökleri yedek seçenek olarak eklenir. QR komutu bu yedek seçeneği yalnızca `lan` için ekler; `custom` ve `tailnet`, açıkça duyurdukları rotaları korur. Güncel iOS istemcileri duyurulan rotaları sırayla yoklar ve erişilebilen ilk rotayı kaydeder; eski istemciler için geriye dönük `url` alanı değişmeden kalır.
+Mobil eşleştirme, Tailscale/genel `ws://` Gateway URL'leri için güvenli biçimde başarısız olur: bunlar için Tailscale Serve/Funnel veya bir `wss://` Gateway URL'si kullanın. Özel LAN adresleri ve `.local` Bonjour ana makineleri, yukarıda açıklandığı şekilde sınırlı operatör erişimiyle düz `ws://` üzerinden desteklenmeye devam eder.
 
-`--remote` kullanıldığında `gateway.remote.url` veya `gateway.tailscale.mode=serve|funnel` değerlerinden biri gereklidir.
+Seçilen Gateway URL'si `gateway.bind=lan` kaynağından geldiğinde OpenClaw, kalıcı `tailscale serve status --json` rotalarını da denetler. Etkin Gateway'in geri döngü bağlantı noktasına vekillik eden tüm HTTPS Serve kökleri yedek olarak eklenir. QR komutu bu yedeği yalnızca `lan` için ekler; `custom` ve `tailnet` açıkça duyurulan rotalarını korur. Geçerli iOS istemcileri duyurulan rotaları sırayla yoklar ve erişilebilen ilk rotayı kaydeder; eski istemciler için geriye dönük `url` alanı değiştirilmeden kalır.
 
-## Kimlik doğrulaması çözümleme (`--remote` olmadan)
+`--remote` kullanılırken `gateway.remote.url` veya `gateway.tailscale.mode=serve|funnel` seçeneklerinden biri gereklidir.
 
-Herhangi bir CLI kimlik doğrulaması geçersiz kılma seçeneği iletilmediğinde, yerel Gateway kimlik doğrulaması SecretRef değerleri aşağıdaki şekilde çözümlenir:
+## Kimlik doğrulama çözümlemesi (`--remote` olmadan)
 
-| Koşul                                                                                                                               | Çözümlenen değer                         |
-| ----------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------- |
-| `gateway.auth.mode="token"` veya öncelikli bir parola kaynağı bulunmadan çıkarılan mod                                               | `gateway.auth.token`                     |
-| `gateway.auth.mode="password"` veya kimlik doğrulaması/ortamdan öncelikli bir belirteç bulunmadan çıkarılan mod                       | `gateway.auth.password`                  |
-| Hem `gateway.auth.token` hem de `gateway.auth.password` yapılandırılmışsa (SecretRef değerleri dâhil) ve `gateway.auth.mode` ayarsızsa | başarısız olur; `gateway.auth.mode` açıkça ayarlanmalıdır |
+CLI kimlik doğrulama geçersiz kılması iletilmediğinde, yerel Gateway kimlik doğrulama SecretRef'leri şu şekilde çözümlenir:
 
-## Kimlik doğrulaması çözümleme (`--remote` ile)
+| Koşul                                                                                                                    | Çözümlenen                                  |
+| ---------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------- |
+| `gateway.auth.mode="token"` veya kazanan parola kaynağı bulunmayan çıkarımlı mod                                                | `gateway.auth.token`                      |
+| `gateway.auth.mode="password"` veya kimlik doğrulaması/ortamdan kazanan belirteç bulunmayan çıkarımlı mod                                         | `gateway.auth.password`                   |
+| Hem `gateway.auth.token` hem de `gateway.auth.password` yapılandırılmışsa (SecretRef'ler dâhil) ve `gateway.auth.mode` ayarlanmamışsa | başarısız olur; `gateway.auth.mode` değerini açıkça ayarlayın |
 
-Fiilen etkin uzak kimlik bilgileri SecretRef olarak yapılandırılmışsa ve `--token` ya da `--password` iletilmemişse komut, bunları etkin Gateway anlık görüntüsünden çözümler. Gateway kullanılamıyorsa komut hızla başarısız olur.
+## Kimlik doğrulama çözümlemesi (`--remote`)
+
+Etkin durumdaki uzak kimlik bilgileri SecretRef olarak yapılandırılmışsa ve ne `--token` ne de `--password` iletilmişse komut, bunları etkin Gateway anlık görüntüsünden çözümler. Gateway kullanılamıyorsa komut hemen başarısız olur.
 
 <Note>
-Bu komut yolu, `secrets.resolve` RPC yöntemini destekleyen bir Gateway gerektirir. Eski Gateway sürümleri, bilinmeyen yöntem hatası döndürür.
+Bu komut yolu, `secrets.resolve` RPC yöntemini destekleyen bir Gateway gerektirir. Eski Gateway'ler bilinmeyen yöntem hatası döndürür.
 </Note>
 
-## İlgili konular
+## İlgili
 
-- [CLI başvurusu](/tr/cli)
+- [CLI referansı](/tr/cli)
 - [Cihazlar](/tr/cli/devices)
 - [Eşleştirme](/tr/cli/pairing)

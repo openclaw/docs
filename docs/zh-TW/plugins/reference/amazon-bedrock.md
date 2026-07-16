@@ -1,14 +1,15 @@
 ---
 read_when:
     - 你正在安裝、設定或稽核 amazon-bedrock 外掛
-summary: 具備模型探索、嵌入與防護機制支援的 OpenClaw Amazon Bedrock 供應商外掛。
+summary: OpenClaw Amazon Bedrock 供應商外掛，支援模型探索、嵌入與防護機制。
 title: Amazon Bedrock 外掛
 x-i18n:
-    generated_at: "2026-07-11T21:35:17Z"
+    generated_at: "2026-07-16T11:47:15Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: bf39e0d58332cd057e8f050dc1a8742c219b62182381a7f47856e3a657b80f03
+    source_hash: 9711834eab36af35cd59039dae095064677e1ec3ad71d8405d76caa1badb9d81
     source_path: plugins/reference/amazon-bedrock.md
     workflow: 16
 ---
@@ -17,14 +18,14 @@ x-i18n:
 
 OpenClaw Amazon Bedrock 供應商外掛，支援模型探索、嵌入與防護機制。
 
-## 發佈方式
+## 發行方式
 
 - 套件：`@openclaw/amazon-bedrock-provider`
 - 安裝途徑：npm；ClawHub
 
 ## 介面
 
-供應商：amazon-bedrock；契約：memoryEmbeddingProviders
+供應商：`amazon-bedrock`；合約：`memoryEmbeddingProviders`
 
 ## 相關文件
 

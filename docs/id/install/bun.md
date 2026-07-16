@@ -1,24 +1,25 @@
 ---
 read_when:
-    - Anda menginginkan siklus pengembangan lokal tercepat (bun + watch)
+    - Anda ingin menginstal dependensi atau menjalankan skrip paket dengan Bun
     - Anda mengalami masalah pada skrip instalasi/patch/siklus hidup Bun
-summary: 'Alur kerja Bun (eksperimental): instalasi dan hal-hal yang perlu diperhatikan dibandingkan dengan pnpm'
-title: Bun (eksperimental)
+summary: Alur kerja Bun untuk instalasi dan skrip paket; Node diperlukan saat runtime
+title: Bun
 x-i18n:
-    generated_at: "2026-07-12T14:18:49Z"
+    generated_at: "2026-07-16T18:15:02Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: b836be354166ceb073d170e472e8b69c3f517e754fe71417df1d85d27a18ae94
+    source_hash: b822f700123b91c785eb881ebf28a63e77915b46dfd44beb9dbf63fb71aaa0d2
     source_path: install/bun.md
     workflow: 16
 ---
 
 <Warning>
-Bun tidak direkomendasikan untuk runtime Gateway (terdapat masalah yang diketahui pada WhatsApp dan Telegram). Gunakan Node untuk produksi.
+Bun tidak dapat menjalankan CLI atau Gateway OpenClaw karena tidak menyediakan API `node:sqlite` yang diperlukan. Instal versi Node yang didukung untuk semua perintah runtime OpenClaw.
 </Warning>
 
-Bun adalah runtime lokal opsional untuk menjalankan TypeScript secara langsung (`bun run ...`, `bun --watch ...`). Manajer paket default tetap `pnpm`, yang didukung sepenuhnya dan digunakan oleh perangkat dokumentasi. Bun tidak dapat menggunakan `pnpm-lock.yaml` dan mengabaikannya.
+Bun tetap dapat digunakan sebagai penginstal dependensi dan penjalankan skrip paket opsional. Manajer paket default tetap `pnpm`, yang didukung sepenuhnya dan digunakan oleh alat dokumentasi. Bun tidak dapat menggunakan `pnpm-lock.yaml` dan mengabaikannya.
 
 ## Instalasi
 
@@ -28,29 +29,32 @@ Bun adalah runtime lokal opsional untuk menjalankan TypeScript secara langsung (
     bun install
     ```
 
-    `bun.lock` / `bun.lockb` diabaikan oleh git, sehingga tidak ada perubahan yang tidak perlu pada repositori. Untuk sepenuhnya melewati penulisan berkas kunci:
+    `bun.lock` / `bun.lockb` diabaikan oleh git, sehingga tidak ada perubahan pada repo. Untuk sepenuhnya melewati penulisan lockfile:
 
     ```sh
     bun install --no-save
     ```
 
   </Step>
-  <Step title="Bangun dan uji">
+  <Step title="Build dan pengujian">
     ```sh
     bun run build
     bun run vitest run
     ```
+
+    Perintah yang meluncurkan OpenClaw itu sendiri tetap harus dijalankan melalui Node.
+
   </Step>
 </Steps>
 
 ## Skrip siklus hidup
 
-Bun memblokir skrip siklus hidup dependensi kecuali dipercaya secara eksplisit. Untuk repositori ini, skrip yang umumnya diblokir tidak diperlukan:
+Bun memblokir skrip siklus hidup dependensi kecuali jika dipercaya secara eksplisit. Untuk repo ini, skrip yang biasanya diblokir tidak diperlukan:
 
-- `baileys` `preinstall`: memeriksa versi mayor Node >= 20 (OpenClaw memerlukan Node 22.19+ atau 23.11+, dengan Node 24 direkomendasikan)
+- `baileys` `preinstall`: memeriksa versi mayor Node >= 20 (OpenClaw memerlukan Node 22.22.3+, 24.15+, atau 25.9+, dengan Node 24 direkomendasikan)
 - `protobufjs` `postinstall`: menampilkan peringatan tentang skema versi yang tidak kompatibel (tanpa artefak build)
 
-Jika Anda mengalami masalah runtime yang memerlukan skrip tersebut, percayai skrip itu secara eksplisit:
+Jika Anda mengalami masalah runtime yang memerlukan skrip ini, percayai skrip tersebut secara eksplisit:
 
 ```sh
 bun pm trust baileys protobufjs
@@ -58,7 +62,7 @@ bun pm trust baileys protobufjs
 
 ## Catatan penting
 
-Beberapa skrip paket menetapkan `pnpm` secara langsung secara internal (misalnya `check:docs`, `ui:*`, `protocol:check`). Menjalankannya melalui `bun run` tetap memanggil `pnpm` lewat shell, jadi jalankan saja skrip tersebut secara langsung melalui `pnpm`.
+Beberapa skrip paket melakukan hardcode `pnpm` secara internal (misalnya `check:docs`, `ui:*`, `protocol:check`). Menjalankannya melalui `bun run` tetap memanggil `pnpm` melalui shell, jadi jalankan langsung melalui `pnpm`.
 
 ## Terkait
 

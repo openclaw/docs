@@ -1,89 +1,94 @@
 ---
 read_when:
-    - Eşleştirilmiş düğümleri yönetiyorsunuz (kameralar, ekran, tuval)
+    - Eşleştirilmiş Node'ları yönetiyorsunuz (kameralar, ekran, tuval)
     - İstekleri onaylamanız veya node komutlarını çağırmanız gerekir
-summary: '`openclaw nodes` için CLI başvurusu (status, pairing, invoke, camera/canvas/screen)'
+summary: '`openclaw nodes` için CLI referansı (durum, eşleştirme, çağırma, kamera/tuval/ekran/konum/bildirim)'
 title: Node'lar
 x-i18n:
-    generated_at: "2026-06-28T00:23:45Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T16:50:45Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: e752e4a5809e01ee7970204c84d9f1008f146d8a55954f6ed5de527a6a124bc7
+    source_hash: 5b57235006d803fe09f626a65157dfb1f620d3d3c6f337e33132bcffdf4f1e37
     source_path: cli/nodes.md
     workflow: 16
 ---
 
 # `openclaw nodes`
 
-Eşleştirilmiş düğümleri (cihazları) yönetin ve düğüm yeteneklerini çağırın.
+Eşleştirilmiş Node'ları (cihazları) yönetin ve Node yeteneklerini çağırın.
 
-İlgili:
+İlgili: [Node'lara genel bakış](/tr/nodes) - [Etkin bilgisayar varlığı](/nodes/presence) - [Kamera Node'ları](/tr/nodes/camera) - [Görüntü Node'ları](/tr/nodes/images)
 
-- Düğümler genel bakışı: [Düğümler](/tr/nodes)
-- Kamera: [Kamera düğümleri](/tr/nodes/camera)
-- Görüntüler: [Görüntü düğümleri](/tr/nodes/images)
+Her alt komuttaki ortak seçenekler: `--url <url>`, `--token <token>`, `--timeout <ms>` (varsayılan `10000`), `--json`.
 
-Yaygın seçenekler:
-
-- `--url`, `--token`, `--timeout`, `--json`
-
-## Yaygın komutlar
+## Durum
 
 ```bash
+openclaw nodes status
+openclaw nodes status --connected
+openclaw nodes status --last-connected 24h
 openclaw nodes list
-openclaw nodes list --connected
-openclaw nodes list --last-connected 24h
+openclaw nodes describe --node <idOrNameOrIp>
+```
+
+`status` ve `list` komutlarının ikisi de `--connected` (yalnızca bağlı Node'lar) ve `--last-connected <duration>` (ör. `24h`, `7d`; yalnızca belirtilen süre içinde bağlanmış Node'lar) seçeneklerini kabul eder. `list`, bekleyen ve eşleştirilmiş Node'ları ayrı tablolarda gösterir; eşleştirilmiş satırlar en son bağlantı yaşını (Last Connect) içerir. `status`, Node başına yetenek, sürüm ve son giriş ayrıntılarını tek bir birleştirilmiş tabloda gösterir. Bağlı bir macOS Node'u, son girişi yalnızca Erişilebilirlik izni verilmişken bildirir ve en güncel satır `active` olarak işaretlenir; bkz. [Etkin bilgisayar varlığı](/nodes/presence). `describe`, bir Node'un yeteneklerini, izinlerini, etkinliğini ve geçerli/bekleyen çağırma komutlarını yazdırır.
+
+## Eşleştirme
+
+```bash
 openclaw nodes pending
 openclaw nodes approve <requestId>
 openclaw nodes reject <requestId>
 openclaw nodes remove --node <id|name|ip>
 openclaw nodes rename --node <id|name|ip> --name <displayName>
-openclaw nodes status
-openclaw nodes status --connected
-openclaw nodes status --last-connected 24h
 ```
 
-`nodes list`, bekleyen/eşleştirilmiş tabloları yazdırır. Eşleştirilmiş satırlar en son bağlantı yaşını (Son Bağlantı) içerir.
-Yalnızca şu anda bağlı düğümleri göstermek için `--connected` kullanın. Bir süre içinde bağlanan düğümlere
-filtrelemek için `--last-connected <duration>` kullanın (ör. `24h`, `7d`).
-Bir düğüm eşleştirmesini kaldırmak için `nodes remove --node <id|name|ip>` kullanın. Cihaz destekli
-bir düğüm için bu, cihazın `devices/paired.json` içindeki `node` rolünü iptal eder
-ve düğüm rolü oturumlarının bağlantısını keser (karma rollü bir cihaz satırını korur ve
-yalnızca `node` rolünü kaybeder; yalnızca düğüm olan bir cihaz silinir); ayrıca
-eşleşen eski Gateway sahipli düğüm eşleştirme kaydını da temizler. `operator.pairing`, operatör olmayan
-düğüm satırlarını kaldırabilir; karma rollü bir cihazda kendi düğüm rolünü iptal eden
-cihaz belirteci çağırıcısının ayrıca `operator.admin` yetkisine ihtiyacı vardır.
+Bu komutlar, Node'un WS `connect` el sıkışmasını denetleyen cihaz eşleştirmesinden (`openclaw devices approve`) ayrı olan, Gateway'in sahip olduğu `node.pair.*` deposunu yönetir. İkisinin nasıl ilişkili olduğu hakkında bilgi için [Node'lar](/tr/nodes) bölümüne bakın.
 
-Onay notu:
-
-- `openclaw nodes pending` yalnızca eşleştirme kapsamına ihtiyaç duyar.
-- `gateway.nodes.pairing.autoApproveCidrs`, bekleme adımını yalnızca açıkça güvenilen,
-  ilk kez yapılan `role: node` cihaz eşleştirmesi için atlayabilir. Varsayılan olarak kapalıdır
-  ve yükseltmeleri onaylamaz.
-- `openclaw nodes approve <requestId>`, bekleyen istekten ek kapsam gereksinimlerini devralır:
-  - komutsuz istek: yalnızca eşleştirme
-  - exec olmayan düğüm komutları: eşleştirme + yazma
-  - `system.run` / `system.run.prepare` / `system.which`: eşleştirme + yönetici
+- `remove`, Node'un eşleştirilmiş rol girdisini iptal eder. Cihaz destekli bir Node için bu işlem, cihaz eşleştirme deposundaki `node` rolünü iptal eder ve Node rolü oturumlarının bağlantısını keser: karma rollü bir cihaz satırını korur ve yalnızca `node` rolünü kaybeder; yalnızca Node rolüne sahip bir cihaz satırı silinir. Ayrıca Gateway'in sahip olduğu eşleşen tüm eski Node eşleştirme kayıtlarını temizler.
+- `pending` yalnızca `operator.pairing` kapsamını gerektirir.
+- `gateway.nodes.pairing.autoApproveCidrs`, açıkça güvenilen ve ilk kez gerçekleştirilen `role: node` cihaz eşleştirmesinde bekleme adımını atlayabilir. Varsayılan olarak kapalıdır; rol yükseltmelerini onaylamaz.
+- `gateway.nodes.pairing.sshVerify` (varsayılan olarak açık), Gateway cihaz anahtarını Node ana makinesine SSH üzerinden doğrulayabildiğinde ilk kez gerçekleştirilen `role: node` cihaz eşleştirmesini otomatik olarak onaylar; ilk yetenek yüzeyi de aynı adımda onaylanır. Bkz. [Node eşleştirme](/tr/gateway/pairing#ssh-verified-device-auto-approval-default).
+- `approve` kapsam gereksinimleri, bekleyen isteğin bildirdiği komutlara göre belirlenir:
+  - komutsuz istek: `operator.pairing`
+  - normal Node komutları: `operator.pairing` + `operator.write`
+  - yönetici açısından hassas komutlar (`system.run`, `system.run.prepare`, `system.which`, `browser.proxy`, `fs.listDir` ve `system.execApprovals.get/set`): `operator.pairing` + `operator.admin`
+- `remove` kapsamı: `operator.pairing`, operatör olmayan Node satırlarını kaldırabilir; karma rollü bir cihazdaki kendi Node rolünü iptal eden cihaz belirteci çağırıcısı ayrıca `operator.admin` gerektirir.
 
 ## Çağırma
 
 ```bash
-openclaw nodes invoke --node <id|name|ip> --command <command> --params <json>
+openclaw nodes invoke --node <id> --command system.which --params '{"bins":["uname"]}'
 ```
 
-Çağırma bayrakları:
+Bayraklar:
 
-- `--params <json>`: JSON nesnesi dizgesi (varsayılan `{}`).
-- `--invoke-timeout <ms>`: düğüm çağırma zaman aşımı (varsayılan `15000`).
-- `--idempotency-key <key>`: isteğe bağlı idempotency anahtarı.
-- `system.run` ve `system.run.prepare` burada engellenir; kabuk yürütme için `host=node` ile `exec` aracını kullanın.
+- `--command <command>` (zorunlu): ör. `canvas.eval`.
+- `--params <json>`: JSON nesnesi dizesi (varsayılan `{}`).
+- `--invoke-timeout <ms>`: Node çağırma zaman aşımı (varsayılan `15000`).
+- `--idempotency-key <key>`: isteğe bağlı eşgüçlülük anahtarı.
 
-Bir düğümde kabuk yürütme için `openclaw nodes run` yerine `host=node` ile `exec` aracını kullanın.
-`nodes` CLI artık yetenek odaklıdır: `nodes invoke` ile doğrudan RPC, ayrıca eşleştirme, kamera,
-ekran, konum, Canvas ve bildirimler. Canvas komutları paketle birlikte gelen deneysel Canvas Plugin tarafından uygulanır; çekirdek, bunların `openclaw nodes canvas` altında kalması için bir uyumluluk kancası tutar.
+`system.run` ve `system.run.prepare` burada engellenir; kabuk yürütme için bunun yerine `host=node` ile `exec` aracını kullanın. `system.which` işlemine `invoke` üzerinden izin verilir.
+
+## Bildirim, anında iletme, konum, ekran
+
+```bash
+openclaw nodes notify --node <id> --title "Build" --body "Done" --priority timeSensitive
+openclaw nodes push --node <id> --title "OpenClaw" --environment sandbox
+openclaw nodes location get --node <id> --accuracy precise
+openclaw nodes screen record --node <id> --duration 10s --fps 10 --out ./clip.mp4
+```
+
+- `notify`, macOS, iOS, Android ve doğrudan watchOS Node'ları dâhil olmak üzere `system.notify` bildiren bir Node'a yerel bildirim gönderir. Doğrudan watchOS teslimatı, OpenClaw'ın etkin olmasını gerektirir. `--title` veya `--body` gerektirir. Seçenekler: `--sound <name>`, `--priority <passive|active|timeSensitive>`, `--delivery <system|overlay|auto>` (varsayılan `system`), `--invoke-timeout <ms>` (varsayılan `15000`).
+- `push`, bir iOS Node'una APNs test anında iletimi gönderir. Seçenekler: `--title <text>` (varsayılan `OpenClaw`), algılanan APNs ortamını geçersiz kılmak için `--body <text>`, `--environment <sandbox|production>`.
+- `location get`, Node'un geçerli konumunu getirir. Seçenekler: `--max-age <ms>` (önbelleğe alınmış bir konum tespitini yeniden kullan), `--accuracy <coarse|balanced|precise>`, `--location-timeout <ms>` (varsayılan `10000`), `--invoke-timeout <ms>` (varsayılan `20000`).
+- `screen record`, kısa bir klip yakalar ve kaydedilen yolu yazdırır (veya `--json` ile JSON yazar). Seçenekler: `--screen <index>` (varsayılan `0`), `--duration <ms|10s>` (varsayılan `10000`), `--fps <fps>` (varsayılan `10`), `--no-audio`, `--out <path>`, `--invoke-timeout <ms>` (varsayılan `120000`).
+
+Kamera ve Canvas komutlarının kendi belgeleri vardır: [Kamera Node'ları](/tr/nodes/camera), [Canvas](/tr/platforms/mac/canvas). Canvas, paketle birlikte sunulan deneysel Canvas Plugin'i tarafından uygulanır; çekirdek, `openclaw nodes canvas` öğesini uyumluluk bağlama noktası olarak tutar.
 
 ## İlgili
 
-- [CLI başvurusu](/tr/cli)
-- [Düğümler](/tr/nodes)
+- [CLI referansı](/tr/cli)
+- [Node'lar](/tr/nodes)

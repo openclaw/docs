@@ -1,31 +1,32 @@
 ---
 read_when:
-    - Przed zainstalowaniem OpenClaw musisz zainstalować Node.js
-    - 'Zainstalowano OpenClaw, ale pojawia się błąd `openclaw`: nie znaleziono polecenia'
-    - '`npm install -g` kończy się niepowodzeniem z powodu uprawnień lub problemów ze zmienną `PATH`'
+    - Przed zainstalowaniem OpenClaw należy zainstalować Node.js
+    - Zainstalowano OpenClaw, ale nie znaleziono polecenia `openclaw`
+    - npm install -g kończy się niepowodzeniem z powodu problemów z uprawnieniami lub zmienną PATH
 summary: Instalowanie i konfigurowanie Node.js dla OpenClaw — wymagania dotyczące wersji, opcje instalacji i rozwiązywanie problemów ze zmienną PATH
 title: Node.js
 x-i18n:
-    generated_at: "2026-07-12T15:14:28Z"
+    generated_at: "2026-07-16T18:45:11Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 410686b714fe2830a0c6d77a52850eab5720a97747b9579bd730808db23a9dda
+    source_hash: ef4df255c24a11a549c757b597a07b00852e60973a5e513bdcf60796037a462a
     source_path: install/node.md
     workflow: 16
 ---
 
-OpenClaw wymaga **Node 22.19+, Node 23.11+ lub Node 24+**. **Node 24 jest domyślnym i zalecanym środowiskiem uruchomieniowym** dla instalacji, CI i procesów wydawniczych; Node 22 pozostaje obsługiwany w ramach aktywnej linii LTS. [Skrypt instalacyjny](/pl/install#alternative-install-methods) automatycznie wykrywa i instaluje Node — skorzystaj z tej strony, jeśli chcesz samodzielnie skonfigurować Node (wersje, PATH, instalacje globalne).
+OpenClaw wymaga **Node 22.22.3+, Node 24.15+ lub Node 25.9+**. **Node 24 jest domyślnym i zalecanym środowiskiem uruchomieniowym** dla instalacji, CI i procesów wydawania; Node 22 pozostaje obsługiwany w ramach aktywnej linii LTS. Node 23 nie jest obsługiwany. [Skrypt instalacyjny](/pl/install#alternative-install-methods) automatycznie wykrywa i instaluje Node — z tej strony należy skorzystać, aby samodzielnie skonfigurować Node (wersje, PATH, instalacje globalne).
 
-## Sprawdź swoją wersję
+## Sprawdzanie wersji
 
 ```bash
 node -v
 ```
 
-Zalecanym domyślnym wyborem jest `v24.x.x` lub nowsza wersja. Obsługiwana ścieżka Node 22 LTS wymaga wersji `v22.19.x` lub nowszej (przejdź na Node 24, gdy będzie to dogodne). Wydania Node 23 starsze niż `v23.11.0` nie są obsługiwane. Jeśli brakuje Node lub jego wersja nie mieści się w obsługiwanym zakresie, wybierz jedną z poniższych metod instalacji.
+`v24.15.0` lub nowsza wersja 24.x jest zalecaną wersją domyślną. `v22.22.3` lub nowsza wersja 22.x jest obsługiwaną ścieżką Node 22 LTS; Node `v25.9.0+` jest również obsługiwany. Node 23 nie jest obsługiwany. Jeśli Node nie jest zainstalowany lub jego wersja jest poza obsługiwanym zakresem, należy wybrać jedną z poniższych metod instalacji.
 
-## Zainstaluj Node
+## Instalowanie Node
 
 <Tabs>
   <Tab title="macOS">
@@ -35,7 +36,7 @@ Zalecanym domyślnym wyborem jest `v24.x.x` lub nowsza wersja. Obsługiwana ści
     brew install node
     ```
 
-    Możesz też pobrać instalator dla systemu macOS ze strony [nodejs.org](https://nodejs.org/).
+    Można też pobrać instalator dla systemu macOS ze strony [nodejs.org](https://nodejs.org/).
 
   </Tab>
   <Tab title="Linux">
@@ -52,7 +53,7 @@ Zalecanym domyślnym wyborem jest `v24.x.x` lub nowsza wersja. Obsługiwana ści
     sudo dnf install nodejs
     ```
 
-    Możesz też użyć menedżera wersji (patrz poniżej).
+    Można też użyć menedżera wersji (patrz poniżej).
 
   </Tab>
   <Tab title="Windows">
@@ -68,17 +69,17 @@ Zalecanym domyślnym wyborem jest `v24.x.x` lub nowsza wersja. Obsługiwana ści
     choco install nodejs-lts
     ```
 
-    Możesz też pobrać instalator dla systemu Windows ze strony [nodejs.org](https://nodejs.org/).
+    Można też pobrać instalator dla systemu Windows ze strony [nodejs.org](https://nodejs.org/).
 
   </Tab>
 </Tabs>
 
 <Accordion title="Korzystanie z menedżera wersji (nvm, fnm, mise, asdf)">
-  Menedżery wersji umożliwiają łatwe przełączanie się między wersjami Node. Popularne rozwiązania:
+  Menedżery wersji umożliwiają łatwe przełączanie między wersjami Node. Popularne opcje:
 
-- [**fnm**](https://github.com/Schniz/fnm) — szybki i wieloplatformowy
-- [**nvm**](https://github.com/nvm-sh/nvm) — powszechnie używany w systemach macOS/Linux
-- [**mise**](https://mise.jdx.dev/) — obsługuje wiele języków (Node, Python, Ruby itp.)
+- [**fnm**](https://github.com/Schniz/fnm) - szybki, wieloplatformowy
+- [**nvm**](https://github.com/nvm-sh/nvm) - powszechnie używany w systemach macOS/Linux
+- [**mise**](https://mise.jdx.dev/) - obsługuje wiele języków (Node, Python, Ruby itp.)
 
 Przykład z użyciem fnm:
 
@@ -88,7 +89,7 @@ fnm use 24
 ```
 
   <Warning>
-  Zainicjuj menedżer wersji w pliku startowym powłoki (`~/.zshrc` lub `~/.bashrc`). Jeśli pominiesz ten krok, polecenie `openclaw` może nie być dostępne w nowych sesjach terminala, ponieważ PATH nie będzie zawierać katalogu binarnego Node.
+  Menedżer wersji należy zainicjować w pliku startowym powłoki (`~/.zshrc` lub `~/.bashrc`). W przeciwnym razie polecenie `openclaw` może nie zostać znalezione w nowych sesjach terminala, ponieważ PATH nie będzie zawierać katalogu bin Node.
   </Warning>
 </Accordion>
 
@@ -96,35 +97,35 @@ fnm use 24
 
 ### `openclaw: command not found`
 
-Prawie zawsze oznacza to, że globalny katalog plików binarnych npm nie znajduje się w PATH.
+Prawie zawsze oznacza to, że globalny katalog bin npm nie znajduje się w PATH.
 
 <Steps>
-  <Step title="Znajdź globalny prefiks npm">
+  <Step title="Znajdowanie globalnego prefiksu npm">
     ```bash
     npm prefix -g
     ```
   </Step>
-  <Step title="Sprawdź, czy znajduje się w PATH">
+  <Step title="Sprawdzanie, czy znajduje się w PATH">
     ```bash
     echo "$PATH"
     ```
 
-    Poszukaj w danych wyjściowych wpisu `<npm-prefix>/bin` (macOS/Linux) lub `<npm-prefix>` (Windows).
+    W danych wyjściowych należy odszukać `<npm-prefix>/bin` (macOS/Linux) lub `<npm-prefix>` (Windows).
 
   </Step>
-  <Step title="Dodaj go do pliku startowego powłoki">
+  <Step title="Dodawanie do pliku startowego powłoki">
     <Tabs>
       <Tab title="macOS / Linux">
-        Dodaj do pliku `~/.zshrc` lub `~/.bashrc`:
+        Należy dodać do `~/.zshrc` lub `~/.bashrc`:
 
         ```bash
         export PATH="$(npm prefix -g)/bin:$PATH"
         ```
 
-        Następnie otwórz nowy terminal (lub uruchom `rehash` w powłoce zsh albo `hash -r` w powłoce bash).
+        Następnie należy otworzyć nowy terminal (lub uruchomić `rehash` w zsh albo `hash -r` w bash).
       </Tab>
       <Tab title="Windows">
-        Dodaj wynik polecenia `npm prefix -g` do systemowej zmiennej PATH za pomocą opcji Settings → System → Environment Variables.
+        Należy dodać wynik polecenia `npm prefix -g` do systemowej zmiennej PATH za pomocą opcji Settings → System → Environment Variables.
       </Tab>
     </Tabs>
 
@@ -133,7 +134,7 @@ Prawie zawsze oznacza to, że globalny katalog plików binarnych npm nie znajduj
 
 ### Błędy uprawnień podczas wykonywania `npm install -g` (Linux)
 
-Jeśli pojawiają się błędy `EACCES`, zmień globalny prefiks npm na katalog z prawem zapisu dla użytkownika:
+Jeśli występują błędy `EACCES`, należy zmienić globalny prefiks npm na katalog z prawem zapisu dla użytkownika:
 
 ```bash
 mkdir -p "$HOME/.npm-global"
@@ -141,10 +142,10 @@ npm config set prefix "$HOME/.npm-global"
 export PATH="$HOME/.npm-global/bin:$PATH"
 ```
 
-Dodaj wiersz `export PATH=...` do pliku `~/.bashrc` lub `~/.zshrc`, aby zmiana była trwała.
+Aby zachować tę zmianę na stałe, należy dodać wiersz `export PATH=...` do pliku `~/.bashrc` lub `~/.zshrc`.
 
 ## Powiązane materiały
 
-- [Omówienie instalacji](/pl/install) — wszystkie metody instalacji
-- [Aktualizowanie](/pl/install/updating) — utrzymywanie aktualnej wersji OpenClaw
-- [Pierwsze kroki](/pl/start/getting-started) — pierwsze czynności po instalacji
+- [Omówienie instalacji](/pl/install) - wszystkie metody instalacji
+- [Aktualizowanie](/pl/install/updating) - utrzymywanie aktualnej wersji OpenClaw
+- [Pierwsze kroki](/pl/start/getting-started) - pierwsze kroki po instalacji

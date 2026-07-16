@@ -1,43 +1,42 @@
 ---
 read_when:
-    - Güvenli binleri veya özel güvenli bin profillerini yapılandırma
+    - Güvenli ikili dosyaları veya özel güvenli ikili dosya profillerini yapılandırma
     - Onayları Slack/Discord/Telegram veya diğer sohbet kanallarına yönlendirme
-    - Bir kanal için yerel onay istemcisi uygulama
-summary: 'Gelişmiş exec onayları: güvenli ikililer, yorumlayıcı bağlama, onay yönlendirme, yerel teslim'
-title: Yürütme onayları — gelişmiş
+    - Bir kanal için yerel bir onay istemcisi uygulama
+summary: 'Gelişmiş exec onayları: güvenli ikili dosyalar, yorumlayıcı bağlama, onay yönlendirme, yerel teslimat'
+title: Exec onayları — gelişmiş
 x-i18n:
-    generated_at: "2026-06-28T01:21:57Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T17:50:08Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 3d936e1a1567d204981eec7c3262cf11f2af8fc1ed6213182954c2324718a270
+    source_hash: 99f123c7663378cc30ff9b6498c5cbc18ce9f20e9ac769755bab23af69ef1c7d
     source_path: tools/exec-approvals-advanced.md
     workflow: 16
 ---
 
 Gelişmiş exec onayı konuları: `safeBins` hızlı yolu, yorumlayıcı/çalışma zamanı
-bağlama ve sohbet kanallarına onay iletme (yerel iletim dahil).
-Temel politika ve onay akışı için bkz. [Exec onayları](/tr/tools/exec-approvals).
+bağlama ve onayların sohbet kanallarına iletilmesi (yerel teslimat dâhil).
+Temel politika ve onay akışı için [Exec onayları](/tr/tools/exec-approvals) bölümüne bakın.
 
-## Güvenli ikililer (yalnızca stdin)
+## Güvenli ikili dosyalar (yalnızca stdin)
 
-`tools.exec.safeBins`, açık izin listesi girdileri **olmadan** izin listesi
-modunda çalışabilen küçük bir **yalnızca stdin** ikili listesini (örneğin `cut`)
-tanımlar. Güvenli ikililer konumsal dosya argümanlarını ve yol benzeri tokenları
-reddeder, bu yüzden yalnızca gelen akış üzerinde çalışabilirler. Bunu genel bir
-güven listesi olarak değil, akış filtreleri için dar bir hızlı yol olarak ele
-alın.
+`tools.exec.safeBins`, izin verilenler listesi modunda açık izin verilenler listesi girdileri
+**olmadan** çalışan **yalnızca stdin** ikili dosyalarını (örneğin `cut`) belirtir.
+Güvenli ikili dosyalar konumsal dosya argümanlarını ve yol benzeri belirteçleri reddeder;
+böylece yalnızca gelen akış üzerinde çalışabilirler. Bunu genel bir güven listesi olarak değil,
+akış filtrelerine yönelik dar kapsamlı bir hızlı yol olarak değerlendirin.
 
 <Warning>
-Yorumlayıcı veya çalışma zamanı ikililerini (örneğin `python3`, `node`,
-`ruby`, `bash`, `sh`, `zsh`) `safeBins` içine **eklemeyin**. Bir komut kod
-değerlendirebiliyor, alt komut çalıştırabiliyor veya tasarımı gereği dosya
-okuyabiliyorsa, açık izin listesi girdilerini tercih edin ve onay istemlerini
-etkin tutun. Özel güvenli ikililer `tools.exec.safeBinProfiles.<bin>` içinde
-açık bir profil tanımlamalıdır.
+Yorumlayıcı veya çalışma zamanı ikili dosyalarını (örneğin `python3`, `node`,
+`ruby`, `bash`, `sh`, `zsh`) `safeBins` içine **eklemeyin**. Bir komut tasarımı
+gereği kod değerlendirebiliyor, alt komut çalıştırabiliyor veya dosya okuyabiliyorsa açık izin
+verilenler listesi girdilerini tercih edin ve onay istemlerini etkin tutun. Özel güvenli ikili
+dosyalar `tools.exec.safeBinProfiles.<bin>` içinde açık bir profil tanımlamalıdır.
 </Warning>
 
-Varsayılan güvenli ikililer:
+Varsayılan güvenli ikili dosyalar:
 
 [//]: # "SAFE_BIN_DEFAULTS:START"
 
@@ -45,270 +44,429 @@ Varsayılan güvenli ikililer:
 
 [//]: # "SAFE_BIN_DEFAULTS:END"
 
-`grep` ve `sort` varsayılan listede yoktur. Dahil etmeyi seçerseniz, stdin dışı
-iş akışları için açık izin listesi girdilerini koruyun. Güvenli ikili modunda
-`grep` için deseni `-e`/`--regexp` ile sağlayın; dosya operandlarının belirsiz
-konumsallar olarak gizlice sokulamaması için konumsal desen biçimi reddedilir.
+`grep` ve `sort` varsayılan listede değildir. Bunları etkinleştirirseniz stdin dışındaki
+iş akışları için açık izin verilenler listesi girdilerini koruyun. Güvenli ikili dosya modunda
+`grep` için kalıbı `-e`/`--regexp` ile sağlayın; konumsal kalıp biçimi reddedilir,
+böylece dosya işlenenleri belirsiz konumsal argümanlar olarak gizlice aktarılamaz.
 
 ### Argv doğrulaması ve reddedilen bayraklar
 
-Doğrulama yalnızca argv biçiminden deterministiktir (ana makine dosya sistemi
-varlık denetimi yoktur); bu, izin/verme farklarından dosya varlığı oracle
-davranışını engeller. Varsayılan güvenli ikililer için dosya odaklı seçenekler
-reddedilir; uzun seçenekler kapalı başarısız olacak şekilde doğrulanır
-(bilinmeyen bayraklar ve belirsiz kısaltmalar reddedilir).
+Doğrulama yalnızca argv biçimine göre belirlenimlidir (ana makine dosya sisteminde varlık
+kontrolü yapılmaz); bu, izin verme/reddetme farklarının dosya varlığı sorgulama kanalı
+oluşturmasını önler. Varsayılan güvenli ikili dosyalarda dosya odaklı seçenekler reddedilir;
+uzun seçenekler kapalı kalma ilkesiyle doğrulanır (bilinmeyen bayraklar ve belirsiz kısaltmalar
+reddedilir). Varsayılan ikili dosyaların tanınan salt okunur Boole bayrakları (örneğin
+`wc -l`, `tr -d`, `uniq -c`) kabul edilirken tanınmayan kısa bayraklar kapalı kalır
+ve manuel onaya yönlendirilir.
 
-Güvenli ikili profiline göre reddedilen bayraklar:
+Güvenli ikili dosya profiline göre reddedilen bayraklar:
 
 [//]: # "SAFE_BIN_DENIED_FLAGS:START"
 
 - `grep`: `--dereference-recursive`, `--directories`, `--exclude-from`, `--file`, `--recursive`, `-R`, `-d`, `-f`, `-r`
 - `jq`: `--argfile`, `--from-file`, `--library-path`, `--rawfile`, `--slurpfile`, `-L`, `-f`
 - `sort`: `--compress-program`, `--files0-from`, `--output`, `--random-source`, `--temporary-directory`, `-T`, `-o`
+- `tail`: `--follow`, `--retry`, `-F`, `-f`
 - `wc`: `--files0-from`
 
 [//]: # "SAFE_BIN_DENIED_FLAGS:END"
 
-Güvenli ikililer ayrıca, stdin’e özel segmentler için argv tokenlarının yürütme
-zamanında **değişmez metin** olarak ele alınmasını zorunlu kılar (globbing yok
-ve `$VARS` genişletmesi yok); böylece `*` veya `$HOME/...` gibi desenler dosya
-okumalarını gizlice sokmak için kullanılamaz.
+Güvenli ikili dosyalar ayrıca yalnızca stdin kullanan segmentlerde argv belirteçlerinin çalışma
+zamanında **değişmez metin** olarak değerlendirilmesini zorunlu kılar (glob eşleştirmesi ve
+`$VARS` genişletmesi yapılmaz); böylece `*` veya `$HOME/...` gibi kalıplar dosya okumalarını
+gizlice aktarmak için kullanılamaz. Anlamsal davranışları yalnızca stdin ile sınırlı olarak
+doğrulanamadığından `awk`, `sed` ve `jq` güvenli ikili dosya olarak her zaman reddedilir:
+`jq` ortam verilerini okuyabilir ve modüllerden veya başlangıç dosyalarından jq kodu yükleyebilir.
+Bu araçlar için `safeBins` yerine açık bir izin verilenler listesi girdisi veya onay istemi kullanın.
 
-### Güvenilen ikili dizinleri
+### Güvenilir ikili dosya dizinleri
 
-Güvenli ikililer güvenilen ikili dizinlerinden çözümlenmelidir (sistem
-varsayılanları artı isteğe bağlı `tools.exec.safeBinTrustedDirs`). `PATH`
-girdilerine hiçbir zaman otomatik olarak güvenilmez. Varsayılan güvenilen
-dizinler kasıtlı olarak minimaldir: `/bin`, `/usr/bin`. Güvenli ikili
-yürütülebiliriniz paket yöneticisi/kullanıcı yollarında bulunuyorsa (örneğin
-`/opt/homebrew/bin`, `/usr/local/bin`, `/opt/local/bin`, `/snap/bin`), bunları
-açıkça `tools.exec.safeBinTrustedDirs` içine ekleyin.
+Güvenli ikili dosyalar güvenilir ikili dosya dizinlerinden (sistem varsayılanları ve isteğe bağlı
+`tools.exec.safeBinTrustedDirs`) çözümlenmelidir. `PATH` girdilerine hiçbir zaman otomatik olarak güvenilmez.
+Varsayılan güvenilir dizinler kasıtlı olarak asgari düzeydedir: `/bin`, `/usr/bin`.
+Güvenli ikili dosya yürütülebiliriniz paket yöneticisi/kullanıcı yollarında bulunuyorsa (örneğin
+`/opt/homebrew/bin`, `/usr/local/bin`, `/opt/local/bin`, `/snap/bin`), bunları açıkça
+`tools.exec.safeBinTrustedDirs` içine ekleyin.
 
 ### Kabuk zincirleme, sarmalayıcılar ve çoklayıcılar
 
-Kabuk zincirleme (`&&`, `||`, `;`), her üst düzey segment izin listesini
-karşıladığında (güvenli ikililer veya skill otomatik izni dahil) izinlidir.
-Yönlendirmeler izin listesi modunda desteklenmemeye devam eder. Komut ikamesi
-(`$()` / ters tırnaklar), çift tırnakların içinde olsa bile izin listesi
-ayrıştırması sırasında reddedilir; değişmez `$()` metnine ihtiyacınız varsa tek
-tırnak kullanın.
+Her üst düzey segment izin verilenler listesini karşıladığında (güvenli ikili dosyalar veya
+Skills otomatik izni dâhil) kabuk zincirlemeye (`&&`, `||`, `;`) izin verilir.
+Yönlendirmeler izin verilenler listesi modunda desteklenmez. Komut ikamesi (`$()` /
+ters tırnaklar), çift tırnakların içinde olsa bile izin verilenler listesi ayrıştırması sırasında
+reddedilir; değişmez `$()` metnine ihtiyacınız varsa tek tırnak kullanın.
 
-macOS yardımcı uygulama onaylarında, kabuk denetimi veya genişletme söz dizimi
-(`&&`, `||`, `;`, `|`, `` ` ``, `$`, `<`, `>`, `(`, `)`) içeren ham kabuk metni,
-kabuk ikilisinin kendisi izin listesine alınmadıkça izin listesi eşleşmesi
-yokmuş gibi ele alınır.
+macOS yardımcı uygulama onaylarında kabuk denetimi veya genişletme sözdizimi (`&&`,
+`||`, `;`, `|`, `` ` ``, `$`, `<`, `>`, `(`, `)`) içeren ham kabuk metni,
+kabuk ikili dosyasının kendisi izin verilenler listesinde olmadığı sürece izin verilenler listesi
+eşleşmemesi olarak değerlendirilir.
 
-Kabuk sarmalayıcıları (`bash|sh|zsh ... -c/-lc`) için istek kapsamlı ortam
-geçersiz kılmaları küçük ve açık bir izin listesine indirgenir (`TERM`, `LANG`,
-`LC_*`, `COLORTERM`, `NO_COLOR`, `FORCE_COLOR`).
+Kabuk sarmalayıcılarında (`bash|sh|zsh ... -c/-lc`) istek kapsamındaki ortam geçersiz kılmaları küçük ve
+açık bir izin verilenler listesine indirgenir (`TERM`, `LANG`, `LC_*`,
+`COLORTERM`, `NO_COLOR`, `FORCE_COLOR`).
 
-İzin listesi modundaki `allow-always` kararları için bilinen dağıtım
-sarmalayıcıları (`env`, `flock`, `nice`, `nohup`, `stdbuf`, `timeout`),
-sarmalayıcı yolu yerine içteki yürütülebilir yolu kalıcılaştırır. Kabuk
-çoklayıcıları (`busybox`, `toybox`) kabuk applet’leri (`sh`, `ash` vb.) için
-aynı şekilde açılır. Bir sarmalayıcı veya çoklayıcı güvenle açılamazsa, otomatik
-olarak hiçbir izin listesi girdisi kalıcılaştırılmaz.
-
-`python3` veya `node` gibi yorumlayıcıları izin listesine alırsanız, satır içi
-eval’in yine de açık onay gerektirmesi için `tools.exec.strictInlineEval=true`
-tercih edin. Katı modda `allow-always`, zararsız yorumlayıcı/betik çağrılarını
-yine de kalıcılaştırabilir, ancak satır içi eval taşıyıcıları otomatik olarak
+İzin verilenler listesi modundaki `allow-always` kararlarında şeffaf yönlendirme sarmalayıcıları
+(örneğin `env`, `flock`, `nice`, `nohup`, `stdbuf`, `timeout`) sarmalayıcı yolu yerine içteki
+yürütülebilir dosyanın yolunu kalıcılaştırır. Kabuk çoklayıcıları (`busybox`, `toybox`)
+da kabuk uygulamacıkları (`sh`, `ash` vb.) için aynı şekilde açılır. Bir sarmalayıcı
+veya çoklayıcı güvenli biçimde açılamıyorsa hiçbir izin verilenler listesi girdisi otomatik olarak
 kalıcılaştırılmaz.
 
-### Güvenli ikililer ve izin listesi
+`python3` veya `node` gibi yorumlayıcıları izin verilenler listesine eklerseniz satır içi
+değerlendirmenin yine açık bir onay gerektirmesi için `tools.exec.strictInlineEval=true` seçeneğini tercih edin.
+Katı modda `allow-always` zararsız yorumlayıcı/betik çağrılarını yine kalıcılaştırabilir ancak satır
+içi değerlendirme taşıyıcıları otomatik olarak kalıcılaştırılmaz.
 
-| Konu             | `tools.exec.safeBins`                                  | İzin listesi (`exec-approvals.json`)                                               |
-| ---------------- | ------------------------------------------------------ | ---------------------------------------------------------------------------------- |
-| Amaç             | Dar stdin filtrelerine otomatik izin ver               | Belirli yürütülebilirlere açıkça güven                                             |
-| Eşleşme türü     | Yürütülebilir adı + güvenli ikili argv politikası      | Çözümlenmiş yürütülebilir yol glob’u veya PATH ile çağrılan komutlar için yalın komut adı glob’u |
-| Argüman kapsamı  | Güvenli ikili profili ve değişmez-token kurallarıyla sınırlı | Varsayılan olarak yol eşleşmesi; isteğe bağlı `argPattern` ayrıştırılmış argv’yi sınırlayabilir |
-| Tipik örnekler   | `head`, `tail`, `tr`, `wc`                             | `jq`, `python3`, `node`, `ffmpeg`, özel CLI’ler                                    |
-| En iyi kullanım  | İş hatlarında düşük riskli metin dönüşümleri           | Daha geniş davranışı veya yan etkileri olan herhangi bir araç                      |
+### Güvenli ikili dosyalar ile izin verilenler listesinin karşılaştırması
+
+| Konu             | `tools.exec.safeBins`                                         | İzin verilenler listesi (`exec-approvals.json`)                                              |
+| ---------------- | ---------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| Amaç             | Dar kapsamlı stdin filtrelerine otomatik olarak izin verme | Belirli yürütülebilir dosyalara açıkça güvenme                                             |
+| Eşleşme türü     | Yürütülebilir dosya adı + güvenli ikili argv politikası    | Çözümlenmiş yürütülebilir dosya yolu globu veya PATH üzerinden çağrılan komutlar için yalın komut adı globu |
+| Argüman kapsamı  | Güvenli ikili dosya profili ve değişmez belirteç kurallarıyla sınırlandırılır | Varsayılan olarak yol eşleşmesi; isteğe bağlı `argPattern` ayrıştırılmış argv'yi sınırlandırabilir |
+| Tipik örnekler   | `head`, `tail`, `tr`, `wc` | `jq`, `python3`, `node`, `ffmpeg`, özel CLI'lar |
+| En iyi kullanım  | İşlem hatlarındaki düşük riskli metin dönüşümleri          | Daha geniş davranışa veya yan etkilere sahip tüm araçlar                                   |
 
 Yapılandırma konumu:
 
-- `safeBins` yapılandırmadan gelir (`tools.exec.safeBins` veya ajan başına `agents.list[].tools.exec.safeBins`).
-- `safeBinTrustedDirs` yapılandırmadan gelir (`tools.exec.safeBinTrustedDirs` veya ajan başına `agents.list[].tools.exec.safeBinTrustedDirs`).
-- `safeBinProfiles` yapılandırmadan gelir (`tools.exec.safeBinProfiles` veya ajan başına `agents.list[].tools.exec.safeBinProfiles`). Ajan başına profil anahtarları global anahtarları geçersiz kılar.
-- izin listesi girdileri ana makineye yerel onay dosyasında `agents.<id>.allowlist` altında (veya Control UI / `openclaw approvals allowlist ...` üzerinden) bulunur.
-- `openclaw security audit`, yorumlayıcı/çalışma zamanı ikilileri açık profiller olmadan `safeBins` içinde göründüğünde `tools.exec.safe_bins_interpreter_unprofiled` ile uyarır.
-- `openclaw doctor --fix`, eksik özel `safeBinProfiles.<bin>` girdilerini `{}` olarak iskeleleyebilir (sonrasında gözden geçirip sıkılaştırın). Yorumlayıcı/çalışma zamanı ikilileri otomatik olarak iskelelenmez.
+- `safeBins` yapılandırmadan gelir (`tools.exec.safeBins` veya aracı başına `agents.list[].tools.exec.safeBins`).
+- `safeBinTrustedDirs` yapılandırmadan gelir (`tools.exec.safeBinTrustedDirs` veya aracı başına `agents.list[].tools.exec.safeBinTrustedDirs`).
+- `safeBinProfiles` yapılandırmadan gelir (`tools.exec.safeBinProfiles` veya aracı başına `agents.list[].tools.exec.safeBinProfiles`). Aracı başına profil anahtarları genel anahtarları geçersiz kılar.
+- izin verilenler listesi girdileri, `agents.<id>.allowlist` altındaki ana makineye yerel onaylar dosyasında (veya Control UI / `openclaw approvals allowlist ...` aracılığıyla) bulunur.
+- `openclaw security audit`, yorumlayıcı/çalışma zamanı ikili dosyaları açık profiller olmadan `safeBins` içinde yer aldığında `tools.exec.safe_bins_interpreter_unprofiled` ile uyarır.
+- `openclaw doctor --fix`, eksik özel `safeBinProfiles.<bin>` girdilerini `{}` olarak oluşturabilir (ardından gözden geçirip sıkılaştırın). Yorumlayıcı/çalışma zamanı ikili dosyaları otomatik olarak oluşturulmaz.
 
 Özel profil örneği:
-__OC_I18N_900000__
-`jq`’yu açıkça `safeBins` içine dahil ederseniz, OpenClaw güvenli ikili modunda `env`
-builtin’ini yine de reddeder; böylece `jq -n env`, açık bir izin listesi yolu veya onay
-istemi olmadan ana makine süreç ortamını dökemez.
+
+```json5
+{
+  tools: {
+    exec: {
+      safeBins: ["myfilter"],
+      safeBinProfiles: {
+        myfilter: {
+          minPositional: 0,
+          maxPositional: 0,
+          allowedValueFlags: ["-n", "--limit"],
+          deniedFlags: ["-f", "--file", "-c", "--command"],
+        },
+      },
+    },
+  },
+}
+```
 
 ## Yorumlayıcı/çalışma zamanı komutları
 
-Onay destekli yorumlayıcı/çalışma zamanı çalıştırmaları kasıtlı olarak muhafazakardır:
+Onay destekli yorumlayıcı/çalışma zamanı çalıştırmaları kasıtlı olarak ihtiyatlıdır:
 
-- Tam argv/cwd/env bağlamı her zaman bağlanır.
-- Doğrudan kabuk betiği ve doğrudan çalışma zamanı dosyası biçimleri en iyi çabayla tek bir somut yerel
+- Kesin argv/cwd/env bağlamı her zaman bağlanır.
+- Doğrudan kabuk betiği ve doğrudan çalışma zamanı dosyası biçimleri, mümkün olan en iyi çabayla tek bir somut yerel
   dosya anlık görüntüsüne bağlanır.
-- Yine de tek bir doğrudan yerel dosyaya çözümlenen yaygın paket yöneticisi sarmalayıcı biçimleri (örneğin
+- Yine tek bir doğrudan yerel dosyaya çözümlenen yaygın paket yöneticisi sarmalayıcı biçimleri (örneğin
   `pnpm exec`, `pnpm node`, `npm exec`, `npx`) bağlamadan önce açılır.
 - OpenClaw bir yorumlayıcı/çalışma zamanı komutu için tam olarak bir somut yerel dosya belirleyemezse
-  (örneğin paket betikleri, eval biçimleri, çalışma zamanına özgü yükleyici zincirleri veya belirsiz çoklu dosya
-  biçimleri), onay destekli yürütme kapsamadığı anlamsal kapsamı iddia etmek yerine reddedilir.
-- Bu iş akışları için sandboxing, ayrı bir ana makine sınırı veya operatörün daha geniş çalışma zamanı semantiğini
-  kabul ettiği açıkça güvenilen bir izin listesi/tam iş akışı tercih edin.
+  (örneğin paket betikleri, değerlendirme biçimleri, çalışma zamanına özgü yükleyici zincirleri veya belirsiz çok dosyalı
+  biçimler), sahip olmadığı anlamsal kapsamı varmış gibi göstermek yerine onay destekli yürütme
+  reddedilir.
+- Bu iş akışlarında korumalı alan kullanmayı, ayrı bir ana makine sınırını veya operatörün daha geniş çalışma zamanı
+  anlamlarını kabul ettiği, açıkça güvenilen izin verilenler listesi/tam iş akışını tercih edin.
 
-Onay gerektiğinde exec aracı hemen bir onay id’siyle döner. Daha sonra onaylanan çalıştırma sistem
-olaylarını (`Exec finished` ve yapılandırıldığında `Exec running`) ilişkilendirmek için bu id’yi kullanın.
-Zaman aşımından önce karar gelmezse istek onay zaman aşımı olarak ele alınır ve terminal ana makine komutu
-reddi olarak gösterilir. Kaynak oturumu olan ana ajan async onayları için OpenClaw, komutun çalışmadığını
-ajanın gözlemlemesi ve daha sonra eksik sonucu onarmaya çalışmaması için o oturumu dahili bir takip ile de sürdürür.
+Onay gerektiğinde exec aracı bir onay kimliğiyle hemen döner. Daha sonra gerçekleşen onaylı çalıştırma
+sistem olaylarını (`Exec finished` ve yapılandırıldığında `Exec running`) ilişkilendirmek için bu kimliği kullanın.
+Zaman aşımından önce karar verilmezse istek, onay zaman aşımı olarak değerlendirilir ve nihai bir
+ana makine komutu reddi olarak gösterilir. Kaynak oturumu bulunan ana aracı eşzamansız onaylarında
+OpenClaw ayrıca bu oturumu dâhilî bir takip ile sürdürür; böylece aracı daha sonra eksik bir sonucu
+düzeltmeye çalışmak yerine komutun çalışmadığını gözlemler. Bekleyen exec onaylarının süresi
+varsayılan olarak 30 dakika sonra dolar.
 
-### Takip iletimi davranışı
+### Takip teslimatı davranışı
 
-Onaylanan async exec bittikten sonra OpenClaw aynı oturuma bir takip `agent` turu gönderir.
-Reddedilen async onayları ret durumu için aynı ana oturum takip yolunu kullanır, ancak yükseltilmiş
-çalışma zamanı devirleri kaydetmez ve komutu çalıştırmaz. Sürdürülebilir ana oturumu olmayan retler
-ya bastırılır ya da mevcut olduğunda güvenli bir doğrudan rota üzerinden raporlanır.
+Onaylanmış eşzamansız bir exec tamamlandıktan sonra OpenClaw aynı oturuma takip niteliğinde bir
+`agent` dönüşü gönderir. Reddedilen eşzamansız onaylar, ret durumu için aynı ana oturum takip
+yolunu kullanır ancak yükseltilmiş çalışma zamanı devirlerini kaydetmez ve komutu çalıştırmaz.
+Sürdürülebilir bir ana oturumu olmayan retler ya bastırılır ya da mevcut olduğunda güvenli bir
+doğrudan yol üzerinden bildirilir.
 
-- Geçerli bir harici iletim hedefi varsa (iletilebilir kanal artı hedef `to`), takip iletimi o kanalı kullanır.
-- Yalnızca webchat veya harici hedefi olmayan dahili oturum akışlarında takip iletimi yalnızca oturumda kalır (`deliver: false`).
-- Bir çağıran çözümlenebilir harici kanal olmadan açıkça katı harici iletim isterse istek `INVALID_REQUEST` ile başarısız olur.
-- `bestEffortDeliver` etkinse ve harici kanal çözümlenemiyorsa, iletim başarısız olmak yerine yalnızca oturuma düşürülür.
+- Geçerli bir harici teslimat hedefi varsa (teslimat yapılabilir kanal ve hedef `to`), takip teslimatı bu kanalı kullanır.
+- Harici hedefi olmayan yalnızca web sohbeti veya dâhilî oturum akışlarında takip teslimatı yalnızca oturumda kalır (`deliver: false`).
+- Çağıran, çözümlenebilir bir harici kanal olmadan açıkça katı harici teslimat isterse istek `INVALID_REQUEST` ile başarısız olur.
+- `bestEffortDeliver` etkinse ve hiçbir harici kanal çözümlenemiyorsa teslimat başarısız olmak yerine yalnızca oturuma indirgenir.
 
 ## Onayları sohbet kanallarına iletme
 
-Exec onay istemlerini herhangi bir sohbet kanalına (Plugin kanalları dahil) iletebilir ve
-bunları `/approve` ile onaylayabilirsiniz. Bu, normal giden iletim işlem hattını kullanır.
+Exec onayı istemlerini herhangi bir sohbet kanalına (Plugin kanalları dâhil) iletebilir ve
+`/approve` ile onaylayabilirsiniz. Bu işlem normal giden teslimat işlem hattını kullanır.
 
 Yapılandırma:
-__OC_I18N_900001__
+
+```json5
+{
+  approvals: {
+    exec: {
+      enabled: true,
+      mode: "session", // "session" | "targets" | "both"
+      agentFilter: ["main"],
+      sessionFilter: ["discord"], // substring or regex
+      targets: [
+        { channel: "slack", to: "U12345678" },
+        { channel: "telegram", to: "123456789" },
+      ],
+    },
+  },
+}
+```
+
 Sohbette yanıtlayın:
-__OC_I18N_900002__
-`/approve` komutu hem exec onaylarını hem de Plugin onaylarını işler. ID bekleyen bir exec onayıyla eşleşmezse, otomatik olarak Plugin onaylarını denetler.
 
-### Plugin onayı iletme
+```
+/approve <id> allow-once
+/approve <id> allow-always
+/approve <id> deny
+```
 
-Plugin onayı iletme, exec onaylarıyla aynı iletim işlem hattını kullanır ancak `approvals.plugin`
-altında kendi bağımsız yapılandırmasına sahiptir. Birini etkinleştirmek veya devre dışı bırakmak
-diğerini etkilemez. Plugin yazma davranışı, istek alanları ve karar semantiği için bkz.
-[Plugin izin istekleri](/plugins/plugin-permission-requests).
-__OC_I18N_900003__
+`/approve` komutu hem exec onaylarını hem de plugin onaylarını işler. Kimlik bekleyen bir exec onayıyla eşleşmezse bunun yerine otomatik olarak plugin onaylarını denetler. Bu geri dönüş yalnızca "onay bulunamadı" hatalarıyla sınırlıdır; gerçek bir exec onayı reddi/hatası, plugin onayı olarak sessizce yeniden denenmez.
+
+### Plugin onayı yönlendirme
+
+Plugin onayı yönlendirme, exec onaylarıyla aynı teslimat işlem hattını kullanır ancak
+`approvals.plugin` altında kendi bağımsız yapılandırmasına sahiptir. Birini etkinleştirmek veya devre dışı bırakmak diğerini etkilemez.
+Plugin geliştirme davranışı, istek alanları ve karar semantiği için
+[Plugin izin istekleri](/plugins/plugin-permission-requests) bölümüne bakın.
+
+```json5
+{
+  approvals: {
+    plugin: {
+      enabled: true,
+      mode: "targets",
+      agentFilter: ["main"],
+      targets: [
+        { channel: "slack", to: "U12345678" },
+        { channel: "telegram", to: "123456789" },
+      ],
+    },
+  },
+}
+```
+
 Yapılandırma şekli `approvals.exec` ile aynıdır: `enabled`, `mode`, `agentFilter`,
 `sessionFilter` ve `targets` aynı şekilde çalışır.
 
-Paylaşılan etkileşimli yanıtları destekleyen kanallar hem exec hem de Plugin onayları için aynı
-onay düğmelerini işler. Paylaşılan etkileşimli UI olmayan kanallar, `/approve` yönergeleriyle
-düz metne geri döner.
-Plugin onay istekleri kullanılabilir kararları sınırlayabilir. Onay yüzeyleri isteğin beyan ettiği
-karar kümesini kullanır ve Gateway sunulmamış bir kararı gönderme girişimlerini reddeder.
+Paylaşılan etkileşimli yanıtları destekleyen kanallar, hem exec hem de
+plugin onayları için aynı onay düğmelerini oluşturur. Paylaşılan etkileşimli kullanıcı arayüzü olmayan kanallar, `/approve`
+talimatlarını içeren düz metne geri döner. Plugin onayı istekleri kullanılabilir kararları kısıtlayabilir: onay yüzeyleri
+isteğin bildirdiği karar kümesini kullanır ve Gateway sunulmayan bir kararı gönderme girişimlerini
+reddeder.
 
-### Herhangi bir kanalda aynı sohbet onayları
+### Herhangi bir kanalda aynı sohbetten onaylar
 
-Bir exec veya Plugin onay isteği iletilebilir bir sohbet yüzeyinden kaynaklandığında, aynı sohbet
-artık varsayılan olarak `/approve` ile bunu onaylayabilir. Bu, mevcut Web UI ve terminal UI akışlarına
-ek olarak Slack, Matrix ve Microsoft Teams gibi kanallar için geçerlidir.
+Bir exec veya plugin onayı isteği teslimat yapılabilen bir sohbet yüzeyinden kaynaklandığında, aynı sohbet
+varsayılan olarak `/approve` ile bunu onaylayabilir. Bu, mevcut Web kullanıcı arayüzü ve terminal kullanıcı arayüzü akışlarına ek olarak Slack, Matrix, Microsoft Teams ve
+benzer teslimat yapılabilen sohbetler için geçerlidir ve ilgili konuşmanın
+normal kanal kimlik doğrulama modelini kullanır. Kaynak sohbet zaten komut gönderebiliyor
+ve yanıt alabiliyorsa onay isteklerinin beklemede kalmak için artık ayrı bir yerel teslimat bağdaştırıcısına
+ihtiyacı yoktur.
 
-Bu paylaşılan metin-komut yolu, ilgili konuşma için normal kanal kimlik doğrulama modelini kullanır. Kaynak sohbet zaten komut gönderebiliyor ve yanıt alabiliyorsa, onay isteklerinin beklemede kalmak için artık ayrı bir yerel teslim adaptörüne ihtiyacı yoktur.
+Discord, Telegram ve QQ bot da aynı sohbetten `/approve` özelliğini destekler ancak bu kanallar, yerel onay teslimatı devre dışı bırakılmış olsa bile yetkilendirme için
+çözümlenmiş onaylayanlar listesini kullanmaya devam eder.
 
-Discord ve Telegram aynı sohbet içinde `/approve` komutunu da destekler, ancak bu kanallar yerel onay teslimi devre dışı olduğunda bile yetkilendirme için çözümlenmiş onaylayan listesini kullanmaya devam eder.
+### Yerel onay teslimatı
 
-Gateway’i doğrudan çağıran Telegram ve diğer yerel onay istemcileri için bu geri dönüş, kasıtlı olarak "onay bulunamadı" hatalarıyla sınırlandırılmıştır. Gerçek bir exec onay reddi/hatası sessizce Plugin onayı olarak yeniden denenmez.
+Bazı kanallar yerel onay istemcileri olarak da görev yapabilir: Discord, Slack, Telegram, Matrix ve QQ bot.
+Yerel istemciler, paylaşılan aynı sohbetten `/approve` akışına ek olarak onaylayanlara DM, kaynak sohbetlere dağıtım ve kanala özgü etkileşimli onay kullanıcı deneyimi
+ekler.
 
-### Yerel onay teslimi
+Yerel onay kartları/düğmeleri kullanılabilir olduğunda bu yerel kullanıcı arayüzü, agent'a yönelik birincil yoldur.
+Araç sonucu sohbet onaylarının kullanılamadığını veya manuel onayın kalan tek yol olduğunu belirtmediği sürece agent ayrıca yinelenen bir düz sohbet `/approve` komutunu
+yansıtmamalıdır.
 
-Bazı kanallar yerel onay istemcileri olarak da davranabilir. Yerel istemciler, paylaşılan aynı sohbet `/approve` akışının üzerine onaylayan DM’leri, kaynak sohbet yayılımını ve kanala özgü etkileşimli onay kullanıcı deneyimini ekler.
-
-Yerel onay kartları/düğmeleri kullanılabilir olduğunda, bu yerel kullanıcı arayüzü birincil agent’a dönük yoldur. Araç sonucu sohbet onaylarının kullanılamadığını veya el ile onayın kalan tek yol olduğunu söylemedikçe agent ayrıca yinelenen bir düz sohbet `/approve` komutunu da yankılamamalıdır.
-
-Yerel bir onay istemcisi yapılandırılmış ancak kaynak kanal için etkin bir yerel çalışma zamanı yoksa, OpenClaw yerel deterministik `/approve` istemini görünür tutar. Yerel çalışma zamanı etkinse ve teslimi dener ancak hiçbir hedef kartı almazsa, OpenClaw isteğin yine de çözülebilmesi için tam `/approve <id> <decision>` komutuyla aynı sohbet geri dönüş bildirimi gönderir.
+Yerel bir onay istemcisi yapılandırılmış ancak kaynak
+kanal için etkin bir yerel çalışma zamanı yoksa OpenClaw, yerel belirlenimsel `/approve` istemini görünür tutar. Yerel çalışma zamanı
+etkinse ve teslimatı dener ancak kartı hiçbir hedef almazsa OpenClaw, isteğin yine de çözümlenebilmesi için tam `/approve <id> <decision>` komutunu içeren aynı sohbette bir geri dönüş
+bildirimi gönderir.
 
 Genel model:
 
-- host exec ilkesi, exec onayının gerekip gerekmediğine hâlâ karar verir
-- `approvals.exec`, onay istemlerinin diğer sohbet hedeflerine iletilmesini denetler
-- `channels.<channel>.execApprovals`, Discord, Slack, Telegram ve benzeri kanala özgü yerel istemcilerin etkin olup olmadığını denetler
-- Slack Plugin onayları, istek Slack’ten geldiğinde ve Slack Plugin onaylayanları çözümlendiğinde Slack’in yerel onay istemcisini kullanabilir; `approvals.plugin`, Slack exec onayları devre dışı olsa bile Plugin onaylarını Slack oturumlarına veya hedeflerine yönlendirebilir
-- Google Chat yerel onay kartları, kararlı `users/<id>` onaylayanları `dm.allowFrom` veya `defaultTo` üzerinden çözümlendiğinde Google Chat alanlarından ya da iş parçacıklarından kaynaklanan exec ve Plugin onaylarını işler; kararlar için tepki olaylarını kullanmazlar
-- WhatsApp ve Signal tepki onayı teslimi `approvals.exec` ve `approvals.plugin` ile sınırlanır; `channels.<channel>.execApprovals` blokları yoktur
+- ana makine exec ilkesi, exec onayının gerekli olup olmadığına karar vermeye devam eder
+- `approvals.exec`, onay istemlerinin diğer sohbet hedeflerine yönlendirilmesini denetler
+- `channels.<channel>.execApprovals`, Discord, Slack, Telegram, QQ bot ve benzeri
+  kanala özgü yerel istemcilerin etkin olup olmadığını denetler
+- Slack plugin onayları, istek Slack'ten geldiğinde
+  ve Slack plugin onaylayanları çözümlendiğinde Slack'in yerel onay istemcisini kullanabilir; `approvals.plugin`, Slack exec onayları devre dışı bırakılmış olsa bile plugin onaylarını Slack
+  oturumlarına veya hedeflerine yönlendirebilir
+- Google Chat yerel onay kartları, kararlı `users/<id>` onaylayanları `dm.allowFrom` veya
+  `defaultTo` üzerinden çözümlendiğinde Google
+  Chat alanlarından veya ileti dizilerinden kaynaklanan exec ve plugin onaylarını işler; kararlar için tepki olaylarını kullanmaz
+- WhatsApp ve Signal tepki onayı teslimatı, `approvals.exec` ve
+  `approvals.plugin` tarafından denetlenir; bunların `channels.<channel>.execApprovals` blokları yoktur
 
-Yerel onay istemcileri, aşağıdakilerin tümü doğru olduğunda DM öncelikli teslimi otomatik etkinleştirir:
+Yerel onay istemcileri, aşağıdakilerin tümü doğru olduğunda önce DM teslimatını otomatik olarak etkinleştirir:
 
-- kanal yerel onay teslimini destekler
-- onaylayanlar açık `execApprovals.approvers` veya `commands.ownerAllowFrom` gibi sahip kimliği üzerinden çözümlenebilir
+- kanal yerel onay teslimatını destekler
+- onaylayanlar açık `execApprovals.approvers` değerinden veya
+  `commands.ownerAllowFrom` gibi sahip kimliğinden çözümlenebilir
 - `channels.<channel>.execApprovals.enabled` ayarlanmamıştır veya `"auto"` değerindedir
 
-Bir yerel onay istemcisini açıkça devre dışı bırakmak için `enabled: false` ayarlayın. Onaylayanlar çözümlendiğinde zorla açmak için `enabled: true` ayarlayın. Genel kaynak sohbet teslimi `channels.<channel>.execApprovals.target` üzerinden açık kalır.
+Yerel bir onay istemcisini açıkça devre dışı bırakmak için `enabled: false` değerini ayarlayın. Onaylayanlar çözümlendiğinde istemciyi zorla
+etkinleştirmek için `enabled: true` değerini ayarlayın. Herkese açık kaynak sohbet teslimatı
+`channels.<channel>.execApprovals.target` üzerinden açıkça yapılandırılmaya devam eder. Yerel `target` kaynak sohbet teslimatını etkinleştirdiğinde,
+onay istemleri komut metnini içerir.
 
-SSS: [Sohbet onayları için neden iki exec onay yapılandırması var?](/help/faq-first-run#why-are-there-two-exec-approval-configs-for-chat-approvals)
+SSS: [Sohbet onayları için neden iki exec onayı yapılandırması var?](/help/faq-first-run)
 
 - Discord: `channels.discord.execApprovals.*`
 - Slack: `channels.slack.execApprovals.*`
 - Telegram: `channels.telegram.execApprovals.*`
-- Google Chat: kararlı onaylayanları `channels.googlechat.dm.allowFrom` veya `channels.googlechat.defaultTo` ile yapılandırın; `execApprovals` bloğu gerekmez
-- WhatsApp: onay istemlerini WhatsApp’a yönlendirmek için `approvals.exec` ve `approvals.plugin` kullanın
-- Signal: onay istemlerini Signal’e yönlendirmek için `approvals.exec` ve `approvals.plugin` kullanın
+- QQ bot: `channels.qqbot.execApprovals.*`
+- Google Chat: kararlı onaylayanları `channels.googlechat.dm.allowFrom` veya
+  `channels.googlechat.defaultTo` ile yapılandırın; `execApprovals` bloğu gerekli değildir
+- WhatsApp: onay istemlerini WhatsApp'a yönlendirmek için `approvals.exec` ve `approvals.plugin` kullanın
+- Signal: onay istemlerini Signal'e yönlendirmek için `approvals.exec` ve `approvals.plugin` kullanın
 
-Bu yerel onay istemcileri, paylaşılan aynı sohbet `/approve` akışı ve paylaşılan onay düğmelerinin üzerine DM yönlendirme ve isteğe bağlı kanal yayılımı ekler.
+Yerel istemciye özgü yönlendirme:
 
-Paylaşılan davranış:
+- Telegram varsayılan olarak onaylayan DM'lerini (`target: "dm"`) kullanır. Onay istemlerini
+  kaynak Telegram sohbetinde/konusunda da göstermek için `channel` veya `both` değerine geçin. Telegram forum konularında OpenClaw,
+  onay istemi ve onay sonrası takip için konuyu korur.
+- Discord ve Telegram onaylayanları açıkça belirtilebilir (`execApprovals.approvers`) veya
+  `commands.ownerAllowFrom` üzerinden çıkarılabilir; yalnızca çözümlenmiş onaylayanlar onaylayabilir veya reddedebilir.
+- Slack onaylayanları açıkça belirtilebilir (`execApprovals.approvers`) veya
+  `commands.ownerAllowFrom` üzerinden çıkarılabilir. Slack plugin onayı DM'leri, Slack exec onaylayanlarını değil `allowFrom`
+  değerindeki Slack plugin onaylayanlarını ve hesap varsayılan yönlendirmesini kullanır. Slack yerel düğmeleri onay kimliği
+  türünü korur; böylece `plugin:` kimlikleri ikinci bir Slack yerel geri dönüş katmanı olmadan plugin onaylarını çözümleyebilir.
+- Google Chat yerel kartları, ileti metnindeki manuel `/approve` geri dönüşünü korur ancak kart düğmesi
+  geri çağırmaları yalnızca opak eylem belirteçleri taşır; onay kimliği ve karar
+  sunucu tarafındaki bekleyen durumdan alınır.
+- WhatsApp emoji onayları, eşleşen üst düzey
+  yönlendirme ailesi WhatsApp'a yönlendirdiğinde hem exec hem de plugin istemlerini işler. Yerel kaynaklı istemler doğrudan bağlanır; paylaşılan hedef modu
+  teslimatı, aynı türü belirlenmiş onay meta verilerini kabul edilen WhatsApp ileti alındısına bağlar.
+- Signal tepki onayları, hem exec hem de plugin istemlerini yalnızca eşleşen üst düzey
+  yönlendirme ailesi etkinleştirildiğinde ve Signal'e yönlendirdiğinde işler. Doğrudan aynı sohbetten Signal exec onayları,
+  açık onaylayanlar olmadan yerel `/approve` geri dönüşünü engelleyebilir; Signal tepki çözümlemesi
+  yine de `channels.signal.allowFrom` veya `defaultTo` üzerinden açık Signal onaylayanları gerektirir.
+- Matrix yerel DM/kanal yönlendirmesi ve tepki kısayolları hem exec hem de plugin onaylarını işler;
+  plugin yetkilendirmesi yine de `channels.matrix.dm.allowFrom` üzerinden gelir. Matrix yerel istemleri,
+  OpenClaw uyumlu Matrix istemcilerinin yapılandırılmış onay durumunu okuyabilmesi, standart istemcilerin ise düz metin
+  `/approve` geri dönüşünü koruması için ilk istem olayında `com.openclaw.approval` özel olay içeriğini barındırır.
+- Yerel Discord ve Telegram onay düğmeleri, taşıma katmanına özel geri çağırma verilerinde açık bir exec veya plugin sahibi türü taşır
+  ve yalnızca o sahibi çözümler. Tür içermeyen eski `/approve` denetimleri
+  sınırlı bir uyumluluk yolu olarak kalır: yalnızca aktörün onaylayabileceği sahip türlerini dener,
+  yalnızca onay bulunamadı sonucundan sonra devam eder ve hiçbir zaman onay kimliğinden sahiplik çıkarımı yapmaz.
+- İstekte bulunan kişinin onaylayan olması gerekmez.
+- Hiçbir operatör kullanıcı arayüzü veya yapılandırılmış onay istemcisi isteği kabul edemezse istem
+  `askFallback` değerine geri döner.
 
-- Slack, Matrix, Microsoft Teams ve benzeri teslim edilebilir sohbetler, aynı sohbet `/approve` için normal kanal kimlik doğrulama modelini kullanır
-- bir yerel onay istemcisi otomatik etkinleştiğinde, varsayılan yerel teslim hedefi onaylayan DM’leridir
-- Discord ve Telegram için yalnızca çözümlenmiş onaylayanlar onaylayabilir veya reddedebilir
-- Discord onaylayanları açık (`execApprovals.approvers`) olabilir veya `commands.ownerAllowFrom` üzerinden çıkarılabilir
-- Telegram onaylayanları açık (`execApprovals.approvers`) olabilir veya `commands.ownerAllowFrom` üzerinden çıkarılabilir
-- Slack onaylayanları açık (`execApprovals.approvers`) olabilir veya `commands.ownerAllowFrom` üzerinden çıkarılabilir
-- Slack Plugin onay DM’leri, Slack exec onaylayanlarını değil, `allowFrom` ve hesap varsayılan yönlendirmesinden gelen Slack Plugin onaylayanlarını kullanır
-- Slack yerel düğmeleri onay kimliği türünü korur, böylece `plugin:` kimlikleri ikinci bir Slack’e yerel geri dönüş katmanı olmadan Plugin onaylarını çözebilir
-- Google Chat yerel kartları, ileti metninde el ile `/approve` geri dönüşünü korur ancak kart düğmesi geri çağırmaları yalnızca opak eylem belirteçleri taşır; onay kimliği ve karar sunucu tarafındaki bekleyen durumdan kurtarılır
-- WhatsApp emoji onayları, hem exec hem de Plugin istemlerini yalnızca eşleşen üst düzey iletme ailesi etkinleştirildiğinde ve WhatsApp’a yönlendirdiğinde işler; yalnızca hedefe yönelik WhatsApp iletimi, aynı yerel kaynak hedefle eşleşmediği sürece paylaşılan iletme yolunda kalır
-- Signal tepki onayları, hem exec hem de Plugin istemlerini yalnızca eşleşen üst düzey iletme ailesi etkinleştirildiğinde ve Signal’e yönlendirdiğinde işler. Doğrudan aynı sohbet Signal exec onayları, açık onaylayanlar olmadan yerel `/approve` geri dönüşünü bastırabilir; Signal tepki çözümlemesi yine de `channels.signal.allowFrom` veya `defaultTo` içinden açık Signal onaylayanları gerektirir.
-- Matrix yerel DM/kanal yönlendirmesi ve tepki kısayolları hem exec hem de Plugin onaylarını işler; Plugin yetkilendirmesi yine de `channels.matrix.dm.allowFrom` içinden gelir
-- Matrix yerel istemleri, OpenClaw uyumlu Matrix istemcilerinin yapılandırılmış onay durumunu okuyabilmesi ve standart istemcilerin düz metin `/approve` geri dönüşünü koruması için ilk istem olayında `com.openclaw.approval` özel olay içeriğini içerir
-- isteği yapan kişinin onaylayan olması gerekmez
-- kaynak sohbet, o sohbet zaten komutları ve yanıtları destekliyorsa doğrudan `/approve` ile onaylayabilir
-- yerel Discord onay düğmeleri onay kimliği türüne göre yönlendirir: `plugin:` kimlikleri doğrudan Plugin onaylarına gider, diğer her şey exec onaylarına gider
-- yerel Telegram onay düğmeleri `/approve` ile aynı sınırlandırılmış exec’ten Plugin’e geri dönüşü izler
-- yerel `target` kaynak sohbet teslimini etkinleştirdiğinde, onay istemleri komut metnini içerir
-- bekleyen exec onayları varsayılan olarak 30 dakika sonra sona erer
-- hiçbir operatör kullanıcı arayüzü veya yapılandırılmış onay istemcisi isteği kabul edemiyorsa, istem `askFallback` değerine geri döner
+`/diagnostics` ve `/export-trajectory` gibi yalnızca sahibe özel hassas grup komutları, onay istemleri ve nihai sonuçlar için özel
+sahip yönlendirmesini kullanır. OpenClaw önce, sahibin komutu çalıştırdığı
+aynı yüzeyde özel bir yol dener. Bu yüzeyde özel bir sahip yolu yoksa `commands.ownerAllowFrom` içindeki ilk kullanılabilir sahip yoluna
+geri döner; böylece Telegram yapılandırılmış
+birincil özel arayüz olduğunda bir Discord grup komutu onayı ve sonucu yine de sahibin Telegram DM'sine gönderebilir. Grup sohbetine yalnızca kısa bir alındı bildirimi gönderilir.
 
-`/diagnostics` ve `/export-trajectory` gibi hassas, yalnızca sahip komutları, onay istemleri ve nihai sonuçlar için özel sahip yönlendirmesi kullanır. OpenClaw önce sahibin komutu çalıştırdığı aynı yüzeyde özel bir rota dener. Bu yüzeyde özel sahip rotası yoksa, `commands.ownerAllowFrom` içinden ilk kullanılabilir sahip rotasına geri döner; böylece bir Discord grup komutu, Telegram yapılandırılmış birincil özel arayüz olduğunda onayı ve sonucu yine de sahibin Telegram DM’ine gönderebilir. Grup sohbeti yalnızca kısa bir alındı bildirimi alır.
-
-Telegram varsayılan olarak onaylayan DM’lerini (`target: "dm"`) kullanır. Onay istemlerinin kaynak Telegram sohbetinde/konusunda da görünmesini istediğinizde `channel` veya `both` değerine geçebilirsiniz. Telegram forum konuları için OpenClaw, onay istemi ve onay sonrası takip iletisi için konuyu korur.
-
-Bkz.:
+Ayrıca bkz.:
 
 - [Discord](/channels/discord)
 - [Telegram](/channels/telegram)
+- [QQ bot](/channels/qqbot)
+
+### Resmî mobil operatör uygulamaları
+
+Resmî iOS ve Android uygulamaları, `operator.admin` bağlantısı kullanıldığında veya eşleştirilmiş
+`operator.approvals` cihazları istek tarafından açıkça hedeflendiğinde Gateway'in sahip olduğu bekleyen exec
+onaylarını da inceleyebilir. Bu uygulamalar
+Control UI tarafından kullanılan aynı arındırılmış kalıcı kaydı okur, türü dikkate alan bir karar gönderir ve Gateway'in standart
+ilk yanıt sonucunu görüntüler. Apple Watch, bu onay istemlerini eşleştirilmiş
+iPhone üzerinden bir kez izin ver ve reddet eylemleriyle yansıtır. Doğrudan Watch Gateway modu
+onayları incelemez.
+
+Kaybolan bir çözümleme alındısı, gönderilen seçimi yetkili hâle getirmez:
+uygulama denetimleri devre dışı bırakır ve kaydı yeniden okur. Başka bir yüzey
+kazandıysa uygulama kaydedilmiş kararı gösterir. Bekleyen istemler, onları oluşturan
+Gateway'e bağlı kalır; bu nedenle etkin Gateway'i değiştirmek eski bir
+onay kimliğini yeniden yönlendiremez.
 
 ### macOS IPC akışı
-__OC_I18N_900004__
+
+```
+Gateway -> Node Hizmeti (WS)
+                 |  IPC (UDS + belirteç + HMAC + TTL)
+                 v
+             Mac Uygulaması (kullanıcı arayüzü + onaylar + system.run)
+```
+
 Güvenlik notları:
 
 - Unix soket modu `0600`, belirteç `exec-approvals.json` içinde saklanır.
 - Aynı UID eş denetimi.
-- Sınama/yanıt (nonce + HMAC token + istek karması) + kısa TTL.
+- Sorgulama/yanıt (tek kullanımlık değer + HMAC belirteci + istek karması) + kısa TTL.
 
 ## SSS
 
 ### Bir onay hedefinde `accountId` ve `threadId` ne zaman kullanılır?
 
-Kanalda birden fazla yapılandırılmış kimlik olduğunda ve onay isteminin belirli bir hesap üzerinden çıkması gerektiğinde `accountId` kullanın. Hedef konuları veya iş parçacıklarını desteklediğinde ve istemin üst düzey sohbet yerine o iş parçacığının içinde kalması gerektiğinde `threadId` kullanın.
+Kanalda yapılandırılmış birden fazla kimlik varsa ve onay isteminin belirli bir hesaptan
+gönderilmesi gerekiyorsa `accountId` kullanın. Hedef konuları veya
+ileti dizilerini destekliyorsa ve istemin üst düzey sohbet yerine ilgili ileti dizisinin içinde kalması gerekiyorsa `threadId` kullanın.
 
-Somut bir Telegram örneği, forum konuları ve iki Telegram bot hesabı olan bir operasyon süper grubudur. `to` değeri süper grubu adlandırır, `accountId` bot hesabını seçer ve `threadId` forum konusunu seçer:
-__OC_I18N_900005__
-Bu kurulumla, iletilen exec onayları `ops-bot` Telegram hesabı tarafından `-1001234567890` sohbetinin `77` konusuna gönderilir. `accountId` olmayan bir hedef kanalın varsayılan hesabını kullanır ve `threadId` olmayan bir hedef üst düzey hedefe gönderir.
+Somut bir Telegram örneği, forum konularına ve iki Telegram bot
+hesabına sahip bir operasyon süper grubudur. `to` değeri süper grubu adlandırır, `accountId` bot hesabını seçer ve `threadId`
+forum konusunu seçer:
 
-### Onaylar bir oturuma gönderildiğinde, o oturumdaki herkes onları onaylayabilir mi?
+```json5
+{
+  approvals: {
+    exec: {
+      enabled: true,
+      mode: "targets",
+      targets: [
+        {
+          channel: "telegram",
+          to: "-1001234567890",
+          accountId: "ops-bot",
+          threadId: "77",
+        },
+      ],
+    },
+  },
+  channels: {
+    telegram: {
+      accounts: {
+        default: {
+          name: "Birincil bot",
+          botToken: "env:TELEGRAM_PRIMARY_BOT_TOKEN",
+        },
+        "ops-bot": {
+          name: "Operasyon botu",
+          botToken: "env:TELEGRAM_OPS_BOT_TOKEN",
+        },
+      },
+    },
+  },
+}
+```
 
-Hayır. Oturum teslimi yalnızca istemin nerede görüneceğini denetler. Tek başına o sohbetteki her katılımcıya onaylama yetkisi vermez.
+Bu kurulumla yönlendirilen exec onayları, `ops-bot` Telegram hesabı tarafından
+`-1001234567890` sohbetinin `77` konusuna gönderilir. `accountId` içermeyen bir hedef kanalın varsayılan hesabını kullanır ve
+`threadId` içermeyen bir hedef üst düzey hedefe gönderilir.
 
-Genel aynı sohbet `/approve` için gönderenin o kanal oturumunda komutlar için zaten yetkili olması gerekir. Kanal açık onay onaylayanları sunuyorsa, bu onaylayanlar o oturumda aksi halde komut yetkisine sahip olmasalar bile `/approve` eylemini yetkilendirebilir.
+### Onaylar bir oturuma gönderildiğinde, o oturumdaki herkes bunları onaylayabilir mi?
 
-Bazı kanallar daha katıdır. Discord, Telegram, Matrix, Slack yerel onay DM’leri ve benzeri yerel onay istemcileri, onay yetkilendirmesi için çözümlenmiş onaylayan listelerini kullanır. Örneğin, bir Telegram forum konusu onay istemi konudaki herkes tarafından görülebilir, ancak yalnızca `channels.telegram.execApprovals.approvers` veya `commands.ownerAllowFrom` üzerinden çözümlenen sayısal Telegram kullanıcı kimlikleri onu onaylayabilir ya da reddedebilir.
+Hayır. Oturuma teslim, yalnızca istemin nerede görüneceğini kontrol eder. Tek başına, o
+sohbetteki her katılımcıya onaylama yetkisi vermez.
+
+Aynı sohbetteki genel `/approve` için gönderenin, söz konusu kanal oturumunda komutlar için
+zaten yetkilendirilmiş olması gerekir. Kanal açık onay yetkilileri sunuyorsa bu yetkililer, söz konusu
+oturumda başka şekilde komut yetkisine sahip olmasalar bile `/approve` eylemini yetkilendirebilir.
+
+Bazı kanallar daha katıdır. Discord, Telegram, Matrix, Slack yerel onay doğrudan mesajları ve benzer
+yerel onay istemcileri, onay yetkilendirmesi için çözümlenmiş onay yetkilisi listelerini kullanır. Örneğin,
+bir Telegram forum konusu onay istemi konudaki herkes tarafından görülebilir, ancak yalnızca
+`channels.telegram.execApprovals.approvers` veya `commands.ownerAllowFrom` üzerinden çözümlenen sayısal
+Telegram kullanıcı kimlikleri bunu onaylayabilir veya reddedebilir.
 
 ## İlgili
 
-- [Exec onayları](/tr/tools/exec-approvals) — temel ilke ve onay akışı
-- [Exec aracı](/tr/tools/exec)
+- [Çalıştırma onayları](/tr/tools/exec-approvals) — temel politika ve onay akışı
+- [Çalıştırma aracı](/tr/tools/exec)
 - [Yükseltilmiş mod](/tr/tools/elevated)
-- [Skills](/tr/tools/skills) — skill destekli otomatik izin verme davranışı
+- [Skills](/tr/tools/skills) — beceri destekli otomatik izin verme davranışı

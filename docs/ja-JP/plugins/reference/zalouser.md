@@ -1,30 +1,31 @@
 ---
 read_when:
-    - zalouser Pluginをインストール、設定、または監査している場合
-summary: ネイティブの zca-js 統合を使用する OpenClaw Zalo 個人アカウント Plugin。
+    - zalouser Plugin のインストール、設定、または監査を行っています
+summary: ネイティブの zca-js 統合を介した OpenClaw Zalo 個人アカウント Plugin。
 title: Zalo Personal Plugin
 x-i18n:
-    generated_at: "2026-07-11T22:32:57Z"
+    generated_at: "2026-07-16T12:00:59Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: c03db694c940cb1fb20f4a2f73512c9d3cf3c79e910cc6a0dd4aa38bd4465ed5
+    source_hash: 5c6617fe9868c56c0ecd4065109f58f8483e2fcef7730456826366c24dceee8b
     source_path: plugins/reference/zalouser.md
     workflow: 16
 ---
 
-# Zalo 個人アカウント Plugin
+# Zalo Personal Plugin
 
-ネイティブの zca-js 統合を使用する OpenClaw Zalo 個人アカウント Plugin。
+ネイティブの zca-js 統合を介した OpenClaw の Zalo 個人アカウント Plugin。
 
 ## 配布
 
 - パッケージ: `@openclaw/zalouser`
 - インストール経路: npm、ClawHub
 
-## 対象領域
+## サーフェス
 
-チャネル: zalouser、コントラクト: ツール
+チャンネル: `zalouser`、コントラクト: `tools`
 
 ## 関連ドキュメント
 

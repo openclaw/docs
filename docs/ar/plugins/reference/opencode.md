@@ -1,30 +1,47 @@
 ---
 read_when:
-    - أنت تثبّت Plugin ‏opencode أو تهيئه أو تدقّق فيه
+    - أنت تثبّت أو تهيّئ أو تدقّق Plugin opencode
 summary: يضيف دعم موفّر نماذج OpenCode إلى OpenClaw.
-title: Plugin ‏OpenCode
+title: Plugin OpenCode
 x-i18n:
-    generated_at: "2026-07-12T06:16:13Z"
+    generated_at: "2026-07-16T14:41:30Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 8c1c1264da52e8f362e83b2733390ccc3b2fc1dd62f14f8e5211bbb8fa47e95f
+    source_hash: aecf396cfc645e4a036b8130ed7f33db9081dffda120c6d06ebe863dd3be3730
     source_path: plugins/reference/opencode.md
     workflow: 16
 ---
 
-# Plugin ‏OpenCode
+# Plugin OpenCode
 
 يضيف دعم موفّر نماذج OpenCode إلى OpenClaw.
 
 ## التوزيع
 
 - الحزمة: `@openclaw/opencode-provider`
-- مسار التثبيت: مُضمّن في OpenClaw
+- مسار التثبيت: مضمّن في OpenClaw
 
-## الواجهات
+## السطح
 
-الموفّرون: opencode؛ العقود: mediaUnderstandingProviders
+الموفّرون: `opencode`؛ العقود: `mediaUnderstandingProviders`
+
+<!-- openclaw-plugin-reference:manual-start -->
+
+## الجلسات الأصلية
+
+يكتشف OpenClaw تلقائيًا CLI ‏`opencode` على Gateway والعُقد المقترنة. ثم تظهر
+الجلسات المخزّنة في مجموعة جلسات **OpenCode** بالشريط الجانبي، مع تصفّح
+النصوص المنسوخة للقراءة فقط عبر الأمرين الرسميين `opencode --pure db ... --format json`
+و`opencode --pure export`. تمنع البيئة المقيّدة ووضع `--pure`
+تصفّح الكتالوج من تحميل Plugins المشروع أو وراثة بيانات اعتماد
+Gateway غير ذات الصلة.
+
+عطّل **كتالوج جلسات OpenCode** ضمن **الإعدادات > Plugins > OpenCode**
+لتعطيل الاكتشاف. وهو مفعّل افتراضيًا.
+
+<!-- openclaw-plugin-reference:manual-end -->
 
 ## الوثائق ذات الصلة
 

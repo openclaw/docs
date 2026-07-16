@@ -1,25 +1,26 @@
 ---
 read_when:
-    - De probleemoplossingshub heeft je hierheen verwezen voor diepere diagnose
-    - Je hebt stabiele, op symptomen gebaseerde runbooksecties nodig met exacte opdrachten
+    - De hub voor probleemoplossing heeft je hierheen verwezen voor een grondigere diagnose
+    - Je hebt stabiele, op symptomen gebaseerde runbooksecties met exacte commando's nodig
 sidebarTitle: Troubleshooting
-summary: Uitgebreid troubleshooting-runbook voor Gateway, kanalen, automatisering, nodes en browser
+summary: Uitgebreid draaiboek voor probleemoplossing voor Gateway, kanalen, automatisering, Nodes en browser
 title: Probleemoplossing
 x-i18n:
-    generated_at: "2026-06-27T17:38:23Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T15:53:09Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 4ce8e8aed5c3e00be5b093875222962c22883472802e164534dae32adc5365c5
+    source_hash: f53064a0d42e601ec1a1904fc9d0e8ebb9def7a2fb9d2579c7f10ca675b8f7fd
     source_path: gateway/troubleshooting.md
     workflow: 16
 ---
 
-Deze pagina is het diepgaande runbook. Begin bij [/help/troubleshooting](/nl/help/troubleshooting) als je eerst de snelle triageflow wilt.
+Dit is het uitgebreide draaiboek. Begin eerst bij [/help/probleemoplossing](/nl/help/troubleshooting) voor het snelle triageproces.
 
-## Commandoladder
+## Opdrachtvolgorde
 
-Voer deze eerst uit, in deze volgorde:
+Voer dit in deze volgorde uit:
 
 ```bash
 openclaw status
@@ -29,16 +30,15 @@ openclaw doctor
 openclaw channels status --probe
 ```
 
-Verwachte gezonde signalen:
+Signalen dat alles goed werkt:
 
 - `openclaw gateway status` toont `Runtime: running`, `Connectivity probe: ok` en een regel `Capability: ...`.
 - `openclaw doctor` meldt geen blokkerende configuratie- of serviceproblemen.
-- `openclaw channels status --probe` toont live transportstatus per account en, waar ondersteund, probe-/auditresultaten zoals `works` of `audit ok`.
+- `openclaw channels status --probe` toont de actuele transportstatus per account en, waar ondersteund, `works` of `audit ok`.
 
 ## Na een update
 
-Gebruik dit wanneer een update is voltooid maar de Gateway offline is, kanalen leeg zijn, of
-modelaanroepen beginnen te mislukken met 401's.
+Gebruik dit wanneer een update is voltooid, maar de Gateway niet actief is, kanalen leeg zijn of modelaanroepen mislukken met 401-fouten.
 
 ```bash
 openclaw status --all
@@ -50,20 +50,15 @@ openclaw gateway restart
 
 Let op:
 
-- `Update restart` in `openclaw status` / `openclaw status --all`. Wachtende of
-  mislukte overdrachten bevatten de volgende opdracht om uit te voeren.
-- `plugin load failed: dependency tree corrupted; run openclaw doctor --fix`
-  onder Kanalen. Dat betekent dat de kanaalconfiguratie nog bestaat, maar dat de Plugin-
-  registratie mislukte voordat het kanaal kon laden.
-- provider-401's na opnieuw authenticeren. `openclaw doctor --fix` controleert op verouderde
-  OAuth-authschaduwen per agent en verwijdert de oude kopieën zodat alle agents
-  het huidige gedeelde profiel gebruiken.
+- `Update restart` in `openclaw status` / `openclaw status --all`. Openstaande of mislukte overdrachten vermelden de volgende opdracht die je moet uitvoeren.
+- `plugin load failed: dependency tree corrupted; run openclaw doctor --fix` onder Kanalen: de kanaalconfiguratie bestaat nog, maar de registratie van de Plugin is mislukt voordat het kanaal kon worden geladen.
+- 401-fouten van providers na herauthenticatie: `openclaw doctor --fix` controleert op verouderde OAuth-authenticatieschaduwen per agent en verwijdert oude kopieën, zodat alle agents het huidige gedeelde profiel gebruiken.
 
-## Split-braininstallaties en nieuwere configuratiebeveiliging
+## Gesplitste installaties en beveiliging tegen nieuwere configuratie
 
-Gebruik dit wanneer een Gateway-service onverwacht stopt na een update, of logs tonen dat één `openclaw`-binary ouder is dan de versie die voor het laatst `openclaw.json` heeft geschreven.
+Gebruik dit wanneer een Gateway-service na een update onverwacht stopt, of wanneer uit de logboeken blijkt dat een `openclaw`-binair bestand ouder is dan de versie die `openclaw.json` het laatst heeft geschreven.
 
-OpenClaw markeert configuratieschrijfacties met `meta.lastTouchedVersion`. Alleen-lezen-opdrachten kunnen nog steeds een configuratie inspecteren die door een nieuwere OpenClaw is geschreven, maar proces- en servicemutaties weigeren door te gaan vanaf een oudere binary. Geblokkeerde acties omvatten het starten, stoppen, herstarten en verwijderen van de Gateway-service, geforceerde serviceherinstallatie, Gateway-start in servicemodus en `gateway --force`-poortopschoning.
+OpenClaw voorziet configuratiewijzigingen van `meta.lastTouchedVersion`. Alleen-lezenopdrachten kunnen een configuratie inspecteren die door een nieuwere OpenClaw is geschreven, maar proces- en servicemutaties kunnen niet vanuit een ouder binair bestand worden uitgevoerd. Geblokkeerde acties: de Gateway-service starten/stoppen/herstarten/verwijderen, gedwongen herinstallatie van de service, opstarten van de Gateway in servicemodus en het opschonen van poorten via `gateway --force`.
 
 ```bash
 which openclaw
@@ -73,8 +68,8 @@ openclaw config get meta.lastTouchedVersion
 ```
 
 <Steps>
-  <Step title="PATH repareren">
-    Repareer `PATH` zodat `openclaw` naar de nieuwere installatie verwijst en voer de actie daarna opnieuw uit.
+  <Step title="PATH herstellen">
+    Herstel `PATH` zodat `openclaw` naar de nieuwere installatie verwijst en voer de actie daarna opnieuw uit.
   </Step>
   <Step title="De Gateway-service opnieuw installeren">
     Installeer de bedoelde Gateway-service opnieuw vanuit de nieuwere installatie:
@@ -86,17 +81,17 @@ openclaw config get meta.lastTouchedVersion
 
   </Step>
   <Step title="Verouderde wrappers verwijderen">
-    Verwijder verouderde systeempakketten of oude wrappervermeldingen die nog steeds naar een oude `openclaw`-binary wijzen.
+    Verwijder verouderde systeempakketten of oude wrappervermeldingen die nog naar een oud binair bestand van `openclaw` verwijzen.
   </Step>
 </Steps>
 
 <Warning>
-Alleen voor bewuste downgrade of noodherstel: stel `OPENCLAW_ALLOW_OLDER_BINARY_DESTRUCTIVE_ACTIONS=1` in voor die ene opdracht. Laat dit niet ingesteld voor normaal gebruik.
+Stel `OPENCLAW_ALLOW_OLDER_BINARY_DESTRUCTIVE_ACTIONS=1` alleen voor de afzonderlijke opdracht in bij een opzettelijke downgrade of noodherstel. Laat deze variabele bij normaal gebruik uitgeschakeld.
 </Warning>
 
-## Protocolmismatch na rollback
+## Protocol komt na terugdraaiing niet overeen
 
-Gebruik dit wanneer logs `protocol mismatch` blijven afdrukken nadat je OpenClaw hebt gedowngraded of teruggedraaid. Dit betekent dat een oudere Gateway draait, maar dat een nieuwer lokaal clientproces nog steeds probeert opnieuw verbinding te maken met een protocolbereik dat de oudere Gateway niet ondersteunt.
+Gebruik dit wanneer de logboeken na een downgrade of terugdraaiing `protocol mismatch` blijven weergeven. Er draait een oudere Gateway, maar een nieuwer lokaal clientproces probeert nog steeds opnieuw verbinding te maken met een protocolbereik dat de oudere Gateway niet ondersteunt.
 
 ```bash
 openclaw --version
@@ -108,32 +103,29 @@ openclaw logs --follow
 
 Let op:
 
-- `protocol mismatch ... client=... v<version> min=<n> max=<n> expected=<n>` in Gateway-logs.
-- `Established clients:` in `openclaw gateway status --deep` of `Gateway clients` in `openclaw doctor --deep`. Dit toont actieve TCP-clients die verbonden zijn met de Gateway-poort, inclusief PID's en opdrachtregels wanneer het besturingssysteem dat toestaat.
-- Een clientproces waarvan de opdrachtregel wijst naar de nieuwere OpenClaw-installatie of wrapper waarvan je bent teruggedraaid.
+- `protocol mismatch ... client=... v<version> min=<n> max=<n> expected=<n>` in de Gateway-logboeken.
+- `Established clients:` in `openclaw gateway status --deep` of `Gateway clients` in `openclaw doctor --deep`: actieve TCP-clients die met de Gateway-poort zijn verbonden, met PID's en opdrachtregels wanneer het besturingssysteem dit toestaat.
+- Een clientproces waarvan de opdrachtregel verwijst naar de nieuwere OpenClaw-installatie of wrapper waarvan je bent teruggedraaid.
 
 Oplossing:
 
-1. Stop of herstart het verouderde OpenClaw-clientproces dat door `gateway status --deep` wordt getoond.
-2. Herstart apps of wrappers die OpenClaw insluiten, zoals lokale dashboards, editors, app-serverhelpers of langlopende `openclaw logs --follow`-shells.
-3. Voer `openclaw gateway status --deep` of `openclaw doctor --deep` opnieuw uit en bevestig dat de verouderde client-PID verdwenen is.
+1. Stop of herstart het verouderde OpenClaw-clientproces dat door `gateway status --deep` wordt weergegeven.
+2. Herstart apps of wrappers waarin OpenClaw is ingebed: lokale dashboards, editors, appserverhelpers of langlopende `openclaw logs --follow`-shells.
+3. Voer `openclaw gateway status --deep` of `openclaw doctor --deep` opnieuw uit en controleer of de PID van de verouderde client verdwenen is.
 
-Laat een oudere Gateway geen nieuwer incompatibel protocol accepteren. Protocolverhogingen beschermen het wire-contract; rollbackherstel is een proces-/versieopschoningsprobleem.
+Laat een oudere Gateway geen nieuwer, incompatibel protocol accepteren. Protocolverhogingen beschermen het communicatiecontract; herstel na een terugdraaiing is een probleem met het opschonen van processen en versies.
 
-## Skills-symlink overgeslagen als padontsnapping
+## Symlink van een Skill overgeslagen vanwege ontsnapping uit het pad
 
-Gebruik dit wanneer logs het volgende bevatten:
+Gebruik dit wanneer de logboeken het volgende bevatten:
 
 ```text
-Skipping escaped skill path outside its configured root: ... reason=symlink-escape
+Skill-pad buiten de geconfigureerde hoofdmap overgeslagen: ... reason=symlink-escape
 ```
 
-OpenClaw behandelt elke Skills-root als een containmentgrens. Een symlink onder
-`~/.agents/skills`, `<workspace>/.agents/skills`, `<workspace>/skills` of
-`~/.openclaw/skills` wordt overgeslagen wanneer het echte doel buiten die root
-uitkomt, tenzij het doel expliciet vertrouwd is.
+Elke hoofdmap van een Skill vormt een insluitingsgrens. Een symlink onder `~/.agents/skills`, `<workspace>/.agents/skills`, `<workspace>/skills` of `~/.openclaw/skills` wordt overgeslagen wanneer het werkelijke doel buiten die hoofdmap valt, tenzij het doel expliciet wordt vertrouwd.
 
-Inspecteer de link:
+Inspecteer de koppeling:
 
 ```bash
 ls -l ~/.agents/skills/<name>
@@ -141,8 +133,7 @@ realpath ~/.agents/skills/<name>
 openclaw config get skills.load
 ```
 
-Als het doel bedoeld is, configureer dan zowel de directe Skills-root als het
-toegestane symlinkdoel:
+Als het doel bewust is gekozen, configureer je zowel de directe hoofdmap van de Skill als het toegestane symlinkdoel:
 
 ```json5
 {
@@ -155,25 +146,20 @@ toegestane symlinkdoel:
 }
 ```
 
-Start daarna een nieuwe sessie of wacht tot de Skills-watcher ververst. Herstart de
-Gateway als het draaiende proces van vóór de configuratiewijziging is.
+Start daarna een nieuwe sessie of wacht tot de Skills-watcher is vernieuwd. Herstart de Gateway als het actieve proces van vóór de configuratiewijziging dateert.
 
-Gebruik geen brede doelen zoals `~`, `/` of een volledige gesynchroniseerde projectmap.
-Houd `allowSymlinkTargets` beperkt tot de echte Skills-root die vertrouwde
-`SKILL.md`-mappen bevat.
+Gebruik geen brede doelen zoals `~`, `/` of een volledige gesynchroniseerde projectmap. Beperk `allowSymlinkTargets` tot de werkelijke hoofdmap van de Skill die vertrouwde `SKILL.md`-mappen bevat.
 
-Als Skill Workshop apply ook door die vertrouwde gesymlinkte
-workspace-Skills-paden moet schrijven, schakel dan `skills.workshop.allowSymlinkTargetWrites` in. Houd
-dit uitgeschakeld voor alleen-lezen gedeelde Skills-roots.
+Als toepassen vanuit Skill Workshop ook via die vertrouwde, met symlinks gekoppelde Skill-paden in de werkruimte moet schrijven, schakel je `skills.workshop.allowSymlinkTargetWrites` in. Houd dit uitgeschakeld voor gedeelde Skill-hoofdmappen die alleen-lezen zijn.
 
 Gerelateerd:
 
 - [Skills-configuratie](/nl/tools/skills-config#symlinked-skill-roots)
 - [Configuratievoorbeelden](/nl/gateway/configuration-examples#symlinked-sibling-skill-repo)
 
-## Anthropic 429 extra gebruik vereist voor lange context
+## Voor Anthropic 429 is extra gebruik vereist voor een lange context
 
-Gebruik dit wanneer logs/fouten bevatten: `HTTP 429: rate_limit_error: Extra usage is required for long context requests`.
+Gebruik dit wanneer logboeken/fouten het volgende bevatten: `HTTP 429: rate_limit_error: Extra usage is required for long context requests`.
 
 ```bash
 openclaw logs --follow
@@ -183,22 +169,22 @@ openclaw config get agents.defaults.models
 
 Let op:
 
-- Geselecteerd Anthropic-model is een GA-geschikt 1M Claude 4.x-model, of het model heeft legacy `params.context1m: true`.
-- Huidige Anthropic-referentie is niet geschikt voor gebruik met lange context.
-- Verzoeken mislukken alleen bij lange sessies/modelruns die het 1M-contextpad nodig hebben.
+- Het geselecteerde Anthropic-model is een GA-geschikt Claude 4.x-model met 1M context (Opus 4.6/4.7/4.8, Sonnet 4.6), of de modelconfiguratie bevat nog de verouderde `params.context1m: true`.
+- De huidige Anthropic-referentie is niet geschikt voor gebruik met een lange context.
+- Aanvragen mislukken alleen bij lange sessies/modeluitvoeringen waarvoor het 1M-contextpad nodig is.
 
-Oplossingsopties:
+Oplossingsmogelijkheden:
 
 <Steps>
-  <Step title="Een standaard contextvenster gebruiken">
-    Schakel over naar een model met standaardvenster, of verwijder legacy `context1m` uit oudere
-    modelconfiguratie die niet GA-geschikt is voor 1M-context.
+  <Step title="Een standaardcontextvenster gebruiken">
+    Schakel over naar een model met een standaardvenster of verwijder de verouderde `context1m` uit een oudere
+    modelconfiguratie die niet GA-geschikt is voor 1M context.
   </Step>
   <Step title="Een geschikte referentie gebruiken">
-    Gebruik een Anthropic-referentie die geschikt is voor lange-contextverzoeken, of schakel over naar een Anthropic-API-sleutel.
+    Gebruik een Anthropic-referentie die geschikt is voor aanvragen met een lange context of schakel over naar een Anthropic-API-sleutel.
   </Step>
-  <Step title="Fallbackmodellen configureren">
-    Configureer fallbackmodellen zodat runs doorgaan wanneer Anthropic-lange-contextverzoeken worden geweigerd.
+  <Step title="Terugvalmodellen configureren">
+    Configureer terugvalmodellen zodat uitvoeringen doorgaan wanneer Anthropic-aanvragen met een lange context worden geweigerd.
   </Step>
 </Steps>
 
@@ -208,14 +194,11 @@ Gerelateerd:
 - [Tokengebruik en kosten](/nl/reference/token-use)
 - [Waarom zie ik HTTP 429 van Anthropic?](/nl/help/faq-first-run#why-am-i-seeing-http-429-ratelimiterror-from-anthropic)
 
-## Upstream 403-geblokkeerde reacties
+## Geblokkeerde 403-responsen van upstream
 
-Gebruik dit wanneer een upstream LLM-provider een generieke `403` retourneert, zoals
-`Your request was blocked`.
+Gebruik dit wanneer een upstream LLM-provider een algemene `403` retourneert, zoals `Your request was blocked`.
 
-Ga er niet van uit dat dit altijd een configuratieprobleem van OpenClaw is. De reactie kan
-komen van een upstream beveiligingslaag zoals een CDN, WAF, botbeheerregel of
-reverse proxy vóór een OpenAI-compatibel endpoint.
+Ga er niet van uit dat dit altijd een configuratieprobleem van OpenClaw is. De respons kan afkomstig zijn van een upstream beveiligingslaag, zoals een CDN, WAF, regel voor botbeheer of reverse proxy vóór een OpenAI-compatibel eindpunt.
 
 ```bash
 openclaw status
@@ -225,33 +208,30 @@ openclaw logs --follow
 
 Let op:
 
-- meerdere modellen onder dezelfde provider falen op dezelfde manier
-- HTML of generieke beveiligingstekst in plaats van een normale provider-API-fout
-- beveiligingsgebeurtenissen aan providerzijde voor hetzelfde verzoekmoment
-- een kleine directe `curl`-probe slaagt terwijl normale SDK-vormige verzoeken mislukken
+- Meerdere modellen van dezelfde provider mislukken op dezelfde manier.
+- HTML of algemene beveiligingstekst in plaats van een normale API-fout van de provider.
+- Beveiligingsgebeurtenissen aan de kant van de provider voor hetzelfde aanvraagtijdstip.
+- Een minimale rechtstreekse `curl`-controle slaagt, terwijl normale aanvragen in SDK-vorm mislukken.
 
-Los eerst de filtering aan providerzijde op wanneer het bewijs wijst op een WAF/CDN-
-blokkade. Geef de voorkeur aan een nauw afgebakende allow- of skipregel voor het API-pad dat OpenClaw
-gebruikt, en vermijd het uitschakelen van bescherming voor de hele site.
+Herstel eerst de filtering aan de kant van de provider wanneer het bewijs op een WAF/CDN-blokkade wijst. Geef de voorkeur aan een nauwkeurig afgebakende toestemmings- of overslaregel voor het API-pad dat OpenClaw gebruikt en schakel de beveiliging niet voor de hele site uit.
 
 <Warning>
-Een succesvolle minimale `curl` garandeert niet dat echte SDK-stijlverzoeken door
-dezelfde upstream beveiligingslaag komen.
+Een geslaagde minimale `curl` garandeert niet dat echte aanvragen in SDK-stijl door dezelfde upstream beveiligingslaag komen.
 </Warning>
 
 Gerelateerd:
 
-- [OpenAI-compatibele endpoints](/nl/gateway/configuration-reference#openai-compatible-endpoints)
+- [OpenAI-compatibele eindpunten](/nl/gateway/configuration-reference#openai-compatible-endpoints)
 - [Providerconfiguratie](/nl/providers)
-- [Logs](/nl/logging)
+- [Logboeken](/nl/logging)
 
-## Lokale OpenAI-compatibele backend slaagt voor directe probes maar agentruns mislukken
+## Lokale OpenAI-compatibele backend slaagt voor directe controles, maar agentuitvoeringen mislukken
 
 Gebruik dit wanneer:
 
-- `curl ... /v1/models` werkt
-- kleine directe `/v1/chat/completions`-aanroepen werken
-- OpenClaw-modelruns alleen mislukken bij normale agentbeurten
+- `curl ... /v1/models` werkt.
+- Kleine rechtstreekse `/v1/chat/completions`-aanroepen werken.
+- OpenClaw-modeluitvoeringen mislukken alleen bij normale agentbeurten.
 
 ```bash
 curl http://127.0.0.1:1234/v1/models
@@ -264,29 +244,28 @@ openclaw logs --follow
 
 Let op:
 
-- directe kleine aanroepen slagen, maar OpenClaw-runs mislukken alleen bij grotere prompts
-- `model_not_found`- of 404-fouten ook al werkt directe `/v1/chat/completions`
-  met dezelfde kale model-id
-- backendfouten over `messages[].content` die een string verwachten
-- intermitterende waarschuwingen `incomplete turn detected ... stopReason=stop payloads=0` met een OpenAI-compatibele lokale backend
-- backendcrashes die alleen verschijnen bij grotere prompt-tokenaantallen of volledige agent-runtimeprompts
+- Kleine rechtstreekse aanroepen slagen, maar OpenClaw-uitvoeringen mislukken alleen bij grotere prompts.
+- `model_not_found`- of 404-fouten, hoewel rechtstreekse `/v1/chat/completions` met dezelfde kale model-ID werkt.
+- Backendfouten waarin staat dat `messages[].content` een tekenreeks verwacht.
+- Onregelmatige `incomplete turn detected ... stopReason=stop payloads=0`-waarschuwingen bij een OpenAI-compatibele lokale backend.
+- Backendcrashes die alleen optreden bij grotere aantallen prompttokens of volledige prompts van de agentruntime.
 
 <AccordionGroup>
-  <Accordion title="Veelvoorkomende signalen">
-    - `model_not_found` met een lokale MLX-/vLLM-achtige server → controleer of `baseUrl` `/v1` bevat, `api` `"openai-completions"` is voor `/v1/chat/completions`-backends, en `models.providers.<provider>.models[].id` de kale provider-lokale id is. Selecteer deze één keer met het providerprefix, bijvoorbeeld `mlx/mlx-community/Qwen3-30B-A3B-6bit`; houd de catalogusvermelding als `mlx-community/Qwen3-30B-A3B-6bit`.
-    - `messages[...].content: invalid type: sequence, expected a string` → backend weigert gestructureerde Chat Completions-contentdelen. Oplossing: stel `models.providers.<provider>.models[].compat.requiresStringContent: true` in.
-    - `validation.keys` of toegestane berichtsleutels zoals `["role","content"]` → backend weigert OpenAI-stijl replaymetadata op Chat Completions-berichten. Oplossing: stel `models.providers.<provider>.models[].compat.strictMessageKeys: true` in.
-    - `incomplete turn detected ... stopReason=stop payloads=0` → de backend voltooide het Chat Completions-verzoek maar retourneerde geen voor de gebruiker zichtbare assistenttekst voor die beurt. OpenClaw probeert replay-veilige lege OpenAI-compatibele beurten één keer opnieuw; aanhoudende fouten betekenen meestal dat de backend lege/niet-tekstuele content uitzendt of finale-antwoordtekst onderdrukt.
-    - directe kleine verzoeken slagen, maar OpenClaw-agentruns mislukken met backend-/modelcrashes (bijvoorbeeld Gemma op sommige `inferrs`-builds) → OpenClaw-transport is waarschijnlijk al correct; de backend faalt op de grotere promptvorm van de agentruntime.
-    - fouten nemen af na het uitschakelen van tools maar verdwijnen niet → toolschema's maakten deel uit van de druk, maar het resterende probleem is nog steeds upstream model-/servercapaciteit of een backendbug.
+  <Accordion title="Veelvoorkomende kenmerken">
+    - `model_not_found` met een lokale server in MLX/vLLM-stijl: controleer of `baseUrl` `/v1` bevat, `api` voor `/v1/chat/completions`-backends `"openai-completions"` is en `models.providers.<provider>.models[].id` de kale providerlokale ID is. Selecteer deze eenmaal met het providervoorvoegsel, bijvoorbeeld `mlx/mlx-community/Qwen3-30B-A3B-6bit`; behoud de catalogusvermelding als `mlx-community/Qwen3-30B-A3B-6bit`.
+    - `messages[...].content: invalid type: sequence, expected a string`: de backend weigert gestructureerde inhoudsdelen van Chat Completions. Oplossing: stel `models.providers.<provider>.models[].compat.requiresStringContent: true` in.
+    - `validation.keys` of toegestane berichtsleutels zoals `["role","content"]`: de backend weigert replaymetadata in OpenAI-stijl in Chat Completions-berichten. Oplossing: stel `models.providers.<provider>.models[].compat.strictMessageKeys: true` in.
+    - `incomplete turn detected ... stopReason=stop payloads=0`: de backend heeft de Chat Completions-aanvraag voltooid, maar voor die beurt geen voor de gebruiker zichtbare assistenttekst geretourneerd. OpenClaw probeert replay-veilige, lege OpenAI-compatibele beurten eenmaal opnieuw; aanhoudende fouten betekenen meestal dat de backend lege/niet-tekstuele inhoud uitvoert of de tekst van het definitieve antwoord onderdrukt.
+    - Kleine rechtstreekse aanvragen slagen, maar OpenClaw-agentuitvoeringen mislukken door crashes van de backend/het model (bijvoorbeeld Gemma bij sommige `inferrs`-builds): het OpenClaw-transport is waarschijnlijk al correct; de backend faalt bij de grotere promptvorm van de agentruntime.
+    - Fouten nemen af nadat tools zijn uitgeschakeld, maar verdwijnen niet: toolschema's droegen bij aan de belasting, maar het resterende probleem is nog steeds de capaciteit van het upstream model/de upstream server of een backendfout.
 
   </Accordion>
-  <Accordion title="Oplossingsopties">
-    1. Stel `compat.requiresStringContent: true` in voor string-only Chat Completions-backends.
-    2. Stel `compat.strictMessageKeys: true` in voor strikte Chat Completions-backends die alleen `role` en `content` op elk bericht accepteren.
-    3. Stel `compat.supportsTools: false` in voor modellen/backends die OpenClaw's toolschemaoppervlak niet betrouwbaar aankunnen.
-    4. Verlaag promptdruk waar mogelijk: kleinere workspace-bootstrap, kortere sessiegeschiedenis, lichter lokaal model of een backend met sterkere ondersteuning voor lange context.
-    5. Als kleine directe verzoeken blijven slagen terwijl OpenClaw-agentbeurten nog steeds binnen de backend crashen, behandel dit dan als een upstream server-/modelbeperking en dien daar een repro in met de geaccepteerde payloadvorm.
+  <Accordion title="Oplossingsmogelijkheden">
+    1. Stel `compat.requiresStringContent: true` in voor Chat Completions-backends die alleen tekenreeksen ondersteunen.
+    2. Stel `compat.strictMessageKeys: true` in voor strikte Chat Completions-backends die per bericht alleen `role` en `content` accepteren.
+    3. Stel `compat.supportsTools: false` in voor modellen/backends die het toolschema-oppervlak van OpenClaw niet betrouwbaar kunnen verwerken.
+    4. Verminder waar mogelijk de promptbelasting: een kleinere werkruimtebootstrap, een kortere sessiegeschiedenis, een lichter lokaal model of een backend met betere ondersteuning voor een lange context.
+    5. Als kleine rechtstreekse aanvragen blijven slagen terwijl OpenClaw-agentbeurten nog steeds binnen de backend crashen, behandel dit dan als een beperking van de upstream server/het upstream model en dien daar een reproduceerbaar voorbeeld in met de geaccepteerde payloadvorm.
   </Accordion>
 </AccordionGroup>
 
@@ -294,11 +273,11 @@ Gerelateerd:
 
 - [Configuratie](/nl/gateway/configuration)
 - [Lokale modellen](/nl/gateway/local-models)
-- [OpenAI-compatibele endpoints](/nl/gateway/configuration-reference#openai-compatible-endpoints)
+- [OpenAI-compatibele eindpunten](/nl/gateway/configuration-reference#openai-compatible-endpoints)
 
 ## Geen antwoorden
 
-Als kanalen actief zijn maar niets antwoordt, controleer dan routing en beleid voordat je iets opnieuw verbindt.
+Als kanalen actief zijn maar er niets antwoordt, controleer dan de routering en het beleid voordat je iets opnieuw verbindt.
 
 ```bash
 openclaw status
@@ -310,25 +289,25 @@ openclaw logs --follow
 
 Let op:
 
-- Koppeling in behandeling voor DM-afzenders.
-- Groepsvermelding-gating (`requireMention`, `mentionPatterns`).
-- Mismatches in de allowlist voor kanaal/groep.
+- Koppeling in afwachting voor afzenders van privéberichten.
+- Vereiste groepsvermelding (`requireMention`, `mentionPatterns`).
+- Niet-overeenkomende toelatingslijsten voor kanalen/groepen.
 
-Veelvoorkomende kenmerken:
+Veelvoorkomende meldingen:
 
-- `drop guild message (mention required` → groepsbericht genegeerd tot vermelding.
+- `drop guild message (mention required` → groepsbericht genegeerd totdat er een vermelding is.
 - `pairing request` → afzender heeft goedkeuring nodig.
 - `blocked` / `allowlist` → afzender/kanaal is door beleid gefilterd.
 
 Gerelateerd:
 
-- [Kanaalprobleemoplossing](/nl/channels/troubleshooting)
+- [Problemen met kanalen oplossen](/nl/channels/troubleshooting)
 - [Groepen](/nl/channels/groups)
 - [Koppeling](/nl/channels/pairing)
 
-## Connectiviteit van dashboard/control-UI
+## Connectiviteit van het dashboard en de beheerinterface
 
-Wanneer de dashboard/control-UI geen verbinding maakt, valideer dan de URL, auth-modus en aannames over de veilige context.
+Als het dashboard/de beheerinterface geen verbinding maakt, controleer dan de URL, de authenticatiemodus en de aannames over een beveiligde context.
 
 ```bash
 openclaw gateway status
@@ -341,10 +320,10 @@ openclaw gateway status --json
 Let op:
 
 - Juiste probe-URL en dashboard-URL.
-- Mismatch in auth-modus/token tussen client en gateway.
-- HTTP-gebruik waar apparaatidentiteit vereist is.
+- Niet-overeenkomende authenticatiemodus/token tussen client en Gateway.
+- Gebruik van HTTP waar een apparaatidentiteit vereist is.
 
-Als een lokale browser na een update geen verbinding kan maken met `127.0.0.1:18789`, herstel dan eerst de lokale Gateway-service en bevestig dat deze het dashboard serveert:
+Als een lokale browser na een update geen verbinding kan maken met `127.0.0.1:18789`, herstel dan eerst de lokale Gateway-service en controleer of deze het dashboard aanbiedt:
 
 ```bash
 openclaw gateway restart
@@ -352,43 +331,43 @@ lsof -i :18789
 curl http://127.0.0.1:18789
 ```
 
-Als `curl` OpenClaw-HTML teruggeeft, werkt de Gateway en is het resterende probleem waarschijnlijk browsercache, een oude dieplink of verouderde tabbladstatus. Open `http://127.0.0.1:18789` rechtstreeks en navigeer vanaf het dashboard. Als herstarten de service niet actief laat, voer dan `openclaw gateway start` uit en controleer `openclaw gateway status` opnieuw.
+Als `curl` OpenClaw-HTML retourneert, werkt de Gateway en is het resterende probleem waarschijnlijk de browsercache, een oude deep link of verouderde tabbladstatus. Open `http://127.0.0.1:18789` rechtstreeks en navigeer vanuit het dashboard. Als de service na het opnieuw starten niet actief blijft, voer dan `openclaw gateway start` uit en controleer `openclaw gateway status` opnieuw.
 
 <AccordionGroup>
-  <Accordion title="Verbindings-/auth-kenmerken">
-    - `device identity required` → niet-veilige context of ontbrekende apparaatauthenticatie.
-    - `origin not allowed` → browser-`Origin` staat niet in `gateway.controlUi.allowedOrigins` (of je verbindt vanaf een niet-loopback browser-origin zonder expliciete allowlist).
-    - `device nonce required` / `device nonce mismatch` → client voltooit de op challenge gebaseerde apparaatauthenticatiestroom niet (`connect.challenge` + `device.nonce`).
-    - `device signature invalid` / `device signature expired` → client heeft de verkeerde payload (of een verouderde timestamp) ondertekend voor de huidige handshake.
-    - `AUTH_TOKEN_MISMATCH` met `canRetryWithDeviceToken=true` → client kan één vertrouwde nieuwe poging doen met gecachte apparaattoken.
-    - Die nieuwe poging met gecachte token hergebruikt de gecachte scopeset die is opgeslagen met de gekoppelde apparaattoken. Aanroepers met expliciete `deviceToken` / expliciete `scopes` behouden in plaats daarvan hun aangevraagde scopeset.
-    - `AUTH_SCOPE_MISMATCH` → de apparaattoken is herkend, maar de goedgekeurde scopes dekken dit verbindingsverzoek niet; koppel opnieuw of keur het aangevraagde scopecontract goed in plaats van een gedeelde Gateway-token te roteren.
-    - Buiten dat pad voor opnieuw proberen is de auth-prioriteit voor verbinden: eerst expliciete gedeelde token/wachtwoord, daarna expliciete `deviceToken`, daarna opgeslagen apparaattoken, daarna bootstrap-token.
-    - Op het asynchrone Tailscale Serve Control UI-pad worden mislukte pogingen voor dezelfde `{scope, ip}` geserialiseerd voordat de limiter de fout registreert. Twee slechte gelijktijdige nieuwe pogingen vanaf dezelfde client kunnen daarom bij de tweede poging `retry later` tonen in plaats van twee gewone mismatches.
-    - `too many failed authentication attempts (retry later)` vanaf een browser-origin loopback-client → herhaalde fouten vanaf dezelfde genormaliseerde `Origin` worden tijdelijk buitengesloten; een andere localhost-origin gebruikt een aparte bucket.
-    - herhaalde `unauthorized` na die nieuwe poging → drift in gedeelde token/apparaattoken; vernieuw de tokenconfiguratie en keur de apparaattoken indien nodig opnieuw goed of roteer deze.
-    - `gateway connect failed:` → verkeerd host-/poort-/URL-doel.
+  <Accordion title="Verbindings-/authenticatiemeldingen">
+    - `device identity required` → onbeveiligde context of ontbrekende apparaatauthenticatie.
+    - `origin not allowed` → browser-`Origin` staat niet in `gateway.controlUi.allowedOrigins` (of je maakt verbinding vanaf een browseroorsprong die geen loopback gebruikt, zonder expliciete toelatingslijst).
+    - `device nonce required` / `device nonce mismatch` → client voltooit de op uitdagingen gebaseerde apparaatauthenticatiestroom niet (`connect.challenge` + `device.nonce`).
+    - `device signature invalid` / `device signature expired` → client heeft de verkeerde payload (of een verouderd tijdstempel) voor de huidige handshake ondertekend.
+    - `AUTH_TOKEN_MISMATCH` met `canRetryWithDeviceToken=true` → client kan één vertrouwde nieuwe poging uitvoeren met de gecachte apparaattoken.
+    - Die nieuwe poging met de gecachte token hergebruikt de gecachte set bereiken die met de gekoppelde apparaattoken is opgeslagen. Aanroepers met expliciete `deviceToken` / expliciete `scopes` behouden in plaats daarvan hun aangevraagde set bereiken.
+    - `AUTH_SCOPE_MISMATCH` → de apparaattoken is herkend, maar de goedgekeurde bereiken dekken dit verbindingsverzoek niet; koppel opnieuw of keur het aangevraagde bereikcontract goed in plaats van een gedeelde Gateway-token te roteren.
+    - Buiten dat pad voor opnieuw proberen geldt voor verbindingsauthenticatie de volgende prioriteit: eerst expliciete gedeelde token/wachtwoord, daarna expliciete `deviceToken`, vervolgens de opgeslagen apparaattoken en ten slotte de bootstrap-token.
+    - In het asynchrone Tailscale Serve-pad van de beheerinterface worden mislukte pogingen voor dezelfde `{scope, ip}` geserialiseerd voordat de begrenzer de mislukking registreert. Twee gelijktijdige foutieve nieuwe pogingen van dezelfde client kunnen daardoor bij de tweede poging `retry later` opleveren in plaats van twee gewone niet-overeenkomsten.
+    - `too many failed authentication attempts (retry later)` van een loopback-client met browseroorsprong → herhaalde mislukkingen vanaf dezelfde genormaliseerde `Origin` worden tijdelijk geblokkeerd; een andere localhost-oorsprong gebruikt een aparte bucket.
+    - Herhaalde `unauthorized` na die nieuwe poging → afwijking tussen gedeelde token en apparaattoken; vernieuw de tokenconfiguratie en keur de apparaattoken indien nodig opnieuw goed of roteer deze.
+    - `gateway connect failed:` → onjuist doel voor host/poort/URL.
 
   </Accordion>
 </AccordionGroup>
 
-### Snelle kaart voor auth-detailcodes
+### Sneloverzicht van detailcodes voor authenticatie
 
-Gebruik `error.details.code` uit de mislukte `connect`-respons om de volgende actie te kiezen:
+Gebruik `error.details.code` uit het mislukte `connect`-antwoord om de volgende actie te kiezen:
 
-| Detailcode                   | Betekenis                                                                                                                                                                                    | Aanbevolen actie                                                                                                                                                                                                                                                                         |
+| Detailcode                  | Betekenis                                                                                                                                                                                      | Aanbevolen actie                                                                                                                                                                                                                                                                       |
 | ---------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `AUTH_TOKEN_MISSING`         | Client heeft geen vereiste gedeelde token verzonden.                                                                                                                                         | Plak/stel de token in de client in en probeer opnieuw. Voor dashboardpaden: `openclaw config get gateway.auth.token` en plak daarna in de Control UI-instellingen.                                                                                                                       |
-| `AUTH_TOKEN_MISMATCH`        | Gedeelde token kwam niet overeen met de auth-token van de gateway.                                                                                                                           | Als `canRetryWithDeviceToken=true`, sta dan één vertrouwde nieuwe poging toe. Nieuwe pogingen met gecachte token hergebruiken opgeslagen goedgekeurde scopes; aanroepers met expliciete `deviceToken` / `scopes` behouden aangevraagde scopes. Als het nog steeds mislukt, voer dan de [checklist voor herstel van tokendrift](/nl/cli/devices#token-drift-recovery-checklist) uit. |
-| `AUTH_DEVICE_TOKEN_MISMATCH` | Gecachte token per apparaat is verouderd of ingetrokken.                                                                                                                                     | Roteer/keur de apparaattoken opnieuw goed met de [apparaten-CLI](/nl/cli/devices), en verbind daarna opnieuw.                                                                                                                                                                                |
-| `AUTH_SCOPE_MISMATCH`        | Apparaattoken is geldig, maar de goedgekeurde rol/scopes dekken dit verbindingsverzoek niet.                                                                                                | Koppel het apparaat opnieuw of keur het aangevraagde scopecontract goed; behandel dit niet als drift van gedeelde tokens.                                                                                                                                                                 |
-| `PAIRING_REQUIRED`           | Apparaatidentiteit heeft goedkeuring nodig. Controleer `error.details.reason` voor `not-paired`, `scope-upgrade`, `role-upgrade` of `metadata-upgrade`, en gebruik `requestId` / `remediationHint` indien aanwezig. | Keur openstaand verzoek goed: `openclaw devices list` en daarna `openclaw devices approve <requestId>`. Scope-/rolupgrades gebruiken dezelfde stroom nadat je de aangevraagde toegang hebt beoordeeld.                                                                                  |
+| `AUTH_TOKEN_MISSING`         | Client heeft een vereiste gedeelde token niet verzonden.                                                                                                                                                 | Plak/stel de token in de client in en probeer het opnieuw. Voor dashboardpaden: `openclaw config get gateway.auth.token` en plak deze vervolgens in de instellingen van de beheerinterface.                                                                                                                                              |
+| `AUTH_TOKEN_MISMATCH`        | Gedeelde token kwam niet overeen met de authenticatietoken van de Gateway.                                                                                                                                               | Als `canRetryWithDeviceToken=true`, sta dan één vertrouwde nieuwe poging toe. Nieuwe pogingen met een gecachte token hergebruiken opgeslagen goedgekeurde bereiken; aanroepers met expliciete `deviceToken` / `scopes` behouden aangevraagde bereiken. Als het nog steeds mislukt, voer dan de [controlelijst voor herstel van tokenafwijkingen](/nl/cli/devices#token-drift-recovery-checklist) uit. |
+| `AUTH_DEVICE_TOKEN_MISMATCH` | Gecachte token per apparaat is verouderd of ingetrokken.                                                                                                                                                 | Roteer/keur de apparaattoken opnieuw goed met de [apparaten-CLI](/nl/cli/devices) en maak vervolgens opnieuw verbinding.                                                                                                                                                                                                        |
+| `AUTH_SCOPE_MISMATCH`        | Apparaattoken is geldig, maar de goedgekeurde rol/bereiken dekken dit verbindingsverzoek niet.                                                                                                       | Koppel het apparaat opnieuw of keur het aangevraagde bereikcontract goed; behandel dit niet als een afwijking van de gedeelde token.                                                                                                                                                                                     |
+| `PAIRING_REQUIRED`           | Apparaatidentiteit moet worden goedgekeurd. Controleer `error.details.reason` op `not-paired`, `scope-upgrade`, `role-upgrade` of `metadata-upgrade`, en gebruik `requestId` / `remediationHint` indien aanwezig. | Keur het openstaande verzoek goed: `openclaw devices list` en daarna `openclaw devices approve <requestId>`. Upgrades van bereik/rol gebruiken dezelfde stroom nadat je de aangevraagde toegang hebt beoordeeld.                                                                                                               |
 
 <Note>
-Directe loopback-backend-RPC's die zijn geauthenticeerd met de gedeelde Gateway-token/het gedeelde Gateway-wachtwoord zouden niet afhankelijk moeten zijn van de scopebasislijn van gekoppelde apparaten van de CLI. Als subagenten of andere interne aanroepen nog steeds mislukken met `scope-upgrade`, controleer dan of de aanroeper `client.id: "gateway-client"` en `client.mode: "backend"` gebruikt en geen expliciete `deviceIdentity` of apparaattoken afdwingt.
+Rechtstreekse RPC's naar de loopback-backend die zijn geauthenticeerd met de gedeelde Gateway-token/het gedeelde Gateway-wachtwoord, mogen niet afhankelijk zijn van de basisset bereiken van gekoppelde apparaten van de CLI. Als subagents of andere interne aanroepen nog steeds mislukken met `scope-upgrade`, controleer dan of de aanroeper `client.id: "gateway-client"` en `client.mode: "backend"` gebruikt en niet een expliciete `deviceIdentity` of apparaattoken afdwingt.
 </Note>
 
-Migratiecontrole voor apparaatauthenticatie v2:
+Controle van de migratie naar apparaatauthenticatie v2:
 
 ```bash
 openclaw --version
@@ -396,74 +375,74 @@ openclaw doctor
 openclaw gateway status
 ```
 
-Als logs nonce-/handtekeningfouten tonen, werk dan de verbindende client bij en verifieer deze:
+Als logboeken nonce-/handtekeningfouten tonen, werk dan de verbindende client bij en controleer deze:
 
 <Steps>
   <Step title="Wacht op connect.challenge">
-    Client wacht op de door de gateway uitgegeven `connect.challenge`.
+    Client wacht op de door de Gateway uitgegeven `connect.challenge`.
   </Step>
   <Step title="Onderteken de payload">
-    Client ondertekent de aan de challenge gebonden payload.
+    Client ondertekent de aan de uitdaging gebonden payload.
   </Step>
   <Step title="Verzend de apparaatnonce">
-    Client verzendt `connect.params.device.nonce` met dezelfde challenge-nonce.
+    Client verzendt `connect.params.device.nonce` met dezelfde uitdagingsnonce.
   </Step>
 </Steps>
 
 Als `openclaw devices rotate` / `revoke` / `remove` onverwacht wordt geweigerd:
 
-- gekoppelde-apparaattokensessies kunnen alleen **hun eigen** apparaat beheren, tenzij de aanroeper ook `operator.admin` heeft
-- `openclaw devices rotate --scope ...` kan alleen operatorscopes aanvragen die de aanroepersessie al heeft
+- Sessies met tokens van gekoppelde apparaten kunnen alleen **hun eigen** apparaat beheren, tenzij de aanroeper ook `operator.admin` heeft.
+- `openclaw devices rotate --scope ...` kan alleen operatorbereiken aanvragen die de sessie van de aanroeper al heeft.
 
 Gerelateerd:
 
-- [Configuratie](/nl/gateway/configuration) (Gateway-auth-modi)
-- [Control UI](/nl/web/control-ui)
+- [Configuratie](/nl/gateway/configuration) (authenticatiemodi van de Gateway)
+- [Beheerinterface](/nl/web/control-ui)
 - [Apparaten](/nl/cli/devices)
 - [Externe toegang](/nl/gateway/remote)
-- [Vertrouwde-proxy-auth](/nl/gateway/trusted-proxy-auth)
+- [Authenticatie via vertrouwde proxy](/nl/gateway/trusted-proxy-auth)
 
-## Gateway-service draait niet
+## Gateway-service is niet actief
 
-Gebruik dit wanneer de service is geïnstalleerd maar het proces niet actief blijft.
+Gebruik dit wanneer de service is geïnstalleerd, maar het proces niet actief blijft.
 
 ```bash
 openclaw gateway status
 openclaw status
 openclaw logs --follow
 openclaw doctor
-openclaw gateway status --deep   # also scan system-level services
+openclaw gateway status --deep   # ook services op systeemniveau scannen
 ```
 
 Let op:
 
-- `Runtime: stopped` met exithints.
-- Mismatch in serviceconfiguratie (`Config (cli)` vs `Config (service)`).
-- Poort-/listenerconflicten.
-- Extra launchd/systemd/schtasks-installaties wanneer `--deep` wordt gebruikt.
-- Opruimhints voor `Other gateway-like services detected (best effort)`.
+- `Runtime: stopped` met aanwijzingen over afsluiten.
+- Niet-overeenkomende serviceconfiguratie (`Config (cli)` versus `Config (service)`).
+- Conflicten met poorten/listeners.
+- Extra installaties van launchd/systemd/schtasks wanneer `--deep` wordt gebruikt.
+- Aanwijzingen voor het opschonen van `Other gateway-like services detected (best effort)`.
 
 <AccordionGroup>
-  <Accordion title="Veelvoorkomende kenmerken">
-    - `Gateway start blocked: set gateway.mode=local` of `existing config is missing gateway.mode` → lokale gatewaymodus is niet ingeschakeld, of het configuratiebestand is overschreven en `gateway.mode` is verloren gegaan. Oplossing: stel `gateway.mode="local"` in je configuratie in, of voer `openclaw onboard --mode local` / `openclaw setup` opnieuw uit om de verwachte lokale-modusconfiguratie opnieuw te stempelen. Als je OpenClaw via Podman uitvoert, is het standaardconfiguratiepad `~/.openclaw/openclaw.json`.
-    - `refusing to bind gateway ... without auth` → niet-loopback bind zonder geldig Gateway-auth-pad (token/wachtwoord, of vertrouwde proxy waar geconfigureerd).
+  <Accordion title="Veelvoorkomende meldingen">
+    - `Gateway start blocked: set gateway.mode=local` of `existing config is missing gateway.mode` → lokale Gateway-modus is niet ingeschakeld, of het configuratiebestand is overschreven en `gateway.mode` is verloren gegaan. Oplossing: stel `gateway.mode="local"` in je configuratie in, of voer `openclaw onboard --mode local` / `openclaw setup` opnieuw uit om de verwachte configuratie voor lokale modus opnieuw vast te leggen. Als je OpenClaw via Podman uitvoert, is het standaardconfiguratiepad `~/.openclaw/openclaw.json`.
+    - `refusing to bind gateway ... without auth` → binding buiten loopback zonder een geldig authenticatiepad voor de Gateway (token/wachtwoord, of vertrouwde proxy indien geconfigureerd).
     - `another gateway instance is already listening` / `EADDRINUSE` → poortconflict.
-    - `Other gateway-like services detected (best effort)` → er bestaan verouderde of parallelle launchd/systemd/schtasks-units. De meeste setups zouden één gateway per machine moeten houden; als je er toch meer dan één nodig hebt, isoleer dan poorten + configuratie/status/werkruimte. Zie [/gateway#multiple-gateways-same-host](/nl/gateway#multiple-gateways-same-host).
-    - `System-level OpenClaw gateway service detected` van doctor → er bestaat een systemd-systeemunit terwijl de service op gebruikersniveau ontbreekt. Verwijder of schakel het duplicaat uit voordat je doctor toestaat een gebruikersservice te installeren, of stel `OPENCLAW_SERVICE_REPAIR_POLICY=external` in als de systeemunit de bedoelde supervisor is.
-    - `Gateway service port does not match current gateway config` → de geïnstalleerde supervisor pint nog steeds de oude `--port`. Voer `openclaw doctor --fix` of `openclaw gateway install --force` uit en herstart daarna de Gateway-service.
+    - `Other gateway-like services detected (best effort)` → er bestaan verouderde of parallelle launchd-/systemd-/schtasks-eenheden. De meeste installaties moeten één Gateway per machine behouden; als je er toch meer dan één nodig hebt, isoleer dan poorten + configuratie/status/werkruimte. Zie [/gateway#multiple-gateways-same-host](/nl/gateway#multiple-gateways-same-host).
+    - `System-level OpenClaw gateway service detected` van doctor → er bestaat een systemd-systeemeenheid terwijl de service op gebruikersniveau ontbreekt. Verwijder of schakel het duplicaat uit voordat je doctor een gebruikersservice laat installeren, of stel `OPENCLAW_SERVICE_REPAIR_POLICY=external` in als de systeemeenheid de bedoelde supervisor is.
+    - `Gateway service port does not match current gateway config` → de geïnstalleerde supervisor legt nog steeds de oude `--port` vast. Voer `openclaw doctor --fix` of `openclaw gateway install --force` uit en start vervolgens de Gateway-service opnieuw.
 
   </Accordion>
 </AccordionGroup>
 
 Gerelateerd:
 
-- [Achtergrondexec en procestool](/nl/gateway/background-process)
+- [Uitvoering op de achtergrond en procestool](/nl/gateway/background-process)
 - [Configuratie](/nl/gateway/configuration)
 - [Doctor](/nl/gateway/doctor)
 
-## macOS-gateway reageert stilzwijgend niet meer en hervat daarna wanneer je het dashboard aanraakt
+## macOS-Gateway reageert ongemerkt niet meer en hervat wanneer je het dashboard aanraakt
 
-Gebruik dit wanneer kanalen (Telegram, WhatsApp, enz.) op een macOS-host minuten tot uren tegelijk stilvallen, en de gateway lijkt terug te komen zodra je de Control UI opent, via SSH inlogt of anderszins met de host interageert. Er is meestal geen duidelijk symptoom in `openclaw status`, omdat de gateway tegen de tijd dat je kijkt alweer leeft.
+Gebruik dit wanneer kanalen (Telegram, WhatsApp enz.) op een macOS-host minuten- tot urenlang stilvallen en de Gateway weer actief lijkt te worden zodra je de Control UI opent, via SSH verbinding maakt of op een andere manier interactie met de host hebt. Gewoonlijk is er geen duidelijk symptoom in `openclaw status`, omdat de Gateway tegen de tijd dat je kijkt alweer actief is.
 
 ```bash
 ls ~/.openclaw/logs/stability/ | tail -5
@@ -475,37 +454,37 @@ launchctl print gui/$UID/ai.openclaw.gateway | grep -E "state|last exit|runs"
 Let op:
 
 - Een of meer `*-uncaught_exception.json`-bundels in `~/.openclaw/logs/stability/` waarbij `error.code` is ingesteld op een tijdelijke netwerkcode zoals `ENETDOWN`, `ENETUNREACH`, `EHOSTUNREACH` of `ECONNREFUSED`.
-- `pmset -g log`-regels zoals `Entering Sleep state due to 'Maintenance Sleep'` of `en0 driver is slow (msg: WillChangeState to 0)` die samenvallen met de crashtijdstempels. Power Nap / Maintenance Sleep zet het wifi-stuurprogramma kort in status 0; elke uitgaande `connect()` die in dat venster valt, kan mislukken met `ENETDOWN`, zelfs op een host die verder volledige netwerkconnectiviteit heeft.
-- `launchctl print`-uitvoer met `state = not running`, meerdere recente `runs` en een exitcode, vooral wanneer de periode tussen de crash en de volgende start eerder rond een uur ligt dan rond seconden. macOS launchd past na een crashreeks een niet-gedocumenteerde herstartbeveiliging toe die `KeepAlive=true` kan blijven negeren totdat een externe trigger, zoals interactief inloggen, een dashboardverbinding of `launchctl kickstart`, deze opnieuw activeert.
+- `pmset -g log`-regels zoals `Entering Sleep state due to 'Maintenance Sleep'` of `en0 driver is slow (msg: WillChangeState to 0)` die samenvallen met de tijdstempels van de crashes. Power Nap / Maintenance Sleep zet het wifi-stuurprogramma kort in status 0; elke uitgaande `connect()` die in dat tijdvenster valt, kan mislukken met `ENETDOWN`, zelfs op een host die verder volledige netwerkverbinding heeft.
+- `launchctl print`-uitvoer die `state = not running` toont met meerdere recente `runs` en een afsluitcode, vooral wanneer er tussen de crash en de volgende start ongeveer een uur zit in plaats van enkele seconden. macOS launchd past na een reeks crashes een niet-gedocumenteerde beveiliging tegen herhaald starten toe, waardoor `KeepAlive=true` mogelijk niet meer wordt gehonoreerd totdat een externe trigger, zoals een interactieve aanmelding, een dashboardverbinding of `launchctl kickstart`, deze opnieuw activeert.
 
-Veelvoorkomende signalen:
+Veelvoorkomende kenmerken:
 
-- Een stabiliteitsbundel waarvan `error.code` `ENETDOWN` of een verwante code is, met een callstack die wijst naar Node `net` `lookupAndConnect` / `Socket.connect`. OpenClaw `2026.5.26` en nieuwer classificeren deze als onschuldige tijdelijke netwerkfouten, zodat ze niet langer doorlopen naar de uncaught handler op topniveau; als je een oudere release gebruikt, upgrade dan eerst.
-- Lange stille perioden die precies eindigen zodra je verbinding maakt met de Control UI of via SSH inlogt op de host: de gebruikerszichtbare activiteit is wat de herstartbeveiliging van launchd opnieuw activeert, niet iets wat het dashboard met de gateway doet.
-- Een `runs`-aantal dat gedurende de dag oploopt zonder overeenkomstige regel `received SIG*; shutting down` in `~/Library/Logs/openclaw/gateway.log`: schone afsluitingen loggen een signaal; tijdelijke crashes doen dat niet.
+- Een stabiliteitsbundel waarvan `error.code` gelijk is aan `ENETDOWN` of een verwante code, waarbij de aanroepstack verwijst naar Node `net` `lookupAndConnect` / `Socket.connect`. OpenClaw `2026.5.26` en nieuwer classificeren deze als onschuldige tijdelijke netwerkfouten, zodat ze niet langer worden doorgegeven aan de niet-afgevangen handler op het hoogste niveau; voer eerst een upgrade uit als je een oudere release gebruikt.
+- Lange stille perioden die onmiddellijk eindigen wanneer je verbinding maakt met de Control UI of via SSH met de host: de voor de gebruiker zichtbare activiteit activeert de beveiliging van launchd tegen herhaald starten opnieuw, niet iets wat het dashboard met de Gateway doet.
+- Het aantal `runs` loopt gedurende de dag op zonder bijbehorende `received SIG*; shutting down`-regel in `~/Library/Logs/openclaw/gateway.log`: bij een normale afsluiting wordt een signaal vastgelegd; bij tijdelijke crashes niet.
 
 Wat te doen:
 
-1. **Upgrade de gateway** als je een release vóór `2026.5.26` gebruikt. Na de upgrade worden toekomstige `ENETDOWN`-fouten als waarschuwingen gelogd in plaats van het proces te beëindigen.
-2. **Verminder onderhoudsslaapactiviteit** op Mac mini- / desktophosts die bedoeld zijn om als altijd-aan-servers te draaien:
+1. **Upgrade de Gateway** als je een release van vóór `2026.5.26` gebruikt. Na de upgrade worden toekomstige `ENETDOWN`-fouten als waarschuwingen vastgelegd in plaats van het proces te beëindigen.
+2. **Verminder activiteit door onderhoudsslaap** op Mac mini-/desktophosts die als permanent actieve servers moeten werken:
 
    ```bash
    sudo pmset -a sleep 0 disksleep 0 standby 0 powernap 0
    ```
 
-   Dit vermindert de onderliggende driverflap aanzienlijk, maar elimineert deze niet volledig. Het systeem kan nog steeds bepaalde onderhoudsslaapstanden uitvoeren voor TCP-keepalive en mDNS-onderhoud, ongeacht deze vlaggen.
+   Dit vermindert de onderliggende onderbreking van het stuurprogramma aanzienlijk, maar voorkomt deze niet volledig. Het systeem kan, ongeacht deze vlaggen, nog steeds bepaalde onderhoudsslaapcycli uitvoeren voor TCP-keepalive en mDNS-onderhoud.
 
-3. **Voeg een liveness-watchdog toe**, zodat een toekomstige crashreeks die door launchd wordt geparkeerd snel wordt opgemerkt:
+3. **Voeg een bewakingsmechanisme voor beschikbaarheid toe**, zodat een toekomstige reeks crashes die door launchd wordt geblokkeerd snel wordt gedetecteerd:
 
    ```bash
-   # Example launchd-aware liveness check, suitable for a 5-minute cron or LaunchAgent
+   # Voorbeeld van een launchd-bewuste beschikbaarheidscontrole, geschikt voor een Cron of LaunchAgent die elke 5 minuten wordt uitgevoerd
    state=$(launchctl print gui/$UID/ai.openclaw.gateway 2>/dev/null | awk -F'= ' '/state =/ {print $2; exit}')
    if [ "$state" != "running" ]; then
      launchctl kickstart -k gui/$UID/ai.openclaw.gateway
    fi
    ```
 
-   Het doel is om de herstartbeveiliging extern opnieuw te activeren; `KeepAlive=true` alleen is op macOS na een crashreeks niet voldoende.
+   Het doel is de beveiliging tegen herhaald starten extern opnieuw te activeren; alleen `KeepAlive=true` is op macOS na een reeks crashes niet voldoende.
 
 Gerelateerd:
 
@@ -513,9 +492,105 @@ Gerelateerd:
 - [Logboekregistratie](/nl/logging)
 - [Doctor](/nl/gateway/doctor)
 
-## Gateway sluit af bij hoog geheugengebruik
+## macOS launchd-supervisorlus met dubbele Gateway-/Node-LaunchAgents
 
-Gebruik dit wanneer de Gateway onder belasting verdwijnt, de supervisor een OOM-achtige herstart meldt, of logs `critical memory pressure bundle written` vermelden.
+Gebruik dit wanneer een macOS-installatie om de paar seconden opnieuw wordt gestart, `openclaw`-
+statuscontroles wisselen tussen beschikbaar en niet beschikbaar en de kanaalverzending vastloopt,
+hoewel de service actief lijkt te zijn.
+
+Dit is waargenomen bij oudere installaties waarbij zowel de LaunchAgent `ai.openclaw.gateway` als
+`ai.openclaw.node` actief was en beide
+`OPENCLAW_LAUNCHD_LABEL` injecteerden. In die toestand kan OpenClaw launchd-
+supervisie detecteren, proberen het opnieuw starten terug aan launchd over te dragen en in een snelle
+`EADDRINUSE`-/herstartlus terechtkomen in plaats van één stabiel Gateway-proces te behouden.
+
+```bash
+for i in 1 2 3 4; do
+  ps aux | grep 'openclaw.*index.js' | grep -v grep | awk '{print $2}'
+  sleep 10
+done
+
+openclaw gateway status --deep
+openclaw node status
+launchctl print gui/$UID/ai.openclaw.gateway | grep -E 'state|last exit|runs'
+tail -n 80 ~/Library/Logs/openclaw/gateway.log
+```
+
+Let op:
+
+- Meer dan één Gateway-PID tijdens de steekproef van 30 seconden in plaats van één stabiel
+  proces.
+- `EADDRINUSE`, `another gateway instance is already listening` of herhaalde
+  regels over opnieuw starten/overdracht in `gateway.log`.
+- Zowel `~/Library/LaunchAgents/ai.openclaw.gateway.plist` als
+  `~/Library/LaunchAgents/ai.openclaw.node.plist` zijn tegelijkertijd geladen op een
+  host waarop slechts één beheerde Gateway-service hoort te worden uitgevoerd.
+
+Wat te doen:
+
+1. Als op deze host alleen de Gateway-service hoort te worden uitgevoerd, verwijder je de beheerde Node-
+   service via OpenClaw. **Sla deze stap over** als je actief afhankelijk bent van de Node-
+   service voor functies van externe Nodes; als je deze verwijdert, stoppen die functies op
+   deze host:
+
+   ```bash
+   openclaw node uninstall
+   ```
+
+2. Installeer een permanente Gateway-wrapper die de overgenomen launchd-
+   markeringen wist voordat OpenClaw wordt gestart. Gebruik de ondersteunde optie `--wrapper`; bewerk
+   het gegenereerde bestand onder `~/.openclaw/service-env/` niet, omdat dit bestand bij herinstallatie
+   en updates van de service en bij reparatie door Doctor opnieuw wordt gegenereerd:
+
+   ```bash
+   mkdir -p ~/.local/bin
+   cat >~/.local/bin/openclaw-launchd-workaround <<'EOF'
+   #!/bin/sh
+   set -eu
+   unset OPENCLAW_LAUNCHD_LABEL LAUNCH_JOB_LABEL LAUNCH_JOB_NAME XPC_SERVICE_NAME || true
+   exec openclaw "$@"
+   EOF
+   chmod 700 ~/.local/bin/openclaw-launchd-workaround
+
+   openclaw gateway install \
+     --wrapper ~/.local/bin/openclaw-launchd-workaround \
+     --force
+   ```
+
+   `gateway install` bewaart het wrapperpad bij gedwongen herinstallaties,
+   updates en reparaties door Doctor.
+
+3. Controleer of de Gateway stabiel is en RPC bedient, en niet alleen luistert:
+
+   ```bash
+   openclaw gateway status --deep --require-rpc
+
+   for i in 1 2 3 4; do
+     ps aux | grep 'openclaw.*index.js' | grep -v grep | awk '{print $2}'
+     sleep 10
+   done
+   ```
+
+   De PID-steekproef moet één stabiel proces tonen in plaats van een wisselende reeks
+   PID's, en de inkomende kanaalverzending moet worden hervat.
+
+4. Verwijder na een upgrade naar een release waarin de onderliggende lus met dubbele LaunchAgents is
+   opgelost de tijdelijke oplossing en installeer de normale beheerde service opnieuw:
+
+   ```bash
+   OPENCLAW_WRAPPER= openclaw gateway install --force
+   rm ~/.local/bin/openclaw-launchd-workaround
+   ```
+
+Gerelateerd:
+
+- [macOS-platformnotities](/nl/platforms/mac/bundled-gateway)
+- [Doctor](/nl/gateway/doctor)
+- [Gateway-CLI](/nl/cli/gateway)
+
+## Gateway wordt afgesloten bij hoog geheugengebruik
+
+Gebruik dit wanneer de Gateway onder belasting verdwijnt, de supervisor een herstart in OOM-stijl meldt of de logboeken `critical memory pressure bundle written` vermelden.
 
 ```bash
 openclaw gateway status --deep
@@ -529,30 +604,29 @@ Let op:
 - `Reason: diagnostic.memory.pressure.critical` in de nieuwste stabiliteitsbundel.
 - `Memory pressure:` met `critical/rss_threshold`, `critical/heap_threshold` of `critical/rss_growth`.
 - `V8 heap:`-waarden dicht bij de heaplimiet.
-- `Largest session files:`-items zoals `agents/<agent>/sessions/<session>.jsonl` of `sessions/<session>.jsonl`.
-- Linux cgroup-geheugentellers wanneer de gateway in een container of service met geheugenlimiet draait.
+- `Largest session files:`-vermeldingen zoals `agents/<agent>/sessions/<session>.jsonl` of `sessions/<session>.jsonl`.
+- Linux-cgroup-geheugentellers wanneer de Gateway in een container of service met een geheugenlimiet wordt uitgevoerd.
 
-Veelvoorkomende signalen:
+Veelvoorkomende kenmerken:
 
-- `critical memory pressure bundle written` verschijnt kort voor de herstart → OpenClaw heeft een pre-OOM-stabiliteitsbundel vastgelegd. Inspecteer deze met `openclaw gateway stability --bundle latest`.
-- `memory pressure: level=critical ... memoryPressureSnapshot=disabled` verschijnt in gatewaylogs → OpenClaw heeft kritieke geheugendruk gedetecteerd, maar de pre-OOM-stabiliteitssnapshot staat uit.
-- `Largest session files:` wijst naar een zeer groot geredigeerd transcriptpad → verminder de bewaarde sessiegeschiedenis, inspecteer sessiegroei, of verplaats oude transcripties uit de actieve opslag voordat je opnieuw start.
-- Gebruikte bytes bij `V8 heap:` liggen dicht bij de heaplimiet → verlaag prompt-/sessiedruk, verminder gelijktijdig werk, of verhoog de Node-heaplimiet pas nadat je hebt bevestigd dat de workload verwacht is.
-- `Memory pressure: critical/rss_growth` → geheugen groeide snel binnen één samplingvenster. Controleer de nieuwste logs op een grote import, ontspoorde tooluitvoer, herhaalde retries of een batch wachtrijwerk van agents.
-- Kritieke geheugendruk verschijnt in logs maar er bestaat geen bundel → dit is de standaardinstelling. Stel `diagnostics.memoryPressureSnapshot: true` in om de pre-OOM-stabiliteitsbundel vast te leggen bij toekomstige kritieke geheugendrukgebeurtenissen.
+- `critical memory pressure bundle written` verschijnt kort vóór de herstart → OpenClaw heeft vóór de OOM een stabiliteitsbundel vastgelegd. Inspecteer deze met `openclaw gateway stability --bundle latest`.
+- `memory pressure: level=critical ... memoryPressureSnapshot=disabled` verschijnt in de Gateway-logboeken → OpenClaw heeft kritieke geheugendruk gedetecteerd, maar de stabiliteitsmomentopname vóór de OOM is uitgeschakeld.
+- `Largest session files:` verwijst naar een zeer groot geredigeerd transcriptpad → beperk de bewaarde sessiegeschiedenis, onderzoek de groei van de sessie of verplaats oude transcripties uit de actieve opslag voordat je opnieuw start.
+- Het aantal gebruikte bytes in `V8 heap:` ligt dicht bij de heaplimiet → verlaag de prompt-/sessiedruk, verminder het aantal gelijktijdige taken of verhoog de Node-heaplimiet pas nadat je hebt bevestigd dat de werklast wordt verwacht.
+- `Memory pressure: critical/rss_growth` → het geheugengebruik is binnen één meetvenster snel gegroeid. Controleer de nieuwste logboeken op een grote import, uit de hand gelopen tooluitvoer, herhaalde pogingen of een reeks agenttaken in de wachtrij.
+- Kritieke geheugendruk verschijnt in de logboeken, maar er bestaat geen bundel → dit is de standaardinstelling. Stel `diagnostics.memoryPressureSnapshot: true` in om bij toekomstige gebeurtenissen met kritieke geheugendruk de stabiliteitsbundel vóór de OOM vast te leggen.
 
-De stabiliteitsbundel bevat geen payload. Deze bevat operationeel geheugenbewijs en geredigeerde relatieve bestandspaden, geen berichttekst, webhook-bodies, referenties, tokens, cookies of ruwe sessie-id's. Voeg de diagnostiekexport toe aan bugrapporten in plaats van ruwe logs te kopiëren.
+De stabiliteitsbundel bevat geen payloads. Deze bevat operationeel bewijs over het geheugen en geredigeerde relatieve bestandspaden, maar geen berichttekst, Webhook-bodies, aanmeldgegevens, tokens, cookies of onbewerkte sessie-id's. Voeg de diagnostische export toe aan foutrapporten in plaats van onbewerkte logboeken te kopiëren.
 
 Gerelateerd:
 
-- [Gateway-gezondheid](/nl/gateway/health)
-- [Diagnostiekexport](/nl/gateway/diagnostics)
+- [Gateway-status](/nl/gateway/health)
+- [Diagnostische export](/nl/gateway/diagnostics)
 - [Sessies](/nl/cli/sessions)
 
 ## Gateway heeft ongeldige configuratie geweigerd
 
-Gebruik dit wanneer het opstarten van de Gateway mislukt met `Invalid config` of hot-reloadlogs zeggen
-dat een ongeldige bewerking is overgeslagen.
+Gebruik dit wanneer het starten van de Gateway mislukt met `Invalid config` of wanneer logboeken voor dynamisch herladen melden dat een ongeldige wijziging is overgeslagen.
 
 ```bash
 openclaw logs --follow
@@ -566,21 +640,21 @@ Let op:
 - `Invalid config at ...`
 - `config reload skipped (invalid config): ...`
 - `Config write rejected: ...`
-- Een getijdstempeld bestand `openclaw.json.rejected.*` naast de actieve configuratie
-- Een getijdstempeld bestand `openclaw.json.clobbered.*` als `doctor --fix` een kapotte directe bewerking heeft gerepareerd
-- OpenClaw bewaart de nieuwste 32 `.clobbered.*`-bestanden voor elk configuratiepad en roteert oudere bestanden
+- Een bestand `openclaw.json.rejected.*` met een tijdstempel naast de actieve configuratie.
+- Een bestand `openclaw.json.clobbered.*` met een tijdstempel als `doctor --fix` een beschadigde rechtstreekse wijziging heeft gerepareerd.
+- OpenClaw bewaart voor elk configuratiepad de nieuwste 32 `.clobbered.*`-bestanden en roteert oudere bestanden.
 
 <AccordionGroup>
-  <Accordion title="What happened">
-    - De configuratie valideerde niet tijdens het opstarten, hot reload, of een schrijfactie die eigendom is van OpenClaw.
-    - Het opstarten van de Gateway faalt gesloten in plaats van `openclaw.json` te herschrijven.
-    - Hot reload slaat ongeldige externe bewerkingen over en houdt de huidige runtimeconfiguratie actief.
-    - Schrijfacties die eigendom zijn van OpenClaw weigeren ongeldige/destructieve payloads vóór commit en slaan `.rejected.*` op.
-    - `openclaw doctor --fix` is eigenaar van reparatie. Het kan niet-JSON-prefixen verwijderen of de laatst bekende goede kopie herstellen, terwijl de geweigerde payload als `.clobbered.*` behouden blijft.
-    - Wanneer er veel reparaties plaatsvinden voor één configuratiepad, roteert OpenClaw oudere `.clobbered.*`-bestanden zodat de nieuwste gerepareerde payload beschikbaar blijft.
+  <Accordion title="Wat er is gebeurd">
+    - De configuratie is niet gevalideerd tijdens het starten, dynamisch herladen of een door OpenClaw beheerde schrijfbewerking.
+    - Het starten van de Gateway mislukt veilig in plaats van `openclaw.json` te herschrijven.
+    - Bij dynamisch herladen worden ongeldige externe wijzigingen overgeslagen en blijft de huidige runtimeconfiguratie actief.
+    - Door OpenClaw beheerde schrijfbewerkingen weigeren ongeldige/destructieve payloads vóór het vastleggen en slaan `.rejected.*` op.
+    - `openclaw doctor --fix` beheert de reparatie. Deze kan niet-JSON-voorvoegsels verwijderen of de laatst bekende geldige kopie herstellen, terwijl de geweigerde payload als `.clobbered.*` behouden blijft.
+    - Wanneer voor één configuratiepad veel reparaties plaatsvinden, roteert OpenClaw oudere `.clobbered.*`-bestanden, zodat de nieuwste gerepareerde payload beschikbaar blijft.
 
   </Accordion>
-  <Accordion title="Inspect and repair">
+  <Accordion title="Inspecteren en herstellen">
     ```bash
     CONFIG="$(openclaw config file)"
     ls -lt "$CONFIG".clobbered.* "$CONFIG".rejected.* 2>/dev/null | head
@@ -589,21 +663,21 @@ Let op:
     openclaw doctor
     ```
   </Accordion>
-  <Accordion title="Common signatures">
-    - `.clobbered.*` bestaat → doctor heeft een kapotte externe bewerking behouden terwijl de actieve configuratie werd gerepareerd.
-    - `.rejected.*` bestaat → een configuratieschrijfactie die eigendom is van OpenClaw faalde schema- of clobbercontroles vóór commit.
-    - `Config write rejected:` → de schrijfactie probeerde de vereiste vorm te laten vallen, het bestand sterk te verkleinen, of ongeldige configuratie vast te leggen.
-    - `config reload skipped (invalid config):` → een directe bewerking faalde validatie en werd genegeerd door de draaiende Gateway.
-    - `Invalid config at ...` → opstarten faalde voordat Gateway-services werden gestart.
-    - `missing-meta-vs-last-good`, `gateway-mode-missing-vs-last-good` of `size-drop-vs-last-good:*` → een schrijfactie die eigendom is van OpenClaw werd geweigerd omdat velden of grootte verloren gingen vergeleken met de laatst bekende goede back-up.
-    - `Config last-known-good promotion skipped` → de kandidaat bevatte geredigeerde geheime placeholders zoals `***`.
+  <Accordion title="Veelvoorkomende kenmerken">
+    - `.clobbered.*` bestaat → doctor heeft een defecte externe bewerking behouden tijdens het herstellen van de actieve configuratie.
+    - `.rejected.*` bestaat → een door OpenClaw beheerde configuratieschrijfactie heeft vóór het vastleggen de schema- of overschrijvingscontroles niet doorstaan.
+    - `Config write rejected:` → de schrijfactie probeerde de vereiste structuur te verwijderen, het bestand sterk te verkleinen of een ongeldige configuratie op te slaan.
+    - `config reload skipped (invalid config):` → een rechtstreekse bewerking heeft de validatie niet doorstaan en is door de actieve Gateway genegeerd.
+    - `Invalid config at ...` → het opstarten is mislukt voordat de Gateway-services waren gestart.
+    - `missing-meta-vs-last-good`, `gateway-mode-missing-vs-last-good` of `size-drop-vs-last-good:*` → een door OpenClaw beheerde schrijfactie is geweigerd omdat deze velden of omvang verloor ten opzichte van de laatst bekende werkende back-up.
+    - `Config last-known-good promotion skipped` → de kandidaat bevatte geredigeerde placeholders voor geheimen, zoals `***`.
 
   </Accordion>
-  <Accordion title="Fix options">
-    1. Voer `openclaw doctor --fix` uit om doctor prefixed/clobbered-configuratie te laten repareren of last-known-good te laten herstellen.
+  <Accordion title="Oplossingsopties">
+    1. Voer `openclaw doctor --fix` uit om doctor configuraties met voorvoegsels of overschrijvingen te laten herstellen, of om de laatst bekende werkende versie terug te zetten.
     2. Kopieer alleen de bedoelde sleutels uit `.clobbered.*` of `.rejected.*` en pas ze vervolgens toe met `openclaw config set` of `config.patch`.
-    3. Voer `openclaw config validate` uit voordat je opnieuw start.
-    4. Als je handmatig bewerkt, behoud dan de volledige JSON5-configuratie, niet alleen het gedeeltelijke object dat je wilde wijzigen.
+    3. Voer `openclaw config validate` uit voordat je opnieuw opstart.
+    4. Als je handmatig bewerkt, behoud dan de volledige JSON5-configuratie en niet alleen het gedeeltelijke object dat je wilde wijzigen.
   </Accordion>
 </AccordionGroup>
 
@@ -614,9 +688,9 @@ Gerelateerd:
 - [Configuratie: strikte validatie](/nl/gateway/configuration#strict-validation)
 - [Doctor](/nl/gateway/doctor)
 
-## Gateway-probewaarschuwingen
+## Waarschuwingen van de Gateway-controle
 
-Gebruik dit wanneer `openclaw gateway probe` iets bereikt, maar toch een waarschuwingsblok afdrukt.
+Gebruik dit wanneer `openclaw gateway probe` iets bereikt, maar nog steeds een waarschuwingsblok weergeeft.
 
 ```bash
 openclaw gateway probe
@@ -626,17 +700,17 @@ openclaw gateway probe --ssh user@gateway-host
 
 Let op:
 
-- `warnings[].code` en `primaryTargetId` in JSON-uitvoer.
-- Of de waarschuwing gaat over SSH-fallback, meerdere gateways, ontbrekende scopes of onopgeloste auth-refs.
+- `warnings[].code` en `primaryTargetId` in de JSON-uitvoer.
+- Of de waarschuwing betrekking heeft op SSH-terugval, meerdere gateways, ontbrekende scopes of niet-opgeloste authenticatiereferenties.
 
-Veelvoorkomende signalen:
+Veelvoorkomende kenmerken:
 
-- `SSH tunnel failed to start; falling back to direct probes.` → SSH-configuratie faalde, maar de opdracht probeerde nog steeds directe geconfigureerde/local loopback-doelen.
-- `multiple reachable gateway identities detected` → verschillende gateways hebben geantwoord, of OpenClaw kon niet bewijzen dat bereikbare doelen dezelfde gateway zijn. Een SSH-tunnel, proxy-URL of geconfigureerde externe URL naar dezelfde gateway wordt behandeld als één gateway met meerdere transports, zelfs wanneer transportpoorten verschillen.
-- `Read-probe diagnostics are limited by gateway scopes (missing operator.read)` → verbinden werkte, maar detail-RPC is beperkt door scopes; koppel apparaatidentiteit of gebruik referenties met `operator.read`.
-- `Gateway accepted the WebSocket connection, but follow-up read diagnostics failed` → verbinden werkte, maar de volledige set diagnostische RPC's kreeg een timeout of faalde. Behandel dit als een bereikbare Gateway met gedegradeerde diagnostiek; vergelijk `connect.ok` en `connect.rpcOk` in `--json`-uitvoer.
-- `Capability: pairing-pending` of `gateway closed (1008): pairing required` → de gateway antwoordde, maar deze client moet nog worden gekoppeld/goedgekeurd vóór normale operatortoegang.
-- onopgeloste waarschuwingstekst voor `gateway.auth.*` / `gateway.remote.*` SecretRef → auth-materiaal was in dit opdrachtpad niet beschikbaar voor het mislukte doel.
+- `SSH tunnel failed to start; falling back to direct probes.` → de SSH-configuratie is mislukt, maar de opdracht heeft nog steeds rechtstreeks geconfigureerde of loopback-doelen geprobeerd.
+- `multiple reachable gateway identities detected` → verschillende gateways hebben geantwoord, of OpenClaw kon niet aantonen dat de bereikbare doelen dezelfde Gateway zijn. Een SSH-tunnel, proxy-URL of geconfigureerde externe URL naar dezelfde Gateway wordt behandeld als één Gateway met meerdere transporten, zelfs wanneer de transportpoorten verschillen.
+- `Read-probe diagnostics are limited by gateway scopes (missing operator.read)` → de verbinding werkte, maar de gedetailleerde RPC is beperkt door scopes; koppel de apparaatidentiteit of gebruik aanmeldgegevens met `operator.read`.
+- `Gateway accepted the WebSocket connection, but follow-up read diagnostics failed` → de verbinding werkte, maar er trad een time-out of fout op bij de volledige set diagnostische RPC's. Behandel dit als een bereikbare Gateway met beperkte diagnostiek; vergelijk `connect.ok` en `connect.rpcOk` in de uitvoer van `--json`.
+- `Capability: pairing-pending` of `gateway closed (1008): pairing required` → de Gateway heeft geantwoord, maar deze client moet nog worden gekoppeld of goedgekeurd voordat normale beheerderstoegang mogelijk is.
+- Niet-opgeloste waarschuwingstekst voor `gateway.auth.*` / `gateway.remote.*` SecretRef → het authenticatiemateriaal was in dit opdrachtpad niet beschikbaar voor het mislukte doel.
 
 Gerelateerd:
 
@@ -644,9 +718,9 @@ Gerelateerd:
 - [Meerdere gateways op dezelfde host](/nl/gateway#multiple-gateways-same-host)
 - [Externe toegang](/nl/gateway/remote)
 
-## Kanaal verbonden, berichten stromen niet
+## Kanaal verbonden, maar berichten worden niet verwerkt
 
-Als de kanaalstatus verbonden is maar de berichtenstroom dood is, focus dan op beleid, machtigingen en kanaalspecifieke bezorgregels.
+Als de kanaalstatus verbonden is, maar de berichtenstroom stilligt, richt je dan op beleid, machtigingen en kanaalspecifieke bezorgingsregels.
 
 ```bash
 openclaw channels status --probe
@@ -659,25 +733,25 @@ openclaw config get channels
 Let op:
 
 - DM-beleid (`pairing`, `allowlist`, `open`, `disabled`).
-- Groepsallowlist en vermeldingsvereisten.
-- Ontbrekende kanaal-API-machtigingen/scopes.
+- Toestaanlijst voor groepen en vereisten voor vermeldingen.
+- Ontbrekende API-machtigingen/scopes voor het kanaal.
 
-Veelvoorkomende signalen:
+Veelvoorkomende kenmerken:
 
-- `mention required` → bericht genegeerd door groepsvermeldingsbeleid.
-- `pairing` / sporen van wachtende goedkeuring → afzender is niet goedgekeurd.
-- `missing_scope`, `not_in_channel`, `Forbidden`, `401/403` → probleem met kanaalauthenticatie/-machtigingen.
+- `mention required` → bericht genegeerd vanwege het groepsbeleid voor vermeldingen.
+- `pairing` / sporen van een wachtende goedkeuring → de afzender is niet goedgekeurd.
+- `missing_scope`, `not_in_channel`, `Forbidden`, `401/403` → probleem met de authenticatie/machtigingen van het kanaal.
 
 Gerelateerd:
 
-- [Kanaalprobleemoplossing](/nl/channels/troubleshooting)
+- [Problemen met kanalen oplossen](/nl/channels/troubleshooting)
 - [Discord](/nl/channels/discord)
 - [Telegram](/nl/channels/telegram)
 - [WhatsApp](/nl/channels/whatsapp)
 
-## Cron- en Heartbeat-bezorging
+## Bezorging via Cron en Heartbeat
 
-Als cron of heartbeat niet heeft gedraaid of niet is bezorgd, verifieer dan eerst de schedulerstatus en daarna het bezorgdoel.
+Als Cron of Heartbeat niet is uitgevoerd of niets heeft bezorgd, controleer dan eerst de status van de planner en daarna het bezorgingsdoel.
 
 ```bash
 openclaw cron status
@@ -689,19 +763,19 @@ openclaw logs --follow
 
 Let op:
 
-- Cron ingeschakeld en volgende activering aanwezig.
-- Status van taakuitvoeringsgeschiedenis (`ok`, `skipped`, `error`).
-- Redenen voor overgeslagen Heartbeat (`quiet-hours`, `requests-in-flight`, `cron-in-progress`, `lanes-busy`, `alerts-disabled`, `empty-heartbeat-file`, `no-tasks-due`).
+- Cron is ingeschakeld en het volgende activeringsmoment is aanwezig.
+- Status van de uitvoeringsgeschiedenis van de taak (`ok`, `skipped`, `error`).
+- Redenen voor het overslaan van Heartbeat (`quiet-hours`, `requests-in-flight`, `cron-in-progress`, `lanes-busy`, `alerts-disabled`, `empty-heartbeat-file`, `no-tasks-due`).
 
 <AccordionGroup>
-  <Accordion title="Veelvoorkomende signalen">
-    - `cron: scheduler disabled; jobs will not run automatically` → cron uitgeschakeld.
-    - `cron: timer tick failed` → plannertick mislukt; controleer bestands-, log- en runtimefouten.
+  <Accordion title="Veelvoorkomende kenmerken">
+    - `cron: scheduler disabled; jobs will not run automatically` → Cron is uitgeschakeld.
+    - `cron: timer tick failed` → de plannertick is mislukt; controleer fouten in bestanden, logboeken of de runtime.
     - `heartbeat skipped` met `reason=quiet-hours` → buiten het venster met actieve uren.
-    - `heartbeat skipped` met `reason=empty-heartbeat-file` → `HEARTBEAT.md` bestaat maar bevat alleen lege, commentaar-, kop-, fence- of lege-checkliststructuur, dus OpenClaw slaat de modelaanroep over.
-    - `heartbeat skipped` met `reason=no-tasks-due` → `HEARTBEAT.md` bevat een `tasks:`-blok, maar geen van de taken is aan de beurt bij deze tick.
-    - `heartbeat: unknown accountId` → ongeldig account-id voor Heartbeat-afleverdoel.
-    - `heartbeat skipped` met `reason=dm-blocked` → Heartbeat-doel is herleid tot een DM-achtige bestemming terwijl `agents.defaults.heartbeat.directPolicy` (of een override per agent) is ingesteld op `block`.
+    - `heartbeat skipped` met `reason=empty-heartbeat-file` → `HEARTBEAT.md` bestaat, maar bevat alleen lege tekst, opmerkingen, een kop, een codeblok of een lege checkliststructuur, waardoor OpenClaw de modelaanroep overslaat.
+    - `heartbeat skipped` met `reason=no-tasks-due` → `HEARTBEAT.md` bevat een `tasks:`-blok, maar geen van de taken is bij deze tick aan de beurt.
+    - `heartbeat: unknown accountId` → ongeldig account-ID voor het bezorgingsdoel van Heartbeat.
+    - `heartbeat skipped` met `reason=dm-blocked` → het Heartbeat-doel is omgezet naar een DM-achtige bestemming terwijl `agents.defaults.heartbeat.directPolicy` (of de overschrijving per agent) is ingesteld op `block`.
 
   </Accordion>
 </AccordionGroup>
@@ -712,9 +786,9 @@ Gerelateerd:
 - [Geplande taken](/nl/automation/cron-jobs)
 - [Geplande taken: probleemoplossing](/nl/automation/cron-jobs#troubleshooting)
 
-## Node gekoppeld, tool mislukt
+## Node gekoppeld, maar hulpmiddel mislukt
 
-Als een Node gekoppeld is maar tools mislukken, isoleer dan voorgrond-, toestemmings- en goedkeuringsstatus.
+Als een Node is gekoppeld, maar hulpmiddelen mislukken, isoleer dan de status van de voorgrond, machtigingen en goedkeuringen.
 
 ```bash
 openclaw nodes status
@@ -726,26 +800,26 @@ openclaw status
 
 Let op:
 
-- Node online met verwachte mogelijkheden.
-- OS-toestemmingen voor camera/microfoon/locatie/scherm.
-- Exec-goedkeuringen en allowlist-status.
+- Node is online met de verwachte mogelijkheden.
+- Toekenningen van OS-machtigingen voor camera/microfoon/locatie/scherm.
+- Status van uitvoeringsgoedkeuringen en de toestaanlijst.
 
-Veelvoorkomende signalen:
+Veelvoorkomende kenmerken:
 
-- `NODE_BACKGROUND_UNAVAILABLE` → Node-app moet op de voorgrond staan.
-- `*_PERMISSION_REQUIRED` / `LOCATION_PERMISSION_REQUIRED` → ontbrekende OS-toestemming.
-- `SYSTEM_RUN_DENIED: approval required` → exec-goedkeuring in behandeling.
-- `SYSTEM_RUN_DENIED: allowlist miss` → opdracht geblokkeerd door allowlist.
+- `NODE_BACKGROUND_UNAVAILABLE` → de Node-app moet op de voorgrond staan.
+- `*_PERMISSION_REQUIRED` / `LOCATION_PERMISSION_REQUIRED` → ontbrekende OS-machtiging.
+- `SYSTEM_RUN_DENIED: approval required` → uitvoeringsgoedkeuring is in behandeling.
+- `SYSTEM_RUN_DENIED: allowlist miss` → opdracht geblokkeerd door de toestaanlijst.
 
 Gerelateerd:
 
-- [Exec-goedkeuringen](/nl/tools/exec-approvals)
-- [Node-probleemoplossing](/nl/nodes/troubleshooting)
+- [Uitvoeringsgoedkeuringen](/nl/tools/exec-approvals)
+- [Problemen met Nodes oplossen](/nl/nodes/troubleshooting)
 - [Nodes](/nl/nodes/index)
 
-## Browsertool mislukt
+## Browserhulpmiddel mislukt
 
-Gebruik dit wanneer acties van de browsertool mislukken, ook al is de Gateway zelf gezond.
+Gebruik dit wanneer acties van het browserhulpmiddel mislukken, hoewel de Gateway zelf naar behoren werkt.
 
 ```bash
 openclaw browser status
@@ -758,38 +832,37 @@ openclaw doctor
 Let op:
 
 - Of `plugins.allow` is ingesteld en `browser` bevat.
-- Geldig pad naar browseruitvoerbaar bestand.
-- Bereikbaarheid van CDP-profiel.
-- Beschikbaarheid van lokale Chrome voor `existing-session`- / `user`-profielen.
+- Geldig pad naar het uitvoerbare browserbestand.
+- Bereikbaarheid van het CDP-profiel.
+- Lokale beschikbaarheid van Chrome voor `existing-session`- / `user`-profielen.
 
 <AccordionGroup>
-  <Accordion title="Plugin- / uitvoerbaar-bestandssignalen">
-    - `unknown command "browser"` of `unknown command 'browser'` → de meegeleverde browser-Plugin is uitgesloten door `plugins.allow`.
-    - browsertool ontbreekt / is niet beschikbaar terwijl `browser.enabled=true` → `plugins.allow` sluit `browser` uit, waardoor de Plugin nooit is geladen.
-    - `Failed to start Chrome CDP on port` → browserproces kon niet worden gestart.
-    - `browser.executablePath not found` → geconfigureerd pad is ongeldig.
-    - `browser.cdpUrl must be http(s) or ws(s)` → de geconfigureerde CDP-URL gebruikt een niet-ondersteund schema zoals `file:` of `ftp:`.
-    - `browser.cdpUrl has invalid port` → de geconfigureerde CDP-URL heeft een ongeldige poort of een poort buiten bereik.
-    - `Playwright is not available in this gateway build; '<feature>' is unsupported.` → de huidige Gateway-installatie mist de kernruntimeafhankelijkheid voor de browser; installeer OpenClaw opnieuw of werk het bij en herstart daarna de Gateway. ARIA-snapshots en eenvoudige paginaschermafbeeldingen kunnen nog werken, maar navigatie, AI-snapshots, schermafbeeldingen van elementen via CSS-selectors en PDF-export blijven niet beschikbaar.
+  <Accordion title="Kenmerken van de Plugin / het uitvoerbare bestand">
+    - `unknown command "browser"` of `unknown command 'browser'` → de meegeleverde browser-Plugin wordt uitgesloten door `plugins.allow`.
+    - Browserhulpmiddel ontbreekt / is niet beschikbaar terwijl `browser.enabled=true` → `plugins.allow` sluit `browser` uit, waardoor de Plugin nooit is geladen.
+    - `Failed to start Chrome CDP on port` → het browserproces kon niet worden gestart.
+    - `browser.executablePath not found` → het geconfigureerde pad is ongeldig.
+    - `browser.cdpUrl must be http(s) or ws(s)` → de geconfigureerde CDP-URL gebruikt een niet-ondersteund schema, zoals `file:` of `ftp:`.
+    - `browser.cdpUrl has invalid port` → de geconfigureerde CDP-URL heeft een onjuiste poort of een poort buiten het geldige bereik.
+    - `Playwright is not available in this gateway build; '<feature>' is unsupported.` → de huidige Gateway-installatie mist de kernruntime-afhankelijkheid voor de browser; installeer OpenClaw opnieuw of werk het bij en start daarna de Gateway opnieuw. ARIA-snapshots en eenvoudige schermafbeeldingen van pagina's kunnen nog steeds werken, maar navigatie, AI-snapshots, schermafbeeldingen van elementen met CSS-selectors en PDF-export blijven niet beschikbaar.
 
   </Accordion>
-  <Accordion title="Chrome MCP- / existing-session-signalen">
-    - `Could not find DevToolsActivePort for chrome` → Chrome MCP existing-session kon nog niet koppelen aan de geselecteerde browsergegevensmap. Open de inspectiepagina van de browser, schakel remote debugging in, houd de browser open, keur de eerste koppelprompt goed en probeer het opnieuw. Als aangemelde status niet vereist is, geef dan de voorkeur aan het beheerde `openclaw`-profiel.
-    - `No Chrome tabs found for profile="user"` → het Chrome MCP-koppelprofiel heeft geen geopende lokale Chrome-tabbladen.
+  <Accordion title="Kenmerken van Chrome MCP / bestaande sessies">
+    - `Could not find DevToolsActivePort for chrome` → de bestaande sessie van Chrome MCP kon nog geen verbinding maken met de geselecteerde browsergegevensmap. Open de inspectiepagina van de browser, schakel externe foutopsporing in, houd de browser geopend, keur de eerste verbindingsprompt goed en probeer het opnieuw. Als een aangemelde status niet vereist is, gebruik dan bij voorkeur het beheerde `openclaw`-profiel.
+    - `No browser tabs found for profile="user"` → het koppelprofiel van Chrome MCP heeft geen geopende lokale Chrome-tabbladen.
     - `Remote CDP for profile "<name>" is not reachable` → het geconfigureerde externe CDP-eindpunt is niet bereikbaar vanaf de Gateway-host.
-    - `Browser attachOnly is enabled ... not reachable` of `Browser attachOnly is enabled and CDP websocket ... is not reachable` → attach-only-profiel heeft geen bereikbaar doel, of het HTTP-eindpunt antwoordde maar de CDP-WebSocket kon nog steeds niet worden geopend.
+    - `Browser attachOnly is enabled ... not reachable` of `Browser attachOnly is enabled and CDP websocket ... is not reachable` → het profiel dat alleen koppelen ondersteunt heeft geen bereikbaar doel, of het HTTP-eindpunt heeft geantwoord maar de CDP-WebSocket kon nog steeds niet worden geopend.
 
   </Accordion>
-  <Accordion title="Element- / schermafbeelding- / uploadsignalen">
-    - `fullPage is not supported for element screenshots` → schermafbeeldingsverzoek combineerde `--full-page` met `--ref` of `--element`.
-    - `element screenshots are not supported for existing-session profiles; use ref from snapshot.` → Chrome MCP- / `existing-session`-schermafbeeldingsaanroepen moeten paginacapture of een snapshot-`--ref` gebruiken, niet CSS-`--element`.
-    - `existing-session file uploads do not support element selectors; use ref/inputRef.` → Chrome MCP-uploadhooks hebben snapshotrefs nodig, geen CSS-selectors.
-    - `existing-session file uploads currently support one file at a time.` → verstuur één upload per aanroep op Chrome MCP-profielen.
-    - `existing-session dialog handling does not support timeoutMs.` → dialooghooks op Chrome MCP-profielen ondersteunen geen timeout-overrides.
-    - `existing-session type does not support timeoutMs overrides.` → laat `timeoutMs` weg voor `act:type` op `profile="user"`- / Chrome MCP existing-session-profielen, of gebruik een beheerd/CDP-browserprofiel wanneer een aangepaste timeout vereist is.
-    - `existing-session evaluate does not support timeoutMs overrides.` → laat `timeoutMs` weg voor `act:evaluate` op `profile="user"`- / Chrome MCP existing-session-profielen, of gebruik een beheerd/CDP-browserprofiel wanneer een aangepaste timeout vereist is.
-    - `response body is not supported for existing-session profiles yet.` → `responsebody` vereist nog steeds een beheerde browser of raw CDP-profiel.
-    - verouderde viewport- / dark-mode- / locale- / offline-overrides op attach-only- of externe CDP-profielen → voer `openclaw browser stop --browser-profile <name>` uit om de actieve controlesessie te sluiten en de Playwright/CDP-emulatiestatus vrij te geven zonder de hele Gateway opnieuw te starten.
+  <Accordion title="Kenmerken van elementen / schermafbeeldingen / uploads">
+    - `fullPage is not supported for element screenshots` → de aanvraag voor een schermafbeelding combineerde `--full-page` met `--ref` of `--element`.
+    - `element screenshots are not supported for existing-session profiles; use ref from snapshot.` → aanroepen voor schermafbeeldingen van Chrome MCP / `existing-session` moeten paginaopname of een snapshot-`--ref` gebruiken, niet de CSS-`--element`.
+    - `existing-session file uploads do not support element selectors; use ref/inputRef.` → uploadhooks van Chrome MCP hebben snapshotreferenties nodig, geen CSS-selectors.
+    - `existing-session file uploads currently support one file at a time.` → verstuur bij Chrome MCP-profielen één upload per aanroep.
+    - `existing-session dialog handling does not support timeoutMs.` → dialooghooks bij Chrome MCP-profielen ondersteunen geen overschrijvingen van time-outs.
+    - `existing-session type does not support timeoutMs overrides.` → laat `timeoutMs` weg voor `act:type` bij `profile="user"`- / bestaande-sessieprofielen van Chrome MCP, of gebruik een beheerd/CDP-browserprofiel wanneer een aangepaste time-out vereist is.
+    - `response body is not supported for existing-session profiles yet.` → `responsebody` vereist nog steeds een beheerd browserprofiel of een onbewerkt CDP-profiel.
+    - Verouderde overschrijvingen voor viewport / donkere modus / landinstelling / offlinemodus bij profielen die alleen koppelen ondersteunen of externe CDP-profielen → voer `openclaw browser stop --browser-profile <name>` uit om de actieve besturingssessie te sluiten en de emulatiestatus van Playwright/CDP vrij te geven zonder de volledige Gateway opnieuw te starten.
 
   </Accordion>
 </AccordionGroup>
@@ -797,14 +870,14 @@ Let op:
 Gerelateerd:
 
 - [Browser (beheerd door OpenClaw)](/nl/tools/browser)
-- [Browser-probleemoplossing](/nl/tools/browser-linux-troubleshooting)
+- [Problemen met de browser oplossen](/nl/tools/browser-linux-troubleshooting)
 
-## Als je hebt geüpgraded en er plotseling iets stukging
+## Als je een upgrade hebt uitgevoerd en er plotseling iets niet meer werkt
 
-De meeste breuken na een upgrade zijn configuratiedrift of strengere defaults die nu worden afgedwongen.
+De meeste problemen na een upgrade worden veroorzaakt door configuratieafwijkingen of strengere standaardinstellingen die nu worden afgedwongen.
 
 <AccordionGroup>
-  <Accordion title="1. Gedrag voor auth en URL-override is gewijzigd">
+  <Accordion title="1. Gedrag voor authenticatie en URL-overschrijving is gewijzigd">
     ```bash
     openclaw gateway status
     openclaw config get gateway.mode
@@ -812,18 +885,18 @@ De meeste breuken na een upgrade zijn configuratiedrift of strengere defaults di
     openclaw config get gateway.auth.mode
     ```
 
-    Wat te controleren:
+    Wat je moet controleren:
 
-    - Als `gateway.mode=remote`, kunnen CLI-aanroepen op remote gericht zijn terwijl je lokale service in orde is.
-    - Expliciete `--url`-aanroepen vallen niet terug op opgeslagen referenties.
+    - Als `gateway.mode=remote`, zijn CLI-aanroepen mogelijk op de externe service gericht terwijl je lokale service correct werkt.
+    - Expliciete `--url`-aanroepen vallen niet terug op opgeslagen aanmeldgegevens.
 
-    Veelvoorkomende signalen:
+    Veelvoorkomende meldingen:
 
-    - `gateway connect failed:` → verkeerd URL-doel.
-    - `unauthorized` → eindpunt bereikbaar maar verkeerde auth.
+    - `gateway connect failed:` → onjuist URL-doel.
+    - `unauthorized` → eindpunt bereikbaar, maar onjuiste authenticatie.
 
   </Accordion>
-  <Accordion title="2. Bind- en auth-guardrails zijn strenger">
+  <Accordion title="2. Beveiligingsregels voor binding en authenticatie zijn strenger">
     ```bash
     openclaw config get gateway.bind
     openclaw config get gateway.auth.mode
@@ -832,18 +905,18 @@ De meeste breuken na een upgrade zijn configuratiedrift of strengere defaults di
     openclaw logs --follow
     ```
 
-    Wat te controleren:
+    Wat je moet controleren:
 
-    - Niet-loopback-binds (`lan`, `tailnet`, `custom`) hebben een geldig Gateway-auth-pad nodig: gedeelde token-/wachtwoordauth, of een correct geconfigureerde niet-loopback-`trusted-proxy`-implementatie.
+    - Niet-loopbackbindingen (`lan`, `tailnet`, `custom`) vereisen een geldig authenticatiepad voor de Gateway: authenticatie met een gedeeld token/wachtwoord of een correct geconfigureerde niet-loopback-`trusted-proxy`-implementatie.
     - Oude sleutels zoals `gateway.token` vervangen `gateway.auth.token` niet.
 
-    Veelvoorkomende signalen:
+    Veelvoorkomende meldingen:
 
-    - `refusing to bind gateway ... without auth` → niet-loopback-bind zonder geldig Gateway-auth-pad.
-    - `Connectivity probe: failed` terwijl runtime draait → Gateway leeft maar is niet toegankelijk met huidige auth/url.
+    - `refusing to bind gateway ... without auth` → niet-loopbackbinding zonder een geldig authenticatiepad voor de Gateway.
+    - `Connectivity probe: failed` terwijl de runtime actief is → Gateway is actief, maar niet toegankelijk met de huidige authenticatie/URL.
 
   </Accordion>
-  <Accordion title="3. Koppeling en apparaatidentiteitsstatus zijn gewijzigd">
+  <Accordion title="3. Status van koppeling en apparaatidentiteit is gewijzigd">
     ```bash
     openclaw devices list
     openclaw pairing list --channel <channel> [--account <id>]
@@ -851,20 +924,20 @@ De meeste breuken na een upgrade zijn configuratiedrift of strengere defaults di
     openclaw doctor
     ```
 
-    Wat te controleren:
+    Wat je moet controleren:
 
-    - Apparaatgoedkeuringen in behandeling voor dashboard/nodes.
-    - DM-koppelingsgoedkeuringen in behandeling na beleids- of identiteitswijzigingen.
+    - Openstaande apparaatgoedkeuringen voor dashboard/nodes.
+    - Openstaande goedkeuringen voor DM-koppelingen na wijzigingen in beleid of identiteit.
 
-    Veelvoorkomende signalen:
+    Veelvoorkomende meldingen:
 
-    - `device identity required` → apparaat-auth niet voldaan.
+    - `device identity required` → niet voldaan aan apparaatauthenticatie.
     - `pairing required` → afzender/apparaat moet worden goedgekeurd.
 
   </Accordion>
 </AccordionGroup>
 
-Als serviceconfiguratie en runtime na controles nog steeds niet overeenkomen, installeer dan servicemetadata opnieuw vanuit dezelfde profiel-/statusmap:
+Als de serviceconfiguratie en runtime na de controles nog steeds niet overeenkomen, installeer je de servicemetadata opnieuw vanuit dezelfde profiel-/statusmap:
 
 ```bash
 openclaw gateway install --force
@@ -874,11 +947,11 @@ openclaw gateway restart
 Gerelateerd:
 
 - [Authenticatie](/nl/gateway/authentication)
-- [Achtergrond-exec en procestool](/nl/gateway/background-process)
-- [Gateway-beheerde koppeling](/nl/gateway/pairing)
+- [Uitvoering op de achtergrond en procestool](/nl/gateway/background-process)
+- [Node-koppeling](/nl/gateway/pairing)
 
 ## Gerelateerd
 
 - [Doctor](/nl/gateway/doctor)
-- [FAQ](/nl/help/faq)
-- [Gateway-runbook](/nl/gateway)
+- [Veelgestelde vragen](/nl/help/faq)
+- [Gateway-draaiboek](/nl/gateway)

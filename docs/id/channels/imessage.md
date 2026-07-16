@@ -2,62 +2,68 @@
 read_when:
     - Menyiapkan dukungan iMessage
     - Men-debug pengiriman/penerimaan iMessage
-summary: Dukungan iMessage native melalui imsg (JSON-RPC melalui stdio), dengan tindakan API privat untuk balasan, tapback, efek, polling, lampiran, dan manajemen grup. Lebih disarankan untuk penyiapan iMessage OpenClaw baru ketika persyaratan host sesuai.
+summary: Dukungan iMessage native melalui imsg (JSON-RPC melalui stdio), dengan tindakan API privat untuk balasan, tapback, efek, jajak pendapat, lampiran, dan pengelolaan grup. Direkomendasikan untuk penyiapan iMessage OpenClaw baru jika persyaratan host terpenuhi.
 title: iMessage
 x-i18n:
-    generated_at: "2026-07-01T13:21:18Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T17:45:04Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 0fbddd770d05762c64b81e9c6443ac8fd487ba15a34ed70b068a69776d355b81
+    source_hash: 78b7ff7621e66e3b0122b5581c097140b7f62998b78981741bd3edbc0e1608bd
     source_path: channels/imessage.md
     workflow: 16
 ---
 
 <Note>
-Untuk deployment iMessage OpenClaw, gunakan `imsg` pada host Messages macOS yang sudah masuk. Jika Gateway Anda berjalan di Linux atau Windows, arahkan `channels.imessage.cliPath` ke wrapper SSH yang menjalankan `imsg` di Mac.
+Untuk deployment iMessage OpenClaw yang umum, jalankan Gateway dan `imsg` pada host macOS Messages yang sama dan telah masuk. Jika Gateway berjalan di tempat lain, arahkan `channels.imessage.cliPath` ke pembungkus SSH transparan yang menjalankan `imsg` di Mac.
 
-**Pemulihan masuk otomatis.** Setelah bridge atau gateway dimulai ulang, iMessage memutar ulang pesan yang terlewat saat tidak aktif dan menekan "backlog bomb" usang yang dapat dikosongkan Apple setelah pemulihan Push, melakukan deduplikasi agar tidak ada yang dikirim dua kali. Tidak ada konfigurasi yang perlu diaktifkan — lihat [Pemulihan masuk setelah bridge atau gateway dimulai ulang](#inbound-recovery-after-a-bridge-or-gateway-restart).
+**Pemulihan pesan masuk berlangsung otomatis.** Setelah bridge atau gateway dimulai ulang, iMessage memutar ulang pesan yang terlewat saat tidak aktif dan menekan "ledakan backlog" usang yang dapat digelontorkan Apple setelah pemulihan Push, dengan melakukan deduplikasi agar tidak ada yang dikirim dua kali. Tidak ada konfigurasi yang perlu diaktifkan — lihat [Pemulihan pesan masuk setelah bridge atau gateway dimulai ulang](#inbound-recovery-after-a-bridge-or-gateway-restart).
 </Note>
 
 <Warning>
-Dukungan BlueBubbles telah dihapus. Migrasikan konfigurasi `channels.bluebubbles` ke `channels.imessage`; OpenClaw mendukung iMessage hanya melalui `imsg`. Mulai dari [Penghapusan BlueBubbles dan jalur iMessage imsg](/id/announcements/bluebubbles-imessage) untuk pengumuman singkat, atau [Beralih dari BlueBubbles](/id/channels/imessage-from-bluebubbles) untuk tabel migrasi lengkap.
+Dukungan BlueBubbles telah dihapus. Migrasikan konfigurasi `channels.bluebubbles` ke `channels.imessage`; OpenClaw hanya mendukung iMessage melalui `imsg`. Mulailah dengan [Penghapusan BlueBubbles dan jalur iMessage imsg](/id/announcements/bluebubbles-imessage) untuk pengumuman singkat, atau [Beralih dari BlueBubbles](/id/channels/imessage-from-bluebubbles) untuk tabel migrasi lengkap.
 </Warning>
 
-Status: integrasi CLI eksternal native. Gateway menjalankan `imsg rpc` dan berkomunikasi melalui JSON-RPC di stdio (tanpa daemon/port terpisah). Tindakan lanjutan memerlukan `imsg launch` dan probe private API yang berhasil.
+Status: integrasi CLI eksternal native. Gateway menjalankan `imsg rpc` dan berkomunikasi menggunakan JSON-RPC melalui stdio — tanpa daemon atau port terpisah. Mode API privat sangat dianjurkan untuk kanal iMessage yang lengkap; balasan, tapback, efek, jajak pendapat, balasan lampiran, dan tindakan grup memerlukan `imsg launch` serta pemeriksaan API privat yang berhasil.
+
+Untuk penyiapan lokal yang umum, penyiapan OpenClaw dapat menawarkan instalasi atau pembaruan Homebrew yang dikonfirmasi pengguna untuk `imsg` di Mac Messages yang telah masuk. Penyiapan manual dan topologi pembungkus SSH tetap dikelola operator: instal atau perbarui `imsg` dalam konteks pengguna yang sama dengan yang akan menjalankan Gateway atau pembungkus.
 
 <CardGroup cols={3}>
-  <Card title="Private API actions" icon="wand-sparkles" href="#private-api-actions">
-    Balasan, tapback, efek, polling, lampiran, dan manajemen grup.
+  <Card title="Tindakan API privat" icon="wand-sparkles" href="#private-api-actions">
+    Balasan, tapback, efek, jajak pendapat, lampiran, dan pengelolaan grup.
   </Card>
-  <Card title="Pairing" icon="link" href="/id/channels/pairing">
-    DM iMessage secara default menggunakan mode pairing.
+  <Card title="Pemasangan" icon="link" href="/id/channels/pairing">
+    DM iMessage secara default menggunakan mode pemasangan.
   </Card>
-  <Card title="Remote Mac" icon="terminal" href="#remote-mac-over-ssh">
-    Gunakan wrapper SSH saat Gateway tidak berjalan di Mac Messages.
+  <Card title="Mac jarak jauh" icon="terminal" href="#remote-mac-over-ssh">
+    Gunakan pembungkus SSH saat Gateway tidak berjalan di Mac Messages.
   </Card>
-  <Card title="Configuration reference" icon="settings" href="/id/gateway/config-channels#imessage">
-    Referensi lengkap field iMessage.
+  <Card title="Referensi konfigurasi" icon="settings" href="/id/gateway/config-channels#imessage">
+    Referensi lengkap bidang iMessage.
   </Card>
 </CardGroup>
 
 ## Penyiapan cepat
 
 <Tabs>
-  <Tab title="Local Mac (fast path)">
+  <Tab title="Mac lokal (jalur cepat)">
     <Steps>
-      <Step title="Install and verify imsg">
+      <Step title="Instal dan verifikasi imsg">
 
 ```bash
 brew install steipete/tap/imsg
+brew update && brew upgrade imsg
 imsg rpc --help
 imsg launch
 openclaw channels status --probe
 ```
 
+        Saat wizard penyiapan lokal mendeteksi bahwa perintah default `imsg` tidak tersedia, wizard dapat meminta untuk menginstal `steipete/tap/imsg` melalui Homebrew. Jika mendeteksi `imsg` yang dikelola Homebrew, wizard dapat meminta untuk menginstal ulang atau memperbaruinya. Pembungkus `cliPath` khusus tidak diubah.
+
       </Step>
 
-      <Step title="Configure OpenClaw">
+      <Step title="Konfigurasikan OpenClaw">
 
 ```json5
 {
@@ -73,7 +79,7 @@ openclaw channels status --probe
 
       </Step>
 
-      <Step title="Start gateway">
+      <Step title="Mulai gateway">
 
 ```bash
 openclaw gateway
@@ -81,25 +87,30 @@ openclaw gateway
 
       </Step>
 
-      <Step title="Approve first DM pairing (default dmPolicy)">
+      <Step title="Setujui pemasangan DM pertama (dmPolicy default)">
 
 ```bash
 openclaw pairing list imessage
 openclaw pairing approve imessage <CODE>
 ```
 
-        Permintaan pairing kedaluwarsa setelah 1 jam.
+        Permintaan pemasangan kedaluwarsa setelah 1 jam.
       </Step>
     </Steps>
 
   </Tab>
 
-  <Tab title="Remote Mac over SSH">
-    OpenClaw hanya memerlukan `cliPath` yang kompatibel dengan stdio, sehingga Anda dapat mengarahkan `cliPath` ke skrip wrapper yang melakukan SSH ke Mac jarak jauh dan menjalankan `imsg`.
+  <Tab title="Mac jarak jauh melalui SSH">
+    Sebagian besar penyiapan tidak memerlukan SSH. Gunakan topologi ini hanya saat Gateway tidak dapat berjalan di Mac Messages yang telah masuk. OpenClaw hanya memerlukan `cliPath` yang kompatibel dengan stdio, sehingga Anda dapat mengarahkan `cliPath` ke skrip pembungkus yang terhubung melalui SSH ke Mac jarak jauh dan menjalankan `imsg`.
+    Instal dan perbarui `imsg` di Mac jarak jauh tersebut, bukan di host Gateway:
+
+```bash
+ssh messages-mac 'brew install steipete/tap/imsg && brew update && brew upgrade imsg'
+```
 
 ```bash
 #!/usr/bin/env bash
-exec ssh -T gateway-host imsg "$@"
+exec ssh -T messages-mac imsg "$@"
 ```
 
     Konfigurasi yang disarankan saat lampiran diaktifkan:
@@ -110,10 +121,10 @@ exec ssh -T gateway-host imsg "$@"
     imessage: {
       enabled: true,
       cliPath: "~/.openclaw/scripts/imsg-ssh",
-      remoteHost: "user@gateway-host", // used for SCP attachment fetches
+      remoteHost: "user@gateway-host", // digunakan untuk mengambil lampiran melalui SCP
       includeAttachments: true,
-      // Optional: override allowed attachment roots.
-      // Defaults include /Users/*/Library/Messages/Attachments
+      // Opsional: root lampiran tambahan yang diizinkan (digabungkan dengan default
+      // /Users/*/Library/Messages/Attachments).
       attachmentRoots: ["/Users/*/Library/Messages/Attachments"],
       remoteAttachmentRoots: ["/Users/*/Library/Messages/Attachments"],
     },
@@ -121,21 +132,21 @@ exec ssh -T gateway-host imsg "$@"
 }
 ```
 
-    Jika `remoteHost` tidak diatur, OpenClaw mencoba mendeteksinya otomatis dengan mengurai skrip wrapper SSH.
-    `remoteHost` harus berupa `host` atau `user@host` (tanpa spasi atau opsi SSH).
-    OpenClaw menggunakan pemeriksaan host-key ketat untuk SCP, jadi kunci host relay harus sudah ada di `~/.ssh/known_hosts`.
+    Jika `remoteHost` tidak ditetapkan, OpenClaw mencoba mendeteksinya secara otomatis dengan mengurai skrip pembungkus SSH.
+    `remoteHost` harus berupa `host` atau `user@host` (tanpa spasi atau opsi SSH); nilai yang tidak aman diabaikan.
+    OpenClaw menggunakan pemeriksaan kunci host yang ketat untuk SCP, sehingga kunci host relai harus sudah ada di `~/.ssh/known_hosts`.
     Jalur lampiran divalidasi terhadap root yang diizinkan (`attachmentRoots` / `remoteAttachmentRoots`).
 
 <Warning>
-Wrapper `cliPath` atau proxy SSH apa pun yang Anda letakkan di depan `imsg` HARUS berperilaku seperti pipe stdio transparan untuk JSON-RPC yang berjalan lama. OpenClaw bertukar pesan JSON-RPC kecil berbingkai newline melalui stdin/stdout wrapper selama masa aktif saluran:
+Setiap pembungkus `cliPath` atau proksi SSH yang ditempatkan di depan `imsg` HARUS berperilaku seperti pipa stdio transparan untuk JSON-RPC berumur panjang. OpenClaw mempertukarkan pesan JSON-RPC kecil berbingkai baris baru melalui stdin/stdout pembungkus selama masa aktif kanal:
 
 - Teruskan setiap potongan/baris stdin **segera setelah byte tersedia** — jangan menunggu EOF.
 - Teruskan setiap potongan/baris stdout dengan segera ke arah sebaliknya.
-- Pertahankan newline.
-- Hindari pembacaan blocking berukuran tetap (`read(4096)`, `cat | buffer`, `read` shell default) yang dapat membuat frame kecil kelaparan.
-- Pisahkan stderr dari stream stdout JSON-RPC.
+- Pertahankan baris baru.
+- Hindari pembacaan pemblokiran berukuran tetap (`read(4096)`, `cat | buffer`, `read` shell default) yang dapat menghambat bingkai kecil.
+- Pisahkan stderr dari aliran stdout JSON-RPC.
 
-Wrapper yang menahan stdin hingga blok besar terisi akan menghasilkan gejala yang tampak seperti gangguan iMessage — `imsg rpc timeout (chats.list)` atau restart saluran berulang — meskipun `imsg rpc` sendiri sehat. `ssh -T host imsg "$@"` (di atas) aman karena meneruskan argumen `cliPath` OpenClaw seperti `rpc` dan `--db`. Pipeline seperti `ssh host imsg | grep -v '^DEBUG'` TIDAK aman — alat line-buffered masih dapat menahan frame; gunakan `stdbuf -oL -eL` pada setiap tahap jika Anda harus memfilter.
+Pembungkus yang menyangga stdin hingga blok besar terisi akan menghasilkan gejala yang tampak seperti gangguan iMessage — `imsg rpc timeout (chats.list)` atau kanal yang berulang kali dimulai ulang — meskipun `imsg rpc` sendiri berfungsi normal. `ssh -T host imsg "$@"` (di atas) aman karena meneruskan argumen `cliPath` milik OpenClaw seperti `rpc` dan `--db`. Pipeline seperti `ssh host imsg | grep -v '^DEBUG'` TIDAK aman — alat dengan penyanggaan per baris masih dapat menahan bingkai; gunakan `stdbuf -oL -eL` pada setiap tahap jika pemfilteran harus dilakukan.
 </Warning>
 
   </Tab>
@@ -144,61 +155,61 @@ Wrapper yang menahan stdin hingga blok besar terisi akan menghasilkan gejala yan
 ## Persyaratan dan izin (macOS)
 
 - Messages harus sudah masuk di Mac yang menjalankan `imsg`.
-- Full Disk Access diperlukan untuk konteks proses yang menjalankan OpenClaw/`imsg` (akses DB Messages).
-- Izin Automation diperlukan untuk mengirim pesan melalui Messages.app.
-- Untuk tindakan lanjutan (react / edit / unsend / balasan berutas / efek / polling / operasi grup), System Integrity Protection harus dinonaktifkan — lihat [Mengaktifkan private API imsg](#enabling-the-imsg-private-api) di bawah. Pengiriman/penerimaan teks dan media dasar berfungsi tanpanya.
+- Akses Disk Penuh diperlukan untuk konteks proses yang menjalankan OpenClaw/`imsg` (akses DB Messages).
+- Izin Otomasi diperlukan untuk mengirim pesan melalui Messages.app.
+- Untuk tindakan lanjutan (reaksi / edit / batalkan pengiriman / balasan berutas / efek / jajak pendapat / operasi grup), Perlindungan Integritas Sistem harus dinonaktifkan — lihat [Mengaktifkan API privat imsg](#enabling-the-imsg-private-api). Pengiriman dan penerimaan teks serta media dasar tetap berfungsi tanpanya.
 
 <Tip>
-Izin diberikan per konteks proses. Jika gateway berjalan headless (LaunchAgent/SSH), jalankan perintah interaktif sekali dalam konteks yang sama untuk memicu prompt:
+Izin diberikan per konteks proses. Jika gateway berjalan tanpa antarmuka (LaunchAgent/SSH), jalankan perintah interaktif satu kali dalam konteks yang sama untuk memicu permintaan izin:
 
 ```bash
 imsg chats --limit 1
-# or
+# atau
 imsg send <handle> "test"
 ```
 
 </Tip>
 
-<Accordion title="SSH wrapper sends fail with AppleEvents -1743">
-  Penyiapan SSH jarak jauh dapat membaca chat, lolos `channels status --probe`, dan memproses pesan masuk sementara pengiriman keluar tetap gagal dengan kesalahan otorisasi AppleEvents:
+<Accordion title="Pengiriman pembungkus SSH gagal dengan AppleEvents -1743">
+  Penyiapan SSH jarak jauh dapat membaca obrolan, melewati `channels status --probe`, dan memproses pesan masuk, sementara pengiriman keluar tetap gagal dengan kesalahan otorisasi AppleEvents:
 
 ```text
-Not authorized to send Apple events to Messages. (-1743)
+Tidak diotorisasi untuk mengirim event Apple ke Messages. (-1743)
 ```
 
-Periksa database TCC pengguna Mac yang masuk atau System Settings > Privacy & Security > Automation. Jika entri Automation dicatat untuk `/usr/libexec/sshd-keygen-wrapper`, bukan proses `imsg` atau shell lokal, macOS mungkin tidak menampilkan toggle Messages yang dapat digunakan untuk klien sisi server SSH tersebut:
+Periksa basis data TCC pengguna Mac yang telah masuk atau System Settings > Privacy & Security > Automation. Jika entri Otomasi dicatat untuk `/usr/libexec/sshd-keygen-wrapper`, bukan untuk `imsg` atau proses shell lokal, macOS mungkin tidak menampilkan tombol Messages yang dapat digunakan untuk klien sisi server SSH tersebut:
 
 ```text
 kTCCServiceAppleEvents | /usr/libexec/sshd-keygen-wrapper | auth_value=0 | com.apple.MobileSMS
 ```
 
-Dalam kondisi tersebut, mengulangi `tccutil reset AppleEvents` atau menjalankan ulang `imsg send` melalui wrapper SSH yang sama mungkin terus gagal karena konteks proses yang membutuhkan Automation Messages adalah wrapper SSH, bukan aplikasi yang dapat diberi izin oleh UI.
+Dalam keadaan tersebut, mengulangi `tccutil reset AppleEvents` atau menjalankan ulang `imsg send` melalui pembungkus SSH yang sama mungkin terus gagal karena konteks proses yang memerlukan Otomasi Messages adalah pembungkus SSH, bukan aplikasi yang dapat diberi izin oleh UI.
 
-Gunakan salah satu konteks proses `imsg` yang didukung sebagai gantinya:
+Sebagai gantinya, gunakan salah satu konteks proses `imsg` yang didukung:
 
-- Jalankan Gateway, atau setidaknya bridge `imsg`, di sesi lokal pengguna Messages yang sedang masuk.
-- Mulai Gateway dengan LaunchAgent untuk pengguna tersebut setelah memberikan Full Disk Access dan Automation dari sesi yang sama.
-- Jika Anda mempertahankan topologi SSH dua pengguna, verifikasi bahwa `imsg send` keluar yang nyata berhasil melalui wrapper yang persis sama sebelum mengaktifkan saluran. Jika Automation tidak dapat diberikan, konfigurasi ulang ke penyiapan `imsg` satu pengguna alih-alih mengandalkan wrapper SSH untuk pengiriman.
+- Jalankan Gateway, atau setidaknya bridge `imsg`, dalam sesi lokal pengguna Messages yang telah masuk.
+- Mulai Gateway dengan LaunchAgent untuk pengguna tersebut setelah memberikan Akses Disk Penuh dan Otomasi dari sesi yang sama.
+- Jika tetap menggunakan topologi SSH dua pengguna, pastikan pengiriman keluar `imsg send` yang sebenarnya berhasil melalui pembungkus yang persis sama sebelum mengaktifkan kanal. Jika izin Otomasi tidak dapat diberikan, konfigurasi ulang ke penyiapan `imsg` satu pengguna alih-alih mengandalkan pembungkus SSH untuk pengiriman.
 
 </Accordion>
 
-## Mengaktifkan private API imsg
+## Mengaktifkan API privat imsg
 
-`imsg` dikirim dalam dua mode operasional:
+`imsg` tersedia dalam dua mode operasional. Untuk OpenClaw, mode API Privat adalah penyiapan yang disarankan karena memberikan tindakan native iMessage yang diharapkan pengguna pada kanal. Mode dasar tetap berguna untuk instalasi berisiko rendah, verifikasi awal, atau host tempat SIP tidak dapat dinonaktifkan.
 
-- **Mode dasar** (default, tidak perlu perubahan SIP): teks dan media keluar melalui `send`, watch/history masuk, daftar chat. Ini yang Anda dapatkan langsung dari `brew install steipete/tap/imsg` baru ditambah izin macOS standar di atas.
-- **Mode private API**: `imsg` menyuntikkan helper dylib ke `Messages.app` untuk memanggil fungsi internal `IMCore`. Ini membuka `react`, `edit`, `unsend`, `reply` (berutas), `sendWithEffect`, `poll` dan `poll-vote` (polling Messages native), `renameGroup`, `setGroupIcon`, `addParticipant`, `removeParticipant`, `leaveGroup`, plus indikator mengetik dan tanda dibaca.
+- **Mode dasar** (default, tidak memerlukan perubahan SIP): teks dan media keluar melalui `send`, pemantauan/riwayat pesan masuk, daftar obrolan. Inilah yang langsung tersedia dari `brew install steipete/tap/imsg` baru beserta izin macOS standar di atas.
+- **Mode API privat**: `imsg` menyuntikkan dylib pembantu ke dalam `Messages.app` untuk memanggil fungsi internal `IMCore`. Ini membuka akses ke `react`, `edit`, `unsend`, `reply` (berutas), `sendWithEffect`, `poll` dan `poll-vote` (jajak pendapat native Messages), `renameGroup`, `setGroupIcon`, `addParticipant`, `removeParticipant`, `leaveGroup`, serta indikator pengetikan dan tanda terima telah dibaca.
 
-Untuk mencapai permukaan tindakan lanjutan yang didokumentasikan halaman saluran ini, Anda memerlukan mode Private API. README `imsg` tegas tentang persyaratan ini:
+Permukaan tindakan yang disarankan pada halaman ini memerlukan mode API Privat. README `imsg` secara tegas menyatakan persyaratannya:
 
-> Fitur lanjutan seperti `read`, `typing`, `launch`, pengiriman kaya berbasis bridge, mutasi pesan, dan manajemen chat bersifat opt-in. Fitur tersebut memerlukan SIP dinonaktifkan dan helper dylib disuntikkan ke `Messages.app`. `imsg launch` menolak menyuntikkan saat SIP diaktifkan.
+> Fitur lanjutan seperti `read`, `typing`, `launch`, pengiriman kaya yang didukung bridge, mutasi pesan, dan pengelolaan obrolan bersifat opsional. Fitur tersebut mengharuskan SIP dinonaktifkan dan dylib pembantu disuntikkan ke dalam `Messages.app`. `imsg launch` menolak melakukan penyuntikan saat SIP diaktifkan.
 
-Teknik injeksi helper menggunakan dylib milik `imsg` sendiri untuk menjangkau private API Messages. Tidak ada server pihak ketiga atau runtime BlueBubbles di jalur iMessage OpenClaw.
+Teknik penyuntikan pembantu menggunakan dylib milik `imsg` untuk mengakses API privat Messages. Tidak ada server pihak ketiga atau runtime BlueBubbles dalam jalur iMessage OpenClaw.
 
 <Warning>
-**Menonaktifkan SIP adalah kompromi keamanan nyata.** SIP adalah salah satu perlindungan inti macOS terhadap eksekusi kode sistem yang dimodifikasi; mematikannya secara sistem-wide membuka permukaan serangan tambahan dan efek samping. Khususnya, **menonaktifkan SIP pada Mac Apple Silicon juga menonaktifkan kemampuan untuk menginstal dan menjalankan aplikasi iOS di Mac Anda**.
+**Menonaktifkan SIP merupakan kompromi keamanan yang nyata.** SIP adalah salah satu perlindungan inti macOS terhadap eksekusi kode sistem yang dimodifikasi; menonaktifkannya di seluruh sistem membuka permukaan serangan dan efek samping tambahan. Khususnya, **menonaktifkan SIP di Mac Apple Silicon juga menonaktifkan kemampuan untuk menginstal dan menjalankan aplikasi iOS di Mac Anda**.
 
-Perlakukan ini sebagai pilihan operasional yang disengaja, bukan default. Jika model ancaman Anda tidak dapat menoleransi SIP dimatikan, iMessage bawaan terbatas pada mode dasar — hanya pengiriman/penerimaan teks dan media, tanpa reaksi / edit / unsend / efek / operasi grup.
+Perlakukan ini sebagai pilihan operasional yang disengaja, terutama pada Mac pribadi utama. Untuk iMessage OpenClaw berkualitas produksi, sebaiknya gunakan Mac khusus atau pengguna bot macOS yang memungkinkan pengaktifan bridge dengan nyaman. Jika model ancaman Anda tidak dapat menoleransi SIP yang dinonaktifkan di mana pun, iMessage yang dibundel terbatas pada mode dasar — hanya pengiriman/penerimaan teks dan media, tanpa reaksi / edit / batalkan pengiriman / efek / operasi grup.
 </Warning>
 
 ### Penyiapan
@@ -207,40 +218,37 @@ Perlakukan ini sebagai pilihan operasional yang disengaja, bukan default. Jika m
 
    ```bash
    brew install steipete/tap/imsg
+   brew update && brew upgrade imsg
    imsg --version
    imsg status --json
    ```
 
-   Output `imsg status --json` melaporkan `bridge_version`, `rpc_methods`, dan `selectors` per metode sehingga Anda dapat melihat apa yang didukung build saat ini sebelum memulai.
+   Keluaran `imsg status --json` melaporkan `bridge_version`, `rpc_methods`, dan `selectors` per metode agar Anda dapat melihat dukungan build saat ini sebelum memulai.
 
-2. **Nonaktifkan System Integrity Protection, dan (pada macOS modern) Library Validation.** Menyuntikkan helper dylib non-Apple ke `Messages.app` yang ditandatangani Apple memerlukan SIP dimatikan **dan** validasi library dilonggarkan. Langkah SIP mode Recovery spesifik untuk versi macOS:
-   - **macOS 10.13-10.15 (Sierra-Catalina):** nonaktifkan Library Validation melalui Terminal, reboot ke Recovery Mode, jalankan `csrutil disable`, mulai ulang.
+2. **Nonaktifkan System Integrity Protection, dan (pada macOS modern) Library Validation.** Menyuntikkan dylib pembantu non-Apple ke dalam `Messages.app` yang ditandatangani Apple memerlukan SIP dinonaktifkan **dan** validasi pustaka dilonggarkan. Langkah SIP dalam mode Recovery bergantung pada versi macOS:
+   - **macOS 10.13-10.15 (Sierra-Catalina):** nonaktifkan Library Validation melalui Terminal, mulai ulang ke Recovery Mode, jalankan `csrutil disable`, mulai ulang.
    - **macOS 11+ (Big Sur dan yang lebih baru), Intel:** Recovery Mode (atau Internet Recovery), `csrutil disable`, mulai ulang.
-   - **macOS 11+, Apple Silicon:** urutan startup tombol daya untuk masuk Recovery; pada versi macOS terbaru tahan tombol **Left Shift** saat Anda mengklik Continue, lalu `csrutil disable`. Penyiapan mesin virtual mengikuti alur terpisah, jadi ambil snapshot VM terlebih dahulu.
+   - **macOS 11+, Apple Silicon:** gunakan urutan penyalaan dengan tombol daya untuk masuk ke Recovery; pada versi macOS terbaru, tahan tombol **Left Shift** saat Anda mengeklik Continue, lalu `csrutil disable`. Penyiapan mesin virtual mengikuti alur terpisah, jadi buat snapshot VM terlebih dahulu.
 
-   **Pada macOS 11 dan yang lebih baru, `csrutil disable` saja biasanya tidak cukup.** Apple masih menerapkan validasi library terhadap `Messages.app` sebagai binary platform, sehingga helper yang ditandatangani adhoc ditolak (`Library Validation failed: ... platform binary, but mapped file is not`) bahkan dengan SIP dimatikan. Setelah menonaktifkan SIP, nonaktifkan juga validasi library dan reboot:
+   **Pada macOS 11 dan yang lebih baru, `csrutil disable` saja biasanya tidak cukup.** Apple masih memberlakukan validasi pustaka terhadap `Messages.app` sebagai biner platform, sehingga pembantu yang ditandatangani secara ad hoc ditolak (`Library Validation failed: ... platform binary, but mapped file is not`) meskipun SIP dinonaktifkan. Setelah menonaktifkan SIP, nonaktifkan juga validasi pustaka dan mulai ulang:
 
    ```bash
    sudo defaults write /Library/Preferences/com.apple.security.libraryvalidation.plist DisableLibraryValidation -bool true
    ```
 
-   **macOS 26 (Tahoe), diverifikasi pada 26.5.1:** SIP dimatikan **plus** perintah `DisableLibraryValidation` di atas sudah cukup untuk menyuntikkan helper di seluruh 26.0 hingga 26.5.x. **Tidak diperlukan boot-args.** Plist adalah faktor penentu dan langkah yang paling umum terlewat saat injeksi gagal di Tahoe:
+   **macOS 26 (Tahoe), diverifikasi pada 26.5.1:** SIP dinonaktifkan **ditambah** perintah `DisableLibraryValidation` di atas sudah cukup untuk menyuntikkan pembantu pada versi 26.0 hingga 26.5.x. **Tidak diperlukan boot-args.** Plist tersebut merupakan faktor penentu dan langkah yang paling sering terlewat ketika penyuntikan gagal pada Tahoe:
    - **Dengan plist:** `imsg launch` menyuntikkan dan `imsg status` melaporkan `advanced_features: true`.
-   - **Tanpa plist (bahkan dengan SIP dimatikan):** `imsg launch` gagal dengan `Failed to launch: Timeout waiting for Messages.app to initialize`. AMFI menolak helper adhoc saat dimuat, sehingga bridge tidak pernah siap dan launch timeout. Timeout tersebut adalah gejala yang paling sering ditemui di Tahoe, dan perbaikannya adalah plist di atas, bukan tindakan yang lebih drastis.
+   - **Tanpa plist (bahkan dengan SIP dinonaktifkan):** `imsg launch` gagal dengan `Failed to launch: Timeout waiting for Messages.app to initialize`. AMFI menolak pembantu ad hoc saat dimuat, sehingga bridge tidak pernah siap dan peluncuran kehabisan waktu. Kehabisan waktu tersebut adalah gejala yang dialami sebagian besar pengguna pada Tahoe; perbaikannya adalah plist di atas, bukan tindakan yang lebih drastis.
 
-   Ini dikonfirmasi dengan before/after terkontrol pada macOS 26.5.1 (Apple Silicon): dengan plist, dylib dipetakan ke `Messages.app` dan bridge aktif; hapus plist dan reboot, lalu `imsg launch` menghasilkan kegagalan timeout di atas dengan dylib tidak dipetakan.
+   Jika penyuntikan `imsg launch` atau `selectors` tertentu mulai mengembalikan false setelah peningkatan macOS, gate ini biasanya menjadi penyebabnya. Periksa status SIP dan validasi pustaka sebelum menganggap langkah SIP itu sendiri gagal. Jika pengaturan tersebut sudah benar dan bridge masih tidak dapat menyuntikkan, kumpulkan `imsg status --json` beserta keluaran `imsg launch` dan laporkan ke proyek `imsg`, alih-alih melemahkan kontrol keamanan tambahan di seluruh sistem.
 
-   Jika injeksi `imsg launch` atau `selectors` tertentu mulai mengembalikan false setelah peningkatan macOS, gate ini biasanya penyebabnya. Periksa status SIP dan validasi pustaka Anda sebelum menganggap langkah SIP itu sendiri gagal. Jika pengaturan tersebut benar dan bridge masih tidak dapat melakukan injeksi, kumpulkan `imsg status --json` beserta keluaran `imsg launch` dan laporkan ke proyek `imsg`, bukan melemahkan kontrol keamanan tambahan di seluruh sistem.
-
-   Ikuti alur mode Recovery Apple untuk Mac Anda guna menonaktifkan SIP sebelum menjalankan `imsg launch`.
-
-3. **Injeksikan helper.** Dengan SIP dinonaktifkan dan Messages.app sudah masuk:
+3. **Suntikkan pembantu.** Dengan SIP dinonaktifkan dan Messages.app sudah masuk:
 
    ```bash
    imsg launch
    ```
 
-   `imsg launch` menolak melakukan injeksi ketika SIP masih aktif, jadi ini juga berfungsi sebagai konfirmasi bahwa langkah 2 berhasil.
+   `imsg launch` menolak melakukan penyuntikan saat SIP masih diaktifkan, sehingga langkah ini juga berfungsi sebagai konfirmasi bahwa langkah 2 telah diterapkan.
 
 4. **Verifikasi bridge dari OpenClaw:**
 
@@ -248,63 +256,63 @@ Perlakukan ini sebagai pilihan operasional yang disengaja, bukan default. Jika m
    openclaw channels status --probe
    ```
 
-   Entri iMessage seharusnya melaporkan `works`, dan `imsg status --json | jq '{rpc_methods, selectors}'` seharusnya menampilkan kapabilitas yang diekspos oleh build macOS Anda. Pembuatan polling memerlukan `selectors.pollPayloadMessage`; voting memerlukan `selectors.pollVoteMessage` dan metode RPC `poll.vote`. Plugin OpenClaw hanya mengiklankan tindakan yang didukung oleh probe yang di-cache, sementara cache kosong tetap optimistis dan melakukan probe pada pengiriman pertama.
+   Entri iMessage seharusnya melaporkan `works`, dan `imsg status --json | jq '{rpc_methods, selectors}'` seharusnya menampilkan kapabilitas yang diekspos oleh build macOS Anda. Pembuatan jajak pendapat memerlukan `selectors.pollPayloadMessage`; pemberian suara memerlukan `selectors.pollVoteMessage` dan metode RPC `poll.vote`. Plugin OpenClaw hanya mengiklankan tindakan yang didukung oleh probe yang di-cache, sedangkan cache kosong tetap optimistis dan melakukan probe pada pengiriman pertama.
 
-Jika `openclaw channels status --probe` melaporkan channel sebagai `works` tetapi tindakan tertentu melempar "iMessage `<action>` requires the imsg private API bridge" saat pengiriman, jalankan `imsg launch` lagi — helper dapat terlepas (restart Messages.app, pembaruan OS, dll.) dan status `available: true` yang di-cache akan terus mengiklankan tindakan sampai probe berikutnya menyegarkan status.
+Jika `openclaw channels status --probe` melaporkan kanal sebagai `works`, tetapi tindakan tertentu memunculkan "iMessage `<action>` memerlukan bridge API privat imsg" saat pengiriman, jalankan kembali `imsg launch` — pembantu dapat terlepas (Messages.app dimulai ulang, pembaruan OS, dan sebagainya) dan status `available: true` yang di-cache akan terus mengiklankan tindakan hingga probe berikutnya menyegarkannya.
 
-### Ketika Anda tidak dapat menonaktifkan SIP
+### Ketika SIP tetap diaktifkan
 
-Jika SIP yang dinonaktifkan tidak dapat diterima untuk model ancaman Anda:
+Jika menonaktifkan SIP tidak dapat diterima untuk model ancaman Anda:
 
-- `imsg` kembali ke mode dasar — teks + media + hanya menerima.
-- Plugin OpenClaw masih mengiklankan pengiriman teks/media dan pemantauan masuk; Plugin hanya menyembunyikan `react`, `edit`, `unsend`, `reply`, `sendWithEffect`, dan operasi grup dari permukaan tindakan (sesuai gate kapabilitas per metode).
-- Anda dapat menjalankan Mac non-Apple-Silicon terpisah (atau Mac bot khusus) dengan SIP mati untuk beban kerja iMessage, sambil tetap mengaktifkan SIP di perangkat utama Anda. Lihat [Dedicated bot macOS user (separate iMessage identity)](#deployment-patterns) di bawah.
+- `imsg` kembali ke mode dasar — hanya teks + media + penerimaan.
+- Plugin OpenClaw tetap mengiklankan pengiriman teks/media dan pemantauan pesan masuk; plugin menyembunyikan `react`, `edit`, `unsend`, `reply`, `sendWithEffect`, dan operasi grup dari permukaan tindakan (sesuai gate kapabilitas per metode).
+- Anda dapat menjalankan Mac non-Apple-Silicon terpisah (atau Mac bot khusus) dengan SIP dinonaktifkan untuk beban kerja iMessage, sementara SIP tetap diaktifkan pada perangkat utama Anda. Lihat [Pengguna macOS bot khusus (identitas iMessage terpisah)](#deployment-patterns) di bawah.
 
-## Kontrol akses dan routing
+## Kontrol akses dan perutean
 
 <Tabs>
-  <Tab title="DM policy">
+  <Tab title="Kebijakan DM">
     `channels.imessage.dmPolicy` mengontrol pesan langsung:
 
-    - `pairing` (default)
-    - `allowlist`
-    - `open` (memerlukan `allowFrom` untuk menyertakan `"*"`)
+    - `pairing` (bawaan)
+    - `allowlist` (memerlukan setidaknya satu entri `allowFrom`)
+    - `open` (mengharuskan `allowFrom` menyertakan `"*"`)
     - `disabled`
 
-    Kolom allowlist: `channels.imessage.allowFrom`.
+    Bidang daftar izin: `channels.imessage.allowFrom`.
 
-    Entri allowlist harus mengidentifikasi pengirim: handle atau grup akses pengirim statis (`accessGroup:<name>`). Gunakan `channels.imessage.groupAllowFrom` untuk target chat seperti `chat_id:*`, `chat_guid:*`, atau `chat_identifier:*`; gunakan `channels.imessage.groups` untuk kunci registri `chat_id` numerik.
+    Entri daftar izin harus mengidentifikasi pengirim: handle atau grup akses pengirim statis (`accessGroup:<name>`). Gunakan `channels.imessage.groupAllowFrom` untuk target percakapan seperti `chat_id:*`, `chat_guid:*`, atau `chat_identifier:*`; gunakan `channels.imessage.groups` untuk kunci registri numerik `chat_id`.
 
   </Tab>
 
-  <Tab title="Group policy + mentions">
+  <Tab title="Kebijakan grup + sebutan">
     `channels.imessage.groupPolicy` mengontrol penanganan grup:
 
-    - `allowlist` (default saat dikonfigurasi)
+    - `allowlist` (bawaan)
     - `open`
     - `disabled`
 
-    Allowlist pengirim grup: `channels.imessage.groupAllowFrom`.
+    Daftar izin pengirim grup: `channels.imessage.groupAllowFrom`.
 
-    Entri `groupAllowFrom` juga dapat mereferensikan grup akses pengirim statis (`accessGroup:<name>`).
+    Entri `groupAllowFrom` juga dapat merujuk ke grup akses pengirim statis (`accessGroup:<name>`).
 
-    Fallback runtime: jika `groupAllowFrom` tidak diatur, pemeriksaan pengirim grup iMessage menggunakan `allowFrom`; atur `groupAllowFrom` ketika penerimaan DM dan grup harus berbeda.
-    Catatan runtime: jika `channels.imessage` sepenuhnya tidak ada, runtime kembali ke `groupPolicy="allowlist"` dan mencatat peringatan (meskipun `channels.defaults.groupPolicy` diatur).
+    Fallback runtime: jika `groupAllowFrom` tidak ditetapkan, pemeriksaan pengirim grup iMessage menggunakan `allowFrom`; tetapkan `groupAllowFrom` ketika penerimaan DM dan grup harus berbeda. `groupAllowFrom: []` yang secara eksplisit kosong tidak menggunakan fallback — nilai tersebut memblokir semua pengirim grup di bawah `allowlist`.
+    Catatan runtime: jika `channels.imessage` sama sekali tidak ada, runtime menggunakan fallback ke `groupPolicy="allowlist"` dan mencatat peringatan (meskipun `channels.defaults.groupPolicy` ditetapkan).
 
     <Warning>
-    Routing grup memiliki **dua** gate allowlist yang berjalan berurutan, dan keduanya harus lolos:
+    Perutean grup di bawah `groupPolicy: "allowlist"` menjalankan **dua** gate secara berurutan:
 
-    1. **Allowlist pengirim / target chat** (`channels.imessage.groupAllowFrom`) — handle, `chat_guid`, `chat_identifier`, atau `chat_id`.
-    2. **Registri grup** (`channels.imessage.groups`) — dengan `groupPolicy: "allowlist"`, gate ini memerlukan entri wildcard `groups: { "*": { ... } }` (mengatur `allowAll = true`), atau entri eksplisit per `chat_id` di bawah `groups`.
+    1. **Daftar izin pengirim** (`channels.imessage.groupAllowFrom`) — handle, `accessGroup:<name>`, `chat_guid`, `chat_identifier`, atau `chat_id`. Daftar efektif yang kosong (tidak ada `groupAllowFrom` dan tidak ada fallback `allowFrom`) memblokir setiap pengirim grup.
+    2. **Registri grup** (`channels.imessage.groups`) — diberlakukan setelah peta memiliki entri: percakapan harus cocok dengan entri eksplisit per-`chat_id` atau wildcard `groups: { "*": { ... } }`. Ketika `groups` kosong atau tidak ada, daftar izin pengirim saja yang menentukan penerimaan.
 
-    Jika gate 2 kosong, setiap pesan grup akan dibuang. Plugin memancarkan dua sinyal tingkat `warn` pada level log default:
+    Jika tidak ada daftar izin pengirim grup efektif yang dikonfigurasi, setiap pesan grup dihapus sebelum gate registri. Setiap gate memiliki sinyal tingkat `warn` sendiri pada tingkat log bawaan, dan masing-masing menyebutkan perbaikan yang berbeda:
 
-    - satu kali per akun saat startup: `imessage: groupPolicy="allowlist" but channels.imessage.groups is empty for account "<id>"`
-    - satu kali per `chat_id` saat runtime: `imessage: dropping group message from chat_id=<id> ...`
+    - satu kali per akun saat startup, ketika daftar izin pengirim grup efektif kosong: `imessage: groupPolicy="allowlist" for account "<id>" but no group sender allowlist is configured ...` — perbaiki dengan menetapkan `channels.imessage.groupAllowFrom` (atau `allowFrom`); menambahkan entri `groups` saja membuat gate 1 tetap memblokir setiap pengirim.
+    - satu kali per `chat_id` saat runtime, ketika pengirim melewati gate 1 tetapi percakapan tidak ada dalam registri `groups` yang terisi: `imessage: dropping group message from chat_id=<id> ...` — perbaiki dengan menambahkan `chat_id` tersebut (atau `"*"`) di bawah `channels.imessage.groups`.
 
-    DM tetap berfungsi karena mengambil jalur kode yang berbeda.
+    DM tidak terpengaruh — DM menggunakan jalur kode yang berbeda.
 
-    Konfigurasi minimum agar grup tetap berjalan di bawah `groupPolicy: "allowlist"`:
+    Konfigurasi yang disarankan untuk alur grup di bawah `groupPolicy: "allowlist"`:
 
     ```json5
     {
@@ -318,23 +326,22 @@ Jika SIP yang dinonaktifkan tidak dapat diterima untuk model ancaman Anda:
     }
     ```
 
-    Jika baris `warn` tersebut muncul di log gateway, gate 2 sedang membuang — tambahkan blok `groups`.
+    `groupAllowFrom` saja menerima pengirim tersebut dalam grup apa pun; tambahkan blok `groups` untuk membatasi percakapan yang diizinkan (dan menetapkan opsi per percakapan seperti `requireMention`).
     </Warning>
 
-    Gate mention untuk grup:
+    Gate sebutan untuk grup:
 
-    - iMessage tidak memiliki metadata mention bawaan
-    - deteksi mention menggunakan pola regex (`agents.list[].groupChat.mentionPatterns`, fallback `messages.groupChat.mentionPatterns`)
-    - tanpa pola yang dikonfigurasi, gate mention tidak dapat ditegakkan
-
-    Perintah kontrol dari pengirim resmi dapat melewati gate mention di grup.
+    - iMessage tidak memiliki metadata sebutan bawaan
+    - deteksi sebutan menggunakan pola regex (`agents.list[].groupChat.mentionPatterns`, fallback `messages.groupChat.mentionPatterns`)
+    - tanpa pola yang dikonfigurasi, gate sebutan tidak dapat diberlakukan
+    - perintah kontrol dari pengirim yang diotorisasi melewati gate sebutan
 
     `systemPrompt` per grup:
 
-    Setiap entri di bawah `channels.imessage.groups.*` menerima string `systemPrompt` opsional. Nilai tersebut disuntikkan ke prompt sistem agen pada setiap turn yang menangani pesan di grup tersebut. Resolusi mencerminkan resolusi prompt per grup yang digunakan oleh `channels.whatsapp.groups`:
+    Setiap entri di bawah `channels.imessage.groups.*` menerima string `systemPrompt` opsional, yang disuntikkan ke prompt sistem agen pada setiap giliran yang menangani pesan dalam grup tersebut. Resolusinya mencerminkan `channels.whatsapp.groups`:
 
-    1. **Prompt sistem khusus grup** (`groups["<chat_id>"].systemPrompt`): digunakan ketika entri grup tertentu ada di map **dan** kunci `systemPrompt`-nya didefinisikan. Jika `systemPrompt` adalah string kosong (`""`), wildcard ditekan dan tidak ada prompt sistem yang diterapkan ke grup tersebut.
-    2. **Prompt sistem wildcard grup** (`groups["*"].systemPrompt`): digunakan ketika entri grup tertentu sepenuhnya tidak ada dari map, atau ketika entri itu ada tetapi tidak mendefinisikan kunci `systemPrompt`.
+    1. **Prompt sistem khusus grup** (`groups["<chat_id>"].systemPrompt`): digunakan ketika entri grup tertentu ada dalam peta **dan** kunci `systemPrompt`-nya ditentukan. Jika `systemPrompt` adalah string kosong (`""`), wildcard ditekan dan tidak ada prompt sistem yang diterapkan pada grup tersebut.
+    2. **Prompt sistem wildcard grup** (`groups["*"].systemPrompt`): digunakan ketika entri grup tertentu sama sekali tidak ada dalam peta, atau ketika entri tersebut ada tetapi tidak menentukan kunci `systemPrompt`.
 
     ```json5
     {
@@ -343,13 +350,13 @@ Jika SIP yang dinonaktifkan tidak dapat diterima untuk model ancaman Anda:
           groupPolicy: "allowlist",
           groupAllowFrom: ["+15555550123"],
           groups: {
-            "*": { systemPrompt: "Use British spelling." },
+            "*": { systemPrompt: "Gunakan ejaan Inggris." },
             "8421": {
               requireMention: true,
-              systemPrompt: "This is the on-call rotation chat. Keep replies under 3 sentences.",
+              systemPrompt: "Ini adalah percakapan rotasi petugas siaga. Batasi balasan hingga kurang dari 3 kalimat.",
             },
             "9907": {
-              // explicit suppression: the wildcard "Use British spelling." does not apply here
+              // penekanan eksplisit: wildcard "Gunakan ejaan Inggris." tidak berlaku di sini
               systemPrompt: "",
             },
           },
@@ -358,41 +365,41 @@ Jika SIP yang dinonaktifkan tidak dapat diterima untuk model ancaman Anda:
     }
     ```
 
-    Prompt per grup hanya berlaku untuk pesan grup — pesan langsung di channel ini tidak terpengaruh.
+    Prompt per grup hanya berlaku untuk pesan grup — pesan langsung tidak terpengaruh.
 
   </Tab>
 
-  <Tab title="Sessions and deterministic replies">
-    - DM menggunakan routing langsung; grup menggunakan routing grup.
-    - Dengan `session.dmScope=main` default, DM iMessage digabungkan ke sesi utama agen.
+  <Tab title="Sesi dan balasan deterministik">
+    - DM menggunakan perutean langsung; grup menggunakan perutean grup.
+    - Dengan `session.dmScope=main` bawaan, DM iMessage digabungkan ke dalam sesi utama agen.
     - Sesi grup diisolasi (`agent:<agentId>:imessage:group:<chat_id>`).
-    - Balasan dirutekan kembali ke iMessage menggunakan metadata channel/target asal.
+    - Balasan dirutekan kembali ke iMessage menggunakan metadata kanal/target asal.
 
-    Perilaku thread yang mirip grup:
+    Perilaku utas yang menyerupai grup:
 
-    Beberapa thread iMessage multipeserta dapat datang dengan `is_group=false`.
-    Jika `chat_id` tersebut secara eksplisit dikonfigurasi di bawah `channels.imessage.groups`, OpenClaw memperlakukannya sebagai traffic grup (gate grup + isolasi sesi grup).
+    Beberapa utas iMessage dengan banyak peserta dapat tiba dengan `is_group=false`.
+    Jika `chat_id` tersebut dikonfigurasi secara eksplisit di bawah `channels.imessage.groups`, OpenClaw memperlakukannya sebagai lalu lintas grup (gate grup + isolasi sesi grup).
 
   </Tab>
 </Tabs>
 
-## Binding percakapan ACP
+## Pengikatan percakapan ACP
 
-Chat iMessage lama juga dapat diikat ke sesi ACP.
+Percakapan iMessage dapat diikat ke sesi ACP.
 
-Alur operator cepat:
+Alur cepat operator:
 
-- Jalankan `/acp spawn codex --bind here` di dalam DM atau chat grup yang diizinkan.
+- Jalankan `/acp spawn codex --bind here` di dalam DM atau percakapan grup yang diizinkan.
 - Pesan berikutnya dalam percakapan iMessage yang sama dirutekan ke sesi ACP yang dibuat.
-- `/new` dan `/reset` mereset sesi ACP terikat yang sama di tempat.
-- `/acp close` menutup sesi ACP dan menghapus binding.
+- `/new` dan `/reset` mengatur ulang sesi ACP terikat yang sama di tempat.
+- `/acp close` menutup sesi ACP dan menghapus pengikatan.
 
-Binding persisten yang dikonfigurasi didukung melalui entri `bindings[]` tingkat atas dengan `type: "acp"` dan `match.channel: "imessage"`.
+Pengikatan persisten yang dikonfigurasi menggunakan entri `bindings[]` tingkat atas dengan `type: "acp"` dan `match.channel: "imessage"`.
 
 `match.peer.id` dapat menggunakan:
 
 - handle DM yang dinormalisasi seperti `+15555550123` atau `user@example.com`
-- `chat_id:<id>` (direkomendasikan untuk binding grup yang stabil)
+- `chat_id:<id>` (disarankan untuk pengikatan grup yang stabil)
 - `chat_guid:<guid>`
 - `chat_identifier:<identifier>`
 
@@ -426,32 +433,32 @@ Contoh:
 }
 ```
 
-Lihat [Agen ACP](/id/tools/acp-agents) untuk perilaku binding ACP bersama.
+Lihat [Agen ACP](/id/tools/acp-agents) untuk perilaku pengikatan ACP bersama.
 
 ## Pola deployment
 
 <AccordionGroup>
-  <Accordion title="Dedicated bot macOS user (separate iMessage identity)">
-    Gunakan Apple ID khusus dan pengguna macOS khusus agar traffic bot terisolasi dari profil Messages pribadi Anda.
+  <Accordion title="Pengguna macOS bot khusus (identitas iMessage terpisah)">
+    Gunakan Apple ID dan pengguna macOS khusus agar lalu lintas bot terisolasi dari profil Messages pribadi Anda.
 
     Alur umum:
 
-    1. Buat/masuk sebagai pengguna macOS khusus.
-    2. Masuk ke Messages dengan Apple ID bot di pengguna tersebut.
-    3. Instal `imsg` di pengguna tersebut.
-    4. Buat wrapper SSH agar OpenClaw dapat menjalankan `imsg` dalam konteks pengguna tersebut.
+    1. Buat/masuk ke pengguna macOS khusus.
+    2. Masuk ke Messages dengan Apple ID bot pada pengguna tersebut.
+    3. Instal `imsg` pada pengguna tersebut.
+    4. Buat pembungkus SSH agar OpenClaw dapat menjalankan `imsg` dalam konteks pengguna tersebut.
     5. Arahkan `channels.imessage.accounts.<id>.cliPath` dan `.dbPath` ke profil pengguna tersebut.
 
-    Eksekusi pertama mungkin memerlukan persetujuan GUI (Automation + Full Disk Access) di sesi pengguna bot tersebut.
+    Pengoperasian pertama mungkin memerlukan persetujuan GUI (Automation + Full Disk Access) dalam sesi pengguna bot tersebut.
 
   </Accordion>
 
-  <Accordion title="Remote Mac over Tailscale (example)">
+  <Accordion title="Mac jarak jauh melalui Tailscale (contoh)">
     Topologi umum:
 
     - gateway berjalan di Linux/VM
     - iMessage + `imsg` berjalan di Mac dalam tailnet Anda
-    - wrapper `cliPath` menggunakan SSH untuk menjalankan `imsg`
+    - pembungkus `cliPath` menggunakan SSH untuk menjalankan `imsg`
     - `remoteHost` mengaktifkan pengambilan lampiran melalui SCP
 
     Contoh:
@@ -475,22 +482,22 @@ Lihat [Agen ACP](/id/tools/acp-agents) untuk perilaku binding ACP bersama.
     exec ssh -T bot@mac-mini.tailnet-1234.ts.net imsg "$@"
     ```
 
-    Gunakan kunci SSH agar SSH dan SCP sama-sama noninteraktif.
+    Gunakan kunci SSH agar SSH dan SCP bersifat noninteraktif.
     Pastikan kunci host dipercaya terlebih dahulu (misalnya `ssh bot@mac-mini.tailnet-1234.ts.net`) agar `known_hosts` terisi.
 
   </Accordion>
 
-  <Accordion title="Multi-account pattern">
+  <Accordion title="Pola multiakun">
     iMessage mendukung konfigurasi per akun di bawah `channels.imessage.accounts`.
 
-    Setiap akun dapat mengganti kolom seperti `cliPath`, `dbPath`, `allowFrom`, `groupPolicy`, `mediaMaxMb`, pengaturan riwayat, dan allowlist root lampiran.
+    Setiap akun dapat mengganti bidang seperti `cliPath`, `dbPath`, `allowFrom`, `groupPolicy`, `mediaMaxMb`, pengaturan riwayat, dan daftar izin akar lampiran.
 
   </Accordion>
 
-  <Accordion title="Direct-message history">
-    Atur `channels.imessage.dmHistoryLimit` untuk mengisi sesi pesan langsung baru dengan riwayat `imsg` terbaru yang sudah didekode untuk percakapan tersebut. Gunakan `channels.imessage.dms["<sender>"].historyLimit` untuk penggantian per pengirim, termasuk `0` untuk menonaktifkan riwayat bagi seorang pengirim.
+  <Accordion title="Riwayat pesan langsung">
+    Atur `channels.imessage.dmHistoryLimit` untuk mengisi sesi pesan langsung baru dengan riwayat `imsg` terbaru yang telah didekode untuk percakapan tersebut. Gunakan `channels.imessage.dms["<sender>"].historyLimit` untuk penggantian per pengirim, termasuk `0` guna menonaktifkan riwayat bagi seorang pengirim.
 
-    Riwayat DM iMessage diambil sesuai permintaan dari `imsg`. Membiarkan `dmHistoryLimit` tidak diatur menonaktifkan pengisian riwayat DM global, tetapi `channels.imessage.dms["<sender>"].historyLimit` per pengirim yang bernilai positif tetap mengaktifkan pengisian untuk pengirim tersebut.
+    Riwayat DM iMessage diambil sesuai permintaan dari `imsg`. Membiarkan `dmHistoryLimit` tidak diatur akan menonaktifkan pengisian riwayat DM global, tetapi nilai positif `channels.imessage.dms["<sender>"].historyLimit` per pengirim tetap mengaktifkan pengisian bagi pengirim tersebut.
 
   </Accordion>
 </AccordionGroup>
@@ -499,29 +506,31 @@ Lihat [Agen ACP](/id/tools/acp-agents) untuk perilaku binding ACP bersama.
 
 <AccordionGroup>
   <Accordion title="Lampiran dan media">
-    - penyerapan lampiran masuk **nonaktif secara default** — atur `channels.imessage.includeAttachments: true` untuk meneruskan foto, memo suara, video, dan lampiran lain ke agen. Jika dinonaktifkan, iMessage yang hanya berisi lampiran akan dibuang sebelum mencapai agen dan mungkin sama sekali tidak menghasilkan baris log `Inbound message`.
-    - jalur lampiran jarak jauh dapat diambil melalui SCP saat `remoteHost` ditetapkan
-    - jalur lampiran harus cocok dengan root yang diizinkan:
+    - penyerapan lampiran masuk **dinonaktifkan secara default** — atur `channels.imessage.includeAttachments: true` untuk meneruskan foto, memo suara, video, dan lampiran lainnya kepada agen. Saat dinonaktifkan, iMessage yang hanya berisi lampiran dibuang sebelum mencapai agen dan mungkin sama sekali tidak menghasilkan baris log `Inbound message`.
+    - jalur lampiran jarak jauh dapat diambil melalui SCP saat `remoteHost` diatur
+    - jalur lampiran harus cocok dengan akar yang diizinkan:
       - `channels.imessage.attachmentRoots` (lokal)
       - `channels.imessage.remoteAttachmentRoots` (mode SCP jarak jauh)
-      - pola root default: `/Users/*/Library/Messages/Attachments`
-    - SCP menggunakan pemeriksaan kunci host ketat (`StrictHostKeyChecking=yes`)
+      - akar yang dikonfigurasi memperluas pola akar default `/Users/*/Library/Messages/Attachments` (digabungkan, bukan diganti)
+    - SCP menggunakan pemeriksaan kunci host yang ketat (`StrictHostKeyChecking=yes`)
     - ukuran media keluar menggunakan `channels.imessage.mediaMaxMb` (default 16 MB)
 
   </Accordion>
 
-  <Accordion title="Pemotongan keluaran">
+  <Accordion title="Teks keluar dan pemotongan">
     - batas potongan teks: `channels.imessage.textChunkLimit` (default 4000)
-    - mode potongan: `channels.imessage.chunkMode`
+    - mode pemotongan: `channels.imessage.streaming.chunkMode`
       - `length` (default)
-      - `newline` (pemecahan yang mengutamakan paragraf)
+      - `newline` (pemotongan yang mengutamakan paragraf)
+    - tebal/miring/garis bawah/coret Markdown keluar dikonversi menjadi teks bergaya native (penerima macOS 15+ merender gaya tersebut; penerima versi lama melihat teks biasa tanpa penanda); tabel Markdown dikonversi sesuai mode tabel Markdown kanal
+    - `channels.imessage.sendTransport` (`auto` default, `bridge`, `applescript`) memilih cara `imsg` melakukan pengiriman
 
   </Accordion>
 
   <Accordion title="Format pengalamatan">
     Target eksplisit yang disarankan:
 
-    - `chat_id:123` (direkomendasikan untuk perutean stabil)
+    - `chat_id:123` (disarankan untuk perutean stabil)
     - `chat_guid:...`
     - `chat_identifier:...`
 
@@ -541,6 +550,8 @@ Lihat [Agen ACP](/id/tools/acp-agents) untuk perilaku binding ACP bersama.
 ## Tindakan API privat
 
 Saat `imsg launch` berjalan dan `openclaw channels status --probe` melaporkan `privateApi.available: true`, alat pesan dapat menggunakan tindakan native iMessage selain pengiriman teks biasa.
+
+Semua tindakan diaktifkan secara default; gunakan `channels.imessage.actions` untuk menonaktifkan tindakan individual:
 
 ```json5
 {
@@ -567,32 +578,32 @@ Saat `imsg launch` berjalan dan `openclaw channels status --probe` melaporkan `p
 
 <AccordionGroup>
   <Accordion title="Tindakan yang tersedia">
-    - **react**: Menambah/menghapus tapback iMessage (`messageId`, `emoji`, `remove`). Tapback yang didukung dipetakan ke love, like, dislike, laugh, emphasize, dan question.
-    - **reply**: Mengirim balasan berutas ke pesan yang sudah ada (`messageId`, `text` atau `message`, ditambah `chatGuid`, `chatId`, `chatIdentifier`, atau `to`).
-    - **sendWithEffect**: Mengirim teks dengan efek iMessage (`text` atau `message`, `effect` atau `effectId`).
-    - **edit**: Mengedit pesan terkirim pada versi macOS/API privat yang didukung (`messageId`, `text` atau `newText`).
-    - **unsend**: Menarik kembali pesan terkirim pada versi macOS/API privat yang didukung (`messageId`).
-    - **upload-file**: Mengirim media/berkas (`buffer` sebagai base64 atau `media`/`path`/`filePath` yang telah dihidrasi, `filename`, opsional `asVoice`). Alias lama: `sendAttachment`.
-    - **renameGroup**, **setGroupIcon**, **addParticipant**, **removeParticipant**, **leaveGroup**: Mengelola obrolan grup saat target saat ini adalah percakapan grup.
-    - **poll**: Membuat polling native Apple Messages (`pollQuestion`, `pollOption` diulang 2 hingga 12 kali, ditambah `chatGuid`, `chatId`, `chatIdentifier`, atau `to`). Penerima di iOS/iPadOS/macOS 26+ melihat dan memberikan suara secara native; versi OS lama menerima fallback teks "Sent a poll". Memerlukan `selectors.pollPayloadMessage`.
-    - **poll-vote**: Memberikan suara pada polling yang sudah ada (`pollId` atau `messageId`, ditambah tepat salah satu dari `pollOptionIndex`, `pollOptionId`, atau `pollOptionText`). Memerlukan `selectors.pollVoteMessage` dan metode RPC `poll.vote`.
+    - **react**: Tambahkan/hapus tapback iMessage (`messageId`, `emoji`, `remove`). Tapback yang didukung dipetakan ke love, like, dislike, laugh, emphasize, dan question. Penghapusan tanpa emoji menghapus tapback apa pun yang telah ditetapkan.
+    - **reply**: Kirim balasan berutas ke pesan yang ada (`messageId`, `text` atau `message`, ditambah `chatGuid`, `chatId`, `chatIdentifier`, atau `to`). Balasan dengan lampiran juga memerlukan build `imsg` yang `send-rich`-nya mendukung `--file`.
+    - **sendWithEffect**: Kirim teks dengan efek iMessage (`text` atau `message`, `effect` atau `effectId`). Nama pendek: slam, loud, gentle, invisibleink, confetti, lasers, fireworks, balloon, heart, echo, happybirthday, shootingstar, sparkles, spotlight.
+    - **edit**: Edit pesan terkirim pada versi macOS/API privat yang didukung (`messageId`, `text` atau `newText`). Hanya pesan yang dikirim oleh gateway itu sendiri yang dapat diedit.
+    - **unsend**: Tarik kembali pesan terkirim pada versi macOS/API privat yang didukung (`messageId`). Hanya pesan yang dikirim oleh gateway itu sendiri yang dapat ditarik kembali.
+    - **upload-file**: Kirim media/file (`buffer` sebagai base64 atau `media`/`path`/`filePath` yang telah dihidrasi, `filename`, `asVoice` opsional). Alias lama: `sendAttachment`.
+    - **renameGroup**, **setGroupIcon**, **addParticipant**, **removeParticipant**, **leaveGroup**: Kelola obrolan grup saat target saat ini merupakan percakapan grup. Tindakan ini mengubah identitas Messages milik host, sehingga memerlukan pengirim pemilik atau klien Gateway `operator.admin`.
+    - **poll**: Buat jajak pendapat native Apple Messages (`pollQuestion`, `pollOption` yang diulang 2 hingga 12 kali, ditambah `chatGuid`, `chatId`, `chatIdentifier`, atau `to`). Penerima di iOS/iPadOS/macOS 26+ melihat dan memberikan suara secara native; versi OS lama menerima teks cadangan "Sent a poll". Memerlukan `selectors.pollPayloadMessage`.
+    - **poll-vote**: Berikan suara pada jajak pendapat yang ada (`pollId` atau `messageId`, ditambah tepat satu dari `pollOptionIndex`, `pollOptionId`, atau `pollOptionText`). Memerlukan `selectors.pollVoteMessage` dan metode RPC `poll.vote`.
 
-    Polling masuk yang diterima dirender untuk agen dengan pertanyaan, label opsi bernomor, jumlah suara, dan ID pesan polling yang diperlukan oleh `poll-vote`.
+    Jajak pendapat masuk yang diterima dirender untuk agen dengan pertanyaan, label opsi bernomor, jumlah suara, dan ID pesan jajak pendapat yang diperlukan oleh `poll-vote`.
 
   </Accordion>
 
-  <Accordion title="ID Pesan">
-    Konteks iMessage masuk mencakup nilai `MessageSid` pendek dan GUID pesan lengkap saat tersedia. ID pendek dicakupkan ke cache balasan terbaru berbasis SQLite dan diperiksa terhadap obrolan saat ini sebelum digunakan. Jika ID pendek telah kedaluwarsa atau milik obrolan lain, coba lagi dengan `MessageSidFull`.
+  <Accordion title="ID pesan">
+    Konteks iMessage masuk menyertakan nilai pendek `MessageSid` dan GUID pesan lengkap (`MessageSidFull`) jika tersedia. ID pendek dibatasi pada cache balasan terbaru berbasis SQLite dan diperiksa terhadap obrolan saat ini sebelum digunakan. Jika ID pendek kedaluwarsa, coba lagi dengan `MessageSidFull` miliknya sambil menargetkan percakapan yang menyediakannya. ID lengkap tidak melewati pengikatan percakapan atau akun, jadi ganti ID dari obrolan lain dengan ID dari target saat ini. Panggilan terdelegasi jarak jauh dapat menolak ID lengkap yang kedaluwarsa saat bukti percakapan saat ini tidak tersedia.
 
   </Accordion>
 
   <Accordion title="Deteksi kapabilitas">
-    OpenClaw menyembunyikan tindakan API privat hanya saat status probe yang di-cache menyatakan bridge tidak tersedia. Jika status tidak diketahui, tindakan tetap terlihat dan dispatch melakukan probe secara malas sehingga tindakan pertama dapat berhasil setelah `imsg launch` tanpa penyegaran status manual terpisah.
+    OpenClaw menyembunyikan tindakan API privat hanya jika status pemeriksaan yang disimpan dalam cache menyatakan bahwa bridge tidak tersedia. Jika statusnya tidak diketahui, tindakan tetap terlihat dan pengiriman menjalankan pemeriksaan secara lazy sehingga tindakan pertama dapat berhasil setelah `imsg launch` tanpa penyegaran status manual terpisah.
 
   </Accordion>
 
-  <Accordion title="Tanda sudah dibaca dan mengetik">
-    Saat bridge API privat aktif, obrolan masuk yang diterima ditandai sudah dibaca dan obrolan langsung menampilkan gelembung mengetik segera setelah giliran diterima, sementara agen menyiapkan konteks dan menghasilkan respons. Nonaktifkan penandaan baca dengan:
+  <Accordion title="Tanda dibaca dan pengetikan">
+    Saat bridge API privat aktif, obrolan masuk yang diterima ditandai telah dibaca dan obrolan langsung menampilkan gelembung pengetikan segera setelah giliran diterima, sementara agen menyiapkan konteks dan menghasilkan respons. Nonaktifkan penandaan telah dibaca dengan:
 
     ```json5
     {
@@ -604,45 +615,46 @@ Saat `imsg launch` berjalan dan `openclaw channels status --probe` melaporkan `p
     }
     ```
 
-    Build `imsg` lama yang mendahului daftar kapabilitas per metode akan menonaktifkan pengetikan/tanda baca secara diam-diam; OpenClaw mencatat peringatan satu kali per restart agar tanda terima yang hilang dapat dilacak penyebabnya.
+    Build `imsg` lama yang dibuat sebelum daftar kapabilitas per metode menonaktifkan pengetikan/tanda dibaca secara diam-diam; OpenClaw mencatat peringatan satu kali setiap kali dimulai ulang agar penyebab tidak adanya tanda dibaca dapat diketahui.
 
   </Accordion>
 
   <Accordion title="Tapback masuk">
-    OpenClaw berlangganan tapback iMessage dan merutekan reaksi yang diterima sebagai peristiwa sistem, bukan teks pesan biasa, sehingga tapback pengguna tidak memicu loop balasan biasa.
+    OpenClaw berlangganan tapback iMessage dan merutekan reaksi yang diterima sebagai peristiwa sistem, bukan teks pesan biasa, sehingga tapback pengguna tidak memicu perulangan balasan biasa.
 
     Mode notifikasi dikendalikan oleh `channels.imessage.reactionNotifications`:
 
-    - `"own"` (default): beri tahu hanya saat pengguna bereaksi ke pesan yang ditulis bot.
+    - `"own"` (default): beri tahu hanya saat pengguna bereaksi terhadap pesan yang ditulis bot.
     - `"all"`: beri tahu untuk semua tapback masuk dari pengirim yang diotorisasi.
     - `"off"`: abaikan tapback masuk.
 
-    Override per akun menggunakan `channels.imessage.accounts.<id>.reactionNotifications`.
+    Penggantian per akun menggunakan `channels.imessage.accounts.<id>.reactionNotifications`.
 
   </Accordion>
 
   <Accordion title="Reaksi persetujuan (👍 / 👎)">
-    Saat `approvals.exec.enabled` atau `approvals.plugin.enabled` bernilai true dan permintaan dirutekan ke iMessage, Gateway mengirim prompt persetujuan secara native dan menerima tapback untuk menyelesaikannya:
+    Saat `approvals.exec.enabled` atau `approvals.plugin.enabled` bernilai true dan permintaan dirutekan ke iMessage, gateway mengirimkan perintah persetujuan secara native dan menerima tapback untuk menyelesaikannya:
 
     - `👍` (tapback Like) → `allow-once`
     - `👎` (tapback Dislike) → `deny`
-    - `allow-always` tetap menjadi fallback manual: kirim `/approve <id> allow-always` sebagai balasan reguler.
+    - `allow-always` tetap menjadi opsi cadangan manual: kirim `/approve <id> allow-always` sebagai balasan biasa.
 
-    Penanganan reaksi mengharuskan handle pengguna yang bereaksi menjadi pemberi persetujuan eksplisit. Daftar pemberi persetujuan dibaca dari `channels.imessage.allowFrom` (atau `channels.imessage.accounts.<id>.allowFrom`); tambahkan nomor telepon pengguna dalam format E.164 atau email Apple ID mereka. Entri wildcard `"*"` dihormati tetapi mengizinkan pengirim mana pun untuk menyetujui. Pintasan reaksi sengaja melewati `reactionNotifications`, `dmPolicy`, dan `groupAllowFrom` karena allowlist pemberi persetujuan eksplisit adalah satu-satunya gerbang yang penting untuk resolusi persetujuan.
+    Penanganan reaksi mengharuskan handle pengguna yang bereaksi menjadi pemberi persetujuan eksplisit. Daftar pemberi persetujuan dibaca dari `channels.imessage.allowFrom` (atau `channels.imessage.accounts.<id>.allowFrom`); tambahkan nomor telepon pengguna dalam format E.164 atau email Apple ID mereka (target obrolan seperti `chat_id:*` bukan entri pemberi persetujuan yang valid). Entri wildcard `"*"` diterapkan tetapi mengizinkan pengirim mana pun memberikan persetujuan; daftar pemberi persetujuan yang kosong menonaktifkan pintasan reaksi sepenuhnya. Pintasan reaksi sengaja melewati `reactionNotifications`, `dmPolicy`, dan `groupAllowFrom` karena daftar izin pemberi persetujuan eksplisit adalah satu-satunya gerbang yang relevan untuk penyelesaian persetujuan.
 
-    **Perubahan perilaku dengan rilis ini:** Saat `channels.imessage.allowFrom` tidak kosong, perintah teks `/approve <id> <decision>` kini diotorisasi terhadap daftar pemberi persetujuan tersebut (bukan allowlist DM yang lebih luas). Pengirim yang diizinkan pada allowlist DM tetapi tidak ada di `allowFrom` akan menerima penolakan eksplisit. Tambahkan setiap operator yang harus dapat menyetujui melalui `/approve` (dan melalui reaksi) ke `allowFrom` untuk mempertahankan perilaku sebelumnya. Saat `allowFrom` kosong, "fallback obrolan yang sama" lama tetap berlaku dan `/approve` terus mengotorisasi siapa pun yang diizinkan oleh allowlist DM.
+    Otorisasi perintah teks `/approve` mengikuti daftar yang sama: saat `channels.imessage.allowFrom` tidak kosong, `/approve <id> <decision>` diotorisasi berdasarkan daftar pemberi persetujuan tersebut (bukan daftar izin DM yang lebih luas), dan pengirim yang diizinkan dalam daftar izin DM tetapi tidak tercantum dalam `allowFrom` menerima penolakan eksplisit. Saat `allowFrom` kosong, opsi cadangan dalam obrolan yang sama tetap berlaku dan `/approve` mengotorisasi siapa pun yang diizinkan oleh daftar izin DM. Tambahkan setiap operator yang harus dapat memberikan persetujuan — melalui `/approve` atau melalui reaksi — ke `allowFrom`.
 
     Catatan operator:
-    - Binding reaksi disimpan baik di memori (dengan TTL yang dicocokkan dengan kedaluwarsa persetujuan) maupun di penyimpanan keyed persisten Gateway, sehingga tapback yang masuk tak lama setelah restart Gateway tetap menyelesaikan persetujuan.
-    - Tapback lintas perangkat `is_from_me=true` (reaksi operator sendiri pada perangkat Apple yang dipasangkan) sengaja diabaikan agar bot tidak dapat menyetujui dirinya sendiri.
-    - Tapback gaya teks lama (`Liked "…"` sebagai teks biasa dari klien Apple yang sangat lama) tidak dapat menyelesaikan persetujuan karena tidak membawa GUID pesan; resolusi reaksi memerlukan metadata tapback terstruktur yang dipancarkan klien macOS / iOS saat ini.
+    - Pengikatan reaksi disimpan baik di memori maupun di penyimpanan berkunci persisten milik gateway (TTL disesuaikan dengan kedaluwarsa persetujuan), dan gateway juga melakukan polling terhadap permintaan yang tertunda untuk tapback, sehingga tapback yang masuk sesaat setelah gateway dimulai ulang tetap menyelesaikan persetujuan.
+    - Tapback `is_from_me=true` milik operator sendiri (misalnya dari perangkat Apple yang dipasangkan) menyelesaikan persetujuan ketika handle tersebut merupakan pemberi persetujuan eksplisit.
+    - Permintaan persetujuan dirutekan ke percakapan grup hanya ketika pemberi persetujuan eksplisit dikonfigurasi; jika tidak, anggota grup mana pun dapat menyetujui.
+    - Tapback gaya teks lama (teks biasa `Liked "…"` dari klien Apple yang sangat lama) tidak dapat menyelesaikan persetujuan karena tidak membawa GUID pesan; penyelesaian reaksi memerlukan metadata tapback terstruktur yang dihasilkan oleh klien macOS / iOS saat ini.
 
   </Accordion>
 </AccordionGroup>
 
 ## Penulisan konfigurasi
 
-iMessage mengizinkan penulisan konfigurasi yang dimulai channel secara default (untuk `/config set|unset` saat `commands.config: true`).
+iMessage secara default mengizinkan penulisan konfigurasi yang dimulai oleh saluran (untuk `/config set|unset` ketika `commands.config: true`).
 
 Nonaktifkan:
 
@@ -658,29 +670,29 @@ Nonaktifkan:
 
 <a id="coalescing-split-send-dms-command--url-in-one-composition"></a>
 
-## Menggabungkan DM split-send (perintah + URL dalam satu komposisi)
+## Menggabungkan DM kiriman terpisah (perintah + URL dalam satu komposisi)
 
-Saat pengguna mengetik perintah dan URL bersama-sama — misalnya `Dump https://example.com/article` — aplikasi Messages Apple memecah pengiriman menjadi **dua baris `chat.db` terpisah**:
+Ketika pengguna mengetik perintah dan URL secara bersamaan — misalnya `Dump https://example.com/article` — aplikasi Messages milik Apple membagi pengiriman menjadi **dua baris `chat.db` terpisah**:
 
 1. Pesan teks (`"Dump"`).
-2. Gelembung pratinjau URL (`"https://..."`) dengan gambar pratinjau OG sebagai lampiran.
+2. Balon pratinjau URL (`"https://..."`) dengan gambar pratinjau OG sebagai lampiran.
 
-Kedua baris tiba di OpenClaw dengan selang ~0,8-2,0 d pada sebagian besar penyiapan. Tanpa penggabungan, agen menerima perintah saja pada giliran 1, membalas (sering kali "send me the URL"), dan baru melihat URL pada giliran 2 — saat konteks perintah sudah hilang. Ini adalah pipeline pengiriman Apple, bukan sesuatu yang diperkenalkan OpenClaw atau `imsg`.
+Kedua baris tiba di OpenClaw dengan selang ~0.8-2.0 dtk pada sebagian besar penyiapan. Tanpa penggabungan, agen menerima perintah saja pada giliran 1 (dan sering menjawab "kirimkan URL-nya") sebelum URL tiba pada giliran 2. Ini merupakan alur pengiriman Apple, bukan sesuatu yang diperkenalkan oleh OpenClaw atau `imsg`.
 
-`channels.imessage.coalesceSameSenderDms` membuat DM menggunakan buffering baris berurutan dari pengirim yang sama. Saat `imsg` mengekspos penanda struktural pratinjau URL `balloon_bundle_id: "com.apple.messages.URLBalloonProvider"` pada salah satu baris sumber, OpenClaw hanya menggabungkan split-send nyata tersebut dan mempertahankan baris buffer lain sebagai giliran terpisah. Pada build `imsg` lama yang sama sekali tidak memancarkan metadata gelembung, OpenClaw tidak dapat membedakan split-send dari pengiriman terpisah, sehingga fallback ke penggabungan bucket. Itu mempertahankan perilaku pra-metadata alih-alih meregresikan split-send `Dump <url>` menjadi dua giliran. Obrolan grup terus melakukan dispatch per pesan sehingga struktur giliran multi-pengguna tetap dipertahankan.
+`channels.imessage.coalesceSameSenderDms` mengikutsertakan DM dalam penyanggaan baris berurutan dari pengirim yang sama. Ketika `imsg` mengekspos penanda struktural pratinjau URL `balloon_bundle_id: "com.apple.messages.URLBalloonProvider"` pada salah satu baris sumber, OpenClaw hanya menggabungkan kiriman terpisah yang sebenarnya tersebut dan mempertahankan baris lain yang disangga sebagai giliran terpisah. Pada build `imsg` lama yang sama sekali tidak menghasilkan metadata balon, OpenClaw tidak dapat membedakan kiriman terpisah dari pengiriman terpisah, sehingga beralih ke penggabungan bucket. Hal tersebut mempertahankan perilaku sebelum adanya metadata alih-alih meregresikan kiriman terpisah `Dump <url>` menjadi dua giliran. Obrolan grup tetap dikirimkan per pesan agar struktur giliran multipengguna dipertahankan.
 
 <Tabs>
-  <Tab title="Kapan mengaktifkan">
-    Aktifkan saat:
+  <Tab title="Kapan perlu diaktifkan">
+    Aktifkan ketika:
 
-    - Anda mengirim Skills yang mengharapkan `command + payload` dalam satu pesan (dump, paste, save, queue, dll.).
+    - Anda menyediakan Skills yang mengharapkan `command + payload` dalam satu pesan (dump, tempel, simpan, antrekan, dan sebagainya).
     - Pengguna Anda menempelkan URL bersama perintah.
-    - Anda dapat menerima latensi giliran DM tambahan (lihat di bawah).
+    - Anda dapat menerima latensi tambahan pada giliran DM (lihat di bawah).
 
-    Biarkan nonaktif saat:
+    Biarkan nonaktif ketika:
 
-    - Anda membutuhkan latensi perintah minimum untuk pemicu DM satu kata.
-    - Semua flow Anda adalah perintah sekali jalan tanpa tindak lanjut payload.
+    - Anda memerlukan latensi perintah minimum untuk pemicu DM satu kata.
+    - Semua alur Anda berupa perintah sekali jalan tanpa tindak lanjut muatan.
 
   </Tab>
   <Tab title="Mengaktifkan">
@@ -688,22 +700,22 @@ Kedua baris tiba di OpenClaw dengan selang ~0,8-2,0 d pada sebagian besar penyia
     {
       channels: {
         imessage: {
-          coalesceSameSenderDms: true, // opt in (default: false)
+          coalesceSameSenderDms: true, // ikut serta (default: false)
         },
       },
     }
     ```
 
-    Dengan flag aktif dan tanpa `messages.inbound.byChannel.imessage` eksplisit atau `messages.inbound.debounceMs` global, jendela debounce melebar menjadi **7000 ms** (default lama adalah 0 ms — tanpa debouncing). Jendela yang lebih lebar diperlukan karena irama split-send pratinjau URL Apple dapat memanjang hingga beberapa detik saat Messages.app memancarkan baris pratinjau.
+    Dengan flag aktif dan tanpa `messages.inbound.byChannel.imessage` eksplisit atau `messages.inbound.debounceMs` global, jendela debounce diperlebar menjadi **7000 ms** (default lama adalah 0 ms — tanpa debounce). Jendela yang lebih lebar diperlukan karena interval kiriman terpisah pratinjau URL Apple dapat memanjang hingga beberapa detik ketika Messages.app menghasilkan baris pratinjau.
 
-    Untuk menyesuaikan jendela sendiri:
+    Untuk menyesuaikan sendiri jendelanya:
 
     ```json5
     {
       messages: {
         inbound: {
           byChannel: {
-            // 7000 ms covers observed Messages.app URL-preview delays.
+            // 7000 ms mencakup penundaan pratinjau URL Messages.app yang diamati.
             imessage: 7000,
           },
         },
@@ -712,57 +724,57 @@ Kedua baris tiba di OpenClaw dengan selang ~0,8-2,0 d pada sebagian besar penyia
     ```
 
   </Tab>
-  <Tab title="Trade-offs">
-    - **Penggabungan presisi membutuhkan metadata payload `imsg` saat ini.** Saat baris URL menyertakan `balloon_bundle_id`, hanya split-send nyata itu yang digabungkan dan baris buffer lain tetap terpisah. Pada build `imsg` lama yang tidak mengekspos metadata balon, OpenClaw kembali menggabungkan bucket buffer agar split-send `Dump <url>` tidak mengalami regresi menjadi dua giliran (back-compat sementara, dihapus setelah `imsg` menggabungkan split-send di upstream).
-    - **Latensi tambahan untuk pesan DM.** Dengan flag aktif, setiap DM (termasuk perintah kontrol mandiri dan tindak lanjut teks tunggal) menunggu hingga jendela debounce sebelum dikirim, untuk berjaga-jaga jika baris pratinjau URL akan datang. Pesan obrolan grup tetap dikirim secara instan.
-    - **Output gabungan dibatasi.** Teks gabungan dibatasi hingga 4000 karakter dengan penanda eksplisit `…[truncated]`; lampiran dibatasi hingga 20; entri sumber dibatasi hingga 10 (yang pertama-plus-terbaru dipertahankan setelah batas itu). Setiap GUID sumber dilacak di `coalescedMessageGuids` untuk telemetri downstream.
-    - **Hanya DM.** Obrolan grup diteruskan ke pengiriman per pesan agar bot tetap responsif saat beberapa orang sedang mengetik.
-    - **Opt-in, per kanal.** Kanal lain (Telegram, WhatsApp, Slack, …) tidak terpengaruh. Konfigurasi BlueBubbles lama yang mengatur `channels.bluebubbles.coalesceSameSenderDms` harus memigrasikan nilai itu ke `channels.imessage.coalesceSameSenderDms`.
+  <Tab title="Kompromi">
+    - **Penggabungan yang presisi memerlukan metadata muatan `imsg` terkini.** Dengan `balloon_bundle_id` tersedia, hanya kiriman terpisah yang sebenarnya yang digabungkan; penggabungan fallback tanpa metadata yang dijelaskan di atas merupakan kompatibilitas mundur sementara, yang akan dihapus setelah `imsg` menggabungkan kiriman terpisah di upstream.
+    - **Latensi tambahan untuk pesan DM.** Dengan flag aktif, setiap DM (termasuk perintah kontrol mandiri dan tindak lanjut teks tunggal) menunggu hingga jendela debounce sebelum dikirimkan, untuk mengantisipasi datangnya baris pratinjau URL. Pesan obrolan grup tetap dikirimkan seketika.
+    - **Keluaran gabungan dibatasi.** Teks gabungan dibatasi hingga 4000 karakter dengan penanda `…[truncated]` eksplisit; lampiran dibatasi hingga 20; entri sumber dibatasi hingga 10 (yang pertama beserta yang terbaru dipertahankan jika melampaui batas tersebut). Setiap GUID sumber dilacak dalam `coalescedMessageGuids` untuk telemetri downstream.
+    - **Khusus DM.** Obrolan grup diteruskan ke pengiriman per pesan agar bot tetap responsif ketika beberapa orang sedang mengetik.
+    - **Keikutsertaan, per saluran.** Saluran lain (Discord, Slack, Telegram, WhatsApp, …) tidak terpengaruh. Konfigurasi BlueBubbles lama yang menetapkan `channels.bluebubbles.coalesceSameSenderDms` harus memigrasikan nilai tersebut ke `channels.imessage.coalesceSameSenderDms`.
 
   </Tab>
 </Tabs>
 
 ### Skenario dan apa yang dilihat agen
 
-Kolom "Flag aktif" menunjukkan perilaku pada build `imsg` yang memancarkan `balloon_bundle_id`. Pada build `imsg` lama yang sama sekali tidak memancarkan metadata balon, baris di bawah yang ditandai "Dua giliran" / "N giliran" akan kembali ke penggabungan lama (satu giliran): OpenClaw tidak dapat membedakan secara struktural split-send dari pengiriman terpisah, sehingga mempertahankan penggabungan pra-metadata. Pemisahan presisi aktif setelah build memancarkan metadata balon.
+Kolom "Flag aktif" menunjukkan perilaku pada build `imsg` yang menghasilkan `balloon_bundle_id`. Pada build `imsg` lama yang sama sekali tidak menghasilkan metadata balon, baris di bawah yang ditandai "Dua giliran" / "N giliran" beralih ke penggabungan lama (satu giliran): OpenClaw tidak dapat membedakan kiriman terpisah dari pengiriman terpisah secara struktural, sehingga mempertahankan penggabungan sebelum adanya metadata. Pemisahan presisi diaktifkan setelah build menghasilkan metadata balon.
 
-| Pengguna menyusun                                                   | `chat.db` menghasilkan              | Flag nonaktif (default)                       | Flag aktif + jendela (imsg memancarkan metadata balon)                                                   |
-| ------------------------------------------------------------------- | ----------------------------------- | --------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
-| `Dump https://example.com` (satu pengiriman)                        | 2 baris berjarak ~1 d               | Dua giliran agen: "Dump" saja, lalu URL       | Satu giliran: teks gabungan `Dump https://example.com`                                                   |
-| `Save this 📎image.jpg caption` (lampiran + teks)                   | 2 baris tanpa metadata balon URL    | Dua giliran                                   | Dua giliran setelah metadata teramati; satu giliran gabungan pada sesi lama/pra-latch tanpa metadata     |
-| `/status` (perintah mandiri)                                        | 1 baris                             | Pengiriman instan                             | **Tunggu hingga jendela, lalu kirim**                                                                    |
-| URL ditempel sendiri                                                | 1 baris                             | Pengiriman instan                             | Tunggu hingga jendela, lalu kirim                                                                        |
-| Teks + URL dikirim sebagai dua pesan terpisah yang disengaja, terpaut menit | 2 baris di luar jendela             | Dua giliran                                   | Dua giliran (jendela kedaluwarsa di antaranya)                                                           |
-| Banjir cepat (>10 DM kecil dalam jendela)                           | N baris tanpa metadata balon URL    | N giliran                                     | N giliran setelah metadata teramati; satu giliran gabungan terbatas pada sesi lama/pra-latch tanpa metadata |
-| Dua orang mengetik di obrolan grup                                  | N baris dari M pengirim             | M+ giliran (satu per bucket pengirim)         | M+ giliran — obrolan grup tidak digabungkan                                                              |
+| Komposisi pengguna                                                 | Yang dihasilkan `chat.db`       | Flag nonaktif (default)                       | Flag aktif + jendela (imsg menghasilkan metadata balon)                                                     |
+| ------------------------------------------------------------------ | ----------------------------------- | --------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| `Dump https://example.com` (satu pengiriman)                               | 2 baris berselang ~1 dtk            | Dua giliran agen: "Dump" saja, kemudian URL   | Satu giliran: teks gabungan `Dump https://example.com`                                                              |
+| `Save this 📎image.jpg caption` (lampiran + teks)                               | 2 baris tanpa metadata balon URL     | Dua giliran                                   | Dua giliran setelah metadata teramati; satu giliran gabungan pada sesi lama/sebelum latch tanpa metadata    |
+| `/status` (perintah mandiri)                              | 1 baris                              | Pengiriman seketika                           | **Tunggu hingga jendela berakhir, lalu kirimkan**                                                           |
+| URL ditempelkan sendiri                                            | 1 baris                              | Pengiriman seketika                           | Tunggu hingga jendela berakhir, lalu kirimkan                                                               |
+| Teks + URL dikirim sebagai dua pesan terpisah yang disengaja, berselang beberapa menit | 2 baris di luar jendela | Dua giliran                                   | Dua giliran (jendela berakhir di antara keduanya)                                                           |
+| Banjir cepat (>10 DM kecil dalam jendela)                           | N baris tanpa metadata balon URL     | N giliran                                     | N giliran setelah metadata teramati; satu giliran gabungan terbatas pada sesi lama/sebelum latch tanpa metadata |
+| Dua orang mengetik dalam obrolan grup                              | N baris dari M pengirim              | M+ giliran (satu per bucket pengirim)          | M+ giliran — obrolan grup tidak digabungkan                                                                 |
 
-## Pemulihan inbound setelah bridge atau gateway dimulai ulang
+## Pemulihan masuk setelah bridge atau gateway dimulai ulang
 
-iMessage memulihkan pesan yang terlewat saat gateway mati, dan pada saat yang sama menekan "bom backlog" usang yang dapat digelontorkan Apple setelah pemulihan Push. Perilaku default selalu aktif, dibangun di atas dedupe inbound.
+iMessage memulihkan pesan yang terlewat ketika gateway tidak aktif dan pada saat yang sama menekan "bom backlog" usang yang dapat digelontorkan Apple setelah pemulihan Push. Perilaku default selalu aktif dan dibangun di atas deduplikasi pesan masuk.
 
-- **Dedupe replay.** Setiap pesan inbound yang dikirim dicatat berdasarkan GUID Apple-nya dalam status Plugin persisten (`imessage.inbound-dedupe`), diklaim saat ingestion dan dikomit setelah penanganan (dilepas pada kegagalan sementara agar dapat dicoba ulang). Apa pun yang sudah ditangani akan dijatuhkan, bukan dikirim dua kali. Inilah yang memungkinkan replay pemulihan berjalan agresif tanpa pembukuan per pesan.
-- **Pemulihan downtime.** Saat startup, monitor mengingat `chat.db` rowid terakhir yang dikirim (kursor per akun yang dipersistenkan) dan meneruskannya ke `imsg watch.subscribe` sebagai `since_rowid`, sehingga imsg memutar ulang baris yang masuk saat gateway mati, lalu mengikuti live. Replay dibatasi ke baris terbaru dan ke pesan hingga usia ~2 jam, dan dedupe menjatuhkan apa pun yang sudah ditangani.
-- **Pagar usia backlog usang.** Baris di atas batas startup benar-benar live; baris yang tanggal kirimnya lebih dari ~15 menit lebih lama daripada waktu kedatangannya adalah backlog Push-flush dan ditekan. Baris yang diputar ulang (di atau di bawah batas) menggunakan jendela pemulihan yang lebih lebar, sehingga pesan yang baru saja terlewat dikirim sementara riwayat kuno tidak.
+- **Deduplikasi pemutaran ulang.** Setiap pesan masuk yang dikirimkan dicatat berdasarkan GUID Apple-nya dalam status Plugin persisten (`imessage.inbound-dedupe`), diklaim saat penyerapan dan dikomit setelah penanganan (dilepaskan saat terjadi kegagalan sementara agar dapat dicoba lagi). Semua yang telah ditangani akan dibuang alih-alih dikirimkan dua kali. Hal ini memungkinkan pemulihan melakukan pemutaran ulang secara agresif tanpa pembukuan per pesan.
+- **Pemulihan waktu henti.** Saat dimulai, monitor mengingat rowid baris `chat.db` terakhir yang dikirimkan (kursor per akun yang dipersistenkan) dan meneruskannya ke `imsg watch.subscribe` sebagai `since_rowid`, sehingga imsg memutar ulang baris yang masuk ketika gateway tidak aktif, lalu mengikuti data langsung. Pemutaran ulang dibatasi pada 500 baris terbaru dan pesan yang berusia hingga ~2 jam, sementara deduplikasi membuang semua yang sudah ditangani.
+- **Batas usia backlog usang.** Baris di atas batas saat mulai benar-benar merupakan data langsung; baris yang tanggal pengirimannya lebih dari ~15 menit lebih lama daripada waktu kedatangannya merupakan backlog hasil penggelontoran Push dan akan ditekan. Baris yang diputar ulang (pada atau di bawah batas) menggunakan jendela pemulihan yang lebih lebar, sehingga pesan yang baru saja terlewat dikirimkan sementara riwayat lama tidak.
 
-Pemulihan bekerja pada setup `cliPath` lokal maupun jarak jauh, karena replay `since_rowid` berjalan melalui koneksi RPC `imsg` yang sama. Perbedaannya ada pada jendela: saat gateway dapat membaca `chat.db` (lokal), gateway menambatkan batas rowid startup, membatasi rentang replay, dan mengirim pesan yang terlewat hingga sekitar beberapa jam. Melalui `cliPath` SSH jarak jauh, gateway tidak dapat membaca basis data, sehingga replay tidak dibatasi dan setiap baris menggunakan pagar usia live — tetap memulihkan pesan yang baru saja terlewat dan tetap menekan backlog lama, hanya dengan jendela live yang lebih sempit. Jalankan gateway di Mac Messages untuk jendela pemulihan yang lebih lebar.
+Pemulihan berfungsi pada penyiapan `cliPath` lokal maupun jarak jauh karena pemutaran ulang `since_rowid` berjalan melalui koneksi RPC `imsg` yang sama. Perbedaannya terletak pada jendela: ketika gateway dapat membaca `chat.db` (lokal), gateway menentukan batas rowid saat mulai, membatasi rentang pemutaran ulang, dan mengirimkan pesan yang terlewat hingga sekitar dua jam sebelumnya. Melalui `cliPath` SSH jarak jauh, gateway tidak dapat membaca basis data sehingga pemutaran ulang tidak dibatasi dan setiap baris menggunakan batas usia langsung — pesan yang baru saja terlewat tetap dipulihkan dan backlog lama tetap ditekan, hanya dengan jendela langsung yang lebih sempit. Jalankan gateway pada Mac Messages untuk mendapatkan jendela pemulihan yang lebih lebar.
 
-### Sinyal yang terlihat operator
+### Sinyal yang terlihat oleh operator
 
-Backlog yang ditekan dicatat pada level default, tidak pernah dijatuhkan diam-diam (flag `recovery` menunjukkan jendela mana yang diterapkan):
+Backlog yang ditekan dicatat pada level default dan tidak pernah dibuang secara diam-diam (flag `recovery` menunjukkan jendela yang diterapkan):
 
-```
-imessage: suppressed stale inbound backlog account=<id> sent=<iso> recovery=<bool> (<N> suppressed since start)
+```text
+imessage: backlog masuk usang ditekan account=<id> sent=<iso> recovery=<bool> (<N> ditekan sejak mulai)
 ```
 
 ### Migrasi
 
-`channels.imessage.catchup.*` tidak digunakan lagi — pemulihan downtime sekarang otomatis dan tidak memerlukan konfigurasi untuk setup baru. Konfigurasi yang sudah ada dengan `catchup.enabled: true` tetap dihormati sebagai profil kompatibilitas untuk jendela replay pemulihan. Blok catchup yang dinonaktifkan (`enabled: false` atau tanpa `enabled: true`) sudah dipensiunkan; `openclaw doctor --fix` menghapusnya.
+`channels.imessage.catchup.*` tidak digunakan lagi — pemulihan waktu henti berlangsung otomatis dan tidak memerlukan konfigurasi untuk penyiapan baru. Konfigurasi yang sudah ada dengan `catchup.enabled: true` tetap dihormati sebagai profil kompatibilitas untuk jendela pemutaran ulang pemulihan. Blok catchup yang dinonaktifkan (`enabled: false` atau tanpa `enabled: true`) telah dihentikan; `openclaw doctor --fix` menghapusnya.
 
 ## Pemecahan masalah
 
 <AccordionGroup>
-  <Accordion title="imsg not found or RPC unsupported">
-    Validasi binary dan dukungan RPC:
+  <Accordion title="imsg tidak ditemukan atau RPC tidak didukung">
+    Validasi dukungan biner dan RPC:
 
     ```bash
     imsg rpc --help
@@ -770,12 +782,12 @@ imessage: suppressed stale inbound backlog account=<id> sent=<iso> recovery=<boo
     openclaw channels status --probe
     ```
 
-    Jika probe melaporkan RPC tidak didukung, perbarui `imsg`. Jika tindakan API privat tidak tersedia, jalankan `imsg launch` dalam sesi pengguna macOS yang sedang login dan probe lagi. Jika Gateway tidak berjalan di macOS, gunakan setup Remote Mac melalui SSH di atas alih-alih path `imsg` lokal default.
+    Jika probe melaporkan bahwa RPC tidak didukung, perbarui `imsg`. Jika tindakan API privat tidak tersedia, jalankan `imsg launch` dalam sesi pengguna macOS yang sedang masuk dan lakukan probe lagi. Jika Gateway tidak berjalan di macOS, gunakan penyiapan Mac Jarak Jauh melalui SSH di atas alih-alih jalur `imsg` lokal default.
 
   </Accordion>
 
-  <Accordion title="Messages send but inbound iMessages do not arrive">
-    Pertama buktikan apakah pesan mencapai Mac lokal. Jika `chat.db` tidak berubah, OpenClaw tidak dapat menerima pesan meskipun `imsg status --json` melaporkan bridge yang sehat.
+  <Accordion title="Messages mengirim, tetapi iMessage masuk tidak tiba">
+    Pertama, buktikan apakah pesan mencapai Mac lokal. Jika `chat.db` tidak berubah, OpenClaw tidak dapat menerima pesan meskipun `imsg status --json` melaporkan bridge yang sehat.
 
 ```bash
 imsg chats --limit 10 --json
@@ -784,7 +796,7 @@ sqlite3 ~/Library/Messages/chat.db \
   "select datetime(max(date)/1000000000 + 978307200, 'unixepoch', 'localtime'), max(ROWID) from message;"
 ```
 
-    Jika pesan yang dikirim dari ponsel tidak membuat baris baru, perbaiki lapisan macOS Messages dan Apple Push sebelum mengubah konfigurasi OpenClaw. Refresh layanan sekali jalan sering kali cukup:
+    Jika pesan yang dikirim dari ponsel tidak membuat baris baru, perbaiki lapisan Messages macOS dan Apple Push sebelum mengubah konfigurasi OpenClaw. Penyegaran layanan satu kali sering kali sudah cukup:
 
 ```bash
 launchctl kickstart -k system/com.apple.apsd
@@ -795,19 +807,19 @@ imsg launch
 openclaw gateway restart
 ```
 
-    Kirim iMessage baru dari ponsel dan konfirmasi baris `chat.db` baru atau event `imsg watch` sebelum men-debug sesi OpenClaw. Jangan jalankan ini sebagai loop peluncuran ulang bridge berkala; `imsg launch` berulang plus restart gateway selama pekerjaan aktif dapat mengganggu pengiriman dan meninggalkan run kanal yang sedang berjalan.
+    Kirim iMessage baru dari ponsel dan pastikan ada baris `chat.db` baru atau peristiwa `imsg watch` sebelum men-debug sesi OpenClaw. Jangan jalankan ini sebagai perulangan peluncuran ulang bridge secara berkala; `imsg launch` berulang yang disertai mulai ulang Gateway selama pekerjaan aktif dapat mengganggu pengiriman dan membuat proses channel yang sedang berjalan terhenti.
 
   </Accordion>
 
-  <Accordion title="Gateway is not running on macOS">
-    `cliPath: "imsg"` default harus berjalan di Mac yang login ke Messages. Di Linux atau Windows, atur `channels.imessage.cliPath` ke script wrapper yang melakukan SSH ke Mac itu dan menjalankan `imsg "$@"`.
+  <Accordion title="Gateway tidak berjalan di macOS">
+    `cliPath: "imsg"` bawaan harus berjalan di Mac yang masuk ke Messages. Di Linux atau Windows, atur `channels.imessage.cliPath` ke skrip pembungkus yang terhubung melalui SSH ke Mac tersebut dan menjalankan `imsg "$@"`.
 
 ```bash
 #!/usr/bin/env bash
 exec ssh -T messages-mac imsg "$@"
 ```
 
-    Lalu jalankan:
+    Kemudian jalankan:
 
 ```bash
 openclaw channels status --probe --channel imessage
@@ -815,61 +827,61 @@ openclaw channels status --probe --channel imessage
 
   </Accordion>
 
-  <Accordion title="DMs are ignored">
+  <Accordion title="DM diabaikan">
     Periksa:
 
     - `channels.imessage.dmPolicy`
     - `channels.imessage.allowFrom`
-    - persetujuan pairing (`openclaw pairing list imessage`)
+    - persetujuan pemasangan (`openclaw pairing list imessage`)
 
   </Accordion>
 
-  <Accordion title="Group messages are ignored">
+  <Accordion title="Pesan grup diabaikan">
     Periksa:
 
     - `channels.imessage.groupPolicy`
     - `channels.imessage.groupAllowFrom`
-    - perilaku allowlist `channels.imessage.groups`
-    - konfigurasi pola mention (`agents.list[].groupChat.mentionPatterns`)
+    - `channels.imessage.groups` perilaku daftar yang diizinkan
+    - konfigurasi pola penyebutan (`agents.list[].groupChat.mentionPatterns`)
 
   </Accordion>
 
-  <Accordion title="Remote attachments fail">
+  <Accordion title="Lampiran jarak jauh gagal">
     Periksa:
 
     - `channels.imessage.remoteHost`
     - `channels.imessage.remoteAttachmentRoots`
-    - autentikasi kunci SSH/SCP dari host gateway
-    - kunci host ada di `~/.ssh/known_hosts` pada host gateway
-    - keterbacaan path jarak jauh di Mac yang menjalankan Messages
+    - autentikasi kunci SSH/SCP dari host Gateway
+    - kunci host tersedia di `~/.ssh/known_hosts` pada host Gateway
+    - keterbacaan jalur jarak jauh pada Mac yang menjalankan Messages
 
   </Accordion>
 
-  <Accordion title="macOS permission prompts were missed">
-    Jalankan ulang di terminal GUI interaktif dalam konteks pengguna/sesi yang sama dan setujui prompt:
+  <Accordion title="Permintaan izin macOS terlewat">
+    Jalankan kembali di terminal GUI interaktif dalam konteks pengguna/sesi yang sama dan setujui permintaan izin:
 
     ```bash
     imsg chats --limit 1
     imsg send <handle> "test"
     ```
 
-    Konfirmasi Full Disk Access + Automation diberikan untuk konteks proses yang menjalankan OpenClaw/`imsg`.
+    Pastikan Full Disk Access + Automation diberikan untuk konteks proses yang menjalankan OpenClaw/`imsg`.
 
   </Accordion>
 </AccordionGroup>
 
-## Penunjuk referensi konfigurasi
+## Rujukan referensi konfigurasi
 
 - [Referensi konfigurasi - iMessage](/id/gateway/config-channels#imessage)
 - [Konfigurasi Gateway](/id/gateway/configuration)
-- [Pairing](/id/channels/pairing)
+- [Penyandingan](/id/channels/pairing)
 
 ## Terkait
 
-- [Ringkasan Kanal](/id/channels) — semua kanal yang didukung
-- [Penghapusan BlueBubbles dan jalur imsg iMessage](/id/announcements/bluebubbles-imessage) — pengumuman dan ringkasan migrasi
-- [Beralih dari BlueBubbles](/id/channels/imessage-from-bluebubbles) — tabel terjemahan konfigurasi dan cutover langkah demi langkah
-- [Pairing](/id/channels/pairing) — autentikasi DM dan alur pairing
-- [Grup](/id/channels/groups) — perilaku obrolan grup dan gating mention
-- [Perutean Kanal](/id/channels/channel-routing) — perutean sesi untuk pesan
-- [Keamanan](/id/gateway/security) — model akses dan hardening
+- [Ikhtisar Saluran](/id/channels) — semua saluran yang didukung
+- [Penghapusan BlueBubbles dan jalur iMessage imsg](/id/announcements/bluebubbles-imessage) — pengumuman dan ringkasan migrasi
+- [Beralih dari BlueBubbles](/id/channels/imessage-from-bluebubbles) — tabel konversi konfigurasi dan peralihan langkah demi langkah
+- [Penyandingan](/id/channels/pairing) — autentikasi pesan langsung dan alur penyandingan
+- [Grup](/id/channels/groups) — perilaku obrolan grup dan pembatasan berdasarkan penyebutan
+- [Perutean Saluran](/id/channels/channel-routing) — perutean sesi untuk pesan
+- [Keamanan](/id/gateway/security) — model akses dan penguatan keamanan

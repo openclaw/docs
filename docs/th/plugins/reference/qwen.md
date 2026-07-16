@@ -4,11 +4,12 @@ read_when:
 summary: เพิ่มการรองรับผู้ให้บริการโมเดล Qwen, Qwen Cloud, Model Studio, DashScope, Qwen Oauth, Qwen Portal, Qwen CLI, Qwen Token Plan และ Bailian Token Plan ให้กับ OpenClaw
 title: Plugin Qwen
 x-i18n:
-    generated_at: "2026-07-12T16:34:38Z"
+    generated_at: "2026-07-16T19:34:20Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 3d3c529b0b98f0c7b2137754264e9acfddd90a245418ee105b9efc9541b1911b
+    source_hash: 0704c1c8b54d092da412800e636bba594362e41e837872d41f5a492cc597230d
     source_path: plugins/reference/qwen.md
     workflow: 16
 ---
@@ -22,9 +23,9 @@ x-i18n:
 - แพ็กเกจ: `@openclaw/qwen-provider`
 - ช่องทางการติดตั้ง: npm; ClawHub: `clawhub:@openclaw/qwen-provider`
 
-## ส่วนเชื่อมต่อ
+## พื้นผิว
 
-ผู้ให้บริการ: qwen, qwencloud, modelstudio, dashscope, qwen-oauth, qwen-portal, qwen-cli, qwen-token-plan, bailian-token-plan; สัญญา: mediaUnderstandingProviders, videoGenerationProviders
+ผู้ให้บริการ: `qwen`, `qwencloud`, `modelstudio`, `dashscope`, `qwen-oauth`, `qwen-portal`, `qwen-cli`, `qwen-token-plan`, `bailian-token-plan`; สัญญา: `mediaUnderstandingProviders`, `videoGenerationProviders`
 
 ## เอกสารที่เกี่ยวข้อง
 

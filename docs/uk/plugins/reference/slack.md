@@ -1,30 +1,31 @@
 ---
 read_when:
-    - Ви встановлюєте, налаштовуєте або перевіряєте плагін Slack
-summary: Plugin каналу Slack для OpenClaw, що підтримує канали, особисті повідомлення, команди та події застосунку.
-title: Plugin Slack
+    - Ви встановлюєте, налаштовуєте або перевіряєте Plugin Slack.
+summary: Плагін каналу Slack для OpenClaw, що підтримує канали, особисті повідомлення, команди та події застосунку.
+title: Плагін Slack
 x-i18n:
-    generated_at: "2026-07-12T13:31:43Z"
+    generated_at: "2026-07-16T18:26:55Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 602ccb21ce084219d922860d186664bbb098fd034117893dc7359d79495bedd6
+    source_hash: bc5b593ef4361a52024f068febd8982fefdf3af1957373b1e5d7d1b9ef8b0a77
     source_path: plugins/reference/slack.md
     workflow: 16
 ---
 
 # Plugin Slack
 
-Plugin каналу Slack для OpenClaw, що підтримує канали, приватні повідомлення, команди та події застосунку.
+Plugin каналу Slack для OpenClaw, призначений для каналів, приватних повідомлень, команд і подій застосунку.
 
 ## Розповсюдження
 
-- Пакет: `@openclaw/slack`
-- Спосіб установлення: npm; ClawHub
+- Пакунок: `@openclaw/slack`
+- Спосіб встановлення: npm; ClawHub
 
-## Можливості
+## Поверхня
 
-канали: slack; Skills
+канали: `slack`; Skills
 
 ## Пов’язана документація
 

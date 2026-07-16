@@ -1,14 +1,15 @@
 ---
 read_when:
     - 你正在安裝、設定或稽核 lmstudio 外掛
-summary: 為 OpenClaw 新增 LM Studio 模型供應商支援。
+summary: 新增 OpenClaw 對 LM Studio 模型供應商的支援。
 title: LM Studio 外掛
 x-i18n:
-    generated_at: "2026-07-11T21:36:28Z"
+    generated_at: "2026-07-16T11:52:37Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: ec6c84ec422c0795d00f744239fcad96a5a01ef4fddd4823ba0b6ed93444a75b
+    source_hash: 8fc13cb8579875fab911aaf456f1b632426761b173cc06a8a7f60698e96cfb16
     source_path: plugins/reference/lmstudio.md
     workflow: 16
 ---
@@ -20,11 +21,11 @@ x-i18n:
 ## 發布方式
 
 - 套件：`@openclaw/lmstudio-provider`
-- 安裝方式：內含於 OpenClaw
+- 安裝方式：隨附於 OpenClaw
 
 ## 介面
 
-供應商：lmstudio；合約：memoryEmbeddingProviders
+供應商：`lmstudio`；合約：`memoryEmbeddingProviders`
 
 ## 相關文件
 

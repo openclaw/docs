@@ -1,14 +1,15 @@
 ---
 read_when:
     - คุณกำลังติดตั้ง กำหนดค่า หรือตรวจสอบ Plugin opencode-go
-summary: เพิ่มการรองรับผู้ให้บริการโมเดล OpenCode Go ให้กับ OpenClaw
+summary: เพิ่มการรองรับผู้ให้บริการโมเดล OpenCode Go ใน OpenClaw
 title: Plugin OpenCode Go
 x-i18n:
-    generated_at: "2026-07-12T16:34:23Z"
+    generated_at: "2026-07-16T19:34:06Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: adf5c43fc8e32041d5b58f5c7fa197015dcebcee3dfc0484081fbd67f14feeb6
+    source_hash: 57209cc840913a956367772220cdf9738dc2f194e98920eeb47fe8e82d644f9e
     source_path: plugins/reference/opencode-go.md
     workflow: 16
 ---
@@ -24,7 +25,7 @@ x-i18n:
 
 ## ส่วนที่เปิดให้ใช้งาน
 
-ผู้ให้บริการ: opencode-go; สัญญา: mediaUnderstandingProviders
+ผู้ให้บริการ: `opencode-go`; สัญญา: `mediaUnderstandingProviders`
 
 ## เอกสารที่เกี่ยวข้อง
 

@@ -1,80 +1,63 @@
 ---
 read_when:
-    - पूर्ण agent turn चलाए बिना tools को कॉल करना
-    - ऐसे ऑटोमेशन बनाना जिन्हें टूल नीति प्रवर्तन की आवश्यकता हो
-summary: Gateway HTTP एंडपॉइंट के माध्यम से किसी एक टूल को सीधे चलाएँ
-title: उपकरण API को कॉल करते हैं
+    - पूर्ण एजेंट टर्न चलाए बिना टूल कॉल करना
+    - ऐसे ऑटोमेशन बनाना जिनमें टूल नीति लागू करना आवश्यक हो
+summary: Gateway HTTP एंडपॉइंट के माध्यम से किसी एक टूल को सीधे इनवोक करें
+title: टूल API को इनवोक करते हैं
 x-i18n:
-    generated_at: "2026-06-28T23:15:11Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T15:16:04Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 2023505f5a705b62e2fd685d64d3f9bd7788d09adfe89ac99604e6660c78ad8a
+    source_hash: 6d07f765d63255e718d5e558b662589e77b2992538f43288cd83e6e3f2a06dda
     source_path: gateway/tools-invoke-http-api.md
     workflow: 16
 ---
 
-OpenClaw का Gateway किसी एक टूल को सीधे invoke करने के लिए एक सरल HTTP endpoint expose करता है। यह हमेशा enabled रहता है और Gateway प्रमाणीकरण के साथ टूल नीति का उपयोग करता है। OpenAI-compatible `/v1/*` surface की तरह, shared-secret bearer प्रमाणीकरण को पूरे gateway के लिए trusted operator access माना जाता है।
+OpenClaw का Gateway किसी एक टूल को सीधे आह्वान करने के लिए एक HTTP एंडपॉइंट उपलब्ध कराता है। यह हमेशा सक्षम रहता है और Gateway प्रमाणीकरण के साथ टूल नीति का उपयोग करता है। OpenAI-संगत `/v1/*` सतह की तरह, साझा-गुप्त bearer प्रमाणीकरण को पूरे Gateway के लिए विश्वसनीय ऑपरेटर पहुँच माना जाता है।
 
 - `POST /tools/invoke`
-- Gateway जैसा ही port (WS + HTTP multiplex): `http://<gateway-host>:<port>/tools/invoke`
-
-Default अधिकतम payload आकार 2 MB है।
+- Gateway के समान पोर्ट (WS + HTTP मल्टीप्लेक्स): `http://<gateway-host>:<port>/tools/invoke`
+- अनुरोध बॉडी का डिफ़ॉल्ट अधिकतम आकार: 2 MB
 
 ## प्रमाणीकरण
 
-Gateway auth configuration का उपयोग करता है।
+Gateway प्रमाणीकरण कॉन्फ़िगरेशन का उपयोग करता है।
 
-सामान्य HTTP auth paths:
+सामान्य HTTP प्रमाणीकरण पथ:
 
-- shared-secret auth (`gateway.auth.mode="token"` या `"password"`):
-  `Authorization: Bearer <token-or-password>`
-- trusted identity-bearing HTTP auth (`gateway.auth.mode="trusted-proxy"`):
-  configured identity-aware proxy के माध्यम से route करें और उसे आवश्यक
-  identity headers inject करने दें
-- private-ingress open auth (`gateway.auth.mode="none"`):
-  कोई auth header आवश्यक नहीं
+- साझा-गुप्त प्रमाणीकरण (`gateway.auth.mode="token"` या `"password"`): `Authorization: Bearer <token-or-password>`
+- विश्वसनीय पहचान-युक्त HTTP प्रमाणीकरण (`gateway.auth.mode="trusted-proxy"`): कॉन्फ़िगर किए गए पहचान-जागरूक प्रॉक्सी के माध्यम से रूट करें और उसे आवश्यक पहचान हेडर इंजेक्ट करने दें
+- निजी-इनग्रेस खुला प्रमाणीकरण (`gateway.auth.mode="none"`): किसी प्रमाणीकरण हेडर की आवश्यकता नहीं
 
-नोट्स:
+टिप्पणियाँ:
 
-- जब `gateway.auth.mode="token"` हो, तो `gateway.auth.token` (या `OPENCLAW_GATEWAY_TOKEN`) का उपयोग करें।
-- जब `gateway.auth.mode="password"` हो, तो `gateway.auth.password` (या `OPENCLAW_GATEWAY_PASSWORD`) का उपयोग करें।
-- जब `gateway.auth.mode="trusted-proxy"` हो, तो HTTP request को configured
-  trusted proxy source से आना चाहिए; same-host loopback proxies के लिए explicit
-  `gateway.auth.trustedProxy.allowLoopback = true` आवश्यक है।
-- Internal same-host callers जो proxy को bypass करते हैं, वे local direct
-  fallback के रूप में `gateway.auth.password` / `OPENCLAW_GATEWAY_PASSWORD` का
-  उपयोग कर सकते हैं। कोई भी `Forwarded`, `X-Forwarded-*`, या `X-Real-IP` header evidence
-  request को इसके बजाय trusted-proxy path पर रखता है।
-- यदि `gateway.auth.rateLimit` configured है और बहुत अधिक auth failures होते हैं, तो endpoint `Retry-After` के साथ `429` लौटाता है।
+- `mode="token"`, `gateway.auth.token` (या `OPENCLAW_GATEWAY_TOKEN`) का उपयोग करता है।
+- `mode="password"`, `gateway.auth.password` (या `OPENCLAW_GATEWAY_PASSWORD`) का उपयोग करता है।
+- `mode="trusted-proxy"` के लिए आवश्यक है कि HTTP अनुरोध किसी कॉन्फ़िगर किए गए विश्वसनीय प्रॉक्सी स्रोत से आए; समान-होस्ट लूपबैक प्रॉक्सी के लिए स्पष्ट `gateway.auth.trustedProxy.allowLoopback = true` आवश्यक है।
+- प्रॉक्सी को बायपास करने वाले आंतरिक समान-होस्ट कॉलर स्थानीय प्रत्यक्ष फ़ॉलबैक के रूप में `gateway.auth.password` / `OPENCLAW_GATEWAY_PASSWORD` का उपयोग कर सकते हैं। इसके बजाय किसी भी `Forwarded`, `X-Forwarded-*`, या `X-Real-IP` हेडर का प्रमाण अनुरोध को विश्वसनीय-प्रॉक्सी पथ पर बनाए रखता है।
+- यदि `gateway.auth.rateLimit` कॉन्फ़िगर किया गया है और प्रमाणीकरण की बहुत अधिक विफलताएँ होती हैं, तो एंडपॉइंट `Retry-After` के साथ `429` लौटाता है।
 
 ## सुरक्षा सीमा (महत्वपूर्ण)
 
-इस endpoint को gateway instance के लिए **पूर्ण operator-access** surface मानें।
+इस एंडपॉइंट को Gateway इंस्टेंस के लिए **पूर्ण ऑपरेटर-पहुँच** सतह मानें।
 
-- यहां HTTP bearer auth कोई संकीर्ण per-user scope model नहीं है।
-- इस endpoint के लिए valid Gateway token/password को owner/operator credential जैसा माना जाना चाहिए।
-- shared-secret auth modes (`token` और `password`) के लिए, endpoint normal full operator defaults restore करता है, भले ही caller एक संकरा `x-openclaw-scopes` header भेजे।
-- Shared-secret auth इस endpoint पर direct tool invokes को owner-sender turns भी मानता है।
-- Trusted identity-bearing HTTP modes (उदाहरण के लिए trusted proxy auth या private ingress पर `gateway.auth.mode="none"`) मौजूद होने पर `x-openclaw-scopes` का सम्मान करते हैं और अन्यथा normal operator default scope set पर fall back करते हैं।
-- इस endpoint को केवल loopback/tailnet/private ingress पर रखें; इसे सीधे public internet पर expose न करें।
+- यहाँ HTTP bearer प्रमाणीकरण कोई संकीर्ण प्रति-उपयोगकर्ता स्कोप मॉडल नहीं है।
+- इस एंडपॉइंट के लिए मान्य Gateway टोकन/पासवर्ड को स्वामी/ऑपरेटर क्रेडेंशियल की तरह माना जाना चाहिए।
+- साझा-गुप्त प्रमाणीकरण मोड (`token` और `password`) के लिए, एंडपॉइंट सामान्य पूर्ण ऑपरेटर डिफ़ॉल्ट पुनर्स्थापित करता है, भले ही कॉलर कोई अधिक संकीर्ण `x-openclaw-scopes` हेडर भेजे।
+- साझा-गुप्त प्रमाणीकरण इस एंडपॉइंट पर प्रत्यक्ष टूल आह्वानों को स्वामी-प्रेषक टर्न भी मानता है।
+- विश्वसनीय पहचान-युक्त HTTP मोड (विश्वसनीय प्रॉक्सी प्रमाणीकरण, या निजी इनग्रेस पर `gateway.auth.mode="none"`) उपलब्ध होने पर `x-openclaw-scopes` का पालन करते हैं और अन्यथा सामान्य ऑपरेटर डिफ़ॉल्ट स्कोप सेट पर फ़ॉलबैक करते हैं।
+- इस एंडपॉइंट को केवल लूपबैक/टेलनेट/निजी इनग्रेस पर रखें; इसे सीधे सार्वजनिक इंटरनेट पर उजागर न करें।
 
-Auth matrix:
+प्रमाणीकरण मैट्रिक्स:
 
-- `gateway.auth.mode="token"` या `"password"` + `Authorization: Bearer ...`
-  - shared gateway operator secret के possession को prove करता है
-  - संकरे `x-openclaw-scopes` को ignore करता है
-  - full default operator scope set restore करता है:
-    `operator.admin`, `operator.approvals`, `operator.pairing`,
-    `operator.read`, `operator.talk.secrets`, `operator.write`
-  - इस endpoint पर direct tool invokes को owner-sender turns मानता है
-- trusted identity-bearing HTTP modes (उदाहरण के लिए trusted proxy auth, या private ingress पर `gateway.auth.mode="none"`)
-  - किसी outer trusted identity या deployment boundary को authenticate करते हैं
-  - header मौजूद होने पर `x-openclaw-scopes` का सम्मान करते हैं
-  - header अनुपस्थित होने पर normal operator default scope set पर fall back करते हैं
-  - owner semantics केवल तब खोते हैं जब caller स्पष्ट रूप से scopes को narrow करता है और `operator.admin` को omit करता है
+| प्रमाणीकरण मोड                                                                               | व्यवहार                                                                                                                                                                                                                                                                                                               |
+| --------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `token` या `password` + `Authorization: Bearer ...`                                     | साझा Gateway ऑपरेटर गुप्त के कब्ज़े को प्रमाणित करता है। अधिक संकीर्ण `x-openclaw-scopes` की उपेक्षा करता है। पूर्ण डिफ़ॉल्ट ऑपरेटर स्कोप सेट पुनर्स्थापित करता है: `operator.admin`, `operator.approvals`, `operator.pairing`, `operator.read`, `operator.talk.secrets`, `operator.write`। प्रत्यक्ष टूल आह्वानों को स्वामी-प्रेषक टर्न मानता है। |
+| विश्वसनीय पहचान-युक्त HTTP (विश्वसनीय प्रॉक्सी प्रमाणीकरण, या निजी इनग्रेस पर `mode="none"`) | किसी बाहरी विश्वसनीय पहचान या परिनियोजन सीमा को प्रमाणित करता है। उपलब्ध होने पर `x-openclaw-scopes` का पालन करता है। हेडर अनुपस्थित होने पर सामान्य ऑपरेटर डिफ़ॉल्ट स्कोप सेट पर फ़ॉलबैक करता है। स्वामी अर्थवत्ता केवल तभी खोता है जब कॉलर स्पष्ट रूप से स्कोप संकीर्ण करता है और `operator.admin` को छोड़ देता है।                               |
 
-## Request body
+## अनुरोध बॉडी
 
 ```json
 {
@@ -86,79 +69,91 @@ Auth matrix:
 }
 ```
 
-Fields:
+फ़ील्ड:
 
-- `tool` (string, आवश्यक): invoke करने के लिए टूल नाम।
-- `action` (string, वैकल्पिक): यदि tool schema `action` को support करता है और args payload ने इसे omit किया है, तो args में mapped किया जाता है।
-- `args` (object, वैकल्पिक): tool-specific arguments।
-- `sessionKey` (string, वैकल्पिक): target session key। यदि omit किया गया है या `"main"` है, तो Gateway configured main session key का उपयोग करता है (`session.mainKey` और default agent का सम्मान करता है, या global scope में `global`)।
-- `dryRun` (boolean, वैकल्पिक): future use के लिए reserved; अभी ignored है।
+- `tool` / `name` (स्ट्रिंग, आवश्यक): आह्वान किए जाने वाले टूल का नाम। दोनों भेजे जाने पर `name` को प्राथमिकता मिलती है।
+- `action` (स्ट्रिंग, वैकल्पिक): यदि टूल स्कीमा किसी `action` प्रॉपर्टी का समर्थन करता है और `args` ने पहले से कोई मान सेट नहीं किया है, तो इसे `args.action` में मर्ज किया जाता है।
+- `args` (ऑब्जेक्ट, वैकल्पिक): टूल-विशिष्ट आर्ग्युमेंट।
+- `sessionKey` (स्ट्रिंग, वैकल्पिक): लक्ष्य सेशन कुंजी। छोड़े जाने पर या `"main"` होने पर, Gateway कॉन्फ़िगर की गई मुख्य सेशन कुंजी का उपयोग करता है (`session.mainKey` और डिफ़ॉल्ट एजेंट का पालन करता है, या वैश्विक सेशन स्कोप में `global`)।
+- `agentId` (स्ट्रिंग, वैकल्पिक): उस एजेंट के लिए सेशन कुंजी का समाधान करता है। यदि यह किसी स्पष्ट `sessionKey` से टकराता है जो पहले से किसी अलग एजेंट से मैप है, तो `400` त्रुटि देता है।
+- `idempotencyKey` (स्ट्रिंग, वैकल्पिक): आह्वान के लिए स्थिर टूल-कॉल आईडी प्राप्त करने हेतु उपयोग किया जाता है।
+- `dryRun` (बूलियन, वैकल्पिक): भविष्य में उपयोग के लिए आरक्षित; वर्तमान में उपेक्षित।
 
-## Policy + routing behavior
+## नीति + रूटिंग व्यवहार
 
-Tool availability को Gateway agents द्वारा उपयोग की जाने वाली same policy chain से filter किया जाता है:
+टूल की उपलब्धता को Gateway एजेंट द्वारा उपयोग की जाने वाली समान नीति शृंखला के माध्यम से फ़िल्टर किया जाता है:
 
 - `tools.profile` / `tools.byProvider.profile`
 - `tools.allow` / `tools.byProvider.allow`
 - `agents.<id>.tools.allow` / `agents.<id>.tools.byProvider.allow`
-- group policies (यदि session key किसी group या channel पर map होती है)
-- subagent policy (subagent session key के साथ invoke करते समय)
+- समूह नीतियाँ (यदि सेशन कुंजी किसी समूह या चैनल से मैप होती है)
+- उप-एजेंट नीति (उप-एजेंट सेशन कुंजी से आह्वान करते समय)
 
-यदि कोई टूल policy द्वारा allowed नहीं है, तो endpoint **404** लौटाता है।
+यदि नीति किसी टूल की अनुमति नहीं देती, तो एंडपॉइंट **404** लौटाता है।
 
-महत्वपूर्ण boundary notes:
+महत्वपूर्ण सीमा टिप्पणियाँ:
 
-- Exec approvals operator guardrails हैं, इस HTTP endpoint के लिए कोई separate authorization boundary नहीं। यदि कोई टूल यहां Gateway auth + tool policy के माध्यम से reachable है, तो `/tools/invoke` कोई extra per-call approval prompt नहीं जोड़ता।
-- यदि `exec` यहां reachable है, तो इसे mutating shell surface मानें। `write`, `edit`, `apply_patch`, या HTTP filesystem-write tools को deny करना shell execution को read-only नहीं बनाता।
-- Gateway bearer credentials को untrusted callers के साथ share न करें। यदि आपको trust boundaries के बीच separation चाहिए, तो separate gateways चलाएं (और ideally separate OS users/hosts)।
+- Exec अनुमोदन ऑपरेटर सुरक्षा-उपाय हैं, इस HTTP एंडपॉइंट के लिए अलग प्राधिकरण सीमा नहीं। यदि कोई टूल यहाँ Gateway प्रमाणीकरण + टूल नीति के माध्यम से पहुँच योग्य है, तो `/tools/invoke` अतिरिक्त प्रति-कॉल अनुमोदन प्रॉम्प्ट नहीं जोड़ता।
+- यदि `exec` यहाँ पहुँच योग्य है, तो इसे परिवर्तनकारी शेल सतह मानें। `write`, `edit`, `apply_patch`, या HTTP फ़ाइल-सिस्टम लेखन टूल को अस्वीकार करने से शेल निष्पादन केवल-पठन नहीं बनता।
+- अविश्वसनीय कॉलर के साथ Gateway bearer क्रेडेंशियल साझा न करें। यदि आपको विश्वास सीमाओं के बीच पृथक्करण चाहिए, तो अलग-अलग Gateway चलाएँ (आदर्श रूप से अलग OS उपयोगकर्ताओं/होस्ट पर)।
 
-Gateway HTTP default रूप से hard deny list भी apply करता है (भले ही session policy टूल allow करती हो):
+Gateway HTTP डिफ़ॉल्ट रूप से एक कठोर अस्वीकरण सूची भी लागू करता है (भले ही सेशन नीति टूल की अनुमति देती हो):
 
-- `exec` - direct command execution (RCE surface)
-- `spawn` - arbitrary child process creation (RCE surface)
-- `shell` - shell command execution (RCE surface)
-- `fs_write` - host पर arbitrary file mutation
-- `fs_delete` - host पर arbitrary file deletion
-- `fs_move` - host पर arbitrary file move/rename
-- `apply_patch` - patch application arbitrary files rewrite कर सकता है
-- `sessions_spawn` - session orchestration; agents को remotely spawn करना RCE है
-- `sessions_send` - cross-session message injection
-- `cron` - persistent automation control plane
-- `gateway` - gateway control plane; HTTP के माध्यम से reconfiguration रोकता है
-- `nodes` - node command relay paired hosts पर system.run तक पहुंच सकता है
-- `whatsapp_login` - terminal QR scan की आवश्यकता वाला interactive setup; HTTP पर hangs
+| टूल             | कारण                                                    |
+| ---------------- | --------------------------------------------------------- |
+| `exec`           | प्रत्यक्ष कमांड निष्पादन (RCE सतह)                    |
+| `spawn`          | मनमाना चाइल्ड प्रोसेस निर्माण (RCE सतह)            |
+| `shell`          | शेल कमांड निष्पादन (RCE सतह)                     |
+| `fs_write`       | होस्ट पर मनमाना फ़ाइल परिवर्तन                       |
+| `fs_delete`      | होस्ट पर मनमाना फ़ाइल विलोपन                       |
+| `fs_move`        | होस्ट पर मनमाना फ़ाइल स्थानांतरण/नाम-परिवर्तन                    |
+| `apply_patch`    | पैच लागू करने से मनमानी फ़ाइलें पुनर्लिखित हो सकती हैं             |
+| `sessions_spawn` | सेशन ऑर्केस्ट्रेशन; दूरस्थ रूप से एजेंट उत्पन्न करना RCE है    |
+| `sessions_send`  | क्रॉस-सेशन संदेश इंजेक्शन                           |
+| `cron`           | स्थायी स्वचालन नियंत्रण तल                       |
+| `gateway`        | Gateway नियंत्रण तल; HTTP के माध्यम से पुनः-कॉन्फ़िगरेशन रोकता है  |
+| `nodes`          | Node कमांड रिले युग्मित होस्ट पर `system.run` तक पहुँच सकता है |
 
-आप `gateway.tools` के माध्यम से इस deny list को customize कर सकते हैं:
+`cron`, `gateway`, और `nodes` भी केवल-स्वामी हैं: इस डिफ़ॉल्ट अस्वीकरण सूची से बाहर होने पर भी, गैर-स्वामी कॉलर इस सतह पर उनका आह्वान नहीं कर सकते।
+
+`gateway.tools` के माध्यम से सामान्य अस्वीकरण सूची अनुकूलित करें:
 
 ```json5
 {
   gateway: {
     tools: {
-      // Additional tools to block over HTTP /tools/invoke
+      // HTTP /tools/invoke पर ब्लॉक करने के लिए अतिरिक्त टूल
       deny: ["browser"],
-      // Remove tools from the default deny list for owner/admin callers
+      // स्वामी/एडमिन कॉलर के लिए डिफ़ॉल्ट अस्वीकरण सूची से टूल हटाएँ
       allow: ["gateway"],
     },
   },
 }
 ```
 
-`gateway.tools.allow` exposure override है, scope upgrade नहीं। Identity-bearing HTTP modes में, `cron`, `gateway`, और `nodes` उन callers के लिए unavailable रहते हैं जिनके पास owner/admin identity (`operator.admin`) नहीं है, भले ही वे `gateway.tools.allow` में listed हों। Shared-secret bearer auth अभी भी ऊपर दिए गए full trusted-operator rule का पालन करता है।
+`gateway.tools.allow` एक एक्सपोज़र ओवरराइड है, स्कोप उन्नयन नहीं। पहचान-युक्त HTTP मोड में, `cron`, `gateway`, और `nodes` स्वामी/एडमिन पहचान (`operator.admin`) के बिना कॉलर के लिए अनुपलब्ध रहते हैं, भले ही वे `gateway.tools.allow` में सूचीबद्ध हों। साझा-गुप्त bearer प्रमाणीकरण फिर भी ऊपर दिए गए पूर्ण विश्वसनीय-ऑपरेटर नियम का पालन करता है।
 
-Group policies को context resolve करने में मदद करने के लिए, आप optionally set कर सकते हैं:
+समूह नीतियों को संदर्भ का समाधान करने में सहायता के लिए, आप वैकल्पिक रूप से ये सेट कर सकते हैं:
 
 - `x-openclaw-message-channel: <channel>` (उदाहरण: `slack`, `telegram`)
-- `x-openclaw-account-id: <accountId>` (जब multiple accounts मौजूद हों)
+- `x-openclaw-account-id: <accountId>` (जब एकाधिक खाते मौजूद हों)
+- `x-openclaw-message-to: <target>` (संदेश-टूल नीति के लिए डिलीवरी लक्ष्य)
+- `x-openclaw-thread-id: <threadId>` (संदेश-टूल नीति के लिए थ्रेड संदर्भ)
 
-## Responses
+## प्रतिक्रियाएँ
 
-- `200` → `{ ok: true, result }`
-- `400` → `{ ok: false, error: { type, message } }` (invalid request या tool input error)
-- `401` → unauthorized
-- `429` → auth rate-limited (`Retry-After` set)
-- `404` → tool available नहीं है (not found या allowlisted नहीं)
-- `405` → method allowed नहीं है
-- `500` → `{ ok: false, error: { type, message } }` (unexpected tool execution error; sanitized message)
+| स्थिति | अर्थ                                                                                        |
+| ------ | ---------------------------------------------------------------------------------------------- |
+| `200`  | `{ ok: true, result }`                                                                         |
+| `400`  | `{ ok: false, error: { type, message } }` (अमान्य अनुरोध या टूल इनपुट त्रुटि)                |
+| `401`  | अनधिकृत                                                                                   |
+| `403`  | `{ ok: false, error: { type, message, requiresApproval? } }` (नीति द्वारा टूल कॉल ब्लॉक किया गया)     |
+| `404`  | टूल उपलब्ध नहीं (नहीं मिला या अनुमति-सूची में नहीं)                                              |
+| `405`  | विधि की अनुमति नहीं                                                                             |
+| `408`  | अनुरोध बॉडी पढ़ने का समय समाप्त                                                                    |
+| `413`  | अनुरोध बॉडी अधिकतम पेलोड आकार से अधिक हो गई                                                     |
+| `429`  | प्रमाणीकरण दर-सीमित (`Retry-After` सेट)                                                          |
+| `500`  | `{ ok: false, error: { type, message } }` (अप्रत्याशित टूल निष्पादन त्रुटि; स्वच्छ किया गया संदेश) |
 
 ## उदाहरण
 
@@ -175,5 +170,5 @@ curl -sS http://127.0.0.1:18789/tools/invoke \
 
 ## संबंधित
 
-- [Gateway protocol](/hi/gateway/protocol)
-- [Tools and plugins](/hi/tools)
+- [Gateway प्रोटोकॉल](/hi/gateway/protocol)
+- [टूल और plugins](/hi/tools)

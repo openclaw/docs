@@ -1,90 +1,86 @@
 ---
 read_when:
-    - Praca nad kodem lub testami środowiska uruchomieniowego agenta OpenClaw
-    - Uruchamianie przepływów lintowania, sprawdzania typów i testów live dla środowiska wykonawczego agenta
-summary: 'Przepływ pracy dewelopera dla środowiska uruchomieniowego agentów OpenClaw: budowanie, testowanie i walidacja na żywo'
-title: Przepływ pracy środowiska wykonawczego agenta OpenClaw
+    - Praca nad kodem środowiska wykonawczego agenta OpenClaw lub testami
+    - Uruchamianie lintowania, sprawdzania typów i testów na żywo środowiska wykonawczego agenta
+summary: 'Proces pracy deweloperskiej dla środowiska uruchomieniowego agenta OpenClaw: kompilowanie, testowanie i walidacja na żywo'
+title: Przepływ pracy środowiska uruchomieniowego agenta OpenClaw
 x-i18n:
-    generated_at: "2026-06-27T17:45:39Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T18:36:13Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: fbe2a192ff7954577f8cbeae33676cbfd330f297d31c1917d2ab52898c2c5064
+    source_hash: 044f05779bef4ad18478081ba44d84356723c8a0be764440aa9d2b976d167324
     source_path: openclaw-agent-runtime.md
     workflow: 16
 ---
 
-Rozsądny przepływ pracy podczas pracy nad środowiskiem uruchomieniowym agentów OpenClaw w OpenClaw.
+Przepływ pracy deweloperskiej dla środowiska uruchomieniowego agenta (`src/agents/`) w repozytorium OpenClaw.
 
-## Sprawdzanie typów i linting
+## Sprawdzanie typów i lintowanie
 
-- Domyślna lokalna bramka: `pnpm check`
-- Bramka kompilacji: `pnpm build`, gdy zmiana może wpływać na wynik kompilacji, pakowanie lub granice lazy-loading/modułów
-- Pełna bramka przed scaleniem dla zmian w środowisku uruchomieniowym agentów: `pnpm check && pnpm test`
+- Domyślna lokalna bramka: `pnpm check` (sprawdzanie typów, lintowanie, zabezpieczenia zasad)
+- Bramka kompilacji: `pnpm build`, gdy zmiana może wpłynąć na wynik kompilacji, pakowanie albo granice leniwego ładowania/modułów
+- Pełna bramka przed wysłaniem zmian: `pnpm build && pnpm check && pnpm check:test-types && pnpm test`
 
-## Uruchamianie testów środowiska uruchomieniowego agentów
+## Uruchamianie testów środowiska uruchomieniowego agenta
 
-Uruchom zestaw testów środowiska uruchomieniowego agentów bezpośrednio za pomocą Vitest:
+Uruchom zestawy testów jednostkowych środowiska uruchomieniowego agenta:
 
 ```bash
 pnpm test \
   "src/agents/agent-*.test.ts" \
   "src/agents/embedded-agent-*.test.ts" \
-  "src/agents/agent-tools*.test.ts" \
-  "src/agents/agent-settings.test.ts" \
-  "src/agents/agent-tool-definition-adapter*.test.ts" \
   "src/agents/agent-hooks/**/*.test.ts"
 ```
 
-Aby uwzględnić ćwiczenie z aktywnym dostawcą:
+Pierwszy wzorzec glob obejmuje również zestawy `agent-tools*`, `agent-settings` i
+`agent-tool-definition-adapter*`.
+
+Testy na żywo są wykluczone z konfiguracji testów jednostkowych; uruchamiaj je za pomocą
+wrappera testów na żywo (ustawia `OPENCLAW_LIVE_TEST=1` i wymaga danych uwierzytelniających dostawcy):
 
 ```bash
-OPENCLAW_LIVE_TEST=1 pnpm test src/agents/embedded-agent-runner-extraparams.live.test.ts
+pnpm test:live src/agents/embedded-agent-runner-extraparams.live.test.ts
 ```
-
-Obejmuje to główne zestawy testów jednostkowych środowiska uruchomieniowego agentów:
-
-- `src/agents/agent-*.test.ts`
-- `src/agents/embedded-agent-*.test.ts`
-- `src/agents/agent-tools*.test.ts`
-- `src/agents/agent-settings.test.ts`
-- `src/agents/agent-tool-definition-adapter.test.ts`
-- `src/agents/agent-hooks/*.test.ts`
 
 ## Testowanie ręczne
 
-Zalecany przepływ:
+- Uruchom Gateway w trybie deweloperskim (pomija połączenia z kanałami za pomocą `OPENCLAW_SKIP_CHANNELS=1`): `pnpm gateway:dev`
+- Wyzwól jedną turę agenta przez Gateway: `pnpm openclaw agent --message "Hello" --thinking low`
+- Użyj TUI do interaktywnego debugowania: `pnpm tui`
 
-- Uruchom gateway w trybie deweloperskim:
-  - `pnpm gateway:dev`
-- Wywołaj agenta bezpośrednio:
-  - `pnpm openclaw agent --message "Hello" --thinking low`
-- Użyj TUI do interaktywnego debugowania:
-  - `pnpm tui`
+Aby przetestować zachowanie wywołań narzędzi, poproś o działanie `read` lub `exec`, aby obserwować
+strumieniowanie narzędzi i obsługę ładunku.
 
-W przypadku zachowania wywołań narzędzi poproś o akcję `read` lub `exec`, aby zobaczyć strumieniowanie narzędzi i obsługę ładunku.
+## Reset do stanu początkowego
 
-## Reset do czystego stanu
+Stan znajduje się w katalogu stanu OpenClaw: domyślnie `~/.openclaw` lub
+`$OPENCLAW_STATE_DIR`, jeśli ustawiono. Ścieżki względem tego katalogu:
 
-Stan znajduje się w katalogu stanu OpenClaw. Domyślnie jest to `~/.openclaw`. Jeśli ustawiono `OPENCLAW_STATE_DIR`, użyj zamiast tego tego katalogu.
+| Ścieżka                                       | Zawartość                                                          |
+| --------------------------------------------- | ------------------------------------------------------------------ |
+| `openclaw.json`                            | Konfiguracja                                                       |
+| `state/openclaw.sqlite`                            | Współdzielona baza danych stanu środowiska uruchomieniowego        |
+| `agents/<agentId>/agent/openclaw-agent.sqlite`                            | Profile uwierzytelniania modelu dla poszczególnych agentów (klucze API + OAuth) oraz stan środowiska uruchomieniowego |
+| `credentials/`                            | Dane uwierzytelniające dostawców/kanałów poza magazynem profili uwierzytelniania |
+| `agents/<agentId>/sessions/`                            | Historia transkrypcji i źródła migracji starszych sesji            |
+| `sessions/`                            | Starszy magazyn sesji pojedynczego agenta (tylko stare instalacje) |
+| `workspace/`                            | Domyślny obszar roboczy agenta (dodatkowi agenci używają `workspace-<agentId>`) |
 
-Aby zresetować wszystko:
+Usuń te ścieżki, aby wykonać pełny reset. Resetowanie w węższym zakresie:
 
-- `openclaw.json` dla konfiguracji
-- `agents/<agentId>/agent/auth-profiles.json` dla profili uwierzytelniania modeli (klucze API + OAuth)
-- `credentials/` dla stanu dostawcy/kanału, który nadal znajduje się poza magazynem profili uwierzytelniania
-- `agents/<agentId>/sessions/` dla historii sesji agenta
-- `agents/<agentId>/sessions/sessions.json` dla indeksu sesji
-- `sessions/`, jeśli istnieją ścieżki legacy
-- `workspace/`, jeśli chcesz pusty obszar roboczy
+- Tylko sesje: nie usuwaj `agents/<agentId>/agent/openclaw-agent.sqlite`; wiersze sesji znajdują się tam wraz z innym stanem poszczególnych agentów. Użyj `/new` lub `/reset`, aby rozpocząć nową sesję dla jednego czatu, oraz `openclaw sessions cleanup` do konserwacji sesji.
+- Zachowaj uwierzytelnianie: pozostaw `agents/<agentId>/agent/openclaw-agent.sqlite` i `credentials/` bez zmian.
 
-Jeśli chcesz zresetować tylko sesje, usuń `agents/<agentId>/sessions/` dla tego agenta. Jeśli chcesz zachować uwierzytelnianie, pozostaw `agents/<agentId>/agent/auth-profiles.json` oraz wszelki stan dostawcy w `credentials/`.
+Starsze pliki `auth-profiles.json` nie są już odczytywane w czasie działania;
+`openclaw doctor --fix` importuje je do magazynu SQLite.
 
-## Odniesienia
+## Materiały referencyjne
 
 - [Testowanie](/pl/help/testing)
 - [Pierwsze kroki](/pl/start/getting-started)
 
 ## Powiązane
 
-- [Architektura środowiska uruchomieniowego agentów OpenClaw](/pl/agent-runtime-architecture)
+- [Architektura środowiska uruchomieniowego agenta OpenClaw](/pl/agent-runtime-architecture)

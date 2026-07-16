@@ -1,115 +1,80 @@
 ---
 read_when:
     - OpenResponses API का उपयोग करने वाले क्लाइंट्स का एकीकरण
-    - आपको आइटम-आधारित इनपुट, क्लाइंट टूल कॉल, या SSE इवेंट चाहिए
-summary: Gateway से OpenResponses-संगत /v1/responses HTTP एंडपॉइंट एक्सपोज़ करें
+    - आपको आइटम-आधारित इनपुट, क्लाइंट टूल कॉल या SSE इवेंट चाहिए
+summary: Gateway से OpenResponses-संगत /v1/responses HTTP एंडपॉइंट उपलब्ध कराएँ
 title: OpenResponses API
 x-i18n:
-    generated_at: "2026-06-28T23:10:56Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T14:54:13Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: fbc41a14f5c585a0fb0aae96fb3d2376f94cdb77f41bcd7cc5e7998a27673c44
+    source_hash: 37fcf5016d1455383181923ec31b26cf31533b990045df300f0356f135c95579
     source_path: gateway/openresponses-http-api.md
     workflow: 16
 ---
 
-OpenClaw का Gateway OpenResponses-संगत `POST /v1/responses` एंडपॉइंट सर्व कर सकता है.
+Gateway एक OpenResponses-संगत `POST /v1/responses` एंडपॉइंट प्रदान कर सकता है। यह **डिफ़ॉल्ट रूप से अक्षम** होता है और Gateway के साथ अपना पोर्ट साझा करता है (WS + HTTP मल्टीप्लेक्स): `http://<gateway-host>:<port>/v1/responses`।
 
-यह एंडपॉइंट **डिफ़ॉल्ट रूप से अक्षम** है. पहले इसे कॉन्फ़िग में सक्षम करें.
+अनुरोध सामान्य Gateway एजेंट रन के रूप में चलते हैं (`openclaw agent` के समान कोडपाथ), इसलिए रूटिंग, अनुमतियाँ और कॉन्फ़िगरेशन आपके Gateway के अनुरूप होते हैं।
 
-- `POST /v1/responses`
-- Gateway जैसा ही पोर्ट (WS + HTTP मल्टीप्लेक्स): `http://<gateway-host>:<port>/v1/responses`
+`gateway.http.endpoints.responses.enabled` से इसे सक्षम या अक्षम करें। सक्षम होने पर, यही संगतता सतह `GET /v1/models`, `GET /v1/models/{id}`, `POST /v1/embeddings`, और `POST /v1/chat/completions` भी प्रदान करती है।
 
-अंदरूनी तौर पर, अनुरोध सामान्य Gateway एजेंट रन के रूप में निष्पादित होते हैं (`openclaw agent` जैसा ही कोडपाथ), इसलिए रूटिंग/अनुमतियां/कॉन्फ़िग आपके Gateway से मेल खाते हैं.
+## प्रमाणीकरण, सुरक्षा और रूटिंग
 
-## प्रमाणीकरण, सुरक्षा, और रूटिंग
+परिचालन व्यवहार [OpenAI Chat Completions](/hi/gateway/openai-http-api) के अनुरूप है:
 
-ऑपरेशनल व्यवहार [OpenAI Chat Completions](/hi/gateway/openai-http-api) से मेल खाता है:
+- प्रमाणीकरण पथ `gateway.auth.mode` के अनुरूप है: साझा-सीक्रेट (`token`/`password`) `Authorization: Bearer <token-or-password>` का उपयोग करता है; trusted-proxy पहचान-जागरूक प्रॉक्सी हेडर का उपयोग करता है (समान-होस्ट लूपबैक प्रॉक्सी को `gateway.auth.trustedProxy.allowLoopback = true` की आवश्यकता होती है, और जब कोई `Forwarded`/`X-Forwarded-*`/`X-Real-IP` हेडर मौजूद न हो, तब `gateway.auth.password` / `OPENCLAW_GATEWAY_PASSWORD` के माध्यम से समान-होस्ट प्रत्यक्ष फ़ॉलबैक उपलब्ध होता है); निजी इनग्रेस पर `none` को किसी प्रमाणीकरण हेडर की आवश्यकता नहीं होती। [विश्वसनीय प्रॉक्सी प्रमाणीकरण](/hi/gateway/trusted-proxy-auth) देखें।
+- इस एंडपॉइंट को Gateway इंस्टेंस तक पूर्ण ऑपरेटर पहुँच मानें।
+- साझा-सीक्रेट प्रमाणीकरण मोड अधिक सीमित bearer-घोषित `x-openclaw-scopes` को अनदेखा करते हैं और पूर्ण डिफ़ॉल्ट ऑपरेटर स्कोप सेट पुनर्स्थापित करते हैं: `operator.admin`, `operator.approvals`, `operator.pairing`, `operator.read`, `operator.talk.secrets`, `operator.write`। इस एंडपॉइंट पर चैट टर्न को स्वामी-प्रेषक टर्न माना जाता है।
+- विश्वसनीय पहचान-धारक HTTP मोड (trusted-proxy, या `gateway.auth.mode="none"`) मौजूद होने पर `x-openclaw-scopes` का पालन करते हैं, अन्यथा डिफ़ॉल्ट ऑपरेटर स्कोप सेट पर फ़ॉलबैक करते हैं। स्वामी संबंधी सिमैंटिक्स केवल तब समाप्त होते हैं, जब कॉलर स्पष्ट रूप से स्कोप सीमित करता है और `operator.admin` को छोड़ देता है।
+- `model: "openclaw"`, `"openclaw/default"`, `"openclaw/<agentId>"`, या `x-openclaw-agent-id` हेडर से एजेंट चुनें।
+- चुने गए एजेंट के बैकएंड मॉडल को ओवरराइड करने के लिए `x-openclaw-model` का उपयोग करें (पहचान-धारक प्रमाणीकरण पथों पर `operator.admin` आवश्यक है)।
+- स्पष्ट सेशन रूटिंग के लिए `x-openclaw-session-key` का उपयोग करें (यदि यह किसी आरक्षित नेमस्पेस का उपयोग करता है, तो `400 invalid_request_error` के साथ अस्वीकार किया जाता है: `subagent:`, `cron:`, `acp:`)।
+- गैर-डिफ़ॉल्ट सिंथेटिक इनग्रेस चैनल संदर्भ के लिए `x-openclaw-message-channel` का उपयोग करें।
 
-- मिलते-जुलते Gateway HTTP प्रमाणीकरण पथ का उपयोग करें:
-  - साझा-गुप्त प्रमाणीकरण (`gateway.auth.mode="token"` या `"password"`): `Authorization: Bearer <token-or-password>`
-  - विश्वसनीय-प्रॉक्सी प्रमाणीकरण (`gateway.auth.mode="trusted-proxy"`): कॉन्फ़िगर किए गए विश्वसनीय प्रॉक्सी स्रोत से पहचान-जागरूक प्रॉक्सी हेडर; same-host लूपबैक प्रॉक्सी के लिए स्पष्ट `gateway.auth.trustedProxy.allowLoopback = true` चाहिए
-  - विश्वसनीय-प्रॉक्सी स्थानीय सीधा फ़ॉलबैक: बिना `Forwarded`, `X-Forwarded-*`, या `X-Real-IP` हेडर वाले same-host कॉलर `gateway.auth.password` / `OPENCLAW_GATEWAY_PASSWORD` का उपयोग कर सकते हैं
-  - निजी-इनग्रेस खुला प्रमाणीकरण (`gateway.auth.mode="none"`): कोई प्रमाणीकरण हेडर नहीं
-- एंडपॉइंट को Gateway इंस्टेंस के लिए पूर्ण ऑपरेटर एक्सेस मानें
-- साझा-गुप्त प्रमाणीकरण मोड (`token` और `password`) के लिए, संकरे bearer-घोषित `x-openclaw-scopes` मानों को अनदेखा करें और सामान्य पूर्ण ऑपरेटर डिफ़ॉल्ट वापस लाएं
-- विश्वसनीय पहचान-युक्त HTTP मोड के लिए (उदाहरण के लिए विश्वसनीय प्रॉक्सी प्रमाणीकरण या `gateway.auth.mode="none"`), मौजूद होने पर `x-openclaw-scopes` का सम्मान करें और अन्यथा सामान्य ऑपरेटर डिफ़ॉल्ट स्कोप सेट पर फ़ॉलबैक करें
-- एजेंट चुनें `model: "openclaw"`, `model: "openclaw/default"`, `model: "openclaw/<agentId>"`, या `x-openclaw-agent-id` से
-- जब आप चुने गए एजेंट के बैकएंड मॉडल को ओवरराइड करना चाहते हैं, तो `x-openclaw-model` का उपयोग करें
-- स्पष्ट सत्र रूटिंग के लिए `x-openclaw-session-key` का उपयोग करें
-- जब आप गैर-डिफ़ॉल्ट कृत्रिम इनग्रेस चैनल संदर्भ चाहते हैं, तो `x-openclaw-message-channel` का उपयोग करें
+एजेंट-लक्ष्य मॉडल, `openclaw/default`, एम्बेडिंग पास-थ्रू और बैकएंड मॉडल ओवरराइड की प्रामाणिक व्याख्या के लिए [OpenAI Chat Completions](/hi/gateway/openai-http-api#agent-first-model-contract) देखें।
 
-प्रमाणीकरण मैट्रिक्स:
+[ऑपरेटर स्कोप](/hi/gateway/operator-scopes) और [सुरक्षा](/hi/gateway/security) देखें।
 
-- `gateway.auth.mode="token"` या `"password"` + `Authorization: Bearer ...`
-  - साझा Gateway ऑपरेटर गुप्त के कब्जे को सिद्ध करता है
-  - संकरे `x-openclaw-scopes` को अनदेखा करता है
-  - पूर्ण डिफ़ॉल्ट ऑपरेटर स्कोप सेट वापस लाता है:
-    `operator.admin`, `operator.approvals`, `operator.pairing`,
-    `operator.read`, `operator.talk.secrets`, `operator.write`
-  - इस एंडपॉइंट पर चैट टर्न को स्वामी-प्रेषक टर्न मानता है
-- विश्वसनीय पहचान-युक्त HTTP मोड (उदाहरण के लिए विश्वसनीय प्रॉक्सी प्रमाणीकरण, या निजी इनग्रेस पर `gateway.auth.mode="none"`)
-  - हेडर मौजूद होने पर `x-openclaw-scopes` का सम्मान करते हैं
-  - हेडर अनुपस्थित होने पर सामान्य ऑपरेटर डिफ़ॉल्ट स्कोप सेट पर फ़ॉलबैक करते हैं
-  - स्वामी semantics केवल तब खोते हैं जब कॉलर स्पष्ट रूप से स्कोप संकरे करता है और `operator.admin` छोड़ देता है
+## सेशन व्यवहार
 
-इस एंडपॉइंट को `gateway.http.endpoints.responses.enabled` से सक्षम या अक्षम करें.
+डिफ़ॉल्ट रूप से एंडपॉइंट **प्रति अनुरोध स्टेटलेस** होता है (हर कॉल पर एक नई सेशन कुंजी जनरेट होती है)।
 
-उसी संगतता सतह में यह भी शामिल है:
+यदि अनुरोध में OpenResponses की `user` स्ट्रिंग शामिल है, तो Gateway उससे एक स्थिर सेशन कुंजी प्राप्त करता है, ताकि बार-बार की गई कॉल एक एजेंट सेशन साझा कर सकें।
 
-- `GET /v1/models`
-- `GET /v1/models/{id}`
-- `POST /v1/embeddings`
-- `POST /v1/chat/completions`
+जब अनुरोध समान एजेंट/उपयोगकर्ता/अनुरोधित-सेशन स्कोप में रहता है (प्रमाणीकरण सब्जेक्ट, एजेंट आईडी और `x-openclaw-session-key` के आधार पर मिलान), तो `previous_response_id` पहले के रिस्पॉन्स के सेशन का पुनः उपयोग करता है।
 
-एजेंट-लक्षित मॉडल, `openclaw/default`, embeddings पास-थ्रू, और बैकएंड मॉडल ओवरराइड कैसे साथ काम करते हैं, इसकी canonical व्याख्या के लिए [OpenAI Chat Completions](/hi/gateway/openai-http-api#agent-first-model-contract) और [मॉडल सूची और एजेंट रूटिंग](/hi/gateway/openai-http-api#model-list-and-agent-routing) देखें.
+## अनुरोध संरचना
 
-## सत्र व्यवहार
+| फ़ील्ड                                                            | समर्थन                                                                                                                        |
+| ---------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| `input`                                                          | स्ट्रिंग या आइटम ऑब्जेक्ट की सरणी।                                                                                               |
+| `instructions`                                                   | सिस्टम प्रॉम्प्ट में मर्ज किया जाता है।                                                                                                 |
+| `tools`                                                          | क्लाइंट टूल परिभाषाएँ (फ़ंक्शन टूल)।                                                                                      |
+| `tool_choice`                                                    | क्लाइंट टूल को फ़िल्टर करने या आवश्यक बनाने के लिए `"auto"`, `"none"`, `"required"`, या `{ "type": "function", "name": "..." }`।                |
+| `stream`                                                         | SSE स्ट्रीमिंग सक्षम करता है।                                                                                                         |
+| `max_output_tokens`                                              | सर्वोत्तम-प्रयास आउटपुट सीमा (प्रदाता पर निर्भर)।                                                                                 |
+| `temperature`                                                    | सर्वोत्तम-प्रयास सैंपलिंग तापमान। ChatGPT-आधारित Codex Responses बैकएंड इसे अनदेखा करता है, क्योंकि वह सर्वर-साइड की निश्चित सैंपलिंग का उपयोग करता है। |
+| `top_p`                                                          | सर्वोत्तम-प्रयास न्यूक्लियस सैंपलिंग। `temperature` के समान Codex Responses संबंधी चेतावनी।                                                    |
+| `user`                                                           | स्थिर सेशन रूटिंग।                                                                                                        |
+| `previous_response_id`                                           | सेशन निरंतरता (ऊपर देखें)।                                                                                                |
+| `max_tool_calls`, `reasoning`, `metadata`, `store`, `truncation` | स्वीकार किए जाते हैं, लेकिन वर्तमान में अनदेखे किए जाते हैं।                                                                                                |
 
-डिफ़ॉल्ट रूप से एंडपॉइंट **प्रति अनुरोध stateless** है (हर कॉल में नई सत्र कुंजी बनती है).
-
-यदि अनुरोध में OpenResponses `user` स्ट्रिंग शामिल है, तो Gateway उससे स्थिर सत्र कुंजी निकालता है, ताकि दोहराई गई कॉल एजेंट सत्र साझा कर सकें.
-
-## अनुरोध आकार (समर्थित)
-
-अनुरोध item-आधारित इनपुट के साथ OpenResponses API का पालन करता है. वर्तमान समर्थन:
-
-- `input`: स्ट्रिंग या item ऑब्जेक्ट की array.
-- `instructions`: सिस्टम prompt में merge किया जाता है.
-- `tools`: client tool परिभाषाएं (function tools).
-- `tool_choice`: client tools को फ़िल्टर या आवश्यक करने के लिए `"auto"`, `"none"`, `"required"`, या `{ "type": "function", "name": "..." }`.
-- `stream`: SSE streaming सक्षम करता है.
-- `max_output_tokens`: best-effort output सीमा (provider पर निर्भर).
-- `temperature`: provider को forward किया गया best-effort sampling temperature. ChatGPT-आधारित Codex Responses backend द्वारा अनदेखा किया जाता है, जो fixed server-side sampling का उपयोग करता है.
-- `top_p`: provider को forward किया गया best-effort nucleus sampling. `temperature` जैसी ही Codex Responses सावधानी लागू है.
-- `user`: स्थिर सत्र रूटिंग.
-
-स्वीकार किए जाते हैं लेकिन **वर्तमान में अनदेखे** हैं:
-
-- `max_tool_calls`
-- `reasoning`
-- `metadata`
-- `store`
-- `truncation`
-
-समर्थित:
-
-- `previous_response_id`: जब अनुरोध उसी एजेंट/user/अनुरोधित-सत्र scope में रहता है, OpenClaw पहले के response सत्र को फिर से उपयोग करता है.
-
-## Items (इनपुट)
+## आइटम (इनपुट)
 
 ### `message`
 
-भूमिकाएं: `system`, `developer`, `user`, `assistant`.
+भूमिकाएँ: `system`, `developer`, `user`, `assistant`।
 
-- `system` और `developer` सिस्टम prompt में जोड़े जाते हैं.
-- सबसे हाल का `user` या `function_call_output` item "वर्तमान संदेश" बनता है.
-- पहले के user/assistant संदेश संदर्भ के लिए history के रूप में शामिल किए जाते हैं.
+- `system` और `developer` सिस्टम प्रॉम्प्ट में जोड़े जाते हैं।
+- सबसे हाल का `user` या `function_call_output` आइटम "वर्तमान संदेश" बन जाता है।
+- संदर्भ के लिए पहले के उपयोगकर्ता/सहायक संदेश इतिहास के रूप में शामिल किए जाते हैं।
 
-### `function_call_output` (turn-आधारित tools)
+### `function_call_output` (टर्न-आधारित टूल)
 
-Tool परिणाम model को वापस भेजें:
+टूल के परिणाम मॉडल को वापस भेजें:
 
 ```json
 {
@@ -121,20 +86,19 @@ Tool परिणाम model को वापस भेजें:
 
 ### `reasoning` और `item_reference`
 
-Schema संगतता के लिए स्वीकार किए जाते हैं, लेकिन prompt बनाते समय अनदेखे किए जाते हैं.
+स्कीमा संगतता के लिए स्वीकार किए जाते हैं, लेकिन प्रॉम्प्ट बनाते समय अनदेखे किए जाते हैं।
 
-## Tools (client-side function tools)
+## टूल (क्लाइंट-साइड फ़ंक्शन टूल)
 
-Tools `tools: [{ type: "function", name, description?, parameters? }]` से दें.
+`tools: [{ type: "function", name, description?, parameters? }]` के साथ टूल प्रदान करें।
 
-यदि एजेंट किसी tool को call करने का निर्णय लेता है, तो response `function_call` output item लौटाता है.
-फिर आप turn जारी रखने के लिए `function_call_output` के साथ follow-up अनुरोध भेजते हैं.
+यदि एजेंट कोई टूल कॉल करता है, तो रिस्पॉन्स एक `function_call` आउटपुट आइटम लौटाता है। टर्न जारी रखने के लिए `function_call_output` के साथ अनुवर्ती अनुरोध भेजें।
 
-`tool_choice: "required"` और function-pinned `tool_choice` के लिए, endpoint exposed client function-tool set को संकरा करता है, runtime को response देने से पहले client tool call करने का निर्देश देता है, और यदि turn में matching structured client-tool call शामिल नहीं है तो उसे reject करता है. यह contract caller-supplied HTTP `tools` list पर लागू होता है, हर internal OpenClaw agent tool पर नहीं. Non-streaming अनुरोध `api_error` के साथ `502` लौटाते हैं; streaming अनुरोध `response.failed` event emit करते हैं. यह `/v1/chat/completions` contract से मेल खाता है.
+`tool_choice: "required"` और फ़ंक्शन-पिन किए गए `tool_choice` के लिए, एंडपॉइंट उजागर किए गए क्लाइंट फ़ंक्शन-टूल सेट को सीमित करता है, रनटाइम को उत्तर देने से पहले किसी क्लाइंट टूल को कॉल करने का निर्देश देता है, और यदि टर्न में मेल खाती संरचित क्लाइंट-टूल कॉल शामिल नहीं होती, तो उसे `/v1/chat/completions` अनुबंध के अनुरूप अस्वीकार कर देता है। गैर-स्ट्रीमिंग अनुरोध एक `api_error` के साथ `502` लौटाते हैं; स्ट्रीमिंग अनुरोध एक `response.failed` इवेंट उत्सर्जित करते हैं।
 
-## Images (`input_image`)
+## इमेज (`input_image`)
 
-base64 या URL sources समर्थित हैं:
+base64 या URL स्रोतों का समर्थन करता है:
 
 ```json
 {
@@ -143,12 +107,11 @@ base64 या URL sources समर्थित हैं:
 }
 ```
 
-अनुमत MIME types (वर्तमान): `image/jpeg`, `image/png`, `image/gif`, `image/webp`, `image/heic`, `image/heif`.
-अधिकतम आकार (वर्तमान): 10MB.
+अनुमत MIME प्रकार (डिफ़ॉल्ट): `image/jpeg`, `image/png`, `image/gif`, `image/webp`, `image/heic`, `image/heif`। अधिकतम आकार (डिफ़ॉल्ट): 10MB।
 
-## Files (`input_file`)
+## फ़ाइलें (`input_file`)
 
-base64 या URL sources समर्थित हैं:
+base64 या URL स्रोतों का समर्थन करता है:
 
 ```json
 {
@@ -162,42 +125,28 @@ base64 या URL sources समर्थित हैं:
 }
 ```
 
-अनुमत MIME types (वर्तमान): `text/plain`, `text/markdown`, `text/html`, `text/csv`,
-`application/json`, `application/pdf`.
-
-अधिकतम आकार (वर्तमान): 5MB.
+अनुमत MIME प्रकार (डिफ़ॉल्ट): `text/plain`, `text/markdown`, `text/html`, `text/csv`, `application/json`, `application/pdf`। अधिकतम आकार (डिफ़ॉल्ट): 5MB।
 
 वर्तमान व्यवहार:
 
-- File content decode किया जाता है और **system prompt** में जोड़ा जाता है, user message में नहीं,
-  इसलिए यह ephemeral रहता है (session history में persist नहीं होता).
-- Decoded file text को जोड़े जाने से पहले **untrusted external content** के रूप में wrap किया जाता है,
-  इसलिए file bytes को data माना जाता है, trusted instructions नहीं.
-- Injected block स्पष्ट boundary markers जैसे
-  `<<<EXTERNAL_UNTRUSTED_CONTENT id="...">>>` /
-  `<<<END_EXTERNAL_UNTRUSTED_CONTENT id="...">>>` का उपयोग करता है और
-  `Source: External` metadata line शामिल करता है.
-- यह file-input path prompt budget बचाने के लिए लंबे `SECURITY NOTICE:` banner को जानबूझकर छोड़ता है; boundary markers और metadata फिर भी मौजूद रहते हैं.
-- PDFs को पहले text के लिए parse किया जाता है. यदि कम text मिलता है, तो पहले pages images में rasterize किए जाते हैं और model को दिए जाते हैं, और injected file block
-  placeholder `[PDF content rendered to images]` का उपयोग करता है.
+- फ़ाइल की सामग्री को डीकोड करके उपयोगकर्ता संदेश के बजाय **सिस्टम प्रॉम्प्ट** में जोड़ा जाता है, इसलिए वह क्षणिक रहती है (सेशन इतिहास में सहेजी नहीं जाती)।
+- डीकोड किए गए फ़ाइल टेक्स्ट को जोड़ने से पहले **अविश्वसनीय बाहरी सामग्री** के रूप में रैप किया जाता है, इसलिए फ़ाइल बाइट्स को विश्वसनीय निर्देश नहीं, बल्कि डेटा माना जाता है। इंजेक्ट किया गया ब्लॉक स्पष्ट सीमा मार्कर (`<<<EXTERNAL_UNTRUSTED_CONTENT id="...">>>` / `<<<END_EXTERNAL_UNTRUSTED_CONTENT id="...">>>`) और एक `Source: External` मेटाडेटा पंक्ति का उपयोग करता है। प्रॉम्प्ट बजट बचाने के लिए इसमें जानबूझकर लंबा `SECURITY NOTICE:` बैनर शामिल नहीं किया जाता; सीमा मार्कर और मेटाडेटा फिर भी लागू होते हैं।
+- PDF से पहले टेक्स्ट पार्स किया जाता है। यदि बहुत कम टेक्स्ट मिलता है, तो शुरुआती पृष्ठों को रास्टराइज़ करके इमेज में बदला और मॉडल को भेजा जाता है, तथा इंजेक्ट किया गया फ़ाइल ब्लॉक `[PDF content rendered to images]` प्लेसहोल्डर का उपयोग करता है।
 
-PDF parsing bundled `document-extract` Plugin द्वारा दी जाती है, जो text extraction और page rendering के लिए `clawpdf` और उसके packaged PDFium WebAssembly runtime का उपयोग करता है.
+PDF पार्सिंग बंडल किए गए `document-extract` Plugin द्वारा प्रदान की जाती है, जो टेक्स्ट निष्कर्षण और पृष्ठ रेंडरिंग के लिए `clawpdf` तथा उसके पैकेज किए गए PDFium WebAssembly रनटाइम का उपयोग करता है।
 
-URL fetch defaults:
+URL फ़ेच डिफ़ॉल्ट:
 
 - `files.allowUrl`: `true`
 - `images.allowUrl`: `true`
-- `maxUrlParts`: `8` (प्रति अनुरोध कुल URL-based `input_file` + `input_image` parts)
-- अनुरोध सुरक्षित रखे जाते हैं (DNS resolution, private IP blocking, redirect caps, timeouts).
-- Optional hostname allowlists प्रति input type समर्थित हैं (`files.urlAllowlist`, `images.urlAllowlist`).
-  - Exact host: `"cdn.example.com"`
-  - Wildcard subdomains: `"*.assets.example.com"` (apex से match नहीं करता)
-  - खाली या छोड़ी गई allowlists का अर्थ है कोई hostname allowlist restriction नहीं.
-- URL-based fetches को पूरी तरह अक्षम करने के लिए, `files.allowUrl: false` और/या `images.allowUrl: false` set करें.
+- `maxUrlParts`: `8` (प्रति अनुरोध कुल URL-आधारित `input_file` + `input_image` भाग)
+- अनुरोधों को सुरक्षित किया जाता है (DNS रिज़ॉल्यूशन, निजी IP अवरोधन, रीडायरेक्ट सीमाएँ, टाइमआउट)।
+- प्रत्येक इनपुट प्रकार (`files.urlAllowlist`, `images.urlAllowlist`) के लिए वैकल्पिक होस्टनाम अनुमत-सूचियाँ समर्थित हैं: सटीक होस्ट (`"cdn.example.com"`) या वाइल्डकार्ड सबडोमेन (`"*.assets.example.com"`, शीर्ष डोमेन से मेल नहीं खाता)। खाली या अनुपस्थित अनुमत-सूचियों का अर्थ है कि कोई होस्टनाम अनुमत-सूची प्रतिबंध नहीं है।
+- URL-आधारित फ़ेच पूरी तरह अक्षम करने के लिए `files.allowUrl: false` और/या `images.allowUrl: false` सेट करें।
 
-## File + image limits (config)
+## फ़ाइल + इमेज सीमाएँ (कॉन्फ़िगरेशन)
 
-Defaults को `gateway.http.endpoints.responses` के अंतर्गत tune किया जा सकता है:
+डिफ़ॉल्ट को `gateway.http.endpoints.responses` के अंतर्गत समायोजित किया जा सकता है:
 
 ```json5
 {
@@ -220,7 +169,7 @@ Defaults को `gateway.http.endpoints.responses` के अंतर्गत 
               "application/pdf",
             ],
             maxBytes: 5242880,
-            maxChars: 200000,
+            maxChars: 60000,
             maxRedirects: 3,
             timeoutMs: 10000,
             pdf: {
@@ -251,73 +200,54 @@ Defaults को `gateway.http.endpoints.responses` के अंतर्गत 
 }
 ```
 
-छोड़े जाने पर defaults:
+अनुपस्थित होने पर डिफ़ॉल्ट:
 
-- `maxBodyBytes`: 20MB
-- `maxUrlParts`: 8
-- `files.maxBytes`: 5MB
-- `files.maxChars`: 200k
-- `files.maxRedirects`: 3
-- `files.timeoutMs`: 10s
-- `files.pdf.maxPages`: 4
-- `files.pdf.maxPixels`: 4,000,000
-- `files.pdf.minTextChars`: 200
-- `images.maxBytes`: 10MB
-- `images.maxRedirects`: 3
-- `images.timeoutMs`: 10s
-- HEIC/HEIF `input_image` sources तब स्वीकार किए जाते हैं जब system converter उपलब्ध हो और provider delivery से पहले JPEG में normalize किए जाते हैं. समर्थित converters macOS `sips`, ImageMagick, GraphicsMagick, या ffmpeg हैं.
+| कुंजी                      | डिफ़ॉल्ट   |
+| ------------------------ | --------- |
+| `maxBodyBytes`           | 20MB      |
+| `maxUrlParts`            | 8         |
+| `files.maxBytes`         | 5MB       |
+| `files.maxChars`         | 60k       |
+| `files.maxRedirects`     | 3         |
+| `files.timeoutMs`        | 10s       |
+| `files.pdf.maxPages`     | 4         |
+| `files.pdf.maxPixels`    | 4,000,000 |
+| `files.pdf.minTextChars` | 200       |
+| `images.maxBytes`        | 10MB      |
+| `images.maxRedirects`    | 3         |
+| `images.timeoutMs`       | 10s       |
 
-सुरक्षा नोट:
+HEIC/HEIF `input_image` स्रोतों को साझा OpenClaw इमेज प्रोसेसर (Rastermill) के माध्यम से प्रदाता को भेजने से पहले JPEG में सामान्यीकृत किया जाता है, जो बाहरी कोडेक समर्थन की आवश्यकता वाले प्रारूपों के लिए सिस्टम कन्वर्टर (`sips`, ImageMagick, GraphicsMagick, या ffmpeg) का फ़ॉलबैक के रूप में उपयोग करता है।
 
-- URL allowlists fetch से पहले और redirect hops पर enforce की जाती हैं.
-- किसी hostname को allowlist करना private/internal IP blocking को bypass नहीं करता.
-- internet-exposed gateways के लिए, app-level guards के अतिरिक्त network egress controls लागू करें.
-  [Security](/hi/gateway/security) देखें.
+सुरक्षा नोट: URL अनुमति-सूचियाँ फ़ेच से पहले और रीडायरेक्ट के प्रत्येक चरण पर लागू की जाती हैं। किसी होस्टनेम को अनुमति-सूची में जोड़ने से निजी/आंतरिक IP अवरोधन को बायपास नहीं किया जाता। इंटरनेट पर उपलब्ध Gateways के लिए, ऐप-स्तरीय सुरक्षा उपायों के अतिरिक्त नेटवर्क इग्रेस नियंत्रण लागू करें। [सुरक्षा](/hi/gateway/security) देखें।
 
-## Streaming (SSE)
+## स्ट्रीमिंग (SSE)
 
-Server-Sent Events (SSE) प्राप्त करने के लिए `stream: true` set करें:
+Server-Sent Events प्राप्त करने के लिए `stream: true` सेट करें:
 
 - `Content-Type: text/event-stream`
-- प्रत्येक event line `event: <type>` और `data: <json>` होती है
-- Stream `data: [DONE]` से समाप्त होती है
+- प्रत्येक इवेंट पंक्ति `event: <type>` और `data: <json>` होती है
+- स्ट्रीम `data: [DONE]` के साथ समाप्त होती है
 
-वर्तमान में emitted event types:
-
-- `response.created`
-- `response.in_progress`
-- `response.output_item.added`
-- `response.content_part.added`
-- `response.output_text.delta`
-- `response.output_text.done`
-- `response.content_part.done`
-- `response.output_item.done`
-- `response.completed`
-- `response.failed` (error पर)
+वर्तमान में उत्सर्जित इवेंट प्रकार: `response.created`, `response.in_progress`, `response.output_item.added`, `response.content_part.added`, `response.output_text.delta`, `response.output_text.done`, `response.content_part.done`, `response.output_item.done`, `response.completed`, `response.failed` (त्रुटि होने पर)।
 
 ## उपयोग
 
-जब underlying provider token counts report करता है, तब `usage` populate होता है.
-OpenClaw उन counters के downstream status/session surfaces तक पहुंचने से पहले common OpenAI-style aliases normalize करता है, जिनमें `input_tokens` / `output_tokens`
-और `prompt_tokens` / `completion_tokens` शामिल हैं.
+जब अंतर्निहित प्रदाता टोकन की संख्याएँ रिपोर्ट करता है, तब `usage` भरा जाता है। उन गणनाओं के डाउनस्ट्रीम स्थिति/सत्र सतहों तक पहुँचने से पहले OpenClaw सामान्य OpenAI-शैली के उपनामों को सामान्यीकृत करता है, जिनमें `input_tokens` / `output_tokens` और `prompt_tokens` / `completion_tokens` शामिल हैं।
 
-## Errors
+## त्रुटियाँ
 
-Errors ऐसा JSON object उपयोग करते हैं:
+त्रुटियाँ इस तरह के JSON ऑब्जेक्ट का उपयोग करती हैं:
 
 ```json
 { "error": { "message": "...", "type": "invalid_request_error" } }
 ```
 
-सामान्य मामले:
+सामान्य मामले: `400` अमान्य अनुरोध बॉडी, `401` अनुपलब्ध/अमान्य प्रमाणीकरण, `403` अनुपलब्ध ऑपरेटर स्कोप, `405` गलत विधि, `429` प्रमाणीकरण के बहुत अधिक विफल प्रयास (`Retry-After` के साथ)।
 
-- `401` missing/invalid auth
-- `400` invalid request body
-- `405` wrong method
+## उदाहरण
 
-## Examples
-
-Non-streaming:
+बिना स्ट्रीमिंग के:
 
 ```bash
 curl -sS http://127.0.0.1:18789/v1/responses \
@@ -330,7 +260,7 @@ curl -sS http://127.0.0.1:18789/v1/responses \
   }'
 ```
 
-Streaming:
+स्ट्रीमिंग:
 
 ```bash
 curl -N http://127.0.0.1:18789/v1/responses \
@@ -346,5 +276,6 @@ curl -N http://127.0.0.1:18789/v1/responses \
 
 ## संबंधित
 
-- [OpenAI चैट कम्प्लीशन्स](/hi/gateway/openai-http-api)
+- [OpenAI चैट पूर्णताएँ](/hi/gateway/openai-http-api)
+- [ऑपरेटर स्कोप](/hi/gateway/operator-scopes)
 - [OpenAI](/hi/providers/openai)

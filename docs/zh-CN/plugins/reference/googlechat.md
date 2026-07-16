@@ -1,31 +1,32 @@
 ---
 read_when:
-    - 你正在安装、配置或审核 googlechat 插件
-summary: 适用于聊天室和私信的 OpenClaw Google Chat 渠道插件。
+    - 你正在安装、配置或审计 Google Chat 插件
+summary: 用于聊天室和私信的 OpenClaw Google Chat 渠道插件。
 title: Google Chat 插件
 x-i18n:
-    generated_at: "2026-07-11T20:48:11Z"
+    generated_at: "2026-07-16T11:50:21Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 04febb1ead7d63e9ef79ecc52ce69f38a7c4eb404c90019717363f57477cd37d
+    source_hash: d800ec6b317e15fd14e3990d84a9ca2f29026607921629198f5032be2b0a3281
     source_path: plugins/reference/googlechat.md
     workflow: 16
 ---
 
 # Google Chat 插件
 
-用于空间和私信的 OpenClaw Google Chat 渠道插件。
+用于聊天室和私信的 OpenClaw Google Chat 渠道插件。
 
 ## 分发
 
 - 软件包：`@openclaw/googlechat`
 - 安装途径：npm；ClawHub
 
-## 功能入口
+## 接口
 
-渠道：googlechat
+渠道：`googlechat`
 
 ## 相关文档
 
-- [googlechat](/zh-CN/channels/googlechat)
+- [Google Chat](/zh-CN/channels/googlechat)

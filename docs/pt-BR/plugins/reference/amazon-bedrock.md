@@ -1,21 +1,22 @@
 ---
 read_when:
     - Você está instalando, configurando ou auditando o plugin amazon-bedrock
-summary: Plugin de provedor do Amazon Bedrock para o OpenClaw com descoberta de modelos, embeddings e suporte a proteções.
+summary: Plugin de provedor Amazon Bedrock para o OpenClaw com descoberta de modelos, embeddings e suporte a proteções.
 title: Plugin do Amazon Bedrock
 x-i18n:
-    generated_at: "2026-07-12T00:11:13Z"
+    generated_at: "2026-07-16T12:43:49Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: bf39e0d58332cd057e8f050dc1a8742c219b62182381a7f47856e3a657b80f03
+    source_hash: 9711834eab36af35cd59039dae095064677e1ec3ad71d8405d76caa1badb9d81
     source_path: plugins/reference/amazon-bedrock.md
     workflow: 16
 ---
 
 # Plugin do Amazon Bedrock
 
-Plugin de provedor Amazon Bedrock para o OpenClaw, com descoberta de modelos, embeddings e suporte a proteções.
+Plugin do provedor Amazon Bedrock para OpenClaw, com descoberta de modelos, embeddings e suporte a guardrails.
 
 ## Distribuição
 
@@ -24,8 +25,8 @@ Plugin de provedor Amazon Bedrock para o OpenClaw, com descoberta de modelos, em
 
 ## Superfície
 
-provedores: amazon-bedrock; contratos: memoryEmbeddingProviders
+provedores: `amazon-bedrock`; contratos: `memoryEmbeddingProviders`
 
 ## Documentação relacionada
 
-- [amazon-bedrock](/pt-BR/providers/bedrock)
+- [Amazon Bedrock](/pt-BR/providers/bedrock)

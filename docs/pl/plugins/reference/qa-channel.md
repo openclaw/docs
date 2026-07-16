@@ -1,21 +1,22 @@
 ---
 read_when:
-    - Instalujesz, konfigurujesz lub przeprowadzasz audyt pluginu qa-channel
+    - Instalowanie, konfigurowanie lub audytowanie pluginu qa-channel
 summary: Dodaje interfejs kanału QA do wysyłania i odbierania wiadomości OpenClaw.
-title: Plugin kanału QA
+title: Plugin kanału kontroli jakości
 x-i18n:
-    generated_at: "2026-07-12T15:27:01Z"
+    generated_at: "2026-07-16T18:58:52Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 3c6f0aec62fb014895d11fa46b75626d929c326eb2ded463188e4338f0fdae5d
+    source_hash: 09d9255a5f9783bd3153b7e790428ccbae9d9383cacda36b796494b5651fe91a
     source_path: plugins/reference/qa-channel.md
     workflow: 16
 ---
 
-# Plugin kanału QA
+# Plugin QA Channel
 
-Dodaje interfejs kanału QA do wysyłania i odbierania wiadomości OpenClaw.
+Dodaje interfejs QA Channel do wysyłania i odbierania wiadomości OpenClaw.
 
 ## Dystrybucja
 
@@ -24,7 +25,7 @@ Dodaje interfejs kanału QA do wysyłania i odbierania wiadomości OpenClaw.
 
 ## Interfejs
 
-kanały: qa-channel
+kanały: `qa-channel`
 
 ## Powiązana dokumentacja
 

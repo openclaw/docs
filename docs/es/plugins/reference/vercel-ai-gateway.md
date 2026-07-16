@@ -1,14 +1,15 @@
 ---
 read_when:
-    - Estás instalando, configurando o auditando el plugin vercel-ai-gateway
+    - Está instalando, configurando o auditando el plugin vercel-ai-gateway
 summary: Añade compatibilidad con el proveedor de modelos Vercel AI Gateway en OpenClaw.
 title: Plugin de Vercel AI Gateway
 x-i18n:
-    generated_at: "2026-07-11T23:22:38Z"
+    generated_at: "2026-07-16T11:50:35Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: d923028f0767ecf6e55c33ad09f769835d5b91fe5285700fc98b1463e9ab7323
+    source_hash: aca657b18734b1e82fb0a61442989945d45adad9a08eb4de83d8a08ac5b5edf7
     source_path: plugins/reference/vercel-ai-gateway.md
     workflow: 16
 ---
@@ -20,12 +21,12 @@ Añade compatibilidad con el proveedor de modelos Vercel AI Gateway a OpenClaw.
 ## Distribución
 
 - Paquete: `@openclaw/vercel-ai-gateway-provider`
-- Método de instalación: npm; ClawHub: `clawhub:@openclaw/vercel-ai-gateway-provider`
+- Vía de instalación: npm; ClawHub: `clawhub:@openclaw/vercel-ai-gateway-provider`
 
 ## Superficie
 
-proveedores: vercel-ai-gateway
+proveedores: `vercel-ai-gateway`
 
 ## Documentación relacionada
 
-- [vercel-ai-gateway](/es/providers/vercel-ai-gateway)
+- [Vercel AI Gateway](/es/providers/vercel-ai-gateway)

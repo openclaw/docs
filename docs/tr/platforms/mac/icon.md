@@ -1,42 +1,54 @@
 ---
 read_when:
     - Menü çubuğu simgesi davranışını değiştirme
-summary: macOS'te OpenClaw için menü çubuğu simge durumları ve animasyonları
+summary: macOS'te OpenClaw için menü çubuğu simgesi durumları ve animasyonları
 title: Menü çubuğu simgesi
 x-i18n:
-    generated_at: "2026-05-06T09:22:15Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T17:36:19Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 5497927721ff7486e9585a8a3edc2d5140408b2b0707acdcef2388e87bca20ec
+    source_hash: 8a38f1253f0c376ef2ce6c0ae339b67084c472c764964bcc7ad21e10133e2b47
     source_path: platforms/mac/icon.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
 # Menü Çubuğu Simgesi Durumları
 
-Yazar: steipete · Güncellendi: 2025-12-06 · Kapsam: macOS uygulaması (`apps/macos`)
+Kapsam: macOS uygulaması (`apps/macos`). İşleme: `CritterIconRenderer.makeIcon(...)`. Animasyon/durum bağlantıları: `CritterStatusLabel` + `CritterStatusLabel+Behavior.swift`.
 
-- **Boşta:** Normal simge animasyonu (göz kırpma, ara sıra hafif sallanma).
-- **Duraklatıldı:** Durum öğesi `appearsDisabled` kullanır; hareket yoktur.
-- **Ses tetikleyicisi (büyük kulaklar):** Sesle uyandırma algılayıcısı, uyandırma sözcüğü duyulduğunda `AppState.triggerVoiceEars(ttl: nil)` çağırır ve ifade yakalanırken `earBoostActive=true` değerini korur. Kulaklar büyür (1.9x), okunabilirlik için dairesel kulak delikleri alır, ardından 1 sn sessizlikten sonra `stopVoiceEars()` ile geri iner. Yalnızca uygulama içi ses işlem hattından tetiklenir.
-- **Çalışıyor (agent çalışıyor):** `AppState.isWorking=true`, "kuyruk/bacak koşturması" mikro hareketini çalıştırır: iş devam ederken daha hızlı bacak sallanması ve hafif kayma. Şu anda WebChat agent çalıştırmaları sırasında açılıp kapatılır; bunları bağladığınızda diğer uzun görevlerin etrafına da aynı açma/kapatmayı ekleyin.
+## Durumlar
 
-Bağlantı noktaları
+| Durum                 | Tetikleyici                               | Görsel                                                                                              |
+| --------------------- | ----------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| Boşta                 | Varsayılan                                | Normal göz kırpma/kıpırdama animasyonu; açık gözlerde parlak bir ışıltı korunur                     |
+| Duraklatıldı          | `isPaused=true`                        | Antenler açık gözlerle aşağı sarkar ("görev dışı"); hareket yoktur                                  |
+| Uyuyor                | Gateway bağlantısı kesilmiş/yapılandırılmamış | Antenler aşağı sarkar ve gözler kapanarak `⌣ ⌣` göz kapaklarına dönüşür; hareket yoktur |
+| Kutlama               | Mesaj gönderildi (`sendCelebrationTick`)     | Gözler ~0.9s boyunca mutlu `∩ ∩` yayları şeklinde parlar ve buna bir bacak tekmesi eşlik eder |
+| Sesle uyandırma (büyük kulaklar) | Uyandırma sözcüğü duyuldu        | Antenler dikleşip uzar (`earScale=1.9`); sessizlikten sonra eski hâline döner                   |
+| Çalışıyor             | `isWorking=true` veya etkin bir `IconState` | Daha hızlı bacak kıpırdaması (`legWiggle` değerinden `1.0` değerine kadar) ve küçük bir yatay kayma; boşta kıpırdamasına eklenir |
 
-- Sesle uyandırma: runtime/tester, yakalama penceresiyle eşleşmesi için tetikleme sırasında `AppState.triggerVoiceEars(ttl: nil)` ve 1 sn sessizlikten sonra `stopVoiceEars()` çağırır.
-- Agent etkinliği: iş aralıkları sırasında `AppStateStore.shared.setWorking(true/false)` ayarlayın (WebChat agent çağrısında zaten yapılıyor). Takılı kalan animasyonları önlemek için aralıkları kısa tutun ve `defer` bloklarında sıfırlayın.
+Bir oturumda etkin bir iş veya araç olduğunda, aynı yaratık simgesinin üzerinde bir araç etkinliği rozeti (SF Symbol diski; ör. exec için `chevron.left.slash.chevron.right`) görüntülenebilir. Bu rozet `IconState`/`ActivityKind` kaynağından gelir; tam durum modeli için [Menü çubuğu](/tr/platforms/mac/menu-bar) sayfasına bakın.
 
-Şekiller ve boyutlar
+## Sesle uyandırma kulakları
 
-- Temel simge `CritterIconRenderer.makeIcon(blink:legWiggle:earWiggle:earScale:earHoles:)` içinde çizilir.
-- Kulak ölçeği varsayılan olarak `1.0` olur; ses güçlendirmesi genel çerçeveyi değiştirmeden `earScale=1.9` ayarlar ve `earHoles=true` açar (36×36 px Retina arka depoya işlenen 18×18 pt şablon görüntü).
-- Koşturma, küçük bir yatay titremeyle birlikte bacak sallanmasını yaklaşık ~1.0 değerine kadar kullanır; mevcut boşta sallanmasına eklenir.
+- Tetikleyici: Sesle uyandırma yakalama işlem hattından (`VoiceWakeRuntime`) ve sesle uyandırma hata ayıklama/test araçlarından (`VoiceWakeTester`, `VoiceWakeOverlayController`) çağrılan `AppStateStore.shared.triggerVoiceEars(ttl: nil)`.
+- Durdurma: Yakalama tamamlandığında çağrılan `stopVoiceEars()`.
+- Tamamlamadan önceki sessizlik aralığı: normalde `2.0s`; yalnızca tetikleyici sözcük duyulduysa ve ardından başka bir konuşma gelmediyse `5.0s` (`VoiceWakeRuntime.silenceWindow` / `triggerOnlySilenceWindow`).
+- Güçlendirme etkinken boşta göz kırpma/kıpırdama/bacak/kulak zamanlayıcıları askıya alınır (`earBoostActive`, `CritterStatusLabel+Behavior` içindeki animasyon görevini denetler).
 
-Davranış notları
+## Şekiller ve boyutlar
 
-- Kulaklar/çalışma için harici CLI/broker açma kapaması yoktur; yanlışlıkla dalgalanmayı önlemek için bunu uygulamanın kendi sinyallerine dahili tutun.
-- TTL'leri kısa tutun (&lt;10 sn), böylece bir iş takılırsa simge hızla başlangıç durumuna döner.
+- Tuval: 18x18pt şablon görüntü, simgenin Retina ekranda keskin kalması için 36x36px bit eşlemli arka depoya (2x) işlenir.
+- Kulak ölçeğinin varsayılanı `1.0`; ses güçlendirmesi genel çerçeveyi değiştirmeden `earScale=1.9` değerini ayarlar.
+- `antennaDroop` (0-1), duraklatılmış ve uyuyan pozlar için antenleri aşağı katlar.
+- Bacak koşuşturması, küçük bir yatay titremeyle birlikte `legWiggle` değerinden `1.0` değerine kadar olan aralığı kullanır.
+
+## Davranış notları
+
+- Kulaklar veya çalışma durumu için harici CLI/aracı anahtarı yoktur; yanlışlıkla gidip gelmelerini önlemek amacıyla ikisi de uygulama sinyalleri (`AppState.setWorking`, `AppState.triggerVoiceEars`) tarafından dâhilî olarak yönetilir.
+- Bir iş takılı kalırsa simgenin hızla temel duruma dönebilmesi için yeni TTL değerlerini kısa (10s değerinin oldukça altında) tutun.
 
 ## İlgili
 

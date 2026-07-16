@@ -1,19 +1,20 @@
 ---
 read_when:
-    - Estás instalando, configurando o auditando el plugin inworld
+    - Está instalando, configurando o auditando el plugin inworld
 summary: Texto a voz en streaming de Inworld (MP3, OGG_OPUS, PCM para telefonía).
 title: Plugin de Inworld
 x-i18n:
-    generated_at: "2026-07-11T23:20:23Z"
+    generated_at: "2026-07-16T11:52:10Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 02d912c51460e181e100bc227575cafd1ab3c49494057d2df1e26571000020a8
+    source_hash: 3682eb0f40307e258cd34b0c1f7963f710e6e8852aad7f10efb8cedb023291f1
     source_path: plugins/reference/inworld.md
     workflow: 16
 ---
 
-# Plugin de Inworld
+# Plugin Inworld
 
 Conversión de texto a voz en streaming de Inworld (MP3, OGG_OPUS, PCM para telefonía).
 
@@ -24,8 +25,8 @@ Conversión de texto a voz en streaming de Inworld (MP3, OGG_OPUS, PCM para tele
 
 ## Superficie
 
-contratos: speechProviders
+contratos: `speechProviders`
 
 ## Documentación relacionada
 
-- [Inworld](/es/providers/inworld)
+- [inworld](/es/providers/inworld)

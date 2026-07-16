@@ -2,13 +2,14 @@
 read_when:
     - คุณกำลังติดตั้ง กำหนดค่า หรือตรวจสอบ Plugin microsoft
 summary: เพิ่มการรองรับผู้ให้บริการแปลงข้อความเป็นเสียงพูด
-title: Plugin ของ Microsoft
+title: Plugin Microsoft
 x-i18n:
-    generated_at: "2026-07-12T16:34:02Z"
+    generated_at: "2026-07-16T19:33:39Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: cd8cfbff1861d7e9d9dfee2c3ecba9dc3fcf21f5a9c2ea3d7866c2d9b456fd68
+    source_hash: 7657d1ada51f5df3d205bddde44a8fe5116a4d30d2f572e4c2f5c824d021a74c
     source_path: plugins/reference/microsoft.md
     workflow: 16
 ---
@@ -22,6 +23,6 @@ x-i18n:
 - แพ็กเกจ: `@openclaw/microsoft-speech`
 - ช่องทางการติดตั้ง: รวมอยู่ใน OpenClaw
 
-## ส่วนเชื่อมต่อ
+## พื้นผิว
 
-สัญญา: speechProviders
+สัญญา: `speechProviders`

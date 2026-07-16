@@ -1,229 +1,268 @@
 ---
 read_when:
-    - Je hebt gedetailleerd gedrag nodig voor openclaw onboard
+    - Je hebt gedetailleerd gedrag nodig voor een specifieke stap van `openclaw onboard`
     - Je debugt onboardingresultaten of integreert onboardingclients
 sidebarTitle: CLI reference
-summary: Volledige referentie voor de CLI-installatiestroom, auth/model-installatie, uitvoer en interne werking
-title: CLI-installatiereferentie
+summary: 'Stapsgewijs gedrag van openclaw onboard: wat elke stap doet, welke configuratie deze schrijft en de interne werking'
+title: Naslaginformatie voor CLI-configuratie
 x-i18n:
-    generated_at: "2026-07-04T06:41:03Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T16:36:23Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 016ea0c85cefd5cc70d0988e82f2cbb5898c0ae3134f68df645dddb58c2dfe9a
+    source_hash: 96c1469c6b64f08fd9105c8b737df164d39d27d051bbb9bb4f76b9e1e057785d
     source_path: start/wizard-cli-reference.md
     workflow: 16
 ---
 
-Deze pagina is de volledige referentie voor `openclaw onboard`.
-Zie voor de korte gids [Onboarding (CLI)](/nl/start/wizard).
+Deze pagina behandelt stapsgewijs het onboardinggedrag, de uitvoer en de interne werking.
+Zie [Onboarding (CLI)](/nl/start/wizard) voor een rondleiding. Zie voor de volledige referentie
+van CLI-vlaggen (elke `--flag`, niet-interactieve voorbeelden, providerspecifieke
+opdrachten) [`openclaw onboard`](/nl/cli/onboard).
 
 ## Wat de wizard doet
 
-Lokale modus (standaard) leidt je door:
+De lokale modus (standaard) begeleidt je bij:
 
-- Model- en authenticatie-instelling (OAuth voor OpenAI Code-abonnement, Anthropic Claude CLI of API-sleutel, plus opties voor MiniMax, GLM, Ollama, Moonshot, StepFun en AI Gateway)
+- Model- en authenticatieconfiguratie (Anthropic, OAuth voor OpenAI Code-abonnementen, xAI, OpenCode, aangepaste eindpunten en meer authenticatiestromen die door providers worden beheerd)
 - Werkruimtelocatie en bootstrapbestanden
-- Gateway-instellingen (poort, bind, authenticatie, tailscale)
-- Kanalen en providers (Telegram, WhatsApp, Discord, Google Chat, Mattermost, Signal, iMessage en andere meegeleverde kanaalplugins)
-- Daemoninstallatie (LaunchAgent, systemd-gebruikerseenheid of native Windows Scheduled Task met Startup-map als fallback)
-- Gezondheidscontrole
-- Skills-instelling
+- Gateway-instellingen (poort, binding, authenticatie, Tailscale)
+- Kanalen en providers (Discord, Feishu, Google Chat, iMessage, Mattermost, Microsoft Teams, QQ Bot, Signal, Slack, Telegram, WhatsApp en andere meegeleverde kanalen of Plugin-kanalen)
+- Provider voor zoeken op het web (optioneel)
+- Daemoninstallatie (LaunchAgent, systemd-gebruikerseenheid of systeemeigen geplande Windows-taak met terugval op de map Opstarten)
+- Statuscontrole
+- Configuratie van Skills
 
-Externe modus configureert deze machine om verbinding te maken met een Gateway elders.
-Deze installeert of wijzigt niets op de externe host.
+De externe modus configureert deze machine om verbinding te maken met een Gateway elders. Er wordt
+niets op de externe host geïnstalleerd of gewijzigd.
 
-## Details van lokale flow
+## Details van de lokale stroom
 
 <Steps>
-  <Step title="Existing config detection">
-    - Als `~/.openclaw/openclaw.json` bestaat, kies je Behouden, Wijzigen of Resetten.
-    - Het opnieuw uitvoeren van de wizard wist niets, tenzij je expliciet Resetten kiest (of `--reset` meegeeft).
+  <Step title="Detectie van bestaande configuratie">
+    - Als `~/.openclaw/openclaw.json` bestaat, kies je **Huidige waarden behouden**, **Controleren en bijwerken** of **Opnieuw instellen vóór configuratie**.
+    - Als je de wizard opnieuw uitvoert, wordt er niets gewist tenzij je expliciet Opnieuw instellen kiest (of `--reset` doorgeeft).
     - CLI `--reset` gebruikt standaard `config+creds+sessions`; gebruik `--reset-scope full` om ook de werkruimte te verwijderen.
-    - Als de configuratie ongeldig is of verouderde sleutels bevat, stopt de wizard en vraagt deze je om `openclaw doctor` uit te voeren voordat je doorgaat.
-    - Reset gebruikt `trash` en biedt scopes:
+    - Als de configuratie ongeldig is of verouderde sleutels bevat, stopt de wizard en vraagt deze je om `openclaw doctor` uit te voeren voordat je verdergaat.
+    - Bij opnieuw instellen wordt de status naar de prullenmand verplaatst (nooit rechtstreeks verwijderd) en kun je kiezen uit:
       - Alleen configuratie
       - Configuratie + inloggegevens + sessies
-      - Volledige reset (verwijdert ook de werkruimte)
+      - Volledig opnieuw instellen (verwijdert ook de werkruimte)
 
   </Step>
-  <Step title="Model and auth">
+  <Step title="Model en authenticatie">
     - De volledige optiematrix staat in [Authenticatie- en modelopties](#auth-and-model-options).
 
   </Step>
-  <Step title="Workspace">
+  <Step title="Werkruimte">
     - Standaard `~/.openclaw/workspace` (configureerbaar).
-    - Vult de werkruimte met bestanden die nodig zijn voor het bootstrapritueel bij de eerste uitvoering.
-    - Werkruimte-indeling: [Agent-werkruimte](/nl/concepts/agent-workspace).
+    - Maakt de werkruimtebestanden aan die nodig zijn voor de bootstrap bij de eerste uitvoering.
+    - Indeling van de werkruimte: [Agentwerkruimte](/nl/concepts/agent-workspace).
 
   </Step>
   <Step title="Gateway">
-    - Vraagt om poort, bind, authenticatiemodus en tailscale-blootstelling.
-    - Aanbevolen: houd tokenauthenticatie ingeschakeld, zelfs voor loopback, zodat lokale WS-clients zich moeten authenticeren.
-    - In tokenmodus biedt interactieve instelling:
-      - **Platteteksttoken genereren/opslaan** (standaard)
-      - **SecretRef gebruiken** (opt-in)
-    - In wachtwoordmodus ondersteunt interactieve instelling ook opslag als plattetekst of SecretRef.
-    - Niet-interactief token-SecretRef-pad: `--gateway-token-ref-env <ENV_VAR>`.
-      - Vereist een niet-lege env-var in de procesomgeving van de onboarding.
+    - Vraagt naar poort, binding, authenticatiemodus en blootstelling via Tailscale.
+    - Aanbevolen: houd tokenauthenticatie zelfs voor loopback ingeschakeld, zodat lokale WS-clients zich moeten authenticeren.
+    - In tokenmodus biedt de interactieve configuratie:
+      - **Token in platte tekst genereren/opslaan** (standaard)
+      - **SecretRef gebruiken** (optioneel)
+    - In wachtwoordmodus ondersteunt de interactieve configuratie ook opslag als platte tekst of SecretRef.
+    - Niet-interactief SecretRef-pad voor tokens: `--gateway-token-ref-env <ENV_VAR>`.
+      - Vereist een niet-lege omgevingsvariabele in de procesomgeving van de onboarding.
       - Kan niet worden gecombineerd met `--gateway-token`.
     - Schakel authenticatie alleen uit als je elk lokaal proces volledig vertrouwt.
-    - Niet-loopback-binds vereisen nog steeds authenticatie.
+    - Bindingen buiten loopback vereisen nog steeds authenticatie.
 
   </Step>
-  <Step title="Channels">
-    - [WhatsApp](/nl/channels/whatsapp): optionele QR-login
+  <Step title="Kanalen">
+    - [WhatsApp](/nl/channels/whatsapp): optionele QR-aanmelding
     - [Telegram](/nl/channels/telegram): bottoken
     - [Discord](/nl/channels/discord): bottoken
-    - [Google Chat](/nl/channels/googlechat): serviceaccount-JSON + Webhook-doelgroep
+    - [Google Chat](/nl/channels/googlechat): JSON van serviceaccount + webhookdoelgroep
     - [Mattermost](/nl/channels/mattermost): bottoken + basis-URL
-    - [Signal](/nl/channels/signal): optionele `signal-cli`-installatie + accountconfiguratie
-    - [iMessage](/nl/channels/imessage): `imsg` CLI-pad + toegang tot Messages DB; gebruik een SSH-wrapper wanneer de Gateway buiten de Mac draait
-    - DM-beveiliging: standaard is koppelen. De eerste DM stuurt een code; keur goed via
-      `openclaw pairing approve <channel> <code>` of gebruik allowlists.
+    - [Signal](/nl/channels/signal): optionele installatie van `signal-cli` + accountconfiguratie
+    - [iMessage](/nl/channels/imessage): pad naar `imsg` CLI + toegang tot de Messages-database; gebruik een SSH-wrapper wanneer de Gateway niet op een Mac draait
+    - DM-beveiliging: standaard wordt koppeling gebruikt. De eerste DM verzendt een code; keur deze goed via
+      `openclaw pairing approve <channel> <code>` of gebruik toelatingslijsten.
   </Step>
-  <Step title="Daemon install">
-    - macOS: LaunchAgent
-      - Vereist een aangemelde gebruikerssessie; gebruik voor headless een aangepaste LaunchDaemon (niet meegeleverd).
-    - Linux en Windows via WSL2: systemd-gebruikerseenheid
-      - De wizard probeert `loginctl enable-linger <user>` zodat de Gateway actief blijft na uitloggen.
-      - Kan om sudo vragen (schrijft `/var/lib/systemd/linger`); probeert het eerst zonder sudo.
-    - Native Windows: eerst Scheduled Task
-      - Als taakaanmaak wordt geweigerd, valt OpenClaw terug op een login-item in de Startup-map per gebruiker en start het de Gateway onmiddellijk.
-      - Scheduled Tasks blijven de voorkeur houden omdat ze betere supervisorstatus bieden.
-    - Runtimeselectie: Node (aanbevolen; vereist voor WhatsApp en Telegram). Bun wordt niet aanbevolen.
+  <Step title="Zoeken op het web">
+    - Kies een provider (Brave, DuckDuckGo, Exa, Firecrawl, Gemini, Grok, Kimi, MiniMax Search, Ollama Web Search, Perplexity, SearXNG, Tavily) of sla deze stap over.
+    - Sla deze stap over met `--skip-search`; configureer deze later opnieuw met `openclaw configure --section web`.
 
   </Step>
-  <Step title="Health check">
+  <Step title="Daemoninstallatie">
+    - macOS: LaunchAgent
+      - Vereist een aangemelde gebruikerssessie; gebruik voor headless-systemen een aangepaste LaunchDaemon (niet meegeleverd).
+    - Linux en Windows via WSL2: systemd-gebruikerseenheid
+      - De wizard probeert `loginctl enable-linger <user>` zodat de Gateway actief blijft na afmelden.
+      - Kan om sudo vragen (schrijft `/var/lib/systemd/linger`); eerst wordt het zonder sudo geprobeerd.
+    - Systeemeigen Windows: eerst een geplande taak
+      - Als het maken van de taak wordt geweigerd, valt OpenClaw terug op een aanmeldingsitem per gebruiker in de map Opstarten en start het de Gateway onmiddellijk.
+      - Geplande taken blijven de voorkeur houden omdat ze een betere supervisorstatus bieden.
+    - Runtimeselectie: Node is vereist omdat de canonieke runtimestatusopslag van OpenClaw `node:sqlite` gebruikt.
+
+  </Step>
+  <Step title="Statuscontrole">
     - Start de Gateway (indien nodig) en voert `openclaw health` uit.
-    - `openclaw status --deep` voegt de live Gateway-gezondheidsprobe toe aan de statusuitvoer, inclusief kanaalprobes wanneer ondersteund.
+    - `openclaw status --deep` voegt de live statuscontrole van de Gateway toe aan de statusuitvoer, inclusief kanaalcontroles indien ondersteund.
 
   </Step>
   <Step title="Skills">
-    - Leest beschikbare Skills en controleert vereisten.
-    - Laat je nodebeheerder kiezen: npm, pnpm of bun.
+    - Leest beschikbare Skills en controleert de vereisten.
+    - Laat je een Node-beheerprogramma kiezen: npm, pnpm of bun.
     - Installeert optionele afhankelijkheden voor vertrouwde meegeleverde Skills wanneer het vereiste
       installatieprogramma beschikbaar is.
-    - Slaat niet-beschikbare Homebrew-, uv- en Go-installatieprogramma's over en groepeert daarna de getroffen
-      Skills met handmatige installatie-instructies. Voer `openclaw doctor` uit nadat je
+    - Slaat niet-beschikbare installatieprogramma's voor Homebrew, uv en Go over en groepeert vervolgens de getroffen
+      Skills met instructies voor handmatige configuratie. Voer `openclaw doctor` uit nadat je
       de ontbrekende vereisten hebt geïnstalleerd.
 
   </Step>
-  <Step title="Finish">
-    - Samenvatting en volgende stappen, inclusief iOS-, Android- en macOS-appopties.
+  <Step title="Voltooien">
+    - Samenvatting en vervolgstappen, inclusief opties voor iOS-, Android- en macOS-apps.
 
   </Step>
 </Steps>
 
 <Note>
-Als er geen GUI wordt gedetecteerd, drukt de wizard SSH-port-forward-instructies af voor de Control UI in plaats van een browser te openen.
-Als Control UI-assets ontbreken, probeert de wizard ze te bouwen; fallback is `pnpm ui:build` (installeert UI-afhankelijkheden automatisch).
+Als er geen grafische gebruikersinterface wordt gedetecteerd, drukt de wizard instructies voor SSH-poortdoorsturing voor de Control UI af in plaats van een browser te openen.
+Als de assets van de Control UI ontbreken, probeert de wizard ze te bouwen; de terugvaloptie is `pnpm ui:build` (installeert automatisch UI-afhankelijkheden).
 </Note>
 
-## Details van externe modus
+## Details van de externe modus
 
-Externe modus configureert deze machine om verbinding te maken met een Gateway elders.
-
-<Info>
-Externe modus installeert of wijzigt niets op de externe host.
-</Info>
+De externe modus configureert deze machine om verbinding te maken met een Gateway elders. Er wordt
+niets op de externe host geïnstalleerd of gewijzigd.
 
 Wat je instelt:
 
-- Externe Gateway-URL (`ws://...`)
-- Token als authenticatie voor de externe Gateway vereist is (aanbevolen)
+- URL van de externe Gateway (`ws://...` of `wss://...`)
+- Token, wachtwoord of geen authenticatie, overeenkomstig de configuratie van de externe Gateway
+
+<Steps>
+  <Step title="Detectie (optioneel)">
+    Als `dns-sd` (macOS) of `avahi-browse` (Linux) beschikbaar is, biedt de onboarding
+    aan om naar Bonjour/mDNS-beacons van Gateways te zoeken voordat wordt teruggevallen op
+    handmatige invoer van de URL. Indien geconfigureerd wordt ook wide-area DNS-SD-detectie
+    geprobeerd. Documentatie: [Gateway-detectie](/nl/gateway/discovery), [Bonjour](/nl/gateway/bonjour).
+  </Step>
+  <Step title="Verbindingsmethode">
+    Wanneer een beacon is geselecteerd, kies je een directe WebSocket-verbinding of een SSH-tunnel:
+    - **Direct**: maakt verbinding via `wss://` en vraagt je om de gedetecteerde
+      TLS-vingerafdruk te vertrouwen (vastzetten op basis van vertrouwen bij eerste gebruik; wordt alleen vastgezet als je deze accepteert).
+    - **SSH-tunnel**: drukt een `ssh -N -L 18789:127.0.0.1:18789 <user>@<host>`-
+      opdracht af die je eerst moet uitvoeren en maakt vervolgens verbinding met het lokale tunneleindpunt.
+  </Step>
+  <Step title="Authenticatie">
+    Kies een token (aanbevolen), wachtwoord of geen authenticatie en sla dit vervolgens desgewenst
+    op als SecretRef in plaats van als platte tekst.
+  </Step>
+</Steps>
 
 <Note>
-- Als de Gateway alleen loopback is, gebruik dan SSH-tunneling of een tailnet.
-- Discovery-hints:
-  - macOS: Bonjour (`dns-sd`)
-  - Linux: Avahi (`avahi-browse`)
-
+Als de Gateway alleen voor loopback beschikbaar is en niet kan worden gedetecteerd, gebruik je handmatig een SSH-tunnel of tailnet.
+`ws://` in platte tekst wordt geaccepteerd voor loopback, letterlijke privé-IP-adressen, `.local` en Tailnet-URL's met `*.ts.net`; andere privé-DNS-namen vereisen `OPENCLAW_ALLOW_INSECURE_PRIVATE_WS=1`.
 </Note>
 
 ## Authenticatie- en modelopties
 
+Als een configuratiestap voor een provider tijdens interactieve onboarding mislukt (bijvoorbeeld een optie voor CLI-hergebruik
+zonder lokale aanmelding), toont de wizard de fout en keert deze terug naar de providerkiezer
+in plaats van af te sluiten. Expliciete uitvoeringen van `--auth-choice` blijven direct mislukken ten behoeve van automatisering.
+
 <AccordionGroup>
-  <Accordion title="Anthropic API key">
-    Gebruikt `ANTHROPIC_API_KEY` als deze aanwezig is, of vraagt om een sleutel, en slaat deze daarna op voor daemongebruik.
+  <Accordion title="Anthropic-API-sleutel">
+    Gebruikt `ANTHROPIC_API_KEY` indien aanwezig of vraagt om een sleutel en slaat deze vervolgens op voor gebruik door de daemon.
   </Accordion>
-  <Accordion title="OpenAI Code subscription (OAuth)">
-    Browserflow; plak `code#state`.
-
-    Stelt `agents.defaults.model` in op `openai/gpt-5.5` via de Codex-runtime wanneer het model niet is ingesteld of al tot de OpenAI-familie behoort.
-
+  <Accordion title="Anthropic Claude CLI">
+    Voorkeursroute lokaal bij interactieve onboarding/configuratie; hergebruikt een bestaande aanmelding bij Claude CLI wanneer beschikbaar.
   </Accordion>
-  <Accordion title="OpenAI Code subscription (device pairing)">
-    Browserkoppelingsflow met een kortlevende apparaatcode.
+  <Accordion title="OpenAI Code-abonnement (OAuth)">
+    Browserstroom; plak `code#state`.
 
-    Stelt `agents.defaults.model` in op `openai/gpt-5.5` via de Codex-runtime wanneer het model niet is ingesteld of al tot de OpenAI-familie behoort.
+    Bij een nieuwe configuratie zonder primair model wordt `agents.defaults.model` ingesteld op
+    `openai/gpt-5.6-sol` via de Codex-runtime.
 
   </Accordion>
-  <Accordion title="OpenAI API key">
-    Gebruikt `OPENAI_API_KEY` als deze aanwezig is, of vraagt om een sleutel, en slaat de inloggegevens daarna op in authenticatieprofielen.
+  <Accordion title="OpenAI Code-abonnement (apparaatkoppeling)">
+    Browserkoppelingsstroom met een kortlevende apparaatcode.
 
-    Stelt `agents.defaults.model` in op `openai/gpt-5.5` wanneer het model niet is ingesteld, `openai/*` is, of verouderde Codex-modelrefs gebruikt.
+    Bij een nieuwe configuratie zonder primair model wordt `agents.defaults.model` ingesteld op
+    `openai/gpt-5.6-sol` via de Codex-runtime.
+
+  </Accordion>
+  <Accordion title="OpenAI-API-sleutel">
+    Gebruikt `OPENAI_API_KEY` indien aanwezig of vraagt om een sleutel en slaat de inloggegevens vervolgens op in authenticatieprofielen.
+
+    Bij een nieuwe configuratie zonder primair model wordt `agents.defaults.model` ingesteld op
+    `openai/gpt-5.6`; de kale model-id voor de directe API wordt omgezet naar de Sol-tier.
+
+    Als OpenAI wordt toegevoegd of opnieuw geauthenticeerd, blijft een bestaand expliciet primair
+    model behouden, waaronder `openai/gpt-5.5`. Als het account geen GPT-5.6 beschikbaar stelt,
+    selecteer je expliciet `openai/gpt-5.5`; OpenClaw verlaagt dit niet stilzwijgend.
 
   </Accordion>
   <Accordion title="xAI (Grok) OAuth">
-    Browseraanmelding voor in aanmerking komende SuperGrok- of X Premium-accounts. Dit is het
-    aanbevolen xAI-pad voor de meeste gebruikers. OpenClaw slaat het resulterende authenticatieprofiel
+    Aanmelden via de browser voor in aanmerking komende SuperGrok- of X Premium-accounts. Dit is voor de
+    meeste gebruikers de aanbevolen xAI-methode. OpenClaw slaat het resulterende authenticatieprofiel
     op voor Grok-modellen, Grok `web_search`, `x_search` en `code_execution`.
   </Accordion>
-  <Accordion title="xAI (Grok) device code">
-    Extern-vriendelijke browseraanmelding met een korte code in plaats van een localhost-
+  <Accordion title="xAI (Grok)-apparaatcode">
+    Browseraanmelding die geschikt is voor externe systemen, met een korte code in plaats van een localhost-
     callback. Gebruik dit vanaf SSH-, Docker- of VPS-hosts.
   </Accordion>
-  <Accordion title="xAI (Grok) API key">
+  <Accordion title="xAI (Grok)-API-sleutel">
     Vraagt om `XAI_API_KEY` en configureert xAI als modelprovider. Gebruik dit
-    wanneer je een xAI Console API-sleutel wilt in plaats van abonnements-OAuth.
+    wanneer je een API-sleutel van xAI Console wilt in plaats van OAuth via een abonnement.
   </Accordion>
   <Accordion title="OpenCode">
-    Vraagt om `OPENCODE_API_KEY` (of `OPENCODE_ZEN_API_KEY`) en laat je de Zen- of Go-catalogus kiezen.
+    Vraagt om `OPENCODE_API_KEY` (of `OPENCODE_ZEN_API_KEY`) en laat je de Zen- of Go-catalogus kiezen (één API-sleutel dekt beide).
     Installatie-URL: [opencode.ai/auth](https://opencode.ai/auth).
   </Accordion>
-  <Accordion title="API key (generic)">
+  <Accordion title="API-sleutel (algemeen)">
     Slaat de sleutel voor je op.
   </Accordion>
   <Accordion title="Vercel AI Gateway">
     Vraagt om `AI_GATEWAY_API_KEY`.
-    Meer details: [Vercel AI Gateway](/nl/providers/vercel-ai-gateway).
+    Meer informatie: [Vercel AI Gateway](/nl/providers/vercel-ai-gateway).
   </Accordion>
   <Accordion title="Cloudflare AI Gateway">
-    Vraagt om account-ID, Gateway-ID en `CLOUDFLARE_AI_GATEWAY_API_KEY`.
-    Meer details: [Cloudflare AI Gateway](/nl/providers/cloudflare-ai-gateway).
+    Vraagt om account-ID, gateway-ID en `CLOUDFLARE_AI_GATEWAY_API_KEY`.
+    Meer informatie: [Cloudflare AI Gateway](/nl/providers/cloudflare-ai-gateway).
   </Accordion>
   <Accordion title="MiniMax">
-    Configuratie wordt automatisch geschreven. Gehoste standaard is `MiniMax-M3`; instelling met API-sleutel gebruikt
-    `minimax/...`, en OAuth-instelling gebruikt `minimax-portal/...`.
-    Meer details: [MiniMax](/nl/providers/minimax).
+    De configuratie wordt automatisch geschreven. De standaardinstelling voor hosting is `MiniMax-M3`; de installatie met API-sleutel gebruikt
+    `minimax/...` en de OAuth-installatie gebruikt `minimax-portal/...`.
+    Meer informatie: [MiniMax](/nl/providers/minimax).
   </Accordion>
   <Accordion title="StepFun">
-    Configuratie wordt automatisch geschreven voor StepFun Standard of Step Plan op Chinese of wereldwijde endpoints.
-    Standard bevat momenteel `step-3.5-flash`, en Step Plan bevat ook `step-3.5-flash-2603`.
-    Meer details: [StepFun](/nl/providers/stepfun).
+    De configuratie wordt automatisch geschreven voor StepFun Standard of Step Plan op Chinese of wereldwijde eindpunten.
+    Standard bevat momenteel `step-3.5-flash` en Step Plan bevat ook `step-3.5-flash-2603`.
+    Meer informatie: [StepFun](/nl/providers/stepfun).
   </Accordion>
-  <Accordion title="Synthetic (Anthropic-compatible)">
+  <Accordion title="Synthetic (compatibel met Anthropic)">
     Vraagt om `SYNTHETIC_API_KEY`.
-    Meer details: [Synthetic](/nl/providers/synthetic).
+    Meer informatie: [Synthetic](/nl/providers/synthetic).
   </Accordion>
-  <Accordion title="Ollama (Cloud and local open models)">
+  <Accordion title="Ollama (cloud- en lokale open modellen)">
     Vraagt eerst om `Cloud + Local`, `Cloud only` of `Local only`.
     `Cloud only` gebruikt `OLLAMA_API_KEY` met `https://ollama.com`.
-    De host-backed modi vragen om een basis-URL (standaard `http://127.0.0.1:11434`), ontdekken beschikbare modellen en stellen standaarden voor.
+    De hostgebaseerde modi vragen om de basis-URL (standaard `http://127.0.0.1:11434`), detecteren beschikbare modellen en stellen standaardwaarden voor.
     `Cloud + Local` controleert ook of die Ollama-host is aangemeld voor cloudtoegang.
-    Meer details: [Ollama](/nl/providers/ollama).
+    Meer informatie: [Ollama](/nl/providers/ollama).
   </Accordion>
-  <Accordion title="Moonshot and Kimi Coding">
-    Moonshot (Kimi K2)- en Kimi Coding-configuraties worden automatisch geschreven.
-    Meer details: [Moonshot AI (Kimi + Kimi Coding)](/nl/providers/moonshot).
+  <Accordion title="Moonshot en Kimi Coding">
+    Configuraties voor Moonshot (Kimi K2) en Kimi Coding worden automatisch geschreven.
+    Meer informatie: [Moonshot AI (Kimi + Kimi Coding)](/nl/providers/moonshot).
   </Accordion>
-  <Accordion title="Custom provider">
-    Werkt met OpenAI-compatibele en Anthropic-compatibele endpoints.
+  <Accordion title="Aangepaste provider">
+    Werkt met eindpunten die compatibel zijn met OpenAI, OpenAI Responses en Anthropic.
 
-    Interactieve onboarding ondersteunt dezelfde opslagkeuzes voor API-sleutels als andere API-sleutelflows voor providers:
-    - **API-sleutel nu plakken** (plattetekst)
-    - **Geheime referentie gebruiken** (env-ref of geconfigureerde provider-ref, met preflightvalidatie)
+    Interactieve onboarding ondersteunt dezelfde opslagkeuzes voor API-sleutels als andere API-sleutelstromen voor providers:
+    - **API-sleutel nu plakken** (platte tekst)
+    - **Geheime verwijzing gebruiken** (omgevingsverwijzing of geconfigureerde providerverwijzing, met voorafgaande validatie)
+
+    Onboarding leidt afbeeldingsondersteuning af voor gangbare ID's van vision-modellen (GPT-4o/4.1/5.x, Claude 3/4, Gemini, Qwen-VL, LLaVA, Pixtral en vergelijkbare modellen) en vraagt dit alleen wanneer de modelnaam onbekend is.
 
     Niet-interactieve vlaggen:
     - `--auth-choice custom-api-key`
@@ -232,76 +271,75 @@ Wat je instelt:
     - `--custom-api-key` (optioneel; valt terug op `CUSTOM_API_KEY`)
     - `--custom-provider-id` (optioneel)
     - `--custom-compatibility <openai|openai-responses|anthropic>` (optioneel; standaard `openai`)
-    - `--custom-image-input` / `--custom-text-input` (optioneel; overschrijft afgeleide modelinvoercapaciteit)
+    - `--custom-image-input` / `--custom-text-input` (optioneel; overschrijft de afgeleide invoercapaciteit van het model)
 
   </Accordion>
-  <Accordion title="Skip">
+  <Accordion title="Overslaan">
     Laat authenticatie ongeconfigureerd.
   </Accordion>
 </AccordionGroup>
 
 Modelgedrag:
 
-- Kies het standaardmodel uit de gedetecteerde opties, of voer provider en model handmatig in.
-- Onboarding voor aangepaste providers leidt beeldondersteuning af voor gangbare model-ID's en vraagt alleen wanneer de modelnaam onbekend is.
-- Wanneer onboarding start vanuit een provider-authenticatiekeuze, geeft de modelkiezer automatisch
+- Kies het standaardmodel uit de gedetecteerde opties of voer de provider en het model handmatig in.
+- Wanneer onboarding begint vanuit een keuze voor providerauthenticatie, geeft de modelkiezer automatisch
   de voorkeur aan die provider. Voor Volcengine en BytePlus komt dezelfde voorkeur
-  ook overeen met hun coding-plan-varianten (`volcengine-plan/*`,
+  ook overeen met hun varianten voor programmeerabonnementen (`volcengine-plan/*`,
   `byteplus-plan/*`).
 - Als dat voorkeursproviderfilter leeg zou zijn, valt de kiezer terug op
-  de volledige catalogus in plaats van geen modellen te tonen.
-- De wizard voert een modelcontrole uit en waarschuwt als het geconfigureerde model onbekend is of authenticatie mist.
+  de volledige catalogus in plaats van geen modellen weer te geven.
+- De wizard voert een modelcontrole uit en waarschuwt als het geconfigureerde model onbekend is of authenticatie ontbreekt.
 
-Paden voor inloggegevens en profielen:
+Paden voor referenties en profielen:
 
 - Authenticatieprofielen (API-sleutels + OAuth): `~/.openclaw/agents/<agentId>/agent/auth-profiles.json`
-- Import van verouderde OAuth: `~/.openclaw/credentials/oauth.json`
+- Verouderde OAuth-import: `~/.openclaw/credentials/oauth.json`
 
-Opslagmodus voor inloggegevens:
+Opslagmodus voor referenties:
 
-- Standaard onboardinggedrag bewaart API-sleutels als plattetekstwaarden in auth-profielen.
-- `--secret-input-mode ref` schakelt referentiemodus in in plaats van opslag van sleutels in platte tekst.
-  In interactieve setup kun je kiezen uit:
-  - omgevingsvariabele-ref (bijvoorbeeld `keyRef: { source: "env", provider: "default", id: "OPENAI_API_KEY" }`)
-  - geconfigureerde provider-ref (`file` of `exec`) met provideralias + id
-- Interactieve referentiemodus voert een snelle preflightvalidatie uit voordat er wordt opgeslagen.
-  - Env-refs: valideert variabelenaam + niet-lege waarde in de huidige onboardingomgeving.
-  - Provider-refs: valideert providerconfiguratie en resolveert de gevraagde id.
-  - Als preflight mislukt, toont onboarding de fout en kun je het opnieuw proberen.
-- In niet-interactieve modus wordt `--secret-input-mode ref` alleen door env ondersteund.
-  - Stel de provider-env-var in de procesomgeving voor onboarding in.
-  - Inline sleutelvlaggen (bijvoorbeeld `--openai-api-key`) vereisen dat die env-var is ingesteld; anders faalt onboarding direct.
-  - Voor aangepaste providers slaat niet-interactieve `ref`-modus `models.providers.<id>.apiKey` op als `{ source: "env", provider: "default", id: "CUSTOM_API_KEY" }`.
-  - In dat geval met een aangepaste provider vereist `--custom-api-key` dat `CUSTOM_API_KEY` is ingesteld; anders faalt onboarding direct.
-- Gateway-authreferenties ondersteunen keuzes voor platte tekst en SecretRef in interactieve setup:
-  - Tokenmodus: **Platteteksttoken genereren/opslaan** (standaard) of **SecretRef gebruiken**.
+- Bij standaardonboarding worden API-sleutels als waarden in platte tekst opgeslagen in authenticatieprofielen.
+- `--secret-input-mode ref` schakelt de verwijzingsmodus in in plaats van opslag van sleutels in platte tekst.
+  Bij interactieve installatie kun je kiezen uit:
+  - verwijzing naar een omgevingsvariabele (bijvoorbeeld `keyRef: { source: "env", provider: "default", id: "OPENAI_API_KEY" }`)
+  - geconfigureerde providerverwijzing (`file` of `exec`) met provideralias + ID
+- De interactieve verwijzingsmodus voert vóór het opslaan een snelle voorafgaande validatie uit.
+  - Omgevingsverwijzingen: valideert de variabelenaam + een niet-lege waarde in de huidige onboardingomgeving.
+  - Providerverwijzingen: valideert de providerconfiguratie en herleidt het gevraagde ID.
+  - Als de voorafgaande validatie mislukt, toont onboarding de fout en kun je het opnieuw proberen.
+- In de niet-interactieve modus wordt `--secret-input-mode ref` alleen door de omgeving ondersteund.
+  - Stel de omgevingsvariabele van de provider in de procesomgeving van onboarding in.
+  - Voor inline sleutelvlaggen (bijvoorbeeld `--openai-api-key`) moet die omgevingsvariabele zijn ingesteld; anders mislukt onboarding onmiddellijk.
+  - Voor aangepaste providers slaat de niet-interactieve modus `ref` `models.providers.<id>.apiKey` op als `{ source: "env", provider: "default", id: "CUSTOM_API_KEY" }`.
+  - In dat geval met een aangepaste provider vereist `--custom-api-key` dat `CUSTOM_API_KEY` is ingesteld; anders mislukt onboarding onmiddellijk.
+- Gateway-authenticatiegegevens ondersteunen bij interactieve installatie zowel platte tekst als SecretRef-keuzes:
+  - Tokenmodus: **Token in platte tekst genereren/opslaan** (standaard) of **SecretRef gebruiken**.
   - Wachtwoordmodus: platte tekst of SecretRef.
-- Niet-interactief token-SecretRef-pad: `--gateway-token-ref-env <ENV_VAR>`.
-- Bestaande setups met platte tekst blijven ongewijzigd werken.
+- Niet-interactief SecretRef-pad voor tokens: `--gateway-token-ref-env <ENV_VAR>`.
+- Bestaande installaties met platte tekst blijven ongewijzigd werken.
 
 <Note>
-Tip voor headless en servers: voltooi OAuth op een machine met een browser en kopieer daarna
-de `auth-profiles.json` van die agent (bijvoorbeeld
-`~/.openclaw/agents/<agentId>/agent/auth-profiles.json`, of het bijbehorende
-`$OPENCLAW_STATE_DIR/...`-pad) naar de gatewayhost. `credentials/oauth.json`
-is alleen een oudere importbron.
+Tip voor systemen zonder grafische interface en servers: voltooi OAuth op een machine met een browser en kopieer vervolgens
+het bestand `auth-profiles.json` van die agent (bijvoorbeeld
+`~/.openclaw/agents/<agentId>/agent/auth-profiles.json` of het overeenkomstige
+pad `$OPENCLAW_STATE_DIR/...`) naar de Gateway-host. `credentials/oauth.json`
+is uitsluitend een verouderde importbron.
 </Note>
 
-## Uitvoer en internals
+## Uitvoer en interne werking
 
-Typische velden in `~/.openclaw/openclaw.json`:
+Gebruikelijke velden in `~/.openclaw/openclaw.json`:
 
 - `agents.defaults.workspace`
-- `agents.defaults.skipBootstrap` wanneer `--skip-bootstrap` wordt meegegeven
+- `agents.defaults.skipBootstrap` wanneer `--skip-bootstrap` wordt doorgegeven
 - `agents.defaults.model` / `models.providers` (als Minimax is gekozen)
-- `tools.profile` (lokale onboarding gebruikt standaard `"coding"` wanneer niet ingesteld; bestaande expliciete waarden blijven behouden)
-- `gateway.*` (modus, bind, auth, tailscale)
-- `session.dmScope` (lokale onboarding stelt dit standaard in op `per-channel-peer` wanneer niet ingesteld; bestaande expliciete waarden blijven behouden)
+- `tools.profile` (lokale onboarding gebruikt standaard `"coding"` wanneer dit niet is ingesteld; bestaande expliciete waarden blijven behouden)
+- `gateway.*` (modus, binding, authenticatie, Tailscale)
+- `session.dmScope` (lokale onboarding stelt dit standaard in op `per-channel-peer` wanneer het niet is ingesteld; bestaande expliciete waarden blijven behouden)
 - `channels.telegram.botToken`, `channels.discord.token`, `channels.matrix.*`, `channels.signal.*`, `channels.imessage.*`
-- Kanaal-allowlists (Slack, Discord, Matrix, Microsoft Teams) wanneer je hiervoor kiest tijdens prompts (namen worden waar mogelijk naar ID's omgezet)
+- Toegestane kanalenlijsten (Discord, iMessage, Signal, Slack, Telegram, WhatsApp) wanneer je hiervoor kiest tijdens de prompts; Discord en Slack zetten ingevoerde namen ook om naar ID's
 - `skills.install.nodeManager`
   - De vlag `setup --node-manager` accepteert `npm`, `pnpm` of `bun`.
-  - Handmatige configuratie kan later nog steeds `skills.install.nodeManager: "yarn"` instellen.
+  - Bij handmatige configuratie kan `skills.install.nodeManager: "yarn"` later nog steeds worden ingesteld.
 - `wizard.lastRunAt`
 - `wizard.lastRunVersion`
 - `wizard.lastRunCommit`
@@ -309,36 +347,51 @@ Typische velden in `~/.openclaw/openclaw.json`:
 - `wizard.lastRunMode`
 - `wizard.securityAcknowledgedAt`
 
-`openclaw agents add` schrijft `agents.list[]` en optionele `bindings`.
+`openclaw agents add` schrijft `agents.list[]` en optioneel `bindings`.
 
-WhatsApp-referenties komen onder `~/.openclaw/credentials/whatsapp/<accountId>/`.
-Sessies worden opgeslagen onder `~/.openclaw/agents/<agentId>/sessions/`.
+WhatsApp-authenticatiegegevens worden opgeslagen onder `~/.openclaw/credentials/whatsapp/<accountId>/`.
+Actieve sessies en transcripties worden opgeslagen in
+`~/.openclaw/agents/<agentId>/agent/openclaw-agent.sqlite`. De map
+`~/.openclaw/agents/<agentId>/sessions/` wordt gebruikt voor invoer voor verouderde migraties
+en archief-/ondersteuningsartefacten.
 
 <Note>
-Sommige kanalen worden geleverd als plugins. Wanneer ze tijdens setup worden geselecteerd, vraagt de wizard
-om de plugin te installeren (npm of lokaal pad) vóór kanaalconfiguratie.
+Sommige kanalen worden als plugins geleverd. Wanneer ze tijdens de installatie worden geselecteerd, vraagt de wizard
+om de plugin te installeren (npm of lokaal pad) voordat het kanaal wordt geconfigureerd.
 </Note>
 
-Gateway-wizard-RPC:
+## Niet-interactieve installatie
+
+`--non-interactive` vereist `--accept-risk` (bevestigt dat agents
+krachtig zijn en dat volledige systeemtoegang riskant is):
+
+```bash
+openclaw onboard --non-interactive --accept-risk \
+  --auth-choice apiKey \
+  --anthropic-api-key "$ANTHROPIC_API_KEY"
+```
+
+Volledige vlaggenreferentie en providerspecifieke voorbeelden: [`openclaw onboard`](/nl/cli/onboard), [CLI-automatisering](/nl/start/wizard-cli-automation).
+
+## RPC van de Gateway-wizard
 
 - `wizard.start`
 - `wizard.next`
 - `wizard.cancel`
 - `wizard.status`
 
-Clients (macOS-app en Control UI) kunnen stappen renderen zonder onboardinglogica opnieuw te implementeren.
+Clients (macOS-app en Control UI) kunnen stappen weergeven zonder de onboardinglogica opnieuw te implementeren.
 
-Signal-setupgedrag:
+## Installatiegedrag van Signal
 
-- Downloadt de juiste release-asset
-- Slaat deze op onder `~/.openclaw/tools/signal-cli/<version>/`
-- Schrijft `channels.signal.cliPath` in config
-- JVM-builds vereisen Java 21
-- Native builds worden gebruikt wanneer beschikbaar
-- Windows gebruikt WSL2 en volgt de Linux signal-cli-flow binnen WSL
+- Downloadt het juiste release-artefact uit de officiële GitHub-releases van `signal-cli` (native build, alleen Linux x86-64)
+- Installeert op andere platforms (macOS, niet-x64 Linux) in plaats daarvan via Homebrew
+- Slaat de installatie van het release-artefact op onder `~/.openclaw/tools/signal-cli/<version>/`
+- Schrijft `channels.signal.cliPath` naar de configuratie
+- Native Windows wordt nog niet ondersteund; voer onboarding uit binnen WSL2 om het Linux-installatiepad te gebruiken
 
-## Gerelateerde docs
+## Gerelateerde documentatie
 
-- Onboardinghub: [Onboarding (CLI)](/nl/start/wizard)
+- Onboardingcentrum: [Onboarding (CLI)](/nl/start/wizard)
 - Automatisering en scripts: [CLI-automatisering](/nl/start/wizard-cli-automation)
-- Commandoreferentie: [`openclaw onboard`](/nl/cli/onboard)
+- Opdrachtenreferentie: [`openclaw onboard`](/nl/cli/onboard)

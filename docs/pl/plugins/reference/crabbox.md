@@ -1,21 +1,22 @@
 ---
 read_when:
-    - Instalujesz, konfigurujesz lub audytujesz plugin crabbox
+    - Instalowanie, konfigurowanie lub audytowanie pluginu crabbox
 summary: Dostawca procesów roboczych w chmurze oparty na CLI Crabbox.
 title: Plugin Crabbox
 x-i18n:
-    generated_at: "2026-07-12T15:24:57Z"
+    generated_at: "2026-07-16T18:54:23Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: b52daa026c1a44ae7ca68d3974bc068fc41f6dd18f195d957be9afbd4bfebdea
+    source_hash: e2c0b8d23b37746d79bedb93361bcec779ed03bca9bb8e08ad43a21d6d40be12
     source_path: plugins/reference/crabbox.md
     workflow: 16
 ---
 
 # Plugin Crabbox
 
-Dostawca procesów roboczych w chmurze oparty na CLI Crabbox.
+Dostawca pracowników chmurowych oparty na CLI Crabbox.
 
 ## Dystrybucja
 
@@ -24,12 +25,12 @@ Dostawca procesów roboczych w chmurze oparty na CLI Crabbox.
 
 ## Powierzchnia
 
-kontrakty: workerProviders
+kontrakty: `workerProviders`
 
 <!-- openclaw-plugin-reference:manual-start -->
 
 ## Konfiguracja
 
-Schemat profilu i uwagi dotyczące cyklu życia znajdziesz w sekcji [Środowiska procesów roboczych w chmurze](/pl/gateway/configuration-reference#crabbox-profile).
+Schemat profilu i uwagi dotyczące cyklu życia opisano w sekcji [Środowiska pracowników chmurowych](/pl/gateway/configuration-reference#crabbox-profile).
 
 <!-- openclaw-plugin-reference:manual-end -->

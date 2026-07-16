@@ -1,14 +1,15 @@
 ---
 read_when:
-    - 您正在安裝、設定或稽核 vydra 外掛
-summary: 為 OpenClaw 新增 Vydra 模型供應商支援。
+    - 你正在安裝、設定或稽核 vydra 外掛
+summary: 新增 Vydra 模型供應商支援至 OpenClaw。
 title: Vydra 外掛
 x-i18n:
-    generated_at: "2026-07-11T21:41:30Z"
+    generated_at: "2026-07-16T11:56:05Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 21d6803f6ac505cc1c9e5e3e798997b05a398a06c5093a2f6b4e253523a0b892
+    source_hash: 33561ad201ed8ce3711bb960d3c62be3a5d32fd28510c50cc5270d8596b84fc6
     source_path: plugins/reference/vydra.md
     workflow: 16
 ---
@@ -17,14 +18,14 @@ x-i18n:
 
 為 OpenClaw 新增 Vydra 模型供應商支援。
 
-## 發行方式
+## 發行
 
 - 套件：`@openclaw/vydra-provider`
-- 安裝途徑：隨 OpenClaw 內附
+- 安裝方式：隨附於 OpenClaw
 
 ## 介面
 
-供應商：vydra；合約：imageGenerationProviders、speechProviders、videoGenerationProviders
+供應商：`vydra`；合約：`imageGenerationProviders`、`speechProviders`、`videoGenerationProviders`
 
 ## 相關文件
 

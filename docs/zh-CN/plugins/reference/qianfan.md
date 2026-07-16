@@ -4,11 +4,12 @@ read_when:
 summary: 为 OpenClaw 添加千帆模型提供商支持。
 title: 千帆插件
 x-i18n:
-    generated_at: "2026-07-11T20:46:43Z"
+    generated_at: "2026-07-16T11:47:09Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 49d639836cefb6c96502e614e1b5d06615fbef31a50ea186e1a02c060882019a
+    source_hash: 586bf29ac08b1a682ac387a21ed8df9baebd7c923278eb4b8f5b8659580be363
     source_path: plugins/reference/qianfan.md
     workflow: 16
 ---
@@ -20,11 +21,11 @@ x-i18n:
 ## 分发
 
 - 软件包：`@openclaw/qianfan-provider`
-- 安装途径：npm；ClawHub：`clawhub:@openclaw/qianfan-provider`
+- 安装方式：npm；ClawHub：`clawhub:@openclaw/qianfan-provider`
 
-## 接口范围
+## 接口
 
-提供商：qianfan
+提供商：`qianfan`
 
 ## 相关文档
 

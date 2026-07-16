@@ -1,31 +1,32 @@
 ---
 read_when:
-    - Metinden sese için Gradium istiyorsunuz
-    - Gradium API anahtarı, ses veya yönerge belirteci yapılandırmasına ihtiyacınız var
-summary: OpenClaw’da Gradium metinden konuşmaya özelliğini kullanın
+    - Metinden konuşmaya dönüştürme için Gradium kullanmak istiyorsunuz
+    - Gradium API anahtarı, ses veya direktif belirteci yapılandırması gereklidir
+summary: OpenClaw'da Gradium metinden konuşmaya özelliğini kullanma
 title: Gradium
 x-i18n:
-    generated_at: "2026-06-28T01:10:34Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T17:37:21Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 5178bfaf5087e18d5d71f46d04b16d52e0e132257b9ef772b7869ac11b49a0da
+    source_hash: 80120b1951115b6c81247c6bc6bc3c8834ef454c30d32f1d854cd3cca0870750
     source_path: providers/gradium.md
     workflow: 16
 ---
 
-[Gradium](https://gradium.ai), OpenClaw için bir metinden konuşmaya sağlayıcısıdır. Plugin normal sesli yanıtları (WAV), sesli not uyumlu Opus çıktısını ve telefon yüzeyleri için 8 kHz u-law sesi işleyebilir.
+[Gradium](https://gradium.ai), OpenClaw için bir metinden konuşmaya sağlayıcısıdır. Standart sesli yanıtlar (WAV), sesli notlarla uyumlu Opus çıktısı ve telefon yüzeyleri için 8 kHz u-law ses oluşturur.
 
 | Özellik       | Değer                                |
 | ------------- | ------------------------------------ |
 | Sağlayıcı kimliği | `gradium`                            |
-| Kimlik doğrulama | `GRADIUM_API_KEY` veya config `apiKey` |
-| Temel URL     | `https://api.gradium.ai` (varsayılan) |
+| Kimlik doğrulama | `GRADIUM_API_KEY` veya `apiKey` yapılandırması |
+| Temel URL     | `https://api.gradium.ai` (varsayılan)   |
 | Varsayılan ses | `Emma` (`YTpq7expH9539ERJ`)          |
 
-## Plugin yükleme
+## Plugin'i yükleme
 
-Resmi Plugin'i yükleyin, ardından Gateway'i yeniden başlatın:
+Gradium, resmi bir harici Plugin'dir. Plugin'i yükleyin, ardından Gateway'i yeniden başlatın:
 
 ```bash
 openclaw plugins install @openclaw/gradium-speech
@@ -34,16 +35,16 @@ openclaw gateway restart
 
 ## Kurulum
 
-Bir Gradium API anahtarı oluşturun, ardından bunu bir env var veya config anahtarıyla OpenClaw'a sunun.
+Bir Gradium API anahtarı oluşturun, ardından bunu bir ortam değişkeni veya yapılandırma anahtarıyla kullanıma sunun. Yapılandırma, ortam değişkenine göre önceliklidir.
 
 <Tabs>
-  <Tab title="Env var">
+  <Tab title="Ortam değişkeni">
     ```bash
     export GRADIUM_API_KEY="gsk_..."
     ```
   </Tab>
 
-  <Tab title="Config key">
+  <Tab title="Yapılandırma anahtarı">
     ```json5
     {
       messages: {
@@ -62,9 +63,7 @@ Bir Gradium API anahtarı oluşturun, ardından bunu bir env var veya config ana
   </Tab>
 </Tabs>
 
-Plugin önce çözümlenen `apiKey` değerini kontrol eder ve ardından `GRADIUM_API_KEY` ortam değişkenine geri döner.
-
-## Config
+## Yapılandırma
 
 ```json5
 {
@@ -84,31 +83,29 @@ Plugin önce çözümlenen `apiKey` değerini kontrol eder ve ardından `GRADIUM
 }
 ```
 
-| Anahtar                                        | Tür    | Açıklama                                                                                     |
-| ----------------------------------------------- | ------ | --------------------------------------------------------------------------------------------- |
-| `messages.tts.providers.gradium.apiKey`         | string | Çözümlenen API anahtarı. `${ENV}` ve secret ref'lerini destekler.                             |
-| `messages.tts.providers.gradium.baseUrl`        | string | API kaynağını geçersiz kılar. Sondaki eğik çizgiler çıkarılır. Varsayılan `https://api.gradium.ai`. |
-| `messages.tts.providers.gradium.speakerVoiceId` | string | Yönerge geçersiz kılması yokken kullanılan varsayılan ses kimliği.                            |
+| Anahtar                                         | Tür    | Açıklama                                                                                                |
+| ----------------------------------------------- | ------ | ------------------------------------------------------------------------------------------------------- |
+| `messages.tts.providers.gradium.apiKey`         | dize | Çözümlenmiş API anahtarı. `${ENV}` ve gizli bilgi referanslarını destekler.                                                    |
+| `messages.tts.providers.gradium.baseUrl`        | dize | `api.gradium.ai` üzerindeki HTTPS Gradium API URL'si. Sondaki eğik çizgiler kaldırılır. Varsayılan: `https://api.gradium.ai`. |
+| `messages.tts.providers.gradium.speakerVoiceId` | dize | Direktifle geçersiz kılma belirtilmediğinde kullanılan varsayılan ses kimliği.                                            |
 
-Çıktı ses biçimi, hedef yüzeye göre runtime tarafından otomatik olarak seçilir ve `openclaw.json` içinden yapılandırılamaz. Aşağıdaki [Çıktı](#output) bölümüne bakın.
+Çıktı biçimi hedef yüzeye göre otomatik olarak seçilir (bkz. [Çıktı](#output)) ve `openclaw.json` içinde yapılandırılamaz.
 
 ## Sesler
 
-| Ad        | Ses kimliği        |
-| --------- | ------------------ |
-| Emma      | `YTpq7expH9539ERJ` |
-| Kent      | `LFZvm12tW_z0xfGo` |
-| Tiffany   | `Eu9iL_CYe8N-Gkx_` |
-| Christina | `2H4HY2CBNyJHBCrP` |
-| Sydney    | `jtEKaLYNn6iif5PR` |
-| John      | `KWJiFWu2O9nMPYcR` |
-| Arthur    | `3jUdJyOi9pgbxBTK` |
+| Ad                 | Ses kimliği        |
+| ------------------ | ------------------ |
+| Arthur             | `3jUdJyOi9pgbxBTK` |
+| Christina          | `2H4HY2CBNyJHBCrP` |
+| Emma **(varsayılan)** | `YTpq7expH9539ERJ` |
+| John               | `KWJiFWu2O9nMPYcR` |
+| Kent               | `LFZvm12tW_z0xfGo` |
+| Sydney             | `jtEKaLYNn6iif5PR` |
+| Tiffany            | `Eu9iL_CYe8N-Gkx_` |
 
-Varsayılan ses: Emma.
+### İleti başına sesi geçersiz kılma
 
-### Mesaj başına ses geçersiz kılma
-
-Etkin konuşma ilkesi ses geçersiz kılmalarına izin verdiğinde, bir yönerge belirteci kullanarak sesleri satır içinde değiştirebilirsiniz. Sağlayıcıya özgü ses kimlikleri için `speakerVoiceId` kullanın.
+Etkin konuşma ilkesi sesi geçersiz kılmaya izin verdiğinde, bir direktif belirteciyle satır içinde sesler arasında geçiş yapın (bunların tümü eşdeğerdir ve sağlayıcıya özgü bir ses kimliği alır):
 
 ```text
 /voice:LFZvm12tW_z0xfGo
@@ -118,23 +115,23 @@ Etkin konuşma ilkesi ses geçersiz kılmalarına izin verdiğinde, bir yönerge
 /gradiumvoice:LFZvm12tW_z0xfGo
 ```
 
-Konuşma ilkesi ses geçersiz kılmalarını devre dışı bırakırsa, yönerge tüketilir ancak yok sayılır.
+Konuşma ilkesi sesi geçersiz kılmayı devre dışı bırakırsa direktif tüketilir ancak yok sayılır.
 
 ## Çıktı
 
-Runtime, çıktı biçimini hedef yüzeyden seçer. Sağlayıcı bugün başka biçimler sentezlemez.
+Çıktı biçimi hedef yüzeye göre seçilir; sağlayıcı diğer biçimleri sentezlemez.
 
-| Hedef          | Biçim       | Dosya uzantısı | Örnekleme hızı | Ses uyumlu bayrak |
-| -------------- | ----------- | -------- | ----------- | --------------------- |
-| Standart ses   | `wav`       | `.wav`   | sağlayıcı    | hayır                 |
-| Sesli not      | `opus`      | `.opus`  | sağlayıcı    | evet                  |
-| Telefon        | `ulaw_8000` | n/a      | 8 kHz        | n/a                   |
+| Hedef          | Biçim       | Dosya uzantısı | Örnekleme hızı | Sesle uyumlu işareti |
+| -------------- | ----------- | -------------- | ------------- | -------------------- |
+| Standart ses   | `wav`       | `.wav`   | sağlayıcı     | hayır                |
+| Sesli not      | `opus`      | `.opus`  | sağlayıcı     | evet                 |
+| Telefon        | `ulaw_8000` | yok            | 8 kHz         | yok                  |
 
 ## Otomatik seçim sırası
 
-Yapılandırılmış TTS sağlayıcıları arasında Gradium'un otomatik seçim sırası `30` değeridir. `messages.tts.provider` sabitlenmediğinde OpenClaw'ın etkin sağlayıcıyı nasıl seçtiği için [Metinden Konuşmaya](/tr/tools/tts) bölümüne bakın.
+Yapılandırılmış TTS sağlayıcıları arasında Gradium'un otomatik seçim sırası `30` değerindedir. `messages.tts.provider` sabitlenmediğinde OpenClaw'ın etkin sağlayıcıyı nasıl seçtiği hakkında bilgi için [Metinden Konuşmaya](/tr/tools/tts) bölümüne bakın.
 
 ## İlgili
 
 - [Metinden Konuşmaya](/tr/tools/tts)
-- [Medya Genel Bakışı](/tr/tools/media-overview)
+- [Medyaya Genel Bakış](/tr/tools/media-overview)

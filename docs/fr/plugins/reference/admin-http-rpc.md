@@ -4,11 +4,12 @@ read_when:
 summary: Point de terminaison RPC HTTP d’administration d’OpenClaw.
 title: Plugin RPC HTTP d’administration
 x-i18n:
-    generated_at: "2026-07-12T02:51:59Z"
+    generated_at: "2026-07-16T13:30:51Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 58909f4c97bfacc22d3a597939ff8724ec111995841822962c66305140aef4ba
+    source_hash: 3e3875dd776c0f4dd58977b503de22989ddab5add4dd37a0e1c7f5cb4e306044
     source_path: plugins/reference/admin-http-rpc.md
     workflow: 16
 ---
@@ -24,7 +25,7 @@ Point de terminaison RPC HTTP d’administration d’OpenClaw.
 
 ## Surface
 
-contrats : gatewayMethodDispatch
+contrats : `gatewayMethodDispatch`
 
 ## Documentation associée
 

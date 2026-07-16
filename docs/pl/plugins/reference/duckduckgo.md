@@ -1,21 +1,22 @@
 ---
 read_when:
-    - Instalujesz, konfigurujesz lub audytujesz plugin duckduckgo
+    - Instalowanie, konfigurowanie lub audytowanie pluginu duckduckgo
 summary: Dodaje obsługę dostawcy wyszukiwania internetowego.
 title: Plugin DuckDuckGo
 x-i18n:
-    generated_at: "2026-07-12T15:22:51Z"
+    generated_at: "2026-07-16T18:47:25Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 3b7960979d5dae6c64eb740dcd6f82f3f1fc466aa93cc9b64bdd08293881529c
+    source_hash: fb12e8fecf07142dec329318d78cd43286e0b0056fb1860fb46ee1c95ab63e41
     source_path: plugins/reference/duckduckgo.md
     workflow: 16
 ---
 
 # Plugin DuckDuckGo
 
-Dodaje obsługę dostawcy wyszukiwania internetowego.
+Dodaje obsługę dostawcy wyszukiwania w internecie.
 
 ## Dystrybucja
 
@@ -24,7 +25,7 @@ Dodaje obsługę dostawcy wyszukiwania internetowego.
 
 ## Powierzchnia
 
-kontrakty: webSearchProviders
+kontrakty: `webSearchProviders`
 
 ## Powiązana dokumentacja
 

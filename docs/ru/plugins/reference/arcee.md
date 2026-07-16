@@ -4,12 +4,12 @@ read_when:
 summary: Добавляет в OpenClaw поддержку провайдера моделей Arcee.
 title: Плагин Arcee
 x-i18n:
-    generated_at: "2026-07-13T18:32:40Z"
+    generated_at: "2026-07-16T17:11:15Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
-    prompt_version: 24
+    prompt_version: 32
     provider: openai
-    source_hash: 9d4880c859c2498ce3708834cdc62a8ff6babb0571672b99d62cc5c2c7299f8e
+    source_hash: 63d974b78bbe3cdd8dffc7336301575d7eee976e80ee83642c03df0cd1e2683f
     source_path: plugins/reference/arcee.md
     workflow: 16
 ---
@@ -25,8 +25,8 @@ x-i18n:
 
 ## Интерфейс
 
-провайдеры: arcee
+провайдеры: `arcee`
 
 ## Связанная документация
 
-- [arcee](/ru/providers/arcee)
+- [Arcee](/ru/providers/arcee)

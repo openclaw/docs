@@ -1,27 +1,28 @@
 ---
 read_when:
-    - Ви встановлюєте, налаштовуєте або перевіряєте Plugin memory-core
+    - Ви встановлюєте, налаштовуєте або перевіряєте Plugin memory-core на відповідність вимогам
 summary: Додає інструменти, які може викликати агент.
-title: Plugin ядра пам’яті
+title: Плагін ядра пам’яті
 x-i18n:
-    generated_at: "2026-07-12T13:30:32Z"
+    generated_at: "2026-07-16T18:20:57Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: cda6ebb02b0e4c1616f68c3c9636b269248b4c63ca5f778d7f8c48152b27f303
+    source_hash: dfdb9a85499d0a5d6f9dc9dd01d78773120d71b17dd941765442d9887c673f2d
     source_path: plugins/reference/memory-core.md
     workflow: 16
 ---
 
-# Plugin ядра пам’яті
+# Плагін Memory Core
 
 Додає інструменти, які може викликати агент.
 
 ## Розповсюдження
 
-- Пакет: `@openclaw/memory-core`
-- Спосіб установлення: включено до OpenClaw
+- Пакунок: `@openclaw/memory-core`
+- Шлях установлення: входить до складу OpenClaw
 
-## Інтерфейс
+## Поверхня
 
-контракти: інструменти
+контракти: `tools`

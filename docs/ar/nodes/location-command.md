@@ -1,15 +1,16 @@
 ---
 read_when:
-    - إضافة دعم موقع Node أو واجهة مستخدم للأذونات
+    - إضافة دعم عقدة الموقع أو واجهة مستخدم للأذونات
     - تصميم أذونات الموقع أو سلوك التشغيل في المقدمة على Android
-summary: أمر الموقع لعُقد Node ‏(`location.get`)، وأوضاع الأذونات، وسلوك Android في المقدمة
+summary: أمر الموقع للعُقد، وأوضاع أذونات المنصة، وإعداد GeoClue على Linux
 title: أمر الموقع
 x-i18n:
-    generated_at: "2026-07-12T06:11:36Z"
+    generated_at: "2026-07-16T14:23:19Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: fae9f7707620f3f743d40c07618a431a6baa7a357dda6d74021bc986cd4974b1
+    source_hash: 644229c1eafc8fc7b59bc23ba01d4ba95687ea66c4f9bd4a4cda98a87f2b6085
     source_path: nodes/location-command.md
     workflow: 16
 ---
@@ -18,12 +19,12 @@ x-i18n:
 
 - `location.get` هو أمر Node، ويُستدعى عبر `node.invoke` أو `openclaw nodes location get`.
 - معطّل افتراضيًا.
-- تستخدم إصدارات Android التابعة لجهات خارجية محدِّدًا: إيقاف / أثناء الاستخدام / دائمًا. تظل إصدارات Play مقتصرة على إيقاف / أثناء الاستخدام.
+- تستخدم إصدارات Android التابعة لجهات خارجية محددًا: إيقاف / أثناء الاستخدام / دائمًا. تظل إصدارات Play على إيقاف / أثناء الاستخدام.
 - الموقع الدقيق مفتاح تبديل منفصل.
 
-## لماذا محدِّد (وليس مجرد مفتاح تبديل)
+## لماذا محدد (وليس مجرد مفتاح تبديل)
 
-أذونات الموقع في نظام التشغيل متعددة المستويات. والموقع الدقيق هو أيضًا إذن منفصل من نظام التشغيل (في iOS 14 والإصدارات الأحدث: "Precise"، وفي Android: "fine" مقابل "coarse"). يتحكم المحدِّد داخل التطبيق في الوضع المطلوب، لكن نظام التشغيل يظل هو من يقرر الإذن الفعلي.
+أذونات الموقع في نظام التشغيل متعددة المستويات. والموقع الدقيق منحة منفصلة من نظام التشغيل أيضًا (في iOS 14+ ‏"Precise"، وفي Android ‏"fine" مقابل "coarse"). يحدد المحدد داخل التطبيق الوضع المطلوب، لكن نظام التشغيل يظل صاحب القرار في المنحة الفعلية.
 
 ## نموذج الإعدادات
 
@@ -35,17 +36,17 @@ x-i18n:
 سلوك واجهة المستخدم:
 
 - يؤدي تحديد `whileUsing` إلى طلب إذن الاستخدام في المقدمة.
-- يؤدي تحديد `always` في إصدار Android التابع لجهة خارجية إلى طلب إذن الاستخدام في المقدمة أولًا، ثم توضيح الوصول في الخلفية، ثم فتح إعدادات تطبيق Android لمنح الإذن المنفصل **Allow all the time**.
-- لا تعلن إصدارات Android Play عن إذن الموقع في الخلفية ولا تعرض `always`.
+- يؤدي تحديد `always` في إصدار Android التابع لجهة خارجية أولًا إلى طلب إذن الاستخدام في المقدمة، ثم توضيح الوصول في الخلفية، ثم فتح إعدادات تطبيق Android لمنح إذن **Allow all the time** المنفصل.
+- لا تصرّح إصدارات Android Play بإذن الموقع في الخلفية ولا تعرض `always`.
 - إذا رفض نظام التشغيل المستوى المطلوب، يعود التطبيق إلى أعلى مستوى ممنوح ويعرض الحالة.
 
 ## تعيين الأذونات (node.permissions)
 
-اختياري. تبلغ Node في macOS عن `location` عبر خريطة `permissions` في `node.list`/`node.describe`؛ وقد لا يورده iOS/Android.
+اختياري. تُبلغ Node في macOS عن `location` عبر خريطة `permissions` في `node.list`/`node.describe`؛ وقد يحذفه iOS/Android.
 
 ## الأمر: `location.get`
 
-يُستدعى عبر `node.invoke`، أو أداة CLI المساعدة:
+يُستدعى عبر `node.invoke`، أو مساعد CLI:
 
 ```bash
 openclaw nodes location get --node <idOrNameOrIp>
@@ -62,7 +63,7 @@ openclaw nodes location get --node <idOrNameOrIp> --accuracy precise --max-age 1
 }
 ```
 
-تُعيَّن أعلام CLI مباشرةً: `--location-timeout` -> `timeoutMs`، و`--max-age` -> `maxAgeMs`، و`--accuracy` -> `desiredAccuracy`.
+تُعيَّن علامات CLI مباشرةً: `--location-timeout` -> `timeoutMs`، و`--max-age` -> `maxAgeMs`، و`--accuracy` -> `desiredAccuracy`.
 
 حمولة الاستجابة:
 
@@ -82,34 +83,60 @@ openclaw nodes location get --node <idOrNameOrIp> --accuracy precise --max-age 1
 
 الأخطاء (رموز ثابتة):
 
-- `LOCATION_DISABLED`: المحدِّد في وضع الإيقاف.
+- `LOCATION_DISABLED`: المحدد متوقف.
 - `LOCATION_PERMISSION_REQUIRED`: الإذن المطلوب للوضع المحدد مفقود.
 - `LOCATION_BACKGROUND_UNAVAILABLE`: التطبيق في الخلفية، لكن الممنوح هو أثناء الاستخدام فقط.
-- `LOCATION_TIMEOUT`: لم يُحدَّد الموقع في الوقت المحدد.
-- `LOCATION_UNAVAILABLE`: فشل في النظام أو عدم توفر مزوّدي الموقع.
+- `LOCATION_TIMEOUT`: لم يتوفر تحديد للموقع في الوقت المحدد.
+- `LOCATION_UNAVAILABLE`: فشل في النظام أو لا يوجد مزودون.
 
 ## السلوك في الخلفية
 
-- لا تقبل إصدارات Android التابعة لجهات خارجية أمر `location.get` في الخلفية إلا عندما يحدد المستخدم `Always` ويمنح Android إذن الموقع في الخلفية. تضيف خدمة Node الدائمة الحالية نوع الخدمة `location` وتعرض `Location: Always` أثناء نشاطها.
-- ترفض إصدارات Android Play ووضع `While Using` أمر `location.get` عندما يكون التطبيق في الخلفية.
+- لا تقبل إصدارات Android التابعة لجهات خارجية `location.get` في الخلفية إلا عندما يحدد المستخدم `Always` ويمنح Android إذن الموقع في الخلفية. تضيف خدمة Node المستمرة الحالية نوع الخدمة `location` وتُظهر `Location: Always` أثناء نشاطها.
+- ترفض إصدارات Android Play ووضع `While Using` ‏`location.get` أثناء العمل في الخلفية.
 - قد تختلف منصات Node الأخرى.
 
-## التكامل مع النموذج والأدوات
+## مضيف Node على Linux
 
-- أداة الوكيل: الإجراء `location_get` في أداة `nodes` (تتطلب Node).
-- CLI:‏ `openclaw nodes location get --node <id>`.
-- إرشادات الوكيل: لا تستدعِه إلا عندما يكون المستخدم قد فعّل الموقع ويفهم نطاق المشاركة.
+يضيف Plugin ‏Node المضمّن لنظام Linux ‏`location.get` إلى خدمة CLI ‏`openclaw node`، بما في ذلك المضيفون بلا واجهة رسومية الذين لا يستخدمون تطبيق سطح المكتب لنظام Linux. يكون الموقع معطّلًا افتراضيًا. فعّله ضمن إدخال Plugin، ثم أعد تشغيل خدمة Node:
+
+```json5
+{
+  plugins: {
+    entries: {
+      "linux-node": {
+        config: {
+          location: { enabled: true },
+        },
+      },
+    },
+  },
+}
+```
+
+ثبّت GeoClue2 والعرض التوضيحي `where-am-i` الخاص به (`geoclue-2-demo` على Debian وUbuntu). يجب أن تسمح سياسة GeoClue الخاصة بالمضيف ووكيل التخويل لمستخدم خدمة Node.
+
+يستخدم Plugin ‏`where-am-i` بدلًا من سلسلة من استدعاءات `busctl`. يربط GeoClue إنشاء العميل وخصائصه وبدءه وتحديثاته وإيقافه باتصال عميل D-Bus واحد؛ ويحافظ العرض التوضيحي على دورة الحياة هذه مجتمعة، بينما لا تفعل ذلك عمليات `busctl` الفرعية المنفصلة. لا تُضاف أي تبعية npm.
+
+يعيّن Linux ‏`coarse` و`balanced` و`precise` إلى مستويات دقة GeoClue ‏`4` و`6` و`8`. ويتحقق من `maxAgeMs` مقارنةً بالطابع الزمني المُعاد. لا يعرض العرض التوضيحي لـ GeoClue المزود المحدد، لذا تكون `source` هي `unknown`؛ وتكون `isPrecise` صحيحة فقط عندما تكون الدقة المُبلغ عنها 100 متر أو أفضل.
+
+يستخدم Linux الأخطاء الثابتة نفسها: `LOCATION_DISABLED` و`LOCATION_TIMEOUT` و`LOCATION_UNAVAILABLE`.
+
+## تكامل النموذج والأدوات
+
+- أداة الوكيل: إجراء `location_get` الخاص بأداة `nodes` (يلزم وجود Node).
+- CLI: ‏`openclaw nodes location get --node <id>`.
+- إرشادات الوكيل: لا يُستدعى إلا عندما يفعّل المستخدم الموقع ويفهم نطاقه.
 
 ## نصوص تجربة المستخدم (مقترحة)
 
 - إيقاف: "مشاركة الموقع معطّلة."
 - أثناء الاستخدام: "فقط عندما يكون OpenClaw مفتوحًا."
-- دائمًا: "السماح بعمليات التحقق المطلوبة من الموقع أثناء عمل OpenClaw في الخلفية."
-- دقيق: "استخدام موقع GPS الدقيق. عطّل هذا الخيار لمشاركة الموقع التقريبي."
+- دائمًا: "السماح بعمليات التحقق من الموقع المطلوبة أثناء وجود OpenClaw في الخلفية."
+- دقيق: "استخدام موقع GPS الدقيق. عطّل مفتاح التبديل لمشاركة الموقع التقريبي."
 
-## ذات صلة
+## ذو صلة
 
-- [نظرة عامة على وحدات Node](/ar/nodes)
-- [تحليل الموقع في القنوات](/ar/channels/location)
+- [نظرة عامة على أجهزة Node](/ar/nodes)
+- [تحليل موقع القناة](/ar/channels/location)
 - [التقاط الصور بالكاميرا](/ar/nodes/camera)
 - [وضع التحدث](/ar/nodes/talk)

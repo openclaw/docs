@@ -1,14 +1,15 @@
 ---
 read_when:
-    - Vous installez, configurez ou auditez le plugin Deepgram
-summary: Ajoute la prise en charge des fournisseurs d’analyse des médias. Ajoute la prise en charge des fournisseurs de transcription en temps réel.
+    - Vous installez, configurez ou auditez le plugin deepgram
+summary: Ajoute la prise en charge des fournisseurs de compréhension des médias. Ajoute la prise en charge des fournisseurs de transcription en temps réel.
 title: Plugin Deepgram
 x-i18n:
-    generated_at: "2026-07-12T02:52:46Z"
+    generated_at: "2026-07-16T13:38:12Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 93383c01d5a5e1e1d412d396ec1def12f388fc7c5da102573373dbc8180497a3
+    source_hash: ababdaeda58a97236e3dd96bdf51a0ce560278bbeb20a731d05f51d28bfb4155
     source_path: plugins/reference/deepgram.md
     workflow: 16
 ---
@@ -24,8 +25,8 @@ Ajoute la prise en charge d’un fournisseur de compréhension des médias. Ajou
 
 ## Surface
 
-contrats : mediaUnderstandingProviders, realtimeTranscriptionProviders
+contrats : `mediaUnderstandingProviders`, `realtimeTranscriptionProviders`
 
 ## Documentation associée
 
-- [Deepgram](/fr/providers/deepgram)
+- [deepgram](/fr/providers/deepgram)

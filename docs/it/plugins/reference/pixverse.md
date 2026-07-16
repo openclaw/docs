@@ -1,21 +1,22 @@
 ---
 read_when:
-    - Stai installando, configurando o verificando il plugin pixverse
-summary: Plugin provider di OpenClaw per la generazione di video con PixVerse.
+    - Si sta installando, configurando o verificando il plugin pixverse
+summary: Plugin del provider di generazione video PixVerse per OpenClaw.
 title: Plugin PixVerse
 x-i18n:
-    generated_at: "2026-07-12T07:19:50Z"
+    generated_at: "2026-07-16T14:46:14Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 99ebe964ed48bcb8cc00a34fdde9269cdb02cb2c7a13f7ed2ab48b784d168b41
+    source_hash: b626078ace5566db7795bab7f1319256043620bc4a1b28706ee6aec578878836
     source_path: plugins/reference/pixverse.md
     workflow: 16
 ---
 
 # Plugin PixVerse
 
-Plugin del provider di generazione video PixVerse per OpenClaw.
+Plugin del provider OpenClaw per la generazione di video con PixVerse.
 
 ## Distribuzione
 
@@ -24,8 +25,8 @@ Plugin del provider di generazione video PixVerse per OpenClaw.
 
 ## Superficie
 
-contratti: videoGenerationProviders
+contratti: `videoGenerationProviders`
 
 ## Documentazione correlata
 
-- [pixverse](/it/providers/pixverse)
+- [PixVerse](/it/providers/pixverse)

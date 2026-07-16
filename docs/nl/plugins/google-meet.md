@@ -1,62 +1,48 @@
 ---
 read_when:
     - Je wilt dat een OpenClaw-agent deelneemt aan een Google Meet-gesprek
-    - Je wilt dat een OpenClaw-agent een nieuwe Google Meet-oproep maakt
-    - Je configureert Chrome, Chrome-node of Twilio als Google Meet-transport
-summary: 'Google Meet-Plugin: neem deel aan expliciete Meet-URL’s via Chrome of Twilio met standaardinstellingen voor agent-terugspraak'
-title: Google Meet-Plugin
+    - Je wilt dat een OpenClaw-agent een nieuw Google Meet-gesprek aanmaakt
+    - Je configureert Chrome, Chrome node of Twilio als transport voor Google Meet
+summary: 'Google Meet-plugin: neem via Chrome of Twilio deel aan expliciete Meet-URL''s met standaardinstellingen waarmee de agent kan terugpraten'
+title: Google Meet-plugin
 x-i18n:
-    generated_at: "2026-06-27T17:53:51Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T16:05:19Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: e85d531897e3aeadf0ac718f82a7aac5ce73715e182e96ceba77cb76eff094c4
+    source_hash: 5a3a0d2675bdfaeaa869652593fd1931c3afdefe0ed95f13935dade976ff038c
     source_path: plugins/google-meet.md
     workflow: 16
 ---
 
-Ondersteuning voor Google Meet-deelnemers voor OpenClaw — de Plugin is expliciet van opzet:
+De Plugin `google-meet` neemt namens een OpenClaw-agent deel via expliciete Meet-URL's. De functionaliteit is bewust beperkt:
 
-- Deze neemt alleen deel aan een expliciete `https://meet.google.com/...`-URL.
-- Deze kan via de Google Meet API een nieuwe Meet-ruimte maken en vervolgens deelnemen aan de
-  geretourneerde URL.
-- `agent` is de standaard terugspreekmodus: realtime transcriptie luistert, de
-  geconfigureerde OpenClaw-agent antwoordt, en reguliere OpenClaw-TTS spreekt in Meet.
-- `bidi` blijft beschikbaar als fallbackmodus voor een direct realtime-spraakmodel.
-- Agents kiezen het deelnamegedrag met `mode`: gebruik `agent` voor live
-  luisteren/terugspreken, `bidi` als fallback voor directe realtime spraak, of `transcribe`
-  om de browser te openen/besturen zonder de terugspreekbrug.
-- Auth start als persoonlijke Google OAuth of een al ingelogd Chrome-profiel.
-- Er is geen automatische toestemmingsaankondiging.
-- De standaard Chrome-audiobackend is `BlackHole 2ch`.
-- Chrome kan lokaal draaien of op een gekoppelde Node-host.
-- Twilio accepteert een inbelnummer plus optionele PIN of DTMF-reeks; het
-  kan niet rechtstreeks naar een Meet-URL bellen.
-- De CLI-opdracht is `googlemeet`; `meet` is gereserveerd voor bredere
-  teleconference-workflows van agents.
+- De Plugin neemt alleen deel via `https://meet.google.com/...`-URL's; de Plugin belt nooit in bij een vergadering via een telefoonnummer dat deze zelf vindt.
+- `googlemeet create` kan via de Google Meet API (of een browserfallback) een nieuwe Meet-URL genereren en neemt er standaard aan deel.
+- Deelname via Chrome gebruikt een aangemeld Chrome-profiel, eventueel op een gekoppelde Node. Deelname via Twilio belt via de [Plugin voor spraakoproepen](/nl/plugins/voice-call) een telefoonnummer plus pincode/DTMF; hiermee kan niet rechtstreeks naar een Meet-URL worden gebeld.
+- `mode: "agent"` (standaard) transcribeert spraak van deelnemers met een realtimeprovider, stuurt deze naar de geconfigureerde OpenClaw-agent en spreekt het antwoord uit met reguliere OpenClaw-TTS. Met `mode: "bidi"` kan een realtime spraakmodel rechtstreeks antwoorden. `mode: "transcribe"` neemt alleen als waarnemer deel, zonder terug te praten.
+- Er wordt niet automatisch een toestemmingsmelding afgespeeld wanneer de Plugin aan een gesprek deelneemt.
+- De CLI-opdracht is `googlemeet`; `meet` is gereserveerd voor bredere workflows voor telefonische vergaderingen met agents.
 
-## Snelstart
+## Snel aan de slag
 
-Installeer de lokale audio-afhankelijkheden en configureer een realtime-transcriptieprovider
-plus reguliere OpenClaw-TTS. OpenAI is de standaard transcriptieprovider;
-Google Gemini Live werkt ook als een afzonderlijke `bidi`-spraakfallback met
-`realtime.voiceProvider: "google"`:
+Installeer de lokale audioafhankelijkheden en stel vervolgens een sleutel voor een realtimeprovider in. OpenAI is de standaardprovider voor transcriptie in de modus `agent`; Google Gemini Live is beschikbaar als spraakprovider voor de modus `bidi`:
 
 ```bash
 brew install blackhole-2ch sox
 export OPENAI_API_KEY=sk-...
-# only needed when realtime.voiceProvider is "google" for bidi mode
+# alleen nodig wanneer realtime.voiceProvider voor de bidi-modus "google" is
 export GEMINI_API_KEY=...
 ```
 
-`blackhole-2ch` installeert het virtuele audioapparaat `BlackHole 2ch`. Het
-installatieprogramma van Homebrew vereist een herstart voordat macOS het apparaat toont:
+`blackhole-2ch` installeert het virtuele audioapparaat `BlackHole 2ch` waarlangs Chrome routeert. Het Homebrew-installatieprogramma vereist dat macOS opnieuw wordt opgestart voordat het apparaat beschikbaar is:
 
 ```bash
 sudo reboot
 ```
 
-Controleer na de herstart beide onderdelen:
+Controleer na het opnieuw opstarten beide onderdelen:
 
 ```bash
 system_profiler SPAudioDataType | grep -i BlackHole
@@ -78,47 +64,26 @@ Schakel de Plugin in:
 }
 ```
 
-Controleer de installatie:
+Controleer de installatie en neem vervolgens deel:
 
 ```bash
 openclaw googlemeet setup
+openclaw googlemeet join https://meet.google.com/abc-defg-hij
 ```
 
-De setup-uitvoer is bedoeld om door agents leesbaar en modusbewust te zijn. Deze rapporteert het Chrome-profiel,
-Node-pinning en, voor realtime Chrome-deelnames, de BlackHole/SoX-audiobrug
-en vertraagde realtime-introcontroles. Controleer voor alleen-observeren-deelnames hetzelfde
-transport met `--mode transcribe`; die modus slaat realtime audiovereisten over
-omdat deze niet via de brug luistert of spreekt:
+De uitvoer van `setup` is leesbaar voor agents en houdt rekening met modus en transport: deze rapporteert het Chrome-profiel, de vastgezette Node en, voor realtime deelname via Chrome, de BlackHole/SoX-audiobrug en de controle voor de vertraagde introductie. Deelname alleen als waarnemer slaat realtimevereisten over:
 
 ```bash
 openclaw googlemeet setup --transport chrome-node --mode transcribe
 ```
 
-Wanneer Twilio-delegatie is geconfigureerd, rapporteert setup ook of de
-`voice-call`-Plugin, Twilio-referenties en openbare Webhook-blootstelling klaar zijn.
-Behandel elke `ok: false`-controle als een blokkade voor het gecontroleerde transport en de modus
-voordat je een agent vraagt deel te nemen. Gebruik `openclaw googlemeet setup --json` voor
-scripts of machineleesbare uitvoer. Gebruik `--transport chrome`,
-`--transport chrome-node` of `--transport twilio` om een specifiek
-transport vooraf te controleren voordat een agent het probeert.
-
-Voor Twilio moet je het transport altijd expliciet vooraf controleren wanneer het standaardtransport
-Chrome is:
+Wanneer delegatie via Twilio is geconfigureerd, rapporteert `setup` ook of `voice-call`, Twilio-inloggegevens en openbare Webhook-beschikbaarheid gereed zijn. Beschouw elke `ok: false`-controle als een blokkade voor die combinatie van transport en modus voordat een agent deelneemt. Gebruik `--json` voor machineleesbare uitvoer en `--transport chrome|chrome-node|twilio` om een specifiek transport vooraf te controleren:
 
 ```bash
 openclaw googlemeet setup --transport twilio
 ```
 
-Dat vangt ontbrekende `voice-call`-bedrading, Twilio-referenties of onbereikbare
-Webhook-blootstelling op voordat de agent probeert in te bellen bij de vergadering.
-
-Neem deel aan een vergadering:
-
-```bash
-openclaw googlemeet join https://meet.google.com/abc-defg-hij
-```
-
-Of laat een agent deelnemen via de `google_meet`-tool:
+Of laat een agent deelnemen via de tool `google_meet`:
 
 ```json
 {
@@ -129,163 +94,99 @@ Of laat een agent deelnemen via de `google_meet`-tool:
 }
 ```
 
-De agentgerichte `google_meet`-tool blijft beschikbaar op niet-macOS-hosts voor
-artifact-, agenda-, setup-, transcriptie-, Twilio- en `chrome-node`-flows. Lokale
-Chrome-terugspreekacties worden daar geblokkeerd omdat het gebundelde Chrome-audiopad
-momenteel afhankelijk is van macOS `BlackHole 2ch`. Gebruik op Linux `mode: "transcribe"`,
-Twilio-inbellen of een macOS `chrome-node`-host voor Chrome-terugspreekdeelname.
+Op Gateway-hosts zonder macOS blijft `google_meet` zichtbaar voor artefact-, agenda-, installatie-, transcriptie- en Twilio-acties en voor `chrome-node`-acties, maar lokaal terugpraten via Chrome (`transport: "chrome"` met `mode: "agent"` of `"bidi"`) wordt geblokkeerd voordat de audiobrug wordt bereikt, omdat dit pad momenteel afhankelijk is van `BlackHole 2ch` in macOS. Gebruik in plaats daarvan `mode: "transcribe"`, inbellen via Twilio of een macOS-host voor `chrome-node`.
 
-Maak een nieuwe vergadering en neem eraan deel:
+### Een vergadering maken
 
 ```bash
 openclaw googlemeet create --transport chrome-node --mode agent
+openclaw googlemeet create --no-join
 ```
 
-Gebruik voor via de API gemaakte ruimtes Google Meet `SpaceConfig.accessType` wanneer je wilt
-dat het geen-aanklopbeleid van de ruimte expliciet is in plaats van overgenomen uit de standaardinstellingen
-van het Google-account:
+`create` heeft twee paden, die in het veld `source` van het resultaat worden vermeld:
+
+- **`api`**: wordt gebruikt wanneer OAuth-inloggegevens voor Google Meet zijn geconfigureerd. Deterministisch; niet afhankelijk van de status van de browserinterface.
+- **`browser`**: wordt gebruikt zonder OAuth-inloggegevens. OpenClaw opent `https://meet.google.com/new` op de vastgezette Chrome-Node en wacht tot Google omleidt naar een echte URL met een vergaderingscode; het OpenClaw-Chrome-profiel op die Node moet al bij Google zijn aangemeld. Zowel deelnemen als maken hergebruikt een bestaand Meet-tabblad (of een tabblad met een actieve `.../new`- of Google-accountprompt) voordat een nieuw tabblad wordt geopend; bij het vergelijken van tabbladen worden onschadelijke queryreeksen zoals `authuser` genegeerd.
+
+`create` neemt standaard deel en retourneert `joined: true` plus de deelnamesessie. Geef `--no-join` (CLI) of `"join": false` (tool) door om alleen de URL te genereren.
+
+Stel voor via de API gemaakte ruimten een expliciet toegangsbeleid in in plaats van de standaardinstelling van het Google-account over te nemen:
 
 ```bash
 openclaw googlemeet create --access-type OPEN --transport chrome-node --mode agent
 ```
 
-`OPEN` laat iedereen met de Meet-URL deelnemen zonder aan te kloppen. `TRUSTED` laat de
-vertrouwde gebruikers van de hostorganisatie, uitgenodigde externe gebruikers en inbelgebruikers
-deelnemen zonder aan te kloppen. `RESTRICTED` beperkt toegang zonder aankloppen tot genodigden. Deze
-instellingen zijn alleen van toepassing op het officiële aanmaakpad van de Google Meet API, dus OAuth-
-referenties moeten zijn geconfigureerd.
+| `--access-type` | Wie zonder aankloppen kan deelnemen                                  |
+| --------------- | ------------------------------------------------------------------- |
+| `OPEN`          | Iedereen met de Meet-URL                                             |
+| `TRUSTED`       | Vertrouwde gebruikers van de organisatie van de host, uitgenodigde externe gebruikers en inbellers |
+| `RESTRICTED`    | Alleen genodigden                                                    |
 
-Als je Google Meet hebt geauthenticeerd voordat deze optie beschikbaar was, voer dan opnieuw
-`openclaw googlemeet auth login --json` uit nadat je het
-`meetings.space.settings`-bereik aan je Google OAuth-toestemmingsscherm hebt toegevoegd.
+Dit geldt alleen voor via de API gemaakte ruimten, dus OAuth moet zijn geconfigureerd. Als je je hebt geauthenticeerd voordat deze optie bestond, voer je `openclaw googlemeet auth login --json` opnieuw uit nadat je het bereik `meetings.space.settings` aan je OAuth-toestemmingsscherm hebt toegevoegd.
 
-Maak alleen de URL zonder deel te nemen:
+Als de browserfallback wordt geblokkeerd door een Google-aanmelding of een Meet-machtiging, retourneert de tool `manualActionRequired: true` met `manualActionReason`, `manualActionMessage` en de `browser.nodeId`/`browser.targetId`/`browserUrl`. Meld dat bericht en open geen nieuwe Meet-tabbladen totdat de operator de browserstap heeft voltooid.
+
+### Alleen als waarnemer deelnemen
+
+Stel `"mode": "transcribe"` in om de duplex-realtimebrug over te slaan (geen BlackHole/SoX vereist, niet terugpraten). Deelname via Chrome in de transcriptiemodus slaat ook de toekenning van microfoon-/cameramachtigingen door OpenClaw en het Meet-pad **Use microphone** over; als Meet het tussenscherm voor audiokeuze toont, probeert de automatisering eerst **Continue without microphone**. Beheerde Chrome-transporten installeren in deze modus zo goed mogelijk een waarnemer voor Meet-ondertiteling. `googlemeet status --json` en `googlemeet doctor` rapporteren `captioning`, `captionsEnabledAttempted`, `transcriptLines`, `lastCaptionAt`, `lastCaptionSpeaker`, `lastCaptionText` en een `recentTranscript`-staart.
+
+Lees voor het begrensde sessietranscript exact het bijgehouden Meet-tabblad:
 
 ```bash
-openclaw googlemeet create --no-join
+openclaw googlemeet transcript <session-id>
+openclaw googlemeet transcript <session-id> --since <next-index> --json
 ```
 
-`googlemeet create` heeft twee paden:
+De waarnemer bewaart maximaal 2,000 voltooide ondertitelregels op de Meet-pagina. Zichtbare voortschrijdende tekst blijft in de gezondheidsstaart van de status staan totdat de ondertitelregel is voltooid, zodat het opslaan van `nextIndex` een latere tekstuitbreiding niet kan overslaan; bij het verlaten worden zichtbare regels vóór de momentopname voltooid. `droppedLines` rapporteert regels die aan het begin verloren zijn gegaan wanneer de limiet wordt overschreden. De vier meest recent beëindigde sessietranscripten blijven leesbaar totdat de Gateway opnieuw wordt gestart. Oudere beëindigde transcripten retourneren `evicted: true`. Dit is bewust runtimegeheugen en geen duurzame opslag voor vergadergeschiedenis: door de Gateway opnieuw te starten, het tabblad vóór een momentopname te sluiten of de gedocumenteerde limieten te overschrijden, kunnen ondertitels verloren gaan.
 
-- API-aanmaak: gebruikt wanneer Google Meet OAuth-referenties zijn geconfigureerd. Dit is
-  het meest deterministische pad en is niet afhankelijk van de browser-UI-status.
-- Browserfallback: gebruikt wanneer OAuth-referenties ontbreken. OpenClaw gebruikt de
-  gepinde Chrome-Node, opent `https://meet.google.com/new`, wacht tot Google
-  omleidt naar een echte URL met vergadercode en retourneert vervolgens die URL. Dit pad vereist
-  dat het OpenClaw Chrome-profiel op de Node al bij Google is ingelogd.
-  Browserautomatisering verwerkt de eigen eerste microfoonprompt van Meet; die prompt
-  wordt niet behandeld als een Google-inlogfout.
-  Deelname- en aanmaakflows proberen ook een bestaande Meet-tab te hergebruiken voordat ze een
-  nieuwe openen. Matching negeert onschuldige URL-querystrings zoals `authuser`, zodat een
-  nieuwe poging van een agent de al geopende vergadering zou moeten focussen in plaats van een tweede
-  Chrome-tab te maken.
+Voor een ja/nee-luistertest:
 
-De opdracht-/tooluitvoer bevat een `source`-veld (`api` of `browser`), zodat agents
-kunnen uitleggen welk pad is gebruikt. `create` neemt standaard deel aan de nieuwe vergadering en
-retourneert `joined: true` plus de deelnamesessie. Gebruik
-`create --no-join` in de CLI, of geef `"join": false` door aan de tool, om alleen de URL te maken.
-
-Of zeg tegen een agent: "Maak een Google Meet, neem eraan deel met de terugspreekmodus van de agent,
-en stuur mij de link." De agent moet `google_meet` aanroepen met
-`action: "create"` en vervolgens de geretourneerde `meetingUri` delen.
-
-```json
-{
-  "action": "create",
-  "transport": "chrome-node",
-  "mode": "agent"
-}
+```bash
+openclaw googlemeet test-listen <meet-url> --transport chrome-node
 ```
 
-Stel voor een alleen-observeren/browserbesturingsdeelname `"mode": "transcribe"` in. Dat start
-niet de duplex realtime-spraakbrug, vereist geen BlackHole of SoX,
-en zal niet terugspreken in de vergadering. Chrome-deelnames in deze modus vermijden ook
-OpenClaw's toestemmingsverlening voor microfoon/camera en vermijden het Meet-pad **Use
-microphone**. Als Meet een interstitial voor audiokeuze toont, probeert automatisering
-het pad zonder microfoon en rapporteert anders een handmatige actie in plaats van
-de lokale microfoon te openen. In transcriptiemodus installeren beheerde Chrome-transporten ook
-een best-effort Meet-ondertitelingsobserver. `googlemeet status --json` en
-`googlemeet doctor` tonen `captioning`, `captionsEnabledAttempted`,
-`transcriptLines`, `lastCaptionAt`, `lastCaptionSpeaker`, `lastCaptionText`,
-en een korte `recentTranscript`-staart, zodat operators kunnen zien of de browser
-aan het gesprek heeft deelgenomen en of Meet-ondertitels tekst produceren.
-Gebruik `openclaw googlemeet test-listen <meet-url> --transport chrome-node` wanneer
-je een ja/nee-probe nodig hebt: deze neemt deel in transcriptiemodus, wacht op nieuwe beweging in ondertitels of
-transcriptie, en retourneert `listenVerified`, `listenTimedOut`, velden voor handmatige
-actie en de nieuwste ondertitelingsstatus.
+Deze neemt deel in de transcriptiemodus, wacht op nieuwe beweging in ondertitels/transcript en retourneert `listenVerified`, `listenTimedOut`, velden voor handmatige acties en de huidige status van de ondertiteling.
 
-Tijdens realtime sessies bevat de `google_meet`-status browser- en audiobrugstatus,
-zoals `inCall`, `manualActionRequired`, `providerConnected`,
-`realtimeReady`, `audioInputActive`, `audioOutputActive`, laatste invoer-/uitvoer-
-tijdstempels, bytetellers en gesloten status van de brug. Als een veilige Meet-paginaprompt
-verschijnt, verwerkt browserautomatisering deze wanneer dat kan. Inlog-, hosttoelatings- en
-browser-/OS-toestemmingsprompts worden gerapporteerd als handmatige actie met een reden en
-bericht dat de agent kan doorgeven. Beheerde Chrome-sessies geven de intro- of
-testzin alleen weer nadat browserstatus `inCall: true` rapporteert; anders rapporteert status
-`speechReady: false` en wordt de spreekpoging geblokkeerd in plaats van te doen alsof de
-agent in de vergadering heeft gesproken.
+### Status van de realtimesessie
 
-Lokale Chrome-deelnames verlopen via het ingelogde OpenClaw-browserprofiel. Realtime modus
-vereist `BlackHole 2ch` voor het microfoon-/speakerpad dat door OpenClaw wordt gebruikt. Gebruik voor
-schone duplexaudio afzonderlijke virtuele apparaten of een Loopback-achtige grafiek; een
-enkel BlackHole-apparaat is genoeg voor een eerste rooktest, maar kan echo veroorzaken.
+Tijdens sessies waarin wordt teruggepraat, rapporteert de status `google_meet` de status van Chrome/de audiobrug: `inCall`, `manualActionRequired`, `providerConnected`, `realtimeReady`, `audioInputActive`, `audioOutputActive`, tijdstempels van de laatste invoer/uitvoer, bytetellers en de gesloten status van de brug. Beheerde Chrome-sessies spreken de introductie-/testzin alleen uit nadat de status `inCall: true` rapporteert; anders wordt `speechReady: false` gerapporteerd en wordt de spraakpoging geblokkeerd in plaats van stilzwijgend niets te doen.
 
-### Lokale Gateway + Parallels Chrome
+Lokale deelname via Chrome gebruikt het aangemelde OpenClaw-browserprofiel en vereist `BlackHole 2ch` voor het microfoon-/luidsprekerpad. Eén BlackHole-apparaat is voldoende voor een eerste rooktest, maar kan echo veroorzaken; gebruik afzonderlijke virtuele apparaten of een Loopback-achtige graaf voor zuivere duplexaudio.
 
-Je hebt **geen** volledige OpenClaw Gateway of model-API-sleutel binnen een macOS-VM
-nodig alleen om de VM eigenaar van Chrome te maken. Draai de Gateway en agent lokaal en draai vervolgens een
-Node-host in de VM. Schakel de gebundelde Plugin eenmaal in op de VM, zodat de Node
-de Chrome-opdracht adverteert:
+## Lokale Gateway + Chrome in Parallels
 
-Wat waar draait:
+Een volledige Gateway of API-sleutel voor een model is niet vereist in een macOS-VM wanneer deze alleen Chrome beschikbaar hoeft te stellen. Voer de Gateway en agent lokaal uit; voer een Node-host uit in de VM.
 
-- Gateway-host: OpenClaw Gateway, agent-werkruimte, model-/API-sleutels, realtime
-  provider en de Google Meet-Pluginconfiguratie.
-- Parallels macOS-VM: OpenClaw CLI/Node-host, Google Chrome, SoX, BlackHole 2ch,
-  en een Chrome-profiel dat bij Google is ingelogd.
-- Niet nodig in de VM: Gateway-service, agent-configuratie, OpenAI/GPT-sleutel of model-
-  providerinstelling.
+| Wordt uitgevoerd op  | Wat                                                                                             |
+| -------------------- | ----------------------------------------------------------------------------------------------- |
+| Gateway-host         | OpenClaw Gateway, agentwerkruimte, model-/API-sleutels, realtimeprovider, configuratie van de Google Meet-Plugin |
+| Parallels-macOS-VM   | OpenClaw CLI/Node-host, Chrome, SoX, BlackHole 2ch, een bij Google aangemeld Chrome-profiel     |
+| Niet nodig in de VM  | Gateway-service, agentconfiguratie, configuratie van modelprovider                              |
 
-Installeer de VM-afhankelijkheden:
+Installeer de VM-afhankelijkheden, start opnieuw op en controleer:
 
 ```bash
 brew install blackhole-2ch sox
-```
-
-Herstart de VM na het installeren van BlackHole, zodat macOS `BlackHole 2ch` toont:
-
-```bash
 sudo reboot
-```
-
-Controleer na de herstart of de VM het audioapparaat en de SoX-opdrachten kan zien:
-
-```bash
 system_profiler SPAudioDataType | grep -i BlackHole
 command -v sox
 ```
 
-Installeer of werk OpenClaw bij in de VM en schakel daar vervolgens de gebundelde Plugin in:
+Schakel de Plugin in de VM in en start de Node-host:
 
 ```bash
 openclaw plugins enable google-meet
-```
-
-Start de Node-host in de VM:
-
-```bash
 openclaw node run --host <gateway-host> --port 18789 --display-name parallels-macos
 ```
 
-Als `<gateway-host>` een LAN-IP is en je geen TLS gebruikt, weigert de Node de
-plaintext WebSocket tenzij je daar expliciet voor kiest voor dat vertrouwde privénetwerk:
+Als `<gateway-host>` een LAN-IP zonder TLS is, sta dit dan toe voor dat vertrouwde privénetwerk:
 
 ```bash
 OPENCLAW_ALLOW_INSECURE_PRIVATE_WS=1 \
   openclaw node run --host <gateway-lan-ip> --port 18789 --display-name parallels-macos
 ```
 
-Gebruik dezelfde omgevingsvariabele bij het installeren van de Node als LaunchAgent:
+Gebruik dezelfde vlag bij de installatie als LaunchAgent (het is een procesomgevingsvariabele die, wanneer deze aanwezig is in de installatieopdracht, in de LaunchAgent-omgeving wordt opgeslagen; het is geen instelling voor `openclaw.json`):
 
 ```bash
 OPENCLAW_ALLOW_INSECURE_PRIVATE_WS=1 \
@@ -293,25 +194,15 @@ OPENCLAW_ALLOW_INSECURE_PRIVATE_WS=1 \
 openclaw node restart
 ```
 
-`OPENCLAW_ALLOW_INSECURE_PRIVATE_WS=1` is een procesomgeving, geen
-`openclaw.json`-instelling. `openclaw node install` slaat deze op in de LaunchAgent-
-omgeving wanneer deze aanwezig is op de installatieopdracht.
-
-Keur de Node goed vanaf de Gateway-host:
+Keur de Node goed vanaf de Gateway-host en controleer vervolgens of deze zowel `googlemeet.chrome` als browserfunctionaliteit/`browser.proxy` aanbiedt:
 
 ```bash
 openclaw devices list
 openclaw devices approve <requestId>
-```
-
-Bevestig dat de Gateway de Node ziet en dat deze zowel `googlemeet.chrome`
-als browsercapaciteit/`browser.proxy` adverteert:
-
-```bash
 openclaw nodes status
 ```
 
-Route Meet via die Node op de Gateway-host:
+Routeer Meet via die Node:
 
 ```json5
 {
@@ -341,113 +232,67 @@ Route Meet via die Node op de Gateway-host:
 }
 ```
 
-Neem nu normaal deel vanaf de Gateway-host:
+Neem nu op de gebruikelijke manier deel vanaf de Gateway-host:
 
 ```bash
 openclaw googlemeet join https://meet.google.com/abc-defg-hij
 ```
 
-of vraag de agent de `google_meet`-tool te gebruiken met `transport: "chrome-node"`.
-
-Voor een rooktest met één opdracht die een sessie maakt of hergebruikt, een bekende
-zin uitspreekt en sessiestatus afdrukt:
+Voor een rooktest met één opdracht die een sessie maakt of hergebruikt, een bekende zin uitspreekt en de sessiestatus afdrukt:
 
 ```bash
 openclaw googlemeet test-speech https://meet.google.com/abc-defg-hij
 ```
 
-Tijdens realtime deelnemen vult de browserautomatisering van OpenClaw de gastnaam in, klikt op
-Deelnemen/Vragen om deel te nemen, en accepteert Meet's eerste-keer-keuze "Microfoon gebruiken" wanneer die
-prompt verschijnt. Tijdens alleen-observeren deelnemen of alleen-browser vergaderingen maken, gaat het
-door voorbij dezelfde prompt zonder microfoon wanneer die keuze beschikbaar is.
-Als het browserprofiel niet is ingelogd, Meet wacht op toelating door de host,
-Chrome microfoon-/cameratoestemming nodig heeft voor realtime deelnemen, of Meet vastzit
-op een prompt die automatisering niet kon oplossen, rapporteert het join/test-speech-resultaat
-`manualActionRequired: true` met `manualActionReason` en
-`manualActionMessage`. Agents moeten stoppen met opnieuw proberen deel te nemen, precies dat
-bericht plus de huidige `browserUrl`/`browserTitle` rapporteren, en pas opnieuw proberen nadat de
-handmatige browseractie is voltooid.
+Tijdens realtime deelname vult de browserautomatisering de gastnaam in, klikt op Join/Ask to join en accepteert de prompt "Use microphone" van Meet bij het eerste gebruik wanneer deze verschijnt (of "Continue without microphone" bij deelname alleen als waarnemer en het uitsluitend via de browser maken van vergaderingen). Als het profiel is afgemeld, Meet wacht op toelating door de host, Chrome microfoon-/cameramachtiging nodig heeft of Meet vastzit op een onopgeloste prompt, rapporteert het resultaat `manualActionRequired: true` met `manualActionReason` en `manualActionMessage`. Stop met opnieuw proberen, meld dat bericht plus `browserUrl`/`browserTitle` en probeer het pas opnieuw nadat de handmatige actie is voltooid.
 
-Als `chromeNode.node` is weggelaten, selecteert OpenClaw automatisch alleen wanneer precies één
-verbonden node zowel `googlemeet.chrome` als browserbesturing adverteert. Als
-meerdere geschikte nodes zijn verbonden, stel `chromeNode.node` dan in op de node-id,
-weergavenaam of externe IP.
+Als `chromeNode.node` wordt weggelaten, selecteert OpenClaw alleen automatisch wanneer precies één verbonden Node zowel `googlemeet.chrome` als browserbesturing aanbiedt; zet `chromeNode.node` vast (Node-id, weergavenaam of extern IP-adres) wanneer meerdere geschikte Nodes zijn verbonden.
 
-Veelvoorkomende foutcontroles:
+### Controles bij veelvoorkomende fouten
 
-- `Configured Google Meet node ... is not usable: offline`: de vastgezette node is
-  bekend bij de Gateway maar niet beschikbaar. Agents moeten die node behandelen als
-  diagnostische staat, niet als een bruikbare Chrome-host, en de setup-blokkade rapporteren
-  in plaats van terug te vallen op een ander transport, tenzij de gebruiker daarom vroeg.
-- `No connected Google Meet-capable node`: start `openclaw node run` in de VM,
-  keur koppeling goed, en zorg dat `openclaw plugins enable google-meet` en
-  `openclaw plugins enable browser` in de VM zijn uitgevoerd. Controleer ook dat de
-  Gateway-host beide node-commando's toestaat met
-  `gateway.nodes.allowCommands: ["googlemeet.chrome", "browser.proxy"]`.
-- `BlackHole 2ch audio device not found`: installeer `blackhole-2ch` op de host
-  die wordt gecontroleerd en herstart voordat je lokale Chrome-audio gebruikt.
-- `BlackHole 2ch audio device not found on the node`: installeer `blackhole-2ch`
-  in de VM en herstart de VM.
-- Chrome opent maar kan niet deelnemen: log in op het browserprofiel binnen de VM, of
-  houd `chrome.guestName` ingesteld voor deelnemen als gast. Automatisch deelnemen als gast gebruikt OpenClaw
-  browserautomatisering via de node-browserproxy; zorg dat de node-browserconfiguratie
-  verwijst naar het gewenste profiel, bijvoorbeeld
-  `browser.defaultProfile: "user"` of een benoemd profiel met bestaande sessie.
-- Dubbele Meet-tabbladen: laat `chrome.reuseExistingTab: true` ingeschakeld. OpenClaw
-  activeert een bestaand tabblad voor dezelfde Meet-URL voordat een nieuw wordt geopend, en
-  het maken van vergaderingen in de browser hergebruikt een lopend `https://meet.google.com/new`
-  of Google-accountprompttabblad voordat nog een wordt geopend.
-- Geen audio: routeer in Meet microfoon-/luidsprekeraudio via het virtuele audioapparaatpad
-  dat OpenClaw gebruikt; gebruik afzonderlijke virtuele apparaten of Loopback-achtige routering
-  voor schone duplexaudio.
+| Symptoom                                                  | Oplossing                                                                                                                                                                                                                                                                 |
+| -------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Configured Google Meet node ... is not usable: offline` | De vastgezette Node is bekend, maar niet beschikbaar. Meld de blokkade in de configuratie; val niet stilzwijgend terug op een ander transport, tenzij daarom wordt gevraagd.                                                                                                                                    |
+| `No connected Google Meet-capable node`                  | Voer `openclaw node run` uit in de VM, keur de koppeling goed en voer daar `openclaw plugins enable google-meet` en `openclaw plugins enable browser` uit. Controleer of `gateway.nodes.allowCommands` `googlemeet.chrome` en `browser.proxy` bevat.                              |
+| `BlackHole 2ch audio device not found`                   | Installeer `blackhole-2ch` op de host die wordt gecontroleerd en start deze opnieuw op.                                                                                                                                                                                                       |
+| `BlackHole 2ch audio device not found on the node`       | Installeer `blackhole-2ch` in de VM en start de VM opnieuw op.                                                                                                                                                                                                                |
+| Chrome wordt geopend, maar kan niet deelnemen                             | Meld je aan bij het browserprofiel in de VM of laat `chrome.guestName` ingesteld. Automatisch deelnemen als gast gebruikt OpenClaw-browserautomatisering via de browserproxy van de Node; richt `browser.defaultProfile` van de Node (of een benoemd profiel met een bestaande sessie) op het gewenste profiel. |
+| Dubbele Meet-tabbladen                                      | Laat `chrome.reuseExistingTab: true` staan. OpenClaw activeert een bestaand tabblad voor dezelfde URL en hergebruikt tijdens het maken eerst een lopend `.../new`-tabblad of een tabblad met een Google-accountprompt, voordat een ander tabblad wordt geopend.                                                                      |
+| Geen audio                                                 | Leid de microfoon/luidspreker van Meet via het virtuele audiopad dat OpenClaw gebruikt; gebruik afzonderlijke virtuele apparaten of routering zoals Loopback voor heldere duplexaudio.                                                                                                              |
 
 ## Installatieopmerkingen
 
-De standaard Chrome-terugspraak gebruikt twee externe tools:
+De standaardconfiguratie voor terugspreken via Chrome gebruikt twee externe hulpprogramma's die OpenClaw niet bundelt of herdistribueert; installeer ze als hostafhankelijkheden via Homebrew:
 
-- `sox`: opdrachtregel-audiohulpprogramma. De Plugin gebruikt expliciete CoreAudio
-  apparaatcommando's voor de standaard 24 kHz PCM16-audiobridge.
-- `blackhole-2ch`: virtuele audiodriver voor macOS. Deze maakt het `BlackHole 2ch`
-  audioapparaat dat Chrome/Meet kan gebruiken voor routering.
+- `sox`: audiohulpprogramma voor de opdrachtregel. De Plugin geeft expliciete CoreAudio-apparaatopdrachten voor de standaard PCM16-audiobrug van 24 kHz.
+- `blackhole-2ch`: virtueel audiostuurprogramma voor macOS dat het `BlackHole 2ch`-apparaat levert waar Chrome/Meet via wordt gerouteerd.
 
-OpenClaw bundelt of herdistribueert geen van beide pakketten. De docs vragen gebruikers ze
-als hostafhankelijkheden via Homebrew te installeren. SoX is gelicentieerd als
-`LGPL-2.0-only AND GPL-2.0-only`; BlackHole is GPL-3.0. Als je een
-installatieprogramma of appliance bouwt die BlackHole met OpenClaw bundelt, controleer dan de
-upstream licentievoorwaarden van BlackHole of verkrijg een aparte licentie van Existential Audio.
+SoX heeft de licentie `LGPL-2.0-only AND GPL-2.0-only`; BlackHole heeft de GPL-3.0-licentie. Als je een installatieprogramma of apparaat bouwt dat BlackHole met OpenClaw bundelt, controleer dan de upstreamlicentie van BlackHole of verkrijg een afzonderlijke licentie van Existential Audio.
 
 ## Transporten
 
+| Transport     | Gebruiken wanneer                                                                                     |
+| ------------- | -------------------------------------------------------------------------------------------- |
+| `chrome`      | Chrome/audio actief zijn op de Gateway-host                                                        |
+| `chrome-node` | Chrome/audio actief zijn op een gekoppelde Node (bijvoorbeeld een Parallels-VM met macOS)                        |
+| `twilio`      | Terugval op telefonisch inbellen via de Voice Call-Plugin, wanneer deelname via Chrome niet beschikbaar is |
+
 ### Chrome
 
-Chrome-transport opent de Meet-URL via OpenClaw-browserbesturing en neemt deel
-als het ingelogde OpenClaw-browserprofiel. Op macOS controleert de Plugin op
-`BlackHole 2ch` voor het starten. Indien geconfigureerd, voert deze ook een gezondheidscommando
-voor de audiobridge en een opstartcommando uit voordat Chrome wordt geopend. Gebruik `chrome` wanneer
-Chrome/audio op de Gateway-host draaien; gebruik `chrome-node` wanneer Chrome/audio draaien
-op een gekoppelde node zoals een Parallels macOS-VM. Kies voor lokale Chrome het
-profiel met `browser.defaultProfile`; `chrome.browserProfile` wordt doorgegeven aan
-`chrome-node`-hosts.
+Opent de Meet-URL via OpenClaw-browserbesturing en neemt deel als het aangemelde OpenClaw-browserprofiel. Op macOS controleert de Plugin vóór het starten op `BlackHole 2ch` en voert deze, indien geconfigureerd, een opdracht voor statuscontrole/het starten van de audiobrug uit voordat Chrome wordt geopend. Kies voor lokale Chrome het profiel met `browser.defaultProfile`; `chrome.browserProfile` wordt in plaats daarvan doorgegeven aan `chrome-node`-hosts.
 
 ```bash
 openclaw googlemeet join https://meet.google.com/abc-defg-hij --transport chrome
 openclaw googlemeet join https://meet.google.com/abc-defg-hij --transport chrome-node
 ```
 
-Routeer Chrome-microfoon- en luidsprekeraudio via de lokale OpenClaw-audiobridge.
-Als `BlackHole 2ch` niet is geïnstalleerd, mislukt het deelnemen met een setupfout
-in plaats van stilzwijgend deel te nemen zonder audiopad.
+Audio van de microfoon/luidspreker van Chrome wordt via de lokale OpenClaw-audiobrug geleid. Als `BlackHole 2ch` niet is geïnstalleerd, mislukt het deelnemen met een configuratiefout in plaats van zonder audiopad deel te nemen.
 
 ### Twilio
 
-Twilio-transport is een strikt belplan dat wordt gedelegeerd aan de Voice Call Plugin. Het
-parseert geen Meet-pagina's voor telefoonnummers.
+Een strikt belplan dat is gedelegeerd aan de [Voice Call-Plugin](/nl/plugins/voice-call). Meet-pagina's worden niet geparseerd op telefoonnummers; Google Meet moet een telefoonnummer en pincode voor telefonisch inbellen voor de vergadering beschikbaar stellen.
 
-Gebruik dit wanneer Chrome-deelname niet beschikbaar is of wanneer je een terugvaloptie voor telefonisch inbellen
-wilt. Google Meet moet een telefonisch inbelnummer en pincode voor de
-vergadering beschikbaar maken; OpenClaw ontdekt die niet vanaf de Meet-pagina.
-
-Schakel de Voice Call Plugin in op de Gateway-host, niet op de Chrome-node:
+Schakel Voice Call in op de Gateway-host, niet op de Chrome-Node:
 
 ```json5
 {
@@ -458,7 +303,7 @@ Schakel de Voice Call Plugin in op de Gateway-host, niet op de Chrome-node:
         enabled: true,
         config: {
           defaultTransport: "chrome-node",
-          // or set "twilio" if Twilio should be the default
+          // of stel "twilio" in als Twilio de standaard moet zijn
         },
       },
       "voice-call": {
@@ -469,7 +314,7 @@ Schakel de Voice Call Plugin in op de Gateway-host, niet op de Chrome-node:
           realtime: {
             enabled: true,
             provider: "google",
-            instructions: "Join this Google Meet as an OpenClaw agent. Be brief.",
+            instructions: "Neem als OpenClaw-agent deel aan deze Google Meet. Houd het kort.",
             toolPolicy: "safe-read-only",
             providers: {
               google: {
@@ -488,8 +333,7 @@ Schakel de Voice Call Plugin in op de Gateway-host, niet op de Chrome-node:
 }
 ```
 
-Geef Twilio-referenties op via omgeving of configuratie. De omgeving houdt
-geheimen buiten `openclaw.json`:
+Geef Twilio-inloggegevens via de omgeving door om geheimen buiten `openclaw.json` te houden:
 
 ```bash
 export TWILIO_ACCOUNT_SID=AC...
@@ -498,13 +342,9 @@ export TWILIO_FROM_NUMBER=+15550001234
 export GEMINI_API_KEY=...
 ```
 
-Gebruik in plaats daarvan `realtime.provider: "openai"` met de OpenAI provider-Plugin en
-`OPENAI_API_KEY` als dat je realtime spraakprovider is.
+Gebruik in plaats daarvan `realtime.provider: "openai"` met `OPENAI_API_KEY` als OpenAI de realtime spraakprovider is.
 
-Herstart of herlaad de Gateway na het inschakelen van `voice-call`; Plugin-configuratiewijzigingen
-verschijnen pas in een al draaiend Gateway-proces nadat het opnieuw laadt.
-
-Verifieer daarna:
+Start de Gateway opnieuw of laad deze opnieuw nadat `voice-call` is ingeschakeld; wijzigingen in de Plugin-configuratie worden pas na opnieuw laden van kracht. Controleer:
 
 ```bash
 openclaw config validate
@@ -512,9 +352,7 @@ openclaw plugins list | grep -E 'google-meet|voice-call'
 openclaw googlemeet setup
 ```
 
-Wanneer Twilio-delegatie is aangesloten, bevat `googlemeet setup` geslaagde
-controles voor `twilio-voice-call-plugin`, `twilio-voice-call-credentials` en
-`twilio-voice-call-webhook`.
+Wanneer Twilio-delegatie is aangesloten, bevat `googlemeet setup` controles voor `twilio-voice-call-plugin`, `twilio-voice-call-credentials` en `twilio-voice-call-webhook`.
 
 ```bash
 openclaw googlemeet join https://meet.google.com/abc-defg-hij \
@@ -523,7 +361,7 @@ openclaw googlemeet join https://meet.google.com/abc-defg-hij \
   --pin 123456
 ```
 
-Gebruik `--dtmf-sequence` wanneer de vergadering een aangepaste reeks nodig heeft:
+Gebruik `--dtmf-sequence` voor een aangepaste reeks, met voorafgaande `w` of komma's voor een pauze vóór de pincode:
 
 ```bash
 openclaw googlemeet join https://meet.google.com/abc-defg-hij \
@@ -532,78 +370,54 @@ openclaw googlemeet join https://meet.google.com/abc-defg-hij \
   --dtmf-sequence ww123456#
 ```
 
-## OAuth en preflight
+## OAuth en voorbereidende controle
 
-OAuth is optioneel voor het maken van een Meet-link omdat `googlemeet create` kan
-terugvallen op browserautomatisering. Configureer OAuth wanneer je officiële API-aanmaak,
-space-resolutie of Meet Media API-preflightcontroles wilt.
+OAuth is optioneel voor het maken van een Meet-link, omdat `googlemeet create` kan terugvallen op browserautomatisering. Configureer OAuth voor het maken via de officiële API, het omzetten naar een ruimte of de voorbereidende controle van de Meet Media API. Deelnemen via Chrome/Chrome-Node is nooit afhankelijk van OAuth; hiervoor worden hoe dan ook een aangemeld Chrome-profiel, BlackHole/SoX en (voor `chrome-node`) een verbonden Node gebruikt.
 
-Google Meet API-toegang gebruikt gebruikers-OAuth: maak een Google Cloud OAuth-client,
-vraag de vereiste scopes aan, autoriseer een Google-account, en sla vervolgens het
-resulterende refresh-token op in de Google Meet Plugin-configuratie of geef de
-`OPENCLAW_GOOGLE_MEET_*`-omgevingsvariabelen op.
-
-OAuth vervangt het Chrome-deelnamepad niet. Chrome- en Chrome-node-transporten
-nemen nog steeds deel via een ingelogd Chrome-profiel, BlackHole/SoX, en een verbonden
-node wanneer je browserdeelname gebruikt. OAuth is alleen voor het officiële Google
-Meet API-pad: vergaderruimtes maken, ruimtes oplossen en Meet Media API
-preflightcontroles uitvoeren.
-
-### Google-referenties maken
+### Google-inloggegevens maken
 
 In Google Cloud Console:
 
-1. Maak of selecteer een Google Cloud-project.
-2. Schakel **Google Meet REST API** in voor dat project.
-3. Configureer het OAuth-toestemmingsscherm.
-   - **Intern** is het eenvoudigst voor een Google Workspace-organisatie.
-   - **Extern** werkt voor persoonlijke/testsetups; zolang de app in Testing staat,
-     voeg je elk Google-account dat de app zal autoriseren toe als testgebruiker.
-4. Voeg de scopes toe die OpenClaw aanvraagt:
-   - `https://www.googleapis.com/auth/meetings.space.created`
-   - `https://www.googleapis.com/auth/meetings.space.readonly`
-   - `https://www.googleapis.com/auth/meetings.space.settings`
-   - `https://www.googleapis.com/auth/meetings.conference.media.readonly`
-5. Maak een OAuth-client-ID.
-   - Applicatietype: **Webapplicatie**.
-   - Geautoriseerde redirect-URI:
+<Steps>
+<Step title="Een project maken of selecteren">
+</Step>
+<Step title="De Google Meet REST API inschakelen">
+</Step>
+<Step title="Het OAuth-toestemmingsscherm configureren">
+Internal is het eenvoudigst voor een Google Workspace-organisatie. External werkt voor persoonlijke/testconfiguraties; voeg, zolang de app de status Testing heeft, elk Google-account dat de app zal autoriseren toe als testgebruiker.
+</Step>
+<Step title="De gevraagde bereiken toevoegen">
+- `https://www.googleapis.com/auth/meetings.space.created`
+- `https://www.googleapis.com/auth/meetings.space.readonly`
+- `https://www.googleapis.com/auth/meetings.space.settings`
+- `https://www.googleapis.com/auth/meetings.conference.media.readonly`
+- `https://www.googleapis.com/auth/calendar.events.readonly` (agenda opzoeken)
+- `https://www.googleapis.com/auth/drive.meet.readonly` (export van de documenttekst van transcript/slimme notitie)
 
-     ```text
-     http://localhost:8085/oauth2callback
-     ```
+</Step>
+<Step title="Een OAuth-client-ID maken">
+Applicatietype **Web application**. Geautoriseerde omleidings-URI:
 
-6. Kopieer de client-ID en het clientgeheim.
+```text
+http://localhost:8085/oauth2callback
+```
 
-`meetings.space.created` is vereist door Google Meet `spaces.create`.
-`meetings.space.readonly` laat OpenClaw Meet-URL's/codes oplossen naar ruimtes.
-`meetings.space.settings` laat OpenClaw `SpaceConfig`-instellingen doorgeven zoals
-`accessType` tijdens het maken van API-ruimtes.
-`meetings.conference.media.readonly` is voor Meet Media API-preflight en mediawerk;
-Google kan Developer Preview-inschrijving vereisen voor daadwerkelijk Media API-gebruik.
-Als je alleen browsergebaseerde Chrome-deelnames nodig hebt, sla OAuth dan volledig over.
+</Step>
+<Step title="De client-ID en het clientgeheim kopiëren">
+</Step>
+</Steps>
 
-### Het refresh-token aanmaken
+`meetings.space.created` is vereist door `spaces.create`. `meetings.space.readonly` zet Meet-URL's/-codes om naar ruimten. Met `meetings.space.settings` kan OpenClaw `SpaceConfig`-instellingen zoals `accessType` doorgeven tijdens het maken van een ruimte via de API. `meetings.conference.media.readonly` is bedoeld voor de voorbereidende controle van de Meet Media API en mediawerk; Google kan inschrijving voor Developer Preview vereisen voor daadwerkelijk gebruik van de Media API. `calendar.events.readonly` is alleen nodig voor het opzoeken in de agenda via `--today`/`--event`. `drive.meet.readonly` is alleen nodig voor de export via `--include-doc-bodies`. Als je alleen via de browser aan Chrome-sessies wilt deelnemen, kun je OAuth volledig overslaan.
 
-Configureer `oauth.clientId` en optioneel `oauth.clientSecret`, of geef ze door als
-omgevingsvariabelen, en voer daarna uit:
+### Het vernieuwingstoken genereren
+
+Configureer `oauth.clientId` en optioneel `oauth.clientSecret` (of geef ze door als omgevingsvariabelen) en voer vervolgens het volgende uit:
 
 ```bash
 openclaw googlemeet auth login --json
 ```
 
-Het commando print een `oauth`-configuratieblok met een refresh-token. Het gebruikt PKCE,
-localhost-callback op `http://localhost:8085/oauth2callback`, en een handmatige
-kopieer/plak-flow met `--manual`.
-
-Voorbeelden:
-
-```bash
-OPENCLAW_GOOGLE_MEET_CLIENT_ID="your-client-id" \
-OPENCLAW_GOOGLE_MEET_CLIENT_SECRET="your-client-secret" \
-openclaw googlemeet auth login --json
-```
-
-Gebruik handmatige modus wanneer de browser de lokale callback niet kan bereiken:
+Dit voert een PKCE-stroom uit met een localhost-callback op `http://localhost:8085/oauth2callback` en drukt een `oauth`-configuratieblok met een vernieuwingstoken af. Voeg `--manual` toe voor een kopieer-en-plakstroom wanneer de browser de lokale callback niet kan bereiken:
 
 ```bash
 OPENCLAW_GOOGLE_MEET_CLIENT_ID="your-client-id" \
@@ -611,7 +425,7 @@ OPENCLAW_GOOGLE_MEET_CLIENT_SECRET="your-client-secret" \
 openclaw googlemeet auth login --json --manual
 ```
 
-De JSON-uitvoer bevat:
+JSON-uitvoer:
 
 ```json
 {
@@ -626,7 +440,7 @@ De JSON-uitvoer bevat:
 }
 ```
 
-Sla het `oauth`-object op onder de Google Meet Plugin-configuratie:
+Sla het `oauth`-object op onder de Plugin-configuratie:
 
 ```json5
 {
@@ -647,83 +461,58 @@ Sla het `oauth`-object op onder de Google Meet Plugin-configuratie:
 }
 ```
 
-Geef de voorkeur aan omgevingsvariabelen wanneer je het refresh-token niet in configuratie wilt.
-Als zowel configuratie- als omgevingswaarden aanwezig zijn, lost de Plugin eerst
-configuratie op en daarna de omgeving als terugval.
+Gebruik bij voorkeur omgevingsvariabelen als je het vernieuwingstoken niet in de configuratie wilt opnemen; eerst wordt de configuratie verwerkt en daarna de omgeving als terugval. Als je je hebt geverifieerd voordat ondersteuning bestond voor het maken van vergaderingen, het opzoeken in de agenda of het exporteren van documenttekst, voer `openclaw googlemeet auth login --json` dan opnieuw uit zodat het vernieuwingstoken de huidige verzameling bereiken dekt.
 
-De OAuth-toestemming omvat het maken van Meet-ruimtes, leestoegang tot Meet-ruimtes, en
-leestoegang tot Meet-conferentiemedia. Als je je hebt geauthenticeerd voordat ondersteuning
-voor het maken van vergaderingen bestond, voer `openclaw googlemeet auth login --json` opnieuw uit zodat het refresh-token
-de scope `meetings.space.created` heeft.
-
-### OAuth verifiëren met doctor
-
-Voer de OAuth-doctor uit wanneer je een snelle gezondheidscontrole zonder geheimen wilt:
+### OAuth controleren met doctor
 
 ```bash
 openclaw googlemeet doctor --oauth --json
 ```
 
-Dit laadt de Chrome-runtime niet en vereist geen verbonden Chrome-node. Het
-controleert dat OAuth-configuratie bestaat en dat het refresh-token een access-token kan
-aanmaken. Het JSON-rapport bevat alleen statusvelden zoals `ok`, `configured`,
-`tokenSource`, `expiresAt`, en controleberichten; het print niet het access-token,
-refresh-token of clientgeheim.
+Dit controleert of de OAuth-configuratie bestaat en of het vernieuwingstoken een toegangstoken kan genereren, zonder de Chrome-runtime te laden of een verbonden Node te vereisen. Het rapport bevat alleen statusvelden (`ok`, `configured`, `tokenSource`, `expiresAt`, controlemeldingen) en drukt nooit het toegangstoken, vernieuwingstoken of clientgeheim af.
 
-Veelvoorkomende resultaten:
+| Controle                | Betekenis                                                                          |
+| -------------------- | -------------------------------------------------------------------------------- |
+| `oauth-config`       | `oauth.clientId` plus `oauth.refreshToken`, of een toegangstoken in de cache, is aanwezig |
+| `oauth-token`        | Het toegangstoken in de cache is nog geldig of het vernieuwingstoken heeft een nieuw token gegenereerd    |
+| `meet-spaces-get`    | De optionele controle van `--meeting` heeft een bestaande Meet-ruimte gevonden                       |
+| `meet-spaces-create` | De optionele controle van `--create-space` heeft een nieuwe Meet-ruimte gemaakt                         |
 
-| Controle             | Betekenis                                                                               |
-| -------------------- | --------------------------------------------------------------------------------------- |
-| `oauth-config`       | `oauth.clientId` plus `oauth.refreshToken`, of een gecachte toegangstoken, is aanwezig. |
-| `oauth-token`        | De gecachte toegangstoken is nog geldig, of de vernieuwingstoken heeft een nieuwe toegangstoken uitgegeven. |
-| `meet-spaces-get`    | Optionele `--meeting`-controle heeft een bestaande Meet-ruimte opgelost.                |
-| `meet-spaces-create` | Optionele `--create-space`-controle heeft een nieuwe Meet-ruimte gemaakt.               |
-
-Voer de create-controle met neveneffecten uit om ook de inschakeling van de Google Meet API en het `spaces.create`-bereik te bewijzen:
+Bewijs dat de Meet API is ingeschakeld en dat het bereik `spaces.create` beschikbaar is met de aanmaakcontrole die bijwerkingen heeft:
 
 ```bash
 openclaw googlemeet doctor --oauth --create-space --json
-openclaw googlemeet create --no-join --json
 ```
 
-`--create-space` maakt een tijdelijke Meet-URL. Gebruik dit wanneer je moet bevestigen dat de Google Cloud-project de Meet API heeft ingeschakeld en dat het geautoriseerde account het `meetings.space.created`-bereik heeft.
-
-Om leestoegang voor een bestaande vergaderruimte te bewijzen:
+Bewijs leestoegang tot een bestaande ruimte:
 
 ```bash
 openclaw googlemeet doctor --oauth --meeting https://meet.google.com/abc-defg-hij --json
 openclaw googlemeet resolve-space --meeting https://meet.google.com/abc-defg-hij
 ```
 
-`doctor --oauth --meeting` en `resolve-space` bewijzen leestoegang tot een bestaande ruimte waartoe het geautoriseerde Google-account toegang heeft. Een `403` van deze controles betekent meestal dat de Google Meet REST API is uitgeschakeld, dat de ingestemde vernieuwingstoken het vereiste bereik mist, of dat het Google-account geen toegang heeft tot die Meet-ruimte. Een vernieuwingstokenfout betekent dat je `openclaw googlemeet auth login
---json` opnieuw moet uitvoeren en het nieuwe `oauth`-blok moet opslaan.
+Een `403` bij deze controles betekent meestal dat de Meet REST API is uitgeschakeld, dat het vereiste bereik ontbreekt in het vernieuwingstoken of dat het Google-account geen toegang heeft tot die ruimte. Een fout met het vernieuwingstoken betekent dat je `openclaw googlemeet auth login --json` opnieuw moet uitvoeren en het nieuwe `oauth`-blok moet opslaan.
 
-Er zijn geen OAuth-referenties nodig voor de browserfallback. In die modus komt Google-authenticatie van het aangemelde Chrome-profiel op de geselecteerde Node, niet uit de OpenClaw-configuratie.
+Voor de browserterugval is geen OAuth nodig; Google-verificatie is daar afkomstig van het aangemelde Chrome-profiel op de geselecteerde Node, niet van de OpenClaw-configuratie.
 
-Deze omgevingsvariabelen worden geaccepteerd als fallbacks:
+Deze omgevingsvariabelen worden als terugvalopties geaccepteerd:
 
 - `OPENCLAW_GOOGLE_MEET_CLIENT_ID` of `GOOGLE_MEET_CLIENT_ID`
 - `OPENCLAW_GOOGLE_MEET_CLIENT_SECRET` of `GOOGLE_MEET_CLIENT_SECRET`
 - `OPENCLAW_GOOGLE_MEET_REFRESH_TOKEN` of `GOOGLE_MEET_REFRESH_TOKEN`
 - `OPENCLAW_GOOGLE_MEET_ACCESS_TOKEN` of `GOOGLE_MEET_ACCESS_TOKEN`
-- `OPENCLAW_GOOGLE_MEET_ACCESS_TOKEN_EXPIRES_AT` of
-  `GOOGLE_MEET_ACCESS_TOKEN_EXPIRES_AT`
+- `OPENCLAW_GOOGLE_MEET_ACCESS_TOKEN_EXPIRES_AT` of `GOOGLE_MEET_ACCESS_TOKEN_EXPIRES_AT`
 - `OPENCLAW_GOOGLE_MEET_DEFAULT_MEETING` of `GOOGLE_MEET_DEFAULT_MEETING`
 - `OPENCLAW_GOOGLE_MEET_PREVIEW_ACK` of `GOOGLE_MEET_PREVIEW_ACK`
 
-Los een Meet-URL, code of `spaces/{id}` op via `spaces.get`:
+### Artefacten herleiden, vooraf controleren en lezen
 
 ```bash
 openclaw googlemeet resolve-space --meeting https://meet.google.com/abc-defg-hij
-```
-
-Voer preflight uit vóór mediawerk:
-
-```bash
 openclaw googlemeet preflight --meeting https://meet.google.com/abc-defg-hij
 ```
 
-Geef vergaderartefacten en aanwezigheid weer nadat Meet conferentierecords heeft gemaakt:
+Nadat Meet conferentierecords heeft aangemaakt:
 
 ```bash
 openclaw googlemeet artifacts --meeting https://meet.google.com/abc-defg-hij
@@ -731,9 +520,9 @@ openclaw googlemeet attendance --meeting https://meet.google.com/abc-defg-hij
 openclaw googlemeet export --meeting https://meet.google.com/abc-defg-hij --output ./meet-export
 ```
 
-Met `--meeting` gebruiken `artifacts` en `attendance` standaard het nieuwste conferentierecord. Geef `--all-conference-records` mee wanneer je elk bewaard record voor die vergadering wilt.
+Met `--meeting` gebruiken `artifacts` en `attendance` standaard het nieuwste conferentierecord; geef `--all-conference-records` door voor elk bewaard record.
 
-Agenda-opzoeking kan de vergader-URL uit Google Calendar oplossen voordat Meet-artefacten worden gelezen:
+Bij het opzoeken in de agenda wordt de vergader-URL vanuit Google Calendar herleid voordat artefacten worden gelezen (hiervoor is een vernieuwingstoken vereist met het alleen-lezenbereik voor Calendar-gebeurtenissen):
 
 ```bash
 openclaw googlemeet latest --today
@@ -742,10 +531,9 @@ openclaw googlemeet artifacts --event "Weekly sync"
 openclaw googlemeet attendance --today --format csv --output attendance.csv
 ```
 
-`--today` doorzoekt de `primary`-agenda van vandaag naar een Calendar-afspraak met een Google Meet-link. Gebruik `--event <query>` om overeenkomende afspraaktekst te zoeken, en `--calendar <id>` voor een niet-primaire agenda. Agenda-opzoeking vereist een nieuwe OAuth-login die het alleen-lezenbereik voor Calendar-afspraken bevat.
-`calendar-events` toont een voorbeeld van de overeenkomende Meet-afspraken en markeert de afspraak die `latest`, `artifacts`, `attendance` of `export` zal kiezen.
+`--today` doorzoekt de `primary`-agenda van vandaag naar een gebeurtenis met een Meet-link; `--event <query>` zoekt naar overeenkomende gebeurtenistekst; `--calendar <id>` richt zich op een niet-primaire agenda. `calendar-events` toont een voorbeeld van overeenkomende gebeurtenissen en markeert welke `latest`/`artifacts`/`attendance`/`export` zal kiezen.
 
-Als je de conferentierecord-id al weet, adresseer die dan direct:
+Als je de id van het conferentierecord al kent, kun je het rechtstreeks adresseren:
 
 ```bash
 openclaw googlemeet latest --meeting https://meet.google.com/abc-defg-hij
@@ -753,23 +541,19 @@ openclaw googlemeet artifacts --conference-record conferenceRecords/abc123 --jso
 openclaw googlemeet attendance --conference-record conferenceRecords/abc123 --json
 ```
 
-Beëindig een actieve conferentie voor een via de API gemaakte ruimte wanneer je de ruimte na het gesprek wilt sluiten:
+Sluit de ruimte voor een via de API aangemaakte ruimte:
 
 ```bash
 openclaw googlemeet end-active-conference https://meet.google.com/abc-defg-hij
 ```
 
-Dit roept Google Meet `spaces.endActiveConference` aan en vereist OAuth met het `meetings.space.created`-bereik voor een ruimte die het geautoriseerde account kan beheren.
-OpenClaw accepteert een Meet-URL, vergadercode of `spaces/{id}`-invoer en lost die op naar de API-ruimteresource voordat de actieve conferentie wordt beëindigd.
-Dit staat los van `googlemeet leave`: `leave` stopt OpenClaw's lokale/sessie-deelname, terwijl `end-active-conference` Google Meet vraagt de actieve conferentie voor de ruimte te beëindigen.
+Roept `spaces.endActiveConference` aan en vereist OAuth met het bereik `meetings.space.created` voor een ruimte die het geautoriseerde account kan beheren. Accepteert een Meet-URL, vergadercode of `spaces/{id}` en herleidt deze eerst tot de API-ruimtebron. Dit staat los van `googlemeet leave`: `leave` stopt de lokale/sessiedeelname van OpenClaw; `end-active-conference` vraagt Google Meet de actieve conferentie voor de ruimte te beëindigen.
 
 Schrijf een leesbaar rapport:
 
 ```bash
 openclaw googlemeet artifacts --conference-record conferenceRecords/abc123 \
   --format markdown --output meet-artifacts.md
-openclaw googlemeet attendance --conference-record conferenceRecords/abc123 \
-  --format markdown --output meet-attendance.md
 openclaw googlemeet attendance --conference-record conferenceRecords/abc123 \
   --format csv --output meet-attendance.csv
 openclaw googlemeet export --conference-record conferenceRecords/abc123 \
@@ -778,58 +562,13 @@ openclaw googlemeet export --conference-record conferenceRecords/abc123 \
   --include-doc-bodies --dry-run
 ```
 
-`artifacts` retourneert metadata van conferentierecords plus metadata van deelnemer-, opname-, transcript-, gestructureerde transcriptvermelding- en smart-note-resources wanneer Google die voor de vergadering beschikbaar stelt. Gebruik `--no-transcript-entries` om het opzoeken van vermeldingen voor grote vergaderingen over te slaan. `attendance` breidt deelnemers uit naar deelnemer-sessierijen met eerste/laatste gezien-tijden, totale sessieduur, te-laat-/vroeg-vertrek-vlaggen, en dubbele deelnemerresources samengevoegd op basis van aangemelde gebruiker of weergavenaam. Geef `--no-merge-duplicates` mee om ruwe deelnemerresources gescheiden te houden, `--late-after-minutes` om te-laatdetectie af te stemmen, en `--early-before-minutes` om vroeg-vertrekdetectie af te stemmen.
+`artifacts` retourneert metadata van conferentierecords plus bronmetadata voor deelnemers, opnamen, transcripties, gestructureerde transcriptvermeldingen en slimme notities wanneer Google deze beschikbaar stelt. `--no-transcript-entries` slaat het opzoeken van vermeldingen over voor grote vergaderingen. `attendance` breidt deelnemers uit naar deelnemerssessierijen met tijdstippen waarop ze voor het eerst en laatst zijn gezien, de totale sessieduur, markeringen voor te laat komen/vroeg vertrekken en dubbele deelnemersbronnen die zijn samengevoegd op basis van de aangemelde gebruiker of weergavenaam; `--no-merge-duplicates` houdt onbewerkte bronnen gescheiden, `--late-after-minutes`/`--early-before-minutes` passen de drempelwaarden aan.
 
-`export` schrijft een map met `summary.md`, `attendance.csv`, `transcript.md`, `artifacts.json`, `attendance.json` en `manifest.json`.
-`manifest.json` registreert de gekozen invoer, exportopties, conferentierecords, uitvoerbestanden, aantallen, tokenbron, Calendar-afspraak wanneer die is gebruikt, en eventuele waarschuwingen over gedeeltelijke ophaling. Geef `--zip` mee om ook een draagbaar archief naast de map te schrijven. Geef `--include-doc-bodies` mee om gekoppelde transcript- en smart-note-Google Docs-tekst te exporteren via Google Drive `files.export`; dit vereist een nieuwe OAuth-login die het alleen-lezenbereik voor Drive Meet bevat. Zonder `--include-doc-bodies` bevatten exports alleen Meet-metadata en gestructureerde transcriptvermeldingen. Als Google een gedeeltelijke artefactfout retourneert, zoals een smart-note-lijst-, transcriptvermelding- of Drive-documenttekstfout, bewaren de samenvatting en manifest de waarschuwing in plaats van de hele export te laten mislukken.
-Gebruik `--dry-run` om dezelfde artefact-/aanwezigheidsgegevens op te halen en de manifest-JSON af te drukken zonder de map of ZIP te maken. Dat is nuttig voordat je een grote export schrijft of wanneer een agent alleen aantallen, geselecteerde records en waarschuwingen nodig heeft.
+`export` schrijft een map met `summary.md`, `attendance.csv`, `transcript.md`, `artifacts.json`, `attendance.json` en `manifest.json`. `manifest.json` registreert de gekozen invoer, exportopties, conferentierecords, uitvoerbestanden, aantallen, tokenbron, eventueel gebruikte Calendar-gebeurtenissen en waarschuwingen voor gedeeltelijk ophalen. `--zip` schrijft ook een overdraagbaar archief naast de map. `--include-doc-bodies` exporteert de tekst van gekoppelde Google Docs met transcripties/slimme notities via Drive `files.export` (vereist het alleen-lezenbereik van Drive voor Meet); zonder dit bereik bevatten exports alleen Meet-metadata en gestructureerde transcriptvermeldingen. Bij een gedeeltelijke artefactfout (fout bij het weergeven van slimme notities, transcriptvermeldingen of documentinhoud) blijft de waarschuwing in de samenvatting/het manifest staan in plaats van dat de hele export mislukt. `--dry-run` haalt dezelfde gegevens op en drukt de manifest-JSON af zonder de map of het ZIP-bestand aan te maken.
 
-Agenten kunnen dezelfde bundel ook maken via de `google_meet`-tool:
+Agents gebruiken dezelfde acties via de tool `google_meet` (`export`, `create` met `accessType`, `end_active_conference`, `test_listen`); zie [Tool](#tool).
 
-```json
-{
-  "action": "export",
-  "conferenceRecord": "conferenceRecords/abc123",
-  "includeDocumentBodies": true,
-  "outputDir": "meet-export",
-  "zip": true
-}
-```
-
-Stel `"dryRun": true` in om alleen het exportmanifest te retourneren en bestandswrites over te slaan.
-
-Agenten kunnen ook een API-ondersteunde ruimte maken met een expliciet toegangsbeleid:
-
-```json
-{
-  "action": "create",
-  "transport": "chrome-node",
-  "mode": "agent",
-  "accessType": "OPEN"
-}
-```
-
-En ze kunnen de actieve conferentie voor een bekende ruimte beëindigen:
-
-```json
-{
-  "action": "end_active_conference",
-  "meeting": "https://meet.google.com/abc-defg-hij"
-}
-```
-
-Voor listen-first-validatie moeten agenten `test_listen` gebruiken voordat ze claimen dat de vergadering nuttig is:
-
-```json
-{
-  "action": "test_listen",
-  "url": "https://meet.google.com/abc-defg-hij",
-  "transport": "chrome-node",
-  "timeoutMs": 30000
-}
-```
-
-Voer de bewaakte live smoke uit tegen een echte bewaarde vergadering:
+### Live-rooktest
 
 ```bash
 OPENCLAW_LIVE_TEST=1 \
@@ -837,39 +576,28 @@ OPENCLAW_GOOGLE_MEET_LIVE_MEETING=https://meet.google.com/abc-defg-hij \
 pnpm test:live -- extensions/google-meet/google-meet.live.test.ts
 ```
 
-Voer de live listen-first-browserprobe uit tegen een vergadering waarin iemand zal spreken en Meet-ondertiteling beschikbaar is:
-
 ```bash
 openclaw googlemeet setup --transport chrome-node --mode transcribe
 openclaw googlemeet test-listen https://meet.google.com/abc-defg-hij --transport chrome-node --timeout-ms 30000
 ```
 
-Live smoke-omgeving:
+| Variabele                                                                                                                 | Doel                                                                   |
+| ------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------- |
+| `OPENCLAW_LIVE_TEST=1`                                                                                                    | Schakelt afgeschermde live-tests in                                    |
+| `OPENCLAW_GOOGLE_MEET_LIVE_MEETING`                                                                                       | Bewaarde Meet-URL, code of `spaces/{id}`                               |
+| `OPENCLAW_GOOGLE_MEET_CLIENT_ID` / `GOOGLE_MEET_CLIENT_ID`                                                                | OAuth-client-id                                                        |
+| `OPENCLAW_GOOGLE_MEET_REFRESH_TOKEN` / `GOOGLE_MEET_REFRESH_TOKEN`                                                        | Vernieuwingstoken                                                      |
+| `OPENCLAW_GOOGLE_MEET_CLIENT_SECRET`, `OPENCLAW_GOOGLE_MEET_ACCESS_TOKEN`, `OPENCLAW_GOOGLE_MEET_ACCESS_TOKEN_EXPIRES_AT` | Optioneel; dezelfde terugvalnamen zonder het voorvoegsel `OPENCLAW_` werken ook |
 
-- `OPENCLAW_LIVE_TEST=1` schakelt bewaakte live tests in.
-- `OPENCLAW_GOOGLE_MEET_LIVE_MEETING` wijst naar een bewaarde Meet-URL, code of
-  `spaces/{id}`.
-- `OPENCLAW_GOOGLE_MEET_CLIENT_ID` of `GOOGLE_MEET_CLIENT_ID` levert de OAuth-client-id.
-- `OPENCLAW_GOOGLE_MEET_REFRESH_TOKEN` of `GOOGLE_MEET_REFRESH_TOKEN` levert de vernieuwingstoken.
-- Optioneel: `OPENCLAW_GOOGLE_MEET_CLIENT_SECRET`,
-  `OPENCLAW_GOOGLE_MEET_ACCESS_TOKEN` en
-  `OPENCLAW_GOOGLE_MEET_ACCESS_TOKEN_EXPIRES_AT` gebruiken dezelfde fallbacknamen
-  zonder het `OPENCLAW_`-voorvoegsel.
+De basisrooktest voor artefacten/aanwezigheid vereist `meetings.space.readonly` en `meetings.conference.media.readonly`. Opzoeken in de agenda vereist `calendar.events.readonly`. Voor het exporteren van documentinhoud uit Drive is `drive.meet.readonly` vereist.
 
-De live smoke voor basisartefacten/aanwezigheid heeft
-`https://www.googleapis.com/auth/meetings.space.readonly` en
-`https://www.googleapis.com/auth/meetings.conference.media.readonly` nodig. Agenda-opzoeking heeft `https://www.googleapis.com/auth/calendar.events.readonly` nodig. Export van documenttekst uit Drive heeft
-`https://www.googleapis.com/auth/drive.meet.readonly` nodig.
-
-Maak een nieuwe Meet-ruimte:
+### Aanmaakvoorbeelden
 
 ```bash
 openclaw googlemeet create
 ```
 
-De opdracht drukt de nieuwe `meeting uri`, bron en joinsessie af. Met OAuth-referenties gebruikt deze de officiële Google Meet API. Zonder OAuth-referenties gebruikt deze als fallback het aangemelde browserprofiel van de vastgezette Chrome-Node. Agenten kunnen de `google_meet`-tool gebruiken met `action: "create"` om in één stap te maken en deel te nemen. Geef `"join": false` mee voor alleen-URL-creatie.
-
-Voorbeeld van JSON-uitvoer van de browserfallback:
+Drukt de nieuwe vergader-URI, bron en deelnamesessie af. Met OAuth gebruikt dit de Meet API; zonder OAuth het aangemelde profiel van de vastgezette Chrome-Node. JSON van de browserterugval:
 
 ```json
 {
@@ -889,7 +617,7 @@ Voorbeeld van JSON-uitvoer van de browserfallback:
 }
 ```
 
-Als de browserfallback Google-login of een Meet-machtigingsblokkade tegenkomt voordat deze de URL kan maken, retourneert de Gateway-methode een mislukte respons en retourneert de `google_meet`-tool gestructureerde details in plaats van een platte string:
+Als de browserterugval eerst op de Google-aanmelding of een blokkering van Meet-machtigingen stuit, retourneert `google_meet` gestructureerde details in plaats van een gewone tekenreeks:
 
 ```json
 {
@@ -907,9 +635,7 @@ Als de browserfallback Google-login of een Meet-machtigingsblokkade tegenkomt vo
 }
 ```
 
-Wanneer een agent `manualActionRequired: true` ziet, moet deze de `manualActionMessage` plus de browser-Node-/tabcontext rapporteren en stoppen met het openen van nieuwe Meet-tabbladen totdat de operator de browserstap voltooit.
-
-Voorbeeld van JSON-uitvoer van API-create:
+JSON bij aanmaken via de API:
 
 ```json
 {
@@ -930,32 +656,13 @@ Voorbeeld van JSON-uitvoer van API-create:
 }
 ```
 
-Een Meet maken neemt standaard deel. Het Chrome- of Chrome-node-transport heeft nog steeds
-een aangemeld Google Chrome-profiel nodig om via de browser deel te nemen. Als het
-profiel is afgemeld, meldt OpenClaw `manualActionRequired: true` of een
-browserfallbackfout en vraagt het de operator om de Google-login af te ronden voordat
-opnieuw wordt geprobeerd.
+Bij het aanmaken wordt standaard deelgenomen, maar Chrome/Chrome-Node heeft nog steeds een aangemeld Google-profiel nodig om via de browser deel te nemen; als het profiel is afgemeld, meldt OpenClaw `manualActionRequired: true` of een browserterugvalfout en wordt de beheerder gevraagd de Google-aanmelding te voltooien voordat die het opnieuw probeert.
 
-Stel `preview.enrollmentAcknowledged: true` alleen in nadat je hebt bevestigd dat je Cloud-
-project, OAuth-principal en vergaderdeelnemers zijn ingeschreven in het Google
-Workspace Developer Preview Program voor Meet-media-API's.
+Stel `preview.enrollmentAcknowledged: true` pas in nadat je hebt bevestigd dat je Cloud-project, OAuth-principal en vergaderdeelnemers zijn ingeschreven voor het Google Workspace Developer Preview Program voor Meet-media-API's.
 
 ## Configuratie
 
-Het algemene Chrome-agentpad heeft alleen de ingeschakelde Plugin, BlackHole, SoX, een
-providersleutel voor realtime transcriptie en een geconfigureerde OpenClaw TTS-provider nodig.
-OpenAI is de standaardprovider voor transcriptie; stel `realtime.voiceProvider` in op
-`"google"` en `realtime.model` om Google Gemini Live te gebruiken voor de `bidi`-modus
-zonder de standaard transcriptieprovider voor agentmodus te wijzigen:
-
-```bash
-brew install blackhole-2ch sox
-export OPENAI_API_KEY=sk-...
-# or
-export GEMINI_API_KEY=...
-```
-
-Stel de Plugin-configuratie in onder `plugins.entries.google-meet.config`:
+Voor het algemene Chrome-Agent-pad hoeven alleen de Plugin, BlackHole en SoX te zijn ingeschakeld en moeten een sleutel voor een realtimeprovider en een OpenClaw TTS-provider zijn geconfigureerd:
 
 ```json5
 {
@@ -970,65 +677,44 @@ Stel de Plugin-configuratie in onder `plugins.entries.google-meet.config`:
 }
 ```
 
-Standaardwaarden:
+### Standaardwaarden
 
-- `defaultTransport: "chrome"`
-- `defaultMode: "agent"` (`"realtime"` wordt alleen geaccepteerd als verouderde
-  compatibiliteitsalias voor `"agent"`; nieuwe toolaanroepen moeten `"agent"` zeggen)
-- `chromeNode.node`: optionele Node-id/naam/IP voor `chrome-node`
-- `chrome.audioBackend: "blackhole-2ch"`
-- `chrome.guestName: "OpenClaw Agent"`: naam die wordt gebruikt op het afgemelde Meet-gastscherm
-- `chrome.autoJoin: true`: best-effort invullen van gastnaam en klikken op Nu deelnemen
-  via OpenClaw-browserautomatisering op `chrome-node`
-- `chrome.reuseExistingTab: true`: activeer een bestaand Meet-tabblad in plaats van
-  duplicaten te openen
-- `chrome.waitForInCallMs: 20000`: wacht tot het Meet-tabblad meldt dat het in gesprek is
-  voordat de terugspreekintro wordt geactiveerd
-- `chrome.audioFormat: "pcm16-24khz"`: audioformaat voor opdrachtparen. Gebruik
-  `"g711-ulaw-8khz"` alleen voor verouderde/aangepaste opdrachtparen die nog
-  telefonieaudio uitzenden.
-- `chrome.audioBufferBytes: 4096`: SoX-verwerkingsbuffer voor gegenereerde Chrome-
-  audio-opdrachten met opdrachtparen. Dit is de helft van SoX' standaardbuffer van 8192 bytes,
-  waardoor de standaardpijplijnlatentie wordt verlaagd en er ruimte blijft om deze op drukke hosts te verhogen.
-  Waarden onder het minimum van SoX worden vastgezet op 17 bytes.
-- `chrome.audioInputCommand`: SoX-opdracht die leest uit CoreAudio `BlackHole 2ch`
-  en audio schrijft in `chrome.audioFormat`
-- `chrome.audioOutputCommand`: SoX-opdracht die audio leest in `chrome.audioFormat`
-  en schrijft naar CoreAudio `BlackHole 2ch`
-- `chrome.bargeInInputCommand`: optionele lokale microfoonopdracht die
-  gesigneerde 16-bits little-endian mono-PCM schrijft voor detectie van menselijke interrupties terwijl
-  assistentweergave actief is. Dit is momenteel van toepassing op de door Gateway gehoste
-  `chrome`-brug met opdrachtparen.
-- `chrome.bargeInRmsThreshold: 650`: RMS-niveau dat telt als een menselijke
-  interruptie op `chrome.bargeInInputCommand`
-- `chrome.bargeInPeakThreshold: 2500`: piekniveau dat telt als een menselijke
-  interruptie op `chrome.bargeInInputCommand`
-- `chrome.bargeInCooldownMs: 900`: minimale vertraging tussen herhaalde
-  resets door menselijke interrupties
-- `mode: "agent"`: standaard terugspreekmodus. Spraak van deelnemers wordt getranscribeerd door
-  de geconfigureerde realtime transcriptieprovider, naar de geconfigureerde
-  OpenClaw-agent gestuurd in een subagentsessie per vergadering, en terug uitgesproken via de
-  normale OpenClaw TTS-runtime.
-- `mode: "bidi"`: fallbackmodus voor een direct bidirectioneel realtime model. De
-  realtime spraakprovider beantwoordt spraak van deelnemers direct en kan
-  `openclaw_agent_consult` aanroepen voor diepere, door tools ondersteunde antwoorden.
-- `mode: "transcribe"`: alleen-observerenmodus zonder de terugspreekbrug.
-- `realtime.provider: "openai"`: compatibiliteitsfallback die wordt gebruikt wanneer de hieronder gescopete
-  providervelden niet zijn ingesteld.
-- `realtime.transcriptionProvider: "openai"`: provider-id die door de `agent`-modus
-  wordt gebruikt voor realtime transcriptie.
-- `realtime.voiceProvider`: provider-id die door de `bidi`-modus wordt gebruikt voor directe realtime
-  spraak. Stel dit in op `"google"` om Gemini Live te gebruiken terwijl transcriptie in agentmodus
-  op OpenAI blijft.
-- `realtime.toolPolicy: "safe-read-only"`
-- `realtime.instructions`: korte gesproken antwoorden, met
-  `openclaw_agent_consult` voor diepere antwoorden
-- `realtime.introMessage`: korte gesproken gereedheidscontrole wanneer de realtime brug
-  verbinding maakt; stel dit in op `""` om stil deel te nemen
-- `realtime.agentId`: optionele OpenClaw-agent-id voor
-  `openclaw_agent_consult`; standaard is `main`
+| Sleutel                           | Standaard                                | Opmerkingen                                                                                                                                                                                                       |
+| --------------------------------- | ---------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `defaultTransport`                | `"chrome"`                               |                                                                                                                                                                                                                   |
+| `defaultMode`                     | `"agent"`                                | `"realtime"` wordt geaccepteerd als verouderde alias voor `"agent"`; nieuwe aanroepers moeten `"agent"` gebruiken                                                                                                                        |
+| `chromeNode.node`                 | niet ingesteld                          | Node-id/-naam/-IP voor `chrome-node`; vereist wanneer meer dan één geschikte Node verbonden kan zijn                                                                                                                      |
+| `chrome.launch`                   | `true`                                   | Start Chrome om deel te nemen; stel `false` alleen in wanneer je een reeds geopende sessie hergebruikt                                                                                                                                 |
+| `chrome.audioBackend`             | `"blackhole-2ch"`                        |                                                                                                                                                                                                                   |
+| `chrome.guestName`                | `"OpenClaw Agent"`                       | Wordt weergegeven op het Meet-gastscherm wanneer je niet bent ingelogd                                                                                                                                                                         |
+| `chrome.autoJoin`                 | `true`                                   | Best-effort invullen van de gastnaam en klikken op Join Now voor `chrome-node`                                                                                                                                                   |
+| `chrome.reuseExistingTab`         | `true`                                   | Activeert een bestaand Meet-tabblad in plaats van duplicaten te openen                                                                                                                                                      |
+| `chrome.waitForInCallMs`          | `20000`                                  | Wacht tot het Meet-tabblad meldt dat het gesprek actief is voordat de terugspreekintro wordt gestart                                                                                                                                          |
+| `chrome.audioFormat`              | `"pcm16-24khz"`                          | Audio-indeling voor opdrachtparen; `"g711-ulaw-8khz"` is alleen bedoeld voor verouderde/aangepaste opdrachtparen die telefonieaudio uitvoeren                                                                                                   |
+| `chrome.audioBufferBytes`         | `4096`                                   | SoX-verwerkingsbuffer voor gegenereerde audio-opdrachten van opdrachtparen (de helft van SoX' standaardbuffer van 8192 bytes, waardoor de pijplijnlatentie afneemt); waarden worden begrensd op minimaal 17 bytes                                         |
+| `chrome.audioInputCommand`        | gegenereerde SoX-opdracht                | Leest van CoreAudio `BlackHole 2ch` en schrijft audio in `chrome.audioFormat`                                                                                                                                        |
+| `chrome.audioOutputCommand`       | gegenereerde SoX-opdracht                | Leest audio in `chrome.audioFormat` en schrijft naar CoreAudio `BlackHole 2ch`                                                                                                                                          |
+| `chrome.bargeInInputCommand`      | niet ingesteld                          | Optionele lokale microfoonopdracht die ondertekende 16-bits little-endian mono-PCM schrijft voor detectie van menselijke onderbrekingen tijdens het afspelen van de assistent; van toepassing op de door de Gateway gehoste opdrachtpaarbridge                          |
+| `chrome.bargeInRmsThreshold`      | `650`                                    | RMS-niveau dat als menselijke onderbreking wordt beschouwd                                                                                                                                                                           |
+| `chrome.bargeInPeakThreshold`     | `2500`                                   | Piekniveau dat als menselijke onderbreking wordt beschouwd                                                                                                                                                                          |
+| `chrome.bargeInCooldownMs`        | `900`                                    | Minimale vertraging tussen herhaalde wisacties voor onderbrekingen                                                                                                                                                                |
+| `mode` (per verzoek)              | `"agent"`                                | Terugspreekmodus; zie de tabel [Agent- en bidi-modi](#agent-and-bidi-modes)                                                                                                                                       |
+| `realtime.provider`               | `"openai"`                               | Compatibiliteitsterugval die wordt gebruikt wanneer de onderstaande velden binnen het bereik niet zijn ingesteld                                                                                                                                                |
+| `realtime.transcriptionProvider`  | `"openai"`                               | Provider-id die door de modus `agent` wordt gebruikt voor realtime transcriptie                                                                                                                                                       |
+| `realtime.voiceProvider`          | niet ingesteld                          | Provider-id die door de modus `bidi` wordt gebruikt voor directe realtime spraak; stel in op `"google"` voor Gemini Live terwijl transcriptie in agentmodus OpenAI blijft gebruiken. Combineer met `realtime.model` om het specifieke Gemini Live-model te kiezen. |
+| `realtime.toolPolicy`             | `"safe-read-only"`                       | Zie [Agent- en bidi-modi](#agent-and-bidi-modes)                                                                                                                                                                 |
+| `realtime.instructions`           | korte instructies voor gesproken antwoorden | Instrueert het model om kort te spreken en `openclaw_agent_consult` te gebruiken voor uitgebreidere antwoorden                                                                                                                              |
+| `realtime.introMessage`           | `"Say exactly: I'm here and listening."` | Wordt eenmaal uitgesproken wanneer de realtime bridge verbinding maakt; stel in op `""` om geruisloos deel te nemen                                                                                                                                       |
+| `realtime.agentId`                | `"main"`                                 | OpenClaw-agent-id die wordt gebruikt voor `openclaw_agent_consult`                                                                                                                                                               |
+| `voiceCall.enabled`               | `true`                                   | Delegeert de Twilio PSTN-oproep, DTMF en introductiebegroeting aan de Voice Call-plugin                                                                                                                                 |
+| `voiceCall.dtmfDelayMs`           | `12000`                                  | Wachttijd voorafgaand aan het afspelen van een van een pincode afgeleide DTMF-reeks via Twilio                                                                                                                                               |
+| `voiceCall.postDtmfSpeechDelayMs` | `5000`                                   | Vertraging voordat de realtime introductiebegroeting wordt aangevraagd nadat Voice Call het Twilio-deel heeft gestart                                                                                                                        |
 
-Optionele overschrijvingen:
+Met `chrome.audioBridgeCommand` en `chrome.audioBridgeHealthCommand` kan een externe bridge het volledige lokale audiopad beheren in plaats van `chrome.audioInputCommand`/`chrome.audioOutputCommand`; zie [Opmerkingen](#notes) voor de beperking van welke modus deze kan gebruiken.
+
+Er bestaat een `openclaw doctor --fix`-migratie voor de verouderde `realtime.provider: "google"`-structuur: deze verplaatst die intentie naar `realtime.voiceProvider: "google"` plus `realtime.transcriptionProvider: "openai"` wanneer die velden nog niet zijn ingesteld.
+
+### Optionele overschrijvingen
 
 ```json5
 {
@@ -1068,7 +754,7 @@ Optionele overschrijvingen:
     provider: "openai",
     transcriptionProvider: "openai",
     voiceProvider: "google",
-    model: "gemini-2.5-flash-native-audio-preview-12-2025",
+    model: "gemini-3.1-flash-live-preview",
     agentId: "jay",
     toolPolicy: "owner",
     introMessage: "Say exactly: I'm here.",
@@ -1118,14 +804,9 @@ ElevenLabs voor zowel luisteren als spreken in agentmodus:
 }
 ```
 
-De persistente Meet-stem komt uit
-`messages.tts.providers.elevenlabs.speakerVoiceId`. Antwoorden van agents kunnen ook
-per antwoord `[[tts:speakerVoiceId=... model=eleven_v3]]`-directieven gebruiken wanneer overschrijvingen van het TTS-model
-zijn ingeschakeld, maar configuratie is de deterministische standaard voor vergaderingen.
-Bij deelname moeten de logs `transcriptionProvider=elevenlabs` tonen en elk
-gesproken antwoord moet `provider=elevenlabs model=eleven_v3 speakerVoiceId=<voiceId>` loggen.
+De permanente Meet-stem komt uit `messages.tts.providers.elevenlabs.speakerVoiceId`. Agentantwoorden kunnen ook `[[tts:speakerVoiceId=... model=eleven_v3]]`-richtlijnen per antwoord gebruiken wanneer overschrijvingen van het TTS-model zijn ingeschakeld, maar de configuratie is de deterministische standaard voor vergaderingen. Bij deelname tonen de logboeken `transcriptionProvider=elevenlabs`, en elk gesproken antwoord registreert `provider=elevenlabs model=eleven_v3 speakerVoiceId=<voiceId>`.
 
-Configuratie alleen voor Twilio:
+Configuratie uitsluitend voor Twilio:
 
 ```json5
 {
@@ -1140,16 +821,17 @@ Configuratie alleen voor Twilio:
 }
 ```
 
-`voiceCall.enabled` is standaard `true`; met Twilio-transport delegeert het de
-daadwerkelijke PSTN-oproep, DTMF en introductiebegroeting aan de Voice Call-Plugin. Voice Call
-speelt de DTMF-reeks af voordat de realtime mediastream wordt geopend, en gebruikt daarna de
-opgeslagen introductietekst als de initiële realtime begroeting. Als `voice-call` niet is
-ingeschakeld, kan Google Meet het belplan nog steeds valideren en registreren, maar kan het de
-Twilio-oproep niet plaatsen.
+Met `voiceCall.enabled: true` (de standaard) en Twilio-transport plaatst Voice Call de DTMF-reeks voordat de realtime mediastream wordt geopend en gebruikt vervolgens de opgeslagen introductietekst als eerste realtime begroeting. Als `voice-call` niet is ingeschakeld, kan Google Meet het belplan nog steeds valideren en vastleggen, maar de Twilio-oproep niet plaatsen.
+
+Laat `voiceCall.gatewayUrl` uitgeschakeld om de lokale vertrouwde Gateway-runtime te gebruiken, waarmee de
+aanroepende agent gedurende de volledige aanroep behouden blijft. Een geconfigureerde Gateway-URL blijft een expliciet WebSocket-doel en
+kan de herkomst van plugins niet verifiëren; deelnames door niet-standaardagents worden standaard geweigerd in plaats van stilzwijgend
+een andere agent te gebruiken. Voer Google Meet en Voice Call in hetzelfde Gateway-proces uit wanneer routering
+per agent vereist is.
 
 ## Tool
 
-Agents kunnen de tool `google_meet` gebruiken:
+Agents gebruiken de tool `google_meet`:
 
 ```json
 {
@@ -1160,109 +842,117 @@ Agents kunnen de tool `google_meet` gebruiken:
 }
 ```
 
-Gebruik `transport: "chrome"` wanneer Chrome op de Gateway-host draait. Gebruik
-`transport: "chrome-node"` wanneer Chrome op een gekoppelde Node draait, zoals een Parallels-
-VM. In beide gevallen draaien de modelproviders en `openclaw_agent_consult` op de
-Gateway-host, zodat modelreferenties daar blijven. Met de standaard `mode: "agent"`
-handelt de realtime transcriptieprovider het luisteren af, produceert de geconfigureerde OpenClaw-
-agent het antwoord, en spreekt reguliere OpenClaw TTS dit uit in Meet. Gebruik
-`mode: "bidi"` wanneer je wilt dat het realtime spraakmodel direct antwoordt.
-Ruwe `mode: "realtime"` blijft geaccepteerd als verouderde compatibiliteitsalias voor
-`mode: "agent"`, maar wordt niet langer geadverteerd in het agenttoolschema.
-Logs in agentmodus bevatten de opgeloste transcriptieprovider/het model bij het opstarten van de brug
-en de TTS-provider, het model, de stem, het uitvoerformaat en de samplefrequentie na
-elk gesynthetiseerd antwoord.
+| `action`                | Doel                                                                                              |
+| ----------------------- | ------------------------------------------------------------------------------------------------- |
+| `join`                  | Deelnemen via een expliciete Meet-URL                                                              |
+| `create`                | Een ruimte maken (en standaard deelnemen); ondersteunt `accessType`/`entryPointAccess`          |
+| `status`                | Actieve sessies weergeven of er één inspecteren via `sessionId`                                  |
+| `setup_status`          | Dezelfde controles uitvoeren als `googlemeet setup`                                               |
+| `resolve_space`         | Een URL/code/`spaces/{id}` omzetten via `spaces.get`                                           |
+| `preflight`             | Vereisten voor OAuth en het omzetten van vergaderingen valideren                                   |
+| `latest`                | De nieuwste conferentierecord voor een vergadering zoeken                                          |
+| `calendar_events`       | Een voorbeeld weergeven van Agenda-afspraken met Meet-links                                        |
+| `artifacts`             | Conferentierecords en metadata van deelnemers/opnamen/transcripties/slimme notities weergeven       |
+| `attendance`            | Deelnemers en deelnemerssessies weergeven                                                          |
+| `export`                | De bundel met artefacten/aanwezigheid/transcript/manifest schrijven; stel `"dryRun": true` in voor alleen het manifest |
+| `recover_current_tab`   | Een bestaand Meet-tabblad activeren/inspecteren zonder een nieuw tabblad te openen                  |
+| `transcript`            | Het begrensde ondertitelingstranscript lezen; `sinceIndex` gaat verder vanaf de vorige `nextIndex` |
+| `leave`                 | Een sessie beëindigen (Chrome klikt op Verlaten; sluit alleen zelf geopende tabbladen; Twilio verbreekt de verbinding) |
+| `end_active_conference` | De actieve Google Meet-conferentie beëindigen voor een via de API beheerde ruimte                   |
+| `speak`                 | De realtime-agent onmiddellijk laten spreken met `sessionId` en `message`                  |
+| `test_speech`           | Een sessie maken/hergebruiken, een bekende zin activeren en de Chrome-status retourneren           |
+| `test_listen`           | Een alleen-observeren-sessie maken/hergebruiken en wachten op beweging in ondertiteling/transcript |
 
-Gebruik `action: "status"` om actieve sessies weer te geven of een sessie-id te inspecteren. Gebruik
-`action: "speak"` met `sessionId` en `message` om de realtime agent
-direct te laten spreken. Gebruik `action: "test_speech"` om de sessie te maken of te hergebruiken,
-een bekende zin te activeren en `inCall`-gezondheid terug te geven wanneer de Chrome-host dit kan
-rapporteren. `test_speech` forceert altijd `mode: "agent"` en faalt als gevraagd wordt om
-in `mode: "transcribe"` te draaien, omdat alleen-observerensessies bewust geen
-spraak kunnen uitzenden. Het resultaat `speechOutputVerified` is gebaseerd op toenemende realtime audio-uitvoerbytes
-tijdens deze testaanroep, dus een hergebruikte sessie met oudere audio
-telt niet als een nieuwe succesvolle spraakcontrole. Gebruik `action: "leave"` om
-een sessie als beëindigd te markeren.
+`test_speech` dwingt altijd `mode: "agent"` of `"bidi"` af en mislukt bij een verzoek om in `mode: "transcribe"` te worden uitgevoerd, omdat alleen-observeren-sessies geen spraak kunnen voortbrengen. Het resultaat `speechOutputVerified` is gebaseerd op een toename van realtime-audio-uitvoerbytes tijdens die aanroep, zodat een hergebruikte sessie met oudere audio niet als een nieuwe controle telt.
 
-`status` bevat Chrome-gezondheid wanneer beschikbaar:
+Voor Chrome-transports houdt `leave` een hergebruikt tabblad van de gebruiker open nadat op de knop Verlaten van Meet is geklikt. Door OpenClaw geopende tabbladen worden na vertrek gesloten.
 
-- `inCall`: Chrome lijkt zich binnen de Meet-oproep te bevinden
-- `micMuted`: best-effort Meet-microfoonstatus
-- `manualActionRequired` / `manualActionReason` / `manualActionMessage`: het
-  browserprofiel vereist handmatige login, toelating door de Meet-host, machtigingen of
-  browserbesturingsherstel voordat spraak kan werken
-- `speechReady` / `speechBlockedReason` / `speechBlockedMessage`: of
-  beheerde Chrome-spraak nu is toegestaan. `speechReady: false` betekent dat OpenClaw
-  de intro-/testzin niet naar de audiobrug heeft gestuurd.
-- `providerConnected` / `realtimeReady`: status van de realtime spraakbrug
-- `lastInputAt` / `lastOutputAt`: laatste audio gezien van of gestuurd naar de brug
-- `audioOutputRouted` / `audioOutputDeviceLabel`: of de media-uitvoer van het Meet-tabblad
-  actief werd gerouteerd naar het BlackHole-apparaat dat door de brug wordt gebruikt
-- `lastSuppressedInputAt` / `suppressedInputBytes`: loopbackinvoer genegeerd terwijl
-  assistentweergave actief is
+Gebruik `transport: "chrome"` wanneer Chrome op de Gateway-host draait en `transport: "chrome-node"` wanneer Chrome op een gekoppelde Node draait. In beide gevallen draaien de modelproviders en `openclaw_agent_consult` op de Gateway-host, zodat modelreferenties daar blijven. Logboeken in agentmodus bevatten bij het starten van de bridge de gekozen transcriptieprovider/het gekozen transcriptiemodel en na elk gesynthetiseerd antwoord de TTS-provider/het TTS-model/de stem/de uitvoerindeling/de samplefrequentie. Onbewerkte `mode: "realtime"` wordt nog geaccepteerd als verouderde compatibiliteitsalias voor `mode: "agent"`, maar wordt niet meer vermeld in de `mode`-enum van de tool.
+
+`create` met een door een API ondersteunde ruimte en een expliciet toegangsbeleid:
+
+```json
+{
+  "action": "create",
+  "transport": "chrome-node",
+  "mode": "agent",
+  "accessType": "OPEN"
+}
+```
+
+De actieve conferentie van een bekende ruimte beëindigen:
+
+```json
+{
+  "action": "end_active_conference",
+  "meeting": "https://meet.google.com/abc-defg-hij"
+}
+```
+
+Validatie waarbij eerst wordt geluisterd voordat wordt beweerd dat een vergadering bruikbaar is:
+
+```json
+{
+  "action": "test_listen",
+  "url": "https://meet.google.com/abc-defg-hij",
+  "transport": "chrome-node",
+  "timeoutMs": 30000
+}
+```
+
+Op verzoek spreken:
 
 ```json
 {
   "action": "speak",
   "sessionId": "meet_...",
-  "message": "Say exactly: I'm here and listening."
+  "message": "Zeg precies: Ik ben er en luister."
 }
 ```
 
+`status` bevat indien beschikbaar de Chrome-status:
+
+| Veld                                                                  | Betekenis                                                                                                              |
+| --------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| `inCall`                                                              | Chrome lijkt zich in het Meet-gesprek te bevinden                                                                      |
+| `micMuted`                                                            | Meet-microfoonstatus op basis van beste inspanning                                                                     |
+| `manualActionRequired` / `manualActionReason` / `manualActionMessage` | Het browserprofiel vereist handmatig aanmelden, toelating door de Meet-host, machtigingen of herstel van browserbesturing voordat spraak kan werken |
+| `speechReady` / `speechBlockedReason` / `speechBlockedMessage`        | Of beheerde Chrome-spraak nu is toegestaan; `speechReady: false` betekent dat OpenClaw de introductie-/testzin niet heeft verzonden |
+| `providerConnected` / `realtimeReady`                                 | Status van de realtime-spraakbridge                                                                                    |
+| `lastInputAt` / `lastOutputAt`                                        | Laatste audio die van/naar de bridge is waargenomen/verzonden                                                          |
+| `audioOutputRouted` / `audioOutputDeviceLabel`                        | Of de media-uitvoer van het Meet-tabblad actief naar het BlackHole-apparaat van de bridge werd gerouteerd              |
+| `lastSuppressedInputAt` / `suppressedInputBytes`                      | Loopback-invoer genegeerd terwijl het afspelen van de assistent actief is                                               |
+
 ## Agent- en bidi-modi
 
-Chrome `agent`-modus is geoptimaliseerd voor gedrag waarbij "mijn agent in de vergadering is". De
-realtime transcriptieprovider hoort de vergaderaudio, definitieve deelnemertranscripten
-worden via de geconfigureerde OpenClaw-agent gerouteerd, en het antwoord wordt
-uitgesproken via de normale OpenClaw TTS-runtime. Stel `mode: "bidi"` in wanneer je wilt
-dat het realtime spraakmodel direct antwoordt.
-Nabije definitieve transcriptfragmenten worden samengevoegd vóór de consultatie, zodat één gesproken
-beurt niet meerdere verouderde gedeeltelijke antwoorden oplevert. Realtime invoer wordt ook
-onderdrukt terwijl audio van de assistent in de wachtrij nog wordt afgespeeld,
-en recente assistentachtige transcriptecho's worden genegeerd vóór de agentconsultatie,
-zodat BlackHole-loopback de agent niet zijn eigen spraak laat beantwoorden.
+| Modus   | Wie het antwoord bepaalt          | Pad voor spraakuitvoer                  | Gebruiken wanneer                                      |
+| ------- | ------------------------------- | --------------------------------------- | ------------------------------------------------------ |
+| `agent` | De geconfigureerde OpenClaw-agent | Normale OpenClaw TTS-runtime            | Je gedrag wilt waarbij je agent in de vergadering zit  |
+| `bidi`  | Het realtime-spraakmodel           | Audiorespons van de realtime-spraakprovider | Je een conversatiespraaklus met de laagste latentie wilt |
 
-| Modus   | Wie bepaalt het antwoord      | Pad voor spraakuitvoer                 | Gebruik wanneer                                         |
-| ------- | ----------------------------- | -------------------------------------- | ------------------------------------------------------ |
-| `agent` | De geconfigureerde OpenClaw-agent | Normale OpenClaw TTS-runtime           | Je gedrag wilt waarbij "mijn agent in de vergadering is" |
-| `bidi`  | Het realtime spraakmodel      | Audioreactie van realtime spraakprovider | Je de gesprekslus met de laagste latentie wilt          |
+`agent`-modus: de realtime-transcriptieprovider hoort de vergaderaudio, definitieve deelnemerstranscripties worden via de geconfigureerde OpenClaw-agent gerouteerd en het antwoord wordt uitgesproken via de reguliere OpenClaw TTS. Nabijgelegen definitieve transcriptfragmenten worden vóór de raadpleging samengevoegd, zodat één gesproken beurt niet meerdere verouderde gedeeltelijke antwoorden oplevert; realtime-invoer wordt onderdrukt terwijl in de wachtrij geplaatste assistentaudio nog wordt afgespeeld en recente transcriptie-echo's die op de assistent lijken, worden vóór de raadpleging genegeerd, zodat BlackHole-loopback er niet voor zorgt dat de agent zijn eigen spraak beantwoordt.
 
-In `bidi`-modus kan het realtime model, wanneer het diepere redenatie, actuele
-informatie of normale OpenClaw-tools nodig heeft, `openclaw_agent_consult` aanroepen.
+`bidi`-modus: het realtime-spraakmodel antwoordt rechtstreeks en kan `openclaw_agent_consult` aanroepen voor diepere redenering, actuele informatie of normale OpenClaw-tools. De raadpleegtool voert achter de schermen de reguliere OpenClaw-agent uit met recente context uit het vergaderingstranscript en retourneert een beknopt gesproken antwoord; in de `agent`-modus stuurt OpenClaw dat antwoord rechtstreeks naar TTS, in de `bidi`-modus kan het realtime-spraakmodel het uitspreken. Deze modus gebruikt hetzelfde gedeelde raadpleegmechanisme als Voice Call.
 
-De consult-tool voert achter de schermen de reguliere OpenClaw-agent uit met recente
-context uit het vergadertranscript en retourneert een beknopt gesproken antwoord. In `agent`-modus
-stuurt OpenClaw dat antwoord rechtstreeks naar de TTS-runtime; in `bidi`-modus kan het
-realtime spraakmodel het consultresultaat terug de vergadering in uitspreken. Het gebruikt
-dezelfde gedeelde consultmechaniek als Voice Call.
+Standaard worden raadplegingen uitgevoerd voor de agent `main`; stel `realtime.agentId` in om een Meet-route te koppelen aan een speciale agentwerkruimte, standaardmodellen, toolbeleid, geheugen en sessiegeschiedenis. Raadplegingen in agentmodus gebruiken per vergadering een sessiesleutel `agent:<id>:subagent:google-meet:<session>`, zodat vervolgvragen de vergadercontext behouden en tegelijkertijd het normale agentbeleid overnemen. Wanneer een agent in agentmodus `google_meet` aanroept, maakt de consultantsessie een fork van het huidige transcript van de aanroeper voordat spraak van deelnemers wordt beantwoord; de Meet-sessie blijft gescheiden, zodat vervolgvragen in de vergadering het transcript van de aanroeper niet rechtstreeks wijzigen.
 
-Standaard worden consults uitgevoerd tegen de `main`-agent. Stel `realtime.agentId` in wanneer een
-Meet-lane een specifieke OpenClaw-agentworkspace, modelstandaarden,
-toolbeleid, geheugen en sessiegeschiedenis moet raadplegen.
+`realtime.toolPolicy` bepaalt de raadplegingsuitvoering:
 
-Consults in agentmodus gebruiken per vergadering een sessiesleutel
-`agent:<id>:subagent:google-meet:<session>`, zodat vervolgvragen de vergadercontext behouden
-terwijl ze het normale agentbeleid van de geconfigureerde agent erven.
+| Beleid           | Gedrag                                                                                                                           |
+| ---------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| `safe-read-only` | De raadpleegtool beschikbaar stellen; de reguliere agent beperken tot `read`, `web_search`, `web_fetch`, `x_search`, `memory_search`, `memory_get` |
+| `owner`          | De raadpleegtool beschikbaar stellen; de reguliere agent het normale toolbeleid laten gebruiken                                  |
+| `none`           | De raadpleegtool niet beschikbaar stellen aan het realtime-spraakmodel                                                           |
 
-`realtime.toolPolicy` regelt de consult-run:
+De sessiesleutel voor raadplegingen heeft een bereik per Meet-sessie, zodat volgende raadplegingsaanroepen tijdens dezelfde vergadering eerdere raadplegingscontext hergebruiken.
 
-- `safe-read-only`: stel de consult-tool beschikbaar en beperk de reguliere agent tot
-  `read`, `web_search`, `web_fetch`, `x_search`, `memory_search` en
-  `memory_get`.
-- `owner`: stel de consult-tool beschikbaar en laat de reguliere agent het normale
-  agent-toolbeleid gebruiken.
-- `none`: stel de consult-tool niet beschikbaar aan het realtime spraakmodel.
-
-De consultsessiesleutel is per Meet-sessie afgebakend, zodat vervolgconsultaanroepen
-eerdere consultcontext tijdens dezelfde vergadering kunnen hergebruiken.
-
-Om een gesproken gereedheidscontrole af te dwingen nadat Chrome volledig aan het gesprek heeft deelgenomen:
+Dwing een gesproken gereedheidscontrole af nadat Chrome volledig heeft deelgenomen:
 
 ```bash
 openclaw googlemeet speak meet_... "Say exactly: I'm here and listening."
 ```
 
-Voor de volledige join-and-speak-smoke:
+Volledige rooktest voor deelnemen en spreken:
 
 ```bash
 openclaw googlemeet test-speech https://meet.google.com/abc-defg-hij \
@@ -1270,9 +960,9 @@ openclaw googlemeet test-speech https://meet.google.com/abc-defg-hij \
   --message "Say exactly: I'm here and listening."
 ```
 
-## Live testchecklist
+## Checklist voor livetests
 
-Gebruik deze volgorde voordat je een vergadering overdraagt aan een onbeheerde agent:
+Voordat je een vergadering overdraagt aan een onbeheerde agent:
 
 ```bash
 openclaw googlemeet setup
@@ -1284,16 +974,11 @@ openclaw googlemeet test-speech https://meet.google.com/abc-defg-hij \
 
 Verwachte Chrome-node-status:
 
-- `googlemeet setup` is volledig groen.
-- `googlemeet setup` bevat `chrome-node-connected` wanneer Chrome-node het
-  standaardtransport is of een node is vastgezet.
-- `nodes status` toont dat de geselecteerde node verbonden is.
-- De geselecteerde node adverteert zowel `googlemeet.chrome` als `browser.proxy`.
-- Het Meet-tabblad neemt deel aan het gesprek en `test-speech` retourneert Chrome-gezondheid met
-  `inCall: true`.
+- `googlemeet setup` is volledig groen en bevat `chrome-node-connected` wanneer Chrome-node het standaardtransport is of een Node is vastgezet.
+- `nodes status` geeft aan dat de geselecteerde Node verbonden is en zowel `googlemeet.chrome` als `browser.proxy` aanbiedt.
+- Het Meet-tabblad neemt deel en `test-speech` retourneert de Chrome-status met `inCall: true`.
 
-Voor een externe Chrome-host zoals een Parallels macOS-VM is dit de kortste
-veilige controle na het bijwerken van de Gateway of de VM:
+Voor een externe Chrome-host, zoals een Parallels macOS-VM, is dit de kortste veilige controle na het bijwerken van de Gateway of de VM:
 
 ```bash
 openclaw googlemeet setup
@@ -1304,11 +989,9 @@ openclaw nodes invoke \
   --params '{"action":"setup"}'
 ```
 
-Dat bewijst dat de Gateway-plugin is geladen, de VM-node verbonden is met het
-huidige token en de Meet-audiobridge beschikbaar is voordat een agent een
-echt vergadertabblad opent.
+Dit bewijst dat de Gateway-plugin is geladen, de VM-Node is verbonden met het huidige token en de Meet-audiobridge beschikbaar is voordat een agent een echt vergaderingstabblad opent.
 
-Gebruik voor een Twilio-smoke een vergadering die telefooninbelgegevens beschikbaar maakt:
+Gebruik voor een Twilio-rooktest een vergadering die telefonische inbelgegevens beschikbaar stelt:
 
 ```bash
 openclaw googlemeet setup
@@ -1320,38 +1003,28 @@ openclaw googlemeet join https://meet.google.com/abc-defg-hij \
 
 Verwachte Twilio-status:
 
-- `googlemeet setup` bevat groene controles voor `twilio-voice-call-plugin`,
-  `twilio-voice-call-credentials` en `twilio-voice-call-webhook`.
-- `voicecall` is beschikbaar in de CLI na het herladen van de Gateway.
+- `googlemeet setup` bevat groene controles voor `twilio-voice-call-plugin`, `twilio-voice-call-credentials` en `twilio-voice-call-webhook`.
+- `voicecall` is beschikbaar in de CLI nadat de Gateway opnieuw is geladen.
 - De geretourneerde sessie heeft `transport: "twilio"` en een `twilio.voiceCallId`.
-- `openclaw logs --follow` toont dat DTMF TwiML wordt geserveerd vóór realtime TwiML, daarna een
-  realtime bridge met de eerste begroeting in de wachtrij.
-- `googlemeet leave <sessionId>` hangt het gedelegeerde voice-callgesprek op.
+- `openclaw logs --follow` toont DTMF-TwiML die vóór realtime-TwiML wordt aangeboden, gevolgd door een realtime-bridge waarbij de eerste begroeting in de wachtrij staat.
+- `googlemeet leave <sessionId>` beëindigt de gedelegeerde spraakoproep.
 
-## Probleemoplossing
+## Problemen oplossen
 
 ### Agent kan de Google Meet-tool niet zien
 
-Controleer of de plugin is ingeschakeld in de Gateway-configuratie en herlaad de Gateway:
+Controleer of de plugin is ingeschakeld en laad de Gateway opnieuw; de actieve agent ziet alleen plugintools die door het huidige Gateway-proces zijn geregistreerd:
 
 ```bash
 openclaw plugins list | grep google-meet
 openclaw googlemeet setup
 ```
 
-Als je net `plugins.entries.google-meet` hebt bewerkt, herstart of herlaad dan de Gateway.
-De actieve agent ziet alleen plugintools die door het huidige Gateway-proces
-zijn geregistreerd.
+Op Gateway-hosts zonder macOS blijft `google_meet` zichtbaar, maar lokale Chrome-acties voor terugspreken worden geblokkeerd voordat ze de audiobridge bereiken. Gebruik `mode: "transcribe"`, inbellen via Twilio of een macOS-host met `chrome-node` in plaats van het standaardpad voor de lokale Chrome-agent.
 
-Op niet-macOS Gateway-hosts blijft de agentgerichte `google_meet`-tool zichtbaar,
-maar lokale Chrome-talk-back-acties worden geblokkeerd voordat ze de audiobridge bereiken.
-Lokale Chrome-talk-back-audio is momenteel afhankelijk van macOS `BlackHole 2ch`, dus
-Linux-agents moeten `mode: "transcribe"`, Twilio-inbellen of een macOS
-`chrome-node`-host gebruiken in plaats van het standaardpad voor lokale Chrome-agents.
+### Geen verbonden Node met ondersteuning voor Google Meet
 
-### Geen verbonden node met Google Meet-mogelijkheden
-
-Voer op de node-host uit:
+Op de Node-host:
 
 ```bash
 openclaw plugins enable google-meet
@@ -1360,7 +1033,7 @@ OPENCLAW_ALLOW_INSECURE_PRIVATE_WS=1 \
   openclaw node run --host <gateway-lan-ip> --port 18789 --display-name parallels-macos
 ```
 
-Keur op de Gateway-host de node goed en verifieer de opdrachten:
+Op de Gateway-host:
 
 ```bash
 openclaw devices list
@@ -1368,8 +1041,7 @@ openclaw devices approve <requestId>
 openclaw nodes status
 ```
 
-De node moet verbonden zijn en `googlemeet.chrome` plus `browser.proxy` vermelden.
-De Gateway-configuratie moet die node-opdrachten toestaan:
+De Node moet verbonden zijn en `googlemeet.chrome` plus `browser.proxy` vermelden; de Gateway-configuratie moet beide toestaan:
 
 ```json5
 {
@@ -1381,9 +1053,7 @@ De Gateway-configuratie moet die node-opdrachten toestaan:
 }
 ```
 
-Als `googlemeet setup` faalt op `chrome-node-connected` of het Gateway-log
-`gateway token mismatch` meldt, installeer of herstart de node dan opnieuw met het huidige Gateway-token.
-Voor een LAN-Gateway betekent dit meestal:
+Als `googlemeet setup` niet slaagt voor `chrome-node-connected`, of het Gateway-logboek `gateway token mismatch` meldt, installeer of herstart je de Node met het huidige Gateway-token:
 
 ```bash
 OPENCLAW_ALLOW_INSECURE_PRIVATE_WS=1 \
@@ -1394,128 +1064,60 @@ OPENCLAW_ALLOW_INSECURE_PRIVATE_WS=1 \
   --force
 ```
 
-Herlaad daarna de nodeservice en voer opnieuw uit:
+Laad daarna de Node-service opnieuw en voer dit nogmaals uit:
 
 ```bash
 openclaw googlemeet setup
 openclaw nodes status --connected
 ```
 
-### Browser opent, maar agent kan niet deelnemen
+### Browser wordt geopend, maar agent kan niet deelnemen
 
-Voer `googlemeet test-listen` uit voor observer-only deelname of `googlemeet test-speech`
-voor realtime deelname en inspecteer daarna de geretourneerde Chrome-gezondheid. Als een van beide probes
-`manualActionRequired: true` meldt, toon `manualActionMessage` aan de operator
-en stop met opnieuw proberen totdat de browseractie is voltooid.
+Voer `googlemeet test-listen` uit voor deelnames waarbij alleen wordt geobserveerd, of `googlemeet test-speech` voor realtime-deelnames, en controleer vervolgens de geretourneerde Chrome-status. Als een van beide `manualActionRequired: true` meldt, toon je `manualActionMessage` aan de beheerder en probeer je het niet opnieuw totdat de browseractie is voltooid.
 
-Veelvoorkomende handmatige acties:
+Veelvoorkomende handmatige acties: meld je aan bij het Chrome-profiel; laat de gast toe vanuit het Meet-hostaccount; verleen Chrome toestemming voor de microfoon en camera wanneer de systeemeigen prompt verschijnt; sluit of herstel een vastgelopen dialoogvenster voor Meet-machtigingen.
 
-- Meld je aan bij het Chrome-profiel.
-- Laat de gast toe vanuit het Meet-hostaccount.
-- Verleen Chrome-microfoon-/cameramachtigingen wanneer de native machtigingsprompt van Chrome verschijnt.
-- Sluit of herstel een vastgelopen Meet-machtigingsdialoog.
-
-Meld niet "not signed in" alleen omdat Meet "Do you want people to
-hear you in the meeting?" toont. Dat is het audio-keuzescherm van Meet; OpenClaw
-klikt via browserautomatisering op **Use microphone** wanneer dat beschikbaar is en blijft
-wachten op de echte vergaderstatus. Voor create-only browserfallback kan OpenClaw
-op **Continue without microphone** klikken, omdat het aanmaken van de URL het
-realtime audiopad niet nodig heeft.
+Meld niet dat de gebruiker "niet is aangemeld" alleen omdat Meet vraagt "Do you want people to hear you in the meeting?"; dit is het tussenscherm van Meet voor de audiokeuze. OpenClaw klikt indien beschikbaar via browserautomatisering op **Use microphone** en blijft wachten op de werkelijke vergaderstatus; bij een browserfallback die alleen een vergadering aanmaakt, kan het in plaats daarvan op **Continue without microphone** klikken, omdat voor het genereren van de URL geen realtime-audiopad nodig is.
 
 ### Vergadering aanmaken mislukt
 
-`googlemeet create` gebruikt eerst het Google Meet API-eindpunt `spaces.create`
-wanneer OAuth-referenties zijn geconfigureerd. Zonder OAuth-referenties valt het terug
-op de browser van de vastgezette Chrome-node. Controleer:
+`googlemeet create` gebruikt de Meet-API `spaces.create` wanneer OAuth is geconfigureerd, en anders de browser van de vastgezette Chrome-Node. Controleer het volgende:
 
-- Voor API-aanmaak: `oauth.clientId` en `oauth.refreshToken` zijn geconfigureerd,
-  of overeenkomende `OPENCLAW_GOOGLE_MEET_*`-omgevingsvariabelen zijn aanwezig.
-- Voor API-aanmaak: het refresh-token is uitgegeven nadat aanmaakondersteuning is
-  toegevoegd. Oudere tokens kunnen de scope `meetings.space.created` missen; voer
-  `openclaw googlemeet auth login --json` opnieuw uit en werk de pluginconfiguratie bij.
-- Voor browserfallback: `defaultTransport: "chrome-node"` en
-  `chromeNode.node` wijzen naar een verbonden node met `browser.proxy` en
-  `googlemeet.chrome`.
-- Voor browserfallback: het OpenClaw Chrome-profiel op die node is aangemeld
-  bij Google en kan `https://meet.google.com/new` openen.
-- Voor browserfallback: nieuwe pogingen hergebruiken een bestaand tabblad
-  `https://meet.google.com/new` of een Google-accountprompttabblad voordat een nieuw tabblad wordt geopend. Als een agent een time-out krijgt,
-  probeer de toolaanroep opnieuw in plaats van handmatig een ander Meet-tabblad te openen.
-- Voor browserfallback: als de tool `manualActionRequired: true` retourneert, gebruik dan
-  de geretourneerde `browser.nodeId`, `browser.targetId`, `browserUrl` en
-  `manualActionMessage` om de operator te begeleiden. Probeer niet in een lus opnieuw totdat die
-  actie is voltooid.
-- Voor browserfallback: als Meet "Do you want people to hear you in the
-  meeting?" toont, laat het tabblad open. OpenClaw zou via browserautomatisering
-  op **Use microphone** moeten klikken of, voor create-only fallback, op **Continue without microphone**
-  en verder wachten op de gegenereerde Meet-URL. Als dat niet lukt, moet de
-  fout `meet-audio-choice-required` vermelden, niet `google-login-required`.
+- **Aanmaken via API**: `oauth.clientId` en `oauth.refreshToken` (of overeenkomende `OPENCLAW_GOOGLE_MEET_*`-omgevingsvariabelen) zijn aanwezig en het vernieuwingstoken is aangemaakt nadat ondersteuning voor aanmaken werd toegevoegd; oudere tokens hebben mogelijk geen `meetings.space.created`, dus voer `openclaw googlemeet auth login --json` opnieuw uit.
+- **Browserfallback**: `defaultTransport: "chrome-node"` en `chromeNode.node` verwijzen naar een verbonden Node met `browser.proxy` en `googlemeet.chrome`; het OpenClaw Chrome-profiel op die Node is aangemeld en kan `https://meet.google.com/new` openen.
+- **Nieuwe pogingen met browserfallback**: hergebruik een bestaand tabblad met `.../new` of een Google-accountprompt voordat je een nieuw tabblad opent; probeer de toolaanroep opnieuw in plaats van handmatig nog een tabblad te openen.
+- **Handmatige actie**: als de tool `manualActionRequired: true` retourneert, gebruik je `browser.nodeId`, `browser.targetId`, `browserUrl` en `manualActionMessage` om de beheerder te begeleiden; probeer het niet herhaaldelijk opnieuw.
+- **Tussenscherm voor audiokeuze**: als Meet "Do you want people to hear you in the meeting?" toont, laat je het tabblad open. OpenClaw hoort op **Use microphone** of (alleen bij aanmaken) **Continue without microphone** te klikken en te blijven wachten op de gegenereerde URL; als dat niet lukt, hoort de fout `meet-audio-choice-required` te vermelden, niet `google-login-required`.
 
-### Agent neemt deel, maar praat niet
-
-Controleer het realtime pad:
+### Agent neemt deel, maar spreekt niet
 
 ```bash
 openclaw googlemeet setup
 openclaw googlemeet doctor
 ```
 
-Gebruik `mode: "agent"` voor het normale STT -> OpenClaw-agent -> TTS-talk-backpad,
-of `mode: "bidi"` voor de directe realtime spraakfallback. `mode: "transcribe"`
-start bewust geen talk-backbridge. Voer voor observer-only foutopsporing
-`openclaw googlemeet status --json <session-id>` uit nadat deelnemers hebben gesproken
-en controleer `captioning`, `transcriptLines` en `lastCaptionText`. Als `inCall`
-true is maar `transcriptLines` op `0` blijft, zijn Meet-ondertitels mogelijk uitgeschakeld, heeft niemand
-gesproken sinds de observer is geïnstalleerd, is de Meet-UI gewijzigd of zijn live
-ondertitels niet beschikbaar voor de vergadertaal/het account.
+Gebruik `mode: "agent"` voor het pad STT -> OpenClaw-agent -> TTS en `mode: "bidi"` voor de directe realtime-spraakfallback. `mode: "transcribe"` start opzettelijk geen bridge voor terugspreken. Voer voor foutopsporing waarbij alleen wordt geobserveerd `openclaw googlemeet status --json <session-id>` uit nadat deelnemers hebben gesproken en controleer `captioning`, `transcriptLines` en `lastCaptionText`. Als `inCall` waar is maar `transcriptLines` `0` blijft, zijn Meet-ondertitels mogelijk uitgeschakeld, heeft niemand gesproken sinds de observator werd geïnstalleerd, is de Meet-interface gewijzigd of zijn live-ondertitels niet beschikbaar voor de taal of het account van de vergadering.
 
-`googlemeet test-speech` controleert altijd het realtime pad en meldt of
-bridge-uitvoerbytes voor die aanroep zijn waargenomen. Als `speechOutputVerified` false is en
-`speechOutputTimedOut` true is, heeft de realtime provider de uiting mogelijk geaccepteerd,
-maar zag OpenClaw geen nieuwe uitvoerbytes de Chrome-audiobridge bereiken.
+`googlemeet test-speech` controleert altijd het realtime-pad en meldt of tijdens die aanroep uitvoerbytes van de bridge zijn waargenomen. Als `speechOutputVerified` onwaar is en `speechOutputTimedOut` waar is, heeft de realtime-provider de uiting mogelijk geaccepteerd, maar heeft OpenClaw geen nieuwe uitvoerbytes de Chrome-audiobridge zien bereiken.
 
-Controleer ook:
+Controleer ook het volgende: er is een sleutel voor een realtime-provider (`OPENAI_API_KEY` of `GEMINI_API_KEY`) beschikbaar op de Gateway-host; `BlackHole 2ch` is zichtbaar op de Chrome-host; `sox` bestaat daar; de microfoon en luidspreker van Meet worden via het virtuele audiopad geleid (`doctor` hoort `meet output routed: yes` te tonen voor lokale realtime-deelnames via Chrome).
 
-- Er is een realtime providersleutel beschikbaar op de Gateway-host, zoals
-  `OPENAI_API_KEY` of `GEMINI_API_KEY`.
-- `BlackHole 2ch` is zichtbaar op de Chrome-host.
-- `sox` bestaat op de Chrome-host.
-- Meet-microfoon en -speaker zijn gerouteerd via het virtuele audiopad dat door
-  OpenClaw wordt gebruikt. `doctor` moet `meet output routed: yes` tonen voor lokale Chrome
-  realtime deelname.
+`googlemeet doctor [session-id]` toont de sessie, Node, status tijdens het gesprek, reden voor handmatige actie, verbinding met de realtime-provider, `realtimeReady`, activiteit van audio-invoer en -uitvoer, tijdstempels van de laatste audio, bytetellers en browser-URL. Gebruik `googlemeet status [session-id] --json` voor onbewerkte JSON en `googlemeet doctor --oauth` (voeg `--meeting` of `--create-space` toe) om OAuth-vernieuwing te controleren zonder tokens prijs te geven.
 
-`googlemeet doctor [session-id]` print de sessie, node, in-callstatus,
-reden voor handmatige actie, realtime providerverbinding, `realtimeReady`, audio-
-invoer-/uitvoeractiviteit, laatste audiotijdstempels, byte-tellers en browser-URL.
-Gebruik `googlemeet status [session-id] --json` wanneer je de ruwe JSON nodig hebt. Gebruik
-`googlemeet doctor --oauth` wanneer je Google Meet OAuth-refresh moet verifiëren
-zonder tokens bloot te leggen; voeg `--meeting` of `--create-space` toe wanneer je ook
-Google Meet API-bewijs nodig hebt.
-
-Als een agent een time-out heeft gekregen en je al een Meet-tabblad open ziet, inspecteer dat tabblad
-zonder een ander te openen:
+Als een agent een time-out heeft bereikt en er al een Meet-tabblad is geopend, controleer je dit zonder nog een tabblad te openen:
 
 ```bash
 openclaw googlemeet recover-tab
 openclaw googlemeet recover-tab https://meet.google.com/abc-defg-hij
 ```
 
-De equivalente toolactie is `recover_current_tab`. Deze focust en inspecteert een
-bestaand Meet-tabblad voor het geselecteerde transport. Met `chrome` gebruikt het lokale
-browserbesturing via de Gateway; met `chrome-node` gebruikt het de geconfigureerde
-Chrome-node. Het opent geen nieuw tabblad en maakt geen nieuwe sessie aan; het meldt de
-huidige blokkade, zoals login, toelating, machtigingen of audio-keuzestatus.
-De CLI-opdracht communiceert met de geconfigureerde Gateway, dus de Gateway moet actief zijn;
-`chrome-node` vereist ook dat de Chrome-node verbonden is.
+De equivalente toolactie is `recover_current_tab`: deze stelt een bestaand Meet-tabblad voor het geselecteerde transport scherp en controleert het (lokale browserbesturing voor `chrome`, de geconfigureerde Node voor `chrome-node`) zonder een nieuw tabblad of een nieuwe sessie te openen, en meldt de huidige blokkade (aanmelding, toelating, machtigingen, status van audiokeuze). De CLI-opdracht communiceert met de geconfigureerde Gateway, die actief moet zijn; voor `chrome-node` moet de Node bovendien verbonden zijn.
 
-### Twilio-setupcontroles mislukken
+### Twilio-installatiecontroles mislukken
 
-`twilio-voice-call-plugin` faalt wanneer `voice-call` niet is toegestaan of niet is ingeschakeld.
-Voeg het toe aan `plugins.allow`, schakel `plugins.entries.voice-call` in en herlaad de
-Gateway.
+`twilio-voice-call-plugin` mislukt wanneer `voice-call` niet is toegestaan of niet is ingeschakeld: voeg deze toe aan `plugins.allow`, schakel `plugins.entries.voice-call` in en laad de Gateway opnieuw.
 
-`twilio-voice-call-credentials` faalt wanneer de Twilio-backend account-SID,
-auth-token of bellernummer mist. Stel deze in op de Gateway-host:
+`twilio-voice-call-credentials` mislukt wanneer de account-SID, het authenticatietoken of het nummer van de beller ontbreekt in de Twilio-backend:
 
 ```bash
 export TWILIO_ACCOUNT_SID=AC...
@@ -1523,16 +1125,7 @@ export TWILIO_AUTH_TOKEN=...
 export TWILIO_FROM_NUMBER=+15550001234
 ```
 
-`twilio-voice-call-webhook` faalt wanneer `voice-call` geen publieke Webhook-blootstelling
-heeft, of wanneer `publicUrl` naar loopback- of privénetwerkruimte wijst.
-Stel `plugins.entries.voice-call.config.publicUrl` in op de publieke provider-URL of
-configureer een `voice-call`-tunnel/Tailscale-blootstelling.
-
-Loopback- en privé-URL's zijn niet geldig voor carrier-callbacks. Gebruik
-`localhost`, `127.0.0.1`, `0.0.0.0`, `10.x`, `172.16.x`-`172.31.x`,
-`192.168.x`, `169.254.x`, `fc00::/7` of `fd00::/8` niet als `publicUrl`.
-
-Voor een stabiele publieke URL:
+`twilio-voice-call-webhook` mislukt wanneer `voice-call` geen openbare Webhook-blootstelling heeft of `publicUrl` naar loopback- of privé-netwerkruimte verwijst. Gebruik `localhost`, `127.0.0.1`, `0.0.0.0`, `10.x`, `172.16.x`-`172.31.x`, `192.168.x`, `169.254.x`, `fc00::/7` of `fd00::/8` niet als `publicUrl`; terugbelverzoeken van de provider kunnen deze niet bereiken. Stel `plugins.entries.voice-call.config.publicUrl` in op een openbare URL of configureer blootstelling via een tunnel of Tailscale:
 
 ```json5
 {
@@ -1551,8 +1144,7 @@ Voor een stabiele publieke URL:
 }
 ```
 
-Gebruik voor lokale ontwikkeling een tunnel of Tailscale-blootstelling in plaats van een privé
-host-URL:
+Gebruik voor lokale ontwikkeling blootstelling via een tunnel of Tailscale in plaats van een URL van een privéhost:
 
 ```json5
 {
@@ -1561,7 +1153,7 @@ host-URL:
       "voice-call": {
         config: {
           tunnel: { provider: "ngrok" },
-          // or
+          // of
           tailscale: { mode: "funnel", path: "/voice/webhook" },
         },
       },
@@ -1570,7 +1162,7 @@ host-URL:
 }
 ```
 
-Herstart of herlaad daarna de Gateway en voer uit:
+Herstart of herlaad de Gateway en voer vervolgens dit uit:
 
 ```bash
 openclaw googlemeet setup --transport twilio
@@ -1578,23 +1170,21 @@ openclaw voicecall setup
 openclaw voicecall smoke
 ```
 
-`voicecall smoke` controleert standaard alleen de gereedheid. Om een proefuitvoering voor een specifiek nummer te doen:
+`voicecall smoke` controleert standaard alleen of het systeem gereed is. Voer een test zonder uitvoering uit voor een specifiek nummer:
 
 ```bash
 openclaw voicecall smoke --to "+15555550123"
 ```
 
-Voeg `--yes` alleen toe wanneer je bewust een live uitgaande meldingsoproep wilt
-plaatsen:
+Voeg `--yes` alleen toe om bewust een echte uitgaande oproep te plaatsen:
 
 ```bash
 openclaw voicecall smoke --to "+15555550123" --yes
 ```
 
-### Twilio-oproep start maar komt nooit in de vergadering
+### Twilio-oproep start, maar komt nooit in de vergadering
 
-Controleer of het Meet-evenement telefonische inbelgegevens beschikbaar stelt. Geef het exacte inbelnummer
-en de PIN of een aangepaste DTMF-reeks door:
+Controleer of de Meet-gebeurtenis telefonische inbelgegevens bevat en geef het exacte inbelnummer plus de pincode of een aangepaste DTMF-reeks door:
 
 ```bash
 openclaw googlemeet join https://meet.google.com/abc-defg-hij \
@@ -1603,83 +1193,38 @@ openclaw googlemeet join https://meet.google.com/abc-defg-hij \
   --dtmf-sequence ww123456#
 ```
 
-Gebruik een voorafgaande `w` of komma's in `--dtmf-sequence` als de provider een pauze nodig heeft
-voordat de PIN wordt ingevoerd.
+Gebruik vooraan `w` of komma's in `--dtmf-sequence` voor een pauze vóór de pincode.
 
-Als de telefoongesprek wordt aangemaakt maar de Meet-deelnemerslijst nooit de ingebelde
-deelnemer toont:
+Als de oproep is aangemaakt, maar de deelnemerslijst van Meet de inbellende deelnemer nooit toont:
 
-- Voer `openclaw googlemeet doctor <session-id>` uit om de gedelegeerde Twilio
-  oproep-ID te bevestigen, of DTMF in de wachtrij is gezet en of de introductiebegroeting is aangevraagd.
-- Voer `openclaw voicecall status --call-id <id>` uit en controleer of de oproep nog
-  actief is.
-- Voer `openclaw voicecall tail` uit en controleer of Twilio-webhooks bij de
-  Gateway aankomen.
-- Voer `openclaw logs --follow` uit en zoek naar de Twilio Meet-reeks: Google
-  Meet delegeert het deelnemen, Voice Call slaat pre-connect DTMF TwiML op en serveert deze,
-  Voice Call serveert realtime TwiML voor de Twilio-oproep, waarna Google Meet
-  introductiespraak aanvraagt met `voicecall.speak`.
-- Voer `openclaw googlemeet setup --transport twilio` opnieuw uit; een groene setupcontrole is
-  vereist, maar bewijst niet dat de PIN-reeks voor de vergadering klopt.
-- Controleer of het inbelnummer bij dezelfde Meet-uitnodiging en regio hoort als
-  de PIN.
-- Verhoog `voiceCall.dtmfDelayMs` vanaf de standaardwaarde van 12 seconden als Meet traag
-  opneemt of als het oproeptranscript nog steeds de prompt toont waarin om een PIN wordt gevraagd nadat
-  pre-connect DTMF is verzonden.
-- Als de deelnemer wel toetreedt maar je de begroeting niet hoort, controleer dan
-  `openclaw logs --follow` op het post-DTMF `voicecall.speak`-verzoek en
-  ofwel media-stream TTS-weergave of de Twilio `<Say>`-fallback. Als het oproeptranscript
-  nog steeds "enter the meeting PIN" bevat, is de telefoonverbinding nog niet toegetreden
-  tot de Meet-ruimte, dus vergaderdeelnemers zullen geen spraak horen.
+- `openclaw googlemeet doctor <session-id>`: controleer de gedelegeerde Twilio-oproep-ID, of DTMF in de wachtrij is geplaatst en of om de inleidende begroeting is gevraagd.
+- `openclaw voicecall status --call-id <id>`: controleer of de oproep nog actief is.
+- `openclaw voicecall tail`: controleer of Twilio-webhooks bij de Gateway aankomen.
+- `openclaw logs --follow`: zoek naar de Twilio Meet-reeks: Google Meet delegeert de deelname, Voice Call slaat TwiML voor DTMF vóór de verbinding op en biedt dit aan, Voice Call biedt realtime-TwiML voor de Twilio-oproep aan en vervolgens vraagt Google Meet met `voicecall.speak` om de inleidende spraak.
+- Voer `openclaw googlemeet setup --transport twilio` opnieuw uit; een groene installatiecontrole is vereist, maar bewijst niet dat de pincodereeks van de vergadering correct is.
+- Controleer of het inbelnummer bij dezelfde Meet-uitnodiging en regio hoort als de pincode.
+- Verhoog `voiceCall.dtmfDelayMs` vanaf de standaardwaarde van 12 seconden als Meet langzaam opneemt of het oproeptranscript de vraag om de pincode nog steeds toont nadat DTMF vóór de verbinding is verzonden.
+- Als de deelnemer binnenkomt maar je de begroeting niet hoort, controleer je `openclaw logs --follow` op het `voicecall.speak`-verzoek na DTMF en op TTS-weergave via de mediastream of de Twilio-fallback `<Say>`. Als het transcript nog steeds "enter the meeting PIN" toont, is het telefoongedeelte nog niet toegetreden tot de Meet-ruimte en zullen deelnemers dus geen spraak horen.
 
-Als webhooks niet aankomen, debug dan eerst de Voice Call-Plugin: de provider moet
-`plugins.entries.voice-call.config.publicUrl` of de geconfigureerde tunnel kunnen bereiken.
-Zie [Probleemoplossing voor spraakoproepen](/nl/plugins/voice-call#troubleshooting).
+Als webhooks niet aankomen, spoor je eerst problemen in de Voice Call-plugin op: de provider moet `plugins.entries.voice-call.config.publicUrl` of de geconfigureerde tunnel kunnen bereiken. Zie [Problemen met spraakoproepen oplossen](/nl/plugins/voice-call#troubleshooting).
 
-## Notities
+## Opmerkingen
 
-De officiële media-API van Google Meet is gericht op ontvangen, dus spreken in een Meet-
-oproep heeft nog steeds een deelnemerspad nodig. Deze Plugin houdt die grens zichtbaar:
-Chrome verwerkt browserdeelname en lokale audioroutering; Twilio verwerkt
-telefonische inbeldeelname.
+De officiële media-API van Google Meet is gericht op ontvangen, dus om in een oproep te spreken is nog steeds een deelnemerspad nodig. Deze plugin houdt die grens zichtbaar: Chrome verwerkt browserdeelname en lokale audioroutering; Twilio verwerkt deelname via telefonisch inbellen.
 
-Chrome-terugspraakmodi hebben `BlackHole 2ch` nodig plus een van beide:
+Chrome-modi voor terugspreken hebben `BlackHole 2ch` plus een van de volgende nodig:
 
-- `chrome.audioInputCommand` plus `chrome.audioOutputCommand`: OpenClaw beheert de
-  bridge en pipe't audio in `chrome.audioFormat` tussen die commando's en de
-  geselecteerde provider. Agentmodus gebruikt realtime transcriptie plus reguliere TTS;
-  bidi-modus gebruikt de realtime spraakprovider. Het standaard Chrome-pad is 24 kHz
-  PCM16 met `chrome.audioBufferBytes: 4096`; 8 kHz G.711 mu-law blijft
-  beschikbaar voor verouderde commandoparen.
-- `chrome.audioBridgeCommand`: een extern bridgecommando beheert het volledige lokale
-  audiopad en moet afsluiten nadat het zijn daemon heeft gestart of gevalideerd. Dit is alleen
-  geldig voor `bidi`, omdat `agent`-modus directe toegang tot commandoparen nodig heeft voor TTS.
+- `chrome.audioInputCommand` plus `chrome.audioOutputCommand`: OpenClaw beheert de bridge en stuurt audio in `chrome.audioFormat` tussen deze commando's en de geselecteerde provider. De modus `agent` gebruikt realtime transcriptie plus reguliere TTS; de modus `bidi` gebruikt de realtime spraakprovider. Het standaardpad is 24 kHz PCM16 met `chrome.audioBufferBytes: 4096`; 8 kHz G.711 mu-law blijft beschikbaar voor verouderde commandoparen.
+- `chrome.audioBridgeCommand`: een extern bridge-commando beheert het volledige lokale audiopad en moet afsluiten nadat de daemon is gestart of gevalideerd. Alleen geldig voor `bidi`, omdat de modus `agent` directe toegang tot het commandopaar nodig heeft voor TTS.
 
-Wanneer een agent de `google_meet`-tool in agentmodus aanroept, forkt de vergaderconsultant-
-sessie het huidige transcript van de aanroeper voordat er op deelnemersspraak wordt geantwoord.
-De Meet-sessie blijft nog steeds afzonderlijk (`agent:<agentId>:subagent:google-meet:<sessionId>`)
-zodat vervolgacties voor de vergadering het aanroepertranscript niet direct wijzigen.
+Met de Chrome-bridge met commandopaar kan `chrome.bargeInInputCommand` naar een afzonderlijke lokale microfoon luisteren en het afspelen van de assistent onderbreken wanneer een persoon begint te praten, zodat menselijke spraak voorrang houdt op de uitvoer van de assistent, zelfs wanneer de gedeelde BlackHole-loopbackinvoer tijdelijk wordt onderdrukt tijdens het afspelen van de assistent. Net als `chrome.audioInputCommand`/`chrome.audioOutputCommand` is dit een door de operator geconfigureerd lokaal commando: gebruik een expliciet vertrouwd commandopad of een expliciete argumentenlijst, nooit een script uit een niet-vertrouwde locatie.
 
-Voor schone duplexaudio routeer je Meet-uitvoer en de Meet-microfoon via afzonderlijke
-virtuele apparaten of een virtuele apparaatgrafiek in Loopback-stijl. Een enkel gedeeld
-BlackHole-apparaat kan andere deelnemers terug de oproep in echoën.
+Voor zuivere duplexaudio stuur je de Meet-uitvoer en de Meet-microfoon via afzonderlijke virtuele apparaten of een virtuele apparaatgraaf in Loopback-stijl; één gedeeld BlackHole-apparaat kan andere deelnemers terug de oproep in laten echoën.
 
-Met de Chrome-bridge met commandoparen kan `chrome.bargeInInputCommand` naar een
-afzonderlijke lokale microfoon luisteren en assistentweergave wissen wanneer de mens begint
-te praten. Hierdoor blijft menselijke spraak vóór de assistentuitvoer, zelfs wanneer de gedeelde
-BlackHole-loopback-invoer tijdelijk wordt onderdrukt tijdens assistentweergave.
-Net als `chrome.audioInputCommand` en `chrome.audioOutputCommand` is dit een
-door de operator geconfigureerd lokaal commando. Gebruik een expliciet vertrouwd commandopad of
-argumentenlijst, en wijs het niet naar scripts uit onvertrouwde locaties.
-
-`googlemeet speak` activeert de actieve terugspraak-audiobridge voor een Chrome-
-sessie. `googlemeet leave` stopt die bridge. Voor Twilio-sessies die via de
-Voice Call-Plugin zijn gedelegeerd, hangt `leave` ook de onderliggende spraakoproep op.
-Gebruik `googlemeet end-active-conference` wanneer je ook de actieve
-Google Meet-conferentie voor een door de API beheerde ruimte wilt sluiten.
+`googlemeet speak` activeert de actieve audiobridge voor terugspreken voor een Chrome-sessie; `googlemeet leave` stopt deze (en beëindigt bij Twilio-sessies die via Voice Call zijn gedelegeerd de onderliggende oproep). Gebruik `googlemeet end-active-conference` om ook de actieve Google Meet-conferentie voor een via de API beheerde ruimte te sluiten.
 
 ## Gerelateerd
 
-- [Voice Call-Plugin](/nl/plugins/voice-call)
-- [Praatmodus](/nl/nodes/talk)
+- [Plugin voor spraakoproepen](/nl/plugins/voice-call)
+- [Gespreksmodus](/nl/nodes/talk)
 - [Plugins bouwen](/nl/plugins/building-plugins)

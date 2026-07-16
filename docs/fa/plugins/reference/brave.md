@@ -1,31 +1,32 @@
 ---
 read_when:
-    - شما در حال نصب، پیکربندی یا ممیزی Plugin ‏brave هستید
-summary: Plugin ارائه‌دهندهٔ جست‌وجوی Brave در OpenClaw برای جست‌وجوی وب.
+    - در حال نصب، پیکربندی یا ممیزی Plugin مربوط به Brave هستید
+summary: Plugin ارائه‌دهنده Brave Search برای جست‌وجوی وب در OpenClaw.
 title: Plugin بریو
 x-i18n:
-    generated_at: "2026-07-12T10:29:25Z"
+    generated_at: "2026-07-16T17:26:12Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 265b0efa840eb3ebc7bfc1cc47b703737bbd76050ac95e79825728030a166d37
+    source_hash: de92722ae6d104db350455fd075c8a0d29dcc7bb92753cc0503fbbef00ed532c
     source_path: plugins/reference/brave.md
     workflow: 16
 ---
 
-# Plugin ‏Brave
+# Plugin Brave
 
-Plugin ارائه‌دهندهٔ جست‌وجوی Brave برای جست‌وجوی وب در OpenClaw.
+Plugin ارائه‌دهندهٔ Brave Search در OpenClaw برای جست‌وجوی وب.
 
 ## توزیع
 
 - بسته: `@openclaw/brave-plugin`
-- روش نصب: npm؛ ClawHub
+- مسیر نصب: npm؛ ClawHub
 
 ## سطح
 
-قراردادها: webSearchProviders
+قراردادها: `webSearchProviders`
 
 ## مستندات مرتبط
 
-- [Brave](/fa/tools/brave-search)
+- [brave](/fa/tools/brave-search)

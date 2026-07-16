@@ -1,21 +1,22 @@
 ---
 read_when:
-    - Vous installez, configurez ou auditez le Plugin de tableau de travail
-summary: Tableau de suivi pour les problèmes et sessions gérés par les agents.
+    - Vous installez, configurez ou auditez le plugin de tableau de travail
+summary: Tableau de bord de suivi des problèmes et des sessions gérés par les agents.
 title: Plugin Workboard
 x-i18n:
-    generated_at: "2026-07-12T03:10:52Z"
+    generated_at: "2026-07-16T13:35:49Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 1e5a48a52d45dbe87b73020103c2bc3f0bd46305b4c0d26b3010864af65fa99c
+    source_hash: 7011f95388aafcc6bd2d4af0fc71296976b05f57d9314bbb4fa341b8de717fa2
     source_path: plugins/reference/workboard.md
     workflow: 16
 ---
 
 # Plugin Workboard
 
-Tableau de travail pour les problèmes et les sessions gérés par des agents.
+Tableau de travail pour les problèmes et sessions gérés par les agents.
 
 ## Distribution
 
@@ -24,7 +25,7 @@ Tableau de travail pour les problèmes et les sessions gérés par des agents.
 
 ## Surface
 
-contrats : outils
+contrats : `tools`
 
 ## Documentation associée
 

@@ -1,14 +1,15 @@
 ---
 read_when:
-    - Anda sedang memasang, mengonfigurasi, atau mengaudit plugin keterbacaan web
+    - Anda sedang memasang, mengonfigurasi, atau mengaudit plugin web-readability
 summary: Ekstrak konten artikel yang mudah dibaca dari respons pengambilan web HTML lokal.
-title: Plugin keterbacaan web
+title: Plugin Keterbacaan Web
 x-i18n:
-    generated_at: "2026-07-12T14:31:01Z"
+    generated_at: "2026-07-16T18:29:40Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 5909a2da50238f14feecc519809d3b1dce90a49dc98142b4797bb45ad0e48cd1
+    source_hash: a2f2144fc91eea68286f83a0d3c92ff31d45f7b0ebb4d272ebefb58e868ae932
     source_path: plugins/reference/web-readability.md
     workflow: 16
 ---
@@ -20,8 +21,8 @@ Ekstrak konten artikel yang mudah dibaca dari respons pengambilan web HTML lokal
 ## Distribusi
 
 - Paket: `@openclaw/web-readability-plugin`
-- Jalur instalasi: disertakan dalam OpenClaw
+- Rute instalasi: disertakan dalam OpenClaw
 
-## Antarmuka
+## Permukaan
 
-kontrak: webContentExtractors
+kontrak: `webContentExtractors`

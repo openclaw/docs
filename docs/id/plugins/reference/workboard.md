@@ -1,31 +1,32 @@
 ---
 read_when:
-    - Anda sedang menginstal, mengonfigurasi, atau mengaudit Plugin papan kerja
-summary: Papan kerja dasbor untuk masalah dan sesi yang dikelola agen.
-title: Plugin papan kerja
+    - Anda sedang memasang, mengonfigurasi, atau mengaudit plugin papan kerja
+summary: Dasbor papan kerja untuk masalah dan sesi yang dimiliki agen.
+title: Plugin Workboard
 x-i18n:
-    generated_at: "2026-07-12T14:31:02Z"
+    generated_at: "2026-07-16T18:34:22Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 1e5a48a52d45dbe87b73020103c2bc3f0bd46305b4c0d26b3010864af65fa99c
+    source_hash: 7011f95388aafcc6bd2d4af0fc71296976b05f57d9314bbb4fa341b8de717fa2
     source_path: plugins/reference/workboard.md
     workflow: 16
 ---
 
-# Plugin papan kerja
+# Plugin workboard
 
-Dasbor papan kerja untuk masalah dan sesi yang dikelola agen.
+Dasbor workboard untuk masalah dan sesi yang dimiliki agen.
 
 ## Distribusi
 
 - Paket: `@openclaw/workboard`
-- Jalur instalasi: disertakan dalam OpenClaw
+- Rute instalasi: disertakan dalam OpenClaw
 
-## Antarmuka
+## Permukaan
 
-kontrak: alat
+kontrak: `tools`
 
 ## Dokumentasi terkait
 
-- [papan kerja](/id/plugins/workboard)
+- [workboard](/id/plugins/workboard)

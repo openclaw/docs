@@ -1,43 +1,38 @@
 ---
 read_when:
-    - Uzun süren sohbet dönüşleri için görünür ilerleme güncellemelerini yapılandırma
+    - Uzun süren sohbet turları için görünür ilerleme güncellemelerini yapılandırma
     - Kısmi, blok ve ilerleme akışı modları arasında seçim yapma
-    - Çalışma sürerken OpenClaw'ın bir kanal mesajını nasıl güncellediğini açıklama
-    - İlerleme taslakları, bağımsız ilerleme iletileri veya sonlandırma geri dönüşü sorunlarını giderme
-summary: 'İlerleme taslakları: bir agent çalışırken güncellenen, görünür tek bir devam eden çalışma mesajı'
+    - Çalışma devam ederken OpenClaw'ın tek bir kanal mesajını nasıl güncellediğini açıklama
+    - Sorun giderme ilerleme taslakları, bağımsız ilerleme mesajları veya sonlandırma yedeği
+summary: 'İlerleme taslakları: bir aracı çalışırken güncellenen, görünür tek bir devam eden çalışma iletisi'
 title: İlerleme taslakları
 x-i18n:
-    generated_at: "2026-06-28T00:30:35Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T17:06:24Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 7cc005ed39c2a4a6d887748c769c9d2bb9c133aeeda87b2c11bfe5360f364fdd
+    source_hash: 4ef66dd4d7a31c753f5faa0b88b83ec3760beecf3118cf8aae84f5e57652e809
     source_path: concepts/progress-drafts.md
     workflow: 16
 ---
 
-İlerleme taslakları, uzun süren agent dönüşlerini, konuşmayı geçici durum
-yanıtları yığınına çevirmeden sohbette canlı hissettirir.
-
-İlerleme taslakları etkinleştirildiğinde OpenClaw, ancak dönüş gerçek iş
-yaptığını kanıtladıktan sonra görünür tek bir devam eden çalışma mesajı
-oluşturur; agent okurken, plan yaparken, araçları çağırırken veya onay beklerken
-bunu günceller ve kanal bunu güvenle yapabiliyorsa bu taslağı final yanıta
-dönüştürür.
+İlerleme taslakları, bir agent çalışırken tek bir kanal mesajını canlı bir durum satırına dönüştürür; böylece geçici "hâlâ çalışıyor" yanıtları yığını oluşmaz. `channels.<channel>.streaming.mode: "progress"` ayarlandığında OpenClaw, gerçek çalışma başladıktan sonra mesajı bir kez oluşturur; agent okudukça, plan yaptıkça, araç çağırdıkça veya onay bekledikçe mesajı düzenler ve ardından nihai yanıta dönüştürür.
 
 ```text
-Shelling...
-📖 from docs/concepts/progress-drafts.md
-🔎 Web Search: for "discord edit message"
-🛠️ Bash: run tests
+Çalışıyor...
+📖 docs/concepts/progress-drafts.md kaynağından
+🔎 Web Araması: "discord mesaj düzenleme" için
+🛠️ Bash: testleri çalıştır
 ```
 
-Araç yoğun iş sırasında tek bir düzenli durum mesajı ve dönüş tamamlandığında
-final yanıt istediğinizde ilerleme taslaklarını kullanın.
+<Note>
+  `channels.discord.streaming` ayarlanmamışsa Discord zaten varsayılan olarak `streaming.mode: "progress"` kullanır; dolayısıyla ilerleme taslakları herhangi bir yapılandırma olmadan burada görünür. Diğer tüm kanallar varsayılan olarak `partial`
+  veya `off` kullanır; kanalların tüm varsayılanlarını içeren tablo için [Akış ve parçalara ayırma](/tr/concepts/streaming#channel-mapping)
+  bölümüne bakın.
+</Note>
 
 ## Hızlı başlangıç
-
-İlerleme taslaklarını kanal başına `streaming.mode: "progress"` ile etkinleştirin:
 
 ```json5
 {
@@ -51,85 +46,43 @@ final yanıt istediğinizde ilerleme taslaklarını kullanın.
 }
 ```
 
-Bu genellikle yeterlidir. OpenClaw otomatik tek kelimelik bir etiket seçer, iş
-en az beş saniye sürünceye veya ikinci bir iş olayı yayınlayıncaya kadar bekler,
-yararlı iş gerçekleşirken kompakt ilerleme satırları ekler ve o dönüş için
-yinelenen bağımsız ilerleme konuşmalarını bastırır.
+Buradaki varsayılanlar: 5 saniyelik başlangıç gecikmesi, yararlı çalışma sürerken kısa ilerleme satırları ve ilgili tur için eski bağımsız ilerleme mesajlarının bastırılmasıdır. Ham araç satırı taslakları otomatik, tek sözcüklük bir etiket kullanır; açıkça bir başlık yapılandırmadığınız sürece durum başlığı bu gereksiz başlığı göstermez.
+
+Bu sayfa, ilerleme taslağı deneyimini ve yapılandırma seçeneklerini ele alır. Akış modlarının tam matrisi, kanala özgü çalışma zamanı notları ve eski anahtarların taşınması için [Akış ve parçalara ayırma](/tr/concepts/streaming) bölümüne bakın.
 
 ## Kullanıcıların gördükleri
 
-Bir ilerleme taslağının iki parçası vardır:
+| Bölüm           | Amaç                                                                              |
+| --------------- | --------------------------------------------------------------------------------- |
+| Durum başlığı   | Discord ve Telegram'da modelin giriş açıklaması; Discord yardımcı bir dolgu ekler. |
+| Etiket          | `Working` gibi isteğe bağlı başlangıç/durum satırı.                      |
+| İlerleme satırları | `/verbose` ile aynı araç simgelerini ve ayrıntı biçimlendiricisini kullanan kısa çalışma güncellemeleri. |
 
-| Parça             | Amaç                                                                                  |
-| ----------------- | ------------------------------------------------------------------------------------- |
-| Etiket            | `Working` veya `Shelling` gibi kısa bir başlangıç/durum satırı.                       |
-| İlerleme satırları | Ayrıntılı çıktıyla aynı araç simgelerini ve ayrıntı biçimlendiricisini kullanan kompakt çalıştırma güncellemeleri. |
+Ham araç ilerlemesinde etiket, agent anlamlı bir çalışmaya başlayıp ilk gecikme süresince çalışmayı sürdürdüğünde görünür.
+Kayan ilerleme satırları listesinin en üstünde yer aldığından, yeterince somut çalışma satırı göründüğünde kayarak görünümden çıkar. Durum başlığı, açıkça bir etiket yapılandırılmadığı sürece yalnızca agent'ın sade dille yazılmış durumunu gösterir. Yalnızca düz metinden oluşan yanıtlar hiçbir zaman ilerleme taslağı göstermez; yalnızca `🛠️ Bash: run tests`, `🔎 Web Search: for "discord edit message"`
+veya `✍️ Write: to /tmp/file` gibi gerçek çalışma güncellemelerinde bir satır görünür.
 
-Etiket, agent anlamlı işe başladıktan ve beş saniye meşgul kaldıktan ya da ikinci
-bir iş olayı yayınladıktan sonra görünür. Dönen ilerleme satırı listesinin bir
-parçasıdır, bu yüzden yeterince somut iş göründüğünde başlangıç durumu yukarı
-kayarak görünümden çıkar.
-Yalnızca düz metin yanıtları ilerleme taslağı göstermez. İlerleme satırları
-yalnızca agent yararlı iş güncellemeleri yayınladığında eklenir; örneğin
-`🛠️ Bash: run tests`, `🔎 Web Search: for "discord edit message"` veya
-`✍️ Write: to /tmp/file`.
-Varsayılan olarak `/verbose` ile aynı kompakt açıklama modunu kullanırlar;
-hata ayıklarken ham komutların/ayrıntıların da eklenmesini istiyorsanız
-`agents.defaults.toolProgressDetail: "raw"` ayarlayın.
-Mümkün olduğunda final yanıt taslağın yerini alır; aksi halde OpenClaw final
-yanıtı normal şekilde gönderir ve kanalın aktarımına göre taslağı temizler veya
-güncellemeyi durdurur.
+Kanal bunu güvenle yapabiliyorsa nihai yanıt taslağın yerini aynı konumda alır; aksi takdirde OpenClaw nihai yanıtı normal teslimat yoluyla gönderir ve taslağı temizler veya güncellemeyi durdurur (bkz. [Sonlandırma](#finalization)).
 
 ## Mod seçme
 
-`channels.<channel>.streaming.mode`, görünür devam eden çalışma davranışını
-kontrol eder:
+`channels.<channel>.streaming.mode`, devam eden çalışmanın görünür davranışını denetler:
 
-| Mod        | En uygun kullanım                 | Sohbette görünenler                                |
-| ---------- | --------------------------------- | -------------------------------------------------- |
-| `off`      | Sessiz kanallar                   | Yalnızca final yanıt.                              |
-| `partial`  | Yanıt metninin görünmesini izleme | En son yanıt metniyle düzenlenen tek taslak.       |
-| `block`    | Daha büyük yanıt önizleme parçaları | Daha büyük parçalar halinde güncellenen veya eklenen tek önizleme. |
-| `progress` | Araç yoğun veya uzun süren dönüşler | Tek durum taslağı, ardından final yanıt.           |
+| Mod        | En uygun olduğu durum            | Sohbette görünenler                               |
+| ---------- | -------------------------------- | ------------------------------------------------- |
+| `off` | Sessiz kanallar                  | Yalnızca nihai yanıt.                             |
+| `partial` | Yanıt metninin görünmesini izleme | En son yanıt metniyle düzenlenen tek bir taslak.  |
+| `block` | Daha büyük yanıt önizleme parçaları | Daha büyük parçalar hâlinde güncellenen veya genişletilen tek bir önizleme. |
+| `progress` | Araç kullanımının yoğun olduğu veya uzun süren turlar | Bir durum taslağı, ardından nihai yanıt.           |
 
-Kullanıcılar yanıt metninin token token akmasını izlemekten çok "ne oluyor"u
-önemsiyorsa `progress` seçin.
-
-Yanıtın kendisi ilerleme sinyaliyse `partial` seçin.
-
-Daha büyük metin parçaları halinde taslak önizleme güncellemeleri istiyorsanız
-`block` seçin. Discord ve Telegram'da `streaming.mode: "block"` hâlâ önizleme
-akışıdır, normal blok teslimi değildir. Normal blok yanıtları istediğinizde
-`streaming.block.enabled` veya eski `blockStreaming` kullanın.
+Kullanıcılar, yanıt metninin token token akışını izlemekten çok "ne oluyor" sorusuyla ilgileniyorsa `progress`; ilerleme sinyali yanıt metninin kendisiyse `partial`; daha büyük önizleme parçaları için `block` seçin. Discord ve Telegram'da `streaming.mode: "block"` hâlâ önizleme akışıdır, normal blok yanıt teslimatı değildir — bunun için `streaming.block.enabled` kullanın.
 
 ## Etiketleri yapılandırma
 
-İlerleme etiketleri `channels.<channel>.streaming.progress` altında bulunur.
-
-Varsayılan etiket `auto` değeridir; bu, OpenClaw'ın yerleşik tek kelimelik etiket
-havuzundan seçim yapar:
+İlerleme etiketleri `channels.<channel>.streaming.progress` altında bulunur. Varsayılan ham araç satırı etiketi, yerleşik düz `Working` etiketini kullanan `"auto"` değeridir. Durum başlığı bu örtük etiketi gizler; üzerinde de bir etiket istiyorsanız `label: "auto"` değerini açıkça ayarlayın:
 
 ```text
-Working
-Shelling
-Scuttling
-Clawing
-Pinching
-Molting
-Bubbling
-Tiding
-Reefing
-Cracking
-Sifting
-Brining
-Nautiling
-Krilling
-Barnacling
-Lobstering
-Tidepooling
-Pearling
-Snapping
-Surfacing
+Çalışıyor
 ```
 
 Sabit bir etiket kullanın:
@@ -141,7 +94,7 @@ Sabit bir etiket kullanın:
       streaming: {
         mode: "progress",
         progress: {
-          label: "Investigating",
+          label: "İnceleniyor",
         },
       },
     },
@@ -149,7 +102,7 @@ Sabit bir etiket kullanın:
 }
 ```
 
-Kendi otomatik etiket havuzunuzu kullanın:
+Kendi etiket havuzunuzu kullanın (`label: "auto"` olduğunda yine rastgele/tohuma göre seçilir):
 
 ```json5
 {
@@ -159,7 +112,7 @@ Kendi otomatik etiket havuzunuzu kullanın:
         mode: "progress",
         progress: {
           label: "auto",
-          labels: ["Checking", "Reading", "Testing", "Finishing"],
+          labels: ["Kontrol ediliyor", "Okunuyor", "Test ediliyor", "Tamamlanıyor"],
         },
       },
     },
@@ -184,23 +137,18 @@ Etiketi gizleyip yalnızca ilerleme satırlarını gösterin:
 }
 ```
 
-## İlerleme satırlarını kontrol etme
+## İlerleme satırlarını denetleme
 
-İlerleme satırları ilerleme modunda varsayılan olarak etkindir. Gerçek çalıştırma
-olaylarından gelirler: araç başlangıçları, öğe güncellemeleri, görev planları,
-onaylar, komut çıktısı, yama özetleri ve benzer agent etkinlikleri.
+İlerleme satırları gerçek çalışma olaylarından gelir: araç başlangıçları, öğe güncellemeleri, görev planları, onaylar, komut çıktısı, yama özetleri ve benzer agent etkinlikleri.
+Bunlar varsayılan olarak etkindir (`progress.toolProgress`, varsayılan `true`).
 
-Araçlar, tek bir araç çağrısı hâlâ çalışırken de türlendirilmiş ilerleme
-yayınlayabilir. Yavaş bir getirme veya aramanın, araç final sonucunu döndürmeden
-önce görünür taslağı güncelleyebilmesi böyle sağlanır. İlerleme güncellemesi,
-boş model içeriği ve açık genel kanal metaverileri içeren kısmi bir araç
-sonucudur:
+Araçlar, tek bir çağrı hâlâ çalışırken türü belirlenmiş ilerleme güncellemeleri de yayınlayabilir. Yavaş bir getirme veya arama işleminin, araç nihai sonucunu döndürmeden önce görünür taslağı güncellemesi bu şekilde sağlanır. İlerleme güncellemesi, boş model içeriğine ve açık genel kanal meta verilerine sahip kısmi bir araç sonucudur:
 
 ```json
 {
   "content": [],
   "progress": {
-    "text": "Fetching page content...",
+    "text": "Sayfa içeriği getiriliyor...",
     "visibility": "channel",
     "privacy": "public",
     "id": "web_fetch:fetching"
@@ -208,17 +156,14 @@ sonucudur:
 }
 ```
 
-OpenClaw kanal ilerleme kullanıcı arayüzünde yalnızca `progress.text` değerini
-gösterir. Normal araç sonucu daha sonra `content` ve `details` olarak gelir ve
-modele döndürülen tek parça odur.
+OpenClaw, kanalın ilerleme kullanıcı arayüzünde yalnızca `progress.text` öğesini işler. Normal araç sonucu daha sonra yine `content`/`details` olarak gelir ve modele döndürülen tek bölümdür.
 
-Bir araca ilerleme eklerken kısa, genel bir mesaj kullanın ve bunu, işlem yararlı
-olacak kadar uzun süre beklemede kaldıktan sonra geciktirin:
+Bir araca ilerleme eklerken kısa ve genel bir mesaj yayınlayın ve işlem, gösterilmesinin yararlı olacağı kadar uzun süre beklemede kalana dek mesajı geciktirin. `web_fetch`, 5 saniyelik gecikmeyle tam olarak bunu yapar:
 
 ```typescript
 const clearProgressTimer = scheduleToolProgress(
   onUpdate,
-  { text: "Fetching page content...", id: "web_fetch:fetching" },
+  { text: "Sayfa içeriği getiriliyor...", id: "web_fetch:fetching" },
   5_000,
   { signal },
 );
@@ -230,13 +175,11 @@ try {
 }
 ```
 
-Bu kalıp, hızlı çağrıların ilerleme satırı göstermemesi, uzun çağrıların hâlâ
-beklemedeyken bir satır göstermesi ve iptal edilen çağrıların eski ilerleme
-görünmeden önce zamanlayıcıyı temizlemesi anlamına gelir. İlerleme metni herkese
-açık bir kullanıcı arayüzü yan kanalıdır; bu yüzden gizli bilgiler, ham
-argümanlar, getirilen içerik, komut çıktısı veya sayfa metni içermemelidir.
+Hızlı çağrılar ilerleme satırı göstermez; uzun çağrılar hâlâ beklemedeyken bir satır gösterir; iptal edilen çağrılar, güncelliğini yitirmiş ilerleme görünmeden önce zamanlayıcıyı temizler. İlerleme metni, genel bir kullanıcı arayüzü yan kanalıdır; bu nedenle hiçbir zaman gizli bilgiler, ham bağımsız değişkenler, getirilen içerik, komut çıktısı veya sayfa metni içermemelidir.
 
-OpenClaw ilerleme taslakları ve `/verbose` için aynı biçimlendiriciyi kullanır:
+### Ayrıntı modu
+
+OpenClaw, ilerleme taslakları ve `/verbose` için aynı biçimlendiriciyi kullanır:
 
 ```json5
 {
@@ -248,19 +191,77 @@ OpenClaw ilerleme taslakları ve `/verbose` için aynı biçimlendiriciyi kullan
 }
 ```
 
-`"explain"` varsayılandır ve taslakları
-`🛠️ check JS syntax for /tmp/app.js` gibi özlü etiketlerle kararlı tutar.
-`"raw"` mevcut olduğunda alttaki komutu/ayrıntıyı ekler; bu hata ayıklarken
-yararlıdır ancak sohbette daha gürültülüdür.
+`"explain"` varsayılandır ve kısa etiketlerle taslakların kararlı kalmasını sağlar.
+`"raw"`, kullanılabilir olduğunda temel komutu ekler; bu, hata ayıklama sırasında yararlıdır ancak sohbette daha fazla gürültü oluşturur. Örneğin bir `node --check /tmp/app.js` çağrısı moda göre farklı işlenir:
 
-Örneğin aynı komut, ayrıntı moduna bağlı olarak farklı görünür:
+| Mod       | İlerleme satırı                                                 |
+| --------- | --------------------------------------------------------------- |
+| `explain` | `🛠️ check js syntax for /tmp/app.js`                                      |
+| `raw` | `🛠️ check js syntax for /tmp/app.js · node --check /tmp/app.js`                                      |
 
-| Mod       | İlerleme satırı                                                |
-| --------- | -------------------------------------------------------------- |
-| `explain` | `🛠️ check JS syntax for /tmp/app.js`                           |
-| `raw`     | `🛠️ check JS syntax for /tmp/app.js, node --check /tmp/app.js` |
+### Komut/exec metni
 
-Kaç satırın görünür kalacağını sınırlayın:
+`streaming.progress.commandText` (varsayılan `"raw"`), yukarıdaki ayrıntı modundan bağımsız olarak exec/bash ilerleme satırlarının yanında ne kadar komut ayrıntısı gösterileceğini denetler. Komut metnini tamamen gizlerken araç ilerleme satırının görünür kalması için bunu `"status"` olarak ayarlayın:
+
+```json5
+{
+  channels: {
+    discord: {
+      streaming: {
+        mode: "progress",
+        progress: {
+          commandText: "status",
+        },
+      },
+    },
+  },
+}
+```
+
+### Yorum şeridi
+
+`streaming.progress.commentary` (varsayılan `false`), modelin araç öncesi yorum/giriş anlatımını (💬, örneğin "Kontrol edeceğim... ardından ...") taslaktaki araç satırlarıyla iç içe geçirir. Kanallar arasında paylaşılan yapılandırma biçimi için [Akış ve parçalara ayırma](/tr/concepts/streaming#commentary-progress-lane) bölümüne bakın.
+
+Yorum şeridi etkinleştirildiğinde giriş açıklamaları yalnızca iç içe geçmiş 💬 satırları olarak işlenir; aşağıdaki durum başlığı aradan çekilir ve şerit belgelenmiş biçimini korur.
+
+### Durum başlığı
+
+Discord ve Telegram'da ilerleme modundayken modelin türü belirlenmiş araç öncesi giriş açıklaması, kullanılabilir olduğunda taslağın durum başlığına dönüşür. İlerleme modundaki diğer kanallar mevcut durum davranışlarını korur. Başlık varsayılan olarak açıktır ve kısa turlarda normal etkinlik eşiğini atlamaz;
+`streaming.progress.commentary` etkinleştirildiğinde giriş açıklamaları bunun yerine iç içe geçmiş yorum şeridine aktarılır.
+
+Discord'da agent için bir yardımcı model çözümlendiğinde — açık bir [`utilityModel`](/tr/gateway/config-agents#utilitymodel) veya birincil sağlayıcının bildirdiği küçük model varsayılanı (OpenAI → `gpt-5.6-luna`,
+Anthropic → `claude-haiku-4-5`) — model hiçbir giriş açıklaması yayınlamadığında veya yaklaşık 20 saniyedir sessiz kaldığında kısa ve sade dille yazılmış bir dolgu sağlar
+(Telegram'ın başlığı bugün yalnızca giriş açıklamasını kullanır):
+
+```text
+Yapılandırmanızdaki varsayılan model güncelleniyor, ardından değişikliği
+uygulamak için gateway yeniden başlatılıyor. Bir agent listeleme çağrısı başarısız oldu ve yeniden deneniyor.
+```
+
+Yardımcı anlatım varsayılan olarak açıktır (`streaming.progress.narration`, varsayılan
+`true`) ve hiçbir zaman birincil modele geri dönmez: yalnızca açık bir
+`utilityModel` veya agent'ın birincil sağlayıcısı için sağlayıcı tarafından bildirilmiş bir varsayılan olduğunda çalışır. Yardımcı yönlendirmeyi tamamen devre dışı bırakmak için `utilityModel: ""` ayarını kullanın. Araç satırları altta birikmeye devam eder ve her iki durum kaynağı da durursa yeniden görünür. Taslak düzenlemeleri yine normal etkinlik eşiğini ve gerçek bir metin değişikliğini bekler; bu, hızlı turlardaki yanıp sönmeleri önler ve yoğun kanallardaki düzenleme yükünü azaltır. Yalnızca yardımcı model dolgusunu devre dışı bırakmak için `narration: false` ayarını kullanın; modelin giriş açıklaması başlıkları etkin kalır:
+
+```json5
+{
+  channels: {
+    discord: {
+      streaming: {
+        mode: "progress",
+        progress: {
+          narration: false,
+        },
+      },
+    },
+  },
+}
+```
+
+Anlatım girdisi sınırlanır ve hassas bilgilerden arındırılır: yardımcı model, gelen istek metninin yanı sıra taslağın işleyeceği aynı kısa ve hassas bilgilerden arındırılmış araç özetlerini alır; ham komut çıktısını veya araç sonuçlarını hiçbir zaman almaz. `commandText: "status"` kullanıldığında anlatım girdisi, taslakta gösterilenle uyumlu biçimde exec/bash komut metnini de dışarıda bırakır.
+
+### Satır sınırları
+
+Kaç satırın görünür kalacağını sınırlayın (varsayılan 8):
 
 ```json5
 {
@@ -277,15 +278,9 @@ Kaç satırın görünür kalacağını sınırlayın:
 }
 ```
 
-Taslak düzenlenirken sohbet balonu yeniden akışını azaltmak için ilerleme satırları otomatik olarak sıkıştırılır.
+Taslak düzenlenirken sohbet balonunun yeniden akışını azaltmak için ilerleme satırları otomatik olarak sıkıştırılır ve OpenClaw uzun satırları kısaltır; böylece tekrarlanan taslak düzenlemelerinde metin her güncellemede farklı şekilde kaymaz. Satır başına varsayılan sınır 120 karakterdir; düz yazı sözcük sınırında kesilirken yollar veya ham komutlar gibi uzun ayrıntılar, son ek görünür kalacak şekilde ortadan üç noktayla kısaltılır.
 
-OpenClaw, yinelenen taslak düzenlemelerinin her güncellemede farklı sarılmaması
-için uzun ilerleme satırlarını varsayılan olarak kısaltır. Varsayılan satır başı
-bütçe 120 karakterdir. Düzyazı bir kelime sınırında kesilir; yollar veya ham
-komutlar gibi uzun ayrıntılar ise sonek görünür kalacak şekilde ortadan üç nokta
-ile kısaltılır.
-
-Satır başı bütçeyi ayarlayın:
+Satır başına sınırı ayarlayın:
 
 ```json5
 {
@@ -302,8 +297,9 @@ Satır başı bütçeyi ayarlayın:
 }
 ```
 
-Slack, ilerleme satırlarını tek bir metin gövdesi yerine yapılandırılmış Block
-Kit alanları olarak gösterebilir:
+### Zengin işleme (Slack)
+
+Slack, ilerleme satırlarını düz metin yerine yapılandırılmış Block Kit alanları olarak işleyebilir:
 
 ```json5
 {
@@ -320,9 +316,9 @@ Kit alanları olarak gösterebilir:
 }
 ```
 
-Zengin gösterim aynı düz metin yedeğini korur; böylece daha zengin biçimi
-desteklemeyen kanallar ve istemciler yine de kompakt ilerleme metnini
-gösterebilir.
+Zengin işleme, Block Kit alanlarının yanında her zaman aynı düz metin gövdesini de gönderir; böylece daha zengin biçimi işleyemeyen istemciler de kısa ilerleme metnini göstermeye devam eder.
+
+### Araç/görev satırlarını gizleme
 
 Tek ilerleme taslağını koruyup araç ve görev satırlarını gizleyin:
 
@@ -341,72 +337,81 @@ Tek ilerleme taslağını koruyup araç ve görev satırlarını gizleyin:
 }
 ```
 
-`toolProgress: false` ile OpenClaw, o dönüş için eski bağımsız araç ilerleme
-mesajlarını yine de bastırır. Bir etiket yapılandırılmışsa etiket dışında kanal,
-final yanıta kadar görsel olarak sessiz kalır.
+`toolProgress: false` ile OpenClaw, söz konusu tur için eski bağımsız
+araç ilerleme mesajlarını yine de bastırır — yapılandırılmışsa etiket dışında kanal,
+nihai yanıta kadar görsel olarak sessiz kalır.
 
 ## Kanal davranışı
 
-Her kanal desteklediği en temiz aktarımı kullanır:
+| Kanal           | İlerleme aktarımı                         | Notlar                                                                                                                                                          |
+| --------------- | ----------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Discord         | Bir mesaj gönderir, ardından düzenler.     | Varsayılan olarak `progress` modunu kullanır; nihai yanıt bir `-#` etkinlik makbuzu içerir ve durum taslağı, yanıt ulaştıktan sonra silinir. |
+| Matrix          | Bir etkinlik gönderir, ardından düzenler.  | Hesap düzeyindeki akış yapılandırması, hesap düzeyindeki taslakları denetler.                                                                                    |
+| Microsoft Teams | Kişisel sohbetlerde yerel Teams akışı.     | `streaming.mode: "block"`, bunun yerine Teams blok teslimine eşlenir.                                                                                                   |
+| Slack           | Yerel akış veya düzenlenebilir taslak gönderisi. | Bir yanıt dizisi hedefi gerektirir; böyle bir hedefi olmayan üst düzey doğrudan mesajlarda yine de taslak önizleme gönderileri ve düzenlemeleri kullanılır. |
+| Telegram        | Bir mesaj gönderir, ardından düzenler.     | İlerleme taslağı ile yanıt arasına bir mesaj gelirse taslak, istemcinin kaydırma konumunu sıçratmak yerine onun altında yeniden yayımlanır (önce yeniyi gönderip sonra eskiyi silme). |
+| Mattermost      | Düzenlenebilir taslak gönderisi.           | `block` modu, tamamlanmış metin ile araç etkinliği gönderileri arasında geçiş yapar; diğer modlar araç etkinliğini aynı taslak tarzı gönderide birleştirir. |
 
-| Kanal           | İlerleme aktarımı                      | Notlar                                                                |
-| --------------- | -------------------------------------- | --------------------------------------------------------------------- |
-| Discord         | Bir mesaj gönderir, sonra düzenler.    | Final metin tek güvenli önizleme mesajına sığdığında yerinde düzenlenir. |
-| Matrix          | Bir olay gönderir, sonra düzenler.     | Hesap düzeyi akış yapılandırması hesap düzeyi taslakları kontrol eder. |
-| Microsoft Teams | Kişisel sohbetlerde yerel Teams akışı. | `streaming.mode: "block"` Teams blok teslimiyle eşleşir.              |
-| Slack           | Yerel akış veya düzenlenebilir taslak gönderisi. | İş parçacığı kullanılabilirliği, yerel akışın kullanılıp kullanılamayacağını etkiler. |
-| Telegram        | Bir mesaj gönderir, sonra düzenler.    | Eski görünür taslaklar, final zaman damgaları yararlı kalsın diye değiştirilebilir. |
-| Mattermost      | Düzenlenebilir taslak gönderisi.       | Araç etkinliği aynı taslak tarzı gönderiye katlanır.                  |
-
-Güvenli düzenleme desteği olmayan kanallar genellikle yazıyor göstergelerine
-veya yalnızca final teslimine geri döner.
+Güvenli düzenleme desteği olmayan kanallar, yazıyor göstergelerine veya
+yalnızca nihai yanıt teslimine geri döner. Kanal başına tam çalışma zamanı
+davranışı dökümü için [Akış ve parçalama](/tr/concepts/streaming) bölümüne bakın.
 
 ## Sonlandırma
 
-Final yanıt hazır olduğunda OpenClaw sohbeti temiz tutmaya çalışır:
+Nihai yanıt hazır olduğunda OpenClaw, sohbeti temiz tutmaya çalışır:
 
-- Taslak güvenli şekilde final yanıta dönüşebiliyorsa OpenClaw onu yerinde
-  düzenler.
-- Kanal yerel ilerleme akışı kullanıyorsa OpenClaw, yerel aktarım final metni
-  kabul ettiğinde o akışı sonlandırır.
-- Final yanıtta medya, bir onay istemi, açık bir yanıt hedefi, çok fazla parça
-  veya başarısız bir düzenleme/gönderme varsa OpenClaw final yanıtı normal kanal
-  teslim yolu üzerinden gönderir.
+- Discord'da `progress` modunda nihai yanıt, sonuna küçük bir
+  `-#` etkinlik makbuzu eklenmiş yeni bir mesaj olarak gönderilir
+  (örneğin `-# 🧠 2 thoughts · 🛠️ 5 tool calls · ⏱️ 12s`) ve durum taslağı,
+  bu yanıt teslim edildiğinde silinir. Yoğun kanallarda yanıtın üzerinde sahipsiz
+  bir araç günlüğü kalmaz; hatalı nihai yanıtlarda taslak, başarısız turun görünür
+  kaydı olarak korunur.
+- Taslak güvenli bir şekilde nihai yanıta dönüştürülebiliyorsa (`partial`/`block` modları),
+  OpenClaw taslağı yerinde düzenler.
+- Kanal yerel ilerleme akışı kullanıyorsa OpenClaw,
+  yerel aktarım nihai metni kabul ettiğinde bu akışı sonlandırır.
+- Aksi takdirde (medya, bir onay istemi, açık bir yanıt hedefi, çok fazla
+  parça veya başarısız bir düzenleme/gönderme) OpenClaw, taslağın üzerine yazmak yerine
+  nihai yanıtı normal kanal teslim yolu üzerinden gönderir.
 
-Yedek yol bilinçlidir. Metni kaybetmekten, bir yanıtı yanlış iş parçacığına
-bağlamaktan veya bir taslağın kanalın güvenle temsil edemeyeceği bir yükle
-üzerine yazılmasındansa yeni bir final yanıt göndermek daha iyidir.
+Bu geri dönüş kasıtlıdır: Yeni bir nihai yanıt göndermek; metni kaybetmekten,
+bir yanıtı yanlış diziye bağlamaktan veya kanalın güvenli biçimde temsil edemeyeceği
+bir yükle taslağın üzerine yazmaktan daha iyidir.
 
 ## Sorun giderme
 
-**Yalnızca final yanıtı görüyorum.**
+**Yalnızca nihai yanıtı görüyorum.**
 
-Mesajı işleyen hesap veya kanal için `channels.<channel>.streaming.mode`
-değerinin `progress` olarak ayarlandığını kontrol edin. Bazı grup veya alıntı
-yanıt yolları, kanal doğru mesajı güvenle düzenleyemediğinde bir dönüş için
-taslak önizlemelerini devre dışı bırakabilir.
+Mesajı işleyen hesap veya kanal için `channels.<channel>.streaming.mode` değerinin
+`progress` olduğunu kontrol edin. Kanal doğru mesajı güvenli biçimde
+düzenleyemediğinde bazı grup veya alıntılı yanıt yolları, ilgili tur için
+taslak önizlemelerini devre dışı bırakır.
 
-**Etiketi görüyorum ama araç satırlarını görmüyorum.**
+**Etiketi görüyorum ancak araç satırlarını görmüyorum.**
 
-`streaming.progress.toolProgress` değerini kontrol edin. `false` ise OpenClaw
-tek taslak davranışını korur ancak araç ve görev ilerleme satırlarını gizler.
+`streaming.progress.toolProgress` değerini kontrol edin. Değer `false` ise
+OpenClaw tek taslak davranışını korur ancak araç ve görev ilerleme satırlarını gizler.
 
-**Düzenlenmiş taslak yerine yeni bir final mesaj görüyorum.**
+**Düzenlenmiş bir taslak yerine yeni bir nihai mesaj görüyorum.**
 
-Bu bir güvenlik yedeğidir. Medya yanıtları, uzun yanıtlar, açık yanıt hedefleri,
-eski Telegram taslakları, eksik Slack iş parçacığı hedefleri, silinmiş önizleme
-mesajları veya başarısız yerel akış sonlandırması nedeniyle gerçekleşebilir.
+Bu, [Sonlandırma](#finalization) bölümünde açıklanan güvenlik geri dönüşüdür.
+Medya yanıtları, uzun yanıtlar, açık yanıt hedefleri, eski Telegram taslakları,
+eksik Slack yanıt dizisi hedefleri, silinmiş önizleme mesajları veya başarısız
+yerel akış sonlandırması nedeniyle gerçekleşebilir.
 
 **Hâlâ bağımsız ilerleme mesajları görüyorum.**
 
-İlerleme modu, bir taslak etkinken varsayılan bağımsız araç ilerleme mesajlarını
-bastırır. Bağımsız mesajlar hâlâ görünüyorsa dönüşün gerçekten ilerleme modunu
-kullandığını ve `streaming.mode: "off"` ya da o mesaj için taslak oluşturamayan
-bir kanal yolu olmadığını doğrulayın.
+Taslak etkin olduğunda ilerleme modu, varsayılan bağımsız araç ilerleme mesajlarını
+bastırır. Bağımsız mesajlar hâlâ görünüyorsa turun gerçekten `progress`
+modunu kullandığını ve `streaming.mode: "off"` modunu ya da söz konusu mesaj için
+taslak oluşturamayan bir kanal yolunu kullanmadığını doğrulayın.
 
 **Teams, Discord veya Telegram'dan farklı davranıyor.**
 
-Microsoft Teams, kişisel sohbetlerde genel gönder-ve-düzenle önizleme taşıması yerine yerel bir akış kullanır. Teams ayrıca `streaming.mode: "block"` değerini Teams blok teslimi olarak ele alır çünkü Discord ve Telegram tarafından kullanılan aynı taslak önizleme blok moduna sahip değildir.
+Microsoft Teams, genel gönderip düzenlemeli önizleme aktarımı yerine kişisel
+sohbetlerde yerel akış kullanır ve Discord ile Telegram'daki gibi bir taslak
+önizleme blok modu bulunmadığından `streaming.mode: "block"` değerini Teams blok
+teslimine eşler.
 
 ## İlgili
 
@@ -418,3 +423,4 @@ Microsoft Teams, kişisel sohbetlerde genel gönder-ve-düzenle önizleme taşı
 - [Microsoft Teams](/tr/channels/msteams)
 - [Slack](/tr/channels/slack)
 - [Telegram](/tr/channels/telegram)
+- [Mattermost](/tr/channels/mattermost)

@@ -1,31 +1,31 @@
 ---
 read_when:
-    - anthropic Pluginをインストール、設定、または監査しています
-summary: Anthropic モデル、Claude CLI、ネイティブ Claude セッションカタログ。
+    - anthropic Plugin をインストール、設定、または監査しています
+summary: Anthropicモデル、Claude CLI、ネイティブClaudeセッションカタログ。
 title: Anthropic Plugin
 x-i18n:
-    generated_at: "2026-07-12T14:46:25Z"
+    generated_at: "2026-07-16T11:56:52Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
-    prompt_version: 15
+    prompt_version: 32
     provider: openai
-    source_hash: a482afe12e9e5b17d1ee88bf1d5515c436e0a8dab56418cfb631e35f5cf0279d
+    source_hash: 11d3c7879a9dc6de35e67f9812b878918d908d41555c181920deb4f1f9cba22e
     source_path: plugins/reference/anthropic.md
     workflow: 16
 ---
 
-# Anthropic Plugin
+# Anthropic plugin
 
 Anthropicモデル、Claude CLI、ネイティブClaudeセッションカタログ。
 
 ## 配布
 
 - パッケージ: `@openclaw/anthropic-provider`
-- インストール方法: OpenClawに同梱
+- インストール経路: OpenClawに同梱
 
 ## サーフェス
 
-プロバイダー: anthropic; コントラクト: mediaUnderstandingProviders, usageProviders
+プロバイダー: `anthropic`; コントラクト: `mediaUnderstandingProviders`, `usageProviders`
 
 <!-- openclaw-plugin-reference:manual-start -->
 

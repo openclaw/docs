@@ -1,32 +1,33 @@
 ---
 read_when:
-    - تحتاج إلى طريقة تثبيت أخرى غير دليل البدء السريع
+    - تحتاج إلى طريقة تثبيت غير دليل البدء السريع لبدء الاستخدام
     - تريد النشر على منصة سحابية
     - تحتاج إلى التحديث أو الترحيل أو إلغاء التثبيت
 summary: تثبيت OpenClaw - برنامج التثبيت النصي، وnpm/pnpm/bun، ومن المصدر، وDocker، والمزيد
 title: تثبيت
 x-i18n:
-    generated_at: "2026-07-12T06:09:35Z"
+    generated_at: "2026-07-16T14:31:19Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: cc819cc6c1d57af0739a7d11f0f2834479ddabbca0571b105b8cb9325e87b145
+    source_hash: dc6c6c33294852c90d2d2904b78ff8b0483b8e72a380d5835c5bdda67547de0c
     source_path: install/index.md
     workflow: 16
 ---
 
 ## متطلبات النظام
 
-- **Node 22.19+ أو 23.11+ أو 24+** - الإصدار Node 24 هو الهدف الافتراضي؛ ويتولى برنامج التثبيت النصي ذلك تلقائيًا.
-- **macOS أو Linux أو Windows** - يمكن لمستخدمي Windows البدء بتطبيق Windows Hub الأصلي، أو مُثبّت CLI عبر PowerShell، أو Gateway على WSL2. راجع [Windows](/ar/platforms/windows).
+- **Node 22.22.3+ أو 24.15+ أو 25.9+** - يُعد Node 24 الإصدار المستهدف الافتراضي؛ ويتولى برنامج التثبيت النصي ذلك تلقائيًا.
+- **macOS أو Linux أو Windows** - يمكن لمستخدمي Windows البدء بتطبيق Windows Hub الأصلي، أو مثبّت CLI عبر PowerShell، أو Gateway على WSL2. راجع [Windows](/ar/platforms/windows).
 - لا يلزم `pnpm` إلا عند البناء من المصدر.
 
-## الموصى به: برنامج التثبيت النصي
+## موصى به: برنامج التثبيت النصي
 
-هذه أسرع طريقة للتثبيت. يكتشف نظام التشغيل لديك، ويثبّت Node عند الحاجة، ويثبّت OpenClaw، ثم يبدأ الإعداد الأولي.
+أسرع طريقة للتثبيت. يكتشف نظام التشغيل لديك، ويثبّت Node عند الحاجة، ويثبّت OpenClaw، ثم يبدأ الإعداد الأولي.
 
 <Note>
-يمكن لمستخدمي سطح المكتب على Windows أيضًا تثبيت التطبيق المصاحب الأصلي [Windows Hub](/ar/platforms/windows#recommended-windows-hub)، الذي يتضمن الإعداد، وحالة علبة النظام، والدردشة، ووضع Node، ووضع MCP المحلي.
+يمكن لمستخدمي سطح مكتب Windows أيضًا تثبيت التطبيق المرافق الأصلي [Windows Hub](/ar/platforms/windows#recommended-windows-hub)، الذي يتضمن الإعداد، وحالة علبة النظام، والدردشة، ووضع Node، ووضع MCP المحلي.
 </Note>
 
 <Tabs>
@@ -57,23 +58,23 @@ x-i18n:
   </Tab>
 </Tabs>
 
-للاطلاع على جميع العلامات وخيارات CI/الأتمتة، راجع [تفاصيل برنامج التثبيت الداخلية](/ar/install/installer).
+للاطلاع على جميع العلامات وخيارات CI/الأتمتة، راجع [تفاصيل المثبّت الداخلية](/ar/install/installer).
 
 ## طرق تثبيت بديلة
 
-### مُثبّت البادئة المحلية (`install-cli.sh`)
+### مثبّت البادئة المحلية (`install-cli.sh`)
 
-استخدمه عندما تريد الاحتفاظ بـ OpenClaw وNode ضمن بادئة محلية مثل
+استخدم هذا الخيار عندما تريد إبقاء OpenClaw وNode ضمن بادئة محلية مثل
 `~/.openclaw`، من دون الاعتماد على تثبيت Node على مستوى النظام:
 
 ```bash
 curl -fsSL https://openclaw.ai/install-cli.sh | bash
 ```
 
-يدعم تثبيتات npm افتراضيًا، إضافةً إلى التثبيتات من نسخة git محلية ضمن مسار
-البادئة نفسه. المرجع الكامل: [تفاصيل برنامج التثبيت الداخلية](/ar/install/installer#install-clish).
+يدعم تثبيتات npm افتراضيًا، بالإضافة إلى التثبيتات من نسخة git محلية ضمن
+مسار البادئة نفسه. المرجع الكامل: [تفاصيل المثبّت الداخلية](/ar/install/installer#install-clish).
 
-هل ثبّتّه بالفعل؟ بدّل بين التثبيت من الحزمة والتثبيت من git باستخدام
+هل ثبّتته بالفعل؟ بدّل بين تثبيتات الحزمة وgit باستخدام
 `openclaw update --channel dev` و`openclaw update --channel stable`. راجع
 [التحديث](/ar/install/updating#switch-between-npm-and-git-installs).
 
@@ -89,9 +90,9 @@ curl -fsSL https://openclaw.ai/install-cli.sh | bash
     ```
 
     <Note>
-    يزيل برنامج التثبيت المستضاف عوامل تصفية حداثة npm، مثل `min-release-age`،
-    عند تثبيت حزمة OpenClaw. إذا ثبّتّها يدويًا باستخدام npm، فستظل
-    سياسة npm الخاصة بك سارية.
+    يزيل المثبّت المستضاف مرشحات حداثة npm مثل `min-release-age`
+    عند تثبيت حزمة OpenClaw. إذا أجريت التثبيت يدويًا باستخدام npm، فستظل
+    سياسة npm الخاصة بك مطبّقة.
     </Note>
 
   </Tab>
@@ -114,7 +115,7 @@ curl -fsSL https://openclaw.ai/install-cli.sh | bash
     ```
 
     <Note>
-    يُدعم Bun لمسار تثبيت CLI العام. أما بالنسبة إلى وقت تشغيل Gateway، فيظل Node هو وقت التشغيل الموصى به للخدمة الخلفية.
+    يستطيع Bun تثبيت الحزمة العامة، لكن الملف التنفيذي `openclaw` الناتج يتطلب بيئة تشغيل Node مدعومة لأن حالة OpenClaw تستخدم `node:sqlite`.
     </Note>
 
   </Tab>
@@ -144,10 +145,10 @@ curl -fsSL --proto '=https' --tlsv1.2 https://openclaw.ai/install.sh | bash -s -
 
 <CardGroup cols={2}>
   <Card title="Docker" href="/ar/install/docker" icon="container">
-    عمليات نشر ضمن حاويات أو بلا واجهة رسومية.
+    عمليات نشر ضمن حاويات أو من دون واجهة.
   </Card>
   <Card title="Podman" href="/ar/install/podman" icon="container">
-    بديل لـ Docker لتشغيل الحاويات من دون صلاحيات الجذر.
+    بديل لـ Docker بحاويات لا تتطلب صلاحيات الجذر.
   </Card>
   <Card title="Nix" href="/ar/install/nix" icon="snowflake">
     تثبيت تصريحي عبر Nix flake.
@@ -156,7 +157,7 @@ curl -fsSL --proto '=https' --tlsv1.2 https://openclaw.ai/install.sh | bash -s -
     تجهيز آلي لمجموعة من الأجهزة.
   </Card>
   <Card title="Bun" href="/ar/install/bun" icon="zap">
-    استخدام CLI فقط عبر وقت تشغيل Bun.
+    مثبّت اختياري للتبعيات ومشغّل لبرامج الحزم النصية.
   </Card>
 </CardGroup>
 
@@ -164,28 +165,28 @@ curl -fsSL --proto '=https' --tlsv1.2 https://openclaw.ai/install.sh | bash -s -
 
 ```bash
 openclaw --version      # تأكد من توفر CLI
-openclaw doctor         # تحقق من مشكلات الإعدادات
-openclaw gateway status # تحقق من أن Gateway قيد التشغيل
+openclaw doctor         # تحقق من مشكلات الإعداد
+openclaw gateway status # تحقق من تشغيل Gateway
 ```
 
-إذا كنت تريد بدء تشغيل مُدارًا بعد التثبيت:
+إذا أردت بدء تشغيل مُدارًا بعد التثبيت:
 
 - macOS: ‏LaunchAgent عبر `openclaw onboard --install-daemon` أو `openclaw gateway install`
 - Linux/WSL2: خدمة مستخدم systemd عبر الأوامر نفسها
-- Windows الأصلي: ‏Scheduled Task أولًا، مع الرجوع إلى عنصر تسجيل دخول لكل مستخدم في مجلد Startup إذا رُفض إنشاء المهمة
+- Windows الأصلي: مهمة مجدولة أولًا، مع عنصر تسجيل دخول لكل مستخدم في مجلد Startup كخيار احتياطي إذا رُفض إنشاء المهمة
 
 ## الاستضافة والنشر
 
-انشر OpenClaw على خادم سحابي أو VPS. راجع [خادم Linux](/ar/vps) للاطلاع على منتقي
-موفري الخدمة الكامل (DigitalOcean وHetzner وHostinger وFly.io وGCP وAzure وRailway
-وNorthflank وOracle Cloud وRaspberry Pi وغيرها)، أو انشره تصريحيًا على
+انشر OpenClaw على خادم سحابي أو VPS. راجع [خادم Linux](/ar/vps) للاطلاع على
+أداة اختيار المزوّد الكاملة (DigitalOcean وHetzner وHostinger وFly.io وGCP وAzure وRailway
+وNorthflank وOracle Cloud وRaspberry Pi والمزيد)، أو انشره تصريحيًا على
 [Render](/ar/install/render).
 
 <CardGroup cols={3}>
   <Card title="VPS" href="/ar/vps">
-    اختر موفر خدمة.
+    اختر مزوّدًا.
   </Card>
-  <Card title="آلة Docker الافتراضية" href="/ar/install/docker-vm-runtime">
+  <Card title="جهاز Docker افتراضي" href="/ar/install/docker-vm-runtime">
     خطوات Docker المشتركة.
   </Card>
   <Card title="Kubernetes" href="/ar/install/kubernetes">
@@ -200,7 +201,7 @@ openclaw gateway status # تحقق من أن Gateway قيد التشغيل
     حافظ على تحديث OpenClaw.
   </Card>
   <Card title="الترحيل" href="/ar/install/migrating" icon="arrow-right">
-    انقل OpenClaw إلى جهاز جديد.
+    انتقل إلى جهاز جديد.
   </Card>
   <Card title="إلغاء التثبيت" href="/ar/install/uninstall" icon="trash-2">
     أزل OpenClaw بالكامل.
@@ -209,10 +210,10 @@ openclaw gateway status # تحقق من أن Gateway قيد التشغيل
 
 ## استكشاف الأخطاء وإصلاحها: تعذّر العثور على `openclaw`
 
-غالبًا ما تكون المشكلة في PATH: دليل الملفات التنفيذية العام لـ npm غير موجود في `PATH` الخاص بالصدفة. راجع [استكشاف أخطاء Node.js وإصلاحها](/ar/install/node#troubleshooting) للاطلاع على الحل الكامل، بما في ذلك مسار Windows.
+غالبًا ما تكون المشكلة في PATH: دليل الملفات التنفيذية العامة لـ npm غير موجود في `PATH` الخاص بصدفتك. راجع [استكشاف أخطاء Node.js وإصلاحها](/ar/install/node#troubleshooting) للاطلاع على الحل الكامل، بما في ذلك مسار Windows.
 
 ```bash
 node -v           # هل Node مثبت؟
 npm prefix -g     # أين توجد الحزم العامة؟
-echo "$PATH"      # هل دليل الملفات التنفيذية العام موجود في PATH؟
+echo "$PATH"      # هل دليل الملفات التنفيذية العامة موجود في PATH؟
 ```

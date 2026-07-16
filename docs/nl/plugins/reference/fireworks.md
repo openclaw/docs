@@ -1,14 +1,15 @@
 ---
 read_when:
-    - U installeert, configureert of controleert de fireworks-Plugin
+    - Je installeert, configureert of controleert de Fireworks-plugin
 summary: Voegt ondersteuning voor de Fireworks-modelprovider toe aan OpenClaw.
-title: Fireworks-Plugin
+title: Fireworks-plugin
 x-i18n:
-    generated_at: "2026-07-12T09:07:09Z"
+    generated_at: "2026-07-16T16:18:34Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 1750e345f485fa7d8735a16278422188ad761b0c682cd5f09227f4407d502203
+    source_hash: f50d32c05d94cd14dbbc3dc25659884dbe3c23c2d613bceaaae573e942a545d5
     source_path: plugins/reference/fireworks.md
     workflow: 16
 ---
@@ -24,8 +25,8 @@ Voegt ondersteuning voor de Fireworks-modelprovider toe aan OpenClaw.
 
 ## Oppervlak
 
-providers: fireworks
+providers: `fireworks`
 
 ## Gerelateerde documentatie
 
-- [fireworks](/nl/providers/fireworks)
+- [Fireworks](/nl/providers/fireworks)

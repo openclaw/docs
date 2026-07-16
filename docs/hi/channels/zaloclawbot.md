@@ -1,103 +1,98 @@
 ---
 read_when:
-    - आप QR-कोड लॉगिन वाला व्यक्तिगत Zalo सहायक bot चाहते हैं
-    - आप openclaw-zaloclawbot चैनल Plugin इंस्टॉल कर रहे हैं या समस्या निवारण कर रहे हैं
+    - आप QR-कोड लॉगिन वाला एक निजी Zalo सहायक बॉट चाहते हैं
+    - आप openclaw-zaloclawbot चैनल Plugin इंस्टॉल कर रहे हैं या उसकी समस्या का निवारण कर रहे हैं
 summary: बाहरी openclaw-zaloclawbot Plugin के माध्यम से Zalo ClawBot चैनल सेटअप
 title: Zalo ClawBot
 x-i18n:
-    generated_at: "2026-06-28T22:42:08Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T13:39:34Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 982ae27b58af013bb5398266837698052b30337df0fe132f7cdfc5b66f561a99
+    source_hash: 76c9f79d114856b86026a5e4b98a43f451b0d3f16dd41a67e9226da4f8b37b33
     source_path: channels/zaloclawbot.md
     workflow: 16
 ---
 
-OpenClaw catalog-सूचीबद्ध बाहरी
-`@zalo-platforms/openclaw-zaloclawbot` plugin के माध्यम से Zalo ClawBot से कनेक्ट होता है। लॉगिन में Zalo Mini App QR
-कोड का उपयोग होता है।
+OpenClaw कैटलॉग में सूचीबद्ध बाहरी `@zalo-platforms/openclaw-zaloclawbot` plugin के माध्यम से Zalo ClawBot से जुड़ता है। लॉगिन के लिए Zalo Mini App QR कोड का उपयोग होता है; कॉन्फ़िगरेशन में plugin आईडी `openclaw-zaloclawbot` है।
 
 ## संगतता
 
 | Plugin संस्करण | OpenClaw संस्करण | npm dist-tag | स्थिति        |
 | -------------- | ---------------- | ------------ | ------------- |
-| 0.1.x          | >=2026.4.10      | `latest`     | सक्रिय / बीटा |
+| 0.1.4          | >=2026.4.10      | `latest`     | सक्रिय / बीटा |
 
 ## पूर्वापेक्षाएँ
 
-- Node.js **>= 22**
-- [OpenClaw](https://docs.openclaw.ai/install) इंस्टॉल होना चाहिए (`openclaw` CLI उपलब्ध)।
-- लॉगिन QR कोड स्कैन करने के लिए मोबाइल डिवाइस पर Zalo खाता।
+- Node.js >= 22
+- [OpenClaw](https://docs.openclaw.ai/install) इंस्टॉल हो (`openclaw` CLI उपलब्ध हो)
+- लॉगिन QR कोड स्कैन करने के लिए मोबाइल डिवाइस पर एक Zalo खाता
 
-## onboard के साथ इंस्टॉल करें (अनुशंसित)
-
-OpenClaw ऑनबोर्डिंग विज़ार्ड चलाएँ और चैनल मेनू से **Zalo ClawBot** चुनें:
+## ऑनबोर्ड के साथ इंस्टॉल करें (अनुशंसित)
 
 ```bash
 openclaw onboard
 ```
 
-विज़ार्ड आधिकारिक catalog से plugin इंस्टॉल करता है (integrity-verified), लॉगिन QR को सीधे टर्मिनल में रेंडर करता है, और Zalo ऐप से उसे स्कैन करने के बाद चैनल पूरा कर देता है। कोई अतिरिक्त कमांड आवश्यक नहीं हैं।
+चैनल मेन्यू से **Zalo ClawBot** चुनें। विज़ार्ड आधिकारिक कैटलॉग से plugin इंस्टॉल करता है (अखंडता सत्यापित करके), टर्मिनल में लॉगिन QR प्रदर्शित करता है और Zalo ऐप से उसे स्कैन करने के बाद चैनल का सेटअप पूरा करता है।
 
-## मैनुअल इंस्टॉलेशन
+## मैन्युअल इंस्टॉलेशन
 
-पहले से ऑनबोर्ड किए गए gateway में चैनल जोड़ने के लिए, इन चरणों का पालन करें:
+पहले से ऑनबोर्ड किए गए Gateway में चैनल जोड़ने के लिए:
 
-### 1. plugin इंस्टॉल करें
+### 1. Plugin इंस्टॉल करें
 
 ```bash
 openclaw plugins install "@zalo-platforms/openclaw-zaloclawbot@0.1.4"
 ```
 
-ऊपर दिखाए गए ठीक pinned version का उपयोग करें (यह आधिकारिक catalog entry से मेल खाता है), ताकि OpenClaw इंस्टॉल के दौरान package को catalog integrity hash के विरुद्ध सत्यापित करे।
+सटीक पिन किया गया संस्करण उपयोग करें, ताकि इंस्टॉल करते समय OpenClaw कैटलॉग के अखंडता हैश के विरुद्ध पैकेज को सत्यापित कर सके।
 
-### 2. config में plugin सक्षम करें
+### 2. कॉन्फ़िगरेशन में plugin सक्षम करें
 
 ```bash
 openclaw config set plugins.entries.openclaw-zaloclawbot.enabled true
 ```
 
-### 3. QR कोड जनरेट करें और लॉग इन करें
+### 3. QR कोड बनाएँ और लॉगिन करें
 
 ```bash
 openclaw channels login --channel openclaw-zaloclawbot
 ```
 
-Zalo मोबाइल ऐप का उपयोग करके टर्मिनल में रेंडर किया गया QR कोड स्कैन करें, Zalo Mini App के अंदर उपयोग की शर्तें स्वीकार करें, और session को authorize करें।
+टर्मिनल में प्रदर्शित QR कोड को Zalo मोबाइल ऐप से स्कैन करें, Zalo Mini App के भीतर उपयोग की शर्तें स्वीकार करें और सत्र को अधिकृत करें।
 
-### 4. gateway रीस्टार्ट करें
+### 4. Gateway पुनः आरंभ करें
 
 ```bash
 openclaw gateway restart
 ```
 
----
-
 ## यह कैसे काम करता है
 
-मानक developer Zalo channel के विपरीत, जिसमें आपको अपना Zalo Official Account (OA) रजिस्टर करना और static developer credentials पेस्ट करना पड़ता है, Zalo ClawBot साझा, आधिकारिक infrastructure का उपयोग करते हुए **owner-bound personal assistant** के रूप में काम करता है:
+मानक Zalo चैनल में अपना Zalo Official Account (OA) पंजीकृत करना और स्थिर डेवलपर क्रेडेंशियल कॉन्फ़िगर करना आवश्यक होता है, लेकिन इसके विपरीत Zalo ClawBot साझा आधिकारिक अवसंरचना पर एक **स्वामी से संबद्ध निजी सहायक** है:
 
-1. **सुरक्षित ऑनबोर्डिंग:** QR कोड एक सुरक्षित Zalo Mini App पर resolve होता है, जो साझा आधिकारिक OA के अंतर्गत नए provisioned, private bot को सीधे आपके Zalo User ID से bind करता है।
-2. **Owner-Bound गोपनीयता:** डिज़ाइन के अनुसार, bot को _केवल_ अपने owner के साथ संचार करने तक सीमित रखा गया है। अन्य users के messages platform स्तर पर drop कर दिए जाते हैं, जिससे connection निजी और सुरक्षित रहता है।
-3. **आधिकारिक API path:** plugin browser या web-session automation के बजाय
-   Zalo Bot Platform APIs का उपयोग करता है।
+1. **ऑनबोर्डिंग:** QR कोड एक Zalo Mini App पर ले जाता है, जो साझा आधिकारिक OA के अंतर्गत नए प्रावधान किए गए निजी बॉट को सीधे आपकी Zalo उपयोगकर्ता आईडी से संबद्ध करता है।
+2. **स्वामी-संबद्ध गोपनीयता:** बॉट केवल अपने स्वामी से संवाद करता है। अन्य उपयोगकर्ताओं के संदेश प्लेटफ़ॉर्म स्तर पर हटा दिए जाते हैं।
+3. **आधिकारिक API मार्ग:** plugin ब्राउज़र या वेब-सत्र स्वचालन के बजाय Zalo Bot Platform API का उपयोग करता है।
 
-## आंतरिक विवरण
+## आंतरिक कार्यप्रणाली
 
-Zalo ClawBot plugin persistent long-polling message loop के माध्यम से Zalo APIs से संचार करता है। runtime को साफ और lightweight बनाए रखने के लिए:
+Plugin एक स्थायी लॉन्ग-पोलिंग लूप (`getUpdates`) के माध्यम से Zalo से संवाद करता है। स्थानीय डेस्कटॉप/टर्मिनल Gateway संचालन के लिए Webhook डिफ़ॉल्ट रूप से अक्षम होते हैं। संदेशों को क्लाइंट की ओर संसाधित करके आपके स्थानीय एजेंट रनटाइम से मैप किया जाता है।
 
-- Long-poll connections `getUpdates` endpoint का उपयोग करते हैं।
-- स्थानीय desktop/terminal gateway runs के लिए Webhook डिफ़ॉल्ट रूप से disabled होते हैं।
-- Messages client-side processed होते हैं और सीधे आपके local agent runtime से map किए जाते हैं।
+Plugin, OpenClaw स्टेट डायरेक्टरी में बॉट क्रेडेंशियल प्रबंधित करता है। उस डायरेक्टरी को संवेदनशील मानें और उस पर वही अभिगम-नियंत्रण तथा बैकअप नीति लागू करें जो शेष OpenClaw स्टेट पर लागू होती है।
 
-बाहरी plugin OpenClaw state directory के अंतर्गत bot credentials manage करता है।
-उस directory को संवेदनशील मानें और इसे अपने बाकी OpenClaw state जैसी ही access-control और
-backup policy में शामिल करें।
-
----
+इस plugin का रनटाइम पूरी तरह बाहरी `@zalo-platforms/openclaw-zaloclawbot` पैकेज में स्थित है; इंस्टॉल/कॉन्फ़िगरेशन से आगे दिए गए व्यवहार संबंधी विवरण plugin के अनुरक्षकों द्वारा बताए गए हैं और OpenClaw के मूल स्रोत से सत्यापित नहीं किए गए हैं।
 
 ## समस्या निवारण
 
-- **QR लॉगिन टाइमआउट:** login token (`zbsk`) security कारणों से 5 मिनट बाद expire हो जाता है। यदि QR कोड आपके scan करने से पहले expire हो जाता है, तो नया जनरेट करने के लिए login command फिर से चलाएँ।
-- **Gateway लोड होने में विफल:** सुनिश्चित करें कि आपका OpenClaw host version `2026.4.10` या उच्चतर है। पुराने versions external npm-plugin installation ledger का समर्थन नहीं करते।
+- **QR लॉगिन टाइमआउट:** सुरक्षा के लिए लॉगिन टोकन (`zbsk`) 5 मिनट बाद समाप्त हो जाता है। यदि स्कैन करने से पहले QR कोड की समय-सीमा समाप्त हो जाए, तो नया कोड बनाने के लिए लॉगिन कमांड फिर से चलाएँ।
+- **Gateway लोड होने में विफल:** पुष्टि करें कि आपके OpenClaw होस्ट का संस्करण `2026.4.10` या उससे नया है। पुराने संस्करण इस आईडी के लिए आवश्यक बाहरी npm-plugin इंस्टॉलेशन लेजर का समर्थन नहीं करते हैं।
+
+## संबंधित
+
+- [चैनलों का अवलोकन](/hi/channels) - सभी समर्थित चैनल
+- [Zalo](/hi/channels/zalo) - बंडल किया गया Zalo Bot Creator / Marketplace चैनल
+- [पेयरिंग](/hi/channels/pairing) - DM प्रमाणीकरण और पेयरिंग प्रवाह
+- [Plugins](/hi/tools/plugin) - plugin इंस्टॉल और प्रबंधित करना

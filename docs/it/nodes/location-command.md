@@ -1,15 +1,16 @@
 ---
 read_when:
-    - Aggiunta del supporto per i nodi di localizzazione o dell'interfaccia utente per le autorizzazioni
+    - Aggiunta del supporto del Node per la posizione o dell'interfaccia utente per le autorizzazioni
     - Progettazione delle autorizzazioni di localizzazione o del comportamento in primo piano su Android
-summary: Comando di localizzazione per i Node (location.get), modalità di autorizzazione e comportamento in primo piano su Android
-title: Comando di localizzazione
+summary: Comando di localizzazione per i Node, modalità di autorizzazione della piattaforma e configurazione di GeoClue su Linux
+title: Comando di posizione
 x-i18n:
-    generated_at: "2026-07-12T07:13:03Z"
+    generated_at: "2026-07-16T14:32:57Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: fae9f7707620f3f743d40c07618a431a6baa7a357dda6d74021bc986cd4974b1
+    source_hash: 644229c1eafc8fc7b59bc23ba01d4ba95687ea66c4f9bd4a4cda98a87f2b6085
     source_path: nodes/location-command.md
     workflow: 16
 ---
@@ -23,25 +24,25 @@ x-i18n:
 
 ## Perché un selettore (e non un semplice interruttore)
 
-Le autorizzazioni del sistema operativo per la posizione prevedono più livelli. Anche la posizione precisa è un'autorizzazione separata del sistema operativo («Precise» su iOS 14+, «fine» rispetto a «coarse» su Android). Il selettore nell'app determina la modalità richiesta, ma è comunque il sistema operativo a decidere l'autorizzazione effettivamente concessa.
+Le autorizzazioni di localizzazione del sistema operativo prevedono più livelli. Anche la posizione precisa è un'autorizzazione distinta del sistema operativo («Precisa» su iOS 14+, «fine» rispetto ad «approssimativa» su Android). Il selettore nell'app determina la modalità richiesta, ma è comunque il sistema operativo a decidere l'autorizzazione effettivamente concessa.
 
 ## Modello delle impostazioni
 
-Per ogni dispositivo Node:
+Per ciascun dispositivo Node:
 
 - `location.enabledMode`: `off | whileUsing | always`
 - `location.preciseEnabled`: bool
 
-Comportamento dell'interfaccia utente:
+Comportamento dell'interfaccia:
 
 - Selezionando `whileUsing` viene richiesta l'autorizzazione in primo piano.
-- Selezionando `always` nella build Android di terze parti, viene prima richiesta l'autorizzazione in primo piano, poi viene spiegato l'accesso in background e infine vengono aperte le impostazioni Android dell'app per concedere separatamente **Allow all the time**.
-- Le build Android Play non dichiarano l'autorizzazione alla posizione in background e non mostrano `always`.
-- Se il sistema operativo nega il livello richiesto, l'app ripristina il livello più elevato concesso e ne mostra lo stato.
+- Selezionando `always` nella build Android di terze parti, viene prima richiesta l'autorizzazione in primo piano, quindi viene spiegato l'accesso in background e infine vengono aperte le impostazioni dell'app Android per concedere separatamente **Allow all the time**.
+- Le build Android Play non dichiarano l'autorizzazione per la localizzazione in background e non mostrano `always`.
+- Se il sistema operativo nega il livello richiesto, l'app ripristina il livello più alto concesso e ne mostra lo stato.
 
 ## Mappatura delle autorizzazioni (node.permissions)
 
-Facoltativa. Il Node macOS segnala `location` tramite la mappa `permissions` in `node.list`/`node.describe`; iOS/Android potrebbero ometterla.
+Facoltativa. Il Node macOS segnala `location` tramite la mappa `permissions` in `node.list`/`node.describe`; iOS e Android potrebbero ometterlo.
 
 ## Comando: `location.get`
 
@@ -62,7 +63,7 @@ Parametri:
 }
 ```
 
-I flag della CLI vengono mappati direttamente: `--location-timeout` -> `timeoutMs`, `--max-age` -> `maxAgeMs`, `--accuracy` -> `desiredAccuracy`.
+I flag CLI vengono mappati direttamente: `--location-timeout` -> `timeoutMs`, `--max-age` -> `maxAgeMs`, `--accuracy` -> `desiredAccuracy`.
 
 Payload della risposta:
 
@@ -84,28 +85,54 @@ Errori (codici stabili):
 
 - `LOCATION_DISABLED`: il selettore è disattivato.
 - `LOCATION_PERMISSION_REQUIRED`: manca l'autorizzazione per la modalità richiesta.
-- `LOCATION_BACKGROUND_UNAVAILABLE`: l'app è in background, ma è stata concessa solo l'autorizzazione Durante l'uso.
+- `LOCATION_BACKGROUND_UNAVAILABLE`: l'app è in background, ma è stata concessa soltanto l'autorizzazione Durante l'uso.
 - `LOCATION_TIMEOUT`: posizione non acquisita in tempo.
-- `LOCATION_UNAVAILABLE`: errore di sistema o nessun fornitore disponibile.
+- `LOCATION_UNAVAILABLE`: errore di sistema o nessun provider disponibile.
 
 ## Comportamento in background
 
-- Le build Android di terze parti accettano `location.get` in background solo quando l'utente ha selezionato `Always` e Android ha concesso l'accesso alla posizione in background. Il servizio Node persistente esistente aggiunge il tipo di servizio `location` e mostra `Location: Always` mentre è attivo.
-- Le build Android Play e la modalità `While Using` negano `location.get` quando l'app è in background.
-- Le altre piattaforme Node potrebbero comportarsi diversamente.
+- Le build Android di terze parti accettano `location.get` in background solo quando è stata selezionata l'opzione `Always` e Android ha concesso la localizzazione in background. Il servizio Node persistente esistente aggiunge il tipo di servizio `location` e indica `Location: Always` mentre è attivo.
+- Le build Android Play e la modalità `While Using` negano `location.get` mentre l'app è in background.
+- Le altre piattaforme Node possono comportarsi diversamente.
+
+## Host Node Linux
+
+Il Plugin Node Linux incluso aggiunge `location.get` al servizio CLI `openclaw node`, inclusi gli host headless privi dell'app desktop Linux. La localizzazione è disattivata per impostazione predefinita. Abilitarla nella voce del Plugin, quindi riavviare il servizio Node:
+
+```json5
+{
+  plugins: {
+    entries: {
+      "linux-node": {
+        config: {
+          location: { enabled: true },
+        },
+      },
+    },
+  },
+}
+```
+
+Installare GeoClue2 e la relativa demo `where-am-i` (`geoclue-2-demo` su Debian e Ubuntu). L'utente del servizio Node deve essere autorizzato dai criteri GeoClue dell'host e dall'agente di autorizzazione.
+
+Il Plugin usa `where-am-i` anziché una sequenza di chiamate `busctl`. GeoClue associa la creazione del client, le proprietà, l'avvio, gli aggiornamenti e l'arresto a una singola connessione client D-Bus; la demo mantiene unito questo ciclo di vita, mentre i sottoprocessi `busctl` separati non lo fanno. Non viene aggiunta alcuna dipendenza npm.
+
+Linux mappa `coarse`, `balanced` e `precise` sui livelli di precisione GeoClue `4`, `6` e `8`. Convalida `maxAgeMs` rispetto al timestamp restituito. La demo di GeoClue non espone il provider selezionato, quindi `source` è `unknown`; `isPrecise` è true solo quando la precisione indicata è pari o inferiore a 100 metri.
+
+Linux usa gli stessi errori stabili: `LOCATION_DISABLED`, `LOCATION_TIMEOUT` e `LOCATION_UNAVAILABLE`.
 
 ## Integrazione con modelli e strumenti
 
-- Strumento dell'agente: l'azione `location_get` dello strumento `nodes` (Node obbligatorio).
+- Strumento dell'agente: l'azione `location_get` dello strumento `nodes` (Node richiesto).
 - CLI: `openclaw nodes location get --node <id>`.
-- Linee guida per l'agente: richiamare solo quando l'utente ha abilitato la posizione e ne comprende l'ambito.
+- Linee guida per l'agente: effettuare la chiamata solo quando l'utente ha abilitato la localizzazione e ne comprende l'ambito.
 
-## Testi per l'esperienza utente (suggeriti)
+## Testi dell'interfaccia (suggeriti)
 
 - Disattivato: «La condivisione della posizione è disabilitata».
 - Durante l'uso: «Solo quando OpenClaw è aperto».
 - Sempre: «Consenti i controlli della posizione richiesti mentre OpenClaw è in background».
-- Precisa: «Usa la posizione GPS precisa. Disattiva per condividere una posizione approssimativa».
+- Precisa: «Usa la posizione GPS precisa. Disattivare l'opzione per condividere la posizione approssimativa».
 
 ## Argomenti correlati
 

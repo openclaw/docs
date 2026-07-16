@@ -3,213 +3,215 @@ read_when:
     - मूल OpenClaw plugins बनाना या डीबग करना
     - Plugin क्षमता मॉडल या स्वामित्व सीमाओं को समझना
     - Plugin लोड पाइपलाइन या रजिस्ट्री पर काम करना
-    - प्रदाता रनटाइम hooks या चैनल plugins लागू करना
+    - प्रोवाइडर रनटाइम हुक या चैनल Plugin लागू करना
 sidebarTitle: Internals
-summary: 'Plugin आंतरिक संरचना: क्षमता मॉडल, स्वामित्व, अनुबंध, लोड पाइपलाइन, और रनटाइम हेल्पर'
-title: Plugin आंतरिक संरचना
+summary: 'Plugin की आंतरिक संरचना: क्षमता मॉडल, स्वामित्व, अनुबंध, लोड पाइपलाइन और रनटाइम सहायक साधन'
+title: Plugin की आंतरिक कार्यप्रणाली
 x-i18n:
-    generated_at: "2026-06-28T23:32:03Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T15:59:03Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 0e36f77594f16d7f03e31be81a241a15fb15c0b160f22a4dce863f6da184dfe3
+    source_hash: 07ab077080285b5b7a93f58f71cd00be62cfd79cdc2cfa40f0e64cc91cc5ac46
     source_path: plugins/architecture.md
     workflow: 16
 ---
 
-यह OpenClaw Plugin सिस्टम के लिए **गहन आर्किटेक्चर संदर्भ** है। व्यावहारिक गाइड के लिए, नीचे दिए गए केंद्रित पेजों में से किसी एक से शुरू करें।
+यह OpenClaw Plugin सिस्टम के लिए **गहन आर्किटेक्चर संदर्भ** है। व्यावहारिक मार्गदर्शिकाओं के लिए, नीचे दिए गए केंद्रित पृष्ठों में से किसी एक से शुरुआत करें।
 
 <CardGroup cols={2}>
-  <Card title="Plugin इंस्टॉल और उपयोग करें" icon="plug" href="/hi/tools/plugin">
-    Plugin जोड़ने, सक्षम करने और समस्या निवारण के लिए अंतिम-उपयोगकर्ता गाइड।
+  <Card title="Plugin इंस्टॉल करें और उपयोग करें" icon="plug" href="/hi/tools/plugin">
+    Plugin जोड़ने, सक्षम करने और समस्याओं का निवारण करने के लिए अंतिम-उपयोगकर्ता मार्गदर्शिका।
   </Card>
   <Card title="Plugin बनाना" icon="rocket" href="/hi/plugins/building-plugins">
-    सबसे छोटे कार्यशील मैनिफेस्ट के साथ पहला-Plugin ट्यूटोरियल।
+    सबसे छोटे कार्यशील मैनिफ़ेस्ट के साथ पहला Plugin बनाने का ट्यूटोरियल।
   </Card>
-  <Card title="Channel Plugin" icon="comments" href="/hi/plugins/sdk-channel-plugins">
-    एक मैसेजिंग चैनल Plugin बनाएं।
+  <Card title="चैनल Plugin" icon="comments" href="/hi/plugins/sdk-channel-plugins">
+    मैसेजिंग चैनल Plugin बनाएँ।
   </Card>
-  <Card title="Provider Plugin" icon="microchip" href="/hi/plugins/sdk-provider-plugins">
-    एक मॉडल provider Plugin बनाएं।
+  <Card title="प्रोवाइडर Plugin" icon="microchip" href="/hi/plugins/sdk-provider-plugins">
+    मॉडल प्रोवाइडर Plugin बनाएँ।
   </Card>
   <Card title="SDK अवलोकन" icon="book" href="/hi/plugins/sdk-overview">
-    इम्पोर्ट मैप और registration API संदर्भ।
+    इंपोर्ट मैप और पंजीकरण API संदर्भ।
   </Card>
 </CardGroup>
 
 ## सार्वजनिक क्षमता मॉडल
 
-क्षमताएं OpenClaw के भीतर सार्वजनिक **native plugin** मॉडल हैं। हर native OpenClaw Plugin एक या अधिक क्षमता प्रकारों के लिए register करता है:
+क्षमताएँ OpenClaw के भीतर सार्वजनिक **नेटिव Plugin** मॉडल हैं। प्रत्येक नेटिव OpenClaw Plugin एक या अधिक क्षमता प्रकारों के लिए पंजीकरण करता है:
 
-| क्षमता                 | Registration विधि                                | उदाहरण Plugin                       |
-| ---------------------- | ------------------------------------------------ | ------------------------------------ |
-| टेक्स्ट inference      | `api.registerProvider(...)`                      | `openai`, `anthropic`                |
-| CLI inference backend  | `api.registerCliBackend(...)`                    | `openai`, `anthropic`                |
-| Embeddings             | `api.registerEmbeddingProvider(...)`             | Provider-स्वामित्व वाले vector Plugin |
-| Speech                 | `api.registerSpeechProvider(...)`                | `elevenlabs`, `microsoft`            |
-| Realtime transcription | `api.registerRealtimeTranscriptionProvider(...)` | `openai`                             |
-| Realtime voice         | `api.registerRealtimeVoiceProvider(...)`         | `openai`                             |
-| Media understanding    | `api.registerMediaUnderstandingProvider(...)`    | `openai`, `google`                   |
-| Transcripts source     | `api.registerTranscriptSourceProvider(...)`      | `discord`                            |
-| Image generation       | `api.registerImageGenerationProvider(...)`       | `openai`, `google`, `fal`, `minimax` |
-| Music generation       | `api.registerMusicGenerationProvider(...)`       | `google`, `minimax`                  |
-| Video generation       | `api.registerVideoGenerationProvider(...)`       | `qwen`                               |
-| Web fetch              | `api.registerWebFetchProvider(...)`              | `firecrawl`                          |
-| Web search             | `api.registerWebSearchProvider(...)`             | `google`                             |
-| Channel / messaging    | `api.registerChannel(...)`                       | `msteams`, `matrix`                  |
-| Gateway discovery      | `api.registerGatewayDiscoveryService(...)`       | `bonjour`                            |
+| क्षमता                   | पंजीकरण विधि                                     | उदाहरण Plugin                       |
+| ------------------------ | ------------------------------------------------ | ------------------------------------ |
+| टेक्स्ट अनुमान           | `api.registerProvider(...)`                               | `anthropic`, `openai` |
+| CLI अनुमान बैकएंड        | `api.registerCliBackend(...)`                               | `anthropic`, `openai` |
+| एम्बेडिंग                | `api.registerEmbeddingProvider(...)`                               | प्रोवाइडर-स्वामित्व वाले वेक्टर Plugin |
+| स्पीच                    | `api.registerSpeechProvider(...)`                               | `elevenlabs`, `microsoft` |
+| रीयलटाइम ट्रांसक्रिप्शन  | `api.registerRealtimeTranscriptionProvider(...)`                               | `openai`                   |
+| रीयलटाइम वॉइस            | `api.registerRealtimeVoiceProvider(...)`                               | `google`, `openai` |
+| मीडिया समझ               | `api.registerMediaUnderstandingProvider(...)`                               | `google`, `openai` |
+| ट्रांसक्रिप्ट स्रोत       | `api.registerTranscriptSourceProvider(...)`                               | `discord`                   |
+| इमेज जनरेशन             | `api.registerImageGenerationProvider(...)`                               | `fal`, `google`, `openai` |
+| संगीत जनरेशन            | `api.registerMusicGenerationProvider(...)`                               | `fal`, `google`, `minimax` |
+| वीडियो जनरेशन           | `api.registerVideoGenerationProvider(...)`                               | `fal`, `google`, `qwen` |
+| वेब फ़ेच                 | `api.registerWebFetchProvider(...)`                               | `firecrawl`                   |
+| वेब खोज                  | `api.registerWebSearchProvider(...)`                               | `brave`, `firecrawl`, `google` |
+| चैनल / मैसेजिंग          | `api.registerChannel(...)`                               | `matrix`, `msteams` |
+| Gateway डिस्कवरी         | `api.registerGatewayDiscoveryService(...)`                               | `bonjour`                   |
 
 <Note>
-जो Plugin शून्य क्षमताएं register करता है लेकिन hooks, tools, discovery services, या background services प्रदान करता है, वह **legacy hook-only** Plugin है। यह पैटर्न अभी भी पूरी तरह supported है।
+जो Plugin कोई क्षमता पंजीकृत नहीं करता, लेकिन हुक, टूल, डिस्कवरी सेवाएँ या बैकग्राउंड सेवाएँ प्रदान करता है, वह **केवल लीगेसी हुक वाला** Plugin है। यह पैटर्न अब भी पूरी तरह समर्थित है।
 </Note>
 
-### बाहरी compatibility दृष्टिकोण
+### बाहरी संगतता का रुख
 
-Capability मॉडल core में landed है और आज bundled/native Plugin द्वारा उपयोग किया जाता है, लेकिन external Plugin compatibility के लिए अभी भी "यह export किया गया है, इसलिए frozen है" से अधिक कड़ी कसौटी चाहिए।
+क्षमता मॉडल को कोर में सम्मिलित किया जा चुका है और आज बंडल किए गए/नेटिव Plugin इसका उपयोग करते हैं, लेकिन बाहरी Plugin संगतता के लिए अब भी "यह एक्सपोर्ट किया गया है, इसलिए यह स्थिर है" से अधिक कड़ा मानदंड आवश्यक है।
 
-| Plugin स्थिति                                   | मार्गदर्शन                                                                                      |
-| ------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
-| मौजूदा external Plugin                           | hook-based integrations को काम करते रहने दें; यही compatibility baseline है।                   |
-| नए bundled/native Plugin                         | vendor-specific reach-ins या नए hook-only designs के बजाय explicit capability registration को प्राथमिकता दें। |
-| Capability registration अपनाने वाले external Plugin | अनुमति है, लेकिन capability-specific helper surfaces को evolving मानें जब तक docs उन्हें stable न चिह्नित करें। |
+| Plugin की स्थिति                              | मार्गदर्शन                                                                                                         |
+| --------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| मौजूदा बाहरी Plugin                           | हुक-आधारित इंटीग्रेशन को कार्यशील रखें; यह संगतता की आधाररेखा है।                                                |
+| नए बंडल किए गए/नेटिव Plugin                  | विक्रेता-विशिष्ट आंतरिक पहुँच या केवल हुक वाले नए डिज़ाइन के बजाय स्पष्ट क्षमता पंजीकरण को प्राथमिकता दें।      |
+| क्षमता पंजीकरण अपनाने वाले बाहरी Plugin       | अनुमति है, लेकिन जब तक दस्तावेज़ उन्हें स्थिर न बताएँ, क्षमता-विशिष्ट सहायक सतहों को विकसित होती हुई मानें।     |
 
-Capability registration इच्छित दिशा है। संक्रमण के दौरान external Plugin के लिए Legacy hooks सबसे सुरक्षित no-breakage path बने रहते हैं। Exported helper subpaths सभी समान नहीं हैं — incidental helper exports की तुलना में संकीर्ण documented contracts को प्राथमिकता दें।
+क्षमता पंजीकरण अभीष्ट दिशा है। संक्रमण के दौरान बाहरी Plugin के लिए लीगेसी हुक बिना किसी टूट-फूट वाला सबसे सुरक्षित मार्ग बने हुए हैं। सभी एक्सपोर्ट किए गए सहायक उप-पथ समान नहीं हैं — आकस्मिक सहायक एक्सपोर्ट के बजाय सीमित और दस्तावेज़ीकृत अनुबंधों को प्राथमिकता दें।
 
-### Plugin shapes
+### Plugin के स्वरूप
 
-OpenClaw हर loaded Plugin को उसके actual registration behavior के आधार पर shape में वर्गीकृत करता है (सिर्फ static metadata के आधार पर नहीं):
+OpenClaw प्रत्येक लोड किए गए Plugin को उसके वास्तविक पंजीकरण व्यवहार के आधार पर एक स्वरूप में वर्गीकृत करता है (केवल स्थिर मेटाडेटा के आधार पर नहीं):
 
 <AccordionGroup>
   <Accordion title="plain-capability">
-    ठीक एक capability type register करता है (उदाहरण के लिए `mistral` जैसा provider-only Plugin)।
+    ठीक एक क्षमता प्रकार पंजीकृत करता है (उदाहरण के लिए केवल प्रोवाइडर वाला Plugin, जैसे `arcee` या `chutes`)।
   </Accordion>
   <Accordion title="hybrid-capability">
-    कई capability types register करता है (उदाहरण के लिए `openai` text inference, speech, media understanding, और image generation का स्वामी है)।
+    कई क्षमता प्रकार पंजीकृत करता है (उदाहरण के लिए `openai` टेक्स्ट अनुमान, स्पीच, मीडिया समझ और इमेज जनरेशन का स्वामी है)।
   </Accordion>
   <Accordion title="hook-only">
-    केवल hooks (typed या custom) register करता है, कोई capabilities, tools, commands, या services नहीं।
+    केवल हुक (टाइप किए गए या कस्टम) पंजीकृत करता है; कोई क्षमता, टूल, कमांड या सेवा नहीं।
   </Accordion>
   <Accordion title="non-capability">
-    tools, commands, services, या routes register करता है लेकिन कोई capabilities नहीं।
+    टूल, कमांड, सेवाएँ या रूट पंजीकृत करता है, लेकिन कोई क्षमता नहीं।
   </Accordion>
 </AccordionGroup>
 
-किसी Plugin की shape और capability breakdown देखने के लिए `openclaw plugins inspect <id>` का उपयोग करें। विवरण के लिए [CLI संदर्भ](/hi/cli/plugins#inspect) देखें।
+किसी Plugin का स्वरूप और क्षमता विवरण देखने के लिए `openclaw plugins inspect <id>` का उपयोग करें। विवरण के लिए [CLI संदर्भ](/hi/cli/plugins#inspect) देखें।
 
-### Legacy hooks
+### लीगेसी हुक
 
-`before_agent_start` hook hook-only Plugin के लिए compatibility path के रूप में supported रहता है। Legacy real-world Plugin अभी भी इस पर निर्भर हैं।
+`before_agent_start` हुक केवल हुक वाले Plugin के लिए संगतता मार्ग के रूप में समर्थित बना हुआ है। वास्तविक दुनिया के लीगेसी Plugin अब भी इस पर निर्भर हैं।
 
 दिशा:
 
-- इसे काम करते रहने दें
-- इसे legacy के रूप में document करें
-- model/provider override work के लिए `before_model_resolve` को प्राथमिकता दें
-- prompt mutation work के लिए `before_prompt_build` को प्राथमिकता दें
-- केवल तब हटाएं जब वास्तविक उपयोग घट जाए और fixture coverage migration safety साबित करे
+- इसे कार्यशील रखें
+- इसे लीगेसी के रूप में दस्तावेज़ीकृत करें
+- मॉडल/प्रोवाइडर ओवरराइड कार्य के लिए `before_model_resolve` को प्राथमिकता दें
+- प्रॉम्प्ट परिवर्तन कार्य के लिए `before_prompt_build` को प्राथमिकता दें
+- इसे तभी हटाएँ जब वास्तविक उपयोग कम हो जाए और फ़िक्स्चर कवरेज माइग्रेशन की सुरक्षा सिद्ध करे
 
-### Compatibility signals
+### संगतता संकेत
 
-जब आप `openclaw doctor` या `openclaw plugins inspect <id>` चलाते हैं, तो आपको इनमें से कोई label दिख सकता है:
+`openclaw doctor`, `openclaw plugins inspect <id>`, `openclaw status --all`, और `openclaw plugins doctor` ये संगतता सूचनाएँ दिखाते हैं:
 
-| Signal                     | अर्थ                                                         |
-| -------------------------- | ------------------------------------------------------------ |
-| **config valid**           | Config ठीक से parse होता है और Plugin resolve होते हैं       |
-| **compatibility advisory** | Plugin supported-but-older pattern का उपयोग करता है (जैसे `hook-only`) |
-| **legacy warning**         | Plugin `before_agent_start` का उपयोग करता है, जो deprecated है |
-| **hard error**             | Config invalid है या Plugin load होने में विफल रहा           |
+| संकेत                                       | अर्थ                                                                                                                   |
+| ------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| **कॉन्फ़िग मान्य**                          | कॉन्फ़िग सही ढंग से पार्स होता है और Plugin रिज़ॉल्व होते हैं                                                        |
+| **केवल हुक** (जानकारी)                     | Plugin केवल हुक पंजीकृत करता है; यह समर्थित मार्ग है, लेकिन अभी क्षमता पंजीकरण में माइग्रेट नहीं हुआ है             |
+| **लीगेसी `before_agent_start`** (चेतावनी)    | Plugin `before_model_resolve`/`before_prompt_build` के बजाय अप्रचलित `before_agent_start` हुक का उपयोग करता है              |
+| **अप्रचलित मेमोरी-एम्बेडिंग API** (चेतावनी) | गैर-बंडल Plugin `registerEmbeddingProvider` के बजाय पुराने मेमोरी-विशिष्ट एम्बेडिंग प्रोवाइडर API का उपयोग करता है          |
+| **गंभीर त्रुटि**                            | कॉन्फ़िग अमान्य है या Plugin लोड होने में विफल रहा                                                                   |
 
-न तो `hook-only` और न ही `before_agent_start` आज आपके Plugin को तोड़ेगा: `hook-only` advisory है, और `before_agent_start` केवल warning trigger करता है। ये signals `openclaw status --all` और `openclaw plugins doctor` में भी दिखाई देते हैं।
+आज कोई भी परामर्शात्मक/चेतावनी संकेत आपके Plugin को बाधित नहीं करता। ये संकेत `openclaw status --all` और `openclaw plugins doctor` में भी दिखाई देते हैं।
 
-## Architecture अवलोकन
+## आर्किटेक्चर अवलोकन
 
-OpenClaw के Plugin सिस्टम में चार layers हैं:
+OpenClaw के Plugin सिस्टम की चार परतें हैं:
 
 <Steps>
-  <Step title="Manifest + discovery">
-    OpenClaw configured paths, workspace roots, global Plugin roots, और bundled Plugin से candidate Plugin खोजता है। Discovery पहले native `openclaw.plugin.json` manifests और supported bundle manifests पढ़ता है।
+  <Step title="मैनिफ़ेस्ट + डिस्कवरी">
+    OpenClaw कॉन्फ़िगर किए गए पथों, वर्कस्पेस रूट, ग्लोबल Plugin रूट और बंडल किए गए Plugin से संभावित Plugin खोजता है। डिस्कवरी सबसे पहले नेटिव `openclaw.plugin.json` मैनिफ़ेस्ट और समर्थित बंडल मैनिफ़ेस्ट पढ़ती है।
   </Step>
-  <Step title="Enablement + validation">
-    Core तय करता है कि discovered Plugin enabled, disabled, blocked है या memory जैसे exclusive slot के लिए selected है।
+  <Step title="सक्षमीकरण + सत्यापन">
+    कोर तय करता है कि खोजा गया Plugin सक्षम, अक्षम, अवरुद्ध या मेमोरी जैसे विशिष्ट स्लॉट के लिए चयनित है।
   </Step>
-  <Step title="Runtime loading">
-    Native OpenClaw Plugin in-process load होते हैं और capabilities को central registry में register करते हैं। Packaged JavaScript native `require` के माध्यम से load होता है; third-party local source TypeScript emergency Jiti fallback है। Compatible bundles runtime code import किए बिना registry records में normalized होते हैं।
+  <Step title="रनटाइम लोडिंग">
+    नेटिव OpenClaw Plugin प्रक्रिया के भीतर लोड होते हैं और एक केंद्रीय रजिस्ट्री में क्षमताएँ पंजीकृत करते हैं। पैकेज किया गया JavaScript नेटिव `require` के माध्यम से लोड होता है; तृतीय-पक्ष स्थानीय स्रोत TypeScript के लिए Jiti आपातकालीन फ़ॉलबैक है। संगत बंडल को रनटाइम कोड इंपोर्ट किए बिना रजिस्ट्री रिकॉर्ड में सामान्यीकृत किया जाता है।
   </Step>
-  <Step title="Surface consumption">
-    OpenClaw का बाकी हिस्सा tools, channels, provider setup, hooks, HTTP routes, CLI commands, और services expose करने के लिए registry पढ़ता है।
+  <Step title="सतह उपभोग">
+    OpenClaw के शेष भाग टूल, चैनल, प्रोवाइडर सेटअप, हुक, HTTP रूट, CLI कमांड और सेवाएँ उजागर करने के लिए रजिस्ट्री पढ़ते हैं।
   </Step>
 </Steps>
 
-विशेष रूप से Plugin CLI के लिए, root command discovery दो phases में split है:
+विशेष रूप से Plugin CLI के लिए, रूट कमांड डिस्कवरी दो चरणों में विभाजित है:
 
-- parse-time metadata `registerCli(..., { descriptors: [...] })` से आता है
-- वास्तविक Plugin CLI module lazy रह सकता है और first invocation पर register कर सकता है
+- पार्स-समय मेटाडेटा `registerCli(..., { descriptors: [...] })` से आता है
+- वास्तविक Plugin CLI मॉड्यूल लेज़ी रह सकता है और पहली बार आह्वान किए जाने पर पंजीकरण कर सकता है
 
-इससे Plugin-owned CLI code Plugin के भीतर रहता है, जबकि OpenClaw parsing से पहले भी root command names reserve कर सकता है।
+इससे Plugin के स्वामित्व वाला CLI कोड Plugin के भीतर ही रहता है, जबकि OpenClaw पार्सिंग से पहले भी रूट कमांड नाम आरक्षित कर सकता है।
 
-महत्वपूर्ण design boundary:
+महत्त्वपूर्ण डिज़ाइन सीमा:
 
-- manifest/config validation को Plugin code execute किए बिना **manifest/schema metadata** से काम करना चाहिए
-- native capability discovery trusted Plugin entry code load करके non-activating registry snapshot बना सकता है
-- native runtime behavior Plugin module के `register(api)` path से आता है, जहां `api.registrationMode === "full"`
+- मैनिफ़ेस्ट/कॉन्फ़िग सत्यापन को Plugin कोड निष्पादित किए बिना **मैनिफ़ेस्ट/स्कीमा मेटाडेटा** से कार्य करना चाहिए
+- नेटिव क्षमता डिस्कवरी गैर-सक्रिय रजिस्ट्री स्नैपशॉट बनाने के लिए विश्वसनीय Plugin एंट्री कोड लोड कर सकती है
+- नेटिव रनटाइम व्यवहार Plugin मॉड्यूल के `register(api)` पथ से `api.registrationMode === "full"` के साथ आता है
 
-यह split OpenClaw को full runtime active होने से पहले config validate करने, missing/disabled Plugin समझाने, और UI/schema hints बनाने देता है।
+यह विभाजन OpenClaw को पूर्ण रनटाइम सक्रिय होने से पहले कॉन्फ़िग सत्यापित करने, अनुपलब्ध/अक्षम Plugin समझाने और UI/स्कीमा संकेत बनाने देता है।
 
-### Plugin metadata snapshot और lookup table
+### Plugin मेटाडेटा स्नैपशॉट और लुकअप तालिका
 
-Gateway startup मौजूदा config snapshot के लिए एक `PluginMetadataSnapshot` बनाता है। Snapshot metadata-only है: यह installed Plugin index, manifest registry, manifest diagnostics, owner maps, Plugin id normalizer, और manifest records store करता है। यह loaded Plugin modules, provider SDKs, package contents, या runtime exports नहीं रखता।
+Gateway स्टार्टअप वर्तमान कॉन्फ़िग स्नैपशॉट के लिए एक `PluginMetadataSnapshot` बनाता है। स्नैपशॉट केवल मेटाडेटा वाला है: यह इंस्टॉल किए गए Plugin का इंडेक्स, मैनिफ़ेस्ट रजिस्ट्री, मैनिफ़ेस्ट डायग्नोस्टिक्स, स्वामी मैप, Plugin ID नॉर्मलाइज़र और मैनिफ़ेस्ट रिकॉर्ड संग्रहीत करता है। इसमें लोड किए गए Plugin मॉड्यूल, प्रोवाइडर SDK, पैकेज सामग्री या रनटाइम एक्सपोर्ट नहीं होते।
 
-Plugin-aware config validation, startup auto-enable, और Gateway Plugin bootstrap उस snapshot को consume करते हैं, बजाय manifest/index metadata को independently rebuild करने के। `PluginLookUpTable` उसी snapshot से derive होता है और मौजूदा runtime config के लिए startup Plugin plan जोड़ता है।
+Plugin-जागरूक कॉन्फ़िग सत्यापन, स्टार्टअप पर स्वतः-सक्षमीकरण और Gateway Plugin बूटस्ट्रैप स्वतंत्र रूप से मैनिफ़ेस्ट/इंडेक्स मेटाडेटा दोबारा बनाने के बजाय उस स्नैपशॉट का उपयोग करते हैं। `PluginLookUpTable` उसी स्नैपशॉट से प्राप्त होता है और वर्तमान रनटाइम कॉन्फ़िग के लिए स्टार्टअप Plugin योजना जोड़ता है।
 
-Startup के बाद, Gateway मौजूदा metadata snapshot को replaceable runtime product के रूप में रखता है। Repeated runtime provider discovery हर provider-catalog pass के लिए installed index और manifest registry reconstruct करने के बजाय वह snapshot borrow कर सकता है। Gateway shutdown, config/Plugin inventory changes, और installed index writes पर snapshot cleared या replaced होता है; compatible current snapshot मौजूद न होने पर callers cold manifest/index path पर fall back करते हैं। Compatibility checks में `plugins.load.paths` और default agent workspace जैसे Plugin discovery roots शामिल होने चाहिए, क्योंकि workspace Plugin metadata scope का हिस्सा हैं।
+स्टार्टअप के बाद, Gateway वर्तमान मेटाडेटा स्नैपशॉट को बदले जा सकने वाले रनटाइम उत्पाद के रूप में रखता है। बार-बार होने वाली रनटाइम प्रोवाइडर डिस्कवरी प्रत्येक प्रोवाइडर-कैटलॉग पास के लिए इंस्टॉल किया गया इंडेक्स और मैनिफ़ेस्ट रजिस्ट्री पुनर्निर्मित करने के बजाय उस स्नैपशॉट का उपयोग कर सकती है। Gateway बंद होने, कॉन्फ़िग/Plugin इन्वेंट्री में बदलाव और इंस्टॉल किए गए इंडेक्स में लिखने पर स्नैपशॉट साफ़ या प्रतिस्थापित किया जाता है; जब कोई संगत वर्तमान स्नैपशॉट मौजूद न हो, तो कॉलर कोल्ड मैनिफ़ेस्ट/इंडेक्स पथ का उपयोग करते हैं। संगतता जाँच में `plugins.load.paths` और डिफ़ॉल्ट एजेंट वर्कस्पेस जैसे Plugin डिस्कवरी रूट शामिल होने चाहिए, क्योंकि वर्कस्पेस Plugin मेटाडेटा के दायरे का हिस्सा हैं।
 
-Snapshot और lookup table repeated startup decisions को fast path पर रखते हैं:
+स्नैपशॉट और लुकअप तालिका बार-बार लिए जाने वाले स्टार्टअप निर्णयों को तेज़ पथ पर रखते हैं:
 
-- channel ownership
-- deferred channel startup
-- startup Plugin ids
-- provider और CLI backend ownership
-- setup provider, command alias, model catalog provider, और manifest contract ownership
-- Plugin config schema और channel config schema validation
-- startup auto-enable decisions
+- चैनल स्वामित्व
+- स्थगित चैनल स्टार्टअप
+- स्टार्टअप Plugin ID
+- प्रोवाइडर और CLI बैकएंड स्वामित्व
+- सेटअप प्रोवाइडर, कमांड उपनाम, मॉडल कैटलॉग प्रोवाइडर और मैनिफ़ेस्ट अनुबंध स्वामित्व
+- Plugin कॉन्फ़िग स्कीमा और चैनल कॉन्फ़िग स्कीमा सत्यापन
+- स्टार्टअप पर स्वतः-सक्षम करने के निर्णय
 
-Safety boundary snapshot replacement है, mutation नहीं। Config, Plugin inventory, install records, या persisted index policy बदलने पर snapshot rebuild करें। इसे broad mutable global registry के रूप में न मानें, और unbounded historical snapshots न रखें। Runtime Plugin loading metadata snapshots से अलग रहता है ताकि stale runtime state metadata cache के पीछे hidden न हो सके।
+सुरक्षा सीमा परिवर्तन नहीं, बल्कि स्नैपशॉट प्रतिस्थापन है। कॉन्फ़िग, Plugin इन्वेंट्री, इंस्टॉल रिकॉर्ड या स्थायी इंडेक्स नीति बदलने पर स्नैपशॉट पुनर्निर्मित करें। इसे व्यापक परिवर्तनशील ग्लोबल रजिस्ट्री न मानें और असीमित ऐतिहासिक स्नैपशॉट न रखें। रनटाइम Plugin लोडिंग मेटाडेटा स्नैपशॉट से अलग रहती है, ताकि पुराने रनटाइम स्टेट को मेटाडेटा कैश के पीछे छिपाया न जा सके।
 
-Cache rule [Plugin architecture internals](/hi/plugins/architecture-internals#plugin-cache-boundary) में documented है: manifest और discovery metadata fresh होते हैं जब तक कोई caller मौजूदा flow के लिए explicit snapshot, lookup table, या manifest registry न रखता हो। Hidden metadata caches और wall-clock TTLs Plugin loading का हिस्सा नहीं हैं। केवल runtime loader, module, और dependency-artifact caches code या installed artifacts वास्तव में loaded होने के बाद persist रह सकते हैं।
+कैश नियम [Plugin आर्किटेक्चर की आंतरिक कार्यप्रणाली](/hi/plugins/architecture-internals#plugin-cache-boundary) में दस्तावेज़ीकृत है: मैनिफ़ेस्ट और डिस्कवरी मेटाडेटा नवीन रहते हैं, जब तक कोई कॉलर वर्तमान प्रवाह के लिए कोई स्पष्ट स्नैपशॉट, लुकअप तालिका या मैनिफ़ेस्ट रजिस्ट्री धारण न करे। छिपे हुए मेटाडेटा कैश और वॉल-क्लॉक TTL Plugin लोडिंग का हिस्सा नहीं हैं। कोड या इंस्टॉल किए गए आर्टिफ़ैक्ट वास्तव में लोड होने के बाद केवल रनटाइम लोडर, मॉड्यूल और निर्भरता-आर्टिफ़ैक्ट कैश बने रह सकते हैं।
 
-कुछ cold-path callers अभी भी Gateway `PluginLookUpTable` पाने के बजाय persisted installed Plugin index से सीधे manifest registries reconstruct करते हैं। अब वह path registry को demand पर reconstruct करता है; जब caller के पास पहले से current lookup table या explicit manifest registry हो, तो runtime flows में उसे pass करना prefer करें।
+कुछ कोल्ड-पाथ कॉलर अब भी Gateway `PluginLookUpTable` प्राप्त करने के बजाय, स्थायी रूप से संग्रहीत इंस्टॉल किए गए Plugin इंडेक्स से सीधे मैनिफ़ेस्ट रजिस्ट्री का पुनर्निर्माण करते हैं। वह पाथ अब आवश्यकता पड़ने पर रजिस्ट्री का पुनर्निर्माण करता है; जब किसी कॉलर के पास पहले से मौजूदा लुकअप तालिका या स्पष्ट मैनिफ़ेस्ट रजिस्ट्री हो, तो रनटाइम प्रवाहों के माध्यम से उसे पास करना बेहतर है।
 
-### Activation planning
+### सक्रियण योजना
 
-Activation planning control plane का हिस्सा है। Callers broad runtime registries load करने से पहले पूछ सकते हैं कि किसी concrete command, provider, channel, route, agent harness, या capability के लिए कौन से Plugin relevant हैं।
+सक्रियण योजना कंट्रोल प्लेन का हिस्सा है। व्यापक रनटाइम रजिस्ट्री लोड करने से पहले कॉलर पूछ सकते हैं कि किसी ठोस कमांड, प्रदाता, चैनल, रूट, एजेंट हार्नेस या क्षमता के लिए कौन-से Plugin प्रासंगिक हैं।
 
-Planner मौजूदा manifest behavior को compatible रखता है:
+प्लानर मौजूदा मैनिफ़ेस्ट व्यवहार को संगत रखता है:
 
 - `activation.*` फ़ील्ड स्पष्ट प्लानर संकेत हैं
-- `providers`, `channels`, `commandAliases`, `setup.providers`, `contracts.tools`, और hooks मैनिफ़ेस्ट स्वामित्व फ़ॉलबैक बने रहते हैं
-- केवल-ids प्लानर API मौजूदा कॉलरों के लिए उपलब्ध रहती है
-- प्लान API कारण लेबल रिपोर्ट करता है ताकि डायग्नॉस्टिक्स स्पष्ट संकेतों को स्वामित्व फ़ॉलबैक से अलग कर सकें
+- `providers`, `channels`, `commandAliases`, `setup.providers`, `contracts.tools`, और हुक मैनिफ़ेस्ट स्वामित्व फ़ॉलबैक बने रहते हैं
+- केवल आईडी वाला प्लानर API मौजूदा कॉलर के लिए उपलब्ध रहता है
+- प्लान API कारण लेबल की रिपोर्ट करता है, ताकि निदान स्पष्ट संकेतों को स्वामित्व फ़ॉलबैक से अलग कर सके
 
 <Warning>
-`activation` को lifecycle hook या `register(...)` के प्रतिस्थापन के रूप में न मानें। यह लोडिंग को सीमित करने के लिए उपयोग किया जाने वाला मेटाडेटा है। जब स्वामित्व फ़ील्ड पहले से संबंध का वर्णन करते हों, तो उन्हें प्राथमिकता दें; अतिरिक्त प्लानर संकेतों के लिए ही `activation` का उपयोग करें।
+`activation` को लाइफ़साइकल हुक या `register(...)` का प्रतिस्थापन न मानें। यह लोडिंग को सीमित करने के लिए प्रयुक्त मेटाडेटा है। जब स्वामित्व फ़ील्ड पहले से संबंध का वर्णन करते हों, तो उन्हें प्राथमिकता दें; `activation` का उपयोग केवल अतिरिक्त प्लानर संकेतों के लिए करें।
 </Warning>
 
-### चैनल Plugin और साझा message टूल
+### चैनल Plugin और साझा संदेश टूल
 
-चैनल Plugin को सामान्य चैट कार्रवाइयों के लिए अलग send/edit/react टूल रजिस्टर करने की आवश्यकता नहीं है। OpenClaw core में एक साझा `message` टूल रखता है, और चैनल Plugin उसके पीछे चैनल-विशिष्ट खोज और निष्पादन के स्वामी होते हैं।
+सामान्य चैट कार्रवाइयों के लिए चैनल Plugin को अलग भेजने/संपादित करने/प्रतिक्रिया देने वाला टूल पंजीकृत करने की आवश्यकता नहीं है। OpenClaw कोर में एक साझा `message` टूल रखता है, और चैनल Plugin उसके पीछे चैनल-विशिष्ट खोज और निष्पादन के स्वामी होते हैं।
 
-वर्तमान सीमा यह है:
+मौजूदा सीमा यह है:
 
-- core साझा `message` टूल होस्ट, prompt wiring, session/thread bookkeeping, और execution dispatch का स्वामी है
-- चैनल Plugin scoped action discovery, capability discovery, और किसी भी चैनल-विशिष्ट schema fragments के स्वामी हैं
-- चैनल Plugin प्रदाता-विशिष्ट session conversation grammar के स्वामी हैं, जैसे conversation ids thread ids को कैसे encode करते हैं या parent conversations से कैसे inherit करते हैं
-- चैनल Plugin अपने action adapter के माध्यम से अंतिम कार्रवाई निष्पादित करते हैं
+- कोर साझा `message` टूल होस्ट, प्रॉम्प्ट वायरिंग, सत्र/थ्रेड लेखांकन और निष्पादन डिस्पैच का स्वामी है
+- चैनल Plugin स्कोप की गई कार्रवाई खोज, क्षमता खोज और किसी भी चैनल-विशिष्ट स्कीमा खंड के स्वामी हैं
+- चैनल Plugin प्रदाता-विशिष्ट सत्र वार्तालाप व्याकरण के स्वामी हैं, जैसे वार्तालाप आईडी थ्रेड आईडी को कैसे एन्कोड करती हैं या पैरेंट वार्तालापों से कैसे इनहेरिट करती हैं
+- चैनल Plugin अपने कार्रवाई अडैप्टर के माध्यम से अंतिम कार्रवाई निष्पादित करते हैं
 
-चैनल Plugin के लिए, SDK surface `ChannelMessageActionAdapter.describeMessageTool(...)` है। वह एकीकृत discovery call Plugin को अपनी visible actions, capabilities, और schema contributions साथ में लौटाने देता है ताकि वे हिस्से अलग-अलग दिशा में न जाएं।
+चैनल Plugin के लिए SDK सतह `ChannelMessageActionAdapter.describeMessageTool(...)` है। यह एकीकृत खोज कॉल किसी Plugin को उसकी दृश्यमान कार्रवाइयाँ, क्षमताएँ और स्कीमा योगदान एक साथ लौटाने देता है, ताकि ये हिस्से एक-दूसरे से अलग न हो जाएँ।
 
-जब कोई चैनल-विशिष्ट message-tool param किसी स्थानीय path या remote media URL जैसे media source को रखता है, तो Plugin को `describeMessageTool(...)` से `mediaSourceParams` भी लौटाना चाहिए। Core उस स्पष्ट सूची का उपयोग sandbox path normalization और outbound media-access hints लागू करने के लिए करता है, बिना Plugin-owned param नामों को hardcode किए। वहां action-scoped maps को प्राथमिकता दें, न कि एक channel-wide flat list, ताकि profile-only media param असंबंधित actions जैसे `send` पर normalize न हो।
+जब कोई चैनल-विशिष्ट संदेश-टूल पैरामीटर स्थानीय पाथ या रिमोट मीडिया URL जैसा मीडिया स्रोत रखता है, तो Plugin को `describeMessageTool(...)` से `mediaSourceParams` भी लौटाना चाहिए। कोर Plugin के स्वामित्व वाले पैरामीटर नामों को हार्डकोड किए बिना सैंडबॉक्स पाथ सामान्यीकरण और आउटबाउंड मीडिया-एक्सेस संकेत लागू करने के लिए उस स्पष्ट सूची का उपयोग करता है। वहाँ पूरे चैनल की एक समतल सूची के बजाय कार्रवाई-स्कोप वाले मैप को प्राथमिकता दें, ताकि केवल प्रोफ़ाइल वाला मीडिया पैरामीटर `send` जैसी असंबंधित कार्रवाइयों पर सामान्यीकृत न हो।
 
-Core उस discovery step में runtime scope पास करता है। महत्वपूर्ण फ़ील्ड में शामिल हैं:
+कोर उस खोज चरण में रनटाइम स्कोप पास करता है। महत्वपूर्ण फ़ील्ड में शामिल हैं:
 
 - `accountId`
 - `currentChannelId`
@@ -218,108 +220,108 @@ Core उस discovery step में runtime scope पास करता है
 - `sessionKey`
 - `sessionId`
 - `agentId`
-- विश्वसनीय inbound `requesterSenderId`
+- विश्वसनीय इनबाउंड `requesterSenderId`
 
-यह context-sensitive Plugin के लिए महत्वपूर्ण है। कोई चैनल active account, current room/thread/message, या trusted requester identity के आधार पर message actions छिपा या दिखा सकता है, बिना core `message` टूल में चैनल-विशिष्ट branches को hardcode किए।
+यह संदर्भ-संवेदी Plugin के लिए महत्वपूर्ण है। कोई चैनल सक्रिय खाते, मौजूदा रूम/थ्रेड/संदेश या विश्वसनीय अनुरोधकर्ता पहचान के आधार पर संदेश कार्रवाइयों को छिपा या प्रदर्शित कर सकता है, और इसके लिए कोर `message` टूल में चैनल-विशिष्ट शाखाएँ हार्डकोड करने की आवश्यकता नहीं होती।
 
-इसीलिए embedded-runner routing बदलाव अभी भी Plugin कार्य हैं: runner की ज़िम्मेदारी है कि वह current chat/session identity को Plugin discovery boundary में forward करे ताकि साझा `message` टूल वर्तमान turn के लिए सही channel-owned surface expose करे।
+इसी कारण एम्बेडेड-रनर रूटिंग परिवर्तन अब भी Plugin का कार्य हैं: रनर मौजूदा चैट/सत्र पहचान को Plugin खोज सीमा में अग्रेषित करने के लिए उत्तरदायी है, ताकि साझा `message` टूल मौजूदा टर्न के लिए सही चैनल-स्वामित्व वाली सतह प्रदर्शित करे।
 
-Channel-owned execution helpers के लिए, bundled Plugin को execution runtime अपने extension modules के अंदर ही रखना चाहिए। Core अब `src/agents/tools` के अंतर्गत Discord, Slack, Telegram, या WhatsApp message-action runtimes का स्वामी नहीं है। हम अलग `plugin-sdk/*-action-runtime` subpaths publish नहीं करते, और bundled Plugin को अपने extension-owned modules से अपना local runtime code सीधे import करना चाहिए।
+चैनल-स्वामित्व वाले निष्पादन हेल्पर के लिए, बंडल किए गए Plugin को निष्पादन रनटाइम अपने Plugin मॉड्यूल के भीतर ही रखना चाहिए। कोर अब `src/agents/tools` के अंतर्गत Discord, Slack, Telegram या WhatsApp संदेश-कार्रवाई रनटाइम का स्वामी नहीं है। हम अलग `plugin-sdk/*-action-runtime` सबपाथ प्रकाशित नहीं करते, और बंडल किए गए Plugin को अपना स्थानीय रनटाइम कोड सीधे अपने Plugin-स्वामित्व वाले मॉड्यूल से आयात करना चाहिए।
 
-यही सीमा सामान्य रूप से provider-named SDK seams पर लागू होती है: core को Slack, Discord, Signal, WhatsApp, या समान extensions के लिए channel-specific convenience barrels import नहीं करने चाहिए। यदि core को किसी behavior की आवश्यकता है, तो या तो bundled Plugin के अपने `api.ts` / `runtime-api.ts` barrel का उपयोग करें या आवश्यकता को shared SDK में एक संकीर्ण generic capability में promote करें।
+सामान्यतः प्रदाता-नामित SDK सीमों पर भी यही सीमा लागू होती है: कोर को Discord, Signal, Slack, WhatsApp या समान Plugin के लिए चैनल-विशिष्ट सुविधा बैरल आयात नहीं करने चाहिए। यदि कोर को किसी व्यवहार की आवश्यकता है, तो या तो बंडल किए गए Plugin के अपने `api.ts` / `runtime-api.ts` बैरल का उपयोग करें या आवश्यकता को साझा SDK में एक संकीर्ण सामान्य क्षमता के रूप में उन्नत करें।
 
-Bundled Plugin भी यही नियम अपनाते हैं। किसी bundled Plugin के `runtime-api.ts` को अपने ही branded `openclaw/plugin-sdk/<plugin-id>` facade को re-export नहीं करना चाहिए। वे branded facades external Plugin और पुराने consumers के लिए compatibility shims बने रहते हैं, लेकिन bundled Plugin को local exports और `openclaw/plugin-sdk/channel-policy`, `openclaw/plugin-sdk/runtime-store`, या `openclaw/plugin-sdk/webhook-ingress` जैसे संकीर्ण generic SDK subpaths का उपयोग करना चाहिए। नया code plugin-id-specific SDK facades नहीं जोड़ना चाहिए, जब तक किसी मौजूदा external ecosystem की compatibility boundary इसकी मांग न करे।
+बंडल किए गए Plugin भी इसी नियम का पालन करते हैं। किसी बंडल किए गए Plugin के `runtime-api.ts` को अपना ब्रांडेड `openclaw/plugin-sdk/<plugin-id>` फ़साड पुनः निर्यात नहीं करना चाहिए। वे ब्रांडेड फ़साड बाहरी Plugin और पुराने उपभोक्ताओं के लिए संगतता शिम बने रहते हैं, लेकिन बंडल किए गए Plugin को स्थानीय निर्यातों के साथ `openclaw/plugin-sdk/channel-policy`, `openclaw/plugin-sdk/runtime-store` या `openclaw/plugin-sdk/webhook-ingress` जैसे संकीर्ण सामान्य SDK सबपाथ का उपयोग करना चाहिए। नए कोड को Plugin-आईडी-विशिष्ट SDK फ़साड नहीं जोड़ने चाहिए, जब तक किसी मौजूदा बाहरी इकोसिस्टम की संगतता सीमा को इसकी आवश्यकता न हो।
 
-Polls के लिए विशेष रूप से, दो execution paths हैं:
+विशेष रूप से पोल के लिए, दो निष्पादन पाथ हैं:
 
-- `outbound.sendPoll` उन चैनलों के लिए साझा baseline है जो common poll model में फिट होते हैं
-- `actions.handleAction("poll")` channel-specific poll semantics या अतिरिक्त poll parameters के लिए preferred path है
+- `outbound.sendPoll` उन चैनलों के लिए साझा आधाररेखा है जो सामान्य पोल मॉडल में फिट होते हैं
+- `actions.handleAction("poll")` चैनल-विशिष्ट पोल अर्थविज्ञान या अतिरिक्त पोल पैरामीटर के लिए पसंदीदा पाथ है
 
-Core अब shared poll parsing को तब तक defer करता है जब तक Plugin poll dispatch कार्रवाई को decline नहीं कर देता, ताकि Plugin-owned poll handlers generic poll parser से पहले blocked हुए बिना channel-specific poll fields स्वीकार कर सकें।
+कोर अब साझा पोल पार्सिंग को तब तक स्थगित करता है, जब तक Plugin पोल डिस्पैच कार्रवाई को अस्वीकार नहीं कर देता, ताकि Plugin-स्वामित्व वाले पोल हैंडलर पहले सामान्य पोल पार्सर द्वारा अवरुद्ध हुए बिना चैनल-विशिष्ट पोल फ़ील्ड स्वीकार कर सकें।
 
-पूरा startup sequence देखने के लिए [Plugin architecture internals](/hi/plugins/architecture-internals) देखें।
+पूर्ण स्टार्टअप अनुक्रम के लिए [Plugin आर्किटेक्चर के आंतरिक भाग](/hi/plugins/architecture-internals) देखें।
 
 ## क्षमता स्वामित्व मॉडल
 
-OpenClaw native Plugin को किसी **कंपनी** या **feature** के लिए ownership boundary मानता है, असंबंधित integrations का संग्रह नहीं।
+OpenClaw किसी मूल Plugin को असंबंधित एकीकरणों के मिश्रित संग्रह के बजाय किसी **कंपनी** या **सुविधा** की स्वामित्व सीमा मानता है।
 
-इसका मतलब है:
+इसका अर्थ है:
 
-- company Plugin को आमतौर पर उस कंपनी के सभी OpenClaw-facing surfaces का स्वामी होना चाहिए
-- feature Plugin को आमतौर पर अपने द्वारा पेश किए गए पूरे feature surface का स्वामी होना चाहिए
-- channels को provider behavior को ad hoc फिर से लागू करने के बजाय shared core capabilities का उपयोग करना चाहिए
+- किसी कंपनी के Plugin को सामान्यतः उस कंपनी की सभी OpenClaw-संबंधी सतहों का स्वामी होना चाहिए
+- किसी सुविधा Plugin को सामान्यतः अपने द्वारा प्रस्तुत पूरी सुविधा सतह का स्वामी होना चाहिए
+- चैनलों को प्रदाता व्यवहार को तदर्थ रूप से पुनः लागू करने के बजाय साझा कोर क्षमताओं का उपयोग करना चाहिए
 
 <AccordionGroup>
-  <Accordion title="Vendor multi-capability">
-    `openai` text inference, speech, realtime voice, media understanding, और image generation का स्वामी है। `google` text inference के साथ media understanding, image generation, और web search का स्वामी है। `qwen` text inference के साथ media understanding और video generation का स्वामी है।
+  <Accordion title="विक्रेता की बहु-क्षमता">
+    `google` टेक्स्ट इन्फ़रेंस, CLI बैकएंड, एम्बेडिंग, स्पीच, रियलटाइम वॉइस, मीडिया समझ, छवि/संगीत/वीडियो निर्माण और वेब खोज का स्वामी है। `openai` टेक्स्ट इन्फ़रेंस, एम्बेडिंग, स्पीच, रियलटाइम ट्रांसक्रिप्शन, रियलटाइम वॉइस, मीडिया समझ और छवि/वीडियो निर्माण का स्वामी है। `minimax` टेक्स्ट इन्फ़रेंस के साथ मीडिया समझ, स्पीच, छवि/संगीत/वीडियो निर्माण और वेब खोज का स्वामी है।
   </Accordion>
-  <Accordion title="Vendor single-capability">
-    `elevenlabs` और `microsoft` speech के स्वामी हैं; `firecrawl` web-fetch का स्वामी है; `minimax` / `mistral` / `moonshot` / `zai` media-understanding backends के स्वामी हैं।
+  <Accordion title="विक्रेता की एकल क्षमता">
+    `arcee` और `chutes` केवल टेक्स्ट इन्फ़रेंस के स्वामी हैं; `microsoft` केवल स्पीच का स्वामी है। विक्रेता Plugin तब तक इतना सीमित रह सकता है, जब तक उसे उस विक्रेता की अधिक सतह को समाहित करने की आवश्यकता न हो।
   </Accordion>
-  <Accordion title="Feature plugin">
-    `voice-call` call transport, tools, CLI, routes, और Twilio media-stream bridging का स्वामी है, लेकिन vendor Plugin को सीधे import करने के बजाय shared speech, realtime transcription, और realtime voice capabilities का उपयोग करता है।
+  <Accordion title="सुविधा Plugin">
+    `voice-call` कॉल ट्रांसपोर्ट, टूल, CLI, रूट और Twilio मीडिया-स्ट्रीम ब्रिजिंग का स्वामी है, लेकिन विक्रेता Plugin को सीधे आयात करने के बजाय साझा स्पीच, रियलटाइम ट्रांसक्रिप्शन और रियलटाइम वॉइस क्षमताओं का उपयोग करता है।
   </Accordion>
 </AccordionGroup>
 
-इच्छित अंतिम स्थिति यह है:
+अभिप्रेत अंतिम स्थिति यह है:
 
-- OpenAI एक ही Plugin में रहता है, भले ही वह text models, speech, images, और future video तक फैला हो
-- दूसरा vendor अपने surface area के लिए ऐसा ही कर सकता है
-- channels को इस बात की परवाह नहीं होती कि provider का स्वामी कौन-सा vendor Plugin है; वे core द्वारा expose किए गए shared capability contract का उपयोग करते हैं
+- किसी विक्रेता की OpenClaw-संबंधी सतह एक ही Plugin में रहती है, भले ही वह टेक्स्ट मॉडल, स्पीच, छवियों और वीडियो तक फैली हो
+- अन्य विक्रेता अपने सतह क्षेत्र के लिए भी ऐसा ही कर सकते हैं
+- चैनलों के लिए यह मायने नहीं रखता कि प्रदाता का स्वामी कौन-सा विक्रेता Plugin है; वे कोर द्वारा प्रदर्शित साझा क्षमता अनुबंध का उपयोग करते हैं
 
 मुख्य अंतर यह है:
 
-- **Plugin** = ownership boundary
-- **capability** = core contract जिसे कई Plugin implement या consume कर सकते हैं
+- **Plugin** = स्वामित्व सीमा
+- **क्षमता** = वह कोर अनुबंध जिसे अनेक Plugin लागू या उपयोग कर सकते हैं
 
-इसलिए यदि OpenClaw video जैसा नया domain जोड़ता है, तो पहला प्रश्न यह नहीं है कि "किस provider को video handling hardcode करनी चाहिए?" पहला प्रश्न यह है कि "core video capability contract क्या है?" जब वह contract मौजूद हो जाता है, vendor Plugin उसके विरुद्ध register कर सकते हैं और channel/feature Plugin उसका उपयोग कर सकते हैं।
+इसलिए यदि OpenClaw वीडियो जैसा कोई नया डोमेन जोड़ता है, तो पहला प्रश्न यह नहीं है कि "किस प्रदाता को वीडियो हैंडलिंग हार्डकोड करनी चाहिए?" पहला प्रश्न यह है कि "कोर वीडियो क्षमता अनुबंध क्या है?" वह अनुबंध उपलब्ध होने के बाद, विक्रेता Plugin उसके अनुरूप पंजीकरण कर सकते हैं और चैनल/सुविधा Plugin उसका उपयोग कर सकते हैं।
 
-यदि capability अभी मौजूद नहीं है, तो सही कदम आमतौर पर यह है:
+यदि क्षमता अभी मौजूद नहीं है, तो सामान्यतः सही कदम यह है:
 
 <Steps>
   <Step title="क्षमता परिभाषित करें">
-    गायब capability को core में define करें।
+    अनुपलब्ध क्षमता को कोर में परिभाषित करें।
   </Step>
-  <Step title="SDK के माध्यम से expose करें">
-    इसे plugin API/runtime के माध्यम से typed तरीके से expose करें।
+  <Step title="SDK के माध्यम से प्रदर्शित करें">
+    उसे Plugin API/रनटाइम के माध्यम से टाइप किए गए ढंग से प्रदर्शित करें।
   </Step>
-  <Step title="Consumers wire करें">
-    channels/features को उस capability के विरुद्ध wire करें।
+  <Step title="उपभोक्ताओं को जोड़ें">
+    चैनलों/सुविधाओं को उस क्षमता से जोड़ें।
   </Step>
-  <Step title="Vendor implementations">
-    vendor Plugin को implementations register करने दें।
+  <Step title="विक्रेता कार्यान्वयन">
+    विक्रेता Plugin को कार्यान्वयन पंजीकृत करने दें।
   </Step>
 </Steps>
 
-यह स्वामित्व को स्पष्ट रखता है और ऐसे core behavior से बचाता है जो किसी एक vendor या one-off plugin-specific code path पर निर्भर हो।
+इससे स्वामित्व स्पष्ट रहता है और साथ ही ऐसा कोर व्यवहार टलता है जो किसी एक विक्रेता या एकबारगी Plugin-विशिष्ट कोड पाथ पर निर्भर हो।
 
-### क्षमता layering
+### क्षमता स्तरीकरण
 
-Code कहां होना चाहिए, यह तय करते समय इस mental model का उपयोग करें:
+कोड कहाँ होना चाहिए, इसका निर्णय लेते समय इस मानसिक मॉडल का उपयोग करें:
 
 <Tabs>
-  <Tab title="Core capability layer">
-    साझा orchestration, policy, fallback, config merge rules, delivery semantics, और typed contracts।
+  <Tab title="कोर क्षमता स्तर">
+    साझा ऑर्केस्ट्रेशन, नीति, फ़ॉलबैक, कॉन्फ़िग मर्ज नियम, डिलीवरी अर्थविज्ञान और टाइप किए गए अनुबंध।
   </Tab>
-  <Tab title="Vendor plugin layer">
-    Vendor-specific APIs, auth, model catalogs, speech synthesis, image generation, future video backends, usage endpoints।
+  <Tab title="विक्रेता Plugin स्तर">
+    विक्रेता-विशिष्ट API, प्रमाणीकरण, मॉडल कैटलॉग, स्पीच सिंथेसिस, छवि निर्माण, वीडियो बैकएंड और उपयोग एंडपॉइंट।
   </Tab>
-  <Tab title="Channel/feature plugin layer">
-    Slack/Discord/voice-call/etc. integration जो core capabilities का उपयोग करता है और उन्हें किसी surface पर प्रस्तुत करता है।
+  <Tab title="चैनल/सुविधा Plugin स्तर">
+    Discord/Slack/वॉइस-कॉल/आदि एकीकरण, जो कोर क्षमताओं का उपयोग करता है और उन्हें किसी सतह पर प्रस्तुत करता है।
   </Tab>
 </Tabs>
 
-उदाहरण के लिए, TTS यह shape अपनाता है:
+उदाहरण के लिए, TTS इस संरचना का पालन करता है:
 
-- core reply-time TTS policy, fallback order, prefs, और channel delivery का स्वामी है
-- `openai`, `elevenlabs`, और `microsoft` synthesis implementations के स्वामी हैं
-- `voice-call` telephony TTS runtime helper का उपयोग करता है
+- कोर उत्तर-समय TTS नीति, फ़ॉलबैक क्रम, प्राथमिकताओं और चैनल डिलीवरी का स्वामी है
+- `elevenlabs`, `google`, `microsoft`, और `openai` सिंथेसिस कार्यान्वयनों के स्वामी हैं
+- `voice-call` टेलीफ़ोनी TTS रनटाइम हेल्पर का उपयोग करता है
 
-Future capabilities के लिए भी इसी pattern को प्राथमिकता दी जानी चाहिए।
+भविष्य की क्षमताओं के लिए भी इसी पैटर्न को प्राथमिकता दी जानी चाहिए।
 
-### Multi-capability company Plugin उदाहरण
+### बहु-क्षमता कंपनी Plugin का उदाहरण
 
-Company Plugin को बाहर से cohesive महसूस होना चाहिए। यदि OpenClaw के पास models, speech, realtime transcription, realtime voice, media understanding, image generation, video generation, web fetch, और web search के लिए shared contracts हैं, तो कोई vendor अपने सभी surfaces का स्वामी एक ही जगह हो सकता है:
+किसी कंपनी का Plugin बाहर से सुसंगत प्रतीत होना चाहिए। यदि OpenClaw के पास मॉडल, स्पीच, रियलटाइम ट्रांसक्रिप्शन, रियलटाइम वॉइस, मीडिया समझ, छवि निर्माण, वीडियो निर्माण, वेब फ़ेच और वेब खोज के लिए साझा अनुबंध हैं, तो कोई विक्रेता अपनी सभी सतहों का स्वामित्व एक ही स्थान पर रख सकता है:
 
 ```ts
 import type { OpenClawPluginDefinition } from "openclaw/plugin-sdk/plugin-entry";
@@ -327,6 +329,7 @@ import {
   describeImageWithModel,
   transcribeOpenAiCompatibleAudio,
 } from "openclaw/plugin-sdk/media-understanding";
+import { createPluginBackedWebSearchProvider } from "openclaw/plugin-sdk/provider-web-search";
 
 const plugin: OpenClawPluginDefinition = {
   id: "exampleai",
@@ -334,12 +337,12 @@ const plugin: OpenClawPluginDefinition = {
   register(api) {
     api.registerProvider({
       id: "exampleai",
-      // auth/model catalog/runtime hooks
+      // प्रमाणीकरण/मॉडल कैटलॉग/रनटाइम हुक
     });
 
     api.registerSpeechProvider({
       id: "exampleai",
-      // vendor speech config — implement the SpeechProviderPlugin interface directly
+      // विक्रेता स्पीच कॉन्फ़िग — SpeechProviderPlugin इंटरफ़ेस को सीधे लागू करें
     });
 
     api.registerMediaUnderstandingProvider({
@@ -347,16 +350,14 @@ const plugin: OpenClawPluginDefinition = {
       capabilities: ["image", "audio", "video"],
       async describeImage(req) {
         return describeImageWithModel({
+          ...req,
           provider: "exampleai",
-          model: req.model,
-          input: req.input,
         });
       },
       async transcribeAudio(req) {
         return transcribeOpenAiCompatibleAudio({
+          ...req,
           provider: "exampleai",
-          model: req.model,
-          input: req.input,
         });
       },
     });
@@ -364,7 +365,7 @@ const plugin: OpenClawPluginDefinition = {
     api.registerWebSearchProvider(
       createPluginBackedWebSearchProvider({
         id: "exampleai-search",
-        // credential + fetch logic
+        // क्रेडेंशियल + फ़ेच तर्क
       }),
     );
   },
@@ -373,60 +374,60 @@ const plugin: OpenClawPluginDefinition = {
 export default plugin;
 ```
 
-महत्व exact helper names का नहीं है। Shape मायने रखता है:
+सटीक हेल्पर नाम महत्वपूर्ण नहीं हैं। संरचना महत्वपूर्ण है:
 
-- एक Plugin vendor surface का स्वामी है
-- core फिर भी capability contracts का स्वामी है
-- channels और feature Plugin `api.runtime.*` helpers का उपयोग करते हैं, vendor code का नहीं
-- contract tests assert कर सकते हैं कि Plugin ने वे capabilities register की हैं जिनका वह स्वामी होने का दावा करता है
+- एक Plugin विक्रेता सतह का स्वामी है
+- कोर अब भी क्षमता अनुबंधों का स्वामी है
+- चैनल और सुविधा Plugin विक्रेता कोड के बजाय `api.runtime.*` हेल्पर का उपयोग करते हैं
+- अनुबंध परीक्षण पुष्टि कर सकते हैं कि Plugin ने उन क्षमताओं को पंजीकृत किया है जिनका वह स्वामी होने का दावा करता है
 
-### क्षमता उदाहरण: video understanding
+### क्षमता का उदाहरण: वीडियो समझ
 
-OpenClaw पहले से image/audio/video understanding को एक साझा capability मानता है। वही ownership model वहां लागू होता है:
+OpenClaw पहले से ही छवि/ऑडियो/वीडियो समझ को एक साझा क्षमता मानता है। वही स्वामित्व मॉडल वहाँ भी लागू होता है:
 
 <Steps>
-  <Step title="Core contract define करता है">
-    Core media-understanding contract define करता है।
+  <Step title="कोर अनुबंध परिभाषित करता है">
+    कोर मीडिया-समझ अनुबंध परिभाषित करता है।
   </Step>
-  <Step title="Vendor Plugin register करते हैं">
-    Vendor Plugin लागू होने पर `describeImage`, `transcribeAudio`, और `describeVideo` register करते हैं।
+  <Step title="विक्रेता Plugin पंजीकृत होते हैं">
+    विक्रेता Plugin लागू होने पर `describeImage`, `transcribeAudio`, और `describeVideo` पंजीकृत करते हैं।
   </Step>
-  <Step title="Consumers shared behavior का उपयोग करते हैं">
-    Channels और feature Plugin vendor code से सीधे wire करने के बजाय shared core behavior का उपयोग करते हैं।
+  <Step title="उपभोक्ता साझा व्यवहार का उपयोग करते हैं">
+    चैनल और सुविधा Plugin विक्रेता कोड से सीधे जुड़ने के बजाय साझा कोर व्यवहार का उपयोग करते हैं।
   </Step>
 </Steps>
 
-यह core में किसी एक provider की video assumptions bake करने से बचाता है। Plugin vendor surface का स्वामी है; core capability contract और fallback behavior का स्वामी है।
+इससे किसी एक प्रदाता की वीडियो संबंधी धारणाएँ कोर में अंतर्निहित नहीं होतीं। विक्रेता सतह का स्वामित्व Plugin के पास होता है; क्षमता अनुबंध और फ़ॉलबैक व्यवहार का स्वामित्व कोर के पास होता है।
 
-Video generation पहले से इसी sequence का उपयोग करता है: core typed capability contract और runtime helper का स्वामी है, और vendor Plugin उसके विरुद्ध `api.registerVideoGenerationProvider(...)` implementations register करते हैं।
+वीडियो जनरेशन पहले से इसी क्रम का उपयोग करता है: टाइप किए गए क्षमता अनुबंध और रनटाइम सहायक का स्वामित्व कोर के पास होता है, और विक्रेता Plugin उसके लिए `api.registerVideoGenerationProvider(...)` कार्यान्वयन पंजीकृत करते हैं।
 
-Concrete rollout checklist चाहिए? [Capability Cookbook](/hi/plugins/adding-capabilities) देखें।
+कोई ठोस रोलआउट चेकलिस्ट चाहिए? [क्षमता कुकबुक](/hi/plugins/adding-capabilities) देखें।
 
-## Contracts और enforcement
+## अनुबंध और प्रवर्तन
 
-Plugin API surface जानबूझकर `OpenClawPluginApi` में typed और centralized है। वह contract supported registration points और runtime helpers define करता है जिन पर कोई Plugin भरोसा कर सकता है।
+Plugin API सतह को जानबूझकर `OpenClawPluginApi` में टाइप और केंद्रीकृत किया गया है। यह अनुबंध समर्थित पंजीकरण बिंदुओं और उन रनटाइम सहायकों को परिभाषित करता है जिन पर कोई Plugin निर्भर रह सकता है।
 
 यह क्यों महत्वपूर्ण है:
 
-- Plugin authors को एक stable internal standard मिलता है
-- core duplicate ownership को reject कर सकता है, जैसे दो Plugin का same provider id register करना
-- startup malformed registration के लिए actionable diagnostics surface कर सकता है
-- contract tests bundled-plugin ownership enforce कर सकते हैं और silent drift रोक सकते हैं
+- Plugin लेखकों को एक स्थिर आंतरिक मानक मिलता है
+- कोर डुप्लिकेट स्वामित्व को अस्वीकार कर सकता है, जैसे दो Plugin द्वारा समान प्रदाता आईडी पंजीकृत करना
+- स्टार्टअप विकृत पंजीकरण के लिए कार्रवाई योग्य निदान दिखा सकता है
+- अनुबंध परीक्षण बंडल किए गए Plugin के स्वामित्व को लागू कर सकते हैं और मौन विचलन रोक सकते हैं
 
-Enforcement की दो layers हैं:
+प्रवर्तन की दो परतें हैं:
 
 <AccordionGroup>
   <Accordion title="रनटाइम पंजीकरण प्रवर्तन">
-    Plugin रजिस्ट्री Plugins लोड होते समय पंजीकरणों को सत्यापित करती है। उदाहरण: डुप्लीकेट प्रोवाइडर ids, डुप्लीकेट स्पीच प्रोवाइडर ids, और विकृत पंजीकरण अनिर्धारित व्यवहार के बजाय Plugin डायग्नॉस्टिक्स उत्पन्न करते हैं।
+    Plugin लोड होते समय Plugin रजिस्ट्री पंजीकरणों को सत्यापित करती है। उदाहरण: डुप्लिकेट प्रदाता आईडी, डुप्लिकेट वाक् प्रदाता आईडी, और विकृत पंजीकरण अपरिभाषित व्यवहार के बजाय Plugin निदान उत्पन्न करते हैं।
   </Accordion>
   <Accordion title="अनुबंध परीक्षण">
-    परीक्षण रन के दौरान बंडल किए गए Plugins को अनुबंध रजिस्ट्रियों में कैप्चर किया जाता है ताकि OpenClaw स्वामित्व को स्पष्ट रूप से सत्यापित कर सके। आज इसका उपयोग मॉडल प्रोवाइडर्स, स्पीच प्रोवाइडर्स, वेब सर्च प्रोवाइडर्स, और बंडल किए गए पंजीकरण स्वामित्व के लिए किया जाता है।
+    परीक्षण चलने के दौरान बंडल किए गए Plugin को अनुबंध रजिस्ट्रियों में दर्ज किया जाता है, ताकि OpenClaw स्वामित्व की स्पष्ट रूप से पुष्टि कर सके। वर्तमान में इसका उपयोग मॉडल प्रदाताओं, वाक् प्रदाताओं, वेब खोज प्रदाताओं और बंडल किए गए पंजीकरण के स्वामित्व के लिए होता है।
   </Accordion>
 </AccordionGroup>
 
-व्यावहारिक प्रभाव यह है कि OpenClaw पहले से जानता है कि कौन सा Plugin किस सतह का स्वामी है। इससे कोर और चैनल सहजता से संयोजित हो पाते हैं, क्योंकि स्वामित्व अंतर्निहित होने के बजाय घोषित, टाइप किया हुआ, और परीक्षण योग्य होता है।
+इसका व्यावहारिक प्रभाव यह है कि OpenClaw को पहले से पता होता है कि किस सतह का स्वामित्व किस Plugin के पास है। इससे कोर और चैनल सहजता से संयोजित हो पाते हैं, क्योंकि स्वामित्व निहित होने के बजाय घोषित, टाइप किया हुआ और परीक्षण योग्य होता है।
 
-### अनुबंध में क्या होना चाहिए
+### अनुबंध में क्या शामिल होना चाहिए
 
 <Tabs>
   <Tab title="अच्छे अनुबंध">
@@ -434,58 +435,58 @@ Enforcement की दो layers हैं:
     - छोटे
     - क्षमता-विशिष्ट
     - कोर के स्वामित्व वाले
-    - कई Plugins द्वारा पुन: उपयोग योग्य
-    - चैनल/फीचर द्वारा वेंडर जानकारी के बिना उपयोग योग्य
+    - कई Plugin द्वारा पुनः उपयोग योग्य
+    - विक्रेता की जानकारी के बिना चैनलों/सुविधाओं द्वारा उपयोग योग्य
 
   </Tab>
   <Tab title="खराब अनुबंध">
-    - कोर में छिपी वेंडर-विशिष्ट नीति
-    - एकबारगी Plugin एस्केप हैच जो रजिस्ट्री को बायपास करते हैं
-    - चैनल कोड का सीधे किसी वेंडर इम्प्लीमेंटेशन में पहुंचना
+    - कोर में छिपी विक्रेता-विशिष्ट नीति
+    - रजिस्ट्री को दरकिनार करने वाले एकबारगी Plugin निकास मार्ग
+    - विक्रेता कार्यान्वयन तक सीधे पहुँचने वाला चैनल कोड
     - तदर्थ रनटाइम ऑब्जेक्ट जो `OpenClawPluginApi` या `api.runtime` का हिस्सा नहीं हैं
 
   </Tab>
 </Tabs>
 
-संदेह होने पर, अमूर्तन स्तर बढ़ाएँ: पहले क्षमता परिभाषित करें, फिर Plugins को उसमें प्लग इन करने दें।
+संदेह होने पर अमूर्तन का स्तर बढ़ाएँ: पहले क्षमता परिभाषित करें, फिर Plugin को उससे जुड़ने दें।
 
 ## निष्पादन मॉडल
 
-नेटिव OpenClaw Plugins Gateway के साथ **इन-प्रोसेस** चलते हैं। वे सैंडबॉक्स्ड नहीं होते। लोड किए गए नेटिव Plugin की प्रक्रिया-स्तरीय विश्वास सीमा कोर कोड जैसी ही होती है।
+मूल OpenClaw Plugin Gateway के साथ **प्रक्रिया के भीतर** चलते हैं। वे सैंडबॉक्स किए हुए नहीं हैं। लोड किए गए मूल Plugin की प्रक्रिया-स्तरीय विश्वास सीमा कोर कोड के समान होती है।
 
 <Warning>
-नेटिव Plugin के निहितार्थ: कोई Plugin टूल्स, नेटवर्क हैंडलर्स, हुक्स, और सेवाएँ पंजीकृत कर सकता है; Plugin बग gateway को क्रैश या अस्थिर कर सकता है; और दुर्भावनापूर्ण नेटिव Plugin OpenClaw प्रक्रिया के अंदर मनमाने कोड निष्पादन के बराबर है।
+मूल Plugin के निहितार्थ: कोई Plugin टूल, नेटवर्क हैंडलर, हुक और सेवाएँ पंजीकृत कर सकता है; Plugin की कोई त्रुटि Gateway को क्रैश या अस्थिर कर सकती है; और कोई दुर्भावनापूर्ण मूल Plugin OpenClaw प्रक्रिया के भीतर मनमाना कोड निष्पादन करने के समान है।
 </Warning>
 
-संगत बंडल डिफॉल्ट रूप से अधिक सुरक्षित होते हैं, क्योंकि OpenClaw वर्तमान में उन्हें मेटाडेटा/कंटेंट पैक मानता है। मौजूदा रिलीज में, इसका अर्थ मुख्य रूप से बंडल किए गए Skills है।
+संगत बंडल डिफ़ॉल्ट रूप से अधिक सुरक्षित होते हैं, क्योंकि OpenClaw वर्तमान में उन्हें मेटाडेटा/कंटेंट पैक मानता है। मौजूदा रिलीज़ में इसका अर्थ मुख्यतः बंडल किए गए Skills हैं।
 
-बंडल में शामिल नहीं किए गए Plugins के लिए अनुमति-सूचियों और स्पष्ट install/load पथों का उपयोग करें। वर्कस्पेस Plugins को विकास-समय का कोड मानें, उत्पादन डिफॉल्ट नहीं।
+बंडल न किए गए Plugin के लिए अनुमति-सूचियों और स्पष्ट इंस्टॉल/लोड पथों का उपयोग करें। वर्कस्पेस Plugin को डेवलपमेंट-समय का कोड मानें, प्रोडक्शन डिफ़ॉल्ट नहीं।
 
-बंडल किए गए वर्कस्पेस पैकेज नामों के लिए, Plugin id को npm नाम में एंकर रखें: डिफॉल्ट रूप से `@openclaw/<id>`, या स्वीकृत टाइप किया हुआ suffix जैसे `-provider`, `-plugin`, `-speech`, `-sandbox`, या `-media-understanding` जब पैकेज जानबूझकर संकीर्ण Plugin भूमिका उजागर करता है।
+बंडल किए गए वर्कस्पेस पैकेज नामों के लिए Plugin आईडी को npm नाम से संबद्ध रखें: डिफ़ॉल्ट रूप से `@openclaw/<id>`, या जब पैकेज जानबूझकर अधिक सीमित Plugin भूमिका उपलब्ध कराता हो, तब `-provider`, `-plugin`, `-speech`, `-sandbox`, या `-media-understanding` जैसे अनुमोदित टाइप किए हुए प्रत्यय का उपयोग करें।
 
 <Note>
-**विश्वास नोट:** `plugins.allow` **Plugin ids** पर भरोसा करता है, स्रोत provenance पर नहीं। जब उसी id वाला वर्कस्पेस Plugin सक्षम/अनुमति-सूचीबद्ध होता है, तो वह जानबूझकर उसी id वाले बंडल किए गए Plugin की कॉपी को shadow करता है। यह स्थानीय विकास, पैच परीक्षण, और hotfixes के लिए सामान्य और उपयोगी है। बंडल किए गए Plugin का विश्वास स्रोत snapshot से तय होता है — लोड समय पर डिस्क पर मौजूद manifest और कोड से — install metadata से नहीं। दूषित या प्रतिस्थापित install record, वास्तविक स्रोत के दावे से आगे किसी बंडल किए गए Plugin की trust surface को चुपचाप विस्तृत नहीं कर सकता।
+**विश्वास संबंधी टिप्पणी:** `plugins.allow` **Plugin आईडी** पर विश्वास करता है, स्रोत की उत्पत्ति पर नहीं। किसी बंडल किए गए Plugin के समान आईडी वाला वर्कस्पेस Plugin सक्षम/अनुमति-सूचीबद्ध होने पर जानबूझकर बंडल की गई प्रति को प्रतिस्थापित करता है। यह स्थानीय डेवलपमेंट, पैच परीक्षण और हॉटफ़िक्स के लिए सामान्य और उपयोगी है। बंडल किए गए Plugin का विश्वास स्रोत स्नैपशॉट—लोड के समय डिस्क पर मौजूद मैनिफ़ेस्ट और कोड—से निर्धारित होता है, न कि इंस्टॉल मेटाडेटा से। कोई दूषित या प्रतिस्थापित इंस्टॉल रिकॉर्ड बंडल किए गए Plugin की विश्वास सतह को वास्तविक स्रोत द्वारा किए गए दावे से आगे मौन रूप से विस्तृत नहीं कर सकता।
 </Note>
 
 ## निर्यात सीमा
 
-OpenClaw क्षमताएँ निर्यात करता है, इम्प्लीमेंटेशन सुविधा नहीं।
+OpenClaw क्षमताएँ निर्यात करता है, कार्यान्वयन की सुविधाएँ नहीं।
 
-क्षमता पंजीकरण को सार्वजनिक रखें। गैर-अनुबंध helper exports को कम करें:
+क्षमता पंजीकरण को सार्वजनिक रखें। गैर-अनुबंध सहायक निर्यात हटाएँ:
 
-- बंडल किए गए Plugin-विशिष्ट helper subpaths
-- रनटाइम plumbing subpaths जो सार्वजनिक API के रूप में अभिप्रेत नहीं हैं
-- वेंडर-विशिष्ट सुविधा helpers
-- setup/onboarding helpers जो इम्प्लीमेंटेशन विवरण हैं
+- बंडल किए गए Plugin-विशिष्ट सहायक उपपथ
+- सार्वजनिक API के रूप में अभिप्रेत न होने वाले रनटाइम प्लंबिंग उपपथ
+- विक्रेता-विशिष्ट सुविधा सहायक
+- कार्यान्वयन विवरण वाले सेटअप/ऑनबोर्डिंग सहायक
 
-आरक्षित बंडल किए गए Plugin helper subpaths को जनरेट किए गए SDK export map से हटा दिया गया है। स्वामी-विशिष्ट helpers को स्वामी Plugin package के अंदर रखें; केवल पुन: उपयोग योग्य host व्यवहार को generic SDK अनुबंधों जैसे `plugin-sdk/gateway-runtime`, `plugin-sdk/security-runtime`, और `plugin-sdk/plugin-config-runtime` में promote करें।
+आरक्षित बंडल किए गए Plugin सहायक उपपथ जनरेट किए गए SDK निर्यात मानचित्र से हटा दिए गए हैं। स्वामी-विशिष्ट सहायकों को स्वामी Plugin पैकेज के भीतर रखें; केवल पुनः उपयोग योग्य होस्ट व्यवहार को `plugin-sdk/gateway-runtime`, `plugin-sdk/security-runtime`, और `plugin-sdk/plugin-config-runtime` जैसे सामान्य SDK अनुबंधों में उन्नत करें।
 
-## आंतरिक विवरण और संदर्भ
+## आंतरिक संरचना और संदर्भ
 
-लोड pipeline, रजिस्ट्री मॉडल, प्रोवाइडर रनटाइम hooks, Gateway HTTP routes, message tool schemas, channel target resolution, provider catalogs, context engine plugins, और नई क्षमता जोड़ने की गाइड के लिए, [Plugin architecture internals](/hi/plugins/architecture-internals) देखें।
+लोड पाइपलाइन, रजिस्ट्री मॉडल, प्रदाता रनटाइम हुक, Gateway HTTP रूट, संदेश टूल स्कीमा, चैनल लक्ष्य समाधान, प्रदाता कैटलॉग, संदर्भ इंजन Plugin और नई क्षमता जोड़ने की मार्गदर्शिका के लिए [Plugin आर्किटेक्चर की आंतरिक संरचना](/hi/plugins/architecture-internals) देखें।
 
 ## संबंधित
 
-- [Plugins बनाना](/hi/plugins/building-plugins)
-- [Plugin manifest](/hi/plugins/manifest)
-- [Plugin SDK setup](/hi/plugins/sdk-setup)
+- [Plugin बनाना](/hi/plugins/building-plugins)
+- [Plugin मैनिफ़ेस्ट](/hi/plugins/manifest)
+- [Plugin SDK सेटअप](/hi/plugins/sdk-setup)

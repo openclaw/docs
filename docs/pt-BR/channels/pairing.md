@@ -1,45 +1,45 @@
 ---
 read_when:
     - Configurando o controle de acesso a mensagens diretas
-    - Pareando um novo Node iOS/Android
-    - Analisando a postura de segurança do OpenClaw
-summary: 'Visão geral do pareamento: aprove quem pode enviar mensagens diretas para você e quais nós podem participar'
+    - Emparelhamento de um novo Node iOS/Android
+    - Análise da postura de segurança do OpenClaw
+summary: 'Visão geral do pareamento: aprove quem pode enviar mensagens diretas para você e quais nodes podem ingressar'
 title: Pareamento
 x-i18n:
-    generated_at: "2026-07-12T14:55:25Z"
+    generated_at: "2026-07-16T12:13:56Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
-    prompt_version: 15
+    prompt_version: 32
     provider: openai
-    source_hash: 32fcb7c9031afc1e18c9288c201b80aeee7ce8b44eb345492101949ec7c91358
+    source_hash: ef58100d222604ab2f0e073c268750eb0996b598dc37b3d4ca20a444d2c69f1e
     source_path: channels/pairing.md
     workflow: 16
 ---
 
-"Emparelhamento" é a etapa explícita de aprovação de acesso do OpenClaw.
-Ele é usado em dois lugares:
+"Pareamento" é a etapa explícita de aprovação de acesso do OpenClaw.
+Ela é usada em dois lugares:
 
-1. **Emparelhamento de MD** (quem tem permissão para falar com o bot)
-2. **Emparelhamento de Node** (quais dispositivos/nós têm permissão para ingressar na rede do Gateway)
+1. **Pareamento de MD** (quem tem permissão para conversar com o bot)
+2. **Pareamento de Node** (quais dispositivos/nodes têm permissão para ingressar na rede do Gateway)
 
 Contexto de segurança: [Segurança](/pt-BR/gateway/security)
 
-## 1) Emparelhamento de MD (acesso a conversas recebidas)
+## 1) Pareamento de MD (acesso a conversas recebidas)
 
-Quando um canal está configurado com a política de MD `pairing`, remetentes desconhecidos recebem um código curto, e suas mensagens **não são processadas** até que você aprove.
+Quando um canal é configurado com a política de MD `pairing`, remetentes desconhecidos recebem um código curto, e a mensagem deles **não é processada** até que seja aprovada.
 
 As políticas padrão de MD estão documentadas em: [Segurança](/pt-BR/gateway/security)
 
-`dmPolicy: "open"` só é público quando a lista efetiva de permissões de MD inclui `"*"`.
-A configuração e a validação exigem esse curinga para configurações públicas abertas. Se o
-estado existente contiver `open` com entradas específicas em `allowFrom`, o runtime continuará
-admitindo somente esses remetentes, e as aprovações no armazenamento de emparelhamento não ampliarão o acesso `open`.
+`dmPolicy: "open"` só é público quando a lista de permissões efetiva de MD inclui `"*"`.
+A configuração e a validação exigem esse curinga para configurações abertas ao público. Se o estado
+existente contiver `open` com entradas concretas em `allowFrom`, o runtime ainda admitirá
+somente esses remetentes, e as aprovações do armazenamento de pareamento não ampliarão o acesso de `open`.
 
-Códigos de emparelhamento:
+Códigos de pareamento:
 
 - 8 caracteres, em maiúsculas, sem caracteres ambíguos (`0O1I`).
-- **Expiram após 1 hora**. O bot só envia a mensagem de emparelhamento quando uma nova solicitação é criada (aproximadamente uma vez por hora por remetente).
-- As solicitações pendentes de emparelhamento de MD são limitadas a **3 por conta de canal**; solicitações adicionais são ignoradas até que uma expire ou seja aprovada.
+- **Expiram após 1 hora**. O bot só envia a mensagem de pareamento quando uma nova solicitação é criada (aproximadamente uma vez por hora para cada remetente).
+- As solicitações pendentes de pareamento de MD são limitadas a **3 por conta de canal**; solicitações adicionais são ignoradas até que uma expire ou seja aprovada.
 
 ### Aprovar um remetente
 
@@ -48,15 +48,15 @@ openclaw pairing list telegram
 openclaw pairing approve telegram <CODE>
 ```
 
-Adicione `--notify` ao comando de aprovação para avisar o solicitante no mesmo canal. Canais com várias contas aceitam `--account <id>`.
+Adicione `--notify` ao comando de aprovação para notificar o solicitante no mesmo canal. Canais com várias contas aceitam `--account <id>`.
 
-Se nenhum proprietário de comandos tiver sido configurado ainda, aprovar um código de emparelhamento de MD também inicializa
+Se ainda não houver um proprietário de comandos configurado, aprovar um código de pareamento de MD também inicializará
 `commands.ownerAllowFrom` com o remetente aprovado, como `telegram:123456789`.
-Isso fornece às configurações iniciais um proprietário explícito para comandos privilegiados e solicitações de aprovação
-de execução. Depois que um proprietário passa a existir, aprovações de emparelhamento posteriores concedem apenas acesso
-a MD; elas não adicionam mais proprietários.
+Isso fornece às configurações iniciais um proprietário explícito para comandos privilegiados e solicitações
+de aprovação de execução. Depois que existir um proprietário, aprovações de pareamento posteriores concederão apenas
+acesso a MD; elas não adicionarão outros proprietários.
 
-Canais compatíveis (qualquer plugin de canal instalado que declare emparelhamento; plugins externos como `openclaw-weixin` podem adicionar outros): `discord`, `feishu`, `googlechat`, `imessage`, `irc`, `line`, `matrix`, `mattermost`, `msteams`, `nextcloud-talk`, `nostr`, `signal`, `slack`, `sms`, `synology-chat`, `telegram`, `twitch`, `whatsapp`, `zalo`, `zalouser`.
+Canais compatíveis (qualquer Plugin de canal instalado que declare pareamento; plugins externos como `openclaw-weixin` podem adicionar outros): `discord`, `feishu`, `googlechat`, `imessage`, `irc`, `line`, `matrix`, `mattermost`, `msteams`, `nextcloud-talk`, `nostr`, `signal`, `slack`, `sms`, `synology-chat`, `telegram`, `twitch`, `whatsapp`, `zalo`, `zalouser`.
 
 ### Grupos reutilizáveis de remetentes
 
@@ -89,95 +89,110 @@ Os grupos de acesso estão documentados em detalhes aqui: [Grupos de acesso](/pt
 
 ### Onde o estado fica armazenado
 
-Armazenado em `~/.openclaw/credentials/`:
+Armazenado no banco de dados SQLite de estado compartilhado em
+`~/.openclaw/state/openclaw.sqlite`:
 
-- Solicitações pendentes: `<channel>-pairing.json`
-- Armazenamento da lista de permissões aprovada: `<channel>-<accountId>-allowFrom.json` (as aprovações da
-  conta padrão usam `<channel>-default-allowFrom.json`)
+- solicitações pendentes em `channel_pairing_requests`
+- remetentes aprovados em `channel_pairing_allow_entries`
 
-Comportamento do escopo de contas:
+Comportamento do escopo por conta:
 
-- Contas não padrão leem/gravam somente o arquivo de lista de permissões de seu próprio escopo.
-- A conta padrão também continua respeitando um arquivo legado sem escopo `<channel>-allowFrom.json`
-  de instalações mais antigas; as entradas dos dois arquivos são mescladas durante a leitura.
+- cada solicitação e remetente aprovado é identificado por canal e conta
+- o runtime lê apenas as linhas canônicas do SQLite; ele não mescla arquivos legados
 
-Trate esses arquivos como confidenciais (eles controlam o acesso ao seu assistente).
+Gateways mais antigos gravavam `<channel>-pairing.json` e
+`<channel>-<accountId>-allowFrom.json` em `~/.openclaw/credentials/`.
+A migração na inicialização e `openclaw doctor --fix` importam esses arquivos para o SQLite e
+removem cada origem após uma importação bem-sucedida. Trate o banco de dados SQLite como
+confidencial, pois essas linhas controlam o acesso ao seu assistente.
 
 <Note>
-O armazenamento da lista de permissões de emparelhamento serve para o acesso a MD. A autorização de grupos é separada.
-Aprovar um código de emparelhamento de MD não permite automaticamente que esse remetente execute
-comandos de grupo ou controle o bot em grupos. A inicialização do primeiro proprietário é um estado de configuração
-separado em `commands.ownerAllowFrom`, e a entrega de conversas em grupo continua seguindo as
+O armazenamento da lista de permissões de pareamento destina-se ao acesso a MD. A autorização de grupos é separada.
+Aprovar um código de pareamento de MD não permite automaticamente que esse remetente execute
+comandos de grupo nem controle o bot em grupos. A inicialização do primeiro proprietário é um estado de configuração
+separado em `commands.ownerAllowFrom`, e a entrega em conversas de grupo ainda segue as
 listas de permissões de grupo do canal (por exemplo, `groupAllowFrom`, `groups` ou substituições por grupo
 ou por tópico, dependendo do canal).
 </Note>
 
-## 2) Emparelhamento de dispositivos Node (Nodes iOS/Android/macOS/headless)
+## 2) Pareamento de dispositivo Node (nodes iOS/Android/macOS/headless)
 
-Os Nodes se conectam ao Gateway como **dispositivos** com `role: node`. O Gateway
-cria uma solicitação de emparelhamento de dispositivo que precisa ser aprovada.
+Os nodes se conectam ao Gateway como **dispositivos** com `role: node`. O Gateway
+cria uma solicitação de pareamento de dispositivo que precisa ser aprovada.
 
-### Emparelhar pela interface de controle (recomendado)
+### Parear pela interface de controle (recomendado)
 
-Use uma sessão já conectada da interface de controle com acesso `operator.admin`:
+Use uma sessão já conectada da interface de controle com acesso a `operator.admin`:
 
-1. Abra a interface de controle e selecione **Nodes**.
+1. Abra a interface de controle e acesse **Settings → Devices**.
 2. Na página **Devices**, clique em **Pair mobile device**.
-3. No telefone, abra o aplicativo OpenClaw → **Settings** → **Gateway**.
-4. Escaneie o código QR ou cole o código de configuração e conecte-se.
+3. Mantenha **Full access (recommended)** ou selecione **Limited access** para omitir
+   os controles administrativos do Gateway.
+4. Clique em **Create setup code**.
+5. No telefone, abra o aplicativo OpenClaw → **Settings** → **Gateway**.
+6. Escaneie o código QR ou cole o código de configuração e conecte-se.
 
 Os aplicativos oficiais do OpenClaw para iOS e Android são aprovados automaticamente quando seus
 metadados do código de configuração correspondem. Se **Pending approval** exibir uma solicitação (por
-exemplo, para um cliente não oficial ou metadados incompatíveis), revise sua função e seus
-escopos antes de aprová-la.
+exemplo, para um cliente não oficial ou metadados divergentes), revise a função e
+os escopos antes de aprová-la.
 
 O botão fica desativado quando a sessão atual da interface de controle não tem
 acesso de administrador. Nesse caso, use o fluxo de aprovação pela CLI abaixo no host do Gateway.
 
-### Emparelhar pelo Telegram
+### Parear pelo Telegram
 
-Se você usa o plugin `device-pair`, pode realizar o primeiro emparelhamento de dispositivo inteiramente pelo Telegram:
+Se você usa o Plugin `device-pair`, pode fazer o pareamento inicial do dispositivo inteiramente pelo Telegram:
 
-1. No Telegram, envie uma mensagem ao seu bot: `/pair`
-2. O bot responde com duas mensagens: uma mensagem de instruções e uma mensagem separada com o **código de configuração** (fácil de copiar/colar no Telegram).
+1. No Telegram, envie uma mensagem ao bot: `/pair`
+2. O bot responde com duas mensagens: uma mensagem de instruções e uma mensagem separada com o **código de configuração** (fácil de copiar e colar no Telegram).
 3. No telefone, abra o aplicativo OpenClaw para iOS → Settings → Gateway.
 4. Escaneie o código QR (`/pair qr`) ou cole o código de configuração e conecte-se.
 5. O aplicativo móvel oficial se conecta automaticamente. Se `/pair pending` exibir uma
-   solicitação, revise sua função e seus escopos antes de aprová-la.
+   solicitação, revise a função e os escopos antes de aprová-la.
 
 O código de configuração é uma carga JSON codificada em base64 que contém:
 
 - `url`: a URL WebSocket do Gateway (`ws://...` ou `wss://...`)
 - `urls`: quando disponíveis, as rotas LAN/Tailnet ordenadas que o aplicativo móvel pode tentar
-- `bootstrapToken`: um token de inicialização de uso único para o handshake inicial de emparelhamento; o Gateway o expira após 10 minutos
+- `bootstrapToken`: um token de inicialização de uso único para o handshake inicial de pareamento; o Gateway o invalida após 10 minutos
 
-Execute `/pair cleanup` para invalidar códigos de configuração não utilizados após a conclusão do emparelhamento.
+Execute `/pair cleanup` para invalidar códigos de configuração não utilizados após o término do pareamento.
 
-Esse token de inicialização carrega o perfil integrado de inicialização do emparelhamento:
+Esse token de inicialização carrega o perfil integrado de inicialização de pareamento:
 
-- o perfil de configuração integrado permite apenas a linha de base do novo QR/código de configuração:
-  `node` mais uma transferência limitada de `operator`
-- o token `node` transferido permanece com `scopes: []`
-- o token `operator` transferido é limitado a `operator.approvals`,
-  `operator.read`, `operator.talk.secrets` e `operator.write`
-- `operator.admin` não é concedido pela inicialização via QR/código de configuração; ele exige um
-  fluxo separado de emparelhamento ou token de operador aprovado
-- a rotação/revogação posterior de tokens permanece limitada tanto pelo contrato de função aprovado
-  do dispositivo quanto pelos escopos de operador da sessão chamadora
+- uma configuração segura de `wss://` (ou loopback no mesmo host) usa por padrão `node`, além de acesso
+  nativo móvel completo a `operator`
+- o token `node` transferido permanece `scopes: []`
+- o token `operator` transferido por padrão inclui `operator.admin`,
+  `operator.approvals`, `operator.read`, `operator.talk.secrets` e
+  `operator.write`
+- **Limited access** da interface de controle e `openclaw qr --limited` omitem
+  `operator.admin`, mantendo os outros escopos de operador
+- a configuração de `ws://` em texto simples na LAN usa automaticamente o mesmo perfil limitado;
+  configure `wss://` ou o Tailscale Serve e gere um novo código para obter acesso completo
+- a rotação/revogação posterior do token permanece limitada tanto pelo contrato de função aprovado
+  do dispositivo quanto pelos escopos de operador da sessão que fez a chamada
 
-Trate o código de configuração como uma senha enquanto ele estiver válido.
+Trate o código de configuração como uma senha enquanto ele for válido.
 
-Para emparelhamento móvel via Tailscale, público ou outro acesso remoto, use Tailscale Serve/Funnel
-ou outra URL `wss://` do Gateway. Códigos de configuração `ws://` sem criptografia são aceitos apenas
-para loopback, endereços LAN privados, hosts Bonjour `.local` e o host do emulador
-Android. Endereços CGNAT da Tailnet, nomes `.ts.net` e hosts públicos continuam
-falhando de forma segura antes da emissão do QR/código de configuração.
+As páginas **Settings → Gateway** do iOS e Android mostram acesso **Full** ou **Limited**.
+Para atualizar um telefone limitado, primeiro configure uma rota segura de `wss://` ou
+do Tailscale Serve, depois gere um novo código de configuração de acesso completo, escaneie-o ou cole-o
+nessa página de configurações e reconecte-se.
 
-Para URLs de configuração com `gateway.bind=lan`, o OpenClaw detecta raízes HTTPS persistentes do Tailscale Serve
-que encaminham para a porta de loopback do Gateway ativo e as anuncia
-junto com a rota LAN. O comando de configuração adiciona esse fallback apenas
+Para pareamento móvel pelo Tailscale, público ou outro acesso remoto, use o Tailscale Serve/Funnel
+ou outra URL do Gateway com `wss://`. Códigos de configuração de `ws://` em texto simples são aceitos apenas
+para loopback, endereços de LAN privada, hosts Bonjour `.local` e o host do
+emulador Android. Rotas em texto simples que não sejam de loopback recebem acesso limitado. Endereços
+CGNAT da Tailnet, nomes `.ts.net` e hosts públicos continuam bloqueados por padrão antes
+da emissão do QR/código de configuração.
+
+Para URLs de configuração `gateway.bind=lan`, o OpenClaw detecta raízes HTTPS persistentes do Tailscale Serve
+que encaminham a porta de loopback do Gateway ativo e as anuncia
+junto com a rota de LAN. O comando de configuração adiciona esse fallback apenas
 para `lan`; `custom` e `tailnet` mantêm suas rotas explicitamente anunciadas. O
-aplicativo para iOS testa as rotas anunciadas na ordem e salva o primeiro
+aplicativo para iOS testa as rotas anunciadas em ordem e salva o primeiro
 endpoint acessível.
 
 ### Aprovar um dispositivo Node
@@ -188,25 +203,25 @@ openclaw devices approve <requestId>
 openclaw devices reject <requestId>
 ```
 
-Quando uma aprovação explícita é negada porque a sessão do dispositivo emparelhado que está aprovando
-foi aberta somente com o escopo de emparelhamento, a CLI tenta novamente a mesma solicitação com
-`operator.admin`. Isso permite que um dispositivo emparelhado existente com capacidade de administrador recupere um novo
-emparelhamento da interface de controle/navegador sem editar manualmente o armazenamento de emparelhamento. O
+Quando uma aprovação explícita é negada porque a sessão do dispositivo pareado
+que está aprovando foi aberta apenas com o escopo de pareamento, a CLI tenta novamente a mesma solicitação com
+`operator.admin`. Isso permite que um dispositivo pareado existente com capacidade administrativa recupere um novo
+pareamento da interface de controle/navegador sem editar manualmente o armazenamento de pareamento. O
 Gateway ainda valida a nova tentativa de conexão; tokens que não conseguem se autenticar
-com `operator.admin` permanecem bloqueados.
+com `operator.admin` continuam bloqueados.
 
-Se o mesmo dispositivo tentar novamente com dados de autenticação diferentes (por exemplo, outra
-função, outros escopos ou outra chave pública), a solicitação pendente anterior será substituída, e um novo
+Se o mesmo dispositivo tentar novamente com detalhes de autenticação diferentes (por exemplo, outra
+função, outros escopos ou outra chave pública), a solicitação pendente anterior será substituída e um novo
 `requestId` será criado.
 
 <Note>
-Um dispositivo já emparelhado não recebe acesso mais amplo silenciosamente. Se ele se reconectar solicitando mais escopos ou uma função mais ampla, o OpenClaw mantém a aprovação existente inalterada e cria uma nova solicitação pendente de ampliação de acesso. Use `openclaw devices list` para comparar o acesso atualmente aprovado com o novo acesso solicitado antes de aprovar.
+Um dispositivo já pareado não obtém acesso mais amplo silenciosamente. Se ele se reconectar solicitando mais escopos ou uma função mais ampla, o OpenClaw manterá a aprovação existente sem alterações e criará uma nova solicitação pendente de atualização. Use `openclaw devices list` para comparar o acesso atualmente aprovado com o novo acesso solicitado antes de aprovar.
 </Note>
 
-### Aprovação automática opcional de Nodes por CIDR confiável
+### Aprovação automática opcional de nodes por CIDR confiável
 
-O emparelhamento de dispositivos permanece manual por padrão. Para redes de Nodes rigidamente controladas,
-você pode habilitar a aprovação automática do primeiro emparelhamento de Node com CIDRs explícitos ou IPs exatos:
+O pareamento de dispositivos permanece manual por padrão. Para redes de nodes estritamente controladas,
+é possível habilitar a aprovação automática do primeiro pareamento de node com CIDRs ou IPs exatos explícitos:
 
 ```json5
 {
@@ -220,17 +235,17 @@ você pode habilitar a aprovação automática do primeiro emparelhamento de Nod
 }
 ```
 
-Isso se aplica somente a novas solicitações de emparelhamento com `role: node` e sem
+Isso se aplica apenas a novas solicitações de pareamento `role: node` sem
 escopos solicitados. Clientes de operador, navegador, interface de controle e WebChat ainda exigem aprovação
 manual. Alterações de função, escopo, metadados e chave pública ainda exigem aprovação
 manual.
 
-### Armazenamento do estado de emparelhamento de Nodes
+### Armazenamento do estado de pareamento de Node
 
-Armazenado no banco de dados de estado SQLite compartilhado em `~/.openclaw/state/openclaw.sqlite`:
+Armazenado no banco de dados SQLite de estado compartilhado em `~/.openclaw/state/openclaw.sqlite`:
 
-- solicitações pendentes de emparelhamento de dispositivos (de curta duração; expiram após 5 minutos)
-- dispositivos emparelhados + tokens
+- solicitações pendentes de pareamento de dispositivos (de curta duração; expiram após 5 minutos)
+- dispositivos pareados + tokens
 
 Gateways mais antigos mantinham esse estado em `~/.openclaw/devices/*.json`; esses arquivos são
 importados para o SQLite na inicialização do Gateway e arquivados com o sufixo `.migrated`.
@@ -238,13 +253,13 @@ importados para o SQLite na inicialização do Gateway e arquivados com o sufixo
 ### Observações
 
 - A API `node.pair.*` (CLI: `openclaw nodes pending|approve|reject|remove|rename`) gerencia
-  as aprovações de recursos de Nodes armazenadas nos mesmos registros de dispositivos emparelhados. Nodes WS
-  ainda exigem emparelhamento de dispositivo; consulte [Emparelhamento de Nodes](/pt-BR/gateway/pairing).
-- O registro de emparelhamento é a fonte durável da verdade para funções aprovadas. Tokens de
+  as aprovações de recursos do Node armazenadas nos mesmos registros de dispositivos pareados. Nodes WS
+  ainda exigem pareamento de dispositivo; consulte [Pareamento de Node](/pt-BR/gateway/pairing).
+- O registro de pareamento é a fonte da verdade durável para as funções aprovadas. Tokens de
   dispositivos ativos permanecem limitados a esse conjunto de funções aprovado; uma entrada de token isolada
   fora das funções aprovadas não cria novo acesso.
 
-## Documentos relacionados
+## Documentação relacionada
 
 - Modelo de segurança + injeção de prompt: [Segurança](/pt-BR/gateway/security)
 - Atualização segura (execute o doctor): [Atualização](/pt-BR/install/updating)

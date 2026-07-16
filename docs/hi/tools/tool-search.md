@@ -1,130 +1,141 @@
 ---
 read_when:
-    - आप चाहते हैं कि OpenClaw एजेंट prompt में हर tool schema जोड़े बिना एक बड़े tool catalog का उपयोग करें
-    - आप OpenClaw tools, MCP tools, और client tools को एक संक्षिप्त runtime सतह के माध्यम से उजागर करना चाहते हैं
-    - आप OpenClaw रन के लिए टूल डिस्कवरी लागू कर रहे हैं या डिबग कर रहे हैं
-summary: 'टूल खोज: बड़े OpenClaw टूल कैटलॉग को खोज, वर्णन, और कॉल के पीछे संक्षिप्त करें'
+    - आप चाहते हैं कि OpenClaw एजेंट हर टूल स्कीमा को प्रॉम्प्ट में जोड़े बिना टूल की एक बड़ी सूची का उपयोग करें
+    - आप OpenClaw टूल्स, MCP टूल्स और क्लाइंट टूल्स को एक संक्षिप्त रनटाइम सतह के माध्यम से उपलब्ध कराना चाहते हैं
+    - आप OpenClaw रन के लिए टूल खोज लागू कर रहे हैं या उसे डीबग कर रहे हैं
+summary: 'टूल खोज: बड़े OpenClaw टूल कैटलॉग को खोज, विवरण और कॉल के पीछे संक्षिप्त करें'
 title: टूल खोज
 x-i18n:
-    generated_at: "2026-06-30T14:06:27Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T17:36:49Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 81036277d763be8040526b42c116b2e503589921a58b3f765ff38670554a751c
+    source_hash: 6608a2de3b8ec03d3bb182d5909bb73429f623af8cebb34bc38856cb9d8b8c32
     source_path: tools/tool-search.md
     workflow: 16
 ---
 
-Tool Search OpenClaw एजेंट रनटाइम की एक प्रयोगात्मक सुविधा है। यह एजेंटों को बड़े टूल कैटलॉग खोजने और कॉल करने का एक
-कॉम्पैक्ट तरीका देता है। यह तब उपयोगी होता है जब रन में
-कई उपलब्ध टूल हों लेकिन मॉडल को संभवतः उनमें से केवल कुछ की ही आवश्यकता हो।
+Tool Search एक प्रयोगात्मक OpenClaw एजेंट रनटाइम सुविधा है। यह एजेंटों को बड़े टूल कैटलॉग खोजने और उनमें मौजूद टूल कॉल करने का एक
+संक्षिप्त तरीका देती है। यह तब उपयोगी होती है जब रन में कई टूल
+उपलब्ध हों, लेकिन मॉडल को उनमें से केवल कुछ की आवश्यकता होने की संभावना हो।
 
-यह पृष्ठ OpenClaw Tool Search का दस्तावेज़ीकरण करता है। यह Codex-native tool
-search या dynamic-tools surface नहीं है। Codex-native code mode, tool search, deferred
-dynamic tools, और nested tool calls स्थिर Codex harness surfaces हैं और
+यह पृष्ठ OpenClaw Tool Search का दस्तावेज़ीकरण करता है। यह Codex-नेटिव टूल
+सर्च या डायनेमिक-टूल्स सरफ़ेस नहीं है। Codex-नेटिव कोड मोड, टूल सर्च, स्थगित
+डायनेमिक टूल और नेस्टेड टूल कॉल स्थिर Codex हार्नेस सरफ़ेस हैं और
 `tools.toolSearch` पर निर्भर नहीं हैं।
 
 OpenClaw रन के लिए सक्षम होने पर, मॉडल को डिफ़ॉल्ट रूप से एक `tool_search_code` टूल
-मिलता है। वह टूल एक अलग-थलग Node
-सबप्रोसेस में `openclaw.tools` ब्रिज के साथ एक छोटा JavaScript body चलाता है:
+और ऐसे सभी डायरेक्ट-ओनली टूल मिलते हैं जिनके संरचित परिणाम संक्षिप्त
+ब्रिज को पार नहीं कर सकते। कोड टूल एक पृथक
+Node सबप्रोसेस में `openclaw.tools` ब्रिज के साथ एक छोटा JavaScript निकाय चलाता है:
 
 ```js
-const hits = await openclaw.tools.search("create a GitHub issue");
+const hits = await openclaw.tools.search("एक GitHub इश्यू बनाएँ");
 const tool = await openclaw.tools.describe(hits[0].id);
 return await openclaw.tools.call(tool.id, {
-  title: "Crash on startup",
-  body: "Steps to reproduce...",
+  title: "स्टार्टअप पर क्रैश",
+  body: "दोबारा उत्पन्न करने के चरण...",
 });
 ```
 
-कैटलॉग में OpenClaw टूल, Plugin टूल, MCP टूल, और
-क्लाइंट-प्रदान किए गए टूल शामिल हो सकते हैं। मॉडल हर पूर्ण स्कीमा को शुरुआत में नहीं देखता।
-इसके बजाय, यह कॉम्पैक्ट descriptor खोजता है, सटीक स्कीमा की
-आवश्यकता होने पर एक चुने हुए टूल का वर्णन करता है, और उस टूल को OpenClaw के माध्यम से कॉल करता है।
+कैटलॉग में कैटलॉग-योग्य OpenClaw टूल, Plugin टूल, MCP
+टूल और क्लाइंट द्वारा दिए गए टूल शामिल हो सकते हैं। मॉडल को प्रत्येक सूचीबद्ध स्कीमा
+पहले से दिखाई नहीं देता। इसके बजाय, यह संक्षिप्त डिस्क्रिप्टर खोजता है, सटीक स्कीमा की आवश्यकता होने पर
+चुने गए एक टूल का विवरण प्राप्त करता है और OpenClaw के माध्यम से उस टूल को कॉल करता है।
+डायरेक्ट-ओनली टूल मॉडल को दिखाई देते रहते हैं और कैटलॉग में नहीं जोड़े जाते।
 
-Codex harness रन को ये प्रयोगात्मक OpenClaw Tool Search
-नियंत्रण नहीं मिलते। OpenClaw उत्पाद क्षमताओं को Codex को dynamic tools के रूप में पास करता है, और
-Codex स्थिर native code mode, native tool search, deferred dynamic
-tools, और nested tool calls का स्वामी है।
+Codex हार्नेस रन को ये प्रयोगात्मक OpenClaw Tool Search
+नियंत्रण नहीं मिलते। OpenClaw उत्पाद क्षमताओं को Codex तक डायनेमिक टूल के रूप में पहुँचाता है और
+स्थिर नेटिव कोड मोड, नेटिव टूल सर्च, स्थगित डायनेमिक
+टूल तथा नेस्टेड टूल कॉल का स्वामित्व Codex के पास होता है।
 
 ## एक टर्न कैसे चलता है
 
-योजना के समय OpenClaw embedded runner रन के लिए प्रभावी कैटलॉग बनाता है:
+योजना बनाते समय OpenClaw एम्बेडेड रनर रन के लिए प्रभावी कैटलॉग
+बनाता है:
 
-1. एजेंट, प्रोफ़ाइल, sandbox, और session के लिए सक्रिय टूल नीति हल करें।
+1. एजेंट, प्रोफ़ाइल, सैंडबॉक्स और सत्र के लिए सक्रिय टूल नीति निर्धारित करें।
 2. योग्य OpenClaw और Plugin टूल सूचीबद्ध करें।
-3. session MCP runtime के माध्यम से योग्य MCP टूल सूचीबद्ध करें।
-4. मौजूदा रन के लिए दिए गए योग्य क्लाइंट टूल जोड़ें।
-5. खोज के लिए कॉम्पैक्ट descriptor इंडेक्स करें।
-6. मॉडल को OpenClaw code bridge, structured fallback tools, या
-   compact directory surface expose करें।
+3. सत्र MCP रनटाइम के माध्यम से योग्य MCP टूल सूचीबद्ध करें।
+4. वर्तमान रन के लिए दिए गए योग्य क्लाइंट टूल जोड़ें।
+5. डायरेक्ट-ओनली टूल को मॉडल के लिए दृश्यमान रखें और शेष
+   कैटलॉग-योग्य टूल के संक्षिप्त डिस्क्रिप्टर इंडेक्स करें।
+6. उन डायरेक्ट-ओनली टूल के साथ OpenClaw कोड ब्रिज, संरचित फ़ॉलबैक टूल या
+   संक्षिप्त डायरेक्टरी सरफ़ेस उपलब्ध कराएँ।
 
-execution time पर हर वास्तविक टूल कॉल OpenClaw पर लौटती है। अलग-थलग Node
-runtime में Plugin implementations, MCP client objects, या secrets नहीं होते।
-`openclaw.tools.call(...)` ब्रिज पार करके Gateway में वापस जाता है, जहाँ
-सामान्य policy, approval, hook, logging, और result handling अभी भी लागू होते हैं।
+निष्पादन के समय प्रत्येक वास्तविक टूल कॉल OpenClaw पर लौटता है। पृथक Node
+रनटाइम में Plugin कार्यान्वयन, MCP क्लाइंट ऑब्जेक्ट या सीक्रेट नहीं होते।
+`openclaw.tools.call(...)` ब्रिज पार करके वापस Gateway में जाता है, जहाँ
+सामान्य नीति, अनुमोदन, हुक, लॉगिंग और परिणाम प्रबंधन अभी भी लागू होते हैं।
 
 ## मोड
 
-`tools.toolSearch` के तीन model-facing मोड हैं:
+`tools.toolSearch` के तीन मॉडल-फ़ेसिंग मोड हैं:
 
-- `code`: `tool_search_code` expose करता है, डिफ़ॉल्ट compact JavaScript bridge।
-- `tools`: code प्राप्त नहीं करने वाले providers के लिए `tool_search`, `tool_describe`, और `tool_call` को plain
-  structured tools के रूप में expose करता है।
-- `directory`: `tool_search`, `tool_describe`, और `tool_call` के साथ-साथ
-  providers के लिए उपलब्ध टूल नामों और विवरणों की एक bounded prompt directory expose करता है
-  जिन्हें हर full schema के बिना टूल नाम देखने चाहिए। OpenClaw
-  मौजूदा टर्न के लिए संभावित या आवश्यक tool schemas का छोटा bounded set भी सीधे expose कर सकता है।
+- `code`: डायरेक्ट-ओनली टूल के साथ डिफ़ॉल्ट संक्षिप्त JavaScript ब्रिज
+  `tool_search_code` उपलब्ध कराता है।
+- `tools`: ऐसे प्रदाताओं के लिए जिन्हें कोड नहीं मिलना चाहिए, डायरेक्ट-ओनली
+  टूल के साथ `tool_search`, `tool_describe` और `tool_call` को सामान्य
+  संरचित टूल के रूप में उपलब्ध कराता है।
+- `directory`: ऐसे प्रदाताओं के लिए जिन्हें प्रत्येक पूर्ण स्कीमा के बिना टूल के नाम दिखने चाहिए,
+  उपलब्ध टूल के नामों और विवरणों की सीमित प्रॉम्प्ट डायरेक्टरी के साथ
+  `tool_search`, `tool_describe` और `tool_call` उपलब्ध कराता है। OpenClaw
+  वर्तमान टर्न के लिए संभावित या आवश्यक टूल स्कीमा का एक छोटा सीमित समूह भी
+  सीधे उपलब्ध करा सकता है। इस मोड में भी डायरेक्ट-ओनली टूल दिखाई देते रहते हैं।
 
-सभी मोड समान policy-filtered catalog और सामान्य OpenClaw execution
-path का उपयोग करते हैं। यदि मौजूदा runtime अलग-थलग Node code-mode child
-process launch नहीं कर सकता, तो डिफ़ॉल्ट `code` mode catalog
-Compaction से पहले `tools` पर fallback करता है। `directory` mode में, client-provided tools मौजूदा रन के लिए सीधे visible रहते हैं, जबकि OpenClaw tools, Plugin tools, और MCP tools को
-directory catalog के पीछे compact किया जा सकता है। exact hidden
-directory name पर direct call execution से पहले उसी authorized catalog से hydrate की जाती है।
+सभी मोड एक ही नीति-फ़िल्टर किए गए कैटलॉग और सामान्य OpenClaw निष्पादन
+पथ का उपयोग करते हैं। `catalogMode: "direct-only"` चिह्नित टूल उस कैटलॉग से बाहर रहते हैं और
+मॉडल को दिखाई देते रहते हैं। यदि वर्तमान रनटाइम पृथक Node कोड-मोड चाइल्ड
+प्रोसेस लॉन्च नहीं कर सकता, तो डिफ़ॉल्ट `code` मोड कैटलॉग
+Compaction से पहले `tools` पर फ़ॉलबैक करता है। `directory` मोड में, क्लाइंट द्वारा दिए गए टूल
+वर्तमान रन के लिए सीधे दिखाई देते रहते हैं, जबकि OpenClaw टूल, Plugin टूल और MCP टूल को
+डायरेक्टरी कैटलॉग के पीछे संक्षिप्त किया जा सकता है। किसी सटीक छिपे हुए
+डायरेक्टरी नाम पर सीधी कॉल को निष्पादन से पहले उसी अधिकृत कैटलॉग से हाइड्रेट किया जाता है।
 
-सभी मोड प्रयोगात्मक हैं। छोटे OpenClaw tool
-catalogs के लिए direct tool exposure को प्राथमिकता दें, और Codex harness runs के लिए Codex-native stable surfaces को प्राथमिकता दें।
+सभी मोड प्रयोगात्मक हैं। छोटे OpenClaw टूल
+कैटलॉग के लिए टूल को सीधे उपलब्ध कराना बेहतर है और Codex हार्नेस रन के लिए स्थिर Codex-नेटिव सरफ़ेस को प्राथमिकता दें।
 
-कोई अलग source-selection config नहीं है। Tool Search सक्षम होने पर,
-catalog में सामान्य policy filtering के बाद योग्य OpenClaw, MCP, और client tools शामिल होते हैं।
+स्रोत चयन के लिए कोई अलग कॉन्फ़िगरेशन नहीं है। Tool Search सक्षम होने पर,
+कैटलॉग में सामान्य नीति फ़िल्टरिंग के बाद कैटलॉग-योग्य OpenClaw, MCP और क्लाइंट टूल
+शामिल होते हैं; डायरेक्ट-ओनली टूल अलग से बनाए रखे जाते हैं।
 
 ## यह क्यों मौजूद है
 
-बड़े catalogs उपयोगी होते हैं लेकिन महंगे होते हैं। हर tool schema को मॉडल को भेजना
-request को बड़ा बनाता है, planning को धीमा करता है, और आकस्मिक tool
-selection बढ़ाता है।
+बड़े कैटलॉग उपयोगी लेकिन महँगे होते हैं। प्रत्येक टूल स्कीमा मॉडल को भेजने से
+अनुरोध बड़ा होता है, योजना बनाने की गति धीमी होती है और अनजाने में टूल
+चुने जाने की संभावना बढ़ती है।
 
-Tool Search आकार बदलता है:
+Tool Search इसकी संरचना बदल देता है:
 
-- direct tools: मॉडल first token से पहले हर selected schema देखता है
-- Tool Search code mode: मॉडल एक compact code tool और छोटा API
-  contract देखता है
-- Tool Search tools mode: मॉडल तीन compact structured fallback
-  tools देखता है
-- Tool Search directory mode: मॉडल एक bounded directory के साथ
-  search/describe/call controls और संभावित या आवश्यक
-  schemas का छोटा bounded set देखता है
-- turn के दौरान: मॉडल आवश्यकता अनुसार शेष schemas लोड कर सकता है
+- डायरेक्ट टूल: मॉडल को पहले टोकन से पहले प्रत्येक चयनित स्कीमा दिखाई देता है
+- Tool Search कोड मोड: मॉडल को एक संक्षिप्त कोड टूल, एक छोटा API
+  अनुबंध और सभी डायरेक्ट-ओनली टूल दिखाई देते हैं
+- Tool Search टूल मोड: मॉडल को तीन संक्षिप्त संरचित फ़ॉलबैक
+  टूल और सभी डायरेक्ट-ओनली टूल दिखाई देते हैं
+- Tool Search डायरेक्टरी मोड: मॉडल को एक सीमित डायरेक्टरी,
+  सर्च/डिस्क्राइब/कॉल नियंत्रण, संभावित या आवश्यक स्कीमा का एक छोटा सीमित समूह
+  और सभी डायरेक्ट-ओनली टूल दिखाई देते हैं
+- टर्न के दौरान: मॉडल आवश्यकतानुसार शेष स्कीमा लोड कर सकता है
 
-छोटे catalogs के लिए direct tool exposure अभी भी सही default है। Tool Search
-तब सबसे अच्छा है जब एक रन कई टूल देख सकता हो, विशेषकर MCP servers या
-client-provided app tools से।
+छोटे कैटलॉग के लिए टूल को सीधे उपलब्ध कराना अभी भी सही डिफ़ॉल्ट है। Tool Search
+तब सबसे उपयुक्त है जब एक रन को कई टूल दिखाई दे सकते हैं, विशेष रूप से MCP सर्वर या
+क्लाइंट द्वारा दिए गए ऐप टूल।
 
 ## API
 
 `openclaw.tools.search(query, options?)`
 
-मौजूदा रन के effective catalog में खोजता है। परिणाम compact और prompt context में
-वापस रखने के लिए सुरक्षित होते हैं।
+वर्तमान रन के प्रभावी कैटलॉग में खोज करता है। परिणाम संक्षिप्त होते हैं और उन्हें
+प्रॉम्प्ट संदर्भ में वापस रखना सुरक्षित होता है।
 
 ```js
-const hits = await openclaw.tools.search("calendar event", { limit: 5 });
+const hits = await openclaw.tools.search("कैलेंडर इवेंट", { limit: 5 });
 ```
 
 `openclaw.tools.describe(id)`
 
-एक search result के लिए पूरा metadata लोड करता है, जिसमें exact input schema शामिल है।
+एक खोज परिणाम का पूर्ण मेटाडेटा लोड करता है, जिसमें सटीक इनपुट स्कीमा शामिल होता है।
 
 ```js
 const calendarCreate = await openclaw.tools.describe("mcp:calendar:create_event");
@@ -132,62 +143,63 @@ const calendarCreate = await openclaw.tools.describe("mcp:calendar:create_event"
 
 `openclaw.tools.call(id, args)`
 
-OpenClaw के माध्यम से चुने गए टूल को call करता है।
+OpenClaw के माध्यम से चुने गए टूल को कॉल करता है।
 
 ```js
 await openclaw.tools.call(calendarCreate.id, {
-  summary: "Planning",
+  summary: "योजना",
   start: "2026-05-09T14:00:00Z",
 });
 ```
 
-structured fallback mode उन्हीं operations को tools के रूप में expose करता है:
+संरचित फ़ॉलबैक मोड उन्हीं कार्रवाइयों को टूल के रूप में उपलब्ध कराता है:
 
 - `tool_search`
 - `tool_describe`
 - `tool_call`
 
-Directory mode expose करता है:
+डायरेक्टरी मोड उपलब्ध कराता है:
 
 - `tool_search`
 - `tool_describe`
 - `tool_call`
 
-यह client-provided tools को सीधे visible भी रखता है और मौजूदा
-turn के लिए संभावित या आवश्यक catalog tool schemas का छोटा
-bounded set सीधे expose कर सकता है। यदि bounded directory entries छोड़ती है, तो उन्हें खोजने के लिए `tool_search` का उपयोग करें। यदि
-मॉडल exact hidden directory tool name सीधे request करता है, तो OpenClaw
-normal execution से पहले उसे authorized catalog से hydrate करता है।
-Directory-mode client tool names को OpenClaw, Plugin, या MCP
-tool names से collide नहीं करना चाहिए क्योंकि exact deferred dispatch उन्हीं names का उपयोग करता है।
+यह क्लाइंट द्वारा दिए गए टूल और सभी डायरेक्ट-ओनली टूल को भी सीधे दृश्यमान रखता है
+और वर्तमान टर्न के लिए संभावित या आवश्यक कैटलॉग टूल स्कीमा का एक छोटा सीमित समूह
+सीधे उपलब्ध करा सकता है। यदि सीमित डायरेक्टरी में प्रविष्टियाँ छूट गई हों, तो उन्हें खोजने के लिए
+`tool_search` का उपयोग करें। यदि मॉडल किसी सटीक छिपे हुए डायरेक्टरी
+टूल नाम का सीधे अनुरोध करता है, तो OpenClaw सामान्य निष्पादन से पहले उसे अधिकृत कैटलॉग से
+हाइड्रेट करता है।
+डायरेक्टरी-मोड क्लाइंट टूल के नाम OpenClaw, Plugin या MCP
+टूल नामों से टकराने नहीं चाहिए, क्योंकि सटीक स्थगित डिस्पैच उन्हीं नामों का उपयोग करता है।
 
-## Runtime boundary
+## रनटाइम सीमा
 
-code bridge एक अल्पकालिक Node subprocess में चलता है। subprocess
-Node permission mode enabled, empty environment, no filesystem or
-network grants, और no child-process or worker grants के साथ शुरू होता है। OpenClaw
-parent-process wall-clock timeout लागू करता है और timeout पर subprocess को kill करता है, जिसमें
-async continuations के बाद भी शामिल है।
+कोड ब्रिज अल्पकालिक Node सबप्रोसेस में चलता है। सबप्रोसेस
+Node अनुमति मोड सक्षम करके, खाली एनवायरनमेंट, फ़ाइल सिस्टम या
+नेटवर्क की किसी अनुमति के बिना और चाइल्ड-प्रोसेस या वर्कर की किसी अनुमति के बिना प्रारंभ होता है। OpenClaw
+पैरेंट-प्रोसेस वॉल-क्लॉक टाइमआउट लागू करता है और टाइमआउट होने पर सबप्रोसेस को समाप्त कर देता है,
+जिसमें एसिंक कंटिन्यूएशन के बाद का समय भी शामिल है।
 
-runtime केवल expose करता है:
+रनटाइम केवल इन्हें उपलब्ध कराता है:
 
-- `console.log`, `console.warn`, और `console.error`
+- `console.log`, `console.warn` और `console.error`
 - `openclaw.tools.search`
 - `openclaw.tools.describe`
 - `openclaw.tools.call`
 
-final calls पर सामान्य OpenClaw behavior अभी भी लागू होता है:
+अंतिम कॉल पर सामान्य OpenClaw व्यवहार अभी भी लागू होता है:
 
-- tool allow और deny policies
-- per-agent और per-sandbox tool restrictions
-- channel/runtime tool policy
-- approval hooks
-- Plugin `before_tool_call` hooks
-- session identity, logs, और telemetry
+- टूल की अनुमति और निषेध नीतियाँ
+- प्रति-एजेंट और प्रति-सैंडबॉक्स टूल प्रतिबंध
+- चैनल/रनटाइम टूल नीति
+- अनुमोदन हुक
+- Plugin `before_tool_call` हुक
+- सत्र पहचान, लॉग और टेलीमेट्री
 
-## Config
+## कॉन्फ़िगरेशन
 
-डिफ़ॉल्ट code bridge के साथ OpenClaw runs के लिए Tool Search सक्षम करें:
+डिफ़ॉल्ट कोड ब्रिज के साथ OpenClaw रन के लिए Tool Search सक्षम करें:
 
 ```bash
 openclaw config set tools.toolSearch true
@@ -203,7 +215,7 @@ openclaw config set tools.toolSearch true
 }
 ```
 
-OpenClaw runs के लिए इसके बजाय structured fallback tools का उपयोग करें:
+इसके बजाय OpenClaw रन के लिए संरचित फ़ॉलबैक टूल का उपयोग करें:
 
 ```json5
 {
@@ -215,7 +227,7 @@ OpenClaw runs के लिए इसके बजाय structured fallback too
 }
 ```
 
-OpenClaw runs के लिए इसके बजाय compact directory surface का उपयोग करें:
+इसके बजाय OpenClaw रन के लिए संक्षिप्त डायरेक्टरी सरफ़ेस का उपयोग करें:
 
 ```json5
 {
@@ -227,7 +239,7 @@ OpenClaw runs के लिए इसके बजाय compact directory surfa
 }
 ```
 
-code-mode timeout और search result limits tune करें:
+कोड-मोड टाइमआउट और खोज परिणाम सीमाएँ समायोजित करें (दिखाए गए मान डिफ़ॉल्ट हैं):
 
 ```json5
 {
@@ -242,6 +254,9 @@ code-mode timeout और search result limits tune करें:
 }
 ```
 
+रनटाइम `codeTimeoutMs` को 1000-60000, `maxSearchLimit` को 1-50 और
+`searchDefaultLimit` को 1..`maxSearchLimit` तक सीमित करता है।
+
 इसे अक्षम करें:
 
 ```json5
@@ -252,59 +267,59 @@ code-mode timeout और search result limits tune करें:
 }
 ```
 
-## Prompt और telemetry
+## प्रॉम्प्ट और टेलीमेट्री
 
-Tool Search direct tool exposure से तुलना करने के लिए पर्याप्त telemetry record करता है:
+Tool Search इतनी टेलीमेट्री रिकॉर्ड करता है कि उसकी तुलना टूल को सीधे उपलब्ध कराने से की जा सके:
 
-- harness को भेजे गए कुल serialized tool और prompt bytes
-- catalog size और source breakdown
-- search, describe, और call counts
-- OpenClaw के माध्यम से execute किए गए final tool calls
-- selected tool ids और sources
+- हार्नेस को भेजे गए सीरियलाइज़ किए गए टूल और प्रॉम्प्ट बाइट्स की कुल संख्या
+- कैटलॉग आकार और स्रोत के अनुसार विभाजन
+- सर्च, डिस्क्राइब और कॉल की संख्याएँ
+- OpenClaw के माध्यम से निष्पादित अंतिम टूल कॉल
+- चुने गए टूल आईडी और स्रोत
 
-Session logs से इन प्रश्नों का उत्तर देना संभव होना चाहिए:
+सत्र लॉग से इन प्रश्नों के उत्तर देना संभव होना चाहिए:
 
-- मॉडल ने शुरुआत में कितने tool schemas देखे
-- उसने कितने search और describe operations किए
-- कौन-सा final tool call किया गया
-- result OpenClaw, MCP, या client tool से आया या नहीं
+- मॉडल ने पहले से कितने टूल स्कीमा देखे
+- उसने कितनी सर्च और डिस्क्राइब कार्रवाइयाँ कीं
+- कौन-सा अंतिम टूल कॉल किया गया
+- परिणाम OpenClaw, MCP या क्लाइंट टूल में से किससे आया
 
-## E2E validation
+## E2E सत्यापन
 
-QA Lab Gateway scenario OpenClaw runtime के साथ दोनों paths सिद्ध करता है:
+QA Lab Gateway परिदृश्य OpenClaw रनटाइम के साथ दोनों पथों को प्रमाणित करता है:
 
 ```bash
 pnpm openclaw qa suite --provider-mode mock-openai --scenario tool-search-gateway-e2e
 ```
 
-यह large tool catalog के साथ एक temporary fake Plugin बनाता है, mock
-OpenAI provider शुरू करता है, Gateway को direct mode में एक बार और Tool Search
-enabled के साथ एक बार शुरू करता है, फिर provider request payloads और session logs की तुलना करता है।
+यह एक बड़े टूल कैटलॉग वाला अस्थायी नकली Plugin बनाता है, नकली
+OpenAI प्रदाता प्रारंभ करता है, Gateway को एक बार डायरेक्ट मोड में और एक बार Tool Search
+सक्षम करके प्रारंभ करता है, फिर प्रदाता अनुरोध पेलोड और सत्र लॉग की तुलना करता है।
 
-regression सिद्ध करता है:
+रिग्रेशन प्रमाणित करता है:
 
-1. Direct mode fake Plugin tool को call कर सकता है।
-2. Tool Search उसी fake Plugin tool को call कर सकता है।
-3. Direct mode fake Plugin tool schemas को सीधे provider को expose करता है।
-4. Tool Search केवल compact bridge expose करता है।
-5. बड़े fake catalog के लिए Tool Search request payload छोटा होता है।
-6. Session logs expected tool-call counts और bridged call telemetry दिखाते हैं।
+1. डायरेक्ट मोड नकली Plugin टूल को कॉल कर सकता है।
+2. Tool Search उसी नकली Plugin टूल को कॉल कर सकता है।
+3. डायरेक्ट मोड नकली Plugin टूल स्कीमा को सीधे प्रदाता के सामने उपलब्ध कराता है।
+4. Tool Search केवल संक्षिप्त ब्रिज और सभी डायरेक्ट-ओनली टूल उपलब्ध कराता है।
+5. बड़े नकली कैटलॉग के लिए Tool Search अनुरोध पेलोड छोटा होता है।
+6. सत्र लॉग अपेक्षित टूल-कॉल संख्याएँ और ब्रिज की गई कॉल टेलीमेट्री दिखाते हैं।
 
-## Failure behavior
+## विफलता व्यवहार
 
-Tool Search fail closed होना चाहिए:
+Tool Search को विफलता की स्थिति में बंद रहना चाहिए:
 
-- यदि कोई टूल effective policy में नहीं है, तो search उसे return नहीं करना चाहिए
-- यदि selected tool unavailable हो जाता है, तो `tool_call` fail होना चाहिए
-- यदि policy या approval execution को block करता है, तो call result को उसे
-  bypass करने के बजाय block report करना चाहिए
-- यदि code bridge isolated runtime नहीं बना सकता, तो `mode: "tools"` उपयोग करें या
-  उस deployment के लिए Tool Search disable करें
+- यदि कोई टूल प्रभावी नीति में नहीं है, तो खोज को वह लौटाना नहीं चाहिए
+- यदि चुना गया टूल अनुपलब्ध हो जाता है, तो `tool_call` को विफल होना चाहिए
+- यदि नीति या अनुमोदन निष्पादन को अवरुद्ध करता है, तो कॉल परिणाम को उसे दरकिनार करने के बजाय
+  उस अवरोध की सूचना देनी चाहिए
+- यदि कोड ब्रिज पृथक रनटाइम नहीं बना सकता, तो `mode: "tools"` का उपयोग करें या
+  उस परिनियोजन के लिए Tool Search अक्षम करें
 
 ## संबंधित
 
-- [टूल और plugins](/hi/tools)
-- [Multi-agent sandbox और tools](/hi/tools/multi-agent-sandbox-tools)
-- [Exec tool](/hi/tools/exec)
-- [ACP agents setup](/hi/tools/acp-agents-setup)
-- [Building plugins](/hi/plugins/building-plugins)
+- [टूल और Plugin](/hi/tools)
+- [मल्टी-एजेंट सैंडबॉक्स और टूल](/hi/tools/multi-agent-sandbox-tools)
+- [Exec टूल](/hi/tools/exec)
+- [ACP एजेंट सेटअप](/hi/tools/acp-agents-setup)
+- [Plugin बनाना](/hi/plugins/building-plugins)

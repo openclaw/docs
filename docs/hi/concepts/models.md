@@ -1,155 +1,132 @@
 ---
 read_when:
-    - मॉडल CLI जोड़ना या संशोधित करना (models list/set/scan/aliases/fallbacks)
-    - मॉडल fallback व्यवहार या चयन UX बदलना
-    - मॉडल स्कैन प्रोब अपडेट करना (tools/images)
+    - मॉडल फ़ॉलबैक व्यवहार या चयन उपयोगकर्ता अनुभव में बदलाव करना
+    - '"मॉडल की अनुमति नहीं है" या पुराने डिफ़ॉल्ट प्रदाता फ़ॉलबैक को डीबग करना'
+    - models.json के मर्ज/सीक्रेट व्यवहार पर काम करना
 sidebarTitle: Models CLI
-summary: 'मॉडल CLI: सूची, सेट, उपनाम, फ़ॉलबैक, स्कैन, स्थिति'
+summary: OpenClaw प्रोवाइडर/मॉडल रेफ़रेंस, कॉन्फ़िग कुंजियों और `/model` चैट कमांड का समाधान कैसे करता है
 title: मॉडल CLI
 x-i18n:
-    generated_at: "2026-06-28T23:00:32Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T14:32:08Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 8c7d4cbe1e0854a281f57f39dac9ac5f54c65f50da08cf37dfd298f8f1dd5536
+    source_hash: 20a5e4861bdafa1f5ff549fc54968051b653611f1ef05e836df855638a7aa967
     source_path: concepts/models.md
     workflow: 16
 ---
 
 <CardGroup cols={2}>
-  <Card title="मॉडल फेलओवर" href="/hi/concepts/model-failover">
-    प्रमाणीकरण प्रोफ़ाइल रोटेशन, कूलडाउन, और यह फॉलबैक के साथ कैसे इंटरैक्ट करता है।
+  <Card title="मॉडल फ़ेलओवर" href="/hi/concepts/model-failover">
+    प्रमाणीकरण प्रोफ़ाइल रोटेशन, कूलडाउन, और फ़ॉलबैक के साथ उनका परस्पर प्रभाव।
   </Card>
   <Card title="मॉडल प्रदाता" href="/hi/concepts/model-providers">
-    त्वरित प्रदाता अवलोकन और उदाहरण।
+    प्रदाताओं का संक्षिप्त अवलोकन और उदाहरण।
   </Card>
-  <Card title="एजेंट रनटाइम" href="/hi/concepts/agent-runtimes">
-    OpenClaw, Codex, और अन्य एजेंट लूप रनटाइम।
+  <Card title="मॉडल CLI संदर्भ" href="/hi/cli/models">
+    पूर्ण `openclaw models` कमांड और फ़्लैग संदर्भ।
   </Card>
   <Card title="कॉन्फ़िगरेशन संदर्भ" href="/hi/gateway/config-agents#agent-defaults">
-    मॉडल कॉन्फ़िग कुंजियाँ।
+    मॉडल कॉन्फ़िगरेशन कुंजियाँ, डिफ़ॉल्ट और उदाहरण।
   </Card>
 </CardGroup>
 
-मॉडल रेफ्स एक प्रदाता और मॉडल चुनते हैं। वे आम तौर पर निम्न-स्तरीय एजेंट रनटाइम नहीं चुनते। OpenAI एजेंट रेफ्स मुख्य अपवाद हैं: `openai/gpt-5.5` आधिकारिक OpenAI प्रदाता पर डिफ़ॉल्ट रूप से Codex ऐप-सर्वर रनटाइम के माध्यम से चलता है। सब्सक्रिप्शन Copilot रेफ्स (`github-copilot/*`) को अतिरिक्त रूप से बाहरी GitHub Copilot एजेंट रनटाइम Plugin में चुना जा सकता है — वह पथ स्पष्ट रहता है (कोई `auto` फॉलबैक नहीं)। स्पष्ट रनटाइम ओवरराइड पूरे एजेंट या सत्र पर नहीं, बल्कि प्रदाता/मॉडल नीति पर होने चाहिए। Codex रनटाइम मोड में, `openai/gpt-*` रेफ API-कुंजी बिलिंग का संकेत नहीं देता; प्रमाणीकरण Codex खाते या `openai` OAuth प्रोफ़ाइल से आ सकता है। [एजेंट रनटाइम](/hi/concepts/agent-runtimes) और [GitHub Copilot एजेंट रनटाइम](/hi/plugins/copilot) देखें।
+एक मॉडल संदर्भ (`provider/model`) किसी प्रदाता और मॉडल को चुनता है, निम्न-स्तरीय
+एजेंट रनटाइम को नहीं। रनटाइम नीति सेट न होने या `auto` होने पर, OpenAI की प्रदाता-स्वामित्व वाली
+रूट नीति Codex को केवल बिना किसी लेखक-निर्धारित अनुरोध ओवरराइड वाले सटीक आधिकारिक HTTPS Platform
+Responses या ChatGPT Responses रूट के लिए चुन सकती है; केवल
+`openai/*` उपसर्ग कभी भी Codex का चयन नहीं करता। Completions अडैप्टर, कस्टम
+एंडपॉइंट और लेखक-निर्धारित अनुरोध व्यवहार OpenClaw पर ही रहते हैं। प्लेनटेक्स्ट आधिकारिक
+HTTP एंडपॉइंट अस्वीकार कर दिए जाते हैं। [OpenAI का अंतर्निहित एजेंट रनटाइम](/hi/providers/openai#implicit-agent-runtime) देखें।
 
-## मॉडल चयन कैसे काम करता है
+सब्सक्रिप्शन Copilot संदर्भों (`github-copilot/*`) को बाहरी
+GitHub Copilot एजेंट रनटाइम Plugin के लिए चुना जा सकता है, लेकिन वह पथ हमेशा स्पष्ट होता है (कभी भी
+`auto` द्वारा चयनित नहीं होता)। रनटाइम ओवरराइड प्रदाता/मॉडल नीति पर होने चाहिए, पूरे
+एजेंट या सत्र पर नहीं। रनटाइम चयन बिलिंग निर्धारित नहीं करता:
+OpenAI API-कुंजी और ChatGPT/Codex सब्सक्रिप्शन क्रेडेंशियल अलग रहते हैं। [एजेंट रनटाइम](/hi/concepts/agent-runtimes) और
+[GitHub Copilot एजेंट रनटाइम](/hi/plugins/copilot) देखें।
 
-OpenClaw इस क्रम में मॉडल चुनता है:
+## चयन क्रम
 
 <Steps>
   <Step title="प्राथमिक मॉडल">
-    `agents.defaults.model.primary` (या `agents.defaults.model`)।
+    `agents.defaults.model.primary` (या सामान्य स्ट्रिंग के रूप में `agents.defaults.model`)।
   </Step>
-  <Step title="फॉलबैक">
-    `agents.defaults.model.fallbacks` (क्रम में)।
+  <Step title="फ़ॉलबैक">
+    `agents.defaults.model.fallbacks`, क्रम से आज़माए जाते हैं।
   </Step>
-  <Step title="प्रदाता प्रमाणीकरण फेलओवर">
-    अगले मॉडल पर जाने से पहले प्रमाणीकरण फेलओवर प्रदाता के भीतर होता है।
+  <Step title="प्रमाणीकरण फ़ेलओवर">
+    OpenClaw के अगले फ़ॉलबैक मॉडल पर जाने से पहले, प्रदाता के भीतर प्रमाणीकरण-प्रोफ़ाइल रोटेशन होता है।
   </Step>
 </Steps>
 
-<AccordionGroup>
-  <Accordion title="संबंधित मॉडल सतहें">
-    - `agents.defaults.models` उन मॉडलों की अनुमति-सूची/कैटलॉग है जिनका OpenClaw उपयोग कर सकता है (साथ में उपनाम)। प्रदाता खोज को डायनेमिक रखते हुए दिखाई देने वाले प्रदाताओं को सीमित करने के लिए `provider/*` प्रविष्टियों का उपयोग करें।
-    - `agents.defaults.imageModel` का उपयोग **केवल तब** होता है जब प्राथमिक मॉडल छवियाँ स्वीकार नहीं कर सकता।
-    - `agents.defaults.pdfModel` का उपयोग `pdf` टूल द्वारा किया जाता है। यदि छोड़ा गया हो, तो टूल पहले `agents.defaults.imageModel` पर, फिर हल किए गए सत्र/डिफ़ॉल्ट मॉडल पर फॉलबैक करता है।
-    - `agents.defaults.imageGenerationModel` का उपयोग साझा इमेज-जनरेशन क्षमता द्वारा किया जाता है। यदि छोड़ा गया हो, तो `image_generate` फिर भी प्रमाणीकरण-समर्थित प्रदाता डिफ़ॉल्ट का अनुमान लगा सकता है। यह पहले मौजूदा डिफ़ॉल्ट प्रदाता को आज़माता है, फिर शेष पंजीकृत इमेज-जनरेशन प्रदाताओं को प्रदाता-ID क्रम में। यदि आप कोई विशिष्ट प्रदाता/मॉडल सेट करते हैं, तो उस प्रदाता का प्रमाणीकरण/API कुंजी भी कॉन्फ़िगर करें।
-    - `agents.defaults.musicGenerationModel` का उपयोग साझा म्यूज़िक-जनरेशन क्षमता द्वारा किया जाता है। यदि छोड़ा गया हो, तो `music_generate` फिर भी प्रमाणीकरण-समर्थित प्रदाता डिफ़ॉल्ट का अनुमान लगा सकता है। यह पहले मौजूदा डिफ़ॉल्ट प्रदाता को आज़माता है, फिर शेष पंजीकृत म्यूज़िक-जनरेशन प्रदाताओं को प्रदाता-ID क्रम में। यदि आप कोई विशिष्ट प्रदाता/मॉडल सेट करते हैं, तो उस प्रदाता का प्रमाणीकरण/API कुंजी भी कॉन्फ़िगर करें।
-    - `agents.defaults.videoGenerationModel` का उपयोग साझा वीडियो-जनरेशन क्षमता द्वारा किया जाता है। यदि छोड़ा गया हो, तो `video_generate` फिर भी प्रमाणीकरण-समर्थित प्रदाता डिफ़ॉल्ट का अनुमान लगा सकता है। यह पहले मौजूदा डिफ़ॉल्ट प्रदाता को आज़माता है, फिर शेष पंजीकृत वीडियो-जनरेशन प्रदाताओं को प्रदाता-ID क्रम में। यदि आप कोई विशिष्ट प्रदाता/मॉडल सेट करते हैं, तो उस प्रदाता का प्रमाणीकरण/API कुंजी भी कॉन्फ़िगर करें।
-    - प्रति-एजेंट डिफ़ॉल्ट, बाइंडिंग्स के साथ `agents.list[].model` के ज़रिए `agents.defaults.model` को ओवरराइड कर सकते हैं ([मल्टी-एजेंट रूटिंग](/hi/concepts/multi-agent) देखें)।
+संबंधित मॉडल-कॉन्फ़िगरेशन सतहें:
 
-  </Accordion>
-</AccordionGroup>
+- `agents.defaults.models` उन मॉडलों की अनुमति-सूची/कैटलॉग है जिनका OpenClaw उपयोग कर सकता है, साथ ही उपनाम भी। प्रत्येक मॉडल को सूचीबद्ध किए बिना किसी प्रदाता से खोजे गए सभी मॉडलों की अनुमति देने के लिए `provider/*` प्रविष्टियों का उपयोग करें।
+- `agents.defaults.utilityModel` छोटे आंतरिक कार्यों, जैसे जनरेट किए गए डैशबोर्ड सत्र शीर्षक, समर्थित चैनल थ्रेड/विषय शीर्षक और प्रगति विवरण के लिए एक वैकल्पिक कम-लागत मॉडल है। प्रति-एजेंट `agents.list[].utilityModel` इसे ओवरराइड करता है। सेट न होने पर, OpenClaw प्राथमिक प्रदाता के घोषित छोटे-मॉडल डिफ़ॉल्ट का उपयोग करता है, यदि कोई मौजूद हो (OpenAI → `gpt-5.6-luna`, Anthropic → `claude-haiku-4-5`), अन्यथा एजेंट के प्राथमिक मॉडल का; उपयोगिता रूटिंग अक्षम करने के लिए इसे रिक्त स्ट्रिंग पर सेट करें। उपयोगिता कार्य अलग मॉडल कॉल होते हैं और चयनित मॉडल प्रदाता को सीमित कार्य सामग्री भेज सकते हैं।
+- `agents.defaults.imageModel` का उपयोग केवल तब किया जाता है जब प्राथमिक मॉडल छवियाँ स्वीकार नहीं कर सकता।
+- `agents.defaults.pdfModel` का उपयोग `pdf` टूल द्वारा किया जाता है। सेट न होने पर, टूल पहले `imageModel`, फिर समाधान किए गए सत्र/डिफ़ॉल्ट मॉडल पर फ़ॉलबैक करता है।
+- `agents.defaults.imageGenerationModel`, `musicGenerationModel` और `videoGenerationModel` साझा मीडिया-जनरेशन टूल को आधार प्रदान करते हैं। सेट न होने पर, प्रत्येक टूल प्रमाणीकरण-समर्थित प्रदाता डिफ़ॉल्ट का अनुमान लगाता है: पहले वर्तमान डिफ़ॉल्ट प्रदाता, फिर उस क्षमता के लिए शेष पंजीकृत प्रदाता, प्रदाता-id क्रम में। स्पष्ट फ़ॉलबैक बनाए रखते हुए इस अंतर-प्रदाता अनुमान को अक्षम करने के लिए `agents.defaults.mediaGenerationAutoProviderFallback: false` सेट करें।
+- प्रति-एजेंट `agents.list[].model` (और बाइंडिंग) `agents.defaults.model` को ओवरराइड करता है — [बहु-एजेंट रूटिंग](/hi/concepts/multi-agent) देखें।
 
-## चयन स्रोत और फॉलबैक व्यवहार
+पूर्ण कुंजी संदर्भ, डिफ़ॉल्ट और JSON5 उदाहरण: [कॉन्फ़िगरेशन संदर्भ](/hi/gateway/config-agents#agent-defaults)।
 
-वही `provider/model` इस पर निर्भर करते हुए अलग-अलग अर्थ रख सकता है कि वह कहाँ से आया है:
+## चयन स्रोत और फ़ॉलबैक की कठोरता
 
-- कॉन्फ़िगर किए गए डिफ़ॉल्ट (`agents.defaults.model.primary` और एजेंट-विशिष्ट प्राथमिक) सामान्य शुरुआती बिंदु हैं और `agents.defaults.model.fallbacks` का उपयोग करते हैं।
-- ऑटो फॉलबैक चयन अस्थायी रिकवरी स्थिति हैं। उन्हें `modelOverrideSource: "auto"` के साथ संग्रहीत किया जाता है ताकि बाद के टर्न हर बार ज्ञात-खराब प्राथमिक की जाँच किए बिना फॉलबैक श्रृंखला का उपयोग जारी रख सकें; OpenClaw समय-समय पर मूल प्राथमिक को फिर से जाँचता है, रिकवर होने पर ऑटो चयन साफ़ करता है, और फॉलबैक/रिकवरी संक्रमणों की घोषणा प्रत्येक स्थिति परिवर्तन पर एक बार करता है।
-- उपयोगकर्ता सत्र चयन सटीक होते हैं। `/model`, मॉडल पिकर, `session_status(model=...)`, और `sessions.patch` `modelOverrideSource: "user"` संग्रहीत करते हैं; यदि वह चुना गया प्रदाता/मॉडल पहुँच योग्य नहीं है, तो OpenClaw किसी अन्य कॉन्फ़िगर किए गए मॉडल पर जाने के बजाय स्पष्ट रूप से विफल होता है।
-- `agents.defaults.model.primary` बदलने से मौजूदा सत्र चयन फिर से नहीं लिखे जाते। यदि स्थिति कहती है `This session is pinned to X; config primary Y will apply to new/unpinned sessions.`, तो मौजूदा सत्र चयन को `/model default` से साफ़ करें ताकि वह फिर से कॉन्फ़िगर किए गए प्राथमिक को विरासत में ले।
-- Cron `--model` / पेलोड `model` प्रति-जॉब प्राथमिक है। यह फिर भी कॉन्फ़िगर किए गए फॉलबैक का उपयोग करता है, जब तक कि जॉब स्पष्ट पेलोड `fallbacks` न दे (`fallbacks: []` का उपयोग सख़्त cron रन के लिए करें)।
-- CLI डिफ़ॉल्ट-मॉडल और अनुमति-सूची पिकर, पूरे बिल्ट-इन कैटलॉग को लोड करने के बजाय स्पष्ट `models.providers.*.models` सूचीबद्ध करके `models.mode: "replace"` का सम्मान करते हैं।
-- Control UI मॉडल पिकर Gateway से उसका कॉन्फ़िगर किया गया मॉडल व्यू पूछता है: मौजूद होने पर `agents.defaults.models`, जिसमें प्रदाता-व्यापी `provider/*` प्रविष्टियाँ शामिल हैं, अन्यथा स्पष्ट `models.providers.*.models` और उपयोगी प्रमाणीकरण वाले प्रदाता। पूरा बिल्ट-इन कैटलॉग स्पष्ट ब्राउज़ व्यू जैसे `models.list` के साथ `view: "all"` या `openclaw models list --all` के लिए आरक्षित है।
+वही `provider/model` अपने स्रोत के आधार पर अलग तरह से व्यवहार करता है:
+
+| स्रोत                                                                  | व्यवहार                                                                                                                                                                                                                                                       |
+| ----------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| कॉन्फ़िगर किया गया डिफ़ॉल्ट (`agents.defaults.model.primary`, प्रति-एजेंट प्राथमिक) | सामान्य प्रारंभिक बिंदु; `agents.defaults.model.fallbacks` का उपयोग करता है।                                                                                                                                                                                                 |
+| स्वचालित फ़ॉलबैक                                                           | अस्थायी पुनर्प्राप्ति स्थिति, `modelOverrideSource: "auto"` के रूप में संग्रहीत। OpenClaw समय-समय पर मूल प्राथमिक की फिर से जाँच करता है, पुनर्प्राप्ति पर स्वचालित चयन हटा देता है और प्रत्येक स्थिति परिवर्तन पर एक बार फ़ॉलबैक/पुनर्प्राप्ति संक्रमण की घोषणा करता है।                              |
+| उपयोगकर्ता सत्र चयन                                                  | सटीक और कठोर। `/model`, मॉडल पिकर, `session_status(model=...)` और `sessions.patch`, `modelOverrideSource: "user"` संग्रहीत करते हैं। यदि वह प्रदाता/मॉडल पहुँच से बाहर हो जाता है, तो किसी अन्य कॉन्फ़िगर किए गए मॉडल पर जाने के बजाय रन स्पष्ट रूप से विफल होता है। |
+| Cron `--model` / पेलोड `model`                                        | प्रति-जॉब प्राथमिक। जब तक जॉब अपना स्वयं का पेलोड `fallbacks` प्रदान नहीं करता, तब तक कॉन्फ़िगर किए गए फ़ॉलबैक का उपयोग करता है (`fallbacks: []` कठोर रन बाध्य करता है)।                                                                                                                    |
+
+अन्य चयन नियम:
+
+- `agents.defaults.model.primary` बदलने से मौजूदा सत्र पिन दोबारा नहीं लिखे जाते। यदि स्थिति `This session is pinned to X; config primary Y will apply to new/unpinned sessions.` दिखाती है, तो पिन हटाने के लिए `/model default` चलाएँ।
+- CLI डिफ़ॉल्ट-मॉडल और अनुमति-सूची पिकर पूर्ण अंतर्निहित कैटलॉग के बजाय केवल `models.providers.*.models` सूचीबद्ध करके `models.mode: "replace"` का सम्मान करते हैं।
+- Control UI मॉडल पिकर Gateway से उसका कॉन्फ़िगर किया गया मॉडल दृश्य माँगता है: सेट होने पर `agents.defaults.models` (`provider/*` वाइल्डकार्ड प्रविष्टियों सहित), अन्यथा `models.providers.*.models` और उपयोग योग्य प्रमाणीकरण वाले प्रदाता। पूर्ण अंतर्निहित कैटलॉग स्पष्ट ब्राउज़ दृश्यों (`models.list` के साथ `view: "all"`, या `openclaw models list --all`) के लिए आरक्षित है।
+- प्रदाता इन्वेंट्री UI, पिकर अनुमति-सूचियाँ लागू किए बिना स्रोत-निर्धारित `models.providers.*.models` पंक्तियाँ दिखाने के लिए `models.list` के साथ `view: "provider-config"` का उपयोग करते हैं।
+
+पूर्ण कार्यप्रणाली: [मॉडल फ़ेलओवर](/hi/concepts/model-failover)।
 
 ## त्वरित मॉडल नीति
 
-- अपना प्राथमिक मॉडल आपके लिए उपलब्ध सबसे मजबूत नवीनतम-पीढ़ी के मॉडल पर सेट करें।
-- लागत/विलंब-संवेदनशील कार्यों और कम-जोखिम चैट के लिए फॉलबैक का उपयोग करें।
-- टूल-सक्षम एजेंटों या अविश्वसनीय इनपुट के लिए, पुराने/कमज़ोर मॉडल टियर से बचें।
+- अपने प्राथमिक मॉडल को आपके लिए उपलब्ध सबसे शक्तिशाली नवीनतम-पीढ़ी के मॉडल पर सेट करें।
+- लागत/विलंबता-संवेदनशील कार्यों और कम-महत्त्वपूर्ण चैट के लिए फ़ॉलबैक का उपयोग करें।
+- टूल-सक्षम एजेंटों या अविश्वसनीय इनपुट के लिए पुराने/कमज़ोर मॉडल स्तरों से बचें।
 
-## ऑनबोर्डिंग (अनुशंसित)
-
-यदि आप कॉन्फ़िग हाथ से संपादित नहीं करना चाहते, तो ऑनबोर्डिंग चलाएँ:
+## ऑनबोर्डिंग
 
 ```bash
 openclaw onboard
 ```
 
-यह सामान्य प्रदाताओं के लिए मॉडल + प्रमाणीकरण सेट कर सकता है, जिसमें **OpenAI Code (Codex) सब्सक्रिप्शन** (OAuth) और **Anthropic** (API कुंजी या Claude CLI) शामिल हैं।
+कॉन्फ़िगरेशन को हाथ से संपादित किए बिना सामान्य प्रदाताओं के लिए मॉडल और प्रमाणीकरण सेट करता है, जिसमें OpenAI Codex सब्सक्रिप्शन OAuth और Anthropic (API कुंजी या Claude CLI पुनः उपयोग) शामिल हैं।
 
-## कॉन्फ़िग कुंजियाँ (अवलोकन)
+कोई प्राथमिक मॉडल कॉन्फ़िगर न होने पर, नया OpenAI API-कुंजी सेटअप
+`openai/gpt-5.6` चुनता है; सामान्य प्रत्यक्ष-API id Sol स्तर में समाधान होता है। नया
+ChatGPT/Codex OAuth सेटअप सटीक `openai/gpt-5.6-sol` कैटलॉग संदर्भ चुनता है।
+पुनः प्रमाणीकरण मौजूदा स्पष्ट प्राथमिक मॉडल को बनाए रखता है, जिसमें
+`openai/gpt-5.5` शामिल है। यदि GPT-5.6 खाते के लिए उपलब्ध नहीं है, तो
+`openai/gpt-5.5` स्पष्ट रूप से चुनें; OpenClaw इसे चुपचाप डाउनग्रेड नहीं करता।
 
-- `agents.defaults.model.primary` और `agents.defaults.model.fallbacks`
-- `agents.defaults.imageModel.primary` और `agents.defaults.imageModel.fallbacks`
-- `agents.defaults.pdfModel.primary` और `agents.defaults.pdfModel.fallbacks`
-- `agents.defaults.imageGenerationModel.primary` और `agents.defaults.imageGenerationModel.fallbacks`
-- `agents.defaults.videoGenerationModel.primary` और `agents.defaults.videoGenerationModel.fallbacks`
-- `agents.defaults.models` (अनुमति-सूची + उपनाम + प्रदाता पैरामीटर + `provider/*` डायनेमिक प्रदाता प्रविष्टियाँ)
-- `models.providers` (`models.json` में लिखे गए कस्टम प्रदाता)
+## "मॉडल की अनुमति नहीं है" (और उत्तर क्यों रुक जाते हैं)
 
-<Note>
-मॉडल रेफ्स को लोअरकेस में सामान्यीकृत किया जाता है। प्रदाता IDs अन्यथा सटीक होते हैं; Plugin द्वारा विज्ञापित प्रदाता ID का उपयोग करें।
+यदि `agents.defaults.models` सेट है, तो यह `/model` और सत्र ओवरराइड के लिए अनुमति-सूची बन जाता है। उस अनुमति-सूची से बाहर मॉडल चुनने पर कोई सामान्य उत्तर जनरेट होने से पहले यह लौटता है:
 
-प्रदाता कॉन्फ़िगरेशन उदाहरण (OpenCode सहित) [OpenCode](/hi/providers/opencode) में हैं।
-</Note>
-
-### सुरक्षित अनुमति-सूची संपादन
-
-`agents.defaults.models` को हाथ से अपडेट करते समय एडिटिव राइट्स का उपयोग करें:
-
-```bash
-openclaw config set agents.defaults.models '{"openai/gpt-5.4":{}}' --strict-json --merge
+```text
+मॉडल "provider/model" की अनुमति नहीं है। प्रदाताओं की सूची के लिए /models या मॉडलों की सूची के लिए /models <provider> का उपयोग करें।
+इसे इससे जोड़ें: openclaw config set agents.defaults.models '{"provider/model":{}}' --strict-json --merge
 ```
 
-<AccordionGroup>
-  <Accordion title="क्लॉबर सुरक्षा नियम">
-    `openclaw config set` मॉडल/प्रदाता मैप्स को आकस्मिक क्लॉबर से बचाता है। `agents.defaults.models`, `models.providers`, या `models.providers.<id>.models` को साधारण ऑब्जेक्ट असाइनमेंट अस्वीकार किया जाता है जब वह मौजूदा प्रविष्टियाँ हटा देगा। एडिटिव बदलावों के लिए `--merge` का उपयोग करें; `--replace` का उपयोग केवल तब करें जब दिया गया मान पूरा लक्ष्य मान बनना चाहिए।
+मॉडल को `agents.defaults.models` में जोड़कर, अनुमति-सूची को पूरी तरह हटाकर (कुंजी हटाएँ), या `/model list` से मॉडल चुनकर इसे ठीक करें। यदि अस्वीकृत कमांड में `/model openai/gpt-5.5 --runtime codex` जैसा रनटाइम ओवरराइड शामिल था, तो पहले अनुमति-सूची ठीक करें, फिर वही `/model ... --runtime ...` कमांड दोबारा चलाएँ।
 
-    इंटरैक्टिव प्रदाता सेटअप और `openclaw configure --section model` भी प्रदाता-स्कोप किए गए चयनों को मौजूदा अनुमति-सूची में मर्ज करते हैं, इसलिए Codex, Ollama, या कोई अन्य प्रदाता जोड़ने से असंबंधित मॉडल प्रविष्टियाँ नहीं हटतीं। प्रदाता प्रमाणीकरण फिर से लागू होने पर Configure मौजूदा `agents.defaults.model.primary` को सुरक्षित रखता है। स्पष्ट डिफ़ॉल्ट-सेटिंग कमांड जैसे `openclaw models auth login --provider <id> --set-default` और `openclaw models set <model>` फिर भी `agents.defaults.model.primary` को बदलते हैं।
+स्थानीय/GGUF मॉडलों के लिए, अनुमति-सूची में पूर्ण प्रदाता-उपसर्गित संदर्भ चाहिए, उदाहरण के लिए `ollama/gemma4:26b` या `lmstudio/Gemma4-26b-a4-it-gguf` — सटीक स्ट्रिंग के लिए `openclaw models list --provider <provider>` देखें। अनुमति-सूची सक्रिय होने पर केवल फ़ाइल नाम या प्रदर्शन नाम पर्याप्त नहीं होते।
 
-  </Accordion>
-</AccordionGroup>
-
-## "मॉडल की अनुमति नहीं है" (और उत्तर क्यों रुकते हैं)
-
-यदि `agents.defaults.models` सेट है, तो यह `/model` और सत्र ओवरराइड के लिए **अनुमति-सूची** बन जाता है। जब कोई उपयोगकर्ता ऐसा मॉडल चुनता है जो उस अनुमति-सूची में नहीं है, तो OpenClaw लौटाता है:
-
-```
-Model "provider/model" is not allowed. Use /models to list providers, or /models <provider> to list models.
-Add it with: openclaw config set agents.defaults.models '{"provider/model":{}}' --strict-json --merge
-```
-
-<Warning>
-यह सामान्य उत्तर जनरेट होने से **पहले** होता है, इसलिए संदेश ऐसा लग सकता है जैसे उसने "जवाब नहीं दिया।" समाधान है इनमें से कोई एक:
-
-- मॉडल को `agents.defaults.models` में जोड़ें, या
-- अनुमति-सूची साफ़ करें (`agents.defaults.models` हटाएँ), या
-- `/model list` से कोई मॉडल चुनें।
-
-</Warning>
-
-जब अस्वीकृत कमांड में `/model openai/gpt-5.5 --runtime codex` जैसा रनटाइम ओवरराइड शामिल हो, तो पहले अनुमति-सूची ठीक करें, फिर वही `/model ... --runtime ...` कमांड दोबारा चलाएँ। नेटिव Codex निष्पादन के लिए, चुना गया मॉडल फिर भी `openai/gpt-5.5` है; `codex` रनटाइम हार्नेस चुनता है और Codex प्रमाणीकरण को अलग से उपयोग करता है।
-
-स्थानीय/GGUF मॉडलों के लिए, अनुमति-सूची में पूरा प्रदाता-प्रीफ़िक्स वाला रेफ संग्रहीत करें,
-उदाहरण के लिए `ollama/gemma4:26b`, `lmstudio/Gemma4-26b-a4-it-gguf`, या
-`openclaw models list --provider <provider>` द्वारा दिखाया गया सटीक प्रदाता/मॉडल।
-जब अनुमति-सूची सक्रिय हो, तो केवल स्थानीय फ़ाइलनाम या डिस्प्ले नाम पर्याप्त नहीं होते।
-
-यदि आप हर मॉडल को हाथ से सूचीबद्ध किए बिना प्रदाताओं को सीमित करना चाहते हैं, तो
-`provider/*` प्रविष्टियाँ `agents.defaults.models` में जोड़ें:
+प्रत्येक मॉडल सूचीबद्ध किए बिना प्रदाताओं को सीमित करने के लिए `provider/*` वाइल्डकार्ड प्रविष्टियों का उपयोग करें:
 
 ```json5
 {
@@ -164,12 +141,9 @@ Add it with: openclaw config set agents.defaults.models '{"provider/model":{}}' 
 }
 ```
 
-उस नीति के साथ, `/model`, `/models`, और मॉडल पिकर केवल उन प्रदाताओं के लिए खोजा गया
-कैटलॉग दिखाते हैं। चुने गए प्रदाताओं से नए मॉडल अनुमति-सूची संपादित किए बिना
-दिखाई दे सकते हैं। जब आपको किसी दूसरे प्रदाता से एक विशिष्ट मॉडल चाहिए, तो सटीक `provider/model` प्रविष्टियों को
-`provider/*` प्रविष्टियों के साथ मिलाया जा सकता है।
+इसके बाद `/model`, `/models` और मॉडल पिकर केवल उन प्रदाताओं के खोजे गए कैटलॉग दिखाते हैं, और अनुमति-सूची संपादित किए बिना नए मॉडल दिखाई दे सकते हैं। किसी अन्य प्रदाता से एक विशिष्ट मॉडल शामिल करने के लिए सटीक `provider/model` प्रविष्टियों को `provider/*` प्रविष्टियों के साथ मिलाएँ।
 
-उदाहरण अनुमति-सूची कॉन्फ़िग:
+उपनामों वाली अनुमति-सूची का उदाहरण:
 
 ```json5
 {
@@ -185,11 +159,19 @@ Add it with: openclaw config set agents.defaults.models '{"provider/model":{}}' 
 }
 ```
 
-## चैट में मॉडल बदलना (`/model`)
+<Accordion title="CLI से सुरक्षित अनुमति-सूची संपादन">
+योगात्मक परिवर्तनों के लिए `--merge` का उपयोग करें:
 
-आप पुनरारंभ किए बिना मौजूदा सत्र के लिए मॉडल बदल सकते हैं:
-
+```bash
+openclaw config set agents.defaults.models '{"openai/gpt-5.4":{}}' --strict-json --merge
 ```
+
+`openclaw config set`, `agents.defaults.models`, `models.providers` या `models.providers.<id>.models` को सामान्य-ऑब्जेक्ट असाइनमेंट देने से इनकार करता है, जब उससे मौजूदा प्रविष्टियाँ हट जाएँगी; `--replace` का उपयोग केवल तब करें जब नया मान पूर्ण लक्ष्य मान बनना चाहिए। इंटरैक्टिव प्रदाता सेटअप और `openclaw configure --section model` पहले से ही प्रदाता-स्कोप वाले चयनों को अनुमति-सूची में मर्ज करते हैं, इसलिए प्रदाता जोड़ने से असंबंधित प्रविष्टियाँ नहीं हटतीं; कॉन्फ़िगर मौजूदा `agents.defaults.model.primary` को बनाए रखता है। `openclaw models auth login --provider <id> --set-default` और `openclaw models set <model>` जैसे स्पष्ट कमांड अभी भी प्राथमिक मॉडल को बदल देते हैं।
+</Accordion>
+
+## चैट में `/model`
+
+```text
 /model
 /model list
 /model 3
@@ -198,182 +180,68 @@ Add it with: openclaw config set agents.defaults.models '{"provider/model":{}}' 
 /model status
 ```
 
-<AccordionGroup>
-  <Accordion title="पिकर व्यवहार">
-    - `/model` (और `/model list`) एक कॉम्पैक्ट, क्रमांकित पिकर है (मॉडल परिवार + उपलब्ध प्रदाता)।
-    - Discord पर, `/model` और `/models` प्रदाता और मॉडल ड्रॉपडाउन तथा Submit चरण के साथ एक इंटरैक्टिव पिकर खोलते हैं।
-    - Telegram पर, `/models` पिकर चयन सत्र-स्कोप होते हैं; वे `openclaw.json` में एजेंट का स्थायी डिफ़ॉल्ट नहीं बदलते।
-    - `/models add` अप्रचलित है और अब चैट से मॉडल पंजीकृत करने के बजाय अप्रचलन संदेश लौटाता है।
-    - `/model <#>` उस पिकर से चयन करता है।
+- `/model` और `/model list` एक संक्षिप्त क्रमांकित चयनकर्ता (मॉडल फ़ैमिली + उपलब्ध प्रदाता) दिखाते हैं; `/model <#>` उसमें से चयन करता है। Discord पर यह Submit चरण वाले प्रदाता/मॉडल ड्रॉपडाउन खोलता है; Telegram पर, चयनकर्ता के चुनाव सत्र-स्कोप वाले होते हैं और `openclaw.json` में एजेंट के स्थायी डिफ़ॉल्ट को कभी दोबारा नहीं लिखते। `/models add` बहिष्कृत है और चैट से मॉडल पंजीकृत करने के बजाय एक संदेश लौटाता है।
+- `/model` नए सत्र चयन को तुरंत सहेजता है। यदि एजेंट निष्क्रिय है, तो अगला रन तुरंत इसका उपयोग करता है; यदि कोई रन पहले से सक्रिय है, तो स्विच को अगले स्वच्छ पुनः प्रयास बिंदु के लिए कतारबद्ध किया जाता है (या किसी बाद वाले बिंदु के लिए, यदि टूल गतिविधि या उत्तर आउटपुट पहले ही शुरू हो चुका हो)।
+- `/model default` सत्र चयन साफ़ करता है, ताकि यह फिर से कॉन्फ़िगर किए गए प्राथमिक विकल्प को इनहेरिट करे।
+- उपयोगकर्ता द्वारा चुना गया `/model` संदर्भ उस सत्र के लिए सख़्त होता है: यदि वह पहुँच से बाहर हो जाता है, तो `agents.defaults.model.fallbacks` के माध्यम से चुपचाप फ़ॉलबैक करने के बजाय उत्तर स्पष्ट रूप से विफल होता है। कॉन्फ़िगर किए गए डिफ़ॉल्ट और Cron जॉब के प्राथमिक विकल्प अब भी फ़ॉलबैक शृंखलाओं का उपयोग करते हैं।
+- `/model status` विस्तृत दृश्य है: प्रत्येक प्रदाता के प्रमाणीकरण उम्मीदवार, और (कॉन्फ़िगर होने पर) प्रदाता एंडपॉइंट `baseUrl` तथा `api` मोड।
+- मॉडल संदर्भों को पहले `/` पर विभाजित करके पार्स किया जाता है; `provider/model` टाइप करें। यदि मॉडल ID में स्वयं `/` शामिल है (OpenRouter शैली), तो प्रदाता प्रीफ़िक्स शामिल करें, जैसे `/model openrouter/moonshotai/kimi-k2`। यदि आप प्रदाता छोड़ देते हैं, तो OpenClaw यह प्रयास करता है: (1) उपनाम मिलान, (2) ठीक उसी बिना-प्रीफ़िक्स वाले मॉडल ID के लिए अद्वितीय कॉन्फ़िगर-प्रदाता मिलान, (3) कॉन्फ़िगर किया गया डिफ़ॉल्ट प्रदाता (बहिष्कृत फ़ॉलबैक) — और यदि वह प्रदाता अब कॉन्फ़िगर किए गए डिफ़ॉल्ट मॉडल को उपलब्ध नहीं कराता, तो पुराने हटाए गए प्रदाता के डिफ़ॉल्ट को दिखाने से बचने के लिए इसके बजाय पहला कॉन्फ़िगर किया गया प्रदाता/मॉडल।
+- मॉडल संदर्भों को लोअरकेस में सामान्यीकृत किया जाता है; अन्यथा प्रदाता ID सटीक होते हैं, इसलिए Plugin द्वारा प्रचारित ID का उपयोग करें।
 
-  </Accordion>
-  <Accordion title="स्थायित्व और लाइव स्विचिंग">
-    - `/model` नया सत्र चयन तुरंत कायम रखता है।
-    - यदि agent निष्क्रिय है, तो अगला run नया मॉडल तुरंत उपयोग करता है।
-    - यदि कोई run पहले से सक्रिय है, तो OpenClaw लाइव स्विच को pending के रूप में चिह्नित करता है और केवल साफ़ retry point पर नए मॉडल में पुनः आरंभ करता है।
-    - यदि tool गतिविधि या reply output पहले ही शुरू हो चुका है, तो pending switch बाद के retry अवसर या अगले user turn तक queued रह सकता है।
-    - `/model default` सत्र चयन साफ़ करता है और सत्र को कॉन्फ़िगर किए गए default मॉडल पर वापस ले जाता है।
-    - user-selected `/model` ref उस सत्र के लिए strict होता है: यदि चयनित provider/model पहुँच योग्य नहीं है, तो reply `agents.defaults.model.fallbacks` से चुपचाप उत्तर देने के बजाय स्पष्ट रूप से fail होता है। यह configured defaults और cron job primaries से अलग है, जो अभी भी fallback chains उपयोग कर सकते हैं।
-    - `/model status` विस्तृत view है (auth candidates और, कॉन्फ़िगर होने पर, provider endpoint `baseUrl` + `api` mode).
+पूर्ण कमांड व्यवहार और कॉन्फ़िगरेशन: [स्लैश कमांड](/hi/tools/slash-commands)।
 
-  </Accordion>
-  <Accordion title="Ref parsing">
-    - Model refs को **पहले** `/` पर split करके parse किया जाता है। `/model <ref>` type करते समय `provider/model` उपयोग करें।
-    - यदि model ID में स्वयं `/` शामिल है (OpenRouter-style), तो आपको provider prefix शामिल करना होगा (उदाहरण: `/model openrouter/moonshotai/kimi-k2`)।
-    - यदि आप provider छोड़ देते हैं, तो OpenClaw input को इस क्रम में resolve करता है:
-      1. alias match
-      2. उस exact unprefixed model id के लिए unique configured-provider match
-      3. configured default provider पर deprecated fallback — यदि वह provider अब configured default model expose नहीं करता, तो OpenClaw stale removed-provider default दिखाने से बचने के लिए पहले configured provider/model पर fallback करता है।
-  </Accordion>
-</AccordionGroup>
-
-पूर्ण command behavior/config: [Slash commands](/hi/tools/slash-commands).
-
-## CLI commands
+## CLI
 
 ```bash
-openclaw models list
 openclaw models status
+openclaw models list
 openclaw models set <provider/model>
 openclaw models set-image <provider/model>
-
-openclaw models aliases list
-openclaw models aliases add <alias> <provider/model>
-openclaw models aliases remove <alias>
-
-openclaw models fallbacks list
-openclaw models fallbacks add <provider/model>
-openclaw models fallbacks remove <provider/model>
-openclaw models fallbacks clear
-
-openclaw models image-fallbacks list
-openclaw models image-fallbacks add <provider/model>
-openclaw models image-fallbacks remove <provider/model>
-openclaw models image-fallbacks clear
+openclaw models scan
+openclaw models aliases list|add|remove
+openclaw models fallbacks list|add|remove|clear
+openclaw models image-fallbacks list|add|remove|clear
+openclaw models auth list|add|login|paste-api-key|paste-token|setup-token|order
 ```
 
-`openclaw models` (बिना subcommand) `models status` के लिए shortcut है।
-
-### `models list`
-
-Default रूप से configured/auth-available models दिखाता है। उपयोगी flags:
-
-<ParamField path="--all" type="boolean">
-  पूरा catalog। Auth configure होने से पहले bundled provider-owned static catalog rows शामिल करता है, इसलिए discovery-only views ऐसे models दिखा सकते हैं जो matching provider credentials जोड़ने तक unavailable होते हैं।
-</ParamField>
-<ParamField path="--local" type="boolean">
-  केवल local providers।
-</ParamField>
-<ParamField path="--provider <id>" type="string">
-  Provider id से filter करें, उदाहरण के लिए `moonshot`। Interactive pickers से display labels स्वीकार नहीं किए जाते।
-</ParamField>
-<ParamField path="--plain" type="boolean">
-  प्रति line एक model।
-</ParamField>
-<ParamField path="--json" type="boolean">
-  Machine-readable output।
-</ParamField>
-
-### `models status`
-
-Resolved primary model, fallbacks, image model, और configured providers का auth overview दिखाता है। यह auth store में मिले profiles के लिए OAuth expiry status भी दिखाता है (default रूप से 24h के भीतर चेतावनी देता है)। `--plain` केवल resolved primary model print करता है।
+बिना सबकमांड वाला `openclaw models`, `models status` का शॉर्टकट है, जो प्रमाणीकरण-स्टोर प्रोफ़ाइलों के लिए OAuth समाप्ति भी दिखाता है (डिफ़ॉल्ट रूप से 24h के भीतर चेतावनी देता है)। पूर्ण फ़्लैग, JSON संरचनाएँ और प्रमाणीकरण-प्रोफ़ाइल सबकमांड: [मॉडल CLI संदर्भ](/hi/cli/models)।
 
 <AccordionGroup>
-  <Accordion title="Auth और probe behavior">
-    - OAuth status हमेशा दिखाया जाता है (और `--json` output में शामिल होता है)। यदि configured provider के पास credentials नहीं हैं, तो `models status` **Missing auth** section print करता है।
-    - JSON में `auth.oauth` (warn window + profiles) और `auth.providers` (प्रति provider effective auth, env-backed credentials सहित) शामिल हैं। `auth.oauth` केवल auth-store profile health है; env-only providers वहाँ दिखाई नहीं देते।
-    - Automation के लिए `--check` उपयोग करें (missing/expired होने पर exit `1`, expiring होने पर `2`)।
-    - Live auth checks के लिए `--probe` उपयोग करें; probe rows auth profiles, env credentials, या `models.json` से आ सकती हैं।
-    - यदि explicit `auth.order.<provider>` stored profile को छोड़ देता है, तो probe उसे try करने के बजाय `excluded_by_auth_order` report करता है। यदि auth मौजूद है लेकिन उस provider के लिए कोई probeable model resolve नहीं किया जा सकता, तो probe `status: no_model` report करता है।
+  <Accordion title="स्कैनिंग (OpenRouter के निःशुल्क मॉडल)">
+    `openclaw models scan` OpenRouter की सार्वजनिक निःशुल्क-मॉडल कैटलॉग की जाँच करता है और टूल तथा इमेज समर्थन के लिए उम्मीदवारों की लाइव जाँच कर सकता है। कैटलॉग स्वयं सार्वजनिक है, इसलिए केवल-मेटाडेटा स्कैन (`--no-probe`) के लिए किसी कुंजी की आवश्यकता नहीं होती; लाइव जाँच और `--set-default`/`--set-image` के लिए OpenRouter API कुंजी (प्रमाणीकरण प्रोफ़ाइल या `OPENROUTER_API_KEY`) आवश्यक है और उसके बिना केवल-मेटाडेटा आउटपुट पर सुरक्षित रूप से सीमित हो जाते हैं।
+
+    परिणामों की रैंकिंग इस क्रम में होती है: इमेज समर्थन, फिर टूल विलंबता, फिर कॉन्टेक्स्ट आकार, फिर पैरामीटर संख्या। TTY में, जाँचे गए परिणाम इंटरैक्टिव फ़ॉलबैक चयन के लिए संकेत देते हैं; गैर-इंटरैक्टिव मोड में डिफ़ॉल्ट स्वीकार करने के लिए `--yes` आवश्यक है।
 
   </Accordion>
 </AccordionGroup>
 
-<Note>
-Auth choice provider/account पर निर्भर करता है। Always-on Gateway hosts के लिए, API keys आमतौर पर सबसे predictable होती हैं; Claude CLI reuse और मौजूदा Anthropic OAuth/token profiles भी supported हैं।
-</Note>
+## मॉडल रजिस्ट्री (`models.json`)
 
-उदाहरण (Claude CLI):
-
-```bash
-claude auth login
-openclaw models status
-```
-
-## Scanning (OpenRouter free models)
-
-`openclaw models scan` OpenRouter के **free model catalog** की जाँच करता है और वैकल्पिक रूप से tool और image support के लिए models probe कर सकता है।
-
-<ParamField path="--no-probe" type="boolean">
-  Live probes छोड़ें (केवल metadata)।
-</ParamField>
-<ParamField path="--min-params <b>" type="number">
-  न्यूनतम parameter size (billions)।
-</ParamField>
-<ParamField path="--max-age-days <days>" type="number">
-  पुराने models छोड़ें।
-</ParamField>
-<ParamField path="--provider <name>" type="string">
-  Provider prefix filter।
-</ParamField>
-<ParamField path="--max-candidates <n>" type="number">
-  Fallback list size।
-</ParamField>
-<ParamField path="--set-default" type="boolean">
-  `agents.defaults.model.primary` को first selection पर set करें।
-</ParamField>
-<ParamField path="--set-image" type="boolean">
-  `agents.defaults.imageModel.primary` को first image selection पर set करें।
-</ParamField>
-
-<Note>
-OpenRouter `/models` catalog public है, इसलिए metadata-only scans बिना key के free candidates list कर सकते हैं। Probing और inference के लिए फिर भी OpenRouter API key चाहिए (auth profiles या `OPENROUTER_API_KEY` से)। यदि कोई key उपलब्ध नहीं है, तो `openclaw models scan` metadata-only output पर fallback करता है और config unchanged छोड़ता है। Metadata-only mode स्पष्ट रूप से request करने के लिए `--no-probe` उपयोग करें।
-</Note>
-
-Scan results इस आधार पर ranked होते हैं:
-
-1. Image support
-2. Tool latency
-3. Context size
-4. Parameter count
-
-Input:
-
-- OpenRouter `/models` list (filter `:free`)
-- Live probes के लिए auth profiles या `OPENROUTER_API_KEY` से OpenRouter API key चाहिए (देखें [Environment variables](/hi/help/environment))
-- Optional filters: `--max-age-days`, `--min-params`, `--provider`, `--max-candidates`
-- Request/probe controls: `--timeout`, `--concurrency`
-
-जब live probes TTY में चलते हैं, तो आप fallbacks interactively select कर सकते हैं। Non-interactive mode में, defaults स्वीकार करने के लिए `--yes` pass करें। Metadata-only results informational हैं; `--set-default` और `--set-image` के लिए live probes चाहिए ताकि OpenClaw unusable keyless OpenRouter model configure न करे।
-
-## Models registry (`models.json`)
-
-`models.providers` में custom providers agent directory के अंतर्गत `models.json` में लिखे जाते हैं (default `~/.openclaw/agents/<agentId>/agent/models.json`)। Provider-plugin catalogs agent की plugin state के अंतर्गत generated plugin-owned catalog shards के रूप में stored होते हैं और automatically load होते हैं। यह file default रूप से merge होती है जब तक `models.mode` को `replace` पर set न किया गया हो।
+`models.providers` के अंतर्गत कॉन्फ़िगर किए गए कस्टम प्रदाता एजेंट डायरेक्टरी (डिफ़ॉल्ट `~/.openclaw/agents/<agentId>/agent/models.json`) के अंतर्गत `models.json` में लिखे जाते हैं। प्रदाता-Plugin कैटलॉग अलग से जनरेट किए गए Plugin-स्वामित्व वाले कैटलॉग शार्ड के रूप में संग्रहीत होते हैं और स्वचालित रूप से लोड होते हैं। यह फ़ाइल डिफ़ॉल्ट रूप से कॉन्फ़िगरेशन के साथ मर्ज होती है; केवल अपने कॉन्फ़िगर किए गए प्रदाताओं का उपयोग करने के लिए `models.mode: "replace"` सेट करें।
 
 <AccordionGroup>
-  <Accordion title="Merge mode precedence">
-    Matching provider IDs के लिए merge mode precedence:
+  <Accordion title="मर्ज मोड की प्राथमिकता">
+    मेल खाने वाली प्रदाता ID के लिए:
 
-    - Agent `models.json` में पहले से मौजूद non-empty `baseUrl` जीतता है।
-    - Agent `models.json` में non-empty `apiKey` केवल तब जीतता है जब वह provider current config/auth-profile context में SecretRef-managed नहीं है।
-    - SecretRef-managed provider `apiKey` values resolved secrets persist करने के बजाय source markers (env refs के लिए `ENV_VAR_NAME`, file/exec refs के लिए `secretref-managed`) से refresh होती हैं।
-    - SecretRef-managed provider header values source markers (env refs के लिए `secretref-env:ENV_VAR_NAME`, file/exec refs के लिए `secretref-managed`) से refresh होती हैं।
-    - Empty या missing agent `apiKey`/`baseUrl` config `models.providers` पर fall back करते हैं।
-    - अन्य provider fields config और normalized catalog data से refresh होते हैं।
+    - एजेंट `models.json` में पहले से मौजूद गैर-रिक्त `baseUrl` को प्राथमिकता मिलती है।
+    - `models.json` में गैर-रिक्त `apiKey` को केवल तभी प्राथमिकता मिलती है, जब वह प्रदाता वर्तमान कॉन्फ़िगरेशन/प्रमाणीकरण-प्रोफ़ाइल संदर्भ में SecretRef द्वारा प्रबंधित न हो।
+    - SecretRef द्वारा प्रबंधित `apiKey` मान समाधान किए गए सीक्रेट सहेजने के बजाय स्रोत मार्कर से रीफ़्रेश होते हैं: env संदर्भों के लिए पर्यावरण वेरिएबल का नाम, और फ़ाइल/exec संदर्भों के लिए `secretref-managed`।
+    - SecretRef द्वारा प्रबंधित हेडर मान भी उसी तरह रीफ़्रेश होते हैं और env संदर्भों के लिए `secretref-env:ENV_VAR_NAME` का उपयोग करते हैं।
+    - `models.json` में रिक्त या अनुपस्थित `apiKey`/`baseUrl`, कॉन्फ़िगरेशन `models.providers` पर फ़ॉलबैक करते हैं।
+    - अन्य प्रदाता फ़ील्ड कॉन्फ़िगरेशन और सामान्यीकृत कैटलॉग डेटा से रीफ़्रेश होते हैं।
 
   </Accordion>
 </AccordionGroup>
 
-<Note>
-Marker persistence source-authoritative है: OpenClaw active source config snapshot (pre-resolution) से markers लिखता है, resolved runtime secret values से नहीं। यह तब भी लागू होता है जब OpenClaw `models.json` regenerate करता है, command-driven paths जैसे `openclaw agent` सहित।
-</Note>
+मार्कर का स्थायित्व स्रोत-प्रामाणिक है: जब भी OpenClaw `models.json` को पुनः जनरेट करता है—जिसमें `openclaw agent` जैसे कमांड-संचालित पथ भी शामिल हैं—वह समाधान किए गए रनटाइम सीक्रेट मानों के बजाय सक्रिय स्रोत कॉन्फ़िगरेशन स्नैपशॉट (समाधान-पूर्व) से मार्कर लिखता है।
 
 ## संबंधित
 
-- [Agent runtimes](/hi/concepts/agent-runtimes) — OpenClaw, Codex, और अन्य agent loop runtimes
-- [Configuration reference](/hi/gateway/config-agents#agent-defaults) — model config keys
-- [Image generation](/hi/tools/image-generation) — image model configuration
-- [Model failover](/hi/concepts/model-failover) — fallback chains
-- [Model providers](/hi/concepts/model-providers) — provider routing और auth
-- [Music generation](/hi/tools/music-generation) — music model configuration
-- [Video generation](/hi/tools/video-generation) — video model configuration
+- [एजेंट रनटाइम](/hi/concepts/agent-runtimes) — OpenClaw, Codex और अन्य एजेंट लूप रनटाइम
+- [कॉन्फ़िगरेशन संदर्भ](/hi/gateway/config-agents#agent-defaults) — मॉडल कॉन्फ़िगरेशन कुंजियाँ
+- [इमेज जनरेशन](/hi/tools/image-generation) — इमेज मॉडल कॉन्फ़िगरेशन
+- [मॉडल फ़ेलओवर](/hi/concepts/model-failover) — फ़ॉलबैक शृंखलाएँ
+- [मॉडल प्रदाता](/hi/concepts/model-providers) — प्रदाता रूटिंग और प्रमाणीकरण
+- [मॉडल CLI संदर्भ](/hi/cli/models) — पूर्ण कमांड और फ़्लैग संदर्भ
+- [संगीत जनरेशन](/hi/tools/music-generation) — संगीत मॉडल कॉन्फ़िगरेशन
+- [वीडियो जनरेशन](/hi/tools/video-generation) — वीडियो मॉडल कॉन्फ़िगरेशन

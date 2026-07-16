@@ -2,18 +2,19 @@
 read_when:
     - คุณกำลังติดตั้ง กำหนดค่า หรือตรวจสอบ Plugin tts-local-cli
 summary: เพิ่มการรองรับผู้ให้บริการแปลงข้อความเป็นเสียงพูด
-title: Plugin CLI ภายในเครื่องสำหรับ TTS
+title: Plugin CLI สำหรับ TTS ภายในเครื่อง
 x-i18n:
-    generated_at: "2026-07-12T16:35:04Z"
+    generated_at: "2026-07-16T19:29:32Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 65e8fd3b34a8edd70773316e0dae1fa894cfc7cf1bb216f9b5a9b53a33760330
+    source_hash: dda79fac2b7f67c0ed1ef8e920410580e25bf9be33c28966fea04694344b24a6
     source_path: plugins/reference/tts-local-cli.md
     workflow: 16
 ---
 
-# Plugin CLI TTS ภายในเครื่อง
+# Plugin CLI สำหรับ TTS ภายในเครื่อง
 
 เพิ่มการรองรับผู้ให้บริการแปลงข้อความเป็นเสียงพูด
 
@@ -22,6 +23,6 @@ x-i18n:
 - แพ็กเกจ: `@openclaw/tts-local-cli`
 - ช่องทางการติดตั้ง: รวมอยู่ใน OpenClaw
 
-## ส่วนเชื่อมต่อ
+## พื้นผิว
 
-สัญญา: speechProviders
+สัญญา: `speechProviders`

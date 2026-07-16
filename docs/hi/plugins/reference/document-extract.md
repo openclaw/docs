@@ -1,21 +1,22 @@
 ---
 read_when:
-    - आप document-extract Plugin इंस्टॉल, कॉन्फ़िगर या ऑडिट कर रहे हैं
-summary: स्थानीय दस्तावेज़ संलग्नकों से पाठ और वैकल्पिक पृष्ठ छवियाँ निकालें।
+    - आप document-extract Plugin को इंस्टॉल, कॉन्फ़िगर या ऑडिट कर रहे हैं
+summary: स्थानीय दस्तावेज़ अनुलग्नकों से टेक्स्ट और फ़ॉलबैक पृष्ठ छवियाँ निकालें।
 title: दस्तावेज़ निष्कर्षण Plugin
 x-i18n:
-    generated_at: "2026-06-28T23:43:51Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T16:29:13Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 3745783e57c15e75caf28491c6693c64fea018593662a43268e299ed42c3d574
+    source_hash: 173a860c28f293b52ed4a155dfb308713f0c0f5ef22c988c26b2440e1d63cf23
     source_path: plugins/reference/document-extract.md
     workflow: 16
 ---
 
-# Document Extract Plugin
+# दस्तावेज़ निष्कर्षण Plugin
 
-स्थानीय दस्तावेज़ अटैचमेंट से टेक्स्ट और फ़ॉलबैक पेज इमेज निकालें।
+स्थानीय दस्तावेज़ अटैचमेंट से टेक्स्ट और फ़ॉलबैक पृष्ठ छवियाँ निकालें।
 
 ## वितरण
 
@@ -24,8 +25,8 @@ x-i18n:
 
 ## सतह
 
-अनुबंध: documentExtractors
+अनुबंध: `documentExtractors`
 
 ## संबंधित दस्तावेज़
 
-- [document-extract](/hi/tools/pdf)
+- [दस्तावेज़ निष्कर्षण](/hi/tools/pdf)

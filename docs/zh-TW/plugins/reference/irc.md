@@ -4,11 +4,12 @@ read_when:
 summary: 新增 IRC 頻道介面，用於傳送及接收 OpenClaw 訊息。
 title: IRC 外掛
 x-i18n:
-    generated_at: "2026-07-11T21:39:48Z"
+    generated_at: "2026-07-16T11:54:20Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: ef4c5df880542d4d3554320f4d183a2464ef8b31d0e86edc1b6c63e1e41f35d3
+    source_hash: 91f258b4abd854e62fff7c769a6482e5dd2da6bdfbb831fd217a1f792ba2d255
     source_path: plugins/reference/irc.md
     workflow: 16
 ---
@@ -17,14 +18,14 @@ x-i18n:
 
 新增 IRC 頻道介面，用於傳送及接收 OpenClaw 訊息。
 
-## 發佈方式
+## 發佈
 
 - 套件：`@openclaw/irc`
-- 安裝來源：npm；ClawHub：`clawhub:@openclaw/irc`
+- 安裝管道：npm；ClawHub：`clawhub:@openclaw/irc`
 
 ## 介面
 
-頻道：irc
+頻道：`irc`
 
 ## 相關文件
 

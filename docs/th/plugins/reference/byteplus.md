@@ -4,11 +4,12 @@ read_when:
 summary: เพิ่มการรองรับผู้ให้บริการโมเดล BytePlus และ BytePlus Plan ใน OpenClaw
 title: Plugin BytePlus
 x-i18n:
-    generated_at: "2026-07-12T16:28:31Z"
+    generated_at: "2026-07-16T19:26:32Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: ecb4a427b1809c11631115b63e67bc7ce619191a0c840c13cf46cade27e76d4b
+    source_hash: cda52c7e6d054ab190d3a78483937e655aa4467b3c3031863233c27cfe5b4411
     source_path: plugins/reference/byteplus.md
     workflow: 16
 ---
@@ -17,11 +18,11 @@ x-i18n:
 
 เพิ่มการรองรับผู้ให้บริการโมเดล BytePlus และ BytePlus Plan ให้กับ OpenClaw
 
-## การจัดจำหน่าย
+## การเผยแพร่
 
 - แพ็กเกจ: `@openclaw/byteplus-provider`
-- ช่องทางการติดตั้ง: รวมอยู่ใน OpenClaw
+- เส้นทางการติดตั้ง: รวมอยู่ใน OpenClaw
 
-## ส่วนที่เปิดให้ใช้งาน
+## พื้นผิว
 
-ผู้ให้บริการ: byteplus, byteplus-plan; สัญญา: videoGenerationProviders
+ผู้ให้บริการ: `byteplus`, `byteplus-plan`; สัญญา: `videoGenerationProviders`

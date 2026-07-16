@@ -1,125 +1,144 @@
 ---
 read_when:
-    - Melakukan debug pada tab Instans
-    - Menyelidiki baris instans duplikat atau usang
-    - Mengubah koneksi WS Gateway atau suar system-event
-summary: Bagaimana entri kehadiran OpenClaw dihasilkan, digabungkan, dan ditampilkan
+    - Men-debug status langsung di halaman Perangkat UI Kontrol
+    - Menyelidiki baris instans yang duplikat atau kedaluwarsa
+    - Mengubah koneksi WS Gateway atau beacon peristiwa sistem
+summary: Bagaimana entri kehadiran OpenClaw dibuat, digabungkan, dan ditampilkan
 title: Kehadiran
 x-i18n:
-    generated_at: "2026-05-06T09:08:22Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T18:00:21Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 6ab76e81fc1842c747b0a33da8cf9874e3537c5ab023450ee1a6a314453e7263
+    source_hash: b50291e26ddc06fac888847c9e94eba5f9351b1b8d06c55fd6bec16a38d0b6a5
     source_path: concepts/presence.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-OpenClaw "kehadiran" adalah tampilan ringan dengan upaya terbaik untuk:
+"Presence" OpenClaw adalah tampilan ringan dengan upaya terbaik untuk:
 
 - **Gateway** itu sendiri, dan
-- **klien yang terhubung ke Gateway** (aplikasi mac, WebChat, CLI, dll.)
+- **klien yang terlihat oleh pengguna dan terhubung ke Gateway** (aplikasi Mac, WebChat, node, dll.)
 
-Kehadiran digunakan terutama untuk merender tab **Instans** aplikasi macOS dan untuk
-memberikan visibilitas operator secara cepat.
+Presence menampilkan metadata koneksi langsung di halaman **Devices** pada Control UI
+(di bawah **Settings → Devices**) dan tab **Instances** pada aplikasi macOS.
 
-## Bidang kehadiran (yang ditampilkan)
+Halaman ini membahas daftar klien Gateway. Untuk mendeteksi Mac yang terakhir
+Anda gunakan dan merutekan peringatan node ke sana, lihat
+[Presence komputer aktif](/nodes/presence).
 
-Entri kehadiran adalah objek terstruktur dengan bidang seperti:
+## Bidang presence (yang ditampilkan)
+
+Entri presence adalah objek terstruktur dengan bidang seperti:
 
 - `instanceId` (opsional tetapi sangat disarankan): identitas klien yang stabil (biasanya `connect.client.instanceId`)
-- `host`: nama host yang mudah dipahami manusia
-- `ip`: alamat IP dengan upaya terbaik
+- `host`: nama host yang mudah dibaca
+- `ip`: alamat IP berdasarkan upaya terbaik
 - `version`: string versi klien
 - `deviceFamily` / `modelIdentifier`: petunjuk perangkat keras
-- `mode`: `ui`, `webchat`, `cli`, `backend`, `probe`, `test`, `node`, ...
-- `lastInputSeconds`: "detik sejak input pengguna terakhir" (jika diketahui)
-- `reason`: `self`, `connect`, `node-connected`, `periodic`, ...
+- `mode`: `ui`, `webchat`, `cli`, `backend`, `node`, `probe`, `test`
+- `lastInputSeconds`: jumlah detik sejak input pengguna terakhir, jika diketahui
+- `reason`: string bebas yang disediakan klien; Gateway itu sendiri hanya mengeluarkan `self`, `connect`, dan `disconnect`
+- `deviceId`, `roles`, `scopes`: identitas perangkat serta petunjuk peran/cakupan dari handshake koneksi
 - `ts`: stempel waktu pembaruan terakhir (md sejak epoch)
 
-## Produsen (asal kehadiran)
+## Penghasil (asal presence)
 
-Entri kehadiran dihasilkan oleh beberapa sumber dan **digabungkan**.
+Entri presence dihasilkan oleh beberapa sumber dan **digabungkan**.
 
 ### 1) Entri mandiri Gateway
 
-Gateway selalu menyiapkan entri "mandiri" saat startup agar UI menampilkan host gateway
-bahkan sebelum ada klien yang terhubung.
+Gateway selalu membuat entri "mandiri" saat dimulai agar UI menampilkan host gateway
+bahkan sebelum klien terhubung.
 
 ### 2) Koneksi WebSocket
 
 Setiap klien WS dimulai dengan permintaan `connect`. Setelah handshake berhasil,
-Gateway melakukan upsert entri kehadiran untuk koneksi tersebut.
+Gateway melakukan upsert entri presence untuk koneksi tersebut.
 
-#### Mengapa perintah CLI sekali jalan tidak muncul
+#### Mengapa koneksi bidang kendali sementara tidak ditampilkan
 
-CLI sering terhubung untuk perintah singkat sekali jalan. Untuk menghindari spam pada
-daftar Instans, `client.mode === "cli"` **tidak** diubah menjadi entri kehadiran.
+Perintah CLI, klien RPC backend, dan probe sering kali terhubung secara singkat. Untuk menghindari
+penyimpanan perubahan cepat tersebut selama seluruh TTL presence, klien dalam mode `cli`, `backend`,
+atau `probe` **tidak** diubah menjadi entri presence. Klien mode pengujian
+tetap dilacak karena rangkaian pengujian menggunakannya sebagai pengganti klien nyata.
 
 ### 3) Beacon `system-event`
 
-Klien dapat mengirim beacon berkala yang lebih kaya melalui metode `system-event`. Aplikasi mac
-menggunakan ini untuk melaporkan nama host, IP, dan `lastInputSeconds`.
+Klien dapat mengirim beacon berkala yang lebih lengkap melalui metode `system-event`. Aplikasi
+Mac menggunakannya untuk melaporkan nama host, IP, dan `lastInputSeconds`.
 
-### 4) Koneksi Node (role: node)
+### 4) Koneksi node (peran: node)
 
-Ketika sebuah node terhubung melalui WebSocket Gateway dengan `role: node`, Gateway
-melakukan upsert entri kehadiran untuk node tersebut (alur yang sama seperti klien WS lainnya).
+Ketika node terhubung melalui WebSocket Gateway dengan `role: node`, Gateway
+melakukan upsert entri presence untuk node tersebut (alur yang sama seperti klien WS lainnya).
 
 ## Aturan penggabungan + deduplikasi (mengapa `instanceId` penting)
 
-Entri kehadiran disimpan dalam satu map dalam memori:
+Entri presence disimpan dalam satu peta dalam memori, dengan kunci yang tidak membedakan huruf besar-kecil
+berdasarkan nilai pertama yang tersedia, secara berurutan: ID perangkat yang dipasangkan, `connect.client.instanceId`,
+atau ID per koneksi sebagai pilihan terakhir.
 
-- Entri diberi kunci berdasarkan **kunci kehadiran**.
-- Kunci terbaik adalah `instanceId` yang stabil (dari `connect.client.instanceId`) yang bertahan setelah restart.
-- Kunci tidak peka huruf besar/kecil.
+Klien bidang kendali sementara sepenuhnya dikecualikan dari pelacakan (lihat
+di atas), sehingga ID koneksinya tidak pernah menjadi kunci. Untuk setiap klien lainnya,
+penggunaan ID koneksi sebagai pilihan terakhir berarti klien yang terhubung kembali tanpa
+`instanceId` yang stabil akan ditampilkan sebagai baris **duplikat**.
 
-Jika klien terhubung ulang tanpa `instanceId` yang stabil, klien tersebut dapat muncul sebagai
-baris **duplikat**.
+## TTL dan batas ukuran
 
-## TTL dan ukuran terbatas
+Presence sengaja bersifat sementara:
 
-Kehadiran sengaja dibuat sementara:
-
-- **TTL:** entri yang lebih lama dari 5 menit dipangkas
+- **TTL:** entri yang lebih lama dari 5 menit akan dihapus
 - **Entri maksimum:** 200 (yang paling lama dihapus terlebih dahulu)
 
-Ini menjaga daftar tetap segar dan menghindari pertumbuhan memori tanpa batas.
+Hal ini menjaga daftar tetap mutakhir dan menghindari pertumbuhan memori tanpa batas.
 
-## Catatan remote/tunnel (IP loopback)
+## Catatan untuk koneksi jarak jauh/tunnel (IP loopback)
 
-Ketika klien terhubung melalui tunnel SSH / penerusan port lokal, Gateway dapat
-melihat alamat remote sebagai `127.0.0.1`. Untuk menghindari penimpaan IP baik yang dilaporkan klien,
-alamat remote loopback diabaikan.
+Ketika klien terhubung melalui tunnel SSH / penerusan port lokal, Gateway
+mungkin melihat alamat jarak jauh sebagai `127.0.0.1`. Agar alamat tunnel tersebut
+tidak dicatat sebagai IP klien, penanganan koneksi sepenuhnya menghilangkan `ip` untuk
+klien yang terdeteksi lokal (loopback), alih-alih menuliskan alamat loopback
+ke dalam entri.
 
 ## Konsumen
 
-### Tab Instans macOS
+### Halaman Devices pada Control UI
+
+Halaman **Devices** menggabungkan `system-presence` dengan catatan pemasangan dan node
+yang persisten. Halaman tersebut menyematkan beacon mandiri Gateway di urutan pertama dan menggunakan ID perangkat atau
+instans yang cocok untuk metadata langsung platform, versi, model, serta keterkinian input.
+
+### Tab Instances macOS
 
 Aplikasi macOS merender keluaran `system-presence` dan menerapkan indikator status kecil
-(Aktif/Menganggur/Kedaluwarsa) berdasarkan usia pembaruan terakhir.
+(Active/Idle/Stale) berdasarkan usia pembaruan terakhir.
 
-## Tips debugging
+## Kiat penelusuran kesalahan
 
 - Untuk melihat daftar mentah, panggil `system-presence` terhadap Gateway.
 - Jika Anda melihat duplikat:
   - pastikan klien mengirim `client.instanceId` yang stabil dalam handshake
   - pastikan beacon berkala menggunakan `instanceId` yang sama
-  - periksa apakah entri yang diturunkan dari koneksi tidak memiliki `instanceId` (duplikat memang diharapkan)
+  - periksa apakah entri yang berasal dari koneksi tidak memiliki `instanceId` (duplikat memang diperkirakan)
 
 ## Terkait
 
 <CardGroup cols={2}>
-  <Card title="Indikator mengetik" href="/id/concepts/typing-indicators" icon="ellipsis">
-    Kapan indikator mengetik dikirim dan cara menyesuaikannya.
+  <Card title="Presence komputer aktif" href="/nodes/presence" icon="computer-mouse">
+    Bagaimana input fisik Mac memilih node aktif dan merutekan peringatan koneksi.
   </Card>
-  <Card title="Streaming dan chunking" href="/id/concepts/streaming" icon="bars-staggered">
-    Streaming keluar, chunking, dan pemformatan per saluran.
+  <Card title="Indikator pengetikan" href="/id/concepts/typing-indicators" icon="ellipsis">
+    Kapan indikator pengetikan dikirim dan cara menyesuaikannya.
+  </Card>
+  <Card title="Streaming dan pemotongan" href="/id/concepts/streaming" icon="bars-staggered">
+    Streaming keluar, pemotongan, dan pemformatan per kanal.
   </Card>
   <Card title="Arsitektur Gateway" href="/id/concepts/architecture" icon="diagram-project">
-    Komponen Gateway dan protokol WebSocket yang mendorong pembaruan kehadiran.
+    Komponen Gateway dan protokol WebSocket yang menggerakkan pembaruan presence.
   </Card>
   <Card title="Protokol Gateway" href="/id/gateway/protocol" icon="plug">
-    Protokol wire untuk `connect`, `system-event`, dan `system-presence`.
+    Protokol kabel untuk `connect`, `system-event`, dan `system-presence`.
   </Card>
 </CardGroup>

@@ -1,15 +1,16 @@
 ---
 read_when:
-    - Control UI'yi mevcut token'ınızla açmak istiyorsunuz
-    - Bir tarayıcı açmadan URL'yi yazdırmak istiyorsunuz
-summary: '`openclaw dashboard` için CLI başvurusu (Kontrol Arayüzünü açın)'
+    - Mevcut tokeninizle Kontrol Arayüzü'nü açmak istiyorsunuz
+    - Tarayıcı başlatmadan URL'yi yazdırmak istiyorsunuz
+summary: '`openclaw dashboard` için CLI başvurusu (Control UI''ı açma)'
 title: Gösterge Paneli
 x-i18n:
-    generated_at: "2026-07-12T12:08:34Z"
+    generated_at: "2026-07-16T16:47:20Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 349dff4bad7fc6aa622067ed502d7d6800b93ebcfe26d2594e602e06e564993f
+    source_hash: 168605e1e58827020b4d247afd513880335273e489995549377bc2dc1f8a3b25
     source_path: cli/dashboard.md
     workflow: 16
 ---
@@ -21,23 +22,35 @@ Mevcut kimlik doğrulamanızı kullanarak Denetim Arayüzü'nü açın.
 ```bash
 openclaw dashboard
 openclaw dashboard --no-open
+openclaw dashboard --json
 openclaw dashboard --yes
 ```
 
 - `--no-open`: URL'yi yazdırır ancak tarayıcı başlatmaz.
-- `--yes`: gerektiğinde sormadan Gateway'i başlatır/yükler.
+- `--json`: tarayıcı açmadan, panoyu kullanmadan, istem göstermeden veya Gateway'i başlatmadan makine tarafından okunabilir tek bir bağlantı nesnesi yazdırır.
+- `--yes`: gerektiğinde istem göstermeden Gateway'i başlatır/kurar.
+
+## Makine tarafından okunabilir çıktı
+
+Çözümlenmiş Denetim Arayüzü URL'sine ihtiyaç duyan masaüstü entegrasyonları ve betikler için `--json` kullanın:
+
+```bash
+openclaw dashboard --json
+```
+
+Yanıt; `url`, `httpUrl`, `wsUrl`, `port` ve `tokenIncluded` içerir. Gateway hazır değilse komut, `{"ok":false,"reason":"..."}` döndürür ve sıfırdan farklı bir kodla çıkar. SecretRef tarafından yönetilen belirteçler hiçbir zaman `url` içine eklenmez.
 
 Notlar:
 
 - Yapılandırılmış `gateway.auth.token` SecretRef'lerini mümkün olduğunda çözümler.
-- `gateway.tls.enabled` ayarını izler: TLS etkin Gateway'ler `https://` Denetim Arayüzü URL'lerini yazdırır/açar ve `wss://` üzerinden bağlanır.
-- `lan` veya joker karakterli bir `custom` bağlaması için aynı ana makinedeki başlatmalar her zaman loopback kullanır; çünkü joker karakter bir tarayıcı hedefi değildir. Düz metin `tailnet` ve `custom` bağlamaları da tarayıcının güvenli bir bağlama sahip olması için `127.0.0.1` kullanır; TLS etkin belirli ana makineler, sertifika adlarının eşleşmesi için yapılandırılmış adresi korur.
-- Komut, belirli bir arayüze bağlama için kimliği doğrulanmış bir loopback URL'si sunmadan önce yapılandırılmış arayüzü yoklar ve bu arayüz ile `127.0.0.1` adresinin aynı Gateway işlemi tarafından yönetildiğini doğrular. Dinleyici sahipliğinin belirsiz olması durumunda güvenli biçimde başarısız olur ve durumla ilgili yönlendirme sağlar.
-- SecretRef tarafından yönetilen token'lar için (çözümlenmiş veya çözümlenmemiş), yazdırılan, kopyalanan veya açılan URL hiçbir zaman token'ı içermez; böylece harici gizli bilgiler terminal çıktısına, pano geçmişine veya tarayıcı başlatma bağımsız değişkenlerine sızmaz.
-- `gateway.auth.token`, SecretRef tarafından yönetiliyor ancak çözümlenemiyorsa komut, geçersiz bir token yer tutucusu yerine token içermeyen bir URL ve düzeltme yönergeleri yazdırır.
-- Token ile kimliği doğrulanmış bir URL'nin panoya veya tarayıcıya iletilmesi başarısız olursa komut, token değerini yazdırmadan `OPENCLAW_GATEWAY_TOKEN`, `gateway.auth.token` ve `token` URL parçası anahtarını belirten güvenli bir elle kimlik doğrulama ipucu kaydeder.
+- `gateway.tls.enabled` ayarını izler: TLS etkin Gateway'ler, `https://` Denetim Arayüzü URL'lerini yazdırır/açar ve `wss://` üzerinden bağlanır.
+- `lan` veya joker karakterli bir `custom` bağlaması için, joker karakter bir tarayıcı hedefi olmadığından aynı ana makinedeki başlatmalar her zaman geri döngü arabirimini kullanır. Düz metin `tailnet` ve `custom` bağlamaları da tarayıcının güvenli bir bağlama sahip olması için `127.0.0.1` kullanır; TLS etkin belirli ana makineler, sertifika adlarının eşleşmesi için yapılandırılmış adresi korur.
+- Belirli bir arabirim bağlaması için kimliği doğrulanmış bir geri döngü URL'sini teslim etmeden önce komut, yapılandırılmış arabirimi yoklar ve bu arabirim ile `127.0.0.1` öğesinin aynı Gateway işlemi tarafından sahiplenildiğini doğrular. Dinleyici sahipliği belirsizse durum yönergeleri sunularak güvenli biçimde başarısız olunur.
+- SecretRef tarafından yönetilen belirteçlerde (çözümlenmiş veya çözümlenmemiş), yazdırılan/kopyalanan/açılan URL hiçbir zaman belirteci içermez; böylece harici gizli değerler terminal çıktısına, pano geçmişine veya tarayıcı başlatma bağımsız değişkenlerine sızmaz.
+- `gateway.auth.token` SecretRef tarafından yönetiliyor ancak çözümlenemiyorsa komut, geçersiz bir belirteç yer tutucusu yerine belirteç içermeyen bir URL ve düzeltme yönergeleri yazdırır.
+- Belirteçle kimliği doğrulanmış bir URL'nin panoya/tarayıcıya teslimi başarısız olursa komut, belirteç değerini yazdırmadan `OPENCLAW_GATEWAY_TOKEN`, `gateway.auth.token` ve URL parçası anahtarı `token` adlarını belirten güvenli bir manuel kimlik doğrulama ipucu günlüğe kaydeder.
 
 ## İlgili
 
 - [CLI başvurusu](/tr/cli)
-- [Gösterge paneli](/tr/web/dashboard)
+- [Kontrol Paneli](/tr/web/dashboard)

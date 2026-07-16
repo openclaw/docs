@@ -1,79 +1,92 @@
 ---
 read_when:
-    - Thêm hoặc sửa đổi phân tích cú pháp vị trí kênh
+    - Thêm hoặc sửa đổi cách phân tích vị trí kênh
     - Sử dụng các trường ngữ cảnh vị trí trong lời nhắc hoặc công cụ của tác nhân
-summary: Phân tích vị trí kênh đến (Telegram/WhatsApp/Matrix) và các trường ngữ cảnh
-title: Phân tích cú pháp vị trí kênh
+summary: Phân tích vị trí kênh và payload vị trí gửi đi có tính di động
+title: Phân tích vị trí kênh
 x-i18n:
-    generated_at: "2026-04-29T22:26:02Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T14:02:13Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 19c10a55e30c70a7af5d041f9a25c0a2783e3191403e7c0cedfbe7dd8f1a77c1
+    source_hash: c7e5647d02643ad6d95024b362228377690d7fdff66441fae367f0f5307217fb
     source_path: channels/location.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-OpenClaw chuẩn hóa các vị trí được chia sẻ từ các kênh chat thành:
+OpenClaw chuẩn hóa các vị trí được chia sẻ từ các kênh trò chuyện thành:
 
-- văn bản tọa độ ngắn gọn được thêm vào nội dung gửi đến, và
-- các trường có cấu trúc trong payload ngữ cảnh tự động trả lời. Nhãn, địa chỉ và chú thích/bình luận do kênh cung cấp được hiển thị vào prompt bằng khối JSON siêu dữ liệu không đáng tin cậy dùng chung, không chèn trực tiếp vào nội dung người dùng.
+- văn bản tọa độ ngắn gọn được nối vào nội dung đến, và
+- các trường có cấu trúc trong tải trọng ngữ cảnh trả lời tự động. Nhãn, địa chỉ và chú thích/bình luận do kênh cung cấp được kết xuất vào lời nhắc bằng khối JSON siêu dữ liệu không đáng tin cậy dùng chung, thay vì chèn trực tiếp vào nội dung người dùng.
 
 Hiện được hỗ trợ:
 
-- **Telegram** (ghim vị trí + địa điểm + vị trí trực tiếp)
-- **WhatsApp** (locationMessage + liveLocationMessage)
+- **LINE** (tin nhắn vị trí có tiêu đề/địa chỉ)
 - **Matrix** (`m.location` với `geo_uri`)
+- **Telegram** (ghim vị trí + địa điểm + vị trí trực tiếp)
+- **WhatsApp** (`locationMessage` + `liveLocationMessage`)
 
 ## Định dạng văn bản
 
-Vị trí được hiển thị dưới dạng các dòng thân thiện không có dấu ngoặc:
+Vị trí được kết xuất thành các dòng thân thiện, không có dấu ngoặc. Tọa độ sử dụng sáu chữ số thập phân; độ chính xác được làm tròn đến mét nguyên:
 
 - Ghim:
   - `📍 48.858844, 2.294351 ±12m`
-- Địa điểm có tên:
+- Địa điểm có tên (trên cùng một dòng; tên/địa chỉ chỉ được đưa vào khối siêu dữ liệu):
   - `📍 48.858844, 2.294351 ±12m`
 - Chia sẻ trực tiếp:
   - `🛰 Live location: 48.858844, 2.294351 ±12m`
 
-Nếu kênh bao gồm nhãn, địa chỉ hoặc chú thích/bình luận, thông tin đó được giữ lại trong payload ngữ cảnh và xuất hiện trong prompt dưới dạng JSON không đáng tin cậy được đặt trong khối rào:
+Nếu kênh có nhãn, địa chỉ hoặc chú thích/bình luận, thông tin đó được giữ nguyên trong tải trọng ngữ cảnh và xuất hiện trong lời nhắc dưới dạng JSON không đáng tin cậy có hàng rào (các trường sẽ bị lược bỏ khi không có):
 
 ````text
-Location (untrusted metadata):
+Vị trí (siêu dữ liệu không đáng tin cậy):
 ```json
 {
   "latitude": 48.858844,
   "longitude": 2.294351,
-  "name": "Eiffel Tower",
+  "accuracy_m": 12,
+  "source": "place",
+  "name": "Tháp Eiffel",
   "address": "Champ de Mars, Paris",
-  "caption": "Meet here"
+  "caption": "Gặp nhau ở đây"
 }
 ```
 ````
 
-## Trường ngữ cảnh
+## Các trường ngữ cảnh
 
-Khi có vị trí, các trường này được thêm vào `ctx`:
+Khi có vị trí, các trường sau được thêm vào `ctx`:
 
-- `LocationLat` (number)
-- `LocationLon` (number)
-- `LocationAccuracy` (number, mét; tùy chọn)
-- `LocationName` (string; tùy chọn)
-- `LocationAddress` (string; tùy chọn)
+- `LocationLat` (số)
+- `LocationLon` (số)
+- `LocationAccuracy` (số, mét; không bắt buộc)
+- `LocationName` (chuỗi; không bắt buộc)
+- `LocationAddress` (chuỗi; không bắt buộc)
 - `LocationSource` (`pin | place | live`)
 - `LocationIsLive` (boolean)
-- `LocationCaption` (string; tùy chọn)
+- `LocationCaption` (chuỗi; không bắt buộc)
 
-Bộ kết xuất prompt xem `LocationName`, `LocationAddress` và `LocationCaption` là siêu dữ liệu không đáng tin cậy và tuần tự hóa chúng qua cùng đường dẫn JSON có giới hạn được dùng cho ngữ cảnh kênh khác.
+Khi kênh không đặt nguồn tường minh, OpenClaw sẽ suy luận nguồn: các lượt chia sẻ trực tiếp trở thành `live`, vị trí có tên hoặc địa chỉ trở thành `place`, mọi trường hợp khác là `pin`.
+
+Trình kết xuất lời nhắc coi `LocationName`, `LocationAddress` và `LocationCaption` là siêu dữ liệu không đáng tin cậy và tuần tự hóa chúng qua cùng đường dẫn JSON có giới hạn được sử dụng cho ngữ cảnh kênh khác.
+
+## Tải trọng gửi đi
+
+Công cụ tin nhắn và SDK Plugin sử dụng cùng cấu trúc `NormalizedLocation` cho các vị trí gửi đi có tính di động. Tải trọng chỉ có tọa độ biểu thị một ghim. Các kênh hỗ trợ địa điểm gốc có thể ánh xạ `name` cùng `address` sang một thẻ địa điểm.
+
+Telegram hiện cung cấp tính năng này qua `message(action="send")`. Bản triển khai đầu tiên được chủ ý thiết kế độc lập: tải trọng vị trí không thể kết hợp với văn bản hoặc phương tiện, và các cặp địa điểm không đầy đủ sẽ thất bại thay vì âm thầm loại bỏ tên hoặc địa chỉ. Các kênh không được hỗ trợ không quảng bá tham số vị trí.
 
 ## Ghi chú về kênh
 
-- **Telegram**: địa điểm ánh xạ sang `LocationName/LocationAddress`; vị trí trực tiếp dùng `live_period`.
+- **LINE**: `title`/`address` của tin nhắn vị trí ánh xạ đến `LocationName`/`LocationAddress`; không có vị trí trực tiếp.
+- **Matrix**: `geo_uri` được phân tích cú pháp thành vị trí ghim; tham số `u` (độ bất định) ánh xạ đến `LocationAccuracy`, nội dung sự kiện điền vào `LocationCaption`, độ cao bị bỏ qua và `LocationIsLive` luôn là false.
+- **Telegram**: các địa điểm ánh xạ đến `LocationName`/`LocationAddress`; vị trí trực tiếp được phát hiện qua `live_period`.
 - **WhatsApp**: `locationMessage.comment` và `liveLocationMessage.caption` điền vào `LocationCaption`.
-- **Matrix**: `geo_uri` được phân tích cú pháp như một vị trí ghim; độ cao bị bỏ qua và `LocationIsLive` luôn là false.
 
 ## Liên quan
 
-- [Lệnh vị trí (nodes)](/vi/nodes/location-command)
-- [Chụp bằng camera](/vi/nodes/camera)
-- [Hiểu nội dung phương tiện](/vi/nodes/media-understanding)
+- [Lệnh vị trí (các Node)](/vi/nodes/location-command)
+- [Chụp ảnh bằng camera](/vi/nodes/camera)
+- [Nhận hiểu phương tiện](/vi/nodes/media-understanding)

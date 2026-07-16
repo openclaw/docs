@@ -1,15 +1,15 @@
 ---
 read_when:
-    - Вы устанавливаете, настраиваете или проверяете плагин admin-http-rpc.
+    - Вы устанавливаете, настраиваете или проверяете плагин admin-http-rpc
 summary: HTTP RPC-эндпоинт администрирования OpenClaw.
-title: Плагин администрирования HTTP RPC
+title: Плагин Admin Http Rpc
 x-i18n:
-    generated_at: "2026-07-13T18:32:22Z"
+    generated_at: "2026-07-16T17:10:44Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
-    prompt_version: 24
+    prompt_version: 32
     provider: openai
-    source_hash: 58909f4c97bfacc22d3a597939ff8724ec111995841822962c66305140aef4ba
+    source_hash: 3e3875dd776c0f4dd58977b503de22989ddab5add4dd37a0e1c7f5cb4e306044
     source_path: plugins/reference/admin-http-rpc.md
     workflow: 16
 ---
@@ -21,12 +21,12 @@ x-i18n:
 ## Распространение
 
 - Пакет: `@openclaw/admin-http-rpc`
-- Способ установки: входит в состав OpenClaw
+- Способ установки: включён в OpenClaw
 
 ## Интерфейс
 
-контракты: gatewayMethodDispatch
+контракты: `gatewayMethodDispatch`
 
-## Связанная документация
+## Связанные документы
 
 - [admin-http-rpc](/ru/plugins/admin-http-rpc)

@@ -1,15 +1,15 @@
 ---
 read_when:
     - Вы устанавливаете, настраиваете или проверяете плагин qa-channel
-summary: Добавляет интерфейс канала QA для отправки и получения сообщений OpenClaw.
+summary: Добавляет интерфейс QA Channel для отправки и получения сообщений OpenClaw.
 title: Плагин канала QA
 x-i18n:
-    generated_at: "2026-07-13T20:07:37Z"
+    generated_at: "2026-07-16T16:43:56Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
-    prompt_version: 24
+    prompt_version: 32
     provider: openai
-    source_hash: 3c6f0aec62fb014895d11fa46b75626d929c326eb2ded463188e4338f0fdae5d
+    source_hash: 09d9255a5f9783bd3153b7e790428ccbae9d9383cacda36b796494b5651fe91a
     source_path: plugins/reference/qa-channel.md
     workflow: 16
 ---
@@ -25,7 +25,7 @@ x-i18n:
 
 ## Интерфейс
 
-каналы: qa-channel
+каналы: `qa-channel`
 
 ## Связанная документация
 

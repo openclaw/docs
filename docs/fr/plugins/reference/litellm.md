@@ -4,27 +4,28 @@ read_when:
 summary: Ajoute la prise en charge du fournisseur de modèles LiteLLM à OpenClaw.
 title: Plugin LiteLLM
 x-i18n:
-    generated_at: "2026-07-12T03:08:30Z"
+    generated_at: "2026-07-16T13:35:39Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 8bbe9b35112012185719c87aa0f027422f574e995cefcfe2bc1f243d9b3b43a9
+    source_hash: 3262796d0254cb5672312fc9d8012ea1f5527a2c31798e50cfbe9391f90f3402
     source_path: plugins/reference/litellm.md
     workflow: 16
 ---
 
 # Plugin LiteLLM
 
-Ajoute à OpenClaw la prise en charge du fournisseur de modèles LiteLLM.
+Ajoute la prise en charge du fournisseur de modèles LiteLLM à OpenClaw.
 
 ## Distribution
 
-- Paquet : `@openclaw/litellm-provider`
-- Mode d’installation : inclus dans OpenClaw
+- Paquet : `@openclaw/litellm-provider`
+- Mode d’installation : inclus dans OpenClaw
 
 ## Surface
 
-fournisseurs : litellm ; contrats : imageGenerationProviders
+fournisseurs : `litellm`; contrats : `imageGenerationProviders`
 
 ## Documentation associée
 

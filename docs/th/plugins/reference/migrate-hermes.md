@@ -1,21 +1,22 @@
 ---
 read_when:
     - คุณกำลังติดตั้ง กำหนดค่า หรือตรวจสอบ Plugin migrate-hermes
-summary: นำเข้าการกำหนดค่า ความทรงจำ Skills และข้อมูลรับรองที่รองรับของ Hermes ไปยัง OpenClaw
-title: ย้ายข้อมูล Plugin Hermes
+summary: นำเข้าการกำหนดค่า ความทรงจำ Skills และข้อมูลประจำตัวที่รองรับของ Hermes ไปยัง OpenClaw
+title: ย้าย Plugin Hermes
 x-i18n:
-    generated_at: "2026-07-12T16:28:09Z"
+    generated_at: "2026-07-16T19:34:50Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 231102d87795a43c45d8fb5dc12cda4faf8f4b9c4f85254e7d44676fead7f00c
+    source_hash: 9356a826ec15776dafb71f46c112a802ba52be1c16a585c9a554f686c9622add
     source_path: plugins/reference/migrate-hermes.md
     workflow: 16
 ---
 
 # ย้ายข้อมูล Plugin Hermes
 
-นำเข้าการกำหนดค่า หน่วยความจำ Skills และข้อมูลรับรองที่รองรับของ Hermes เข้าสู่ OpenClaw
+นำเข้าการกำหนดค่า หน่วยความจำ Skills และข้อมูลประจำตัวที่รองรับของ Hermes เข้าสู่ OpenClaw
 
 ## การเผยแพร่
 
@@ -24,4 +25,4 @@ x-i18n:
 
 ## ส่วนติดต่อ
 
-contracts: migrationProviders
+สัญญา: `migrationProviders`

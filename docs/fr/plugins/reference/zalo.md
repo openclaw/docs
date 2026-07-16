@@ -1,21 +1,22 @@
 ---
 read_when:
-    - Vous installez, configurez ou auditez le Plugin zalo
+    - Vous installez, configurez ou auditez le plugin zalo
 summary: Plugin de canal Zalo pour OpenClaw destiné aux conversations par bot et Webhook.
 title: Plugin Zalo
 x-i18n:
-    generated_at: "2026-07-12T02:59:19Z"
+    generated_at: "2026-07-16T13:38:02Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: ff9da1e1591eaad36db74a27f817dd9dac8791af2d5030fcd3419ee50d2ed4aa
+    source_hash: a4b94a8f8907373d12d0958496c18e5fb3dff0442a01e2a8a521993b9025d990
     source_path: plugins/reference/zalo.md
     workflow: 16
 ---
 
 # Plugin Zalo
 
-Plugin de canal Zalo pour OpenClaw, destiné aux conversations avec des bots et via Webhook.
+Plugin de canal Zalo pour OpenClaw, destiné aux conversations par bot et Webhook.
 
 ## Distribution
 
@@ -24,8 +25,8 @@ Plugin de canal Zalo pour OpenClaw, destiné aux conversations avec des bots et 
 
 ## Surface
 
-canaux : zalo
+canaux : `zalo`
 
 ## Documentation associée
 
-- [zalo](/fr/channels/zalo)
+- [Zalo](/fr/channels/zalo)

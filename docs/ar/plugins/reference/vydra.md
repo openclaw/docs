@@ -1,14 +1,15 @@
 ---
 read_when:
-    - أنت تقوم بتثبيت Plugin ‏vydra أو تهيئته أو تدقيقه
+    - أنت تثبّت Plugin ‏vydra أو تهيّئه أو تدقّقه
 summary: يضيف دعم موفّر نماذج Vydra إلى OpenClaw.
-title: Plugin ‏Vydra
+title: Plugin Vydra
 x-i18n:
-    generated_at: "2026-07-12T06:23:07Z"
+    generated_at: "2026-07-16T14:35:01Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 21d6803f6ac505cc1c9e5e3e798997b05a398a06c5093a2f6b4e253523a0b892
+    source_hash: 33561ad201ed8ce3711bb960d3c62be3a5d32fd28510c50cc5270d8596b84fc6
     source_path: plugins/reference/vydra.md
     workflow: 16
 ---
@@ -24,7 +25,7 @@ x-i18n:
 
 ## الواجهات
 
-الموفّرون: vydra؛ العقود: imageGenerationProviders، speechProviders، videoGenerationProviders
+الموفّرون: `vydra`؛ العقود: `imageGenerationProviders`، `speechProviders`، `videoGenerationProviders`
 
 ## الوثائق ذات الصلة
 

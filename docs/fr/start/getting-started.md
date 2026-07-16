@@ -1,15 +1,16 @@
 ---
 read_when:
     - Première configuration à partir de zéro
-    - Vous souhaitez la méthode la plus rapide pour disposer d’un chat fonctionnel
+    - Vous recherchez le moyen le plus rapide d’obtenir une messagerie fonctionnelle
 summary: Installez OpenClaw et lancez votre première conversation en quelques minutes.
 title: Prise en main
 x-i18n:
-    generated_at: "2026-07-12T03:20:29Z"
+    generated_at: "2026-07-16T13:50:10Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 308ca58b8a11832b5a4c0d4634d1c88ef44681ef755a18d675bcff60b5aba929
+    source_hash: 8f50073b059477636b94e128cec90b41dcc21c8bb132e34900e68409cacf70eb
     source_path: start/getting-started.md
     workflow: 16
 ---
@@ -20,14 +21,14 @@ session de discussion fonctionnelle.
 
 ## Prérequis
 
-- **Node.js 22.19+, 23.11+ ou 24+** (la version 24 est recommandée par défaut)
-- **Une clé API** fournie par un fournisseur de modèles (Anthropic, OpenAI, Google, etc.) — l’assistant d’intégration vous la demandera
+- **Node.js 22.22.3+, 24.15+ ou 25.9+** (24 est la version recommandée par défaut)
+- **Une clé API** d’un fournisseur de modèles (Anthropic, OpenAI, Google, etc.) — elle vous sera demandée lors de l’intégration
 
 <Tip>
 Vérifiez votre version de Node avec `node --version`.
-**Utilisateurs de Windows :** l’application Windows Hub native constitue la solution la plus simple sur ordinateur. Le
-programme d’installation PowerShell et les configurations du Gateway sous WSL2 sont également pris en charge. Consultez [Windows](/fr/platforms/windows).
-Vous devez installer Node ? Consultez [Configuration de Node](/fr/install/node).
+**Utilisateurs de Windows :** l’application de bureau native Windows Hub constitue la solution la plus simple. Le
+programme d’installation PowerShell et les configurations Gateway sous WSL2 sont également pris en charge. Consultez [Windows](/fr/platforms/windows).
+Vous devez installer Node ? Consultez [Installation de Node](/fr/install/node).
 </Tip>
 
 ## Configuration rapide
@@ -66,7 +67,7 @@ Vous devez installer Node ? Consultez [Configuration de Node](/fr/install/node).
     et la configuration du Gateway. Le démarrage rapide ne prend généralement que quelques minutes, mais
     la connexion au fournisseur, l’association d’un canal, l’installation du démon, les téléchargements réseau, les Skills
     ou les plugins facultatifs peuvent prolonger l’intégration complète. Ignorez les
-    étapes facultatives et revenez-y plus tard avec `openclaw configure`.
+    étapes facultatives et revenez-y ultérieurement avec `openclaw configure`.
 
     Consultez [Intégration (CLI)](/fr/start/wizard) pour la documentation de référence complète.
 
@@ -84,23 +85,23 @@ Vous devez installer Node ? Consultez [Configuration de Node](/fr/install/node).
     openclaw dashboard
     ```
 
-    Cette commande ouvre l’interface de contrôle dans votre navigateur. Si elle se charge, tout fonctionne correctement.
+    Cette commande ouvre l’interface de contrôle dans votre navigateur. Si elle se charge, tout fonctionne.
 
   </Step>
   <Step title="Envoyer votre premier message">
     Saisissez un message dans la discussion de l’interface de contrôle ; vous devriez recevoir une réponse de l’IA.
 
     Vous préférez discuter depuis votre téléphone ? Le canal le plus rapide à configurer est
-    [Telegram](/fr/channels/telegram) (un simple jeton de bot suffit). Consultez [Canaux](/fr/channels)
+    [Telegram](/fr/channels/telegram) (un simple jeton de bot). Consultez [Canaux](/fr/channels)
     pour découvrir toutes les options.
 
   </Step>
 </Steps>
 
 <Accordion title="Avancé : monter une version personnalisée de l’interface de contrôle">
-  Si vous gérez une version localisée ou personnalisée du tableau de bord, définissez
-  `gateway.controlUi.root` sur un répertoire contenant vos ressources statiques
-  compilées et le fichier `index.html`.
+  Si vous gérez une version localisée ou personnalisée du tableau de bord, faites pointer
+  `gateway.controlUi.root` vers un répertoire contenant vos ressources statiques
+  compilées et `index.html`.
 
 ```bash
 mkdir -p "$HOME/.openclaw/control-ui-custom"
@@ -133,7 +134,7 @@ openclaw dashboard
 
 <Columns>
   <Card title="Connecter un canal" href="/fr/channels" icon="message-square">
-    Discord, Feishu, iMessage, Matrix, Microsoft Teams, Signal, Slack, Telegram, WhatsApp, Zalo et bien d’autres.
+    Discord, Feishu, iMessage, Matrix, Microsoft Teams, Signal, Slack, Telegram, WhatsApp, Zalo, et plus encore.
   </Card>
   <Card title="Association et sécurité" href="/fr/channels/pairing" icon="shield">
     Contrôlez qui peut envoyer des messages à votre agent.
@@ -149,15 +150,15 @@ openclaw dashboard
 <Accordion title="Avancé : variables d’environnement">
   Si vous exécutez OpenClaw avec un compte de service ou souhaitez utiliser des chemins personnalisés :
 
-- `OPENCLAW_HOME` — répertoire personnel utilisé pour la résolution des chemins internes
+- `OPENCLAW_HOME` — répertoire personnel pour la résolution des chemins internes
 - `OPENCLAW_STATE_DIR` — remplace le répertoire d’état
 - `OPENCLAW_CONFIG_PATH` — remplace le chemin du fichier de configuration
 
-Documentation de référence complète : [Variables d’environnement](/fr/help/environment).
+Documentation complète : [Variables d’environnement](/fr/help/environment).
 </Accordion>
 
-## Ressources associées
+## Voir aussi
 
-- [Vue d’ensemble de l’installation](/fr/install)
-- [Vue d’ensemble des canaux](/fr/channels)
+- [Présentation de l’installation](/fr/install)
+- [Présentation des canaux](/fr/channels)
 - [Configuration](/fr/start/setup)

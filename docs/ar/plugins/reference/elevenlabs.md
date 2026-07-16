@@ -1,21 +1,22 @@
 ---
 read_when:
     - أنت تثبّت Plugin ‏elevenlabs أو تهيئه أو تدقّق فيه
-summary: يضيف دعم مزوّدي فهم الوسائط. يضيف دعم مزوّدي النسخ الفوري. يضيف دعم مزوّدي تحويل النص إلى كلام.
-title: Plugin ‏ElevenLabs
+summary: يضيف دعم موفّر فهم الوسائط. يضيف دعم موفّر النسخ الفوري. يضيف دعم موفّر تحويل النص إلى كلام.
+title: Plugin Elevenlabs
 x-i18n:
-    generated_at: "2026-07-12T06:20:37Z"
+    generated_at: "2026-07-16T14:49:42Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 6a1461a4e6be6145245df937d9438aaba563febe02dd44141f0d1da1ea1c409b
+    source_hash: 2a25d78114eca6ddd519a09e457c7158b6049e52ec62040009fd202fd06dba7f
     source_path: plugins/reference/elevenlabs.md
     workflow: 16
 ---
 
-# Plugin ‏ElevenLabs
+# Plugin ‏Elevenlabs
 
-يضيف دعم موفّر لفهم الوسائط. ويضيف دعم موفّر للنسخ الفوري. ويضيف دعم موفّر لتحويل النص إلى كلام.
+يضيف دعم موفّر فهم الوسائط. ويضيف دعم موفّر النسخ النصي في الوقت الفعلي. ويضيف دعم موفّر تحويل النص إلى كلام.
 
 ## التوزيع
 
@@ -24,8 +25,8 @@ x-i18n:
 
 ## الواجهات
 
-العقود: mediaUnderstandingProviders، realtimeTranscriptionProviders، speechProviders
+العقود: `mediaUnderstandingProviders`، `realtimeTranscriptionProviders`، `speechProviders`
 
 ## الوثائق ذات الصلة
 
-- [ElevenLabs](/ar/providers/elevenlabs)
+- [elevenlabs](/ar/providers/elevenlabs)

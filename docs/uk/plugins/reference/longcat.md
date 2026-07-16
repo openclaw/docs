@@ -1,14 +1,15 @@
 ---
 read_when:
     - Ви встановлюєте, налаштовуєте або перевіряєте Plugin longcat.
-summary: Plugin провайдера LongCat для OpenClaw.
+summary: Плагін провайдера LongCat для OpenClaw.
 title: Plugin LongCat
 x-i18n:
-    generated_at: "2026-07-12T13:30:31Z"
+    generated_at: "2026-07-16T18:20:47Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: f4a7a4085e102508c9f209f32d275dce91a844421d89ece7cde266e634752e21
+    source_hash: ef3aaa427e8b5dc2195df54f5abad25815677c61395f1fc541096875f43a0976
     source_path: plugins/reference/longcat.md
     workflow: 16
 ---
@@ -19,12 +20,12 @@ Plugin постачальника LongCat для OpenClaw.
 
 ## Розповсюдження
 
-- Пакет: `@openclaw/longcat-provider`
+- Пакунок: `@openclaw/longcat-provider`
 - Спосіб установлення: npm; ClawHub: `clawhub:@openclaw/longcat-provider`
 
 ## Інтерфейс
 
-постачальники: longcat
+постачальники: `longcat`
 
 ## Пов’язана документація
 

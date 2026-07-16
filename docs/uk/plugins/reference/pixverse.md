@@ -1,14 +1,15 @@
 ---
 read_when:
     - Ви встановлюєте, налаштовуєте або перевіряєте plugin pixverse
-summary: Plugin постачальника генерації відео PixVerse для OpenClaw.
-title: Plugin PixVerse
+summary: Плагін постачальника генерації відео PixVerse для OpenClaw.
+title: Плагін PixVerse
 x-i18n:
-    generated_at: "2026-07-12T13:35:41Z"
+    generated_at: "2026-07-16T18:21:42Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 99ebe964ed48bcb8cc00a34fdde9269cdb02cb2c7a13f7ed2ab48b784d168b41
+    source_hash: b626078ace5566db7795bab7f1319256043620bc4a1b28706ee6aec578878836
     source_path: plugins/reference/pixverse.md
     workflow: 16
 ---
@@ -19,12 +20,12 @@ Plugin постачальника генерації відео PixVerse для 
 
 ## Розповсюдження
 
-- Пакет: `@openclaw/pixverse-provider`
+- Пакунок: `@openclaw/pixverse-provider`
 - Спосіб установлення: npm; ClawHub: `clawhub:@openclaw/pixverse-provider`
 
 ## Інтерфейс
 
-контракти: videoGenerationProviders
+контракти: `videoGenerationProviders`
 
 ## Пов’язана документація
 

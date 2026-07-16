@@ -1,17 +1,18 @@
 ---
 summary: /automation/cron-jobs पर रीडायरेक्ट करें
-title: Webhook
+title: Webhooks
 x-i18n:
-    generated_at: "2026-06-28T22:32:55Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T13:13:36Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: b0241fc7232c73d1f595f18fdf1a2d65475c6a82e3068b0aefb4f95f41712086
+    source_hash: fde1180946aef371d4e44b24f3880f28e935a033c9a722ea3b188f893faf9e17
     source_path: automation/webhook.md
     workflow: 16
 ---
 
-यह पृष्ठ [निर्धारित कार्य](/hi/automation/cron-jobs#webhooks) पर स्थानांतरित हो गया है। Webhook दस्तावेज़ के लिए [निर्धारित कार्य](/hi/automation/cron-jobs#webhooks) देखें।
+यह पृष्ठ स्थानांतरित हो गया है। Webhook दस्तावेज़ अब [निर्धारित कार्य](/hi/automation/cron-jobs#webhooks) पर उपलब्ध हैं।
 
 ## संबंधित
 

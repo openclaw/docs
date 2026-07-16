@@ -1,14 +1,15 @@
 ---
 read_when:
-    - Sie installieren, konfigurieren oder prüfen das Plugin admin-http-rpc.
+    - Sie installieren, konfigurieren oder prüfen das admin-http-rpc-Plugin.
 summary: OpenClaw-HTTP-RPC-Endpunkt für die Administration.
 title: Admin-HTTP-RPC-Plugin
 x-i18n:
-    generated_at: "2026-07-12T01:55:37Z"
+    generated_at: "2026-07-16T13:07:43Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 58909f4c97bfacc22d3a597939ff8724ec111995841822962c66305140aef4ba
+    source_hash: 3e3875dd776c0f4dd58977b503de22989ddab5add4dd37a0e1c7f5cb4e306044
     source_path: plugins/reference/admin-http-rpc.md
     workflow: 16
 ---
@@ -24,7 +25,7 @@ OpenClaw-Admin-HTTP-RPC-Endpunkt.
 
 ## Oberfläche
 
-Verträge: gatewayMethodDispatch
+Verträge: `gatewayMethodDispatch`
 
 ## Zugehörige Dokumentation
 

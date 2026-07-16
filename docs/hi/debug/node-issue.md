@@ -1,98 +1,94 @@
 ---
 read_when:
-    - केवल Node वाली डेवलपमेंट स्क्रिप्ट या वॉच मोड विफलताओं की डीबगिंग
-    - OpenClaw में tsx/esbuild लोडर क्रैश की जाँच
-summary: Node + tsx "__name is not a function" क्रैश नोट्स और समाधान
+    - अनुपलब्ध __name हेल्पर का उल्लेख करने वाले tsx/esbuild लोडर क्रैश की जाँच करना
+summary: ऐतिहासिक Node + tsx "__name is not a function" क्रैश और उसका कारण
 title: Node + tsx क्रैश
 x-i18n:
-    generated_at: "2026-06-28T23:04:54Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T14:40:21Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 808f04959c70c96c983fb2517234d4c06712049d7afebb9b1b4b340df75d7d70
+    source_hash: 97d2f62d24860cee65753027ba84c14c8d4ffb910ee17bb0032cf0409c427589
     source_path: debug/node-issue.md
     workflow: 16
 ---
 
 # Node + tsx "\_\_name is not a function" क्रैश
 
-## सारांश
+## स्थिति
 
-`tsx` के साथ Node के जरिए OpenClaw चलाने पर startup में यह विफल होता है:
+समाधान हो चुका है। यह क्रैश
+`package.json` (`4.22.3`) में पिन किए गए मौजूदा `tsx` संस्करण या मौजूदा Node रिलीज़ पर पुनरुत्पादित नहीं होता। इसे यहाँ इसलिए रखा गया है, ताकि भविष्य में
+`tsx`/esbuild अपग्रेड द्वारा इसे फिर से उत्पन्न किए जाने पर संदर्भ उपलब्ध रहे।
 
+## मूल लक्षण
+
+`tsx` के माध्यम से OpenClaw डेवलपमेंट स्क्रिप्ट चलाना स्टार्टअप पर इस त्रुटि के साथ विफल हुआ:
+
+```text
+[openclaw] CLI शुरू करने में विफल: TypeError: __name कोई फ़ंक्शन नहीं है
+    createSubsystemLogger पर (src/logging/subsystem.ts)
+    <caller> पर (src/agents/auth-profiles/constants.ts)
 ```
-[openclaw] Failed to start CLI: TypeError: __name is not a function
-    at createSubsystemLogger (.../src/logging/subsystem.ts:203:25)
-    at .../src/agents/auth-profiles/constants.ts:25:20
-```
 
-यह dev scripts को Bun से `tsx` पर स्विच करने के बाद शुरू हुआ (commit `2871657e`, 2026-01-06)। वही runtime path Bun के साथ काम करता था।
+पंक्ति संख्याएँ छोड़ दी गई हैं; मूल क्रैश के बाद से दोनों फ़ाइलें बदल चुकी हैं
+और विशिष्ट पंक्तियाँ अब मेल नहीं खातीं।
 
-## Environment
+यह समस्या डेवलपमेंट स्क्रिप्ट द्वारा Bun को वैकल्पिक बनाने के लिए Bun से `tsx` (`2871657e`,
+2026-01-06) पर स्विच किए जाने के बाद दिखाई दी। समकक्ष Bun-आधारित पथ क्रैश नहीं हुआ।
+यह मूल रूप से macOS पर Node v25.3.0 में देखी गई थी; Node 25 चलाने वाले अन्य प्लेटफ़ॉर्म के भी
+प्रभावित होने की संभावना मानी गई थी।
 
-- Node: v25.x (v25.3.0 पर देखा गया)
-- tsx: 4.21.0
-- OS: macOS (repro संभवतः Node 25 चलाने वाले अन्य platforms पर भी)
+## कारण
 
-## Repro (केवल Node)
+`tsx`, अपने ट्रांसफ़ॉर्म विकल्पों में `keepNames: true` को हार्डकोड करके esbuild के माध्यम से TS/ESM को ट्रांसफ़ॉर्म करता है। यह सेटिंग esbuild से नामित फ़ंक्शन/क्लास
+घोषणाओं को `__name` सहायक के कॉल में रैप करवाती है, ताकि `fn.name` मिनिफ़िकेशन
+और बंडलिंग के बाद भी बना रहे। क्रैश का अर्थ है कि प्रभावित `tsx`/Node संयोजन में उस मॉड्यूल के कॉल
+स्थल पर सहायक अनुपस्थित था या किसी अन्य परिभाषा से छिप गया था, इसलिए `__name(...)` ने रैप किया गया मान लौटाने के बजाय
+त्रुटि फेंकी।
+
+## वर्तमान पुनरुत्पादन जाँच
 
 ```bash
-# in repo root
 node --version
 pnpm install
 node --import tsx src/entry.ts status
 ```
 
-## repo में न्यूनतम repro
+न्यूनतम पृथक पुनरुत्पादन (मूल स्टैक ट्रेस से केवल मॉड्यूल लोड करता है):
 
 ```bash
 node --import tsx scripts/repro/tsx-name-repro.ts
 ```
 
-## Node version check
+दोनों कमांड वर्तमान में बिना त्रुटि के समाप्त होते हैं। यदि कोई भी फिर से `__name is not a
+function` फेंकता है, तो अपस्ट्रीम में रिपोर्ट दर्ज करने से पहले सटीक Node संस्करण, `tsx` संस्करण
+(`node_modules/tsx/package.json`) और पूरा स्टैक ट्रेस कैप्चर करें।
 
-- Node 25.3.0: विफल
-- Node 22.22.0 (Homebrew `node@22`): विफल
-- Node 24: अभी यहां installed नहीं है; verification चाहिए
+## वैकल्पिक उपाय (यदि क्रैश वापस आता है)
 
-## Notes / hypothesis
-
-- `tsx`, TS/ESM को transform करने के लिए esbuild का उपयोग करता है। esbuild का `keepNames` एक `__name` helper emit करता है और function definitions को `__name(...)` से wrap करता है।
-- क्रैश दिखाता है कि runtime पर `__name` मौजूद है लेकिन function नहीं है, जिसका अर्थ है कि इस module के लिए Node 25 loader path में helper missing या overwritten है।
-- इसी तरह की `__name` helper समस्याएं अन्य esbuild consumers में report हुई हैं, जब helper missing या rewritten होता है।
-
-## Regression history
-
-- `2871657e` (2026-01-06): Bun को optional बनाने के लिए scripts को Bun से tsx में बदला गया।
-- उससे पहले (Bun path), `openclaw status` और `gateway:watch` काम करते थे।
-
-## Workarounds
-
-- dev scripts के लिए Bun का उपयोग करें (मौजूदा temporary revert)।
-- repo type checking के लिए `tsgo` का उपयोग करें, फिर built output चलाएं:
+- डेवलपमेंट स्क्रिप्ट को `node --import tsx` के बजाय Bun के साथ चलाएँ।
+- टाइप जाँच के लिए `pnpm tsgo` चलाएँ, फिर `tsx` के माध्यम से स्रोत चलाने के बजाय
+  निर्मित आउटपुट चलाएँ:
 
   ```bash
   pnpm tsgo
   node openclaw.mjs status
   ```
 
-- ऐतिहासिक नोट: इस Node/tsx issue को debug करते समय यहां `tsc` इस्तेमाल किया गया था, लेकिन repo type-check lanes अब `tsgo` का उपयोग करते हैं।
-- संभव हो तो TS loader में esbuild keepNames disable करें (`__name` helper insertion रोकता है); tsx वर्तमान में इसे expose नहीं करता।
-- यह देखने के लिए Node LTS (22/24) को `tsx` के साथ test करें कि issue Node 25-specific है या नहीं।
+- किसी अलग `tsx` संस्करण को आज़माएँ (`pnpm add -D tsx@<version>` एक निर्भरता
+  परिवर्तन है और रिपॉज़िटरी नीति के अनुसार अनुमोदन आवश्यक है), ताकि यह विभाजित करके पता लगाया जा सके कि उसके द्वारा बंडल किए गए esbuild
+  संस्करण ने बग को फिर से उत्पन्न किया है या नहीं।
+- किसी अलग Node मेजर/माइनर संस्करण पर परीक्षण करके देखें कि विफलता किसी विशिष्ट संस्करण
+  तक सीमित है या नहीं।
 
-## References
+## संदर्भ
 
-- [https://opennext.js.org/cloudflare/howtos/keep_names](https://opennext.js.org/cloudflare/howtos/keep_names)
 - [https://esbuild.github.io/api/#keep-names](https://esbuild.github.io/api/#keep-names)
 - [https://github.com/evanw/esbuild/issues/1031](https://github.com/evanw/esbuild/issues/1031)
 
-## Next steps
+## संबंधित
 
-- Node 25 regression की पुष्टि करने के लिए Node 22/24 पर repro करें।
-- यदि कोई known regression मौजूद है, तो `tsx` nightly test करें या earlier version पर pin करें।
-- यदि Node LTS पर reproduce होता है, तो `__name` stack trace के साथ upstream में minimal repro file करें।
-
-## Related
-
-- [Node.js install](/hi/install/node)
-- [Gateway troubleshooting](/hi/gateway/troubleshooting)
+- [Node.js इंस्टॉल करना](/hi/install/node)
+- [Gateway समस्या निवारण](/hi/gateway/troubleshooting)

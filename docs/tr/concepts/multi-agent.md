@@ -1,81 +1,86 @@
 ---
-read_when: You want multiple isolated agents (workspaces + auth) in one gateway process.
+read_when: You want multiple agents with separate workspaces, auth, and sessions in one Gateway process.
 sidebarTitle: Multi-agent routing
 status: active
-summary: 'Çoklu ajan yönlendirmesi: yalıtılmış ajanlar, kanal hesapları ve bağlamalar'
-title: Çok aracılı yönlendirme
+summary: 'Çoklu ajan yönlendirmesi: ajan sınırları, kanal hesapları ve bağlamalar'
+title: Çoklu ajan yönlendirme
 x-i18n:
-    generated_at: "2026-06-28T00:29:26Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T17:05:54Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 4c1c55188cd27ea786cf65dcabd356a602e1e6da5f842532b189df59195274db
+    source_hash: 265a1f3d9d9b4957c99c71f391ce4f5abba6b70561570f8bbe8cb9964ece1cfc
     source_path: concepts/multi-agent.md
     workflow: 16
 ---
 
-Bir çalışan Gateway içinde, her biri kendi çalışma alanı, durum dizini (`agentDir`) ve oturum geçmişine sahip birden çok _yalıtılmış_ agent çalıştırın; ayrıca birden çok kanal hesabını (ör. iki WhatsApp) kullanın. Gelen mesajlar binding'ler üzerinden doğru agent'a yönlendirilir.
+Tek bir Gateway işleminde, her biri kendi çalışma alanına, durum dizinine (`agentDir`) ve SQLite destekli oturum geçmişine sahip birden fazla _yalıtılmış_ agent ile birden fazla kanal hesabını (ör. iki WhatsApp numarası) çalıştırın. Gelen mesajlar **bağlamalar** aracılığıyla doğru agent'a yönlendirilir.
 
-Buradaki **agent**, persona başına tam kapsamdır: çalışma alanı dosyaları, kimlik doğrulama profilleri, model kayıt defteri ve oturum deposu. `agentDir`, agent başına bu yapılandırmayı `~/.openclaw/agents/<agentId>/` konumunda tutan disk üzerindeki durum dizinidir. Bir **binding**, bir kanal hesabını (ör. bir Slack çalışma alanı veya bir WhatsApp numarası) bu agent'lardan biriyle eşler.
+Bir **agent**, persona başına tam kapsamdır: çalışma alanı dosyaları, kimlik doğrulama profilleri, model kayıt defteri ve oturum deposu. Bir **bağlama**, bir kanal hesabını (bir Slack çalışma alanı, bir WhatsApp numarası vb.) bu agent'lardan biriyle eşler.
 
-## "Tek agent" nedir?
+## Bir agent nedir
 
-Bir **agent**, kendine ait aşağıdakileri olan tam kapsamlı bir beyindir:
+Her agent'ın kendine ait şunları vardır:
 
-- **Çalışma alanı** (dosyalar, AGENTS.md/SOUL.md/USER.md, yerel notlar, persona kuralları).
-- Kimlik doğrulama profilleri, model kayıt defteri ve agent başına yapılandırma için **durum dizini** (`agentDir`).
-- `~/.openclaw/agents/<agentId>/sessions` altında **oturum deposu** (sohbet geçmişi + yönlendirme durumu).
+- **Çalışma alanı**: dosyalar, `AGENTS.md`/`SOUL.md`/`USER.md`, yerel notlar, persona kuralları.
+- **Durum dizini** (`agentDir`): kimlik doğrulama profilleri, model kayıt defteri, agent başına yapılandırma.
+- **Oturum deposu**: `~/.openclaw/agents/<agentId>/agent/openclaw-agent.sqlite` içindeki sohbet geçmişi ve yönlendirme durumu.
 
-Kimlik doğrulama profilleri **agent başınadır**. Her agent kendi şu konumundan okur:
+Kimlik doğrulama profilleri agent başınadır ve şuradan okunur:
 
 ```text
 ~/.openclaw/agents/<agentId>/agent/auth-profiles.json
 ```
 
 <Note>
-`sessions_history` burada da daha güvenli oturumlar arası hatırlama yoludur: ham transkript dökümü değil, sınırlı ve arındırılmış bir görünüm döndürür. Asistan hatırlaması; düşünme etiketlerini, `<relevant-memories>` iskeletini, düz metin araç çağrısı XML payload'larını (`<tool_call>...</tool_call>`, `<function_call>...</function_call>`, `<tool_calls>...</tool_calls>`, `<function_calls>...</function_calls>` ve kesilmiş araç çağrısı blokları dahil), düşürülmüş araç çağrısı iskeletini, sızmış ASCII/tam genişlikli model kontrol token'larını ve hatalı biçimlendirilmiş MiniMax araç çağrısı XML'ini redaksiyon/kesme öncesinde çıkarır.
+`sessions_history`, oturumlar arası hatırlama için daha güvenli yoldur: ham bir transkript dökümü değil, sınırlandırılmış ve sansürlenmiş bir görünüm döndürür. Düşünme bloğu imzalarını, araç sonucu yükü ayrıntılarını, `<relevant-memories>` iskeletini, araç çağrısı XML etiketlerini (`<tool_call>`, `<function_call>` ve bunların çoğul/indirgenmiş biçimleri) ve MiniMax araç çağrısı XML'ini kaldırır; ardından çıktıyı bayt boyutuna göre kısaltır ve sınırlar.
 </Note>
 
 <Warning>
-`agentDir` değerini agent'lar arasında asla yeniden kullanmayın (kimlik doğrulama/oturum çakışmalarına neden olur). Agent'lar, yerel bir profilleri olmadığında varsayılan/ana agent'ın kimlik doğrulama profillerine okuyarak erişebilir, ancak OpenClaw OAuth yenileme token'larını ikincil agent deposuna klonlamaz. Bağımsız bir OAuth hesabı istiyorsanız o agent üzerinden oturum açın; kimlik bilgilerini elle kopyalıyorsanız yalnızca taşınabilir statik `api_key` veya `token` profillerini kopyalayın.
+`agentDir` değerini agent'lar arasında asla yeniden kullanmayın — bu, kimlik doğrulama/oturum durumu çakışmalarına neden olur. İkincil bir agent'ın yerel OAuth kimlik bilgisi sona erdiğinde veya yenileme işlemi başarısız olduğunda OpenClaw, aynı profil kimliği için varsayılan/ana agent'ın kimlik bilgisine başvurur ve yenileme belirtecini ikincil agent'ın deposuna kopyalamadan en güncel belirteci benimser. Tamamen bağımsız bir OAuth hesabı istiyorsanız o agent üzerinden oturum açın. Kimlik bilgilerini elle kopyalarsanız yalnızca taşınabilir statik `api_key` veya `token` profillerini kopyalayın — OAuth yenileme malzemesi varsayılan olarak taşınabilir değildir (`copyToAgents` ile bir profil açıkça buna dahil edilebilir).
 </Warning>
 
-Skills, her agent çalışma alanından ve `~/.openclaw/skills` gibi paylaşılan köklerden yüklenir, ardından yapılandırıldığında etkin agent skill izin listesine göre filtrelenir. Paylaşılan bir temel için `agents.defaults.skills`, agent başına değiştirme için `agents.list[].skills` kullanın. Bkz. [Skills: agent başına ve paylaşılan](/tr/tools/skills#per-agent-vs-shared-skills) ve [Skills: agent skill izin listeleri](/tr/tools/skills#agent-allowlists).
+Skills, her agent çalışma alanından ve `~/.openclaw/skills` gibi paylaşılan köklerden yüklenir, ardından etkin agent Skills izin listesine göre filtrelenir. Paylaşılan bir temel için `agents.defaults.skills`, agent başına değiştirme için `agents.list[].skills` kullanın (açık girdiler varsayılanın yerini alır, onunla birleştirilmez). Bkz. [Skills: agent başına ve paylaşılan](/tr/tools/skills#per-agent-vs-shared-skills) ve [Skills: agent izin listeleri](/tr/tools/skills#agent-allowlists).
 
-Gateway **tek agent** (varsayılan) veya yan yana **birçok agent** barındırabilir.
+Plugin'e ait depolama, ilgili Plugin'in yapılandırmasını izler; ikinci bir agent eklemek her genel Plugin deposunu otomatik olarak ayırmaz. Örneğin, personaların derlenmiş wiki bilgisini paylaşmaması gerektiğinde [agent başına Memory Wiki kasalarını](/tr/concepts/multi-agent#per-agent-memory-wiki-vaults) yapılandırın.
 
 <Note>
-**Çalışma alanı notu:** her agent'ın çalışma alanı, katı bir sandbox değil, **varsayılan cwd**'dir. Göreli yollar çalışma alanı içinde çözümlenir, ancak sandboxing etkin değilse mutlak yollar ana makinedeki diğer konumlara ulaşabilir. Bkz. [Sandboxing](/tr/gateway/sandboxing).
+**Çalışma alanı notu:** Her agent'ın çalışma alanı, katı bir korumalı alan değil, **varsayılan cwd**'dir. Göreli yollar çalışma alanı içinde çözümlenir ancak korumalı alan etkinleştirilmemişse mutlak yollar ana makinedeki diğer konumlara erişebilir. Bkz. [Korumalı alan](/tr/gateway/sandboxing).
 </Note>
 
-## Yollar (hızlı harita)
+## Yollar
 
-- Yapılandırma: `~/.openclaw/openclaw.json` (veya `OPENCLAW_CONFIG_PATH`)
-- Durum dizini: `~/.openclaw` (veya `OPENCLAW_STATE_DIR`)
-- Çalışma alanı: `~/.openclaw/workspace` (veya `~/.openclaw/workspace-<agentId>`)
-- Agent dizini: `~/.openclaw/agents/<agentId>/agent` (veya `agents.list[].agentDir`)
-- Oturumlar: `~/.openclaw/agents/<agentId>/sessions`
+| Öğe                              | Varsayılan                                                                             | Geçersiz kılma                                                                           |
+| -------------------------------- | -------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| Yapılandırma                     | `~/.openclaw/openclaw.json`                                                            | `OPENCLAW_CONFIG_PATH`                                                                   |
+| Durum dizini                     | `~/.openclaw`                                                                          | `OPENCLAW_STATE_DIR`                                                                     |
+| Varsayılan agent'ın çalışma alanı | `~/.openclaw/workspace` (`OPENCLAW_PROFILE` ayarlandığında `workspace-<profile>`)      | `agents.list[].workspace`, ardından `agents.defaults.workspace` veya `OPENCLAW_WORKSPACE_DIR` |
+| Diğer agent'ların çalışma alanı  | `<stateDir>/workspace-<agentId>` (ayarlandığında `<agents.defaults.workspace>/<agentId>`) | `agents.list[].workspace`                                                                |
+| Agent dizini                     | `~/.openclaw/agents/<agentId>/agent`                                                   | `agents.list[].agentDir`                                                                 |
+| Oturumlar ve transkriptler       | `~/.openclaw/agents/<agentId>/agent/openclaw-agent.sqlite`                             | —                                                                                        |
+| Eski/arşiv oturum yapıtları      | `~/.openclaw/agents/<agentId>/sessions`                                                | —                                                                                        |
 
 ### Tek agent modu (varsayılan)
 
-Hiçbir şey yapmazsanız OpenClaw tek bir agent çalıştırır:
+Hiçbir şey yapılandırmazsanız OpenClaw tek bir agent çalıştırır:
 
-- `agentId` varsayılan olarak **`main`** olur.
-- Oturumlar `agent:main:<mainKey>` olarak anahtarlanır.
-- Çalışma alanı varsayılan olarak `~/.openclaw/workspace` olur (veya `OPENCLAW_PROFILE` ayarlandığında `~/.openclaw/workspace-<profile>`).
-- Durum varsayılan olarak `~/.openclaw/agents/main/agent` olur.
+- `agentId` varsayılan olarak `main` değerini alır.
+- Oturumların anahtarı `agent:main:<mainKey>` şeklindedir (varsayılan `mainKey`, `main` değeridir).
+- Çalışma alanı varsayılan olarak `~/.openclaw/workspace` değerini alır (veya `OPENCLAW_PROFILE`, `default` dışında bir değere ayarlandığında `workspace-<profile>`).
+- Durum varsayılan olarak `~/.openclaw/agents/main/agent` değerini alır.
 
 ## Agent yardımcısı
 
-Yeni bir yalıtılmış agent eklemek için agent sihirbazını kullanın:
+Yeni bir yalıtılmış agent ekleyin:
 
 ```bash
 openclaw agents add work
 ```
 
-Ardından gelen mesajları yönlendirmek için `bindings` ekleyin (veya bunu sihirbazın yapmasına izin verin).
+Bayraklar: `--workspace <dir>`, `--model <id>`, `--agent-dir <dir>`, `--bind <channel[:accountId]>` (yinelenebilir), `--non-interactive` (`--workspace` gerektirir).
 
-Şununla doğrulayın:
+Gelen mesajları yönlendirmek için `bindings` ekleyin (sihirbaz bunu sizin için yapmayı önerir), ardından doğrulayın:
 
 ```bash
 openclaw agents list --bindings
@@ -85,21 +90,19 @@ openclaw agents list --bindings
 
 <Steps>
   <Step title="Her agent çalışma alanını oluşturun">
-    Sihirbazı kullanın veya çalışma alanlarını elle oluşturun:
-
     ```bash
     openclaw agents add coding
     openclaw agents add social
     ```
 
-    Her agent; `SOUL.md`, `AGENTS.md` ve isteğe bağlı `USER.md` içeren kendi çalışma alanını, ayrıca `~/.openclaw/agents/<agentId>` altında ayrılmış bir `agentDir` ve oturum deposunu alır.
+    Her agent, `SOUL.md`, `AGENTS.md` ve isteğe bağlı `USER.md` içeren kendi çalışma alanının yanı sıra özel bir `agentDir` ve `~/.openclaw/agents/<agentId>` altında bir oturum deposu edinir.
 
   </Step>
   <Step title="Kanal hesapları oluşturun">
-    Tercih ettiğiniz kanallarda agent başına bir hesap oluşturun:
+    Tercih ettiğiniz kanallarda her agent için bir hesap oluşturun:
 
-    - Discord: agent başına bir bot, Message Content Intent'i etkinleştirin, her token'ı kopyalayın.
-    - Telegram: BotFather üzerinden agent başına bir bot, her token'ı kopyalayın.
+    - Discord: agent başına bir bot oluşturun, Message Content Intent seçeneğini etkinleştirin ve her belirteci kopyalayın.
+    - Telegram: BotFather aracılığıyla agent başına bir bot oluşturun ve her belirteci kopyalayın.
     - WhatsApp: hesap başına her telefon numarasını bağlayın.
 
     ```bash
@@ -109,8 +112,8 @@ openclaw agents list --bindings
     Kanal kılavuzlarına bakın: [Discord](/tr/channels/discord), [Telegram](/tr/channels/telegram), [WhatsApp](/tr/channels/whatsapp).
 
   </Step>
-  <Step title="Agent'ları, hesapları ve binding'leri ekleyin">
-    Agent'ları `agents.list` altına, kanal hesaplarını `channels.<channel>.accounts` altına ekleyin ve bunları `bindings` ile bağlayın (aşağıdaki örnekler).
+  <Step title="Agent'ları, hesapları ve bağlamaları ekleyin">
+    Agent'ları `agents.list` altına, kanal hesaplarını `channels.<channel>.accounts` altına ekleyin ve bunları `bindings` ile bağlayın (örnekler aşağıdadır).
   </Step>
   <Step title="Yeniden başlatın ve doğrulayın">
     ```bash
@@ -121,19 +124,43 @@ openclaw agents list --bindings
   </Step>
 </Steps>
 
-## Birden çok agent = birden çok kişi, birden çok kişilik
+## Birden fazla agent, birden fazla persona
 
-**Birden çok agent** ile her `agentId`, **tamamen yalıtılmış bir persona** haline gelir:
+Yapılandırılan her `agentId`, temel agent durumu için ayrı bir persona sınırıdır:
 
-- **Farklı telefon numaraları/hesaplar** (kanal başına `accountId`).
-- **Farklı kişilikler** (`AGENTS.md` ve `SOUL.md` gibi agent başına çalışma alanı dosyaları).
-- **Ayrı kimlik doğrulama + oturumlar** (açıkça etkinleştirilmedikçe çapraz konuşma yok).
+- Kanal başına farklı hesaplar (`accountId` başına).
+- Farklı kişilikler (agent başına `AGENTS.md`/`SOUL.md`).
+- Agent'lar arası erişimin yalnızca açık özellikler veya Plugin yapılandırması üzerinden etkinleştirildiği ayrı kimlik doğrulama ve oturumlar.
 
-Bu, **birden çok kişinin** AI "beyinlerini" ve verilerini yalıtılmış tutarken tek bir Gateway sunucusunu paylaşmasını sağlar.
+Bu, temel agent durumunu ayrı tutarken birden fazla kişinin tek bir Gateway'i paylaşmasına olanak tanır.
+
+## Agent başına Memory Wiki kasaları
+
+Memory Wiki varsayılan olarak tek bir genel kasa kullanır. Bir destek agent'ının derlenmiş bilgisini bir pazarlama agent'ınınkinden ayrı tutmak için `plugins.entries.memory-wiki.config.vault.scope` değerini `agent` olarak ayarlayın:
+
+```json5
+{
+  plugins: {
+    entries: {
+      "memory-wiki": {
+        enabled: true,
+        config: {
+          vault: {
+            scope: "agent",
+            path: "~/.openclaw/wiki",
+          },
+        },
+      },
+    },
+  },
+}
+```
+
+Yapılandırılan yol üst dizindir. OpenClaw normalleştirilmiş agent kimliğini sona ekleyerek `~/.openclaw/wiki/support` ve `~/.openclaw/wiki/marketing` gibi yollar oluşturur. Birden fazla agent yapılandırıldığında agent kapsamlı CLI ve Gateway işlemleri açıkça bir agent belirtilmesini gerektirir. Köprü filtreleme, geçiş ve güven sınırı ayrıntıları için [agent başına Memory Wiki kasalarına](/tr/plugins/memory-wiki#per-agent-vaults) bakın.
 
 ## Agent'lar arası QMD bellek araması
 
-Bir agent'ın başka bir agent'ın QMD oturum transkriptlerinde arama yapması gerekiyorsa `agents.list[].memorySearch.qmd.extraCollections` altına ek koleksiyonlar ekleyin. `agents.defaults.memorySearch.qmd.extraCollections` değerini yalnızca her agent aynı paylaşılan transkript koleksiyonlarını devralmalıysa kullanın.
+Bir agent'ın başka bir agent'ın QMD oturum transkriptlerinde arama yapmasına izin vermek için `agents.list[].memorySearch.qmd.extraCollections` altına ek koleksiyonlar ekleyin. Her agent'ın aynı koleksiyonları paylaşması gerektiğinde `agents.defaults.memorySearch.qmd.extraCollections` kullanın.
 
 ```json5
 {
@@ -152,7 +179,7 @@ Bir agent'ın başka bir agent'ın QMD oturum transkriptlerinde arama yapması g
         workspace: "~/workspaces/main",
         memorySearch: {
           qmd: {
-            extraCollections: [{ path: "notes" }], // resolves inside workspace -> collection named "notes-main"
+            extraCollections: [{ path: "notes" }], // çalışma alanı içinde çözümlenir -> "notes-main" adlı koleksiyon
           },
         },
       },
@@ -166,17 +193,15 @@ Bir agent'ın başka bir agent'ın QMD oturum transkriptlerinde arama yapması g
 }
 ```
 
-Ek koleksiyon yolu agent'lar arasında paylaşılabilir, ancak yol agent çalışma alanının dışındaysa koleksiyon adı açık kalır. Çalışma alanı içindeki yollar agent kapsamlı kalır, böylece her agent kendi transkript arama kümesini korur.
+Ek koleksiyon yolu agent'lar arasında paylaşılabilir ancak yol agent çalışma alanının dışındaysa `name` açıkça belirtilmiş olarak kalır. Çalışma alanı içindeki yollar agent kapsamında kalır; böylece her agent kendi transkript arama kümesini korur.
 
-## Tek WhatsApp numarası, birden çok kişi (DM ayrımı)
+## Tek WhatsApp numarası, birden fazla kişi (DM ayrımı)
 
-**Tek WhatsApp hesabında** kalırken **farklı WhatsApp DM'lerini** farklı agent'lara yönlendirebilirsiniz. `peer.kind: "direct"` ile gönderen E.164 üzerinde (`+15551234567` gibi) eşleştirin. Yanıtlar yine aynı WhatsApp numarasından gelir (agent başına gönderen kimliği yoktur).
+Gönderen E.164 (`+15551234567`) değerini `peer.kind: "direct"` ile eşleştirerek **tek** bir WhatsApp hesabındaki farklı WhatsApp DM'lerini farklı agent'lara yönlendirin. Yanıtlar yine aynı WhatsApp numarasından gelir — agent başına ayrı bir gönderen kimliği yoktur.
 
 <Note>
-Doğrudan sohbetler agent'ın **ana oturum anahtarına** indirgenir, bu yüzden gerçek yalıtım **kişi başına bir agent** gerektirir.
+Doğrudan sohbetler varsayılan olarak agent'ın ana oturum anahtarında birleştirilir; bu nedenle gerçek yalıtım için kişi başına bir agent gerekir.
 </Note>
-
-Örnek:
 
 ```json5
 {
@@ -205,81 +230,36 @@ Doğrudan sohbetler agent'ın **ana oturum anahtarına** indirgenir, bu yüzden 
 }
 ```
 
-Notlar:
+DM erişim denetimi (eşleştirme/izin listesi) agent başına değil, WhatsApp hesabı başına geneldir. Paylaşılan gruplar için grubu tek bir agent'a bağlayın veya [Yayın gruplarını](/tr/channels/broadcast-groups) kullanın.
 
-- DM erişim denetimi agent başına değil, **WhatsApp hesabı başına geneldir** (eşleme/izin listesi).
-- Paylaşılan gruplar için grubu bir agent'a bağlayın veya [Yayın grupları](/tr/channels/broadcast-groups) kullanın.
+## Yönlendirme kuralları
 
-## Yönlendirme kuralları (mesajlar bir agent'ı nasıl seçer)
+Bağlamalar deterministiktir ve en belirgin eşleşme kazanır. Tam katman sırası (tam eş, üst eş, eş joker karakteri, sunucu+roller, sunucu, ekip, hesap, kanal, varsayılan agent) için [Kanal yönlendirmesine](/tr/channels/channel-routing#routing-rules-how-an-agent-is-chosen) bakın. Burada özellikle belirtilmesi gereken birkaç kural:
 
-Binding'ler **deterministiktir** ve **en spesifik olan kazanır**:
+- Aynı katmanda birden fazla bağlama eşleşirse yapılandırma sırasındaki ilk bağlama kazanır.
+- Bir bağlama birden fazla eşleşme alanı ayarlarsa (örneğin `peer` + `guildId`), belirtilen tüm alanların eşleşmesi gerekir (`AND` semantiği).
+- `accountId` değerini içermeyen bir bağlama her hesapla değil, yalnızca varsayılan hesapla eşleşir. Kanal genelinde geri dönüş için `accountId: "*"`, tek bir hesap için `accountId: "<name>"` kullanın. Aynı bağlamayı açık bir hesap kimliğiyle yeniden eklemek, mevcut yalnızca kanal bağlamasını çoğaltmak yerine yükseltir.
 
-<Steps>
-  <Step title="peer eşleşmesi">
-    Tam DM/grup/kanal kimliği.
-  </Step>
-  <Step title="parentPeer eşleşmesi">
-    Thread devralma.
-  </Step>
-  <Step title="guildId + roller">
-    Discord rol yönlendirmesi.
-  </Step>
-  <Step title="guildId">
-    Discord.
-  </Step>
-  <Step title="teamId">
-    Slack.
-  </Step>
-  <Step title="Bir kanal için accountId eşleşmesi">
-    Hesap başına fallback.
-  </Step>
-  <Step title="Kanal düzeyi eşleşme">
-    `accountId: "*"`.
-  </Step>
-  <Step title="Varsayılan agent">
-    `agents.list[].default` değerine, yoksa ilk liste girdisine fallback, varsayılan: `main`.
-  </Step>
-</Steps>
+## Birden fazla hesap / telefon numarası
 
-<AccordionGroup>
-  <Accordion title="Eşitlik bozma ve AND semantiği">
-    - Aynı kademede birden çok binding eşleşirse yapılandırma sırasındaki ilk binding kazanır.
-    - Bir binding birden çok match alanı ayarlarsa (örneğin `peer` + `guildId`), belirtilen tüm alanlar zorunludur (`AND` semantiği).
+Birden fazla hesabı destekleyen kanallar (ör. WhatsApp), her oturum açma işlemini tanımlamak için `accountId` kullanır. Her `accountId` kendi agent'ına yönlendirilir; böylece tek bir sunucu, oturumları karıştırmadan birden fazla telefon numarasını barındırabilir.
 
-  </Accordion>
-  <Accordion title="Hesap kapsamı ayrıntısı">
-    - `accountId` atlayan bir binding yalnızca varsayılan hesapla eşleşir. Tüm hesaplarla eşleşmez.
-    - Tüm hesaplar genelinde kanal çapında fallback için `accountId: "*"` kullanın.
-    - Tek bir hesabı eşleştirmek için `accountId: "<name>"` kullanın.
-    - Daha sonra aynı agent için aynı binding'i açık bir hesap kimliğiyle eklerseniz OpenClaw mevcut yalnızca kanal binding'ini çoğaltmak yerine hesap kapsamlı olacak şekilde yükseltir.
+`accountId` belirtilmediğinde kullanılacak hesabı seçmek için `channels.<channel>.defaultAccount` değerini ayarlayın. Ayarlanmadığında OpenClaw, varsa `default` değerine; aksi takdirde yapılandırılmış ilk hesap kimliğine (sıralanmış olarak) geri döner.
 
-  </Accordion>
-</AccordionGroup>
-
-## Birden çok hesap / telefon numarası
-
-**Birden çok hesabı** destekleyen kanallar (ör. WhatsApp), her oturum açmayı tanımlamak için `accountId` kullanır. Her `accountId` farklı bir agent'a yönlendirilebilir, böylece tek bir sunucu oturumları karıştırmadan birden çok telefon numarası barındırabilir.
-
-`accountId` atlandığında kanal çapında varsayılan bir hesap istiyorsanız `channels.<channel>.defaultAccount` değerini ayarlayın (isteğe bağlı). Ayarlanmadığında OpenClaw, varsa `default` değerine, aksi halde ilk yapılandırılmış hesap kimliğine (sıralı) fallback yapar.
-
-Bu deseni destekleyen yaygın kanallar şunlardır:
-
-- `whatsapp`, `telegram`, `discord`, `slack`, `signal`, `imessage`
-- `irc`, `line`, `googlechat`, `mattermost`, `matrix`, `nextcloud-talk`
-- `zalo`, `zalouser`, `nostr`, `feishu`
+Birden fazla hesabı destekleyen kanallar: `discord`, `feishu`, `googlechat`, `imessage`, `irc`, `line`, `mattermost`, `matrix`, `nextcloud-talk`, `nostr`, `signal`, `slack`, `telegram`, `whatsapp`, `zalo`, `zalouser`.
 
 ## Kavramlar
 
-- `agentId`: tek bir "beyin" (çalışma alanı, agent başına kimlik doğrulama, agent başına oturum deposu).
-- `accountId`: tek bir kanal hesabı örneği (ör. WhatsApp hesabı `"personal"` ve `"biz"`).
-- `binding`: gelen mesajları `(channel, accountId, peer)` ve isteğe bağlı olarak guild/team kimlikleriyle bir `agentId` değerine yönlendirir.
-- Doğrudan sohbetler `agent:<agentId>:<mainKey>` değerine indirgenir (agent başına "main"; `session.mainKey`).
+- `agentId`: tek bir "beyin" (çalışma alanı, aracı başına kimlik doğrulama, aracı başına oturum deposu).
+- `accountId`: tek bir kanal hesabı örneği (ör. WhatsApp hesabı `personal` ile `biz`).
+- `binding`: gelen mesajları `(channel, accountId, peer)` ve isteğe bağlı olarak guild/ekip kimliklerine göre bir `agentId` hedefine yönlendirir.
+- Doğrudan sohbetler `agent:<agentId>:<mainKey>` altında birleştirilir (aracı başına "ana"; bkz. `session.mainKey`).
 
 ## Platform örnekleri
 
 <AccordionGroup>
-  <Accordion title="Agent başına Discord botları">
-    Her Discord bot hesabı benzersiz bir `accountId` ile eşleşir. Her hesabı bir agent'a bağlayın ve izin listelerini bot başına tutun.
+  <Accordion title="Aracı başına Discord botları">
+    Her Discord bot hesabı benzersiz bir `accountId` ile eşleşir. Her hesabı bir aracıya bağlayın ve izin listelerini bot başına ayrı tutun.
 
     ```json5
     {
@@ -323,11 +303,11 @@ Bu deseni destekleyen yaygın kanallar şunlardır:
     }
     ```
 
-    - Her botu sunucuya davet edin ve Message Content Intent ayarını etkinleştirin.
-    - Tokenlar `channels.discord.accounts.<id>.token` içinde bulunur (varsayılan hesap `DISCORD_BOT_TOKEN` kullanabilir).
+    - Her botu guild'e davet edin ve Message Content Intent'i etkinleştirin.
+    - Token'lar `channels.discord.accounts.<id>.token` içinde tutulur (varsayılan hesap `DISCORD_BOT_TOKEN` kullanabilir).
 
   </Accordion>
-  <Accordion title="Telegram bots per agent">
+  <Accordion title="Aracı başına Telegram botları">
     ```json5
     {
       agents: {
@@ -358,17 +338,17 @@ Bu deseni destekleyen yaygın kanallar şunlardır:
     }
     ```
 
-    - BotFather ile her ajan için bir bot oluşturun ve her tokenı kopyalayın.
-    - Tokenlar `channels.telegram.accounts.<id>.botToken` içinde bulunur (varsayılan hesap `TELEGRAM_BOT_TOKEN` kullanabilir).
-    - Aynı Telegram grubunda birden fazla bot için her botu davet edin ve yanıtlaması gereken bottan bahsedin.
-    - Her grup botu için BotFather Privacy Mode ayarını devre dışı bırakın, ardından Telegram ayarı uygulayabilsin diye botu yeniden ekleyin.
-    - Gruplara `channels.telegram.groups` ile izin verin veya `groupPolicy: "open"` değerini yalnızca güvenilir grup dağıtımları için kullanın.
-    - Gönderen kullanıcı kimliklerini `groupAllowFrom` içine koyun. Grup ve süper grup kimlikleri `groupAllowFrom` içinde değil, `channels.telegram.groups` içinde yer alır.
-    - Her botun kendi ajanına yönlenmesi için `accountId` ile bağlayın.
+    - BotFather ile her aracı için bir bot oluşturun ve her token'ı kopyalayın.
+    - Token'lar `channels.telegram.accounts.<id>.botToken` içinde tutulur (varsayılan hesap `TELEGRAM_BOT_TOKEN` kullanabilir).
+    - Aynı Telegram grubundaki birden fazla bot için her botu davet edin ve yanıt vermesi gereken bottan bahsedin.
+    - Her grup botu için BotFather Privacy Mode'u devre dışı bırakın (`/setprivacy` -> Disable), ardından Telegram'ın ayarı uygulaması için botu kaldırıp yeniden ekleyin.
+    - Gruplara `channels.telegram.groups` ile izin verin veya yalnızca güvenilir grup dağıtımları için `groupPolicy: "open"` kullanın.
+    - Gönderen kullanıcı kimliklerini `groupAllowFrom` içine yerleştirin. Grup ve süper grup kimlikleri `groupAllowFrom` içine değil, `channels.telegram.groups` içine aittir.
+    - Her botun kendi aracısına yönlendirilmesi için `accountId` ile bağlayın.
 
   </Accordion>
-  <Accordion title="WhatsApp numbers per agent">
-    Gateway başlatmadan önce her hesabı bağlayın:
+  <Accordion title="Aracı başına WhatsApp numaraları">
+    Gateway'i başlatmadan önce her hesabı bağlayın:
 
     ```bash
     openclaw channels login --channel whatsapp --account personal
@@ -397,12 +377,12 @@ Bu deseni destekleyen yaygın kanallar şunlardır:
         ],
       },
 
-      // Deterministic routing: first match wins (most-specific first).
+      // Belirlenimci yönlendirme: ilk eşleşme kazanır (en özel olan önce).
       bindings: [
         { agentId: "home", match: { channel: "whatsapp", accountId: "personal" } },
         { agentId: "work", match: { channel: "whatsapp", accountId: "biz" } },
 
-        // Optional per-peer override (example: send a specific group to work agent).
+        // İsteğe bağlı eş düzeyi geçersiz kılma (örnek: belirli bir grubu iş aracısına gönderin).
         {
           agentId: "work",
           match: {
@@ -413,7 +393,7 @@ Bu deseni destekleyen yaygın kanallar şunlardır:
         },
       ],
 
-      // Off by default: agent-to-agent messaging must be explicitly enabled + allowlisted.
+      // Varsayılan olarak kapalıdır: aracılar arası mesajlaşma açıkça etkinleştirilmeli ve izin listesine alınmalıdır.
       tools: {
         agentToAgent: {
           enabled: false,
@@ -425,11 +405,11 @@ Bu deseni destekleyen yaygın kanallar şunlardır:
         whatsapp: {
           accounts: {
             personal: {
-              // Optional override. Default: ~/.openclaw/credentials/whatsapp/personal
+              // İsteğe bağlı geçersiz kılma. Varsayılan: ~/.openclaw/credentials/whatsapp/personal
               // authDir: "~/.openclaw/credentials/whatsapp/personal",
             },
             biz: {
-              // Optional override. Default: ~/.openclaw/credentials/whatsapp/biz
+              // İsteğe bağlı geçersiz kılma. Varsayılan: ~/.openclaw/credentials/whatsapp/biz
               // authDir: "~/.openclaw/credentials/whatsapp/biz",
             },
           },
@@ -444,8 +424,8 @@ Bu deseni destekleyen yaygın kanallar şunlardır:
 ## Yaygın kalıplar
 
 <Tabs>
-  <Tab title="WhatsApp daily + Telegram deep work">
-    Kanala göre ayırın: WhatsApp'ı hızlı bir günlük ajana, Telegram'ı ise bir Opus ajanına yönlendirin.
+  <Tab title="Günlük WhatsApp + Telegram'da derin çalışma">
+    Kanala göre ayırın: WhatsApp'ı hızlı bir günlük aracıya, Telegram'ı ise bir Opus aracısına yönlendirin.
 
     ```json5
     {
@@ -472,14 +452,11 @@ Bu deseni destekleyen yaygın kanallar şunlardır:
     }
     ```
 
-    Notlar:
-
-    - Bu örnekler `accountId: "*"` kullanır; böylece daha sonra hesap ekleseniz bile bağlamalar çalışmaya devam eder.
-    - Geri kalanını sohbet ajanında tutarken tek bir DM/grubu Opus'a yönlendirmek için o eş için bir `match.peer` bağlaması ekleyin; eş eşleşmeleri her zaman kanal geneli kurallara üstün gelir.
+    Bu örnekler `accountId: "*"` kullanır; böylece daha sonra hesap ekleseniz bile bağlamalar çalışmaya devam eder. Geri kalanları sohbet aracısında tutarken tek bir DM'yi/grubu Opus'a yönlendirmek için ilgili eş düzey adına bir `match.peer` bağlaması ekleyin — eş düzey eşleşmeleri her zaman kanal genelindeki kurallara üstün gelir.
 
   </Tab>
-  <Tab title="Same channel, one peer to Opus">
-    WhatsApp'ı hızlı ajanda tutun, ancak bir DM'yi Opus'a yönlendirin:
+  <Tab title="Aynı kanal, bir eş düzey Opus'a">
+    WhatsApp'ı hızlı aracıda tutun, ancak bir DM'yi Opus'a yönlendirin:
 
     ```json5
     {
@@ -509,11 +486,11 @@ Bu deseni destekleyen yaygın kanallar şunlardır:
     }
     ```
 
-    Eş bağlamaları her zaman üstün gelir; bu yüzden onları kanal geneli kuralın üstünde tutun.
+    Eş düzey bağlamaları her zaman üstün gelir; bu nedenle bunları kanal genelindeki kuralın üzerinde tutun.
 
   </Tab>
-  <Tab title="Family agent bound to a WhatsApp group">
-    Özel bir aile ajanını tek bir WhatsApp grubuna, bahsetme kapısı ve daha sıkı bir araç ilkesiyle bağlayın:
+  <Tab title="Bir WhatsApp grubuna bağlı aile aracısı">
+    Bahsetme denetimi ve daha sıkı bir araç politikasıyla özel bir aile aracısını tek bir WhatsApp grubuna bağlayın:
 
     ```json5
     {
@@ -558,17 +535,14 @@ Bu deseni destekleyen yaygın kanallar şunlardır:
     }
     ```
 
-    Notlar:
-
-    - Araç izin/ret listeleri **araçlardır**, Skills değildir. Bir Skills ikili dosya çalıştırmak zorundaysa `exec` izni olduğundan ve ikili dosyanın sandbox içinde bulunduğundan emin olun.
-    - Daha sıkı kapılama için `agents.list[].groupChat.mentionPatterns` değerini ayarlayın ve kanal için grup izin listelerini etkin tutun.
+    Araç izin/ret listeleri skill'ler değil, **araçlardır**. Bir skill'in bir ikili dosya çalıştırması gerekiyorsa `exec` için izin verildiğinden ve ikili dosyanın sandbox'ta bulunduğundan emin olun. Daha sıkı denetim için `agents.list[].groupChat.mentionPatterns` değerini ayarlayın ve kanalın grup izin listelerini etkin tutun.
 
   </Tab>
 </Tabs>
 
-## Ajan başına sandbox ve araç yapılandırması
+## Aracı başına sandbox ve araç yapılandırması
 
-Her ajanın kendi sandbox'ı ve araç kısıtlamaları olabilir:
+Her aracının kendi sandbox ve araç kısıtlamaları olabilir:
 
 ```js
 {
@@ -578,24 +552,24 @@ Her ajanın kendi sandbox'ı ve araç kısıtlamaları olabilir:
         id: "personal",
         workspace: "~/.openclaw/workspace-personal",
         sandbox: {
-          mode: "off",  // No sandbox for personal agent
+          mode: "off",  // Kişisel aracı için sandbox yok
         },
-        // No tool restrictions - all tools available
+        // Araç kısıtlaması yok - tüm araçlar kullanılabilir
       },
       {
         id: "family",
         workspace: "~/.openclaw/workspace-family",
         sandbox: {
-          mode: "all",     // Always sandboxed
-          scope: "agent",  // One container per agent
+          mode: "all",     // Her zaman sandbox içinde
+          scope: "agent",  // Aracı başına bir konteyner
           docker: {
-            // Optional one-time setup after container creation
+            // Konteyner oluşturulduktan sonra isteğe bağlı tek seferlik kurulum
             setupCommand: "apt-get update && apt-get install -y git curl",
           },
         },
         tools: {
-          allow: ["read"],                    // Only read tool
-          deny: ["exec", "write", "edit", "apply_patch"],    // Deny others
+          allow: ["read"],                    // Yalnızca okuma aracı
+          deny: ["exec", "write", "edit", "apply_patch"],    // Diğerlerini reddet
         },
       },
     ],
@@ -604,25 +578,25 @@ Her ajanın kendi sandbox'ı ve araç kısıtlamaları olabilir:
 ```
 
 <Note>
-`setupCommand`, `sandbox.docker` altında bulunur ve konteyner oluşturulduğunda bir kez çalışır. Çözümlenen kapsam `"shared"` olduğunda ajan başına `sandbox.docker.*` geçersiz kılmaları yok sayılır.
+`setupCommand`, `sandbox.docker` altında bulunur ve konteyner oluşturulurken bir kez çalışır. Çözümlenen kapsam `"shared"` olduğunda, aracı başına `sandbox.docker.*` geçersiz kılmaları yok sayılır.
 </Note>
 
-**Faydalar:**
+Bu size şunları sağlar:
 
-- **Güvenlik yalıtımı**: güvenilmeyen ajanlar için araçları kısıtlayın.
-- **Kaynak denetimi**: belirli ajanları sandbox'a alırken diğerlerini ana makinede tutun.
-- **Esnek ilkeler**: ajan başına farklı izinler.
+- **Güvenlik yalıtımı**: güvenilmeyen aracılar için araçları kısıtlayın.
+- **Kaynak denetimi**: diğerlerini ana sistemde tutarken belirli aracıları sandbox içine alın.
+- **Esnek politikalar**: aracı başına farklı izinler.
 
 <Note>
-`tools.elevated` **geneldir** ve gönderene dayalıdır; ajan başına yapılandırılamaz. Ajan başına sınırlar gerekiyorsa `exec` kullanımını reddetmek için `agents.list[].tools` kullanın. Grup hedefleme için `agents.list[].groupChat.mentionPatterns` kullanın; böylece @bahsetmeler amaçlanan ajanla düzgün eşleşir.
+`tools.elevated` hem genel bir denetime (`tools.elevated.enabled`/`allowFrom`) hem de aracı başına bir denetime (`agents.list[].tools.elevated.enabled`/`allowFrom`) sahiptir. Aracı başına denetim, genel denetimi yalnızca daha fazla kısıtlayabilir — yükseltilmiş komutların çalışması için her ikisinin de bir gönderene izin vermesi gerekir. Grup hedeflemesi için @bahsetmelerin amaçlanan aracıyla düzgün biçimde eşleşmesi amacıyla `agents.list[].groupChat.mentionPatterns` kullanın.
 </Note>
 
-Ayrıntılı örnekler için [Çok ajanlı sandbox ve araçlar](/tr/tools/multi-agent-sandbox-tools) bölümüne bakın.
+Ayrıntılı örnekler için [Çok aracılı sandbox ve araçlar](/tr/tools/multi-agent-sandbox-tools) bölümüne bakın.
 
 ## İlgili
 
-- [ACP ajanları](/tr/tools/acp-agents) — harici kodlama harness'ları çalıştırma
+- [ACP ajanları](/tr/tools/acp-agents) — harici kodlama düzeneklerini çalıştırma
 - [Kanal yönlendirme](/tr/channels/channel-routing) — iletilerin ajanlara nasıl yönlendirildiği
-- [Presence](/tr/concepts/presence) — ajan varlığı ve kullanılabilirliği
+- [Mevcudiyet](/tr/concepts/presence) — ajan mevcudiyeti ve kullanılabilirliği
 - [Oturum](/tr/concepts/session) — oturum yalıtımı ve yönlendirme
-- [Alt ajanlar](/tr/tools/subagents) — arka plan ajan çalıştırmaları başlatma
+- [Alt ajanlar](/tr/tools/subagents) — arka planda ajan çalıştırmaları başlatma

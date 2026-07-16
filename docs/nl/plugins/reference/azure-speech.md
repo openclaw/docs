@@ -1,14 +1,15 @@
 ---
 read_when:
-    - U installeert, configureert of controleert de azure-speech-plugin
-summary: Azure AI Speech-tekst-naar-spraak (MP3, systeemeigen Ogg/Opus-spraaknotities, PCM-telefonie).
+    - Je installeert, configureert of controleert de azure-speech-plugin
+summary: Azure AI Speech-tekst-naar-spraak (MP3, systeemeigen Ogg/Opus-spraakberichten, PCM-telefonie).
 title: Azure Speech-plugin
 x-i18n:
-    generated_at: "2026-07-12T09:12:26Z"
+    generated_at: "2026-07-16T16:04:17Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: fdcf7c9166d90a92362478ebc361a2917b9e29c0a7dfdcfa86d34003647a8034
+    source_hash: fb4dfda1962ddee004eaeb01a3f6f24fc6fb81b89df394cc55c777d5e0bbf0a7
     source_path: plugins/reference/azure-speech.md
     workflow: 16
 ---
@@ -20,11 +21,11 @@ Azure AI Speech-tekst-naar-spraak (MP3, systeemeigen Ogg/Opus-spraakberichten, P
 ## Distributie
 
 - Pakket: `@openclaw/azure-speech`
-- Installatieroute: inbegrepen bij OpenClaw
+- Installatieroute: opgenomen in OpenClaw
 
-## Interface
+## Oppervlak
 
-contracten: speechProviders
+contracten: `speechProviders`
 
 ## Gerelateerde documentatie
 

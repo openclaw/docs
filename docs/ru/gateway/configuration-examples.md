@@ -2,20 +2,21 @@
 read_when:
     - Изучение настройки OpenClaw
     - Поиск примеров конфигурации
-    - Настройка OpenClaw в первый раз
-summary: Примеры конфигурации, точно соответствующие схеме, для распространенных настроек OpenClaw
+    - Первоначальная настройка OpenClaw
+summary: Примеры конфигурации, соответствующие схеме, для распространённых вариантов настройки OpenClaw
 title: Примеры конфигурации
 x-i18n:
-    generated_at: "2026-06-28T22:55:56Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T16:52:28Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 945f4cd8571814597ec0188853e91c6483a0d8b09bd0ca7dcfb79eb877607ce2
+    source_hash: 67a669f3da2392aa8d2953fa124c43447afe3da971d5f5e497d6c2ec3bf88c6a
     source_path: gateway/configuration-examples.md
     workflow: 16
 ---
 
-Примеры ниже согласованы с текущей схемой конфигурации. Полный справочник и примечания по отдельным полям см. в разделе [Конфигурация](/ru/gateway/configuration).
+Приведённые ниже примеры соответствуют текущей схеме конфигурации. Полный справочник и примечания по каждому полю см. в разделе [Конфигурация](/ru/gateway/configuration).
 
 ## Быстрый старт
 
@@ -28,7 +29,7 @@ x-i18n:
 }
 ```
 
-Сохраните в `~/.openclaw/openclaw.json`, и вы сможете отправлять боту личные сообщения с этого номера.
+Сохраните в `~/.openclaw/openclaw.json`, после чего можно будет отправлять боту личные сообщения с этого номера.
 
 ### Рекомендуемая начальная конфигурация
 
@@ -44,7 +45,7 @@ x-i18n:
         id: "main",
         identity: {
           name: "Clawd",
-          theme: "helpful assistant",
+          theme: "полезный помощник",
           emoji: "🦞",
         },
       },
@@ -59,7 +60,7 @@ x-i18n:
   messages: {
     visibleReplies: "automatic",
     groupChat: {
-      visibleReplies: "message_tool", // opt-in; visible output requires message(action=send)
+      visibleReplies: "message_tool", // включается явно; для видимого вывода требуется message(action=send)
       unmentionedInbound: "room_event",
     },
   },
@@ -68,11 +69,11 @@ x-i18n:
 
 ## Расширенный пример (основные параметры)
 
-> JSON5 позволяет использовать комментарии и завершающие запятые. Обычный JSON тоже поддерживается.
+> JSON5 позволяет использовать комментарии и завершающие запятые. Обычный JSON также поддерживается.
 
 ```json5
 {
-  // Environment + shell
+  // Окружение + оболочка
   env: {
     OPENROUTER_API_KEY: "sk-or-...",
     vars: {
@@ -84,7 +85,7 @@ x-i18n:
     },
   },
 
-  // Auth profile metadata (secrets live in auth-profiles.json)
+  // Метаданные профилей аутентификации (секреты хранятся в auth-profiles.json)
   auth: {
     profiles: {
       "anthropic:default": { provider: "anthropic", mode: "api_key" },
@@ -98,9 +99,9 @@ x-i18n:
     },
   },
 
-  // Identity is per agent — set it on agents.list[].identity below.
+  // Идентификация задаётся отдельно для каждого агента — укажите её ниже в agents.list[].identity.
 
-  // Logging
+  // Ведение журналов
   logging: {
     level: "info",
     file: "/tmp/openclaw/openclaw.log",
@@ -109,7 +110,7 @@ x-i18n:
     redactSensitive: "tools",
   },
 
-  // Message formatting
+  // Форматирование сообщений
   messages: {
     messagePrefix: "[openclaw]",
     visibleReplies: "automatic",
@@ -118,7 +119,7 @@ x-i18n:
     ackReactionScope: "group-mentions",
     groupChat: {
       historyLimit: 50,
-      visibleReplies: "message_tool", // opt in for shared rooms with tool-reliable models
+      visibleReplies: "message_tool", // включите для общих комнат с моделями, надёжно использующими инструменты
       unmentionedInbound: "room_event",
     },
     queue: {
@@ -138,15 +139,15 @@ x-i18n:
     },
   },
 
-  // Tooling
+  // Инструменты
   tools: {
     media: {
       audio: {
         enabled: true,
         maxBytes: 20971520,
         models: [
-          { provider: "openai", model: "gpt-4o-mini-transcribe" },
-          // Optional CLI fallback (Whisper binary):
+          { provider: "openai", model: "gpt-4o-transcribe" },
+          // Необязательный резервный вариант через CLI (исполняемый файл Whisper):
           // { type: "cli", command: "whisper", args: ["--model", "base", "{{MediaPath}}"] }
         ],
         timeoutSeconds: 120,
@@ -159,10 +160,10 @@ x-i18n:
     },
   },
 
-  // Session behavior
+  // Поведение сеанса
   session: {
     scope: "per-sender",
-    dmScope: "per-channel-peer", // recommended for multi-user inboxes
+    dmScope: "per-channel-peer", // рекомендуется для входящих сообщений от нескольких пользователей
     reset: {
       mode: "daily",
       atHour: 4,
@@ -172,14 +173,14 @@ x-i18n:
       discord: { mode: "idle", idleMinutes: 10080 },
     },
     resetTriggers: ["/new", "/reset"],
-    store: "~/.openclaw/agents/default/sessions/sessions.json",
+    store: "~/.openclaw/agents/main/sessions/sessions.json",
     maintenance: {
       mode: "warn",
       pruneAfter: "30d",
       maxEntries: 500,
-      resetArchiveRetention: "30d", // duration or false
-      maxDiskBytes: "500mb", // optional
-      highWaterBytes: "400mb", // optional (defaults to 80% of maxDiskBytes)
+      resetArchiveRetention: "30d", // длительность или false
+      maxDiskBytes: "500mb", // необязательно
+      highWaterBytes: "400mb", // необязательно (по умолчанию 80% от maxDiskBytes)
     },
     typingIntervalSeconds: 5,
     sendPolicy: {
@@ -188,7 +189,7 @@ x-i18n:
     },
   },
 
-  // Channels
+  // Каналы
   channels: {
     whatsapp: {
       dmPolicy: "pairing",
@@ -216,8 +217,8 @@ x-i18n:
           slug: "friends-of-openclaw",
           requireMention: false,
           channels: {
-            general: { allow: true },
-            help: { allow: true, requireMention: true },
+            general: { enabled: true },
+            help: { enabled: true, requireMention: true },
           },
         },
       },
@@ -228,7 +229,7 @@ x-i18n:
       botToken: "xoxb-REPLACE_ME",
       appToken: "xapp-REPLACE_ME",
       channels: {
-        "#general": { allow: true, requireMention: true },
+        "#general": { enabled: true, requireMention: true },
       },
       dm: { enabled: true, allowFrom: ["U123"] },
       slashCommand: {
@@ -240,7 +241,7 @@ x-i18n:
     },
   },
 
-  // Agent runtime
+  // Среда выполнения агента
   agents: {
     defaults: {
       workspace: "~/.openclaw/workspace",
@@ -257,7 +258,7 @@ x-i18n:
         "anthropic/claude-sonnet-4-6": { alias: "sonnet" },
         "openai/gpt-5.4": { alias: "gpt" },
       },
-      skills: ["github", "weather"], // inherited by agents that omit list[].skills
+      skills: ["github", "weather"], // наследуется агентами, у которых отсутствует list[].skills
       thinkingDefault: "low",
       verboseDefault: "off",
       toolProgressDetail: "explain",
@@ -284,7 +285,7 @@ x-i18n:
         every: "30m",
         model: "anthropic/claude-sonnet-4-6",
         target: "last",
-        directPolicy: "allow", // allow (default) | block
+        directPolicy: "allow", // allow (по умолчанию) | block
         to: "+15555550123",
         prompt: "HEARTBEAT",
         ackMaxChars: 300,
@@ -299,7 +300,7 @@ x-i18n:
       },
       sandbox: {
         mode: "non-main",
-        scope: "session", // preferred over legacy perSession: true
+        scope: "session", // предпочтительнее устаревшего perSession: true
         workspaceRoot: "~/.openclaw/sandboxes",
         docker: {
           image: "openclaw-sandbox:bookworm-slim",
@@ -320,21 +321,21 @@ x-i18n:
         default: true,
         identity: {
           name: "Samantha",
-          theme: "helpful sloth",
+          theme: "отзывчивый ленивец",
           emoji: "🦥",
         },
-        // inherits defaults.skills -> github, weather
+        // наследует defaults.skills -> github, weather
         groupChat: {
           mentionPatterns: ["@openclaw", "openclaw"],
         },
-        thinkingDefault: "high", // per-agent thinking override
-        reasoningDefault: "on", // per-agent reasoning visibility
-        fastModeDefault: false, // per-agent fast mode
+        thinkingDefault: "high", // переопределение глубины обдумывания для агента
+        reasoningDefault: "on", // видимость рассуждений для агента
+        fastModeDefault: false, // быстрый режим для агента
       },
       {
         id: "quick",
-        skills: [], // no skills for this agent
-        fastModeDefault: true, // this agent always runs fast
+        skills: [], // у этого агента нет Skills
+        fastModeDefault: true, // этот агент всегда работает в быстром режиме
         thinkingDefault: "off",
       },
     ],
@@ -362,7 +363,7 @@ x-i18n:
     },
   },
 
-  // Custom model providers
+  // Пользовательские поставщики моделей
   models: {
     mode: "merge",
     providers: {
@@ -388,19 +389,15 @@ x-i18n:
     },
   },
 
-  // Cron jobs
+  // Задания Cron
   cron: {
     enabled: true,
-    store: "~/.openclaw/cron/cron.json",
-    maxConcurrentRuns: 8, // default; cron dispatch + isolated cron agent-turn execution
+    store: "~/.openclaw/cron/jobs.json",
+    maxConcurrentRuns: 8, // по умолчанию; диспетчеризация Cron + изолированное выполнение хода агента Cron
     sessionRetention: "24h",
-    runLog: {
-      maxBytes: "2mb",
-      keepLines: 2000,
-    },
   },
 
-  // Webhooks
+  // Webhook
   hooks: {
     enabled: true,
     path: "/hooks",
@@ -415,7 +412,7 @@ x-i18n:
         wakeMode: "now",
         name: "Gmail",
         sessionKey: "hook:gmail:{{messages[0].id}}",
-        messageTemplate: "From: {{messages[0].from}}\nSubject: {{messages[0].subject}}",
+        messageTemplate: "От: {{messages[0].from}}\nТема: {{messages[0].subject}}",
         textTemplate: "{{messages[0].snippet}}",
         deliver: true,
         channel: "last",
@@ -443,7 +440,7 @@ x-i18n:
     },
   },
 
-  // Gateway + networking
+  // Gateway + сеть
   gateway: {
     mode: "local",
     port: 18789,
@@ -455,7 +452,7 @@ x-i18n:
       allowTailscale: true,
     },
     tailscale: { mode: "serve", resetOnExit: false },
-    remote: { url: "ws://gateway.tailnet:18789", token: "remote-token" },
+    remote: { url: "ws://gateway-host.ts.net:18789", token: "remote-token" },
     reload: { mode: "hybrid", debounceMs: 300 },
   },
 
@@ -482,9 +479,10 @@ x-i18n:
 }
 ```
 
-### Символически связанный соседний репозиторий навыков
+### Репозиторий Skills в соседнем каталоге, подключённый символической ссылкой
 
-Используйте это, когда корень встроенного навыка содержит символическую ссылку на соседний репозиторий, например `~/.agents/skills/manager -> ~/Projects/manager/skills`.
+Используйте эту конфигурацию, если корневой каталог встроенного Skills содержит символическую ссылку на соседний репозиторий, например
+`~/.agents/skills/manager -> ~/Projects/manager/skills`.
 
 ```json5
 {
@@ -497,13 +495,15 @@ x-i18n:
 }
 ```
 
-- `extraDirs` сканирует соседний репозиторий как явный корень навыков.
-- `allowSymlinkTargets` позволяет папкам навыков, на которые указывают символические ссылки, разрешаться в этот доверенный реальный целевой корень без разрешения произвольных выходов по символическим ссылкам.
-- Чтобы Skill Workshop мог выполнять запись через тот же доверенный целевой путь символической ссылки, задайте `skills.workshop.allowSymlinkTargetWrites: true`.
+- `extraDirs` сканирует соседний репозиторий как явно заданный корневой каталог Skills.
+- `allowSymlinkTargets` позволяет каталогам Skills, подключённым символическими ссылками, разрешаться в этот доверенный
+  реальный корневой каталог, не допуская произвольного выхода через символические ссылки.
+- Чтобы Skill Workshop мог записывать данные через тот же доверенный целевой каталог символической ссылки,
+  задайте `skills.workshop.allowSymlinkTargetWrites: true`.
 
-## Распространенные шаблоны
+## Распространённые шаблоны
 
-### Общая базовая конфигурация навыков с одним переопределением
+### Общий базовый набор Skills с одним переопределением
 
 ```json5
 {
@@ -520,9 +520,9 @@ x-i18n:
 }
 ```
 
-- `agents.defaults.skills` — общий базовый набор.
-- `agents.list[].skills` заменяет этот базовый набор для одного агента.
-- Используйте `skills: []`, когда агент не должен видеть Skills.
+- `agents.defaults.skills` — общая базовая конфигурация.
+- `agents.list[].skills` заменяет эту базовую конфигурацию для одного агента.
+- Используйте `skills: []`, если агент не должен видеть никаких навыков.
 
 ### Настройка для нескольких платформ
 
@@ -545,11 +545,11 @@ x-i18n:
 }
 ```
 
-### Автоодобрение доверенной сети узлов
+### Автоматическое одобрение в доверенной сети узлов
 
-Оставляйте сопряжение устройств ручным, если вы не контролируете сетевой путь. Для выделенной
-лаборатории или подсети tailnet можно включить автоодобрение устройства узла при первом подключении
-с точными CIDR или IP:
+Оставьте сопряжение устройств ручным, если не контролируете сетевой маршрут. Для выделенной
+лабораторной сети или подсети tailnet можно включить автоматическое одобрение
+первичного сопряжения устройства узла, указав точные CIDR или IP-адреса:
 
 ```json5
 {
@@ -563,27 +563,27 @@ x-i18n:
 }
 ```
 
-Если параметр не задан, эта функция остается выключенной. Она применяется только к новому сопряжению `role: node`
-без запрошенных областей доступа. Клиенты оператора/браузера, а также обновления роли, области доступа, метаданных или
+Если параметр не задан, эта функция остаётся отключённой. Она применяется только к первичному сопряжению `role: node`
+без запрошенных областей доступа. Клиенты оператора и браузера, а также изменение роли, области доступа, метаданных или
 открытого ключа по-прежнему требуют ручного одобрения.
 
-### Безопасный режим DM (общий входящий ящик / многопользовательские DM)
+### Безопасный режим личных сообщений (общий почтовый ящик / многопользовательские личные сообщения)
 
-Если вашему боту могут писать в DM несколько человек (несколько записей в `allowFrom`, одобрения сопряжения для нескольких людей или `dmPolicy: "open"`), включите **безопасный режим DM**, чтобы DM от разных отправителей по умолчанию не использовали один общий контекст:
+Если вашему боту могут отправлять личные сообщения несколько человек (несколько записей в `allowFrom`, одобрения сопряжения для нескольких человек или `dmPolicy: "open"`), включите **безопасный режим личных сообщений**, чтобы личные сообщения от разных отправителей по умолчанию не использовали общий контекст:
 
 ```json5
 {
-  // Secure DM mode (recommended for multi-user or sensitive DM agents)
+  // Безопасный режим личных сообщений (рекомендуется для многопользовательских агентов и агентов, обрабатывающих конфиденциальные личные сообщения)
   session: { dmScope: "per-channel-peer" },
 
   channels: {
-    // Example: WhatsApp multi-user inbox
+    // Пример: многопользовательский почтовый ящик WhatsApp
     whatsapp: {
       dmPolicy: "allowlist",
       allowFrom: ["+15555550123", "+15555550124"],
     },
 
-    // Example: Discord multi-user inbox
+    // Пример: многопользовательский почтовый ящик Discord
     discord: {
       enabled: true,
       token: "YOUR_DISCORD_BOT_TOKEN",
@@ -593,10 +593,10 @@ x-i18n:
 }
 ```
 
-Для Discord/Slack/Google Chat/Microsoft Teams/Mattermost/IRC авторизация отправителя по умолчанию сначала проверяет ID.
-Включайте прямое сопоставление по изменяемому имени, адресу электронной почты или никнейму с помощью `dangerouslyAllowNameMatching: true` в соответствующем канале только если вы явно принимаете этот риск.
+Для Discord/Google Chat/IRC/Mattermost/Microsoft Teams/Slack авторизация отправителя по умолчанию выполняется прежде всего по идентификатору.
+Включайте прямое сопоставление по изменяемому имени, адресу электронной почты или псевдониму с помощью `dangerouslyAllowNameMatching: true` каждого канала, только если явно принимаете этот риск.
 
-### API-ключ Anthropic + резервный MiniMax
+### Ключ API Anthropic и резервная модель MiniMax
 
 ```json5
 {
@@ -656,8 +656,8 @@ x-i18n:
       enabled: true,
       botToken: "xoxb-...",
       channels: {
-        "#engineering": { allow: true, requireMention: true },
-        "#general": { allow: true, requireMention: true },
+        "#engineering": { enabled: true, requireMention: true },
+        "#general": { enabled: true, requireMention: true },
       },
     },
   },
@@ -700,12 +700,12 @@ x-i18n:
 
 ## Советы
 
-- Если вы задаете `dmPolicy: "open"`, соответствующий список `allowFrom` должен включать `"*"`.
-- ID поставщиков отличаются (номера телефонов, ID пользователей, ID каналов). Используйте документацию поставщика, чтобы подтвердить формат.
+- Если задан параметр `dmPolicy: "open"`, соответствующий список `allowFrom` должен включать `"*"`.
+- Идентификаторы провайдеров различаются (номера телефонов, идентификаторы пользователей и каналов). Сверьтесь с документацией провайдера, чтобы уточнить формат.
 - Необязательные разделы, которые можно добавить позже: `web`, `browser`, `ui`, `discovery`, `plugins`, `talk`, `signal`, `imessage`.
-- См. [Поставщики](/ru/providers) и [Устранение неполадок](/ru/gateway/troubleshooting) для более подробных примечаний по настройке.
+- Подробные сведения о настройке см. в разделах [Провайдеры](/ru/providers) и [Устранение неполадок](/ru/gateway/troubleshooting).
 
-## См. также
+## Связанные материалы
 
 - [Справочник по конфигурации](/ru/gateway/configuration-reference)
 - [Конфигурация](/ru/gateway/configuration)

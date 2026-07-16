@@ -1,14 +1,15 @@
 ---
 read_when:
     - Bạn đang cài đặt, cấu hình hoặc kiểm tra Plugin IRC
-summary: Thêm giao diện kênh IRC để gửi và nhận tin nhắn OpenClaw.
+summary: Bổ sung giao diện kênh IRC để gửi và nhận tin nhắn OpenClaw.
 title: Plugin IRC
 x-i18n:
-    generated_at: "2026-07-12T08:15:48Z"
+    generated_at: "2026-07-16T15:38:26Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: ef4c5df880542d4d3554320f4d183a2464ef8b31d0e86edc1b6c63e1e41f35d3
+    source_hash: 91f258b4abd854e62fff7c769a6482e5dd2da6bdfbb831fd217a1f792ba2d255
     source_path: plugins/reference/irc.md
     workflow: 16
 ---
@@ -24,7 +25,7 @@ Thêm bề mặt kênh IRC để gửi và nhận tin nhắn OpenClaw.
 
 ## Bề mặt
 
-kênh: irc
+kênh: `irc`
 
 ## Tài liệu liên quan
 

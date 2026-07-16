@@ -1,37 +1,41 @@
 ---
-summary: Hoe OpenClaw de ingebouwde agentruntime, providers, sessies, tools en extensies uitvoert.
+summary: 'Hoe OpenClaw de ingebouwde agentruntime structureert: code-indeling, grenzen, resourcemanifesten en runtimeselectie.'
 title: Architectuur van de agentruntime
 x-i18n:
-    generated_at: "2026-06-27T17:08:41Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T15:06:40Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: cd0ca61b10a4f7029590da8566b22cc44cf801af162e5f2c00c9561fe46e39e3
+    source_hash: 071a0cb076230ce02f2c2c1c21971379cf617f24faa8a9733570aae30a062019
     source_path: agent-runtime-architecture.md
     workflow: 16
 ---
 
-OpenClaw beheert de ingebouwde agentruntime rechtstreeks. De runtimecode staat onder `src/agents/`, model-/providerhelpers staan onder `src/llm/`, en Plugin-gerichte contracten worden beschikbaar gemaakt via `openclaw/plugin-sdk/*`-barrels.
+OpenClaw beheert de ingebouwde agentruntime. Runtimecode bevindt zich onder `src/agents/`, model-/providertransport onder `src/llm/`, en contracten voor plugins worden beschikbaar gesteld via `openclaw/plugin-sdk/*`-barrels.
 
-## Runtimeindeling
+## Runtime-indeling
 
-- `src/agents/embedded-agent-runner/`: ingebouwde agentpogingslus, providerstreamadapters, Compaction, modelselectie en sessiebedrading.
-- `src/agents/sessions/`: sessiepersistentie, laden van extensies, resourcedetectie, Skills, prompts, thema's en door TUI ondersteunde toolrenderers.
-- `packages/agent-core/`: herbruikbare agentkern, harness-typen op lager niveau, berichten, Compaction-helpers, prompttemplates en tool-/sessiecontracten.
-- `src/agents/runtime/`: OpenClaw-facade voor `@openclaw/agent-core` plus lokale proxyhulpprogramma's.
-- `src/agents/agent-tools*.ts`: door OpenClaw beheerde tooldefinities, schema's, beleid, adapters voor hooks voor/na, en ondersteuning voor hostbewerkingen.
-- `src/agents/agent-hooks/`: ingebouwde runtimehooks, zoals waarborgen voor Compaction en contextsnoei.
-- `src/llm/`: model-/providerregister, transporthelpers en providerspecifieke streamimplementaties.
+| Pad                                 | Beheert                                                                                                                                                                                                                   |
+| ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/agents/embedded-agent-runner/` | Ingebouwde poginglus (`run.ts`, `run/`), modelselectie en providernormalisatie (`model*.ts`), aanvraagparameters per provider (`extra-params.*`), Compaction, en koppeling van transcript en sessie.                            |
+| `src/agents/sessions/`              | Sessiepersistentie (`session-manager.ts`), resourcedetectie (`package-manager.ts`, `resource-loader.ts`), het laden van `extensions` binnen de sessie, prompttemplates, Skills, thema's en TUI-gebaseerde toolrenderers (`tools/`). |
+| `packages/agent-core/`              | Herbruikbare agentkern (`@openclaw/agent-core`): agentlus, harnastypen, berichten, Compaction-helpers, prompttemplates, Skills en contracten voor sessieopslag.                                                           |
+| `src/agents/runtime/`               | OpenClaw-facade die `@openclaw/agent-core` koppelt aan de LLM-runtime van de plugin-SDK en deze opnieuw exporteert, samen met lokale proxyhulpprogramma's.                                                                                             |
+| `src/agents/agent-tools*.ts`        | Tooldefinities onder beheer van OpenClaw, parameterschema's, toolbeleid, adapters vóór en na toolaanroepen en bewerkingstools voor host/sandbox.                                                                                            |
+| `src/agents/agent-hooks/`           | Ingebouwde runtimehooks: Compaction-beveiliging, Compaction-instructies, contextsnoeiing.                                                                                                                                   |
+| `src/agents/harness/`               | Harnasregister, selectiebeleid en levenscyclus voor de ingebouwde en door plugins geregistreerde harnassen.                                                                                                                       |
+| `src/llm/`                          | Model-/providerregister, transporthelpers en providerspecifieke streamimplementaties (`src/llm/providers/`).                                                                                                          |
 
 ## Grenzen
 
-Core-code roept de ingebouwde runtime aan via OpenClaw-modules en SDK-barrels, niet via oude externe agentpakketten. Plugins gebruiken gedocumenteerde `openclaw/plugin-sdk/*`-entrypoints en importeren geen interne onderdelen uit `src/**`.
+De kern roept de ingebouwde runtime aan via OpenClaw-modules en SDK-barrels; er zijn geen externe pakketten voor agentframeworks meer. Plugins gebruiken gedocumenteerde `openclaw/plugin-sdk/*`-ingangspunten en importeren geen interne onderdelen van `src/**`.
 
-`@earendil-works/pi-tui` blijft een TUI-afhankelijkheid van derden. Het wordt gebruikt als toolkit voor terminalcomponenten door de lokale TUI en sessierenderers; het internaliseren ervan zou een afzonderlijke vendoring-inspanning zijn.
+`@earendil-works/pi-tui` blijft een afhankelijkheid van derden: een toolkit voor terminalcomponenten die door de lokale TUI en renderers voor sessietools wordt gebruikt. Het internaliseren ervan zou een afzonderlijke vendoringsinspanning vereisen.
 
 ## Manifesten
 
-Resourcepakketten declareren OpenClaw-resources in pakketmetadata:
+Resourcepakketten declareren OpenClaw-resources in `package.json`-metadata. Vermeldingen zijn bestandspaden of globpatronen relatief ten opzichte van de pakketroot:
 
 ```json
 {
@@ -44,13 +48,17 @@ Resourcepakketten declareren OpenClaw-resources in pakketmetadata:
 }
 ```
 
-De pakketbeheerder ontdekt ook conventionele mappen `extensions/`, `skills/`, `prompts/` en `themes/`.
+Resourcetypen die niet in een manifest worden vermeld, vallen terug op detectie van conventionele mappen `extensions/`, `skills/`, `prompts/` en `themes/`.
 
 ## Runtimeselectie
 
-De standaard ingebouwde runtime-id is `openclaw`. Plugin-harnassen kunnen aanvullende runtime-id's registreren. `auto` selecteert een ondersteunend Plugin-harnas wanneer dat bestaat en gebruikt anders de ingebouwde OpenClaw-runtime.
+- De id van de ingebouwde runtime is `openclaw`. De verouderde alias `pi` wordt genormaliseerd naar `openclaw`; `codex-app-server` wordt genormaliseerd naar `codex`.
+- Pluginharnassen registreren aanvullende runtime-id's (bijvoorbeeld `codex`).
+- Runtimebeleid is model-/providergerichte `agentRuntime.id`-configuratie (de modelvermelding heeft voorrang op de providervermelding). Niet ingesteld of `default` wordt omgezet naar `auto`.
+- `auto` selecteert een geregistreerd pluginharnas dat de effectieve providerroute ondersteunt, en anders de ingebouwde OpenClaw-runtime. Alleen een provider- of modelprefix selecteert nooit een harnas.
+- OpenAI mag `codex` alleen impliciet selecteren voor een exacte officiële HTTPS-route voor Platform Responses of ChatGPT Responses zonder expliciet ingestelde aanvraagoverschrijving. Completions-adapters, aangepaste eindpunten en routes met expliciet ingesteld aanvraaggedrag blijven op `openclaw`; officiële HTTP-eindpunten met platte tekst worden geweigerd. Zie [Impliciete OpenAI-agentruntime](/nl/providers/openai#implicit-agent-runtime).
 
 ## Gerelateerd
 
-- [Workflow voor de OpenClaw-agentruntime](/nl/openclaw-agent-runtime)
+- [Workflow van de OpenClaw-agentruntime](/nl/openclaw-agent-runtime)
 - [Agentruntimes](/nl/concepts/agent-runtimes)

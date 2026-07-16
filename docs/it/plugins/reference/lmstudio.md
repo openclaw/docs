@@ -1,21 +1,22 @@
 ---
 read_when:
-    - Stai installando, configurando o verificando il plugin lmstudio
-summary: Aggiunge a OpenClaw il supporto per il provider di modelli LM Studio.
+    - Si sta installando, configurando o verificando il plugin lmstudio
+summary: Aggiunge il supporto per il provider di modelli LM Studio a OpenClaw.
 title: Plugin LM Studio
 x-i18n:
-    generated_at: "2026-07-12T07:18:37Z"
+    generated_at: "2026-07-16T14:45:34Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: ec6c84ec422c0795d00f744239fcad96a5a01ef4fddd4823ba0b6ed93444a75b
+    source_hash: 8fc13cb8579875fab911aaf456f1b632426761b173cc06a8a7f60698e96cfb16
     source_path: plugins/reference/lmstudio.md
     workflow: 16
 ---
 
 # Plugin LM Studio
 
-Aggiunge a OpenClaw il supporto per il provider di modelli LM Studio.
+Aggiunge il supporto per il provider di modelli LM Studio a OpenClaw.
 
 ## Distribuzione
 
@@ -24,7 +25,7 @@ Aggiunge a OpenClaw il supporto per il provider di modelli LM Studio.
 
 ## Superficie
 
-provider: lmstudio; contratti: memoryEmbeddingProviders
+provider: `lmstudio`; contratti: `memoryEmbeddingProviders`
 
 ## Documentazione correlata
 

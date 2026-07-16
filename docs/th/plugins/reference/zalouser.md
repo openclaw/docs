@@ -1,21 +1,22 @@
 ---
 read_when:
     - คุณกำลังติดตั้ง กำหนดค่า หรือตรวจสอบ Plugin zalouser
-summary: Plugin บัญชีส่วนบุคคล Zalo สำหรับ OpenClaw ผ่านการผสานรวม zca-js แบบเนทีฟ
+summary: Plugin บัญชีส่วนตัว Zalo สำหรับ OpenClaw ผ่านการผสานรวม zca-js แบบเนทีฟ
 title: Plugin Zalo Personal
 x-i18n:
-    generated_at: "2026-07-12T16:32:53Z"
+    generated_at: "2026-07-16T19:35:22Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: c03db694c940cb1fb20f4a2f73512c9d3cf3c79e910cc6a0dd4aa38bd4465ed5
+    source_hash: 5c6617fe9868c56c0ecd4065109f58f8483e2fcef7730456826366c24dceee8b
     source_path: plugins/reference/zalouser.md
     workflow: 16
 ---
 
 # Plugin Zalo Personal
 
-Plugin บัญชีส่วนบุคคล Zalo ของ OpenClaw ผ่านการผสานรวมแบบเนทีฟกับ zca-js
+Plugin บัญชีส่วนบุคคล Zalo ของ OpenClaw ผ่านการผสานรวม zca-js แบบเนทีฟ
 
 ## การเผยแพร่
 
@@ -24,7 +25,7 @@ Plugin บัญชีส่วนบุคคล Zalo ของ OpenClaw ผ่
 
 ## พื้นผิว
 
-ช่องทาง: zalouser; สัญญา: เครื่องมือ
+ช่องทาง: `zalouser`; สัญญา: `tools`
 
 ## เอกสารที่เกี่ยวข้อง
 

@@ -2,29 +2,30 @@
 doc-schema-version: 1
 read_when:
     - Installazione o configurazione dei plugin
-    - Comprendere le regole di individuazione e caricamento dei plugin
-    - Utilizzo di pacchetti di Plugin compatibili con Codex/Claude
+    - Comprendere le regole di individuazione e caricamento dei Plugin
+    - Utilizzo dei bundle di Plugin compatibili con Codex/Claude
 sidebarTitle: Getting Started
-summary: Installa, configura e gestisci i Plugin di OpenClaw
+summary: Installa, configura e gestisci i plugin di OpenClaw
 title: Plugin
 x-i18n:
-    generated_at: "2026-07-12T07:34:54Z"
+    generated_at: "2026-07-16T15:01:22Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 9de5b54c1c7b8ecf789816aa909ee1538de4295f0503a1ea9eecd535077a7cbc
+    source_hash: cd6b19616c14fbbfcec47beca02f206d7a8ca9500c530d06958a30a9e5488bde
     source_path: tools/plugin.md
     workflow: 16
 ---
 
 I Plugin estendono OpenClaw con canali, provider di modelli, harness per agenti, strumenti,
 Skills, sintesi vocale, trascrizione in tempo reale, voce, comprensione dei contenuti multimediali, generazione,
-recupero web, ricerca web e altre funzionalità di runtime.
+recupero dal web, ricerca sul web e altre funzionalità di runtime.
 
-Usa questa pagina per installare un Plugin, riavviare il Gateway, verificare che il runtime
-lo abbia caricato e risolvere i comuni errori di configurazione. Per esempi relativi ai soli comandi, consulta
+Usare questa pagina per installare un Plugin, riavviare il Gateway, verificare che il runtime
+lo abbia caricato e risolvere i comuni errori di configurazione. Per esempi relativi ai soli comandi, vedere
 [Gestire i Plugin](/it/plugins/manage-plugins). Per l'inventario generato dei
-Plugin inclusi, esterni ufficiali e disponibili solo come sorgente, consulta
+Plugin inclusi, esterni ufficiali e disponibili solo come sorgente, vedere
 [Inventario dei Plugin](/it/plugins/plugin-inventory).
 
 ## Requisiti
@@ -32,28 +33,28 @@ Plugin inclusi, esterni ufficiali e disponibili solo come sorgente, consulta
 - un checkout o un'installazione di OpenClaw con la CLI `openclaw` disponibile
 - accesso di rete alla sorgente selezionata (ClawHub, npm o un host git)
 - eventuali credenziali, chiavi di configurazione o strumenti del sistema operativo specifici del Plugin indicati dalla
-  relativa documentazione di configurazione
-- autorizzazione per ricaricare o riavviare il Gateway che gestisce i tuoi canali
+  documentazione di configurazione del Plugin
+- autorizzazione per il Gateway che gestisce i canali a ricaricarsi o riavviarsi
 
 ## Avvio rapido
 
 <Steps>
-  <Step title="Trova il Plugin">
-    Cerca in [ClawHub](/clawhub) i pacchetti Plugin pubblici:
+  <Step title="Trovare il Plugin">
+    Cercare in [ClawHub](/clawhub) i pacchetti di Plugin pubblici:
 
     ```bash
     openclaw plugins search "calendar"
     ```
 
-    ClawHub è il principale punto di ricerca dei Plugin della community. Durante la
-    transizione del lancio, le normali specifiche di pacchetto semplici vengono ancora installate da npm, a meno che
-    non corrispondano all'ID di un Plugin ufficiale. Le specifiche `@openclaw/*` non elaborate che corrispondono a un
-    Plugin incluso vengono risolte nella relativa copia inclusa. Usa un prefisso di sorgente esplicito
-    quando ti serve specificamente una determinata sorgente.
+    ClawHub è la superficie principale per individuare i Plugin della community. Durante la
+    transizione del lancio, le normali specifiche di pacchetto senza prefisso continuano a essere installate da npm, a meno che
+    non corrispondano all'id di un Plugin ufficiale. Le specifiche `@openclaw/*` non elaborate che corrispondono a un
+    Plugin incluso vengono risolte nella relativa copia inclusa. Usare un prefisso di sorgente esplicito
+    quando è necessaria una sorgente specifica.
 
   </Step>
 
-  <Step title="Installa il Plugin">
+  <Step title="Installare il Plugin">
     ```bash
     # Da ClawHub.
     openclaw plugins install clawhub:<package>
@@ -69,102 +70,106 @@ Plugin inclusi, esterni ufficiali e disponibili solo come sorgente, consulta
     openclaw plugins install --link ./my-plugin
     ```
 
-    Considera le installazioni dei Plugin come l'esecuzione di codice. Per installazioni
-    di produzione riproducibili, preferisci versioni bloccate.
+    Considerare l'installazione di un Plugin come l'esecuzione di codice. Preferire versioni fissate per
+    installazioni di produzione riproducibili. I pacchetti ClawHub e il catalogo
+    incluso/ufficiale di OpenClaw sono sorgenti attendibili. Nuove sorgenti arbitrarie npm, git,
+    percorso/archivio locale, `npm-pack:` o marketplace richiedono
+    `--force` nelle installazioni non interattive, dopo aver
+    esaminato la sorgente e averne verificato l'affidabilità.
 
   </Step>
 
-  <Step title="Configuralo e abilitalo">
-    Configura le impostazioni specifiche del Plugin in `plugins.entries.<id>.config`.
-    Abilita il Plugin se non è già abilitato:
+  <Step title="Configurarlo e abilitarlo">
+    Configurare le impostazioni specifiche del Plugin in `plugins.entries.<id>.config`.
+    Abilitare il Plugin se non è già abilitato:
 
     ```bash
     openclaw plugins enable <plugin-id>
     ```
 
-    Se `plugins.allow` è impostato, l'ID del Plugin installato deve essere presente nell'elenco
-    prima che il Plugin possa essere caricato. `openclaw plugins install` aggiunge l'ID
-    installato a un elenco `plugins.allow` esistente e rimuove lo stesso ID da
+    Se `plugins.allow` è impostato, l'id del Plugin installato deve essere presente in tale elenco
+    prima che il Plugin possa essere caricato. `openclaw plugins install` aggiunge l'id
+    installato a un elenco `plugins.allow` esistente e rimuove lo stesso id da
     `plugins.deny`, in modo che l'installazione esplicita possa essere caricata dopo il riavvio.
 
   </Step>
 
-  <Step title="Consenti il ricaricamento del Gateway">
-    L'installazione, l'aggiornamento o la disinstallazione del codice di un Plugin richiede il riavvio del
-    Gateway. Un Gateway gestito con il ricaricamento della configurazione abilitato rileva la modifica
-    del record di installazione del Plugin e si riavvia automaticamente. Altrimenti, riavvialo
+  <Step title="Consentire al Gateway di ricaricarsi">
+    L'installazione, l'aggiornamento o la disinstallazione del codice di un Plugin richiede il riavvio del Gateway.
+    Un Gateway gestito con la ricarica della configurazione abilitata rileva la modifica
+    del record di installazione del Plugin e si riavvia automaticamente. In caso contrario, riavviarlo
     manualmente:
 
     ```bash
     openclaw gateway restart
     ```
 
-    L'abilitazione o la disabilitazione aggiorna la configurazione e il registro a freddo. Un'ispezione del runtime
-    resta comunque la prova più chiara delle superfici attive del runtime.
+    L'abilitazione/disabilitazione aggiorna la configurazione e il registro a freddo. Un'ispezione del runtime
+    rimane comunque la prova più chiara delle superfici attive del runtime.
 
   </Step>
 
-  <Step title="Verifica la registrazione nel runtime">
+  <Step title="Verificare la registrazione nel runtime">
     ```bash
     openclaw plugins inspect <plugin-id> --runtime --json
     ```
 
-    Usa `--runtime` per verificare strumenti, hook, servizi, metodi del Gateway
-    o comandi CLI di proprietà del Plugin registrati. Un semplice `inspect` controlla soltanto
-    il manifest e il registro a freddo.
+    Usare `--runtime` per verificare strumenti, hook, servizi, metodi del Gateway
+    o comandi CLI di proprietà del Plugin registrati. Il semplice `inspect` è solo un controllo
+    a freddo del manifesto e del registro.
 
   </Step>
 </Steps>
 
 ## Configurazione
 
-### Scegli una sorgente di installazione
+### Scegliere una sorgente di installazione
 
-| Sorgente    | Usala quando                                                                    | Esempio                                                        |
+| Sorgente    | Quando usarla                                                                  | Esempio                                                        |
 | ----------- | ------------------------------------------------------------------------------ | -------------------------------------------------------------- |
-| ClawHub     | Vuoi ricerca nativa di OpenClaw, scansioni, metadati delle versioni e indicazioni per l'installazione | `openclaw plugins install clawhub:<package>`                   |
-| npm         | Ti servono flussi di lavoro diretti con il registro npm o i dist-tag           | `openclaw plugins install npm:<package>`                       |
-| git         | Ti serve un branch, un tag o un commit da un repository                        | `openclaw plugins install git:github.com/<owner>/<repo>@<ref>` |
-| percorso locale | Stai sviluppando o testando un Plugin sulla stessa macchina                | `openclaw plugins install --link ./my-plugin`                  |
-| marketplace | Stai installando un Plugin di marketplace compatibile con Claude               | `openclaw plugins install <plugin> --marketplace <source>`     |
+| ClawHub     | Se si desiderano individuazione nativa di OpenClaw, scansioni, metadati delle versioni e suggerimenti di installazione | `openclaw plugins install clawhub:<package>`                   |
+| npm         | Se sono necessari flussi di lavoro diretti con il registro npm o i dist-tag    | `openclaw plugins install npm:<package>`                       |
+| git         | Se è necessario un branch, un tag o un commit da un repository                 | `openclaw plugins install git:github.com/<owner>/<repo>@<ref>` |
+| percorso locale | Se si sta sviluppando o testando un Plugin sulla stessa macchina           | `openclaw plugins install --link ./my-plugin`                  |
+| marketplace | Se si sta installando un Plugin marketplace compatibile con Claude             | `openclaw plugins install <plugin> --marketplace <source>`     |
 
-Le specifiche di pacchetto semplici hanno un comportamento speciale di compatibilità: un nome semplice che
-corrisponde all'ID di un Plugin incluso usa la relativa sorgente inclusa; un nome semplice che corrisponde
-all'ID di un Plugin esterno ufficiale usa il catalogo ufficiale dei pacchetti; qualsiasi altra
-specifica semplice viene installata tramite npm durante la transizione del lancio. Anche le specifiche `@openclaw/*`
-non elaborate che corrispondono a Plugin inclusi vengono risolte nella copia inclusa prima del
-fallback su npm. Usa `npm:@openclaw/<plugin>@<version>` per installare intenzionalmente il
-pacchetto npm esterno invece della copia inclusa. Usa `clawhub:`, `npm:`,
-`git:` o `npm-pack:` per selezionare la sorgente in modo deterministico. Consulta
+Le specifiche di pacchetto senza prefisso hanno un comportamento di compatibilità speciale: un nome senza prefisso che
+corrisponde all'id di un Plugin incluso usa la relativa sorgente inclusa; un nome senza prefisso che corrisponde
+all'id di un Plugin esterno ufficiale usa il catalogo ufficiale dei pacchetti; qualsiasi altra
+specifica senza prefisso viene installata tramite npm durante la transizione del lancio. Anche le specifiche
+`@openclaw/*` non elaborate che corrispondono a Plugin inclusi vengono risolte nella copia inclusa prima del
+fallback su npm. Usare `npm:@openclaw/<plugin>@<version>` per installare deliberatamente il
+pacchetto npm esterno anziché la copia inclusa. Usare `clawhub:`, `npm:`,
+`git:` o `npm-pack:` per una selezione deterministica della sorgente. Vedere
 [`openclaw plugins`](/it/cli/plugins#install) per il contratto completo del comando.
 
-Per le installazioni npm, le specifiche senza versione bloccata e `@latest` selezionano il pacchetto stabile
-più recente che dichiara la compatibilità con questa build di OpenClaw. Se la
-versione latest corrente di npm dichiara un `openclaw.compat.pluginApi` o
-`openclaw.install.minHostVersion` più recente di quanto supportato da questa build, OpenClaw esamina
+Per le installazioni npm, le specifiche senza versione fissata e `@latest` selezionano il pacchetto
+stabile più recente che dichiara compatibilità con questa build di OpenClaw. Se la versione
+latest corrente di npm dichiara un `openclaw.compat.pluginApi` o
+`openclaw.install.minHostVersion` più recente di quello supportato da questa build, OpenClaw esamina
 le versioni stabili precedenti e installa la più recente compatibile. Le versioni esatte
-e i tag di canale espliciti, come `@beta`, restano vincolati al pacchetto selezionato
-e non riescono se incompatibili.
+e i tag di canale espliciti come `@beta` rimangono fissati al pacchetto selezionato
+e generano un errore in caso di incompatibilità.
 
 ### Criteri di installazione dell'operatore
 
-Configura `security.installPolicy` per eseguire un comando di criteri locale attendibile
-prima che proceda l'installazione o l'aggiornamento di un Plugin. Il comando riceve i metadati e
-il percorso della sorgente predisposta e può consentire o bloccare l'installazione. Si applica sia ai percorsi
-di installazione/aggiornamento della CLI sia a quelli supportati dal Gateway. Gli hook `before_install` del Plugin vengono eseguiti
-successivamente e solo nei processi OpenClaw in cui sono caricati gli hook dei Plugin; usa quindi
-`security.installPolicy` per le decisioni di installazione di competenza dell'operatore. Il
-flag deprecato `--dangerously-force-unsafe-install` è accettato per
-compatibilità, ma non esegue alcuna operazione: non aggira i criteri di installazione né l'elenco di esclusione
+Configurare `security.installPolicy` per eseguire un comando di criteri locale attendibile
+prima di procedere con l'installazione o l'aggiornamento di un Plugin. I criteri ricevono i metadati e
+il percorso della sorgente preparata e possono consentire o bloccare l'installazione. Si applicano sia ai percorsi
+di installazione/aggiornamento tramite CLI sia a quelli gestiti dal Gateway. Gli hook `before_install` del Plugin vengono eseguiti
+successivamente e solo nei processi OpenClaw in cui vengono caricati gli hook dei Plugin; usare quindi
+`security.installPolicy` per le decisioni di installazione di competenza dell'operatore. Il flag
+obsoleto `--dangerously-force-unsafe-install` è accettato per
+compatibilità, ma non esegue alcuna operazione: non elude i criteri di installazione né l'elenco di esclusione
 integrato di OpenClaw per le dipendenze dei Plugin.
 
-Consulta [Configurazione delle Skills](/it/tools/skills-config#operator-install-policy-securityinstallpolicy)
-per lo schema exec condiviso di `security.installPolicy`, usato sia dalle Skills sia dai
+Vedere [Configurazione delle Skills](/it/tools/skills-config#operator-install-policy-securityinstallpolicy)
+per lo schema exec condiviso `security.installPolicy` usato sia dalle Skills sia dai
 Plugin.
 
-### Configura i criteri dei Plugin
+### Configurare i criteri dei Plugin
 
-La struttura comune della configurazione dei Plugin è:
+La struttura comune di configurazione dei Plugin è:
 
 ```json5
 {
@@ -183,92 +188,92 @@ La struttura comune della configurazione dei Plugin è:
 
 Regole principali dei criteri:
 
-- `plugins.enabled: false` disabilita tutti i Plugin e ignora le operazioni di rilevamento/caricamento.
-  I riferimenti obsoleti ai Plugin restano inerti finché questa opzione è attiva; riabilita
-  i Plugin prima di eseguire la pulizia con doctor se vuoi rimuovere gli ID obsoleti.
-- `plugins.deny` prevale sull'elenco delle autorizzazioni e sull'abilitazione dei singoli Plugin.
-- `plugins.allow` è un elenco esclusivo di autorizzazioni. Gli strumenti di proprietà dei Plugin non inclusi
-  nell'elenco restano non disponibili anche quando `tools.allow` include `"*"`.
-- `plugins.entries.<id>.enabled: false` disabilita un singolo Plugin mantenendone la
-  configurazione.
-- `plugins.load.paths` aggiunge file o directory locali di Plugin espliciti.
-  I percorsi locali gestiti da `plugins install` devono essere directory o
-  archivi di Plugin; usa `plugins.load.paths` per file Plugin autonomi.
-- I Plugin provenienti dall'area di lavoro sono disabilitati per impostazione predefinita; abilitali esplicitamente o
-  aggiungili all'elenco delle autorizzazioni prima di usare codice dell'area di lavoro locale.
-- I Plugin inclusi seguono i relativi metadati integrati di attivazione/disattivazione predefinita,
-  a meno che la configurazione non li sovrascriva esplicitamente.
+- `plugins.enabled: false` disabilita tutti i Plugin e ignora il lavoro di individuazione/caricamento.
+  I riferimenti obsoleti ai Plugin rimangono inattivi mentre questa opzione è attiva; riabilitare
+  i Plugin prima di eseguire la pulizia con doctor se si desidera rimuovere gli id obsoleti.
+- `plugins.deny` ha la precedenza sull'elenco delle autorizzazioni e sull'abilitazione dei singoli Plugin.
+- `plugins.allow` è un elenco esclusivo di autorizzazioni. Gli strumenti di proprietà dei Plugin non presenti
+  nell'elenco rimangono indisponibili anche quando `tools.allow` include `"*"`.
+- `plugins.entries.<id>.enabled: false` disabilita un singolo Plugin mantenendone
+  la configurazione.
+- `plugins.load.paths` aggiunge file o directory locali espliciti dei Plugin.
+  I percorsi locali `plugins install` gestiti devono essere directory o
+  archivi di Plugin; usare `plugins.load.paths` per file di Plugin autonomi.
+- I Plugin provenienti dal workspace sono disabilitati per impostazione predefinita; abilitarli esplicitamente o
+  aggiungerli all'elenco delle autorizzazioni prima di usare il codice del workspace locale.
+- I Plugin inclusi seguono i metadati integrati di attivazione/disattivazione predefinita,
+  a meno che la configurazione non li sostituisca esplicitamente.
 - `plugins.slots.<slot>` (`memory` o `contextEngine`) seleziona un Plugin per una
   categoria esclusiva. La selezione dello slot conta come attivazione esplicita e
-  abilita forzatamente il Plugin selezionato per quello slot, anche se altrimenti
-  richiederebbe l'attivazione esplicita. `plugins.deny` e `plugins.entries.<id>.enabled: false`
-  continuano a bloccarlo.
-- I Plugin inclusi che richiedono l'attivazione esplicita possono attivarsi automaticamente quando la configurazione indica una delle
+  forza l'abilitazione del Plugin selezionato per quello slot, anche se altrimenti
+  richiederebbe l'attivazione esplicita. `plugins.deny` e `plugins.entries.<id>.enabled: false` continuano
+  a bloccarlo.
+- I Plugin inclusi che richiedono attivazione esplicita possono attivarsi automaticamente quando la configurazione indica una delle
   superfici di loro proprietà, come un riferimento a provider/modello, la configurazione di un canale, un backend CLI
   o il runtime di un harness per agenti.
-- L'instradamento Codex della famiglia OpenAI mantiene separati i confini tra provider e Plugin di runtime:
-  i riferimenti legacy ai modelli Codex sono configurazioni legacy che doctor corregge,
-  mentre il Plugin `codex` incluso gestisce il runtime app-server Codex per
-  i riferimenti canonici agli agenti `openai/*`, `agentRuntime.id: "codex"` esplicito e
+- L'instradamento Codex della famiglia OpenAI mantiene separati i confini tra provider e Plugin
+  di runtime: i riferimenti legacy ai modelli Codex sono configurazioni legacy che doctor corregge,
+  mentre il Plugin incluso `codex` gestisce il runtime del server applicativo Codex per
+  i riferimenti canonici agli agenti `openai/*`, `agentRuntime.id: "codex"` espliciti e
   i riferimenti legacy `codex/*`.
 
-Quando `plugins.allow` non è impostato e i Plugin non inclusi vengono rilevati automaticamente
-dall'area di lavoro o dalle radici globali dei Plugin, all'avvio viene registrato
+Quando `plugins.allow` non è impostato e i Plugin non inclusi vengono individuati automaticamente dal
+workspace o dalle radici globali dei Plugin, all'avvio viene registrato
 `plugins.allow is empty; discovered non-bundled plugins may auto-load: ...`
-con gli ID dei Plugin rilevati e, per elenchi brevi, un frammento minimo di `plugins.allow`.
-Esegui [`openclaw plugins list --enabled --verbose`](/it/cli/plugins#list)
-o [`openclaw plugins inspect <id>`](/it/cli/plugins#inspect) sull'ID del
+con gli id dei Plugin individuati e, per elenchi brevi, un frammento `plugins.allow`
+minimo. Eseguire [`openclaw plugins list --enabled --verbose`](/it/cli/plugins#list)
+o [`openclaw plugins inspect <id>`](/it/cli/plugins#inspect) sull'id del
 Plugin elencato prima di copiare i Plugin attendibili in `openclaw.json`. Lo stesso
-vincolo di attendibilità si applica quando la diagnostica indica che un Plugin è stato caricato
-`without install/load-path provenance`: ispeziona l'ID del Plugin, quindi aggiungilo a
-`plugins.allow` oppure reinstallalo da una sorgente attendibile affinché OpenClaw registri la
+blocco basato sull'attendibilità si applica quando la diagnostica indica che un Plugin è stato caricato
+`without install/load-path provenance`: ispezionare l'id del Plugin, quindi fissarlo in
+`plugins.allow` oppure reinstallarlo da una sorgente attendibile affinché OpenClaw registri la
 provenienza dell'installazione.
 
-Esegui `openclaw doctor` o `openclaw doctor --fix` quando la convalida della configurazione
-segnala ID di Plugin obsoleti, incongruenze tra elenchi di autorizzazioni e strumenti o percorsi legacy dei Plugin
+Eseguire `openclaw doctor` o `openclaw doctor --fix` quando la convalida della configurazione
+segnala id di Plugin obsoleti, mancata corrispondenza tra elenco delle autorizzazioni e strumenti o percorsi legacy di Plugin
 inclusi.
 
 ## Comprendere i formati dei Plugin
 
 OpenClaw riconosce due formati di Plugin:
 
-| Formato                | Modalità di caricamento                                                        | Usalo quando                                                            |
-| ---------------------- | ------------------------------------------------------------------------------ | ----------------------------------------------------------------------- |
-| Plugin OpenClaw nativo | `openclaw.plugin.json` più un modulo di runtime caricato nel processo          | Stai installando o creando funzionalità di runtime specifiche di OpenClaw |
-| Bundle compatibile     | Layout di Plugin Codex, Claude o Cursor mappato nell'inventario dei Plugin di OpenClaw | Stai riutilizzando Skills, comandi, hook o metadati di bundle compatibili |
+| Formato                | Modalità di caricamento                                                       | Quando usarlo                                                           |
+| ---------------------- | ---------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
+| Plugin OpenClaw nativo | `openclaw.plugin.json` più un modulo di runtime caricato nel processo             | Se si installano o sviluppano funzionalità di runtime specifiche di OpenClaw |
+| Bundle compatibile     | Layout di Plugin Codex, Claude o Cursor mappato nell'inventario dei Plugin di OpenClaw | Se si riutilizzano Skills, comandi, hook o metadati di bundle compatibili |
 
 Entrambi i formati compaiono in `openclaw plugins list`, `openclaw plugins inspect`,
-`openclaw plugins enable` e `openclaw plugins disable`. Consulta
-[Bundle di Plugin](/it/plugins/bundles) per i limiti di compatibilità dei bundle e
-[Creazione di Plugin](/it/plugins/building-plugins) per la creazione di Plugin nativi.
+`openclaw plugins enable` e `openclaw plugins disable`. Vedere
+[Bundle di Plugin](/it/plugins/bundles) per il confine di compatibilità dei bundle e
+[Creazione di Plugin](/it/plugins/building-plugins) per lo sviluppo di Plugin nativi.
 
 ## Hook dei Plugin
 
-I Plugin possono registrare hook in fase di runtime tramite due API diverse:
+I Plugin possono registrare hook nel runtime tramite due API diverse:
 
 - hook tipizzati `api.on(...)` per gli eventi del ciclo di vita del runtime. Questa è la
-  superficie preferita per middleware, criteri, riscrittura dei messaggi, strutturazione dei prompt
-  e controllo degli strumenti.
+  superficie preferita per middleware, criteri, riscrittura dei messaggi, definizione
+  dei prompt e controllo degli strumenti.
 - `api.registerHook(...)` per il sistema di hook interno descritto in
-  [Hook](/it/automation/hooks). Serve principalmente per effetti collaterali generali sui comandi o sul ciclo di vita
-  e per la compatibilità con l'automazione esistente in stile HOOK.
+  [Hook](/it/automation/hooks). È destinato principalmente a effetti collaterali generali di comandi/ciclo di vita
+  e alla compatibilità con l'automazione esistente in stile HOOK.
 
-Regola rapida: se il gestore necessita di priorità, semantica di unione o
-comportamento di blocco/annullamento, usa gli hook tipizzati. Se reagisce soltanto a `command:new`,
+Regola rapida: se il gestore richiede priorità, semantica di unione o
+comportamento di blocco/annullamento, usare gli hook tipizzati. Se reagisce soltanto a `command:new`,
 `command:reset`, `message:sent` o eventi generali simili, `api.registerHook`
 è adeguato.
 
 Gli hook interni gestiti dai Plugin compaiono in `openclaw hooks list` con
-`plugin:<id>`. Non puoi abilitarli o disabilitarli tramite `openclaw hooks`;
-abilita o disabilita invece il Plugin.
+`plugin:<id>`. Non è possibile abilitarli o disabilitarli tramite `openclaw hooks`;
+abilitare o disabilitare invece il Plugin.
 
-## Verifica il Gateway attivo
+## Verificare il Gateway attivo
 
-`openclaw plugins list` e un semplice `openclaw plugins inspect` leggono lo stato a freddo di configurazione,
-manifest e registro. Non dimostrano che un Gateway già in esecuzione
-abbia importato lo stesso codice del Plugin.
+`openclaw plugins list` e il semplice `openclaw plugins inspect` leggono la configurazione a freddo,
+il manifest e lo stato del registro. Non dimostrano che un Gateway già in esecuzione
+abbia importato lo stesso codice del plugin.
 
-Quando un Plugin risulta installato ma il traffico della chat in tempo reale non lo utilizza:
+Quando un plugin risulta installato ma il traffico della chat in tempo reale non lo utilizza:
 
 ```bash
 openclaw gateway status --deep --require-rpc
@@ -277,50 +282,50 @@ openclaw gateway restart
 ```
 
 I Gateway gestiti si riavviano automaticamente dopo modifiche di installazione, aggiornamento e
-disinstallazione che alterano il codice sorgente del plugin. Nelle installazioni su VPS o container, assicurati
-che qualsiasi riavvio manuale interessi l'effettivo processo figlio `openclaw gateway run` che
-serve i tuoi canali, non soltanto un wrapper o un supervisore.
+disinstallazione che alterano il codice sorgente del plugin. Nelle installazioni su VPS o container,
+assicurarsi che qualsiasi riavvio manuale interessi il processo figlio `openclaw gateway run` effettivo
+che gestisce i canali, non soltanto un wrapper o un supervisore.
 
 ## Risoluzione dei problemi
 
 | Sintomo                                                        | Verifica                                                                                                                                      | Soluzione                                                                                                     |
 | -------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------- |
-| Il plugin appare in `plugins list`, ma gli hook di runtime non vengono eseguiti  | Usa `openclaw plugins inspect <id> --runtime --json` e verifica il Gateway attivo con `gateway status --deep --require-rpc`             | Riavvia il Gateway attivo dopo modifiche di installazione, aggiornamento, configurazione o codice sorgente                               |
-| Vengono visualizzate diagnostiche di proprietà duplicate di canali o strumenti         | Esegui `openclaw plugins list --enabled --verbose`, esamina ogni plugin sospetto con `--runtime --json` e confronta la proprietà di canali/strumenti | Disabilita uno dei proprietari, rimuovi le installazioni obsolete oppure usa `preferOver` nel manifest per una sostituzione intenzionale      |
-| La configurazione indica che manca un plugin                                | Consulta l'[inventario dei plugin](/it/plugins/plugin-inventory) per verificare se è incluso, ufficiale esterno o disponibile solo come codice sorgente                           | Installa il pacchetto esterno, abilita il plugin incluso oppure rimuovi la configurazione obsoleta                         |
-| La configurazione non è valida durante l'installazione                               | Leggi il messaggio di convalida ed esegui `openclaw doctor --fix` se indica uno stato obsoleto del plugin                                             | Doctor può mettere in quarantena la configurazione non valida del plugin disabilitando la voce e rimuovendo il payload non valido     |
-| Il percorso del plugin è bloccato a causa di proprietà o autorizzazioni sospette | Esamina la diagnostica che precede l'errore di configurazione                                                                                             | Correggi la proprietà e le autorizzazioni del file system, quindi esegui `openclaw plugins registry --refresh`                    |
-| `OPENCLAW_NIX_MODE=1` blocca i comandi del ciclo di vita                | Verifica che l'installazione sia gestita da Nix                                                                                                      | Modifica la selezione dei plugin nel codice sorgente Nix anziché usare i comandi di modifica dei plugin                      |
-| L'importazione delle dipendenze non riesce durante il runtime                             | Verifica se il plugin è stato installato tramite npm/git/ClawHub o caricato da un percorso locale                                                 | Esegui `openclaw plugins update <id>`, reinstalla il codice sorgente oppure installa autonomamente le dipendenze del plugin locale |
+| Il plugin appare in `plugins list`, ma gli hook di runtime non vengono eseguiti  | Usare `openclaw plugins inspect <id> --runtime --json` e confermare il Gateway attivo con `gateway status --deep --require-rpc`             | Riavviare il Gateway in esecuzione dopo modifiche di installazione, aggiornamento, configurazione o codice sorgente                               |
+| Compaiono diagnostiche sulla proprietà duplicata di canali o strumenti         | Eseguire `openclaw plugins list --enabled --verbose`, esaminare ogni plugin sospetto con `--runtime --json` e confrontare la proprietà di canali/strumenti | Disabilitare uno dei proprietari, rimuovere le installazioni obsolete o usare `preferOver` nel manifest per la sostituzione intenzionale      |
+| La configurazione indica che manca un plugin                                | Consultare l'[inventario dei plugin](/it/plugins/plugin-inventory) per verificare se è incluso, esterno ufficiale o disponibile solo come codice sorgente                           | Installare il pacchetto esterno, abilitare il plugin incluso o rimuovere la configurazione obsoleta                         |
+| La configurazione non è valida durante l'installazione                               | Leggere il messaggio di convalida ed eseguire `openclaw doctor --fix` se indica uno stato obsoleto del plugin                                             | Doctor può mettere in quarantena la configurazione non valida del plugin disabilitando la voce e rimuovendo il payload non valido     |
+| Il percorso del plugin è bloccato a causa di proprietà o autorizzazioni sospette | Esaminare la diagnostica che precede l'errore di configurazione                                                                                             | Correggere la proprietà e le autorizzazioni del file system, quindi eseguire `openclaw plugins registry --refresh`                    |
+| `OPENCLAW_NIX_MODE=1` blocca i comandi del ciclo di vita                | Confermare che l'installazione sia gestita da Nix                                                                                                      | Modificare la selezione del plugin nel codice sorgente Nix anziché usare i comandi di modifica dei plugin                      |
+| L'importazione di una dipendenza non riesce in fase di esecuzione                             | Verificare se il plugin è stato installato tramite npm/git/ClawHub o caricato da un percorso locale                                                 | Eseguire `openclaw plugins update <id>`, reinstallare il codice sorgente oppure installare manualmente le dipendenze del plugin locale |
 
-Quando la configurazione obsoleta del plugin indica ancora un plugin di canale non più rilevabile,
-la convalida della configurazione declassa la relativa chiave del canale ad avviso anziché generare un
-errore irreversibile, in modo che all'avvio il Gateway possa comunque servire tutti gli altri canali. Esegui
+Quando la configurazione obsoleta di un plugin indica ancora un plugin di canale non più
+individuabile, la convalida della configurazione trasforma la chiave del canale in un avviso anziché
+in un errore bloccante, così l'avvio del Gateway può continuare a gestire tutti gli altri canali. Eseguire
 `openclaw doctor --fix` per rimuovere le voci obsolete del plugin e del canale. Le chiavi
-di canale sconosciute senza prove di plugin obsoleti continuano a causare il fallimento della convalida, così gli errori di battitura
-restano visibili.
+di canale sconosciute senza prove di un plugin obsoleto continuano a non superare la convalida, così gli errori
+di battitura restano visibili.
 
 Per la sostituzione intenzionale di un canale, il plugin preferito deve dichiarare
 `channelConfigs.<channel-id>.preferOver` con l'id del plugin precedente o con priorità
-inferiore. Se entrambi i plugin sono esplicitamente abilitati, OpenClaw conserva tale richiesta
-e segnala diagnostiche di proprietà duplicate di canali/strumenti anziché scegliere
+inferiore. Se entrambi i plugin sono abilitati esplicitamente, OpenClaw mantiene tale richiesta
+e segnala diagnostiche sulla proprietà duplicata di canali/strumenti anziché scegliere
 silenziosamente un proprietario.
 
 Se un pacchetto installato segnala che `requires compiled runtime output for
 TypeScript entry ...`, il pacchetto è stato pubblicato senza i file JavaScript
-necessari a OpenClaw durante il runtime. Aggiornalo o reinstallalo dopo che l'editore avrà distribuito
-il codice JavaScript compilato, oppure disabilita o disinstalla il plugin fino ad allora.
+necessari a OpenClaw in fase di esecuzione. Aggiornarlo o reinstallarlo dopo che l'editore avrà distribuito
+il JavaScript compilato, oppure disabilitare/disinstallare il plugin fino ad allora.
 
 ### Proprietà bloccata del percorso del plugin
 
-Se le diagnostiche indicano
+Se la diagnostica indica
 `blocked plugin candidate: suspicious ownership (... uid=1000, expected uid=0 or root)`
-e la convalida prosegue con `plugin present but blocked`, OpenClaw ha trovato
+e la convalida prosegue con `plugin present but blocked`, OpenClaw ha rilevato
 file del plugin appartenenti a un utente Unix diverso da quello del processo che li carica.
-Mantieni la configurazione del plugin; correggi la proprietà nel file system oppure esegui OpenClaw
+Mantenere invariata la configurazione del plugin; correggere la proprietà del file system oppure eseguire OpenClaw
 con lo stesso utente proprietario della directory di stato.
 
-Per le installazioni Docker, l'immagine ufficiale viene eseguita come `node` (uid `1000`), pertanto le
+Per le installazioni Docker, l'immagine ufficiale viene eseguita come `node` (uid `1000`), quindi le
 directory di configurazione e dell'area di lavoro di OpenClaw montate dall'host dovrebbero normalmente
 appartenere all'uid `1000`:
 
@@ -328,68 +333,68 @@ appartenere all'uid `1000`:
 sudo chown -R 1000:1000 /path/to/openclaw-config /path/to/openclaw-workspace
 ```
 
-Se esegui intenzionalmente OpenClaw come root, assegna invece a root la proprietà
-della radice gestita dei plugin:
+Se OpenClaw viene eseguito intenzionalmente come root, assegnare invece
+a root la proprietà della directory principale gestita dei plugin:
 
 ```bash
 sudo chown -R root:root /path/to/openclaw-config/npm
 ```
 
-Dopo aver corretto la proprietà, esegui nuovamente `openclaw doctor --fix` oppure
+Dopo aver corretto la proprietà, eseguire nuovamente `openclaw doctor --fix` o
 `openclaw plugins registry --refresh`, affinché il registro persistente dei plugin
 corrisponda ai file corretti.
 
-### Configurazione lenta degli strumenti dei plugin
+### Configurazione lenta degli strumenti del plugin
 
-Se le interazioni dell'agente sembrano bloccarsi durante la preparazione degli strumenti, abilita la registrazione a livello trace
-e cerca le righe relative ai tempi delle factory degli strumenti dei plugin:
+Se i turni dell'agente sembrano bloccarsi durante la preparazione degli strumenti, abilitare i log di traccia
+e verificare la presenza delle righe relative ai tempi delle factory degli strumenti del plugin:
 
 ```bash
 openclaw config set logging.level trace
 openclaw logs --follow
 ```
 
-Cerca:
+Cercare:
 
 ```text
-[trace:plugin-tools] factory timings ...
+[trace:plugin-tools] tempi delle factory ...
 ```
 
-Il riepilogo elenca il tempo totale delle factory e le factory degli strumenti dei plugin più lente,
+Il riepilogo elenca il tempo totale delle factory e le factory degli strumenti del plugin più lente,
 inclusi l'id del plugin, i nomi degli strumenti dichiarati, la struttura del risultato e l'eventuale
-carattere facoltativo dello strumento. Le righe lente vengono promosse ad avvisi quando una singola factory impiega
-almeno 1 s oppure la preparazione complessiva delle factory degli strumenti dei plugin richiede almeno 5 s.
+carattere facoltativo dello strumento. Le righe lente vengono elevate ad avvisi quando una singola factory impiega
+almeno 1s o la preparazione complessiva delle factory degli strumenti del plugin impiega almeno 5s.
 
-OpenClaw memorizza nella cache i risultati corretti delle factory degli strumenti dei plugin per risoluzioni
+OpenClaw memorizza nella cache i risultati riusciti delle factory degli strumenti del plugin per risoluzioni
 ripetute con lo stesso contesto effettivo della richiesta. La chiave della cache include
-la configurazione effettiva del runtime, l'area di lavoro e l'id dell'agente, i criteri della sandbox, le impostazioni
-del browser, il contesto di consegna, l'identità del richiedente e lo stato della proprietà, pertanto
+la configurazione effettiva del runtime, l'area di lavoro e l'id dell'agente, la policy della sandbox, le impostazioni
+del browser, il contesto di consegna, l'identità del richiedente e lo stato di proprietà, quindi
 le factory che dipendono da questi campi attendibili vengono eseguite nuovamente quando cambia il contesto.
-Se i tempi restano elevati, il plugin potrebbe eseguire operazioni onerose prima
+Se i tempi rimangono elevati, il plugin potrebbe eseguire operazioni costose prima
 di restituire le definizioni dei propri strumenti.
 
-Se un plugin domina i tempi, esaminane le registrazioni di runtime:
+Se un plugin domina i tempi, esaminarne le registrazioni di runtime:
 
 ```bash
 openclaw plugins inspect <plugin-id> --runtime --json
 ```
 
-Quindi aggiorna, reinstalla o disabilita tale plugin. Gli autori dei plugin dovrebbero spostare
-il caricamento oneroso delle dipendenze nel percorso di esecuzione dello strumento, anziché eseguirlo
+Quindi aggiornare, reinstallare o disabilitare tale plugin. Gli autori dei plugin dovrebbero spostare
+il caricamento oneroso delle dipendenze nel percorso di esecuzione dello strumento anziché effettuarlo
 all'interno della factory dello strumento.
 
-Per le radici delle dipendenze, la convalida dei metadati dei pacchetti, i record del registro, il comportamento
-di ricaricamento all'avvio e la pulizia delle risorse obsolete, consulta
+Per le directory principali delle dipendenze, la convalida dei metadati dei pacchetti, i record del registro, il comportamento
+di ricaricamento all'avvio e la pulizia dei dati legacy, consultare
 [Risoluzione delle dipendenze dei plugin](/it/plugins/dependency-resolution).
 
 ## Contenuti correlati
 
 - [Gestire i plugin](/it/plugins/manage-plugins) - esempi di comandi per elencare, installare, aggiornare, disinstallare e pubblicare
-- [`openclaw plugins`](/it/cli/plugins) - riferimento completo della CLI
+- [`openclaw plugins`](/it/cli/plugins) - riferimento CLI completo
 - [Inventario dei plugin](/it/plugins/plugin-inventory) - elenco generato dei plugin inclusi ed esterni
 - [Riferimento dei plugin](/it/plugins/reference) - pagine di riferimento generate per ciascun plugin
-- [Plugin della community](/it/plugins/community) - individuazione tramite ClawHub e criteri per le PR della documentazione
-- [Risoluzione delle dipendenze dei plugin](/it/plugins/dependency-resolution) - radici di installazione, record del registro e confini del runtime
+- [Plugin della community](/it/plugins/community) - individuazione tramite ClawHub e policy per le PR della documentazione
+- [Risoluzione delle dipendenze dei plugin](/it/plugins/dependency-resolution) - directory principali di installazione, record del registro e confini del runtime
 - [Creazione di plugin](/it/plugins/building-plugins) - guida alla creazione di plugin nativi
 - [Panoramica dell'SDK dei plugin](/it/plugins/sdk-overview) - registrazione del runtime, hook e campi API
 - [Manifest del plugin](/it/plugins/manifest) - manifest e metadati del pacchetto

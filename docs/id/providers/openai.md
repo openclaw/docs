@@ -1,153 +1,191 @@
 ---
 read_when:
     - Anda ingin menggunakan model OpenAI di OpenClaw
-    - Anda menginginkan autentikasi langganan Codex, bukan kunci API
+    - Anda ingin autentikasi langganan Codex alih-alih kunci API
     - Anda memerlukan perilaku eksekusi agen GPT-5 yang lebih ketat
 summary: Gunakan OpenAI melalui kunci API atau langganan Codex di OpenClaw
 title: OpenAI
 x-i18n:
-    generated_at: "2026-07-01T08:35:30Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T18:34:15Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 7078798b1d73bd1efca4820eae6d3fb6510e802b2c9193d0c135d8ab28c58fca
+    source_hash: 18efddc44f2b06ae9592cdbc01c0aadc4621ddf99e818793a4d835c741a2464e
     source_path: providers/openai.md
     workflow: 16
 ---
 
-OpenAI menyediakan API pengembang untuk model GPT, dan Codex juga tersedia sebagai
-agen coding paket ChatGPT melalui klien Codex OpenAI. OpenClaw menggunakan satu
-id penyedia, `openai`, untuk kedua bentuk autentikasi.
+OpenClaw menggunakan satu id penyedia, `openai`, untuk autentikasi kunci API langsung dan
+autentikasi langganan ChatGPT/Codex. `openai/*` adalah rute model kanonis.
+Untuk giliran agen tertanam dengan kebijakan runtime yang tidak ditetapkan atau `auto`, fakta rute
+OpenAI menentukan apakah OpenClaw dapat memilih runtime app-server Codex bawaan
+secara implisit. Prefiks `openai/*` saja tidak memilih runtime.
 
-OpenClaw menggunakan `openai/*` sebagai rute model OpenAI kanonis. Giliran agen
-tertanam pada model OpenAI berjalan melalui runtime server aplikasi Codex native secara
-default; autentikasi kunci API OpenAI langsung tetap tersedia untuk permukaan OpenAI
-non-agen seperti gambar, embedding, ucapan, dan realtime.
+- **Model agen** - `openai/*` melalui runtime yang dipilih oleh konfigurasi
+  `agentRuntime` eksplisit atau kebijakan rute implisit OpenAI. Masuk dengan autentikasi Codex
+  untuk menggunakan langganan ChatGPT/Codex, atau konfigurasikan profil autentikasi
+  kunci API jika Anda menginginkan penagihan berbasis kunci.
+- **API OpenAI non-agen** - akses langsung ke OpenAI Platform, ditagih per penggunaan,
+  melalui `OPENAI_API_KEY` atau profil autentikasi kunci API `openai`.
+- **Konfigurasi lama** - referensi `codex/*` dan `openai-codex/*` diperbaiki menjadi
+  `openai/*` ditambah `agentRuntime.id: "codex"` yang tercakup pada model oleh
+  `openclaw doctor --fix`.
 
-- **Model agen** - model `openai/*` melalui runtime Codex; masuk dengan
-  autentikasi Codex untuk penggunaan langganan ChatGPT/Codex, atau konfigurasikan cadangan
-  kunci API OpenAI yang kompatibel dengan Codex saat Anda sengaja menginginkan autentikasi kunci API.
-- **API OpenAI non-agen** - akses OpenAI Platform langsung dengan penagihan berbasis
-  penggunaan melalui `OPENAI_API_KEY` atau onboarding kunci API OpenAI.
-- **Konfigurasi lama** - referensi model Codex lama diperbaiki oleh
-  `openclaw doctor --fix` menjadi `openai/*` plus runtime Codex.
+OpenAI secara eksplisit mendukung penggunaan OAuth langganan dalam alat eksternal dan
+alur kerja seperti OpenClaw.
 
-OpenAI secara eksplisit mendukung penggunaan OAuth langganan di alat dan alur kerja eksternal seperti OpenClaw.
+## Pelacakan penggunaan dan biaya
 
-Penyedia, model, runtime, dan kanal adalah lapisan terpisah. Jika label tersebut
-mulai tercampur, baca [Runtime agen](/id/concepts/agent-runtimes) sebelum
+OpenClaw memisahkan kuota langganan dan penagihan API Platform:
+
+- OAuth ChatGPT/Codex menampilkan paket langganan, jendela kuota, dan saldo kredit.
+- `OPENAI_ADMIN_KEY` menampilkan biaya organisasi dan penggunaan penyelesaian selama 30 hari yang dilaporkan penyedia dalam **Penggunaan** di Control UI, termasuk pengeluaran harian, total permintaan/token, model teratas, dan kategori biaya.
+- `OPENAI_PROJECT_ID` secara opsional membatasi riwayat Admin API ke satu proyek.
+- OpenClaw tidak pernah mengirim `OPENAI_API_KEY` atau profil inferensi `openai` ke API organisasi; kredensial tersebut mungkin dimiliki oleh endpoint kustom, Azure, atau endpoint lokal agen.
+
+Kunci Admin eksplisit lebih diutamakan daripada OAuth. Riwayat yang dilaporkan penyedia tidak digabungkan dengan perkiraan biaya OpenClaw yang berasal dari sesi; riwayat tersebut dapat mencakup aktivitas API dari klien lain dan penyesuaian penagihan dari pihak penyedia.
+
+Dokumentasi [Dasbor Penggunaan API](https://help.openai.com/en/articles/10478918) OpenAI menjelaskan persyaratan pemilik organisasi dan izin Usage Dashboard eksplisit untuk data penggunaan.
+
+Penyedia, model, runtime, dan kanal adalah lapisan yang terpisah. Jika label-label tersebut
+tercampur, baca [Runtime agen](/id/concepts/agent-runtimes) sebelum
 mengubah konfigurasi.
 
 ## Pilihan cepat
 
-| Tujuan                                               | Gunakan                                                  | Catatan                                                               |
-| ---------------------------------------------------- | -------------------------------------------------------- | --------------------------------------------------------------------- |
-| Langganan ChatGPT/Codex dengan runtime Codex native  | `openai/gpt-5.5`                                         | Penyiapan agen OpenAI default. Masuk dengan autentikasi Codex.        |
-| Pratinjau terbatas GPT-5.6                           | `openai/gpt-5.6-sol`, `-terra`, atau `-luna`             | Memerlukan organisasi API yang disetujui OpenAI atau workspace Codex. |
-| Penagihan kunci API langsung untuk model agen        | `openai/gpt-5.5` plus profil kunci API kompatibel Codex  | Gunakan `auth.order.openai` untuk menempatkan cadangan setelah autentikasi langganan. |
-| Penagihan kunci API langsung melalui OpenClaw eksplisit | `openai/gpt-5.5` plus runtime penyedia/model `openclaw` | Pilih profil kunci API `openai` normal.                               |
-| Alias API ChatGPT Instant terbaru                    | `openai/chat-latest`                                     | Hanya kunci API langsung. Alias bergerak untuk eksperimen, bukan default. |
-| Autentikasi langganan ChatGPT/Codex melalui OpenClaw | `openai/gpt-5.5` plus runtime penyedia/model `openclaw`  | Pilih profil OAuth `openai` untuk rute kompatibilitas.                |
-| Pembuatan atau pengeditan gambar                     | `openai/gpt-image-2`                                     | Berfungsi dengan `OPENAI_API_KEY` atau OAuth OpenAI Codex.            |
-| Gambar berlatar transparan                           | `openai/gpt-image-1.5`                                   | Gunakan `outputFormat=png` atau `webp` dan `openai.background=transparent`. |
+| Tujuan                                            | Gunakan                                                            | Catatan                                                             |
+| ------------------------------------------------- | ------------------------------------------------------------------ | ------------------------------------------------------------------- |
+| Langganan ChatGPT/Codex, runtime Codex native     | `openai/gpt-5.6-sol`                                               | Penyiapan langganan baru; masuk dengan autentikasi Codex.            |
+| Penagihan kunci API langsung untuk giliran agen   | `openai/gpt-5.6` ditambah profil autentikasi kunci API berurutan   | Penyiapan kunci API baru; id API langsung tanpa penentu mengarah ke Sol. |
+| Memilih tingkat GPT-5.6 yang tepat                | `openai/gpt-5.6-sol`, `-terra`, atau `-luna`     | Periksa `models list` untuk tingkat yang tersedia bagi akun ini. |
+| Akun tanpa akses GPT-5.6                          | `openai/gpt-5.5`                                                   | Pilihan pemulihan eksplisit; OpenClaw tidak menurunkan versi secara diam-diam. |
+| Penagihan kunci API langsung, runtime OpenClaw eksplisit | `openai/gpt-5.6` ditambah `agentRuntime.id: "openclaw"` penyedia/model | Pilih profil kunci API `openai` biasa.                     |
+| Alias model ChatGPT Instant terbaru               | `openai/chat-latest`                                               | Hanya kunci API langsung; alias bergerak, bukan default stabil.      |
+| Pembuatan atau pengeditan gambar                  | `openai/gpt-image-2`                                               | Berfungsi dengan `OPENAI_API_KEY` atau OAuth Codex.                |
+| Gambar dengan latar belakang transparan           | `openai/gpt-image-1.5`                                             | Tetapkan `outputFormat` ke `png` atau `webp` dan `background=transparent`. |
 
 ## Peta penamaan
 
-Nama-namanya mirip tetapi tidak dapat saling dipertukarkan:
+| Nama yang Anda lihat                     | Lapisan           | Arti                                                                                     |
+| ---------------------------------------- | ----------------- | ---------------------------------------------------------------------------------------- |
+| `openai`                       | Prefiks penyedia  | Rute model OpenAI kanonis; fakta rute menentukan runtime implisit.                       |
+| Plugin `codex`                | Plugin            | Plugin bawaan yang menyediakan runtime app-server Codex native dan kontrol obrolan `/codex`. |
+| `agentRuntime.id: codex` penyedia/model        | Runtime agen      | Memaksa harness app-server Codex native untuk giliran tertanam yang cocok.               |
+| `/codex ...`                       | Set perintah obrolan | Mengikat/mengontrol utas app-server Codex dari percakapan.                            |
+| `runtime: "acp", agentId: "codex"`                       | Rute sesi ACP     | Jalur fallback eksplisit yang menjalankan Codex melalui ACP/acpx.                        |
 
-| Nama yang Anda lihat                    | Lapisan           | Makna                                                                                             |
-| --------------------------------------- | ----------------- | ------------------------------------------------------------------------------------------------- |
-| `openai`                                | Prefiks penyedia  | Rute model OpenAI kanonis; giliran agen menggunakan runtime Codex.                                |
-| prefiks OpenAI Codex lama               | Prefiks lama      | Namespace model/profil lama. `openclaw doctor --fix` memigrasikannya ke `openai`.                 |
-| Plugin `codex`                          | Plugin            | Plugin OpenClaw bawaan yang menyediakan runtime server aplikasi Codex native dan kontrol chat `/codex`. |
-| penyedia/model `agentRuntime.id: codex` | Runtime agen      | Memaksa harness server aplikasi Codex native untuk giliran tertanam yang cocok.                   |
-| `/codex ...`                            | Set perintah chat | Mengikat/mengontrol thread server aplikasi Codex dari percakapan.                                 |
-| `runtime: "acp", agentId: "codex"`      | Rute sesi ACP     | Jalur fallback eksplisit yang menjalankan Codex melalui ACP/acpx.                                 |
+## Runtime agen implisit
 
-Ini berarti konfigurasi dapat dengan sengaja berisi referensi model `openai/*` sementara profil
-autentikasi menunjuk ke kredensial kunci API atau OAuth ChatGPT/Codex. Gunakan
-`auth.order.openai` untuk konfigurasi; `openclaw doctor --fix` menulis ulang referensi model
-Codex lama, id profil autentikasi Codex lama, dan urutan autentikasi Codex lama
-ke rute OpenAI kanonis.
+Saat kebijakan `agentRuntime` penyedia/model tidak ditetapkan atau `auto`, kebijakan rute
+milik penyedia OpenAI memilih runtime implisit berdasarkan
+endpoint dan adaptor efektif:
+
+| Fakta rute efektif                                                                                                                                                       | Runtime implisit       |
+| ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------- |
+| Endpoint HTTPS Platform resmi yang tepat dengan `openai-responses`, atau endpoint HTTPS ChatGPT resmi yang tepat dengan `openai-chatgpt-responses`; tanpa penggantian permintaan buatan pengguna | Codex dapat dipilih |
+| Adaptor `openai-completions` buatan pengguna                                                                                                                             | OpenClaw               |
+| Endpoint kustom                                                                                                                                                         | OpenClaw               |
+| Endpoint resmi tepat yang menggunakan HTTP secara eksplisit                                                                                                            | Ditolak                |
+| Rute dengan penggantian permintaan penyedia/model buatan pengguna                                                                                                      | OpenClaw               |
+
+`agentRuntime.id` penyedia/model non-default yang eksplisit tetap menjadi acuan.
+Misalnya, `agentRuntime.id: "openclaw"` mempertahankan rute yang sebenarnya memenuhi syarat Codex
+pada OpenClaw, sedangkan `agentRuntime.id: "codex"` mewajibkan Codex dan gagal
+secara tertutup ketika rute efektif tidak dinyatakan kompatibel dengan Codex.
+Pemilihan runtime tidak mengubah jenis kredensial atau penagihan: autentikasi kunci API
+Platform dan autentikasi langganan ChatGPT/Codex tetap terpisah.
+
+`openclaw doctor --fix` memigrasikan referensi model `codex/*` dan `openai-codex/*`
+lama, id profil autentikasi Codex lama, serta entri urutan autentikasi Codex lama ke
+rute kanonis `openai`. Referensi model yang dimigrasikan menerima
+`agentRuntime.id: "codex"` yang tercakup pada model; gunakan `auth.order.openai` untuk konfigurasi urutan autentikasi baru.
 
 <Note>
-GPT-5.5 tersedia melalui akses kunci API OpenAI Platform langsung maupun
-rute langganan/OAuth. Untuk langganan ChatGPT/Codex plus eksekusi Codex
-native, gunakan `openai/gpt-5.5`; konfigurasi runtime yang tidak disetel sekarang memilih harness Codex
-untuk giliran agen OpenAI. Gunakan profil kunci API OpenAI hanya saat Anda menginginkan
-autentikasi kunci API langsung untuk model agen OpenAI.
+Penyiapan OpenAI baru menerapkan model utama GPT-5.6 hanya jika tidak ada model utama yang
+dikonfigurasi. Menambahkan atau memperbarui autentikasi OpenAI mempertahankan pilihan eksplisit
+yang sudah ada, termasuk `openai/gpt-5.5`, kecuali Anda secara eksplisit menggunakan
+`models auth login --set-default` atau `models set`. Gunakan profil autentikasi kunci API
+hanya jika Anda menginginkan autentikasi kunci API untuk model agen.
 </Note>
 
 ## Pratinjau terbatas GPT-5.6
 
-OpenClaw mengenali tiga id model GPT-5.6 publik:
-
-- `openai/gpt-5.6-sol`
-- `openai/gpt-5.6-terra`
-- `openai/gpt-5.6-luna`
-
-Ketiganya mengekspos penalaran `max` dalam katalog server aplikasi Codex saat ini. Pengumuman
-peluncuran OpenAI menggambarkan Sol sebagai tingkat unggulan, Terra sebagai tingkat
-seimbang, dan Luna sebagai tingkat cepat dengan biaya lebih rendah. Lihat
+OpenClaw mengenali id model `openai/gpt-5.6-sol`,
+`openai/gpt-5.6-terra`, dan `openai/gpt-5.6-luna` secara tepat. Ketiganya menyediakan
+penalaran `xhigh` dan `max` dalam katalog saat ini. OpenAI menjelaskan Sol sebagai
+tingkat unggulan, Terra sebagai tingkat seimbang, dan Luna sebagai tingkat cepat
+dengan biaya lebih rendah. Lihat
 [pengumuman peluncuran GPT-5.6](https://openai.com/index/previewing-gpt-5-6-sol/)
-dan [panduan akses pratinjau](https://help.openai.com/en/articles/20001325-a-preview-of-gpt-5-6-sol-terra-and-luna).
+dan [panduan akses](https://help.openai.com/en/articles/20001325-a-preview-of-gpt-5-6-sol-terra-and-luna).
 
-Akses masuk daftar izin selama pratinjau dan dapat diberikan secara terpisah untuk
-API dan Codex. Paket ChatGPT berbayar saja tidak memberikan akses. OpenClaw mempertahankan
-`openai/gpt-5.5` sebagai default; memilih referensi GPT-5.6 tanpa akses mengembalikan
-galat akses upstream alih-alih fallback secara diam-diam.
+Dengan autentikasi kunci API OpenAI langsung, id `openai/gpt-5.6` tanpa penentu merupakan alias untuk
+Sol dan menjadi default penyiapan baru. Katalog Codex native tidak menerapkan
+alias API langsung tersebut di sisi klien; bergantung pada akses ruang kerja, katalog dapat menampilkan
+id Sol, Terra, dan Luna yang tepat. Oleh karena itu, penyiapan OAuth ChatGPT/Codex baru
+menggunakan `openai/gpt-5.6-sol`. Periksa akun saat ini dengan:
+
+```bash
+openclaw models list --provider openai
+```
+
+Akses organisasi API dan ruang kerja Codex dapat berbeda. Jika GPT-5.6 tidak
+tersedia, pilih GPT-5.5 secara eksplisit:
+
+```bash
+openclaw models set openai/gpt-5.5
+```
+
+OpenClaw menampilkan kesalahan akses upstream dan tidak secara diam-diam mengganti
+pilihan GPT-5.6 dengan GPT-5.5.
 
 <Note>
-Giliran model agen OpenAI memerlukan Plugin server aplikasi Codex bawaan. Konfigurasi runtime
-OpenClaw eksplisit tetap tersedia sebagai rute kompatibilitas opt-in. Saat OpenClaw
-dipilih secara eksplisit dengan profil OAuth `openai`, OpenClaw mempertahankan
-referensi model publik sebagai `openai/*` dan merutekan secara internal melalui transport
-autentikasi Codex. Jalankan `openclaw doctor --fix` untuk memperbaiki
-referensi model Codex lama, `codex-cli/*`, atau pin sesi runtime lama yang tidak berasal dari
+Rute HTTPS resmi yang tepat dan memenuhi syarat dapat memilih Plugin app-server Codex
+bawaan saat kebijakan runtime tidak ditetapkan atau `auto`; rute Completions buatan pengguna,
+endpoint kustom, dan penggantian transportasi permintaan tetap menggunakan OpenClaw. Endpoint
+HTTP teks biasa resmi ditolak. Konfigurasi runtime penyedia/model eksplisit tetap
+menjadi acuan. Jalankan `openclaw doctor --fix` untuk memperbaiki referensi model Codex lama,
+referensi `codex-cli/*`, atau pin sesi runtime lama yang tidak ditetapkan oleh
 konfigurasi runtime eksplisit.
 </Note>
 
 ## Cakupan fitur OpenClaw
 
-| Kapabilitas OpenAI       | Permukaan OpenClaw                                                                            | Status                                                                 |
-| ------------------------ | --------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------- |
-| Chat / Responses         | penyedia model `openai/<model>`                                                               | Ya                                                                     |
-| Model langganan Codex    | `openai/<model>` dengan OAuth OpenAI                                                          | Ya                                                                     |
-| Referensi model Codex lama | referensi model Codex lama atau `codex-cli/<model>`                                         | Diperbaiki oleh doctor menjadi `openai/<model>`                        |
-| Harness server aplikasi Codex | `openai/<model>` dengan runtime dihilangkan atau penyedia/model `agentRuntime.id: codex` | Ya                                                                     |
-| Pencarian web sisi server | Alat OpenAI Responses native                                                                  | Ya, saat pencarian web diaktifkan dan tidak ada penyedia yang dipin    |
-| Gambar                   | `image_generate`                                                                              | Ya                                                                     |
-| Video                    | `video_generate`                                                                              | Ya                                                                     |
-| Teks-ke-ucapan           | `messages.tts.provider: "openai"` / `tts`                                                     | Ya                                                                     |
-| Ucapan-ke-teks batch     | `tools.media.audio` / pemahaman media                                                         | Ya                                                                     |
-| Ucapan-ke-teks streaming | Voice Call `streaming.provider: "openai"`                                                     | Ya                                                                     |
-| Suara realtime           | Voice Call `realtime.provider: "openai"` / Control UI Talk `talk.realtime.provider: "openai"` | Ya (memerlukan kredit OpenAI Platform, bukan langganan Codex/ChatGPT)  |
-| Embedding                | penyedia embedding memori                                                                     | Ya                                                                     |
+| Kapabilitas OpenAI         | Permukaan OpenClaw                                                                              | Status                                                          |
+| ------------------------- | --------------------------------------------------------------------------------------------- | --------------------------------------------------------------- |
+| Chat / Responses          | penyedia model `openai/<model>`                                                               | Ya                                                             |
+| Model langganan Codex | `openai/<model>` dengan OAuth OpenAI                                                            | Ya                                                             |
+| Referensi model Codex lama   | referensi model Codex lama, `codex-cli/<model>`                                                     | Diperbaiki oleh doctor menjadi `openai/<model>`                          |
+| Harness app-server Codex  | Rute HTTPS yang kompatibel dengan Codex dengan runtime tidak ditetapkan/`auto`, atau `agentRuntime.id: codex` eksplisit  | Ya                                                             |
+| Pencarian web sisi server    | Alat OpenAI Responses native                                                                  | Ya, ketika pencarian web diaktifkan dan tidak ada penyedia lain yang disematkan |
+| Gambar                    | `image_generate`                                                                              | Ya                                                             |
+| Video                    | `video_generate`                                                                              | Ya                                                             |
+| Teks ke ucapan            | `messages.tts.provider: "openai"` / `tts`                                                     | Ya                                                             |
+| Ucapan ke teks secara batch      | `tools.media.audio` / pemahaman media                                                     | Ya                                                             |
+| Ucapan ke teks secara streaming  | Voice Call `streaming.provider: "openai"`                                                     | Ya                                                             |
+| Suara waktu nyata            | Voice Call `realtime.provider: "openai"` / Control UI Talk `talk.realtime.provider: "openai"` | Ya (kunci API OpenAI Platform)                                   |
+| Embedding                | penyedia embedding memori                                                                     | Ya                                                             |
 
 <Note>
-  Suara OpenAI Realtime (digunakan oleh `realtime.provider: "openai"` milik Voice Call dan
-  Control UI Talk dengan `talk.realtime.provider: "openai"`) melalui
-  **OpenAI Platform Realtime API** publik, yang ditagihkan ke kredit OpenAI
-  Platform, bukan kuota langganan Codex/ChatGPT. Akun dengan OAuth OpenAI
-  yang sehat yang menjalankan model chat berbasis Codex tanpa masalah
-  tetap memerlukan profil autentikasi kunci API OpenAI atau kunci API Platform dengan
-  penagihan Platform terdanai untuk suara Realtime.
+Suara OpenAI Realtime melalui **OpenAI Platform Realtime
+API** publik dan memerlukan kunci API Platform. Token OAuth Codex mengautentikasi
+backend ChatGPT Codex sebagai gantinya; token tersebut tidak dapat dipertukarkan dengan kunci API
+Platform untuk endpoint Realtime publik.
 
-Perbaikan: isi ulang kredit Platform di
+Jika autentikasi kunci API melaporkan bahwa penagihan tidak tersedia, tambahkan kredit Platform di
 [platform.openai.com/account/billing](https://platform.openai.com/account/billing)
-untuk organisasi yang mendukung kredensial realtime Anda. Suara Realtime menerima
-profil autentikasi kunci API `openai` yang dibuat oleh `openclaw onboard --auth-choice openai-api-key`,
-`OPENAI_API_KEY` Platform yang dikonfigurasi melalui `talk.realtime.providers.openai.apiKey`
-untuk Control UI Talk, `plugins.entries.voice-call.config.realtime.providers.openai.apiKey`
-untuk Voice Call, atau variabel lingkungan `OPENAI_API_KEY`. Profil OAuth OpenAI
-tetap dapat menjalankan model chat `openai/*` berbasis Codex dalam instalasi
-OpenClaw yang sama, tetapi profil tersebut tidak mengonfigurasi suara Realtime.
+untuk organisasi yang mendukung kredensial waktu nyata Anda saat menggunakan autentikasi
+kunci API. Suara waktu nyata menerima profil autentikasi kunci API `openai` yang dibuat oleh
+`openclaw onboard --auth-choice openai-api-key`, kunci API Platform yang ditetapkan melalui
+`talk.realtime.providers.openai.apiKey` untuk Control UI Talk, atau
+`plugins.entries.voice-call.config.realtime.providers.openai.apiKey` untuk Voice
+Call, atau variabel lingkungan `OPENAI_API_KEY`.
 </Note>
 
 ## Embedding memori
 
 OpenClaw dapat menggunakan OpenAI, atau endpoint embedding yang kompatibel dengan OpenAI, untuk
-pengindeksan `memory_search` dan embedding kueri:
+pengindeksan dan embedding kueri `memory_search`:
 
 ```json5
 {
@@ -162,30 +200,30 @@ pengindeksan `memory_search` dan embedding kueri:
 }
 ```
 
-Untuk endpoint kompatibel OpenAI yang memerlukan label embedding asimetris, setel
-`queryInputType` dan `documentInputType` di bawah `memorySearch`. OpenClaw meneruskan
-keduanya sebagai field permintaan `input_type` khusus penyedia: embedding kueri menggunakan
-`queryInputType`; potongan memori terindeks dan pengindeksan batch menggunakan
-`documentInputType`. Lihat [referensi konfigurasi memori](/id/reference/memory-config#provider-specific-config) untuk contoh lengkap.
+Untuk endpoint yang kompatibel dengan OpenAI yang memerlukan label embedding asimetris, tetapkan
+`queryInputType` dan `documentInputType` di bawah `memorySearch`. OpenClaw
+meneruskannya sebagai bidang permintaan `input_type` khusus penyedia: embedding
+kueri menggunakan `queryInputType`; potongan memori terindeks dan pengindeksan batch menggunakan
+`documentInputType`. Lihat
+[Referensi konfigurasi memori](/id/reference/memory-config#provider-specific-config)
+untuk contoh lengkap.
 
 ## Memulai
 
-Pilih metode autentikasi yang Anda inginkan dan ikuti langkah penyiapan.
-
 <Tabs>
   <Tab title="Kunci API (OpenAI Platform)">
-    **Paling cocok untuk:** akses API langsung dan penagihan berbasis penggunaan.
+    **Paling sesuai untuk:** akses API langsung dan penagihan berdasarkan penggunaan.
 
     <Steps>
       <Step title="Dapatkan kunci API Anda">
         Buat atau salin kunci API dari [dasbor OpenAI Platform](https://platform.openai.com/api-keys).
       </Step>
-      <Step title="Jalankan onboarding">
+      <Step title="Jalankan orientasi awal">
         ```bash
         openclaw onboard --auth-choice openai-api-key
         ```
 
-        Atau berikan kunci secara langsung:
+        Atau teruskan kunci secara langsung:
 
         ```bash
         openclaw onboard --openai-api-key "$OPENAI_API_KEY"
@@ -200,18 +238,21 @@ Pilih metode autentikasi yang Anda inginkan dan ikuti langkah penyiapan.
 
     ### Ringkasan rute
 
-    | Ref model              | Konfigurasi runtime             | Rute                       | Auth             |
-    | ---------------------- | -------------------------- | --------------------------- | ---------------- |
-    | `openai/gpt-5.5`      | dihilangkan / provider/model `agentRuntime.id: "codex"` | harness server aplikasi Codex | profil OpenAI yang kompatibel dengan Codex |
-    | `openai/gpt-5.4-mini` | dihilangkan / provider/model `agentRuntime.id: "codex"` | harness server aplikasi Codex | profil OpenAI yang kompatibel dengan Codex |
-    | `openai/gpt-5.5`      | provider/model `agentRuntime.id: "openclaw"`              | runtime tertanam OpenClaw      | Profil `openai` yang dipilih |
+    | Referensi model        | Kebijakan runtime atau fakta rute                                 | Rute                     | Autentikasi                              |
+    | ---------------- | ------------------------------------------------------------- | ------------------------- | --------------------------------- |
+    | `openai/gpt-5.6` | tidak ditetapkan/`auto`, rute native HTTPS resmi yang sama persis, tanpa penggantian permintaan | Codex dapat dipilih     | Profil autentikasi kunci API terurut      |
+    | `openai/gpt-5.6` | penyedia/model `agentRuntime.id: "openclaw"`                  | Runtime tertanam OpenClaw | Profil kunci API `openai` yang dipilih |
+    | `openai/gpt-5.5` | penyedia/model `agentRuntime.id` eksplisit                     | Runtime agen yang dipilih    | Profil kunci API OpenAI yang dipilih   |
+    | `openai/*`       | Completions yang ditulis, kustom, atau penggantian permintaan | Runtime tertanam OpenClaw | Jenis kredensial tetap tidak berubah |
+    | `openai/*`       | endpoint HTTP resmi berupa teks biasa                  | Ditolak                 | Kredensial tidak dikirim             |
 
     <Note>
-    Model agen `openai/*` menggunakan harness server aplikasi Codex. Untuk menggunakan
-    auth kunci API untuk model agen, buat profil kunci API yang kompatibel dengan Codex dan urutkan
-    dengan `auth.order.openai`; `OPENAI_API_KEY` tetap menjadi fallback langsung untuk
+    Saat runtime tidak ditetapkan atau `auto`, hanya rute native HTTPS resmi yang sama persis
+    dan memenuhi syarat yang dapat memilih harness app-server Codex secara implisit. Untuk autentikasi kunci API
+    pada model agen, buat profil autentikasi kunci API `openai` dan urutkan dengan
+    `auth.order.openai`; `OPENAI_API_KEY` tetap menjadi fallback langsung untuk
     permukaan API OpenAI non-agen. Jalankan `openclaw doctor --fix` untuk memigrasikan entri
-    urutan auth Codex lama yang lebih lawas.
+    urutan autentikasi Codex lama.
     </Note>
 
     ### Contoh konfigurasi
@@ -219,11 +260,15 @@ Pilih metode autentikasi yang Anda inginkan dan ikuti langkah penyiapan.
     ```json5
     {
       env: { OPENAI_API_KEY: "example-openai-key-not-real" },
-      agents: { defaults: { model: { primary: "openai/gpt-5.5" } } },
+      agents: { defaults: { model: { primary: "openai/gpt-5.6" } } },
     }
     ```
 
-    Untuk mencoba model Instant ChatGPT saat ini dari API OpenAI, atur model
+    ID `gpt-5.6` API langsung tanpa prefiks diselesaikan ke tingkatan Sol. Jika organisasi API ini
+    tidak menyediakan GPT-5.6, tetapkan model utama ke
+    `openai/gpt-5.5` secara eksplisit.
+
+    Untuk mencoba model Instant ChatGPT saat ini dari API OpenAI, tetapkan model
     ke `openai/chat-latest`:
 
     ```json5
@@ -233,20 +278,24 @@ Pilih metode autentikasi yang Anda inginkan dan ikuti langkah penyiapan.
     }
     ```
 
-    `chat-latest` adalah alias yang berubah. OpenAI mendokumentasikannya sebagai model Instant
-    terbaru yang digunakan di ChatGPT dan merekomendasikan `gpt-5.5` untuk penggunaan API produksi, jadi
-    pertahankan `openai/gpt-5.5` sebagai default stabil kecuali Anda secara eksplisit menginginkan
-    perilaku alias tersebut. Alias ini saat ini hanya menerima verbositas teks `medium`, jadi
-    OpenClaw menormalkan penimpaan verbositas teks OpenAI yang tidak kompatibel untuk model ini.
+    `chat-latest` adalah alias yang terus berubah. Penyiapan baru dengan kunci API OpenAI menggunakan
+    `openai/gpt-5.6` sebagai gantinya, yang ID API langsung tanpa prefiksnya diselesaikan ke Sol. Model utama
+    eksplisit yang sudah ada, termasuk `openai/gpt-5.5`, tetap tidak berubah. Alias
+    `chat-latest` hanya menerima verbositas teks `medium`; OpenClaw memaksa
+    verbositas lain yang diminta menjadi `medium` untuk model ini.
 
     <Warning>
-    OpenClaw **tidak** mengekspos `gpt-5.3-codex-spark` pada rute kunci API OpenAI langsung. Model ini hanya tersedia melalui entri katalog langganan Codex ketika akun yang Anda masuki mengeksposnya.
+    OpenClaw **tidak** mengekspos `gpt-5.3-codex-spark` pada rute kunci API
+    OpenAI langsung. Model ini hanya tersedia melalui entri katalog langganan Codex
+    ketika akun yang digunakan untuk masuk menyediakannya.
     </Warning>
 
   </Tab>
 
   <Tab title="Langganan Codex">
-    **Paling cocok untuk:** menggunakan langganan ChatGPT/Codex Anda dengan eksekusi server aplikasi Codex native alih-alih kunci API terpisah. Cloud Codex memerlukan masuk ChatGPT.
+    **Paling sesuai untuk:** menggunakan langganan ChatGPT/Codex Anda dengan eksekusi
+    app-server Codex native sebagai pengganti kunci API terpisah. Cloud Codex memerlukan
+    proses masuk ChatGPT.
 
     <Steps>
       <Step title="Jalankan OAuth Codex">
@@ -260,7 +309,9 @@ Pilih metode autentikasi yang Anda inginkan dan ikuti langkah penyiapan.
         openclaw models auth login --provider openai
         ```
 
-        Untuk penyiapan tanpa headless atau yang bermasalah dengan callback, tambahkan `--device-code` untuk masuk dengan alur kode perangkat ChatGPT alih-alih callback browser localhost:
+        Untuk penyiapan tanpa antarmuka atau yang tidak mendukung callback, tambahkan `--device-code` untuk
+        masuk dengan alur kode perangkat ChatGPT sebagai pengganti callback browser
+        localhost:
 
         ```bash
         openclaw models auth login --provider openai --device-code
@@ -268,47 +319,52 @@ Pilih metode autentikasi yang Anda inginkan dan ikuti langkah penyiapan.
       </Step>
       <Step title="Gunakan rute model OpenAI kanonis">
         ```bash
-        openclaw config set agents.defaults.model.primary openai/gpt-5.5
+        openclaw config set agents.defaults.model.primary openai/gpt-5.6-sol
         ```
 
-        Tidak diperlukan konfigurasi runtime untuk jalur default. Giliran agen OpenAI
-        memilih runtime server aplikasi Codex native secara otomatis, dan OpenClaw
-        menginstal atau memperbaiki Plugin Codex bawaan ketika rute ini dipilih.
+        Konfigurasi runtime tidak diperlukan untuk rute native HTTPS resmi yang sama persis ini.
+        Rute ini dapat memilih runtime app-server Codex secara otomatis, dan
+        OpenClaw menginstal atau memperbaiki Plugin Codex bawaan ketika runtime tersebut
+        dipilih.
       </Step>
-      <Step title="Verifikasi auth Codex tersedia">
+      <Step title="Verifikasi autentikasi Codex tersedia">
         ```bash
         openclaw models list --provider openai
         ```
 
         Setelah Gateway berjalan, kirim `/codex status` atau `/codex models`
-        di chat untuk memverifikasi runtime server aplikasi native.
+        dalam chat untuk memverifikasi runtime app-server native.
       </Step>
     </Steps>
 
     ### Ringkasan rute
 
-    | Ref model | Konfigurasi runtime | Rute | Auth |
-    |-----------|----------------|-------|------|
-    | `openai/gpt-5.5` | dihilangkan / provider/model `agentRuntime.id: "codex"` | Harness server aplikasi Codex native | Masuk Codex atau profil auth `openai` yang diurutkan |
-    | `openai/gpt-5.5` | provider/model `agentRuntime.id: "openclaw"` | runtime tertanam OpenClaw dengan transport auth Codex internal | Profil OAuth `openai` yang dipilih |
-    | ref Codex GPT-5.5 lama | diperbaiki oleh doctor | Rute lama ditulis ulang ke `openai/gpt-5.5` | Profil OAuth OpenAI yang dimigrasikan |
-    | `codex-cli/gpt-5.5` | diperbaiki oleh doctor | Rute CLI lama ditulis ulang ke `openai/gpt-5.5` | auth server aplikasi Codex |
+    | Referensi model                | Kebijakan runtime atau fakta rute                                 | Rute                                                    | Autentikasi                                               |
+    | ------------------------ | ------------------------------------------------------------- | -------------------------------------------------------- | -------------------------------------------------- |
+    | `openai/gpt-5.6-sol`     | tidak ditetapkan/`auto`, rute native HTTPS resmi yang sama persis, tanpa penggantian permintaan | Codex dapat dipilih                                    | Proses masuk Codex, atau profil autentikasi `openai` terurut |
+    | `openai/gpt-5.6-terra`   | tidak ditetapkan/`auto`, rute native HTTPS resmi yang sama persis, tanpa penggantian permintaan | Codex dapat dipilih                                    | Proses masuk Codex ketika katalog menyediakan Terra       |
+    | `openai/gpt-5.6-luna`    | tidak ditetapkan/`auto`, rute native HTTPS resmi yang sama persis, tanpa penggantian permintaan | Codex dapat dipilih                                    | Proses masuk Codex ketika katalog menyediakan Luna        |
+    | `openai/gpt-5.6-sol`     | penyedia/model `agentRuntime.id: "openclaw"`                  | Runtime tertanam OpenClaw, transportasi autentikasi Codex internal | Profil OAuth `openai` yang dipilih                    |
+    | `openai/gpt-5.5`         | penyedia/model `agentRuntime.id` eksplisit                     | Runtime agen yang dipilih                                   | Profil autentikasi OpenAI yang dipilih                       |
+    | `openai/*`               | Completions yang ditulis, kustom, atau penggantian permintaan | Runtime tertanam OpenClaw                                | Persyaratan kredensial tetap khusus untuk rute      |
+    | `openai/*`               | endpoint HTTP resmi berupa teks biasa                  | Ditolak                                                 | Kredensial tidak dikirim                              |
+    | Referensi GPT-5.5 Codex lama | diperbaiki oleh doctor                                            | Ditulis ulang menjadi `openai/gpt-5.5`                            | Profil OAuth OpenAI yang dimigrasikan                      |
+    | `codex-cli/gpt-5.5`      | diperbaiki oleh doctor                                            | Ditulis ulang menjadi `openai/gpt-5.5`                            | Autentikasi app-server Codex                              |
 
     <Warning>
-    Pilih `openai/gpt-5.5` untuk konfigurasi agen baru yang didukung langganan. Ref
-    GPT Codex lama yang lebih lawas adalah rute OpenClaw lama, bukan jalur runtime Codex native;
-    jalankan `openclaw doctor --fix` ketika Anda ingin memigrasikannya ke ref `openai/*`
-    kanonis. `gpt-5.3-codex-spark` tetap terbatas pada akun yang katalog langganan
-    Codex-nya mengiklankan model tersebut; ref kunci API OpenAI langsung dan
-    Azure untuk model ini tetap disembunyikan.
+    Penyiapan baru berbasis langganan menggunakan `openai/gpt-5.6-sol` secara tepat; katalog
+    Codex native juga dapat menampilkan referensi Terra atau Luna secara tepat. Jika
+    akun tidak menampilkan GPT-5.6, pilih `openai/gpt-5.5` secara eksplisit. Referensi
+    GPT Codex lama adalah rute OpenClaw warisan, bukan jalur runtime Codex
+    native; jalankan `openclaw doctor --fix` untuk memigrasikannya tanpa meningkatkan
+    pilihan GPT-5.5 eksplisit yang sudah ada. `gpt-5.3-codex-spark` tetap terbatas
+    pada akun yang katalog langganan Codex-nya mengiklankannya; referensi langsung
+    kunci API OpenAI dan Azure untuknya tetap disembunyikan.
     </Warning>
 
     <Note>
-    Prefiks model Codex lama adalah konfigurasi lama yang diperbaiki oleh doctor. Untuk
-    penyiapan umum langganan plus runtime native, masuk dengan auth Codex
-    tetapi pertahankan ref model sebagai `openai/gpt-5.5`. Konfigurasi baru harus menaruh urutan
-    auth agen OpenAI di bawah `auth.order.openai`; doctor memigrasikan entri
-    urutan auth Codex lama yang lebih lawas.
+    Konfigurasi baru harus menempatkan urutan autentikasi agen OpenAI di bawah `auth.order.openai`;
+    doctor memigrasikan entri urutan autentikasi Codex warisan yang lebih lama.
     </Note>
 
     ### Contoh konfigurasi
@@ -318,22 +374,22 @@ Pilih metode autentikasi yang Anda inginkan dan ikuti langkah penyiapan.
       plugins: { entries: { codex: { enabled: true } } },
       agents: {
         defaults: {
-          model: { primary: "openai/gpt-5.5" },
+          model: { primary: "openai/gpt-5.6-sol" },
         },
       },
     }
     ```
 
-    Dengan cadangan kunci API, pertahankan model pada `openai/gpt-5.5` dan taruh
-    urutan auth di bawah `openai`. OpenClaw akan mencoba langganan terlebih dahulu, lalu
-    kunci API, sambil tetap berada pada harness Codex:
+    Dengan cadangan kunci API, pertahankan model yang dipilih di bawah `openai/*` dan tempatkan
+    urutan autentikasi di bawah `openai`. OpenClaw mencoba langganan terlebih dahulu, lalu
+    kunci API, sambil tetap menggunakan harness Codex:
 
     ```json5
     {
       plugins: { entries: { codex: { enabled: true } } },
       agents: {
         defaults: {
-          model: { primary: "openai/gpt-5.5" },
+          model: { primary: "openai/gpt-5.6-sol" },
         },
       },
       auth: {
@@ -348,13 +404,12 @@ Pilih metode autentikasi yang Anda inginkan dan ikuti langkah penyiapan.
     ```
 
     <Note>
-    Onboarding tidak lagi mengimpor materi OAuth dari `~/.codex`. Masuk dengan OAuth browser (default) atau alur kode perangkat di atas — OpenClaw mengelola kredensial yang dihasilkan di penyimpanan auth agennya sendiri.
+    Onboarding tidak lagi mengimpor materi OAuth dari `~/.codex`. Masuk dengan
+    OAuth browser (default) atau alur kode perangkat di atas; OpenClaw mengelola
+    kredensial yang dihasilkan dalam penyimpanan autentikasi agennya sendiri.
     </Note>
 
-    ### Periksa dan pulihkan routing OAuth Codex
-
-    Gunakan perintah berikut untuk melihat model, runtime, dan rute auth mana yang digunakan agen default
-    Anda:
+    ### Memeriksa dan memulihkan perutean OAuth Codex
 
     ```bash
     openclaw models status
@@ -370,8 +425,8 @@ Pilih metode autentikasi yang Anda inginkan dan ikuti langkah penyiapan.
     openclaw models auth list --agent <id> --provider openai
     ```
 
-    Jika konfigurasi lama masih memiliki ref GPT Codex lama atau pin sesi runtime
-    OpenAI usang tanpa konfigurasi runtime eksplisit, perbaiki:
+    Jika konfigurasi lama masih memiliki referensi GPT Codex warisan, atau pin sesi runtime
+    OpenAI yang usang tanpa konfigurasi runtime eksplisit, perbaiki:
 
     ```bash
     openclaw doctor --fix
@@ -379,48 +434,47 @@ Pilih metode autentikasi yang Anda inginkan dan ikuti langkah penyiapan.
     ```
 
     Jika `models auth list --provider openai` tidak menampilkan profil yang dapat digunakan, masuk
-    lagi:
+    kembali:
 
     ```bash
     openclaw models auth login --provider openai
     openclaw models status --probe --probe-provider openai
     ```
 
-    Gunakan `--profile-id` ketika Anda menginginkan beberapa login OAuth Codex dalam agen
-    yang sama dan nantinya ingin mengontrolnya melalui urutan auth atau `/model ...@<profileId>`:
+    Gunakan `--profile-id` untuk beberapa login OAuth Codex dalam agen yang sama, lalu
+    kendalikan melalui urutan autentikasi atau `/model ...@<profileId>`:
 
     ```bash
     openclaw models auth login --provider openai --profile-id openai:ritsuko
     openclaw models auth login --provider openai --profile-id openai:lain
     ```
 
-    `openai/*` adalah rute model untuk giliran agen OpenAI melalui Codex. Jalankan
-    `openclaw doctor --fix` untuk memigrasikan id profil prefiks OpenAI Codex lama yang usang dan
-    entri urutan sebelum mengandalkan urutan profil.
+    Jalankan `openclaw doctor --fix` untuk memigrasikan ID profil berprefiks OpenAI Codex
+    warisan yang lebih lama dan entri urutan sebelum mengandalkan urutan profil.
 
     ### Indikator status
 
-    Chat `/status` menampilkan runtime model mana yang aktif untuk sesi saat ini.
-    Harness app-server Codex bawaan muncul sebagai `Runtime: OpenAI Codex` untuk
-    giliran model agen OpenAI. Pin sesi runtime OpenAI usang diperbaiki ke Codex kecuali
-    konfigurasi secara eksplisit mem-pin OpenClaw.
+    Chat `/status` menampilkan runtime model yang aktif untuk sesi saat ini.
+    Harness app-server Codex yang disertakan muncul sebagai
+    `Runtime: OpenAI Codex` ketika rute implisit yang memenuhi syarat atau kebijakan
+    runtime penyedia/model eksplisit memilihnya.
 
     ### Peringatan doctor
 
-    Jika ref model Codex lama atau pin runtime OpenAI usang masih ada di konfigurasi atau
-    status sesi, `openclaw doctor --fix` menulis ulang semuanya ke `openai/*` dengan
+    Jika referensi model Codex warisan atau pin runtime OpenAI yang usang tetap ada dalam konfigurasi
+    atau status sesi, `openclaw doctor --fix` menulis ulang referensi tersebut menjadi `openai/*` dengan
     runtime Codex kecuali OpenClaw dikonfigurasi secara eksplisit.
 
     ### Batas jendela konteks
 
-    OpenClaw memperlakukan metadata model dan batas konteks runtime sebagai nilai terpisah.
+    OpenClaw memperlakukan metadata model dan batas konteks runtime sebagai nilai
+    yang terpisah. Untuk `openai/gpt-5.5` melalui katalog OAuth Codex:
 
-    Untuk `openai/gpt-5.5` melalui katalog OAuth Codex:
-
-    - `contextWindow` native: `1000000`
+    - Native `contextWindow`: `400000`
     - Batas `contextTokens` runtime default: `272000`
 
-    Batas default yang lebih kecil memiliki karakteristik latensi dan kualitas yang lebih baik dalam praktik. Timpa dengan `contextTokens`:
+    Dalam praktiknya, batas default yang lebih kecil memiliki karakteristik latensi dan kualitas
+    yang lebih baik. Timpa dengan `contextTokens`:
 
     ```json5
     {
@@ -435,15 +489,18 @@ Pilih metode autentikasi yang Anda inginkan dan ikuti langkah penyiapan.
     ```
 
     <Note>
-    Gunakan `contextWindow` untuk mendeklarasikan metadata model native. Gunakan `contextTokens` untuk membatasi anggaran konteks runtime.
+    Gunakan `contextWindow` untuk mendeklarasikan metadata model native. Gunakan `contextTokens`
+    untuk membatasi anggaran konteks runtime. Rute langsung kunci API OpenAI
+    melaporkan `contextWindow` native yang lebih besar (`1000000`) untuk `gpt-5.5`; kedua
+    rute dilacak secara terpisah karena katalog upstream berbeda.
     </Note>
 
     ### Pemulihan katalog
 
-    OpenClaw menggunakan metadata katalog Codex upstream untuk `gpt-5.5` saat metadata itu
-    tersedia. Jika penemuan Codex langsung menghilangkan baris `gpt-5.5` sementara
-    akun sudah diautentikasi, OpenClaw menyintesis baris model OAuth tersebut sehingga
-    Cron, sub-agen, dan eksekusi model default terkonfigurasi tidak gagal dengan
+    OpenClaw menggunakan metadata katalog Codex upstream untuk `gpt-5.5` jika
+    tersedia. Jika penemuan Codex langsung tidak menyertakan baris `gpt-5.5` sementara akun
+    telah diautentikasi, OpenClaw menyintesis baris model OAuth tersebut agar eksekusi cron,
+    subagen, dan model default yang dikonfigurasi tidak gagal dengan
     `Unknown model`.
 
   </Tab>
@@ -451,45 +508,50 @@ Pilih metode autentikasi yang Anda inginkan dan ikuti langkah penyiapan.
 
 ## Autentikasi app-server Codex native
 
-Harness app-server Codex native menggunakan ref model `openai/*` ditambah konfigurasi
-runtime yang dihilangkan atau `agentRuntime.id: "codex"` provider/model, tetapi auth-nya
-tetap berbasis akun. OpenClaw memilih auth dalam urutan ini:
+Harness app-server Codex native menggunakan referensi model `openai/*` ketika rute
+HTTPS resmi yang tepat dan memenuhi syarat memilihnya secara implisit, atau ketika
+`agentRuntime.id: "codex"` penyedia/model memilihnya secara eksplisit. Autentikasinya tetap
+berbasis akun. OpenClaw memilih autentikasi dalam urutan ini:
 
-1. Profil auth OpenAI berurutan untuk agen, sebaiknya di bawah
-   `auth.order.openai`. Jalankan `openclaw doctor --fix` untuk memigrasikan
-   id profil auth Codex lama yang usang dan urutan auth Codex lama.
-2. Akun app-server yang sudah ada, seperti login ChatGPT CLI Codex lokal.
-3. Hanya untuk peluncuran app-server stdio lokal, `CODEX_API_KEY`, lalu
-   `OPENAI_API_KEY`, ketika app-server melaporkan tidak ada akun dan masih memerlukan
-   auth OpenAI.
+1. Profil autentikasi OpenAI yang diurutkan untuk agen, sebaiknya di bawah
+   `auth.order.openai`. Jalankan `openclaw doctor --fix` untuk memigrasikan ID profil autentikasi
+   Codex warisan yang lebih lama dan urutan autentikasi.
+2. Akun app-server yang sudah ada, seperti login ChatGPT
+   CLI Codex lokal. Untuk home agen terisolasi default, OpenClaw menjembatani akun
+   CLI native tersebut ke app-server melalui RPC login-nya; OpenClaw tidak berbagi
+   konfigurasi, plugin, atau penyimpanan utas CLI.
+3. Hanya untuk peluncuran app-server stdio lokal, dan hanya ketika app-server
+   melaporkan tidak ada akun: `CODEX_API_KEY`, lalu `OPENAI_API_KEY`.
 
-Itu berarti login langganan ChatGPT/Codex lokal tidak diganti hanya
-karena proses Gateway juga memiliki `OPENAI_API_KEY` untuk model OpenAI langsung
-atau embedding. Fallback kunci API env hanya jalur stdio lokal tanpa akun; itu
-tidak dikirim ke koneksi app-server WebSocket. Ketika profil Codex bergaya langganan
-dipilih, OpenClaw juga menjauhkan `CODEX_API_KEY` dan `OPENAI_API_KEY`
-dari child app-server stdio yang dijalankan dan mengirim kredensial terpilih
-melalui RPC login app-server. Ketika profil langganan tersebut diblokir oleh
-batas penggunaan Codex, OpenClaw dapat berotasi ke profil kunci API `openai:*`
-berurutan berikutnya tanpa mengubah model yang dipilih atau keluar dari harness
-Codex. Setelah waktu reset langganan lewat, profil langganan tersebut
-memenuhi syarat lagi.
+Login langganan ChatGPT/Codex lokal tidak diganti hanya karena proses
+gateway juga memiliki `OPENAI_API_KEY` untuk model OpenAI langsung atau
+embedding. Fallback kunci API env hanya berlaku untuk jalur stdio lokal tanpa akun;
+kunci tersebut tidak pernah dikirim melalui koneksi app-server WebSocket. Ketika profil
+Codex bergaya langganan dipilih, OpenClaw juga tidak menyertakan
+`CODEX_API_KEY` dan `OPENAI_API_KEY` dalam proses anak app-server stdio yang diluncurkan
+dan sebagai gantinya mengirim kredensial yang dipilih melalui RPC login app-server.
+
+Ketika profil langganan tersebut diblokir oleh batas penggunaan Codex, OpenClaw
+menandai profil sebagai diblokir hingga waktu reset yang diumumkan Codex dan memungkinkan urutan
+autentikasi beralih ke profil `openai:*` berikutnya, tanpa mengubah model yang dipilih
+atau keluar dari harness Codex. Setelah waktu reset berlalu, profil
+langganan dapat digunakan kembali.
 
 ## Pembuatan gambar
 
-Plugin `openai` bawaan mendaftarkan pembuatan gambar melalui tool `image_generate`.
-Plugin ini mendukung pembuatan gambar kunci API OpenAI dan pembuatan gambar OAuth Codex
-melalui ref model `openai/gpt-image-2` yang sama.
+Plugin `openai` yang disertakan mendaftarkan pembuatan gambar melalui alat
+`image_generate`. Plugin ini mendukung pembuatan gambar dengan kunci API OpenAI dan OAuth Codex
+melalui referensi model `openai/gpt-image-2` yang sama.
 
-| Kemampuan                | Kunci API OpenAI                  | Codex OAuth                          |
-| ------------------------- | ---------------------------------- | ------------------------------------ |
-| Ref model                 | `openai/gpt-image-2`               | `openai/gpt-image-2`                 |
-| Auth                      | `OPENAI_API_KEY`                   | Masuk OpenAI Codex OAuth             |
-| Transport                 | API OpenAI Images                  | Backend Codex Responses              |
-| Maks. gambar per permintaan | 4                                | 4                                    |
+| Kemampuan                 | Kunci API OpenAI                    | OAuth Codex                          |
+| ------------------------- | ----------------------------------- | ------------------------------------ |
+| Referensi model           | `openai/gpt-image-2`                  | `openai/gpt-image-2`                   |
+| Autentikasi               | `OPENAI_API_KEY`                  | Login OAuth OpenAI Codex             |
+| Transport                 | API OpenAI Images                   | Backend Codex Responses              |
+| Gambar maks. per permintaan | 4                                 | 4                                    |
 | Mode edit                 | Diaktifkan (hingga 5 gambar referensi) | Diaktifkan (hingga 5 gambar referensi) |
-| Penggantian ukuran        | Didukung, termasuk ukuran 2K/4K    | Didukung, termasuk ukuran 2K/4K      |
-| Rasio aspek / resolusi    | Tidak diteruskan ke API OpenAI Images | Dipetakan ke ukuran yang didukung saat aman |
+| Penimpaan ukuran          | Didukung, termasuk ukuran 2K/4K     | Didukung, termasuk ukuran 2K/4K      |
+| Rasio aspek / resolusi    | Tidak diteruskan ke API OpenAI Images | Dipetakan ke ukuran yang didukung jika aman |
 
 ```json5
 {
@@ -502,85 +564,87 @@ melalui ref model `openai/gpt-image-2` yang sama.
 ```
 
 <Note>
-Lihat [Pembuatan Gambar](/id/tools/image-generation) untuk parameter alat bersama, pemilihan penyedia, dan perilaku failover.
+Lihat [Pembuatan Gambar](/id/tools/image-generation) untuk parameter alat bersama,
+pemilihan penyedia, dan perilaku failover.
 </Note>
 
-`gpt-image-2` adalah default untuk pembuatan gambar dari teks OpenAI dan
-pengeditan gambar. `gpt-image-1.5`, `gpt-image-1`, dan `gpt-image-1-mini` tetap dapat digunakan sebagai
-penggantian model eksplisit. Gunakan `openai/gpt-image-1.5` untuk keluaran PNG/WebP
-berlatar belakang transparan; API `gpt-image-2` saat ini menolak
+`gpt-image-2` adalah default untuk pembuatan teks-ke-gambar dan pengeditan gambar
+OpenAI. `gpt-image-1.5`, `gpt-image-1`, dan `gpt-image-1-mini` tetap dapat digunakan
+sebagai penimpaan model eksplisit. Gunakan `openai/gpt-image-1.5` untuk
+keluaran PNG/WebP berlatar belakang transparan; API `gpt-image-2` saat ini menolak
 `background: "transparent"`.
 
-Untuk permintaan berlatar belakang transparan, agen harus memanggil `image_generate` dengan
+Untuk permintaan berlatar belakang transparan, panggil `image_generate` dengan
 `model: "openai/gpt-image-1.5"`, `outputFormat: "png"` atau `"webp"`, dan
 `background: "transparent"`; opsi penyedia `openai.background` yang lebih lama
-masih diterima. OpenClaw juga melindungi rute publik OpenAI dan
-OpenAI Codex OAuth dengan menulis ulang permintaan transparan default
-`openai/gpt-image-2` menjadi `gpt-image-1.5`; Azure dan endpoint kustom yang kompatibel dengan OpenAI tetap
-menggunakan nama deployment/model yang dikonfigurasi.
+masih diterima. OpenClaw juga melindungi rute publik OpenAI dan OAuth OpenAI Codex
+dengan menulis ulang permintaan transparan `openai/gpt-image-2` default menjadi
+`gpt-image-1.5`; Azure dan endpoint kustom yang kompatibel dengan OpenAI mempertahankan
+nama deployment/model yang dikonfigurasi.
 
-Pengaturan yang sama diekspos untuk eksekusi CLI headless:
+Pengaturan yang sama tersedia untuk eksekusi CLI headless:
 
 ```bash
 openclaw infer image generate \
   --model openai/gpt-image-1.5 \
   --output-format png \
   --background transparent \
-  --prompt "A simple red circle sticker on a transparent background" \
+  --prompt "Stiker lingkaran merah sederhana pada latar belakang transparan" \
   --json
 ```
 
 Gunakan flag `--output-format` dan `--background` yang sama dengan
-`openclaw infer image edit` saat memulai dari file input.
-`--openai-background` tetap tersedia sebagai alias khusus OpenAI.
-Gunakan `--quality low|medium|high|auto` saat Anda perlu mengontrol kualitas dan biaya
-OpenAI Images. Gunakan `--openai-moderation low|auto` untuk meneruskan petunjuk
-moderasi khusus penyedia OpenAI dari `image generate` atau `image edit`.
+`openclaw infer image edit` saat memulai dari berkas input.
+`--openai-background` tetap tersedia sebagai alias khusus OpenAI. Gunakan
+`--quality low|medium|high|auto` untuk mengendalikan kualitas dan biaya OpenAI Images.
+Gunakan `--openai-moderation low|auto` untuk meneruskan petunjuk moderasi OpenAI dari
+`image generate` atau `image edit`.
 
-Untuk instalasi ChatGPT/Codex OAuth, pertahankan ref `openai/gpt-image-2` yang sama. Saat profil OAuth
-`openai` dikonfigurasi, OpenClaw menyelesaikan token akses OAuth tersimpan tersebut
-dan mengirim permintaan gambar melalui backend Codex Responses. OpenClaw
-tidak lebih dulu mencoba `OPENAI_API_KEY` atau diam-diam kembali ke kunci API untuk
-permintaan tersebut. Konfigurasikan `models.providers.openai` secara eksplisit dengan kunci API,
-URL dasar kustom, atau endpoint Azure saat Anda menginginkan rute API OpenAI Images
-langsung.
-Jika endpoint gambar kustom tersebut berada di alamat LAN/pribadi tepercaya, tetapkan juga
-`browser.ssrfPolicy.dangerouslyAllowPrivateNetwork: true`; OpenClaw tetap memblokir
-endpoint gambar privat/internal yang kompatibel dengan OpenAI kecuali opt-in ini
-ada.
+Untuk instalasi OAuth ChatGPT/Codex, pertahankan referensi `openai/gpt-image-2` yang sama. Ketika
+profil OAuth `openai` dikonfigurasi, OpenClaw mengambil token akses OAuth
+yang tersimpan tersebut dan mengirim permintaan gambar melalui backend Codex Responses; OpenClaw
+tidak terlebih dahulu mencoba `OPENAI_API_KEY` atau secara diam-diam melakukan fallback ke kunci API.
+Konfigurasikan `models.providers.openai` secara eksplisit dengan kunci API, URL dasar
+kustom, atau endpoint Azure jika Anda menginginkan rute API OpenAI Images langsung.
+Jika endpoint gambar kustom tersebut berada di alamat LAN/pribadi tepercaya,
+atur juga `browser.ssrfPolicy.dangerouslyAllowPrivateNetwork: true`; OpenClaw
+tetap memblokir endpoint gambar kompatibel OpenAI yang bersifat pribadi/internal kecuali opsi
+keikutsertaan ini tersedia.
 
 Buat:
 
 ```
-/tool image_generate model=openai/gpt-image-2 prompt="A polished launch poster for OpenClaw on macOS" size=3840x2160 count=1
+/tool image_generate model=openai/gpt-image-2 prompt="Poster peluncuran yang rapi untuk OpenClaw di macOS" size=3840x2160 count=1
 ```
 
 Buat PNG transparan:
 
 ```
-/tool image_generate model=openai/gpt-image-1.5 prompt="A simple red circle sticker on a transparent background" outputFormat=png background=transparent
+/tool image_generate model=openai/gpt-image-1.5 prompt="Stiker lingkaran merah sederhana pada latar belakang transparan" outputFormat=png background=transparent
 ```
 
 Edit:
 
 ```
-/tool image_generate model=openai/gpt-image-2 prompt="Preserve the object shape, change the material to translucent glass" image=/path/to/reference.png size=1024x1536
+/tool image_generate model=openai/gpt-image-2 prompt="Pertahankan bentuk objek, ubah bahannya menjadi kaca tembus cahaya" image=/path/to/reference.png size=1024x1536
 ```
 
 ## Pembuatan video
 
-Plugin bawaan `openai` mendaftarkan pembuatan video melalui alat `video_generate`.
+Plugin `openai` yang disertakan mendaftarkan pembuatan video melalui alat
+`video_generate`.
 
-| Kemampuan       | Nilai                                                                             |
-| ---------------- | --------------------------------------------------------------------------------- |
-| Model default    | `openai/sora-2`                                                                   |
-| Mode             | Teks-ke-video, gambar-ke-video, edit satu video                                   |
-| Input referensi | 1 gambar atau 1 video                                                             |
-| Penggantian ukuran | Didukung untuk teks-ke-video dan gambar-ke-video                                |
-| Penggantian lain | `aspectRatio`, `resolution`, `audio`, `watermark` diabaikan dengan peringatan alat |
+| Kemampuan         | Nilai                                                                              |
+| ----------------- | ---------------------------------------------------------------------------------- |
+| Model default     | `openai/sora-2`                                                                 |
+| Mode              | Teks-ke-video, gambar-ke-video, pengeditan satu video                              |
+| Input referensi   | 1 gambar atau 1 video                                                              |
+| Penimpaan ukuran  | Didukung untuk teks-ke-video dan gambar-ke-video                                   |
+| Rasio aspek       | Dikonversi ke ukuran terdekat yang didukung, tidak diteruskan secara mentah        |
+| Penimpaan lainnya | `resolution`, `audio`, `watermark` tidak didukung dan dihapus dengan peringatan alat |
 
-Permintaan gambar-ke-video OpenAI menggunakan `POST /v1/videos` dengan
-`input_reference` gambar. Edit satu video menggunakan `POST /v1/videos/edits` dengan
+Permintaan gambar-ke-video OpenAI menggunakan `POST /v1/videos` dengan sebuah gambar
+`input_reference`. Pengeditan video tunggal menggunakan `POST /v1/videos/edits` dengan
 video yang diunggah di bidang `video`.
 
 ```json5
@@ -594,25 +658,53 @@ video yang diunggah di bidang `video`.
 ```
 
 <Note>
-Lihat [Pembuatan Video](/id/tools/video-generation) untuk parameter alat bersama, pemilihan penyedia, dan perilaku failover.
+Lihat [Pembuatan Video](/id/tools/video-generation) untuk parameter alat bersama,
+pemilihan penyedia, dan perilaku failover.
+
+Penyedia OpenAI mendeklarasikan `supportsSize`, tetapi tidak mendeklarasikan `supportsAspectRatio` atau
+`supportsResolution`. Lapisan normalisasi bersama OpenClaw mengonversi
+`aspectRatio` yang diminta menjadi `size` OpenAI terdekat yang cocok sebelum
+permintaan mencapai penyedia, sehingga permintaan rasio aspek umumnya tetap berfungsi.
+`resolution` tidak memiliki fallback ukuran dan dihapus, lalu ditampilkan kepada pemanggil sebagai
+`Ignored unsupported overrides for openai/<model>: resolution=<value>`.
 </Note>
 
 ## Kontribusi prompt GPT-5
 
-OpenClaw menambahkan kontribusi prompt GPT-5 bersama untuk eksekusi keluarga GPT-5 pada permukaan prompt yang dirakit OpenClaw. Ini berlaku berdasarkan id model, sehingga rute OpenClaw/penyedia seperti ref lama pra-perbaikan (ref GPT-5.5 Codex lama), `openrouter/openai/gpt-5.5`, `opencode/gpt-5.5`, dan ref GPT-5 kompatibel lainnya menerima overlay yang sama. Model GPT-4.x yang lebih lama tidak.
+OpenClaw menambahkan kontribusi prompt GPT-5 bersama untuk model keluarga GPT-5 pada
+penyedia `openai` (termasuk referensi Codex lama sebelum perbaikan yang dinormalisasi
+menjadi `openai/*`). Penyedia lain yang juga menyajikan ID model keluarga GPT-5, seperti
+rute OpenRouter atau opencode, tidak menerima overlay ini; overlay dibatasi berdasarkan
+ID penyedia `openai`, bukan hanya berdasarkan ID model. Model GPT-4.x yang lebih lama tidak pernah
+menerimanya.
 
-Harness Codex native bawaan tidak menerima overlay GPT-5 OpenClaw ini melalui instruksi developer app-server Codex. Codex native tetap mempertahankan perilaku dasar, model, dan dokumen proyek milik Codex, sementara OpenClaw menonaktifkan kepribadian bawaan Codex untuk thread native agar file kepribadian workspace agen tetap otoritatif. OpenClaw hanya menyumbangkan konteks runtime seperti pengiriman channel, alat dinamis OpenClaw, delegasi ACP, konteks workspace, dan Skills OpenClaw.
+Harness app-server Codex native tidak menerima kontrak perilaku persona/disiplin-
+alat atau overlay gaya interaksi ramah melalui
+instruksi pengembang; Codex native mempertahankan perilaku dasar, model, dan
+dokumen proyek milik Codex, dan OpenClaw menonaktifkan kepribadian bawaan Codex untuk
+utas native agar berkas kepribadian ruang kerja agen tetap menjadi sumber otoritatif.
+OpenClaw hanya menyumbangkan konteks runtime ke utas Codex native: pengiriman
+kanal, alat dinamis OpenClaw, delegasi ACP, konteks ruang kerja, dan
+Skills OpenClaw. Teks panduan Heartbeat dari kontribusi yang sama ini merupakan
+satu-satunya pengecualian: giliran Heartbeat Codex native tetap menerimanya, yang disuntikkan sebagai
+instruksi kolaborasi khusus, bukan melalui hook kontribusi prompt
+bersama.
 
-Kontribusi GPT-5 menambahkan kontrak perilaku bertag untuk persistensi persona, keamanan eksekusi, disiplin alat, bentuk keluaran, pemeriksaan penyelesaian, dan verifikasi pada prompt rakitan OpenClaw yang cocok. Perilaku balasan khusus channel dan pesan senyap tetap berada di prompt sistem OpenClaw bersama dan kebijakan pengiriman keluar. Lapisan gaya interaksi ramah terpisah dan dapat dikonfigurasi.
+Kontribusi GPT-5 menambahkan kontrak perilaku bertag untuk persistensi
+persona, keamanan eksekusi, disiplin alat, bentuk output, pemeriksaan
+penyelesaian, dan verifikasi pada prompt rakitan OpenClaw yang cocok. Perilaku balasan khusus
+kanal dan pesan senyap tetap berada dalam prompt sistem OpenClaw bersama
+dan kebijakan pengiriman keluar. Lapisan gaya interaksi ramah bersifat
+terpisah dan dapat dikonfigurasi.
 
 | Nilai                  | Efek                                      |
 | ---------------------- | ------------------------------------------- |
 | `"friendly"` (default) | Mengaktifkan lapisan gaya interaksi ramah |
 | `"on"`                 | Alias untuk `"friendly"`                      |
-| `"off"`                | Menonaktifkan hanya lapisan gaya ramah       |
+| `"off"`                | Hanya menonaktifkan lapisan gaya ramah       |
 
 <Tabs>
-  <Tab title="Config">
+  <Tab title="Konfigurasi">
     ```json5
     {
       agents: {
@@ -633,33 +725,41 @@ Kontribusi GPT-5 menambahkan kontrak perilaku bertag untuk persistensi persona, 
 </Tabs>
 
 <Tip>
-Nilai tidak peka huruf besar-kecil saat runtime, jadi `"Off"` dan `"off"` sama-sama menonaktifkan lapisan gaya ramah.
+Nilai tidak peka huruf besar-kecil saat runtime, sehingga `"Off"` dan `"off"` sama-sama menonaktifkan
+lapisan gaya ramah.
 </Tip>
 
 <Note>
-`plugins.entries.openai.config.personality` lama masih dibaca sebagai fallback kompatibilitas saat pengaturan bersama `agents.defaults.promptOverlays.gpt5.personality` tidak ditetapkan.
+`plugins.entries.openai.config.personality` lama masih dibaca sebagai
+fallback kompatibilitas ketika pengaturan bersama
+`agents.defaults.promptOverlays.gpt5.personality` belum ditetapkan.
 </Note>
 
 ## Suara dan ucapan
 
 <AccordionGroup>
-  <Accordion title="Speech synthesis (TTS)">
-    Plugin bawaan `openai` mendaftarkan sintesis ucapan untuk permukaan `messages.tts`.
+  <Accordion title="Sintesis ucapan (TTS)">
+    Plugin `openai` yang disertakan mendaftarkan sintesis ucapan untuk
+    permukaan `messages.tts`.
 
-    | Pengaturan | Jalur konfigurasi | Default |
-    |---------|------------|---------|
-    | Model | `messages.tts.providers.openai.model` | `gpt-4o-mini-tts` |
-    | Suara | `messages.tts.providers.openai.speakerVoice` | `coral` |
-    | Kecepatan | `messages.tts.providers.openai.speed` | (belum ditetapkan) |
-    | Instruksi | `messages.tts.providers.openai.instructions` | (belum ditetapkan, hanya `gpt-4o-mini-tts`) |
-    | Format | `messages.tts.providers.openai.responseFormat` | `opus` untuk catatan suara, `mp3` untuk file |
-    | Kunci API | `messages.tts.providers.openai.apiKey` | Fallback ke `OPENAI_API_KEY` |
-    | URL dasar | `messages.tts.providers.openai.baseUrl` | `https://api.openai.com/v1` |
-    | Body ekstra | `messages.tts.providers.openai.extraBody` / `extra_body` | (belum ditetapkan) |
+    | Pengaturan      | Jalur konfigurasi                                            | Default                          |
+    | ------------- | --------------------------------------------------------- | ----------------------------------- |
+    | Model        | `messages.tts.providers.openai.model`                  | `gpt-4o-mini-tts`                |
+    | Suara        | `messages.tts.providers.openai.speakerVoice`           | `coral`                          |
+    | Kecepatan        | `messages.tts.providers.openai.speed`                  | (belum ditetapkan)                          |
+    | Instruksi | `messages.tts.providers.openai.instructions`           | (belum ditetapkan, hanya `gpt-4o-mini-tts`)  |
+    | Format       | `messages.tts.providers.openai.responseFormat`         | `opus` untuk catatan suara, `mp3` untuk berkas |
+    | Kunci API      | `messages.tts.providers.openai.apiKey`                 | Menggunakan fallback `OPENAI_API_KEY`   |
+    | URL dasar     | `messages.tts.providers.openai.baseUrl`                | `https://api.openai.com/v1`      |
+    | Isi tambahan   | `messages.tts.providers.openai.extraBody` / `extra_body` | (belum ditetapkan)                        |
 
-    Model yang tersedia: `gpt-4o-mini-tts`, `tts-1`, `tts-1-hd`. Suara yang tersedia: `alloy`, `ash`, `ballad`, `cedar`, `coral`, `echo`, `fable`, `juniper`, `marin`, `onyx`, `nova`, `sage`, `shimmer`, `verse`.
+    Model yang tersedia: `gpt-4o-mini-tts`, `tts-1`, `tts-1-hd`. Suara yang tersedia:
+    `alloy`, `ash`, `ballad`, `cedar`, `coral`, `echo`, `fable`, `juniper`,
+    `marin`, `onyx`, `nova`, `sage`, `shimmer`, `verse`.
 
-    `extraBody` digabungkan ke JSON permintaan `/audio/speech` setelah bidang yang dibuat OpenClaw, jadi gunakan ini untuk endpoint yang kompatibel dengan OpenAI yang memerlukan kunci tambahan seperti `lang`. Kunci prototipe diabaikan.
+    `extraBody` digabungkan ke dalam JSON permintaan `/audio/speech` setelah bidang
+    yang dihasilkan OpenClaw, jadi gunakan untuk endpoint kompatibel OpenAI yang memerlukan
+    kunci tambahan seperti `lang`. Kunci prototipe diabaikan.
 
     ```json5
     {
@@ -674,23 +774,25 @@ Nilai tidak peka huruf besar-kecil saat runtime, jadi `"Off"` dan `"off"` sama-s
     ```
 
     <Note>
-    Tetapkan `OPENAI_TTS_BASE_URL` untuk mengganti URL dasar TTS tanpa memengaruhi endpoint API chat. OpenAI TTS dan suara Realtime sama-sama dikonfigurasi melalui kunci API OpenAI Platform; instalasi khusus OAuth masih dapat menggunakan model chat berbasis Codex, tetapi tidak dapat menggunakan talk-back langsung OpenAI.
+    Tetapkan `OPENAI_TTS_BASE_URL` untuk mengganti URL dasar TTS tanpa memengaruhi
+    endpoint API obrolan. TTS OpenAI dan suara Realtime sama-sama dikonfigurasi
+    melalui kunci API OpenAI Platform; instalasi khusus OAuth tetap dapat menggunakan
+    model obrolan yang didukung Codex, tetapi tidak dapat menggunakan respons suara langsung OpenAI.
     </Note>
 
   </Accordion>
 
-  <Accordion title="Speech-to-text">
-    Plugin bawaan `openai` mendaftarkan speech-to-text batch melalui
+  <Accordion title="Ucapan-ke-teks">
+    Plugin `openai` yang disertakan mendaftarkan ucapan-ke-teks secara batch melalui
     permukaan transkripsi pemahaman media OpenClaw.
 
     - Model default: `gpt-4o-transcribe`
-    - Endpoint: OpenAI REST `/v1/audio/transcriptions`
-    - Jalur input: unggahan file audio multipart
-    - Didukung oleh OpenClaw di mana pun transkripsi audio masuk menggunakan
-      `tools.media.audio`, termasuk segmen channel suara Discord dan lampiran
-      audio channel
+    - Endpoint: REST OpenAI `/v1/audio/transcriptions`
+    - Jalur input: unggahan berkas audio multipart
+    - Digunakan di mana pun transkripsi audio masuk membaca `tools.media.audio`,
+      termasuk segmen kanal suara Discord dan lampiran audio kanal
 
-    Untuk memaksa OpenAI bagi transkripsi audio masuk:
+    Untuk memaksakan penggunaan OpenAI bagi transkripsi audio masuk:
 
     ```json5
     {
@@ -710,71 +812,100 @@ Nilai tidak peka huruf besar-kecil saat runtime, jadi `"Off"` dan `"off"` sama-s
     }
     ```
 
-    Petunjuk bahasa dan prompt diteruskan ke OpenAI saat disediakan oleh
+    Petunjuk bahasa dan prompt diteruskan ke OpenAI jika disediakan oleh
     konfigurasi media audio bersama atau permintaan transkripsi per panggilan.
 
   </Accordion>
 
-  <Accordion title="Realtime transcription">
-    Plugin bawaan `openai` mendaftarkan transkripsi realtime untuk Plugin Voice Call.
+  <Accordion title="Transkripsi Realtime">
+    Plugin `openai` yang disertakan mendaftarkan transkripsi Realtime untuk
+    Plugin Panggilan Suara.
 
-    | Pengaturan | Jalur konfigurasi | Default |
-    |---------|------------|---------|
-    | Model | `plugins.entries.voice-call.config.streaming.providers.openai.model` | `gpt-4o-transcribe` |
-    | Bahasa | `...openai.language` | (belum ditetapkan) |
-    | Prompt | `...openai.prompt` | (belum ditetapkan) |
-    | Durasi hening | `...openai.silenceDurationMs` | `800` |
-    | Ambang VAD | `...openai.vadThreshold` | `0.5` |
-    | Auth | `...openai.apiKey`, `OPENAI_API_KEY`, atau OAuth `openai` | Kunci API terhubung langsung; OAuth membuat rahasia klien transkripsi Realtime |
+    | Pengaturan          | Jalur konfigurasi                                                          | Default |
+    | ----------------- | ----------------------------------------------------------------------- | --------- |
+    | Model            | `plugins.entries.voice-call.config.streaming.providers.openai.model` | `gpt-4o-transcribe` |
+    | Bahasa         | `...openai.language`                                                 | (belum ditetapkan) |
+    | Prompt           | `...openai.prompt`                                                   | (belum ditetapkan) |
+    | Durasi hening | `...openai.silenceDurationMs`                                        | `800`   |
+    | Ambang batas VAD    | `...openai.vadThreshold`                                             | `0.5`   |
+    | Autentikasi             | `...openai.apiKey`, `OPENAI_API_KEY`, atau profil kunci API `openai`    | Kunci API Platform diperlukan |
 
     <Note>
-    Menggunakan koneksi WebSocket ke `wss://api.openai.com/v1/realtime` dengan audio G.711 u-law (`g711_ulaw` / `audio/pcmu`). Saat hanya OAuth `openai` yang dikonfigurasi, Gateway membuat rahasia klien transkripsi Realtime sementara sebelum membuka WebSocket. Penyedia streaming ini untuk jalur transkripsi realtime Voice Call; suara Discord saat ini merekam segmen pendek dan menggunakan jalur transkripsi batch `tools.media.audio`.
+    Menggunakan koneksi WebSocket ke `wss://api.openai.com/v1/realtime` dengan
+    audio G.711 u-law (`g711_ulaw` / `audio/pcmu`). Untuk profil kunci API
+    `openai`, Gateway membuat rahasia klien transkripsi Realtime
+    sementara sebelum membuka WebSocket. Penyedia streaming ini ditujukan untuk jalur
+    transkripsi Realtime Panggilan Suara; suara Discord saat ini merekam segmen
+    pendek dan sebagai gantinya menggunakan jalur transkripsi batch `tools.media.audio`.
     </Note>
 
   </Accordion>
 
-  <Accordion title="Realtime voice">
-    Plugin bawaan `openai` mendaftarkan suara realtime untuk Plugin Voice Call.
+  <Accordion title="Suara Realtime">
+    Plugin `openai` yang disertakan mendaftarkan suara Realtime untuk Plugin
+    Panggilan Suara.
 
-    | Pengaturan | Jalur konfigurasi | Default |
-    |---------|------------|---------|
-    | Model | `plugins.entries.voice-call.config.realtime.providers.openai.model` | `gpt-realtime-2` |
-    | Suara | `...openai.voice` | `alloy` |
-    | Temperature (jembatan deployment Azure) | `...openai.temperature` | `0.8` |
-    | Ambang VAD | `...openai.vadThreshold` | `0.5` |
-    | Durasi hening | `...openai.silenceDurationMs` | `500` |
-    | Padding prefiks | `...openai.prefixPaddingMs` | `300` |
-    | Upaya penalaran | `...openai.reasoningEffort` | (belum diatur) |
-    | Autentikasi | profil autentikasi kunci API `openai`, `...openai.apiKey`, atau `OPENAI_API_KEY` | Kunci API OpenAI Platform diperlukan; OAuth OpenAI tidak mengonfigurasi suara Realtime |
+    | Pengaturan                               | Jalur konfigurasi                                                              | Default             |
+    | --------------------------------------- | ---------------------------------------------------------------------------- | ---------------------- |
+    | Model                                  | `plugins.entries.voice-call.config.realtime.providers.openai.model`     | `gpt-realtime-2.1`  |
+    | Suara                                  | `...openai.voice`                                                       | `alloy`             |
+    | Suhu (jembatan deployment Azure)  | `...openai.temperature`                                                 | `0.8`               |
+    | Ambang batas VAD                          | `...openai.vadThreshold`                                                | `0.5`                |
+    | Durasi hening                       | `...openai.silenceDurationMs`                                           | `500`                |
+    | Padding prefiks                         | `...openai.prefixPaddingMs`                                             | `300`                |
+    | Upaya penalaran                       | `...openai.reasoningEffort`                                             | (belum ditetapkan)              |
+    | Autentikasi                                   | Profil kunci API `openai`, `...openai.apiKey`, atau `OPENAI_API_KEY` | Kunci API OpenAI Platform diperlukan |
 
-    Suara Realtime bawaan yang tersedia untuk `gpt-realtime-2`: `alloy`, `ash`,
+    Suara Realtime bawaan yang tersedia untuk `gpt-realtime-2.1`: `alloy`, `ash`,
     `ballad`, `coral`, `echo`, `sage`, `shimmer`, `verse`, `marin`, `cedar`.
     OpenAI merekomendasikan `marin` dan `cedar` untuk kualitas Realtime terbaik. Ini
-    adalah set terpisah dari suara Text-to-speech di atas; jangan berasumsi suara TTS
-    seperti `fable`, `nova`, atau `onyx` valid untuk sesi Realtime.
+    adalah kumpulan yang terpisah dari suara teks-ke-ucapan di atas; suara khusus TTS
+    seperti `fable`, `nova`, atau `onyx` tidak valid untuk sesi Realtime.
+    Tetapkan model secara eksplisit ke `gpt-realtime-2.1-mini` jika Anda lebih memilih
+    varian Realtime 2.1 yang lebih kecil dan lebih murah.
 
     <Note>
-    Jembatan realtime backend OpenAI menggunakan bentuk sesi WebSocket Realtime GA, yang tidak menerima `session.temperature`. Deployment Azure OpenAI tetap tersedia melalui `azureEndpoint` dan `azureDeployment` serta mempertahankan bentuk sesi yang kompatibel dengan deployment. Mendukung pemanggilan alat dua arah dan audio G.711 u-law.
+    **GPT-Live (akan datang).** Model dupleks penuh `gpt-live-1` dan
+    `gpt-live-1-mini` OpenAI menggantikan mode suara ChatGPT pada Juli 2026; API
+    pengembang sedang diluncurkan untuk organisasi dengan akses awal. OpenClaw
+    mengenali keluarga model tersebut, tetapi belum menjalankannya: sesi GPT-Live
+    hanya menggunakan WebRTC, mengelola pergantian giliran sendiri (tanpa VAD), dan mendelegasikan pekerjaan agen
+    melalui protokol peristiwa serah terima yang belum diterapkan oleh transport Realtime
+    OpenClaw. Mengonfigurasi model `gpt-live-*` akan gagal secara tertutup dengan
+    panduan untuk jembatan WebSocket dan sesi browser Talk, alih-alih
+    secara diam-diam menghubungkan audio tanpa akses agen. Akses API juga dibatasi
+    per organisasi OpenAI selama akses awal. Pertahankan `gpt-realtime-2.1` (nilai
+    default) hingga dukungan GPT-Live tersedia.
     </Note>
 
     <Note>
-    Suara Realtime dipilih saat sesi dibuat. OpenAI mengizinkan sebagian besar
-    field sesi diubah kemudian, tetapi suara tidak dapat diubah setelah
-    model mengeluarkan audio dalam sesi tersebut. OpenClaw saat ini mengekspos
+    Jembatan Realtime OpenAI backend menggunakan bentuk sesi WebSocket Realtime
+    GA, yang tidak menerima `session.temperature`. Deployment Azure OpenAI
+    tetap tersedia melalui `azureEndpoint` dan `azureDeployment` serta
+    mempertahankan bentuk sesi yang kompatibel dengan deployment (termasuk `temperature`).
+    Mendukung pemanggilan alat dua arah dan audio G.711 u-law.
+    </Note>
+
+    <Note>
+    Suara realtime dipilih saat sesi dibuat. OpenAI mengizinkan sebagian besar
+    bidang sesi diubah kemudian, tetapi suara tidak dapat diubah setelah
+    model menghasilkan audio dalam sesi tersebut. OpenClaw saat ini menampilkan
     id suara Realtime bawaan sebagai string.
     </Note>
 
     <Note>
-    Control UI Talk menggunakan sesi realtime browser OpenAI dengan rahasia klien
-    sementara yang dicetak Gateway dan pertukaran SDP WebRTC browser langsung terhadap
-    OpenAI Realtime API. Gateway mencetak rahasia klien tersebut dengan profil
-    autentikasi kunci API `openai` yang dipilih atau kunci API OpenAI Platform yang dikonfigurasi. Relay Gateway
-    dan jembatan WebSocket realtime backend Voice Call menggunakan jalur autentikasi
-    khusus kunci API yang sama untuk endpoint OpenAI native. Verifikasi live maintainer
-    tersedia dengan
+    Talk di Control UI menggunakan sesi realtime browser OpenAI dengan rahasia
+    klien sementara yang diterbitkan Gateway dan pertukaran SDP WebRTC langsung
+    dari browser dengan OpenAI Realtime API. Gateway menerbitkan rahasia klien
+    tersebut menggunakan kredensial `openai` yang dipilih. Kunci yang dikonfigurasi, profil kunci API, dan
+    `OPENAI_API_KEY` didahulukan; profil OAuth `openai` atau login
+    Codex eksternal digunakan sebagai fallback. Relai Gateway dan jembatan WebSocket
+    realtime backend Voice Call menggunakan urutan kredensial yang sama untuk endpoint OpenAI native.
+    Verifikasi langsung oleh pengelola tersedia dengan
     `OPENAI_API_KEY=... GEMINI_API_KEY=... node --import tsx scripts/dev/realtime-talk-live-smoke.ts`;
-    kaki OpenAI memverifikasi jembatan WebSocket backend dan pertukaran
+    bagian OpenAI memverifikasi jembatan WebSocket backend dan pertukaran
     SDP WebRTC browser tanpa mencatat rahasia.
+    Teruskan `--openai-only` untuk menjalankan kedua bagian tersebut tanpa kredensial Google.
     </Note>
 
   </Accordion>
@@ -782,29 +913,29 @@ Nilai tidak peka huruf besar-kecil saat runtime, jadi `"Off"` dan `"off"` sama-s
 
 ## Endpoint Azure OpenAI
 
-Provider `openai` bawaan dapat menargetkan resource Azure OpenAI untuk pembuatan
-gambar dengan menimpa URL dasar. Pada jalur pembuatan gambar, OpenClaw
-mendeteksi hostname Azure pada `models.providers.openai.baseUrl` dan beralih ke
-bentuk permintaan Azure secara otomatis.
+Penyedia `openai` yang dibundel dapat menargetkan sumber daya Azure OpenAI untuk pembuatan
+gambar dengan mengganti URL dasar. Pada jalur pembuatan gambar, OpenClaw
+mendeteksi nama host Azure pada `models.providers.openai.baseUrl` dan beralih ke
+format permintaan Azure secara otomatis.
 
 <Note>
-Suara Realtime menggunakan jalur konfigurasi terpisah
+Suara realtime menggunakan jalur konfigurasi terpisah
 (`plugins.entries.voice-call.config.realtime.providers.openai.azureEndpoint`)
-dan tidak dipengaruhi oleh `models.providers.openai.baseUrl`. Lihat akordeon
-**Suara Realtime** di bawah [Suara dan ucapan](#voice-and-speech) untuk
-pengaturan Azure-nya.
+dan tidak dipengaruhi oleh `models.providers.openai.baseUrl`. Lihat akordeon **Suara
+realtime** pada [Suara dan ucapan](#voice-and-speech) untuk pengaturan Azure-nya.
 </Note>
 
-Gunakan Azure OpenAI ketika:
+Gunakan Azure OpenAI jika:
 
-- Anda sudah memiliki langganan, kuota, atau perjanjian enterprise Azure OpenAI
+- Anda sudah memiliki langganan, kuota, atau perjanjian
+  perusahaan Azure OpenAI
 - Anda memerlukan residensi data regional atau kontrol kepatuhan yang disediakan Azure
-- Anda ingin mempertahankan traffic di dalam tenancy Azure yang sudah ada
+- Anda ingin mempertahankan lalu lintas di dalam tenancy Azure yang sudah ada
 
 ### Konfigurasi
 
-Untuk pembuatan gambar Azure melalui provider `openai` bawaan, arahkan
-`models.providers.openai.baseUrl` ke resource Azure Anda dan atur `apiKey` ke
+Untuk pembuatan gambar Azure melalui penyedia `openai` yang dibundel, arahkan
+`models.providers.openai.baseUrl` ke sumber daya Azure Anda dan atur `apiKey` ke
 kunci Azure OpenAI (bukan kunci OpenAI Platform):
 
 ```json5
@@ -820,7 +951,8 @@ kunci Azure OpenAI (bukan kunci OpenAI Platform):
 }
 ```
 
-OpenClaw mengenali sufiks host Azure ini untuk rute pembuatan gambar Azure:
+OpenClaw mengenali sufiks host Azure berikut untuk rute pembuatan gambar
+Azure:
 
 - `*.openai.azure.com`
 - `*.services.ai.azure.com`
@@ -828,95 +960,105 @@ OpenClaw mengenali sufiks host Azure ini untuk rute pembuatan gambar Azure:
 
 Untuk permintaan pembuatan gambar pada host Azure yang dikenali, OpenClaw:
 
-- Mengirim header `api-key` alih-alih `Authorization: Bearer`
-- Menggunakan path yang dicakup deployment (`/openai/deployments/{deployment}/...`)
+- Mengirim header `api-key` sebagai pengganti `Authorization: Bearer`
+- Menggunakan jalur dengan cakupan deployment (`/openai/deployments/{deployment}/...`)
 - Menambahkan `?api-version=...` ke setiap permintaan
-- Menggunakan timeout permintaan default 600 detik untuk panggilan pembuatan gambar Azure.
-  Nilai `timeoutMs` per panggilan tetap menimpa default ini.
+- Menggunakan batas waktu permintaan default 600s untuk panggilan pembuatan gambar Azure.
+  Nilai `timeoutMs` per panggilan tetap menggantikan nilai default ini.
 
-URL dasar lain (OpenAI publik, proxy yang kompatibel dengan OpenAI) mempertahankan
-bentuk permintaan gambar OpenAI standar.
+URL dasar lainnya (OpenAI publik, proksi yang kompatibel dengan OpenAI) tetap menggunakan
+format permintaan gambar OpenAI standar.
 
 <Note>
-Routing Azure untuk jalur pembuatan gambar provider `openai` memerlukan
-OpenClaw 2026.4.22 atau yang lebih baru. Versi sebelumnya memperlakukan
-`openai.baseUrl` kustom apa pun seperti endpoint OpenAI publik dan akan gagal
-terhadap deployment gambar Azure.
+Perutean Azure untuk jalur pembuatan gambar penyedia `openai` memerlukan
+OpenClaw 2026.4.22 atau yang lebih baru. Versi sebelumnya memperlakukan setiap
+`openai.baseUrl` khusus seperti endpoint OpenAI publik dan gagal pada deployment
+gambar Azure.
 </Note>
 
 ### Versi API
 
-Atur `AZURE_OPENAI_API_VERSION` untuk menyematkan versi preview atau GA Azure tertentu
-untuk jalur pembuatan gambar Azure:
+Atur `AZURE_OPENAI_API_VERSION` untuk menetapkan versi pratinjau atau GA Azure tertentu
+bagi jalur pembuatan gambar Azure:
 
 ```bash
 export AZURE_OPENAI_API_VERSION="2024-12-01-preview"
 ```
 
-Default-nya adalah `2024-12-01-preview` ketika variabel tidak diatur.
+Nilai default-nya adalah `2024-12-01-preview` ketika variabel tidak diatur.
 
 ### Nama model adalah nama deployment
 
 Azure OpenAI mengikat model ke deployment. Untuk permintaan pembuatan gambar Azure
-yang dirutekan melalui provider `openai` bawaan, field `model` di OpenClaw
-harus berupa **nama deployment Azure** yang Anda konfigurasikan di portal Azure, bukan
+yang dirutekan melalui penyedia `openai` yang dibundel, bidang `model` di OpenClaw
+harus berupa **nama deployment Azure** yang Anda konfigurasi di portal Azure, bukan
 id model OpenAI publik.
 
-Jika Anda membuat deployment bernama `gpt-image-2-prod` yang menyajikan `gpt-image-2`:
+Jika Anda membuat deployment bernama `gpt-image-2-prod` yang menyediakan `gpt-image-2`:
 
 ```
-/tool image_generate model=openai/gpt-image-2-prod prompt="A clean poster" size=1024x1024 count=1
+/tool image_generate model=openai/gpt-image-2-prod prompt="Poster yang bersih" size=1024x1024 count=1
 ```
 
-Aturan nama deployment yang sama berlaku untuk panggilan pembuatan gambar yang dirutekan melalui
-provider `openai` bawaan.
+Aturan nama deployment yang sama berlaku untuk setiap panggilan pembuatan gambar yang dirutekan
+melalui penyedia `openai` yang dibundel.
 
 ### Ketersediaan regional
 
 Pembuatan gambar Azure saat ini hanya tersedia di sebagian wilayah
 (misalnya `eastus2`, `swedencentral`, `polandcentral`, `westus3`,
-`uaenorth`). Periksa daftar wilayah Microsoft saat ini sebelum membuat
-deployment, dan konfirmasi model tertentu ditawarkan di wilayah Anda.
+`uaenorth`). Periksa daftar wilayah terkini Microsoft sebelum membuat
+deployment, dan pastikan model tertentu tersebut ditawarkan di wilayah Anda.
 
 ### Perbedaan parameter
 
 Azure OpenAI dan OpenAI publik tidak selalu menerima parameter gambar yang sama.
-Azure dapat menolak opsi yang diizinkan OpenAI publik (misalnya nilai
-`background` tertentu pada `gpt-image-2`) atau mengeksposnya hanya pada versi
-model tertentu. Perbedaan ini berasal dari Azure dan model yang mendasarinya,
-bukan OpenClaw. Jika permintaan Azure gagal dengan error validasi, periksa
-set parameter yang didukung oleh deployment dan versi API spesifik Anda di
+Azure mungkin menolak opsi yang diizinkan OpenAI publik (misalnya nilai
+`background` tertentu pada `gpt-image-2`) atau hanya menyediakannya pada versi model
+tertentu. Perbedaan ini berasal dari Azure dan model yang mendasarinya, bukan
+OpenClaw. Jika permintaan Azure gagal dengan kesalahan validasi, periksa
+kumpulan parameter yang didukung oleh deployment dan versi API spesifik Anda di
 portal Azure.
 
 <Note>
-Azure OpenAI menggunakan transport native dan perilaku kompatibilitas tetapi tidak menerima
-header atribusi tersembunyi OpenClaw — lihat akordeon **Rute native vs kompatibel OpenAI**
-di bawah [Konfigurasi lanjutan](#advanced-configuration).
+Azure OpenAI menggunakan transport native dan perilaku kompatibilitas, tetapi tidak menerima
+header atribusi tersembunyi OpenClaw—lihat akordeon **Rute native vs kompatibel dengan
+OpenAI** pada [Konfigurasi lanjutan](#advanced-configuration).
 
-Untuk traffic chat atau Responses di Azure (di luar pembuatan gambar), gunakan
-alur onboarding atau konfigurasi provider Azure khusus — `openai.baseUrl` saja
-tidak mengambil bentuk API/autentikasi Azure. Provider
-`azure-openai-responses/*` terpisah tersedia; lihat
-akordeon Compaction sisi server di bawah.
+Untuk lalu lintas chat atau Responses di Azure (di luar pembuatan gambar), gunakan
+alur orientasi awal atau konfigurasi penyedia Azure khusus; `openai.baseUrl` saja
+tidak menggunakan format API/autentikasi Azure. Tersedia penyedia
+`azure-openai-responses/*` terpisah; lihat akordeon Compaction sisi server
+di bawah.
 </Note>
 
 ## Konfigurasi lanjutan
 
+Contoh `params` per model di bawah membentuk permintaan penyedia tertanam
+OpenClaw. Mengonfigurasinya merupakan perilaku permintaan yang ditentukan, sehingga rute
+`auto` yang memenuhi syarat tetap berada di OpenClaw alih-alih memilih Codex secara implisit. Harness
+app-server Codex native mengelola transport dan pengaturan permintaannya sendiri; `agentRuntime.id: "codex"`
+eksplisit akan gagal secara tertutup ketika rute efektif tidak dinyatakan kompatibel dengan
+Codex.
+
 <AccordionGroup>
   <Accordion title="Transport (WebSocket vs SSE)">
-    OpenClaw menggunakan WebSocket terlebih dahulu dengan fallback SSE (`"auto"`) untuk `openai/*`.
+    OpenClaw mengutamakan WebSocket dengan fallback SSE (`"auto"`) untuk `openai/*`.
 
     Dalam mode `"auto"`, OpenClaw:
-    - Mencoba ulang satu kegagalan WebSocket awal sebelum fallback ke SSE
-    - Setelah kegagalan, menandai WebSocket sebagai terdegradasi selama ~60 detik dan menggunakan SSE selama masa pendinginan
-    - Melampirkan header identitas sesi dan giliran yang stabil untuk percobaan ulang dan koneksi ulang
-    - Menormalkan penghitung penggunaan (`input_tokens` / `prompt_tokens`) di seluruh varian transport
+    - Mencoba ulang satu kegagalan awal WebSocket sebelum beralih ke SSE
+    - Setelah kegagalan, menandai WebSocket sebagai terdegradasi selama 60 detik dan menggunakan SSE
+      selama periode pendinginan
+    - Melampirkan header identitas sesi dan giliran yang stabil untuk percobaan ulang dan
+      penyambungan kembali
+    - Menormalisasi penghitung penggunaan (`input_tokens` / `prompt_tokens`) di seluruh
+      varian transport
 
-    | Nilai | Perilaku |
-    |-------|----------|
-    | `"auto"` (default) | WebSocket terlebih dahulu, fallback SSE |
-    | `"sse"` | Paksa hanya SSE |
-    | `"websocket"` | Paksa hanya WebSocket |
+    | Nilai                | Perilaku                          |
+    | ---------------------- | ------------------------------------ |
+    | `"auto"` (default)   | WebSocket terlebih dahulu, fallback SSE     |
+    | `"sse"`              | Paksa hanya SSE                    |
+    | `"websocket"`        | Paksa hanya WebSocket              |
 
     ```json5
     {
@@ -932,19 +1074,25 @@ akordeon Compaction sisi server di bawah.
     }
     ```
 
-    Dokumen OpenAI terkait:
+    Dokumentasi OpenAI terkait:
     - [Realtime API dengan WebSocket](https://platform.openai.com/docs/guides/realtime-websocket)
-    - [Respons Streaming API (SSE)](https://platform.openai.com/docs/guides/streaming-responses)
+    - [Respons API streaming (SSE)](https://platform.openai.com/docs/guides/streaming-responses)
 
   </Accordion>
 
-  <Accordion title="Fast mode">
-    OpenClaw mengekspos toggle mode cepat bersama untuk `openai/*`:
+  <Accordion title="Mode cepat">
+    OpenClaw menyediakan sakelar mode cepat bersama untuk `openai/*`:
 
     - **Chat/UI:** `/fast status|auto|on|off`
     - **Konfigurasi:** `agents.defaults.models["<provider>/<model>"].params.fastMode`
 
-    Saat diaktifkan, OpenClaw memetakan mode cepat ke pemrosesan prioritas OpenAI (`service_tier = "priority"`). Nilai `service_tier` yang sudah ada dipertahankan, dan mode cepat tidak menulis ulang `reasoning` atau `text.verbosity`. `fastMode: "auto"` memulai panggilan model baru secara cepat hingga batas otomatis, lalu memulai panggilan percobaan ulang, fallback, hasil alat, atau lanjutan berikutnya tanpa mode cepat. Batas default adalah 60 detik; atur `params.fastAutoOnSeconds` pada model aktif untuk mengubahnya.
+    Saat diaktifkan, OpenClaw memetakan mode cepat ke pemrosesan prioritas OpenAI
+    (`service_tier = "priority"`). Nilai `service_tier` yang sudah ada
+    dipertahankan, dan mode cepat tidak menulis ulang `reasoning` atau
+    `text.verbosity`. `fastMode: "auto"` memulai panggilan model baru dalam mode cepat hingga
+    batas otomatis, lalu memulai panggilan percobaan ulang, fallback, hasil alat, atau
+    kelanjutan berikutnya tanpa mode cepat. Batas tersebut secara default adalah 60 detik;
+    atur `params.fastAutoOnSeconds` pada model aktif untuk mengubahnya.
 
     ```json5
     {
@@ -959,13 +1107,15 @@ akordeon Compaction sisi server di bawah.
     ```
 
     <Note>
-    Override sesi mengalahkan konfigurasi. Menghapus override sesi di Sessions UI mengembalikan sesi ke default yang dikonfigurasi.
+    Penggantian sesi didahulukan daripada konfigurasi. Menghapus penggantian sesi di
+    UI Sessions mengembalikan sesi ke nilai default yang dikonfigurasi.
     </Note>
 
   </Accordion>
 
-  <Accordion title="Priority processing (service_tier)">
-    API OpenAI mengekspos pemrosesan prioritas melalui `service_tier`. Atur per model di OpenClaw:
+  <Accordion title="Pemrosesan prioritas (service_tier)">
+    API OpenAI menyediakan pemrosesan prioritas melalui `service_tier`. Atur untuk setiap
+    model di OpenClaw:
 
     ```json5
     {
@@ -982,23 +1132,31 @@ akordeon Compaction sisi server di bawah.
     Nilai yang didukung: `auto`, `default`, `flex`, `priority`.
 
     <Warning>
-    `serviceTier` hanya diteruskan ke endpoint OpenAI native (`api.openai.com`) dan endpoint Codex native (`chatgpt.com/backend-api`). Jika Anda merutekan salah satu provider melalui proxy, OpenClaw membiarkan `service_tier` tidak tersentuh.
+    `serviceTier` hanya diteruskan ke endpoint OpenAI native
+    (`api.openai.com`) dan endpoint Codex native (`chatgpt.com/backend-api`).
+    Jika Anda merutekan salah satu penyedia melalui proksi, OpenClaw membiarkan
+    `service_tier` tetap tidak berubah.
     </Warning>
 
   </Accordion>
 
-  <Accordion title="Server-side compaction (Responses API)">
-    Untuk model OpenAI Responses langsung (`openai/*` pada `api.openai.com`), wrapper stream OpenClaw milik Plugin OpenAI mengaktifkan Compaction sisi server secara otomatis:
+  <Accordion title="Compaction sisi server (Responses API)">
+    Untuk model Responses OpenAI langsung (`openai/*` pada `api.openai.com`), wrapper
+    stream OpenClaw milik Plugin OpenAI secara otomatis mengaktifkan Compaction
+    sisi server:
 
-    - Memaksa `store: true` (kecuali kompatibilitas model mengatur `supportsStore: false`)
-    - Menyuntikkan `context_management: [{ type: "compaction", compact_threshold: ... }]`
-    - Default `compact_threshold`: 70% dari `contextWindow` (atau `80000` jika tidak tersedia)
+    - Memaksakan `store: true` (kecuali kompatibilitas model menetapkan `supportsStore: false`)
+    - Menyisipkan `context_management: [{ type: "compaction", compact_threshold: ... }]`
+    - `compact_threshold` default: 70% dari `contextWindow` (atau `80000` ketika
+      tidak tersedia)
 
-    Ini berlaku untuk jalur runtime OpenClaw bawaan dan hook provider OpenAI yang digunakan oleh run tertanam. Harness app-server Codex native mengelola konteksnya sendiri melalui Codex dan dikonfigurasi oleh rute agen default OpenAI atau kebijakan runtime provider/model.
+    Ini berlaku untuk jalur runtime OpenClaw bawaan dan hook penyedia OpenAI
+    yang digunakan oleh eksekusi tertanam. Harness app-server Codex native mengelola
+    konteksnya sendiri melalui Codex dan tidak dipengaruhi oleh pengaturan ini.
 
     <Tabs>
-      <Tab title="Enable explicitly">
-        Berguna untuk endpoint kompatibel seperti Azure OpenAI Responses:
+      <Tab title="Aktifkan secara eksplisit">
+        Berguna untuk endpoint yang kompatibel seperti Azure OpenAI Responses:
 
         ```json5
         {
@@ -1014,7 +1172,7 @@ akordeon Compaction sisi server di bawah.
         }
         ```
       </Tab>
-      <Tab title="Custom threshold">
+      <Tab title="Ambang khusus">
         ```json5
         {
           agents: {
@@ -1032,7 +1190,7 @@ akordeon Compaction sisi server di bawah.
         }
         ```
       </Tab>
-      <Tab title="Disable">
+      <Tab title="Nonaktifkan">
         ```json5
         {
           agents: {
@@ -1050,55 +1208,75 @@ akordeon Compaction sisi server di bawah.
     </Tabs>
 
     <Note>
-    `responsesServerCompaction` hanya mengontrol injeksi `context_management`. Model OpenAI Responses langsung tetap memaksa `store: true` kecuali kompatibilitas mengatur `supportsStore: false`.
+    `responsesServerCompaction` hanya mengontrol penyisipan `context_management`.
+    Model Responses OpenAI langsung tetap memaksakan `store: true` kecuali kompatibilitas
+    menetapkan `supportsStore: false`.
     </Note>
 
   </Accordion>
 
   <Accordion title="Mode GPT agentik ketat">
-    Untuk eksekusi keluarga GPT-5 pada `openai/*`, OpenClaw dapat menggunakan kontrak eksekusi tertanam yang lebih ketat:
+    Untuk model keluarga GPT-5 penyedia `openai` yang dijalankan melalui runtime
+    tertanam OpenClaw, OpenClaw sudah menetapkan kontrak eksekusi yang lebih ketat secara default
+    bernama `strict-agentic`. Kontrak ini aktif secara otomatis setiap kali penyedia yang ditetapkan adalah
+    `openai` dan id model cocok dengan keluarga GPT-5, kecuali konfigurasi
+    secara eksplisit memilih untuk menonaktifkannya:
 
     ```json5
     {
       agents: {
         defaults: {
-          embeddedAgent: { executionContract: "strict-agentic" },
+          embeddedAgent: { executionContract: "default" },
         },
       },
     }
     ```
 
-    Dengan `strict-agentic`, OpenClaw:
-    - Mengaktifkan otomatis `update_plan` untuk pekerjaan substansial
-    - Mencoba ulang giliran yang kosong secara struktural atau hanya berisi penalaran dengan kelanjutan jawaban yang terlihat
-    - Menggunakan peristiwa rencana harness eksplisit saat harness yang dipilih menyediakannya
+    Menetapkan `"strict-agentic"` secara eksplisit tidak menghasilkan perubahan pada jalur yang didukung (nilai tersebut
+    sudah menjadi default) dan tidak berpengaruh pada pasangan penyedia/model yang tidak didukung.
 
-    OpenClaw tidak mengklasifikasikan prosa asisten untuk memutuskan apakah suatu giliran adalah rencana, pembaruan progres, atau jawaban akhir.
+    Saat `strict-agentic` aktif, OpenClaw:
+    - Mengaktifkan otomatis `update_plan` untuk pekerjaan substansial
+    - Mencoba kembali giliran yang secara struktural kosong atau hanya berisi penalaran dengan kelanjutan
+      jawaban yang terlihat
+    - Menggunakan peristiwa rencana harness eksplisit ketika harness yang dipilih
+      menyediakannya
+
+    OpenClaw tidak mengklasifikasikan prosa asisten untuk menentukan apakah suatu giliran merupakan
+    rencana, pembaruan progres, atau jawaban akhir.
 
     <Note>
-    Dicakup hanya untuk eksekusi keluarga OpenAI dan Codex GPT-5. Penyedia lain dan keluarga model lama mempertahankan perilaku default.
+    Kontrak ini sepenuhnya berada dalam runner agen tertanam OpenClaw. Kontrak ini
+    tidak berlaku pada harness app-server Codex native, yang mengelola sendiri
+    perilaku giliran dan rencananya; pemilihan harness lebih menentukan daripada
+    pengaturan kontrak eksekusi untuk proses Codex native.
     </Note>
 
   </Accordion>
 
-  <Accordion title="Rute native vs kompatibel OpenAI">
-    OpenClaw memperlakukan endpoint OpenAI langsung, Codex, dan Azure OpenAI secara berbeda dari proxy `/v1` generik yang kompatibel dengan OpenAI:
+  <Accordion title="Rute native vs kompatibel dengan OpenAI">
+    OpenClaw memperlakukan endpoint langsung OpenAI, Codex, dan Azure OpenAI
+    secara berbeda dari proksi `/v1` generik yang kompatibel dengan OpenAI:
 
     **Rute native** (`openai/*`, Azure OpenAI):
-    - Mempertahankan `reasoning: { effort: "none" }` hanya untuk model yang mendukung upaya OpenAI `none`
-    - Menghilangkan penalaran yang dinonaktifkan untuk model atau proxy yang menolak `reasoning.effort: "none"`
-    - Menetapkan skema alat default ke mode ketat
-    - Melampirkan header atribusi tersembunyi hanya pada host native yang terverifikasi
-    - Mempertahankan pembentukan permintaan khusus OpenAI (`service_tier`, `store`, kompatibilitas penalaran, petunjuk cache prompt)
+    - Mempertahankan `reasoning: { effort: "none" }` hanya untuk model yang mendukung
+      upaya `none` OpenAI
+    - Menghilangkan penalaran yang dinonaktifkan untuk model atau proksi yang menolak
+      `reasoning.effort: "none"`
+    - Menetapkan skema alat ke mode ketat secara default
+    - Melampirkan header atribusi tersembunyi hanya pada host native yang terverifikasi (Azure
+      OpenAI tidak menerima header ini, meskipun merupakan rute native)
+    - Mempertahankan pembentukan permintaan khusus OpenAI (`service_tier`, `store`,
+      kompatibilitas penalaran, petunjuk cache prompt)
 
-    **Rute proxy/kompatibel:**
+    **Rute proksi/kompatibel:**
     - Menggunakan perilaku kompatibilitas yang lebih longgar
-    - Menghapus Completions `store` dari payload `openai-completions` non-native
-    - Menerima JSON penerusan `params.extra_body`/`params.extraBody` lanjutan untuk proxy Completions yang kompatibel dengan OpenAI
-    - Menerima `params.chat_template_kwargs` untuk proxy Completions yang kompatibel dengan OpenAI seperti vLLM
+    - Menghapus `store` Completions dari payload `openai-completions` non-native
+    - Menerima JSON penerusan `params.extra_body`/`params.extraBody` tingkat lanjut
+      untuk proksi Completions yang kompatibel dengan OpenAI
+    - Menerima `params.chat_template_kwargs` untuk proksi Completions yang kompatibel dengan OpenAI
+      seperti vLLM
     - Tidak memaksakan skema alat ketat atau header khusus native
-
-    Azure OpenAI menggunakan transport native dan perilaku kompatibilitas tetapi tidak menerima header atribusi tersembunyi.
 
   </Accordion>
 </AccordionGroup>
@@ -1115,7 +1293,7 @@ akordeon Compaction sisi server di bawah.
   <Card title="Pembuatan video" href="/id/tools/video-generation" icon="video">
     Parameter alat video bersama dan pemilihan penyedia.
   </Card>
-  <Card title="OAuth dan auth" href="/id/gateway/authentication" icon="key">
-    Detail auth dan aturan penggunaan ulang kredensial.
+  <Card title="OAuth dan autentikasi" href="/id/gateway/authentication" icon="key">
+    Detail autentikasi dan aturan penggunaan kembali kredensial.
   </Card>
 </CardGroup>

@@ -2,61 +2,67 @@
 read_when:
     - Menjalankan host Node tanpa antarmuka grafis
     - Memasangkan node non-macOS untuk system.run
-summary: Referensi CLI untuk `openclaw node` (host Node tanpa antarmuka)
+summary: Referensi CLI untuk `openclaw node` (host node tanpa antarmuka grafis)
 title: Node
 x-i18n:
-    generated_at: "2026-07-12T14:02:19Z"
+    generated_at: "2026-07-16T18:01:07Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 076449123d8b3e9cb092a2bd7de311b87b27a128cb381fc343c68d18aeb634a0
+    source_hash: d17b96b8829bef4202ff220d9b20e04c183702f997f669120cb16aa7191235b6
     source_path: cli/node.md
     workflow: 16
 ---
 
 # `openclaw node`
 
-Jalankan **host node tanpa antarmuka** yang terhubung ke WebSocket Gateway dan mengekspos
+Jalankan **host node headless** yang terhubung ke WebSocket Gateway dan mengekspos
 `system.run` / `system.which` pada mesin ini.
+
+Di macOS, aplikasi bilah menu sudah menyematkan runtime host node ini ke dalam
+koneksi node-nya sendiri dan menambahkan kemampuan native Mac. Gunakan `openclaw node run` pada
+Mac hanya jika Anda memang menginginkan node headless tanpa aplikasi. Menjalankan
+keduanya akan membuat dua identitas node untuk mesin yang sama.
 
 ## Mengapa menggunakan host node?
 
-Gunakan host node saat Anda ingin agen **menjalankan perintah pada mesin lain** di
-jaringan Anda tanpa memasang aplikasi pendamping macOS lengkap di sana.
+Gunakan host node jika Anda ingin agen **menjalankan perintah pada mesin lain** di
+jaringan Anda tanpa menginstal aplikasi pendamping macOS lengkap di sana.
 
 Kasus penggunaan umum:
 
-- Menjalankan perintah pada mesin Linux/Windows jarak jauh (server build, mesin laboratorium, NAS).
-- Menjaga exec tetap **terisolasi** di Gateway, tetapi mendelegasikan eksekusi yang disetujui ke host lain.
-- Menyediakan target eksekusi ringan tanpa antarmuka untuk otomatisasi atau node CI.
+- Jalankan perintah pada mesin Linux/Windows jarak jauh (server build, mesin lab, NAS).
+- Pertahankan exec tetap **terisolasi dalam sandbox** di Gateway, tetapi delegasikan eksekusi yang disetujui ke host lain.
+- Sediakan target eksekusi headless yang ringan untuk otomatisasi atau node CI.
 
 Eksekusi tetap dilindungi oleh **persetujuan exec** dan daftar izin per agen pada
 host node, sehingga Anda dapat menjaga akses perintah tetap terbatas dan eksplisit.
 
-`openclaw node run` dapat memublikasikan alat berbasis Plugin atau MCP setelah terhubung.
-Secara default, Gateway memercayai deskriptor dari node yang dipasangkan, dengan tetap
-mengharuskan perintah setiap deskriptor berada dalam cakupan perintah node yang disetujui. Agen
-melihat setiap deskriptor yang diterima sebagai alat Plugin biasa, tetapi eksekusi tetap
-berlangsung melalui `node.invoke`, sehingga pemutusan koneksi node menghapus alat tersebut dari
+`openclaw node run` dapat memublikasikan alat yang didukung plugin atau MCP setelah terhubung.
+Gateway memercayai deskriptor dari node yang telah dipasangkan secara default, sembari mewajibkan
+perintah setiap deskriptor tetap berada dalam cakupan perintah yang disetujui pada node.
+Agen melihat setiap deskriptor yang diterima sebagai alat plugin biasa, tetapi eksekusi tetap
+melewati `node.invoke`, sehingga memutuskan koneksi node akan menghapus alat tersebut dari
 eksekusi agen baru. Operator Gateway dapat menonaktifkan publikasi dengan
 `gateway.nodes.pluginTools.enabled: false`.
 
-Untuk alat MCP deklaratif, tambahkan struktur server MCP biasa di bawah
+Untuk alat MCP deklaratif, tambahkan struktur server MCP normal di bawah
 `nodeHost.mcp.servers` dalam `openclaw.json` pada mesin node, lalu mulai ulang
-host node. Node mendeklarasikan kelompok perintah `mcp.tools.call.v1` yang memerlukan
-persetujuan dan memublikasikan alat yang tercantum setelah terhubung; mengubah daftar server
+host node. Node mendeklarasikan keluarga perintah `mcp.tools.call.v1` yang memerlukan persetujuan
+dan memublikasikan alat yang tercantum setelah terhubung; mengubah daftar server
 kemudian tidak memerlukan pemasangan ulang. Lihat
-[Server MCP yang dihost di node](/id/nodes#node-hosted-mcp-servers).
+[Server MCP yang dihosting node](/id/nodes#node-hosted-mcp-servers).
 
-## Proksi peramban (tanpa konfigurasi)
+## Proksi browser (tanpa konfigurasi)
 
-Host node secara otomatis mengiklankan proksi peramban jika `browser.enabled` tidak
-dinonaktifkan pada node. Hal ini memungkinkan agen menggunakan otomatisasi peramban pada node tersebut
+Host node secara otomatis mengiklankan proksi browser jika `browser.enabled` tidak
+dinonaktifkan pada node. Ini memungkinkan agen menggunakan otomatisasi browser pada node tersebut
 tanpa konfigurasi tambahan.
 
-Secara default, proksi mengekspos cakupan profil peramban normal milik node. Jika Anda
-menetapkan `nodeHost.browserProxy.allowProfiles`, proksi menjadi terbatas:
-penargetan profil yang tidak tercantum dalam daftar izin ditolak, dan rute pembuatan/penghapusan
+Secara default, proksi mengekspos cakupan profil browser normal milik node. Jika Anda
+mengatur `nodeHost.browserProxy.allowProfiles`, proksi menjadi restriktif:
+penargetan profil yang tidak ada dalam daftar izin ditolak, dan rute pembuatan/penghapusan
 profil persisten diblokir melalui proksi.
 
 Nonaktifkan pada node jika diperlukan:
@@ -71,7 +77,7 @@ Nonaktifkan pada node jika diperlukan:
 }
 ```
 
-## Menjalankan (latar depan)
+## Jalankan (latar depan)
 
 ```bash
 openclaw node run --host <gateway-host> --port 18789
@@ -80,38 +86,38 @@ openclaw node run --host <gateway-host> --port 18789
 Opsi:
 
 - `--host <host>`: Host WebSocket Gateway (default: `127.0.0.1`)
-- `--port <port>`: Porta WebSocket Gateway (default: `18789`)
+- `--port <port>`: Port WebSocket Gateway (default: `18789`)
 - `--context-path <path>`: Jalur konteks WebSocket Gateway (misalnya `/openclaw-gw`). Ditambahkan ke URL WebSocket.
-- `--tls`: Menggunakan TLS untuk koneksi Gateway
-- `--no-tls`: Memaksakan koneksi Gateway teks biasa meskipun konfigurasi Gateway lokal mengaktifkan TLS
+- `--tls`: Gunakan TLS untuk koneksi Gateway
+- `--no-tls`: Paksa koneksi Gateway teks biasa meskipun konfigurasi Gateway lokal mengaktifkan TLS
 - `--tls-fingerprint <sha256>`: Sidik jari sertifikat TLS yang diharapkan (sha256)
-- `--node-id <id>`: Mengganti ID instans klien lama yang disimpan dalam `node.json` (tidak mereset pemasangan)
-- `--display-name <name>`: Mengganti nama tampilan node
+- `--node-id <id>`: Timpa ID instans klien yang disimpan dalam status SQLite bersama (tidak mengatur ulang pemasangan)
+- `--display-name <name>`: Timpa nama tampilan node
 
 ## Autentikasi Gateway untuk host node
 
-`openclaw node run` dan `openclaw node install` menentukan autentikasi Gateway dari konfigurasi/variabel lingkungan (tidak ada flag `--token`/`--password` pada perintah node):
+`openclaw node run` dan `openclaw node install` menentukan autentikasi Gateway dari konfigurasi/lingkungan (tanpa flag `--token`/`--password` pada perintah node):
 
 - `OPENCLAW_GATEWAY_TOKEN` / `OPENCLAW_GATEWAY_PASSWORD` diperiksa terlebih dahulu.
-- Kemudian cadangan konfigurasi lokal: `gateway.auth.token` / `gateway.auth.password`.
-- Dalam mode lokal, host node secara sengaja tidak mewarisi `gateway.remote.token` / `gateway.remote.password`.
-- Jika `gateway.auth.token` / `gateway.auth.password` dikonfigurasi secara eksplisit melalui SecretRef dan tidak dapat ditentukan, penentuan autentikasi node gagal secara tertutup (tanpa cadangan jarak jauh yang menyamarkan kegagalan).
-- Dalam `gateway.mode=remote`, kolom klien jarak jauh (`gateway.remote.token` / `gateway.remote.password`) juga dapat digunakan sesuai aturan prioritas jarak jauh.
-- Penentuan autentikasi host node hanya mematuhi variabel lingkungan `OPENCLAW_GATEWAY_*`.
+- Kemudian fallback ke konfigurasi lokal: `gateway.auth.token` / `gateway.auth.password`.
+- Dalam mode lokal, host node sengaja tidak mewarisi `gateway.remote.token` / `gateway.remote.password`.
+- Jika `gateway.auth.token` / `gateway.auth.password` dikonfigurasi secara eksplisit melalui SecretRef dan tidak dapat diresolusikan, resolusi autentikasi node gagal secara tertutup (tidak ada fallback jarak jauh yang menyamarkannya).
+- Dalam `gateway.mode=remote`, bidang klien jarak jauh (`gateway.remote.token` / `gateway.remote.password`) juga memenuhi syarat sesuai aturan prioritas jarak jauh.
+- Resolusi autentikasi host node hanya menerima variabel lingkungan `OPENCLAW_GATEWAY_*`.
 
-Untuk node yang terhubung ke Gateway `ws://` teks biasa, local loopback, literal IP
-privat, `.local`, dan host Tailnet `*.ts.net` diterima. Untuk nama DNS privat
-tepercaya lainnya, tetapkan `OPENCLAW_ALLOW_INSECURE_PRIVATE_WS=1`; tanpanya,
-proses awal node gagal secara tertutup dan meminta Anda menggunakan `wss://`, terowongan SSH, atau
-Tailscale. Ini adalah pilihan eksplisit melalui lingkungan proses, bukan kunci konfigurasi
+Untuk node yang terhubung ke Gateway `ws://` teks biasa, loopback, literal IP
+privat, `.local`, dan host Tailnet `*.ts.net` diterima. Untuk nama
+DNS privat tepercaya lainnya, atur `OPENCLAW_ALLOW_INSECURE_PRIVATE_WS=1`; tanpanya,
+proses awal node gagal secara tertutup dan meminta Anda menggunakan `wss://`, tunnel SSH, atau
+Tailscale. Ini adalah keikutsertaan eksplisit melalui lingkungan proses, bukan kunci konfigurasi
 `openclaw.json`.
-`openclaw node install` menyimpannya dalam layanan node yang diawasi jika variabel tersebut
-ada dalam lingkungan perintah pemasangan.
+`openclaw node install` mempertahankannya dalam layanan node yang diawasi ketika
+variabel tersebut ada dalam lingkungan perintah instalasi.
 
 ## Layanan (latar belakang)
 
-Pasang host node tanpa antarmuka sebagai layanan pengguna (launchd pada macOS, systemd pada
-Linux, Windows Task Scheduler pada Windows).
+Instal host node headless sebagai layanan pengguna (launchd di macOS, systemd di
+Linux, Windows Task Scheduler di Windows).
 
 ```bash
 openclaw node install --host <gateway-host> --port 18789
@@ -120,14 +126,14 @@ openclaw node install --host <gateway-host> --port 18789
 Opsi:
 
 - `--host <host>`: Host WebSocket Gateway (default: `127.0.0.1`)
-- `--port <port>`: Porta WebSocket Gateway (default: `18789`)
+- `--port <port>`: Port WebSocket Gateway (default: `18789`)
 - `--context-path <path>`: Jalur konteks WebSocket Gateway (misalnya `/openclaw-gw`). Ditambahkan ke URL WebSocket.
-- `--tls`: Menggunakan TLS untuk koneksi Gateway
+- `--tls`: Gunakan TLS untuk koneksi Gateway
 - `--tls-fingerprint <sha256>`: Sidik jari sertifikat TLS yang diharapkan (sha256)
-- `--node-id <id>`: Mengganti ID instans klien lama yang disimpan dalam `node.json` (tidak mereset pemasangan)
-- `--display-name <name>`: Mengganti nama tampilan node
-- `--runtime <runtime>`: Runtime layanan (`node` atau `bun`)
-- `--force`: Memasang ulang/menimpa jika sudah terpasang
+- `--node-id <id>`: Timpa ID instans klien yang disimpan dalam status SQLite bersama (tidak mengatur ulang pemasangan)
+- `--display-name <name>`: Timpa nama tampilan node
+- `--runtime <runtime>`: Runtime layanan (`node`)
+- `--force`: Instal ulang/timpa jika sudah terinstal
 
 Kelola layanan:
 
@@ -143,20 +149,21 @@ Gunakan `openclaw node run` untuk host node latar depan (tanpa layanan).
 
 Perintah layanan menerima `--json` untuk keluaran yang dapat dibaca mesin.
 
-Host node mencoba kembali ketika Gateway dimulai ulang atau koneksi jaringan ditutup, dalam proses yang sama. Jika
-Gateway melaporkan jeda autentikasi token/kata sandi/bootstrap yang bersifat terminal, host node
-mencatat detail penutupan dan keluar dengan status bukan nol agar launchd/systemd/Task Scheduler dapat
-memulai ulang dengan konfigurasi dan kredensial baru. Jeda yang memerlukan pemasangan tetap berada dalam
-alur latar depan agar permintaan yang tertunda dapat disetujui.
+Host node mencoba kembali saat Gateway dimulai ulang dan saat koneksi jaringan ditutup
+di dalam proses. Jika Gateway melaporkan jeda autentikasi terminal akibat token/kata sandi/bootstrap,
+host node mencatat detail penutupan dan keluar dengan kode bukan nol agar
+launchd/systemd/Task Scheduler dapat memulai ulang dengan konfigurasi dan kredensial baru.
+Jeda yang memerlukan pemasangan tetap berada dalam alur latar depan agar permintaan yang tertunda
+dapat disetujui.
 
 ## Pemasangan
 
 Koneksi pertama membuat permintaan pemasangan perangkat yang tertunda (`role: node`) pada Gateway.
 
-Saat host Gateway dapat menggunakan SSH ke host node secara noninteraktif (pengguna yang sama,
-kunci host tepercaya), permintaan tertunda disetujui secara otomatis: Gateway
-menjalankan `openclaw node identity --json` pada host node melalui SSH dan menyetujui jika
-kunci perangkat cocok persis. Ini aktif secara default; lihat
+Jika host Gateway dapat terhubung melalui SSH ke host node secara noninteraktif (pengguna yang sama,
+kunci host tepercaya), permintaan yang tertunda disetujui secara otomatis: Gateway
+menjalankan `openclaw node identity --json` pada host node melalui SSH dan memberikan persetujuan jika
+kunci perangkat sama persis. Fitur ini aktif secara default; lihat
 [Persetujuan otomatis perangkat yang diverifikasi SSH](/id/gateway/pairing#ssh-verified-device-auto-approval-default)
 untuk persyaratan dan cara menonaktifkannya (`gateway.nodes.pairing.sshVerify: false`).
 
@@ -167,7 +174,7 @@ openclaw devices list
 openclaw devices approve <requestId>
 ```
 
-Periksa identitas node lokal yang diverifikasi oleh Gateway:
+Periksa identitas node lokal yang digunakan Gateway untuk verifikasi:
 
 ```bash
 openclaw node identity --json
@@ -176,8 +183,8 @@ openclaw node identity --json
 Perintah ini mencetak ID perangkat dan kunci publik dari `identity/device.json` dan tidak pernah
 membuat atau mengubah berkas identitas.
 
-Pada jaringan node yang dikontrol secara ketat, operator Gateway dapat secara eksplisit memilih untuk
-menyetujui secara otomatis pemasangan node pertama kali dari CIDR tepercaya:
+Pada jaringan node yang dikontrol ketat, operator Gateway dapat secara eksplisit mengaktifkan
+persetujuan otomatis untuk pemasangan node pertama kali dari CIDR tepercaya:
 
 ```json5
 {
@@ -191,9 +198,9 @@ menyetujui secara otomatis pemasangan node pertama kali dari CIDR tepercaya:
 }
 ```
 
-Fitur ini dinonaktifkan secara default (`autoApproveCidrs` tidak ditetapkan). Fitur ini hanya berlaku untuk
+Fitur ini dinonaktifkan secara default (`autoApproveCidrs` tidak diatur). Fitur ini hanya berlaku untuk
 pemasangan `role: node` baru tanpa cakupan yang diminta, dari IP klien yang
-dipercayai Gateway. Klien operator/peramban, Control UI, WebChat, serta peningkatan
+dipercayai Gateway. Klien operator/browser, Control UI, WebChat, serta peningkatan
 peran, cakupan, metadata, atau kunci publik tetap memerlukan persetujuan manual.
 
 Jika node mencoba kembali pemasangan dengan detail autentikasi yang berubah (peran/cakupan/kunci publik),
@@ -202,31 +209,32 @@ Jalankan kembali `openclaw devices list` sebelum memberikan persetujuan.
 
 ### Status identitas dan pemasangan
 
-Node tanpa antarmuka memisahkan ID instans klien lamanya dari identitas perangkat
-bertanda tangan yang digunakan Gateway untuk pemasangan dan perutean. Berkas-berkas ini berada di
-direktori status OpenClaw (`~/.openclaw` secara default, atau `$OPENCLAW_STATE_DIR`
-jika ditetapkan):
+Node headless memisahkan ID instans kliennya dari identitas perangkat bertanda tangan
+yang digunakan Gateway untuk pemasangan dan perutean. Status ini berada di direktori
+status OpenClaw (`~/.openclaw` secara default, atau `$OPENCLAW_STATE_DIR`
+jika diatur):
 
-| Berkas                      | Tujuan                                                                                                                                                |
-| --------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `node.json`                 | ID instans klien di bawah kunci lama `nodeId`, nama tampilan, dan metadata koneksi Gateway. Klien mengirim nilai ini sebagai `instanceId`.             |
-| `identity/device.json`      | Pasangan kunci Ed25519 bertanda tangan dan ID perangkat turunannya. Untuk koneksi bertanda tangan, ID perangkat ini menjadi ID node yang dirutekan dan identitas pemasangan. |
-| `identity/device-auth.json` | Token perangkat yang dipasangkan, dengan kunci berdasarkan ID perangkat kriptografis dan peran.                                                       |
+| Status                                        | Tujuan                                                                                                                          |
+| -------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| `state/openclaw.sqlite` (`node_host_config`) | ID instans klien, nama tampilan, dan metadata koneksi Gateway. Klien mengirim ID ini sebagai `instanceId`.                     |
+| `identity/device.json`                       | Pasangan kunci Ed25519 bertanda tangan dan ID perangkat turunannya. Untuk koneksi bertanda tangan, ID perangkat ini adalah ID node yang dirutekan dan identitas pemasangan. |
+| `identity/device-auth.json`                  | Token perangkat yang dipasangkan, dengan kunci berupa ID perangkat kriptografis dan peran.                                                                 |
 
-`--node-id` hanya mengubah ID instans klien dalam `node.json`. Flag ini tidak
-mengubah ID perangkat kriptografis atau menghapus autentikasi pemasangan. Demikian pula, hanya menghapus
-`node.json` tidak mereset pemasangan. Untuk mencabut dan memasangkan ulang node:
+`--node-id` hanya mengubah ID instans klien dalam status SQLite bersama. Perintah ini
+tidak mengubah ID perangkat kriptografis atau menghapus autentikasi pemasangan. Memigrasikan
+`node.json` yang telah dihentikan dengan `openclaw doctor --fix` juga tidak mengatur ulang pemasangan. Untuk
+mencabut dan memasangkan ulang node:
 
 1. Pada Gateway, jalankan `openclaw nodes remove --node <id|name|ip>`.
-2. Pada node, mulai ulang layanan yang terpasang dengan `openclaw node restart`, atau
+2. Pada node, mulai ulang layanan yang terinstal dengan `openclaw node restart`, atau
    hentikan dan jalankan kembali perintah latar depan `openclaw node run`. Ini memulai
    alur pemasangan perangkat. Jika `openclaw devices list` tidak menampilkan permintaan
    dan node melaporkan `AUTH_DEVICE_TOKEN_MISMATCH`, mulai ulang atau jalankan kembali sekali
-   lagi. Percobaan yang ditolak menghapus token lokal yang kini telah dicabut; percobaan
+   lagi. Percobaan yang ditolak akan menghapus token lokal yang kini telah dicabut; percobaan
    berikutnya dapat meminta pemasangan.
 3. Pada Gateway, jalankan `openclaw devices list`, lalu
    `openclaw devices approve <deviceRequestId>`.
-4. Mulai ulang atau jalankan kembali node sekali lagi. Klien yang dijeda untuk pemasangan tidak dilanjutkan
+4. Mulai ulang atau jalankan kembali node sekali lagi. Klien yang dijeda untuk pemasangan tidak melanjutkan
    secara otomatis setelah persetujuan; koneksi ulang ini membuat permintaan
    cakupan perintah yang terpisah.
 5. Pada Gateway, jalankan `openclaw nodes pending`, lalu
@@ -234,26 +242,29 @@ mengubah ID perangkat kriptografis atau menghapus autentikasi pemasangan. Demiki
 
 Kedua ID permintaan tersebut berbeda. Kebijakan CIDR tepercaya yang berlaku dapat
 menyetujui secara otomatis langkah pemasangan perangkat pertama kali; persetujuan cakupan perintah tetap
-menjadi pemeriksaan terpisah.
+merupakan pemeriksaan terpisah.
 
-Rilis OpenClaw lama dapat meninggalkan kolom `token` lama dalam `node.json`.
-OpenClaw saat ini tidak menggunakan kolom tersebut dan menghapusnya saat host node
-menyimpan berkas itu lagi. Jaga kerahasiaan kedua berkas di bawah `identity/`; berkas tersebut berisi
-pasangan kunci perangkat dan token autentikasi.
+Rilis OpenClaw lama menyimpan status host node di `node.json` dan dapat meninggalkan
+bidang `token` yang usang di sana. Hentikan host node dan jalankan `openclaw doctor --fix`
+satu kali; Doctor mengimpor bidang identitas dan koneksi yang didukung ke SQLite,
+membuang bidang token yang tidak digunakan, memverifikasi baris, dan menghapus berkas yang telah dihentikan.
+Perintah node normal gagal secara tertutup dengan instruksi perbaikan ini selama berkas atau
+klaim Doctor yang terinterupsi masih ada. Jaga kedua berkas di bawah `identity/` tetap privat;
+berkas tersebut berisi pasangan kunci perangkat dan token autentikasi.
 
 ## Persetujuan exec
 
-`system.run` dibatasi oleh persetujuan exec lokal:
+`system.run` dikontrol oleh persetujuan exec lokal:
 
 - `$OPENCLAW_STATE_DIR/exec-approvals.json`, atau
-  `~/.openclaw/exec-approvals.json` jika variabel tidak ditetapkan
+  `~/.openclaw/exec-approvals.json` jika variabel tidak diatur
 - [Persetujuan exec](/id/tools/exec-approvals)
-- `openclaw approvals --node <id|name|ip>` (sunting dari Gateway)
+- `openclaw approvals --node <id|name|ip>` (edit dari Gateway)
 
 Untuk exec node asinkron yang disetujui, OpenClaw menyiapkan `systemRunPlan` kanonis
 sebelum meminta persetujuan. Penerusan `system.run` yang kemudian disetujui menggunakan kembali
-rencana tersimpan tersebut, sehingga perubahan pada kolom perintah/cwd/sesi setelah permintaan persetujuan
-dibuat akan ditolak alih-alih mengubah apa yang dijalankan node.
+rencana tersimpan tersebut, sehingga perubahan pada bidang perintah/cwd/sesi setelah permintaan
+persetujuan dibuat akan ditolak alih-alih mengubah apa yang dijalankan node.
 
 ## Terkait
 

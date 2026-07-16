@@ -1,36 +1,39 @@
 ---
 read_when:
-    - Bạn sử dụng `openclaw browser` và muốn có ví dụ cho các tác vụ phổ biến
-    - Bạn muốn điều khiển một trình duyệt đang chạy trên máy khác thông qua một máy chủ Node
+    - Bạn sử dụng `openclaw browser` và muốn xem các ví dụ về những tác vụ phổ biến
+    - Bạn muốn điều khiển một trình duyệt đang chạy trên máy khác thông qua máy chủ Node
     - Bạn muốn kết nối với Chrome cục bộ đã đăng nhập của mình qua Chrome MCP
-summary: Tham khảo CLI cho `openclaw browser` (vòng đời, hồ sơ, thẻ, hành động, trạng thái và gỡ lỗi)
+summary: Tài liệu tham khảo CLI cho `openclaw browser` (vòng đời, hồ sơ, tab, hành động, trạng thái và gỡ lỗi)
 title: Trình duyệt
 x-i18n:
-    generated_at: "2026-06-27T17:17:17Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T14:12:18Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: d9e45a6b89f23623c25b61d41273151b60da1fc415b5d3c901d8c555d8244f7a
+    source_hash: 50e9da3fa6899d830e38d8548313c70b5615c2ed3d70dd372a1fe147ff5db053
     source_path: cli/browser.md
     workflow: 16
 ---
 
 # `openclaw browser`
 
-Quản lý bề mặt điều khiển trình duyệt của OpenClaw và chạy các hành động trình duyệt (vòng đời, hồ sơ, thẻ, snapshot, ảnh chụp màn hình, điều hướng, nhập liệu, mô phỏng trạng thái và gỡ lỗi).
+Quản lý bề mặt điều khiển trình duyệt của OpenClaw và chạy các thao tác trình duyệt: vòng đời, hồ sơ, tab, ảnh chụp trạng thái, ảnh chụp màn hình, điều hướng, nhập liệu, mô phỏng trạng thái và gỡ lỗi.
 
-Liên quan:
+Liên quan: [Công cụ trình duyệt](/vi/tools/browser)
 
-- Công cụ trình duyệt + API: [Công cụ trình duyệt](/vi/tools/browser)
-
-## Cờ thường dùng
+## Các cờ thường dùng
 
 - `--url <gatewayWsUrl>`: URL WebSocket của Gateway (mặc định lấy từ cấu hình).
-- `--token <token>`: token Gateway (nếu cần).
-- `--timeout <ms>`: thời gian chờ yêu cầu (ms).
-- `--expect-final`: chờ phản hồi Gateway cuối cùng.
-- `--browser-profile <name>`: chọn hồ sơ trình duyệt (mặc định lấy từ cấu hình).
-- `--json`: đầu ra máy đọc được (ở nơi được hỗ trợ).
+- `--token <token>`: token Gateway (nếu bắt buộc).
+- `--timeout <ms>`: thời gian chờ yêu cầu tính bằng ms (mặc định: `30000`).
+- `--expect-final`: chờ phản hồi cuối cùng từ Gateway.
+- `--browser-profile <name>`: chọn hồ sơ trình duyệt (mặc định: `openclaw`, hoặc `browser.defaultProfile`).
+- `--json`: đầu ra có thể đọc bằng máy (ở nơi được hỗ trợ). Đây là tùy chọn cấp trình duyệt, vì vậy
+  hãy đặt tùy chọn này trước lệnh con để có dạng rõ ràng, chẳng hạn như
+  `openclaw browser --json status`. Cách đặt ở cuối như
+  `openclaw browser status --json` cũng hoạt động khi lệnh con đã chọn không
+  định nghĩa `--json` riêng.
 
 ## Bắt đầu nhanh (cục bộ)
 
@@ -41,13 +44,13 @@ openclaw browser --browser-profile openclaw open https://example.com
 openclaw browser --browser-profile openclaw snapshot
 ```
 
-Agent có thể chạy cùng kiểm tra sẵn sàng bằng `browser({ action: "doctor" })`.
+Agent có thể chạy cùng phép kiểm tra mức độ sẵn sàng bằng `browser({ action: "doctor" })`.
 
 ## Khắc phục sự cố nhanh
 
-Nếu `start` thất bại với `not reachable after start`, hãy khắc phục trạng thái sẵn sàng của CDP trước. Nếu `start` và `tabs` thành công nhưng `open` hoặc `navigate` thất bại, mặt phẳng điều khiển trình duyệt vẫn hoạt động bình thường và lỗi thường là do chính sách SSRF khi điều hướng.
+Nếu `start` thất bại với `not reachable after start`, trước tiên hãy khắc phục sự cố về mức độ sẵn sàng của CDP. Nếu `start` và `tabs` thành công nhưng `open` hoặc `navigate` thất bại, mặt phẳng điều khiển trình duyệt vẫn hoạt động bình thường và lỗi thường do chính sách SSRF chặn điều hướng.
 
-Chuỗi tối thiểu:
+Trình tự tối thiểu:
 
 ```bash
 openclaw browser --browser-profile openclaw doctor
@@ -70,31 +73,19 @@ openclaw browser stop
 openclaw browser --browser-profile openclaw reset-profile
 ```
 
-Ghi chú:
-
-- `doctor --deep` thêm một phép dò snapshot trực tiếp. Nó hữu ích khi trạng thái sẵn sàng CDP cơ bản
-  đã xanh nhưng bạn muốn bằng chứng rằng thẻ hiện tại có thể được kiểm tra.
-- Đối với hồ sơ `attachOnly` và CDP từ xa, `openclaw browser stop` đóng
-  phiên điều khiển đang hoạt động và xóa các ghi đè mô phỏng tạm thời ngay cả khi
-  OpenClaw không tự khởi chạy tiến trình trình duyệt.
-- Đối với hồ sơ cục bộ được quản lý, `openclaw browser stop` dừng tiến trình trình duyệt
-  đã được sinh ra.
-- `openclaw browser start --headless` chỉ áp dụng cho yêu cầu start đó và
-  chỉ khi OpenClaw khởi chạy trình duyệt cục bộ được quản lý. Nó không ghi lại
-  `browser.headless` hay cấu hình hồ sơ, và không có tác dụng với trình duyệt
-  đang chạy sẵn.
-- Trên máy chủ Linux không có `DISPLAY` hoặc `WAYLAND_DISPLAY`, hồ sơ cục bộ được quản lý
-  tự động chạy headless trừ khi `OPENCLAW_BROWSER_HEADLESS=0`,
-  `browser.headless=false`, hoặc `browser.profiles.<name>.headless=false`
-  yêu cầu rõ ràng một trình duyệt hiển thị.
+- `doctor --deep` bổ sung phép thăm dò ảnh chụp trạng thái trực tiếp: hữu ích khi mức độ sẵn sàng cơ bản của CDP đang ở trạng thái tốt nhưng bạn muốn có bằng chứng rằng tab hiện tại có thể được kiểm tra.
+- Đối với hồ sơ cục bộ được quản lý đang chạy, `status` và `doctor` báo cáo thông tin chẩn đoán
+  đồ họa được lưu đệm từ Chrome: phân loại phần cứng/phần mềm, trình kết xuất,
+  backend, thiết bị/trình điều khiển, chi tiết tính năng và trạng thái bị vô hiệu hóa, cùng các
+  khả năng video tăng tốc. `openclaw browser --json status` trả về toàn bộ tải trọng có cấu trúc.
+  Trạng thái thụ động không bao giờ khởi chạy Chrome chỉ để thu thập các thông tin này.
+- `stop` đóng phiên điều khiển đang hoạt động và xóa các tùy chỉnh mô phỏng tạm thời ngay cả đối với `attachOnly` và các hồ sơ CDP từ xa mà OpenClaw không tự khởi chạy tiến trình trình duyệt. Đối với hồ sơ cục bộ được quản lý, `stop` cũng dừng tiến trình trình duyệt đã được tạo.
+- `start --headless` chỉ áp dụng cho yêu cầu khởi động đó và chỉ khi OpenClaw khởi chạy một trình duyệt cục bộ được quản lý. Tùy chọn này không ghi lại `browser.headless` hoặc cấu hình hồ sơ và không có tác dụng đối với trình duyệt đang chạy.
+- Trên các máy chủ Linux không có `DISPLAY` hoặc `WAYLAND_DISPLAY`, hồ sơ cục bộ được quản lý tự động chạy ở chế độ không giao diện, trừ khi `OPENCLAW_BROWSER_HEADLESS=0`, `browser.headless=false` hoặc `browser.profiles.<name>.headless=false` yêu cầu rõ ràng một trình duyệt hiển thị.
 
 ## Nếu thiếu lệnh
 
-Nếu `openclaw browser` là lệnh không xác định, hãy kiểm tra `plugins.allow` trong
-`~/.openclaw/openclaw.json`.
-
-Khi có `plugins.allow`, hãy liệt kê rõ Plugin trình duyệt tích hợp
-trừ khi cấu hình đã có khối gốc `browser`:
+Nếu `openclaw browser` là lệnh không xác định, hãy kiểm tra `plugins.allow` trong `~/.openclaw/openclaw.json`. Khi có `plugins.allow`, hãy liệt kê rõ Plugin trình duyệt đi kèm, trừ khi cấu hình đã có khối `browser` ở cấp gốc:
 
 ```json5
 {
@@ -104,35 +95,39 @@ trừ khi cấu hình đã có khối gốc `browser`:
 }
 ```
 
-Một khối gốc `browser` rõ ràng, ví dụ `browser.enabled=true` hoặc
-`browser.profiles.<name>`, cũng kích hoạt Plugin trình duyệt tích hợp trong
-allowlist Plugin hạn chế.
+Khối `browser` rõ ràng ở cấp gốc (ví dụ `browser.enabled=true` hoặc `browser.profiles.<name>`) cũng kích hoạt Plugin trình duyệt đi kèm trong danh sách cho phép Plugin hạn chế.
 
 Liên quan: [Công cụ trình duyệt](/vi/tools/browser#missing-browser-command-or-tool)
 
 ## Hồ sơ
 
-Hồ sơ là các cấu hình định tuyến trình duyệt có tên. Trong thực tế:
+Hồ sơ là các cấu hình định tuyến trình duyệt có tên:
 
-- `openclaw`: khởi chạy hoặc gắn vào một phiên bản Chrome chuyên dụng do OpenClaw quản lý (thư mục dữ liệu người dùng cô lập).
-- `user`: điều khiển phiên Chrome hiện có đã đăng nhập của bạn thông qua Chrome DevTools MCP.
-- hồ sơ CDP tùy chỉnh: trỏ tới một endpoint CDP cục bộ hoặc từ xa.
+- `openclaw` (mặc định): khởi chạy hoặc kết nối với một phiên bản Chrome chuyên dụng do OpenClaw quản lý (thư mục dữ liệu người dùng biệt lập).
+- `user`: điều khiển phiên Chrome hiện có mà bạn đã đăng nhập thông qua Chrome DevTools MCP.
+- hồ sơ CDP tùy chỉnh: trỏ đến điểm cuối CDP cục bộ hoặc từ xa.
 
 ```bash
 openclaw browser profiles
+openclaw browser system-profiles
+openclaw browser system-profiles --browser brave
+openclaw browser import-profile --browser chrome --system Default --into imported
+openclaw browser import-profile --system "Profile 1" --into work --domains google.com,youtube.com
 openclaw browser create-profile --name work --color "#FF5A36"
 openclaw browser create-profile --name chrome-live --driver existing-session
 openclaw browser create-profile --name remote --cdp-url https://browser-host.example.com
 openclaw browser delete-profile --name work
 ```
 
-Dùng một hồ sơ cụ thể:
+Sử dụng một hồ sơ cụ thể với `--browser-profile <name>` trên bất kỳ lệnh con nào, ví dụ `openclaw browser --browser-profile work tabs`.
 
-```bash
-openclaw browser --browser-profile work tabs
-```
+Trên macOS, `system-profiles` liệt kê các hồ sơ Chrome, Brave, Edge hoặc Chromium thực có trên máy chủ. `import-profile` giải mã cookie của chúng sau một lời nhắc đồng ý từ macOS Keychain/Touch ID và đưa chúng vào một hồ sơ mới do OpenClaw quản lý. Tính năng này chỉ nhập cookie; bộ nhớ cục bộ và IndexedDB không thay đổi. Một số phiên Google sử dụng thông tin xác thực phiên ràng buộc với thiết bị (DBSC) và vẫn có thể yêu cầu xác thực lại sau khi nhập.
 
-## Thẻ
+Khi ứng dụng macOS sử dụng Gateway cục bộ, ứng dụng có thể đề xuất thao tác nhập này một lần và đặt hồ sơ nhập biệt lập làm mặc định cho hoạt động duyệt web của agent. Việc nhập luôn yêu cầu một lần nhấp rõ ràng; nhập thành công hoặc đóng lời nhắc sẽ ngăn các lời nhắc tự động sau đó, và **Settings → General → Browser login** vẫn khả dụng để nhập lại.
+
+Tính năng nhập hồ sơ hệ thống được bật theo mặc định. Đặt `browser.allowSystemProfileImport=false` để tắt cả thao tác nhập do CLI và agent kích hoạt. Việc nhập chỉ diễn ra cục bộ trên máy chủ và không thể chạy qua proxy Node trình duyệt.
+
+## Tab
 
 ```bash
 openclaw browser tabs
@@ -145,22 +140,13 @@ openclaw browser focus docs
 openclaw browser close t1
 ```
 
-`tabs` trả về `suggestedTargetId` trước, sau đó là `tabId` ổn định như `t1`,
-nhãn tùy chọn, và `targetId` thô. Agent nên truyền
-`suggestedTargetId` trở lại vào `focus`, `close`, snapshot và hành động. Bạn có thể
-gán nhãn bằng `open --label`, `tab new --label`, hoặc `tab label`; nhãn,
-id thẻ, id target thô, và tiền tố target-id duy nhất đều được chấp nhận.
-Trường yêu cầu vẫn có tên `targetId` để tương thích, nhưng nó chấp nhận
-các tham chiếu thẻ này. Hãy xem id target thô là tay cầm chẩn đoán, không phải
-bộ nhớ agent bền vững.
-Khi Chromium thay thế target thô bên dưới trong lúc điều hướng hoặc gửi biểu mẫu,
-OpenClaw giữ `tabId`/nhãn ổn định gắn với thẻ thay thế
-khi có thể chứng minh khớp. Id target thô vẫn dễ thay đổi; ưu tiên
-`suggestedTargetId`.
+`tabs` trả về `suggestedTargetId` trước, sau đó là `tabId` ổn định (chẳng hạn `t1`), nhãn tùy chọn và `targetId` thô. Truyền lại `suggestedTargetId` vào `focus`, `close`, ảnh chụp trạng thái và các thao tác. Gán nhãn bằng `open --label`, `tab new --label` hoặc `tab label`; nhãn, ID tab, ID đích thô và tiền tố ID đích duy nhất đều được chấp nhận. Trường yêu cầu vẫn có tên `targetId` để tương thích, nhưng chấp nhận bất kỳ tham chiếu tab nào trong số này.
 
-## Snapshot / ảnh chụp màn hình / hành động
+ID đích thô là các định danh chẩn đoán không ổn định, không phải bộ nhớ lâu dài của agent: khi Chromium thay thế đích thô bên dưới trong quá trình điều hướng hoặc gửi biểu mẫu, OpenClaw giữ `tabId`/nhãn ổn định gắn với tab thay thế khi có thể chứng minh sự khớp. Nên dùng `suggestedTargetId`.
 
-Snapshot:
+## Ảnh chụp trạng thái / ảnh chụp màn hình / thao tác
+
+Ảnh chụp trạng thái:
 
 ```bash
 openclaw browser snapshot
@@ -176,32 +162,13 @@ openclaw browser screenshot --ref e12
 openclaw browser screenshot --labels
 ```
 
-Ghi chú:
+- `--full-page` chỉ dành cho ảnh chụp trang; không thể kết hợp với `--ref` hoặc `--element`.
+- Các hồ sơ `existing-session` / `user` hỗ trợ ảnh chụp màn hình trang và ảnh chụp màn hình `--ref` từ đầu ra ảnh chụp trạng thái, nhưng không hỗ trợ ảnh chụp màn hình `--element` CSS.
+- `--labels` phủ các tham chiếu ảnh chụp trạng thái hiện tại lên ảnh chụp màn hình. Trên các hồ sơ dựa trên Playwright, tùy chọn này hoạt động với `--full-page` (lớp phủ toàn trang), `--ref` (lớp phủ vùng cắt phần tử theo tham chiếu ARIA) và `--element` (lớp phủ vùng cắt phần tử theo bộ chọn CSS); trong các chế độ cắt phần tử, nhãn được chiếu tương đối so với phần tử. Phản hồi cũng bao gồm một mảng `annotations` (bị lược bỏ khi trống) chứa hộp giới hạn của từng tham chiếu: `ref`, `number`, `role`, `name` tùy chọn và `box: {x, y, width, height}` trong không gian tọa độ của ảnh đã chụp (khung nhìn / toàn trang / tương đối theo phần tử).
+  Các hồ sơ `existing-session` kết xuất lớp phủ chrome-mcp trên ảnh chụp màn hình trang nhưng không sử dụng trình trợ giúp chiếu Playwright và không bao gồm `annotations`; ảnh chụp màn hình `--element` CSS không được hỗ trợ tại đó. Nếu không có Playwright hoặc chrome-mcp, ảnh chụp màn hình có nhãn sẽ không khả dụng.
+- `snapshot --urls` nối thêm các đích liên kết đã phát hiện vào ảnh chụp trạng thái AI để agent có thể chọn đích điều hướng trực tiếp thay vì chỉ đoán từ văn bản liên kết.
 
-- `--full-page` chỉ dành cho chụp trang; không thể kết hợp với `--ref`
-  hoặc `--element`.
-- Hồ sơ `existing-session` / `user` hỗ trợ ảnh chụp màn hình trang và ảnh chụp `--ref`
-  từ đầu ra snapshot, nhưng không hỗ trợ ảnh chụp CSS `--element`.
-- `--labels` phủ các ref snapshot hiện tại lên ảnh chụp màn hình. Trên
-  hồ sơ dùng Playwright làm nền, nó hoạt động với `--full-page` (lớp phủ nhãn toàn trang),
-  `--ref` (lớp phủ nhãn cắt theo phần tử bằng ref ARIA), và `--element`
-  (lớp phủ nhãn cắt theo phần tử bằng bộ chọn CSS); trong các chế độ cắt theo phần tử, nhãn
-  được chiếu tương đối với phần tử. Phản hồi cũng bao gồm một mảng
-  `annotations` với hộp bao của từng ref. Mỗi mục có `ref`,
-  `number`, `role`, `name` tùy chọn, và `box: {x, y, width, height}`;
-  tọa độ nằm trong không gian của ảnh đã chụp (viewport / fullpage /
-  tương đối với phần tử). Trường này bị bỏ qua khi rỗng.
-  Hồ sơ `existing-session` hiển thị lớp phủ chrome-mcp trên ảnh chụp màn hình trang
-  nhưng không dùng helper chiếu của Playwright và không bao gồm
-  `annotations`; ảnh chụp CSS `--element` không được hỗ trợ ở đó. Không có
-  Playwright hoặc chrome-mcp thì không có ảnh chụp màn hình có nhãn. Các bản phát hành trước
-  đã bỏ qua `--full-page`, `--ref`, và `--element` trên ảnh chụp màn hình Playwright có nhãn
-  và luôn trả về ảnh chụp viewport; ảnh chụp màn hình có nhãn hiện tôn trọng các phạm vi đó.
-- `snapshot --urls` thêm các đích liên kết đã phát hiện vào snapshot AI để
-  agent có thể chọn đích điều hướng trực tiếp thay vì chỉ đoán từ
-  văn bản liên kết.
-
-Điều hướng/nhấp/gõ (tự động hóa UI dựa trên ref):
+Điều hướng/nhấp/nhập (tự động hóa giao diện dựa trên tham chiếu):
 
 ```bash
 openclaw browser navigate https://example.com
@@ -220,16 +187,11 @@ openclaw browser evaluate --fn 'const title = document.title; return title;'
 openclaw browser evaluate --timeout-ms 30000 --fn 'async () => { await window.ready; return true; }'
 ```
 
-`evaluate --fn` chấp nhận nguồn hàm, biểu thức, hoặc thân câu lệnh.
-Thân câu lệnh được bọc thành hàm async, vì vậy hãy dùng `return` cho giá trị
-bạn muốn nhận lại. Dùng `evaluate --timeout-ms <ms>` khi hàm phía trang có thể
-cần lâu hơn thời gian chờ evaluate mặc định.
+`evaluate --fn` chấp nhận mã nguồn hàm, biểu thức hoặc thân câu lệnh. Thân câu lệnh được bọc dưới dạng hàm bất đồng bộ, vì vậy hãy dùng `return` cho giá trị bạn muốn nhận lại. Dùng `--timeout-ms` khi hàm phía trang có thể cần nhiều thời gian hơn thời gian chờ đánh giá mặc định. `browser.evaluateEnabled=false` (mặc định: `true`) vô hiệu hóa cả `evaluate` và `wait --fn`.
 
-Phản hồi hành động trả về `targetId` thô hiện tại sau khi trang bị thay thế
-do hành động kích hoạt, khi OpenClaw có thể chứng minh thẻ thay thế. Script vẫn nên
-lưu và truyền `suggestedTargetId`/nhãn cho các quy trình chạy dài.
+Phản hồi thao tác trả về `targetId` thô hiện tại sau khi trang bị thay thế do thao tác kích hoạt, khi OpenClaw có thể chứng minh tab thay thế. Tập lệnh vẫn nên lưu trữ và truyền `suggestedTargetId`/nhãn cho các quy trình dài hạn.
 
-Helper tệp + hộp thoại:
+Trình trợ giúp tệp + hộp thoại:
 
 ```bash
 openclaw browser upload /tmp/openclaw/uploads/file.pdf --ref <ref>
@@ -240,22 +202,13 @@ openclaw browser dialog --accept
 openclaw browser dialog --dismiss --dialog-id d1
 ```
 
-Hồ sơ Chrome được quản lý lưu các bản tải xuống do nhấp thông thường kích hoạt vào thư mục
-downloads của OpenClaw (`/tmp/openclaw/downloads` theo mặc định, hoặc temp root đã cấu hình).
-Dùng `waitfordownload` hoặc `download` khi agent cần chờ một
-tệp cụ thể và trả về đường dẫn của tệp đó; các bộ chờ rõ ràng đó sở hữu lần tải xuống kế tiếp.
-Tải lên chấp nhận tệp từ temp uploads root của OpenClaw và media inbound
-do OpenClaw quản lý, bao gồm tham chiếu `media://inbound/<id>` và tham chiếu
-`media/inbound/<id>` tương đối với sandbox. Ref media lồng nhau, traversal, và đường dẫn
-cục bộ tùy ý vẫn bị từ chối.
-Khi một hành động mở hộp thoại modal, phản hồi hành động trả về
-`blockedByDialog` cùng với `browserState.dialogs.pending`; truyền `--dialog-id` để
-trả lời trực tiếp. Hộp thoại được xử lý bên ngoài OpenClaw xuất hiện dưới
-`browserState.dialogs.recent`.
+Các hồ sơ Chrome được quản lý lưu những tệp tải xuống thông thường do thao tác nhấp kích hoạt vào thư mục tải xuống của OpenClaw (mặc định là `/tmp/openclaw/downloads`, hoặc thư mục gốc tạm thời đã cấu hình). Dùng `waitfordownload` hoặc `download` khi agent cần chờ một tệp cụ thể và trả về đường dẫn của tệp đó; các trình chờ rõ ràng này sở hữu lượt tải xuống tiếp theo. Thao tác tải lên chấp nhận tệp từ thư mục gốc tải lên tạm thời của OpenClaw và phương tiện đầu vào do OpenClaw quản lý, bao gồm các tham chiếu `media://inbound/<id>` và `media/inbound/<id>` tương đối với sandbox. Các tham chiếu phương tiện lồng nhau, thao tác duyệt xuyên thư mục và đường dẫn cục bộ tùy ý đều bị từ chối.
 
-## Trạng thái và lưu trữ
+Khi một thao tác mở hộp thoại phương thức, phản hồi thao tác trả về `blockedByDialog` cùng với `browserState.dialogs.pending`; truyền `--dialog-id` để trả lời trực tiếp. Các hộp thoại được xử lý bên ngoài OpenClaw xuất hiện dưới `browserState.dialogs.recent`.
 
-Viewport + mô phỏng:
+## Trạng thái và bộ nhớ
+
+Khung nhìn + mô phỏng:
 
 ```bash
 openclaw browser resize 1280 720
@@ -270,7 +223,7 @@ openclaw browser set headers '{"x-test":"1"}'
 openclaw browser set credentials myuser mypass
 ```
 
-Cookie + lưu trữ:
+Cookie + bộ nhớ:
 
 ```bash
 openclaw browser cookies
@@ -296,7 +249,7 @@ openclaw browser trace stop --out trace.zip
 
 ## Chrome hiện có qua MCP
 
-Dùng hồ sơ `user` tích hợp, hoặc tạo hồ sơ `existing-session` của riêng bạn:
+Sử dụng hồ sơ `user` tích hợp sẵn hoặc tạo hồ sơ `existing-session` của riêng bạn:
 
 ```bash
 openclaw browser --browser-profile user tabs
@@ -306,35 +259,28 @@ openclaw browser create-profile --name chrome-port --driver existing-session --c
 openclaw browser --browser-profile chrome-live tabs
 ```
 
-Đường dẫn existing-session mặc định là tự động kết nối Chrome MCP chỉ trên máy chủ. Nếu trình duyệt đã
-chạy với endpoint DevTools, hãy truyền `--cdp-url` để Chrome MCP gắn vào endpoint đó thay thế.
-Đối với Docker, Browserless, hoặc các thiết lập từ xa khác nơi không cần ngữ nghĩa Chrome MCP, hãy dùng
-hồ sơ CDP.
+Đường dẫn phiên hiện có mặc định là chế độ tự động kết nối Chrome MCP chỉ trên máy chủ. Nếu trình duyệt đã chạy với một điểm cuối DevTools, hãy truyền `--cdp-url` để Chrome MCP kết nối với điểm cuối đó. Đối với Docker, Browserless hoặc các thiết lập từ xa khác không cần ngữ nghĩa Chrome MCP, hãy sử dụng hồ sơ CDP thay thế.
 
-Giới hạn existing-session hiện tại:
+Các giới hạn hiện tại của phiên hiện có:
 
-- các hành động dựa trên ảnh chụp trạng thái sử dụng ref, không dùng bộ chọn CSS
-- `browser.actionTimeoutMs` mặc định đặt các yêu cầu `act` được hỗ trợ thành 60000 ms khi
-  bên gọi bỏ qua `timeoutMs`; `timeoutMs` theo từng lệnh gọi vẫn được ưu tiên.
-- `click` chỉ là nhấp chuột trái
-- `type` không hỗ trợ `slowly=true`
-- `press` không hỗ trợ `delayMs`
-- `hover`, `scrollintoview`, `drag`, `select`, `fill`, và `evaluate` từ chối
-  ghi đè thời gian chờ theo từng lệnh gọi
-- `select` chỉ hỗ trợ một giá trị
-- `wait --load networkidle` không được hỗ trợ trên các hồ sơ phiên hiện có (hoạt động trên CDP được quản lý và thô/từ xa)
-- tải tệp lên yêu cầu `--ref` / `--input-ref`, không hỗ trợ CSS
-  `--element`, và hiện chỉ hỗ trợ một tệp mỗi lần
-- hook hộp thoại không hỗ trợ `--timeout`
-- ảnh chụp màn hình hỗ trợ chụp trang và `--ref`, nhưng không hỗ trợ CSS `--element`
-- `responsebody`, chặn tải xuống, xuất PDF, và hành động hàng loạt vẫn
-  yêu cầu một hồ sơ trình duyệt được quản lý hoặc CDP thô
+- Các thao tác dựa trên ảnh chụp nhanh sử dụng tham chiếu, không sử dụng bộ chọn CSS.
+- `browser.actionTimeoutMs` đặt mặc định các yêu cầu `act` được hỗ trợ thành 60000 ms khi bên gọi bỏ qua `timeoutMs`; `timeoutMs` theo từng lần gọi vẫn được ưu tiên.
+- `click` chỉ hỗ trợ nhấp chuột trái.
+- `type` không hỗ trợ `slowly=true`.
+- `press` không hỗ trợ `delayMs`.
+- `hover`, `scrollintoview`, `drag`, `select` và `fill` từ chối ghi đè thời gian chờ theo từng lần gọi; `evaluate` chấp nhận `--timeout-ms`.
+- `select` chỉ hỗ trợ một giá trị.
+- `wait --load networkidle` không được hỗ trợ (hoạt động trên các hồ sơ CDP được quản lý và CDP thô/từ xa).
+- Việc tải tệp lên yêu cầu `--ref` / `--input-ref`, không hỗ trợ `--element` CSS và chỉ hỗ trợ mỗi lần một tệp.
+- Các hook hộp thoại không hỗ trợ `--timeout`.
+- Ảnh chụp màn hình hỗ trợ chụp trang và `--ref`, nhưng không hỗ trợ `--element` CSS.
+- `responsebody`, chặn tải xuống, xuất PDF và các thao tác hàng loạt vẫn yêu cầu trình duyệt được quản lý hoặc hồ sơ CDP thô.
 
 ## Điều khiển trình duyệt từ xa (proxy máy chủ node)
 
-Nếu Gateway chạy trên một máy khác với trình duyệt, hãy chạy một **máy chủ node** trên máy có Chrome/Brave/Edge/Chromium. Gateway sẽ proxy các hành động trình duyệt đến node đó (không cần máy chủ điều khiển trình duyệt riêng).
+Nếu Gateway chạy trên một máy khác với trình duyệt, hãy chạy một **máy chủ node** trên máy có Chrome/Brave/Edge/Chromium. Gateway chuyển tiếp các thao tác trình duyệt đến node đó; không cần máy chủ điều khiển trình duyệt riêng biệt.
 
-Dùng `gateway.nodes.browser.mode` để kiểm soát tự động định tuyến và `gateway.nodes.browser.node` để ghim một node cụ thể nếu có nhiều node được kết nối.
+Sử dụng `gateway.nodes.browser.mode` để kiểm soát định tuyến tự động và `gateway.nodes.browser.node` để ghim một node cụ thể nếu có nhiều node được kết nối.
 
 Bảo mật + thiết lập từ xa: [Công cụ trình duyệt](/vi/tools/browser), [Truy cập từ xa](/vi/gateway/remote), [Tailscale](/vi/gateway/tailscale), [Bảo mật](/vi/gateway/security)
 

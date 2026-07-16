@@ -1,21 +1,22 @@
 ---
 read_when:
-    - U installeert, configureert of controleert de cloudflare-ai-gateway-plugin
-summary: Voegt ondersteuning voor de Cloudflare AI Gateway-modelprovider toe aan OpenClaw.
+    - Je installeert, configureert of controleert de cloudflare-ai-gateway-plugin
+summary: Voegt ondersteuning voor Cloudflare AI Gateway als modelprovider toe aan OpenClaw.
 title: Cloudflare AI Gateway-plugin
 x-i18n:
-    generated_at: "2026-07-12T09:06:13Z"
+    generated_at: "2026-07-16T16:04:51Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 3b0fc9623f61ca9541402a381521442c30207743fa774923b3340f8af298bfd3
+    source_hash: 1c967516483fd20c61ae2b66f473dc819335b66850f9310cc41fe0a482dbd8ce
     source_path: plugins/reference/cloudflare-ai-gateway.md
     workflow: 16
 ---
 
 # Cloudflare AI Gateway-Plugin
 
-Voegt ondersteuning voor Cloudflare AI Gateway als modelprovider toe aan OpenClaw.
+Voegt ondersteuning voor de Cloudflare AI Gateway-modelprovider toe aan OpenClaw.
 
 ## Distributie
 
@@ -24,7 +25,7 @@ Voegt ondersteuning voor Cloudflare AI Gateway als modelprovider toe aan OpenCla
 
 ## Oppervlak
 
-providers: cloudflare-ai-gateway
+providers: `cloudflare-ai-gateway`
 
 ## Gerelateerde documentatie
 

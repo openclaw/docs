@@ -1,30 +1,31 @@
 ---
 read_when:
-    - U installeert, configureert of controleert de memory-wiki-plugin
-summary: Permanente wikicompiler en Obsidian-vriendelijke kennisopslag voor OpenClaw.
-title: Memory-Wiki-plugin
+    - Je installeert, configureert of controleert de memory-wiki-plugin
+summary: Persistente wikicompiler en Obsidian-vriendelijke kennisbank voor OpenClaw.
+title: Memory Wiki-Plugin
 x-i18n:
-    generated_at: "2026-07-12T09:14:01Z"
+    generated_at: "2026-07-16T16:19:25Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 461c9e3e52db968fc98b058c70070585f272ad27024392a6af0ce3d2f0237635
+    source_hash: b36b0638011658857d9cccccb0d5db678f8d13b347afcb0fc2c8bbc3c5eeff04
     source_path: plugins/reference/memory-wiki.md
     workflow: 16
 ---
 
 # Memory Wiki-plugin
 
-Persistente wiki-compiler en Obsidian-vriendelijke kennisopslag voor OpenClaw.
+Permanente wikicompiler en Obsidian-vriendelijke kennisopslag voor OpenClaw.
 
 ## Distributie
 
 - Pakket: `@openclaw/memory-wiki`
-- Installatieroute: inbegrepen in OpenClaw
+- Installatieroute: opgenomen in OpenClaw
 
 ## Oppervlak
 
-contracten: hulpmiddelen; Skills
+contracten: `tools`; Skills
 
 ## Gerelateerde documentatie
 

@@ -4,18 +4,19 @@ read_when:
 summary: ابزارهای قابل فراخوانی توسط عامل را اضافه می‌کند. پشتیبانی از ارائه‌دهندهٔ واکشی وب را اضافه می‌کند. پشتیبانی از ارائه‌دهندهٔ جست‌وجوی وب را اضافه می‌کند.
 title: Plugin فایرکراول
 x-i18n:
-    generated_at: "2026-07-12T10:36:12Z"
+    generated_at: "2026-07-16T17:27:19Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: ca5577e6e850d947a3714e3dc62c7756faae8471e150d3cdb320a85efe3fe4f5
+    source_hash: 058bd8b3fabe5646f198789c0454a61d459efcdc9f9bb47f9b07d3eaf7396097
     source_path: plugins/reference/firecrawl.md
     workflow: 16
 ---
 
-# Plugin ‏Firecrawl
+# Plugin Firecrawl
 
-ابزارهای قابل فراخوانی توسط عامل را اضافه می‌کند. پشتیبانی از ارائه‌دهندهٔ واکشی وب را اضافه می‌کند. پشتیبانی از ارائه‌دهندهٔ جست‌وجوی وب را اضافه می‌کند.
+ابزارهای قابل‌فراخوانی توسط عامل را اضافه می‌کند. پشتیبانی از ارائه‌دهنده واکشی وب را اضافه می‌کند. پشتیبانی از ارائه‌دهنده جست‌وجوی وب را اضافه می‌کند.
 
 ## توزیع
 
@@ -24,7 +25,7 @@ x-i18n:
 
 ## سطح
 
-قراردادها: ابزارها، ارائه‌دهندگان واکشی وب، ارائه‌دهندگان جست‌وجوی وب
+قراردادها: `tools`، `webFetchProviders`، `webSearchProviders`
 
 ## مستندات مرتبط
 

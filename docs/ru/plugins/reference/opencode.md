@@ -4,12 +4,12 @@ read_when:
 summary: Добавляет в OpenClaw поддержку провайдера моделей OpenCode.
 title: Плагин OpenCode
 x-i18n:
-    generated_at: "2026-07-13T20:07:25Z"
+    generated_at: "2026-07-16T17:16:09Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
-    prompt_version: 24
+    prompt_version: 32
     provider: openai
-    source_hash: 8c1c1264da52e8f362e83b2733390ccc3b2fc1dd62f14f8e5211bbb8fa47e95f
+    source_hash: aecf396cfc645e4a036b8130ed7f33db9081dffda120c6d06ebe863dd3be3730
     source_path: plugins/reference/opencode.md
     workflow: 16
 ---
@@ -21,12 +21,28 @@ x-i18n:
 ## Распространение
 
 - Пакет: `@openclaw/opencode-provider`
-- Способ установки: включён в OpenClaw
+- Способ установки: входит в состав OpenClaw
 
 ## Интерфейс
 
-провайдеры: opencode; контракты: mediaUnderstandingProviders
+провайдеры: `opencode`; контракты: `mediaUnderstandingProviders`
+
+<!-- openclaw-plugin-reference:manual-start -->
+
+## Нативные сеансы
+
+OpenClaw автоматически обнаруживает CLI `opencode` на Gateway и сопряжённых узлах. Сохранённые
+сеансы затем отображаются в группе **OpenCode** на боковой панели сеансов; доступен просмотр
+транскриптов только для чтения с помощью официальных команд `opencode --pure db ... --format json`
+и `opencode --pure export`. Ограниченная среда и режим `--pure`
+не позволяют при просмотре каталога загружать плагины проекта или наследовать посторонние
+учётные данные Gateway.
+
+Отключите **OpenCode Session Catalog** в разделе **Config > Plugins > OpenCode**,
+чтобы запретить обнаружение. По умолчанию оно включено.
+
+<!-- openclaw-plugin-reference:manual-end -->
 
 ## Связанная документация
 
-- [opencode](/ru/providers/opencode)
+- [OpenCode](/ru/providers/opencode)

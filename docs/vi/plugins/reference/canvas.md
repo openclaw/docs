@@ -1,27 +1,28 @@
 ---
 read_when:
     - Bạn đang cài đặt, cấu hình hoặc kiểm tra Plugin canvas
-summary: Các giao diện thử nghiệm để điều khiển Canvas và kết xuất A2UI cho các Node đã ghép nối.
-title: Plugin canvas
+summary: Các bề mặt điều khiển Canvas và kết xuất A2UI thử nghiệm dành cho các Node đã ghép nối.
+title: Plugin Canvas
 x-i18n:
-    generated_at: "2026-07-12T08:09:20Z"
+    generated_at: "2026-07-16T15:36:28Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 623f241907be5c88e7b20139f8a03e9c54e29df4bc7d3411fa90a029bfcb285f
+    source_hash: b7a59cf21ed88e49677bf47a679b9653e08468a7dc11b209fa1469f6031da737
     source_path: plugins/reference/canvas.md
     workflow: 16
 ---
 
 # Plugin Canvas
 
-Các bề mặt thử nghiệm để điều khiển Canvas và kết xuất A2UI cho các Node đã ghép nối.
+Các bề mặt thử nghiệm để điều khiển Canvas và kết xuất A2UI cho các Node đã ghép đôi.
 
 ## Phân phối
 
 - Gói: `@openclaw/canvas-plugin`
-- Phương thức cài đặt: được tích hợp trong OpenClaw
+- Đường dẫn cài đặt: được tích hợp trong OpenClaw
 
 ## Bề mặt
 
-hợp đồng: công cụ; Skills
+hợp đồng: `tools`; Skills

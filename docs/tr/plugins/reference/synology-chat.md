@@ -1,21 +1,22 @@
 ---
 read_when:
-    - synology-chat Plugin'ini kuruyor, yapılandırıyor veya denetliyorsunuz
-summary: OpenClaw kanalları ve doğrudan mesajlar için Synology Chat kanal Plugin'i.
-title: Synology Chat Plugin'i
+    - synology-chat pluginini kuruyor, yapılandırıyor veya denetliyorsunuz
+summary: OpenClaw kanalları ve doğrudan mesajları için Synology Chat kanal plugini.
+title: Synology Chat plugin'i
 x-i18n:
-    generated_at: "2026-07-12T12:35:01Z"
+    generated_at: "2026-07-16T17:46:47Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 13caa3939ae9abbf11f95a0578e9fcf79f280c54953bcde76a28383afa43c404
+    source_hash: 2c8da9bfb2905928dd4f7920aa9030301965788c1741424cf60c77a4891fc626
     source_path: plugins/reference/synology-chat.md
     workflow: 16
 ---
 
-# Synology Chat Plugin'i
+# Synology Chat plugin'i
 
-OpenClaw kanalları ve doğrudan mesajlar için Synology Chat kanal Plugin'i.
+OpenClaw kanalları ve doğrudan mesajlar için Synology Chat kanal plugin'i.
 
 ## Dağıtım
 
@@ -24,7 +25,7 @@ OpenClaw kanalları ve doğrudan mesajlar için Synology Chat kanal Plugin'i.
 
 ## Yüzey
 
-kanallar: synology-chat
+kanallar: `synology-chat`
 
 ## İlgili belgeler
 

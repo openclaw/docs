@@ -1,19 +1,20 @@
 ---
 read_when:
-    - tencent Plugin'ini kuruyor, yapılandırıyor veya denetliyorsunuz
+    - tencent pluginini kuruyor, yapılandırıyor veya denetliyorsunuz
 summary: OpenClaw'a Tencent TokenHub ve Tencent Tokenplan model sağlayıcısı desteği ekler.
-title: Tencent Plugin'i
+title: Tencent plugin'i
 x-i18n:
-    generated_at: "2026-07-12T12:03:37Z"
+    generated_at: "2026-07-16T17:27:11Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 7f7925d89feaded27708e3f31d08ed4e29650cb8ce1152011fd920ed4fb864ef
+    source_hash: c053ff4f5e142ac9414c03388352474da68e86715ff4f7f00781c3dfced185c4
     source_path: plugins/reference/tencent.md
     workflow: 16
 ---
 
-# Tencent Plugin'i
+# Tencent plugin'i
 
 OpenClaw'a Tencent TokenHub ve Tencent Tokenplan model sağlayıcısı desteği ekler.
 
@@ -22,9 +23,9 @@ OpenClaw'a Tencent TokenHub ve Tencent Tokenplan model sağlayıcısı desteği 
 - Paket: `@openclaw/tencent-provider`
 - Kurulum yolu: npm; ClawHub: `clawhub:@openclaw/tencent-provider`
 
-## Kapsam
+## Yüzey
 
-sağlayıcılar: tencent-tokenhub, tencent-tokenplan
+sağlayıcılar: `tencent-tokenhub`, `tencent-tokenplan`
 
 ## İlgili belgeler
 

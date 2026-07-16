@@ -1,31 +1,32 @@
 ---
 read_when:
-    - Anda sedang memasang, mengonfigurasi, atau mengaudit plugin tokenjuice
-summary: Memadatkan hasil alat exec dan bash dengan pereduksi tokenjuice.
+    - Anda sedang menginstal, mengonfigurasi, atau mengaudit plugin Tokenjuice
+summary: Memadatkan hasil alat exec dan bash dengan pereduksi Tokenjuice.
 title: Plugin Tokenjuice
 x-i18n:
-    generated_at: "2026-07-12T14:28:22Z"
+    generated_at: "2026-07-16T18:33:59Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: a51416caa94a17799e3a55c1d3b88bf2c026fd003317b86d7926cf11b9b81fab
+    source_hash: 214b04944642ed16afc43a5271e1ad8beeae7445f1a5b6e7ee123e496ec43b2a
     source_path: plugins/reference/tokenjuice.md
     workflow: 16
 ---
 
-# Plugin tokenjuice
+# Plugin Tokenjuice
 
-Memadatkan hasil alat exec dan bash dengan reducer tokenjuice.
+Memadatkan hasil alat exec dan bash dengan pereduksi tokenjuice.
 
 ## Distribusi
 
 - Paket: `@openclaw/tokenjuice`
-- Jalur instalasi: npm; ClawHub: `clawhub:@openclaw/tokenjuice`
+- Rute instalasi: npm; ClawHub: `clawhub:@openclaw/tokenjuice`
 
-## Antarmuka
+## Permukaan
 
-kontrak: agentToolResultMiddleware
+kontrak: `agentToolResultMiddleware`
 
 ## Dokumentasi terkait
 
-- [tokenjuice](/id/tools/tokenjuice)
+- [Tokenjuice](/id/tools/tokenjuice)

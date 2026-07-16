@@ -4,11 +4,12 @@ read_when:
 summary: Menambahkan dukungan penyedia model GitHub Copilot ke OpenClaw.
 title: Plugin GitHub Copilot
 x-i18n:
-    generated_at: "2026-07-12T14:26:49Z"
+    generated_at: "2026-07-16T18:27:10Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 01b8a15fe2da9848cef18e0e24b1fdb1493e8f17046a7f82f1331f29c80f0660
+    source_hash: 3ed5a9098ac15afb0ecb77a0c723e178819a4f83e7da9728342d985e0f51f4c8
     source_path: plugins/reference/github-copilot.md
     workflow: 16
 ---
@@ -24,7 +25,7 @@ Menambahkan dukungan penyedia model GitHub Copilot ke OpenClaw.
 
 ## Permukaan
 
-penyedia: github-copilot; kontrak: memoryEmbeddingProviders, usageProviders
+penyedia: `github-copilot`; kontrak: `memoryEmbeddingProviders`, `usageProviders`
 
 ## Dokumentasi terkait
 

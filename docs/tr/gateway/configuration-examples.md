@@ -1,21 +1,22 @@
 ---
 read_when:
     - OpenClaw'u nasıl yapılandıracağınızı öğrenme
-    - Yapılandırma örneklerini arama
-    - OpenClaw'u ilk kez ayarlama
-summary: Yaygın OpenClaw kurulumları için şemaya uygun yapılandırma örnekleri
+    - Yapılandırma örnekleri aranıyor
+    - OpenClaw'ı ilk kez kurma
+summary: Yaygın OpenClaw kurulumları için şemayla tam uyumlu yapılandırma örnekleri
 title: Yapılandırma örnekleri
 x-i18n:
-    generated_at: "2026-07-12T11:42:49Z"
+    generated_at: "2026-07-16T17:24:41Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: c3ad82ccce62e0c8dbb72f81b0de62d60d8a6282f0a327ed1cbda7ffa3e47969
+    source_hash: 67a669f3da2392aa8d2953fa124c43447afe3da971d5f5e497d6c2ec3bf88c6a
     source_path: gateway/configuration-examples.md
     workflow: 16
 ---
 
-Aşağıdaki örnekler mevcut yapılandırma şemasıyla uyumludur. Kapsamlı başvuru kaynağı ve alan bazındaki notlar için [Yapılandırma](/tr/gateway/configuration) sayfasına bakın.
+Aşağıdaki örnekler mevcut yapılandırma şemasıyla uyumludur. Kapsamlı başvuru ve alan bazındaki notlar için [Yapılandırma](/tr/gateway/configuration) bölümüne bakın.
 
 ## Hızlı başlangıç
 
@@ -28,7 +29,7 @@ Aşağıdaki örnekler mevcut yapılandırma şemasıyla uyumludur. Kapsamlı ba
 }
 ```
 
-`~/.openclaw/openclaw.json` konumuna kaydettikten sonra bu numaradan bota doğrudan mesaj gönderebilirsiniz.
+`~/.openclaw/openclaw.json` konumuna kaydettiğinizde, bu numaradan bota doğrudan mesaj gönderebilirsiniz.
 
 ### Önerilen başlangıç yapılandırması
 
@@ -59,7 +60,7 @@ Aşağıdaki örnekler mevcut yapılandırma şemasıyla uyumludur. Kapsamlı ba
   messages: {
     visibleReplies: "automatic",
     groupChat: {
-      visibleReplies: "message_tool", // isteğe bağlıdır; görünür çıktı için message(action=send) gerekir
+      visibleReplies: "message_tool", // isteğe bağlı; görünür çıktı için message(action=send) gerekir
       unmentionedInbound: "room_event",
     },
   },
@@ -68,11 +69,11 @@ Aşağıdaki örnekler mevcut yapılandırma şemasıyla uyumludur. Kapsamlı ba
 
 ## Genişletilmiş örnek (başlıca seçenekler)
 
-> JSON5, yorumları ve sondaki virgülleri kullanmanıza olanak tanır. Normal JSON da kullanılabilir.
+> JSON5, yorumları ve sondaki virgülleri kullanmanıza olanak tanır. Normal JSON da çalışır.
 
 ```json5
 {
-  // Environment + shell
+  // Ortam + kabuk
   env: {
     OPENROUTER_API_KEY: "sk-or-...",
     vars: {
@@ -84,7 +85,7 @@ Aşağıdaki örnekler mevcut yapılandırma şemasıyla uyumludur. Kapsamlı ba
     },
   },
 
-  // Auth profile metadata (secrets live in auth-profiles.json)
+  // Kimlik doğrulama profili meta verileri (gizli bilgiler auth-profiles.json içinde bulunur)
   auth: {
     profiles: {
       "anthropic:default": { provider: "anthropic", mode: "api_key" },
@@ -98,9 +99,9 @@ Aşağıdaki örnekler mevcut yapılandırma şemasıyla uyumludur. Kapsamlı ba
     },
   },
 
-  // Identity is per agent — set it on agents.list[].identity below.
+  // Kimlik her aracıya özeldir — aşağıdaki agents.list[].identity üzerinde ayarlayın.
 
-  // Logging
+  // Günlük kaydı
   logging: {
     level: "info",
     file: "/tmp/openclaw/openclaw.log",
@@ -109,7 +110,7 @@ Aşağıdaki örnekler mevcut yapılandırma şemasıyla uyumludur. Kapsamlı ba
     redactSensitive: "tools",
   },
 
-  // Message formatting
+  // İleti biçimlendirme
   messages: {
     messagePrefix: "[openclaw]",
     visibleReplies: "automatic",
@@ -118,7 +119,7 @@ Aşağıdaki örnekler mevcut yapılandırma şemasıyla uyumludur. Kapsamlı ba
     ackReactionScope: "group-mentions",
     groupChat: {
       historyLimit: 50,
-      visibleReplies: "message_tool", // opt in for shared rooms with tool-reliable models
+      visibleReplies: "message_tool", // araçları güvenilir biçimde kullanan modellerin bulunduğu paylaşımlı odalar için etkinleştirin
       unmentionedInbound: "room_event",
     },
     queue: {
@@ -138,7 +139,7 @@ Aşağıdaki örnekler mevcut yapılandırma şemasıyla uyumludur. Kapsamlı ba
     },
   },
 
-  // Tooling
+  // Araçlar
   tools: {
     media: {
       audio: {
@@ -146,7 +147,7 @@ Aşağıdaki örnekler mevcut yapılandırma şemasıyla uyumludur. Kapsamlı ba
         maxBytes: 20971520,
         models: [
           { provider: "openai", model: "gpt-4o-transcribe" },
-          // Optional CLI fallback (Whisper binary):
+          // İsteğe bağlı CLI geri dönüşü (Whisper ikili dosyası):
           // { type: "cli", command: "whisper", args: ["--model", "base", "{{MediaPath}}"] }
         ],
         timeoutSeconds: 120,
@@ -159,10 +160,10 @@ Aşağıdaki örnekler mevcut yapılandırma şemasıyla uyumludur. Kapsamlı ba
     },
   },
 
-  // Session behavior
+  // Oturum davranışı
   session: {
     scope: "per-sender",
-    dmScope: "per-channel-peer", // recommended for multi-user inboxes
+    dmScope: "per-channel-peer", // çok kullanıcılı gelen kutuları için önerilir
     reset: {
       mode: "daily",
       atHour: 4,
@@ -177,9 +178,9 @@ Aşağıdaki örnekler mevcut yapılandırma şemasıyla uyumludur. Kapsamlı ba
       mode: "warn",
       pruneAfter: "30d",
       maxEntries: 500,
-      resetArchiveRetention: "30d", // duration or false
-      maxDiskBytes: "500mb", // optional
-      highWaterBytes: "400mb", // optional (defaults to 80% of maxDiskBytes)
+      resetArchiveRetention: "30d", // süre veya false
+      maxDiskBytes: "500mb", // isteğe bağlı
+      highWaterBytes: "400mb", // isteğe bağlı (varsayılan olarak maxDiskBytes değerinin %80'i)
     },
     typingIntervalSeconds: 5,
     sendPolicy: {
@@ -188,7 +189,7 @@ Aşağıdaki örnekler mevcut yapılandırma şemasıyla uyumludur. Kapsamlı ba
     },
   },
 
-  // Channels
+  // Kanallar
   channels: {
     whatsapp: {
       dmPolicy: "pairing",
@@ -240,7 +241,7 @@ Aşağıdaki örnekler mevcut yapılandırma şemasıyla uyumludur. Kapsamlı ba
     },
   },
 
-  // Agent runtime
+  // Aracı çalışma zamanı
   agents: {
     defaults: {
       workspace: "~/.openclaw/workspace",
@@ -257,7 +258,7 @@ Aşağıdaki örnekler mevcut yapılandırma şemasıyla uyumludur. Kapsamlı ba
         "anthropic/claude-sonnet-4-6": { alias: "sonnet" },
         "openai/gpt-5.4": { alias: "gpt" },
       },
-      skills: ["github", "weather"], // inherited by agents that omit list[].skills
+      skills: ["github", "weather"], // list[].skills değerini belirtmeyen aracılar tarafından devralınır
       thinkingDefault: "low",
       verboseDefault: "off",
       toolProgressDetail: "explain",
@@ -284,7 +285,7 @@ Aşağıdaki örnekler mevcut yapılandırma şemasıyla uyumludur. Kapsamlı ba
         every: "30m",
         model: "anthropic/claude-sonnet-4-6",
         target: "last",
-        directPolicy: "allow", // allow (default) | block
+        directPolicy: "allow", // allow (varsayılan) | block
         to: "+15555550123",
         prompt: "HEARTBEAT",
         ackMaxChars: 300,
@@ -299,7 +300,7 @@ Aşağıdaki örnekler mevcut yapılandırma şemasıyla uyumludur. Kapsamlı ba
       },
       sandbox: {
         mode: "non-main",
-        scope: "session", // preferred over legacy perSession: true
+        scope: "session", // eski perSession: true yerine tercih edilir
         workspaceRoot: "~/.openclaw/sandboxes",
         docker: {
           image: "openclaw-sandbox:bookworm-slim",
@@ -320,21 +321,21 @@ Aşağıdaki örnekler mevcut yapılandırma şemasıyla uyumludur. Kapsamlı ba
         default: true,
         identity: {
           name: "Samantha",
-          theme: "helpful sloth",
+          theme: "yardımsever tembel hayvan",
           emoji: "🦥",
         },
-        // inherits defaults.skills -> github, weather
+        // defaults.skills değerini devralır -> github, weather
         groupChat: {
           mentionPatterns: ["@openclaw", "openclaw"],
         },
-        thinkingDefault: "high", // per-agent thinking override
-        reasoningDefault: "on", // per-agent reasoning visibility
-        fastModeDefault: false, // per-agent fast mode
+        thinkingDefault: "high", // aracıya özgü düşünme geçersiz kılması
+        reasoningDefault: "on", // aracıya özgü akıl yürütme görünürlüğü
+        fastModeDefault: false, // aracıya özgü hızlı mod
       },
       {
         id: "quick",
-        skills: [], // no skills for this agent
-        fastModeDefault: true, // this agent always runs fast
+        skills: [], // bu aracı için beceri yok
+        fastModeDefault: true, // bu aracı her zaman hızlı çalışır
         thinkingDefault: "off",
       },
     ],
@@ -362,7 +363,7 @@ Aşağıdaki örnekler mevcut yapılandırma şemasıyla uyumludur. Kapsamlı ba
     },
   },
 
-  // Custom model providers
+  // Özel model sağlayıcıları
   models: {
     mode: "merge",
     providers: {
@@ -388,19 +389,15 @@ Aşağıdaki örnekler mevcut yapılandırma şemasıyla uyumludur. Kapsamlı ba
     },
   },
 
-  // Cron jobs
+  // Cron işleri
   cron: {
     enabled: true,
     store: "~/.openclaw/cron/jobs.json",
-    maxConcurrentRuns: 8, // default; cron dispatch + isolated cron agent-turn execution
+    maxConcurrentRuns: 8, // varsayılan; cron yönlendirmesi + yalıtılmış cron aracı turu yürütmesi
     sessionRetention: "24h",
-    runLog: {
-      maxBytes: "2mb",
-      keepLines: 2000,
-    },
   },
 
-  // Webhooks
+  // Webhook'lar
   hooks: {
     enabled: true,
     path: "/hooks",
@@ -415,7 +412,7 @@ Aşağıdaki örnekler mevcut yapılandırma şemasıyla uyumludur. Kapsamlı ba
         wakeMode: "now",
         name: "Gmail",
         sessionKey: "hook:gmail:{{messages[0].id}}",
-        messageTemplate: "From: {{messages[0].from}}\nSubject: {{messages[0].subject}}",
+        messageTemplate: "Kimden: {{messages[0].from}}\nKonu: {{messages[0].subject}}",
         textTemplate: "{{messages[0].snippet}}",
         deliver: true,
         channel: "last",
@@ -443,7 +440,7 @@ Aşağıdaki örnekler mevcut yapılandırma şemasıyla uyumludur. Kapsamlı ba
     },
   },
 
-  // Gateway + networking
+  // Gateway + ağ
   gateway: {
     mode: "local",
     port: 18789,
@@ -482,9 +479,9 @@ Aşağıdaki örnekler mevcut yapılandırma şemasıyla uyumludur. Kapsamlı ba
 }
 ```
 
-### Sembolik bağlantılı kardeş Skills deposu
+### Sembolik bağlantılı kardeş beceri deposu
 
-Yerleşik bir Skills kökü, örneğin `~/.agents/skills/manager -> ~/Projects/manager/skills` biçiminde kardeş bir depoya sembolik bağlantı içerdiğinde bunu kullanın.
+Yerleşik bir beceri kökü, kardeş bir depoya yönlendiren sembolik bağlantı içerdiğinde bunu kullanın; örneğin `~/.agents/skills/manager -> ~/Projects/manager/skills`.
 
 ```json5
 {
@@ -497,13 +494,15 @@ Yerleşik bir Skills kökü, örneğin `~/.agents/skills/manager -> ~/Projects/m
 }
 ```
 
-- `extraDirs`, kardeş depoyu açıkça belirtilmiş bir Skills kökü olarak tarar.
-- `allowSymlinkTargets`, sembolik bağlantılı Skills klasörlerinin, rastgele sembolik bağlantı kaçışlarına izin vermeden bu güvenilir gerçek hedef köke çözümlenmesini sağlar.
-- Skill Workshop'un aynı güvenilir sembolik bağlantı hedefi üzerinden yazma işlemi gerçekleştirmesine izin vermek için `skills.workshop.allowSymlinkTargetWrites: true` ayarını yapın.
+- `extraDirs` kardeş depoyu açık bir beceri kökü olarak tarar.
+- `allowSymlinkTargets`, sembolik bağlantılı beceri klasörlerinin rastgele sembolik bağlantı kaçışlarına izin vermeden bu güvenilir
+  gerçek hedef köke çözümlenmesini sağlar.
+- Beceri Atölyesi'nin aynı güvenilir sembolik bağlantı hedefi üzerinden yazma işlemi uygulamasına izin vermek için
+  `skills.workshop.allowSymlinkTargetWrites: true` değerini ayarlayın.
 
 ## Yaygın kalıplar
 
-### Tek bir geçersiz kılmayla paylaşılan Skills temeli
+### Tek bir geçersiz kılma ile paylaşılan beceri temeli
 
 ```json5
 {
@@ -521,8 +520,8 @@ Yerleşik bir Skills kökü, örneğin `~/.agents/skills/manager -> ~/Projects/m
 ```
 
 - `agents.defaults.skills` paylaşılan temel yapılandırmadır.
-- `agents.list[].skills`, bir ajan için bu temel yapılandırmanın yerini alır.
-- Bir ajanın hiçbir Skills görmemesi gerektiğinde `skills: []` kullanın.
+- `agents.list[].skills`, bir agent için bu temel yapılandırmanın yerini alır.
+- Bir agent'ın hiçbir skills görmemesi gerektiğinde `skills: []` kullanın.
 
 ### Çok platformlu kurulum
 
@@ -545,11 +544,11 @@ Yerleşik bir Skills kökü, örneğin `~/.agents/skills/manager -> ~/Projects/m
 }
 ```
 
-### Güvenilir Node ağında otomatik onay
+### Güvenilen Node ağı için otomatik onay
 
-Ağ yolunu denetlemiyorsanız cihaz eşleştirmesini manuel tutun. Ayrılmış bir
-laboratuvar veya tailnet alt ağı için tam CIDR'ler ya da IP'ler kullanarak
-ilk Node cihazı eşleştirmesinin otomatik onaylanmasını etkinleştirebilirsiniz:
+Ağ yolunu denetlemediğiniz sürece cihaz eşleştirmesini manuel tutun. Ayrılmış bir
+laboratuvar veya tailnet alt ağı için, tam CIDR'ler veya IP'ler kullanarak ilk
+Node cihaz eşleştirmesinin otomatik onaylanmasını etkinleştirebilirsiniz:
 
 ```json5
 {
@@ -563,17 +562,17 @@ ilk Node cihazı eşleştirmesinin otomatik onaylanmasını etkinleştirebilirsi
 }
 ```
 
-Bu ayar belirtilmediğinde kapalı kalır. Yalnızca kapsam talep etmeyen yeni
-`role: node` eşleştirmeleri için geçerlidir. Operatör/tarayıcı istemcileri ile
-rol, kapsam, meta veri veya genel anahtar yükseltmeleri yine manuel onay gerektirir.
+Ayarlanmadığında bu özellik kapalı kalır. Yalnızca istenen kapsam bulunmayan yeni
+`role: node` eşleştirmelerine uygulanır. Operatör/tarayıcı istemcileri ile rol, kapsam, meta veri veya
+açık anahtar yükseltmeleri hâlâ manuel onay gerektirir.
 
 ### Güvenli DM modu (paylaşılan gelen kutusu / çok kullanıcılı DM'ler)
 
-Botunuza birden fazla kişi DM gönderebiliyorsa (`allowFrom` içinde birden fazla girdi, birden fazla kişi için eşleştirme onayı veya `dmPolicy: "open"`), farklı gönderenlerden gelen DM'lerin varsayılan olarak tek bir bağlamı paylaşmaması için **güvenli DM modunu** etkinleştirin:
+Botunuza birden fazla kişi DM gönderebiliyorsa (`allowFrom` içinde birden fazla giriş, birden fazla kişi için eşleştirme onayları veya `dmPolicy: "open"`), farklı gönderenlerden gelen DM'lerin varsayılan olarak tek bir bağlamı paylaşmaması için **güvenli DM modunu** etkinleştirin:
 
 ```json5
 {
-  // Güvenli DM modu (çok kullanıcılı veya hassas DM ajanları için önerilir)
+  // Çok kullanıcılı veya hassas DM agent'ları için önerilen güvenli DM modu
   session: { dmScope: "per-channel-peer" },
 
   channels: {
@@ -596,7 +595,7 @@ Botunuza birden fazla kişi DM gönderebiliyorsa (`allowFrom` içinde birden faz
 Discord/Google Chat/IRC/Mattermost/Microsoft Teams/Slack için gönderen yetkilendirmesi varsayılan olarak öncelikle kimliğe dayanır.
 Değiştirilebilir ad/e-posta/takma adların doğrudan eşleştirilmesini yalnızca bu riski açıkça kabul ediyorsanız her kanalın `dangerouslyAllowNameMatching: true` ayarıyla etkinleştirin.
 
-### Anthropic API anahtarı + MiniMax geri dönüşü
+### Anthropic API anahtarı + MiniMax yedeği
 
 ```json5
 {
@@ -700,12 +699,12 @@ Değiştirilebilir ad/e-posta/takma adların doğrudan eşleştirilmesini yalnı
 
 ## İpuçları
 
-- `dmPolicy: "open"` ayarını kullanırsanız karşılık gelen `allowFrom` listesi `"*"` içermelidir.
+- `dmPolicy: "open"` ayarlarsanız eşleşen `allowFrom` listesi `"*"` değerini içermelidir.
 - Sağlayıcı kimlikleri farklılık gösterir (telefon numaraları, kullanıcı kimlikleri, kanal kimlikleri). Biçimi doğrulamak için sağlayıcı belgelerini kullanın.
 - Daha sonra eklenebilecek isteğe bağlı bölümler: `web`, `browser`, `ui`, `discovery`, `plugins`, `talk`, `signal`, `imessage`.
 - Daha ayrıntılı kurulum notları için [Sağlayıcılar](/tr/providers) ve [Sorun giderme](/tr/gateway/troubleshooting) bölümlerine bakın.
 
-## İlgili konular
+## İlgili
 
-- [Yapılandırma başvurusu](/tr/gateway/configuration-reference)
+- [Yapılandırma referansı](/tr/gateway/configuration-reference)
 - [Yapılandırma](/tr/gateway/configuration)

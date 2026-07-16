@@ -1,42 +1,44 @@
 ---
 read_when:
     - Aggiunta o modifica dell'analisi della posizione del canale
-    - Utilizzo dei campi di contesto della posizione nei prompt dell'agente o negli strumenti
-summary: Analisi della posizione del canale in ingresso (Telegram/WhatsApp/Matrix) e campi di contesto
+    - Utilizzo dei campi di contesto della posizione nei prompt o negli strumenti dell'agente
+summary: Analisi della posizione del canale e payload di posizione in uscita portabili
 title: Analisi della posizione del canale
 x-i18n:
-    generated_at: "2026-04-24T08:30:12Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 19c10a55e30c70a7af5d041f9a25c0a2783e3191403e7c0cedfbe7dd8f1a77c1
-    source_path: channels/location.md
-    workflow: 15
+    generated_at: "2026-07-16T13:50:32Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
+    provider: openai
+    source_hash: c7e5647d02643ad6d95024b362228377690d7fdff66441fae367f0f5307217fb
+    source_path: channels/location.md
+    workflow: 16
 ---
 
 OpenClaw normalizza le posizioni condivise dai canali di chat in:
 
-- testo conciso con coordinate aggiunto al corpo in ingresso, e
-- campi strutturati nel payload di contesto della risposta automatica. Le etichette, gli indirizzi e le didascalie/commenti forniti dal canale vengono resi nel prompt tramite il blocco JSON condiviso di metadati non attendibili, non inline nel corpo dell'utente.
+- testo conciso con le coordinate aggiunto al corpo in entrata e
+- campi strutturati nel payload di contesto della risposta automatica. Le etichette, gli indirizzi e le didascalie/i commenti forniti dal canale vengono inseriti nel prompt tramite il blocco JSON condiviso dei metadati non attendibili, non direttamente nel corpo dell'utente.
 
-Attualmente supportato:
+Attualmente supportati:
 
-- **Telegram** (pin di posizione + luoghi + posizioni in tempo reale)
-- **WhatsApp** (`locationMessage` + `liveLocationMessage`)
+- **LINE** (messaggi di posizione con titolo/indirizzo)
 - **Matrix** (`m.location` con `geo_uri`)
+- **Telegram** (segnaposto di posizione + luoghi + posizioni in tempo reale)
+- **WhatsApp** (`locationMessage` + `liveLocationMessage`)
 
 ## Formattazione del testo
 
-Le posizioni vengono visualizzate come righe leggibili senza parentesi:
+Le posizioni vengono visualizzate come righe leggibili senza parentesi. Le coordinate usano sei cifre decimali; la precisione viene arrotondata al metro intero:
 
-- Pin:
+- Segnaposto:
   - `📍 48.858844, 2.294351 ±12m`
-- Luogo con nome:
+- Luogo denominato (sulla stessa riga; il nome/indirizzo viene inserito solo nel blocco dei metadati):
   - `📍 48.858844, 2.294351 ±12m`
 - Condivisione in tempo reale:
-  - `🛰 Posizione in tempo reale: 48.858844, 2.294351 ±12m`
+  - `🛰 Live location: 48.858844, 2.294351 ±12m`
 
-Se il canale include un'etichetta, un indirizzo o una didascalia/commento, questi vengono mantenuti nel payload di contesto e compaiono nel prompt come JSON non attendibile delimitato:
+Se il canale include un'etichetta, un indirizzo o una didascalia/un commento, questi vengono conservati nel payload di contesto e appaiono nel prompt come JSON non attendibile delimitato (i campi vengono omessi quando assenti):
 
 ````text
 Posizione (metadati non attendibili):
@@ -44,36 +46,47 @@ Posizione (metadati non attendibili):
 {
   "latitude": 48.858844,
   "longitude": 2.294351,
+  "accuracy_m": 12,
+  "source": "place",
   "name": "Torre Eiffel",
-  "address": "Champ de Mars, Parigi",
+  "address": "Campo di Marte, Parigi",
   "caption": "Incontriamoci qui"
 }
 ```
 ````
 
-## Campi di contesto
+## Campi del contesto
 
 Quando è presente una posizione, questi campi vengono aggiunti a `ctx`:
 
-- `LocationLat` (number)
-- `LocationLon` (number)
-- `LocationAccuracy` (number, metri; facoltativo)
-- `LocationName` (string; facoltativo)
-- `LocationAddress` (string; facoltativo)
+- `LocationLat` (numero)
+- `LocationLon` (numero)
+- `LocationAccuracy` (numero, metri; facoltativo)
+- `LocationName` (stringa; facoltativo)
+- `LocationAddress` (stringa; facoltativo)
 - `LocationSource` (`pin | place | live`)
-- `LocationIsLive` (boolean)
-- `LocationCaption` (string; facoltativo)
+- `LocationIsLive` (booleano)
+- `LocationCaption` (stringa; facoltativo)
 
-Il renderer del prompt tratta `LocationName`, `LocationAddress` e `LocationCaption` come metadati non attendibili e li serializza tramite lo stesso percorso JSON delimitato usato per gli altri contesti di canale.
+Quando il canale non imposta una sorgente esplicita, OpenClaw la deduce: le condivisioni in tempo reale diventano `live`, le posizioni con un nome o un indirizzo diventano `place`, tutte le altre sono `pin`.
+
+Il renderer del prompt tratta `LocationName`, `LocationAddress` e `LocationCaption` come metadati non attendibili e li serializza tramite lo stesso percorso JSON con limiti usato per gli altri dati di contesto del canale.
+
+## Payload in uscita
+
+Lo strumento per i messaggi e l'SDK del Plugin usano la stessa struttura `NormalizedLocation` per le posizioni portabili in uscita. Un payload contenente solo le coordinate rappresenta un segnaposto. I canali con supporto nativo per i luoghi possono associare `name` più `address` a una scheda del luogo.
+
+Attualmente Telegram espone questa funzionalità tramite `message(action="send")`. La sua prima implementazione è volutamente autonoma: i payload di posizione non possono essere combinati con testo o contenuti multimediali e le coppie di dati del luogo incomplete generano un errore anziché eliminare silenziosamente un nome o un indirizzo. I canali non supportati non dichiarano il parametro di posizione.
 
 ## Note sui canali
 
-- **Telegram**: i luoghi vengono mappati a `LocationName/LocationAddress`; le posizioni in tempo reale usano `live_period`.
+- **LINE**: i campi `title`/`address` del messaggio di posizione vengono associati a `LocationName`/`LocationAddress`; le posizioni in tempo reale non sono supportate.
+- **Matrix**: `geo_uri` viene analizzato come posizione di un segnaposto; il parametro `u` (incertezza) viene associato a `LocationAccuracy`, il corpo dell'evento popola `LocationCaption`, l'altitudine viene ignorata e `LocationIsLive` è sempre falso.
+- **Telegram**: i luoghi vengono associati a `LocationName`/`LocationAddress`; le posizioni in tempo reale vengono rilevate tramite `live_period`.
 - **WhatsApp**: `locationMessage.comment` e `liveLocationMessage.caption` popolano `LocationCaption`.
-- **Matrix**: `geo_uri` viene analizzato come posizione pin; l'altitudine viene ignorata e `LocationIsLive` è sempre false.
 
-## Correlati
+## Argomenti correlati
 
-- [Comando di posizione (Node)](/it/nodes/location-command)
-- [Acquisizione fotocamera](/it/nodes/camera)
-- [Comprensione dei media](/it/nodes/media-understanding)
+- [Comando di posizione (nodi)](/it/nodes/location-command)
+- [Acquisizione dalla fotocamera](/it/nodes/camera)
+- [Comprensione dei contenuti multimediali](/it/nodes/media-understanding)

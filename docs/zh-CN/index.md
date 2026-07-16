@@ -1,14 +1,15 @@
 ---
 read_when:
     - 向新用户介绍 OpenClaw
-summary: OpenClaw 是一个可在任何操作系统上运行的 AI 智能体多渠道 Gateway 网关。
+summary: OpenClaw 是一款可在任何操作系统上运行的 AI 智能体多渠道 Gateway 网关。
 title: OpenClaw
 x-i18n:
-    generated_at: "2026-07-11T20:36:57Z"
+    generated_at: "2026-07-16T11:38:59Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 2b87c2a9ce06f110bda45709fb6055ed8000f73993793ea7386db2a47a782828
+    source_hash: fe97e7299be4855fd9af21838e0626b5a5c8aafe46d982859e9033f0efec2443
     source_path: index.md
     workflow: 16
 ---
@@ -33,33 +34,33 @@ x-i18n:
 > _“去角质！去角质！”_ —— 大概是一只太空龙虾
 
 <p align="center">
-  <strong>适用于任意操作系统的 AI 智能体网关，支持 Discord、Google Chat、iMessage、Matrix、Microsoft Teams、Signal、Slack、Telegram、WhatsApp、Zalo 等渠道。</strong><br />
-  发送消息，即可随时随地收到智能体回复。运行一个 Gateway 网关，即可连接渠道插件、WebChat 和移动节点。
+  <strong>适用于任何操作系统的 AI 智能体 Gateway 网关，覆盖 Discord、Google Chat、iMessage、Matrix、Microsoft Teams、Signal、Slack、Telegram、WhatsApp、Zalo 等渠道。</strong><br />
+  发送消息，即可在口袋里收到智能体的回复。使用一个 Gateway 网关运行各类渠道插件、WebChat 和移动节点。
 </p>
 
 <Columns>
   <Card title="开始使用" href="/zh-CN/start/getting-started" icon="rocket">
-    安装 OpenClaw，几分钟内即可启动 Gateway 网关。
+    安装 OpenClaw，并在几分钟内启动 Gateway 网关。
   </Card>
   <Card title="运行新手引导" href="/zh-CN/start/wizard" icon="list-checks">
-    使用 `openclaw onboard` 和配对流程完成引导式设置。
+    通过 `openclaw onboard` 和配对流程完成引导式设置。
   </Card>
   <Card title="连接渠道" href="/zh-CN/channels" icon="message-circle">
-    连接 Discord、Signal、Telegram、WhatsApp 等渠道，随时随地进行聊天。
+    关联 Discord、Signal、Telegram、WhatsApp 等服务，随时随地聊天。
   </Card>
   <Card title="打开 Control UI" href="/zh-CN/web/control-ui" icon="layout-dashboard">
-    启动浏览器仪表板，管理聊天、配置和会话。
+    启动浏览器仪表板，用于聊天、配置和管理会话。
   </Card>
 </Columns>
 
 ## 浏览文档
 
-移动端浏览器可能只显示章节菜单，而不显示完整的桌面端标签栏。你可以使用
-这些中心链接，从页面正文进入相同的顶层文档区域。
+移动浏览器可能只显示章节菜单，而不显示完整的桌面端标签栏。可以使用
+这些中心链接，从页面正文进入相同的顶级文档区域。
 
 <Columns>
   <Card title="入门指南" href="/zh-CN" icon="rocket">
-    概览、展示、第一步操作和设置指南。
+    概览、功能展示、初始步骤和设置指南。
   </Card>
   <Card title="安装" href="/zh-CN/install" icon="download">
     安装方式、更新、容器、托管和高级设置。
@@ -73,8 +74,8 @@ x-i18n:
   <Card title="能力" href="/zh-CN/tools" icon="wand-sparkles">
     工具、技能、定时任务、Webhooks 和自动化能力。
   </Card>
-  <Card title="ClawHub" href="/zh-CN/clawhub" icon="store">
-    插件市场、发布、策展和信任指南。
+  <Card title="ClawHub" href="/clawhub" icon="store">
+    插件市场、发布、精选和信任指南。
   </Card>
   <Card title="Models" href="/zh-CN/providers" icon="brain">
     提供商、模型配置、故障转移和本地模型服务。
@@ -86,27 +87,27 @@ x-i18n:
     Gateway 配置、安全、诊断和运维。
   </Card>
   <Card title="参考" href="/zh-CN/cli" icon="terminal">
-    CLI 参考、架构定义、RPC、发布说明和模板。
+    CLI 参考、模式、RPC、发布说明和模板。
   </Card>
   <Card title="帮助" href="/zh-CN/help" icon="life-buoy">
-    故障排查、常见问题、测试、诊断和环境检查。
+    故障排除、常见问题、测试、诊断和环境检查。
   </Card>
 </Columns>
 
-## OpenClaw 是什么？
+## 什么是 OpenClaw？
 
-OpenClaw 是一个**自托管网关**，通过渠道插件将你常用的聊天应用（Discord、Google Chat、iMessage、Matrix、Microsoft Teams、Signal、Slack、Telegram、WhatsApp、Zalo 等）连接到 AI 编程智能体。你只需在自己的计算机（或服务器）上运行一个 Gateway 网关进程，它就会成为消息应用与随时可用的 AI 助手之间的桥梁。
+OpenClaw 是一个**自托管 Gateway 网关**，通过渠道插件将你常用的聊天应用（Discord、Google Chat、iMessage、Matrix、Microsoft Teams、Signal、Slack、Telegram、WhatsApp、Zalo 等）连接到 AI 编码智能体。你可以在自己的计算机（或服务器）上运行单个 Gateway 网关进程，使其成为消息应用与随时可用的 AI 助手之间的桥梁。
 
-**它适合谁？** 希望随时随地向个人 AI 助手发送消息，同时又不愿放弃数据控制权或依赖托管服务的开发者和高级用户。
+**它适合谁？** 希望随时随地向个人 AI 助手发送消息，同时又不放弃数据控制权或依赖托管服务的开发者和高级用户。
 
 **它有何不同？**
 
-- **自托管**：在你的硬件上运行，遵循你的规则
-- **多渠道**：一个 Gateway 网关可同时服务所有已配置的渠道插件
-- **智能体原生**：专为支持工具调用、会话、记忆和多智能体路由的编程智能体构建
+- **自托管**：在你的硬件上按你的规则运行
+- **多渠道**：一个 Gateway 网关同时服务所有已配置的渠道插件
+- **智能体原生**：专为编码智能体构建，支持工具使用、会话、记忆和多智能体路由
 - **开源**：采用 MIT 许可证，由社区驱动
 
-**你需要什么？** Node 24（推荐），或为实现兼容性使用 Node 22 LTS（`22.19+`）；所选提供商的 API 密钥；以及 5 分钟时间。为获得最佳质量和安全性，请使用当前可用的最强新一代模型。
+**需要什么？** Node 24.15+（推荐）、用于兼容性的 Node 22 LTS（`22.22.3+`）或 Node 25.9+、所选提供商的 API 密钥，以及 5 分钟时间。为获得最佳质量和安全性，请使用可用的最强新一代模型。
 
 ## 工作原理
 
@@ -120,28 +121,28 @@ flowchart LR
   B --> G["iOS 和 Android 节点"]
 ```
 
-Gateway 网关是会话、路由和渠道连接的唯一事实来源。
+Gateway 网关是会话、路由和渠道连接的唯一可信来源。
 
 ## 核心能力
 
 <Columns>
-  <Card title="多渠道网关" icon="network" href="/zh-CN/channels">
-    通过一个 Gateway 网关进程支持 Discord、iMessage、Signal、Slack、Telegram、WhatsApp、WebChat 等渠道。
+  <Card title="多渠道 Gateway 网关" icon="network" href="/zh-CN/channels">
+    通过单个 Gateway 网关进程支持 Discord、iMessage、Signal、Slack、Telegram、WhatsApp、WebChat 等服务。
   </Card>
   <Card title="插件渠道" icon="plug" href="/zh-CN/tools/plugin">
-    渠道插件可添加 Matrix、Nostr、Twitch、Zalo 等渠道；官方插件可按需安装。
+    渠道插件可添加 Matrix、Nostr、Twitch、Zalo 等服务；官方插件可按需安装。
   </Card>
   <Card title="多智能体路由" icon="route" href="/zh-CN/concepts/multi-agent">
     按智能体、工作区或发送者隔离会话。
   </Card>
   <Card title="媒体支持" icon="image" href="/zh-CN/nodes/images">
-    发送和接收图像、音频和文档。
+    发送和接收图像、音频及文档。
   </Card>
   <Card title="Web Control UI" icon="monitor" href="/zh-CN/web/control-ui">
-    用于管理聊天、配置、会话和节点的浏览器仪表板。
+    用于聊天、配置、会话和节点的浏览器仪表板。
   </Card>
   <Card title="移动节点" icon="smartphone" href="/zh-CN/nodes">
-    配对 iOS 和 Android 节点，支持 Canvas、相机和语音工作流。
+    配对 iOS 和 Android 节点，用于 Canvas、相机和支持语音的工作流。
   </Card>
 </Columns>
 
@@ -165,7 +166,7 @@ Gateway 网关是会话、路由和渠道连接的唯一事实来源。
     openclaw dashboard
     ```
 
-    或连接一个渠道（[Telegram](/zh-CN/channels/telegram) 最快），然后用手机聊天。
+    或连接一个渠道（[Telegram](/zh-CN/channels/telegram) 最快），然后通过手机聊天。
 
   </Step>
 </Steps>
@@ -187,8 +188,8 @@ Gateway 网关启动后，打开浏览器中的 Control UI。
 
 配置位于 `~/.openclaw/openclaw.json`。
 
-- 如果你**不做任何配置**，OpenClaw 会使用内置的 OpenClaw 智能体运行时；私信共享智能体的主会话，每个群聊则拥有独立会话。
-- 如果要限制访问，请从 `channels.whatsapp.allowFrom` 开始配置，并为群组设置提及规则。
+- 如果你**不进行任何操作**，OpenClaw 将使用内置的 OpenClaw agent runtime；私信共享智能体的主会话，每个群聊则拥有自己的会话。
+- 如果你想限制访问，请从 `channels.whatsapp.allowFrom` 开始，并为群组配置提及规则。
 
 示例：
 
@@ -217,13 +218,13 @@ Gateway 网关启动后，打开浏览器中的 Control UI。
     SSH 和 tailnet 访问模式。
   </Card>
   <Card title="渠道" href="/zh-CN/channels/telegram" icon="message-square">
-    Discord、Feishu、Microsoft Teams、Telegram、WhatsApp 等渠道的专属设置。
+    Discord、Feishu、Microsoft Teams、Telegram、WhatsApp 等服务的渠道专属设置。
   </Card>
   <Card title="节点" href="/zh-CN/nodes" icon="smartphone">
     支持配对、Canvas、相机和设备操作的 iOS 与 Android 节点。
   </Card>
   <Card title="帮助" href="/zh-CN/help" icon="life-buoy">
-    常见修复方法和故障排查入口。
+    常见修复方法和故障排除入口。
   </Card>
 </Columns>
 

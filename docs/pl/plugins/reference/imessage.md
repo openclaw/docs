@@ -1,14 +1,15 @@
 ---
 read_when:
-    - Instalujesz, konfigurujesz lub audytujesz plugin iMessage
+    - Instalowanie, konfigurowanie lub audytowanie pluginu iMessage
 summary: Dodaje obsługę kanału iMessage do wysyłania i odbierania wiadomości OpenClaw.
 title: Plugin iMessage
 x-i18n:
-    generated_at: "2026-07-12T15:25:44Z"
+    generated_at: "2026-07-16T18:55:30Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 5c48bb24e59d5dea948c5f04f579df48b0ae51f923e5dc8a0fc35888ddbbc1c6
+    source_hash: fe0dc8c9efc3e0852931ae702baca2acb7a554505ca227cc4933f375f7de1be0
     source_path: plugins/reference/imessage.md
     workflow: 16
 ---
@@ -20,12 +21,12 @@ Dodaje obsługę kanału iMessage do wysyłania i odbierania wiadomości OpenCla
 ## Dystrybucja
 
 - Pakiet: `@openclaw/imessage`
-- Sposób instalacji: dołączony do OpenClaw
+- Sposób instalacji: zawarty w OpenClaw
 
-## Zakres
+## Obsługiwane elementy
 
-kanały: imessage; Skills
+kanały: `imessage`; umiejętności
 
 ## Powiązana dokumentacja
 
-- [imessage](/pl/channels/imessage)
+- [iMessage](/pl/channels/imessage)

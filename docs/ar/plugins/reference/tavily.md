@@ -1,31 +1,32 @@
 ---
 read_when:
-    - أنت تثبّت Plugin ‏tavily أو تهيّئه أو تدقّقه
+    - أنت تثبّت Plugin ‏tavily أو تهيئه أو تدقّق فيه
 summary: يضيف أدوات يمكن للوكيل استدعاؤها. يضيف دعم موفّري البحث على الويب.
 title: Plugin Tavily
 x-i18n:
-    generated_at: "2026-07-12T06:22:47Z"
+    generated_at: "2026-07-16T14:42:18Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 409da2bdfca9c2dd5a2c64565787175b57f2d43f09b1fa484ac54dd1f528c9fb
+    source_hash: c7bbeb8a0580d9248fdc1ffa08a556e8d2d91cb263f859b1d26a519ec2014f38
     source_path: plugins/reference/tavily.md
     workflow: 16
 ---
 
 # Plugin Tavily
 
-يضيف أدوات يمكن للوكيل استدعاؤها. ويضيف دعم موفّر البحث على الويب.
+يضيف أدوات قابلة للاستدعاء من الوكيل. يضيف دعم موفّر البحث على الويب.
 
 ## التوزيع
 
 - الحزمة: `@openclaw/tavily-plugin`
 - مسار التثبيت: npm؛ ClawHub: `clawhub:@openclaw/tavily-plugin`
 
-## الواجهات
+## السطح
 
-العقود: الأدوات، موفّرو البحث على الويب؛ Skills
+العقود: `tools`، `webSearchProviders`؛ Skills
 
 ## الوثائق ذات الصلة
 
-- [Tavily](/ar/tools/tavily)
+- [tavily](/ar/tools/tavily)

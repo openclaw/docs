@@ -1,44 +1,56 @@
 ---
 read_when:
     - Mengubah perilaku ikon bilah menu
-summary: Status dan animasi ikon bilah menu untuk OpenClaw di macOS
+summary: Status ikon dan animasi bilah menu untuk OpenClaw di macOS
 title: Ikon bilah menu
 x-i18n:
-    generated_at: "2026-05-06T09:20:06Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T18:17:42Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 5497927721ff7486e9585a8a3edc2d5140408b2b0707acdcef2388e87bca20ec
+    source_hash: 8a38f1253f0c376ef2ce6c0ae339b67084c472c764964bcc7ad21e10133e2b47
     source_path: platforms/mac/icon.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
 # Status Ikon Bilah Menu
 
-Penulis: steipete · Diperbarui: 2025-12-06 · Cakupan: aplikasi macOS (`apps/macos`)
+Cakupan: aplikasi macOS (`apps/macos`). Rendering: `CritterIconRenderer.makeIcon(...)`. Pengaitan animasi/status: `CritterStatusLabel` + `CritterStatusLabel+Behavior.swift`.
 
-- **Diam:** Animasi ikon normal (berkedip, sesekali bergoyang).
-- **Dijeda:** Item status menggunakan `appearsDisabled`; tidak ada gerakan.
-- **Pemicu suara (telinga besar):** Pendeteksi bangun suara memanggil `AppState.triggerVoiceEars(ttl: nil)` ketika kata bangun terdengar, mempertahankan `earBoostActive=true` saat ucapan ditangkap. Telinga membesar (1.9x), mendapatkan lubang telinga bundar agar lebih mudah dibaca, lalu turun melalui `stopVoiceEars()` setelah 1 dtk hening. Hanya dipicu dari pipeline suara di dalam aplikasi.
-- **Bekerja (agen berjalan):** `AppState.isWorking=true` menjalankan mikrogerakan "ekor/kaki berlari kecil": goyangan kaki lebih cepat dan sedikit offset saat pekerjaan sedang berlangsung. Saat ini diaktifkan/dinonaktifkan di sekitar eksekusi agen WebChat; tambahkan toggle yang sama di sekitar tugas panjang lainnya saat Anda menghubungkannya.
+## Status
 
-Titik integrasi
+| Status                | Pemicu                                    | Visual                                                                                              |
+| --------------------- | ----------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| Diam                  | Bawaan                                    | Animasi kedip/goyang normal; mata terbuka tetap memiliki kilau mengilap                            |
+| Dijeda                | `isPaused=true`                           | Antena terkulai ("tidak bertugas") dengan mata terbuka; tanpa gerakan                               |
+| Tidur                 | Gateway terputus/tidak dikonfigurasi      | Antena terkulai dan mata menutup menjadi kelopak `⌣ ⌣`; tanpa gerakan                  |
+| Merayakan             | Pesan terkirim (`sendCelebrationTick`)      | Mata menampilkan sekilas lengkungan `∩ ∩` yang gembira selama ~0.9s disertai tendangan kaki |
+| Bangun suara (telinga besar) | Kata pemicu terdengar              | Antena menegak dan menjadi lebih tinggi (`earScale=1.9`); turun setelah hening                  |
+| Bekerja               | `isWorking=true` atau `IconState` aktif | Goyangan kaki lebih cepat (`legWiggle` hingga `1.0`) ditambah sedikit pergeseran horizontal; ditambahkan ke goyangan saat diam |
 
-- Bangun suara: panggilan runtime/tester `AppState.triggerVoiceEars(ttl: nil)` saat pemicu dan `stopVoiceEars()` setelah 1 dtk hening agar cocok dengan jendela tangkapan.
-- Aktivitas agen: tetapkan `AppStateStore.shared.setWorking(true/false)` di sekitar rentang pekerjaan (sudah dilakukan dalam panggilan agen WebChat). Pertahankan rentang tetap pendek dan reset dalam blok `defer` untuk menghindari animasi yang macet.
+Lencana aktivitas alat (kepingan SF Symbol, misalnya `chevron.left.slash.chevron.right` untuk eksekusi) dapat dirender di atas ikon makhluk yang sama ketika suatu sesi memiliki pekerjaan atau alat aktif. Lencana tersebut berasal dari `IconState`/`ActivityKind`; lihat [Bilah menu](/id/platforms/mac/menu-bar) untuk model status lengkap.
 
-Bentuk & ukuran
+## Telinga bangun suara
 
-- Ikon dasar digambar di `CritterIconRenderer.makeIcon(blink:legWiggle:earWiggle:earScale:earHoles:)`.
-- Skala telinga default ke `1.0`; boost suara menetapkan `earScale=1.9` dan mengaktifkan `earHoles=true` tanpa mengubah frame keseluruhan (gambar templat 18×18 pt dirender ke backing store Retina 36×36 px).
-- Lari kecil menggunakan goyangan kaki hingga ~1.0 dengan goyangan horizontal kecil; ini ditambahkan ke goyangan diam yang sudah ada.
+- Pemicu: `AppStateStore.shared.triggerVoiceEars(ttl: nil)`, dipanggil dari alur pengambilan bangun suara (`VoiceWakeRuntime`) dan dari perangkat debug/pengujian bangun suara (`VoiceWakeTester`, `VoiceWakeOverlayController`).
+- Berhenti: `stopVoiceEars()`, dipanggil saat pengambilan diselesaikan.
+- Jendela hening sebelum penyelesaian: biasanya `2.0s`, atau `5.0s` jika hanya kata pemicu yang terdengar dan tidak ada ucapan lanjutan (`VoiceWakeRuntime.silenceWindow` / `triggerOnlySilenceWindow`).
+- Saat ditingkatkan, pengatur waktu kedip/goyang/kaki/telinga saat diam ditangguhkan (`earBoostActive` mengatur tugas animasi di `CritterStatusLabel+Behavior`).
 
-Catatan perilaku
+## Bentuk dan ukuran
 
-- Tidak ada toggle CLI/broker eksternal untuk telinga/bekerja; pertahankan tetap internal pada sinyal aplikasi sendiri untuk menghindari perubahan status yang tidak disengaja.
-- Pertahankan TTL pendek (&lt;10 dtk) agar ikon kembali ke baseline dengan cepat jika pekerjaan macet.
+- Kanvas: gambar templat 18x18pt, dirender ke penyimpanan pendukung bitmap 36x36px (2x) agar ikon tetap tajam di Retina.
+- Skala telinga secara bawaan adalah `1.0`; peningkatan suara menetapkan `earScale=1.9` tanpa mengubah bingkai keseluruhan.
+- `antennaDroop` (0-1) melipat antena ke bawah untuk pose dijeda dan tidur.
+- Gerakan cepat kaki menggunakan `legWiggle` hingga `1.0` dengan sedikit goyangan horizontal.
+
+## Catatan perilaku
+
+- Tidak ada pengalih CLI/broker eksternal untuk telinga atau status bekerja; keduanya dikendalikan secara internal oleh sinyal aplikasi (`AppState.setWorking`, `AppState.triggerVoiceEars`) guna menghindari gerakan naik-turun yang tidak disengaja.
+- Pertahankan TTL baru tetap singkat (jauh di bawah 10s) agar ikon cepat kembali ke kondisi dasar jika suatu pekerjaan macet.
 
 ## Terkait
 
 - [Bilah menu](/id/platforms/mac/menu-bar)
-- [aplikasi macOS](/id/platforms/macos)
+- [Aplikasi macOS](/id/platforms/macos)

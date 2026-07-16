@@ -1,27 +1,28 @@
 ---
 read_when:
-    - شما در حال نصب، پیکربندی یا ممیزی Plugin تفاوت‌ها هستید
-summary: Plugin نمایش تفاوتِ فقط‌خواندنی و رندرکنندهٔ فایل OpenClaw برای عامل‌ها.
+    - در حال نصب، پیکربندی یا ممیزی Plugin تفاوت‌ها هستید
+summary: Plugin نمایش تفاوت فقط‌خواندنی و رندرکنندهٔ فایل OpenClaw برای عامل‌ها.
 title: Plugin تفاوت‌ها
 x-i18n:
-    generated_at: "2026-07-12T10:30:29Z"
+    generated_at: "2026-07-16T16:54:57Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 836ed7a32a0868ee24eacf8f72e8c7888ebbd5d07ca62b2b6170d6a1919f7382
+    source_hash: c8e55537310879d09b50472db7a80a73402477faf5b09da463b6306275e90121
     source_path: plugins/reference/diffs.md
     workflow: 16
 ---
 
-# Plugin نمایش تفاوت‌ها
+# Plugin تفاوت‌ها
 
-Plugin فقط‌خواندنی OpenClaw برای نمایش تفاوت‌ها و رندر فایل‌ها برای عامل‌ها.
+Plugin نمایشگر فقط‌خواندنی تفاوت‌ها و رندرکنندهٔ فایل OpenClaw برای عامل‌ها.
 
 ## توزیع
 
 - بسته: `@openclaw/diffs`
-- روش نصب: npm؛ ClawHub
+- مسیر نصب: npm؛ ClawHub
 
-## سطح ارائه
+## سطح
 
-قراردادها: ابزارها؛ Skills
+قراردادها: `tools`؛ مهارت‌ها

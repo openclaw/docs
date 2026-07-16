@@ -1,37 +1,41 @@
 ---
-summary: Come OpenClaw esegue il runtime agente integrato, i provider, le sessioni, gli strumenti e le estensioni.
-title: Architettura del runtime degli agenti
+summary: 'Come OpenClaw struttura il runtime dell’agente integrato: organizzazione del codice, confini, manifest delle risorse e selezione del runtime.'
+title: Architettura del runtime dell'agente
 x-i18n:
-    generated_at: "2026-06-27T17:08:47Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T13:48:53Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: cd0ca61b10a4f7029590da8566b22cc44cf801af162e5f2c00c9561fe46e39e3
+    source_hash: 071a0cb076230ce02f2c2c1c21971379cf617f24faa8a9733570aae30a062019
     source_path: agent-runtime-architecture.md
     workflow: 16
 ---
 
-OpenClaw possiede direttamente il runtime dell'agente integrato. Il codice del runtime si trova in `src/agents/`, gli helper per modelli/provider si trovano in `src/llm/` e i contratti rivolti ai plugin sono esposti tramite i barrel `openclaw/plugin-sdk/*`.
+OpenClaw gestisce il runtime dell'agente integrato. Il codice del runtime si trova in `src/agents/`, il trasporto per modelli/provider si trova in `src/llm/` e i contratti destinati ai plugin sono esposti tramite i barrel `openclaw/plugin-sdk/*`.
 
-## Layout del runtime
+## Struttura del runtime
 
-- `src/agents/embedded-agent-runner/`: loop dei tentativi dell'agente integrato, adattatori di stream dei provider, Compaction, selezione del modello e cablaggio della sessione.
-- `src/agents/sessions/`: persistenza delle sessioni, caricamento delle estensioni, rilevamento delle risorse, Skills, prompt, temi e renderer degli strumenti basati su TUI.
-- `packages/agent-core/`: core agente riutilizzabile, tipi di harness di livello inferiore, messaggi, helper di Compaction, template di prompt e contratti di strumenti/sessione.
-- `src/agents/runtime/`: facade OpenClaw per `@openclaw/agent-core` più utilità proxy locali.
-- `src/agents/agent-tools*.ts`: definizioni degli strumenti di proprietà di OpenClaw, schemi, policy, adattatori di hook prima/dopo e supporto alle modifiche sull'host.
-- `src/agents/agent-hooks/`: hook del runtime integrati come salvaguardie di Compaction e potatura del contesto.
-- `src/llm/`: registro di modelli/provider, helper di trasporto e implementazioni di stream specifiche dei provider.
+| Percorso                            | Responsabilità                                                                                                                                                                                                            |
+| ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/agents/embedded-agent-runner/` | Ciclo di tentativi integrato (`run.ts`, `run/`), selezione del modello e normalizzazione del provider (`model*.ts`), parametri delle richieste per ciascun provider (`extra-params.*`), Compaction, collegamento di trascrizioni e sessioni. |
+| `src/agents/sessions/`              | Persistenza delle sessioni (`session-manager.ts`), individuazione delle risorse (`package-manager.ts`, `resource-loader.ts`), caricamento di `extensions` nella sessione, modelli di prompt, Skills, temi e renderer degli strumenti basati sulla TUI (`tools/`). |
+| `packages/agent-core/`              | Core riutilizzabile dell'agente (`@openclaw/agent-core`): ciclo dell'agente, tipi dell'harness, messaggi, helper per la Compaction, modelli di prompt, Skills e contratti di archiviazione delle sessioni. |
+| `src/agents/runtime/`               | Facade OpenClaw che collega `@openclaw/agent-core` al runtime LLM dell'SDK dei plugin e lo riesporta insieme alle utilità proxy locali.                                                                                       |
+| `src/agents/agent-tools*.ts`        | Definizioni degli strumenti gestite da OpenClaw, schemi dei parametri, criteri degli strumenti, adattatori precedenti/successivi alle chiamate degli strumenti e strumenti di modifica dell'host/sandbox.                   |
+| `src/agents/agent-hooks/`           | Hook del runtime integrato: protezione della Compaction, istruzioni per la Compaction, eliminazione selettiva del contesto.                                                                                                  |
+| `src/agents/harness/`               | Registro degli harness, criteri di selezione e ciclo di vita degli harness integrati e registrati dai plugin.                                                                                                               |
+| `src/llm/`                          | Registro di modelli/provider, helper di trasporto e implementazioni dei flussi specifiche per provider (`src/llm/providers/`).                                                                                              |
 
 ## Confini
 
-Il codice core chiama il runtime integrato tramite moduli OpenClaw e barrel SDK, non tramite vecchi pacchetti agente esterni. I Plugin usano gli entrypoint documentati `openclaw/plugin-sdk/*` e non importano elementi interni di `src/**`.
+Il core chiama il runtime integrato tramite i moduli OpenClaw e i barrel dell'SDK; non rimane alcun pacchetto di framework esterno per agenti. I plugin utilizzano gli entry point `openclaw/plugin-sdk/*` documentati e non importano componenti interni di `src/**`.
 
-`@earendil-works/pi-tui` rimane una dipendenza TUI di terze parti. È usata come toolkit di componenti terminale dal TUI locale e dai renderer di sessione; internalizzarla sarebbe un intervento separato di vendoring.
+`@earendil-works/pi-tui` rimane una dipendenza di terze parti: un toolkit di componenti per terminale utilizzato dalla TUI locale e dai renderer degli strumenti di sessione. La sua internalizzazione richiederebbe un'attività distinta di incorporamento del codice di terze parti.
 
 ## Manifest
 
-I pacchetti di risorse dichiarano le risorse OpenClaw nei metadati del pacchetto:
+I pacchetti di risorse dichiarano le risorse OpenClaw nei metadati `package.json`. Le voci sono percorsi di file o glob relativi alla radice del pacchetto:
 
 ```json
 {
@@ -44,13 +48,17 @@ I pacchetti di risorse dichiarano le risorse OpenClaw nei metadati del pacchetto
 }
 ```
 
-Il package manager rileva anche le directory convenzionali `extensions/`, `skills/`, `prompts/` e `themes/`.
+Per i tipi di risorse non elencati in un manifest, viene usata come fallback l'individuazione delle directory convenzionali `extensions/`, `skills/`, `prompts/` e `themes/`.
 
 ## Selezione del runtime
 
-L'id del runtime integrato predefinito è `openclaw`. Gli harness dei Plugin possono registrare ulteriori id di runtime. `auto` seleziona un harness Plugin compatibile quando ne esiste uno e altrimenti usa il runtime OpenClaw integrato.
+- L'ID del runtime integrato è `openclaw`. L'alias legacy `pi` viene normalizzato in `openclaw`; `codex-app-server` viene normalizzato in `codex`.
+- Gli harness dei plugin registrano ID di runtime aggiuntivi (ad esempio `codex`).
+- I criteri del runtime sono definiti dalla configurazione `agentRuntime.id` con ambito modello/provider (la voce del modello ha la precedenza su quella del provider). Un valore non impostato o `default` viene risolto in `auto`.
+- `auto` seleziona un harness di plugin registrato che supporta la route effettiva del provider; in caso contrario, seleziona il runtime OpenClaw integrato. Il solo prefisso di un provider o modello non seleziona mai un harness.
+- OpenAI può selezionare implicitamente `codex` soltanto per una route HTTPS ufficiale e corrispondente esattamente a Platform Responses o ChatGPT Responses, senza alcuna sostituzione della richiesta definita dall'utente. Gli adattatori Completions, gli endpoint personalizzati e le route con comportamento della richiesta definito dall'utente rimangono su `openclaw`; gli endpoint HTTP ufficiali in testo non cifrato vengono rifiutati. Consultare [runtime implicito dell'agente OpenAI](/it/providers/openai#implicit-agent-runtime).
 
-## Correlati
+## Argomenti correlati
 
-- [Workflow del runtime agente OpenClaw](/it/openclaw-agent-runtime)
-- [Runtime agente](/it/concepts/agent-runtimes)
+- [Flusso di lavoro del runtime dell'agente OpenClaw](/it/openclaw-agent-runtime)
+- [Runtime degli agenti](/it/concepts/agent-runtimes)

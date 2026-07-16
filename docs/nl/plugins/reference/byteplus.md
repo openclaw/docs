@@ -1,19 +1,20 @@
 ---
 read_when:
-    - U installeert, configureert of controleert de byteplus-Plugin
-summary: Voegt ondersteuning voor BytePlus en de BytePlus Plan-modelprovider toe aan OpenClaw.
+    - Je installeert, configureert of controleert de byteplus-plugin
+summary: Voegt ondersteuning voor de modelproviders BytePlus en BytePlus Plan toe aan OpenClaw.
 title: BytePlus-plugin
 x-i18n:
-    generated_at: "2026-07-12T09:06:05Z"
+    generated_at: "2026-07-16T16:04:30Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: ecb4a427b1809c11631115b63e67bc7ce619191a0c840c13cf46cade27e76d4b
+    source_hash: cda52c7e6d054ab190d3a78483937e655aa4467b3c3031863233c27cfe5b4411
     source_path: plugins/reference/byteplus.md
     workflow: 16
 ---
 
-# BytePlus-plugin
+# BytePlus-Plugin
 
 Voegt ondersteuning voor de modelproviders BytePlus en BytePlus Plan toe aan OpenClaw.
 
@@ -24,4 +25,4 @@ Voegt ondersteuning voor de modelproviders BytePlus en BytePlus Plan toe aan Ope
 
 ## Oppervlak
 
-providers: byteplus, byteplus-plan; contracten: videoGenerationProviders
+providers: `byteplus`, `byteplus-plan`; contracten: `videoGenerationProviders`

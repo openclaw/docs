@@ -1,68 +1,69 @@
 ---
 read_when:
-    - आप scripts या command line से agent runs ट्रिगर करना चाहते हैं
-    - आपको एजेंट के जवाबों को प्रोग्रामेटिक रूप से चैट चैनल तक पहुँचाना होगा
-summary: CLI से एजेंट टर्न चलाएँ और वैकल्पिक रूप से उत्तर चैनलों तक पहुँचाएँ
-title: Agent भेजें
+    - आप स्क्रिप्ट या कमांड लाइन से एजेंट रन ट्रिगर करना चाहते हैं
+    - आपको एजेंट के उत्तरों को प्रोग्रामेटिक रूप से किसी चैट चैनल पर पहुँचाना है
+summary: CLI से एजेंट टर्न चलाएँ और वैकल्पिक रूप से चैनलों पर उत्तर भेजें
+title: एजेंट भेजना
 x-i18n:
-    generated_at: "2026-06-29T00:15:50Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T17:22:20Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 25026258a5a47c87fbf99689de5ea16d827b11af07bc5ce4f6c3e2bda6466b46
+    source_hash: 23ad57735bd43a2bba5add571e9572da0fbe7b516a70515c674e1ababaab081a
     source_path: tools/agent-send.md
     workflow: 16
 ---
 
-`openclaw agent` कमांड लाइन से एक ही एजेंट टर्न चलाता है, जिसके लिए
-इनबाउंड चैट संदेश की आवश्यकता नहीं होती। इसे स्क्रिप्टेड वर्कफ़्लो, परीक्षण और
-प्रोग्रामेटिक डिलीवरी के लिए उपयोग करें।
+`openclaw agent` बिना किसी इनबाउंड चैट संदेश के कमांड लाइन से एजेंट का एक टर्न चलाता है। इसका उपयोग स्क्रिप्टेड वर्कफ़्लो, परीक्षण और
+प्रोग्रामेटिक डिलीवरी के लिए करें। फ़्लैग और व्यवहार का पूरा संदर्भ:
+[एजेंट CLI संदर्भ](/hi/cli/agent)।
 
 ## त्वरित शुरुआत
 
 <Steps>
-  <Step title="Run a simple agent turn">
+  <Step title="एजेंट का एक सरल टर्न चलाएँ">
     ```bash
-    openclaw agent --agent main --message "What is the weather today?"
+    openclaw agent --agent main --message "आज मौसम कैसा है?"
     ```
 
-    यह संदेश को Gateway के माध्यम से भेजता है और उत्तर प्रिंट करता है।
+    संदेश को Gateway के माध्यम से भेजता है और उत्तर प्रिंट करता है।
 
   </Step>
 
-  <Step title="Send a multiline prompt from a file">
+  <Step title="फ़ाइल से बहुपंक्ति प्रॉम्प्ट भेजें">
     ```bash
     openclaw agent --agent ops --message-file ./task.md
     ```
 
-    यह एजेंट संदेश बॉडी के रूप में एक मान्य UTF-8 फ़ाइल पढ़ता है।
+    एजेंट संदेश के मुख्य भाग के रूप में एक मान्य UTF-8 फ़ाइल पढ़ता है।
 
   </Step>
 
-  <Step title="Target a specific agent or session">
+  <Step title="किसी विशिष्ट एजेंट या सत्र को लक्षित करें">
     ```bash
-    # Target a specific agent
-    openclaw agent --agent ops --message "Summarize logs"
+    # किसी विशिष्ट एजेंट को लक्षित करें
+    openclaw agent --agent ops --message "लॉग का सारांश दें"
 
-    # Target a phone number (derives session key)
-    openclaw agent --to +15555550123 --message "Status update"
+    # किसी फ़ोन नंबर को लक्षित करें (सत्र कुंजी प्राप्त करता है)
+    openclaw agent --to +15555550123 --message "स्थिति अपडेट"
 
-    # Reuse an existing session
-    openclaw agent --session-id abc123 --message "Continue the task"
+    # किसी मौजूदा सत्र का पुनः उपयोग करें
+    openclaw agent --session-id abc123 --message "कार्य जारी रखें"
 
-    # Target an exact session key
-    openclaw agent --session-key agent:ops:incident-42 --message "Summarize status"
+    # किसी सटीक सत्र कुंजी को लक्षित करें
+    openclaw agent --session-key agent:ops:incident-42 --message "स्थिति का सारांश दें"
     ```
 
   </Step>
 
-  <Step title="Deliver the reply to a channel">
+  <Step title="उत्तर को किसी चैनल पर डिलीवर करें">
     ```bash
-    # Deliver to WhatsApp (default channel)
-    openclaw agent --to +15555550123 --message "Report ready" --deliver
+    # WhatsApp पर डिलीवर करें (डिफ़ॉल्ट चैनल)
+    openclaw agent --to +15555550123 --message "रिपोर्ट तैयार है" --deliver
 
-    # Deliver to Slack
-    openclaw agent --agent ops --message "Generate report" \
+    # Slack पर डिलीवर करें
+    openclaw agent --agent ops --message "रिपोर्ट जनरेट करें" \
       --deliver --reply-channel slack --reply-to "#reports"
     ```
 
@@ -71,84 +72,93 @@ x-i18n:
 
 ## फ़्लैग
 
-| फ़्लैग                         | विवरण                                                       |
-| ----------------------------- | ----------------------------------------------------------- |
-| `--message \<text\>`          | भेजने के लिए इनलाइन संदेश                                  |
-| `--message-file \<path\>`     | एक मान्य UTF-8 फ़ाइल से संदेश पढ़ें                        |
-| `--to \<dest\>`               | किसी लक्ष्य (फ़ोन, चैट id) से सेशन कुंजी प्राप्त करें      |
-| `--session-key \<key\>`       | स्पष्ट सेशन कुंजी का उपयोग करें                            |
-| `--agent \<id\>`              | कॉन्फ़िगर किए गए एजेंट को लक्षित करें (उसके `main` सेशन का उपयोग करता है) |
-| `--session-id \<id\>`         | id द्वारा मौजूदा सेशन का पुनः उपयोग करें                   |
-| `--local`                     | स्थानीय एम्बेडेड रनटाइम बाध्य करें (Gateway छोड़ें)        |
-| `--deliver`                   | उत्तर को चैट चैनल पर भेजें                                 |
-| `--channel \<name\>`          | डिलीवरी चैनल (whatsapp, telegram, discord, slack, आदि)     |
-| `--reply-to \<target\>`       | डिलीवरी लक्ष्य ओवरराइड                                    |
-| `--reply-channel \<name\>`    | डिलीवरी चैनल ओवरराइड                                      |
-| `--reply-account \<id\>`      | डिलीवरी अकाउंट id ओवरराइड                                 |
-| `--thinking \<level\>`        | चुने गए मॉडल प्रोफ़ाइल के लिए थिंकिंग स्तर सेट करें        |
-| `--verbose \<on\|full\|off\>` | वर्बोज़ स्तर सेट करें                                      |
-| `--timeout \<seconds\>`       | एजेंट टाइमआउट ओवरराइड करें                                |
-| `--json`                      | संरचित JSON आउटपुट करें                                    |
+| फ़्लैग                        | विवरण                                                          |
+| --------------------------- | -------------------------------------------------------------------- |
+| `--message <text>`          | भेजने के लिए इनलाइन संदेश                                               |
+| `--message-file <path>`     | संदेश को किसी मान्य UTF-8 फ़ाइल से पढ़ें                             |
+| `--to <dest>`               | किसी लक्ष्य (फ़ोन, चैट आईडी) से सत्र कुंजी प्राप्त करें                    |
+| `--session-key <key>`       | स्पष्ट सत्र कुंजी का उपयोग करें                                          |
+| `--agent <id>`              | कॉन्फ़िगर किए गए एजेंट को लक्षित करें (इसके `main` सत्र का उपयोग करता है)                  |
+| `--session-id <id>`         | आईडी द्वारा किसी मौजूदा सत्र का पुनः उपयोग करें                                      |
+| `--model <id>`              | इस रन के लिए मॉडल ओवरराइड (`provider/model` या मॉडल आईडी)           |
+| `--local`                   | स्थानीय एम्बेडेड रनटाइम बाध्य करें (Gateway को छोड़ें)                          |
+| `--deliver`                 | उत्तर को किसी चैट चैनल पर भेजें                                     |
+| `--channel <name>`          | डिलीवरी चैनल; `--agent` + `--to` के साथ, DM का दायरा भी लागू करता है     |
+| `--reply-to <target>`       | डिलीवरी लक्ष्य ओवरराइड                                             |
+| `--reply-channel <name>`    | डिलीवरी चैनल ओवरराइड                                            |
+| `--reply-account <id>`      | डिलीवरी खाता आईडी ओवरराइड                                         |
+| `--thinking <level>`        | चयनित मॉडल प्रोफ़ाइल के लिए चिंतन स्तर सेट करें                    |
+| `--verbose <on\|full\|off>` | सत्र के लिए वर्बोज़ स्तर बनाए रखें (`full` टूल आउटपुट भी लॉग करता है) |
+| `--timeout <seconds>`       | एजेंट टाइमआउट ओवरराइड करें (डिफ़ॉल्ट 600, या कॉन्फ़िगरेशन मान)                |
+| `--json`                    | संरचित JSON आउटपुट करें                                               |
 
 ## व्यवहार
 
 - डिफ़ॉल्ट रूप से, CLI **Gateway के माध्यम से** जाता है। वर्तमान मशीन पर
-  एम्बेडेड रनटाइम को बाध्य करने के लिए `--local` जोड़ें।
-- `--message` या `--message-file` में से ठीक एक पास करें। फ़ाइल संदेश वैकल्पिक
-  UTF-8 BOM हटाने के बाद मल्टीलाइन सामग्री को संरक्षित रखते हैं।
-- यदि Gateway उपलब्ध नहीं है, तो CLI स्थानीय एम्बेडेड रन पर **फॉलबैक** करता है।
-- सेशन चयन: `--to` सेशन कुंजी प्राप्त करता है (समूह/चैनल लक्ष्य
-  आइसोलेशन संरक्षित रखते हैं; डायरेक्ट चैट `main` में समाहित हो जाती हैं)।
-- `--session-key` एक स्पष्ट कुंजी चुनता है। एजेंट-प्रीफ़िक्स वाली कुंजियों को
-  `agent:<agent-id>:<session-key>` का उपयोग करना होगा, और दोनों दिए जाने पर
-  `--agent` को उस एजेंट id से मेल खाना चाहिए। बेयर नॉन-सेंटिनल कुंजियाँ
-  दिए जाने पर `--agent` के स्कोप में होती हैं; उदाहरण के लिए,
-  `--agent ops --session-key incident-42` को `agent:ops:incident-42` पर रूट करता है।
-  `--agent` के बिना, बेयर नॉन-सेंटिनल कुंजियाँ कॉन्फ़िगर किए गए डिफ़ॉल्ट एजेंट
-  के स्कोप में होती हैं। लिटरल `global` और `unknown` केवल तब अनस्कोप्ड रहते हैं
-  जब कोई `--agent` नहीं दिया गया हो; उस स्थिति में, एम्बेडेड फॉलबैक और स्टोर
-  ओनरशिप कॉन्फ़िगर किए गए डिफ़ॉल्ट एजेंट का उपयोग करते हैं।
-- थिंकिंग और वर्बोज़ फ़्लैग सेशन स्टोर में बने रहते हैं।
+  एम्बेडेड रनटाइम बाध्य करने के लिए `--local` जोड़ें।
+- `--message` या `--message-file` में से ठीक एक पास करें। फ़ाइल संदेश वैकल्पिक UTF-8 BOM हटाने के बाद
+  बहुपंक्ति सामग्री बनाए रखते हैं।
+- यदि Gateway अनुरोध विफल होता है, तो CLI स्थानीय एम्बेडेड
+  रन पर **वापस जाता है**; Gateway टाइमआउट मूल ट्रांसक्रिप्ट के साथ रेस करने के बजाय
+  एक नए सत्र पर वापस जाता है।
+- सत्र चयन: `--to` लक्ष्य से सत्र कुंजी प्राप्त करता है (समूह/चैनल लक्ष्य
+  अलगाव बनाए रखते हैं; सीधे चैट `main` में समाहित हो जाते हैं)। `--agent`,
+  `--channel`, और `--to` को एक साथ देने पर, रूटिंग चैनल के कैनोनिकल
+  प्राप्तकर्ता और `session.dmScope` का अनुसरण करती है। केवल स्थिर आउटबाउंड पहचानें एजेंट के मुख्य सत्र से पृथक
+  प्रदाता-स्वामित्व वाले सत्र का उपयोग करती हैं।
+- `--session-key` एक स्पष्ट कुंजी चुनता है। एजेंट-उपसर्ग वाली कुंजियों में
+  `agent:<agent-id>:<session-key>` का उपयोग होना चाहिए, और दोनों दिए जाने पर `--agent` को उस एजेंट आईडी से मेल खाना
+  चाहिए। दिए जाने पर बिना उपसर्ग वाली गैर-सेंटिनल कुंजियाँ `--agent` के दायरे में आती हैं;
+  उदाहरण के लिए, `--agent ops --session-key incident-42` को
+  `agent:ops:incident-42` पर रूट किया जाता है। `--agent` के बिना, बिना उपसर्ग वाली गैर-सेंटिनल कुंजियाँ
+  कॉन्फ़िगर किए गए डिफ़ॉल्ट एजेंट के दायरे में आती हैं। लिटरल `global` और `unknown` केवल तभी
+  बिना दायरे के रहते हैं जब कोई `--agent` न दिया गया हो; एम्बेडेड फ़ॉलबैक पथ
+  उन सेंटिनल सत्रों को कॉन्फ़िगर किए गए डिफ़ॉल्ट एजेंट में रिज़ॉल्व करता है।
+- `--reply-channel` और `--reply-account` केवल डिलीवरी को प्रभावित करते हैं।
+- चिंतन और वर्बोज़ फ़्लैग सत्र स्टोर में बने रहते हैं।
 - आउटपुट: डिफ़ॉल्ट रूप से सादा टेक्स्ट, या संरचित पेलोड + मेटाडेटा के लिए `--json`।
-- `--json --deliver` के साथ, JSON में भेजे गए, दबाए गए, आंशिक और विफल भेजावों
-  की डिलीवरी स्थिति शामिल होती है। देखें
+- `--json --deliver` के साथ, JSON में भेजी गई, रोकी गई,
+  आंशिक और विफल डिलीवरी की स्थिति शामिल होती है। देखें
   [JSON डिलीवरी स्थिति](/hi/cli/agent#json-delivery-status)।
 
 ## उदाहरण
 
 ```bash
-# Simple turn with JSON output
-openclaw agent --to +15555550123 --message "Trace logs" --verbose on --json
+# JSON आउटपुट के साथ सरल टर्न
+openclaw agent --to +15555550123 --message "लॉग ट्रेस करें" --verbose on --json
 
-# Turn with thinking level
-openclaw agent --session-id 1234 --message "Summarize inbox" --thinking medium
+# मॉडल ओवरराइड वाला टर्न
+openclaw agent --agent ops --model openai/gpt-5.4 --message "लॉग का सारांश दें"
 
-# Multiline prompt from a file
+# चिंतन स्तर वाला टर्न
+openclaw agent --session-id 1234 --message "इनबॉक्स का सारांश दें" --thinking medium
+
+# फ़ाइल से बहुपंक्ति प्रॉम्प्ट
 openclaw agent --agent ops --message-file ./task.md
 
-# Exact session key
-openclaw agent --session-key agent:ops:incident-42 --message "Summarize status"
+# सटीक सत्र कुंजी
+openclaw agent --session-key agent:ops:incident-42 --message "स्थिति का सारांश दें"
 
-# Legacy key scoped to an agent
-openclaw agent --agent ops --session-key incident-42 --message "Summarize status"
+# एजेंट के दायरे में लीगेसी कुंजी
+openclaw agent --agent ops --session-key incident-42 --message "स्थिति का सारांश दें"
 
-# Deliver to a different channel than the session
-openclaw agent --agent ops --message "Alert" --deliver --reply-channel telegram --reply-to "@admin"
+# सत्र से अलग चैनल पर डिलीवर करें
+openclaw agent --agent ops --message "चेतावनी" --deliver --reply-channel telegram --reply-to "@admin"
 ```
 
 ## संबंधित
 
 <CardGroup cols={2}>
-  <Card title="Agent CLI reference" href="/hi/cli/agent" icon="terminal">
-    पूरा `openclaw agent` फ़्लैग और विकल्प संदर्भ।
+  <Card title="एजेंट CLI संदर्भ" href="/hi/cli/agent" icon="terminal">
+    संपूर्ण `openclaw agent` फ़्लैग और विकल्प संदर्भ।
   </Card>
-  <Card title="Sub-agents" href="/hi/tools/subagents" icon="users">
-    बैकग्राउंड उप-एजेंट स्पॉनिंग।
+  <Card title="उप-एजेंट" href="/hi/tools/subagents" icon="users">
+    पृष्ठभूमि में उप-एजेंट शुरू करना।
   </Card>
-  <Card title="Sessions" href="/hi/concepts/session" icon="comments">
-    सेशन कुंजियाँ कैसे काम करती हैं और `--to`, `--agent`, और `--session-id` उन्हें कैसे रिज़ॉल्व करते हैं।
+  <Card title="सत्र" href="/hi/concepts/session" icon="comments">
+    सत्र कुंजियाँ कैसे काम करती हैं और `--to`, `--agent`, तथा `--session-id` उन्हें कैसे रिज़ॉल्व करते हैं।
   </Card>
-  <Card title="Slash commands" href="/hi/tools/slash-commands" icon="slash">
-    एजेंट सेशन के अंदर उपयोग किया जाने वाला नेटिव कमांड कैटलॉग।
+  <Card title="स्लैश कमांड" href="/hi/tools/slash-commands" icon="slash">
+    एजेंट सत्रों के भीतर उपयोग की जाने वाली नेटिव कमांड सूची।
   </Card>
 </CardGroup>

@@ -4,11 +4,12 @@ read_when:
 summary: เพิ่มการรองรับผู้ให้บริการค้นหาเว็บ
 title: Plugin Perplexity
 x-i18n:
-    generated_at: "2026-07-12T16:31:20Z"
+    generated_at: "2026-07-16T19:34:09Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: c649c4dc4df04ca668e924e2644af970d75eab404b8f57579e509aa061994ffe
+    source_hash: 0d483c483a637445c34236d86e627dcf1e1caa63a546056bba8079c482021862
     source_path: plugins/reference/perplexity.md
     workflow: 16
 ---
@@ -24,8 +25,8 @@ x-i18n:
 
 ## พื้นผิว
 
-สัญญา: webSearchProviders
+สัญญา: `webSearchProviders`
 
 ## เอกสารที่เกี่ยวข้อง
 
-- [Perplexity](/th/tools/perplexity-search)
+- [perplexity](/th/tools/perplexity-search)

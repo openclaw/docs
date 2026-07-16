@@ -1,312 +1,463 @@
 ---
 read_when:
-    - आप एक नया मैसेजिंग चैनल plugin बना रहे हैं
-    - आप OpenClaw को किसी मैसेजिंग प्लेटफ़ॉर्म से जोड़ना चाहते हैं
-    - आपको ChannelPlugin अडैप्टर सतह को समझना होगा
+    - आप एक नया मैसेजिंग चैनल Plugin बना रहे हैं
+    - आप OpenClaw को किसी मैसेजिंग प्लेटफ़ॉर्म से कनेक्ट करना चाहते हैं
+    - आपको ChannelPlugin अडैप्टर इंटरफ़ेस को समझना होगा
 sidebarTitle: Channel Plugins
 summary: OpenClaw के लिए मैसेजिंग चैनल Plugin बनाने की चरण-दर-चरण मार्गदर्शिका
 title: चैनल Plugin बनाना
 x-i18n:
-    generated_at: "2026-07-02T22:32:22Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T16:35:37Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 84490ebdd482d1f09827af38274d06beea6d7fd72071e66beb79fcc12c86656a
+    source_hash: 2c6398dd0b4789b9f4aaf7ad2d1786a7e6388cb8fbb74e8ecaecae7ac0a5eb90
     source_path: plugins/sdk-channel-plugins.md
     workflow: 16
 ---
 
-यह गाइड ऐसा चैनल Plugin बनाने की प्रक्रिया बताती है जो OpenClaw को किसी
-मैसेजिंग प्लेटफ़ॉर्म से जोड़ता है। अंत तक आपके पास DM सुरक्षा,
-पेयरिंग, उत्तर थ्रेडिंग, और आउटबाउंड मैसेजिंग वाला काम करता चैनल होगा।
+यह मार्गदर्शिका एक ऐसा चैनल Plugin बनाती है जो OpenClaw को किसी मैसेजिंग
+प्लेटफ़ॉर्म से जोड़ता है: DM सुरक्षा, पेयरिंग, उत्तर थ्रेडिंग और आउटबाउंड मैसेजिंग।
 
 <Info>
-  अगर आपने पहले कोई OpenClaw plugin नहीं बनाया है, तो बुनियादी पैकेज
-  संरचना और मैनिफ़ेस्ट सेटअप के लिए पहले
-  [शुरू करना](/hi/plugins/building-plugins) पढ़ें।
+  OpenClaw plugins के लिए नए हैं? पैकेज संरचना और मैनिफ़ेस्ट सेटअप के लिए पहले
+  [आरंभ करना](/hi/plugins/building-plugins) पढ़ें।
 </Info>
 
-## चैनल plugins कैसे काम करते हैं
+## आपके Plugin का दायित्व
 
-चैनल plugins को अपने अलग send/edit/react टूल की ज़रूरत नहीं होती। OpenClaw core में एक
-साझा `message` टूल रखता है। आपका plugin इनका स्वामी होता है:
+चैनल plugins भेजने/संपादित करने/प्रतिक्रिया देने वाले टूल लागू नहीं करते; कोर एक
+साझा `message` टूल प्रदान करता है। आपके Plugin का दायित्व है:
 
-- **कॉन्फ़िग** - खाते का समाधान और सेटअप विज़ार्ड
-- **सुरक्षा** - DM नीति और allowlists
-- **पेयरिंग** - DM स्वीकृति फ़्लो
-- **सेशन व्याकरण** - provider-विशिष्ट conversation ids कैसे base chats, thread ids, और parent fallbacks से मैप होते हैं
-- **आउटबाउंड** - प्लेटफ़ॉर्म पर टेक्स्ट, मीडिया, और polls भेजना
-- **थ्रेडिंग** - उत्तर कैसे थ्रेड किए जाते हैं
-- **Heartbeat टाइपिंग** - heartbeat डिलीवरी targets के लिए वैकल्पिक typing/busy संकेत
+- **कॉन्फ़िगरेशन** - खाता समाधान और सेटअप विज़ार्ड
+- **सुरक्षा** - DM नीति और अनुमति-सूचियाँ
+- **पेयरिंग** - DM अनुमोदन प्रवाह
+- **सेशन व्याकरण** - प्रदाता-विशिष्ट वार्तालाप आईडी को मूल
+  चैट, थ्रेड आईडी और पैरेंट फ़ॉलबैक से मैप करने का तरीका
+- **आउटबाउंड** - प्लेटफ़ॉर्म पर टेक्स्ट, मीडिया और पोल भेजना
+- **थ्रेडिंग** - उत्तरों को थ्रेड करने का तरीका
+- **Heartbeat टाइपिंग** - Heartbeat डिलीवरी लक्ष्यों के लिए वैकल्पिक टाइपिंग/व्यस्तता संकेत
 
-Core साझा message टूल, prompt wiring, बाहरी session-key shape,
-सामान्य `:thread:` bookkeeping, और dispatch का स्वामी होता है।
+कोर साझा संदेश टूल, प्रॉम्प्ट वायरिंग, बाहरी सेशन-कुंजी संरचना, सामान्य
+`:thread:` लेखा-जोखा और डिस्पैच का दायित्व संभालता है।
 
-नए चैनल plugins को `openclaw/plugin-sdk/channel-outbound` से
-`defineChannelMessageAdapter` के साथ एक `message` अडैप्टर भी expose करना चाहिए। अडैप्टर
-घोषित करता है कि native transport वास्तव में कौन-सी durable final-send क्षमताएँ
-समर्थित करता है और text/media sends को legacy `outbound` अडैप्टर जैसे ही
-transport functions पर इंगित करता है। क्षमता तभी घोषित करें जब contract test
-native side effect और लौटाई गई receipt सिद्ध करे।
-पूर्ण API contract, उदाहरणों, capability matrix, receipt नियमों, live
-preview finalization, receive ack policy, tests, और migration table के लिए
-[चैनल outbound API](/hi/plugins/sdk-channel-outbound) देखें।
-अगर मौजूदा `outbound` अडैप्टर में पहले से सही send methods और
-capability metadata हैं, तो दूसरा bridge हाथ से लिखने के बजाय
-`createChannelMessageAdapterFromOutbound(...)` का उपयोग करके
-`message` अडैप्टर derive करें।
-अडैप्टर sends को `MessageReceipt` values लौटानी चाहिए। जब compatibility code
-को अभी भी legacy ids चाहिए, तो नए lifecycle code में समानांतर
-`messageIds` fields रखने के बजाय उन्हें `listMessageReceiptPlatformIds(...)`
-या `resolveMessageReceiptPrimaryId(...)` से derive करें।
-Preview-capable चैनलों को अपने स्वामित्व वाले exact live lifecycle, जैसे
-`draftPreview`,
-`previewFinalization`, `progressUpdates`, `nativeStreaming`, या
-`quietFinalization` के साथ `message.live.capabilities` भी घोषित करना चाहिए।
-जो चैनल draft preview को उसी जगह finalize करते हैं, उन्हें
-`message.live.finalizer.capabilities`, जैसे `finalEdit`,
-`normalFallback`, `discardPending`, `previewReceipt`, और
-`retainOnAmbiguousFailure` भी घोषित करना चाहिए, और runtime logic को
-`defineFinalizableLivePreviewAdapter(...)` तथा
-`deliverWithFinalizableLivePreviewAdapter(...)` के माध्यम से route करना चाहिए। इन क्षमताओं को
-`verifyChannelMessageLiveCapabilityAdapterProofs(...)` और
-`verifyChannelMessageLiveFinalizerProofs(...)` tests से समर्थित रखें ताकि native preview,
-progress, edit, fallback/retention, cleanup, और receipt behavior चुपचाप drift न हो।
-जो inbound receivers platform acknowledgements को defer करते हैं, उन्हें
-ack timing को monitor-local state में छिपाने के बजाय
-`message.receive.defaultAckPolicy` और `supportedAckPolicies` घोषित करने चाहिए। हर घोषित policy को
-`verifyChannelMessageReceiveAckPolicyAdapterProofs(...)` से cover करें।
+## संदेश अडैप्टर
 
-Legacy reply helpers जैसे `createChannelTurnReplyPipeline`,
-`dispatchInboundReplyWithBase`, और `recordInboundSessionAndDispatchReply`
-compatibility dispatchers के लिए उपलब्ध रहते हैं। नए चैनल code के लिए इन नामों का उपयोग न करें; नए plugins को `openclaw/plugin-sdk/channel-outbound` पर `message` अडैप्टर, receipts, और
-receive/send lifecycle helpers से शुरू करना चाहिए।
+`openclaw/plugin-sdk/channel-outbound` से `defineChannelMessageAdapter` वाला
+`message` अडैप्टर एक्सपोज़ करें। केवल उन्हीं स्थायी अंतिम-प्रेषण
+क्षमताओं को घोषित करें जिनका आपका नेटिव ट्रांसपोर्ट वास्तव में समर्थन करता है और जिन्हें ऐसा कॉन्ट्रैक्ट
+टेस्ट समर्थित करता हो जो नेटिव साइड इफ़ेक्ट और लौटाई गई रसीद को सिद्ध करता है। टेक्स्ट/मीडिया
+प्रेषण को उन्हीं ट्रांसपोर्ट फ़ंक्शन की ओर इंगित करें जिनका लेगेसी `outbound` अडैप्टर उपयोग करता है। पूर्ण
+API कॉन्ट्रैक्ट, क्षमता मैट्रिक्स, रसीद नियमों, लाइव प्रीव्यू
+अंतिमीकरण, प्राप्ति अभिस्वीकृति नीति, टेस्ट और माइग्रेशन तालिका के लिए
+[चैनल आउटबाउंड API](/hi/plugins/sdk-channel-outbound) देखें।
 
-Inbound authorization migrate करने वाले चैनल runtime receive
-paths से experimental
-`openclaw/plugin-sdk/channel-ingress-runtime` subpath का उपयोग कर सकते हैं।
-Subpath platform lookup और side effects को plugin में रखता है, जबकि
-allowlist state resolution, route/sender/command/event/activation
-decisions, redacted diagnostics, और turn-admission mapping साझा करता है। Plugin
-identity normalization को उस descriptor में रखें जिसे आप resolver को देते हैं; resolved state या decision से raw match values serialize न करें। API design,
-ownership boundary, और test expectations के लिए
-[चैनल ingress API](/hi/plugins/sdk-channel-ingress) देखें।
+यदि आपके मौजूदा `outbound` अडैप्टर में पहले से सही प्रेषण विधियाँ और
+क्षमता मेटाडेटा हैं, तो दूसरा ब्रिज स्वयं लिखने के बजाय
+`createChannelMessageAdapterFromOutbound(...)` से `message` अडैप्टर व्युत्पन्न करें।
+अडैप्टर प्रेषण `MessageReceipt` मान लौटाते हैं। लेगेसी आईडी के लिए, समानांतर
+`messageIds` फ़ील्ड बनाए रखने के बजाय उन्हें
+`listMessageReceiptPlatformIds(...)` या
+`resolveMessageReceiptPrimaryId(...)` से व्युत्पन्न करें।
 
-अगर आपका चैनल inbound replies के बाहर typing indicators का समर्थन करता है, तो
-channel plugin पर `heartbeat.sendTyping(...)` expose करें। Core इसे heartbeat model run शुरू होने से पहले resolved heartbeat delivery target के साथ call करता है और
-shared typing keepalive/cleanup lifecycle का उपयोग करता है। जब platform को explicit stop signal चाहिए, तो `heartbeat.clearTyping(...)`
-जोड़ें।
+लाइव और फ़ाइनलाइज़र क्षमताओं को सटीक रूप से घोषित करें - कोर इन्हीं से तय करता है
+कि चैनल क्या कर सकता है, और घोषित तथा वास्तविक व्यवहार के बीच अंतर
+कॉन्ट्रैक्ट टेस्ट की विफलता है:
 
-अगर आपका चैनल media sources ले जाने वाले message-tool params जोड़ता है, तो उन
-param names को `describeMessageTool(...).mediaSourceParams` के माध्यम से expose करें। Core
-sandbox path normalization और outbound media-access
-policy के लिए इस explicit list का उपयोग करता है, इसलिए plugins को provider-विशिष्ट
-avatar, attachment, या cover-image params के लिए shared-core special cases की ज़रूरत नहीं होती।
-`{ "set-profile": ["avatarUrl", "avatarPath"] }` जैसे action-keyed map लौटाना
-बेहतर है ताकि असंबंधित actions किसी दूसरे action के media args inherit न करें। Flat array उन params के लिए अभी भी काम करता है जो
-हर exposed action में जानबूझकर साझा किए जाते हैं।
-जिन चैनलों को platform-side media fetch के लिए temporary public URL expose करना हो, वे
-plugin state stores के साथ
-`openclaw/plugin-sdk/outbound-media` से `createHostedOutboundMediaStore(...)` का उपयोग कर सकते हैं। Platform
-route parsing और token enforcement को channel plugin में रखें; shared helper
-सिर्फ media loading, expiry metadata, chunk rows, और cleanup का स्वामी होता है।
+| सतह                                  | मान                                                                                              |
+| ------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| `message.live.capabilities`           | `draftPreview`, `previewFinalization`, `progressUpdates`, `nativeStreaming`, `quietFinalization` |
+| `message.live.finalizer.capabilities` | `finalEdit`, `normalFallback`, `discardPending`, `previewReceipt`, `retainOnAmbiguousFailure`    |
 
-अगर आपके चैनल को `message(action="send")` के लिए provider-विशिष्ट shaping चाहिए,
-तो `actions.prepareSendPayload(...)` को प्राथमिकता दें। Native cards, blocks, embeds, या
-अन्य durable data को `payload.channelData.<channel>` के अंतर्गत रखें और core को
-outbound/message अडैप्टर के माध्यम से actual send करने दें। Send के लिए
-`actions.handleAction(...)` का उपयोग केवल उन payloads के लिए compatibility fallback के रूप में करें
-जो serialize और retry नहीं किए जा सकते।
+ड्राफ़्ट प्रीव्यू को उसी स्थान पर अंतिम रूप देने वाले चैनलों को रनटाइम लॉजिक
+`defineFinalizableLivePreviewAdapter(...)` और
+`deliverWithFinalizableLivePreviewAdapter(...)` के माध्यम से रूट करना चाहिए और घोषित
+क्षमताओं को `verifyChannelMessageLiveCapabilityAdapterProofs(...)`
+और `verifyChannelMessageLiveFinalizerProofs(...)` टेस्ट द्वारा समर्थित रखना चाहिए, ताकि नेटिव प्रीव्यू,
+प्रगति, संपादन, फ़ॉलबैक/अवधारण, क्लीनअप और रसीद का व्यवहार चुपचाप
+बदल न सके।
 
-अगर आपका platform conversation ids के अंदर अतिरिक्त scope store करता है, तो उस parsing को
-`messaging.resolveSessionConversation(...)` के साथ plugin में रखें। यह
-`rawId` को base conversation id, वैकल्पिक thread
-id, explicit `baseConversationId`, और किसी भी `parentConversationCandidates` से मैप करने का canonical hook है।
-जब आप `parentConversationCandidates` लौटाते हैं, तो उन्हें सबसे संकरे parent से
-सबसे व्यापक/base conversation तक क्रम में रखें।
+प्लेटफ़ॉर्म अभिस्वीकृतियों को स्थगित करने वाले इनबाउंड रिसीवरों को
+मॉनिटर-स्थानीय स्थिति में अभिस्वीकृति समय छिपाने के बजाय
+`message.receive.defaultAckPolicy` और `supportedAckPolicies` घोषित करने चाहिए।
+प्रत्येक घोषित नीति को `verifyChannelMessageReceiveAckPolicyAdapterProofs(...)` से कवर करें।
 
-जब plugin code को route-जैसे fields normalize करने, child thread की उसके parent route से तुलना करने, या
-`{ channel, to, accountId, threadId }` से stable dedupe key बनाने की ज़रूरत हो, तो `openclaw/plugin-sdk/channel-route` का उपयोग करें। Helper
-numeric thread ids को उसी तरह normalize करता है जैसे core करता है, इसलिए plugins को ad hoc `String(threadId)` comparisons के बजाय
-इसे प्राथमिकता देनी चाहिए।
-Provider-विशिष्ट target grammar वाले plugins को
-`messaging.resolveOutboundSessionRoute(...)` expose करना चाहिए ताकि core को parser shims का उपयोग किए बिना provider-native
-session और thread identity मिल सके।
+`dispatchInboundReplyWithBase` और
+`recordInboundSessionAndDispatchReply` जैसे लेगेसी उत्तर हेल्पर संगतता
+डिस्पैचर के लिए उपलब्ध रहते हैं। नए चैनल कोड के लिए उनका उपयोग न करें; इसके बजाय
+`message` अडैप्टर, रसीदों और
+`openclaw/plugin-sdk/channel-outbound` पर उपलब्ध प्राप्ति/प्रेषण जीवनचक्र हेल्पर से आरंभ करें।
 
-जिन bundled plugins को channel registry boot होने से पहले वही parsing चाहिए,
-वे matching
-`resolveSessionConversation(...)` export के साथ top-level `session-key-api.ts` file भी expose कर सकते हैं। Core इस bootstrap-safe surface का उपयोग
-सिर्फ तब करता है जब runtime plugin registry अभी उपलब्ध नहीं होती।
+### इनबाउंड प्रवेश (प्रायोगिक)
 
-`messaging.resolveParentConversationCandidates(...)` legacy compatibility fallback के रूप में उपलब्ध रहता है, जब plugin को generic/raw id के ऊपर
-सिर्फ parent fallbacks चाहिए। अगर दोनों hooks मौजूद हैं, तो core पहले
-`resolveSessionConversation(...).parentConversationCandidates` का उपयोग करता है और केवल तब
-`resolveParentConversationCandidates(...)` पर fallback करता है जब canonical hook
-उन्हें omit करता है।
+इनबाउंड प्राधिकरण माइग्रेट करने वाले चैनल रनटाइम प्राप्ति
+पथों से प्रायोगिक `openclaw/plugin-sdk/channel-ingress-runtime` उपपथ का उपयोग कर सकते हैं।
+यह प्लेटफ़ॉर्म तथ्य, कच्ची अनुमति-सूचियाँ, रूट विवरणक, कमांड
+तथ्य और एक्सेस-समूह कॉन्फ़िगरेशन स्वीकार करता है, फिर प्रेषक/रूट/कमांड/सक्रियण
+प्रक्षेपणों के साथ क्रमबद्ध प्रवेश ग्राफ़ लौटाता है, जबकि प्लेटफ़ॉर्म लुकअप और साइड
+इफ़ेक्ट Plugin में रहते हैं। Plugin पहचान सामान्यीकरण उस
+विवरणक में रखें जिसे आप रिज़ॉल्वर को देते हैं; समाधान की गई स्थिति या निर्णय से कच्चे मिलान मान
+क्रमबद्ध न करें। API डिज़ाइन, स्वामित्व सीमा और टेस्ट अपेक्षाओं के लिए
+[चैनल प्रवेश API](/hi/plugins/sdk-channel-ingress) देखें।
 
-## स्वीकृतियाँ और चैनल क्षमताएँ
+### टाइपिंग संकेतक
 
-अधिकांश चैनल plugins को approval-विशिष्ट code की ज़रूरत नहीं होती।
+यदि आपका चैनल इनबाउंड उत्तरों के बाहर टाइपिंग संकेतकों का समर्थन करता है, तो चैनल Plugin पर
+`heartbeat.sendTyping(...)` एक्सपोज़ करें। कोर Heartbeat मॉडल रन शुरू होने से पहले
+समाधान किए गए Heartbeat डिलीवरी लक्ष्य के साथ इसे कॉल करता है और
+साझा टाइपिंग कीपअलाइव/क्लीनअप जीवनचक्र का उपयोग करता है। जब प्लेटफ़ॉर्म को स्पष्ट रोक संकेत चाहिए, तब
+`heartbeat.clearTyping(...)` जोड़ें।
 
-- कोर समान-चैट `/approve`, साझा अनुमोदन बटन पेलोड, और सामान्य फ़ॉलबैक डिलीवरी का स्वामी है।
-- जब चैनल को अनुमोदन-विशिष्ट व्यवहार चाहिए, तो चैनल Plugin पर एक `approvalCapability` ऑब्जेक्ट को प्राथमिकता दें।
-- `ChannelPlugin.approvals` हटा दिया गया है। अनुमोदन डिलीवरी/नेटिव/रेंडर/auth तथ्य `approvalCapability` पर रखें।
-- `plugin.auth` केवल login/logout है; कोर अब उस ऑब्जेक्ट से अनुमोदन auth हुक नहीं पढ़ता।
-- `approvalCapability.authorizeActorAction` और `approvalCapability.getActionAvailabilityState` कैनोनिकल अनुमोदन-auth सीम हैं।
-- समान-चैट अनुमोदन auth उपलब्धता के लिए `approvalCapability.getActionAvailabilityState` का उपयोग करें। नेटिव डिलीवरी अक्षम होने पर भी कॉन्फ़िगर किए गए अनुमोदकों को `/approve` के लिए उपलब्ध रखें; इसके बजाय डिलीवरी/setup मार्गदर्शन के लिए नेटिव आरंभिक-सतह स्थिति का उपयोग करें।
-- यदि आपका चैनल नेटिव exec अनुमोदन उजागर करता है, तो जब यह समान-चैट अनुमोदन auth से अलग हो, आरंभिक-सतह/नेटिव-क्लाइंट स्थिति के लिए `approvalCapability.getExecInitiatingSurfaceState` का उपयोग करें। कोर उस exec-विशिष्ट हुक का उपयोग `enabled` बनाम `disabled` में अंतर करने, यह तय करने कि आरंभिक चैनल नेटिव exec अनुमोदन का समर्थन करता है या नहीं, और चैनल को नेटिव-क्लाइंट फ़ॉलबैक मार्गदर्शन में शामिल करने के लिए करता है। `createApproverRestrictedNativeApprovalCapability(...)` सामान्य मामले के लिए इसे भरता है।
-- चैनल-विशिष्ट पेलोड लाइफ़साइकल व्यवहार, जैसे डुप्लिकेट स्थानीय अनुमोदन प्रॉम्प्ट छिपाना या डिलीवरी से पहले टाइपिंग संकेत भेजना, के लिए `outbound.shouldSuppressLocalPayloadPrompt` या `outbound.beforeDeliverPayload` का उपयोग करें।
-- `approvalCapability.delivery` का उपयोग केवल नेटिव अनुमोदन रूटिंग या फ़ॉलबैक दमन के लिए करें।
-- चैनल-स्वामित्व वाले नेटिव अनुमोदन तथ्यों के लिए `approvalCapability.nativeRuntime` का उपयोग करें। इसे हॉट चैनल एंट्रीपॉइंट पर `createLazyChannelApprovalNativeRuntimeAdapter(...)` के साथ lazy रखें, जो मांग पर आपके runtime मॉड्यूल को import कर सकता है और फिर भी कोर को अनुमोदन लाइफ़साइकल असेंबल करने देता है।
-- `approvalCapability.render` का उपयोग केवल तब करें जब चैनल को साझा रेंडरर के बजाय सचमुच कस्टम अनुमोदन पेलोड चाहिए।
-- जब चैनल चाहता है कि disabled-path उत्तर नेटिव exec अनुमोदन सक्षम करने के लिए ज़रूरी सटीक config knobs समझाए, तो `approvalCapability.describeExecApprovalSetup` का उपयोग करें। हुक को `{ channel, channelLabel, accountId }` मिलता है; नामित-अकाउंट चैनलों को शीर्ष-स्तरीय defaults के बजाय `channels.<channel>.accounts.<id>.execApprovals.*` जैसे अकाउंट-स्कोप्ड पथ रेंडर करने चाहिए।
-- जब Plugin अनुमोदन no-route और timeout विफलताओं के लिए Plugin अनुमोदन विफलता मार्गदर्शन दिखाना सुरक्षित हो, तो `approvalCapability.describePluginApprovalSetup` का उपयोग करें। `createApproverRestrictedNativeApprovalCapability(...)` इसे `describeExecApprovalSetup` से infer नहीं करता; वही helper स्पष्ट रूप से केवल तब पास करें जब Plugin और exec अनुमोदन सचमुच समान नेटिव setup का उपयोग करते हों।
-- यदि कोई चैनल मौजूदा config से स्थिर owner-जैसी DM पहचानों का अनुमान लगा सकता है, तो अनुमोदन-विशिष्ट कोर लॉजिक जोड़े बिना समान-चैट `/approve` को सीमित करने के लिए `openclaw/plugin-sdk/approval-runtime` से `createResolvedApproverActionAuthAdapter` का उपयोग करें।
-- यदि कस्टम अनुमोदन auth जानबूझकर केवल समान-चैट फ़ॉलबैक की अनुमति देता है, तो `openclaw/plugin-sdk/approval-auth-runtime` से `markImplicitSameChatApprovalAuthorization({ authorized: true })` लौटाएँ; अन्यथा कोर परिणाम को स्पष्ट अनुमोदक authorization मानता है।
-- यदि चैनल-स्वामित्व वाला नेटिव callback अनुमोदनों को सीधे resolve करता है, तो resolve करने से पहले `isImplicitSameChatApprovalAuthorization(...)` का उपयोग करें, ताकि implicit फ़ॉलबैक फिर भी चैनल के सामान्य actor authorization से गुज़रे।
-- यदि किसी चैनल को नेटिव अनुमोदन डिलीवरी चाहिए, तो चैनल कोड को target normalization और transport/presentation तथ्यों पर केंद्रित रखें। `openclaw/plugin-sdk/approval-runtime` से `createChannelExecApprovalProfile`, `createChannelNativeOriginTargetResolver`, `createChannelApproverDmTargetResolver`, और `createApproverRestrictedNativeApprovalCapability` का उपयोग करें। चैनल-विशिष्ट तथ्यों को `approvalCapability.nativeRuntime` के पीछे रखें, आदर्श रूप से `createChannelApprovalNativeRuntimeAdapter(...)` या `createLazyChannelApprovalNativeRuntimeAdapter(...)` के माध्यम से, ताकि कोर handler असेंबल कर सके और request filtering, routing, dedupe, expiry, Gateway subscription, और routed-elsewhere notices का स्वामित्व रख सके। `nativeRuntime` कुछ छोटे seams में विभाजित है:
-- जब कोई चैनल session-origin नेटिव डिलीवरी और स्पष्ट अनुमोदन forwarding targets, दोनों का समर्थन करता है, तो `openclaw/plugin-sdk/approval-native-runtime` से `createNativeApprovalChannelRouteGates` का उपयोग करें। helper अनुमोदन config चयन, `mode` handling, agent/session filters, account binding, session-target matching, और target-list matching को केंद्रीकृत करता है, जबकि callers अभी भी channel id, default forwarding mode, account lookup, transport-enabled check, target normalization, और turn-source target resolution के स्वामी रहते हैं। core-owned channel policy defaults बनाने के लिए इसका उपयोग न करें; चैनल का दस्तावेज़ीकृत default mode स्पष्ट रूप से पास करें।
-- `createChannelNativeOriginTargetResolver` `{ to, accountId, threadId }` targets के लिए default रूप से shared channel-route matcher का उपयोग करता है। `targetsMatch` केवल तब पास करें जब किसी चैनल के provider-specific equivalence rules हों, जैसे Slack timestamp prefix matching।
-- जब चैनल को default route matcher या custom `targetsMatch` callback चलने से पहले provider ids को canonicalize करना हो, और delivery के लिए original target को सुरक्षित रखना हो, तो `createChannelNativeOriginTargetResolver` में `normalizeTargetForMatch` पास करें। `normalizeTarget` का उपयोग केवल तब करें जब resolved delivery target को स्वयं canonicalize किया जाना चाहिए।
-- `availability` - क्या अकाउंट configured है और क्या request को handle किया जाना चाहिए
-- `presentation` - shared approval view model को pending/resolved/expired नेटिव पेलोड या final actions में map करें
-- `transport` - targets तैयार करें और नेटिव अनुमोदन messages भेजें/update/delete करें
-- `interactions` - नेटिव buttons या reactions के लिए वैकल्पिक bind/unbind/clear-action hooks, साथ ही वैकल्पिक `cancelDelivered` hook। `cancelDelivered` तब implement करें जब `deliverPending` in-process या persistent state (जैसे reaction target store) register करता हो, ताकि handler stop द्वारा `bindPending` चलने से पहले delivery cancel होने पर या `bindPending` no handle लौटाने पर वह state release की जा सके
-- `observe` - वैकल्पिक delivery diagnostics hooks
-- यदि चैनल को client, token, Bolt app, या webhook receiver जैसे runtime-owned objects चाहिए, तो उन्हें `openclaw/plugin-sdk/channel-runtime-context` के माध्यम से register करें। generic runtime-context registry कोर को channel startup state से capability-driven handlers bootstrap करने देती है, बिना अनुमोदन-विशिष्ट wrapper glue जोड़े।
-- निचले-स्तर के `createChannelApprovalHandler` या `createChannelNativeApprovalRuntime` तक केवल तब पहुँचें जब capability-driven seam अभी पर्याप्त expressive न हो।
-- नेटिव अनुमोदन चैनलों को उन helpers के माध्यम से `accountId` और `approvalKind`, दोनों route करने होंगे। `accountId` multi-account approval policy को सही bot account तक scoped रखता है, और `approvalKind` exec बनाम Plugin अनुमोदन व्यवहार को core में hardcoded branches के बिना channel के लिए उपलब्ध रखता है।
-- कोर अब approval reroute notices का भी स्वामी है। Channel plugins को `createChannelNativeApprovalRuntime` से अपने "approval went to DMs / another channel" follow-up messages नहीं भेजने चाहिए; इसके बजाय, shared approval capability helpers के माध्यम से accurate origin + approver-DM routing expose करें और initiating chat में कोई notice वापस post करने से पहले core को actual deliveries aggregate करने दें।
-- delivered approval id kind को end-to-end सुरक्षित रखें। नेटिव clients को channel-local state से exec बनाम Plugin approval routing का अनुमान लगाना या rewrite नहीं करना चाहिए।
-- अलग-अलग approval kinds जानबूझकर अलग नेटिव surfaces expose कर सकते हैं।
-  मौजूदा bundled examples:
-  - Slack exec और Plugin ids, दोनों के लिए नेटिव approval routing उपलब्ध रखता है।
-  - Matrix exec और Plugin approvals के लिए समान नेटिव DM/channel routing और reaction UX रखता है, जबकि auth को approval kind के अनुसार अलग रहने देता है।
-- `createApproverRestrictedNativeApprovalAdapter` अभी भी compatibility wrapper के रूप में मौजूद है, लेकिन नए code को capability builder को प्राथमिकता देनी चाहिए और Plugin पर `approvalCapability` expose करना चाहिए।
+### मीडिया स्रोत पैरामीटर
 
-हॉट चैनल entrypoints के लिए, जब आपको उस family का केवल एक हिस्सा चाहिए, तो संकरे runtime subpaths को प्राथमिकता दें:
+यदि आपका चैनल संदेश-टूल में मीडिया स्रोत रखने वाले पैरामीटर जोड़ता है, तो
+उन पैरामीटर नामों को `plugin.actions.describeMessageTool(...).mediaSourceParams` के माध्यम से एक्सपोज़ करें।
+कोर सैंडबॉक्स पथ सामान्यीकरण और आउटबाउंड
+मीडिया-पहुँच नीति के लिए इस स्पष्ट सूची का उपयोग करता है, इसलिए plugins को
+प्रदाता-विशिष्ट अवतार, अटैचमेंट या कवर-इमेज पैरामीटर के लिए साझा-कोर विशेष स्थितियों की आवश्यकता नहीं होती।
+
+`{ "set-profile": ["avatarUrl", "avatarPath"] }` जैसे क्रिया-कुंजी वाले मैप को प्राथमिकता दें,
+ताकि असंबंधित क्रियाएँ किसी अन्य क्रिया के मीडिया आर्ग्युमेंट ग्रहण न करें। प्रत्येक एक्सपोज़ की गई क्रिया में जानबूझकर
+साझा किए गए पैरामीटर के लिए समतल ऐरे भी काम करता है।
+
+जिन चैनलों को प्लेटफ़ॉर्म-पक्षीय मीडिया
+फ़ेच के लिए अस्थायी सार्वजनिक URL एक्सपोज़ करना आवश्यक है, वे Plugin स्थिति स्टोर के साथ
+`openclaw/plugin-sdk/outbound-media` से `createHostedOutboundMediaStore(...)` का उपयोग कर सकते हैं। प्लेटफ़ॉर्म
+रूट पार्सिंग और टोकन प्रवर्तन चैनल Plugin में रखें; साझा हेल्पर
+केवल मीडिया लोडिंग, समाप्ति मेटाडेटा, चंक पंक्तियों और क्लीनअप का दायित्व संभालता है।
+
+### नेटिव पेलोड संरचना
+
+यदि आपके चैनल को `message(action="send")` के लिए प्रदाता-विशिष्ट संरचना चाहिए,
+तो `actions.prepareSendPayload(...)` को प्राथमिकता दें। नेटिव कार्ड, ब्लॉक, एम्बेड या
+अन्य स्थायी डेटा को `payload.channelData.<channel>` के अंतर्गत रखें और कोर को
+आउटबाउंड/संदेश अडैप्टर के माध्यम से भेजने दें। केवल उन पेलोड के लिए, जिन्हें क्रमबद्ध करके
+पुनः प्रयास नहीं किया जा सकता, संगतता फ़ॉलबैक के रूप में प्रेषण हेतु `actions.handleAction(...)` का उपयोग करें।
+
+### सेशन वार्तालाप व्याकरण
+
+यदि आपका प्लेटफ़ॉर्म वार्तालाप आईडी के भीतर अतिरिक्त स्कोप संग्रहीत करता है, तो उस पार्सिंग को
+`messaging.resolveSessionConversation(...)` के साथ Plugin में रखें। यह
+`rawId` को मूल वार्तालाप आईडी, वैकल्पिक
+थ्रेड आईडी, स्पष्ट `baseConversationId` और किसी भी
+`parentConversationCandidates` से मैप करने का कैनोनिकल हुक है। जब आप `parentConversationCandidates`
+लौटाएँ, तो उन्हें सबसे संकीर्ण पैरेंट से सबसे व्यापक/मूल वार्तालाप तक क्रमबद्ध करें।
+
+`messaging.resolveParentConversationCandidates(...)` उन plugins के लिए बहिष्कृत
+संगतता फ़ॉलबैक है जिन्हें सामान्य/कच्ची आईडी के ऊपर केवल पैरेंट फ़ॉलबैक चाहिए।
+यदि दोनों हुक मौजूद हों, तो कोर पहले
+`resolveSessionConversation(...).parentConversationCandidates` का उपयोग करता है और कैनोनिकल
+हुक द्वारा उन्हें छोड़े जाने पर ही `resolveParentConversationCandidates(...)` पर
+फ़ॉलबैक करता है।
+
+जिन बंडल किए गए plugins को चैनल रजिस्ट्री के बूट होने से पहले समान पार्सिंग चाहिए,
+वे मेल खाते `resolveSessionConversation(...)` एक्सपोर्ट के साथ शीर्ष-स्तरीय
+`session-key-api.ts` फ़ाइल एक्सपोज़ कर सकते हैं (Feishu और Telegram
+plugins देखें)। कोर उस बूटस्ट्रैप-सुरक्षित सतह का उपयोग केवल तब करता है, जब रनटाइम Plugin
+रजिस्ट्री अभी उपलब्ध नहीं होती।
+
+जब Plugin कोड को रूट-जैसे फ़ील्ड सामान्यीकृत करने, चाइल्ड थ्रेड की उसके पैरेंट रूट से तुलना करने
+या `{ channel, to, accountId, threadId }` से स्थिर डीडुप कुंजी बनाने की आवश्यकता हो, तब
+`openclaw/plugin-sdk/channel-route` का उपयोग करें। यह हेल्पर
+संख्यात्मक थ्रेड आईडी को कोर के समान तरीके से सामान्यीकृत करता है, इसलिए तदर्थ
+`String(threadId)` तुलनाओं के बजाय इसे प्राथमिकता दें। प्रदाता-विशिष्ट लक्ष्य व्याकरण वाले
+plugins को `messaging.resolveOutboundSessionRoute(...)` एक्सपोज़ करना चाहिए, ताकि कोर को
+पार्सर शिम के बिना प्रदाता-नेटिव सेशन और थ्रेड पहचान मिल सके।
+
+### खाता-स्कोप वाला वार्तालाप बाइंडिंग समर्थन
+
+जब चैनल सामान्य वर्तमान-वार्तालाप बाइंडिंग का समर्थन करता हो, तब
+`conversationBindings.supportsCurrentConversationBinding` सेट करें। `createChatChannelPlugin(...)`
+इस स्थिर क्षमता को डिफ़ॉल्ट रूप से `true` पर सेट करता है।
+
+यदि समर्थन कॉन्फ़िगर किए गए खाते के अनुसार अलग होता है, तो
+`conversationBindings.isCurrentConversationBindingSupported({ accountId })` भी लागू करें।
+कोर इस समकालिक हुक का मूल्यांकन स्थिर क्षमता सक्षम होने के बाद ही करता है।
+`false` लौटाने पर सामान्य वर्तमान-वार्तालाप क्षमता,
+बाइंड, लुकअप, सूची, टच और अनबाइंड संचालन उस खाते के लिए अनुपलब्ध हो जाते हैं।
+हुक छोड़ने पर स्थिर क्षमता प्रत्येक खाते पर लागू होती है।
+
+उत्तर पहले से लोड किए गए खाता कॉन्फ़िगरेशन या रनटाइम स्थिति से समाधान करें। यह
+हुक केवल सामान्य वर्तमान-वार्तालाप बाइंडिंग को नियंत्रित करता है; यह
+कॉन्फ़िगर किए गए बाइंडिंग नियमों या Plugin-स्वामित्व वाली सेशन रूटिंग को प्रतिस्थापित नहीं करता। कॉन्ट्रैक्ट टेस्ट में
+`openclaw/plugin-sdk/channel-core` द्वारा एक्सपोर्ट किए गए
+`ChannelPlugin["conversationBindings"]` कॉन्ट्रैक्ट के माध्यम से कम-से-कम एक समर्थित और एक असमर्थित खाता
+कवर होना चाहिए।
+
+## अनुमोदन और चैनल क्षमताएँ
+
+अधिकांश चैनल plugins को अनुमोदन-विशिष्ट कोड की आवश्यकता नहीं होती। कोर समान-चैट
+`/approve`, साझा अनुमोदन बटन पेलोड और सामान्य फ़ॉलबैक डिलीवरी का दायित्व संभालता है।
+`ChannelPlugin.approvals` हटा दिया गया था; इसके बजाय अनुमोदन डिलीवरी/नेटिव/रेंडर/प्राधिकरण
+तथ्यों को एक `approvalCapability` ऑब्जेक्ट पर रखें। `plugin.auth` केवल लॉगिन/लॉगआउट
+के लिए है - कोर अब उस ऑब्जेक्ट से अनुमोदन प्राधिकरण हुक नहीं पढ़ता।
+
+केवल नेटिव अनुमोदन रूटिंग या फ़ॉलबैक
+दमन के लिए `approvalCapability.delivery` और केवल तभी `approvalCapability.render` का उपयोग करें, जब किसी चैनल को वास्तव में
+साझा रेंडरर के बजाय कस्टम अनुमोदन पेलोड की आवश्यकता हो।
+
+### अनुमोदन प्राधिकरण
+
+- `approvalCapability.authorizeActorAction` और
+  `approvalCapability.getActionAvailabilityState` कैनोनिकल
+  अनुमोदन-प्राधिकरण सीम हैं।
+- समान-चैट अनुमोदन प्राधिकरण उपलब्धता के लिए `getActionAvailabilityState` का उपयोग करें।
+  नेटिव डिलीवरी अक्षम होने पर भी कॉन्फ़िगर किए गए अनुमोदकों को `/approve` के लिए उपलब्ध रखें;
+  इसके बजाय डिलीवरी/सेटअप मार्गदर्शन के लिए नेटिव आरंभिक-सतह स्थिति का उपयोग करें।
+- यदि आपका चैनल नेटिव निष्पादन अनुमोदन एक्सपोज़ करता है, तो
+  आरंभिक-सतह/नेटिव-क्लाइंट स्थिति समान-चैट
+  अनुमोदन प्राधिकरण से अलग होने पर उसके लिए `approvalCapability.getExecInitiatingSurfaceState` का उपयोग करें।
+  कोर उस निष्पादन-विशिष्ट हुक का उपयोग `enabled` और
+  `disabled` में अंतर करने, यह तय करने कि आरंभिक चैनल नेटिव निष्पादन
+  अनुमोदनों का समर्थन करता है या नहीं, और चैनल को नेटिव-क्लाइंट फ़ॉलबैक मार्गदर्शन में शामिल करने के लिए करता है।
+  सामान्य स्थिति में `createApproverRestrictedNativeApprovalCapability(...)` इसे भरता है।
+- यदि कोई चैनल मौजूदा कॉन्फ़िगरेशन से स्थिर स्वामी-जैसी DM पहचान अनुमानित कर सकता है,
+  तो अनुमोदन-विशिष्ट कोर लॉजिक जोड़े बिना समान-चैट
+  `/approve` को प्रतिबंधित करने के लिए
+  `openclaw/plugin-sdk/approval-runtime` से `createResolvedApproverActionAuthAdapter` का उपयोग करें।
+- यदि कस्टम अनुमोदन प्राधिकरण जानबूझकर केवल समान-चैट फ़ॉलबैक की अनुमति देता है, तो
+  `openclaw/plugin-sdk/approval-auth-runtime` से `markImplicitSameChatApprovalAuthorization({ authorized: true })` लौटाएँ;
+  अन्यथा कोर परिणाम को स्पष्ट अनुमोदक प्राधिकरण मानता है।
+- यदि चैनल-स्वामित्व वाला नेटिव कॉलबैक अनुमोदनों को सीधे समाधान करता है, तो समाधान से पहले
+  `isImplicitSameChatApprovalAuthorization(...)` का उपयोग करें, ताकि अंतर्निहित
+  फ़ॉलबैक फिर भी चैनल के सामान्य अभिनेता प्राधिकरण से होकर जाए।
+
+### पेलोड जीवनचक्र और सेटअप मार्गदर्शन
+
+- डुप्लिकेट स्थानीय अनुमोदन प्रॉम्प्ट छिपाने या डिलीवरी से पहले टाइपिंग
+  संकेतक भेजने जैसे चैनल-विशिष्ट पेलोड जीवनचक्र
+  व्यवहार के लिए `outbound.shouldSuppressLocalPayloadPrompt` या
+  `outbound.beforeDeliverPayload` का उपयोग करें।
+- जब चैनल चाहता है कि अक्षम-पथ उत्तर नेटिव निष्पादन अनुमोदन सक्षम करने के लिए आवश्यक
+  सटीक कॉन्फ़िगरेशन नॉब समझाए, तब `approvalCapability.describeExecApprovalSetup` का उपयोग करें।
+  हुक को `{ channel, channelLabel, accountId }` प्राप्त होता है;
+  नामित-खाता चैनलों को शीर्ष-स्तरीय
+  डिफ़ॉल्ट के बजाय `channels.<channel>.accounts.<id>.execApprovals.*` जैसे खाता-स्कोप वाले पथ रेंडर करने चाहिए।
+- जब Plugin अनुमोदन विफलता मार्गदर्शन को Plugin अनुमोदन के कोई-रूट-नहीं और टाइमआउट
+  विफलताओं के लिए दिखाना सुरक्षित हो, तब `approvalCapability.describePluginApprovalSetup` का उपयोग करें।
+  `createApproverRestrictedNativeApprovalCapability(...)`, `describeExecApprovalSetup` से
+  इसका अनुमान नहीं लगाता; समान हेल्पर को स्पष्ट रूप से केवल तभी पास करें,
+  जब Plugin और निष्पादन अनुमोदन वास्तव में समान नेटिव सेटअप का उपयोग करते हों।
+
+### नेटिव अनुमोदन डिलीवरी
+
+यदि किसी चैनल को नेटिव अनुमोदन डिलीवरी चाहिए, तो चैनल कोड को
+लक्ष्य सामान्यीकरण और ट्रांसपोर्ट/प्रस्तुति तथ्यों पर केंद्रित रखें।
+`openclaw/plugin-sdk/approval-runtime` से
+`createChannelExecApprovalProfile`, `createChannelNativeOriginTargetResolver`,
+`createChannelApproverDmTargetResolver` और
+`createApproverRestrictedNativeApprovalCapability` का उपयोग करें। चैनल-विशिष्ट तथ्यों को
+`approvalCapability.nativeRuntime` के पीछे रखें,
+आदर्श रूप से `createChannelApprovalNativeRuntimeAdapter(...)` या
+`createLazyChannelApprovalNativeRuntimeAdapter(...)` के माध्यम से, ताकि कोर हैंडलर को असेंबल कर सके
+और अनुरोध फ़िल्टरिंग, रूटिंग, डीडुप, समाप्ति, Gateway
+सदस्यता तथा अन्यत्र-रूट किए गए नोटिस का दायित्व संभाल सके।
+
+`nativeRuntime` को कुछ छोटे सीम में विभाजित किया गया है:
+
+- `availability` - क्या खाता कॉन्फ़िगर किया गया है और क्या किसी अनुरोध को
+  संभाला जाना चाहिए
+- `presentation` - साझा अनुमोदन व्यू मॉडल को
+  लंबित/समाधानित/समय-सीमा समाप्त नेटिव पेलोड या अंतिम कार्रवाइयों में मैप करें
+- `transport` - लक्ष्य तैयार करें और नेटिव अनुमोदन
+  संदेश भेजें/अपडेट करें/हटाएँ
+- `interactions` - नेटिव बटन
+  या प्रतिक्रियाओं के लिए वैकल्पिक बाइंड/अनबाइंड/कार्रवाई-साफ़-करने वाले हुक, साथ ही एक वैकल्पिक `cancelDelivered` हुक। जब
+  `deliverPending` इन-प्रोसेस या स्थायी
+  स्थिति (जैसे प्रतिक्रिया लक्ष्य स्टोर) पंजीकृत करता है, तब `cancelDelivered` लागू करें, ताकि यदि
+  हैंडलर रुकने से `bindPending` चलने से पहले डिलीवरी रद्द हो जाए, या जब
+  `bindPending` कोई हैंडल न लौटाए, तो उस स्थिति को मुक्त किया जा सके
+- `observe` - वैकल्पिक डिलीवरी निदान हुक
+
+अन्य अनुमोदन सहायक:
+
+- जब कोई चैनल सत्र-मूल नेटिव डिलीवरी और स्पष्ट अनुमोदन अग्रेषण लक्ष्य,
+  दोनों का समर्थन करता है, तब
+  `openclaw/plugin-sdk/approval-native-runtime` से `createNativeApprovalChannelRouteGates` का उपयोग करें। यह
+  सहायक अनुमोदन कॉन्फ़िग चयन, `mode` प्रबंधन, एजेंट/सत्र
+  फ़िल्टर, खाता बाइंडिंग, सत्र-लक्ष्य मिलान और लक्ष्य-सूची मिलान को केंद्रीकृत करता है,
+  जबकि कॉलर अब भी चैनल आईडी, डिफ़ॉल्ट अग्रेषण मोड, खाता
+  लुकअप, ट्रांसपोर्ट-सक्षम जाँच, लक्ष्य सामान्यीकरण और टर्न-स्रोत
+  लक्ष्य समाधान के स्वामी बने रहते हैं। कोर-स्वामित्व वाले चैनल नीति
+  डिफ़ॉल्ट बनाने के लिए इसका उपयोग न करें; चैनल का दस्तावेज़ीकृत डिफ़ॉल्ट मोड स्पष्ट रूप से पास करें।
+- `createChannelNativeOriginTargetResolver`, `{ to, accountId, threadId }` लक्ष्यों के लिए डिफ़ॉल्ट रूप से साझा चैनल-रूट
+  मिलानकर्ता का उपयोग करता है। `targetsMatch` केवल तभी पास करें,
+  जब किसी चैनल में प्रदाता-विशिष्ट समतुल्यता नियम हों,
+  जैसे Slack टाइमस्टैम्प उपसर्ग मिलान। `normalizeTargetForMatch` तब पास करें, जब
+  चैनल को डिफ़ॉल्ट रूट मिलानकर्ता या कस्टम `targetsMatch` कॉलबैक चलने से पहले
+  प्रदाता आईडी को कैनोनिकल बनाना हो, जबकि डिलीवरी के लिए
+  मूल लक्ष्य संरक्षित रहे। `normalizeTarget` का उपयोग केवल तभी करें, जब समाधानित
+  डिलीवरी लक्ष्य को ही कैनोनिकल बनाया जाना चाहिए।
+- यदि चैनल को क्लाइंट, टोकन, Bolt
+  ऐप या Webhook रिसीवर जैसी रनटाइम-स्वामित्व वाली वस्तुओं की आवश्यकता हो, तो उन्हें
+  `openclaw/plugin-sdk/channel-runtime-context` के माध्यम से पंजीकृत करें। सामान्य रनटाइम-संदर्भ
+  रजिस्ट्री, अनुमोदन-विशिष्ट रैपर ग्लू जोड़े बिना, कोर को चैनल
+  स्टार्टअप स्थिति से क्षमता-संचालित हैंडलर बूटस्ट्रैप करने देती है।
+- निचले-स्तर के `createChannelApprovalHandler` या
+  `createChannelNativeApprovalRuntime` का उपयोग केवल तभी करें, जब क्षमता-संचालित सीम
+  अभी पर्याप्त रूप से अभिव्यंजक न हो।
+- नेटिव अनुमोदन चैनलों को `accountId` और `approvalKind` दोनों को
+  उन सहायकों के माध्यम से रूट करना होगा। `accountId` बहु-खाता अनुमोदन नीति को
+  सही बॉट खाते तक सीमित रखता है, और `approvalKind` कोर में
+  हार्डकोडेड शाखाओं के बिना exec बनाम Plugin अनुमोदन व्यवहार
+  चैनल के लिए उपलब्ध रखता है।
+- अनुमोदन पुनः-रूट सूचना का स्वामित्व भी कोर के पास है। चैनल Plugin को
+  `createChannelNativeApprovalRuntime` से अपने स्वयं के "अनुमोदन DMs / किसी अन्य चैनल पर गया" अनुवर्ती संदेश
+  नहीं भेजने चाहिए; इसके बजाय, साझा अनुमोदन क्षमता सहायकों के माध्यम से
+  सटीक मूल + अनुमोदक-DM रूटिंग उजागर करें और आरंभिक चैट में
+  कोई सूचना वापस पोस्ट करने से पहले कोर को वास्तविक डिलीवरी एकत्रित करने दें।
+- डिलीवर किए गए अनुमोदन आईडी के प्रकार को शुरू से अंत तक संरक्षित रखें। नेटिव क्लाइंट को
+  चैनल-स्थानीय स्थिति से exec बनाम Plugin अनुमोदन रूटिंग का अनुमान नहीं लगाना
+  या उसे फिर से लिखना नहीं चाहिए।
+- उस स्पष्ट `approvalKind` को `resolveApprovalOverGateway` में पास करें। यह
+  कैनोनिकल `approval.resolve` सेवा का उपयोग करता है और जब कोई अन्य सतह पहले उत्तर देती है,
+  तो दर्ज विजेता लौटाता है। पुराना स्पष्ट `resolveMethod` इनपुट
+  कमांड-समर्थित नियंत्रणों के लिए बना हुआ है; नई नेटिव कार्रवाइयों को इसका उपयोग नहीं करना चाहिए
+  या किसी आईडी से प्रकार का अनुमान नहीं लगाना चाहिए।
+- अलग-अलग अनुमोदन प्रकार जानबूझकर अलग नेटिव
+  सतहें उजागर कर सकते हैं। वर्तमान बंडल किए गए उदाहरण: Matrix, exec और Plugin अनुमोदनों के लिए समान नेटिव DM/चैनल
+  रूटिंग और प्रतिक्रिया UX बनाए रखता है, जबकि फिर भी अनुमोदन प्रकार के अनुसार
+  प्रमाणीकरण अलग होने देता है; Slack, exec और Plugin दोनों आईडी के लिए नेटिव अनुमोदन रूटिंग
+  उपलब्ध रखता है।
+- `createApproverRestrictedNativeApprovalAdapter` अब भी एक
+  संगतता रैपर के रूप में मौजूद है, लेकिन नए कोड को क्षमता बिल्डर को प्राथमिकता देनी चाहिए
+  और Plugin पर `approvalCapability` उजागर करना चाहिए।
+
+### अनुमोदन रनटाइम के अधिक संकीर्ण उपपथ
+
+हॉट चैनल प्रवेश-बिंदुओं के लिए, जब आपको उस समूह का केवल एक भाग चाहिए, तो व्यापक
+`approval-runtime` बैरल के बजाय इन अधिक संकीर्ण उपपथों को प्राथमिकता दें:
 
 - `openclaw/plugin-sdk/approval-auth-runtime`
 - `openclaw/plugin-sdk/approval-client-runtime`
 - `openclaw/plugin-sdk/approval-delivery-runtime`
 - `openclaw/plugin-sdk/approval-gateway-runtime`
+- `openclaw/plugin-sdk/approval-reference-runtime`
 - `openclaw/plugin-sdk/approval-handler-adapter-runtime`
 - `openclaw/plugin-sdk/approval-handler-runtime`
 - `openclaw/plugin-sdk/approval-native-runtime`
 - `openclaw/plugin-sdk/approval-reply-runtime`
 - `openclaw/plugin-sdk/channel-runtime-context`
 
-इसी तरह, जब आपको व्यापक umbrella surface की ज़रूरत न हो, तो
-`openclaw/plugin-sdk/setup-runtime`,
-`openclaw/plugin-sdk/setup-runtime`,
+इसी प्रकार, जब आपको उन सभी की आवश्यकता न हो, तो व्यापक अम्ब्रेला सतहों के बजाय
 `openclaw/plugin-sdk/reply-runtime`,
 `openclaw/plugin-sdk/reply-dispatch-runtime`,
 `openclaw/plugin-sdk/reply-reference`, और
 `openclaw/plugin-sdk/reply-chunking` को प्राथमिकता दें।
 
-विशेष रूप से setup के लिए:
+### सेटअप उपपथ
 
-- `openclaw/plugin-sdk/setup-runtime` runtime-safe setup helpers को cover करता है:
-  `createSetupTranslator`, import-safe setup patch adapters (`createPatchedAccountSetupAdapter`,
-  `createEnvPatchedAccountSetupAdapter`,
-  `createSetupInputPresenceValidator`), lookup-note output,
-  `promptResolvedAllowFrom`, `splitSetupEntries`, और delegated
-  setup-proxy builders
-- `openclaw/plugin-sdk/setup-runtime` में
-  `createEnvPatchedAccountSetupAdapter` के लिए env-aware adapter seam शामिल है
-- `openclaw/plugin-sdk/channel-setup` optional-install setup
-  builders और कुछ setup-safe primitives को cover करता है:
-  `createOptionalChannelSetupSurface`, `createOptionalChannelSetupAdapter`,
+- `openclaw/plugin-sdk/setup-runtime` रनटाइम-सुरक्षित सेटअप सहायकों को कवर करता है:
+  `createSetupTranslator`, इम्पोर्ट-सुरक्षित सेटअप पैच एडाप्टर
+  (`createPatchedAccountSetupAdapter`, `createEnvPatchedAccountSetupAdapter`,
+  `createSetupInputPresenceValidator`), लुकअप-नोट आउटपुट,
+  `promptResolvedAllowFrom`, `splitSetupEntries`, और प्रत्यायोजित
+  सेटअप-प्रॉक्सी बिल्डर।
+- `openclaw/plugin-sdk/channel-setup` वैकल्पिक-इंस्टॉल सेटअप
+  बिल्डर और कुछ सेटअप-सुरक्षित प्रिमिटिव को कवर करता है: `createOptionalChannelSetupSurface`,
+  `createOptionalChannelSetupAdapter`, `createOptionalChannelSetupWizard`,
+  `DEFAULT_ACCOUNT_ID`, `createTopLevelChannelDmPolicy`,
+  `setSetupChannelEnabled`, और `splitSetupEntries`।
+- व्यापक `openclaw/plugin-sdk/setup` सीम का उपयोग केवल तभी करें, जब आपको
+  `moveSingleAccountChannelSectionToDefaultAccount(...)` जैसे अधिक भारी साझा सेटअप/कॉन्फ़िग सहायकों की भी
+  आवश्यकता हो।
 
-यदि आपका चैनल env-driven setup या auth का समर्थन करता है और generic startup/config
-flows को runtime load होने से पहले उन env names को जानना चाहिए, तो उन्हें
-Plugin manifest में `channelEnvVars` के साथ declare करें। channel runtime `envVars` या local
-constants को केवल operator-facing copy के लिए रखें।
+यदि आपका चैनल सेटअप सतहों में केवल "पहले यह Plugin इंस्टॉल करें" का विज्ञापन करना चाहता है,
+तो `createOptionalChannelSetupSurface(...)` को प्राथमिकता दें। जनरेट किया गया
+एडाप्टर/विज़ार्ड कॉन्फ़िग लेखन और अंतिमकरण पर सुरक्षित रूप से विफल होता है, और वह
+सत्यापन, अंतिमकरण तथा दस्तावेज़-लिंक कॉपी में समान इंस्टॉल-आवश्यक संदेश का पुनः उपयोग करता है।
 
-यदि आपका चैनल Plugin runtime शुरू होने से पहले `status`, `channels list`, `channels status`, या
-SecretRef scans में दिखाई दे सकता है, तो `package.json` में `openclaw.setupEntry` जोड़ें। वह entrypoint read-only command
-paths में import करने के लिए सुरक्षित होना चाहिए और उसे उन summaries के लिए ज़रूरी channel metadata, setup-safe config adapter, status
-adapter, और channel secret target metadata लौटाना चाहिए। setup entry से clients, listeners, या transport runtimes शुरू न करें।
+यदि आपका चैनल env-संचालित सेटअप या प्रमाणीकरण का समर्थन करता है और सामान्य स्टार्टअप/कॉन्फ़िग
+प्रवाहों को रनटाइम लोड होने से पहले उन env नामों की जानकारी होनी चाहिए, तो उन्हें
+Plugin मैनिफ़ेस्ट में `channelEnvVars` के साथ घोषित करें। चैनल रनटाइम `envVars` या स्थानीय
+स्थिरांकों को केवल ऑपरेटर-दृश्य कॉपी के लिए रखें।
 
-मुख्य channel entry import path को भी संकरा रखें। Discovery channel को activate किए बिना capabilities register करने के लिए entry और channel plugin module को evaluate कर सकता है। `channel-plugin-api.ts` जैसी files को setup wizards, transport clients, socket
-listeners, subprocess launchers, या service startup modules import किए बिना channel
-Plugin object export करना चाहिए। उन runtime
-pieces को `registerFull(...)`, runtime setters, या lazy
-capability adapters से loaded modules में रखें।
+यदि आपका चैनल Plugin रनटाइम शुरू होने से पहले `status`, `channels list`, `channels status`, या
+SecretRef स्कैन में दिखाई दे सकता है, तो
+`package.json` में `openclaw.setupEntry` जोड़ें। यह प्रवेश-बिंदु केवल-पठन कमांड
+पथों में इम्पोर्ट करने के लिए सुरक्षित होना चाहिए और उन
+सारांशों के लिए आवश्यक चैनल मेटाडेटा, सेटअप-सुरक्षित कॉन्फ़िग एडाप्टर,
+स्थिति एडाप्टर और चैनल सीक्रेट लक्ष्य मेटाडेटा लौटाना चाहिए।
+सेटअप प्रविष्टि से क्लाइंट, लिसनर या ट्रांसपोर्ट रनटाइम शुरू न करें।
 
-`createOptionalChannelSetupWizard`, `DEFAULT_ACCOUNT_ID`,
-`createTopLevelChannelDmPolicy`, `setSetupChannelEnabled`, और
-`splitSetupEntries`
+मुख्य चैनल प्रविष्टि के इम्पोर्ट पथ को भी संकीर्ण रखें। डिस्कवरी,
+चैनल को सक्रिय किए बिना क्षमताएँ पंजीकृत करने के लिए प्रविष्टि और चैनल Plugin मॉड्यूल का मूल्यांकन कर सकती है।
+`channel-plugin-api.ts` जैसी फ़ाइलों को
+सेटअप विज़ार्ड, ट्रांसपोर्ट क्लाइंट, सॉकेट लिसनर, सबप्रोसेस लॉन्चर या सेवा स्टार्टअप मॉड्यूल इम्पोर्ट किए बिना
+चैनल Plugin ऑब्जेक्ट एक्सपोर्ट करना चाहिए।
+उन रनटाइम भागों को `registerFull(...)`, रनटाइम
+सेटर या लेज़ी क्षमता एडाप्टर से लोड किए गए मॉड्यूल में रखें।
 
-- व्यापक `openclaw/plugin-sdk/setup` seam का उपयोग केवल तब करें जब आपको
-  `moveSingleAccountChannelSectionToDefaultAccount(...)` जैसे भारी shared setup/config helpers भी चाहिए हों
+### अन्य संकीर्ण चैनल उपपथ
 
-यदि आपका चैनल setup surfaces में केवल "पहले यह Plugin install करें" advertise करना चाहता है, तो `createOptionalChannelSetupSurface(...)` को प्राथमिकता दें। generated
-adapter/wizard config writes और finalization पर fail closed करते हैं, और वे validation, finalize, और docs-link
-copy में वही install-required message reuse करते हैं।
+अन्य हॉट चैनल पथों के लिए, व्यापक लेगेसी
+सतहों के बजाय संकीर्ण सहायकों को प्राथमिकता दें:
 
-अन्य हॉट channel paths के लिए, व्यापक legacy
-surfaces के बजाय narrow helpers को प्राथमिकता दें:
-
-- `openclaw/plugin-sdk/account-core`,
-  `openclaw/plugin-sdk/account-id`,
+- बहु-खाता कॉन्फ़िग और
+  डिफ़ॉल्ट-खाता फ़ॉलबैक के लिए `openclaw/plugin-sdk/account-core`, `openclaw/plugin-sdk/account-id`,
   `openclaw/plugin-sdk/account-resolution`, और
-  `openclaw/plugin-sdk/account-helpers` बहु-खाता कॉन्फ़िग और
-  डिफ़ॉल्ट-खाता फ़ॉलबैक के लिए
-- `openclaw/plugin-sdk/inbound-envelope` और
-  `openclaw/plugin-sdk/channel-inbound` आवक route/envelope और
-  record-and-dispatch वायरिंग के लिए
-- `openclaw/plugin-sdk/channel-targets` लक्ष्य पार्सिंग हेल्पर के लिए
-- `openclaw/plugin-sdk/outbound-media` मीडिया लोडिंग के लिए और
-  `openclaw/plugin-sdk/channel-outbound` जावक पहचान/भेजने वाले डेलिगेट
-  और payload योजना के लिए
-- `openclaw/plugin-sdk/channel-core` से `buildThreadAwareOutboundSessionRoute(...)`
-  जब किसी जावक route को स्पष्ट `replyToId`/`threadId` सुरक्षित रखना हो या
-  base session key के अब भी मेल खाने के बाद मौजूदा `:thread:` session को
-  पुनर्प्राप्त करना हो। Provider plugins precedence, suffix व्यवहार, और thread id
-  normalization को override कर सकते हैं, जब उनके platform में native thread delivery semantics हों।
-- `openclaw/plugin-sdk/thread-bindings-runtime` thread-binding lifecycle
-  और adapter registration के लिए
-- `openclaw/plugin-sdk/agent-media-payload` केवल तब, जब legacy agent/media
-  payload field layout अब भी आवश्यक हो
-- `openclaw/plugin-sdk/telegram-command-config` Telegram custom-command
-  normalization, duplicate/conflict validation, और fallback-stable command
-  config contract के लिए
+  `openclaw/plugin-sdk/account-helpers`
+- इनबाउंड रूट/एन्वेलप और
+  रिकॉर्ड-एवं-डिस्पैच वायरिंग के लिए `openclaw/plugin-sdk/inbound-envelope` और
+  `openclaw/plugin-sdk/channel-inbound`
+- लक्ष्य पार्सिंग सहायकों के लिए `openclaw/plugin-sdk/channel-targets`
+- मीडिया लोडिंग के लिए `openclaw/plugin-sdk/outbound-media` और
+  आउटबाउंड पहचान/भेजने के प्रतिनिधियों
+  तथा पेलोड योजना के लिए `openclaw/plugin-sdk/channel-outbound`
+- जब किसी आउटबाउंड रूट को स्पष्ट
+  `replyToId`/`threadId` संरक्षित करना चाहिए या बेस सत्र कुंजी के अब भी मेल खाने के बाद वर्तमान `:thread:`
+  सत्र को पुनर्प्राप्त करना चाहिए, तब
+  `openclaw/plugin-sdk/channel-core` से `buildThreadAwareOutboundSessionRoute(...)`। जब उनके प्लेटफ़ॉर्म में नेटिव थ्रेड डिलीवरी सिमेंटिक्स हों,
+  प्रदाता Plugin प्राथमिकता, प्रत्यय व्यवहार और थ्रेड आईडी सामान्यीकरण को
+  ओवरराइड कर सकते हैं।
+- थ्रेड-बाइंडिंग जीवनचक्र
+  और एडाप्टर पंजीकरण के लिए `openclaw/plugin-sdk/thread-bindings-runtime`
+- केवल तभी `openclaw/plugin-sdk/agent-media-payload`, जब लेगेसी एजेंट/मीडिया
+  पेलोड फ़ील्ड लेआउट अब भी आवश्यक हो
+- Telegram कस्टम-कमांड सामान्यीकरण,
+  डुप्लिकेट/टकराव सत्यापन और फ़ॉलबैक-स्थिर कमांड कॉन्फ़िग
+  अनुबंध के लिए `openclaw/plugin-sdk/telegram-command-config` (अप्रचलित: कोई बंडल किया गया
+  Plugin उत्पादन में इसका उपयोग नहीं करता); नए Plugin कोड के लिए Plugin-स्थानीय कमांड कॉन्फ़िग प्रबंधन को प्राथमिकता दें
 
-केवल-auth चैनल आम तौर पर default path पर रुक सकते हैं: core approvals संभालता है और Plugin केवल outbound/auth capabilities उजागर करता है। Matrix, Slack, Telegram, और custom chat transports जैसे native approval channels को अपनी approval lifecycle बनाने के बजाय साझा native helpers का उपयोग करना चाहिए।
+केवल-प्रमाणीकरण चैनल सामान्यतः डिफ़ॉल्ट पथ तक सीमित रह सकते हैं: कोर
+अनुमोदनों को संभालता है और Plugin केवल आउटबाउंड/प्रमाणीकरण क्षमताएँ उजागर करता है। Matrix, Slack, Telegram और कस्टम चैट ट्रांसपोर्ट जैसे
+नेटिव अनुमोदन चैनलों को अपना अनुमोदन
+जीवनचक्र स्वयं बनाने के बजाय साझा नेटिव सहायकों का उपयोग करना चाहिए।
 
-## आवक mention नीति
+## इनबाउंड उल्लेख नीति
 
-आवक mention handling को दो layers में विभाजित रखें:
+इनबाउंड उल्लेख प्रबंधन को दो परतों में विभाजित रखें:
 
-- Plugin-स्वामित्व वाला evidence gathering
-- साझा policy evaluation
+- Plugin-स्वामित्व वाला साक्ष्य संग्रह
+- साझा नीति मूल्यांकन
 
-mention-policy निर्णयों के लिए `openclaw/plugin-sdk/channel-mention-gating` का उपयोग करें।
-`openclaw/plugin-sdk/channel-inbound` का उपयोग केवल तब करें जब आपको व्यापक inbound
-helper barrel की आवश्यकता हो।
+उल्लेख-नीति निर्णयों के लिए `openclaw/plugin-sdk/channel-mention-gating` का उपयोग करें।
+व्यापक इनबाउंड सहायक बैरल की आवश्यकता होने पर ही
+`openclaw/plugin-sdk/channel-inbound` का उपयोग करें।
 
-Plugin-local logic के लिए अच्छा विकल्प:
+Plugin-स्थानीय तर्क के लिए उपयुक्त:
 
-- reply-to-bot detection
-- quoted-bot detection
-- thread-participation checks
-- service/system-message exclusions
-- bot participation साबित करने के लिए आवश्यक platform-native caches
+- बॉट को दिए गए उत्तर की पहचान
+- उद्धृत बॉट की पहचान
+- थ्रेड-भागीदारी जाँच
+- सेवा/सिस्टम-संदेश अपवर्जन
+- बॉट की भागीदारी सिद्ध करने के लिए आवश्यक प्लेटफ़ॉर्म-नेटिव कैश
 
-साझा helper के लिए अच्छा विकल्प:
+साझा सहायक के लिए उपयुक्त:
 
 - `requireMention`
-- explicit mention result
-- implicit mention allowlist
-- command bypass
-- final skip decision
+- स्पष्ट उल्लेख परिणाम
+- अप्रत्यक्ष उल्लेख अनुमति-सूची
+- कमांड बाइपास
+- अंतिम छोड़ने का निर्णय
 
-पसंदीदा flow:
+वरीय प्रवाह:
 
-1. local mention facts compute करें।
-2. उन facts को `resolveInboundMentionDecision({ facts, policy })` में पास करें।
-3. अपने inbound gate में `decision.effectiveWasMentioned`, `decision.shouldBypassMention`, और `decision.shouldSkip` का उपयोग करें।
+1. स्थानीय उल्लेख तथ्यों की गणना करें।
+2. उन तथ्यों को `resolveInboundMentionDecision({ facts, policy })` में पास करें।
+3. अपने इनबाउंड गेट में `decision.effectiveWasMentioned`, `decision.shouldBypassMention`, और
+   `decision.shouldSkip` का उपयोग करें।
 
 ```typescript
 import {
@@ -315,15 +466,20 @@ import {
   resolveInboundMentionDecision,
 } from "openclaw/plugin-sdk/channel-inbound";
 
-const mentionMatch = matchesMentionWithExplicit(text, {
+const wasMentioned = matchesMentionWithExplicit({
+  text,
   mentionRegexes,
-  mentionPatterns,
+  explicit: {
+    hasAnyMention,
+    isExplicitlyMentioned,
+    canResolveExplicit,
+  },
 });
 
 const facts = {
   canDetectMention: true,
-  wasMentioned: mentionMatch.matched,
-  hasAnyMention: mentionMatch.hasExplicitMention,
+  wasMentioned,
+  hasAnyMention,
   implicitMentionKinds: [
     ...implicitMentionKindWhen("reply_to_bot", isReplyToBot),
     ...implicitMentionKindWhen("quoted_bot", isQuoteOfBot),
@@ -345,30 +501,29 @@ const decision = resolveInboundMentionDecision({
 if (decision.shouldSkip) return;
 ```
 
-`api.runtime.channel.mentions` उन्हीं साझा mention helpers को उन
-bundled channel plugins के लिए उजागर करता है जो पहले से runtime injection पर निर्भर हैं:
+`matchesMentionWithExplicit(...)` एक बूलियन लौटाता है। `hasAnyMention`,
+`isExplicitlyMentioned`, और `canResolveExplicit` चैनल के अपने
+नेटिव उल्लेख मेटाडेटा (संदेश एंटिटी, बॉट को उत्तर देने वाले फ़्लैग और इसी प्रकार की जानकारी) से आते हैं;
+जब आपका प्लेटफ़ॉर्म उनका पता नहीं लगा सकता, तब `false`/`undefined` मान प्रदान करें।
 
-- `buildMentionRegexes`
-- `matchesMentionPatterns`
-- `matchesMentionWithExplicit`
-- `implicitMentionKindWhen`
-- `resolveInboundMentionDecision`
+`api.runtime.channel.mentions` उन बंडल किए गए चैनल Plugin के लिए
+समान साझा उल्लेख सहायक उजागर करता है, जो पहले से रनटाइम इंजेक्शन पर निर्भर हैं:
+`buildMentionRegexes`, `matchesMentionPatterns`, `matchesMentionWithExplicit`,
+`implicitMentionKindWhen`, `resolveInboundMentionDecision`।
 
-यदि आपको केवल `implicitMentionKindWhen` और
-`resolveInboundMentionDecision` चाहिए, तो असंबंधित inbound
-runtime helpers लोड करने से बचने के लिए
-`openclaw/plugin-sdk/channel-mention-gating` से import करें।
+यदि आपको केवल `implicitMentionKindWhen` और `resolveInboundMentionDecision` की आवश्यकता है,
+तो असंबंधित इनबाउंड रनटाइम सहायकों को लोड करने से बचने के लिए
+`openclaw/plugin-sdk/channel-mention-gating` से इम्पोर्ट करें।
 
-mention gating के लिए `resolveInboundMentionDecision({ facts, policy })` का उपयोग करें।
-
-## वॉकथ्रू
+## चरण-दर-चरण विवरण
 
 <Steps>
   <a id="step-1-package-and-manifest"></a>
-  <Step title="Package और manifest">
-    मानक Plugin files बनाएँ। `package.json` में `channel` field ही
-    इसे channel Plugin बनाता है। पूरे package-metadata surface के लिए,
-    [Plugin Setup और Config](/hi/plugins/sdk-setup#openclaw-channel) देखें:
+  <Step title="पैकेज और मैनिफ़ेस्ट">
+    मानक plugin फ़ाइलें बनाएँ। `openclaw.plugin.json` में
+    `channels` फ़ील्ड (`kind` फ़ील्ड नहीं) ही किसी मैनिफ़ेस्ट को
+    किसी चैनल का स्वामी चिह्नित करती है। संपूर्ण पैकेज-मेटाडेटा सतह के लिए,
+    [Plugin सेटअप और कॉन्फ़िगरेशन](/hi/plugins/sdk-setup#openclaw-channel) देखें:
 
     <CodeGroup>
     ```json package.json
@@ -382,7 +537,7 @@ mention gating के लिए `resolveInboundMentionDecision({ facts, policy }
         "channel": {
           "id": "acme-chat",
           "label": "Acme Chat",
-          "blurb": "Connect OpenClaw to Acme Chat."
+          "blurb": "OpenClaw को Acme Chat से कनेक्ट करें।"
         }
       }
     }
@@ -391,10 +546,9 @@ mention gating के लिए `resolveInboundMentionDecision({ facts, policy }
     ```json openclaw.plugin.json
     {
       "id": "acme-chat",
-      "kind": "channel",
       "channels": ["acme-chat"],
       "name": "Acme Chat",
-      "description": "Acme Chat channel plugin",
+      "description": "Acme Chat चैनल plugin",
       "configSchema": {
         "type": "object",
         "additionalProperties": false,
@@ -415,7 +569,7 @@ mention gating के लिए `resolveInboundMentionDecision({ facts, policy }
           },
           "uiHints": {
             "token": {
-              "label": "Bot token",
+              "label": "बॉट टोकन",
               "sensitive": true
             }
           }
@@ -425,16 +579,19 @@ mention gating के लिए `resolveInboundMentionDecision({ facts, policy }
     ```
     </CodeGroup>
 
-    `configSchema` `plugins.entries.acme-chat.config` को validate करता है। इसे
-    Plugin-स्वामित्व वाली उन settings के लिए उपयोग करें जो channel account config नहीं हैं। `channelConfigs`
-    `channels.acme-chat` को validate करता है और वह cold-path source है जिसे config
-    schema, setup, और UI surfaces Plugin runtime लोड होने से पहले उपयोग करते हैं।
+    `configSchema`, `plugins.entries.acme-chat.config` को सत्यापित करता है। इसका उपयोग
+    plugin के स्वामित्व वाली उन सेटिंग्स के लिए करें जो चैनल खाता कॉन्फ़िगरेशन नहीं हैं।
+    `channelConfigs.acme-chat.schema`, `channels.acme-chat` को सत्यापित करता है और यह
+    plugin रनटाइम लोड होने से पहले कॉन्फ़िगरेशन स्कीमा, सेटअप और UI सतहों द्वारा उपयोग किया जाने वाला
+    कोल्ड-पाथ स्रोत है। शीर्ष-स्तरीय फ़ील्ड के संपूर्ण संदर्भ के लिए
+    [Plugin मैनिफ़ेस्ट](/hi/plugins/manifest) देखें।
 
   </Step>
 
-  <Step title="Channel Plugin object बनाएँ">
-    `ChannelPlugin` interface में कई optional adapter surfaces हैं। न्यूनतम
-    - `id` और `setup` - से शुरू करें और जैसे आवश्यकता हो adapters जोड़ें।
+  <Step title="चैनल plugin ऑब्जेक्ट बनाएँ">
+    `ChannelPlugin` इंटरफ़ेस में कई वैकल्पिक अडैप्टर सतहें हैं। न्यूनतम
+    `id`, `config` और `setup` से शुरू करें और आवश्यकतानुसार
+    अडैप्टर जोड़ें।
 
     `src/channel.ts` बनाएँ:
 
@@ -444,7 +601,7 @@ mention gating के लिए `resolveInboundMentionDecision({ facts, policy }
       createChannelPluginBase,
     } from "openclaw/plugin-sdk/channel-core";
     import type { OpenClawConfig } from "openclaw/plugin-sdk/channel-core";
-    import { acmeChatApi } from "./client.js"; // your platform API client
+    import { acmeChatApi } from "./client.js"; // आपका प्लेटफ़ॉर्म API क्लाइंट
 
     type ResolvedAccount = {
       accountId: string | null;
@@ -459,7 +616,7 @@ mention gating के लिए `resolveInboundMentionDecision({ facts, policy }
     ): ResolvedAccount {
       const section = (cfg.channels as Record<string, any>)?.["acme-chat"];
       const token = section?.token;
-      if (!token) throw new Error("acme-chat: token is required");
+      if (!token) throw new Error("acme-chat: टोकन आवश्यक है");
       return {
         accountId: accountId ?? null,
         token,
@@ -471,7 +628,10 @@ mention gating के लिए `resolveInboundMentionDecision({ facts, policy }
     export const acmeChatPlugin = createChatChannelPlugin<ResolvedAccount>({
       base: createChannelPluginBase({
         id: "acme-chat",
-        setup: {
+        // खाता रिज़ॉल्यूशन/निरीक्षण `config` में होता है, `setup` में नहीं।
+        // `setup` ऑनबोर्डिंग लेखनों (applyAccountConfig, validateInput) को संभालता है।
+        config: {
+          listAccountIds: () => ["default"],
           resolveAccount,
           inspectAccount(cfg, accountId) {
             const section =
@@ -483,9 +643,18 @@ mention gating के लिए `resolveInboundMentionDecision({ facts, policy }
             };
           },
         },
+        setup: {
+          applyAccountConfig: ({ cfg, input }) => ({
+            ...cfg,
+            channels: {
+              ...cfg.channels,
+              "acme-chat": { ...(cfg.channels as any)?.["acme-chat"], ...input },
+            },
+          }),
+        },
       }),
 
-      // DM security: who can message the bot
+      // DM सुरक्षा: बॉट को कौन संदेश भेज सकता है
       security: {
         dm: {
           channelKey: "acme-chat",
@@ -495,23 +664,24 @@ mention gating के लिए `resolveInboundMentionDecision({ facts, policy }
         },
       },
 
-      // Pairing: approval flow for new DM contacts
+      // पेयरिंग: नए DM संपर्कों के लिए अनुमोदन प्रवाह
       pairing: {
         text: {
-          idLabel: "Acme Chat username",
-          message: "Send this code to verify your identity:",
+          idLabel: "Acme Chat उपयोगकर्ता नाम",
+          message: "अपनी पहचान सत्यापित करने के लिए यह कोड भेजें:",
           notify: async ({ target, code }) => {
-            await acmeChatApi.sendDm(target, `Pairing code: ${code}`);
+            await acmeChatApi.sendDm(target, `पेयरिंग कोड: ${code}`);
           },
         },
       },
 
-      // Threading: how replies are delivered
+      // थ्रेडिंग: उत्तर कैसे वितरित किए जाते हैं
       threading: { topLevelReplyToMode: "reply" },
 
-      // Outbound: send messages to the platform
+      // आउटबाउंड: प्लेटफ़ॉर्म को संदेश भेजें
       outbound: {
         attachedResults: {
+          channel: "acme-chat",
           sendText: async (params) => {
             const result = await acmeChatApi.sendMessage(
               params.to,
@@ -529,34 +699,35 @@ mention gating के लिए `resolveInboundMentionDecision({ facts, policy }
     });
     ```
 
-    ऐसे channels के लिए जो canonical top-level DM keys और legacy nested keys दोनों स्वीकार करते हैं, `plugin-sdk/channel-config-helpers` से helpers का उपयोग करें: `resolveChannelDmAccess`, `resolveChannelDmPolicy`, `resolveChannelDmAllowFrom`, और `normalizeChannelDmPolicy` account-local values को inherited root values से आगे रखते हैं। उसी resolver को `normalizeLegacyDmAliases` के माध्यम से doctor repair के साथ pair करें ताकि runtime और migration समान contract पढ़ें।
+    उन चैनलों के लिए जो मानक शीर्ष-स्तरीय DM कुंजियाँ और विरासती नेस्टेड कुंजियाँ दोनों स्वीकार करते हैं, `plugin-sdk/channel-config-helpers` के हेल्पर का उपयोग करें: `resolveChannelDmAccess`, `resolveChannelDmPolicy`, `resolveChannelDmAllowFrom` और `normalizeChannelDmPolicy`, खाते के स्थानीय मानों को इनहेरिट किए गए रूट मानों से आगे रखते हैं। उसी रिज़ॉल्वर को `normalizeLegacyDmAliases` के माध्यम से डॉक्टर रिपेयर के साथ युग्मित करें, ताकि रनटाइम और माइग्रेशन एक ही अनुबंध पढ़ें।
 
     <Accordion title="createChatChannelPlugin आपके लिए क्या करता है">
-      low-level adapter interfaces को मैन्युअल रूप से implement करने के बजाय, आप
-      declarative options पास करते हैं और builder उन्हें compose करता है:
+      निम्न-स्तरीय अडैप्टर इंटरफ़ेस को मैन्युअल रूप से लागू करने के बजाय, आप
+      घोषणात्मक विकल्प देते हैं और बिल्डर उन्हें संयोजित करता है:
 
-      | विकल्प | यह क्या वायर करता है |
+      | विकल्प | यह क्या जोड़ता है |
       | --- | --- |
-      | `security.dm` | config fields से scoped DM security resolver |
-      | `pairing.text` | code exchange के साथ text-based DM pairing flow |
-      | `threading` | Reply-to-mode resolver (fixed, account-scoped, या custom) |
-      | `outbound.attachedResults` | result metadata (message IDs) लौटाने वाले send functions |
+      | `security.dm` | कॉन्फ़िगरेशन फ़ील्ड से स्कोप किया गया DM सुरक्षा रिज़ॉल्वर |
+      | `pairing.text` | कोड विनिमय के साथ टेक्स्ट-आधारित DM पेयरिंग प्रवाह |
+      | `threading` | रिप्लाई-टू-मोड रिज़ॉल्वर (निश्चित, खाता-स्कोप किया गया या कस्टम) |
+      | `outbound.attachedResults` | परिणाम मेटाडेटा (संदेश ID) लौटाने वाले प्रेषण फ़ंक्शन; इसके लिए सहोदर `channel` id आवश्यक है, ताकि कोर लौटाए गए डिलीवरी परिणाम पर मुहर लगा सके |
 
-      यदि आपको पूरा control चाहिए, तो आप declarative options के बजाय raw adapter objects
-      भी पास कर सकते हैं।
+      यदि आपको पूर्ण नियंत्रण चाहिए, तो घोषणात्मक विकल्पों के बजाय रॉ अडैप्टर
+      ऑब्जेक्ट भी दिए जा सकते हैं।
 
-      Raw outbound adapters एक `chunker(text, limit, ctx)` function define कर सकते हैं।
-      optional `ctx.formatting` delivery-time formatting decisions जैसे
-      `maxLinesPerMessage` रखता है; भेजने से पहले इसे apply करें ताकि reply threading
-      और chunk boundaries shared outbound delivery द्वारा एक बार resolve हों।
-      Send contexts में native reply target resolve होने पर `replyToIdSource` (`implicit` या `explicit`)
-      भी शामिल होता है, ताकि payload helpers implicit single-use reply slot consume किए बिना
-      explicit reply tags सुरक्षित रख सकें।
+      रॉ आउटबाउंड अडैप्टर एक `chunker(text, limit, ctx)` फ़ंक्शन परिभाषित कर सकते हैं।
+      वैकल्पिक `ctx.formatting`, `maxLinesPerMessage` जैसे डिलीवरी-समय के
+      फ़ॉर्मैटिंग निर्णय रखता है; इसे भेजने से पहले लागू करें, ताकि रिप्लाई थ्रेडिंग
+      और खंड सीमाओं को साझा आउटबाउंड डिलीवरी द्वारा केवल एक बार हल किया जाए।
+      जब कोई नेटिव रिप्लाई लक्ष्य रिज़ॉल्व हो जाता है, तब प्रेषण संदर्भों में
+      `replyToIdSource` (`implicit` या `explicit`) भी शामिल होता है,
+      ताकि पेलोड हेल्पर किसी अंतर्निहित एकल-उपयोग रिप्लाई स्लॉट का उपभोग किए बिना
+      स्पष्ट रिप्लाई टैग सुरक्षित रख सकें।
     </Accordion>
 
   </Step>
 
-  <Step title="Entry point वायर करें">
+  <Step title="एंट्री पॉइंट जोड़ें">
     `index.ts` बनाएँ:
 
     ```typescript index.ts
@@ -566,20 +737,20 @@ mention gating के लिए `resolveInboundMentionDecision({ facts, policy }
     export default defineChannelPluginEntry({
       id: "acme-chat",
       name: "Acme Chat",
-      description: "Acme Chat channel plugin",
+      description: "Acme Chat चैनल plugin",
       plugin: acmeChatPlugin,
       registerCliMetadata(api) {
         api.registerCli(
           ({ program }) => {
             program
               .command("acme-chat")
-              .description("Acme Chat management");
+              .description("Acme Chat प्रबंधन");
           },
           {
             descriptors: [
               {
                 name: "acme-chat",
-                description: "Acme Chat management",
+                description: "Acme Chat प्रबंधन",
                 hasSubcommands: false,
               },
             ],
@@ -592,21 +763,21 @@ mention gating के लिए `resolveInboundMentionDecision({ facts, policy }
     });
     ```
 
-    चैनल-स्वामित्व वाले CLI वर्णनकर्ताओं को `registerCliMetadata(...)` में रखें ताकि OpenClaw
-    पूरे चैनल रनटाइम को सक्रिय किए बिना उन्हें रूट सहायता में दिखा सके,
-    जबकि सामान्य पूर्ण लोड वास्तविक कमांड पंजीकरण के लिए वही वर्णनकर्ता अब भी उठा लें।
-    रनटाइम-केवल काम के लिए `registerFull(...)` रखें।
-    यदि `registerFull(...)` Gateway RPC विधियां पंजीकृत करता है, तो
-    Plugin-विशिष्ट उपसर्ग का उपयोग करें। कोर एडमिन नेमस्पेस (`config.*`,
+    चैनल के स्वामित्व वाले CLI डिस्क्रिप्टर `registerCliMetadata(...)` में रखें, ताकि OpenClaw
+    पूर्ण चैनल रनटाइम सक्रिय किए बिना उन्हें रूट सहायता में दिखा सके,
+    जबकि सामान्य पूर्ण लोड वास्तविक कमांड पंजीकरण के लिए उन्हीं डिस्क्रिप्टर को
+    प्राप्त करते रहें। `registerFull(...)` को केवल रनटाइम कार्य के लिए रखें।
+    `defineChannelPluginEntry` पंजीकरण-मोड के विभाजन को स्वचालित रूप से संभालता है।
+    यदि `registerFull(...)`, Gateway RPC विधियाँ पंजीकृत करता है, तो
+    plugin-विशिष्ट प्रीफ़िक्स का उपयोग करें। कोर एडमिन नेमस्पेस (`config.*`,
     `exec.approvals.*`, `wizard.*`, `update.*`) आरक्षित रहते हैं और हमेशा
-    `operator.admin` पर रिजॉल्व होते हैं।
-    `defineChannelPluginEntry` पंजीकरण-मोड विभाजन को अपने आप संभालता है। सभी
-    विकल्पों के लिए [एंट्री पॉइंट](/hi/plugins/sdk-entrypoints#definechannelpluginentry) देखें।
+    `operator.admin` में रिज़ॉल्व होते हैं। सभी विकल्पों के लिए
+    [एंट्री पॉइंट](/hi/plugins/sdk-entrypoints#definechannelpluginentry) देखें।
 
   </Step>
 
-  <Step title="Add a setup entry">
-    ऑनबोर्डिंग के दौरान हल्के लोडिंग के लिए `setup-entry.ts` बनाएं:
+  <Step title="सेटअप एंट्री जोड़ें">
+    ऑनबोर्डिंग के दौरान हल्के लोडिंग के लिए `setup-entry.ts` बनाएँ:
 
     ```typescript setup-entry.ts
     import { defineSetupPluginEntry } from "openclaw/plugin-sdk/channel-core";
@@ -615,33 +786,32 @@ mention gating के लिए `resolveInboundMentionDecision({ facts, policy }
     export default defineSetupPluginEntry(acmeChatPlugin);
     ```
 
-    जब चैनल अक्षम या अनकन्फिगर हो, तो OpenClaw पूर्ण एंट्री के बजाय इसे लोड करता है।
-    यह सेटअप फ्लो के दौरान भारी रनटाइम कोड खींचने से बचाता है।
-    विवरण के लिए [सेटअप और कॉन्फिग](/hi/plugins/sdk-setup#setup-entry) देखें।
+    चैनल अक्षम या अपुष्ट होने पर OpenClaw पूर्ण एंट्री के बजाय इसे लोड करता है।
+    यह सेटअप प्रवाहों के दौरान भारी रनटाइम कोड लोड होने से बचाता है।
+    विवरण के लिए [सेटअप और कॉन्फ़िगरेशन](/hi/plugins/sdk-setup#setup-entry) देखें।
 
     बंडल किए गए वर्कस्पेस चैनल, जो सेटअप-सुरक्षित एक्सपोर्ट को साइडकार
-    मॉड्यूल में विभाजित करते हैं, `openclaw/plugin-sdk/channel-entry-contract` से
-    `defineBundledChannelSetupEntry(...)` का उपयोग कर सकते हैं, जब उन्हें
-    स्पष्ट सेटअप-समय रनटाइम सेटर की भी जरूरत हो।
+    मॉड्यूल में विभाजित करते हैं, स्पष्ट सेटअप-समय रनटाइम सेटर की आवश्यकता होने पर
+    `openclaw/plugin-sdk/channel-entry-contract` से `defineBundledChannelSetupEntry(...)` का उपयोग कर सकते हैं।
 
   </Step>
 
-  <Step title="Handle inbound messages">
-    आपके Plugin को प्लेटफॉर्म से संदेश प्राप्त करके उन्हें
-    OpenClaw को आगे भेजना होगा। सामान्य पैटर्न एक Webhook है जो अनुरोध सत्यापित करता है और
+  <Step title="इनबाउंड संदेश संभालें">
+    आपके plugin को प्लेटफ़ॉर्म से संदेश प्राप्त करके उन्हें OpenClaw को अग्रेषित करना
+    होगा। सामान्य पैटर्न एक Webhook है, जो अनुरोध को सत्यापित करता है और
     उसे आपके चैनल के इनबाउंड हैंडलर के माध्यम से डिस्पैच करता है:
 
     ```typescript
     registerFull(api) {
       api.registerHttpRoute({
         path: "/acme-chat/webhook",
-        auth: "plugin", // plugin-managed auth (verify signatures yourself)
+        auth: "plugin", // plugin-प्रबंधित प्रमाणीकरण (हस्ताक्षरों को स्वयं सत्यापित करें)
         handler: async (req, res) => {
           const event = parseWebhookPayload(req);
 
-          // Your inbound handler dispatches the message to OpenClaw.
-          // The exact wiring depends on your platform SDK -
-          // see a real example in the bundled Microsoft Teams or Google Chat plugin package.
+          // आपका इनबाउंड हैंडलर संदेश को OpenClaw में डिस्पैच करता है।
+          // सटीक वायरिंग आपके प्लेटफ़ॉर्म SDK पर निर्भर करती है -
+          // बंडल किए गए Microsoft Teams या Google Chat plugin पैकेज में वास्तविक उदाहरण देखें।
           await handleAcmeChatInbound(api, event);
 
           res.statusCode = 200;
@@ -653,111 +823,111 @@ mention gating के लिए `resolveInboundMentionDecision({ facts, policy }
     ```
 
     <Note>
-      इनबाउंड संदेश हैंडलिंग चैनल-विशिष्ट है। हर चैनल Plugin अपनी
-      इनबाउंड पाइपलाइन का स्वामी होता है। वास्तविक पैटर्न के लिए बंडल किए गए चैनल Plugins
-      (उदाहरण के लिए Microsoft Teams या Google Chat Plugin पैकेज) देखें।
+      इनबाउंड संदेश प्रबंधन चैनल-विशिष्ट है। प्रत्येक चैनल plugin अपनी
+      इनबाउंड पाइपलाइन का स्वामी होता है। वास्तविक पैटर्न के लिए बंडल किए गए चैनल plugin
+      (उदाहरण के लिए Microsoft Teams या Google Chat plugin पैकेज) देखें।
     </Note>
 
   </Step>
 
 <a id="step-6-test"></a>
-<Step title="Test">
-`src/channel.test.ts` में सह-स्थित टेस्ट लिखें:
+<Step title="परीक्षण">
+`src/channel.test.ts` में साथ रखे गए परीक्षण लिखें:
 
     ```typescript src/channel.test.ts
     import { describe, it, expect } from "vitest";
     import { acmeChatPlugin } from "./channel.js";
 
-    describe("acme-chat plugin", () => {
-      it("resolves account from config", () => {
+    describe("acme-chat Plugin", () => {
+      it("कॉन्फ़िगरेशन से खाता हल करता है", () => {
         const cfg = {
           channels: {
             "acme-chat": { token: "test-token", allowFrom: ["user1"] },
           },
         } as any;
-        const account = acmeChatPlugin.setup!.resolveAccount(cfg, undefined);
+        const account = acmeChatPlugin.config.resolveAccount(cfg, undefined);
         expect(account.token).toBe("test-token");
       });
 
-      it("inspects account without materializing secrets", () => {
+      it("सीक्रेट को मूर्त रूप दिए बिना खाते का निरीक्षण करता है", () => {
         const cfg = {
           channels: { "acme-chat": { token: "test-token" } },
         } as any;
-        const result = acmeChatPlugin.setup!.inspectAccount!(cfg, undefined);
+        const result = acmeChatPlugin.config.inspectAccount!(cfg, undefined);
         expect(result.configured).toBe(true);
         expect(result.tokenStatus).toBe("available");
       });
 
-      it("reports missing config", () => {
+      it("अनुपलब्ध कॉन्फ़िगरेशन की रिपोर्ट करता है", () => {
         const cfg = { channels: {} } as any;
-        const result = acmeChatPlugin.setup!.inspectAccount!(cfg, undefined);
+        const result = acmeChatPlugin.config.inspectAccount!(cfg, undefined);
         expect(result.configured).toBe(false);
       });
     });
     ```
 
     ```bash
-    pnpm test -- <bundled-plugin-root>/acme-chat/
+    pnpm test <bundled-plugin-root>/acme-chat/
     ```
 
-    साझा टेस्ट हेल्पर के लिए, [टेस्टिंग](/hi/plugins/sdk-testing) देखें।
+    साझा परीक्षण सहायकों के लिए, [परीक्षण](/hi/plugins/sdk-testing) देखें।
 
 </Step>
 </Steps>
 
-## फाइल संरचना
+## फ़ाइल संरचना
 
-```
+```text
 <bundled-plugin-root>/acme-chat/
-├── package.json              # openclaw.channel metadata
-├── openclaw.plugin.json      # Manifest with config schema
+├── package.json              # openclaw.channel मेटाडेटा
+├── openclaw.plugin.json      # कॉन्फ़िगरेशन स्कीमा वाला मैनिफ़ेस्ट
 ├── index.ts                  # defineChannelPluginEntry
 ├── setup-entry.ts            # defineSetupPluginEntry
-├── api.ts                    # Public exports (optional)
-├── runtime-api.ts            # Internal runtime exports (optional)
+├── api.ts                    # सार्वजनिक एक्सपोर्ट (वैकल्पिक)
+├── runtime-api.ts            # आंतरिक रनटाइम एक्सपोर्ट (वैकल्पिक)
 └── src/
-    ├── channel.ts            # ChannelPlugin via createChatChannelPlugin
-    ├── channel.test.ts       # Tests
-    ├── client.ts             # Platform API client
-    └── runtime.ts            # Runtime store (if needed)
+    ├── channel.ts            # createChatChannelPlugin के माध्यम से ChannelPlugin
+    ├── channel.test.ts       # परीक्षण
+    ├── client.ts             # प्लेटफ़ॉर्म API क्लाइंट
+    └── runtime.ts            # रनटाइम स्टोर (यदि आवश्यक हो)
 ```
 
 ## उन्नत विषय
 
 <CardGroup cols={2}>
-  <Card title="Threading options" icon="git-branch" href="/hi/plugins/sdk-entrypoints#registration-mode">
-    स्थिर, खाता-स्कोप वाले, या कस्टम उत्तर मोड
+  <Card title="थ्रेडिंग विकल्प" icon="git-branch" href="/hi/plugins/sdk-entrypoints#registration-mode">
+    निश्चित, खाता-क्षेत्रित या कस्टम उत्तर मोड
   </Card>
-  <Card title="Message tool integration" icon="puzzle" href="/hi/plugins/architecture#channel-plugins-and-the-shared-message-tool">
-    describeMessageTool और एक्शन खोज
+  <Card title="संदेश टूल एकीकरण" icon="puzzle" href="/hi/plugins/architecture#channel-plugins-and-the-shared-message-tool">
+    describeMessageTool और कार्रवाई की खोज
   </Card>
-  <Card title="Target resolution" icon="crosshair" href="/hi/plugins/architecture-internals#channel-target-resolution">
+  <Card title="लक्ष्य समाधान" icon="crosshair" href="/hi/plugins/architecture-internals#channel-target-resolution">
     inferTargetChatType, looksLikeId, reservedLiterals, resolveTarget
   </Card>
-  <Card title="Runtime helpers" icon="settings" href="/hi/plugins/sdk-runtime">
-    TTS, STT, मीडिया, api.runtime के माध्यम से सबएजेंट
+  <Card title="रनटाइम सहायक" icon="settings" href="/hi/plugins/sdk-runtime">
+    api.runtime के माध्यम से TTS, STT, मीडिया और उप-एजेंट
   </Card>
-  <Card title="Channel inbound API" icon="bolt" href="/hi/plugins/sdk-channel-inbound">
-    साझा इनबाउंड इवेंट जीवनचक्र: इनजेस्ट, रिजॉल्व, रिकॉर्ड, डिस्पैच, फाइनलाइज
+  <Card title="चैनल इनबाउंड API" icon="bolt" href="/hi/plugins/sdk-channel-inbound">
+    साझा इनबाउंड इवेंट जीवनचक्र: अंतर्ग्रहण, समाधान, रिकॉर्डिंग, प्रेषण, अंतिम रूप देना
   </Card>
 </CardGroup>
 
 <Note>
-कुछ बंडल किए गए हेल्पर सीम अब भी बंडल किए गए Plugin रखरखाव और
-संगतता के लिए मौजूद हैं। वे नए चैनल Plugins के लिए अनुशंसित पैटर्न नहीं हैं;
-जब तक आप उस बंडल किए गए Plugin परिवार का सीधे रखरखाव नहीं कर रहे हैं, सामान्य SDK
-सतह से जेनेरिक चैनल/सेटअप/रिप्लाई/रनटाइम उपपथों को प्राथमिकता दें।
+बंडल किए गए Plugin के रखरखाव और संगतता के लिए कुछ बंडल किए गए सहायक सीम अभी भी
+मौजूद हैं। नए चैनल Plugin के लिए ये अनुशंसित पैटर्न नहीं हैं;
+जब तक आप सीधे उस बंडल किए गए Plugin परिवार का रखरखाव नहीं कर रहे हों, सामान्य SDK
+सतह के जेनेरिक चैनल/सेटअप/उत्तर/रनटाइम सबपाथ को प्राथमिकता दें।
 </Note>
 
 ## अगले चरण
 
-- [प्रदाता Plugins](/hi/plugins/sdk-provider-plugins) - यदि आपका Plugin मॉडल भी प्रदान करता है
-- [SDK अवलोकन](/hi/plugins/sdk-overview) - पूर्ण उपपथ इंपोर्ट संदर्भ
-- [SDK टेस्टिंग](/hi/plugins/sdk-testing) - टेस्ट यूटिलिटी और कॉन्ट्रैक्ट टेस्ट
-- [Plugin मैनिफेस्ट](/hi/plugins/manifest) - पूर्ण मैनिफेस्ट स्कीमा
+- [प्रदाता Plugin](/hi/plugins/sdk-provider-plugins) - यदि आपका Plugin मॉडल भी प्रदान करता है
+- [SDK अवलोकन](/hi/plugins/sdk-overview) - पूर्ण सबपाथ इंपोर्ट संदर्भ
+- [SDK परीक्षण](/hi/plugins/sdk-testing) - परीक्षण उपयोगिताएँ और अनुबंध परीक्षण
+- [Plugin मैनिफ़ेस्ट](/hi/plugins/manifest) - पूर्ण मैनिफ़ेस्ट स्कीमा
 
 ## संबंधित
 
 - [Plugin SDK सेटअप](/hi/plugins/sdk-setup)
-- [Plugins बनाना](/hi/plugins/building-plugins)
-- [एजेंट हार्नेस Plugins](/hi/plugins/sdk-agent-harness)
+- [Plugin बनाना](/hi/plugins/building-plugins)
+- [एजेंट हार्नेस Plugin](/hi/plugins/sdk-agent-harness)

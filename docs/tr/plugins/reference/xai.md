@@ -1,19 +1,20 @@
 ---
 read_when:
-    - xai Pluginini kuruyor, yapılandırıyor veya denetliyorsunuz
+    - xai Pluginini yüklüyor, yapılandırıyor veya denetliyorsunuz
 summary: OpenClaw'a xAI model sağlayıcısı desteği ekler.
-title: xAI eklentisi
+title: xAI Plugin'i
 x-i18n:
-    generated_at: "2026-07-12T12:39:23Z"
+    generated_at: "2026-07-16T17:47:27Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 2ec2ac3af258ae6876b2c0957e4ffc5db2d780fc9f33458204c8089fd47238bc
+    source_hash: 7fc08d7c11ca70704b65f6cf2f81d9183e629b9404128aa0ac1c9e0a65e0a339
     source_path: plugins/reference/xai.md
     workflow: 16
 ---
 
-# xAI Plugin
+# xAI plugin'i
 
 OpenClaw'a xAI model sağlayıcısı desteği ekler.
 
@@ -24,7 +25,7 @@ OpenClaw'a xAI model sağlayıcısı desteği ekler.
 
 ## Yüzey
 
-sağlayıcılar: xai; sözleşmeler: imageGenerationProviders, mediaUnderstandingProviders, realtimeTranscriptionProviders, speechProviders, tools, videoGenerationProviders, webSearchProviders
+sağlayıcılar: `xai`; sözleşmeler: `imageGenerationProviders`, `mediaUnderstandingProviders`, `realtimeTranscriptionProviders`, `realtimeVoiceProviders`, `speechProviders`, `tools`, `videoGenerationProviders`, `webSearchProviders`
 
 ## İlgili belgeler
 

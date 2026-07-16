@@ -1,76 +1,84 @@
 ---
+doc-schema-version: 1
 read_when:
-    - Memahami bagaimana tumpukan QA saling terhubung
-    - Memperluas qa-lab, qa-channel, atau adaptor transport
-    - Menambahkan skenario QA berbasis repo
+    - Memahami bagaimana komponen QA saling terintegrasi
+    - Memperluas qa-lab, qa-channel, atau adaptor transportasi
+    - Menambahkan skenario QA berbasis repositori
     - Membangun otomatisasi QA dengan realisme lebih tinggi di sekitar dasbor Gateway
-summary: 'Ikhtisar tumpukan QA: qa-lab, qa-channel, skenario berbasis repo, jalur transport langsung, adaptor transport, dan pelaporan.'
+summary: 'Ikhtisar tumpukan QA: qa-lab, qa-channel, skenario berbasis repositori, jalur transportasi langsung, adaptor transportasi, dan pelaporan.'
 title: Ikhtisar QA
 x-i18n:
-    generated_at: "2026-07-01T08:31:05Z"
-    model: gpt-5.5
+    generated_at: "2026-07-16T18:05:18Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 33dc2c7ac1751c8728dda332476cd41cf39c3e9d1582f8c652c2670c2549b34c
+    source_hash: 8dcb506cedb57289f29938eb55b5f11ceedfaabba88364dce8249116010ce859
     source_path: concepts/qa-e2e-automation.md
     workflow: 16
 ---
 
-Tumpukan QA privat dimaksudkan untuk menguji OpenClaw dengan cara yang lebih realistis
-dan berbentuk kanal dibandingkan satu pengujian unit tunggal.
+Stack QA privat menguji OpenClaw secara realistis dengan bentuk yang menyerupai channel,
+yang tidak dapat dilakukan oleh pengujian unit.
 
-Bagian saat ini:
+Komponen:
 
-- `extensions/qa-channel`: kanal pesan sintetis dengan permukaan DM, kanal, thread,
-  reaksi, edit, dan hapus.
-- `extensions/qa-lab`: UI debugger dan bus QA untuk mengamati transkrip,
-  menyuntikkan pesan masuk, dan mengekspor laporan Markdown.
-- `extensions/qa-matrix`, plugin runner mendatang: adaptor transport langsung yang
-  menggerakkan kanal nyata di dalam gateway QA turunan.
-- `qa/`: aset seed berbasis repo untuk tugas kickoff dan skenario QA baseline.
-- [Mantis](/id/concepts/mantis): verifikasi langsung sebelum dan sesudah untuk bug yang
-  membutuhkan transport nyata, tangkapan layar browser, status VM, dan bukti PR.
+- `extensions/qa-channel`: channel pesan sintetis dengan permukaan DM, channel, utas,
+  reaksi, pengeditan, dan penghapusan.
+- `extensions/qa-lab`: UI debugger, bus QA, profil skenario, dan adaptor
+  transport langsung untuk mengamati transkrip, menyuntikkan pesan masuk,
+  dan mengekspor laporan Markdown.
+- `qa/`: aset seed berbasis repo untuk tugas awal dan skenario QA
+  dasar.
+- [Mantis](/id/concepts/mantis): verifikasi langsung sebelum/sesudah untuk bug yang
+  memerlukan transport nyata, tangkapan layar browser, status VM, dan bukti PR.
 
 ## Permukaan perintah
 
-Setiap alur QA berjalan di bawah `pnpm openclaw qa <subcommand>`. Banyak yang memiliki alias skrip `pnpm qa:*`;
-kedua bentuk didukung.
+Setiap alur QA berjalan di bawah `pnpm openclaw qa <subcommand>`. Banyak yang memiliki alias skrip
+`pnpm qa:*`; kedua bentuk berfungsi.
 
-| Perintah                                             | Tujuan                                                                                                                                                                                                                                                                 |
-| --------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `qa run`                                            | Pemeriksaan mandiri QA bawaan tanpa `--qa-profile`; runner profil kematangan berbasis taksonomi dengan `--qa-profile smoke-ci`, `--qa-profile release`, atau `--qa-profile all`.                                                                                                      |
-| `qa suite`                                          | Jalankan skenario berbasis repo terhadap jalur gateway QA. Alias: `pnpm openclaw qa suite --runner multipass` untuk VM Linux sekali pakai.                                                                                                                                  |
-| `qa coverage`                                       | Cetak inventaris cakupan skenario YAML (`--json` untuk keluaran mesin).                                                                                                                                                                                               |
-| `qa parity-report`                                  | Bandingkan dua berkas `qa-suite-summary.json` dan tulis laporan paritas agentik, atau gunakan `--runtime-axis --token-efficiency` untuk menulis laporan paritas runtime Codex-vs-OpenClaw dan efisiensi token dari satu ringkasan pasangan runtime.                                         |
-| `qa character-eval`                                 | Jalankan skenario QA karakter di beberapa model langsung dengan laporan yang dinilai. Lihat [Pelaporan](#reporting).                                                                                                                                                            |
-| `qa manual`                                         | Jalankan prompt sekali jalan terhadap jalur penyedia/model yang dipilih.                                                                                                                                                                                                          |
-| `qa ui`                                             | Mulai UI debugger QA dan bus QA lokal (alias: `pnpm qa:lab:ui`).                                                                                                                                                                                                    |
-| `qa docker-build-image`                             | Bangun image Docker QA yang sudah dipra-panggang.                                                                                                                                                                                                                                     |
-| `qa docker-scaffold`                                | Tulis scaffold docker-compose untuk dasbor QA + jalur gateway.                                                                                                                                                                                                    |
-| `qa up`                                             | Bangun situs QA, mulai tumpukan berbasis Docker, cetak URL (alias: `pnpm qa:lab:up`; varian `:fast` menambahkan `--use-prebuilt-image --bind-ui-dist --skip-ui-build`).                                                                                                  |
-| `qa aimock`                                         | Mulai hanya server penyedia AIMock.                                                                                                                                                                                                                                  |
-| `qa mock-openai`                                    | Mulai hanya server penyedia `mock-openai` yang sadar skenario.                                                                                                                                                                                                            |
-| `qa credentials doctor` / `add` / `list` / `remove` | Kelola pool kredensial Convex bersama.                                                                                                                                                                                                                               |
-| `qa matrix`                                         | Jalur transport langsung terhadap homeserver Tuwunel sekali pakai. Lihat [QA Matrix](/id/concepts/qa-matrix).                                                                                                                                                                      |
-| `qa telegram`                                       | Jalur transport langsung terhadap grup Telegram privat nyata.                                                                                                                                                                                                              |
-| `qa discord`                                        | Jalur transport langsung terhadap kanal guild Discord privat nyata.                                                                                                                                                                                                       |
-| `qa slack`                                          | Jalur transport langsung terhadap kanal Slack privat nyata.                                                                                                                                                                                                               |
-| `qa whatsapp`                                       | Jalur transport langsung terhadap akun WhatsApp Web nyata.                                                                                                                                                                                                                 |
-| `qa mantis`                                         | Runner verifikasi sebelum dan sesudah untuk bug transport langsung, dengan bukti reaksi-status Discord, smoke desktop/browser Crabbox, dan smoke Slack-dalam-VNC. Lihat [Mantis](/id/concepts/mantis) dan [Runbook Desktop Slack Mantis](/id/concepts/mantis-slack-desktop-runbook). |
+| Perintah                                             | Tujuan                                                                                                                                                                                                                                                             |
+| --------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `qa run`                                            | Pemeriksaan mandiri QA terbundel tanpa `--qa-profile`; runner profil kematangan berbasis taksonomi dengan `--qa-profile smoke-ci`, `--qa-profile release`, atau `--qa-profile all`.                                                                                                  |
+| `qa suite`                                          | Menjalankan skenario berbasis repo terhadap jalur gateway QA. `--runner multipass` menggunakan VM Linux sekali pakai, bukan host.                                                                                                                                         |
+| `qa coverage`                                       | Mencetak inventaris cakupan skenario YAML (`--json` untuk keluaran mesin; `--match <query>` untuk menemukan skenario bagi perilaku yang disentuh; `--tools` untuk cakupan fixture alat runtime).                                                                                  |
+| `qa parity-report`                                  | Membandingkan dua file `qa-suite-summary.json` untuk gerbang paritas sumbu model, atau menggunakan `--runtime-axis --token-efficiency` untuk menulis laporan paritas runtime Codex-vs-OpenClaw dan efisiensi token.                                                                          |
+| `qa confidence-report`                              | Mengklasifikasikan artefak bukti QA berdasarkan manifes menjadi laporan keyakinan tanpa hal yang tidak diketahui.                                                                                                                                                                               |
+| `qa confidence-self-test`                           | Menulis canary kontrol negatif ber-seed yang membuktikan gerbang keyakinan mendeteksi penyimpangan.                                                                                                                                                                                   |
+| `qa jsonl-replay`                                   | Memutar ulang transkrip JSONL terkurasi melalui harness pemutaran ulang paritas runtime.                                                                                                                                                                                         |
+| `qa character-eval`                                 | Menjalankan skenario QA karakter pada beberapa model langsung dengan laporan yang dinilai. Lihat [Pelaporan](#reporting).                                                                                                                                                        |
+| `qa manual`                                         | Menjalankan prompt satu kali terhadap jalur penyedia/model yang dipilih.                                                                                                                                                                                                      |
+| `qa ui`                                             | Memulai UI debugger QA dan bus QA lokal (alias: `pnpm qa:lab:ui`).                                                                                                                                                                                                |
+| `qa docker-build-image`                             | Membangun image Docker QA yang telah disiapkan sebelumnya.                                                                                                                                                                                                                                 |
+| `qa docker-scaffold`                                | Menulis scaffold docker-compose untuk dasbor QA + jalur gateway.                                                                                                                                                                                                |
+| `qa up`                                             | Membangun situs QA, memulai stack berbasis Docker, mencetak URL (alias: `pnpm qa:lab:up`; varian `:fast` menambahkan `--use-prebuilt-image --bind-ui-dist --skip-ui-build`).                                                                                              |
+| `qa aimock`                                         | Memulai hanya server penyedia AIMock.                                                                                                                                                                                                                              |
+| `qa mock-openai`                                    | Memulai hanya server penyedia `mock-openai` yang sadar skenario.                                                                                                                                                                                                        |
+| `qa credentials doctor` / `add` / `list` / `remove` | Mengelola kumpulan kredensial Convex bersama.                                                                                                                                                                                                                           |
+| `qa discord`                                        | Jalur transport langsung terhadap channel guild Discord privat yang nyata.                                                                                                                                                                                                   |
+| `qa matrix`                                         | Profil Matrix QA Lab terhadap homeserver Tuwunel sekali pakai. Lihat [Jalur smoke Matrix](#matrix-smoke-lanes).                                                                                                                                                      |
+| `qa slack`                                          | Jalur transport langsung terhadap channel Slack privat yang nyata.                                                                                                                                                                                                           |
+| `qa telegram`                                       | Jalur transport langsung terhadap grup Telegram privat yang nyata.                                                                                                                                                                                                          |
+| `qa whatsapp`                                       | Jalur transport langsung terhadap akun WhatsApp Web nyata.                                                                                                                                                                                                             |
+| `qa mantis`                                         | Runner verifikasi sebelum/sesudah untuk bug transport langsung, dengan bukti reaksi status Discord, smoke desktop/browser Crabbox, dan smoke Slack-dalam-VNC. Lihat [Mantis](/id/concepts/mantis) dan [Runbook Desktop Slack Mantis](/id/concepts/mantis-slack-desktop-runbook). |
 
-`qa run` berbasis profil membaca keanggotaan dari `taxonomy.yaml`, lalu mendispatch
-skenario yang diselesaikan melalui `qa suite`. `--surface` dan
-`--category` memfilter profil yang dipilih alih-alih mendefinisikan jalur terpisah.
-`qa-evidence.json` yang dihasilkan mencakup ringkasan scorecard profil dengan
-jumlah kategori yang dipilih dan ID cakupan yang hilang; entri bukti individual
-tetap menjadi sumber kebenaran untuk pengujian, peran cakupan, dan hasil.
-ID cakupan fitur taksonomi adalah target bukti yang tepat, bukan alias. Cakupan
-skenario primer memenuhi ID yang cocok; cakupan sekunder tetap bersifat saran.
-ID cakupan menggunakan bentuk bertitik `namespace.behavior` dengan segmen
-alfanumerik/tanda hubung huruf kecil; ID profil, permukaan, dan kategori masih dapat menggunakan
-ID taksonomi bertanda hubung atau bertitik yang sudah ada.
-Bukti ramping menghilangkan `execution` per entri dan menetapkan `evidenceMode: "slim"`;
-`smoke-ci` default ke ramping, dan `--evidence-mode full` memulihkan entri lengkap:
+### `qa run` berbasis profil
+
+`qa run` berbasis profil membaca keanggotaan dari `taxonomy.yaml`, lalu mengirimkan
+skenario yang telah diresolusi melalui `qa suite`. `--surface` dan `--category` memfilter
+profil yang dipilih alih-alih mendefinisikan jalur terpisah. `qa-evidence.json`
+yang dihasilkan menyertakan ringkasan kartu skor profil dengan jumlah kategori
+terpilih dan ID cakupan yang hilang; entri bukti individual tetap menjadi
+sumber kebenaran untuk pengujian, peran cakupan, dan hasil. ID cakupan fitur
+taksonomi adalah target bukti yang tepat, bukan alias: cakupan skenario utama
+memenuhi ID yang cocok, sedangkan cakupan sekunder tetap bersifat anjuran. ID cakupan menggunakan
+bentuk `namespace.behavior` bertitik dengan segmen alfanumerik/hubung huruf kecil;
+ID profil, permukaan, dan kategori masih dapat menggunakan ID taksonomi bertanda
+hubung atau bertitik yang ada.
+
+Bukti ringkas menghilangkan `execution` per entri dan menetapkan `evidenceMode: "slim"`;
+`smoke-ci` secara default menggunakan bentuk ringkas, dan `--evidence-mode full` memulihkan entri lengkap:
 
 ```bash
 pnpm openclaw qa run \
@@ -80,12 +88,13 @@ pnpm openclaw qa run \
   --output-dir .artifacts/qa-e2e/smoke-ci-profile-dispatch
 ```
 
-Gunakan `smoke-ci` untuk bukti profil deterministik dengan penyedia model mock dan
-server penyedia lokal Crabline. Gunakan `release` untuk bukti Stable/LTS terhadap kanal langsung.
-Gunakan `all` hanya untuk eksekusi bukti taksonomi penuh yang eksplisit; ini memilih
-setiap kategori kematangan aktif dan dapat didispatch melalui workflow `QA Profile
-Evidence` dengan `qa_profile=all`. Ketika sebuah perintah juga memerlukan profil root OpenClaw,
-letakkan profil root sebelum perintah QA:
+Gunakan `smoke-ci` untuk bukti profil deterministik dengan penyedia model tiruan dan
+server penyedia lokal Crabline. Gunakan `release` untuk bukti Stable/LTS terhadap
+channel langsung. Gunakan `all` hanya untuk proses bukti taksonomi lengkap yang eksplisit; ini
+memilih setiap kategori kematangan aktif dan dapat dikirim melalui alur kerja GitHub Actions `QA
+Profile Evidence` dengan `qa_profile=all`. Ketika suatu
+perintah juga memerlukan profil root OpenClaw, letakkan profil root sebelum
+perintah QA:
 
 ```bash
 pnpm openclaw --profile work qa run --qa-profile smoke-ci
@@ -95,8 +104,8 @@ pnpm openclaw --profile work qa run --qa-profile smoke-ci
 
 Alur operator QA saat ini adalah situs QA dua panel:
 
-- Kiri: dasbor Gateway (Control UI) dengan agen.
-- Kanan: QA Lab, menampilkan transkrip bergaya Slack dan rencana skenario.
+- Kiri: Dasbor Gateway (UI Kontrol) dengan agen.
+- Kanan: QA Lab, yang menampilkan transkrip bergaya Slack dan rencana skenario.
 
 Jalankan dengan:
 
@@ -104,13 +113,13 @@ Jalankan dengan:
 pnpm qa:lab:up
 ```
 
-Itu membangun situs QA, memulai jalur gateway berbasis Docker, dan mengekspos halaman
-QA Lab tempat operator atau loop otomatisasi dapat memberi agen misi QA,
-mengamati perilaku kanal nyata, dan mencatat apa yang berhasil, gagal, atau
+Perintah tersebut membangun situs QA, memulai jalur gateway berbasis Docker, dan mengekspos
+halaman QA Lab tempat operator atau loop otomatisasi dapat memberikan misi QA
+kepada agen, mengamati perilaku channel nyata, serta mencatat apa yang berhasil, gagal, atau
 tetap terblokir.
 
-Untuk iterasi UI QA Lab lokal yang lebih cepat tanpa membangun ulang image Docker setiap kali,
-mulai tumpukan dengan bundel QA Lab yang dipasang dengan bind mount:
+Untuk iterasi UI QA Lab yang lebih cepat tanpa membangun ulang image Docker setiap kali,
+mulai stack dengan bundel QA Lab yang dipasang melalui bind mount:
 
 ```bash
 pnpm openclaw qa docker-build-image
@@ -119,122 +128,177 @@ pnpm qa:lab:up:fast
 pnpm qa:lab:watch
 ```
 
-`qa:lab:up:fast` menjaga layanan Docker pada image yang sudah dibangun dan melakukan bind mount
-`extensions/qa-lab/web/dist` ke dalam kontainer `qa-lab`. `qa:lab:watch`
-membangun ulang bundel tersebut saat ada perubahan, dan browser memuat ulang otomatis ketika hash aset QA Lab berubah.
+`qa:lab:up:fast` mempertahankan layanan Docker pada image yang telah dibuat sebelumnya dan
+memasang `extensions/qa-lab/web/dist` melalui bind mount ke dalam kontainer `qa-lab`.
+`qa:lab:watch` membangun ulang bundel tersebut saat ada perubahan, dan browser memuat ulang
+secara otomatis ketika hash aset QA Lab berubah.
 
-Untuk smoke sinyal OpenTelemetry lokal, jalankan:
+### Smoke observabilitas
 
-```bash
-pnpm qa:otel:smoke
-```
+<Note>
+QA observabilitas tetap hanya tersedia dari checkout sumber. Tarball npm sengaja
+tidak menyertakan QA Lab (dan `qa-channel`), sehingga jalur rilis Docker
+paket tidak menjalankan perintah `qa`. Jalankan perintah ini dari checkout sumber yang telah dibangun saat
+mengubah instrumentasi diagnostik.
+</Note>
 
-Skrip tersebut memulai penerima OTLP/HTTP lokal, menjalankan skenario QA `otel-trace-smoke`
-dengan plugin `diagnostics-otel` diaktifkan, lalu menegaskan bahwa trace,
-metrik, dan log diekspor. Skrip ini mendekode span trace protobuf yang diekspor
-dan memeriksa bentuk kritis rilis:
-`openclaw.run`, `openclaw.harness.run`, span pemanggilan model konvensi semantik GenAI terbaru,
-`openclaw.context.assembled`, dan `openclaw.message.delivery`
-harus ada. Smoke memaksa
+| Alias                                   | Yang dijalankan                                                                                                                         |
+| --------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| `pnpm qa:otel:smoke`                    | Penerima OpenTelemetry lokal beserta skenario `otel-trace-smoke` dengan `diagnostics-otel` diaktifkan.                                  |
+| `pnpm qa:otel:collector-smoke`          | Jalur yang sama di belakang kontainer Docker OpenTelemetry Collector nyata. Gunakan saat mengubah pengawatan endpoint atau kompatibilitas collector/OTLP. |
+| `pnpm qa:prometheus:smoke`              | Skenario `docker-prometheus-smoke` dengan `diagnostics-prometheus` diaktifkan.                                                           |
+| `pnpm qa:observability:smoke`           | `qa:otel:smoke` diikuti oleh `qa:prometheus:smoke`.                                                                                     |
+| `pnpm qa:observability:collector-smoke` | `qa:otel:collector-smoke` diikuti oleh `qa:prometheus:smoke`.                                                                            |
+
+`qa:otel:smoke` memulai penerima OTLP/HTTP lokal, menjalankan giliran agen
+kanal QA minimal, lalu memastikan trace, metrik, dan log diekspor. Proses ini
+mendekode span trace protobuf yang diekspor dan memeriksa struktur yang sangat
+penting bagi rilis: `openclaw.run`, `openclaw.harness.run`, span pemanggilan
+model konvensi semantik GenAI terbaru, `openclaw.context.assembled`, dan
+`openclaw.message.delivery` semuanya harus ada. Smoke memaksakan
 `OTEL_SEMCONV_STABILITY_OPT_IN=gen_ai_latest_experimental`, sehingga span pemanggilan model
-harus menggunakan nama `{gen_ai.operation.name} {gen_ai.request.model}`;
-pemanggilan model tidak boleh mengekspor `StreamAbandoned` pada giliran yang berhasil; ID diagnostik mentah dan
-atribut `openclaw.content.*` harus tetap di luar trace. Payload OTLP mentah
-tidak boleh berisi sentinel prompt, sentinel respons, atau kunci sesi QA.
-Skrip ini menulis `otel-smoke-summary.json` di sebelah artefak suite QA.
+harus menggunakan nama `{gen_ai.operation.name} {gen_ai.request.model}`; pemanggilan model
+tidak boleh mengekspor `StreamAbandoned` pada giliran yang berhasil; ID diagnostik
+mentah dan atribut `openclaw.content.*` harus tetap berada di luar trace. Prompt skenario
+meminta model membalas dengan penanda tetap dan menahan string rahasia
+tetap; payload OTLP mentah tidak boleh memuat salah satunya, maupun kunci
+sesi QA yang diturunkan dari ID skenario. Proses ini menulis `otel-smoke-summary.json`
+di samping artefak rangkaian QA.
 
-Untuk smoke OpenTelemetry yang didukung kolektor, jalankan:
+`qa:prometheus:smoke` memverifikasi bahwa scrape tanpa autentikasi ditolak, lalu
+memeriksa bahwa scrape terautentikasi menyertakan kelompok metrik yang sangat
+penting bagi rilis tanpa konten prompt, konten respons, pengidentifikasi diagnostik mentah, token
+autentikasi, atau jalur lokal.
 
-```bash
-pnpm qa:otel:collector-smoke
-```
+### Jalur smoke Matrix
 
-Jalur tersebut menempatkan kontainer Docker OpenTelemetry Collector nyata di depan
-penerima lokal yang sama. Gunakan ini saat mengubah wiring endpoint, kompatibilitas kolektor,
-atau perilaku ekspor OTLP yang dapat tertutup oleh penerima dalam proses.
-
-Untuk smoke scrape Prometheus yang dilindungi, jalankan:
-
-```bash
-pnpm qa:prometheus:smoke
-```
-
-Alias tersebut menjalankan skenario QA `docker-prometheus-smoke` dengan
-`diagnostics-prometheus` diaktifkan, memverifikasi scrape tanpa autentikasi ditolak,
-lalu memeriksa bahwa scrape terautentikasi menyertakan keluarga metrik yang kritis
-untuk rilis tanpa konten prompt, konten respons, pengidentifikasi diagnostik mentah,
-token auth, atau path lokal.
-
-Untuk menjalankan kedua observability smoke secara berurutan, gunakan:
+Untuk jalur smoke Matrix dengan transportasi nyata yang tidak memerlukan kredensial
+penyedia model, jalankan profil rilis dengan penyedia OpenAI tiruan deterministik:
 
 ```bash
-pnpm qa:observability:smoke
+pnpm openclaw qa matrix --provider-mode mock-openai --profile release
 ```
 
-Untuk jalur OpenTelemetry berbasis collector ditambah smoke scrape Prometheus yang
-dilindungi, gunakan:
-
-```bash
-pnpm qa:observability:collector-smoke
-```
-
-QA observability tetap hanya untuk checkout sumber. Tarball npm sengaja tidak menyertakan
-QA Lab, sehingga jalur rilis Docker paket tidak menjalankan perintah `qa`. Gunakan
-`pnpm qa:otel:smoke`, `pnpm qa:prometheus:smoke`, atau
-`pnpm qa:observability:smoke` dari checkout sumber yang sudah dibangun saat mengubah
-instrumentasi diagnostik.
-
-Untuk jalur smoke Matrix dengan transport nyata yang tidak memerlukan kredensial
-penyedia model, jalankan profil cepat dengan penyedia OpenAI mock deterministik:
-
-```bash
-OPENCLAW_QA_MATRIX_NO_REPLY_WINDOW_MS=3000 \
-  pnpm openclaw qa matrix --provider-mode mock-openai --profile fast --fail-fast
-```
-
-Untuk jalur penyedia live-frontier, berikan kredensial yang kompatibel dengan OpenAI
+Untuk jalur penyedia frontier langsung, berikan kredensial yang kompatibel dengan OpenAI
 secara eksplisit:
 
 ```bash
 OPENCLAW_LIVE_OPENAI_KEY="${OPENAI_API_KEY}" \
-OPENCLAW_QA_MATRIX_NO_REPLY_WINDOW_MS=3000 \
-  pnpm openclaw qa matrix --provider-mode live-frontier --profile fast --fail-fast
+  pnpm openclaw qa matrix --provider-mode live-frontier --profile release
 ```
 
-Referensi CLI lengkap, katalog profil/skenario, variabel env, dan tata letak artefak untuk jalur ini tersedia di [QA Matrix](/id/concepts/qa-matrix). Sekilas: jalur ini menyediakan homeserver Tuwunel sekali pakai di Docker, mendaftarkan pengguna driver/SUT/observer sementara, menjalankan Plugin Matrix nyata di dalam Gateway QA turunan yang dibatasi ke transport tersebut (tanpa `qa-channel`), lalu menulis laporan Markdown, ringkasan JSON, artefak observed-events, dan log output gabungan di bawah `.artifacts/qa-e2e/matrix-<timestamp>/`.
+`pnpm openclaw qa matrix` biasa menjalankan profil `all` lengkap dan tetap
+berlanjut setelah kegagalan skenario. Gunakan `--fail-fast` untuk siklus umpan balik
+yang lebih singkat atau ulangi `--scenario <id>` untuk memilih skenario individual; ID skenario
+eksplisit lebih diprioritaskan daripada `--profile`.
 
-Skenario mencakup perilaku transport yang tidak dapat dibuktikan unit test secara end to end: penyaringan mention, kebijakan allow-bot, allowlist, balasan tingkat atas dan berutas, perutean DM, penanganan reaksi, penekanan edit masuk, dedupe replay setelah restart, pemulihan gangguan homeserver, pengiriman metadata persetujuan, penanganan media, serta alur bootstrap/pemulihan/verifikasi E2EE Matrix. Profil CLI E2EE juga menjalankan `openclaw matrix encryption setup` dan perintah verifikasi melalui homeserver sekali pakai yang sama sebelum memeriksa balasan Gateway.
+| Profil       | Skenario  | Tujuan                                                                                                                                  |
+| ------------ | --------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| `all`        | 93        | Katalog lengkap (default).                                                                                                              |
+| `release`    | 2         | Baseline kanal yang sangat penting bagi rilis dan pemuatan ulang daftar izin langsung.                                                   |
+| `fast`       | 12        | Cakupan terfokus untuk utas, reaksi, persetujuan, kebijakan, pembatasan bot, dan balasan terenkripsi.                                    |
+| `transport`  | 50        | Utas, perutean DM/ruang, bergabung otomatis, persetujuan, reaksi, mulai ulang, kebijakan penyebutan/daftar izin, pengeditan, dan pengurutan multiaktor. |
+| `media`      | 7         | Cakupan gambar, gambar yang dihasilkan, suara, lampiran, media yang tidak didukung, dan media terenkripsi.                               |
+| `e2ee-smoke` | 8         | Cakupan minimum untuk balasan terenkripsi, utas, bootstrap, pemulihan, mulai ulang, redaksi, dan kegagalan.                              |
+| `e2ee-deep`  | 18        | Kehilangan status, pencadangan, pemulihan kunci, kebersihan perangkat, dan verifikasi SAS/QR/DM.                                         |
+| `e2ee-cli`   | 9         | `openclaw matrix encryption setup`, kunci pemulihan, multiakun, perjalanan pulang-pergi Gateway, dan perintah verifikasi mandiri melalui harness. |
 
-Discord juga memiliki skenario opt-in khusus Mantis untuk reproduksi bug. Gunakan
-`--scenario discord-status-reactions-tool-only` untuk timeline reaksi status eksplisit,
-atau `--scenario discord-thread-reply-filepath-attachment` untuk membuat utas Discord
-nyata dan memverifikasi bahwa `message.thread-reply` mempertahankan lampiran
-`filePath`. Skenario ini tidak masuk ke jalur live Discord default karena merupakan
-probe reproduksi sebelum/sesudah, bukan cakupan smoke yang luas.
-Workflow Mantis thread-attachment juga dapat menambahkan video saksi Discord Web yang
-sudah login saat `MANTIS_DISCORD_VIEWER_CHROME_PROFILE_DIR` atau
-`MANTIS_DISCORD_VIEWER_CHROME_PROFILE_TGZ_B64` dikonfigurasi di lingkungan QA.
-Profil viewer tersebut hanya untuk tangkapan visual; keputusan lulus/gagal tetap
-berasal dari oracle REST Discord.
+Keanggotaan profil dan persyaratan kanal berada bersama skenario Matrix
+deklaratif di bawah `qa/scenarios/channels/`. Proses menjalankan memilih driver kanal.
+Implementasi langsungnya berada di bawah
+`extensions/qa-lab/src/live-transports/matrix/scenarios/`.
 
-CI menggunakan permukaan perintah yang sama di `.github/workflows/qa-live-transports-convex.yml`.
-Jalankan terjadwal dan manual default mengeksekusi profil Matrix cepat dengan
-kredensial live-frontier yang disediakan QA, `--fast`, dan
-`OPENCLAW_QA_MATRIX_NO_REPLY_WINDOW_MS=3000`. Manual `matrix_profile=all` melakukan fan-out
-ke lima shard profil.
+Adaptor menyediakan homeserver Tuwunel sekali pakai di Docker (image default
+`ghcr.io/matrix-construct/tuwunel:v1.5.1`, nama server `matrix-qa.test`,
+port `28008`), mendaftarkan pengguna driver, SUT, dan pengamat sementara, menyiapkan
+ruang yang diperlukan, serta merekam batas permintaan/respons yang telah disunting. Adaptor kemudian
+menjalankan Plugin Matrix nyata di dalam Gateway QA anak yang dibatasi pada transportasi tersebut
+(tanpa `qa-channel`) dan membongkar lingkungan.
 
-Untuk jalur smoke Telegram, Discord, Slack, dan WhatsApp dengan transport nyata:
+Opsi umum:
+
+| Flag                     | Default           | Tujuan                                                                               |
+| ------------------------ | ----------------- | ------------------------------------------------------------------------------------ |
+| `--profile <profile>`    | `all`             | Pilih salah satu profil di atas.                                                     |
+| `--scenario <id>`        | -                 | Pilih satu skenario; dapat diulang.                                                  |
+| `--fail-fast`            | nonaktif          | Berhenti setelah pemeriksaan atau skenario pertama yang gagal.                       |
+| `--allow-failures`       | nonaktif          | Tulis artefak tanpa mengembalikan kode keluar gagal untuk kegagalan skenario.         |
+| `--provider-mode <mode>` | `live-frontier`   | Gunakan `mock-openai` untuk pengiriman deterministik atau `live-frontier` untuk penyedia langsung. |
+| `--model <ref>`          | default penyedia  | Tetapkan referensi `provider/model` utama.                                         |
+| `--alt-model <ref>`      | default penyedia  | Tetapkan model alternatif yang digunakan oleh skenario yang beralih model.           |
+| `--fast`                 | nonaktif          | Aktifkan mode cepat penyedia jika didukung.                                          |
+| `--output-dir <path>`    | dihasilkan        | Pilih direktori laporan; jalur relatif diselesaikan terhadap `--repo-root`.      |
+| `--repo-root <path>`     | direktori saat ini | Jalankan dari direktori kerja netral.                                                |
+| `--sut-account <id>`     | `sut`             | Pilih ID akun Matrix dalam konfigurasi Gateway anak.                                 |
+
+QA Matrix tidak menyewa kredensial Matrix bersama: adaptor membuat
+pengguna sekali pakai secara lokal, sehingga tidak menerima `--credential-source` atau
+`--credential-role`. Ganti image homeserver dengan
+`OPENCLAW_QA_MATRIX_TUWUNEL_IMAGE`; sesuaikan pernyataan negatif tanpa balasan dengan
+`OPENCLAW_QA_MATRIX_NO_REPLY_WINDOW_MS` (default `8000`, dibatasi hingga batas waktu
+skenario aktif). Perintah sekali jalan biasanya memaksakan keluar bersih setelah
+artefak selesai ditulis karena handle native kripto Matrix dapat bertahan setelah pembersihan; tetapkan
+`OPENCLAW_QA_MATRIX_DISABLE_FORCE_EXIT=1` hanya untuk harness pengujian langsung yang
+memerlukan perintah untuk kembali.
+
+Setiap proses menjalankan menulis artefak QA Lab normal di bawah direktori keluaran
+yang dipilih: `qa-suite-report.md`, `qa-suite-summary.json`, `qa-evidence.json`,
+dan manifes `matrix-harness-*/matrix-qa-harness.json` yang telah disunting. Jika pembersihan
+gagal, jalankan perintah pemulihan `docker compose ... down --remove-orphans`
+yang dicetak. Pada runner lambat, tingkatkan jendela tanpa balasan; pada CI cepat, jendela
+yang lebih kecil dapat mempersingkat pernyataan negatif.
+
+Skenario tersebut mencakup perilaku transportasi yang tidak dapat dibuktikan oleh pengujian unit secara
+menyeluruh: pembatasan penyebutan, kebijakan mengizinkan bot, daftar izin, balasan tingkat atas
+dan berutas, perutean DM, penanganan reaksi, penekanan pengeditan masuk, deduplikasi
+pemutaran ulang saat mulai ulang, pemulihan dari gangguan homeserver, pengiriman metadata persetujuan,
+penanganan media, serta alur bootstrap/pemulihan/verifikasi E2EE Matrix. Profil
+CLI E2EE juga menjalankan `openclaw matrix encryption setup` dan
+perintah verifikasi melalui homeserver sekali pakai yang sama sebelum memeriksa
+balasan Gateway.
+
+`matrix-room-block-streaming` dan `subagent-thread-spawn` tetap tersedia melalui
+pemilihan `--scenario` secara eksplisit, tetapi tetap berada di luar profil default `all`.
+
+CI menggunakan permukaan perintah yang sama di
+`.github/workflows/qa-live-transports-convex.yml`. Proses terjadwal dan rilis
+menjalankan skenario rilis. Pengiriman `matrix_profile=all` manual menyebarkan
+profil `transport`, `media`, `e2ee-smoke`, `e2ee-deep`, dan `e2ee-cli`;
+pengiriman terfokus memilih `fast`, `release`, atau `transport` dalam satu tugas.
+
+### Skenario Discord Mantis
+
+Discord juga memiliki skenario khusus Mantis yang ikut serta secara opsional untuk reproduksi bug. Gunakan
+`--scenario discord-status-reactions-tool-only` untuk linimasa reaksi status
+eksplisit, atau `--scenario discord-thread-reply-filepath-attachment`
+untuk membuat utas Discord nyata dan memverifikasi bahwa `message.thread-reply`
+mempertahankan lampiran `filePath`. Skenario ini tetap berada di luar jalur
+Discord langsung default karena merupakan probe reproduksi sebelum/sesudah, bukan
+cakupan smoke yang luas. Alur kerja Mantis untuk lampiran utas juga dapat menambahkan
+video saksi Discord Web yang telah masuk jika
+`MANTIS_DISCORD_VIEWER_CHROME_PROFILE_DIR` atau
+`MANTIS_DISCORD_VIEWER_CHROME_PROFILE_TGZ_B64` dikonfigurasi dalam lingkungan
+QA. Profil penampil tersebut hanya untuk pengambilan visual; keputusan lulus/gagal
+tetap berasal dari oracle REST Discord.
+
+Untuk jalur smoke lain dengan transportasi nyata:
 
 ```bash
-pnpm openclaw qa telegram
 pnpm openclaw qa discord
 pnpm openclaw qa slack
+pnpm openclaw qa telegram
 pnpm openclaw qa whatsapp
 ```
 
-Jalur tersebut menargetkan channel nyata yang sudah ada dengan dua bot atau akun (driver + SUT). Variabel env yang diperlukan, daftar skenario, artefak output, dan pool kredensial Convex didokumentasikan dalam [referensi QA Telegram, Discord, Slack, dan WhatsApp](#telegram-discord-slack-and-whatsapp-qa-reference) di bawah.
+Jalur tersebut menargetkan kanal nyata yang sudah ada dengan dua bot atau akun (driver +
+SUT). Variabel lingkungan yang diperlukan, daftar skenario, artefak keluaran, dan kumpulan
+kredensial Convex untuk keempat transportasi tersebut didokumentasikan dalam
+[Referensi QA Discord, Slack, Telegram, dan WhatsApp](#discord-slack-telegram-and-whatsapp-qa-reference)
+di bawah.
 
-Untuk menjalankan VM desktop Slack penuh dengan penyelamatan VNC, jalankan:
+### Runner tugas desktop dan visual Mantis Slack
+
+Untuk proses VM desktop Slack lengkap dengan penyelamatan VNC, jalankan:
 
 ```bash
 pnpm openclaw qa mantis slack-desktop-smoke \
@@ -243,26 +307,27 @@ pnpm openclaw qa mantis slack-desktop-smoke \
   --keep-lease
 ```
 
-Perintah tersebut menyewa mesin desktop/browser Crabbox, menjalankan jalur live Slack
-di dalam VM, membuka Slack Web di browser VNC, menangkap desktop, dan menyalin
-`slack-qa/`, `slack-desktop-smoke.png`, dan `slack-desktop-smoke.mp4` saat
-tangkapan video tersedia kembali ke direktori artefak Mantis. Sewa desktop/browser
-Crabbox menyediakan alat tangkap dan paket pembantu browser/native-build sejak awal,
-sehingga skenario hanya perlu menginstal fallback pada sewa yang lebih lama. Mantis
-melaporkan waktu total dan per fase di `mantis-slack-desktop-smoke-report.md` sehingga
-run yang lambat menunjukkan apakah waktu digunakan untuk pemanasan sewa, akuisisi
-kredensial, setup jarak jauh, atau penyalinan artefak. Gunakan kembali
-`--lease-id <cbx_...>` setelah login ke Slack Web secara manual melalui VNC;
-sewa yang digunakan kembali juga menjaga cache pnpm store Crabbox tetap hangat. Default
-`--hydrate-mode source` memverifikasi dari checkout sumber dan menjalankan install/build
-di dalam VM. Gunakan `--hydrate-mode prehydrated` hanya saat workspace jarak jauh yang
-digunakan kembali sudah memiliki `node_modules` dan `dist/` yang sudah dibangun; mode
-tersebut melewati langkah install/build yang mahal dan gagal tertutup saat workspace
-belum siap. Dengan `--gateway-setup`, Mantis membiarkan Gateway Slack OpenClaw persisten
-berjalan di dalam VM pada port `38973`; tanpanya, perintah menjalankan jalur QA Slack
-bot-ke-bot normal dan keluar setelah tangkapan artefak.
+Perintah tersebut menyewa mesin desktop/peramban Crabbox, menjalankan lane langsung Slack
+di dalam VM, membuka Slack Web di peramban VNC, merekam desktop,
+dan menyalin `slack-qa/`, `slack-desktop-smoke.png`, serta
+`slack-desktop-smoke.mp4` (ketika perekaman video tersedia) kembali ke
+direktori artefak Mantis. Sewa desktop/peramban Crabbox menyediakan alat
+perekaman dan paket pembantu peramban/build native sejak awal, sehingga skenario
+hanya perlu menginstal fallback pada sewa lama. Mantis melaporkan waktu total dan
+per fase dalam `mantis-slack-desktop-smoke-report.md` agar proses yang lambat menunjukkan
+apakah waktu digunakan untuk pemanasan sewa, perolehan kredensial, penyiapan jarak jauh, atau
+penyalinan artefak. Gunakan kembali `--lease-id <cbx_...>` setelah masuk ke Slack Web
+secara manual melalui VNC; sewa yang digunakan kembali juga menjaga cache penyimpanan pnpm Crabbox
+tetap siap. `--hydrate-mode source` default melakukan verifikasi dari checkout sumber dan
+menjalankan instalasi/build di dalam VM. Gunakan `--hydrate-mode prehydrated` hanya ketika
+ruang kerja jarak jauh yang digunakan kembali sudah memiliki `node_modules` dan `dist/` yang telah di-build;
+mode tersebut melewati langkah instalasi/build yang mahal dan gagal secara tertutup ketika
+ruang kerja belum siap. Dengan `--gateway-setup`, Mantis membiarkan
+Gateway Slack OpenClaw persisten tetap berjalan di dalam VM pada port `38973`; tanpa opsi tersebut,
+perintah menjalankan lane QA Slack bot-ke-bot normal dan keluar setelah perekaman
+artefak.
 
-Untuk membuktikan UI persetujuan native Slack dengan bukti desktop, jalankan mode
+Untuk membuktikan UI persetujuan Slack native dengan bukti desktop, jalankan mode
 checkpoint persetujuan Mantis:
 
 ```bash
@@ -273,117 +338,144 @@ pnpm openclaw qa mantis slack-desktop-smoke \
 ```
 
 Mode ini saling eksklusif dengan `--gateway-setup`. Mode ini menjalankan skenario
-persetujuan Slack, menolak id skenario non-persetujuan, menunggu pada setiap status
-persetujuan tertunda dan terselesaikan, merender pesan Slack API yang diamati ke
+persetujuan Slack, menolak ID skenario non-persetujuan, menunggu pada setiap status
+persetujuan tertunda dan terselesaikan, merender pesan API Slack yang diamati ke
 `approval-checkpoints/<scenario>-pending.png` dan
 `approval-checkpoints/<scenario>-resolved.png`, lalu gagal jika ada checkpoint,
-bukti pesan, acknowledgment, atau screenshot hasil render yang hilang atau kosong.
-Sewa CI dingin masih dapat menampilkan sign-in Slack di `slack-desktop-smoke.png`;
-gambar checkpoint persetujuan adalah bukti visual untuk jalur ini.
+bukti pesan, tanda terima, atau tangkapan layar yang dirender yang tidak ada atau
+kosong. Sewa CI baru mungkin masih menampilkan proses masuk Slack dalam
+`slack-desktop-smoke.png`; gambar checkpoint persetujuan merupakan bukti visual
+untuk lane ini.
 
-Checklist operator, perintah dispatch workflow GitHub, kontrak komentar bukti,
-tabel keputusan hydrate-mode, interpretasi waktu, dan langkah penanganan kegagalan
-tersedia di [Runbook Desktop Slack Mantis](/id/concepts/mantis-slack-desktop-runbook).
+Proses checkpoint default mempertahankan dua skenario persetujuan Slack standar.
+Untuk merekam salah satu rute persetujuan Codex yang bersifat opsional, pilih secara eksplisit dengan
+`--scenario slack-codex-approval-exec-native` atau
+`--scenario slack-codex-approval-plugin-native`; Mantis menerima keduanya dan menghasilkan
+pasangan tangkapan layar tertunda/terselesaikan yang sama. Runner memperpanjang tenggat waktu checkpoint
+dan perintah jarak jauhnya untuk setiap rute Codex yang dipilih agar seluruh
+urutan persetujuan, penyelesaian agen, dan pembaruan terselesaikan dapat selesai.
 
-Untuk tugas desktop gaya agent/CV, jalankan:
+Daftar periksa operator, perintah dispatch alur kerja GitHub, kontrak komentar
+bukti, tabel keputusan mode hidrasi, interpretasi waktu, dan langkah
+penanganan kegagalan tersedia di
+[Runbook Desktop Slack Mantis](/id/concepts/mantis-slack-desktop-runbook).
+
+Untuk tugas desktop bergaya agen/CV, jalankan:
 
 ```bash
 pnpm openclaw qa mantis visual-task \
   --browser-url https://example.net \
   --expect-text "Example Domain" \
-  --vision-model openai/gpt-5.5
+  --vision-model openai/gpt-5.6-luna
 ```
 
-`visual-task` menyewa atau menggunakan kembali mesin desktop/browser Crabbox, memulai
-`crabbox record --while`, mengendalikan browser yang terlihat melalui
-`visual-driver` bersarang, menangkap `visual-task.png`, menjalankan
-`openclaw infer image describe` terhadap screenshot saat `--vision-mode image-describe`
+`visual-task` menyewa atau menggunakan kembali mesin desktop/peramban Crabbox, memulai
+`crabbox record --while`, mengendalikan peramban yang terlihat melalui
+`visual-driver` bertingkat, mengambil `visual-task.png`, menjalankan `openclaw infer image
+describe` terhadap tangkapan layar ketika `--vision-mode image-describe`
 dipilih, dan menulis `visual-task.mp4`, `mantis-visual-task-summary.json`,
-`mantis-visual-task-driver-result.json`, serta `mantis-visual-task-report.md`.
-Saat `--expect-text` diatur, prompt vision meminta verdict JSON terstruktur dan hanya
-lulus saat model melaporkan bukti terlihat yang positif; respons negatif yang hanya
-mengutip teks target menggagalkan assertion. Gunakan `--vision-mode metadata` untuk
-smoke tanpa model yang membuktikan plumbing desktop, browser, screenshot, dan video
-tanpa memanggil penyedia pemahaman gambar. Rekaman adalah artefak wajib untuk
-`visual-task`; jika Crabbox tidak merekam `visual-task.mp4` yang tidak kosong, tugas
-gagal meskipun visual driver lulus. Saat gagal, Mantis mempertahankan sewa untuk VNC
-kecuali tugas sudah lulus dan `--keep-lease` tidak diatur.
+`mantis-visual-task-driver-result.json`, serta
+`mantis-visual-task-report.md`. Ketika `--expect-text` ditetapkan, prompt visi
+meminta putusan JSON terstruktur (`visible`, `evidence`, `reason`)
+dan hanya lolos ketika model melaporkan `visible: true` dengan bukti yang
+mengutip teks yang diharapkan; respons `visible: false` yang hanya mengutip
+teks target tetap gagal dalam pemeriksaan. Gunakan `--vision-mode metadata` untuk
+smoke tanpa model yang membuktikan rangkaian desktop, peramban, tangkapan layar, dan video
+tanpa memanggil penyedia pemahaman gambar. Rekaman merupakan
+artefak wajib untuk `visual-task`; jika Crabbox tidak merekam
+`visual-task.mp4` yang tidak kosong, tugas gagal meskipun pengendali visual lolos. Saat
+gagal, Mantis mempertahankan sewa untuk VNC kecuali tugas sudah lolos
+dan `--keep-lease` tidak ditetapkan.
 
-Sebelum menggunakan kredensial live yang dipool, jalankan:
+### Pemeriksaan kesehatan kumpulan kredensial
+
+Sebelum menggunakan kredensial langsung yang dikumpulkan, jalankan:
 
 ```bash
 pnpm openclaw qa credentials doctor
 ```
 
-Doctor memeriksa env broker Convex, memvalidasi pengaturan endpoint, dan memverifikasi keterjangkauan admin/list saat secret maintainer ada. Doctor hanya melaporkan status set/missing untuk secret.
+Doctor memeriksa env broker Convex (`OPENCLAW_QA_CONVEX_SITE_URL`,
+`OPENCLAW_QA_CONVEX_ENDPOINT_PREFIX`), memvalidasi pengaturan endpoint, hanya melaporkan
+status ditetapkan/tidak ada untuk `OPENCLAW_QA_CONVEX_SECRET_CI` dan
+`OPENCLAW_QA_CONVEX_SECRET_MAINTAINER`, serta memverifikasi keterjangkauan admin/daftar
+ketika rahasia pengelola tersedia.
 
-## Cakupan transport live
+## Cakupan skenario kanonis
 
-Jalur transport live berbagi satu kontrak alih-alih masing-masing membuat bentuk daftar skenarionya sendiri. `qa-channel` adalah suite perilaku produk sintetis yang luas dan bukan bagian dari matriks cakupan transport live.
+`taxonomy.yaml` root mendefinisikan ID cakupan semantik. File YAML skenario
+di bawah `qa/scenarios/` memetakan setiap skenario ke ID tersebut dan memiliki metadata
+eksekusi: `channel` adalah satu-satunya persyaratan kanal, dan `profiles` mendeklarasikan
+keanggotaan proses bernama. Pengendali kanal merupakan pilihan implementasi tingkat proses
+yang dapat dipertukarkan. Runner TypeScript
+mengueri katalog tersebut; runner tidak memelihara inventaris skenario atau cakupan
+paralel.
 
-Runner transport live harus mengimpor id skenario bersama, helper cakupan
-baseline, dan helper pemilihan skenario dari
-`openclaw/plugin-sdk/qa-live-transport-scenarios`.
+Output statis `qa coverage` melaporkan pemetaan taksonomi-ke-skenario. Bukti
+sebenarnya berasal dari `qa-evidence.json`, yang mencatat skenario yang dijalankan,
+ID cakupan, kanal, pengendali yang benar-benar digunakan, dan hasilnya. Kanal dan pengendali adalah
+dimensi laporan, bukan kosakata ID cakupan tambahan atau sumbu kelayakan
+skenario.
 
-| Jalur    | Canary | Penyaringan mention | Bot-ke-bot | Blok allowlist | Balasan tingkat atas | Balasan kutipan | Lanjutkan setelah restart | Tindak lanjut utas | Isolasi utas | Observasi reaksi | Perintah bantuan | Pendaftaran perintah native |
-| -------- | ------ | ------------------- | ---------- | -------------- | -------------------- | ---------------- | ------------------------- | ------------------ | ------------ | ---------------- | ---------------- | ---------------------------- |
-| Matrix   | x      | x                   | x          | x              | x                    |                  | x                         | x                  | x            | x                |                  |                              |
-| Telegram | x      | x                   | x          |                |                      |                  |                           |                    |              |                  | x                |                              |
-| Discord  | x      | x                   | x          |                |                      |                  |                           |                    |              |                  |                  | x                            |
-| Slack    | x      | x                   | x          | x              | x                    |                  | x                         | x                  | x            |                  |                  |                              |
-| WhatsApp | x      | x                   |            | x              | x                    | x                | x                         |                    |              | x                | x                |                              |
-
-Ini mempertahankan `qa-channel` sebagai suite perilaku produk yang luas sementara Matrix,
-Telegram, dan transport live lainnya berbagi satu checklist kontrak transport yang eksplisit.
-
-Untuk jalur VM Linux sekali pakai tanpa membawa Docker ke path QA, jalankan:
+Untuk lane VM Linux sekali pakai tanpa memasukkan Docker ke jalur QA, jalankan:
 
 ```bash
 pnpm openclaw qa suite --runner multipass --scenario channel-chat-baseline
 ```
 
-Ini mem-boot guest Multipass baru, menginstal dependensi, membangun OpenClaw
-di dalam guest, menjalankan `qa suite`, lalu menyalin laporan QA normal dan
-ringkasan kembali ke `.artifacts/qa-e2e/...` pada host.
-Ini menggunakan kembali perilaku pemilihan skenario yang sama seperti `qa suite` pada host.
-Run suite host dan Multipass mengeksekusi beberapa skenario terpilih secara paralel
-dengan worker Gateway terisolasi secara default. `qa-channel` default ke concurrency
-4, dibatasi oleh jumlah skenario yang dipilih. Gunakan `--concurrency <count>` untuk
-menyetel jumlah worker, atau `--concurrency 1` untuk eksekusi serial.
-Gunakan `--pack personal-agent` untuk menjalankan pack benchmark asisten pribadi. Selector
-pack bersifat aditif dengan flag `--scenario` berulang: skenario eksplisit berjalan
-terlebih dahulu, lalu skenario pack berjalan sesuai urutan pack dengan duplikat dihapus.
-Gunakan `--pack observability` saat runner QA kustom sudah menyediakan setup collector
-OpenTelemetry dan ingin skenario smoke diagnostik OpenTelemetry serta Prometheus dipilih
-bersama.
-Perintah keluar non-zero saat ada skenario yang gagal. Gunakan `--allow-failures` saat
-Anda menginginkan artefak tanpa kode keluar gagal.
-Run live meneruskan input auth QA yang didukung dan praktis untuk guest: key penyedia
-berbasis env, path konfigurasi penyedia live QA, dan `CODEX_HOME` saat ada. Pertahankan
-`--output-dir` di bawah root repo agar guest dapat menulis balik melalui workspace yang
-di-mount.
+Perintah ini memulai guest Multipass baru, menginstal dependensi, mem-build OpenClaw
+di dalam guest, menjalankan `qa suite`, lalu menyalin laporan dan
+ringkasan QA normal kembali ke `.artifacts/qa-e2e/...` pada host. Perintah ini menggunakan kembali
+perilaku pemilihan skenario yang sama seperti `qa suite` pada host.
 
-## Referensi QA Telegram, Discord, Slack, dan WhatsApp
+Proses suite host dan Multipass menjalankan beberapa skenario terpilih secara
+paralel dengan worker Gateway terisolasi secara default. `qa-channel` menggunakan
+konkurensi default 4, yang dibatasi oleh jumlah skenario terpilih. Gunakan `--concurrency
+<count>` untuk menyesuaikan jumlah worker, atau `--concurrency 1` untuk eksekusi serial.
+Gunakan `--pack personal-agent` untuk menjalankan paket benchmark asisten pribadi (10
+skenario). Pemilih paket bersifat aditif dengan flag `--scenario` berulang:
+skenario eksplisit dijalankan terlebih dahulu, lalu skenario paket dijalankan sesuai urutan paket dengan
+duplikat dihapus. Gunakan `--pack observability` untuk memilih skenario
+`otel-trace-smoke` dan `docker-prometheus-smoke` secara bersamaan ketika
+runner QA khusus sudah menyediakan penyiapan kolektor OpenTelemetry.
 
-Matrix memiliki [halaman khusus](/id/concepts/qa-matrix) karena jumlah skenarionya dan penyediaan homeserver berbasis Docker. Telegram, Discord, Slack, dan WhatsApp berjalan terhadap transport nyata yang sudah ada, sehingga referensinya berada di sini.
+Perintah keluar dengan kode bukan nol ketika ada skenario yang gagal. Gunakan `--allow-failures`
+ketika Anda menginginkan artefak tanpa kode keluar kegagalan.
+
+Proses langsung meneruskan input autentikasi QA yang didukung dan praktis untuk
+guest: kunci penyedia berbasis env, jalur konfigurasi penyedia langsung QA, serta
+`CODEX_HOME` jika tersedia. Simpan `--output-dir` di bawah root repo agar
+guest dapat menulis kembali melalui ruang kerja yang dipasang.
+
+## Referensi QA Discord, Slack, Telegram, dan WhatsApp
+
+Adaptor Matrix menggunakan lane sekali pakai yang didukung Docker dan didokumentasikan di atas.
+Discord, Slack, Telegram, dan WhatsApp berjalan terhadap transport nyata yang
+sudah ada, sehingga referensinya tersedia di sini.
 
 ### Flag CLI bersama
 
-Lane ini mendaftar melalui `extensions/qa-lab/src/live-transports/shared/live-transport-cli.ts` dan menerima flag yang sama:
+Lane ini didaftarkan melalui
+`extensions/qa-lab/src/live-transports/shared/live-transport-cli.ts` dan
+menerima flag yang sama:
 
-| Flag                                  | Default                                            | Deskripsi                                                                                                                                                  |
-| ------------------------------------- | -------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `--scenario <id>`                     | -                                                  | Jalankan hanya skenario ini. Dapat diulang.                                                                                                                |
-| `--output-dir <path>`                 | `<repo>/.artifacts/qa-e2e/<transport>-<timestamp>` | Tempat laporan, ringkasan, bukti, artefak khusus transport, dan log keluaran ditulis. Path relatif di-resolve terhadap `--repo-root`.                      |
-| `--repo-root <path>`                  | `process.cwd()`                                    | Root repositori saat memanggil dari cwd netral.                                                                                                            |
-| `--sut-account <id>`                  | `sut`                                              | ID akun sementara di dalam konfigurasi Gateway QA.                                                                                                         |
-| `--provider-mode <mode>`              | `live-frontier`                                    | `mock-openai` atau `live-frontier` (`live-openai` lama masih berfungsi).                                                                                   |
-| `--model <ref>` / `--alt-model <ref>` | default provider                                   | Ref model utama/alternatif.                                                                                                                                |
-| `--fast`                              | nonaktif                                           | Mode cepat provider jika didukung.                                                                                                                        |
-| `--credential-source <env\|convex>`   | `env`                                              | Lihat [pool kredensial Convex](#convex-credential-pool).                                                                                                   |
-| `--credential-role <maintainer\|ci>`  | `ci` di CI, selain itu `maintainer`                | Peran yang digunakan saat `--credential-source convex`.                                                                                                    |
+| Flag                                  | Default                                            | Deskripsi                                                                                                                                     |
+| ------------------------------------- | -------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| `--scenario <id>`                     | -                                                  | Jalankan hanya skenario ini. Dapat diulang.                                                                                                             |
+| `--output-dir <path>`                 | `<repo>/.artifacts/qa-e2e/<transport>-<timestamp>` | Lokasi penulisan laporan, ringkasan, bukti, artefak khusus transport, dan log output. Jalur relatif diresolusikan terhadap `--repo-root`. |
+| `--repo-root <path>`                  | `process.cwd()`                                    | Root repositori saat dipanggil dari cwd netral.                                                                                               |
+| `--sut-account <id>`                  | `sut`                                              | ID akun sementara di dalam konfigurasi Gateway QA.                                                                                              |
+| `--provider-mode <mode>`              | `live-frontier`                                    | `mock-openai`, `aimock`, atau `live-frontier`.                                                                                                    |
+| `--model <ref>` / `--alt-model <ref>` | default penyedia                                   | Referensi model utama/alternatif.                                                                                                                   |
+| `--fast`                              | nonaktif                                                | Mode cepat penyedia jika didukung.                                                                                                             |
+| `--credential-source <env\|convex>`   | `env`                                              | Lihat [Kumpulan kredensial Convex](#convex-credential-pool).                                                                                          |
+| `--credential-role <maintainer\|ci>`  | `ci` dalam CI, selain itu `maintainer`                 | Peran yang digunakan ketika `--credential-source convex`.                                                                                                    |
+| `--allow-failures`                    | nonaktif                                                | Tulis artefak tanpa mengembalikan kode keluar kegagalan ketika skenario gagal.                                                                      |
 
-Setiap lane keluar dengan status non-zero pada skenario yang gagal. `--allow-failures` menulis artefak tanpa menetapkan kode keluar gagal.
+Setiap lane keluar dengan kode bukan nol jika ada skenario yang gagal. `--allow-failures` menulis
+artefak tanpa menetapkan kode keluar kegagalan. Telegram juga menerima
+`--list-scenarios` untuk mencetak ID skenario yang tersedia dan keluar; lane lainnya
+tidak menyediakan flag tersebut.
 
 ### QA Telegram
 
@@ -391,19 +483,23 @@ Setiap lane keluar dengan status non-zero pada skenario yang gagal. `--allow-fai
 pnpm openclaw qa telegram
 ```
 
-Menargetkan satu grup Telegram privat nyata dengan dua bot berbeda (driver + SUT). Bot SUT harus memiliki nama pengguna Telegram; pengamatan bot-ke-bot bekerja paling baik saat kedua bot mengaktifkan **Bot-to-Bot Communication Mode** di `@BotFather`.
+Menargetkan satu grup privat Telegram nyata dengan dua bot berbeda (pengendali +
+SUT). Bot SUT harus memiliki nama pengguna Telegram; pengamatan bot-ke-bot berfungsi
+paling baik ketika kedua bot mengaktifkan **Bot-to-Bot Communication Mode** di
+`@BotFather`.
 
-Env wajib saat `--credential-source env`:
+Env wajib ketika `--credential-source env`:
 
-- `OPENCLAW_QA_TELEGRAM_GROUP_ID` - id obrolan numerik (string).
+- `OPENCLAW_QA_TELEGRAM_GROUP_ID` - ID obrolan numerik (string).
 - `OPENCLAW_QA_TELEGRAM_DRIVER_BOT_TOKEN`
 - `OPENCLAW_QA_TELEGRAM_SUT_BOT_TOKEN`
 
-Skenario (`extensions/qa-lab/src/live-transports/telegram/telegram-live.runtime.ts`):
+Profil `release` memilih skenario YAML Telegram yang dipelihara; `all`
+menambahkan pemeriksaan stres sesi, penggunaan, rantai balasan, dan streaming yang bersifat opsional. Nilai
+`--scenario` eksplisit menggantikan profil.
 
-- `telegram-canary`
-- `telegram-mention-gating`
-- `telegram-mentioned-message-reply`
+- `channel-canary`
+- `channel-mention-gating`
 - `telegram-help-command`
 - `telegram-commands-command`
 - `telegram-tools-compact-command`
@@ -413,26 +509,49 @@ Skenario (`extensions/qa-lab/src/live-transports/telegram/telegram-live.runtime.
 - `telegram-other-bot-command-gating`
 - `telegram-context-command`
 - `telegram-current-session-status-tool`
+- `telegram-tool-only-usage-footer`
 - `telegram-reply-chain-exact-marker`
 - `telegram-stream-final-single-message`
 - `telegram-long-final-reuses-preview`
 - `telegram-long-final-three-chunks`
 
-Set default implisit selalu mencakup canary, mention gating, balasan perintah native, pengalamatan perintah, dan balasan grup bot-ke-bot. Default `mock-openai` juga mencakup pemeriksaan deterministik rantai balasan dan streaming pesan final. `telegram-current-session-status-tool` tetap opt-in karena hanya stabil saat di-thread langsung setelah canary, bukan setelah balasan perintah native sembarang. Gunakan `pnpm openclaw qa telegram --list-scenarios --provider-mode mock-openai` untuk mencetak pemisahan default/opsional saat ini dengan ref regresi.
+Profil `release` selalu mencakup canary, pembatasan mention, balasan
+perintah native, pengalamatan perintah, dan balasan grup antarbot. `mock-openai`
+juga mencakup pemeriksaan pratinjau akhir panjang yang deterministik.
+`telegram-current-session-status-tool` dan
+`telegram-tool-only-usage-footer` tetap bersifat opsional: yang pertama hanya stabil
+ketika dijalankan langsung setelah canary, dan yang kedua merupakan pembuktian dengan Telegram nyata
+atas footer `/usage` pada balasan yang hanya berisi tool. Gunakan `pnpm openclaw qa telegram
+--list-scenarios --provider-mode mock-openai` untuk menampilkan pembagian
+default/opsional saat ini beserta referensi regresi. Gunakan `--profile all` untuk setiap
+skenario adaptor live Telegram.
 
 Artefak keluaran:
 
-- `telegram-qa-report.md`
-- `qa-evidence.json` - entri bukti untuk pemeriksaan transport live, termasuk field profil, cakupan, provider, channel, artefak, hasil, dan RTT.
+- `qa-suite-report.md`
+- `qa-suite-summary.json`
+- `qa-evidence.json` - entri bukti untuk pemeriksaan transportasi live,
+  termasuk bidang profil, cakupan, penyedia, kanal, artefak, hasil, dan RTT.
 
-Jalankan Telegram paket menggunakan kontrak kredensial Telegram yang sama. Pengukuran RTT berulang adalah bagian dari lane live Telegram paket normal; distribusi RTT dilipat ke dalam `qa-evidence.json` di bawah `result.timing` untuk pemeriksaan RTT yang dipilih.
+Proses Telegram paket menggunakan kontrak kredensial Telegram yang sama. Pengukuran RTT
+berulang merupakan bagian dari lane live Telegram paket normal; distribusi RTT
+dimasukkan ke dalam `qa-evidence.json` di bawah `result.timing` untuk
+pemeriksaan RTT yang dipilih.
 
 ```bash
 OPENCLAW_QA_CREDENTIAL_SOURCE=convex \
 pnpm test:docker:npm-telegram-live
 ```
 
-Saat `OPENCLAW_QA_CREDENTIAL_SOURCE=convex` ditetapkan, wrapper live paket menyewa kredensial `kind: "telegram"`, mengekspor env grup/driver/bot SUT yang disewa ke dalam run paket terinstal, mengirim Heartbeat untuk sewa, dan melepasnya saat shutdown. Wrapper paket secara default melakukan 20 pemeriksaan RTT dari `telegram-mentioned-message-reply`, timeout RTT 30 detik, dan peran Convex `maintainer` di luar CI saat Convex dipilih. Override `OPENCLAW_NPM_TELEGRAM_RTT_SAMPLES`, `OPENCLAW_NPM_TELEGRAM_RTT_TIMEOUT_MS`, atau `OPENCLAW_NPM_TELEGRAM_RTT_MAX_FAILURES` untuk menyetel pengukuran RTT tanpa membuat perintah RTT terpisah atau format ringkasan khusus Telegram.
+Ketika `OPENCLAW_QA_CREDENTIAL_SOURCE=convex` ditetapkan, wrapper live paket
+menyewa kredensial `kind: "telegram"`, mengekspor env bot grup/driver/SUT yang disewa
+ke dalam proses paket yang diinstal, mengirim Heartbeat untuk sewa tersebut, dan melepaskannya
+saat penghentian. Wrapper paket secara default menjalankan 20 pemeriksaan RTT
+`channel-canary`, dengan batas waktu RTT 30s, dan peran Convex
+`maintainer` di luar CI ketika Convex dipilih. Timpa
+`OPENCLAW_NPM_TELEGRAM_RTT_SAMPLES`, `OPENCLAW_NPM_TELEGRAM_RTT_TIMEOUT_MS`,
+atau `OPENCLAW_NPM_TELEGRAM_RTT_MAX_FAILURES` untuk menyesuaikan pengukuran RTT tanpa
+membuat perintah RTT terpisah atau format ringkasan khusus Telegram.
 
 ### QA Discord
 
@@ -440,30 +559,47 @@ Saat `OPENCLAW_QA_CREDENTIAL_SOURCE=convex` ditetapkan, wrapper live paket menye
 pnpm openclaw qa discord
 ```
 
-Menargetkan satu channel guild Discord privat nyata dengan dua bot: bot driver yang dikendalikan oleh harness dan bot SUT yang dimulai oleh Gateway OpenClaw anak melalui Plugin Discord terbundel. Memverifikasi penanganan mention channel, bahwa bot SUT telah mendaftarkan perintah native `/help` dengan Discord, dan skenario bukti Mantis opt-in.
+Menargetkan satu kanal guild Discord privat nyata dengan dua bot: bot driver
+yang dikendalikan oleh harness dan bot SUT yang dimulai oleh Gateway OpenClaw turunan
+melalui Plugin Discord bawaan. Memverifikasi penanganan mention kanal, bahwa
+bot SUT telah mendaftarkan perintah native `/help` pada Discord, serta
+skenario bukti Mantis yang bersifat opsional.
 
-Env wajib saat `--credential-source env`:
+Env wajib ketika `--credential-source env`:
 
 - `OPENCLAW_QA_DISCORD_GUILD_ID`
 - `OPENCLAW_QA_DISCORD_CHANNEL_ID`
 - `OPENCLAW_QA_DISCORD_DRIVER_BOT_TOKEN`
 - `OPENCLAW_QA_DISCORD_SUT_BOT_TOKEN`
-- `OPENCLAW_QA_DISCORD_SUT_APPLICATION_ID` - harus cocok dengan id pengguna bot SUT yang dikembalikan oleh Discord (jika tidak, lane gagal cepat).
+- `OPENCLAW_QA_DISCORD_SUT_APPLICATION_ID` - harus cocok dengan id pengguna bot SUT
+  yang dikembalikan oleh Discord (jika tidak, lane langsung gagal).
 
 Opsional:
 
-- `OPENCLAW_QA_DISCORD_CAPTURE_CONTENT=1` mempertahankan isi pesan di artefak pesan-teramati.
-- `OPENCLAW_QA_DISCORD_VOICE_CHANNEL_ID` memilih channel suara/stage untuk `discord-voice-autojoin`; tanpa ini, skenario memilih channel suara/stage pertama yang terlihat oleh bot SUT.
+- `OPENCLAW_QA_DISCORD_VOICE_CHANNEL_ID` memilih kanal suara/stage untuk
+  `discord-voice-autojoin`; tanpanya, skenario memilih kanal
+  suara/stage pertama yang terlihat oleh bot SUT.
 
-Skenario (`extensions/qa-lab/src/live-transports/discord/discord-live.runtime.ts:36`):
+Skenario modul YAML Discord (`qa/scenarios/channels/discord-*.yaml`):
 
 - `discord-canary`
 - `discord-mention-gating`
 - `discord-native-help-command-registration`
-- `discord-voice-autojoin` - skenario suara opt-in. Berjalan sendiri, mengaktifkan `channels.discord.voice.autoJoin`, dan memverifikasi status suara Discord bot SUT saat ini adalah channel suara/stage target. Kredensial Discord Convex dapat menyertakan `voiceChannelId` opsional; jika tidak, runner menemukan channel suara/stage pertama yang terlihat di guild.
-- `discord-status-reactions-tool-only` - skenario Mantis opt-in. Berjalan sendiri karena mengalihkan SUT ke balasan guild selalu aktif, khusus tool dengan `messages.statusReactions.enabled=true`, lalu menangkap timeline reaksi REST plus artefak visual HTML/PNG. Laporan sebelum/sesudah Mantis juga mempertahankan artefak MP4 yang disediakan skenario sebagai `baseline.mp4` dan `candidate.mp4`.
+- `discord-voice-autojoin` - skenario suara opsional. Berjalan sendiri, mengaktifkan
+  `channels.discord.voice.autoJoin`, dan memverifikasi bahwa status suara Discord
+  bot SUT saat ini adalah kanal suara/stage target. Kredensial Discord Convex
+  dapat menyertakan `voiceChannelId` opsional; jika tidak, adaptor runner
+  menemukan kanal suara/stage pertama yang terlihat di guild.
+- `discord-status-reactions-tool-only` - skenario Mantis opsional. Berjalan
+  sendiri karena skenario ini mengalihkan SUT ke balasan guild yang selalu aktif dan hanya berisi tool
+  dengan `messages.statusReactions.enabled=true`, lalu merekam linimasa
+  reaksi REST beserta artefak visual HTML/PNG. Laporan sebelum/sesudah
+  Mantis juga mempertahankan artefak MP4 yang disediakan skenario sebagai `baseline.mp4`
+  dan `candidate.mp4`.
+- `discord-thread-reply-filepath-attachment` - skenario Mantis opsional; lihat
+  [Skenario Mantis Discord](#discord-mantis-scenarios).
 
-Jalankan skenario auto-join suara Discord secara eksplisit:
+Jalankan skenario gabung otomatis suara Discord secara eksplisit:
 
 ```bash
 pnpm openclaw qa discord \
@@ -477,17 +613,19 @@ Jalankan skenario reaksi status Mantis secara eksplisit:
 pnpm openclaw qa discord \
   --scenario discord-status-reactions-tool-only \
   --provider-mode live-frontier \
-  --model openai/gpt-5.5 \
-  --alt-model openai/gpt-5.5 \
+  --model openai/gpt-5.6-luna \
+  --alt-model openai/gpt-5.6-luna \
   --fast
 ```
 
 Artefak keluaran:
 
-- `discord-qa-report.md`
-- `qa-evidence.json` - entri bukti untuk pemeriksaan transport live.
-- `discord-qa-observed-messages.json` - isi disunting kecuali `OPENCLAW_QA_DISCORD_CAPTURE_CONTENT=1`.
-- `discord-qa-reaction-timelines.json` dan `discord-status-reactions-tool-only-timeline.png` saat skenario reaksi status berjalan.
+- `qa-suite-report.md`
+- `qa-suite-summary.json`
+- `qa-evidence.json` - entri bukti untuk pemeriksaan transportasi live.
+- `discord-qa-reaction-timelines.json` dan
+  `discord-status-reactions-tool-only-timeline.png` ketika skenario reaksi status
+  berjalan.
 
 ### QA Slack
 
@@ -495,9 +633,11 @@ Artefak keluaran:
 pnpm openclaw qa slack
 ```
 
-Menargetkan satu channel Slack privat nyata dengan dua bot berbeda: bot driver yang dikendalikan oleh harness dan bot SUT yang dimulai oleh Gateway OpenClaw anak melalui Plugin Slack terbundel.
+Menargetkan satu kanal Slack privat nyata dengan dua bot berbeda: bot driver
+yang dikendalikan oleh harness dan bot SUT yang dimulai oleh Gateway OpenClaw turunan
+melalui Plugin Slack bawaan.
 
-Env wajib saat `--credential-source env`:
+Env wajib ketika `--credential-source env`:
 
 - `OPENCLAW_QA_SLACK_CHANNEL_ID`
 - `OPENCLAW_QA_SLACK_DRIVER_BOT_TOKEN`
@@ -506,51 +646,115 @@ Env wajib saat `--credential-source env`:
 
 Opsional:
 
-- `OPENCLAW_QA_SLACK_CAPTURE_CONTENT=1` mempertahankan isi pesan di artefak pesan-teramati.
-- `OPENCLAW_QA_SLACK_APPROVAL_CHECKPOINT_DIR` mengaktifkan checkpoint persetujuan visual untuk Mantis. Runner menulis `<scenario>.pending.json` dan `<scenario>.resolved.json`, lalu menunggu file `.ack.json` yang cocok.
-- `OPENCLAW_QA_SLACK_APPROVAL_CHECKPOINT_TIMEOUT_MS` menimpa timeout acknowledgement checkpoint. Default-nya adalah `120000`.
+- `OPENCLAW_QA_SLACK_APPROVAL_CHECKPOINT_DIR` mengaktifkan titik pemeriksaan persetujuan visual
+  untuk Mantis. Adaptor menulis `<scenario>.pending.json` dan
+  `<scenario>.resolved.json`, lalu menunggu file `.ack.json` yang cocok.
+- `OPENCLAW_QA_SLACK_APPROVAL_CHECKPOINT_TIMEOUT_MS` menimpa batas waktu
+  pengakuan titik pemeriksaan. Default-nya adalah `120000`.
 
-Skenario (`extensions/qa-lab/src/live-transports/slack/slack-live.runtime.ts`):
+Skenario YAML kanonis yang diekspos melalui adaptor live Slack:
+
+- `thread-follow-up`
+- `thread-isolation`
+
+Skenario modul YAML Slack (`qa/scenarios/channels/slack-*.yaml`):
 
 - `slack-canary`
 - `slack-mention-gating`
 - `slack-allowlist-block`
+- `slack-channel-disabled-warning` - probe Slack nyata opsional yang memastikan bahwa
+  kanal nonaktif yang dikonfigurasi mengeluarkan peringatan terstruktur tanpa membalas.
 - `slack-top-level-reply-shape`
 - `slack-restart-resume`
-- `slack-thread-follow-up`
-- `slack-thread-isolation`
-- `slack-approval-exec-native` - skenario persetujuan exec Slack native opt-in. Meminta persetujuan exec melalui Gateway, memverifikasi pesan Slack memiliki tombol persetujuan native, menyelesaikannya, dan memverifikasi pembaruan Slack yang sudah diselesaikan.
-- `slack-approval-plugin-native` - skenario persetujuan Plugin Slack native opt-in. Mengaktifkan penerusan persetujuan exec dan Plugin bersama-sama agar event Plugin tidak disupresi oleh routing persetujuan exec, lalu memverifikasi jalur UI Slack native pending/resolved yang sama.
+- `slack-progress-commentary-true`, `slack-progress-commentary-false`,
+  `slack-progress-commentary-omitted`, dan
+  `slack-progress-commentary-verbose-dedupe` - probe Slack nyata opsional untuk
+  kontrol komentar/progres tool yang independen, default lama saat kunci
+  dihilangkan, dan perilaku pengiriman tunggal ketika progres verbose persisten aktif.
+- `slack-reaction-glyph-native` - skenario reaksi tool pesan live opsional.
+  Menginstruksikan agen untuk meneruskan glif `✅` secara persis dan memastikan Slack menyimpan
+  `white_check_mark` untuk bot SUT pada pesan target.
+- `slack-chart-presentation-native` - skenario bagan portabel opsional yang
+  memverifikasi blok native `data_visualization` dan teks aksesibel secara persis.
+- `slack-table-presentation-native` - skenario tabel portabel opsional yang
+  memverifikasi blok native `data_table`, baris secara persis, dan teks aksesibel.
+- `slack-table-invalid-blocks-fallback` - skenario transportasi langsung opsional
+  yang mengirim tabel mentah melebihi batas namun dapat dibaca secara struktural dengan 101 baris data
+  beserta header-nya melalui
+  jalur pengiriman Slack produksi, membuktikan bahwa Slack sendiri mengembalikan `invalid_blocks`,
+  dan memverifikasi bahwa fallback tersimpan dengan pemformatan dinonaktifkan lengkap dan tidak memiliki
+  blok data native. Detail skenario hanya menyimpan bukti kode galat, jumlah, dan
+  boolean yang aman.
+- `slack-approval-exec-native` - skenario persetujuan exec native Slack opsional.
+  Meminta persetujuan exec melalui Gateway, memverifikasi bahwa pesan Slack
+  memiliki tombol persetujuan native, menyelesaikannya, dan memverifikasi pembaruan Slack
+  yang telah diselesaikan.
+- `slack-approval-plugin-native` - skenario persetujuan Plugin native Slack
+  opsional. Mengaktifkan penerusan persetujuan exec dan Plugin secara bersamaan agar peristiwa
+  Plugin tidak ditekan oleh perutean persetujuan exec, lalu memverifikasi jalur
+  UI native Slack tertunda/terselesaikan yang sama.
+- `slack-codex-approval-exec-native` - skenario persetujuan perintah Codex Guardian
+  opsional. Mengaktifkan Plugin Codex dalam mode Guardian, merutekan giliran
+  agen Gateway yang berasal dari Slack melalui harness app-server Codex,
+  menunggu permintaan persetujuan Plugin native Slack untuk
+  `openclaw-codex-app-server`, menyelesaikannya, dan memverifikasi bahwa giliran Codex
+  selesai dengan penanda keluaran perintah dan asisten yang diharapkan.
+- `slack-codex-approval-plugin-native` - skenario persetujuan file Codex Guardian
+  opsional. Menggunakan instruksi `apply_patch` di luar ruang kerja agar Codex mengeluarkan
+  rute persetujuan perubahan file app-server, lalu memverifikasi jalur
+  persetujuan tertunda/terselesaikan native Slack yang sama, penanda asisten akhir, dan isi file secara
+  persis sebelum pembersihan.
+
+Skenario persetujuan Codex memerlukan `openai/*` atau `codex/*` `--model`, kredensial
+model live normal, serta autentikasi Codex atau autentikasi kunci API yang diterima oleh Plugin Codex.
+Detail skenario mencakup metode app-server Codex, kunci model Codex
+yang dipilih, status akhir giliran Codex, dan verifikasi penanda operasi beserta
+metadata persetujuan Slack yang telah disunting.
 
 Artefak keluaran:
 
-- `slack-qa-report.md`
-- `qa-evidence.json` - entri bukti untuk pemeriksaan transport live.
-- `slack-qa-observed-messages.json` - isi disunting kecuali `OPENCLAW_QA_SLACK_CAPTURE_CONTENT=1`.
-- `approval-checkpoints/` - hanya saat Mantis menetapkan `OPENCLAW_QA_SLACK_APPROVAL_CHECKPOINT_DIR`; berisi JSON checkpoint, JSON acknowledgement, dan screenshot pending/resolved.
+- `qa-suite-report.md`
+- `qa-suite-summary.json`
+- `qa-evidence.json` - entri bukti untuk pemeriksaan transportasi live.
+- `approval-checkpoints/` - hanya ketika Mantis menetapkan
+  `OPENCLAW_QA_SLACK_APPROVAL_CHECKPOINT_DIR`; berisi JSON titik pemeriksaan,
+  JSON pengakuan, dan tangkapan layar tertunda/terselesaikan.
 
-#### Menyiapkan workspace Slack
+#### Menyiapkan ruang kerja Slack
 
-Lane membutuhkan dua aplikasi Slack berbeda dalam satu workspace, plus sebuah channel tempat kedua bot menjadi anggota:
+Lane memerlukan dua aplikasi Slack yang berbeda dalam satu ruang kerja, serta sebuah kanal yang
+diikuti oleh kedua bot:
 
-- `channelId` - id `Cxxxxxxxxxx` dari channel yang telah mengundang kedua bot. Gunakan channel khusus; lane memposting pada setiap run.
+- `channelId` - id `Cxxxxxxxxxx` dari kanal yang telah menerima undangan untuk kedua bot.
+  Gunakan kanal khusus; lane mengirim postingan pada setiap proses.
 - `driverBotToken` - token bot (`xoxb-...`) dari aplikasi **Driver**.
-- `sutBotToken` - token bot (`xoxb-...`) dari aplikasi **SUT**, yang harus merupakan aplikasi Slack terpisah dari driver agar id pengguna botnya berbeda.
-- `sutAppToken` - token tingkat aplikasi (`xapp-...`) dari aplikasi SUT dengan `connections:write`, digunakan oleh Socket Mode agar aplikasi SUT dapat menerima event.
+- `sutBotToken` - token bot (`xoxb-...`) dari aplikasi **SUT**, yang harus berupa
+  aplikasi Slack terpisah dari driver agar id pengguna bot-nya berbeda.
+- `sutAppToken` - token tingkat aplikasi (`xapp-...`) dari aplikasi SUT dengan
+  `connections:write`, digunakan oleh Socket Mode agar aplikasi SUT dapat menerima peristiwa.
 
-Lebih baik gunakan workspace Slack khusus untuk QA daripada menggunakan ulang workspace produksi.
+Utamakan ruang kerja Slack yang didedikasikan untuk QA daripada menggunakan kembali ruang kerja
+produksi.
 
-Manifest SUT di bawah ini sengaja mempersempit instalasi produksi Plugin Slack terbundel (`extensions/slack/src/setup-shared.ts:10`) ke izin dan event yang dicakup oleh suite QA Slack live. Untuk penyiapan channel produksi sebagaimana dilihat pengguna, lihat [penyiapan cepat channel Slack](/id/channels/slack#quick-setup); pasangan Driver/SUT QA sengaja dipisahkan karena lane membutuhkan dua id pengguna bot berbeda dalam satu workspace.
+Manifes SUT di bawah sengaja mempersempit instalasi produksi Plugin Slack
+bawaan (`extensions/slack/src/setup-shared.ts:12`) hanya pada
+izin dan peristiwa yang dicakup oleh rangkaian QA Slack live. Untuk
+penyiapan kanal produksi sebagaimana dilihat pengguna, lihat
+[Penyiapan cepat kanal Slack](/id/channels/slack#quick-setup); pasangan Driver/SUT QA
+sengaja dipisahkan karena lane memerlukan dua id pengguna bot yang berbeda
+dalam satu ruang kerja.
 
 **1. Buat aplikasi Driver**
 
-Buka [api.slack.com/apps](https://api.slack.com/apps) → _Create New App_ → _From a manifest_ → pilih workspace QA, tempel manifest berikut, lalu _Install to Workspace_:
+Buka [api.slack.com/apps](https://api.slack.com/apps) → _Create New App_ →
+_From a manifest_ → pilih ruang kerja QA, tempel manifes berikut,
+lalu _Install to Workspace_:
 
 ```json
 {
   "display_information": {
     "name": "OpenClaw QA Driver",
-    "description": "Test driver bot for OpenClaw QA Slack live lane"
+    "description": "Bot driver pengujian untuk lane live Slack QA OpenClaw"
   },
   "features": {
     "bot_user": {
@@ -569,11 +773,17 @@ Buka [api.slack.com/apps](https://api.slack.com/apps) → _Create New App_ → _
 }
 ```
 
-Salin _Bot User OAuth Token_ (`xoxb-...`) - itu menjadi `driverBotToken`. Driver hanya perlu memposting pesan dan mengidentifikasi dirinya sendiri; tidak ada event, tidak ada Socket Mode.
+Salin _Bot User OAuth Token_ (`xoxb-...`) - token tersebut menjadi
+`driverBotToken`. Driver hanya perlu mengirim pesan dan mengidentifikasi
+dirinya; tanpa peristiwa dan tanpa Socket Mode.
 
 **2. Buat aplikasi SUT**
 
-Ulangi _Create New App → From a manifest_ di workspace yang sama. Aplikasi QA ini sengaja memakai versi yang lebih sempit dari manifest produksi Plugin Slack bawaan (`extensions/slack/src/setup-shared.ts:10`): scope dan event reaksi dihilangkan karena suite QA Slack live belum mencakup penanganan reaksi.
+Ulangi _Create New App → From a manifest_ di ruang kerja yang sama. Aplikasi QA ini
+sengaja menggunakan versi yang lebih sempit dari manifes produksi Plugin Slack
+bawaan (`extensions/slack/src/setup-shared.ts:12`): cakupan dan
+peristiwa reaksi dihilangkan karena rangkaian QA Slack live belum mencakup
+penanganan reaksi.
 
 ```json
 {
@@ -640,29 +850,40 @@ Ulangi _Create New App → From a manifest_ di workspace yang sama. Aplikasi QA 
 }
 ```
 
-Setelah Slack membuat aplikasi, lakukan dua hal pada halaman pengaturannya:
+Setelah Slack membuat aplikasi, lakukan dua hal di halaman pengaturannya:
 
-- _Install to Workspace_ → salin _Bot User OAuth Token_ → itu menjadi `sutBotToken`.
-- _Basic Information → App-Level Tokens → Generate Token and Scopes_ → tambahkan scope `connections:write` → simpan → salin nilai `xapp-...` → itu menjadi `sutAppToken`.
+- _Install to Workspace_ → salin _Bot User OAuth Token_ → token tersebut menjadi
+  `sutBotToken`.
+- _Basic Information → App-Level Tokens → Generate Token and Scopes_ → tambahkan
+  cakupan `connections:write` → simpan → salin nilai `xapp-...` → nilai tersebut
+  menjadi `sutAppToken`.
 
-Verifikasi bahwa kedua bot memiliki user id berbeda dengan memanggil `auth.test` pada setiap token. Runtime membedakan driver dan SUT berdasarkan user id; menggunakan ulang satu aplikasi untuk keduanya akan langsung menggagalkan gating mention.
+Pastikan kedua bot memiliki ID pengguna yang berbeda dengan memanggil `auth.test` pada setiap
+token. Runtime membedakan driver dan SUT berdasarkan ID pengguna; menggunakan kembali satu aplikasi
+untuk keduanya akan langsung menyebabkan pemeriksaan penyebutan gagal.
 
-**3. Buat channel**
+**3. Buat saluran**
 
-Di workspace QA, buat channel (misalnya `#openclaw-qa`) dan undang kedua bot dari dalam channel:
+Di ruang kerja QA, buat saluran (misalnya `#openclaw-qa`) dan undang kedua
+bot dari dalam saluran:
 
-```
+```text
 /invite @OpenClaw QA Driver
 /invite @OpenClaw QA SUT
 ```
 
-Salin id `Cxxxxxxxxxx` dari _channel info → About → Channel ID_ - itu menjadi `channelId`. Channel publik bisa digunakan; jika Anda memakai channel privat, kedua aplikasi sudah memiliki `groups:history` sehingga pembacaan riwayat oleh harness tetap berhasil.
+Salin ID `Cxxxxxxxxxx` dari _channel info → About → Channel ID_—ID tersebut
+menjadi `channelId`. Saluran publik dapat digunakan; jika Anda menggunakan saluran privat,
+kedua aplikasi sudah memiliki `groups:history` sehingga pembacaan riwayat oleh harness
+tetap berhasil.
 
 **4. Daftarkan kredensial**
 
-Ada dua opsi. Gunakan env var untuk debugging di satu mesin (atur empat variabel `OPENCLAW_QA_SLACK_*` dan teruskan `--credential-source env`), atau seed pool Convex bersama agar CI dan maintainer lain dapat menyewanya.
+Tersedia dua opsi. Gunakan variabel lingkungan untuk debugging pada satu mesin (atur empat
+variabel `OPENCLAW_QA_SLACK_*` dan teruskan `--credential-source env`), atau isi
+pool Convex bersama agar CI dan pengelola lain dapat menyewanya.
 
-Untuk pool Convex, tulis keempat field ke file JSON:
+Untuk pool Convex, tulis keempat bidang ke file JSON:
 
 ```json
 {
@@ -673,7 +894,8 @@ Untuk pool Convex, tulis keempat field ke file JSON:
 }
 ```
 
-Dengan `OPENCLAW_QA_CONVEX_SITE_URL` dan `OPENCLAW_QA_CONVEX_SECRET_MAINTAINER` diekspor di shell Anda, daftarkan dan verifikasi:
+Dengan `OPENCLAW_QA_CONVEX_SITE_URL` dan `OPENCLAW_QA_CONVEX_SECRET_MAINTAINER`
+diekspor di shell Anda, daftarkan dan verifikasi:
 
 ```bash
 pnpm openclaw qa credentials add \
@@ -684,11 +906,12 @@ pnpm openclaw qa credentials add \
 pnpm openclaw qa credentials list --kind slack --status all --json
 ```
 
-Harapkan `count: 1`, `status: "active"`, tanpa field `lease`.
+Hasil yang diharapkan adalah `count: 1`, `status: "active"`, tanpa bidang `lease`.
 
-**5. Verifikasi end to end**
+**5. Verifikasi secara menyeluruh**
 
-Jalankan lane secara lokal untuk memastikan kedua bot dapat saling berbicara melalui broker:
+Jalankan lane secara lokal untuk memastikan kedua bot dapat berkomunikasi satu sama lain melalui
+broker:
 
 ```bash
 pnpm openclaw qa slack \
@@ -697,7 +920,11 @@ pnpm openclaw qa slack \
   --output-dir .artifacts/qa-e2e/slack-local
 ```
 
-Run yang hijau selesai jauh di bawah 30 detik dan `slack-qa-report.md` menampilkan `slack-canary` dan `slack-mention-gating` dengan status `pass`. Jika lane menggantung selama ~90 detik dan keluar dengan `Convex credential pool exhausted for kind "slack"`, berarti pool kosong atau setiap baris sedang disewa - `qa credentials list --kind slack --status all --json` akan memberi tahu yang mana.
+Proses yang berhasil selesai dalam waktu jauh di bawah 30 detik dan `qa-suite-report.md`
+menampilkan `slack-canary` serta `slack-mention-gating` dengan status `pass`. Jika
+lane terhenti selama ~90 detik dan keluar dengan `Convex credential pool exhausted
+for kind "slack"`, pool kosong atau setiap baris sedang disewa—`qa
+credentials list --kind slack --status all --json` akan menunjukkan penyebabnya.
 
 ### QA WhatsApp
 
@@ -706,10 +933,10 @@ pnpm openclaw qa whatsapp
 ```
 
 Menargetkan dua akun WhatsApp Web khusus: akun driver yang dikendalikan oleh
-harness dan akun SUT yang dimulai oleh child Gateway OpenClaw melalui
+harness dan akun SUT yang dimulai oleh Gateway OpenClaw turunan melalui
 Plugin WhatsApp bawaan.
 
-Env yang wajib saat `--credential-source env`:
+Variabel lingkungan yang diperlukan saat `--credential-source env`:
 
 - `OPENCLAW_QA_WHATSAPP_DRIVER_PHONE_E164`
 - `OPENCLAW_QA_WHATSAPP_SUT_PHONE_E164`
@@ -721,55 +948,53 @@ Opsional:
 - `OPENCLAW_QA_WHATSAPP_GROUP_JID` mengaktifkan skenario grup seperti
   `whatsapp-mention-gating`, `whatsapp-group-pending-history-context`,
   `whatsapp-broadcast-group-fanout`, `whatsapp-group-activation-always`,
-  `whatsapp-group-reply-to-bot-triggers`, skenario aksi/media/poll grup, dan
-  `whatsapp-group-allowlist-block`.
-- `OPENCLAW_QA_WHATSAPP_CAPTURE_CONTENT=1` mempertahankan isi pesan dalam
-  artefak observed-message.
+  `whatsapp-group-reply-to-bot-triggers`, skenario tindakan/media/jajak pendapat grup,
+  dan `whatsapp-group-allowlist-block`.
 
-Katalog skenario (`extensions/qa-lab/src/live-transports/whatsapp/whatsapp-live.runtime.ts`):
+Skenario YAML WhatsApp (`qa/scenarios/channels/whatsapp-*.yaml`):
 
-- Baseline dan gating grup: `whatsapp-canary`, `whatsapp-pairing-block`,
+- Dasar dan pemeriksaan grup: `whatsapp-canary`, `whatsapp-pairing-block`,
   `whatsapp-mention-gating`, `whatsapp-group-pending-history-context`,
-  `whatsapp-group-activation-always`,
-  `whatsapp-group-reply-to-bot-triggers`,
+  `whatsapp-group-activation-always`, `whatsapp-group-reply-to-bot-triggers`,
   `whatsapp-top-level-reply-shape`, `whatsapp-restart-resume`,
   `whatsapp-group-allowlist-block`.
 - Perintah native: `whatsapp-help-command`, `whatsapp-status-command`,
   `whatsapp-commands-command`, `whatsapp-tools-compact-command`,
   `whatsapp-whoami-command`, `whatsapp-context-command`,
   `whatsapp-native-new-command`.
-- Perilaku balasan dan output akhir: `whatsapp-tool-only-usage-footer`,
+- Perilaku balasan dan keluaran akhir: `whatsapp-tool-only-usage-footer`,
   `whatsapp-reply-to-message`, `whatsapp-group-reply-to-message`,
   `whatsapp-reply-to-mode-batched`, `whatsapp-reply-context-isolation`,
   `whatsapp-reply-delivery-shape`, `whatsapp-stream-final-message-accounting`.
-- Aksi pesan jalur pengguna: `whatsapp-agent-message-action-react` dimulai dari
-  DM driver nyata, membiarkan model memanggil tool `message`, dan mengamati
-  reaksi WhatsApp native. `whatsapp-agent-message-action-upload-file` memakai
-  postur yang sama untuk `message(action=upload-file)` dan mengamati media
-  WhatsApp native. `whatsapp-group-agent-message-action-react` dan
-  `whatsapp-group-agent-message-action-upload-file` membuktikan aksi yang
-  terlihat pengguna yang sama di grup WhatsApp nyata.
-- Fanout grup: `whatsapp-broadcast-group-fanout` dimulai dari satu pesan grup
-  WhatsApp yang menyebutkan bot dan memverifikasi balasan terlihat yang berbeda dari `main` dan
-  `qa-second`.
+- Tindakan pesan melalui jalur pengguna: `whatsapp-agent-message-action-react` dimulai
+  dari DM driver nyata, memungkinkan model memanggil alat `message`, dan
+  mengamati reaksi native WhatsApp. `whatsapp-agent-message-action-upload-file`
+  menggunakan pendekatan yang sama untuk `message(action=upload-file)` dan mengamati
+  media native WhatsApp. `whatsapp-group-agent-message-action-react` dan
+  `whatsapp-group-agent-message-action-upload-file` membuktikan tindakan yang terlihat oleh
+  pengguna tersebut dalam grup WhatsApp nyata.
+- Fan-out grup: `whatsapp-broadcast-group-fanout` dimulai dari satu pesan grup
+  WhatsApp yang menyebut bot dan memverifikasi balasan berbeda yang terlihat dari `main`
+  dan `qa-second`.
 - Aktivasi grup: `whatsapp-group-activation-always` mengubah sesi grup nyata
-  ke `/activation always`, membuktikan pesan grup tanpa mention membangunkan
-  agent, lalu memulihkan `/activation mention`. `whatsapp-group-reply-to-bot-triggers`
-  menanam balasan bot, mengirim balasan kutipan native kepadanya tanpa mention
-  eksplisit, dan memverifikasi agent bangun dari konteks balasan tersebut.
+  menjadi `/activation always`, membuktikan bahwa pesan grup tanpa penyebutan membangunkan
+  agen, lalu memulihkan `/activation mention`.
+  `whatsapp-group-reply-to-bot-triggers` menyiapkan balasan bot, mengirim balasan
+  kutipan native terhadapnya tanpa penyebutan eksplisit, dan memverifikasi bahwa agen
+  terbangun dari konteks balasan tersebut.
 - Media masuk dan pesan terstruktur: `whatsapp-inbound-image-caption`,
   `whatsapp-audio-preflight`, `whatsapp-inbound-structured-messages`,
   `whatsapp-group-audio-gating`, `whatsapp-inbound-reaction-no-trigger`.
-  Ini mengirim event gambar, audio, dokumen, lokasi, kontak, stiker,
-  dan reaksi WhatsApp nyata melalui driver.
-- Probe kontrak Gateway langsung:
-  `whatsapp-outbound-media-matrix`,
+  Skenario ini mengirim peristiwa gambar, audio, dokumen, lokasi, kontak,
+  stiker, dan reaksi WhatsApp nyata melalui driver.
+- Probe kontrak Gateway langsung: `whatsapp-outbound-media-matrix`,
   `whatsapp-outbound-document-preserves-filename`, `whatsapp-outbound-poll`,
+  `whatsapp-outbound-send-serialization`,
   `whatsapp-group-outbound-media`, `whatsapp-group-outbound-poll`,
   `whatsapp-message-actions`, `whatsapp-reply-context-isolation`,
-  `whatsapp-reply-delivery-shape`. Ini sengaja melewati prompting model dan
-  membuktikan kontrak deterministik `send`, `poll`, dan `message.action`
-  Gateway/channel.
+  `whatsapp-reply-delivery-shape`. Skenario ini sengaja melewati pemberian prompt kepada model
+  dan membuktikan kontrak `send`, `poll`, serta
+  `message.action` Gateway/saluran yang deterministik.
 - Cakupan kontrol akses: `whatsapp-access-control-dm-open`,
   `whatsapp-access-control-dm-disabled`, `whatsapp-access-control-group-open`,
   `whatsapp-access-control-group-disabled`, `whatsapp-group-allowlist-block`.
@@ -780,182 +1005,223 @@ Katalog skenario (`extensions/qa-lab/src/live-transports/whatsapp/whatsapp-live.
 - Reaksi status: `whatsapp-status-reactions`,
   `whatsapp-status-reaction-lifecycle`.
 
-Katalog saat ini berisi 50 skenario. Lane default `live-frontier`
-dibuat kecil dengan 10 skenario untuk cakupan smoke yang cepat. Lane default
-`mock-openai` menjalankan 44 skenario deterministik melalui transport WhatsApp nyata sambil
-hanya memock output model. Skenario persetujuan dan beberapa pemeriksaan yang
-lebih berat/memblokir tetap eksplisit berdasarkan id skenario.
+Katalog saat ini berisi 52 skenario. Lane default `live-frontier`
+dipertahankan berukuran kecil dengan 8 skenario untuk cakupan smoke yang cepat. Lane default `mock-openai`
+menjalankan 39 skenario secara deterministik melalui transport WhatsApp nyata
+dengan hanya memalsukan keluaran model; skenario persetujuan dan beberapa pemeriksaan
+yang lebih berat/memblokir tetap harus ditentukan secara eksplisit berdasarkan ID skenario.
 
-Driver QA WhatsApp mengamati event live terstruktur (`text`, `media`,
-`location`, `reaction`, dan `poll`) serta dapat secara aktif mengirim media, poll,
-kontak, lokasi, dan stiker. QA Lab mengimpor driver tersebut melalui surface paket
-`@openclaw/whatsapp/api.js`, bukan menjangkau file runtime WhatsApp privat.
-Untuk observasi grup, `fromJid` adalah JID grup sementara
-`participantJid` dan `fromPhoneE164` mengidentifikasi pengirim peserta. Konten
-pesan disunting secara default. Probe Gateway langsung
-poll, upload-file, media, poll grup, media grup, dan reply-shape adalah pemeriksaan kontrak transport/API;
-semuanya tidak diperlakukan sebagai bukti bahwa prompt pengguna membuat agent memilih
-aksi yang sama. Bukti aksi jalur pengguna berasal dari skenario seperti
-`whatsapp-agent-message-action-react` dan
+Driver QA WhatsApp mengamati peristiwa langsung terstruktur (`text`, `media`,
+`location`, `reaction`, dan `poll`) serta dapat secara aktif mengirim media, jajak pendapat,
+kontak, lokasi, dan stiker. QA Lab mengimpor driver tersebut melalui
+permukaan paket `@openclaw/whatsapp/api.js`, bukan dengan mengakses file
+runtime WhatsApp privat. Untuk pengamatan grup, `fromJid` adalah JID grup,
+sedangkan `participantJid` dan `fromPhoneE164` mengidentifikasi peserta pengirim.
+Konten pesan disamarkan secara default. Probe Gateway langsung untuk jajak pendapat, unggah file,
+media, jajak pendapat grup, media grup, dan bentuk balasan merupakan pemeriksaan kontrak
+transport/API; probe tersebut tidak dianggap sebagai bukti bahwa prompt pengguna membuat
+agen memilih tindakan yang sama. Bukti tindakan melalui jalur pengguna berasal dari skenario
+seperti `whatsapp-agent-message-action-react` dan
 `whatsapp-group-agent-message-action-react`, tempat driver mengirim pesan
-WhatsApp normal dan QA Lab mengamati artefak WhatsApp native yang dihasilkan.
-Laporan WhatsApp menyertakan postur setiap skenario (`user-path`, `direct-gateway`,
-atau `native-approval`) sehingga bukti tidak dapat disalahartikan sebagai kontrak
-yang lebih kuat daripada yang benar-benar dibuktikannya.
+WhatsApp biasa dan QA Lab mengamati artefak native WhatsApp yang dihasilkan.
+Detail skenario WhatsApp mencakup pendekatan setiap skenario (`user-path`,
+`direct-gateway`, atau `native-approval`) agar bukti tidak disalahartikan sebagai
+kontrak yang lebih kuat daripada yang benar-benar dibuktikannya.
 
-Artefak output:
+Artefak keluaran:
 
-- `whatsapp-qa-report.md`
-- `qa-evidence.json` - entri bukti untuk pemeriksaan transport live.
-- `whatsapp-qa-observed-messages.json` - isi disunting kecuali `OPENCLAW_QA_WHATSAPP_CAPTURE_CONTENT=1`.
+- `qa-suite-report.md`
+- `qa-suite-summary.json`
+- `qa-evidence.json`—entri bukti untuk pemeriksaan transport langsung.
 
 ### Pool kredensial Convex
 
-Lane Telegram, Discord, Slack, dan WhatsApp dapat menyewa kredensial dari pool Convex bersama alih-alih membaca env var di atas. Teruskan `--credential-source convex` (atau atur `OPENCLAW_QA_CREDENTIAL_SOURCE=convex`); QA Lab memperoleh lease eksklusif, mengirim Heartbeat selama run berlangsung, dan melepaskannya saat shutdown. Jenis pool adalah `"telegram"`, `"discord"`, `"slack"`, dan `"whatsapp"`.
+Lane Discord, Slack, Telegram, dan WhatsApp dapat menyewa kredensial dari
+pool Convex bersama, alih-alih membaca variabel lingkungan di atas. Teruskan
+`--credential-source convex` (atau atur `OPENCLAW_QA_CREDENTIAL_SOURCE=convex`);
+QA Lab memperoleh sewa eksklusif, mengirim Heartbeat selama
+proses berjalan, dan melepaskannya saat penghentian. Jenis pool adalah `"discord"`, `"slack"`,
+`"telegram"`, dan `"whatsapp"`.
 
 Bentuk payload yang divalidasi broker pada `admin/add`:
 
-- Telegram (`kind: "telegram"`): `{ groupId: string, driverToken: string, sutToken: string }` - `groupId` harus berupa string chat-id numerik.
-- Pengguna nyata Telegram (`kind: "telegram-user"`): `{ groupId: string, sutToken: string, testerUserId: string, testerUsername: string, telegramApiId: string, telegramApiHash: string, tdlibDatabaseEncryptionKey: string, tdlibArchiveBase64: string, tdlibArchiveSha256: string, desktopTdataArchiveBase64: string, desktopTdataArchiveSha256: string }` - hanya untuk bukti Mantis Telegram Desktop. Lane QA Lab generik tidak boleh memperoleh jenis ini.
-- Discord (`kind: "discord"`): `{ guildId: string, channelId: string, driverBotToken: string, sutBotToken: string, sutApplicationId: string }`.
-- WhatsApp (`kind: "whatsapp"`): `{ driverPhoneE164: string, sutPhoneE164: string, driverAuthArchiveBase64: string, sutAuthArchiveBase64: string, groupJid?: string }` - nomor telepon harus berupa string E.164 yang berbeda.
+- Discord (`kind: "discord"`): `{ guildId: string, channelId: string,
+driverBotToken: string, sutBotToken: string, sutApplicationId: string }`.
+- Telegram (`kind: "telegram"`): `{ groupId: string, driverToken: string,
+sutToken: string }`—`groupId` harus berupa string ID obrolan numerik.
+- Pengguna nyata Telegram (`kind: "telegram-user"`): `{ groupId: string, sutToken:
+string, testerUserId: string, testerUsername: string, telegramApiId:
+string, telegramApiHash: string, tdlibDatabaseEncryptionKey: string,
+tdlibArchiveBase64: string, tdlibArchiveSha256: string,
+desktopTdataArchiveBase64: string, desktopTdataArchiveSha256: string }`—
+  hanya untuk bukti Telegram Desktop Mantis. Lane QA Lab generik tidak boleh memperoleh
+  jenis ini.
+- WhatsApp (`kind: "whatsapp"`): `{ driverPhoneE164: string, sutPhoneE164:
+string, driverAuthArchiveBase64: string, sutAuthArchiveBase64: string,
+groupJid?: string }`—nomor telepon harus berupa string E.164 yang berbeda.
 
-Alur kerja bukti Mantis Telegram Desktop memegang satu lease Convex
+Alur kerja bukti Telegram Desktop Mantis mempertahankan satu sewa Convex
 `telegram-user` eksklusif untuk driver CLI TDLib dan saksi Telegram Desktop,
-lalu melepasnya setelah menerbitkan bukti.
+lalu melepaskannya setelah menerbitkan bukti.
 
-Ketika sebuah PR membutuhkan diff visual deterministik, Mantis dapat menggunakan balasan
-model tiruan yang sama di `main` dan di head PR sementara pemformat Telegram atau lapisan
-pengiriman berubah. Default tangkapan disetel untuk komentar PR: kelas Crabbox
-standar, rekaman desktop 24fps, GIF gerak 24fps, dan lebar pratinjau 1920px.
-Komentar sebelum/sesudah harus menerbitkan bundel bersih yang hanya berisi GIF
-yang dimaksud.
+Saat PR memerlukan diff visual deterministik, Mantis dapat menggunakan balasan model
+tiruan yang sama pada `main` dan pada head PR sementara pemformat atau
+lapisan pengiriman Telegram berubah. Default pengambilan disesuaikan untuk komentar PR: kelas
+Crabbox standar, rekaman desktop 24fps, GIF gerakan 24fps, dan lebar pratinjau
+1920px. Komentar sebelum/sesudah harus menerbitkan bundel bersih yang hanya berisi
+GIF yang dimaksud.
 
-Lane Slack juga dapat menggunakan pool. Pemeriksaan bentuk payload Slack saat ini berada di runner QA Slack, bukan di broker; gunakan `{ channelId: string, driverBotToken: string, sutBotToken: string, sutAppToken: string }`, dengan id kanal Slack seperti `Cxxxxxxxxxx`. Lihat [Menyiapkan ruang kerja Slack](#setting-up-the-slack-workspace) untuk penyediaan aplikasi dan scope.
+Lane Slack juga dapat menggunakan pool. Pemeriksaan bentuk payload Slack saat ini berada
+di runner QA Slack, bukan di broker; gunakan `{ channelId: string,
+driverBotToken: string, sutBotToken: string, sutAppToken: string }`, dengan
+ID saluran Slack seperti `Cxxxxxxxxxx`. Lihat
+[Menyiapkan ruang kerja Slack](#setting-up-the-slack-workspace) untuk penyediaan
+aplikasi dan cakupan.
 
-Env var operasional dan kontrak endpoint broker Convex berada di [Pengujian → Kredensial Telegram bersama melalui Convex](/id/help/testing#shared-telegram-credentials-via-convex-v1) (nama bagian tersebut lebih lama daripada pool multi-kanal; semantik lease dibagikan di seluruh jenis).
+Variabel lingkungan operasional dan kontrak endpoint broker Convex tersedia di
+[Pengujian → Kredensial Telegram bersama melalui Convex](/id/help/testing#shared-telegram-credentials-via-convex-v1)
+(nama bagian tersebut dibuat sebelum pool multisaluran; semantik sewa
+digunakan bersama oleh semua jenis).
 
-## Seed berbasis repo
+## Seed berbasis repositori
 
-Aset seed berada di `qa/`:
+Aset seed tersedia di `qa/`:
 
 - `qa/scenarios/index.yaml`
 - `qa/scenarios/<theme>/*.yaml`
 
-Ini sengaja ada di git agar rencana QA terlihat oleh manusia dan
-agent.
+Aset tersebut sengaja disimpan di git agar rencana QA terlihat oleh manusia dan
+agen.
 
-`qa-lab` harus tetap menjadi runner skenario YAML generik. Setiap berkas YAML skenario adalah
-sumber kebenaran untuk satu eksekusi pengujian dan harus mendefinisikan:
+`qa-lab` tetap menjadi runner skenario YAML generik. Setiap file YAML skenario merupakan
+sumber kebenaran untuk satu proses pengujian dan harus menentukan:
 
-- `title` tingkat atas
+- `title` tingkat teratas
 - metadata `scenario`
-- metadata kategori, capability, lane, dan risiko opsional di `scenario`
-- referensi docs dan kode di `scenario`
-- persyaratan plugin opsional di `scenario`
-- patch konfigurasi Gateway opsional di `scenario`
-- `flow` tingkat atas yang dapat dieksekusi untuk skenario flow, atau `scenario.execution.kind` /
-  `scenario.execution.path` untuk skenario Vitest dan Playwright
+- metadata kategori, kapabilitas, lane, dan risiko opsional dalam `scenario`
+- referensi dokumentasi dan kode dalam `scenario`
+- persyaratan Plugin opsional dalam `scenario`
+- patch konfigurasi Gateway opsional dalam `scenario`
+- `flow` tingkat teratas yang dapat dieksekusi untuk skenario alur, atau
+  `scenario.execution.kind` / `scenario.execution.path` untuk skenario Vitest dan
+  Playwright
 
-Permukaan runtime pakai ulang yang mendukung `flow` boleh tetap generik
-dan lintas area. Misalnya, skenario YAML dapat menggabungkan helper sisi transport
-dengan helper sisi browser yang menggerakkan Control UI tertanam melalui
+Permukaan runtime yang dapat digunakan kembali dan mendukung `flow` tetap generik dan
+lintas aspek. Misalnya, skenario YAML dapat menggabungkan helper sisi transportasi
+dengan helper sisi browser yang mengendalikan Control UI tersemat melalui
 seam Gateway `browser.request` tanpa menambahkan runner kasus khusus.
 
-Berkas skenario harus dikelompokkan berdasarkan capability produk, bukan folder
-pohon sumber. Pertahankan ID skenario tetap stabil saat berkas dipindahkan; gunakan `docsRefs` dan `codeRefs`
-untuk keterlacakan implementasi.
+File skenario harus dikelompokkan berdasarkan kapabilitas produk, bukan folder
+pohon sumber. Pertahankan ID skenario agar tetap stabil saat file dipindahkan; gunakan `docsRefs` dan
+`codeRefs` untuk keterlacakan implementasi.
 
-Daftar baseline harus tetap cukup luas untuk mencakup:
+Daftar dasar harus tetap cukup luas untuk mencakup:
 
-- chat DM dan kanal
-- perilaku thread
-- lifecycle tindakan pesan
+- DM dan percakapan kanal
+- perilaku utas
+- siklus hidup tindakan pesan
 - callback cron
-- recall memori
+- pemanggilan kembali memori
 - pergantian model
-- handoff subagent
-- pembacaan repo dan pembacaan docs
+- serah terima subagen
+- pembacaan repo dan pembacaan dokumentasi
 - satu tugas build kecil seperti Lobster Invaders
 
-## Lane mock penyedia
+## Jalur mock penyedia
 
-`qa suite` memiliki dua lane mock penyedia lokal:
+`qa suite` memiliki dua jalur mock penyedia lokal:
 
-- `mock-openai` adalah mock OpenClaw yang sadar skenario. Ini tetap menjadi lane mock
-  deterministik default untuk QA berbasis repo dan gerbang paritas.
-- `aimock` memulai server penyedia berbasis AIMock untuk cakupan protokol,
-  fixture, rekam/putar ulang, dan chaos eksperimental. Ini bersifat tambahan dan tidak
-  menggantikan dispatcher skenario `mock-openai`.
+- `mock-openai` adalah mock OpenClaw yang memahami skenario. Ini tetap menjadi jalur
+  mock deterministik default untuk QA berbasis repo dan gerbang paritas.
+- `aimock` memulai server penyedia berbasis AIMock untuk cakupan
+  protokol eksperimental, fixture, rekam/putar ulang, dan chaos. Jalur ini bersifat tambahan dan
+  tidak menggantikan dispatcher skenario `mock-openai`.
 
-Implementasi lane penyedia berada di bawah `extensions/qa-lab/src/providers/`.
-Setiap penyedia memiliki default, startup server lokal, konfigurasi model gateway,
-kebutuhan staging profil auth, dan flag capability live/mock miliknya sendiri. Kode suite dan
-gateway bersama harus merutekan melalui registry penyedia, bukan bercabang berdasarkan
+Implementasi jalur penyedia berada di bawah `extensions/qa-lab/src/providers/`.
+Setiap penyedia memiliki nilai default, startup server lokal, konfigurasi model gateway,
+kebutuhan penyiapan profil autentikasi, dan flag kapabilitas live/mock masing-masing. Kode suite dan
+gateway bersama dirutekan melalui registri penyedia alih-alih membuat percabangan berdasarkan
 nama penyedia.
 
-## Adapter transport
+## Adaptor transportasi
 
-`qa-lab` memiliki seam transport generik untuk skenario QA YAML. `qa-channel` adalah
-default sintetis. `crabline` memulai server lokal berbentuk penyedia dan menjalankan
-plugin kanal normal OpenClaw terhadapnya. `live` dicadangkan untuk kredensial
-penyedia nyata dan kanal eksternal.
+`qa-lab` menyediakan seam transportasi generik untuk skenario QA YAML. `qa-channel` adalah
+default sintetis. `crabline` memulai server lokal yang menyerupai penyedia dan
+menjalankan plugin kanal normal OpenClaw terhadap server tersebut. `live` dicadangkan untuk
+kredensial penyedia nyata dan kanal eksternal.
 
-Pada tingkat arsitektur, pemisahannya adalah:
+Pada tingkat arsitektur, pembagiannya adalah:
 
-- `qa-lab` memiliki eksekusi skenario generik, concurrency worker, penulisan artefak, dan pelaporan.
-- Adapter transport memiliki konfigurasi gateway, kesiapan, observasi inbound dan outbound, tindakan transport, dan status transport ternormalisasi.
-- Berkas skenario YAML di bawah `qa/scenarios/` mendefinisikan eksekusi pengujian; `qa-lab` menyediakan permukaan runtime pakai ulang yang mengeksekusinya.
+- `qa-lab` menangani eksekusi skenario generik, konkurensi worker, penulisan
+  artefak, dan pelaporan.
+- Adaptor transportasi menangani konfigurasi gateway, kesiapan, pengamatan masuk dan keluar,
+  tindakan transportasi, serta status transportasi yang dinormalisasi.
+- File skenario YAML di bawah `qa/scenarios/` menentukan proses pengujian; `qa-lab`
+  menyediakan permukaan runtime yang dapat digunakan kembali untuk menjalankannya.
 
 ### Menambahkan kanal
 
-Menambahkan kanal ke sistem QA YAML membutuhkan implementasi kanal plus
-paket skenario yang menguji kontrak kanal tersebut. Untuk cakupan CI smoke, tambahkan
-server penyedia lokal Crabline yang sesuai dan ekspos melalui driver `crabline`.
+Menambahkan kanal ke sistem QA YAML memerlukan implementasi kanal
+beserta paket skenario yang menguji kontrak kanal tersebut. Untuk cakupan CI
+smoke, tambahkan server penyedia lokal Crabline yang sesuai dan ekspos server tersebut
+melalui driver `crabline`.
 
-Jangan tambahkan root perintah QA tingkat atas baru ketika host bersama `qa-lab` dapat memiliki flow tersebut.
+Jangan menambahkan akar perintah QA tingkat atas baru jika host bersama `qa-lab` dapat
+menangani alur tersebut.
 
-`qa-lab` memiliki mekanik host bersama:
+`qa-lab` menangani mekanisme host bersama:
 
-- root perintah `openclaw qa`
+- akar perintah `openclaw qa`
 - startup dan teardown suite
-- concurrency worker
+- konkurensi worker
 - penulisan artefak
 - pembuatan laporan
 - eksekusi skenario
 - alias kompatibilitas untuk skenario `qa-channel` yang lebih lama
 
-Plugin runner memiliki kontrak transport:
+Plugin runner menangani kontrak transportasi:
 
-- cara `openclaw qa <runner>` dipasang di bawah root `qa` bersama
-- cara gateway dikonfigurasi untuk transport tersebut
+- cara `openclaw qa <runner>` dipasang di bawah akar bersama `qa`
+- cara gateway dikonfigurasi untuk transportasi tersebut
 - cara kesiapan diperiksa
-- cara event inbound diinjeksi
-- cara pesan outbound diobservasi
-- cara transkrip dan status transport ternormalisasi diekspos
-- cara tindakan berbasis transport dieksekusi
-- cara reset atau pembersihan khusus transport ditangani
+- cara peristiwa masuk diinjeksi
+- cara pesan keluar diamati
+- cara transkrip dan status transportasi yang dinormalisasi diekspos
+- cara tindakan yang didukung transportasi dijalankan
+- cara reset atau pembersihan khusus transportasi ditangani
 
 Batas adopsi minimum untuk kanal baru:
 
-1. Pertahankan `qa-lab` sebagai pemilik root `qa` bersama.
-2. Implementasikan runner transport pada seam host `qa-lab` bersama.
-3. Pertahankan mekanik khusus transport di dalam plugin runner atau harness kanal.
-4. Pasang runner sebagai `openclaw qa <runner>` alih-alih mendaftarkan perintah root pesaing. Plugin runner harus mendeklarasikan `qaRunners` di `openclaw.plugin.json` dan mengekspor array `qaRunnerCliRegistrations` yang sesuai dari `runtime-api.ts`. Jaga `runtime-api.ts` tetap ringan; CLI lazy dan eksekusi runner harus tetap berada di balik entrypoint terpisah.
-5. Tulis atau adaptasi skenario YAML di bawah direktori bertema `qa/scenarios/`.
+1. Pertahankan `qa-lab` sebagai pemilik akar bersama `qa`.
+2. Implementasikan runner transportasi pada seam host bersama `qa-lab`.
+3. Pertahankan mekanisme khusus transportasi di dalam plugin runner atau harness
+   kanal.
+4. Pasang runner sebagai `openclaw qa <runner>`, bukan mendaftarkan
+   perintah akar pesaing. Plugin runner harus mendeklarasikan `qaRunners` di
+   `openclaw.plugin.json` dan mengekspor array `qaRunnerCliRegistrations`
+   yang sesuai dari `runtime-api.ts`. Jaga agar `runtime-api.ts` tetap ringan; eksekusi CLI lazy dan
+   runner harus tetap berada di balik entrypoint terpisah. `adapterFactory`
+   opsional mengekspos transportasi ke skenario bersama tanpa mengubah
+   katalog skenario perintah yang sudah ada.
+5. Buat atau adaptasikan skenario YAML di bawah direktori `qa/scenarios/`
+   bertema.
 6. Gunakan helper skenario generik untuk skenario baru.
-7. Jaga alias kompatibilitas yang ada tetap berfungsi kecuali repo sedang melakukan migrasi yang disengaja.
+7. Pertahankan alias kompatibilitas yang sudah ada agar tetap berfungsi, kecuali repo sedang melakukan
+   migrasi yang disengaja.
 
 Aturan keputusannya ketat:
 
-- Jika perilaku dapat diekspresikan sekali di `qa-lab`, tempatkan di `qa-lab`.
-- Jika perilaku bergantung pada satu transport kanal, pertahankan di plugin runner atau harness plugin tersebut.
-- Jika sebuah skenario membutuhkan capability baru yang dapat digunakan oleh lebih dari satu kanal, tambahkan helper generik alih-alih cabang khusus kanal di `suite.ts`.
-- Jika suatu perilaku hanya bermakna untuk satu transport, pertahankan skenario tetap khusus transport dan buat hal itu eksplisit dalam kontrak skenario.
+- Jika perilaku dapat dinyatakan sekali di `qa-lab`, letakkan di `qa-lab`.
+- Jika perilaku bergantung pada satu transportasi kanal, pertahankan di plugin
+  runner atau harness plugin tersebut.
+- Jika suatu skenario memerlukan kapabilitas baru yang dapat digunakan oleh lebih dari satu kanal,
+  tambahkan helper generik alih-alih cabang khusus kanal di `suite.ts`.
+- Jika suatu perilaku hanya bermakna bagi satu transportasi, pertahankan skenario
+  agar khusus transportasi dan nyatakan hal tersebut secara eksplisit dalam kontrak skenario.
 
 ### Nama helper skenario
 
-Helper generik yang disarankan untuk skenario baru:
+Helper generik yang dianjurkan untuk skenario baru:
 
 - `waitForTransportReady`
 - `waitForChannelReady`
@@ -970,11 +1236,15 @@ Helper generik yang disarankan untuk skenario baru:
 - `formatTransportTranscript`
 - `resetTransport`
 
-Alias kompatibilitas tetap tersedia untuk skenario yang ada - `waitForQaChannelReady`, `waitForOutboundMessage`, `waitForNoOutbound`, `formatConversationTranscript`, `resetBus` - tetapi penulisan skenario baru harus menggunakan nama generik. Alias tersebut ada untuk menghindari migrasi serentak, bukan sebagai model ke depan.
+Alias kompatibilitas tetap tersedia untuk skenario yang sudah ada -
+`waitForQaChannelReady`, `waitForOutboundMessage`, `waitForNoOutbound`,
+`formatConversationTranscript`, `resetBus` - tetapi penulisan skenario baru
+harus menggunakan nama generik. Alias tersebut ada untuk menghindari
+migrasi sekaligus, bukan sebagai model untuk ke depannya.
 
 ## Pelaporan
 
-`qa-lab` mengekspor laporan protokol Markdown dari timeline bus yang diamati.
+`qa-lab` mengekspor laporan protokol Markdown dari lini masa bus yang diamati.
 Laporan harus menjawab:
 
 - Apa yang berhasil
@@ -982,30 +1252,38 @@ Laporan harus menjawab:
 - Apa yang tetap terblokir
 - Skenario tindak lanjut apa yang layak ditambahkan
 
-Untuk inventaris skenario yang tersedia - berguna saat mengukur pekerjaan tindak lanjut atau menyambungkan transport baru - jalankan `pnpm openclaw qa coverage` (tambahkan `--json` untuk output yang dapat dibaca mesin).
-Saat memilih bukti terfokus untuk perilaku atau path berkas yang disentuh, jalankan `pnpm openclaw qa coverage --match <query>`.
-Laporan kecocokan mencari metadata skenario, referensi docs, referensi kode, ID cakupan, plugin, dan persyaratan penyedia, lalu mencetak target `qa suite --scenario ...` yang cocok.
-Setiap eksekusi `qa suite` menulis artefak tingkat atas `qa-evidence.json`,
+Untuk inventaris skenario yang tersedia - berguna saat memperkirakan pekerjaan tindak lanjut
+atau menghubungkan transportasi baru - jalankan `pnpm openclaw qa coverage` (tambahkan `--json`
+untuk keluaran yang dapat dibaca mesin). Saat memilih bukti terfokus untuk
+perilaku atau jalur file yang disentuh, jalankan `pnpm openclaw qa coverage --match <query>`. Laporan
+kecocokan mencari metadata skenario, referensi dokumentasi, referensi kode, ID cakupan,
+plugin, dan persyaratan penyedia, lalu mencetak target `qa suite
+--scenario ...` yang cocok.
+
+Setiap proses `qa suite` menulis artefak tingkat atas `qa-evidence.json`,
 `qa-suite-summary.json`, dan `qa-suite-report.md` untuk kumpulan
 skenario yang dipilih. Skenario yang mendeklarasikan `execution.kind: vitest` atau
-`execution.kind: playwright` menjalankan path pengujian yang sesuai dan juga menulis
+`execution.kind: playwright` menjalankan jalur pengujian yang sesuai dan juga menulis
 log per skenario. Skenario yang mendeklarasikan `execution.kind: script` menjalankan
-produser bukti di `execution.path` melalui `node --import tsx` (dengan
-`${outputDir}` dan `${scenarioId}` diekspansi di `execution.args`); produser
-menulis `qa-evidence.json` miliknya sendiri, yang entrinya diimpor ke output
-suite dan path artefaknya diselesaikan relatif terhadap
-`qa-evidence.json` produser tersebut. Ketika `qa suite` dicapai melalui
-`qa run --qa-profile`, `qa-evidence.json` yang sama juga menyertakan ringkasan
-scorecard profil untuk kategori taksonomi yang dipilih.
-Perlakukan ini sebagai bantuan penemuan, bukan pengganti gerbang; skenario yang dipilih tetap membutuhkan mode penyedia, transport live, Multipass, Testbox, atau lane rilis yang tepat untuk perilaku yang diuji.
-Untuk konteks scorecard, lihat [Scorecard kematangan](/id/maturity/scorecard).
+produsen bukti di `execution.path` melalui `node --import tsx` (dengan
+`${outputDir}` dan `${scenarioId}` diperluas di `execution.args`); produsen tersebut
+menulis `qa-evidence.json` miliknya sendiri, yang entrinya diimpor ke
+keluaran suite dan jalur artefaknya diresolusikan relatif terhadap
+`qa-evidence.json` produsen tersebut. Saat `qa suite` dicapai melalui `qa run
+--qa-profile`, `qa-evidence.json` yang sama juga menyertakan ringkasan
+kartu skor profil untuk kategori taksonomi yang dipilih.
 
-Untuk pemeriksaan karakter dan gaya, jalankan skenario yang sama di beberapa ref model live
-dan tulis laporan Markdown yang dinilai:
+Perlakukan keluaran cakupan sebagai alat bantu penemuan, bukan pengganti gerbang;
+skenario yang dipilih masih memerlukan mode penyedia, transportasi live,
+Multipass, Testbox, atau jalur rilis yang tepat untuk perilaku yang diuji. Untuk
+konteks kartu skor, lihat [Kartu skor kematangan](/id/maturity/scorecard).
+
+Untuk pemeriksaan karakter dan gaya, jalankan skenario yang sama pada beberapa
+referensi model live dan tulis laporan Markdown yang dinilai:
 
 ```bash
 pnpm openclaw qa character-eval \
-  --model openai/gpt-5.5,thinking=medium,fast \
+  --model openai/gpt-5.6-luna,thinking=medium,fast \
   --model openai/gpt-5.2,thinking=xhigh \
   --model openai/gpt-5,thinking=xhigh \
   --model anthropic/claude-opus-4-8,thinking=high \
@@ -1013,34 +1291,50 @@ pnpm openclaw qa character-eval \
   --model zai/glm-5.1,thinking=high \
   --model moonshot/kimi-k2.5,thinking=high \
   --model google/gemini-3.1-pro-preview,thinking=high \
-  --judge-model openai/gpt-5.5,thinking=xhigh,fast \
+  --judge-model openai/gpt-5.6-sol,thinking=xhigh,fast \
   --judge-model anthropic/claude-opus-4-8,thinking=high \
   --blind-judge-models \
   --concurrency 16 \
   --judge-concurrency 16
 ```
 
-Perintah ini menjalankan proses anak Gateway QA lokal, bukan Docker. Skenario evaluasi karakter harus mengatur persona melalui `SOUL.md`, lalu menjalankan giliran pengguna biasa seperti chat, bantuan workspace, dan tugas file kecil. Model kandidat tidak boleh diberi tahu bahwa model tersebut sedang dievaluasi. Perintah ini mempertahankan setiap transkrip lengkap, mencatat statistik dasar eksekusi, lalu meminta model penilai dalam mode cepat dengan penalaran `xhigh` jika didukung untuk memeringkat eksekusi berdasarkan kewajaran, vibe, dan humor.
-Gunakan `--blind-judge-models` saat membandingkan penyedia: prompt penilai tetap mendapatkan setiap transkrip dan status eksekusi, tetapi referensi kandidat diganti dengan label netral seperti `candidate-01`; laporan memetakan peringkat kembali ke referensi asli setelah penguraian.
-Eksekusi kandidat secara default menggunakan pemikiran `high`, dengan `medium` untuk GPT-5.5 dan `xhigh` untuk referensi evaluasi OpenAI lama yang mendukungnya. Timpa kandidat tertentu secara inline dengan
-`--model provider/model,thinking=<level>`. `--thinking <level>` tetap mengatur fallback global, dan bentuk lama `--model-thinking <provider/model=level>` dipertahankan untuk kompatibilitas.
-Referensi kandidat OpenAI secara default menggunakan mode cepat sehingga pemrosesan prioritas digunakan jika penyedia mendukungnya. Tambahkan `,fast`, `,no-fast`, atau `,fast=false` secara inline saat satu kandidat atau penilai memerlukan penimpaan. Berikan `--fast` hanya saat Anda ingin memaksa mode cepat aktif untuk setiap model kandidat. Durasi kandidat dan penilai dicatat dalam laporan untuk analisis benchmark, tetapi prompt penilai secara eksplisit mengatakan untuk tidak memeringkat berdasarkan kecepatan.
-Eksekusi model kandidat dan penilai keduanya secara default menggunakan concurrency 16. Turunkan
-`--concurrency` atau `--judge-concurrency` saat batas penyedia atau tekanan Gateway lokal membuat eksekusi terlalu berisik.
-Saat tidak ada kandidat `--model` yang diberikan, evaluasi karakter secara default menggunakan
-`openai/gpt-5.5`, `openai/gpt-5.2`, `openai/gpt-5`, `anthropic/claude-opus-4-8`,
-`anthropic/claude-sonnet-4-6`, `zai/glm-5.1`,
-`moonshot/kimi-k2.5`, dan
-`google/gemini-3.1-pro-preview` saat tidak ada `--model` yang diberikan.
-Saat tidak ada `--judge-model` yang diberikan, penilai secara default menggunakan
-`openai/gpt-5.5,thinking=xhigh,fast` dan
+Perintah tersebut menjalankan proses anak gateway QA lokal, bukan Docker. Skenario
+evaluasi karakter harus menetapkan persona melalui `SOUL.md`, lalu menjalankan giliran
+pengguna biasa seperti percakapan, bantuan ruang kerja, dan tugas file kecil. Model kandidat
+tidak boleh diberi tahu bahwa model tersebut sedang dievaluasi. Perintah tersebut mempertahankan
+setiap transkrip lengkap, merekam statistik dasar proses, lalu meminta model penilai dalam
+mode cepat dengan penalaran `xhigh` jika didukung untuk memberi peringkat proses berdasarkan
+kealamian, nuansa, dan humor. Gunakan `--blind-judge-models` saat membandingkan
+penyedia: prompt penilai tetap menerima setiap transkrip dan status proses, tetapi
+referensi kandidat diganti dengan label netral seperti `candidate-01`; laporan
+memetakan kembali peringkat ke referensi sebenarnya setelah penguraian.
+
+Proses kandidat secara default menggunakan pemikiran `high`, dengan `medium` untuk GPT-5.6 Luna dan
+`xhigh` untuk referensi evaluasi OpenAI lama yang mendukungnya. Timpa kandidat tertentu
+secara inline dengan `--model provider/model,thinking=<level>`; opsi
+inline juga mendukung `fast`, `no-fast`, dan `fast=<bool>`. `--thinking
+<level>` tetap menetapkan fallback global, dan bentuk `--model-thinking
+<provider/model=level>` yang lebih lama dipertahankan untuk kompatibilitas. Referensi kandidat OpenAI
+secara default menggunakan mode cepat agar pemrosesan prioritas digunakan jika didukung oleh penyedia.
+Teruskan `--fast` hanya jika Anda ingin memaksa mode cepat aktif untuk
+setiap model kandidat. Durasi kandidat dan penilai direkam dalam
+laporan untuk analisis benchmark, tetapi prompt penilai secara eksplisit menyatakan agar tidak memberi peringkat
+berdasarkan kecepatan. Proses model kandidat dan penilai sama-sama secara default menggunakan konkurensi 16.
+Turunkan `--concurrency` atau `--judge-concurrency` saat batas penyedia atau tekanan
+gateway lokal membuat proses terlalu bising.
+
+Jika tidak ada `--model` kandidat yang diteruskan, evaluasi karakter secara default menggunakan
+`openai/gpt-5.6-luna`, `openai/gpt-5.2`, `openai/gpt-5`,
+`anthropic/claude-opus-4-8`, `anthropic/claude-sonnet-4-6`, `zai/glm-5.1`,
+`moonshot/kimi-k2.5`, dan `google/gemini-3.1-pro-preview`. Jika tidak ada
+`--judge-model` yang diteruskan, penilai secara default menggunakan
+`openai/gpt-5.6-sol,thinking=xhigh,fast` dan
 `anthropic/claude-opus-4-8,thinking=high`.
 
-## Dokumen terkait
+## Dokumentasi terkait
 
-- [Matrix QA](/id/concepts/qa-matrix)
 - [Kartu skor kematangan](/id/maturity/scorecard)
 - [Paket benchmark agen pribadi](/id/concepts/personal-agent-benchmark-pack)
-- [Channel QA](/id/channels/qa-channel)
+- [Kanal QA](/id/channels/qa-channel)
 - [Pengujian](/id/help/testing)
 - [Dasbor](/id/web/dashboard)

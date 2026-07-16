@@ -1,31 +1,32 @@
 ---
 read_when:
-    - Anda sedang memasang, mengonfigurasi, atau mengaudit plugin featherless
-summary: Plugin penyedia Featherless AI untuk OpenClaw.
+    - Anda sedang menginstal, mengonfigurasi, atau mengaudit plugin featherless
+summary: Plugin penyedia AI Featherless OpenClaw.
 title: Plugin Featherless
 x-i18n:
-    generated_at: "2026-07-12T14:31:14Z"
+    generated_at: "2026-07-16T18:25:55Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: b5365b6d07b7828408411c7fd15e0721692bb70e15c8ba01eb3d6d44a5a308bd
+    source_hash: cc85911d6fa5ee416b1abd11bd08466d1e8d245ad3edb03e315fb555b4ed38b3
     source_path: plugins/reference/featherless.md
     workflow: 16
 ---
 
 # Plugin Featherless
 
-Plugin penyedia Featherless AI untuk OpenClaw.
+Plugin penyedia AI Featherless untuk OpenClaw.
 
 ## Distribusi
 
 - Paket: `@openclaw/featherless-provider`
-- Jalur instalasi: npm; ClawHub: `clawhub:@openclaw/featherless-provider`
+- Rute instalasi: npm; ClawHub: `clawhub:@openclaw/featherless-provider`
 
 ## Antarmuka
 
-penyedia: featherless
+penyedia: `featherless`
 
 ## Dokumentasi terkait
 
-- [featherless](/providers/featherless)
+- [featherless](/id/providers/featherless)
