@@ -41,7 +41,9 @@ permissions:
 
 concurrency:
   group: docs-i18n-incremental
-  cancel-in-progress: true
+  # Keep the active debounce alive on hot main. GitHub retains the newest
+  # pending run, while prepare's max-wait cap selects the latest source.
+  cancel-in-progress: false
 
 jobs:
   validate-workflow-shell:

@@ -442,6 +442,11 @@ class I18NScriptTests(unittest.TestCase):
         for slug in expected.values():
             self.assertIn(f'!docs/{slug}/**', text)
 
+    def test_incremental_workflow_keeps_running_debounce_on_hot_main(self) -> None:
+        text = (REPO_ROOT / ".github/workflows/translate-incremental.yml").read_text(encoding="utf-8")
+
+        self.assertRegex(text, r"group: docs-i18n-incremental\s+(?:#[^\n]*\n\s*)*cancel-in-progress: false")
+
     def test_locale_like_docs_dirs_are_supported_and_excluded_from_incremental_triggers(self) -> None:
         text = (REPO_ROOT / ".github/workflows/translate-incremental.yml").read_text(encoding="utf-8")
         docs_dirs = {path.name for path in (REPO_ROOT / "docs").iterdir() if path.is_dir()}
