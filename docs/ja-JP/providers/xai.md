@@ -536,6 +536,7 @@ xAI は、以下の正確な ID を廃止しました。OpenClaw は、リリー
     - OpenClaw は現在、xAI のマルチエージェントモデルファミリーを公開していません。xAI はこれらのモデルを Responses API 経由で提供していますが、OpenClaw の共有エージェントループで使用されるクライアント側ツールやカスタムツールには対応していません。[xAI マルチエージェントの制限](https://docs.x.ai/developers/model-capabilities/text/multi-agent#limitations)を参照してください。
     - xAI Realtime 音声は現在、Gateway リレー式の Talk トランスポートのみを公開しています。ブラウザ側で管理されるプロバイダー WebSocket セッションは、まだ Control UI に接続されていません。
     - xAI の画像 `quality`、画像 `mask`、およびネイティブ専用の追加アスペクト比は、共有 `image_generate` ツールに対応するプロバイダー横断コントロールが実装されるまで公開されません。
+
   </Accordion>
 
   <Accordion title="高度な注記">
@@ -546,6 +547,7 @@ xAI は、以下の正確な ID を廃止しました。OpenClaw は、リリー
     - Grok `web_search` は `plugins.entries.xai.config.webSearch.baseUrl` を読み取ります。`x_search` は `plugins.entries.xai.config.xSearch.baseUrl` を読み取り、その後 Grok Web 検索のベース URL にフォールバックします。
     - `x_search` と `code_execution` は、コアモデルランタイムにハードコードされるのではなく、バンドルされた xAI Plugin によって所有されます。
     - `code_execution` はリモートの xAI サンドボックス実行であり、ローカルの [`exec`](/ja-JP/tools/exec) ではありません。
+
   </Accordion>
 </AccordionGroup>
 

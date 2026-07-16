@@ -598,6 +598,7 @@ les métadonnées de contexte obsolètes sur les lignes 4.20 actives. Il n’ép
       [limitations multi-agents de xAI](https://docs.x.ai/developers/model-capabilities/text/multi-agent#limitations).
     - La voix xAI Realtime n’expose actuellement que le transport Talk par relais du Gateway. Les sessions WebSocket du fournisseur gérées par le navigateur ne sont pas encore intégrées à l’interface de contrôle.
     - L’image xAI `quality`, l’image `mask` et les rapports hauteur/largeur supplémentaires exclusivement natifs ne sont pas exposés tant que l’outil partagé `image_generate` ne dispose pas de contrôles inter-fournisseurs correspondants.
+
   </Accordion>
 
   <Accordion title="Remarques avancées">

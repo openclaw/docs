@@ -625,6 +625,7 @@ ms，因此模型预热、嵌入索引加载和首次
     - 查看 Gateway 网关日志中是否出现 `active-memory: ... start|done`、`memory sync failed (search-bootstrap)` 或提供商嵌入错误。
     - 运行 `openclaw status --deep`，检查记忆搜索后端和索引健康状况。
     - 如果使用 `ollama`，请确认已安装嵌入模型（`ollama list`）。
+
   </Accordion>
 
   <Accordion title="Gateway 网关重启后的首次召回返回 `status=timeout`">

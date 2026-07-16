@@ -598,6 +598,7 @@ Aliase `beta-latest` werden dabei nicht auf einen datierten Snapshot festgelegt.
     - OpenClaw stellt die Multi-Agent-Modellfamilie von xAI derzeit nicht bereit. xAI stellt diese Modelle über die Responses API bereit, sie akzeptieren jedoch nicht die clientseitigen oder benutzerdefinierten Tools, die von der gemeinsamen Agent-Schleife von OpenClaw verwendet werden. Weitere Informationen finden Sie unter [Einschränkungen der xAI-Multi-Agent-Funktion](https://docs.x.ai/developers/model-capabilities/text/multi-agent#limitations).
     - xAI Realtime Voice stellt derzeit nur den Talk-Transport über das Gateway-Relay bereit. Vom Browser verwaltete Provider-WebSocket-Sitzungen sind noch nicht in die Control UI integriert.
     - xAI-Bild `quality`, Bild `mask` und zusätzliche ausschließlich native Seitenverhältnisse werden erst bereitgestellt, wenn das gemeinsame Tool `image_generate` über entsprechende Provider-übergreifende Steuerungen verfügt.
+
   </Accordion>
 
   <Accordion title="Erweiterte Hinweise">
@@ -608,6 +609,7 @@ Aliase `beta-latest` werden dabei nicht auf einen datierten Snapshot festgelegt.
     - Grok `web_search` liest `plugins.entries.xai.config.webSearch.baseUrl`. `x_search` liest `plugins.entries.xai.config.xSearch.baseUrl` und greift anschließend auf die Basis-URL der Grok-Websuche zurück.
     - `x_search` und `code_execution` gehören zum gebündelten xAI-Plugin und sind nicht fest in der Kern-Modelllaufzeit codiert.
     - `code_execution` ist eine entfernte Ausführung in der xAI-Sandbox und keine lokale [`exec`](/de/tools/exec).
+
   </Accordion>
 </AccordionGroup>
 

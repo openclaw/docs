@@ -43,6 +43,7 @@ Khi một cuộc hội thoại được liên kết với một phiên ACP, văn
     - Trong các tin nhắn **chỉ chứa chỉ thị** (tin nhắn chỉ có các chỉ thị), chúng được duy trì trong phiên và phản hồi bằng một xác nhận.
     - Trong các tin nhắn **trò chuyện thông thường** có văn bản khác, chúng đóng vai trò là gợi ý nội tuyến và **không** duy trì cài đặt phiên.
     - Các chỉ thị chỉ áp dụng cho **người gửi được ủy quyền**. Nếu `commands.allowFrom` được đặt, đây là danh sách cho phép duy nhất được sử dụng; nếu không, việc ủy quyền đến từ danh sách cho phép/ghép đôi của kênh cùng với `commands.useAccessGroups`. Với người gửi không được ủy quyền, các chỉ thị được coi là văn bản thuần túy.
+
   </Accordion>
 </AccordionGroup>
 
