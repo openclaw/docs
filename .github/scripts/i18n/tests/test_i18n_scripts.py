@@ -487,7 +487,7 @@ class I18NScriptTests(unittest.TestCase):
 
     def test_full_plan_all_uses_canary_and_small_batches(self) -> None:
         result = plan_full.plan_full("all", 4, FIXTURES / "pending-docs" / "docs")
-        self.assertEqual("zh-CN", result["canary"]["locale"])
+        self.assertEqual("es", result["canary"]["locale"])
         self.assertEqual(5, len(result["batches"]))
         self.assertEqual(1, result["shard_total"])
         self.assertEqual(20, len(result["expected_locales"].split()))
@@ -556,10 +556,35 @@ class I18NScriptTests(unittest.TestCase):
         self.assertEqual(40, len(result["matrix"]["include"]))
         self.assertEqual(
             [
-                {"locale": "zh-CN", "locale_slug": "zh-cn", "shard_index": "0", "shard_total": "2"},
-                {"locale": "zh-CN", "locale_slug": "zh-cn", "shard_index": "1", "shard_total": "2"},
+                {"locale": "es", "locale_slug": "es", "shard_index": "0", "shard_total": "2"},
+                {"locale": "es", "locale_slug": "es", "shard_index": "1", "shard_total": "2"},
             ],
             result["matrix"]["include"][:2],
+        )
+        self.assertEqual(
+            [
+                "es",
+                "zh-CN",
+                "zh-TW",
+                "ja-JP",
+                "pt-BR",
+                "fr",
+                "ko",
+                "ru",
+                "de",
+                "it",
+                "id",
+                "tr",
+                "vi",
+                "pl",
+                "nl",
+                "uk",
+                "th",
+                "ar",
+                "fa",
+                "hi",
+            ],
+            [item["locale"] for item in result["matrix"]["include"][::2]],
         )
 
     def test_incremental_plan_excludes_supported_locale_dirs_without_marker(self) -> None:

@@ -29,27 +29,28 @@ from pathlib import Path
 DEFAULT_TARGET_DOCS_PER_SHARD = 250
 DEFAULT_MAX_SHARDS = 4
 
+# Scheduling priority: common/current locales first, harder recovery locales last.
 LOCALES: tuple[tuple[str, str], ...] = (
+    ("es", "es"),
     ("zh-CN", "zh-cn"),
     ("zh-TW", "zh-tw"),
     ("ja-JP", "ja-jp"),
-    ("es", "es"),
     ("pt-BR", "pt-br"),
-    ("ko", "ko"),
-    ("de", "de"),
     ("fr", "fr"),
-    ("hi", "hi"),
-    ("ar", "ar"),
-    ("it", "it"),
-    ("vi", "vi"),
-    ("nl", "nl"),
-    ("fa", "fa"),
+    ("ko", "ko"),
     ("ru", "ru"),
-    ("tr", "tr"),
-    ("uk", "uk"),
+    ("de", "de"),
+    ("it", "it"),
     ("id", "id"),
+    ("tr", "tr"),
+    ("vi", "vi"),
     ("pl", "pl"),
+    ("nl", "nl"),
+    ("uk", "uk"),
     ("th", "th"),
+    ("ar", "ar"),
+    ("fa", "fa"),
+    ("hi", "hi"),
 )
 
 LOCALE_NAMES = frozenset(locale for locale, _slug in LOCALES)
