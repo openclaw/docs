@@ -42,6 +42,14 @@ on:
         required: false
         default: false
         type: boolean
+      translation_effort:
+        description: Thinking effort for full translation batches. Use max only for hard recovery.
+        required: true
+        default: xhigh
+        type: choice
+        options:
+          - xhigh
+          - max
 
 permissions:
   actions: write
@@ -160,6 +168,7 @@ jobs:
       shard_index: "0"
       shard_total: "1"
       worker_parallel: "3"
+      # Canary remains the source-blind behavior probe for prompt/source changes.
       thinking_effort: "max"
       pending_limit: "1"
       canary_source_path: channels/line.md
@@ -192,7 +201,8 @@ jobs:
       shard_index: ${{ matrix.shard_index }}
       shard_total: ${{ matrix.shard_total }}
       worker_parallel: "3"
-      thinking_effort: "max"
+      # Scheduled/routine full runs default to xhigh; manual hard recovery can select Max.
+      thinking_effort: ${{ inputs.translation_effort || 'xhigh' }}
       pending_limit: "0"
       artifact_prefix: i18n
       artifact_role: locale
@@ -221,7 +231,7 @@ jobs:
       shard_index: ${{ matrix.shard_index }}
       shard_total: ${{ matrix.shard_total }}
       worker_parallel: "3"
-      thinking_effort: "max"
+      thinking_effort: ${{ inputs.translation_effort || 'xhigh' }}
       pending_limit: "0"
       artifact_prefix: i18n
       artifact_role: locale
@@ -250,7 +260,7 @@ jobs:
       shard_index: ${{ matrix.shard_index }}
       shard_total: ${{ matrix.shard_total }}
       worker_parallel: "3"
-      thinking_effort: "max"
+      thinking_effort: ${{ inputs.translation_effort || 'xhigh' }}
       pending_limit: "0"
       artifact_prefix: i18n
       artifact_role: locale
@@ -279,7 +289,7 @@ jobs:
       shard_index: ${{ matrix.shard_index }}
       shard_total: ${{ matrix.shard_total }}
       worker_parallel: "3"
-      thinking_effort: "max"
+      thinking_effort: ${{ inputs.translation_effort || 'xhigh' }}
       pending_limit: "0"
       artifact_prefix: i18n
       artifact_role: locale
@@ -308,7 +318,7 @@ jobs:
       shard_index: ${{ matrix.shard_index }}
       shard_total: ${{ matrix.shard_total }}
       worker_parallel: "3"
-      thinking_effort: "max"
+      thinking_effort: ${{ inputs.translation_effort || 'xhigh' }}
       pending_limit: "0"
       artifact_prefix: i18n
       artifact_role: locale
@@ -337,7 +347,7 @@ jobs:
       shard_index: ${{ matrix.shard_index }}
       shard_total: ${{ matrix.shard_total }}
       worker_parallel: "3"
-      thinking_effort: "max"
+      thinking_effort: ${{ inputs.translation_effort || 'xhigh' }}
       pending_limit: "0"
       artifact_prefix: i18n
       artifact_role: locale

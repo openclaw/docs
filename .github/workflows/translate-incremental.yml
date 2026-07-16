@@ -141,7 +141,8 @@ jobs:
       shard_index: ${{ matrix.shard_index }}
       shard_total: ${{ matrix.shard_total }}
       worker_parallel: "3"
-      thinking_effort: "max"
+      # Routine backfill favors throughput; targeted full recovery owns Max.
+      thinking_effort: "xhigh"
       pending_limit: "0"
       artifact_prefix: i18n
       artifact_role: locale

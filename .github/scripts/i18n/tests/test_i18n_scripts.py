@@ -400,17 +400,19 @@ class I18NScriptTests(unittest.TestCase):
         reusable = (REPO_ROOT / ".github/workflows/translate-locale-reusable.yml").read_text(encoding="utf-8")
         self.assertRegex(reusable, r"(?ms)^  translate:\n.*?^    timeout-minutes: 360$")
 
-    def test_translation_workflows_pin_latest_codex_and_use_max_effort(self) -> None:
+    def test_translation_workflows_pin_latest_codex_and_tier_effort(self) -> None:
         reusable = (REPO_ROOT / ".github/workflows/translate-locale-reusable.yml").read_text(encoding="utf-8")
         full = (REPO_ROOT / ".github/workflows/translate-all.yml").read_text(encoding="utf-8")
         incremental = (REPO_ROOT / ".github/workflows/translate-incremental.yml").read_text(encoding="utf-8")
 
         self.assertIn("npm install -g @openai/codex@0.144.4", reusable)
         self.assertIn("effort: max", reusable)
-        self.assertNotIn('thinking_effort: "xhigh"', full)
-        self.assertNotIn('thinking_effort: "xhigh"', incremental)
-        self.assertEqual(7, full.count('thinking_effort: "max"'))
-        self.assertEqual(1, incremental.count('thinking_effort: "max"'))
+        self.assertEqual(1, full.count('thinking_effort: "max"'))
+        self.assertEqual(6, full.count("thinking_effort: ${{ inputs.translation_effort || 'xhigh' }}"))
+        self.assertIn("translation_effort:", full)
+        self.assertIn("Use max only for hard recovery.", full)
+        self.assertEqual(1, incremental.count('thinking_effort: "xhigh"'))
+        self.assertNotIn('thinking_effort: "max"', incremental)
 
     def test_prepare_path_selection_matches_incremental_rules(self) -> None:
         self.assertTrue(prepare.is_translatable_doc_path("docs/guide/setup.mdx"))
