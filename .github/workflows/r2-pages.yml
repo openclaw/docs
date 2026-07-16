@@ -175,7 +175,7 @@ jobs:
 
       - name: Set up Node
         if: steps.artifact-scope.outputs.scope != 'none' || steps.artifact-scope.outputs.deploy_worker == '1'
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v7
         with:
           node-version: 24
           cache: npm
