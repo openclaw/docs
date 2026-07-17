@@ -1962,6 +1962,12 @@
                 ]
               },
               {
+                "group": "Contributing",
+                "pages": [
+                  "reference/pull-request-review-flow"
+                ]
+              },
+              {
                 "group": "Release and CI",
                 "pages": [
                   {
@@ -3555,6 +3561,12 @@
                 ]
               },
               {
+                "group": "Contributing",
+                "pages": [
+                  "zh-TW/reference/pull-request-review-flow"
+                ]
+              },
+              {
                 "group": "Release and CI",
                 "pages": [
                   {
@@ -4522,6 +4534,12 @@
                 "group": "Project",
                 "pages": [
                   "ja-JP/reference/credits"
+                ]
+              },
+              {
+                "group": "Contributing",
+                "pages": [
+                  "ja-JP/reference/pull-request-review-flow"
                 ]
               },
               {
@@ -5495,6 +5513,12 @@
                 ]
               },
               {
+                "group": "Contributing",
+                "pages": [
+                  "es/reference/pull-request-review-flow"
+                ]
+              },
+              {
                 "group": "Release and CI",
                 "pages": [
                   {
@@ -6462,6 +6486,12 @@
                 "group": "Project",
                 "pages": [
                   "pt-BR/reference/credits"
+                ]
+              },
+              {
+                "group": "Contributing",
+                "pages": [
+                  "pt-BR/reference/pull-request-review-flow"
                 ]
               },
               {
@@ -7435,6 +7465,12 @@
                 ]
               },
               {
+                "group": "Contributing",
+                "pages": [
+                  "ko/reference/pull-request-review-flow"
+                ]
+              },
+              {
                 "group": "Release and CI",
                 "pages": [
                   {
@@ -8402,6 +8438,12 @@
                 "group": "Project",
                 "pages": [
                   "de/reference/credits"
+                ]
+              },
+              {
+                "group": "Contributing",
+                "pages": [
+                  "de/reference/pull-request-review-flow"
                 ]
               },
               {
@@ -9375,6 +9417,12 @@
                 ]
               },
               {
+                "group": "Contributing",
+                "pages": [
+                  "fr/reference/pull-request-review-flow"
+                ]
+              },
+              {
                 "group": "Release and CI",
                 "pages": [
                   {
@@ -10342,6 +10390,12 @@
                 "group": "Project",
                 "pages": [
                   "hi/reference/credits"
+                ]
+              },
+              {
+                "group": "Contributing",
+                "pages": [
+                  "hi/reference/pull-request-review-flow"
                 ]
               },
               {
@@ -11315,6 +11369,12 @@
                 ]
               },
               {
+                "group": "Contributing",
+                "pages": [
+                  "ar/reference/pull-request-review-flow"
+                ]
+              },
+              {
                 "group": "Release and CI",
                 "pages": [
                   {
@@ -12282,6 +12342,12 @@
                 "group": "Project",
                 "pages": [
                   "it/reference/credits"
+                ]
+              },
+              {
+                "group": "Contributing",
+                "pages": [
+                  "it/reference/pull-request-review-flow"
                 ]
               },
               {
@@ -13255,6 +13321,12 @@
                 ]
               },
               {
+                "group": "Contributing",
+                "pages": [
+                  "vi/reference/pull-request-review-flow"
+                ]
+              },
+              {
                 "group": "Release and CI",
                 "pages": [
                   {
@@ -14222,6 +14294,12 @@
                 "group": "Project",
                 "pages": [
                   "nl/reference/credits"
+                ]
+              },
+              {
+                "group": "Contributing",
+                "pages": [
+                  "nl/reference/pull-request-review-flow"
                 ]
               },
               {
@@ -15195,6 +15273,12 @@
                 ]
               },
               {
+                "group": "Contributing",
+                "pages": [
+                  "tr/reference/pull-request-review-flow"
+                ]
+              },
+              {
                 "group": "Release and CI",
                 "pages": [
                   {
@@ -16162,6 +16246,12 @@
                 "group": "Project",
                 "pages": [
                   "uk/reference/credits"
+                ]
+              },
+              {
+                "group": "Contributing",
+                "pages": [
+                  "uk/reference/pull-request-review-flow"
                 ]
               },
               {
@@ -17135,6 +17225,12 @@
                 ]
               },
               {
+                "group": "Contributing",
+                "pages": [
+                  "id/reference/pull-request-review-flow"
+                ]
+              },
+              {
                 "group": "Release and CI",
                 "pages": [
                   {
@@ -18105,6 +18201,12 @@
                 ]
               },
               {
+                "group": "Contributing",
+                "pages": [
+                  "pl/reference/pull-request-review-flow"
+                ]
+              },
+              {
                 "group": "Release and CI",
                 "pages": [
                   {
@@ -19072,6 +19174,12 @@
                 "group": "Project",
                 "pages": [
                   "ru/reference/credits"
+                ]
+              },
+              {
+                "group": "Contributing",
+                "pages": [
+                  "ru/reference/pull-request-review-flow"
                 ]
               },
               {
