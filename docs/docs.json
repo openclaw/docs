@@ -1358,6 +1358,7 @@
                 "group": "Tools",
                 "pages": [
                   "tools/apply-patch",
+                  "tools/ask-user",
                   "tools/btw",
                   "tools/code-execution",
                   "tools/code-mode",
@@ -2993,6 +2994,7 @@
                 "group": "Tools",
                 "pages": [
                   "zh-TW/tools/apply-patch",
+                  "zh-TW/tools/ask-user",
                   "zh-TW/tools/btw",
                   "zh-TW/tools/code-execution",
                   "zh-TW/tools/code-mode",
@@ -3971,6 +3973,7 @@
                 "group": "Tools",
                 "pages": [
                   "ja-JP/tools/apply-patch",
+                  "ja-JP/tools/ask-user",
                   "ja-JP/tools/btw",
                   "ja-JP/tools/code-execution",
                   "ja-JP/tools/code-mode",
@@ -4949,6 +4952,7 @@
                 "group": "Tools",
                 "pages": [
                   "es/tools/apply-patch",
+                  "es/tools/ask-user",
                   "es/tools/btw",
                   "es/tools/code-execution",
                   "es/tools/code-mode",
@@ -5927,6 +5931,7 @@
                 "group": "Tools",
                 "pages": [
                   "pt-BR/tools/apply-patch",
+                  "pt-BR/tools/ask-user",
                   "pt-BR/tools/btw",
                   "pt-BR/tools/code-execution",
                   "pt-BR/tools/code-mode",
@@ -6905,6 +6910,7 @@
                 "group": "Tools",
                 "pages": [
                   "ko/tools/apply-patch",
+                  "ko/tools/ask-user",
                   "ko/tools/btw",
                   "ko/tools/code-execution",
                   "ko/tools/code-mode",
@@ -7883,6 +7889,7 @@
                 "group": "Tools",
                 "pages": [
                   "de/tools/apply-patch",
+                  "de/tools/ask-user",
                   "de/tools/btw",
                   "de/tools/code-execution",
                   "de/tools/code-mode",
@@ -8861,6 +8868,7 @@
                 "group": "Tools",
                 "pages": [
                   "fr/tools/apply-patch",
+                  "fr/tools/ask-user",
                   "fr/tools/btw",
                   "fr/tools/code-execution",
                   "fr/tools/code-mode",
@@ -9839,6 +9847,7 @@
                 "group": "Tools",
                 "pages": [
                   "hi/tools/apply-patch",
+                  "hi/tools/ask-user",
                   "hi/tools/btw",
                   "hi/tools/code-execution",
                   "hi/tools/code-mode",
@@ -10817,6 +10826,7 @@
                 "group": "Tools",
                 "pages": [
                   "ar/tools/apply-patch",
+                  "ar/tools/ask-user",
                   "ar/tools/btw",
                   "ar/tools/code-execution",
                   "ar/tools/code-mode",
@@ -11795,6 +11805,7 @@
                 "group": "Tools",
                 "pages": [
                   "it/tools/apply-patch",
+                  "it/tools/ask-user",
                   "it/tools/btw",
                   "it/tools/code-execution",
                   "it/tools/code-mode",
@@ -12773,6 +12784,7 @@
                 "group": "Tools",
                 "pages": [
                   "vi/tools/apply-patch",
+                  "vi/tools/ask-user",
                   "vi/tools/btw",
                   "vi/tools/code-execution",
                   "vi/tools/code-mode",
@@ -13751,6 +13763,7 @@
                 "group": "Tools",
                 "pages": [
                   "nl/tools/apply-patch",
+                  "nl/tools/ask-user",
                   "nl/tools/btw",
                   "nl/tools/code-execution",
                   "nl/tools/code-mode",
@@ -14729,6 +14742,7 @@
                 "group": "Tools",
                 "pages": [
                   "tr/tools/apply-patch",
+                  "tr/tools/ask-user",
                   "tr/tools/btw",
                   "tr/tools/code-execution",
                   "tr/tools/code-mode",
@@ -15707,6 +15721,7 @@
                 "group": "Tools",
                 "pages": [
                   "uk/tools/apply-patch",
+                  "uk/tools/ask-user",
                   "uk/tools/btw",
                   "uk/tools/code-execution",
                   "uk/tools/code-mode",
@@ -16685,6 +16700,7 @@
                 "group": "Tools",
                 "pages": [
                   "id/tools/apply-patch",
+                  "id/tools/ask-user",
                   "id/tools/btw",
                   "id/tools/code-execution",
                   "id/tools/code-mode",
@@ -17663,6 +17679,7 @@
                 "group": "Tools",
                 "pages": [
                   "pl/tools/apply-patch",
+                  "pl/tools/ask-user",
                   "pl/tools/btw",
                   "pl/tools/code-execution",
                   "pl/tools/code-mode",
@@ -18641,6 +18658,7 @@
                 "group": "Tools",
                 "pages": [
                   "ru/tools/apply-patch",
+                  "ru/tools/ask-user",
                   "ru/tools/btw",
                   "ru/tools/code-execution",
                   "ru/tools/code-mode",
