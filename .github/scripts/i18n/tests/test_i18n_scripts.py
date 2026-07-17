@@ -234,7 +234,6 @@ class I18NScriptTests(unittest.TestCase):
         self.assertIn('if [ "${MODE}" = "full" ] && [ "$attempt" -eq 1 ]; then', reusable)
         self.assertIn('PARTIAL_ARGS+=(--overwrite)', reusable)
         self.assertIn('echo "docs-i18n strict completion check $attempt/$max_attempts"', reusable)
-
         self.assertIn('echo "I18N_SCRIPT_DIR=${I18N_SCRIPT_DIR}" >> "$GITHUB_ENV"', reusable)
         self.assertIn("ref: ${{ github.workflow_sha }}", reusable)
         self.assertIn('python "${I18N_SCRIPT_DIR}/build_pending_manifest.py"', reusable)
@@ -286,15 +285,16 @@ class I18NScriptTests(unittest.TestCase):
         self.assertIn("R2_UPLOAD_LOCALE: ${{ inputs.locale || '' }}", r2_pages)
         self.assertIn("R2_UPLOAD_PAGE_PATH: ${{ inputs.page_path || '' }}", r2_pages)
 
-    def test_translation_worker_preserves_progress_across_full_retries(self) -> None:
+    def test_translation_worker_preserves_progress_across_retries(self) -> None:
         reusable = (REPO_ROOT / ".github/workflows/translate-locale-reusable.yml").read_text(encoding="utf-8")
         self.assertIn("MODE: ${{ inputs.mode }}", reusable)
         self.assertIn('if [ "${MODE}" = "full" ] && [ "$attempt" -eq 1 ]; then', reusable)
         self.assertIn("PARTIAL_ARGS+=(--overwrite)", reusable)
         self.assertIn("PARTIAL_ARGS=(--allow-partial)", reusable)
         self.assertIn('"${PARTIAL_ARGS[@]}"', reusable)
-        self.assertIn('if [ "${MODE}" != "full" ]; then\n                exit 0', reusable)
-        self.assertIn('if [ "${MODE}" = "full" ]; then\n              echo "docs-i18n strict completion check', reusable)
+        self.assertNotIn('if [ "${MODE}" != "full" ]; then\n                exit 0', reusable)
+        self.assertNotIn('if [ "${MODE}" = "full" ]; then\n              echo "docs-i18n strict completion check', reusable)
+        self.assertIn('echo "docs-i18n strict completion check $attempt/$max_attempts"', reusable)
         self.assertNotIn("TRANSLATE_ARGS", reusable)
 
     def test_clear_pending_locale_outputs_removes_only_requested_locale_pages(self) -> None:

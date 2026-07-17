@@ -194,7 +194,7 @@ jobs:
             fi
 
             echo "docs-i18n partial attempt $attempt/$max_attempts"
-            if (
+            if ! (
               cd source/scripts/docs-i18n
               go run . \
                 --docs "$GITHUB_WORKSPACE/docs" \
@@ -206,26 +206,22 @@ jobs:
                 "${PARTIAL_ARGS[@]}" \
                 "${DOC_FILES[@]}"
             ); then
-              if [ "${MODE}" != "full" ]; then
-                exit 0
-              fi
+              echo "docs-i18n partial attempt $attempt/$max_attempts reported failures; checking preserved progress."
             fi
 
-            if [ "${MODE}" = "full" ]; then
-              echo "docs-i18n strict completion check $attempt/$max_attempts"
-              if (
-                cd source/scripts/docs-i18n
-                go run . \
-                  --docs "$GITHUB_WORKSPACE/docs" \
-                  --lang "${LOCALE}" \
-                  --src en \
-                  --mode doc \
-                  --thinking "${THINKING_EFFORT}" \
-                  --parallel "${WORKER_PARALLEL}" \
-                  "${DOC_FILES[@]}"
-              ); then
-                exit 0
-              fi
+            echo "docs-i18n strict completion check $attempt/$max_attempts"
+            if (
+              cd source/scripts/docs-i18n
+              go run . \
+                --docs "$GITHUB_WORKSPACE/docs" \
+                --lang "${LOCALE}" \
+                --src en \
+                --mode doc \
+                --thinking "${THINKING_EFFORT}" \
+                --parallel "${WORKER_PARALLEL}" \
+                "${DOC_FILES[@]}"
+            ); then
+              exit 0
             fi
 
             if [ "$attempt" -eq "$max_attempts" ]; then
