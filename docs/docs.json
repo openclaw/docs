@@ -165,6 +165,10 @@
       "destination": "/plugins/adding-capabilities"
     },
     {
+      "source": "/reference/code-mode",
+      "destination": "/tools/code-mode"
+    },
+    {
       "source": "/brave-search",
       "destination": "/tools/brave-search"
     },
@@ -1356,6 +1360,7 @@
                   "tools/apply-patch",
                   "tools/btw",
                   "tools/code-execution",
+                  "tools/code-mode",
                   "tools/diffs",
                   "tools/show-widget",
                   "tools/elevated",
@@ -1870,7 +1875,6 @@
                 "pages": [
                   "reference/rpc",
                   "gateway/external-apps",
-                  "reference/code-mode",
                   "reference/device-models"
                 ]
               },
@@ -2991,6 +2995,7 @@
                   "zh-TW/tools/apply-patch",
                   "zh-TW/tools/btw",
                   "zh-TW/tools/code-execution",
+                  "zh-TW/tools/code-mode",
                   "zh-TW/tools/diffs",
                   "zh-TW/tools/show-widget",
                   "zh-TW/tools/elevated",
@@ -3471,7 +3476,6 @@
                 "pages": [
                   "zh-TW/reference/rpc",
                   "zh-TW/gateway/external-apps",
-                  "zh-TW/reference/code-mode",
                   "zh-TW/reference/device-models"
                 ]
               },
@@ -3969,6 +3973,7 @@
                   "ja-JP/tools/apply-patch",
                   "ja-JP/tools/btw",
                   "ja-JP/tools/code-execution",
+                  "ja-JP/tools/code-mode",
                   "ja-JP/tools/diffs",
                   "ja-JP/tools/show-widget",
                   "ja-JP/tools/elevated",
@@ -4449,7 +4454,6 @@
                 "pages": [
                   "ja-JP/reference/rpc",
                   "ja-JP/gateway/external-apps",
-                  "ja-JP/reference/code-mode",
                   "ja-JP/reference/device-models"
                 ]
               },
@@ -4947,6 +4951,7 @@
                   "es/tools/apply-patch",
                   "es/tools/btw",
                   "es/tools/code-execution",
+                  "es/tools/code-mode",
                   "es/tools/diffs",
                   "es/tools/show-widget",
                   "es/tools/elevated",
@@ -5427,7 +5432,6 @@
                 "pages": [
                   "es/reference/rpc",
                   "es/gateway/external-apps",
-                  "es/reference/code-mode",
                   "es/reference/device-models"
                 ]
               },
@@ -5925,6 +5929,7 @@
                   "pt-BR/tools/apply-patch",
                   "pt-BR/tools/btw",
                   "pt-BR/tools/code-execution",
+                  "pt-BR/tools/code-mode",
                   "pt-BR/tools/diffs",
                   "pt-BR/tools/show-widget",
                   "pt-BR/tools/elevated",
@@ -6405,7 +6410,6 @@
                 "pages": [
                   "pt-BR/reference/rpc",
                   "pt-BR/gateway/external-apps",
-                  "pt-BR/reference/code-mode",
                   "pt-BR/reference/device-models"
                 ]
               },
@@ -6903,6 +6907,7 @@
                   "ko/tools/apply-patch",
                   "ko/tools/btw",
                   "ko/tools/code-execution",
+                  "ko/tools/code-mode",
                   "ko/tools/diffs",
                   "ko/tools/show-widget",
                   "ko/tools/elevated",
@@ -7383,7 +7388,6 @@
                 "pages": [
                   "ko/reference/rpc",
                   "ko/gateway/external-apps",
-                  "ko/reference/code-mode",
                   "ko/reference/device-models"
                 ]
               },
@@ -7881,6 +7885,7 @@
                   "de/tools/apply-patch",
                   "de/tools/btw",
                   "de/tools/code-execution",
+                  "de/tools/code-mode",
                   "de/tools/diffs",
                   "de/tools/show-widget",
                   "de/tools/elevated",
@@ -8361,7 +8366,6 @@
                 "pages": [
                   "de/reference/rpc",
                   "de/gateway/external-apps",
-                  "de/reference/code-mode",
                   "de/reference/device-models"
                 ]
               },
@@ -8859,6 +8863,7 @@
                   "fr/tools/apply-patch",
                   "fr/tools/btw",
                   "fr/tools/code-execution",
+                  "fr/tools/code-mode",
                   "fr/tools/diffs",
                   "fr/tools/show-widget",
                   "fr/tools/elevated",
@@ -9339,7 +9344,6 @@
                 "pages": [
                   "fr/reference/rpc",
                   "fr/gateway/external-apps",
-                  "fr/reference/code-mode",
                   "fr/reference/device-models"
                 ]
               },
@@ -9837,6 +9841,7 @@
                   "hi/tools/apply-patch",
                   "hi/tools/btw",
                   "hi/tools/code-execution",
+                  "hi/tools/code-mode",
                   "hi/tools/diffs",
                   "hi/tools/show-widget",
                   "hi/tools/elevated",
@@ -10317,7 +10322,6 @@
                 "pages": [
                   "hi/reference/rpc",
                   "hi/gateway/external-apps",
-                  "hi/reference/code-mode",
                   "hi/reference/device-models"
                 ]
               },
@@ -10815,6 +10819,7 @@
                   "ar/tools/apply-patch",
                   "ar/tools/btw",
                   "ar/tools/code-execution",
+                  "ar/tools/code-mode",
                   "ar/tools/diffs",
                   "ar/tools/show-widget",
                   "ar/tools/elevated",
@@ -11295,7 +11300,6 @@
                 "pages": [
                   "ar/reference/rpc",
                   "ar/gateway/external-apps",
-                  "ar/reference/code-mode",
                   "ar/reference/device-models"
                 ]
               },
@@ -11793,6 +11797,7 @@
                   "it/tools/apply-patch",
                   "it/tools/btw",
                   "it/tools/code-execution",
+                  "it/tools/code-mode",
                   "it/tools/diffs",
                   "it/tools/show-widget",
                   "it/tools/elevated",
@@ -12273,7 +12278,6 @@
                 "pages": [
                   "it/reference/rpc",
                   "it/gateway/external-apps",
-                  "it/reference/code-mode",
                   "it/reference/device-models"
                 ]
               },
@@ -12771,6 +12775,7 @@
                   "vi/tools/apply-patch",
                   "vi/tools/btw",
                   "vi/tools/code-execution",
+                  "vi/tools/code-mode",
                   "vi/tools/diffs",
                   "vi/tools/show-widget",
                   "vi/tools/elevated",
@@ -13251,7 +13256,6 @@
                 "pages": [
                   "vi/reference/rpc",
                   "vi/gateway/external-apps",
-                  "vi/reference/code-mode",
                   "vi/reference/device-models"
                 ]
               },
@@ -13749,6 +13753,7 @@
                   "nl/tools/apply-patch",
                   "nl/tools/btw",
                   "nl/tools/code-execution",
+                  "nl/tools/code-mode",
                   "nl/tools/diffs",
                   "nl/tools/show-widget",
                   "nl/tools/elevated",
@@ -14229,7 +14234,6 @@
                 "pages": [
                   "nl/reference/rpc",
                   "nl/gateway/external-apps",
-                  "nl/reference/code-mode",
                   "nl/reference/device-models"
                 ]
               },
@@ -14727,6 +14731,7 @@
                   "tr/tools/apply-patch",
                   "tr/tools/btw",
                   "tr/tools/code-execution",
+                  "tr/tools/code-mode",
                   "tr/tools/diffs",
                   "tr/tools/show-widget",
                   "tr/tools/elevated",
@@ -15207,7 +15212,6 @@
                 "pages": [
                   "tr/reference/rpc",
                   "tr/gateway/external-apps",
-                  "tr/reference/code-mode",
                   "tr/reference/device-models"
                 ]
               },
@@ -15705,6 +15709,7 @@
                   "uk/tools/apply-patch",
                   "uk/tools/btw",
                   "uk/tools/code-execution",
+                  "uk/tools/code-mode",
                   "uk/tools/diffs",
                   "uk/tools/show-widget",
                   "uk/tools/elevated",
@@ -16185,7 +16190,6 @@
                 "pages": [
                   "uk/reference/rpc",
                   "uk/gateway/external-apps",
-                  "uk/reference/code-mode",
                   "uk/reference/device-models"
                 ]
               },
@@ -16683,6 +16687,7 @@
                   "id/tools/apply-patch",
                   "id/tools/btw",
                   "id/tools/code-execution",
+                  "id/tools/code-mode",
                   "id/tools/diffs",
                   "id/tools/show-widget",
                   "id/tools/elevated",
@@ -17163,7 +17168,6 @@
                 "pages": [
                   "id/reference/rpc",
                   "id/gateway/external-apps",
-                  "id/reference/code-mode",
                   "id/reference/device-models"
                 ]
               },
@@ -17661,6 +17665,7 @@
                   "pl/tools/apply-patch",
                   "pl/tools/btw",
                   "pl/tools/code-execution",
+                  "pl/tools/code-mode",
                   "pl/tools/diffs",
                   "pl/tools/show-widget",
                   "pl/tools/elevated",
@@ -18141,7 +18146,6 @@
                 "pages": [
                   "pl/reference/rpc",
                   "pl/gateway/external-apps",
-                  "pl/reference/code-mode",
                   "pl/reference/device-models"
                 ]
               },
@@ -18639,6 +18643,7 @@
                   "ru/tools/apply-patch",
                   "ru/tools/btw",
                   "ru/tools/code-execution",
+                  "ru/tools/code-mode",
                   "ru/tools/diffs",
                   "ru/tools/show-widget",
                   "ru/tools/elevated",
@@ -19119,7 +19124,6 @@
                 "pages": [
                   "ru/reference/rpc",
                   "ru/gateway/external-apps",
-                  "ru/reference/code-mode",
                   "ru/reference/device-models"
                 ]
               },
