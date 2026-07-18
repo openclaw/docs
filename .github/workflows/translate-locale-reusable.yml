@@ -77,7 +77,7 @@ jobs:
       # Keep workflow control-plane scripts pinned to the workflow ref. The docs
       # content checkout below may intentionally point at latest main.
       - name: Check out workflow scripts
-        uses: actions/checkout@v7
+        uses: actions/checkout@v7.0.0
         with:
           ref: ${{ github.workflow_sha }}
           path: .openclaw-sync/workflow-ref
@@ -93,7 +93,7 @@ jobs:
           cp -R .openclaw-sync/workflow-ref/.github/scripts/i18n/. "${I18N_SCRIPT_DIR}/"
 
       - name: Checkout publish repo
-        uses: actions/checkout@v7
+        uses: actions/checkout@v7.0.0
         with:
           ref: ${{ inputs.publish_ref }}
           fetch-depth: 0
@@ -113,7 +113,7 @@ jobs:
 
       - name: Checkout source repo
         if: steps.stale.outputs.skip != 'true'
-        uses: actions/checkout@v7
+        uses: actions/checkout@v7.0.0
         with:
           repository: ${{ steps.meta.outputs.repository }}
           ref: ${{ steps.meta.outputs.sha }}
@@ -352,7 +352,7 @@ jobs:
       # Finalizers apply artifacts to latest main, but deploy/commit control
       # logic must come from this workflow ref so branch canaries test the fix.
       - name: Check out workflow scripts
-        uses: actions/checkout@v7
+        uses: actions/checkout@v7.0.0
         with:
           ref: ${{ github.workflow_sha }}
           path: .openclaw-sync/workflow-ref
@@ -368,7 +368,7 @@ jobs:
           cp -R .openclaw-sync/workflow-ref/.github/scripts/i18n/. "${I18N_SCRIPT_DIR}/"
 
       - name: Check out latest main
-        uses: actions/checkout@v7
+        uses: actions/checkout@v7.0.0
         with:
           fetch-depth: 0
 

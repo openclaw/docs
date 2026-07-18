@@ -41,7 +41,7 @@ jobs:
       url: https://docs.openclaw.ai
     steps:
       - name: Check out
-        uses: actions/checkout@v7
+        uses: actions/checkout@v7.0.0
 
       - name: Set up Node
         uses: actions/setup-node@v7
