@@ -1750,7 +1750,6 @@
                 "pages": [
                   "web/index",
                   "web/control-ui",
-                  "web/workspaces",
                   "web/dashboard",
                   "web/webchat",
                   "web/tui",
@@ -3353,7 +3352,6 @@
                 "pages": [
                   "zh-TW/web/index",
                   "zh-TW/web/control-ui",
-                  "zh-TW/web/workspaces",
                   "zh-TW/web/dashboard",
                   "zh-TW/web/webchat",
                   "zh-TW/web/tui",
@@ -4333,7 +4331,6 @@
                 "pages": [
                   "ja-JP/web/index",
                   "ja-JP/web/control-ui",
-                  "ja-JP/web/workspaces",
                   "ja-JP/web/dashboard",
                   "ja-JP/web/webchat",
                   "ja-JP/web/tui",
@@ -5313,7 +5310,6 @@
                 "pages": [
                   "es/web/index",
                   "es/web/control-ui",
-                  "es/web/workspaces",
                   "es/web/dashboard",
                   "es/web/webchat",
                   "es/web/tui",
@@ -6293,7 +6289,6 @@
                 "pages": [
                   "pt-BR/web/index",
                   "pt-BR/web/control-ui",
-                  "pt-BR/web/workspaces",
                   "pt-BR/web/dashboard",
                   "pt-BR/web/webchat",
                   "pt-BR/web/tui",
@@ -7273,7 +7268,6 @@
                 "pages": [
                   "ko/web/index",
                   "ko/web/control-ui",
-                  "ko/web/workspaces",
                   "ko/web/dashboard",
                   "ko/web/webchat",
                   "ko/web/tui",
@@ -8253,7 +8247,6 @@
                 "pages": [
                   "de/web/index",
                   "de/web/control-ui",
-                  "de/web/workspaces",
                   "de/web/dashboard",
                   "de/web/webchat",
                   "de/web/tui",
@@ -9233,7 +9226,6 @@
                 "pages": [
                   "fr/web/index",
                   "fr/web/control-ui",
-                  "fr/web/workspaces",
                   "fr/web/dashboard",
                   "fr/web/webchat",
                   "fr/web/tui",
@@ -10213,7 +10205,6 @@
                 "pages": [
                   "hi/web/index",
                   "hi/web/control-ui",
-                  "hi/web/workspaces",
                   "hi/web/dashboard",
                   "hi/web/webchat",
                   "hi/web/tui",
@@ -11193,7 +11184,6 @@
                 "pages": [
                   "ar/web/index",
                   "ar/web/control-ui",
-                  "ar/web/workspaces",
                   "ar/web/dashboard",
                   "ar/web/webchat",
                   "ar/web/tui",
@@ -12173,7 +12163,6 @@
                 "pages": [
                   "it/web/index",
                   "it/web/control-ui",
-                  "it/web/workspaces",
                   "it/web/dashboard",
                   "it/web/webchat",
                   "it/web/tui",
@@ -13153,7 +13142,6 @@
                 "pages": [
                   "vi/web/index",
                   "vi/web/control-ui",
-                  "vi/web/workspaces",
                   "vi/web/dashboard",
                   "vi/web/webchat",
                   "vi/web/tui",
@@ -14133,7 +14121,6 @@
                 "pages": [
                   "nl/web/index",
                   "nl/web/control-ui",
-                  "nl/web/workspaces",
                   "nl/web/dashboard",
                   "nl/web/webchat",
                   "nl/web/tui",
@@ -15113,7 +15100,6 @@
                 "pages": [
                   "tr/web/index",
                   "tr/web/control-ui",
-                  "tr/web/workspaces",
                   "tr/web/dashboard",
                   "tr/web/webchat",
                   "tr/web/tui",
@@ -16093,7 +16079,6 @@
                 "pages": [
                   "uk/web/index",
                   "uk/web/control-ui",
-                  "uk/web/workspaces",
                   "uk/web/dashboard",
                   "uk/web/webchat",
                   "uk/web/tui",
@@ -17073,7 +17058,6 @@
                 "pages": [
                   "id/web/index",
                   "id/web/control-ui",
-                  "id/web/workspaces",
                   "id/web/dashboard",
                   "id/web/webchat",
                   "id/web/tui",
@@ -18053,7 +18037,6 @@
                 "pages": [
                   "pl/web/index",
                   "pl/web/control-ui",
-                  "pl/web/workspaces",
                   "pl/web/dashboard",
                   "pl/web/webchat",
                   "pl/web/tui",
@@ -19033,7 +19016,6 @@
                 "pages": [
                   "ru/web/index",
                   "ru/web/control-ui",
-                  "ru/web/workspaces",
                   "ru/web/dashboard",
                   "ru/web/webchat",
                   "ru/web/tui",
