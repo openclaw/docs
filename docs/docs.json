@@ -1752,6 +1752,7 @@
                   "web/index",
                   "web/control-ui",
                   "web/dashboard",
+                  "web/dashboard-architecture",
                   "web/webchat",
                   "web/tui",
                   "web/lobster"
@@ -3355,6 +3356,7 @@
                   "zh-TW/web/index",
                   "zh-TW/web/control-ui",
                   "zh-TW/web/dashboard",
+                  "zh-TW/web/dashboard-architecture",
                   "zh-TW/web/webchat",
                   "zh-TW/web/tui",
                   "zh-TW/web/lobster"
@@ -4335,6 +4337,7 @@
                   "ja-JP/web/index",
                   "ja-JP/web/control-ui",
                   "ja-JP/web/dashboard",
+                  "ja-JP/web/dashboard-architecture",
                   "ja-JP/web/webchat",
                   "ja-JP/web/tui",
                   "ja-JP/web/lobster"
@@ -5315,6 +5318,7 @@
                   "es/web/index",
                   "es/web/control-ui",
                   "es/web/dashboard",
+                  "es/web/dashboard-architecture",
                   "es/web/webchat",
                   "es/web/tui",
                   "es/web/lobster"
@@ -6295,6 +6299,7 @@
                   "pt-BR/web/index",
                   "pt-BR/web/control-ui",
                   "pt-BR/web/dashboard",
+                  "pt-BR/web/dashboard-architecture",
                   "pt-BR/web/webchat",
                   "pt-BR/web/tui",
                   "pt-BR/web/lobster"
@@ -7275,6 +7280,7 @@
                   "ko/web/index",
                   "ko/web/control-ui",
                   "ko/web/dashboard",
+                  "ko/web/dashboard-architecture",
                   "ko/web/webchat",
                   "ko/web/tui",
                   "ko/web/lobster"
@@ -8255,6 +8261,7 @@
                   "de/web/index",
                   "de/web/control-ui",
                   "de/web/dashboard",
+                  "de/web/dashboard-architecture",
                   "de/web/webchat",
                   "de/web/tui",
                   "de/web/lobster"
@@ -9235,6 +9242,7 @@
                   "fr/web/index",
                   "fr/web/control-ui",
                   "fr/web/dashboard",
+                  "fr/web/dashboard-architecture",
                   "fr/web/webchat",
                   "fr/web/tui",
                   "fr/web/lobster"
@@ -10215,6 +10223,7 @@
                   "hi/web/index",
                   "hi/web/control-ui",
                   "hi/web/dashboard",
+                  "hi/web/dashboard-architecture",
                   "hi/web/webchat",
                   "hi/web/tui",
                   "hi/web/lobster"
@@ -11195,6 +11204,7 @@
                   "ar/web/index",
                   "ar/web/control-ui",
                   "ar/web/dashboard",
+                  "ar/web/dashboard-architecture",
                   "ar/web/webchat",
                   "ar/web/tui",
                   "ar/web/lobster"
@@ -12175,6 +12185,7 @@
                   "it/web/index",
                   "it/web/control-ui",
                   "it/web/dashboard",
+                  "it/web/dashboard-architecture",
                   "it/web/webchat",
                   "it/web/tui",
                   "it/web/lobster"
@@ -13155,6 +13166,7 @@
                   "vi/web/index",
                   "vi/web/control-ui",
                   "vi/web/dashboard",
+                  "vi/web/dashboard-architecture",
                   "vi/web/webchat",
                   "vi/web/tui",
                   "vi/web/lobster"
@@ -14135,6 +14147,7 @@
                   "nl/web/index",
                   "nl/web/control-ui",
                   "nl/web/dashboard",
+                  "nl/web/dashboard-architecture",
                   "nl/web/webchat",
                   "nl/web/tui",
                   "nl/web/lobster"
@@ -15115,6 +15128,7 @@
                   "tr/web/index",
                   "tr/web/control-ui",
                   "tr/web/dashboard",
+                  "tr/web/dashboard-architecture",
                   "tr/web/webchat",
                   "tr/web/tui",
                   "tr/web/lobster"
@@ -16095,6 +16109,7 @@
                   "uk/web/index",
                   "uk/web/control-ui",
                   "uk/web/dashboard",
+                  "uk/web/dashboard-architecture",
                   "uk/web/webchat",
                   "uk/web/tui",
                   "uk/web/lobster"
@@ -17075,6 +17090,7 @@
                   "id/web/index",
                   "id/web/control-ui",
                   "id/web/dashboard",
+                  "id/web/dashboard-architecture",
                   "id/web/webchat",
                   "id/web/tui",
                   "id/web/lobster"
@@ -18055,6 +18071,7 @@
                   "pl/web/index",
                   "pl/web/control-ui",
                   "pl/web/dashboard",
+                  "pl/web/dashboard-architecture",
                   "pl/web/webchat",
                   "pl/web/tui",
                   "pl/web/lobster"
@@ -19035,6 +19052,7 @@
                   "ru/web/index",
                   "ru/web/control-ui",
                   "ru/web/dashboard",
+                  "ru/web/dashboard-architecture",
                   "ru/web/webchat",
                   "ru/web/tui",
                   "ru/web/lobster"
