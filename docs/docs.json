@@ -1232,6 +1232,7 @@
               {
                 "group": "Sessions and memory",
                 "pages": [
+                  "concepts/main-session",
                   "concepts/session",
                   "concepts/session-search",
                   "concepts/channel-docking",
@@ -2868,6 +2869,7 @@
               {
                 "group": "Sessions and memory",
                 "pages": [
+                  "zh-TW/concepts/main-session",
                   "zh-TW/concepts/session",
                   "zh-TW/concepts/session-search",
                   "zh-TW/concepts/channel-docking",
@@ -3847,6 +3849,7 @@
               {
                 "group": "Sessions and memory",
                 "pages": [
+                  "ja-JP/concepts/main-session",
                   "ja-JP/concepts/session",
                   "ja-JP/concepts/session-search",
                   "ja-JP/concepts/channel-docking",
@@ -4826,6 +4829,7 @@
               {
                 "group": "Sessions and memory",
                 "pages": [
+                  "es/concepts/main-session",
                   "es/concepts/session",
                   "es/concepts/session-search",
                   "es/concepts/channel-docking",
@@ -5805,6 +5809,7 @@
               {
                 "group": "Sessions and memory",
                 "pages": [
+                  "pt-BR/concepts/main-session",
                   "pt-BR/concepts/session",
                   "pt-BR/concepts/session-search",
                   "pt-BR/concepts/channel-docking",
@@ -6784,6 +6789,7 @@
               {
                 "group": "Sessions and memory",
                 "pages": [
+                  "ko/concepts/main-session",
                   "ko/concepts/session",
                   "ko/concepts/session-search",
                   "ko/concepts/channel-docking",
@@ -7763,6 +7769,7 @@
               {
                 "group": "Sessions and memory",
                 "pages": [
+                  "de/concepts/main-session",
                   "de/concepts/session",
                   "de/concepts/session-search",
                   "de/concepts/channel-docking",
@@ -8742,6 +8749,7 @@
               {
                 "group": "Sessions and memory",
                 "pages": [
+                  "fr/concepts/main-session",
                   "fr/concepts/session",
                   "fr/concepts/session-search",
                   "fr/concepts/channel-docking",
@@ -9721,6 +9729,7 @@
               {
                 "group": "Sessions and memory",
                 "pages": [
+                  "hi/concepts/main-session",
                   "hi/concepts/session",
                   "hi/concepts/session-search",
                   "hi/concepts/channel-docking",
@@ -10700,6 +10709,7 @@
               {
                 "group": "Sessions and memory",
                 "pages": [
+                  "ar/concepts/main-session",
                   "ar/concepts/session",
                   "ar/concepts/session-search",
                   "ar/concepts/channel-docking",
@@ -11679,6 +11689,7 @@
               {
                 "group": "Sessions and memory",
                 "pages": [
+                  "it/concepts/main-session",
                   "it/concepts/session",
                   "it/concepts/session-search",
                   "it/concepts/channel-docking",
@@ -12658,6 +12669,7 @@
               {
                 "group": "Sessions and memory",
                 "pages": [
+                  "vi/concepts/main-session",
                   "vi/concepts/session",
                   "vi/concepts/session-search",
                   "vi/concepts/channel-docking",
@@ -13637,6 +13649,7 @@
               {
                 "group": "Sessions and memory",
                 "pages": [
+                  "nl/concepts/main-session",
                   "nl/concepts/session",
                   "nl/concepts/session-search",
                   "nl/concepts/channel-docking",
@@ -14616,6 +14629,7 @@
               {
                 "group": "Sessions and memory",
                 "pages": [
+                  "tr/concepts/main-session",
                   "tr/concepts/session",
                   "tr/concepts/session-search",
                   "tr/concepts/channel-docking",
@@ -15595,6 +15609,7 @@
               {
                 "group": "Sessions and memory",
                 "pages": [
+                  "uk/concepts/main-session",
                   "uk/concepts/session",
                   "uk/concepts/session-search",
                   "uk/concepts/channel-docking",
@@ -16574,6 +16589,7 @@
               {
                 "group": "Sessions and memory",
                 "pages": [
+                  "id/concepts/main-session",
                   "id/concepts/session",
                   "id/concepts/session-search",
                   "id/concepts/channel-docking",
@@ -17553,6 +17569,7 @@
               {
                 "group": "Sessions and memory",
                 "pages": [
+                  "pl/concepts/main-session",
                   "pl/concepts/session",
                   "pl/concepts/session-search",
                   "pl/concepts/channel-docking",
@@ -18532,6 +18549,7 @@
               {
                 "group": "Sessions and memory",
                 "pages": [
+                  "ru/concepts/main-session",
                   "ru/concepts/session",
                   "ru/concepts/session-search",
                   "ru/concepts/channel-docking",
