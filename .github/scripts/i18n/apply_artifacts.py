@@ -56,6 +56,7 @@ class ApplyState:
     skipped_stale_pages: list[str] = field(default_factory=list)
     skipped_stale_deletes: list[str] = field(default_factory=list)
     skipped_stale_tm: list[str] = field(default_factory=list)
+    skipped_incomplete: list[str] = field(default_factory=list)
     seen: set[tuple[str, int]] = field(default_factory=set)
 
 
@@ -109,6 +110,38 @@ def tm_path(locale: str, rel: str) -> bool:
     return rel == f"docs/.i18n/{locale}.tm.jsonl"
 
 
+def artifact_payload_issue(artifact: Path, metadata: dict[str, object], locale: str) -> str:
+    try:
+        changed = read_lines(artifact / "changed-files.txt")
+        deleted = read_lines(artifact / "deleted-files.txt")
+    except OSError as exc:
+        return f"manifest read failed ({exc})"
+    if len(changed) != len(set(changed)) or len(deleted) != len(set(deleted)):
+        return "duplicate manifest path"
+    if set(changed) & set(deleted):
+        return "path appears in both changed and deleted manifests"
+    for field, paths in (("changed_count", changed), ("deleted_count", deleted)):
+        if field not in metadata:
+            continue
+        try:
+            expected_count = int(metadata[field])
+        except (TypeError, ValueError):
+            return f"invalid {field}"
+        if expected_count != len(paths):
+            return f"{field} {expected_count} did not match manifest count {len(paths)}"
+    for rel in changed + deleted:
+        path = Path(rel)
+        if path.is_absolute() or ".." in path.parts:
+            return f"unsafe manifest path {rel}"
+        if not (rel.startswith(f"docs/{locale}/") or tm_path(locale, rel)):
+            return f"unexpected locale path {rel}"
+    payload = artifact / "payload"
+    for rel in changed:
+        if not (payload / rel).is_file():
+            return f"missing payload file {rel}"
+    return ""
+
+
 def should_apply_changed(source_current: bool, locale: str, rel: str, payload_file: Path) -> tuple[bool, str]:
     if source_current:
         return True, ""
@@ -158,6 +191,7 @@ def process_artifact(
     expected_shard_total: int,
     source_sha: str,
     source_current: bool,
+    complete_locales: set[str],
     state: ApplyState,
 ) -> None:
     metadata_path = artifact / "metadata.json"
@@ -169,9 +203,15 @@ def process_artifact(
     except Exception as exc:  # noqa: BLE001 - preserve old broad metadata failure behavior.
         state.invalid.append(f"{artifact.name}: invalid metadata ({exc})")
         return
+    if not isinstance(metadata, dict):
+        state.invalid.append(f"{artifact.name}: metadata must be an object")
+        return
 
     slug = metadata.get("locale_slug")
     locale = metadata.get("locale")
+    if not isinstance(slug, str) or not isinstance(locale, str):
+        state.invalid.append(f"{artifact.name}: locale metadata must be strings")
+        return
     if slug not in expected or expected[slug] != locale:
         state.invalid.append(f"{artifact.name}: unexpected locale {locale!r}/{slug!r}")
         return
@@ -195,6 +235,9 @@ def process_artifact(
     failed_reason = metadata.get("failed_reason") or ""
     if failed_reason:
         state.failed.append(f"{artifact_label(locale, shard_index, expected_shard_total)}: {failed_reason}")
+        return
+    if slug not in complete_locales:
+        state.skipped_incomplete.append(artifact_label(locale, shard_index, expected_shard_total))
         return
 
     changed = read_lines(artifact / "changed-files.txt")
@@ -265,6 +308,8 @@ def write_summary(mode: str, expected_shard_total: int, source_sha: str, current
             fh.write(f"- artifacts with no changes: {', '.join(state.no_changes)}\n")
         if missing_or_failed:
             fh.write(f"- missing or failed artifacts: {', '.join(missing_or_failed)}\n")
+        if state.skipped_incomplete:
+            fh.write(f"- incomplete locales left unchanged: {', '.join(state.skipped_incomplete)}\n")
         if state.stale:
             fh.write(f"- stale artifacts ignored: {', '.join(state.stale)}\n")
         if state.skipped_stale_pages:
@@ -304,10 +349,58 @@ def apply_artifacts(
     source_current = current == source_sha
     expected = parse_expected(expected_locales)
     state = ApplyState()
+    artifacts = sorted(path for path in artifacts_root.iterdir() if path.is_dir()) if artifacts_root.exists() else []
+    shard_counts: dict[tuple[str, int], int] = {}
+    blocked_locales: set[str] = set()
+    preflight_issues: list[str] = []
 
-    if artifacts_root.exists():
-        for artifact in sorted(path for path in artifacts_root.iterdir() if path.is_dir()):
-            process_artifact(artifact, expected, shard_total, source_sha, source_current, state)
+    for artifact in artifacts:
+        metadata_path = artifact / "metadata.json"
+        if not metadata_path.exists():
+            continue
+        try:
+            metadata = json.loads(metadata_path.read_text(encoding="utf-8"))
+        except Exception:  # noqa: BLE001 - process_artifact reports the exact metadata error.
+            continue
+        if not isinstance(metadata, dict):
+            continue
+        slug = metadata.get("locale_slug")
+        locale = metadata.get("locale")
+        if not isinstance(slug, str) or not isinstance(locale, str):
+            continue
+        if slug not in expected or expected[slug] != locale:
+            continue
+        try:
+            shard_index = int(metadata.get("shard_index", 0))
+            artifact_shard_total = int(metadata.get("shard_total", 1))
+        except (TypeError, ValueError):
+            continue
+        if artifact_shard_total != shard_total or shard_index < 0 or shard_index >= shard_total:
+            continue
+        if metadata.get("source_sha") != source_sha:
+            continue
+        key = (slug, shard_index)
+        shard_counts[key] = shard_counts.get(key, 0) + 1
+        if metadata.get("failed_reason"):
+            blocked_locales.add(slug)
+            continue
+        payload_issue = artifact_payload_issue(artifact, metadata, locale)
+        if payload_issue:
+            blocked_locales.add(slug)
+            preflight_issues.append(f"{artifact.name}: {payload_issue}")
+
+    for slug in expected:
+        for shard_index in range(shard_total):
+            count = shard_counts.get((slug, shard_index), 0)
+            if count != 1:
+                blocked_locales.add(slug)
+            if count > 1:
+                preflight_issues.append(f"{artifact_label(expected[slug], shard_index, shard_total)}: duplicate artifacts")
+    complete_locales = set(expected) - blocked_locales
+    state.invalid.extend(preflight_issues)
+
+    for artifact in artifacts:
+        process_artifact(artifact, expected, shard_total, source_sha, source_current, complete_locales, state)
 
     missing = [
         artifact_label(expected[slug], shard_index, shard_total)

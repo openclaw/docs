@@ -1837,6 +1837,166 @@ class I18NScriptTests(unittest.TestCase):
             self.assertIn("Index FR", (repo / "docs/fr/index.md").read_text(encoding="utf-8"))
             self.assertIn("Setup FR", (repo / "docs/fr/guide/setup.md").read_text(encoding="utf-8"))
 
+    def test_apply_artifacts_leaves_incomplete_locale_unchanged(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            repo = self._repo_with_source(tmp)
+            (repo / "docs/fr").mkdir()
+            (repo / "docs/fr/index.md").write_text("# Existing FR\n", encoding="utf-8")
+            (repo / "docs/fr/removed.md").write_text("# Keep until locale completes\n", encoding="utf-8")
+            run_git(repo, "add", ".")
+            run_git(repo, "commit", "-m", "add existing locale")
+            artifacts = repo / ".openclaw-sync/i18n-artifacts"
+            self._write_artifact(
+                artifacts,
+                "fr-s0of2",
+                metadata={
+                    "failed_reason": "",
+                    "locale": "fr",
+                    "locale_slug": "fr",
+                    "mode": "incremental",
+                    "shard_index": 0,
+                    "shard_total": 2,
+                    "source_sha": "source-a",
+                },
+                changed=["docs/fr/index.md"],
+                deleted=["docs/fr/removed.md"],
+                payload={"docs/fr/index.md": "# Updated FR\n"},
+            )
+            self._write_artifact(
+                artifacts,
+                "fr-s1of2",
+                metadata={
+                    "failed_reason": "translation failed",
+                    "locale": "fr",
+                    "locale_slug": "fr",
+                    "mode": "incremental",
+                    "shard_index": 1,
+                    "shard_total": 2,
+                    "source_sha": "source-a",
+                },
+            )
+
+            with chdir(repo):
+                result = apply_artifacts.apply_artifacts(
+                    source_sha="source-a",
+                    mode="incremental",
+                    shard_total=2,
+                    expected_locales="fr=fr",
+                    artifacts_root=artifacts,
+                    skip_checkout_main=True,
+                )
+
+            self.assertEqual(1, result["incomplete_count"])
+            self.assertEqual("# Existing FR\n", (repo / "docs/fr/index.md").read_text(encoding="utf-8"))
+            self.assertTrue((repo / "docs/fr/removed.md").exists())
+            self.assertEqual(0, result["changed_count"])
+
+    def test_apply_artifacts_does_not_block_complete_locale_for_malformed_extra(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            repo = self._repo_with_source(tmp)
+            artifacts = repo / ".openclaw-sync/i18n-artifacts"
+            self._write_artifact(
+                artifacts,
+                "fr-s0of1",
+                metadata={
+                    "failed_reason": "",
+                    "locale": "fr",
+                    "locale_slug": "fr",
+                    "mode": "incremental",
+                    "shard_index": 0,
+                    "shard_total": 1,
+                    "source_sha": "source-a",
+                },
+                changed=["docs/fr/index.md"],
+                payload={"docs/fr/index.md": "# Index FR\n"},
+            )
+            self._write_artifact(
+                artifacts,
+                "stray",
+                metadata={
+                    "failed_reason": "",
+                    "locale": "fr",
+                    "locale_slug": "fr",
+                    "mode": "incremental",
+                    "shard_index": "invalid",
+                    "shard_total": 1,
+                    "source_sha": "source-a",
+                },
+            )
+            non_object = self._write_artifact(artifacts, "non-object")
+            (non_object / "metadata.json").write_text("[]\n", encoding="utf-8")
+            unhashable_slug = self._write_artifact(artifacts, "unhashable-slug")
+            (unhashable_slug / "metadata.json").write_text(
+                json.dumps({"locale": "fr", "locale_slug": []}) + "\n",
+                encoding="utf-8",
+            )
+
+            with chdir(repo):
+                result = apply_artifacts.apply_artifacts(
+                    source_sha="source-a",
+                    mode="incremental",
+                    shard_total=1,
+                    expected_locales="fr=fr",
+                    artifacts_root=artifacts,
+                    skip_checkout_main=True,
+                )
+
+            self.assertEqual(3, result["incomplete_count"])
+            self.assertIn("Index FR", (repo / "docs/fr/index.md").read_text(encoding="utf-8"))
+
+    def test_apply_artifacts_leaves_locale_unchanged_for_missing_shard_payload(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            repo = self._repo_with_source(tmp)
+            (repo / "docs/fr").mkdir()
+            (repo / "docs/fr/index.md").write_text("# Existing FR\n", encoding="utf-8")
+            run_git(repo, "add", ".")
+            run_git(repo, "commit", "-m", "add existing locale")
+            artifacts = repo / ".openclaw-sync/i18n-artifacts"
+            self._write_artifact(
+                artifacts,
+                "fr-s0of2",
+                metadata={
+                    "failed_reason": "",
+                    "locale": "fr",
+                    "locale_slug": "fr",
+                    "mode": "incremental",
+                    "shard_index": 0,
+                    "shard_total": 2,
+                    "source_sha": "source-a",
+                },
+                changed=["docs/fr/index.md"],
+                payload={"docs/fr/index.md": "# Updated FR\n"},
+            )
+            self._write_artifact(
+                artifacts,
+                "fr-s1of2",
+                metadata={
+                    "changed_count": 1,
+                    "failed_reason": "",
+                    "locale": "fr",
+                    "locale_slug": "fr",
+                    "mode": "incremental",
+                    "shard_index": 1,
+                    "shard_total": 2,
+                    "source_sha": "source-a",
+                },
+                changed=["docs/fr/missing.md"],
+            )
+
+            with chdir(repo):
+                result = apply_artifacts.apply_artifacts(
+                    source_sha="source-a",
+                    mode="incremental",
+                    shard_total=2,
+                    expected_locales="fr=fr",
+                    artifacts_root=artifacts,
+                    skip_checkout_main=True,
+                )
+
+            self.assertEqual(1, result["incomplete_count"])
+            self.assertEqual("# Existing FR\n", (repo / "docs/fr/index.md").read_text(encoding="utf-8"))
+            self.assertEqual(0, result["changed_count"])
+
     def test_apply_artifacts_reports_missing_metadata_fixture(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             repo = self._repo_with_source(tmp)
