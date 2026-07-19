@@ -5,35 +5,34 @@ read_when:
 summary: 搭配 OpenClaw 使用 Z.AI（GLM 模型）
 title: Z.AI
 x-i18n:
-    generated_at: "2026-07-16T11:55:15Z"
+    generated_at: "2026-07-19T14:03:59Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
     prompt_version: 32
     provider: openai
-    source_hash: 7f7adf0e2f436f9081891013c0092ce4717bf302b2a4a2e997d9561d7d40211a
+    source_hash: 0ca3e7ef743e908550f4d96ba6f78167e38cabd15b14044683b02493ebbf3025
     source_path: providers/zai.md
     workflow: 16
 ---
 
-Z.AI 是 **GLM** 模型的 API 平台。它為 GLM 提供 REST API，並
-使用 API 金鑰進行驗證。請在 Z.AI 主控台中建立你的 API 金鑰。
+Z.AI 是 **GLM** 模型的 API 平台。它提供 GLM 的 REST API，並使用 API 金鑰進行驗證。請在 Z.AI 主控台中建立你的 API 金鑰。
 OpenClaw 使用 `zai` 提供者搭配 Z.AI API 金鑰。
 
-| 屬性 | 值                                        |
+| 屬性 | 值                                           |
 | -------- | -------------------------------------------- |
 | 提供者 | `zai`                                        |
-| 套件  | `@openclaw/zai-provider`                     |
+| 套件     | `@openclaw/zai-provider`                     |
 | 驗證     | `ZAI_API_KEY`（舊版別名：`Z_AI_API_KEY`） |
-| API      | Z.AI Chat Completions（Bearer 驗證）          |
+| API      | Z.AI Chat Completions（Bearer 驗證）         |
 
 ## GLM 模型
 
-GLM 是一個模型系列，而非獨立的提供者。在 OpenClaw 中，GLM 模型使用
+GLM 是模型系列，而非獨立的提供者。在 OpenClaw 中，GLM 模型使用
 如 `zai/glm-5.2` 的參照：提供者為 `zai`，模型 ID 為 `glm-5.2`。
 
 ## 開始使用
 
-先安裝提供者外掛：
+請先安裝提供者外掛：
 
 ```bash
 openclaw plugins install @openclaw/zai-provider
@@ -59,7 +58,7 @@ openclaw plugins install @openclaw/zai-provider
   </Tab>
 
   <Tab title="明確指定區域端點">
-    **最適合：**想要強制使用特定 Coding Plan 或一般 API 介面的使用者。
+    **最適合：**想強制使用特定 Coding Plan 或一般 API 介面的使用者。
 
     <Steps>
       <Step title="選擇正確的初始設定選項">
@@ -89,38 +88,42 @@ openclaw plugins install @openclaw/zai-provider
 
 ### 端點
 
-| 初始設定選項   | 基底 URL                                      | 預設模型 |
+| 初始設定選項        | 基底 URL                                      | 預設模型 |
 | ------------------- | --------------------------------------------- | ------------- |
 | `zai-global`        | `https://api.z.ai/api/paas/v4`                | `glm-5.1`     |
 | `zai-cn`            | `https://open.bigmodel.cn/api/paas/v4`        | `glm-5.1`     |
 | `zai-coding-global` | `https://api.z.ai/api/coding/paas/v4`         | `glm-5.2`     |
 | `zai-coding-cn`     | `https://open.bigmodel.cn/api/coding/paas/v4` | `glm-5.2`     |
 
-`zai-api-key` 會以你的金鑰逐一探測這四個端點的
-chat-completions API，先檢查一般端點（`zai-global`，
+Z.AI 也發布了與 Anthropic 相容的 Coding Plan 基底 URL：
+`https://api.z.ai/api/anthropic`。OpenClaw 的 Z.AI 選項使用上述文件所述的
+OpenAI Chat Completions 端點；Anthropic URL 則供直接使用 Anthropic Messages
+通訊的用戶端使用。
+
+`zai-api-key` 會使用你的金鑰逐一探測這四個端點的
+Chat Completions API，以自動偵測其中之一。它會先檢查一般端點（`zai-global`，
 接著是 `zai-cn`），再檢查 Coding Plan 端點（`zai-coding-global`，接著是
-`zai-coding-cn`），並在第一個接受要求的端點停止，藉此自動偵測其中一個端點。
-如果你的金鑰在兩者皆可使用，請使用明確的 `--auth-choice` 以強制使用 Coding Plan 端點。
+`zai-coding-cn`），並在第一個接受要求的端點停止。如果你的金鑰
+在兩者皆可使用，請使用明確的 `--auth-choice` 強制指定 Coding Plan 端點。
 
 ## 速率限制與過載
 
-Z.AI 將 Coding Plan 與通用代理工具描述為容量
-受管理的服務。根據 Z.AI 自有文件：
+Z.AI 文件將 Coding Plan 與通用代理程式工具描述為受容量
+管理的服務。根據 Z.AI 自身的文件：
 
-- [通用代理工具](https://docs.z.ai/devpack/tool/others)
-  （包括 OpenClaw）採盡力而為的方式提供服務。在推論負載高峰期間，
-  通常約為新加坡時間下午 2 點至 6 點，部分要求可能會暫時
-  遇到速率限制。
+- [通用代理程式工具](https://docs.z.ai/devpack/tool/others)，
+  包括 OpenClaw，皆以盡力而為的方式提供服務。在推論負載較高時，
+  通常約為新加坡時間下午 2-6 點，部分要求可能會遇到暫時性的
+  速率限制。
 - [Coding Plan 速率與並行限制](https://docs.z.ai/devpack/usage-policy)
-  與方案等級相關，並可依資源可用性動態調整。
-  離峰時段可能會有更高的並行上限。
+  取決於方案層級，並可依資源可用性動態調整。離峰時段可能提供較高的並行數。
 - [API 錯誤碼 `1302`](https://docs.z.ai/api-reference/api-code) 表示「要求已達
-  速率限制」。API 錯誤碼 `1305` 表示「服務可能
-  暫時過載，請稍後再試」。
+  速率限制」。API 錯誤碼 `1305` 表示「服務可能暫時
+  過載，請稍後再試」。
 
-如果你在繁忙時段看到暫時性的 `429` 或 `1305` 回應，請等待後
-重試要求。如果失敗在非尖峰時段仍可重現，或只
-發生於某個端點、模型或要求格式，請先檢查已設定的端點
+如果你在忙碌時段看到暫時性的 `429` 或 `1305` 回應，請等待後
+重試要求。如果故障可在尖峰時段以外穩定重現，或僅發生於
+某一個端點、模型或要求形式，請先檢查設定的端點
 與模型：
 
 ```bash
@@ -130,16 +133,15 @@ openclaw config get models.providers.zai.baseUrl
 
 Coding Plan 金鑰應使用 Coding Plan 端點，例如
 `https://api.z.ai/api/coding/paas/v4`；一般 API 金鑰應使用一般 API
-端點，例如 `https://api.z.ai/api/paas/v4`。使用相同
-金鑰與端點時持續失敗，可能表示提供者端拒絕要求或方案限制，
-而非一般的尖峰負載節流。
+端點，例如 `https://api.z.ai/api/paas/v4`。使用相同金鑰與端點時持續發生故障，
+可能表示提供者端拒絕要求或方案限制，而非一般尖峰負載造成的節流。
 
 ## 設定範例
 
 <Tip>
-`zai-api-key` 可讓 OpenClaw 根據金鑰偵測相符的 Z.AI 端點，並
-自動套用正確的基底 URL。若要強制使用特定 Coding Plan 或一般 API 介面，
-請使用明確的區域選項。
+`zai-api-key` 可讓 OpenClaw 從金鑰偵測相符的 Z.AI 端點，並
+自動套用正確的基底 URL。若要強制使用特定 Coding Plan 或一般 API
+介面，請使用明確的區域選項。
 </Tip>
 
 ```json5
@@ -159,8 +161,8 @@ Coding Plan 金鑰應使用 Coding Plan 端點，例如
 
 ## 內建目錄
 
-`zai` 提供者外掛會將其目錄隨附於外掛資訊清單中，因此唯讀
-清單可以在不載入提供者執行階段的情況下顯示已知的 GLM 資料列：
+`zai` 提供者外掛會在外掛資訊清單中隨附其目錄，因此唯讀
+列表無須載入提供者執行階段，即可顯示已知的 GLM 項目：
 
 ```bash
 openclaw models list --all --provider zai
@@ -168,10 +170,10 @@ openclaw models list --all --provider zai
 
 資訊清單支援的目錄目前包括：
 
-| 模型參照            | 備註                           |
+| 模型參照             | 備註                            |
 | -------------------- | ------------------------------- |
-| `zai/glm-5.2`        | Coding Plan 預設值；1M 上下文 |
-| `zai/glm-5.1`        | 一般 API 預設值             |
+| `zai/glm-5.2`        | Coding Plan 預設值；1M 上下文   |
+| `zai/glm-5.1`        | 一般 API 預設值                 |
 | `zai/glm-5`          |                                 |
 | `zai/glm-5-turbo`    |                                 |
 | `zai/glm-5v-turbo`   |                                 |
@@ -185,15 +187,20 @@ openclaw models list --all --provider zai
 | `zai/glm-4.5-flash`  |                                 |
 | `zai/glm-4.5v`       |                                 |
 
+目錄中的權杖成本中繼資料遵循 Z.AI 目前的
+[隨用隨付定價](https://docs.z.ai/guides/overview/pricing)。Coding Plan
+訂閱使用方案配額，而非按權杖計費；方案定價與供應情況請參閱即時
+[訂閱頁面](https://z.ai/subscribe)。
+
 <Tip>
-GLM 模型可透過 `zai/<model>` 取得（範例：`zai/glm-5`）。
+GLM 模型可用作 `zai/<model>`（範例：`zai/glm-5`）。
 </Tip>
 
 <Note>
 Coding Plan 設定預設為 `zai/glm-5.2`；一般 API 設定則保留
-`zai/glm-5.1`。在 Coding Plan 端點上，當金鑰或方案未提供 GLM-5.2 時，
+`zai/glm-5.1`。在 Coding Plan 端點上，當金鑰／方案未提供 GLM-5.2 時，
 自動偵測會依序回退至 `glm-5.1` 和 `glm-4.7`。GLM
-版本與可用性可能變更；請執行 `openclaw models list --all --provider zai`
+版本與供應情況可能變更；執行 `openclaw models list --all --provider zai`
 以查看已安裝版本所知的目錄。
 </Note>
 
@@ -207,25 +214,26 @@ Coding Plan 設定預設為 `zai/glm-5.2`；一般 API 設定則保留
   </Tab>
   <Tab title="其他 GLM 模型">
     僅提供二元切換：`off` 和 `low`（在選擇器中顯示為 `on`），預設為
-    `off`。將思考設為 `off` 會傳送 `thinking: { type: "disabled" }`；
-    任何其他層級都不會修改要求承載資料（套用 Z.AI 自有的預設
+    `off`。將思考設定為 `off` 會傳送 `thinking: { type: "disabled" }`；
+    任何其他層級皆不會變更要求承載資料（套用 Z.AI 自身的預設
     推理行為）。
   </Tab>
 </Tabs>
 
-將思考設為 `off`，可避免回應先將輸出預算耗費在
-`reasoning_content`，而非可見文字上。
+將思考設定為 `off`，可避免回應在顯示可見文字前，將輸出額度耗費於
+`reasoning_content`。
 
 ## 進階設定
 
 <AccordionGroup>
   <Accordion title="向前解析未知的 GLM-5 模型">
-    當 ID 符合目前 GLM-5 系列的格式時，未知的 `glm-5*` ID 仍會在提供者路徑上向前解析，
-    方法是從 `glm-4.7` 範本合成提供者擁有的中繼資料。
+    未知的 `glm-5*` ID 仍會在提供者路徑上向前解析：
+    當 ID 符合目前 GLM-5 系列的形式時，會依據 `glm-4.7` 範本
+    合成由提供者擁有的中繼資料。
   </Accordion>
 
   <Accordion title="工具呼叫串流">
-    Z.AI 工具呼叫串流預設會啟用 `tool_stream`。若要停用：
+    Z.AI 工具呼叫串流預設啟用 `tool_stream`。若要停用：
 
     ```json5
     {
@@ -243,9 +251,9 @@ Coding Plan 設定預設為 `zai/glm-5.2`；一般 API 設定則保留
 
   </Accordion>
 
-  <Accordion title="保留思考內容">
-    保留思考內容為選用功能，因為 Z.AI 要求重播完整的歷史
-    `reasoning_content`，這會增加提示詞 Token 數量。請依模型啟用：
+  <Accordion title="保留思考">
+    保留思考須選擇性啟用，因為 Z.AI 要求重播完整的歷史
+    `reasoning_content`，這會增加提示詞權杖。請針對個別模型啟用：
 
     ```json5
     {
@@ -261,25 +269,24 @@ Coding Plan 設定預設為 `zai/glm-5.2`；一般 API 設定則保留
     }
     ```
 
-    啟用且開啟思考時，OpenClaw 會傳送
-    `thinking: { type: "enabled", clear_thinking: false }`，並為同一份 OpenAI 相容對話記錄重播先前的
-    `reasoning_content`。蛇形命名的
-    `preserve_thinking` 參數鍵也可作為別名。
+    啟用且思考功能開啟時，OpenClaw 會傳送
+    `thinking: { type: "enabled", clear_thinking: false }`，並針對同一份 OpenAI 相容逐字稿重播先前的
+    `reasoning_content`。蛇形命名的 `preserve_thinking` 參數鍵也可作為別名。
 
-    進階使用者仍可使用
-    `params.extra_body.thinking` 覆寫確切的提供者承載資料。
+    進階使用者仍可使用 `params.extra_body.thinking`
+    覆寫確切的提供者承載資料。
 
   </Accordion>
 
   <Accordion title="圖片理解">
     Z.AI 外掛會註冊圖片理解功能。
 
-    | 屬性      | 值       |
+    | 屬性          | 值          |
     | ------------- | ----------- |
-    | 模型         | `glm-4.6v`  |
+    | 模型          | `glm-4.6v`  |
 
-    圖片理解會根據已設定的 Z.AI 驗證自動解析，不需要
-    額外設定。
+    圖片理解功能會根據已設定的 Z.AI 驗證自動解析，不需要
+    其他設定。
 
   </Accordion>
 
@@ -287,7 +294,7 @@ Coding Plan 設定預設為 `zai/glm-5.2`；一般 API 設定則保留
     - Z.AI 使用你的 API 金鑰進行 Bearer 驗證。
     - `zai-api-key` 初始設定選項會使用你的金鑰探測支援的端點，以自動偵測相符的 Z.AI 端點。
     - 若要強制使用特定 API 介面，請使用明確的區域選項（`zai-coding-global`、`zai-coding-cn`、`zai-global`、`zai-cn`）。
-    - 仍接受舊版環境變數 `Z_AI_API_KEY`；若未設定 `ZAI_API_KEY`，OpenClaw 會在啟動時將其複製到 `ZAI_API_KEY`。
+    - 舊版環境變數 `Z_AI_API_KEY` 仍可使用；若未設定 `ZAI_API_KEY`，OpenClaw 會在啟動時將其複製至 `ZAI_API_KEY`。
 
   </Accordion>
 </AccordionGroup>

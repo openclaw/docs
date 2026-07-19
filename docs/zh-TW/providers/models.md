@@ -1,20 +1,21 @@
 ---
 read_when:
-    - 您想要選擇模型提供者
-    - 你想要快速設定大型語言模型驗證與模型選擇的範例
-summary: OpenClaw 支援的模型供應商（大型語言模型）
+    - 你想選擇模型提供者
+    - 你想要快速設定 LLM 驗證與模型選擇的範例
+summary: OpenClaw 支援的模型供應商（LLM）
 title: 模型供應商快速入門
 x-i18n:
-    generated_at: "2026-07-11T21:42:45Z"
+    generated_at: "2026-07-19T13:59:46Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: c4f9add879b41fdb0b54edbbff2ea982957cd4f3bc5d438c43f8a8403a048338
+    source_hash: 3988d6985cbe203a6a3357d59160190990b1b53245ea25f1538dbc6f567afec1
     source_path: providers/models.md
     workflow: 16
 ---
 
-選擇供應商、完成驗證，然後將預設模型設定為 `provider/model`。
+選擇供應商、完成驗證，然後將預設模型設為 `provider/model`。
 
 ## 快速開始（兩個步驟）
 
@@ -32,6 +33,7 @@ x-i18n:
 - [Alibaba Model Studio](/zh-TW/providers/alibaba)
 - [Amazon Bedrock](/zh-TW/providers/bedrock)
 - [Anthropic（API + Claude 命令列介面）](/zh-TW/providers/anthropic)
+- [Baseten（Inkling + 模型 API）](/providers/baseten)
 - [BytePlus（國際版）](/zh-TW/concepts/model-providers#byteplus-international)
 - [Chutes](/zh-TW/providers/chutes)
 - [Cloudflare AI 閘道](/zh-TW/providers/cloudflare-ai-gateway)
@@ -62,9 +64,9 @@ x-i18n:
 
 ## 其他供應商變體
 
-- `anthropic-vertex` - 安裝 `@openclaw/anthropic-vertex-provider`，即可在具備 Vertex 憑證時支援 Google Vertex 上的隱式 Anthropic；不提供獨立的初始設定驗證選項
+- `anthropic-vertex` - 安裝 `@openclaw/anthropic-vertex-provider`，即可在有 Vertex 認證資訊時隱式支援 Google Vertex 上的 Anthropic；不提供獨立的初始設定驗證選項
 - `copilot-proxy` - 本機 VS Code Copilot Proxy 橋接器；使用 `openclaw onboard --auth-choice copilot-proxy`
-- `google-gemini-cli` - 非官方 Gemini 命令列介面 OAuth 流程；需要在本機安裝 `gemini`（`brew install gemini-cli` 或 `npm install -g @google/gemini-cli`）；預設模型為 `google-gemini-cli/gemini-3-flash-preview`；使用 `openclaw onboard --auth-choice google-gemini-cli` 或 `openclaw models auth login --provider google-gemini-cli --set-default`
+- `google-gemini-cli` - 非官方 Gemini 命令列介面 OAuth 流程；需要本機安裝 `gemini`（`brew install gemini-cli` 或 `npm install -g @google/gemini-cli`）；預設模型為 `google-gemini-cli/gemini-3-flash-preview`；使用 `openclaw onboard --auth-choice google-gemini-cli` 或 `openclaw models auth login --provider google-gemini-cli --set-default`
 
 ## 相關內容
 

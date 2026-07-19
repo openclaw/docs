@@ -1,32 +1,33 @@
 ---
 read_when:
-    - 你想在 OpenClaw 中使用注重隱私的推論功能
-    - 你需要 Venice AI 設定指南
-summary: 在 OpenClaw 中使用 Venice AI 的隱私導向模型
+    - 你想在 OpenClaw 中使用注重隱私的推論
+    - 你想取得 Venice AI 的設定指南
+summary: 在 OpenClaw 中使用注重隱私的 Venice AI 模型
 title: Venice AI
 x-i18n:
-    generated_at: "2026-07-11T21:46:34Z"
+    generated_at: "2026-07-19T14:03:12Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: f274922274def2f87fb0e074554f6457b97852dcb509578262a2e2e58425265e
+    source_hash: 13c32b783394eb3092ff94a532b69e34c00624127b0e76e4e2812751d39073a1
     source_path: providers/venice.md
     workflow: 16
 ---
 
-[Venice AI](https://venice.ai) 提供以隱私為重點的推論服務：開放模型執行時
-不記錄任何資料，並提供對 Claude、GPT、Gemini 和 Grok 的匿名化代理存取。
+[Venice AI](https://venice.ai) 提供以隱私為重點的推論服務：開放模型在
+不記錄任何內容的情況下執行，並提供對 Claude、GPT、Gemini 和 Grok 的匿名化代理存取。
 所有端點皆與 OpenAI 相容（`/v1`）。
 
 ## 隱私模式
 
 | 模式           | 行為                                                         | 模型                                                        |
 | -------------- | ---------------------------------------------------------------- | ------------------------------------------------------------- |
-| **私密**    | 提示與回應永不儲存或記錄，僅短暫存在。         | Llama、Qwen、DeepSeek、Kimi、MiniMax、Venice Uncensored 等。 |
-| **匿名化** | 透過 Venice 代理，轉送前會移除中繼資料。 | Claude、GPT、Gemini、Grok                                     |
+| **私密**    | 提示詞／回應絕不儲存或記錄，且僅短暫存在。         | Llama、Qwen、DeepSeek、Kimi、MiniMax、Venice Uncensored 等。 |
+| **匿名化** | 透過 Venice 代理，並在轉送前移除中繼資料。 | Claude、GPT、Gemini、Grok                                     |
 
 <Warning>
-匿名化模型並非完全私密。Venice 會在轉送前移除中繼資料，但底層供應商（OpenAI、Anthropic、Google、xAI）仍會處理請求。需要完整隱私時，請使用私密模型。
+匿名化模型並非完全私密。Venice 會在轉送前移除中繼資料，但底層供應商（OpenAI、Anthropic、Google、xAI）仍會處理該請求。需要完全隱私時，請使用私密模型。
 </Warning>
 
 ## 開始使用
@@ -37,8 +38,8 @@ x-i18n:
     openclaw plugins install @openclaw/venice-provider
     ```
   </Step>
-  <Step title="取得 API 金鑰">
-    1. 在 [venice.ai](https://venice.ai) 註冊
+  <Step title="取得你的 API 金鑰">
+    1. 前往 [venice.ai](https://venice.ai) 註冊
     2. 前往 **Settings > API Keys > Create new key**
     3. 複製你的 API 金鑰（格式：`vapi_xxxxxxxxxxxx`）
   </Step>
@@ -49,7 +50,7 @@ x-i18n:
         openclaw onboard --auth-choice venice-api-key
         ```
 
-        系統會提示輸入 API 金鑰（或重複使用現有的 `VENICE_API_KEY`）、列出可用的 Venice 模型，並設定預設模型。
+        系統會提示輸入 API 金鑰（或重複使用現有的 `VENICE_API_KEY`）、列出可用的 Venice 模型，並設定你的預設模型。
       </Tab>
       <Tab title="環境變數">
         ```bash
@@ -68,7 +69,7 @@ x-i18n:
   </Step>
   <Step title="驗證設定">
     ```bash
-    openclaw agent --model venice/kimi-k2-5 --message "Hello, are you working?"
+    openclaw agent --model venice/kimi-k2-5 --message "你好，可以正常運作嗎？"
     ```
   </Step>
 </Steps>
@@ -83,41 +84,36 @@ openclaw models set venice/kimi-k2-5
 openclaw models list --all --provider venice
 ```
 
-你也可以執行 `openclaw configure`，然後選擇 **模型／驗證供應商 > Venice AI**。
+你也可以執行 `openclaw configure`，然後選擇 **Model/auth provider > Venice AI**。
 
 <Tip>
-| 使用情境                 | 模型                             | 原因                                       |
-| ------------------------- | ---------------------------------- | ------------------------------------------ |
-| 一般聊天（預設）    | `kimi-k2-5`                        | 強大的私密推理與視覺能力       |
-| 最佳整體品質      | `claude-opus-4-6`                  | Venice 最強的匿名化選項         |
-| 隱私與程式設計          | `qwen3-coder-480b-a35b-instruct`   | 具備大型上下文的私密程式設計模型    |
-| 快速且便宜              | `qwen3-4b`                         | 輕量級推理模型                |
-| 複雜的私密任務     | `deepseek-v3.2`                    | 強大推理能力；已停用工具呼叫    |
-| 無內容審查限制                | `venice-uncensored`                | 無內容限制                    |
+| 使用情境              | 模型                                        | 原因                                    |
+| --------------------- | -------------------------------------------- | -------------------------------------- |
+| 一般聊天（預設） | `kimi-k2-5`                                  | 強大的私密推理與視覺能力   |
+| 最佳整體品質   | `claude-opus-4-6`                            | Venice 最強的匿名化選項     |
+| 隱私＋程式設計       | `qwen3-coder-480b-a35b-instruct-turbo`       | 具備大型上下文的私密程式設計模型 |
+| 快速且便宜           | `llama-3.2-3b`                               | 精簡的私密模型                  |
+| 複雜的私密任務  | `deepseek-v3.2`                              | 強大的推理能力；已停用工具呼叫 |
+| 無審查             | `venice-uncensored-1-2`                      | Venice 目前的無審查模型        |
 </Tip>
 
-## 內建目錄（38 個模型）
+## 內建目錄（30 個模型）
 
 <AccordionGroup>
-  <Accordion title="私密模型（26 個）— 完全私密、不記錄資料">
+  <Accordion title="私密模型（20 個）— 完全私密，不記錄">
     | 模型 ID                               | 名稱                                 | 上下文 | 備註                      |
     | -------------------------------------- | ------------------------------------- | ------- | --------------------------- |
     | `kimi-k2-5`                            | Kimi K2.5                             | 256k    | 預設、推理、視覺  |
-    | `kimi-k2-thinking`                     | Kimi K2 Thinking                      | 256k    | 推理                   |
     | `llama-3.3-70b`                        | Llama 3.3 70B                         | 128k    | 通用                     |
     | `llama-3.2-3b`                         | Llama 3.2 3B                          | 128k    | 通用                     |
     | `hermes-3-llama-3.1-405b`              | Hermes 3 Llama 3.1 405B               | 128k    | 通用、已停用工具     |
     | `qwen3-235b-a22b-thinking-2507`        | Qwen3 235B Thinking                   | 128k    | 推理                   |
     | `qwen3-235b-a22b-instruct-2507`        | Qwen3 235B Instruct                   | 128k    | 通用                     |
-    | `qwen3-coder-480b-a35b-instruct`       | Qwen3 Coder 480B                      | 256k    | 程式設計                      |
     | `qwen3-coder-480b-a35b-instruct-turbo` | Qwen3 Coder 480B Turbo                | 256k    | 程式設計                      |
     | `qwen3-5-35b-a3b`                      | Qwen3.5 35B A3B                       | 256k    | 推理、視覺           |
     | `qwen3-next-80b`                       | Qwen3 Next 80B                        | 256k    | 通用                     |
     | `qwen3-vl-235b-a22b`                   | Qwen3 VL 235B（視覺）                | 256k    | 視覺                      |
-    | `qwen3-4b`                             | Venice Small（Qwen3 4B）               | 32k     | 快速、推理              |
     | `deepseek-v3.2`                        | DeepSeek V3.2                         | 160k    | 推理、已停用工具    |
-    | `venice-uncensored`                    | Venice Uncensored（Dolphin-Mistral）   | 32k     | 無內容審查限制、已停用工具   |
-    | `mistral-31-24b`                       | Venice Medium（Mistral）               | 128k    | 視覺                       |
     | `google-gemma-3-27b-it`                | Google Gemma 3 27B Instruct           | 198k    | 視覺                       |
     | `openai-gpt-oss-120b`                  | OpenAI GPT OSS 120B                   | 128k    | 通用                      |
     | `nvidia-nemotron-3-nano-30b-a3b`       | NVIDIA Nemotron 3 Nano 30B            | 128k    | 通用                      |
@@ -126,11 +122,10 @@ openclaw models list --all --provider venice
     | `zai-org-glm-4.7`                      | GLM 4.7                               | 198k    | 推理                    |
     | `zai-org-glm-4.7-flash`                | GLM 4.7 Flash                         | 128k    | 推理                    |
     | `zai-org-glm-5`                        | GLM 5                                 | 198k    | 推理                    |
-    | `minimax-m21`                          | MiniMax M2.1                          | 198k    | 推理                    |
     | `minimax-m25`                          | MiniMax M2.5                          | 198k    | 推理                    |
   </Accordion>
 
-  <Accordion title="匿名化模型（12 個）— 透過 Venice 代理">
+  <Accordion title="匿名化模型（10 個）— 透過 Venice 代理">
     | 模型 ID                        | 名稱                           | 上下文 | 備註                      |
     | -------------------------------- | -------------------------------- | ------- | ---------------------------- |
     | `claude-opus-4-6`               | Claude Opus 4.6（透過 Venice）    | 1M      | 推理、視覺            |
@@ -142,70 +137,71 @@ openclaw models list --all --provider venice
     | `openai-gpt-4o-2024-11-20`      | GPT-4o（透過 Venice）             | 128k    | 視覺                        |
     | `openai-gpt-4o-mini-2024-07-18` | GPT-4o Mini（透過 Venice）        | 128k    | 視覺                        |
     | `gemini-3-1-pro-preview`        | Gemini 3.1 Pro（透過 Venice）     | 1M      | 推理、視覺             |
-    | `gemini-3-pro-preview`          | Gemini 3 Pro（透過 Venice）       | 198k    | 推理、視覺             |
     | `gemini-3-flash-preview`        | Gemini 3 Flash（透過 Venice）     | 256k    | 推理、視覺             |
-    | `grok-41-fast`                  | Grok 4.1 Fast（透過 Venice）      | 1M      | 推理、視覺             |
   </Accordion>
 </AccordionGroup>
 
-以 Grok 為基礎的 Venice 模型（`grok-41-fast` 及類似模型）會套用與原生 xAI 供應商相同的工具結構描述
+由 Grok 支援的 Venice 模型（`grok-4-3` 及類似模型）會套用與原生 xAI 供應商相同的工具結構描述
 相容性修補，因為它們使用相同的上游
 工具呼叫格式。
 
 ## 模型探索
 
-上述內建目錄是由資訊清單支援的初始清單。OpenClaw 在執行階段
-會從 Venice `/models` API 重新整理此清單；若
-API 無法連線，則回退至初始清單。`/models` 端點為公開端點（列出模型
-不需要驗證），但推論需要有效的 API 金鑰。
+上述隨附目錄是由資訊清單支援的種子清單。OpenClaw 會在執行階段
+從 Venice 的 `/models` API 重新整理該目錄，若
+API 無法連線，則回復使用種子清單。`/models` 端點是公開的（列出模型不需要驗證），
+但推論需要有效的 API 金鑰。
+
+Venice 可能會繼續接受已淘汰的模型 ID，將其視為供應商所擁有的別名。
+OpenClaw 目錄僅公布 `/models` 傳回的標準模型 ID。
 
 ## DeepSeek V4 重播行為
 
-如果 Venice 提供 `deepseek-v4-pro` 或
-`deepseek-v4-flash` 等 DeepSeek V4 模型，當 Venice 省略必要的 `reasoning_content` 重播
-欄位時，OpenClaw 會在助理訊息中補上該欄位，並從請求承載資料中移除 `thinking`／
-`reasoning`／`reasoning_effort`（Venice 會拒絕
-這些模型使用 DeepSeek 原生的 `thinking` 控制項）。此重播修正
-與原生 DeepSeek 供應商本身的思考控制項互相獨立。
+如果 Venice 公開 DeepSeek V4 模型，例如 `deepseek-v4-pro` 或
+`deepseek-v4-flash`，當 Venice 省略必要的 `reasoning_content` 重播
+欄位時，OpenClaw 會在助理訊息中填入該欄位，並從請求承載資料中移除 `thinking`／
+`reasoning`／`reasoning_effort`（Venice 會拒絕這些模型上的
+DeepSeek 原生 `thinking` 控制項）。這項重播修正
+與原生 DeepSeek 供應商本身的思考控制項彼此獨立。
 
 ## 串流與工具支援
 
 | 功能          | 支援                                           |
 | ---------------- | ------------------------------------------------- |
 | 串流        | 所有模型                                        |
-| 函式呼叫 | 大多數模型；上述註明者會針對個別模型停用 |
-| 視覺／圖片    | 上述標記為「視覺」的模型                      |
+| 函式呼叫 | 大多數模型；上述註明者會依模型停用 |
+| 視覺／影像    | 上述標示為「視覺」的模型                      |
 | JSON 模式        | 透過 `response_format`                             |
 
 ## 定價
 
-Venice 採用點數制。匿名化模型的費用約等於
-直接使用 API 的價格，再加上一小筆 Venice 費用。請參閱
-[venice.ai/pricing](https://venice.ai/pricing) 以取得目前費率。
+Venice 採用點數制。匿名化模型的費用大致等同於
+直接 API 定價加上少量 Venice 費用。最新費率請參閱
+[venice.ai/pricing](https://venice.ai/pricing)。
 
 ## 使用範例
 
 ```bash
-# Default private model
-openclaw agent --model venice/kimi-k2-5 --message "Quick health check"
+# 預設私密模型
+openclaw agent --model venice/kimi-k2-5 --message "快速健康檢查"
 
-# Claude Opus via Venice (anonymized)
-openclaw agent --model venice/claude-opus-4-6 --message "Summarize this task"
+# 透過 Venice 使用 Claude Opus（匿名化）
+openclaw agent --model venice/claude-opus-4-6 --message "摘要此任務"
 
-# Uncensored model
-openclaw agent --model venice/venice-uncensored --message "Draft options"
+# 無審查模型
+openclaw agent --model venice/venice-uncensored-1-2 --message "草擬選項"
 
-# Vision model with image
-openclaw agent --model venice/qwen3-vl-235b-a22b --message "Review attached image"
+# 搭配影像的視覺模型
+openclaw agent --model venice/qwen3-vl-235b-a22b --message "檢閱附加的影像"
 
-# Coding model
-openclaw agent --model venice/qwen3-coder-480b-a35b-instruct --message "Refactor this function"
+# 程式設計模型
+openclaw agent --model venice/qwen3-coder-480b-a35b-instruct-turbo --message "重構此函式"
 ```
 
 ## 疑難排解
 
 <AccordionGroup>
-  <Accordion title="無法識別 API 金鑰">
+  <Accordion title="無法辨識 API 金鑰">
     ```bash
     echo $VENICE_API_KEY
     openclaw models list | grep venice
@@ -217,11 +213,11 @@ openclaw agent --model venice/qwen3-coder-480b-a35b-instruct --message "Refactor
 
   <Accordion title="模型無法使用">
     執行 `openclaw models list --all --provider venice` 以查看目前
-    可用的模型；Venice 新增或淘汰模型時，目錄也會隨之變更。
+    可用的模型；目錄會隨 Venice 新增或淘汰模型而變更。
   </Accordion>
 
   <Accordion title="連線問題">
-    Venice API 位於 `https://api.venice.ai/api/v1`。請確認你的網路允許透過 HTTPS 連線至該主機。
+    Venice API 位於 `https://api.venice.ai/api/v1`。確認你的網路允許透過 HTTPS 連線至該主機。
   </Accordion>
 </AccordionGroup>
 
@@ -263,19 +259,19 @@ openclaw agent --model venice/qwen3-coder-480b-a35b-instruct --message "Refactor
   </Accordion>
 </AccordionGroup>
 
-## 相關資源
+## 相關內容
 
 <CardGroup cols={2}>
   <Card title="模型選擇" href="/zh-TW/concepts/model-providers" icon="layers">
-    選擇提供者、模型參照與容錯移轉行為。
+    選擇供應商、模型參照與容錯移轉行為。
   </Card>
   <Card title="Venice AI" href="https://venice.ai" icon="globe">
-    Venice AI 首頁與帳號註冊。
+    Venice AI 首頁與帳戶註冊。
   </Card>
   <Card title="API 文件" href="https://docs.venice.ai" icon="book">
     Venice API 參考資料與開發者文件。
   </Card>
   <Card title="定價" href="https://venice.ai/pricing" icon="credit-card">
-    目前的 Venice 點數費率與方案。
+    Venice 目前的點數費率與方案。
   </Card>
 </CardGroup>

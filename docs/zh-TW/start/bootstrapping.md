@@ -1,46 +1,65 @@
 ---
 read_when:
-    - 瞭解代理程式首次執行時會發生什麼事
-    - 說明啟動引導檔案的所在位置
-    - 偵錯初始設定身分設定
+    - 了解代理程式首次執行時會發生什麼事
+    - 說明啟動設定檔案的位置
+    - 偵錯新手引導身分設定
 sidebarTitle: Bootstrapping
-summary: 代理啟動初始化流程，用於建立工作區與身分檔案的初始內容
-title: 代理啟動初始化
+summary: 植入工作區與身分檔案的代理程式啟動初始化流程
+title: 代理程式啟動初始化
 x-i18n:
-    generated_at: "2026-07-11T21:48:34Z"
+    generated_at: "2026-07-19T14:08:36Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: d8356684e8567b02f558ce2b455a20019e55579e5dcb4625bb441d66656098e0
+    source_hash: 4c065534b5abe539cccfe8badc44296d890289d8ce3daa9f03a12e82adf8c091
     source_path: start/bootstrapping.md
     workflow: 16
 ---
 
-啟動初始化是首次執行時的流程，會建立新代理程式工作區的初始內容，並引導代理程式選擇身分。此流程只會執行一次，也就是在完成引導設定後，代理程式第一次正式互動時執行。
+啟動初始化是首次執行時的儀式，用來建立新的代理工作區，並
+引導代理選擇身分。此流程只會執行一次，時間是在
+新手引導完成後、代理第一次真正互動時。
 
-## 執行內容
+## 會發生什麼事
 
-首次使用全新工作區（預設為 `~/.openclaw/workspace`）執行時，OpenClaw 會：
+首次使用全新工作區（預設為 `~/.openclaw/workspace`）執行時，
+OpenClaw 會：
 
-- 建立 `AGENTS.md`、`SOUL.md`、`TOOLS.md`、`IDENTITY.md`、`USER.md`、`HEARTBEAT.md` 和 `BOOTSTRAP.md` 的初始內容。
-- 讓代理程式依照 `BOOTSTRAP.md` 進行：透過自由形式的對話（而非固定的問答表單）決定名稱、個性與風格。
-- 將取得的資訊寫入 `IDENTITY.md`、`USER.md` 和 `SOUL.md`。
-- 工作區完成設定後刪除 `BOOTSTRAP.md`，確保此流程只執行一次。
+- 建立 `AGENTS.md`、`SOUL.md`、`TOOLS.md`、`IDENTITY.md`、`USER.md`、`HEARTBEAT.md` 和 `BOOTSTRAP.md`。
+- 讓代理依循最多三個節拍的誕生流程：它會提出自己的
+  名字、分享一句簡短的靈魂／氛圍描述，並詢問你要使用最精簡的
+  建議外掛組合，還是追求最大便利性。
+- 將雙方同意的身分保存兩次：寫入 `IDENTITY.md` 和 `SOUL.md`（代理
+  讀取的自身資訊），並透過 `openclaw agents set-identity` 保存（頻道
+  與 UI 顯示的資訊）。
+- 讀取新手引導期間已儲存的應用程式建議，不重新掃描。
+  官方外掛使用 `openclaw plugins install <id>`；第三方 ClawHub
+  Skills 仍須明確選擇加入。處理選擇後，代理會
+  確認已儲存的提議，因此不會再次詢問。
+- 工作區看起來已設定完成後，刪除 `BOOTSTRAP.md`，確保此儀式只執行一次。
 
-只要 `SOUL.md`、`IDENTITY.md` 或 `USER.md` 與其初始範本不同，或存在 `memory/` 資料夾，工作區就視為已完成設定。
+只要 `SOUL.md`、`IDENTITY.md` 或 `USER.md` 已
+偏離其初始範本，或存在 `memory/` 資料夾，
+便會將工作區視為已設定完成。
 
 <Note>
-`BOOTSTRAP.md` 涵蓋完整的身分設定對話。內容請參閱
+`BOOTSTRAP.md` 涵蓋完整的身分對話。其內容請參閱
 [BOOTSTRAP.md 範本](/zh-TW/reference/templates/BOOTSTRAP)。
 </Note>
 
-## 嵌入式與本機模型執行
+## 內嵌與本機模型執行
 
-對於嵌入式或本機模型執行，OpenClaw 不會將 `BOOTSTRAP.md` 放入具特殊權限的系統內容中。在主要互動工作階段首次執行時，仍會透過使用者提示傳入該檔案的內容，因此即使模型無法可靠地呼叫 `read` 工具，仍可完成此流程。若目前的執行無法安全地存取工作區，代理程式會收到簡短且功能受限的啟動初始化說明，而不是一般問候語。
+針對內嵌或本機模型執行，OpenClaw 不會將 `BOOTSTRAP.md` 放入
+具特殊權限的系統內容中。在主要互動式首次執行時，它仍會
+透過使用者提示傳入檔案內容，因此即使模型無法可靠地
+呼叫 `read` 工具，也能完成此儀式。如果目前的
+執行無法安全存取工作區，代理會收到簡短的有限啟動初始化
+說明，而非一般問候語。
 
 ## 略過啟動初始化
 
-若要在已預先建立內容的工作區中略過此流程，請執行：
+若要在預先建立的工作區中略過此流程，請執行：
 
 ```bash
 openclaw onboard --skip-bootstrap
@@ -48,14 +67,17 @@ openclaw onboard --skip-bootstrap
 
 ## 執行位置
 
-啟動初始化一律在閘道主機上執行。若 macOS 應用程式連線至遠端閘道，工作區及其啟動初始化檔案會位於該遠端機器，而非 Mac 上。
+啟動初始化一律在閘道主機上執行。如果 macOS 應用程式連線至
+遠端閘道，工作區及其啟動初始化檔案會位於該遠端
+機器，而非 Mac 上。
 
 <Note>
-當閘道在另一台機器上執行時，請在閘道主機上編輯工作區檔案（例如 `user@gateway-host:~/.openclaw/workspace`）。
+當閘道在另一台機器上執行時，請在閘道
+主機上編輯工作區檔案（例如 `user@gateway-host:~/.openclaw/workspace`）。
 </Note>
 
 ## 相關文件
 
-- macOS 應用程式引導設定：[引導設定](/zh-TW/start/onboarding)
-- 工作區配置：[代理程式工作區](/zh-TW/concepts/agent-workspace)
+- macOS 應用程式新手引導：[新手引導](/zh-TW/start/onboarding)
+- 工作區配置：[代理工作區](/zh-TW/concepts/agent-workspace)
 - 範本內容：[BOOTSTRAP.md 範本](/zh-TW/reference/templates/BOOTSTRAP)

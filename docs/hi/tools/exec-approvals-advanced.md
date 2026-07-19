@@ -1,34 +1,42 @@
 ---
 read_when:
-    - सुरक्षित बिन या कस्टम safe-bin प्रोफ़ाइल कॉन्फ़िगर करना
-    - Slack/Discord/Telegram या अन्य चैट चैनलों पर अनुमोदन अग्रेषित करना
+    - सुरक्षित बिन या कस्टम सुरक्षित-बिन प्रोफ़ाइल कॉन्फ़िगर करना
+    - अनुमोदनों को Slack/Discord/Telegram या अन्य चैट चैनलों पर फ़ॉरवर्ड करना
     - किसी चैनल के लिए नेटिव अनुमोदन क्लाइंट लागू करना
-summary: 'उन्नत exec अनुमोदन: सुरक्षित bins, इंटरप्रेटर बाइंडिंग, अनुमोदन अग्रेषण, नेटिव डिलीवरी'
+summary: 'उन्नत exec अनुमोदन: सुरक्षित बाइनरी, इंटरप्रेटर बाइंडिंग, अनुमोदन अग्रेषण, नेटिव डिलीवरी'
 title: Exec अनुमोदन — उन्नत
 x-i18n:
-    generated_at: "2026-06-29T00:18:37Z"
-    model: gpt-5.5
+    generated_at: "2026-07-19T19:35:02Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: 3d936e1a1567d204981eec7c3262cf11f2af8fc1ed6213182954c2324718a270
+    source_hash: 628f695f2a005d537b11966bab7f6626aa87d473b1f1d5d72319a57aa7d9b24c
     source_path: tools/exec-approvals-advanced.md
     workflow: 16
 ---
 
-उन्नत exec-अनुमोदन विषय: `safeBins` फास्ट-पाथ, interpreter/runtime
-बाइंडिंग, और chat channels में approval-forwarding (native delivery सहित)।
-मुख्य policy और approval flow के लिए, [Exec अनुमोदन](/hi/tools/exec-approvals) देखें।
+उन्नत exec-अनुमोदन विषय: `safeBins` तेज़-पथ, इंटरप्रेटर/रनटाइम
+बाइंडिंग, और चैट चैनलों को अनुमोदन-अग्रेषण (नेटिव डिलीवरी सहित)।
+मुख्य नीति और अनुमोदन प्रवाह के लिए, [Exec अनुमोदन](/hi/tools/exec-approvals) देखें।
 
-## सुरक्षित बिन्स (केवल stdin)
+## सुरक्षित बिन (केवल stdin)
 
-`tools.exec.safeBins` **केवल-stdin** binaries की एक छोटी सूची परिभाषित करता है (उदाहरण के लिए `cut`) जो allowlist mode में स्पष्ट allowlist entries के **बिना** चल सकते हैं। सुरक्षित बिन्स positional file args और path-like tokens को अस्वीकार करते हैं, इसलिए वे केवल incoming stream पर काम कर सकते हैं। इसे stream filters के लिए संकीर्ण fast-path मानें, सामान्य trust list नहीं।
+`tools.exec.safeBins` **केवल stdin** बाइनरियों (उदाहरण के लिए `cut`) के नाम निर्दिष्ट करता है, जो
+स्पष्ट अनुमत-सूची प्रविष्टियों के **बिना** अनुमत-सूची मोड में चलते हैं। सुरक्षित बिन
+स्थितीय फ़ाइल आर्ग्युमेंट और पथ-जैसे टोकन अस्वीकार करते हैं, इसलिए वे केवल आने वाली
+स्ट्रीम पर कार्य कर सकते हैं। इसे स्ट्रीम फ़िल्टर के लिए सीमित तेज़-पथ मानें, सामान्य
+विश्वास सूची नहीं।
 
 <Warning>
-interpreter या runtime binaries (उदाहरण के लिए `python3`, `node`,
-`ruby`, `bash`, `sh`, `zsh`) को `safeBins` में **न** जोड़ें। यदि कोई command code evaluate कर सकता है, subcommands execute कर सकता है, या design से files पढ़ सकता है, तो explicit allowlist entries को प्राथमिकता दें और approval prompts enabled रखें। Custom safe bins को `tools.exec.safeBinProfiles.<bin>` में एक explicit profile परिभाषित करनी होगी।
+इंटरप्रेटर या रनटाइम बाइनरियों (उदाहरण के लिए `python3`, `node`,
+`ruby`, `bash`, `sh`, `zsh`) को `safeBins` में **न जोड़ें**। यदि कोई कमांड कोड का मूल्यांकन,
+उपकमांड निष्पादित, या डिज़ाइन के अनुसार फ़ाइलें पढ़ सकता है, तो स्पष्ट अनुमत-सूची प्रविष्टियों को
+प्राथमिकता दें और अनुमोदन प्रॉम्प्ट सक्षम रखें। कस्टम सुरक्षित बिन को `tools.exec.safeBinProfiles.<bin>` में
+एक स्पष्ट प्रोफ़ाइल परिभाषित करनी होगी।
 </Warning>
 
-Default सुरक्षित बिन्स:
+डिफ़ॉल्ट सुरक्षित बिन:
 
 [//]: # "SAFE_BIN_DEFAULTS:START"
 
@@ -36,274 +44,429 @@ Default सुरक्षित बिन्स:
 
 [//]: # "SAFE_BIN_DEFAULTS:END"
 
-`grep` और `sort` default list में नहीं हैं। यदि आप opt in करते हैं, तो उनके non-stdin workflows के लिए explicit allowlist entries रखें। safe-bin mode में `grep` के लिए, pattern को `-e`/`--regexp` के साथ दें; positional pattern form अस्वीकार कर दिया जाता है ताकि file operands को ambiguous positionals के रूप में छिपाकर न भेजा जा सके।
+`grep` और `sort` डिफ़ॉल्ट सूची में नहीं हैं। यदि आप इन्हें चुनते हैं, तो इनके गैर-stdin
+वर्कफ़्लो के लिए स्पष्ट अनुमत-सूची प्रविष्टियाँ बनाए रखें। सुरक्षित-बिन मोड में `grep` के लिए,
+पैटर्न को `-e`/`--regexp` के साथ दें; स्थितीय पैटर्न रूप अस्वीकार किया जाता है
+ताकि फ़ाइल ऑपरेंड को अस्पष्ट स्थितीय मानों के रूप में छिपाकर न भेजा जा सके।
 
-### Argv validation और denied flags
+### Argv सत्यापन और अस्वीकृत फ़्लैग
 
-Validation केवल argv shape से deterministic है (कोई host filesystem existence
-checks नहीं), जो allow/deny अंतरों से file-existence oracle behavior को रोकता है। Default safe bins के लिए file-oriented options denied हैं; long options fail-closed validate किए जाते हैं (unknown flags और ambiguous abbreviations अस्वीकार किए जाते हैं)।
+सत्यापन केवल argv के आकार से नियतात्मक होता है (होस्ट फ़ाइल सिस्टम में अस्तित्व की
+कोई जाँच नहीं), जिससे अनुमति/अस्वीकृति के अंतर से फ़ाइल-अस्तित्व ओरैकल व्यवहार
+रुकता है। डिफ़ॉल्ट सुरक्षित बिन के लिए फ़ाइल-उन्मुख विकल्प अस्वीकृत होते हैं; लंबे
+विकल्प विफलता पर बंद रहते हुए सत्यापित होते हैं (अज्ञात फ़्लैग और अस्पष्ट संक्षिप्त रूप
+अस्वीकृत होते हैं)। डिफ़ॉल्ट बिन के पहचाने गए केवल-पढ़ने योग्य बूलियन फ़्लैग (उदाहरण के लिए
+`wc -l`, `tr -d`, `uniq -c`) स्वीकार किए जाते हैं, जबकि अपरिचित छोटे फ़्लैग
+विफलता पर बंद रहते हैं और मैन्युअल अनुमोदन पर भेज दिए जाते हैं।
 
-Safe-bin profile के अनुसार denied flags:
+सुरक्षित-बिन प्रोफ़ाइल के अनुसार अस्वीकृत फ़्लैग:
 
 [//]: # "SAFE_BIN_DENIED_FLAGS:START"
 
 - `grep`: `--dereference-recursive`, `--directories`, `--exclude-from`, `--file`, `--recursive`, `-R`, `-d`, `-f`, `-r`
 - `jq`: `--argfile`, `--from-file`, `--library-path`, `--rawfile`, `--slurpfile`, `-L`, `-f`
 - `sort`: `--compress-program`, `--files0-from`, `--output`, `--random-source`, `--temporary-directory`, `-T`, `-o`
+- `tail`: `--follow`, `--retry`, `-F`, `-f`
 - `wc`: `--files0-from`
 
 [//]: # "SAFE_BIN_DENIED_FLAGS:END"
 
-Safe bins stdin-only segments के लिए execution time पर argv tokens को **literal text** के रूप में treat करने के लिए भी बाध्य करते हैं (कोई globbing नहीं और कोई `$VARS` expansion नहीं), इसलिए `*` या `$HOME/...` जैसे patterns का उपयोग file reads छिपाकर करने के लिए नहीं किया जा सकता।
+सुरक्षित बिन, केवल-stdin खंडों के लिए निष्पादन के समय argv टोकन को **शाब्दिक टेक्स्ट**
+मानने के लिए भी बाध्य करते हैं (कोई ग्लॉबिंग और कोई `$VARS` विस्तार नहीं), ताकि
+`*` या `$HOME/...` जैसे पैटर्न का उपयोग फ़ाइल-पठन छिपाने के लिए न किया जा सके। `awk`,
+`sed`, और `jq` को सुरक्षित बिन के रूप में हमेशा अस्वीकार किया जाता है क्योंकि उनके अर्थ-विज्ञान को
+केवल-stdin के रूप में सत्यापित नहीं किया जा सकता: `jq` पर्यावरण डेटा पढ़ सकता है और
+मॉड्यूल या स्टार्टअप फ़ाइलों से jq कोड लोड कर सकता है। उन टूल के लिए `safeBins` के बजाय
+स्पष्ट अनुमत-सूची प्रविष्टि या अनुमोदन प्रॉम्प्ट का उपयोग करें।
 
-### Trusted binary directories
+### विश्वसनीय बाइनरी डायरेक्टरी
 
-Safe bins को trusted binary directories (system defaults और optional `tools.exec.safeBinTrustedDirs`) से resolve होना चाहिए। `PATH` entries कभी auto-trusted नहीं होतीं। Default trusted directories जानबूझकर न्यूनतम हैं: `/bin`, `/usr/bin`। यदि आपका safe-bin executable package-manager/user paths में है (उदाहरण के लिए `/opt/homebrew/bin`, `/usr/local/bin`, `/opt/local/bin`, `/snap/bin`), तो उन्हें स्पष्ट रूप से `tools.exec.safeBinTrustedDirs` में जोड़ें।
+सुरक्षित बिन को विश्वसनीय बाइनरी डायरेक्टरी (सिस्टम डिफ़ॉल्ट और वैकल्पिक
+`tools.exec.safeBinTrustedDirs`) से रिज़ॉल्व होना चाहिए। `PATH` प्रविष्टियाँ कभी स्वतः विश्वसनीय नहीं मानी जातीं।
+डिफ़ॉल्ट विश्वसनीय डायरेक्टरी जानबूझकर न्यूनतम हैं: `/bin`, `/usr/bin`। यदि
+आपका सुरक्षित-बिन एक्ज़ीक्यूटेबल पैकेज-मैनेजर/उपयोगकर्ता पथों (उदाहरण के लिए
+`/opt/homebrew/bin`, `/usr/local/bin`, `/opt/local/bin`, `/snap/bin`) में स्थित है, तो उन्हें
+`tools.exec.safeBinTrustedDirs` में स्पष्ट रूप से जोड़ें।
 
-### Shell chaining, wrappers, और multiplexers
+### शेल शृंखलन, रैपर और मल्टीप्लेक्सर
 
-Shell chaining (`&&`, `||`, `;`) की अनुमति है जब हर top-level segment allowlist को satisfy करता है (safe bins या skill auto-allow सहित)। Redirections allowlist mode में unsupported रहती हैं। Command substitution (`$()` / backticks) allowlist parsing के दौरान अस्वीकार की जाती है, double quotes के अंदर भी; यदि आपको literal `$()` text चाहिए तो single quotes का उपयोग करें।
+शेल शृंखलन (`&&`, `||`, `;`) की अनुमति तब होती है जब प्रत्येक शीर्ष-स्तरीय खंड
+अनुमत-सूची को संतुष्ट करता है (सुरक्षित बिन या स्किल की स्वतः-अनुमति सहित)। अनुमत-सूची
+मोड में रीडायरेक्शन अब भी असमर्थित हैं। कमांड प्रतिस्थापन (`$()` / बैकटिक)
+अनुमत-सूची पार्सिंग के दौरान अस्वीकार किया जाता है, दोहरे उद्धरण-चिह्नों के भीतर भी; यदि
+शाब्दिक `$()` टेक्स्ट चाहिए, तो एकल उद्धरण-चिह्नों का उपयोग करें।
 
-macOS companion-app approvals पर, shell control या expansion syntax (`&&`, `||`, `;`, `|`, `` ` ``, `$`, `<`, `>`, `(`, `)`) वाला raw shell text allowlist miss माना जाता है जब तक कि shell binary स्वयं allowlisted न हो।
+macOS सहयोगी ऐप अनुमोदनों में, शेल नियंत्रण या विस्तार सिंटैक्स (`&&`, `||`, `;`, `|`, `` ` ``, `$`, `<`, `>`, `(`, `)`) वाला
+अपरिष्कृत शेल टेक्स्ट अनुमत-सूची से अनुपस्थित माना जाता है, जब तक कि शेल बाइनरी स्वयं अनुमत-सूची में न हो।
 
-Shell wrappers (`bash|sh|zsh ... -c/-lc`) के लिए, request-scoped env overrides एक छोटी explicit allowlist (`TERM`, `LANG`, `LC_*`, `COLORTERM`,
-`NO_COLOR`, `FORCE_COLOR`) तक घटाए जाते हैं।
+शेल रैपर (`bash|sh|zsh ... -c/-lc`) के लिए, अनुरोध-स्कोप वाले env ओवरराइड को
+एक छोटी स्पष्ट अनुमत-सूची (`TERM`, `LANG`, `LC_*`, `COLORTERM`,
+`NO_COLOR`, `FORCE_COLOR`) तक सीमित किया जाता है।
 
-Allowlist mode में `allow-always` decisions के लिए, ज्ञात dispatch wrappers (`env`,
-`flock`, `nice`, `nohup`, `stdbuf`, `timeout`) wrapper path के बजाय inner executable path को persist करते हैं। Shell multiplexers (`busybox`, `toybox`) shell applets (`sh`, `ash`, आदि) के लिए उसी तरह unwrapped किए जाते हैं। यदि किसी wrapper या multiplexer को सुरक्षित रूप से unwrap नहीं किया जा सकता, तो कोई allowlist entry automatically persisted नहीं होती।
+अनुमत-सूची मोड में `allow-always` निर्णयों के लिए, पारदर्शी डिस्पैच रैपर
+(उदाहरण के लिए `env`, `flock`, `nice`, `nohup`, `stdbuf`, `timeout`) रैपर पथ के बजाय
+आंतरिक एक्ज़ीक्यूटेबल पथ को स्थायी बनाते हैं। शेल मल्टीप्लेक्सर
+(`busybox`, `toybox`) को शेल ऐपलेट (`sh`, `ash`, आदि) के लिए इसी
+तरह अनरैप किया जाता है। यदि किसी रैपर या मल्टीप्लेक्सर को सुरक्षित रूप से अनरैप नहीं किया जा सकता, तो कोई अनुमत-सूची
+प्रविष्टि स्वतः स्थायी नहीं बनाई जाती।
 
-यदि आप `python3` या `node` जैसे interpreters को allowlist करते हैं, तो `tools.exec.strictInlineEval=true` को प्राथमिकता दें ताकि inline eval को अभी भी explicit approval की आवश्यकता हो। Strict mode में, `allow-always` अभी भी benign interpreter/script invocations को persist कर सकता है, लेकिन inline-eval carriers automatically persisted नहीं होते।
+यदि आप `python3` या `node` जैसे इंटरप्रेटर को अनुमत-सूची में रखते हैं, तो
+`tools.exec.strictInlineEval=true` को प्राथमिकता दें, ताकि इनलाइन मूल्यांकन के लिए फिर भी स्पष्ट
+अनुमोदन आवश्यक हो। सख़्त मोड में, `allow-always` फिर भी निरापद
+इंटरप्रेटर/स्क्रिप्ट आह्वानों को स्थायी बना सकता है, लेकिन इनलाइन-मूल्यांकन वाहकों को
+स्वतः स्थायी नहीं बनाया जाता।
 
-### Safe bins बनाम allowlist
+### सुरक्षित बिन बनाम अनुमत-सूची
 
-| विषय            | `tools.exec.safeBins`                                  | Allowlist (`exec-approvals.json`)                                                  |
+| विषय             | `tools.exec.safeBins`                                  | अनुमत-सूची (`exec-approvals.json`)                                                  |
 | ---------------- | ------------------------------------------------------ | ---------------------------------------------------------------------------------- |
-| लक्ष्य             | संकीर्ण stdin filters को auto-allow करना                        | विशिष्ट executables पर स्पष्ट रूप से trust करना                                              |
-| Match type       | Executable name + safe-bin argv policy                 | Resolved executable path glob, या PATH-invoked commands के लिए bare command-name glob |
-| Argument scope   | Safe-bin profile और literal-token rules द्वारा restricted | Default रूप से path match; optional `argPattern` parsed argv को restrict कर सकता है              |
-| सामान्य उदाहरण | `head`, `tail`, `tr`, `wc`                             | `jq`, `python3`, `node`, `ffmpeg`, custom CLIs                                     |
-| सर्वोत्तम उपयोग         | Pipelines में low-risk text transforms                  | व्यापक behavior या side effects वाला कोई भी tool                                     |
+| लक्ष्य            | सीमित stdin फ़िल्टर को स्वतः अनुमति देना               | विशिष्ट एक्ज़ीक्यूटेबल पर स्पष्ट रूप से विश्वास करना                              |
+| मिलान प्रकार      | एक्ज़ीक्यूटेबल नाम + सुरक्षित-बिन argv नीति             | रिज़ॉल्व किए गए एक्ज़ीक्यूटेबल पथ का ग्लॉब, या PATH से आह्वान किए गए कमांड के लिए केवल कमांड-नाम का ग्लॉब |
+| आर्ग्युमेंट स्कोप | सुरक्षित-बिन प्रोफ़ाइल और शाब्दिक-टोकन नियमों द्वारा सीमित | डिफ़ॉल्ट रूप से पथ मिलान; वैकल्पिक `argPattern` पार्स किए गए argv को सीमित कर सकता है |
+| सामान्य उदाहरण   | `head`, `tail`, `tr`, `wc`                             | `jq`, `python3`, `node`, `ffmpeg`, कस्टम CLI                                     |
+| सर्वोत्तम उपयोग  | पाइपलाइन में कम-जोखिम वाले टेक्स्ट रूपांतरण             | व्यापक व्यवहार या दुष्प्रभाव वाला कोई भी टूल                                      |
 
-Configuration location:
+कॉन्फ़िगरेशन स्थान:
 
-- `safeBins` config (`tools.exec.safeBins` या per-agent `agents.list[].tools.exec.safeBins`) से आता है।
-- `safeBinTrustedDirs` config (`tools.exec.safeBinTrustedDirs` या per-agent `agents.list[].tools.exec.safeBinTrustedDirs`) से आता है।
-- `safeBinProfiles` config (`tools.exec.safeBinProfiles` या per-agent `agents.list[].tools.exec.safeBinProfiles`) से आता है। Per-agent profile keys global keys को override करती हैं।
-- allowlist entries host-local approvals file में `agents.<id>.allowlist` के अंतर्गत रहती हैं (या Control UI / `openclaw approvals allowlist ...` के माध्यम से)।
-- `openclaw security audit` `tools.exec.safe_bins_interpreter_unprofiled` के साथ चेतावनी देता है जब interpreter/runtime bins explicit profiles के बिना `safeBins` में दिखाई देते हैं।
-- `openclaw doctor --fix` missing custom `safeBinProfiles.<bin>` entries को `{}` के रूप में scaffold कर सकता है (बाद में review और tighten करें)। Interpreter/runtime bins auto-scaffolded नहीं होते।
+- `safeBins` कॉन्फ़िगरेशन (`tools.exec.safeBins` या प्रति-एजेंट `agents.list[].tools.exec.safeBins`) से आता है।
+- `safeBinTrustedDirs` कॉन्फ़िगरेशन (`tools.exec.safeBinTrustedDirs` या प्रति-एजेंट `agents.list[].tools.exec.safeBinTrustedDirs`) से आता है।
+- `safeBinProfiles` कॉन्फ़िगरेशन (`tools.exec.safeBinProfiles` या प्रति-एजेंट `agents.list[].tools.exec.safeBinProfiles`) से आता है। प्रति-एजेंट प्रोफ़ाइल कुंजियाँ वैश्विक कुंजियों को ओवरराइड करती हैं।
+- अनुमत-सूची प्रविष्टियाँ `agents.<id>.allowlist` के अंतर्गत होस्ट-स्थानीय अनुमोदन फ़ाइल में रहती हैं (या Control UI / `openclaw approvals allowlist ...` के माध्यम से)।
+- जब इंटरप्रेटर/रनटाइम बिन स्पष्ट प्रोफ़ाइलों के बिना `safeBins` में दिखाई देते हैं, तब `openclaw security audit`, `tools.exec.safe_bins_interpreter_unprofiled` के साथ चेतावनी देता है।
+- `openclaw doctor --fix` अनुपस्थित कस्टम `safeBinProfiles.<bin>` प्रविष्टियों को `{}` के रूप में स्कैफ़ोल्ड कर सकता है (बाद में समीक्षा करके सख़्त करें)। इंटरप्रेटर/रनटाइम बिन स्वतः स्कैफ़ोल्ड नहीं किए जाते।
 
-Custom profile उदाहरण:
-__OC_I18N_900000__
-यदि आप `jq` को स्पष्ट रूप से `safeBins` में opt करते हैं, तो OpenClaw अभी भी safe-bin
-mode में `env` builtin को अस्वीकार करता है ताकि `jq -n env` explicit allowlist path
-या approval prompt के बिना host process environment dump न कर सके।
+कस्टम प्रोफ़ाइल का उदाहरण:
 
-## Interpreter/runtime commands
+```json5
+{
+  tools: {
+    exec: {
+      safeBins: ["myfilter"],
+      safeBinProfiles: {
+        myfilter: {
+          minPositional: 0,
+          maxPositional: 0,
+          allowedValueFlags: ["-n", "--limit"],
+          deniedFlags: ["-f", "--file", "-c", "--command"],
+        },
+      },
+    },
+  },
+}
+```
 
-Approval-backed interpreter/runtime runs जानबूझकर conservative हैं:
+## इंटरप्रेटर/रनटाइम कमांड
 
-- Exact argv/cwd/env context हमेशा bound होता है।
-- Direct shell script और direct runtime file forms best-effort रूप से एक concrete local
-  file snapshot से bound होते हैं।
-- Common package-manager wrapper forms जो अभी भी एक direct local file पर resolve होते हैं (उदाहरण के लिए
-  `pnpm exec`, `pnpm node`, `npm exec`, `npx`) binding से पहले unwrapped किए जाते हैं।
-- यदि OpenClaw interpreter/runtime command के लिए ठीक एक concrete local file identify नहीं कर सकता
-  (उदाहरण के लिए package scripts, eval forms, runtime-specific loader chains, या ambiguous multi-file
-  forms), तो approval-backed execution उस semantic coverage का दावा करने के बजाय denied होता है जो उसके पास नहीं है।
-- उन workflows के लिए, sandboxing, अलग host boundary, या explicit trusted
-  allowlist/full workflow को प्राथमिकता दें जहाँ operator व्यापक runtime semantics स्वीकार करता है।
+अनुमोदन-समर्थित इंटरप्रेटर/रनटाइम संचालन जानबूझकर रूढ़िवादी होते हैं:
 
-जब approvals आवश्यक होते हैं, exec tool तुरंत approval id के साथ return करता है। बाद के approved-run system events (`Exec finished`, और configured होने पर `Exec running`) correlate करने के लिए उस id का उपयोग करें।
-यदि timeout से पहले कोई decision नहीं आता, तो request को approval timeout माना जाता है और terminal host-command denial के रूप में surfaced किया जाता है। Originating session वाले main-agent async approvals के लिए, OpenClaw उस session को internal followup के साथ resume भी करता है ताकि agent देख सके कि command बाद में missing result repair करने के बजाय चली ही नहीं।
+- सटीक argv/cwd/env संदर्भ हमेशा बाइंड होता है।
+- प्रत्यक्ष शेल स्क्रिप्ट और प्रत्यक्ष रनटाइम फ़ाइल रूप सर्वोत्तम प्रयास के आधार पर एक ठोस स्थानीय
+  फ़ाइल स्नैपशॉट से बाइंड होते हैं।
+- सामान्य पैकेज-मैनेजर रैपर रूप, जो फिर भी एक प्रत्यक्ष स्थानीय फ़ाइल पर रिज़ॉल्व होते हैं (उदाहरण के लिए
+  `pnpm exec`, `pnpm node`, `npm exec`, `npx`), बाइंडिंग से पहले अनरैप किए जाते हैं।
+- यदि OpenClaw किसी इंटरप्रेटर/रनटाइम कमांड के लिए ठीक एक ठोस स्थानीय फ़ाइल की पहचान नहीं कर सकता
+  (उदाहरण के लिए पैकेज स्क्रिप्ट, मूल्यांकन रूप, रनटाइम-विशिष्ट लोडर शृंखलाएँ, या अस्पष्ट बहु-फ़ाइल
+  रूप), तो ऐसा अर्थ-विज्ञान कवरेज दावा करने के बजाय अनुमोदन-समर्थित निष्पादन अस्वीकार कर दिया जाता है, जो वास्तव में
+  उपलब्ध नहीं है।
+- उन वर्कफ़्लो के लिए, सैंडबॉक्सिंग, अलग होस्ट सीमा, या स्पष्ट विश्वसनीय
+  अनुमत-सूची/पूर्ण वर्कफ़्लो को प्राथमिकता दें, जहाँ ऑपरेटर व्यापक रनटाइम अर्थ-विज्ञान स्वीकार करता है।
 
-### Followup delivery behavior
+जब अनुमोदन आवश्यक होते हैं, exec टूल एक अनुमोदन आईडी के साथ तुरंत लौटता है। बाद में
+अनुमोदित संचालन के सिस्टम इवेंट (`Exec finished`, और कॉन्फ़िगर होने पर `Exec running`) को परस्पर संबद्ध करने के लिए उस आईडी का उपयोग करें।
+यदि समय-सीमा से पहले कोई निर्णय नहीं आता, तो अनुरोध को अनुमोदन समय-समाप्ति माना जाता है और
+टर्मिनल होस्ट-कमांड अस्वीकृति के रूप में प्रस्तुत किया जाता है। मूल सत्र वाले मुख्य-एजेंट के एसिंक्रोनस
+अनुमोदनों के लिए, OpenClaw उस सत्र को एक आंतरिक फ़ॉलोअप के साथ फिर से शुरू भी करता है, ताकि एजेंट यह देख सके कि
+कमांड नहीं चला, बजाय इसके कि वह बाद में अनुपस्थित परिणाम की मरम्मत करे। लंबित exec अनुमोदन
+डिफ़ॉल्ट रूप से 30 मिनट बाद समाप्त हो जाते हैं।
 
-Approved async exec finish होने के बाद, OpenClaw उसी session में followup `agent` turn भेजता है।
-Denied async approvals denial status के लिए वही main-session followup path उपयोग करते हैं, लेकिन वे elevated runtime handoffs register नहीं करते और command नहीं चलाते। Resumable main session के बिना denials या तो suppressed होते हैं या कोई safe direct route मौजूद होने पर उसके माध्यम से reported होते हैं।
+### फ़ॉलोअप डिलीवरी व्यवहार
 
-- यदि valid external delivery target मौजूद है (deliverable channel plus target `to`), followup delivery उसी channel का उपयोग करती है।
-- Webchat-only या external target के बिना internal-session flows में, followup delivery session-only रहती है (`deliver: false`)।
-- यदि caller कोई resolvable external channel न होने पर strict external delivery explicitly request करता है, तो request `INVALID_REQUEST` के साथ fail होती है।
-- यदि `bestEffortDeliver` enabled है और कोई external channel resolve नहीं हो सकता, तो fail होने के बजाय delivery session-only में downgraded हो जाती है।
+अनुमोदित एसिंक्रोनस exec पूरा होने के बाद, OpenClaw उसी सत्र में एक फ़ॉलोअप `agent` टर्न भेजता है।
+अस्वीकृत एसिंक्रोनस अनुमोदन, अस्वीकृति स्थिति के लिए उसी मुख्य-सत्र फ़ॉलोअप पथ का उपयोग करते हैं, लेकिन वे
+उन्नत रनटाइम हैंडऑफ़ पंजीकृत नहीं करते और कमांड नहीं चलाते। पुनः शुरू किए जा सकने वाले
+मुख्य सत्र के बिना अस्वीकृतियाँ या तो दबा दी जाती हैं या उपलब्ध होने पर सुरक्षित प्रत्यक्ष मार्ग से रिपोर्ट की जाती हैं।
 
-## Chat channels में approval forwarding
+- यदि कोई मान्य बाहरी डिलीवरी लक्ष्य मौजूद है (डिलीवर किया जा सकने वाला चैनल और लक्ष्य `to`), तो फ़ॉलोअप डिलीवरी उस चैनल का उपयोग करती है।
+- बिना बाहरी लक्ष्य वाले केवल-वेबचैट या आंतरिक-सत्र प्रवाह में, फ़ॉलोअप डिलीवरी केवल सत्र तक सीमित रहती है (`deliver: false`)।
+- यदि कोई कॉलर बिना रिज़ॉल्व किए जा सकने वाले बाहरी चैनल के सख़्त बाहरी डिलीवरी का स्पष्ट अनुरोध करता है, तो अनुरोध `INVALID_REQUEST` के साथ विफल हो जाता है।
+- यदि `bestEffortDeliver` सक्षम है और कोई बाहरी चैनल रिज़ॉल्व नहीं किया जा सकता, तो विफल होने के बजाय डिलीवरी को केवल-सत्र तक डाउनग्रेड कर दिया जाता है।
 
-आप exec approval prompts को किसी भी chat channel (plugin channels सहित) में forward कर सकते हैं और उन्हें `/approve` के साथ approve कर सकते हैं। यह normal outbound delivery pipeline का उपयोग करता है।
+## तृतीय-पक्ष क्लाइंट के लिए न्यूनतम स्कोप
 
-Config:
-__OC_I18N_900001__
-Chat में reply करें:
-__OC_I18N_900002__
-`/approve` command exec approvals और plugin approvals दोनों संभालता है। यदि ID किसी pending exec approval से match नहीं करती, तो यह automatically plugin approvals को check करता है।
+Gateway अनुमोदन रिज़ॉल्यूशन को समर्पित `operator.approvals` स्कोप द्वारा सुरक्षित किया जाता है। यह स्वामी-विशिष्ट `exec.approval.resolve` विधि और प्रकार-निरपेक्ष `approval.resolve` विधि, दोनों पर लागू होता है; `operator.write` इसे समाहित नहीं करता। डैशबोर्ड और इंटीग्रेशन को केवल उन विधियों के लिए आवश्यक स्कोप का अनुरोध करना चाहिए जिनका वे उपयोग करते हैं। अनुमोदन-रिज़ॉल्यूशन पहुँच को रिमोट-निष्पादन-स्तरीय प्राधिकार मानें और `operator.approvals` जानबूझकर प्रदान करें, भले ही क्लाइंट केवल एक छोटा अनुमोदन UI प्रस्तुत करता हो।
 
-### Plugin approval forwarding
+## चैट चैनलों को अनुमोदन अग्रेषण
 
-Plugin approval forwarding exec approvals की तरह ही delivery pipeline का उपयोग करता है, लेकिन इसकी अपनी
-independent config `approvals.plugin` के अंतर्गत होती है। एक को enable या disable करने से दूसरे पर असर नहीं पड़ता।
-Plugin-authoring behavior, request fields, और decision semantics के लिए,
-[Plugin permission requests](/plugins/plugin-permission-requests) देखें।
-__OC_I18N_900003__
-Config shape `approvals.exec` के समान है: `enabled`, `mode`, `agentFilter`,
-`sessionFilter`, और `targets` उसी तरह काम करते हैं।
+आप exec अनुमोदन प्रॉम्प्ट को किसी भी चैट चैनल (Plugin चैनलों सहित) पर अग्रेषित कर सकते हैं और
+उन्हें `/approve` से अनुमोदित कर सकते हैं। यह सामान्य आउटबाउंड डिलीवरी पाइपलाइन का उपयोग करता है।
 
-Shared interactive replies support करने वाले channels exec और
-plugin approvals दोनों के लिए वही approval buttons render करते हैं। Shared interactive UI के बिना channels `/approve`
-instructions के साथ plain text पर fall back करते हैं।
-Plugin approval requests available decisions को restrict कर सकती हैं। Approval surfaces request के
-declared decision set का उपयोग करते हैं, और Gateway ऐसे decision को submit करने के attempts reject करता है जो offered नहीं था।
+कॉन्फ़िगरेशन:
 
-### किसी भी channel पर same-chat approvals
+```json5
+{
+  approvals: {
+    exec: {
+      enabled: true,
+      mode: "session", // "session" | "targets" | "both"
+      agentFilter: ["main"],
+      sessionFilter: ["discord"], // substring or regex
+      targets: [
+        { channel: "slack", to: "U12345678" },
+        { channel: "telegram", to: "123456789" },
+      ],
+    },
+  },
+}
+```
 
-जब exec या plugin approval request deliverable chat surface से originate होती है, तो वही chat
-default रूप से इसे `/approve` के साथ approve कर सकता है। यह मौजूदा Web UI और terminal UI flows के अलावा Slack, Matrix, और
-Microsoft Teams जैसे channels पर भी लागू होता है।
+चैट में उत्तर दें:
 
-यह साझा टेक्स्ट-कमांड पथ उस बातचीत के लिए सामान्य चैनल प्रमाणीकरण मॉडल का उपयोग करता है। यदि
-मूल चैट पहले से ही कमांड भेज सकती है और जवाब प्राप्त कर सकती है, तो अनुमोदन अनुरोधों को अब
-केवल लंबित रहने के लिए अलग नेटिव डिलीवरी अडैप्टर की आवश्यकता नहीं होती।
+```
+/approve <id> allow-once
+/approve <id> allow-always
+/approve <id> deny
+```
 
-Discord और Telegram भी उसी चैट में `/approve` का समर्थन करते हैं, लेकिन वे चैनल तब भी
-प्राधिकरण के लिए अपनी हल की गई अनुमोदक सूची का उपयोग करते हैं, भले ही नेटिव अनुमोदन डिलीवरी अक्षम हो।
+`/approve` कमांड exec अनुमोदनों और Plugin अनुमोदनों, दोनों को संभालता है। यदि ID किसी लंबित exec अनुमोदन से मेल नहीं खाती, तो यह इसके बजाय स्वतः Plugin अनुमोदनों की जाँच करता है। यह फ़ॉलबैक केवल "approval not found" विफलताओं तक सीमित है; वास्तविक exec अनुमोदन अस्वीकृति/त्रुटि पर Plugin अनुमोदन के रूप में चुपचाप पुनः प्रयास नहीं किया जाता।
 
-Telegram और अन्य नेटिव अनुमोदन क्लाइंट के लिए जो सीधे Gateway को कॉल करते हैं,
-यह fallback जानबूझकर केवल "approval not found" विफलताओं तक सीमित है। वास्तविक
-exec अनुमोदन अस्वीकृति/त्रुटि चुपचाप Plugin अनुमोदन के रूप में पुनः प्रयास नहीं करती।
+### Plugin अनुमोदन अग्रेषण
+
+Plugin अनुमोदन अग्रेषण exec अनुमोदनों वाली ही डिलीवरी पाइपलाइन का उपयोग करता है, लेकिन इसका
+`approvals.plugin` के अंतर्गत अपना स्वतंत्र कॉन्फ़िगरेशन होता है। किसी एक को सक्षम या अक्षम करने से दूसरा प्रभावित नहीं होता।
+Plugin लेखन व्यवहार, अनुरोध फ़ील्ड और निर्णय के अर्थ-विज्ञान के लिए
+[Plugin अनुमति अनुरोध](/plugins/plugin-permission-requests) देखें।
+
+```json5
+{
+  approvals: {
+    plugin: {
+      enabled: true,
+      mode: "targets",
+      agentFilter: ["main"],
+      targets: [
+        { channel: "slack", to: "U12345678" },
+        { channel: "telegram", to: "123456789" },
+      ],
+    },
+  },
+}
+```
+
+कॉन्फ़िगरेशन संरचना `approvals.exec` के समान है: `enabled`, `mode`, `agentFilter`,
+`sessionFilter` और `targets` उसी तरह काम करते हैं।
+
+साझा इंटरैक्टिव उत्तरों का समर्थन करने वाले चैनल exec और
+Plugin अनुमोदनों, दोनों के लिए समान अनुमोदन बटन प्रदर्शित करते हैं। साझा इंटरैक्टिव UI के बिना चैनल `/approve`
+निर्देशों वाले सादे टेक्स्ट पर फ़ॉलबैक करते हैं। Plugin अनुमोदन अनुरोध उपलब्ध निर्णयों को सीमित कर सकते हैं: अनुमोदन सतहें
+अनुरोध के घोषित निर्णय-समुच्चय का उपयोग करती हैं, और Gateway ऐसे निर्णय को सबमिट करने के प्रयासों को अस्वीकार करता है
+जिसकी पेशकश नहीं की गई थी।
+
+### किसी भी चैनल पर उसी चैट में अनुमोदन
+
+जब कोई exec या Plugin अनुमोदन अनुरोध किसी डिलीवरी-योग्य चैट सतह से उत्पन्न होता है, तो वही चैट
+डिफ़ॉल्ट रूप से उसे `/approve` से अनुमोदित कर सकती है। यह मौजूदा Web UI और टर्मिनल UI प्रवाहों के अतिरिक्त
+Slack, Matrix, Microsoft Teams और इसी प्रकार की डिलीवरी-योग्य चैट पर लागू होता है तथा उस वार्तालाप के लिए
+सामान्य चैनल प्रमाणीकरण मॉडल का उपयोग करता है। यदि मूल चैट पहले से कमांड भेज और उत्तर प्राप्त कर सकती है,
+तो अनुमोदन अनुरोधों को केवल लंबित बने रहने के लिए अब अलग नेटिव डिलीवरी अडैप्टर की आवश्यकता नहीं होती।
+
+Discord, Telegram और QQ bot भी उसी चैट में `/approve` का समर्थन करते हैं, लेकिन नेटिव अनुमोदन डिलीवरी अक्षम होने पर भी
+ये चैनल प्राधिकरण के लिए अपनी समाधान की गई अनुमोदक सूची का उपयोग करते हैं।
 
 ### नेटिव अनुमोदन डिलीवरी
 
-कुछ चैनल नेटिव अनुमोदन क्लाइंट के रूप में भी काम कर सकते हैं। नेटिव क्लाइंट साझा उसी-चैट `/approve`
-प्रवाह के ऊपर अनुमोदक DM, मूल-चैट fanout, और चैनल-विशिष्ट इंटरैक्टिव अनुमोदन UX जोड़ते हैं।
+कुछ चैनल नेटिव अनुमोदन क्लाइंट के रूप में भी कार्य कर सकते हैं: Discord, Slack, Telegram, Matrix और QQ bot।
+नेटिव क्लाइंट साझा समान-चैट `/approve` प्रवाह के ऊपर अनुमोदक DM, मूल चैट फ़ैनआउट और चैनल-विशिष्ट
+इंटरैक्टिव अनुमोदन UX जोड़ते हैं।
 
-जब नेटिव अनुमोदन कार्ड/बटन उपलब्ध हों, तो वही नेटिव UI प्राथमिक
-एजेंट-सामना पथ होता है। एजेंट को अलग से डुप्लिकेट सादा चैट
-`/approve` कमांड echo नहीं करनी चाहिए, जब तक कि टूल परिणाम यह न कहे कि चैट अनुमोदन उपलब्ध नहीं हैं या
-मैन्युअल अनुमोदन ही बचा हुआ एकमात्र पथ है।
+नेटिव अनुमोदन कार्ड/बटन उपलब्ध होने पर वह नेटिव UI एजेंट के लिए प्राथमिक मार्ग होता है।
+एजेंट को डुप्लिकेट सादा चैट `/approve` कमांड भी नहीं दोहराना चाहिए, जब तक टूल परिणाम यह न बताए
+कि चैट अनुमोदन अनुपलब्ध हैं या मैन्युअल अनुमोदन ही एकमात्र शेष मार्ग है।
 
-यदि कोई नेटिव अनुमोदन क्लाइंट कॉन्फ़िगर है लेकिन मूल चैनल के लिए कोई नेटिव runtime सक्रिय नहीं है,
-तो OpenClaw स्थानीय deterministic `/approve` prompt को दृश्यमान रखता है। यदि नेटिव runtime सक्रिय है
-और डिलीवरी का प्रयास करता है लेकिन किसी target को कार्ड प्राप्त नहीं होता, तो OpenClaw उसी चैट में fallback notice भेजता है,
-जिसमें ठीक `/approve <id> <decision>` कमांड होती है ताकि अनुरोध फिर भी हल किया जा सके।
+यदि कोई नेटिव अनुमोदन क्लाइंट कॉन्फ़िगर किया गया है, लेकिन मूल
+चैनल के लिए कोई नेटिव रनटाइम सक्रिय नहीं है, तो OpenClaw स्थानीय नियतात्मक `/approve` प्रॉम्प्ट दृश्यमान रखता है। यदि नेटिव रनटाइम
+सक्रिय है और डिलीवरी का प्रयास करता है, लेकिन किसी लक्ष्य को कार्ड प्राप्त नहीं होता, तो OpenClaw सटीक `/approve <id> <decision>` कमांड वाली
+समान-चैट फ़ॉलबैक सूचना भेजता है, ताकि अनुरोध का फिर भी समाधान किया जा सके।
 
 सामान्य मॉडल:
 
-- host exec policy अब भी तय करती है कि exec अनुमोदन आवश्यक है या नहीं
-- `approvals.exec` अनुमोदन prompts को अन्य चैट destinations पर forward करने को नियंत्रित करता है
-- `channels.<channel>.execApprovals` नियंत्रित करता है कि Discord, Slack, Telegram, और समान
+- होस्ट exec नीति अब भी तय करती है कि exec अनुमोदन आवश्यक है या नहीं
+- `approvals.exec` अनुमोदन प्रॉम्प्ट को अन्य चैट गंतव्यों पर अग्रेषित करना नियंत्रित करता है
+- `channels.<channel>.execApprovals` नियंत्रित करता है कि Discord, Slack, Telegram, QQ bot और इसी प्रकार के
   चैनल-विशिष्ट नेटिव क्लाइंट सक्षम हैं या नहीं
-- Slack Plugin अनुमोदन Slack के नेटिव अनुमोदन क्लाइंट का उपयोग कर सकते हैं जब अनुरोध Slack से आता है
-  और Slack Plugin अनुमोदक हल हो जाते हैं; `approvals.plugin` Plugin अनुमोदनों को Slack
-  sessions या targets पर route भी कर सकता है, भले ही Slack exec अनुमोदन अक्षम हों
+- अनुरोध Slack से आने और Slack Plugin अनुमोदकों का समाधान होने पर Slack Plugin अनुमोदन Slack के नेटिव अनुमोदन क्लाइंट का उपयोग कर सकते हैं;
+  Slack exec अनुमोदन अक्षम होने पर भी `approvals.plugin` Plugin अनुमोदनों को Slack
+  सत्रों या लक्ष्यों तक रूट कर सकता है
 - Google Chat नेटिव अनुमोदन कार्ड Google
-  Chat spaces या threads से शुरू होने वाले exec और Plugin अनुमोदनों को संभालते हैं, जब स्थिर `users/<id>` अनुमोदक `dm.allowFrom` या
-  `defaultTo` से हल होते हैं; वे निर्णयों के लिए reaction events का उपयोग नहीं करते
-- WhatsApp और Signal reaction अनुमोदन डिलीवरी `approvals.exec` और
-  `approvals.plugin` से gated होती है; उनके पास `channels.<channel>.execApprovals` blocks नहीं होते
+  Chat स्पेस या थ्रेड से उत्पन्न exec और Plugin अनुमोदनों को संभालते हैं, जब स्थिर `users/<id>` अनुमोदकों का समाधान `dm.allowFrom` या
+  `defaultTo` से होता है; वे निर्णयों के लिए प्रतिक्रिया इवेंट का उपयोग नहीं करते
+- WhatsApp और Signal प्रतिक्रिया अनुमोदन डिलीवरी `approvals.exec` और
+  `approvals.plugin` द्वारा नियंत्रित होती है; उनमें `channels.<channel>.execApprovals` ब्लॉक नहीं होते
 
-नेटिव अनुमोदन क्लाइंट DM-first डिलीवरी को अपने-आप सक्षम करते हैं जब ये सभी सत्य हों:
+इन सभी के सत्य होने पर नेटिव अनुमोदन क्लाइंट DM-प्रथम डिलीवरी स्वतः सक्षम करते हैं:
 
 - चैनल नेटिव अनुमोदन डिलीवरी का समर्थन करता है
-- अनुमोदक स्पष्ट `execApprovals.approvers` या owner
-  identity जैसे `commands.ownerAllowFrom` से हल किए जा सकते हैं
-- `channels.<channel>.execApprovals.enabled` unset है या `"auto"` है
+- अनुमोदकों का समाधान स्पष्ट `execApprovals.approvers` या
+  `commands.ownerAllowFrom` जैसी स्वामी पहचान से किया जा सकता है
+- `channels.<channel>.execApprovals.enabled` सेट नहीं है या `"auto"` है
 
-किसी नेटिव अनुमोदन क्लाइंट को स्पष्ट रूप से अक्षम करने के लिए `enabled: false` सेट करें। अनुमोदक हल होने पर
-इसे force-enable करने के लिए `enabled: true` सेट करें। सार्वजनिक मूल-चैट डिलीवरी
-`channels.<channel>.execApprovals.target` के माध्यम से स्पष्ट रहती है।
+नेटिव अनुमोदन क्लाइंट को स्पष्ट रूप से अक्षम करने के लिए `enabled: false` सेट करें। अनुमोदकों का समाधान होने पर
+उसे जबरन सक्षम करने के लिए `enabled: true` सेट करें। सार्वजनिक मूल-चैट डिलीवरी
+`channels.<channel>.execApprovals.target` के माध्यम से स्पष्ट बनी रहती है। जब नेटिव `target` मूल-चैट डिलीवरी सक्षम करता है,
+तो अनुमोदन प्रॉम्प्ट में कमांड टेक्स्ट शामिल होता है।
 
-FAQ: [चैट अनुमोदनों के लिए दो exec अनुमोदन config क्यों हैं?](/help/faq-first-run#why-are-there-two-exec-approval-configs-for-chat-approvals)
+अक्सर पूछे जाने वाले प्रश्न: [चैट अनुमोदनों के लिए दो exec अनुमोदन कॉन्फ़िगरेशन क्यों हैं?](/help/faq-first-run)
 
 - Discord: `channels.discord.execApprovals.*`
 - Slack: `channels.slack.execApprovals.*`
 - Telegram: `channels.telegram.execApprovals.*`
+- QQ bot: `channels.qqbot.execApprovals.*`
 - Google Chat: स्थिर अनुमोदकों को `channels.googlechat.dm.allowFrom` या
-  `channels.googlechat.defaultTo` से कॉन्फ़िगर करें; कोई `execApprovals` block आवश्यक नहीं है
-- WhatsApp: अनुमोदन prompts को WhatsApp पर route करने के लिए `approvals.exec` और `approvals.plugin` का उपयोग करें
-- Signal: अनुमोदन prompts को Signal पर route करने के लिए `approvals.exec` और `approvals.plugin` का उपयोग करें
+  `channels.googlechat.defaultTo` से कॉन्फ़िगर करें; किसी `execApprovals` ब्लॉक की आवश्यकता नहीं है
+- WhatsApp: अनुमोदन प्रॉम्प्ट को WhatsApp पर रूट करने के लिए `approvals.exec` और `approvals.plugin` का उपयोग करें
+- Signal: अनुमोदन प्रॉम्प्ट को Signal पर रूट करने के लिए `approvals.exec` और `approvals.plugin` का उपयोग करें
 
-ये नेटिव अनुमोदन क्लाइंट साझा उसी-चैट `/approve` flow और साझा अनुमोदन buttons के ऊपर
-DM routing और वैकल्पिक channel fanout जोड़ते हैं।
+नेटिव-क्लाइंट-विशिष्ट रूटिंग:
 
-साझा व्यवहार:
+- Telegram डिफ़ॉल्ट रूप से अनुमोदक DM (`target: "dm"`) का उपयोग करता है। मूल Telegram चैट/विषय में भी
+  अनुमोदन प्रॉम्प्ट दिखाने के लिए `channel` या `both` पर स्विच करें। Telegram फ़ोरम विषयों के लिए OpenClaw
+  अनुमोदन प्रॉम्प्ट और अनुमोदन के बाद के फ़ॉलो-अप में विषय को बनाए रखता है।
+- Discord और Telegram अनुमोदक स्पष्ट (`execApprovals.approvers`) हो सकते हैं या
+  `commands.ownerAllowFrom` से अनुमानित किए जा सकते हैं; केवल समाधान किए गए अनुमोदक ही अनुमोदित या अस्वीकार कर सकते हैं।
+- Slack अनुमोदक स्पष्ट (`execApprovals.approvers`) हो सकते हैं या
+  `commands.ownerAllowFrom` से अनुमानित किए जा सकते हैं। Slack Plugin अनुमोदन DM, Slack exec अनुमोदकों के बजाय `allowFrom`
+  और खाते की डिफ़ॉल्ट रूटिंग से Slack Plugin अनुमोदकों का उपयोग करते हैं। Slack नेटिव बटन अनुमोदन ID
+  प्रकार बनाए रखते हैं, इसलिए `plugin:` ID दूसरी Slack-स्थानीय फ़ॉलबैक परत के बिना Plugin अनुमोदनों का समाधान कर सकती हैं।
+- Google Chat नेटिव कार्ड संदेश टेक्स्ट में मैन्युअल `/approve` फ़ॉलबैक बनाए रखते हैं, लेकिन कार्ड बटन
+  कॉलबैक में केवल अपारदर्शी ऐक्शन टोकन होते हैं; अनुमोदन ID और निर्णय
+  सर्वर-साइड लंबित स्थिति से पुनः प्राप्त किए जाते हैं।
+- WhatsApp इमोजी अनुमोदन exec और Plugin, दोनों प्रॉम्प्ट संभालते हैं, जब मेल खाने वाला शीर्ष-स्तरीय
+  अग्रेषण परिवार WhatsApp पर रूट करता है। नेटिव-मूल प्रॉम्प्ट सीधे बाइंड होते हैं; साझा लक्ष्य-मोड
+  डिलीवरी समान टाइप किया हुआ अनुमोदन मेटाडेटा स्वीकृत WhatsApp संदेश रसीद से बाइंड करती है।
+- Signal प्रतिक्रिया अनुमोदन exec और Plugin, दोनों प्रॉम्प्ट केवल तभी संभालते हैं, जब मेल खाने वाला शीर्ष-स्तरीय
+  अग्रेषण परिवार सक्षम हो और Signal पर रूट करे। प्रत्यक्ष समान-चैट Signal exec अनुमोदन
+  स्पष्ट अनुमोदकों के बिना स्थानीय `/approve` फ़ॉलबैक को दबा सकते हैं; Signal प्रतिक्रिया समाधान के लिए
+  अब भी `channels.signal.allowFrom` या `defaultTo` से स्पष्ट Signal अनुमोदकों की आवश्यकता होती है।
+- Matrix नेटिव DM/चैनल रूटिंग और प्रतिक्रिया शॉर्टकट exec और Plugin, दोनों अनुमोदनों को संभालते हैं;
+  Plugin प्राधिकरण अब भी `channels.matrix.dm.allowFrom` से आता है। Matrix नेटिव प्रॉम्प्ट
+  पहले प्रॉम्प्ट इवेंट में `com.openclaw.approval` कस्टम इवेंट सामग्री शामिल करते हैं, ताकि OpenClaw-सक्षम
+  Matrix क्लाइंट संरचित अनुमोदन स्थिति पढ़ सकें, जबकि सामान्य क्लाइंट सादा-टेक्स्ट
+  `/approve` फ़ॉलबैक बनाए रखें।
+- नेटिव Discord और Telegram अनुमोदन बटन ट्रांसपोर्ट-निजी कॉलबैक डेटा में स्पष्ट exec या Plugin स्वामी प्रकार रखते हैं
+  और केवल उसी स्वामी का समाधान करते हैं। प्रकार-रहित पुराने `/approve` नियंत्रण एक सीमित संगतता मार्ग बने रहते हैं:
+  वे केवल उन्हीं स्वामी प्रकारों को आज़माते हैं जिन्हें अभिनेता अनुमोदित कर सकता है,
+  केवल अनुमोदन-न-मिलने के परिणाम के बाद आगे बढ़ते हैं और अनुमोदन ID से कभी स्वामित्व का अनुमान नहीं लगाते।
+- अनुरोधकर्ता का अनुमोदक होना आवश्यक नहीं है।
+- यदि कोई ऑपरेटर UI या कॉन्फ़िगर किया हुआ अनुमोदन क्लाइंट अनुरोध स्वीकार नहीं कर सकता, तो प्रॉम्प्ट
+  `askFallback` पर फ़ॉलबैक करता है।
 
-- Slack, Matrix, Microsoft Teams, और समान deliverable chats उसी-चैट `/approve` के लिए सामान्य channel auth model
-  का उपयोग करते हैं
-- जब कोई नेटिव अनुमोदन क्लाइंट auto-enable होता है, तो default नेटिव delivery target अनुमोदक DMs होते हैं
-- Discord और Telegram के लिए, केवल हल किए गए अनुमोदक approve या deny कर सकते हैं
-- Discord अनुमोदक स्पष्ट (`execApprovals.approvers`) हो सकते हैं या `commands.ownerAllowFrom` से अनुमानित हो सकते हैं
-- Telegram अनुमोदक स्पष्ट (`execApprovals.approvers`) हो सकते हैं या `commands.ownerAllowFrom` से अनुमानित हो सकते हैं
-- Slack अनुमोदक स्पष्ट (`execApprovals.approvers`) हो सकते हैं या `commands.ownerAllowFrom` से अनुमानित हो सकते हैं
-- Slack Plugin अनुमोदन DMs `allowFrom` और account default
-  routing से Slack Plugin अनुमोदकों का उपयोग करते हैं, Slack exec अनुमोदकों का नहीं
-- Slack नेटिव buttons अनुमोदन id kind को preserve करते हैं, इसलिए `plugin:` ids दूसरी Slack-local fallback layer
-  के बिना Plugin अनुमोदनों को हल कर सकते हैं
-- Google Chat नेटिव cards message text में manual `/approve` fallback को preserve करते हैं लेकिन card button
-  callbacks केवल opaque action tokens ले जाते हैं; approval id और decision server-side
-  pending state से recover किए जाते हैं
-- WhatsApp emoji अनुमोदन exec और Plugin prompts दोनों को केवल तब संभालते हैं जब matching top-level
-  forwarding family सक्षम हो और WhatsApp पर route करे; target-only WhatsApp forwarding साझा forwarding path पर रहती है
-  जब तक कि वह उसी नेटिव origin target से match न करे
-- Signal reaction अनुमोदन exec और Plugin prompts दोनों को केवल तब संभालते हैं जब matching top-level
-  forwarding family सक्षम हो और Signal पर route करे। Direct same-chat Signal exec approvals
-  explicit approvers के बिना local `/approve` fallback को suppress कर सकते हैं; Signal reaction resolution
-  अब भी `channels.signal.allowFrom` या `defaultTo` से explicit Signal approvers मांगता है।
-- Matrix नेटिव DM/channel routing और reaction shortcuts exec और Plugin अनुमोदन दोनों संभालते हैं;
-  Plugin authorization अब भी `channels.matrix.dm.allowFrom` से आता है
-- Matrix नेटिव prompts पहले prompt
-  event पर `com.openclaw.approval` custom event content शामिल करते हैं ताकि OpenClaw-aware Matrix clients structured approval state पढ़ सकें जबकि stock clients
-  plain-text `/approve` fallback रखते हैं
-- requester को अनुमोदक होना आवश्यक नहीं है
-- मूल चैट `/approve` से सीधे approve कर सकती है जब वह चैट पहले से commands और replies का समर्थन करती है
-- नेटिव Discord approval buttons approval id kind के अनुसार route करते हैं: `plugin:` ids
-  सीधे Plugin approvals पर जाते हैं, बाकी सब exec approvals पर जाते हैं
-- नेटिव Telegram approval buttons `/approve` जैसा ही bounded exec-to-plugin fallback follow करते हैं
-- जब नेटिव `target` origin-chat delivery सक्षम करता है, तो approval prompts command text शामिल करते हैं
-- लंबित exec approvals default रूप से 30 minutes के बाद expire होते हैं
-- यदि कोई operator UI या configured approval client अनुरोध accept नहीं कर सकता, तो prompt `askFallback` पर fallback करता है
-
-संवेदनशील owner-only group commands जैसे `/diagnostics` और `/export-trajectory` अनुमोदन prompts और final results के लिए private
-owner routing का उपयोग करते हैं। OpenClaw पहले उसी surface पर private route आज़माता है
-जहां owner ने command चलाई थी। यदि उस surface पर कोई private owner route नहीं है, तो यह
-`commands.ownerAllowFrom` से पहले उपलब्ध owner route पर fallback करता है, ताकि Discord group command
-फिर भी approval और result को owner के Telegram DM पर भेज सके जब Telegram configured
-primary private interface हो। group chat को केवल छोटा acknowledgement मिलता है।
-
-Telegram अनुमोदक DMs (`target: "dm"`) पर डिफ़ॉल्ट होता है। जब आप चाहते हैं कि अनुमोदन प्रॉम्प्ट मूल Telegram चैट/टॉपिक में भी दिखाई दें, तो आप `channel` या `both` पर स्विच कर सकते हैं। Telegram फ़ोरम टॉपिक्स के लिए, OpenClaw अनुमोदन प्रॉम्प्ट और अनुमोदन के बाद के फ़ॉलो-अप के लिए टॉपिक को सुरक्षित रखता है।
+`/diagnostics` और `/export-trajectory` जैसे संवेदनशील केवल-स्वामी समूह कमांड अनुमोदन प्रॉम्प्ट और अंतिम परिणामों के लिए निजी
+स्वामी रूटिंग का उपयोग करते हैं। OpenClaw पहले उसी सतह पर निजी रूट आज़माता है जहाँ स्वामी ने कमांड चलाया था।
+यदि उस सतह पर कोई निजी स्वामी रूट नहीं है, तो यह `commands.ownerAllowFrom` से पहले उपलब्ध स्वामी रूट पर फ़ॉलबैक करता है,
+ताकि Telegram को प्राथमिक निजी इंटरफ़ेस के रूप में कॉन्फ़िगर किए जाने पर Discord समूह कमांड भी अनुमोदन और परिणाम
+स्वामी के Telegram DM पर भेज सके। समूह चैट को केवल एक संक्षिप्त अभिस्वीकृति मिलती है।
 
 देखें:
 
 - [Discord](/channels/discord)
 - [Telegram](/channels/telegram)
+- [QQ bot](/channels/qqbot)
+
+### आधिकारिक मोबाइल ऑपरेटर ऐप्स
+
+आधिकारिक iOS और Android ऐप्स Gateway-स्वामित्व वाले लंबित exec
+अनुमोदनों की समीक्षा भी कर सकते हैं, जब `operator.admin` कनेक्शन का उपयोग किया जाता है या अनुरोध ने उनके युग्मित
+`operator.approvals` डिवाइस को स्पष्ट रूप से लक्षित किया हो। वे
+Control UI द्वारा उपयोग किए जाने वाले उसी सैनिटाइज़ किए गए टिकाऊ रिकॉर्ड को पढ़ते हैं, प्रकार-सचेत निर्णय सबमिट करते हैं और Gateway का प्रामाणिक
+पहले-उत्तर का परिणाम प्रदर्शित करते हैं। Apple Watch युग्मित iPhone के माध्यम से इन अनुमोदन प्रॉम्प्ट को मिरर करता है,
+जिसमें एक बार अनुमति देने और अस्वीकार करने की क्रियाएँ होती हैं। प्रत्यक्ष Watch Gateway मोड
+अनुमोदनों की समीक्षा नहीं करता।
+
+समाधान अभिस्वीकृति खो जाने से सबमिट किया गया विकल्प आधिकारिक नहीं बन जाता:
+ऐप नियंत्रणों को अक्षम करके रिकॉर्ड फिर से पढ़ता है। यदि कोई अन्य सतह सफल हुई,
+तो ऐप वह रिकॉर्ड किया गया निर्णय दिखाता है। लंबित प्रॉम्प्ट उन्हें जारी करने वाले
+Gateway से बंधे रहते हैं, इसलिए सक्रिय Gateway बदलने से पुरानी अनुमोदन ID को पुनर्निर्देशित नहीं किया जा सकता।
 
 ### macOS IPC प्रवाह
-__OC_I18N_900004__
-सुरक्षा नोट्स:
+
+```
+Gateway -> Node Service (WS)
+                 |  IPC (UDS + token + HMAC + TTL)
+                 v
+             Mac App (UI + approvals + system.run)
+```
+
+सुरक्षा टिप्पणियाँ:
 
 - Unix सॉकेट मोड `0600`, टोकन `exec-approvals.json` में संग्रहीत।
 - समान-UID पीयर जाँच।
-- चैलेंज/रिस्पॉन्स (nonce + HMAC token + request hash) + छोटा TTL।
+- चुनौती/प्रतिक्रिया (nonce + HMAC token + request hash) + छोटी TTL।
 
 ## अक्सर पूछे जाने वाले प्रश्न
 
-### अनुमोदन लक्ष्य पर `accountId` और `threadId` कब उपयोग किए जाएंगे?
+### किसी अनुमोदन लक्ष्य पर `accountId` और `threadId` का उपयोग कब किया जाएगा?
 
-जब चैनल में कई कॉन्फ़िगर की गई पहचानें हों और अनुमोदन प्रॉम्प्ट को किसी विशिष्ट खाते से ही भेजना हो, तब `accountId` का उपयोग करें। जब गंतव्य टॉपिक्स या थ्रेड्स का समर्थन करता हो और प्रॉम्प्ट को शीर्ष-स्तरीय चैट के बजाय उसी थ्रेड के अंदर रहना चाहिए, तब `threadId` का उपयोग करें।
+जब चैनल में कई कॉन्फ़िगर की गई पहचान हों और अनुमोदन प्रॉम्प्ट को किसी विशिष्ट खाते से भेजना आवश्यक हो,
+तब `accountId` का उपयोग करें। जब गंतव्य विषयों या थ्रेड का समर्थन करता हो और प्रॉम्प्ट को शीर्ष-स्तरीय चैट के बजाय
+उसी थ्रेड के अंदर रहना चाहिए, तब `threadId` का उपयोग करें।
 
-एक ठोस Telegram उदाहरण फ़ोरम टॉपिक्स और दो Telegram bot खातों वाला एक ऑपरेशंस सुपरग्रुप है। `to` मान सुपरग्रुप का नाम देता है, `accountId` bot खाता चुनता है, और `threadId` फ़ोरम टॉपिक चुनता है:
-__OC_I18N_900005__
-इस सेटअप के साथ, फ़ॉरवर्ड किए गए exec अनुमोदन `ops-bot` Telegram खाते द्वारा चैट `-1001234567890` के टॉपिक `77` में पोस्ट किए जाते हैं। `accountId` के बिना लक्ष्य चैनल के डिफ़ॉल्ट खाते का उपयोग करता है, और `threadId` के बिना लक्ष्य शीर्ष-स्तरीय गंतव्य पर पोस्ट करता है।
+एक ठोस Telegram उदाहरण फ़ोरम विषयों और दो Telegram bot
+खातों वाला संचालन सुपरग्रुप है। `to` मान सुपरग्रुप का नाम देता है, `accountId` bot खाते का चयन करता है और `threadId`
+फ़ोरम विषय का चयन करता है:
 
-### जब अनुमोदन किसी सत्र में भेजे जाते हैं, तो क्या उस सत्र में कोई भी उन्हें अनुमोदित कर सकता है?
+```json5
+{
+  approvals: {
+    exec: {
+      enabled: true,
+      mode: "targets",
+      targets: [
+        {
+          channel: "telegram",
+          to: "-1001234567890",
+          accountId: "ops-bot",
+          threadId: "77",
+        },
+      ],
+    },
+  },
+  channels: {
+    telegram: {
+      accounts: {
+        default: {
+          name: "प्राथमिक बॉट",
+          botToken: "env:TELEGRAM_PRIMARY_BOT_TOKEN",
+        },
+        "ops-bot": {
+          name: "संचालन बॉट",
+          botToken: "env:TELEGRAM_OPS_BOT_TOKEN",
+        },
+      },
+    },
+  },
+}
+```
 
-नहीं। सत्र डिलीवरी केवल यह नियंत्रित करती है कि प्रॉम्प्ट कहाँ दिखाई देता है। यह अपने आप उस चैट के हर प्रतिभागी को अनुमोदन का अधिकार नहीं देती।
+इस सेटअप के साथ, अग्रेषित exec अनुमोदन `ops-bot` Telegram खाते द्वारा चैट `-1001234567890` के विषय
+`77` में पोस्ट किए जाते हैं। `accountId` के बिना कोई लक्ष्य चैनल के डिफ़ॉल्ट खाते का उपयोग करता है, और
+`threadId` के बिना कोई लक्ष्य शीर्ष-स्तरीय गंतव्य पर पोस्ट करता है।
 
-सामान्य समान-चैट `/approve` के लिए, भेजने वाले को उस चैनल सत्र में कमांड्स के लिए पहले से अधिकृत होना चाहिए। यदि चैनल स्पष्ट अनुमोदन अनुमोदकों को उजागर करता है, तो वे अनुमोदक `/approve` कार्रवाई को अधिकृत कर सकते हैं, भले ही वे उस सत्र में अन्यथा कमांड-अधिकृत न हों।
+### जब अनुमोदन किसी सत्र में भेजे जाते हैं, तो क्या उस सत्र का कोई भी व्यक्ति उन्हें अनुमोदित कर सकता है?
 
-कुछ चैनल अधिक सख्त होते हैं। Discord, Telegram, Matrix, Slack नेटिव अनुमोदन DMs, और समान नेटिव अनुमोदन क्लाइंट अनुमोदन प्राधिकरण के लिए अपनी रिज़ॉल्व की गई अनुमोदक सूचियों का उपयोग करते हैं। उदाहरण के लिए, Telegram फ़ोरम-टॉपिक अनुमोदन प्रॉम्प्ट टॉपिक में सभी को दिखाई दे सकता है, लेकिन केवल `channels.telegram.execApprovals.approvers` या `commands.ownerAllowFrom` से रिज़ॉल्व किए गए संख्यात्मक Telegram उपयोगकर्ता IDs ही उसे अनुमोदित या अस्वीकार कर सकते हैं।
+नहीं। सत्र में डिलीवरी केवल यह नियंत्रित करती है कि प्रॉम्प्ट कहाँ दिखाई देता है। यह अपने आप उस चैट के प्रत्येक
+प्रतिभागी को अनुमोदन देने के लिए अधिकृत नहीं करती।
+
+सामान्य समान-चैट `/approve` के लिए, प्रेषक को उस
+चैनल सत्र में कमांड के लिए पहले से अधिकृत होना चाहिए। यदि चैनल स्पष्ट अनुमोदनकर्ताओं को उपलब्ध कराता है, तो वे अनुमोदनकर्ता
+`/approve` कार्रवाई को अधिकृत कर सकते हैं, भले ही वे उस सत्र में अन्यथा कमांड के लिए अधिकृत न हों।
+
+कुछ चैनल अधिक सख्त होते हैं। Discord, Telegram, Matrix, Slack के मूल अनुमोदन DM और इसी तरह के
+मूल अनुमोदन क्लाइंट, अनुमोदन प्राधिकरण के लिए अपनी निर्धारित अनुमोदनकर्ता सूचियों का उपयोग करते हैं। उदाहरण के लिए,
+Telegram फ़ोरम-विषय का अनुमोदन प्रॉम्प्ट विषय में सभी को दिखाई दे सकता है, लेकिन केवल `channels.telegram.execApprovals.approvers` या
+`commands.ownerAllowFrom` से निर्धारित संख्यात्मक Telegram उपयोगकर्ता ID ही उसे अनुमोदित या अस्वीकार कर सकती हैं।
 
 ## संबंधित
 
 - [Exec अनुमोदन](/hi/tools/exec-approvals) — मुख्य नीति और अनुमोदन प्रवाह
 - [Exec टूल](/hi/tools/exec)
-- [Elevated मोड](/hi/tools/elevated)
-- [Skills](/hi/tools/skills) — skill-समर्थित ऑटो-अनुमति व्यवहार
+- [उन्नत मोड](/hi/tools/elevated)
+- [Skills](/hi/tools/skills) — skill-समर्थित स्वतः-अनुमति व्यवहार

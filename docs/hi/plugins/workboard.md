@@ -1,289 +1,46 @@
 ---
 read_when:
-    - आपको नियंत्रण UI में कानबान-शैली का कार्यबोर्ड चाहिए
+    - आप Control UI में Kanban-शैली का कार्यबोर्ड चाहते हैं
     - आप बंडल किए गए Workboard Plugin को सक्षम या अक्षम कर रहे हैं
-    - आप बाहरी प्रोजेक्ट मैनेजर के बिना नियोजित एजेंट कार्य को ट्रैक करना चाहते हैं
-summary: एजेंट-स्वामित्व वाले कार्ड और सत्र हैंडऑफ़ के लिए वैकल्पिक डैशबोर्ड वर्कबोर्ड
-title: Workboard Plugin
+    - आप किसी बाहरी प्रोजेक्ट मैनेजर के बिना एजेंट के नियोजित कार्य को ट्रैक करना चाहते हैं
+summary: एजेंट-स्वामित्व वाले कार्ड और सत्र हस्तांतरण के लिए वैकल्पिक डैशबोर्ड कार्य-पटल
+title: वर्कबोर्ड Plugin
 x-i18n:
-    generated_at: "2026-06-28T23:55:36Z"
-    model: gpt-5.5
+    generated_at: "2026-07-19T19:23:52Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    prompt_version: 32
     provider: openai
-    source_hash: caca6263b4ee08b36816ef6acdef506499c66b4d27f4f75551ac7784b2bf3324
+    source_hash: 38f138584fed2d052ed45798c38a342fd9fe08eddf4fef9f73c52353f4b0ded2
     source_path: plugins/workboard.md
     workflow: 16
 ---
 
-Workboard Plugin [Control UI](/hi/web/control-ui) में एक वैकल्पिक Kanban-शैली बोर्ड जोड़ता है। इसका उपयोग एजेंट-आकार के कार्य कार्ड इकट्ठा करने, उन्हें एजेंटों को असाइन करने, और लिंक किए गए पृष्ठभूमि कार्य, रन, और डैशबोर्ड सत्र को एक कार्ड से ट्रैक करने के लिए करें.
+Workboard Plugin, [Control UI](/hi/web/control-ui) में एक वैकल्पिक Kanban-शैली का बोर्ड जोड़ता है: एजेंट के आकार के कार्य कार्ड, एजेंटों को असाइनमेंट, और कार्ड के टास्क, रन तथा डैशबोर्ड सेशन पर वापस जाने वाला लिंक।
 
-Workboard जानबूझकर छोटा है। यह OpenClaw Gateway के लिए स्थानीय संचालन कार्य ट्रैक करता है; यह GitHub Issues, Linear, Jira, या अन्य टीम प्रोजेक्ट प्रबंधन प्रणालियों का विकल्प नहीं है।
+Workboard को जानबूझकर छोटा रखा गया है: यह एक OpenClaw Gateway के स्थानीय संचालन कार्य को ट्रैक करता है। यह GitHub Issues, Linear, Jira या अन्य टीम परियोजना प्रबंधन प्रणालियों का विकल्प नहीं है।
 
-## डिफ़ॉल्ट स्थिति
+## इसे सक्षम करें
 
-Workboard एक बंडल किया गया Plugin है और डिफ़ॉल्ट रूप से अक्षम रहता है जब तक आप इसे Plugin कॉन्फ़िग में सक्षम नहीं करते।
+Workboard बंडल में शामिल है, लेकिन डिफ़ॉल्ट रूप से अक्षम रहता है:
 
-इसे इस तरह सक्षम करें:
+1. Control UI में **Plugins** खोलें, या कॉन्फ़िगर किए गए Control UI बेस पाथ के सापेक्ष `/settings/plugins` का उपयोग करें। उदाहरण के लिए, `/openclaw` बेस पाथ में `/openclaw/settings/plugins` का उपयोग होता है।
+2. **Workboard** खोजें और **Enable** चुनें। Workboard, OpenClaw के साथ शामिल है, इसलिए इसके लिए **Install** क्रिया की आवश्यकता नहीं है।
+3. यदि UI बताता है कि पुनः आरंभ करना आवश्यक है, तो Gateway पुनः आरंभ करें।
+
+Plugin रनटाइम लोड होने के बाद Workboard टैब डैशबोर्ड नेविगेशन में दिखाई देता है। इसके अक्षम रहने पर टैब नेविगेशन से छिपा रहता है। Plugin के अक्षम होने या `plugins.allow`/`plugins.deny` द्वारा अवरुद्ध होने के दौरान `/workboard` रूट को सीधे खोलने पर कार्ड डेटा के बजाय Plugin-अनुपलब्ध स्थिति दिखाई देती है।
+
+समतुल्य CLI कार्यप्रवाह है:
 
 ```bash
 openclaw plugins enable workboard
 openclaw gateway restart
-```
-
-फिर डैशबोर्ड खोलें:
-
-```bash
 openclaw dashboard
 ```
 
-Workboard टैब डैशबोर्ड नेविगेशन में दिखाई देता है। यदि टैब दिखाई दे रहा है लेकिन Plugin अक्षम है या `plugins.allow` / `plugins.deny` से अवरुद्ध है, तो व्यू स्थानीय कार्ड डेटा के बजाय Plugin-अनुपलब्ध स्थिति दिखाता है।
+## कॉन्फ़िगरेशन
 
-## कार्ड में क्या होता है
-
-हर कार्ड यह संग्रहीत करता है:
-
-- शीर्षक और नोट्स
-- स्थिति: `triage`, `backlog`, `todo`, `scheduled`, `ready`, `running`,
-  `review`, `blocked`, या `done`
-- प्राथमिकता: `low`, `normal`, `high`, या `urgent`
-- लेबल
-- वैकल्पिक एजेंट आईडी
-- वैकल्पिक लिंक किया गया कार्य, रन, सत्र, या स्रोत URL
-- कार्ड से शुरू किए गए Codex या Claude रन के लिए वैकल्पिक निष्पादन मेटाडेटा
-- प्रयासों, टिप्पणियों, लिंक, प्रमाण, आर्टिफैक्ट, ऑटोमेशन,
-  अटैचमेंट, वर्कर लॉग, वर्कर प्रोटोकॉल स्थिति, दावों, डायग्नॉस्टिक्स,
-  सूचनाओं, टेम्पलेट्स, आर्काइव स्थिति, और पुराने-सत्र पहचान के लिए संक्षिप्त मेटाडेटा
-- हाल के कार्ड इवेंट जैसे बनाए गए, मूव किए गए, लिंक किए गए, दावा किए गए, Heartbeat,
-  प्रयास, प्रमाण, आर्टिफैक्ट, डायग्नॉस्टिक, सूचना, डिस्पैच, आर्काइव, पुराने,
-  या एजेंट-अपडेट किए गए बदलाव
-
-कार्ड Plugin की Gateway स्थिति में संग्रहीत होते हैं। वे Gateway स्थिति डायरेक्टरी के लिए स्थानीय होते हैं और उस Gateway की बाकी OpenClaw स्थिति के साथ चलते हैं।
-
-Workboard प्रति-कार्ड संक्षिप्त मेटाडेटा रखता है ताकि ऑपरेटर लिंक किए गए सत्र को खोले बिना देख सकें कि कार्ड बोर्ड से कैसे गुजरा। इवेंट, प्रयास सारांश, प्रमाण स्निपेट, संबंधित लिंक, टिप्पणियां, आर्काइव मार्कर, और पुराने-सत्र मार्कर जानबूझकर स्थानीय मेटाडेटा हैं; वे सत्र ट्रांसक्रिप्ट या GitHub issue इतिहास का विकल्प नहीं हैं।
-
-## कार्ड निष्पादन और कार्य
-
-बिना लिंक वाले कार्ड कार्ड से काम शुरू कर सकते हैं। स्वायत्त शुरुआत Gateway के कार्य-ट्रैक किए गए एजेंट रन पथ का उपयोग करती है, फिर Workboard परिणामी कार्य, रन आईडी, और सत्र कुंजी को वापस कार्ड से लिंक करता है। शुरुआत Gateway के कॉन्फ़िगर किए गए डिफ़ॉल्ट एजेंट और मॉडल का उपयोग करती है। Codex और Claude क्रियाएं वैकल्पिक स्पष्ट मॉडल विकल्प हैं:
-
-- Run Codex या Run Claude कार्य-समर्थित एजेंट रन शुरू करता है, कार्ड
-  प्रॉम्प्ट भेजता है, और कार्ड को `running` चिह्नित करता है।
-- Open Codex या Open Claude कार्ड प्रॉम्प्ट भेजे बिना या कार्ड को मूव किए बिना
-  एक लिंक किया गया डैशबोर्ड सत्र बनाता है, ताकि आप बोर्ड से जुड़े रहते हुए मैन्युअल रूप से काम कर सकें।
-
-निष्पादन मेटाडेटा चयनित इंजन, मोड, मॉडल रेफ, सत्र कुंजी,
-रन आईडी, उपलब्ध होने पर कार्य आईडी, और कार्ड पर लाइफसाइकल स्थिति संग्रहीत करता है। Codex
-निष्पादन `openai/gpt-5.5` का उपयोग करते हैं; Claude निष्पादन
-`anthropic/claude-sonnet-4-6` का उपयोग करते हैं।
-
-हर लिंक किया गया निष्पादन उसी कार्ड रिकॉर्ड पर एक प्रयास सारांश भी दर्ज करता है।
-प्रयास सारांश इंजन, मोड, मॉडल, रन आईडी, टाइमस्टैम्प, स्थिति,
-और रोलिंग विफलता संख्या रखता है ताकि बार-बार की विफलताएं बोर्ड पर दिखाई देती रहें।
-
-डैशबोर्ड Gateway कार्य लेजर से कार्य स्थिति रीफ्रेश करता है और कार्य आईडी, रन आईडी, या लिंक की गई सत्र कुंजी से कार्यों को कार्ड से मिलाता है। यदि कोई कार्य कतार में है या चल रहा है, तो कार्ड लाइफसाइकल सक्रिय कार्य स्थिति दिखाता है। यदि कार्य पूरा होता है, विफल होता है, टाइम आउट होता है, या रद्द होता है, तो कार्ड लाइफसाइकल लिंक किए गए सत्रों वाली समान लाइफसाइकल सिंक का उपयोग करके समीक्षा या अवरुद्ध स्थिति की ओर बढ़ती है।
-
-## एजेंट समन्वय
-
-Workboard बोर्ड-सचेत वर्कफ़्लो के लिए वैकल्पिक एजेंट टूल भी उपलब्ध कराता है:
-
-- `workboard_list` दावा और डायग्नॉस्टिक स्थिति वाले संक्षिप्त कार्ड सूचीबद्ध करता है, वैकल्पिक बोर्ड फ़िल्टर के साथ।
-- `workboard_read` एक कार्ड और नोट्स, प्रयासों, टिप्पणियों, लिंक, प्रमाण, आर्टिफैक्ट, पैरेंट परिणामों, हाल के असाइनी कार्य, और सक्रिय डायग्नॉस्टिक्स से बना सीमित वर्कर संदर्भ लौटाता है।
-- `workboard_create` वैकल्पिक पैरेंट्स, टेनेंट, skills,
-  बोर्ड, वर्कस्पेस मेटाडेटा, idempotency कुंजी, रनटाइम सीमा, और retry बजट के साथ कार्ड बनाता है।
-- `workboard_link` पैरेंट कार्ड को चाइल्ड कार्ड से लिंक करता है। चिल्ड्रेन `todo`
-  में रहते हैं जब तक हर पैरेंट `done` तक नहीं पहुंचता; फिर डिस्पैच प्रमोशन उन्हें `ready` में मूव करता है।
-- `workboard_claim` कॉल करने वाले एजेंट के लिए कार्ड पर दावा करता है और बैकलॉग, todo,
-  या ready कार्ड को `running` में मूव करता है।
-- `workboard_heartbeat` लंबे रन के दौरान दावा Heartbeat रीफ्रेश करता है।
-- `workboard_release` पूरा होने, विराम, या हैंडऑफ के बाद दावा रिलीज़ करता है और
-  कार्ड को अगली स्थिति में मूव कर सकता है।
-- `workboard_complete` और `workboard_block` अंतिम सारांशों, प्रमाण, आर्टिफैक्ट, बनाए-गए-कार्ड मैनिफेस्ट, और अवरोधक कारणों के लिए संरचित लाइफसाइकल टूल हैं। बनाए-गए-कार्ड मैनिफेस्ट में पूरे किए गए कार्ड से वापस लिंक किए गए कार्ड का संदर्भ होना चाहिए, जिससे काल्पनिक चिल्ड्रेन सारांशों से बाहर रहते हैं।
-- `workboard_attachment_add`, `workboard_attachment_read`, और
-  `workboard_attachment_delete` छोटे कार्ड अटैचमेंट Plugin SQLite
-  स्थिति में संग्रहीत करते हैं, उन्हें कार्ड पर इंडेक्स करते हैं, और वर्कर संदर्भ में उपलब्ध कराते हैं।
-- `workboard_worker_log` और `workboard_protocol_violation` वर्कर लॉग
-  पंक्तियां दर्ज करते हैं और जब कोई स्वचालित वर्कर `workboard_complete` या `workboard_block` कॉल किए बिना रुकता है तो कार्ड ब्लॉक करते हैं।
-- `workboard_board_create`, `workboard_board_archive`, और
-  `workboard_board_delete` डिस्प्ले नाम, विवरण, आर्काइव स्थिति, और डिफ़ॉल्ट वर्कस्पेस जैसे स्थायी बोर्ड मेटाडेटा प्रबंधित करते हैं।
-- `workboard_runs` कार्ड पर संग्रहीत स्थायी रन-प्रयास इतिहास लौटाता है।
-- `workboard_specify` किसी मोटे triage या backlog कार्ड को स्पष्ट
-  `todo` कार्ड में बदलता है और विनिर्देश सारांश कार्ड पर दर्ज करता है।
-- `workboard_decompose` पैरेंट orchestration कार्ड को लिंक किए गए चिल्ड्रेन में फैलाता है,
-  बोर्ड और टेनेंट मेटाडेटा विरासत में देता है, और बनाए-गए-कार्ड मैनिफेस्ट के साथ पैरेंट को पूरा कर सकता है।
-- `workboard_notify_subscribe`, `workboard_notify_list`,
-  `workboard_notify_events`, `workboard_notify_advance`, और
-  `workboard_notify_unsubscribe` Plugin स्थिति में सूचना सदस्यताएं प्रबंधित करते हैं। इवेंट रीड replay-safe हैं; advance टूल टिकाऊ कर्सर को आगे बढ़ाता है ताकि कॉलर पूर्ण, विफल, या पुराने कार्ड इवेंट खोए बिना या दोबारा पढ़े बिना फिर से शुरू कर सकें।
-- `workboard_boards`, `workboard_stats`, `workboard_promote`,
-  `workboard_reassign`, `workboard_reclaim`, `workboard_comment`,
-  `workboard_proof`, `workboard_unblock`, और `workboard_dispatch` एजेंट को
-  बोर्ड नेमस्पेस निरीक्षण करने, कतार आंकड़े देखने, अटके काम को पुनर्प्राप्त करने, हैंडऑफ
-  नोट्स जोड़ने, प्रमाण या आर्टिफैक्ट संदर्भ जोड़ने, अवरुद्ध काम को वापस `todo` में मूव करने,
-  और dependency promotion या stale-claim cleanup को नज करने देते हैं।
-
-दावा किए गए कार्ड अन्य एजेंटों से एजेंट-टूल mutations अस्वीकार करते हैं जब तक कॉलर के पास `workboard_claim` से लौटाया गया claim token न हो। डैशबोर्ड ऑपरेटर अब भी सामान्य Gateway RPC सतह का उपयोग करते हैं और कार्ड रिकवर या फिर से असाइन कर सकते हैं।
-
-Workboard टिकाऊ बोर्ड डेटा को OpenClaw स्थिति डायरेक्टरी के अंतर्गत Plugin-स्वामित्व वाले relational SQLite डेटाबेस में संग्रहीत करता है। बोर्ड, कार्ड, लेबल, लाइफसाइकल इवेंट,
-रन प्रयास, टिप्पणियां, dependency links, प्रमाण, आर्टिफैक्ट संदर्भ,
-अटैचमेंट मेटाडेटा और blobs, डायग्नॉस्टिक्स, सूचनाएं, वर्कर लॉग,
-प्रोटोकॉल स्थिति, और सदस्यताएं Plugin key-value entries के बजाय Workboard तालिकाओं में स्थायी की जाती हैं। कार्ड export अब भी अटैचमेंट blob सामग्री inline किए बिना बोर्ड narrative को सुरक्षित रखता है।
-
-`.28` रिलीज़ में Workboard का उपयोग करने वाले इंस्टॉलेशन shipped legacy plugin-state namespaces
-(`workboard.cards`, `workboard.boards`, और `workboard.notify`) को relational database में migrate करने के लिए
-`openclaw doctor --fix` चला सकते हैं। यदि legacy `workboard.attachments` namespace मौजूद है,
-तो doctor उन attachment blobs को भी migrate करता है।
-
-Workboard डायग्नॉस्टिक्स स्थानीय कार्ड मेटाडेटा से गणना किए जाते हैं। अंतर्निहित checks
-उन असाइन किए गए कार्ड को flag करते हैं जो बहुत लंबे समय तक प्रतीक्षा करते हैं, हालिया Heartbeat के बिना running cards,
-ध्यान मांगने वाले blocked cards, repeated failures, proof के बिना done cards,
-और running cards जिनके पास केवल loose session link है।
-
-Dispatch जानबूझकर Gateway-local है। यह मनमाने operating
-system processes spawn नहीं करता; सामान्य OpenClaw subagent sessions अब भी execution के स्वामी हैं। Dispatch action dependency-ready cards को promote करता है, ready cards पर dispatch metadata record करता है, expired claims या timed-out runs को block करता है, board-configured
-triage cards को orchestration candidates के रूप में mark करता है, फिर ready cards की छोटी batch claim करता है और Gateway subagent runtime के माध्यम से worker runs शुरू करता है। Assigned
-cards `agent:<id>:subagent:workboard-*` worker session keys का उपयोग करते हैं; unassigned
-cards unscoped `subagent:workboard-*` keys का उपयोग करते हैं ताकि Gateway अब भी configured default agent resolve करे। Workers को bounded card context और वह claim token मिलता है जिसकी उन्हें Workboard tools के माध्यम से card को heartbeat, complete, या block करने के लिए आवश्यकता होती है।
-
-### Dispatch worker चयन
-
-हर dispatch pass डिफ़ॉल्ट रूप से अधिकतम तीन workers शुरू करता है। Ready cards को
-priority, position, और creation time के अनुसार order किया जाता है, फिर duplicate active ownership से बचने के लिए filter किया जाता है। एक dispatch उसी pass में किसी दिए गए owner या
-agent के लिए केवल एक card शुरू करता है, और उन owners को skip करता है जिनके पास board पर पहले से running या review work है।
-
-Archived cards, active claims वाले cards, और `ready` status के बिना cards
-worker starts के लिए select नहीं किए जाते। वे फिर भी dispatch के data side से प्रभावित हो सकते हैं जब stale claims, dependency promotion, या timeout cleanup लागू होता है।
-
-### Worker prompt और lifecycle
-
-Worker prompt में card title, bounded notes और context,
-assigned board, और Workboard worker protocol शामिल होता है। इसमें claim
-owner और claim token भी शामिल होता है ताकि worker किसी अन्य actor द्वारा card take over किए बिना `workboard_heartbeat`,
-`workboard_complete`, या `workboard_block` call कर सके।
-
-जब worker सफलतापूर्वक शुरू होता है, Workboard session key, run id,
-engine, mode, model label, status, और worker log को card पर store करता है। Session key
-board और card के लिए deterministic है, जिससे repeated dispatches unrelated sessions बनाने के बजाय उसी worker lane पर वापस route होते हैं।
-
-यदि card claim होने के बाद worker शुरू नहीं किया जा सकता, तो Workboard
-card को block करता है, claim clear करता है, run-start failure record करता है, और worker log
-line append करता है। यह failure dashboard, CLI JSON, agent tools, और card
-diagnostics में visible है।
-
-### Dispatch entry points
-
-Ready-card worker starts इनसे हो सकते हैं:
-
-- dashboard dispatch action
-- `openclaw workboard dispatch`
-- command-capable channel पर `/workboard dispatch`
-
-तीनों entry points Gateway उपलब्ध होने पर Gateway subagent runtime का उपयोग करते हैं। CLI में एक extra operator fallback है: यदि Gateway offline है या
-Workboard dispatch method expose नहीं करता और कोई explicit `--url` या
-`--token` target provide नहीं किया गया, तो यह local SQLite
-state के विरुद्ध data-only dispatch चलाता है। वह fallback dependencies promote कर सकता है, stale claims clean कर सकता है, और timed-out runs block कर सकता है, लेकिन workers शुरू नहीं कर सकता।
-
-Board metadata में `autoDecompose`,
-`autoDecomposePerDispatch`, `defaultAssignee`, और `orchestratorProfile` जैसी orchestration settings शामिल हो सकती हैं।
-OpenClaw orchestration intent record करता है और उसे worker context में expose करता है; वास्तविक specification और decomposition अब भी सामान्य
-Workboard tools के माध्यम से होता है।
-
-## CLI और slash command
-
-Plugin एक root CLI command register करता है:
-
-```bash
-openclaw workboard list
-openclaw workboard create "Fix stale card lifecycle" --priority high --labels bug,workboard
-openclaw workboard show <card-id>
-openclaw workboard dispatch
-```
-
-`openclaw workboard dispatch` चल रहे Gateway को कॉल करता है ताकि worker शुरू होने पर
-dashboard जैसा ही subagent runtime इस्तेमाल हो। अगर Gateway उपलब्ध नहीं है, तो यह
-data-only dispatch पर वापस चला जाता है ताकि dependency promotion, stale-claim cleanup, और
-timeout blocking फिर भी चल सकें। Auth, permission, और validation failures फिर भी
-command errors के रूप में दिखते हैं, जैसे explicit `--url` या `--token`
-targets के failures भी।
-
-`/workboard` slash command वही compact operator path support करता है:
-`/workboard list`, `/workboard show <card-id>`, `/workboard create <title>`, और
-`/workboard dispatch`। List और show authorized command senders के लिए read operations
-हैं। Create और dispatch के लिए chat surfaces पर owner status या `operator.write`
-या `operator.admin` वाला Gateway client चाहिए।
-
-command flags, JSON output, Gateway fallback behavior, unambiguous id-prefix handling,
-dispatch selection rules, और troubleshooting के लिए [Workboard CLI](/hi/cli/workboard) देखें।
-
-## Session lifecycle sync
-
-Cards को existing dashboard sessions से या card से काम शुरू करने पर बने session से
-link किया जा सकता है। Linked cards session lifecycle inline दिखाते हैं:
-running, stale, linked idle, done, failed, या missing।
-
-अगर linked session missing है, तो card context के लिए linked रहता है और फिर भी
-start controls देता है ताकि आप fresh dashboard session में काम restart कर सकें।
-अगर active linked session recent activity report करना बंद कर देता है, तो Workboard
-card को stale mark करता है और marker को card metadata के रूप में store करता है जब तक
-lifecycle उसे clear नहीं कर देता।
-
-आप Sessions tab से Add to Workboard के साथ existing dashboard session भी capture कर
-सकते हैं। Card उस session से linked होता है, session label या recent user prompt को
-title के रूप में इस्तेमाल करता है, और chat history उपलब्ध होने पर recent user prompt
-plus latest assistant response से notes seed करता है।
-
-जब card अभी भी active work state में हो, Workboard linked session को follow करता है:
-
-- active linked session -> `running`
-- completed linked session -> `review`
-- failed, killed, timed out, या aborted linked session -> `blocked`
-
-Manual review states जीतते हैं। अगर आप card को `review`, `blocked`, या `done` में
-move करते हैं, तो Workboard उस card को auto-moving करना बंद कर देता है जब तक आप उसे
-वापस `todo` या `running` में move नहीं करते।
-
-## Dashboard workflow
-
-1. Control UI में Workboard tab खोलें।
-2. title, notes, priority, labels, optional agent, और optional linked session के साथ card बनाएं।
-3. या existing session के लिए Sessions खोलें और Add to Workboard चुनें।
-4. card को columns के बीच drag करें या card पर compact status control focus करें
-   और उसका menu या ArrowLeft/ArrowRight इस्तेमाल करें।
-5. dashboard session create या reuse करने के लिए card से काम शुरू करें।
-6. agent के काम करते समय card से linked session खोलें।
-7. lifecycle sync को running work को review या blocked में move करने दें, फिर accepted होने पर
-   card को manually done में move करें।
-
-Card शुरू करना normal Gateway sessions इस्तेमाल करता है। Workboard Plugin सिर्फ
-card metadata और links store करता है; conversation transcript, model selection, और run
-lifecycle regular session system के owned रहते हैं।
-
-Live linked card पर Stop इस्तेमाल करके active session run abort करें। Workboard उस
-card को `blocked` mark करता है ताकि वह follow-up के लिए visible रहे।
-
-New cards bugfixes, docs, releases, PR reviews, या plugin work के लिए Workboard
-templates से शुरू हो सकते हैं। Templates title, notes, labels, और priority prefill
-करते हैं, और selected template id card metadata के रूप में store होती है।
-
-## Permissions
-
-Plugin Gateway RPC methods को `workboard.*` namespace के तहत register करता है:
-
-- `workboard.cards.list` के लिए `operator.read` चाहिए
-- `workboard.cards.export` के लिए `operator.read` चाहिए
-- `workboard.cards.diagnostics` के लिए `operator.read` चाहिए
-- `workboard.cards.diagnostics.refresh` के लिए `operator.write` चाहिए
-- attachment list/get और notification event reads के लिए `operator.read` चाहिए
-- notification cursor advancement के लिए `operator.write` चाहिए
-- create, update, move, delete, comment, link, dependency link, proof, artifact,
-  attachment add/delete, worker log, protocol violation, claim, heartbeat,
-  release, complete, block, unblock, dispatch, bulk, और archive methods के लिए
-  `operator.write` चाहिए
-
-Read-only operator access से connected browsers board inspect कर सकते हैं लेकिन
-cards mutate नहीं कर सकते।
-
-## Configuration
-
-आज Workboard में कोई plugin-specific config नहीं है। Standard plugin entry से इसे
-enable या disable करें:
+Workboard का कोई Plugin-विशिष्ट कॉन्फ़िगरेशन नहीं है। इसे मानक Plugin प्रविष्टि से सक्षम/अक्षम करें:
 
 ```json5
 {
@@ -298,56 +55,330 @@ enable या disable करें:
 }
 ```
 
-इसे फिर से disable करें:
-
 ```bash
 openclaw plugins disable workboard
 openclaw gateway restart
 ```
 
-## Troubleshooting
+## कार्ड फ़ील्ड
 
-### Tab कहता है कि Workboard unavailable है
+| फ़ील्ड       | मान                                                                                                        |
+| ----------- | ------------------------------------------------------------------------------------------------------------- |
+| `status`    | `triage`, `backlog`, `todo`, `scheduled`, `ready`, `running`, `review`, `blocked`, `done`                     |
+| `priority`  | `low`, `normal`, `high`, `urgent`                                                                             |
+| `labels`    | मुक्त-रूप स्ट्रिंग                                                                                             |
+| `agentId`   | वैकल्पिक रूप से असाइन किया गया एजेंट                                                                                       |
+| लिंक किए गए संदर्भ | वैकल्पिक टास्क, रन, सेशन या स्रोत URL                                                                    |
+| `execution` | कार्ड से शुरू किए गए Codex/Claude रन का वैकल्पिक मेटाडेटा (इंजन, मोड, मॉडल, सेशन, रन आईडी, स्थिति) |
 
-Plugin policy check करें:
+कार्ड में प्रयासों, टिप्पणियों, लिंक, प्रमाण, आर्टिफ़ैक्ट, ऑटोमेशन सेटिंग, अटैचमेंट, वर्कर लॉग, वर्कर प्रोटोकॉल स्थिति, दावों, निदान, सूचनाओं, टेम्पलेट आईडी, आर्काइव स्थिति और पुराने सेशन का पता लगाने के लिए संक्षिप्त मेटाडेटा के साथ हाल की घटनाओं की सूची (`created`, `edited`, `moved`, `linked`, `specified`, `decomposed`, `claimed`, `heartbeat`, `execution_updated`, `attempt_started`, `attempt_updated`, `comment_added`, `link_added`, `proof_added`, `artifact_added`, `attachment_added`, `diagnostic`, `notification`, `dispatch`, `orchestration`, `protocol_violation`, `archived`, `unarchived`, `stale`) भी होती है। यह मेटाडेटा ऑपरेटर को लिंक किए गए सेशन को खोले बिना यह देखने देता है कि कार्ड बोर्ड में किस प्रकार आगे बढ़ा; यह स्थानीय संचालन संदर्भ है, सेशन ट्रांसक्रिप्ट या GitHub इश्यू इतिहास का विकल्प नहीं।
+
+Plugin और Control UI, Workboard कार्ड के एक ही अनुबंध का उपयोग करते हैं। इसलिए डैशबोर्ड रीफ़्रेश, कार्ड की केवल UI वाली छोटी प्रति बनाने के बजाय वर्कस्पेस उद्गम और अधिकार, दावे की स्थिति, निदान क्रियाओं और सूचना अनुक्रम संख्याओं को सुरक्षित रखते हैं। अज्ञात निदान प्रकारों, निदान गंभीरताओं और सूचना प्रकारों को तब तक अनदेखा किया जाता है, जब तक दोनों सतहें उनका समर्थन न करें; उन्हें कभी किसी दूसरी मान्य स्थिति में पुनर्लिखित नहीं किया जाता।
+
+खुला डैशबोर्ड `plugin.workboard.changed` अमान्यकरणों से अपडेट होता है। प्रत्येक घटना में केवल स्टोर युग और संशोधन होता है; इसके बाद UI सामान्य `operator.read` RPC के माध्यम से प्रामाणिक कार्ड दोबारा पढ़ता है। एकाधिक संशोधन एक अनुवर्ती रीड में समेकित हो जाते हैं। कार्ड को खींचे, संपादित या लिखे जाने के दौरान Workboard उस रीड को स्थगित करता है और फिर स्थानीय इंटरैक्शन समाप्त होने के बाद दोबारा शुरू करता है। दोबारा कनेक्ट होने पर हमेशा प्रामाणिक रीलोड किया जाता है। पूर्ण कार्ड का कोई नियमित पोल नहीं होता और मैन्युअल पुनर्प्राप्ति के लिए **Refresh** उपलब्ध रहता है।
+
+एक से अधिक बोर्ड होने पर टूलबार में एक **Board** फ़िल्टर शामिल होता है, जो केवल वर्तमान में दिखाई देने वाले कार्ड के बजाय स्थायी बोर्ड मेटाडेटा द्वारा समर्थित होता है। इसलिए खाली और आर्काइव किए गए बोर्ड भी चुने जा सकते हैं। स्पष्ट बोर्ड आईडी के बिना कार्ड प्रामाणिक `default` बोर्ड से संबंधित होते हैं। चयनित बोर्ड को `?board=` क्वेरी पैरामीटर में संग्रहीत किया जाता है, इसलिए फ़िल्टर किए गए Workboard URL को बुकमार्क या साझा किया जा सकता है; **All boards** चुनने पर पैरामीटर हट जाता है।
+
+कार्ड Plugin की अपनी Gateway स्थिति में संग्रहीत होते हैं और उस Gateway की शेष OpenClaw स्थिति के साथ स्थानांतरित होते हैं ([संग्रहण](#storage) देखें)।
+
+## कार्ड से काम शुरू करना
+
+लिंक न किए गए कार्ड सीधे काम शुरू कर सकते हैं:
+
+- **Run Codex** / **Run Claude** स्पष्ट इंजन के साथ टास्क-ट्रैक किया गया एजेंट रन शुरू करता है, कार्ड प्रॉम्प्ट भेजता है और कार्ड को `running` के रूप में चिह्नित करता है। Codex रन `openai/gpt-5.6-sol` का उपयोग करते हैं; Claude रन `anthropic/claude-sonnet-4-6` का उपयोग करते हैं।
+- **Open Codex** / **Open Claude** कार्ड प्रॉम्प्ट भेजे या कार्ड को स्थानांतरित किए बिना लिंक किया गया डैशबोर्ड सेशन बनाता है, ताकि मैन्युअल कार्य बोर्ड से जुड़ा रहे।
+
+स्वायत्त शुरुआतें Gateway के टास्क-ट्रैक किए गए एजेंट रन पाथ का उपयोग करती हैं (जब तक Codex/Claude स्पष्ट रूप से न चुना जाए, डिफ़ॉल्ट एजेंट और मॉडल); इसके बाद Workboard परिणामी टास्क, रन आईडी और सेशन कुंजी को वापस कार्ड से लिंक करता है। प्रत्येक लिंक किया गया निष्पादन प्रयास का सारांश भी दर्ज करता है (इंजन, मोड, मॉडल, रन आईडी, टाइमस्टैम्प, स्थिति, क्रमिक विफलता संख्या), ताकि बार-बार होने वाली विफलताएँ दिखाई देती रहें।
+
+डैशबोर्ड Gateway टास्क लेज़र से टास्क स्थिति रीफ़्रेश करता है और टास्क आईडी, रन आईडी या लिंक की गई सेशन कुंजी के आधार पर टास्क का कार्ड से मिलान करता है। कतारबद्ध/चल रहा टास्क कार्ड के जीवनचक्र को सक्रिय रखता है; समाप्त, विफल, समय-सीमा समाप्त या रद्द हुआ टास्क कार्ड को लिंक किए गए सेशन वाले समान सिंक नियम का उपयोग करके `review` या `blocked` की ओर ले जाता है ([सेशन जीवनचक्र सिंक](#session-lifecycle-sync) देखें)।
+
+## एजेंट टूल्स
+
+| टूल                                                                                                                                             | उद्देश्य                                                                                                                                                                                   |
+| ------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `workboard_list`                                                                                                                                 | क्लेम/डायग्नोस्टिक स्थिति वाले संक्षिप्त कार्ड सूचीबद्ध करें; वैकल्पिक बोर्ड फ़िल्टर।                                                                                                                    |
+| `workboard_read`                                                                                                                                 | एक कार्ड और सीमित वर्कर संदर्भ (नोट्स, प्रयास, टिप्पणियाँ, लिंक, प्रमाण, आर्टिफ़ैक्ट, पैरेंट परिणाम, असाइनी का हाल का कार्य, सक्रिय डायग्नोस्टिक्स) लौटाएँ।                               |
+| `workboard_create`                                                                                                                               | वैकल्पिक पैरेंट, टेनेंट, स्किल्स, बोर्ड, वर्कस्पेस मेटाडेटा, आइडेम्पोटेंसी कुंजी, रनटाइम सीमा और पुनः प्रयास बजट के साथ कार्ड बनाएँ।                                                             |
+| `workboard_link`                                                                                                                                 | किसी पैरेंट को चाइल्ड कार्ड से लिंक करें। जब तक प्रत्येक पैरेंट `done` तक नहीं पहुँचता, चाइल्ड `todo` रहते हैं; फिर डिस्पैच प्रमोशन उन्हें `ready` में ले जाता है।                                                     |
+| `workboard_claim`                                                                                                                                | कॉल करने वाले एजेंट के लिए कार्ड क्लेम करें; `backlog`/`todo`/`ready` को `running` में ले जाता है।                                                                                                        |
+| `workboard_heartbeat`                                                                                                                            | लंबे रन के दौरान क्लेम Heartbeat रीफ़्रेश करें।                                                                                                                                          |
+| `workboard_release`                                                                                                                              | पूर्ण होने, विराम या हैंडऑफ़ के बाद क्लेम रिलीज़ करें; कार्ड को अगली स्थिति में ले जा सकता है।                                                                                                |
+| `workboard_complete` / `workboard_block`                                                                                                         | अंतिम सारांशों, प्रमाण, आर्टिफ़ैक्ट और बनाए गए कार्ड के मैनिफ़ेस्ट (पूर्ण किए गए कार्ड से वापस लिंक किए गए कार्डों का संदर्भ देना आवश्यक है) या अवरोधक कारणों के लिए संरचित लाइफ़साइकल टूल।                 |
+| `workboard_attachment_add` / `workboard_attachment_read` / `workboard_attachment_delete`                                                         | छोटे कार्ड अटैचमेंट को Plugin SQLite स्थिति में संग्रहीत करें, कार्ड पर इंडेक्स करें और वर्कर संदर्भ में उपलब्ध कराएँ।                                                                                         |
+| `workboard_worker_log` / `workboard_protocol_violation`                                                                                          | वर्कर लॉग पंक्तियाँ रिकॉर्ड करें और जब कोई स्वचालित वर्कर `workboard_complete`/`workboard_block` को कॉल किए बिना रुक जाए, तो कार्ड को ब्लॉक करें।                                                           |
+| `workboard_board_create` / `workboard_board_archive` / `workboard_board_delete`                                                                  | स्थायी बोर्ड मेटाडेटा (प्रदर्शन नाम, विवरण, आर्काइव स्थिति, डिफ़ॉल्ट वर्कस्पेस) प्रबंधित करें।                                                                                            |
+| `workboard_runs`                                                                                                                                 | किसी कार्ड का स्थायी रन-प्रयास इतिहास लौटाएँ।                                                                                                                                      |
+| `workboard_specify`                                                                                                                              | किसी अपरिष्कृत ट्रायेज/बैकलॉग कार्ड को स्पष्ट `todo` कार्ड में बदलें; कार्ड पर स्पेसिफ़िकेशन सारांश रिकॉर्ड करता है।                                                                                      |
+| `workboard_decompose`                                                                                                                            | किसी पैरेंट ऑर्केस्ट्रेशन कार्ड को लिंक किए गए चाइल्ड कार्डों में विभाजित करें, जो बोर्ड/टेनेंट मेटाडेटा इनहेरिट करते हैं; बनाए गए कार्ड के मैनिफ़ेस्ट के साथ पैरेंट को पूर्ण कर सकता है।                                             |
+| `workboard_notify_subscribe` / `workboard_notify_list` / `workboard_notify_events` / `workboard_notify_advance` / `workboard_notify_unsubscribe` | सूचना सदस्यताएँ प्रबंधित करें। इवेंट रीड रीप्ले-सुरक्षित हैं; `advance` टिकाऊ कर्सर को आगे बढ़ाता है, ताकि कॉलर पूर्ण/विफल/स्टेल कार्ड इवेंट खोए या दोबारा पढ़े बिना फिर से शुरू कर सकें। |
+| `workboard_boards` / `workboard_stats`                                                                                                           | बोर्ड नेमस्पेस और क्यू आँकड़ों का निरीक्षण करें।                                                                                                                                                 |
+| `workboard_promote` / `workboard_reassign` / `workboard_reclaim`                                                                                 | अटके हुए कार्य को रिकवर या हैंडऑफ़ करें।                                                                                                                                                           |
+| `workboard_comment` / `workboard_proof`                                                                                                          | हैंडऑफ़ नोट्स जोड़ें या प्रमाण/आर्टिफ़ैक्ट संदर्भ संलग्न करें।                                                                                                                                    |
+| `workboard_unblock`                                                                                                                              | ब्लॉक किए गए कार्य को वापस `todo` में ले जाएँ।                                                                                                                                                         |
+| `workboard_move`                                                                                                                                 | कार्ड को दूसरी स्थिति में ले जाएँ; क्लेम किए गए कार्डों के लिए कॉलर का एजेंट क्लेम स्कोप आवश्यक है।                                                                                                      |
+| `workboard_dispatch`                                                                                                                             | वर्कर लॉन्च किए बिना डिपेंडेंसी प्रमोशन या स्टेल-क्लेम क्लीनअप को प्रेरित करें; वर्कर लॉन्च Gateway या स्लैश-कमांड डिस्पैच का उपयोग करता है।                                                        |
+
+प्रमाण स्थितियाँ वर्कर द्वारा रिपोर्ट किए गए परिणाम हैं, स्वतंत्र सत्यापन नहीं। एक `passed`
+प्रविष्टि का अर्थ है कि वर्कर रिपोर्ट करता है कि उसका कमांड या जाँच सफल हुई; जिन उपभोक्ताओं को
+स्वतंत्र गुणवत्ता गेट चाहिए, उन्हें संलग्न कमांड, URL या आर्टिफ़ैक्ट का निरीक्षण करके
+अपना सत्यापनकर्ता चलाना चाहिए। `workboard_proof` नए रिकॉर्ड का `proofId` लौटाता है। जब
+`workboard_complete` उसी प्रमाण की अंतिम स्थिति रिपोर्ट करता है, तो `proofId` पास करें, ताकि
+लंबित रिकॉर्ड की पहचान या टाइमस्टैम्प खोए बिना उसे उसी स्थान पर समाधानित किया जाए। जिस प्रमाण की
+अंतिम स्थिति पहले से समान है, उसे बिना बदलाव के पुनः उपयोग किया जाता है। `proofId` के बिना
+पूर्णता प्रमाण केवल जोड़ने योग्य रहता है, इसलिए बाद का पुनः प्रयास पुराने इतिहास को केवल इस कारण
+दोबारा नहीं लिख सकता कि उसका कमांड या नोट समान है।
+
+क्लेम किए गए कार्ड अन्य एजेंटों से एजेंट-टूल म्यूटेशन अस्वीकार करते हैं, जब तक कॉलर के पास
+`workboard_claim` द्वारा लौटाया गया क्लेम टोकन न हो। किसी एजेंट टूल या Gateway RPC कॉल द्वारा
+लौटाया गया प्रत्येक कार्ड `metadata.claim.token` को `[redacted]` के रूप में रिडैक्ट करता है
+(टोकन स्वयं केवल `workboard_claim` से एक बार, शीर्ष स्तर पर लौटाया जाता है), ताकि डैशबोर्ड
+ऑपरेटर और अन्य एजेंट उपयोग योग्य टोकन देखे बिना क्लेम स्थिति का निरीक्षण कर सकें।
+रिकवरी `workboard_promote`/`workboard_reassign`/`workboard_reclaim` के माध्यम से होती है,
+जिनके लिए टोकन आवश्यक नहीं है।
+
+## डिस्पैच
+
+डिस्पैच Gateway-स्थानीय है: यह मनमानी OS प्रक्रियाएँ शुरू नहीं करता। सामान्य
+OpenClaw सबएजेंट सत्र अब भी निष्पादन के स्वामी होते हैं। एक डिस्पैच पास:
+
+1. डिपेंडेंसी के लिए तैयार कार्डों को प्रमोट करता है।
+2. तैयार कार्डों पर डिस्पैच मेटाडेटा रिकॉर्ड करता है।
+3. समाप्त हो चुके क्लेम या समय-सीमा पार कर चुके रन को ब्लॉक करता है।
+4. बोर्ड-कॉन्फ़िगर किए गए ट्रायेज कार्डों को ऑर्केस्ट्रेशन उम्मीदवार के रूप में चिह्नित करता है।
+5. तैयार कार्डों के एक छोटे बैच को क्लेम करता है और Gateway सबएजेंट रनटाइम के माध्यम से
+   वर्कर रन शुरू करता है।
+
+वर्करों को सीमित कार्ड संदर्भ के साथ वह क्लेम टोकन मिलता है, जिसकी आवश्यकता Workboard टूल के
+माध्यम से Heartbeat भेजने, कार्ड पूर्ण करने या उसे ब्लॉक करने के लिए होती है।
+
+वर्कस्पेस पथ कॉलर के मौजूदा फ़ाइलसिस्टम प्राधिकार का पालन करते हैं। `operator.write` वाले
+Gateway क्लाइंट कॉन्फ़िगर किए गए एजेंट वर्कस्पेस का उपयोग कर सकते हैं; `operator.admin`
+क्लाइंट अन्य होस्ट चेकआउट का उपयोग कर सकते हैं। सैंडबॉक्स किए गए एजेंट टूल अपने सैंडबॉक्स
+वर्कस्पेस एक्सेस का उपयोग करते हैं, जबकि अनसैंडबॉक्स्ड वर्कस्पेस-केवल टूल अपने कॉन्फ़िगर किए गए
+वर्कस्पेस रूट का उपयोग करते हैं। वर्कस्पेस असाइन होने पर Workboard उस प्राधिकार को रिकॉर्ड करता है
+और डिस्पैच के समय उसे वर्तमान कॉलर के प्राधिकार से फिर इंटरसेक्ट करता है, इसलिए स्थायी कार्ड बाद के
+कॉलर की पहुँच नहीं बढ़ा सकता। स्पष्ट होस्ट वर्कस्पेस लेकिन बिना रिकॉर्ड किए गए प्राधिकार वाले पुराने
+कार्डों के वर्कस्पेस को पूर्ण-होस्ट डिस्पैच से पहले फिर से सहेजना आवश्यक है; बिना होस्ट पथ वाले कार्ड
+पहली बार डिस्पैच होने पर वर्तमान कॉलर का प्राधिकार अपनाते हैं।
+
+वर्कस्पेस-बाउंड डिस्पैच किसी डायरेक्टरी या Git चेकआउट को केवल तभी स्वीकार करता है, जब उसका
+रिपॉज़िटरी रूट लक्ष्य एजेंट वर्कस्पेस से बिल्कुल मेल खाता हो। वर्कट्री अनुरोध को उस डायरेक्टरी तक
+सीमित किया जाता है और डायरेक्टरी वर्कस्पेस के रूप में स्थायी बनाया जाता है, इसलिए होस्ट चेकआउट को
+मटेरियलाइज़ नहीं करता या रिपॉज़िटरी सेटअप कोड निष्पादित नहीं करता। लक्ष्य वर्कर को उसी सटीक
+वर्कस्पेस के लिए लिखने योग्य, गैर-साझा Docker सैंडबॉक्स का उपयोग करना आवश्यक है, जिसमें उन्नत
+निष्पादन, स्थायी होस्ट/node exec ओवरराइड या अवर्गीकृत Plugin और MCP टूल न हों। Workboard किसी
+`workboard_*` प्रीफ़िक्स पर भरोसा करने के बजाय अपने पंजीकृत टूलों को सूचीबद्ध करता है, और
+डिस्पैच ऐसे सक्रिय Docker कंटेनर को अस्वीकार करता है जिसका लाइव माउंट/कॉन्फ़िग हैश स्टेल है।
+कम-प्रतिबंधित वर्कर शुरू करने के बजाय डिस्पैच असंगत लक्ष्य नीति रिपोर्ट करता है।
+पूर्ण-होस्ट डिस्पैच अन्य स्थानीय चेकआउट को लक्षित कर सकता है और सामान्य प्रबंधित-
+वर्कट्री सेटअप बनाए रखता है।
+
+वर्कस्पेस प्राधिकार दूसरा कार्ड-लाइफ़साइकल अनुमति मॉडल नहीं बनाता।
+Workboard कार्डों को म्यूटेट कर सकने वाले कॉलर प्रत्येक सतह पर उन्हें समान
+स्थितियों में मैन्युअल रूप से ले जा सकते हैं; केवल-पढ़ने योग्य वर्कस्पेस एक्सेस केवल उस वर्कर
+डिस्पैच को रोकता है, जिसे लिखने की आवश्यकता होती है।
+
+### वर्कर चयन
+
+प्रत्येक चरण डिफ़ॉल्ट रूप से **अधिकतम 3 वर्कर शुरू करता है**। तैयार कार्डों को
+पहले प्राथमिकता, फिर स्थिति, फिर निर्माण समय के अनुसार क्रमबद्ध किया जाता है। एक चरण प्रति
+स्वामी/एजेंट केवल एक कार्ड शुरू करता है और उन स्वामियों को छोड़ देता है जिनका कोई कार्य पहले से
+बोर्ड पर चल रहा है या समीक्षा में है। संग्रहित कार्ड, सक्रिय दावे वाले कार्ड और `ready`
+स्थिति में न होने वाले कार्ड वर्कर शुरू करने के लिए कभी नहीं चुने जाते (वे फिर भी
+डिस्पैच के डेटा पक्ष से प्रभावित हो सकते हैं: पुराने दावे हटाना, निर्भरता प्रोमोट करना, टाइमआउट
+साफ़ करना)।
+
+सत्र कुंजियाँ प्रत्येक बोर्ड/कार्ड के लिए नियतात्मक होती हैं, इसलिए बार-बार किए गए डिस्पैच
+असंबंधित सत्र बनाने के बजाय उसी वर्कर लेन पर वापस रूट होते हैं:
+
+- असाइन किए गए कार्ड: `agent:<agentId>:subagent:workboard-<boardId>-<cardId>`
+- अनअसाइन किए गए कार्ड: `subagent:workboard-<boardId>-<cardId>` (Gateway
+  कॉन्फ़िगर किए गए डिफ़ॉल्ट एजेंट का समाधान करता है)
+
+यदि किसी कार्ड पर दावा किए जाने के बाद वर्कर शुरू नहीं किया जा सकता, तो कार्यपट्ट
+कार्ड को अवरुद्ध करता है, दावा हटाता है, रन शुरू होने की विफलता दर्ज करता है और वर्कर
+लॉग पंक्ति जोड़ता है—जो डैशबोर्ड, CLI JSON, एजेंट टूल और कार्ड
+निदान में दिखाई देती है।
+
+### प्रवेश बिंदु
+
+- डैशबोर्ड डिस्पैच कार्रवाई
+- `openclaw workboard dispatch`
+- कमांड-सक्षम चैनल पर `/workboard dispatch`
+
+Gateway उपलब्ध होने पर तीनों Gateway सबएजेंट रनटाइम का उपयोग करते हैं। CLI में
+ऑपरेटर के लिए एक फ़ॉलबैक है: यदि Gateway कॉल किसी कनेक्शन/अनुपलब्धता त्रुटि
+(या पुराने Gateways के लिए `unknown method` त्रुटि) के साथ विफल होती है,
+और कोई स्पष्ट `--url`/`--token` लक्ष्य तथा कोई कॉन्फ़िगर किया गया रिमोट
+Gateway (`OPENCLAW_GATEWAY_URL` या `gateway.mode: remote`) लागू नहीं होता, तो CLI स्थानीय SQLite स्थिति पर
+केवल-डेटा डिस्पैच चलाता है—यह निर्भरताएँ प्रोमोट कर सकता है,
+पुराने दावे हटा सकता है और टाइमआउट वाले रन अवरुद्ध कर सकता है, लेकिन वर्कर शुरू नहीं कर सकता। पहुँच योग्य Gateway से आने वाली प्रमाणीकरण,
+अनुमति और सत्यापन विफलताओं को अनुपलब्धता नहीं माना जाता;
+वे कमांड त्रुटियों के रूप में दिखाई देती हैं, और स्पष्ट `--url`/`--token` लक्ष्य दिए जाने पर
+Gateway की कोई भी विफलता भी इसी तरह दिखाई देती है।
+
+बोर्ड मेटाडेटा `autoDecompose`, `autoDecomposePerDispatch`,
+`defaultAssignee` और `orchestratorProfile` सेट कर सकता है। OpenClaw इस आशय को दर्ज करता है और
+इसे वर्कर संदर्भ में उपलब्ध कराता है; वास्तविक विनिर्देशन/विघटन फिर भी
+सामान्य कार्यपट्ट टूल के माध्यम से चलता है।
+
+## CLI और स्लैश कमांड
+
+```bash
+openclaw workboard list [--board <id>] [--status <status>] [--include-archived] [--json]
+openclaw workboard create "Fix stale card lifecycle" --priority high --labels bug,workboard
+openclaw workboard show <card-id> [--json]
+openclaw workboard move <card-id> --status <status> [--json]
+openclaw workboard dispatch [--board <id>] [--json]
+```
+
+`list` टेक्स्ट आउटपुट डिफ़ॉल्ट रूप से संग्रहित कार्ड छिपाता है (`--include-archived`
+इसे ओवरराइड करता है); `--json` हमेशा संग्रहित कार्ड शामिल करता है, जो मौजूदा स्क्रिप्ट द्वारा उपयोग किए जाने वाले पूर्ण-कार्ड
+अनुबंध से मेल खाता है। `show` और `move` एक असंदिग्ध id
+उपसर्ग स्वीकार करते हैं। `list`, `create`, `show` और `move` हमेशा स्थानीय Plugin
+स्थिति को सीधे पढ़ते/लिखते हैं। केवल `dispatch` चालू Gateway को कॉल करता है और ऊपर वर्णित
+फ़ॉलबैक का उपयोग करता है।
+
+सभी फ़्लैग, JSON आउटपुट, Gateway फ़ॉलबैक व्यवहार, id-उपसर्ग प्रबंधन, डिस्पैच चयन नियमों और
+समस्या निवारण के लिए [कार्यपट्ट CLI](/hi/cli/workboard) देखें।
+
+`/workboard list`, `/workboard show <card-id>`, `/workboard create <title>`,
+`/workboard move <card-id> --status <status>` और `/workboard dispatch`
+CLI के अनुरूप हैं। सूचीबद्ध करना और दिखाना किसी भी अधिकृत कमांड प्रेषक के लिए पठन संचालन हैं।
+बनाने, स्थानांतरित करने और डिस्पैच करने के लिए चैट सतहों पर स्वामी की स्थिति या
+`operator.write`/`operator.admin` वाला Gateway क्लाइंट आवश्यक है। मैन्युअल ऑपरेटर स्थानांतरण
+डैशबोर्ड के ड्रैग-एंड-ड्रॉप जैसा ही दावा-ओवरराइड व्यवहार उपयोग करते हैं। उनकी वर्कट्री पहुँच
+फिर भी ऊपर वर्णित उसी कार्यस्थान सीमा का पालन करती है।
+
+## सत्र जीवनचक्र समन्वयन
+
+कार्ड किसी मौजूदा डैशबोर्ड सत्र या कार्ड से कार्य शुरू करते समय बनाए गए सत्र से लिंक हो सकते हैं।
+लिंक किए गए कार्ड सत्र का जीवनचक्र इनलाइन दिखाते हैं:
+चल रहा है, पुराना, लिंक किया हुआ निष्क्रिय, पूर्ण, विफल या अनुपलब्ध। आप Sessions टैब से
+**कार्यपट्ट में जोड़ें** का उपयोग करके किसी मौजूदा सत्र को भी कैप्चर कर सकते हैं; कार्ड
+उस सत्र से लिंक होता है, सत्र लेबल या हाल के उपयोगकर्ता प्रॉम्प्ट को शीर्षक के रूप में उपयोग करता है
+और उपलब्ध होने पर हाल के उपयोगकर्ता प्रॉम्प्ट तथा नवीनतम सहायक प्रतिक्रिया से नोट्स आरंभ करता है।
+
+यदि लिंक किया गया सत्र अनुपलब्ध हो जाता है, तो कार्ड संदर्भ के लिए लिंक बना रहता है और
+नए सत्र में पुनः शुरू करने के लिए प्रारंभ नियंत्रण देता रहता है। यदि कोई सक्रिय
+लिंक किया गया सत्र हाल की गतिविधि की रिपोर्ट करना बंद कर देता है, तो कार्यपट्ट कार्ड को
+`stale` चिह्नित करता है और जीवनचक्र द्वारा इसे साफ़ किए जाने तक इसे मेटाडेटा के रूप में संग्रहीत करता है।
+
+जब कोई कार्ड सक्रिय कार्य स्थिति में होता है, तब कार्यपट्ट लिंक किए गए सत्र का अनुसरण करता है:
+
+| लिंक किए गए सत्र की स्थिति            | कार्ड की स्थिति |
+| ------------------------------------- | ----------- |
+| सक्रिय                                | `running`   |
+| पूर्ण                                 | `review`    |
+| विफल, समाप्त, टाइमआउट या निरस्त       | `blocked`   |
+
+**मैन्युअल समीक्षा स्थितियों को प्राथमिकता मिलती है।** किसी कार्ड को `review`, `blocked` या `done`
+पर ले जाने से उस कार्ड का स्वतः-समन्वयन तब तक रुक जाता है, जब तक आप उसे वापस `todo` या `running` पर नहीं ले जाते।
+
+कार्ड शुरू करने में सामान्य Gateway सत्रों का उपयोग होता है; कार्यपट्ट केवल कार्ड
+मेटाडेटा और लिंक संग्रहीत करता है। वार्तालाप ट्रांसक्रिप्ट, मॉडल चयन और रन
+जीवनचक्र का स्वामित्व नियमित सत्र प्रणाली के पास रहता है। सक्रिय
+लिंक किए गए कार्ड पर चल रहे रन को निरस्त करने के लिए **रोकें** का उपयोग करें—कार्यपट्ट उस कार्ड को `blocked` चिह्नित करता है ताकि
+वह आगे की कार्रवाई के लिए दिखाई देता रहे।
+
+नए कार्ड कार्यपट्ट टेम्पलेट (`bugfix`, `docs`, `release`,
+`pr_review`, `plugin`) से शुरू हो सकते हैं। टेम्पलेट शीर्षक, नोट्स, लेबल और प्राथमिकता पहले से भरते हैं;
+टेम्पलेट id कार्ड मेटाडेटा के रूप में संग्रहीत होती है।
+
+## डैशबोर्ड कार्यप्रवाह
+
+1. Control UI में कार्यपट्ट टैब खोलें।
+2. शीर्षक, नोट्स, प्राथमिकता, लेबल, वैकल्पिक एजेंट और
+   वैकल्पिक लिंक किए गए सत्र के साथ कार्ड बनाएँ—या Sessions खोलें और किसी मौजूदा सत्र के लिए **कार्यपट्ट में जोड़ें**
+   चुनें।
+3. कार्ड को स्तंभों के बीच खींचें, या उसके संक्षिप्त स्थिति नियंत्रण पर फ़ोकस करके
+   मेनू अथवा ArrowLeft/ArrowRight का उपयोग करें। खींचते समय स्रोत कार्ड धुंधला हो जाता है और
+   उपलब्ध ड्रॉप स्तंभों के चारों ओर रूपरेखा दिखाई देती है।
+4. डैशबोर्ड सत्र बनाने या पुनः उपयोग करने के लिए कार्ड से कार्य शुरू करें।
+5. एजेंट के कार्य करते समय कार्ड से लिंक किया गया सत्र खोलें।
+6. जीवनचक्र समन्वयन को चलते कार्य को `review`/`blocked` में ले जाने दें, फिर स्वीकार किए जाने पर
+   कार्ड को मैन्युअल रूप से `done` में ले जाएँ।
+
+## निदान
+
+निदान स्थानीय कार्ड मेटाडेटा से परिकलित किए जाते हैं। अंतर्निहित जाँचें निम्न स्थितियों को चिह्नित करती हैं:
+
+| प्रकार                       | स्थिति                                                                          |
+| --------------------------- | ------------------------------------------------------------------------------ |
+| `stranded_ready`            | असाइन किया गया `todo`/`backlog`/`ready` कार्ड 1 घंटे से अधिक समय से अपडेट नहीं हुआ।             |
+| `running_without_heartbeat` | `running` कार्ड में 20 मिनट से अधिक समय से कोई दावा Heartbeat या निष्पादन अपडेट नहीं है। |
+| `blocked_too_long`          | `blocked` कार्ड 24 घंटे से अधिक समय से अपडेट नहीं हुआ।                                   |
+| `repeated_failures`         | कार्ड की ट्रैक की गई विफलताओं की संख्या 2 या अधिक हो जाती है।                                |
+| `missing_proof`             | `done` कार्ड में कोई प्रमाण, आर्टिफ़ैक्ट या संलग्नक नहीं है।                          |
+| `orphaned_session`          | `running` कार्ड में `sessionKey` है, लेकिन `execution` मेटाडेटा नहीं है।                |
+
+## अनुमतियाँ
+
+Gateway RPC विधियाँ `workboard.*` के अंतर्गत होती हैं:
+
+| दायरा            | विधियाँ                                                                                                                                                                                                                                                                                                                                                                            |
+| ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `operator.read`  | `cards.list`, `cards.export`, `cards.diagnostics`, संलग्नक सूची/प्राप्ति, सूचना इवेंट पठन, `boards.list`, `cards.stats`, `cards.runs`                                                                                                                                                                                                                                       |
+| `operator.write` | `cards.diagnostics.refresh`, बनाना/अपडेट करना/स्थानांतरित करना/हटाना/टिप्पणी/link/linkDependency/proof/artifact, संलग्नक जोड़ना/हटाना, वर्कर लॉग, प्रोटोकॉल उल्लंघन, claim/heartbeat/release/promote/reassign/reclaim/complete/block/unblock, `cards.dispatch`, `cards.bulk`, संग्रहित करना, `boards.upsert`/`archive`/`delete`, `cards.specify`/`decompose`, सूचना subscribe/delete/advance |
+
+किसी RPC विधि को `operator.admin` की आवश्यकता नहीं है। केवल-पठन
+ऑपरेटर पहुँच से जुड़े ब्राउज़र बोर्ड देख सकते हैं, लेकिन कार्डों में परिवर्तन नहीं कर सकते। एडमिन दायरा
+स्वीकृत कार्यपट्ट होस्ट पथों को विस्तृत करता है; यह उपलब्ध विधियों को नहीं बदलता।
+
+## संग्रहण
+
+कार्यपट्ट OpenClaw स्थिति निर्देशिका के अंतर्गत Plugin-स्वामित्व वाले रिलेशनल SQLite डेटाबेस में
+स्थायी डेटा संग्रहीत करता है: बोर्ड, कार्ड, लेबल, जीवनचक्र इवेंट,
+रन प्रयास, टिप्पणियाँ, निर्भरता लिंक, प्रमाण, आर्टिफ़ैक्ट संदर्भ,
+संलग्नक मेटाडेटा और ब्लॉब, निदान, सूचनाएँ, वर्कर लॉग,
+प्रोटोकॉल स्थिति और सदस्यताएँ—सभी कार्यपट्ट तालिकाओं में रहते हैं (
+Plugin कुंजी-मूल्य प्रविष्टियों में नहीं)। कार्ड निर्यात संलग्नक ब्लॉब की सामग्री इनलाइन किए बिना
+बोर्ड का विवरण सुरक्षित रखता है।
+
+`.28` रिलीज़ में कार्यपट्ट का उपयोग करने वाले इंस्टॉलेशन
+भेजे गए पुराने Plugin-स्थिति नेमस्पेस
+(`workboard.cards`, `workboard.boards`, `workboard.notify` और, यदि मौजूद हो,
+`workboard.attachments`) को रिलेशनल डेटाबेस में माइग्रेट करने के लिए `openclaw doctor --fix` चला सकते हैं।
+
+## समस्या निवारण
+
+**टैब बताता है कि कार्यपट्ट अनुपलब्ध है**
 
 ```bash
 openclaw plugins inspect workboard --runtime --json
 ```
 
-अगर `plugins.allow` configured है, तो उस allowlist में `workboard` जोड़ें। अगर
-`plugins.deny` में `workboard` है, तो Plugin enable करने से पहले उसे remove करें।
+यदि `plugins.allow` कॉन्फ़िगर किया गया है, तो उसमें `workboard` जोड़ें। यदि `plugins.deny`
+में `workboard` है, तो Plugin सक्षम करने से पहले उसे हटाएँ।
 
-### Cards save नहीं होते
+**कार्ड सहेजे नहीं जाते**
 
-Confirm करें कि browser connection के पास `operator.write` access है। Read-only operator
-sessions cards list कर सकते हैं लेकिन उन्हें create, edit, move, या delete नहीं कर सकते।
+पुष्टि करें कि ब्राउज़र कनेक्शन के पास `operator.write` पहुँच है। केवल-पठन ऑपरेटर
+सत्र कार्ड सूचीबद्ध कर सकते हैं, लेकिन उन्हें बना, संपादित, स्थानांतरित या हटा नहीं सकते।
 
-### Card शुरू करने पर expected session नहीं खुलता
+**कार्ड शुरू करने पर अपेक्षित सत्र नहीं खुलता**
 
-Workboard normal dashboard sessions के links बनाता है। Card का agent id
-और linked session check करें, फिर actual run state inspect करने के लिए Sessions या Chat view खोलें।
+कार्ड की एजेंट id और लिंक किए गए सत्र की जाँच करें, फिर वास्तविक रन स्थिति देखने के लिए
+Sessions या Chat खोलें।
 
-### Dispatch worker start नहीं करता
+**डिस्पैच वर्कर शुरू नहीं करता**
 
-Confirm करें कि active claim के बिना कम से कम एक `ready` card है:
+पुष्टि करें कि सक्रिय दावे के बिना कम-से-कम एक `ready` कार्ड मौजूद है:
 
 ```bash
 openclaw workboard list --status ready
 ```
 
-अगर CLI data-only dispatch report करता है, तो Gateway start या restart करें और retry करें।
-Data-only dispatch local board state update करता है लेकिन subagent worker
-runs शुरू नहीं कर सकता।
+यदि CLI केवल-डेटा डिस्पैच की रिपोर्ट करता है, तो Gateway शुरू या पुनः शुरू करें और
+दोबारा प्रयास करें—केवल-डेटा डिस्पैच स्थानीय बोर्ड स्थिति अपडेट करता है, लेकिन
+सबएजेंट वर्कर रन शुरू नहीं कर सकता। कार्ड तब भी छोड़े जा सकते हैं जब उसी
+स्वामी या एजेंट का कोई अन्य कार्ड पहले से चल रहा हो या समीक्षा की प्रतीक्षा कर रहा हो; उसी
+स्वामी के लिए और कार्ड डिस्पैच करने से पहले उस सक्रिय कार्य को पूरा, अवरुद्ध या रिलीज़ करें।
 
-Cards तब भी skipped हो सकते हैं जब same owner या agent के लिए कोई दूसरा card
-already running हो या review का wait कर रहा हो। Same owner के लिए और work dispatch करने से पहले
-उस active work को complete, block, या release करें।
-
-## Related
+## संबंधित
 
 - [Control UI](/hi/web/control-ui)
-- [Workboard CLI](/hi/cli/workboard)
+- [कार्यपट्ट CLI](/hi/cli/workboard)
 - [Plugins](/hi/tools/plugin)
-- [Plugins manage करें](/hi/plugins/manage-plugins)
-- [Sessions](/hi/concepts/session)
+- [Plugins प्रबंधित करें](/hi/plugins/manage-plugins)
+- [सत्र](/hi/concepts/session)
