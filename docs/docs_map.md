@@ -5965,6 +5965,18 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Notes
   - H2: Related
 
+## plugins/meeting-plugins.md
+
+- Route: /plugins/meeting-plugins
+- Headings:
+  - H2: Choose a plugin
+  - H2: Choose a mode
+  - H2: Prepare Chrome and audio
+  - H2: Enable the plugin
+  - H2: Verify and join
+  - H2: Handle platform policy prompts
+  - H2: Platform guides
+
 ## plugins/memory-lancedb.md
 
 - Route: /plugins/memory-lancedb
@@ -7571,6 +7583,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Modes
   - H2: Guest join limits
   - H2: Tool and gateway surface
+  - H2: Related
 
 ## plugins/tool-plugins.md
 
@@ -7703,6 +7716,7 @@ Do not edit it by hand; run `pnpm docs:map:gen`.
   - H2: Modes
   - H2: Guest join limits
   - H2: Tool and gateway surface
+  - H2: Related
 
 ## prose.md
 
